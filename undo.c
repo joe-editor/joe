@@ -82,8 +82,7 @@ void undorm(UNDO *undo)
 
 void bw_unlock(BW *bw)
 {
-	if (bw->b->locked && !bw->b->ignored_lock && bw->b->name && bw->b->name[0]!='!' &&
-	    bw->b->name[0]!='>' && bw->b->name[0]!='-') {
+	if (bw->b->locked && !bw->b->ignored_lock && plain_file(bw->b)) {
 		unlock_it(bw->b->name);
 		bw->b->locked = 0;
 	}

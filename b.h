@@ -164,5 +164,6 @@ unsigned char **getbufs PARAMS((void));
 
 int lock_it(unsigned char *path,unsigned char *buf);
 void unlock_it(unsigned char *path);
+int plain_file(B *b);
 
 #endif

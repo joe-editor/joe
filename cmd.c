@@ -232,6 +232,8 @@ CMD cmds[] = {
 
 /* Steal Lock dialog */
 
+int nolocks;
+
 int steal_lock(BW *bw,int c,unsigned char *s,int *notify)
 {
 	if (c=='s' || c=='S') {
@@ -319,7 +321,7 @@ int execmd(CMD *cmd, int k)
 		} else if (!bw->b->changed && !bw->b->locked) {
 			/* First time we modify the file */
 			/* If we're a plain file, acquire lock */
-			if (bw->b->name && bw->b->name[0]!='!' && bw->b->name[0]!='>') {
+			if (!nolocks && plain_file(bw->b)) {
 				unsigned char bf1[256];
 				unsigned char bf[300];
 				int x;

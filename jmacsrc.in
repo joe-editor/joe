@@ -55,6 +55,7 @@
 -lightoff	Turn off highlighting after block copy or move
  -asis		Characters 128 - 255 shown as-is
  -force		Force final newline when files are saved
+ -nolocks	If you don't want file locks to be used
  -nobackups	If you don't want backup files to be created
  -exask		^KX always confirms file name
 -beep		Beep on errors and when cursor goes past extremes

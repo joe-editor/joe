@@ -249,9 +249,8 @@ void brm(B *b)
 	if (b && !--b->count) {
 		if (b->changed)
 			abrerr(b->name);
-		if (b->locked && !b->ignored_lock && b->name && b->name[0]!='!' && b->name[0]!='>') {
+		if (b->locked && !b->ignored_lock && plain_file(b))
 			unlock_it(b->name);
-		}
 		if (b == errbuf)
 			errbuf = NULL;
 		if (b->undo)
@@ -2663,4 +2662,14 @@ void unlock_it(unsigned char *path)
 	unlink(lock_name);
 	vsrm(lock_name);
 	vsrm(name);
+}
+
+/* True if file is regular */
+
+int plain_file(B *b)
+{
+	if (b->name && strcmp(b->name,"-") && b->name[0]!='!' && b->name[0]!='>')
+		return 1;
+	else
+		return 0;
 }
