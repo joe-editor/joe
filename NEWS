@@ -1,61 +1,9 @@
-# Historical JOE release
-
-This snapshot contains a historical release of JOE. These versions predated
-widespread use of source control and were distributed primarily on USENET
-and FTP servers. As such, any related commits do not represent *real*
-commits, but are included in the repository for the sake of completeness.
-
----
-
-## J 0.0.0
-**Released: 1991-08-21**
-
-Source recovered from usenet
-
-Author's comments:
-
-```
-Here is 'J', which is not the first version of "E" released on the net, but
-is pretty close.  It shows the result of some critical influence from people
-on the net.  This version has:
-
-* gap buffer
-
-* K&R C, because it was more portable.
-
-* multiple windows
-
-* ~ expansion of file names
-
-* A man page! (complete with embarrassing spelling errors :)
-
-* Compile with 'make cruddy'.
-
-* Still only works in 80x24 terminal
-
-* Undelete
-```
-
-Original announcement:
-```
-Xref: funic alt.sources:2271 comp.editors:2096 comp.unix.xenix.sco:3018 alt.religion.emacs:834
-Path: funic!fuug!mcsun!uunet!elroy.jpl.nasa.gov!usc!samsung!crackers!m2c!wpi.WPI.EDU!rcarter
-From: rcarter@wpi.WPI.EDU (Randolph Carter (nee. Joseph H. Allen))
-Newsgroups: alt.sources,comp.editors,comp.unix.xenix.sco,alt.religion.emacs
-Subject: J (Joe's Editor) New Release
-Message-ID: <1991Aug22.043934.1087@wpi.WPI.EDU>
-Date: 22 Aug 91 04:39:34 GMT
-Sender: rcarter@wpi.WPI.EDU (Randolph Carter (nee. Joseph H. Allen))
-Organization: Kadath Tours, Inc.
-Lines: 138
-
-
 
 Release 0.0.0 of 'J' (Joe's Editor):  This release supersedes all previous
 versions which lack a release number.  Note that this program was previously
 called 'E' but the name has been changed ('E' turns out to be one of the
-synonyms for 'vi').  See below for list of bug fixes and new features.
-Find the 3 posts in alt.sources for the source
+synonyms for 'vi').  See below for list of bug fixes and new features.  The
+2 following posts contain the source.
 
 Introduction
 
@@ -182,50 +130,7 @@ before january.  These are my goals for it:
 		28 Dale Lane
 		Smithtown, N.Y. 11787
 
--- 
 /*  rcarter@wpi.wpi.edu */      /* Amazing */             /* Joseph H. Allen */
 int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
 +r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
 ]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
-```
-
----
-
-## E 0.0
-**Released: 1988-09-20**
-
-Source recovered from joe-hist archive
-
-Author's comments:
-
-```
-This is close to the very first version of JOE (or E as it was first
-called).  It has:
-
- * Only a single window.
-
- * No ~ expansion of file names.
-
- * Block selection is not quite like WordStar.  You set the mark with ^KB
-   and then hit ^KM to cut the text between the mark and the cursor.  In
-   this case, the cut text is saved in a file called "cut.c".  You hit ^T to
-   insert the cut.e file at the cursor.
-
- * The terminal screen must be 80 x 24.
-
- * VT52 terminals are handled, but you have to recompile.
-
- * It does have word wrap, paragraph reformat, autoindent and
-   picture mode.
-
- * No status line.
-
- * It does have a single page of on-line help: hit ^K H to toggle it.
-
- * The entire editor is a single 2800 line C file: e.c
-
- * Does not have gap buffer yet.
-
- * Note that E is ANSI-C!  I later reverted it to K&R C for more
-   enhanced portability.
-```
