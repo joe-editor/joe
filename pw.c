@@ -190,8 +190,12 @@ static WATOM watompw = {
 };
 
 /* Create a prompt window */
+/* wide=-1: use default
+   wide=0: use 8-bit chars
+   wide=1: use UTF-8
+*/
 
-BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify)
+BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify,int wide)
 {
 	W *new;
 	PW *pw;
@@ -206,6 +210,8 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	}
 	wfit(new->t);
 	new->object = (void *) (bw = bwmk(new, bmk(NULL), 1));
+	if (wide!=-1)
+		bw->b->o.utf8= wide;
 	bw->object = (void *) (pw = (PW *) joe_malloc(sizeof(PW)));
 	pw->abrt = abrt;
 	pw->tab = tab;

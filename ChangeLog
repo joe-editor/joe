@@ -1,4 +1,15 @@
 Fri Apr 16 2004  Joe Allen <jhallen@world.std.com>
+ 	* ChangeLog TODO cmd.c macro.c pw.c pw.h rc.c regex.c ublock.c 
+ 	uedit.c ufile.c umath.c usearch.c ushell.c utag.c utf8.c w.c 
+ 	w.h:
+
+	UTF-8 now supported in file names and prompts.
+
+	Search should be partially working.  \+ with
+	a UTF-8 character following is broken and
+	\[ ] only works for bytes.
+
+Fri Apr 16 2004  Joe Allen <jhallen@world.std.com>
 	* b.c, bw.c, rc.c, rc.h, tw.c, types.h, utf8.c:
 
 	Fixed bug where '-syntax' on command line had

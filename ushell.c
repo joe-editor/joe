@@ -164,7 +164,7 @@ B *runhist = NULL;
 
 int urun(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Program to run: ", &runhist, dorun, US "Run", NULL, NULL, NULL, NULL)) {
+	if (wmkpw(bw->parent, US "Program to run: ", &runhist, dorun, US "Run", NULL, NULL, NULL, NULL, -1)) {
 		return 0;
 	} else {
 		return -1;

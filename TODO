@@ -1,9 +1,8 @@
 UTF-8/Internationalization
 --------------------------
 
-- think about status line, prompts, regex, rc files, highlighting, ug
-
-- 32-bit chars in search/replace \[...] sequences?
+- think about regex, rc files, highlighting
+    32-bit chars in search/replace \[...] sequences?
 
 - deal with error utf8 sequences: prget and pgetc do not match.
 
@@ -83,6 +82,8 @@ UTF-8 syntax files.
 UI for changing colors in the editor (or at least dark/light mode)
 
 UI for seting syntax during run time
+
+More colors: UI for using 256 color xterms.
 
 
 Support for more languages:

@@ -581,7 +581,7 @@ static int doarg(BW *bw, unsigned char *s, void *object, int *notify)
 
 int uarg(BW *bw)
 {
-	if (wmkpw(bw->parent, US "No. times to repeat next command (^C to abort): ", NULL, doarg, NULL, NULL, utypebw, NULL, NULL))
+	if (wmkpw(bw->parent, US "No. times to repeat next command (^C to abort): ", NULL, doarg, NULL, NULL, utypebw, NULL, NULL, -1))
 		return 0;
 	else
 		return -1;

@@ -529,7 +529,7 @@ static int doline(BW *bw, unsigned char *s, void *object, int *notify)
 
 int uline(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Go to line (^C to abort): ", &linehist, doline, NULL, NULL, NULL, NULL, NULL))
+	if (wmkpw(bw->parent, US "Go to line (^C to abort): ", &linehist, doline, NULL, NULL, NULL, NULL, NULL, -1))
 		return 0;
 	else
 		return -1;
@@ -565,7 +565,7 @@ static int docol(BW *bw, unsigned char *s, void *object, int *notify)
 
 int ucol(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Go to column (^C to abort): ", &colhist, docol, NULL, NULL, NULL, NULL, NULL))
+	if (wmkpw(bw->parent, US "Go to column (^C to abort): ", &colhist, docol, NULL, NULL, NULL, NULL, NULL, -1))
 		return 0;
 	else
 		return -1;
@@ -601,7 +601,7 @@ static int dobyte(BW *bw, unsigned char *s, void *object, int *notify)
 
 int ubyte(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Go to byte (^C to abort): ", &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL))
+	if (wmkpw(bw->parent, US "Go to byte (^C to abort): ", &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL, -1))
 		return 0;
 	else
 		return -1;
@@ -1255,7 +1255,7 @@ static int domsg(BASE *b, unsigned char *s, void *object, int *notify)
 
 int umsg(BASE *b)
 {
-	if (wmkpw(b->parent, US "Msg (^C to abort): ", NULL, domsg, NULL, NULL, NULL, NULL, NULL))
+	if (wmkpw(b->parent, US "Msg (^C to abort): ", NULL, domsg, NULL, NULL, NULL, NULL, NULL, -1))
 		return 0;
 	else
 		return -1;
@@ -1275,9 +1275,9 @@ static int dotxt(BW *bw, unsigned char *s, void *object, int *notify)
 	return 0;
 }
 
-int utxt(BASE *bw)
+int utxt(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Insert (^C to abort): ", NULL, dotxt, NULL, NULL, utypebw, NULL, NULL))
+	if (wmkpw(bw->parent, US "Insert (^C to abort): ", NULL, dotxt, NULL, NULL, utypebw, NULL, NULL, bw->b->o.utf8))
 		return 0;
 	else
 		return -1;

@@ -10,8 +10,10 @@
 
 #include <stdio.h> 
 #include <ctype.h>
+#include <wctype.h>
 
 #include "b.h"
+#include "utf8.h"
 #include "vs.h"
 
 int escape(unsigned char **a, int *b)
@@ -256,9 +258,25 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 	int c, d;
 	P *q = pdup(p);
 	P *o = NULL;
+	int local_utf8 = p->b->o.utf8;
+	struct utf8_sm sm;
 
-	while (len--)
-		switch (c = *regex++) {
+	utf8_init(&sm);
+
+	while (len) {
+		if (local_utf8) {
+			do {
+				c = utf8_decode(&sm,*regex++);
+				--len;
+			} while (len && c<0);
+			if (c<0)
+				return 0;
+		} else {
+			c = *regex++;
+			--len;
+		}
+
+		switch (c) {
 		case '\\':
 			if (!len--)
 				goto fail;
@@ -412,27 +430,29 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 				if (!piseow(p))
 					goto fail;
 				break;
-			default:
+			case '\\':
 				d = pgetc(p);
-				if (icase) {
-					if (toupper(d) != toupper(c))
-						goto fail;
-				} else {
-					if (d != c)
-						goto fail;
-				}
+				if (d != c)
+					goto fail;
+				break;
+			default:
+				goto fail;
 			}
 			break;
 		default:
 			d = pgetc(p);
 			if (icase) {
-				if (toupper(d) != toupper(c))
+				if (local_utf8) {
+					if (towupper(d) != towupper(c))
+						goto fail;
+				} else if (toupper(d) != toupper(c))
 					goto fail;
 			} else {
 				if (d != c)
 					goto fail;
 			}
 		}
+	}
 succeed:
 	if (o)
 		prm(o);

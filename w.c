@@ -19,6 +19,7 @@
 #include "rc.h"
 #include "scrn.h"
 #include "utils.h"
+#include "utf8.h"
 #include "w.h"
 
 extern int dspasis;		/* Set to display chars above 127 as-is */
@@ -702,6 +703,8 @@ int wabort(W *w)
 
 /* Generate text with formatting escape sequences */
 
+extern int mk_wcwidth(int c);
+
 void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
@@ -709,6 +712,9 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 	int atr = 0;
 	int col = 0;
 	int c;
+	struct utf8_sm sm;
+
+	utf8_init(&sm);
 
 	while ((c = *s++) != '\0')
 		if (c == '\\') {
@@ -737,21 +743,50 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 				--s;
 				break;
 			default:
+				/* Allow only ASCII here */
 				if (col++ >= ofst) {
-					outatr(utf8, t, scrn, attr, x, y, c, atr);
+					outatr(utf8, t, scrn, attr, x, y, (c&0x7F), atr);
 					++scrn;
 					++attr;
 					++x;
 				}
 				break;
 			}
-		} else if (col++ >= ofst) {
-			if (c == '\t')
-				c = ' ';
-			outatr(utf8, t, scrn, attr, x, y, c, atr);
-			++scrn;
-			++attr;
-			++x;
+		} else {
+			int wid = 0;
+			int d;
+			if(utf8) {
+				d = utf8_decode(&sm,c);
+				if (d>=0)
+					wid = mk_wcwidth(d);
+			} else {
+				d = c;
+				wid = 1;
+			}
+			if (d=='\t')
+				d = ' ';
+
+			if (col >= ofst) {
+				outatr(utf8, t, scrn, attr, x, y, d, atr);
+				scrn += wid;
+				attr += wid;
+				x += wid;
+				col += wid;
+			} else if (col+wid>ofst) {
+				while (col<ofst) {
+					++col;
+					--wid;
+				}
+				while (wid) {
+					outatr(utf8, t, scrn, attr, x, y, '<', atr);
+					++scrn;
+					++attr;
+					++x;
+					++col;
+					--wid;
+				}
+			} else
+				col += wid;
 		}
 	if (flg)
 		eraeol(t, x, y);
@@ -767,19 +802,79 @@ void gentxt(SCRN *t, int x, int y, int ofst, unsigned char *s, int len, int flg)
 	unsigned char c;
 	int a;
 
-	for (col = 0; col != len; ++col)
-		if (col >= ofst) {
-			c = s[col];
-			if (c == '\t')
-				c = ' ';
-			xlat(&a, &c);
-			outatr(utf8, t, scrn, attr, x, y, c, a);
-			++scrn;
-			++attr;
-			++x;
+	if (utf8) {
+		struct utf8_sm sm;
+		utf8_init(&sm);
+		col = 0;
+		while(*s) {
+			int d = utf8_decode(&sm, *s);
+			int wid = 0;
+			if (d>=0)
+				wid = mk_wcwidth(d);
+
+			if (d=='\t')
+				d = ' ';
+
+			if (col>=ofst) {
+				outatr(utf8, t, scrn, attr, x, y, d, a);
+				scrn+=wid;
+				attr+=wid;
+				x+=wid;
+				col+=wid;
+			} else if (col+wid>ofst) {
+				while (col<ofst) {
+					++col;
+					--wid;
+				}
+				while (wid) {
+					outatr(utf8, t, scrn, attr, x, y, '<', a);
+					++scrn;
+					++attr;
+					++x;
+					++col;
+					--wid;
+				}
+			} else
+				col += wid;
+
+			++s;
 		}
+	} else {
+		for (col = 0; col != len; ++col)
+			if (col >= ofst) {
+				c = s[col];
+				if (c == '\t')
+					c = ' ';
+				xlat(&a, &c);
+				outatr(utf8, t, scrn, attr, x, y, c, a);
+				++scrn;
+				++attr;
+				++x;
+			}
+	}
 	if (flg)
 		eraeol(t, x, y);
+}
+
+/* Width function for above */
+
+int gentxtwidth(unsigned char *s)
+{
+	if (utf8) {
+		int col=0;
+		struct utf8_sm sm;
+		utf8_init(&sm);
+
+		while(*s) {
+			int d = utf8_decode(&sm,*s);
+			if (d>=0)
+				col += mk_wcwidth(d);
+		++s;
+		}
+
+		return col;
+	} else
+		return strlen((char *)s);
 }
 
 /* Determine column width of string with format codes */
@@ -787,6 +882,9 @@ void gentxt(SCRN *t, int x, int y, int ofst, unsigned char *s, int len, int flg)
 int fmtlen(unsigned char *s)
 {
 	int col = 0;
+	struct utf8_sm sm;
+
+	utf8_init(&sm);
 
 	while (*s) {
 		if (*s == '\\') {
@@ -804,11 +902,24 @@ int fmtlen(unsigned char *s)
 				++s;
 				continue;
 			case 0:
-				--s;
+				return col;
+			default:
+				++s;
+				++col;
+				continue;
 			}
+		} else {
+			int wid = 0;
+			if(utf8) {
+				int d = utf8_decode(&sm,*s);
+				if (d>=0)
+					wid = mk_wcwidth(d);
+			} else {
+				wid = 1;
+			}
+			col += wid;
+			++s;
 		}
-		++col;
-		++s;
 	}
 	return col;
 }

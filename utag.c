@@ -130,7 +130,7 @@ int utag(BW *bw)
 {
 	BW *pbw;
 
-	pbw = wmkpw(bw->parent, US "Tag search: ", &taghist, dotag, NULL, NULL, cmplt, NULL, NULL);
+	pbw = wmkpw(bw->parent, US "Tag search: ", &taghist, dotag, NULL, NULL, cmplt, NULL, NULL, -1);
 	if (pbw && isalnum_(bw->b->o.utf8,brch(bw->cursor))) {
 		P *p = pdup(bw->cursor);
 		P *q = pdup(p);

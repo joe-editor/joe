@@ -205,6 +205,7 @@ void joe_locale()
 	if(!strcmp((char *)codeset,"UTF-8")) {
 		utf8 = 1;
 		fdefault.utf8 = 1;	/* Default file type */
+		pdefault.utf8 = 1;	/* For prompt windows too */
 	}
 
 	to_utf = iconv_open("UTF-8", non_utf8_codeset);

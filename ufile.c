@@ -113,7 +113,7 @@ void genexmsg(BW *bw, int saved, unsigned char *name)
 int ublksave(BW *bw)
 {
 	if (markb && markk && markb->b == markk->b && (markk->byte - markb->byte) > 0 && (!square || piscol(markk) > piscol(markb))) {
-		if (wmkpw(bw->parent, US "Name of file to write (^C to abort): ", &filehist, dowrite, US "Names", NULL, cmplt, NULL, NULL)) {
+		if (wmkpw(bw->parent, US "Name of file to write (^C to abort): ", &filehist, dowrite, US "Names", NULL, cmplt, NULL, NULL, -1)) {
 			return 0;
 		} else {
 			return -1;
@@ -388,7 +388,7 @@ int usave(BW *bw)
 {
 	BW *pbw;
 	
-	pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, dosave1, US "Names", NULL, cmplt, NULL, NULL);
+	pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, dosave1, US "Names", NULL, cmplt, NULL, NULL, -1);
 
 	if (pbw && bw->b->name) {
 		binss(pbw->cursor, bw->b->name);
@@ -466,7 +466,7 @@ int okrepl(BW *bw)
 
 int uedit(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Name of file to edit (^C to abort): ", &filehist, doedit, US "Names", NULL, cmplt, NULL, NULL)) {
+	if (wmkpw(bw->parent, US "Name of file to edit (^C to abort): ", &filehist, doedit, US "Names", NULL, cmplt, NULL, NULL, -1)) {
 		return 0;
 	} else {
 		return -1;
@@ -583,7 +583,7 @@ int upbuf(BW *bw)
 
 int uinsf(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Name of file to insert (^C to abort): ", &filehist, doinsf, US "Names", NULL, cmplt, NULL, NULL)) {
+	if (wmkpw(bw->parent, US "Name of file to insert (^C to abort): ", &filehist, doinsf, US "Names", NULL, cmplt, NULL, NULL, -1)) {
 		return 0;
 	} else {
 		return -1;
@@ -631,7 +631,7 @@ int uexsve(BW *bw)
 	} else if (bw->b->name && !exask) {
 		return dosave(bw, vsncpy(NULL, 0, sz(bw->b->name)), exdone1, NULL);
 	} else {
-		BW *pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, doex, US "Names", NULL, cmplt, NULL, NULL);
+		BW *pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, doex, US "Names", NULL, cmplt, NULL, NULL, -1);
 
 		if (pbw && bw->b->name) {
 			binss(pbw->cursor, bw->b->name);
@@ -654,7 +654,7 @@ static int nask(BW *bw, int c, void *object, int *notify)
 		if (bw->b->name) {
 			return dosave1(bw, vsncpy(NULL, 0, sz(bw->b->name)), object, notify);
 		} else {
-			BW *pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, dosave1, US "Names", NULL, cmplt, object, notify);
+			BW *pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, dosave1, US "Names", NULL, cmplt, object, notify, -1);
 
 			if (pbw) {
 				return 0;
@@ -694,7 +694,7 @@ int uask(BW *bw)
 static int nask2(BW *bw, int c, void *object, int *notify)
 {
 	if (c == 'y' || c == 'Y') {
-		BW *pbw = wmkpw(bw->parent, "Name of file to save (^C to abort): ", &filehist, dosave1, "Names", NULL, cmplt, object, notify);
+		BW *pbw = wmkpw(bw->parent, "Name of file to save (^C to abort): ", &filehist, dosave1, "Names", NULL, cmplt, object, notify, -1);
 
 		if (pbw) {
 			return 0;

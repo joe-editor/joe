@@ -527,7 +527,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		*xx = x;
 		m->parent->notify = 0;
 		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify))
+		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, -1))
 			return 0;
 		else
 			return -1;
@@ -541,7 +541,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		*xx = x;
 		m->parent->notify = 0;
 		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify))
+		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, -1))
 			return 0;
 		else
 			return -1;
@@ -555,7 +555,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		*xx = x;
 		m->parent->notify = 0;
 		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify))
+		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, -1))
 			return 0;
 		else
 			return -1;
