@@ -377,7 +377,10 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 		help_on(maint);
 	}
 	if (!nonotice)
-		msgnw(((BASE *)lastw(maint)->object)->parent, US ("\\i** Joe's Own Editor v" VERSION " ** Copyright (C) 2004 **\\i"));
+		if (utf8)
+			msgnw(((BASE *)lastw(maint)->object)->parent, US ("\\i** Joe's Own Editor v" VERSION " ** Copyright © 2004 **\\i"));
+		else
+			msgnw(((BASE *)lastw(maint)->object)->parent, US ("\\i** Joe's Own Editor v" VERSION " ** Copyright (C) 2004 **\\i"));
 	edloop(0);
 	vclose(vmem);
 	nclose(n);

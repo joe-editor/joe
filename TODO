@@ -1,32 +1,41 @@
-compiling issues:
-  -liconv
-  -better checks for existence of iconv
+Fix for next release:
 
-should not be loading all syntax files at
-startup.
+  perl highlighter
 
-internal termcap definition working?
+  sh highlighter
+
+  more syntax files
+
+  ~/.joe directory
+
+  different symbol for 'joe' directory
+
+  replace iconv(). (include i18n file in joe).
+    (which fixes our compiling problem)
+
+  ^T U should prompt for locale
+
+  can't load terminfo- should switch to termcap or provide compiled
+  ANSI terminfo built in.
+
+  UTF-8: regex, incremental search
+
+  highlight other windows
+  why lose state during page down?
+
+  Update documentation.
+
+  Check if file is newer on save.
+
+  gettext patch
 
 
-
+New features:
 -----------------------
-Tasks for next release:
------------------------
 
-UTF-8: regex, incremental search, select charset UI
-
-Highlight: more syntax files, other windows.
-why do we lose highlight state during page down?
-
-Math: need hex and octal entry, some math functions
-
-Misc: update documentation.
-
-Test test test...
+Math: hex, octal more functions. (-lm?)
 
 Perl compatible regex search.
-
-On save, should check if file on disk is newer
 
 Watch loaded file for changes
 
@@ -37,10 +46,6 @@ Reload file before I began changing it in another buffer
 Save all modified files
 
 Save all history buffers in .joestate file?
-
-
-
-
 
 Improvements for regular text
 -----------------------------
@@ -55,11 +60,8 @@ Abbreviations
  Tab complete a word in a file, should look through file for matching
  words.
 
-Should <space> indent-step in smartmode?  Probably not: think about /*
-comments.                                                            *
-
 Show name of function cursor is in (parse C).  This is useful during
-searches.
+searches.  (Call ctags *.c *.h?)
 
 Jump to definition (tags does this)
 
@@ -79,13 +81,6 @@ Compiling
 
 UTF-8/Internationalization
 --------------------------
-
-- think about regex, rc files, highlighting
-    32-bit chars in search/replace \[...] sequences?
-
-- check incremental search functions.
-
-- translate: allow user to specify charset.  think about isalpha.
 
 - right-left mode for Hebrew/Arabic?
 
@@ -153,8 +148,6 @@ sequence: perhaps all of this is ok).
 Syntax Highlighting:
 --------------------
 
-More syntax files.
-
 UTF-8 syntax files?
 
 UI for changing colors in the editor (or at least dark/light mode)
@@ -168,8 +161,6 @@ Support for more languages:
  Paragraph reformat mode for TeX files.
 
  ^G Matching for verilog begin ... end, html tags, etc.
-
- Add .v, .pl, etc. file types to joerc
 
  Reformat paragraph should reformat C function if we're editing C.
 

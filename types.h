@@ -115,9 +115,11 @@ struct options {
 	int	spaces;
 	int	crlf;
 	int	highlight;	/* Set to enable highlighting */
-	struct high_syntax *syntax;	/* Syntax for highlighting */
+	unsigned char *syntax_name;	/* Name of syntax to use */
+	struct high_syntax *syntax;	/* Syntax for highlighting (load_dfa() from syntax_name happens in setopt()) */
 	int	utf8;		/* Set for UTF-8 mode */
 	int	smarthome;	/* Set for smart home key */
+	int	indentfirst;	/* Smart home goes to indentation point first */
 	int	smartbacks;	/* Set for smart backspace key */
 	int	purify;		/* Purify indentation */
 	int	picture;	/* Picture mode */

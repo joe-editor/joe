@@ -1,10 +1,14 @@
 # JOE syntax highlight file for FORTRAN
 # Heavily improved by: Malte Thoma (thoma@uni-muenster.de)
 
+# Bugs:
+#  in:  4.  eq.   -- does not recognize the .eq.
+#  needs more intrinsics.
+
 =Idle
 =Comment 	green
 =Constant 	cyan
-=Type 		bold yellow
+=Type 		red
 =Keyword 	bold 
 =Intrinsic	magenta
 =Preproc        blue
@@ -32,7 +36,7 @@
 	"!"		comment		recolor=-1
 	"\n"		reset
 	"0-9"		first_number	recolor=-1
-	"."		maybe_float
+	"."		have_dot
 	"'"		string		recolor=-1
 	"a-zA-Z_"	ident		buffer
 
@@ -42,15 +46,23 @@
 	"."		second_start
 	"eEdD"		epart
 
-:maybe_float Constant
+:have_dot Constant
 	*		idle	recolor=-2	noeat
 	"0-9"		second_number		recolor=-2
-	"a-zA-Z"	operator	buffer recolor=-2
+	" \ta-zA-Z"	operator1	noeat recolor=-2
+
+# Color the left .
+
+:operator1 Operator
+	*	operator	buffer noeat
+	" \t"	operator1
+
+# Default color is Idle for unknown operator
 
 :operator Idle
 	*		idle	noeat
 	"a-zA-Z"	operator
-	"."		idle	istrings
+	". \t"		unknown	noeat istrings
 	"gt"		op
 	"ge"		op
 	"eq"		op
@@ -68,17 +80,38 @@
 	"true"		const
 done
 
+# Eat the right .
+
+:unknown Operator
+	*	idle
+	" \t"	unknown
+
 :op Operator
-	*	idle	noeat
+	*	idle
+	" \t"	op
 
 :const Constant
-	*	idle	noeat
+	*	idle
+	"."	op noeat
+	" \t"	const
+
+# For distrinuishing between 4.e1 and 4.eq.
 
 :second_start Constant
 	*	idle	noeat
-	"a-zA-Z"	operator	buffer recolor=-2
-	"dDeE"	epart1	buffer
+	"a-zA-Z"	operator1	noeat recolor=-2
+	"dD"	epart
+	"eE"	epart1
 	"0-9"	second_number
+
+:epart1 Constant
+	*		idle	noeat
+	"q"		epart2
+	"0-9+\-"	enum
+
+:epart2	Idle
+	*		idle	noeat
+	". \t"		op	noeat recolor=-4
 
 :second_number Constant
 	*		idle	noeat
@@ -87,13 +120,6 @@ done
 
 :epart Constant
 	*		idle	noeat
-	"0-9+\-"	enum
-
-# For distrinuishing between 4.e1 and 4.eq.
-
-:epart1 Constant
-	*		idle	noeat
-	"a-zA-Z"	operator recolor=-3
 	"0-9+\-"	enum
 
 :enum Constant

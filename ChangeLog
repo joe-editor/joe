@@ -1,3 +1,17 @@
+Fri Apr 30 2004  Joe Allen <jhallen@world.std.com>
+	*:
+
+	Improve Fortran again.
+
+	Added '-indentfirst' option to control
+	how smarthome works.
+
+	Now syntax files are loaded as needed.
+
+	New version of automake and autoconf.
+
+	Print UTF-8 (c) if terminal is utf-8.
+
 Thu Apr 29 2004  Joe Allen <jhallen@world.std.com>
 	*:
 

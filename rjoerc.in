@@ -133,8 +133,11 @@
 
 	-highlight		Enable highlighting
 
-	-smarthome		Home key first moves cursor to the first
-				non-space character, unless already there
+	-smarthome		Home key first moves cursor to beginning of line,
+				then if hit again, to first non-blank character.
+
+	-indentfirst		Smart home goes to first non-blank character first,
+				instead of going the beginning of line first.
 
 	-smartbacks		Backspace key deletes 'istep' number of
 				'indentc's if cursor is at first non-space

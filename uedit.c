@@ -49,18 +49,21 @@ int uhome(BW *bw)
 {
 	P *p = pdup(bw->cursor);
 
-	if (bw->o.smarthome && piscol(p)==0 && pisindent(p)) {
-		while (joe_isblank(brc(p)))
-			pgetc(p);
-	} else
-		p_goto_bol(p);
+	if (bw->o.indentfirst) {
+		if ((bw->o.smarthome) && (piscol(p) > pisindent(p))) { 
+			p_goto_bol(p);
+			while (joe_isblank(brc(p)))
+				pgetc(p);
+		} else
+			p_goto_bol(p);
+	} else {
+		if (bw->o.smarthome && piscol(p)==0 && pisindent(p)) {
+			while (joe_isblank(brc(p)))
+				pgetc(p);
+		} else
+			p_goto_bol(p);
+	}
 
-/* Old way
-	if ((bw->o.smarthome) && (piscol(p) > pisindent(p))) { 
-		p_goto_bol(p);
-		while (joe_isblank(brc(p)))
-			pgetc(p);
-*/
 	pset(bw->cursor, p);
 	prm(p);
 	return 0;

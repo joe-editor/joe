@@ -138,8 +138,11 @@
 	-hex			Hex editor mode
 
 	-smarthome		Home key first moves cursor to beginning of line,
-	-smarthome		Home key first moves cursor to the first
-				non-space character, unless already there
+				then if hit again, to first non-blank character.
+
+	-indentfirst		Smart home goes to first non-blank character first,
+				instead of going the beginning of line first.
+
 	-smartbacks		Backspace key deletes 'istep' number of
 				'indentc's if cursor is at first non-space
 				character.

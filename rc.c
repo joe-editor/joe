@@ -93,9 +93,11 @@ OPTIONS pdefault = {
 	0,		/* crlf */
 #endif
 	0,		/* Highlight */
+	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	0,		/* UTF-8 */
 	0,		/* Smart home key */
+	0,		/* Goto indent first */
 	0,		/* Smart backspace key */
 	0,		/* Purify indentation */
 	0,		/* Picture mode */
@@ -132,14 +134,23 @@ OPTIONS fdefault = {
 	0,		/* crlf */
 #endif
 	0,		/* Highlight */
+	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	0,		/* UTF-8 */
 	0,		/* Smart home key */
+	0,		/* Goto indent first */
 	0,		/* Smart backspace key */
 	0,		/* Purity indentation */
 	0,		/* Picture mode */
 	NULL, NULL, NULL, NULL	/* macros (see above) */
 };
+
+/* Update options */
+
+void lazy_opts(OPTIONS *o)
+{
+	o->syntax = load_dfa(o->syntax_name);
+}
 
 /* Set local options depending on file name and contents */
 
@@ -160,6 +171,7 @@ void setopt(B *b, unsigned char *parsed_name)
 						vsrm(pieces[x]);
 					prm(p);
 					b->o = *o;
+					lazy_opts(&b->o);
 					return;
 				} else {
 					for (x = 0; x != 26; ++x)
@@ -168,10 +180,12 @@ void setopt(B *b, unsigned char *parsed_name)
 				}
 			} else {
 				b->o = *o;
+				lazy_opts(&b->o);
 				return;
 			}
 		}
 	b->o = fdefault;
+	lazy_opts(&b->o);
 }
 
 /* Table of options and how to set them */
@@ -229,6 +243,7 @@ struct glopts {
 	{US "csmode",	0, &csmode, NULL, US "Start search after a search repeats previous search", US "Start search always starts a new search", US "Continued search " },
 	{US "rdonly",	4, NULL, (unsigned char *) &fdefault.readonly, US "Read only", US "Full editing", US "O Read only " },
 	{US "smarthome",	4, NULL, (unsigned char *) &fdefault.smarthome, US "Smart home key enabled", US "Smart home key disabled", US "  Smart home key " },
+	{US "indentfirst",	4, NULL, (unsigned char *) &fdefault.indentfirst, US "Smart home goes to indent first", US "Smart home goes home first", US "  To indent first " },
 	{US "smartbacks",	4, NULL, (unsigned char *) &fdefault.smartbacks, US "Smart backspace key enabled", US "Smart backspace key disabled", US "  Smart backspace " },
 	{US "purify",	4, NULL, (unsigned char *) &fdefault.purify, US "Indentation clean up enabled", US "Indentation clean up disabled", US "  Clean up indents " },
 	{US "picture",	4, NULL, (unsigned char *) &fdefault.picture, US "Picture drawing mode enabled", US "Picture drawing mode disabled", US "Picture mode " },
@@ -357,8 +372,10 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				break;
 
 			case 9: /* Set syntax */
+				options->syntax_name = (unsigned char *)strdup((char *)arg);
+				/* this was causing all syntax files to be loaded...
 				if (arg && options)
-					options->syntax = load_dfa(arg);
+					options->syntax = load_dfa(arg); */
 				break;
 			}
 			/* This is a stupid hack... */
@@ -518,6 +535,7 @@ static int dosyntax(BW *bw, unsigned char *s, int *xx, int *notify)
 		msgnw(bw->parent, US "Syntax definition file not found");
 
 	vsrm(s);
+	bw->o.syntax = syn;
 	bw->b->o = bw->o;
 	updall();
 	if (notify)

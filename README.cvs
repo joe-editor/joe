@@ -20,8 +20,8 @@ close to you), listed at <http://www.gnu.org/order/ftp.html>.
 Versions of autoconf and automake used by maintainers and confirmed to do
 the right thing are:
 
-	automake version >= 1.5
-	autoconf version >= 2.54
+	automake version >= 1.8.4
+	autoconf version >= 2.59
 
 Failing to use above mentioned version may cause malfunction of building
 system or even malfunction of joe itself.
