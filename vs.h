@@ -144,7 +144,7 @@ sELEMENT *vsmk PARAMS((int len));
  * Free an array and everything which is in it.  Does nothing if 'vary' is
  * 0.
  */
-void vsrm PARAMS((char *vary));
+void vsrm PARAMS((sELEMENT *vary));
 
 /********************/
 /* Space management */
@@ -181,7 +181,7 @@ void vsrm PARAMS((char *vary));
  * Compute length of char or variable length array by searching for termination
  * element.  Returns 0 if 'vary' is 0.
  */
-int slen PARAMS((char *ary));
+int slen PARAMS((sELEMENT *ary));
 
 /* sELEMENT *vsensure(sELEMENT *vary, int len);
  * Make sure there's enough space in the array for 'len' elements.  Whenever

@@ -31,13 +31,13 @@ sELEMENT *vsmk(int len)
 	return (sELEMENT *)(new + 2);
 }
 
-void vsrm(char *vary)
+void vsrm(sELEMENT *vary)
 {
 	if (vary)
 		joe_free((int *) vary - 2);
 }
 
-int slen(char *ary)
+int slen(sELEMENT *ary)
 {
 	if (ary) {
 		sELEMENT *beg = ary;
