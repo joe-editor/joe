@@ -52,20 +52,20 @@
 	"."		dot
 
 :dot Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		float
 
 :float Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
 :epart Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9+\-"	enum
 
 :enum Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		enum
 
 

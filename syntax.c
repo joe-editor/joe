@@ -52,9 +52,10 @@ int parse(struct high_syntax *syntax,P *line,int state)
 		}
 
 		/* Color with current state */
-		*attr++ = h->color;
+		attr++;
 
 		do {
+			attr[-1] = h->color;
 			old_state = h;
 			/* Get command for this character */
 			cmd = h->cmd[c];
@@ -71,7 +72,7 @@ int parse(struct high_syntax *syntax,P *line,int state)
 					attr[x] = h -> color;
 			}
 			/* Start buffering? */
-			if(cmd->start_buffering)
+			if (cmd->start_buffering)
 				buf_idx = 0;
 		} while(cmd->noeat);
 

@@ -29,7 +29,7 @@
 	"a-zA-Z_"	ident		buffer
 
 :first_number Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		first_number
 	"."		second_number
 	"eE"		epart
@@ -39,16 +39,16 @@
 	"0-9"		second_number		recolor=-2
 
 :second_number Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"eE"		epart
 	"0-9"		second_number
 
 :epart Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9+\-"	enum
 
 :enum Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		enum
 
 # String

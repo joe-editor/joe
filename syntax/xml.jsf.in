@@ -65,7 +65,7 @@
 	"\'"		bstring		recolor= -1
 
 :number Constant
-	*		mark	noeat	recolor=-1
+	*		mark	noeat
 	"0-9"		number
 
 

@@ -70,32 +70,32 @@ done
 # Integer constants
 
 :first_digit Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"'"		sized_number
 	"."		float
 	"0-9"		first_digit
 
 :sized_number Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"hH"		hex_number
 	"oO"		octal_number
 	"bB"		binary_number
 	"dD"		decimal_number
 
 :hex_number Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9A-Fa-f_xz"	hex_number
 
 :binary_number Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"01_xz"		binary_number
 
 :octal_number Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-7_xz"	octal_number
 
 :decimal_number Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9_"		decimal_number
 
 # Floating point
@@ -105,16 +105,16 @@ done
 	"0-9"		float		recolor=-2
 
 :float Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
 :epart	Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9+\-"	enum
 
 :enum	Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		enum
 
 # Strings

@@ -53,7 +53,9 @@
 # Weirdness: only states have colors, not transitions.  This means that you
 # sometimes have to make dummy states with '* next-state noeat' just to get
 # a color specification.
-
+#
+# Weirdness: noeat does not cause the character to be recolored by the next
+# state: you have to use recolor=-1 to have this happen.
 
 # Define no. sync lines
 # You can say:
@@ -106,7 +108,7 @@ done
 	"a-zA-Z0-9_"	predef_ident	recolor=-1
 
 :predef_ident Define
-	*		idle		noeat recolor=-1
+	*		idle		noeat
 	"a-zA-Z0-9_"	predef_ident
 
 :preproc Preproc
@@ -150,17 +152,17 @@ done
 	"\n"		reset
 
 :first_digit Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"xX"		hex
 	"."		float
 	"0-9"		first_number
 
 :hex Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
 :first_number Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		first_number
 	"."		float
 
@@ -169,16 +171,16 @@ done
 	"0-9"		float		recolor=-2
 
 :float Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
 :epart Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9+\-"	enum
 
 :enum Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		enum
 
 :string	Constant

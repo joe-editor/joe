@@ -25,11 +25,11 @@
 	"\n"		idle
 
 :string_sq_1 Constant
-	*		string_sq	noeat recolor=-1
+	*		string_sq	noeat
 	"'"		string_sq_2
 
 :string_sq_2 Constant
-	*		idle		noeat recolor=-1
+	*		idle		noeat
 	"'"		docstr_sq	recolor=-3
 
 :string_sq Constant
@@ -47,11 +47,11 @@
 	"'"		docstr_sq_1
 
 :docstr_sq_1 Docstring
-	*		docstr_sq	noeat recolor=-1
+	*		docstr_sq	noeat
 	"'"		docstr_sq_2
 
 :docstr_sq_2 Docstring
-	*		docstr_sq	noeat recolor=-1
+	*		docstr_sq	noeat
 	"'"		idle
 
 :docstr_sq_esc DocEscape
@@ -59,11 +59,11 @@
 	"\n"		docstr_sq	recolor=-2
 
 :string_dq_1 Constant
-	*		string_dq	noeat recolor=-1
+	*		string_dq	noeat
 	"\""		string_dq_2
 
 :string_dq_2 Constant
-	*		idle		noeat recolor=-1
+	*		idle		noeat
 	"\""		docstr_dq	recolor=-3
 
 :string_dq Constant
@@ -81,11 +81,11 @@
 	"\""		docstr_dq_1
 
 :docstr_dq_1 Docstring
-	*		docstr_dq	noeat recolor=-1
+	*		docstr_dq	noeat
 	"\""		docstr_dq_2
 
 :docstr_dq_2 Docstring
-	*		docstr_dq	noeat recolor=-1
+	*		docstr_dq	noeat
 	"\""		idle
 
 :docstr_dq_esc DocEscape
@@ -93,17 +93,17 @@
 	"\n"		docstr_dq	recolor=-2
 	
 :first_digit Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"xX"		hex
 	"."		float
 	"0-9"		first_number
 
 :hex Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
 :first_number Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		first_number
 	"."		float
 
@@ -112,16 +112,16 @@
 	"0-9"		float		recolor=-2
 
 :float Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
 :epart Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9+\-"	enum
 
 :enum Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		enum
 
 :ident Idle

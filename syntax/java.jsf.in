@@ -42,17 +42,17 @@
 	"\n"		idle
 
 :first_digit Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"xX"		hex
 	"."		float
 	"0-9"		first_number
 
 :hex Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
 :first_number Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		first_number
 	"."		float
 
@@ -61,16 +61,16 @@
 	"0-9"		float		recolor=-2
 
 :float Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
 :epart Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9+\-"	enum
 
 :enum Constant
-	*		idle	noeat	recolor=-1
+	*		idle	noeat
 	"0-9"		enum
 
 :string	Constant

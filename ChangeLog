@@ -1,3 +1,11 @@
+Wed Apr 28 2004  Joe Allen <jhallen@world.std.com>
+	* syntax.c :
+
+	More syntax files: tcl
+
+	Now 'noeat' implies 'recolor=-1', which reduces debug time
+	for syntax definition files.
+
 Tue Apr 27 2004  Joe Allen <jhallen@world.std.com>
 	*:
 
