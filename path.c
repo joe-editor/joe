@@ -232,7 +232,7 @@ char *mktmp(char *where)
 		close(fd);
 		goto loop;	/* FIXME: possible endless loop --> DoS attack */
 	}
-	if ((fd = creat(name, 0600)) == -1)
+	if ((fd = open(name, O_RDWR | O_CREAT | O_EXCL, 0600)) == -1)
 		return NULL;	/* FIXME: see above */
 	else
 		close(fd);

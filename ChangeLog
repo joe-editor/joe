@@ -1,3 +1,7 @@
+Sat Mar 22 2003  Vitezslav Samel <samel@mail.cz>
+	* path.c:
+	use O_EXCL when creating temporary file
+
 Sun Mar  2 2003  Vitezslav Samel <samel@mail.cz>
 	* bw.c, cmd.c, hash.c, kbd.c, macro.c, main.c, menu.c, path.c,
 	poshist.c, pw.c, qw.c, rc.c, regex.c, scrn.c, tab.c, termcap.c, tty.c,
