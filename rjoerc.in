@@ -231,6 +231,19 @@
 *.txt
 -wordwrap
 
+ Assembly language
+*.asm
+-wordwrap
+-syntax asm
+
+*.s
+-wordwrap
+-syntax asm
+
+*.S
+-wordwrap
+-syntax asm
+
  Mason
 *.mas
 -autoindent

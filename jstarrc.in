@@ -206,6 +206,19 @@
 +\[1-9]\+\[0-9]\[cda]
 -syntax diff
 
+ Assembly language
+*.asm
+-wordwrap
+-syntax asm
+
+*.s
+-wordwrap
+-syntax asm
+
+*.S
+-wordwrap
+-syntax asm
+
  Text file.
 *.txt
 -wordwrap

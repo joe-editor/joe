@@ -607,6 +607,8 @@ Mouse:
  any way we can distinguish normal typing from a drop?
  modify xterm...
 
+ mouse mode: mouse can position cursor.  Would be good for
+ jcua...
 
 Major new modes:
 
