@@ -119,6 +119,11 @@ static int rtnpw(BW *bw)
 			prm(t);
 		}
 	}
+
+	/* Do ~ expansion */
+	if (pw->file_prompt)
+		s = canonical(s);
+
 	win = w->win;
 	pfunc = pw->pfunc;
 	object = pw->object;
@@ -130,6 +135,8 @@ static int rtnpw(BW *bw)
 	w->notify = 0;
 	wabort(w);
 	dostaupd = 1;
+
+
 	if (pfunc) {
 		return pfunc(win->object, s, object, notify);
 	} else {
@@ -196,7 +203,7 @@ static WATOM watompw = {
 
 /* Create a prompt window */
 
-BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify,struct charmap *map)
+BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify,struct charmap *map,int file_prompt)
 {
 	W *new;
 	PW *pw;
@@ -220,6 +227,7 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	pw->promptlen = fmtlen(prompt);
 	pw->promptofst = 0;
 	pw->pfunc = func;
+	pw->file_prompt = file_prompt;
 	if (history) {
 		if (!*history) {
 			*history = bmk(NULL);

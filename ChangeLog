@@ -6,6 +6,11 @@ Wed Mar 16 11:04:19 EST 2005
 
 	Add ! operator to math (factorial and logical not)
 
+	Make ~ expansion occur at user level, not low level.
+           (otherwise ~ appears in b->name, which screws up
+	   many things unless ~ is really part of the file
+	   name).
+
 Tue Mar 15 14:18:53 EST 2005
 
 	Fix processing of joe.1.in -> joe.1 so

@@ -1,12 +1,7 @@
 
 Short list for 3.2:
 
-joe ~/foo	- Shell expands
-^KE		- Editor expands, but keeps name ~/foo
-locking code	- uses unexpanded
-
-^KE: hit ~/.joerc: can't create macro
-parsens() not being called enough...
+-backpath should get ~ expansion.
 
 perl again: if (-s foo)  looks like s/
 
@@ -161,12 +156,6 @@ Support for more languages:
  Reformat paragraph should reformat C function if we're editing C.
 
 File loading/storing:
-
- Emacs breaks hard links on save.  Vim and Joe preserve them.  Should
- this be an option.  This has something to do with "tla".
-
- Should have switch buffers in current window as more fundamental joe key
- sequence (it's ^[ u and ^[ v for now).
 
  Unnamed buffers should be in bufed list (was fixed in the lost joe 2.9)
 

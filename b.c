@@ -2055,7 +2055,19 @@ unsigned char *parsens(unsigned char *s, long int *skip, long int *amnt)
 				sscanf((char *)(n + x + 1), "%ld", skip);
 		}
 	}
+	/* Don't do this here: do it in prompt buffer instead, so we're just like
+	   the shell doing it on the command line. */
+	/* n = canonical(n); */
+	return n;
+}
+
+/* Canonicalize file name: do ~ expansion */
+
+unsigned char *canonical(unsigned char *n)
+{
 #ifndef __MSDOS__
+	int x;
+	unsigned char *s;
 	if (n[0] == '~') {
 		for (x = 1; n[x] && n[x] != '/'; ++x) ;
 		if (n[x] == '/') {

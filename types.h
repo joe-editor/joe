@@ -530,6 +530,7 @@ struct pw {
 	int	promptofst;	/* Prompt scroll offset */
 	B	*hist;		/* History buffer */
 	void	*object;	/* Object */
+	int	file_prompt;	/* Set if this is a file name prompt, so do ~ expansion */
 };
 
 struct stditem {

@@ -132,6 +132,7 @@ int bsave PARAMS((P *p, unsigned char *s, long int size,int flag));
 int bsavefd PARAMS((P *p, int fd, long int size));
 
 unsigned char *parsens PARAMS((unsigned char *s, long int *skip, long int *amnt));
+unsigned char *canonical PARAMS((unsigned char *s));
 
 /* Get byte at pointer or return NO_MORE_DATA if pointer is at end of buffer */
 int brc PARAMS((P *p));

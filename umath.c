@@ -524,7 +524,7 @@ B *mathhist = NULL;
 int umath(BW *bw)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(bw->parent, US "=", &mathhist, domath, US "Math", NULL, NULL, NULL, NULL, locale_map)) {
+	if (wmkpw(bw->parent, US "=", &mathhist, domath, US "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;

@@ -389,6 +389,6 @@ static int keymap_cmplt(BW *bw)
 
 int ukeymap(BASE *bw)
 {
-	if (wmkpw(bw->parent,"Change keymap: ",&keymaphist,dokeymap,"keymap",NULL,keymap_cmplt,NULL,NULL,locale_map)) return 0;
+	if (wmkpw(bw->parent,"Change keymap: ",&keymaphist,dokeymap,"keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
 	else return -1;
 }

@@ -642,7 +642,7 @@ static int doarg(BW *bw, unsigned char *s, void *object, int *notify)
 
 int uarg(BW *bw)
 {
-	if (wmkpw(bw->parent, US "No. times to repeat next command (^C to abort): ", NULL, doarg, NULL, NULL, utypebw, NULL, NULL, locale_map))
+	if (wmkpw(bw->parent, US "No. times to repeat next command (^C to abort): ", NULL, doarg, NULL, NULL, utypebw, NULL, NULL, locale_map,0))
 		return 0;
 	else
 		return -1;
@@ -669,7 +669,7 @@ int uif(BW *bw)
 {
 	ifdepth++;
 	if (!ifflag) return 0;
-	if (wmkpw(bw->parent,US "If (^C to abort): ",NULL,doif,NULL,ifabrt,utypebw,NULL,NULL,locale_map)) return 0;
+	if (wmkpw(bw->parent,US "If (^C to abort): ",NULL,doif,NULL,ifabrt,utypebw,NULL,NULL,locale_map,0)) return 0;
 	else return -1;
 }
 
@@ -682,7 +682,7 @@ int uelsif(BW *bw)
 		ifflag=iffail=0; /* don't let the next else/elsif get run */
 	} else if(ifdepth == iffail) {
 		ifflag=1;	/* so the script can type the condition :) */
-		if(wmkpw(bw->parent,"Else if: ",NULL,doif,NULL,NULL,utypebw,NULL,NULL,locale_map)) return 0;
+		if(wmkpw(bw->parent,"Else if: ",NULL,doif,NULL,NULL,utypebw,NULL,NULL,locale_map,0)) return 0;
 		else return -1;
 	}
 }
