@@ -23,7 +23,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <stdlib.h>
 #include "config.h"
 #include "vs.h"
-#include "zstr.h"
 #include "blocks.h"
 #include "queue.h"
 #include "path.h"

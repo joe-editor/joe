@@ -238,21 +238,6 @@ char *envv[];
 
 #else
 
- s=vsncpy(NULL,0,sc("."));
- s=vsncpy(sv(s),sv(run));
- s=vsncpy(sv(s),sc("rc"));
- c=procrc(cap,s);
- if(c==0) goto donerc;
- if(c==1)
-  {
-  char buf[8];
-  fprintf(stderr,"There were errors in '%s'.  Use it anyway?",s);
-  fflush(stderr);
-  fgets(buf,8,stdin);
-  if(buf[0]=='y' || buf[0]=='Y') goto donerc;
-  }
-
- vsrm(s);
  s=getenv("HOME");
  if(s)
   {
@@ -371,7 +356,7 @@ char *envv[];
  if(help) help_on(maint);
 
  if(!nonotice)
-  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.9.4 ** Copyright (C) 2001 **\\i");
+  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.9.5 ** Copyright (C) 2001 **\\i");
  edloop(0);
  vclose(vmem);
  nclose(n);

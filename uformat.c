@@ -21,7 +21,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "config.h"
 #include "b.h"
 #include "bw.h"
-#include "zstr.h"
 #include "ublock.h"
 #include "uformat.h"
 

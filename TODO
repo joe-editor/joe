@@ -1,7 +1,39 @@
+FEATURES
+=-=-=-=-
+	-=- syntax higlighting
+	-=- gettext (possibility of translate messages from joe)
+	-=- folding
+
+	from joe2.8
+	-=- picture mode
+	-=- brief emulation? EDT emulation?
+	-=- save editor state
+	-=- CR-LF mode for joe editing DOS files in linux?
+	-=- xedit and folding stuff
+		- with seperate valid-line database?
+		- display update algorithm will break
+	-=- hexadecimal edit mode
+	-=- fixed record length edit mode
+	-=- verticle windows
+		- difficult to get scrolling to work right
+
 PROGRAM REDeSIGN:
 =-=-=-=-=-=-=-=-=-=
 	-=- why to use list of help screens and array of help screens
 		when later is only array used ?
+	-=- prepare sources to use gettext
+
+PORTABILITY
+=-=-=-=-=-=
+	-=- WARNING: MSDOS compatibility can be broken by my changes
+		I try to use ANSI/ISO C but sometimes 
+		I have to use POSIX extentsions so if you want to 
+		have a DOS version, plz mail me your patches
+	-=- MSDOS
+		- how to give memory back during shell escapes?
+	-=- make identifier length significant in first 8 (6?) places 
+		for old C compilers
+
 
 BuGS
 =-=-
@@ -20,43 +52,4 @@ Emacs emulation improvements:
 	- Allow either direct screen access or normal tty support 
 		for DOS version.
 
-NEW FEATURES
-=-=-=-=-=-=-
 
-=-=-=
-Picture mode
-
-=-=-=
-Brief emulation? EDT emulation?
-
-=-=-=
-Save editor state
-
-=-=-=
-CR-LF mode for joe editing DOS files in linux?
-
-=-=-=
-xedit and folding stuff
-- with seperate valid-line database?
-- display update algorithm will break
-
-=-=-=
-hexadecimal edit mode
-
-=-=-=
-fixed record length edit mode
-
-=-=-=
-verticle windows
-- difficult to get scrolling to work right
-
-PORTABILITY
-=-=-=-=-=-=
-
-=-=-=
-msdos-
-
- how to give memory back during shell escapes?
-
-=-=-=
-make identifier length significant in first 8 (6?) places for old C compilers

@@ -26,7 +26,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "kbd.h"
 #include "scrn.h"
 #include "bw.h"
-#include "zstr.h"
 #include "help.h"
 #include "tab.h"
 #include "undo.h"

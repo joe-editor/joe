@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
-#include "zstr.h"
+#include "utils.h"
 #include "macro.h"
 #include "cmd.h"
 #include "bw.h"

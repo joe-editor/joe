@@ -24,7 +24,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "blocks.h"
 #include "vs.h"
 #include "va.h"
-#include "zstr.h"
 #include "queue.h"
 #include "termcap.h"
 

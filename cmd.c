@@ -29,7 +29,6 @@
 #include "umath.h"
 #include "uerror.h"
 #include "path.h"
-#include "zstr.h"
 #include "cmd.h"
 
 extern int smode;

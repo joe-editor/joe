@@ -18,7 +18,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include "config.h"
 #include "w.h"
-#include "zstr.h"
 #include "vs.h"
 #include "qw.h"
 

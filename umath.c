@@ -7,7 +7,6 @@
 #include "pw.h"
 #include "tw.h"
 #include "vs.h"
-#include "zstr.h"
 #include "umath.h"
 
 char *merr;

@@ -26,7 +26,7 @@
 #include "undo.h"
 #include "vs.h"
 #include "va.h"
-#include "zstr.h"
+#include "utils.h"
 #include "path.h"
 #include "w.h"
 #include "tty.h"

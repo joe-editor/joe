@@ -52,7 +52,8 @@ EXTRALIBS = -lncurses
 OBJS = b.o blocks.o bw.o cmd.o hash.o help.o kbd.o macro.o main.o menu.o \
  path.o poshist.o pw.o queue.o qw.o rc.o regex.o scrn.o tab.o \
  termcap.o tty.o tw.o ublock.o uedit.o uerror.o ufile.o uformat.o uisrch.o \
- umath.o undo.o usearch.o ushell.o utag.o va.o vfile.o vs.o w.o zstr.o
+ umath.o undo.o usearch.o ushell.o utag.o va.o vfile.o vs.o w.o \
+ utils.o
 
 # That's it!
 

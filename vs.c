@@ -18,7 +18,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include <varargs.h>
 #include "config.h"
-#include "zstr.h"
 #include "blocks.h"
 #include "vs.h"
 

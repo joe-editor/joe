@@ -17,7 +17,6 @@
 #include "vs.h"
 #include "w.h"
 #include "bw.h"
-#include "zstr.h"
 #include "path.h"
 #include "va.h"
 #include "menu.h"

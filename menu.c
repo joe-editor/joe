@@ -20,7 +20,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "scrn.h"
 #include "w.h"
 #include "vs.h"
-#include "zstr.h"
 #include "menu.h"
 #include <string.h>
 

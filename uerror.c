@@ -7,7 +7,7 @@
 #include "ufile.h"
 #include "w.h"
 #include "bw.h"
-#include "zstr.h"
+#include "utils.h"
 #include "ufile.h"
 #include "main.h"
 #include "uerror.h"

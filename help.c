@@ -20,7 +20,6 @@
 #include "w.h"
 #include "vs.h"
 #include "menu.h"
-#include "zstr.h"
 #include "tw.h"
 #include "blocks.h"
 

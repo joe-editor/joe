@@ -24,7 +24,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "pw.h"
 #include "qw.h"
 #include "uedit.h"
-#include "zstr.h"
+#include "utils.h"
 #include "vs.h"
 #include "ublock.h"
 

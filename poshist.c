@@ -21,7 +21,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "queue.h"
 #include "b.h"
 #include "w.h"
-#include "zstr.h"
 #include "bw.h"
 
 typedef struct pos POS;

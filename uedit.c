@@ -14,7 +14,7 @@
 #include "w.h"
 #include "pw.h"
 #include "qw.h"
-#include "zstr.h"
+#include "utils.h"
 #include "vs.h"
 #include "uformat.h"
 #include "umath.h"

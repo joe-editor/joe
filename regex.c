@@ -18,7 +18,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include <ctype.h>
 #include "config.h"
-#include "zstr.h"
 #include "vs.h"
 #include "b.h"
 #include "regex.h"

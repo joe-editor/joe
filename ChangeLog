@@ -5,6 +5,12 @@ TODO Plan
 
 USER ChangeLog
 =-=-=-=-=-=-=-=
+** JOE 2.9.5 :: 28 Mar 2001
+	- BUGFIX:: Fix problem with resizing. 
+		Submitted by Oleg Bartunov (oleg@sai.msu.su)
+	- SECURITY:: .[joe|rjoe|jpico|..]rc in actual directory is ignored
+		because in this file can be defined which program run.
+		I found this bug on the freshmeat.net (submitted by Debian)
 ** JOE 2.9.4 :: 27 Mar 2001
 	- FEATURE:: locale (LC_CTYPE) is accepted 
 		when skipping/deleting/... words	
@@ -13,6 +19,18 @@ USER ChangeLog
 
 PROGRAMMER ChangeLog
 =-=-=-=-=-=-=-=-=-=-=
+** JOE 2.9.5 :: 28 Mar 2001
+	- BUGFIX:: Fix problem with resizing.
+		The problem was missing	<sys/ioctl.h> in tty.c;
+		submitted by Oleg Bartunov (oleg@sai.msu.su)
+	- zstr.c/zstr.h is now clean and fully documented
+		first two files which are complete :) yuuh
+	- zstr.c/zstr.h was renamed to utils.c/utils.h
+		because functions which worked with "zero terminated string"
+		where substituted for their ISO/ANSI C equivalent 
+	- SECURITY:: .[joe|rjoe|jpico|..]rc in actual directory is ignored
+		because in this file can be defined which program run.
+		I found this bug on the freshmeat.net (submitted by Debian)
 ** JOE 2.9.4 :: 27 Mar 2001
 	- FEATURE:: locale is accepted when skipping/deleting/... words
 	- changed parts of zstr.c/zstr.h and some others

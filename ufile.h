@@ -14,7 +14,7 @@ details.
 
 You should have received a copy of the GNU General Public License along with 
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */ 
+675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifndef _Iufile
 #define _Iufile 1
@@ -23,19 +23,19 @@ extern int exask;
 
 #include "bw.h"
 
-void genexmsg();
+void genexmsg ();
 
-int ublksave();
-int ushell();
-int usave();
-int uedit();
-int uinsf();
-int uexsve();
-int unbuf();
-int upbuf();
-int uask();
-int ubufed();
-int ulose();
-int okrepl();
+int ublksave ();
+int ushell ();
+int usave ();
+int uedit ();
+int uinsf ();
+int uexsve ();
+int unbuf ();
+int upbuf ();
+int uask ();
+int ubufed ();
+int ulose ();
+int okrepl ();
 
 #endif

@@ -27,7 +27,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "ublock.h"
 #include "umath.h"
 #include "uedit.h"
-#include "zstr.h"
 #include "macro.h"
 #include <ctype.h>
 

@@ -12,7 +12,6 @@
 #include <string.h>
 
 #include "config.h"
-#include "zstr.h"
 #include "vs.h"
 #include "va.h"
 #include "tty.h"

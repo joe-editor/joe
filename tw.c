@@ -24,7 +24,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "tty.h"
 #include "scrn.h"
 #include "bw.h"
-#include "zstr.h"
 #include "vs.h"
 #include "help.h"
 #include "undo.h"

@@ -1,7 +1,6 @@
 /* Simple hash table */
 
 #include <string.h>
-#include "zstr.h"
 #include "hash.h"
 
 static HENTRY *freentry=0;

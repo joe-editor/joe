@@ -23,7 +23,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "vs.h"
 #include "termcap.h"
 #include "tty.h"
-#include "zstr.h"
 #include "scrn.h"
 
 int skiptop=0;

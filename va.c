@@ -17,7 +17,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
 #include "blocks.h"
-#include "zstr.h"
 #include "va.h"
 
 aELEMENT(*vamk(len))

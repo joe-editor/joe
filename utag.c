@@ -14,7 +14,7 @@
 #include "pw.h"
 #include "qw.h"
 #include "vs.h"
-#include "zstr.h"
+#include "utils.h"
 #include "usearch.h"
 #include "tab.h"
 #include "main.h"

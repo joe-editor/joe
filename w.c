@@ -23,7 +23,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "main.h"
 #include "poshist.h"
 #include "blocks.h"
-#include "zstr.h"
+#include "utils.h"
 #include "w.h"
 
 extern int dspasis;	/* Set to display chars above 127 as-is */

@@ -26,7 +26,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "scrn.h"
 #include "w.h"
 #include "ublock.h"
-#include "zstr.h"
+#include "utils.h"
 #include "blocks.h"
 #include "bw.h"
 

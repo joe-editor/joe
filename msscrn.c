@@ -5,7 +5,6 @@
 #include "blocks.h"
 #include "vs.h"
 #include "tty.h"
-#include "zstr.h"
 #include "scrn.h"
 
 int skiptop=0;

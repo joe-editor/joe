@@ -21,6 +21,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 /* These should exist on every UNIX system */
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
