@@ -1,4 +1,9 @@
 Sat Dec 08 2001  Vitezslav Samel <samel@mail.cz>
+	* configure.ac, tty.c:
+	make joe compilable (not only) on cygwin - check if siginterrupt() is
+	available on this host
+
+Sat Dec 08 2001  Vitezslav Samel <samel@mail.cz>
 	* ublock.c:
 	remove feature: exchange points of start and end of the block when
 	checking validity of block pointers

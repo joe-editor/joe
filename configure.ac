@@ -78,7 +78,7 @@ if test x"$ac_cv_func_isblank" = xyes; then
 	joe_ISBLANK
 fi
 AC_CHECK_FUNCS([alarm mkdir mkstemp setlocale strchr strdup utime setpgid])
-AC_CHECK_FUNCS([setitimer sigprocmask])
+AC_CHECK_FUNCS([setitimer siginterrupt sigprocmask])
 
 
 dnl not yet :-)

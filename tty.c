@@ -254,7 +254,9 @@ static RETSIGTYPE winchd(int unused)
 	++winched;
 #ifdef SIGWINCH
 	signal(SIGWINCH, winchd);
+#ifdef HAVE_SIGINTERRUPT
 	siginterrupt(SIGWINCH, 1);
+#endif
 #endif
 }
 
@@ -319,7 +321,9 @@ void ttopnn(void)
 		} else {
 #ifdef SIGWINCH
 			signal(SIGWINCH, winchd);
+#ifdef HAVE_SIGINTERRUPT
 			siginterrupt(SIGWINCH, 1);
+#endif
 #endif
 			tickon();
 		}
