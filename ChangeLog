@@ -1,4 +1,8 @@
 Sun Nov 04 2001  Vitezslav Samel <samel@mail.cz>
+	* ufile.c: kill infinite loop when saving unmodified file
+	(sourceforge.net BUG #478290)
+
+Sun Nov 04 2001  Vitezslav Samel <samel@mail.cz>
 	* ufile.c: remove "feature" added in 2.9.7-pre1 so the user is always
 	asked of the filename saved (sourceforge.net BUG #449489)
 

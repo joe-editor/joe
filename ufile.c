@@ -303,14 +303,17 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 			 *		24 Apr 2001, Marx
 			 */
 			UNDO *u = bw->b->undo;
-			UNDOREC *rec = u->recs.link.prev;
-			
-			while (rec->changed) {
-				rec = rec->link.prev;
-			}		
-			rec->changed = 1;
-		}
+			UNDOREC *rec, *rec_start;
 
+			rec = rec_start = &u->recs;
+
+			do {
+				rec = rec->link.prev;
+			} while (rec != rec_start && rec->changed);
+			if(rec->changed == 0)
+				rec->changed = 1;
+
+		}
 		genexmsg(bw, 1, req->name);
 		vsrm(req->name);
 		free(req);
