@@ -920,6 +920,13 @@ int procrc(CAP *cap, unsigned char *name)
 		case '\f':
 		case 0:
 			break;	/* Skip comment lines */
+
+		case '=':	/* Define a global color */
+			{
+			parse_color_def(&global_colors,buf+1,name,line);
+			}
+			break;
+
 		case '*':	/* Select file types for file-type dependant options */
 			{
 				int x;

@@ -70,4 +70,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state);
 #define invalidate_state(s) ((s)->state = -1)
 #define move_state(to,from) (*(to)= *(from))
 
+extern struct high_color *global_colors;
+void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned char *name,int line);
+
 #endif

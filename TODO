@@ -1,10 +1,21 @@
 Short list for 3.2:
 
+- document some things which are in joerc file: like yank, and switch buffers.
+
 - egmont's Ctrl-selection bug
 
 - in emacs: ^XA save block when no block is selected, we type in >> for
 append (because that't what it does in emacs), but we also put the file name
 in, but we do the two in the wrong order.
+
+   (we could change save so it doesn't stuff name in, but it then break
+    jpico).
+
+
+	save,name
+	blksave
+
+  emacs: ^X^I (indent region) does not work with selection method
 
 - for cygwin: we need to compile with --disable-termcap
 
@@ -33,8 +44,6 @@ in, but we do the two in the wrong order.
     - special lock for NFS
 
 - update help screens: some things have changed (emacs is more like emacs).
-
-UI for changing colors in the editor (or at least dark/light mode)
 
 More colors: UI for using 256 color xterms.
 

@@ -192,6 +192,56 @@ static struct high_cmd *mkcmd()
 	return cmd;
 }
 
+/* Globally defined colors */
+
+struct high_color *global_colors;
+
+struct high_color *find_color(struct high_color *colors,unsigned char *name,unsigned char *syn)
+{
+	unsigned char bf[256];
+	struct high_color *color;
+	joe_snprintf_2((char *)bf, sizeof(bf), "%s.%s", syn, name);
+	for (color = colors; color; color = color->next)
+		if (!strcmp(color->name,bf)) break;
+	if (color)
+		return color;
+	for (color = colors; color; color = color->next)
+		if (!strcmp(color->name,name)) break;
+	return color;
+}
+
+void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned char *name,int line)
+{
+	unsigned char bf[256];
+	if(!parse_tows(&p, bf)) {
+		struct high_color *color, *gcolor;
+
+		/* Find color */
+		color=find_color(*color_list,bf,name);
+
+		/* If it doesn't exist, create it */
+		if(!color) {
+			color = joe_malloc(sizeof(struct high_color));
+			color->name = joe_strdup(bf);
+			color->color = 0;
+			color->next = *color_list;
+			*color_list = color;
+		} else {
+			fprintf(stderr,"%s %d: Class already defined\n",name,line);
+		}
+
+		/* Find it in global list */
+		if (color_list != &global_colors && (gcolor=find_color(global_colors,bf,name))) {
+			color->color = gcolor->color;
+		} else {
+			/* Parse color definition */
+			while(parse_ws(&p,'#'), !parse_ident(&p,bf,255)) {
+				color->color |= meta_color(bf);
+			}
+		}
+	}
+}
+
 /* Load syntax file */
 
 struct high_syntax *syntax_list;
@@ -276,29 +326,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 			} else
 				fprintf(stderr,"%s %d: Missing state name\n",name,line);
 		} else if(!parse_char(&p, '=')) {
-			if(!parse_ident(&p, bf, 255)) {
-				struct high_color *color;
-
-				/* Find color */
-				for(color=syntax->color;color;color=color->next)
-					if(!strcmp(color->name,bf))
-						break;
-				/* If it doesn't exist, create it */
-				if(!color) {
-					color = joe_malloc(sizeof(struct high_color));
-					color->name = joe_strdup(bf);
-					color->color = 0;
-					color->next = syntax->color;
-					syntax->color = color;
-				} else {
-					fprintf(stderr,"%s %d: Class already defined\n",name,line);
-				}
-
-				/* Parse color definition */
-				while(parse_ws(&p,'#'), !parse_ident(&p,bf,255)) {
-					color->color |= meta_color(bf);
-				}
-			}
+			parse_color_def(&syntax->color,p,name,line);
 		} else if(!parse_char(&p, '-')) { /* No. sync lines */
 			if(parse_int(&p, &syntax->sync_lines))
 				syntax->sync_lines = -1;

@@ -15,6 +15,36 @@
  on the command line.  Also the NOXON, LINES, COLUMNS, DOPADDING and BAUD
  options can be specified in environment variables):
 
+ Override colors of lexical classes specified in syntax files:
+ Put each color override you want in the first column.
+
+ Valid colors:
+   bold inverse blink dim underline
+   white cyan magenta blue yellow green red black
+   bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
+
+ Override all instances of class Idle:
+   =Idle red
+
+ Override Idle only for c syntax file:
+   =c.Idle red
+
+ The following list is from c.jsf.  Look at other syntax files for more classes.
+
+ =Idle
+ =Bad        bold red
+ =Preproc    blue
+ =Define     bold blue
+ =IncLocal   cyan
+ =IncSystem  bold cyan
+ =Constant   cyan
+ =Escape     bold cyan
+ =Type       bold
+ =Keyword    bold
+ =CppKeyword bold
+ =Brace      magenta
+ =Control
+
  Put each option you want set in the first column:
 
  -option	Sets the option
