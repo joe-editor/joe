@@ -48,7 +48,7 @@ int pisbol PARAMS((P *p));
 int pisbow PARAMS((P *p));
 int piseow PARAMS((P *p));
 
-#define piscol(p) ((p)->valcol?(p)->col:(pfcol(p),(p)->col))
+#define piscol(p) ((p)->valcol ? (p)->col : (pfcol(p), (p)->col))
 
 int pisblank PARAMS((P *p));
 
@@ -58,19 +58,15 @@ int pnext PARAMS((P *p));
 int pprev PARAMS((P *p));
 
 int pgetc PARAMS((P *p));
-
-P *pfwrd PARAMS((P *p, long int n));
-
 int prgetc PARAMS((P *p));
 
-P *pbkwd PARAMS((P *p, long int n));
 P *pgoto PARAMS((P *p, long int loc));
+P *pfwrd PARAMS((P *p, long int n));
+P *pbkwd PARAMS((P *p, long int n));
 
 P *pfcol PARAMS((P *p));
 
-
 P *pnextl PARAMS((P *p));
-
 P *pprevl PARAMS((P *p));
 
 P *pline PARAMS((P *p, long int line));
@@ -86,33 +82,20 @@ P *pifind PARAMS((P *p, char *s, int len));
 P *prfind PARAMS((P *p, char *s, int len));
 P *prifind PARAMS((P *p, char *s, int len));
 
-/* B *bcpy(P *from,P *to);
- * Copy text between from and to into a new buffer
- */
-B *bcpy PARAMS((P *from, P *to));
+/* copy text between 'from' and 'to' into new buffer */
+B *bcpy PARAMS((P *from, P *to));	
 
 void pcoalesce PARAMS((P *p));
 
 void bdel PARAMS((P *from, P *to));
 
-/* P *binsb(P *p,B *b);
- * Insert an entire buffer 'b' into another buffer at 'p'
- */
+/* insert buffer 'b' into another at 'p' */
 P *binsb PARAMS((P *p, B *b));
-
-/* P *binsm(P *p,char *blk,int amnt);
- * Insert a block 'blk' of size 'amnt' into buffer at 'p'
- */
-P *binsm PARAMS((P *p, char *blk, int amnt));
-
-/* P *binsc(P *p,char c);
- * Insert character into buffer at P
- */
+/* insert a block 'blk' of size 'amnt' into buffer at 'p' */
+P *binsm PARAMS((P *p, char *blk, int amnt)); 
+/* insert character 'c' into buffer at 'p' */
 P *binsc PARAMS((P *p, char c));
-
-/* P *binss(P *p,char *s);
- * Insert zero terminated string into buffer at P
- */
+/* insert zero term. string 's' into buffer at 'p' */
 P *binss PARAMS((P *p, char *s));
 
 /* B *bload(char *s);
@@ -124,39 +107,29 @@ P *binss PARAMS((P *p, char *s));
  * -3 for seek error
  * -4 for open error
  */
-B *bread PARAMS((int fi, long int max));
 B *bload PARAMS((char *s));
+B *bread PARAMS((int fi, long int max));
 B *bfind PARAMS((char *s));
 B *borphan PARAMS((void));
 
-/* int bsave(P *p,char *s,long size);
- * Save 'size' bytes beginning at 'p' into file with name in 's'
- */
-int bsavefd PARAMS((P *p, int fd, long int size));
+/* Save 'size' bytes beginning at 'p' into file with name in 's' */
 int bsave PARAMS((P *p, char *s, long int size));
+int bsavefd PARAMS((P *p, int fd, long int size));
 
 char *parsens PARAMS((char *s, long int *skip, long int *amnt));
 
-/* int brc(P *p);
- * Get character at pointer or return MAXINT if pointer is at end of buffer
- */
+/* Get character at pointer or return MAXINT if pointer is at end of buffer */
 int brc PARAMS((P *p));
 
-/* char *brmem(P *p,char *blk,int size);
- * Copy 'size' bytes from a buffer beginning at p into block 'blk'
- */
+/* Copy 'size' bytes from a buffer beginning at p into block 'blk' */
 char *brmem PARAMS((P *p, char *blk, int size));
 
-/* char *brs(P *p,int size);
- * Copy 'size' bytes from a buffer beginning at p into a zero-terminated
+/* Copy 'size' bytes from a buffer beginning at p into a zero-terminated
  * C-string in an malloc block.
  */
 char *brs PARAMS((P *p, int size));
 
-/* char *brvs(P *p,int size);
- * Copy 'size' bytes from a buffer beginning at p into a variable length
- * string.
- */
+/* Copy 'size' bytes from a buffer beginning at p into a variable length string. */
 char *brvs PARAMS((P *p, int size));
 
 B *bnext PARAMS((void));

@@ -1,3 +1,7 @@
+Wed Jan 30 2002  Vitezslav Samel <samel@mail.cz>
+	* b.c, b.h, types.h:
+	cosmetic cleanup: add comments - this patch doesn't touch code
+
 Fri Jan 25 2002  Vitezslav Samel <samel@mail.cz>
 	* termcap.c:
 	strcmp() can return values other than -1/0/+1 (fix supplied by

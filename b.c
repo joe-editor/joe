@@ -56,15 +56,12 @@ char *msgs[] = {
 };
 
 /* Get size of gap (amount of free space) */
-
-#define GGAPSZ(hdr) ((hdr)->ehole-(hdr)->hole)
+#define GGAPSZ(hdr) ((hdr)->ehole - (hdr)->hole)
 
 /* Get number of characters in gap buffer */
-
-#define GSIZE(hdr) (SEGSIZ-GGAPSZ(hdr))
+#define GSIZE(hdr) (SEGSIZ - GGAPSZ(hdr))
 
 /* Set position of gap */
-
 static void gstgap(H *hdr, char *ptr, int ofst)
 {
 	if (ofst > hdr->hole)
@@ -76,7 +73,6 @@ static void gstgap(H *hdr, char *ptr, int ofst)
 }
 
 /* Insert a block */
-
 static void ginsm(H *hdr, char *ptr, int ofst, char *blk, int size)
 {
 	if (ofst != hdr->hole)
@@ -87,7 +83,6 @@ static void ginsm(H *hdr, char *ptr, int ofst, char *blk, int size)
 }
 
 /* Read block */
-
 static void grmem(H *hdr, char *ptr, int ofst, char *blk, int size)
 {
 	if (ofst < hdr->hole)
@@ -99,11 +94,11 @@ static void grmem(H *hdr, char *ptr, int ofst, char *blk, int size)
 		mmove(blk, ptr + ofst + hdr->ehole - hdr->hole, size);
 }
 
-/* Header allocation */
 
 static H nhdrs = { {&nhdrs, &nhdrs} };
 static H ohdrs = { {&ohdrs, &ohdrs} };
 
+/* Header allocation */
 static H *halloc(void)
 {
 	H *h;
@@ -130,10 +125,10 @@ static void hfreechn(H *h)
 	splicef(H, link, &ohdrs, h);
 }
 
-/* Pointer allocation */
 
 static P frptrs = { {&frptrs, &frptrs} };
 
+/* Pointer allocation */
 static P *palloc(void)
 {
 	return alitem(&frptrs, sizeof(P));
@@ -145,7 +140,6 @@ static void pfree(P *p)
 }
 
 /* Doubly linked list of buffers and free buffer structures */
-
 static B bufs = { {&bufs, &bufs} };
 static B frebufs = { {&frebufs, &frebufs} };
 
@@ -174,7 +168,6 @@ B *bprev(void)
 }
 
 /* Make a buffer out of a chain */
-
 static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 {
 	B *b = alitem(&frebufs, sizeof(B));
@@ -224,16 +217,15 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 }
 
 /* Create an empty buffer */
-
 B *bmk(B *prop)
 {
 	return bmkchn(halloc(), prop, 0L, 0L);
 }
 
-/* Eliminate a buffer */
 
 extern B *errbuf;
 
+/* Eliminate a buffer */
 void brm(B *b)
 {
 	if (b && !--b->count) {
@@ -357,16 +349,19 @@ P *p_goto_eof(P *p)
 	return pset(p, p->b->eof);
 }
 
+/* is p at the beginning of file? */
 int pisbof(P *p)
 {
 	return p->hdr == p->b->bof->hdr && !p->ofst;
 }
 
+/* is p at the end of file? */
 int piseof(P *p)
 {
 	return p->ofst == GSIZE(p->hdr);
 }
 
+/* is p at the end of line? */
 int piseol(P *p)
 {
 	int c;
@@ -390,6 +385,7 @@ int piseol(P *p)
 	return 0;
 }
 
+/* is p at the beginning of line? */
 int pisbol(P *p)
 {
 	char c;
@@ -401,6 +397,7 @@ int pisbol(P *p)
 	return c == '\n';
 }
 
+/* is p at the beginning of word? */
 int pisbow(P *p)
 {
 	P *q = pdup(p);
@@ -414,6 +411,7 @@ int pisbow(P *p)
 		return 0;
 }
 
+/* is p at the end of word? */
 int piseow(P *p)
 {
 	P *q = pdup(p);
@@ -427,6 +425,7 @@ int piseow(P *p)
 		return 0;
 }
 
+/* is p on the blank line (ie. full of spaces/tabs)? */
 int pisblank(P *p)
 {
 	P *q = pdup(p);
@@ -443,6 +442,7 @@ int pisblank(P *p)
 	}
 }
 
+/* return column of first nonblank character */
 long pisindent(P *p)
 {
 	P *q = pdup(p);
@@ -482,6 +482,7 @@ int pprev(P *p)
 	return 1;
 }
 
+/* return current character and move p to the next character */
 int pgetc(P *p)
 {
 	unsigned char c;
@@ -514,6 +515,7 @@ int pgetc(P *p)
 	return c;
 }
 
+/* move p n characters forward */
 P *pfwrd(P *p, long n)
 {
 	if (!n)
@@ -563,6 +565,7 @@ static int prgetc1(P *p)
 	return c;
 }
 
+/* move p to the previous character */
 int prgetc(P *p)
 {
 	int c = prgetc1(p);
@@ -578,6 +581,7 @@ int prgetc(P *p)
 	return c;
 }
 
+/* move p n characters backwards */
 P *pbkwd(P *p, long n)
 {
 	if (!n)
@@ -602,6 +606,7 @@ P *pbkwd(P *p, long n)
 	return p;
 }
 
+/* move p n characters forwards/backwards according to loc */
 P *pgoto(P *p, long loc)
 {
 	if (loc > p->byte)
@@ -611,6 +616,7 @@ P *pgoto(P *p, long loc)
 	return p;
 }
 
+/* make p->col valid */
 P *pfcol(P *p)
 {
 	H *hdr = p->hdr;
@@ -622,6 +628,7 @@ P *pfcol(P *p)
 	return p;
 }
 
+/* move p to the beginning of line */
 P *p_goto_bol(P *p)
 {
 	if (pprevl(p))
@@ -631,6 +638,7 @@ P *p_goto_bol(P *p)
 	return p;
 }
 
+/* move p to the end of line */
 P *p_goto_eol(P *p)
 {
 	if (p->b->o.crlf)
@@ -660,6 +668,7 @@ P *p_goto_eol(P *p)
 	return p;
 }
 
+/* move p to the beginning of next line */
 P *pnextl(P *p)
 {
 	char c;
@@ -686,6 +695,7 @@ P *pnextl(P *p)
 	return p;
 }
 
+/* move p to the end of previous line */
 P *pprevl(P *p)
 {
 	char c;
@@ -715,6 +725,7 @@ P *pprevl(P *p)
 	return p;
 }
 
+/* move p to the given 'line' line */
 P *pline(P *p, long line)
 {
 	if (line > p->b->eof->line) {
@@ -739,6 +750,7 @@ P *pline(P *p, long line)
 	return p;
 }
 
+/* move p to the given 'goalcol' column */
 P *pcol(P *p, long goalcol)
 {
 	p_goto_bol(p);
@@ -770,6 +782,7 @@ P *pcol(P *p, long goalcol)
 	return p;
 }
 
+/* move p into given given 'goalcol' column (even within whitespaces) */
 P *pcolwse(P *p, long goalcol)
 {
 	int c;
@@ -783,6 +796,7 @@ P *pcolwse(P *p, long goalcol)
 	return p;
 }
 
+/* FIXME: whats the differnce between pcol() and pcoli() ??? */
 P *pcoli(P *p, long goalcol)
 {
 	p_goto_bol(p);
@@ -812,6 +826,7 @@ P *pcoli(P *p, long goalcol)
 	return p;
 }
 
+/* fill space between curent column and 'to' column with tabs/spaces */
 void pfill(P *p, long to, int usetabs)
 {
 	piscol(p);
@@ -826,6 +841,7 @@ void pfill(P *p, long to, int usetabs)
 			binsc(p, ' '), pgetc(p);
 }
 
+/* delete sequence of whitespaces - backwards */
 void pbackws(P *p)
 {
 	int c;
@@ -862,6 +878,7 @@ static void ffwrd(P *p, int n)
 		pnext(p);
 }
 
+/* forward find pattern 's' in text pointed by 'p' (Boyer-Moore algorithm) */
 static P *ffind(P *p, unsigned char *s, int len)
 {
 	long amnt = p->b->eof->byte - p->byte;
@@ -896,6 +913,7 @@ static P *ffind(P *p, unsigned char *s, int len)
 	return p;
 }
 
+/* forward find (case insensitive) pattern 's' in text pointed by 'p' (Boyer-Moore algorithm) */
 static P *fifind(P *p, unsigned char *s, int len)
 {
 	long amnt = p->b->eof->byte - p->byte;
@@ -930,6 +948,8 @@ static P *fifind(P *p, unsigned char *s, int len)
 	return p;
 }
 
+/* move cursor p to q's position and set p's col, line, ofst, byte etc. accordingly */
+/* same as rgetto() but p is before q */
 static P *getto(P *p, P *q)
 {
 	while (p->hdr != q->hdr || p->ofst != q->ofst) {
@@ -950,6 +970,7 @@ static P *getto(P *p, P *q)
 	return p;
 }
 
+/* find forward substring s in text pointed by p and set p after found substring */
 P *pfind(P *p, char *s, int len)
 {
 	P *q = pdup(p);
@@ -964,6 +985,7 @@ P *pfind(P *p, char *s, int len)
 	}
 }
 
+/* same as pfind() but case insensitive */
 P *pifind(P *p, char *s, int len)
 {
 	P *q = pdup(p);
@@ -1006,6 +1028,7 @@ static int fpgetc(P *p)
 	return c;
 }
 
+/* backward find pattern 's' in text pointed by 'p' (Boyer-Moore algorithm) */
 static P *frfind(P *p, unsigned char *s, int len)
 {
 	long amnt = p->byte;
@@ -1043,6 +1066,7 @@ static P *frfind(P *p, unsigned char *s, int len)
 	return p;
 }
 
+/* backward find (case insensitive) pattern 's' in text pointed by 'p' (Boyer-Moore algorithm) */
 static P *frifind(P *p, unsigned char *s, int len)
 {
 	long amnt = p->byte;
@@ -1080,6 +1104,8 @@ static P *frifind(P *p, unsigned char *s, int len)
 	return p;
 }
 
+/* move cursor p to q's position and set p's col, line, ofst, byte etc. accordingly */
+/* same as getto() but q is before p */
 static P *rgetto(P *p, P *q)
 {
 	while (p->hdr != q->hdr || p->ofst != q->ofst) {
@@ -1100,6 +1126,7 @@ static P *rgetto(P *p, P *q)
 	return p;
 }
 
+/* find backward substring s in text pointed by p and set p on the first of found substring */
 P *prfind(P *p, char *s, int len)
 {
 	P *q = pdup(p);
@@ -1114,6 +1141,7 @@ P *prfind(P *p, char *s, int len)
 	}
 }
 
+/* same as prfind() but case insensitive */
 P *prifind(P *p, char *s, int len)
 {
 	P *q = pdup(p);
@@ -1128,6 +1156,7 @@ P *prifind(P *p, char *s, int len)
 	}
 }
 
+/* copy text between 'from' and 'to' into new buffer */
 B *bcpy(P *from, P *to)
 {
 	H anchor, *l;
@@ -1194,7 +1223,6 @@ B *bcpy(P *from, P *to)
 }
 
 /* Coalesce small blocks into a single larger one */
-
 void pcoalesce(P *p)
 {
 	if (p->hdr != p->b->eof->hdr && GSIZE(p->hdr) + GSIZE(p->hdr->link.next) <= SEGSIZ - SEGSIZ / 4) {
@@ -1426,7 +1454,6 @@ static B *bcut(P *from, P *to)
 	pcoalesce(from);
 
 	/* Make buffer out of deleted text and return it */
-
 	return bmkchn(h, from->b, amnt, nlines);
 }
 
@@ -1447,7 +1474,6 @@ void bdel(P *from, P *to)
 /* p is placed in the new block such that it points to the same text but with
  * p->ofst==0
  */
-
 static void bsplit(P *p)
 {
 	if (p->ofst) {
@@ -1488,9 +1514,7 @@ static void bsplit(P *p)
 	}
 }
 
-/* Make a chain out of a block of memory */
-/* The block must not be empty */
-
+/* Make a chain out of a block of memory (the block must not be empty) */
 static H *bldchn(char *blk, int size, long *nlines)
 {
 	H anchor, *l;
@@ -1521,9 +1545,7 @@ static H *bldchn(char *blk, int size, long *nlines)
 	return l;
 }
 
-/* Insert a chain into a buffer */
-/* This does not update pointers */
-
+/* Insert a chain into a buffer (this does not update pointers) */
 static void inschn(P *p, H *a)
 {
 	if (!p->b->eof->byte) {	/* P's buffer is empty: replace the empty segment in p with a */
@@ -1590,9 +1612,7 @@ static void fixupins(P *p, long amnt, long nlines, H *hdr, int hdramnt)
 	p->b->changed = 1;
 }
 
-/* Insert a buffer at pointer position */
-/* The buffer goes away */
-
+/* Insert a buffer at pointer position (the buffer goes away) */
 P *binsb(P *p, B *b)
 {
 	if (b->eof->byte) {
@@ -1608,6 +1628,7 @@ P *binsb(P *p, B *b)
 	return p;
 }
 
+/* insert memory block 'blk' at 'p' */
 P *binsm(P *p, char *blk, int amnt)
 {
 	long nlines;
@@ -1638,6 +1659,7 @@ P *binsm(P *p, char *blk, int amnt)
 	return p;
 }
 
+/* insert char 'c' at 'p' */
 P *binsc(P *p, char c)
 {
 	if (p->b->o.crlf && c == '\n')
@@ -1646,6 +1668,7 @@ P *binsc(P *p, char c)
 		return binsm(p, &c, 1);
 }
 
+/* insert zero-terminated string 's' at 'p' */
 P *binss(P *p, char *s)
 {
 	return binsm(p, s, strlen(s));
@@ -1655,7 +1678,6 @@ P *binss(P *p, char *s)
  * when requested size has been read or when end of file condition occurs.
  * Returns with -2 in error for read error or 0 in error for success.
  */
-
 static int bkread(int fi, char *buff, int size)
 {
 	int a, b;
@@ -1674,7 +1696,6 @@ static int bkread(int fi, char *buff, int size)
 
 /* Read up to 'max' bytes from a file into a buffer */
 /* Returns with 0 in error or -2 in error for read error */
-
 B *bread(int fi, long int max)
 {
 	H anchor, *l;
@@ -1710,7 +1731,6 @@ B *bread(int fi, long int max)
  *
  * Returns new variable length string.
  */
-
 char *parsens(char *s, long int *skip, long int *amnt)
 {
 	char *n = vsncpy(NULL, 0, sz(s));
@@ -1783,7 +1803,6 @@ char *parsens(char *s, long int *skip, long int *amnt)
  * -3 for seek error
  * -4 for open error
  */
-
 B *bload(char *s)
 {
 	char buffer[SEGSIZ];
@@ -1897,7 +1916,6 @@ B *bload(char *s)
 }
 
 /* Find already loaded buffer or load file into new buffer */
-
 B *bfind(char *s)
 {
 	B *b;
@@ -1938,7 +1956,6 @@ char **getbufs(void)
 }
 
 /* Find an orphaned buffer */
-
 B *borphan(void)
 {
 	B *b;
@@ -1956,7 +1973,6 @@ B *borphan(void)
  * error is set to -5 for write error or 0 for success.
  * Don't attempt to write past the end of the file
  */
-
 int bsavefd(P *p, int fd, long int size)
 {
 	P *np = pdup(p);
@@ -1997,7 +2013,6 @@ int bsavefd(P *p, int fd, long int size)
 }
 
 /* Save 'size' bytes beginning at 'p' in file 's' */
-
 int bsave(P *p, char *s, long int size)
 {
 	FILE *f;

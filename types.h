@@ -84,9 +84,9 @@ struct point {
 
 	long	byte;		/* ??? */
 	long	line;		/* ??? */
-	long	col;		/* ??? */
+	long	col;		/* current column */
 	long	xcol;		/* ??? */
-	int	valcol;		/* ??? */
+	int	valcol;		/* bool: is col valid? */
 	int	end;		/* ??? */
 
 	P	**owner;	/* ??? */
