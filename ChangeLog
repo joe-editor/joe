@@ -1,4 +1,8 @@
 Sun Jun  9 2002  Vitezslav Samel <samel@mail.cz>
+	* hash.c, hash.h:
+	move hnext() definition into hash.c
+
+Sun Jun  9 2002  Vitezslav Samel <samel@mail.cz>
 	* bw.c, rc.c, termcap.c, ufile.c, usearch.c:
 	kill some warnings when compiled with -Wall
 

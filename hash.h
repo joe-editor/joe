@@ -11,8 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#define hnext(accu,c) (((accu)<<4)+((accu)>>28)+(c))
-
 unsigned long hash PARAMS((char *s));
 HASH *htmk PARAMS((int len));
 void htrm PARAMS((HASH *ht));

@@ -13,6 +13,8 @@
 #include "hash.h"
 #include "utils.h"
 
+#define hnext(accu, c) (((accu) << 4) + ((accu) >> 28) + (c))
+
 static HENTRY *freentry = 0;
 
 unsigned long hash(char *s)
