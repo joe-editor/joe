@@ -396,25 +396,29 @@ notepad/cua mode?
 F3	find next
 F5	date/time
 
-- continued search mode for jpico?
+- shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
+  shell window.
+
+- do not use ^[^[ for anything.  it prevents Alt-arrow
+  from being useful.
 
 - search should automatically use 'k' mode if block is
   selected.  Cursor should jump to top of block when done.  Jump
   back to start mode?
 
+
+
 - save all files without asking thing for quick compile
 
 - better parsing of compile messages
 
+
+
+- continued search mode for jpico?
+
 - smarter highlighter- need char and string storage.
 
-- shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
-  shell window.
-
 - make ^K F prompt with previous text (PICO)?
-
-- do not use ^[^[ for anything.  it prevents Alt-arrow
-  from being useful.
 
 ^K X leads to segfault?
 
@@ -427,9 +431,6 @@ stale data.
 
 we are missing many query and prompt window abort handlers, which cause
 small memory leaks.
-
-- check all commands.  Make sure status line updates enough (second timer
-  is not there all of the time anymore).
 
 - update help screens: some things have changed (emacs is more like emacs).
 

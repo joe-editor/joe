@@ -754,11 +754,16 @@ stop		^K ]		Stop recording
  Spell-check macros
 
  Ispell
-:def spellfile filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype
-:def spellword psh,nextword,markk,prevword,markb,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\012';/bin/rm ispell.tmp",rtn,retype,nextword
+:def ispellfile filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype
+:def ispellword psh,nextword,markk,prevword,markb,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\012';/bin/rm ispell.tmp",rtn,retype,nextword
+
+ Aspell
+:def aspellfile filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell -x -c $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP",rtn,retype
+:def aspellword psh,nextword,markk,prevword,markb,filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell -x -c $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\012';/bin/rm $SPLTMP",rtn,retype,nextword
+
 @SPELL@file	^[ l
-spellfile	^[ l
-spellword	^[ n
+@SPELL@word	^[ n
+
  Compile
 
  :def compile switch,"*Build-Log*",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
@@ -766,6 +771,56 @@ spellword	^[ n
 :def compile querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
 
  Here we guess some common key sequences which either do not have termcap
+ sequences or which are frequently wrong.  Note that if the termcap entry is
+ correct, it will override these later on.
+
+paste			^[ [ 2 0 2 ~		Bracketed paste
+insc			^[ [ L			SCO
+
+delch			^[ [ 3 ~
+
+pgup			^[ [ I		SCO
+
+pgdn			^[ [ G		SCO
+
+home			^[ [ 1 ~		Putty, Linux, Cygwin
+home			^[ [ H			Xterm, Konsole, SCO
+home			^[ O H			gnome-terminal
+home			^[ [ 7 ~		RxVT
+home			^# SP A		Amiga
+eol			^[ [ 4 ~		Putty, Linux, Cygwin, ssh
+eol			^[ [ F			Xterm, Konsole, SCO
+eol			^[ O F			gnome-terminal
+eol			^[ [ 8 ~		RxVT
+eol			^# SP @		Amiga
+begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right Xterm
+begin_marking,rtarw,toggle_marking	^[ [ 5 C        Mark right Gnome-terminal
+ (Almost all termcap entries have ^[ O C as an arrow key).
+ begin_marking,rtarw,toggle_marking	^[ O C		Mark right Putty Ctrl-rtarw
+begin_marking,rtarw,toggle_marking	^[ O c		Mark right RxVT Ctrl-rtarw
+
+begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Mark left
+begin_marking,ltarw,toggle_marking	^[ [ 5 D        Mark left
+ begin_marking,ltarw,toggle_marking	^[ O D		Mark left Putty Ctrl-ltarw
+begin_marking,ltarw,toggle_marking	^[ O d		Mark left RxVT Ctrl-ltarw
+
+begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Mark up
+begin_marking,uparw,toggle_marking	^[ [ 5 A        Mark up
+ begin_marking,uparw,toggle_marking	^[ O A		Mark up Putty Ctrl-uparw
+begin_marking,uparw,toggle_marking	^[ O a		Mark up RxVT Ctrl-uparw
+
+begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Mark down
+begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
+ begin_marking,dnarw,toggle_marking	^[ O B		Mark down Putty Ctrl-dnarw
+begin_marking,dnarw,toggle_marking	^[ O b		Mark down RxVT Ctrl-dnarw
+
+blkdel,nmark   ^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
+blkdel,nmark   ^[ [ 3 ; 5 ~	Xterm Ctrl-Del
+
+yank		^[ [ 2 ; 5 -	Gnome-terminal Ctrl-Ins
+yank		^[ [ 2 ; 5 ~    Xterm Ctrl-Ins
+
+ Extra functions not really part of JOE user interface:
 
 delbol		^[ o		Delete to beginning of line
 delbol		^[ ^O		Delete to beginning of line
@@ -807,31 +862,6 @@ yankpop		^[ ^Y		Undelete text
 yank		^[ Y		Undelete text
 
  toggle_marking	^@		Ctrl-space block selection method
- begin_marking,rtarw,toggle_marking	^[ ^[ [ C
-begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right
-begin_marking,rtarw,toggle_marking	^[ [ 5 C        Mark right
- begin_marking,rtarw,toggle_marking	^[ O C		Mark right Putty Ctrl-rtarw
-
- begin_marking,ltarw,toggle_marking	^[ ^[ [ D
-begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Mark left
-begin_marking,ltarw,toggle_marking	^[ [ 5 D        Mark left
- begin_marking,ltarw,toggle_marking	^[ O D		Mark left Putty Ctrl-ltarw
-
- begin_marking,uparw,toggle_marking	^[ ^[ [ A
-begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Mark up
-begin_marking,uparw,toggle_marking	^[ [ 5 A        Mark up
- begin_marking,uparw,toggle_marking	^[ O A		Mark up Putty Ctrl-uparw
-
- begin_marking,dnarw,toggle_marking	^[ ^[ [ B
-begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Mark down
-begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
- begin_marking,dnarw,toggle_marking	^[ O B		Mark down Putty Ctrl-dnarw
-
-blkdel,nmark   ^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
-blkdel,nmark   ^[ [ 3 ; 5 ~	Xterm Ctrl-Del
-yank		^[ [ 2 ; 5 -	Gnome-terminal Ctrl-Ins
-yank		^[ [ 2 ; 5 ~    Xterm Ctrl-Ins
-
 toggle_marking	^@		Ctrl-space block selection method
 				Ctrl-space used to insert a space
  bufed		^[ d		Menu of buffers
@@ -995,6 +1025,21 @@ dnarw,eol	.kd		Go down
 :menu			Selection menus
 :inherit windows
 
+pgupmenu			^[ [ I
+
+pgdnmenu			^[ [ G
+
+bolmenu			^[ [ 1 ~		Putty, Linux, Cygwin
+bolmenu			^[ [ H			Xterm, Konsole
+bolmenu			^[ O H			gnome-terminal
+bolmenu			^[ [ 7 ~		RxVT
+bolmenu			^# SP A		Amiga
+eolmenu			^[ [ 4 ~		Putty, Linux, Cygwin, ssh
+eolmenu			^[ [ F			Xterm, Konsole
+eolmenu			^[ O F			gnome-terminal
+eolmenu			^[ [ 8 ~		RxVT
+eolmenu			^# SP @		Amiga
+abort		^[ ^[	Why?
 backsmenu	^?
 backsmenu	^H
 bofmenu		^K U

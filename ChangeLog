@@ -1,3 +1,13 @@
+Sat May 29 2004  Joe Allen <jhallen@world.std.com>
+
+	Use 'aspell' if it exists.
+	Set Home, End, Insert, Del key bindings, assuming termcap
+	entry is wrong.
+
+Fri May 28 2004  Joe Allen <jhallen@world.std.com>
+
+	Status line updates even if you keep typing.
+
 Fri May 28 2004  Joe Allen <jhallen@world.std.com>
 
 	Now it will use sprintf if snprintf does not exist.

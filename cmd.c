@@ -217,7 +217,7 @@ int execmd(CMD *cmd, int k)
 	BW *bw = (BW *) maint->curwin->object;
 	int ret = -1;
 
-	/* Send data to shell window */
+	/* Send data to shell window: this is broken ^K ^H (help) sends its ^H to shell */
 	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && piseof(bw->cursor) &&
 	(k==3 || k==13 || k==8 || k==127 || k==4 || cmd->func==utype && k>=32 && k<256)) {
 		unsigned char c = k;

@@ -264,7 +264,6 @@ extern int dostaupd;
 static RETSIGTYPE dotick(int unused)
 {
 	ticked = 1;
-	dostaupd = 1;
 }
 
 void tickoff(void)
@@ -562,13 +561,23 @@ int ttflsh(void)
 
 void mpxdied(MPX *m);
 
+long last_time;
+
 int ttgetc(void)
 {
 	int stat;
+	long new_time;
+
 
 	tickon();
 
       loop:
+	new_time = time(NULL);
+	if (new_time != last_time) {
+		last_time = new_time;
+		dostaupd = 1;
+		ticked = 1;
+	}
 	ttflsh();
 	while (winched) {
 		winched = 0;
