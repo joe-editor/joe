@@ -689,7 +689,7 @@ hprev		^[ ,		Previous help window
 math		^[ m		Calculator
 math		^[ M		Calculator
  math		^[ ^M		Calculator
-math		^[ ^M		Calculator
+msg		^[ h		Display a message
 msg		^[ H		Display a message
 msg		^[ ^H		Display a message
 nextw		^K N		Goto next window
@@ -744,6 +744,8 @@ execmd		^[ x		Prompt for command to execute
 execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute
 finish		^[ ^I		Complete word in document
+finish		^[ ^M		Complete word: used to be math
+isrch		^[ s		Forward incremental search
 isrch		^[ S		Forward incremental search
 isrch		^[ ^S		Forward incremental search
 notmod		^[ ~		Not modified
@@ -846,6 +848,7 @@ blkdel		^K ^Y
 blkdel		^K y
 blkmove		^K M		Move marked block
 blkmove		^K ^M
+blkmove		^K m
 blksave		^K W		Save marked block
 blksave		^K ^W
 blksave		^K w
@@ -887,7 +890,7 @@ ffirst		^K ^F
 ffirst		^K f
 filt		^K /		Filter block
  finish		^K ^M		Complete text under cursor
-finish		^K ^M		Complete text under cursor
+fnext		^L		Find next
 fmtblk		^K J		Format paragraphs in block
 fmtblk		^K ^J
 fmtblk		^K j
@@ -929,6 +932,7 @@ rtarw		^F
 rtarw		^[ O C
 rtarw		^[ [ C
 rtarw          ^# C
+save		^K D		Save file
 save		^K S
 save		^K ^D
 save		^K ^S

@@ -22,18 +22,7 @@ Save all history buffers and keyboard macros in ~/.joe_state file?
 
 shift/alt/ctrl arrow key stuff.
 
-
-
-
-
-
-
-
-
-
-
-
-  regex: character classes? a-z matches any letter?
+regex: character classes? a-z matches any letter?
 
   parse *rc file only once?
 
@@ -126,13 +115,6 @@ Documentation:
 
  joe should open tty earlier in startup sequence because ^Y
  is suspend character on sun.
-
-
-
-
-
-
-
 
 UTF-8/Internationalization
 --------------------------
