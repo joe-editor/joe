@@ -4,7 +4,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.joerc
-	2 - @prefix@/etc/joerc
+	2 - @JOERC@/joerc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -881,8 +881,8 @@
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
 \i \i \|\i \i
 \i \i  default joerc file is here @JOERC@/joerc \|\i \i
-\i \i  default joerc file is here @prefix@/etc/joe/joerc \|\i \i
-\i \i  additional documentation can be found here @prefix@/etc/joe/doc \|\i \i
+\i \i  additional documentation can be found here @JOERC@/doc \|\i \i
+}
 
  FOURTH SECTION: Key bindings:
 

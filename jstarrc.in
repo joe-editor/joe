@@ -4,7 +4,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.jstarrc
-	2 - ${prefix}/etc/jstarrc
+	2 - @JOERC@/jstarrc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -844,8 +844,8 @@
 \i   Help Screen    \|turn off with ^J     prev. screen ^[,                        \i
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
 \i \i \|\i \i
-\i \i  default jstarrc file is here @prefix@/etc/joe/jstarrc \|\i \i
-\i \i  additional documentation can be found here @prefix@/etc/joe/doc \|\i \i
+\i \i  default jstarrc file is here @JOERC@/jstarrc \|\i \i
+\i \i  additional documentation can be found here @JOERC@/doc \|\i \i
 }
 
  FOURTH SECTION: Key bindings:

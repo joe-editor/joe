@@ -4,7 +4,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.jmacsrc
-	2 - ${prefix}/etc/jmacsrc
+	2 - @JOERC@/jmacsrc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -836,8 +836,8 @@
 \i   Help Screen    \|turn off with ^XH    prev. screen ^X,                        \i
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
 \i \i \|\i \i
-\i \i  default jmacsrc file is here @prefix@/etc/joe/jmacsrc \|\i \i
-\i \i  additional documentation can be found here @prefix@/etc/joe/doc \|\i \i
+\i \i  default jmacsrc file is here @JOERC@/jmacsrc \|\i \i
+\i \i  additional documentation can be found here @JOERC@/doc \|\i \i
 }
 
  FOURTH SECTION: Key bindings:

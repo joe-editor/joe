@@ -1,33 +1,80 @@
 This is Joe's Own Editor.  See the INFO file if you don't know what this is.
 
-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-
 Installation procedure
-=-=-=-=-=-=-=-=-=-=-=-=
+=-=-=-=-=-=-=-=-=-=-=-
 
-  Joe uses automake and autoconf suites to build itself. Type:
+  JOE uses the GNU Automake and Autoconf suites to build itself.
+
+  Run configure script, type one of these:
+
+	./configure --prefix=/usr --sysconfdir=/etc
+
+	  (normal system installation)
+		- executables in /usr/bin
+		- man pages in /usr/man
+		- configuration files in /etc/joe
+
+	./configure --prefix=$HOME
+
+	  (install into your home directory)
+		- executables in ~/bin
+		- man pages in ~/man
+		- configuration files in ~/etc/joe
 
 	./configure
+
+	  (install into /local)
+		- executables in /usr/local/bin
+		- man pages in /usr/local/man
+		- configuration files in /usr/local/etc
+
+  Build JOE, type:
+
 	make
 
-At this point you can try JOE without fully installing it by typing "./joe".
-However, you need to copy a few files into your home directory first:
+  Install JOE, type:
 
-	# This is required for JOE to start:
-	cp joerc ~/.joerc
-
-	# The following are needed if you want syntax highlighting to work:
-	mkdir ~/.joe
-	mkdir ~/.joe/syntax
-	cp syntax/*.jsf ~/.joe/syntax
-
-Otherwise you need to do a real install, which generally requires root
-privileges:
-
-	su root
+	su root (leave out if installing into home directory)
 	make install
 
-This will copy the executables to /usr/local/bin and runtime files to
-/usr/local/etc.  After installation, you can then try it by typing "joe".
+  Delete or update user custom configuration files (otherwise new features
+  will not work):
+
+	rm ~/.joerc
+	rm ~/.jmacsrc
+	rm ~/.rjoerc
+	rm ~/.jstarrc
+	rm ~/.jpicorc
+	rm -r ~/.joe
+
+  Try running JOE:
+
+	joe
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-
+Common ./configure options
+=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+  To force JOE to use /etc/termcap file using its built-in termcap file parser
+  (which is useful if you want to compile JOE so that it doesn't depend on any
+  libraries other than libc and libm):
+
+	./configure --disable-curses --disable-termcap
+
+  (--disable-termcap prevents JOE from using the termcap emulation functions
+   in the -ltermcap library.  --disable-curses prevents JOE from using the
+   termcap emulation functions in the -lcurses library).
+
+  Otherwise, JOE tries to use the terminfo database via termcap
+  emulation routines: see man tgetent, tgetstr, tgoto, etc.  (JOE has its
+  own implementation of "curses", so curses is not required except to get
+  access to the terminfo database).
+
+  Note that even if you don't have an /etc/termcap file, JOE will run: it
+  will assume that the terminal is "ANSI" (but you need to compile it this
+  way for it to be able to use the builtin ANSI termcap entry- if it's
+  compiled for terminfo, it can not use its built-in termcap entry).
 
 =-=-=-=-=-=-=-=-=-=-=-=
 Verify the installation
@@ -120,46 +167,6 @@ command to account for this time.  You need set the DOPADDING environment
 variable or use the -dopadding option.
 
 You should just buy a modern terminal :-)
-
-=-=-=-=-=-=-=-=-=-=-=-=-=-
-Common ./configure options
-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-Here are some common ./configure options:
-
-  To have "make intall" install JOE into your home directory:
-
-	./configure --prefix=$HOME
-
-	The executables will end up in $HOME/bin and the runtime
-	files will end up in $HOME/etc.  You need to have $HOME/bin in
-	your path for this to work.
-
-
-  For other install options:
-
-	./configure --help
-
-
-  To force JOE to use /etc/termcap file using its built-in termcap file parser
-  (which is useful if you want to compile JOE so that it doesn't depend on any
-  libraries other than libc):
-
-	./configure --disable-curses --disable-termcap
-
-  (--disable-termcap prevents JOE from using the termcap emulation functions
-   in the -ltermcap library.  --disable-curses prevents JOE from using the
-   termcap emulation functions in the -lcurses library).
-
-  Otherwise, JOE tries to use the terminfo database via termcap
-  emulation routines: see man tgetent, tgetstr, tgoto, etc.  (JOE has its
-  own implementation of "curses", so curses is not required except to get
-  access to the terminfo database).
-
-  Note that even if you don't have an /etc/termcap file, JOE will run: it
-  will assume that the terminal is "ANSI" (but you need to compile it this
-  way for it to be able to use the builtin ANSI termcap entry).
-
 
 =-=-=
 Usage
@@ -264,7 +271,7 @@ Termcap/Terminfo
 attempts to find this file in:
 
 	$HOME/.termcap		Personal .termcap in your home directory
-	/usr/local/lib/termcap	Joe's termcap file
+	/etc/joe/termcap	Joe's termcap file
 	/etc/termcap		Normal system termcap file
 
 	Joe copies its own termcap file to /usr/local/lib/termcap (or
@@ -306,18 +313,6 @@ understands several new capabilities:
 			Like the 'cv' capability, but the cursor goes to the
 			beginning of the specified line.  Like 'ESC [ n H' in
 			ansi/vt100.
-
-JPICO
-=-=-=
-
-If you want JPICO to act more like real pico when you hit ^X (I.E., to have
-it ask before saving), change the line:
-
-exsave		^X		Exit
-
-to:
-
-ask,query,lose,query,abortbuf	^X	Exit
 
 BROKEN TERMINALS
 =-=-=-=-=-=-=-=-
