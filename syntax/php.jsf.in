@@ -1,0 +1,163 @@
+# JOE syntax highlight file for PHP
+
+# TODO:
+#  * octal escape sequences
+#  * heredoc support (as good as possible)
+#  * highlight variables
+#  * highlight function and class names?
+
+=Idle
+=HTML		bold black
+=Comment 	green
+=Constant 	cyan
+=Escape 	bold cyan
+=Keyword 	bold
+
+:reset HTML
+	*		reset
+	"<"		reset_lt
+
+:reset_lt HTML
+	*		reset
+	"?"		idle		recolor=-2
+
+:idle Idle
+	*		idle
+	"?"		idle_qmark
+	"#"		sh_comment	recolor=-1
+	"/"		slash
+	"0-9"		first_digit	recolor=-1
+	"'"		string_sq	recolor=-1
+	"\""		string_dq	recolor=-1
+	"a-zA-Z_"	ident		buffer
+
+:idle_qmark Idle
+	*		idle
+	">"		reset
+
+:sh_comment Comment
+	*		sh_comment
+	"\n"		idle
+
+:slash Idle
+	*		idle		noeat
+	"*"		comment		recolor=-2
+	"/"		line_comment	recolor=-2
+
+:comment Comment
+	*		comment
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment
+	*		comment
+	"/"		idle
+	"*"		maybe_end_comment
+
+:line_comment Comment
+	*		line_comment
+	"\n"		idle
+
+
+:string_sq Constant
+	*		string_sq
+	"\'"		idle
+	"\\"		string_sq_esc	recolor=-1
+
+:string_sq_esc Escape
+	*		string_sq
+	"\n"		string_sq	recolor=-2
+
+:string_dq Constant
+	*		string_dq
+	"\""		idle
+	"\\"		string_dq_esc	recolor=-1
+
+:string_dq_esc Escape
+	*		string_dq
+	"\n"		string_dq	recolor=-2
+	
+:first_digit Constant
+	*		idle	noeat	recolor=-1
+	"xX"		hex
+	"."		float
+	"0-9"		first_number
+
+:hex Constant
+	*		idle	noeat	recolor=-1
+	"0-9A-Fa-f"	hex
+
+:first_number Constant
+	*		idle	noeat	recolor=-1
+	"0-9"		first_number
+	"."		float
+
+:maybe_float Constant
+	*		idle	recolor=-2	noeat
+	"0-9"		float		recolor=-2
+
+:float Constant
+	*		idle	noeat	recolor=-1
+	"eE"		epart
+	"0-9"		float
+
+:epart Constant
+	*		idle	noeat	recolor=-1
+	"0-9+\-"	enum
+
+:enum Constant
+	*		idle	noeat	recolor=-1
+	"0-9"		enum
+
+:ident Idle
+	*		idle		noeat strings
+	"and"		kw
+	"array"		kw
+	"as"		kw
+	"break"		kw
+	"class"		kw
+	"continue"	kw
+	"declare"	kw
+	"default"	kw
+	"die"		kw
+	"do"		kw
+	"echo"		kw
+	"else"		kw
+	"elseif"	kw
+	"empty"		kw
+	"enddeclare"	kw
+	"endfor"	kw
+	"endforeach"	kw
+	"endif"		kw
+	"endswitch"	kw
+	"endwhile"	kw
+	"eval"		kw
+	"exception"	kw
+	"exit"		kw
+	"extends"	kw
+	"for"		kw
+	"foreach"	kw
+	"function"	kw
+	"global"	kw
+	"if"		kw
+	"include"	kw
+	"include_once"	kw
+	"isset"		kw
+	"list"		kw
+	"new"		kw
+	"or"		kw
+	"print"		kw
+	"require"	kw
+	"require_once"	kw
+	"return"	kw
+	"static"	kw
+	"switch"	kw
+	"unset"		kw
+	"use"		kw
+	"var"		kw
+	"while"		kw
+	"xor"		kw
+done
+	"a-zA-Z0-9_"	ident
+
+:kw Keyword
+	*	idle	noeat
