@@ -3,6 +3,7 @@ Short (infinite) list for 3.3:
 
 - dynamic spell checking with highlighter- there should be a way
 - grep and grep-find commands
+- smart end
 
 Mouse issues:
 
@@ -18,10 +19,6 @@ Mouse issues:
 - i18n issues:
 
    hex is screwed up.  utf-8 file encoding needs to be off for hex mode.
-
-   xterm selection is screwed up (xterm patch bug): ESC [ 1 y ..... ESC ESC
-
-   utf-8 characters are handled before state machine decoding.
 
 - - - -
 

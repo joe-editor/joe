@@ -46,3 +46,5 @@ can enable "-joexterm" in the joerc file:
 
 		(When this mode is off, codes 33 - 255 correspond to
 		coordinates 1 - 223).
+
+Also, this patch makes XTerms compiled with wide character support much faster.

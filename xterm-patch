@@ -713,7 +713,7 @@ diff -Naur xterm-200/VTparse.h xterm-200-new/VTparse.h
  #endif /* included_VTparse_h */
 diff -Naur xterm-200/button.c xterm-200-new/button.c
 --- xterm-200/button.c	2005-02-06 16:42:37.000000000 -0500
-+++ xterm-200-new/button.c	2005-03-28 23:13:41.000000000 -0500
++++ xterm-200-new/button.c	2005-03-30 23:40:53.000000000 -0500
 @@ -1174,7 +1174,7 @@
      return cutbuffer;
  }
@@ -760,7 +760,7 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
  	XFreeStringList(text_list);
      } else
  	goto fail;
-@@ -2452,6 +2446,47 @@
+@@ -2452,6 +2446,63 @@
      _OwnSelection(term, params, num_params);
  }
  
@@ -770,7 +770,7 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
 +    screen->selection_length = 0;
 +}
 +
-+void AppendToSelectionBuffer(Char *text,int len)
++void AppendStrToSelectionBuffer(Char *text,int len)
 +{
 +    TScreen *screen = &term->screen;
 +    if (len != 0) {
@@ -798,6 +798,22 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
 +    }
 +}
 +
++void AppendToSelectionBuffer(unsigned c)
++{
++#if OPT_WIDE_CHARS
++    if (c < 128 || !term->screen.utf8_mode) {
++#endif
++        Char d = c;
++        AppendStrToSelectionBuffer(&d, 1);
++#if OPT_WIDE_CHARS
++    } else {
++        Char buf[10];
++        Char *x = convertToUTF8(buf, c);
++        AppendStrToSelectionBuffer(buf, x-buf);
++    }
++#endif
++}
++
 +extern char *select_args[]; /* in charproc.c */
 +
 +void CompleteSelection()
@@ -808,7 +824,7 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
  static Bool
  _ConvertSelectionHelper(Widget w,
  			Atom * type, XtPointer *value,
-@@ -2885,6 +2920,18 @@
+@@ -2885,6 +2936,18 @@
      return (result);
  }
  
@@ -827,7 +843,7 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
  static int
  BtnCode(XButtonEvent * event, int button)
  {
-@@ -2904,6 +2951,16 @@
+@@ -2904,6 +2967,16 @@
  
  #define MOUSE_LIMIT (255 - 32)
  
@@ -844,7 +860,7 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
  static void
  EditorButton(XButtonEvent * event)
  {
-@@ -2923,20 +2980,41 @@
+@@ -2923,20 +2996,41 @@
      row = (event->y - screen->border) / FontHeight(screen);
      col = (event->x - OriginX(screen)) / FontWidth(screen);
  
@@ -902,7 +918,7 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
      if (screen->control_eight_bits) {
 diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
 --- xterm-200/charproc.c	2005-02-06 16:42:38.000000000 -0500
-+++ xterm-200-new/charproc.c	2005-03-28 22:45:18.000000000 -0500
++++ xterm-200-new/charproc.c	2005-03-30 23:28:21.000000000 -0500
 @@ -1098,6 +1098,18 @@
  
  static struct ParseState myState;
@@ -922,7 +938,37 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  static Boolean
  doparsing(unsigned c, struct ParseState *sp)
  {
-@@ -1654,6 +1666,51 @@
+@@ -1121,7 +1133,19 @@
+ 
+     do {
+ #if OPT_WIDE_CHARS
+-	if (screen->wide_chars
++
++        /* Feed wide characters into state machine when we're
++           reading in a selection */
++        if (sp->parsestate == take_table) {
++            if (c < 256)
++              sp->nextstate = sp->parsestate[E2A(c)];
++            else
++              sp->nextstate = CASE_TAKE;
++            goto just_take_it;
++        }
++
++        /* Jhallen: this code was very very slow, so I put in the (c >= 0x300) */
++	if (c >= 0x300 && screen->wide_chars
+ 	    && my_wcwidth((int) c) == 0) {
+ 	    int prev, precomposed;
+ 
+@@ -1366,6 +1390,8 @@
+ 	    string_used = 0;
+ 	}
+ 
++	just_take_it:
++
+ 	TRACE(("parse %04X -> %d %s\n", c, sp->nextstate, which_table(sp->parsestate)));
+ 
+ 	switch (sp->nextstate) {
+@@ -1654,6 +1680,49 @@
  	    sp->parsestate = sp->groundtable;
  	    break;
  
@@ -945,8 +991,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
 +        }
 +
 +        case CASE_TAKE: {
-+            Char the_c = c;
-+            AppendToSelectionBuffer(&the_c, 1);
++            AppendToSelectionBuffer(c);
 +            sp->parsestate = take_table;
 +            break;
 +        }
@@ -960,8 +1005,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
 +            break;
 +
 +        case CASE_TAKE_QUOTE: {
-+            Char the_c = 0x1B;
-+            AppendToSelectionBuffer(&the_c, 1);
++            AppendToSelectionBuffer(0x1B);
 +            sp->parsestate = take_table;
 +            break;
 +        }
@@ -974,7 +1018,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  	case CASE_ECH:
  	    TRACE(("CASE_ECH - erase char\n"));
  	    /* ECH */
-@@ -3877,6 +3934,12 @@
+@@ -3877,6 +3946,12 @@
  	    set_keyboard_type(keyboardIsVT220, func == bitset);
  	    break;
  #endif
@@ -987,7 +1031,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  #if OPT_READLINE
  	case SET_BUTTON1_MOVE_POINT:
  	    set_mouseflag(click1_moves);
-@@ -3887,9 +3950,6 @@
+@@ -3887,9 +3962,6 @@
  	case SET_DBUTTON3_DELETE:
  	    set_mouseflag(dclick3_deletes);
  	    break;
@@ -997,7 +1041,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  	case SET_PASTE_QUOTE:
  	    set_mouseflag(paste_quotes);
  	    break;
-@@ -3993,6 +4053,12 @@
+@@ -3993,6 +4065,12 @@
  		CursorSave(termw);
  	    }
  	    break;
@@ -1010,7 +1054,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  #if OPT_READLINE
  	case SET_BUTTON1_MOVE_POINT:
  	    SCREEN_FLAG_save(screen, click1_moves);
-@@ -4003,9 +4069,6 @@
+@@ -4003,9 +4081,6 @@
  	case SET_DBUTTON3_DELETE:
  	    SCREEN_FLAG_save(screen, dclick3_deletes);
  	    break;
@@ -1020,7 +1064,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  	case SET_PASTE_QUOTE:
  	    SCREEN_FLAG_save(screen, paste_quotes);
  	    break;
-@@ -4156,6 +4219,11 @@
+@@ -4156,6 +4231,11 @@
  		CursorRestore(termw);
  	    }
  	    break;
@@ -1032,7 +1076,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  #if OPT_READLINE
  	case SET_BUTTON1_MOVE_POINT:
  	    SCREEN_FLAG_restore(screen, click1_moves);
-@@ -4166,9 +4234,6 @@
+@@ -4166,9 +4246,6 @@
  	case SET_DBUTTON3_DELETE:
  	    SCREEN_FLAG_restore(screen, dclick3_deletes);
  	    break;
@@ -1184,7 +1228,7 @@ diff -Naur xterm-200/xcharmouse.h xterm-200-new/xcharmouse.h
  
 diff -Naur xterm-200/xterm.h xterm-200-new/xterm.h
 --- xterm-200/xterm.h	2005-01-13 20:50:03.000000000 -0500
-+++ xterm-200-new/xterm.h	2005-03-28 17:11:29.000000000 -0500
++++ xterm-200-new/xterm.h	2005-03-30 22:35:45.000000000 -0500
 @@ -603,6 +603,9 @@
  extern void DisownSelection (XtermWidget termw);
  extern void HandleGINInput            PROTO_XT_ACTIONS_ARGS;
@@ -1200,7 +1244,7 @@ diff -Naur xterm-200/xterm.h xterm-200-new/xterm.h
  #endif
  
 +extern void ClearSelectionBuffer ();
-+extern void AppendToSelectionBuffer (Char *text, int len);
++extern void AppendToSelectionBuffer (unsigned c);
 +extern void CompleteSelection ();
 +
  /* charproc.c */
