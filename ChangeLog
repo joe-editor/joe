@@ -1,4 +1,8 @@
 Sat Mar 20 2004  Joe Allen <jhallen@world.std.com>
+	* uerror.c:
+	Slight improvement in compiler error parser.
+
+Sat Mar 20 2004  Joe Allen <jhallen@world.std.com>
 	Fix shell window again: instead of running bash if there is no
 	SHELL variable defined, we just print a message.
 	Also noticed that session leader stuff in Cygwin is broken: if you

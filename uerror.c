@@ -117,17 +117,29 @@ static void freeall(void)
 
 /* Parse error messages into database */
 
+/* From joe's joe 2.9 */
+
+/* First word on line with a '.' in it.  This is the file name.  The next number after that is the line number. */
+
 static int parseit(char *s, long int row)
 {
-	int x, y;
+	int x, y, flg;
 	char *name = NULL;
 	long line = -1;
 	ERROR *err;
 
-	/* Skip to first word */
-	for (x = 0; s[x] && !(isalnum_(s[x]) || s[x] == '.' || s[x] == '/'); ++x) ;
-	/* Skip to end of first word */
-	for (y = x; isalnum_(s[y]) || s[y] == '.' || s[y] == '/'; ++y) ;
+	y=0;
+	flg=0;
+
+	do {
+		/* Skip to first word */
+		for (x = y; s[x] && !(isalnum_(s[x]) || s[x] == '.' || s[x] == '/'); ++x) ;
+
+		/* Skip to end of first word */
+		for (y = x; isalnum_(s[y]) || s[y] == '.' || s[y] == '/'; ++y)
+			if (s[y] == '.')
+				flg = 1;
+	} while (!flg && x!=y);
 
 	/* Save file name */
 	if (x != y)

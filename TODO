@@ -21,8 +21,6 @@ Immediate things:
  Search should try to scroll window so that entire found text is displayed on
  screen.  I had implemented this once, but it was broken.
 
- Error parser for ^[ c is abysmal.  Should define regexes for them.
-
  Add .v, .pl, etc. file types to joerc
 
  Make tab completion more like bash?
