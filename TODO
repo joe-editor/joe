@@ -12,6 +12,8 @@ Short list for 3.2:
 
 	- Ctrl-G xml should ignore <foo>  <foo />  </foo>
 
+	- Ctrl-G for vhdl, for `if `endif and #if #endif
+
 	- update man page
 
 	- better string demarkation in highlighter (highlight strings with 's in
@@ -20,6 +22,7 @@ Short list for 3.2:
 	- debug .joe_state file
 	  - names of files on command line
 	  - try for previous screen configuration?
+	  - multiple joes: last one who exits wins
 
 
 maybe:
@@ -27,7 +30,7 @@ maybe:
 	- security hole with spell checker
 	- regexp for compiler parsing
 	- nfs locking?
-	- if file is read only, check it out again (for jperfs)
+	- if file is read only, check it out again (for perforce)
 
 Do something with these keys:
 
@@ -481,8 +484,6 @@ Fix for next release highlight:
   don't use -notite by default.
 
 Watch loaded file for changes
-k
-Save all history buffers and keyboard macros in ~/.joe_state file?
 
   Update documentation.
 
