@@ -305,15 +305,17 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 			goto in;
 		}
 		while (z != (x + y) / 2) {
+			int found;
+
 			z = (x + y) / 2;
-			switch (strcmp(qq, cap->sort[z].name)) {
-			case 1:
+			found = strcmp(qq, cap->sort[z].name);
+			if(found > 0) {
 				x = z;
 				break;
-			case -1:
+			} else if(found < 0) {
 				y = z;
 				break;
-			case 0:
+			} else {
 				if (c == '@')
 					mmove(cap->sort + z, cap->sort + z + 1, (cap->sortlen-- - (z + 1)) * sizeof(struct sortentry));
 
