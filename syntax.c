@@ -38,6 +38,8 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	int buf_en = 0;	/* Set for name buffering */
 	int ofst = 0;	/* record offset after we've stopped buffering */
 
+	buf[0]=0;	/* Forgot this originally... took 5 months to fix! */
+
 	/* Get next character */
 	while((c=pgetc(line))!=NO_MORE_DATA) {
 		struct high_cmd *cmd, *kw_cmd;
