@@ -10,10 +10,6 @@ Make joerc file so we load system and local customizations.
 
 - - - - - - - -
 
-perl again: if (-s foo)  looks like s/
-
-- - - - - - - -
-
 can we highlight backup files? files ending in .in?
 
 - - - - - - - -

@@ -56,7 +56,7 @@
 	"/"		regex		recolor=-1
 	"<"		maybe_inc
 	"$"		not_string
-	"a-zA-Z_"	ident		buffer
+	"-a-zA-Z_"	ident		buffer
 
 # prevent keywords
 
