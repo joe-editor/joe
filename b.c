@@ -61,6 +61,10 @@ char *msgs[] = {
 /* Get number of characters in gap buffer */
 #define GSIZE(hdr) (SEGSIZ - GGAPSZ(hdr))
 
+/* Get char from buffer (with jumping around the gap) */
+#define GCHAR(p) ((p)->ofst >= (p)->hdr->hole ? (p)->ptr[(p)->ofst + GGAPSZ((p)->hdr)] \
+					      : (p)->ptr[(p)->ofst])
+
 /* Set position of gap */
 static void gstgap(H *hdr, char *ptr, int ofst)
 {
@@ -489,10 +493,7 @@ int pgetc(P *p)
 
 	if (p->ofst == GSIZE(p->hdr))
 		return MAXINT;
-	if (p->ofst >= p->hdr->hole)
-		c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
-	else
-		c = p->ptr[p->ofst];
+	c = GCHAR(p);
 	if (++p->ofst == GSIZE(p->hdr))
 		pnext(p);
 	++p->byte;
@@ -532,10 +533,7 @@ P *pfwrd(P *p, long n)
 				if (!pnext(p))
 					return NULL;
 			} while (n > GSIZE(p->hdr));
-		if (p->ofst >= p->hdr->hole) {
-			if (p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole] == '\n')
-				++p->line;
-		} else if (p->ptr[p->ofst] == '\n')
+		if (GCHAR(p) == '\n')
 			++p->line;
 		++p->byte;
 		++p->ofst;
@@ -553,10 +551,7 @@ static int prgetc1(P *p)
 		if (!pprev(p))
 			return MAXINT;
 	--p->ofst;
-	if (p->ofst >= p->hdr->hole)
-		c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
-	else
-		c = p->ptr[p->ofst];
+	c = GCHAR(p);
 	--p->byte;
 	if (c == '\n') {
 		--p->line;
@@ -604,10 +599,7 @@ P *pbkwd(P *p, long n)
 			} while (n > GSIZE(p->hdr));
 		--p->ofst;
 		--p->byte;
-		if (p->ofst >= p->hdr->hole) {
-			if (p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole] == '\n')
-				--p->line;
-		} else if (p->ptr[p->ofst] == '\n')
+		if (GCHAR(p) == '\n')
 			--p->line;
 	} while (--n);
 	return p;
@@ -655,10 +647,7 @@ P *p_goto_eol(P *p)
 		while (p->ofst != GSIZE(p->hdr)) {
 			unsigned char c;
 
-			if (p->ofst >= p->hdr->hole)
-				c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
-			else
-				c = p->ptr[p->ofst];
+			c = GCHAR(p);
 			if (c == '\n')
 				break;
 			else {
@@ -687,10 +676,7 @@ P *pnextl(P *p)
 				if (!pnext(p))
 					return NULL;
 			} while (!p->hdr->nlines);
-		if (p->ofst >= p->hdr->hole)
-			c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
-		else
-			c = p->ptr[p->ofst];
+		c = GCHAR(p);
 		++p->byte;
 		++p->ofst;
 	} while (c != '\n');
@@ -717,10 +703,7 @@ P *pprevl(P *p)
 			} while (!p->hdr->nlines);
 		--p->ofst;
 		--p->byte;
-		if (p->ofst >= p->hdr->hole)
-			c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
-		else
-			c = p->ptr[p->ofst];
+		c = GCHAR(p);
 	} while (c != '\n');
 	--p->line;
 	if (p->b->o.crlf && c == '\n') {
@@ -767,10 +750,7 @@ P *pcol(P *p, long goalcol)
 
 		if (p->ofst == GSIZE(p->hdr))
 			break;
-		if (p->ofst >= p->hdr->hole)
-			c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
-		else
-			c = p->ptr[p->ofst];
+		c = GCHAR(p);
 		if (c == '\n')
 			break;
 		if (p->b->o.crlf && c == '\r' && piseol(p))
@@ -812,10 +792,7 @@ P *pcoli(P *p, long goalcol)
 
 		if (p->ofst == GSIZE(p->hdr))
 			break;
-		if (p->ofst >= p->hdr->hole)
-			c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
-		else
-			c = p->ptr[p->ofst];
+		c = GCHAR(p);
 		if (c == '\n')
 			break;
 #ifdef __MSDOS
@@ -873,10 +850,7 @@ static char frgetc(P *p)
 	if (!p->ofst)
 		pprev(p);
 	--p->ofst;
-	if (p->ofst >= p->hdr->hole)
-		return p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
-	else
-		return p->ptr[p->ofst];
+	return GCHAR(p);
 }
 
 static void ffwrd(P *p, int n)
@@ -973,10 +947,7 @@ static P *fifind(P *p, unsigned char *s, int len)
 static P *getto(P *p, P *q)
 {
 	while (p->hdr != q->hdr || p->ofst != q->ofst) {
-		if (p->ofst >= p->hdr->hole) {
-			if (p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole] == '\n')
-				++p->line;
-		} else if (p->ptr[p->ofst] == '\n')
+		if (GCHAR(p) == '\n')
 			++p->line;
 		++p->byte;
 		++p->ofst;
@@ -1040,10 +1011,7 @@ static int fpgetc(P *p)
 
 	if (p->ofst == GSIZE(p->hdr))
 		return MAXINT;
-	if (p->ofst >= p->hdr->hole)
-		c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
-	else
-		c = p->ptr[p->ofst];
+	c = GCHAR(p);
 	if (++p->ofst == GSIZE(p->hdr))
 		pnext(p);
 	return c;
@@ -1148,10 +1116,7 @@ static P *rgetto(P *p, P *q)
 			} while (p->hdr != q->hdr);
 		--p->ofst;
 		--p->byte;
-		if (p->ofst >= p->hdr->hole) {
-			if (p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole] == '\n')
-				--p->line;
-		} else if (p->ptr[p->ofst] == '\n')
+		if (GCHAR(p) == '\n')
 			--p->line;
 	}
 	return p;
@@ -2126,10 +2091,7 @@ int brc(P *p)
 {
 	if (p->ofst == GSIZE(p->hdr))
 		return MAXINT;
-	if (p->ofst >= p->hdr->hole)
-		return p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
-	else
-		return p->ptr[p->ofst];
+	return GCHAR(p);
 }
 
 char *brmem(P *p, char *blk, int size)
