@@ -1,4 +1,9 @@
 Sat Dec 08 2001  Vitezslav Samel <samel@mail.cz>
+	* ublock.c:
+	remove feature: exchange points of start and end of the block when
+	checking validity of block pointers
+
+Sat Dec 08 2001  Vitezslav Samel <samel@mail.cz>
 	* rc.c:
 	change indentation of initialization of pdefault, fdefault
 	and glopts arrays; add comments to [pf]default struct members

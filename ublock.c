@@ -98,15 +98,7 @@ int markv(int r)
 {
 	if (markb && markk && markb->b == markk->b && markk->byte > markb->byte && (!square || markk->xcol > markb->xcol))
 		return 1;
-	else if (r && markb && markk && markb->b == markk->b && markk->byte < markb->byte && (!square || markk->xcol < markb->xcol)) {
-		P *t = markb;
-
-		markb = markk;
-		markk = t;
-		markb->owner = &markb;
-		markk->owner = &markk;
-		return 1;
-	} else
+	else
 		return 0;
 }
 
