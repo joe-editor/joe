@@ -409,7 +409,10 @@ static void disptw(BW *bw, int flg)
 	}
 
 	if (flg)
-		bwgen(bw, bw->o.linums);
+		if (bw->o.hex)
+			bwgenh(bw);
+		else
+			bwgen(bw, bw->o.linums);
 }
 
 /* Split current window */

@@ -7,7 +7,6 @@ Short (infinite) list for 3.3:
 
 Mouse issues:
 
-- mouse select when in hex mode, line numbering mode, prompt windows.
 - auto scroll when drag past edge
 
   help screen mouse commands?

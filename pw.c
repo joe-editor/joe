@@ -247,7 +247,7 @@ static int abortpw(BW *b)
 static WATOM watompw = {
 	US "prompt",
 	disppw,
-	bwfllw,
+	bwfllwt,
 	abortpw,
 	rtnpw,
 	utypebw,

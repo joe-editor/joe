@@ -166,7 +166,7 @@ CMD cmds[] = {
 	{US "nxterr", TYPETW, unxterr, NULL, 1, US "prverr"},
 	{US "open", TYPETW + TYPEPW + EFIXXCOL + EMOD, uopen, NULL, 1, US "deleol"},
 	{US "parserr", TYPETW, uparserr, NULL, 0, NULL},
-	{US "paste", TYPETW + EMOD, upaste, NULL, 0, NULL },
+	{US "paste", TYPETW + TYPEPW + EMOD, upaste, NULL, 0, NULL },
 	{US "pbuf", TYPETW, upbuf, NULL, 1, US "nbuf"},
 	{US "pedge", TYPETW + TYPEPW + EFIXXCOL, upedge, NULL, 1, US "nedge"}, 
 	{US "pgdn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgdn, NULL, 1, US "pgup"},

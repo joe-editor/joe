@@ -15,9 +15,12 @@ extern int dspasis;
 extern int mid;
 
 void bwfllw PARAMS((BW *w));
+void bwfllwt PARAMS((BW *w));
+void bwfllwh PARAMS((BW *w));
 void bwins PARAMS((BW *w, long int l, long int n, int flg));
 void bwdel PARAMS((BW *w, long int l, long int n, int flg));
 void bwgen PARAMS((BW *w, int linums));
+void bwgenh PARAMS((BW *w));
 BW *bwmk PARAMS((W *window, B *b, int prompt));
 void bwmove PARAMS((BW *w, int x, int y));
 void bwresz PARAMS((BW *w, int wi, int he));

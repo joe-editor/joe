@@ -160,7 +160,7 @@ void select_done()
 			}
 			/* Add a new line if we went past right edge of column */
 			if (square && q->byte<markk->byte && piscol(q) >= right)
-				ttputc(13);
+				ttputc(10);
 		}
 		ttputs(US "\33\33");
 		prm(q);
@@ -222,30 +222,62 @@ int utomouse(BW *xx)
 	bw = w->object;
 	drag_size = 0;
 	if (w->watom->what == TYPETW) {
-		/* window has a status line? */
-		if (((TW *)bw->object)->staon)
-			/* clicked on it? */
-			if (y == w->y) {
-				if (y != maint->wind)
-					drag_size = y;
-				return -1;
-			} else
-				pline(bw->cursor,y-w->y+bw->top->line-1);
-		else
-			pline(bw->cursor,y-w->y+bw->top->line);
-		pcol(bw->cursor,x-w->x+bw->offset);
-		if (floatmouse)
-			bw->cursor->xcol = x - w->x + bw->offset;
-		else
-			bw->cursor->xcol = piscol(bw->cursor);
-		return 0;
+		if (bw->o.hex) {
+			int goal_col = x - w->x + bw->offset - 60;
+			int goal_line;
+			long goal_byte;
+			if (goal_col < 0)
+				goal_col = 0;
+			if (goal_col >15)
+				goal_col = 15;
+			/* window has a status line? */
+			if (((TW *)bw->object)->staon)
+				/* clicked on it? */
+				if (y == w->y) {
+					if (y != maint->wind)
+						drag_size = y;
+					return -1;
+				} else
+					goal_line = y - w->y + bw->top->byte/16 - 1;
+			else
+				goal_line = y - w->y + bw->top->byte/16;
+			goal_byte = goal_line*16L + goal_col;
+			if (goal_byte > bw->b->eof->byte)
+				goal_byte = bw->b->eof->byte;
+			pgoto(bw->cursor, goal_byte);
+			return 0;
+		} else {
+			int goal_col = x - w->x + bw->offset - (bw->o.linums ? LINCOLS : 0);
+			int goal_line;
+			if (goal_col < 0)
+				goal_col = 0;
+			/* window has a status line? */
+			if (((TW *)bw->object)->staon)
+				/* clicked on it? */
+				if (y == w->y) {
+					if (y != maint->wind)
+						drag_size = y;
+					return -1;
+				} else
+					goal_line = y - w->y + bw->top->line - 1;
+			else
+				goal_line = y - w->y + bw->top->line;
+			pline(bw->cursor, goal_line);
+			pcol(bw->cursor, goal_col);
+			if (floatmouse)
+				bw->cursor->xcol = goal_col;
+			else
+				bw->cursor->xcol = piscol(bw->cursor);
+			return 0;
+		}
 	} else if (w->watom->what == TYPEPW) {
 		PW *pw = (PW *)bw->object;
 		/* only one line in prompt windows */
 		pcol(bw->cursor,x - w->x + bw->offset - pw->promptlen + pw->promptofst);
 		bw->cursor->xcol = piscol(bw->cursor);
+		return 0;
 	} else if (w->watom->what == TYPEMENU) {
-		menujump((MENU *)w->object,x - w->x,y - w->y);
+		menujump((MENU *)w->object, x - w->x, y - w->y);
 		return 0;
 	} else return -1;
 }
@@ -263,25 +295,57 @@ static int tomousestay()
 		return -1;
 	bw = w->object;
 	if (w->watom->what == TYPETW) {
-		/* window has a status line? */
-		if (((TW *)bw->object)->staon)
-			/* clicked on it? */
-			if (y == w->y)
-				return -1;
+		if (bw->o.hex) {
+			int goal_col = x - w->x + bw->offset - 60;
+			int goal_line;
+			long goal_byte;
+			if (goal_col < 0)
+				goal_col = 0;
+			if (goal_col >15)
+				goal_col = 15;
+			/* window has a status line? */
+			if (((TW *)bw->object)->staon)
+				/* clicked on it? */
+				if (y == w->y) {
+					return -1;
+				} else
+					goal_line = y - w->y + bw->top->byte/16 - 1;
 			else
-				pline(bw->cursor,y - w->y + bw->top->line - 1);
-		else
-			pline(bw->cursor,y - w->y + bw->top->line);
-		pcol(bw->cursor,x - w->x + bw->offset);
-		tmspos = bw->cursor->xcol = x-w->x + bw->offset;
-		if (!floatmouse)
-			tmspos = piscol(bw->cursor);
-		return 0;
+				goal_line = y - w->y + bw->top->byte/16;
+			goal_byte = goal_line*16L + goal_col;
+			if (goal_byte > bw->b->eof->byte)
+				goal_byte = bw->b->eof->byte;
+			pgoto(bw->cursor, goal_byte);
+			/* This is not right... */
+			tmspos = bw->cursor->xcol = piscol(bw->cursor);
+			return 0;
+		} else {
+			int goal_col = x - w->x + bw->offset - (bw->o.linums ? LINCOLS : 0);
+			int goal_line;
+			if (goal_col < 0)
+				goal_col = 0;
+			/* window has a status line? */
+			if (((TW *)bw->object)->staon)
+				/* clicked on it? */
+				if (y == w->y)
+					return -1;
+				else
+					goal_line = y - w->y + bw->top->line - 1;
+			else
+				goal_line = y - w->y + bw->top->line;
+			pline(bw->cursor, goal_line);
+			pcol(bw->cursor, goal_col);
+			tmspos = bw->cursor->xcol = goal_col;
+			if (!floatmouse)
+				tmspos = piscol(bw->cursor);
+			return 0;
+		}
 	} else if (w->watom->what == TYPEPW) {
 		PW *pw = (PW *)bw->object;
 		/* only one line in prompt windows */
 		pcol(bw->cursor,x - w->x + bw->offset - pw->promptlen + pw->promptofst);
 		tmspos = bw->cursor->xcol = piscol(bw->cursor);
+		return 0;
 	} else return -1;
 }
 

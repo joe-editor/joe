@@ -2,6 +2,13 @@ Tue Mar 29 19:19:42 EST 2005
 
 	Fix some cut & paste bugs.
 
+	Wheel can scroll menus.
+
+	Fix bugs with mouse in hex mode, prompt windows
+	and when line numbers enabled.
+
+	Prevent hex mode from prompt windows.
+
 Mon Mar 28 02:17:37 EST 2005
 
 	Apply (and fix) background color patch

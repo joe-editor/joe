@@ -2365,7 +2365,7 @@ int upaste(BW  *bw, int k)
 
 	while ((c = ttgetc()) != -1) {
 		if (buf_len == 6) {
-			if (buf[0] == 13 && !bw->o.hex)
+			if (buf[0] == 13)
 				rtntw(bw);
 			else
 				utypebw(bw, buf[0]);
