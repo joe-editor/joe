@@ -31,7 +31,9 @@ Save all history buffers and keyboard macros in ~/.joe_state file?
 
   Update documentation.
 
+shift/alt/ctrl arrow key stuff.
 
+ESC ! runs a command in shell window- use this for Compiling.
 
 
 

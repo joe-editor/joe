@@ -764,15 +764,19 @@ yankpop		^[ Y		Undelete text
  toggle_marking	^@		Ctrl-space block selection method
 select,rtarw,markk    ^[ [ 1 ; 5 C    Mark right
 select,rtarw,markk    ^[ [ 5 C        Mark right
+ select,rtarw,markk    ^[ O C
 
 select,ltarw,markk    ^[ [ 1 ; 5 D    Mark left
 select,ltarw,markk    ^[ [ 5 D        Mark left
+ select,ltarw,markk    ^[ O D
 
 select,uparw,markk    ^[ [ 1 ; 5 A    Mark up
 select,uparw,markk    ^[ [ 5 A        Mark up
+ select,uparw,markk    ^[ O A
 
 select,dnarw,markk    ^[ [ 1 ; 5 B    Mark down
 select,dnarw,markk    ^[ [ 5 B        Mark down
+ select,dnarw,markk    ^[ O B
 
 markk,blkdel,nmark   ^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
 markk,blkdel,nmark   ^[ [ 3 ; 5 ~	Xterm Ctrl-Del

@@ -32,7 +32,23 @@ case "$host" in
 esac
 
 # Checks for libraries.
-AC_SEARCH_LIBS(tgetflag, ncurses curses termcap, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we have newer terminfo/termcap capabilities]))
+AC_ARG_ENABLE(curses,
+[  --disable-curses        disable use of curses library],
+	curses=$enableval, curses=yes)
+
+if test "$curses" = "yes"; then
+	search_libs="ncurses curses"
+fi
+
+AC_ARG_ENABLE(termcap,
+[  --disable-termcap       disable use of termcap library],
+	termcap=$enableval, termcap=yes)
+
+if test "$termcap" = "yes"; then
+	search_libs="$search_libs termcap"
+fi
+
+AC_SEARCH_LIBS(tgetflag, $search_libs, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we have newer terminfo/termcap capabilities]))
 AC_SEARCH_LIBS(snprintf, snprintf db)
 
 # Checks for header files.
@@ -49,8 +65,8 @@ fi
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([errno.h fcntl.h locale.h sgtty.h stdlib.h string.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
-AC_CHECK_HEADERS([ncurses.h curses.h sys/dirent.h time.h pwd.h paths.h])
-AC_CHECK_HEADERS([term.h sys/types.h sys/stat.h sys/wait.h limits.h signal.h])
+AC_CHECK_HEADERS([sys/dirent.h time.h pwd.h paths.h])
+AC_CHECK_HEADERS([sys/types.h sys/stat.h sys/wait.h limits.h signal.h])
 
 AC_CHECK_HEADERS([selinux/selinux.h selinux/context.h])
 if test "$ac_cv_header_selinux_selinux_h" = "yes" -a "$ac_cv_header_selinux_context_h" = "yes" ; then

@@ -24,6 +24,7 @@ JOE 3.1
 - Warn if file changed on save.
 - Added Ctrl-space block selection method
 - ^K E asks if you want to load original version of the file
+- jmacs bugs fixes: upperase word, transpose words.
 
 JOE 3.0 (23 APR 2004)
 - UTF-8

@@ -6,7 +6,7 @@ EXTRA_DIST = COPYING INFO LIST NEWS README README.cvs TODO docs/help-system.html
 	syntax/conf.jsf.in syntax/python.jsf.in syntax/php.jsf.in syntax/sh.jsf.in \
 	syntax/pascal.jsf.in syntax/html.jsf.in syntax/vhdl.jsf.in syntax/fortran.jsf.in \
 	syntax/java.jsf.in syntax/xml.jsf.in syntax/tcl.jsf.in charmaps/klingon.in docs HINTS \
-	syntax/lisp.jsf.in syntax/csh.jsf.in
+	syntax/lisp.jsf.in syntax/csh.jsf.in syntax/mail.jsf.in
 
 sysconf_joedir = $(sysconfdir)/joe
 sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
