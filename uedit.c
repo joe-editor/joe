@@ -802,7 +802,8 @@ int utypebw(BW * bw, int k)
 		if (simple && bw->parent->t->t->sary[bw->y + bw->cursor->line - bw->top->line])
 			simple = 0;
 		if (simple && k != '\t' && k != '\n' && !curmacro) {
-			int c = 0;
+			int a = 0;
+			unsigned char c = (unsigned char)k;
 			SCRN *t = bw->parent->t->t;
 			int y = bw->y + bw->cursor->line - bw->top->line;
 			int x = bw->cursor->xcol - bw->offset + bw->x - 1;
@@ -816,9 +817,9 @@ int utypebw(BW * bw, int k)
 			    markk->b == bw->b &&
 			   ((!square && bw->cursor->byte >= markb->byte && bw->cursor->byte < markk->byte) ||
 			    ( square && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line && piscol(bw->cursor) >= markb->xcol && piscol(bw->cursor) < markk->xcol)))
-				c = INVERSE;
-			xlat(c, k);
-			outatr(t, screen + x, x, y, k, c);
+				a = INVERSE;
+			xlat(&a, &c);
+			outatr(t, screen + x, x, y, c, a);
 		}
 #endif
 	}

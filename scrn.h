@@ -106,17 +106,10 @@ extern unsigned atab[];
 
 #endif
 
-extern unsigned xlata[256];
-extern unsigned char xlatc[256];
-extern int dspasis;
-
-#define xlat(a,c) \
-  ( \
-  (dspasis && ((unsigned)(c)>=128)) ? \
-      ((a)=0) \
-    : \
-      (((a)=xlata[(unsigned)(c)]), ((c)=xlatc[(unsigned)(c)])) \
-  )
+/*
+ * translate character and its attribute into something printable
+ */
+void xlat PARAMS((int *attr, unsigned char *c));
 
 /* int eraeol(SCRN *t,int x,int y);
  *

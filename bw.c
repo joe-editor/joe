@@ -325,7 +325,7 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 			} else if (bc == '\n')
 				goto eobl;
 			else {
-				xlat(c, bc);
+				xlat(&c, &bc);
 				c ^= c1;
 				outatr(t, screen + x, x, y, bc, c);
 				if (ifhave)
@@ -488,7 +488,7 @@ static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, 
 			} else if (bc == '\n')
 				goto eobl;
 			else {
-				xlat(c, bc);
+				xlat(&c, &bc);
 				c ^= c1;
 				screen[x] = c + bc;
 				if (++x == w)

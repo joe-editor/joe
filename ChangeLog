@@ -1,4 +1,9 @@
 Sat Dec 08 2001  Vitezslav Samel <samel@mail.cz>
+	* bw.c, scrn.c, scrn.h, uedit.c, w.c:
+	change xlat macro into xlat(int *, char *) function;
+	change indentation of xlat[ac] tables
+
+Sat Dec 08 2001  Vitezslav Samel <samel@mail.cz>
 	* joerc.in:
 	turn off asis (setlocale(LC_CTYPE) takes care of it);
 	turn off baudrate (leave optimizations of terminal baudrate on the user)

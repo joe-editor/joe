@@ -738,15 +738,15 @@ void gentxt(SCRN * t, int x, int y, int ofst, char *s, int len, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
 	int col;
-	int c;
+	unsigned char c;
 	int a;
 
 	for (col = 0; col != len; ++col)
 		if (col >= ofst) {
-			c = (unsigned) s[col];
+			c = s[col];
 			if (c == '\t')
 				c = ' ';
-			xlat(a, c);
+			xlat(&a, &c);
 			outatr(t, scrn, x, y, c, a);
 			++scrn;
 			++x;
