@@ -1,5 +1,9 @@
 Sun Feb 27 2005  Joe Allen <jhallen@world.std.com>
 
+	Fix lockup problem from Ctrl-G
+
+Sun Feb 27 2005  Joe Allen <jhallen@world.std.com>
+
 	Added Jesse McGrew's xterm mouse and macro enhancements:
 		added to math: %, ==, !=, >, >=, <, <= operators,
 		plus 'char' is ascii value of character under cursor.

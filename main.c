@@ -322,7 +322,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 
 #ifdef MOUSE_XTERM
 	/* initialize mouse */
-	if ((s=getenv("TERM")) && !strcmp(s,"xterm")) {
+	if ((s=getenv("TERM")) && strstr(s,"xterm")) {
 		ttisxterm=1;
 		ttputs("\33[?1002h");
 		ttflsh();

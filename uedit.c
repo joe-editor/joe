@@ -702,7 +702,7 @@ int utomatch(BW *bw)
 			}
 			if (peek == '\\' && peek1!='\\') {
 			} else if (d == '"') {
-				while((d = prgetc(p)) != NO_MORE_DATA)
+				while((d = prgetc(p)) != NO_MORE_DATA) {
 					if (d == '"') {
 						d = prgetc(p);
 						if (d != '\\') {
@@ -711,6 +711,7 @@ int utomatch(BW *bw)
 							break;
 						}
 					}
+				}
 			} else if (bw->o.c_comment && d =='/') {
 				d = prgetc(p);
 				if (d == '*') {
@@ -742,7 +743,7 @@ int utomatch(BW *bw)
 							break;
 						}
 					} else if (bw->o.single_quoted && cc == '\'') {
-						while((cc = pgetc(q)) != NO_MORE_DATA)
+						while((cc = pgetc(q)) != '\n')
 							if (cc == '\'') break;
 							else if (cc == '\\') pgetc(q);
 					} else if (bw->o.vhdl_comment && cc == '-') {
