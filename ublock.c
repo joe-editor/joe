@@ -446,7 +446,7 @@ int ublkmove(BW *bw)
 
 int ublkcpy(BW *bw)
 {
-	if (markv(1))
+	if (markv(1)) {
 		if (square) {
 			long height = markk->line - markb->line + 1;
 			long width = markk->xcol - markb->xcol;
@@ -480,6 +480,7 @@ int ublkcpy(BW *bw)
 			}
 			updall();
 			return 0;
+		}
 	} else {
 		msgnw(bw->parent, "No block");
 		return -1;
@@ -493,7 +494,7 @@ int dowrite(BW *bw, char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
-	if (markv(1))
+	if (markv(1)) {
 		if (square) {
 			int fl;
 			int ret = 0;
@@ -522,6 +523,7 @@ int dowrite(BW *bw, char *s, void *object, int *notify)
 				unmark(bw);
 			vsrm(s);
 			return ret;
+		}
 	} else {
 		vsrm(s);
 		msgnw(bw->parent, "No block");
