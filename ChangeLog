@@ -1,3 +1,11 @@
+Thu Mar 18 2004  Joe Allen <jhallen@world.std.com>
+	* b.c:
+	Automatically detect MS-DOS files (files with ^M^J terminated lines)
+
+Thu Mar 18 2004  Joe Allen <jhallen@world.std.com>
+	* tw.c, uedit.c, tty.c:
+	Fix ^C and ^D in shell windows (for linux at least)
+
 Mon Jan 19 2004  Marek 'Marx' Grac <xgrac@fi.muni.cz>
 	* utag.c:
 	Correct file position by using tags file generated from ctags 5.5.2

@@ -1812,6 +1812,8 @@ B *bload(char *s)
 	long skip, amnt;
 	char *n;
 	int nowrite = 0;
+	P *p;
+	int x;
 
 	if (!s || !s[0]) {
 		error = -1;
@@ -1914,6 +1916,23 @@ opnerr:
 	}
 	if (nowrite)
 		b->rdonly = b->o.readonly = 1;
+
+	p=pdup(b->bof);
+	for(x=0;x!=1024;++x) {
+		int c = pgetc(p);
+		if(c == '\r') {
+			b->o.crlf = 1;
+			break;
+			}
+		if(c == '\n') {
+			b->o.crlf = 0;
+			break;
+			}
+		if(c == NO_MORE_DATA)
+			break;
+	}
+	prm(p);
+	
 
 	/* Eliminate parsed name */
 	vsrm(n);
