@@ -11,6 +11,8 @@
 #include "config.h"
 #include "types.h"
 
+#include "i18n.h"
+
 /* UTF-8 Encoder
  *
  * c is unicode character.

@@ -108,7 +108,7 @@ joe_REINSTALL_SIGHANDLERS
 # if iconv() is in libc, don't bother with -liconv
 AC_CHECK_LIB(c,iconv,
   [REQRD_LIBS= ],
-  [REQRD_LIBS= -liconv])
+  [REQRD_LIBS=-liconv])
 
 AC_SUBST(REQRD_LIBS)
 

@@ -212,7 +212,7 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 			if(*scrn==c && *attrf==a)
 				return;
 
-			wid = mk_wcwidth(1,c);
+			wid = joe_wcwidth(1,c);
 
 			*scrn = c;
 			*attrf = a;
@@ -307,7 +307,7 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 			if(*scrn==c && *attrf==a)
 				return;
 
-			wid = mk_wcwidth(0,c);
+			wid = joe_wcwidth(0,c);
 			*scrn = c;
 			*attrf = a;
 			if(t->ins)
@@ -426,7 +426,7 @@ static void outatri(SCRN *t, int x, int y, int c, int a)
 	if (t->haz && c == '~')
 		c = '\\';
 	utf8_putc(c);
-	t->x+=mk_wcwidth(1,c);
+	t->x+=joe_wcwidth(1,c);
 */
 	/* ++t->x; */
 }
@@ -1813,7 +1813,7 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 			/* UTF-8 mode: decode character and determine its width */
 			c = utf8_decode(&sm,c);
 			if (c >= 0)
-				wid = mk_wcwidth(1,c);
+				wid = joe_wcwidth(1,c);
 		} else {
 			/* Byte mode: character is one column wide */
 			wid = 1 ;
@@ -1874,7 +1874,7 @@ int txtwidth(unsigned char *s,int len)
 		while(len--) {
 			int d = utf8_decode(&sm,*s++);
 			if (d >= 0)
-				col += mk_wcwidth(1,d);
+				col += joe_wcwidth(1,d);
 		}
 
 		return col;
@@ -1937,7 +1937,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 				/* UTF-8 mode: decode character and determine its width */
 				c = utf8_decode(&sm,c);
 				if (c >= 0) {
-						wid = mk_wcwidth(1,c);
+						wid = joe_wcwidth(1,c);
 				}
 			} else {
 				/* Byte mode: character is one column wide */
@@ -2006,7 +2006,7 @@ int fmtlen(unsigned char *s)
 			if(utf8) {
 				c = utf8_decode(&sm,c);
 				if (c>=0)
-					wid = mk_wcwidth(1,c);
+					wid = joe_wcwidth(1,c);
 			} else {
 				wid = 1;
 			}
@@ -2057,7 +2057,7 @@ int fmtpos(unsigned char *s, int goal)
 			if(utf8) {
 				c = utf8_decode(&sm,c);
 				if (c>=0)
-					wid = mk_wcwidth(1,c);
+					wid = joe_wcwidth(1,c);
 			} else {
 				wid = 1;
 			}

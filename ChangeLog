@@ -1,3 +1,11 @@
+Mon May  3 2004  Joe Allen <jhallen@world.std.com>
+	* bw.c, i18n.c, i18n.h, b.c, configure.ac, regex.c, scrn.c, Makefile.am :
+
+	Fix highlighter when there are utf-8 characters in file.
+
+	No longer depend on wctype.h (working towards not depending on
+	iconv()).
+
 Sun May  2 2004  Joe Allen <jhallen@world.std.com>
 	* Makefile.am, configure.ac, *rc.in:
 

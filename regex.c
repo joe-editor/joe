@@ -10,7 +10,6 @@
 
 #include <stdio.h> 
 #include <ctype.h>
-#include <wctype.h>
 
 #include "b.h"
 #include "utf8.h"
@@ -443,7 +442,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 			d = pgetc(p);
 			if (icase) {
 				if (local_utf8) {
-					if (towupper(d) != towupper(c))
+					if (joe_towupper(d) != joe_towupper(c))
 						goto fail;
 				} else if (toupper(d) != toupper(c))
 					goto fail;

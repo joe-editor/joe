@@ -20,7 +20,6 @@
 #endif
 #ifdef TERMINFO
 #ifdef HAVE_TERM_H
-#include <term.h>
 #endif
 #endif
 

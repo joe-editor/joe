@@ -608,7 +608,7 @@ int pgetc(P *p)
 				c = 'X';
 				wid = 1;
 			} else if (val)
-				wid = mk_wcwidth(1,c);
+				wid = joe_wcwidth(1,c);
 		} else {
 			wid = 1;
 		}
@@ -772,7 +772,7 @@ int prgetc(P *p)
 
 		if (val && c!='\t' && c!='\n') {
 			p->valcol = 1;
-			p->col -= mk_wcwidth(1,d);
+			p->col -= joe_wcwidth(1,d);
 		}
 		
 		return d;
@@ -976,7 +976,7 @@ P *pcol(P *p, long goalcol)
 			if (c == '\t')
 				wid = p->b->o.tab - p->col % p->b->o.tab;
 			else
-				wid = mk_wcwidth(1,c);
+				wid = joe_wcwidth(1,c);
 
 			if (p->col + wid > goalcol)
 				break;

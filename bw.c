@@ -365,7 +365,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					c = utf8_decode(&utf8_sm,bc);
 
 					if (c>=0) /* Normal decoded character */
-						wid = mk_wcwidth(1,c);
+						wid = joe_wcwidth(1,c);
 					else if(c== -1) /* Character taken */
 						wid = -1;
 					else if(c== -2) { /* Incomplete sequence (FIXME: do something better here) */
@@ -390,7 +390,8 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 						tach = '<';
 						goto dota;
 					}
-				}
+				} else
+					--idx;	/* Get highlighting character again.. */
 			}
 		} while (--amnt);
 	if (bp == p->ptr + SEGSIZ) {
@@ -482,7 +483,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					utf8_char = utf8_decode(&utf8_sm,bc);
 
 					if (utf8_char >= 0) { /* Normal decoded character */
-						wid = mk_wcwidth(1,utf8_char);
+						wid = joe_wcwidth(1,utf8_char);
 					} else if(utf8_char== -1) { /* Character taken */
 						wid = -1;
 					} else if(utf8_char== -2) { /* Incomplete sequence (FIXME: do something better here) */
@@ -512,7 +513,8 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 						outatr(bw->b->o.utf8, t, screen + x, attr + x, x, y, utf8_char, c1|atr);
 						x += wid;
 					}
-				}
+				} else
+					--idx;
 
 				if (ifhave)
 					goto bye;
@@ -921,7 +923,7 @@ int ustat(BW *bw)
 	if (c == NO_MORE_DATA)
 		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
 	else
-		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, c, c, c, mk_wcwidth(bw->o.utf8,c));
+		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, c, c, c, joe_wcwidth(bw->o.utf8,c));
 	msgnw(bw->parent, buf);
 	return 0;
 }
