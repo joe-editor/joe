@@ -258,6 +258,17 @@ int udrop(BW *bw)
 	return 0;
 }
 
+int udropon(BW *bw)
+{
+	prm(markk);
+	marking = 1;
+	if (marking && markb)
+		prm(markb);
+	else
+		umarkb(bw);
+	return 0;
+}
+
 int uselect(BW *bw)
 {
 	if (!markb)

@@ -2,6 +2,7 @@ Thu May  6 2004  Joe Allen <jhallen@world.std.com>
 	* ublock.c :
 
 	Added "select" function for Ctrl-arrow selecting.
+	Ctrl-space drops anchor and sets marking mode.
 
 Thu May  6 2004  Joe Allen <jhallen@world.std.com>
 	* uerror.c :
