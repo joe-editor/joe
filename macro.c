@@ -497,12 +497,14 @@ int exmacro(MACRO *m, int u)
 			/* Steps of macro... */
 			while (m && x != m->n && !leave && !ret) {
 				MACRO *d;
+				int tmp_arg;
+				int tmp_set;
 
 				d = m->steps[x++];
 				curmacro = m;
 				macroptr = x;
-				int tmp_arg = current_arg;
-				int tmp_set = current_arg_set;
+				tmp_arg = current_arg;
+				tmp_set = current_arg_set;
 				current_arg = o_arg;
 				current_arg_set = o_arg_set;
 

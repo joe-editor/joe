@@ -203,6 +203,8 @@
 
 	-hex			Hex editor mode
 
+	-highlight		Enable highlighting
+
 	-smarthome		Home key first moves cursor to beginning of line,
 				then if hit again, to first non-blank character.
 

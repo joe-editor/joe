@@ -75,6 +75,30 @@ void bwfllw(BW *w)
 	P *newtop;
 	int x;
 
+	if (w->o.hex) {
+		/* Top must be a muliple of 16 bytes */
+		if (w->top->byte%16) {
+			pbkwd(w->top,w->top->byte%16);
+		}
+
+		/* Move backward */
+		if (w->cursor->byte < w->top->byte) {
+			pset(w->top, w->cursor);
+			if (w->top->byte%16) {
+				pbkwd(w->top,w->top->byte%16);
+			}
+		}
+
+		/* Move forward */
+		if (w->cursor->byte >= w->top->byte+(w->h*16)) {
+			pset(w->top, w->cursor);
+			pbkwd(w->top, (w->top->byte % 16) + (w->h-1) * 16);
+		}
+		return;
+	} if (!pisbol(w->top)) {
+		p_goto_bol(w->top);
+	}
+
 	if (w->cursor->line < w->top->line) {
 		newtop = pdup(w->cursor);
 		p_goto_bol(newtop);
@@ -749,6 +773,46 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	}
 }
 
+void bwgenh(BW *w)
+{
+	int *screen;
+	int *attr;
+	P *q = pdup(w->top);
+	int bot = w->h + w->y;
+	int y;
+	SCRN *t = w->t->t;
+	int flg = 0;
+
+	y=w->y;
+	attr = t->attr + y*w->t->w;
+	for (screen = t->scrn + y * w->t->w; y != bot; ++y, (screen += w->t->w), (attr += w->t->w)) {
+		unsigned char txt[80];
+		unsigned char bf[16];
+		int x;
+		memset(txt,' ',75);
+		txt[75]=0;
+		if (!flg) {
+			sprintf(bf,"%8X ",q->byte);
+			memcpy(txt,bf,9);
+			for (x=0; x!=16; ++x) {
+				int c = pgetb(q);
+				if (c >= 0) {
+					sprintf(bf,"%2.2X",c);
+					txt[10+x*3] = bf[0];
+					txt[10+x*3+1] = bf[1];
+					if (c >= 0x20 && c <= 0x7E)
+						txt[59+x] = c;
+					else
+						txt[59+x] = '.';
+				} else
+					flg = 1;
+			}
+		}
+		genfield(t, screen, attr, 0, y, 0, txt, 75, 0, w->w, 1);
+	}
+	prm(q);
+}
+
 void bwgen(BW *w, int linums)
 {
 	int *screen;
@@ -761,6 +825,11 @@ void bwgen(BW *w, int linums)
 	long from, to;
 	long fromline, toline;
 	SCRN *t = w->t->t;
+
+	if (w->o.hex) {
+		bwgenh(w);
+		return;
+	}
 
 	fromline = toline = from = to = 0;
 

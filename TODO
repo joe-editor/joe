@@ -30,6 +30,10 @@ Short (infinite) list for 3.2:
 
 - - - - - - - -
 
+- better editing in shell windows
+
+- - - - - - - -
+
 jmacs glitches:
     history for incremental search
     ^S return supposed to be normal search
@@ -38,10 +42,6 @@ jmacs glitches:
     ^X ^P  mark page
     ^X h   mark entire buffer
     ^X .  set left margin (fill prefix)
-
-- - - - - - - -
-
-- better editing in shell windows
 
 - - - - - - - -
 
@@ -250,9 +250,7 @@ Mouse:
  any way we can distinguish normal typing from a drop?
  modify xterm...
 
-Major new modes:
-
- Hex edit mode
+Major new display modes:
 
  Fixed record length mode
 
@@ -270,8 +268,7 @@ Major new features:
 Options
 
  Fix it so all options appear in ^T.  Maybe make hook function
- to handle major changes.  Need this for major mode change for
- hex edit mode.
+ to handle major changes.
 
 Other requests:
 

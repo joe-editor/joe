@@ -141,6 +141,7 @@ struct options {
 	int	pound_comment;	/* Ignore text after # comments */
 	int	vhdl_comment;	/* Ignore text after -- comments */
 	int	semi_comment;	/* Ignore text after ; comments */
+	int	hex;		/* Hex edit mode */
 	unsigned char *text_delimiters;	/* Define word delimiters */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */

@@ -40,7 +40,11 @@ extern WATOM watommenu;
  */
 int u_goto_bol(BW *bw)
 {
-	p_goto_bol(bw->cursor);
+	if (bw->o.hex) {
+		pbkwd(bw->cursor,bw->cursor->byte%16);
+	} else {
+		p_goto_bol(bw->cursor);
+	}
 	return 0;
 }
 
@@ -50,7 +54,13 @@ int u_goto_bol(BW *bw)
  */
 int uhome(BW *bw)
 {
-	P *p = pdup(bw->cursor);
+	P *p;
+
+	if (bw->o.hex) {
+		return u_goto_bol(bw);
+	}
+
+	p = pdup(bw->cursor);
 
 	if (bw->o.indentfirst) {
 		if ((bw->o.smarthome) && (piscol(p) > pisindent(p))) { 
@@ -77,7 +87,13 @@ int uhome(BW *bw)
  */
 int u_goto_eol(BW *bw)
 {
-	p_goto_eol(bw->cursor);
+	if (bw->o.hex) {
+		if (bw->cursor->byte + 15 - bw->cursor->byte%16 > bw->b->eof->byte)
+			pset(bw->cursor,bw->b->eof);
+		else
+			pfwrd(bw->cursor, 15 - bw->cursor->byte%16);
+	} else
+		p_goto_eol(bw->cursor);
 	return 0;
 }
 
@@ -104,6 +120,13 @@ int u_goto_eof(BW *bw)
  */
 int u_goto_left(BW *bw)
 {
+	if (bw->o.hex) {
+		if (prgetb(bw->cursor) != NO_MORE_DATA) {
+			return 0;
+		} else {
+			return -1;
+		}
+	}
 	if (bw->o.picture) {
 		if (bw->cursor->xcol) {
 			--bw->cursor->xcol;
@@ -129,6 +152,13 @@ int u_goto_left(BW *bw)
  */
 int u_goto_right(BW *bw)
 {
+	if (bw->o.hex) {
+		if (pgetb(bw->cursor) != NO_MORE_DATA) {
+			return 0;
+		} else {
+			return -1;
+		}
+	}
 	if (bw->o.picture) {
 		++bw->cursor->xcol;
 		pcol(bw->cursor,bw->cursor->xcol);
@@ -1088,6 +1118,14 @@ int utomatch(BW *bw)
 
 int uuparw(BW *bw)
 {
+	if (bw->o.hex) {
+		if (bw->cursor->byte<16)
+			return -1;
+		else {
+			pbkwd(bw->cursor, 16);
+			return 0;
+		}
+	}
 	if (bw->cursor->line) {
 		pprevl(bw->cursor);
 		pcol(bw->cursor, bw->cursor->xcol);
@@ -1100,6 +1138,17 @@ int uuparw(BW *bw)
 
 int udnarw(BW *bw)
 {
+	if (bw->o.hex) {
+		if (bw->cursor->byte+16 <= bw->b->eof->byte) {
+			pfwrd(bw->cursor, 16);
+			return 0;
+		} else if (bw->cursor->byte != bw->b->eof->byte) {
+			pset(bw->cursor, bw->b->eof);
+			return 0;
+		} else {
+			return -1;
+		}
+	}
 	if (bw->cursor->line != bw->b->eof->line) {
 		pnextl(bw->cursor);
 		pcol(bw->cursor, bw->cursor->xcol);
@@ -1154,29 +1203,50 @@ void scrup(BW *bw, int n, int flg)
 
 	/* Decide number of lines we're really going to scroll */
 
-	if (bw->top->line >= n)
-		scrollamnt = cursoramnt = n;
-	else if (bw->top->line)
-		scrollamnt = cursoramnt = bw->top->line;
-	else if (flg)
-		cursoramnt = bw->cursor->line;
-	else if (bw->cursor->line >= n)
-		cursoramnt = n;
+	if (bw->o.hex) {
+		if (bw->top->byte/16 >= n)
+			scrollamnt = cursoramnt = n;
+		else if (bw->top->byte/16)
+			scrollamnt = cursoramnt = bw->top->byte/16;
+		else if (flg)
+			cursoramnt = bw->cursor->byte/16;
+		else if (bw->cursor->byte/16 >= n)
+			cursoramnt = n;
+	} else {
+		if (bw->top->line >= n)
+			scrollamnt = cursoramnt = n;
+		else if (bw->top->line)
+			scrollamnt = cursoramnt = bw->top->line;
+		else if (flg)
+			cursoramnt = bw->cursor->line;
+		else if (bw->cursor->line >= n)
+			cursoramnt = n;
+	}
 
-	/* Move top-of-window pointer */
-	for (x = 0; x != scrollamnt; ++x)
-		pprevl(bw->top);
-	p_goto_bol(bw->top);
+	if (bw->o.hex) {
+		/* Move top-of-window pointer */
+		pbkwd(bw->top,scrollamnt*16);
+		/* Move cursor */
+		pbkwd(bw->cursor,cursoramnt*16);
+		/* If window is on the screen, give (buffered) scrolling command */
+		if (bw->parent->y != -1)
+			nscrldn(bw->parent->t->t, bw->y, bw->y + bw->h, scrollamnt);
+	} else {
+		/* Move top-of-window pointer */
+		for (x = 0; x != scrollamnt; ++x)
+			pprevl(bw->top);
+		p_goto_bol(bw->top);
 
-	/* Move cursor */
-	for (x = 0; x != cursoramnt; ++x)
-		pprevl(bw->cursor);
-	p_goto_bol(bw->cursor);
-	pcol(bw->cursor, bw->cursor->xcol);
+		/* Move cursor */
+		for (x = 0; x != cursoramnt; ++x)
+			pprevl(bw->cursor);
+		p_goto_bol(bw->cursor);
+		pcol(bw->cursor, bw->cursor->xcol);
 
-	/* If window is on the screen, give (buffered) scrolling command */
-	if (bw->parent->y != -1)
-		nscrldn(bw->parent->t->t, bw->y, bw->y + bw->h, scrollamnt);
+		/* If window is on the screen, give (buffered) scrolling command */
+		if (bw->parent->y != -1)
+			nscrldn(bw->parent->t->t, bw->y, bw->y + bw->h, scrollamnt);
+	}
 }
 
 /* Scroll buffer window down n lines
@@ -1194,27 +1264,48 @@ void scrdn(BW *bw, int n, int flg)
 	int x;
 
 	/* How much we're really going to scroll... */
-	if (bw->top->b->eof->line < bw->top->line + bw->h) {
-		cursoramnt = bw->top->b->eof->line - bw->cursor->line;
-		if (!flg && cursoramnt > n)
-			cursoramnt = n;
-	} else if (bw->top->b->eof->line - (bw->top->line + bw->h) >= n)
-		cursoramnt = scrollamnt = n;
-	else
-		cursoramnt = scrollamnt = bw->top->b->eof->line - (bw->top->line + bw->h) + 1;
+	if (bw->o.hex) {
+		if (bw->top->b->eof->byte/16 < bw->top->byte/16 + bw->h) {
+			cursoramnt = bw->top->b->eof->byte/16 - bw->cursor->byte/16;
+			if (!flg && cursoramnt > n)
+				cursoramnt = n;
+		} else if (bw->top->b->eof->byte/16 - (bw->top->byte/16 + bw->h) >= n)
+			cursoramnt = scrollamnt = n;
+		else
+			cursoramnt = scrollamnt = bw->top->b->eof->byte/16 - (bw->top->byte/16 + bw->h) + 1;
+	} else {
+		if (bw->top->b->eof->line < bw->top->line + bw->h) {
+			cursoramnt = bw->top->b->eof->line - bw->cursor->line;
+			if (!flg && cursoramnt > n)
+				cursoramnt = n;
+		} else if (bw->top->b->eof->line - (bw->top->line + bw->h) >= n)
+			cursoramnt = scrollamnt = n;
+		else
+			cursoramnt = scrollamnt = bw->top->b->eof->line - (bw->top->line + bw->h) + 1;
+	}
 
-	/* Move top-of-window pointer */
-	for (x = 0; x != scrollamnt; ++x)
-		pnextl(bw->top);
+	if (bw->o.hex) {
+		/* Move top-of-window pointer */
+		pfwrd(bw->top,16*scrollamnt);
+		/* Move cursor */
+		pfwrd(bw->cursor,16*cursoramnt);
+		/* If window is on screen, give (buffered) scrolling command to terminal */
+		if (bw->parent->y != -1)
+			nscrlup(bw->parent->t->t, bw->y, bw->y + bw->h, scrollamnt);
+	} else {
+		/* Move top-of-window pointer */
+		for (x = 0; x != scrollamnt; ++x)
+			pnextl(bw->top);
 
-	/* Move cursor */
-	for (x = 0; x != cursoramnt; ++x)
-		pnextl(bw->cursor);
-	pcol(bw->cursor, bw->cursor->xcol);
+		/* Move cursor */
+		for (x = 0; x != cursoramnt; ++x)
+			pnextl(bw->cursor);
+		pcol(bw->cursor, bw->cursor->xcol);
 
-	/* If window is on screen, give (buffered) scrolling command to terminal */
-	if (bw->parent->y != -1)
-		nscrlup(bw->parent->t->t, bw->y, bw->y + bw->h, scrollamnt);
+		/* If window is on screen, give (buffered) scrolling command to terminal */
+		if (bw->parent->y != -1)
+			nscrlup(bw->parent->t->t, bw->y, bw->y + bw->h, scrollamnt);
+	}
 }
 
 /* Page up */
@@ -1225,7 +1316,8 @@ int upgup(BW *bw)
 		return umpgup(bw->parent->link.next->object);
 	}
 	bw = (BW *) bw->parent->main->object;
-	if (!bw->cursor->line)
+
+	if (bw->o.hex ? bw->cursor->byte < 16 : !bw->cursor->line)
 		return -1;
 	if (pgamnt < 0)
 		scrup(bw, bw->h / 2 + bw->h % 2, 1);
@@ -1244,7 +1336,7 @@ int upgdn(BW *bw)
 		return umpgdn(bw->parent->link.next->object);
 	}
 	bw = (BW *) bw->parent->main->object;
-	if (bw->cursor->line == bw->b->eof->line)
+	if (bw->o.hex ? bw->cursor->byte/16 == bw->b->eof->byte/16 : bw->cursor->line == bw->b->eof->line)
 		return -1;
 	if (pgamnt < 0)
 		scrdn(bw, bw->h / 2 + bw->h % 2, 1);

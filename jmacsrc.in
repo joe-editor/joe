@@ -170,6 +170,8 @@
 	-syntax name		Specify syntax (syntax file called
 				'name.jsf' will be loaded)
 
+	-hex			Hex editor mode
+
 	-highlight		Enable highlighting
 
 	-smarthome		Home key first moves cursor to beginning of line,

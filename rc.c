@@ -144,6 +144,7 @@ OPTIONS pdefault = {
 	0,		/* pound_comment */
 	0,		/* vhdl_comment */
 	0,		/* semi_comment */
+	0,		/* hex */
 	NULL,		/* text_delimiters */
 	NULL,		/* macro to execute for new files */
 	NULL,		/* macro to execute for existing files */
@@ -194,6 +195,7 @@ OPTIONS fdefault = {
 	0,		/* pound_comment */
 	0,		/* vhdl_comment */
 	0,		/* semi_comment */
+	0,		/* hex */
 	NULL,		/* text_delimiters */
 	NULL, NULL, NULL, NULL, NULL	/* macros (see above) */
 };
@@ -270,6 +272,7 @@ struct glopts {
 	int high;		/* High limit for numeric options */
 } glopts[] = {
 	{US "overwrite",4, NULL, (unsigned char *) &fdefault.overtype, US "Overtype mode", US "Insert mode", US "T Overtype " },
+	{US "hex",4, NULL, (unsigned char *) &fdefault.hex, US "Hex edit mode", US "Text edit mode", US "  Hex edit mode " },
 	{US "autoindent",	4, NULL, (unsigned char *) &fdefault.autoindent, US "Autoindent enabled", US "Autoindent disabled", US "I Autoindent " },
 	{US "wordwrap",	4, NULL, (unsigned char *) &fdefault.wordwrap, US "Wordwrap enabled", US "Wordwrap disabled", US "Word wrap " },
 	{US "tab",	5, NULL, (unsigned char *) &fdefault.tab, US "Tab width (%d): ", 0, US "D Tab width ", 0, 1, 64 },

@@ -361,6 +361,8 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 	return stalin;
 }
 
+extern int hex;
+
 static void disptw(BW *bw, int flg)
 {
 	W *w = bw->parent;
@@ -373,8 +375,13 @@ static void disptw(BW *bw, int flg)
 		bwfllw(bw);
 	}
 
-	w->cury = bw->cursor->line - bw->top->line + bw->y - w->y;
-	w->curx = bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0);
+	if (bw->o.hex) {
+		w->cury = (bw->cursor->byte-bw->top->byte)/16 + bw->y - w->y;
+		w->curx = (bw->cursor->byte-bw->top->byte)%16 + 59;
+	} else {
+		w->cury = bw->cursor->line - bw->top->line + bw->y - w->y;
+		w->curx = bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0);
+	}
 
 	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen)) {
 		int fill;

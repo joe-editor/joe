@@ -5,6 +5,8 @@ JOE 3.2
   read-only file, JOE runs "p4 edit".  (look in joerc file to enable the
   macro).
 
+- Hex edit mode: joe -hex /dev/hda,0,1024
+
 - New '-break_links' option causes JOE to delete before writing files, to
   break hard links.  Useful for 'arch' SCM.
 

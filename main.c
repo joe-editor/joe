@@ -386,11 +386,11 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 			BW *bw = NULL;
 			int er = error;
 
-			set_current_dir(argv[c],1);
+			/* This is too annoying */
+			/* set_current_dir(argv[c],1); */
 
 			setup_history(&filehist);
 			append_history(filehist,sz(argv[c]));
-			
 
 			/* wmktw inserts the window before maint->curwin */
 			if (!orphan || !opened) {
