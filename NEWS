@@ -1,5 +1,11 @@
 JOE 3.3
 
+- Can now set default background color
+
+- JOE now supports 256 color xterm
+
+- Mouse can resize windows and select menu entries
+
 JOE 3.2
 
 - A Perforce SCM "p4 edit" macro has been supplied (along with the hooks
