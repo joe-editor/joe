@@ -1,4 +1,11 @@
 Mon Apr 26 2004  Joe Allen <jhallen@world.std.com>
+	* uedit.c ublock.c :
+
+	Smart backspace now always fixes the indentation.
+
+	Indent left and right always fixes indentation.
+
+Mon Apr 26 2004  Joe Allen <jhallen@world.std.com>
 	* bw.c tty.c uedit.c utf8.c *rc.in:
 
 	Fix rtarw: was not fixing xcol.

@@ -645,7 +645,7 @@ int urindent(BW *bw)
 	} else {
 		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
 			setindent(bw);
-		} else if (bw->o.purify) {
+		} else if ( 1 /* bw->o.purify */) {
 			P *p = pdup(markb);
 			P *q = pdup(markb);
 			int indwid;
@@ -725,7 +725,7 @@ int ulindent(BW *bw)
 	} else {
 		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
 			setindent(bw);
-		} else if (bw->o.purify && lindent_check(bw->o.indentc,bw->o.istep)) {
+		} else if (1 /* bw->o.purify */ && lindent_check(bw->o.indentc,bw->o.istep)) {
 			P *p = pdup(markb);
 			P *q = pdup(markb);
 			int indwid;

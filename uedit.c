@@ -727,7 +727,7 @@ int ubacks(BW *bw, int k)
 		   indent characters (or purify indents is enabled). */
 		
 		/* Ignore purify for backspace */
-		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smartbacks && bw->o.autoindent && pispure(bw->cursor,bw->o.indentc)) {
+		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smartbacks && bw->o.autoindent) {
 			P *p;
 			int x;
 
