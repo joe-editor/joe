@@ -26,11 +26,11 @@ joe_SOURCES = b.c blocks.c bw.c cmd.c hash.c help.c kbd.c macro.c main.c menu.c 
 termidx_SOURCES = termidx.c
 
 install-exec-hook:
-	rm -f $(bindir)/jmacs $(bindir)/jstar $(bindir)/rjoe $(bindir)/jpico
-	for i in jmacs jstar rjoe jpico ; do $(LN_S) joe $(bindir)/$$i ; done
+	rm -f $(DESTDIR)$(bindir)/jmacs $(DESTDIR)$(bindir)/jstar $(DESTDIR)$(bindir)/rjoe $(DESTDIR)$(bindir)/jpico
+	for i in jmacs jstar rjoe jpico ; do $(LN_S) joe $(DESTDIR)$(bindir)/$$i ; done
 
 uninstall-local:
-	rm -f $(bindir)/jmacs $(bindir)/jstar $(bindir)/rjoe $(bindir)/jpico
+	rm -f $(DESTDIR)$(bindir)/jmacs $(DESTDIR)$(bindir)/jstar $(DESTDIR)$(bindir)/rjoe $(DESTDIR)$(bindir)/jpico
 
 distclean-local:
 	rm -f *~
