@@ -145,8 +145,8 @@ void bwfllw(BW *w)
 		pset(w->top, newtop);
 		prm(newtop);
 	} else if (w->cursor->line >= w->top->line + w->h) {
-		// newtop = pdup(w->top);
-		// getto() creates newtop
+		/* newtop = pdup(w->top); */
+		/* getto() creates newtop */
 		if (mid)
 			newtop = getto(NULL, w->cursor, w->top, w->cursor->line - w->h / 2);
 		else
@@ -821,7 +821,7 @@ void bwgenh(BW *w,long from,long to)
 		msetI(fmt,0,76);
 		txt[76]=0;
 		if (!flg) {
-			sprintf(bf,"%8x ",q->byte);
+			sprintf((char *)bf,"%8x ",q->byte);
 			memcpy(txt,bf,9);
 			for (x=0; x!=8; ++x) {
 				int c;
@@ -836,7 +836,7 @@ void bwgenh(BW *w,long from,long to)
 				}
 				c = pgetb(q);
 				if (c >= 0) {
-					sprintf(bf,"%2.2x",c);
+					sprintf((char *)bf,"%2.2x",c);
 					txt[10+x*3] = bf[0];
 					txt[10+x*3+1] = bf[1];
 					if (c >= 0x20 && c <= 0x7E)
@@ -859,7 +859,7 @@ void bwgenh(BW *w,long from,long to)
 				}
 				c = pgetb(q);
 				if (c >= 0) {
-					sprintf(bf,"%2.2x",c);
+					sprintf((char *)bf,"%2.2x",c);
 					txt[11+x*3] = bf[0];
 					txt[11+x*3+1] = bf[1];
 					if (c >= 0x20 && c <= 0x7E)

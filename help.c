@@ -124,7 +124,7 @@ void help_display(SCREEN *t)
 			int spanextra;
 			int len;
 
-			eol = strchr(str, '\n');
+			eol = (unsigned char *)strchr((char *)str, '\n');
 
 			/* First pass: count no. springs \| and determine minimum width */
 			while(*str && *str!='\n') {

@@ -326,8 +326,8 @@ struct glopts {
 	{US "vhdl_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US "-- comments enabled", US "-- comments disabled", US "  ^G ignores -- " },
 	{US "semi_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US "; comments enabled", US "; comments disabled", US "  ^G ignores ; " },
 	{US "text_delimiters",	6, NULL, (unsigned char *) &fdefault.text_delimiters, US "Text delimiters (%s): ", 0, US "  Text delimiters " },
-	{US "floatmouse",	0, &floatmouse, 0, "Clicking can move the cursor past end of line", "Clicking past end of line moves cursor to the end", "  Click past end " },
-	{US "rtbutton",	0, &rtbutton, 0, "Mouse action is done with the right button", "Mouse action is done with the left button", "  Right button " },
+	{US "floatmouse",	0, &floatmouse, 0, US "Clicking can move the cursor past end of line", US "Clicking past end of line moves cursor to the end", US "  Click past end " },
+	{US "rtbutton",	0, &rtbutton, 0, US "Mouse action is done with the right button", US "Mouse action is done with the left button", US "  Right button " },
 	{US "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
 	{US "noxon",	0, &noxon, NULL, 0, 0, 0 },
 	{US "orphan",	0, &orphan, NULL, 0, 0, 0 },
@@ -1173,7 +1173,7 @@ void load_hist(FILE *f,B **bp)
 
 	q = pdup(b->eof);
 
-	while(fgets(buf,1023,f) && strcmp(buf,"done\n")) {
+	while(fgets((char *)buf,1023,f) && strcmp(buf,"done\n")) {
 		unsigned char *p = buf;
 		int len;
 		parse_ws(&p,'#');
@@ -1200,9 +1200,9 @@ void save_state()
 		return;
 	if (!home)
 		return;
-	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
+	joe_snprintf_1((char *)stdbuf,stdsiz,"%s/.joe_state",home);
 	old_mask = umask(0066);
-	f = fopen(stdbuf,"w");
+	f = fopen((char *)stdbuf,"w");
 	umask(old_mask);
 	if(!f)
 		return;
@@ -1235,16 +1235,16 @@ void load_state()
 		return;
 	if (!home)
 		return;
-	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
-	f = fopen(stdbuf,"r");
+	joe_snprintf_1((char *)stdbuf,stdsiz,"%s/.joe_state",home);
+	f = fopen((char *)stdbuf,"r");
 	if(!f)
 		return;
 
 	/* Only read state information if the version is correct */
-	if (fgets(buf,1024,f) && !strcmp(buf,STATE_ID)) {
+	if (fgets((char *)buf,1024,f) && !strcmp((char *)buf,STATE_ID)) {
 
 		/* Read state information */
-		while(fgets(buf,1023,f)) {
+		while(fgets((char *)buf,1023,f)) {
 			if(!strcmp(buf,"search\n"))
 				load_srch(f);
 			else if(!strcmp(buf,"macros\n"))
@@ -1266,7 +1266,7 @@ void load_state()
 			else if(!strcmp(buf,"yank\n"))
 				load_yank(f);
 			else { /* Unknown... skip until next done */
-				while(fgets(buf,1023,f) && strcmp(buf,"done\n"));
+				while(fgets((char *)buf,1023,f) && strcmp((char *)buf,"done\n"));
 			}
 		}
 	}

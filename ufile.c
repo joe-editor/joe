@@ -294,8 +294,8 @@ struct savereq {
 	B *first;
 	int not_saved;	/* Set if a modified file was not saved */
 	int rename;	/* Set if we're renaming the file during save */
-	int block_save; // Flag, if we want to save a block#
-	char *message; // String for messages to be shown to the user
+	int block_save; /* Flag, if we want to save a block# */
+	unsigned char *message; /* String for messages to be shown to the user */
 };
 
 struct savereq *mksavereq(int (*callback)(), unsigned char *name, B *first,int rename, int block_save)
@@ -497,16 +497,16 @@ static int dosave1(BW *bw, unsigned char *s, struct savereq *req, int *notify)
 			f = open((char *)s, O_RDONLY);
 			if (f != -1) {
 				close(f);
-				//char *msg = "File exists. Overwrite (y,n,^C)? ";
-				//req->message = msg;
-				req->message = "File exists. Overwrite (y,n,^C)? ";
+				/* char *msg = "File exists. Overwrite (y,n,^C)? ";
+				   req->message = msg; */
+				req->message = US "File exists. Overwrite (y,n,^C)? ";
 				return dosave2(bw, 0, req, notify);
 			}
 		}
 		else {
 			/* We're saving a newer version of the same file */
 			if (check_mod(bw->b)) {
-				req->message = "File on disk is newer. Overwrite (y,n,^C)? ";
+				req->message = US "File on disk is newer. Overwrite (y,n,^C)? ";
 				return dosave2(bw, 0, req, notify);
 			}
 		}

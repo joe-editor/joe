@@ -374,9 +374,9 @@ static unsigned char **keymap_list;
 
 static int keymap_cmplt(BW *bw)
 {
-	// Reload every time: we should really check date of tags file...
-	//if (tag_word_list)
-	//	varm(tag_word_list);
+	/* Reload every time: we should really check date of tags file...
+	  if (tag_word_list)
+	  	varm(tag_word_list); */
 
 	if (!keymap_list)
 		keymap_list = get_keymap_list();

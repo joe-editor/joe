@@ -1217,7 +1217,7 @@ int blksum(double *sum, double *sumsq)
 					}
 					/* Convert number to floating point, add it to total */
 					buf[x] = 0;
-					v = strtod(buf,NULL);
+					v = strtod((char *)buf,NULL);
 					++count;
 					accu += v;
 					accusq += v*v;

@@ -995,7 +995,7 @@ void load_srch(FILE *f)
 	int ignore = 0;
 	int replace = 0;
 	int block_restrict = 0;
-	while(fgets(buf,1023,f) && strcmp(buf,"done\n")) {
+	while(fgets((char *)buf,1023,f) && strcmp((char *)buf,"done\n")) {
 		unsigned char *p=buf;
 		parse_ws(&p,'#');
 		if(!parse_kw(&p,US "pattern")) {

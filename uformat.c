@@ -339,7 +339,7 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 		if (p->b->o.overtype){
 			/* delete the next line break which is unnecessary */
 			r = pdup(p);
-			//p_goto_eol(r);
+			/* p_goto_eol(r); */
 			pgetc(r);
 			p_goto_eol(r);
 			s = pdup(r);

@@ -276,7 +276,7 @@ int unxterr(BW *bw)
 	}
 	errptr = errptr->link.next;
 	if (!bw->b->name || strcmp(errptr->file, bw->b->name)) {
-		if (doedit(bw, vsdup(errptr->file), NULL, NULL))
+		if (doswitch(bw, vsdup(errptr->file), NULL, NULL))
 			return -1;
 		bw = (BW *) maint->curwin->object;
 	}
@@ -301,7 +301,7 @@ int uprverr(BW *bw)
 	}
 	errptr = errptr->link.prev;
 	if (!bw->b->name || strcmp(errptr->file, bw->b->name)) {
-		if (doedit(bw, vsdup(errptr->file), NULL, NULL))
+		if (doswitch(bw, vsdup(errptr->file), NULL, NULL))
 			return -1;
 		bw = (BW *) maint->curwin->object;
 	}

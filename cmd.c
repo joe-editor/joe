@@ -247,9 +247,9 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
 			if(bf1[0])
-				joe_snprintf_1(bf,sizeof(bf),"Locked by %s  (S)teal, (I)gnore, (Q)uit? ",bf1);
+				joe_snprintf_1((char *)bf,sizeof(bf),"Locked by %s  (S)teal, (I)gnore, (Q)uit? ",bf1);
 			else
-				joe_snprintf_0(bf,sizeof(bf),"Could not create lock.  (S)teal, (I)gnore, (Q)uit? ");
+				joe_snprintf_0((char *)bf,sizeof(bf),"Could not create lock.  (S)teal, (I)gnore, (Q)uit? ");
 			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, notify)) {
 				return 0;
 			} else {
@@ -304,9 +304,9 @@ int try_lock(BW *bw,B *b)
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
 			if(bf1[0])
-				joe_snprintf_1(bf,sizeof(bf),"Locked by %s  (S)teal, (I)gnore, (Q)uit? ",bf1);
+				joe_snprintf_1((char *)bf,sizeof(bf),"Locked by %s  (S)teal, (I)gnore, (Q)uit? ",bf1);
 			else
-				joe_snprintf_0(bf,sizeof(bf),"Could not create lock.  (S)teal, (I)gnore, (Q)uit? ");
+				joe_snprintf_0((char *)bf,sizeof(bf),"Could not create lock.  (S)teal, (I)gnore, (Q)uit? ");
 			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, NULL)) {
 				uquery(bw);
 				if (!b->locked)
@@ -367,6 +367,9 @@ int execmd(CMD *cmd, int k)
 	BW *bw = (BW *) maint->curwin->object;
 	int ret = -1;
 
+	/* Warning: bw is a BW * only if maint->curwin->watom->what &
+	    (TYPETW|TYPEPW) */
+
 	/* Send data to shell window: this is broken ^K ^H (help) sends its ^H to shell */
 	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && piseof(bw->cursor) &&
 	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || cmd->func==utype && k>=32 && k<256)) {
@@ -411,6 +414,9 @@ int execmd(CMD *cmd, int k)
 		return 0;
 
 	/* cmd->func could have changed bw on us */
+	/* This is bad: maint->curwin might not be the same window */
+	/* Safer would be to attach a pointer to curwin- if curwin
+	   gets clobbered, so does pointer. */
 	bw = (BW *) maint->curwin->object;
 
 	/* Maintain position history */

@@ -357,9 +357,9 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 
 #ifdef MOUSE_XTERM
 	/* initialize mouse */
-	if (xmouse && (s=getenv("TERM")) && strstr(s,"xterm")) {
+	if (xmouse && (s=(unsigned char *)getenv("TERM")) && strstr((char *)s,"xterm")) {
 		ttisxterm=1;
-		ttputs("\33[?1002h");
+		ttputs(US "\33[?1002h");
 		ttflsh();
 	}
 #endif
@@ -476,7 +476,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	vclose(vmem);
 #ifdef MOUSE_XTERM
 	if(ttisxterm) {
-		ttputs("\33[?1002l");
+		ttputs(US "\33[?1002l");
 		ttflsh();
 	}
 #endif

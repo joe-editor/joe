@@ -444,11 +444,11 @@ unsigned char *simplify_prefix(unsigned char *s)
 #endif
 
 	/* If current directory is prefixed with home directory, use ~... */
-	if (t && !strncmp(s,t,strlen(t)) && (!s[strlen(t)] || s[strlen(t)]=='/')) {
+	if (t && !strncmp((char *)s,(char *)t,strlen((char *)t)) && (!s[strlen((char *)t)] || s[strlen((char *)t)]=='/')) {
 		n = vsncpy(NULL,0,sc("~/"));
 		/* If anything more than just the home directory, add it */
-		if (s[strlen(t)]) {
-			n = vsncpy(sv(n),s+strlen(t)+1,strlen(s+strlen(t)+1));
+		if (s[strlen((char *)t)]) {
+			n = vsncpy(sv(n),s+strlen((char *)t)+1,strlen((char *)(s+strlen((char *)t)+1)));
 		}
 	} else {
 		n = vsncpy(NULL,0,sz(s));

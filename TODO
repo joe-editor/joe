@@ -1,7 +1,19 @@
 
 Short (infinite) list for 3.2:
 
+- - - -
+
+Dangerous situations:
+  assume maint->curwin->object is a BW *
+  call interactive functions (like doedit) an expect them
+  to leave maint a buffer window (it could start a prompt).
+
+Querysave is sometimes not saving all files in ESC c?
+
+- - - - - - - -
+
 - backspace in picture mode
+  (it jumps to end of line - should it be like left-arrow?)
 
 - - - - - - - -
 

@@ -136,21 +136,21 @@ static double expr(int prec, int en,struct var **rtv)
 		} else if (!strcmp(s,"hex")) {
 			mode_hex = 1;
 			mode_eng = 0;
-			v = get("ans");
+			v = get(US "ans");
 			x = v->val;
 		} else if (!strcmp(s,"dec")) {
 			mode_hex = 0;
 			mode_eng = 0;
-			v = get("ans");
+			v = get(US "ans");
 			x = v->val;
 		} else if (!strcmp(s,"eng")) {
 			mode_hex = 0;
 			mode_eng = 1;
-			v = get("ans");
+			v = get(US "ans");
 			x = v->val;
 		} else if (!strcmp(s,"ins")) {
 			mode_ins = 1;
-			v = get("ans");
+			v = get(US "ans");
 			x = v->val;
 		} else if (!strcmp(s,"sum")) {
 			double xsq;
@@ -201,7 +201,7 @@ static double expr(int prec, int en,struct var **rtv)
 		}
 		*ptr = c;
 	} else if ((*ptr >= '0' && *ptr <= '9') || *ptr == '.') {
-		x = strtod(ptr,(char **)&ptr);
+		x = strtod((char *)ptr,(char **)&ptr);
 	} else if (*ptr == '(') {
 		++ptr;
 		x = expr(0, en, &v);

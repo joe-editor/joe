@@ -61,7 +61,7 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 			if (x != y) {
 				c = buf[y];
 				buf[y] = 0;
-				if (doedit(bw, vsncpy(NULL, 0, sz(buf + x)), NULL, NULL)) {
+				if (doswitch(bw, vsncpy(NULL, 0, sz(buf + x)), NULL, NULL)) {
 					vsrm(s);
 					vsrm(t);
 					fclose(f);
@@ -161,9 +161,9 @@ static unsigned char **tag_word_list;
 
 static int tag_cmplt(BW *bw)
 {
-	// Reload every time: we should really check date of tags file...
-	//if (tag_word_list)
-	//	varm(tag_word_list);
+	/* Reload every time: we should really check date of tags file...
+	if (tag_word_list)
+		varm(tag_word_list); */
 
 	if (!tag_word_list)
 		tag_word_list = get_tag_list();

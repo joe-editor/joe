@@ -2693,21 +2693,21 @@ int lock_it(unsigned char *path,unsigned char *bf)
 	unsigned char *lock_name=dirprt(path);
 	unsigned char *name=namprt(path);
 	unsigned char buf[1024];
-	unsigned char *user = getenv("USER");
-	unsigned char *host = getenv("HOSTNAME");
+	unsigned char *user = (unsigned char *)getenv("USER");
+	unsigned char *host = (unsigned char *)getenv("HOSTNAME");
 	int len;
-	if (!user) user="me";
-	if (!host) host="here";
+	if (!user) user=US "me";
+	if (!host) host=US "here";
 	lock_name=vsncpy(sv(lock_name),sc(".#"));
 	lock_name=vsncpy(sv(lock_name),sv(name));
-	joe_snprintf_3(buf,sizeof(buf),"%s@%s.%d",user,host,getpid());
-	if (!symlink(buf,lock_name)) {
+	joe_snprintf_3((char *)buf,sizeof(buf),"%s@%s.%d",user,host,getpid());
+	if (!symlink((char *)buf,(char *)lock_name)) {
 		vsrm(lock_name);
 		vsrm(name);
 		return 0;
 	}
 	if (bf) {
-		len = readlink(lock_name,bf,255);
+		len = readlink((char *)lock_name,(char *)bf,255);
 		if (len<0) len = 0;
 		bf[len] = 0;
 	}
@@ -2722,7 +2722,7 @@ void unlock_it(unsigned char *path)
 	unsigned char *name=namprt(path);
 	lock_name=vsncpy(sv(lock_name),sc(".#"));
 	lock_name=vsncpy(sv(lock_name),sv(name));
-	unlink(lock_name);
+	unlink((char *)lock_name);
 	vsrm(lock_name);
 	vsrm(name);
 }
@@ -2731,7 +2731,8 @@ void unlock_it(unsigned char *path)
 
 int plain_file(B *b)
 {
-	if (b->name && strcmp(b->name,"-") && b->name[0]!='!' && b->name[0]!='>')
+	if (b->name && strcmp(b->name,"-") && b->name[0]!='!' && b->name[0]!='>' &&
+	    !b->scratch)
 		return 1;
 	else
 		return 0;

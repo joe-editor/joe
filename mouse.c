@@ -40,6 +40,17 @@ static int Cb, Cx, Cy;
 static int last_msec=0;		/* time in ms when event occurred */
 static int clicks;
 
+static void fake_key(int c)
+ {
+ MACRO *m=dokey(maint->curwin->kbd,c);
+ int x=maint->curwin->kbd->x;
+ maint->curwin->main->kbd->x=x;
+ if(x)
+  maint->curwin->main->kbd->seq[x-1]=maint->curwin->kbd->seq[x-1];
+ if(m)
+  exemac(m);
+ }
+
 int uxtmouse(BW *bw)
  {
  Cb=ttgetc()-32;
@@ -72,17 +83,6 @@ int uxtmouse(BW *bw)
    /* drag */
    mousedrag(Cx,Cy);
  return 0;
- }
-
-static void fake_key(int c)
- {
- MACRO *m=dokey(maint->curwin->kbd,c);
- int x=maint->curwin->kbd->x;
- maint->curwin->main->kbd->x=x;
- if(x)
-  maint->curwin->main->kbd->seq[x-1]=maint->curwin->kbd->seq[x-1];
- if(m)
-  exemac(m);
  }
 
 static int mnow()

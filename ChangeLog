@@ -9,6 +9,12 @@ Mon Mar 21 11:56:56 EST 2005
 
 	Don't use paths which begin with ! as directories.
 
+	Fix more segfault problems: use doswitch instead of doedit.
+
+	Don't lock scratch buffers.
+
+	Run gcc -pedantic
+
 Sun Mar 20 11:54:44 EST 2005
 
 	Hex edit mode

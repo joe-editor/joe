@@ -489,7 +489,7 @@ SCRN *nopen(CAP *cap)
 		t->te = jgetstr(t->cap,US "te");
 
 	if (ttisxterm) {
-		ttputs("\33[?1002l");
+		ttputs(US "\33[?1002l");
 		ttflsh();
 	}
 
@@ -1632,7 +1632,7 @@ void nescape(SCRN *t)
 void nreturn(SCRN *t)
 {
 	if (ttisxterm)
-		ttputs("\33[?1002h");
+		ttputs(US "\33[?1002h");
 	if (t->ti)
 		texec(t->cap, t->ti, 1, 0, 0, 0, 0);
 	if (!skiptop && t->cl)

@@ -757,7 +757,7 @@ void save_macros(FILE *f)
 		if(kbdmacro[x]) {
 			mtext(buf, kbdmacro[x]);
 			fprintf(f,"	%d ",x);
-			emit_hdlc(f,buf,strlen(buf));
+			emit_hdlc(f,buf,strlen((char *)buf));
 			fprintf(f,"\n");
 		}
 	fprintf(f,"done\n");
@@ -767,7 +767,7 @@ void load_macros(FILE *f)
 {
 	unsigned char buf[1024];
 	unsigned char bf[1024];
-	while(fgets(buf,1023,f) && strcmp(buf,"done\n")) {
+	while(fgets((char *)buf,1023,f) && strcmp((char *)buf,"done\n")) {
 		unsigned char *p = buf;
 		int n;
 		int len;
@@ -847,13 +847,13 @@ int uif(BW *bw)
 int uelsif(BW *bw)
 {
 	if (!ifdepth) {
-		msgnw(bw->parent,"Elsif without if");
+		msgnw(bw->parent,US "Elsif without if");
 		return -1;
 	} else if(ifflag) {
 		ifflag=iffail=0; /* don't let the next else/elsif get run */
 	} else if(ifdepth == iffail) {
 		ifflag=1;	/* so the script can type the condition :) */
-		if(wmkpw(bw->parent,"Else if: ",NULL,doif,NULL,NULL,utypebw,NULL,NULL,locale_map,0)) return 0;
+		if(wmkpw(bw->parent,US "Else if: ",NULL,doif,NULL,NULL,utypebw,NULL,NULL,locale_map,0)) return 0;
 		else return -1;
 	}
 }
@@ -861,7 +861,7 @@ int uelsif(BW *bw)
 int uelse(BW *bw)
 {
 	if (!ifdepth) {
-		msgnw(bw->parent,"Else without if");
+		msgnw(bw->parent,US "Else without if");
 		return -1;
 	} else if(ifdepth == iffail) {
 		ifflag = !ifflag;
@@ -872,7 +872,7 @@ int uelse(BW *bw)
 int uendif(BW *bw)
 {
 	if(!ifdepth) {
-		msgnw(bw->parent,"Endif without if");
+		msgnw(bw->parent,US "Endif without if");
 		return -1;
 	}
 	if(iffail==ifdepth) iffail--, ifflag=1;
