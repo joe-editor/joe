@@ -133,8 +133,10 @@ int ubknd(BW *bw)
 	char **a;
 	char *s;
         char *sh=getenv("SHELL");
-        if (!sh)
-        	sh = "/usr/bin/bash";
+        if (!sh) {
+        	msgnw(bw->parent, "\"SHELL\" environment variable not defined or exported");
+        	return -1;
+        }
 
 	a = vamk(3);
 	s = vsncpy(NULL, 0, sz(sh));

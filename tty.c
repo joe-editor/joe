@@ -706,6 +706,13 @@ void ttsusp(void)
 	tickon();
 }
 
+/* Stuff for asynchronous I/O multiplexing.  We do not use streams or select() because joe
+   needs to work on versions of UNIX which predate these calls.  Instead, when there is
+   multiple async sources, we use helper processes which packetize data from the sources.  A
+   header on each packet indicates the source.  There is no guarentee that packets getting
+   written to the same pipe don't get interleaved, but you can reasonable rely on it with
+   small packets. */
+
 static void mpxstart(void)
 {
 	int fds[2];
@@ -869,7 +876,7 @@ static RETSIGTYPE death(int unused)
 #define SIGCHLD SIGCLD
 #endif
 
-/* Build a new environment */
+/* Build a new environment, but replace one variable */
 
 extern char **mainenv;
 
@@ -897,8 +904,11 @@ static char **newenv(char **old, char *s)
 	return new;
 }
 
+/* Create a shell process */
+
 MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj)
 {
+	char buf[80];
 	int fds[2];
 	int comm[2];
 	pid_t pid;
@@ -906,35 +916,68 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 	MPX *m;
 	char *name;
 
+	/* Get pty/tty pair */
 	if (!(name = getpty(ptyfd)))
 		return NULL;
+
+	/* Find free slot */
 	for (x = 0; x != NPROC; ++x)
 		if (!asyncs[x].func) {
 			m = asyncs + x;
-			goto ok;
+			break;
 		}
-	return NULL;
-      ok:
+	if (x==NPROC)
+		return NULL;
+
+	/* Flush output */
 	ttflsh();
+
+	/* Bump no. current async inputs to joe */
 	++nmpx;
+
+	/* Start input multiplexer */
 	if (ackkbd == -1)
 		mpxstart();
+
+	/* Remember callback function */
 	m->func = func;
 	m->object = object;
 	m->die = die;
 	m->dieobj = dieobj;
+
+	/* Acknowledgement pipe */
 	pipe(fds);
-	pipe(comm);
 	m->ackfd = fds[1];
+
+	/* PID number pipe */
+	pipe(comm);
+
+	/* Create processes... */
 	if (!(m->kpid = fork())) {
+		/* This process copies data from shell to joe */
+		/* After each packet it sends to joe it waits for
+		   an acknowledgement from joe so that it can not get
+		   too far ahead with buffering */
+
+		/* Close joe side of pipes */
 		close(fds[1]);
 		close(comm[0]);
+
+		/* Flag which indicates child died */
 		dead = 0;
 		joe_set_signal(SIGCHLD, death);
 
 		if (!(pid = fork())) {
+			/* This process becomes the shell */
 			signrm();
+
+			/* Close pty (we only need tty) */
 			close(*ptyfd);
+
+			/* All of this stuff is for disassociating ourself from
+			   controlling tty (session leader) and starting a new
+			   session.  This is the most non-portable part of UNIX- second
+			   only to pty/tty pair creation. */
 
 #ifdef TIOCNOTTY
 			x = open("/dev/tty", O_RDWR);
@@ -948,17 +991,23 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 			setpgrp();
 #endif
 
+
+			/* Close all fds */
 			for (x = 0; x != 32; ++x)
 				close(x);	/* Yes, this is quite a kludge... all in the
 						   name of portability */
 
+			/* Open the TTY */
 			if ((x = open(name, O_RDWR)) != -1) {	/* Standard input */
 				char **env = newenv(mainenv, "TERM=");
 
+				/* This tells the fd that it's a tty (I think) */
 #ifdef __svr4__
 				ioctl(x, I_PUSH, "ptem");
 				ioctl(x, I_PUSH, "ldterm");
 #endif
+
+				/* Open stdout, stderr */
 				dup(x);
 				dup(x);	/* Standard output, standard error */
 				/* (yes, stdin, stdout, and stderr must all be open for reading and
@@ -980,12 +1029,21 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 
 				/* Execute the shell */
 				execve(cmd, args, env);
+
+				/* If shell didn't execute */
+				snprintf(buf,80,"Couldn't execute shell '%s'\n",cmd);
+				write(0,buf,strlen(buf));
+				sleep(1);
 			}
 
 			_exit(0);
 		}
+
+		/* Tell JOE PID of shell */
 		joe_write(comm[1], &pid, sizeof(pid));
 
+		/* This process copies data from shell to JOE until EOF.  It creates a packet
+		   for each data */
 	      loop:
 		pack.who = m;
 		pack.ch = 0;
@@ -1012,8 +1070,11 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 	}
 	joe_read(comm[0], &m->pid, sizeof(m->pid));
 
+	/* We only need comm once */
 	close(comm[0]);
 	close(comm[1]);
+
+	/* Close other side of copy process pipe */
 	close(fds[0]);
 	return m;
 }

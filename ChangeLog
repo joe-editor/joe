@@ -1,4 +1,10 @@
 Sat Mar 20 2004  Joe Allen <jhallen@world.std.com>
+	Fix shell window again: instead of running bash if there is no
+	SHELL variable defined, we just print a message.
+	Also noticed that session leader stuff in Cygwin is broken: if you
+	suspend joe the subshell breaks.
+
+Sat Mar 20 2004  Joe Allen <jhallen@world.std.com>
 	* tty.c, ushell.c:
 	Fix shell window for Cygwin:
 	The problem was that the SHELL environment variable is not defined.

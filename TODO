@@ -4,6 +4,8 @@ Immediate things:
  and scrn.c with color support.  I need to merge it in.  I still need a
  database for syntax highlighting.  Emacs re-colors after no activity.
 
+ Better environment settings for shell windows.
+
  Gettext: merge yes or no?  I need a non-english speaking
  person to tell how well this works.
 
