@@ -1089,7 +1089,7 @@ static int dosetmark(BW * bw, int c, void *object, int *notify)
 	if (c >= '0' && c <= '9') {
 		pdupown(bw->cursor, bw->b->marks + c - '0');
 		poffline(bw->b->marks[c - '0']);
-		snprintf(msgbuf, JOE_MSGSBUFSIZE, "Mark %d set", c - '0');
+		snprintf(msgbuf, JOE_MSGBUFSIZE, "Mark %d set", c - '0');
 		msgnw(bw->parent, msgbuf);
 		return 0;
 	} else {
@@ -1120,7 +1120,7 @@ static int dogomark(BW * bw, int c, void *object, int *notify)
 			bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		} else {
-			snprintf(msgbuf, JOE_MSGSBUFSIZE, "Mark %d not set", c - '0');
+			snprintf(msgbuf, JOE_MSGBUFSIZE, "Mark %d not set", c - '0');
 			msgnw(bw->parent, msgbuf);
 			return -1;
 	} else {
