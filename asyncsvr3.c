@@ -18,11 +18,10 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <sys/time.h>
+#include <time.h>
 #include <sys/param.h>
 #include <termio.h>
 #include "async.h"
-
 
 #define DIVISOR 12000000
 #define TIMES 2
@@ -110,23 +109,7 @@ aflush()
 {
 if(obufp)
  {
- struct itimerval a,b;
- unsigned long usec=obufp*ccc;
- if(usec>=500000/10 /* HZ */)
-  {
-  a.it_value.tv_sec=usec/1000000;
-  a.it_value.tv_usec=usec%1000000;
-  a.it_interval.tv_usec=0;
-  a.it_interval.tv_sec=0;
-  signal(SIGALRM,dosig);
-  yep=0;
-  sigsetmask(sigmask(SIGALRM));
-  setitimer(ITIMER_REAL,&a,&b);
-  write(fileno(stdout),obuf,obufp);
-  while(!yep) sigpause(0);
-  signal(SIGALRM,SIG_DFL);
-  }
- else write(fileno(stdout),obuf,obufp);
+ write(fileno(stdout),obuf,obufp);
  obufp=0;
  }
 if(!have && !leave)

@@ -29,7 +29,7 @@ extern errno;
 int width=80;
 int height=24;
 int scroll=1;
-
+int noupdate=0;
 int repeatamnt=1;
 int nrepeatamnt;
 
@@ -1074,7 +1074,7 @@ if(*str=='\\' && flg1 && (str[1]=='i' || str[1]=='u'))
   goto loop;
   }
  }
-c= *str++ | att;
+c= showas(*str++) ^ att;
 if(c!= *too)
  {
  cpos(row,j);
@@ -1102,18 +1102,16 @@ while(1)
  if(x>width-1) msgout(height-1,buf+x-(width-1),1,0);
  else msgout(height-1,buf,1,0);
  ch=anext();
- if(ch=='`')
+ if(ch=='`' && !flag)
   {
   flag=1;
   continue;
   }
  if(ch>=32 && ch!=127 || flag)
   {
-  if(flag)
-   {
-   flag=0;
-   ch&=0x1f;
-   }
+  if(flag && ch=='?') ch=127;
+  else if(flag && ch!='`') ch&=0x1f;
+  flag=0;
   buf[x+1]=0, dat[x+1-y]=0;
   buf[x]=ch, dat[x++-y]=ch;
   continue;
@@ -1208,7 +1206,7 @@ imsg()
 attrib(0);
 if(omsg) msgout(1,omsg,0,1);
 upd=1;
-msgout(height-1,"\\i** Joe's Own Editor version 0.1.2 (1991) **\\i",0,1);
+msgout(height-1,"\\i** Joe's Own Editor version 0.1.5 (1991) **\\i",0,1);
 cpos(1,0);
 }
 
@@ -2117,15 +2115,16 @@ if(curwin->next==curwin)
   c=askyn("Do you really want to throw away this file?"); 
   if(c=='N') return;
   if(c== -1) return;
+  leave=1;
   dclose();
   eputs("\nFile not saved.\r\n");
   }
  else
   {
+  leave=1;
   dclose();
   eputs("\nFile not changed so no update needed\r\n");
   }
- leave=1;
  }
 else
  {
@@ -2301,7 +2300,14 @@ if(*s=='~')
  if(c= *p)
   {
   *p=0;
-  if(passwd=getpwnam(s+1))
+  if(!s[1])
+   {
+   *p=c;
+   strcpy(tmp,getenv("HOME"));
+   strcat(tmp,p);
+   strcpy(s,tmp);
+   }
+  else if(passwd=getpwnam(s+1))
    {
    *p=c;
    strcpy(tmp,passwd->pw_dir);
@@ -2408,9 +2414,9 @@ if(saveit1(gfnam))
  sprintf(sting,"\nFile %s saved.\r\n",gfnam);
  if(curwin->next==curwin)
   {
+  leave=1;
   dclose();
   eputs(sting);
-  leave=1;
   }
  else
   eexit();
@@ -2766,7 +2772,7 @@ else
   write(fw[1],&ch,1);
   }
  close(fw[1]);
- _exit();
+ _exit(-1);
  }
 aopen();
 rewrite();
@@ -2904,15 +2910,19 @@ else
 
 push()
 {
+leave=1;
 dclose();
 shell();
+leave=0;
 rewrite();
 }
 
 suspend()
 {
+leave=1;
 dclose();
 susp();
+leave=0;
 rewrite();
 }
 
@@ -3730,7 +3740,7 @@ else
   msgout(curwin->wind+1,"\\iError opening file\\i",0,1);
   cpos(curwin->wind+1,0);
   }
- dokey(anext());
+ noupdate=1;
  return;
  }
 }
@@ -3867,20 +3877,37 @@ macroe()
 record=0;
 }
 
-int inmacro=0;
-
 macrodo()
 {
 int z=repeatamnt;
 if(record) return;
-if(inmacro) return;
-inmacro=1;
 repeatamnt=1;
 nrepeatamnt=1;
 take=kmacro;
 waite();
 repeatamnt=z;
-inmacro=0;
+}
+
+int *runfuncs;
+int rsize=0;
+int rptr=0;
+
+isrunning(r,n)
+{
+int z;
+for(z=0;z!=rptr;z+=2) if(r==runfuncs[z] && n==runfuncs[z+1]) return 1;
+return 0;
+}
+
+pop() { rptr-=2; } 
+
+running(r,n)
+{
+if(rsize==rptr)
+ if(rsize) runfuncs=(int *)realloc(runfuncs,sizeof(int)*(rsize+=10));
+ else runfuncs=(int *)malloc(sizeof(int)*(rsize=10));
+runfuncs[rptr++]=r;
+runfuncs[rptr++]=n;
 }
 
 int dokey(k)
@@ -3926,19 +3953,25 @@ do
      undoptr=0;
      break;
      }
-    for(zz=0;r->keys[new].n[zz]!= -1;zz+=2)
+    if(isrunning(r,new)) undoptr=0, type(k);
+    else
      {
-     if(r->keys[new].n[zz])
+     running(r,new);
+     for(zz=0;r->keys[new].n[zz]!= -1;zz+=2)
       {
-      take=(unsigned char *)r->keys[new].n[zz+1];
+      if(r->keys[new].n[zz])
+       {
+       take=(unsigned char *)r->keys[new].n[zz+1];
+       }
+      else
+       {
+       if(km.cmd[r->keys[new].n[zz+1]].func!=redo &&
+          km.cmd[r->keys[new].n[zz+1]].func!=undo) undoptr=0;
+       km.cmd[r->keys[new].n[zz+1]].func(k);
+       if(leave) goto abcd;
+       }
       }
-     else
-      {
-      if(km.cmd[r->keys[new].n[zz+1]].func!=redo &&
-         km.cmd[r->keys[new].n[zz+1]].func!=undo) undoptr=0;
-      km.cmd[r->keys[new].n[zz+1]].func(k);
-      if(leave) goto abcd;
-      }
+     pop();
      }
     }
    abcd:
@@ -3947,7 +3980,8 @@ do
     {
     if(!uuu) upd=1;
     else uuu=0;
-    dupdate();
+    if(!noupdate) dupdate();
+    else noupdate=0;
     }
    return 0;
    }
@@ -4042,7 +4076,7 @@ while(fgets(buf,256,fd))
   if(helpsize+strlen(buf)>helpblksize)
    {
    if(help) help=(unsigned char *)realloc(help,helpblksize+strlen(buf)+320);
-   else help=(unsigned char *)malloc(strlen(buf)+320);
+   else help=(unsigned char *)calloc(1,strlen(buf)+320);
    helpblksize+=strlen(buf)+320;
    }
   strcat(help,buf);

@@ -103,7 +103,7 @@ if(obufp)
  nap(obufp*ccc);
  obufp=0;
  }
-if(!have) if(rdchk(fileno(stdin))>0) have=1;
+if(!have && !leave) if(rdchk(fileno(stdin))>0) have=1;
 }
 
 unsigned char *take=0;

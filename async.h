@@ -28,6 +28,7 @@ int sigjoe();		/* Set signal handling for JOE */
 int signorm();		/* Set signal handling back to default */
 
 extern int have;	/* Set if there is typeahead */
+extern int leave;	/* Set to prevent typehead checking */
 
 int eputs();		/* Write string to terminal */
 int eputc();		/* Write character to terminal */

@@ -10,12 +10,12 @@ CFLAGS = -DKEYDEF=\"$(WHEREJOERC)/.joerc\" -O
 
 # Use these two for 'gcc'
 #CC = gcc
-#CFLAGS = -DKEYDEF=\"$(WHEREJOERC)/.joerc\"
+#CFLAGS = -DKEYDEF=\"$(WHEREJOERC)/.joerc\" -O
 
 foo:
 	@echo Type make followed by one of the following
 	@echo
-	@echo bsd hpux xenix esix posix cruddy install clean
+	@echo bsd hpux xenix esix linux svr3 posix cruddy install clean
 
 bsd: joe.o asyncbsd.o blocks.o
 	$(CC) $(CFLAGS) joe.o asyncbsd.o blocks.o -ltermcap -o joe
@@ -33,7 +33,10 @@ posix: joe.o asyncposix.o blocks.o
 	$(CC) $(CFLAGS) joe.o asyncposix.o blocks.o -ltermcap -o joe
 
 linux: joe.o asynclinux.o blocks.o
-	$(CC) $(CFLAGS) joe.o asynclinux.o blocks.o -o joe
+	$(CC) $(CFLAGS) joe.o asynclinux.o blocks.o -ltermcap -o joe
+
+svr3: joe.o asyncsvr3.o blocks.o
+	$(CC) $(CFLAGS) joe.o asyncsvr3.o blocks.o -lcurses -o joe
 
 cruddy: joe.o cruddy.o blocks.o
 	$(CC) $(CFLAGS) joe.o cruddy.o blocks.o -o joe
@@ -47,9 +50,9 @@ install:
 
 clean:
 	rm -f asyncbsd.o asyncxenix.o asynchpux.o asyncesix.o asyncposix.o \
-cruddy.o blocks.o joe.o asynclinux.o
+cruddy.o blocks.o joe.o asynclinux.o asyncsvr3.o
 
-asyncbsd.o asynclinux.o cruddy.o asyncxenix.o asynxhpux.o asyncesix.o : async.h
+asyncbsd.o asyncsvr3.o asynclinux.o cruddy.o asyncxenix.o asynxhpux.o asyncesix.o : async.h
 
 blocks.o : blocks.h
 

@@ -7,6 +7,112 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 0.1.5
+**Released: 1992-02-01**
+
+Source recovered from joe-hist archive
+
+*Archival notes: Release date is an estimate. It is probably before Mar 26 and definitely before Jun 12.*
+
+Author's comments:
+
+```
+Here is the last version before the big joe1.0 rewrite.  It got the be quite
+sophisticated.  It now has macros and a real undo system.
+```
+
+Changelog:
+
+```
+Release 0.1.5 of JOE
+
+FIXES
+
+	* No longer looses single character of typehead when exiting
+
+	* Strcat to a block not guarenteed to contain a zero fixed.  This
+	  may have caused core dumps or may have messed up the help screen.
+
+	* posix driver fixed
+```
+
+---
+
+## JOE 0.1.4
+**Released: 1992-01-30**
+
+*The source for this release has been lost*
+
+Changelog:
+
+```
+Release 0.1.4 of JOE
+
+FIXES
+
+	* Control characters in prompts now handled correctly
+
+	* Detection for recursive macros added
+
+	* Stdout/stderr set properly for pipe-block-through-shell-command
+
+	* Generic SVR3 async file added
+
+	* Spelling errors in man page fixed :-)
+```
+
+Original announcement:
+```
+Xref: sparky comp.editors:917 alt.religion.emacs:44 comp.unix.misc:1115 alt.os.linux:346
+Newsgroups: comp.editors,alt.religion.emacs,comp.unix.misc,alt.os.linux
+Path: sparky!uunet!zaphod.mps.ohio-state.edu!qt.cs.utexas.edu!news!noc.near.net!wpi.WPI.EDU!rcarter
+From: rcarter@wpi.WPI.EDU (Randolph Carter (nee. Joseph H. Allen))
+Subject: Joe Editor version 0.1.4 (you might know it as E or J)
+Message-ID: <1992Jan30.191900.5741@wpi.WPI.EDU>
+Sender: rcarter@wpi.WPI.EDU (Randolph Carter (nee. Joseph H. Allen))
+Organization: Kadath Tours, Inc.
+Date: Thu, 30 Jan 1992 19:19:00 GMT
+Lines: 28
+
+
+Well I said that the last release was going to be the last before the
+rewrite, but people found enough minor bugs so that I have to make another. 
+But good news!  I finally have an anonymous ftp archive site (yeah! no more
+stupid uuencoding or people complaining that I posted it wrong):
+
+	ftp 		wpi.wpi.edu   (130.215.24.1)
+	login:		anonymous
+	password: 	<your user name>
+	cd		stusrc
+	binary
+	get		joe.tar.Z
+
+The fixes for this version:
+
+	Recursive macros detected
+
+	Control characters typed in prompts are properly handled
+
+	stdout/stderr are set right for the 'pipe block through shell
+	command' function
+
+	A new version of async for SVR3 (actually generic system V I think)
+-- 
+/*  rcarter@wpi.wpi.edu */      /* Amazing */             /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
+## JOE 0.1.3
+*Release date unknown*
+
+*The source for this release has been lost*
+
+---
+
 ## JOE 0.1.2
 **Released: 1992-01-23**
 

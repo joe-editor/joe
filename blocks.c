@@ -18,16 +18,6 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "blocks.h"
 
-/* Set block to zero */
-
-unsigned char *bzero(bk,sz)
-unsigned char *bk;
-{
-unsigned char *b=bk-1;
-if(sz) do b[sz]=0; while(--sz);
-return bk;
-}
-
 /* Set block to unsigned character */
 
 unsigned char *bset(bk,sz,c)

@@ -127,7 +127,7 @@ if(obufp)
  else write(fileno(stdout),obuf,obufp);
  obufp=0;
  }
-if(!have)
+if(!have && !leave)
  {/* this doesn't work
  fcntl(STDIN_FILENO,F_SETFL,O_NDELAY);
  if(read(STDIN_FILENO,&havec,1)==1) have=1;

@@ -1,3 +1,27 @@
+Release 0.1.5 of JOE
+
+FIXES
+
+	* No longer looses single character of typehead when exiting
+
+	* Strcat to a block not guarenteed to contain a zero fixed.  This
+	  may have caused core dumps or may have messed up the help screen.
+
+	* posix driver fixed
+
+Release 0.1.4 of JOE
+
+FIXES
+
+	* Control characters in prompts now handled correctly
+
+	* Detection for recursive macros added
+
+	* Stdout/stderr set properly for pipe-block-through-shell-command
+
+	* Generic SVR3 async file added
+
+	* Spelling errors in man page fixed :-)
 
 Release 0.1.2 of JOE
 

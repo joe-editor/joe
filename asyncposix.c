@@ -47,8 +47,9 @@ esignal(a,b)
 void (*b)();
 {
 struct sigaction action;
-sigemptyset(&actions.sa_mask);
+sigemptyset(&action.sa_mask);
 action.sa_handler=b;
+action.sa_flags=0;
 sigaction(a,&action,NULL);
 }
 
@@ -131,7 +132,6 @@ if(obufp)
   a.it_value.tv_usec=usec%1000000;
   a.it_interval.tv_usec=0;
   a.it_interval.tv_sec=0;
-  action.sa_handler=dosig;
   esignal(SIGALRM,dosig);
   yep=0;
   sigsetmask(sigmask(SIGALRM));
@@ -143,7 +143,7 @@ if(obufp)
  else write(fileno(stdout),obuf,obufp);
  obufp=0;
  }
-if(!have)
+if(!have && !leave)
  {
  fcntl(STDIN_FILENO,F_SETFL,O_NDELAY);
  if(read(STDIN_FILENO,&havec,1)==1) have=1;

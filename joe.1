@@ -7,7 +7,7 @@ joe \- Joe's Own Editor
 .BR joe
 .SH DESCRIPTION
 JOE is a screen editor designed to be easy to learn for novice users and
-powerfull enough to be usefull for experienced users.  After you invoke the
+powerful enough to be useful for experienced users.  After you invoke the
 editor, you can hit ^K H ('^' mean hold the Ctrl key down while pressing the
 following key) to turn on the help text.  From this you should be able to
 figure out how to use the editor.  A few things need further explanation
@@ -19,7 +19,7 @@ CCC staff do not have to help you use it.  Use this program at your own risk.
 However, as long as the author of the program is here at WPI, he will be glad
 to help you.  Mail any questions you have to 'rcarter@wpi.wpi.edu'
 
-.SH USEAGE
+.SH USAGE
 JOE uses the "TERM" environment variable and the termcap database to determine
 the height and width of the screen and to determine if the terminal uses
 scrolling regions.  Except for these differences the terminal must be
@@ -39,13 +39,13 @@ comments at the beginning of the file explain how to do this.
 
 Be sure that the baud rate as reported by stty is correct.  JOE uses this
 to optimize its screen writes.  If you're going over a network, set the
-baud rate to your best estimate of the actual througput.  If you're using
+baud rate to your best estimate of the actual throughput.  If you're using
 JOE in an X window, set the baud rate to the highest possible (usually 'stty extb'
 or 'stty 38400').
 
 ^K J reformats the current paragraph.  ^T R can be used to change the right
 margin.  The default is the width of the screen.  If auto-indent mode is set,
-indented paragraphs are formated.
+indented paragraphs are formatted.
 
 Use ^K B to set the beginning of a block and ^K K to set the end of a block. 
 You can then copy, move, save or delete the marked block.  To turn the
@@ -84,11 +84,11 @@ Hit ^K L to goto an entered line number.
 
 Hit ^K 0 to execute a shell command.  If a block was set, the shell command
 gets the block on its standard input and the any output the command writes
-to it's stardard output will replace the block.  If a block was not set, any
+to it's standard output will replace the block.  If a block was not set, any
 standard output is simply inserted into the text at the cursor location.
 
 You may wish to capture the error output from the command instead of its
-standard output.  This may be done by giving appropraite shell modifiers
+standard output.  This may be done by giving appropriate shell modifiers
 along with the command.  For example if you want to run the command 'make
 bsd':
 
@@ -124,7 +124,7 @@ A number of editing modes are settable with the ^T command:
 .br
 				When tab magic is on, the column number of
 .br
-				characters preceeded by tab characters will
+				characters preceded by tab characters will
 .br
 				automatically be maintained.
 
