@@ -265,6 +265,7 @@ int udropon(BW *bw)
 		prm(markk); markk=0;
 		updall();
 		marking = 0;
+		msgnw(bw->parent, US "Selection cleared.");
 		return 0;
 	} else if (markb && markb->b==bw->cursor->b) {
 		marking = 0;
@@ -280,6 +281,7 @@ int udropon(BW *bw)
 		return 0;
 	} else {
 		marking = 1;
+		msgnw(bw->parent, US "Selection started.");
 		return umarkb(bw);
 	}
 }

@@ -2,7 +2,7 @@ Tue May 11 2004  Joe Allen <jhallen@world.std.com>
 	* b.c ufile.c :
 
 	Update file date on save.
-
+	Improve Ctrl-<space> marking.
 
 Mon May 10 2004  Joe Allen <jhallen@world.std.com>
 	* ufile.c b.c :

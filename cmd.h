@@ -24,6 +24,8 @@ extern int beep;
 #define EMOVE		 32	/* A movement for position history purposes */
 #define EKILL		 64	/* Function is a kill */
 #define EMOD		128	/* Not allowed on readonly files */
+/* These use same bits as TYPE* in types.h */
+#define EBLOCK		0x4000	/* Finish block selection (call udropon) */
 
 /* CMD *findcmd(char *s);
  * Return command address for given name
