@@ -537,22 +537,22 @@
 {Basic
 \i   Help Screen    turn off with ^G     more help with ^[. (ESC .)              \i
 \i \i\uCURSOR\u           \uGO TO\u            \uBLOCK\u      \uDELETE\u    \uMISC\u         \uEXIT\u     \i \i
-\i \i^B left ^F right ^[Y top of file  ^^  mark   ^D  char  ^J   format  ^X save  \i \i
-\i \i^P up   ^N down  ^[V end of file  ^K  cut    ^K  line  ^T   spell   ^C abort \i \i
-\i \i^Y prev. screen  ^A  beg. of line ^U  paste  ^[K >line ^[T  file    ^Z shell \i \i
-\i \i^V next screen   ^E  end of line  ^[U select ^[H word< ^L   refresh \uFILE\u     \i \i
-\i \i^@  prev. word   ^[L line No.     ^O  save   ^[D >word ^[^[ options ^O save  \i \i
-\i \i^_  next word    ^W  find text    ^[/ filter ^[- undo  ^[=  redo    ^R insert\i \i
+\i \i^B left ^F right ^W^Y top of file ^^  mark   ^D  char  ^J   format  ^X save  \i \i
+\i \i^P up   ^N down  ^W^V end of file ^K  cut    ^K  line  ^T   spell   ^C status\i \i
+\i \i^Y prev. screen  ^A  beg. of line ^U  paste  ^[K >line ^[T  file    ^[Z shell\i \i
+\i \i^V next screen   ^E  end of line  ^O  save   ^[H word< ^L   refresh \uFILE\u     \i \i
+\i \i^Z prev. word    ^W^T line No.    ^[/ filter ^[D >word ^[^[ options ^O save  \i \i
+\i \i^SPACE next word ^W find ^[W next            ^[- undo  ^[=  redo    ^R insert\i \i
 }
 
 {Advanced
 \i   Help Screen    turn off with ^G     prev. screen ^[,    next screen ^[.     \i
 \i \i\uMACROS\u         \uWINDOW\u          \uWINDOW\u     \uSHELL\u         \uMISC\u                 \i \i
-\i \i^[( 0-9 Record ^[O Split       ^[I Grow   ^[! Command   ^[X Execute command  \i \i
-\i \i^[)     Stop   ^[E Edit file   ^[J Shrink ^[W Window    ^[M Math             \i \i
+\i \i^[( 0-9 Record ^[O Split       ^[G Grow   ^[! Command   ^[X Execute command  \i \i
+\i \i^[)     Stop   ^[E Edit file   ^[J Shrink ^[' Window    ^[M Math             \i \i
 \i \i^[ 0-9  Play   ^[P Goto prev.  \uQUOTE\u      \uI-SEARCH\u      ^[C Center line      \i \i
-\i \i^[?     Query  ^[N Goto next   `  Ctrl-   ^[R Backwards ^[G to matching ( [ {\i \i
-\i \i^[\\     Repeat ^[Z Zoom in/out ^\\ Meta-   ^[S Forwards  ^[< ^[> pan left/rght\i \i
+\i \i^[?     Query  ^[N Goto next   `  Ctrl-   ^[R Backwards ^[] to matching ( [ {\i \i
+\i \i^[\\     Repeat ^[I Zoom in/out ^\\ Meta-   ^[S Forwards  ^[< ^[> pan left/rght\i \i
 }
 
 {Search
@@ -649,9 +649,9 @@
 type		^@ TO ÿ		Type a character
 abort		^C		Abort window
 arg		^[ \		Repeat next command
-explode		^[ Z		Show all windows or show only one window
-explode		^[ ^Z
-explode		^[ z
+explode		^[ I		Show all windows or show only one window
+explode		^[ ^I
+explode		^[ i
 help		^G		Help menu
 help		.k1
 hnext		^[ .		Next help window
@@ -676,7 +676,9 @@ query		^[ ?		Macro query insert
 record		^[ (		Record a macro
 retype		^L		Refresh screen
 rtn		^M		Return
-shell		^Z
+shell		^[ z
+shell		^[ Z
+shell		^[ ^Z
 stop		^[ )		Stop recording
 
 :main			Text editing window
@@ -700,9 +702,7 @@ backw		^[ H		Backspace word
 backw		^[ ^?
 backw		^[ ^H
 backw		^[ h
-bknd		^[ W		Shell window
-bknd		^[ w
-bknd		^[ ^W
+bknd		^[ '		Shell window
 bof		^[ Y		Goto beginning of file
 bof		^[ ^Y
 bof		^[ y
@@ -723,7 +723,7 @@ dnarw		.kd		Go down
 dnarw		^N
 dnarw		^[ O B
 dnarw		^[ [ B
-drop		^^		Marking
+dropon		^^		Marking
 edit		^[ E		Edit a file
 edit		^[ ^E
 edit		^[ e
@@ -738,12 +738,15 @@ eol		^[ [ 4 ~
 execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute
 execmd		^[ x		Prompt for command to execute
+ ffirst,uparw,eol	^W		Find first
 ffirst		^W		Find first
-markk,filt		^[ /		Filter block though file
+fnext		^[ w
+fnext		^[ W
+filt		^[ /		Filter block though file
 fmtblk		^J		Format paragraphs in block
-groww		^[ I		Grow window
-groww		^[ ^I
-groww		^[ i
+groww		^[ G		Grow window
+groww		^[ ^G
+groww		^[ g
 insc		.kI		Insert a space
 insf		^R		Insert a file
 isrch		^[ S		Forward incremental search
@@ -752,6 +755,7 @@ isrch		^[ s		Forward incremental search
 line		^[ L		Goto line no.
 line		^[ ^L
 line		^[ l
+line		^_
 ltarw		.kl		Go left
 ltarw		^B
 ltarw		^[ O D
@@ -759,7 +763,7 @@ ltarw		^[ [ D
 mode		^[ ^[		Options menu
 nextword	^@		Goto next word
 open		^]		Split line
-prevword	^_		Previous word
+prevword	^Z		Previous word
 picokill	^K		Pico kill function
 quote		`		Enter Ctrl chars
 quote8		^\		Enter Meta chars
@@ -772,8 +776,8 @@ rtarw		^F
 rtarw		^[ O C
 rtarw		^[ [ C
 run		^[ !		Run a program in a window
-stat		^[ SP		Cursor position status
-markk,blksave		^O		Save file
+stat		^C   		Cursor position status
+blksave		^O		Save file
 crawll		^[ <		Pan left
 crawlr		^[ >		Pan right
 shrinkw		^[ J		Shrink window
@@ -782,9 +786,7 @@ shrinkw		^[ j
 splitw		^[ ^O		Split window
 splitw		^[ o
 tag		^[ ;		Tags file search
-tomatch		^[ G		To matching delimiter
-tomatch		^[ g
-tomatch		^[ ^G
+tomatch		^[ ]		To matching delimiter
 undo		^[ -		Undo changes
 uparw		.ku		Go up
 uparw		^P
@@ -797,7 +799,13 @@ yankpop		^[ u
 
 :prompt			Prompt windows
 :inherit main
+abort		^C
 complete	^I
+cancel,bof	^Y
+cancel,eof	^V
+cancel,line	^T
+cancel,bop	^W
+cancel,eop	^O
 
 :menu			Selection menus
 :inherit windows

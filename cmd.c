@@ -79,6 +79,7 @@ CMD cmds[] = {
 	{US "bufed", TYPETW, ubufed, NULL, 0, NULL},
 	{US "build", TYPETW + TYPEPW, ubuild, NULL, 0, NULL},
 	{US "byte", TYPETW + TYPEPW, ubyte, NULL, 0, NULL},
+	{US "cancel", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ucancel, NULL, 0, NULL},
 	{US "center", TYPETW + TYPEPW + EFIXXCOL + EMOD, ucenter, NULL, 1, NULL},
 	{US "ctrl", TYPETW + TYPEPW + EMOD, uctrl, NULL, 0, NULL},
 	{US "col", TYPETW + TYPEPW, ucol, NULL, 0, NULL},

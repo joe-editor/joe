@@ -887,7 +887,7 @@ int uask(BW *bw)
 static int dolose(BW *bw, int c, void *object, int *notify)
 {
 	W *w;
-	B *b;
+	B *b, *new_b;
 	int cnt;
 
 	if (notify) {
@@ -906,14 +906,26 @@ static int dolose(BW *bw, int c, void *object, int *notify)
 	if ((w = maint->topwin) != NULL) {
 		do {
 			if ((w->watom->what&TYPETW) && ((BW *)w->object)->b==b) {
-				BW *bw = (BW *)w->object;
-				object = bw->object;
-				bwrm(bw);
-				w->object = (void *) (bw = bwmk(w, bfind(US ""), 0));
-				wredraw(w);
-				bw->object = object;
-				if (bw->o.mnew)
-					exemac(bw->o.mnew);
+				if ((new_b = borphan()) != NULL) {
+					BW *bw = (BW *)w->object;
+					void *object = bw->object;
+					/* FIXME: Shouldn't we wabort() and wcreate here to kill
+					   any prompt windows? */
+
+					bwrm(bw);
+					w->object = (void *) (bw = bwmk(w, new_b, 0));
+					wredraw(w);
+					bw->object = object;
+				} else {
+					BW *bw = (BW *)w->object;
+					object = bw->object;
+					bwrm(bw);
+					w->object = (void *) (bw = bwmk(w, bfind(US ""), 0));
+					wredraw(w);
+					bw->object = object;
+					if (bw->o.mnew)
+						exemac(bw->o.mnew);
+				}
 			}
 		w = w->link.next;
 		} while (w != maint->topwin);

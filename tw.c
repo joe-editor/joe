@@ -547,6 +547,15 @@ int uabort(BW *bw, int k)
 		return naborttw(bw, 'y', NULL, NULL);
 }
 
+int ucancel(BW *bw, int k)
+{
+	if (bw->parent->watom != &watomtw) {
+		wabort(bw->parent);
+		return 0;
+	} else
+		return uabort(bw,k);
+}
+
 /* Same as above, but only calls genexmsg if nobody else has */
 
 int uabort1(BW *bw, int k)

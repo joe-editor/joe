@@ -91,6 +91,9 @@ prverr		Go to previous parsed error
 
 Exit
 ----
+cancel		Like abort, but doesn't return failure: useful in macros
+		to escape out of a prompt.
+
 abort		Abort current buffer/window.  Prompt if it is changed.
 
 abortbuf	Like above, but just fail if it would have to prompt because
