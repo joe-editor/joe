@@ -1,4 +1,8 @@
 Sat Jun  8 2002  Vitezslav Samel <samel@mail.cz>
+	* ufile.c:
+	change write() to joe_write() to avoid partly copied files
+
+Sat Jun  8 2002  Vitezslav Samel <samel@mail.cz>
 	* termcap.c:
 	strcmp() can return values other than -1/0/+1
 

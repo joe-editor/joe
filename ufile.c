@@ -157,7 +157,7 @@ static int cp(char *from, char *to)
 		return -1;
 	}
 	while ((amnt = read(f, stdbuf, stdsiz)) > 0) {
-		if (amnt != write(g, stdbuf, amnt)) {
+		if (amnt != joe_write(g, stdbuf, amnt)) {
 			break;
 		}
 	}
