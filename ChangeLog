@@ -3,6 +3,7 @@ Wed Mar  2 2005  Joe Allen <jhallen@world.std.com>
 	Fix pointer leak.
 	Make option to enable mouse support
 	Change .joe_state file to use \ for escape
+	Improve math
 
 Wed Mar  2 2005  Joe Allen <jhallen@world.std.com>
 

@@ -4,7 +4,7 @@
 AC_PREREQ(2.54)
 
 #### Here's the only place where to change version number ####
-AC_INIT(joe, 3.1)
+AC_INIT(joe, 3.2)
 AC_CONFIG_SRCDIR([b.c])
 
 AC_CANONICAL_BUILD
@@ -30,6 +30,8 @@ case "$host" in
 		;;
 	*)	;;
 esac
+
+search_libs="$search_libs m"
 
 # Checks for libraries.
 AC_ARG_ENABLE(curses,

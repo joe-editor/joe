@@ -4,7 +4,7 @@ Short list for 3.2:
 
 	- egmont's Ctrl-selection bug
 
-	- math: hex entry/display, insert into text
+	- math: insert into text
 
 	- ^KC into search window fails.  key to move text into search window
 
@@ -543,8 +543,6 @@ UTF-8 syntax files?
 Support for more languages:
 
  Paragraph reformat mode for TeX files.
-
- ^G Matching for verilog begin ... end, html tags, etc.
 
  Reformat paragraph should reformat C function if we're editing C.
 
