@@ -771,28 +771,33 @@ yankpop		^[ y		Undelete text
 yank		^[ Y		Undelete text
 yankpop		^[ Y		Undelete text
  toggle_marking	^@		Ctrl-space block selection method
-select,rtarw,markk    ^[ [ 1 ; 5 C    Mark right
-select,rtarw,markk    ^[ [ 5 C        Mark right
- select,rtarw,markk    ^[ O C
+ begin_marking,rtarw,toggle_marking	^[ ^[ [ C
+begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right
+begin_marking,rtarw,toggle_marking	^[ [ 5 C        Mark right
+ begin_marking,rtarw,toggle_marking	^[ O C		Mark right Putty Ctrl-rtarw
 
-select,ltarw,markk    ^[ [ 1 ; 5 D    Mark left
-select,ltarw,markk    ^[ [ 5 D        Mark left
- select,ltarw,markk    ^[ O D
+ begin_marking,ltarw,toggle_marking	^[ ^[ [ D
+begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Mark left
+begin_marking,ltarw,toggle_marking	^[ [ 5 D        Mark left
+ begin_marking,ltarw,toggle_marking	^[ O D		Mark left Putty Ctrl-ltarw
 
-select,uparw,markk    ^[ [ 1 ; 5 A    Mark up
-select,uparw,markk    ^[ [ 5 A        Mark up
- select,uparw,markk    ^[ O A
+ begin_marking,uparw,toggle_marking	^[ ^[ [ A
+begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Mark up
+begin_marking,uparw,toggle_marking	^[ [ 5 A        Mark up
+ begin_marking,uparw,toggle_marking	^[ O A		Mark up Putty Ctrl-uparw
 
-select,dnarw,markk    ^[ [ 1 ; 5 B    Mark down
-select,dnarw,markk    ^[ [ 5 B        Mark down
- select,dnarw,markk    ^[ O B
+ begin_marking,dnarw,toggle_marking	^[ ^[ [ B
+begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Mark down
+begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
+ begin_marking,dnarw,toggle_marking	^[ O B		Mark down Putty Ctrl-dnarw
 
-markk,blkdel,nmark   ^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
-markk,blkdel,nmark   ^[ [ 3 ; 5 ~	Xterm Ctrl-Del
+blkdel,nmark   ^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
+blkdel,nmark   ^[ [ 3 ; 5 ~	Xterm Ctrl-Del
 yank		^[ [ 2 ; 5 -	Gnome-terminal Ctrl-Ins
 yank		^[ [ 2 ; 5 ~    Xterm Ctrl-Ins
 
-dropon		^@
+toggle_marking	^@		Ctrl-space block selection method
+				Ctrl-space used to insert a space
  bufed		^[ d		Menu of buffers
 nbuf		^[ v		Next buffer
 nbuf		^[ V		Next buffer
@@ -952,7 +957,7 @@ dnarw,eol	.kd		Go down
 :menu			Selection menus
 :inherit windows
 
-abort		^[ ^[
+backsmenu	^?
 backsmenu	^H
 bofmenu		^K U
 bofmenu		^K ^U

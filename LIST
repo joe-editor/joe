@@ -15,6 +15,16 @@ blksave		Save marked block into a file
 copy		Copy block to kill-ring
 drop		Set markb.  If it was already set, eliminate it.
 dropon          Set markb.  If it was already set, eliminate it.  Turn on marking mode.
+
+toggle_marking	If we're in a block: clear markb and markk.
+		If marking is off: set markb and turn on marking.
+		If marking is on: set markk (swap if necessary with markb)
+		and turn marking off.
+
+begin_marking	If we're on an edge of a block: set markb to other edge and
+		turn on marking mode.  Otherwise set markb to cursor and
+		turn on marking mode.
+
 select          Set markb.  If it was already set, do nothing.
 filt		Filter block or file through a unix command
 markb		Set beginning of block mark

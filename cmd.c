@@ -64,6 +64,7 @@ CMD cmds[] = {
 	{US "backsmenu", TYPEMENU, umbacks, NULL, 1, NULL},
 	{US "backw", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EKILL + EMOD, ubackw, NULL, 1, US "delw"},
 	{US "beep", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ubeep, NULL, 0, NULL},
+	{US "begin_marking", TYPETW + TYPEPW, ubegin_marking, NULL, 0, NULL},
 	{US "bknd", TYPETW + TYPEPW, ubknd, NULL, 0, NULL},
 	{US "bkwdc", TYPETW + TYPEPW, ubkwdc, NULL, 1, US "fwrdc"},
 	{US "blkcpy", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, ublkcpy, NULL, 1, NULL},
@@ -96,7 +97,6 @@ CMD cmds[] = {
 	{US "dnarwmenu", TYPEMENU, umdnarw, NULL, 1, US "uparwmenu"}, 
 	{US "dnslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, udnslide, NULL, 1, US "upslide"},
 	{US "drop", TYPETW + TYPEPW, udrop, NULL, 0, NULL},
-	{US "dropon", TYPETW + TYPEPW, udropon, NULL, 0, NULL},
 	{US "dupw", TYPETW, uduptw, NULL, 0, NULL},
 	{US "edit", TYPETW + TYPEPW, uedit, NULL, 0, NULL},
 	{US "eof", TYPETW + TYPEPW + EFIXXCOL + EMOVE, u_goto_eof, NULL, 0, NULL},
@@ -190,6 +190,7 @@ CMD cmds[] = {
 	{US "switch", TYPETW + TYPEPW, uswitch, NULL, 0, NULL},
 	{US "tabmenu", TYPEMENU, umtab, NULL, 1, US "ltarwmenu"},
 	{US "tag", TYPETW + TYPEPW, utag, NULL, 0, NULL},
+	{US "toggle_marking", TYPETW + TYPEPW, utoggle_marking, NULL, 0, NULL},
 	{US "tomarkb", TYPETW + TYPEPW + EFIXXCOL + EBLOCK, utomarkb, NULL, 0, NULL},
 	{US "tomarkbk", TYPETW + TYPEPW + EFIXXCOL + EBLOCK, utomarkbk, NULL, 0, NULL},
 	{US "tomarkk", TYPETW + TYPEPW + EFIXXCOL + EBLOCK, utomarkk, NULL, 0, NULL},
@@ -239,7 +240,7 @@ int execmd(CMD *cmd, int k)
 
 	/* Complete selection for block commands */
 	if ((cmd->flag & EBLOCK) && marking)
-		udropon(maint->curwin->object);
+		utoggle_marking(maint->curwin->object);
 
 	if ((maint->curwin->watom->what & TYPETW) && bw->b->rdonly && (cmd->flag & EMOD)) {
 		msgnw(bw->parent, US "Read only");

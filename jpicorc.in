@@ -730,7 +730,7 @@ dnarw		.kd		Go down
 dnarw		^N
 dnarw		^[ O B
 dnarw		^[ [ B
-dropon		^^		Marking
+toggle_marking	^^		Marking
 edit		^[ E		Edit a file
 edit		^[ ^E
 edit		^[ e

@@ -54,3 +54,30 @@ Programming
 
 	Try ^K , and ^K .  These keys select the current block (based on
 indentation) and shift it left or right by the -istep and -indentc.
+
+Selecting blocks
+----------------
+
+	The "classic" way is to hit ^K B at the beginning and ^K K at the
+end.  These set pointers called markb and markk.  Once these are set you
+can jump to markb with ^[ b and jump to markk with ^[ k.
+
+	New way no.1: hit Ctrl-space to start selecting, move the cursor,
+then hit Ctrl-space to complete the block.  Hit Ctrl-space in the block to
+cancel it.  Hit Ctrl-space outside of the block to start selecting a new
+one.  This uses the "toggle_marking" function.  Also any block command will
+complete the block.
+
+	New way no.2: hit Ctrl-rtarw to start selecting rightward.  Each
+time you hit Ctrl-rtarw, the block is extended one more to the right.  This
+uses a simple macro: "begin_marking,rtarw,toggle_marking".  Unfortunately,
+there is no standard way to get the keysequence given by the terminal
+emulator when you hit Ctrl-rtarw.  Instead you have to determine this
+sequence yourself and enter it directly in the joerc file.  Some examples
+are given for xterm and gnome-terminal.  Hit ` rtarw to have the sequence
+shown on your screen.  Note that Putty uses ^[ ^[ [ C which will not appear
+with ` rtarw (also ^[ ^[ is set book mark, so you need to unbind it to do
+this in Putty).
+
+	Also you can hit Ctrl-delete to cut and Ctrl-insert to paste if the
+sequence for these keys are known.
