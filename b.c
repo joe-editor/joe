@@ -413,7 +413,7 @@ int pisbow(P *p)
 	int d = prgetc(q);
 
 	prm(q);
-	if (isalnum_(c) && !isalnum_(d))
+	if (isalnum_(c) && (!isalnum_(d) || pisbof(p)))
 		return 1;
 	else
 		return 0;
@@ -427,7 +427,7 @@ int piseow(P *p)
 	int c = prgetc(q);
 
 	prm(q);
-	if (isalnum_(c) && !isalnum_(d))
+	if (isalnum_(c) && (!isalnum_(d) || piseof(p)))
 		return 1;
 	else
 		return 0;
