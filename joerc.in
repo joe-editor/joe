@@ -713,7 +713,7 @@
  Keys:
 
  Use ^@ through ^_ , ^# and ^? for Ctrl chars
- Use ^@ through ^_ and ^? for Ctrl chars
+ Use SP for space
  Use a TO b to generate a range of characters
  Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
  You can also use termcap string capability names.  For example:
@@ -780,9 +780,11 @@ pgdn		.kN		Screen down
 pgdn		^V
 pgdn		^[ [ 6 ~
 pgdn      ^# S
+pgup		.kP		Screen up
 pgup		^U
 pgup		^[ [ 5 ~
 pgup      ^# T
+play		^K 0 TO 9	Execute macro
 prevw		^K P		Goto previous window
 prevw		^K ^P
 prevw		^K p
@@ -835,11 +837,13 @@ home			^[ [ H			Xterm, Konsole, SCO
 home			^[ O H			gnome-terminal
 home			^[ [ 7 ~		RxVT
 home			^# SP A		Amiga
+
 eol			^[ [ 4 ~		Putty, Linux, Cygwin, ssh
 eol			^[ [ F			Xterm, Konsole, SCO
 eol			^[ O F			gnome-terminal
 eol			^[ [ 8 ~		RxVT
 eol			^# SP @		Amiga
+
 begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right Xterm
 begin_marking,rtarw,toggle_marking	^[ [ 5 C        Mark right Gnome-terminal
  (Almost all termcap entries have ^[ O C as an arrow key).
@@ -969,6 +973,7 @@ bof		^K u
  bol		.kh		Goto beginning of line
  bol		^A
  bol      ^# SP A
+home		.kh
 home		^A
 center		^K A		Center line
 center		^K ^A
@@ -985,6 +990,7 @@ dnarw		^N
 dnarw		^[ O B
 dnarw		^[ [ B
 dnarw		^# B
+edit		^K E		Edit a file
 edit		^K ^E
 edit		^K e
 eof		^K V		Go to end of file
@@ -1023,6 +1029,7 @@ ltarw		^B
 ltarw		^[ O D
 ltarw		^[ [ D
 ltarw          ^# D
+macros		^[ d		Dump keyboard macros
 macros		^[ ^D
 markb		^K B		Set beginning of marked block
 markb		^K ^B
@@ -1043,6 +1050,7 @@ rtarw		^F
 rtarw		^[ O C
 rtarw		^[ [ C
 rtarw          ^# C
+run		^K !		Run a shell command
 save		^K D		Save file
 save		^K S
 save		^K ^D
@@ -1062,6 +1070,7 @@ tomatch		^G		Goto matching parenthasis
 undo		^_		Undo changes
 uparw		.ku		Go up
 uparw		^# A
+uparw		^P
 uparw		^[ O A
 uparw		^[ [ A
 
@@ -1081,11 +1090,13 @@ bolmenu			^[ [ H			Xterm, Konsole
 bolmenu			^[ O H			gnome-terminal
 bolmenu			^[ [ 7 ~		RxVT
 bolmenu			^# SP A		Amiga
+
 eolmenu			^[ [ 4 ~		Putty, Linux, Cygwin, ssh
 eolmenu			^[ [ F			Xterm, Konsole
 eolmenu			^[ O F			gnome-terminal
 eolmenu			^[ [ 8 ~		RxVT
 eolmenu			^# SP @		Amiga
+
 abort		^[ ^[	Why?
 backsmenu	^?
 backsmenu	^H
@@ -1099,6 +1110,7 @@ dnarwmenu	^N
 dnarwmenu	^[ [ B
 dnarwmenu	^[ O B
 dnarwmenu ^# B
+dnarwmenu	MWDOWN
 eofmenu		^K ^V
 eofmenu		^K v
 eolmenu		.kH
@@ -1108,15 +1120,19 @@ ltarwmenu	^B
 ltarwmenu	^[ [ D
 ltarwmenu	^[ O D
 ltarwmenu ^# D
+pgdnmenu	.kN		Screen down
 pgdnmenu	^V
 pgdnmenu	^[ [ 6 ~
 pgdnmenu  ^# S
+pgupmenu	.kP		Screen up
 pgupmenu	^U
 pgupmenu	^[ [ 5 ~
 pgupmenu  ^# T
+rtarwmenu	.kr
 rtarwmenu	^F
 rtarwmenu	^[ [ C
 rtarwmenu ^# C
+rtarwmenu	^[ O C
 rtn		SP
 rtn		^I
 rtn		^K H
@@ -1128,6 +1144,7 @@ uparwmenu	^P
 uparwmenu	^[ [ A
 uparwmenu	^[ O A
 uparwmenu ^# A
+uparwmenu	MWUP
 :query			Single-key query window
 :inherit windows
 

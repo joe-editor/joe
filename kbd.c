@@ -65,10 +65,15 @@ void *dokey(KBD *kbd, int n)
 static int keyval(unsigned char *s)
 {
 	if (s[0] == '^' && s[1] && !s[2])
-		if (s[1] == '?')
+		switch (s[1])
+		{
+		case '?':
 			return 127;
-		else
+		case '#':
+			return 0x9B;
+		default:
 			return s[1] & 0x1F;
+		}
 	else if ((s[0] == 'S' || s[0] == 's')
 		 && (s[1] == 'P' || s[1] == 'p') && !s[2])
 		return ' ';

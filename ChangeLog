@@ -1,3 +1,10 @@
+Tue Jul  6 2004  Pavel Fedin <sonimiga@rambler.ru>
+
+     Changed some fork()s to vfork()s.
+	Added ^# (CSI = 0x9B) control character.
+	Added Amiga CSI sequences to keys definitions in joerc files.
+	Added some #ifdef's to compile properly on AmigaOS.
+
 Mon Jun  7 2004  Joe Allen <jhallen@world.std.com>
 
 	Highlighter state now includes a saved string.

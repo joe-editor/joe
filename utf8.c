@@ -17,6 +17,13 @@
 #include <stdlib.h>
 #endif
 
+/* Under AmigaOS we have setlocale() but don't have langinfo.h and associated stuff,
+ * so we have to disable the whole piece of code
+ */
+#ifdef __amigaos
+#undef HAVE_SETLOCALE
+#endif
+
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #	include <locale.h>
 #       include <langinfo.h>

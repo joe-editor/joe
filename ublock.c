@@ -939,7 +939,7 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 	pipe(fw);
 	npartial(bw->parent->t->t);
 	ttclsn();
-	if (!fork()) {
+	if (!vfork()) {
 #ifdef HAVE_PUTENV
 		unsigned char		*fname, *name;
 		unsigned	len;
@@ -969,7 +969,7 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 	}
 	close(fr[1]);
 	close(fw[0]);
-	if (fork()) {
+	if (vfork()) {
 		close(fw[1]);
 		if (square) {
 			B *tmp;

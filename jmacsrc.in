@@ -679,7 +679,7 @@
 
  Keys:
 
- Use ^@ through ^_ and ^? for Ctrl chars
+ Use ^@ through ^_, ^# and ^? for Ctrl chars
  Use SP for space
  Use a TO b to generate a range of characters
 
@@ -732,9 +732,11 @@ nextw		^X o		Other window
 pgdn		.kN		Screen down
 pgdn		^V
 pgdn		^[ [ 6 ~
+pgdn      ^# S
 pgup		.kP		Screen up
 pgup		^[ v
 pgup		^[ [ 5 ~
+pgup      ^# T
 play,"0"	^X e		Execute keyboard macro
 prevw		^X p		Previous window (uemacs)
 query		^X q		Query insert
@@ -778,11 +780,13 @@ home			^[ [ 1 ~		Putty, Linux, Cygwin
 home			^[ [ H			Xterm, Konsole, SCO
 home			^[ O H			gnome-terminal
 home			^[ [ 7 ~		RxVT
+home			^# SP A		Amiga
 
 eol			^[ [ 4 ~		Putty, Linux, Cygwin, ssh
 eol			^[ [ F			Xterm, Konsole, SCO
 eol			^[ O F			gnome-terminal
 eol			^[ [ 8 ~		RxVT
+eol			^# SP @		Amiga
 
   Macros of non-existant emacs functions
 
@@ -882,6 +886,7 @@ dnarw		.kd		Go down
 dnarw		^N
 dnarw		^[ O B
 dnarw		^[ [ B
+dnarw		^# B
 dnslide		^X ^N		Slide down (uemacs)
 edit		^X ^F		Edit a file: creates orphaned buffers
 eof		^[ >		Go to end of file
@@ -909,6 +914,7 @@ ltarw		.kl		Go left
 ltarw		^B
 ltarw		^[ O D
 ltarw		^[ [ D
+ltarw          ^# D
 mode		^[ ^[		Change modes
 nbuf		^X ^B		Next buffer in current window
 nbuf		^X x		(uemacs)
@@ -932,6 +938,7 @@ rtarw		.kr		Go right
 rtarw		^F
 rtarw		^[ O C
 rtarw		^[ [ C
+rtarw          ^# C
 run		^[ !
 save		^X ^W		Write file
 setmark		^X j		Set bookmark
@@ -951,6 +958,7 @@ uparw		.ku		Go up
 uparw		^P
 uparw		^[ O A
 uparw		^[ [ A
+uparw		^# A
 upslide		^X ^P		Slide up (uemacs)
 yank		^Y		Yank deleted text
 yankpop		^[ y		Yank-pop
@@ -972,11 +980,13 @@ bolmenu			^[ [ 1 ~		Putty, Linux, Cygwin
 bolmenu			^[ [ H			Xterm, Konsole
 bolmenu			^[ O H			gnome-terminal
 bolmenu			^[ [ 7 ~		RxVT
+bolmenu			^# SP A		Amiga
 
 eolmenu			^[ [ 4 ~		Putty, Linux, Cygwin, ssh
 eolmenu			^[ [ F			Xterm, Konsole
 eolmenu			^[ O F			gnome-terminal
 eolmenu			^[ [ 8 ~		RxVT
+eolmenu			^# SP @		Amiga
 
 abort		^[ ^[
 backsmenu	^?
@@ -989,6 +999,7 @@ bolmenu		^A
 dnarwmenu	.kd
 dnarwmenu	^N
 dnarwmenu	^[ [ B
+dnarwmenu ^# B
 dnarwmenu	^[ O B
 eofmenu		^K V
 eofmenu		^K ^V
@@ -999,15 +1010,19 @@ ltarwmenu	.kl
 ltarwmenu	^B
 ltarwmenu	^[ [ D
 ltarwmenu	^[ O D
+ltarwmenu ^# D
 pgdnmenu	.kN		Screen down
 pgdnmenu	^V
 pgdnmenu	^[ [ 6 ~
+pgdnmenu  ^# S
 pgupmenu	.kP		Screen up
 pgupmenu	^[ v
 pgupmenu	^[ [ 5 ~
+pgupmenu  ^# T
 rtarwmenu	.kr
 rtarwmenu	^F
 rtarwmenu	^[ [ C
+rtarwmenu ^# C
 rtarwmenu	^[ O C
 rtn		SP
 rtn		^I
@@ -1018,6 +1033,7 @@ tabmenu		^I
 uparwmenu	.ku
 uparwmenu	^P
 uparwmenu	^[ [ A
+uparwmenu ^# A
 uparwmenu	^[ O A
 
 :querysr		Search & replace query window
