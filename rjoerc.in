@@ -328,6 +328,42 @@
 -smartbacks
 -purify
 
+ CSH
+*
++#!\+\[ 	]\+\[a-z/]/csh\>
+-autoindent
+-syntax csh
+
+*.csh
+-autoindent
+-syntax csh
+
+*.cshrc
+-autoindent
+-syntax csh
+
+*.login
+-autoindent
+-syntax csh
+
+*.logout
+-autoindent
+-syntax csh
+
+ TCSH
+*
++#!\+\[ 	]\+\[a-z/]/tcsh\>
+-autoindent
+-syntax csh
+
+*.tcsh
+-autoindent
+-syntax csh
+
+*.tcshrc
+-autoindent
+-syntax csh
+
  Shell
 *
 +#!\+\[ 	]\+\[a-z/]/sh\>
@@ -335,6 +371,10 @@
 -syntax sh
 
 *.sh
+-autoindent
+-syntax sh
+
+*profile
 -autoindent
 -syntax sh
 
@@ -348,25 +388,26 @@
 -autoindent
 -syntax sh
 
- CSH
-*
-+#!\+\[ 	]\+\[a-z/]/csh\>
+*.bash_login
 -autoindent
--syntax csh
+-syntax sh
 
-*.csh
+*.bash_logout
 -autoindent
--syntax csh
+-syntax sh
 
- TCSH
-*
-+#!\+\[ 	]\+\[a-z/]/tcsh\>
+ LISP
+*.lisp
 -autoindent
--syntax csh
+-syntax lisp
 
-*.tcsh
+*.lsp
 -autoindent
--syntax csh
+-syntax lisp
+
+*.el
+-autoindent
+-syntax lisp
 
  KSH
 *

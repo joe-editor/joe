@@ -307,26 +307,6 @@
 -smartbacks
 -purify
 
- Shell
-*
-+#!\+\[ 	]\+\[a-z/]/sh\>
--autoindent
--syntax sh
-
-*.sh
--autoindent
--syntax sh
-
- BASH Shell
-*
-+#!\+\[ 	]\+\[a-z/]/bash\>
--autoindent
--syntax sh
-
-*.bash
--autoindent
--syntax sh
-
  CSH
 *
 +#!\+\[ 	]\+\[a-z/]/csh\>
@@ -334,6 +314,18 @@
 -syntax csh
 
 *.csh
+-autoindent
+-syntax csh
+
+*.cshrc
+-autoindent
+-syntax csh
+
+*.login
+-autoindent
+-syntax csh
+
+*.logout
 -autoindent
 -syntax csh
 
@@ -347,6 +339,42 @@
 -autoindent
 -syntax csh
 
+*.tcshrc
+-autoindent
+-syntax csh
+
+ Shell
+*
++#!\+\[ 	]\+\[a-z/]/sh\>
+-autoindent
+-syntax sh
+
+*.sh
+-autoindent
+-syntax sh
+
+*profile
+-autoindent
+-syntax sh
+
+ BASH Shell
+*
++#!\+\[ 	]\+\[a-z/]/bash\>
+-autoindent
+-syntax sh
+
+*.bash
+-autoindent
+-syntax sh
+
+*.bash_login
+-autoindent
+-syntax sh
+
+*.bash_logout
+-autoindent
+-syntax sh
+
  KSH
 *
 +#!\+\[ 	]\+\[a-z/]/ksh\>
@@ -356,6 +384,19 @@
 *.ksh
 -autoindent
 -syntax sh
+
+ LISP
+*.lisp
+-autoindent
+-syntax lisp
+
+*.lsp
+-autoindent
+-syntax lisp
+
+*.el
+-autoindent
+-syntax el
 
  Makefile
 *akefile

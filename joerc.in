@@ -111,6 +111,7 @@
   %M  Macro recording message
   %y  Syntax
   %x  Context (first non-indented line going backwards)
+
  These formatting escape sequences may also be given:
  
   \i  Inverse
@@ -120,7 +121,7 @@
   \f  Blink
 
 -lmsg \i%k%T%W%I%X %n %m%y%R %M %x
--lmsg \i%k%T%W%I%X %n %m%y%R %M
+-rmsg  %S Row %r Col %c %t  Ctrl-K H for help
 
  SECOND SECTION: File name dependant local option settings:
 
@@ -334,6 +335,38 @@
 
  CSH
 *
++#!\+\[ 	]\+\[a-z/]/csh\>
+-autoindent
+-syntax csh
+-pound_comment
+*.csh
+-autoindent
+-syntax csh
+-pound_comment
+*.login
+-autoindent
+-syntax csh
+-pound_comment
+*.logout
+-autoindent
+-syntax csh
+-pound_comment
+ TCSH
+*
++#!\+\[ 	]\+\[a-z/]/tcsh\>
+-autoindent
+-syntax csh
+-pound_comment
+*.tcsh
+-autoindent
+-syntax csh
+-pound_comment
+*.tcshrc
+-autoindent
+-syntax csh
+-pound_comment
+ Shell
+*
 +#!\+\[ 	]\+\[a-z/]/sh\>
 -autoindent
 -syntax sh
@@ -343,6 +376,10 @@
 -syntax sh
 -pound_comment
 *profile
+-autoindent
+-syntax sh
+-pound_comment
+ BASH Shell
 *
 +#!\+\[ 	]\+\[a-z/]/bash\>
 -autoindent
@@ -353,25 +390,26 @@
 -syntax sh
 -pound_comment
 *.bash_login
- CSH
-*
-+#!\+\[ 	]\+\[a-z/]/csh\>
+-autoindent
 -syntax sh
--syntax csh
+-pound_comment
+*.bash_logout
+-autoindent
+-syntax sh
+-pound_comment
  LISP
-*.csh
+*.lisp
+-autoindent
 -syntax lisp
--syntax csh
+-semi_comment
 *.lsp
- TCSH
-*
-+#!\+\[ 	]\+\[a-z/]/tcsh\>
+-autoindent
 -syntax lisp
--syntax csh
+-semi_comment
 *.el
-*.tcsh
+-autoindent
 -syntax lisp
--syntax csh
+-semi_comment
  KSH
 *
 +#!\+\[ 	]\+\[a-z/]/ksh\>

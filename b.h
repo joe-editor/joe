@@ -147,6 +147,10 @@ unsigned char *brs PARAMS((P *p, int size));
 /* Copy 'size' bytes from a buffer beginning at p into a variable length string. */
 unsigned char *brvs PARAMS((P *p, int size));
 
+/* Copy line into buffer.  Maximum of size bytes will be copied.  Buffer needs
+   to be one bigger for NIL */
+unsigned char *brzs PARAMS((P *p, unsigned char *buf, int size));
+
 B *bnext PARAMS((void));
 B *bprev PARAMS((void));
 

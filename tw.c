@@ -64,6 +64,71 @@ static void resizetw(BW *bw, int wi, int he)
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he);
 }
 
+/* Get current context */
+
+/* Find first line (going backwards) which has 0 indentation level
+ * and is not a comment, blank, or block structuring line.  This is
+ * likely to be the line with the function name.
+ *
+ * There are actually two possibilities:
+ *
+ * We want the first line- 
+ *
+ * int
+ * foo(int x,int y) {
+ *
+ *   }
+ *
+ * We want the last line-
+ *
+ * program foo(input,output);
+ * var a, b, c : real;
+ * begin
+ *
+ */
+
+unsigned char *get_context(BW *bw)
+{
+	P *p = pdup(bw->cursor);
+	static unsigned char buf1[stdsiz];
+
+
+	buf1[0] = 0;
+	/* Find first line with 0 indentation which is not a comment line */
+	do {
+		p_goto_bol(p);
+		if (!pisindent(p) && !pisblank(p)) {
+			next:
+			brzs(p,stdbuf,stdsiz-1);
+			/* Ignore comment and block structuring lines */
+			if (!(stdbuf[0]=='{' ||
+			    stdbuf[0]=='/' && stdbuf[1]=='*' ||
+			    stdbuf[0]=='\f' ||
+			    stdbuf[0]=='/' && stdbuf[1]=='/' ||
+			    stdbuf[0]=='#' ||
+			    stdbuf[0]=='b' && stdbuf[1]=='e' && stdbuf[2]=='g' && stdbuf[3]=='i' && stdbuf[4]=='n' ||
+			    stdbuf[0]=='B' && stdbuf[1]=='E' && stdbuf[2]=='G' && stdbuf[3]=='I' && stdbuf[4]=='N' ||
+			    stdbuf[0]=='-' && stdbuf[1]=='-' ||
+			    stdbuf[0]==';')) {
+			    	strcpy(buf1,stdbuf);
+				/* Uncomment to get the last line instead of the first line (see above)
+			    	if (pprevl(p)) {
+			    		p_goto_bol(p);
+			    		if (!pisindent(p) && !pisblank(p))
+			    			goto next;
+			    	}
+			    	*/
+			    	break;
+			}
+			
+		}
+	} while (!buf1[0] && pprevl(p));
+
+	prm(p);
+
+	return buf1;
+}
+
 static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, int fill)
 {
 	unsigned char buf[80];
@@ -74,6 +139,15 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 	while (*s) {
 		if (*s == '%' && s[1]) {
 			switch (*++s) {
+			case 'x': /* Context (but only if autoindent is enabled) */
+				{
+					if ( bw->o.autoindent) {
+						unsigned char *s = get_context(bw);
+						stalin = vsncpy(sv(stalin), sz(s));
+					}
+				}
+				break;
+
 			case 'y':
 				{
 					if (bw->o.syntax) {

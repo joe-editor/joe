@@ -1,3 +1,13 @@
+Mon May 10 2004  Joe Allen <jhallen@world.std.com>
+	* b.c tw.c :
+
+	New status line escape sequence: %x shows current context (function
+	cursor is in).
+
+	More globs in *rc.in files.
+
+	csh.jsf lisp.jsf
+
 Sun May  9 02:30:41 EDT 2004
 	* sh.jsf.in :
 

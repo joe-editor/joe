@@ -2465,6 +2465,20 @@ unsigned char *brvs(P *p, int size)
 	return brmem(p, (unsigned char *)s, size);
 }
 
+unsigned char *brzs(P *p, unsigned char *buf, int size)
+{
+	P *q=pdup(p);
+	p_goto_eol(q);
+
+	if(q->byte-p->byte<size)
+		size = q->byte - p->byte;
+
+	prm(q);
+	brmem(p,buf,size);
+	buf[size]=0;
+	return buf;
+}
+
 /* Save edit buffers when editor dies */
 
 RETSIGTYPE ttsig(int sig)
