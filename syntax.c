@@ -285,20 +285,22 @@ struct high_syntax *load_dfa(unsigned char *name)
 									++line;
 									p = buf;
 									c = parse_ws(&p);
-									if(!parse_field(&p,US "done"))
-										break;
-									if(!parse_string(&p,bf,255)) {
-										parse_ws(&p);
-										if (cmd->ignore)
-											lowerize(bf);
-										if(!parse_ident(&p,bf1,255)) {
-											if(!cmd->keywords)
-												cmd->keywords = htmk(64);
-											htadd(cmd->keywords,(unsigned char *)strdup((char *)bf),find_state(syntax,bf1));
+									if (*p) {
+										if(!parse_field(&p,US "done"))
+											break;
+										if(!parse_string(&p,bf,255)) {
+											parse_ws(&p);
+											if (cmd->ignore)
+												lowerize(bf);
+											if(!parse_ident(&p,bf1,255)) {
+												if(!cmd->keywords)
+													cmd->keywords = htmk(64);
+												htadd(cmd->keywords,(unsigned char *)strdup((char *)bf),find_state(syntax,bf1));
+											} else
+												fprintf(stderr,"%s %d: Missing state name\n",name,line);
 										} else
-											fprintf(stderr,"%s %d: Missing state name\n",name,line);
-									} else
-										fprintf(stderr,"%s %d: Missing string\n",name,line);
+											fprintf(stderr,"%s %d: Missing string\n",name,line);
+									}
 								}
 							} else if(!strcmp(bf,"noeat")) {
 								cmd->noeat = 1;

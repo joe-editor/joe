@@ -30,10 +30,12 @@
 :reset_lt HTML
 	*		reset
 	"?"		idle		recolor=-2
+	"%"		idle		recolor=-2
 
 :idle Idle
 	*		idle
 	"?"		idle_qmark
+	"%"		idle_hash
 	"#"		sh_comment	recolor=-1
 	"/"		slash
 	"0-9"		first_digit	recolor=-1
@@ -43,6 +45,10 @@
 
 :idle_qmark Idle
 	*		idle
+	">"		reset
+
+:idle_hash Idle
+	*		idle	noeat
 	">"		reset
 
 :sh_comment Comment

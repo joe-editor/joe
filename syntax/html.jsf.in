@@ -5,7 +5,6 @@
 # Define colors
 
 =Idle
-=HTML		bold black
 =Comment 	green
 =Constant 	cyan
 =Escape 	bold cyan
@@ -17,7 +16,12 @@
 
 :idle Idle
 	*		idle
+	"&"		char		recolor=-1
 	"<"		start
+
+:char Escape
+	*		char
+	";"		idle
 
 :start Idle
 	*		mark		noeat
@@ -56,59 +60,24 @@
 	*		mark
 	">"		idle
 	"a-zA-Z_"	ident		buffer
-	"0-9"		first_digit	recolor= -1
-	"\""		string		recolor= -1
-	
-:first_digit Constant
-	*		idle	noeat	recolor=-1
-	"xX"		hex
-	"."		float
-	"0-9"		first_number
+	"0-9"		number		recolor= -1
+	"\""		astring		recolor= -1
+	"\'"		bstring		recolor= -1
 
-:hex Constant
-	*		idle	noeat	recolor=-1
-	"0-9A-Fa-f"	hex
-
-:first_number Constant
-	*		idle	noeat	recolor=-1
-	"0-9"		first_number
-	"."		float
-
-:maybe_float Constant
-	*		idle	recolor=-2	noeat
-	"0-9"		float		recolor=-2
-
-:float Constant
-	*		idle	noeat	recolor=-1
-	"eE"		epart
-	"0-9"		float
-
-:epart Constant
-	*		idle	noeat	recolor=-1
-	"0-9+\-"	enum
-
-:enum Constant
-	*		idle	noeat	recolor=-1
-	"0-9"		enum
+:number Constant
+	*		mark	noeat	recolor=-1
+	"0-9"		number
 
 
 # Strings
 
-:string	Constant
-	*		string
+:astring Constant
+	*		astring
 	"\""		mark
-	"\\"		string_escape	recolor=-1
-	"%"		string_control	recolor=-1
 
-:string_escape Escape
-	*		string
-	"\n"		string		recolor=-2
-
-:string_control Escape
-	*		string_control
-	"\n"		string
-	"diouxXeEfFgGaAcspn%SC"	string
-
+:bstring Constant
+	*		bstring
+	"'"		mark
 
 # Keywords
 
@@ -208,7 +177,6 @@
 	"action"	attr
 	"enctype"	attr
 	"method"	attr
-	"
 done
 	"a-zA-Z0-9_"	ident
 

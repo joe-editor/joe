@@ -271,6 +271,12 @@
 -smartbacks
 -purify
 
+ XML
+*.xml
+-wordwrap
+-autoindent
+-syntax xml
+
  HTML
 *.htm
 -wordwrap

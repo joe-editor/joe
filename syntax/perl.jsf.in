@@ -18,6 +18,7 @@
 	"."		maybe_float
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
+	"`"		backtick	recolor=-1
 	"a-zA-Z_"	ident		buffer
 
 :line_comment Comment
@@ -80,6 +81,16 @@
 :char_escape	Escape
 	*		char
 	"\n"		char		recolor=-2
+
+:backtick	Constant
+	*		backtick
+	"\n"		idle
+	"`"		idle
+	"\\"		backtick_escape	recolor=-1
+
+:backtick_escape	Escape
+	*		backtick
+	"\n"		backtick	recolor=-2
 
 :ident	Idle
 	*		idle		noeat strings

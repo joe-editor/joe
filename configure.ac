@@ -119,5 +119,5 @@ AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 AC_CONFIG_FILES([Makefile joe.1 joerc jmacsrc jstarrc rjoerc jpicorc
 syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf syntax/sh.jsf syntax/python.jsf
 syntax/conf.jsf syntax/php.jsf syntax/mail.jsf syntax/pascal.jsf syntax/html.jsf
-syntax/vhdl.jsf syntax/fortran.jsf syntax/java.jsf])
+syntax/vhdl.jsf syntax/fortran.jsf syntax/java.jsf syntax/xml.jsf])
 AC_OUTPUT

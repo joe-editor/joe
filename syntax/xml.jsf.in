@@ -1,0 +1,104 @@
+# JOE syntax highlight file for XML
+# This needs lots of work...
+
+
+# Define colors
+
+=Idle
+=Comment 	green
+=Constant 	cyan
+=Escape 	bold cyan
+=Keyword 	bold
+=Bad		bold red
+=Attr		magenta
+
+# Start of markup, plus crazy HTML comments... (not really needed for XML)
+
+:idle Idle
+	*		idle
+	"&%"		char		recolor=-1
+	"<"		start
+
+:char Escape
+	*		char
+	";"		idle
+
+:start Idle
+	*		mark		noeat
+	"!"		bang
+
+:bang Idle
+	*		mark		noeat
+	"-"		maybe_comment
+
+:maybe_comment Idle
+	*		mark		noeat
+	"-"		comment		recolor=-2
+
+:comment Comment
+	*		comment
+	"-"		maybe_end_comment
+
+:maybe_end_comment Comment
+	*		comment
+	"-"		end_comment
+
+:end_comment Bad
+	*		idle
+	"-"		maybe_another_comment
+	" \t\n"		end_comment
+	">"		idle		recolor= -1
+
+:maybe_another_comment Idle
+	*		end_comment
+	"-"		comment		recolor= -2
+
+
+# We're in a markup
+
+:mark Idle
+	*		mark
+	">"		idle
+	"a-zA-Z_"	ident		buffer
+	"0-9"		number		recolor= -1
+	"\""		astring		recolor= -1
+	"\'"		bstring		recolor= -1
+
+:number Constant
+	*		mark	noeat	recolor=-1
+	"0-9"		number
+
+
+# Strings
+
+:astring Constant
+	*		astring
+	"%&"		achar	recolor=-1
+	"\""		mark
+
+:achar Escape
+	*		achar
+	";"		astring
+
+:bstring Constant
+	*		bstring
+	"%&"		bchar	recolor=-1
+	"'"		mark
+
+:bchar Escape
+	*		bchar
+	";"		bstring
+
+# Keywords
+
+:ident Idle
+	*		mark		noeat istrings
+# Add keywords here..
+done
+	"a-zA-Z0-9_"	ident
+
+:kw Keyword
+	*	mark	noeat
+
+:attr Attr
+	*	mark	noeat

@@ -1,8 +1,9 @@
 Tue Apr 27 2004  Joe Allen <jhallen@world.std.com>
 	*:
 
-	More syntax files: html, pascal, vhdl, fortran, java.
+	More syntax files: html, pascal, vhdl, fortran, java, xml.
 
+	Allow comment lines in syntax file string lists.
 
 Mon Apr 26 2004  Joe Allen <jhallen@world.std.com>
 	*  Makefile.am bw.c configure.ac *rc.in utf8.c syntax/perl.jsf.in

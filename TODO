@@ -1,3 +1,14 @@
+compiling issues:
+  -liconv
+  -better checks for existence of iconv
+
+should not be loading all syntax files at
+startup.
+
+internal termcap definition working?
+
+
+
 -----------------------
 Tasks for next release:
 -----------------------

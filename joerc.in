@@ -276,6 +276,12 @@
 -purify
 -vhdl_comment
  XML
+*.xml
+-wordwrap
+-autoindent
+-syntax xml
+
+ XML
 *.htm
 -wordwrap
 -autoindent
