@@ -1,3 +1,10 @@
+Tue May 18 2004  Joe Allen <jhallen@world.std.com>
+
+	Changed ESC y to yank in joerc.  Left ESC ^Y
+	as yankpop.
+
+	Added "spring" escape sequence for help text.
+
 Mon May 17 2004  Joe Allen <jhallen@world.std.com>
 
 	Fix backspace handling in shell windows.

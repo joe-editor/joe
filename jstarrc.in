@@ -521,73 +521,73 @@
  Use \f to turn on/off flash
 
 {Basic
-\i   Help Screen    turn off with ^J     more help with ESC . (^[.)              \i
-\i \i\uCURSOR\u           \uGO TO\u            \uBLOCK\u     \uDELETE\u    \uMISC\u         \uEXIT\u      \i \i
-\i \i^S left ^D right ^R  prev. screen ^KB begin ^G  char  ^B  reformat ^KX save  \i \i
-\i \i^E up   ^X down  ^C  next screen  ^KK end   ^Y  line  ^V  overtype ^KQ abort \i \i
-\i \i^A previous word ^QS beg. of line ^KV move  ^T  >word ^]  refresh  ^KZ shell \i \i
-\i \i^F next word     ^QD end of line  ^KC copy  ^QY >line ^O  options  \uFILE\u      \i \i
-\i \i\uSEARCH\u           ^QR top of file  ^KW file  ^U  undo  \uSPELL\u        ^KE new   \i \i
-\i \i^QF find text    ^QC end of file  ^KY delete ^^ redo  ^QN word     ^KR insert\i \i
-\i \i^L  find next    ^QI to line No.  ^K/ filter          ^QL file     ^KD save  \i \i
+\i   Help Screen    \|turn off with ^J     more help with ESC . (^[.)              \i
+\i \i\|\uCURSOR\u           \|\uGO TO\u            \|\uBLOCK\u     \|\uDELETE\u    \|\uMISC\u         \|\uEXIT\u      \|\i \i
+\i \i\|^S left ^D right \|^R  prev. screen \|^KB begin \|^G  char  \|^B  reformat \|^KX save  \|\i \i
+\i \i\|^E up   ^X down  \|^C  next screen  \|^KK end   \|^Y  line  \|^V  overtype \|^KQ abort \|\i \i
+\i \i\|^A previous word \|^QS beg. of line \|^KV move  \|^T  >word \|^]  refresh  \|^KZ shell \|\i \i
+\i \i\|^F next word     \|^QD end of line  \|^KC copy  \|^QY >line \|^O  options  \|\uFILE\u      \|\i \i
+\i \i\|\uSEARCH\u           \|^QR top of file  \|^KW file  \|^U  undo  \|\uSPELL\u        \|^KE new   \|\i \i
+\i \i\|^QF find text    \|^QC end of file  \|^KY delete \|^^ redo  \|^QN word     \|^KR insert\|\i \i
+\i \i\|^L  find next    \|^QI to line No.  \|^K/ filter \|         \|^QL file     \|^KD save  \|\i \i
 }
 
 {Windows
-\i   Help Screen    turn off with ^J     prev. screen ^[,    next screen ^[.     \i
-\i \i^KO Split the window in half           ^KE Load file into window             \i \i
-\i \i^KG Make current window bigger         ^KT Make current window smaller       \i \i
-\i \i^KN Go to the window below             ^KP Go to the window above            \i \i
-\i \i^KQ Eliminate the current window       ^KI Show all windows / Show one window\i \i
+\i   Help Screen    \|turn off with ^J     prev. screen ^[,    next screen ^[.     \i
+\i \i\|^KO Split the window in half           \|^KE Load file into window             \|\i \i
+\i \i\|^KG Make current window bigger         \|^KT Make current window smaller       \|\i \i
+\i \i\|^KN Go to the window below             \|^KP Go to the window above            \|\i \i
+\i \i\|^KQ Eliminate the current window       \|^KI Show all windows / Show one window\|\i \i
 }
 
 {Advanced
-\i   Help Screen    turn off with ^J     prev. screen ^[,    next screen ^[.     \i
-\i \iMACROS      MISC            SCROLL    SHELL       GOTO       I-SEARCH        \i \i
-\i \i^[( Record  ^Q? status      ^Q. Right ^K' Window  ^QB to ^KB ^[R Backwards   \i \i
-\i \i^[) Stop    ^QQ repeat      ^Q, Left  ^[! Command ^QK to ^KK ^[S Forwards    \i \i
-\i \i^[ 0-9 Play ^QM Math                  QUOTE       DELETE     BOOKMARKS       \i \i
-\i \i^[? Query   ^KA Center line           ^P Ctrl-    ^[Y yank   ^K 0-9 Set      \i \i
-\i \i^[D Dump    ^[H Message               ^\\ Meta-    ^[O word<  ^Q 0-9 Goto     \i \i
+\i   Help Screen    \|turn off with ^J     prev. screen ^[,    next screen ^[.     \i
+\i \i\|\uMACROS\u      \|\uMISC\u            \|\uSCROLL\u    \|\uSHELL\u       \|\uGOTO\u       \|\uI-SEARCH\u        \|\i \i
+\i \i\|^[( Record  \|^Q? status      \|^Q. Right \|^K' Window  \|^QB to ^KB \|^[R Backwards   \|\i \i
+\i \i\|^[) Stop    \|^QQ repeat      \|^Q, Left  \|^[! Command \|^QK to ^KK \|^[S Forwards    \|\i \i
+\i \i\|^[ 0-9 Play \|^QM Math        \|          \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u       \|\i \i
+\i \i\|^[? Query   \|^KA Center line \|          \|^P Ctrl-    \|^[Y yank   \|^K 0-9 Set      \|\i \i
+\i \i\|^[D Dump    \|^[H Message     \|          \|^\\ Meta-    \|^[O word<  \|^Q 0-9 Goto     \|\i \i
 }
 
 {Programs
-\i   Help Screen    turn off with ^J     prev. screen ^[,    next screen ^[.     \i
-\i \iGOTO                INDENT    COMPILING                                      \i \i
-\i \i^Q[ Matching ( [ {  ^K. more  ^[C Compile and parse errors                   \i \i
-\i \i^QP Previous place  ^K, less  ^[E Parse errors                               \i \i
-\i \i^K= Next place                ^[= Goto next error                            \i \i
-\i \i^K; Tags file srch            ^[- Goto previous error                        \i \i
+\i   Help Screen    \|turn off with ^J     prev. screen ^[,    next screen ^[.     \i
+\i \i\|\uGOTO\u                \|\uINDENT\u    \|\uCOMPILING\u                     \|                 \|\i \i
+\i \i\|^Q[ Matching ( [ {  \|^K. more  \|^[C Compile and parse errors  \|                 \|\i \i
+\i \i\|^QP Previous place  \|^K, less  \|^[E Parse errors              \|                 \|\i \i
+\i \i\|^K= Next place      \|          \|^[= Goto next error           \|                 \|\i \i
+\i \i\|^K; Tags file srch  \|          \|^[- Goto previous error       \|                 \|\i \i
 }
 
 {Search
-\i   Help Screen    turn off with ^J     prev. screen ^[,    next screen ^[.     \i
-\i \iSpecial search sequences:                                                    \i \i
-\i \i    \\^  \\$  matches beg./end of line     \\?     match any single char        \i \i
-\i \i    \\<  \\>  matches beg./end of word     \\*     match 0 or more chars        \i \i
-\i \i    \\c     matches balanced C expression \\\\     matches a \\                  \i \i
-\i \i    \\[..]  matches one of a set          \\n     matches a newline            \i \i
-\i \i    \\+     matches 0 or more of the character which follows the \\+           \i \i
-\i \iSpecial replace sequences:                                                   \i \i
-\i \i    \\&     replaced with text which matched search string                    \i \i
-\i \i    \\0 - 9 replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]     \i \i
-\i \i    \\\\     replaced with \\               \\n     replaced with newline        \i \i
+\i   Help Screen    \|turn off with ^J     prev. screen ^[,    next screen ^[.     \i
+\i \iSpecial search sequences:                                                    \|\i \i
+\i \i    \\^  \\$  matches beg./end of line      \\?     match any single char       \|\i \i
+\i \i    \\<  \\>  matches beg./end of word      \\*     match 0 or more chars       \|\i \i
+\i \i    \\c      matches balanced C expression \\\\     matches a \\                 \|\i \i
+\i \i    \\[..]   matches one of a set          \\n     matches a newline           \|\i \i
+\i \i    \\+      matches 0 or more of the character which follows the \\+          \|\i \i
+\i \iSpecial replace sequences:                                                   \|\i \i
+\i \i    \\&      replaced with text which matched search string                   \|\i \i
+\i \i    \\0 - 9  replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]    \|\i \i
+\i \i    \\\\      replaced with \\               \\n     replaced with newline       \|\i \i
 }
 
 {Names
-\i   Help Screen    turn off with ^J     prev. screen ^[,    next screen ^[.     \i
-\i \i Hit TAB at file name prompts to generate menu of file names                 \i \i
-\i \i Or use up/down keys to access history of previously entered names           \i \i
-\i \i Special file names:                                                         \i \i
-\i \i      !command                 Pipe in/out of a shell command                \i \i
-\i \i      >>filename               Append to a file                              \i \i
-\i \i      -                        Read/Write to/from standard I/O               \i \i
-\i \i      filename,START,SIZE      Read/Write a part of a file/device            \i \i
-\i \i          Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \i \i
+\i   Help Screen    \|turn off with ^J     prev. screen ^[,    next screen ^[.     \i
+\i \i Hit TAB at file name prompts to generate menu of file names                 \|\i \i
+\i \i Or use up/down keys to access history of previously entered names           \|\i \i
+\i \i Special file names:                                                         \|\i \i
+\i \i      !command                 Pipe in/out of a shell command                \|\i \i
+\i \i      >>filename               Append to a file                              \|\i \i
+\i \i      -                        Read/Write to/from standard I/O               \|\i \i
+\i \i      filename,START,SIZE      Read/Write a part of a file/device            \|\i \i
+\i \i          Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \|\i \i
 }
 
 {Joe
-\i   Help Screen    turn off with ^J     prev. screen ^[,                        \i
-\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \i \i
+\i   Help Screen    \|turn off with ^J     prev. screen ^[,                        \i
+\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \|\i \i
 }
 
  FOURTH SECTION: Key bindings:

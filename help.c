@@ -146,7 +146,7 @@ struct help *find_context_help(unsigned char *name)
 void help_display(SCREEN *t)
 {
 	unsigned char *str;
-	int y, x, c;
+	int y, x, c, z;
 	int atr = 0;
 
 	if (help_actual) {
@@ -157,6 +157,50 @@ void help_display(SCREEN *t)
 
 	for (y = skiptop; y != t->wind; ++y) {
 		if (t->t->updtab[y]) {
+			unsigned char *start = str;
+			int width=0;
+			int nspans=0;
+			int spanwidth;
+			int spancount=0;
+			int spanextra;
+			/* First pass: count no. springs \| and determine minimum width */
+			while(*str && *str!='\n')
+				if (*str++ == '\\')
+					switch(*str) {
+						case 'i':
+						case 'I':
+						case 'u':
+						case 'U':
+						case 'd':
+						case 'D':
+						case 'b':
+						case 'B':
+						case 'f':
+						case 'F':
+							++str;
+							break;
+						case '|':
+							++str;
+							++nspans;
+							break;
+						case 0:
+							break;
+						default:
+							++str;
+							++width;
+					}
+				else
+					++width;
+			str = start;
+			/* Now calculate span width */
+			if (width >= t->w - 1 || nspans==0) {
+				spanwidth = 0;
+				spanextra = nspans;
+			} else {
+				spanwidth = ((t->w - 1) - width)/nspans;
+				spanextra = nspans - ((t->w - 1) - width - nspans*spanwidth);
+			}
+			/* Second pass: display text */
 			for (x = 0; x != t->w - 1; ++x) {
 				if (*str == '\n' || !*str) {
 					if (eraeol(t->t, x, y)) {
@@ -167,6 +211,16 @@ void help_display(SCREEN *t)
 				} else {
 					if (*str == '\\') {
 						switch (*++str) {
+						case '|':
+							++str;
+							for (z=0;z!=spanwidth;++z)
+								outatr(locale_map,t->t,t->t->scrn+x+y*t->w+z,t->t->attr+x+y*t->w+z,x+z,y,' ',atr);
+							if (spancount++ >= spanextra) {
+								outatr(locale_map,t->t,t->t->scrn+x+y*t->w+z,t->t->attr+x+y*t->w+z,x+z,y,' ',atr);
+								++z;
+							}
+							x += z-1;
+							continue;
 						case 'i':
 						case 'I':
 							atr ^= INVERSE;

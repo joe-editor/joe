@@ -542,55 +542,60 @@
  Use \f to turn on/off flash
 
 {Basic
-\i   Help Screen    turn off with ^G     more help with ^[. (ESC .)              \i
-\i \i\uCURSOR\u           \uGO TO\u            \uBLOCK\u      \uDELETE\u    \uMISC\u         \uEXIT\u     \i \i
-\i \i^B left ^F right ^W^Y top of file ^^  mark   ^D  char  ^J   format  ^X save  \i \i
-\i \i^P up   ^N down  ^W^V end of file ^K  cut    ^K  line  ^T   spell   ^C status\i \i
-\i \i^Y prev. screen  ^A  beg. of line ^U  paste  ^[K >line ^[T  file    ^[Z shell\i \i
-\i \i^V next screen   ^E  end of line  ^O  save   ^[H word< ^L   refresh \uFILE\u     \i \i
-\i \i^Z prev. word    ^W^T line No.    ^[/ filter ^[D >word ^[^[ options ^O save  \i \i
-\i \i^SPACE next word ^W find ^[W next            ^[- undo  ^[=  redo    ^R insert\i \i
+\|\b^K\b cut line \|   \b^W\b find first \|\b^J\b justify \|   \b^X\b save or discard, exit \|
+\|\b^U\b paste    \|\bEsc W\b find next  \|\b^T\b spell   \|\bEsc .\b for more help         \|
+}
+
+{Basic1
+\i   Help Screen    \|turn off with ^G     more help with ^[. (ESC .)              \i
+\i \i\|\uCURSOR\u           \|\uGO TO\u            \|\uBLOCK\u      \|\uDELETE\u    \|\uMISC\u         \|\uEXIT\u     \|\i \i
+\i \i\|^B left ^F right \|^W^Y top of file \|^^  mark   \|^D  char  \|^J   format  \|^X save  \|\i \i
+\i \i\|^P up   ^N down  \|^W^V end of file \|^K  cut    \|^K  line  \|^T   spell   \|^C status\|\i \i
+\i \i\|^Y prev. screen  \|^A  beg. of line \|^U  paste  \|^[K >line \|^[T  file    \|^[Z shell\|\i \i
+\i \i\|^V next screen   \|^E  end of line  \|^O  save   \|^[H word< \|^L   refresh \|\uFILE\u     \|\i \i
+\i \i\|^Z prev. word    \|^W^T line No.    \|^[/ filter \|^[D >word \|^[^[ options \|^O save  \|\i \i
+\i \i\|^SPACE next word \|^W find ^[W next \|           \|^[- undo  \|^[=  redo    \|^R insert\|\i \i
 }
 
 {Advanced
-\i   Help Screen    turn off with ^G     prev. screen ^[,    next screen ^[.     \i
-\i \i\uMACROS\u         \uWINDOW\u          \uWINDOW\u     \uSHELL\u         \uMISC\u                 \i \i
-\i \i^[( 0-9 Record ^[O Split       ^[G Grow   ^[! Command   ^[X Execute command  \i \i
-\i \i^[)     Stop   ^[E Edit file   ^[J Shrink ^[' Window    ^[M Math             \i \i
-\i \i^[ 0-9  Play   ^[P Goto prev.  \uQUOTE\u      \uI-SEARCH\u      ^[C Center line      \i \i
-\i \i^[?     Query  ^[N Goto next   `  Ctrl-   ^[R Backwards ^[] to matching ( [ {\i \i
-\i \i^[\\     Repeat ^[I Zoom in/out ^\\ Meta-   ^[S Forwards  ^[< ^[> pan left/rght\i \i
+\i   Help Screen    \|turn off with ^G     prev. screen ^[,    next screen ^[.     \i
+\i \i\|\uMACROS\u         \|\uWINDOW\u          \|\uWINDOW\u     \|\uSHELL\u         \|\uMISC\u                 \|\i \i
+\i \i\|^[( 0-9 Record \|^[O Split       \|^[G Grow   \|^[! Command   \|^[X Execute command  \|\i \i
+\i \i\|^[)     Stop   \|^[E Edit file   \|^[J Shrink \|^[' Window    \|^[M Math             \|\i \i
+\i \i\|^[ 0-9  Play   \|^[P Goto prev.  \|\uQUOTE\u      \|\uI-SEARCH\u      \|^[C Center line      \|\i \i
+\i \i\|^[?     Query  \|^[N Goto next   \|`  Ctrl-   \|^[R Backwards \|^[] to matching ( [ {\|\i \i
+\i \i\|^[\\     Repeat \|^[I Zoom in/out \|^\\ Meta-   \|^[S Forwards  \|^[< ^[> pan left/rght\|\i \i
 }
 
 {Search
-\i   Help Screen    turn off with ^G     prev. screen ^[,    next screen ^[.     \i
-\i \iSpecial search sequences:                                                    \i \i
-\i \i    \\^  \\$  matches beg./end of line     \\?     match any single char        \i \i
-\i \i    \\<  \\>  matches beg./end of word     \\*     match 0 or more chars        \i \i
-\i \i    \\c     matches balanced C expression \\\\     matches a \\                  \i \i
-\i \i    \\[..]  matches one of a set          \\n     matches a newline            \i \i
-\i \i    \\+     matches 0 or more of the character which follows the \\+           \i \i
-\i \iSpecial replace sequences:                                                   \i \i
-\i \i    \\&     replaced with text which matched search string                    \i \i
-\i \i    \\0 - 9 replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]     \i \i
-\i \i    \\\\     replaced with \\               \\n     replaced with newline        \i \i
+\i   Help Screen    \|turn off with ^G     prev. screen ^[,    next screen ^[.     \i
+\i \iSpecial search sequences:                                                    \|\i \i
+\i \i    \\^  \\$  matches beg./end of line      \\?     match any single char       \|\i \i
+\i \i    \\<  \\>  matches beg./end of word      \\*     match 0 or more chars       \|\i \i
+\i \i    \\c      matches balanced C expression \\\\     matches a \\                 \|\i \i
+\i \i    \\[..]   matches one of a set          \\n     matches a newline           \|\i \i
+\i \i    \\+      matches 0 or more of the character which follows the \\+          \|\i \i
+\i \iSpecial replace sequences:                                                   \|\i \i
+\i \i    \\&      replaced with text which matched search string                   \|\i \i
+\i \i    \\0 - 9  replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]    \|\i \i
+\i \i    \\\\      replaced with \\               \\n     replaced with newline       \|\i \i
 }
 
 {Names
-\i   Help Screen    turn off with ^G     prev. screen ^[,    next screen ^[.     \i
-\i \i Hit TAB at file name prompts to generate menu of file names                 \i \i
-\i \i Or use up/down keys to access history of previously entered names           \i \i
-\i \i Special file names:                                                         \i \i
-\i \i      !command                 Pipe in/out of a shell command                \i \i
-\i \i      >>filename               Append to a file                              \i \i
-\i \i      -                        Read/Write to/from standard I/O               \i \i
-\i \i      filename,START,SIZE      Read/Write a part of a file/device            \i \i
-\i \i          Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \i \i
+\i   Help Screen    \|turn off with ^G     prev. screen ^[,    next screen ^[.     \i
+\i \i Hit TAB at file name prompts to generate menu of file names                 \|\i \i
+\i \i Or use up/down keys to access history of previously entered names           \|\i \i
+\i \i Special file names:                                                         \|\i \i
+\i \i      !command                 Pipe in/out of a shell command                \|\i \i
+\i \i      >>filename               Append to a file                              \|\i \i
+\i \i      -                        Read/Write to/from standard I/O               \|\i \i
+\i \i      filename,START,SIZE      Read/Write a part of a file/device            \|\i \i
+\i \i          Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \|\i \i
 }
 
 {Joe
-\i   Help Screen    turn off with ^G     prev. screen ^[,                        \i
-\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \i \i
+\i   Help Screen    \|turn off with ^G     prev. screen ^[,                        \i
+\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \|\i \i
 }
 
  FOURTH SECTION: Key bindings:

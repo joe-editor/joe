@@ -542,61 +542,60 @@
  Use \f to turn on/off flash
 
 {Basic
-\i   Help Screen    turn off with ^KH    more help with ESC . (^[.)              \i
-\i \i\uCURSOR\u           \uGO TO\u            \uBLOCK\u      \uDELETE\u   \uMISC\u         \uEXIT\u      \i \i
-\i \i^B left ^F right ^U  prev. screen ^KB begin  ^D char. ^KJ reformat ^KX save  \i \i
-\i \i^P up   ^N down  ^V  next screen  ^KK end    ^Y line  ^T  options  ^C  abort \i \i
-\i \i^Z previous word ^A  beg. of line ^KM move   ^W >word ^R  refresh            \i \i
-\i \i^X next word     ^E  end of line  ^KC copy   ^O word< ^@  insert   \uFILE\u      \i \i
-\i \i\uSEARCH\u           ^KU top of file  ^KY delete ^J >line \uSPELL\u        ^KD save  \i \i
-\i \i^KF find text    ^KV end of file             ^_ undo  ^[N word               \i \i
-\i \i^L  find next    ^KL to line No.             ^^ redo  ^[L file               \i \i
+\i   Help Screen    \|turn off with ^KH    more help with ESC . (^[.)              \i
+\i \i\|\uCURSOR\u           \|\uGO TO\u            \|\uBLOCK\u      \|\uDELETE\u   \|\uMISC\u         \|\uEXIT\u      \|\i \i
+\i \i\|^B left ^F right \|^U  prev. screen \|^KB begin  \|^D char. \|^KJ reformat \|^KX save  \|\i \i
+\i \i\|^P up   ^N down  \|^V  next screen  \|^KK end    \|^Y line  \|^T  options  \|^C  abort \|\i \i
+\i \i\|^Z previous word \|^A  beg. of line \|^KM move   \|^W >word \|^R  refresh  \|          \|\i \i
+\i \i\|^X next word     \|^E  end of line  \|^KC copy   \|^O word< \|^@  insert   \|\uFILE\u      \|\i \i
+\i \i\|\uSEARCH\u           \|^KU top of file  \|^KY delete \|^J >line \|\uSPELL\u        \|^KD save  \|\i \i
+\i \i\|^KF find text    \|^KV end of file      \|       \|^_ undo  \|^[N word     \|          \|\i \i
+\i \i\|^L  find next    \|^KL to line No.      \|       \|^^ redo  \|^[L file     \|          \|\i \i
 }
 
 {Windows
-\i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i^KO Split the window in half                                                 \i \i
-\i \i^KG Make current window bigger         ^KT Make current window smaller       \i \i
-\i \i^KN Go to the window below             ^KP Go to the window above            \i \i
-\i \i^C  Eliminate the current window       ^KI Show all windows / Show one window\i \i
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \i\|^KO Split the window in half           \|                                      \|\i \i
+\i \i\|^KG Make current window bigger         \|^KT Make current window smaller       \|\i \i
+\i \i\|^KN Go to the window below             \|^KP Go to the window above            \|\i \i
+\i \i\|^C  Eliminate the current window       \|^KI Show all windows / Show one window\|\i \i
 }
 
 {Advanced
-\i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i\uMACROS\u         \uMISC\u            \uSCROLL\u                \uGOTO\u       \uI-SEARCH\u     \i \i
-\i \i^K[ 0-9 Record ^K SPACE status ^[W Up                ^[B To ^KB ^[R Backwards\i \i
-\i \i^K]     Stop   ^K\\ Repeat      ^[Z Down              ^[K To ^KK ^[S Forwards \i \i
-\i \i^K 0-9  Play   ^[M Math        ^K< Left  \uQUOTE\u       \uDELETE\u     \uBOOKMARKS\u    \i \i
-\i \i^K?     Query  ^KA Center line ^K> Right `  Ctrl-    ^[Y yank   ^[ 0-9 Goto  \i \i
-\i \i^[D     Dump   ^[H Message               ^\\ Meta-    ^[O line<  ^[^[   Set   \i \i
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \i\|\uMACROS\u         \|\uMISC\u            \|\uSCROLL\u  \|              \|\uGOTO\u       \|\uI-SEARCH\u     \|\i \i
+\i \i\|^K[ 0-9 Record \|^K SPACE status \|^[W Up    \|            \|^[B To ^KB \|^[R Backwards\|\i \i
+\i \i\|^K]     Stop   \|^K\\ Repeat      \|^[Z Down \|             \|^[K To ^KK \|^[S Forwards \|\i \i
+\i \i\|^K 0-9  Play   \|^[M Math        \|^K< Left  \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u    \|\i \i
+\i \i\|^K?     Query  \|^KA Center line \|^K> Right \|`  Ctrl-    \|^[Y yank   \|^[ 0-9 Goto  \|\i \i
+\i \i\|^[D     Dump   \|^[H Message     \|          \|^\\ Meta-    \|^[O line<  \|^[^[   Set   \|\i \i
 }
 
 {Programs
-\i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i\uGOTO\u                 \uINDENT\u                                                  \i \i
-\i \i^G  Matching ( [ {   ^K, less                                                \i \i
-\i \i^K- Previous place   ^K. more                                                \i \i
-\i \i^K= Next place                                                               \i \i
-\i \i                                                                             \i \i
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \i\|\uGOTO\u                 \|\uINDENT\u                                                  \|\i \i
+\i \i\|^G  Matching ( [ {   \|^K, less                                                \|\i \i
+\i \i\|^K- Previous place   \|^K. more                                                \|\i \i
+\i \i\|^K= Next place       \|                                                        \|\i \i
 }
 
 {Search
-\i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \iSpecial search sequences:                                                    \i \i
-\i \i    \\^  \\$  matches beg./end of line     \\?     match any single char        \i \i
-\i \i    \\<  \\>  matches beg./end of word     \\*     match 0 or more chars        \i \i
-\i \i    \\c     matches balanced C expression \\\\     matches a \\                  \i \i
-\i \i    \\[..]  matches one of a set          \\n     matches a newline            \i \i
-\i \i    \\+     matches 0 or more of the character which follows the \\+           \i \i
-\i \iSpecial replace sequences:                                                   \i \i
-\i \i    \\&     replaced with text which matched search string                    \i \i
-\i \i    \\0 - 9 replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]     \i \i
-\i \i    \\\\     replaced with \\               \\n     replaced with newline        \i \i
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \iSpecial search sequences:                                                    \|\i \i
+\i \i    \\^  \\$  matches beg./end of line      \\?     match any single char       \|\i \i
+\i \i    \\<  \\>  matches beg./end of word      \\*     match 0 or more chars       \|\i \i
+\i \i    \\c      matches balanced C expression \\\\     matches a \\                 \|\i \i
+\i \i    \\[..]   matches one of a set          \\n     matches a newline           \|\i \i
+\i \i    \\+      matches 0 or more of the character which follows the \\+          \|\i \i
+\i \iSpecial replace sequences:                                                   \|\i \i
+\i \i    \\&      replaced with text which matched search string                   \|\i \i
+\i \i    \\0 - 9  replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]    \|\i \i
+\i \i    \\\\      replaced with \\               \\n     replaced with newline       \|\i \i
 }
 
 {Joe
-\i   Help Screen    turn off with ^KH    prev. screen ^[,                        \i
-\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \i \i
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,                        \i
+\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \|\i \i
 }
 
  FOURTH SECTION: Key bindings:

@@ -543,74 +543,80 @@
  Use \f to turn on/off flash
 
  Use \| to insert a spring: all springs in a given line are set to the same
+ width such that the entire line exactly fits in the width of the screen (if
+ it's not an exact multiple so that there are N spaces remaining, the
+ rightmost N springs each get one extra space).  Hint: if you want vertical
+ alignment, each line should have the same number of springs.
+
+ UTF-8 sequences can be used in the help text (local 8-bit characters can not be used).
 \i   Help Screen    \|turn off with ^KH    more help with ESC . (^[.)              \i
-\i   Help Screen    turn off with ^KH    more help with ESC . (^[.)              \i
-\i \i\uCURSOR\u           \uGO TO\u            \uBLOCK\u      \uDELETE\u   \uMISC\u         \uEXIT\u      \i \i
-\i \i^B left ^F right ^U  prev. screen ^KB begin  ^D char. ^KJ reformat ^KX save  \i \i
-\i \i^P up   ^N down  ^V  next screen  ^KK end    ^Y line  ^T  options  ^C  abort \i \i
-\i \i^Z previous word ^A  beg. of line ^KM move   ^W >word ^R  refresh  ^KZ shell \i \i
-\i \i^X next word     ^E  end of line  ^KC copy   ^O word< ^@  insert   \uFILE\u      \i \i
-\i \i\uSEARCH\u           ^KU top of file  ^KW file   ^J >line \uSPELL\u        ^KE edit  \i \i
-\i \i^KF find text    ^KV end of file  ^KY delete ^_ undo  ^[N word     ^KR insert\i \i
-\i \i^L  find next    ^KL to line No.  ^K/ filter ^^ redo  ^[L file     ^KD save  \i \i
+\i \i\|\uCURSOR\u           \|\uGO TO\u            \|\uBLOCK\u      \|\uDELETE\u   \|\uMISC\u         \|\uEXIT\u      \|\i \i
+\i \i\|^B left ^F right \|^U  prev. screen \|^KB begin  \|^D char. \|^KJ reformat \|^KX save  \|\i \i
+\i \i\|^P up   ^N down  \|^V  next screen  \|^KK end    \|^Y line  \|^KA center   \|^C  abort \|\i \i
+\i \i\|^P up   ^N down  \|^V  next screen  \|^KK end    \|^Y line  \|^T  options  \|^C  abort \|\i \i
+\i \i\|^Z previous word \|^A  beg. of line \|^KM move   \|^W >word \|^R  refresh  \|^KZ shell \|\i \i
+\i \i\|^X next word     \|^E  end of line  \|^KC copy   \|^O word< \|^@  insert   \|\uFILE\u      \|\i \i
+\i \i\|^KF find text    \|^KV end of file  \|^KY delete \|^_ undo  \|^[N word     \|^KR insert\|\i \i
+\i \i\|^L  find next    \|^KL to line No.  \|^K/ filter \|^^ redo  \|^[L file     \|^KD save  \|\i \i
+}
 
 {Windows
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i^KO Split the window in half           ^KE Load file into window             \i \i
-\i \i^KG Make current window bigger         ^KT Make current window smaller       \i \i
-\i \i^KN Go to the window below             ^KP Go to the window above            \i \i
-\i \i^C  Eliminate the current window       ^KI Show all windows / Show one window\i \i
+\i \i\|^KO Split the window in half           \|^KE Load file into window             \|\i \i
+\i \i\|^KG Make current window bigger         \|^KT Make current window smaller       \|\i \i
+\i \i\|^KN Go to the window below             \|^KP Go to the window above            \|\i \i
+\i \i\|^[V Switch to next buffer              \|^[U Switch to previous buffer         \|\i \i
+}
 
 {Advanced
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i\uMACROS\u         \uMISC\u            \uSCROLL\u    \uSHELL\u       \uGOTO\u       \uI-SEARCH\u     \i \i
-\i \i^K[ 0-9 Record ^K SPACE status ^[W Up    ^K' Window  ^[B To ^KB ^[R Backwards\i \i
-\i \i^K]     Stop   ^K\\ Repeat      ^[Z Down  ^[! Command ^[K To ^KK ^[S Forwards \i \i
-\i \i^K 0-9  Play   ^[M Math        ^K< Left  \uQUOTE\u       \uDELETE\u     \uBOOKMARKS\u    \i \i
-\i \i^K?     Query  ^KA Center line ^K> Right `  Ctrl-    ^[Y yank   ^[ 0-9 Goto  \i \i
-\i \i^[D     Dump   ^[H Message               ^\\ Meta-    ^[O line<  ^[^[   Set   \i \i
+\i \i\|\uMACROS\u         \|\uMISC\u            \|\uSCROLL\u    \|\uSHELL\u       \|\uGOTO\u       \|\uI-SEARCH\u     \|\i \i
+\i \i\|^K[ 0-9 Record \|^K SPACE status \|^[W Up    \|^K' Window  \|^[B To ^KB \|^[R Backwards\|\i \i
+\i \i\|^K]     Stop   \|^K\\ Repeat      \|^[Z Down  \|^[! Command \|^[K To ^KK \|^[S Forwards \|\i \i
+\i \i\|^K 0-9  Play   \|\uINSERT\u          \|^K< Left  \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u    \|\i \i
+\i \i\|^K 0-9  Play   \|^[M Math        \|^K< Left  \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u    \|\i \i
+\i \i\|^K?     Query  \|^KA Center line \|^K> Right \|`  Ctrl-    \|^[Y yank   \|^[ 0-9 Goto  \|\i \i
+\i \i\|^[D     Dump   \|^[H Message     \|          \|^\\ Meta-    \|^[O line<  \|^[^[   Set   \|\i \i
 
 {Programs
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i\uGOTO\u                 \uINDENT\u   \uCOMPILING\u                                      \i \i
-\i \i^G  Matching ( [ {   ^K, less ^[C Compile and parse errors                   \i \i
-\i \i^K- Previous place   ^K. more ^[E Parse errors                               \i \i
-\i \i^K= Next place                ^[= To next error                              \i \i
-\i \i^K; Tags file search          ^[- To prev. error                             \i \i
+\i \i\|\uGOTO\u                 \|\uINDENT\u   \|\uCOMPILING\u          \uQUICK\u                       \|\i \i
+\i \i\|\uGOTO\u                 \|\uINDENT\u   \|\uCOMPILING\u                                      \|\i \i
+\i \i\|^G  Matching ( [ {   \|^K, less \|^[C Compile and parse errors                   \|\i \i
+\i \i\|^K- Previous place   \|^K. more \|^[E Parse errors                               \|\i \i
+\i \i\|^K= Next place         \|       \|^[= To next error                              \|\i \i
+\i \i\|^K; Tags file search   \|       \|^[- To prev. error                             \|\i \i
 
 {Search
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \iSpecial search sequences:                                                    \i \i
-\i \i    \\^  \\$  matches beg./end of line     \\?     match any single char        \i \i
-\i \i    \\<  \\>  matches beg./end of word     \\*     match 0 or more chars        \i \i
-\i \i    \\c     matches balanced C expression \\\\     matches a \\                  \i \i
-\i \i    \\[..]  matches one of a set          \\n     matches a newline            \i \i
-\i \i    \\+     matches 0 or more of the character which follows the \\+           \i \i
-\i \iSpecial replace sequences:                                                   \i \i
-\i \i    \\&     replaced with text which matched search string                    \i \i
-\i \i    \\0 - 9 replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]     \i \i
-\i \i    \\\\     replaced with \\               \\n     replaced with newline        \i \i
+\i \iSpecial search sequences:                                                    \|\i \i
+\i \i    \\^  \\$  matches beg./end of line      \\?     match any single char       \|\i \i
+\i \i    \\<  \\>  matches beg./end of word      \\*     match 0 or more chars       \|\i \i
+\i \i    \\c      matches balanced C expression \\\\     matches a \\                 \|\i \i
+\i \i    \\[..]   matches one of a set          \\n     matches a newline           \|\i \i
+\i \i    \\+      matches 0 or more of the character which follows the \\+          \|\i \i
+\i \iSpecial replace sequences:                                                   \|\i \i
+\i \i    \\&      replaced with text which matched search string                   \|\i \i
+\i \i    \\0 - 9  replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]    \|\i \i
+\i \i    \\\\      replaced with \\               \\n     replaced with newline       \|\i \i
+}
 
 {Math
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i Hit TAB at file name prompts to generate menu of file names                 \i \i
-\i \i Or use up/down keys to access history of previously entered names           \i \i
-\i \i Special file names:                                                         \i \i
-\i \i      !command                 Pipe in/out of a shell command                \i \i
-\i \i      >>filename               Append to a file                              \i \i
-\i \i      -                        Read/Write to/from standard I/O               \i \i
-\i \i      filename,START,SIZE      Read/Write a part of a file/device            \i \i
-\i \i          Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \i \i
+\i \i Hit TAB at file name prompts to generate menu of file names                 \|\i \i
+\i \i Or use up/down keys to access history of previously entered names           \|\i \i
+\i \i Special file names:                                                         \|\i \i
+\i \i      !command                 Pipe in/out of a shell command                \|\i \i
+\i \i      >>filename               Append to a file                              \|\i \i
+\i \i      -                        Read/Write to/from standard I/O               \|\i \i
+\i \i      filename,START,SIZE      Read/Write a part of a file/device            \|\i \i
+\i \i          Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \|\i \i
+}
 
 {Joe
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,                        \i
-\i   Help Screen    turn off with ^KH    prev. screen ^[,                        \i
-\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \i \i
+\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
+\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \|\i \i
 
  FOURTH SECTION: Key bindings:
 
@@ -769,9 +775,9 @@ upslide		^[ w		Scroll up one line
 upslide		^[ ^W		Scroll up one line
 upslide		^[ W		Scroll up one line
 upslide,upslide,upslide,upslide		MWUP
-yankpop		^[ y		Undelete text
+yankpop		^[ ^Y		Undelete text
 yank		^[ Y		Undelete text
-yankpop		^[ Y		Undelete text
+
  toggle_marking	^@		Ctrl-space block selection method
  begin_marking,rtarw,toggle_marking	^[ ^[ [ C
 begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right
