@@ -6,6 +6,12 @@ Thu Mar 17 18:54:06 EST 2005
 
 	Document 'backpath' bad parsing
 
+	Put version number in state file
+
+	Save command line file names in joe_state file
+
+	Fix ufilt (broke with irix fix)
+
 Wed Mar 16 11:04:19 EST 2005
 
 	Check if system joerc file is newer than local joerc file.

@@ -14,12 +14,12 @@ perl again: if (-s foo)  looks like s/
 
 - - - - - - - -
 
-formatting characters are being interpreted by context printing on status
-line
+can we highlight backup files? files ending in .in?
 
 - - - - - - - -
 
-can we highlight backup files? files ending in .in?
+formatting characters are being interpreted by context printing on status
+line
 
 - - - - - - - -
 
@@ -47,6 +47,13 @@ jmacs:
  some macros are broken because of the bail on any error
  semantic: sometimes we want to ignore errors (emacs scroll
  other window when we hit end of window).
+
+  more powerful macro language -
+    - merge math with commands so quoting not needed
+    - eliminate need for :
+    - add loops, user defined functions with local variables
+    - add comments
+    - user should be able to bring up a program and hit 'eval'.
 
 - - - - - - - -
 
@@ -80,12 +87,8 @@ window on the screen).
 - - - - - - - -
 
 - .joe_state file:
- - save names of files on command line?
  - try for previous screen configuration?
- - multiple joes: the last one who exits wins
- - don't quote macros, so user can copy them to joerc file
-
-- turn on by default?
+ - multiple joes: the last one who exits wins: merge them
 
 - - - - - - - -
 

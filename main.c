@@ -36,6 +36,7 @@
 #include "utf8.h"
 #include "charmap.h"
 #include "syntax.h"
+#include "pw.h"
 
 extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, joe_beep;
 
@@ -50,6 +51,8 @@ int xmouse=0;
 
 SCREEN *maint;			/* Main edit screen */
 int nowmarking;
+
+extern B *filehist;		/* History of file names */
 
 /* Make windows follow cursor */
 
@@ -362,6 +365,8 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	}
 #endif
 
+	load_state();
+
 	/* It would be better if this ran uedit() to load files */
 
 	/* The business with backopt is to load the file first, then apply file
@@ -381,6 +386,9 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 			B *b = bfind(argv[c]);
 			BW *bw = NULL;
 			int er = error;
+
+			setup_history(&filehist);
+			append_history(filehist,sz(argv[c]));
 
 			/* wmktw inserts the window before maint->curwin */
 			if (!orphan || !opened) {
@@ -455,8 +463,6 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 
 		msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
 	}
-
-	load_state();
 
 	edloop(0);
 	vclose(vmem);

@@ -1191,6 +1191,8 @@ void load_hist(FILE *f,B **bp)
 
 /* Save state */
 
+#define STATE_ID "# JOE state file v1.0\n"
+
 void save_state()
 {
 	unsigned char *home = (unsigned char *)getenv("HOME");
@@ -1206,6 +1208,9 @@ void save_state()
 	umask(old_mask);
 	if(!f)
 		return;
+
+	/* Write ID */
+	fprintf(f,"%s",STATE_ID);
 
 	/* Write state information */
 	fprintf(f,"search\n"); save_srch(f);
@@ -1237,30 +1242,34 @@ void load_state()
 	if(!f)
 		return;
 
-	/* Read state information */
-	while(fgets(buf,1023,f)) {
-		if(!strcmp(buf,"search\n"))
-			load_srch(f);
-		else if(!strcmp(buf,"macros\n"))
-			load_macros(f);
-		else if(!strcmp(buf,"files\n"))
-			load_hist(f,&filehist);
-		else if(!strcmp(buf,"find\n"))
-			load_hist(f,&findhist);
-		else if(!strcmp(buf,"replace\n"))
-			load_hist(f,&replhist);
-		else if(!strcmp(buf,"run\n"))
-			load_hist(f,&runhist);
-		else if(!strcmp(buf,"build\n"))
-			load_hist(f,&buildhist);
-		else if(!strcmp(buf,"cmd\n"))
-			load_hist(f,&cmdhist);
-		else if(!strcmp(buf,"math\n"))
-			load_hist(f,&mathhist);
-		else if(!strcmp(buf,"yank\n"))
-			load_yank(f);
-		else { /* Unknown... skip until next done */
-			while(fgets(buf,1023,f) && strcmp(buf,"done\n"));
+	/* Only read state information if the version is correct */
+	if (fgets(buf,1024,f) && !strcmp(buf,STATE_ID)) {
+
+		/* Read state information */
+		while(fgets(buf,1023,f)) {
+			if(!strcmp(buf,"search\n"))
+				load_srch(f);
+			else if(!strcmp(buf,"macros\n"))
+				load_macros(f);
+			else if(!strcmp(buf,"files\n"))
+				load_hist(f,&filehist);
+			else if(!strcmp(buf,"find\n"))
+				load_hist(f,&findhist);
+			else if(!strcmp(buf,"replace\n"))
+				load_hist(f,&replhist);
+			else if(!strcmp(buf,"run\n"))
+				load_hist(f,&runhist);
+			else if(!strcmp(buf,"build\n"))
+				load_hist(f,&buildhist);
+			else if(!strcmp(buf,"cmd\n"))
+				load_hist(f,&cmdhist);
+			else if(!strcmp(buf,"math\n"))
+				load_hist(f,&mathhist);
+			else if(!strcmp(buf,"yank\n"))
+				load_yank(f);
+			else { /* Unknown... skip until next done */
+				while(fgets(buf,1023,f) && strcmp(buf,"done\n"));
+			}
 		}
 	}
 

@@ -939,7 +939,7 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 	npartial(bw->parent->t->t);
 	ttclsn();
 #ifdef HAVE_FORK
-	if (fork()) {
+	if (!fork()) {
 #else
 	if (!vfork()) { /* For AMIGA only */
 #endif

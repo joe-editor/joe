@@ -76,6 +76,45 @@ static void disppw(BW *bw, int flg)
 	bwgen(bw, 0);
 }
 
+/* History functions */
+
+void setup_history(B **history)
+{
+	if (!*history) {
+		*history = bmk(NULL);
+	}
+}
+
+/* Add line to history buffer */
+
+void append_history(B *hist,unsigned char *s,int len)
+{
+	P *q = pdup(hist->eof);
+	binsm(q, s, len);
+	p_goto_eof(q);
+	binsc(q, '\n');
+	prm(q);
+}
+
+/* Promote line to end of history buffer */
+
+void promote_history(B *hist, long line)
+{
+	P *q = pdup(hist->bof);
+	P *r;
+	P *t;
+
+	pline(q, line);
+	r = pdup(q);
+	pnextl(r);
+	t = pdup(hist->eof);
+	binsb(t, bcpy(q, r));
+	bdel(q, r);
+	prm(q);
+	prm(r);
+	prm(t);
+}
+
 /* When user hits return in a prompt window */
 
 extern volatile int dostaupd;
@@ -91,32 +130,18 @@ static int rtnpw(BW *bw)
 	void *object;
 	long byte;
 
+	/* Extract entered text from buffer */
 	p_goto_eol(bw->cursor);
 	byte = bw->cursor->byte;
 	p_goto_bol(bw->cursor);
 	s = brvs(bw->cursor, (int) (byte - bw->cursor->byte));
+
+	/* Save text into history buffer */
 	if (pw->hist) {
 		if (bw->b->changed) {
-			P *q = pdup(pw->hist->eof);
-
-			binsm(q, s, (int) (byte - bw->cursor->byte));
-			p_goto_eof(q);
-			binsc(q, '\n');
-			prm(q);
+			append_history(pw->hist, sv(s));
 		} else {
-			P *q = pdup(pw->hist->bof);
-			P *r;
-			P *t;
-
-			pline(q, bw->cursor->line);
-			r = pdup(q);
-			pnextl(r);
-			t = pdup(pw->hist->eof);
-			binsb(t, bcpy(q, r));
-			bdel(q, r);
-			prm(q);
-			prm(r);
-			prm(t);
+			promote_history(pw->hist, bw->cursor->line);
 		}
 	}
 
@@ -136,7 +161,7 @@ static int rtnpw(BW *bw)
 	wabort(w);
 	dostaupd = 1;
 
-
+	/* Call callback function */
 	if (pfunc) {
 		return pfunc(win->object, s, object, notify);
 	} else {
@@ -229,9 +254,7 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	pw->pfunc = func;
 	pw->file_prompt = file_prompt;
 	if (history) {
-		if (!*history) {
-			*history = bmk(NULL);
-		}
+		setup_history(history);
 		pw->hist = *history;
 		binsb(bw->cursor, bcpy(pw->hist->bof, pw->hist->eof));
 		bw->b->changed = 0;

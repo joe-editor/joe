@@ -31,4 +31,8 @@ int cmplt_rtn PARAMS((MENU *m,int x,unsigned char *line));
 
 int simple_cmplt PARAMS((BW *bw,unsigned char **list));
 
+void setup_history(B **history);
+void append_history(B *hist,unsigned char *s,int len);
+void promote_history(B *hist, long line);
+
 #endif
