@@ -1,3 +1,8 @@
+Mon May 17 2004  Joe Allen <jhallen@world.std.com>
+
+	Fix backspace handling in shell windows.
+	Ring bell when we get ^G.
+
 Sun May 16 2004  Joe Allen <jhallen@world.std.com>
 
 	Fix -syntax and -encoding on command line.

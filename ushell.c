@@ -84,7 +84,10 @@ static void cdata(B *b, unsigned char *dat, int siz)
 				pset(q, r);
 				prgetc(q);
 				bdel(q, r);
+				--byte;
 			}
+		} else if (dat[x] == 7) {
+			ttputc(7);
 		} else {
 			bf[y++] = dat[x];
 		}

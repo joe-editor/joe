@@ -726,6 +726,18 @@ compile		^[ ^C
 compile		^[ c
 compile		^[ C
 
+
+insf,"!date '+%I:%M %p'",rtn	^[ !
+insf,"!date '+%b %d, %Y'",rtn	^[ @
+ center		^[ c
+psh,prevword,nextword,nextword,markk,prevword,markb,setmark,":",
+prevword,nextword,blkmove,markk,prevword,markb,gomark,":",blkmove,nextword	^[ t
+bop		^[ p
+psh,drop,fwrdc,query,markk,blkdel	^Q T	Cut to char
+psh,drop,fwrdc,query,markk,blkdel	^Q t	Cut to char
+psh,drop,fwrdc,query,markk,blkdel	^Q ^T	Cut to char
+
+
 quote8		^\		Quote Meta chars
 quote		^P		Quote Ctrl chars
 
@@ -750,22 +762,26 @@ blksave		^K w
 bof		^Q R		Goto beginning of file
 bof		^Q ^R
 bof		^Q r
+bof		^Q .kP
 home		.kh		Goto beginning of line
 home		^[ [ H
 home		^[ [ 1 ~
 home		^Q S
 home		^Q ^S
 home		^Q s
+home		^Q .kl
 crawll		^Q ,
 crawlr		^Q .
-tos		^Q E
-tos		^Q ^E
-tos		^Q e
+tos,bol		^Q E
+tos,bol		^Q ^E
+tos,bol		^Q e
+tos,bol		^Q .ku
 center		^K A		Center line
 center		^K ^A
 center		^K a
 delbol		^Q ^H
 delbol		^Q ^?
+delbol		^Q .kD
 delch		.kD		Delete character
 delch		^G
 deleol		^Q Y		Delete to end of line
@@ -784,6 +800,7 @@ edit		^K e
 eof		^Q C		Go to end of file
 eof		^Q ^C
 eof		^Q c
+eof		^Q .kN
 eol		.kH		Go to end of line
 eol		.@7
 eol		^[ [ F
@@ -791,9 +808,11 @@ eol		^[ [ 4 ~
 eol		^Q D
 eol		^Q ^D
 eol		^Q d
-bos		^Q X
-bos		^Q ^X
-bos		^Q x
+eol		^Q .kr
+bos,eol		^Q X
+bos,eol		^Q ^X
+bos,eol		^Q x
+bos,eol		^Q .kd
 exsave		^K X		Save and exit
 exsave		^K ^X
 exsave		^K x
