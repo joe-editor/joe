@@ -458,6 +458,104 @@ int usave(BW *bw)
 
 /* Load file to edit */
 
+int doedit1(BW *bw,int c,unsigned char *s,int *notify)
+{
+	int ret = 0;
+	int er;
+	void *object;
+	W *w;
+	B *b;
+	if (c=='y' || c=='Y') {
+		/* Reload from file */
+
+		if (notify) {
+			*notify = 1;
+		}
+
+		b = bfind_reload(s);
+		er = error;
+		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
+			if (orphan) {
+				orphit(bw);
+			} else {
+				if (uduptw(bw)) {
+					brm(b);
+					return -1;
+				}
+				bw = (BW *) maint->curwin->object;
+			}
+		}
+		if (er) {
+			msgnwt(bw->parent, msgs[-er]);
+			if (er != -1) {
+				ret = -1;
+			}
+		}
+		object = bw->object;
+		w = bw->parent;
+		bwrm(bw);
+		w->object = (void *) (bw = bwmk(w, b, 0));
+		wredraw(bw->parent);
+		bw->object = object;
+		vsrm(s);
+		if (er == -1 && bw->o.mnew) {
+			exemac(bw->o.mnew);
+		}
+		if (er == 0 && bw->o.mold) {
+			exemac(bw->o.mold);
+		}
+		return ret;
+	} else if(c=='n' || c=='N') {
+		/* Edit already loaded buffer */
+
+		if (notify) {
+			*notify = 1;
+		}
+
+		b = bfind(s);
+		er = error;
+		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
+			if (orphan) {
+				orphit(bw);
+			} else {
+				if (uduptw(bw)) {
+					brm(b);
+					return -1;
+				}
+				bw = (BW *) maint->curwin->object;
+			}
+		}
+		if (er) {
+			msgnwt(bw->parent, msgs[-er]);
+			if (er != -1) {
+				ret = -1;
+			}
+		}
+		object = bw->object;
+		w = bw->parent;
+		bwrm(bw);
+		w->object = (void *) (bw = bwmk(w, b, 0));
+		wredraw(bw->parent);
+		bw->object = object;
+		vsrm(s);
+		if (er == -1 && bw->o.mnew) {
+			exemac(bw->o.mnew);
+		}
+		if (er == 0 && bw->o.mold) {
+			exemac(bw->o.mold);
+		}
+		return ret;
+	} else {
+		/* FIXME: need abort handler to prevent leak */
+		if (mkqw(bw->parent, sc("Load original file from disk (y,n,^C)? "), doedit1, NULL, s, notify))
+			return 0;
+		else {
+			vsrm(s);
+			return -1;
+		}
+	}
+}
+
 int doedit(BW *bw, unsigned char *s, void *obj, int *notify)
 {
 	int ret = 0;
@@ -466,46 +564,23 @@ int doedit(BW *bw, unsigned char *s, void *obj, int *notify)
 	W *w;
 	B *b;
 
-	if (notify) {
-		*notify = 1;
-	}
 	if (bw->pid) {
 		msgnw(bw->parent, US "Process running in this window");
 		return -1;
 	}
-	b = bfind(s);
-	er = error;
-	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
-		if (orphan) {
-			orphit(bw);
-		} else {
-			if (uduptw(bw)) {
-				brm(b);
-				return -1;
-			}
-			bw = (BW *) maint->curwin->object;
-		}
-	}
-	if (er) {
-		msgnwt(bw->parent, msgs[-er]);
-		if (er != -1) {
-			ret = -1;
-		}
-	}
-	object = bw->object;
-	w = bw->parent;
-	bwrm(bw);
-	w->object = (void *) (bw = bwmk(w, b, 0));
-	wredraw(bw->parent);
-	bw->object = object;
-	vsrm(s);
-	if (er == -1 && bw->o.mnew) {
-		exemac(bw->o.mnew);
-	}
-	if (er == 0 && bw->o.mold) {
-		exemac(bw->o.mold);
-	}
-	return ret;
+
+	b = bcheck_loaded(s);
+
+	if (b) {
+		if (b->changed)
+			/* Modified buffer exists, so ask */
+			return doedit1(bw, 0, s, notify);
+		else
+			/* Buffer not modified- just use it as is */
+			return doedit1(bw, 'n', s, notify);
+	} else
+		/* File not in buffer: don't ask */
+		return doedit1(bw, 'y', s, notify);
 }
 
 int okrepl(BW *bw)
@@ -521,6 +596,32 @@ int okrepl(BW *bw)
 int uedit(BW *bw)
 {
 	if (wmkpw(bw->parent, US "Name of file to edit (^C to abort): ", &filehist, doedit, US "Names", NULL, cmplt, NULL, NULL, locale_map)) {
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
+int doswitch(BW *bw, unsigned char *s, void *obj, int *notify)
+{
+	int ret = 0;
+	int er;
+	void *object;
+	W *w;
+	B *b;
+
+	if (bw->pid) {
+		msgnw(bw->parent, US "Process running in this window");
+		return -1;
+	}
+
+	/* Try buffer, then file */
+	return doedit1(bw, 'n', s, notify);
+}
+
+int uswitch(BW *bw)
+{
+	if (wmkpw(bw->parent, US "Name of buffer to edit (^C to abort): ", &filehist, doswitch, US "Names", NULL, cmplt, NULL, NULL, locale_map)) {
 		return 0;
 	} else {
 		return -1;

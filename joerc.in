@@ -721,7 +721,7 @@ spellword	^[ n
  Compile
 
  :def compile switch,"*Build-Log*",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
-:def compile edit,"errors",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
+:def compile switch,"errors",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
  Here we guess some common key sequences which either do not have termcap
 
 delbol		^[ o		Delete to beginning of line

@@ -6,6 +6,8 @@ Tue May 11 2004  Joe Allen <jhallen@world.std.com>
 	Ctrl-space clears selection when cursor is in
 	selection, otherwise it starts a new one.
 
+	^K E prompts to load original file from disk.
+
 Tue May 11 2004  Joe Allen <jhallen@world.std.com>
 	* b.c ufile.c :
 

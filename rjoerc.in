@@ -704,11 +704,11 @@ delbol		^[ ^O		Delete to beginning of line
 dnslide		^[ z		Scroll down one line
 dnslide		^[ Z		Scroll down one line
 dnslide		^[ ^Z		Scroll down one line
- edit,rtn,filt,
+ switch,rtn,filt,
  query,parserr	^[ c		Compile
- edit,rtn,filt,
+ switch,rtn,filt,
  query,parserr	^[ C		Compile
- edit,rtn,filt,
+ switch,rtn,filt,
  query,parserr	^[ ^C		Compile
  execmd		^[ x		Prompt for command to execute
  execmd		^[ X		Prompt for command to execute

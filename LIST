@@ -35,7 +35,8 @@ yapp		Append next kill to top of kill ring
 Buffers
 -------
 bufed		Buffer menu
-edit		Load file into window
+edit		Load file into window: asks to reload if buffer exists
+switch		Load file into window: always uses buffer if it exists
 nbuf		Load next buffer into current window
 pbuf		Load previous buffer into current window
 

@@ -693,7 +693,7 @@ spellword	^Q N
 spellword	^Q ^N
 
  Compile macro
-:def compile edit,"errors",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
+:def compile switch,"errors",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
 
 rtarw,prevword,markb,nextword,markk	^K T
 rtarw,prevword,markb,nextword,markk	^K ^T

@@ -181,6 +181,7 @@ CMD cmds[] = {
 	{US "stat", TYPETW + TYPEPW, ustat, NULL, 0, NULL},
 	{US "stop", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ustop, NULL, 0, NULL},
 	{US "swap", TYPETW + TYPEPW + EFIXXCOL, uswap, NULL, 0, NULL},
+	{US "switch", TYPETW + TYPEPW, uswitch, NULL, 0, NULL},
 	{US "tabmenu", TYPEMENU, umtab, NULL, 1, US "ltarwmenu"},
 	{US "tag", TYPETW + TYPEPW, utag, NULL, 0, NULL},
 	{US "tomarkb", TYPETW + TYPEPW + EFIXXCOL + EBLOCK, utomarkb, NULL, 0, NULL},

@@ -668,7 +668,7 @@ stop		^X )		Stop recording macro
 
   ESC-x compile
 
-:def compile edit,"errors",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
+:def compile switch,"errors",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
 
   Spell-check macros
 

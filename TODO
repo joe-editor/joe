@@ -1,7 +1,14 @@
+Fix for next release:
+
+  highlight other windows
+  why lose state during page down?
+  perl highlighter
+  more syntax files
+
+  byte to byte conversions?
+  UTF-8 decoder right at input instead of in qw and utype?
 
  Update man page.
-
- Reload file before I began changing it in another buffer
 
  Save all modified files
  Save all modified
@@ -19,21 +26,33 @@ Compiling
 
  Emacs reload from file function? ^X ^V 
  (it just works out if ^X ^V kills all instances of the buffer)
+ (doesn't have to be exact: make ^K E (which ^X ^V uses) able to
+ reload file.
+
+ nextword,nextword,prevword sequence 
+ doesn't work for marking next successive word at ends of lines
+ (swap word is broken)
+
+  don't use -notite by default.
+
+Watch loaded file for changes
+
+Save all history buffers and keyboard macros in ~/.joe_state file?
+
+  Update documentation.
 
 
 
 
 
 
-Fix for next release:
 
-  highlight other windows
-  why lose state during page down?
-  perl highlighter
-  more syntax files
 
-  byte to byte conversions?
-  UTF-8 decoder right at input instead of in qw and utype?
+
+
+
+
+
 
   regex: character classes? a-z matches any letter?
 
@@ -44,11 +63,8 @@ Fix for next release:
   can't load terminfo- should switch to termcap or provide compiled
   ANSI terminfo built in.
 
-  Update documentation.
-
   gettext patch
 
-  don't use -notite by default.
 
 New features:
 -----------------------
@@ -64,10 +80,6 @@ New features:
 Math: hex, octal more functions. (-lm?)
 
 Perl compatible regex search.
-
-Watch loaded file for changes
-
-Save all history buffers and keyboard macros in ~/.joe_state file?
 
 Improvements for regular text
 -----------------------------
@@ -121,9 +133,6 @@ Jmacs/Jstar/Jpico:
 
  ESC args should work differently in emacs
 
- nextword,nextword,prevword sequence 
- doesn't work for marking next successive word at ends of lines
- (swap word is broken)
 
  exiting options and i-search with ESC is not pretty
  (it isn't in emacs either)

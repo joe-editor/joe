@@ -2277,6 +2277,29 @@ B *bfind(unsigned char *s)
 	return b;
 }
 
+B *bfind_reload(unsigned char *s)
+{
+	B *b;
+	b = bload(s);
+	b->internal = 0;
+	return b;
+}
+
+B *bcheck_loaded(unsigned char *s)
+{
+	B *b;
+
+	if (!s || !s[0]) {
+		return NULL;
+	}
+	for (b = bufs.link.next; b != &bufs; b = b->link.next)
+		if (b->name && !strcmp(s, b->name)) {
+			return b;
+		}
+
+	return NULL;
+}
+
 unsigned char **getbufs(void)
 {
 	unsigned char **s = vamk(16);
