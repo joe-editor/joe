@@ -1,4 +1,11 @@
 Fri Dec 14 2001  Vitezslav Samel <samel@mail.cz>
+	*** Release joe-2.9.8-pre1 ***
+
+Fri Dec 14 2001  Vitezslav Samel <samel@mail.cz>
+	* configure.ac, NEWS:
+	prepare for -pre release; bump up version to 2.9.8-pre1
+
+Fri Dec 14 2001  Vitezslav Samel <samel@mail.cz>
 	* Makefile.am:
 	add types.h into distribution package
 
