@@ -7,12 +7,6 @@ window on the screen).
 
 - - - - - - - -
 
-- arch/tla wants the editor to break hardlinks on save.  This
-  should be an option in joe (unlink, then write).  Have to deal with
-  security mess.
-
-- - - - - - - -
-
 - Watch loaded file for changes under us
     - Print message when it happens
 
@@ -58,6 +52,8 @@ More colors: UI for using 256 color xterms.
 - - - - - - - -
 
 Others:
+
+- keep special meaning of !, >> and , in file names?
 
 - rectangular blocks: make this a local file option?
 

@@ -23,6 +23,12 @@
 #include <time.h>
 #endif
 
+#ifdef WITH_SELINUX
+#include <selinux/selinux.h>
+static int selinux_enabled = -1;
+#endif
+
+
 #include "b.h"
 #include "blocks.h"
 #include "main.h"
@@ -2418,6 +2424,8 @@ err:
  * same name as buffer or is about to get this name).
  */
 
+int break_links; /* Set to break hard links on writes */
+
 int bsave(P *p, unsigned char *s, long int size, int flag)
 {
 	FILE *f;
@@ -2446,6 +2454,40 @@ int bsave(P *p, unsigned char *s, long int size, int flag)
 	} else if (skip || amnt != MAXLONG)
 		f = fopen((char *)s, "r+");
 	else {
+		/* Normal file save */
+		if (break_links) {
+			struct stat sbuf;
+
+			/* Try to copy permissions */
+			if (!stat((char *)s,&sbuf)) {
+				int g;
+				int en=0;
+#ifdef WITH_SELINUX
+				security_context_t se;
+				if (selinux_enabled == -1)
+					selinux_enabled = (is_selinux_enabled() > 0);
+				
+				if (selinux_enabled) {
+					if (getfilecon((char *)s, &se) < 0) {
+						error = -4;
+						goto opnerr;
+					}
+				}
+#endif
+				unlink((char *)s);
+				g = creat((char *)s, sbuf.st_mode & ~(S_ISUID | S_ISGID));
+#ifdef WITH_SELINUX
+				if (selinux_enabled) {
+					setfilecon((char *)s, &se);
+					freecon(se);
+				}
+#endif
+				close(g);
+			} else {
+				unlink((char *)s);
+			}
+		}
+
 		f = fopen((char *)s, "w");
 		norm = 1;
 	}

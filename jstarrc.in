@@ -56,6 +56,7 @@
  -force		Force final newline when files are saved
  -nolocks	If you don't want file locks to be used
  -nobackups	If you don't want backup files to be created
+ -break_links	Delete file before writing, to break hard links
  -lightoff	Turn off highlighting after block copy or move
  -exask		^KX always confirms file name
  -beep		Beep on errors and when cursor goes past extremes

@@ -338,7 +338,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 
 	/* orphan is not compatible with exemac()- macros need a window to exist */
 	for (c = 1, backopt = 0; argv[c]; ++c)
-		if (argv[c][0] == '+' && argv[c][1]) {
+		if (argv[c][0] == '+' && argv[c][1]>='0' && argv[c][1]<='9') {
 			if (!backopt)
 				backopt = c;
 		} else if (argv[c][0] == '-' && argv[c][1]) {

@@ -1,6 +1,7 @@
 Mon Mar 14 11:34:56 EST 2005
 
 	Fix some math and first change bugs.
+	Allow for file names which begin with +
 
 Sun Mar 13 12:39:18 EST 2005
 
