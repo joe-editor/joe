@@ -319,7 +319,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 				break;
 			case '+':
 				{
-					char *oregex = regex;	/* Point to character to skip */
+					unsigned char *oregex = regex;	/* Point to character to skip */
 					int olen = len;
 
 					unsigned char *tregex;

@@ -40,7 +40,7 @@ static struct context {
  * is created.
  */
 
-KMAP *kmap_getcontext(char *name)
+KMAP *kmap_getcontext(unsigned char *name)
 {
 	struct context *c;
 
@@ -206,7 +206,7 @@ static void izopts(void)
 	isiz = 1;
 }
 
-int glopt(char *s, char *arg, OPTIONS *options, int set)
+int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 {
 	int val;
 	int ret = 0;
@@ -563,7 +563,7 @@ int umode(BW *bw)
  *         1 if there was a syntax error in the file
  */
 
-int procrc(CAP *cap, char *name)
+int procrc(CAP *cap, unsigned char *name)
 {
 	OPTIONS *o = 0;		/* Current options */
 	KMAP *context = 0;	/* Current context */

@@ -18,16 +18,16 @@ void setopt PARAMS((OPTIONS *n, char *name));
  * Find and return the KMAP for a given context name.  If none is found, an
  * empty kmap is created, bound to the context name, and returned.
  */
-KMAP *kmap_getcontext PARAMS((char *name));
+KMAP *kmap_getcontext PARAMS((unsigned char *name));
 
 /* int procrc(CAP *cap, char *name);  Process an rc file
    Returns 0 for success
           -1 for file not found
            1 for syntax error (errors written to stderr)
 */
-int procrc PARAMS((CAP *cap, char *name));
+int procrc PARAMS((CAP *cap, unsigned char *name));
 
-int glopt PARAMS((char *s, char *arg, OPTIONS *options, int set));
+int glopt PARAMS((unsigned char *s, unsigned char *arg, OPTIONS *options, int set));
 
 int umode PARAMS((BW *bw));
 

@@ -268,7 +268,7 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char 
 	return kmap;
 }
 
-int kadd(CAP *cap, KMAP *kmap, char *seq, void *bind)
+int kadd(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind)
 {
 	int err = 0;
 
@@ -297,7 +297,7 @@ void kcpy(KMAP *dest, KMAP *src)
 
 /* Remove a binding from a keymap */
 
-int kdel(KMAP *kmap, char *seq)
+int kdel(KMAP *kmap, unsigned char *seq)
 {
 	int err = 1;
 	int v, w;

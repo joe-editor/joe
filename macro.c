@@ -124,7 +124,7 @@ MACRO *macsta(MACRO *m, int a)
  *                 -2 for need more input
  */
 
-MACRO *mparse(MACRO *m, char *buf, int *sta)
+MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 {
 	int y, c, x = 0;
 

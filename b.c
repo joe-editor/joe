@@ -967,7 +967,7 @@ static P *getto(P *p, P *q)
 }
 
 /* find forward substring s in text pointed by p and set p after found substring */
-P *pfind(P *p, char *s, int len)
+P *pfind(P *p, unsigned char *s, int len)
 {
 	P *q = pdup(p);
 
@@ -982,7 +982,7 @@ P *pfind(P *p, char *s, int len)
 }
 
 /* same as pfind() but case insensitive */
-P *pifind(P *p, char *s, int len)
+P *pifind(P *p, unsigned char *s, int len)
 {
 	P *q = pdup(p);
 
@@ -1127,7 +1127,7 @@ static P *rgetto(P *p, P *q)
 }
 
 /* find backward substring s in text pointed by p and set p on the first of found substring */
-P *prfind(P *p, char *s, int len)
+P *prfind(P *p, unsigned char *s, int len)
 {
 	P *q = pdup(p);
 
@@ -1142,7 +1142,7 @@ P *prfind(P *p, char *s, int len)
 }
 
 /* same as prfind() but case insensitive */
-P *prifind(P *p, char *s, int len)
+P *prifind(P *p, unsigned char *s, int len)
 {
 	P *q = pdup(p);
 

@@ -29,7 +29,7 @@ extern int beep;
  * Return command address for given name
  */
 CMD *findcmd PARAMS((char *s));
-void addcmd PARAMS((char *s, MACRO *m));
+void addcmd PARAMS((unsigned char *s, MACRO *m));
 
 /* Execute a command.  Returns return value of command */
 int execmd PARAMS((CMD *cmd, int k));

@@ -1,4 +1,9 @@
 Wed Feb 19 2003  Vitezslav Samel <samel@mail.cz>
+	* b.c, b.h, cmd.c, cmd.h, help.c, kbd.c, kbd.h, macro.c, macro.h,
+	main.c, rc.c, rc.h, regex.c, uisrch.c:
+	change type of variables holding string to unsigned char *
+
+Wed Feb 19 2003  Vitezslav Samel <samel@mail.cz>
 	* b.c, tw.c:
 	change type of variables holding time values to time_t
 

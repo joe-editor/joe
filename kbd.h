@@ -47,7 +47,7 @@ void rmkmap PARAMS((KMAP *kmap));
  * is speicified, then the key sequences
  * ^K A, ^K B, ^K C, ... ^K Z are all bound.
  */
-int kadd PARAMS((CAP *cap, KMAP *kmap, char *seq, void *bind));
+int kadd PARAMS((CAP *cap, KMAP *kmap, unsigned char *seq, void *bind));
 
 /* void kcpy(KMAP *dest,KMAP *src);
  * Copy all of the entries in the 'src' keymap into the 'dest' keymap
@@ -61,7 +61,7 @@ void kcpy PARAMS((KMAP *dest, KMAP *src));
  *        -1 if the given key sequence was invalid
  *         1 if the given key sequence did not exist
  */
-int kdel PARAMS((KMAP *kmap, char *seq));
+int kdel PARAMS((KMAP *kmap, unsigned char *seq));
 
 /* KBD *mkkbd(KMAP *kmap);
    Create a keyboard handler which uses the given keymap

@@ -160,7 +160,7 @@ char **mainenv;
 int main(int argc, char **argv, char **envv)
 {
 	CAP *cap;
-	char *s;
+	unsigned char *s;
 	char *run;
 #ifdef __MSDOS__
 	char *rundir;

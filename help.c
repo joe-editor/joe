@@ -37,7 +37,7 @@ int help_init(char *filename)
 	struct help *tmp;
 	unsigned int bfl;				/* buffer length */
 	unsigned int hlpsiz, hlpbsz;			/* number of used/allocated bytes for tmp->text */
-	char *tempbuf;
+	unsigned char *tempbuf;
 
 	if (!(fd = fopen(filename, "r")))		/* open the help file */
 		return -1;				/* return if we couldn't open the file */
@@ -61,7 +61,7 @@ int help_init(char *filename)
 				bfl = strlen(buf);
 				if (hlpsiz + bfl > hlpbsz) {
 					if (tmp->text) {
-						tempbuf = (char *) joe_realloc(tmp->text, hlpbsz + bfl + 1024);
+						tempbuf = (unsigned char *) joe_realloc(tmp->text, hlpbsz + bfl + 1024);
 						if (!tempbuf) {
 							joe_free(tmp->text);
 							joe_free(tmp);
@@ -70,7 +70,7 @@ int help_init(char *filename)
 							tmp->text = tempbuf;
 						}
 					} else {
-						tmp->text = (char *) joe_malloc(bfl + 1024);
+						tmp->text = (unsigned char *) joe_malloc(bfl + 1024);
 						if (!tmp->text) {
 							joe_free(tmp);
 							return NOT_ENOUGH_MEMORY;
@@ -144,7 +144,7 @@ struct help *find_context_help(unsigned char *name)
  */
 void help_display(SCREEN *t)
 {
-	char *str;
+	unsigned char *str;
 	int y, x, c;
 	int atr = 0;
 
@@ -200,10 +200,10 @@ void help_display(SCREEN *t)
 							--x;
 							continue;
 						default:
-							c = (unsigned char) *str++;
+							c = *str++;
 						}
 					} else {
-						c = (unsigned char) *str++;
+						c = *str++;
 					}
 					outatr(t->t, t->t->scrn + x + y * t->w, x, y, c, atr);
 				}

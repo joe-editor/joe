@@ -280,7 +280,7 @@ CMD *findcmd(char *s)
 	return (CMD *) htfind(cmdhash, s);
 }
 
-void addcmd(char *s, MACRO *m)
+void addcmd(unsigned char *s, MACRO *m)
 {
 	CMD *cmd = (CMD *) joe_malloc(sizeof(CMD));
 

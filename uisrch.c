@@ -21,7 +21,7 @@
 extern int smode;
 struct isrch *lastisrch = 0;	/* Previous search */
 
-char *lastpat = 0;		/* Previous pattern */
+unsigned char *lastpat = 0;	/* Previous pattern */
 
 IREC fri = { {&fri, &fri} };	/* Free-list of irecs */
 
@@ -50,7 +50,7 @@ static int iabrt(BW *bw, struct isrch *isrch)
 	return -1;
 }
 
-static void iappend(BW *bw, struct isrch *isrch, char *s, int len)
+static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 {				/* Append text and search */
 	/* Append char and search */
 	IREC *i = alirec();

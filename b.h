@@ -77,10 +77,10 @@ P *pcoli PARAMS((P *p, long int goalcol));
 void pbackws PARAMS((P *p));
 void pfill PARAMS((P *p, long int to, int usetabs));
 
-P *pfind PARAMS((P *p, char *s, int len));
-P *pifind PARAMS((P *p, char *s, int len));
-P *prfind PARAMS((P *p, char *s, int len));
-P *prifind PARAMS((P *p, char *s, int len));
+P *pfind PARAMS((P *p, unsigned char *s, int len));
+P *pifind PARAMS((P *p, unsigned char *s, int len));
+P *prfind PARAMS((P *p, unsigned char *s, int len));
+P *prifind PARAMS((P *p, unsigned char *s, int len));
 
 /* copy text between 'from' and 'to' into new buffer */
 B *bcpy PARAMS((P *from, P *to));	
