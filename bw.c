@@ -350,42 +350,64 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 			} else if (bc == '\n')
 				goto eobl;
 			else {
-				if (utf8_state) {
-					--utf8_state;
-					utf8_char = (utf8_char<<6)|(bc&0x3F);
-				} else if ((bc&0x80)==0x00) {
-					utf8_state = 0;
-					utf8_char = bc;
-				} else if ((bc&0xC0)==0x80) {
-					utf8_state = 1;
-					utf8_char = (bc&0x3F);
-				} else if ((bc&0xE0)==0xC0) {
-					utf8_state = 2;
-					utf8_char = (bc&0x1F);
-				} else if ((bc&0xF0)==0xE0) {
-					utf8_state = 3;
-					utf8_char = (bc&0x0F);
-				} else if ((bc&0xF8)==0xF0) {
-					utf8_state = 4;
-					utf8_char = (bc&0x07);
-				} else if ((bc&0xFC)==0xF8) {
-					utf8_state = 5;
-					utf8_char = (bc&0x03);
-				} else if ((bc&0xFE)==0xFC) {
-					utf8_state = 6;
-					utf8_char = (bc&0x01);
+				int wid = -1;
+				if (p->b->o.utf8) {
+					if (utf8_state) {
+						if ((bc&0xC0)==0x80) {
+							--utf8_state;
+							utf8_char = ((utf8_char<<6)|(bc&0x3F));
+							if(!utf8_state)
+								wid = mk_wcwidth(utf8_char);
+						} else {
+							/* FIXME: Do something better here for bad UTF-8 sequence */
+							/* Like print all control chars... */
+							utf8_state = 0;
+							utf8_char = 'X';
+							wid = 1;
+						}
+					} else if ((bc&0xE0)==0xC0) {
+						/* 192 - 223 */
+						utf8_state = 1;
+						utf8_char = (bc&0x1F);
+					} else if ((bc&0xF0)==0xE0) {
+						/* 224 - 239 */
+						utf8_state = 2;
+						utf8_char = (bc&0x0F);
+					} else if ((bc&0xF8)==0xF0) {
+						/* 240 - 247 */
+						utf8_state = 3;
+						utf8_char = (bc&0x07);
+					} else if ((bc&0xFC)==0xF8) {
+						/* 248 - 251 */
+						utf8_state = 4;
+						utf8_char = (bc&0x03);
+					} else if ((bc&0xFE)==0xFC) {
+						/* 252 - 253 */
+						utf8_state = 5;
+						utf8_char = (bc&0x01);
+					} else {
+						/* 0 - 191, 254, 255 */
+						utf8_state = 0;
+						xlat(&c, &bc);
+						utf8_char = bc;
+						c1 ^= c;
+						wid = 1;
+					}
 				} else {
-					utf8_state = 0;
+					xlat(&c, &bc);
 					utf8_char = bc;
+					c1 ^= c;
+					wid = 1;
 				}
-				if(!utf8_state) {
-					int wid = mk_wcwidth(utf8_char);
-					if(wid<=0)
-						wid=1;
+
+				if(wid>0) {
 					col += wid;
-					if (col >= scr) {
+					if (col == scr) {
 						--amnt;
 						goto loop;
+					} else if (col > scr) {
+						ta = col - scr;
+						goto dota;
 					}
 				}
 			}
@@ -472,35 +494,42 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 						if ((bc&0xC0)==0x80) {
 							--utf8_state;
 							utf8_char = ((utf8_char<<6)|(bc&0x3F));
+							if(!utf8_state)
+								wid = mk_wcwidth(utf8_char);
 						} else {
-							/* FIXME: Should not take character */
+							/* FIXME: Do something better here for bad UTF-8 sequence */
+							/* Like print all control chars... */
 							utf8_state = 0;
-							utf8_char = 'Y';
+							utf8_char = 'X';
+							wid = 1;
 						}
-					} else if ((bc&0x80)==0x00) {
-						utf8_state = 0;
-						utf8_char = bc;
 					} else if ((bc&0xE0)==0xC0) {
+						/* 192 - 223 */
 						utf8_state = 1;
 						utf8_char = (bc&0x1F);
 					} else if ((bc&0xF0)==0xE0) {
+						/* 224 - 239 */
 						utf8_state = 2;
 						utf8_char = (bc&0x0F);
 					} else if ((bc&0xF8)==0xF0) {
+						/* 240 - 247 */
 						utf8_state = 3;
 						utf8_char = (bc&0x07);
 					} else if ((bc&0xFC)==0xF8) {
+						/* 248 - 251 */
 						utf8_state = 4;
 						utf8_char = (bc&0x03);
 					} else if ((bc&0xFE)==0xFC) {
+						/* 252 - 253 */
 						utf8_state = 5;
 						utf8_char = (bc&0x01);
 					} else {
+						/* 0 - 191, 254, 255 */
 						utf8_state = 0;
-						utf8_char = 'X';
-					}
-					if(!utf8_state) {
-						wid = mk_wcwidth(utf8_char);
+						xlat(&c, &bc);
+						utf8_char = bc;
+						c1 ^= c;
+						wid = 1;
 					}
 				} else {
 					xlat(&c, &bc);
@@ -720,12 +749,12 @@ static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, 
 
 static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 {
-	char buf[12];
+	unsigned char buf[12];
 	int z;
 	int lin = w->top->line + y - w->y;
 
 	if (lin <= w->b->eof->line)
-		snprintf(buf, sizeof(buf), "%5ld ", w->top->line + y - w->y + 1);
+		snprintf((char *)buf, sizeof(buf), "%5ld ", w->top->line + y - w->y + 1);
 	else
 		strcpy(buf, "      ");
 	for (z = 0; buf[z]; ++z) {
@@ -919,13 +948,13 @@ void bwrm(BW *w)
 
 int ustat(BW *bw)
 {
-	static char buf[80];
+	static unsigned char buf[80];
 	int c = brch(bw->cursor);
 
 	if (c == NO_MORE_DATA)
-		snprintf(buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
+		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
 	else
-		snprintf(buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, c, c, c, mk_wcwidth(c));
+		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, c, c, c, mk_wcwidth(c));
 	msgnw(bw->parent, buf);
 	return 0;
 }

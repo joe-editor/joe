@@ -137,7 +137,7 @@ static struct ltchars oltarg;
 
 /* Output buffer, index and size */
 
-char *obuf = NULL;
+unsigned char *obuf = NULL;
 int obufp = 0;
 int obufsiz;
 
@@ -189,14 +189,13 @@ static int mpxfd;		/* Editor reads packets from this fd */
 static int mpxsfd;		/* Clients send packets to this fd */
 
 static int nmpx = 0;
-static int accept = MAXINT;	/* =MAXINT if we have last packet */
-				/* FIXME: overloaded meaning of MAXINT */
+static int accept = NO_MORE_DATA;	/* =-1 if we have last packet */
 
 struct packet {
 	MPX *who;
 	int size;
 	int ch;
-	char data[1024];
+	unsigned char data[1024];
 } pack;
 
 MPX asyncs[NPROC];
@@ -385,7 +384,7 @@ void ttopnn(void)
 	}
 	if (!obufsiz)
 		obufsiz = 1;
-	obuf = (char *) joe_malloc(obufsiz);
+	obuf = (unsigned char *) joe_malloc(obufsiz);
 }
 
 /* Close terminal */
@@ -517,14 +516,14 @@ int ttflsh(void)
 	}
 
 	/* Ack previous packet */
-	if (ackkbd != -1 && accept != MAXINT && !have) {
-		char c = 0;
+	if (ackkbd != -1 && accept != NO_MORE_DATA && !have) {
+		unsigned char c = 0;
 
 		if (pack.who && pack.who->func)
 			joe_write(pack.who->ackfd, &c, 1);
 		else
 			joe_write(ackkbd, &c, 1);
-		accept = MAXINT;
+		accept = NO_MORE_DATA;
 	}
 
 	/* Check for typeahead or next packet */
@@ -590,7 +589,7 @@ int ttgetc(void)
 		}
 		have = 0;
 		if (pack.who) {	/* Got bknd input */
-			if (accept != MAXINT) {
+			if (accept != NO_MORE_DATA) {
 				if (pack.who->func) {
 					pack.who->func(pack.who->object, pack.data, pack.size);
 					edupd(1);
@@ -599,7 +598,7 @@ int ttgetc(void)
 				mpxdied(pack.who);
 			goto loop;
 		} else {
-			if (accept != MAXINT)
+			if (accept != NO_MORE_DATA)
 				return accept;
 			else {
 				ttsig(0);
@@ -622,7 +621,7 @@ int ttgetc(void)
 
 /* Write string to output */
 
-void ttputs(char *s)
+void ttputs(unsigned char *s)
 {
 	while (*s) {
 		obuf[obufp++] = *s++;
@@ -661,10 +660,10 @@ void ttgtsz(int *x, int *y)
 #endif
 }
 
-void ttshell(char *cmd)
+void ttshell(unsigned char *cmd)
 {
 	int x, omode = ttymode;
-	char *s = getenv("SHELL");
+	unsigned char *s = (unsigned char *)getenv("SHELL");
 
 	if (!s)
 		return;
@@ -677,10 +676,10 @@ void ttshell(char *cmd)
 	} else {
 		signrm();
 		if (cmd)
-			execl(s, s, "-c", cmd, NULL);
+			execl((char *)s, (char *)s, "-c", cmd, NULL);
 		else {
 			fprintf(stderr, "You are at the command shell.  Type 'exit' to return\n");
-			execl(s, s, NULL);
+			execl((char *)s, (char *)s, NULL);
 		}
 		_exit(0);
 	}
@@ -721,7 +720,7 @@ static void mpxstart(void)
 	mpxfd = fds[0];
 	mpxsfd = fds[1];
 	pipe(fds);
-	accept = MAXINT;
+	accept = NO_MORE_DATA;
 	have = 0;
 	if (!(kbdpid = fork())) {
 		close(fds[1]);
@@ -732,7 +731,7 @@ static void mpxstart(void)
 			pack.who = 0;
 			sta = joe_read(fileno(termin), &c, 1);
 			if (sta == 0)
-				pack.ch = MAXINT;
+				pack.ch = NO_MORE_DATA;
 			else
 				pack.ch = c;
 			pack.size = 0;
@@ -773,9 +772,9 @@ static void mpxend(void)
 
 /* Newer sgi machines can do it the __svr4__ way, but old ones can't */
 
-extern char *_getpty();
+extern unsigned char *_getpty();
 
-static char *getpty(int *ptyfd)
+static unsigned char *getpty(int *ptyfd)
 {
 	return _getpty(ptyfd, O_RDWR, 0600, 0);
 }
@@ -785,12 +784,12 @@ static char *getpty(int *ptyfd)
 
 /* Strange streams way */
 
-extern char *ptsname();
+extern unsigned char *ptsname();
 
-static char *getpty(int *ptyfd)
+static unsigned char *getpty(int *ptyfd)
 {
 	int fdm;
-	char *name;
+	unsigned char *name;
 
 	*ptyfd = fdm = open("/dev/ptmx", O_RDWR);
 	grantpt(fdm);
@@ -812,46 +811,46 @@ static char *getpty(int *ptyfd)
  * process and the process gets to be the session leader.
  */
 
-static char *getpty(int *ptyfd)
+static unsigned char *getpty(int *ptyfd)
 {
 	int x, fd;
-	char *orgpwd = pwd();
-	static char **ptys = NULL;
-	static char *ttydir;
-	static char *ptydir;
-	static char ttyname[32];
+	unsigned char *orgpwd = pwd();
+	static unsigned char **ptys = NULL;
+	static unsigned char *ttydir;
+	static unsigned char *ptydir;
+	static unsigned char ttyname[32];
 
 	if (!ptys) {
-		ttydir = "/dev/pty/";
-		ptydir = "/dev/ptym/";	/* HPUX systems */
-		if (chpwd(ptydir) || !(ptys = rexpnd("pty*")))
+		ttydir = US "/dev/pty/";
+		ptydir = US "/dev/ptym/";	/* HPUX systems */
+		if (chpwd(ptydir) || !(ptys = rexpnd(US "pty*")))
 			if (!ptys) {
-				ttydir = ptydir = "/dev/";	/* Everyone else */
+				ttydir = ptydir = US "/dev/";	/* Everyone else */
 				if (!chpwd(ptydir))
-					ptys = rexpnd("pty*");
+					ptys = rexpnd(US "pty*");
 			}
 	}
 	chpwd(orgpwd);
 
 	if (ptys)
 		for (fd = 0; ptys[fd]; ++fd) {
-			strcpy(ttyname, ptydir);
-			strcat(ttyname, ptys[fd]);
-			if ((*ptyfd = open(ttyname, O_RDWR)) >= 0) {
+			strcpy((char *)ttyname, (char *)ptydir);
+			strcat((char *)ttyname, (char  *)(ptys[fd]));
+			if ((*ptyfd = open((char *)ttyname, O_RDWR)) >= 0) {
 				ptys[fd][0] = 't';
-				strcpy(ttyname, ttydir);
-				strcat(ttyname, ptys[fd]);
+				strcpy((char *)ttyname, (char *)ttydir);
+				strcat((char *)ttyname, (char *)(ptys[fd]));
 				ptys[fd][0] = 'p';
-				x = open(ttyname, O_RDWR);
+				x = open((char *)ttyname, O_RDWR);
 				if (x >= 0) {
 					close(x);
 					close(*ptyfd);
-					strcpy(ttyname, ptydir);
-					strcat(ttyname, ptys[fd]);
-					*ptyfd = open(ttyname, O_RDWR);
+					strcpy((char *)ttyname, (char *)ptydir);
+					strcat((char *)ttyname, (char *)(ptys[fd]));
+					*ptyfd = open((char *)ttyname, O_RDWR);
 					ptys[fd][0] = 't';
-					strcpy(ttyname, ttydir);
-					strcat(ttyname, ptys[fd]);
+					strcpy((char *)ttyname, (char *)ttydir);
+					strcat((char *)ttyname, (char *)(ptys[fd]));
 					ptys[fd][0] = 'p';
 					return ttyname;
 				} else
@@ -878,15 +877,15 @@ static RETSIGTYPE death(int unused)
 
 /* Build a new environment, but replace one variable */
 
-extern char **mainenv;
+extern unsigned char **mainenv;
 
-static char **newenv(char **old, char *s)
+static unsigned char **newenv(unsigned char **old, unsigned char *s)
 {
-	char **new;
+	unsigned char **new;
 	int x, y, z;
 
 	for (x = 0; old[x]; ++x) ;
-	new = (char **) joe_malloc((x + 2) * sizeof(char *));
+	new = (unsigned char **) joe_malloc((x + 2) * sizeof(unsigned char *));
 
 	for (x = 0, y = 0; old[x]; ++x) {
 		for (z = 0; s[z] != '='; ++z)
@@ -906,15 +905,15 @@ static char **newenv(char **old, char *s)
 
 /* Create a shell process */
 
-MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj)
+MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj)
 {
-	char buf[80];
+	unsigned char buf[80];
 	int fds[2];
 	int comm[2];
 	pid_t pid;
 	int x;
 	MPX *m;
-	char *name;
+	unsigned char *name;
 
 	/* Get pty/tty pair */
 	if (!(name = getpty(ptyfd)))
@@ -998,8 +997,8 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 						   name of portability */
 
 			/* Open the TTY */
-			if ((x = open(name, O_RDWR)) != -1) {	/* Standard input */
-				char **env = newenv(mainenv, "TERM=");
+			if ((x = open((char *)name, O_RDWR)) != -1) {	/* Standard input */
+				unsigned char **env = newenv(mainenv, US "TERM=");
 
 				/* This tells the fd that it's a tty (I think) */
 #ifdef __svr4__
@@ -1028,11 +1027,11 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 #endif
 
 				/* Execute the shell */
-				execve(cmd, args, env);
+				execve((char *)cmd, (char **)args, (char **)env);
 
 				/* If shell didn't execute */
-				snprintf(buf,80,"Couldn't execute shell '%s'\n",cmd);
-				write(0,buf,strlen(buf));
+				snprintf((char *)buf,80,"Couldn't execute shell '%s'\n",cmd);
+				write(0,(char *)buf,strlen((char *)buf));
 				sleep(1);
 			}
 
@@ -1061,7 +1060,7 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 			joe_read(fds[0], &pack, 1);
 			goto loop;
 		} else {
-			pack.ch = MAXINT;
+			pack.ch = NO_MORE_DATA;
 			pack.size = 0;
 			joe_write(mpxsfd, &pack, sizeof(struct packet) - 1024);
 

@@ -561,7 +561,7 @@ void wshowone(W *w)
 
 /* Create a window */
 
-W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height, char *huh, int *notify)
+W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify)
 {
 	W *new;
 
@@ -662,7 +662,7 @@ static int doabort(W *w, int *ret)
 	}
 	deque(W, link, w);
 	if (w->watom->abort && w->object) {
-		*ret = w->watom->abort(w->object, MAXINT);
+		*ret = w->watom->abort(w->object);
 		if (w->notify)
 			*w->notify = -1;
 	} else {
@@ -701,7 +701,7 @@ int wabort(W *w)
 
 /* Generate text with formatting escape sequences */
 
-void genfmt(SCRN *t, int x, int y, int ofst, char *s, int flg)
+void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
 	int *attr = t->attr + y * t->co + x;
@@ -758,7 +758,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, char *s, int flg)
 
 /* Generate text: no formatting */
 
-void gentxt(SCRN *t, int x, int y, int ofst, char *s, int len, int flg)
+void gentxt(SCRN *t, int x, int y, int ofst, unsigned char *s, int len, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
 	int *attr = t->attr + y * t->co + x;
@@ -783,7 +783,7 @@ void gentxt(SCRN *t, int x, int y, int ofst, char *s, int len, int flg)
 
 /* Determine column width of string with format codes */
 
-int fmtlen(char *s)
+int fmtlen(unsigned char *s)
 {
 	int col = 0;
 
@@ -815,9 +815,9 @@ int fmtlen(char *s)
 /* Return offset within format string which corresponds to a particular
    column */
 
-int fmtpos(char *s, int goal)
+int fmtpos(unsigned char *s, int goal)
 {
-	char *org = s;
+	unsigned char *org = s;
 	int col = 0;
 
 	while (*s && col != goal) {
@@ -846,7 +846,7 @@ int fmtpos(char *s, int goal)
 
 /* Display a message and skip the next key */
 
-static void mdisp(SCRN *t, int y, char *s)
+static void mdisp(SCRN *t, int y, unsigned char *s)
 {
 	int ofst;
 	int len;
@@ -876,15 +876,15 @@ void msgout(W *w)
 
 /* Set temporary message */
 
-char msgbuf[JOE_MSGBUFSIZE];
+unsigned char msgbuf[JOE_MSGBUFSIZE];
 
 /* display message on bottom line of window */
-void msgnw(W *w, char *s)
+void msgnw(W *w, unsigned char *s)
 {
 	w->msgb = s;
 }
 
-void msgnwt(W *w, char *s)
+void msgnwt(W *w, unsigned char *s)
 {
 	w->msgt = s;
 }

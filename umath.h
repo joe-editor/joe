@@ -11,8 +11,8 @@
 #include "config.h"
 #include "types.h"
 
-extern char *merr;
-double calc(BW *bw, char *s);
+extern unsigned char *merr;
+double calc(BW *bw, unsigned char *s);
 int umath(BW *bw);
 
 #endif

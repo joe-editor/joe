@@ -65,6 +65,11 @@
 
  -skiptop nnn	Don't use top nnn lines of the screen
 
+-notite         Don't send terminal initialization and termination strings: prevents
+                restoration of screen on exit.
+
+ -usetabs       Use tabs to help optimize screen update.
+
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used
  in these strings:
@@ -117,10 +122,14 @@
  Here are the modes which can be set:
 
 	-encoding name		Set file coding (for example: utf-8, iso-8859-15)
+	-utf8			File is UTF-8 coded
+	-syntax name		Specify syntax (syntax file called
 	-syntax name		Specify syntax (syntax file called 'name.jsf' will be loaded)
 	-hex			Hex editor mode
 
 	-smarthome		Home key first moves cursor to beginning of line,
+
+	-wordwrap		Wordwrap
 
 	-autoindent		Auto indent
 

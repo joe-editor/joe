@@ -275,7 +275,7 @@ int ueop(BW *bw)
  * after . ? or !
  */
 
-void wrapword(P *p, long int indent, int french, char *indents)
+void wrapword(P *p, long int indent, int french, unsigned char *indents)
 {
 	P *q;
 	int rmf = 0;
@@ -340,7 +340,7 @@ void wrapword(P *p, long int indent, int french, char *indents)
 		/* Indent to left margin */
 		if (indents) {
 			binss(p, indents);
-			to += strlen(indents);
+			to += strlen((char *)indents);
 		} else
 			while (indent--) {
 				binsc(p, ' ');
@@ -360,8 +360,8 @@ void wrapword(P *p, long int indent, int french, char *indents)
 int uformat(BW *bw)
 {
 	long indent;
-	char *indents;
-	char *buf, *b;
+	unsigned char *indents;
+	unsigned char *buf, *b;
 	int len;
 	long curoff;
 	int c;
@@ -413,7 +413,7 @@ int uformat(BW *bw)
 		indent = bw->o.lmargin;
 
 	/* Cut paragraph into memory buffer */
-	buf = (char *) joe_malloc(len = (bw->cursor->byte - p->byte));
+	buf = (unsigned char *) joe_malloc(len = (bw->cursor->byte - p->byte));
 	brmem(p, buf, len);
 	bdel(p, bw->cursor);
 
@@ -439,7 +439,7 @@ int uformat(BW *bw)
 
 		/* Stop if we found white-space followed by end of line */
 		if (isblank(c)) {
-			char *r = b;
+			unsigned char *r = b;
 			int rlen = len;
 			int z;
 

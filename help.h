@@ -14,7 +14,7 @@
 
 void help_display PARAMS((SCREEN *t));		/* display text in help window */
 int help_on PARAMS((SCREEN *t));		/* turn help on */
-int help_init PARAMS((char *filename));		/* load help file */
+int help_init PARAMS((unsigned char *filename));/* load help file */
 
 int u_help PARAMS((BASE *base));		/* toggle help on/off */
 int u_help_next PARAMS((BASE *base));		/* goto next help screen */

@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static void gen(char *s, FILE *fd)
+static void gen(unsigned char *s, FILE *fd)
 {
 	int c, x;
 	long addr = 0, oaddr;
@@ -44,10 +44,10 @@ static void gen(char *s, FILE *fd)
 					for (y = z; s[y] && s[y] != '|' && s[y] != ':'; ++y) ;
 					c = s[y];
 					s[y] = 0;
-					if (strlen(s + z) > 2 && !strchr(s + z, ' ') && !strchr(s + z, '\t')) {
+					if (strlen((char *)(s + z)) > 2 && !strchr((char *)(s + z), ' ') && !strchr((char *)(s + z), '\t')) {
 						if(flg)
 							putchar(' ');
-						fputs(s + z, stdout);
+						fputs((char *)(s + z), stdout);
 						flg = 1;
 					}
 					s[y] = c;
@@ -66,7 +66,7 @@ static void gen(char *s, FILE *fd)
 
 int main(int argc, char *argv[])
 {
-	char array[65536];
+	unsigned char array[65536];
 
 	gen(array, stdin);
 	return(0);

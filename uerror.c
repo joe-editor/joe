@@ -28,9 +28,9 @@ struct error {
 	LINK(ERROR) link;	/* Linked list of errors */
 	long line;		/* Target line number */
 	long org;		/* Original target line number */
-	char *file;		/* Target file name */
+	unsigned char *file;		/* Target file name */
 	long src;		/* Error-file line number */
-	char *msg;		/* The message */
+	unsigned char *msg;		/* The message */
 } errors = { { &errors, &errors} };
 ERROR *errptr = &errors;	/* Current error row */
 
@@ -38,7 +38,7 @@ B *errbuf = NULL;		/* Buffer with error messages */
 
 /* Insert and delete notices */
 
-void inserr(char *name, long int where, long int n, int bol)
+void inserr(unsigned char *name, long int where, long int n, int bol)
 {
 	ERROR *e;
 
@@ -54,7 +54,7 @@ void inserr(char *name, long int where, long int n, int bol)
 	}
 }
 
-void delerr(char *name, long int where, long int n)
+void delerr(unsigned char *name, long int where, long int n)
 {
 	ERROR *e;
 
@@ -72,7 +72,7 @@ void delerr(char *name, long int where, long int n)
 
 /* Abort notice */
 
-void abrerr(char *name)
+void abrerr(unsigned char *name)
 {
 	ERROR *e;
 
@@ -84,7 +84,7 @@ void abrerr(char *name)
 
 /* Save notice */
 
-void saverr(char *name)
+void saverr(unsigned char *name)
 {
 	ERROR *e;
 
@@ -121,10 +121,10 @@ static void freeall(void)
 
 /* First word on line with a '.' in it.  This is the file name.  The next number after that is the line number. */
 
-static int parseit(char *s, long int row)
+static int parseit(unsigned char *s, long int row)
 {
 	int x, y, flg;
-	char *name = NULL;
+	unsigned char *name = NULL;
 	long line = -1;
 	ERROR *err;
 
@@ -153,7 +153,7 @@ static int parseit(char *s, long int row)
 
 	/* Save line number */
 	if (x != y)
-		sscanf(s + x, "%ld", &line);
+		sscanf((char *)(s + x), "%ld", &line);
 	if (line != -1)
 		--line;
 
@@ -184,7 +184,7 @@ static long parserr(B *b)
 
 	freeall();
 	do {
-		char *s;
+		unsigned char *s;
 
 		pset(q, p);
 		p_goto_eol(p);
@@ -203,7 +203,7 @@ int uparserr(BW *bw)
 {
 	errbuf = bw->b;
 	freeall();
-	snprintf(msgbuf, JOE_MSGBUFSIZE, "Parsed %ld lines", parserr(bw->b));
+	snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "Parsed %ld lines", parserr(bw->b));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
@@ -213,7 +213,7 @@ int unxterr(BW *bw)
 	int omid;
 
 	if (errptr->link.next == &errors) {
-		msgnw(bw->parent, "No more errors");
+		msgnw(bw->parent, US "No more errors");
 		return -1;
 	}
 	errptr = errptr->link.next;
@@ -238,7 +238,7 @@ int uprverr(BW *bw)
 	int omid;
 
 	if (errptr->link.prev == &errors) {
-		msgnw(bw->parent, "No more errors");
+		msgnw(bw->parent, US "No more errors");
 		return -1;
 	}
 	errptr = errptr->link.prev;

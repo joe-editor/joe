@@ -12,19 +12,19 @@
 #include "types.h"
 
 /* 31744 */
-extern char stdbuf[stdsiz];
+extern unsigned char stdbuf[stdsiz];
 
 extern int force;		/* Set to have final '\n' added to file */
 extern int tabwidth;		/* Default tab width */
 
 extern VFILE *vmem;		/* Virtual memory file used for buffer system */
 
-extern char *msgs[];
+extern unsigned char *msgs[];
 
 B *bmk PARAMS((B *prop));
 void brm PARAMS((B *b));
 
-B *bfind PARAMS((char *s));
+B *bfind PARAMS((unsigned char *s));
 
 P *pdup PARAMS((P *p));
 P *pdupown PARAMS((P *p, P **o));
@@ -110,16 +110,16 @@ P *binss PARAMS((P *p, unsigned char *s));
  * -3 for seek error
  * -4 for open error
  */
-B *bload PARAMS((char *s));
+B *bload PARAMS((unsigned char *s));
 B *bread PARAMS((int fi, long int max));
-B *bfind PARAMS((char *s));
+B *bfind PARAMS((unsigned char *s));
 B *borphan PARAMS((void));
 
 /* Save 'size' bytes beginning at 'p' into file with name in 's' */
-int bsave PARAMS((P *p, char *s, long int size));
+int bsave PARAMS((P *p, unsigned char *s, long int size));
 int bsavefd PARAMS((P *p, int fd, long int size));
 
-char *parsens PARAMS((char *s, long int *skip, long int *amnt));
+unsigned char *parsens PARAMS((unsigned char *s, long int *skip, long int *amnt));
 
 /* Get byte at pointer or return NO_MORE_DATA if pointer is at end of buffer */
 int brc PARAMS((P *p));
@@ -136,7 +136,7 @@ unsigned char *brmem PARAMS((P *p, unsigned char *blk, int size));
 unsigned char *brs PARAMS((P *p, int size));
 
 /* Copy 'size' bytes from a buffer beginning at p into a variable length string. */
-char *brvs PARAMS((P *p, int size));
+unsigned char *brvs PARAMS((P *p, int size));
 
 B *bnext PARAMS((void));
 B *bprev PARAMS((void));
@@ -144,6 +144,6 @@ B *bprev PARAMS((void));
 #define error berror
 extern int berror;
 
-char **getbufs PARAMS((void));
+unsigned char **getbufs PARAMS((void));
 
 #endif

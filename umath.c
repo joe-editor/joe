@@ -17,24 +17,24 @@
 #include "vs.h"
 #include "w.h"
 
-char *merr;
+unsigned char *merr;
 
 static RETSIGTYPE fperr(int unused)
 {
 	if (!merr) {
-		merr = "Float point exception";
+		merr = US "Float point exception";
 	}
 	REINSTALL_SIGHANDLER(SIGFPE, fperr);
 }
 
 struct var {
-	char *name;
+	unsigned char *name;
 	int set;
 	double val;
 	struct var *next;
 } *vars = NULL;
 
-static struct var *get(char *str)
+static struct var *get(unsigned char *str)
 {
 	struct var *v;
 
@@ -48,11 +48,11 @@ static struct var *get(char *str)
 	v->set = 0;
 	v->next = vars;
 	vars = v;
-	v->name = strdup(str);
+	v->name = (unsigned char *)strdup((char *)str);
 	return v;
 }
 
-char *ptr;
+unsigned char *ptr;
 struct var *dumb;
 
 static double expr(int prec, struct var **rtv)
@@ -65,7 +65,7 @@ static double expr(int prec, struct var **rtv)
 	}
 	if ((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z')
 	    || *ptr == '_') {
-		char *s = ptr, c;
+		unsigned char *s = ptr, c;
 
 		while ((*ptr >= 'a' && *ptr <= 'z')
 		       || (*ptr >= 'A' && *ptr <= 'Z')
@@ -78,7 +78,7 @@ static double expr(int prec, struct var **rtv)
 		x = v->val;
 		*ptr = c;
 	} else if ((*ptr >= '0' && *ptr <= '9') || *ptr == '.') {
-		sscanf(ptr, "%lf", &x);
+		sscanf((char *)ptr, "%lf", &x);
 		while ((*ptr >= '0' && *ptr <= '9') || *ptr == '.' || *ptr == 'e' || *ptr == 'E')
 			++ptr;
 	} else if (*ptr == '(') {
@@ -88,7 +88,7 @@ static double expr(int prec, struct var **rtv)
 			++ptr;
 		else {
 			if (!merr)
-				merr = "Missing )";
+				merr = US "Missing )";
 		}
 	} else if (*ptr == '-') {
 		++ptr;
@@ -121,7 +121,7 @@ static double expr(int prec, struct var **rtv)
 			v->set = 1;
 		} else {
 			if (!merr)
-				merr = "Left side of = is not an l-value";
+				merr = US "Left side of = is not an l-value";
 		}
 		goto loop;
 	}
@@ -129,31 +129,31 @@ static double expr(int prec, struct var **rtv)
 	return x;
 }
 
-double calc(BW *bw, char *s)
+double calc(BW *bw, unsigned char *s)
 {
 	double result;
 	struct var *v;
 	BW *tbw = bw->parent->main->object;
 
-	v = get("top");
+	v = get(US "top");
 	v->val = tbw->top->line + 1;
 	v->set = 1;
-	v = get("lines");
+	v = get(US "lines");
 	v->val = tbw->b->eof->line + 1;
 	v->set = 1;
-	v = get("line");
+	v = get(US "line");
 	v->val = tbw->cursor->line + 1;
 	v->set = 1;
-	v = get("col");
+	v = get(US "col");
 	v->val = tbw->cursor->col + 1;
 	v->set = 1;
-	v = get("byte");
+	v = get(US "byte");
 	v->val = tbw->cursor->byte + 1;
 	v->set = 1;
-	v = get("height");
+	v = get(US "height");
 	v->val = tbw->h;
 	v->set = 1;
-	v = get("width");
+	v = get(US "width");
 	v->val = tbw->w;
 	v->set = 1;
 	ptr = s;
@@ -173,14 +173,14 @@ double calc(BW *bw, char *s)
 				goto up;
 			}
 		} else if (*ptr) {
-			merr = "Extra junk after end of expr";
+			merr = US "Extra junk after end of expr";
 		}
 	}
 	return result;
 }
 
 /* Main user interface */
-static int domath(BW *bw, char *s, void *object, int *notify)
+static int domath(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	double result = calc(bw, s);
 
@@ -192,10 +192,10 @@ static int domath(BW *bw, char *s, void *object, int *notify)
 		return -1;
 	}
 	vsrm(s);
-	snprintf(msgbuf, JOE_MSGBUFSIZE, "%G", result);
+	snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "%G", result);
 	if (bw->parent->watom->what != TYPETW) {
 		binsm(bw->cursor, sz(msgbuf));
-		pfwrd(bw->cursor, strlen(msgbuf));
+		pfwrd(bw->cursor, strlen((char *)msgbuf));
 		bw->cursor->xcol = piscol(bw->cursor);
 	} else {
 		msgnw(bw->parent, msgbuf);
@@ -208,7 +208,7 @@ B *mathhist = NULL;
 int umath(BW *bw)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(bw->parent, "=", &mathhist, domath, "math", NULL, NULL, NULL, NULL)) {
+	if (wmkpw(bw->parent, US "=", &mathhist, domath, US "math", NULL, NULL, NULL, NULL)) {
 		return 0;
 	} else {
 		return -1;

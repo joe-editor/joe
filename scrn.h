@@ -189,6 +189,6 @@ void magic PARAMS((SCRN *t, int y, int *cs, int *ca, int *s, int *a,int placex))
 
 int clrins PARAMS((SCRN *t));
 
-int meta_color PARAMS((char *s));
+int meta_color PARAMS((unsigned char *s));
 
 #endif

@@ -62,7 +62,7 @@ void *dokey(KBD *kbd, int n)
 
 /* Return key code for key name or -1 for syntax error */
 
-static int keyval(char *s)
+static int keyval(unsigned char *s)
 {
 	if (s[0] == '^' && s[1] && !s[2])
 		if (s[1] == '?')
@@ -103,9 +103,9 @@ void rmkmap(KMAP *kmap)
 
 /* Parse a range */
 
-static char *range(char *seq, int *vv, int *ww)
+static unsigned char *range(unsigned char *seq, int *vv, int *ww)
 {
-	char c;
+	unsigned char c;
 	int x, v, w;
 
 	for (x = 0; seq[x] && seq[x] != ' '; ++x) ;	/* Skip to a space */
@@ -141,7 +141,7 @@ static char *range(char *seq, int *vv, int *ww)
 
 /* Add a binding to a keymap */
 
-static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char *capseq, int seql)
+static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *err, unsigned char *capseq, int seql)
 {
 	int v, w;
 

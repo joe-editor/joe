@@ -27,7 +27,7 @@ int parse(struct high_syntax *syntax,P *line,int state)
 {
 	struct high_state *h = syntax->states[state];
 			/* Current state */
-	char buf[20];	/* Name buffer (trunc after 19 characters) */
+	unsigned char buf[20];	/* Name buffer (trunc after 19 characters) */
 	int buf_idx=0;	/* Index into buffer */
 	int c;		/* Current character */
 	int *attr_end = attr_buf+attr_size;
@@ -84,7 +84,7 @@ int parse(struct high_syntax *syntax,P *line,int state)
 
 /* Subroutines for load_dfa() */
 
-static struct high_state *find_state(struct high_syntax *syntax,char *name)
+static struct high_state *find_state(struct high_syntax *syntax,unsigned char *name)
 {
 	int x;
 	struct high_state *state;
@@ -97,7 +97,7 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 	/* It doesn't exist, so create it */
 	if(x==syntax->nstates) {
 		state=malloc(sizeof(struct high_state));
-		state->name=strdup(name);
+		state->name=(unsigned char *)strdup((char *)name);
 		state->no=syntax->nstates;
 		state->color=FG_WHITE;
 		/* FIXME: init cmd table? */
@@ -113,13 +113,13 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 
 struct high_syntax *syntax_list;
 
-struct high_syntax *load_dfa(char *name)
+struct high_syntax *load_dfa(unsigned char *name)
 {
-	char buf[1024];
-	char bf[256];
-	char bf1[256];
+	unsigned char buf[1024];
+	unsigned char bf[256];
+	unsigned char bf1[256];
 	int clist[256];
-	char *p;
+	unsigned char *p;
 	int c;
 	FILE *f;
 	struct high_state *state=0;	/* Current state */
@@ -141,14 +141,14 @@ struct high_syntax *load_dfa(char *name)
 		return syntax;
 
 	/* Load it */
-	sprintf(buf,"%s%s.jsf",JOERC,name);
-	f=fopen(buf,"r");
+	sprintf((char *)buf,"%s%s.jsf",JOERC,name);
+	f=fopen((char *)buf,"r");
 	if(!f)
 		return 0;
 
 	/* Create new one */
 	syntax = malloc(sizeof(struct high_syntax));
-	syntax->name = strdup(name);
+	syntax->name = (unsigned char *)strdup((char *)name);
 	syntax->next = syntax_list;
 	syntax_list = syntax;
 	syntax->nstates = 0;
@@ -156,7 +156,7 @@ struct high_syntax *load_dfa(char *name)
 	syntax->states = malloc(sizeof(struct high_state *)*(syntax->szstates=64));
 
 	/* Parse file */
-	while(fgets(buf,1023,f)) {
+	while(fgets((char *)buf,1023,f)) {
 		++line;
 		p = buf;
 		c = parse_ws(&p);
@@ -192,7 +192,7 @@ struct high_syntax *load_dfa(char *name)
 				/* If it doesn't exist, create it */
 				if(!color) {
 					color = malloc(sizeof(struct high_color));
-					color->name = strdup(bf);
+					color->name = (unsigned char *)strdup((char *)bf);
 					color->color = 0;
 					color->next = syntax->color;
 					syntax->color = color;
@@ -212,7 +212,7 @@ struct high_syntax *load_dfa(char *name)
 			} else if (c=='"' || c=='*') {
 				if (state) {
 					struct high_cmd *cmd;
-					if(!parse_field(&p, "*")) {
+					if(!parse_field(&p, US "*")) {
 						int z;
 						for(z=0;z!=256;++z)
 							clist[z] = 1;
@@ -223,7 +223,7 @@ struct high_syntax *load_dfa(char *name)
 						else {
 							int z;
 							int first, second;
-							char *t = bf;
+							unsigned char *t = bf;
 							for(z=0;z!=256;++z)
 								clist[z] = 0;
 							while(!parse_range(&t, &first, &second)) {
@@ -260,18 +260,18 @@ struct high_syntax *load_dfa(char *name)
 								} else
 									fprintf(stderr,"%s %d: Missing value for option\n",name,line);
 							} else if(!strcmp(bf,"strings")) {
-								while(fgets(buf,1023,f)) {
+								while(fgets((char *)buf,1023,f)) {
 									++line;
 									p = buf;
 									c = parse_ws(&p);
-									if(!parse_field(&p,"done"))
+									if(!parse_field(&p,US "done"))
 										break;
 									if(!parse_string(&p,bf,255)) {
 										parse_ws(&p);
 										if(!parse_ident(&p,bf1,255)) {
 											if(!cmd->keywords)
 												cmd->keywords = htmk(64);
-											htadd(cmd->keywords,strdup(bf),find_state(syntax,bf1));
+											htadd(cmd->keywords,(unsigned char *)strdup((char *)bf),find_state(syntax,bf1));
 										} else
 											fprintf(stderr,"%s %d: Missing state name\n",name,line);
 									} else

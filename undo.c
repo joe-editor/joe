@@ -270,7 +270,7 @@ static void yankdel(long where, B *b)
 				binsb(rec->big->eof, bcpy(b->bof, b->eof));
 				boffline(rec->big);
 			} else {
-				rec->small = (char *) joe_realloc(rec->small, rec->len + size);
+				rec->small = (unsigned char *) joe_realloc(rec->small, rec->len + size);
 				brmem(b->bof, rec->small + rec->len, (int) size);
 			}
 			rec->len += size;
@@ -286,7 +286,7 @@ static void yankdel(long where, B *b)
 				binsb(rec->big->bof, bcpy(b->bof, b->eof));
 				boffline(rec->big);
 			} else {
-				rec->small = (char *) joe_realloc(rec->small, rec->len + size);
+				rec->small = (unsigned char *) joe_realloc(rec->small, rec->len + size);
 				mmove(rec->small + size, rec->small, (int) rec->len);
 				brmem(b->bof, rec->small, (int) size);
 			}
@@ -299,7 +299,7 @@ static void yankdel(long where, B *b)
 			}
 			rec = alrec();
 			if (size < SMALL) {
-				rec->small = (char *) joe_malloc(size);
+				rec->small = (unsigned char *) joe_malloc(size);
 				brmem(b->bof, rec->small, (int) b->eof->byte);
 			} else {
 				rec->big = bcpy(b->bof, b->eof);
@@ -342,7 +342,7 @@ void undodel(UNDO *undo, long where, B *b)
 			binsb(rec->big->eof, b);
 			boffline(rec->big);
 		} else {
-			rec->small = (char *) joe_realloc(rec->small, rec->len + size);
+			rec->small = (unsigned char *) joe_realloc(rec->small, rec->len + size);
 			brmem(b->bof, rec->small + rec->len, (int) size);
 			brm(b);
 		}
@@ -359,7 +359,7 @@ void undodel(UNDO *undo, long where, B *b)
 			binsb(rec->big->bof, b);
 			boffline(rec->big);
 		} else {
-			rec->small = (char *) joe_realloc(rec->small, rec->len + size);
+			rec->small = (unsigned char *) joe_realloc(rec->small, rec->len + size);
 			mmove(rec->small + size, rec->small, (int) rec->len);
 			brmem(b->bof, rec->small, (int) size);
 			brm(b);
@@ -369,7 +369,7 @@ void undodel(UNDO *undo, long where, B *b)
 	} else {
 		rec = alrec();
 		if (size < SMALL) {
-			rec->small = (char *) joe_malloc(size);
+			rec->small = (unsigned char *) joe_malloc(size);
 			brmem(b->bof, rec->small, (int) b->eof->byte);
 			brm(b);
 		} else {
@@ -438,7 +438,7 @@ int uyankpop(BW *bw)
 int unotmod(BW *bw)
 {
 	bw->b->changed = 0;
-	msgnw(bw->parent, "Modified flag cleared");
+	msgnw(bw->parent, US "Modified flag cleared");
 	return 0;
 }
 
@@ -453,7 +453,7 @@ int ucopy(BW *bw)
 			unmark(bw);
 		return 0;
 	} else {
-		msgnw(bw->parent, "No block");
+		msgnw(bw->parent, US "No block");
 		return -1;
 	}
 }

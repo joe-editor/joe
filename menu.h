@@ -13,7 +13,7 @@
 
 /* Create a menu */
 /* FIXME: ??? ---> */
-MENU *mkmenu PARAMS((W *w, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify));
+MENU *mkmenu PARAMS((W *w, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify));
 
 /* Menu user functions */
 
@@ -29,8 +29,8 @@ int umbol PARAMS((MENU *m));
 int umeol PARAMS((MENU *m));
 int umbacks PARAMS((MENU *m));
 
-void ldmenu PARAMS((MENU *m, char **s, int cursor));
+void ldmenu PARAMS((MENU *m, unsigned char **s, int cursor));
 
-char *mcomplete PARAMS((MENU *m));
+unsigned char *mcomplete PARAMS((MENU *m));
 
 #endif

@@ -194,12 +194,12 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 				if (!m->steps) {
 					MACRO *macro = m;
 
-					m = mkmacro(MAXINT, 1, 0, NULL);
+					m = mkmacro(-1, 1, 0, NULL);
 					addmacro(m, macro);
 				}
 			} else
-				m = mkmacro(MAXINT, 1, 0, NULL);
-			addmacro(m, mkmacro(buf[x], 1, 0, findcmd("type")));
+				m = mkmacro(-1, 1, 0, NULL);
+			addmacro(m, mkmacro(buf[x], 1, 0, findcmd(US "type")));
 			++x;
 		}
 		if (buf[x] == '\"')
@@ -222,12 +222,12 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 				if (!m->steps) {
 					MACRO *macro = m;
 
-					m = mkmacro(MAXINT, 1, 0, NULL);
+					m = mkmacro(-1, 1, 0, NULL);
 					addmacro(m, macro);
 				}
-				addmacro(m, mkmacro(MAXINT, 1, 0, cmd));
+				addmacro(m, mkmacro(-1, 1, 0, cmd));
 			} else
-				m = mkmacro(MAXINT, 1, 0, cmd);
+				m = mkmacro(-1, 1, 0, cmd);
 			buf[x = y] = c;
 		}
 	}
@@ -254,11 +254,11 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 
 /* Convert macro to text */
 
-static char *ptr;
+static unsigned char *ptr;
 static int first;
 static int instr;
 
-static char *unescape(char *ptr, int c)
+static unsigned char *unescape(unsigned char *ptr, int c)
 {
 	if (c == '"') {
 		*ptr++ = '\\';
@@ -314,7 +314,7 @@ static void domtext(MACRO *m)
 	}
 }
 
-char *mtext(char *s, MACRO *m)
+unsigned char *mtext(unsigned char *s, MACRO *m)
 {
 	ptr = s;
 	first = 1;
@@ -504,7 +504,7 @@ int ustop(void)
 			rmmacro(kbdmacro[r->n]);
 		kbdmacro[r->n] = r->m;
 		if (recmac)
-			record(m = mkmacro(r->n + '0', 1, 0, findcmd("play"))), rmmacro(m);
+			record(m = mkmacro(r->n + '0', 1, 0, findcmd(US "play"))), rmmacro(m);
 		joe_free(r);
 	}
 	return 0;
@@ -533,7 +533,7 @@ static int doplay(BW *bw, int c, void *object, int *notify)
 int umacros(BW *bw)
 {
 	int x;
-	char buf[1024];
+	unsigned char buf[1024];
 
 	p_goto_eol(bw->cursor);
 	for (x = 0; x != 10; ++x)
@@ -541,7 +541,7 @@ int umacros(BW *bw)
 			mtext(buf, kbdmacro[x]);
 			binss(bw->cursor, buf);
 			p_goto_eol(bw->cursor);
-			snprintf(buf, JOE_MSGBUFSIZE, "\t^K %c\tMacro %d", x + '0', x);
+			snprintf((char *)buf, JOE_MSGBUFSIZE, "\t^K %c\tMacro %d", x + '0', x);
 			binss(bw->cursor, buf);
 			p_goto_eol(bw->cursor);
 			binsc(bw->cursor, '\n');
@@ -562,7 +562,7 @@ int uplay(BW *bw, int c)
 
 /* Repeat-count setting */
 
-static int doarg(BW *bw, char *s, void *object, int *notify)
+static int doarg(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	long num;
 
@@ -581,7 +581,7 @@ static int doarg(BW *bw, char *s, void *object, int *notify)
 
 int uarg(BW *bw)
 {
-	if (wmkpw(bw->parent, "No. times to repeat next command (^C to abort): ", NULL, doarg, NULL, NULL, utypebw, NULL, NULL))
+	if (wmkpw(bw->parent, US "No. times to repeat next command (^C to abort): ", NULL, doarg, NULL, NULL, utypebw, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -620,7 +620,7 @@ static int douarg(BW *bw, int c, void *object, int *notify)
 			*notify = 1;
 		return 0;
 	}
-	snprintf(msgbuf, JOE_MSGBUFSIZE, "Repeat %s%d", negarg ? "-" : "", unaarg);
+	snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "Repeat %s%d", negarg ? "-" : "", unaarg);
 	if (mkqwna(bw->parent, sz(msgbuf), douarg, NULL, NULL, notify))
 		return 0;
 	else

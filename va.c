@@ -178,7 +178,7 @@ aELEMENT *vasort(aELEMENT *ary, int len)
 	return ary;
 }
 
-aELEMENT *vawords(aELEMENT *a, char *s, int len, char *sep, int seplen)
+aELEMENT *vawords(aELEMENT *a, unsigned char *s, int len, unsigned char *sep, int seplen)
 {
 	int x;
 

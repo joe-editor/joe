@@ -29,7 +29,7 @@ struct help *help_actual = NULL;			/* actual help screen */
  *        NOT_ENOUGH_MEMORY if there is not enough memory
  */
 
-int help_init(char *filename)
+int help_init(unsigned char *filename)
 {
 	FILE *fd;					/* help file */
 	unsigned char buf[1024];			/* input buffer */
@@ -39,13 +39,13 @@ int help_init(char *filename)
 	unsigned int hlpsiz, hlpbsz;			/* number of used/allocated bytes for tmp->text */
 	unsigned char *tempbuf;
 
-	if (!(fd = fopen(filename, "r")))		/* open the help file */
+	if (!(fd = fopen((char *)filename, "r")))		/* open the help file */
 		return -1;				/* return if we couldn't open the file */
 
 	fprintf(stderr, "Processing '%s'...", filename);
 	fflush(stderr);
 
-	while (fgets(buf, sizeof(buf), fd)) {
+	while (fgets((char *)buf, sizeof(buf), fd)) {
 		if (buf[0] == '{') {			/* start of help screen */
 			if (!(tmp = (struct help *) joe_malloc(sizeof(struct help)))) {
 				return NOT_ENOUGH_MEMORY;
@@ -57,8 +57,8 @@ int help_init(char *filename)
 			hlpbsz = 0;
 			tmp->name = vsncpy(NULL, 0, sz(buf + 1) - 1);
 
-			while ((fgets(buf, sizeof(buf), fd)) && (buf[0] != '}')) {
-				bfl = strlen(buf);
+			while ((fgets((char *)buf, sizeof(buf), fd)) && (buf[0] != '}')) {
+				bfl = strlen((char *)buf);
 				if (hlpsiz + bfl > hlpbsz) {
 					if (tmp->text) {
 						tempbuf = (unsigned char *) joe_realloc(tmp->text, hlpbsz + bfl + 1024);
@@ -95,7 +95,7 @@ int help_init(char *filename)
 				fprintf(stderr, "\nHelp file '%s' is not properly ended with } on new line.\n", filename);
 				fprintf(stderr, "Do you want to accept incomplete help screen (y/n)?");
 				fflush(stderr);
-				fgets(buf, 8, stdin);
+				fgets((char *)buf, 8, stdin);
 				if (!((buf[0] == 'y') || (buf[0] == 'Y'))) {
 					joe_free(tmp->text);
 					joe_free(tmp);

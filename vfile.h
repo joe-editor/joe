@@ -30,7 +30,7 @@
  * get previously read data?
  */
 
-extern char *vbase;		/* Data first entry in vheader refers to */
+extern unsigned char *vbase;		/* Data first entry in vheader refers to */
 extern VPAGE **vheaders;	/* Array of headers */
 
 /* VFILE *vtmp(V);
@@ -116,13 +116,13 @@ void vflshf PARAMS((VFILE *vfile));
  * ever might want to is to implement your own version of valloc()).
  */
 
-char *vlock PARAMS((VFILE *vfile, unsigned long addr));
+unsigned char *vlock PARAMS((VFILE *vfile, unsigned long addr));
 
 /* VPAGE *vheader(char *);
  * Return address of page header for given page
  */
 
-#define vheader(p) (vheaders[(physical((char *)(p))-physical(vbase))>>LPGSIZE])
+#define vheader(p) (vheaders[(physical((unsigned char *)(p))-physical(vbase))>>LPGSIZE])
 
 /* void vchanged(char *);
  *
@@ -256,7 +256,7 @@ short vputw PARAMS(());
  * This requires that you use the 'vs.h' / 'vs.c' library.
  */
 
-char *vgets PARAMS(());
+unsigned char *vgets PARAMS(());
 
 /* void vputs(VFILE *v,char *s);
  *

@@ -48,13 +48,13 @@
  * done for self-refering 'tc=filename' links (so all of core will be
  * allocated if there are any).
  */
-CAP *getcap PARAMS((char *name, unsigned int baud, void (*out) (char *, char), void *outptr));
+CAP *getcap PARAMS((unsigned char *name, unsigned int baud, void (*out) (unsigned char *, unsigned char), void *outptr));
 
 /* CAP *setcap(CAP *cap,int baud,void (*out)(void *outptr,char c),void *outptr);
  *
  * Reset baud, out and outptr for a CAP
  */
-CAP *setcap PARAMS((CAP *cap, unsigned int baud, void (*out) (char *, char), void *outptr));
+CAP *setcap PARAMS((CAP *cap, unsigned int baud, void (*out) (unsigned char *, unsigned char), void *outptr));
 
 /* char *jgetstr(CAP *cap,char *name);
  *
@@ -63,21 +63,21 @@ CAP *setcap PARAMS((CAP *cap, unsigned int baud, void (*out) (char *, char), voi
  * the buffer used to load the termcap entry.  It should not be modified or
  * freed.
  */
-char *jgetstr PARAMS((CAP *cap, char *name));
+unsigned char *jgetstr PARAMS((CAP *cap, unsigned char *name));
 
 /* int getflag(CAP *cap,char *name);
  *
  * Return true if the named capability is found in 'cap'.  A fast binary
  * search is used to lookup the capability.
  */
-int getflag PARAMS((CAP *cap, char *name));
+int getflag PARAMS((CAP *cap, unsigned char *name));
 
 /* int getnum(CAP *cap,char *name);
  *
  * Return value of numeric capability or return -1 if it's not found.  A fast
  * binary search is used to lookup the capability.
  */
-int getnum PARAMS((CAP *cap, char *name));
+int getnum PARAMS((CAP *cap, unsigned char *name));
 
 /* void rmcap(CAP *cap);
  *
@@ -101,7 +101,7 @@ void rmcap PARAMS((CAP *cap));
 
    'a0' - 'a1' are the arguments for the string
 */
-void texec PARAMS((CAP *cap, char *s, int l, int a0, int a1, int a2, int a3));
+void texec PARAMS((CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3));
 
 /* int tcost(CAP *cap,char *str, int l, int a0, int a1, int a2, int a3);
    Return cost in number of characters which need to be sent
@@ -119,7 +119,7 @@ void texec PARAMS((CAP *cap, char *s, int l, int a0, int a1, int a2, int a3));
 
    'a0' - 'a3' are arguements passed to the string
 */
-int tcost PARAMS((CAP *cap, char *s, int l, int a0, int a1, int a2, int a3));
+int tcost PARAMS((CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3));
 
 /* char *tcompile(CAP *cap,char *str,int a0,int a1,int a2,int a3);
 
@@ -127,17 +127,17 @@ int tcost PARAMS((CAP *cap, char *s, int l, int a0, int a1, int a2, int a3));
    string (see vs.h) containing the compiled string capability.
    Pad characters are not placed in the string.
 */
-char *tcompile PARAMS((CAP *cap, char *s, int a0, int a1, int a2, int a3));
+unsigned char *tcompile PARAMS((CAP *cap, unsigned char *s, int a0, int a1, int a2, int a3));
 
 /* Old termcap support */
 #ifdef junk
 int tgetent();
-char *tgetstr();
+unsigned char *tgetstr();
 int tgetflag();
 int tgetnum();
-char *tgoto();
+unsigned char *tgoto();
 void tputs();
 extern short ospeed;
-extern char PC, *UP, *BC;
+extern unsigned char PC, *UP, *BC;
 #endif
 #endif

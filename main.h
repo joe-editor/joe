@@ -11,7 +11,7 @@
 #include "config.h"
 #include "types.h"
 
-extern char *exmsg;		/* Exit message */
+extern unsigned char *exmsg;	/* Exit message */
 extern int help;		/* Set to start with help on */
 extern SCREEN *maint;		/* Primary screen */
 void nungetc PARAMS((int c));

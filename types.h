@@ -3,6 +3,9 @@
 
 #include "config.h"
 
+/* Prefix to make string constants unsigned */
+#define US (unsigned char *)
+
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>				/* we need pid_t */
 #endif
@@ -93,8 +96,8 @@ struct point {
 
 struct options {
 	OPTIONS	*next;
-	char	*name_regex;
-	char	*contents_regex;
+	unsigned char	*name_regex;
+	unsigned char	*contents_regex;
 	int	overtype;
 	int	lmargin;
 	int	rmargin;
@@ -103,16 +106,16 @@ struct options {
 	int	tab;
 	int	indentc;
 	int	istep;
-	char	*context;
-	char	*lmsg;
-	char	*rmsg;
+	unsigned char	*context;
+	unsigned char	*lmsg;
+	unsigned char	*rmsg;
 	int	linums;
 	int	readonly;
 	int	french;
 	int	spaces;
 	int	crlf;
 	int	highlight;	/* Set to enable highlighting */
-	char	*syntax;	/* Syntax name for highlighting */
+	unsigned char	*syntax;	/* Syntax name for highlighting */
 	int	utf8;		/* Set for UTF-8 mode */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
@@ -139,12 +142,12 @@ struct recmac {
 /* Command entry */
 
 struct cmd {
-	char	*name;		/* Command name */
+	unsigned char	*name;		/* Command name */
 	int	flag;		/* Execution flags */
 	int	(*func) ();	/* Function bound to name */
 	MACRO	*m;		/* Macro bound to name */
 	int	arg;		/* 0= arg is meaningless, 1= ok */
-	char	*negarg;	/* Command to use if arg was negative */
+	unsigned char	*negarg;	/* Command to use if arg was negative */
 };
 
 
@@ -153,7 +156,7 @@ struct buffer {
 	LINK(B)	link;
 	P	*bof;
 	P	*eof;
-	char	*name;
+	unsigned char	*name;
 	int	orphan;
 	int	count;
 	int	changed;
@@ -170,7 +173,7 @@ struct buffer {
 
 
 struct entry {
-	char	*name;
+	unsigned char	*name;
 	HENTRY	*next;
 	void	*val;
 };
@@ -213,7 +216,7 @@ struct kbd {
 
 
 struct watom {
-	char	*context;	/* Context name */
+	unsigned char	*context;	/* Context name */
 	void	(*disp) ();	/* Display window */
 	void	(*follow) ();	/* Called to have window follow cursor */
 	int	(*abort) ();	/* Common user functions */
@@ -279,9 +282,9 @@ struct window {
 	} object;
 #endif
 
-	char	*msgt;		/* Message at top of window */
-	char	*msgb;		/* Message at bottom of window */
-	char	*huh;		/* Name of window for context sensitive hlp */
+	unsigned char	*msgt;		/* Message at top of window */
+	unsigned char	*msgb;		/* Message at bottom of window */
+	unsigned char	*huh;		/* Name of window for context sensitive hlp */
 	int	*notify;	/* Address of kill notification flag */
 };
 
@@ -311,7 +314,7 @@ struct bw {
 
 struct menu {
 	W	*parent;	/* Window we're in */
-	char	**list;		/* List of items */
+	unsigned char	**list;		/* List of items */
 	int	top;		/* First item on screen */
 	int	cursor;		/* Item cursor is on */
 	int	width;		/* Width of widest item, up to 'w' max */
@@ -354,11 +357,11 @@ struct scrn {
 	int	li;		/* Screen height */
 	int	co;		/* Screen width */
 
-	char	*ti;		/* Initialization string */
-	char	*cl;		/* Home and clear screen... really an
+	unsigned char	*ti;		/* Initialization string */
+	unsigned char	*cl;		/* Home and clear screen... really an
 				   init. string */
-	char	*cd;		/* Clear to end of screen */
-	char	*te;		/* Restoration string */
+	unsigned char	*cd;		/* Clear to end of screen */
+	unsigned char	*te;		/* Restoration string */
 
 	int	haz;		/* Terminal can't print ~s */
 	int	os;		/* Terminal overstrikes */
@@ -367,73 +370,73 @@ struct scrn {
 	int	am;		/* Terminal has autowrap, but not magicwrap */
 	int	xn;		/* Terminal has magicwrap */
 
-	char	*so;		/* Enter standout (inverse) mode */
-	char	*se;		/* Exit standout mode */
+	unsigned char	*so;		/* Enter standout (inverse) mode */
+	unsigned char	*se;		/* Exit standout mode */
 
-	char	*us;		/* Enter underline mode */
-	char	*ue;		/* Exit underline mode */
-	char	*uc;		/* Single time underline character */
+	unsigned char	*us;		/* Enter underline mode */
+	unsigned char	*ue;		/* Exit underline mode */
+	unsigned char	*uc;		/* Single time underline character */
 
 	int	ms;		/* Ok to move when in standout/underline mode */
 
-	char	*mb;		/* Enter blinking mode */
-	char	*md;		/* Enter bold mode */
-	char	*mh;		/* Enter dim mode */
-	char	*mr;		/* Enter inverse mode */
-	char	*me;		/* Exit above modes */
+	unsigned char	*mb;		/* Enter blinking mode */
+	unsigned char	*md;		/* Enter bold mode */
+	unsigned char	*mh;		/* Enter dim mode */
+	unsigned char	*mr;		/* Enter inverse mode */
+	unsigned char	*me;		/* Exit above modes */
 
-	char	*Sb;		/* Set background color */
-	char	*Sf;		/* Set foregrond color */
+	unsigned char	*Sb;		/* Set background color */
+	unsigned char	*Sf;		/* Set foregrond color */
 	int	ut;		/* Screen erases with background color */
 
 	int	da, db;		/* Extra lines exist above, below */
-	char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
-	char	*cs;		/* Set scrolling region */
+	unsigned char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
+	unsigned char	*cs;		/* Set scrolling region */
 	int	rr;		/* Set for scrolling region relative addressing */
-	char	*sf, *SF, *sr, *SR;	/* Scroll */
+	unsigned char	*sf, *SF, *sr, *SR;	/* Scroll */
 
-	char	*dm, *dc, *DC, *ed;	/* Delete characters */
-	char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
+	unsigned char	*dm, *dc, *DC, *ed;	/* Delete characters */
+	unsigned char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
 	int	mi;		/* Set if ok to move while in insert mode */
 
-	char	*bs;		/* Move cursor left 1 */
+	unsigned char	*bs;		/* Move cursor left 1 */
 	int	cbs;
-	char	*lf;		/* Move cursor down 1 */
+	unsigned char	*lf;		/* Move cursor down 1 */
 	int	clf;
-	char	*up;		/* Move cursor up 1 */
+	unsigned char	*up;		/* Move cursor up 1 */
 	int	cup;
-	char	*nd;		/* Move cursor right 1 */
+	unsigned char	*nd;		/* Move cursor right 1 */
 
-	char	*ta;		/* Move cursor to next tab stop */
+	unsigned char	*ta;		/* Move cursor to next tab stop */
 	int	cta;
-	char	*bt;		/* Move cursor to previous tab stop */
+	unsigned char	*bt;		/* Move cursor to previous tab stop */
 	int	cbt;
 	int	tw;		/* Tab width */
 
-	char	*ho;		/* Home cursor to upper left */
+	unsigned char	*ho;		/* Home cursor to upper left */
 	int	cho;
-	char	*ll;		/* Home cursor to lower left */
+	unsigned char	*ll;		/* Home cursor to lower left */
 	int	cll;
-	char	*cr;		/* Move cursor to left edge */
+	unsigned char	*cr;		/* Move cursor to left edge */
 	int	ccr;
-	char	*RI;		/* Move cursor right n */
+	unsigned char	*RI;		/* Move cursor right n */
 	int	cRI;
-	char	*LE;		/* Move cursor left n */
+	unsigned char	*LE;		/* Move cursor left n */
 	int	cLE;
-	char	*UP;		/* Move cursor up n */
+	unsigned char	*UP;		/* Move cursor up n */
 	int	cUP;
-	char	*DO;		/* Move cursor down n */
+	unsigned char	*DO;		/* Move cursor down n */
 	int	cDO;
-	char	*ch;		/* Set cursor column */
+	unsigned char	*ch;		/* Set cursor column */
 	int	cch;
-	char	*cv;		/* Set cursor row */
+	unsigned char	*cv;		/* Set cursor row */
 	int	ccv;
-	char	*cV;		/* Goto beginning of specified line */
+	unsigned char	*cV;		/* Goto beginning of specified line */
 	int	ccV;
-	char	*cm;		/* Set cursor row and column */
+	unsigned char	*cm;		/* Set cursor row and column */
 	int	ccm;
 
-	char	*ce;		/* Clear to end of line */
+	unsigned char	*ce;		/* Clear to end of line */
 	int	cce;
 
 	/* Basic abilities */
@@ -462,23 +465,23 @@ struct scrn {
 
 
 struct sortentry {
-	char	*name;
-	char	*value;
+	unsigned char	*name;
+	unsigned char	*value;
 };
 
 struct cap {
-	char	*tbuf;		/* Termcap entry loaded here */
+	unsigned char	*tbuf;		/* Termcap entry loaded here */
 
 	struct sortentry *sort;	/* Pointers to each capability stored in here */
 	int	sortlen;	/* Number of capabilities */
 
-	char	*abuf;		/* For terminfo compatible version */
-	char	*abufp;
+	unsigned char	*abuf;		/* For terminfo compatible version */
+	unsigned char	*abufp;
 
 	int	div;		/* tenths of MS per char */
 	int	baud;		/* Baud rate */
-	char	*pad;		/* Padding string or NULL to use NUL */
-	void	(*out) (char *, char);		/* Character output routine */
+	unsigned char	*pad;		/* Padding string or NULL to use NUL */
+	void	(*out) (unsigned char *, unsigned char);		/* Character output routine */
 	void	*outptr;	/* First arg passed to output routine.  Second
 				   arg is character to write */
 	int	dopadding;	/* Set if pad characters should be used */
@@ -489,7 +492,7 @@ struct pw {
 	int	(*pfunc) ();	/* Func which gets called when RTN is hit */
 	int	(*abrt) ();	/* Func which gets called when window is aborted */
 	int	(*tab) ();	/* Func which gets called when TAB is hit */
-	char	*prompt;	/* Prompt string */
+	unsigned char	*prompt;	/* Prompt string */
 	int	promptlen;	/* Width of prompt string */
 	int	promptofst;	/* Prompt scroll offset */
 	B	*hist;		/* History buffer */
@@ -505,7 +508,7 @@ struct query {
 	int	(*func) ();	/* Func. which gets called when key is hit */
 	int	(*abrt) ();
 	void	*object;
-	char	*prompt;	/* Prompt string */
+	unsigned char	*prompt;	/* Prompt string */
 	int	promptlen;	/* Width of prompt string */
 	int	promptofst;	/* Prompt scroll offset */
 };
@@ -524,8 +527,8 @@ struct mpx {
 
 
 struct tw {
-	char	*stalin;	/* Status line info */
-	char	*staright;
+	unsigned char	*stalin;	/* Status line info */
+	unsigned char	*staright;
 	int	staon;		/* Set if status line was on */
 	long	prevline;	/* Previous cursor line number */
 	int	changed;	/* Previous changed value */
@@ -540,7 +543,7 @@ struct irec {
 
 struct isrch {
 	IREC	irecs;		/* Linked list of positions */
-	char	*pattern;	/* Search pattern string/prompt */
+	unsigned char	*pattern;	/* Search pattern string/prompt */
 	int	ofst;		/* Offset in pattern past prompt */
 	int	dir;		/* 0=fwrd, 1=bkwd */
 	int	quote;		/* Set to quote next char */
@@ -556,7 +559,7 @@ struct undorec {
 	long	len;		/* Length of insert or delete */
 	int	del;		/* Set if this is a delete */
 	B	*big;		/* Set to buffer containing a large amount of deleted data */
-	char	*small;		/* Set to malloc block containg a small amount of deleted data */
+	unsigned char	*small;		/* Set to malloc block containg a small amount of deleted data */
 };
 
 struct undo {
@@ -576,15 +579,15 @@ struct srchrec {
 };
 
 struct search {
-	char	*pattern;	/* Search pattern */
-	char	*replacement;	/* Replacement string */
+	unsigned char	*pattern;	/* Search pattern */
+	unsigned char	*replacement;	/* Replacement string */
 	int	backwards;	/* Set if search should go backwards */
 	int	ignore;		/* Set if we should ignore case */
 	int	repeat;		/* Set with repeat count (or -1 for no repeat count) */
 	int	replace;	/* Set if this is search & replace */
 	int	rest;		/* Set to do remainder of search & replace w/o query */
-	char	*entire;	/* Entire matched string */
-	char	*pieces[26];	/* Peices of the matched string */
+	unsigned char	*entire;	/* Entire matched string */
+	unsigned char	*pieces[26];	/* Peices of the matched string */
 	int	flg;		/* Set after prompted for first replace */
 	SRCHREC	recs;		/* Search & replace position history */
 	P	*markb, *markk;	/* Original marks */
@@ -603,7 +606,7 @@ struct vpage {
 	long	addr;		/* Address of this page */
 	int	count;		/* Reference count */
 	int	dirty;		/* Set if page changed */
-	char	*data;		/* The data in the page */
+	unsigned char	*data;		/* The data in the page */
 };
 
 /* File structure */
@@ -614,16 +617,16 @@ struct vfile {
 	long	alloc;		/* Number of bytes allocated to file */
 	int	fd;		/* Physical file */
 	int	writeable;	/* Set if we can write */
-	char	*name;		/* File name.  0 if unnamed */
+	unsigned char	*name;		/* File name.  0 if unnamed */
 	int	flags;		/* Set if this is only a temporary file */
 
 	/* For array I/O */
-	char	*vpage1;	/* Page address */
+	unsigned char	*vpage1;	/* Page address */
 	long	addr;		/* File address of above page */
 
 	/* For stream I/O */
-	char	*bufp;		/* Buffer pointer */
-	char	*vpage;		/* Buffer pointer points in here */
+	unsigned char	*bufp;		/* Buffer pointer */
+	unsigned char	*vpage;		/* Buffer pointer points in here */
 	int	left;		/* Space left in bufp */
 	int	lv;		/* Amount of append space at end of buffer */
 };

@@ -10,7 +10,7 @@
 
 #include "config.h"
 
-char *joesep PARAMS((char *path));
+unsigned char *joesep PARAMS((unsigned char *path));
 
 /* char *namprt(char *path);
  * Return name part of a path.  There is no name if the last character
@@ -20,8 +20,8 @@ char *joesep PARAMS((char *path));
  * The name part of "/hello/" is ""
  * The name part if "/" is ""
  */
-char *namprt PARAMS((char *path));
-char *namepart PARAMS((char *tmp, char *path));
+unsigned char *namprt PARAMS((unsigned char *path));
+unsigned char *namepart PARAMS((unsigned char *tmp, unsigned char *path));
 
 /* char *dirprt(char *path);
  * Return directory and drive part of a path.  I.E., everything to the
@@ -31,7 +31,7 @@ char *namepart PARAMS((char *tmp, char *path));
  * The directory part of "/hello/" is "/hello/"
  * The directory part of "/" is "/"
  */
-char *dirprt PARAMS((char *path));
+unsigned char *dirprt PARAMS((unsigned char *path));
 
 /* char *begprt(char *path);
  * Return the beginning part of a path.
@@ -40,7 +40,7 @@ char *dirprt PARAMS((char *path));
  * The beginning part of "/hello/" is "/"
  * The beginning part of "/" is "/"
  */
-char *begprt PARAMS((char *path));
+unsigned char *begprt PARAMS((unsigned char *path));
 
 /* char *endprt(char *path);
  * Return the ending part of a path.
@@ -49,7 +49,7 @@ char *begprt PARAMS((char *path));
  * The ending part of "/hello/" is "hello/"
  * The ending part of "/" is ""
  */
-char *endprt PARAMS((char *path));
+unsigned char *endprt PARAMS((unsigned char *path));
 
 /* int mkpath(char *path);
  * Make sure path exists.  If it doesn't, try to create it
@@ -59,14 +59,14 @@ char *endprt PARAMS((char *path));
  * the drive and path will be elsewhere (not necessarily where they
  * were before mkpath was called).
  */
-int mkpath PARAMS((char *path));
+int mkpath PARAMS((unsigned char *path));
 
 /* char *mktmp(char *);
  * Create an empty temporary file.  The file name created is the string passed
  * to this function postfixed with /joe.tmp.XXXXXX, where XXXXXX is some
  * string six chars long which makes this file unique.
 */
-char *mktmp PARAMS((char *where));
+unsigned char *mktmp PARAMS((unsigned char *where));
 
 /* Change drive and directory */
 #define chddir chdir
@@ -88,16 +88,16 @@ char *mktmp PARAMS((char *where));
  *  '-' may be specified in sets by placing it at the ends
  *  '[' may be specified in sets by placing it first
  */
-int rmatch PARAMS((char *a, char *b));
-int isreg PARAMS((char *s));
+int rmatch PARAMS((unsigned char *a, unsigned char *b));
+int isreg PARAMS((unsigned char *s));
 
 /* char **rexpnd(char *path,char *pattern);
  * Generate array (see va.h) of file names from directory in 'path'
  * which match the pattern 'pattern'
  */
-char **rexpnd PARAMS((char *word));
+unsigned char **rexpnd PARAMS((unsigned char *word));
 
-int chpwd PARAMS((char *path));
-char *pwd PARAMS((void));
+int chpwd PARAMS((unsigned char *path));
+unsigned char *pwd PARAMS((void));
 
 #endif

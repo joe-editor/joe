@@ -51,7 +51,7 @@ SRCHREC fsr = { {&fsr, &fsr} };
 
 static P *searchf(SRCH *srch, P *p)
 {
-	char *pattern = srch->pattern;
+	unsigned char *pattern = srch->pattern;
 	P *start = pdup(p);
 	P *end = pdup(p);
 	int x;
@@ -94,7 +94,7 @@ static P *searchf(SRCH *srch, P *p)
 
 static P *searchb(SRCH *srch, P *p)
 {
-	char *pattern = srch->pattern;
+	unsigned char *pattern = srch->pattern;
 	P *start = pdup(p);
 	P *end = pdup(p);
 	int x;
@@ -140,7 +140,7 @@ static SRCH *setmark(SRCH *srch)
 	return srch;
 }
 
-SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest)
+SRCH *mksrch(unsigned char *pattern, unsigned char *replacement, int ignore, int backwards, int repeat, int replace, int rest)
 {
 	SRCH *srch = (SRCH *) joe_malloc(sizeof(SRCH));
 	int x;
@@ -197,7 +197,7 @@ void rmsrch(SRCH *srch)
  * p is advanced past the inserted text
  */
 
-static P *insert(SRCH *srch, P *p, char *s, int len)
+static P *insert(SRCH *srch, P *p, unsigned char *s, int len)
 {
 	int x;
 
@@ -244,7 +244,7 @@ static P *insert(SRCH *srch, P *p, char *s, int len)
 /* Query for search string, search options, possible replacement string,
  * and execute first search */
 
-char srchstr[] = "Search";	/* Context sensitive help identifier */
+unsigned char srchstr[] = "Search";	/* Context sensitive help identifier */
 
 static int pfabort(BW *bw, SRCH *srch)
 {
@@ -283,13 +283,13 @@ static int pfsave(BW *bw, SRCH *srch)
 	return -1;
 }
 
-static int set_replace(BW *bw, char *s, SRCH *srch, int *notify)
+static int set_replace(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
 	srch->replacement = s;
 	return dopfnext(bw, srch, notify);
 }
 
-static int set_options(BW *bw, char *s, SRCH *srch, int *notify)
+static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
 	int x;
 
@@ -329,7 +329,7 @@ static int set_options(BW *bw, char *s, SRCH *srch, int *notify)
 	}
 	vsrm(s);
 	if (srch->replace) {
-		if (wmkpw(bw->parent, "Replace with (^C to abort): ", &replhist, set_replace, srchstr, pfabort, utypebw, srch, notify))
+		if (wmkpw(bw->parent, US "Replace with (^C to abort): ", &replhist, set_replace, srchstr, pfabort, utypebw, srch, notify))
 			return 0;
 		else
 			return -1;
@@ -337,14 +337,14 @@ static int set_options(BW *bw, char *s, SRCH *srch, int *notify)
 		return dopfnext(bw, srch, notify);
 }
 
-static int set_pattern(BW *bw, char *s, SRCH *srch, int *notify)
+static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
 	BW *pbw;
 
 	vsrm(srch->pattern);
 	srch->pattern = s;
-	if ((pbw = wmkpw(bw->parent, "(I)gnore (R)eplace (B)ackwards Bloc(K) NNN (^C to abort): ", NULL, set_options, srchstr, pfabort, utypebw, srch, notify)) != NULL) {
-		char buf[10];
+	if ((pbw = wmkpw(bw->parent, US "(I)gnore (R)eplace (B)ackwards Bloc(K) NNN (^C to abort): ", NULL, set_options, srchstr, pfabort, utypebw, srch, notify)) != NULL) {
+		unsigned char buf[10];
 
 		if (srch->ignore)
 			binsc(pbw->cursor, 'i');
@@ -353,7 +353,7 @@ static int set_pattern(BW *bw, char *s, SRCH *srch, int *notify)
 		if (srch->backwards)
 			binsc(pbw->cursor, 'b');
 		if (srch->repeat >= 0)
-			snprintf(buf, sizeof(buf), "%d", srch->repeat), binss(pbw->cursor, buf);
+			snprintf((char *)buf, sizeof(buf), "%d", srch->repeat), binss(pbw->cursor, buf);
 		pset(pbw->cursor, pbw->b->eof);
 		pbw->cursor->xcol = piscol(pbw->cursor);
 		srch->ignore = 0;
@@ -384,11 +384,11 @@ static int dofirst(BW *bw, int back, int repl)
 		p_goto_bol(bw->cursor);
 		if (byte == bw->cursor->byte)
 			prgetc(bw->cursor);
-		return urtn((BASE *)bw, MAXINT);
+		return urtn((BASE *)bw, -1);
 	}
 	srch = setmark(mksrch(NULL, NULL, 0, back, -1, repl, 0));
 	srch->addr = bw->cursor->byte;
-	if (wmkpw(bw->parent, "Find (^C to abort): ", &findhist, set_pattern, srchstr, pfabort, utypebw, srch, NULL))
+	if (wmkpw(bw->parent, US "Find (^C to abort): ", &findhist, set_pattern, srchstr, pfabort, utypebw, srch, NULL))
 		return 0;
 	else {
 		rmsrch(srch);
@@ -418,7 +418,7 @@ static int doreplace(BW *bw, SRCH *srch)
 	P *q;
 
 	if (bw->b->rdonly) {
-		msgnw(bw->parent, "Read only");
+		msgnw(bw->parent, US "Read only");
 		return -1;
 	}
 	if (markk)
@@ -487,7 +487,7 @@ static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 		goback(srch, bw);
 		goback(srch, bw);
 		return dopfnext(bw, srch, notify);
-	} else if (c != MAXINT) {	/* FIXME: what's the meaning of MAXINT here? */
+	} else if (c != -1) {
 		if (notify)
 			*notify = 1;
 		pfsave(bw, srch);
@@ -609,9 +609,9 @@ again:	switch (fnext(bw, srch)) {
 	case 1:
 bye:		if (!srch->flg && !srch->rest) {
 			if (srch->valid && srch->block_restrict)
-				msgnw(bw->parent, "Not found (search restricted to marked block)");
+				msgnw(bw->parent, US "Not found (search restricted to marked block)");
 			else
-				msgnw(bw->parent, "Not found");
+				msgnw(bw->parent, US "Not found");
 			ret = -1;
 		}
 		break;
@@ -659,7 +659,7 @@ bye:		if (!srch->flg && !srch->rest) {
 				markb->xcol = piscol(markb);
 			}
 			srch->flg = 1;
-			if (dopfrepl(bw, MAXINT, srch, notify))
+			if (dopfrepl(bw, -1, srch, notify))
 				ret = -1;
 			notify = 0;
 			srch = 0;

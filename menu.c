@@ -91,8 +91,8 @@ static void mconfig(MENU *m)
 
 		m->top = 0;
 		for (x = 0, m->width = 0; m->list[x]; ++x)
-			if (strlen(m->list[x]) > m->width)
-				m->width = strlen(m->list[x]);
+			if (strlen((char *)m->list[x]) > m->width)
+				m->width = strlen((char *)m->list[x]);
 		m->nitems = x;
 		if (m->width > m->w)
 			m->width = m->w - 1;
@@ -315,7 +315,7 @@ static int menuabort(MENU *m)
 }
 
 WATOM watommenu = {
-	"menu",
+	US "menu",
 	menudisp,
 	menufllw,
 	menuabort,
@@ -328,14 +328,14 @@ WATOM watommenu = {
 	TYPEMENU
 };
 
-void ldmenu(MENU *m, char **s, int cursor)
+void ldmenu(MENU *m, unsigned char **s, int cursor)
 {
 	m->list = s;
 	m->cursor = cursor;
 	mconfig(m);
 }
 
-MENU *mkmenu(W *w, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify)
+MENU *mkmenu(W *w, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify)
 {
 	W *new = wcreate(w->t, &watommenu, w, w, w->main, 4, NULL, notify);
 	MENU *m;
@@ -363,7 +363,7 @@ MENU *mkmenu(W *w, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), i
 	return m;
 }
 
-static char *cull(char *a, char *b)
+static unsigned char *cull(unsigned char *a, unsigned char *b)
 {
 	int x;
 
@@ -371,9 +371,9 @@ static char *cull(char *a, char *b)
 	return vstrunc(a, x);
 }
 
-char *mcomplete(MENU *m)
+unsigned char *mcomplete(MENU *m)
 {
-	char *com;
+	unsigned char *com;
 	int x;
 
 	if (!m->nitems)

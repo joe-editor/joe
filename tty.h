@@ -82,19 +82,19 @@ int ttgetc PARAMS((void));
  */
 extern int obufp;
 extern int obufsiz;
-extern char *obuf;
+extern unsigned char *obuf;
 
 #define ttputc(c) { obuf[obufp++] = (c); if(obufp == obufsiz) ttflsh(); }
 
 /* void ttputs(char *s);  Write a string to the output buffer.  Any time the
  * output buffer gets full, call ttflsh()
  */
-void ttputs PARAMS((char *s));
+void ttputs PARAMS((unsigned char *s));
 
 /* void ttshell(char *s);  Run a shell command or if 's' is zero, run a
  * sub-shell
  */
-void ttshell PARAMS((char *cmd));
+void ttshell PARAMS((unsigned char *cmd));
 
 /* void ttsusp(void);  Suspend the process, or if the UNIX can't do it, call
  * ttshell(NULL)
@@ -178,7 +178,7 @@ void signrm PARAMS((void));
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk PARAMS((int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj));
+MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj));
 
 /* int subshell(int *ptyfd);
  * Execute a subshell.  Returns 'pid' of shell or zero if there was a

@@ -71,6 +71,7 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 }
 
 /* Main user interface */
+/* When called with c==-1, it just creates the prompt */
 static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 {
 	IREC *i;
@@ -117,8 +118,8 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 				enqueb(IREC, link, &isrch->irecs, i);
 			}
 		}
-	} else if ((c < 32 || c >= 256) && c != MAXINT) {	/* FIXME: overloaded MAXINT */
-		/* Done */
+	} else if (c >= 0 && c < 32 || c >= 256) {	/* c >= 256 means an X windows sequence like .ku */
+		/* Done when a control character is received */
 		nungetc(c);
 		if (notify) {
 			*notify = 1;
@@ -131,7 +132,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		}
 		lastisrch = isrch;
 		return 0;
-	} else if (c != MAXINT) {	/* FIXME: overloaded MAXINT */
+	} else if (c != -1) {
 		/* Search */
 		unsigned char k;
 
@@ -162,7 +163,7 @@ static int doisrch(BW *bw, int dir)
 	isrch->ofst = sLen(isrch->pattern);
 	isrch->dir = dir;
 	isrch->quote = 0;
-	return itype(bw, MAXINT, isrch, NULL);
+	return itype(bw, -1, isrch, NULL);
 }
 
 int uisrch(BW *bw)

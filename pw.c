@@ -79,7 +79,7 @@ static int rtnpw(BW *bw)
 {
 	W *w = bw->parent;
 	PW *pw = (PW *) bw->object;
-	char *s;
+	unsigned char *s;
 	W *win;
 	int *notify;
 	int (*pfunc) ();
@@ -176,7 +176,7 @@ static int abortpw(BW *b)
 }
 
 static WATOM watompw = {
-	"prompt",
+	US "prompt",
 	disppw,
 	bwfllw,
 	abortpw,
@@ -191,7 +191,7 @@ static WATOM watompw = {
 
 /* Create a prompt window */
 
-BW *wmkpw(W *w, char *prompt, B **history, int (*func) (), char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify)
+BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify)
 {
 	W *new;
 	PW *pw;
@@ -210,7 +210,7 @@ BW *wmkpw(W *w, char *prompt, B **history, int (*func) (), char *huh, int (*abrt
 	pw->abrt = abrt;
 	pw->tab = tab;
 	pw->object = object;
-	pw->prompt = strdup(prompt);
+	pw->prompt = (unsigned char *)strdup((char *)prompt);
 	pw->promptlen = fmtlen(prompt);
 	pw->promptofst = 0;
 	pw->pfunc = func;

@@ -354,7 +354,7 @@ int ublkdel(BW *bw)
 		if (lightoff)
 			unmark(bw);
 	} else {
-		msgnw(bw->parent, "No block");
+		msgnw(bw->parent, US "No block");
 		return -1;
 	}
 	return 0;
@@ -391,7 +391,7 @@ int ublkmove(BW *bw)
 {
 	if (markv(1)) {
 		if (markb->b->rdonly) {
-			msgnw(bw->parent, "Read only");
+			msgnw(bw->parent, US "Read only");
 			return -1;
 		}
 		if (square) {
@@ -442,7 +442,7 @@ int ublkmove(BW *bw)
 			return 0;
 		}
 	}
-	msgnw(bw->parent, "No block");
+	msgnw(bw->parent, US "No block");
 	return -1;
 }
 
@@ -486,7 +486,7 @@ int ublkcpy(BW *bw)
 			return 0;
 		}
 	} else {
-		msgnw(bw->parent, "No block");
+		msgnw(bw->parent, US "No block");
 		return -1;
 	}
 }
@@ -494,7 +494,7 @@ int ublkcpy(BW *bw)
 /* Write highlighted block to a file */
 /* This is called by ublksave in ufile.c */
 
-int dowrite(BW *bw, char *s, void *object, int *notify)
+int dowrite(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -530,7 +530,7 @@ int dowrite(BW *bw, char *s, void *object, int *notify)
 		}
 	} else {
 		vsrm(s);
-		msgnw(bw->parent, "No block");
+		msgnw(bw->parent, US "No block");
 		return -1;
 	}
 }
@@ -685,7 +685,7 @@ int ulindent(BW *bw)
 
 /* Insert a file */
 
-int doinsf(BW *bw, char *s, void *object, int *notify)
+int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -724,7 +724,7 @@ int doinsf(BW *bw, char *s, void *object, int *notify)
 			updall();
 			return 0;
 		} else {
-			msgnw(bw->parent, "No block");
+			msgnw(bw->parent, US "No block");
 			return -1;
 	} else {
 		int ret = 0;
@@ -746,7 +746,7 @@ int doinsf(BW *bw, char *s, void *object, int *notify)
 
 static int filtflg = 0;
 
-static int dofilt(BW *bw, char *s, void *object, int *notify)
+static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	int fr[2];
 	int fw[2];
@@ -756,7 +756,7 @@ static int dofilt(BW *bw, char *s, void *object, int *notify)
 	if (markb && markk && !square && markb->b == bw->b && markk->b == bw->b && markb->byte == markk->byte)
 		goto ok;
 	if (!markv(1)) {
-		msgnw(bw->parent, "No block");
+		msgnw(bw->parent, US "No block");
 		return -1;
 	}
       ok:
@@ -767,7 +767,7 @@ static int dofilt(BW *bw, char *s, void *object, int *notify)
 	ttclsn();
 	if (!fork()) {
 #ifdef HAVE_PUTENV
-		char		*fname, *name;
+		unsigned char		*fname, *name;
 		unsigned	len;
 #endif
 		signrm();
@@ -783,11 +783,11 @@ static int dofilt(BW *bw, char *s, void *object, int *notify)
 		close(fr[0]);
 #ifdef HAVE_PUTENV
 		fname = vsncpy(NULL, 0, sc("JOE_FILENAME="));
-		name = bw->b->name ? bw->b->name : "Unnamed";
+		name = bw->b->name ? bw->b->name : (unsigned char *)"Unnamed";
 		if((len = slen(name)) >= 512)	/* limit filename length */
 			len = 512;
 		fname = vsncpy(sv(fname), name, len);
-		putenv(fname);
+		putenv((char *)fname);
 		vsrm(fname);
 #endif
 		execl("/bin/sh", "/bin/sh", "-c", s, NULL);
@@ -894,18 +894,18 @@ int ufilt(BW *bw)
 #else
 	switch (checkmark(bw)) {
 	case 0:
-		if (wmkpw(bw->parent, "Command to filter block through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL))
+		if (wmkpw(bw->parent, US "Command to filter block through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL))
 			return 0;
 		else
 			return -1;
 	case 1:
-		if (wmkpw(bw->parent, "Command to filter file through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL))
+		if (wmkpw(bw->parent, US "Command to filter file through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL))
 			return 0;
 		else
 			return -1;
 	case 2:
 	default:
-		msgnw(bw->parent, "No block");
+		msgnw(bw->parent, US "No block");
 		return -1;
 	}
 #endif

@@ -16,7 +16,7 @@ P *pbop PARAMS((P *p));
 P *peop PARAMS((P *p));
 int ubop PARAMS((BW *bw));
 int ueop PARAMS((BW *bw));
-void wrapword PARAMS((P *p, long int indent, int french, char *indents));
+void wrapword PARAMS((P *p, long int indent, int french, unsigned char *indents));
 int uformat PARAMS((BW *bw));
 int ufmtblk PARAMS((BW *bw));
 

@@ -38,11 +38,11 @@ int utf8;	/* Set for UTF8 locale.  Means we should be in utf-8 mode by default. 
 extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, beep;
 
 extern int idleout;		/* Clear to use /dev/tty for screen */
-extern char *joeterm;
+extern unsigned char *joeterm;
 int help = 0;			/* Set to have help on when starting */
 int nonotice = 0;		/* Set to prevent copyright notice */
 int orphan = 0;
-char *exmsg = NULL;		/* Message to display when exiting the editor */
+unsigned char *exmsg = NULL;		/* Message to display when exiting the editor */
 
 SCREEN *maint;			/* Main edit screen */
 
@@ -160,15 +160,15 @@ extern void setbreak();
 extern int breakflg;
 #endif
 
-char **mainenv;
+unsigned char **mainenv;
 
-int main(int argc, char **argv, char **envv)
+int main(int argc, unsigned char **argv, unsigned char **envv)
 {
 	CAP *cap;
 	unsigned char *s;
-	char *run;
+	unsigned char *run;
 #ifdef __MSDOS__
-	char *rundir;
+	unsigned char *rundir;
 #endif
 	SCRN *n;
 	int opened = 0;
@@ -198,17 +198,17 @@ int main(int argc, char **argv, char **envv)
 	run = namprt(argv[0]);
 #endif
 
-	if ((s = getenv("LINES")) != NULL)
-		sscanf(s, "%d", &lines);
-	if ((s = getenv("COLUMNS")) != NULL)
-		sscanf(s, "%d", &columns);
-	if ((s = getenv("BAUD")) != NULL)
-		sscanf(s, "%u", &Baud);
+	if ((s = (unsigned char *)getenv("LINES")) != NULL)
+		sscanf((char *)s, "%d", &lines);
+	if ((s = (unsigned char *)getenv("COLUMNS")) != NULL)
+		sscanf((char *)s, "%d", &columns);
+	if ((s = (unsigned char *)getenv("BAUD")) != NULL)
+		sscanf((char *)s, "%u", &Baud);
 	if (getenv("DOPADDING"))
 		dopadding = 1;
 	if (getenv("NOXON"))
 		noxon = 1;
-	if ((s = getenv("JOETERM")) != NULL)
+	if ((s = (unsigned char *)getenv("JOETERM")) != NULL)
 		joeterm = s;
 
 #ifndef __MSDOS__
@@ -226,7 +226,7 @@ int main(int argc, char **argv, char **envv)
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		char buf[8];
+		unsigned char buf[8];
 
 		fprintf(stderr, "There were errors in '%s'.  Use it anyway?", s);
 		fflush(stderr);
@@ -243,7 +243,7 @@ int main(int argc, char **argv, char **envv)
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		char buf[8];
+		unsigned char buf[8];
 
 		fprintf(stderr, "There were errors in '%s'.  Use it anyway?", s);
 		fflush(stderr);
@@ -253,7 +253,7 @@ int main(int argc, char **argv, char **envv)
 	}
 #else
 
-	s = getenv("HOME");
+	s = (unsigned char *)getenv("HOME");
 	if (s) {
 		s = vsncpy(NULL, 0, sz(s));
 		s = vsncpy(sv(s), sc("/."));
@@ -263,11 +263,11 @@ int main(int argc, char **argv, char **envv)
 		if (c == 0)
 			goto donerc;
 		if (c == 1) {
-			char buf[8];
+			unsigned char buf[8];
 
 			fprintf(stderr, "There were errors in '%s'.  Use it anyway?", s);
 			fflush(stderr);
-			fgets(buf, 8, stdin);
+			fgets((char *)buf, 8, stdin);
 			if (buf[0] == 'y' || buf[0] == 'Y')
 				goto donerc;
 		}
@@ -281,11 +281,11 @@ int main(int argc, char **argv, char **envv)
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		char buf[8];
+		unsigned char buf[8];
 
 		fprintf(stderr, "There were errors in '%s'.  Use it anyway?", s);
 		fflush(stderr);
-		fgets(buf, 8, stdin);
+		fgets((char *)buf, 8, stdin);
 		if (buf[0] == 'y' || buf[0] == 'Y')
 			goto donerc;
 	}
@@ -345,7 +345,7 @@ int main(int argc, char **argv, char **envv)
 				if (backopt) {
 					while (backopt != c) {
 						if (argv[backopt][0] == '+') {
-							sscanf(argv[backopt] + 1, "%ld", &lnum);
+							sscanf((char *)(argv[backopt] + 1), "%ld", &lnum);
 							++backopt;
 						} else if (glopt(argv[backopt] + 1, argv[backopt + 1], &bw->o, 0) == 2)
 							backopt += 2;
@@ -374,7 +374,7 @@ int main(int argc, char **argv, char **envv)
 		dofollows();
 		mid = omid;
 	} else {
-		BW *bw = wmktw(maint, bfind(""));
+		BW *bw = wmktw(maint, bfind(US ""));
 
 		if (bw->o.mnew)
 			exemac(bw->o.mnew);
@@ -385,7 +385,7 @@ int main(int argc, char **argv, char **envv)
 		help_on(maint);
 	}
 	if (!nonotice)
-		msgnw(((BASE *)lastw(maint)->object)->parent, "\\i** Joe's Own Editor v" VERSION " ** Copyright (C) 2003 **\\i");
+		msgnw(((BASE *)lastw(maint)->object)->parent, US ("\\i** Joe's Own Editor v" VERSION " ** Copyright (C) 2003 **\\i"));
 	edloop(0);
 	vclose(vmem);
 	nclose(n);

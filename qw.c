@@ -91,7 +91,7 @@ static int abortqw(QW *qw)
 }
 
 static WATOM watomqw = {
-	"query",
+	US "query",
 	dispqw,
 	NULL,
 	abortqw,
@@ -105,7 +105,7 @@ static WATOM watomqw = {
 };
 
 static WATOM watqwn = {
-	"querya",
+	US "querya",
 	dispqwn,
 	NULL,
 	abortqw,
@@ -119,7 +119,7 @@ static WATOM watqwn = {
 };
 
 static WATOM watqwsr = {
-	"querysr",
+	US "querysr",
 	dispqwn,
 	NULL,
 	abortqw,
@@ -134,7 +134,7 @@ static WATOM watqwsr = {
 
 /* Create a query window */
 
-QW *mkqw(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqw(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
@@ -161,7 +161,7 @@ QW *mkqw(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ?
 /* Same as above, but cursor is left in original window */
 /* For Ctrl-Meta thing */
 
-QW *mkqwna(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqwna(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
@@ -188,7 +188,7 @@ QW *mkqwna(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/*
 /* Same as above, but cursor is left in original window */
 /* For search and replace thing */
 
-QW *mkqwnsr(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqwnsr(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;

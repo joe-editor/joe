@@ -47,144 +47,144 @@ int uexecmd(BW *bw);
 /* Command table */
 
 CMD cmds[] = {
-	{"abort", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uabort, NULL, 0, NULL},
-	{"abortbuf", TYPETW, uabortbuf, NULL, 0, NULL},
-	{"arg", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uarg, NULL, 0, NULL},
-	{"ask", TYPETW + TYPEPW, uask, NULL, 0, NULL},
-	{"uarg", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uuarg, NULL, 0, NULL},
-	{"backs", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, ubacks, NULL, 1, "delch"},
-	{"backsmenu", TYPEMENU, umbacks, NULL, 1, NULL},
-	{"backw", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EKILL + EMOD, ubackw, NULL, 1, "delw"},
-	{"bknd", TYPETW + TYPEPW, ubknd, NULL, 0, NULL},
-	{"bkwdc", TYPETW + TYPEPW, ubkwdc, NULL, 1, "fwrdc"},
-	{"blkcpy", TYPETW + TYPEPW + EFIXXCOL + EMOD, ublkcpy, NULL, 1, NULL},
-	{"blkdel", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, ublkdel, NULL, 0, NULL},
-	{"blkmove", TYPETW + TYPEPW + EFIXXCOL + EMOD, ublkmove, NULL, 0, NULL},
-	{"blksave", TYPETW + TYPEPW, ublksave, NULL, 0, NULL},
-	{"bof", TYPETW + TYPEPW + EMOVE + EFIXXCOL, u_goto_bof, NULL, 0, NULL},
-	{"bofmenu", TYPEMENU, umbof, NULL, 0, NULL},
-	{"bol", TYPETW + TYPEPW + EFIXXCOL, u_goto_bol, NULL, 0, NULL},
-	{"bolmenu", TYPEMENU, umbol, NULL, 0, NULL},
-	{"bop", TYPETW + TYPEPW + EFIXXCOL, ubop, NULL, 1, "eop"},
-	{"bos", TYPETW + TYPEPW + EMOVE, ubos, NULL, 0, NULL},
-	{"bufed", TYPETW, ubufed, NULL, 0, NULL},
-	{"byte", TYPETW + TYPEPW, ubyte, NULL, 0, NULL},
-	{"center", TYPETW + TYPEPW + EFIXXCOL + EMOD, ucenter, NULL, 1, NULL},
-	{"ctrl", TYPETW + TYPEPW + EMOD, uctrl, NULL, 0, NULL},
-	{"col", TYPETW + TYPEPW, ucol, NULL, 0, NULL},
-	{"complete", TYPETW + TYPEPW + EMINOR + EMOD, ucmplt, NULL, 0, NULL},
-	{"copy", TYPETW + TYPEPW, ucopy, NULL, 0, NULL},
-	{"crawll", TYPETW + TYPEPW, ucrawll, NULL, 1, "crawlr"},
-	{"crawlr", TYPETW + TYPEPW, ucrawlr, NULL, 1, "crawll"},
-	{"delbol", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelbl, NULL, 1, "deleol"},
-	{"delch", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, udelch, NULL, 1, "backs"},
-	{"deleol", TYPETW + TYPEPW + EKILL + EMOD, udelel, NULL, 1, "delbol"}, 
-	{"dellin", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelln, NULL, 1, NULL}, 
-	{"delw", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL + EKILL + EMOD, u_word_delete, NULL, 1, "backw"},
-	{"dnarw", TYPETW + TYPEPW + EMOVE, udnarw, NULL, 1, "uparw"},
-	{"dnarwmenu", TYPEMENU, umdnarw, NULL, 1, "uparwmenu"}, 
-	{"dnslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, udnslide, NULL, 1, "upslide"},
-	{"drop", TYPETW + TYPEPW, udrop, NULL, 0, NULL},
-	{"dupw", TYPETW, uduptw, NULL, 0, NULL},
-	{"edit", TYPETW + TYPEPW, uedit, NULL, 0, NULL},
-	{"eof", TYPETW + TYPEPW + EFIXXCOL + EMOVE, u_goto_eof, NULL, 0, NULL},
-	{"eofmenu", TYPEMENU, umeof, NULL, 0, NULL},
-	{"eol", TYPETW + TYPEPW + EFIXXCOL, u_goto_eol, NULL, 0, NULL},
-	{"eolmenu", TYPEMENU, umeol, NULL, 0, NULL},
-	{"eop", TYPETW + TYPEPW + EFIXXCOL, ueop, NULL, 1, "bop"},
-	{"execmd", TYPETW + TYPEPW, uexecmd, NULL, 0, NULL},
-	{"explode", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uexpld, NULL, 0, NULL},
-	{"exsave", TYPETW + TYPEPW, uexsve, NULL, 0, NULL},
-	{"ffirst", TYPETW + TYPEPW, pffirst, NULL, 0, NULL},
-	{"filt", TYPETW + TYPEPW + EMOD, ufilt, NULL, 0, NULL},
-	{"fnext", TYPETW + TYPEPW, pfnext, NULL, 1, NULL},
-	{"format", TYPETW + TYPEPW + EFIXXCOL + EMOD, uformat, NULL, 1, NULL},
-	{"fmtblk", TYPETW + EMOD + EFIXXCOL, ufmtblk, NULL, 1, NULL},
-	{"fwrdc", TYPETW + TYPEPW, ufwrdc, NULL, 1, "bkwdc"},
-	{"gomark", TYPETW + TYPEPW + EMOVE, ugomark, NULL, 0, NULL},
-	{"groww", TYPETW, ugroww, NULL, 1, "shrinkw"},
-	{"isrch", TYPETW + TYPEPW, uisrch, NULL, 0, NULL},
-	{"killproc", TYPETW + TYPEPW, ukillpid, NULL, 0, NULL},
-	{"help", TYPETW + TYPEPW + TYPEQW, u_help, NULL, 0, NULL},
-	{"hnext", TYPETW + TYPEPW + TYPEQW, u_help_next, NULL, 0, NULL},
-	{"hprev", TYPETW + TYPEPW + TYPEQW, u_help_prev, NULL, 0, NULL},
-	{"insc", TYPETW + TYPEPW + EFIXXCOL + EMOD, uinsc, NULL, 1, "delch"},
-	{"insf", TYPETW + TYPEPW + EMOD, uinsf, NULL, 0, NULL}, 
-	{"lindent", TYPETW + TYPEPW + EFIXXCOL + EMOD, ulindent, NULL, 1, "rindent"},
-	{"line", TYPETW + TYPEPW, uline, NULL, 0, NULL},
-	{"lose", TYPETW + TYPEPW, ulose, NULL, 0, NULL}, 
-	{"ltarw", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL, u_goto_left, NULL, 1, "rtarw"},
-	{"ltarwmenu", TYPEMENU, umltarw, NULL, 1, "rtarwmenu"},
-	{"macros", TYPETW + EFIXXCOL, umacros, NULL, 0, NULL},
-	{"markb", TYPETW + TYPEPW, umarkb, NULL, 0, NULL},
-	{"markk", TYPETW + TYPEPW, umarkk, NULL, 0, NULL},
-	{"markl", TYPETW + TYPEPW, umarkl, NULL, 0, NULL},
-	{"math", TYPETW + TYPEPW, umath, NULL, 0, NULL},
-	{"mode", TYPETW + TYPEPW + TYPEQW, umode, NULL, 0, NULL},
-	{"msg", TYPETW + TYPEPW + TYPEQW + TYPEMENU, umsg, NULL, 0, NULL},
-	{"nbuf", TYPETW, unbuf, NULL, 1, "pbuf"},
-	{"nedge", TYPETW + TYPEPW + EFIXXCOL, unedge, NULL, 1, "pedge"}, 
-	{"nextpos", TYPETW + TYPEPW + EFIXXCOL + EMID + EPOS, unextpos, NULL, 1, "prevpos"}, 
-	{"nextw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, unextw, NULL, 1, "prevw"},
-	{"nextword", TYPETW + TYPEPW + EFIXXCOL, u_goto_next, NULL, 1, "prevword"},
-	{"nmark", TYPETW + TYPEPW, unmark, NULL, 0, NULL},
-	{"notmod", TYPETW, unotmod, NULL, 0, NULL},
-	{"nxterr", TYPETW, unxterr, NULL, 1, "prverr"},
-	{"open", TYPETW + TYPEPW + EFIXXCOL + EMOD, uopen, NULL, 1, "deleol"},
-	{"parserr", TYPETW, uparserr, NULL, 0, NULL},
-	{"pbuf", TYPETW, upbuf, NULL, 1, "nbuf"},
-	{"pedge", TYPETW + TYPEPW + EFIXXCOL, upedge, NULL, 1, "nedge"}, 
-	{"pgdn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgdn, NULL, 1, "pgup"},
-	{"pgdnmenu", TYPEMENU, umpgdn, NULL, 1, "pgupmenu"}, 
-	{"pgup", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgup, NULL, 1, "pgdn"},
-	{"pgupmenu", TYPEMENU, umpgup, NULL, 1, "pgdnmenu"}, 
-	{"picokill", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, upicokill, NULL, 1, NULL},
-	{"play", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uplay, NULL, 1, NULL},	/* EFIXX? */ 
-	{"prevpos", TYPETW + TYPEPW + EPOS + EMID + EFIXXCOL, uprevpos, NULL, 1, "nextpos"}, 
-	{"prevw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uprevw, NULL, 1, "nextw"}, 
-	{"prevword", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL, u_goto_prev, NULL, 1, "nextword"},
-	{"prverr", TYPETW, uprverr, NULL, 1, "nxterr"},
-	{"psh", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upsh, NULL, 0, NULL},
-	{"pop", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upop, NULL, 0, NULL},
-	{"qrepl", TYPETW + TYPEPW + EMOD, pqrepl, NULL, 0, NULL},
-	{"query", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uquery, NULL, 0, NULL},
-	{"quote", TYPETW + TYPEPW + EMOD, uquote, NULL, 0, NULL},
-	{"quote8", TYPETW + TYPEPW + EMOD, uquote8, NULL, 0, NULL},
-	{"record", TYPETW + TYPEPW + TYPEMENU + TYPEQW, urecord, NULL, 0, NULL},
-	{"redo", TYPETW + TYPEPW + EFIXXCOL, uredo, NULL, 1, "undo"},
-	{"retype", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uretyp, NULL, 0, NULL},
-	{"rfirst", TYPETW + TYPEPW, prfirst, NULL, 0, NULL}, 
-	{"rindent", TYPETW + TYPEPW + EFIXXCOL + EMOD, urindent, NULL, 1, "lindent"},
-	{"run", TYPETW + TYPEPW, urun, NULL, 0, NULL},
-	{"rsrch", TYPETW + TYPEPW, ursrch, NULL, 0, NULL},
-	{"rtarw", TYPETW + TYPEPW + EFIXXCOL, u_goto_right, NULL, 1, "ltarw"},
-	{"rtarwmenu", TYPEMENU, umrtarw, NULL, 1, "ltarwmenu"},
-	{"rtn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOD, urtn, NULL, 1, NULL},
-	{"save", TYPETW + TYPEPW, usave, NULL, 0, NULL},
-	{"setmark", TYPETW + TYPEPW, usetmark, NULL, 0, NULL},
-	{"shell", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ushell, NULL, 0, NULL},
-	{"shrinkw", TYPETW, ushrnk, NULL, 1, "groww"},
-	{"splitw", TYPETW, usplitw, NULL, 0, NULL},
-	{"stat", TYPETW + TYPEPW, ustat, NULL, 0, NULL},
-	{"stop", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ustop, NULL, 0, NULL},
-	{"swap", TYPETW + TYPEPW + EFIXXCOL, uswap, NULL, 0, NULL},
-	{"tag", TYPETW + TYPEPW, utag, NULL, 0, NULL},
-	{"tomarkb", TYPETW + TYPEPW + EFIXXCOL, utomarkb, NULL, 0, NULL},
-	{"tomarkbk", TYPETW + TYPEPW + EFIXXCOL, utomarkbk, NULL, 0, NULL},
-	{"tomarkk", TYPETW + TYPEPW + EFIXXCOL, utomarkk, NULL, 0, NULL},
-	{"tomatch", TYPETW + TYPEPW + EFIXXCOL, utomatch, NULL, 0, NULL},
-	{"tos", TYPETW + TYPEPW + EMOVE, utos, NULL, 0, NULL},
-	{"tw0", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw0, NULL, 0, NULL},
-	{"tw1", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw1, NULL, 0, NULL},
-	{"txt", TYPETW + TYPEPW, utxt, NULL, 0, NULL}, 
-	{"type", TYPETW + TYPEPW + TYPEQW + TYPEMENU + EMINOR + EMOD, utype, NULL, 1, "backs"},
-	{"undo", TYPETW + TYPEPW + EFIXXCOL, uundo, NULL, 1, "redo"},
-	{"uparw", TYPETW + TYPEPW + EMOVE, uuparw, NULL, 1, "dnarw"},
-	{"uparwmenu", TYPEMENU, umuparw, NULL, 1, "dnarwmenu"}, 
-	{"upslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, uupslide, NULL, 1, "dnslide"},
-	{"yank", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyank, NULL, 1, NULL},
-	{"yapp", TYPETW + TYPEPW + EKILL, uyapp, NULL, 0, NULL},
-	{"yankpop", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyankpop, NULL, 1, NULL}
+	{US "abort", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uabort, NULL, 0, NULL},
+	{US "abortbuf", TYPETW, uabortbuf, NULL, 0, NULL},
+	{US "arg", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uarg, NULL, 0, NULL},
+	{US "ask", TYPETW + TYPEPW, uask, NULL, 0, NULL},
+	{US "uarg", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uuarg, NULL, 0, NULL},
+	{US "backs", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, ubacks, NULL, 1, US "delch"},
+	{US "backsmenu", TYPEMENU, umbacks, NULL, 1, NULL},
+	{US "backw", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EKILL + EMOD, ubackw, NULL, 1, US "delw"},
+	{US "bknd", TYPETW + TYPEPW, ubknd, NULL, 0, NULL},
+	{US "bkwdc", TYPETW + TYPEPW, ubkwdc, NULL, 1, US "fwrdc"},
+	{US "blkcpy", TYPETW + TYPEPW + EFIXXCOL + EMOD, ublkcpy, NULL, 1, NULL},
+	{US "blkdel", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, ublkdel, NULL, 0, NULL},
+	{US "blkmove", TYPETW + TYPEPW + EFIXXCOL + EMOD, ublkmove, NULL, 0, NULL},
+	{US "blksave", TYPETW + TYPEPW, ublksave, NULL, 0, NULL},
+	{US "bof", TYPETW + TYPEPW + EMOVE + EFIXXCOL, u_goto_bof, NULL, 0, NULL},
+	{US "bofmenu", TYPEMENU, umbof, NULL, 0, NULL},
+	{US "bol", TYPETW + TYPEPW + EFIXXCOL, u_goto_bol, NULL, 0, NULL},
+	{US "bolmenu", TYPEMENU, umbol, NULL, 0, NULL},
+	{US "bop", TYPETW + TYPEPW + EFIXXCOL, ubop, NULL, 1, US "eop"},
+	{US "bos", TYPETW + TYPEPW + EMOVE, ubos, NULL, 0, NULL},
+	{US "bufed", TYPETW, ubufed, NULL, 0, NULL},
+	{US "byte", TYPETW + TYPEPW, ubyte, NULL, 0, NULL},
+	{US "center", TYPETW + TYPEPW + EFIXXCOL + EMOD, ucenter, NULL, 1, NULL},
+	{US "ctrl", TYPETW + TYPEPW + EMOD, uctrl, NULL, 0, NULL},
+	{US "col", TYPETW + TYPEPW, ucol, NULL, 0, NULL},
+	{US "complete", TYPETW + TYPEPW + EMINOR + EMOD, ucmplt, NULL, 0, NULL},
+	{US "copy", TYPETW + TYPEPW, ucopy, NULL, 0, NULL},
+	{US "crawll", TYPETW + TYPEPW, ucrawll, NULL, 1, US "crawlr"},
+	{US "crawlr", TYPETW + TYPEPW, ucrawlr, NULL, 1, US "crawll"},
+	{US "delbol", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelbl, NULL, 1, US "deleol"},
+	{US "delch", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, udelch, NULL, 1, US "backs"},
+	{US "deleol", TYPETW + TYPEPW + EKILL + EMOD, udelel, NULL, 1, US "delbol"}, 
+	{US "dellin", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelln, NULL, 1, NULL}, 
+	{US "delw", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL + EKILL + EMOD, u_word_delete, NULL, 1, US "backw"},
+	{US "dnarw", TYPETW + TYPEPW + EMOVE, udnarw, NULL, 1, US "uparw"},
+	{US "dnarwmenu", TYPEMENU, umdnarw, NULL, 1, US "uparwmenu"}, 
+	{US "dnslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, udnslide, NULL, 1, US "upslide"},
+	{US "drop", TYPETW + TYPEPW, udrop, NULL, 0, NULL},
+	{US "dupw", TYPETW, uduptw, NULL, 0, NULL},
+	{US "edit", TYPETW + TYPEPW, uedit, NULL, 0, NULL},
+	{US "eof", TYPETW + TYPEPW + EFIXXCOL + EMOVE, u_goto_eof, NULL, 0, NULL},
+	{US "eofmenu", TYPEMENU, umeof, NULL, 0, NULL},
+	{US "eol", TYPETW + TYPEPW + EFIXXCOL, u_goto_eol, NULL, 0, NULL},
+	{US "eolmenu", TYPEMENU, umeol, NULL, 0, NULL},
+	{US "eop", TYPETW + TYPEPW + EFIXXCOL, ueop, NULL, 1, US "bop"},
+	{US "execmd", TYPETW + TYPEPW, uexecmd, NULL, 0, NULL},
+	{US "explode", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uexpld, NULL, 0, NULL},
+	{US "exsave", TYPETW + TYPEPW, uexsve, NULL, 0, NULL},
+	{US "ffirst", TYPETW + TYPEPW, pffirst, NULL, 0, NULL},
+	{US "filt", TYPETW + TYPEPW + EMOD, ufilt, NULL, 0, NULL},
+	{US "fnext", TYPETW + TYPEPW, pfnext, NULL, 1, NULL},
+	{US "format", TYPETW + TYPEPW + EFIXXCOL + EMOD, uformat, NULL, 1, NULL},
+	{US "fmtblk", TYPETW + EMOD + EFIXXCOL, ufmtblk, NULL, 1, NULL},
+	{US "fwrdc", TYPETW + TYPEPW, ufwrdc, NULL, 1, US "bkwdc"},
+	{US "gomark", TYPETW + TYPEPW + EMOVE, ugomark, NULL, 0, NULL},
+	{US "groww", TYPETW, ugroww, NULL, 1, US "shrinkw"},
+	{US "isrch", TYPETW + TYPEPW, uisrch, NULL, 0, NULL},
+	{US "killproc", TYPETW + TYPEPW, ukillpid, NULL, 0, NULL},
+	{US "help", TYPETW + TYPEPW + TYPEQW, u_help, NULL, 0, NULL},
+	{US "hnext", TYPETW + TYPEPW + TYPEQW, u_help_next, NULL, 0, NULL},
+	{US "hprev", TYPETW + TYPEPW + TYPEQW, u_help_prev, NULL, 0, NULL},
+	{US "insc", TYPETW + TYPEPW + EFIXXCOL + EMOD, uinsc, NULL, 1, US "delch"},
+	{US "insf", TYPETW + TYPEPW + EMOD, uinsf, NULL, 0, NULL}, 
+	{US "lindent", TYPETW + TYPEPW + EFIXXCOL + EMOD, ulindent, NULL, 1, US "rindent"},
+	{US "line", TYPETW + TYPEPW, uline, NULL, 0, NULL},
+	{US "lose", TYPETW + TYPEPW, ulose, NULL, 0, NULL}, 
+	{US "ltarw", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL, u_goto_left, NULL, 1, US "rtarw"},
+	{US "ltarwmenu", TYPEMENU, umltarw, NULL, 1, US "rtarwmenu"},
+	{US "macros", TYPETW + EFIXXCOL, umacros, NULL, 0, NULL},
+	{US "markb", TYPETW + TYPEPW, umarkb, NULL, 0, NULL},
+	{US "markk", TYPETW + TYPEPW, umarkk, NULL, 0, NULL},
+	{US "markl", TYPETW + TYPEPW, umarkl, NULL, 0, NULL},
+	{US "math", TYPETW + TYPEPW, umath, NULL, 0, NULL},
+	{US "mode", TYPETW + TYPEPW + TYPEQW, umode, NULL, 0, NULL},
+	{US "msg", TYPETW + TYPEPW + TYPEQW + TYPEMENU, umsg, NULL, 0, NULL},
+	{US "nbuf", TYPETW, unbuf, NULL, 1, US "pbuf"},
+	{US "nedge", TYPETW + TYPEPW + EFIXXCOL, unedge, NULL, 1, US "pedge"}, 
+	{US "nextpos", TYPETW + TYPEPW + EFIXXCOL + EMID + EPOS, unextpos, NULL, 1, US "prevpos"}, 
+	{US "nextw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, unextw, NULL, 1, US "prevw"},
+	{US "nextword", TYPETW + TYPEPW + EFIXXCOL, u_goto_next, NULL, 1, US "prevword"},
+	{US "nmark", TYPETW + TYPEPW, unmark, NULL, 0, NULL},
+	{US "notmod", TYPETW, unotmod, NULL, 0, NULL},
+	{US "nxterr", TYPETW, unxterr, NULL, 1, US "prverr"},
+	{US "open", TYPETW + TYPEPW + EFIXXCOL + EMOD, uopen, NULL, 1, US "deleol"},
+	{US "parserr", TYPETW, uparserr, NULL, 0, NULL},
+	{US "pbuf", TYPETW, upbuf, NULL, 1, US "nbuf"},
+	{US "pedge", TYPETW + TYPEPW + EFIXXCOL, upedge, NULL, 1, US "nedge"}, 
+	{US "pgdn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgdn, NULL, 1, US "pgup"},
+	{US "pgdnmenu", TYPEMENU, umpgdn, NULL, 1, US "pgupmenu"}, 
+	{US "pgup", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgup, NULL, 1, US "pgdn"},
+	{US "pgupmenu", TYPEMENU, umpgup, NULL, 1, US "pgdnmenu"}, 
+	{US "picokill", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, upicokill, NULL, 1, NULL},
+	{US "play", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uplay, NULL, 1, NULL},	/* EFIXX? */ 
+	{US "prevpos", TYPETW + TYPEPW + EPOS + EMID + EFIXXCOL, uprevpos, NULL, 1, US "nextpos"}, 
+	{US "prevw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uprevw, NULL, 1, US "nextw"}, 
+	{US "prevword", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL, u_goto_prev, NULL, 1, US "nextword"},
+	{US "prverr", TYPETW, uprverr, NULL, 1, US "nxterr"},
+	{US "psh", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upsh, NULL, 0, NULL},
+	{US "pop", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upop, NULL, 0, NULL},
+	{US "qrepl", TYPETW + TYPEPW + EMOD, pqrepl, NULL, 0, NULL},
+	{US "query", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uquery, NULL, 0, NULL},
+	{US "quote", TYPETW + TYPEPW + EMOD, uquote, NULL, 0, NULL},
+	{US "quote8", TYPETW + TYPEPW + EMOD, uquote8, NULL, 0, NULL},
+	{US "record", TYPETW + TYPEPW + TYPEMENU + TYPEQW, urecord, NULL, 0, NULL},
+	{US "redo", TYPETW + TYPEPW + EFIXXCOL, uredo, NULL, 1, US "undo"},
+	{US "retype", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uretyp, NULL, 0, NULL},
+	{US "rfirst", TYPETW + TYPEPW, prfirst, NULL, 0, NULL}, 
+	{US "rindent", TYPETW + TYPEPW + EFIXXCOL + EMOD, urindent, NULL, 1, US "lindent"},
+	{US "run", TYPETW + TYPEPW, urun, NULL, 0, NULL},
+	{US "rsrch", TYPETW + TYPEPW, ursrch, NULL, 0, NULL},
+	{US "rtarw", TYPETW + TYPEPW + EFIXXCOL, u_goto_right, NULL, 1, US "ltarw"},
+	{US "rtarwmenu", TYPEMENU, umrtarw, NULL, 1, US "ltarwmenu"},
+	{US "rtn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOD, urtn, NULL, 1, NULL},
+	{US "save", TYPETW + TYPEPW, usave, NULL, 0, NULL},
+	{US "setmark", TYPETW + TYPEPW, usetmark, NULL, 0, NULL},
+	{US "shell", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ushell, NULL, 0, NULL},
+	{US "shrinkw", TYPETW, ushrnk, NULL, 1, US "groww"},
+	{US "splitw", TYPETW, usplitw, NULL, 0, NULL},
+	{US "stat", TYPETW + TYPEPW, ustat, NULL, 0, NULL},
+	{US "stop", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ustop, NULL, 0, NULL},
+	{US "swap", TYPETW + TYPEPW + EFIXXCOL, uswap, NULL, 0, NULL},
+	{US "tag", TYPETW + TYPEPW, utag, NULL, 0, NULL},
+	{US "tomarkb", TYPETW + TYPEPW + EFIXXCOL, utomarkb, NULL, 0, NULL},
+	{US "tomarkbk", TYPETW + TYPEPW + EFIXXCOL, utomarkbk, NULL, 0, NULL},
+	{US "tomarkk", TYPETW + TYPEPW + EFIXXCOL, utomarkk, NULL, 0, NULL},
+	{US "tomatch", TYPETW + TYPEPW + EFIXXCOL, utomatch, NULL, 0, NULL},
+	{US "tos", TYPETW + TYPEPW + EMOVE, utos, NULL, 0, NULL},
+	{US "tw0", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw0, NULL, 0, NULL},
+	{US "tw1", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw1, NULL, 0, NULL},
+	{US "txt", TYPETW + TYPEPW, utxt, NULL, 0, NULL}, 
+	{US "type", TYPETW + TYPEPW + TYPEQW + TYPEMENU + EMINOR + EMOD, utype, NULL, 1, US "backs"},
+	{US "undo", TYPETW + TYPEPW + EFIXXCOL, uundo, NULL, 1, US "redo"},
+	{US "uparw", TYPETW + TYPEPW + EMOVE, uuparw, NULL, 1, US "dnarw"},
+	{US "uparwmenu", TYPEMENU, umuparw, NULL, 1, US "dnarwmenu"}, 
+	{US "upslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, uupslide, NULL, 1, US "dnslide"},
+	{US "yank", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyank, NULL, 1, NULL},
+	{US "yapp", TYPETW + TYPEPW + EKILL, uyapp, NULL, 0, NULL},
+	{US "yankpop", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyankpop, NULL, 1, NULL}
 };
 
 /* Execute a command n with key k */
@@ -208,7 +208,7 @@ int execmd(CMD *cmd, int k)
 		goto skip;
 
 	if ((maint->curwin->watom->what & TYPETW) && bw->b->rdonly && (cmd->flag & EMOD)) {
-		msgnw(bw->parent, "Read only");
+		msgnw(bw->parent, US "Read only");
 		if (beep)
 			ttputc(7);
 		goto skip;
@@ -275,7 +275,7 @@ static void izcmds(void)
 		htadd(cmdhash, cmds[x].name, cmds + x);
 }
 
-CMD *findcmd(char *s)
+CMD *findcmd(unsigned char *s)
 {
 	if (!cmdhash)
 		izcmds();
@@ -288,7 +288,7 @@ void addcmd(unsigned char *s, MACRO *m)
 
 	if (!cmdhash)
 		izcmds();
-	cmd->name = strdup(s);
+	cmd->name = (unsigned char *)strdup((char *)s);
 	cmd->flag = 0;
 	cmd->func = NULL;
 	cmd->m = m;
@@ -297,9 +297,9 @@ void addcmd(unsigned char *s, MACRO *m)
 	htadd(cmdhash, cmd->name, cmd);
 }
 
-static char **getcmds(void)
+static unsigned char **getcmds(void)
 {
-	char **s = vaensure(NULL, sizeof(cmds) / sizeof(CMD));
+	unsigned char **s = vaensure(NULL, sizeof(cmds) / sizeof(CMD));
 	int x;
 	HENTRY *e;
 
@@ -312,11 +312,11 @@ static char **getcmds(void)
 
 /* Command line */
 
-char **scmds = NULL;
+unsigned char **scmds = NULL;
 
-static char **regsub(char **z, int len, char *s)
+static unsigned char **regsub(unsigned char **z, int len, unsigned char *s)
 {
-	char **lst = NULL;
+	unsigned char **lst = NULL;
 	int x;
 
 	for (x = 0; x != len; ++x)
@@ -325,7 +325,7 @@ static char **regsub(char **z, int len, char *s)
 	return lst;
 }
 
-static void inscmd(BW *bw, char *line)
+static void inscmd(BW *bw, unsigned char *line)
 {
 	P *p = pdup(bw->cursor);
 
@@ -338,7 +338,7 @@ static void inscmd(BW *bw, char *line)
 	bw->cursor->xcol = piscol(bw->cursor);
 }
 
-static int cmdabrt(BW *bw, int x, char *line)
+static int cmdabrt(BW *bw, int x, unsigned char *line)
 {
 	if (line) {
 		inscmd(bw, line);
@@ -347,7 +347,7 @@ static int cmdabrt(BW *bw, int x, char *line)
 	return -1;
 }
 
-static int cmdrtn(MENU *m, int x, char *line)
+static int cmdrtn(MENU *m, int x, unsigned char *line)
 {
 	inscmd(m->parent->win->object, m->list[x]);
 	vsrm(line);
@@ -360,9 +360,9 @@ static int cmdcmplt(BW *bw)
 {
 	MENU *m;
 	P *p, *q;
-	char *line;
-	char *line1;
-	char **lst;
+	unsigned char *line;
+	unsigned char *line1;
+	unsigned char **lst;
 
 	if (!scmds)
 		scmds = getcmds();
@@ -392,7 +392,7 @@ static int cmdcmplt(BW *bw)
 		else if (smode || isreg(line))
 			return 0;
 		else {
-			char *com = mcomplete(m);
+			unsigned char *com = mcomplete(m);
 
 			vsrm(m->object);
 			m->object = com;
@@ -405,7 +405,7 @@ static int cmdcmplt(BW *bw)
 	}
 }
 
-static int docmd(BW *bw, char *s, void *object, int *notify)
+static int docmd(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	MACRO *mac;
 	int ret = -1;
@@ -413,9 +413,9 @@ static int docmd(BW *bw, char *s, void *object, int *notify)
 
 	vsrm(s);	/* allocated in pw.c::rtnpw() */
 	if (!cmd)
-		msgnw(bw->parent, "No such command");
+		msgnw(bw->parent, US "No such command");
 	else {
-		mac = mkmacro(MAXINT, 0, 0, cmd);
+		mac = mkmacro(-1, 0, 0, cmd);
 		ret = exmacro(mac, 1);
 		rmmacro(mac);
 	}
@@ -428,7 +428,7 @@ B *cmdhist = NULL;
 
 int uexecmd(BW *bw)
 {
-	if (wmkpw(bw->parent, "cmd: ", &cmdhist, docmd, "cmd", NULL, cmdcmplt, NULL, NULL)) {
+	if (wmkpw(bw->parent, US "cmd: ", &cmdhist, docmd, US "cmd", NULL, cmdcmplt, NULL, NULL)) {
 		return 0;
 	} else {
 		return -1;

@@ -31,11 +31,11 @@
 #include "vs.h"
 
 int dopadding = 0;
-char *joeterm = NULL;
+unsigned char *joeterm = NULL;
 
 /* Default termcap entry */
 
-char defentry[] = "\
+unsigned char defentry[] = "\
 :co#80:li#25:am:\
 :ho=\\E[H:cm=\\E[%i%d;%dH:cV=\\E[%i%dH:\
 :up=\\E[A:UP=\\E[%dA:DO=\\E[%dB:nd=\\E[C:RI=\\E[%dC:LE=\\E[%dD:\
@@ -49,7 +49,7 @@ char defentry[] = "\
 
 /* Return true if termcap line matches name */
 
-static int match(char *s, char *name)
+static int match(unsigned char *s, unsigned char *name)
 {
 	if (s[0] == 0 || s[0] == '#')
 		return 0;
@@ -68,7 +68,7 @@ static int match(char *s, char *name)
 
 /* Find termcap entry in a file */
 
-static char *lfind(char *s, int pos, FILE *fd, char *name)
+static unsigned char *lfind(unsigned char *s, int pos, FILE *fd, unsigned char *name)
 {
 	int c, x;
 
@@ -121,12 +121,12 @@ static char *lfind(char *s, int pos, FILE *fd, char *name)
 
 /* Lookup termcap entry in index */
 
-static long findidx(FILE *file, char *name)
+static long findidx(FILE *file, unsigned char *name)
 {
-	char buf[80];
+	unsigned char buf[80];
 	long addr = 0;
 
-	while (fgets(buf, 80, file)) {
+	while (fgets((char *)buf, 80, file)) {
 		int x = 0, flg = 0, c, y, z;
 
 		do {
@@ -135,7 +135,7 @@ static long findidx(FILE *file, char *name)
 			buf[y] = 0;
 			if (c == '\n' || !c) {
 				z = 0;
-				sscanf(buf + x, "%x", &z);
+				sscanf((char *)(buf + x), "%x", &z);
 				addr += z;
 			} else if (!strcmp(buf + x, name))
 				flg = 1;
@@ -149,16 +149,16 @@ static long findidx(FILE *file, char *name)
 
 /* Load termcap entry */
 
-CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *outptr)
+CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *, unsigned char), void *outptr)
 {
 	CAP *cap;
 	FILE *f, *f1;
 	long idx;
 	int x, y, c, z, ti;
-	char *tp, *pp, *qq, *namebuf, **npbuf, *idxname;
+	unsigned char *tp, *pp, *qq, *namebuf, **npbuf, *idxname;
 	int sortsiz;
 
-	if (!name && !(name = joeterm) && !(name = getenv("TERM")))
+	if (!name && !(name = joeterm) && !(name = (unsigned char *)getenv("TERM")))
 		return NULL;
 	cap = (CAP *) joe_malloc(sizeof(CAP));
 	cap->tbuf = vsmk(4096);
@@ -166,9 +166,9 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 	cap->sort = NULL;
 
 #ifdef TERMINFO
-	cap->abuf = (char *) joe_malloc(4096);
+	cap->abuf = (unsigned char *) joe_malloc(4096);
 	cap->abufp = cap->abuf;
-	if (tgetent(cap->tbuf, name) == 1)
+	if (tgetent((char *)cap->tbuf, (char *)name) == 1)
 		return setcap(cap, baud, out, outptr);
 	else {
 		joe_free(cap->abuf);
@@ -181,17 +181,17 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 
 	cap->sortlen = 0;
 
-	tp = getenv("TERMCAP");
+	tp = (unsigned char *)getenv("TERMCAP");
 
 	if (tp && tp[0] == '/')
 		namebuf = vsncpy(NULL, 0, sz(tp));
 	else {
 		if (tp)
 			cap->tbuf = vsncpy(sv(cap->tbuf), sz(tp));
-		if ((tp = getenv("TERMPATH")))
+		if ((tp = (unsigned char *)getenv("TERMPATH")))
 			namebuf = vsncpy(NULL, 0, sz(tp));
 		else {
-			if ((tp = getenv("HOME"))) {
+			if ((tp = (unsigned char *)getenv("HOME"))) {
 				namebuf = vsncpy(NULL, 0, sz(tp));
 				namebuf = vsadd(namebuf, '/');
 			} else
@@ -231,11 +231,11 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 	idx = 0;
 	idxname = vsncpy(NULL, 0, sz(npbuf[y]));
 	idxname = vsncpy(idxname, sLEN(idxname), sc(".idx"));
-	f1 = fopen(npbuf[y], "r");
+	f1 = fopen((char *)(npbuf[y]), "r");
 	++y;
 	if (!f1)
 		goto nextfile;
-	f = fopen(idxname, "r");
+	f = fopen((char *)idxname, "r");
 	if (f) {
 		struct stat buf, buf1;
 
@@ -355,7 +355,7 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 	varm(npbuf);
 	vsrm(name);
 
-	cap->pad = jgetstr(cap, "pc");
+	cap->pad = jgetstr(cap, US "pc");
 	if (dopadding)
 		cap->dopadding = 1;
 	else
@@ -363,7 +363,7 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 	return setcap(cap, baud, out, outptr);
 }
 
-static struct sortentry *findcap(CAP *cap, char *name)
+static struct sortentry *findcap(CAP *cap, unsigned char *name)
 {
 	int x, y, z;
 	int found;
@@ -384,7 +384,7 @@ static struct sortentry *findcap(CAP *cap, char *name)
 	return NULL;
 }
 
-CAP *setcap(CAP *cap, unsigned int baud, void (*out) (char *, char), void *outptr)
+CAP *setcap(CAP *cap, unsigned int baud, void (*out) (unsigned char *, unsigned char), void *outptr)
 {
 	cap->baud = baud;
 	cap->div = 100000 / baud;
@@ -393,22 +393,22 @@ CAP *setcap(CAP *cap, unsigned int baud, void (*out) (char *, char), void *outpt
 	return cap;
 }
 
-int getflag(CAP *cap, char *name)
+int getflag(CAP *cap, unsigned char *name)
 {
 #ifdef TERMINFO
 	if (cap->abuf)
-		return tgetflag(name);
+		return tgetflag((char *)name);
 #endif
 	return findcap(cap, name) != NULL;
 }
 
-char *jgetstr(CAP *cap, char *name)
+unsigned char *jgetstr(CAP *cap, unsigned char *name)
 {
 	struct sortentry *s;
 
 #ifdef TERMINFO
 	if (cap->abuf)
-		return tgetstr(name, &cap->abufp);
+		return (unsigned char *)tgetstr((char *)name, (char **)&cap->abufp);
 #endif
 	s = findcap(cap, name);
 	if (s)
@@ -417,17 +417,17 @@ char *jgetstr(CAP *cap, char *name)
 		return NULL;
 }
 
-int getnum(CAP *cap, char *name)
+int getnum(CAP *cap, unsigned char *name)
 {
 	struct sortentry *s;
 
 #ifdef TERMINFO
 	if (cap->abuf)
-		return tgetnum(name);
+		return tgetnum((char *)name);
 #endif
 	s = findcap(cap, name);
 	if (s && s->value)
-		return atoi(s->value);
+		return atoi((char *)(s->value));
 	return -1;
 }
 
@@ -441,9 +441,9 @@ void rmcap(CAP *cap)
 	joe_free(cap);
 }
 
-static char escape(char **s)
+static unsigned char escape(unsigned char **s)
 {
-	char c = *(*s)++;
+	unsigned char c = *(*s)++;
 
 	if (c == '^' && **s)
 		if (**s != '?')
@@ -497,7 +497,7 @@ static int outout(int c)
 	return(c);	/* act like putchar() - return written char */
 }
 
-void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
+void texec(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3)
 {
 	int c, tenth = 0, x;
 	int args[4];
@@ -510,11 +510,11 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 
 #ifdef TERMINFO
 	if (cap->abuf) {
-		char *a;
+		unsigned char *a;
 
 		outcap = cap;
-		a = tgoto(s, a1, a0);
-		tputs(a, l, outout);
+		a = (unsigned char *)tgoto((char *)s, a1, a0);
+		tputs((char *)a, l, outout);
 		return;
 	}
 #endif
@@ -669,14 +669,14 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 
 static int total;
 
-static void cst(char *ptr, char c)
+static void cst(unsigned char *ptr, unsigned char c)
 {
 	++total;
 }
 
-int tcost(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
+int tcost(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3)
 {
-	void (*out) (char *, char) = cap->out;
+	void (*out) (unsigned char *, unsigned char) = cap->out;
 
 	if (!s)
 		return 10000;
@@ -687,15 +687,15 @@ int tcost(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 	return total;
 }
 
-static char *ssp;
-static void cpl(char *ptr, char c)
+static unsigned char *ssp;
+static void cpl(unsigned char *ptr, unsigned char c)
 {
 	ssp = vsadd(ssp, c);
 }
 
-char *tcompile(CAP *cap, char *s, int a0, int a1, int a2, int a3)
+unsigned char *tcompile(CAP *cap, unsigned char *s, int a0, int a1, int a2, int a3)
 {
-	void (*out) (char *, char) = cap->out;
+	void (*out) (unsigned char *, unsigned char) = cap->out;
 	int div = cap->div;
 
 	if (!s)
@@ -712,18 +712,18 @@ char *tcompile(CAP *cap, char *s, int a0, int a1, int a2, int a3)
 /* Old termcap compatibility (not to be used when TERMINFO is set) */
 #ifdef junk
 short ospeed;			/* Output speed */
-char PC, *UP, *BC;		/* Unused */
+unsigned char PC, *UP, *BC;		/* Unused */
 static CAP *latest;		/* CAP entry to use */
 
 static void stupid(ptr, c)
 void (*ptr) ();
-char c;
+unsigned char c;
 {
 	ptr(c);
 }
 
 int tgetent(buf, name)
-char *buf, *name;
+unsigned char *buf, *name;
 {
 	latest = getcap(name, 9600, stupid, NULL);
 	if (latest)
@@ -733,27 +733,27 @@ char *buf, *name;
 }
 
 int tgetflag(name)
-char *name;
+unsigned char *name;
 {
 	return getflag(latest, name);
 }
 
 int tgetnum(name)
-char *name;
+unsigned char *name;
 {
 	return getnum(latest, name);
 }
 
-char *tgetstr(name)
-char *name;
+unsigned char *tgetstr(name)
+unsigned char *name;
 {
 	return jgetstr(latest, name);
 }
 
 static int latestx, latesty;
 
-char *tgoto(str, x, y)
-char *str;
+unsigned char *tgoto(str, x, y)
+unsigned char *str;
 int x, y;
 {
 	latestx = x;
@@ -762,7 +762,7 @@ int x, y;
 }
 
 void tputs(str, l, out)
-char *str;
+unsigned char *str;
 int l;
 void (*out) ();
 {

@@ -106,7 +106,7 @@
  */
 
 /* An element with name 'a' */
-typedef char sELEMENT;
+typedef unsigned char sELEMENT;
 
 /* Duplicate an element */
 /* sELEMENT sdup(); */
@@ -121,7 +121,7 @@ typedef char sELEMENT;
 #define scmp(a, b) ((a) > (b) ? 1 : ((a) == (b) ? 0 : -1))
 
 /* Compare a single element- case insensitive */
-int sicmp(char a, char b);
+int sicmp(unsigned char a, unsigned char b);
 
 /* A blank element */
 /* extern sELEMENT sblank; */
@@ -293,7 +293,7 @@ sELEMENT *_vsset PARAMS((sELEMENT *vary, int pos, sELEMENT el));
 /* { sELEMENT *, int } sc(sELEMENT *array);
  * Return array, size pair.  Uses 'sizeof' to get size.
  */
-#define sc(a) (a), (sizeof(a) / sizeof(sELEMENT) - 1)
+#define sc(a) (unsigned char *)(a), (sizeof(a) / sizeof(sELEMENT) - 1)
 
 /* { sELEMENT *, int } srest(sELEMENT *vary, int pos);
  * Return array, size pair of rest of array beginning at pos.  If
@@ -427,7 +427,7 @@ int vsspan PARAMS((sELEMENT *a, int alen, sELEMENT *b, int blen));
  * 'ptr' is passed as the first arg to 'getC'.  'getC' should return -1 if
  * there is no more input.
  */
-char *vsread PARAMS(());
+unsigned char *vsread PARAMS(());
 
 /* char *vwords(char *s, char **a, int len, char t);
  *
@@ -441,6 +441,6 @@ char *vsread PARAMS(());
  * }
  *
  */
-char *vwords PARAMS(());
+unsigned char *vwords PARAMS(());
 #endif
 #endif

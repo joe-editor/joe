@@ -26,7 +26,7 @@
 #include "vs.h"
 #include "w.h"
 
-extern char *exmsg;
+extern unsigned char *exmsg;
 extern int square;
 int staen = 0;
 int staupd = 0;
@@ -63,9 +63,9 @@ static void resizetw(BW *bw, int wi, int he)
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he);
 }
 
-static char *stagen(char *stalin, BW *bw, char *s, int fill)
+static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, int fill)
 {
-	char buf[80];
+	unsigned char buf[80];
 	int x;
 	W *w = bw->parent;
 
@@ -76,7 +76,7 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 			case 'y':
 				{
 					if (bw->o.syntax) {
-						snprintf(buf, sizeof(buf), "(%s)", bw->o.syntax);
+						snprintf((char *)buf, sizeof(buf), "(%s)", bw->o.syntax);
 						stalin = vsncpy(sv(stalin), sz(buf));
 					}
 				}
@@ -85,12 +85,12 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 				{
 					time_t n = time(NULL);
 					int l;
-					char *d = ctime(&n);
+					unsigned char *d = (unsigned char *)ctime(&n);
 
 					l = (d[11] - '0') * 10 + d[12] - '0';
 					if (l > 12)
 						l -= 12;
-					snprintf(buf, sizeof(buf), "%2.2d", l);
+					snprintf((char *)buf, sizeof(buf), "%2.2d", l);
 					if (buf[0] == '0')
 						buf[0] = fill;
 					stalin = vsncpy(sv(stalin), buf, 2);
@@ -100,7 +100,7 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 			case 'u':
 				{
 					time_t n = time(NULL);
-					char *d = ctime(&n);
+					unsigned char *d = (unsigned char *)ctime(&n);
 
 					stalin = vsncpy(sv(stalin), d + 11, 5);
 				}
@@ -130,7 +130,7 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 					stalin = vsadd(stalin, fill);
 				break;
 			case 'n':
-				stalin = vsncpy(sv(stalin), sz(bw->b->name ? bw->b->name : "Unnamed"));
+				stalin = vsncpy(sv(stalin), sz(bw->b->name ? bw->b->name : (unsigned char *)"Unnamed"));
 				break;
 			case 'm':
 				if (bw->b->changed)
@@ -147,21 +147,21 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 					stalin = vsadd(stalin, fill);
 				break;
 			case 'r':
-				snprintf(buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
+				snprintf((char *)buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'o':
-				snprintf(buf, sizeof(buf), "%-4ld", bw->cursor->byte);
+				snprintf((char *)buf, sizeof(buf), "%-4ld", bw->cursor->byte);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'O':
-				snprintf(buf, sizeof(buf), "%-4lX", bw->cursor->byte);
+				snprintf((char *)buf, sizeof(buf), "%-4lX", bw->cursor->byte);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -169,9 +169,9 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 				break;
 			case 'a':
 				if (!piseof(bw->cursor))
-					snprintf(buf, sizeof(buf), "%3d", 255 & brc(bw->cursor));
+					snprintf((char *)buf, sizeof(buf), "%3d", 255 & brc(bw->cursor));
 				else
-					snprintf(buf, sizeof(buf), "   ");
+					snprintf((char *)buf, sizeof(buf), "   ");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -179,16 +179,16 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 				break;
 			case 'A':
 				if (!piseof(bw->cursor))
-					snprintf(buf, sizeof(buf), "%2.2X", 255 & brc(bw->cursor));
+					snprintf((char *)buf, sizeof(buf), "%2.2X", 255 & brc(bw->cursor));
 				else
-					snprintf(buf, sizeof(buf), "  ");
+					snprintf((char *)buf, sizeof(buf), "  ");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'c':
-				snprintf(buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
+				snprintf((char *)buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -196,16 +196,16 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 				break;
 			case 'p':
 				if (bw->b->eof->byte)
-					snprintf(buf, sizeof(buf), "%3ld", bw->cursor->byte * 100 / bw->b->eof->byte);
+					snprintf((char *)buf, sizeof(buf), "%3ld", bw->cursor->byte * 100 / bw->b->eof->byte);
 				else
-					snprintf(buf, sizeof(buf), "100");
+					snprintf((char *)buf, sizeof(buf), "100");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'l':
-				snprintf(buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
+				snprintf((char *)buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -214,7 +214,7 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 			case 'k':
 				{
 					int i;
-					char *cpos = buf;
+					unsigned char *cpos = buf;
 
 					buf[0] = 0;
 					if (w->kbd->x && w->kbd->seq[0])
@@ -246,7 +246,7 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 				break;
 			case 'M':
 				if (recmac) {
-					snprintf(buf, sizeof(buf), "(Macro %d recording...)", recmac->n);
+					snprintf((char *)buf, sizeof(buf), "(Macro %d recording...)", recmac->n);
 					stalin = vsncpy(sv(stalin), sz(buf));
 				}
 				break;
@@ -415,7 +415,7 @@ static void deltw(BW *bw, B *b, long int l, long int n, int flg)
 }
 
 static WATOM watomtw = {
-	"main",
+	US "main",
 	disptw,
 	bwfllw,
 	NULL,
@@ -428,12 +428,15 @@ static WATOM watomtw = {
 	TYPETW
 };
 
+/* k is last character types which lead to uabort.  If k is -1, it means uabort
+   was called internally, and not by the user: which means uabort will not send
+   Ctrl-C to process */
 int uabort(BW *bw, int k)
 {
 	if (bw->parent->watom != &watomtw)
 		return wabort(bw->parent);
-	if (bw->pid && bw->cursor->byte == bw->b->eof->byte && k != MAXINT) {
-		char c = 3;
+	if (bw->pid && bw->cursor->byte == bw->b->eof->byte && k != -1) {
+		unsigned char c = 3;
 		joe_write(bw->out, &c, 1); /* Send Ctrl-C to process */
 		return 0;
 	}
@@ -487,7 +490,7 @@ int utw0(BASE *b)
 	}
 	if (bw->b->count == 1)
 		orphit(bw);
-	return uabort(bw, MAXINT);
+	return uabort(bw, -1);
 }
 
 /* Kill all other windows (orphans buffers) */
@@ -508,7 +511,7 @@ int utw1(BASE *b)
 		if (t->curwin->main != mainw) {
 			BW *bw = t->curwin->main->object;
 			if (bw->pid) {
-				msgnw(bw->parent, "Process running in this window");
+				msgnw(bw->parent, US "Process running in this window");
 				return -1;
 			}
 			utw0((BASE *)bw);

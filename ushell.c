@@ -39,24 +39,24 @@ static void cdone(BW *bw)
 	close(bw->out);
 	bw->out = -1;
 	if (piseof(bw->cursor)) {
-		binss(bw->cursor, "** Program finished **\n");
+		binss(bw->cursor, US "** Program finished **\n");
 		p_goto_eof(bw->cursor);
 		bw->cursor->xcol = piscol(bw->cursor);
 	} else {
 		P *q = pdup(bw->b->eof);
 
-		binss(q, "** Program finished **\n");
+		binss(q, US "** Program finished **\n");
 		prm(q);
 	}
 }
 
 /* Executed for each chunk of data we get from the shell */
 
-static void cdata(BW *bw, char *dat, int siz)
+static void cdata(BW *bw, unsigned char *dat, int siz)
 {
 	P *q = pdup(bw->cursor);
 	P *r = pdup(bw->b->eof);
-	char bf[1024];
+	unsigned char bf[1024];
 	int x, y;
 
 	for (x = y = 0; x != siz; ++x) {
@@ -92,7 +92,7 @@ static void cdata(BW *bw, char *dat, int siz)
 	prm(q);
 }
 
-static int cstart(BW *bw, char *name, char **s, void *obj, int *notify)
+static int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify)
 {
 #ifdef __MSDOS__
 	if (notify) {
@@ -108,7 +108,7 @@ static int cstart(BW *bw, char *name, char **s, void *obj, int *notify)
 		*notify = 1;
 	}
 	if (bw->pid && orphan) {
-		msgnw(bw->parent, "Program already running in this window");
+		msgnw(bw->parent, US "Program already running in this window");
 		varm(s);
 		return -1;
 	}
@@ -119,7 +119,7 @@ static int cstart(BW *bw, char *name, char **s, void *obj, int *notify)
 	bw = (BW *) maint->curwin->object;
 	if (!(m = mpxmk(&bw->out, name, s, cdata, bw, cdone, bw))) {
 		varm(s);
-		msgnw(bw->parent, "No ptys available");
+		msgnw(bw->parent, US "No ptys available");
 		return -1;
 	} else {
 		bw->pid = m->pid;
@@ -130,11 +130,11 @@ static int cstart(BW *bw, char *name, char **s, void *obj, int *notify)
 
 int ubknd(BW *bw)
 {
-	char **a;
-	char *s;
-        char *sh=getenv("SHELL");
+	unsigned char **a;
+	unsigned char *s;
+        unsigned char *sh=(unsigned char *)getenv("SHELL");
         if (!sh) {
-        	msgnw(bw->parent, "\"SHELL\" environment variable not defined or exported");
+        	msgnw(bw->parent, US "\"SHELL\" environment variable not defined or exported");
         	return -1;
         }
 
@@ -148,23 +148,23 @@ int ubknd(BW *bw)
 
 /* Run a program in a window */
 
-static int dorun(BW *bw, char *s, void *object, int *notify)
+static int dorun(BW *bw, unsigned char *s, void *object, int *notify)
 {
-	char **a = vamk(10);
-	char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+	unsigned char **a = vamk(10);
+	unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
 
 	a = vaadd(a, cmd);
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, "/bin/sh", a, NULL, notify);
+	return cstart(bw, US "/bin/sh", a, NULL, notify);
 }
 
 B *runhist = NULL;
 
 int urun(BW *bw)
 {
-	if (wmkpw(bw->parent, "Program to run: ", &runhist, dorun, "Run", NULL, NULL, NULL, NULL)) {
+	if (wmkpw(bw->parent, US "Program to run: ", &runhist, dorun, US "Run", NULL, NULL, NULL, NULL)) {
 		return 0;
 	} else {
 		return -1;

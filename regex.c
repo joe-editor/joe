@@ -162,9 +162,9 @@ static int brack(unsigned char **a, int *la, unsigned char c)
 		return flag;
 }
 
-static void savec(char **pieces, int n, char c)
+static void savec(unsigned char **pieces, int n, unsigned char c)
 {
-	char *s = NULL;
+	unsigned char *s = NULL;
 
 	if (pieces[n])
 		vsrm(pieces[n]);
@@ -172,9 +172,11 @@ static void savec(char **pieces, int n, char c)
 	pieces[n] = s;
 }
 
-static void saves(char **pieces, int n, P *p, long int szz)
+#define MAX_REGEX_SAVED 16384 /* Largest regex string we will save */
+
+static void saves(unsigned char **pieces, int n, P *p, long int szz)
 {
-	if (szz >= MAXINT - 31)		/* FIXME: why MAXINT - 31 ? */
+	if (szz > MAX_REGEX_SAVED)
 		pieces[n] = vstrunc(pieces[n], 0);
 	else {
 		pieces[n] = vstrunc(pieces[n], (int) szz);
@@ -182,8 +184,12 @@ static void saves(char **pieces, int n, P *p, long int szz)
 	}
 }
 
-/* FIXME: overloaded meaning of MAXINT below (MAXINT - 1) */
-/*        what's the meaning of this? */
+/* Returns -1 (NO_MORE_DATA) for end of file.
+ * Returns -2 if we skipped a special sequence and didn't take the character
+ * after it (this happens for "strings").
+ * Otherwise returns character after sequence (character will be >=0).
+ */
+
 static int skip_special(P *p)
 {
 	int to, s;
@@ -197,7 +203,7 @@ static int skip_special(P *p)
 			}
 		} while (s != NO_MORE_DATA && s != '"');
 		if (s == '"')
-			return MAXINT - 1;
+			return -2;
 		break;
 	case '\'':
 		if ((s = pgetc(p)) == '\\') {
@@ -205,11 +211,11 @@ static int skip_special(P *p)
 			s = pgetc(p);
 		}
 		if (s == '\'')
-			return MAXINT - 1;
+			return -2;
 		if ((s = pgetc(p)) == '\'')
-			return MAXINT - 1;
+			return -2;
 		if ((s = pgetc(p)) == '\'')
-			return MAXINT - 1;
+			return -2;
 		break;
 	case '[':
 		to = ']';
@@ -224,7 +230,7 @@ skip:
 			s = skip_special(p);
 		} while (s != to && s != NO_MORE_DATA);
 		if (s == to)
-			return MAXINT - 1;
+			return -2;
 		break;
 	case '/':
 		s = pgetc(p);
@@ -233,7 +239,7 @@ skip:
 				s = pgetc(p);
 				while (s == '*')
 					if ((s = pgetc(p)) == '/')
-						return MAXINT - 1;
+						return -2;
 			} while (s != NO_MORE_DATA);
 		else if (s != NO_MORE_DATA)
 			s = prgetc(p);
@@ -244,9 +250,9 @@ skip:
 	return s;
 }
 
-int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
+int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 {
-        char buf[20];
+        unsigned char buf[20];
 	int c, d;
 	P *q = pdup(p);
 	P *o = NULL;
@@ -261,7 +267,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 				d = pgetc(p);
 				if (d == NO_MORE_DATA)
 					goto fail;
-				savec(pieces, n++, (char) d);
+				savec(pieces, n++, d);
 				break;
 			case 'n':
 			case 'r':
@@ -317,7 +323,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 					goto fail;
 				if (!brack(&regex, &len, d))
 					goto fail;
-				savec(pieces, n++, (char) d);
+				savec(pieces, n++, d);
 				break;
 			case '+':
 				{

@@ -21,11 +21,11 @@
 #include "vs.h"
 #include "w.h"
 
-static int dotag(BW *bw, char *s, void *obj, int *notify)
+static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 {
-	char buf[512];
+	unsigned char buf[512];
 	FILE *f;
-	char *t = NULL;
+	unsigned char *t = NULL;
 
 	if (notify) {
 		*notify = 1;
@@ -37,12 +37,12 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 	}
 	f = fopen("tags", "r");
 	if (!f) {
-		msgnw(bw->parent, "Couldn't open tags file");
+		msgnw(bw->parent, US "Couldn't open tags file");
 		vsrm(s);
 		vsrm(t);
 		return -1;
 	}
-	while (fgets(buf, 512, f)) {
+	while (fgets((char *)buf, 512, f)) {
 		int x, y, c;
 
 		for (x = 0; buf[x] && buf[x] != ' ' && buf[x] != '\t'; ++x) ;
@@ -74,7 +74,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 					long line = 0;
 
 					if (buf[y] >= '0' && buf[y] <= '9') {
-						sscanf(buf + y, "%ld", &line);
+						sscanf((char *)(buf + y), "%ld", &line);
 						if (line >= 1) {
 							int omid = mid;
 
@@ -83,7 +83,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 							dofollows();
 							mid = omid;
 						} else {
-							msgnw(bw->parent, "Invalid line number");
+							msgnw(bw->parent, US "Invalid line number");
 						}
 					} else {
 						if (buf[y] == '/' || buf[y] == '?') {
@@ -117,7 +117,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 			}
 		}
 	}
-	msgnw(bw->parent, "Not found");
+	msgnw(bw->parent, US "Not found");
 	vsrm(s);
 	vsrm(t);
 	fclose(f);
@@ -130,7 +130,7 @@ int utag(BW *bw)
 {
 	BW *pbw;
 
-	pbw = wmkpw(bw->parent, "Tag search: ", &taghist, dotag, NULL, NULL, cmplt, NULL, NULL);
+	pbw = wmkpw(bw->parent, US "Tag search: ", &taghist, dotag, NULL, NULL, cmplt, NULL, NULL);
 	if (pbw && isalnum_(brc(bw->cursor))) {
 		P *p = pdup(bw->cursor);
 		P *q = pdup(p);

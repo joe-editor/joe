@@ -13,7 +13,7 @@
 
 extern int exask;
 
-void genexmsg PARAMS((BW *bw, int saved, char *name));
+void genexmsg PARAMS((BW *bw, int saved, unsigned char *name));
 
 int ublksave PARAMS((BW *bw));
 int ushell PARAMS((BW *bw));
@@ -27,6 +27,6 @@ int uask PARAMS((BW *bw));
 int ubufed PARAMS((BW *bw));
 int ulose PARAMS((BW *bw));
 int okrepl PARAMS((BW *bw));
-int doedit PARAMS((BW *bw, char *s, void *obj, int *notify));
+int doedit PARAMS((BW *bw, unsigned char *s, void *obj, int *notify));
 
 #endif

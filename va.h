@@ -16,7 +16,7 @@
  * macros or defines here if they are not to be actual functions 
  */
 
-typedef char *aELEMENT;
+typedef unsigned char *aELEMENT;
 
 /* aELEMENT adup(); */
 #define adup(s) vsdup(s)
@@ -240,6 +240,6 @@ aELEMENT *vasort PARAMS((aELEMENT *ary, int len));
  * Generate list of strings out of words in 's' seperated with the characters
  * in 'sep'.  The characters in 'sep' must be sorted.
  */
-aELEMENT *vawords PARAMS((aELEMENT *a, char *s, int len, char *sep, int seplen));
+aELEMENT *vawords PARAMS((aELEMENT *a, unsigned char *s, int len, unsigned char *sep, int seplen));
 
 #endif

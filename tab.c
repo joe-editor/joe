@@ -30,15 +30,15 @@ extern int smode;		/* ??? */
 extern int beep;
 
 struct tab {
-	char *path;		/* current directory */
-	char *pattern;		/* search pattern */
+	unsigned char *path;		/* current directory */
+	unsigned char *pattern;		/* search pattern */
 	int len;		/* no. entries in files */
-	char **files;		/* array of file names */
-	char **list;
-	char *type;		/* file type array */
+	unsigned char **files;		/* array of file names */
+	unsigned char **list;
+	unsigned char *type;		/* file type array */
 	int prv;
-	char *orgpath;
-	char *orgnam;
+	unsigned char *orgpath;
+	unsigned char *orgnam;
 };
 
 #define F_DIR		1	/* type codes for file type array */
@@ -59,12 +59,12 @@ static int get_entries(TAB *tab, int prv)
 {
 	int a;
 	int which = 0;
-	char *oldpwd = pwd();
-	char **files;
+	unsigned char *oldpwd = pwd();
+	unsigned char **files;
 
 	if (chpwd(tab->path))
 		return -1;
-	files = (char **) rexpnd(tab->pattern);
+	files = rexpnd(tab->pattern);
 	if (!files) {
 		chpwd(oldpwd);
 		return -1;
@@ -79,12 +79,12 @@ static int get_entries(TAB *tab, int prv)
 	vasort(files, tab->len);
 	if (tab->type)
 		joe_free(tab->type);
-	tab->type = (char *) joe_malloc(tab->len);
+	tab->type = (unsigned char *) joe_malloc(tab->len);
 	for (a = 0; a != tab->len; a++) {
 		struct stat buf;
 		mset(&buf, 0, sizeof(struct stat));
 
-		stat(files[a], &buf);
+		stat((char *)(files[a]), &buf);
 		if (buf.st_ino == prv)
 			which = a;
 		if ((buf.st_mode & S_IFMT) == S_IFDIR)
@@ -98,7 +98,7 @@ static int get_entries(TAB *tab, int prv)
 	return which;
 }
 
-static void insnam(BW *bw, char *path, char *nam)
+static void insnam(BW *bw, unsigned char *path, unsigned char *nam)
 {
 	P *p = pdup(bw->cursor);
 
@@ -143,7 +143,7 @@ static int treload(MENU *m, int flg)
 	if ((which = get_entries(tab, tab->prv)) < 0)
 		return -1;
 	if (tab->path && tab->path[0])
-		stat(tab->path, &buf);
+		stat((char *)tab->path, &buf);
 	else
 		stat(".", &buf);
 	tab->prv = buf.st_ino;
@@ -153,7 +153,7 @@ static int treload(MENU *m, int flg)
 	tab->list = vatrunc(tab->list, aLEN(tab->files));
 
 	for (x = 0; tab->files[x]; ++x) {
-		char *s = vsncpy(NULL, 0, sv(tab->files[x]));
+		unsigned char *s = vsncpy(NULL, 0, sv(tab->files[x]));
 
 		tab->list = vaset(tab->list, x, s);
 		if (tab->type[x] == F_DIR)
@@ -184,9 +184,9 @@ static void rmtab(TAB *tab)
 static int tabrtn(MENU *m, int cursor, TAB *tab)
 {
 	if (tab->type[cursor] == F_DIR) {	/* Switch directories */
-		char *orgpath = tab->path;
-		char *orgpattern = tab->pattern;
-		char *e = endprt(tab->path);
+		unsigned char *orgpath = tab->path;
+		unsigned char *orgpattern = tab->pattern;
+		unsigned char *e = endprt(tab->path);
 
 		if (!strcmp(tab->files[cursor], "..") && sLEN(e)
 		    && !(e[0] == '.' && e[1] == '.' && (!e[2] || e[2] == '/')))
@@ -198,7 +198,7 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 		vsrm(e);
 		tab->pattern = vsncpy(NULL, 0, sc("*"));
 		if (treload(m, 0)) {
-			msgnw(m->parent, "Couldn't read directory ");
+			msgnw(m->parent, US "Couldn't read directory ");
 			vsrm(tab->pattern);
 			tab->pattern = orgpattern;
 			vsrm(tab->path);
@@ -225,9 +225,9 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 /*****************************************************************************/
 static int tabbacks(MENU *m, int cursor, TAB *tab)
 {
-	char *orgpath = tab->path;
-	char *orgpattern = tab->pattern;
-	char *e = endprt(tab->path);
+	unsigned char *orgpath = tab->path;
+	unsigned char *orgpattern = tab->pattern;
+	unsigned char *e = endprt(tab->path);
 
 	if (sLEN(e))
 		tab->path = begprt(tab->path);
@@ -239,7 +239,7 @@ static int tabbacks(MENU *m, int cursor, TAB *tab)
 	tab->pattern = vsncpy(NULL, 0, sc("*"));
 
 	if (treload(m, 1)) {
-		msgnw(m->parent, "Couldn't read directory ");
+		msgnw(m->parent, US "Couldn't read directory ");
 		vsrm(tab->pattern);
 		tab->pattern = orgpattern;
 		vsrm(tab->path);
@@ -266,7 +266,7 @@ int cmplt(BW *bw)
 	MENU *new;
 	TAB *tab;
 	P *p, *q;
-	char *cline, *tmp;
+	unsigned char *cline, *tmp;
 	long a, b;
 
 	tab = (TAB *) joe_malloc(sizeof(TAB));
@@ -309,7 +309,7 @@ int cmplt(BW *bw)
 	else if (smode || isreg(tab->orgnam))
 		return 0;
 	else {
-		char *com = mcomplete(new);
+		unsigned char *com = mcomplete(new);
 
 		vsrm(tab->orgnam);
 		tab->orgnam = com;

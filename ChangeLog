@@ -1,3 +1,18 @@
+Mon Apr 12 2004  Joe Allen <jhallen@world.std.com>
+	* almost all of them...:
+
+	Added -notite global option: when set, prevents screen from
+	being restored on exit.
+
+	Added -usetabs global option: when set, uses tabs for cursor
+	position update (which was the default before).  Now we don't
+	use tabs by default.
+
+        Completed change to 'unsigned char *' and elimination of
+        MAXINT.  What a mess.  No warnings with gcc -pedantic.
+
+	Fix UTF-8 bugs where cursor was not correct on scrolled screen.
+
 Fri Apr  9 2004  Joe Allen <jhallen@world.std.com>
 	* b.c, b.h, bw.c, types.h:
 

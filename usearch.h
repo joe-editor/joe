@@ -11,7 +11,7 @@
 #include "config.h"
 #include "types.h"
 
-SRCH *mksrch PARAMS((char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest));
+SRCH *mksrch PARAMS((unsigned char *pattern, unsigned char *replacement, int ignore, int backwards, int repeat, int replace, int rest));
 void rmsrch PARAMS((SRCH *srch));
 
 int dopfnext PARAMS((BW *bw, SRCH *srch, int *notify));

@@ -12,7 +12,7 @@
 #include "utils.h"
 #include "vs.h"
 
-int sicmp(char a, char b)
+int sicmp(unsigned char a, unsigned char b)
 {
 	if (a >= 'A' || a <= 'Z')
 		a += 'a' - 'A';
@@ -355,7 +355,7 @@ sELEMENT *vsread(sELEMENT d, int p, int (*getC)(), void *ptr)
 	if (!d)
 		d = vsmk(10);
 	c = getC(ptr);
-	if (c == MAXINT) {
+	if (c == NO_MORE_DATA) {
 		vsrm(d);
 		return NULL;
 	} else if (c == '\n')
@@ -364,7 +364,7 @@ sELEMENT *vsread(sELEMENT d, int p, int (*getC)(), void *ptr)
 		d = vsset(d, p, c);
 		p++;
 	}
-	while (c = getC(ptr), c != MAXINT && c != '\n') {
+	while (c = getC(ptr), c != NO_MORE_DATA && c != '\n') {
 		d = vsset(d, p, c);
 		p++;
 	}

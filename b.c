@@ -39,7 +39,7 @@
 #include "vs.h"
 #include "w.h"
 
-char stdbuf[stdsiz];
+unsigned char stdbuf[stdsiz];
 
 extern int errno;
 
@@ -47,12 +47,12 @@ int error;
 int force = 0;
 VFILE *vmem;
 
-char *msgs[] = {
-	"Error writing file",
-	"Error opening file",
-	"Error seeking file",
-	"Error reading file",
-	"New File"
+unsigned char *msgs[] = {
+	US "Error writing file",
+	US "Error opening file",
+	US "Error seeking file",
+	US "Error reading file",
+	US "New File"
 };
 
 /* Get size of gap (amount of free space) */
@@ -524,6 +524,7 @@ int pgetc(P *p)
 		int c;
 		int d;
 		int n;
+		int wid;
 
 		val = p->valcol;	/* Remember if column number was valid */
 		c = pgetb(p);		/* Get first byte */
@@ -531,9 +532,7 @@ int pgetc(P *p)
 		if (c==NO_MORE_DATA)
 			return c;
 
-		if ((c&0x80)==0x00) { /* One byte */
-			n = 0;
-		} else if ((c&0xE0)==0xC0) { /* Two bytes */
+		if ((c&0xE0)==0xC0) { /* Two bytes */
 			n = 1;
 			c &= 0x1F;
 		} else if ((c&0xF0)==0xE0) { /* Three bytes */
@@ -548,33 +547,36 @@ int pgetc(P *p)
 		} else if ((c&0xFE)==0xFC) { /* Six bytes */
 			n = 5;
 			c &= 0x01;
-		} else { /* Error */
-			c = '?';
+		} else { /* 0-191, 254, 255: ASCII or control character */
+			n = 0;
 		}
 
-		while(n) {
-			d = brc(p);
-			if((d&0xC0)!=0x80)
-				break;
-			pgetb(p);
-			c = ((c<<6)|(d&0x3F));
-			--n;
+		if (n) {
+			while (n) {
+				d = brc(p);
+				if((d&0xC0)!=0x80)
+					break;
+				pgetb(p);
+				c = ((c<<6)|(d&0x3F));
+				--n;
+			}
+			if (n) { /* FIXME: there was a bad UTF-8 sequence */
+				c = 'X';
+			}
+			if (val)
+				wid = mk_wcwidth(c);
+		} else {
+			wid = 1;
 		}
 
-		if(n) { /* There was an error (FIXME: this needs more thought) */
-			c = '?';
-		}
-
-		if(val) {
+		if (val) { /* Update column no. if it was valid to start with */
 			p->valcol = 1;
 			if (c=='\t')
 				p->col += (p->b->o.tab) - (p->col) % (p->b->o.tab);
 			else if (c=='\n')
 				p->col = 0;
-			else if (c<32)
-				p->col++;
 			else
-				p->col += mk_wcwidth(c);
+				p->col += wid;
 		}
 
 		return c;
@@ -1844,7 +1846,7 @@ P *binsm(P *p, unsigned char *blk, int amnt)
 P *binsc(P *p, unsigned char c)
 {
 	if (p->b->o.crlf && c == '\n')
-		return binsm(p, "\r\n", 2);
+		return binsm(p, US "\r\n", 2);
 	else
 		return binsm(p, &c, 1);
 }
@@ -1852,7 +1854,7 @@ P *binsc(P *p, unsigned char c)
 /* insert zero-terminated string 's' at 'p' */
 P *binss(P *p, unsigned char *s)
 {
-	return binsm(p, s, strlen(s));
+	return binsm(p, s, strlen((char *)s));
 }
 
 /* Read 'size' bytes from file or stream.  Stops and returns amnt. read
@@ -1912,9 +1914,9 @@ B *bread(int fi, long int max)
  *
  * Returns new variable length string.
  */
-char *parsens(char *s, long int *skip, long int *amnt)
+unsigned char *parsens(unsigned char *s, long int *skip, long int *amnt)
 {
-	char *n = vsncpy(NULL, 0, sz(s));
+	unsigned char *n = vsncpy(NULL, 0, sz(s));
 	int x;
 
 	*skip = 0;
@@ -1923,25 +1925,25 @@ char *parsens(char *s, long int *skip, long int *amnt)
 	if (n[x] == ',') {
 		n[x] = 0;
 		if (n[x + 1] == 'x' || n[x + 1] == 'X')
-			sscanf(n + x + 2, "%lx", skip);
+			sscanf((char *)(n + x + 2), "%lx", skip);
 		else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-			sscanf(n + x + 3, "%lx", skip);
+			sscanf((char *)(n + x + 3), "%lx", skip);
 		else if (n[x + 1] == '0')
-			sscanf(n + x + 1, "%lo", skip);
+			sscanf((char *)(n + x + 1), "%lo", skip);
 		else
-			sscanf(n + x + 1, "%ld", skip);
+			sscanf((char *)(n + x + 1), "%ld", skip);
 		for (--x; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
 		if (n[x] == ',') {
 			n[x] = 0;
 			*amnt = *skip;
 			if (n[x + 1] == 'x' || n[x + 1] == 'X')
-				sscanf(n + x + 2, "%lx", skip);
+				sscanf((char *)(n + x + 2), "%lx", skip);
 			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-				sscanf(n + x + 3, "%lx", skip);
+				sscanf((char *)(n + x + 3), "%lx", skip);
 			else if (n[x + 1] == '0')
-				sscanf(n + x + 1, "%lo", skip);
+				sscanf((char *)(n + x + 1), "%lo", skip);
 			else
-				sscanf(n + x + 1, "%ld", skip);
+				sscanf((char *)(n + x + 1), "%ld", skip);
 		}
 	}
 #ifndef __MSDOS__
@@ -1949,9 +1951,9 @@ char *parsens(char *s, long int *skip, long int *amnt)
 		for (x = 1; n[x] && n[x] != '/'; ++x) ;
 		if (n[x] == '/') {
 			if (x == 1) {
-				char *z;
+				unsigned char *z;
 
-				s = getenv("HOME");
+				s = (unsigned char *)getenv("HOME");
 				z = vsncpy(NULL, 0, sz(s));
 				z = vsncpy(z, sLEN(z), sz(n + x));
 				vsrm(n);
@@ -1960,11 +1962,11 @@ char *parsens(char *s, long int *skip, long int *amnt)
 				struct passwd *passwd;
 
 				n[x] = 0;
-				passwd = getpwnam(n + 1);
+				passwd = getpwnam((char *)(n + 1));
 				n[x] = '/';
 				if (passwd) {
-					char *z = vsncpy(NULL, 0,
-							 sz(passwd->pw_dir));
+					unsigned char *z = vsncpy(NULL, 0,
+							 sz((unsigned char *)(passwd->pw_dir)));
 
 					z = vsncpy(z, sLEN(z), sz(n + x));
 					vsrm(n);
@@ -1984,13 +1986,13 @@ char *parsens(char *s, long int *skip, long int *amnt)
  * -3 for seek error
  * -4 for open error
  */
-B *bload(char *s)
+B *bload(unsigned char *s)
 {
 	unsigned char buffer[SEGSIZ];
 	FILE *fi;
 	B *b;
 	long skip, amnt;
-	char *n;
+	unsigned char *n;
 	int nowrite = 0;
 	P *p;
 	int x;
@@ -1998,7 +2000,7 @@ B *bload(char *s)
 	if (!s || !s[0]) {
 		error = -1;
 		b = bmk(NULL);
-		setopt(b,"");
+		setopt(b,US "");
 		b->rdonly = b->o.readonly;
 		b->er = error;
 		return b;
@@ -2011,18 +2013,18 @@ B *bload(char *s)
 	if (n[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		fi = popen(n + 1, "r");
+		fi = popen((char *)(n + 1), "r");
 	} else
 #endif
 	if (!strcmp(n, "-"))
 		fi = stdin;
 	else {
-		fi = fopen(n, "r+");
+		fi = fopen((char *)n, "r+");
 		if (!fi)
 			nowrite = 1;
 		else
 			fclose(fi);
-		fi = fopen(n, "r");
+		fi = fopen((char *)n, "r");
 		if (!fi)
 			nowrite = 0;
 	}
@@ -2081,7 +2083,7 @@ opnerr:
 	}
 
 	/* Set name */
-	b->name = joesep(strdup(s));
+	b->name = joesep((unsigned char *)strdup(s));
 
 	/* Set flags */
 	if (error || s[0] == '!' || skip || amnt != MAXLONG) {
@@ -2123,14 +2125,14 @@ opnerr:
 }
 
 /* Find already loaded buffer or load file into new buffer */
-B *bfind(char *s)
+B *bfind(unsigned char *s)
 {
 	B *b;
 
 	if (!s || !s[0]) {
 		error = -1;
 		b = bmk(NULL);
-		setopt(b,"");
+		setopt(b,US "");
 		b->rdonly = b->o.readonly;
 		b->internal = 0;
 		b->er = error;
@@ -2151,9 +2153,9 @@ B *bfind(char *s)
 	return b;
 }
 
-char **getbufs(void)
+unsigned char **getbufs(void)
 {
-	char **s = vamk(16);
+	unsigned char **s = vamk(16);
 	B *b;
 
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
@@ -2220,7 +2222,7 @@ err:
 }
 
 /* Save 'size' bytes beginning at 'p' in file 's' */
-int bsave(P *p, char *s, long int size)
+int bsave(P *p, unsigned char *s, long int size)
 {
 	FILE *f;
 	long skip, amnt;
@@ -2234,19 +2236,19 @@ int bsave(P *p, char *s, long int size)
 	if (s[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		f = popen(s + 1, "w");
+		f = popen((char *)(s + 1), "w");
 	} else
 #endif
 	if (s[0] == '>' && s[1] == '>')
-		f = fopen(s + 2, "a");
+		f = fopen((char *)(s + 2), "a");
 	else if (!strcmp(s, "-")) {
 		nescape(maint->t);
 		ttclsn();
 		f = stdout;
 	} else if (skip || amnt != MAXLONG)
-		f = fopen(s, "r+");
+		f = fopen((char *)s, "r+");
 	else
-		f = fopen(s, "w");
+		f = fopen((char *)s, "w");
 	joesep(s);
 
 	if (!f) {
@@ -2341,9 +2343,9 @@ unsigned char *brs(P *p, int size)
 	return brmem(p, s, size);
 }
 
-char *brvs(P *p, int size)
+unsigned char *brvs(P *p, int size)
 {
-	char *s = vstrunc(NULL, size);
+	unsigned char *s = vstrunc(NULL, size);
 
 	return brmem(p, (unsigned char *)s, size);
 }

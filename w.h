@@ -87,7 +87,7 @@ void chsize PARAMS(());
  * Returns the new window or returns 0 if there was not enough space to
  * create the window and maintain family integrity.
  */
-W *wcreate PARAMS((SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height, char *huh, int *notify));
+W *wcreate PARAMS((SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify));
 
 /* int wabort(W *w);
  *
@@ -143,21 +143,21 @@ void wredraw PARAMS((W *w));
  */
 void updall PARAMS((void));
 
-void genfmt PARAMS((SCRN *t, int x, int y, int ofst, char *s, int flg));
-void gentxt PARAMS((SCRN *t, int x, int y, int ofst, char *s, int len, int flg));
-int fmtlen PARAMS((char *s));
-int fmtpos PARAMS((char *s, int goal));
+void genfmt PARAMS((SCRN *t, int x, int y, int ofst, unsigned char *s, int flg));
+void gentxt PARAMS((SCRN *t, int x, int y, int ofst, unsigned char *s, int len, int flg));
+int fmtlen PARAMS((unsigned char *s));
+int fmtpos PARAMS((unsigned char *s, int goal));
 
 /* void msgnw[t](W *w, char *s);
  * Display a message which will be eliminated on the next keypress.
  * msgnw displays message on bottom line of window
  * msgnwt displays message on top line of window
  */
-void msgnw PARAMS((W *w, char *s));
-void msgnwt PARAMS((W *w, char *s));
+void msgnw PARAMS((W *w, unsigned char *s));
+void msgnwt PARAMS((W *w, unsigned char *s));
 
 #define JOE_MSGBUFSIZE 300
-extern char msgbuf[JOE_MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
+extern unsigned char msgbuf[JOE_MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
 
 void msgout PARAMS((W *w));			/* Output msgnw/msgnwt messages */
 

@@ -17,7 +17,7 @@
 
 static HENTRY *freentry = NULL;
 
-unsigned long hash(char *s)
+unsigned long hash(unsigned char *s)
 {
 	unsigned long accu = 0;
 
@@ -42,7 +42,7 @@ void htrm(HASH *ht)
 	joe_free(ht);
 }
 
-void *htadd(HASH *ht, char *name, void *val)
+void *htadd(HASH *ht, unsigned char *name, void *val)
 {
 	int idx = hash(name) & ht->len;
 	HENTRY *entry;
@@ -63,7 +63,7 @@ void *htadd(HASH *ht, char *name, void *val)
 	return entry->val = val;
 }
 
-void *htfind(HASH *ht, char *name)
+void *htfind(HASH *ht, unsigned char *name)
 {
 	HENTRY *e;
 
