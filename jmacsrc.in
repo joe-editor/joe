@@ -222,6 +222,15 @@
 -smartbacks
 -purify
 
+ Verilog header file
+*.vh
+-autoindent
+-syntax verilog
+-istep 2
+-smarthome
+-smartbacks
+-purify
+
  VHDL file
 *.vhd
 -autoindent

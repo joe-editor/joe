@@ -248,6 +248,15 @@
 -purify
 -c_comment
  Verilog header file
+*.vh
+-autoindent
+-syntax verilog
+-istep 2
+-smarthome
+-smartbacks
+-purify
+-c_comment
+ VHDL file
 *.vhd
 -autoindent
 -syntax vhdl

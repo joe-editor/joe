@@ -1,3 +1,12 @@
+Mon Apr 26 2004  Joe Allen <jhallen@world.std.com>
+	* bw.c tty.c uedit.c utf8.c *rc.in:
+
+	Fix rtarw: was not fixing xcol.
+
+	TAB key now does smart indenting.
+
+	smart home goes to real home first, then indentation point.
+
 Sun Apr 25 2004  Joe Allen <jhallen@world.std.com>
 	* b.c bw.c scrn.c uedit.c utf8.c utf8.h:
 

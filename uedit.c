@@ -49,12 +49,18 @@ int uhome(BW *bw)
 {
 	P *p = pdup(bw->cursor);
 
-	if ((bw->o.smarthome) && (piscol(p) > pisindent(p))) { 
-		p_goto_bol(p);
+	if (bw->o.smarthome && piscol(p)==0 && pisindent(p)) {
 		while (joe_isblank(brc(p)))
 			pgetc(p);
 	} else
 		p_goto_bol(p);
+
+/* Old way
+	if ((bw->o.smarthome) && (piscol(p) > pisindent(p))) { 
+		p_goto_bol(p);
+		while (joe_isblank(brc(p)))
+			pgetc(p);
+*/
 	pset(bw->cursor, p);
 	prm(p);
 	return 0;
@@ -122,12 +128,17 @@ int u_goto_right(BW *bw)
 		pcol(bw->cursor,bw->cursor->xcol);
 		return 0;
 	} else {
+		int rtn;
 		if (pgetc(bw->cursor) != NO_MORE_DATA) {
 			bw->cursor->xcol = piscol(bw->cursor);
-			return 0;
+			rtn = 0;
 		} else {
-			return -1;
+			rtn = -1;
 		}
+		/* Have to do EFIXXCOL here because of picture mode */
+		if (bw->cursor->xcol != piscol(bw->cursor))
+			bw->cursor->xcol = piscol(bw->cursor);
+		return rtn;
 	}
 }
 
@@ -716,7 +727,7 @@ int ubacks(BW *bw, int k)
 		   indent characters (or purify indents is enabled). */
 		
 		/* Ignore purify for backspace */
-		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smartbacks && pispure(bw->cursor,bw->o.indentc)) {
+		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smartbacks && bw->o.autoindent && pispure(bw->cursor,bw->o.indentc)) {
 			P *p;
 			int x;
 
@@ -885,6 +896,23 @@ int utypebw(BW *bw, int k)
 			else
 				pfill(bw->cursor,col,'\t');
 		bw->cursor->xcol = col;			/* Put cursor there even if we can't really go there */
+	} else if (k == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)==piscol(bw->cursor)) {
+		P *p = pdup(bw->cursor);
+		if (pprevl(p) && p_goto_bol(p) && pisindent(p)>pisindent(bw->cursor)) {
+			if (!pisbol(bw->cursor))
+				udelbl(bw);
+			while (isspace(k = pgetc(p)) && k != '\n') {
+				binsc(bw->cursor, k);
+				pgetc(bw->cursor);
+			}
+		} else {
+			int x;
+			for (x=0;x<bw->o.istep;++x) {
+				binsc(bw->cursor,bw->o.indentc);
+				pgetc(bw->cursor);
+			}
+		}
+		bw->cursor->xcol = piscol(bw->cursor);
 	} else if (k == '\t' && bw->o.spaces) {
 		long n;
 

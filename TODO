@@ -13,6 +13,20 @@ Misc: update documentation.
 
 Test test test...
 
+Perl compatible regex search.
+
+On save, should check if file on disk is newer
+
+Watch loaded file for changes
+
+Reload modified files (or current window)
+
+Reload file before I began changing it in another buffer
+
+Save all modified files
+
+Save all history buffers in .joestate file?
+
 
 
 
@@ -61,17 +75,6 @@ UTF-8/Internationalization
 - check incremental search functions.
 
 - translate: allow user to specify charset.  think about isalpha.
-
-
-- deal with error utf8 sequences: prget and pgetc do not match, also check
-  bw.c (genfield ignores error sequences).
-
-- deal with error utf8 sequences: no way to print control characters which
-  began the sequence.
-
-- when first char of utf8 is last of line, nothing shows on screen (state
-  machine never gets any input).
-
 
 - right-left mode for Hebrew/Arabic?
 
@@ -141,10 +144,6 @@ Syntax Highlighting:
 
 More syntax files.
 
-Recognize more file types (joerc work).
-
-Update other *rc files.
-
 UTF-8 syntax files?
 
 UI for changing colors in the editor (or at least dark/light mode)
@@ -166,20 +165,13 @@ Support for more languages:
 
 File loading/storing:
 
- Reload modified files
-
- Lock files being edited
+ Lock files being edited?
   one person gets write lock
 
  Save all modified
 
- On save, should check if file on disk is newer
-
  Should have switch buffers in current window as more fundamental joe key
  sequence.
-
- should ignore wordwrap when overtype mode is enabled.  they
- interact very badly together.
 
  joe a b c
  windows are not in order a, b, c
@@ -187,8 +179,6 @@ File loading/storing:
  Unnamed buffers should be in bufed list (was fixed in the lost joe 2.9)
 
  Don't understand:  optionally break hardlinks on save?  what is "tla"?
-
- Save all history buffers in .joestate file?
 
  Use memory mapped files to fast load large files.  Have to not
  count no. lines in each buffer on startup.
@@ -275,11 +265,6 @@ Keyboard:
 
  Ctrl-left arrow, etc. give codes in modern Lini- should somehow make
  use of these.
-
-
-Regex:
-
- Perl compatible regex search.
 
 
 Major new modes:

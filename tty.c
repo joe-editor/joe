@@ -784,7 +784,7 @@ static unsigned char *getpty(int *ptyfd)
 
 /* Strange streams way */
 
-extern unsigned char *ptsname();
+extern char *ptsname();
 
 static unsigned char *getpty(int *ptyfd)
 {
@@ -794,7 +794,7 @@ static unsigned char *getpty(int *ptyfd)
 	*ptyfd = fdm = open("/dev/ptmx", O_RDWR);
 	grantpt(fdm);
 	unlockpt(fdm);
-	return ptsname(fdm);
+	return (unsigned char *)ptsname(fdm);
 }
 
 #else
