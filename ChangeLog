@@ -1,4 +1,12 @@
 Mon Apr 12 2004  Joe Allen <jhallen@world.std.com>
+	* bw.c:
+
+	If a double-wide character hits right column, display '>' instead of
+	the character.  If a double-wide character is one column to the left
+	of the screen, display '<' instead of the character.
+
+
+Mon Apr 12 2004  Joe Allen <jhallen@world.std.com>
 	* almost all of them...:
 
 	Added -notite global option: when set, prevents screen from

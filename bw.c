@@ -252,6 +252,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
               			/* Range for marked block */
 {
 	int ox = x;
+	int tach;
 	int done = 1;
 	long col = 0;
 	long byte = p->byte;
@@ -341,6 +342,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				ta = p->b->o.tab - col % p->b->o.tab;
 				if (ta + col > scr) {
 					ta -= scr - col;
+					tach = ' ';
 					goto dota;
 				}
 				if ((col += ta) == scr) {
@@ -407,6 +409,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 						goto loop;
 					} else if (col > scr) {
 						ta = col - scr;
+						tach = '<';
 						goto dota;
 					}
 				}
@@ -477,9 +480,10 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 			++byte;
 			if (bc == '\t') {
 				ta = p->b->o.tab - ((x - ox + scr) % p->b->o.tab);
+				tach = ' ';
 			      dota:
 				do {
-					outatr(t, screen + x, attr + x, x, y, ' ', c1|atr);
+					outatr(t, screen + x, attr + x, x, y, tach, c1|atr);
 					if (ifhave)
 						goto bye;
 					if (++x == w)
@@ -539,8 +543,16 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				}
 
 				if(wid>=0) {
-					outatr(t, screen + x, attr + x, x, y, utf8_char, c1|atr);
-					x += wid;
+					if (x+wid > w) {
+						/* If character hits right most column, don't display it */
+						while (x < w) {
+							outatr(t, screen + x, attr + x, x, y, '>', c1|atr);
+							x++;
+						}
+					} else {
+						outatr(t, screen + x, attr + x, x, y, utf8_char, c1|atr);
+						x += wid;
+					}
 				}
 
 				if (ifhave)
