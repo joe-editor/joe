@@ -151,7 +151,7 @@ static int cp(char *from, char *to)
 	if (fstat(f, &sbuf) < 0) {
 		return -1;
 	}
-	g = creat(to, sbuf.st_mode);
+	g = creat(to, sbuf.st_mode & ~(S_ISUID | S_ISGID));
 	if (g < 0) {
 		close(f);
 		return -1;

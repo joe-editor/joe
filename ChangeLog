@@ -1,3 +1,8 @@
+Mon Aug  5 2002  Vitezslav Samel <samel@mail.cz>
+	*** SECURITY ***
+	* ufile.c:
+	drop suid and sgid bits (if set) when creating backup files
+
 Sat Jul 27 2002  Vitezslav Samel <samel@mail.cz>
 	* jmacsrc.in, jpicorc.in, jstarrc.in:
 	use .@7 terminfo entry for "End" key
