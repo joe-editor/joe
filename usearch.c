@@ -1,6 +1,13 @@
-/* Search & Replace system */
-
+/*
+ *	Search & Replace system
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 #include "config.h"
+#include "types.h"
+
 #include <ctype.h>
 #include <stdio.h>
 #ifdef HAVE_STDLIB_H

@@ -1,39 +1,18 @@
-/* TTY interface header file
-   Copyright (C) 1992 Joseph H. Allen
+/*
+ *	TTY interface header file
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_TTY_H
+#define _JOE_TTY_H 1
 
-This file is part of JOE (Joe's Own Editor)
-
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
-
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
-
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */
-
-#ifndef _Itty
-#define _Itty 1
+#include "config.h"
+#include "types.h"
 
 #include "config.h"
 #include "queue.h"
-
-#define NPROC 8			/* Number of processes we keep track of */
-
-typedef struct mpx MPX;
-struct mpx {
-	int ackfd;		/* Packetizer response descriptor */
-	int kpid;		/* Packetizer process id */
-	int pid;		/* Client process id */
-	void (*func) ();	/* Function to call when read occures */
-	void *object;		/* First arg to pass to function */
-	void (*die) ();		/* Function: call when client dies or closes */
-	void *dieobj;
-};
 
 /* Versions of 'read' and 'write' which automatically retry during signals
  * (yuck, yuck, yuck... we the #$%#$@ did they have to do this?) */

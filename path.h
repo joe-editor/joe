@@ -1,14 +1,15 @@
 /*
-	Directory and path functions
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
-#ifndef _joePATH
-#define _joePATH 1
+ *	Directory and path functions
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_PATH_H
+#define _JOE_PATH_H 1
 
 #include "config.h"
+#include "types.h"
 
 char *joesep PARAMS((char *path));
 

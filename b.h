@@ -1,63 +1,22 @@
-#ifndef _Ib
-#define _Ib 1
+/*
+ *	Editor engine
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_B_H
+#define _JOE_B_H 1
 
 #include "config.h"
+#include "types.h"
+
 #include "queue.h"
 #include "rc.h"
 #include "vfile.h"
 
-#define stdsiz 8192
 /* 31744 */
 extern char stdbuf[stdsiz];
-
-typedef struct buffer B;
-typedef struct point P;
-typedef struct header H;
-
-struct header {
-	LINK(H) link;		/* LINK ??? */
-	long seg;		/* ??? */
-	int hole;		/* ??? */
-	int ehole;		/* ??? */
-	int nlines;		/* ??? */
-};
-
-struct point {
-	LINK(P) link;		/* ?LINK ??? */
-
-	B *b;			/* ?B ??? */
-	int ofst;		/* ??? */
-	char *ptr;		/* ??? */
-	H *hdr;			/* ?H ??? */
-
-	long byte;		/* ??? */
-	long line;		/* ??? */
-	long col;		/* ??? */
-	long xcol;		/* ??? */
-	int valcol;		/* ??? */
-	int end;		/* ??? */
-
-	P **owner;		/* ??? */
-};
-
-struct buffer {
-	LINK(B) link;
-	P *bof;
-	P *eof;
-	char *name;
-	int orphan;
-	int count;
-	int changed;
-	int backup;
-	void *undo;
-	P *marks[10];		/* Bookmarks */
-	OPTIONS o;		/* Options */
-	P *oldcur;		/* Last cursor position before orphaning */
-	P *oldtop;		/* Last top screen position before orphaning */
-	int rdonly;		/* Set for read-only */
-	int internal;		/* Set for internal buffers */
-	int er;			/* Error code when file was loaded */
-};
 
 extern int force;		/* Set to have final '\n' added to file */
 extern int tabwidth;		/* Default tab width */

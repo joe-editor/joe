@@ -1,4 +1,12 @@
-/* Compiler error handler */
+/*
+ *	Compiler error handler
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#include "config.h"
+#include "types.h"
 
 #include <string.h>
 #include <stdio.h>

@@ -1,6 +1,13 @@
-/* Simple hash table */
-
+/*
+ *	Simple hash table
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 #include "config.h"
+#include "types.h"
+
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif

@@ -1,50 +1,15 @@
-/* TERMCAP/TERMINFO header file
-   Copyright (C) 1992 Joseph H. Allen
-
-This file is part of JOE (Joe's Own Editor)
-
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
-
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
-
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */
-
-#ifndef _Itermcap
-#define _Itermcap 1
-
+/*
+ * 	TERMCAP/TERMINFO header file
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */ 
+#ifndef _JOE_TERMCAP_H
+#define _JOE_TERMCAP_H 1
+ 
 #include "config.h"
-
-typedef struct cap CAP;
-
-struct sortentry {
-	char *name;
-	char *value;
-};
-
-struct cap {
-	char *tbuf;		/* Termcap entry loaded here */
-
-	struct sortentry *sort;	/* Pointers to each capability stored in here */
-	int sortlen;		/* Number of capabilities */
-
-	char *abuf;		/* For terminfo compatible version */
-	char *abufp;
-
-	int div;		/* tenths of MS per char */
-	int baud;		/* Baud rate */
-	char *pad;		/* Padding string or NULL to use NUL */
-	void (*out) (char *, char);		/* Character output routine */
-	void *outptr;		/* First arg passed to output routine.  Second
-				   arg is character to write */
-	int dopadding;		/* Set if pad characters should be used */
-};
+#include "types.h"
 
 /* CAP *getcap(char *s,int baud,void (*out)(void *outptr,char c),void *outptr);
  *

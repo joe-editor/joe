@@ -1,14 +1,15 @@
 /*
-	Basic user edit functions
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
-#ifndef _Iuedit
-#define _Iuedit 1
+ *	Basic user edit functions
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_UEDIT_H
+#define _JOE_UEDIT_H 1
 
 #include "config.h"
+#include "types.h"
 
 extern int pgamnt;
 

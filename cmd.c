@@ -1,9 +1,14 @@
-
-/* Command execution */
+/*
+ *	Command execution
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#include "config.h"
+#include "types.h"
 
 #include <string.h>
-
-#include "config.h"
 #include "vs.h"
 #include "va.h"
 #include "w.h"

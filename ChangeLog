@@ -1,3 +1,7 @@
+Thu Nov 22 2001  Marek 'Marx' Grac <xgrac@fi.muni.cz>
+	* *.h, *.c: almost all definitions are in types.h (except those from
+	vs.h, va.h). 
+
 Thu Nov 22 2001  Marek 'marx' Grac <xgrac@fi.muni.cz>
 	* uedit.c: correction of last change
 

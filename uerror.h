@@ -1,7 +1,15 @@
-#ifndef _Ierr
-#define _Ierr 1
+/*
+ *	Compiler error handler
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_UERROR_H
+#define _JOE_UERROR_H 1
 
 #include "config.h"
+#include "types.h"
 
 int unxterr PARAMS((BW *bw));
 int uprverr PARAMS((BW *bw));

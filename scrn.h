@@ -1,158 +1,20 @@
-/* Device independant tty interface for JOE
-   Copyright (C) 1992 Joseph H. Allen
-
-This file is part of JOE (Joe's Own Editor)
-
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
-
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
-
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */
-
-#ifndef _Iscrn
-#define _Iscrn 1
+/*
+ *	Device independant tty interface for JOE
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_SCRN_H
+#define _JOE_SCRN_H 1
 
 #include "config.h"
+#include "types.h"
+
 #include "termcap.h"
 #include "tty.h"
 
 extern int skiptop;
-
-typedef struct scrn SCRN;
-
-struct hentry {
-	int next;
-	int loc;
-};
-
-/* Each terminal has one of these */
-
-#ifdef __MSDOS__
-
-struct scrn {
-	int li;
-	int co;
-	short *scrn;
-	int scroll;
-	int insdel;
-	int *updtab;
-	int *compose;
-	int *sary;
-};
-
-#else
-struct scrn {
-	CAP *cap;		/* Termcap/Terminfo data */
-
-	int li;			/* Screen height */
-	int co;			/* Screen width */
-
-	char *ti;		/* Initialization string */
-	char *cl;		/* Home and clear screen... really an
-				   init. string */
-	char *cd;		/* Clear to end of screen */
-	char *te;		/* Restoration string */
-
-	int haz;		/* Terminal can't print ~s */
-	int os;			/* Terminal overstrikes */
-	int eo;			/* Can use blank to erase even if os */
-	int ul;			/* _ overstrikes */
-	int am;			/* Terminal has autowrap, but not magicwrap */
-	int xn;			/* Terminal has magicwrap */
-
-	char *so;		/* Enter standout (inverse) mode */
-	char *se;		/* Exit standout mode */
-
-	char *us;		/* Enter underline mode */
-	char *ue;		/* Exit underline mode */
-	char *uc;		/* Single time underline character */
-
-	int ms;			/* Ok to move when in standout/underline mode */
-
-	char *mb;		/* Enter blinking mode */
-	char *md;		/* Enter bold mode */
-	char *mh;		/* Enter dim mode */
-	char *mr;		/* Enter inverse mode */
-	char *me;		/* Exit above modes */
-
-	int da, db;		/* Extra lines exist above, below */
-	char *al, *dl, *AL, *DL;	/* Insert/delete lines */
-	char *cs;		/* Set scrolling region */
-	int rr;			/* Set for scrolling region relative addressing */
-	char *sf, *SF, *sr, *SR;	/* Scroll */
-
-	char *dm, *dc, *DC, *ed;	/* Delete characters */
-	char *im, *ic, *IC, *ip, *ei;	/* Insert characters */
-	int mi;			/* Set if ok to move while in insert mode */
-
-	char *bs;		/* Move cursor left 1 */
-	int cbs;
-	char *lf;		/* Move cursor down 1 */
-	int clf;
-	char *up;		/* Move cursor up 1 */
-	int cup;
-	char *nd;		/* Move cursor right 1 */
-
-	char *ta;		/* Move cursor to next tab stop */
-	int cta;
-	char *bt;		/* Move cursor to previous tab stop */
-	int cbt;
-	int tw;			/* Tab width */
-
-	char *ho;		/* Home cursor to upper left */
-	int cho;
-	char *ll;		/* Home cursor to lower left */
-	int cll;
-	char *cr;		/* Move cursor to left edge */
-	int ccr;
-	char *RI;		/* Move cursor right n */
-	int cRI;
-	char *LE;		/* Move cursor left n */
-	int cLE;
-	char *UP;		/* Move cursor up n */
-	int cUP;
-	char *DO;		/* Move cursor down n */
-	int cDO;
-	char *ch;		/* Set cursor column */
-	int cch;
-	char *cv;		/* Set cursor row */
-	int ccv;
-	char *cV;		/* Goto beginning of specified line */
-	int ccV;
-	char *cm;		/* Set cursor row and column */
-	int ccm;
-
-	char *ce;		/* Clear to end of line */
-	int cce;
-
-	/* Basic abilities */
-	int scroll;		/* Set to use scrolling */
-	int insdel;		/* Set to use insert/delete within line */
-
-	/* Current state of terminal */
-	int *scrn;		/* Current contents of screen */
-	int x, y;		/* Current cursor position (-1 for unknown) */
-	int top, bot;		/* Current scrolling region */
-	int attrib;		/* Current character attributes */
-	int ins;		/* Set if we're in insert mode */
-
-	int *updtab;		/* Dirty lines table */
-	int avattr;		/* Bits set for available attributes */
-	int *sary;		/* Scroll buffer array */
-
-	int *compose;		/* Line compose buffer */
-	int *ofst;		/* stuff for magic */
-	struct hentry *htab;
-	struct hentry *ary;
-};
-#endif
 
 /* SCRN *nopen(void);
  *

@@ -1,25 +1,18 @@
 /*
-	Help system
-	Copyright
-		(C) 1992 Joseph H. Allen
-		(C) 2001 Marek 'Marx' Grac
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
-#ifndef _JOEhelp
-#define _JOEhelp 1
+ *	Help system
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *		(C) 2001 Marek 'Marx' Grac
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_HELP_H
+#define _JOE_HELP_H 1
 
 #include "config.h"
+#include "types.h"
 
 #include "w.h"				/* definitions of BASE & SCREEN */
-
-struct help {
-	unsigned char *text;		/* help text with attributes */
-	unsigned int lines;		/* number of lines */
-	struct help *prev;		/* previous help screen */
-	struct help *next;		/* nex help screen */
-};
 
 void help_display PARAMS((SCREEN *t));		/* display text in help window */
 int help_on PARAMS((SCREEN *t));		/* turn help on */

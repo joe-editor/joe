@@ -1,20 +1,17 @@
-/* Software virtual memory system
-   Copyright (C) 1992 Joseph H. Allen
+/*
+ *	Software virtual memory system
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_VFILE_H
+#define _JOE_VFILE_H 1
 
-This file is part of JOE (Joe's Own Editor)
+#include "config.h"
+#include "types.h"
 
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
-
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
-
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */
+#include "queue.h"	/* for LINK() macro */
 
 /* Additions:
  *
@@ -34,60 +31,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
  * Should there be an buffering option for that?  So we can seek on pipes to
  * get previously read data?
  */
-
-#ifndef _Ivfile
-#define _Ivfile 1
-
-#include "config.h"
-#include "queue.h"	/* for LINK() macro */
-
-typedef struct vpage VPAGE;
-typedef struct vfile VFILE;
-
-/* These are now defined in config.h */
-#ifdef junk
-/* Minimum page size for MS-DOS is 128 (for 32K vheaders table) or 256 (for
- * 64K vheaders table) */
-#define PGSIZE 512		/* Page size in bytes (Must be power of 2) */
-#define LPGSIZE 9		/* LOG base 2 of PGSIZE */
-#define ILIMIT (PGSIZE*128L)	/* Max amount to buffer */
-#define HTSIZE 128		/* Entries in hash table.  Must be pwr of 2 */
-#endif
-
-#define INC 16			/* Pages to allocate each time */
-
-/* Page header */
-
-struct vpage {
-	VPAGE *next;		/* Next page with same hash value */
-	VFILE *vfile;		/* Owner vfile */
-	long addr;		/* Address of this page */
-	int count;		/* Reference count */
-	int dirty;		/* Set if page changed */
-	char *data;		/* The data in the page */
-};
-
-/* File structure */
-
-struct vfile {
-	LINK(VFILE) link;	/* Doubly linked list of vfiles */
-	long size;		/* Number of bytes in physical file */
-	long alloc;		/* Number of bytes allocated to file */
-	int fd;			/* Physical file */
-	int writeable;		/* Set if we can write */
-	char *name;		/* File name.  0 if unnamed */
-	int flags;		/* Set if this is only a temporary file */
-
-	/* For array I/O */
-	char *vpage1;		/* Page address */
-	long addr;		/* File address of above page */
-
-	/* For stream I/O */
-	char *bufp;		/* Buffer pointer */
-	char *vpage;		/* Buffer pointer points in here */
-	int left;		/* Space left in bufp */
-	int lv;			/* Amount of append space at end of buffer */
-};
 
 extern char *vbase;		/* Data first entry in vheader refers to */
 extern VPAGE **vheaders;	/* Array of headers */

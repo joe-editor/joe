@@ -1,17 +1,18 @@
 /*
-	Basic user edit functions
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
+ *	Basic user edit functions
+ *	Copyright
+ * 		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#include "config.h"
+#include "types.h"
 
 #include <stdio.h>
 
 #include <ctype.h>
 #include <string.h>
 #include "utils.h"
-
-#include "config.h"
 #include "b.h"
 #include "bw.h"
 #include "scrn.h"

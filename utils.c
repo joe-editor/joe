@@ -1,13 +1,13 @@
 /*
-	Various utilities
-	Copyright
-		(C) 1992 Joseph H. Allen
-		(C) 2001 Marek 'Marx' Grac
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
+ *	Various utilities
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *		(C) 2001 Marek 'Marx' Grac
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 #include "config.h"
+#include "types.h"
 
 #include <ctype.h>
 

@@ -1,25 +1,20 @@
 /*
-	Doubly linked list primitives
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
-#ifndef _Iqueue
-#define _Iqueue 1
+ *	Doubly linked list primitives
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_QUEUE
+#define _JOE_QUEUE 1 
 
 #include "config.h"
+#include "types.h"
 
 extern void *ITEM;
 extern void *QUEUE;
 extern void *LAST;
 
-#define LINK(type) struct { type *next; type *prev; }
-
-typedef struct stditem STDITEM;
-struct stditem {
-	LINK(STDITEM) link;
-};
 
 
 #define izque(type,member,item) \

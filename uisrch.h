@@ -1,25 +1,18 @@
-#ifndef _Iuisrch
-#define _Iuisrch 1
+/*
+ *	Incremental search
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_UISRCH_H
+#define _JOE_UISRCH_H 1
 
 #include "config.h"
+#include "types.h"
+
 #include "queue.h"	/* for LINK() macro */
 #include "bw.h"
-
-typedef struct irec IREC;
-struct irec {
-	LINK(IREC) link;
-	int what;		/* 0 repeat, >0 append n chars */
-	long start;		/* Cursor search position */
-	long disp;		/* Original cursor position */
-};
-
-struct isrch {
-	IREC irecs;		/* Linked list of positions */
-	char *pattern;		/* Search pattern string/prompt */
-	int ofst;		/* Offset in pattern past prompt */
-	int dir;		/* 0=fwrd, 1=bkwd */
-	int quote;		/* Set to quote next char */
-};
 
 int uisrch PARAMS((BW * bw));
 int ursrch PARAMS((BW * bw));

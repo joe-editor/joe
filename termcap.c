@@ -1,9 +1,12 @@
 /*
-	TERMCAP/TERMINFO database interface
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
+ *	TERMCAP/TERMINFO database interface
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#include "config.h"
+#include "types.h"
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -11,7 +14,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "config.h"
 #include "blocks.h"
 #include "vs.h"
 #include "va.h"

@@ -1,9 +1,12 @@
 /*
-    Program to generate termcap index file
-    Copyright (C) 1992 Joseph H. Allen
-
-    This file is part of JOE (Joe's Own Editor)
-*/
+ *	Program to generate termcap index file
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ * This file is part of JOE (Joe's Own Editor)
+ */
+#include "config.h"
+#include "types.h"
 
 #include <stdio.h>
 #include <string.h>

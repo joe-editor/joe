@@ -1,17 +1,17 @@
 /*
-	Various utilities
-	
-	Copyright
-		(C) 1992 Joseph H. Allen
-		(C) 2001 Marek 'Marx' Grac
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
-#ifndef _JOEutils
-#define _JOEutils 1
+ *	Various utilities
+ *	
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *		(C) 2001 Marek 'Marx' Grac
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_UTILS_H
+#define _JOE_UTILS_H 1
 
 #include "config.h"
+#include "types.h"
 
 /* 
  * Characters which are considered as word characters 

@@ -1,12 +1,15 @@
 /*
-	Shell-window functions
-	Copyright (C) 1992 Joseph H. Allen
+ * 	Shell-window functions
+ *	Copyright (C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_USHELL_H
+#define _JOE_USHELL_H 1
 
-	This file is part of JOE (Joe's Own Editor)
-*/
+#include "config.h"
+#include "types.h"
 
-#ifndef _Iushell
-#define _Iushell 1
 #include "bw.h"
 
 int ubknd(BW * bw);

@@ -1,13 +1,15 @@
 /*
-	Fast block move/copy subroutines
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
+ *	Fast block move/copy subroutines
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#include "config.h"
+#include "types.h"
 
 /* This module requires ALIGNED and SIZEOF_INT to be defined correctly */
 
-#include "config.h"
 #include "blocks.h"
 
 #define BITS 8

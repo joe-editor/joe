@@ -1,17 +1,19 @@
 /*
-	User file operations
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
-#ifndef _Iufile
-#define _Iufile 1
-
-extern int exask;
+ * 	User file operations
+ *	Copyright
+ *	(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_UFILE_H
+#define _JOE_UFILE_H 1
 
 #include "config.h"
+#include "types.h"
+
 #include "bw.h"
+
+extern int exask;
 
 void genexmsg PARAMS((BW *bw, int saved, char *name));
 

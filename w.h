@@ -1,107 +1,20 @@
 /*
-	Window management
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
-#ifndef _Iw
-#define _Iw 1
+ *	Window management
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_W_H
+#define _JOE_W_H 1
 
 #include "config.h"
+#include "types.h"
+
 #include "queue.h"
 #include "scrn.h"
 #include "kbd.h"
 #include "b.h"
-
-typedef struct watom WATOM;
-typedef struct screen SCREEN;
-typedef struct window W;
-typedef struct base BASE;
-
-struct watom {
-	char *context;		/* Context name */
-	void (*disp) ();	/* Display window */
-	void (*follow) ();	/* Called to have window follow cursor */
-	int (*abort) ();	/* Common user functions */
-	int (*rtn) ();
-	int (*type) ();
-	void (*resize) ();	/* Called when window changed size */
-	void (*move) ();	/* Called when window moved */
-	void (*ins) ();		/* Called on line insertions */
-	void (*del) ();		/* Called on line deletions */
-	int what;		/* Type of this thing */
-};
-
-struct screen {
-	SCRN *t;		/* Screen data on this screen is output to */
-
-	int wind;		/* Number of help lines on this screen */
-
-	W *topwin;		/* Top-most window showing on screen */
-	W *curwin;		/* Window cursor is in */
-
-	int w, h;		/* Width and height of this screen */
-};
-
-struct window {
-	LINK(W) link;		/* Linked list of windows in order they
-				   appear on the screen */
-
-	SCREEN *t;		/* Screen this thing is on */
-
-	int x, y, w, h;		/* Position and size of window */
-				/* Currently, x = 0, w = width of screen. */
-				/* y == -1 if window is not on screen */
-
-	int ny, nh;		/* Temporary values for wfit */
-
-	int reqh;		/* Requested new height or 0 for same */
-				/* This is an argument for wfit */
-
-	int fixed;		/* If this is zero, use 'hh'.  If not, this
-				   is a fixed size window and this variable
-				   gives its height */
-
-	int hh;			/* Height window would be on a screen with
-				   1000 lines.  When the screen size changes
-				   this is used to calculate the window's
-				   real height */
-
-	W *win;			/* Window this one operates on */
-	W *main;		/* Main window of this family */
-	W *orgwin;		/* Window where space from this window came */
-	int curx, cury;		/* Cursor position within window */
-	KBD *kbd;		/* Keyboard handler for this window */
-	WATOM *watom;		/* The type of this window */
-	void *object;		/* Object which inherits this */
-#if 0
-	union {			/* FIXME: instead of void *object we should */
-		BW	*bw;	/* use this union to get strict type checking */
-		PW	*pw;	/* from C compiler (need to check and change */
-		QW	*qw;	/* all of the occurrencies of ->object) */
-		TW	*tw;
-		MENU	*menu;
-		BASE	*base;
-	} object;
-#endif
-
-	char *msgt;		/* Message at top of window */
-
-	char *msgb;		/* Message at bottom of window */
-
-	char *huh;		/* Name of window for context sensitive hlp */
-
-	int *notify;		/* Address of kill notification flag */
-};
-
-/* Anything which goes in window.object must start like this: */
-struct base {
-	W *parent;
-};
-
-/* Minimum text window height */
-#define FITHEIGHT 4
 
 /***************/
 /* Subroutines */

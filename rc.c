@@ -1,12 +1,13 @@
 /*
-	*rc file parser
-	Copyright
-		(C) 1992 Joseph H. Allen; 
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
+ *	*rc file parser
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen; 
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 #include "config.h"
+#include "types.h"
+
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>

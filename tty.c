@@ -1,14 +1,12 @@
-
 /*
-	UNIX Tty and Process interface
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
-/** System include files **/
-
+ *	UNIX Tty and Process interface
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 #include "config.h"
+#include "types.h"
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H

@@ -1,13 +1,15 @@
 /*
-	tags file symbol lookup
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
+ *	tags file symbol lookup
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ * 	This file is part of JOE (Joe's Own Editor)
+ */
+#include "config.h"
+#include "types.h"
 
 #include <stdio.h>
 #include <string.h>
-#include "config.h"
 #include "b.h"
 #include "bw.h"
 #include "w.h"

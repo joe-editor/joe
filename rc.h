@@ -1,34 +1,18 @@
-#ifndef _Irc
-#define _Irc 1
+/*
+ *	*rc file parser
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen; 
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_RC_H
+#define _JOE_RC_H 1
+
+#include "config.h"
+#include "types.h"
 
 #include "kbd.h"
 #include "macro.h"
-
-typedef struct options OPTIONS;
-struct options {
-	OPTIONS *next;
-	char *name;
-	int overtype;
-	int lmargin;
-	int rmargin;
-	int autoindent;
-	int wordwrap;
-	int tab;
-	int indentc;
-	int istep;
-	char *context;
-	char *lmsg;
-	char *rmsg;
-	int linums;
-	int readonly;
-	int french;
-	int spaces;
-	int crlf;
-	MACRO *mnew;		/* Macro to execute for new files */
-	MACRO *mold;		/* Macro to execute for existing files */
-	MACRO *msnew;		/* Macro to execute before saving new files */
-	MACRO *msold;		/* Macro to execute before saving existing files */
-};
 
 extern OPTIONS pdefault;
 void setopt PARAMS((OPTIONS *n, char *name));

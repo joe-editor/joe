@@ -1,21 +1,15 @@
-#ifndef _Icmd
-#define _Icmd 1
+/*
+ *	Command execution
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_CMD_H
+#define _JOE_CMD_H 1
 
 #include "config.h"
-
-typedef struct cmd CMD;
-typedef struct macro MACRO;
-
-/* Command entry */
-
-struct cmd {
-	char *name;		/* Command name */
-	int flag;		/* Execution flags */
-	int (*func) ();		/* Function bound to name */
-	MACRO *m;		/* Macro bound to name */
-	int arg;		/* 0= arg is meaningless, 1= ok */
-	char *negarg;		/* Command to use if arg was negative */
-};
+#include "types.h"
 
 extern CMD cmds[];		/* Built-in commands */
 

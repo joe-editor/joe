@@ -1,14 +1,16 @@
 /*
-	Position history
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
-#ifndef _Iposhist
-#define _Iposhist 1
+ *	Position history
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
+#ifndef _JOE_POSHIST_H
+#define _JOE_POSHIST_H 1
 
 #include "config.h"
+#include "types.h"
+
 #include "bw.h"
 #include "w.h"
 

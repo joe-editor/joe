@@ -1,11 +1,13 @@
 /*
-	Prompt windows
-	Copyright (C) 1992 Joseph H. Allen
-
-	This file is part of JOE (Joe's Own Editor)
-*/
-
+ *	Prompt windows
+ *	Copyright
+ *		(C) 1992 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 #include "config.h"
+#include "types.h"
+
 #include <string.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>

@@ -1,5 +1,5 @@
-#ifndef _JOEconfig
-#define _JOEconfig 1
+#ifndef _JOE_CONFIG_H
+#define _JOE_CONFIG_H
 
 #include "autoconf.h"
 
@@ -37,4 +37,4 @@
 
 #endif /* real mode ms-dos */
 
-#endif /* ifndef _JOEconfig */
+#endif /* ifndef _JOE_CONFIG_H */
