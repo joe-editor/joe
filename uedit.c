@@ -853,7 +853,7 @@ int utypebw(BW *bw, int k)
 		binsc(bw->cursor, k);
 
 		/* We need x position before we move cursor */
-		x = bw->cursor->xcol - bw->offset;
+		x = piscol(bw->cursor) - bw->offset;
 		pgetc(bw->cursor);
 		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !joe_isblank(k)) {
 			wrapword(bw->cursor, (long) bw->o.lmargin, bw->o.french, NULL);

@@ -1,3 +1,9 @@
+Wed Apr 21 2004  Joe Allen <jhallen@world.std.com>
+	* uedit.c :
+
+	Fix new bug caused by previous bug fix :-)
+
+
 Tue Apr 20 2004  Joe Allen <jhallen@world.std.com>
 	* uedit.c :
 
