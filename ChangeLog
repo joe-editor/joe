@@ -1,3 +1,7 @@
+Fri Jun 20 2003  Anil Madhavapeddy <anil@recoil.org>
+	* usearch.c:
+	fix boundary to snprintf()
+
 Mon Jun 16 2003  Vitezslav Samel <samel@mail.cz>
 	* uedit.c
 	u_goto_prev()/u_goto_next() fix take two: skip over spaces
