@@ -1,3 +1,13 @@
+Overview of changes in JOE 2.9.8 (5 May 2003)
+- fixed signal handling
+- return of the context help
+- fixed segfault when moving rectangular block
+- code clean up
+- killed deadlock when reformatting paragraph
+- fixed skiptop handling
+- SECURITY: drop suid and sgid bits when creating backup files
+- fixed segfaults in isalpha()-like functions
+
 Overview of changes in JOE 2.9.8-pre1 (14 Dec 2001)
 - BUGFIX: don't exchange start and end point of the block in some cases
 - defaulting to turn off -asis (locales take care of this; if joe doesn't

@@ -1,3 +1,9 @@
+Mon May  5 2003  Vitezslav Samel <samel@mail.cz>
+	*** Release joe-2.9.8 ***
+
+	* NEWS, configure.ac, main.c:
+	update NEWS; bump up version; update copyright year
+	
 Sat May  3 2003  Vitezslav Samel <samel@mail.cz>
 	* README:
 	delete untrue statements and mention the new build system;
