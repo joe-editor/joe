@@ -471,12 +471,20 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 				prm(q);
 			} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c>='0' && c<='9' || c=='_') {
 				int x;
+				P *q;
 				len=0;
 				while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
 					if(len!=MAX_WORD_SIZE)
 						buf[len++]=c;
 					c=prgetc(p);
 				}
+				/* ifdef hack */
+				q=pdup(p);
+				while (c ==' ' || c=='\t')
+					c=prgetc(q);
+				prm(q);
+				if (c == set[0])
+					buf[len++] = c;
 				if(c!=NO_MORE_DATA)
 					pgetc(p);
 				buf[len]=0;
@@ -533,8 +541,19 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 							break;
 				} else if (c != NO_MORE_DATA)
 					prgetc(p);
+			} else if (c == set[0]) {
+				/* ifdef hack */
+				while ((c = pgetc(p))!=NO_MORE_DATA) {
+					if (c!=' ' && c!='\t')
+						break;
+				}
+				buf[0]=set[0];
+				len=1;
+				if (c >= 'a' && c <= 'z')
+					goto doit;
 			} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_') {
 				len=0;
+				doit:
 				while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
 					if(len!=MAX_WORD_SIZE)
 						buf[len++]=c;
@@ -547,7 +566,10 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					++cnt;
 				} else if (cnt==1) {
 					if (is_in_any_group(group,buf)) {
-						pgoto(p,p->byte-len);
+						if (!(buf[0]>='a' && buf[0]<='z'))
+							pgoto(p,p->byte-len+1);
+						else
+							pgoto(p,p->byte-len);
 						pset(bw->cursor,p);
 						prm(p);
 						return 0;
@@ -690,6 +712,30 @@ void get_xml_name(P *p,unsigned char *buf)
 	prm(p);
 }
 
+void get_delim_name(P *q,unsigned char *buf)
+{
+	int c;
+	int len=0;
+	P *p=pdup(q);
+	while ((c=prgetc(p))!=NO_MORE_DATA)
+		if (c!=' ' && c!='\t')
+			break;
+	prm(p);
+	/* preprocessor directive hack */
+	if (c=='#' || c=='`')
+		buf[len++]=c;
+
+	p=pdup(q);
+	c=pgetc(p);
+	while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c >= '0' && c <= '9') {
+		if(len!=MAX_WORD_SIZE)
+			buf[len++]=c;
+		c=pgetc(p);
+	}
+	buf[len]=0;
+	prm(p);
+}
+
 int utomatch(BW *bw)
 {
 	int d;
@@ -702,7 +748,7 @@ int utomatch(BW *bw)
 	/* Check for word delimiters */
 	if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_') {
 		P *q, *p;
-		unsigned char *buf;
+		unsigned char buf[MAX_WORD_SIZE+1];
 		unsigned char buf1[MAX_WORD_SIZE+1];
 		unsigned char *list = bw->b->o.text_delimiters;
 		unsigned char *set;
@@ -712,9 +758,7 @@ int utomatch(BW *bw)
 		p=pdup(bw->cursor);
 		p_goto_next(p);
 		p_goto_prev(p);
-		q=pdup(p);
-		p_goto_next(q);
-		buf=brvs(p,q->byte-p->byte);
+		get_delim_name(p,buf);
 		get_xml_name(p,buf1);
 		c=prgetc(p);
 		if (c=='<')
@@ -724,19 +768,17 @@ int utomatch(BW *bw)
 			if (c=='<')
 				flg = -1;
 		}
-		prm(p); prm(q);
+		prm(p);
 
 		if (flg) {
-			flg = tomatch_xml(bw, buf1, flg);
-			goto done;
+			return tomatch_xml(bw, buf1, flg);
 		}
 
 		for (set = list; set && *set; set = next_set(set)) {
 			for (group = set; *group && *group!='=' && *group!=':'; group=next_group(group)) {
 				for (word = group; *word && *word!='|' && *word!='=' && *word!=':'; word=next_word(word)) {
 					if (match_word(word, buf)) {
-						flg = tomatch_word(bw, set, next_group(word));
-						goto done;
+						return tomatch_word(bw, set, next_group(word));
 					}
 				}
 			}
@@ -744,11 +786,7 @@ int utomatch(BW *bw)
 		}
 
 		/* We don't know the word, so start a search */
-		flg = dofirst(bw, 0, 0, buf);
-
-		done:
-		vsrm(buf);
-		return flg;
+		return dofirst(bw, 0, 0, buf);
 	}
 
 	switch (c) {

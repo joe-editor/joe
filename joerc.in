@@ -397,6 +397,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+
 *.cpp
 -autoindent
 -syntax c
@@ -407,6 +408,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+
 *.c++
 -autoindent
 -syntax c
@@ -417,6 +419,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+
  C language header file
 *.h
 -autoindent
@@ -428,6 +431,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+
 *.hpp
 -autoindent
 -syntax c
@@ -438,6 +442,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+
 *.h++
 -autoindent
 -syntax c
@@ -448,6 +453,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+
  Verilog file
 *.v
 -autoindent
@@ -459,7 +465,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
--text_delimiters begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
+
  Verilog header file
 *.vh
 -autoindent
@@ -471,7 +477,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
--text_delimiters begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
+
  VHDL file
 *.vhd
 -autoindent
@@ -1069,8 +1075,8 @@ yankpop		^[ ^Y		Undelete text
 yank		^[ Y		Undelete text
 
  toggle_marking	^@		Ctrl-space block selection method
-toggle_marking	^@		Ctrl-space block selection method
-				Ctrl-space used to insert a space
+insc		^@		Ctrl-space used to insert a space
+
  bufed		^[ d		Menu of buffers
 nbuf		^[ v		Next buffer
 nbuf		^[ V		Next buffer

@@ -1,16 +1,12 @@
 Short list for 3.2:
 
-- dump Ctrl-SPACE? (I keep hitting it by accident)
-
 - egmont's Ctrl-selection bug
-
-- math: insert into text (create a macro or documentation)
 
 - ^KC into search window fails.  key to move text into search window
 
 - ^D in selection prompts should bring up menu as in tcsh
 
-- Ctrl-G for vhdl, for `if `endif and #if #endif
+- Ctrl-G for vhdl
 
 - update man page
 
@@ -23,12 +19,15 @@ Short list for 3.2:
  - names of files on command line
  - try for previous screen configuration?
  - multiple joes: the last one who exits wins
+ - don't quote macros, so user can copy them to joerc file
 
 - search should automatically use 'k' mode if block is
   selected.  Cursor should jump to top of block when done.  Jump
   back to start mode?
 
 Others:
+
+- merge math with macro language
 
 - security hole with spell checker
 
