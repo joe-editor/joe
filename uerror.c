@@ -18,6 +18,7 @@
 #include "ufile.h"
 #include "utils.h"
 #include "vs.h"
+#include "charmap.h"
 #include "w.h"
 
 /* Error database */
@@ -121,7 +122,7 @@ static void freeall(void)
 
 /* First word on line with a '.' in it.  This is the file name.  The next number after that is the line number. */
 
-static int parseit(int wide,struct charmap *map,unsigned char *s, long int row)
+static int parseit(struct charmap *map,unsigned char *s, long int row)
 {
 	int x, y, flg;
 	unsigned char *name = NULL;
@@ -133,10 +134,10 @@ static int parseit(int wide,struct charmap *map,unsigned char *s, long int row)
 
 	do {
 		/* Skip to first word */
-		for (x = y; s[x] && !(isalnum_(wide,map,s[x]) || s[x] == '.' || s[x] == '/'); ++x) ;
+		for (x = y; s[x] && !(joe_isalnum_(map,s[x]) || s[x] == '.' || s[x] == '/'); ++x) ;
 
 		/* Skip to end of first word */
-		for (y = x; isalnum_(wide,map,s[y]) || s[y] == '.' || s[y] == '/'; ++y)
+		for (y = x; joe_isalnum_(map,s[y]) || s[y] == '.' || s[y] == '/'; ++y)
 			if (s[y] == '.')
 				flg = 1;
 	} while (!flg && x!=y);
@@ -190,7 +191,7 @@ static long parserr(B *b)
 		p_goto_eol(p);
 		s = brvs(q, (int) (p->byte - q->byte));
 		if (s) {
-			nerrs += parseit(b->o.utf8, b->o.charmap, s, q->line);
+			nerrs += parseit(b->o.charmap, s, q->line);
 			vsrm(s);
 		}
 	} while (pgetc(p) != NO_MORE_DATA);

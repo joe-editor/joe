@@ -96,9 +96,8 @@ OPTIONS pdefault = {
 	0,		/* Highlight */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
-	0,		/* UTF-8 */
-	NULL,		/* Name of byte mode character set */
-	NULL,		/* Byte mode character set */
+	NULL,		/* Name of character set */
+	NULL,		/* Character set */
 	0,		/* Smart home key */
 	0,		/* Goto indent first */
 	0,		/* Smart backspace key */
@@ -139,9 +138,8 @@ OPTIONS fdefault = {
 	0,		/* Highlight */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
-	0,		/* UTF-8 */
-	NULL,		/* Name of byte mode character set */
-	NULL,		/* Byte mode character set */
+	NULL,		/* Name of character set */
+	NULL,		/* Character set */
 	0,		/* Smart home key */
 	0,		/* Goto indent first */
 	0,		/* Smart backspace key */
@@ -236,7 +234,6 @@ struct glopts {
 	{US "guess_crlf",0, &guesscrlf, NULL, US "Automatically detect MS-DOS files", US "Do not automatically detect MS-DOS files", US "  Auto detect CR-LF " },
 	{US "guess_indent",0, &guessindent, NULL, US "Automatically detect indentation", US "Do not automatically detect indentation", US "  Guess indent " },
 	{US "crlf",	4, NULL, (unsigned char *) &fdefault.crlf, US "CR-LF is line terminator", US "LF is line terminator", US "Z CR-LF (MS-DOS) " },
-	{US "utf8",	4, NULL, (unsigned char *) &fdefault.utf8, US "UTF-8 encoding enabled", US "UTF-8 encoding disabled", US "U UTF-8 " },
 	{US "linums",	4, NULL, (unsigned char *) &fdefault.linums, US "Line numbers enabled", US "Line numbers disabled", US "N Line numbers " },
 	{US "marking",	0, &marking, NULL, US "Anchored block marking on", US "Anchored block marking off", US "Marking " },
 	{US "asis",	0, &dspasis, NULL, US "Characters above 127 shown as-is", US "Characters above 127 shown in inverse", US "Meta chars as-is " },
@@ -257,7 +254,7 @@ struct glopts {
 	{US "picture",	4, NULL, (unsigned char *) &fdefault.picture, US "Picture drawing mode enabled", US "Picture drawing mode disabled", US "Picture mode " },
 	{US "backpath",	2, (int *) &backpath, NULL, US "Backup files stored in (%s): ", 0, US "  Path to backup files " },
 	{US "syntax",	9, NULL, NULL, US "Select syntax (^C to abort): ", 0, US "Y Syntax" },
-	{US "encoding",13, NULL, NULL, US "Select byte-mode character set (^C to abort): ", 0, US "Encoding " },
+	{US "encoding",13, NULL, NULL, US "Select file character set (^C to abort): ", 0, US "Encoding " },
 	{US "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
 	{US "noxon",	0, &noxon, NULL, 0, 0, 0 },
 	{US "orphan",	0, &orphan, NULL, 0, 0, 0 },
@@ -418,7 +415,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 		if (arg) {
 			int y;
 
-			for (y = 0; !joe_isspace(arg[y]); ++y) ;
+			for (y = 0; !joe_isspace(locale_map,arg[y]); ++y) ;
 			if (!arg[y])
 				arg[y] = 0;
 			if (options && y)
@@ -580,6 +577,7 @@ static int syntaxcmplt(BW *bw)
 			unsigned char *r = vsncpy(NULL,0,t[x],(unsigned char *)strrchr((char *)(t[x]),'.')-t[x]);
 			syntaxes = vaadd(syntaxes,r);
 		}
+		vasort(av(syntaxes));
 		varm(t);
 		chpwd(oldpwd);
 	}
@@ -613,6 +611,7 @@ static int encodingcmplt(BW *bw)
 {
 	if (!encodings) {
 		encodings = get_encodings();
+		vasort(av(encodings));
 	}
 	return simple_cmplt(bw,encodings);
 }
@@ -654,7 +653,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		*xx = x;
 		m->parent->notify = 0;
 		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, -1))
+		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map))
 			return 0;
 		else
 			return -1;
@@ -668,7 +667,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		*xx = x;
 		m->parent->notify = 0;
 		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, -1))
+		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map))
 			return 0;
 		else
 			return -1;
@@ -682,7 +681,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		*xx = x;
 		m->parent->notify = 0;
 		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, -1))
+		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map))
 			return 0;
 		else
 			return -1;
@@ -691,7 +690,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, "");
 		m->parent->notify = 0;
 		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, -1))
+		if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, locale_map))
 			return 0;
 		else
 			return -1;
@@ -700,7 +699,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, "");
 		m->parent->notify = 0;
 		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, -1))
+		if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, locale_map))
 			return 0;
 		else
 			return -1;
@@ -857,22 +856,22 @@ int procrc(CAP *cap, unsigned char *name)
 			{
 				int x, c;
 
-				for (x = 1; !isspace_eof(buf[x]); ++x) ;
+				for (x = 1; !joe_isspace_eof(locale_map,buf[x]); ++x) ;
 				c = buf[x];
 				buf[x] = 0;
 				if (x != 1)
 					if (!strcmp(buf + 1, "def")) {
 						int y;
 
-						for (buf[x] = c; joe_isblank(buf[x]); ++x) ;
-						for (y = x; !isspace_eof(buf[y]); ++y) ;
+						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+						for (y = x; !joe_isspace_eof(locale_map,buf[y]); ++y) ;
 						c = buf[y];
 						buf[y] = 0;
 						if (y != x) {
 							int sta;
 							MACRO *m;
 
-							if (joe_isblank(c)
+							if (joe_isblank(locale_map,c)
 							    && (m = mparse(NULL, buf + y + 1, &sta)))
 								addcmd(buf + x, m);
 							else {
@@ -885,8 +884,8 @@ int procrc(CAP *cap, unsigned char *name)
 						}
 					} else if (!strcmp(buf + 1, "inherit"))
 						if (context) {
-							for (buf[x] = c; joe_isblank(buf[x]); ++x) ;
-							for (c = x; !isspace_eof(buf[c]); ++c) ;
+							for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+							for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
 							buf[c] = 0;
 							if (c != x)
 								kcpy(context, kmap_getcontext(buf + x));
@@ -898,8 +897,8 @@ int procrc(CAP *cap, unsigned char *name)
 							err = 1;
 							fprintf(stderr, "\n%s %d: No context selected for :inherit", name, line);
 					} else if (!strcmp(buf + 1, "include")) {
-						for (buf[x] = c; joe_isblank(buf[x]); ++x) ;
-						for (c = x; !isspace_eof(buf[c]); ++c) ;
+						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
 						buf[c] = 0;
 						if (c != x) {
 							switch (procrc(cap, buf + x)) {
@@ -921,7 +920,7 @@ int procrc(CAP *cap, unsigned char *name)
 						if (context) {
 							int y;
 
-							for (buf[x] = c; joe_isblank(buf[x]); ++x) ;
+							for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
 							for (y = x; buf[y] != 0 && buf[y] != '\t' && buf[y] != '\n' && (buf[y] != ' ' || buf[y + 1]
 															!= ' '); ++y) ;
 							buf[y] = 0;

@@ -416,7 +416,7 @@ int pisbow(P *p)
 	int d = prgetc(q);
 
 	prm(q);
-	if (isalnum_(p->b->o.utf8,p->b->o.charmap,c) && (!isalnum_(p->b->o.utf8,p->b->o.charmap,d) || pisbof(p)))
+	if (joe_isalnum_(p->b->o.charmap,c) && (!joe_isalnum_(p->b->o.charmap,d) || pisbof(p)))
 		return 1;
 	else
 		return 0;
@@ -430,7 +430,7 @@ int piseow(P *p)
 	int c = prgetc(q);
 
 	prm(q);
-	if (isalnum_(p->b->o.utf8,p->b->o.charmap,c) && (!isalnum_(p->b->o.utf8,p->b->o.charmap,d) || piseof(p)))
+	if (joe_isalnum_(p->b->o.charmap,c) && (!joe_isalnum_(p->b->o.charmap,d) || piseof(p)))
 		return 1;
 	else
 		return 0;
@@ -442,7 +442,7 @@ int pisblank(P *p)
 	P *q = pdup(p);
 
 	p_goto_bol(q);
-	while (joe_isblank(brc(q)))
+	while (joe_isblank(p->b->o.charmap,brc(q)))
 		pgetb(q);
 	if (piseol(q)) {
 		prm(q);
@@ -458,7 +458,7 @@ int piseolblank(P *p)
 {
 	P *q = pdup(p);
 
-	while (joe_isblank(brc(q)))
+	while (joe_isblank(p->b->o.charmap,brc(q)))
 		pgetb(q);
 	if (piseol(q)) {
 		prm(q);
@@ -476,7 +476,7 @@ long pisindent(P *p)
 	long col;
 
 	p_goto_bol(q);
-	while (joe_isblank(brc(q)))
+	while (joe_isblank(p->b->o.charmap,brc(q)))
 		pgetc(q);
 	col = q->col;
 	prm(q);
@@ -553,7 +553,7 @@ int pgetb(P *p)
 /* return current character and move p to the next character.  column will be updated if it was valid. */
 int pgetc(P *p)
 {
-	if (p->b->o.utf8) {
+	if (p->b->o.charmap->type) {
 		int val;
 		int c, oc;
 		int d;
@@ -716,7 +716,7 @@ int prgetb(P *p)
 /* move p to the previous character (try to keep col updated) */
 int prgetc(P *p)
 {
-	if (p->b->o.utf8) {
+	if (p->b->o.charmap->type) {
 
 		if (pisbol(p))
 			return prgetb(p);
@@ -852,7 +852,7 @@ P *p_goto_indent(P *p, int c)
 /* move p to the end of line */
 P *p_goto_eol(P *p)
 {
-	if (p->b->o.crlf || p->b->o.utf8)
+	if (p->b->o.crlf || p->b->o.charmap->type)
 		while (!piseol(p))
 			pgetc(p);
 	else
@@ -957,7 +957,7 @@ P *pline(P *p, long line)
 P *pcol(P *p, long goalcol)
 {
 	p_goto_bol(p);
-	if(p->b->o.utf8) {
+	if(p->b->o.charmap->type) {
 		do {
 			int c;
 			int wid;
@@ -1029,7 +1029,7 @@ P *pcolwse(P *p, long goalcol)
 P *pcoli(P *p, long goalcol)
 {
 	p_goto_bol(p);
-	if (p->b->o.utf8) {
+	if (p->b->o.charmap->type) {
 		while (p->col < goalcol) {
 			int c;
 			c = brc(p);
@@ -1182,7 +1182,7 @@ static P *fifind(P *p, unsigned char *s, int len)
 	amnt -= len;
 	x = len;
 	do {
-		if ((c = joe_toupper(map,frgetc(p))) != s[--x]) {
+		if ((c = joe_tolower(map,frgetc(p))) != s[--x]) {
 			if (table[c] == 255) {
 				ffwrd(p, len + 1);
 				amnt -= x + 1;
@@ -1341,7 +1341,7 @@ static P *frifind(P *p, unsigned char *s, int len)
 	for (x = len; --x; table[s[x]] = len - x - 1) ;
 	x = 0;
 	do {
-		if ((c = joe_toupper(map,fpgetc(p))) != s[x++]) {
+		if ((c = joe_tolower(map,fpgetc(p))) != s[x++]) {
 			if (table[c] == 255) {
 				fbkwd(p, len + 1);
 				amnt -= len - x + 1;
@@ -1929,7 +1929,7 @@ P *binsbyte(P *p, unsigned char c)
 /* UTF-8 encode a character and insert it */
 P *binsc(P *p, int c)
 {
-	if (c>127 && p->b->o.utf8) {
+	if (c>127 && p->b->o.charmap->type) {
 		unsigned char buf[8];
 		int len = utf8_encode(buf,c);
 		return binsm(p,buf,len);
@@ -2421,7 +2421,7 @@ int brc(P *p)
 
 int brch(P *p)
 {
-	if (p->b->o.utf8) {
+	if (p->b->o.charmap->type) {
 		P *q = pdup(p);
 		int c = pgetc(q);
 		prm(q);

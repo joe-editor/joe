@@ -67,7 +67,7 @@ static void menudisp(MENU *m)
 
 			/* Space between columns */
 			if (col != m->w) {
-				outatr(utf8, locale_map, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
+				outatr(locale_map, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
 				++col;
 			}
 		}
@@ -114,7 +114,7 @@ static void mconfig(MENU *m)
 
 int umbol(MENU *m)
 {
-	m->cursor = m->top;
+	m->cursor -= m->cursor % m->perline;
 	return 0;
 }
 
@@ -133,10 +133,13 @@ int umeof(MENU *m)
 
 int umeol(MENU *m)
 {
-	if (m->top + m->perline < m->nitems)
-		m->cursor = m->top + m->perline - 1;
+	m->cursor -= m->cursor % m->perline;
+
+	if (m->cursor+m->perline-1 >= m->nitems)
+		m->cursor = m->nitems - 1;
 	else
-		umeof(m);
+		m->cursor += m->perline - 1;
+
 	return 0;
 }
 

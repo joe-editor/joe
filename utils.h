@@ -19,41 +19,6 @@
 #include <signal.h>
 #endif
 
-#include "charmap.h"
-
-/* 
- * Characters which are considered as word characters 
- * 	_ is considered as word character because is often used 
- *	in the names of C/C++ functions
- */
-int isalnum_ PARAMS((int wide,struct charmap *map,int c));
-int isalpha_ PARAMS((int wide,struct charmap *map,int c));
-
-/* 
- * Whitespace characters are characters like tab, space, ...
- *	Every config line in *rc must be end by whitespace but
- *	EOF is not considered as whitespace by isspace()
- *	This is because I don't want to be forced to end 
- *	*rc file with \n
- */
-int isspace_eof PARAMS((int c));
-
-/*
- * Define function isblank(c)
- *	isblank() is GNU extension;
- *	even #including <ctype.h> without additional hackery doesn't import
- *	the prototype, so we define it here unconditionaly
- */
-int joe_isblank PARAMS((int c));
-
-int joe_isspace PARAMS((int c));
-
-int joe_isprint PARAMS((int wide,struct charmap *map,int c));
-
-int joe_ispunct PARAMS((int wide,struct charmap *map,int c));
-
-unsigned char *lowerize PARAMS((unsigned char *s));
-
 /*
  * Functions which return minimum/maximum of two numbers  
  */
@@ -71,7 +36,6 @@ void *joe_malloc PARAMS((size_t size));
 void *joe_calloc PARAMS((size_t nmemb, size_t size));
 void *joe_realloc PARAMS((void *ptr, size_t size));
 void joe_free PARAMS((void *ptr));
-
 
 #ifndef HAVE_SIGHANDLER_T
 typedef RETSIGTYPE (*sighandler_t)(int);
@@ -95,6 +59,5 @@ int parse_char PARAMS((unsigned char  **p,unsigned char c));
 int parse_int PARAMS((unsigned char **p,int *buf));
 int parse_string PARAMS((unsigned char **p,unsigned char *buf,int len));
 int parse_range PARAMS((unsigned char **p,int *first,int *second));
-
 
 #endif

@@ -117,9 +117,8 @@ struct options {
 	int	highlight;	/* Set to enable highlighting */
 	unsigned char *syntax_name;	/* Name of syntax to use */
 	struct high_syntax *syntax;	/* Syntax for highlighting (load_dfa() from syntax_name happens in setopt()) */
-	int	utf8;		/* Set for UTF-8 mode, otherwise we're in byte mode */
-	unsigned char *map_name;	/* Name of byte mode character set */
-	struct charmap *charmap;	/* Character set if file is in byte mode */
+	unsigned char *map_name;	/* Name of character set */
+	struct charmap *charmap;	/* Character set */
 	int	smarthome;	/* Set for smart home key */
 	int	indentfirst;	/* Smart home goes to indentation point first */
 	int	smartbacks;	/* Set for smart backspace key */

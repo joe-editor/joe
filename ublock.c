@@ -28,6 +28,7 @@
 #include "uedit.h"
 #include "utils.h"
 #include "vs.h"
+#include "utf8.h"
 #include "w.h"
 
 /* Global options */
@@ -985,12 +986,12 @@ int ufilt(BW *bw)
 #else
 	switch (checkmark(bw)) {
 	case 0:
-		if (wmkpw(bw->parent, US "Command to filter block through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL, -1))
+		if (wmkpw(bw->parent, US "Command to filter block through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL, locale_map))
 			return 0;
 		else
 			return -1;
 	case 1:
-		if (wmkpw(bw->parent, US "Command to filter file through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL, -1))
+		if (wmkpw(bw->parent, US "Command to filter file through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL, locale_map))
 			return 0;
 		else
 			return -1;

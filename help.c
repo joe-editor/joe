@@ -22,7 +22,6 @@
 #define NOT_ENOUGH_MEMORY -11
 
 struct help *help_actual = NULL;			/* actual help screen */
-extern int utf8;
 
 /* 
  * Process help file
@@ -207,7 +206,7 @@ void help_display(SCREEN *t)
 					} else {
 						c = *str++;
 					}
-					outatr(utf8, locale_map, t->t, t->t->scrn + x + y * t->w, 
+					outatr(locale_map, t->t, t->t->scrn + x + y * t->w, 
 					             t->t->attr + x + y * t->w, x, y, c, atr);
 				}
 			}

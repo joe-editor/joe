@@ -24,7 +24,6 @@
 
 extern int dspasis;		/* Set to display chars above 127 as-is */
 extern int staen;		/* 0 if top-most status line not displayed */
-extern int utf8;
 
 /* Count no. of main windows */
 

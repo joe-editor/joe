@@ -15,6 +15,8 @@
 #include "pw.h"
 #include "utils.h"
 #include "vs.h"
+#include "utf8.h"
+#include "charmap.h"
 #include "w.h"
 
 unsigned char *merr;
@@ -208,7 +210,7 @@ B *mathhist = NULL;
 int umath(BW *bw)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(bw->parent, US "=", &mathhist, domath, US "math", NULL, NULL, NULL, NULL, -1)) {
+	if (wmkpw(bw->parent, US "=", &mathhist, domath, US "math", NULL, NULL, NULL, NULL, locale_map)) {
 		return 0;
 	} else {
 		return -1;

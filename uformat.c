@@ -17,6 +17,7 @@
 
 #include "b.h"
 #include "ublock.h"
+#include "charmap.h"
 #include "utils.h"
 
 /* Center line cursor is on and move cursor to beginning of next line */
@@ -28,7 +29,7 @@ int ucenter(BW *bw)
 	int c;
 
 	p_goto_eol(p);
-	while (joe_isblank(c = prgetc(p)))
+	while (joe_isblank(bw->b->o.charmap, (c = prgetc(p))))
 		/* do nothing */;
 	if (c == '\n') {
 		pgetc(p);
@@ -40,7 +41,7 @@ int ucenter(BW *bw)
 	endcol = piscol(p);
 
 	p_goto_bol(p);
-	while (joe_isblank(c = pgetc(p)))
+	while (joe_isblank(bw->b->o.charmap, (c = pgetc(p))))
 		/* do nothing */;
 	if (c == '\n') {
 		prgetc(p);
@@ -134,7 +135,7 @@ static long prefix(P *p)
 	while (cpara(brch(q)))
 		pgetc(q);
 	while (!pisbol(q))
-		if (!joe_isblank(prgetc(q))) {
+		if (!joe_isblank(p->b->o.charmap, prgetc(q))) {
 			pgetc(q);
 			break;
 		}
@@ -306,7 +307,7 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 */
 
 	/* Get to beginning of word */
-	while (!pisbol(p) && piscol(p) > indent && !joe_isblank(prgetc(p)))
+	while (!pisbol(p) && piscol(p) > indent && !joe_isblank(p->b->o.charmap, prgetc(p)))
 		/* do nothing */;
 
 	/* If we found the beginning of a word... */
@@ -315,7 +316,7 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 		   word */
 		q = pdup(p);
 		while (!pisbol(q))
-			if (!joe_isblank(c = prgetc(q))) {
+			if (!joe_isblank(p->b->o.charmap, (c = prgetc(q)))) {
 				pgetc(q);
 				if ((c == '.' || c == '?' || c == '!')
 				    && q->byte != p->byte && !french)
@@ -416,7 +417,7 @@ int uformat(BW *bw)
 	/* New buffer needs to inherit UTF-8 and CR-LF options */
 	buf = bcpy(p, bw->cursor);
 	buf->o.crlf = p->b->o.crlf;
-	buf->o.utf8 = p->b->o.utf8;
+	buf->o.charmap = p->b->o.charmap;
 	bdel(p, bw->cursor);
 
 	/* text is in buffer.  insert it at cursor */
@@ -439,7 +440,7 @@ int uformat(BW *bw)
 		}
 
 		/* Stop if we found white-space followed by end of line */
-		if (joe_isblank(c) && piseolblank(b))
+		if (joe_isblank(b->b->o.charmap, c) && piseolblank(b))
 			break;
 
 		/* Insert character, advance pointer */
@@ -447,7 +448,7 @@ int uformat(BW *bw)
 		pgetc(p);
 
 		/* Do word wrap if we reach right margin */
-		if (piscol(p) > bw->o.rmargin && !joe_isblank(c)) {
+		if (piscol(p) > bw->o.rmargin && !joe_isblank(p->b->o.charmap,c)) {
 			wrapword(p, indent, bw->o.french, indents);
 			break;
 		}
@@ -457,7 +458,7 @@ int uformat(BW *bw)
 
 	while (!piseof(b)) {
 		c = brch(b);
-		if (joe_isblank(c) || c == '\n') {
+		if (joe_isblank(b->b->o.charmap,c) || c == '\n') {
 			int f = 0;
 			P *d;
 			int g;
@@ -469,7 +470,7 @@ int uformat(BW *bw)
 			if (g=='.' || g=='?' || g=='!') {
 				pset(d,b);
 				pgetc(d);
-				if (joe_isspace(brch(d)))
+				if (joe_isspace(bw->b->o.charmap,brch(d)))
 					f = 1;
 			}
 			prm(d);
@@ -490,7 +491,7 @@ int uformat(BW *bw)
 				}
 			}
 
-			if (joe_isblank(c)) {
+			if (joe_isblank(b->b->o.charmap,c)) {
 				if(b->byte == curoff)
 					pset(bw->cursor, p);
 				pgetc(b);

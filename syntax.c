@@ -13,6 +13,7 @@
 #include "scrn.h"
 #include "utils.h"
 #include "hash.h"
+#include "charmap.h"
 #include "syntax.h"
 
 /* Parse one line.  Returns new state.

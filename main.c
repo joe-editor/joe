@@ -28,6 +28,7 @@
 #include "vs.h"
 #include "w.h"
 #include "utf8.h"
+#include "charmap.h"
 #include "syntax.h"
 
 extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, beep;
@@ -377,7 +378,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 		help_on(maint);
 	}
 	if (!nonotice)
-		if (utf8)
+		if (locale_map->type)
 			msgnw(((BASE *)lastw(maint)->object)->parent, US ("\\i** Joe's Own Editor v" VERSION " ** Copyright © 2004 **\\i"));
 		else
 			msgnw(((BASE *)lastw(maint)->object)->parent, US ("\\i** Joe's Own Editor v" VERSION " ** Copyright (C) 2004 **\\i"));

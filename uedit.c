@@ -23,6 +23,7 @@
 #include "utils.h"
 #include "vs.h"
 #include "utf8.h"
+#include "charmap.h"
 #include "w.h"
 
 /***************/
@@ -51,13 +52,13 @@ int uhome(BW *bw)
 	if (bw->o.indentfirst) {
 		if ((bw->o.smarthome) && (piscol(p) > pisindent(p))) { 
 			p_goto_bol(p);
-			while (joe_isblank(brc(p)))
+			while (joe_isblank(p->b->o.charmap,brc(p)))
 				pgetc(p);
 		} else
 			p_goto_bol(p);
 	} else {
 		if (bw->o.smarthome && piscol(p)==0 && pisindent(p)) {
-			while (joe_isblank(brc(p)))
+			while (joe_isblank(p->b->o.charmap,brc(p)))
 				pgetc(p);
 		} else
 			p_goto_bol(p);
@@ -153,17 +154,18 @@ int u_goto_right(BW *bw)
 int u_goto_prev(BW *bw)
 {
 	P *p = pdup(bw->cursor);
+	struct charmap *map=bw->b->o.charmap;
 	int c = prgetc(p);
 
-	if (isalnum_(bw->b->o.utf8,p->b->o.charmap,c)) {
-		while (isalnum_(bw->b->o.utf8,p->b->o.charmap,(c=prgetc(p))))
+	if (joe_isalnum_(map,c)) {
+		while (joe_isalnum_(map,(c=prgetc(p))))
 			/* Do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(p);
-	} else if (joe_isspace(c) || joe_ispunct(bw->b->o.utf8,bw->b->o.charmap,c)) {
-		while ((c=prgetc(p)), (joe_isspace(c) || joe_ispunct(bw->b->o.utf8,bw->b->o.charmap,c)))
+	} else if (joe_isspace(map,c) || joe_ispunct(map,c)) {
+		while ((c=prgetc(p)), (joe_isspace(map,c) || joe_ispunct(map,c)))
 			/* Do nothing */;
-		while(isalnum_(bw->b->o.utf8,p->b->o.charmap,(c=prgetc(p))))
+		while(joe_isalnum_(map,(c=prgetc(p))))
 			/* Do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(p);
@@ -186,15 +188,16 @@ int u_goto_prev(BW *bw)
 int u_goto_next(BW *bw)
 {
 	P *p = pdup(bw->cursor);
+	struct charmap *map=bw->b->o.charmap;
 	int c = brch(p);
 
-	if (isalnum_(bw->b->o.utf8,p->b->o.charmap,c))
-		while (isalnum_(bw->b->o.utf8,p->b->o.charmap,(c = brch(p))))
+	if (joe_isalnum_(map,c))
+		while (joe_isalnum_(map,(c = brch(p))))
 			pgetc(p);
-	else if (joe_isspace(c) || joe_ispunct(bw->b->o.utf8,bw->b->o.charmap,c)) {
-		while (joe_isspace(c = brch(p)) || joe_ispunct(bw->b->o.utf8,bw->b->o.charmap,c))
+	else if (joe_isspace(map,c) || joe_ispunct(map,c)) {
+		while (joe_isspace(map, (c = brch(p))) || joe_ispunct(map,c))
 			pgetc(p);
-		while (isalnum_(bw->b->o.utf8,p->b->o.charmap,(c = brch(p))))
+		while (joe_isalnum_(map,(c = brch(p))))
 			pgetc(p);
 	} else
 		pgetc(p);
@@ -210,7 +213,7 @@ int u_goto_next(BW *bw)
 static P *pboi(P *p)
 {
 	p_goto_bol(p);
-	while (joe_isblank(brch(p)))
+	while (joe_isblank(p->b->o.charmap,brch(p)))
 		pgetc(p);
 	return p;
 }
@@ -228,9 +231,9 @@ static int pisedge(P *p)
 	pboi(q);
 	if (q->byte == p->byte)
 		goto left;
-	if (joe_isblank(c = brch(p))) {
+	if (joe_isblank(p->b->o.charmap,(c = brch(p)))) {
 		pset(q, p);
-		if (joe_isblank(prgetc(q)))
+		if (joe_isblank(p->b->o.charmap,prgetc(q)))
 			goto no;
 		if (c == '\t')
 			goto right;
@@ -589,7 +592,7 @@ static int doline(BW *bw, unsigned char *s, void *object, int *notify)
 
 int uline(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Go to line (^C to abort): ", &linehist, doline, NULL, NULL, NULL, NULL, NULL, -1))
+	if (wmkpw(bw->parent, US "Go to line (^C to abort): ", &linehist, doline, NULL, NULL, NULL, NULL, NULL, locale_map))
 		return 0;
 	else
 		return -1;
@@ -625,7 +628,7 @@ static int docol(BW *bw, unsigned char *s, void *object, int *notify)
 
 int ucol(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Go to column (^C to abort): ", &colhist, docol, NULL, NULL, NULL, NULL, NULL, -1))
+	if (wmkpw(bw->parent, US "Go to column (^C to abort): ", &colhist, docol, NULL, NULL, NULL, NULL, NULL, locale_map))
 		return 0;
 	else
 		return -1;
@@ -661,7 +664,7 @@ static int dobyte(BW *bw, unsigned char *s, void *object, int *notify)
 
 int ubyte(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Go to byte (^C to abort): ", &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL, -1))
+	if (wmkpw(bw->parent, US "Go to byte (^C to abort): ", &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL, locale_map))
 		return 0;
 	else
 		return -1;
@@ -763,13 +766,14 @@ int ubacks(BW *bw, int k)
 int u_word_delete(BW *bw)
 {
 	P *p = pdup(bw->cursor);
+	struct charmap *map=bw->b->o.charmap;
 	int c = brch(p);
 
-	if (isalnum_(bw->b->o.utf8,p->b->o.charmap,c))
-		while (isalnum_(bw->b->o.utf8,p->b->o.charmap,(c = brch(p))))
+	if (joe_isalnum_(map,c))
+		while (joe_isalnum_(map,(c = brch(p))))
 			pgetc(p);
-	else if (joe_isspace(c))
-		while (joe_isspace(c = brch(p)))
+	else if (joe_isspace(map,c))
+		while (joe_isspace(map,(c = brch(p))))
 			pgetc(p);
 	else
 		pgetc(p);
@@ -791,14 +795,15 @@ int ubackw(BW *bw)
 {
 	P *p = pdup(bw->cursor);
 	int c = prgetc(bw->cursor);
+	struct charmap *map=bw->b->o.charmap;
 
-	if (isalnum_(bw->b->o.utf8,p->b->o.charmap,c)) {
-		while (isalnum_(bw->b->o.utf8,p->b->o.charmap,(c = prgetc(bw->cursor))))
+	if (joe_isalnum_(map,c)) {
+		while (joe_isalnum_(map,(c = prgetc(bw->cursor))))
 			/* do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(bw->cursor);
-	} else if (joe_isspace(c)) {
-		while (joe_isspace(c = prgetc(bw->cursor)))
+	} else if (joe_isspace(map,c)) {
+		while (joe_isspace(map,(c = prgetc(bw->cursor))))
 			/* do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(bw->cursor);
@@ -877,10 +882,10 @@ int uinsc(BW *bw)
  */
 
 struct utf8_sm utype_utf8_sm;
-extern int utf8;
 
 int utypebw(BW *bw, int k)
 {
+	struct charmap *map=bw->b->o.charmap;
 	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
 		unsigned char c = k;
 
@@ -903,7 +908,7 @@ int utypebw(BW *bw, int k)
 		if (pprevl(p) && p_goto_bol(p) && pisindent(p)>pisindent(bw->cursor)) {
 			if (!pisbol(bw->cursor))
 				udelbl(bw);
-			while (joe_isspace(k = pgetc(p)) && k != '\n') {
+			while (joe_isspace(map,(k = pgetc(p))) && k != '\n') {
 				binsc(bw->cursor, k);
 				pgetc(bw->cursor);
 			}
@@ -939,7 +944,7 @@ int utypebw(BW *bw, int k)
 			pfill(bw->cursor,bw->cursor->xcol,' '); /* Why no tabs? */
 
 		/* UTF8 decoder */
-		if(utf8) {
+		if(locale_map->type) {
 			int utf8_char = utf8_decode(&utype_utf8_sm,k);
 
 			if(utf8_char >= 0)
@@ -957,11 +962,11 @@ int utypebw(BW *bw, int k)
 				pgetc(bw->cursor);
 			}
 
-		if(utf8 && !bw->b->o.utf8) {
+		if(locale_map->type && !bw->b->o.charmap->type) {
 			unsigned char buf[10];
 			utf8_encode(buf,k);
 			k = from_utf8(bw->b->o.charmap,buf);
-		} else if(!utf8 && bw->b->o.utf8) {
+		} else if(!locale_map->type && bw->b->o.charmap->type) {
 			unsigned char buf[10];
 			to_utf8(locale_map,buf,k);
 			k = utf8_decode_string(buf);
@@ -978,7 +983,7 @@ int utypebw(BW *bw, int k)
 			udelch(bw);
 
 		/* Not sure if we're in right position for wordwrap when we're in overtype mode */
-		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !joe_isblank(k)) {
+		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !joe_isblank(map,k)) {
 			wrapword(bw->cursor, (long) bw->o.lmargin, bw->o.french, NULL);
 			simple = 0;
 		}
@@ -1010,7 +1015,7 @@ int utypebw(BW *bw, int k)
 			   ((!square && bw->cursor->byte >= markb->byte && bw->cursor->byte < markk->byte) ||
 			    ( square && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line && piscol(bw->cursor) >= markb->xcol && piscol(bw->cursor) < markk->xcol)))
 				atr = INVERSE;
-			outatr(bw->b->o.utf8, bw->b->o.charmap, t, screen + x, attr + x, x, y, k, atr);
+			outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, k, atr);
 		}
 #endif
 	}
@@ -1059,9 +1064,9 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			else
 				return 0;
 		} else if (c == 'x' || c == 'X') {
-			if (bw->b->o.utf8) {
+			if (bw->b->o.charmap->type) {
 				if (!wmkpw(bw->parent, US "Unicode (ISO-10646) character in hex (^C to abort): ", &unicodehist, dounicode,
-				           NULL, NULL, NULL, NULL, NULL, -1))
+				           NULL, NULL, NULL, NULL, NULL, locale_map))
 					return 0;
 				else
 					return -1;
@@ -1277,7 +1282,7 @@ int rtntw(BW *bw)
 		binsc(bw->cursor, '\n'), pgetc(bw->cursor);
 		if (bw->o.autoindent) {
 			p_goto_bol(p);
-			while (joe_isspace(c = pgetc(p)) && c != '\n') {
+			while (joe_isspace(bw->b->o.charmap,(c = pgetc(p))) && c != '\n') {
 				binsc(bw->cursor, c);
 				pgetc(bw->cursor);
 			}
@@ -1428,7 +1433,7 @@ static int domsg(BASE *b, unsigned char *s, void *object, int *notify)
 
 int umsg(BASE *b)
 {
-	if (wmkpw(b->parent, US "Msg (^C to abort): ", NULL, domsg, NULL, NULL, NULL, NULL, NULL, -1))
+	if (wmkpw(b->parent, US "Msg (^C to abort): ", NULL, domsg, NULL, NULL, NULL, NULL, NULL, locale_map))
 		return 0;
 	else
 		return -1;
@@ -1450,7 +1455,7 @@ static int dotxt(BW *bw, unsigned char *s, void *object, int *notify)
 
 int utxt(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Insert (^C to abort): ", NULL, dotxt, NULL, NULL, utypebw, NULL, NULL, bw->b->o.utf8))
+	if (wmkpw(bw->parent, US "Insert (^C to abort): ", NULL, dotxt, NULL, NULL, utypebw, NULL, NULL, bw->b->o.charmap))
 		return 0;
 	else
 		return -1;

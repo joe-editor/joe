@@ -38,6 +38,7 @@
 #include "utils.h"
 #include "va.h"
 #include "vs.h"
+#include "utf8.h"
 #include "w.h"
 
 extern int smode;
@@ -345,7 +346,7 @@ B *cmdhist = NULL;
 
 int uexecmd(BW *bw)
 {
-	if (wmkpw(bw->parent, US "cmd: ", &cmdhist, docmd, US "cmd", NULL, cmdcmplt, NULL, NULL, -1)) {
+	if (wmkpw(bw->parent, US "cmd: ", &cmdhist, docmd, US "cmd", NULL, cmdcmplt, NULL, NULL, locale_map)) {
 		return 0;
 	} else {
 		return -1;

@@ -56,9 +56,9 @@ static P *searchf(SRCH *srch, P *p)
 	P *end = pdup(p);
 	int x;
 
-	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.utf8); ++x)
+	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
-			pattern[x] = joe_toupper(p->b->o.charmap,pattern[x]);
+			pattern[x] = joe_tolower(p->b->o.charmap,pattern[x]);
 	while (srch->ignore ? pifind(start, pattern, x) : pfind(start, pattern, x)) {
 		pset(end, start);
 		pfwrd(end, (long) x);
@@ -99,9 +99,9 @@ static P *searchb(SRCH *srch, P *p)
 	P *end = pdup(p);
 	int x;
 
-	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.utf8); ++x)
+	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
-			pattern[x] = joe_toupper(p->b->o.charmap,pattern[x]);
+			pattern[x] = joe_tolower(p->b->o.charmap,pattern[x]);
 	while (pbkwd(start, 1L)
 	       && (srch->ignore ? prifind(start, pattern, x) : prfind(start, pattern, x))) {
 		pset(end, start);
@@ -329,7 +329,7 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	}
 	vsrm(s);
 	if (srch->replace) {
-		if (wmkpw(bw->parent, US "Replace with (^C to abort): ", &replhist, set_replace, srchstr, pfabort, utypebw, srch, notify, bw->b->o.utf8))
+		if (wmkpw(bw->parent, US "Replace with (^C to abort): ", &replhist, set_replace, srchstr, pfabort, utypebw, srch, notify, bw->b->o.charmap))
 			return 0;
 		else
 			return -1;
@@ -343,7 +343,7 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 
 	vsrm(srch->pattern);
 	srch->pattern = s;
-	if ((pbw = wmkpw(bw->parent, US "(I)gnore (R)eplace (B)ackwards Bloc(K) NNN (^C to abort): ", NULL, set_options, srchstr, pfabort, utypebw, srch, notify, bw->b->o.utf8)) != NULL) {
+	if ((pbw = wmkpw(bw->parent, US "(I)gnore (R)eplace (B)ackwards Bloc(K) NNN (^C to abort): ", NULL, set_options, srchstr, pfabort, utypebw, srch, notify, bw->b->o.charmap)) != NULL) {
 		unsigned char buf[10];
 
 		if (srch->ignore)
@@ -388,7 +388,7 @@ static int dofirst(BW *bw, int back, int repl)
 	}
 	srch = setmark(mksrch(NULL, NULL, 0, back, -1, repl, 0));
 	srch->addr = bw->cursor->byte;
-	if (wmkpw(bw->parent, US "Find (^C to abort): ", &findhist, set_pattern, srchstr, pfabort, utypebw, srch, NULL, bw->b->o.utf8))
+	if (wmkpw(bw->parent, US "Find (^C to abort): ", &findhist, set_pattern, srchstr, pfabort, utypebw, srch, NULL, bw->b->o.charmap))
 		return 0;
 	else {
 		rmsrch(srch);

@@ -115,7 +115,7 @@
   \d  Dim
   \f  Blink
 
--lmsg \i%k%T%W%I%X %n %y%m%R %M
+-lmsg \i%k%T%W%I%X %n %m%y%R %M
 -rmsg  %S Row %r Col %c %t  Ctrl-K H for help
 
  SECOND SECTION: File name dependant local option settings:

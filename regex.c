@@ -12,6 +12,7 @@
 
 #include "b.h"
 #include "utf8.h"
+#include "charmap.h"
 #include "vs.h"
 
 int escape(unsigned char **a, int *b)
@@ -256,8 +257,8 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 	int c, d;
 	P *q = pdup(p);
 	P *o = NULL;
-	int local_utf8 = p->b->o.utf8;
-	struct charmap *local_map = p->b->o.charmap;
+	int local_utf8 = p->b->o.charmap->type;
+	struct charmap *map = p->b->o.charmap;
 	struct utf8_sm sm;
 
 	utf8_init(&sm);
@@ -397,7 +398,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 								match = (escape(&tregex, &tlen) == c);
 						} else {
 							if(icase)
-								match = (joe_toupper(local_map,c) == joe_toupper(local_map,*tregex));
+								match = (joe_tolower(map,c) == joe_tolower(map,*tregex));
 							else
 								match = (c == *tregex);
 						}
@@ -441,10 +442,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 		default:
 			d = pgetc(p);
 			if (icase) {
-				if (local_utf8) {
-					if (joe_towupper(d) != joe_towupper(c))
-						goto fail;
-				} else if (joe_toupper(local_map,d) != joe_toupper(local_map,c))
+				if (joe_tolower(map,d) != joe_tolower(map,c))
 					goto fail;
 			} else {
 				if (d != c)

@@ -126,7 +126,7 @@ extern unsigned atab[];
 #define FG_RED (14<<FG_SHIFT)
 #define FG_BLACK (15<<FG_SHIFT)
 
-void outatr PARAMS((int wide,struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a));
+void outatr PARAMS((struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a));
 
 #endif
 

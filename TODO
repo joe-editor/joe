@@ -1,7 +1,5 @@
 Fix for next release:
 
-  show modified before language
-
   option to force search to be case insensitive
 
   update selinux patch
@@ -16,8 +14,7 @@ Fix for next release:
 
   different symbol for 'joe' directory
 
-  ^T U should prompt for locale
-  should parse locale charmap files.
+  should parse locale charmap files: make subdirectory for this.
 
   can't load terminfo- should switch to termcap or provide compiled
   ANSI terminfo built in.

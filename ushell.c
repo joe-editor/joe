@@ -27,6 +27,7 @@
 #include "ufile.h"
 #include "va.h"
 #include "vs.h"
+#include "utf8.h"
 #include "w.h"
 
 extern int orphan;
@@ -164,7 +165,7 @@ B *runhist = NULL;
 
 int urun(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Program to run: ", &runhist, dorun, US "Run", NULL, NULL, NULL, NULL, -1)) {
+	if (wmkpw(bw->parent, US "Program to run: ", &runhist, dorun, US "Run", NULL, NULL, NULL, NULL, locale_map)) {
 		return 0;
 	} else {
 		return -1;

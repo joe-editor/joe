@@ -26,6 +26,8 @@
 #include "undo.h"
 #include "utils.h"
 #include "vs.h"
+#include "utf8.h"
+#include "charmap.h"
 #include "w.h"
 
 MACRO *freemacros = NULL;
@@ -131,7 +133,7 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
       macroloop:
 
 	/* Skip whitespace */
-	while (joe_isblank(buf[x]))
+	while (joe_isblank(locale_map,buf[x]))
 		++x;
 
 	/* Do we have a string? */
@@ -233,13 +235,13 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 	}
 
 	/* Skip whitespace */
-	while (joe_isblank(buf[x]))
+	while (joe_isblank(locale_map,buf[x]))
 		++x;
 
 	/* Do we have a comma? */
 	if (buf[x] == ',') {
 		++x;
-		while (joe_isblank(buf[x]))
+		while (joe_isblank(locale_map,buf[x]))
 			++x;
 		if (buf[x] && buf[x] != '\r' && buf[x] != '\n')
 			goto macroloop;
@@ -581,7 +583,7 @@ static int doarg(BW *bw, unsigned char *s, void *object, int *notify)
 
 int uarg(BW *bw)
 {
-	if (wmkpw(bw->parent, US "No. times to repeat next command (^C to abort): ", NULL, doarg, NULL, NULL, utypebw, NULL, NULL, -1))
+	if (wmkpw(bw->parent, US "No. times to repeat next command (^C to abort): ", NULL, doarg, NULL, NULL, utypebw, NULL, NULL, locale_map))
 		return 0;
 	else
 		return -1;

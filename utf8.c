@@ -165,19 +165,20 @@ int utf8_decode_string(unsigned char *s)
 
 /* Initialize locale for JOE */
 
-int utf8;		/* Set if terminal is UTF-8 */
 unsigned char *codeset;	/* Codeset of terminal */
 
 unsigned char *non_utf8_codeset;
 			/* Codeset of local language non-UTF-8 */
-			/* What if it is UTF-8? */
 
-struct charmap *locale_map;	/* Character map */
+struct charmap *locale_map;
+			/* Character map of terminal */
 
 void joe_locale()
 {
 #ifdef HAVE_SETLOCALE
 	unsigned char *s, *t;
+
+	int x;
 
 	s=(unsigned char *)getenv("LC_ALL");
 	if (!s) {
@@ -190,7 +191,7 @@ void joe_locale()
 	if (s)
 		s=(unsigned char *)strdup((char *)s);
 	else
-		s=US "C";
+		s=US "ascii";
 
 	if (t=(unsigned char *)strrchr((char *)s,'.'))
 		*t = 0;
@@ -201,18 +202,21 @@ void joe_locale()
 	setlocale(LC_ALL,"");
 	codeset = (unsigned char *)strdup(nl_langinfo(CODESET));
 
-	if(!strcmp((char *)codeset,"UTF-8")) {
-		utf8 = 1;
-		fdefault.utf8 = 1;	/* Default file type */
-		pdefault.utf8 = 1;	/* For prompt windows too */
-	}
-
-	locale_map = find_charmap(non_utf8_codeset);
+	locale_map = find_charmap(codeset);
 	if (!locale_map)
-		locale_map = find_charmap("C");
+		locale_map = find_charmap(US "ascii");
 
 	fdefault.charmap = locale_map;
 	pdefault.charmap = locale_map;
+
+/*
+	printf("Character set is %s\n",locale_map->name);
+
+	for(x=0;x!=128;++x)
+		printf("%x	space=%d blank=%d alpha=%d alnum=%d punct=%d print=%d\n",
+		       x,joe_isspace(locale_map,x), joe_isblank(locale_map,x), joe_isalpha_(locale_map,x),
+		       joe_isalnum_(locale_map,x), joe_ispunct(locale_map,x), joe_isprint(locale_map,x));
+*/
 
 #ifdef junk
 	to_utf = iconv_open("UTF-8", (char *)non_utf8_codeset);
@@ -220,7 +224,9 @@ void joe_locale()
 #endif
 
 #else
-	locale_map = find_charmap("C");
+	locale_map = find_charmap("ascii");
+	fdefault.charmap = locale_map;
+	pdefault.charmap = locale_map;
 #endif
 }
 
@@ -232,7 +238,6 @@ void to_utf8(struct charmap *map,unsigned char *s,int c)
 		utf8_encode(s,'?');
 	else
 		utf8_encode(s,d);
-
 #ifdef junk
 	/* Iconv() way */
 	unsigned char buf[10];
@@ -277,40 +282,4 @@ int from_utf8(struct charmap *map,unsigned char *s)
 	else
 		return obuf[0];
 #endif
-}
-
-/* Return true if c is a control character which should not be displayed */
-/* This should match mk_wcwidth() */
-
-int unictrl(int ucs)
-{
-	/* Control characters are one column wide in JOE */
-	if (ucs < 32 || ucs == 0x7F)
-		return 1;
-
-	if (ucs >= 0x80 && ucs <= 0x9F)
-		return 4;
-
-	/* More control characters... */
-	if (ucs>=0x200b && ucs<=0x206f) {
-		if (ucs<=0x200f) return 6;
-		if (ucs>=0x2028 && ucs<=0x202E) return 6;
-		if (ucs>=0x2060 && ucs<=0x2063) return 6;
-		if (ucs>=0x206a) return 6;
-	}
-
-	/* More control characters... */
-	if (ucs>=0xFDD0 && ucs<=0xFDEF)
-		return 6;
-
-	if (ucs==0xFEFF)
-		return 6;
-
-	if (ucs>=0xFFF9 && ucs<=0xFFFB)
-		return 6;
-
-	if (ucs>=0xFFFE && ucs<=0xFFFF)
-		return 6;
-
-	return 0;
 }

@@ -24,6 +24,7 @@
 #include "utils.h"
 #include "syntax.h"
 #include "utf8.h"
+#include "charmap.h"
 #include "w.h"
 
 /* Display modes */
@@ -361,7 +362,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				goto eobl;
 			else {
 				int wid;
-				if (p->b->o.utf8) {
+				if (p->b->o.charmap->type) {
 					c = utf8_decode(&utf8_sm,bc);
 
 					if (c>=0) /* Normal decoded character */
@@ -467,7 +468,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				tach = ' ';
 			      dota:
 				do {
-					outatr(bw->b->o.utf8, bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, c1|atr);
+					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, c1|atr);
 					if (ifhave)
 						goto bye;
 					if (++x == w)
@@ -478,7 +479,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 			else {
 				int wid = -1;
 				int utf8_char;
-				if (p->b->o.utf8) { /* UTF-8 */
+				if (p->b->o.charmap->type) { /* UTF-8 */
 
 					utf8_char = utf8_decode(&utf8_sm,bc);
 
@@ -506,11 +507,11 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					if (x+wid > w) {
 						/* If character hits right most column, don't display it */
 						while (x < w) {
-							outatr(bw->b->o.utf8, bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', c1|atr);
+							outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', c1|atr);
 							x++;
 						}
 					} else {
-						outatr(bw->b->o.utf8, bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, c1|atr);
+						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, c1|atr);
 						x += wid;
 					}
 				} else
@@ -731,7 +732,7 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	else
 		strcpy((char *)buf, "      ");
 	for (z = 0; buf[z]; ++z) {
-		outatr(w->b->o.utf8, w->b->o.charmap, t, screen + z, attr + z, z, y, buf[z], 0);
+		outatr(w->b->o.charmap, t, screen + z, attr + z, z, y, buf[z], 0);
 		if (ifhave)
 			return;
 		comp[z] = buf[z];
@@ -923,7 +924,7 @@ int ustat(BW *bw)
 	if (c == NO_MORE_DATA)
 		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
 	else
-		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, c, c, c, joe_wcwidth(bw->o.utf8,c));
+		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
 	msgnw(bw->parent, buf);
 	return 0;
 }

@@ -19,6 +19,8 @@
 #include "usearch.h"
 #include "utils.h"
 #include "vs.h"
+#include "utf8.h"
+#include "charmap.h"
 #include "w.h"
 
 static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
@@ -130,19 +132,19 @@ int utag(BW *bw)
 {
 	BW *pbw;
 
-	pbw = wmkpw(bw->parent, US "Tag search: ", &taghist, dotag, NULL, NULL, cmplt, NULL, NULL, -1);
-	if (pbw && isalnum_(bw->b->o.utf8,bw->b->o.charmap,brch(bw->cursor))) {
+	pbw = wmkpw(bw->parent, US "Tag search: ", &taghist, dotag, NULL, NULL, cmplt, NULL, NULL, locale_map);
+	if (pbw && joe_isalnum_(bw->b->o.charmap,brch(bw->cursor))) {
 		P *p = pdup(bw->cursor);
 		P *q = pdup(p);
 		int c;
 
-		while (isalnum_(bw->b->o.utf8,bw->b->o.charmap,(c = prgetc(p))))
+		while (joe_isalnum_(bw->b->o.charmap,(c = prgetc(p))))
 			/* do nothing */;
 		if (c != NO_MORE_DATA) {
 			pgetc(p);
 		}
 		pset(q, p);
-		while (isalnum_(bw->b->o.utf8,bw->b->o.charmap,(c = pgetc(q))))
+		while (joe_isalnum_(bw->b->o.charmap,(c = pgetc(q))))
 			/* do nothing */;
 		if (c != NO_MORE_DATA) {
 			prgetc(q);

@@ -11,9 +11,9 @@
  * was very easy to do with just the text editor.
  */
 
+#include "charmap.h"
+#include "utf8.h"
 #include "i18n.h"
-
-extern int utf8;
 
 /*
  * This is an implementation of wcwidth() and wcswidth() (defined in
@@ -104,7 +104,7 @@ static int bisearch(int ucs, const struct interval *table, int max)
 /* Macro for generating joe_iswXXX functions */
 
 #define MAKE_ISW(x) \
-	int joe_isw##x(int c) \
+	int joe_isw##x(struct charmap *foo,int c) \
 	{ \
 		if (-1!=bisearch(c, data_wctype_##x, sizeof(data_wctype_##x)/sizeof(struct interval) - 1)) \
 			return 1; \
@@ -198,7 +198,8 @@ int joe_wcwidth(int wide,int ucs)
 	};
 
 	/* If terminal is not UTF-8 or file is not UTF-8: width is 1 */
-	if (!utf8 || !wide)
+	/* FIXME */
+	if (!locale_map->type || !wide)
 		return 1;
 
 	/* Control characters are one column wide in JOE */
@@ -462,6 +463,7 @@ MAKE_ISW(lower)
 struct interval data_wctype_alpha[]=
 {
 	{ 0x0041, 0x005A },
+	{ 0x005F, 0x005F },	/* Include _ for joe */
 	{ 0x0061, 0x007A },
 	{ 0x00AA, 0x00AA },
 	{ 0x00B5, 0x00B5 },
@@ -815,6 +817,22 @@ struct interval data_wctype_alpha[]=
 };
 
 MAKE_ISW(alpha)
+
+int joe_iswalpha_(struct charmap *foo,int c)
+{
+	if (c==0x5F)
+		return 1;
+	else
+		return joe_iswalpha(foo,c);
+}
+
+int joe_iswalnum_(struct charmap *foo,int c)
+{
+	if (c>=0x30 && c<=0x39 || c==0x5F)
+		return 1;
+	else
+		return joe_iswalpha(foo,c);
+}
 
 struct interval data_wctype_digit[]=
 {
@@ -2683,12 +2701,13 @@ static struct interval *data_wctype_toupper_i;
 static int toupper_i_size;
 static int *toupper_cvt;
 
-int joe_towupper(int c)
+int joe_towupper(struct charmap *foo,int c)
 {
 	int idx;
 
-	if (c>='a' && c<='z')
-		return c+'A'-'a';
+	if (c>=0x61 && c<=0x7A)
+		return c+0x41-0x61;
+
 	else if(c<128)
 		return c;
 
@@ -3476,12 +3495,13 @@ static struct interval *data_wctype_tolower_i;
 static int tolower_i_size;
 static int *tolower_cvt;
 
-int joe_towlower(int c)
+int joe_towlower(struct charmap *foo,int c)
 {
 	int idx;
 
-	if (c>='A' && c<='Z')
-		return c+'a'-'A';
+	if (c>=0x41 && c<=0x5A)
+		return c + 0x61 - 0x41;
+
 	else if(c<128)
 		return c;
 
@@ -3520,18 +3540,54 @@ main(int argc,char *argv[])
 	int c;
 	sscanf(argv[1],"%x",&c);
 	printf("Properties of character %x:\n",c);
-	printf("upper=%x\n",joe_iswupper(c));
-	printf("lower=%x\n",joe_iswlower(c));
-	printf("alpha=%x\n",joe_iswalpha(c));
-	printf("digit=%x\n",joe_iswdigit(c));
-	printf("ctrl=%x\n",joe_iswctrl(c));
-	printf("punct=%x\n",joe_iswpunct(c));
-	printf("graph=%x\n",joe_iswgraph(c));
-	printf("print=%x\n",joe_iswprint(c));
-	printf("xdigit=%x\n",joe_iswxdigit(c));
-	printf("blank=%x\n",joe_iswblank(c));
+	printf("upper=%x\n",joe_iswupper(NULL,c));
+	printf("lower=%x\n",joe_iswlower(NULL,c));
+	printf("alpha=%x\n",joe_iswalpha(NULL,c));
+	printf("digit=%x\n",joe_iswdigit(NULL,c));
+	printf("ctrl=%x\n",joe_iswctrl(NULL,c));
+	printf("punct=%x\n",joe_iswpunct(NULL,c));
+	printf("graph=%x\n",joe_iswgraph(NULL,c));
+	printf("print=%x\n",joe_iswprint(NULL,c));
+	printf("xdigit=%x\n",joe_iswxdigit(NULL,c));
+	printf("blank=%x\n",joe_iswblank(NULL,c));
 	printf("width=%x\n",joe_wcwidth(1,c));
-	printf("toupper=%x\n",joe_towupper(c));
-	printf("tolower=%x\n",joe_towlower(c));
+	printf("toupper=%x\n",joe_towupper(NULL,c));
+	printf("tolower=%x\n",joe_towlower(NULL,c));
 }
 */
+
+/* Return true if c is a control character which should not be displayed */
+/* This should match mk_wcwidth() */
+
+int unictrl(int ucs)
+{
+	/* Control characters are one column wide in JOE */
+	if (ucs < 32 || ucs == 0x7F)
+		return 1;
+
+	if (ucs >= 0x80 && ucs <= 0x9F)
+		return 4;
+
+	/* More control characters... */
+	if (ucs>=0x200b && ucs<=0x206f) {
+		if (ucs<=0x200f) return 6;
+		if (ucs>=0x2028 && ucs<=0x202E) return 6;
+		if (ucs>=0x2060 && ucs<=0x2063) return 6;
+		if (ucs>=0x206a) return 6;
+	}
+
+	/* More control characters... */
+	if (ucs>=0xFDD0 && ucs<=0xFDEF)
+		return 6;
+
+	if (ucs==0xFEFF)
+		return 6;
+
+	if (ucs>=0xFFF9 && ucs<=0xFFFB)
+		return 6;
+
+	if (ucs>=0xFFFE && ucs<=0xFFFF)
+		return 6;
+
+	return 0;
+}

@@ -1,3 +1,14 @@
+Tue May  4 2004  Joe Allen <jhallen@world.std.com>
+	* ChangeLog TODO b.c bw.c charmap.c charmap.h cmd.c help.c 
+ 	i18n.c i18n.h joerc.in jpicorc.in jstarrc.in macro.c main.c 
+ 	menu.c pw.c pw.h rc.c regex.c rjoerc.in scrn.c scrn.h syntax.c 
+ 	types.h ublock.c uedit.c uerror.c ufile.c uformat.c umath.c 
+ 	usearch.c ushell.c utag.c utf8.c utils.c utils.h w.c:
+
+	Everything about character set is now contained in struct charmap.
+
+	Deprecate ^T U.  Now use ^T E to select file encoding.
+
 Mon May  3 2004  Joe Allen <jhallen@world.std.com>
 	* :
 
