@@ -2,10 +2,10 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = COPYING INFO LIST NEWS README README.cvs TODO docs/help-system.html \
 	joerc.in jmacsrc.in jstarrc.in rjoerc.in jpicorc.in \
-	joe.1.in dir.c \
+	joe.1.in dir.c c.jsf.in \
 	docs
 
-sysconf_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
+sysconf_DATA = joerc jmacsrc jstarrc rjoerc jpicorc c.jsf
 man_MANS = joe.1
 noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	macro.h main.h menu.h path.h poshist.h pw.h queue.h qw.h rc.h regex.h \

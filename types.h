@@ -73,7 +73,6 @@ struct header {
 	int	nlines;		/* ??? */
 };
 
-
 struct point {
 	LINK(P)	link;		/* ?LINK ??? */
 
@@ -304,7 +303,7 @@ struct bw {
 	int	out;		/* fd to write to process */
 	int	linums;
 	int	top_changed;	/* Top changed */
-	int	state;		/* Highlight state of line following window */
+	struct high_syntax *syntax;	/* Syntax table */
 };
 
 struct menu {
@@ -339,7 +338,8 @@ struct scrn {
 	int	scroll;
 	int	insdel;
 	int	*updtab;	/* Lines which need to be updated */
-	int	*syntab;	/* Syntax highlight state at start of each line */
+	/* HIGHLIGHT_STATE *syntab; */ /* Syntax highlight state at start of each line */
+	int	*syntab;
 	int	*compose;
 	int	*sary;
 };

@@ -110,5 +110,5 @@ AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 #  endif
 #endif])
 
-AC_CONFIG_FILES([Makefile joe.1 joerc jmacsrc jstarrc rjoerc jpicorc])
+AC_CONFIG_FILES([Makefile joe.1 joerc jmacsrc jstarrc rjoerc jpicorc c.jsf])
 AC_OUTPUT

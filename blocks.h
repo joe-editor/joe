@@ -28,6 +28,12 @@ char *mset PARAMS((void *dest, unsigned char c, int sz));
  */
 int *msetI PARAMS((void *dest, int c, int sz));
 
+/* void **msetP(void **d,void *c,int sz); Set 'sz' pointers at 'd' to 'c'.
+ * If 'sz'==0 nothing happens
+ * Returns orininal value of 'd'
+ */
+void **msetP PARAMS((void **dest, void *c, int sz));
+
 /* int mcnt(char *blk,char c,int size);
  *
  * Count the number of occurances a character appears in a block

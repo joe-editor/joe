@@ -22,6 +22,7 @@
 #include "scrn.h"
 #include "ublock.h"
 #include "utils.h"
+#include "syntax.h"
 #include "w.h"
 
 /* Display modes */
@@ -121,7 +122,6 @@ int get_highlight_state(BW *w,int line)
 {
 	P *tmp = 0;
 	int state;
-	int syn[1024];
 
 	/* Screen y position of requested line */
 	int y = line-w->top->line+w->y;
@@ -142,9 +142,12 @@ int get_highlight_state(BW *w,int line)
 		/* We must be on the top line */
 		state = 0;
 		tmp = pdup(w->top);
-		p_goto_bof(tmp); // Fixme
+		if(tmp->line>50)
+			pline(tmp, tmp->line-50);
+		else
+			p_goto_bof(tmp);
 		while(tmp->line!=y-w->y+w->top->line)
-			state = parse_c(state,syn,tmp);
+			state = parse(w->syntax,tmp,state);
 		w->parent->t->t->syntab[y] = state;
 		w->parent->t->t->updtab[y] = 1;
 		prm(tmp);
@@ -155,7 +158,7 @@ int get_highlight_state(BW *w,int line)
 	pline(tmp, y-w->y+w->top->line);
 	state = w->parent->t->t->syntab[y];
 	while(tmp->line!=w->top->line+w->h-1 && !piseof(tmp)) {
-		state = parse_c(state,syn,tmp);
+		state = parse(w->syntax,tmp,state);
 		w->parent->t->t->syntab[++y] = state;
 		w->parent->t->t->updtab[y] = 1; /* This could be smarter: update only if we changed what was there before */
 		}
@@ -239,7 +242,7 @@ void bwdel(BW *w, long int l, long int n, int flg)
 
 /* Update a single line */
 
-static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, long int from, long int to,int st)
+static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, long int from, long int to,int st,BW *bw)
         
       
             			/* Screen line address */
@@ -257,21 +260,17 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 	int c, ta, c1;
 	unsigned char bc;
 
-        int syn[1024];	/* Temporary hack */
-        P *tmp=pdup(p);
+        int *syn;
+        P *tmp;
         int idx=0;
-        int atr;
+        int atr = 0;
 
 	if(st!=-1) {
 		tmp=pdup(p);
-		parse_c(st,syn,tmp);
+		parse(bw->syntax,tmp,st);
+		syn = attr_buf;
 		prm(tmp);
-		}
-	else {
-		for(idx=0;idx!=1024;++idx)
-			syn[idx] = 0;
-		idx = 0;
-		}
+	}
 
 /* Initialize bp and amnt from p */
 	if (p->ofst >= p->hdr->hole) {
@@ -288,7 +287,8 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 	if (amnt)
 		do {
 			bc = *bp++;
-			atr = syn[idx++];
+			if(st!=-1)
+				atr = syn[idx++];
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
 				if (!--amnt) {
@@ -367,7 +367,8 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 	if (amnt)
 		do {
 			bc = *bp++;
-			atr=syn[idx++];
+			if(st!=-1)
+				atr=syn[idx++];
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
 				if (!--amnt) {
@@ -661,7 +662,6 @@ void bwgen(BW *w, int linums)
 	long from, to;
 	long fromline, toline;
 	SCRN *t = w->t->t;
-	int state= w->state;
 
 	fromline = toline = from = to = 0;
 
@@ -713,11 +713,11 @@ void bwgen(BW *w, int linums)
 			}
 			if (dosquare)
 				if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
-					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y));
+					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y),w);
 				else
-					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,w->top->line+y-w->y));
+					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,w->top->line+y-w->y),w);
 			else
-				t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y));
+				t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y),w);
 		}
 	}
 
@@ -742,11 +742,11 @@ void bwgen(BW *w, int linums)
 			}
 			if (dosquare)
 				if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
-					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y));
+					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y),w);
 				else
-					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,w->top->line+y-w->y));
+					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,w->top->line+y-w->y),w);
 			else
-				t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y));
+				t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y),w);
 		}
 	}
 	prm(q);
@@ -814,7 +814,7 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->top->xcol = 0;
 	w->cursor->xcol = 0;
 	w->top_changed = 1;
-	w->state = 0;
+	w->syntax = load_dfa("c");
 	return w;
 }
 

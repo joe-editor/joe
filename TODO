@@ -1,6 +1,4 @@
-Bugs:
-
- locks up when you do prevword on first word
+Extensionless files: do not wrap by default
 
 Syntax highlighting:
 
@@ -73,6 +71,11 @@ Jmacs/Jstar/Jpico:
  exiting options and i-search with ESC is not pretty
  (it isn't in emacs either)
 
+Abbreviations
+
+ Tab complete a word in a file, should look through file for matching
+ words.
+
 
 Shell windows:
 
@@ -100,6 +103,8 @@ Documentation:
 Prompts:
 
  Make tab completion more like bash?
+ Tab character cycle through names like in vim
+ ^D in vim shows whole directory
 
  Size of file selection window should be an option
 
@@ -143,11 +148,6 @@ Keyboard:
  use of these.
 
 
-Bugs:
-
- I've seen spell check lock up joe.
-
-
 Regex:
 
  Perl compatible regex search.
@@ -170,3 +170,10 @@ Major code improvements:
 Major new features:
 
  Folding
+
+
+Compiling
+
+ Make it work better:
+   remove dead windows
+   detect errors better

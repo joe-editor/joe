@@ -154,3 +154,163 @@ int joe_set_signal(int signum, sighandler_t handler)
 #endif
 	return(retval);
 }
+
+/* Helpful little parsing utilities */
+
+/* Skip whitespace and return first non-whitespace character */
+
+int parse_ws(char **pp)
+{
+	char *p = *pp;
+	while (*p==' ' || *p=='\t')
+		++p;
+	if (*p=='\r' || *p=='\n' || *p=='#')
+		*p = 0;
+	*pp = p;
+	return *p;
+}
+
+/* Parse an identifier into a buffer.  Identifier is truncated to a maximum of len chars. */
+
+int parse_ident(char **pp, char *buf, int len)
+{
+	char *p = *pp;
+	if(isalpha(*p) || *p=='_') {
+		while(len && isalnum_(*p))
+			*buf++= *p++, --len;
+		*buf=0;
+		while(isalnum_(*p))
+			++p;
+		*pp = p;
+		return 0;
+	} else
+		return -1;
+}
+
+/* Parse a keyword */
+
+int parse_kw(char **pp, char *kw)
+{
+	char *p = *pp;
+	while(*kw && *kw==*p)
+		++kw, ++p;
+	if(!*kw && !isalnum_(*p)) {
+		*pp = p;
+		return 0;
+	} else
+		return -1;
+}
+
+/* Parse a field */
+
+int parse_field(char **pp, char *kw)
+{
+	char *p = *pp;
+	while(*kw && *kw==*p)
+		++kw, ++p;
+	if(!*kw && (!*p || *p==' ' || *p=='\t' || *p=='#' || *p=='\n' || *p=='\r')) {
+		*pp = p;
+		return 0;
+	} else
+		return -1;
+}
+
+/* Parse a character */
+
+int parse_char(char **pp, char c)
+{
+	char *p = *pp;
+	if (*p == c) {
+		*pp = p+1;
+		return 0;
+	} else
+		return -1;
+}
+
+/* Parse an integer.  Returns 0 for success. */
+
+int parse_int(char **pp, int *buf)
+{
+	char *p = *pp;
+	if (isdigit(*p) || *p=='-') {
+		*buf = atoi(p);
+		if(*p=='-')
+			++p;
+		while(isdigit(*p))
+			++p;
+		*pp = p;
+		return 0;
+	} else
+		return -1;
+}
+
+/* Parse a string into a buffer.  Returns 0 for success.
+   Leaves escape sequences in string. */
+
+int parse_string(char **pp, char *buf, int len)
+{
+	char *p= *pp;
+	if(*p=='\"') {
+		++p;
+		while(len && *p && *p!='\"')
+			if(*p=='\\' && p[1] && len>2) {
+				*buf++ = *p++;
+				*buf++ = *p++;
+				len-=2;
+			} else {
+				*buf++ = *p++;
+				--len;
+			}
+		*buf = 0;
+		while(*p && *p!='\"')
+			if(*p=='\\' && p[1])
+				p+=2;
+			else
+				p++;
+		if(*p=='\"') {
+			*pp= p+1;
+			return 0;
+		}
+	}
+	return -1;
+}
+
+/* Parse a character range: a-z */
+
+int parse_range(char **pp, int *first, int *second)
+{
+	char *p= *pp;
+	int a, b;
+	if(!*p)
+		return -1;
+	if(*p=='\\' && p[1]) {
+		++p;
+		if(*p=='n')
+			a = '\n';
+		else if(*p=='t')
+			a = '\t';
+		else
+			a = *p;
+		++p;
+	} else
+		a = *p++;
+	if(*p=='-' && p[1]) {
+		++p;
+		if(*p=='\\' && p[1]) {
+			++p;
+			if(*p=='n')
+				b = '\n';
+			else if(*p=='t')
+				b = '\t';
+			else
+				b = *p;
+			++p;
+		} else
+			b = *p++;
+	} else
+		b = a;
+	*first = a;
+	*second = b;
+	*pp = p;
+	return 0;
+}

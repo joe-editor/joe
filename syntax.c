@@ -1,982 +1,313 @@
-/* Syntax highlighting functions */
+/*
+ *	Syntax highlighting DFA interpreter
+ *	Copyright
+ *		(C) 2004 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 
 #include "config.h"
+#include <stdlib.h>
+#include <string.h>
 #include "types.h"
-#include "b.h"
 #include "scrn.h"
+#include "utils.h"
+#include "syntax.h"
 
-/* Given starting state and a line, return ending state and colors to use for the line */
+/* Parse one line.  Returns new state.
+   'line' is advanced to start of next line.
+   Array 'attr' has coloring for each character of line.
+*/
 
-#define stIDLE 0		/* Initial state */
-#define stCOMMENT 1		/* In a comment */
-#define stCOMMENTe 3		/* In a comment plus * (tmp) */
-#define stIDLEsl 4		/* IDLE plus / (tmp) */
-#define stLCOMMENT 5		/* In a // comment (tmp) */
-#define stCCONST 6
-#define stSCONST 7
-#define stAND 8
-#define stOR 9
-#define stEQ 10
-#define stNOT 11
-#define stGT 12
-#define stLT 13
-#define stMOD 14
-#define stXOR 15
-#define stMUL 16
-#define stSUB 17
-#define stADD 18
-#define stSHR 19
+int *attr_buf = 0;
+int attr_size = 0;
 
-int parse_c(int state,int *out,P *p)
+int parse(struct high_syntax *syntax,P *line,int state)
 {
-int c;
-int x=0;
-
-for(x=0;x!=1024;++x)
-  out[x]=FG_WHITE;
-x=0;
-
-for(c=pgetc(p);;c=pgetc(p))
-  switch(state)
-    {
-    case stAND:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '&':
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stOR:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '|':
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stEQ:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stNOT:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stGT:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        case '>':
-          {
-          state = stSHR;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stLT:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        case '<':
-          {
-          state = stSHR;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stMOD:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stXOR:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stMUL:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stSUB:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stADD:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stSHR:
-      {
-      switch(c)
-        {
-        case '\n':
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '=':
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          goto ahead;
-          }
-        }
-      break;
-      }
-
-    case stIDLE:
-      {
-      ahead:
-      switch(c)
-        {
-        case '\n':
-          return state;
-
-        case NO_MORE_DATA:
-          return state;
-
-        case ' ': case '\t': case '\r':
-          {
-          out[x++]=FG_WHITE;
-          break;
-          }
-
-        case '/':
-          {
-          state = stIDLEsl;
-          break;
-          }
-
-        case '(':
-        case ')':
-        case '[':
-        case ']':
-        case '{':
-        case '}':
-          {
-          out[x++]=FG_WHITE;
-          break;
-          }
-
-        case '~':
-          {
-          out[x++]=FG_WHITE;
-          break;
-          }
-
-        case '&': /* could be && or &= */
-          {
-          state = stAND;
-          break;
-          }
-
-        case '|': /* could be || or |= */
-          {
-          state = stOR;
-          break;
-          }
-
-        case '=': /* could be = or == */
-          {
-          state = stEQ;
-          break;
-          }
-
-        case '!': /* could be ! or != */
-          {
-          state = stNOT;
-          break;
-          }
-
-        case '>': /* could be >> or >= */
-          {
-          state = stGT;
-          break;
-          }
-
-        case '<': /* could be < or <= */
-          {
-          state = stLT;
-          break;
-          }
-
-        case '%': /* could be % or %= */
-          {
-          state = stMOD;
-          break;
-          }
-
-        case '^': /* could be ^ or ^= */
-          {
-          state = stXOR;
-          break;
-          }
-
-        case '*': /* could be * or *= */
-          {
-          state = stMUL;
-          break;
-          }
-
-        case '-': /* could be - or -= */
-          {
-          state = stSUB;
-          break;
-          }
-
-        case '+': /* could be + or += */
-          {
-          state = stADD;
-          break;
-          }
-
-        case '\'': /* character constant */
-          {
-          out[x++]=FG_MAGENTA;
-          state = stCCONST;
-          break;
-          }
-
-        case '"': /* string constant */
-          {
-          out[x++]=FG_MAGENTA;
-          state = stSCONST;
-          break;
-          }
-
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          {
-          int y;
-
-          nConst:
-          y=x;
-
-          lp:
-          do
-            {
-            ++x;
-            c=pgetc(p);
-            }
-            while(c>='0' && c<='9');
-
-          if(c=='x' || c=='X')
-            { /* Hex constant */
-            goto lp;
-            }
-          else if(c=='.')
-            { /* Second half of floating follows */
-            goto lp;
-            }
-          else if(c=='U')
-            { /* U for unsigned */
-            ++x;
-            c=pgetc(p);
-            goto done;
-            }
-          else if(c=='e' || c=='E')
-            { /* Third half of floating follows */
-            ++x;
-            c=pgetc(p);
-            if(c=='+' || c=='-')
-              goto lp;
-            else if(c>='0' && c<='9')
-              goto lp;
-            }
-
-          done:
-          while(y!=x) out[y++]=FG_MAGENTA;
-          goto ahead;
-          break;
-          }
-
-        case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g': case 'h':
-        case 'i': case 'j': case 'k': case 'l': case 'm': case 'n': case 'o': case 'p':
-        case 'q': case 'r': case 's': case 't': case 'u': case 'v': case 'w': case 'x':
-        case 'y': case 'z':
-        case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G': case 'H':
-        case 'I': case 'J': case 'K': case 'L': case 'M': case 'N': case 'O': case 'P':
-        case 'Q': case 'R': case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
-        case 'Y': case 'Z':
-        case '_':
-          {
-          int y=x;
-          char buf[20];
-          int n;
-          buf[0]=c;
-          ++x;
-          /* Reads ahead */
-          while((c=pgetc(p)), (c>='a' && c<='z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9'))
-            if(x-y<18)
-              buf[x++-y]=c;
-            else
-              x++;
-          buf[x-y]=0;
-          if(!strcmp(buf,"int") ||
-             !strcmp(buf,"float") ||
-             !strcmp(buf,"long") ||
-             !strcmp(buf,"short") ||
-             !strcmp(buf,"char") ||
-             !strcmp(buf,"double") ||
-             !strcmp(buf,"signed") ||
-             !strcmp(buf,"unsigned") ||
-             !strcmp(buf,"void") ||
-             !strcmp(buf,"static") ||
-             !strcmp(buf,"extern") ||
-             !strcmp(buf,"register") ||
-             !strcmp(buf,"volatile") ||
-             !strcmp(buf,"inline") ||
-             !strcmp(buf,"automatic"))
-            n=FG_GREEN;
-          else if(!strcmp(buf,"if") ||
-             !strcmp(buf,"else") ||
-             !strcmp(buf,"while") ||
-             !strcmp(buf,"for") ||
-             !strcmp(buf,"break") ||
-             !strcmp(buf,"continue") ||
-             !strcmp(buf,"do") ||
-             !strcmp(buf,"case") ||
-             !strcmp(buf,"default") ||
-             !strcmp(buf,"switch") ||
-             !strcmp(buf,"goto"))
-            n=FG_YELLOW;
-          else
-            n=FG_WHITE;
-          while(y!=x) out[y++]=n;
-          goto ahead;
-          break;
-          }
-
-        case '#': /* Could't be preprocessor directive if it's first thing on line */
-          { /* Come back to this */
-          out[x++]=FG_WHITE;
-          break;
-          }
-
-        case ';': /* at end of statements */
-          {
-          out[x++]=FG_WHITE;
-          break;
-          }
-
-        case ':': /* for labels and case and ? */
-          {
-          out[x++]=FG_WHITE;
-          break;
-          }
-
-        case ',':
-          {
-          out[x++]=FG_WHITE;
-          break;
-          }
-
-        case '.': /* could be constant or separator */
-          {
-          c=pgetc(p);
-          if(c>='0' && c<='9')
-            {
-            goto nConst;
-            }
-          else
-            {
-            out[x++]=FG_WHITE;
-            goto ahead;
-            }
-          }
-
-        case '?': /* ? operator */
-          {
-          out[x++]=FG_WHITE;
-          break;
-          }
-
-        default: /* ` and @ are unused in C.  \ at end of line... */
-          {
-          out[x++]=FG_WHITE;
-          break;
-          }
-        }
-      break;
-      }
-
-    case stCCONST:
-      {
-      switch(c)
-        {
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_MAGENTA;
-          return stIDLE;
-          }
-
-        case '\n':
-          {
-          out[x++]=FG_MAGENTA;
-          return stIDLE;
-          }
-
-        case '\'':
-          {
-          out[x++]=FG_MAGENTA;
-          state = stIDLE;
-          break;
-          }
-
-        case '%':
-          {
-          out[x++]=FG_RED;
-          lp1:
-          c=pgetc(p);
-          switch(c)
-            {
-            case NO_MORE_DATA:
-            case '\n':
-              return stIDLE;
-
-            case '\'':
-              {
-              out[x++]=FG_MAGENTA;
-              state = stIDLE;
-              break;
-              }
-
-            case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
-            case 'e': case 'E': case 'f': case 'F': case 'g': case 'G':
-            case 'a': case 'A': case 'c': case 's': case 'p': case 'n':
-            case '%': case 'S': case 'C':
-              {
-              out[x++]=FG_RED;
-              break;
-              }
-
-            default:
-              {
-              out[x++]=FG_RED;
-              goto lp1;
-              }
-            }
-          break;
-          }
-
-        case '\\':
-          {
-          out[x++]=FG_RED;
-          c=pgetc(p);
-          if(c==NO_MORE_DATA)
-            {
-            out[x++]=FG_MAGENTA;
-            return stIDLE;
-            }
-          else if(c=='\n')
-            {
-            out[x++]=FG_MAGENTA;
-            return stCCONST;
-            }
-          else
-            {
-            out[x++]=FG_RED;
-            }
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_MAGENTA;
-          break;
-          }
-        }
-      break;
-      }
-
-    case stSCONST:
-      {
-      switch(c)
-        {
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_MAGENTA;
-          return stIDLE;
-          }
-
-        case '\n':
-          {
-          out[x++]=FG_MAGENTA;
-          return stIDLE;
-          }
-
-        case '\"':
-          {
-          out[x++]=FG_MAGENTA;
-          state = stIDLE;
-          break;
-          }
-
-        case '%':
-          {
-          out[x++]=FG_RED;
-          lp2:
-          c=pgetc(p);
-          switch(c)
-            {
-            case NO_MORE_DATA:
-            case '\n':
-              return stIDLE;
-
-            case '\'':
-              {
-              out[x++]=FG_MAGENTA;
-              state = stIDLE;
-              break;
-              }
-
-            case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
-            case 'e': case 'E': case 'f': case 'F': case 'g': case 'G':
-            case 'a': case 'A': case 'c': case 's': case 'p': case 'n':
-            case '%': case 'S': case 'C':
-              {
-              out[x++]=FG_RED;
-              break;
-              }
-
-            default:
-              {
-              out[x++]=FG_RED;
-              goto lp2;
-              }
-            }
-          break;
-          }
-
-        case '\\':
-          {
-          out[x++]=FG_MAGENTA;
-          c=pgetc(p);
-          if(c==NO_MORE_DATA)
-            {
-            out[x++]=FG_MAGENTA;
-            return stIDLE;
-            }
-          else if(c=='\n')
-            {
-            out[x++]=FG_MAGENTA;
-            return stSCONST;
-            }
-          else
-            {
-            out[x++]=FG_MAGENTA;
-            }
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_MAGENTA;
-          break;
-          }
-        }
-      break;
-      }
-
-    case stIDLEsl:
-      {
-      switch(c)
-        {
-        case '*':
-          {
-          state = stCOMMENT;
-          out[x++]=FG_CYAN;
-          out[x++]=FG_CYAN;
-          break;
-          }
-
-        case '/':
-          {
-          state = stLCOMMENT;
-          out[x++]=FG_CYAN;
-          out[x++]=FG_CYAN;
-          break;
-          }
-
-        case NO_MORE_DATA:
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        case '\n':
-          {
-          out[x++]=FG_WHITE;
-          return stIDLE;
-          }
-
-        default:
-          {
-          out[x++]=FG_WHITE;
-          out[x++]=FG_WHITE;
-          state = stIDLE;
-          break;
-          }
-        }
-      break;
-      }
-
-    case stLCOMMENT:
-      {
-      switch(c)
-        {
-        case '\n':
-          return stIDLE;
-
-        case NO_MORE_DATA:
-          return stIDLE;
-
-        default:
-          {
-          out[x++]=FG_CYAN;
-          break;
-          }
-        }
-      break;
-      }
-
-    case stCOMMENT:
-      {
-      switch(c)
-        {
-        case '\n':
-          return state;
-
-        case NO_MORE_DATA:
-          return state;
-
-        case '*':
-          {
-          out[x++]=FG_CYAN;
-          state = stCOMMENTe;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_CYAN;
-          break;
-          }
-        }
-      break;
-      }
-
-    case stCOMMENTe:
-      {
-      switch(c)
-        {
-        case '\n':
-          return stCOMMENT;
-
-        case NO_MORE_DATA:
-          return stCOMMENT;
-
-        case '/':
-          {
-          out[x++]=FG_CYAN;
-          state = stIDLE;
-          break;
-          }
-
-        case '*':
-          {
-          out[x++]=FG_CYAN;
-          break;
-          }
-
-        default:
-          {
-          out[x++]=FG_CYAN;
-          state = stCOMMENT;
-          break;
-          }
-        }
-      break;
-      }
-    }
+	struct high_state *h = syntax->states[state];
+			/* Current state */
+	char buf[20];	/* Name buffer (trunc after 19 characters) */
+	int buf_idx=0;	/* Index into buffer */
+	int c;		/* Current character */
+	int *attr_end = attr_buf+attr_size;
+	int *attr = attr_buf;
+
+	/* Get next character */
+	while((c=pgetc(line))!=NO_MORE_DATA) {
+		struct high_cmd *cmd;
+		struct high_keyword *word;
+		struct high_state *old_state;
+		int x;
+
+		if(attr==attr_end) {
+			attr_buf = realloc(attr_buf,sizeof(int)*(attr_size*2));
+			attr = attr_buf + attr_size;
+			attr_size *= 2;
+			attr_end = attr_buf + attr_size;
+		}
+
+		/* Color with current state */
+		*attr++ = h->color;
+
+		do {
+			old_state = h;
+			/* Get command for this character */
+			cmd = h->cmd[c];
+			/* Determine new state */
+			for(word=cmd->keyword_list;word;word=word->next)
+				if(!strcmp(word->name,buf)) break;
+			if(word) {
+				h = word->new_state;
+				/* Recolor keyword */
+				for(x= -(buf_idx+1);x<-1;++x)
+					attr[x] = h -> color;
+			} else {
+				h = cmd->new_state;
+				/* Recolor if necessary */
+				for(x=cmd->recolor;x<0;++x)
+					attr[x] = h -> color;
+			}
+			/* Start buffering? */
+			if(cmd->start_buffering)
+				buf_idx = 0;
+		} while(cmd->noeat);
+
+		/* Save in buffer */
+		if(buf_idx<19) buf[buf_idx++]=c;
+		buf[buf_idx] = 0;
+
+		if(c=='\n')
+			break;
+	}
+	/* Return new state number */
+	return h->no;
+}
+
+/* Load syntax file */
+
+struct high_syntax *syntax_list;
+
+struct high_syntax *load_dfa(char *name)
+{
+	char buf[1024];
+	char bf[256];
+	int clist[256];
+	char *p;
+	int c;
+	FILE *f;
+	struct high_state *state=0;	/* Current state */
+	struct high_syntax *syntax;	/* New syntax table */
+	int szstates;			/* Malloc size of states table (in syntax) */
+	int line = 0;
+
+	if(!attr_buf) {
+		attr_size = 1024;
+		attr_buf = malloc(sizeof(int)*attr_size);
+	}
+
+	/* Find syntax table */
+
+	/* Already loaded? */
+	for(syntax=syntax_list;syntax;syntax=syntax->next)
+		if(!strcmp(syntax->name,name))
+			break;
+	if(syntax)
+		return syntax;
+
+	/* Load it */
+	sprintf(buf,"%s%s.jsf",JOERC,name);
+	f=fopen(buf,"r");
+	if(!f)
+		return 0;
+
+	/* Create new one */
+	syntax = malloc(sizeof(struct high_syntax));
+	syntax->name = strdup(name);
+	syntax->next = syntax_list;
+	syntax_list = syntax;
+	syntax->nstates = 0;
+	syntax->states = malloc(sizeof(struct high_state *)*(szstates=64));
+
+	/* Parse file */
+	while(fgets(buf,1023,f)) {
+		++line;
+		p = buf;
+		c = parse_ws(&p);
+		if(!parse_char(&p, ':')) {
+			if(!parse_ident(&p, bf, 255)) {
+
+				int x;
+
+				/* Find state */
+				for(x=0;x!=syntax->nstates;++x)
+					if(!strcmp(syntax->states[x]->name,bf))
+						break;
+
+				/* It doesn't exist, so create it */
+				if(x==syntax->nstates) {
+					state=malloc(sizeof(struct high_state));
+					state->name=strdup(bf);
+					state->no=syntax->nstates;
+					state->color=FG_WHITE;
+					/* FIXME: init cmd table? */
+					if(syntax->nstates==szstates)
+						syntax->states=realloc(syntax->states,sizeof(struct high_state *)*(szstates*=2));
+					syntax->states[syntax->nstates++]=state;
+				} else
+					state = syntax->states[x];
+
+				parse_ws(&p);
+				if(!parse_ident(&p,bf,255)) {
+					if(!strcmp(bf,"Keyword"))
+						state->color=FG_YELLOW;
+					else if(!strcmp(bf,"Type"))
+						state->color=FG_GREEN;
+					else if(!strcmp(bf,"Constant"))
+						state->color=FG_MAGENTA;
+					else if(!strcmp(bf,"Escape"))
+						state->color=FG_RED;
+					else if(!strcmp(bf,"Idle"))
+						state->color=FG_WHITE;
+					else if(!strcmp(bf,"Comment"))
+						state->color=FG_CYAN;
+					else if(!strcmp(bf,"Preproc"))
+						state->color=FG_BLUE;
+					else
+						state->color=FG_WHITE;
+				} else
+					fprintf(stderr,"%s %d: Missing color for state definition\n",name,line);
+			} else
+				fprintf(stderr,"%s %d: Missing state name\n",name,line);
+		} else {
+			c = parse_ws(&p);
+
+			if (!c) {
+			} else if (c=='"' || c=='*') {
+				if (state) {
+					struct high_cmd *cmd;
+					if(!parse_field(&p, "*")) {
+						int z;
+						for(z=0;z!=256;++z)
+							clist[z] = 1;
+					} else {
+						c = parse_string(&p, bf, 255);
+						if(c)
+							fprintf(stderr,"%s %d: Bad string\n",name,line);
+						else {
+							int z;
+							int first, second;
+							char *t = bf;
+							for(z=0;z!=256;++z)
+								clist[z] = 0;
+							while(!parse_range(&t, &first, &second)) {
+								if(first>second)
+									second = first;
+								while(first<=second)
+									clist[first++] = 1;
+							}
+						}
+					}
+					/* Create command */
+					cmd = malloc(sizeof(struct high_cmd));
+					cmd->noeat = 0;
+					cmd->recolor = 0;
+					cmd->start_buffering = 0;
+					cmd->new_state = 0;
+					cmd->keyword_list = 0;
+
+					parse_ws(&p);
+					if(!parse_ident(&p,bf,255)) {
+						struct high_state *h;
+						int z;
+						for(z=0;z!=syntax->nstates;++z)
+							if(!strcmp(syntax->states[z]->name,bf))
+								break;
+
+						if(z==syntax->nstates) {
+							h=malloc(sizeof(struct high_state));
+							h->name=strdup(bf);
+							h->no=syntax->nstates;
+							h->color=FG_WHITE;
+							/* FIXME: init cmd table? */
+							if(syntax->nstates==szstates)
+								syntax->states=realloc(syntax->states,sizeof(struct high_state *)*(szstates*=2));
+							syntax->states[syntax->nstates++]=h;
+						} else
+							h = syntax->states[z];
+
+						cmd->new_state = h;
+
+						/* Parse options */
+						while (parse_ws(&p), !parse_ident(&p,bf,255))
+							if(!strcmp(bf,"buffer")) {
+								cmd->start_buffering = 1;
+							} else if(!strcmp(bf,"recolor")) {
+								parse_ws(&p);
+								if(!parse_char(&p,'=')) {
+									parse_ws(&p);
+									if(parse_int(&p,&cmd->recolor))
+										fprintf(stderr,"%s %d: Missing value for option\n",name,line);
+								} else
+									fprintf(stderr,"%s %d: Missing value for option\n",name,line);
+							} else if(!strcmp(bf,"strings")) {
+								while(fgets(buf,1023,f)) {
+									++line;
+									p = buf;
+									c = parse_ws(&p);
+									if(!parse_field(&p,"done"))
+										break;
+									if(!parse_string(&p,bf,255)) {
+										struct high_keyword *k=malloc(sizeof(struct high_keyword));
+										k->name=strdup(bf);
+										k->next=cmd->keyword_list;
+										k->new_state=0;
+										cmd->keyword_list=k;
+										parse_ws(&p);
+										if(!parse_ident(&p,bf,255)) {
+											struct high_state *h;
+											int z;
+											for(z=0;z!=syntax->nstates;++z)
+												if(!strcmp(syntax->states[z]->name,bf))
+													break;
+
+											if(z==syntax->nstates) {
+												h=malloc(sizeof(struct high_state));
+												h->name=strdup(bf);
+												h->no=syntax->nstates;
+												h->color=FG_WHITE;
+												/* FIXME: init cmd table? */
+												if(syntax->nstates==szstates)
+													syntax->states=realloc(syntax->states,sizeof(struct high_state *)*(szstates*=2));
+												syntax->states[syntax->nstates++]=h;
+											} else
+												h = syntax->states[z];
+
+											k->new_state = h;
+											
+										} else
+											fprintf(stderr,"%s %d: Missing state name\n",name,line);
+									} else
+										fprintf(stderr,"%s %d: Missing string\n",name,line);
+								}
+							} else if(!strcmp(bf,"noeat")) {
+								cmd->noeat = 1;
+							} else
+								fprintf(stderr,"%s %d: Unknown option\n",name,line);
+
+						/* Install command */
+						for(z=0;z!=256;++z)
+							if(clist[z])
+								state->cmd[z]=cmd;
+					} else
+						fprintf(stderr,"%s %d: Missing jump\n",name,line);
+				} else
+					fprintf(stderr,"%s %d: No state\n",name,line);
+			} else
+				fprintf(stderr,"%s %d: Unknown character\n",name,line);
+		}
+	}
+
+	fclose(f);
+
+	return syntax;
 }

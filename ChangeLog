@@ -1,3 +1,22 @@
+Tue Mar 30 2004  Joe Allen <jhallen@world.std.com>
+	* uedit.c, syntax.c, syntax.h, types.h, bw.c:
+	Next steps for syntax highlighting: 
+		Now there is a real parser, so syntax files
+		can be defined (although, it only loads
+		the C language c.jsf for now).
+
+		The line length limit has been eliminated.
+
+		It should be faster for large files: we start
+		parsing only 50 lines back when you hit PgUp,
+		not from the start of file each time.
+
+		Todo: update other windows, allow files of
+		other types to be highlighted, create user interface
+		to allow region names to be assigned colors, create
+		more syntax files.  Possibly create program to
+		convert regex NFA to joe DFA syntax file format.
+
 Wed Mar 24 2004  Joe Allen <jhallen@world.std.com>
 	* uedit.c:
 	Fix bug where hitting ^Z on first word of file caused joe to lock up

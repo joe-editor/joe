@@ -101,19 +101,15 @@ int u_goto_prev(BW *bw)
 	int c = prgetc(p);
 
 	if (isalnum_(c)) {
-		while (isalnum_(c=prgetc(p)));
-		/* while (isalnum_(c = brc(p)))
-			prgetc(p);*/
+		while (isalnum_(c=prgetc(p)))
+			/* Do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(p);
 	} else if (isspace(c) || ispunct(c)) {
-		while ((c=prgetc(p)), (isspace(c) || ispunct(c)));
-		/*
-		while (isspace(c = brc(p)) || ispunct(c))
-			prgetc(p); */
-		while(isalnum_(c=prgetc(p)));
-/*		while (isalnum_(c = brc(p)))
-			prgetc(p); */
+		while ((c=prgetc(p)), (isspace(c) || ispunct(c)))
+			/* Do nothing */;
+		while(isalnum_(c=prgetc(p)))
+			/* Do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(p);
 	}

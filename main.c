@@ -30,6 +30,7 @@
 #include "vfile.h"
 #include "vs.h"
 #include "w.h"
+#include "syntax.h"
 
 extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, beep;
 

@@ -1,0 +1,213 @@
+# JOE syntax highlight file for C
+
+# A (deterministic) state machine which performs lexical analysis of C.
+# (This is the "assembly language" of syntax highlighting.  A separate
+# program could be used to convert a regular expression NFA syntax into this
+# format).
+
+# Each state begins with ':<name> <color-name>'
+# <color-name> is the color used for characters eaten by the state
+# (really a symbol for a user definable color).
+
+# The first state defined is the initial state.
+
+# Within a state, define transitions (jumps) to other states.  Each
+# jump has the form: <character-list> <target-state> [<option>s]
+
+# There are two ways to specify <character-list>s, either * for any
+# character not otherwise specified, or a literal list of characters within
+# quotes (ranges and escape sequences allows).  When the next character
+# matches any in the list, a jump to the target-state is taken and the
+# character is eaten (we advance to the next character of the file to be
+# colored).
+#
+# The * transition should be the first transition specified in the state.
+#
+# There are several options:
+#   noeat     	do not eat the character, instead feed it to the next state
+#             	(this tends to make the states smaller, but be careful: you
+#		can make infinite loops).
+#
+#   recolor=-N	Recolor the past N characters with the color of the
+#		target-state.  For example once /* is recognized as the
+#		start of C comment, you want to color the /* with the C
+#		comment color.
+#
+#   buffer    	start copying characters to a buffer, beginning with this
+#		one (it's ok, to not terminate buffering with a matching
+#		'strings' option- the buffer is limited to leading 19
+#		characters).
+#
+#   strings	A list of strings follows.  If the buffer matches any of the
+#		given strings, a jump to the target-state in the string list
+#		is taken instead of the normal jump.
+#
+#   The format of the string list is:
+#
+#      "string"   <target-state>
+#      "string"   <target-state>
+#      done
+#
+# Weirdness: only states have colors, not transitions.  This means that you
+# sometimes have to make dummy states with '* next-state noeat' just to get a
+# color specification.
+
+
+# Skip whitespace at start of line
+:reset Idle
+	*		first		noeat
+	" 	"	reset
+
+:first Idle
+	*		idle		noeat
+	"#"		pre		recolor=-1
+
+:pre Preproc
+	*		idle		noeat
+	"a-zA-Z_"	preident	recolor=-1 buffer
+
+:preident Idle
+	*		idle		noeat strings
+	"define"	preproc
+	"undef"		preproc
+	"if"		preproc
+	"ifdef"		preproc
+	"ifndef"	preproc
+	"elif"		preproc
+	"else"		preproc
+	"endif"		preproc
+	"include"	preproc
+	"pragma"	preproc
+	"line"		preproc
+	"warning"	preproc
+	"warn"		preproc
+	"error"		preproc
+done
+	"a-zA-Z0-9_"	preident
+
+:preproc Preproc
+	*		idle		noeat
+
+# All following states are for when we're not in a preprocessor line
+
+:idle Idle
+	*		idle
+	"\n"		reset
+	"/"		slash
+	"0-9"		first_digit	recolor=-1
+	"."		maybe_float
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"a-zA-Z_"	ident		buffer
+
+:slash Idle
+	*		idle		noeat
+	"*"		comment		recolor=-2
+	"/"		line_comment	recolor=-2
+
+:comment Comment
+	*		comment
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment
+	*		comment
+	"/"		idle
+	"*"		maybe_end_comment
+
+:line_comment Comment
+	*		line_comment
+	"\n"		reset
+
+:first_digit Constant
+	*		idle	noeat	recolor=-1
+	"xX"		hex
+	"."		float
+	"0-9"		first_number
+
+:hex Constant
+	*		idle	noeat	recolor=-1
+	"0-9A-Fa-f"	hex
+
+:first_number Constant
+	*		idle	noeat	recolor=-1
+	"0-9"		first_number
+	"."		float
+
+:maybe_float Constant
+	*		idle	recolor=-2	noeat
+	"0-9"		float		recolor=-2
+
+:float Constant
+	*		idle	noeat	recolor=-1
+	"eE"		epart
+	"0-9"		float
+
+:epart	Constant
+	*		idle	noeat	recolor=-1
+	"0-9+\-"	enum
+
+:enum	Constant
+	*		idle	noeat	recolor=-1
+	"0-9"		enum
+
+:string	Constant
+	*		string
+	"\n"		reset
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+	"%"		string_control	recolor=-1
+
+:string_escape Escape
+	*		string
+	"\n"		string		recolor=-2
+
+:string_control Escape
+	*		string_control
+	"\n"		reset
+	"diouxXeEfFgGaAcspn%SC"	string
+
+:char	Constant
+	*		char
+	"\n"		reset
+	"'"		idle
+	"\\"		char_escape	recolor=-1
+
+:char_escape	Escape
+	*		char
+	"\n"		char		recolor=-2
+
+:ident	Idle
+	*		idle		noeat strings
+	"int"		type
+	"float"		type
+	"long"		type
+	"short"		type
+	"char"		type
+	"double"	type
+	"signed"	type
+	"unsigned"	type
+	"void"		type
+	"static"	type
+	"register"	type
+	"extern"	type
+	"inline"	type
+	"automatic"	type
+	"if"		kw
+	"else"		kw
+	"while"		kw
+	"for"		kw
+	"break"		kw
+	"continue"	kw
+	"do"		kw
+	"case"		kw
+	"default"	kw
+	"switch"	kw
+	"goto"		kw
+done
+	"a-zA-Z0-9_"	ident
+
+:type Type
+	*	idle	noeat
+
+:kw Keyword
+	*	idle	noeat
