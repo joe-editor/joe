@@ -52,6 +52,12 @@ AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
 AC_CHECK_HEADERS([ncurses.h curses.h sys/dirent.h time.h pwd.h paths.h])
 AC_CHECK_HEADERS([term.h sys/types.h sys/stat.h sys/wait.h limits.h signal.h])
 
+AC_CHECK_HEADERS([selinux/selinux.h selinux/context.h])
+if test "$ac_cv_header_selinux_selinux_h" = "yes" -a "$ac_cv_header_selinux_context_h" = "yes" ; then
+	echo "Enabling SELinux context copying!"
+	AC_DEFINE(HAVE_SELINUX, 1, [We have SELinux headers])
+fi
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_PROTOTYPES
 AC_C_CONST

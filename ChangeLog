@@ -1,4 +1,14 @@
 Thu Apr 15 2004  Joe Allen <jhallen@world.std.com>
+	* Makefile.am, configure.ac, main.c, scrn.c, uedit.c,
+	ufile.c, utf8.c, utf8.h:
+
+	First attempt at character set conversion iconv().
+	Now the file's coding can be different from the terminal's
+	coding.  Needs error checking...
+
+	Also, applied secure linux patch from RedHat.
+
+Thu Apr 15 2004  Joe Allen <jhallen@world.std.com>
 	* bw.c, help.c, main.c, menu.c, rc.c, scrn.c, scrn.h,
 	syntax.c, syntax.h, uedit.c, w.c:
 

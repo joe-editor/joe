@@ -14,10 +14,6 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
-#	include <locale.h>
-#       include <langinfo.h>
-#endif
 
 #include "b.h"
 #include "help.h"
@@ -31,9 +27,8 @@
 #include "vfile.h"
 #include "vs.h"
 #include "w.h"
+#include "utf8.h"
 #include "syntax.h"
-
-int utf8;	/* Set for UTF8 locale.  Means we should be in utf-8 mode by default. */
 
 extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, beep;
 
@@ -176,13 +171,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	int backopt;
 	int c;
 
-#ifdef HAVE_SETLOCALE
-	setlocale(LC_ALL, "");
-	printf("%s\n",nl_langinfo(CODESET));
-	utf8 = !strcmp(nl_langinfo(CODESET),"UTF-8");
-	if(utf8)
-		printf("utf8! \n");
-#endif
+	joe_locale();
 
 	mainenv = envv;
 

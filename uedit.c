@@ -820,6 +820,16 @@ int utypebw(BW *bw, int k)
 				pgetc(bw->cursor);
 			}
 
+		if(utf8 && !bw->b->o.utf8) {
+			unsigned char buf[10];
+			utf8_encode(buf,k);
+			k = from_utf8(buf);
+		} else if(!utf8 && bw->b->o.utf8) {
+			unsigned char buf[10];
+			to_utf8(buf,k);
+			k = utf8_decode_string(buf);
+		}
+		
 		binsc(bw->cursor, k);
 
 		pgetc(bw->cursor);

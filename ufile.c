@@ -33,6 +33,10 @@
 #endif
 #endif
 
+#ifdef WITH_SELINUX
+int copy_security_context(const char *from_file, const char *to_file);
+#endif
+
 #include "b.h"
 #include "bw.h"
 #include "macro.h"
@@ -178,6 +182,9 @@ static int cp(unsigned char *from, unsigned char *to)
 	utime(to, &utbuf);
 #endif
 
+#ifdef WITH_SELINUX
+	copy_security_context(from,to);
+#endif
 	return 0;
 }
 

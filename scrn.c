@@ -210,71 +210,91 @@ extern int utf8;
 
 void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 {
-	if(*scrn!=c || *attrf!=a)
-		if(wide)
-			if(utf8) {
-				/* UTF-8 char to UTF-8 terminal */
-				int zz = mk_wcwidth(c);
-				*scrn = c;
-				*attrf = a;
-				if(t->ins)
-					clrins(t);
-				if(t->x != xx || t->y != yy)
-					cpos(t, xx, yy);
-				if(t->attrib != a)
-					set_attr(t, a);
-				utf8_putc(c);
-				t->x+=zz;
-				if(zz==2) {
-					scrn[1]= -1;
-					attrf[1]= 0;
-				}
-			} else {
-				/* UTF-8 char to non-UTF-8 terminal */
-				/* For now: assume terminal is UTF-8 */
-				int zz = mk_wcwidth(c);
-				*scrn = c;
-				*attrf = a;
-				if(t->ins)
-					clrins(t);
-				if(t->x != xx || t->y != yy)
-					cpos(t, xx, yy);
-				if(t->attrib != a)
-					set_attr(t, a);
-				utf8_putc(c);
-				t->x+=zz;
-				if(zz==2) {
-					scrn[1]= -1;
-					attrf[1]= 0;
-				}
+	if(wide)
+		if(utf8) {
+			/* UTF-8 char to UTF-8 terminal */
+			int zz;
+			if(*scrn==c && *attrf==a)
+				return;
+
+			zz = mk_wcwidth(c);
+			*scrn = c;
+			*attrf = a;
+			if(t->ins)
+				clrins(t);
+			if(t->x != xx || t->y != yy)
+				cpos(t, xx, yy);
+			if(t->attrib != a)
+				set_attr(t, a);
+			utf8_putc(c);
+			t->x+=zz;
+			if(zz==2) {
+				scrn[1]= -1;
+				attrf[1]= 0;
 			}
-		else
-			if(!utf8) {
-				/* Non UTF-8 char to non UTF-8 terminal */
-				*scrn = c;
-				*attrf = a;
-				if(t->ins)
-					clrins(t);
-				if(t->x != xx || t->y != yy)
-					cpos(t,xx,yy);
-				if(t->attrib != a)
-					set_attr(t,a);
-				ttputc(c);
-				t->x++;
-			} else {
-				/* Non UTF-8 char to UTF-8 terminal */
-				/* For now: assume terminal is not utf-8 anyway */
-				*scrn = c;
-				*attrf = a;
-				if(t->ins)
-					clrins(t);
-				if(t->x != xx || t->y != yy)
-					cpos(t,xx,yy);
-				if(t->attrib != a)
-					set_attr(t,a);
-				ttputc(c);
-				t->x++;
+		} else {
+			/* UTF-8 char to non-UTF-8 terminal */
+			unsigned char buf[10];
+			utf8_encode(buf,c);	/* Utf-8 encode character */
+			c = from_utf8(buf);	/* Convert to non-utf character */
+
+			if(*scrn==c && *attrf==a)
+				return;
+
+			*scrn = c;
+			*attrf = a;
+			if(t->ins)
+				clrins(t);
+			if(t->x != xx || t->y != yy)
+				cpos(t,xx,yy);
+			if(t->attrib != a)
+				set_attr(t,a);
+			ttputc(c);
+			t->x++;
+		}
+	else
+		if(!utf8) {
+			/* Non UTF-8 char to non UTF-8 terminal */
+			if(*scrn==c && *attrf==a)
+				return;
+
+			*scrn = c;
+			*attrf = a;
+			if(t->ins)
+				clrins(t);
+			if(t->x != xx || t->y != yy)
+				cpos(t,xx,yy);
+			if(t->attrib != a)
+				set_attr(t,a);
+			ttputc(c);
+			t->x++;
+		} else {
+			/* Non UTF-8 char to UTF-8 terminal */
+			unsigned char buf[10];
+			int zz;
+			to_utf8(buf,c);
+			c = utf8_decode_string(buf);
+
+			if(*scrn==c && *attrf==a)
+				return;
+
+			zz = mk_wcwidth(c);
+			*scrn = c;
+			*attrf = a;
+			if(t->ins)
+				clrins(t);
+			if(t->x != xx || t->y != yy)
+				cpos(t, xx, yy);
+			if(t->attrib != a)
+				set_attr(t, a);
+			ttputs(buf);
+			/* utf8_putc(c); */
+			t->x+=zz;
+			if(zz==2) {
+				scrn[1]= -1;
+				attrf[1]= 0;
 			}
+		}
 }
 
 /* Set scrolling region */

@@ -39,8 +39,16 @@ struct utf8_sm {
 
 int utf8_decode PARAMS((struct utf8_sm *utf8_sm,unsigned char c));
 
+int utf8_decode_string PARAMS((unsigned char *s));
+
 /* Initialize state machine */
 
 void utf8_init PARAMS((struct utf8_sm *utf8_sm));
+
+void joe_locale();
+void to_utf8 PARAMS((unsigned char *s,int c));
+int from_utf8 PARAMS((unsigned char *s));
+
+extern int utf8;
 
 #endif

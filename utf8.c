@@ -5,6 +5,20 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
+#include "config.h"
+#include "types.h"
+
+#include <string.h>
+
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
+#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
+#	include <locale.h>
+#       include <langinfo.h>
+#	include <iconv.h>
+#endif
 
 #include "utf8.h"
 
@@ -131,4 +145,89 @@ void utf8_init(struct utf8_sm *utf8_sm)
 {
 	utf8_sm->ptr = 0;
 	utf8_sm->state = 0;
+}
+
+/* Decode a string */
+
+int utf8_decode_string(unsigned char *s)
+{
+	struct utf8_sm sm;
+	int x;
+	int c;
+	utf8_init(&sm);
+	for(x=0;s[x];++x)
+		c = utf8_decode(&sm,s[x]);
+	return c;
+}
+
+/* Initialize locale for JOE */
+
+int utf8;		/* Set if terminal is UTF-8 */
+unsigned char *codeset;	/* Codeset of terminal */
+
+unsigned char *non_utf8_codeset;
+			/* Codeset of local language non-UTF-8 */
+			/* What if it is UTF-8? */
+
+#ifdef HAVE_SETLOCALE
+iconv_t to_utf;
+iconv_t from_utf;
+#endif
+
+void joe_locale()
+{
+	unsigned char *s, *t;
+
+	s=(unsigned char *)getenv("LC_ALL");
+	if (!s) {
+		s=(unsigned char *)getenv("LC_CTYPE");
+		if (!s) {
+			s=(unsigned char *)getenv("LANG");
+		}
+	}
+
+	if (s)
+		s=(unsigned char *)strdup((char *)s);
+
+	if (t=(unsigned char *)strrchr((char *)s,'.'))
+		*t = 0;
+
+	setlocale(LC_ALL,s);
+	non_utf8_codeset = (unsigned char *)strdup(nl_langinfo(CODESET));
+
+	setlocale(LC_ALL,"");
+	codeset = (unsigned char *)strdup(nl_langinfo(CODESET));
+
+	if(!strcmp((char *)codeset,"UTF-8"))
+		utf8 = 1;
+
+	to_utf = iconv_open("UTF-8", non_utf8_codeset);
+	from_utf = iconv_open(non_utf8_codeset, "UTF-8");
+}
+
+void to_utf8(unsigned char *s,int c)
+{
+	unsigned char buf[10];
+	unsigned char *bp;
+	int ibuf_sz=1;
+	int obuf_sz= 10;
+	buf[0]=c;
+	buf[1]=0;
+	bp = buf;
+
+	iconv(to_utf,(char **)&bp,&ibuf_sz,(char **)&s,&obuf_sz);
+	*s = 0;
+}
+
+int from_utf8(unsigned char *s)
+{
+	int ibuf_sz=10;
+	unsigned char *ibufp=s;
+	
+	int obuf_sz=10;
+	unsigned char obuf[10];
+	unsigned char *obufp = obuf;
+
+	iconv(from_utf,(char **)&s,&ibuf_sz,(char **)&obufp,&obuf_sz);
+	return obuf[0];
 }
