@@ -26,7 +26,6 @@
 #include "vs.h"
 #include "w.h"
 
-char *ctime(const time_t *);
 extern char *exmsg;
 extern int square;
 int staen = 0;
@@ -76,7 +75,7 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 			switch (*++s) {
 			case 't':
 				{
-					long n = time(NULL);
+					time_t n = time(NULL);
 					int l;
 					char *d = ctime(&n);
 
@@ -92,7 +91,7 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 				break;
 			case 'u':
 				{
-					long n = time(NULL);
+					time_t n = time(NULL);
 					char *d = ctime(&n);
 
 					stalin = vsncpy(sv(stalin), d + 11, 5);

@@ -1,3 +1,7 @@
+Wed Feb 19 2003  Vitezslav Samel <samel@mail.cz>
+	* b.c, tw.c:
+	change type of variables holding time values to time_t
+
 Sat Feb 15 2003  Vitezslav Samel <samel@mail.cz>
 	* b.c, b.h, bw.c, config.h, macro.c, regex.c, tty.c, ublock.c, uedit.c,
 	uerror.c, uformat.c, uisrch.c, usearch.c, utag.c, utils.c, utils.h,

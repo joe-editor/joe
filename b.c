@@ -2134,11 +2134,9 @@ char *brvs(P *p, int size)
 
 /* Save edit buffers when editor dies */
 
-extern char *ctime(const time_t *);
-
 RETSIGTYPE ttsig(int sig)
 {
-	long tim = time(0);
+	time_t tim = time(NULL);
 	B *b;
 	FILE *f;
 	int tmpfd;
