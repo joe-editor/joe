@@ -4,11 +4,11 @@
 
 =Idle
 =Preproc bold blue
-=Comment bold cyan
-=Constant bold magenta
-=Escape bold red
-=Type bold green
-=Keyword bold yellow
+=Comment green
+=Constant cyan
+=Escape bold cyan
+=Type bold
+=Keyword bold
 
 # Skip whitespace at start of line
 :reset Idle

@@ -11,7 +11,8 @@ sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
 
 sysconf_syntaxdir = $(sysconf_joedir)/syntax
 sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
-	syntax/conf.jsf syntax/python.jsf syntax/php.jsf syntax/sh.jsf
+	syntax/conf.jsf syntax/python.jsf syntax/php.jsf syntax/sh.jsf \
+	syntax/mail.jsf
 
 man_MANS = joe.1
 noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \

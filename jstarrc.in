@@ -192,10 +192,20 @@
 +#!\+\[ 	]\+\[a-z/]/perl\>
 -autoindent
 -syntax perl
+-smarthome
+-smartbacks
 
 *.pl
 -autoindent
 -syntax perl
+-smarthome
+-smartbacks
+
+*.pm
+-autoindent
+-syntax perl
+-smarthome
+-smartbacks
 
  C language file
 *.c
@@ -404,6 +414,11 @@
 *.am
 -autoindent
 -syntax conf
+
+ Mail file
+*tmp/mutt-*
+-autoindent
+-syntax mail
 
  THIRD SECTION: Named help screens:
 

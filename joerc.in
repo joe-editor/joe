@@ -218,10 +218,20 @@
 -autoindent
 -syntax perl
 -smarthome
+-smartbacks
+-pound_comment
 *.pl
 -autoindent
 -syntax perl
 -smarthome
+-smartbacks
+-pound_comment
+*.pm
+-autoindent
+-syntax perl
+-smarthome
+-smartbacks
+-pound_comment
  SQL file
 *.c
 -autoindent
@@ -431,6 +441,11 @@
 -syntax conf
 
  Mail file
+*tmp/mutt-*
+-wordwrap
+-autoindent
+
+ THIRD SECTION: Named help screens:
 
  Use \i to turn on/off inverse video
  Use \u to turn on/off underline

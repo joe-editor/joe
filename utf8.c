@@ -267,7 +267,7 @@ int unictrl(int ucs)
 	if (ucs < 32 || ucs == 0x7F)
 		return 1;
 
-	if (ucs >= 0x80 && ucs <= 0xBF)
+	if (ucs >= 0x80 && ucs <= 0x9F)
 		return 4;
 
 	/* More control characters... */
@@ -477,7 +477,7 @@ int mk_wcwidth(int wide,int ucs)
 		return 1;
 
 	/* More control characters... */
-	if (ucs>=0x80 && ucs<=0xBF)
+	if (ucs>=0x80 && ucs<=0x9F)
 		return 4;
 
 	/* More control characters... */

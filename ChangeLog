@@ -1,9 +1,22 @@
 Mon Apr 26 2004  Joe Allen <jhallen@world.std.com>
+	*  Makefile.am bw.c configure.ac *rc.in utf8.c syntax/perl.jsf.in
+	syntax/verilog.jsf.in:
+
+	Forgot .pm files for perl.
+
+	Update colors for perl and verilog.
+
+	Added mail.jsf: works nicely with mutt
+
+	Oops- was displaying characters between 0xA0 - 0xBF as
+	control characters in UTF-8.
+
+Mon Apr 26 2004  Joe Allen <jhallen@world.std.com>
 	* uedit.c ublock.c :
 
 	Smart backspace now always fixes the indentation.
 
-	Indent left and right always fixes indentation.
+	Indent left and right always fix indentation.
 
 Mon Apr 26 2004  Joe Allen <jhallen@world.std.com>
 	* bw.c tty.c uedit.c utf8.c *rc.in:
