@@ -98,5 +98,6 @@ int isreg PARAMS((char *s));
 char **rexpnd PARAMS((char *word));
 
 int chpwd PARAMS((char *path));
+char *pwd PARAMS((void));
 
 #endif

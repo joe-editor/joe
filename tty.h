@@ -166,10 +166,6 @@ void sigjoe PARAMS((void));
  */
 void signrm PARAMS((void));
 
-/* char *pwd();  Get current working directory into a static buffer.
- */
-char *pwd PARAMS((void));
-
 /* MPX *mpxmk(int fd,int pid,
  *             void (*func)(),void *object,
  *             void (*die)(),void *dieobj,

@@ -67,10 +67,19 @@ AC_CHECK_TYPE([ssize_t], [], [
 	], [])
 AC_TYPE_SIGNAL
 AC_FUNC_STAT
-AC_CHECK_FUNCS([alarm getcwd getwd isblank mkdir mkstemp setlocale strchr strdup utime setpgid setitimer sigprocmask])
-if test "$ac_cv_func_isblank" = yes; then
+AC_CHECK_FUNCS([getcwd getwd])
+if test x"$ac_cv_func_getcwd" != xyes; then
+	if test x"$ac_cv_func_getwd" != xyes; then
+		AC_MSG_ERROR([don't know how to get current working directory])
+	fi
+fi
+AC_CHECK_FUNCS([isblank])
+if test x"$ac_cv_func_isblank" = xyes; then
 	joe_ISBLANK
 fi
+AC_CHECK_FUNCS([alarm mkdir mkstemp setlocale strchr strdup utime setpgid])
+AC_CHECK_FUNCS([setitimer sigprocmask])
+
 
 dnl not yet :-)
 dnl AM_GNU_GETTEXT

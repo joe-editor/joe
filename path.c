@@ -75,6 +75,11 @@
 #  endif
 #endif
 
+#ifndef PATH_MAX
+#warning What should we include to have PATH_MAX defined?
+#define PATH_MAX	4096
+#endif
+
 /********************************************************************/
 char *joesep(char *path)
 {
@@ -380,4 +385,20 @@ int chpwd(char *path)
 		return 0;
 	return chdir(path);
 #endif
+}
+
+/* The pwd function */
+char *pwd(void)
+{
+	static char buf[PATH_MAX];
+	char	*ret;
+
+#ifdef HAVE_GETCWD
+	ret = getcwd(buf, PATH_MAX - 1);
+#else
+	ret = getwd(buf);
+#endif
+	buf[PATH_MAX - 1] = '\0';
+
+	return ret;
 }

@@ -88,27 +88,6 @@ int idleout = 1;
 #include "tty.h"
 #include "utils.h"
 
-/* The pwd function */
-#ifdef HAVE_GETCWD
-char *pwd(void)
-{
-	static char buf[1024];
-
-	return getcwd(buf, 1024);
-}
-#else
-#ifdef HAVE_GETWD
-char *pwd(void)
-{
-	static char buf[1024];
-
-	return getwd(buf);
-}
-#else
-#error "Don't know how to get current directory"
-#endif
-#endif
-
 /** Aliased defines **/
 
 /* O_NDELAY, O_NONBLOCK, and FNDELAY are all synonyms for placing a descriptor

@@ -1,4 +1,9 @@
 Sat Dec 01 2001  Vitezslav Samel <samel@mail.cz>
+	* configure.ac, path.c, path.h, tty.c, tty.h:
+	move pwd() into path.c; check in autoconf if we have at least one
+	of getcwd() / getwd()
+
+Sat Dec 01 2001  Vitezslav Samel <samel@mail.cz>
 	* b.c, configure.ac, tty.c, tty.h, tw.c, uedit.c, utils.c, utils.h,
 	vfile.c:
 	move jread() / jwrite() into utils.c and rename them to joe_read() /
