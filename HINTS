@@ -1,0 +1,35 @@
+This documentation should go elsewhere, but I haven't gotten around to it
+yet.
+
+UTF-8
+-----
+
+	JOE will send UTF-8 sequences to the screen and accept UTF-8
+sequences from the keyboard if you have the LC_ALL environment variable set
+to a UTF_8 locale:
+
+	export LC_ALL=en_IN.utf-8
+
+	Of course the terminal emulator needs to be UTF-8 compatible as
+well.
+
+	Furthermore, if the locale is UTF-8, JOE assumes files are UTF-8
+encoded as well.
+
+	If the locale is not UTF-8, JOE assumes files are not UTF-8.
+
+	If you hit ^T U, JOE will change its assumption about the encoding
+of the file, and translate to the coding of the terminal using iconv().  If
+the terminal is utf-8, ^T U will switch the file encoding to the locale with
+the ".utf-8" removed- this is a guess as to the most likely byte encoding of
+in use at the locale.
+
+	Use ` x to enter a Unicode character in hex.
+
+	Hit ^K <space> to see the Unicode of the character under the cursor.
+
+Programming
+-----------
+
+	Try ^K , and ^K .  These keys select the current block (based on
+indentation) and shift it left or right by the -istep and -indentc.
