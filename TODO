@@ -3,6 +3,8 @@ Improvements for regular text
 mode where wordwrap wraps rest of paragraph?
 mode where all editing wraps rest of paragraph?
 
+tab in overtype should just move the cursor, not insert a tab.
+
 Improvements for programming
 ----------------------------
 

@@ -1,6 +1,12 @@
 Thu Apr 22 2004  Joe Allen <jhallen@world.std.com>
 	* uedit.c:
 
+	Tab key only inserts when past end of line in overtype mode.
+
+
+Thu Apr 22 2004  Joe Allen <jhallen@world.std.com>
+	* uedit.c:
+
 	Fixed bugs where overtype and wordwrap modes were interacting.
 	Hope this doesn't cause new bugs...
 

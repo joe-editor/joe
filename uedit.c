@@ -845,6 +845,16 @@ int utypebw(BW *bw, int k)
 		utype_utf8_sm.ptr = 0;
 
 		joe_write(bw->out, &c, 1);
+	} else if (k == '\t' && bw->o.overtype && !piseol(bw->cursor)) { /* TAB in overtype mode is supposed to be just cursor motion */
+		int col = bw->cursor->xcol;		/* Current cursor column */
+		col = col + bw->o.tab - (col%bw->o.tab);/* Move to next tab stop */
+		pcol(bw->cursor,col);			/* Try to position cursor there */
+		if (piseol(bw->cursor) && piscol(bw->cursor)<col)	/* We moved past end of line, insert a tab */
+			if (bw->o.spaces)
+				pfill(bw->cursor,col,' ');
+			else
+				pfill(bw->cursor,col,'\t');
+		bw->cursor->xcol = col;			/* Put cursor there even if we can't really go there */
 	} else if (k == '\t' && bw->o.spaces) {
 		long n = piscol(bw->cursor);
 
