@@ -74,7 +74,6 @@ AC_CHECK_TYPE([sighandler_t],
 # Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
 AC_FUNC_LSTAT
-AC_FUNC_MALLOC
 joe_SETPGRP
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T

@@ -1,3 +1,8 @@
+Sat Feb 22 2003  Vitezslav Samel <samel@mail.cz>
+	* configure.ac:
+	remove AC_FUNC_MALLOC check; this fixes problem with compilation
+	on alpha; we should check for size == 0 in joe_malloc()
+
 Wed Feb 19 2003  Vitezslav Samel <samel@mail.cz>
 	* b.c, b.h, cmd.c, cmd.h, help.c, kbd.c, kbd.h, macro.c, macro.h,
 	main.c, rc.c, rc.h, regex.c, uisrch.c:
