@@ -1,3 +1,8 @@
+Mon Jun 16 2003  Vitezslav Samel <samel@mail.cz>
+	* uedit.c
+	u_goto_prev()/u_goto_next() fix take two: skip over spaces
+	(return of joe-2.8 behaviour)
+
 Sun Jun  1 2003  Vitezslav Samel <samel@mail.cz>
 	* cmd.c, tab.c, uisrch.c:
 	don't beep when not asked

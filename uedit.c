@@ -105,8 +105,10 @@ int u_goto_prev(BW *bw)
 			prgetc(p);
 		if (c != NO_MORE_DATA)
 			pgetc(p);
-	} else if (isspace(c)) {
-		while (isspace(c = brc(p)))
+	} else if (isspace(c) || ispunct(c)) {
+		while (isspace(c = brc(p)) || ispunct(c))
+			prgetc(p);
+		while (isalnum_(c = brc(p)))
 			prgetc(p);
 		if (c != NO_MORE_DATA)
 			pgetc(p);
@@ -134,10 +136,12 @@ int u_goto_next(BW *bw)
 	if (isalnum_(c))
 		while (isalnum_(c = brc(p)))
 			pgetc(p);
-	else if (isspace(c))
-		while (isspace(c = brc(p)))
+	else if (isspace(c) || ispunct(c)) {
+		while (isspace(c = brc(p)) || ispunct(c))
 			pgetc(p);
-	else
+		while (isalnum_(c = brc(p)))
+			pgetc(p);
+	} else
 		pgetc(p);
 	if (p->byte == bw->cursor->byte) {
 		prm(p);
