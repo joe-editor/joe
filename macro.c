@@ -472,7 +472,8 @@ int exmacro(MACRO *m, int u)
 	return ret;
 }
 
-/* Execute a macro */
+/* Execute a macro - for user typing */
+/* Records macro in macro recorder, resets if */
 
 int exemac(MACRO *m)
 {

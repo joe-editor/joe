@@ -17,6 +17,7 @@ void genexmsg PARAMS((BW *bw, int saved, unsigned char *name));
 
 int ublksave PARAMS((BW *bw));
 int ushell PARAMS((BW *bw));
+int usys PARAMS((BW *bw));
 int usave PARAMS((BW *bw));
 int uedit PARAMS((BW *bw));
 int uswitch PARAMS((BW *bw));

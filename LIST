@@ -4,7 +4,9 @@ Background programs
 -------------------
 bknd		Run a shell in a window
 killproc	Kill program in current window
-run		Run a unix command in a window
+run		Run a UNIX command in a window
+sys		Run a UNIX command and return to editor when done (I/O does
+		not go through editor, be we get the command's return status).
 
 Blocks
 ------
@@ -269,3 +271,68 @@ defm2up
 defm3down	Default triple-click handlers
 defm3drag	(drag to select lines)
 defm3up
+
+Math
+----
+Math functions:
+	sin, cos, tan, exp, sqrt, cbrt, ln, log,
+	asin, acos, atan, sinh, cosh, tanh, asinh, acosh,
+	atanh, int, floor, ceil, abs, erf, erfc, j0,
+	j1, y0, y1
+
+Variables:
+	e	Set to 'e'
+	pi	Set to 'pi'
+	top	Set to line number of top window line
+	lines	Set to number of lines in file
+	line	Set to current line number
+	col	Set to current column number
+	byte	Set to current byte number
+	size	Set to buffer size
+	height	Set to window height
+	width	Set to window width
+	char	Set to ASCII val of character under cursor	
+	markv	True if there is a valid block set (^KB ... ^KK)
+	rdonly	True if file is read-only
+	ans	Result of previous expression
+
+Commands:
+	hex	Hex display mode
+	dec	Decimal display mode
+	ins	Insert 'ans' into buffer
+	sum	Sum of numbers in block
+	cnt	Count numbers in block
+	avg	Average value of numbers in block
+	dev	Standard deviation of numbers in block
+	eval	Evaluate math expressions in block (or whole file
+		if no block set).
+	joe(..)	Execute a JOE macro (argument in same format
+		as joerc file macros).  Return value of
+		JOE macro is returned (for macro success,
+		return true (non-zero)).
+
+		For example:
+
+			joe(cmd,"[ 1 == 1 ]",rtn)
+
+		([ 1 == 1 ]) is a shell command.  "[" is a synonym for
+		the "test" UNIX command.
+
+		Returns true.
+
+		Remember: argument for JOE macro command
+		"if" is a math expression.  So for example, the
+		macro:
+
+		if,"joe(cmd,\"[ 1 == 1 ]\",rtn)",then,"TRUE",endif
+
+		Types TRUE into the buffer.
+
+Operators:
+	
+	^  * / %  + -  < <= > >= == !=  &&  ||  ? :  =  :
+
+	&&, || and ? : work as in C and sh as far as side effects: if the
+	left side of && is false, the right side is not evaluated.
+
+	: is expression separator

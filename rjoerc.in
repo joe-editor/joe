@@ -242,6 +242,7 @@
 	-lmsg			Status line definition strings-
 	-rmsg			see previous section for more info.
 
+	-mfirst macro		Macro to execute on first modification
 	-mnew macro		Macro to execute when new files are loaded
 	-mold macro		Macro to execute when existing files are loaded
 	-msnew macro		Macro to execute when new files are saved
@@ -273,6 +274,10 @@
  Default local options
 -highlight
 -istep 2
+
+ Use this macro (put in first column) to have joe "p4 edit" a file you're about to change.
+
+ -mfirst if,"rdonly && joe(sys,\"p4 edit \",name,rtn)",then,mode,"o",msg,"executed \"p4 edit ",name,"\"",rtn,endif
 
  No '.' in file name?  Assume it's a text file and we want wordwrap on.
 *

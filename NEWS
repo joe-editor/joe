@@ -1,6 +1,16 @@
 JOE 3.2
 
-- JOE now has GNU-Emacs compatible file locks.
+- A perforce "p4 edit" macro has been supplied (along with the hooks
+  within JOE which support it) so that when you make the first change to a
+  read-only file, JOE runs "p4 edit".  (look in joerc file to enable the
+  macro).
+
+- JOE now has GNU-Emacs compatible file locks.  A symbolic link called
+  .#name is created, "pointing" to "user@machine.pid" whenever the buffer
+  goes from unmodified to modified.  If the lock can't be created, the user
+  is allowed to steal or ignore the lock, or cancel the edit.  The lock is
+  deleted when buffer goes from modified to unmodified (or you close the
+  file).
 
 - The built-in calculator (ESC m) is now a full featured scientific
   calculator (I'm shooting for Casio Fx-4000 level here :-), including

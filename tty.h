@@ -91,10 +91,10 @@ extern unsigned char *obuf;
  */
 void ttputs PARAMS((unsigned char *s));
 
-/* void ttshell(char *s);  Run a shell command or if 's' is zero, run a
+/* int ttshell(char *s);  Run a shell command or if 's' is zero, run a
  * sub-shell
  */
-void ttshell PARAMS((unsigned char *cmd));
+int ttshell PARAMS((unsigned char *cmd));
 
 /* void ttsusp(void);  Suspend the process, or if the UNIX can't do it, call
  * ttshell(NULL)

@@ -138,6 +138,30 @@ int ushell(BW *bw)
 	return 0;
 }
 
+/* Execute shell command */
+
+static int dosys(BW *bw, unsigned char *s, void *object, int *notify)
+{
+	int rtn;
+
+	nescape(bw->parent->t->t);
+	rtn=ttshell(s);
+	nreturn(bw->parent->t->t);
+
+	if (notify)
+		*notify = 1;
+	vsrm(s);
+	return rtn;
+}
+
+int usys(BW *bw)
+{
+	if (wmkpw(bw->parent, US "System (^C to abort): ", NULL, dosys, NULL, NULL, NULL, NULL, NULL, bw->b->o.charmap))
+		return 0;
+	else
+		return -1;
+}
+
 /* Copy a file */
 
 static int cp(unsigned char *from, unsigned char *to)
@@ -312,11 +336,11 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 		}
 	}
 	if (bw->b->er == -1 && bw->o.msnew) {
-		exemac(bw->o.msnew);
+		exmacro(bw->o.msnew,1);
 		bw->b->er = -3;
 	}
 	if (bw->b->er == 0 && bw->o.msold) {
-		exemac(bw->o.msold);
+		exmacro(bw->o.msold,1);
 	}
 	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte, 1)) != 0) {
 		msgnw(bw->parent, msgs[-fl]);
@@ -569,10 +593,10 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		bw->object = object;
 		vsrm(s);
 		if (er == -1 && bw->o.mnew) {
-			exemac(bw->o.mnew);
+			exmacro(bw->o.mnew,1);
 		}
 		if (er == 0 && bw->o.mold) {
-			exemac(bw->o.mold);
+			exmacro(bw->o.mold,1);
 		}
 		return ret;
 	} else if(c=='n' || c=='N') {
@@ -609,10 +633,10 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		bw->object = object;
 		vsrm(s);
 		if (er == -1 && bw->o.mnew) {
-			exemac(bw->o.mnew);
+			exmacro(bw->o.mnew,1);
 		}
 		if (er == 0 && bw->o.mold) {
-			exemac(bw->o.mold);
+			exmacro(bw->o.mold,1);
 		}
 		return ret;
 	} else {
@@ -727,10 +751,10 @@ int doscratch(BW *bw, unsigned char *s, void *obj, int *notify)
 	bw->object = object;
 	vsrm(s);
 	if (er == -1 && bw->o.mnew) {
-		exemac(bw->o.mnew);
+		exmacro(bw->o.mnew,1);
 	}
 	if (er == 0 && bw->o.mold) {
-		exemac(bw->o.mold);
+		exmacro(bw->o.mold,1);
 	}
 	return ret;
 }
@@ -774,10 +798,10 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 	bw->object = object;
 	vsrm(s);
 	if (er == -1 && bw->o.mnew) {
-		exemac(bw->o.mnew);
+		exmacro(bw->o.mnew,1);
 	}
 	if (er == 0 && bw->o.mold) {
-		exemac(bw->o.mold);
+		exmacro(bw->o.mold,1);
 	}
 	return ret;
 }
@@ -969,7 +993,7 @@ static int dolose(BW *bw, int c, void *object, int *notify)
 					wredraw(w);
 					bw->object = object;
 					if (bw->o.mnew)
-						exemac(bw->o.mnew);
+						exmacro(bw->o.mnew,1);
 				}
 			}
 		w = w->link.next;

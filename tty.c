@@ -684,9 +684,10 @@ void ttgtsz(int *x, int *y)
 #endif
 }
 
-void ttshell(unsigned char *cmd)
+int ttshell(unsigned char *cmd)
 {
 	int x, omode = ttymode;
+	int stat= -1;
 	unsigned char *s = (unsigned char *)getenv("SHELL");
 
 	if (!s) {
@@ -696,9 +697,10 @@ void ttshell(unsigned char *cmd)
 	ttclsn();
 	if ((x = vfork()) != 0) {
 		if (x != -1)
-			wait(NULL);
+			wait(&stat);
 		if (omode)
 			ttopnn();
+		return stat;
 	} else {
 		signrm();
 		if (cmd)
@@ -708,6 +710,7 @@ void ttshell(unsigned char *cmd)
 			execl((char *)s, (char *)s, NULL);
 		}
 		_exit(0);
+		return 0;
 	}
 }
 

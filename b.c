@@ -201,6 +201,7 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->changed = 0;
 	b->locked = 0;
 	b->ignored_lock = 0;
+	b->didfirst = 0;
 	b->count = 1;
 	b->name = NULL;
 	b->er = -3;

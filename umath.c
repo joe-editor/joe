@@ -20,6 +20,7 @@
 #include "utf8.h"
 #include "charmap.h"
 #include "ublock.h"
+#include "macro.h"
 #include "w.h"
 
 unsigned char *merr;
@@ -156,6 +157,37 @@ static double expr(int prec, int en,struct var **rtv)
 			} else if (!merr) {
 				merr = US "No block";
 			}
+		} else if (!strcmp(s,"joe")) {
+			*ptr = c;
+			v = 0;
+			x = 0.0;
+			while (*ptr==' ' || *ptr=='\t')
+				++ptr;
+			if (*ptr=='(') {
+				unsigned char *q = ++ptr;
+				MACRO *m;
+				int sta;
+				while (*q && *q!=')')
+					++q;
+				if (*q!=')') {
+					if (!merr)
+						merr = US "Missing )";
+				} else
+					*q++ = 0;
+				m = mparse(NULL,ptr,&sta);
+				ptr = q;
+				if (m) {
+					x = !exmacro(m,1);
+					rmmacro(m);
+				} else {
+					if (!merr)
+						merr = US "Syntax error in macro";
+				}
+			} else {
+				if (!merr)
+					merr = US "Missing (";
+			}
+			c = *ptr;
 		} else {
 			v = get(s);
 			x = v->val;
@@ -427,6 +459,9 @@ double calc(BW *bw, unsigned char *s)
 	v->set = 1;
 	v = get(US "markv");
 	v->val = markv(1) ? 1.0 : 0.0;
+	v->set = 1;
+	v = get(US "rdonly");
+	v->val = tbw->b->rdonly;
 	v->set = 1;
 	merr = 0;
 	return eval(s);

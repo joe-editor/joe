@@ -148,6 +148,7 @@ OPTIONS pdefault = {
 	NULL,		/* macro to execute for existing files */
 	NULL,		/* macro to execute before saving new files */
 	NULL,		/* macro to execute before saving existing files */
+	NULL		/* macro to execute on first change */
 };
 
 /* Default options for file windows */
@@ -193,7 +194,7 @@ OPTIONS fdefault = {
 	0,		/* vhdl_comment */
 	0,		/* semi_comment */
 	NULL,		/* text_delimiters */
-	NULL, NULL, NULL, NULL	/* macros (see above) */
+	NULL, NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
 /* Update options */
@@ -508,6 +509,15 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			if (options)
 				options->mnew = mparse(NULL, arg, &sta);
+			ret = 2;
+		} else
+			ret = 1;
+	} else if (!strcmp(s, "mfirst")) {
+		if (arg) {
+			int sta;
+
+			if (options)
+				options->mfirst = mparse(NULL, arg, &sta);
 			ret = 2;
 		} else
 			ret = 1;

@@ -218,6 +218,7 @@
 	-lmsg			Status line definition strings-
 	-rmsg			see previous section for more info.
 
+	-mfirst macro		Macro to execute on first modification
 	-mnew macro		Macro to execute when new files are loaded
 	-mold macro		Macro to execute when existing files are loaded
 	-msnew macro		Macro to execute when new files are saved
@@ -250,6 +251,10 @@
  Default local options
 -highlight
 -istep 2
+
+ Use this macro (put in first column) to have joe "p4 edit" a file you're about to change.
+
+ -mfirst if,"rdonly && joe(sys,\"p4 edit \",name,rtn)",then,mode,"o",msg,"executed \"p4 edit ",name,"\"",rtn,endif
 
  No '.' in file name?  Assume it's a text file and we want wordwrap on.
 *
@@ -814,7 +819,7 @@
 \i \i     dec decimal mode           sinh cosh tanh asinh acosh atanh             \|\i \i
 \i \i     ins type result into file  sqrt cbrt exp ln log                         \|\i \i
 \i \i    eval evaluate block         int floor ceil abs erg ergc                  \|\i \i
-\i \i    0xff enter number in hex                                                 \|\i \i
+\i \i    0xff enter number in hex    joe(..macro..) - runs an editor macro        \|\i \i
 \i \i    3e-4 floating point decimal \uBLOCK\u                                        \|\i \i
 \i \i    a=10 assign a variable      sum cnt  Sum, count                          \|\i \i
 \i \i 2+3:ins multiple commands      avg dev  Average, std. deviation             \|\i \i

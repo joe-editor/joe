@@ -5,6 +5,17 @@ Sun Mar 13 12:39:18 EST 2005
 
 	Add optional file locking.
 
+	Add joe() math command.  Executes JOE macro, and 
+	returns success value as result.
+
+	Added sys command: execute a shell command with
+	I/O connected to terminal, not editor.  Return
+	value of shell command is success value of command.
+
+	rdonly flag is available as math variable.
+
+	Added perforce macro.  Fixed some "if" bugs.
+
 Sat Mar 12 00:31:23 EST 2005
 
 	Update other *rc files.

@@ -382,9 +382,9 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 				maint->curwin = bw->parent;
 				/* Execute macro */
 				if (er == -1 && bw->o.mnew)
-					exemac(bw->o.mnew);
+					exmacro(bw->o.mnew,1);
 				if (er == 0 && bw->o.mold)
-					exemac(bw->o.mold);
+					exmacro(bw->o.mold,1);
 				/* Hmm... window might not exist any more... depends on what macro does... */
 				if (lnum > 0)
 					pline(bw->cursor, lnum - 1);
@@ -409,7 +409,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 		BW *bw = wmktw(maint, bfind(US ""));
 
 		if (bw->o.mnew)
-			exemac(bw->o.mnew);
+			exmacro(bw->o.mnew,1);
 	}
 	maint->curwin = maint->topwin;
 

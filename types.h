@@ -146,6 +146,7 @@ struct options {
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */
 	MACRO	*msold;		/* Macro to execute before saving existing files */
+	MACRO	*mfirst;	/* Macro to execute on first change */
 };
 
 struct macro { int k; /* Keycode */ int arg; /* Repeat argument */ CMD *cmd;
@@ -180,6 +181,7 @@ struct buffer {
 	unsigned char	*name;
 	int locked;		/* Set if we created a lock for this file */
 	int ignored_lock;	/* Set if we didn't create a lock and we don't care (locked set in this case) */
+	int didfirst;		/* Set after user attempted first change */
 	long    mod_time;	/* Last modification time for file */
 	int	orphan;
 	int	count;
