@@ -1,104 +1,250 @@
-# JOE syntax highlight file for XML
-# This needs lots of work...
+# Improved XML highlighter by: Brian Candler <B.Candler@pobox.com>
 
+# Define no. sync lines
+# You can say:
+# -200     means 200 lines
+# -        means always start parsing from beginning of file when we lose sync
+#          if nothing is specified, the default is -50
+
+-
 
 # Define colors
+#
+# bold inverse blink dim underline
+# white cyan magenta blue yellow green red black
+# bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
+
+# The underlines are here right now just because I want to distinguish which
+# bits have been coloured (say) CdataStart, CdataBody, CdataEnd. And that's
+# because I think it may be useful to make that distinction for some people.
 
 =Idle
-=Comment 	green
-=Constant 	cyan
-=Escape 	bold cyan
-=Keyword 	bold
-=Bad		bold red
-=Attr		magenta
+=Error		red bold
+=Tag		blue
+=Attr		cyan
+=Constant	blue bold
+=EntityRef	magenta
+=Decl		cyan
+=CommentStart	green
+=CommentBody	green
+=CommentEnd	green
+=PIStart	magenta bold
+=PIBody		magenta
+=PIEnd		magenta bold
+=CdataStart	blue bold
+=CdataBody	bold
+=CdataEnd	blue bold
 
-# Start of markup, plus crazy HTML comments... (not really needed for XML)
+# http://www.w3.org/TR/2004/REC-xml-20040204/
+#
+# NOTE: For UNICODE compatibility, the ranges
+#	"A-Za-z_:"		-- first character of Name
+#	"A-Za-z0-9._:-"		-- subsequent characters of Name
+# ought to be replaced with some appropriate Unicode character classes
 
-:idle Idle
-	*		idle
-	"&%"		char		recolor=-1
-	"<"		start
+:content Idle
+	*		content
+	"<"		tag		recolor=-1
+	">"		error		noeat recolor=-1
+	"&"		entityref	recolor=-1
 
-:char Escape
-	*		char
-	";"		idle
+# In several contexts a space is an error, and since a coloured space is
+# not visible, we colour the next non-space character as well.
 
-:start Idle
-	*		mark		noeat
-	"!"		bang
+:error Error
+	*		error_visible	noeat recolor=-1
+	" \t\n"		error
 
-:bang Idle
-	*		mark		noeat
-	"-"		maybe_comment
+:error_visible Error
+	*		content
 
-:maybe_comment Idle
-	*		mark		noeat
-	"-"		comment		recolor=-2
+# Matched: &
 
-:comment Comment
-	*		comment
-	"-"		maybe_end_comment
+:entityref EntityRef
+	*		error		noeat recolor=-1
+	"A-Za-z0-9._:-"	entityref
+	"#"		entityref
+	";"		content
 
-:maybe_end_comment Comment
-	*		comment
-	"-"		end_comment
+# Matched: <
 
-:end_comment Bad
-	*		idle
-	"-"		maybe_another_comment
-	" \t\n"		end_comment
-	">"		idle		recolor= -1
+:tag Tag
+	*		error		noeat recolor=-1
+	"/"		end_tag
+	"A-Za-z_:"	start_or_empty_tag
+	"?"		pi_start	recolor=-2
+	"!"		decl		recolor=-2 buffer
 
-:maybe_another_comment Idle
-	*		end_comment
-	"-"		comment		recolor= -2
+# Matched: </
 
+:end_tag Tag
+	*		error		noeat recolor=-1
+	"A-Za-z_:"	end_tag2
 
-# We're in a markup
+:end_tag2 Tag
+	*		error		noeat recolor=-1
+	"A-Za-z0-9._:-"	end_tag2
+	" \t\n"		end_tag3
+	">"		content
 
-:mark Idle
-	*		mark
-	">"		idle
-	"a-zA-Z_"	ident		buffer
-	"0-9"		number		recolor= -1
-	"\""		astring		recolor= -1
-	"\'"		bstring		recolor= -1
+:end_tag3 Tag
+	*		error		noeat recolor=-1
+	" \t\n"		end_tag3
+	">"		content
 
-:number Constant
-	*		mark	noeat
-	"0-9"		number
+# Matched: <tag
 
+:start_or_empty_tag Tag
+	*		error		noeat recolor=-1
+	"A-Za-z0-9._:-"	start_or_empty_tag
+	"/"		empty_tag
+	" \t\n"		tag_space
+	">"		content
 
-# Strings
+# Matched: <tag/
+
+:empty_tag Tag
+	*		error		noeat recolor=-1
+	">"		content
+
+# Matched: <tag SPACE
+
+:tag_space Attr
+	*		error		noeat recolor=-1
+	" \t\n"		tag_space
+	"A-Za-z_:"	attr
+	"/"		empty_tag	recolor=-1
+	">"		close_tag	recolor=-1
+
+# Matched: <tag attr
+
+:attr Attr
+	*		error		noeat recolor=-1
+	"A-Za-z0-9._:-" attr
+	"="		string
+
+# Matched: <tag attr=
+
+:string Attr
+	*		error		noeat recolor=-1
+	"\""		astring		recolor=-1
+	"'"		bstring		recolor=-1
+
+# Matched: <tag attr="
 
 :astring Constant
 	*		astring
-	"%&"		achar	recolor=-1
-	"\""		mark
-
-:achar Escape
-	*		achar
-	";"		astring
+	"<>"		error		noeat recolor=-1
+	"&"		achar		recolor=-1
+	"\""		endstring
 
 :bstring Constant
 	*		bstring
-	"%&"		bchar	recolor=-1
-	"'"		mark
+	"<>"		error		noeat recolor=-1
+	"&"		bchar		recolor=-1
+	"'"		endstring
 
-:bchar Escape
-	*		bchar
+:achar EntityRef
+	*		error		noeat recolor=-1
+	"A-Za-z0-9._:-"	achar
+	"#"		achar
+	";"		astring
+
+:bchar EntityRef
+	*		error		noeat recolor=-1
+	"A-Za-z0-9._:-"	bchar
+	"#"		bchar
 	";"		bstring
 
-# Keywords
+# Matched: <tag attr="foo"
 
-:ident Idle
-	*		mark		noeat istrings
-# Add keywords here..
+:endstring Attr
+	*		error		noeat recolor=-1
+	" \t\n"		tag_space
+	"/"		empty_tag	recolor=-1
+	">"		close_tag	recolor=-1
+
+# This state is just to recolor the final ">" at the end of <tag attr="val">
+
+:close_tag Tag
+	*		content		noeat
+
+# Matched: <?
+
+:pi_start PIStart
+	*		pi		noeat recolor=-1
+
+:pi PIBody
+	*		pi
+	"?"		pi2
+
+:pi2 PIBody
+	*		pi
+	">"		pi_end		recolor=-2
+
+:pi_end PIEnd
+	*		content		noeat recolor=-1
+
+# Matched: <!
+
+:decl Decl
+	*		decl		strings
+	"!--"		comment_start	recolor=-5
+	"![CDATA["	cdata_start	recolor=-10
 done
-	"a-zA-Z0-9_"	ident
+	"<"		decl_nest
+	">"		content
 
-:kw Keyword
-	*	mark	noeat
+# We allow one level of <...> nesting within declarations
 
-:attr Attr
-	*	mark	noeat
+:decl_nest Decl
+	*		decl_nest
+	">"		decl
+
+# Matched: <!--
+
+:comment_start CommentStart
+	*		comment		noeat
+
+:comment CommentBody
+	*		comment
+	"-"		comment2
+
+:comment2 CommentBody
+	*		comment
+	"-"		comment3
+
+:comment3 CommentBody
+	*		comment_error	noeat recolor=-3
+	">"		comment_end	recolor=-3
+
+:comment_end CommentEnd
+	*		content		noeat recolor=-1
+
+# For compatibility, the string "--" (double-hyphen) MUST NOT occur within
+# comments. [http://www.w3.org/TR/REC-xml/ section 2.5]
+
+:comment_error Error
+	*		comment
+	"-"		comment_error
+	">"		comment_end	recolor=-3
+
+# Matched: <![CDATA[
+
+:cdata_start CdataStart
+	*		cdata		noeat
+
+:cdata CdataBody
+	*		cdata
+	"]"		cdata2
+
+:cdata2 CdataBody
+	*		cdata
+	"]"		cdata3
+
+:cdata3 CdataBody
+	*		cdata
+	">"		cdata_end	recolor=-3
+
+:cdata_end CdataEnd
+	*		content		noeat recolor=-1

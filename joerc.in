@@ -222,6 +222,19 @@
 *.*
 
  Diff
+*
++--- 
+-syntax diff
+
+*
++*** 
+-syntax diff
+
+*
++\[1-9]\+\[0-9]\[cda]
+-syntax diff
+
+ TeX
 *.txt
 -wordwrap
 
