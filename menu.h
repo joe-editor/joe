@@ -21,6 +21,8 @@ int umuparw PARAMS((MENU *m));
 int umdnarw PARAMS((MENU *m));
 int umpgup PARAMS((MENU *m));
 int umpgdn PARAMS((MENU *m));
+int umscrup PARAMS((MENU *m));
+int umscrdn PARAMS((MENU *m));
 int umltarw PARAMS((MENU *m));
 int umrtarw PARAMS((MENU *m));
 int umtab PARAMS((MENU *m));

@@ -38,7 +38,7 @@ int rtbutton=0;			/* use button 3 instead of 1 */
 int floatmouse=0;		/* don't fix xcol after tomouse */
 int joexterm=0;			/* set if we're using Joe's modified xterm */
 
-static int dragging = 0;	/* Set if we did any dragging */
+static int selecting = 0;	/* Set if we did any selecting */
 
 static int xtmstate;
 static int Cb, Cx, Cy;
@@ -55,6 +55,8 @@ static void fake_key(int c)
 	if(m)
 		exemac(m);
 }
+
+/* Translate mouse coordinates */
 
 int mcoord(int x)
 {
@@ -101,7 +103,9 @@ int uxtmouse(BW *bw)
 		else
 			/* drag */
 			mousedrag(Cx,Cy);
-	else if (joexterm && (Cb & 3) == 1)		/* Paste */
+	else if ((maint->curwin->watom->what & TYPETW ||
+	          maint->curwin->watom->what & TYPEPW) &&
+	          joexterm && (Cb & 3) == 1)		/* Paste */
 		ttputs(US "\33[y");
 	return 0;
 }
@@ -135,36 +139,41 @@ void mousedn(int x,int y)
 	}
 }
 
+void select_done()
+{
+	/* Feed text to xterm */
+	if (joexterm && markv(1)) {
+		long left = markb->xcol;
+		long right = markk->xcol;
+		P *q = pdup(markb);
+		int c;
+		ttputs(US "\33[1y");
+		while (q->byte < markk->byte) {
+			/* Skip until we're within columns */
+			while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
+				pgetc(q);
+
+			/* Copy text into buffer */
+			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
+				c = pgetc(q);
+				ttputc(c);
+			}
+			/* Add a new line if we went past right edge of column */
+			if (square && q->byte<markk->byte && piscol(q) >= right)
+				ttputc(13);
+		}
+		ttputs(US "\33\33");
+		prm(q);
+	}
+}
+
 void mouseup(int x,int y)
 {
 	struct timeval tv;
 	Cx = x, Cy = y;
-	if (dragging) {
-		/* Feed text to xterm */
-		if (joexterm && markv(1)) {
-			long left = markb->xcol;
-			long right = markk->xcol;
-			P *q = pdup(markb);
-			int c;
-			ttputs(US "\33[1y");
-			while (q->byte < markk->byte) {
-				/* Skip until we're within columns */
-				while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
-					pgetc(q);
-
-				/* Copy text into buffer */
-				while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
-					c = pgetc(q);
-					ttputc(c);
-				}
-				/* Add a new line if we went past right edge of column */
-				if (square && q->byte<markk->byte && piscol(q) >= right)
-					ttputc(13);
-			}
-			ttputs(US "\33\33");
-			prm(q);
-		}
-		dragging = 0;
+	if (selecting) {
+		select_done();
+		selecting = 0;
 	}
 	switch(clicks) {
 		case 1:
@@ -317,7 +326,7 @@ int udefmdrag(BW *xx)
 		marked++, umarkb(bw);
 	if (tomousestay())
 		return -1;
-	dragging = 1;
+	selecting = 1;
 	if (reversed)
 		umarkb(bw);
 	else
@@ -355,6 +364,7 @@ int udefm2down(BW *xx)
 	u_goto_next(bw); anchorn = bw->cursor->byte; umarkk(bw); markk->xcol = piscol(markk);
 	reversed = 0;
 	bw->cursor->xcol = piscol(bw->cursor);
+	selecting = 1;
 }
 
 int udefm2drag(BW *xx)
@@ -362,7 +372,6 @@ int udefm2drag(BW *xx)
 	BW *bw=(BW *)maint->curwin->object;
 	if (tomousestay())
 		return -1;
-	dragging = 1;
 	if (!reversed && bw->cursor->byte < anchor) {
 		pgoto(markk,anchorn);
 		markk->xcol = piscol(markk);
@@ -402,6 +411,7 @@ int udefm3down(BW *xx)
 	umarkk(bw); pnextl(markk); anchorn = markk->byte;
 	reversed = 0;
 	bw->cursor->xcol = piscol(bw->cursor);
+	selecting = 1;
 }
 
 int udefm3drag(BW *xx)
@@ -409,7 +419,6 @@ int udefm3drag(BW *xx)
 	BW *bw = (BW *)maint->curwin->object;
 	if (tomousestay())
 		return -1;
-	dragging = 1;
 	if (!reversed && bw->cursor->byte < anchor) {
 		pgoto(markk,anchorn);
 		markk->xcol = piscol(markk);

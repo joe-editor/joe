@@ -247,9 +247,8 @@ void menujump(MENU *m,int x,int y)
 	m->cursor = pos;
 }
 
-int umpgup(MENU *m)
+int mscrup(MENU *m,int amnt)
 {
-	int amnt = (m->h+1)/2;
 	if (m->top >= amnt*m->perline) {
 		m->top -= amnt*m->perline;
 		m->cursor -= amnt*m->perline;
@@ -265,9 +264,18 @@ int umpgup(MENU *m)
 		return -1;
 }
 
-int umpgdn(MENU *m)
+int umscrup(MENU *m)
 {
-	int amnt = (m->h+1)/2;
+	return mscrup(m, 1);
+}
+
+int umpgup(MENU *m)
+{
+	return mscrup(m, (m->h + 1) / 2);
+}
+
+int mscrdn(MENU *m, int amnt)
+{
 	int col = m->cursor % m->perline;
 	int y = m->cursor / m->perline;
 	int h = (m->nitems + m->perline - 1) / m->perline;
@@ -311,7 +319,16 @@ int umpgdn(MENU *m)
 		m->cursor += col;
 		return -1;
 	}
+}
 
+int umscrdn(MENU *m)
+{
+	return mscrdn(m, 1);
+}
+
+int umpgdn(MENU *m)
+{
+	return mscrdn(m, (m->h + 1) / 2);
 }
 
 static int umrtn(MENU *m)

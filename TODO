@@ -4,8 +4,18 @@ Short (infinite) list for 3.3:
 - dynamic spell checking with highlighter- there should be a way
 - grep and grep-find commands
 - select word wrap for news articles ("article" in file name)
-- scroll menus with mouse
-- mouse when in hex mode, line numbering mode
+
+Mouse issues:
+
+- mouse select when in hex mode, line numbering mode, prompt windows.
+- auto scroll when drag past edge
+
+  help screen mouse commands?
+  double-click at prompts hits enter?
+  double-click empty prompt, hits tab?
+  right-click pops directory?
+  right-click is cancel?
+  double-click is yes?
 
 - - - -
 

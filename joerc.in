@@ -148,7 +148,7 @@
 		position the cursor and left-click-drag will select blocks.
 		For normal xterm cut and paste, hold the shift key down.
  -joexterm	If you are using Joe's modified Xterm, which makes -mouse
- -joexterm	If you are using Joe's modified Xterm, which makes -mouse
+		mode work better (cut & paste work transparently).
 
  -square	Rectangular block mode
 
@@ -1362,6 +1362,7 @@ dnarwmenu	^[ [ B
 dnarwmenu	^[ O B
 dnarwmenu ^# B
 dnarwmenu	MWDOWN
+eofmenu		^K V
 eofmenu		^K ^V
 eofmenu		^K v
 eolmenu		.kH
@@ -1396,6 +1397,7 @@ uparwmenu	^[ [ A
 uparwmenu	^[ O A
 uparwmenu ^# A
 uparwmenu	MWUP
+defm2down	M2DOWN		Hits return key
 
 :query			Single-key query window
 :inherit windows
