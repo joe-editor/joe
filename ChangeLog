@@ -1,3 +1,13 @@
+Thu May  6 2004  Joe Allen <jhallen@world.std.com>
+	* uedit.c :
+
+	Smart tab looks back 10 lines to determine indentation.
+
+Wed May  5 2004  Joe Allen <jhallen@world.std.com>
+	* charmap.c :
+
+	Now parses charmap files.
+
 Wed May  5 2004  Joe Allen <jhallen@world.std.com>
  	* bw.c charmap.c main.c qw.c qw.h regex.c regex.h 
  	syntax.c types.h uisrch.c usearch.c utf8.c utf8.h:

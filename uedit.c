@@ -876,6 +876,22 @@ int uinsc(BW *bw)
 	return 0;
 }
 
+/* Move p backwards to first non-blank line and return its indentation */
+
+int find_indent(P *p)
+{
+	int x;
+	for (x=0; x != 10; ++x) {
+		if (!pprevl(p)) return -1;
+		p_goto_bol(p);
+		if (!pisblank(p)) break;
+	}
+	if (x==10)
+		return -1;
+	else
+		return pisindent(p);
+}
+
 /* Type a character into the buffer (deal with left margin, overtype mode and
  * word-wrap), if cursor is at end of shell window buffer, just send character
  * to process.
@@ -905,7 +921,8 @@ int utypebw(BW *bw, int k)
 		bw->cursor->xcol = col;			/* Put cursor there even if we can't really go there */
 	} else if (k == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)==piscol(bw->cursor)) {
 		P *p = pdup(bw->cursor);
-		if (pprevl(p) && p_goto_bol(p) && pisindent(p)>pisindent(bw->cursor)) {
+		int n = find_indent(p);
+		if (n != -1 && n > pisindent(bw->cursor)) {
 			if (!pisbol(bw->cursor))
 				udelbl(bw);
 			while (joe_isspace(map,(k = pgetc(p))) && k != '\n') {
@@ -920,6 +937,7 @@ int utypebw(BW *bw, int k)
 			}
 		}
 		bw->cursor->xcol = piscol(bw->cursor);
+		prm (p);
 	} else if (k == '\t' && bw->o.spaces) {
 		long n;
 
