@@ -120,7 +120,7 @@ static char *mema(int align, int size)
 	return z + align - physical(z) % align;
 }
 
-char *vlock(VFILE *vfile, long int addr)
+char *vlock(VFILE *vfile, unsigned long addr)
 {
 	VPAGE *vp, *pp;
 	int x, y;
@@ -128,7 +128,7 @@ char *vlock(VFILE *vfile, long int addr)
 
 	addr -= ofst;
 
-	for (vp = htab[((addr >> LPGSIZE) + (int) vfile) & (HTSIZE - 1)]; vp; vp = vp->next)
+	for (vp = htab[((addr >> LPGSIZE) + (unsigned long) vfile) & (HTSIZE - 1)]; vp; vp = vp->next)
 		if (vp->vfile == vfile && vp->addr == addr) {
 			++vp->count;
 			return vp->data + ofst;
@@ -199,8 +199,8 @@ char *vlock(VFILE *vfile, long int addr)
 	vp->vfile = vfile;
 	vp->dirty = 0;
 	vp->count = 1;
-	vp->next = htab[((addr >> LPGSIZE) + (int) vfile) & (HTSIZE - 1)];
-	htab[((addr >> LPGSIZE) + (int) vfile) & (HTSIZE - 1)] = vp;
+	vp->next = htab[((addr >> LPGSIZE) + (unsigned long)vfile) & (HTSIZE - 1)];
+	htab[((addr >> LPGSIZE) + (unsigned long)vfile) & (HTSIZE - 1)] = vp;
 
 	if (addr < vfile->size) {
 		if (!vfile->fd) {

@@ -1,4 +1,9 @@
 Sat Dec  7 2002  Vitezslav Samel <samel@mail.cz>
+	* blocks.c, vfile.c:
+	64bit arch fixes: don't expect pointer fits into int (now we assume
+	it fits into unsigned long)
+
+Sat Dec  7 2002  Vitezslav Samel <samel@mail.cz>
 	* types.h, usearch.c:
 	rename restrict() and restrict member of struct search to make
 	joe compile under HPUX with HP C compiler

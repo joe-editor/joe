@@ -98,7 +98,7 @@ char *mset(void *dest, unsigned char c, int sz)
 		case 0:		/* do nothing */;
 		}
 	} else {
-		int z = SIZEOF_INT - ((int) d & (SIZEOF_INT - 1));
+		unsigned z = SIZEOF_INT - ((unsigned long)d & (SIZEOF_INT - 1));
 
 		if (z != SIZEOF_INT) {
 			switch (z) {
@@ -264,10 +264,10 @@ static char *mbkwd(register char *d, register char *s, register int sz)
 #ifdef ALIGNED
 	if (sz >= 16)
 #else
-	if (((int) s & (SIZEOF_INT - 1)) == ((int) d & (SIZEOF_INT - 1)) && sz >= 16)
+	if (((unsigned long)s & (SIZEOF_INT - 1)) == ((unsigned long)d & (SIZEOF_INT - 1)) && sz >= 16)
 #endif
 	{
-		int z = ((int) s & (SIZEOF_INT - 1));
+		unsigned z = ((unsigned long) s & (SIZEOF_INT - 1));
 
 		s -= z;
 		d -= z;
@@ -355,10 +355,10 @@ static char *mfwrd(register char *d, register char *s, register int sz)
 #ifdef ALIGNED
 	if (sz >= 16)
 #else
-	if (((int) d & (SIZEOF_INT - 1)) == ((int) s & (SIZEOF_INT - 1)) && sz >= 16)
+	if (((unsigned long)d & (SIZEOF_INT - 1)) == ((unsigned long)s & (SIZEOF_INT - 1)) && sz >= 16)
 #endif
 	{
-		int z = ((int) s & (SIZEOF_INT - 1));
+		unsigned z = ((unsigned long)s & (SIZEOF_INT - 1));
 
 		if (z) {
 			s -= z;

@@ -116,7 +116,7 @@ void vflshf PARAMS((VFILE *vfile));
  * ever might want to is to implement your own version of valloc()).
  */
 
-char *vlock PARAMS((VFILE *vfile, long int addr));
+char *vlock PARAMS((VFILE *vfile, unsigned long addr));
 
 /* VPAGE *vheader(char *);
  * Return address of page header for given page
