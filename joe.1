@@ -1,27 +1,33 @@
-.TH J 1
+.TH JOE 1
 .SH NAME
-j \- Joe's Screen Editor
+joe \- Joe's Own Editor
 .SH SYNOPSIS
-.B j file
+.B joe file
 .br
-.BR j
+.BR joe
 .SH DESCRIPTION
-J is a screen editor designed to be easy to learn for novice users and
+JOE is a screen editor designed to be easy to learn for novice users and
 powerfull enough for experienced users.  After you invoke the editor, you can
 hit ^K H ('^' mean hold the Ctrl key down while pressing the following key) to
 turn on the help text.  From this you should be able to figure out how to use
 the editor.  A few things need further explanation however:
 
-J uses the "TERM" environment entry and termcap to determine the height and
+JOE uses the "TERM" environment entry and termcap to determine the height and
 width of the screen and to determine if the terminal uses scrolling regions. 
 Except for these differences the terminal must be ANSI/VT100 compatible.
+
+Be sure that the baud rate as reported by stty is correct.  JOE uses this
+to optimize its screen writes.  If you're going over a network, set the
+baud rate to your best estimate of the actual througput.  If you're using
+JOE in a window, set the baud rate to the highest possible (usually
+'stty extb' or 'stty 38400').
 
 ^K J reformats the current paragraph.  ^T R can be used to change the right
 margin.  The default is the width of the screen.  If auto-indent mode is set,
 indented paragraphs are formated.
 
 Use ^K B to set the beginning of a block and ^K K to set the end of a block. 
-You can then copy, move save or delete the marked blocsk.  To turn the
+You can then copy, move save or delete the marked blocks.  To turn the
 highlighting off, hit ^K B ^K K (make the beginning and ending the same or
 move the beginning past the ending or move the ending before the beginning).
 
@@ -53,18 +59,25 @@ of:
 		Hit ^L to find the next occurance of the previous search
 		string (with all the same options).
 
-If for some reason J gets a signal (that it's going to crash or that the
+If for some reason JOE gets a signal (that it's going to crash or that the
 system is messing up), it attempts to save the last file edited in a file
-"aborted.j" in the current directory.
+"aborted" in the current directory.
 
 .SH FILES
 .DT
 .ta 25n
-keymap.j			Keymap file.  J looks for this in the current
-				directory, the user's home directory and in
-				the directory containing J
+
+ \.joerc 			Initialization file.  JOE looks for
+.br
+				this in the current directory, the
+.br
+				user's home directory and in the 
+.br
+				directory containing JOE
+
 .SH RESTRICTIONS
-The file size is limited to the system process size limit
+
+The file size is limited to the system process size limit 
 
 .SH BUGS
 Send bug reports to rcarter@wpi.wpi.edu (Joseph H. Allen).  This should be

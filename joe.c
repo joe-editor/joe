@@ -1,18 +1,18 @@
-/* J - Joe's Editor - the bulk of the code is here
+/* JOE - Joe's Own Editor - the bulk of the code is here
    Copyright (C) 1991 Joseph H. Allen
 
-This file is part of J (Joe's Editor)
+This file is part of JOE (Joe's Own Editor)
 
-J is free software; you can redistribute it and/or modify it under the terms
+JOE is free software; you can redistribute it and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
-Foundation; either version 1, or (at your option) any later version. 
+Foundation; either version 1, or (at your option) any later version.  
 
-J is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+JOE is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE.  See the GNU General Public License for more details.  
 
 You should have received a copy of the GNU General Public License
-along with GNU Emacs; see the file COPYING.  If not, write to
+along with JOE; see the file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <stdio.h>
@@ -25,7 +25,7 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 extern errno;
 #include "async.h"
 #include "blocks.h"
-#include "j.h"
+#include "joe.h"
 int width=80;
 int height=24;
 int scroll=1;
@@ -60,11 +60,32 @@ unsigned char *ms;
 {
 setregn(0,height-1);
 cpos(height-1,0);
-tputss(ms);
+attrib(0);
+eputs(ms);
 eputs("\033[K");
 oxpos=strlen(ms);
 cpos(height-1,0);
 eputc(10);
+}
+
+resize()
+{
+int x;
+unsigned char buf[30];
+free(scrn);
+scrn=(int *)malloc(width*height*sizeof(int));
+for(x=0;x<width*height;x++) scrn[x]= ' ';
+if(scroll)
+ {
+ sprintf(buf,"\033[0m\033[1;%dr\033[H\033[J",height), eputs(buf);
+ bots=height-1;
+ }
+else eputs("\033[0m\033[H\033[J");
+smode=0;
+if(wind>height-3) wind=height-3;
+if(wind) hupd=1;
+wfit();
+upd=1;
 }
 
 cposs(y,x)
@@ -106,6 +127,7 @@ if(x==oxpos)
  if(y==0 && x==0)
   {
   eputs("\033[H");
+  return;
   }
  if(y>oypos)
   sprintf(s,"\033[%dB",y-oypos);
@@ -192,41 +214,10 @@ int ypos=0;
 TXTSIZ saddr=0;
 TXTSIZ xoffset=0;
 
-unsigned char help[]=
-"\
-\240\240\240\310\345\354\360\240\323\343\362\345\345\356\240\240\240\364\365\
-\362\356\240\357\346\346\240\367\351\364\350\240\336\313\310\240\240\
-\240\240\240\240\240\240\240\240\240\240\240\240\240\240\240\240\240\240\
-\240\240\240\240\240\240\240\240\240\240\240\240\240\240\240\240\240\240\
-\240\240\240\240\240\240\240\
-\240\
-\7\017 \024\017             \4\5\014\5\024\5    \015\011\023\03       \02\
-\014\017\03\013    \06\011\016\04     \021\025\017\024\05    \027\011\016\04\017\
-\027     \
-\240\
-\240\
-^B left  ^F right ^D single ^T  mode   ^KB mark ^KF text `  Ctrl  ^KO split  \
-\240\
-\240\
-^Z word  ^X word  ^W >word  ^R  retype ^KK end  ^L  next ^\\ bit-7 ^KI 1 / all\
-\240\
-\240\
-^A edge  ^E edge  ^O word<  ^KA center ^KC copy ^KL line \06\011\014\
-\05     ^KP up     \
-\240\
-\240\
-^P up    ^N down  ^J >line  ^KJ format ^KM move \05\
-\030\011\024     ^KD save ^KN down   \
-\240\
-\240\
-^U page  ^V page  ^Y line   ^KZ shell  ^KW save ^KX save ^KR read ^KG grow   \
-\240\
-\240\
-^KU top ^KV end   ^K- undo  ^K, indnt< ^KY kill ^C abort/         ^KT shrink \
-\240\
-\240\
-^G matching ([<{` ^K+ redo  ^K. indnt>             close window  ^KE get file\
-\240";
+unsigned char *help=0;
+int helplines=0;
+int helpsize=0;
+int helpblksize=0;
 
 /* Clear end of line if needed.  i is row number and j is column number */
 
@@ -252,8 +243,32 @@ if(t==jj)
  }
 while(t>=jj) k[t--]=' ';
 cpos(i,jj);
-tattrib(' ');
+attrib(0);
 eputs("\033[K");
+}
+
+/* Change buffer character to displayable form */
+
+showas(ch)
+{
+#ifdef NOHIGHBIT
+if(ch>=128)
+ {
+ ch&=127;
+ ch|=INVERSE;
+ }
+#endif
+if((ch&127)<32)
+ {
+ ch+='@';
+ ch|=UNDERLINE;
+ }
+if((ch&127)==127)
+ {
+ ch&=~127;
+ ch|='?'|UNDERLINE;
+ }
+return ch;
 }
 
 int udline(i)
@@ -262,7 +277,7 @@ int q=i*width;
 TXTSIZ j;
 int t;
 int u;
-unsigned char ch;
+int ch;
 for(j=0;1;j++)
  {
  if(have) return -1;
@@ -304,7 +319,8 @@ for(j=0;1;j++)
   }
  else
   {
-  if(fmnote()-1>=markb && fmnote()<=marke && curbuf==markbuf) ch^=128;
+  ch=showas(ch);
+  if(fmnote()-1>=markb && fmnote()<=marke && curbuf==markbuf) ch^=INVERSE;
   t=q+j-xoffset;
   if(j>=xoffset && j<xoffset+width-1)
    {
@@ -343,26 +359,25 @@ TXTSIZ sve=fmnote();
 TXTSIZ sve1;
 
 /* Status line */
-bset(stalin,width-1,' ');
-bfwrd(stalin,"File:",5);
-if(changed)
- if(gfnam[0]) bfwrd(bfwrd(stalin+6,gfnam,strlen(gfnam))+strlen(gfnam),
- " (Modified)",11);
- else bfwrd(bfwrd(stalin+6,"(Unnamed)",9)+9," (Modified)",11);
+strcpy(stalin,"\\i");
+if(gfnam[0]) strcat(stalin,gfnam);
+else strcat(stalin,"(Unnamed)");
+if(changed) strcat(stalin," (Modified)");
+if(!helpon && strlen(stalin)+21<width+1)
+ {
+ int x=strlen(stalin);
+ while(x<width-20) stalin[x++]=' ';
+ stalin[x]=0;
+ strcat(stalin,"Hit Ctrl-K H for help");
+ }
 else
- if(gfnam[0]) bfwrd(stalin+6,gfnam,strlen(gfnam));
- else bfwrd(stalin+6,"(Unnamed)",9);
-if(!helpon) bfwrd(stalin+width-22,"Hit Ctrl-K H for help",21);
+ {
+ int x=strlen(stalin);
+ while(x<width+1) stalin[x++]=' ';
+ stalin[x]=0;
+ }
 
-for(y=0;y<width-1;y++)
- if(scrn[y+curwin->wind*width]!=stalin[y]+128)
-  {
-  if(have) break;
-  cpos(curwin->wind,y);
-  tputcc(stalin[y]+128);
-  scrn[y+curwin->wind*width]=stalin[y]+128;
-  oxpos++;
-  }
+msgout(curwin->wind,stalin,0);
 
 x=getcol();
 if(fmnrnl()) fmpoint(fmnote()+1);
@@ -428,41 +443,58 @@ fmpoint(sve);
 
 dupdatehelp()
 {
-int i,j;
+int att;
+int i,j,c;
 unsigned char *from=help;
 int *too=scrn;
-wind=helplines;
-for(i=0;i!=helplines;i++)
+if(helplines>height-3) wind=height-3;
+else wind=helplines;
+for(i=0;i!=wind;++too, ++i)
  {
- for(j=0;j!=helpwidth;j++)
+ j=0; att=0;
+ loop:
+ if(have) return;
+ if(j==width-1)
   {
-  if(have) return;
-  if(j>=width-1)
-   {
-   from+=helpwidth-width+1;
-   break;
-   }
-  if(*from!=*too)
-   {
-   cpos(i,j);
-   tputcc((unsigned char)(*too= *from));
-   oxpos++;
-   }
-  from++;
-  too++;
+  while(*from!='\n') ++from;
+  ++from;
+  continue;
   }
- for(;j!=width-1;j++)
+ if(*from=='\n')
   {
-  if(have) return;
-  if(' '!=*too)
-   {
-   cpos(i,j);
-   tputcc((unsigned char)(*too= ' '));
-   oxpos++;
-   }
-  too++;
+  hclreol:
+  ++from;
+  cpos(i,j);
+  eputs("\033[K");
+  while(j!=width-1) *too++ =' ', ++j;
+  continue;
   }
- too++;
+ if(*from=='\\')
+  {
+  ++from;
+  if(*from=='\n') goto hclreol;
+  if(*from=='u')
+   {
+   att^=UNDERLINE;
+   ++from;
+   goto loop;
+   }
+  if(*from=='i')
+   {
+   att^=INVERSE;
+   ++from;
+   goto loop;
+   }
+  }
+ c= *from++ | att;
+ if(c!= *too)
+  {
+  cpos(i,j);
+  tputcc(*too= c);
+  oxpos++;
+  }
+ ++too; ++j;
+ goto loop;
  }
 hupd=0;
 }
@@ -512,52 +544,23 @@ int x;
 for(x=0;x<width;x++) scrn[width*line+x]= -1;
 }
 
-int tattrib(c)
-unsigned char c;
-{
-int mmode=0;
-if(c>=128)
- {
- mmode|=INVERSE;
- c-=128;
- }
-if(c==127)
- {
- mmode|=UNDERLINE;
- c='?';
- }
-else if(c<32)
- {
- mmode|=UNDERLINE;
- c+='@';
- }
-attrib(mmode);
-return c;
-}
-
 tputcc(c)
-unsigned char c;
 {
-eputc(tattrib(c));
-}
-
-tputss(s)
-unsigned char *s;
-{
-while(*s) tputcc(*(s++));
+attrib(c);
+eputc(c&255);
 }
 
 int backup=0;
 FILE *handle;
 unsigned char gfnam[PATHSIZE];
 
-TXTSIZ bufsiz;        /* Size of buffer */
-TXTPTR point;            /* The point */
-TXTPTR buffer;           /* The buffer */
-TXTPTR filend;           /* First character not in buffer */
-TXTPTR hole;             /* Beginning of hole */
-TXTPTR ehole;            /* First character not in hole */
-int changed=0;          /* Set when file has been changed */
+TXTSIZ bufsiz;		/* Size of buffer */
+TXTPTR point;		/* The point */
+TXTPTR buffer;		/* The buffer */
+TXTPTR filend;		/* First character not in buffer */
+TXTPTR hole;		/* Beginning of hole */
+TXTPTR ehole;		/* First character not in hole */
+int changed=0;		/* Set when file has been changed */
 
 fmopen()
 {
@@ -944,21 +947,71 @@ hole+=amount;
 return amount==buf.st_size;
 }
 
+/* Output a message string */
+/* The right part of it is chopped */
+
+msgout(row,str,flg)
+unsigned char *str;
+{
+int j=0, c, att=0;
+int *too=scrn+width*row;
+loop:
+if(j==width-1)
+ {
+ if(flg) cpos(row,j);
+ return;
+ }
+if(!*str)
+ {
+ hclreol:
+ cpos(row,j);
+ eputs("\033[K");
+ while(j!=width-1) *too++ =' ', ++j;
+ return;
+ }
+if(*str=='\\')
+ {
+ ++str;
+ if(!*str) goto hclreol;
+ if(*str=='u')
+  {
+  att^=UNDERLINE;
+  ++str;
+  goto loop;
+  }
+ if(*str=='i')
+  {
+  att^=INVERSE;
+  ++str;
+  goto loop;
+  }
+ }
+c= *str++ | att;
+if(c!= *too)
+ {
+ cpos(row,j);
+ tputcc(*too= c);
+ oxpos++;
+ }
+++too; ++j;
+goto loop;
+}
+
 int getl(prompt,dat)
 unsigned char *prompt;
 unsigned char *dat;
 {
-int ch,x;
-cpos(height-1,0);
-tattrib(' ');
-eputs(prompt);
-eputs(" (^C to abort): ");
-eputs(dat);
-eputs("\033[K");
-x=strlen(dat);
-oxpos=strlen(prompt)+x+21;
+int ch,x,y;
+unsigned char buf[PATHSIZE];
+strcpy(buf,prompt);
+strcat(buf," (^C to abort): ");
+y=strlen(buf);
+strcat(buf,dat);
+x=strlen(buf);
 while(1)
  {
+ if(x>width-1) msgout(height-1,buf+x-(width-1),1);
+ else msgout(height-1,buf,1);
  ch=anext();
  if(ch=='L'-'@')
   {
@@ -972,18 +1025,15 @@ while(1)
   }
  if(ch>=32 && ch<127)
   {
-  dat[x+1]=0;
-  dat[x++]=ch;
-  tputcc(ch);
-  oxpos++;
+  buf[x+1]=0, dat[x+1-y]=0;
+  buf[x]=ch, dat[x++-y]=ch;
   continue;
   }
- if((ch==8 || ch==127) && x)
+ if((ch==8 || ch==127) && x-y)
   {
   x--;
-  dat[x]=0;
-  eputs("\010 \010");
-  oxpos--;
+  dat[x-y]=0;
+  buf[x]=0;
   continue;
   }
  if(ch==3)
@@ -992,22 +1042,13 @@ while(1)
   break;
   }
  }
-invalidate(height-1);
 return ch;
 }
 
 msg(ms)
 unsigned char *ms;
 {
-cpos(height-1,0);
-tattrib(' ');
-eputs(ms);
-eputc(' ');
-eputs("\033[K");
-oxpos=1+strlen(ms);
-if(ms[0]=='\033') oxpos-=7;
-eputs("\033[K");
-invalidate(height-1);
+msgout(height-1,ms,1);
 anext();
 }
 
@@ -1015,13 +1056,7 @@ int askyn(ms)
 unsigned char *ms;
 {
 int ch;
-cpos(height-1,0);
-tattrib(' ');
-eputs(ms);
-oxpos=strlen(ms);
-if(ms[0]=='\033') oxpos-=7;
-eputs("\033[K");
-invalidate(height-1);
+msgout(height-1,ms,1);
 up:
 ch=anext();
 switch(ch)
@@ -1047,44 +1082,25 @@ return ch;
 int query(ms)
 unsigned char *ms;
 {
-cpos(height-1,0);
-tattrib(' ');
-eputs(ms);
-oxpos=strlen(ms);
-if(ms[0]=='\033') oxpos-=7;
-eputs("\033[K");
-invalidate(height-1);
+msgout(height-1,ms,1);
 return anext();
 }
 
 int nquery(ms)
 unsigned char *ms;
 {
-cpos(height-1,0);
-tattrib(' ');
-eputs(ms);
-oxpos=strlen(ms);
-if(ms[0]=='\033') oxpos-=7;
-eputs("\033[K");
+msgout(height-1,ms,1);
 cpos(ypos,xpos);
-invalidate(height-1);
 return anext();
 }
 
 imsg()
 {
-unsigned char s[PATHSIZE];
-tattrib(' ');
-if(omsg)
- {
- eputs(omsg);
- invalidate(1);
- }
-sprintf(s,"\033[%d;1H\033[7m** Joe's Editor version 0.0.1 (1991) **          \
-                              \033[m\033[2H",height);
-eputs(s);
-invalidate(height-1);
+attrib(0);
+if(omsg) msgout(1,omsg,0);
 upd=1;
+msgout(height-1,"\\i** Joe's Own Editor version 0.1.0 (1991) **\\i",0);
+cpos(1,0);
 }
 
 int pic;
@@ -1227,7 +1243,7 @@ if(handle)
  {
  if(!fmsave(handle,fmsize()))
   {
-  sprintf(sting,"\033[7mError writing to file %s\033[m",tos);
+  sprintf(sting,"\\iError writing to file %s\\i",tos);
   msg(sting);
   fmpoint(temp);
   return(0);
@@ -1235,7 +1251,7 @@ if(handle)
  fmpoint(temp);
  if(fclose(handle)==EOF)
   {
-  sprintf(sting,"\033[7mError closing file %s\033[m",tos);
+  sprintf(sting,"\\iError closing file %s\\i",tos);
   msg(sting);
   fmpoint(temp);
   return(0);
@@ -1246,7 +1262,7 @@ if(handle)
  }
 else
  {
- sprintf(sting,"\033[7mError opening file %s\033[m",tos);
+ sprintf(sting,"\\iError opening file %s\\i",tos);
  msg(sting);
  fmpoint(temp);
  return(0);
@@ -1294,7 +1310,9 @@ if(helpon)
  }
 else
  {
- hupd=1, wind=helplines;
+ if(helplines>height-3) wind=height-3;
+ else wind=helplines;
+ hupd=1;
  x=topwin;
  do
   {
@@ -1393,9 +1411,13 @@ fmgetc();
 
 ultarw()
 {
+if(extend)
+ {
+ extend=0;
+ return;
+ }
 fillup();
-if(extend) extend=0;
-else if(fmnote())
+if(fmnote())
  {
  fmpoint(fmnote()-1);
  if(fmrc()==NL)
@@ -1409,14 +1431,15 @@ else if(fmnote())
 
 ltarw()
 {
-fillup();
-if(extend) extend=0;
-else
+if(extend)
  {
- if(fmnote())
-  fmpoint(fmnote()-1);
- if(fmrc()==NL) newy=1;
+ extend=0;
+ return;
  }
+fillup();
+if(fmnote())
+ fmpoint(fmnote()-1);
+if(fmrc()==NL) newy=1;
 }
 
 /* Move cursor up */
@@ -1453,7 +1476,7 @@ if(scroll)
    saddr=fmnote();
    setregn(curwin->wind+1,curwin->wind+(curwin->height-1));
    cpos(curwin->wind+1,oxpos);
-   tattrib(' ');
+   attrib(0);
    eputs("\033M");
    for(x=(curwin->wind+curwin->height)*width-1;x>=y+width;x--)
     scrn[x]=scrn[x-width];
@@ -1510,7 +1533,7 @@ if(scroll)
  saddr=fmnote();
  setregn(curwin->wind+1,curwin->wind+curwin->height-1);
  cpos((curwin->wind+curwin->height-1),oxpos);
- tattrib(' ');
+ attrib(0);
  eputc(10);
  for(x=(curwin->wind+1)*width;x!=(curwin->wind+curwin->height-1)*width;x++)
   scrn[x]=scrn[x+width];
@@ -1623,7 +1646,7 @@ if(!fmeof())
    x<(curwin->wind+curwin->height)*width;x++) scrn[x]= ' ';
    setregn(ypos+1,(curwin->wind+curwin->height-1));
    cpos((curwin->wind+curwin->height-1),oxpos);
-   tattrib(' ');
+   attrib(0);
    eputc(10);
    }
   fmdel(1);
@@ -1671,7 +1694,7 @@ if(ch==NL)
     {
     setregn(ypos+1,(curwin->wind+curwin->height-1));
     cpos(ypos+1,oxpos);
-    tattrib(' ');
+    attrib(0);
     eputs("\033M");
     cpos(ypos+1,0);
     for(x=(curwin->wind+curwin->height)*width-1;x>=(ypos+2)*width;x--)
@@ -1687,7 +1710,7 @@ if(ch==NL)
    {
    setregn(curwin->wind+1,(curwin->wind+curwin->height-1));
    cpos((curwin->height+curwin->wind-1),0);
-   tattrib(' ');
+   attrib(0);
    eputc(10);
    for(x=curwin->wind*width;x<(curwin->wind+curwin->height-1)*width;x++)
     scrn[x]=scrn[x+width];
@@ -1821,10 +1844,11 @@ skip:
    }
   if(ch!=TAB && ch!=NL)
    {
-   if(fmnote()>=markb && fmnote()<marke) ch^=128;
+   int cc=showas(ch);
+   if(fmnote()>=markb && fmnote()<marke) cc^=INVERSE;
    fmgetc();
-   tputcc(ch);
-   scrn[ypos*width+oxpos]=ch;
+   tputcc(cc);
+   scrn[ypos*width+oxpos]=cc;
    oxpos++;
    if(fmeof()) { if(!eflag && ox<width-2) uuu=1; }
    else if(fmrc()==NL && !eflag && ox<width-2) uuu=1;
@@ -2047,7 +2071,7 @@ saddr=fmnote();
 fmpoint(curpos);
 setregn(curwin->wind+1,(curwin->wind+curwin->height-1));
 cpos(curwin->wind+1,oxpos);
-tattrib(' ');
+attrib(0);
 for(y=0;y<x;y++)
  {
  if(scroll) eputs("\033M");
@@ -2102,7 +2126,7 @@ saddr=fmnote();
 setregn(curwin->wind+1,(curwin->wind+curwin->height-1));
 cpos((curwin->wind+curwin->height-1),oxpos);
 fmpoint(curpos);
-tattrib(' ');
+attrib(0);
 for(y=0;y<x;y++)
  {
  fmfnl();
@@ -2134,6 +2158,16 @@ fmfnl();
 temp1=fmnote()-temp;
 fmpoint(temp);
 if(temp1) fmdel(temp1);
+}
+
+killlin()
+{
+extend=0;
+if(!fmeof())
+ {
+ if(fmrc()==NL) delch();
+ else deleol();
+ }
 }
 
 dellin()
@@ -2228,7 +2262,7 @@ if(!getl("Goto line",sting))
 x=atol(sting);
 if(!x)
  {
- msg("\033[7mBad line number\033[m");
+ msg("\\iBad line number\\i");
  return;
  }
 x--;
@@ -2417,7 +2451,7 @@ if(markbuf)
  }
 if(markb>=marke || marke>fmsize() || !markbuf)
  {
- msg("\033[7mThe block is not marked properly\033[m  Mark it with ^KB & ^KK");
+ msg("\\iNo block\\i");
  if(markbuf)
   ldbuf(bt);
  return;
@@ -2435,7 +2469,7 @@ if(handle)
  fmpoint(markb);
  if(!fmsave(handle,marke-markb))
   {
-  sprintf(sting,"\033[7mError writting to file %s\033[m",gfnam1);
+  sprintf(sting,"\\iError writting to file %s\\i",gfnam1);
   msg(sting);
   }
  stbuf(markbuf);
@@ -2446,7 +2480,7 @@ if(handle)
 else
  {
  ldbuf(bt);
- sprintf(sting,"\033[7mError opening file %s\033[m",gfnam1);
+ sprintf(sting,"\\iError opening file %s\\i",gfnam1);
  msg(sting);
  }
 }
@@ -2463,7 +2497,7 @@ if(markbuf)
  }
 if(marke<=markb || marke>fmsize() || !markbuf)
  {
- msg("\033[7mThe block is not marked properly\033[m  Mark it with ^KB & ^KK");
+ msg("\\iNo block\\i");
  if(markbuf)
   ldbuf(bt);
  return;
@@ -2492,7 +2526,7 @@ if(markbuf)
  }
 if(marke<=markb || marke>fmsize() || !markbuf)
  {
- msg("\033[7mThe block is not marked properly\033[m  Mark it with ^KB & ^KK");
+ msg("\\iNo block\\i");
  if(markbuf)
   ldbuf(bt);
  return;
@@ -2533,7 +2567,7 @@ if(markbuf)
  }
 if(marke<=markb || marke>fmsize() || !markbuf)
  {
- msg("\033[7mThe block is not marked properly\033[m  Mark it with ^KB & ^KK");
+ msg("\\iNo block\\i");
  if(markbuf)
   ldbuf(bt);
  return;
@@ -2565,7 +2599,7 @@ if(handle)
  {
  if(!fminsfil(handle))
   {
-  sprintf(sting,"\033[7mError inserting file %s\033[m",gfnam1);
+  sprintf(sting,"\\iError inserting file %s\\i",gfnam1);
   msg(sting);
   }
  newy=1;
@@ -2573,7 +2607,7 @@ if(handle)
  }
 else
  {
- sprintf(sting,"\033[7mError opening file %s\033[m",gfnam1);
+ sprintf(sting,"\\iError opening file %s\\i",gfnam1);
  msg(sting);
  return;
  }
@@ -3138,9 +3172,9 @@ up:
 total=height-wind;
 for(x=topwin;1;x=x->next)
  {
- if(x->height<2) x->height=2;
- if(curwin==x && total>=2) break;
- if(total<2) goto in;
+ if(x->height<3) x->height=3;
+ if(curwin==x && total>=3) break;
+ if(total<3) goto in;
  total-=x->height;
  if(total<0)
   {
@@ -3152,7 +3186,7 @@ for(x=topwin;1;x=x->next)
 for(x=topwin,total=wind;1;x=x->next)
  {
  x->wind=total;
- if(x->height<2) x->height=2;
+ if(x->height<3) x->height=3;
  total+=x->height;
  if(total>=height || x->next==topwin)
   {
@@ -3200,7 +3234,7 @@ else
  { /* Show all windows */
  x=topwin; y=0;
  do y++, x=x->next; while(x!=topwin);
- if((height-wind)/y<2) y=2;
+ if((height-wind)/y<3) y=3;
  else y=(height-wind)/y;
  x=topwin;
  do x->height=y, x=x->next; while(x!=topwin);
@@ -3212,12 +3246,12 @@ wgrow()
 {
 if(curwin->wind+curwin->height==height)
  {
- if(curwin->wind!=wind) if(curwin->prev->height>2)
+ if(curwin->wind!=wind) if(curwin->prev->height>3)
   curwin->prev->height--, curwin->height++, curwin->wind--, updall=1;
  }
 else
  {
- if(curwin->next->height>2)
+ if(curwin->next->height>3)
   curwin->height++, curwin->next->wind++, curwin->next->height--, updall=1;
  }
 newy=1;
@@ -3227,12 +3261,12 @@ wshrink()
 {
 if(curwin->wind+curwin->height==height)
  {
- if(curwin->wind!=wind) if(curwin->height>2)
+ if(curwin->wind!=wind) if(curwin->height>3)
  curwin->height--, curwin->prev->height++, curwin->wind++, updall=1;
  }
 else
  {
- if(curwin->height>2)
+ if(curwin->height>3)
  curwin->height--, curwin->next->wind--, curwin->next->height++, updall=1;
  }
 newy=1;
@@ -3241,7 +3275,7 @@ newy=1;
 wsplit()
 {
 struct window *new;
-if(curwin->height<4) return;
+if(curwin->height<6) return;
 new=(struct window *)malloc(sizeof(struct window));
 new->buffer=curbuf;
 stwin(new);
@@ -3313,7 +3347,6 @@ do
  x=x->next;
  }
  while(x!=topwin);
-handle=fopen(gfnam1,"r");
 strcpy(gfnam,gfnam1);
 stmode(gfnam);
 if(curbuf->count==1) free(curbuf->buf),
@@ -3324,11 +3357,12 @@ curbuf=curwin->buffer;
 curbuf->count=1;
 fmopen();
 bof();
+handle=fopen(gfnam1,"r");
 if(handle)
  {
  if(!fminsfil(handle))
   {
-  sprintf(sting,"\033[7mError inserting file %s\033[m",gfnam1);
+  sprintf(sting,"\\iError loading file %s\\i",gfnam1);
   msg(sting);
   }
  changed=0;
@@ -3339,15 +3373,19 @@ else
  {
  newy=1;
  upd=1;
- dupdate();
  if(errno==ENOENT)
   {
-  eputs("New File\r");
+  dupdate();
+  msgout(curwin->wind+1,"New File",0);
+  cpos(curwin->wind+1,0);
   backup=1;
   }
  else
-  eputs("\033[7mError opening file\033[m\r");
- invalidate(curwin->wind+1);
+  {
+  dupdate();
+  msgout(curwin->wind+1,"\\iError opening file\\i",0);
+  cpos(curwin->wind+1,0);
+  }
  dokey(anext());
  return;
  }
@@ -3368,7 +3406,7 @@ stquote8th()
 quote8th=1;
 }
 
-CMD kkm[54]=
+CMD kkm[55]=
 {
  {"uparw",0,uuparw},
  {"rtarw",0,urtarw},
@@ -3423,10 +3461,11 @@ CMD kkm[54]=
  {"indentl",0,indentl},
  {"indentr",0,indentr},
  {"undo",0,undo},
- {"redo",0,redo}
+ {"redo",0,redo},
+ {"killlin",0,killlin}
  };
 
-CONTEXT km={0, "main", 0, 54, kkm};
+CONTEXT km={0, "main", 0, 55, kkm};
 
 /** Key sequence processing functions **/
 
@@ -3462,6 +3501,9 @@ do
    }
   else
    {
+   int h=height, w=width;
+   getsize();
+   if(h!=height || w!=width) resize();
    r=curmap;
    curmap=km.kmap;
    if(km.cmd[r->keys[new].n].func!=redo &&
@@ -3549,6 +3591,22 @@ printf("Processing keymap file %s ...",name);
 fflush(stdout);
 while(fgets(buf,256,fd))
  {
+ if(buf[0]=='{')
+  {
+  up:
+  if(!fgets(buf,256,fd)) break;
+  if(buf[0]=='}') continue;
+  if(helpsize+strlen(buf)>helpblksize)
+   {
+   if(help) help=(unsigned char *)realloc(help,helpblksize+strlen(buf)+320);
+   else help=(unsigned char *)malloc(strlen(buf)+320);
+   helpblksize+=strlen(buf)+320;
+   }
+  strcat(help,buf);
+  helpsize=strlen(help);
+  ++helplines;
+  goto up;
+  }
  if(buf[0]=='*')
   {
   struct mpair *mp=(struct mpair *)calloc(sizeof(struct mpair),1);
@@ -3704,7 +3762,7 @@ curmap=km.kmap;
 if(argc>2)
  {
  fputs("\nIllegal number of command line arguments",stderr);
- fputs("\nEditor Command Format:  e [filename]\n",stderr);
+ fputs("\nEditor Command Format:  joe [filename]\n",stderr);
  return 0;
  }
 termtype();
@@ -3745,7 +3803,7 @@ if(argc==2)
  if(handle)
   {
   if(!fminsfil(handle))
-   omsg=(unsigned char *)"\033[7mError reading file\033[m";
+   omsg=(unsigned char *)"\\iError reading file\\i";
   else
    changed=0;
   fclose(handle);
@@ -3758,7 +3816,7 @@ if(argc==2)
    backup=1;
    }
   else
-   omsg=(unsigned char *)"\033[7mError opening file\033[m";
+   omsg=(unsigned char *)"\\iError opening file\\i";
   }
  }
 else omsg=(unsigned char *)"New File";

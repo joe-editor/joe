@@ -1,18 +1,18 @@
 /* Terminal interface for HPUX
    Copyright (C) 1991 Joseph H. Allen
 
-This file is part of J (Joe's Editor)
+This file is part of JOE (Joe's Own Editor)
 
-J is free software; you can redistribute it and/or modify it under the terms
+JOE is free software; you can redistribute it and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
 Foundation; either version 1, or (at your option) any later version. 
 
-J is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+JOE is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE.  See the GNU General Public License for more details.  
 
 You should have received a copy of the GNU General Public License
-along with GNU Emacs; see the file COPYING.  If not, write to
+along with JOE; see the file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <stdio.h>
@@ -56,7 +56,7 @@ signal(SIGPWR,tsignal);
 ioctl(fileno(stdin),TCGETA,&oldterm);
 newterm=oldterm;
 newterm.c_lflag=0;
-newterm.c_iflag=IXON|IXOFF|IGNBRK;
+newterm.c_iflag&=~(ICRNL|IGNCR);
 newterm.c_oflag=0;
 newterm.c_cc[VINTR]= -1;
 newterm.c_cc[VQUIT]= -1;
@@ -163,19 +163,47 @@ while(*s)
  }
 }
 
+getsize()
+{
+#ifdef TIOCGSIZE
+struct ttysize getit;
+#else
+#ifdef TIOCGWINSZ
+struct winsize getit;
+#endif
+#endif
+#ifdef TIOCGSIZE
+if(ioctl(fileno(stdout),TIOCGSIZE,&getit)!= -1)
+ {
+ if(getit.ts_lines>=3) height=getit.ts_lines;
+ if(getit.ts_cols>=2) width=getit.ts_cols;
+ }
+#else
+#ifdef TIOCGWINSZ
+if(ioctl(fileno(stdout),TIOCGWINSZ,&getit)!= -1)
+ {
+ if(getit.ws_row>=3) height=getit.ws_row;
+ if(getit.ws_col>=2) width=getit.ws_col;
+ }
+#endif
+#endif
+}
+
 termtype()
 {
 unsigned char entry[1024];
 unsigned char area[1024];
 unsigned char *foo=area;
 unsigned char *x=(unsigned char *)getenv("TERM");
-if(!x) return;
-if(tgetent(entry,x)!=1) return;
+if(!x) goto down;
+if(tgetent(entry,x)!=1) goto down;
 height=tgetnum("li");
-if(height<2) height=24;
+if(height<3) height=24;
 width=tgetnum("co");
 if(width<2) width=80;
 if(!tgetstr("cs",&foo)) scroll=0;
+down:
+getsize();
 }
 
 shell(s)

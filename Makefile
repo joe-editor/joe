@@ -1,49 +1,52 @@
-# Makefile for Joe's Editor
+# Makefile for Joe's Own Editor
 
-# Directory to install j into
+# Directory to install joe and .joerc into
 WHERE = /usr/bin
 
 # Use these two for 'cc'
 CC = cc
-CFLAGS = -DKEYDEF=\"$(WHERE)/keymap.j\" -O
+CFLAGS = -DKEYDEF=\"$(WHERE)/.joerc\" -O
 
 # Use these two for 'gcc'
 #CC = gcc
-#CFLAGS = -DKEYDEF=\"$(WHERE)/keymap.j\" -traditional -O
+#CFLAGS = -DKEYDEF=\"$(WHERE)/.joerc\" -O
 
 foo:
 	@echo Type make followed by one of the following
 	@echo
-	@echo bsd hpux xenix cruddy install clean
+	@echo bsd hpux xenix esix posix cruddy install clean
 
-bsd: j.o asyncbsd.o blocks.o
-	$(CC) $(CFLAGS) j.o asyncbsd.o blocks.o -ltermcap -o j
-	cp keymapbsd keymap.j
+bsd: joe.o asyncbsd.o blocks.o
+	$(CC) $(CFLAGS) joe.o asyncbsd.o blocks.o -ltermcap -o joe
 
-xenix: j.o asyncxenix.o blocks.o
-	$(CC) $(CFLAGS) j.o asyncxenix.o blocks.o -lx -ltermcap -o j
-	cp keymapxenix keymap.j
+xenix: joe.o asyncxenix.o blocks.o
+	$(CC) $(CFLAGS) joe.o asyncxenix.o blocks.o -lx -ltermcap -o joe
 
-hpux: j.o asynchpux.o blocks.o
-	$(CC) $(CFLAGS) j.o asynchpux.o blocks.o -ltermcap -o j
-	cp keymapbsd keymap.j
+hpux: joe.o asynchpux.o blocks.o
+	$(CC) $(CFLAGS) joe.o asynchpux.o blocks.o -ltermcap -o joe
 
-cruddy: j.o cruddy.o blocks.o
-	$(CC) $(CFLAGS) j.o cruddy.o blocks.o -o j
-	cp keymapbsd keymap.j
+esix: joe.o asyncesix.o blocks.o
+	$(CC) $(CFLAGS) joe.o asyncesix.o blocks.o -lcurses -lbsd -o joe
+
+posix: joe.o asyncposix.o blocks.o
+	$(CC) $(CFLAGS) joe.o asyncposix.o blocks.o -ltermcap -o joe
+
+cruddy: joe.o cruddy.o blocks.o
+	$(CC) $(CFLAGS) joe.o cruddy.o blocks.o -o joe
 
 install:
-	strip j
-	mv j $(WHERE)
-	mv keymap.j $(WHERE)
-	chmod a+x $(WHERE)/j
-	chmod a+r $(WHERE)/keymap.j
+	strip joe
+	mv joe $(WHERE)
+	cp .joerc $(WHERE)
+	chmod a+x $(WHERE)/joe
+	chmod a+r $(WHERE)/.joerc
 
 clean:
-	rm asyncbsd.o asyncxenix.o asynchpux.o cruddy.o blocks.o j.o keymap.j
+	rm -f asyncbsd.o asyncxenix.o asynchpux.o asyncesix.o asyncposix.o \
+cruddy.o blocks.o joe.o
 
-asyncbsd.o cruddy.o asyncxenix.o asynxhpux.o : async.h
+asyncbsd.o cruddy.o asyncxenix.o asynxhpux.o asyncesix.o : async.h
 
 blocks.o : blocks.h
 
-j.o : blocks.h j.h async.h
+joe.o : blocks.h joe.h async.h

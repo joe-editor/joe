@@ -7,6 +7,122 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 0.1.0
+**Released: 1991-09-03**
+
+Source recovered from usenet
+
+Original announcement:
+```
+Xref: funic comp.editors:2222 alt.sources:2355 alt.religion.emacs:878 comp.unix.xenix.sco:3131 comp.unix.sysv386:10434
+Path: funic!fuug!mcsun!uunet!wupost!udel!sbcs.sunysb.edu!libserv1.ic.sunysb.edu!jallen
+From: jallen@libserv1.ic.sunysb.edu (Joseph Allen)
+Newsgroups: comp.editors,alt.sources,alt.religion.emacs,comp.unix.xenix.sco,comp.unix.sysv386
+Subject: JOE Version 0.1.0
+Message-ID: <1991Sep3.204511.10482@sbcs.sunysb.edu>
+Date: 3 Sep 91 20:45:11 GMT
+Sender: rcarter@wpi.wpi.edu
+Organization: State University of New York at Stony Brook
+Lines: 92
+Originator: jallen@libserv1.ic.sunysb.edu
+Nntp-Posting-Host: libserv1.ic.sunysb.edu
+
+Release 0.1.0 of JOE (Joe's Own Editor):  Note that this program was
+previously called 'E' (which turned out to be the RAND EDITOR and one of the
+synonyms for vi) and 'J' (which turned out to be a language and the name of
+another UNIX editor).  See below for list of big fixes and new features. 
+Find the source for this release in 'alt.sources'
+
+FIXES AND NEW FEATURES FOR THIS VERSION
+
+	* Left arrow jumping fixed
+
+	* No longer touches the IXON IXOFF setting
+
+	* Reference to Gnu EMACS removed from the copyright notice :-)
+
+	* The patch for Undo and Redo is not needed for this version.
+
+	* Name of initialization file changed to '.joerc'
+
+	* Versions for ESIX and POSIX (AIX) now included
+	  (thank you Mike Lijewski for the POSIX driver)
+
+	* Users can now customize the help text.  The help text is now placed
+	  in the initialization file
+
+	* A compile option for passing characters with bit 7 set has been
+	  added.  This is for Iceland
+
+	* Added kill line function for the emacs people.  See 'killlin' in
+          the .joerc file
+
+	* The ioctls TIOCGSIZE and TIOCGWINSZ are used to get the
+	  screen/window size.  If the window changes size, JOE resizes the
+	  screen on the next key press
+
+	* Prompts and messages wider than the screen width are now handled
+	  properly
+
+Introduction
+
+	'JOE' is a small screen editor which was designed to be easy to use
+for novice users but also to be powerful and complete enough for experienced
+users.  Several elements of its design are unique innovations.  Here is a copy
+of the on-line help text to give you a feel for this editor: 
+
+GO TO              DELETE    MISC      BLOCK    FIND     QUOTE    WINDOW
+^B left  ^F right ^D single ^T  mode   ^KB mark ^KF text `  Ctrl  ^KO split
+^Z word  ^X word  ^W >word  ^R  retype ^KK end  ^L  next ^\ bit-7 ^KI 1 / all
+^A edge  ^E edge  ^O word<  ^KA center ^KC copy ^KL line FILE     ^KP up
+^P up    ^N down  ^J >line  ^KJ format ^KM move EXIT     ^KD save ^KN down
+^U page  ^V page  ^Y line   ^KZ shell  ^KW save ^KX save ^KR read ^KG grow
+^KU top ^KV end   ^K- undo  ^K, indnt< ^KY kill ^C abort/         ^KT shrink
+^G matching ([<{` ^K+ redo  ^K. indnt>             close window  ^KE get file
+
+Other relevent features:
+
+	* Extremely small - the XENIX version is only 58K
+
+	* Help text can be left on while editing
+
+	* Key layout designed to eliminate headaches: ^Q and ^S are not used,
+	  both ^H and DEL are backspace.  Also, each user may customize
+	  his key layout by modifying a simple initialization file
+
+	* Versions for BSD, HPUX, POSIX (AIX), ESIX and XENIX 386 are included
+	  A simple driver is also provided to ease porting to other systems
+
+	* Currently only VT100/ANSI terminals are supported.  If the terminal
+	  has scrolling regions, JOE uses them.  Has well-tuned interruptable
+	  screen update algorithm
+
+	* Has: autoindent, word-wrap, overtype/insert, picture mode (right-
+	  arrow makes space past ends of lines), right margin (for paragraph
+	  formatting and center), and magic tabs (the column number of text
+	  after tab stops is preserved when inserting and deleting)
+
+	* The cursor column doesn't 'jump' when you move between long and
+	  short lines.  Instead the cursor column only jumps when you try to
+	  edit in an invalid place or if picture mode is set, the invalid
+	  place is made real by space filling
+
+	* Editor modes can be set depending on file extension
+
+	* No line length restrictions.  Binary files can be edited without
+	  difficulty
+
+	* Long lines are truncated, not wrapped (I.E., the screen scrolls to
+	  the right to get to the truncated parts)
+-- 
+/*  rcarter@wpi.wpi.edu */      /* Amazing */             /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
 ## J 0.0.1
 **Released: 1991-08-23**
 

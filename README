@@ -5,12 +5,21 @@ To compile:
 	(1) Determine where you want to install the editor program and the
 	    system default keymap file.  Put this path in the Makefile.  If
 	    you're a mere user, don't worry about this.  Instead, place a copy
-	    of the 'keymap.j' file (created after you make) in your home
-	    directory. 
+	    of the '.joerc' file in your home directory. 
 
-	(2) type 'make xenix' for xenix systems, 'make hpux' for hpux systems
+	(2) If you need to be able to display characters with bit 7 set as-
+	    is (instead of in inverse), comment out the '#define NOHIGHBIT'
+	    line in the file 'joe.h'
+
+	(3) type 'make xenix' for Xenix systems, 'make hpux' for HPUX systems
 	    or 'make bsd' for BSD systems.  If none of these work, type
 	    'make cruddy' to make a version with an inferior terminal driver.
 
-	(3) To install it in the system, log in as superuser and do
+	(4) To install it in the system, log in as superuser and do
 	    'make install'
+
+	(5) When JOE is used, be sure the baud rate as reported by stty is correctly
+	    set.  If you're not on a real serial terminal, try to set the baud
+	    rate to the best guess of what the actual throughput is.  In particular,
+	    if you use JOE on a windowing system, the window updates will be much
+	    faster if you set the baud rate to 'extb' or '38400'.

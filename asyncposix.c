@@ -1,90 +1,79 @@
-/* Terminal interface for BSD
+/* Terminal interface for POSIX
    Copyright (C) 1991 Joseph H. Allen
+   (Contributed by Mike Lijewski)
 
 This file is part of JOE (Joe's Own Editor)
 
 JOE is free software; you can redistribute it and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
-Foundation; either version 1, or (at your option) any later version. 
+Foundation; either version 1, or (at your option) any later version.  
 
 JOE is distributed in the hope that it will be useful, but WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 A PARTICULAR PURPOSE.  See the GNU General Public License for more details.  
 
-You should have received a copy of the GNU General Public License
-along with JOE; see the file COPYING.  If not, write to
-the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
+You should have received a copy of the GNU General Public License along with
+JOE; see the file COPYING.  If not, write to the Free Software Foundation, 675
+Mass Ave, Cambridge, MA 02139, USA.  */ 
 
-#include <sgtty.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <signal.h>
+#include <fcntl.h>
 #include <sys/time.h>
+#include <sys/param.h>
+#include <termios.h>
+#include <unistd.h>
 #include "async.h"
 
-#define HZ 10			/* Clock ticks/second */
+#define DIVISOR 12000000
+#define TIMES 2
 
-#define DIVISOR 11000000	/* The baud rate divided into this should
-				   give the number of microseconds per
-				   character.  It should attempt to
-				   reflect the true throughput, which is
-				   usually slower than the best possible
-				   for a given baud rate */
-
-#define TIMES 3			/* Times per second that we check for
-				   typeahead */
-
-static struct sgttyb oarg;
-static struct tchars otarg;
-static struct ltchars oltarg;
+static struct termios oldterm;
 
 static unsigned char *obuf=0;
 static unsigned obufp=0;
 static unsigned obufsiz;
 static unsigned long ccc;
 
-static unsigned speeds[]=
+static speed_t speeds[]=
 {
 B50,50,B75,75,B110,110,B134,134,B150,150,B200,200,B300,300,B600,600,B1200,1200,
-B1800,1800,B2400,2400,B4800,4800,B9600,9600,EXTA,19200,EXTB,38400
+B1800,1800,B2400,2400,B4800,4800,B9600,9600,EXTA,19200,EXTB,38400,B19200,19200,
+B38400,38400
 };
 
 aopen()
 {
 int x;
-struct sgttyb arg;
-struct tchars targ;
-struct ltchars ltarg;
+struct sigaction action;
+speed_t baud;
+struct termios newterm;
 fflush(stdout);
-signal(SIGHUP,tsignal);
-signal(SIGINT,SIG_IGN);
-signal(SIGQUIT,SIG_IGN);
-signal(SIGPIPE,SIG_IGN);
-signal(SIGALRM,SIG_IGN);
-signal(SIGTERM,tsignal);
-signal(SIGUSR1,SIG_IGN);
-signal(SIGUSR2,SIG_IGN);
-ioctl(fileno(stdin),TIOCGETP,&arg);
-ioctl(fileno(stdin),TIOCGETC,&targ);
-ioctl(fileno(stdin),TIOCGLTC,&ltarg);
-oarg=arg; otarg=targ; oltarg=ltarg;
-arg.sg_flags=( (arg.sg_flags&~(ECHO|CRMOD) ) | CBREAK) ;
-targ.t_intrc= -1;
-targ.t_quitc= -1;
-targ.t_eofc= -1;
-targ.t_brkc= -1;
-ltarg.t_suspc= -1;
-ltarg.t_dsuspc= -1;
-ltarg.t_rprntc= -1;
-ltarg.t_flushc= -1;
-ltarg.t_werasc= -1;
-ltarg.t_lnextc= -1;
-ioctl(fileno(stdin),TIOCSETN,&arg);
-ioctl(fileno(stdin),TIOCSETC,&targ);
-ioctl(fileno(stdin),TIOCSLTC,&ltarg);
+tcdrain(STDOUT_FILENO);
+sigemptyset(&action.sa_mask);
+action.sa_handler=tsignal;
+sigaction(SIGHUP,&action,NULL);
+sigaction(SIGTERM,&action,NULL);
+action.sa_handler=SIG_IGN;
+sigaction(SIGINT,&action,NULL);
+sigaction(SIGQUIT,&action,NULL);
+sigaction(SIGPIPE,&action,NULL);
+sigaction(SIGALRM,&action,NULL);
+sigaction(SIGUSR1,&action,NULL);
+sigaction(SIGUSR2,&action,NULL);
+tcgetattr(STDIN_FILENO,&oldterm);
+newterm=oldterm;
+newterm.c_lflag=0;
+newterm.c_iflag&=~(ICRNL|IGNCR);
+newterm.c_oflag=0;
+/* we needn't worry about special characters since SIGS are disabled */
+newterm.c_cc[VMIN]=1;
+newterm.c_cc[VTIME]=0;
+tcsetattr(STDIN_FILENO,TCSANOW,&newterm);
 ccc=0;
-for(x=0;x!=30;x+=2)
- if(arg.sg_ospeed==speeds[x])
+baud=cfgetospeed(&newterm);
+for(x=0;x!=34;x+=2)
+ if(baud==speeds[x])
   {
   ccc=DIVISOR/speeds[x+1];
   break;
@@ -104,18 +93,19 @@ if(!obuf)
 
 aclose()
 {
+struct sigaction action;
 aflush();
-ioctl(fileno(stdin),TIOCSETN,&oarg);
-ioctl(fileno(stdin),TIOCSETC,&otarg);
-ioctl(fileno(stdin),TIOCSLTC,&oltarg);
-signal(SIGHUP,SIG_DFL);
-signal(SIGINT,SIG_DFL);
-signal(SIGQUIT,SIG_DFL);
-signal(SIGPIPE,SIG_DFL);
-signal(SIGALRM,SIG_DFL);
-signal(SIGTERM,SIG_DFL);
-signal(SIGUSR1,SIG_DFL);
-signal(SIGUSR2,SIG_DFL);
+tcsetattr(STDIN_FILENO,TCSANOW,&oldterm);
+sigemptyset(&action.sa_mask);
+action.sa_handler=SIG_DFL;
+sigaction(SIGHUP,&action,NULL);
+sigaction(SIGINT,&action,NULL);
+sigaction(SIGQUIT,&action,NULL);
+sigaction(SIGPIPE,&action,NULL);
+sigaction(SIGALRM,&action,NULL);
+sigaction(SIGTERM,&action,NULL);
+sigaction(SIGUSR1,&action,NULL);
+sigaction(SIGUSR2,&action,NULL);
 }
 
 int have=0;
@@ -152,9 +142,9 @@ if(obufp)
  }
 if(!have)
  {
- fcntl(fileno(stdin),F_SETFL,FNDELAY);
- if(read(fileno(stdin),&havec,1)==1) have=1;
- fcntl(fileno(stdin),F_SETFL,0);
+ fcntl(STDIN_FILENO,F_SETFL,O_NDELAY);
+ if(read(STDIN_FILENO,&havec,1)==1) have=1;
+ fcntl(STDIN_FILENO,F_SETFL,0);
  }
 }
 
@@ -162,7 +152,7 @@ anext()
 {
 aflush();
 if(have) have=0;
-else if(read(fileno(stdin),&havec,1)<1) tsignal();
+else if(read(STDIN_FILENO,&havec,1)<1) tsignal();
 return havec;
 }
 

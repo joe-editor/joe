@@ -1,4 +1,43 @@
 
+Release 0.1.0 of JOE (Joe's Own Editor):  Note that this program was
+previously calles 'E' (which turned out to be the RAND EDITOR and one of the
+synonyms for vi) and 'J' (which turned out to be a language and the name of
+another UNIX editor).  See below for list of big fixes and new features. 
+Find the source for this release in 'alt.sources'
+
+FIXES AND NEW FEATURES FOR THIS VERSION
+
+	* Left arrow jumping fixed
+
+	* No longer touches the IXON IXOFF setting
+
+	* Reference to Gnu EMACS removed from the copyright notice :-)
+
+	* The patch for Undo and Redo is not needed for this version.
+
+	* Name of initialization file changed to '.joerc'
+
+	* Versions for ESIX and POSIX now included
+	  (think you Mike Lijewski for the POSIX driver)
+
+	* Users can now customize the help text.  The help text is now placed
+	  in the initialization file
+
+	* A compile option for passing characters with bit 7 set has been
+	  added.  This is for Iceland
+
+	* Added kill line function for the emacs people.  See 'killlin' in
+          the .joerc file
+
+	* The ioctls TIOCGSIZE and TIOCGWINSZ are used to get the
+	  screen/window size.  If the window changes size, JOE resizes the
+	  screen on the next key press
+
+	* Prompts and messages wider than the screen width are now handled
+	  properly
+
+=-=-=-=-=-=
+
 Release 0.0.0 of 'J' (Joe's Editor):  This release supersedes all previous
 versions which lack a release number.  Note that this program was previously
 called 'E' but the name has been changed ('E' turns out to be one of the

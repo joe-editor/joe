@@ -1,4 +1,4 @@
-/* Terminal interface for XENIX
+/* Terminal interface for ESIX
    Copyright (C) 1991 Joseph H. Allen
 
 This file is part of JOE (Joe's Own Editor)
@@ -17,10 +17,21 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include <stdio.h>
 #include <signal.h>
+#include <fcntl.h>
+#include <sys/time.h>
+#include <sys/param.h>
 #include <termio.h>
 #include "async.h"
 
-#define DIVISOR 12000
+struct winsize
+{
+unsigned short ws_row;
+unsigned short ws_col;
+unsigned short ws_xpixel;
+unsigned short ws_ypixel;
+};
+
+#define DIVISOR 12000000
 #define TIMES 2
 
 static struct termio oldterm;
@@ -72,7 +83,7 @@ if(!obuf)
  if(!(TIMES*ccc)) obufsiz=4096;
  else
   {
-  obufsiz=1000/(TIMES*ccc);
+  obufsiz=1000000/(TIMES*ccc);
   if(obufsiz>4096) obufsiz=4096;
   }
  if(!obufsiz) obufsiz=1;
@@ -96,25 +107,51 @@ signal(SIGPWR,SIG_DFL);
 }
 
 int have=0;
+static unsigned char havec;
+static int yep;
+
+static dosig()
+{
+yep=1;
+}
 
 aflush()
 {
 if(obufp)
  {
- write(fileno(stdout),obuf,obufp);
- nap(obufp*ccc);
+ struct itimerval a,b;
+ unsigned long usec=obufp*ccc;
+ if(usec>=500000/HZ)
+  {
+  a.it_value.tv_sec=usec/1000000;
+  a.it_value.tv_usec=usec%1000000;
+  a.it_interval.tv_usec=0;
+  a.it_interval.tv_sec=0;
+  signal(SIGALRM,dosig);
+  yep=0;
+  sigsetmask(sigmask(SIGALRM));
+  setitimer(ITIMER_REAL,&a,&b);
+  write(fileno(stdout),obuf,obufp);
+  while(!yep) sigpause(0);
+  signal(SIGALRM,SIG_DFL);
+  }
+ else write(fileno(stdout),obuf,obufp);
  obufp=0;
  }
-if(!have) if(rdchk(fileno(stdin))>0) have=1;
+if(!have)
+ {
+ fcntl(fileno(stdin),F_SETFL,O_NDELAY);
+ if(read(fileno(stdin),&havec,1)==1) have=1;
+ fcntl(fileno(stdin),F_SETFL,0);
+ }
 }
 
 anext()
 {
-unsigned char c;
 aflush();
-if(read(fileno(stdin),&c,1)<1) tsignal();
-have=0;
-return c;
+if(have) have=0;
+else if(read(fileno(stdin),&havec,1)<1) tsignal();
+return havec;
 }
 
 eputc(c)

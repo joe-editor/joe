@@ -1,25 +1,28 @@
-/* J editor header file
+/* JOE header file
    Copyright (C) 1991 Joseph H. Allen
 
-This file is part of J (Joe's Editor)
+This file is part of JOE (Joe's Own Editor)
 
-J is free software; you can redistribute it and/or modify it under the terms
+JOE is free software; you can redistribute it and/or modify it under the terms
 of the GNU General Public License as published by the Free Software
-Foundation; either version 1, or (at your option) any later version. 
+Foundation; either version 1, or (at your option) any later version.  
 
-J is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+JOE is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE.  See the GNU General Public License for more details.  
 
-You should have received a copy of the GNU General Public License
-along with GNU Emacs; see the file COPYING.  If not, write to
-the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
+You should have received a copy of the GNU General Public License along with
+JOE; see the file COPYING.  If not, write to the Free Software Foundation, 675
+Mass Ave, Cambridge, MA 02139, USA.  */ 
 
 /* File characteristics */
 
 #define NL '\n'			/* End of line character */
 #define TAB '\t'		/* Tab character */
 #define TABWIDTH 8		/* Tab width */
+#define NOHIGHBIT		/* Comment this out to send characters with
+				   high bit set to terminal as is.  See
+				   the function 'showas'. */
 
 /* Types used in the file buffer */
 
@@ -32,9 +35,9 @@ typedef unsigned TXTSIZ;	/* Integer to hold size of file */
 /* File names and characteristics */
 
 #define PATHSIZE 256		/* Maximum path length */
-#define KEYMAP "keymap.j"	/* Keymap file */
-/* #define KEYDEF "/usr/bin/keymap.j"	Default keymap file */
-#define ABORT "aborted.j"	/* Aborted file */
+#define KEYMAP ".joerc"		/* Keymap file */
+/* #define KEYDEF "/usr/bin/.joerc"	Default keymap file */
+#define ABORT "aborted"		/* Aborted file */
 
 /* The current file buffer */
 /* When you change windows, these variables get stored in the 'struct buffer'
@@ -58,8 +61,8 @@ extern unsigned char gfnam[PATHSIZE];
 /* Basic file buffer manipulation functions and macros */
 /*******************************************************/
 
-fminsu();		/* fminsu(size) Adjust pointers by amnt inserted */
-fmdelu();		/* fmdelu(size) Adjust pointers by amount deleted */ 
+int fminsu();		/* fminsu(size) Adjust pointers by amnt inserted */
+int fmdelu();		/* fmdelu(size) Adjust pointers by amount deleted */ 
 /* The pointers the above two functions currently update include:
 	The pointer to start of each window which references the current
 	buffer.
@@ -131,15 +134,15 @@ filend++):0),*(point++)=(c),changed=1)
 
 #define fmnrnl() (fmnote()?(fmrgetc(),fmrnl()):0)
 
-fmopen();			/* fmopen() Initialize current edit buffer */
-fmexpand();			/* fmexpand(amount) Make buffer bigger */
-fmhole();			/* fmhole() Move hole to point */
-fmbig();			/* fmbig(size) Make hole at least size */
+int fmopen();			/* fmopen() Initialize current edit buffer */
+int fmexpand();			/* fmexpand(amount) Make buffer bigger */
+int fmhole();			/* fmhole() Move hole to point */
+int fmbig();			/* fmbig(size) Make hole at least size */
 int fmfnl();			/* Find first NL.  Returns 0 if not found */
 				/* If at an NL already, point is not moved */
 int fmrnl();			/* Find NL in reverse.  Rtns 0 if not found */
 				/* If at an NL already, point is not moved */
-fminss();			/* fminss(blk,size) Insert a block at point */
+int fminss();			/* fminss(blk,size) Insert a block at point */
 int fmcmp();			/* fmcmp(blk,size) return 0 if matching */
 int tupp();			/* tupp(c) Convert char to uppercase */
 int fmicmp();			/* Same as fmcmp but ignore case */
@@ -155,7 +158,6 @@ int fminsfil();			/* fminsfil(FILE) Insert file at point */
 extern int width;		/* Screen width */
 extern int height;		/* Screen height */
 extern int scroll;		/* Set if terminal has scrolling regions */
-termtype();			/* termtype() determine above variables */
 
 /* Terminal state */
 
@@ -170,34 +172,21 @@ extern int *scrn;		/* Screen buffer
 				*/
 
 extern unsigned char *omsg;	/* Opening message */
-dopen();                        /* Open display (clear it, allocate scrn,
+int dopen();                        /* Open display (clear it, allocate scrn,
 				   etc.) */
-dclose();                       /* dclose(s) Show final message and close
+int dclose();                       /* dclose(s) Show final message and close
 				   display */
 
-cposs();			/* cpos(row,col) Set cursor position */
-cpos();				/* cpos(row,col) Set cursor position and
+int cposs();			/* cpos(row,col) Set cursor position */
+int cpos();				/* cpos(row,col) Set cursor position and
 				   update ox/oypos */
-setregn();			/* setregn(top,bot) Set scroll region */
+int setregn();			/* setregn(top,bot) Set scroll region */
 
-attrib();			/* attrib(mask) Set attributes */
-#define INVERSE 1
-#define BLINK 2
-#define UNDERLINE 4
-#define BOLD 8
-
-int tattrib();			/* tattrib(c) Set attribute depending on char:
-					0 - 31		Underlined
-					32 - 126	Normal
-					127		Underlined
-					128 - 255 	As above but also
-							inverse
-				Returns char to show (ctrl chars converted
-				to normal)
-				*/
-
-tputcc();			/* tputcc(c) Set attribute and output char */
-tputss();			/* tputss(s) Use tputcc to output a string */
+int attrib();			/* attrib(mask) Set attributes */
+#define INVERSE 256
+#define BLINK 512
+#define UNDERLINE 1024
+#define BOLD 2048
 
 /*****************/
 /* Screen update */
@@ -233,23 +222,17 @@ extern TXTSIZ xoffset;		/* Cols current window is scrolled to right */
 extern TXTSIZ extend;		/* Column number if past end of line or in
 				   tab stop */
 
-/* Help text */
-
-extern unsigned char help[];	/* Help text */
-#define helplines 9
-#define helpwidth 79
-
 /* Functions for doing screen update */
 
-clreolchk();		/* clreolchk(lin,col) Clear to end of line if needed */
+int clreolchk();		/* clreolchk(lin,col) Clear to end of line if needed */
 int udline();		/* udline(lin) Update a single line.  Return true
 			   EOF reached */
 int udscrn();		/* Update screen (returns true if it finished) */
-dupdate1();		/* dupdate1(flg) Recalculate cursor, scroll & update
+int dupdate1();		/* dupdate1(flg) Recalculate cursor, scroll & update
 			   screen (sets cursor position if flg is set) */
-dupdatehelp();		/* Update help */
-dupdate();		/* Update help and screen */
-invalidate();		/* invalidate(lin) Invalidate a line so it gets upd. */
+int dupdatehelp();		/* Update help */
+int dupdate();		/* Update help and screen */
+int invalidate();		/* invalidate(lin) Invalidate a line so it gets upd. */
 
 /****************/
 /* Window Stuff */
@@ -390,7 +373,7 @@ int getl();		/* getl(prompt,line) Get a line of input */
 			    (yes this is a stupid hack)
 			*/
 
-msg();			/* msg(s) Show a message until user hits a key */
+int msg();			/* msg(s) Show a message until user hits a key */
 
 int askyn();		/* askyn(s) Yes/No question 
 			Returns: 'Y', 'N' or -1 for ^C */
@@ -400,7 +383,7 @@ int query();		/* query(s) Show message, wait for user to hit a key,
 
 int nquery();		/* nquery(s) Same as query but leave cursor on
 			   edit screen */
-imsg();                 /* imsg() Show opening message */
+int imsg();                 /* imsg() Show opening message */
 
 /*******************************************/
 /* High-level edit functions and variables */
@@ -446,18 +429,18 @@ extern struct buffer *markbuf;	/* Buffer block is in or 0 for no block */
 extern int leave;		/* Edit function sets this to leave the editor
 				   after the function returns */
 
-dnarw();			/* Move cursor to next line */
+int dnarw();			/* Move cursor to next line */
 				/* Column number is preserved */
 TXTSIZ calcs();			/* Calculate number of whitespace columns
 				   at beginning of line.  Cursor is left
 				   at first non-whitespace character */
 int saveit1();			/* saveit1(s) Save buffer in file & clear
 				   changed */
-itype();
-ltarw();			/* Move cursor left (goes to end of previous
+int itype();
+int ltarw();			/* Move cursor left (goes to end of previous
 				   line if at beginning of line) */
-uparw();			/* Move cursor up (preserves column) */
-rtarw();                        /* Move cursor right (goes to beginning of
+int uparw();			/* Move cursor up (preserves column) */
+int rtarw();                        /* Move cursor right (goes to beginning of
 				   next line if at end of line) */
 
 /* Return current column number of cursor */
@@ -465,10 +448,10 @@ rtarw();                        /* Move cursor right (goes to beginning of
 #define getcol() (extend?extend:getrcol())
 
 TXTSIZ getrcol();		/* Get column number of point */
-gocol();			/* gocol(col) Set cursor (point/extend) to
+int gocol();			/* gocol(col) Set cursor (point/extend) to
 				   column number */
-unfill();			/* Remove trailing spaces from line */
-fillup();                       /* Fill to extend position (use this only
+int unfill();			/* Remove trailing spaces from line */
+int fillup();                       /* Fill to extend position (use this only
 				   if extend if past end of line, not for
 				   if extend is in tab stop) */
 
@@ -477,63 +460,63 @@ int search();			/* Execute a search.  Returns 1 if found,
 
 /* Window functions */
 
-ldwin();			/* ldwin(window) load window */
-stwin();			/* stwin(window) save window */
-ldbuf();			/* ldbuf(buf) load buf if it's not already */
-ldbuf1();			/* ldbuf1(buf) load buf always */
-stbuf();			/* stbuf(buf) store buffer */
-wfit();				/* make sure the current window is on screen */
+int ldwin();			/* ldwin(window) load window */
+int stwin();			/* stwin(window) save window */
+int ldbuf();			/* ldbuf(buf) load buf if it's not already */
+int ldbuf1();			/* ldbuf1(buf) load buf always */
+int stbuf();			/* stbuf(buf) store buffer */
+int wfit();			/* make sure the current window is on screen */
 
 /* High Level (user) edit functions */
 
-wnext();			/* goto next window */
-wprev();			/* goto previous window */
-wexplode();			/* show 1 or all windows */
-wgrow();			/* make window bigger */
-wshrink();			/* make window smaller */
-wedit();			/* edit a new file */
-wsplit();			/* Split window into 2 */
+int wnext();			/* goto next window */
+int wprev();			/* goto previous window */
+int wexplode();			/* show 1 or all windows */
+int wgrow();			/* make window bigger */
+int wshrink();			/* make window smaller */
+int wedit();			/* edit a new file */
+int wsplit();			/* Split window into 2 */
 
-rewrite();			/* Rewrite screen */
-thelp();			/* Toggle help screen */
-bof();				/* Goto beginning of file */
-eof();				/* Goto end of file */
-bol();				/* Goto beginning of line */
-eol();				/* Goto end of line */
-urtarw();			/* Move cursor right (scroll if need to) */
-ultarw();
-uuparw();
-udnarw();
-delch();			/* Delete character */
-type();				/* type(c) type a character */
-inss();				/* insert a space */
-backs();			/* backspace */
-eexit();			/* Exit & abort */
-pgup();				/* 1/2 Page up */
-pgdn();				/* 1/2 Page down */
-deleol();			/* Erase end of line */
-dellin();			/* Erase entire line */
-exsave();			/* Save and exit */
-saveit();			/* Save current file */
-findline();			/* Goto line No. */
-findfirst();			/* Find some text */
-findnext();			/* Find next occurance */
-setbeg();			/* Set beginning of block */
-setend();			/* Set end of block */
-writeblk();			/* Write block to file */
-moveblk();			/* Move block to point */
-cpyblk();			/* Copy block to point */
-delblk();			/* Delete block */
-insfil();			/* Insert a file */
-push();				/* Execute a shell */
-mode();				/* Change edit mode */
-ctrlin();			/* Center current line */
-reformat();			/* Reformat current paragraph */
-killword();			/* Delete word */
-backword();			/* Delete word to the left */
-wrdl();				/* goto previous word */
-wrdr();				/* goto next word */
-edit();				/* Main edit loop */
+int rewrite();			/* Rewrite screen */
+int thelp();			/* Toggle help screen */
+int bof();			/* Goto beginning of file */
+int eof();			/* Goto end of file */
+int bol();			/* Goto beginning of line */
+int eol();				/* Goto end of line */
+int urtarw();			/* Move cursor right (scroll if need to) */
+int ultarw();
+int uuparw();
+int udnarw();
+int delch();			/* Delete character */
+int type();				/* type(c) type a character */
+int inss();				/* insert a space */
+int backs();			/* backspace */
+int eexit();			/* Exit & abort */
+int pgup();				/* 1/2 Page up */
+int pgdn();				/* 1/2 Page down */
+int deleol();			/* Erase end of line */
+int dellin();			/* Erase entire line */
+int exsave();			/* Save and exit */
+int saveit();			/* Save current file */
+int findline();			/* Goto line No. */
+int findfirst();			/* Find some text */
+int findnext();			/* Find next occurance */
+int setbeg();			/* Set beginning of block */
+int setend();			/* Set end of block */
+int writeblk();			/* Write block to file */
+int moveblk();			/* Move block to point */
+int cpyblk();			/* Copy block to point */
+int delblk();			/* Delete block */
+int insfil();			/* Insert a file */
+int push();				/* Execute a shell */
+int mode();				/* Change edit mode */
+int ctrlin();			/* Center current line */
+int reformat();			/* Reformat current paragraph */
+int killword();			/* Delete word */
+int backword();			/* Delete word to the left */
+int wrdl();				/* goto previous word */
+int wrdr();				/* goto next word */
+int edit();				/* Main edit loop */
 
 extern FILE *handle;		/* File handle used for many various things */
 extern TXTSIZ added;		/* Number of chars autoindent added
