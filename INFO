@@ -20,7 +20,7 @@ editor. JOE has the feel of most IBM PC text editors: The key-sequences are
 reminiscent of WordStar and Turbo-C.  JOE is much more powerful than those
 editors, however.  JOE has all of the features a UNIX user should expect:
 full use of termcap/terminfo, excellent screen update optimizations (JOE is
-fully useable at 2400 baud), simple installation, and all of the
+fully usable at 2400 baud), simple installation, and all of the
 UNIX-integration features of VI.
 
 	JOE's initialization file determines much of JOE's personality and
@@ -31,13 +31,13 @@ the basic "joerc", which allow it to emulate these editors:
 	JPICO	- An enhanced version of the Pine mailer system's PICO
 		  editor.
 
-	JSTAR	- A complete immitation of WordStar including many "JOE"
+	JSTAR	- A complete imitation of WordStar including many "JOE"
 		  extensions.
 
 	RJOE	- A restricted version of JOE which allowed you to edit
 		  only the files specified on the command line.
 
-	JMACS	- A GNU-EMACS immitation which is about one order of
+	JMACS	- A GNU-EMACS imitation which is about one order of
 		  magnitude smaller than real GNU-EMACS.
 
 Features:
@@ -82,7 +82,7 @@ name (including the command line) will also accept:
 		filename,start,size	to edit a portion of a file/device
 		-			to use stdin or stdout
 
-	File names on the command line may be preceeded by +nnn to start
+	File names on the command line may be preceded by +nnn to start
 editing at a specified line.
 
 	JOE has shell windows.  You can run a shell in a window and any
@@ -158,7 +158,7 @@ text files and programs:
 		- can have EMACS-style cursor re-centering on scrolls
 
 		- characters between 128-255 can be shown as-is for
-		  non-english character sets
+		  non-English character sets
 
 		- Final newline can be forced on end of file
 

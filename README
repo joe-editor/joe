@@ -1,18 +1,41 @@
 This is Joe's Own Editor.  See the INFO file if you don't know what this is.
 
 =-=-=-=-=-=-=-=-=-=-=-=
-Installation proceedure
+Installation procedure
 =-=-=-=-=-=-=-=-=-=-=-=
 
-  Joe uses automake and autocnf suites to build itself. Type:
+  Joe uses automake and autoconf suites to build itself. Type:
 
 	./configure
 	make
 	make install
 
   to build and install joe. The installation step may need increased
-priviledges to install into default places (/usr/local). You can then try it
+privileges to install into default places (/usr/local). You can then try it
 by typing "joe".
+
+
+  To install in your home directory:
+
+	./configure --prefix=$HOME
+
+
+  For other install options:
+
+	./configure --help
+
+
+  To force JOE to use /etc/termcap file using its built-in termcap file parser:
+
+	./configure --disable-curses --disable-termcap
+
+  (--disable-termcap prevents JOE from using the termcap emulation functions
+   in the -ltermcap library.  --disable-curses prevents JOE from using the
+   termcap emulation functions in the -lcurses library).
+
+  Otherwise, JOE tries to use the terminfo database via the termcap
+  emulation routines: see man tgetent, tgetstr, tgoto, etc.
+
 
 =-=-=
 Usage
@@ -20,7 +43,7 @@ Usage
 
 USAGE:	joe filename [filename ...]
 
-  Optionally preceed each filename with +nnn to start at specified line number.
+  Optionally precede each filename with +nnn to start at specified line number.
 
   Options:
 
@@ -35,7 +58,7 @@ USAGE:	joe filename [filename ...]
  -nosta		Disable top-most status line
  -keepup	%k and %c status line escape sequences updated frequently
  -pg nnn	No. lines to keep for PgUp/PgDn
- -csmode	^KF after a pervious search does a ^L instead
+ -csmode	^KF after a previous search does a ^L instead
  -backpath path Directory to store backup files
  -nonotice	Disable copyright notice
  -noxon		Attempt to turn off ^S/^Q processing
@@ -120,17 +143,17 @@ attempts to find this file in:
 	/usr/local/lib/termcap	Joe's termcap file
 	/etc/termcap		Normal system termcap file
 
-	Joe coppies its own termcap file to /usr/local/lib/termcap (or
+	Joe copies its own termcap file to /usr/local/lib/termcap (or
 wherever the system-wide joerc file is going to go) when 'make install' is
 run.
 
 	Termcap is better than terminfo because it is a more open standard. 
 Programs can directly access the termcap database and future versions of
 terminfo may require programs to use curses.  The only argument in
-terminfo's favour is that it is faster than termcap.  To fix this problem,
+terminfo's favor is that it is faster than termcap.  To fix this problem,
 JOE will use a termcap index file if it exists and if it is up to date.
 
-	This is the proceedure to make the termcap index file:
+	This is the procedure to make the termcap index file:
 
 		make termidx
 		./termidx </etc/termcap >/etc/termcap.idx
