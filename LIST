@@ -185,6 +185,7 @@ shell		Suspend process or execute a sub-shell
 stat		Display cursor position
 tag		Tags file search
 txt		Insert text
+name		Insert current file name
 keymap		Switch to another keymap
 
 Prompts

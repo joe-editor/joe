@@ -2082,3 +2082,18 @@ int utxt(BW *bw)
 	else
 		return -1;
 }
+
+/* Insert current file name */
+
+int uname(BW *bw)
+{
+	unsigned char *s;
+	W *w=bw->parent->main;
+	s=((BW *)w->object)->b->name;
+	if (!s || !*s)
+		return -1;
+	while (*s)
+		if (utypebw(bw,*s++))
+			return -1;
+	return 0;
+}

@@ -154,6 +154,7 @@ CMD cmds[] = {
 	{US "math", TYPETW + TYPEPW, umath, NULL, 0, NULL},
 	{US "mode", TYPETW + TYPEPW + TYPEQW, umode, NULL, 0, NULL},
 	{US "msg", TYPETW + TYPEPW + TYPEQW + TYPEMENU, umsg, NULL, 0, NULL},
+	{US "name", TYPETW + TYPEPW, uname, NULL, 0, NULL}, 
 	{US "nbuf", TYPETW, unbuf, NULL, 1, US "pbuf"},
 	{US "nedge", TYPETW + TYPEPW + EFIXXCOL, unedge, NULL, 1, US "pedge"}, 
 	{US "nextpos", TYPETW + TYPEPW + EFIXXCOL + EMID + EPOS, unextpos, NULL, 1, US "prevpos"}, 

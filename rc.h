@@ -27,6 +27,8 @@ KMAP *kmap_getcontext PARAMS((unsigned char *name));
  */
 KMAP *ngetcontext PARAMS((unsigned char *name));
 
+unsigned char **get_keymap_list();
+
 /* int procrc(CAP *cap, char *name);  Process an rc file
    Returns 0 for success
           -1 for file not found

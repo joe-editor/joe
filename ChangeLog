@@ -1,7 +1,8 @@
 Tue Mar  1 2005  Joe Allen <jhallen@world.std.com>
 
 	Allow :s in xml names.
-
+	Fix 'keymap' command.
+	Add 'name' command.
 
 Mon Feb 28 2005  Joe Allen <jhallen@world.std.com>
 

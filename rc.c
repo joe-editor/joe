@@ -77,6 +77,16 @@ KMAP *ngetcontext(unsigned char *name)
 	return 0;
 }
 
+unsigned char **get_keymap_list()
+{
+	unsigned char **lst = 0;
+	struct context *c;
+	for (c=contexts; c; c=c->next)
+		lst = vaadd(lst, vsncpy(NULL,0,sz(c->name)));
+
+	return lst;
+}
+
 OPTIONS *options = NULL;
 
 /* Global variable options */

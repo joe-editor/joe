@@ -15,6 +15,9 @@
 #include "macro.h"
 #include "termcap.h"
 #include "utils.h"
+#include "rc.h"
+#include "utf8.h"
+#include "tty.h"
 #include "vs.h"
 
 /* Create a KBD */
@@ -348,6 +351,7 @@ int kdel(KMAP *kmap, unsigned char *seq)
 }
 
 /* JM */
+
 B *keymaphist=0;
 
 int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
@@ -356,7 +360,7 @@ int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
 	vsrm(s);
 	if(notify) *notify=1;
 	if(!k) {
-		msgnw(bw,"No such keymap");
+		msgnw(bw->parent,"No such keymap");
 		return -1;
 	}
 	rmkbd(bw->parent->kbd);
@@ -364,8 +368,27 @@ int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
 	return 0;
 }
 
+static unsigned char **keymap_list;
+
+static int keymap_cmplt(BW *bw)
+{
+	// Reload every time: we should really check date of tags file...
+	//if (tag_word_list)
+	//	varm(tag_word_list);
+
+	if (!keymap_list)
+		keymap_list = get_keymap_list();
+
+	if (!keymap_list) {
+		ttputc(7);
+		return 0;
+	}
+
+	return simple_cmplt(bw,keymap_list);
+}
+
 int ukeymap(BASE *bw)
 {
-	if (wmkpw(bw,"Change keymap: ",&keymaphist,dokeymap,"keymap",NULL,NULL,NULL,NULL)) return 0;
+	if (wmkpw(bw->parent,"Change keymap: ",&keymaphist,dokeymap,"keymap",NULL,keymap_cmplt,NULL,NULL,locale_map)) return 0;
 	else return -1;
 }
