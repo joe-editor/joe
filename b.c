@@ -414,7 +414,7 @@ int pisbow(P *p)
 	int d = prgetc(q);
 
 	prm(q);
-	if (isalnum_(c) && (!isalnum_(d) || pisbof(p)))
+	if (isalnum_(p->b->o.utf8,c) && (!isalnum_(p->b->o.utf8,d) || pisbof(p)))
 		return 1;
 	else
 		return 0;
@@ -428,7 +428,7 @@ int piseow(P *p)
 	int c = prgetc(q);
 
 	prm(q);
-	if (isalnum_(c) && (!isalnum_(d) || piseof(p)))
+	if (isalnum_(p->b->o.utf8,c) && (!isalnum_(p->b->o.utf8,d) || piseof(p)))
 		return 1;
 	else
 		return 0;
@@ -440,7 +440,23 @@ int pisblank(P *p)
 	P *q = pdup(p);
 
 	p_goto_bol(q);
-	while (isblank(brc(q)))
+	while (joe_isblank(brc(q)))
+		pgetb(q);
+	if (piseol(q)) {
+		prm(q);
+		return 1;
+	} else {
+		prm(q);
+		return 0;
+	}
+}
+
+/* is p at end of line or spaces followed by end of line? */
+int piseolblank(P *p)
+{
+	P *q = pdup(p);
+
+	while (joe_isblank(brc(q)))
 		pgetb(q);
 	if (piseol(q)) {
 		prm(q);
@@ -458,7 +474,7 @@ long pisindent(P *p)
 	long col;
 
 	p_goto_bol(q);
-	while (isblank(brc(q)))
+	while (joe_isblank(brc(q)))
 		pgetc(q);
 	col = q->col;
 	prm(q);
@@ -1844,7 +1860,7 @@ P *binsm(P *p, unsigned char *blk, int amnt)
 }
 
 /* insert byte 'c' at 'p' */
-P *binsc(P *p, unsigned char c)
+P *binsbyte(P *p, unsigned char c)
 {
 	if (p->b->o.crlf && c == '\n')
 		return binsm(p, US "\r\n", 2);
@@ -1853,11 +1869,19 @@ P *binsc(P *p, unsigned char c)
 }
 
 /* UTF-8 encode a character and insert it */
-P *bins_utf8(P *p, int c)
+P *binsc(P *p, int c)
 {
-	unsigned char buf[8];
-	int len = utf8_encode(buf,c);
-	return binsm(p,buf,len);
+	if (c>127 && p->b->o.utf8) {
+		unsigned char buf[8];
+		int len = utf8_encode(buf,c);
+		return binsm(p,buf,len);
+	} else {
+		unsigned char ch = c;
+		if (p->b->o.crlf && c == '\n')
+			return binsm(p, US "\r\n", 2);
+		else
+			return binsm(p, &ch, 1);
+	}
 }
 
 /* insert zero-terminated string 's' at 'p' */

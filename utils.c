@@ -37,12 +37,12 @@ int isspace_eof(int c)
  *	!!! code which uses isblank() assumes tested char is evaluated
  *	only once, so it musn't be a macro
  */
-#ifndef HAVE_WORKING_ISBLANK
-int isblank(int c)
+/* GNU is blank does not work properly for wide characters */
+
+int joe_isblank(int c)
 {
 	return((c == 32) || (c == 9));
 }
-#endif
 
 /*
  * return minimum/maximum of two numbers
@@ -72,9 +72,12 @@ signed long int long_min(signed long int a, signed long int b)
  * 	_ is considered as word character because is often used 
  *	in the names of C/C++ functions
  */
-int isalnum_(int c)
+int isalnum_(int wide,int c)
 {
-	return (isalnum(c) || (c == 95));
+	if (wide)
+		return (iswalnum(c) || (c == 95));
+	else
+		return (isalnum(c) || (c == 95));
 }
 
 /* Versions of 'read' and 'write' which automatically retry when interrupted */
@@ -176,10 +179,10 @@ int parse_ident(unsigned char **pp, unsigned char *buf, int len)
 {
 	unsigned char *p = *pp;
 	if(isalpha(*p) || *p=='_') {
-		while(len && isalnum_(*p))
+		while(len && isalnum_(0,*p))
 			*buf++= *p++, --len;
 		*buf=0;
-		while(isalnum_(*p))
+		while(isalnum_(0,*p))
 			++p;
 		*pp = p;
 		return 0;
@@ -194,7 +197,7 @@ int parse_kw(unsigned char **pp, unsigned char *kw)
 	unsigned char *p = *pp;
 	while(*kw && *kw==*p)
 		++kw, ++p;
-	if(!*kw && !isalnum_(*p)) {
+	if(!*kw && !isalnum_(0,*p)) {
 		*pp = p;
 		return 0;
 	} else

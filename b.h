@@ -51,6 +51,7 @@ int piseow PARAMS((P *p));
 #define piscol(p) ((p)->valcol ? (p)->col : (pfcol(p), (p)->col))
 
 int pisblank PARAMS((P *p));
+int piseolblank PARAMS((P *p));
 
 long pisindent PARAMS((P *p));
 
@@ -97,11 +98,11 @@ P *binsb PARAMS((P *p, B *b));
 /* insert a block 'blk' of size 'amnt' into buffer at 'p' */
 P *binsm PARAMS((P *p, unsigned char *blk, int amnt)); 
 
-/* insert byte 'c' into buffer at 'p' */
-P *binsc PARAMS((P *p, unsigned char c));
+/* insert character 'c' into buffer at 'p' */
+P *binsc PARAMS((P *p, int c));
 
-/* UTF-8 encode 'c' and insert is at 'p' */
-P *bins_utf8 PARAMS((P *p, int c));
+/* insert byte 'c' into buffer at at 'p' */
+P *binsbyte PARAMS((P *p, unsigned char c));
 
 /* insert zero term. string 's' into buffer at 'p' */
 P *binss PARAMS((P *p, unsigned char *s));

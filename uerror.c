@@ -121,7 +121,7 @@ static void freeall(void)
 
 /* First word on line with a '.' in it.  This is the file name.  The next number after that is the line number. */
 
-static int parseit(unsigned char *s, long int row)
+static int parseit(int wide,unsigned char *s, long int row)
 {
 	int x, y, flg;
 	unsigned char *name = NULL;
@@ -133,10 +133,10 @@ static int parseit(unsigned char *s, long int row)
 
 	do {
 		/* Skip to first word */
-		for (x = y; s[x] && !(isalnum_(s[x]) || s[x] == '.' || s[x] == '/'); ++x) ;
+		for (x = y; s[x] && !(isalnum_(wide,s[x]) || s[x] == '.' || s[x] == '/'); ++x) ;
 
 		/* Skip to end of first word */
-		for (y = x; isalnum_(s[y]) || s[y] == '.' || s[y] == '/'; ++y)
+		for (y = x; isalnum_(wide,s[y]) || s[y] == '.' || s[y] == '/'; ++y)
 			if (s[y] == '.')
 				flg = 1;
 	} while (!flg && x!=y);
@@ -190,7 +190,7 @@ static long parserr(B *b)
 		p_goto_eol(p);
 		s = brvs(q, (int) (p->byte - q->byte));
 		if (s) {
-			nerrs += parseit(s, q->line);
+			nerrs += parseit(b->o.utf8, s, q->line);
 			vsrm(s);
 		}
 	} while (pgetc(p) != NO_MORE_DATA);

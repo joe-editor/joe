@@ -1,3 +1,13 @@
+Wed Apr 14 2004  Joe Allen <jhallen@world.std.com>
+	* b.c b.h macro.c main.c rc.c uedit.c uerror.c uformat.c utag.c
+	utils.c utils.h:
+
+	Fix many edit fuctions for UTF-8.  Now we use
+	iswalnum() when in UTF-8 mode.  Paragraph format
+	works.
+
+	Search is still broken.
+
 Tue Apr 13 2004  Joe Allen <jhallen@world.std.com>
 	* bw.c, syntax.c, syntax.h, syntax/php.jsf.in,
 	syntax/c.jsf.in:

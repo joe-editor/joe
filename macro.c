@@ -131,7 +131,7 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
       macroloop:
 
 	/* Skip whitespace */
-	while (isblank(buf[x]))
+	while (joe_isblank(buf[x]))
 		++x;
 
 	/* Do we have a string? */
@@ -233,13 +233,13 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 	}
 
 	/* Skip whitespace */
-	while (isblank(buf[x]))
+	while (joe_isblank(buf[x]))
 		++x;
 
 	/* Do we have a comma? */
 	if (buf[x] == ',') {
 		++x;
-		while (isblank(buf[x]))
+		while (joe_isblank(buf[x]))
 			++x;
 		if (buf[x] && buf[x] != '\r' && buf[x] != '\n')
 			goto macroloop;

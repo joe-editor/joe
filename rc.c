@@ -698,7 +698,7 @@ int procrc(CAP *cap, unsigned char *name)
 					if (!strcmp(buf + 1, "def")) {
 						int y;
 
-						for (buf[x] = c; isblank(buf[x]); ++x) ;
+						for (buf[x] = c; joe_isblank(buf[x]); ++x) ;
 						for (y = x; !isspace_eof(buf[y]); ++y) ;
 						c = buf[y];
 						buf[y] = 0;
@@ -706,7 +706,7 @@ int procrc(CAP *cap, unsigned char *name)
 							int sta;
 							MACRO *m;
 
-							if (isblank(c)
+							if (joe_isblank(c)
 							    && (m = mparse(NULL, buf + y + 1, &sta)))
 								addcmd(buf + x, m);
 							else {
@@ -719,7 +719,7 @@ int procrc(CAP *cap, unsigned char *name)
 						}
 					} else if (!strcmp(buf + 1, "inherit"))
 						if (context) {
-							for (buf[x] = c; isblank(buf[x]); ++x) ;
+							for (buf[x] = c; joe_isblank(buf[x]); ++x) ;
 							for (c = x; !isspace_eof(buf[c]); ++c) ;
 							buf[c] = 0;
 							if (c != x)
@@ -732,7 +732,7 @@ int procrc(CAP *cap, unsigned char *name)
 							err = 1;
 							fprintf(stderr, "\n%s %d: No context selected for :inherit", name, line);
 					} else if (!strcmp(buf + 1, "include")) {
-						for (buf[x] = c; isblank(buf[x]); ++x) ;
+						for (buf[x] = c; joe_isblank(buf[x]); ++x) ;
 						for (c = x; !isspace_eof(buf[c]); ++c) ;
 						buf[c] = 0;
 						if (c != x) {
@@ -755,7 +755,7 @@ int procrc(CAP *cap, unsigned char *name)
 						if (context) {
 							int y;
 
-							for (buf[x] = c; isblank(buf[x]); ++x) ;
+							for (buf[x] = c; joe_isblank(buf[x]); ++x) ;
 							for (y = x; buf[y] != 0 && buf[y] != '\t' && buf[y] != '\n' && (buf[y] != ' ' || buf[y + 1]
 															!= ' '); ++y) ;
 							buf[y] = 0;

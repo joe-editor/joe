@@ -101,15 +101,15 @@ int u_goto_prev(BW *bw)
 	P *p = pdup(bw->cursor);
 	int c = prgetc(p);
 
-	if (isalnum_(c)) {
-		while (isalnum_(c=prgetc(p)))
+	if (isalnum_(bw->b->o.utf8,c)) {
+		while (isalnum_(bw->b->o.utf8,(c=prgetc(p))))
 			/* Do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(p);
 	} else if (isspace(c) || ispunct(c)) {
 		while ((c=prgetc(p)), (isspace(c) || ispunct(c)))
 			/* Do nothing */;
-		while(isalnum_(c=prgetc(p)))
+		while(isalnum_(bw->b->o.utf8,(c=prgetc(p))))
 			/* Do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(p);
@@ -132,15 +132,15 @@ int u_goto_prev(BW *bw)
 int u_goto_next(BW *bw)
 {
 	P *p = pdup(bw->cursor);
-	int c = brc(p);
+	int c = brch(p);
 
-	if (isalnum_(c))
-		while (isalnum_(c = brc(p)))
+	if (isalnum_(bw->b->o.utf8,c))
+		while (isalnum_(bw->b->o.utf8,(c = brch(p))))
 			pgetc(p);
 	else if (isspace(c) || ispunct(c)) {
-		while (isspace(c = brc(p)) || ispunct(c))
+		while (isspace(c = brch(p)) || ispunct(c))
 			pgetc(p);
-		while (isalnum_(c = brc(p)))
+		while (isalnum_(bw->b->o.utf8,(c = brch(p))))
 			pgetc(p);
 	} else
 		pgetc(p);
@@ -156,7 +156,7 @@ int u_goto_next(BW *bw)
 static P *pboi(P *p)
 {
 	p_goto_bol(p);
-	while (isblank(brc(p)))
+	while (joe_isblank(brch(p)))
 		pgetc(p);
 	return p;
 }
@@ -174,9 +174,9 @@ static int pisedge(P *p)
 	pboi(q);
 	if (q->byte == p->byte)
 		goto left;
-	if (isblank(c = brc(p))) {
+	if (joe_isblank(c = brch(p))) {
 		pset(q, p);
-		if (isblank(prgetc(q)))
+		if (joe_isblank(prgetc(q)))
 			goto no;
 		if (c == '\t')
 			goto right;
@@ -232,7 +232,7 @@ int utomatch(BW *bw)
 	 f,			/* Character to find */
 	 dir;			/* 1 to search forward, -1 to search backward */
 
-	switch (c = brc(bw->cursor)) {
+	switch (c = brch(bw->cursor)) {
 	case '(':
 		f = ')';
 		dir = 1;
@@ -663,13 +663,13 @@ int ubacks(BW *bw, int k)
 int u_word_delete(BW *bw)
 {
 	P *p = pdup(bw->cursor);
-	int c = brc(p);
+	int c = brch(p);
 
-	if (isalnum_(c))
-		while (isalnum_(c = brc(p)))
+	if (isalnum_(bw->b->o.utf8,c))
+		while (isalnum_(bw->b->o.utf8,(c = brch(p))))
 			pgetc(p);
 	else if (isspace(c))
-		while (isspace(c = brc(p)))
+		while (isspace(c = brch(p)))
 			pgetc(p);
 	else
 		pgetc(p);
@@ -692,8 +692,8 @@ int ubackw(BW *bw)
 	P *p = pdup(bw->cursor);
 	int c = prgetc(bw->cursor);
 
-	if (isalnum_(c)) {
-		while (isalnum_(c = prgetc(bw->cursor)))
+	if (isalnum_(bw->b->o.utf8,c)) {
+		while (isalnum_(bw->b->o.utf8,(c = prgetc(bw->cursor))))
 			/* do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(bw->cursor);
@@ -819,13 +819,10 @@ int utypebw(BW *bw, int k)
 				pgetc(bw->cursor);
 			}
 
-		if(bw->b->o.utf8)
-			bins_utf8(bw->cursor, k);
-		else
-			binsc(bw->cursor, k);
+		binsc(bw->cursor, k);
 
 		pgetc(bw->cursor);
-		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !isblank(k)) {
+		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !joe_isblank(k)) {
 			wrapword(bw->cursor, (long) bw->o.lmargin, bw->o.french, NULL);
 			simple = 0;
 		} else if (bw->o.overtype && !piseol(bw->cursor) && k != '\t')

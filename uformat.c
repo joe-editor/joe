@@ -29,7 +29,7 @@ int ucenter(BW *bw)
 	int c;
 
 	p_goto_eol(p);
-	while (isblank(c = prgetc(p)))
+	while (joe_isblank(c = prgetc(p)))
 		/* do nothing */;
 	if (c == '\n') {
 		pgetc(p);
@@ -41,7 +41,7 @@ int ucenter(BW *bw)
 	endcol = piscol(p);
 
 	p_goto_bol(p);
-	while (isblank(c = pgetc(p)))
+	while (joe_isblank(c = pgetc(p)))
 		/* do nothing */;
 	if (c == '\n') {
 		prgetc(p);
@@ -132,10 +132,10 @@ static long prefix(P *p)
 	P *q = pdup(p);
 
 	p_goto_bol(q);
-	while (cpara(brc(q)))
+	while (cpara(brch(q)))
 		pgetc(q);
 	while (!pisbol(q))
-		if (!isblank(prgetc(q))) {
+		if (!joe_isblank(prgetc(q))) {
 			pgetc(q);
 			break;
 		}
@@ -291,7 +291,7 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 		p_goto_bol(r);
 		q = pdup(r);
 		while(cpara(c = brc(q))) {
-			if(!isblank(c))
+			if(!joe_isblank(c))
 				f = 1;
 			pgetc(q);
 		}
@@ -307,7 +307,7 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 */
 
 	/* Get to beginning of word */
-	while (!pisbol(p) && piscol(p) > indent && !isblank(prgetc(p)))
+	while (!pisbol(p) && piscol(p) > indent && !joe_isblank(prgetc(p)))
 		/* do nothing */;
 
 	/* If we found the beginning of a word... */
@@ -316,7 +316,7 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 		   word */
 		q = pdup(p);
 		while (!pisbol(q))
-			if (!isblank(c = prgetc(q))) {
+			if (!joe_isblank(c = prgetc(q))) {
 				pgetc(q);
 				if ((c == '.' || c == '?' || c == '!')
 				    && q->byte != p->byte && !french)
@@ -361,8 +361,8 @@ int uformat(BW *bw)
 {
 	long indent;
 	unsigned char *indents;
-	unsigned char *buf, *b;
-	int len;
+	B *buf;
+	P *b;
 	long curoff;
 	int c;
 	P *p, *q;
@@ -383,7 +383,7 @@ int uformat(BW *bw)
 	pset(bw->cursor, p);
 	peop(bw->cursor);
 
-	/* Insure that paragraph ends on a beginning of a line */
+	/* Ensure that paragraph ends on a beginning of a line */
 	if (!pisbol(bw->cursor))
 		binsc(bw->cursor, '\n'), pgetc(bw->cursor);
 
@@ -412,56 +412,43 @@ int uformat(BW *bw)
 	if (bw->o.lmargin > indent)
 		indent = bw->o.lmargin;
 
-	/* Cut paragraph into memory buffer */
-	buf = (unsigned char *) joe_malloc(len = (bw->cursor->byte - p->byte));
-	brmem(p, buf, len);
+	/* Cut paragraph into new buffer */
+	
+	/* New buffer needs to inherit UTF-8 and CR-LF options */
+	buf = bcpy(p, bw->cursor);
+	buf->o.crlf = p->b->o.crlf;
+	buf->o.utf8 = p->b->o.utf8;
 	bdel(p, bw->cursor);
 
 	/* text is in buffer.  insert it at cursor */
 
 	/* Do first line */
-	b = buf;
+	b = pdup(buf->bof);
 
-	while (len--) {
+	while (!piseof(b)) {
 		/* Set cursor position if we're at original offset */
-		if (b - buf == curoff)
+		if (b->byte == curoff)
 			pset(bw->cursor, p);
 
 		/* Get character from buffer */
-		c = *b++;
+		c = pgetc(b);
 
 		/* Stop if we found end of line */
-		if (c == '\n' || (c == '\r' && len && *b == '\n')) {
-			++len;
-			--b;
+		if (c == '\n') {
+			prgetc(b);
 			break;
 		}
 
 		/* Stop if we found white-space followed by end of line */
-		if (isblank(c)) {
-			unsigned char *r = b;
-			int rlen = len;
-			int z;
-
-			while (rlen--) {
-				z = *r++;
-				if (z == '\n')
-					break;
-				if (!isblank(z))
-					goto ok;
-			}
-			++len;
-			--b;
+		if (joe_isblank(c) && piseolblank(b))
 			break;
-		      ok:;
-		}
 
 		/* Insert character, advance pointer */
 		binsc(p, c);
 		pgetc(p);
 
 		/* Do word wrap if we reach right margin */
-		if (piscol(p) > bw->o.rmargin && !isblank(c)) {
+		if (piscol(p) > bw->o.rmargin && !joe_isblank(c)) {
 			wrapword(p, indent, bw->o.french, indents);
 			break;
 		}
@@ -469,48 +456,50 @@ int uformat(BW *bw)
 
 	/* Do rest */
 
-	while (len > 0)
-		if (isblank(*b) || *b == '\n' || *b == '\r') {
+	while (!piseof(b)) {
+		c = brch(b);
+		if (joe_isblank(c) || c == '\n') {
 			int f = 0;
+			P *d;
+			int g;
 
 			/* Set f if there are two spaces after . ? or ! instead of one */
-			if ((b[-1] == '.' || b[-1] == '?' || b[-1] == '!')
-			    && isspace(b[1]))
-				f = 1;
-
+			/* (What is c was '\n'?) */
+			d=pdup(b);
+			g=prgetc(d);
+			if (g=='.' || g=='?' || g=='!') {
+				pset(d,b);
+				pgetc(d);
+				if (isspace(brch(d)))
+					f = 1;
+			}
+			prm(d);
+			
 			/* Skip past the whitespace.  Skip over indentations */
 		      loop:
-
-			if (*b == '\r' && len) {
-				if (b - buf == curoff)
+			
+			c = brch(b);
+			if (c == '\n') {
+				if (b->byte == curoff)
 					pset(bw->cursor, p);
-				++b;
-				--len;
-			}
 
-			if (*b == '\n' && len) {
-				if (b - buf == curoff)
-					pset(bw->cursor, p);
-				++b;
-				--len;
-				while (cpara(*b) && len) {
-					if (b - buf == curoff)
+				pgetc(b);
+				while (cpara(c=brch(b))) {
+					if (b->byte == curoff)
 						pset(bw->cursor, p);
-					++b;
-					--len;
+					pgetc(b);
 				}
 			}
 
-			if (len && isblank(*b)) {
-				if (b - buf == curoff)
+			if (joe_isblank(c)) {
+				if(b->byte == curoff)
 					pset(bw->cursor, p);
-				++b;
-				--len;
+				pgetc(b);
 				goto loop;
 			}
 
 			/* Insert proper amount of whitespace */
-			if (len) {
+			if (!piseof(b)) {
 				if (f && !bw->o.french)
 					binsc(p, ' '), pgetc(p);
 				binsc(p, ' ');
@@ -518,18 +507,19 @@ int uformat(BW *bw)
 			}
 		} else {
 			/* Insert characters of word and wrap if necessary */
-			if (b - buf == curoff)
+			if (b->byte == curoff)
 				pset(bw->cursor, p);
-			binsc(p, *b++);
-			--len;
+
+			binsc(p, pgetc(b));
 			pgetc(p);
 			if (piscol(p) > bw->o.rmargin)
 				wrapword(p, indent, bw->o.french, indents);
 		}
+	}
 
 	binsc(p, '\n');
 	prm(p);
-	joe_free(buf);
+	brm(buf);
 	joe_free(indents);
 	return 0;
 }

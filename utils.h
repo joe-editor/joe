@@ -24,7 +24,7 @@
  * 	_ is considered as word character because is often used 
  *	in the names of C/C++ functions
  */
-int isalnum_ PARAMS((int c));
+int isalnum_ PARAMS((int wide,int c));
 
 /* 
  * Whitespace characters are characters like tab, space, ...
@@ -41,7 +41,7 @@ int isspace_eof PARAMS((int c));
  *	even #including <ctype.h> without additional hackery doesn't import
  *	the prototype, so we define it here unconditionaly
  */
-int isblank PARAMS((int c));
+int joe_isblank PARAMS((int c));
 
 /*
  * Functions which return minimum/maximum of two numbers  
