@@ -296,7 +296,7 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 	if (bw->b->er == 0 && bw->o.msold) {
 		exemac(bw->o.msold);
 	}
-	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte, 0)) != 0) {
+	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte, 1)) != 0) {
 		msgnw(bw->parent, msgs[-fl]);
 		vsrm(req->name);
 		joe_free(req);

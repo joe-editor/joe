@@ -2351,6 +2351,7 @@ int bsave(P *p, unsigned char *s, long int size, int flag)
 	FILE *f;
 	long skip, amnt;
 	struct stat sbuf;
+	int norm = 0;
 
 	s = parsens(s, &skip, &amnt);
 
@@ -2373,12 +2374,8 @@ int bsave(P *p, unsigned char *s, long int size, int flag)
 	} else if (skip || amnt != MAXLONG)
 		f = fopen((char *)s, "r+");
 	else {
-		if (flag && p->b->name && !strcmp((char *)s,p->b->name)) {
-			stat((char *)s,&sbuf);
-			if (sbuf.st_mtime>p->b->mod_time)
-				return -6;
-		}
 		f = fopen((char *)s, "w");
+		norm = 1;
 	}
 	joesep(s);
 
@@ -2415,6 +2412,11 @@ err:
 		fclose(f);
 	else
 		fflush(f);
+
+	if (!error && norm && flag && p->b->name && !strcmp((char *)s,p->b->name)) {
+		if (!stat((char *)s,&sbuf))
+			p->b->mod_time = sbuf.st_mtime;
+	}
 
 opnerr:
 	if (s[0] == '!' || !strcmp(s, "-")) {
