@@ -14,11 +14,11 @@
 extern OPTIONS pdefault;
 void setopt PARAMS((OPTIONS *n, char *name));
 
-/* KMAP *getcontext(char *name);
+/* KMAP *kmap_getcontext(char *name);
  * Find and return the KMAP for a given context name.  If none is found, an
  * empty kmap is created, bound to the context name, and returned.
  */
-KMAP *getcontext PARAMS((char *name));
+KMAP *kmap_getcontext PARAMS((char *name));
 
 /* int procrc(CAP *cap, char *name);  Process an rc file
    Returns 0 for success

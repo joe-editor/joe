@@ -40,7 +40,7 @@ static struct context {
  * is created.
  */
 
-KMAP *getcontext(char *name)
+KMAP *kmap_getcontext(char *name)
 {
 	struct context *c;
 
@@ -671,7 +671,7 @@ int procrc(CAP *cap, char *name)
 							for (c = x; !isspace_eof(buf[c]); ++c) ;
 							buf[c] = 0;
 							if (c != x)
-								kcpy(context, getcontext(buf + x));
+								kcpy(context, kmap_getcontext(buf + x));
 							else {
 								err = 1;
 								fprintf(stderr, "\n%s %d: context name missing from :inherit", name, line);
@@ -712,7 +712,7 @@ int procrc(CAP *cap, char *name)
 							err = 1;
 							fprintf(stderr, "\n%s %d: No context selected for :delete", name, line);
 					} else
-						context = getcontext(buf + 1);
+						context = kmap_getcontext(buf + 1);
 				else {
 					err = 1;
 					fprintf(stderr, "\n%s %d: Invalid context name", name, line);

@@ -713,7 +713,7 @@ BW *bwmk(W *window, B *b, int prompt)
 	}
 	if (window == window->main) {
 		rmkbd(window->kbd);
-		window->kbd = mkkbd(getcontext(w->o.context));
+		window->kbd = mkkbd(kmap_getcontext(w->o.context));
 	}
 	w->top->xcol = 0;
 	w->cursor->xcol = 0;

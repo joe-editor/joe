@@ -602,7 +602,7 @@ W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height
 
 	/* Create new keyboard handler for window */
 	if (watom->context)
-		new->kbd = mkkbd(getcontext(watom->context));
+		new->kbd = mkkbd(kmap_getcontext(watom->context));
 	else
 		new->kbd = 0;
 
