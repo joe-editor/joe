@@ -38,5 +38,6 @@ int simple_cmplt PARAMS((BW *bw,unsigned char **list));
 void setup_history(B **history);
 void append_history(B *hist,unsigned char *s,int len);
 void promote_history(B *hist, long line);
+void set_current_dir(unsigned char *s,int simp);
 
 #endif

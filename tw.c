@@ -25,6 +25,7 @@
 #include "utils.h"
 #include "vs.h"
 #include "syntax.h"
+#include "path.h"
 #include "w.h"
 
 extern unsigned char *exmsg;
@@ -222,7 +223,15 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 					stalin = vsadd(stalin, fill);
 				break;
 			case 'n':
-				stalin = vsncpy(sv(stalin), sz(bw->b->name ? bw->b->name : (unsigned char *)"Unnamed"));
+				{
+				if (bw->b->name) {
+					unsigned char *tmp = simplify_prefix(bw->b->name);
+					stalin = vsncpy(sv(stalin), sv(tmp));
+					vsrm(tmp);
+				} else {
+					stalin = vsncpy(sv(stalin), sc("Unnamed"));
+				}
+				}
 				break;
 			case 'm':
 				if (bw->b->changed)

@@ -36,6 +36,21 @@
 int nocurdir;
 unsigned char *current_dir;
 
+void set_current_dir(unsigned char *s,int simp)
+{
+	vsrm(current_dir);
+	if (s) {
+		current_dir=dirprt(s);
+		if (simp) {
+			unsigned char *tmp = simplify_prefix(current_dir);
+			vsrm(current_dir);
+			current_dir = tmp;
+		}
+	}
+	else
+		current_dir = 0;
+}
+
 extern int smode;
 extern int joe_beep;
 
@@ -156,8 +171,7 @@ static int rtnpw(BW *bw)
 
 	/* Do ~ expansion and set new current directory */
 	if (pw->file_prompt&2) {
-		vsrm(current_dir);
-		current_dir=dirprt(s);
+		set_current_dir(s,1);
 	}
 
 	if (pw->file_prompt) {

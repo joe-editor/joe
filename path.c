@@ -440,9 +440,9 @@ unsigned char *simplify_prefix(unsigned char *s)
 	} else {
 		t = 0;
 	}
-
 	chpwd(org);
 #endif
+
 	/* If current directory is prefixed with home directory, use ~... */
 	if (t && !strncmp(s,t,strlen(t)) && (!s[strlen(t)] || s[strlen(t)]=='/')) {
 		n = vsncpy(NULL,0,sc("~/"));
@@ -451,8 +451,7 @@ unsigned char *simplify_prefix(unsigned char *s)
 			n = vsncpy(sv(n),s+strlen(t)+1,strlen(s+strlen(t)+1));
 		}
 	} else {
-		n = vsncpy(NULL,0,sv(s));
+		n = vsncpy(NULL,0,sz(s));
 	}
-	vsrm(s);
 	return n;
 }
