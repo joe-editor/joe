@@ -44,4 +44,9 @@ int umacros PARAMS((BW *bw));
 int uarg PARAMS((BW *bw));
 int uuarg PARAMS((BW *bw, int c));
 
+unsigned char *unescape PARAMS((unsigned char *ptr,int c));
+
+void load_macros PARAMS((FILE *f));
+void save_macros PARAMS((FILE *f));
+
 #endif

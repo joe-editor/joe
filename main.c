@@ -391,9 +391,14 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 		msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
 	}
 
+	load_state();
+
 	edloop(0);
 	vclose(vmem);
 	nclose(n);
+
+	save_state();
+
 	if (exmsg)
 		fprintf(stderr, "\n%s\n", exmsg);
 	return 0;

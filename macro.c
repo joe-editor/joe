@@ -260,11 +260,14 @@ static unsigned char *ptr;
 static int first;
 static int instr;
 
-static unsigned char *unescape(unsigned char *ptr, int c)
+unsigned char *unescape(unsigned char *ptr, int c)
 {
 	if (c == '"') {
 		*ptr++ = '\\';
 		*ptr++ = '"';
+	} else if (c == '\\') {
+		*ptr++ = '\\';
+		*ptr++ = '\\';
 	} else if (c == '\'') {
 		*ptr++ = '\\';
 		*ptr++ = '\'';
@@ -550,6 +553,38 @@ int umacros(BW *bw)
 			pgetc(bw->cursor);
 		}
 	return 0;
+}
+
+void save_macros(FILE *f)
+{
+	int x;
+	unsigned char buf[1024];
+	for(x = 0; x!= 10; ++x)
+		if(kbdmacro[x]) {
+			mtext(buf, kbdmacro[x]);
+			fprintf(f,"	%d ",x);
+			emit_hdlc(f,buf,strlen(buf));
+			fprintf(f,"\n");
+		}
+	fprintf(f,"done\n");
+}
+
+void load_macros(FILE *f)
+{
+	unsigned char buf[1024];
+	unsigned char bf[1024];
+	while(fgets(buf,1023,f) && strcmp(buf,"done\n")) {
+		unsigned char *p = buf;
+		int n;
+		int len;
+		int sta;
+		parse_ws(&p, '#');
+		if(!parse_int(&p,&n)) {
+			parse_ws(&p, '#');
+			len = parse_hdlc(&p,bf,1023);
+			kbdmacro[n] = mparse(NULL,bf,&sta);
+		}
+	}
 }
 
 int uplay(BW *bw, int c)

@@ -1,3 +1,15 @@
+JOE 3.2
+
+- More syntax files: TeX, CSS
+
+- Improved highlighting of Perl, Shell and C/C++
+
+- Now there is a ~/.joe_state file which stores:
+	history buffers
+	current search string
+	current keyboard macros
+	yank records
+
 JOE 3.1
 
 - Regex and incremental search (jmacs ^S) now work for UTF-8

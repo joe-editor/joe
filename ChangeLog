@@ -1,9 +1,20 @@
+Thu Jul  8 2004  Joe Allen <jhallen@world.std.com>
+
+	Merge last two changes (described below...)
+
+
 Tue Jul  6 2004  Pavel Fedin <sonimiga@rambler.ru>
 
      Changed some fork()s to vfork()s.
 	Added ^# (CSI = 0x9B) control character.
 	Added Amiga CSI sequences to keys definitions in joerc files.
 	Added some #ifdef's to compile properly on AmigaOS.
+
+Tue Jun 22 2004  Joe Allen <jhallen@world.std.com>
+
+	~/.joe_state file:
+
+	Saves macros, yanks records, and file name history in a file.
 
 Mon Jun  7 2004  Joe Allen <jhallen@world.std.com>
 

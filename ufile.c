@@ -62,7 +62,7 @@ int copy_security_context(const char *from_file, const char *to_file);
 
 extern int orphan;
 unsigned char *backpath = NULL;		/* Place to store backup files */
-static B *filehist = NULL;	/* History of file names */
+B *filehist = NULL;	/* History of file names */
 int nobackups = 0;
 int exask = 0;
 

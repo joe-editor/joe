@@ -30,6 +30,10 @@
 #include "va.h"
 #include "utf8.h"
 #include "charmap.h"
+#include "ufile.h"
+#include "usearch.h"
+#include "ushell.h"
+#include "undo.h"
 #include "w.h"
 
 #define OPT_BUF_SIZE 300
@@ -66,6 +70,9 @@ extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode, nobackups
 extern int noxon, lines, staen, columns, Baud, dopadding, orphan, marking, beep, keepup, nonotice;
 extern int notite, usetabs, assume_color, guesscrlf, guessindent, menu_explorer, icase, wrap, autoswap;
 extern unsigned char *backpath;
+
+/* Set to use ~/.joe_state file */
+int joe_state;
 
 /* Default options for prompt windows */
 
@@ -243,6 +250,7 @@ struct glopts {
 	{US "marking",	0, &marking, NULL, US "Anchored block marking on", US "Anchored block marking off", US "Marking " },
 	{US "asis",	0, &dspasis, NULL, US "Characters above 127 shown as-is", US "Characters above 127 shown in inverse", US "  Meta chars as-is " },
 	{US "force",	0, &force, NULL, US "Last line forced to have NL when file saved", US "Last line not forced to have NL", US "Force last NL " },
+	{US "joe_state",0, &joe_state, NULL, US "~/.joe_state file will be updated", US "~/.joe_state file will not be updated", US "  Joe_state file " },
 	{US "nobackups",	0, &nobackups, NULL, US "Backup files will not be made", US "Backup files will be made", US "  Disable backups " },
 	{US "lightoff",	0, &lightoff, NULL, US "Highlighting turned off after block operations", US "Highlighting not turned off after block operations", US "Auto unmark " },
 	{US "exask",	0, &exask, NULL, US "Prompt for filename in save & exit command", US "Don't prompt for filename in save & exit command", US "  Exit ask " },
@@ -1015,4 +1023,141 @@ int procrc(CAP *cap, unsigned char *name)
 		fprintf(stderr, "done\n");
 
 	return err;		/* 0 for success, 1 for syntax error */
+}
+
+/* Save a history buffer */
+
+void save_hist(FILE *f,B *b)
+{
+	unsigned char buf[512];
+	int len;
+	if (b) {
+		P *p = pdup(b->bof);
+		P *q = pdup(b->bof);
+		if (b->eof->line>10)
+			pline(p,b->eof->line-10);
+		pset(q,p);
+		while (!piseof(p)) {
+			pnextl(q);
+			if (q->byte-p->byte<512) {
+				len = q->byte - p->byte;
+				brmem(p,buf,len);
+			} else {
+				brmem(p,buf,512);
+				len = 512;
+			}
+			fprintf(f,"\t");
+			emit_hdlc(f,buf,len);
+			fprintf(f,"\n");
+			pset(p,q);
+		}
+		prm(p);
+		prm(q);
+	}
+	fprintf(f,"done\n");
+}
+
+/* Load a history buffer */
+
+void load_hist(FILE *f,B **bp)
+{
+	B *b;
+	unsigned char buf[1024];
+	unsigned char bf[1024];
+	P *q;
+
+	b = *bp;
+	if (!b)
+		*bp = b = bmk(NULL);
+
+	q = pdup(b->eof);
+
+	while(fgets(buf,1023,f) && strcmp(buf,"done\n")) {
+		unsigned char *p = buf;
+		int len;
+		parse_ws(&p,'#');
+		len = parse_hdlc(&p,bf,1023);
+		binsm(q,bf,len);
+		pset(q,b->eof);
+	}
+
+	prm(q);
+}
+
+/* Save state */
+
+void save_state()
+{
+	unsigned char *home = (unsigned char *)getenv("HOME");
+	int old_mask;
+	FILE *f;
+	if (!joe_state)
+		return;
+	if (!home)
+		return;
+	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
+	old_mask = umask(0066);
+	f = fopen(stdbuf,"w");
+	umask(old_mask);
+	if(!f)
+		return;
+
+	/* Write state information */
+	fprintf(f,"search\n"); save_srch(f);
+	fprintf(f,"macros\n"); save_macros(f);
+	fprintf(f,"files\n"); save_hist(f,filehist);
+	fprintf(f,"find\n"); save_hist(f,findhist);
+	fprintf(f,"replace\n"); save_hist(f,replhist);
+	fprintf(f,"run\n"); save_hist(f,runhist);
+	fprintf(f,"build\n"); save_hist(f,buildhist);
+	fprintf(f,"cmd\n"); save_hist(f,cmdhist);
+	fprintf(f,"math\n"); save_hist(f,mathhist);
+	fprintf(f,"yank\n"); save_yank(f);
+	fclose(f);
+}
+
+/* Load state */
+
+void load_state()
+{
+	unsigned char *home = (unsigned char *)getenv("HOME");
+	unsigned char buf[1024];
+	FILE *f;
+	if (!joe_state)
+		return;
+	if (!home)
+		return;
+	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
+	f = fopen(stdbuf,"r");
+	if(!f)
+		return;
+
+	/* Read state information */
+	while(fgets(buf,1023,f)) {
+		if(!strcmp(buf,"search\n"))
+			load_srch(f);
+		else if(!strcmp(buf,"macros\n"))
+			load_macros(f);
+		else if(!strcmp(buf,"files\n"))
+			load_hist(f,&filehist);
+		else if(!strcmp(buf,"find\n"))
+			load_hist(f,&findhist);
+		else if(!strcmp(buf,"replace\n"))
+			load_hist(f,&replhist);
+		else if(!strcmp(buf,"run\n"))
+			load_hist(f,&runhist);
+		else if(!strcmp(buf,"build\n"))
+			load_hist(f,&buildhist);
+		else if(!strcmp(buf,"cmd\n"))
+			load_hist(f,&cmdhist);
+		else if(!strcmp(buf,"math\n"))
+			load_hist(f,&mathhist);
+		else if(!strcmp(buf,"yank\n"))
+			load_yank(f);
+		else { /* Unknown... skip until next done */
+			while(fgets(buf,1023,f) && strcmp(buf,"done\n"));
+		}
+	}
+
+	fclose(f);
 }

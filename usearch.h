@@ -24,4 +24,7 @@ int prfirst PARAMS((BW *bw));
 
 int ufinish PARAMS((BW *bw));
 
+extern B *findhist;
+extern B *replhist;
+
 #endif

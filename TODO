@@ -416,8 +416,6 @@ F5	date/time
 
 - continued search mode for jpico?
 
-- smarter highlighter- need char and string storage.
-
 - make ^K F prompt with previous text (PICO)?
 
 ^K X leads to segfault?

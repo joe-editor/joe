@@ -15,4 +15,7 @@ int ukillpid PARAMS((BW *bw));
 int urun PARAMS((BW *bw));
 int ubuild PARAMS((BW *bw));
 
+extern B *runhist;
+extern B *buildhist;
+
 #endif

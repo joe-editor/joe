@@ -20,6 +20,8 @@
 #include "utf8.h"
 #include "charmap.h"
 #include "blocks.h"
+#include "macro.h"
+#include "regex.h"
 #include "utils.h"
 
 
@@ -451,6 +453,80 @@ int parse_string(unsigned char **pp, unsigned char *buf, int len)
 	return -1;
 }
 
+/* Parse string escape sequences (fixes them in place- returns new string length) */
+
+int parse_escapes(unsigned char *buf,int len)
+{
+	int x;
+	unsigned char *p;
+	x=0;
+	for(p=buf;len;) {
+		int c = escape(0,&p,&len);
+		buf[x++] = c;
+	}
+	return x;
+}
+
+/* Emit a string with escape sequences */
+
+void emit_string(FILE *f,unsigned char *s,int len)
+{
+	unsigned char buf[8];
+	unsigned char *p, *q;
+	fputc('\"',f);
+	while(len) {
+		p = unescape(buf,*s++);
+		for(q=buf;q!=p;++q)
+			fputc(*q,f);
+		--len;
+	}
+	fputc('\"',f);
+}
+
+/* Parse an HDLC string (returns length or -1 for error) */
+
+int parse_hdlc(unsigned char **pp, unsigned char *buf, int len)
+{
+	unsigned char *p= *pp;
+	int x = 0;
+	if(*p=='~') {
+		++p;
+		while(len && *p && *p!='~')
+			if(*p=='}' && p[1]) {
+				++p;
+				buf[x++] = 0x20 + *p++;
+				--len;
+			} else {
+				buf[x++] = *p++;
+				--len;
+			}
+		buf[x] = 0;
+		while(*p && *p!='~')
+			++p;
+		if(*p=='~') {
+			*pp= p+1;
+			return x;
+		}
+	}
+	return -1;
+}
+
+/* Emit an HDLC string */
+
+void emit_hdlc(FILE *f,unsigned char *s,int len)
+{
+	fputc('~',f);
+	while(len) {
+		if(*s=='~' || *s=='}' || *s==0 || *s=='\n')
+			fputc('}',f), fputc(*s-0x20,f);
+		else
+			fputc(*s,f);
+		++s;
+		--len;
+	}
+	fputc('~',f);
+}
+
 /* Parse a character range: a-z */
 
 int parse_range(unsigned char **pp, int *first, int *second)
@@ -464,7 +540,7 @@ int parse_range(unsigned char **pp, int *first, int *second)
 		if(*p=='n')
 			a = '\n';
 		else if(*p=='t')
-			a = '\t';
+  			a = '\t';
 		else
 			a = *p;
 		++p;

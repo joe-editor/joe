@@ -32,4 +32,10 @@ int glopt PARAMS((unsigned char *s, unsigned char *arg, OPTIONS *options, int se
 
 int umode PARAMS((BW *bw));
 
+/* Save state */
+void save_state();
+
+/* Load state */
+void load_state();
+
 #endif

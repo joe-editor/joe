@@ -33,4 +33,6 @@ int doedit PARAMS((BW *bw, unsigned char *s, void *obj, int *notify));
 int uquerysave PARAMS((BW *bw));
 int ukilljoe PARAMS((BW *bw));
 
+extern B *filehist;
+
 #endif

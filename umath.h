@@ -15,4 +15,6 @@ extern unsigned char *merr;
 double calc(BW *bw, unsigned char *s);
 int umath(BW *bw);
 
+extern B *mathhist;
+
 #endif

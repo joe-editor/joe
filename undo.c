@@ -457,3 +457,40 @@ int ucopy(BW *bw)
 		return -1;
 	}
 }
+
+/* Save yank buffers */
+
+void save_yank(FILE *f)
+{
+	UNDOREC *rec;
+	for (rec = yanked.link.next; rec != &yanked; rec = rec->link.next) {
+		if (rec->len < SMALL) {
+			fprintf(f,"	");
+			emit_hdlc(f,rec->small,rec->len);
+			fprintf(f,"\n");
+		}
+	}
+	fprintf(f,"done\n");
+}
+
+/* Load yank buffers */
+
+void load_yank(FILE *f)
+{
+	UNDOREC *rec;
+	unsigned char buf[1024];
+	unsigned char bf[1024];
+	while(fgets(buf,1023,f) && strcmp(buf,"done\n")) {
+		unsigned char *p = buf;
+		int len;
+		parse_ws(&p,'#');
+		len = parse_hdlc(&p,bf,1023);
+		rec = alrec();
+		rec->small = (unsigned char *) joe_malloc(len);
+		memcpy(rec->small,bf,len);
+		rec->where = -1;
+		rec->len = len;
+		rec->del = 1;
+		enqueb(UNDOREC, link, &yanked, rec);
+	}
+}
