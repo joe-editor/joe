@@ -23,7 +23,7 @@
 #include "utils.h"
 #include "mouse.h"
 
-int bg_color = 0;
+int bg_text = 0; /* Background color for text */
 int skiptop = 0;
 int lines = 0;
 int columns = 0;
@@ -382,7 +382,7 @@ int clrins(SCRN *t)
 
 /* Erase from given screen coordinate to end of line */
 
-int eraeol(SCRN *t, int x, int y)
+int eraeol(SCRN *t, int x, int y, int atr)
 {
 	int *s, *ss, *a, *aa;
 	int w = t->co - x - 1;	/* Don't worry about last column */
@@ -397,28 +397,28 @@ int eraeol(SCRN *t, int x, int y)
 		if (*--ss != ' ') {
 			++ss;
 			break;
-		} else if (*--aa != 0) {
+		} else if (*--aa != atr) {
 			++ss;
 			++aa;
 			break;
 		}
 	} while (ss != s);
-	if ((ss - s > 3 || s[w] != ' ' || a[w] != 0) && t->ce) {
+	if ((ss - s > 3 || s[w] != ' ' || a[w] != atr) && t->ce) {
 		cpos(t, x, y);
-		set_attr(t, BG_COLOR(bg_color)); 
+		set_attr(t, atr); 
 		texec(t->cap, t->ce, 1, 0, 0, 0, 0);
 		msetI(s, ' ', w);
-		msetI(a, BG_COLOR(bg_color), w); 
+		msetI(a, atr, w);
 	} else if (s != ss) {
 		if (t->ins)
 			clrins(t);
 		if (t->x != x || t->y != y)
 			cpos(t, x, y);
 		if (t->attrib)
-			set_attr(t, BG_COLOR(bg_color)); 
+			set_attr(t, atr); 
 		while (s != ss) {
 			*s = ' ';
-			*a = 0;
+			*a = atr;
 			ttputc(' ');
 			++t->x;
 			++s;
@@ -1351,7 +1351,7 @@ static void dodelchr(SCRN *t, int x, int y, int n)
 	mmove(t->scrn + t->co * y + x, t->scrn + t->co * y + x + n, (t->co - (x + n)) * sizeof(int));
 	mmove(t->attr + t->co * y + x, t->attr + t->co * y + x + n, (t->co - (x + n)) * sizeof(int));
 	msetI(t->scrn + t->co * y + t->co - n, ' ', n);
-	msetI(t->attr + t->co * y + t->co - n, BG_COLOR(bg_color), n); 
+	msetI(t->attr + t->co * y + t->co - n, (t->attrib & FG_MASK), n);
 }
 
 /* Insert/Delete within line */
@@ -1463,14 +1463,14 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 	}
 }
 
-static void doupscrl(SCRN *t, int top, int bot, int amnt)
+static void doupscrl(SCRN *t, int top, int bot, int amnt, int atr)
 {
 	int a = amnt;
 	int q;
 
 	if (!amnt)
 		return;
-	set_attr(t, BG_COLOR(bg_color)); 
+	set_attr(t, atr);
 	if (top == 0 && bot == t->li && (t->sf || t->SF)) {
 		setregn(t, 0, t->li);
 		cpos(t, 0, t->li - 1);
@@ -1534,18 +1534,18 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt)
 			invalidate_state(t->syntab + t->li - amnt + q);
 	} else {
 		msetI(t->scrn + (bot - amnt) * t->co, ' ', amnt * t->co);
-		msetI(t->attr + (bot - amnt) * t->co, BG_COLOR(bg_color), amnt * t->co); 
+		msetI(t->attr + (bot - amnt) * t->co, atr, amnt * t->co); 
 	}
 }
 
-static void dodnscrl(SCRN *t, int top, int bot, int amnt)
+static void dodnscrl(SCRN *t, int top, int bot, int amnt, int atr)
 {
 	int a = amnt;
 	int q;
 
 	if (!amnt)
 		return;
-	set_attr(t, BG_COLOR(bg_color)); 
+	set_attr(t, atr); 
 	if (top == 0 && bot == t->li && (t->sr || t->SR)) {
 		setregn(t, 0, t->li);
 		cpos(t, 0, 0);
@@ -1608,11 +1608,11 @@ static void dodnscrl(SCRN *t, int top, int bot, int amnt)
 			invalidate_state(t->syntab + q);
 	} else {
 		msetI(t->scrn + t->co * top, ' ', amnt * t->co);
-		msetI(t->attr + t->co * top, BG_COLOR(bg_color), amnt * t->co); 
+		msetI(t->attr + t->co * top, atr, amnt * t->co); 
 	}
 }
 
-void nscroll(SCRN *t)
+void nscroll(SCRN *t,int atr)
 {
 	int y, z, q, r, p;
 
@@ -1624,7 +1624,7 @@ void nscroll(SCRN *t)
 			if (q > 0) {
 				for (z = y; z != t->li && t->sary[z] == q; ++z)
 					t->sary[z] = 0;
-				doupscrl(t, y, z + q, q);
+				doupscrl(t, y, z + q, q, atr);
 				y = z - 1;
 			} else {
 				for (r = y; r != t->li && (t->sary[r] < 0 || t->sary[r] == t->li); ++r) ;
@@ -1633,7 +1633,7 @@ void nscroll(SCRN *t)
 					q = t->sary[p];
 					if (q && q != t->li) {
 						for (z = p; t->sary[z] = 0, (z && t->sary[z - 1] == q); --z) ;
-						dodnscrl(t, z + q, p + 1, -q);
+						dodnscrl(t, z + q, p + 1, -q, atr);
 						p = z + 1;
 					}
 				} while (p-- != y);
@@ -1646,22 +1646,19 @@ void nscroll(SCRN *t)
 
 void npartial(SCRN *t)
 {
-	set_attr(t, BG_COLOR(bg_color)); 
+	set_attr(t, BG_COLOR(bg_text)); 
 	clrins(t);
 	setregn(t, 0, t->li);
 }
 
 void nescape(SCRN *t)
 {
-	int tmp = bg_color;
-	bg_color = 0;
 	mouseclose();
 	npartial(t);
 	cpos(t, 0, t->li - 1);
-	eraeol(t, 0, t->li - 1);
+	eraeol(t, 0, t->li - 1, 0);
 	if (t->te)
 		texec(t->cap, t->te, 1, 0, 0, 0, 0);
-	bg_color = tmp;
 }
 
 void nreturn(SCRN *t)
@@ -1760,9 +1757,9 @@ void nredraw(SCRN *t)
 	int x;
 	dostaupd = 1;
 	msetI(t->scrn, ' ', t->co * skiptop);
-	msetI(t->attr, BG_COLOR(bg_color), t->co * skiptop);  
+	msetI(t->attr, BG_COLOR(bg_text), t->co * skiptop);  
 	msetI(t->scrn + skiptop * t->co, -1, (t->li - skiptop) * t->co);
-	msetI(t->attr + skiptop * t->co, BG_COLOR(bg_color), (t->li - skiptop) * t->co); 
+	msetI(t->attr + skiptop * t->co, BG_COLOR(bg_text), (t->li - skiptop) * t->co); 
 	msetI(t->sary, 0, t->li);
 	msetI(t->updtab + skiptop, -1, t->li - skiptop);
 	for(x=0; x!=t->li - skiptop; ++x)
@@ -1773,7 +1770,7 @@ void nredraw(SCRN *t)
 	t->bot = 0;
 	t->attrib = -1;
 	t->ins = -1;
-	set_attr(t, BG_COLOR(bg_color)); 
+	set_attr(t, BG_COLOR(bg_text)); 
 	clrins(t);
 	setregn(t, 0, t->li);
 
@@ -1783,12 +1780,12 @@ void nredraw(SCRN *t)
 			t->x = 0;
 			t->y = 0;
 			msetI(t->scrn, ' ', t->li * t->co);
-			msetI(t->attr, BG_COLOR(bg_color), t->li * t->co); 
+			msetI(t->attr, BG_COLOR(bg_text), t->li * t->co); 
 		} else if (t->cd) {
 			cpos(t, 0, 0);
 			texec(t->cap, t->cd, 1, 0, 0, 0, 0);
 			msetI(t->scrn, ' ', t->li * t->co);
-			msetI(t->attr, BG_COLOR(bg_color), t->li * t->co); 
+			msetI(t->attr, BG_COLOR(bg_text), t->li * t->co); 
 		}
 	}
 }
@@ -1975,14 +1972,14 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 	}
 	/* Fill balance of field with spaces */
 	while (x < last_col) {
-		outatr(locale_map, t, scrn, attr, x, y, ' ', BG_COLOR(bg_color)); 
+		outatr(locale_map, t, scrn, attr, x, y, ' ', atr);
 		++x;
 		++scrn;
 		++attr;
 	}
 	/* Erase to end of line */
 	if (flg)
-		eraeol(t, x, y);
+		eraeol(t, x, y, atr);
 }
 
 /* Width function for above */
@@ -2007,11 +2004,10 @@ int txtwidth(unsigned char *s,int len)
 
 /* Generate text with formatting escape sequences */
 
-void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
+void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
 	int *attr = t->attr + y * t->co + x;
-	int atr = BG_COLOR(bg_color);
 	int col = 0;
 	int c;
 	struct utf8_sm sm;
@@ -2091,7 +2087,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 					col += wid;
 		}
 	if (flg)
-		eraeol(t, x, y);
+		eraeol(t, x, y, atr);
 }
 
 /* Determine column width of string with format codes */

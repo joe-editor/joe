@@ -731,6 +731,8 @@ int wabort(W *w)
 
 /* Display a message and skip the next key */
 
+int bg_msg;
+
 static void mdisp(SCRN *t, int y, unsigned char *s)
 {
 	int ofst;
@@ -741,7 +743,7 @@ static void mdisp(SCRN *t, int y, unsigned char *s)
 		ofst = 0;
 	else
 		ofst = len - (t->co - 1);
-	genfmt(t, 0, y, ofst, s, 1);
+	genfmt(t, 0, y, ofst, s, BG_COLOR(bg_msg), 1);
 	t->updtab[y] = 1;
 }
 

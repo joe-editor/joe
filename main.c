@@ -41,6 +41,7 @@
 extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, joe_beep;
 
 extern int idleout;		/* Clear to use /dev/tty for screen */
+extern int bg_text;
 extern unsigned char *joeterm;
 int help = 0;			/* Set to have help on when starting */
 int nonotice = 0;		/* Set to prevent copyright notice */
@@ -92,7 +93,7 @@ void edupd(int flg)
 	}
 	dofollows();
 	ttflsh();
-	nscroll(maint->t);
+	nscroll(maint->t, BG_COLOR(bg_text));
 	help_display(maint);
 	w = maint->curwin;
 	do {

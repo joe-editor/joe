@@ -121,8 +121,14 @@
 
  -square	Rectangular block mode
 
- -bg_color color
-		Set background color: for example "-bg_color bg_blue"
+ -bg_text color	Set background color for text.
+ -bg_help color	Set background color for help.
+ -bg_menu color	Set background color for menus.
+ -bg_prompt color
+		Set background color for prompts.
+ -bg_msg color	Set background color for messages.
+
+		For example: -bg_text bg_blue
 
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is

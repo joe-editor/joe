@@ -15,7 +15,7 @@
 #include "utf8.h"
 #include "w.h"
 
-extern int bg_color;
+extern int bg_prompt;
 
 static void dispqw(QW *qw)
 {
@@ -41,7 +41,7 @@ static void dispqw(QW *qw)
 	         qw->promptofst,
 	         qw->prompt,
 	         qw->promptlen,
-	         BG_COLOR(bg_color),
+	         BG_COLOR(bg_prompt),
 	         w->w - w->x,
 	         1,NULL);
 }
@@ -74,7 +74,7 @@ static void dispqwn(QW *qw)
 	         qw->promptofst,
 	         qw->prompt,
 	         qw->promptlen,
-	         BG_COLOR(bg_color),
+	         BG_COLOR(bg_prompt),
 	         w->w - w->x,
 	         1,NULL);
 }

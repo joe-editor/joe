@@ -2,6 +2,8 @@ Mon Mar 28 02:17:37 EST 2005
 
 	Apply (and fix) background color patch
 
+	Allow background color to be set on object-by-object basis.
+
 Sat Mar 26 09:56:23 EST 2005
 
 	Fix some window resize bugs

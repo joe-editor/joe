@@ -99,7 +99,11 @@ extern int xmouse;
 extern unsigned char *backpath;
 extern int nolocks, nomodcheck, nocurdir;
 extern int assume_256color;
-extern int bg_color;
+extern int bg_text;
+extern int bg_menu;
+extern int bg_help;
+extern int bg_prompt;
+extern int bg_msg;
 
 /* Set to use ~/.joe_state file */
 int joe_state;
@@ -558,11 +562,47 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "bg_color")) {
+	} else if (!strcmp(s, "bg_text")) {
 		if (arg) {
 			int sta;
 
-			bg_color = meta_color(arg);
+			bg_text = meta_color(arg);
+			bg_help = bg_text;
+			bg_prompt = bg_text;
+			bg_menu = bg_text;
+			bg_msg = bg_text;
+			ret = 2;
+		} else
+			ret = 1;
+	} else if (!strcmp(s, "bg_help")) {
+		if (arg) {
+			int sta;
+
+			bg_help = meta_color(arg);
+			ret = 2;
+		} else
+			ret = 1;
+	} else if (!strcmp(s, "bg_menu")) {
+		if (arg) {
+			int sta;
+
+			bg_menu = meta_color(arg);
+			ret = 2;
+		} else
+			ret = 1;
+	} else if (!strcmp(s, "bg_prompt")) {
+		if (arg) {
+			int sta;
+
+			bg_prompt = meta_color(arg);
+			ret = 2;
+		} else
+			ret = 1;
+	} else if (!strcmp(s, "bg_msg")) {
+		if (arg) {
+			int sta;
+
+			bg_msg = meta_color(arg);
 			ret = 2;
 		} else
 			ret = 1;

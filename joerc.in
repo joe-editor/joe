@@ -150,8 +150,14 @@
  -joexterm	If you are using Joe's modified Xterm, which makes -mouse
 
  -bg_text color	Set background color for text, help, menus, prompts and messages.
- -bg_color color
-		Set background color: for example "-bg_color bg_blue"
+ -bg_text color	Set background color for text.
+ -bg_menu color	Set background color for menus.
+ -bg_prompt color
+		Set background color for prompts.
+ -bg_msg color	Set background color for messages.
+
+		For example: -bg_text bg_blue
+
 -search_prompting
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used

@@ -22,7 +22,7 @@
 
 #define NOT_ENOUGH_MEMORY -11
 
-extern int bg_color;
+int bg_help;	/* Background color for help */
 
 struct help *help_actual = NULL;	/* actual help screen */
 struct help *help_ptr = NULL;		/* build pointer */
@@ -108,7 +108,7 @@ void help_display(SCREEN *t)
 {
 	unsigned char *str;
 	int y, x, c, z;
-	int atr = BG_COLOR(bg_color);
+	int atr = BG_COLOR(bg_help);
 
 	if (help_actual) {
 		str = help_actual->text;
@@ -174,7 +174,7 @@ void help_display(SCREEN *t)
 			/* Second pass: display text */
 			for (x = 0; x != t->w - 1; ++x) {
 				if (*str == '\n' || !*str) {
-					if (eraeol(t->t, x, y)) {
+					if (eraeol(t->t, x, y, BG_COLOR(bg_help))) {
 						return;
 					} else {
 						break;
@@ -237,7 +237,7 @@ void help_display(SCREEN *t)
 					x += (joe_wcwidth(!!locale_map->type, c) - 1);
 				}
 			}
-			atr = BG_COLOR(bg_color);
+			atr = BG_COLOR(bg_help);
 			t->t->updtab[y] = 0;
 		}
 

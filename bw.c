@@ -33,7 +33,7 @@ int marking = 0;
 extern int square;
 extern int staen;
 extern SCREEN *maint;
-extern int bg_color;
+extern int bg_text;
 
 static P *getto(P *p, P *cur, P *top, long int line)
 {
@@ -331,7 +331,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
         int *syn;
         P *tmp;
         int idx=0;
-        int atr = BG_COLOR(bg_color); 
+        int atr = BG_COLOR(bg_text); 
 
 	utf8_init(&utf8_sm);
 
@@ -366,7 +366,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 			if(st.state!=-1) {
 				atr = syn[idx++];
 				if (!((atr & BG_VALUE) >> BG_SHIFT))
-					atr |= BG_COLOR(bg_color);
+					atr |= BG_COLOR(bg_text);
 			}
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
@@ -485,7 +485,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 			if(st.state!=-1) {
 				atr = syn[idx++];
 				if (!(atr & BG_MASK))
-					atr |= BG_COLOR(bg_color);
+					atr |= BG_COLOR(bg_text);
 			}
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
@@ -608,7 +608,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	++p->line;
       eof:
 	if (x != w)
-		done = eraeol(t, x, y);
+		done = eraeol(t, x, y, BG_COLOR(bg_text));
 	else
 		done = 0;
 
@@ -800,7 +800,7 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	else
 		strcpy((char *)buf, "      ");
 	for (z = 0; buf[z]; ++z) {
-		outatr(w->b->o.charmap, t, screen + z, attr + z, z, y, buf[z], BG_COLOR(bg_color)); 
+		outatr(w->b->o.charmap, t, screen + z, attr + z, z, y, buf[z], BG_COLOR(bg_text)); 
 		if (ifhave)
 			return;
 		comp[z] = buf[z];
@@ -825,7 +825,7 @@ void bwgenh(BW *w,long from,long to)
 		unsigned char bf[16];
 		int x;
 		memset(txt,' ',76);
-		msetI(fmt,BG_COLOR(bg_color),76);
+		msetI(fmt,BG_COLOR(bg_text),76);
 		txt[76]=0;
 		if (!flg) {
 			sprintf((char *)bf,"%8x ",q->byte);

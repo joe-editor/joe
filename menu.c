@@ -17,8 +17,9 @@
 #include "utf8.h"
 #include "w.h"
 
+int bg_menu;
+
 extern int dostaupd;
-extern int bg_color;
 
 static void menufllw(MENU *m)
 {
@@ -45,9 +46,9 @@ static void menudisp(MENU *m)
 			int atr, z, lcol;
 	
 			if (x + y*m->perline + m->top == m->cursor && m->t->curwin==m->parent)
-				atr = INVERSE|BG_COLOR(bg_color);
+				atr = INVERSE|BG_COLOR(bg_menu);
 			else
-				atr = BG_COLOR(bg_color);
+				atr = BG_COLOR(bg_menu);
 
 			if (col == m->w)
 				break;
@@ -69,13 +70,13 @@ static void menudisp(MENU *m)
 
 			/* Space between columns */
 			if (col != m->w) {
-				outatr(locale_map, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', BG_COLOR(bg_color));
+				outatr(locale_map, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', BG_COLOR(bg_menu));
 				++col;
 			}
 		}
 		/* Clear to end of line */
 		if (col != m->w)
-			eraeol(m->t->t, m->x + col, m->y + y);
+			eraeol(m->t->t, m->x + col, m->y + y, BG_COLOR(bg_menu));
 		s += m->t->t->co;
 		a += m->t->t->co;
 	}

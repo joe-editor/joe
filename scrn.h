@@ -160,7 +160,7 @@ void xlat_utf_ctrl PARAMS((int *attr, unsigned char *c));
  *
  * Erase from screen coordinate to end of line.
  */
-int eraeol PARAMS((SCRN *t, int x, int y));
+int eraeol PARAMS((SCRN *t, int x, int y, int atr));
 
 /* void nscrlup(SCRN *t,int top,int bot,int amnt);
  *
@@ -182,7 +182,7 @@ void nscrldn PARAMS((SCRN *t, int top, int bot, int amnt));
  *
  * Execute buffered scroll requests
  */
-void nscroll PARAMS((SCRN *t));
+void nscroll PARAMS((SCRN *t, int atr));
 
 /* void magic(SCRN *t,int y,int *cur,int *new);
  *
@@ -201,7 +201,7 @@ void genfield PARAMS((SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned 
 int txtwidth PARAMS((unsigned char *s,int len));
 
 /* Generate a field: formatted */
-void genfmt PARAMS((SCRN *t, int x, int y, int ofst, unsigned char *s, int flg));
+void genfmt PARAMS((SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg));
 
 /* Column width of formatted string */
 int fmtlen PARAMS((unsigned char *s));

@@ -28,6 +28,7 @@
 #include "path.h"
 #include "w.h"
 
+extern int bg_text;
 extern unsigned char *exmsg;
 extern int square;
 int staen = 0;
@@ -403,7 +404,7 @@ static void disptw(BW *bw, int flg)
 			tw->stalin = vsncpy(tw->stalin, fmtpos(tw->stalin, w->w - fmtlen(tw->staright)), sv(tw->staright));
 		}
 		tw->stalin = vstrunc(tw->stalin, fmtpos(tw->stalin, w->w));
-		genfmt(w->t->t, w->x, w->y, 0, tw->stalin, 0);
+		genfmt(w->t->t, w->x, w->y, 0, tw->stalin, BG_COLOR(bg_text), 0);
 		w->t->t->updtab[w->y] = 0;
 	}
 

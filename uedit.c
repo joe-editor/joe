@@ -35,7 +35,7 @@ extern WATOM watommenu;
 
 /******** i don't like global var ******/
 
-extern int bg_color;
+extern int bg_text;
 
 /* 
  * Move cursor to beginning of line
@@ -1865,7 +1865,7 @@ int utypebw(BW *bw, int k)
 			int *attr = t->attr + y * t->co;
 			x += bw->x;
 
-			atr = BG_COLOR(bg_color);
+			atr = BG_COLOR(bg_text);
 
 			if (!upd && piseol(bw->cursor) && !bw->o.highlight)
 				t->updtab[y] = 0;
