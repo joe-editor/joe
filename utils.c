@@ -40,7 +40,7 @@ int isspace_eof(int c)
 #ifndef HAVE_WORKING_ISBLANK
 int isblank(int c)
 {
-        return((c == 32) || (c == 9));
+	return((c == 32) || (c == 9));
 }
 #endif
 
@@ -72,7 +72,7 @@ signed long int long_min(signed long int a, signed long int b)
  * 	_ is considered as word character because is often used 
  *	in the names of C/C++ functions
  */
-unsigned int isalnum_(unsigned int c)
+int isalnum_(int c)
 {
 	return (isalnum(c) || (c == 95));
 }

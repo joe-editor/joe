@@ -1,3 +1,11 @@
+Sat Feb 15 2003  Vitezslav Samel <samel@mail.cz>
+	* b.c, b.h, bw.c, config.h, macro.c, regex.c, tty.c, ublock.c, uedit.c,
+	uerror.c, uformat.c, uisrch.c, usearch.c, utag.c, utils.c, utils.h,
+	vfile.c, vfile.h:
+	fix segafults in isalpha(): replace MAXINT with NO_MORE_DATA symbol
+	which has value of EOF (-1); that value is permitted to pass into
+	isalpha() type functions
+
 Sun Jan  5 2003  Vitezslav Samel <samel@mail.cz>
 	* configure.ac:
 	newer versions (>= 2.54) of autoconf need AC_PROG_EGREP to prevent

@@ -176,7 +176,7 @@ void pclrrect(P *org, long int height, long int right, int usetabs)
 }
 
 /* int ptabrect(P *org,long height,long right)
- * Check if there are any TABs in a rectange
+ * Check if there are any TABs in a rectangle
  */
 
 int ptabrect(P *org, long int height, long int right)
@@ -187,12 +187,13 @@ int ptabrect(P *org, long int height, long int right)
 		int c;
 
 		pcol(p, org->xcol);
-		while (c = pgetc(p), c != MAXINT && c != '\n')
+		while ((c = pgetc(p)) != NO_MORE_DATA && c != '\n') {
 			if (c == '\t') {
 				prm(p);
 				return 1;
 			} else if (piscol(p) > right)
 				break;
+		}
 		if (c != '\n')
 			pnextl(p);
 	}
@@ -223,7 +224,7 @@ void pinsrect(P *cur, B *tmp, long int width, int usetabs)
 				binsc(p, '\n');
 				pgetc(p);
 			}
-			if (pgetc(q) == MAXINT)
+			if (pgetc(q) == NO_MORE_DATA)
 				break;
 		}
 	prm(p);

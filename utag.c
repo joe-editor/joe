@@ -137,13 +137,13 @@ int utag(BW *bw)
 
 		while (isalnum_(c = prgetc(p)))
 			/* do nothing */;
-		if (c != MAXINT) {
+		if (c != NO_MORE_DATA) {
 			pgetc(p);
 		}
 		pset(q, p);
 		while (isalnum_(c = pgetc(q)))
 			/* do nothing */;
-		if (c != MAXINT) {
+		if (c != NO_MORE_DATA) {
 			prgetc(q);
 		}
 		binsb(pbw->cursor, bcpy(p, q));

@@ -113,7 +113,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 				enqueb(IREC, link, &isrch->irecs, i);
 			}
 		}
-	} else if ((c < 32 || c >= 256) && c != MAXINT) {
+	} else if ((c < 32 || c >= 256) && c != MAXINT) {	/* FIXME: overloaded MAXINT */
 		/* Done */
 		nungetc(c);
 		if (notify) {
@@ -127,7 +127,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		}
 		lastisrch = isrch;
 		return 0;
-	} else if (c != MAXINT) {
+	} else if (c != MAXINT) {	/* FIXME: overloaded MAXINT */
 		/* Search */
 		unsigned char k;
 

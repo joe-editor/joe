@@ -173,7 +173,7 @@ static void savec(char **pieces, int n, char c)
 
 static void saves(char **pieces, int n, P *p, long int szz)
 {
-	if (szz >= MAXINT - 31)
+	if (szz >= MAXINT - 31)		/* FIXME: why MAXINT - 31 ? */
 		pieces[n] = vstrunc(pieces[n], 0);
 	else {
 		pieces[n] = vstrunc(pieces[n], (int) szz);
@@ -181,6 +181,8 @@ static void saves(char **pieces, int n, P *p, long int szz)
 	}
 }
 
+/* FIXME: overloaded meaning of MAXINT below (MAXINT - 1) */
+/*        what's the meaning of this? */
 static int skip_special(P *p)
 {
 	int to, s;
@@ -188,10 +190,12 @@ static int skip_special(P *p)
 	switch (s = pgetc(p)) {
 	case '"':
 		do {
-			if ((s = pgetc(p)) == '\\')
-				pgetc(p), s = pgetc(p);
-		} while (s != MAXINT && s != '\"');
-		if (s == '\"')
+			if ((s = pgetc(p)) == '\\') {
+				pgetc(p);
+				s = pgetc(p);
+			}
+		} while (s != NO_MORE_DATA && s != '"');
+		if (s == '"')
 			return MAXINT - 1;
 		break;
 	case '\'':
@@ -217,7 +221,7 @@ static int skip_special(P *p)
 skip:
 		do {
 			s = skip_special(p);
-		} while (s != to && s != MAXINT);
+		} while (s != to && s != NO_MORE_DATA);
 		if (s == to)
 			return MAXINT - 1;
 		break;
@@ -229,8 +233,8 @@ skip:
 				while (s == '*')
 					if ((s = pgetc(p)) == '/')
 						return MAXINT - 1;
-			} while (s != MAXINT);
-		else if (s != MAXINT)
+			} while (s != NO_MORE_DATA);
+		else if (s != NO_MORE_DATA)
 			s = prgetc(p);
 		else
 			s = '/';
@@ -253,7 +257,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 			switch (c = *regex++) {
 			case '?':
 				d = pgetc(p);
-				if (d == MAXINT)
+				if (d == NO_MORE_DATA)
 					goto fail;
 				savec(pieces, n++, (char) d);
 				break;
@@ -292,7 +296,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 						goto succeed;
 					}
 					c = pgetc(p);
-				} while (c != MAXINT && c != '\n');
+				} while (c != NO_MORE_DATA && c != '\n');
 				goto fail;
 			case 'c':
 				o = pdup(p);
@@ -303,11 +307,11 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 						saves(pieces, n, o, pb - o->byte);
 						goto succeed;
 					}
-				} while (skip_special(p) != MAXINT);
+				} while (skip_special(p) != NO_MORE_DATA);
 				goto fail;
 			case '[':
 				d = pgetc(p);
-				if (d == MAXINT)
+				if (d == NO_MORE_DATA)
 					goto fail;
 				if (!brack(&regex, &len, d))
 					goto fail;
@@ -372,7 +376,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 							else
 								match = (c == *tregex);
 						}
-					} while (c != MAXINT && match);
+					} while (c != NO_MORE_DATA && match);
 
 				      done:
 					if (r) {

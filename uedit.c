@@ -72,7 +72,7 @@ int u_goto_eof(BW *bw)
  */
 int u_goto_left(BW *bw)
 {
-	if (prgetc(bw->cursor) != MAXINT)
+	if (prgetc(bw->cursor) != NO_MORE_DATA)
 		return 0;
 	else
 		return -1;
@@ -83,7 +83,7 @@ int u_goto_left(BW *bw)
  */
 int u_goto_right(BW *bw)
 {
-	if (pgetc(bw->cursor) != MAXINT)
+	if (pgetc(bw->cursor) != NO_MORE_DATA)
 		return 0;
 	else
 		return -1;
@@ -199,7 +199,7 @@ static int pisedge(P *p)
 
 int upedge(BW *bw)
 {
-	if (prgetc(bw->cursor) == MAXINT)
+	if (prgetc(bw->cursor) == NO_MORE_DATA)
 		return -1;
 	while (pisedge(bw->cursor) != -1)
 		prgetc(bw->cursor);
@@ -208,7 +208,7 @@ int upedge(BW *bw)
 
 int unedge(BW *bw)
 {
-	if (pgetc(bw->cursor) == MAXINT)
+	if (pgetc(bw->cursor) == NO_MORE_DATA)
 		return -1;
 	while (pisedge(bw->cursor) != 1)
 		pgetc(bw->cursor);
@@ -273,7 +273,7 @@ int utomatch(BW *bw)
 		P *p = pdup(bw->cursor);
 		int cnt = 0;	/* No. levels of delimiters we're in */
 
-		while (d = pgetc(p), d != MAXINT)
+		while ((d = pgetc(p)) != NO_MORE_DATA) {
 			if (d == c)
 				++cnt;
 			else if (d == f && !--cnt) {
@@ -281,12 +281,13 @@ int utomatch(BW *bw)
 				pset(bw->cursor, p);
 				break;
 			}
+		}
 		prm(p);
 	} else {
 		P *p = pdup(bw->cursor);
 		int cnt = 0;	/* No. levels of delimiters we're in */
 
-		while (d = prgetc(p), d != MAXINT)
+		while ((d = prgetc(p)) != NO_MORE_DATA) {
 			if (d == c)
 				++cnt;
 			else if (d == f)
@@ -294,9 +295,10 @@ int utomatch(BW *bw)
 					pset(bw->cursor, p);
 					break;
 				}
+		}
 		prm(p);
 	}
-	if (d == MAXINT)
+	if (d == NO_MORE_DATA)
 		return -1;
 	else
 		return 0;
@@ -635,7 +637,7 @@ int ubacks(BW *bw, int k)
 		if (pisbof(bw->cursor))
 			return -1;
 		p = pdup(bw->cursor);
-		if ((c = prgetc(bw->cursor)) != MAXINT)
+		if ((c = prgetc(bw->cursor)) != NO_MORE_DATA)
 			if (!bw->o.overtype || c == '\t' || pisbol(p) || piseol(p))
 				bdel(bw->cursor, p);
 		prm(p);
@@ -686,12 +688,12 @@ int ubackw(BW *bw)
 	if (isalnum_(c)) {
 		while (isalnum_(c = prgetc(bw->cursor)))
 			/* do nothing */;
-		if (c != MAXINT)
+		if (c != NO_MORE_DATA)
 			pgetc(bw->cursor);
 	} else if (isspace(c)) {
 		while (isspace(c = prgetc(bw->cursor)))
 			/* do nothing */;
-		if (c != MAXINT)
+		if (c != NO_MORE_DATA)
 			pgetc(bw->cursor);
 	}
 	if (bw->cursor->byte == p->byte) {
@@ -730,7 +732,7 @@ int udelbl(BW *bw)
 
 	if (p->byte == bw->cursor->byte) {
 		prm(p);
-		return ubacks(bw, MAXINT);
+		return ubacks(bw, MAXINT);	/* FIXME: MAXINT overloaded */
 	} else
 		bdel(p, bw->cursor);
 	prm(p);
@@ -1154,15 +1156,15 @@ static int dofwrdc(BW *bw, int k, void *object, int *notify)
 	}
 	q = pdup(bw->cursor);
 	if (dobkwdc) {
-		while ((c = prgetc(q)) != MAXINT)
+		while ((c = prgetc(q)) != NO_MORE_DATA)
 			if (c == k)
 				break;
 	} else {
-		while ((c = pgetc(q)) != MAXINT)
+		while ((c = pgetc(q)) != NO_MORE_DATA)
 			if (c == k)
 				break;
 	}
-	if (c == MAXINT) {
+	if (c == NO_MORE_DATA) {
 		msgnw(bw->parent, "Not found");
 		prm(q);
 		return -1;

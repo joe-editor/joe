@@ -70,7 +70,7 @@ static P *searchf(SRCH *srch, P *p)
 			prm(end);
 			return p;
 		}
-		if (pgetc(start) == MAXINT)
+		if (pgetc(start) == NO_MORE_DATA)
 			break;
 	}
 	prm(start);
@@ -482,7 +482,7 @@ static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 		goback(srch, bw);
 		goback(srch, bw);
 		return dopfnext(bw, srch, notify);
-	} else if (c != MAXINT) {
+	} else if (c != MAXINT) {	/* FIXME: what's the meaning of MAXINT here? */
 		if (notify)
 			*notify = 1;
 		pfsave(bw, srch);

@@ -190,6 +190,7 @@ static int mpxsfd;		/* Clients send packets to this fd */
 
 static int nmpx = 0;
 static int accept = MAXINT;	/* =MAXINT if we have last packet */
+				/* FIXME: overloaded meaning of MAXINT */
 
 struct packet {
 	MPX *who;

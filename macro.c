@@ -267,6 +267,7 @@ static char *unescape(char *ptr, int c)
 		*ptr++ = '\\';
 		*ptr++ = '\'';
 	} else if (c < 32 || c > 126) {
+		/* FIXME: what if c > 256 or c < 0 ? */
 		*ptr++ = '\\';
 		*ptr++ = 'x';
 		*ptr++ = "0123456789ABCDEF"[c >> 4];

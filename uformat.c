@@ -35,7 +35,7 @@ int ucenter(BW *bw)
 		pgetc(p);
 		goto done;
 	}
-	if (c == MAXINT)
+	if (c == NO_MORE_DATA)
 		goto done;
 	pgetc(p);
 	endcol = piscol(p);
@@ -47,7 +47,7 @@ int ucenter(BW *bw)
 		prgetc(p);
 		goto done;
 	}
-	if (c == MAXINT)
+	if (c == NO_MORE_DATA)
 		goto done;
 	prgetc(p);
 	begcol = piscol(p);

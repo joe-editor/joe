@@ -731,9 +731,9 @@ void bwrm(BW *w)
 int ustat(BW *bw)
 {
 	static char buf[80];
-	unsigned c = brc(bw->cursor);
+	int c = brc(bw->cursor);
 
-	if (c == MAXINT)
+	if (c == NO_MORE_DATA)
 		snprintf(buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
 	else
 		snprintf(buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, 255 & c, 255 & c, 255 & c);

@@ -181,7 +181,7 @@ static long parserr(B *b)
 			nerrs += parseit(s, q->line);
 			vsrm(s);
 		}
-	} while (pgetc(p) != MAXINT);
+	} while (pgetc(p) != NO_MORE_DATA);
 	prm(p);
 	prm(q);
 	return nerrs;

@@ -384,7 +384,7 @@ int _vrgetc(vfile)
 VFILE *vfile;
 {
 	if (vtell(vfile) == 0)
-		return MAXINT;
+		return NO_MORE_DATA;
 	vseek(vfile, vtell(vfile) - 1);
 	++vfile->bufp;
 	--vfile->left;
@@ -395,7 +395,7 @@ int _vgetc(vfile)
 VFILE *vfile;
 {
 	if (vtell(vfile) == vsize(vfile))
-		return MAXINT;
+		return NO_MORE_DATA;
 	vseek(vfile, vtell(vfile));
 	return vgetc(vfile);
 }

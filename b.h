@@ -118,7 +118,7 @@ int bsavefd PARAMS((P *p, int fd, long int size));
 
 char *parsens PARAMS((char *s, long int *skip, long int *amnt));
 
-/* Get character at pointer or return MAXINT if pointer is at end of buffer */
+/* Get character at pointer or return NO_MORE_DATA if pointer is at end of buffer */
 int brc PARAMS((P *p));
 
 /* Copy 'size' bytes from a buffer beginning at p into block 'blk' */

@@ -6,6 +6,12 @@
 #define MAXINT  ((((unsigned int)-1)/2)-1)
 #define MAXLONG ((((unsigned long)-1L)/2)-1)
 
+#include <stdio.h>
+#ifndef EOF
+#define EOF -1
+#endif
+#define NO_MORE_DATA EOF
+
 #if defined __MSDOS__ && SIZEOF_INT == 2 /* real mode ms-dos compilers */
 #if SIZEOF_VOID_P == 4 /* real mode ms-dos compilers with 'far' memory model or something like that */
 #define physical(a)  (((unsigned long)(a)&0xFFFF)+(((unsigned long)(a)&0xFFFF0000)>>12))

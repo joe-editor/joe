@@ -496,7 +496,7 @@ int pgetc(P *p)
 	unsigned char c;
 
 	if (p->ofst == GSIZE(p->hdr))
-		return MAXINT;
+		return NO_MORE_DATA;
 	c = GCHAR(p);
 	if (++p->ofst == GSIZE(p->hdr))
 		pnext(p);
@@ -553,7 +553,7 @@ static int prgetc1(P *p)
 
 	if (!p->ofst)
 		if (!pprev(p))
-			return MAXINT;
+			return NO_MORE_DATA;
 	--p->ofst;
 	c = GCHAR(p);
 	--p->byte;
@@ -577,7 +577,7 @@ int prgetc(P *p)
 		c = prgetc1(p);
 		if (c == '\r')
 			return '\n';
-		if (c != MAXINT)
+		if (c != NO_MORE_DATA)
 			pgetc(p);
 		c = '\n';
 	}
@@ -713,7 +713,7 @@ P *pprevl(P *p)
 	if (p->b->o.crlf && c == '\n') {
 		int k = prgetc1(p);
 
-		if (k != '\r' && k != MAXINT)
+		if (k != '\r' && k != NO_MORE_DATA)
 			pgetc(p);
 	}
 	return p;
@@ -782,7 +782,7 @@ P *pcolwse(P *p, long goalcol)
 	do {
 		c = prgetc(p);
 	} while (c == ' ' || c == '\t');
-	if (c != MAXINT)
+	if (c != NO_MORE_DATA)
 		pgetc(p);
 	return p;
 }
@@ -843,7 +843,7 @@ void pbackws(P *p)
 	do {
 		c = prgetc(q);
 	} while (c == ' ' || c == '\t');
-	if (c != MAXINT)
+	if (c != NO_MORE_DATA)
 		pgetc(q);
 	bdel(q, p);
 	prm(q);
@@ -1014,7 +1014,7 @@ static int fpgetc(P *p)
 	char c;
 
 	if (p->ofst == GSIZE(p->hdr))
-		return MAXINT;
+		return NO_MORE_DATA;
 	c = GCHAR(p);
 	if (++p->ofst == GSIZE(p->hdr))
 		pnext(p);
@@ -2094,7 +2094,7 @@ opnerr:
 int brc(P *p)
 {
 	if (p->ofst == GSIZE(p->hdr))
-		return MAXINT;
+		return NO_MORE_DATA;
 	return GCHAR(p);
 }
 

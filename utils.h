@@ -24,7 +24,7 @@
  * 	_ is considered as word character because is often used 
  *	in the names of C/C++ functions
  */
-unsigned int isalnum_ PARAMS((unsigned int c));
+int isalnum_ PARAMS((int c));
 
 /* 
  * Whitespace characters are characters like tab, space, ...
