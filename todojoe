@@ -22,7 +22,7 @@ key layout:
   yank/unyank			?/?
 
 =-=-=
-message file for easily changing languages
+messages file for easily changing languages
 
 =-=-=
 should use temporary edit buffers instead of memory blocks for

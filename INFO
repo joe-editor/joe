@@ -1,8 +1,8 @@
-                           Joe's Own Editor 1.0.5
+                           Joe's Own Editor 1.0.6
 
 
 Get it by anonymous ftp
-from: 'world.std.com', file '/src/editors/joe1.0.5.tar.Z'
+from: 'world.std.com', file '/src/editors/joe1.0.6.tar.Z'
 
 If you have questions, problems or suggestions,
 send email to: 'jhallen@world.std.com'
@@ -11,34 +11,34 @@ send email to: 'jhallen@world.std.com'
 	JOE is a sane ASCII text screen editor for UNIX.  It is designed to 
 make use of the power and versitility of UNIX, but also to be easy to use.  
 It has the feel of most IBM PC editors.  The key sequences are remeniscent 
-of WordStar and TURBO-PASCAL.  It also has the features UNIX user's should 
-expect: makes full use of termcap/terminfo, is designed to work well over 
-slow networks and low baud rate modems, designed to reduce installation 
-headaches, and has the best features of vi.
+of WordStar and TURBO-PASCAL.  It also has the features which UNIX user's 
+should expect: makes full use of termcap/terminfo, is designed to work well 
+over slow networks and low baud rate modems, is designed to reduce 
+installation headaches, and has the best features of vi.  
 
 	JOE is most useful for editing unformatted text, such as USENET news 
 articles and for editing block-structured languages such as C and PASCAL.  
-JOE is ideal for new or casual users but is also is also a powerful enough 
-to please experienced users.
+JOE is ideal for new or casual users but is also powerful enough to please 
+experienced users.  
 
 Features:
 
-	Full termcap/terminfo support.  Will work on any terminal except for
+	Full termcap/terminfo support.  Will work on any terminal except for 
 overstrike terminals.  A new termcap library is supplied which can use an 
-index file to make it faster then terminfo.  A number of terminfo extensions 
-are supported and the GNU extensions to the termcap language are also 
-supported.  JOE is not picky about the completeness of the termcap entries, 
-it knows what the defaults are.
+index file to make termcap faster then terminfo.  A number of terminfo 
+extensions are supported and the GNU extensions to the termcap language are 
+also supported.  JOE is not picky about the completeness of the termcap 
+entries, it knows what the defaults are.  
 
-	Non-nonsense installation.  JOE has both ^H and DEL mapped to 
+	No-nonsense installation.  JOE has both ^H and DEL mapped to 
 backspace and ^Q and ^S are not used.  JOE compiles to 120-190K on most 
-systems.
+systems.  
 
 	Powerful optimal screen update.  Uses scrolling regions the way they 
 are supposed to be used (I.E., without building insert and delete line with 
 them) and uses a powerful line shifting (insert/delete character) algorithm 
-which works if text goes past the ends of lines.  Has defered screen update 
-to handle typeahead.
+which works even if text goes past the ends of lines.  Has deferred screen 
+update to handle typeahead.  
 
 	VI-style unix integration.  You can filter a highlighted block 
 through a UNIX command.  Also, each place in joe which accepts a file name 

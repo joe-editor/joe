@@ -7,6 +7,13 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 1.0.6
+**Released: 1992-11-21**
+
+Source recovered from http.pl.scene.org/pub/unix/editors/old
+
+---
+
 ## JOE 1.0.5
 **Released: 1992-11-21**
 

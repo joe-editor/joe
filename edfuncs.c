@@ -303,10 +303,10 @@ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
             bw->cursor->col) pgetc(bw->cursor);
     else binsc(bw->cursor,' '), pgetc(bw->cursor);
    width=povrrect(bw->cursor,tmp);
+   while(bw->cursor->col<ocol) pgetc(bw->cursor);
    }
   else width=pinsrect(bw->cursor,tmp);
   brm(tmp);
-  while(bw->cursor->col<ocol) pgetc(bw->cursor);
   umarkb(w);
   umarkk(w);
   pline(w->t->markk,w->t->markk->line+height);
@@ -528,7 +528,16 @@ else
  pbol(p);
  while(p->byte<w->t->markk->byte)
   {
-  if(pindent(p)<bw->istep) { prm(p); return; }
+  while(p->col<bw->istep)
+   {
+   int c=pgetc(p);
+   if(c!=' ' && c!='\t' && c!=bw->indentc)
+    {
+    prm(p);
+    prm(q);
+    return;
+    }
+   }
   pnextl(p);
   }
  pset(p,w->t->markb);
@@ -747,7 +756,7 @@ W *w;
 BW *bw=(BW *)w->object;
 if(bw->b->count==1 && bw->b->chnged)
  {
- int c=query(w,"Do you really want to throw away this file (y,n)? ");
+ int c=query(w,"Do you really want to throw away this file (y,n,^C)? ");
  if(c!='y' && c!='Y') return;
  }
 wmkfpw(w,"Name of file to edit (^C to abort): ",&filehist,doedit,"Names");
@@ -1400,8 +1409,8 @@ long indent;
 {
 int c;
 long to=p->byte;
-while(!pisbol(p) && !cwhite(c=prgetc(p)));
-if(!pisbol(p))
+while(!pisbol(p) && p->col>indent && !cwhite(c=prgetc(p)));
+if(!pisbol(p) && p->col>indent)
  {
  pgetc(p);
  binsc(p,'\n'), ++to;
@@ -1563,6 +1572,12 @@ char buf[512];
 FILE *f;
 void *object=bw->object;
 f=fopen("tags","r");
+if(!f)
+ {
+ msgnw(w,"Couldn\'t open \'tags\' file");
+ vsrm(s);
+ return;
+ }
 while(fgets(buf,512,f))
  {
  int x, y, c;
@@ -1650,7 +1665,7 @@ BW *bw=(BW *)w->object;
 W *pw;
 if(bw->b->count==1 && bw->b->chnged)
  {
- int c=query(w,"Do you really want to throw away this file (y,n)? ");
+ int c=query(w,"Do you really want to throw away this file (y,n,^C)? ");
  if(c!='y' && c!='Y') return;
  }
 pw=wmkfpw(w,"Tag string to find (^C to abort): ",&taghist,dotag,NULL);
@@ -1752,6 +1767,7 @@ BW *bw=(BW *)w->object;
 long v=bw->lmargin;
 sscanf(s,"%ld",&v);
 vsrm(s);
+if(v<0 || v>256) v=0;
 bw->lmargin=v;
 }
 
@@ -1772,6 +1788,7 @@ BW *bw=(BW *)w->object;
 int v=bw->indentc;
 sscanf(s,"%d",&v);
 vsrm(s);
+if(v<-128 || v>255) v==32;
 bw->indentc=v;
 }
 
@@ -1793,6 +1810,7 @@ BW *bw=(BW *)w->object;
 long v=bw->istep;
 sscanf(s,"%ld",&v);
 vsrm(s);
+if(v<1 || v>256) v=1;
 bw->istep=v;
 }
 
@@ -1813,6 +1831,7 @@ BW *bw=(BW *)w->object;
 long v=bw->rmargin;
 sscanf(s,"%ld",&v);
 vsrm(s);
+if(v<8 || v>256) v=76;
 bw->rmargin=v;
 }
 
@@ -1832,7 +1851,7 @@ char *s;
 BW *bw=(BW *)w->object;
 int v=bw->b->tab;
 sscanf(s,"%ld",&v);
-if(v<0 || v>256) v=8;
+if(v<1 || v>256) v=8;
 vsrm(s);
 bw->b->tab=v;
 refigure();
@@ -1856,7 +1875,7 @@ BW *bw=(BW *)w->object;
 long v=pgamnt;
 sscanf(s,"%ld",&v);
 vsrm(s);
-if(v<-1) v= -1;
+if(v<-1 || v>24) v= -1;
 pgamnt=v;
 }
 
@@ -1876,7 +1895,7 @@ W *w;
 char buf[80];
 if(c>='1' && c<='9') w->t->arg=(c&0xF);
 else w->t->arg=0;
-sprintf(buf,"%d",w->t->arg); msgnw(w,buf);
+sprintf(buf,"Repeat %d (^C to abort)",w->t->arg); msgnw(w,buf);
 while(c=edgetc(), c>='0' && c<='9')
  {
  w->t->arg=w->t->arg*10+(c&0xf);

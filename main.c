@@ -71,7 +71,7 @@ static CMD cmds[]=
   { "backs", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL+EMINOR, ubacks },
   { "backstab", TYPETAB, tbacks },
   { "backw", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, ubackw },
-  { "blkcpy", TYPETW+TYPEPW+0, ublkcpy },
+  { "blkcpy", TYPETW+TYPEPW+EFIXXCOL, ublkcpy },
   { "blkdel", TYPETW+TYPEPW+EFIXXCOL, ublkdel },
   { "blkmove", TYPETW+TYPEPW+EFIXXCOL, ublkmove },
   { "blksave", TYPETW+TYPEPW+0, ublksave },
@@ -104,7 +104,7 @@ static CMD cmds[]=
   { "explode", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uexpld },
   { "exsave", TYPETW+TYPEPW, uexsve },
   { "ffirst", TYPETW+TYPEPW+EMOVE, pffirst },
-  { "filt", TYPETW+TYPEPW+0, ufilt },
+  { "filt", TYPETW+TYPEPW+EFIXXCOL, ufilt },
   { "fnext", TYPETW+TYPEPW+EFIXXCOL+EMID+EMOVE, pfnext },
   { "format", TYPETW+TYPEPW+EFIXXCOL, uformat },
   { "groww", TYPETW, ugroww },
@@ -126,7 +126,7 @@ static CMD cmds[]=
   { "itab", TYPETW+TYPEPW, uitab },
   { "itype", TYPETW+TYPEPW, uitype },
   { "iwrap", TYPETW+TYPEPW, uiwrap },
-  { "lindent", TYPETW+TYPEPW+0, ulindent },
+  { "lindent", TYPETW+TYPEPW+EFIXXCOL, ulindent },
   { "line", TYPETW+TYPEPW+EMOVE, uline },
   { "ltarw", TYPETW+TYPEPW+EFIXXCOL+ECHKXCOL, ultarw },
   { "ltarwhelp", TYPEHELP, uhltarw },
@@ -150,7 +150,7 @@ static CMD cmds[]=
   { "record", TYPETW+TYPEPW+TYPETAB+TYPEHELP, urecord },
   { "redo", TYPETW+TYPEPW+EFIXXCOL, uredo },
   { "retype", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uretyp },
-  { "rindent", TYPETW+TYPEPW+0, urindent },
+  { "rindent", TYPETW+TYPEPW+EFIXXCOL, urindent },
   { "rtarw", TYPETW+TYPEPW+EFIXXCOL, urtarw },
   { "rtarwhelp", TYPEHELP, uhrtarw },
   { "rtarwtab", TYPETAB, trtarw },
@@ -434,7 +434,7 @@ else
  mid=omid;
  }
 if(help) helpon(maint);
-msgnw(lastw(maint),"\\i** Joe's Own Editor v1.0.5 ** Copyright (C) 1992 Joseph H. Allen **\\i");
+msgnw(lastw(maint),"\\i** Joe's Own Editor v1.0.6 ** Copyright (C) 1992 Joseph H. Allen **\\i");
 do
  {
  int wid,hei;

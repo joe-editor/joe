@@ -238,18 +238,46 @@ while(++line, fgets(buf,256,fd))
   else if(!zcmp(buf+1,"starow")) starow=1;
   else if(!zcmp(buf+1,"force")) force=1;
   else if(!zcmp(buf+1,"help")) help=1;
-  else if(!zcmp(buf+1,"pg") && c) sscanf(buf+x+1,"%d",&pgamnt);
-  else if(!zcmp(buf+1,"gtab") && c) sscanf(buf+x+1,"%d",&tabwidth);
+  else if(!zcmp(buf+1,"pg") && c)
+   {
+   sscanf(buf+x+1,"%d",&pgamnt);
+   if(pgamnt<0 || pgamnt>24) pgamnt= -1;
+   }
+  else if(!zcmp(buf+1,"gtab") && c)
+   {
+   sscanf(buf+x+1,"%d",&tabwidth);
+   if(tabwidth<1 || tabwidth>256) tabwidth=8;
+   }
   else
    if(options)
     if(!zcmp(buf+1,"wordwrap")) options->wordwrap=1;
     else if(!zcmp(buf+1,"autoindent")) options->autoindent=1;
     else if(!zcmp(buf+1,"overwrite")) options->overtype=1;
-    else if(!zcmp(buf+1,"lmargin") && c) sscanf(buf+x+1,"%ld",&options->lmargin);
-    else if(!zcmp(buf+1,"rmargin") && c) sscanf(buf+x+1,"%ld",&options->rmargin);
-    else if(!zcmp(buf+1,"istep") && c) sscanf(buf+x+1,"%ld",&options->istep);
-    else if(!zcmp(buf+1,"tab") && c) sscanf(buf+x+1,"%d",&options->tab);
-    else if(!zcmp(buf+1,"indentc") && c) sscanf(buf+x+1,"%d",&options->indentc);
+    else if(!zcmp(buf+1,"lmargin") && c)
+     {
+     sscanf(buf+x+1,"%ld",&options->lmargin);
+     if(options->lmargin<0 || options->lmargin>256) options->lmargin=0;
+     }
+    else if(!zcmp(buf+1,"rmargin") && c)
+     {
+     sscanf(buf+x+1,"%ld",&options->rmargin);
+     if(options->rmargin<8 || options->rmargin>256) options->rmargin=76;
+     }
+    else if(!zcmp(buf+1,"istep") && c)
+     {
+     sscanf(buf+x+1,"%ld",&options->istep);
+     if(options->istep<1 || options->istep>256) options->istep=1;
+     }
+    else if(!zcmp(buf+1,"tab") && c)
+     {
+     sscanf(buf+x+1,"%d",&options->tab);
+     if(options->tab<1 || options->tab>256) options->tab=8;
+     }
+    else if(!zcmp(buf+1,"indentc") && c)
+     {
+     sscanf(buf+x+1,"%d",&options->indentc);
+     if(options->indentc<-128 || options->indentc>255) options->indentc=32;
+     }
     else fprintf(stderr,"\n%s %d: Unknown option",name,line);
    else fprintf(stderr,"\n%s %d: No pattern selected for option",name,line);
   continue;
@@ -509,4 +537,4 @@ struct help *get_help(name)
   for(tmp=first_help;tmp && zcmp(tmp->name,name);tmp=tmp->next);
   return tmp;
  }
-
+ 
