@@ -34,7 +34,7 @@ static P *getto(P *p, P *cur, P *top, long int line)
 {
 
 	if (p == NULL) {
-		P *best;
+		P *best = cur;
 		long dist = MAXLONG;
 		long d;
 

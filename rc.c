@@ -438,7 +438,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			*glopts[x].set = 1;
 		else
 			*glopts[x].set = 0;
-		uabort(m, MAXINT);
+		wabort(m->parent);
 		msgnw(bw->parent, *glopts[x].set ? glopts[x].yes : glopts[x].no);
 		break;
 	case 4:
@@ -448,7 +448,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			*(int *) ((char *) &bw->o + glopts[x].ofst) = 1;
 		else
 			*(int *) ((char *) &bw->o + glopts[x].ofst) = 0;
-		uabort(m, MAXINT);
+		wabort(m->parent);
 		msgnw(bw->parent, *(int *) ((char *) &bw->o + glopts[x].ofst) ? glopts[x].yes : glopts[x].no);
 		if (glopts[x].ofst == (char *) &fdefault.readonly - (char *) &fdefault)
 			bw->b->rdonly = bw->o.readonly;
@@ -459,7 +459,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 
 		*xx = x;
 		m->parent->notify = 0;
-		uabort(m, MAXINT);
+		wabort(m->parent);
 		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify))
 			return 0;
 		else
@@ -473,7 +473,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 
 		*xx = x;
 		m->parent->notify = 0;
-		uabort(m, MAXINT);
+		wabort(m->parent);
 		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify))
 			return 0;
 		else
@@ -487,7 +487,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 
 		*xx = x;
 		m->parent->notify = 0;
-		uabort(m, MAXINT);
+		wabort(m->parent);
 		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify))
 			return 0;
 		else

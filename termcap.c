@@ -18,6 +18,11 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef TERMINFO
+#ifdef HAVE_TERM_H
+#include <term.h>
+#endif
+#endif
 
 #include "blocks.h"
 #include "termcap.h"
@@ -27,11 +32,6 @@
 
 int dopadding = 0;
 char *joeterm = 0;
-
-#ifdef TERMINFO
-extern char *tgoto(char *, int, int);
-extern char *tgetstr(char *, char **);
-#endif
 
 /* Default termcap entry */
 

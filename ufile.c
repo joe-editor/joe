@@ -775,7 +775,7 @@ static int dobuf(MENU *m, int x, char **s)
 
 	m->parent->notify = 0;
 	name = vsdup(s[x]);
-	uabort(m, MAXINT);
+	wabort(m->parent);
 	return dorepl(bw, name, NULL, notify);
 }
 

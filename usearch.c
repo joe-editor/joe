@@ -379,7 +379,7 @@ static int dofirst(BW *bw, int back, int repl)
 		p_goto_bol(bw->cursor);
 		if (byte == bw->cursor->byte)
 			prgetc(bw->cursor);
-		return urtn(bw, MAXINT);
+		return urtn((BASE *)bw, MAXINT);
 	}
 	srch = setmark(mksrch(NULL, NULL, 0, back, -1, repl, 0));
 	srch->addr = bw->cursor->byte;
