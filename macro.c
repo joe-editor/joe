@@ -258,11 +258,13 @@ static int instr;
 
 static char *unescape(char *ptr, int c)
 {
-	if (c == '"')
-		*ptr++ = '\\', *ptr++ = '"';
-	else if (c == '\'')
-		*ptr++ = '\\', *ptr++ = '\'';
-	else if (c < 32 || c > 126) {
+	if (c == '"') {
+		*ptr++ = '\\';
+		*ptr++ = '"';
+	} else if (c == '\'') {
+		*ptr++ = '\\';
+		*ptr++ = '\'';
+	} else if (c < 32 || c > 126) {
 		*ptr++ = '\\';
 		*ptr++ = 'x';
 		*ptr++ = "0123456789ABCDEF"[c >> 4];
@@ -282,15 +284,19 @@ static void domtext(MACRO *m)
 		for (x = 0; x != m->n; ++x)
 			domtext(m->steps[x]);
 	else {
-		if (instr && strcmp(m->cmd->name, "type"))
-			*ptr++ = '\"', instr = 0;
+		if (instr && strcmp(m->cmd->name, "type")) {
+			*ptr++ = '\"';
+			instr = 0;
+		}
 		if (first)
 			first = 0;
 		else if (!instr)
 			*ptr++ = ',';
 		if (!strcmp(m->cmd->name, "type")) {
-			if (!instr)
-				*ptr++ = '\"', instr = 1;
+			if (!instr) {
+				*ptr++ = '\"';
+				instr = 1;
+			}
 			ptr = unescape(ptr, m->k);
 		} else {
 			for (x = 0; m->cmd->name[x]; ++x)
@@ -374,8 +380,10 @@ int exmacro(MACRO *m, int u)
 		larg = arg;
 		arg = 0;
 		argset = 0;
-		if (larg < 0)
-			negarg = 1, larg = -larg;
+		if (larg < 0) {
+			negarg = 1;
+			larg = -larg;
+		}
 		if (m->steps)
 			negarg = 0;
 		else {

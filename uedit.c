@@ -636,8 +636,7 @@ int ubacks(BW *bw, int k)
 			return -1;
 		p = pdup(bw->cursor);
 		if ((c = prgetc(bw->cursor)) != MAXINT)
-			if (!bw->o.overtype || c == '\t' || pisbol(p)
-			    || piseol(p))
+			if (!bw->o.overtype || c == '\t' || pisbol(p) || piseol(p))
 				bdel(bw->cursor, p);
 		prm(p);
 	} else
@@ -658,10 +657,10 @@ int u_word_delete(BW *bw)
 	int c = brc(p);
 
 	if (isalnum_(c))
-		while (c = brc(p), isalnum_(c))
+		while (isalnum_(c = brc(p)))
 			pgetc(p);
 	else if (isspace(c))
-		while (c = brc(p), isspace(c))
+		while (isspace(c = brc(p)))
 			pgetc(p);
 	else
 		pgetc(p);
@@ -685,12 +684,12 @@ int ubackw(BW *bw)
 	int c = prgetc(bw->cursor);
 
 	if (isalnum_(c)) {
-		while (c = prgetc(bw->cursor), isalnum_(c))
+		while (isalnum_(c = prgetc(bw->cursor)))
 			/* do nothing */;
 		if (c != MAXINT)
 			pgetc(bw->cursor);
 	} else if (isspace(c)) {
-		while (c = prgetc(bw->cursor), isspace(c))
+		while (isspace(c = prgetc(bw->cursor)))
 			/* do nothing */;
 		if (c != MAXINT)
 			pgetc(bw->cursor);
@@ -785,13 +784,15 @@ int utypebw(BW *bw, int k)
 		int simple = 1;
 
 		if (pisblank(bw->cursor))
-			while (piscol(bw->cursor) < bw->o.lmargin)
-				binsc(bw->cursor, ' '), pgetc(bw->cursor);
+			while (piscol(bw->cursor) < bw->o.lmargin) {
+				binsc(bw->cursor, ' ');
+				pgetc(bw->cursor);
+			}
 		binsc(bw->cursor, k), pgetc(bw->cursor);
-		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !isblank(k))
-			wrapword(bw->cursor, (long) bw->o.lmargin, bw->o.french, NULL), simple = 0;
-		else if (bw->o.overtype && !piseol(bw->cursor)
-			 && k != '\t')
+		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !isblank(k)) {
+			wrapword(bw->cursor, (long) bw->o.lmargin, bw->o.french, NULL);
+			simple = 0;
+		} else if (bw->o.overtype && !piseol(bw->cursor) && k != '\t')
 			udelch(bw);
 		bw->cursor->xcol = piscol(bw->cursor);
 #ifndef __MSDOS__
@@ -862,8 +863,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			else
 				return 0;
 		} else {
-			if ((c >= 0x40 && c <= 0x5F)
-			    || (c >= 'a' && c <= 'z'))
+			if ((c >= 0x40 && c <= 0x5F) || (c >= 'a' && c <= 'z'))
 				c &= 0x1F;
 			if (c == '?')
 				c = 127;
@@ -1022,9 +1022,10 @@ static int doctrl(BW *bw, int c, void *object, int *notify)
 	if (notify)
 		*notify = 1;
 	bw->o.overtype = 0;
-	if (bw->parent->huh == srchstr && c == '\n')
-		utypebw(bw, '\\'), utypebw(bw, 'n');
-	else
+	if (bw->parent->huh == srchstr && c == '\n') {
+		utypebw(bw, '\\');
+		utypebw(bw, 'n');
+	} else
 		utypebw(bw, c);
 	bw->o.overtype = org;
 	bw->cursor->xcol = piscol(bw->cursor);
@@ -1054,8 +1055,10 @@ int rtntw(BW *bw)
 		binsc(bw->cursor, '\n'), pgetc(bw->cursor);
 		if (bw->o.autoindent) {
 			p_goto_bol(p);
-			while (isspace(c = pgetc(p)) && c != 10)
-				binsc(bw->cursor, c), pgetc(bw->cursor);
+			while (isspace(c = pgetc(p)) && c != 10) {
+				binsc(bw->cursor, c);
+				pgetc(bw->cursor);
+			}
 		}
 		prm(p);
 		bw->cursor->xcol = piscol(bw->cursor);

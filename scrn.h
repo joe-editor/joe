@@ -77,10 +77,12 @@ int attr PARAMS((SCRN *t, int c));
 #define DIM 16
 extern unsigned atab[];
 
-#define outatr(t,scrn,x,y,c,a) \
-  ( \
-    (t), (x), (y), *(scrn)=((unsigned)(c)|atab[a]) \
-  )
+#define outatr(t,scrn,x,y,c,a) do { \
+	(t); \
+	(x); \
+	(y); \
+	*(scrn) = ((unsigned)(c) | atab[a]); \
+} while(0)
 
 #else
 
@@ -90,7 +92,7 @@ extern unsigned atab[];
 #define BLINK		2048
 #define DIM		4096
 
-#define outatr(t, scrn, xx, yy, c, a) {			\
+#define outatr(t, scrn, xx, yy, c, a) do {		\
 	if(*(scrn) != ((c) | (a))) {			\
 		*(scrn) = ((c) | (a));			\
 		if((t)->ins)				\
@@ -102,7 +104,7 @@ extern unsigned atab[];
 		ttputc(c);				\
 		++(t)->x;				\
 	}						\
-}
+} while(0)
 
 #endif
 

@@ -532,7 +532,8 @@ int ttflsh(void)
 			if (read(mpxfd, &pack, sizeof(struct packet) - 1024) > 0) {
 				fcntl(mpxfd, F_SETFL, 0);
 				joe_read(mpxfd, pack.data, pack.size);
-				have = 1, accept = pack.ch;
+				have = 1;
+				accept = pack.ch;
 			} else
 				fcntl(mpxfd, F_SETFL, 0);
 		} else {
@@ -560,10 +561,16 @@ int ttgetc(void)
 
       loop:
 	ttflsh();
-	while (winched)
-		winched = 0, edupd(1), ttflsh();
-	if (ticked)
-		edupd(0), ttflsh(), tickon();
+	while (winched) {
+		winched = 0;
+		edupd(1);
+		ttflsh();
+	}
+	if (ticked) {
+		edupd(0);
+		ttflsh();
+		tickon();
+	}
 	if (ackkbd != -1) {
 		if (!have) {	/* Wait for input */
 			stat = read(mpxfd, &pack, sizeof(struct packet) - 1024);
@@ -581,8 +588,10 @@ int ttgetc(void)
 		have = 0;
 		if (pack.who) {	/* Got bknd input */
 			if (accept != MAXINT) {
-				if (pack.who->func)
-					pack.who->func(pack.who->object, pack.data, pack.size), edupd(1);
+				if (pack.who->func) {
+					pack.who->func(pack.who->object, pack.data, pack.size);
+					edupd(1);
+				}
 			} else
 				mpxdied(pack.who);
 			goto loop;

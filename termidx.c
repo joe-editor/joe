@@ -57,7 +57,8 @@ static void gen(char *s, FILE *fd)
 					printf(" %lx\n", addr - oaddr);
 			}
 			goto loop;
-		} else if (c == '\r') ;
+		} else if (c == '\r')
+			/* do nothing */ ;
 		else
 			s[x++] = c;
 	}

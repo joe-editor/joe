@@ -59,26 +59,46 @@ static int escape(unsigned char **a, int *b)
 		case '6':
 		case '7':
 			c = *s - '0';
-			if (l > 1 && s[1] >= '0' && s[1] <= '7')
-				c = c * 8 + s[1] - '0', ++s, --l;
-			if (l > 1 && s[1] >= '0' && s[1] <= '7')
-				c = c * 8 + s[1] - '0', ++s, --l;
+			if (l > 1 && s[1] >= '0' && s[1] <= '7') {
+				c = c * 8 + s[1] - '0';
+				++s;
+				--l;
+			}
+			if (l > 1 && s[1] >= '0' && s[1] <= '7') {
+				c = c * 8 + s[1] - '0';
+				++s;
+				--l;
+			}
 			break;
 		case 'x':
 		case 'X':
 			c = 0;
-			if (l > 1 && s[1] >= '0' && s[1] <= '9')
-				c = c * 16 + s[1] - '0', ++s, --l;
-			else if (l > 1 && s[1] >= 'A' && s[1] <= 'F')
-				c = c * 16 + s[1] - 'A' + 10, ++s, --l;
-			else if (l > 1 && s[1] >= 'a' && s[1] <= 'f')
-				c = c * 16 + s[1] - 'a' + 10, ++s, --l;
-			if (l > 1 && s[1] >= '0' && s[1] <= '9')
-				c = c * 16 + s[1] - '0', ++s, --l;
-			else if (l > 1 && s[1] >= 'A' && s[1] <= 'F')
-				c = c * 16 + s[1] - 'A' + 10, ++s, --l;
-			else if (l > 1 && s[1] >= 'a' && s[1] <= 'f')
-				c = c * 16 + s[1] - 'a' + 10, ++s, --l;
+			if (l > 1 && s[1] >= '0' && s[1] <= '9') {
+				c = c * 16 + s[1] - '0';
+				++s;
+				--l;
+			} else if (l > 1 && s[1] >= 'A' && s[1] <= 'F') {
+				c = c * 16 + s[1] - 'A' + 10;
+				++s;
+				--l;
+			} else if (l > 1 && s[1] >= 'a' && s[1] <= 'f') {
+				c = c * 16 + s[1] - 'a' + 10;
+				++s;
+				--l;
+			}
+			if (l > 1 && s[1] >= '0' && s[1] <= '9') {
+				c = c * 16 + s[1] - '0';
+				++s;
+				--l;
+			} else if (l > 1 && s[1] >= 'A' && s[1] <= 'F') {
+				c = c * 16 + s[1] - 'A' + 10;
+				++s;
+				--l;
+			} else if (l > 1 && s[1] >= 'a' && s[1] <= 'f') {
+				c = c * 16 + s[1] - 'a' + 10;
+				++s;
+				--l;
+			}
 			break;
 		default:
 			c = *s;
@@ -86,8 +106,10 @@ static int escape(unsigned char **a, int *b)
 		}
 		++s;
 		--l;
-	} else
-		(c = *s++), --l;
+	} else {
+		c = *s++;
+		--l;
+	}
 	*a = s;
 	*b = l;
 	return c;
@@ -102,8 +124,11 @@ static int brack(unsigned char **a, int *la, unsigned char c)
 
 	if (!l)
 		return 0;
-	if (*s == '^' || *s == '*')
-		inverse = 1, ++s, --l;
+	if (*s == '^' || *s == '*') {
+		inverse = 1;
+		++s;
+		--l;
+	}
 	if (l && *s == ']') {
 		++s;
 		--l;
@@ -309,9 +334,10 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 						} else {
 							escape(&regex, &len);
 						}
-					} else if (len >= 1)
-						--len, ++regex;
-					else
+					} else if (len >= 1) {
+						--len;
+						++regex;
+					} else
 						goto done;
 
 					/* Now oregex/olen point to character to skip over and
@@ -347,8 +373,10 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 					} while (c != MAXINT && match);
 
 				      done:
-					if (r)
-						pset(p, r), prm(r);
+					if (r) {
+						pset(p, r);
+						prm(r);
+					}
 					if (r)
 						goto succeed;
 					else

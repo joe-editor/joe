@@ -116,10 +116,10 @@ int uundo(BW *bw)
 	if (!undo->ptr) {
 		pgoto(bw->cursor, undo->recs.link.prev->where);
 		undo->ptr = &undo->recs;
-		/* If this return is uncommented, then uundo will jump to 
-		   where the undo
-		   is about to occur before actually undoing anything
-		   return 0; */
+		/* If this return is uncommented, then uundo will jump
+		   to where the undo is about to occur before actually
+		   undoing anything */
+		/* return 0; */
 	}
 	if (undo->ptr->link.prev == &undo->recs)
 		return -1;
@@ -293,8 +293,10 @@ static void yankdel(long where, B *b)
 			rec->len += size;
 			rec->where = where;
 		} else {
-			if (++nyanked == 100)
-				frrec(deque_f(UNDOREC, link, yanked.link.next)), --nyanked;
+			if (++nyanked == 100) {
+				frrec(deque_f(UNDOREC, link, yanked.link.next));
+				--nyanked;
+			}
 			rec = alrec();
 			if (size < SMALL) {
 				rec->small = (char *) joe_malloc(size);

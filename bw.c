@@ -32,15 +32,22 @@ extern int staen;
 
 static P *getto(P *p, P *cur, P *top, long int line)
 {
-	long dist = MAXLONG;
-	long d;
-	P *best;
 
-	if (!p) {
-		if (d = (line - cur->line >= 0 ? line - cur->line : cur->line - line), d < dist)
-			dist = d, best = cur;
-		if (d = (line - top->line >= 0 ? line - top->line : top->line - line), d < dist)
-			dist = d, best = top;
+	if (p == NULL) {
+		P *best;
+		long dist = MAXLONG;
+		long d;
+
+		d = (line >= cur->line ? line - cur->line : cur->line - line);
+		if (d < dist) {
+			dist = d;
+			best = cur;
+		}
+		d = (line >= top->line ? line - top->line : top->line - line);
+		if (d < dist) {
+			dist = d;
+			best = top;
+		}
 		p = pdup(best);
 		p_goto_bol(p);
 	}

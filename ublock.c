@@ -46,11 +46,7 @@ typedef struct marksav MARKSAV;
 struct marksav {
 	LINK(MARKSAV) link;
 	P *markb, *markk;
-} markstack = {
-
-	{
-	&markstack, &markstack}
-};
+} markstack = { { &markstack, &markstack} };
 MARKSAV markfree = { {&markfree, &markfree} };
 int nstack = 0;
 
@@ -223,8 +219,10 @@ void pinsrect(P *cur, B *tmp, long int width, int usetabs)
 				pfill(p, cur->xcol + width, usetabs);
 			if (piseol(p))
 				pbackws(p);
-			if (!pnextl(p))
-				binsc(p, '\n'), pgetc(p);
+			if (!pnextl(p)) {
+				binsc(p, '\n');
+				pgetc(p);
+			}
 			if (pgetc(q) == MAXINT)
 				break;
 		}
@@ -503,8 +501,10 @@ int dowrite(BW *bw, char *s, void *object, int *notify)
 					  markk->line - markb->line + 1,
 					  markk->xcol);
 
-			if ((fl = bsave(tmp->bof, s, tmp->eof->byte)) != 0)
-				msgnw(bw->parent, msgs[5 + fl]), ret = -1;
+			if ((fl = bsave(tmp->bof, s, tmp->eof->byte)) != 0) {
+				msgnw(bw->parent, msgs[5 + fl]);
+				ret = -1;
+			}
 			brm(tmp);
 			if (lightoff)
 				unmark(bw);
@@ -593,8 +593,10 @@ int urindent(BW *bw)
 			while (p->byte < markk->byte) {
 				p_goto_bol(p);
 				if (!piseol(p))
-					while (piscol(p) < bw->o.istep)
-						binsc(p, bw->o.indentc), pgetc(p);
+					while (piscol(p) < bw->o.istep) {
+						binsc(p, bw->o.indentc);
+						pgetc(p);
+					}
 				pnextl(p);
 			}
 			prm(p);

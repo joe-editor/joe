@@ -360,10 +360,14 @@ sELEMENT *vsread(sELEMENT d, int p, int (*getC)(), void *ptr)
 		return 0;
 	} else if (c == '\n')
 		return d;
-	else
-		d = vsset(d, p, c), p++;
-	while (c = getC(ptr), c != MAXINT && c != '\n')
-		d = vsset(d, p, c), p++;
+	else {
+		d = vsset(d, p, c);
+		p++;
+	}
+	while (c = getC(ptr), c != MAXINT && c != '\n') {
+		d = vsset(d, p, c);
+		p++;
+	}
 	return d;
 }
 

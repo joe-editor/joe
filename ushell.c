@@ -66,10 +66,14 @@ static void cdata(BW *bw, char *dat, int siz)
 			if (y) {
 				--y;
 			} else if (piseof(bw->cursor)) {
-				pset(q, bw->cursor), prgetc(q), bdel(q, bw->cursor);
+				pset(q, bw->cursor);
+				prgetc(q);
+				bdel(q, bw->cursor);
 				bw->cursor->xcol = piscol(bw->cursor);
 			} else {
-				pset(q, r), prgetc(q), bdel(q, r);
+				pset(q, r);
+				prgetc(q);
+				bdel(q, r);
 			}
 		} else {
 			bf[y++] = dat[x];

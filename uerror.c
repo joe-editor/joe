@@ -31,11 +31,7 @@ struct error {
 	char *file;		/* Target file name */
 	long src;		/* Error-file line number */
 	char *msg;		/* The message */
-} errors = {
-
-	{
-	&errors, &errors}
-};
+} errors = { { &errors, &errors} };
 ERROR *errptr = &errors;	/* Current error row */
 
 B *errbuf = 0;			/* Buffer with error messages */
@@ -99,8 +95,7 @@ void saverr(char *name)
 }
 
 /* Pool of free error nodes */
-ERROR errnodes = { {&errnodes, &errnodes}
-};
+ERROR errnodes = { {&errnodes, &errnodes} };
 
 /* Free an error node */
 

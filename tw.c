@@ -214,14 +214,18 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 						for (i = 0; i != w->kbd->x; ++i) {
 							int c = w->kbd->seq[i] & 127;
 
-							if (c < 32)
-								cpos[0] = '^', cpos[1]
-								    = c + '@', cpos += 2;
-							else if (c == 127)
-								cpos[0] = '^', cpos[1]
-								    = '?', cpos += 2;
-							else
-								cpos[0] = c, cpos += 1;
+							if (c < 32) {
+								cpos[0] = '^';
+								cpos[1] = c + '@';
+								cpos += 2;
+							} else if (c == 127) {
+								cpos[0] = '^';
+								cpos[1] = '?';
+								cpos += 2;
+							} else {
+								cpos[0] = c;
+								cpos += 1;
+							}
 						}
 					*cpos++ = fill;
 					while (cpos - buf < 4)
@@ -276,8 +280,7 @@ static void disptw(BW *bw, int flg)
 		tw->stalin = stagen(tw->stalin, bw, bw->o.lmsg, fill);
 		tw->staright = stagen(tw->staright, bw, bw->o.rmsg, fill);
 		if (fmtlen(tw->staright) < w->w) {
-			int x = fmtpos(tw->stalin,
-				       w->w - fmtlen(tw->staright));
+			int x = fmtpos(tw->stalin, w->w - fmtlen(tw->staright));
 
 			if (x > sLEN(tw->stalin))
 				tw->stalin = vsfill(sv(tw->stalin), fill, x - sLEN(tw->stalin));
@@ -502,7 +505,8 @@ int utw1(BASE *b)
 				msgnw(bw->parent, "Process running in this window");
 				return -1;
 			}
-			utw0((BASE *)bw), yn = 1;
+			utw0((BASE *)bw);
+			yn = 1;
 			goto loop;
 		}
 	} while (yn);

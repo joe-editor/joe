@@ -1,3 +1,11 @@
+Sat Jun  8 2002  Vitezslav Samel <samel@mail.cz>
+	* b.c, bw.c, macro.c, path.c, pw.c, queue.h, rc.c, regex.c, scrn.c,
+	scrn.h, tab.c, termcap.c, termidx.c, tty.c, tw.c, ublock.c, uedit.c,
+	uerror.c, ufile.c, uformat.c, undo.c, usearch.c, ushell.c, vfile.c,
+	vs.c, w.c:
+	change "expr, expr" to "expr; expr" where appropriate to make sources
+	more readable (should have no impact on code)
+
 Tue Jun  4 2002  Vitezslav Samel <samel@mail.cz>
 	* scrn.c:
 	don't clear screen when nonzero skiptop is given (part 2)

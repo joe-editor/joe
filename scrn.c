@@ -297,8 +297,10 @@ SCRN *nopen(CAP *cap)
 		t->co = 80;
 	x = y = 0;
 	ttgtsz(&x, &y);
-	if (x > 7 && y > 3)
-		t->li = y, t->co = x;
+	if (x > 7 && y > 3) {
+		t->li = y;
+		t->co = x;
+	}
 
 	t->haz = getflag(t->cap, "hz");
 	t->os = getflag(t->cap, "os");
@@ -432,8 +434,10 @@ SCRN *nopen(CAP *cap)
 		if (getflag(t->cap, "pt"))
 			t->ta = "\11";
 	t->bt = jgetstr(t->cap, "bt");
-	if (getflag(t->cap, "xt"))
-		t->ta = 0, t->bt = 0;
+	if (getflag(t->cap, "xt")) {
+		t->ta = 0;
+		t->bt = 0;
+	}
 
 	t->cta = tcost(t->cap, t->ta, 1, 2, 2, 0, 0);
 	t->cbt = tcost(t->cap, t->bt, 1, 2, 2, 0, 0);
@@ -614,7 +618,8 @@ static int relcost(register SCRN *t, register int x, register int y, register in
 	if (x > ox && t->ta) {
 		int dist = x - ox;
 		int ntabs = (dist + ox % t->tw) / t->tw;
-		int cstunder = x % t->tw + t->cta * ntabs, cstover;
+		int cstunder = x % t->tw + t->cta * ntabs;
+		int cstover;
 
 		if (x + t->tw < t->co && t->bs)
 			cstover = t->cbs * (t->tw - x % t->tw) + t->cta * (ntabs + 1);
@@ -702,10 +707,13 @@ static void cposs(register SCRN *t, register int x, register int y)
 /* Home y position is usually 0, but it is 'top' if we have scrolling region
  * relative addressing
  */
-	if (t->rr)
-		hy = t->top, hl = t->bot - 1;
-	else
-		hy = 0, hl = t->li - 1;
+	if (t->rr) {
+		hy = t->top;
+		hl = t->bot - 1;
+	} else {
+		hy = 0;
+		hl = t->li - 1;
+	}
 
 /* Assume best way is with only using relative cursor positioning */
 
@@ -718,68 +726,94 @@ static void cposs(register SCRN *t, register int x, register int y)
 
 	if (t->ccm < bestcost) {
 		cost = tcost(t->cap, t->cm, 1, y, x, 0, 0);
-		if (cost < bestcost)
-			bestcost = cost, bestway = 6;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 6;
+		}
 	}
 	if (t->ccr < bestcost) {
 		cost = relcost(t, x, y, 0, t->y) + t->ccr;
-		if (cost < bestcost)
-			bestcost = cost, bestway = 1;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 1;
+		}
 	}
 	if (t->cho < bestcost) {
 		cost = relcost(t, x, y, 0, hy) + t->cho;
-		if (cost < bestcost)
-			bestcost = cost, bestway = 2;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 2;
+		}
 	}
 	if (t->cll < bestcost) {
 		cost = relcost(t, x, y, 0, hl) + t->cll;
-		if (cost < bestcost)
-			bestcost = cost, bestway = 3;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 3;
+		}
 	}
 	if (t->cch < bestcost && x != t->x) {
 		cost = relcost(t, x, y, x, t->y) + tcost(t->cap, t->ch, 1, x, 0, 0, 0);
-		if (cost < bestcost)
-			bestcost = cost, bestway = 4;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 4;
+		}
 	}
 	if (t->ccv < bestcost && y != t->y) {
 		cost = relcost(t, x, y, t->x, y) + tcost(t->cap, t->cv, 1, y, 0, 0, 0);
-		if (cost < bestcost)
-			bestcost = cost, bestway = 5;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 5;
+		}
 	}
 	if (t->ccV < bestcost) {
 		cost = relcost(t, x, y, 0, y) + tcost(t->cap, t->cV, 1, y, 0, 0, 0);
-		if (cost < bestcost)
-			bestcost = cost, bestway = 13;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 13;
+		}
 	}
 	if (t->cch + t->ccv < bestcost && x != t->x && y != t->y) {
 		cost = tcost(t->cap, t->cv, 1, y - hy, 0, 0, 0) + tcost(t->cap, t->ch, 1, x, 0, 0, 0);
-		if (cost < bestcost)
-			bestcost = cost, bestway = 7;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 7;
+		}
 	}
 	if (t->ccv + t->ccr < bestcost && y != t->y) {
 		cost = tcost(t->cap, t->cv, 1, y, 0, 0, 0) + tcost(t->cap, t->cr, 1, 0, 0, 0, 0) + relcost(t, x, y, 0, y);
-		if (cost < bestcost)
-			bestcost = cost, bestway = 8;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 8;
+		}
 	}
 	if (t->cll + t->cch < bestcost) {
 		cost = tcost(t->cap, t->ll, 1, 0, 0, 0, 0) + tcost(t->cap, t->ch, 1, x, 0, 0, 0) + relcost(t, x, y, x, hl);
-		if (cost < bestcost)
-			bestcost = cost, bestway = 9;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 9;
+		}
 	}
 	if (t->cll + t->ccv < bestcost) {
 		cost = tcost(t->cap, t->ll, 1, 0, 0, 0, 0) + tcost(t->cap, t->cv, 1, y, 0, 0, 0) + relcost(t, x, y, 0, y);
-		if (cost < bestcost)
-			bestcost = cost, bestway = 10;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 10;
+		}
 	}
 	if (t->cho + t->cch < bestcost) {
 		cost = tcost(t->cap, t->ho, 1, 0, 0, 0, 0) + tcost(t->cap, t->ch, 1, x, 0, 0, 0) + relcost(t, x, y, x, hy);
-		if (cost < bestcost)
-			bestcost = cost, bestway = 11;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 11;
+		}
 	}
 	if (t->cho + t->ccv < bestcost) {
 		cost = tcost(t->cap, t->ho, 1, 0, 0, 0, 0) + tcost(t->cap, t->cv, 1, y, 0, 0, 0) + relcost(t, x, y, 0, y);
-		if (cost < bestcost)
-			bestcost = cost, bestway = 12;
+		if (cost < bestcost) {
+			bestcost = cost;
+			bestway = 12;
+		}
 	}
 
 /* Do absolute cursor positioning if we don't know the cursor position or
@@ -855,24 +889,31 @@ docv:
 /* First adjust row */
 	if (y > t->y) {
 		/* Have to go down */
-		if (!t->lf || t->cDO < (y - t->y) * t->clf)
-			texec(t->cap, t->DO, 1, y - t->y, 0, 0, 0), t->y = y;
-		else
-			while (y > t->y)
-				texec(t->cap, t->lf, 1, 0, 0, 0, 0), ++t->y;
+		if (!t->lf || t->cDO < (y - t->y) * t->clf) {
+			texec(t->cap, t->DO, 1, y - t->y, 0, 0, 0);
+			t->y = y;
+		} else
+			while (y > t->y) {
+				texec(t->cap, t->lf, 1, 0, 0, 0, 0);
+				++t->y;
+			}
 	} else if (y < t->y) {
 		/* Have to go up */
-		if (!t->up || t->cUP < (t->y - y) * t->cup)
-			texec(t->cap, t->UP, 1, t->y - y, 0, 0, 0), t->y = y;
-		else
-			while (y < t->y)
-				texec(t->cap, t->up, 1, 0, 0, 0, 0), --t->y;
+		if (!t->up || t->cUP < (t->y - y) * t->cup) {
+			texec(t->cap, t->UP, 1, t->y - y, 0, 0, 0);
+			t->y = y;
+		} else
+			while (y < t->y) {
+				texec(t->cap, t->up, 1, 0, 0, 0, 0);
+				--t->y;
+			}
 	}
 
 /* Use tabs */
 	if (x > t->x && t->ta) {
 		int ntabs = (x - t->x + t->x % t->tw) / t->tw;
-		int cstunder = x % t->tw + t->cta * ntabs, cstover;
+		int cstunder = x % t->tw + t->cta * ntabs;
+		int cstover;
 
 		if (x + t->tw < t->co && t->bs)
 			cstover = t->cbs * (t->tw - x % t->tw) + t->cta * (ntabs + 1);
@@ -924,17 +965,21 @@ docv:
 /* Now adjust column */
 	if (x < t->x) {
 		/* Have to go left */
-		if (!t->bs || t->cLE < (t->x - x) * t->cbs)
-			texec(t->cap, t->LE, 1, t->x - x, 0, 0, 0), t->x = x;
-		else
-			while (x < t->x)
-				texec(t->cap, t->bs, 1, 0, 0, 0, 0), --t->x;
+		if (!t->bs || t->cLE < (t->x - x) * t->cbs) {
+			texec(t->cap, t->LE, 1, t->x - x, 0, 0, 0);
+			t->x = x;
+		} else
+			while (x < t->x) {
+				texec(t->cap, t->bs, 1, 0, 0, 0, 0);
+				--t->x;
+			}
 	} else if (x > t->x) {
 		/* Have to go right */
 		/* Hmm.. this should take into account possible attribute changes */
-		if (t->cRI < x - t->x)
-			texec(t->cap, t->RI, 1, x - t->x, 0, 0, 0), t->x = x;
-		else {
+		if (t->cRI < x - t->x) {
+			texec(t->cap, t->RI, 1, x - t->x, 0, 0, 0);
+			t->x = x;
+		} else {
 			int *s = t->scrn + t->x + t->y * t->co;
 
 			if (t->ins)
@@ -988,8 +1033,10 @@ static void doinschr(SCRN *t, int x, int y, int *s, int n)
 {
 	int a;
 
-	if (x < 0)
-		s -= x, x = 0;
+	if (x < 0) {
+		s -= x;
+		x = 0;
+	}
 	if (x >= t->co - 1 || n <= 0)
 		return;
 	if (t->im || t->ic || t->IC) {
@@ -1033,7 +1080,6 @@ static void dodelchr(SCRN *t, int x, int y, int n)
 		texec(t->cap, t->ed, 1, x, 0, 0, 0);	/* Exit delete mode */
 	}
 	mmove(t->scrn + t->co * y + x, t->scrn + t->co * y + x + n, (t->co - (x + n)) * sizeof(int));
-
 	msetI(t->scrn + t->co * y + t->co - n, ' ', n);
 }
 
@@ -1053,8 +1099,12 @@ void magic(SCRN *t, int y, int *cs, int *s, int placex)
 	msetI(ofst, 0, t->co);
 
 /* Build hash table */
-	for (x = 0; x != t->co - 1; ++x)
-		t->ary[aryx].next = htab[cs[x] & 255].next, t->ary[aryx].loc = x, ++htab[cs[x] & 255].loc, htab[cs[x] & 255].next = aryx++;
+	for (x = 0; x != t->co - 1; ++x) {
+		t->ary[aryx].next = htab[cs[x] & 255].next;
+		t->ary[aryx].loc = x;
+		++htab[cs[x] & 255].loc;
+		htab[cs[x] & 255].next = aryx++;
+	}
 
 /* Build offset table */
 	for (x = 0; x < t->co - 1;)
@@ -1092,9 +1142,10 @@ void magic(SCRN *t, int y, int *cs, int *s, int placex)
 				if (cst > best)
 					maxaryy = aryy, maxlen = amnt, best = cst, bestback = back;
 			}
-			if (!maxlen)
-				ofst[x] = t->co - 1, maxlen = 1;
-			else if (best < 2)
+			if (!maxlen) {
+				ofst[x] = t->co - 1;
+				maxlen = 1;
+			} else if (best < 2)
 				for (z = 0; z != maxlen; ++z)
 					ofst[x + z] = t->co - 1;
 			else
@@ -1124,8 +1175,7 @@ void magic(SCRN *t, int y, int *cs, int *s, int placex)
 				int z, fu;
 
 				for (z = x; z != t->co - 1 && ofst[z] == q; ++z) ;
-				while (s[x + q] == cs[x + q]
-				       && x - q < placex)
+				while (s[x + q] == cs[x + q] && x - q < placex)
 					++x;
 				doinschr(t, x + q, y, s + x + q, -q);
 				for (fu = x; fu != t->co - 1; ++fu)
@@ -1280,15 +1330,15 @@ void nscroll(SCRN *t)
 			if (q > 0) {
 				for (z = y; z != t->li && t->sary[z] == q; ++z)
 					t->sary[z] = 0;
-				doupscrl(t, y, z + q, q), y = z - 1;
+				doupscrl(t, y, z + q, q);
+				y = z - 1;
 			} else {
 				for (r = y; r != t->li && (t->sary[r] < 0 || t->sary[r] == t->li); ++r) ;
 				p = r - 1;
 				do {
 					q = t->sary[p];
 					if (q && q != t->li) {
-						for (z = p; t->sary[z] = 0, (z && t->sary[z - 1]
-									     == q); --z) ;
+						for (z = p; t->sary[z] = 0, (z && t->sary[z - 1] == q); --z) ;
 						dodnscrl(t, z + q, p + 1, -q);
 						p = z + 1;
 					}
@@ -1353,8 +1403,10 @@ void nscrldn(SCRN *t, int top, int bot, int amnt)
 	if ((amnt < bot - top && bot - top - amnt < amnt / 2) || !t->scroll)
 		amnt = bot - top;
 	if (amnt < bot - top) {
-		for (x = bot; x != top + amnt; --x)
-			t->sary[x - 1] = (t->sary[x - amnt - 1] == t->li ? t->li : t->sary[x - amnt - 1] - amnt), t->updtab[x - 1] = t->updtab[x - amnt - 1];
+		for (x = bot; x != top + amnt; --x) {
+			t->sary[x - 1] = (t->sary[x - amnt - 1] == t->li ? t->li : t->sary[x - amnt - 1] - amnt);
+			t->updtab[x - 1] = t->updtab[x - amnt - 1];
+		}
 		for (x = top; x != top + amnt; ++x)
 			t->updtab[x] = 1;
 	}
@@ -1374,8 +1426,10 @@ void nscrlup(SCRN *t, int top, int bot, int amnt)
 	if ((amnt < bot - top && bot - top - amnt < amnt / 2) || !t->scroll)
 		amnt = bot - top;
 	if (amnt < bot - top) {
-		for (x = top + amnt; x != bot; ++x)
-			t->sary[x - amnt] = (t->sary[x] == t->li ? t->li : t->sary[x] + amnt), t->updtab[x - amnt] = t->updtab[x];
+		for (x = top + amnt; x != bot; ++x) {
+			t->sary[x - amnt] = (t->sary[x] == t->li ? t->li : t->sary[x] + amnt);
+			t->updtab[x - amnt] = t->updtab[x];
+		}
 		for (x = bot - amnt; x != bot; ++x)
 			t->updtab[x] = 1;
 	}

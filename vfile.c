@@ -52,8 +52,10 @@ void vflsh(void)
 		vlowest = 0;
 		for (x = 0; x != HTSIZE; x++)
 			for (vp = htab[x]; vp; vp = vp->next)
-				if (vp->addr < addr && vp->addr > last && vp->vfile == vfile && (vp->addr >= vfile->size || (vp->dirty && !vp->count)))
-					addr = vp->addr, vlowest = vp;
+				if (vp->addr < addr && vp->addr > last && vp->vfile == vfile && (vp->addr >= vfile->size || (vp->dirty && !vp->count))) {
+					addr = vp->addr;
+					vlowest = vp;
+				}
 		if (vlowest) {
 			if (!vfile->name)
 				vfile->name = mktmp(NULL);
@@ -87,8 +89,10 @@ void vflshf(VFILE *vfile)
 	vlowest = 0;
 	for (x = 0; x != HTSIZE; x++)
 		for (vp = htab[x]; vp; vp = vp->next)
-			if (vp->addr < addr && vp->dirty && vp->vfile == vfile && !vp->count)
-				addr = vp->addr, vlowest = vp;
+			if (vp->addr < addr && vp->dirty && vp->vfile == vfile && !vp->count) {
+				addr = vp->addr;
+				vlowest = vp;
+			}
 	if (vlowest) {
 		if (!vfile->name)
 			vfile->name = mktmp(NULL);
@@ -125,8 +129,10 @@ char *vlock(VFILE *vfile, long int addr)
 	addr -= ofst;
 
 	for (vp = htab[((addr >> LPGSIZE) + (int) vfile) & (HTSIZE - 1)]; vp; vp = vp->next)
-		if (vp->vfile == vfile && vp->addr == addr)
-			return ++vp->count, vp->data + ofst;
+		if (vp->vfile == vfile && vp->addr == addr) {
+			++vp->count;
+			return vp->data + ofst;
+		}
 
 	if (freepages) {
 		vp = freepages;
@@ -142,16 +148,14 @@ char *vlock(VFILE *vfile, long int addr)
 				int q;
 
 				curvalloc += PGSIZE * INC;
-				if (!vheaders)
-					vheaders = (VPAGE **)
-					    joe_malloc((vheadsz = INC)
-						   * sizeof(VPAGE *)), vbase = vp->data;
-				else if (physical(vp->data) < physical(vbase)) {
+				if (!vheaders) {
+					vheaders = (VPAGE **) joe_malloc((vheadsz = INC) * sizeof(VPAGE *));
+					vbase = vp->data;
+				} else if (physical(vp->data) < physical(vbase)) {
 					VPAGE **t = vheaders;
 					int amnt = (physical(vbase) - physical(vp->data)) >> LPGSIZE;
 
-					vheaders = (VPAGE **)
-					    joe_malloc((amnt + vheadsz) * sizeof(VPAGE *));
+					vheaders = (VPAGE **) joe_malloc((amnt + vheadsz) * sizeof(VPAGE *));
 					mmove(vheaders + amnt, t, vheadsz * sizeof(VPAGE *));
 					vheadsz += amnt;
 					vbase = vp->data;
@@ -286,8 +290,10 @@ void vclose(VFILE *vfile)
 				vp->next = freepages;
 				freepages = vp;
 				vp = pp->next;
-			} else
-				pp = vp, vp = vp->next;
+			} else {
+				pp = vp;
+				vp = vp->next;
+			}
 }
 
 #ifdef junk

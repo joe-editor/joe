@@ -202,8 +202,7 @@ static int backup(BW *bw)
 		}
 
 		for (x = strlen(name); name[--x] != '.';) {
-			if (name[x] == '\\' || (name[x] == ':' && x == 1)
-			    || x == 0) {
+			if (name[x] == '\\' || (name[x] == ':' && x == 1) || x == 0) {
 				x = strlen(name);
 				break;
 			}
@@ -281,7 +280,8 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 		*notify = 1;
 	}
 	if (bw->b->er == -1 && bw->o.msnew) {
-		exemac(bw->o.msnew), bw->b->er = -3;
+		exemac(bw->o.msnew);
+		bw->b->er = -3;
 	}
 	if (bw->b->er == 0 && bw->o.msold) {
 		exemac(bw->o.msold);

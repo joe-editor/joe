@@ -256,9 +256,10 @@ int rmatch(char *a, char *b)
 		case '[':
 			++a;
 			flag = 0;
-			if (*a == '^')
-				++a, inv = 1;
-			else
+			if (*a == '^') {
+				++a;
+				inv = 1;
+			} else
 				inv = 0;
 			if (*a == ']')
 				if (*b == *a++)

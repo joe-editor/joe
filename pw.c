@@ -44,11 +44,14 @@ static void disppw(BW *bw, int flg)
 		}
 	} else {
 		if (piscol(bw->cursor) < w->w - pw->promptlen) {
-			pw->promptofst = 0, bw->offset = 0;
+			pw->promptofst = 0;
+			bw->offset = 0;
 		} else if (piscol(bw->cursor) >= w->w) {
-			pw->promptofst = pw->promptlen, bw->offset = piscol(bw->cursor) - (w->w - 1);
+			pw->promptofst = pw->promptlen;
+			bw->offset = piscol(bw->cursor) - (w->w - 1);
 		} else {
-			pw->promptofst = pw->promptlen - (w->w - piscol(bw->cursor) - 1), bw->offset = piscol(bw->cursor) - (w->w - (pw->promptlen - pw->promptofst) - 1);
+			pw->promptofst = pw->promptlen - (w->w - piscol(bw->cursor) - 1);
+			bw->offset = piscol(bw->cursor) - (w->w - (pw->promptlen - pw->promptofst) - 1);
 		}
 	}
 

@@ -384,8 +384,10 @@ static int doopt1(BW *bw, char *s, int *xx, int *notify)
 			ret = -1;
 		} else if (v >= glopts[x].low && v <= glopts[x].high)
 			*glopts[x].set = v;
-		else
-			msgnw(bw->parent, "Value out of range"), ret = -1;
+		else {
+			msgnw(bw->parent, "Value out of range");
+			ret = -1;
+		}
 		break;
 	case 2:
 		if (s[0])

@@ -96,9 +96,12 @@ static char *lfind(char *s, int pos, FILE *fd, char *name)
 				goto loop;
 			else
 				return vstrunc(s, x);
-		else if (c == '\r') ;
-		else
-			s = vsset(s, x, c), ++x;
+		else if (c == '\r')
+			/* do nothing */;
+		else {
+			s = vsset(s, x, c);
+			++x;
+		}
 	}
 	while (c = getc(fd), c != -1)
 		if (c == '\n')
@@ -106,9 +109,12 @@ static char *lfind(char *s, int pos, FILE *fd, char *name)
 				--x;
 			else
 				break;
-		else if (c == '\r') ;
-		else
-			s = vsset(s, x, c), ++x;
+		else if (c == '\r')
+			/* do nothing */;
+		else {
+			s = vsset(s, x, c);
+			++x;
+		}
 	s = vstrunc(s, x);
 	return s;
 }
@@ -185,9 +191,10 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 		if ((tp = getenv("TERMPATH")))
 			namebuf = vsncpy(NULL, 0, sz(tp));
 		else {
-			if ((tp = getenv("HOME")))
-				namebuf = vsncpy(NULL, 0, sz(tp)), namebuf = vsadd(namebuf, '/');
-			else
+			if ((tp = getenv("HOME"))) {
+				namebuf = vsncpy(NULL, 0, sz(tp));
+				namebuf = vsadd(namebuf, '/');
+			} else
 				namebuf = 0;
 			namebuf = vsncpy(sv(namebuf), sc(".termcap "));
 			namebuf = vsncpy(sv(namebuf), sc(JOERC));
@@ -439,8 +446,10 @@ static char escape(char **s)
 	if (c == '^' && **s)
 		if (**s != '?')
 			return 037 & *(*s)++;
-		else
-			return (*s)++, 127;
+		else {
+			(*s)++;
+			return 127;
+		}
 	else if (c == '\\' && **s)
 		switch (c = *((*s)++)) {
 		case '0':
@@ -518,20 +527,26 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 	while (*s >= '0' && *s <= '9')
 		tenth = tenth * 10 + *s++ - '0';
 	tenth *= 10;
-	if (*s == '.')
-		++s, tenth += *s++ - '0';
+	if (*s == '.') {
+		++s;
+		tenth += *s++ - '0';
+	}
 
 /* Check if we have to multiply by number of lines */
-	if (*s == '*')
-		++s, tenth *= l;
+	if (*s == '*') {
+		++s;
+		tenth *= l;
+	}
 
 /* Output string */
 	while ((c = *s++) != '\0')
 		if (c == '%' && *s) {
 			switch (x = a[0], c = escape(&s)) {
 			case 'C':
-				if (x >= 96)
-					cap->out(cap->outptr, x / 96), x %= 96;
+				if (x >= 96) {
+					cap->out(cap->outptr, x / 96);
+					x %= 96;
+				}
 			case '+':
 				if (*s)
 					x += escape(&s);
@@ -547,12 +562,16 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 					goto two;
 			case '3':
 				c = '0';
-				while (x >= 100)
-					++c, x -= 100;
+				while (x >= 100) {
+					++c;
+					x -= 100;
+				}
 				cap->out(cap->outptr, c);
 			      two:c = '0';
-				while (x >= 10)
-					++c, x -= 10;
+				while (x >= 10) {
+					++c;
+					x -= 10;
+				}
 				cap->out(cap->outptr, c);
 			      one:cap->out(cap->outptr, '0' + x);
 				++a;
@@ -625,18 +644,24 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 				cap->out(cap->outptr, '%');
 				cap->out(cap->outptr, c);
 			}
-		} else
-			--s, cap->out(cap->outptr, escape(&s));
+		} else {
+			--s;
+			cap->out(cap->outptr, escape(&s));
+		}
 
 /* Output padding characters */
 	if (cap->dopadding) {
 		if (cap->pad)
 			while (tenth >= cap->div)
-				for (s = cap->pad; *s; ++s)
-					cap->out(cap->outptr, *s), tenth -= cap->div;
+				for (s = cap->pad; *s; ++s) {
+					cap->out(cap->outptr, *s);
+					tenth -= cap->div;
+				}
 		else
-			while (tenth >= cap->div)
-				cap->out(cap->outptr, 0), tenth -= cap->div;
+			while (tenth >= cap->div) {
+				cap->out(cap->outptr, 0);
+				tenth -= cap->div;
+			}
 	}
 }
 
