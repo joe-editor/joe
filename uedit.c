@@ -1190,6 +1190,12 @@ int rtntw(BW *bw)
 {
 	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
 		joe_write(bw->out, "\n", 1);
+	} else if (bw->o.overtype) {
+		p_goto_eol(bw->cursor);
+		if (piseof(bw->cursor))
+			binsc(bw->cursor, '\n');
+		pgetc(bw->cursor);
+		bw->cursor->xcol = piscol(bw->cursor);
 	} else {
 		P *p = pdup(bw->cursor);
 		unsigned char c;

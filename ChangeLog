@@ -1,3 +1,9 @@
+Thu Apr 22 2004  Joe Allen <jhallen@world.std.com>
+	* uedit.c:
+
+	Now, enter does not insert new line when in overtype mode (unless at
+	end of file).  Somebody asked for this.
+
 Wed Apr 21 2004  Joe Allen <jhallen@world.std.com>
 	* b.c, b.h, joerc.in, rc.c, types.h, ublock.c, uedit.c:
 
