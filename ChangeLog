@@ -1,5 +1,9 @@
 Sat Feb 26 2005  Joe Allen <jhallen@world.std.com>
 
+	Tab complete for ^K ; (tags search).
+
+Sat Feb 26 2005  Joe Allen <jhallen@world.std.com>
+
 	Allow '-' in file names in compiler error parser.
 
 Sat Feb 26 2005  Joe Allen <jhallen@world.std.com>

@@ -19,7 +19,9 @@
 #include "usearch.h"
 #include "utils.h"
 #include "vs.h"
+#include "va.h"
 #include "utf8.h"
+#include "tty.h"
 #include "charmap.h"
 #include "w.h"
 
@@ -126,13 +128,61 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 	return -1;
 }
 
+static unsigned char **get_tag_list()
+{
+	unsigned char buf[512];
+	unsigned char tag[512];
+	int i,pos;
+	FILE *f;
+	unsigned char **lst = NULL;
+	
+	f = fopen("tags", "r");
+	if (f) {
+		while (fgets((char *)buf, 512, f)) {
+			pos = 0;
+			for (i=0; i<512; i++) {
+				if (buf[i] == ' ' || buf[i] == '\t') {
+					pos = i;
+					i = 512;
+				}
+			}
+			if (pos > 0) {
+				strncpy(tag, buf, pos);
+				tag[pos] = '\0';
+			}
+			lst = vaadd(lst, vsncpy(NULL, 0, sz(tag)));
+		}
+		fclose(f);	
+	}
+	return lst;
+}
+
+static unsigned char **tag_word_list;
+
+static int tag_cmplt(BW *bw)
+{
+	// Reload every time: we should really check date of tags file...
+	//if (tag_word_list)
+	//	varm(tag_word_list);
+
+	if (!tag_word_list)
+		tag_word_list = get_tag_list();
+
+	if (!tag_word_list) {
+		ttputc(7);
+		return 0;
+	}
+
+	return simple_cmplt(bw,tag_word_list);
+}
+
 static B *taghist = NULL;
 
 int utag(BW *bw)
 {
 	BW *pbw;
 
-	pbw = wmkpw(bw->parent, US "Tag search: ", &taghist, dotag, NULL, NULL, cmplt, NULL, NULL, locale_map);
+	pbw = wmkpw(bw->parent, US "Tag search: ", &taghist, dotag, NULL, NULL, tag_cmplt, NULL, NULL, locale_map);
 	if (pbw && joe_isalnum_(bw->b->o.charmap,brch(bw->cursor))) {
 		P *p = pdup(bw->cursor);
 		P *q = pdup(p);
