@@ -94,7 +94,8 @@ void bwfllw(BW *w)
 		pset(w->top, newtop);
 		prm(newtop);
 	} else if (w->cursor->line >= w->top->line + w->h) {
-		newtop = pdup(w->top);
+		// newtop = pdup(w->top);
+		// getto() creates newtop
 		if (mid)
 			newtop = getto(NULL, w->cursor, w->top, w->cursor->line - w->h / 2);
 		else
