@@ -227,7 +227,7 @@ struct glopts {
 	int high;		/* High limit for numeric options */
 } glopts[] = {
 	{US "overwrite",4, NULL, (unsigned char *) &fdefault.overtype, US "Overtype mode", US "Insert mode", US "T Overtype " },
-	{US "autoindent",	4, NULL, (unsigned char *) &fdefault.autoindent, US "Autoindent enabled", US "Autindent disabled", US "I Autoindent " },
+	{US "autoindent",	4, NULL, (unsigned char *) &fdefault.autoindent, US "Autoindent enabled", US "Autoindent disabled", US "I Autoindent " },
 	{US "wordwrap",	4, NULL, (unsigned char *) &fdefault.wordwrap, US "Wordwrap enabled", US "Wordwrap disabled", US "Word wrap " },
 	{US "tab",	5, NULL, (unsigned char *) &fdefault.tab, US "Tab width (%d): ", 0, US "D Tab width ", 0, 1, 64 },
 	{US "lmargin",	7, NULL, (unsigned char *) &fdefault.lmargin, US "Left margin (%d): ", 0, US "Left margin ", 0, 0, 63 },
