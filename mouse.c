@@ -689,7 +689,7 @@ void mouseopen()
 	if (usexmouse) {
 		ttputs(US "\33[?1002h");
 		if (joexterm)
-			ttputs(US "\33[?2004h\33[?2007h");
+			ttputs(US "\33[?2007h");
 		ttflsh();
 	}
 #endif
@@ -700,7 +700,7 @@ void mouseclose()
 #ifdef MOUSE_XTERM
 	if (usexmouse) {
 		if (joexterm)
-			ttputs(US "\33[?2007l\33[?2004l");
+			ttputs(US "\33[?2007l");
 		ttputs(US "\33[?1002l");
 		ttflsh();
 	}
