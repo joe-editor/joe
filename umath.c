@@ -142,6 +142,7 @@ static double expr(int prec, struct var **rtv)
 			if (!merr)
 				merr = US "Called object is not a function";
 		}
+		goto loop;
 	} else if (*ptr == '*' && ptr[1] == '*' && 8 > prec) {
 		ptr+=2;
 		x = pow(x, expr(8, &dumb));
