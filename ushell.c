@@ -141,7 +141,8 @@ int ubknd(BW *bw)
         unsigned char *sh=(unsigned char *)getenv("SHELL");
         if (!sh) {
         	msgnw(bw->parent, US "\"SHELL\" environment variable not defined or exported");
-        	return -1;
+        	/* return -1; */
+        	sh = US "/bin/sh";
         }
 
 	a = vamk(3);

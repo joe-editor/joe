@@ -676,8 +676,10 @@ void ttshell(unsigned char *cmd)
 	int x, omode = ttymode;
 	unsigned char *s = (unsigned char *)getenv("SHELL");
 
-	if (!s)
-		return;
+	if (!s) {
+		s = US "/bin/sh";
+		/* return; */
+	}
 	ttclsn();
 	if ((x = fork()) != 0) {
 		if (x != -1)
@@ -696,38 +698,11 @@ void ttshell(unsigned char *cmd)
 	}
 }
 
-void ttsusp(void)
-{
-	int omode;
+/* Create keyboard task */
 
-#ifdef SIGTSTP
-	omode = ttymode;
-	ttclsn();
-	fprintf(stderr, "You have suspended the program.  Type 'fg' to return\n");
-	kill(0, SIGTSTP);
-	if (ackkbd != -1)
-		kill(kbdpid, SIGCONT);
-	if (omode)
-		ttopnn();
-#else
-	ttshell(NULL);
-#endif
-}
-
-/* Stuff for asynchronous I/O multiplexing.  We do not use streams or select() because joe
-   needs to work on versions of UNIX which predate these calls.  Instead, when there is
-   multiple async sources, we use helper processes which packetize data from the sources.  A
-   header on each packet indicates the source.  There is no guarentee that packets getting
-   written to the same pipe don't get interleaved, but you can reasonable rely on it with
-   small packets. */
-
-static void mpxstart(void)
+static void mpxresume(void)
 {
 	int fds[2];
-
-	pipe(fds);
-	mpxfd = fds[0];
-	mpxsfd = fds[1];
 	pipe(fds);
 	accept = NO_MORE_DATA;
 	have = 0;
@@ -752,12 +727,69 @@ static void mpxstart(void)
 	ackkbd = fds[1];
 }
 
+/* Kill keyboard task */
+
+static void mpxsusp(void)
+{
+	if (ackkbd!=-1) {
+		kill(kbdpid, 9);
+		while (wait(NULL) < 0 && errno == EINTR)
+			/* do nothing */;
+		close(ackkbd);
+	}
+}
+
+/* We used to leave the keyboard copy task around during suspend, but
+   Cygwin gets confused when two processes are waiting for input and you
+   change the tty from raw to cooked (on the call to ttopnn()): the keyboard
+   process was stuck in cooked until he got a carriage return- then he
+   switched back to raw (he's supposed to switch to raw without waiting for
+   the end of line). Probably this should be done for ttshell() as well. */
+
+void ttsusp(void)
+{
+	int omode;
+
+#ifdef SIGTSTP
+	omode = ttymode;
+	mpxsusp();
+	ttclsn();
+	fprintf(stderr, "You have suspended the program.  Type 'fg' to return\n");
+	kill(0, SIGTSTP);
+#ifdef junk
+	/* Hmmm... this should not have been necessary */
+	if (ackkbd != -1)
+		kill(kbdpid, SIGCONT);
+#endif
+	if (omode)
+		ttopnn();
+	if (ackkbd!= -1)
+		mpxresume();
+#else
+	ttshell(NULL);
+#endif
+}
+
+/* Stuff for asynchronous I/O multiplexing.  We do not use streams or
+   select() because joe needs to work on versions of UNIX which predate
+   these calls.  Instead, when there is multiple async sources, we use
+   helper processes which packetize data from the sources.  A header on each
+   packet indicates the source.  There is no guarentee that packets getting
+   written to the same pipe don't get interleaved, but you can reasonable
+   rely on it with small packets. */
+
+static void mpxstart(void)
+{
+	int fds[2];
+	pipe(fds);
+	mpxfd = fds[0];
+	mpxsfd = fds[1];
+	mpxresume();
+}
+
 static void mpxend(void)
 {
-	kill(kbdpid, 9);
-	while (wait(NULL) < 0 && errno == EINTR)
-		/* do nothing */;
-	close(ackkbd);
+	mpxsusp();
 	ackkbd = -1;
 	close(mpxfd);
 	close(mpxsfd);
@@ -958,6 +990,10 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 	if (x==NPROC)
 		return NULL;
 
+	/* Fixes cygwin console bug: if you fork() with inverse video he assumes you want
+	 * ESC [ 0 m to keep it in inverse video from then on. */
+	set_attr(maint->t,0);
+
 	/* Flush output */
 	ttflsh();
 
@@ -1008,6 +1044,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 			   controlling tty (session leader) and starting a new
 			   session.  This is the most non-portable part of UNIX- second
 			   only to pty/tty pair creation. */
+#ifndef HAVE_LOGIN_TTY
 
 #ifdef TIOCNOTTY
 			x = open("/dev/tty", O_RDWR);
@@ -1021,7 +1058,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 			setpgrp();
 #endif
 
-
+#endif
 			/* Close all fds */
 			for (x = 0; x != 32; ++x)
 				close(x);	/* Yes, this is quite a kludge... all in the
@@ -1031,6 +1068,10 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 			if ((x = open((char *)name, O_RDWR)) != -1) {	/* Standard input */
 				unsigned char **env = newenv(mainenv, US "TERM=");
 
+#ifdef HAVE_LOGIN_TTY
+				login_tty(x);
+
+#else
 				/* This tells the fd that it's a tty (I think) */
 #ifdef __svr4__
 				ioctl(x, I_PUSH, "ptem");
@@ -1042,6 +1083,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 				dup(x);	/* Standard output, standard error */
 				/* (yes, stdin, stdout, and stderr must all be open for reading and
 				 * writing.  On some systems the shell assumes this */
+#endif
 
 				/* We could probably have a special TTY set-up for JOE, but for now
 				 * we'll just use the TTY setup for the TTY was was run on */

@@ -547,7 +547,7 @@
 }
 
 {Basic1
-\i   Help Screen    \|turn off with ^G     more help with ^[. (ESC .)              \i
+\i   Help Screen    \|turn off with ^G     prev. screen ^[,    next screen ^[.     \i
 \i \i\|\uCURSOR\u           \|\uGO TO\u            \|\uBLOCK\u      \|\uDELETE\u    \|\uMISC\u         \|\uEXIT\u     \|\i \i
 \i \i\|^B left ^F right \|^W^Y top of file \|^^  mark   \|^D  char  \|^J   format  \|^X save  \|\i \i
 \i \i\|^P up   ^N down  \|^W^V end of file \|^K  cut    \|^K  line  \|^T   spell   \|^C status\|\i \i
