@@ -685,8 +685,8 @@ int ubacks(BW *bw, int k)
 		/* Smart backspace when: cursor is at indentation point, indentation point
 		   is a multiple of indentation width, we're not at beginning of line,
 		   'smarthome' option is enabled, and indentation is purely made out of
-		   indent characters. */
-		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smartbacks && pispure(bw->cursor,bw->o.indentc)) {
+		   indent characters (or purify indents is enabled). */
+		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smartbacks && (bw->o.purify || pispure(bw->cursor,bw->o.indentc))) {
 			P *p;
 			int x;
 
@@ -697,12 +697,7 @@ int ubacks(BW *bw, int k)
 			prm(p);
 
 			/* Indent to new position */
-			col -= indwid;
-
-			for (x=0; x!=col; x+=wid) {
-				binsc(bw->cursor, bw->o.indentc);
-				pgetc(bw->cursor);
-			}
+			pfill(bw->cursor,col-indwid,bw->o.indentc);
 		} else {
 			P *p = pdup(bw->cursor);
 			if ((c = prgetc(bw->cursor)) != NO_MORE_DATA)
@@ -1202,7 +1197,7 @@ int rtntw(BW *bw)
 		binsc(bw->cursor, '\n'), pgetc(bw->cursor);
 		if (bw->o.autoindent) {
 			p_goto_bol(p);
-			while (isspace(c = pgetc(p)) && c != 10) {
+			while (isspace(c = pgetc(p)) && c != '\n') {
 				binsc(bw->cursor, c);
 				pgetc(bw->cursor);
 			}

@@ -142,6 +142,19 @@
 
 	-tab nnn		Tab width
 
+	-indentc nnn		Indentation character (32 for space, 9 for tab)
+
+	-istep nnn		Number of indentation columns
+
+	-spaces			TAB inserts spaces instead of tabs.
+
+	-purify			Fix indentation if necessary for rindent, lindent and backs
+				(for example if indentation uses a mix of tabs and spaces,
+				and indentc is space, indentation will be converted to all
+				spaces).
+
+	-crlf			File uses CR-LF at ends of lines
+
 	-wordwrap		Wordwrap
 
 	-autoindent		Auto indent
@@ -153,11 +166,6 @@
 	-rmargin nnn		Right margin
 
 
-	-tab nnn		Tab width
-
-	-indentc nnn		Indentation character (32 for space, 9 for tab)
-
-	-istep nnn		Number of indentation columns
 	-french			One space after '.', '?' and '!' for wordwrap
 				and paragraph reformat instead of two.  Joe
 				does not change the spacing you give, but
@@ -165,8 +173,6 @@
 				selects how much is inserted.
 
 	-linums			Enable line numbers on each line
-	-spaces			TAB inserts spaces instead of tabs.
-
 
 	-rdonly			File is read-only
 

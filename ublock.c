@@ -193,7 +193,7 @@ int ptabrect(P *org, long int height, long int right)
 		while ((c = pgetc(p)) != NO_MORE_DATA && c != '\n') {
 			if (c == '\t') {
 				prm(p);
-				return 1;
+				return '\t';
 			} else if (piscol(p) > right)
 				break;
 		}
@@ -201,7 +201,7 @@ int ptabrect(P *org, long int height, long int right)
 			pnextl(p);
 	}
 	prm(p);
-	return 0;
+	return ' ';
 }
 
 /* Insert rectangle */
@@ -409,7 +409,7 @@ int ublkmove(BW *bw)
 				/* If cursor was in block, blkdel moves it to left edge of block, so fix it
 				 * back to its original place here */
 				pcol(bw->cursor, ocol);
-				pfill(bw->cursor, ocol, 0);
+				pfill(bw->cursor, ocol, ' ');
 				pdelrect(bw->cursor, height, piscol(bw->cursor) + width);
 			} else if (update_xcol)
 				/* If cursor was to right of block, xcol was not properly updated */
@@ -604,6 +604,30 @@ int purity_check(int c, int n)
 	return 1;
 }
 
+/* Left indent check */
+/* Verify that there is enough whitespace to do the left indent */
+
+int lindent_check(int c, int n)
+{
+	P *p = pdup(markb);
+	int indwid;
+	if (c=='\t')
+		indwid = n * p->b->o.tab;
+	else
+		indwid = n;
+	while (p->byte < markk->byte) {
+		int x;
+		p_goto_bol(p);
+		if (!piseol(p) && pisindent(p)<indwid) {
+			prm(p);
+			return 0;
+		}
+		pnextl(p);
+	}
+	prm(p);
+	return 1;
+}
+
 /* Indent more */
 
 int urindent(BW *bw)
@@ -614,14 +638,38 @@ int urindent(BW *bw)
 
 			do {
 				pcol(p, markb->xcol);
-				pfill(p, markb->xcol + bw->o.istep, bw->o.indentc == '\t' ? 1 : 0);
+				pfill(p, markb->xcol + bw->o.istep, bw->o.indentc);
 			} while (pnextl(p) && p->line <= markk->line);
 			prm(p);
 		}
 	} else {
-		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte)
+		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
 			setindent(bw);
-		else if (purity_check(bw->o.indentc,0)) {
+		} else if (bw->o.purify) {
+			P *p = pdup(markb);
+			P *q = pdup(markb);
+			int indwid;
+
+			if (bw->o.indentc=='\t')
+				indwid = bw->o.tab * bw->o.istep;
+			else
+				indwid = bw->o.istep;
+
+			while (p->byte < markk->byte) {
+				p_goto_bol(p);
+				if (!piseol(p)) {
+					int col;
+					pset(q, p);
+					p_goto_indent(q, bw->o.indentc);
+					col = piscol(q);
+					bdel(p,q);
+					pfill(p,col+indwid,bw->o.indentc);
+				}
+				pnextl(p);
+			}
+			prm(p);
+			prm(q);
+		} else if (purity_check(bw->o.indentc,0)) {
 			P *p = pdup(markb);
 
 			while (p->byte < markk->byte) {
@@ -675,9 +723,33 @@ int ulindent(BW *bw)
 			prm(q);
 		}
 	} else {
-		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte)
+		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
 			setindent(bw);
-		else if (purity_check(bw->o.indentc,bw->o.istep)) {
+		} else if (bw->o.purify && lindent_check(bw->o.indentc,bw->o.istep)) {
+			P *p = pdup(markb);
+			P *q = pdup(markb);
+			int indwid;
+
+			if (bw->o.indentc=='\t')
+				indwid = bw->o.tab * bw->o.istep;
+			else
+				indwid = bw->o.istep;
+
+			while (p->byte < markk->byte) {
+				p_goto_bol(p);
+				if (!piseol(p)) {
+					int col;
+					pset(q, p);
+					p_goto_indent(q, bw->o.indentc);
+					col = piscol(q);
+					bdel(p,q);
+					pfill(p,col-indwid,bw->o.indentc);
+				}
+				pnextl(p);
+			}
+			prm(p);
+			prm(q);
+		} else if (purity_check(bw->o.indentc,bw->o.istep)) {
 			P *p = pdup(markb);
 			P *q = pdup(p);
 

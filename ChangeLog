@@ -1,4 +1,10 @@
 Wed Apr 21 2004  Joe Allen <jhallen@world.std.com>
+	* b.c, b.h, joerc.in, rc.c, types.h, ublock.c, uedit.c:
+
+	Added -purify option which fixes indentation
+	if necessary for ^K, ^K. and smart backspace.
+
+Wed Apr 21 2004  Joe Allen <jhallen@world.std.com>
 	* ublock.c :
 
 	^K , and ^K . now have improved purity checking

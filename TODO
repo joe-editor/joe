@@ -1,17 +1,24 @@
 Improvements for programming
 ----------------------------
 
+purify and optimizeindent options for ^K , ^K . smartbacks and autoindent
+
+  purity converts any combination of tabs and spaces used for indenting into
+  whatever is called for with indentc and istep.
+
+  optimizeindent makes any indentation created by joe use shortest
+  combination of tabs and spaces.
+
 Abbreviations
 
  Tab complete a word in a file, should look through file for matching
  words.
 
 Should <space> indent-step in smartmode?  Probably not: think about /*
-comments.
+comments.                                                            *
 
-urindent and ulindent should check for purity before doing their dirty work.
-
-Show name of function cursor is in
+Show name of function cursor is in (parse C).  This is useful during
+searches.
 
 Jump to definition (tags does this)
 
@@ -34,6 +41,8 @@ UTF-8/Internationalization
 
 - think about regex, rc files, highlighting
     32-bit chars in search/replace \[...] sequences?
+
+- check incremental search functions.
 
 - translate: allow user to specify charset.  think about isalpha.
 

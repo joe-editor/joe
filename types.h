@@ -119,6 +119,7 @@ struct options {
 	int	utf8;		/* Set for UTF-8 mode */
 	int	smarthome;	/* Set for smart home key */
 	int	smartbacks;	/* Set for smart backspace key */
+	int	purify;		/* Purify indentation */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */

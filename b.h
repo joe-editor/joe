@@ -41,6 +41,8 @@ P *p_goto_eof PARAMS((P *p));		/* move cursor to end of file */
 P *p_goto_bol PARAMS((P *p));		/* move cursor to begging of line */
 P *p_goto_eol PARAMS((P *p));		/* move cursor to end of line */
 
+P *p_goto_indent PARAMS((P *p,int c));	/* move cursor to indentation point */
+
 int pisbof PARAMS((P *p));
 int piseof PARAMS((P *p));
 int piseol PARAMS((P *p));

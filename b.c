@@ -816,6 +816,16 @@ P *p_goto_bol(P *p)
 	return p;
 }
 
+/* move p to the indentation point */
+P *p_goto_indent(P *p, int c)
+{
+	int d;
+	p_goto_bol(p);
+	while ((d=brc(p)), d==c || ((c==' ' || c=='\t') && (d==' ' || d=='\t')))
+		pgetc(p);
+	return p;
+}
+
 /* move p to the end of line */
 P *p_goto_eol(P *p)
 {
@@ -1040,9 +1050,8 @@ P *pcoli(P *p, long goalcol)
 /* fill space between curent column and 'to' column with tabs/spaces */
 void pfill(P *p, long to, int usetabs)
 {
-	piscol(p);
-	if (usetabs)
-		while (p->col < to)
+	if (usetabs=='\t')
+		while (piscol(p) < to)
 			if (p->col + p->b->o.tab - p->col % p->b->o.tab <= to) {
 				binsc(p, '\t');
 				pgetc(p);
@@ -1051,8 +1060,8 @@ void pfill(P *p, long to, int usetabs)
 				pgetc(p);
 			}
 	else
-		while (p->col < to) {
-			binsc(p, ' ');
+		while (piscol(p) < to) {
+			binsc(p, usetabs);
 			pgetc(p);
 		}
 }
