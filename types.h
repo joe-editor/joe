@@ -183,6 +183,7 @@ struct help {
 	unsigned int	lines;		/* number of lines */
 	struct help	*prev;		/* previous help screen */
 	struct help	*next;		/* nex help screen */
+	unsigned char	*name;		/* context name for context sensitive help */
 };
 
 /* A key binding */

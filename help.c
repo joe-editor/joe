@@ -15,6 +15,7 @@
 #include "blocks.h"
 #include "scrn.h"
 #include "utils.h"
+#include "vs.h"
 #include "w.h"
 
 #define NOT_ENOUGH_MEMORY -11
@@ -54,6 +55,7 @@ int help_init(char *filename)
 			tmp->lines = 0;
 			hlpsiz = 0;
 			hlpbsz = 0;
+			tmp->name = vsncpy(NULL, 0, sz(buf + 1) - 1);
 
 			while ((fgets(buf, sizeof(buf), fd)) && (buf[0] != '}')) {
 				bfl = strlen(buf);
@@ -118,6 +120,23 @@ int help_init(char *filename)
 	}
 
 	return 0;
+}
+
+/*
+ * Find context help - find help entry with the same name
+ */
+
+struct help *find_context_help(unsigned char *name)
+{
+	struct help *tmp = help_actual;
+
+	while (tmp->prev != NULL)	/* find the first help entry */
+		tmp = tmp->prev;
+
+	while (tmp != NULL && strcmp(tmp->name, name) != 0)
+		tmp = tmp->next;
+
+	return tmp;
 }
 
 /*
@@ -237,7 +256,15 @@ static void help_off(SCREEN *t)
 int u_help(BASE *base)
 {
 	W *w = base->parent;
+	struct help *new_help;
 
+	if (w->huh && (new_help = find_context_help(w->huh)) != NULL) {
+		if (help_actual != new_help) {
+			if (w->t->wind != skiptop)
+				help_off(w->t);
+			help_actual = new_help;		/* prepare context help */
+		}
+	}
 	if (w->t->wind == skiptop) {
 		return help_on(w->t);			/* help screen is hidden, so show the actual one */
 	} else {
@@ -253,11 +280,11 @@ int u_help_next(BASE *base)
 {
 	W *w = base->parent;
 
-	if (help_actual && help_actual->next) {		/* is there any previous help screen? */
+	if (help_actual && help_actual->next) {		/* is there any next help screen? */
 		if (w->t->wind != skiptop) {
 			help_off(w->t);			/* if help screen was visible, then hide it */
 		}
-		help_actual = help_actual->next;	/* change to previous help screen */
+		help_actual = help_actual->next;	/* change to next help screen */
 		return help_on(w->t);			/* show actual help screen */
 	} else {
 		return -1;
