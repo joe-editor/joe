@@ -20,6 +20,9 @@
 #ifdef HAVE_PATHS_H
 #  include <paths.h>	/* for _PATH_TMP */
 #endif
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
