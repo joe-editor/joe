@@ -142,7 +142,7 @@ int attr(SCRN *t, int c)
 	int e;
 
 	c &= ~255;
-	e = (AT_MASK&t->attrib & ~c);
+	e = (AT_MASK&t->attrib & ~c) || ((FG_MASK&t->attrib) && !(FG_MASK&c)) || ((BG_MASK&t->attrib) && !(BG_MASK&c));
 	if (e) {		/* If any attribute go off, switch them all off: fixes bug on PCs */
 		if (t->me)
 			texec(t->cap, t->me, 1, 0, 0, 0, 0);

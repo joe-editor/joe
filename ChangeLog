@@ -1,3 +1,9 @@
+Thu Apr  1 2004  Joe Allen <jhallen@world.std.com>
+	* scrn.c:
+	Fix color handling for terminals which do not use my defaults :-)
+	Basically we revert to the default text color, use ESC [ 0 m, not
+	ESC [ 37 m and ESC [ 40 m.
+
 Tue Mar 30 2004  Joe Allen <jhallen@world.std.com>
 	* uedit.c, syntax.c, syntax.h, types.h, bw.c:
 	Next steps for syntax highlighting: 

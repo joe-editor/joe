@@ -91,6 +91,7 @@ Internationalization:
  
  Define what constitutes a word for ^X ^Z ^W ^O.
 
+ Understand LOCALE
 
 Documentation:
 
@@ -140,6 +141,7 @@ Mouse:
 
  ` and autoindent mode are a problem for drag and drop.
  any way we can distinguish normal typing from a drop?
+ modify xterm...
 
 
 Keyboard:
