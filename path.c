@@ -24,10 +24,9 @@
 #include <stdlib.h>
 #endif
 
+#include "path.h"
 #include "vs.h"
 #include "va.h"
-#include "tty.h"
-#include "path.h"
 
 #ifdef HAVE_DIRENT_H
 #  include <dirent.h>

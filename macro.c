@@ -14,18 +14,18 @@
 #include <stdlib.h>
 #endif
 
-#include "main.h"
-#include "qw.h"
-#include "pw.h"
-#include "bw.h"
-#include "vs.h"
-#include "undo.h"
+#include "b.h"
 #include "cmd.h"
+#include "main.h"
+#include "pw.h"
+#include "qw.h"
+#include "tty.h"
 #include "ublock.h"
-#include "umath.h"
 #include "uedit.h"
-#include "macro.h"
+#include "umath.h"
+#include "undo.h"
 #include "utils.h"
+#include "vs.h"
 #include "w.h"
 
 MACRO *freemacros = 0;

@@ -11,10 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "queue.h"
-#include "rc.h"
-#include "vfile.h"
-
 /* 31744 */
 extern char stdbuf[stdsiz];
 

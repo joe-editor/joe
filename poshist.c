@@ -8,12 +8,9 @@
 #include "config.h"
 #include "types.h"
 
-#include <stdlib.h>
-#include "poshist.h"
-#include "queue.h"
 #include "b.h"
+#include "queue.h"
 #include "w.h"
-#include "bw.h"
 
 typedef struct pos POS;
 

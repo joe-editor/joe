@@ -11,7 +11,7 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#include <varargs.h>
+
 #include "blocks.h"
 #include "vs.h"
 

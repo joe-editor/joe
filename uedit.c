@@ -9,25 +9,21 @@
 #include "types.h"
 
 #include <stdio.h>
-
 #include <ctype.h>
-#include <string.h>
-#include "utils.h"
+
 #include "b.h"
 #include "bw.h"
-#include "scrn.h"
-#include "w.h"
-#include "pw.h"
-#include "qw.h"
-#include "utils.h"
-#include "vs.h"
-#include "uformat.h"
-#include "umath.h"
-#include "ublock.h"
-#include "tw.h"
 #include "macro.h"
 #include "main.h"
-#include "uedit.h"
+#include "pw.h"
+#include "qw.h"
+#include "scrn.h"
+#include "ublock.h"
+#include "uformat.h"
+#include "umath.h"
+#include "utils.h"
+#include "vs.h"
+#include "w.h"
 
 /***************/
 /* Global options */

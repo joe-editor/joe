@@ -11,8 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "bw.h"
-
 extern int exask;
 
 void genexmsg PARAMS((BW *bw, int saved, char *name));

@@ -11,8 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "queue.h"	/* for LINK() macro */
-
 /* Additions:
  *
  * Should we remove size checking from rc()?  Would make it faster...

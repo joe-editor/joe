@@ -1,3 +1,16 @@
+Wed Nov 28 2001  Vitezslav Samel <samel@mail.cz>
+	* b.c, b.h, blocks.c, blocks.h, bw.c, bw.h, cmd.c, cmd.h, dir.c,
+	help.c, help.h, kbd.c, kbd.h, macro.c, macro.h, main.c, main.h, menu.c,
+	menu.h, path.c, path.h, poshist.c, poshist.h, pw.c, pw.h, queue.h,
+	qw.c, qw.h, rc.c, rc.h, regex.c, scrn.c, scrn.h, tab.c, tab.h,
+	termcap.c, tty.h, tw.c, tw.h, types.h, ublock.c, ublock.h, uedit.c,
+	uerror.c, ufile.c, ufile.h, uformat.c, uformat.h, uisrch.c, uisrch.h,
+	umath.c, umath.h, undo.c, undo.h, usearch.c, usearch.h, ushell.c,
+	ushell.h, utag.c, utag.h, utils.c, utils.h, va.c, va.h, vfile.c,
+	vfile.h, vs.c, vs.h, w.c, w.h: include only headers which are
+	necessary and since the headers now don't depend on each other,
+	include them in alphabetic order
+
 Thu Nov 22 2001  Marek 'Marx' Grac <xgrac@fi.muni.cz>
 	* *.h, *.c: almost all definitions are in types.h (except those from
 	vs.h, va.h). 

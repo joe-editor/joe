@@ -9,7 +9,6 @@
 #define _JOE_BLOCKS_H 1
 
 #include "config.h"
-#include "types.h"
 
 /* char *mmove(char *d,char *s,int sz); Copy 'sz' bytes from 's' to 'd'.
  * Chooses either mbkwd or mfwrd to do this such that the data won't get

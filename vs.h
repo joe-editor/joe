@@ -9,7 +9,6 @@
 #define _JOE_VS_H 1
 
 #include "config.h"
-#include "types.h"
 
 #include <string.h>
 

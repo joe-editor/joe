@@ -13,15 +13,20 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+
+#include "b.h"
+#include "bw.h"
+#include "main.h"
 #include "pw.h"
+#include "queue.h"
 #include "qw.h"
-#include "vs.h"
 #include "regex.h"
 #include "ublock.h"
 #include "uedit.h"
-#include "main.h"
 #include "undo.h"
 #include "usearch.h"
+#include "vs.h"
+#include "w.h"
 
 int smode = 0;			/* Decremented to zero by execmd */
 int csmode = 0;			/* Set for continued search mode */

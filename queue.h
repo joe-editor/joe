@@ -9,13 +9,10 @@
 #define _JOE_QUEUE 1 
 
 #include "config.h"
-#include "types.h"
 
 extern void *ITEM;
 extern void *QUEUE;
 extern void *LAST;
-
-
 
 #define izque(type,member,item) \
 	( \

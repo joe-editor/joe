@@ -11,8 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "scrn.h"
-
 /* KMAP *mkkmap(void);
  * Create an empty keymap
  */

@@ -12,19 +12,20 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#include "w.h"
-#include "tw.h"
-#include "vfile.h"
-#include "termcap.h"
+
 #include "b.h"
-#include "kbd.h"
-#include "scrn.h"
 #include "bw.h"
 #include "help.h"
-#include "tab.h"
-#include "undo.h"
-#include "uedit.h"
+#include "kbd.h"
 #include "pw.h"
+#include "scrn.h"
+#include "tab.h"
+#include "termcap.h"
+#include "tw.h"
+#include "uedit.h"
+#include "undo.h"
+#include "vfile.h"
+#include "w.h"
 
 static void disppw(BW * bw, int flg)
 {

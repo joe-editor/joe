@@ -8,20 +8,17 @@
 #include "config.h"
 #include "types.h"
 
-#include <string.h>
 #include <stdio.h>
 
-#include "queue.h"
 #include "b.h"
-#include "vs.h"
-#include "ufile.h"
-#include "w.h"
 #include "bw.h"
-#include "utils.h"
-#include "ufile.h"
 #include "main.h"
-#include "uerror.h"
+#include "queue.h"
 #include "tw.h"
+#include "ufile.h"
+#include "utils.h"
+#include "vs.h"
+#include "w.h"
 
 /* Error database */
 

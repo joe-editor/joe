@@ -9,7 +9,6 @@
 #define _JOE_PATH_H 1
 
 #include "config.h"
-#include "types.h"
 
 char *joesep PARAMS((char *path));
 

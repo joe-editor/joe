@@ -12,10 +12,10 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+
 #include "scrn.h"
-#include "w.h"
 #include "vs.h"
-#include "menu.h"
+#include "w.h"
 
 extern int dostaupd;
 

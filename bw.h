@@ -11,17 +11,9 @@
 #include "config.h"
 #include "types.h"
 
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#include "b.h"
-#include "rc.h"
-#include "w.h"
-
 extern int dspasis;
-
 extern int mid;
+
 void bwfllw PARAMS((BW *w));
 void bwins PARAMS((BW *w, long int l, long int n, int flg));
 void bwdel PARAMS((BW *w, long int l, long int n, int flg));

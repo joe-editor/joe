@@ -9,16 +9,20 @@
 #include "types.h"
 
 #include <stdio.h>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#include <string.h>
+#endif
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
 
 #include "blocks.h"
-#include "vs.h"
-#include "va.h"
-#include "queue.h"
 #include "termcap.h"
+#include "va.h"
+#include "vs.h"
 
 int dopadding = 0;
 char *joeterm = 0;

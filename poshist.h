@@ -11,13 +11,10 @@
 #include "config.h"
 #include "types.h"
 
-#include "bw.h"
-#include "w.h"
-
 void afterpos PARAMS((void));
-void aftermove PARAMS((W * w, P * p));
-void windie PARAMS((W * w));
-int uprevpos PARAMS((BW * bw));
-int unextpos PARAMS((BW * bw));
+void aftermove PARAMS((W *w, P *p));
+void windie PARAMS((W *w));
+int uprevpos PARAMS((BW *bw));
+int unextpos PARAMS((BW *bw));
 
 #endif

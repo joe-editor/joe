@@ -11,10 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "bw.h"
-#include "b.h"
-#include "w.h"
-
 /* BW *wmkpw(BW *bw,char *prompt,int (*func)(),char *huh,int (*abrt)(),
              int (*tab)(),void *object,int *notify);
  * Create a prompt window for the given window

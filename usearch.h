@@ -11,10 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "queue.h"	/* for LINK() macro */
-#include "b.h"
-
-
 SRCH *mksrch PARAMS((char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest));
 void rmsrch PARAMS((SRCH *srch));
 

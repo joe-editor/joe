@@ -9,11 +9,12 @@
 #include "types.h"
 
 #include <stdio.h>
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#endif
+
 #include "blocks.h"
-#include "vs.h"
 #include "termcap.h"
-#include "tty.h"
 #include "scrn.h"
 
 int skiptop = 0;

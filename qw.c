@@ -11,9 +11,9 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#include "w.h"
+
 #include "vs.h"
-#include "qw.h"
+#include "w.h"
 
 static void dispqw(QW *qw)
 {

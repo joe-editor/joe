@@ -11,8 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "bw.h"
-
 int cmplt PARAMS((BW * bw));
 
 #endif

@@ -17,20 +17,19 @@
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #	include <locale.h>
 #endif
-#include "w.h"
-#include "tty.h"
-#include "help.h"
-#include "rc.h"
-#include "vfile.h"
+
 #include "b.h"
-#include "bw.h"
-#include "tw.h"
+#include "help.h"
 #include "kbd.h"
 #include "macro.h"
-#include "vs.h"
 #include "path.h"
+#include "rc.h"
+#include "scrn.h"
 #include "termcap.h"
-#include "main.h"
+#include "tw.h"
+#include "vfile.h"
+#include "vs.h"
+#include "w.h"
 
 extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, beep;
 

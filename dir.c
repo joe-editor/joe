@@ -5,8 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
-#include "types.h"
 
 struct direct {
 	short d_ino;

@@ -10,10 +10,8 @@
 #include "config.h"
 #include "types.h"
 
-#include "bw.h"
-
-int ubknd(BW * bw);
-int ukillpid(BW * bw);
-int urun(BW * bw);
+int ubknd PARAMS((BW *bw));
+int ukillpid PARAMS((BW *bw));
+int urun PARAMS((BW *bw));
 
 #endif

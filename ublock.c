@@ -9,20 +9,23 @@
 #include "types.h"
 
 #include <unistd.h>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
+
 #include "b.h"
-#include "bw.h"
-#include "scrn.h"
-#include "w.h"
 #include "pw.h"
-#include "qw.h"
+#include "queue.h"
+#include "scrn.h"
+#include "tty.h"
+#include "ublock.h"
 #include "uedit.h"
 #include "utils.h"
 #include "vs.h"
-#include "ublock.h"
+#include "w.h"
 
 /* Global options */
 

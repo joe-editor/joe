@@ -10,7 +10,6 @@
 
 #include "config.h"
 #include "types.h"
-#include "b.h"
 
 int ucenter PARAMS((BW *bw));
 P *pbop PARAMS((P *p));

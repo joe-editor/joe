@@ -11,8 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "bw.h"
-
-int utag(BW * bw);
+int utag PARAMS((BW *bw));
 
 #endif

@@ -11,8 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "w.h"
-
 /* Create a menu */
 /* FIXME: ??? ---> */
 MENU *mkmenu PARAMS((W *w, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify));

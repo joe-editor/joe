@@ -7,7 +7,6 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 #include "config.h"
-#include "types.h"
 
 #include <ctype.h>
 

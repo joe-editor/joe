@@ -11,8 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "w.h"
-
 /* QW *mkqw(W *w, char *prompt, int (*func)(), int (*abrt)(), void *object);
  * Create a query window for the given window
  */

@@ -11,9 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "kbd.h"
-#include "macro.h"
-
 extern OPTIONS pdefault;
 void setopt PARAMS((OPTIONS *n, char *name));
 
@@ -32,9 +29,6 @@ int procrc PARAMS((CAP *cap, char *name));
 
 int glopt PARAMS((char *s, char *arg, OPTIONS *options, int set));
 
-/* FIXME: cyclic dependency of header files (here on BW struct)
 int umode PARAMS((BW *bw));
-*/
-int umode();
 
 #endif

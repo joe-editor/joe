@@ -10,13 +10,15 @@
 
 #include <stdio.h>
 #include <signal.h>
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 #include <string.h>
-#include "w.h"
-#include "bw.h"
+
+#include "b.h"
 #include "pw.h"
-#include "tw.h"
 #include "vs.h"
-#include "umath.h"
+#include "w.h"
 
 char *merr;
 

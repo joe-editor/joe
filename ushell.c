@@ -9,20 +9,23 @@
 #include "types.h"
 
 #include <unistd.h>
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
 #include <signal.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+
 #include "b.h"
-#include "bw.h"
-#include "w.h"
+#include "main.h"
 #include "pw.h"
 #include "qw.h"
-#include "vs.h"
-#include "va.h"
+#include "tty.h"
 #include "ufile.h"
-#include "main.h"
-#include "ushell.h"
+#include "va.h"
+#include "vs.h"
+#include "w.h"
 
 extern int orphan;
 

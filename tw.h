@@ -11,9 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "main.h"
-#include "bw.h"
-
 BW *wmktw PARAMS((SCREEN *t, B *b));
 
 int usplitw PARAMS((BW *bw));

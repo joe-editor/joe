@@ -11,9 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "config.h"
-#include "queue.h"
-
 /* Versions of 'read' and 'write' which automatically retry during signals
  * (yuck, yuck, yuck... we the #$%#$@ did they have to do this?) */
 int jread PARAMS((int fd, void *buf, int siz));

@@ -12,12 +12,14 @@
 #include <stdlib.h>
 #endif
 
+#include "b.h"
 #include "bw.h"
-#include "qw.h"
-#include "vs.h"
-#include "usearch.h"
 #include "main.h"
-#include "uisrch.h"
+#include "queue.h"
+#include "qw.h"
+#include "tty.h"
+#include "usearch.h"
+#include "vs.h"
 
 extern int smode;
 struct isrch *lastisrch = 0;	/* Previous search */

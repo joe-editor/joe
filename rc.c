@@ -14,22 +14,19 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#include "utils.h"
-#include "macro.h"
+
 #include "cmd.h"
-#include "bw.h"
-#include "help.h"
-#include "vs.h"
-#include "va.h"
+#include "kbd.h"
+#include "macro.h"
 #include "menu.h"
-#include "umath.h"
-#include "uedit.h"
-#include "pw.h"
 #include "path.h"
-#include "w.h"
+#include "pw.h"
 #include "tw.h"
-#include "termcap.h"
-#include "rc.h"
+#include "uedit.h"
+#include "umath.h"
+#include "utils.h"
+#include "vs.h"
+#include "w.h"
 
 #define OPT_BUF_SIZE 300
 

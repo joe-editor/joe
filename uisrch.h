@@ -11,9 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "queue.h"	/* for LINK() macro */
-#include "bw.h"
-
 int uisrch PARAMS((BW * bw));
 int ursrch PARAMS((BW * bw));
 

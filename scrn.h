@@ -11,8 +11,7 @@
 #include "config.h"
 #include "types.h"
 
-#include "termcap.h"
-#include "tty.h"
+#include "tty.h"		/* ttputc() */
 
 extern int skiptop;
 
@@ -85,11 +84,11 @@ extern unsigned atab[];
 
 #else
 
-#define INVERSE 256
-#define UNDERLINE 512
-#define BOLD 1024
-#define BLINK 2048
-#define DIM 4096
+#define INVERSE		 256
+#define UNDERLINE	 512
+#define BOLD		1024
+#define BLINK		2048
+#define DIM		4096
 
 #define outatr(t, scrn, xx, yy, c, a) {			\
 	if(*(scrn) != ((c) | (a))) {			\

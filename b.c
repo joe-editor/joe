@@ -24,20 +24,21 @@
 #include <time.h>
 #endif
 
-#include "bw.h"
-#include "blocks.h"
-#include "undo.h"
-#include "vs.h"
-#include "va.h"
-#include "utils.h"
-#include "path.h"
-#include "w.h"
-#include "tty.h"
-#include "scrn.h"
-#include "main.h"
-#include "uerror.h"
-
 #include "b.h"
+#include "blocks.h"
+#include "main.h"
+#include "path.h"
+#include "queue.h"
+#include "rc.h"
+#include "scrn.h"
+#include "tty.h"
+#include "uerror.h"
+#include "undo.h"
+#include "utils.h"
+#include "va.h"
+#include "vfile.h"
+#include "vs.h"
+#include "w.h"
 
 char stdbuf[stdsiz];
 

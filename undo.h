@@ -11,9 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "queue.h"	/* for LINK() macro */
-#include "b.h"
-
 extern int inundo;
 extern int justkilled;
 

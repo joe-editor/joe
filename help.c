@@ -15,8 +15,9 @@
 #include <stdlib.h>
 #endif
 
+
 #include "blocks.h"
-#include "help.h"
+#include "scrn.h"
 #include "w.h"
 
 #define NOT_ENOUGH_MEMORY -11

@@ -11,11 +11,12 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+
 #include "b.h"
-#include "bw.h"
 #include "blocks.h"
+#include "queue.h"
 #include "ublock.h"
-#include "undo.h"
+#include "w.h"
 
 extern int lightoff;
 

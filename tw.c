@@ -16,23 +16,17 @@
 #include <stdlib.h>
 #endif
 
-#include "w.h"
-#include "termcap.h"
-#include "vfile.h"
 #include "b.h"
-#include "tty.h"
-#include "scrn.h"
 #include "bw.h"
-#include "vs.h"
-#include "help.h"
-#include "undo.h"
-#include "main.h"
 #include "macro.h"
+#include "main.h"
+#include "qw.h"
+#include "scrn.h"
 #include "uedit.h"
 #include "ufile.h"
 #include "ushell.h"
-#include "qw.h"
-#include "tw.h"
+#include "vs.h"
+#include "w.h"
 
 char *ctime(const time_t *);
 extern char *exmsg;

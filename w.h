@@ -11,11 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "queue.h"
-#include "scrn.h"
-#include "kbd.h"
-#include "b.h"
-
 /***************/
 /* Subroutines */
 /***************/

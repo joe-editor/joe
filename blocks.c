@@ -6,7 +6,6 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 #include "config.h"
-#include "types.h"
 
 /* This module requires ALIGNED and SIZEOF_INT to be defined correctly */
 

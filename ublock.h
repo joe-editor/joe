@@ -11,9 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "b.h"
-#include "bw.h"
-
 extern int square;
 extern int lightoff;
 extern P *markb, *markk;

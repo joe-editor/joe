@@ -11,7 +11,6 @@
 #define _JOE_UTILS_H 1
 
 #include "config.h"
-#include "types.h"
 
 /* 
  * Characters which are considered as word characters 

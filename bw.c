@@ -13,17 +13,16 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#include "tty.h"
-#include "vfile.h"
-#include "termcap.h"
-#include "kbd.h"
+
+
 #include "b.h"
+#include "blocks.h"
+#include "kbd.h"
+#include "rc.h"
 #include "scrn.h"
-#include "w.h"
 #include "ublock.h"
 #include "utils.h"
-#include "blocks.h"
-#include "bw.h"
+#include "w.h"
 
 /* Display modes */
 int dspasis = 0;

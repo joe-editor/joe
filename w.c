@@ -11,12 +11,13 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#include "b.h"
-#include "scrn.h"
-#include "queue.h"
-#include "main.h"
-#include "poshist.h"
+
 #include "blocks.h"
+#include "kbd.h"
+#include "poshist.h"
+#include "queue.h"
+#include "rc.h"
+#include "scrn.h"
 #include "utils.h"
 #include "w.h"
 

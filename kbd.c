@@ -16,7 +16,6 @@
 #include "macro.h"
 #include "termcap.h"
 #include "vs.h"
-#include "kbd.h"
 
 /* Create a KBD */
 

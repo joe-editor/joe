@@ -12,8 +12,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "w.h"				/* definitions of BASE & SCREEN */
-
 void help_display PARAMS((SCREEN *t));		/* display text in help window */
 int help_on PARAMS((SCREEN *t));		/* turn help on */
 int help_init PARAMS((char *filename));		/* load help file */

@@ -8,24 +8,23 @@
 #include "config.h"
 #include "types.h"
 
-#include <stdio.h>
+#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#include <string.h>
+#endif
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#include "tab.h"
-#include "scrn.h"
-#include "kbd.h"
-#include "vs.h"
-#include "w.h"
-#include "bw.h"
-#include "path.h"
-#include "va.h"
-#include "menu.h"
-#include "tty.h"
+
+#include "b.h"
 #include "blocks.h"
+#include "menu.h"
+#include "path.h"
+#include "tty.h"
+#include "va.h"
+#include "w.h"
 
 typedef struct tab TAB;
 

@@ -10,9 +10,15 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <fcntl.h>
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
-#include <string.h>
+#endif
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -29,25 +35,23 @@
 
 #include "b.h"
 #include "bw.h"
-#include "scrn.h"
-#include "tw.h"
-#include "w.h"
-#include "pw.h"
-#include "qw.h"
-#include "ublock.h"
+#include "macro.h"
 #include "main.h"
-#include "vs.h"
-#include "va.h"
 #include "menu.h"
 #include "path.h"
-#include "ublock.h"
-#include "tty.h"
+#include "pw.h"
+#include "qw.h"
+#include "scrn.h"
 #include "tab.h"
+#include "tty.h"
+#include "tw.h"
+#include "ublock.h"
 #include "uerror.h"
-#include "macro.h"
 #include "ufile.h"
-#include "undo.h"
 #include "ushell.h"
+#include "va.h"
+#include "vs.h"
+#include "w.h"
 
 extern int orphan;
 char *backpath = 0;		/* Place to store backup files */

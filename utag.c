@@ -9,19 +9,17 @@
 #include "types.h"
 
 #include <stdio.h>
-#include <string.h>
+
 #include "b.h"
 #include "bw.h"
-#include "w.h"
-#include "pw.h"
-#include "qw.h"
-#include "vs.h"
-#include "utils.h"
-#include "usearch.h"
-#include "tab.h"
 #include "main.h"
-#include "utag.h"
+#include "pw.h"
+#include "tab.h"
 #include "ufile.h"
+#include "usearch.h"
+#include "utils.h"
+#include "vs.h"
+#include "w.h"
 
 static int dotag(BW * bw, char *s, void *obj, int *notify)
 {

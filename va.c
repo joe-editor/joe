@@ -6,10 +6,11 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 #include "config.h"
-#include "types.h"
 
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#include "blocks.h"
+#endif
+
 #include "va.h"
 
 aELEMENT(*vamk(int len))

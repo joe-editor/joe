@@ -9,18 +9,18 @@
 
 #define LINK(type) struct { type *next; type *prev; }
 
-#define KEYS 256
-#define stdsiz 8192
-#define FITHEIGHT 4				/* Minimum text window height */
-#define LINCOLS 6
-#define TYPEMENU 0x800
-#define TYPEPW 0x200
-#define TYPEQW 0x1000
-#define NPROC 8					/* Number of processes we keep track of */
-#define TYPETW 0x100
-#define UNDOKEEP 100
-#define INC 16			/* Pages to allocate each time */
+#define KEYS		256
+#define stdsiz		8192
+#define FITHEIGHT	4		/* Minimum text window height */
+#define LINCOLS		6
+#define NPROC		8		/* Number of processes we keep track of */
+#define UNDOKEEP	100
+#define INC		16		/* Pages to allocate each time */
 
+#define TYPETW		0x0100
+#define TYPEPW		0x0200
+#define TYPEMENU	0x0800
+#define TYPEQW		0x1000
 
 #ifdef junk					/* These are now defined in config.h */
 
@@ -31,7 +31,6 @@
 #define ILIMIT (PGSIZE*128L)	/* Max amount to buffer */
 #define HTSIZE 128		/* Entries in hash table.  Must be pwr of 2 */
 #endif
-
 
 
 typedef struct header H;
@@ -67,204 +66,204 @@ typedef struct vfile VFILE;
 
 
 struct header {
-	LINK(H) link;		/* LINK ??? */
-	long seg;		/* ??? */
-	int hole;		/* ??? */
-	int ehole;		/* ??? */
-	int nlines;		/* ??? */
+	LINK(H)	link;		/* LINK ??? */
+	long	seg;		/* ??? */
+	int	hole;		/* ??? */
+	int	ehole;		/* ??? */
+	int	nlines;		/* ??? */
 };
 
 
 struct point {
-	LINK(P) link;		/* ?LINK ??? */
+	LINK(P)	link;		/* ?LINK ??? */
 
-	B *b;			/* ?B ??? */
-	int ofst;		/* ??? */
-	char *ptr;		/* ??? */
-	H *hdr;			/* ?H ??? */
+	B	*b;		/* ?B ??? */
+	int	ofst;		/* ??? */
+	char	*ptr;		/* ??? */
+	H	*hdr;		/* ?H ??? */
 
-	long byte;		/* ??? */
-	long line;		/* ??? */
-	long col;		/* ??? */
-	long xcol;		/* ??? */
-	int valcol;		/* ??? */
-	int end;		/* ??? */
+	long	byte;		/* ??? */
+	long	line;		/* ??? */
+	long	col;		/* ??? */
+	long	xcol;		/* ??? */
+	int	valcol;		/* ??? */
+	int	end;		/* ??? */
 
-	P **owner;		/* ??? */
+	P	**owner;	/* ??? */
 };
 
 struct options {
-	OPTIONS *next;
-	char *name;
-	int overtype;
-	int lmargin;
-	int rmargin;
-	int autoindent;
-	int wordwrap;
-	int tab;
-	int indentc;
-	int istep;
-	char *context;
-	char *lmsg;
-	char *rmsg;
-	int linums;
-	int readonly;
-	int french;
-	int spaces;
-	int crlf;
-	MACRO *mnew;		/* Macro to execute for new files */
-	MACRO *mold;		/* Macro to execute for existing files */
-	MACRO *msnew;		/* Macro to execute before saving new files */
-	MACRO *msold;		/* Macro to execute before saving existing files */
+	OPTIONS	*next;
+	char	*name;
+	int	overtype;
+	int	lmargin;
+	int	rmargin;
+	int	autoindent;
+	int	wordwrap;
+	int	tab;
+	int	indentc;
+	int	istep;
+	char	*context;
+	char	*lmsg;
+	char	*rmsg;
+	int	linums;
+	int	readonly;
+	int	french;
+	int	spaces;
+	int	crlf;
+	MACRO	*mnew;		/* Macro to execute for new files */
+	MACRO	*mold;		/* Macro to execute for existing files */
+	MACRO	*msnew;		/* Macro to execute before saving new files */
+	MACRO	*msold;		/* Macro to execute before saving existing files */
 };
 
 struct macro {
-	int k;			/* Keycode */
-	int arg;		/* Repeat argument */
-	CMD *cmd;		/* Command address */
-	int n;			/* Number of steps */
-	int size;		/* Malloc size of steps */
-	MACRO **steps;		/* Block */
+	int	k;		/* Keycode */
+	int	arg;		/* Repeat argument */
+	CMD	*cmd;		/* Command address */
+	int	n;		/* Number of steps */
+	int	size;		/* Malloc size of steps */
+	MACRO	**steps;	/* Block */
 };
 
 struct recmac {
 	struct recmac *next;
-	int n;
-	MACRO *m;
+	int	n;
+	MACRO	*m;
 };
 
 
 /* Command entry */
 
 struct cmd {
-	char *name;		/* Command name */
-	int flag;		/* Execution flags */
-	int (*func) ();		/* Function bound to name */
-	MACRO *m;		/* Macro bound to name */
-	int arg;		/* 0= arg is meaningless, 1= ok */
-	char *negarg;		/* Command to use if arg was negative */
+	char	*name;		/* Command name */
+	int	flag;		/* Execution flags */
+	int	(*func) ();	/* Function bound to name */
+	MACRO	*m;		/* Macro bound to name */
+	int	arg;		/* 0= arg is meaningless, 1= ok */
+	char	*negarg;	/* Command to use if arg was negative */
 };
 
 
 
 struct buffer {
-	LINK(B) link;
-	P *bof;
-	P *eof;
-	char *name;
-	int orphan;
-	int count;
-	int changed;
-	int backup;
-	void *undo;
-	P *marks[10];		/* Bookmarks */
-	OPTIONS o;		/* Options */
-	P *oldcur;		/* Last cursor position before orphaning */
-	P *oldtop;		/* Last top screen position before orphaning */
-	int rdonly;		/* Set for read-only */
-	int internal;		/* Set for internal buffers */
-	int er;			/* Error code when file was loaded */
+	LINK(B)	link;
+	P	*bof;
+	P	*eof;
+	char	*name;
+	int	orphan;
+	int	count;
+	int	changed;
+	int	backup;
+	void	*undo;
+	P	*marks[10];	/* Bookmarks */
+	OPTIONS	o;		/* Options */
+	P	*oldcur;	/* Last cursor position before orphaning */
+	P	*oldtop;	/* Last top screen position before orphaning */
+	int	rdonly;		/* Set for read-only */
+	int	internal;	/* Set for internal buffers */
+	int	er;		/* Error code when file was loaded */
 };
 
 
 struct entry {
-	char *name;
-	HENTRY *next;
-	void *val;
+	char	*name;
+	HENTRY	*next;
+	void	*val;
 };
 
 struct hash {
-	int len;
-	HENTRY **tab;
+	int	len;
+	HENTRY	**tab;
 };
 
 
 struct help {
-	unsigned char *text;		/* help text with attributes */
-	unsigned int lines;		/* number of lines */
-	struct help *prev;		/* previous help screen */
-	struct help *next;		/* nex help screen */
+	unsigned char	*text;		/* help text with attributes */
+	unsigned int	lines;		/* number of lines */
+	struct help	*prev;		/* previous help screen */
+	struct help	*next;		/* nex help screen */
 };
 
 /* A key binding */
 struct key {
-	int k;			/* Flag: 0=binding, 1=submap */
+	int	k;			/* Flag: 0=binding, 1=submap */
 	union {
-		void *bind;	/* What key is bound to */
-		KMAP *submap;	/* Sub KMAP address (for prefix keys) */
+		void	*bind;		/* What key is bound to */
+		KMAP	*submap;	/* Sub KMAP address (for prefix keys) */
 	} value;
 };
 
 /* A map of keycode to command/sub-map bindings */
 struct kmap {
-	KEY keys[KEYS];		/* KEYs */
+	KEY	keys[KEYS];	/* KEYs */
 };
 
 /** A keyboard handler **/
 struct kbd {
-	KMAP *curmap;		/* Current keymap */
-	KMAP *topmap;		/* Top-level keymap */
-	int seq[16];		/* Current sequence of keys */
-	int x;			/* What we're up to */
+	KMAP	*curmap;	/* Current keymap */
+	KMAP	*topmap;	/* Top-level keymap */
+	int	seq[16];	/* Current sequence of keys */
+	int	x;		/* What we're up to */
 };
 
 
 struct watom {
-	char *context;		/* Context name */
-	void (*disp) ();	/* Display window */
-	void (*follow) ();	/* Called to have window follow cursor */
-	int (*abort) ();	/* Common user functions */
-	int (*rtn) ();
-	int (*type) ();
-	void (*resize) ();	/* Called when window changed size */
-	void (*move) ();	/* Called when window moved */
-	void (*ins) ();		/* Called on line insertions */
-	void (*del) ();		/* Called on line deletions */
-	int what;		/* Type of this thing */
+	char	*context;	/* Context name */
+	void	(*disp) ();	/* Display window */
+	void	(*follow) ();	/* Called to have window follow cursor */
+	int	(*abort) ();	/* Common user functions */
+	int	(*rtn) ();
+	int	(*type) ();
+	void	(*resize) ();	/* Called when window changed size */
+	void	(*move) ();	/* Called when window moved */
+	void	(*ins) ();	/* Called on line insertions */
+	void	(*del) ();	/* Called on line deletions */
+	int	what;		/* Type of this thing */
 };
 
 struct screen {
-	SCRN *t;		/* Screen data on this screen is output to */
+	SCRN	*t;		/* Screen data on this screen is output to */
 
-	int wind;		/* Number of help lines on this screen */
+	int	wind;		/* Number of help lines on this screen */
 
-	W *topwin;		/* Top-most window showing on screen */
-	W *curwin;		/* Window cursor is in */
+	W	*topwin;	/* Top-most window showing on screen */
+	W	*curwin;	/* Window cursor is in */
 
-	int w, h;		/* Width and height of this screen */
+	int	w, h;		/* Width and height of this screen */
 };
 
 struct window {
-	LINK(W) link;		/* Linked list of windows in order they
+	LINK(W)	link;		/* Linked list of windows in order they
 				   appear on the screen */
 
-	SCREEN *t;		/* Screen this thing is on */
+	SCREEN	*t;		/* Screen this thing is on */
 
-	int x, y, w, h;		/* Position and size of window */
+	int	x, y, w, h;	/* Position and size of window */
 				/* Currently, x = 0, w = width of screen. */
 				/* y == -1 if window is not on screen */
 
-	int ny, nh;		/* Temporary values for wfit */
+	int	ny, nh;		/* Temporary values for wfit */
 
-	int reqh;		/* Requested new height or 0 for same */
+	int	reqh;		/* Requested new height or 0 for same */
 				/* This is an argument for wfit */
 
-	int fixed;		/* If this is zero, use 'hh'.  If not, this
+	int	fixed;		/* If this is zero, use 'hh'.  If not, this
 				   is a fixed size window and this variable
 				   gives its height */
 
-	int hh;			/* Height window would be on a screen with
+	int	hh;		/* Height window would be on a screen with
 				   1000 lines.  When the screen size changes
 				   this is used to calculate the window's
 				   real height */
 
-	W *win;			/* Window this one operates on */
-	W *main;		/* Main window of this family */
-	W *orgwin;		/* Window where space from this window came */
-	int curx, cury;		/* Cursor position within window */
-	KBD *kbd;		/* Keyboard handler for this window */
-	WATOM *watom;		/* The type of this window */
-	void *object;		/* Object which inherits this */
+	W	*win;		/* Window this one operates on */
+	W	*main;		/* Main window of this family */
+	W	*orgwin;	/* Window where space from this window came */
+	int	curx, cury;	/* Cursor position within window */
+	KBD	*kbd;		/* Keyboard handler for this window */
+	WATOM	*watom;		/* The type of this window */
+	void	*object;	/* Object which inherits this */
 #if 0
 	union {			/* FIXME: instead of void *object we should */
 		BW	*bw;	/* use this union to get strict type checking */
@@ -276,56 +275,53 @@ struct window {
 	} object;
 #endif
 
-	char *msgt;		/* Message at top of window */
-
-	char *msgb;		/* Message at bottom of window */
-
-	char *huh;		/* Name of window for context sensitive hlp */
-
-	int *notify;		/* Address of kill notification flag */
+	char	*msgt;		/* Message at top of window */
+	char	*msgb;		/* Message at bottom of window */
+	char	*huh;		/* Name of window for context sensitive hlp */
+	int	*notify;	/* Address of kill notification flag */
 };
 
 /* Anything which goes in window.object must start like this: */
 struct base {
-	W *parent;
+	W	*parent;
 };
 
 struct bw {
-	W *parent;
-	B *b;
-	P *top;
-	P *cursor;
-	long offset;
-	SCREEN *t;
-	int h, w, x, y;
+	W	*parent;
+	B	*b;
+	P	*top;
+	P	*cursor;
+	long	offset;
+	SCREEN	*t;
+	int	h, w, x, y;
 
-	OPTIONS o;
-	void *object;
+	OPTIONS	o;
+	void	*object;
 
-	pid_t pid;		/* Process id */
-	int out;		/* fd to write to process */
-	int linums;
+	pid_t	pid;		/* Process id */
+	int	out;		/* fd to write to process */
+	int	linums;
 };
 
 struct menu {
-	W *parent;		/* Window we're in */
-	char **list;		/* List of items */
-	int top;		/* First item on screen */
-	int cursor;		/* Item cursor is on */
-	int width;		/* Width of widest item, up to 'w' max */
-	int perline;		/* Number of items on each line */
-	int nitems;		/* No. items in list */
-	SCREEN *t;		/* Screen we're on */
-	int h, w, x, y;
-	int (*abrt) ();		/* Abort callback function */
-	int (*func) ();		/* Return callback function */
-	int (*backs) ();	/* Backspace callback function */
-	void *object;
+	W	*parent;	/* Window we're in */
+	char	**list;		/* List of items */
+	int	top;		/* First item on screen */
+	int	cursor;		/* Item cursor is on */
+	int	width;		/* Width of widest item, up to 'w' max */
+	int	perline;	/* Number of items on each line */
+	int	nitems;		/* No. items in list */
+	SCREEN	*t;		/* Screen we're on */
+	int	h, w, x, y;
+	int	(*abrt) ();	/* Abort callback function */
+	int	(*func) ();	/* Return callback function */
+	int	(*backs) ();	/* Backspace callback function */
+	void	*object;
 };
 
 struct hentry {
-	int next;
-	int loc;
+	int	next;
+	int	loc;
 };
 
 /* Each terminal has one of these */
@@ -333,255 +329,254 @@ struct hentry {
 #ifdef __MSDOS__
 
 struct scrn {
-	int li;
-	int co;
-	short *scrn;
-	int scroll;
-	int insdel;
-	int *updtab;
-	int *compose;
-	int *sary;
+	int	li;
+	int	co;
+	short	*scrn;
+	int	scroll;
+	int	insdel;
+	int	*updtab;
+	int	*compose;
+	int	*sary;
 };
 
 #else
 struct scrn {
-	CAP *cap;		/* Termcap/Terminfo data */
+	CAP	*cap;		/* Termcap/Terminfo data */
 
-	int li;			/* Screen height */
-	int co;			/* Screen width */
+	int	li;		/* Screen height */
+	int	co;		/* Screen width */
 
-	char *ti;		/* Initialization string */
-	char *cl;		/* Home and clear screen... really an
+	char	*ti;		/* Initialization string */
+	char	*cl;		/* Home and clear screen... really an
 				   init. string */
-	char *cd;		/* Clear to end of screen */
-	char *te;		/* Restoration string */
+	char	*cd;		/* Clear to end of screen */
+	char	*te;		/* Restoration string */
 
-	int haz;		/* Terminal can't print ~s */
-	int os;			/* Terminal overstrikes */
-	int eo;			/* Can use blank to erase even if os */
-	int ul;			/* _ overstrikes */
-	int am;			/* Terminal has autowrap, but not magicwrap */
-	int xn;			/* Terminal has magicwrap */
+	int	haz;		/* Terminal can't print ~s */
+	int	os;		/* Terminal overstrikes */
+	int	eo;		/* Can use blank to erase even if os */
+	int	ul;		/* _ overstrikes */
+	int	am;		/* Terminal has autowrap, but not magicwrap */
+	int	xn;		/* Terminal has magicwrap */
 
-	char *so;		/* Enter standout (inverse) mode */
-	char *se;		/* Exit standout mode */
+	char	*so;		/* Enter standout (inverse) mode */
+	char	*se;		/* Exit standout mode */
 
-	char *us;		/* Enter underline mode */
-	char *ue;		/* Exit underline mode */
-	char *uc;		/* Single time underline character */
+	char	*us;		/* Enter underline mode */
+	char	*ue;		/* Exit underline mode */
+	char	*uc;		/* Single time underline character */
 
-	int ms;			/* Ok to move when in standout/underline mode */
+	int	ms;		/* Ok to move when in standout/underline mode */
 
-	char *mb;		/* Enter blinking mode */
-	char *md;		/* Enter bold mode */
-	char *mh;		/* Enter dim mode */
-	char *mr;		/* Enter inverse mode */
-	char *me;		/* Exit above modes */
+	char	*mb;		/* Enter blinking mode */
+	char	*md;		/* Enter bold mode */
+	char	*mh;		/* Enter dim mode */
+	char	*mr;		/* Enter inverse mode */
+	char	*me;		/* Exit above modes */
 
-	int da, db;		/* Extra lines exist above, below */
-	char *al, *dl, *AL, *DL;	/* Insert/delete lines */
-	char *cs;		/* Set scrolling region */
-	int rr;			/* Set for scrolling region relative addressing */
-	char *sf, *SF, *sr, *SR;	/* Scroll */
+	int	da, db;		/* Extra lines exist above, below */
+	char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
+	char	*cs;		/* Set scrolling region */
+	int	rr;		/* Set for scrolling region relative addressing */
+	char	*sf, *SF, *sr, *SR;	/* Scroll */
 
-	char *dm, *dc, *DC, *ed;	/* Delete characters */
-	char *im, *ic, *IC, *ip, *ei;	/* Insert characters */
-	int mi;			/* Set if ok to move while in insert mode */
+	char	*dm, *dc, *DC, *ed;	/* Delete characters */
+	char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
+	int	mi;		/* Set if ok to move while in insert mode */
 
-	char *bs;		/* Move cursor left 1 */
-	int cbs;
-	char *lf;		/* Move cursor down 1 */
-	int clf;
-	char *up;		/* Move cursor up 1 */
-	int cup;
-	char *nd;		/* Move cursor right 1 */
+	char	*bs;		/* Move cursor left 1 */
+	int	cbs;
+	char	*lf;		/* Move cursor down 1 */
+	int	clf;
+	char	*up;		/* Move cursor up 1 */
+	int	cup;
+	char	*nd;		/* Move cursor right 1 */
 
-	char *ta;		/* Move cursor to next tab stop */
-	int cta;
-	char *bt;		/* Move cursor to previous tab stop */
-	int cbt;
-	int tw;			/* Tab width */
+	char	*ta;		/* Move cursor to next tab stop */
+	int	cta;
+	char	*bt;		/* Move cursor to previous tab stop */
+	int	cbt;
+	int	tw;		/* Tab width */
 
-	char *ho;		/* Home cursor to upper left */
-	int cho;
-	char *ll;		/* Home cursor to lower left */
-	int cll;
-	char *cr;		/* Move cursor to left edge */
-	int ccr;
-	char *RI;		/* Move cursor right n */
-	int cRI;
-	char *LE;		/* Move cursor left n */
-	int cLE;
-	char *UP;		/* Move cursor up n */
-	int cUP;
-	char *DO;		/* Move cursor down n */
-	int cDO;
-	char *ch;		/* Set cursor column */
-	int cch;
-	char *cv;		/* Set cursor row */
-	int ccv;
-	char *cV;		/* Goto beginning of specified line */
-	int ccV;
-	char *cm;		/* Set cursor row and column */
-	int ccm;
+	char	*ho;		/* Home cursor to upper left */
+	int	cho;
+	char	*ll;		/* Home cursor to lower left */
+	int	cll;
+	char	*cr;		/* Move cursor to left edge */
+	int	ccr;
+	char	*RI;		/* Move cursor right n */
+	int	cRI;
+	char	*LE;		/* Move cursor left n */
+	int	cLE;
+	char	*UP;		/* Move cursor up n */
+	int	cUP;
+	char	*DO;		/* Move cursor down n */
+	int	cDO;
+	char	*ch;		/* Set cursor column */
+	int	cch;
+	char	*cv;		/* Set cursor row */
+	int	ccv;
+	char	*cV;		/* Goto beginning of specified line */
+	int	ccV;
+	char	*cm;		/* Set cursor row and column */
+	int	ccm;
 
-	char *ce;		/* Clear to end of line */
-	int cce;
+	char	*ce;		/* Clear to end of line */
+	int	cce;
 
 	/* Basic abilities */
-	int scroll;		/* Set to use scrolling */
-	int insdel;		/* Set to use insert/delete within line */
+	int	scroll;		/* Set to use scrolling */
+	int	insdel;		/* Set to use insert/delete within line */
 
 	/* Current state of terminal */
-	int *scrn;		/* Current contents of screen */
-	int x, y;		/* Current cursor position (-1 for unknown) */
-	int top, bot;		/* Current scrolling region */
-	int attrib;		/* Current character attributes */
-	int ins;		/* Set if we're in insert mode */
+	int	*scrn;		/* Current contents of screen */
+	int	x, y;		/* Current cursor position (-1 for unknown) */
+	int	top, bot;	/* Current scrolling region */
+	int	attrib;		/* Current character attributes */
+	int	ins;		/* Set if we're in insert mode */
 
-	int *updtab;		/* Dirty lines table */
-	int avattr;		/* Bits set for available attributes */
-	int *sary;		/* Scroll buffer array */
+	int	*updtab;	/* Dirty lines table */
+	int	avattr;		/* Bits set for available attributes */
+	int	*sary;		/* Scroll buffer array */
 
-	int *compose;		/* Line compose buffer */
-	int *ofst;		/* stuff for magic */
-	struct hentry *htab;
-	struct hentry *ary;
+	int	*compose;	/* Line compose buffer */
+	int	*ofst;		/* stuff for magic */
+	struct hentry	*htab;
+	struct hentry	*ary;
 };
 #endif
 
 
 struct sortentry {
-	char *name;
-	char *value;
+	char	*name;
+	char	*value;
 };
 
 struct cap {
-	char *tbuf;		/* Termcap entry loaded here */
+	char	*tbuf;		/* Termcap entry loaded here */
 
 	struct sortentry *sort;	/* Pointers to each capability stored in here */
-	int sortlen;		/* Number of capabilities */
+	int	sortlen;	/* Number of capabilities */
 
-	char *abuf;		/* For terminfo compatible version */
-	char *abufp;
+	char	*abuf;		/* For terminfo compatible version */
+	char	*abufp;
 
-	int div;		/* tenths of MS per char */
-	int baud;		/* Baud rate */
-	char *pad;		/* Padding string or NULL to use NUL */
-	void (*out) (char *, char);		/* Character output routine */
-	void *outptr;		/* First arg passed to output routine.  Second
+	int	div;		/* tenths of MS per char */
+	int	baud;		/* Baud rate */
+	char	*pad;		/* Padding string or NULL to use NUL */
+	void	(*out) (char *, char);		/* Character output routine */
+	void	*outptr;	/* First arg passed to output routine.  Second
 				   arg is character to write */
-	int dopadding;		/* Set if pad characters should be used */
+	int	dopadding;	/* Set if pad characters should be used */
 };
 
 
 struct pw {
-	int (*pfunc) ();	/* Func which gets called when RTN is hit */
-	int (*abrt) ();		/* Func which gets called when window is aborted */
-	int (*tab) ();		/* Func which gets called when TAB is hit */
-	char *prompt;		/* Prompt string */
-	int promptlen;		/* Width of prompt string */
-	int promptofst;		/* Prompt scroll offset */
-	B *hist;		/* History buffer */
-	void *object;		/* Object */
+	int	(*pfunc) ();	/* Func which gets called when RTN is hit */
+	int	(*abrt) ();	/* Func which gets called when window is aborted */
+	int	(*tab) ();	/* Func which gets called when TAB is hit */
+	char	*prompt;	/* Prompt string */
+	int	promptlen;	/* Width of prompt string */
+	int	promptofst;	/* Prompt scroll offset */
+	B	*hist;		/* History buffer */
+	void	*object;	/* Object */
 };
 
 struct stditem {
-	LINK(STDITEM) link;
+	LINK(STDITEM)	link;
 };
 
 struct query {
-	W *parent;		/* Window we're in */
-	int (*func) ();		/* Func. which gets called when key is hit */
-	int (*abrt) ();
-	void *object;
-	char *prompt;		/* Prompt string */
-	int promptlen;		/* Width of prompt string */
-	int promptofst;		/* Prompt scroll offset */
+	W	*parent;	/* Window we're in */
+	int	(*func) ();	/* Func. which gets called when key is hit */
+	int	(*abrt) ();
+	void	*object;
+	char	*prompt;	/* Prompt string */
+	int	promptlen;	/* Width of prompt string */
+	int	promptofst;	/* Prompt scroll offset */
 };
 
 
 typedef struct mpx MPX;
 struct mpx {
-	int ackfd;		/* Packetizer response descriptor */
-	int kpid;		/* Packetizer process id */
-	int pid;		/* Client process id */
-	void (*func) ();	/* Function to call when read occures */
-	void *object;		/* First arg to pass to function */
-	void (*die) ();		/* Function: call when client dies or closes */
-	void *dieobj;
+	int	ackfd;		/* Packetizer response descriptor */
+	int	kpid;		/* Packetizer process id */
+	int	pid;		/* Client process id */
+	void	(*func) ();	/* Function to call when read occures */
+	void	*object;	/* First arg to pass to function */
+	void	(*die) ();	/* Function: call when client dies or closes */
+	void	*dieobj;
 };
 
 
 struct tw {
-	/* Status line info */
-	char *stalin;
-	char *staright;
-	int staon;		/* Set if status line was on */
-	long prevline;		/* Previous cursor line number */
-	int changed;		/* Previous changed value */
+	char	*stalin;	/* Status line info */
+	char	*staright;
+	int	staon;		/* Set if status line was on */
+	long	prevline;	/* Previous cursor line number */
+	int	changed;	/* Previous changed value */
 };
 
 struct irec {
-	LINK(IREC) link;
-	int what;		/* 0 repeat, >0 append n chars */
-	long start;		/* Cursor search position */
-	long disp;		/* Original cursor position */
+	LINK(IREC)	link;
+	int	what;		/* 0 repeat, >0 append n chars */
+	long	start;		/* Cursor search position */
+	long	disp;		/* Original cursor position */
 };
 
 struct isrch {
-	IREC irecs;		/* Linked list of positions */
-	char *pattern;		/* Search pattern string/prompt */
-	int ofst;		/* Offset in pattern past prompt */
-	int dir;		/* 0=fwrd, 1=bkwd */
-	int quote;		/* Set to quote next char */
+	IREC	irecs;		/* Linked list of positions */
+	char	*pattern;	/* Search pattern string/prompt */
+	int	ofst;		/* Offset in pattern past prompt */
+	int	dir;		/* 0=fwrd, 1=bkwd */
+	int	quote;		/* Set to quote next char */
 };
 
 
 struct undorec {
-	LINK(UNDOREC) link;
-	UNDOREC *unit;
-	int min;
-	int changed;		/* Status of modified flag before this record */
-	long where;		/* Buffer address of this record */
-	long len;		/* Length of insert or delete */
-	int del;		/* Set if this is a delete */
-	B *big;			/* Set to buffer containing a large amount of deleted data */
-	char *small;		/* Set to malloc block containg a small amount of deleted data */
+	LINK(UNDOREC)	link;
+	UNDOREC	*unit;
+	int	min;
+	int	changed;	/* Status of modified flag before this record */
+	long	where;		/* Buffer address of this record */
+	long	len;		/* Length of insert or delete */
+	int	del;		/* Set if this is a delete */
+	B	*big;		/* Set to buffer containing a large amount of deleted data */
+	char	*small;		/* Set to malloc block containg a small amount of deleted data */
 };
 
 struct undo {
-	LINK(UNDO) link;
-	B *b;
-	int nrecs;
-	UNDOREC recs;
-	UNDOREC *ptr;
-	UNDOREC *first;
-	UNDOREC *last;
+	LINK(UNDO)	link;
+	B	*b;
+	int	nrecs;
+	UNDOREC	recs;
+	UNDOREC	*ptr;
+	UNDOREC	*first;
+	UNDOREC	*last;
 };
 
 struct srchrec {
-	LINK(SRCHREC) link;	/* Linked list of search & replace locations */
-	int yn;			/* Did we replace? */
-	long addr;		/* Where we were */
+	LINK(SRCHREC)	link;	/* Linked list of search & replace locations */
+	int	yn;		/* Did we replace? */
+	long	addr;		/* Where we were */
 };
 
 struct search {
-	char *pattern;		/* Search pattern */
-	char *replacement;	/* Replacement string */
-	int backwards;		/* Set if search should go backwards */
-	int ignore;		/* Set if we should ignore case */
-	int repeat;		/* Set with repeat count (or -1 for no repeat count) */
-	int replace;		/* Set if this is search & replace */
-	int rest;		/* Set to do remainder of search & replace w/o query */
-	char *entire;		/* Entire matched string */
-	char *pieces[26];	/* Peices of the matched string */
-	int flg;		/* Set after prompted for first replace */
-	SRCHREC recs;		/* Search & replace position history */
-	P *markb, *markk;	/* Original marks */
-	int valid;		/* Set if original marks are a valid block */
-	long addr;		/* Addr of last replacement or -1 for none */
-	int restrict;		/* Search restricted to marked block */
+	char	*pattern;	/* Search pattern */
+	char	*replacement;	/* Replacement string */
+	int	backwards;	/* Set if search should go backwards */
+	int	ignore;		/* Set if we should ignore case */
+	int	repeat;		/* Set with repeat count (or -1 for no repeat count) */
+	int	replace;	/* Set if this is search & replace */
+	int	rest;		/* Set to do remainder of search & replace w/o query */
+	char	*entire;	/* Entire matched string */
+	char	*pieces[26];	/* Peices of the matched string */
+	int	flg;		/* Set after prompted for first replace */
+	SRCHREC	recs;		/* Search & replace position history */
+	P	*markb, *markk;	/* Original marks */
+	int	valid;		/* Set if original marks are a valid block */
+	long	addr;		/* Addr of last replacement or -1 for none */
+	int	restrict;	/* Search restricted to marked block */
 };
 
 
@@ -589,34 +584,34 @@ struct search {
 /* Page header */
 
 struct vpage {
-	VPAGE *next;		/* Next page with same hash value */
-	VFILE *vfile;		/* Owner vfile */
-	long addr;		/* Address of this page */
-	int count;		/* Reference count */
-	int dirty;		/* Set if page changed */
-	char *data;		/* The data in the page */
+	VPAGE	*next;		/* Next page with same hash value */
+	VFILE	*vfile;		/* Owner vfile */
+	long	addr;		/* Address of this page */
+	int	count;		/* Reference count */
+	int	dirty;		/* Set if page changed */
+	char	*data;		/* The data in the page */
 };
 
 /* File structure */
 
 struct vfile {
-	LINK(VFILE) link;	/* Doubly linked list of vfiles */
-	long size;		/* Number of bytes in physical file */
-	long alloc;		/* Number of bytes allocated to file */
-	int fd;			/* Physical file */
-	int writeable;		/* Set if we can write */
-	char *name;		/* File name.  0 if unnamed */
-	int flags;		/* Set if this is only a temporary file */
+	LINK(VFILE)	link;	/* Doubly linked list of vfiles */
+	long	size;		/* Number of bytes in physical file */
+	long	alloc;		/* Number of bytes allocated to file */
+	int	fd;		/* Physical file */
+	int	writeable;	/* Set if we can write */
+	char	*name;		/* File name.  0 if unnamed */
+	int	flags;		/* Set if this is only a temporary file */
 
 	/* For array I/O */
-	char *vpage1;		/* Page address */
-	long addr;		/* File address of above page */
+	char	*vpage1;	/* Page address */
+	long	addr;		/* File address of above page */
 
 	/* For stream I/O */
-	char *bufp;		/* Buffer pointer */
-	char *vpage;		/* Buffer pointer points in here */
-	int left;		/* Space left in bufp */
-	int lv;			/* Amount of append space at end of buffer */
+	char	*bufp;		/* Buffer pointer */
+	char	*vpage;		/* Buffer pointer points in here */
+	int	left;		/* Space left in bufp */
+	int	lv;		/* Amount of append space at end of buffer */
 };
 
 #endif

@@ -9,9 +9,9 @@
 #include "types.h"
  
 #include <ctype.h>
-#include "vs.h"
+
 #include "b.h"
-#include "regex.h"
+#include "vs.h"
 
 static int escape(unsigned char **a, int *b)
 {

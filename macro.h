@@ -11,8 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-#include "cmd.h"
-
 /* Set when macro is recording: for status line */
 extern struct recmac *recmac;
 
@@ -36,24 +34,14 @@ int exemac PARAMS((MACRO *m));
 int exmacro PARAMS((MACRO *m, int u));
 
 /* Keyboard macros user interface */
-/* FIXME: cyclic dependency of header files (here on BW struct)
 int uplay PARAMS((BW *bw, int c));
+int ustop PARAMS((void));
 int urecord PARAMS((BW *bw, int c));
 int uquery PARAMS((BW *bw));
 int umacros PARAMS((BW *bw));
-*/
-int uplay();
-int ustop PARAMS((void));
-int urecord();
-int uquery();
-int umacros();
 
 /* Repeat prefix user command */
-/* FIXME: cyclic dependency of header files (here on BW struct)
 int uarg PARAMS((BW *bw));
 int uuarg PARAMS((BW *bw, int c));
-*/
-int uarg();
-int uuarg();
 
 #endif
