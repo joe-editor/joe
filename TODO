@@ -1,5 +1,7 @@
 Short list for 3.2:
 
+make path expansion in help screen is correct
+
 - - - - - - - -
 
   define characters which make up words
@@ -8,6 +10,15 @@ Short list for 3.2:
 - - - - - - - -
 
   improve macros: ignore error option, pass args to here option.
+
+jmacs:
+
+ many negative args do not work properly because args
+ are not passed to target command in a macro.
+
+ some macros are broken because of the bail on any error
+ semantic: sometimes we want to ignore errors (emacs scroll
+ other window when we hit end of window).
 
 - - - - - - - -
 
@@ -56,6 +67,10 @@ window on the screen).
 
 More colors: UI for using 256 color xterms.
   - Problems: tgoto takes only two params, so we have to switch to tparm.
+
+- - - - - - - -
+
+Completion list build could take a long time
 
 - - - - - - - -
 
@@ -154,13 +169,6 @@ Jmacs:
  Overtype mode works for yank
 
  ESC args should work differently in emacs
-
- many negative args do not work properly because args
- are not passed to target command in a macro.
-
- some macros are broken because of the bail on any error
- semantic: sometimes we want to ignore errors (emacs scroll
- other window when we hit end of window).
 
  exiting options and i-search with ESC is not pretty
  (it isn't in emacs either)

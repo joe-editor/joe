@@ -800,9 +800,9 @@
 \i \i\|\uCURSOR\u           \|\uGO TO\u            \|\uBLOCK\u      \|\uDELETE\u   \|\uMISC\u         \|\uEXIT\u      \|\i \i
 \i \i\|^B left ^F right \|^U  prev. screen \|^KB begin  \|^D char. \|^KJ reformat \|^KX save  \|\i \i
 \i \i\|^P up   ^N down  \|^V  next screen  \|^KK end    \|^Y line  \|^KA center   \|^C  abort \|\i \i
-\i \i\|^P up   ^N down  \|^V  next screen  \|^KK end    \|^Y line  \|^T  options  \|^C  abort \|\i \i
-\i \i\|^Z previous word \|^A  beg. of line \|^KM move   \|^W >word \|^R  refresh  \|^KZ shell \|\i \i
-\i \i\|^X next word     \|^E  end of line  \|^KC copy   \|^O word< \|^@  insert   \|\uFILE\u      \|\i \i
+\i \i\|^Z previous word \|^A  beg. of line \|^KM move   \|^W >word \|^T  options  \|^KZ shell \|\i \i
+\i \i\|^X next word     \|^E  end of line  \|^KC copy   \|^O word< \|^R  refresh  \|\uFILE\u      \|\i \i
+\i \i\|\uSEARCH\u           \|^KU top of file  \|^KW file   \|^J >line \|\uSPELL\u        \|^KE edit  \|\i \i
 \i \i\|^KF find text    \|^KV end of file  \|^KY delete \|^_ undo  \|^[N word     \|^KR insert\|\i \i
 \i \i\|^L  find next    \|^KL to line No.  \|^K/ filter \|^^ redo  \|^[L file     \|^KD save  \|\i \i
 }
@@ -822,18 +822,18 @@
 \i \i\|^K[ 0-9 Record \|^K SPACE status \|^[W Up    \|^K' Window  \|^[B To ^KB \|^[R Backwards\|\i \i
 \i \i\|^K]     Stop   \|^K\\ Repeat      \|^[Z Down  \|^[! Command \|^[K To ^KK \|^[S Forwards \|\i \i
 \i \i\|^K 0-9  Play   \|\uINSERT\u          \|^K< Left  \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u    \|\i \i
-\i \i\|^K 0-9  Play   \|^[M Math        \|^K< Left  \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u    \|\i \i
-\i \i\|^K?     Query  \|^KA Center line \|^K> Right \|`  Ctrl-    \|^[Y yank   \|^[ 0-9 Goto  \|\i \i
-\i \i\|^[D     Dump   \|^[H Message     \|          \|^\\ Meta-    \|^[O line<  \|^[^[   Set   \|\i \i
+\i \i\|^K?     Query  \|^] split line   \|^K> Right \|`  Ctrl-    \|^[Y yank   \|^[ 0-9 Goto  \|\i \i
+\i \i\|^[D     Dump   \|^SPACE ins space\|          \|^\\ Meta-    \|^[O line<  \|^[^[   Set   \|\i \i
+}
 
 {Programs
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \i\|\uGOTO\u                 \|\uINDENT\u   \|\uCOMPILING\u          \uQUICK\u                       \|\i \i
-\i \i\|\uGOTO\u                 \|\uINDENT\u   \|\uCOMPILING\u                                      \|\i \i
-\i \i\|^G  Matching ( [ {   \|^K, less \|^[C Compile and parse errors                   \|\i \i
-\i \i\|^K- Previous place   \|^K. more \|^[E Parse errors                               \|\i \i
-\i \i\|^K= Next place         \|       \|^[= To next error                              \|\i \i
-\i \i\|^K; Tags file search   \|       \|^[- To prev. error                             \|\i \i
+\i \i\|^G  Matching ( [ {   \|^K, less \|^[C Compile & parse ^G  find word under cursor \|\i \i
+\i \i\|^K- Previous place   \|^K. more \|^[E Parse errors    ^[ENTER complete word      \|\i \i
+\i \i\|^K= Next place         \|       \|^[= To next error   ^[Y paste deleted text     \|\i \i
+\i \i\|^K; Tags file search   \|       \|^[- To prev. error  ^[^Y cycle through deleted \|\i \i
+}
 
 {Search
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
