@@ -169,9 +169,8 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *n
 
 /* Create empty command */
 
-static struct high_cmd *mkcmd()
+static void iz_cmd(struct high_cmd *cmd)
 {
-	struct high_cmd *cmd = joe_malloc(sizeof(struct high_cmd));
 	cmd->noeat = 0;
 	cmd->recolor = 0;
 	cmd->start_buffering = 0;
@@ -182,6 +181,12 @@ static struct high_cmd *mkcmd()
 	cmd->keywords = 0;
 	cmd->delim = 0;
 	cmd->ignore = 0;
+}
+
+static struct high_cmd *mkcmd()
+{
+	struct high_cmd *cmd = joe_malloc(sizeof(struct high_cmd));
+	iz_cmd(cmd);
 	return cmd;
 }
 
@@ -240,11 +245,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 	syntax->color = 0;
 	syntax->states = joe_malloc(sizeof(struct high_state *)*(syntax->szstates=64));
 	syntax->sync_lines = 50;
-	syntax->default_cmd.noeat = 0;
-	syntax->default_cmd.recolor = 0;
-	syntax->default_cmd.start_buffering = 0;
-	syntax->default_cmd.new_state = 0;
-	syntax->default_cmd.keywords = 0;
+	iz_cmd(&syntax->default_cmd);
 
 	/* Parse file */
 	while(fgets((char *)buf,1023,f)) {
