@@ -398,15 +398,18 @@ int ublkmove(BW *bw)
 			int usetabs = ptabrect(markb, height, markk->xcol);
 			long ocol = piscol(bw->cursor);
 			B *tmp = pextrect(markb, height, markk->xcol);
+			int update_xcol = (bw->cursor->xcol >= markk->xcol && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line);
 
 			ublkdel(bw);
+			/* now we can't use markb and markk until we set them again */
+			/* ublkdel() frees them */
 			if (bw->o.overtype) {
 				/* If cursor was in block, blkdel moves it to left edge of block, so fix it
 				 * back to its original place here */
 				pcol(bw->cursor, ocol);
 				pfill(bw->cursor, ocol, 0);
 				pdelrect(bw->cursor, height, piscol(bw->cursor) + width);
-			} else if (bw->cursor->xcol >= markk->xcol && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line)
+			} else if (update_xcol)
 				/* If cursor was to right of block, xcol was not properly updated */
 				bw->cursor->xcol -= width;
 			pinsrect(bw->cursor, tmp, width, usetabs);
