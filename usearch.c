@@ -34,6 +34,7 @@ int wrap = 0;			/* Allow wrap */
 int smode = 0;			/* Decremented to zero by execmd */
 int csmode = 0;			/* Set for continued search mode */
 int icase = 0;			/* Set to force case insensitive search */
+int pico = 0;			/* Pico search prompting */
 
 B *findhist = NULL;		/* Search string history */
 B *replhist = NULL;		/* Replacement string history */
@@ -524,13 +525,20 @@ static int pfsave(BW *bw, SRCH *srch)
 
 static int set_replace(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
-	srch->replacement = s;
+	if (s[0] || !globalsrch || !pico)
+		srch->replacement = s;
+	else {
+		vsrm(s);
+		srch->replacement = vsdup(globalsrch->replacement);
+	}
 	return dopfnext(bw, setmark(srch), notify);
 }
 
 static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
 	int x;
+	unsigned char bf1[80];
+	unsigned char buf[80];
 
 	srch->ignore = icase;
 
@@ -582,7 +590,14 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	}
 	vsrm(s);
 	if (srch->replace) {
-		if (wmkpw(bw->parent, US "Replace with (^C to abort): ", &replhist, set_replace, srchstr, pfabort, srch_cmplt, srch, notify, bw->b->o.charmap, 0))
+		if (pico && globalsrch && globalsrch->replacement) {
+			joe_snprintf_1((char *)bf1,30,"%s",globalsrch->replacement);
+			if (strlen((char *)globalsrch->replacement)>29)
+				strcat((char *)bf1,"$");
+			joe_snprintf_1((char *)buf,sizeof(buf),"Replace with (^C to abort) [%s]: ",bf1);
+		} else
+			strcpy((char *)buf, "Replace with (^C to abort): ");
+		if (wmkpw(bw->parent, buf, &replhist, set_replace, srchstr, pfabort, srch_cmplt, srch, notify, bw->b->o.charmap, 0))
 			return 0;
 		else
 			return -1;
@@ -601,7 +616,12 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 		p = US "(I)gnore (R)eplace (B)ackwards Bloc(K) NNN (^C to abort): ";
 
 	vsrm(srch->pattern);
-	srch->pattern = s;
+	if (s[0] || !globalsrch || !pico)
+		srch->pattern = s;
+	else {
+		vsrm(s);
+		srch->pattern = vsdup(globalsrch->pattern);
+	}
 	if ((pbw = wmkpw(bw->parent, p, NULL, set_options, srchstr, pfabort, utypebw, srch, notify, bw->b->o.charmap, 0)) != NULL) {
 		unsigned char buf[10];
 
@@ -630,6 +650,8 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 {
 	SRCH *srch;
 	BW *pbw;
+	unsigned char bf1[80];
+	unsigned char buf[80];
 
 	if (smode && globalsrch) {
 		globalsrch->backwards = back;
@@ -650,7 +672,14 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 	srch->addr = bw->cursor->byte;
 	srch->wrap_p = pdup(bw->cursor);
 	srch->wrap_p->owner = &srch->wrap_p;
-	if (pbw=wmkpw(bw->parent, US "Find (^C to abort): ", &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap, 0)) {
+	if (pico && globalsrch && globalsrch->pattern) {
+		joe_snprintf_1((char *)bf1,30,"%s",globalsrch->pattern);
+		if (strlen((char *)globalsrch->pattern)>29)
+			strcat((char *)bf1,"$");
+		joe_snprintf_1((char *)buf,sizeof(buf),"Find (^C to abort) [%s]: ",bf1);
+	} else
+		strcpy((char *)buf, "Find (^C to abort): ");
+	if (pbw=wmkpw(bw->parent, buf, &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap, 0)) {
 		if (hint) {
 			binss(pbw->cursor, hint);
 			pset(pbw->cursor, pbw->b->eof);

@@ -74,7 +74,7 @@
 
 -exask		^KX always confirms file name
 
- -beep		Beep on errors and when cursor goes past extremes
+-beep		Beep on errors and when cursor goes past extremes
 
  -nosta		Disable top-most status line
 
@@ -137,13 +137,16 @@
 
  -icase         Search is case insensitive by default.
 
- -wrap          Search wraps
+-wrap          Search wraps
 
 -autoswap	Swap markb with markk when necessary
 
 -joe_state     Use ~/.joe_state file
 
  -mouse		Enable mouse support
+
+ -joexterm	If you are using Joe's modified Xterm, which makes -mouse
+		mode work better (cut & paste work transparently).
 
  -square	Rectangular block mode
 
@@ -155,6 +158,9 @@
  -bg_msg color	Set background color for messages.
 
 		For example: -bg_text bg_blue
+
+-search_prompting
+		Search prompts with previous search request.
 
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is
@@ -808,7 +814,7 @@
 
 {Basic
 \|\b^K\b cut line \|   \b^W\b find first \|\b^J\b justify \|   \b^X\b save or discard, exit \|
-\|\b^U\b paste    \|\bEsc W\b find next  \|\b^T\b spell   \|\bEsc .\b for more help         \|
+\|\b^U\b paste    \| \b^W^W\b find next  \|\b^T\b spell   \|\bEsc .\b for more help         \|
 }
 
 {Basic1
@@ -819,7 +825,7 @@
 \i \i\|^Y prev. screen  \|^A  beg. of line \|^U  paste  \|^[K >line \|^[T  file    \|^[Z shell\|\i \i
 \i \i\|^V next screen   \|^E  end of line  \|^[U cycle  \|^[H word< \|^L   refresh \|\uFILE\u     \|\i \i
 \i \i\|^Z prev. word    \|^W^T line No.    \|^O  save   \|^[D >word \|^[^[ options \|^O save  \|\i \i
-\i \i\|^SPACE next word \|^W find ^[W next \|^[/ filter \|^[- undo  \|^[=  redo    \|^R insert\|\i \i
+\i \i\|^SPACE next word \|^W find ^W^W next\|^[/ filter \|^[- undo  \|^[=  redo    \|^R insert\|\i \i
 }
 
 {Advanced
@@ -1011,6 +1017,8 @@ xtmouse		^[ [ M		Introduces an xterm mouse event
 @SPELL@file	^[ t
 @SPELL@file	^[ ^T
 
+paste			^[ [ 2 0 0 ~		Bracketed paste
+
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO
 
@@ -1079,7 +1087,6 @@ eol		^[ [ 4 ~
 execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute
 execmd		^[ x		Prompt for command to execute
- ffirst,uparw,eol	^W		Find first
 ffirst		^W		Find first
 fnext		^[ w
 fnext		^[ W
@@ -1149,7 +1156,8 @@ complete	^I
 cancel,bof	^Y
 cancel,eof	^V
 cancel,line	^T
-cancel,bop	^W
+cancel,fnext	^W
+ cancel,bop	^W
 cancel,eop	^O
 dnarw,eol	.kd		Go down
 dnarw,eol	^N

@@ -145,6 +145,9 @@
 
  -mouse		Enable mouse support
 
+ -joexterm	If you are using Joe's modified Xterm, which makes -mouse
+		mode work better (cut & paste work transparently).
+
  -square	Rectangular block mode
 
  -bg_text color	Set background color for text.
@@ -155,6 +158,9 @@
  -bg_msg color	Set background color for messages.
 
 		For example: -bg_text bg_blue
+
+ -search_prompting
+		Search prompts with previous search request.
 
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is
@@ -1009,6 +1015,8 @@ xtmouse		^[ [ M		Introduces an xterm mouse event
 
 @SPELL@file	^[ l
 @SPELL@word	^[ n
+
+paste			^[ [ 2 0 0 ~		Bracketed paste
 
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO
