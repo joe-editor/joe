@@ -233,7 +233,10 @@ static int backup(BW *bw)
 		int x;
 
 		if (backpath) {
-			joe_snprintf_2(name, sizeof(name), "%s/%s", backpath, namepart(tmp, bw->b->name));
+			unsigned char *t = vsncpy(NULL,0,sz(backpath));
+			t = canonical(t);
+			joe_snprintf_2(name, sizeof(name), "%s/%s", t, namepart(tmp, bw->b->name));
+			vsrm(t);
 		} else {
 			joe_snprintf_1(name, sizeof(name), "%s", bw->b->name);
 		}
@@ -256,7 +259,10 @@ static int backup(BW *bw)
 			simple_backup_suffix = US "~";
 		}
 		if (backpath) {
-			joe_snprintf_3((char *)name, sizeof(name), "%s/%s%s", backpath, namepart(tmp, bw->b->name), simple_backup_suffix);
+			unsigned char *t = vsncpy(NULL, 0, sz(backpath));
+			t = canonical(t);
+			joe_snprintf_3((char *)name, sizeof(name), "%s/%s%s", t, namepart(tmp, bw->b->name), simple_backup_suffix);
+			vsrm(t);
 		} else {
 			joe_snprintf_2((char *)name, sizeof(name), "%s%s", bw->b->name, simple_backup_suffix);
 		}
