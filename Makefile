@@ -11,7 +11,7 @@
 
 WHEREJOE = /usr/bin
 WHERERC = /usr/lib
-WHEREMAN = /usr/share/man/man1
+WHEREMAN = /usr/man/man1
 
 # If you want to use TERMINFO, you have to set
 # the following variable to 1.  Also you have to
@@ -62,10 +62,10 @@ OBJS = b.o blocks.o bw.o cmd.o hash.o help.o kbd.o macro.o main.o menu.o \
 joe: $(OBJS)
 	rm -f jmacs jstar rjoe jpico
 	$(CC) $(CFLAGS) -o joe $(OBJS) $(EXTRALIBS)
-	ln -s joe jmacs
-	ln -s joe jstar
-	ln -s joe rjoe
-	ln -s joe jpico
+	ln joe jmacs
+	ln joe jstar
+	ln joe rjoe
+	ln joe jpico
 
 # All object files depend on config.h
 
@@ -111,5 +111,5 @@ install: joe termidx
 # Cleanup proceedure
 
 clean:
-	rm -f $(OBJS) termidx.o conf conf.o config.h joe jmacs jpico jstar rjoe
+	rm -f $(OBJS) termidx.o conf conf.o config.h joe jmacs jpico jstar rjoe termidx
 

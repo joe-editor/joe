@@ -598,14 +598,14 @@ else if(marking && markb && markb->b==w->b &&
         w->cursor->byte!= markb->byte && !from)
  if(square)
   {
-  from=Lmin(w->cursor->xcol,markb->xcol),
-    to=Lmax(w->cursor->xcol,markb->xcol);
-  fromline=Lmin(w->cursor->line,markb->line);
-  toline=Lmax(w->cursor->line,markb->line);
+  from=long_min(w->cursor->xcol,markb->xcol),
+    to=long_max(w->cursor->xcol,markb->xcol);
+  fromline=long_min(w->cursor->line,markb->line);
+  toline=long_max(w->cursor->line,markb->line);
   dosquare=1;
   }
- else from=Lmin(w->cursor->byte,markb->byte),
-        to=Lmax(w->cursor->byte,markb->byte);
+ else from=long_min(w->cursor->byte,markb->byte),
+        to=long_max(w->cursor->byte,markb->byte);
 
 if(marking) msetI(t->updtab+w->y,1,w->h);
 

@@ -702,7 +702,7 @@ int *notify;
    else height=tmp->eof->line;
    if(bw->o.overtype)
     {
-    pclrrect(markb,Lmax(markk->line-markb->line+1,height),markk->xcol,usetabs);
+    pclrrect(markb,long_max(markk->line-markb->line+1,height),markk->xcol,usetabs);
     pdelrect(markb,height,width+markb->xcol);
     }
    pinsrect(markb,tmp,width,usetabs);
@@ -791,7 +791,7 @@ int *notify;
    if(bw->o.overtype)
     {
     pclrrect(markb,markk->line-markb->line+1,markk->xcol,usetabs);
-    pdelrect(markb,Lmax(height,markk->line-markb->line+1),width+markb->xcol);
+    pdelrect(markb,long_max(height,markk->line-markb->line+1),width+markb->xcol);
     }
    else pdelrect(markb,markk->line-markb->line+1,markk->xcol);
    pinsrect(markb,tmp,width,usetabs);

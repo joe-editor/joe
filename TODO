@@ -1,27 +1,24 @@
-BUGS
+PROGRAM REDeSIGN:
+=-=-=-=-=-=-=-=-=-=
+	-=- why to use list of help screens and array of help screens
+		when later is only array used ?
+
+BuGS
 =-=-
-Emacs emulation inprovements:
-
- Rectangle mode for emacs yank system
-
- Overtype mode works for yank
-
- Query save loop? for kill-emacs and compile
-
- Emacs reload from file function? ^X ^V (it just works out if ^X ^V kills all
- instances of the buffer)
-
- Bufed should display unnamed buffers
-
- ESC args should work differently in emacs
-
- nextword,nextword,prevword sequence doesn't work for marking next successive
- word at ends of lines
-
- exiting options and i-search with ESC is not pretty
- (it isn't in emacs either)
-
-Allow either direct screen access or normal tty support for DOS version.
+Emacs emulation improvements:
+	- Rectangle mode for emacs yank system
+	- Overtype mode works for yank
+	- Query save loop? for kill-emacs and compile
+	- Emacs reload from file function? ^X ^V 
+		(it just works out if ^X ^V kills all instances of the buffer)
+	- Bufed should display unnamed buffers
+	- ESC args should work differently in emacs
+	- nextword,nextword,prevword sequence 
+		doesn't work for marking next successive word at ends of lines
+	- exiting options and i-search with ESC is not pretty
+		(it isn't in emacs either)
+	- Allow either direct screen access or normal tty support 
+		for DOS version.
 
 NEW FEATURES
 =-=-=-=-=-=-

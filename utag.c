@@ -112,12 +112,12 @@ static B *taghist=0;
 int utag(BW *bw) {
 	BW *pbw;
 	pbw = wmkpw(bw,"Tag search: ",&taghist,dotag,NULL,NULL,cmplt,NULL,NULL);
-	if (pbw && crest(brc(bw->cursor))) {
+	if (pbw && isalnum_(brc(bw->cursor))) {
 		P *p = pdup(bw->cursor);
 		P *q = pdup(p);
 		int c;
-		while (crest(c=prgetc(p))); if (c!=MAXINT) pgetc(p);
-		pset(q,p); while(crest(c=pgetc(q))); if (c!=MAXINT) prgetc(q);
+		while (isalnum_(c=prgetc(p))); if (c!=MAXINT) pgetc(p);
+		pset(q,p); while(isalnum_(c=pgetc(q))); if (c!=MAXINT) prgetc(q);
 		binsb(pbw->cursor,bcpy(p,q));
 		pset(pbw->cursor,pbw->b->eof); pbw->cursor->xcol=piscol(pbw->cursor);
 		prm(p); prm(q);

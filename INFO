@@ -1,16 +1,16 @@
 
 
-                            Joe's Own Editor 2.8
+                            Joe's Own Editor 2.9.x
 
                   A Free ASCII-Text Screen Editor for UNIX
-                               by Joseph Allen
+                               by Joseph Allen (<= 2.8)
+				Marek 'Marx' Grac (=> 2.9)
 
-
-Get it by anonymous ftp
-from: 'ftp.std.com', file '/src/editors/joe2.8.tar.Z'
+Get it from:
+	http://sourceforge.net/projects/joe-editor
 
 If you have questions, problems or suggestions,
-send email to: 'jhallen@world.std.com'
+send email to: 'xgrac@fi.muni.cz'
 
 
 	JOE is the professional freeware ASCII text screen editor for UNIX. 

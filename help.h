@@ -1,47 +1,42 @@
-/* Help system
-   Copyright (C) 1992 Joseph H. Allen
+/*
+	Help system
+	Copyright
+		(C) 1992 Joseph H. Allen
+		(C) 2001 Marek 'Marx' Grac
 
-This file is part of JOE (Joe's Own Editor)
+	This file is part of JOE (Joe's Own Editor)
+*/
 
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
+#ifndef _JOEhelp
+#define _JOEhelp 1
 
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
+#include "config.h"				// ???
+#include "w.h"					// definitions of BASE & SCREEN
 
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */ 
+struct help {					// ???
+	char *hlptxt;				// ???
+	int hlpsiz;				// ???
+	int hlpbsz;				// ???
+	int hlplns;				// ???
+	char *name;				// ???
+	struct help *next;			// ???
+};
 
-#ifndef _Ihelp
-#define _Ihelp 1
+extern char *hlptxt;				// ???
+extern int hlpsiz, hlpbsz, hlplns;		// ???
+extern char **help_names;			// ???
 
-#include "config.h"
+extern struct help *help_first;			// first screen of help list
+extern struct help **help_structs;		// array of help screens
 
-extern char *hlptxt;
-extern int hlpsiz, hlpbsz, hlplns;
-extern char **help_names;
-extern struct help **help_structs;
-extern struct help *first_help;
+void help_display (SCREEN *t);			// display text in help window
+void help_to_array (void);			// transform help list into array
+int help_on (SCREEN *t);			// turn help on
 
-void dsphlp();
+int u_help (BASE *base);			// toggle help on/off
+int u_help_next (BASE *base);			// goto next help screen
+int u_help_prev (BASE *base);			// goto prev help screen
 
-struct help
- {
- char *hlptxt;
- int hlpsiz;
- int hlpbsz;
- int hlplns;
- char *name;
- struct help *next;
- };
 
-int helpon();
-int uhelp();
-int uhnext();
-int uhprev();
 
 #endif

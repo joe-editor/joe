@@ -15,154 +15,154 @@ typedef struct point P;
 typedef struct header H;
 
 struct header
- {
- LINK(H) link;
- long seg;
- int hole;
- int ehole;
- int nlines;
- };
+{
+  LINK (H) link;
+  long seg;
+  int hole;
+  int ehole;
+  int nlines;
+};
 
 struct point
- {
- LINK(P) link;
- 
- B *b;
- int ofst;
- char *ptr;
- H *hdr;
- 
- long byte;
- long line;
- long col;
- long xcol;
- int valcol;
- int end;
- 
- P **owner;
- };
+{
+  LINK (P) link;
+
+  B *b;
+  int ofst;
+  char *ptr;
+  H *hdr;
+
+  long byte;
+  long line;
+  long col;
+  long xcol;
+  int valcol;
+  int end;
+
+  P **owner;
+};
 
 struct buffer
- {
- LINK(B) link;
- P *bof;
- P *eof;
- char *name;
- int orphan;
- int count;
- int changed;
- int backup;
- void *undo;
- P *marks[10];			/* Bookmarks */
- OPTIONS o;			/* Options */
- P *oldcur;			/* Last cursor position before orphaning */
- P *oldtop;			/* Last top screen position before orphaning */
- int rdonly;			/* Set for read-only */
- int internal;			/* Set for internal buffers */
- int er;			/* Error code when file was loaded */
- };
+{
+  LINK (B) link;
+  P *bof;
+  P *eof;
+  char *name;
+  int orphan;
+  int count;
+  int changed;
+  int backup;
+  void *undo;
+  P *marks[10];			/* Bookmarks */
+  OPTIONS o;			/* Options */
+  P *oldcur;			/* Last cursor position before orphaning */
+  P *oldtop;			/* Last top screen position before orphaning */
+  int rdonly;			/* Set for read-only */
+  int internal;			/* Set for internal buffers */
+  int er;			/* Error code when file was loaded */
+};
 
-extern int force;	/* Set to have final '\n' added to file */
-extern int tabwidth;	/* Default tab width */
+extern int force;		/* Set to have final '\n' added to file */
+extern int tabwidth;		/* Default tab width */
 
-extern VFILE *vmem;	/* Virtual memory file used for buffer system */
+extern VFILE *vmem;		/* Virtual memory file used for buffer system */
 
 extern char *msgs[];
 
-B *bmk();
-void brm();
+B *bmk ();
+void brm ();
 
-B *bfind();
+B *bfind ();
 
-P *pdup();
-P *pdupown();
-P *poffline();
-P *ponline();
-B *bonline();
-B *boffline();
+P *pdup ();
+P *pdupown ();
+P *poffline ();
+P *ponline ();
+B *bonline ();
+B *boffline ();
 
-void prm();
-P *pset();
+void prm ();
+P *pset ();
 
-P *pbof();
-P *peof();
+P *pbof ();
+P *peof ();
 
-int pisbof();
-int piseof();
-int piseol();
-int pisbol();
-int pisbow();
-int piseow();
+int pisbof ();
+int piseof ();
+int piseol ();
+int pisbol ();
+int pisbow ();
+int piseow ();
 
 #define piscol(p) ((p)->valcol?(p)->col:(pfcol(p),(p)->col))
 
-int pisblank();
+int pisblank ();
 
-long pisindent();
+long pisindent ();
 
-int pnext();
-int pprev();
+int pnext ();
+int pprev ();
 
-int pgetc();
+int pgetc ();
 
-P *pfwrd();
+P *pfwrd ();
 
-int prgetc();
+int prgetc ();
 
-P *pbkwd();
-P *pgoto();
+P *pbkwd ();
+P *pgoto ();
 
-P *pfcol();
+P *pfcol ();
 
-P *pbol();
+P *pbol ();
 
-P *peol();
+P *peol ();
 
-P *pnextl();
+P *pnextl ();
 
-P *pprevl();
+P *pprevl ();
 
-P *pline();
+P *pline ();
 
-P *pcolwse();
-P *pcol();
-P *pcoli();
-void pbackws();
-void pfill();
+P *pcolwse ();
+P *pcol ();
+P *pcoli ();
+void pbackws ();
+void pfill ();
 
-P *pfind();
-P *pifind();
-P *prfind();
-P *prifind();
+P *pfind ();
+P *pifind ();
+P *prfind ();
+P *prifind ();
 
 /* B *bcpy(P *from,P *to);
  * Copy text between from and to into a new buffer
  */
-B *bcpy();
+B *bcpy ();
 
-void pcoalesce();
+void pcoalesce ();
 
-void bdel();
+void bdel ();
 
 /* P *binsb(P *p,B *b);
  * Insert an entire buffer 'b' into another buffer at 'p'
  */
-P *binsb();
+P *binsb ();
 
 /* P *binsm(P *p,char *blk,int amnt);
  * Insert a block 'blk' of size 'amnt' into buffer at 'p'
  */
-P *binsm();
+P *binsm ();
 
 /* P *binsc(P *p,char c);
  * Insert character into buffer at P
  */
-P *binsc();
+P *binsc ();
 
 /* P *binss(P *p,char *s);
  * Insert zero terminated string into buffer at P
  */
-P *binss();
+P *binss ();
 
 /* B *bload(char *s);
  * Load a file into a new buffer
@@ -173,46 +173,46 @@ P *binss();
  * -3 for seek error
  * -4 for open error
  */
-B *bread();
-B *bload();
-B *bfind();
-B *borphan();
+B *bread ();
+B *bload ();
+B *bfind ();
+B *borphan ();
 
 /* int bsave(P *p,char *s,long size);
  * Save 'size' bytes beginning at 'p' into file with name in 's'
  */
-int bsavefd();
-int bsave();
+int bsavefd ();
+int bsave ();
 
-char *parsens();
+char *parsens ();
 
 /* int brc(P *p);
  * Get character at pointer or return MAXINT if pointer is at end of buffer
  */
-int brc();
+int brc ();
 
 /* char *brmem(P *p,char *blk,int size);
  * Copy 'size' bytes from a buffer beginning at p into block 'blk'
  */
-char *brmem();
+char *brmem ();
 
 /* char *brs(P *p,int size);
  * Copy 'size' bytes from a buffer beginning at p into a zero-terminated
  * C-string in an malloc block.
  */
-char *brs();
+char *brs ();
 
 /* char *brvs(P *p,int size);
  * Copy 'size' bytes from a buffer beginning at p into a variable length
  * string.
  */
-char *brvs();
+char *brvs ();
 
-B *bnext();
-B *bprev();
+B *bnext ();
+B *bprev ();
 
 extern int error;
 
-char **getbufs();
+char **getbufs ();
 
 #endif

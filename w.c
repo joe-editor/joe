@@ -317,7 +317,7 @@ SCREEN *t;
     /* Scroll windows between l and w */
     loop1:
     if(l->ny>=0 && l->y>=0)
-     nscrldn(t->t,l->y,l->ny+Umin(l->h,l->nh),l->ny-l->y);
+     nscrldn(t->t,l->y,l->ny+uns_min(l->h,l->nh),l->ny-l->y);
     if(w!=l)
      {
      l=l->link.prev;
@@ -339,7 +339,7 @@ SCREEN *t;
     /* Scroll windows between l and w */
     loop0:
     if(w->ny>=0 && w->y>=0)
-     nscrlup(t->t,w->ny,w->y+Umin(w->h,w->nh),w->y-w->ny);
+     nscrlup(t->t,w->ny,w->y+uns_min(w->h,w->nh),w->y-w->ny);
     if(w!=l)
      {
      w=w->link.next;

@@ -1,4 +1,4 @@
- /* Editor startup and main edit loop
+/* Editor startup and main edit loop
    Copyright (C) 1992 Joseph H. Allen
 
 This file is part of JOE (Joe's Own Editor)
@@ -19,6 +19,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
+#include <locale.h>
 #include "config.h"
 #include "w.h"
 #include "tty.h"
@@ -81,7 +82,7 @@ void edupd(flg)
  dofollows();
  ttflsh();
  nscroll(maint->t);
- dsphlp(maint);
+ help_display(maint);
  w=maint->curwin; do
   {
   if(w->y!= -1)
@@ -169,6 +170,8 @@ char *envv[];
  int omid;
  int backopt;
  int c;
+
+	setlocale(LC_CTYPE,"");
 
  mainenv=envv;
 
@@ -290,7 +293,7 @@ char *envv[];
  return 1;
 
  donerc:
- izhelp();
+ help_to_array();
  for(c=1;argv[c];++c)
   if(argv[c][0]=='-')
    if(argv[c][1])
@@ -364,9 +367,11 @@ char *envv[];
   if(bw->o.mnew) exemac(bw->o.mnew);
   }
  maint->curwin=maint->topwin;
- if(help) helpon(maint);
+
+ if(help) help_on(maint);
+
  if(!nonotice)
-  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.8 ** Copyright (C) 1995 Joseph H. Allen **\\i");
+  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.9.4 ** Copyright (C) 2001 **\\i");
  edloop(0);
  vclose(vmem);
  nclose(n);

@@ -7,47 +7,25 @@
 	This file is part of JOE (Joe's Own Editor)
 */ 
 
-#ifndef _Izstr
-#define _Izstr 1
+#ifndef _JOEzstr
+#define _JOEzstr 1
 
 #include "config.h"
-
-#define _upp 1
-#define _low 2
-#define _und 4
-#define _bin 8
-#define _oct 16
-#define _dec 32
-#define _hex 64
-#define _flo 128
-
-#define _whi 1
-#define _eol 2
-#define _eos 4
-
-extern char _ctaB[], _ctaA[];
 
 /* Character type test macros */
 
 /* Remaining legal characters of a C identifier */
-#define crest(c)  (_ctaB[(unsigned char)(c)]&(_low|_upp|_und|_bin|_oct|_dec))
+#define isalnum_(c) (isalnum(c) || (c==*"_"))
 
 /* Whitespace: tab, space, newline or nul */
-#define cwhitef(c) (_ctaA[(unsigned char)(c)]&(_whi|_eol|_eos))
+#define isspace_eof(c) (isspace(c) || (!c))
 
 /* Minimum and maximum functions */
 
-/* unsigned Umin(unsigned a,unsigned b); Return the smaller unsigned integer */
-unsigned Umin();
-
-/* int Imin(int a,int b); Return the lower integer */
-int Imin();
-
-/* long Lmax(long a,long b); Return the higher long */
-long Lmax();
-
-/* long Lmin(long a,long b); Return the smaller long */
-long Lmin();
+unsigned uns_min (unsigned a, unsigned b);
+int int_min (int a, int b);
+long long_max (long a, long b);
+long long_min (long a, long b);
 
 /* int fields(char *s,char **fields,char sep); Break up z-string containing
  * fields into its componant fields.  This is done by setting the field
