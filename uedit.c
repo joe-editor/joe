@@ -1027,7 +1027,7 @@ static int dounicode(BW *bw, unsigned char *s, void *object, int *notify)
 	int num;
 	unsigned char buf[8];
 	int x;
-	sscanf(s,"%x",&num);
+	sscanf((char *)s,"%x",&num);
 	if (notify)
 		*notify = 1;
 	vsrm(s);
@@ -1421,7 +1421,7 @@ static int domsg(BASE *b, unsigned char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
-	strcpy(msgbuf, s);
+	strcpy((char *)msgbuf, (char *)s);
 	vsrm(s);
 	msgnw(b->parent, msgbuf);
 	return 0;

@@ -193,12 +193,12 @@ void joe_locale()
 	if (s)
 		s=(unsigned char *)strdup((char *)s);
 	else
-		s="C";
+		s=US "C";
 
 	if (t=(unsigned char *)strrchr((char *)s,'.'))
 		*t = 0;
 
-	setlocale(LC_ALL,s);
+	setlocale(LC_ALL,(char *)s);
 	non_utf8_codeset = (unsigned char *)strdup(nl_langinfo(CODESET));
 
 	setlocale(LC_ALL,"");
@@ -210,8 +210,8 @@ void joe_locale()
 		pdefault.utf8 = 1;	/* For prompt windows too */
 	}
 
-	to_utf = iconv_open("UTF-8", non_utf8_codeset);
-	from_utf = iconv_open(non_utf8_codeset, "UTF-8");
+	to_utf = iconv_open("UTF-8", (char *)non_utf8_codeset);
+	from_utf = iconv_open((char *)non_utf8_codeset, "UTF-8");
 #endif
 }
 
@@ -241,7 +241,7 @@ void to_utf8(unsigned char *s,int c)
 int from_utf8(unsigned char *s)
 {
 #ifdef HAVE_SETLOCALE
-	int ibuf_sz=strlen(s);
+	int ibuf_sz=strlen((char *)s);
 	unsigned char *ibufp=s;
 	int obuf_sz=10;
 	unsigned char obuf[10];

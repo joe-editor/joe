@@ -729,7 +729,7 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	if (lin <= w->b->eof->line)
 		snprintf((char *)buf, sizeof(buf), "%5ld ", w->top->line + y - w->y + 1);
 	else
-		strcpy(buf, "      ");
+		strcpy((char *)buf, "      ");
 	for (z = 0; buf[z]; ++z) {
 		outatr(w->b->o.utf8, t, screen + z, attr + z, z, y, buf[z], 0);
 		if (ifhave)

@@ -137,7 +137,7 @@ int set_attr(SCRN *t, int c)
 
 	c &= ~255;
 
-	// Attributes which have gone off
+	/* Attributes which have gone off */
 	e = ((AT_MASK|FG_NOT_DEFAULT|BG_NOT_DEFAULT)&t->attrib & ~c);
 
 	if (e) {	/* If any attribute go off, switch them all off: fixes bug on PCs */
@@ -152,7 +152,7 @@ int set_attr(SCRN *t, int c)
 		t->attrib = 0;
 	}
 
-	// Attributes which have turned on
+	/* Attributes which have turned on */
 	e = (c & ~t->attrib);
 
 	if (e & INVERSE) {
@@ -223,7 +223,7 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 			if(t->attrib != a)
 				set_attr(t, a);
 			if (uni_ctrl) {
-				sprintf(buf,"<%X>",c);
+				sprintf((char *)buf,"<%X>",c);
 				ttputs(buf);
 			} else {
 				utf8_encode(buf,c);

@@ -684,7 +684,7 @@ int urindent(BW *bw)
 			prm(p);
 		} else {
 			/* Purity failure */
-			msgnw(bw->parent,"Selected lines not properly indented");
+			msgnw(bw->parent,US "Selected lines not properly indented");
 			return 1;
 		}
 	}
@@ -767,7 +767,7 @@ int ulindent(BW *bw)
 			prm(q);
 		} else {
 			/* Purity failure */
-			msgnw(bw->parent,"Selected lines not properly indented");
+			msgnw(bw->parent,US "Selected lines not properly indented");
 			return 1;
 		}
 	}

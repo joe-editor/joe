@@ -101,7 +101,7 @@ static void mconfig(MENU *m)
 
 		m->top = 0;
 		for (x = 0, m->width = 0; m->list[x]; ++x) {
-			int d = txtwidth(m->list[x],strlen(m->list[x]));
+			int d = txtwidth(m->list[x],strlen((char *)(m->list[x])));
 			if (d > m->width)
 				m->width = d;
 		}

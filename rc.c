@@ -553,7 +553,7 @@ static int syntaxcmplt(BW *bw)
 		int x, y;
 		if (chpwd(US (JOERC "syntax")))
 			return -1;
-		t = rexpnd("*.jsf");
+		t = rexpnd(US "*.jsf");
 		if (!t) {
 			chpwd(oldpwd);
 			return -1;
@@ -726,7 +726,7 @@ int procrc(CAP *cap, unsigned char *name)
 	int line = 0;		/* Line number */
 	int err = 0;		/* Set to 1 if there was a syntax error */
 
-	strcpy(buf, name);
+	strcpy((char *)buf, (char *)name);
 #ifdef __MSDOS__
 	fd = fopen((char *)buf, "rt");
 #else
