@@ -1,4 +1,7 @@
 Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
+	* tw.c, w.h: non-code clean up
+
+Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
 	* macro.c, qw.c, qw.h, tw.c, uedit.c, uisrch.c, usearch.c, ushell.c:
 	use mkqw(W *, ...) instead of mkqw(BASE *, ...) (same applies to
 	mkqwna() and mkqwnsr()).

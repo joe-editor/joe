@@ -51,13 +51,13 @@ struct window {
 	SCREEN *t;		/* Screen this thing is on */
 
 	int x, y, w, h;		/* Position and size of window */
-	/* Currently, x=0, w=width of screen. */
-	/* y== -1 if window is not on screen */
+				/* Currently, x = 0, w = width of screen. */
+				/* y == -1 if window is not on screen */
 
 	int ny, nh;		/* Temporary values for wfit */
 
 	int reqh;		/* Requested new height or 0 for same */
-	/* This is an argument for wfit */
+				/* This is an argument for wfit */
 
 	int fixed;		/* If this is zero, use 'hh'.  If not, this
 				   is a fixed size window and this variable
@@ -75,6 +75,16 @@ struct window {
 	KBD *kbd;		/* Keyboard handler for this window */
 	WATOM *watom;		/* The type of this window */
 	void *object;		/* Object which inherits this */
+#if 0
+	union {			/* FIXME: instead of void *object we should */
+		BW	*bw;	/* use this union to get strict type checking */
+		PW	*pw;	/* from C compiler (need to check and change */
+		QW	*qw;	/* all of the occurrencies of ->object) */
+		TW	*tw;
+		MENU	*menu;
+		BASE	*base;
+	} object;
+#endif
 
 	char *msgt;		/* Message at top of window */
 
@@ -86,7 +96,6 @@ struct window {
 };
 
 /* Anything which goes in window.object must start like this: */
-
 struct base {
 	W *parent;
 };

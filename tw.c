@@ -430,8 +430,6 @@ static void deltw(BW *bw, B *b, long int l, long int n, int flg)
 		bwdel(bw, l, n, flg);
 }
 
-int uabort(BW *bw, int k);
-
 static WATOM watomtw = {
 	"main",
 	disptw,
