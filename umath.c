@@ -19,6 +19,7 @@
 #include "vs.h"
 #include "utf8.h"
 #include "charmap.h"
+#include "ublock.h"
 #include "w.h"
 
 unsigned char *merr;
@@ -104,6 +105,38 @@ static double expr(int prec, struct var **rtv)
 			mode_ins = 1;
 			v = get("ans");
 			x = v->val;
+		} else if (!strcmp(s,"sum")) {
+			double xsq;
+			int cnt = blksum(&x, &xsq);
+			if (!merr && cnt<=0)
+				merr = US "No numbers in block";
+			v = 0;
+		} else if (!strcmp(s,"cnt")) {
+			double xsq;
+			int cnt = blksum(&x, &xsq);
+			if (!merr && cnt<=0)
+				merr = US "No numbers in block";
+			v = 0;
+			x = cnt;
+		} else if (!strcmp(s,"avg")) {
+			double xsq;
+			int cnt = blksum(&x, &xsq);
+			if (!merr && cnt<=0)
+				merr = US "No numbers in block";
+			v = 0;
+			if (cnt)
+				x /= (double)cnt;
+		} else if (!strcmp(s,"dev")) {
+			double xsq;
+			double avg;
+			int cnt = blksum(&x, &xsq);
+			if (!merr && cnt<=0)
+				merr = US "No numbers in block";
+			v = 0;
+			if (cnt) {
+				avg = x / (double)cnt;
+				x = sqrt(xsq + (double)cnt*avg*avg - 2.0*avg*x);
+			}
 		} else {
 			v = get(s);
 			x = v->val;

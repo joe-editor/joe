@@ -1148,3 +1148,67 @@ int uupper(BW *bw)
 	} else
 		return -1;
 }
+
+/* Get sum, sum of squares, and return count of
+ * a block of numbers.
+ *
+ * avg = sum/count
+ *
+ * stddev = sqrt(  (a-avg)^2 + (b-avg)^2 + (c-avg)^2 )
+ *        = sqrt(  a^2-2*a*avg+avg^2  + b^2-2*b*avg+avg^2 + c^2-2*c*avg+avg^2 )
+ *        = sqrt(  a^2+b^2+c^2 + 3*avg^2 - 2*avg*(a+b+c) )
+ *        = sqrt(  sumsq + count*avg^2 - 2*avg*sum  )
+ *
+ */
+
+int blksum(double *sum, double *sumsq)
+{
+	unsigned char buf[80];
+	if (markv(1)) {
+		P *q = pdup(markb);
+		int x;
+		int c;
+		double accu = 0.0;
+		double accusq = 0.0;
+		double v;
+		int count = 0;
+		long left = markb->xcol;
+		long right = markk->xcol;
+		while (q->byte < markk->byte) {
+			/* Skip until we're within columns */
+			while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
+				pgetc(q);
+
+			/* Skip to first number */
+			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
+				c=pgetc(q);
+				if (c >= '0' && c <= '9' || c == '.' || c == '-') {
+					/* Copy number into buffer */
+					buf[0]=c; x=1;
+					while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
+						c=pgetc(q);
+						if (c >= '0' && c <= '9' || c == 'e' || c == 'E' ||
+						    c == 'p' || c == 'P' || c == 'x' || c == 'X' ||
+						    c == '.' || c == '-' || c == '+') {
+							if(x != 79)
+								buf[x++]=c;
+						} else
+							break;
+					}
+					/* Convert number to floating point, add it to total */
+					buf[x] = 0;
+					v = strtod(buf,NULL);
+					++count;
+					accu += v;
+					accusq += v*v;
+					break;
+				}
+			}
+		}
+		prm(q);
+		*sum = accu;
+		*sumsq = accusq;
+		return count;
+	} else
+		return -1;
+}

@@ -48,5 +48,6 @@ int upop PARAMS((BW *bw));
 int ulower PARAMS((BW *bw));
 int uupper PARAMS((BW *bw));
 extern int nstack;
+int blksum PARAMS((double *,double *));
 
 #endif
