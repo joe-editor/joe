@@ -33,21 +33,20 @@ struct help *help_ptr = NULL;		/* build pointer */
 int help_init(FILE *fd,unsigned char *bf,int line)
 {
 	unsigned char buf[1024];			/* input buffer */
-	strcpy((char *)buf,(char *)bf);
 
 	struct help *tmp;
 	unsigned int bfl;				/* buffer length */
 	unsigned int hlpsiz, hlpbsz;			/* number of used/allocated bytes for tmp->text */
 	unsigned char *tempbuf;
 
-	if (buf[0] == '{') {			/* start of help screen */
+	if (bf[0] == '{') {			/* start of help screen */
 		tmp = (struct help *) joe_malloc(sizeof(struct help));
 
 		tmp->text = NULL;
 		tmp->lines = 0;
 		hlpsiz = 0;
 		hlpbsz = 0;
-		tmp->name = vsncpy(NULL, 0, sz(buf + 1) - 1);
+		tmp->name = vsncpy(NULL, 0, sz(bf + 1) - 1);
 
 		while ((fgets((char *)buf, sizeof(buf), fd)) && (buf[0] != '}')) {
 			++line;
