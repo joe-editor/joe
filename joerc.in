@@ -455,8 +455,6 @@ bof		^K u
  bol		.kh		Goto beginning of line
 bol		.kh		Goto beginning of line
 bol		^A
-bol		^[ [ H
-bol		^[ [ 1 ~
 center		^K ^A
 center		^K a
 crawll		^K <		Pan left
@@ -478,9 +476,8 @@ eof		^K ^V
 eof		^K v
 eol		.kH		Go to end of line
 eol		.@7
+eol		^E
 exsave		^K X		Save and exit
-eol		^[ [ F
-eol		^[ [ 4 ~
 exsave		^K ^X
 exsave		^K x
 ffirst		^K F		Find first
