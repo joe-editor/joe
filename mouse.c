@@ -171,7 +171,8 @@ int utomouse(BW *xx)
 		if (((TW *)bw->object)->staon)
 			/* clicked on it? */
 			if (y == w->y) {
-				drag_size = y;
+				if (y != maint->wind)
+					drag_size = y;
 				return -1;
 			} else
 				pline(bw->cursor,y-w->y+bw->top->line-1);
@@ -249,14 +250,16 @@ int udefmdown(BW *xx)
 int udefmdrag(BW *xx)
 {
 	BW *bw = (BW *)maint->curwin->object;
+	int ax = Cx - 1;
+	int ay = Cy - 1;
 	if (drag_size) {
-		while (Cy > bw->parent->y) {
+		while (ay > bw->parent->y) {
 			int y = bw->parent->y;
 			wgrowdown(bw->parent);
 			if (y == bw->parent->y)
 				return -1;
 		}
-		while (Cy < bw->parent->y) {
+		while (ay < bw->parent->y) {
 			int y = bw->parent->y;
 			wgrowup(bw->parent);
 			if (y == bw->parent->y)
