@@ -135,7 +135,7 @@ static int itype(BW * bw, int c, struct isrch *isrch, int *notify)
 	bw->cursor->xcol = piscol(bw->cursor);
 	dofollows();
 	mid = omid;
-	if (mkqwnsr(bw, sv(isrch->pattern), itype, iabrt, isrch, notify)) {
+	if (mkqwnsr(bw->parent, sv(isrch->pattern), itype, iabrt, isrch, notify)) {
 		return 0;
 	} else {
 		rmisrch(isrch);

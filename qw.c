@@ -146,11 +146,10 @@ static WATOM watqwsr = {
 
 /* Create a query window */
 
-QW *mkqw(BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqw(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
-	W *w = obw->parent;
 
 	new = wcreate(w->t, &watomqw, w, w, w->main, 1, NULL, notify);
 	if (!new) {
@@ -174,11 +173,10 @@ QW *mkqw(BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) 
 /* Same as above, but cursor is left in original window */
 /* For Ctrl-Meta thing */
 
-QW *mkqwna(BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqwna(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
-	W *w = obw->parent;
 
 	new = wcreate(w->t, &watqwn, w, w, w->main, 1, NULL, notify);
 	if (!new) {
@@ -202,11 +200,10 @@ QW *mkqwna(BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt
 /* Same as above, but cursor is left in original window */
 /* For search and replace thing */
 
-QW *mkqwnsr(BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
+QW *mkqwnsr(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
-	W *w = obw->parent;
 
 	new = wcreate(w->t, &watqwsr, w, w, w->main, 1, NULL, notify);
 	if (!new) {

@@ -35,12 +35,12 @@ struct query {
 
 #define TYPEQW 0x1000
 
-/* QW *mkqw(BW *bw,char *prompt,int (*func)(),int (*abrt)(),void *object);
+/* QW *mkqw(W *w, char *prompt, int (*func)(), int (*abrt)(), void *object);
  * Create a query window for the given window
  */
 /* FIXME: ??? ----> */
-QW *mkqw PARAMS((BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
-QW *mkqwna PARAMS((BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
-QW *mkqwnsr PARAMS((BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
+QW *mkqw PARAMS((W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
+QW *mkqwna PARAMS((W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
+QW *mkqwnsr PARAMS((W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
 
 #endif

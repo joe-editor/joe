@@ -176,7 +176,7 @@ static int pidabort(BW * bw, int c, void *object, int *notify)
 int ukillpid(BW * bw)
 {
 	if (bw->pid) {
-		if (mkqw(bw, sc("Kill program (y,n,^C)?"), pidabort, NULL, NULL, NULL)) {
+		if (mkqw(bw->parent, sc("Kill program (y,n,^C)?"), pidabort, NULL, NULL, NULL)) {
 			return 0;
 		} else {
 			return -1;

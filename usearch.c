@@ -476,7 +476,7 @@ static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 		nungetc(c);
 		return 0;
 	}
-	if (mkqwnsr(bw, sc("Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"), dopfrepl, pfsave, srch, notify))
+	if (mkqwnsr(bw->parent, sc("Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"), dopfrepl, pfsave, srch, notify))
 		return 0;
 	else
 		return pfsave(bw, srch);

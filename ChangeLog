@@ -1,4 +1,10 @@
 Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
+	* macro.c, qw.c, qw.h, tw.c, uedit.c, uisrch.c, usearch.c, ushell.c:
+	use mkqw(W *, ...) instead of mkqw(BASE *, ...) (same applies to
+	mkqwna() and mkqwnsr()).
+	This kills a lot of warnings during build.
+
+Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
 	* bw.c, cmd.c, macro.c, main.c, rc.c, tab.c, tw.c, ublock.c, uedit.c,
 	uerror.c, ufile.c, umath.c, undo.c, usearch.c, ushell.c, utag.c, w.c,
 	w.h: use msgnw[t](W *, char *) instead of msgnw[t](BASE *, char *).

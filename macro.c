@@ -472,7 +472,7 @@ int urecord(BW *bw, int c)
 {
 	if (c >= '0' && c <= '9')
 		return dorecord(bw, c, NULL, NULL);
-	else if (mkqw(bw, sc("Macro to record (0-9 or ^C to abort): "), dorecord, NULL, NULL, NULL))
+	else if (mkqw(bw->parent, sc("Macro to record (0-9 or ^C to abort): "), dorecord, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -543,7 +543,7 @@ int uplay(BW *bw, int c)
 {
 	if (c >= '0' && c <= '9')
 		return doplay(bw, c, NULL, NULL);
-	else if (mkqwna(bw, sc("Play-"), doplay, NULL, NULL, NULL))
+	else if (mkqwna(bw->parent, sc("Play-"), doplay, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -610,7 +610,7 @@ static int douarg(BW *bw, int c, void *object, int *notify)
 		return 0;
 	}
 	snprintf(msgbuf, MSGBUFSIZE, "Repeat %s%d", negarg ? "-" : "", unaarg);
-	if (mkqwna(bw, sz(msgbuf), douarg, NULL, NULL, notify))
+	if (mkqwna(bw->parent, sz(msgbuf), douarg, NULL, NULL, notify))
 		return 0;
 	else
 		return -1;
@@ -622,7 +622,7 @@ int uuarg(BW *bw, int c)
 	negarg = 0;
 	if ((c >= '0' && c <= '9') || c == '-')
 		return douarg(bw, c, NULL, NULL);
-	else if (mkqwna(bw, sc("Repeat"), douarg, NULL, NULL, NULL))
+	else if (mkqwna(bw->parent, sc("Repeat"), douarg, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
