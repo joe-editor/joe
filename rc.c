@@ -897,7 +897,8 @@ int procrc(CAP *cap, unsigned char *name)
 	int line = 0;		/* Line number */
 	int err = 0;		/* Set to 1 if there was a syntax error */
 
-	strcpy((char *)buf, (char *)name);
+	strncpy((char *)buf, (char *)name, sizeof(buf) - 1);
+	buf[sizeof(buf)-1] = '\0';
 #ifdef __MSDOS__
 	fd = fopen((char *)buf, "rt");
 #else
