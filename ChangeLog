@@ -1,4 +1,9 @@
 Thu Mar 18 2004  Joe Allen <jhallen@world.std.com>
+	* usearch.c, regex.c, regex.h:
+	Allow full escape sequences in replacement strings
+	fixes bug #828156
+
+Thu Mar 18 2004  Joe Allen <jhallen@world.std.com>
 	* b.c:
 	Automatically detect MS-DOS files (files with ^M^J terminated lines)
 

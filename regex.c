@@ -13,7 +13,7 @@
 #include "b.h"
 #include "vs.h"
 
-static int escape(unsigned char **a, int *b)
+int escape(unsigned char **a, int *b)
 {
 	int c;
 	unsigned char *s = *a;

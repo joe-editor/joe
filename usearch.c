@@ -209,13 +209,7 @@ static P *insert(SRCH *srch, P *p, char *s, int len)
 			len -= x;
 			s += x;
 		} else if (len >= 2) {
-			if (s[1] == '\\') {
-				binsc(p, '\\');
-				pgetc(p);
-			} else if (s[1] == 'n') {
-				binsc(p, '\n');
-				pgetc(p);
-			} else if (((s[1] >= 'a' && s[1] <= 'z') || (s[1] >= 'A' && s[1] <= 'Z'))
+			if (((s[1] >= 'a' && s[1] <= 'z') || (s[1] >= 'A' && s[1] <= 'Z'))
 				 && srch->pieces[(s[1] & 0x1f) - 1]) {
 				binsm(p, sv(srch->pieces[(s[1] & 0x1f) - 1]));
 				pfwrd(p, (long) sLEN(srch->pieces[(s[1] & 0x1f) - 1]));
@@ -225,6 +219,11 @@ static P *insert(SRCH *srch, P *p, char *s, int len)
 			} else if (s[1] == '&' && srch->entire) {
 				binsm(p, sv(srch->entire));
 				pfwrd(p, (long) sLEN(srch->entire));
+			} else {
+				unsigned char *a=s+x;
+				int l=len-x;
+				binsc(p,escape(&a,&l));
+				pgetc(p);
 			}
 			s += 2;
 			len -= 2;
