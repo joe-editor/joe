@@ -7,6 +7,144 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 1.0.0
+**Released: 1992-11-16**
+
+Source recovered from tsx-11 ftp archive on ibiblio
+
+*Archival notes: This version was included in SLS 1.02*
+
+Original announcement:
+```
+Xref: sparky comp.editors:2776 comp.os.linux:16902 alt.religion.emacs:460
+Path: sparky!uunet!ferkel.ucsb.edu!taco!rock!stanford.edu!agate!biosci!uwm.edu!cs.utexas.edu!zaphod.mps.ohio-state.edu!darwin.sura.net!wupost!usc!sol.ctr.columbia.edu!eff!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Newsgroups: comp.editors,comp.os.linux,alt.religion.emacs
+Subject: JOE 1.0.0 IS FINALLY DONE
+Message-ID: <Bxty5C.CL1@world.std.com>
+Date: 16 Nov 92 22:22:24 GMT
+Organization: The World Public Access UNIX, Brookline, MA
+Lines: 115
+
+The rewrite of JOE is finally done.  JOE Version 1.0.0 is here!
+
+You can get it from:
+
+	tsx-11.mit.edu in pud/linux someplace
+	world.std.com  in the incomming directory
+	VWIS Linux BBS (508)793-9568  in packages/joe.tar.Z
+
+I'll post again as soon as I know where it is exactly :-)
+
+Send email to 'jhallen@word.std.com' or to 'rcarter' on the VWIS Linux BBS
+
+I apologize to all those people who I promised that joe would be done
+real-soon-now.  I knew that it only take me a few weeks to finish it, but I
+could never seem to get down to it... things like work school and
+procrastination kept interfering...  2000 lines of JOE took a year and a
+half and the remaining 18000 took the last month. 
+
+This release is kind of a beta test of the rewrite.  Not everything I
+promised to implement is done yet, but most things are.
+
+These are the new features:
+
+	TERMCAP/TERMINFO support
+
+		Joe will now work on any termcap terminal (except for
+overstrike terminals).  A new termcap library is supplied which can use an
+index file to make it faster than terminfo.  A number of terminfo extensions
+are supported and the GNU extensions to the termcap language are supported.
+JOE is not picky about the completeness of the termcap entries.  It should
+work even better than vi in this respect.
+
+	Improved scrolling
+
+		Necessary scrolling is detected at a lower level in the
+editor.  All edit commands will scroll if they need to.
+
+	Better UNIX integration
+
+		Every place in joe which accepts a file name (including the
+command line) will also accept:
+
+		!command		to pipe into or out of a command
+		>>filename		to append to a file
+		filename,start,size	to edit a portion of a file/device
+		-			to use stdin or stdout
+
+		Also, filenames on the command line may be preceeded by +nnn
+to start editing at a specified line.
+
+	Improved orthoganality
+
+		Each prompt is actually a normal edit buffer and a copy of a
+history buffer.  You can use all of the normal edit commands to edit the
+file names and search strings.  You can use the up arrow key (and search
+backwards or any other normal edit command) to get back previous responses.
+
+	New buffering system
+
+		Joe now uses a doubly linked list of gap buffers which can
+spill into /tmp directory files.  You can edit files of any size up to the
+amount of free disk space and there are no line length restrictions.
+
+	16-bit system support
+
+		This is not quite done, but joe was written so that it will
+eventually work well on xenix 286 and msdos.
+
+	File name selection menus
+
+		If you hit tab in a file name prompt, a menu of matching
+names will appear.
+
+	New help system
+
+		When you ask for help, you get a menu of help screens to
+choose from (all definable in the .joerc file).  Also in certain places
+the help is context sensitive.
+
+	The edit commands are improved:
+
+		- search and replace system uses powerful regular expressions
+		  including matching of balanced C expressions
+
+		- undo and redo now apply to complete edit commands.  If you
+		  accidently reformat paragraph on your C code, you only
+		  have to hit undo once.
+
+		- a position history is supplied so you can to next/prev. place
+
+		- multiple keyboard macros can be defined
+
+	Many options are supplied:
+
+		row and column numbers can be shown on status line
+		emacs style cursor recentering on scrolls
+		characters between 160-254 can be shown as-is
+		Ctrl and Meta chars can be displayed in joe or emacs style
+		Final newline can be forced on end of file
+		Can start with help on
+		No. pgup/pgdn lines to keep can be specified
+		Left margin as well as right margin can be specified
+
+	Joe will soon have:
+
+		Hex dump edit mode
+		Fixed record length edit mode
+		Rectangular blocks
+		Tag search and goto line with error
+		and maybe xedit style folding commands
+
+/*  jhallen@world.std.com */     /* Amazing */            /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
 ## JOE 0.1.5
 **Released: 1992-02-01**
 

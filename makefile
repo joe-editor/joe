@@ -1,59 +1,44 @@
 # Makefile for Joe's Own Editor
 
-# Directory to install joe and .joerc into
-WHEREJOE = /usr/local/stusrc/joe
-WHEREJOERC = /usr/local/stusrc/joe
-
-# Use these two for 'cc'
 CC = cc
-CFLAGS = -DKEYDEF=\"$(WHEREJOERC)/.joerc\" -O
-
-# Use these two for 'gcc'
-#CC = gcc
-#CFLAGS = -DKEYDEF=\"$(WHEREJOERC)/.joerc\" -O
+CFLAGS = -O
+OBJS = main.o termcap.o vfile.o pathfunc.o queue.o blocks.o vs.o va.o scrn.o \
+       b.o bw.o tw.o pw.o help.o heap.o toomany.o queue.o zstr.o edfuncs.o \
+       kbd.o w.o reg.o tab.o pattern.o random.o regex.o undo.o menu.o macro.o \
+       poshist.o
 
 foo:
 	@echo Type make followed by one of the following
 	@echo
-	@echo bsd hpux xenix esix linux svr3 posix cruddy install clean
+	@echo bsd hpux xenix sv posix termidx install clean
 
-bsd: joe.o asyncbsd.o blocks.o
-	$(CC) $(CFLAGS) joe.o asyncbsd.o blocks.o -ltermcap -o joe
+xenix: $(OBJS) ttyxenix.o olddir.o
+	$(CC) $(CFLAGS) -o joe $(OBJS) ttyxenix.o olddir.o -lx
 
-xenix: joe.o asyncxenix.o blocks.o
-	$(CC) $(CFLAGS) joe.o asyncxenix.o blocks.o -lx -ltermcap -o joe
+posix: $(OBJS) ttyposix.o
+	$(CC) $(CFLAGS) -o joe $(OBJS) ttyposix.o
 
-hpux: joe.o asynchpux.o blocks.o
-	$(CC) $(CFLAGS) joe.o asynchpux.o blocks.o -ltermcap -o joe
+bsd: $(OBJS) ttybsd.o
+	$(CC) $(CFLAGS) -o joe $(OBJS) ttybsd.o
 
-esix: joe.o asyncesix.o blocks.o
-	$(CC) $(CFLAGS) joe.o asyncesix.o blocks.o -lcurses -lbsd -o joe
+sv: $(OBJS) ttysv.o
+	$(CC) $(CFLAGS) -o joe $(OBJS) ttysv.o
 
-posix: joe.o asyncposix.o blocks.o
-	$(CC) $(CFLAGS) joe.o asyncposix.o blocks.o -ltermcap -o joe
+hpux: $(OBJS) ttyhpux.o
+	$(CC) $(CFLAGS) -o joe $(OBJS) ttyhpux.o
 
-linux: joe.o asynclinux.o blocks.o
-	$(CC) $(CFLAGS) joe.o asynclinux.o blocks.o -ltermcap -o joe
+termidx: termidx.o
+	$(CC) $(CFLAGS) -o termidx termidx.o
 
-svr3: joe.o asyncsvr3.o blocks.o
-	$(CC) $(CFLAGS) joe.o asyncsvr3.o blocks.o -lcurses -o joe
-
-cruddy: joe.o cruddy.o blocks.o
-	$(CC) $(CFLAGS) joe.o cruddy.o blocks.o -o joe
-
-install:
+install: joe termidx
 	strip joe
-	mv joe $(WHEREJOE)
-	cp .joerc $(WHEREJOERC)
-	chmod a+x $(WHEREJOE)/joe
-	chmod a+r $(WHEREJOERC)/.joerc
+	strip termidx
+	mv joe /usr/local/bin
+	cp joerc /usr/local/lib/joerc
+	mv termidx /usr/local/bin
+	chmod a+x /usr/local/bin/joe
+	chmod a+r /usr/local/lib/joerc
+	chmod a+x /usr/local/bin/termidx
 
 clean:
-	rm -f asyncbsd.o asyncxenix.o asynchpux.o asyncesix.o asyncposix.o \
-cruddy.o blocks.o joe.o asynclinux.o asyncsvr3.o
-
-asyncbsd.o asyncsvr3.o asynclinux.o cruddy.o asyncxenix.o asynxhpux.o asyncesix.o : async.h
-
-blocks.o : blocks.h
-
-joe.o : blocks.h joe.h async.h
+	rm -f $(OBJS) ttyxenix.o ttyposix.o ttybsd.o ttyhpux.o ttysv.o
