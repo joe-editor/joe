@@ -58,6 +58,7 @@ AC_PROG_GCC_TRADITIONAL
 AC_FUNC_LSTAT
 AC_FUNC_MALLOC
 AC_FUNC_SETPGRP
+AC_TYPE_PID_T
 AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_CHECK_FUNCS([alarm getcwd getwd isblank mkdir mkstemp setlocale strchr strdup utime setpgid setitimer sigprocmask])

@@ -209,7 +209,7 @@ static int ttysig = 0;
 
 /* Stuff for shell windows */
 
-static int kbdpid;		/* PID of kbd client */
+static pid_t kbdpid;		/* PID of kbd client */
 static int ackkbd = -1;		/* Editor acks keyboard client to this */
 
 static int mpxfd;		/* Editor reads packets from this fd */
@@ -953,7 +953,7 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 {
 	int fds[2];
 	int comm[2];
-	int pid;
+	pid_t pid;
 	int x;
 	MPX *m;
 	char *name;
@@ -1046,7 +1046,7 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 
 			_exit(0);
 		}
-		jwrite(comm[1], &pid, sizeof(int));
+		jwrite(comm[1], &pid, sizeof(pid));
 
 	      loop:
 		pack.who = m;
@@ -1068,7 +1068,7 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 			_exit(0);
 		}
 	}
-	jread(comm[0], &m->pid, sizeof(int));
+	jread(comm[0], &m->pid, sizeof(m->pid));
 
 	close(comm[0]);
 	close(comm[1]);

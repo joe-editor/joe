@@ -9,6 +9,11 @@
 #define _Ibw 1
 
 #include "config.h"
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
 #include "b.h"
 #include "rc.h"
 #include "w.h"
@@ -31,7 +36,7 @@ struct bw {
 	OPTIONS o;
 	void *object;
 
-	int pid;		/* Process id */
+	pid_t pid;		/* Process id */
 	int out;		/* fd to write to process */
 	int linums;
 };
