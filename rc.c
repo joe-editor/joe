@@ -64,7 +64,7 @@ OPTIONS *options = NULL;
 /* Global variable options */
 extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode, nobackups, lightoff, exask, skiptop;
 extern int noxon, lines, staen, columns, Baud, dopadding, orphan, marking, beep, keepup, nonotice;
-extern int notite, usetabs, assume_color, guesscrlf, guessindent;
+extern int notite, usetabs, assume_color, guesscrlf, guessindent, menu_explorer;
 extern unsigned char *backpath;
 
 /* Default options for prompt windows */
@@ -225,6 +225,7 @@ struct glopts {
 	{US "lmargin",	7, NULL, (unsigned char *) &fdefault.lmargin, US "Left margin (%d): ", 0, US "Left margin ", 0, 0, 63 },
 	{US "rmargin",	7, NULL, (unsigned char *) &fdefault.rmargin, US "Right margin (%d): ", 0, US "Right margin ", 0, 7, 255 },
 	{US "square",	0, &square, NULL, US "Rectangle mode", US "Text-stream mode", US "X Rectangle mode " },
+	{US "menu_explorer",	0, &menu_explorer, NULL, US "Menu explorer mode", US "Simple completion", US "  Menu explorer " },
 	{US "indentc",	5, NULL, (unsigned char *) &fdefault.indentc, US "Indent char %d (SPACE=32, TAB=9, ^C to abort): ", 0, US "  Indent char ", 0, 0, 255 },
 	{US "istep",	5, NULL, (unsigned char *) &fdefault.istep, US "Indent step %d (^C to abort): ", 0, US "  Indent step ", 0, 1, 64 },
 	{US "french",	4, NULL, (unsigned char *) &fdefault.french, US "One space after periods for paragraph reformat", US "Two spaces after periods for paragraph reformat", US "  french spacing " },

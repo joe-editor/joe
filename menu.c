@@ -78,7 +78,11 @@ static void menudisp(MENU *m)
 		a += m->t->t->co;
 	}
 	m->parent->cury = (m->cursor - m->top) / m->perline;
-	m->parent->curx = ((m->cursor - m->top) % m->perline) * (m->width + 1);
+	col = txtwidth(m->list[m->cursor],strlen((char *)m->list[m->cursor]));
+	if (col < m->width)
+		m->parent->curx = ((m->cursor - m->top) % m->perline) * (m->width + 1) + col;
+	else
+		m->parent->curx = ((m->cursor - m->top) % m->perline) * (m->width + 1) + m->width;
 }
 
 static void menumove(MENU *m, int x, int y)
@@ -93,11 +97,35 @@ static void menuresz(MENU *m, int wi, int he)
 	m->h = he;
 }
 
+static int mlines(unsigned char **s, int w)
+{
+	int x;
+	int lines;
+	int width;
+	int nitems;
+	int perline;
+
+	for (x = 0, width = 0; s[x]; ++x) {
+		int d = txtwidth(s[x],strlen((char *)(s[x])));
+		if (d > width)
+			width = d;
+	}
+	nitems = x;
+	if (width > w)
+		width = w - 1;
+	perline = w / (width + 1);
+
+	lines = (nitems + perline - 1) / perline;
+
+	return lines;
+}
+
 static void mconfig(MENU *m)
 {
 	/* Configure menu display parameters */
 	if (m->list) {
 		int x;
+		/* int lines; */
 
 		m->top = 0;
 		for (x = 0, m->width = 0; m->list[x]; ++x) {
@@ -109,6 +137,8 @@ static void mconfig(MENU *m)
 		if (m->width > m->w)
 			m->width = m->w - 1;
 		m->perline = m->w / (m->width + 1);
+
+		/* lines = (m->nitems + m->perline - 1) / m->perline; */
 	}
 }
 
@@ -361,8 +391,20 @@ void ldmenu(MENU *m, unsigned char **s, int cursor)
 
 MENU *mkmenu(W *w, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify)
 {
-	W *new = wcreate(w->t, &watommenu, w, w, w->main, 4, NULL, notify);
+	W *new;
 	MENU *m;
+	int lines;
+	int h = (w->main->h*40) / 100; /* 40% of window size */
+	if (!h)
+		h = 1;
+	
+	if (s) {
+		lines = mlines(s,w->t->w-1);
+		if (lines < h)
+			h = lines;
+	}
+
+	new = wcreate(w->t, &watommenu, w, w, w->main, h, NULL, notify);
 
 	if (!new) {
 		if (notify)

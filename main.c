@@ -348,7 +348,8 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 				}
 				bw->b->o = bw->o;
 				bw->b->rdonly = bw->o.readonly;
-				maint->curwin = bw->parent;
+				if (!opened)
+					maint->curwin = bw->parent;
 				if (er == -1 && bw->o.mnew)
 					exemac(bw->o.mnew);
 				if (er == 0 && bw->o.mold)

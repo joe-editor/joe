@@ -28,8 +28,11 @@ typedef struct tab TAB;
 
 extern int smode;		/* ??? */
 extern int beep;
+int menu_explorer = 0;		/* Stay in menu system when directory selected */
 
 struct tab {
+	int first_len;			/* Original size of path */
+	int ofst;			/* Starting offset to path */
 	unsigned char *path;		/* current directory */
 	unsigned char *pattern;		/* search pattern */
 	int len;		/* no. entries in files */
@@ -98,11 +101,11 @@ static int get_entries(TAB *tab, int prv)
 	return which;
 }
 
-static void insnam(BW *bw, unsigned char *path, unsigned char *nam, int dir)
+static void insnam(BW *bw, unsigned char *path, unsigned char *nam, int dir, int ofst)
 {
 	P *p = pdup(bw->cursor);
 
-	p_goto_bol(p);
+	pgoto(p, ofst);
 	p_goto_eol(bw->cursor);
 	bdel(p, bw->cursor);
 	if (sLEN(path)) {
@@ -135,17 +138,14 @@ static void insnam(BW *bw, unsigned char *path, unsigned char *nam, int dir)
  * Returns with 0 for success
  */
 
-static int treload(MENU *m, int flg)
+static unsigned char **treload(TAB *tab,MENU *m, BW *bw, int flg,int *defer)
 {
-	TAB *tab = (TAB *) m->object;	/* The menu */
-	W *w = m->parent;	/* Window menu is in */
-	BW *bw = (BW *) w->win->object;	/* The prompt window */
 	int x;
 	int which;
 	struct stat buf;
 
 	if ((which = get_entries(tab, tab->prv)) < 0)
-		return -1;
+		return 0;
 	if (tab->path && tab->path[0])
 		stat((char *)tab->path, &buf);
 	else
@@ -165,9 +165,15 @@ static int treload(MENU *m, int flg)
 		else if (tab->type[x] == F_EXEC)
 			tab->list[x] = vsadd(tab->list[x], '*');
 	}
-	ldmenu(m, tab->list, which);
-	insnam(bw, tab->path, tab->pattern, 0);
-	return 0;
+	if (defer) {
+		*defer = which;
+		insnam(bw, tab->path, tab->pattern, 0, tab->ofst);
+		return tab->list;
+	} else {
+		ldmenu(m, tab->list, which);
+		insnam(bw, tab->path, tab->pattern, 0, tab->ofst);
+		return tab->list;
+	}
 }
 
 static void rmtab(TAB *tab)
@@ -187,24 +193,21 @@ static void rmtab(TAB *tab)
 /*****************************************************************************/
 static int tabrtn(MENU *m, int cursor, TAB *tab)
 {
-#if 0
-	/* Old way: if tab completes a directory, bring up menu of
-	   that directory. */
-	if (tab->type[cursor] == F_DIR) {	/* Switch directories */
+	if (menu_explorer && tab->type[cursor] == F_DIR) {	/* Switch directories */
 		unsigned char *orgpath = tab->path;
 		unsigned char *orgpattern = tab->pattern;
 		unsigned char *e = endprt(tab->path);
 
-		if (!strcmp(tab->files[cursor], "..") && sLEN(e)
+		/* if (!strcmp(tab->files[cursor], "..") && sLEN(e)
 		    && !(e[0] == '.' && e[1] == '.' && (!e[2] || e[2] == '/')))
 			tab->path = begprt(tab->path);
-		else {
+		else */ {
 			tab->path = vsncpy(NULL, 0, sv(tab->path));
 			tab->path = vsncpy(sv(tab->path), sv(m->list[cursor]));
 		}
 		vsrm(e);
 		tab->pattern = vsncpy(NULL, 0, sc("*"));
-		if (treload(m, 0)) {
+		if (!treload(m->object, m, m->parent->win->object, 0, NULL)) {
 			msgnw(m->parent, US "Couldn't read directory ");
 			vsrm(tab->pattern);
 			tab->pattern = orgpattern;
@@ -217,21 +220,9 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 			return 0;
 		}
 	} else {		/* Select name */
-#endif
-	/* New way: just add directory to path */
-	if (tab->type[cursor] == F_DIR) {
 		BW *bw = m->parent->win->object;
 
-		insnam(bw, tab->path, tab->files[cursor], 1);
-		rmtab(tab);
-		m->object = NULL;
-		m->abrt = NULL;
-		wabort(m->parent);
-		return 0;
-	} else {
-		BW *bw = m->parent->win->object;
-
-		insnam(bw, tab->path, tab->files[cursor], 0);
+		insnam(bw, tab->path, tab->files[cursor], (tab->type[cursor]==F_DIR), tab->ofst);
 		rmtab(tab);
 		m->object = NULL;
 		m->abrt = NULL;
@@ -239,6 +230,24 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 		return 0;
 	}
 }
+
+/* Like above, but treats directories as files (adds them to path instead of
+ * traverse hierarchy) */
+
+static int tabrtn1(MENU *m, int cursor, TAB *tab)
+{
+	/* New way: just add directory to path */
+	BW *bw = m->parent->win->object;
+
+	insnam(bw, tab->path, tab->files[cursor], (tab->type[cursor]==F_DIR ? 1 : 0), tab->ofst);
+	rmtab(tab);
+	m->object = NULL;
+	m->abrt = NULL;
+	wabort(m->parent);
+	return 0;
+}
+
+
 /*****************************************************************************/
 /****************** The user hit backspace ***********************************/
 /*****************************************************************************/
@@ -248,7 +257,7 @@ static int tabbacks(MENU *m, int cursor, TAB *tab)
 	unsigned char *orgpattern = tab->pattern;
 	unsigned char *e = endprt(tab->path);
 
-	if (sLEN(e))
+	if (sLEN(e) && sLEN(tab->path)!=tab->first_len)
 		tab->path = begprt(tab->path);
 	else {
 		wabort(m->parent);
@@ -257,7 +266,7 @@ static int tabbacks(MENU *m, int cursor, TAB *tab)
 	vsrm(e);
 	tab->pattern = vsncpy(NULL, 0, sc("*"));
 
-	if (treload(m, 1)) {
+	if (!treload(m->object, m, m->parent->win->object, 1, NULL)) {
 		msgnw(m->parent, US "Couldn't read directory ");
 		vsrm(tab->pattern);
 		tab->pattern = orgpattern;
@@ -273,10 +282,24 @@ static int tabbacks(MENU *m, int cursor, TAB *tab)
 /*****************************************************************************/
 static int tababrt(BW *bw, int cursor, TAB *tab)
 {
-	insnam(bw, tab->orgpath, tab->orgnam, 0);
+	insnam(bw, tab->orgpath, tab->orgnam, 0, tab->ofst);
 	rmtab(tab);
 	return -1;
 }
+
+P *p_goto_start_of_path(P *p)
+{
+	int c;
+	do
+		c = prgetc(p);
+	while (c!=NO_MORE_DATA && c!=' ' && c!='\n');
+
+	if (c!=NO_MORE_DATA)
+		pgetc(p);
+
+	return p;
+}
+
 /*****************************************************************************/
 /****************** Create a tab window **************************************/
 /*****************************************************************************/
@@ -287,55 +310,60 @@ int cmplt(BW *bw)
 	P *p, *q;
 	unsigned char *cline, *tmp;
 	long a, b;
+	int which;
+	unsigned char **l;
+	int ofst;
 
 	tab = (TAB *) joe_malloc(sizeof(TAB));
-	new = mkmenu(bw->parent, NULL, tabrtn, tababrt, tabbacks, 0, tab, NULL);
-	if (!new) {
-		joe_free(tab);
-		return -1;
-	}
-
 	tab->files = NULL;
 	tab->type = NULL;
 	tab->list = NULL;
 	tab->prv = 0;
 	tab->len = 0;
 
-	p = pdup(bw->cursor);
-	p_goto_bol(p);
 	q = pdup(bw->cursor);
 	p_goto_eol(q);
+	p = pdup(q);
+	p_goto_start_of_path(p);
+	ofst = p->byte;
+
 	tmp = brvs(p, (int) (q->byte - p->byte));
 	cline = parsens(tmp, &a, &b);
 	vsrm(tmp);
 	prm(p);
 	prm(q);
 
+	tab->ofst = ofst;
 	tab->pattern = namprt(cline);
 	tab->path = dirprt(cline);
+	tab->first_len = sLEN(tab->path);
 	tab->orgnam = vsncpy(NULL, 0, sv(tab->pattern));
 	tab->orgpath = vsncpy(NULL, 0, sv(tab->path));
 	tab->pattern = vsadd(tab->pattern, '*');
 	vsrm(cline);
 
-	if (treload(new, 0)) {
-		wabort(new->parent);
-		if(beep)
-			ttputc(7);
-		return -1;
-	} else if (sLEN(tab->files) == 1)
-		return tabrtn(new, 0, tab);
-	else if (smode || isreg(tab->orgnam))
-		return 0;
-	else {
-		unsigned char *com = mcomplete(new);
+	l = treload(tab, 0, bw, 0, &which);
 
-		vsrm(tab->orgnam);
-		tab->orgnam = com;
-		wabort(new->parent);
-		smode = 2;
-		if(beep)
+	if (l && (new = mkmenu(bw->parent, l, tabrtn, tababrt, tabbacks, which, tab, NULL))) {
+		if (sLEN(tab->files) == 1)
+			return tabrtn1(new, 0, tab);
+		else if (smode || isreg(tab->orgnam))
+			return 0;
+		else {
+			unsigned char *com = mcomplete(new);
+
+			vsrm(tab->orgnam);
+			tab->orgnam = com;
+			wabort(new->parent);
+			smode = 2;
+			/* if(beep) */
+				ttputc(7);
+			return 0;
+		}
+	} else {
+		/* if(beep) */
 			ttputc(7);
-		return 0;
+		rmtab(tab);
+		return -1;
 	}
 }

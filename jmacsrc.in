@@ -58,6 +58,9 @@
 
 -guess_indent	Guess indent character (tab or space).
 
+-menu_explorer Stay in menu system when a directory is selected (otherwise
+                directory is added to path and menu is closed).
+
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used

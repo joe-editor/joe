@@ -1,3 +1,20 @@
+Fri May  7 2004  Joe Allen <jhallen@world.std.com>
+	* main.c, menu.c, pw.c, qw.c, rc.c, tab.c :
+
+	joe a b c, now windows are in order a, b, c.
+
+	TAB completion now works on last path in prompt window:
+	for example '!ls foo', tab will complete the foo.
+
+	Added menu_explorer option.  When set: menu stays up when
+	a directory is seleted.  When clear: directory is added
+	to path and menu is closed.
+
+	Menus are now 40% of window size (or smaller if they are
+	not filled).
+
+	Cursor is now position after selected menu entry.
+
 Thu May  6 2004  Joe Allen <jhallen@world.std.com>
 	* umenu.c :
 

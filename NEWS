@@ -10,6 +10,11 @@ JOE 3.1
 - Fix UTF-8 codes between 0x10000 - 0x1FFFF
 - Now prints <XXXX> for unicode control characters
 - Improved smart home, indent, etc.
+- TAB completion is now more "bash"-like
+- When multiple files are given on command line, they end up in
+  same order on the screen in JOE (before they were shuffled).
+- Menu size is now variable (40% of window size or smaller if
+  it's not filled).
 
 JOE 3.0 (23 APR 2004)
 - UTF-8

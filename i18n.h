@@ -23,6 +23,7 @@ int joe_iswxdigit PARAMS((struct charmap *,int c));
 int joe_iswblank PARAMS((struct charmap *,int c));
 
 int joe_wcwidth PARAMS((int wide,int c));
+/* Looking for wswidth? Take a look at scrn.c/txtwidth() */
 
 int joe_towupper PARAMS((struct charmap *,int c));
 int joe_towlower PARAMS((struct charmap *,int c));
