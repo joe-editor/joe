@@ -233,7 +233,7 @@
 	-semi_comment		Text after ; should be ignored
 
 	-text_delimiters begin=end:if=elif=else=endif
-	-text_delimiters "begin end; if else; if elif else endif"
+
 				Define word delimiters
 
  Default local options
@@ -454,6 +454,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
+-text_delimiters begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
  Verilog header file
 *.vh
 -autoindent
@@ -465,6 +466,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
+-text_delimiters begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
  VHDL file
 *.vhd
 -autoindent
@@ -570,16 +572,19 @@
 -syntax sh
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
+
 *.sh
 -autoindent
 -syntax sh
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
+
 *profile
 -autoindent
 -syntax sh
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
+
  BASH Shell
 *
 +#!\+\[ 	]\+\[a-z/]/bash\>
@@ -587,21 +592,25 @@
 -syntax sh
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
+
 *.bash
 -autoindent
 -syntax sh
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
+
 *.bash_login
 -autoindent
 -syntax sh
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
+
 *.bash_logout
 -autoindent
 -syntax sh
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
+
  LISP
 *.lisp
 -autoindent
@@ -625,11 +634,13 @@
 -syntax sh
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
+
 *.ksh
 -autoindent
 -syntax sh
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
+
  Makefile
 *akefile
 -autoindent
@@ -649,6 +660,7 @@
 -smartbacks
 -purify
 -text_delimiters begin|BEGIN|record|RECORD|case|CASE=end|END:repeat|REPEAT=until|UNTIL
+
 *.pas
 -autoindent
 -syntax pascal
@@ -656,6 +668,7 @@
 -smartbacks
 -purify
 -text_delimiters begin|BEGIN|record|RECORD|case|CASE=end|END:repeat|REPEAT=until|UNTIL
+
  Fortran
 *.f
 -autoindent

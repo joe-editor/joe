@@ -321,164 +321,243 @@ int unedge(BW *bw)
    "else," which finally matches with "fi".
 
    The search goes forward if the delimiter matches any words of any group
-   but the last of in the set.  If the delimiter matches a word in the last
+   but the last of the set.  If the delimiter matches a word in the last
    group, the search goes backward to the first delimiter.
 */
 
 /* Return pointer to first matching set in delimiter set list.  Returns NULL
    if no matches were found. */
 
-unsigned char *have_delim(unsigned char *list,unsigned char *delim)
+unsigned char *next_set(unsigned char *set)
 {
-	unsigned char *start_of_entry;
-	return start_of_entry;
+	while (*set && *set!=':')
+		++set;
+	if (*set==':')
+		++set;
+	return set;
 }
 
-int tomatch_fwrd(BW *bw,unsigned char *begin_delim,unsigned char *end_delim)
+unsigned char *next_group(unsigned char *group)
 {
-	P *p=pdup(bw->cursor);
-	int c;
-	unsigned char buf[32];
-	int len;
-	int state = 0;
-	int cnt = 1;
-	p_goto_next(p);
-	while ((c=pgetc(p)) != NO_MORE_DATA) {
-		if (c == '\\') {
-			pgetc(p);
-		} else if (c == '"') {
-			while ((c = pgetc(p)) != NO_MORE_DATA)
-				if (c == '"') break;
-				else if (c == '\\') pgetc(p); 
-		} else if (bw->o.single_quoted && c == '\'') {
-			while((c = pgetc(p)) != NO_MORE_DATA)
-				if (c == '\'') break;
-				else if (c == '\\') pgetc(p);
-		} else if ((bw->o.c_comment || bw->o.cpp_comment) && c == '/') {
-			c = pgetc(p);
-			if (c == '*') {
-				c = pgetc(p);
-				do {
-					do {
-						if (c == '*') break;
-					} while ((c = pgetc(p)) != NO_MORE_DATA);
-					c = pgetc(p);
-				} while (c != NO_MORE_DATA && c != '/');
-			} else if (c == '/') {
-				while ((c = pgetc(p)) != NO_MORE_DATA)
-					if (c == '\n')
-						break;
-			} else if (c != NO_MORE_DATA)
-				prgetc(p);
-		} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_') {
-			len=0;
-			while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
-				if(len!=31)
-					buf[len++]=c;
-				c=pgetc(p);
-			}
-			if(c!=NO_MORE_DATA)
-				prgetc(p);
-			buf[len]=0;
-			if (!strcmp((char *)buf,(char *)begin_delim)) {
-				++cnt;
-			} else if(!strcmp((char *)buf,(char *)end_delim) && !--cnt) {
-				pgoto(p,p->byte-len);
-				pset(bw->cursor,p);
-				return 0;
-			}
+	while (*group && *group!='=' && *group!=':')
+		++group;
+	if (*group=='=')
+		++group;
+	return group;
+}
+
+unsigned char *next_word(unsigned char *word)
+{
+	while (*word && *word!='|' && *word!='=' && *word!=':')
+		++word;
+	if (*word=='|')
+		++word;
+	return word;
+}
+
+int match_word(unsigned char *word,unsigned char *s)
+{
+	while (*word==*s && *s && *word) {
+		++word;
+		++s;
+	}
+	if (!*s && (!*word || *word=='|' || *word=='=' || *word==':'))
+		return 1;
+	else
+		return 0;
+}
+
+int is_in_group(unsigned char *group,unsigned char *s)
+{
+	while (*group && *group!='=' && *group!=':') {
+		if (match_word(group, s))
+			return 1;
+		else
+			group = next_word(group);
+	}
+	return 0;
+}
+
+int is_in_any_group(unsigned char *group,unsigned char *s)
+{
+	while (*group && *group!=':') {
+		if (match_word(group, s))
+			return 1;
+		else {
+			group = next_word(group);
+			if (*group == '=')
+				++group;
 		}
 	}
-	return -1;
+	return 0;
 }
 
-int tomatch_bkwd(BW *bw,unsigned char *begin_delim,unsigned char *end_delim)
+unsigned char *find_last_group(unsigned char *group)
 {
-	P *p=pdup(bw->cursor);
-	int c;
-	unsigned char buf[32];
-	int len;
-	int state = 0;
-	int cnt = 1;
-	p_goto_next(p);
-	p_goto_prev(p);
-	while ((c=prgetc(p)) != NO_MORE_DATA) {
-		int peek = prgetc(p);
-		if(peek!=NO_MORE_DATA)
-			pgetc(p);
-		if (peek=='\\') {
-		} else if (c == '"') {
-			while((c = prgetc(p)) != NO_MORE_DATA) {
-				if (c == '"') {
-					c = prgetc(p);
-					if (c != '\\') {
-						if (c != NO_MORE_DATA)
-							pgetc(p);
-						break;
+	unsigned char *s;
+	for (s = group; *s && *s!=':'; s=next_group(s))
+		group = s;
+	return group;
+}
+
+#define MAX_WORD_SIZE 31
+
+int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
+{
+	if (!*group || *group==':') {
+		/* Backward search */
+		unsigned char *last_of_set = find_last_group(set);
+		P *p=pdup(bw->cursor);
+		int c;
+		unsigned char buf[MAX_WORD_SIZE+1];
+		int len;
+		int state = 0;
+		int cnt = 1;
+		p_goto_next(p);
+		p_goto_prev(p);
+		while ((c=prgetc(p)) != NO_MORE_DATA) {
+			int peek = prgetc(p);
+			if(peek!=NO_MORE_DATA)
+				pgetc(p);
+			if (peek=='\\') {
+			} else if (c == '"') {
+				while((c = prgetc(p)) != NO_MORE_DATA) {
+					if (c == '"') {
+						c = prgetc(p);
+						if (c != '\\') {
+							if (c != NO_MORE_DATA)
+								pgetc(p);
+							break;
+						}
 					}
 				}
-			}
-		} else if (bw->o.single_quoted && c == '\'') {
-			while((c = prgetc(p)) != NO_MORE_DATA)
-				if (c == '\'') {
-					c = prgetc(p);
-					if (c != '\\') {
-						if (c != NO_MORE_DATA)
-							pgetc(p);
-						break;
+			} else if (bw->o.single_quoted && c == '\'') {
+				while((c = prgetc(p)) != NO_MORE_DATA)
+					if (c == '\'') {
+						c = prgetc(p);
+						if (c != '\\') {
+							if (c != NO_MORE_DATA)
+								pgetc(p);
+							break;
+						}
 					}
-				}
-		} else if (bw->o.c_comment && c == '/') {
-			c = prgetc(p);
-			if (c == '*') {
+			} else if (bw->o.c_comment && c == '/') {
 				c = prgetc(p);
-				do {
-					do {
-						if (c == '*') break;
-					} while ((c = prgetc(p)) != NO_MORE_DATA);
+				if (c == '*') {
 					c = prgetc(p);
-				} while (c != NO_MORE_DATA && c != '/');
-			} else if (c != NO_MORE_DATA)
-				pgetc(p);
-		} else if (bw->o.cpp_comment && c == '\n') {
-			P *q = pdup(p);
-			int cc;
-			p_goto_bol(q);
-			while((cc = pgetc(q)) != '\n') {
-				if (cc == '/') {
-					if (brch(q)=='/') {
-						prgetc(q);
-						pset(p,q);
-						break;
+					do {
+						do {
+							if (c == '*') break;
+						} while ((c = prgetc(p)) != NO_MORE_DATA);
+						c = prgetc(p);
+					} while (c != NO_MORE_DATA && c != '/');
+				} else if (c != NO_MORE_DATA)
+					pgetc(p);
+			} else if (bw->o.cpp_comment && c == '\n') {
+				P *q = pdup(p);
+				int cc;
+				p_goto_bol(q);
+				while((cc = pgetc(q)) != '\n') {
+					if (cc == '/') {
+						if (brch(q)=='/') {
+							prgetc(q);
+							pset(p,q);
+							break;
+						}
 					}
 				}
-			}
-			prm(q);
-		} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_') {
-			int x;
-			len=0;
-			while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
-				if(len!=31)
-					buf[len++]=c;
-				c=prgetc(p);
-			}
-			if(c!=NO_MORE_DATA)
-				pgetc(p);
-			buf[len]=0;
-			for(x=0;x!=len/2;++x) {
-				int d = buf[x];
-				buf[x] = buf[len-x-1];
-				buf[len-x-1] = d;
-			}
-			if (!strcmp((char *)buf,(char *)end_delim)) {
-				++cnt;
-			} else if(!strcmp((char *)buf,(char *)begin_delim) && !--cnt) {
-				pset(bw->cursor,p);
-				return 0;
+				prm(q);
+			} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_') {
+				int x;
+				len=0;
+				while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
+					if(len!=MAX_WORD_SIZE)
+						buf[len++]=c;
+					c=prgetc(p);
+				}
+				if(c!=NO_MORE_DATA)
+					pgetc(p);
+				buf[len]=0;
+				for(x=0;x!=len/2;++x) {
+					int d = buf[x];
+					buf[x] = buf[len-x-1];
+					buf[len-x-1] = d;
+				}
+				if (is_in_group(last_of_set,buf)) {
+					++cnt;
+				} else if(is_in_group(set,buf) && !--cnt) {
+					pset(bw->cursor,p);
+					prm(p);
+					return 0;
+				}
 			}
 		}
+		prm(p);
+		return -1;
+	} else {
+		/* Forward search */
+		unsigned char *last_of_set = find_last_group(group);
+		P *p=pdup(bw->cursor);
+		int c;
+		unsigned char buf[MAX_WORD_SIZE+1];
+		int len;
+		int state = 0;
+		int cnt = 1;
+		p_goto_next(p);
+		while ((c=pgetc(p)) != NO_MORE_DATA) {
+			if (c == '\\') {
+				pgetc(p);
+			} else if (c == '"') {
+				while ((c = pgetc(p)) != NO_MORE_DATA)
+					if (c == '"') break;
+					else if (c == '\\') pgetc(p); 
+			} else if (bw->o.single_quoted && c == '\'') {
+				while((c = pgetc(p)) != NO_MORE_DATA)
+					if (c == '\'') break;
+					else if (c == '\\') pgetc(p);
+			} else if ((bw->o.c_comment || bw->o.cpp_comment) && c == '/') {
+				c = pgetc(p);
+				if (c == '*') {
+					c = pgetc(p);
+					do {
+						do {
+							if (c == '*') break;
+						} while ((c = pgetc(p)) != NO_MORE_DATA);
+						c = pgetc(p);
+					} while (c != NO_MORE_DATA && c != '/');
+				} else if (c == '/') {
+					while ((c = pgetc(p)) != NO_MORE_DATA)
+						if (c == '\n')
+							break;
+				} else if (c != NO_MORE_DATA)
+					prgetc(p);
+			} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_') {
+				len=0;
+				while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
+					if(len!=MAX_WORD_SIZE)
+						buf[len++]=c;
+					c=pgetc(p);
+				}
+				if (c!=NO_MORE_DATA)
+					prgetc(p);
+				buf[len]=0;
+				if (is_in_group(set,buf)) {
+					++cnt;
+				} else if (cnt==1) {
+					if (is_in_any_group(group,buf)) {
+						pgoto(p,p->byte-len);
+						pset(bw->cursor,p);
+						prm(p);
+						return 0;
+					}
+				} else if(is_in_group(last_of_set,buf)) {
+					--cnt;
+				}
+			}
+		}
+		prm(p);
+		return -1;
 	}
-	return -1;
 }
 
 int utomatch(BW *bw)
@@ -494,6 +573,10 @@ int utomatch(BW *bw)
 	if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_') {
 		P *q, *p;
 		unsigned char *buf;
+		unsigned char *list = bw->b->o.text_delimiters;
+		unsigned char *set;
+		unsigned char *group;
+		unsigned char *word;
 		int flg;
 		p=pdup(bw->cursor);
 		p_goto_next(p);
@@ -503,43 +586,24 @@ int utomatch(BW *bw)
 		buf=brvs(p,q->byte-p->byte);
 		prm(p); prm(q);
 
-		if(!strcmp((char *)buf,"begin"))
-			flg=tomatch_fwrd(bw,US "begin", US "end");
-		else if(!strcmp((char *)buf,"module"))
-			flg=tomatch_fwrd(bw,US "module", US "endmodule");
-		else if(!strcmp((char *)buf,"function"))
-			flg=tomatch_fwrd(bw,US "function", US "endfunction");
-		else if(!strcmp((char *)buf,"if"))
-			flg=tomatch_fwrd(bw,US "if", US "fi"); // Or endif
-		else if(!strcmp((char *)buf,"case"))
-			flg=tomatch_fwrd(bw,US "case", US "endcase"); // Or esac
-		else if(!strcmp((char *)buf,"do"))
-			flg=tomatch_fwrd(bw,US "do", US "done");
-
-		else if(!strcmp((char *)buf,"end"))
-			flg=tomatch_bkwd(bw,US "begin", US "end");
-		else if(!strcmp((char *)buf,"endmodule"))
-			flg=tomatch_bkwd(bw,US "module", US "endmodule");
-		else if(!strcmp((char *)buf,"endfunction"))
-			flg=tomatch_bkwd(bw,US "function", US "endfunction");
-		else if(!strcmp((char *)buf,"fi"))
-			flg=tomatch_bkwd(bw,US "if", US "fi");
-		else if(!strcmp((char *)buf,"endif"))
-			flg=tomatch_bkwd(bw,US "if", US "endif");
-		else if(!strcmp((char *)buf,"endcase"))
-			flg=tomatch_bkwd(bw,US "case",US "endcase");
-		else if(!strcmp((char *)buf,"esac"))
-			flg=tomatch_bkwd(bw,US "case",US "esac");
-		else if(!strcmp((char *)buf,"done"))
-			flg=tomatch_bkwd(bw,US "do",US "done");
-		else {
-			flg= -1;
-			/* We don't know the word, so start a search */
-			flg = dofirst(bw, 0, 0, buf);
+		for (set = list; set && *set; set = next_set(set)) {
+			for (group = set; *group && *group!='=' && *group!=':'; group=next_group(group)) {
+				for (word = group; *word && *word!='|' && *word!='=' && *word!=':'; word=next_word(word)) {
+					if (match_word(word, buf)) {
+						flg = tomatch_word(bw, set, next_group(word));
+						goto done;
+					}
+				}
+			}
+				
 		}
+
+		/* We don't know the word, so start a search */
+		flg = dofirst(bw, 0, 0, buf);
+
+		done:
 		vsrm(buf);
 		return flg;
-		
 	}
 
 	switch (c) {

@@ -1,3 +1,7 @@
+Mon Feb 28 2005  Joe Allen <jhallen@world.std.com>
+
+	User defined text delimiters
+
 Sun Feb 27 2005  Joe Allen <jhallen@world.std.com>
 
 	Fix lockup problem from Ctrl-G
