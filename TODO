@@ -3,7 +3,7 @@ Short (infinite) list for 3.3:
 
 - dynamic spell checking with highlighter- there should be a way
 - grep and grep-find commands
-- smart end
+- smart-end key
 
 Mouse issues:
 

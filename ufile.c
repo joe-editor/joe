@@ -541,7 +541,7 @@ int usavenow(BW *bw)
 	BW *pbw;
 
 	if (bw->b->name) {
-		return dosave1(bw,vsdup(bw->b->name),mksavereq(NULL,NULL,NULL,0,0),NULL);
+		return dosave1(bw,vsncpy(NULL,0,sz(bw->b->name)),mksavereq(NULL,NULL,NULL,0,0),NULL);
 	} else
 		return usave(bw);
 }
