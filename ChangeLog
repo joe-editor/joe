@@ -1,3 +1,9 @@
+Sat Mar  5 2005  Joe Allen <jhallen@world.std.com>
+
+	Fix bug where ^KC to copy text into search
+	prompt was not working (search was taking
+	over selected block too early).
+
 Fri Mar  4 2005  Joe Allen <jhallen@world.std.com>
 
 	Add block evaluator and ? operator to math

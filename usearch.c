@@ -524,7 +524,7 @@ static int pfsave(BW *bw, SRCH *srch)
 static int set_replace(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
 	srch->replacement = s;
-	return dopfnext(bw, srch, notify);
+	return dopfnext(bw, setmark(srch), notify);
 }
 
 static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
@@ -578,7 +578,7 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 		else
 			return -1;
 	} else
-		return dopfnext(bw, srch, notify);
+		return dopfnext(bw, setmark(srch), notify);
 }
 
 static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
@@ -637,7 +637,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 			prgetc(bw->cursor);
 		return urtn((BASE *)bw, -1);
 	}
-	srch = setmark(mksrch(NULL, NULL, 0, back, -1, repl, 0));
+	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0);
 	srch->addr = bw->cursor->byte;
 	srch->wrap_p = pdup(bw->cursor);
 	srch->wrap_p->owner = &srch->wrap_p;

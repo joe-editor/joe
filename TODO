@@ -1,30 +1,28 @@
 Short list for 3.2:
 
-- put -marking back into jmacs, now that it's working properly.  Forgot
-  if ^W is supposed to "undrop" the anchor.
+- for cygwin: we need to compile with --disable-termcap
+
+- set -marking as the default in jmacs?
 
 - egmont's Ctrl-selection bug
-
-- ^KC into search window fails.  key to move text into search window
 
 - ^D in selection prompts should bring up menu as in tcsh
 
 - update man page
 
 - better string demarcation in highlighter (highlight all words with 's in
-- them- need to use pointers instead of buffer to refer to string)
+  them- need to use pointers instead of buffer to refer to string)
 
 - ^K W doesn't say "block written" when it's done
 
-- debug .joe_state file
- - names of files on command line
+- .joe_state file:
+ - save names of files on command line?
  - try for previous screen configuration?
  - multiple joes: the last one who exits wins
  - don't quote macros, so user can copy them to joerc file
 
-- search should automatically use 'k' mode if block is
-  selected.  Cursor should jump to top of block when done.  Jump
-  back to start mode?
+- search: automatically use 'k' mode if there is a block selected?  Cursor should
+  jump to top of block when done?  Modes for this?
 
 Others:
 
