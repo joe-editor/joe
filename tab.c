@@ -68,6 +68,7 @@ static int get_entries(TAB *tab, int prv)
 	unsigned char *oldpwd = pwd();
 	unsigned char **files;
 	unsigned char *tmp;
+	int users_flg = 0;
 
 	tmp = vsncpy(NULL,0,sv(tab->path));
 	tmp = canonical(tmp);
@@ -77,7 +78,11 @@ static int get_entries(TAB *tab, int prv)
 		return -1;
 	}
 	vsrm(tmp);
-	files = rexpnd(tab->pattern);
+	if (!tab->path[0] && tab->pattern[0]=='~') {
+		files = rexpnd_users(tab->pattern);
+		users_flg = 1;
+	} else
+		files = rexpnd(tab->pattern);
 	if (!files) {
 		chpwd(oldpwd);
 		return -1;
@@ -93,20 +98,23 @@ static int get_entries(TAB *tab, int prv)
 	if (tab->type)
 		joe_free(tab->type);
 	tab->type = (unsigned char *) joe_malloc(tab->len);
-	for (a = 0; a != tab->len; a++) {
-		struct stat buf;
-		mset(&buf, 0, sizeof(struct stat));
-
-		stat((char *)(files[a]), &buf);
-		if (buf.st_ino == prv)
-			which = a;
-		if ((buf.st_mode & S_IFMT) == S_IFDIR)
+	for (a = 0; a != tab->len; a++)
+		if(users_flg) {
 			tab->type[a] = F_DIR;
-		else if (buf.st_mode & (0100 | 0010 | 0001))
-			tab->type[a] = F_EXEC;
-		else
-			tab->type[a] = F_NORMAL;
-	}
+		} else {
+			struct stat buf;
+			mset(&buf, 0, sizeof(struct stat));
+
+			stat((char *)(files[a]), &buf);
+			if (buf.st_ino == prv)
+				which = a;
+			if ((buf.st_mode & S_IFMT) == S_IFDIR)
+				tab->type[a] = F_DIR;
+			else if (buf.st_mode & (0100 | 0010 | 0001))
+				tab->type[a] = F_EXEC;
+			else
+				tab->type[a] = F_NORMAL;
+		}
 	chpwd(oldpwd);
 	return which;
 }

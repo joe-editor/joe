@@ -66,6 +66,6 @@ int ubyte PARAMS((BW *bw));
 int ucol PARAMS((BW *bw));
 int utxt PARAMS((BASE *bw));
 int uhome PARAMS((BW *bw));
-int uname PARAMS((BW *bw));
+int uname_joe PARAMS((BW *bw));
 
 #endif

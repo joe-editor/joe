@@ -37,7 +37,8 @@ JOE 3.2
 
 - TAB completion is now much more like bash (again :-).  The cursor stays
   at the file name prompt instead of jumping into the menu system.  Also
-  ^D brings up the menu, like in tcsh.
+  ^D brings up the menu, like in tcsh.  Also, tab completion now works
+  on user names for ~ expansion.
 
 - Now there is a ~/.joe_state file which stores:
 	all history buffers

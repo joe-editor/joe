@@ -1,7 +1,10 @@
 
 Short list for 3.2:
 
-~j <tab> should complete use name...
+can we highlight backup files? files ending in .in?
+
+Problems with parsing joerc file: comments are getting included in all
+string options.  Switch to unix standard config file format?
 
 perl again: if (-s foo)  looks like s/
 

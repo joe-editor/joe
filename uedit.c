@@ -2212,7 +2212,7 @@ int utxt(BW *bw)
 
 /* Insert current file name */
 
-int uname(BW *bw)
+int uname_joe(BW *bw)
 {
 	unsigned char *s;
 	W *w=bw->parent->main;

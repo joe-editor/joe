@@ -8,6 +8,9 @@
 #include "config.h"
 #include "types.h"
 
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#endif
 #include <stdio.h>
 #include <sys/types.h>
 #ifdef HAVE_SYS_STAT_H
@@ -355,6 +358,21 @@ unsigned char **rexpnd(unsigned char *word)
 					lst = vaadd(lst, vsncpy(NULL, 0, sz((unsigned char *)de->d_name)));
 		closedir(dir);
 	}
+	return lst;
+}
+/********************************************************************/
+unsigned char **rexpnd_users(unsigned char *word)
+{
+	unsigned char **lst = NULL;
+	struct passwd *pw;
+
+	while(pw=getpwent())
+		if (rmatch(word+1, (unsigned char *)pw->pw_name)) {
+			unsigned char *t = vsncpy(NULL,0,sc("~"));
+			lst = vaadd(lst, vsncpy(sv(t),sz((unsigned char *)pw->pw_name)));
+			}
+	endpwent();
+
 	return lst;
 }
 /********************************************************************/
