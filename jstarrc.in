@@ -122,6 +122,9 @@
 
  -square	Rectangular block mode
 
+ -bg_color color
+		Set background color: for example "-bg_color bg_blue"
+
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used

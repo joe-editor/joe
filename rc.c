@@ -99,6 +99,7 @@ extern int xmouse;
 extern unsigned char *backpath;
 extern int nolocks, nomodcheck, nocurdir;
 extern int assume_256color;
+extern int bg_color;
 
 /* Set to use ~/.joe_state file */
 int joe_state;
@@ -554,6 +555,14 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			if (options)
 				options->msold = mparse(NULL, arg, &sta);
+			ret = 2;
+		} else
+			ret = 1;
+	} else if (!strcmp(s, "bg_color")) {
+		if (arg) {
+			int sta;
+
+			bg_color = meta_color(arg);
 			ret = 2;
 		} else
 			ret = 1;

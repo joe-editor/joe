@@ -35,6 +35,8 @@ extern WATOM watommenu;
 
 /******** i don't like global var ******/
 
+extern int bg_color;
+
 /* 
  * Move cursor to beginning of line
  */
@@ -1855,13 +1857,15 @@ int utypebw(BW *bw, int k)
 			simple = 0;
 		if (simple && k != '\t' && k != '\n' && !curmacro) {
 			int a;
-			int atr = 0;
+			int atr;
 			unsigned char c = k;
 			SCRN *t = bw->parent->t->t;
 			int y = bw->y + bw->cursor->line - bw->top->line;
 			int *screen = t->scrn + y * t->co;
 			int *attr = t->attr + y * t->co;
 			x += bw->x;
+
+			atr = BG_COLOR(bg_color);
 
 			if (!upd && piseol(bw->cursor) && !bw->o.highlight)
 				t->updtab[y] = 0;
@@ -1871,7 +1875,7 @@ int utypebw(BW *bw, int k)
 			    markk->b == bw->b &&
 			   ((!square && bw->cursor->byte >= markb->byte && bw->cursor->byte < markk->byte) ||
 			    ( square && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line && piscol(bw->cursor) >= markb->xcol && piscol(bw->cursor) < markk->xcol)))
-				atr = INVERSE;
+				atr |= INVERSE;
 			outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, k, atr);
 		}
 #endif

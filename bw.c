@@ -33,6 +33,7 @@ int marking = 0;
 extern int square;
 extern int staen;
 extern SCREEN *maint;
+extern int bg_color;
 
 static P *getto(P *p, P *cur, P *top, long int line)
 {
@@ -330,7 +331,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
         int *syn;
         P *tmp;
         int idx=0;
-        int atr = 0;
+        int atr = BG_COLOR(bg_color); 
 
 	utf8_init(&utf8_sm);
 
@@ -362,8 +363,11 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				bc = ungetit;
 				ungetit = -1;
 			}
-			if(st.state!=-1)
+			if(st.state!=-1) {
 				atr = syn[idx++];
+				if (!((atr & BG_VALUE) >> BG_SHIFT))
+					atr |= BG_COLOR(bg_color);
+			}
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
 				if (!--amnt) {
@@ -478,8 +482,11 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				bc = ungetit;
 				ungetit = -1;
 			}
-			if(st.state!=-1)
-				atr=syn[idx++];
+			if(st.state!=-1) {
+				atr = syn[idx++];
+				if (!(atr & BG_MASK))
+					atr |= BG_COLOR(bg_color);
+			}
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
 				if (!--amnt) {
@@ -793,7 +800,7 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	else
 		strcpy((char *)buf, "      ");
 	for (z = 0; buf[z]; ++z) {
-		outatr(w->b->o.charmap, t, screen + z, attr + z, z, y, buf[z], 0);
+		outatr(w->b->o.charmap, t, screen + z, attr + z, z, y, buf[z], BG_COLOR(bg_color)); 
 		if (ifhave)
 			return;
 		comp[z] = buf[z];
@@ -818,7 +825,7 @@ void bwgenh(BW *w,long from,long to)
 		unsigned char bf[16];
 		int x;
 		memset(txt,' ',76);
-		msetI(fmt,0,76);
+		msetI(fmt,BG_COLOR(bg_color),76);
 		txt[76]=0;
 		if (!flg) {
 			sprintf((char *)bf,"%8x ",q->byte);
@@ -826,13 +833,13 @@ void bwgenh(BW *w,long from,long to)
 			for (x=0; x!=8; ++x) {
 				int c;
 				if (q->byte==w->cursor->byte && !flg) {
-					fmt[10+x*3] = INVERSE;
-					fmt[10+x*3+1] = INVERSE;
+					fmt[10+x*3] |= INVERSE;
+					fmt[10+x*3+1] |= INVERSE;
 				}
 				if (q->byte>=from && q->byte<to && !flg) {
 					fmt[10+x*3] |= UNDERLINE;
 					fmt[10+x*3+1] |= UNDERLINE;
-					fmt[60+x] = INVERSE;
+					fmt[60+x] |= INVERSE;
 				}
 				c = pgetb(q);
 				if (c >= 0) {
@@ -849,13 +856,13 @@ void bwgenh(BW *w,long from,long to)
 			for (x=8; x!=16; ++x) {
 				int c;
 				if (q->byte==w->cursor->byte && !flg) {
-					fmt[11+x*3] = INVERSE;
-					fmt[11+x*3+1] = INVERSE;
+					fmt[11+x*3] |= INVERSE;
+					fmt[11+x*3+1] |= INVERSE;
 				}
 				if (q->byte>=from && q->byte<to && !flg) {
 					fmt[11+x*3] |= UNDERLINE;
 					fmt[11+x*3+1] |= UNDERLINE;
-					fmt[60+x] = INVERSE;
+					fmt[60+x] |= INVERSE;
 				}
 				c = pgetb(q);
 				if (c >= 0) {

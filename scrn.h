@@ -102,6 +102,10 @@ extern unsigned atab[];
 #define BG_MASK		(511<<BG_SHIFT)
 
 #define BG_DEFAULT	(0<<BG_SHIFT)
+
+/* #define BG_COLOR(color)	(BG_NOT_DEFAULT^(color)<<BG_SHIFT) */
+#define BG_COLOR(color)	(color)
+
 #define BG_BLACK	(BG_NOT_DEFAULT|(0<<BG_SHIFT))
 #define BG_RED		(BG_NOT_DEFAULT|(1<<BG_SHIFT))
 #define BG_GREEN	(BG_NOT_DEFAULT|(2<<BG_SHIFT))

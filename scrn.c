@@ -23,6 +23,7 @@
 #include "utils.h"
 #include "mouse.h"
 
+int bg_color = 0;
 int skiptop = 0;
 int lines = 0;
 int columns = 0;
@@ -404,17 +405,17 @@ int eraeol(SCRN *t, int x, int y)
 	} while (ss != s);
 	if ((ss - s > 3 || s[w] != ' ' || a[w] != 0) && t->ce) {
 		cpos(t, x, y);
-		set_attr(t, 0);
+		set_attr(t, BG_COLOR(bg_color)); 
 		texec(t->cap, t->ce, 1, 0, 0, 0, 0);
 		msetI(s, ' ', w);
-		msetI(a, 0, w);
+		msetI(a, BG_COLOR(bg_color), w); 
 	} else if (s != ss) {
 		if (t->ins)
 			clrins(t);
 		if (t->x != x || t->y != y)
 			cpos(t, x, y);
 		if (t->attrib)
-			set_attr(t, 0);
+			set_attr(t, BG_COLOR(bg_color)); 
 		while (s != ss) {
 			*s = ' ';
 			*a = 0;
@@ -1350,7 +1351,7 @@ static void dodelchr(SCRN *t, int x, int y, int n)
 	mmove(t->scrn + t->co * y + x, t->scrn + t->co * y + x + n, (t->co - (x + n)) * sizeof(int));
 	mmove(t->attr + t->co * y + x, t->attr + t->co * y + x + n, (t->co - (x + n)) * sizeof(int));
 	msetI(t->scrn + t->co * y + t->co - n, ' ', n);
-	msetI(t->attr + t->co * y + t->co - n, 0, n);
+	msetI(t->attr + t->co * y + t->co - n, BG_COLOR(bg_color), n); 
 }
 
 /* Insert/Delete within line */
@@ -1469,7 +1470,7 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt)
 
 	if (!amnt)
 		return;
-	set_attr(t, 0);
+	set_attr(t, BG_COLOR(bg_color)); 
 	if (top == 0 && bot == t->li && (t->sf || t->SF)) {
 		setregn(t, 0, t->li);
 		cpos(t, 0, t->li - 1);
@@ -1533,7 +1534,7 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt)
 			invalidate_state(t->syntab + t->li - amnt + q);
 	} else {
 		msetI(t->scrn + (bot - amnt) * t->co, ' ', amnt * t->co);
-		msetI(t->attr + (bot - amnt) * t->co, 0, amnt * t->co);
+		msetI(t->attr + (bot - amnt) * t->co, BG_COLOR(bg_color), amnt * t->co); 
 	}
 }
 
@@ -1544,7 +1545,7 @@ static void dodnscrl(SCRN *t, int top, int bot, int amnt)
 
 	if (!amnt)
 		return;
-	set_attr(t, 0);
+	set_attr(t, BG_COLOR(bg_color)); 
 	if (top == 0 && bot == t->li && (t->sr || t->SR)) {
 		setregn(t, 0, t->li);
 		cpos(t, 0, 0);
@@ -1607,7 +1608,7 @@ static void dodnscrl(SCRN *t, int top, int bot, int amnt)
 			invalidate_state(t->syntab + q);
 	} else {
 		msetI(t->scrn + t->co * top, ' ', amnt * t->co);
-		msetI(t->attr + t->co * top, 0, amnt * t->co);
+		msetI(t->attr + t->co * top, BG_COLOR(bg_color), amnt * t->co); 
 	}
 }
 
@@ -1645,19 +1646,22 @@ void nscroll(SCRN *t)
 
 void npartial(SCRN *t)
 {
-	set_attr(t, 0);
+	set_attr(t, BG_COLOR(bg_color)); 
 	clrins(t);
 	setregn(t, 0, t->li);
 }
 
 void nescape(SCRN *t)
 {
+	int tmp = bg_color;
+	bg_color = 0;
 	mouseclose();
 	npartial(t);
 	cpos(t, 0, t->li - 1);
 	eraeol(t, 0, t->li - 1);
 	if (t->te)
 		texec(t->cap, t->te, 1, 0, 0, 0, 0);
+	bg_color = tmp;
 }
 
 void nreturn(SCRN *t)
@@ -1756,9 +1760,9 @@ void nredraw(SCRN *t)
 	int x;
 	dostaupd = 1;
 	msetI(t->scrn, ' ', t->co * skiptop);
-	msetI(t->attr, 0, t->co * skiptop);
+	msetI(t->attr, BG_COLOR(bg_color), t->co * skiptop);  
 	msetI(t->scrn + skiptop * t->co, -1, (t->li - skiptop) * t->co);
-	msetI(t->attr + skiptop * t->co, 0, (t->li - skiptop) * t->co);
+	msetI(t->attr + skiptop * t->co, BG_COLOR(bg_color), (t->li - skiptop) * t->co); 
 	msetI(t->sary, 0, t->li);
 	msetI(t->updtab + skiptop, -1, t->li - skiptop);
 	for(x=0; x!=t->li - skiptop; ++x)
@@ -1769,7 +1773,7 @@ void nredraw(SCRN *t)
 	t->bot = 0;
 	t->attrib = -1;
 	t->ins = -1;
-	set_attr(t, 0);
+	set_attr(t, BG_COLOR(bg_color)); 
 	clrins(t);
 	setregn(t, 0, t->li);
 
@@ -1779,12 +1783,12 @@ void nredraw(SCRN *t)
 			t->x = 0;
 			t->y = 0;
 			msetI(t->scrn, ' ', t->li * t->co);
-			msetI(t->attr, 0, t->li * t->co);
+			msetI(t->attr, BG_COLOR(bg_color), t->li * t->co); 
 		} else if (t->cd) {
 			cpos(t, 0, 0);
 			texec(t->cap, t->cd, 1, 0, 0, 0, 0);
 			msetI(t->scrn, ' ', t->li * t->co);
-			msetI(t->attr, 0, t->li * t->co);
+			msetI(t->attr, BG_COLOR(bg_color), t->li * t->co); 
 		}
 	}
 }
@@ -1881,13 +1885,13 @@ int meta_color(unsigned char *s)
 		s[3]>='0' && s[3]<='5' &&
 		s[4]>='0' && s[4]<='5' &&
 		s[5]>='0' && s[5]<='5' && !s[6])
-	        return FG_NOT_DEFAULT | ((16 + (s[3]-'0')*6*6 + (s[4]-'0')*6 + (s[5]-'0'))<<FG_SHIFT);
+	        return FG_NOT_DEFAULT | ((16 + (s[3]-'0')*6*6 + (s[4]-'0')*6 + (s[5]-'0')) << FG_SHIFT);
 
 	else if(s[0]=='b' && s[1]=='g' && s[2]=='_' &&
 		  s[3]>='0' && s[3]<='5' &&
 		  s[4]>='0' && s[4]<='5' &&
 		  s[5]>='0' && s[5]<='5' && !s[6])
-	        return BG_NOT_DEFAULT | ((16 + (s[3]-'0')*6*6 + (s[4]-'0')*6 + (s[5]-'0'))<<FG_SHIFT);
+	        return BG_NOT_DEFAULT | ((16 + (s[3]-'0')*6*6 + (s[4]-'0')*6 + (s[5]-'0')) << BG_SHIFT);
 
 	/* 256 color xterm support: shades of grey */
 	/* Codes 232 - 255 are shades of grey */
@@ -1971,7 +1975,7 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 	}
 	/* Fill balance of field with spaces */
 	while (x < last_col) {
-		outatr(locale_map, t, scrn, attr, x, y, ' ', 0);
+		outatr(locale_map, t, scrn, attr, x, y, ' ', BG_COLOR(bg_color)); 
 		++x;
 		++scrn;
 		++attr;
@@ -2007,7 +2011,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
 	int *attr = t->attr + y * t->co + x;
-	int atr = 0;
+	int atr = BG_COLOR(bg_color);
 	int col = 0;
 	int c;
 	struct utf8_sm sm;

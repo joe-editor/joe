@@ -18,6 +18,7 @@
 #include "w.h"
 
 extern int dostaupd;
+extern int bg_color;
 
 static void menufllw(MENU *m)
 {
@@ -44,9 +45,9 @@ static void menudisp(MENU *m)
 			int atr, z, lcol;
 	
 			if (x + y*m->perline + m->top == m->cursor && m->t->curwin==m->parent)
-				atr = INVERSE;
+				atr = INVERSE|BG_COLOR(bg_color);
 			else
-				atr = 0;
+				atr = BG_COLOR(bg_color);
 
 			if (col == m->w)
 				break;
@@ -68,7 +69,7 @@ static void menudisp(MENU *m)
 
 			/* Space between columns */
 			if (col != m->w) {
-				outatr(locale_map, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
+				outatr(locale_map, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', BG_COLOR(bg_color));
 				++col;
 			}
 		}

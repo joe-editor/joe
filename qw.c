@@ -8,11 +8,14 @@
 #include "config.h"
 #include "types.h"
 
+#include "scrn.h"
 #include "utils.h"
 #include "vs.h"
 #include "charmap.h"
 #include "utf8.h"
 #include "w.h"
+
+extern int bg_color;
 
 static void dispqw(QW *qw)
 {
@@ -38,7 +41,7 @@ static void dispqw(QW *qw)
 	         qw->promptofst,
 	         qw->prompt,
 	         qw->promptlen,
-	         0,
+	         BG_COLOR(bg_color),
 	         w->w - w->x,
 	         1,NULL);
 }
@@ -71,7 +74,7 @@ static void dispqwn(QW *qw)
 	         qw->promptofst,
 	         qw->prompt,
 	         qw->promptlen,
-	         0,
+	         BG_COLOR(bg_color),
 	         w->w - w->x,
 	         1,NULL);
 }
