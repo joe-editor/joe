@@ -1534,7 +1534,7 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt, int atr)
 			invalidate_state(t->syntab + t->li - amnt + q);
 	} else {
 		msetI(t->scrn + (bot - amnt) * t->co, ' ', amnt * t->co);
-		msetI(t->attr + (bot - amnt) * t->co, atr, amnt * t->co); 
+		msetI(t->attr + (bot - amnt) * t->co, 0, amnt * t->co); 
 	}
 }
 
@@ -1608,7 +1608,7 @@ static void dodnscrl(SCRN *t, int top, int bot, int amnt, int atr)
 			invalidate_state(t->syntab + q);
 	} else {
 		msetI(t->scrn + t->co * top, ' ', amnt * t->co);
-		msetI(t->attr + t->co * top, atr, amnt * t->co); 
+		msetI(t->attr + t->co * top, 0, amnt * t->co); 
 	}
 }
 
