@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = COPYING INFO LIST NEWS README README.cvs TODO docs/help-system.html \
+EXTRA_DIST = COPYING INFO LIST HACKING ChangeLog NEWS README README.cvs TODO docs/help-system.html \
 	joerc.in jmacsrc.in jstarrc.in rjoerc.in jpicorc.in \
 	joe.1.in dir.c syntax/c.jsf.in syntax/perl.jsf.in syntax/verilog.jsf.in \
 	syntax/conf.jsf.in syntax/python.jsf.in syntax/php.jsf.in syntax/sh.jsf.in \
@@ -24,6 +24,9 @@ sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
 
 sysconf_charmapsdir = $(sysconf_joedir)/charmaps
 sysconf_charmaps_DATA = charmaps/klingon
+
+sysconf_docdir = $(sysconf_joedir)/doc
+sysconf_doc_DATA = LIST README HINTS ChangeLog HACKING NEWS
 
 man_MANS = joe.1
 noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \

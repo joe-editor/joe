@@ -1,7 +1,5 @@
 Short list for 3.2:
 
-- point to info files in help window
-
 - update other *rc.in files
 
 - for cygwin: we need to compile with --disable-termcap
