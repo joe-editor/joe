@@ -873,20 +873,18 @@ int ufilt(BW *bw)
 	return -1;
 #else
 	switch (checkmark(bw)) {
-		case 0:
+	case 0:
 		if (wmkpw(bw->parent, "Command to filter block through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL))
 			return 0;
 		else
 			return -1;
-
-		case 1:
+	case 1:
 		if (wmkpw(bw->parent, "Command to filter file through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL))
 			return 0;
 		else
 			return -1;
-
-		case 2:
-		default:
+	case 2:
+	default:
 		msgnw(bw->parent, "No block");
 		return -1;
 	}

@@ -299,13 +299,13 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 		while (z != (x + y) / 2) {
 			z = (x + y) / 2;
 			switch (strcmp(qq, cap->sort[z].name)) {
-				case 1:
+			case 1:
 				x = z;
 				break;
-				case -1:
+			case -1:
 				y = z;
 				break;
-				case 0:
+			case 0:
 				if (c == '@')
 					mmove(cap->sort + z, cap->sort + z + 1, (cap->sortlen-- - (z + 1)) * sizeof(struct sortentry));
 
@@ -363,13 +363,13 @@ static struct sortentry *findcap(CAP *cap, char *name)
 	while (z != (x + y) / 2) {
 		z = (x + y) / 2;
 		switch (strcmp(name, cap->sort[z].name)) {
-			case 1:
+		case 1:
 			x = z;
 			break;
-			case -1:
+		case -1:
 			y = z;
 			break;
-			case 0:
+		case 0:
 			return cap->sort + z;
 		}
 	}
@@ -444,37 +444,37 @@ static char escape(char **s)
 			return (*s)++, 127;
 	else if (c == '\\' && **s)
 		switch (c = *((*s)++)) {
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
 			c -= '0';
 			if (**s >= '0' && **s <= '7')
 				c = (c << 3) + *((*s)++) - '0';
 			if (**s >= '0' && **s <= '7')
 				c = (c << 3) + *((*s)++) - '0';
 			return c;
-			case 'e':
-			case 'E':
+		case 'e':
+		case 'E':
 			return 27;
-			case 'n':
-			case 'l':
+		case 'n':
+		case 'l':
 			return 10;
-			case 'r':
+		case 'r':
 			return 13;
-			case 't':
+		case 't':
 			return 9;
-			case 'b':
+		case 'b':
 			return 8;
-			case 'f':
+		case 'f':
 			return 12;
-			case 's':
+		case 's':
 			return 32;
-			default:
+		default:
 			return c;
 	} else
 		return c;
@@ -528,25 +528,25 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 
 /* Output string */
 	while ((c = *s++) != '\0')
-		if (c == '%' && *s)
+		if (c == '%' && *s) {
 			switch (x = a[0], c = escape(&s)) {
-				case 'C':
+			case 'C':
 				if (x >= 96)
 					cap->out(cap->outptr, x / 96), x %= 96;
-				case '+':
+			case '+':
 				if (*s)
 					x += escape(&s);
-				case '.':
+			case '.':
 				cap->out(cap->outptr, x);
 				++a;
 				break;
-				case 'd':
+			case 'd':
 				if (x < 10)
 					goto one;
-				case '2':
+			case '2':
 				if (x < 100)
 					goto two;
-				case '3':
+			case '3':
 				c = '0';
 				while (x >= 100)
 					++c, x -= 100;
@@ -558,73 +558,74 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 			      one:cap->out(cap->outptr, '0' + x);
 				++a;
 				break;
-				case 'r':
+			case 'r':
 				a[0] = a[1];
 				a[1] = x;
 				break;
-				case 'i':
+			case 'i':
 				++a[0];
 				++a[1];
 				break;
-				case 'n':
+			case 'n':
 				a[0] ^= 0140;
 				a[1] ^= 0140;
 				break;
-				case 'm':
+			case 'm':
 				a[0] ^= 0177;
 				a[1] ^= 0177;
 				break;
-				case 'f':
+			case 'f':
 				++a;
 				break;
-				case 'b':
+			case 'b':
 				--a;
 				break;
-				case 'a':
+			case 'a':
 				x = s[2];
 				if (s[1] == 'p')
 					x = a[x - 0100];
 				switch (*s) {
-					case '+':
+				case '+':
 					a[0] += x;
 					break;
-					case '-':
+				case '-':
 					a[0] -= x;
 					break;
-					case '*':
+				case '*':
 					a[0] *= x;
 					break;
-					case '/':
+				case '/':
 					a[0] /= x;
 					break;
-					case '%':
+				case '%':
 					a[0] %= x;
 					break;
-					case 'l':
+				case 'l':
 					a[0] = vars[x];
 					break;
-					case 's':
+				case 's':
 					vars[x] = a[0];
 					break;
-					default:
+				default:
 					a[0] = x;
 				}
 				s += 3;
 				break;
-				case 'D':
+			case 'D':
 				a[0] = a[0] - 2 * (a[0] & 15);
 				break;
-				case 'B':
+			case 'B':
 				a[0] = 16 * (a[0] / 10) + a[0] % 10;
 				break;
-				case '>':
+			case '>':
 				if (a[0] > escape(&s))
 					a[0] += escape(&s);
 				else
 					escape(&s);
-				default:
+			default:
 				cap->out(cap->outptr, '%');
 				cap->out(cap->outptr, c);
+			}
 		} else
 			--s, cap->out(cap->outptr, escape(&s));
 

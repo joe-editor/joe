@@ -150,41 +150,41 @@ void help_display(SCREEN *t)
 				} else {
 					if (*str == '\\') {
 						switch (*++str) {
-							case 'i':
-							case 'I':
-								atr ^= INVERSE;
-								++str;
-								--x;
-								continue;
-							case 'u':
-							case 'U':
-								atr ^= UNDERLINE;
-								++str;
-								--x;
-								continue;
-							case 'd':
-							case 'D':
-								atr ^= DIM;
-								++str;
-								--x;
-								continue;
-							case 'b':
-							case 'B':
-								atr ^= BOLD;
-								++str;
-								--x;
-								continue;
-							case 'f':
-							case 'F':
-								atr ^= BLINK;
-								++str;
-								--x;
-								continue;
-							case 0:
-								--x;
-								continue;
-							default:
-								c = (unsigned char) *str++;
+						case 'i':
+						case 'I':
+							atr ^= INVERSE;
+							++str;
+							--x;
+							continue;
+						case 'u':
+						case 'U':
+							atr ^= UNDERLINE;
+							++str;
+							--x;
+							continue;
+						case 'd':
+						case 'D':
+							atr ^= DIM;
+							++str;
+							--x;
+							continue;
+						case 'b':
+						case 'B':
+							atr ^= BOLD;
+							++str;
+							--x;
+							continue;
+						case 'f':
+						case 'F':
+							atr ^= BLINK;
+							++str;
+							--x;
+							continue;
+						case 0:	
+							--x;
+							continue;
+						default:
+							c = (unsigned char) *str++;
 						}
 					} else {
 						c = (unsigned char) *str++;

@@ -238,14 +238,14 @@ int rmatch(char *a, char *b)
 
 	for (;;)
 		switch (*a) {
-			case '*':
+		case '*':
 			++a;
 			do {
 				if (rmatch(a, b))
 					return 1;
 			} while (*b++);
 			return 0;
-			case '[':
+		case '[':
 			++a;
 			flag = 0;
 			if (*a == '^')
@@ -265,18 +265,18 @@ int rmatch(char *a, char *b)
 				return 0;
 			++b;
 			break;
-			case '?':
+		case '?':
 			++a;
 			if (!*b)
 				return 0;
 			++b;
 			break;
-			case 0:
+		case 0:
 			if (!*b)
 				return 1;
 			else
 				return 0;
-			default:
+		default:
 			if (*a++ != *b++)
 				return 0;
 		}

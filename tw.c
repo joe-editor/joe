@@ -74,9 +74,9 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 
 	stalin = vstrunc(stalin, 0);
 	while (*s) {
-		if (*s == '%' && s[1])
+		if (*s == '%' && s[1]) {
 			switch (*++s) {
-				case 't':
+			case 't':
 				{
 					long n = time(NULL);
 					int l;
@@ -92,8 +92,7 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 					stalin = vsncpy(sv(stalin), d + 13, 3);
 				}
 				break;
-
-				case 'u':
+			case 'u':
 				{
 					long n = time(NULL);
 					char *d = ctime(&n);
@@ -101,81 +100,69 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 					stalin = vsncpy(sv(stalin), d + 11, 5);
 				}
 				break;
-
-				case 'T':
+			case 'T':
 				if (bw->o.overtype)
 					stalin = vsadd(stalin, 'O');
 				else
 					stalin = vsadd(stalin, 'I');
 				break;
-
-				case 'W':
+			case 'W':
 				if (bw->o.wordwrap)
 					stalin = vsadd(stalin, 'W');
 				else
 					stalin = vsadd(stalin, fill);
 				break;
-
-				case 'I':
+			case 'I':
 				if (bw->o.autoindent)
 					stalin = vsadd(stalin, 'A');
 				else
 					stalin = vsadd(stalin, fill);
 				break;
-
-				case 'X':
+			case 'X':
 				if (square)
 					stalin = vsadd(stalin, 'X');
 				else
 					stalin = vsadd(stalin, fill);
 				break;
-
-				case 'n':
+			case 'n':
 				stalin = vsncpy(sv(stalin), sz(bw->b->name ? bw->b->name : "Unnamed"));
 				break;
-
-				case 'm':
+			case 'm':
 				if (bw->b->changed)
 					stalin = vsncpy(sv(stalin), sc("(Modified)"));
 				break;
-
-				case 'R':
+			case 'R':
 				if (bw->b->rdonly)
 					stalin = vsncpy(sv(stalin), sc("(Read only)"));
 				break;
-
-				case '*':
+			case '*':
 				if (bw->b->changed)
 					stalin = vsadd(stalin, '*');
 				else
 					stalin = vsadd(stalin, fill);
 				break;
-
-				case 'r':
+			case 'r':
 				snprintf(buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
-
-				case 'o':
+			case 'o':
 				snprintf(buf, sizeof(buf), "%-4ld", bw->cursor->byte);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
-
-				case 'O':
+			case 'O':
 				snprintf(buf, sizeof(buf), "%-4lX", bw->cursor->byte);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
-
-				case 'a':
+			case 'a':
 				if (!piseof(bw->cursor))
 					snprintf(buf, sizeof(buf), "%3d", 255 & brc(bw->cursor));
 				else
@@ -185,8 +172,7 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
-
-				case 'A':
+			case 'A':
 				if (!piseof(bw->cursor))
 					snprintf(buf, sizeof(buf), "%2.2X", 255 & brc(bw->cursor));
 				else
@@ -196,16 +182,14 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
-
-				case 'c':
+			case 'c':
 				snprintf(buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
-
-				case 'p':
+			case 'p':
 				if (bw->b->eof->byte)
 					snprintf(buf, sizeof(buf), "%3ld", bw->cursor->byte * 100 / bw->b->eof->byte);
 				else
@@ -215,16 +199,14 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
-
-				case 'l':
+			case 'l':
 				snprintf(buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
-
-				case 'k':
+			case 'k':
 				{
 					int i;
 					char *cpos = buf;
@@ -249,21 +231,19 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 					stalin = vsncpy(sv(stalin), buf, cpos - buf);
 				}
 				break;
-
-				case 'S':
+			case 'S':
 				if (bw->pid)
 					stalin = vsncpy(sv(stalin), sc("*SHELL*"));
 				break;
-
-				case 'M':
+			case 'M':
 				if (recmac) {
 					snprintf(buf, sizeof(buf), "(Macro %d recording...)", recmac->n);
 					stalin = vsncpy(sv(stalin), sz(buf));
 				}
 				break;
-
-				default:
+			default:
 				stalin = vsadd(stalin, *s);
+			}
 		} else
 			stalin = vsadd(stalin, *s);
 		++s;

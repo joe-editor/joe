@@ -139,25 +139,25 @@ MACRO *mparse(MACRO *m, char *buf, int *sta)
 			if (buf[x] == '\\' && buf[x + 1]) {
 				++x;
 				switch (buf[x]) {
-					case 'n':
+				case 'n':
 					buf[x] = 10;
 					break;
-					case 'r':
+				case 'r':
 					buf[x] = 13;
 					break;
-					case 'b':
+				case 'b':
 					buf[x] = 8;
 					break;
-					case 'f':
+				case 'f':
 					buf[x] = 12;
 					break;
-					case 'a':
+				case 'a':
 					buf[x] = 7;
 					break;
-					case 't':
+				case 't':
 					buf[x] = 9;
 					break;
-					case 'x':
+				case 'x':
 					c = 0;
 					if (buf[x + 1] >= '0' && buf[x + 1] <= '9')
 						c = c * 16 + buf[++x] - '0';
@@ -169,16 +169,16 @@ MACRO *mparse(MACRO *m, char *buf, int *sta)
 						c = c * 16 + (buf[++x] & 0xF) + 9;
 					buf[x] = c;
 					break;
-					case '0':
-					case '1':
-					case '2':
-					case '3':
-					case '4':
-					case '5':
-					case '6':
-					case '7':
-					case '8':
-					case '9':
+				case '0':
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+				case '7':
+				case '8':
+				case '9':
 					c = buf[x] - '0';
 					if (buf[x + 1] >= '0' && buf[x + 1] <= '7')
 						c = c * 8 + buf[++x] - '0';

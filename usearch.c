@@ -288,39 +288,40 @@ static int set_options(BW *bw, char *s, SRCH *srch, int *notify)
 {
 	int x;
 
-	for (x = 0; s[x]; ++x)
+	for (x = 0; s[x]; ++x) {
 		switch (s[x]) {
-			case 'r':
-			case 'R':
+		case 'r':
+		case 'R':
 			srch->replace = 1;
 			break;
-			case 'b':
-			case 'B':
+		case 'b':
+		case 'B':
 			srch->backwards = 1;
 			break;
-			case 'i':
-			case 'I':
+		case 'i':
+		case 'I':
 			srch->ignore = 1;
 			break;
-			case 'k':
-			case 'K':
+		case 'k':
+		case 'K':
 			srch->restrict = 1;
 			break;
-			case '0':
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
 			if (srch->repeat == -1)
 				srch->repeat = 0;
 			srch->repeat = srch->repeat * 10 + s[x] - '0';
 			break;
 		}
+	}
 	vsrm(s);
 	if (srch->replace) {
 		if (wmkpw(bw->parent, "Replace with (^C to abort): ", &replhist, set_replace, srchstr, pfabort, utypebw, srch, notify))
@@ -561,9 +562,9 @@ static int fnext(BW *bw, SRCH *srch)
 	} else if (srch->rest || (srch->repeat != -1 && srch->replace)) {
 		if (srch->valid)
 			switch (restrict(bw, srch)) {
-				case -1:
+			case -1:
 				goto again;
-				case 1:
+			case 1:
 				if (srch->addr >= 0)
 					pgoto(bw->cursor, srch->addr);
 				return !srch->rest;
@@ -574,9 +575,9 @@ static int fnext(BW *bw, SRCH *srch)
 	} else if (srch->repeat != -1) {
 		if (srch->valid)
 			switch (restrict(bw, srch)) {
-				case -1:
+			case -1:
 				goto again;
-				case 1:
+			case 1:
 				if (srch->addr >= 0)
 					pgoto(bw->cursor, srch->addr);
 				return 1;
@@ -597,12 +598,11 @@ int dopfnext(BW *bw, SRCH *srch, int *notify)
 		smode = 2;	/* We have started a search mode */
 	if (srch->replace)
 		visit(srch, bw, 0);
-      again:switch (fnext(bw, srch)) {
-		case 0:
+again:	switch (fnext(bw, srch)) {
+	case 0:
 		break;
-
-		case 1:
-	      bye:if (!srch->flg && !srch->rest) {
+	case 1:
+bye:		if (!srch->flg && !srch->rest) {
 			if (srch->valid && srch->restrict)
 				msgnw(bw->parent, "Not found (search restricted to marked block)");
 			else
@@ -610,13 +610,12 @@ int dopfnext(BW *bw, SRCH *srch, int *notify)
 			ret = -1;
 		}
 		break;
-
-		case 2:
+	case 2:
 		if (srch->valid)
 			switch (restrict(bw, srch)) {
-				case -1:
+			case -1:
 				goto again;
-				case 1:
+			case 1:
 				if (srch->addr >= 0)
 					pgoto(bw->cursor, srch->addr);
 				goto bye;

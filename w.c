@@ -688,44 +688,39 @@ void genfmt(SCRN * t, int x, int y, int ofst, char *s, int flg)
 	int c;
 
 	while ((c = *s++) != '\0')
-		if (c == '\\')
+		if (c == '\\') {
 			switch (c = *s++) {
-				case 'u':
-				case 'U':
+			case 'u':
+			case 'U':
 				atr ^= UNDERLINE;
 				break;
-
-				case 'i':
-				case 'I':
+			case 'i':
+			case 'I':
 				atr ^= INVERSE;
 				break;
-
-				case 'b':
-				case 'B':
+			case 'b':
+			case 'B':
 				atr ^= BOLD;
 				break;
-
-				case 'd':
-				case 'D':
+			case 'd':
+			case 'D':
 				atr ^= DIM;
 				break;
-
-				case 'f':
-				case 'F':
+			case 'f':
+			case 'F':
 				atr ^= BLINK;
 				break;
-
-				case 0:
+			case 0:
 				--s;
 				break;
-
-				default:
+			default:
 				if (col++ >= ofst) {
 					outatr(t, scrn, x, y, c, atr);
 					++scrn;
 					++x;
 				}
 				break;
+			}
 		} else if (col++ >= ofst) {
 			if (c == '\t')
 				c = ' ';
@@ -767,27 +762,26 @@ int fmtlen(char *s)
 	int col = 0;
 
 	while (*s) {
-		if (*s == '\\')
+		if (*s == '\\') {
 			switch (*++s) {
-				case 'u':
-				case 'i':
-				case 'd':
-				case 'f':
-				case 'b':
-				case 'U':
-				case 'I':
-				case 'D':
-				case 'F':
-				case 'B':
+			case 'u':
+			case 'i':
+			case 'd':
+			case 'f':
+			case 'b':
+			case 'U':
+			case 'I':
+			case 'D':
+			case 'F':
+			case 'B':
 				++s;
-				goto cont;
-
-				case 0:
+				continue;
+			case 0:
 				--s;
 			}
+		}
 		++col;
 		++s;
-	      cont:;
 	}
 	return col;
 }
@@ -803,25 +797,23 @@ int fmtpos(char *s, int goal)
 	while (*s && col != goal) {
 		if (*s == '\\')
 			switch (*++s) {
-				case 'u':
-				case 'i':
-				case 'd':
-				case 'f':
-				case 'b':
-				case 'U':
-				case 'I':
-				case 'D':
-				case 'F':
-				case 'B':
+			case 'u':
+			case 'i':
+			case 'd':
+			case 'f':
+			case 'b':
+			case 'U':
+			case 'I':
+			case 'D':
+			case 'F':
+			case 'B':
 				++s;
-				goto cont;
-
-				case 0:
+				continue;
+			case 0:
 				--s;
 			}
 		++col;
 		++s;
-	      cont:;
 	}
 	return s - org + goal - col;
 }

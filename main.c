@@ -291,12 +291,12 @@ int main(int argc, char **argv, char **envv)
 		if (argv[c][0] == '-') {
 			if (argv[c][1])
 				switch (glopt(argv[c] + 1, argv[c + 1], NULL, 1)) {
-					case 0:
+				case 0:
 					fprintf(stderr, "Unknown option '%s'\n", argv[c]);
 					break;
-					case 1:
+				case 1:
 					break;
-					case 2:
+				case 2:
 					++c;
 					break;
 			} else

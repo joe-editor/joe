@@ -225,47 +225,47 @@ int utomatch(BW * bw)
 	 dir;			/* 1 to search forward, -1 to search backward */
 
 	switch (c = brc(bw->cursor)) {
-		case '(':
+	case '(':
 		f = ')';
 		dir = 1;
 		break;
-		case '[':
+	case '[':
 		f = ']';
 		dir = 1;
 		break;
-		case '{':
+	case '{':
 		f = '}';
 		dir = 1;
 		break;
-		case '`':
+	case '`':
 		f = '\'';
 		dir = 1;
 		break;
-		case '<':
+	case '<':
 		f = '>';
 		dir = 1;
 		break;
-		case ')':
+	case ')':
 		f = '(';
 		dir = -1;
 		break;
-		case ']':
+	case ']':
 		f = '[';
 		dir = -1;
 		break;
-		case '}':
+	case '}':
 		f = '{';
 		dir = -1;
 		break;
-		case '\'':
+	case '\'':
 		f = '`';
 		dir = -1;
 		break;
-		case '>':
+	case '>':
 		f = '<';
 		dir = -1;
 		break;
-		default:
+	default:
 		return -1;
 	}
 
@@ -839,7 +839,7 @@ static int doquote(BW * bw, int c, void *object, int *notify)
 		return -1;
 	}
 	switch (quotestate) {
-		case 0:
+	case 0:
 		if (c >= '0' && c <= '9') {
 			quoteval = c - '0';
 			quotestate = 1;
@@ -870,8 +870,7 @@ static int doquote(BW * bw, int c, void *object, int *notify)
 			bw->cursor->xcol = piscol(bw->cursor);
 		}
 		break;
-
-		case 1:
+	case 1:
 		if (c >= '0' && c <= '9') {
 			snprintf(buf, sizeof(buf), "ASCII %c%c-", quoteval + '0', c);
 			quoteval = quoteval * 10 + c - '0';
@@ -882,16 +881,14 @@ static int doquote(BW * bw, int c, void *object, int *notify)
 				return 0;
 		}
 		break;
-
-		case 2:
+	case 2:
 		if (c >= '0' && c <= '9') {
 			quoteval = quoteval * 10 + c - '0';
 			utypebw(bw, quoteval);
 			bw->cursor->xcol = piscol(bw->cursor);
 		}
 		break;
-
-		case 3:
+	case 3:
 		if (c >= '0' && c <= '9') {
 			snprintf(buf, sizeof(buf), "ASCII 0x%c-", c);
 			quoteval = c - '0';
@@ -918,8 +915,7 @@ static int doquote(BW * bw, int c, void *object, int *notify)
 				return 0;
 		}
 		break;
-
-		case 4:
+	case 4:
 		if (c >= '0' && c <= '9') {
 			quoteval = quoteval * 16 + c - '0';
 			utypebw(bw, quoteval);
@@ -934,8 +930,7 @@ static int doquote(BW * bw, int c, void *object, int *notify)
 			bw->cursor->xcol = piscol(bw->cursor);
 		}
 		break;
-
-		case 5:
+	case 5:
 		if (c >= '0' && c <= '7') {
 			snprintf(buf, sizeof(buf), "ASCII 0%c--", c);
 			quoteval = c - '0';
@@ -946,8 +941,7 @@ static int doquote(BW * bw, int c, void *object, int *notify)
 				return 0;
 		}
 		break;
-
-		case 6:
+	case 6:
 		if (c >= '0' && c <= '7') {
 			snprintf(buf, sizeof(buf), "ASCII 0%c%c-", quoteval + '0', c);
 			quoteval = quoteval * 8 + c - '0';
@@ -958,8 +952,7 @@ static int doquote(BW * bw, int c, void *object, int *notify)
 				return 0;
 		}
 		break;
-
-		case 7:
+	case 7:
 		if (c >= '0' && c <= '7') {
 			quoteval = quoteval * 8 + c - '0';
 			utypebw(bw, quoteval);

@@ -199,11 +199,11 @@ static void izopts(void)
 
 	for (x = 0; glopts[x].name; ++x)
 		switch (glopts[x].type) {
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
+		case 4:
+		case 5:
+		case 6:
+		case 7:
+		case 8:
 			glopts[x].ofst = glopts[x].addr - (char *) &fdefault;
 		}
 	isiz = 1;
@@ -223,20 +223,18 @@ int glopt(char *s, char *arg, OPTIONS * options, int set)
 	for (x = 0; glopts[x].name; ++x)
 		if (!strcmp(glopts[x].name, s)) {
 			switch (glopts[x].type) {
-				case 0:
+			case 0:
 				if (set)
 					*glopts[x].set = st;
 				break;
-
-				case 1:
+			case 1:
 				if (set && arg) {
 					sscanf(arg, "%d", &val);
 					if (val >= glopts[x].low && val <= glopts[x].high)
 						*glopts[x].set = val;
 				}
 				break;
-
-				case 2:
+			case 2:
 				if (set) {
 					if (arg)
 						*(char **) glopts[x].set = strdup(arg);
@@ -244,15 +242,13 @@ int glopt(char *s, char *arg, OPTIONS * options, int set)
 						*(char **) glopts[x].set = 0;
 				}
 				break;
-
-				case 4:
+			case 4:
 				if (options)
 					*(int *) ((char *) options + glopts[x].ofst) = st;
 				else if (set == 2)
 					*(int *) ((char *) &fdefault + glopts[x].ofst) = st;
 				break;
-
-				case 5:
+			case 5:
 				if (arg) {
 					if (options) {
 						sscanf(arg, "%d", &val);
@@ -267,8 +263,7 @@ int glopt(char *s, char *arg, OPTIONS * options, int set)
 					}
 				}
 				break;
-
-				case 7:
+			case 7:
 				if (arg) {
 					int zz = 0;
 
@@ -385,7 +380,7 @@ static int doopt1(BW * bw, char *s, int *xx, int *notify)
 
 	free(xx);
 	switch (glopts[x].type) {
-		case 1:
+	case 1:
 		v = calc(bw, s);
 		if (merr) {
 			msgnw(bw->parent, merr);
@@ -395,11 +390,11 @@ static int doopt1(BW * bw, char *s, int *xx, int *notify)
 		else
 			msgnw(bw->parent, "Value out of range"), ret = -1;
 		break;
-		case 2:
+	case 2:
 		if (s[0])
 			*(char **) glopts[x].set = strdup(s);
 		break;
-		case 5:
+	case 5:
 		v = calc(bw, s);
 		if (merr) {
 			msgnw(bw->parent, merr);
@@ -409,7 +404,7 @@ static int doopt1(BW * bw, char *s, int *xx, int *notify)
 		else
 			msgnw(bw->parent, "Value out of range"), ret = -1;
 		break;
-		case 7:
+	case 7:
 		v = calc(bw, s) - 1.0;
 		if (merr) {
 			msgnw(bw->parent, merr);
@@ -437,7 +432,7 @@ static int doopt(MENU * m, int x, void *object, int flg)
 	int *notify = m->parent->notify;
 
 	switch (glopts[x].type) {
-		case 0:
+	case 0:
 		if (!flg)
 			*glopts[x].set = !*glopts[x].set;
 		else if (flg == 1)
@@ -447,8 +442,7 @@ static int doopt(MENU * m, int x, void *object, int flg)
 		uabort(m, MAXINT);
 		msgnw(bw->parent, *glopts[x].set ? glopts[x].yes : glopts[x].no);
 		break;
-
-		case 4:
+	case 4:
 		if (!flg)
 			*(int *) ((char *) &bw->o + glopts[x].ofst) = !*(int *) ((char *) &bw->o + glopts[x].ofst);
 		else if (flg == 1)
@@ -460,8 +454,7 @@ static int doopt(MENU * m, int x, void *object, int flg)
 		if (glopts[x].ofst == (char *) &fdefault.readonly - (char *) &fdefault)
 			bw->b->rdonly = bw->o.readonly;
 		break;
-
-		case 1:
+	case 1:
 		snprintf(buf, OPT_BUF_SIZE, glopts[x].yes, *glopts[x].set);
 		xx = (int *) malloc(sizeof(int));
 
@@ -472,8 +465,7 @@ static int doopt(MENU * m, int x, void *object, int flg)
 			return 0;
 		else
 			return -1;
-
-		case 2:
+	case 2:
 		if (*(char **) glopts[x].set)
 			snprintf(buf, OPT_BUF_SIZE, glopts[x].yes, *(char **) glopts[x].set);
 		else
@@ -487,12 +479,10 @@ static int doopt(MENU * m, int x, void *object, int flg)
 			return 0;
 		else
 			return -1;
-
-		case 5:
+	case 5:
 		snprintf(buf, OPT_BUF_SIZE, glopts[x].yes, *(int *) ((char *) &bw->o + glopts[x].ofst));
 		goto in;
-
-		case 7:
+	case 7:
 		snprintf(buf, OPT_BUF_SIZE, glopts[x].yes, *(int *) ((char *) &bw->o + glopts[x].ofst) + 1);
 	      in:xx = (int *) malloc(sizeof(int));
 
@@ -534,27 +524,22 @@ int umode(BW * bw)
 	for (x = 0; x != size; ++x) {
 		s[x] = (char *) malloc(40);
 		switch (glopts[x].type) {
-			case 0:
+		case 0:
 			snprintf(s[x], OPT_BUF_SIZE, "%s%s", glopts[x].menu, *glopts[x].set ? "ON" : "OFF");
 			break;
-
-			case 1:
+		case 1:
 			snprintf(s[x], OPT_BUF_SIZE, "%s%d", glopts[x].menu, *glopts[x].set);
 			break;
-
-			case 2:
+		case 2:
 			strcpy(s[x], glopts[x].menu);
 			break;
-
-			case 4:
+		case 4:
 			snprintf(s[x], OPT_BUF_SIZE, "%s%s", glopts[x].menu, *(int *) ((char *) &bw->o + glopts[x].ofst) ? "ON" : "OFF");
 			break;
-
-			case 5:
+		case 5:
 			snprintf(s[x], OPT_BUF_SIZE, "%s%d", glopts[x].menu, *(int *) ((char *) &bw->o + glopts[x].ofst));
 			break;
-
-			case 7:
+		case 7:
 			snprintf(s[x], OPT_BUF_SIZE, "%s%d", glopts[x].menu, *(int *) ((char *) &bw->o + glopts[x].ofst) + 1);
 			break;
 		}
@@ -597,14 +582,13 @@ int procrc(CAP * cap, char *name)
 
 	while (++line, fgets(buf, 1024, fd))
 		switch (buf[0]) {
-			case ' ':
-			case '\t':
-			case '\n':
-			case '\f':
-			case 0:
+		case ' ':
+		case '\t':
+		case '\n':
+		case '\f':
+		case 0:
 			break;	/* Skip comment lines */
-
-			case '*':	/* Select file types for file-type dependant options */
+		case '*':	/* Select file types for file-type dependant options */
 			{
 				int x;
 
@@ -617,8 +601,7 @@ int procrc(CAP * cap, char *name)
 				o->name = strdup(buf);
 			}
 			break;
-
-			case '-':	/* Set an option */
+		case '-':	/* Set an option */
 			{
 				unsigned char *opt = buf + 1;
 				int x;
@@ -636,8 +619,7 @@ int procrc(CAP * cap, char *name)
 				}
 			}
 			break;
-
-			case '{':	/* Ignore help text */
+		case '{':	/* Ignore help text */
 			{
 				while ((fgets(buf, 256, fd)) && (buf[0] != '}'))
 					/* do nothing */;
@@ -648,8 +630,7 @@ int procrc(CAP * cap, char *name)
 				}
 			}
 			break;
-
-			case ':':	/* Select context */
+		case ':':	/* Select context */
 			{
 				int x, c;
 
@@ -699,10 +680,10 @@ int procrc(CAP * cap, char *name)
 						buf[c] = 0;
 						if (c != x) {
 							switch (procrc(cap, buf + x)) {
-								case 1:
+							case 1:
 								err = 1;
 								break;
-								case -1:
+							case -1:
 								fprintf(stderr, "\n%s %d: Couldn't open %s", name, line, buf + x);
 								err = 1;
 								break;
@@ -733,8 +714,7 @@ int procrc(CAP * cap, char *name)
 				}
 			}
 			break;
-
-			default:	/* Get key-sequence to macro binding */
+		default:	/* Get key-sequence to macro binding */
 			{
 				int x, y;
 				MACRO *m;

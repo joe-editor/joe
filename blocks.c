@@ -50,6 +50,36 @@ int *msetI(void *dest, int c, int sz)
 		sz -= 16;
 	}
 	switch (sz) {
+	case 15:	d[14] = c;
+	case 14:	d[13] = c;
+	case 13:	d[12] = c;
+	case 12:	d[11] = c;
+	case 11:	d[10] = c;
+	case 10:	d[9] = c;
+	case 9:		d[8] = c;
+	case 8:		d[7] = c;
+	case 7:		d[6] = c;
+	case 6:		d[5] = c;
+	case 5:		d[4] = c;
+	case 4:		d[3] = c;
+	case 3:		d[2] = c;
+	case 2:		d[1] = c;
+	case 1:		d[0] = c;
+	case 0:		/* do nothing */;
+	}
+	return orgd;
+}
+
+/* Set 'sz' 'char's beginning at 'd' to the value 'c' */
+/* Returns address of block.  Does nothing if 'sz' equals zero */
+
+char *mset(void *dest, unsigned char c, int sz)
+{
+	char	*d = dest;
+	char	*orgd = dest;
+
+	if (sz < 16) {
+		switch (sz) {
 		case 15:	d[14] = c;
 		case 14:	d[13] = c;
 		case 13:	d[12] = c;
@@ -65,29 +95,13 @@ int *msetI(void *dest, int c, int sz)
 		case 3:		d[2] = c;
 		case 2:		d[1] = c;
 		case 1:		d[0] = c;
-		case 0: /* do nothing */;
-	}
-	return orgd;
-}
+		case 0:		/* do nothing */;
+		}
+	} else {
+		int z = SIZEOF_INT - ((int) d & (SIZEOF_INT - 1));
 
-/* Set 'sz' 'char's beginning at 'd' to the value 'c' */
-/* Returns address of block.  Does nothing if 'sz' equals zero */
-
-char *mset(void *dest, unsigned char c, int sz)
-{
-	char	*d = dest;
-	char	*orgd = dest;
-
-	if (sz < 16)
-		switch (sz) {
-			case 15:	d[14] = c;
-			case 14:	d[13] = c;
-			case 13:	d[12] = c;
-			case 12:	d[11] = c;
-			case 11:	d[10] = c;
-			case 10:	d[9] = c;
-			case 9:		d[8] = c;
-			case 8:		d[7] = c;
+		if (z != SIZEOF_INT) {
+			switch (z) {
 			case 7:		d[6] = c;
 			case 6:		d[5] = c;
 			case 5:		d[4] = c;
@@ -96,22 +110,10 @@ char *mset(void *dest, unsigned char c, int sz)
 			case 2:		d[1] = c;
 			case 1:		d[0] = c;
 			case 0:		/* do nothing */;
-	} else {
-		int z = SIZEOF_INT - ((int) d & (SIZEOF_INT - 1));
-
-		if (z != SIZEOF_INT)
-			switch (z) {
-				case 7:		d[6] = c;
-				case 6:		d[5] = c;
-				case 5:		d[4] = c;
-				case 4:		d[3] = c;
-				case 3:		d[2] = c;
-				case 2:		d[1] = c;
-				case 1:		d[0] = c;
-				case 0:	/* do nothing */;
-				d += z;
-				sz -= z;
 			}
+			d += z;
+			sz -= z;
+		}
 		msetI(d,
 #if SIZEOF_INT >= 8
 		      (c << (BITS * 7)) + (c << (BITS * 6)) + (c << (BITS * 5)) + (c << (BITS * 4)) +
@@ -125,14 +127,14 @@ char *mset(void *dest, unsigned char c, int sz)
 		      c, sz >> SHFT);
 		d += sz & ~(SIZEOF_INT - 1);
 		switch (sz & (SIZEOF_INT - 1)) {
-			case 7:		d[6] = c;
-			case 6:		d[5] = c;
-			case 5:		d[4] = c;
-			case 4:		d[3] = c;
-			case 3:		d[2] = c;
-			case 2:		d[1] = c;
-			case 1:		d[0] = c;
-			case 0:	/* do nothing */;
+		case 7:		d[6] = c;
+		case 6:		d[5] = c;
+		case 5:		d[4] = c;
+		case 4:		d[3] = c;
+		case 3:		d[2] = c;
+		case 2:		d[1] = c;
+		case 1:		d[0] = c;
+		case 0:		/* do nothing */;
 		}
 	}
 	return orgd;
@@ -174,22 +176,22 @@ static int *mbkwdI(void *dest, void *src, int sz)
 	d -= sz;
 	s -= sz;
 	switch (sz) {
-		case 15:	d[14] = s[14];
-		case 14:	d[13] = s[13];
-		case 13:	d[12] = s[12];
-		case 12:	d[11] = s[11];
-		case 11:	d[10] = s[10];
-		case 10:	d[9] = s[9];
-		case 9:		d[8] = s[8];
-		case 8:		d[7] = s[7];
-		case 7:		d[6] = s[6];
-		case 6:		d[5] = s[5];
-		case 5:		d[4] = s[4];
-		case 4:		d[3] = s[3];
-		case 3:		d[2] = s[2];
-		case 2:		d[1] = s[1];
-		case 1:		d[0] = s[0];
-		case 0:		/* do nothing */;
+	case 15:	d[14] = s[14];
+	case 14:	d[13] = s[13];
+	case 13:	d[12] = s[12];
+	case 12:	d[11] = s[11];
+	case 11:	d[10] = s[10];
+	case 10:	d[9] = s[9];
+	case 9:		d[8] = s[8];
+	case 8:		d[7] = s[7];
+	case 7:		d[6] = s[6];
+	case 6:		d[5] = s[5];
+	case 5:		d[4] = s[4];
+	case 4:		d[3] = s[3];
+	case 3:		d[2] = s[2];
+	case 2:		d[1] = s[1];
+	case 1:		d[0] = s[0];
+	case 0:		/* do nothing */;
 	}
 	return d;
 }
@@ -228,22 +230,22 @@ static int *mfwrdI(void *dest, void *src, int sz)
 	s -= 15 - sz;
 	d -= 15 - sz;
 	switch (sz) {
-		case 15:	d[0] = s[0];
-		case 14:	d[1] = s[1];
-		case 13:	d[2] = s[2];
-		case 12:	d[3] = s[3];
-		case 11:	d[4] = s[4];
-		case 10:	d[5] = s[5];
-		case 9:		d[6] = s[6];
-		case 8:		d[7] = s[7];
-		case 7:		d[8] = s[8];
-		case 6:		d[9] = s[9];
-		case 5:		d[10] = s[10];
-		case 4:		d[11] = s[11];
-		case 3:		d[12] = s[12];
-		case 2:		d[13] = s[13];
-		case 1:		d[14] = s[14];
-		case 0:		/* do nothing */;
+	case 15:	d[0] = s[0];
+	case 14:	d[1] = s[1];
+	case 13:	d[2] = s[2];
+	case 12:	d[3] = s[3];
+	case 11:	d[4] = s[4];
+	case 10:	d[5] = s[5];
+	case 9:		d[6] = s[6];
+	case 8:		d[7] = s[7];
+	case 7:		d[8] = s[8];
+	case 6:		d[9] = s[9];
+	case 5:		d[10] = s[10];
+	case 4:		d[11] = s[11];
+	case 3:		d[12] = s[12];
+	case 2:		d[13] = s[13];
+	case 1:		d[14] = s[14];
+	case 0:		/* do nothing */;
 	}
 	return od;
 }
@@ -270,28 +272,28 @@ static char *mbkwd(register char *d, register char *s, register int sz)
 		s -= z;
 		d -= z;
 		switch (z) {
-			case 7:		d[6] = s[6];
-			case 6:		d[5] = s[5];
-			case 5:		d[4] = s[4];
-			case 4:		d[3] = s[3];
-			case 3:		d[2] = s[2];
-			case 2:		d[1] = s[1];
-			case 1:		d[0] = s[0];
-			case 0:		/* do nothing */;
+		case 7:		d[6] = s[6];
+		case 6:		d[5] = s[5];
+		case 5:		d[4] = s[4];
+		case 4:		d[3] = s[3];
+		case 3:		d[2] = s[2];
+		case 2:		d[1] = s[1];
+		case 1:		d[0] = s[0];
+		case 0:		/* do nothing */;
 		}
 		sz -= z;
 		mbkwdI(d - (sz & ~(SIZEOF_INT - 1)), s - (sz & ~(SIZEOF_INT - 1)), sz >> SHFT);
 		d -= sz;
 		s -= sz;
 		switch (sz & (SIZEOF_INT - 1)) {
-			case 7:		d[6] = s[6];
-			case 6:		d[5] = s[5];
-			case 5:		d[4] = s[4];
-			case 4:		d[3] = s[3];
-			case 3:		d[2] = s[2];
-			case 2:		d[1] = s[1];
-			case 1:		d[0] = s[0];
-			case 0:		/* do nothing */;
+		case 7:		d[6] = s[6];
+		case 6:		d[5] = s[5];
+		case 5:		d[4] = s[4];
+		case 4:		d[3] = s[3];
+		case 3:		d[2] = s[2];
+		case 2:		d[1] = s[1];
+		case 1:		d[0] = s[0];
+		case 0:		/* do nothing */;
 		}
 	} else {
 		while (sz >= 16) {
@@ -318,22 +320,22 @@ static char *mbkwd(register char *d, register char *s, register int sz)
 		d -= sz;
 		s -= sz;
 		switch (sz) {
-			case 15:	d[14] = s[14];
-			case 14:	d[13] = s[13];
-			case 13:	d[12] = s[12];
-			case 12:	d[11] = s[11];
-			case 11:	d[10] = s[10];
-			case 10:	d[9] = s[9];
-			case 9:		d[8] = s[8];
-			case 8:		d[7] = s[7];
-			case 7:		d[6] = s[6];
-			case 6:		d[5] = s[5];
-			case 5:		d[4] = s[4];
-			case 4:		d[3] = s[3];
-			case 3:		d[2] = s[2];
-			case 2:		d[1] = s[1];
-			case 1:		d[0] = s[0];
-			case 0:		/* do nothing */;
+		case 15:	d[14] = s[14];
+		case 14:	d[13] = s[13];
+		case 13:	d[12] = s[12];
+		case 12:	d[11] = s[11];
+		case 11:	d[10] = s[10];
+		case 10:	d[9] = s[9];
+		case 9:		d[8] = s[8];
+		case 8:		d[7] = s[7];
+		case 7:		d[6] = s[6];
+		case 6:		d[5] = s[5];
+		case 5:		d[4] = s[4];
+		case 4:		d[3] = s[3];
+		case 3:		d[2] = s[2];
+		case 2:		d[1] = s[1];
+		case 1:		d[0] = s[0];
+		case 0:		/* do nothing */;
 		}
 	}
 	return d;
@@ -363,24 +365,24 @@ static char *mfwrd(register char *d, register char *s, register int sz)
 			d -= z;
 			switch (SIZEOF_INT - z) {
 #if SIZEOF_INT == 8
-				case 7:		d[1] = s[1];
-				case 6:		d[2] = s[2];
-				case 5:		d[3] = s[3];
-				case 4:		d[4] = s[4];
-				case 3:		d[5] = s[5];
-				case 2:		d[6] = s[6];
-				case 1:		d[7] = s[7];
-				case 0:		/* do nothing */;
+			case 7:		d[1] = s[1];
+			case 6:		d[2] = s[2];
+			case 5:		d[3] = s[3];
+			case 4:		d[4] = s[4];
+			case 3:		d[5] = s[5];
+			case 2:		d[6] = s[6];
+			case 1:		d[7] = s[7];
+			case 0:		/* do nothing */;
 #else
 #if SIZEOF_INT == 4
-				case 3:		d[1] = s[1];
-				case 2:		d[2] = s[2];
-				case 1:		d[3] = s[3];
-				case 0:		/* do nothing */;
+			case 3:		d[1] = s[1];
+			case 2:		d[2] = s[2];
+			case 1:		d[3] = s[3];
+			case 0:		/* do nothing */;
 #else
 #if SIZEOF_INT == 2
-				case 1:		d[1] = s[1];
-				case 0:		/* do nothing */;
+			case 1:		d[1] = s[1];
+			case 0:		/* do nothing */;
 #endif
 #endif
 #endif
@@ -394,24 +396,24 @@ static char *mfwrd(register char *d, register char *s, register int sz)
 		d += sz - (SIZEOF_INT - 1);
 		switch (sz & (SIZEOF_INT - 1)) {
 #if SIZEOF_INT == 8
-			case 7:		d[0] = s[0];
-			case 6:		d[1] = s[1];
-			case 5:		d[2] = s[2];
-			case 4:		d[3] = s[3];
-			case 3:		d[4] = s[4];
-			case 2:		d[5] = s[5];
-			case 1:		d[6] = s[6];
-			case 0:		/* do nothing */;
+		case 7:		d[0] = s[0];
+		case 6:		d[1] = s[1];
+		case 5:		d[2] = s[2];
+		case 4:		d[3] = s[3];
+		case 3:		d[4] = s[4];
+		case 2:		d[5] = s[5];
+		case 1:		d[6] = s[6];
+		case 0:		/* do nothing */;
 #else
 #if SIZEOF_INT == 4
-			case 3:		d[0] = s[0];
-			case 2:		d[1] = s[1];
-			case 1:		d[2] = s[2];
-			case 0:		/* do nothing */;
+		case 3:		d[0] = s[0];
+		case 2:		d[1] = s[1];
+		case 1:		d[2] = s[2];
+		case 0:		/* do nothing */;
 #else
 #if SIZEOF_INT == 2
-			case 1:		d[0] = s[0];
-			case 0:		/* do nothing */;
+		case 1:		d[0] = s[0];
+		case 0:		/* do nothing */;
 #endif
 #endif
 #endif
@@ -441,22 +443,22 @@ static char *mfwrd(register char *d, register char *s, register int sz)
 		s -= 15 - sz;
 		d -= 15 - sz;
 		switch (sz) {
-			case 15:	d[0] = s[0];
-			case 14:	d[1] = s[1];
-			case 13:	d[2] = s[2];
-			case 12:	d[3] = s[3];
-			case 11:	d[4] = s[4];
-			case 10:	d[5] = s[5];
-			case 9:		d[6] = s[6];
-			case 8:		d[7] = s[7];
-			case 7:		d[8] = s[8];
-			case 6:		d[9] = s[9];
-			case 5:		d[10] = s[10];
-			case 4:		d[11] = s[11];
-			case 3:		d[12] = s[12];
-			case 2:		d[13] = s[13];
-			case 1:		d[14] = s[14];
-			case 0:		/* do nothing */;
+		case 15:	d[0] = s[0];
+		case 14:	d[1] = s[1];
+		case 13:	d[2] = s[2];
+		case 12:	d[3] = s[3];
+		case 11:	d[4] = s[4];
+		case 10:	d[5] = s[5];
+		case 9:		d[6] = s[6];
+		case 8:		d[7] = s[7];
+		case 7:		d[8] = s[8];
+		case 6:		d[9] = s[9];
+		case 5:		d[10] = s[10];
+		case 4:		d[11] = s[11];
+		case 3:		d[12] = s[12];
+		case 2:		d[13] = s[13];
+		case 1:		d[14] = s[14];
+		case 0:		/* do nothing */;
 		}
 	}
 	return od;
@@ -498,22 +500,22 @@ int mcnt(register char *blk, register char c, int size)
 		size -= 16;
 	}
 	switch (size) {
-		case 15:	if (blk[14] == c) ++nlines;
-		case 14:	if (blk[13] == c) ++nlines;
-		case 13:	if (blk[12] == c) ++nlines;
-		case 12:	if (blk[11] == c) ++nlines;
-		case 11:	if (blk[10] == c) ++nlines;
-		case 10:	if (blk[9] == c) ++nlines;
-		case 9:		if (blk[8] == c) ++nlines;
-		case 8:		if (blk[7] == c) ++nlines;
-		case 7:		if (blk[6] == c) ++nlines;
-		case 6:		if (blk[5] == c) ++nlines;
-		case 5:		if (blk[4] == c) ++nlines;
-		case 4:		if (blk[3] == c) ++nlines;
-		case 3:		if (blk[2] == c) ++nlines;
-		case 2:		if (blk[1] == c) ++nlines;
-		case 1:		if (blk[0] == c) ++nlines;
-		case 0:		/* do nothing */;
+	case 15:	if (blk[14] == c) ++nlines;
+	case 14:	if (blk[13] == c) ++nlines;
+	case 13:	if (blk[12] == c) ++nlines;
+	case 12:	if (blk[11] == c) ++nlines;
+	case 11:	if (blk[10] == c) ++nlines;
+	case 10:	if (blk[9] == c) ++nlines;
+	case 9:		if (blk[8] == c) ++nlines;
+	case 8:		if (blk[7] == c) ++nlines;
+	case 7:		if (blk[6] == c) ++nlines;
+	case 6:		if (blk[5] == c) ++nlines;
+	case 5:		if (blk[4] == c) ++nlines;
+	case 4:		if (blk[3] == c) ++nlines;
+	case 3:		if (blk[2] == c) ++nlines;
+	case 2:		if (blk[1] == c) ++nlines;
+	case 1:		if (blk[0] == c) ++nlines;
+	case 0:		/* do nothing */;
 	}
 	return nlines;
 }

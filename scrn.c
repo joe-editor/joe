@@ -765,63 +765,63 @@ static void cposs(register SCRN *t, register int x, register int y)
  */
 
 	switch (bestway) {
-		case 1:
+	case 1:
 		texec(t->cap, t->cr, 1, 0, 0, 0, 0);
 		t->x = 0;
 		break;
-		case 2:
+	case 2:
 		texec(t->cap, t->ho, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hy;
 		break;
-		case 3:
+	case 3:
 		texec(t->cap, t->ll, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hl;
 		break;
-		case 9:
+	case 9:
 		texec(t->cap, t->ll, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hl;
 		goto doch;
-		case 11:
+	case 11:
 		texec(t->cap, t->ho, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hy;
-	      doch:
-		case 4:
+doch:
+	case 4:
 		texec(t->cap, t->ch, 1, x, 0, 0, 0);
 		t->x = x;
 		break;
-		case 10:
+	case 10:
 		texec(t->cap, t->ll, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hl;
 		goto docv;
-		case 12:
+	case 12:
 		texec(t->cap, t->ho, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hy;
 		goto docv;
-		case 8:
+	case 8:
 		texec(t->cap, t->cr, 1, 0, 0, 0, 0);
 		t->x = 0;
-	      docv:
-		case 5:
+docv:
+	case 5:
 		texec(t->cap, t->cv, 1, y, 0, 0, 0);
 		t->y = y;
 		break;
-		case 6:
+	case 6:
 		texec(t->cap, t->cm, 1, y, x, 0, 0);
 		t->y = y, t->x = x;
 		break;
-		case 7:
+	case 7:
 		texec(t->cap, t->cv, 1, y, 0, 0, 0);
 		t->y = y;
 		texec(t->cap, t->ch, 1, x, 0, 0, 0);
 		t->x = x;
 		break;
-		case 13:
+	case 13:
 		texec(t->cap, t->cV, 1, y, 0, 0, 0);
 		t->y = y;
 		t->x = 0;

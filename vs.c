@@ -221,13 +221,13 @@ int vsbsearch(char *ary, int len, char el)
 	while (z != (x + y) / 2) {
 		z = (x + y) / 2;
 		switch (scmp(el, ary[z])) {
-			case 1:
+		case 1:
 			x = z;
 			break;
-			case -1:
+		case -1:
 			y = z;
 			break;
-			case 0:
+		case 0:
 			return z;
 		}
 	}

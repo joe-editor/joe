@@ -1,4 +1,9 @@
 Sat Dec 01 2001  Vitezslav Samel <samel@mail.cz>
+	* blocks.c, help.c, macro.c, main.c, path.c, rc.c, regex.c, scrn.c,
+	termcap.c, tw.c, ublock.c, uedit.c, usearch.c, vs.c, w.c:
+	change indentation of cases in the switch() statement
+
+Sat Dec 01 2001  Vitezslav Samel <samel@mail.cz>
 	* b.c, bw.c, main.c, path.c, rc.c, regex.c, scrn.c, termcap.c,
 	termidx.c, tty.c, tw.c, ublock.c, uedit.c, uerror.c, uformat.c, undo.c,
 	utag.c, vfile.c, vs.c, w.c:
