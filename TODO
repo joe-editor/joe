@@ -635,3 +635,7 @@ Other requests:
  -cleanup (delete extra lines and extra spaces at ends of lines).
 
  -show no. utf characters, not no. bytes
+
+lock file: give error for edit.
+memory map files
+autosave

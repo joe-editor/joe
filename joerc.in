@@ -83,8 +83,11 @@
 
 -guess_indent	Guess indent character (tab or space).
 
--menu_explorer Stay in menu system when a directory is selected (otherwise
+ -menu_explorer	Stay in menu system when a directory is selected (otherwise
                 directory is added to path and menu is closed).
+
+ -menu_jump	Jump into file selection menu when tab is hit (otherwise, menu
+		comes up, but cursor stays in file name prompt).
 
  -icase         Search is case insensitive by default.
 

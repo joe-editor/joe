@@ -1,3 +1,10 @@
+Wed Mar  2 2005  Joe Allen <jhallen@world.std.com>
+
+	Fix warnings from various syntax files (can't
+	believe I didn't notice this...)
+
+	Add -menu_jump option
+
 Tue Mar  1 2005  Joe Allen <jhallen@world.std.com>
 
 	Allow :s in xml names.

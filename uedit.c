@@ -31,6 +31,8 @@
 /* Global options */
 int pgamnt = -1;		/* No. of PgUp/PgDn lines to keep */
 
+extern WATOM watommenu;
+
 /******** i don't like global var ******/
 
 /* 
@@ -1113,6 +1115,9 @@ void scrdn(BW *bw, int n, int flg)
 
 int upgup(BW *bw)
 {
+	if (bw->parent->link.next->watom==&watommenu) {
+		return umpgup(bw->parent->link.next->object);
+	}
 	bw = (BW *) bw->parent->main->object;
 	if (!bw->cursor->line)
 		return -1;
@@ -1129,6 +1134,9 @@ int upgup(BW *bw)
 
 int upgdn(BW *bw)
 {
+	if (bw->parent->link.next->watom==&watommenu) {
+		return umpgdn(bw->parent->link.next->object);
+	}
 	bw = (BW *) bw->parent->main->object;
 	if (bw->cursor->line == bw->b->eof->line)
 		return -1;

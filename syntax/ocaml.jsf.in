@@ -135,7 +135,7 @@
 	*		prefixop	noeat
 	"a-z"		opparam		noeat
 
-:opparam Lowid
+:opparam LowId
 	*		expr		noeat
 	"a-zA-Z0-9_'"	opparam
 	":"		control

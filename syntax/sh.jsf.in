@@ -56,7 +56,7 @@
 :todelim Constant
 	*		todelim
 	"\n"		next_line	strings
-	"&"		founddelim	noeat
+	"&"		founddelim
 done
 
 # eat \n so it's not in string.

@@ -38,7 +38,7 @@
 	"%"		mason_tag
 	"&"		perl_idle
 
-:mason_tag
+:mason_tag Idle
 	*		perl_idle
 	">"		perl_idle
 	"a-z"		mason_tag
@@ -244,15 +244,15 @@ done
 	"&"		perl_maybe_done
 	"<"		perl_maybe_done_1
 
-:perl_maybe_done
+:perl_maybe_done Idle
 	*		perl_idle	noeat
 	">"		idle
 
-:perl_maybe_done_1
+:perl_maybe_done_1 Idle
 	*		perl_idle	noeat
 	"/"		perl_maybe_done_2
 
-:perl_maybe_done_2
+:perl_maybe_done_2 Idle
 	*		perl_idle	noeat
 	"a-z"		perl_maybe_done_2
 	">"		reset

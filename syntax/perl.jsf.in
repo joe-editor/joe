@@ -31,6 +31,7 @@
 =Type bold
 =Keyword bold
 =Bad bold red
+=Var yellow
 
 :idle Idle
 	*		idle
@@ -109,7 +110,7 @@ done
 :todelim Constant
 	*		todelim
 	"\n"		next_line	strings
-	"&"		founddelim	noeat
+	"&"		founddelim
 done
 
 # eat \n so it's not in string.
@@ -335,10 +336,10 @@ done
 	"printf"	kw
 	"close"		kw
 	"package"	kw
-	"m"		match		noeat
-	"s"		subst		noeat
-	"tr"		subst		noeat
-	"y"		subst		noeat
+	"m"		match
+	"s"		subst
+	"tr"		subst
+	"y"		subst
 	"__END__"	end_of_file_comment
 	"__DATA__"	end_of_file_comment
 done
@@ -346,11 +347,11 @@ done
 
 :maybe_string Idle
 	*		rest		noeat strings
-	"qr"		match		noeat
-	"qq"		match		noeat
-	"qx"		match		noeat
-	"qw"		match		noeat
-	"q"		match		noeat
+	"qr"		match
+	"qq"		match
+	"qx"		match
+	"qw"		match
+	"q"		match
 done
 	"a-zA-Z0-9_"	maybe_string
 

@@ -11,6 +11,7 @@
 =Id red
 =Tag  magenta
 =Keyword  bold white
+=HTML
 
 :reset HTML
 	*		  reset
@@ -37,12 +38,12 @@
   " " id_block_reset
   "{" style_block recolor=-1
 
-:id_block_reset
+:id_block_reset Idle
   *   id_block
   "a-zA-Z"  tag_block recolor=-1
   "." class_block recolor=-1
   "#" id_block  recolor=-1
-  "{" style_block recelor=-1
+  "{" style_block recolor=-1
    
 :class_block  Class
   *   class_block

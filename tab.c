@@ -29,6 +29,9 @@ typedef struct tab TAB;
 extern int smode;		/* ??? */
 extern int beep;
 int menu_explorer = 0;		/* Stay in menu system when directory selected */
+int menu_jump = 0;		/* Jump into menu */
+
+extern WATOM watommenu;
 
 struct tab {
 	int first_len;			/* Original size of path */
@@ -167,11 +170,13 @@ static unsigned char **treload(TAB *tab,MENU *m, BW *bw, int flg,int *defer)
 	}
 	if (defer) {
 		*defer = which;
-		insnam(bw, tab->path, tab->pattern, 0, tab->ofst);
+		/* bash */
+		/* insnam(bw, tab->path, tab->pattern, 0, tab->ofst); */
 		return tab->list;
 	} else {
 		ldmenu(m, tab->list, which);
-		insnam(bw, tab->path, tab->pattern, 0, tab->ofst);
+		/* bash */
+		/* insnam(bw, tab->path, tab->pattern, 0, tab->ofst); */
 		return tab->list;
 	}
 }
@@ -280,9 +285,11 @@ static int tabbacks(MENU *m, int cursor, TAB *tab)
 	}
 }
 /*****************************************************************************/
+/* This should verify that bw still exists... */
 static int tababrt(BW *bw, int cursor, TAB *tab)
 {
-	insnam(bw, tab->orgpath, tab->orgnam, 0, tab->ofst);
+	/* bash */
+	/* insnam(bw, tab->orgpath, tab->orgnam, 0, tab->ofst); */
 	rmtab(tab);
 	return -1;
 }
@@ -344,16 +351,30 @@ int cmplt(BW *bw)
 
 	l = treload(tab, 0, bw, 0, &which);
 
+	/* bash */
+	if (bw->parent->link.next->watom==&watommenu) {
+		wabort(bw->parent->link.next);
+		/* smode=2; */
+	}
+
 	if (l && (new = mkmenu(bw->parent, l, tabrtn, tababrt, tabbacks, which, tab, NULL))) {
 		if (sLEN(tab->files) == 1)
+			/* Only one file found, so select it */
 			return tabrtn1(new, 0, tab);
-		else if (smode || isreg(tab->orgnam))
+		else if (smode || isreg(tab->orgnam)) {
+			/* User tried to complete twice (see smode=2 below), so leave menu on */
+			/* bash */
+			if (!menu_jump)
+				bw->parent->t->curwin=bw->parent;
 			return 0;
-		else {
+		} else {
+			/* Complete name as much as possible, turn menu off */
 			unsigned char *com = mcomplete(new);
 
 			vsrm(tab->orgnam);
 			tab->orgnam = com;
+			/* wabort causes tab->orgnam to be copied to prompt */
+			insnam(bw, tab->orgpath, tab->orgnam, 0, tab->ofst);
 			wabort(new->parent);
 			smode = 2;
 			/* if(beep) */
