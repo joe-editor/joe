@@ -847,8 +847,9 @@ int utypebw(BW *bw, int k)
 		if (simple && bw->parent->t->t->sary[bw->y + bw->cursor->line - bw->top->line])
 			simple = 0;
 		if (simple && k != '\t' && k != '\n' && !curmacro) {
-			int a = 0;
-			unsigned char c = (unsigned char)k;
+			int a;
+			int atr = 0;
+			unsigned char c = k;
 			SCRN *t = bw->parent->t->t;
 			int y = bw->y + bw->cursor->line - bw->top->line;
 			int x = bw->cursor->xcol - bw->offset + bw->x - 1;
@@ -863,9 +864,19 @@ int utypebw(BW *bw, int k)
 			    markk->b == bw->b &&
 			   ((!square && bw->cursor->byte >= markb->byte && bw->cursor->byte < markk->byte) ||
 			    ( square && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line && piscol(bw->cursor) >= markb->xcol && piscol(bw->cursor) < markk->xcol)))
-				a = INVERSE;
-			xlat(&a, &c);
-			outatr(bw->b->o.utf8, t, screen + x, attr + x, x, y, c, a);
+				atr = INVERSE;
+			if (bw->b->o.utf8) {
+				if (k<32 || k>126 && k<160) {
+					xlat_utf_ctrl(&a, &c);
+					k = c;
+					atr ^= a;
+					}
+			} else {
+				xlat(&a, &c);
+				k = c;
+				atr ^= a;
+			}
+			outatr(bw->b->o.utf8, t, screen + x, attr + x, x, y, k, atr);
 		}
 #endif
 	}
@@ -873,6 +884,24 @@ int utypebw(BW *bw, int k)
 }
 
 /* Quoting */
+
+static B *unicodehist = NULL;	/* History of previously entered unicode characters */
+
+static int dounicode(BW *bw, unsigned char *s, void *object, int *notify)
+{
+	int num;
+	unsigned char buf[8];
+	int x;
+	sscanf(s,"%x",&num);
+	if (notify)
+		*notify = 1;
+	vsrm(s);
+	utf8_encode(buf,num);
+	for(x=0;buf[x];++x)
+		utypebw(bw, buf[x]);
+	bw->cursor->xcol = piscol(bw->cursor);
+	return 0;
+}
 
 int quotestate;
 int quoteval;
@@ -907,6 +936,12 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 				return -1;
 			else
 				return 0;
+		} else if (c == 'u' || c == 'U') {
+			if (!wmkpw(bw->parent, US "Unicode (ISO-10646) character in hex (^C to abort): ", &unicodehist, dounicode,
+			           NULL, NULL, NULL, NULL, NULL, -1))
+				return 0;
+			else
+				return -1;
 		} else {
 			if ((c >= 0x40 && c <= 0x5F) || (c >= 'a' && c <= 'z'))
 				c &= 0x1F;

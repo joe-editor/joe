@@ -40,6 +40,10 @@ int parse(struct high_syntax *syntax,P *line,int state)
 		struct high_state *old_state;
 		int x;
 
+		/* Hack so we can have UTF-8 characters without crashing */
+		if (c < 0 || c > 255)
+			c = 0x1F;
+
 		if(attr==attr_end) {
 			attr_buf = realloc(attr_buf,sizeof(int)*(attr_size*2));
 			attr = attr_buf + attr_size;

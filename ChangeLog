@@ -1,3 +1,12 @@
+Sun Apr 18 2004  Joe Allen <jhallen@world.std.com>
+	* syntax.c, uedit.c:
+
+	Added ` u to insert unicode characters in hex.
+
+	Fixed typeing of unicode (utypebw() optimization bug).
+
+	Fixed editor hang when syntax hightlighter hits unicode characters.
+
 Sat Apr 17 2004  Joe Allen <jhallen@world.std.com>
 	* bw.c menu.c qw.c scrn.c scrn.h utf8.h w.c w.h:
 

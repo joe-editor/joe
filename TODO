@@ -250,3 +250,12 @@ Options
  Fix it so all options appear in ^T.  Maybe make hook function
  to handle major changes.  Need this for major mode change for
  hex edit mode.
+
+Other requests:
+
+ -cleanup (delete extra lines and extra spaces at ends of lines).
+
+ Mode where Home is smart: jumps to first non-space character and then
+ beginning of line.
+
+ Mode where backspace unindents a tab even when in spaces mode.
