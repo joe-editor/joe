@@ -266,7 +266,7 @@ void cmplt_ins(BW *bw, unsigned char *line)
 int cmplt_abrt(BW *bw, int x, unsigned char *line)
 {
 	if (line) {
-		cmplt_ins(bw, line);
+		/* cmplt_ins(bw, line); */
 		vsrm(line);
 	}
 	return -1;
@@ -280,6 +280,9 @@ int cmplt_rtn(MENU *m, int x, unsigned char *line)
 	wabort(m->parent);
 	return 0;
 }
+
+extern int menu_jump;
+extern WATOM watommenu;
 
 int simple_cmplt(BW *bw,unsigned char **list)
 {
@@ -308,6 +311,10 @@ int simple_cmplt(BW *bw,unsigned char **list)
 		return -1;
 	}
 
+	if (bw->parent->link.next->watom==&watommenu) {
+		wabort(bw->parent->link.next);
+	}
+
 	m = mkmenu(bw->parent, lst, cmplt_rtn, cmplt_abrt, NULL, 0, line, NULL);
 	if (!m) {
 		varm(lst);
@@ -316,13 +323,17 @@ int simple_cmplt(BW *bw,unsigned char **list)
 	}
 	if (aLEN(lst) == 1)
 		return cmplt_rtn(m, 0, line);
-	else if (smode || isreg(line))
+	else if (smode || isreg(line)) {
+		if (!menu_jump)
+			bw->parent->t->curwin=bw->parent;
 		return 0;
-	else {
+	} else {
 		unsigned char *com = mcomplete(m);
 
 		vsrm(m->object);
 		m->object = com;
+		
+		cmplt_ins(bw, com);
 		wabort(m->parent);
 		smode = 2;
 		ttputc(7);
