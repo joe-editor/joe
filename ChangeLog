@@ -1,3 +1,7 @@
+Sat Apr 24 2004  Joe Allen <jhallen@world.std.com>
+
+	Fixed utf8 encoder for characters between 0x10000 and 0x1FFFF.
+
 Fri Apr 23 2004  Joe Allen <jhallen@world.std.com>
 
 	Added -guess_crlf and -guess_indent options.

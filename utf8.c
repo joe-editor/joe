@@ -41,7 +41,7 @@ int utf8_encode(unsigned char *buf,int c)
 		buf[1] = (0x80|(c&0x3F));
 		buf[2] = 0;
 		return 2;
-	} else if(c < 0x20000) {
+	} else if(c < 0x10000) {
 		buf[0] = (0xe0|(c>>12));
 		buf[1] = (0x80|((c>>6)&0x3f));
 		buf[2] = (0x80|((c)&0x3f));

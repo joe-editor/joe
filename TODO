@@ -104,7 +104,7 @@ sequence: perhaps all of this is ok).
 110x_xxxx	2	0x7FF		11
  10xx_xxxx
 
-1110x_xxxx	3	0x1FFFF		17
+1110_xxxx	3	0xFFFF		16
  10xx_xxxx
  10xx_xxxx
 
@@ -128,6 +128,12 @@ sequence: perhaps all of this is ok).
 
 1111_111x	error
 
+
+-- ý…………… --
+-- ù………… --
+-- ñ……… --
+-- á…… --
+-- Á… --
 
 
 Syntax Highlighting:
