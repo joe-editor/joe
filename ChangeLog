@@ -1,6 +1,8 @@
 Sat Mar 26 09:56:23 EST 2005
 
-	Fix some resize bugs
+	Fix some window resize bugs
+
+	Add support for 16 and 256 color xterms.
 
 Sat Mar 26 00:28:58 EST 2005
 

@@ -98,6 +98,7 @@ extern int menu_jump, break_links;
 extern int xmouse;
 extern unsigned char *backpath;
 extern int nolocks, nomodcheck, nocurdir;
+extern int assume_256color;
 
 /* Set to use ~/.joe_state file */
 int joe_state;
@@ -341,6 +342,7 @@ struct glopts {
 	{US "mouse",	0, &xmouse, NULL, 0, 0, 0 },
 	{US "usetabs",	0, &usetabs, NULL, 0, 0, 0 },
 	{US "assume_color", 0, &assume_color, NULL, 0, 0, 0 },
+	{US "assume_256color", 0, &assume_256color, NULL, 0, 0, 0 },
 	{ NULL,		0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0 }
 };
 

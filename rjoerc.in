@@ -121,6 +121,10 @@
 		looks like an ANSI terminal (support bold and capability starts with
 		ESC [).
 
+ -assume_256color
+		Assume terminal has xterm 256 color support (ESC [ 38 ; 5 ; NNN m and
+                ESC [ 48 ; 5 ; NNN m).
+
 -guess_crlf     Automatically detect MS-DOS files and set -crlf appropriately
 
 -guess_indent	Guess indent character (tab or space).

@@ -8,6 +8,8 @@ Short (infinite) list for 3.3:
 - mouse when in hex mode, line numbering mode
 - bracketed paste support
 
+- background color patch.
+
 - - - -
 
 Dangerous situations:
@@ -134,11 +136,6 @@ window on the screen).
 - .joe_state file:
  - try for previous screen configuration?
  - multiple joes: the last one who exits wins: merge them
-
-- - - - - - - -
-
-More colors: UI for using 256 color xterms.
-  - Problems: tgoto takes only two params, so we have to switch to tparm.
 
 - - - - - - - -
 

@@ -429,6 +429,7 @@ struct scrn {
 
 	unsigned char	*Sb;		/* Set background color */
 	unsigned char	*Sf;		/* Set foregrond color */
+	int	Co;			/* No. of colors */
 	int	ut;		/* Screen erases with background color */
 
 	int	da, db;		/* Extra lines exist above, below */

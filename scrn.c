@@ -29,6 +29,7 @@ int columns = 0;
 int notite = 0;
 int usetabs = 0;
 int assume_color = 0;
+int assume_256color = 0;
 
 extern int mid;
 
@@ -177,11 +178,19 @@ int set_attr(SCRN *t, int c)
 		if (t->mh)
 			texec(t->cap, t->mh, 1, 0, 0, 0, 0);
 
-	if ((t->attrib&FG_MASK)!=(c&FG_MASK))
-		if (t->Sf) texec(t->cap,t->Sf,1,7-(((c&FG_VALUE)>>FG_SHIFT)),0,0,0);
+	if ((t->attrib & FG_MASK) != (c & FG_MASK))
+		if (t->Sf)
+			if (t->Co & (t->Co - 1))
+				texec(t->cap, t->Sf, 1, ((c & FG_VALUE) >> FG_SHIFT) % t->Co, 0, 0, 0);
+			else
+				texec(t->cap, t->Sf, 1, ((c & FG_VALUE) >> FG_SHIFT) & (t->Co - 1), 0, 0, 0);
 
-	if ((t->attrib&BG_MASK)!=(c&BG_MASK))
-		if (t->Sb) texec(t->cap,t->Sb,1,((c&BG_VALUE)>>BG_SHIFT),0,0,0);
+	if ((t->attrib & BG_MASK) != (c & BG_MASK))
+		if (t->Sb)
+			if (t->Co & (t->Co - 1))
+				texec(t->cap, t->Sb, 1, ((c & BG_VALUE) >> BG_SHIFT) % t->Co, 0, 0, 0);
+			else
+				texec(t->cap, t->Sb, 1, ((c & BG_VALUE) >> BG_SHIFT) & (t->Co - 1), 0, 0, 0);
 
 	t->attrib = c;
 
@@ -494,6 +503,9 @@ SCRN *nopen(CAP *cap)
 	if (!t->Sb) t->Sb = jgetstr(t->cap,US "Sb");
 	t->Sf = jgetstr(t->cap,US "AF");
 	if (!t->Sf) t->Sf = jgetstr(t->cap,US "Sf");
+	t->Co = getnum(t->cap,US "Co");
+	if (t->Co == -1)
+		t->Co = 8;
 
 	t->mb = NULL;
 	t->md = NULL;
@@ -514,18 +526,37 @@ SCRN *nopen(CAP *cap)
 
 
 	if (assume_color) {
-		/* Install color support if it looks like an ansi terminal (it has bold which begins with ESC [) */
+		/* Install 8 color support if it looks like an ansi terminal (it has bold which begins with ESC [) */
 #ifndef TERMINFO
 		if (!t->Sf && t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
 			t->ut = 1;
-			t->Sf =US "\\E[3%dm";
-			t->Sb =US "\\E[4%dm";
+			t->Sf = US "\\E[3%dm";
+			t->Sb = US "\\E[4%dm";
+			t->Co = 8;
 		}
 #else
 		if (!t->Sf && t->md && t->md[0]=='\033' && t->md[1]=='[') { 
 			t->ut = 1;
-			t->Sf =US "\033[3%p1%dm";
-			t->Sb =US "\033[4%p1%dm";
+			t->Sf = US "\033[3%p1%dm";
+			t->Sb = US "\033[4%p1%dm";
+		}
+#endif
+	}
+
+      	if (assume_256color && t->Co < 256) {
+      		t->Co = 256;
+		/* Force 256 color support */
+#ifndef TERMINFO
+		if (!t->Sf && t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
+			t->ut = 1;
+			t->Sf = US "\\E[38;5;%dm";
+			t->Sb = US "\\E[48;5;%dm";
+		}
+#else
+		if (!t->Sf && t->md && t->md[0]=='\033' && t->md[1]=='[') { 
+			t->ut = 1;
+			t->Sf = US "\033[38;5%p1%dm";
+			t->Sb = US "\033[48;5%p1%dm";
 		}
 #endif
 	}
@@ -1772,6 +1803,8 @@ int meta_color(unsigned char *s)
 		return BLINK;
 	else if(!strcmp((char *)s,"dim"))
 		return DIM;
+
+	/* ISO colors */
 	else if(!strcmp((char *)s,"white"))
 		return FG_WHITE;
 	else if(!strcmp((char *)s,"cyan"))
@@ -1804,6 +1837,66 @@ int meta_color(unsigned char *s)
 		return BG_RED;
 	else if(!strcmp((char *)s,"bg_black"))
 		return BG_BLACK;
+
+	/* 16 color xterm support: codes 8 - 15 are brighter versions of above */
+	else if(!strcmp((char *)s,"WHITE"))
+		return FG_BWHITE;
+	else if(!strcmp((char *)s,"CYAN"))
+		return FG_BCYAN;
+	else if(!strcmp((char *)s,"MAGENTA"))
+		return FG_BMAGENTA;
+	else if(!strcmp((char *)s,"BLUE"))
+		return FG_BBLUE;
+	else if(!strcmp((char *)s,"YELLOW"))
+		return FG_BYELLOW;
+	else if(!strcmp((char *)s,"GREEN"))
+		return FG_BGREEN;
+	else if(!strcmp((char *)s,"RED"))
+		return FG_BRED;
+	else if(!strcmp((char *)s,"BLACK"))
+		return FG_BBLACK;
+	else if(!strcmp((char *)s,"bg_WHITE"))
+		return BG_BWHITE;
+	else if(!strcmp((char *)s,"bg_CYAN"))
+		return BG_BCYAN;
+	else if(!strcmp((char *)s,"bg_MAGENTA"))
+		return BG_BMAGENTA;
+	else if(!strcmp((char *)s,"bg_BLUE"))
+		return BG_BBLUE;
+	else if(!strcmp((char *)s,"bg_YELLOW"))
+		return BG_BYELLOW;
+	else if(!strcmp((char *)s,"bg_GREEN"))
+		return BG_BGREEN;
+	else if(!strcmp((char *)s,"bg_RED"))
+		return BG_BRED;
+	else if(!strcmp((char *)s,"bg_BLACK"))
+		return BG_BBLACK;
+
+	/* Look at the "256colres.pl" PERL script in the xterm source
+	   distribution to see how these work. */
+
+	/* 256 color xterm support: bg_RGB and fg_RGB, where R, G, and B range from 0 - 5 */
+	/* Codes 16 - 231 are a 6x6x6 color cube */
+	else if(s[0]=='f' && s[1]=='g' && s[2]=='_' &&
+		s[3]>='0' && s[3]<='5' &&
+		s[4]>='0' && s[4]<='5' &&
+		s[5]>='0' && s[5]<='5' && !s[6])
+	        return FG_NOT_DEFAULT | ((16 + (s[3]-'0')*6*6 + (s[4]-'0')*6 + (s[5]-'0'))<<FG_SHIFT);
+
+	else if(s[0]=='b' && s[1]=='g' && s[2]=='_' &&
+		  s[3]>='0' && s[3]<='5' &&
+		  s[4]>='0' && s[4]<='5' &&
+		  s[5]>='0' && s[5]<='5' && !s[6])
+	        return BG_NOT_DEFAULT | ((16 + (s[3]-'0')*6*6 + (s[4]-'0')*6 + (s[5]-'0'))<<FG_SHIFT);
+
+	/* 256 color xterm support: shades of grey */
+	/* Codes 232 - 255 are shades of grey */
+	else if(s[0]=='f' && s[1]=='g' && s[2]=='_' && atoi((char *)(s+3)) >= 0 && atoi((char *)(s+3)) <= 23)
+		return FG_NOT_DEFAULT | (232 + (atoi((char *)(s+3)) << FG_SHIFT));
+
+	else if(s[0]=='b' && s[1]=='g' && s[2]=='_' && atoi((char *)(s+3)) >= 0 && atoi((char *)(s+3)) <= 23)
+		return BG_NOT_DEFAULT | (232 + (atoi((char *)(s+3)) << BG_SHIFT));
+
 	else
 		return 0;
 }

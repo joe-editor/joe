@@ -23,6 +23,8 @@
    white cyan magenta blue yellow green red black
    bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
 
+ Other colors are available: see syntax/c.jsf for documentation.
+
  Override all instances of class Idle:
    =Idle red
 
@@ -119,6 +121,10 @@
 		says that it doesn't.  This only applies if the terminal otherwise
 		looks like an ANSI terminal (support bold and capability starts with
 		ESC [).
+
+ -assume_256color
+		Assume terminal has xterm 256 color support (ESC [ 38 ; 5 ; NNN m and
+                ESC [ 48 ; 5 ; NNN m).
 
 -guess_crlf     Automatically detect MS-DOS files and set -crlf appropriately
 
