@@ -1,3 +1,10 @@
+Mon Mai  3 2004  Joe Allen <jhallen@world.std.com>
+	* utils.c, utils.h, utf8.c, syntax.c, configure.ac, Makefile.am,
+	charmap.c, charmap.h:
+
+	No longer use iconv().  Not 100% sure I'm going to leave it this
+	way.  Maybe optionally use iconv().
+
 Mon May  3 2004  Joe Allen <jhallen@world.std.com>
 	*:
 

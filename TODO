@@ -1,7 +1,5 @@
 Fix for next release:
 
-  highlighting of files with utf-8 chars is broken
-
   update selinux patch
 
   perl highlighter
@@ -14,11 +12,8 @@ Fix for next release:
 
   different symbol for 'joe' directory
 
-  fix it so iconv() is properly referenced.
-  replace iconv(). (include i18n file in joe).
-    (which fixes our compiling problem)
-
   ^T U should prompt for locale
+  should parse locale charmap files.
 
   can't load terminfo- should switch to termcap or provide compiled
   ANSI terminfo built in.

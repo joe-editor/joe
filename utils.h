@@ -77,9 +77,10 @@ typedef RETSIGTYPE (*sighandler_t)(int);
 /* wrapper to hide signal interface differrencies */
 int joe_set_signal PARAMS((int signum, sighandler_t handler));
 
-int parse_ws PARAMS((unsigned char **p));
+int parse_ws PARAMS((unsigned char **p,int cmt));
 int parse_ident PARAMS((unsigned char **p,unsigned char *buf,int len));
 int parse_kw PARAMS((unsigned char **p,unsigned char *kw));
+int parse_tows PARAMS((unsigned char **p,unsigned char *buf));
 int parse_field PARAMS((unsigned char **p,unsigned char *field));
 int parse_char PARAMS((unsigned char  **p,unsigned char c));
 int parse_int PARAMS((unsigned char **p,int *buf));

@@ -170,12 +170,12 @@ int joe_set_signal(int signum, sighandler_t handler)
 
 /* Skip whitespace and return first non-whitespace character */
 
-int parse_ws(unsigned char **pp)
+int parse_ws(unsigned char **pp,int cmt)
 {
 	unsigned char *p = *pp;
 	while (*p==' ' || *p=='\t')
 		++p;
-	if (*p=='\r' || *p=='\n' || *p=='#')
+	if (*p=='\r' || *p=='\n' || *p==cmt)
 		*p = 0;
 	*pp = p;
 	return *p;
@@ -196,6 +196,19 @@ int parse_ident(unsigned char **pp, unsigned char *buf, int len)
 		return 0;
 	} else
 		return -1;
+}
+
+/* Parse to next whitespace */
+
+int parse_tows(unsigned char **pp, unsigned char *buf)
+{
+	unsigned char *p = *pp;
+	while (*p && *p!=' ' && *p!='\t' && *p!='\n' && *p!='\r' && *p!='#')
+		*buf++ = *p++;
+
+	*pp = p;
+	*buf = 0;
+	return 0;
 }
 
 /* Parse a keyword */

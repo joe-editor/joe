@@ -19,11 +19,11 @@
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #	include <locale.h>
 #       include <langinfo.h>
-#	include <iconv.h>
 #endif
 
 #include "rc.h"
 #include "utf8.h"
+#include "charmap.h"
 
 /* UTF-8 Encoder
  *
@@ -172,10 +172,7 @@ unsigned char *non_utf8_codeset;
 			/* Codeset of local language non-UTF-8 */
 			/* What if it is UTF-8? */
 
-#ifdef HAVE_SETLOCALE
-iconv_t to_utf;
-iconv_t from_utf;
-#endif
+struct charmap *locale_map;	/* Character map */
 
 void joe_locale()
 {
@@ -210,14 +207,31 @@ void joe_locale()
 		pdefault.utf8 = 1;	/* For prompt windows too */
 	}
 
+	locale_map = find_charmap(non_utf8_codeset);
+	if (!locale_map)
+		locale_map = find_charmap("C");
+
+#ifdef junk
 	to_utf = iconv_open("UTF-8", (char *)non_utf8_codeset);
 	from_utf = iconv_open((char *)non_utf8_codeset, "UTF-8");
+#endif
+
+#else
+	locale_map = find_charmap("C");
 #endif
 }
 
 void to_utf8(unsigned char *s,int c)
 {
-#ifdef HAVE_SETLOCALE
+	int d = to_uni(locale_map,c);
+
+	if (d==-1)
+		utf8_encode(s,'?');
+	else
+		utf8_encode(s,d);
+
+#ifdef junk
+	/* Iconv() way */
 	unsigned char buf[10];
 	unsigned char *ibufp = buf;
 	unsigned char *obufp = s;
@@ -233,14 +247,20 @@ void to_utf8(unsigned char *s,int c)
 	} else {
 		*obufp = 0;
 	}
-#else
-	utf8_encode(s,c);
 #endif
 }
 
 int from_utf8(unsigned char *s)
 {
-#ifdef HAVE_SETLOCALE
+	int d = utf8_decode_string(s);
+	int c = from_uni(locale_map,d);
+	if (c==-1)
+		return '?';
+	else
+		return c;
+
+#ifdef junk
+	/* Iconv() way */
 	int ibuf_sz=strlen((char *)s);
 	unsigned char *ibufp=s;
 	int obuf_sz=10;
@@ -253,8 +273,6 @@ int from_utf8(unsigned char *s)
 		return '?';
 	else
 		return obuf[0];
-#else
-	return utf8_decode_string(s);
 #endif
 }
 

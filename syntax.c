@@ -190,13 +190,13 @@ struct high_syntax *load_dfa(unsigned char *name)
 	while(fgets((char *)buf,1023,f)) {
 		++line;
 		p = buf;
-		c = parse_ws(&p);
+		c = parse_ws(&p,'#');
 		if(!parse_char(&p, ':')) {
 			if(!parse_ident(&p, bf, 255)) {
 
 				state = find_state(syntax,bf);
 
-				parse_ws(&p);
+				parse_ws(&p,'#');
 				if(!parse_ident(&p,bf,255)) {
 					struct high_color *color;
 					for(color=syntax->color;color;color=color->next)
@@ -232,7 +232,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 				}
 
 				/* Parse color definition */
-				while(parse_ws(&p), !parse_ident(&p,bf,255)) {
+				while(parse_ws(&p,'#'), !parse_ident(&p,bf,255)) {
 					color->color |= meta_color(bf);
 				}
 			}
@@ -240,7 +240,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 			if(parse_int(&p, &syntax->sync_lines))
 				syntax->sync_lines = -1;
 		} else {
-			c = parse_ws(&p);
+			c = parse_ws(&p,'#');
 
 			if (!c) {
 			} else if (c=='"' || c=='*') {
@@ -278,21 +278,21 @@ struct high_syntax *load_dfa(unsigned char *name)
 					cmd->keywords = 0;
 					cmd->ignore = 0;
 
-					parse_ws(&p);
+					parse_ws(&p,'#');
 					if(!parse_ident(&p,bf,255)) {
 						int z;
 						cmd->new_state = find_state(syntax,bf);
 
 						/* Parse options */
-						while (parse_ws(&p), !parse_ident(&p,bf,255))
+						while (parse_ws(&p,'#'), !parse_ident(&p,bf,255))
 							if(!strcmp(bf,"buffer")) {
 								cmd->start_buffering = 1;
 							} else if(!strcmp(bf,"hold")) {
 								cmd->stop_buffering = 1;
 							} else if(!strcmp(bf,"recolor")) {
-								parse_ws(&p);
+								parse_ws(&p,'#');
 								if(!parse_char(&p,'=')) {
-									parse_ws(&p);
+									parse_ws(&p,'#');
 									if(parse_int(&p,&cmd->recolor))
 										fprintf(stderr,"%s %d: Missing value for option\n",name,line);
 								} else
@@ -303,12 +303,12 @@ struct high_syntax *load_dfa(unsigned char *name)
 								while(fgets((char *)buf,1023,f)) {
 									++line;
 									p = buf;
-									c = parse_ws(&p);
+									c = parse_ws(&p,'#');
 									if (*p) {
 										if(!parse_field(&p,US "done"))
 											break;
 										if(!parse_string(&p,bf,255)) {
-											parse_ws(&p);
+											parse_ws(&p,'#');
 											if (cmd->ignore)
 												lowerize(bf);
 											if(!parse_ident(&p,bf1,255)) {
