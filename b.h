@@ -95,11 +95,11 @@ void bdel PARAMS((P *from, P *to));
 /* insert buffer 'b' into another at 'p' */
 P *binsb PARAMS((P *p, B *b));
 /* insert a block 'blk' of size 'amnt' into buffer at 'p' */
-P *binsm PARAMS((P *p, char *blk, int amnt)); 
+P *binsm PARAMS((P *p, unsigned char *blk, int amnt)); 
 /* insert character 'c' into buffer at 'p' */
-P *binsc PARAMS((P *p, char c));
+P *binsc PARAMS((P *p, unsigned char c));
 /* insert zero term. string 's' into buffer at 'p' */
-P *binss PARAMS((P *p, char *s));
+P *binss PARAMS((P *p, unsigned char *s));
 
 /* B *bload(char *s);
  * Load a file into a new buffer
@@ -128,12 +128,12 @@ int brc PARAMS((P *p));
 int brch PARAMS((P *p));
 
 /* Copy 'size' bytes from a buffer beginning at p into block 'blk' */
-char *brmem PARAMS((P *p, char *blk, int size));
+unsigned char *brmem PARAMS((P *p, unsigned char *blk, int size));
 
 /* Copy 'size' bytes from a buffer beginning at p into a zero-terminated
  * C-string in an malloc block.
  */
-char *brs PARAMS((P *p, int size));
+unsigned char *brs PARAMS((P *p, int size));
 
 /* Copy 'size' bytes from a buffer beginning at p into a variable length string. */
 char *brvs PARAMS((P *p, int size));

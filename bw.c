@@ -255,7 +255,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	int done = 1;
 	long col = 0;
 	long byte = p->byte;
-	char *bp;		/* Buffer pointer, 0 if not set */
+	unsigned char *bp;	/* Buffer pointer, 0 if not set */
 	int amnt;		/* Amount left in this segment of the buffer */
 	int c, ta, c1;
 	unsigned char bc;
@@ -575,7 +575,7 @@ static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, 
 	int done = 1;
 	long col = 0;
 	long byte = p->byte;
-	char *bp;		/* Buffer pointer, 0 if not set */
+	unsigned char *bp;	/* Buffer pointer, 0 if not set */
 	int amnt;		/* Amount left in this segment of the buffer */
 	int c, ta, c1;
 	unsigned char bc;

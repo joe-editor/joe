@@ -1,4 +1,12 @@
 Fri Apr  9 2004  Joe Allen <jhallen@world.std.com>
+	* b.c, b.h, bw.c, types.h:
+
+	Fix lockup bug with down arrow on last line (utf-8).
+
+	Type change: chars will be banned.  Unsigned char * and
+	int will be used for characters.
+
+Fri Apr  9 2004  Joe Allen <jhallen@world.std.com>
 	* Makefile.am, b.c, b.h, bw.c, help.c, main.c, menu.c, rc.c,
 	scrn.c, scrn.h, types.h, uedit.c, w.c, wcwidth.c:
 

@@ -66,7 +66,7 @@ char *msgs[] = {
 					      : (p)->ptr[(p)->ofst])
 
 /* Set position of gap */
-static void gstgap(H *hdr, char *ptr, int ofst)
+static void gstgap(H *hdr, unsigned char *ptr, int ofst)
 {
 	if (ofst > hdr->hole) {
 		mmove(ptr + hdr->hole, ptr + hdr->ehole, ofst - hdr->hole);
@@ -80,7 +80,7 @@ static void gstgap(H *hdr, char *ptr, int ofst)
 }
 
 /* Insert a block */
-static void ginsm(H *hdr, char *ptr, int ofst, char *blk, int size)
+static void ginsm(H *hdr, unsigned char *ptr, int ofst, unsigned char *blk, int size)
 {
 	if (ofst != hdr->hole)
 		gstgap(hdr, ptr, ofst);
@@ -90,7 +90,7 @@ static void ginsm(H *hdr, char *ptr, int ofst, char *blk, int size)
 }
 
 /* Read block */
-static void grmem(H *hdr, char *ptr, int ofst, char *blk, int size)
+static void grmem(H *hdr, unsigned char *ptr, int ofst, unsigned char *blk, int size)
 {
 	if (ofst < hdr->hole)
 		if (size > hdr->hole - ofst) {
@@ -396,7 +396,7 @@ int piseol(P *p)
 /* is p at the beginning of line? */
 int pisbol(P *p)
 {
-	char c;
+	int c;
 
 	if (pisbof(p))
 		return 1;
@@ -803,7 +803,7 @@ P *p_goto_eol(P *p)
 /* move p to the beginning of next line */
 P *pnextl(P *p)
 {
-	char c;
+	int c;
 
 	do {
 		if (p->ofst == GSIZE(p->hdr))
@@ -827,7 +827,7 @@ P *pnextl(P *p)
 /* move p to the end of previous line */
 P *pprevl(P *p)
 {
-	char c;
+	int c;
 
 	p->valcol = 0;
 	do {
@@ -887,6 +887,9 @@ P *pcol(P *p, long goalcol)
 			int wid;
 
 			c = brch(p);
+
+			if (c == NO_MORE_DATA)
+				break;
 
 			if (c == '\n')
 				break;
@@ -1026,7 +1029,7 @@ void pbackws(P *p)
 	prm(q);
 }
 
-static char frgetc(P *p)
+static int frgetc(P *p)
 {
 	if (!p->ofst)
 		pprev(p);
@@ -1188,7 +1191,7 @@ static void fbkwd(P *p, int n)
 
 static int fpgetc(P *p)
 {
-	char c;
+	int c;
 
 	if (p->ofst == GSIZE(p->hdr))
 		return NO_MORE_DATA;
@@ -1337,7 +1340,7 @@ P *prifind(P *p, unsigned char *s, int len)
 B *bcpy(P *from, P *to)
 {
 	H anchor, *l;
-	char *ptr;
+	unsigned char *ptr;
 	P *q;
 
 	if (from->byte >= to->byte)
@@ -1404,7 +1407,7 @@ void pcoalesce(P *p)
 {
 	if (p->hdr != p->b->eof->hdr && GSIZE(p->hdr) + GSIZE(p->hdr->link.next) <= SEGSIZ - SEGSIZ / 4) {
 		H *hdr = p->hdr->link.next;
-		char *ptr = vlock(vmem, hdr->seg);
+		unsigned char *ptr = vlock(vmem, hdr->seg);
 		int osize = GSIZE(p->hdr);
 		int size = GSIZE(hdr);
 		P *q;
@@ -1426,7 +1429,7 @@ void pcoalesce(P *p)
 	}
 	if (p->hdr != p->b->bof->hdr && GSIZE(p->hdr) + GSIZE(p->hdr->link.prev) <= SEGSIZ - SEGSIZ / 4) {
 		H *hdr = p->hdr->link.prev;
-		char *ptr = vlock(vmem, hdr->seg);
+		unsigned char *ptr = vlock(vmem, hdr->seg);
 		int size = GSIZE(hdr);
 		P *q;
 
@@ -1470,7 +1473,7 @@ static B *bcut(P *from, P *to)
 {
 	H *h,			/* The deleted text */
 	*i;
-	char *ptr;
+	unsigned char *ptr;
 	P *p;
 	long nlines;		/* No. EOLs to delete */
 	long amnt;		/* No. bytes to delete */
@@ -1656,7 +1659,7 @@ static void bsplit(P *p)
 {
 	if (p->ofst) {
 		H *hdr;
-		char *ptr;
+		unsigned char *ptr;
 		P *pp;
 
 		hdr = halloc();
@@ -1693,14 +1696,14 @@ static void bsplit(P *p)
 }
 
 /* Make a chain out of a block of memory (the block must not be empty) */
-static H *bldchn(char *blk, int size, long *nlines)
+static H *bldchn(unsigned char *blk, int size, long *nlines)
 {
 	H anchor, *l;
 
 	*nlines = 0;
 	izque(H, link, &anchor);
 	do {
-		char *ptr;
+		unsigned char *ptr;
 		int amnt;
 
 		ptr = vlock(vmem, (l = halloc())->seg);
@@ -1807,7 +1810,7 @@ P *binsb(P *p, B *b)
 }
 
 /* insert memory block 'blk' at 'p' */
-P *binsm(P *p, char *blk, int amnt)
+P *binsm(P *p, unsigned char *blk, int amnt)
 {
 	long nlines;
 	H *h = NULL;
@@ -1838,7 +1841,7 @@ P *binsm(P *p, char *blk, int amnt)
 }
 
 /* insert char 'c' at 'p' */
-P *binsc(P *p, char c)
+P *binsc(P *p, unsigned char c)
 {
 	if (p->b->o.crlf && c == '\n')
 		return binsm(p, "\r\n", 2);
@@ -1847,7 +1850,7 @@ P *binsc(P *p, char c)
 }
 
 /* insert zero-terminated string 's' at 'p' */
-P *binss(P *p, char *s)
+P *binss(P *p, unsigned char *s)
 {
 	return binsm(p, s, strlen(s));
 }
@@ -1856,7 +1859,7 @@ P *binss(P *p, char *s)
  * when requested size has been read or when end of file condition occurs.
  * Returns with -2 in error for read error or 0 in error for success.
  */
-static int bkread(int fi, char *buff, int size)
+static int bkread(int fi, unsigned char *buff, int size)
 {
 	int a, b;
 
@@ -1879,7 +1882,7 @@ B *bread(int fi, long int max)
 	H anchor, *l;
 	long lines = 0, total = 0;
 	int amnt;
-	char *seg;
+	unsigned char *seg;
 
 	izque(H, link, &anchor);
 	error = 0;
@@ -1983,7 +1986,7 @@ char *parsens(char *s, long int *skip, long int *amnt)
  */
 B *bload(char *s)
 {
-	char buffer[SEGSIZ];
+	unsigned char buffer[SEGSIZ];
 	FILE *fi;
 	B *b;
 	long skip, amnt;
@@ -2261,7 +2264,7 @@ int bsave(P *p, char *s, long int size)
 
 	if (!error && force && size && !skip && amnt == MAXLONG) {
 		P *q = pdup(p);
-		char nl = '\n';
+		unsigned char nl = '\n';
 
 		pfwrd(q, size - 1);
 		if (brc(q) != '\n' && joe_write(fileno(f), &nl, 1) < 0)
@@ -2311,9 +2314,9 @@ int brch(P *p)
 	}
 }
 
-char *brmem(P *p, char *blk, int size)
+unsigned char *brmem(P *p, unsigned char *blk, int size)
 {
-	char *bk = blk;
+	unsigned char *bk = blk;
 	P *np;
 	int amnt;
 
@@ -2330,9 +2333,9 @@ char *brmem(P *p, char *blk, int size)
 	return blk;
 }
 
-char *brs(P *p, int size)
+unsigned char *brs(P *p, int size)
 {
-	char *s = (char *) joe_malloc(size + 1);
+	unsigned char *s = (unsigned char *) joe_malloc(size + 1);
 
 	s[size] = 0;
 	return brmem(p, s, size);
@@ -2342,7 +2345,7 @@ char *brvs(P *p, int size)
 {
 	char *s = vstrunc(NULL, size);
 
-	return brmem(p, s, size);
+	return brmem(p, (unsigned char *)s, size);
 }
 
 /* Save edit buffers when editor dies */
