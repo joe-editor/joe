@@ -213,20 +213,26 @@ static P *insert(SRCH *srch, P *p, char *s, int len)
 				 && srch->pieces[(s[1] & 0x1f) - 1]) {
 				binsm(p, sv(srch->pieces[(s[1] & 0x1f) - 1]));
 				pfwrd(p, (long) sLEN(srch->pieces[(s[1] & 0x1f) - 1]));
+				s += 2;
+				len -= 2;
 			} else if (s[1] >= '0' && s[1] <= '9' && srch->pieces[s[1] - '0']) {
 				binsm(p, sv(srch->pieces[s[1] - '0']));
 				pfwrd(p, (long) sLEN(srch->pieces[s[1] - '0']));
+				s += 2;
+				len -= 2;
 			} else if (s[1] == '&' && srch->entire) {
 				binsm(p, sv(srch->entire));
 				pfwrd(p, (long) sLEN(srch->entire));
+				s += 2;
+				len -= 2;
 			} else {
-				unsigned char *a=s+x;
+				unsigned char *a=(unsigned char *)s+x;
 				int l=len-x;
 				binsc(p,escape(&a,&l));
 				pgetc(p);
+				len -= a - (unsigned char *)s;
+				s = a;
 			}
-			s += 2;
-			len -= 2;
 		} else
 			len = 0;
 	}

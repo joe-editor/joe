@@ -983,8 +983,12 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 		pack.ch = 0;
 		if (dead)
 			pack.size = 0;
-		else
+		else {
 			pack.size = read(*ptyfd, pack.data, 1024);
+			/* On SUNOS 5.8, the very first read from the pty returns 0 for some reason */
+			if (!pack.size)
+				pack.size = read(*ptyfd, pack.data, 1024);
+		}
 		if (pack.size > 0) {
 			joe_write(mpxsfd, &pack, sizeof(struct packet) - 1024 + pack.size);
 

@@ -1,3 +1,7 @@
+Fri Mar 19 2004  Joe ALlen <jhallen@world.std.com>
+	* tty.c:
+	Fix shell window for SunOS 5.8
+
 Thu Mar 18 2004  Joe Allen <jhallen@world.std.com>
 	* usearch.c, regex.c, regex.h:
 	Allow full escape sequences in replacement strings
