@@ -1,3 +1,7 @@
+Sun Nov 04 2001  Vitezslav Samel <samel@mail.cz>
+	* ufile.c: remove "feature" added in 2.9.7-pre1 so the user is always
+	asked of the filename saved (sourceforge.net BUG #449489)
+
 Wed Oct 31 2001  Vitezslav Samel <samel@mail.cz>
 	* bw.h, tty.c, configure.ac: make use of pid_t type
 

@@ -371,11 +371,6 @@ int usave(BW *bw)
 {
 	BW *pbw;
 	
-	if (!bw->b->changed) {
-		/* there is no change */
-		genexmsg (bw,0,NULL);
-		return -1;
-	}
 	pbw = wmkpw(bw->parent, "Name of file to save (^C to abort): ", &filehist, dosave1, "Names", NULL, cmplt, NULL, NULL);
 
 	if (pbw && bw->b->name) {
