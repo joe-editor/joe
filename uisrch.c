@@ -22,6 +22,7 @@
 
 extern int smode;
 extern int beep;
+extern int icase;
 struct isrch *lastisrch = NULL;	/* Previous search */
 
 unsigned char *lastpat = NULL;	/* Previous pattern */
@@ -66,7 +67,7 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 		pgoto(bw->cursor, isrch->irecs.link.prev->start);
 	}
 	i->start = bw->cursor->byte;
-	if (dopfnext(bw, mksrch(vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern)), NULL, 0, isrch->dir, -1, 0, 0), NULL)) {
+	if (dopfnext(bw, mksrch(vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern)), NULL, icase, isrch->dir, -1, 0, 0), NULL)) {
 		if(beep)
 			ttputc(7);
 	}

@@ -9,7 +9,6 @@ Fix for next release:
   byte to byte conversions?
   UTF-8 decoder right at input instead of in qw and utype?
 
-  option to force search to be case insensitive
   regex: character classes? a-z matches any letter?
 
   parse *rc file only once?
@@ -136,6 +135,9 @@ File loading/storing:
 
 
 Jmacs/Jstar/Jpico:
+
+ search and replace 'fred' to 'foo':
+    find 'Fred', gets 'Foo'.
 
  Jmacs: incremental search should wrap
 

@@ -1,3 +1,8 @@
+Fri May  7 16:02:21 EDT 2004
+	* usearch.c, uisrch.c :
+
+	Added case insensitive by default option.
+
 Fri May  7 2004  Joe Allen <jhallen@world.std.com>
 	* main.c, menu.c, pw.c, qw.c, rc.c, tab.c :
 

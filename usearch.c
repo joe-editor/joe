@@ -28,6 +28,7 @@
 
 int smode = 0;			/* Decremented to zero by execmd */
 int csmode = 0;			/* Set for continued search mode */
+int icase = 0;			/* Set to force case insensitive search */
 
 B *findhist = NULL;		/* Search string history */
 B *replhist = NULL;		/* Replacement string history */
@@ -293,6 +294,8 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
 	int x;
 
+	srch->ignore = icase;
+
 	for (x = 0; s[x]; ++x) {
 		switch (s[x]) {
 		case 'r':
@@ -306,6 +309,10 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 		case 'i':
 		case 'I':
 			srch->ignore = 1;
+			break;
+		case 's':
+		case 'S':
+			srch->ignore = 0;
 			break;
 		case 'k':
 		case 'K':
@@ -340,10 +347,16 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
 	BW *pbw;
+	unsigned char *p;
+
+	if (icase)
+		p = US "case (S)ensitive (R)eplace (B)ackwards Bloc(K) NNN (^C to abort): ";
+	else
+		p = US "(I)gnore (R)eplace (B)ackwards Bloc(K) NNN (^C to abort): ";
 
 	vsrm(srch->pattern);
 	srch->pattern = s;
-	if ((pbw = wmkpw(bw->parent, US "(I)gnore (R)eplace (B)ackwards Bloc(K) NNN (^C to abort): ", NULL, set_options, srchstr, pfabort, utypebw, srch, notify, bw->b->o.charmap)) != NULL) {
+	if ((pbw = wmkpw(bw->parent, p, NULL, set_options, srchstr, pfabort, utypebw, srch, notify, bw->b->o.charmap)) != NULL) {
 		unsigned char buf[10];
 
 		if (srch->ignore)
