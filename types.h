@@ -118,6 +118,7 @@ struct options {
 	struct high_syntax *syntax;	/* Syntax for highlighting */
 	int	utf8;		/* Set for UTF-8 mode */
 	int	smarthome;	/* Set for smart home key */
+	int	smartbacks;	/* Set for smart backspace key */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */

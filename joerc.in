@@ -137,6 +137,10 @@
 	-smarthome		Home key first moves cursor to the first
 				non-space character, unless already there
 	-smartbacks		Backspace key deletes 'istep' number of
+				'indentc's if cursor is at first non-space
+				character.
+
+	-tab nnn		Tab width
 
 	-wordwrap		Wordwrap
 

@@ -1,4 +1,9 @@
 Wed Apr 21 2004  Joe Allen <jhallen@world.std.com>
+	* rc.c, uedit.c, types.h, joerc.in:
+
+	Added 'smartbacks' option.
+
+Wed Apr 21 2004  Joe Allen <jhallen@world.std.com>
 	* uedit.c, b.c:
 
 	Backspace is now smart when 'smarthome' is set.
