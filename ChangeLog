@@ -1,4 +1,9 @@
 Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
+	* cmd.c, menu.c, menu.h, rc.c, tab.c, ufile.c: use mkmenu(W *, ...)
+	instead of mkmenu(BASE *, ...).
+	This kills some warnings during build.
+
+Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
 	* tw.c, w.h: non-code clean up
 
 Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>

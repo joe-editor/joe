@@ -269,7 +269,7 @@ int cmplt(BW * bw)
 	long a, b;
 
 	tab = (TAB *) malloc(sizeof(TAB));
-	new = mkmenu(bw, NULL, tabrtn, tababrt, tabbacks, 0, tab, NULL);
+	new = mkmenu(bw->parent, NULL, tabrtn, tababrt, tabbacks, 0, tab, NULL);
 	if (!new) {
 		free(tab);
 		return -1;

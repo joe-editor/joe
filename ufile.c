@@ -783,7 +783,7 @@ int ubufed(BW *bw)
 	char **s = getbufs();
 
 	vasort(av(s));
-	if (mkmenu(bw, s, dobuf, abrtb, NULL, 0, s, NULL))
+	if (mkmenu(bw->parent, s, dobuf, abrtb, NULL, 0, s, NULL))
 		return 0;
 	else {
 		varm(s);

@@ -410,7 +410,7 @@ static int cmdcmplt(BW *bw)
 	line = brvs(p, (int) (q->byte - p->byte));	/* Assumes short lines :-) */
 	prm(p);
 	prm(q);
-	m = mkmenu(bw, NULL, cmdrtn, cmdabrt, NULL, 0, line, NULL);
+	m = mkmenu(bw->parent, NULL, cmdrtn, cmdabrt, NULL, 0, line, NULL);
 	if (!m)
 		return -1;
 	line1 = vsncpy(NULL, 0, sv(line));

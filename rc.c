@@ -562,7 +562,7 @@ int umode(BW * bw)
 		}
 	}
 	s[x] = 0;
-	if (mkmenu(bw, s, doopt, doabrt, NULL, optx, s, NULL))
+	if (mkmenu(bw->parent, s, doopt, doabrt, NULL, optx, s, NULL))
 		return 0;
 	else
 		return -1;

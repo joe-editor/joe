@@ -259,9 +259,8 @@ void ldmenu(MENU *m, char **s, int cursor)
 	mconfig(m);
 }
 
-MENU *mkmenu(BASE *obw, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify)
+MENU *mkmenu(W *w, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify)
 {
-	W *w = obw->parent;
 	W *new = wcreate(w->t, &watommenu, w, w, w->main, 1, NULL, notify);
 	MENU *m;
 
