@@ -9,7 +9,6 @@
 #include "types.h"
 
 #include <stdio.h> 
-#include <ctype.h>
 
 #include "b.h"
 #include "utf8.h"
@@ -258,6 +257,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 	P *q = pdup(p);
 	P *o = NULL;
 	int local_utf8 = p->b->o.utf8;
+	struct charmap *local_map = p->b->o.charmap;
 	struct utf8_sm sm;
 
 	utf8_init(&sm);
@@ -397,7 +397,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 								match = (escape(&tregex, &tlen) == c);
 						} else {
 							if(icase)
-								match = (toupper(c) == toupper(*tregex));
+								match = (joe_toupper(local_map,c) == joe_toupper(local_map,*tregex));
 							else
 								match = (c == *tregex);
 						}
@@ -444,7 +444,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 				if (local_utf8) {
 					if (joe_towupper(d) != joe_towupper(c))
 						goto fail;
-				} else if (toupper(d) != toupper(c))
+				} else if (joe_toupper(local_map,d) != joe_toupper(local_map,c))
 					goto fail;
 			} else {
 				if (d != c)

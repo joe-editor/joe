@@ -14,7 +14,6 @@
 #include <sys/stat.h>
 #endif
 #include <fcntl.h>
-#include <ctype.h>
 #include <string.h>
 #include <unistd.h>
 #ifdef HAVE_PATHS_H

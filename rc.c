@@ -9,7 +9,6 @@
 #include "types.h"
 
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -29,6 +28,8 @@
 #include "b.h"
 #include "syntax.h"
 #include "va.h"
+#include "utf8.h"
+#include "charmap.h"
 #include "w.h"
 
 #define OPT_BUF_SIZE 300
@@ -96,6 +97,8 @@ OPTIONS pdefault = {
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	0,		/* UTF-8 */
+	NULL,		/* Name of byte mode character set */
+	NULL,		/* Byte mode character set */
 	0,		/* Smart home key */
 	0,		/* Goto indent first */
 	0,		/* Smart backspace key */
@@ -137,6 +140,8 @@ OPTIONS fdefault = {
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	0,		/* UTF-8 */
+	NULL,		/* Name of byte mode character set */
+	NULL,		/* Byte mode character set */
 	0,		/* Smart home key */
 	0,		/* Goto indent first */
 	0,		/* Smart backspace key */
@@ -150,6 +155,9 @@ OPTIONS fdefault = {
 void lazy_opts(OPTIONS *o)
 {
 	o->syntax = load_dfa(o->syntax_name);
+	o->charmap = find_charmap(o->map_name);
+	if (!o->charmap)
+		o->charmap = locale_map;
 }
 
 /* Set local options depending on file name and contents */
@@ -235,7 +243,7 @@ struct glopts {
 	{US "force",	0, &force, NULL, US "Last line forced to have NL when file saved", US "Last line not forced to have NL", US "Force last NL " },
 	{US "nobackups",	0, &nobackups, NULL, US "Backup files will not be made", US "Backup files will be made", US "  Disable backups " },
 	{US "lightoff",	0, &lightoff, NULL, US "Highlighting turned off after block operations", US "Highlighting not turned off after block operations", US "Auto unmark " },
-	{US "exask",	0, &exask, NULL, US "Prompt for filename in save & exit command", US "Don't prompt for filename in save & exit command", US "Exit ask " },
+	{US "exask",	0, &exask, NULL, US "Prompt for filename in save & exit command", US "Don't prompt for filename in save & exit command", US "  Exit ask " },
 	{US "beep",	0, &beep, NULL, US "Warning bell enabled", US "Warning bell disabled", US "Beeps " },
 	{US "nosta",	0, &staen, NULL, US "Top-most status line disabled", US "Top-most status line enabled", US "  Disable status line " },
 	{US "keepup",	0, &keepup, NULL, US "Status line updated constantly", US "Status line updated once/sec", US "  Fast status line " },
@@ -249,6 +257,7 @@ struct glopts {
 	{US "picture",	4, NULL, (unsigned char *) &fdefault.picture, US "Picture drawing mode enabled", US "Picture drawing mode disabled", US "Picture mode " },
 	{US "backpath",	2, (int *) &backpath, NULL, US "Backup files stored in (%s): ", 0, US "  Path to backup files " },
 	{US "syntax",	9, NULL, NULL, US "Select syntax (^C to abort): ", 0, US "Y Syntax" },
+	{US "encoding",13, NULL, NULL, US "Select byte-mode character set (^C to abort): ", 0, US "Encoding " },
 	{US "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
 	{US "noxon",	0, &noxon, NULL, 0, 0, 0 },
 	{US "orphan",	0, &orphan, NULL, 0, 0, 0 },
@@ -377,6 +386,10 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				if (arg && options)
 					options->syntax = load_dfa(arg); */
 				break;
+
+			case 13: /* Set byte mode encoding */
+				options->map_name = (unsigned char *)strdup((char *)arg);
+				break;
 			}
 			/* This is a stupid hack... */
 			if ((glopts[x].type & 3) == 0 || !arg)
@@ -405,7 +418,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 		if (arg) {
 			int y;
 
-			for (y = 0; !isspace(arg[y]); ++y) ;
+			for (y = 0; !joe_isspace(arg[y]); ++y) ;
 			if (!arg[y])
 				arg[y] = 0;
 			if (options && y)
@@ -535,7 +548,6 @@ static int dosyntax(BW *bw, unsigned char *s, int *xx, int *notify)
 		msgnw(bw->parent, US "Syntax definition file not found");
 
 	vsrm(s);
-	bw->o.syntax = syn;
 	bw->b->o = bw->o;
 	updall();
 	if (notify)
@@ -572,6 +584,37 @@ static int syntaxcmplt(BW *bw)
 		chpwd(oldpwd);
 	}
 	return simple_cmplt(bw,syntaxes);
+}
+
+static int doencoding(BW *bw, unsigned char *s, int *xx, int *notify)
+{
+	int ret = 0;
+	struct charmap *map;
+
+
+	map = find_charmap(s);
+
+	if (map)
+		bw->o.charmap = map;
+	else
+		msgnw(bw->parent, US "Character set not found");
+
+	vsrm(s);
+	bw->b->o = bw->o;
+	updall();
+	if (notify)
+		*notify = 1;
+	return ret;
+}
+
+unsigned char **encodings = NULL; /* Array of available encodinges */
+
+static int encodingcmplt(BW *bw)
+{
+	if (!encodings) {
+		encodings = get_encodings();
+	}
+	return simple_cmplt(bw,encodings);
 }
 
 static int doopt(MENU *m, int x, void *object, int flg)
@@ -652,6 +695,15 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			return 0;
 		else
 			return -1;
+
+	case 13:
+		snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, "");
+		m->parent->notify = 0;
+		wabort(m->parent);
+		if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, -1))
+			return 0;
+		else
+			return -1;
 	}
 	if (notify)
 		*notify = 1;
@@ -691,6 +743,7 @@ int umode(BW *bw)
 			break;
 		case 2:
 		case 9:
+		case 13:
 			strcpy((char *)(s[x]), (char *)glopts[x].menu);
 			break;
 		case 4:

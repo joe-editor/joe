@@ -20,7 +20,7 @@ struct pair {
 struct charmap {
 	struct charmap *next;		/* Linked list of loaded character maps */
 	unsigned char *name;		/* Name of this one */
-	int to_map[256];		/* Convert byte to unicode */
+	int *to_map;			/* Convert byte to unicode */
 	struct pair from_map[256];	/* Convert from unicode to byte */
 	int from_size;
 };
@@ -33,5 +33,11 @@ int to_uni PARAMS((struct charmap *cset, int c));
 
 /* Convert unicode to byte */
 int from_uni PARAMS((struct charmap *cset, int c));
+
+/* Get available encodings */
+unsigned char **get_encodings PARAMS((void));
+
+/* Convert byte to upper case */
+int joe_toupper PARAMS((struct charmap *map,int c));
 
 #endif

@@ -8,7 +8,6 @@
 #include "config.h"
 #include "types.h"
 
-#include <ctype.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -470,7 +469,7 @@ int uformat(BW *bw)
 			if (g=='.' || g=='?' || g=='!') {
 				pset(d,b);
 				pgetc(d);
-				if (isspace(brch(d)))
+				if (joe_isspace(brch(d)))
 					f = 1;
 			}
 			prm(d);

@@ -211,6 +211,9 @@ void joe_locale()
 	if (!locale_map)
 		locale_map = find_charmap("C");
 
+	fdefault.charmap = locale_map;
+	pdefault.charmap = locale_map;
+
 #ifdef junk
 	to_utf = iconv_open("UTF-8", (char *)non_utf8_codeset);
 	from_utf = iconv_open((char *)non_utf8_codeset, "UTF-8");
@@ -221,9 +224,9 @@ void joe_locale()
 #endif
 }
 
-void to_utf8(unsigned char *s,int c)
+void to_utf8(struct charmap *map,unsigned char *s,int c)
 {
-	int d = to_uni(locale_map,c);
+	int d = to_uni(map,c);
 
 	if (d==-1)
 		utf8_encode(s,'?');
@@ -250,10 +253,10 @@ void to_utf8(unsigned char *s,int c)
 #endif
 }
 
-int from_utf8(unsigned char *s)
+int from_utf8(struct charmap *map,unsigned char *s)
 {
 	int d = utf8_decode_string(s);
-	int c = from_uni(locale_map,d);
+	int c = from_uni(map,d);
 	if (c==-1)
 		return '?';
 	else

@@ -18,7 +18,6 @@
 #endif
 #include <errno.h>
 #include <stdlib.h>
-#include <ctype.h>
 #include <string.h>
 #ifdef HAVE_TIME_H
 #include <time.h>
@@ -38,6 +37,7 @@
 #include "vfile.h"
 #include "vs.h"
 #include "utf8.h"
+#include "charmap.h"
 #include "w.h"
 
 unsigned char stdbuf[stdsiz];
@@ -416,7 +416,7 @@ int pisbow(P *p)
 	int d = prgetc(q);
 
 	prm(q);
-	if (isalnum_(p->b->o.utf8,c) && (!isalnum_(p->b->o.utf8,d) || pisbof(p)))
+	if (isalnum_(p->b->o.utf8,p->b->o.charmap,c) && (!isalnum_(p->b->o.utf8,p->b->o.charmap,d) || pisbof(p)))
 		return 1;
 	else
 		return 0;
@@ -430,7 +430,7 @@ int piseow(P *p)
 	int c = prgetc(q);
 
 	prm(q);
-	if (isalnum_(p->b->o.utf8,c) && (!isalnum_(p->b->o.utf8,d) || piseof(p)))
+	if (isalnum_(p->b->o.utf8,p->b->o.charmap,c) && (!isalnum_(p->b->o.utf8,p->b->o.charmap,d) || piseof(p)))
 		return 1;
 	else
 		return 0;
@@ -1167,6 +1167,7 @@ static P *fifind(P *p, unsigned char *s, int len)
 {
 	long amnt = p->b->eof->byte - p->byte;
 	int x;
+	struct charmap *map = p->b->o.charmap;
 	unsigned char table[256], c;
 
 	if (len > amnt)
@@ -1181,7 +1182,7 @@ static P *fifind(P *p, unsigned char *s, int len)
 	amnt -= len;
 	x = len;
 	do {
-		if ((c = toupper(frgetc(p))) != s[--x]) {
+		if ((c = joe_toupper(map,frgetc(p))) != s[--x]) {
 			if (table[c] == 255) {
 				ffwrd(p, len + 1);
 				amnt -= x + 1;
@@ -1324,6 +1325,7 @@ static P *frifind(P *p, unsigned char *s, int len)
 	long amnt = p->byte;
 	int x;
 	unsigned char table[256], c;
+	struct charmap *map = p->b->o.charmap;
 
 	if (len > p->b->eof->byte - p->byte) {
 		x = len - (p->b->eof->byte - p->byte);
@@ -1339,7 +1341,7 @@ static P *frifind(P *p, unsigned char *s, int len)
 	for (x = len; --x; table[s[x]] = len - x - 1) ;
 	x = 0;
 	do {
-		if ((c = toupper(fpgetc(p))) != s[x++]) {
+		if ((c = joe_toupper(map,fpgetc(p))) != s[x++]) {
 			if (table[c] == 255) {
 				fbkwd(p, len + 1);
 				amnt -= len - x + 1;

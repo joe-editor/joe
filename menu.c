@@ -67,7 +67,7 @@ static void menudisp(MENU *m)
 
 			/* Space between columns */
 			if (col != m->w) {
-				outatr(utf8, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
+				outatr(utf8, locale_map, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
 				++col;
 			}
 		}

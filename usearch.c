@@ -8,7 +8,6 @@
 #include "config.h"
 #include "types.h"
 
-#include <ctype.h>
 #include <stdio.h>
 
 #include "b.h"
@@ -24,6 +23,7 @@
 #include "usearch.h"
 #include "utils.h"
 #include "vs.h"
+#include "charmap.h"
 #include "w.h"
 
 int smode = 0;			/* Decremented to zero by execmd */
@@ -58,7 +58,7 @@ static P *searchf(SRCH *srch, P *p)
 
 	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.utf8); ++x)
 		if (srch->ignore)
-			pattern[x] = toupper(pattern[x]);
+			pattern[x] = joe_toupper(p->b->o.charmap,pattern[x]);
 	while (srch->ignore ? pifind(start, pattern, x) : pfind(start, pattern, x)) {
 		pset(end, start);
 		pfwrd(end, (long) x);
@@ -101,7 +101,7 @@ static P *searchb(SRCH *srch, P *p)
 
 	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.utf8); ++x)
 		if (srch->ignore)
-			pattern[x] = toupper(pattern[x]);
+			pattern[x] = joe_toupper(p->b->o.charmap,pattern[x]);
 	while (pbkwd(start, 1L)
 	       && (srch->ignore ? prifind(start, pattern, x) : prfind(start, pattern, x))) {
 		pset(end, start);

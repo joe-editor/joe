@@ -16,6 +16,7 @@
 #include "scrn.h"
 #include "utils.h"
 #include "vs.h"
+#include "utf8.h"
 #include "w.h"
 
 #define NOT_ENOUGH_MEMORY -11
@@ -206,7 +207,7 @@ void help_display(SCREEN *t)
 					} else {
 						c = *str++;
 					}
-					outatr(utf8, t->t, t->t->scrn + x + y * t->w, 
+					outatr(utf8, locale_map, t->t, t->t->scrn + x + y * t->w, 
 					             t->t->attr + x + y * t->w, x, y, c, atr);
 				}
 			}

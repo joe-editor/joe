@@ -48,12 +48,14 @@ int utf8_decode_string PARAMS((unsigned char *s));
 void utf8_init PARAMS((struct utf8_sm *utf8_sm));
 
 void joe_locale();
-void to_utf8 PARAMS((unsigned char *s,int c));
-int from_utf8 PARAMS((unsigned char *s));
+void to_utf8 PARAMS((struct charmap *map,unsigned char *s,int c));
+int from_utf8 PARAMS((struct charmap *map,unsigned char *s));
 
 extern int utf8;
 
 int unictrl PARAMS((int ucs));
 int mk_wcwidth PARAMS((int wide,int c));
+
+extern struct charmap *locale_map;	/* Default bytemap of terminal */
 
 #endif

@@ -9,7 +9,6 @@
 #include "types.h"
 
 #include <stdio.h>
-#include <ctype.h>
 
 #include "b.h"
 #include "bw.h"
@@ -156,15 +155,15 @@ int u_goto_prev(BW *bw)
 	P *p = pdup(bw->cursor);
 	int c = prgetc(p);
 
-	if (isalnum_(bw->b->o.utf8,c)) {
-		while (isalnum_(bw->b->o.utf8,(c=prgetc(p))))
+	if (isalnum_(bw->b->o.utf8,p->b->o.charmap,c)) {
+		while (isalnum_(bw->b->o.utf8,p->b->o.charmap,(c=prgetc(p))))
 			/* Do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(p);
-	} else if (isspace(c) || ispunct(c)) {
-		while ((c=prgetc(p)), (isspace(c) || ispunct(c)))
+	} else if (joe_isspace(c) || joe_ispunct(bw->b->o.utf8,bw->b->o.charmap,c)) {
+		while ((c=prgetc(p)), (joe_isspace(c) || joe_ispunct(bw->b->o.utf8,bw->b->o.charmap,c)))
 			/* Do nothing */;
-		while(isalnum_(bw->b->o.utf8,(c=prgetc(p))))
+		while(isalnum_(bw->b->o.utf8,p->b->o.charmap,(c=prgetc(p))))
 			/* Do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(p);
@@ -189,13 +188,13 @@ int u_goto_next(BW *bw)
 	P *p = pdup(bw->cursor);
 	int c = brch(p);
 
-	if (isalnum_(bw->b->o.utf8,c))
-		while (isalnum_(bw->b->o.utf8,(c = brch(p))))
+	if (isalnum_(bw->b->o.utf8,p->b->o.charmap,c))
+		while (isalnum_(bw->b->o.utf8,p->b->o.charmap,(c = brch(p))))
 			pgetc(p);
-	else if (isspace(c) || ispunct(c)) {
-		while (isspace(c = brch(p)) || ispunct(c))
+	else if (joe_isspace(c) || joe_ispunct(bw->b->o.utf8,bw->b->o.charmap,c)) {
+		while (joe_isspace(c = brch(p)) || joe_ispunct(bw->b->o.utf8,bw->b->o.charmap,c))
 			pgetc(p);
-		while (isalnum_(bw->b->o.utf8,(c = brch(p))))
+		while (isalnum_(bw->b->o.utf8,p->b->o.charmap,(c = brch(p))))
 			pgetc(p);
 	} else
 		pgetc(p);
@@ -766,11 +765,11 @@ int u_word_delete(BW *bw)
 	P *p = pdup(bw->cursor);
 	int c = brch(p);
 
-	if (isalnum_(bw->b->o.utf8,c))
-		while (isalnum_(bw->b->o.utf8,(c = brch(p))))
+	if (isalnum_(bw->b->o.utf8,p->b->o.charmap,c))
+		while (isalnum_(bw->b->o.utf8,p->b->o.charmap,(c = brch(p))))
 			pgetc(p);
-	else if (isspace(c))
-		while (isspace(c = brch(p)))
+	else if (joe_isspace(c))
+		while (joe_isspace(c = brch(p)))
 			pgetc(p);
 	else
 		pgetc(p);
@@ -793,13 +792,13 @@ int ubackw(BW *bw)
 	P *p = pdup(bw->cursor);
 	int c = prgetc(bw->cursor);
 
-	if (isalnum_(bw->b->o.utf8,c)) {
-		while (isalnum_(bw->b->o.utf8,(c = prgetc(bw->cursor))))
+	if (isalnum_(bw->b->o.utf8,p->b->o.charmap,c)) {
+		while (isalnum_(bw->b->o.utf8,p->b->o.charmap,(c = prgetc(bw->cursor))))
 			/* do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(bw->cursor);
-	} else if (isspace(c)) {
-		while (isspace(c = prgetc(bw->cursor)))
+	} else if (joe_isspace(c)) {
+		while (joe_isspace(c = prgetc(bw->cursor)))
 			/* do nothing */;
 		if (c != NO_MORE_DATA)
 			pgetc(bw->cursor);
@@ -904,7 +903,7 @@ int utypebw(BW *bw, int k)
 		if (pprevl(p) && p_goto_bol(p) && pisindent(p)>pisindent(bw->cursor)) {
 			if (!pisbol(bw->cursor))
 				udelbl(bw);
-			while (isspace(k = pgetc(p)) && k != '\n') {
+			while (joe_isspace(k = pgetc(p)) && k != '\n') {
 				binsc(bw->cursor, k);
 				pgetc(bw->cursor);
 			}
@@ -961,10 +960,10 @@ int utypebw(BW *bw, int k)
 		if(utf8 && !bw->b->o.utf8) {
 			unsigned char buf[10];
 			utf8_encode(buf,k);
-			k = from_utf8(buf);
+			k = from_utf8(bw->b->o.charmap,buf);
 		} else if(!utf8 && bw->b->o.utf8) {
 			unsigned char buf[10];
-			to_utf8(buf,k);
+			to_utf8(locale_map,buf,k);
 			k = utf8_decode_string(buf);
 		}
 		
@@ -1011,7 +1010,7 @@ int utypebw(BW *bw, int k)
 			   ((!square && bw->cursor->byte >= markb->byte && bw->cursor->byte < markk->byte) ||
 			    ( square && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line && piscol(bw->cursor) >= markb->xcol && piscol(bw->cursor) < markk->xcol)))
 				atr = INVERSE;
-			outatr(bw->b->o.utf8, t, screen + x, attr + x, x, y, k, atr);
+			outatr(bw->b->o.utf8, bw->b->o.charmap, t, screen + x, attr + x, x, y, k, atr);
 		}
 #endif
 	}
@@ -1278,7 +1277,7 @@ int rtntw(BW *bw)
 		binsc(bw->cursor, '\n'), pgetc(bw->cursor);
 		if (bw->o.autoindent) {
 			p_goto_bol(p);
-			while (isspace(c = pgetc(p)) && c != '\n') {
+			while (joe_isspace(c = pgetc(p)) && c != '\n') {
 				binsc(bw->cursor, c);
 				pgetc(bw->cursor);
 			}

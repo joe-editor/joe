@@ -2686,6 +2686,12 @@ static int *toupper_cvt;
 int joe_towupper(int c)
 {
 	int idx;
+
+	if (c>='a' && c<='z')
+		return c+'A'-'a';
+	else if(c<128)
+		return c;
+
 	if (!data_wctype_toupper_i) {
 		int x;
 		int y = -1;
@@ -3473,6 +3479,12 @@ static int *tolower_cvt;
 int joe_towlower(int c)
 {
 	int idx;
+
+	if (c>='A' && c<='Z')
+		return c+'a'-'A';
+	else if(c<128)
+		return c;
+
 	if (!data_wctype_tolower_i) {
 		int x;
 		int y = -1;
@@ -3490,7 +3502,6 @@ int joe_towlower(int c)
 				++data_wctype_tolower_i[y].last;
 		}
 		tolower_i_size = y;
-		printf("raw size=%d, merged size=%d\n",sizeof(data_wctype_tolower)/sizeof(struct interval),y+1);
 	}
 
 	idx = bisearch(c, data_wctype_tolower_i, tolower_i_size);

@@ -1,5 +1,9 @@
 Fix for next release:
 
+  show modified before language
+
+  option to force search to be case insensitive
+
   update selinux patch
 
   perl highlighter

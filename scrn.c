@@ -8,7 +8,6 @@
 #include "config.h"
 #include "types.h"
 
-#include <ctype.h>
 #include <stdio.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -188,7 +187,7 @@ int set_attr(SCRN *t, int c)
 
 /* Output character with attributes */
 
-void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
+void outatr(int wide,struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 {
 	if(wide)
 		if(utf8) {
@@ -243,11 +242,11 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 				if (unictrl(c))
 					a ^= UNDERLINE;
 				utf8_encode(buf,c);
-				c = from_utf8(buf);
+				c = from_utf8(locale_map,buf);
 			}
 
 			/* Deal with control characters */
-			if (!isprint(c) && !(dspasis && c>=128)) {
+			if (!joe_isprint(0,locale_map,c) && !(dspasis && c>=128)) {
 				a ^= xlata[c];
 				c = xlatc[c];
 			}
@@ -269,9 +268,10 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 	else
 		if (!utf8) {
 			/* Non UTF-8 char to non UTF-8 terminal */
+			/* Byte-byte Translate? */
 
 			/* Deal with control characters */
-			if (!isprint(c) && !(dspasis && c>=128)) {
+			if (!joe_isprint(0,locale_map,c) && !(dspasis && c>=128)) {
 				a ^= xlata[c];
 				c = xlatc[c];
 			}
@@ -296,12 +296,12 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 			int wid;
 
 			/* Deal with control characters */
-			if (!isprint(c) && !(dspasis && c>=128)) {
+			if (!joe_iswprint(to_uni(map,c)) && !(dspasis && c>=128)) {
 				a ^= xlata[c];
 				c = xlatc[c];
 			}
 
-			to_utf8(buf,c);
+			to_utf8(map,buf,c);
 			c = utf8_decode_string(buf);
 
 			if(*scrn==c && *attrf==a)
@@ -1823,14 +1823,14 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 				if (x + wid > last_col) {
 					/* Character crosses end of field, so fill balance of field with '>' characters instead */
 					while (x < last_col) {
-						outatr(utf8, t, scrn, attr, x, y, '>', atr);
+						outatr(utf8, locale_map, t, scrn, attr, x, y, '>', atr);
 						++scrn;
 						++attr;
 						++x;
 					}
 				} else if(wid) {
 					/* Emit character */
-					outatr(utf8, t, scrn, attr, x, y, c, atr);
+					outatr(utf8, locale_map, t, scrn, attr, x, y, c, atr);
 					x += wid;
 					scrn += wid;
 					attr += wid;
@@ -1840,7 +1840,7 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 				wid -= ofst - col;
 				col = ofst;
 				while (wid) {
-					outatr(utf8, t, scrn, attr, x, y, '<', atr);
+					outatr(utf8, locale_map, t, scrn, attr, x, y, '<', atr);
 					++scrn;
 					++attr;
 					++x;
@@ -1852,7 +1852,7 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 	}
 	/* Fill balance of field with spaces */
 	while (x < last_col) {
-		outatr(utf8, t, scrn, attr, x, y, ' ', 0);
+		outatr(utf8, locale_map, t, scrn, attr, x, y, ' ', 0);
 		++x;
 		++scrn;
 		++attr;
@@ -1923,7 +1923,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 				break;
 			default: {
 				if (col++ >= ofst) {
-					outatr(utf8, t, scrn, attr, x, y, (c&0x7F), atr);
+					outatr(utf8, locale_map, t, scrn, attr, x, y, (c&0x7F), atr);
 					++scrn;
 					++attr;
 					++x;
@@ -1946,7 +1946,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 
 			if (wid>=0)
 				if (col >= ofst) {
-					outatr(utf8, t, scrn, attr, x, y, c, atr);
+					outatr(utf8, locale_map, t, scrn, attr, x, y, c, atr);
 					scrn += wid;
 					attr += wid;
 					x += wid;
@@ -1957,7 +1957,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 						--wid;
 					}
 					while (wid) {
-						outatr(utf8, t, scrn, attr, x, y, '<', atr);
+						outatr(utf8, locale_map, t, scrn, attr, x, y, '<', atr);
 						++scrn;
 						++attr;
 						++x;

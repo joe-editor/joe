@@ -19,12 +19,15 @@
 #include <signal.h>
 #endif
 
+#include "charmap.h"
+
 /* 
  * Characters which are considered as word characters 
  * 	_ is considered as word character because is often used 
  *	in the names of C/C++ functions
  */
-int isalnum_ PARAMS((int wide,int c));
+int isalnum_ PARAMS((int wide,struct charmap *map,int c));
+int isalpha_ PARAMS((int wide,struct charmap *map,int c));
 
 /* 
  * Whitespace characters are characters like tab, space, ...
@@ -42,6 +45,12 @@ int isspace_eof PARAMS((int c));
  *	the prototype, so we define it here unconditionaly
  */
 int joe_isblank PARAMS((int c));
+
+int joe_isspace PARAMS((int c));
+
+int joe_isprint PARAMS((int wide,struct charmap *map,int c));
+
+int joe_ispunct PARAMS((int wide,struct charmap *map,int c));
 
 unsigned char *lowerize PARAMS((unsigned char *s));
 
