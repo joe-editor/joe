@@ -162,9 +162,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 	/* Already loaded? */
 	for(syntax=syntax_list;syntax;syntax=syntax->next)
 		if(!strcmp(syntax->name,name))
-			break;
-	if(syntax)
-		return syntax;
+			return syntax;
 
 	/* Load it */
 	p = (unsigned char *)getenv("HOME");

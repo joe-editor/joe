@@ -13,59 +13,8 @@
 #include "va.h"
 #include "utils.h"
 #include "i18n.h"
+#include "path.h"
 #include "charmap.h"
-
-/* Byte wide character map to unicode conversion */
-
-static struct charmap *charmaps = NULL;	/* Loaded character sets */
-
-static void load_builtins(void);
-
-/* Compare character map names.  Ignores '-'s and terminates string on '.' */
-/* Chicken and egg problem here.. */
-
-static int map_up(int c)
-{
-	if (c>='a' && c<='z')
-		return c+'A'-'a';
-	else
-		return c;
-}
-
-int map_name_cmp(unsigned char *a,unsigned char *b)
-{
-	while (*a=='-') ++a;
-	while (*b=='-') ++b;
-	while (*a && *b && map_up(*a)==map_up(*b)) {
-		++a;
-		++b;
-		while (*a=='-') ++a;
-		while (*b=='-') ++b;
-	}
-	if (!*a && (*b=='.' || !*b))
-		return 0;
-	else
-		return 1;
-}
-
-/* Find a character map */
-
-struct charmap *find_charmap(unsigned char *name)
-{
-	struct charmap *p;
-
-	if (!name)
-		return 0;
-
-	if (!charmaps)
-		load_builtins();
-
-	for (p=charmaps; p; p=p->next)
-		if (!map_name_cmp(p->name,name))
-			break;
-
-	return p;
-}
 
 /* Convert from byte code to unicode.  Returns -1 for unknown. */
 
@@ -1041,12 +990,97 @@ static int rtn_arg(struct charmap *map,int c)
 	return c;
 }
 
+static struct charmap *charmaps = NULL;	/* Loaded character sets */
+
+/* Process a byte-oriented character map and add it to database.
+   Consults unicode database "i18n.c" to determine which characters are
+   uppercase, etc. */
+
+static struct charmap *process_builtin(struct builtin_charmap *builtin)
+{
+	int x;
+	struct charmap *map;
+	map = malloc(sizeof(struct charmap));
+	map->name = (unsigned char *)strdup((char *)builtin->name);
+	map->type = 0;
+	map->is_punct = byte_ispunct;
+	map->is_print = byte_isprint;
+	map->is_space = byte_isspace;
+	map->is_alpha_ = byte_isalpha_;
+	map->is_alnum_ = byte_isalnum_;
+	map->to_lower = byte_tolower;
+	map->to_uni = to_uni;
+	map->from_uni = from_uni;
+	map->from_size = 0;
+	map->to_map = builtin->to_uni;
+	for (x=0; x!=256; ++x) {
+		if (map->to_map[x]!=-1) {
+			map->from_map[map->from_size].first = map->to_map[x];
+			map->from_map[map->from_size].last = x;
+			++map->from_size;
+		}
+	}
+		
+	qsort(map->from_map,map->from_size,sizeof(struct pair), (int (*)(const void *, const void *))pair_cmp);
+
+	/* Fill in print, alpha and alnum bit maps */
+
+	for (x=0;x!=32;++x) {
+		map->print_map[x] = 0;
+		map->alpha__map[x] = 0;
+		map->alnum__map[x] = 0;
+	}
+
+	for (x=0; x!=256; ++x)
+		if (map->to_map[x] != -1) {
+			if (joe_iswprint(NULL,map->to_map[x]))
+				set_bit(map->print_map,x);
+			if (joe_iswalpha(NULL,map->to_map[x])) {
+				set_bit(map->alpha__map,x);
+				set_bit(map->alnum__map,x);
+			}
+		}
+
+	/* Set underbar <U+005F> */
+
+	x = from_uni(map,0x5F);
+	if (x != -1) {
+		set_bit(map->alpha__map,x);
+		set_bit(map->alnum__map,x);
+	}
+
+	/* Put digits in alnum map */
+
+	for (x=0x30; x!=0x3A; ++x) {
+		int y = from_uni(map,x);
+		if (y != -1)
+			set_bit(map->alnum__map,y);
+	}
+
+	/* Build case conversion table */
+
+	for (x=0; x!=256; ++x) {
+		map->lower_map[x] = x;
+		if (map->to_map[x] != -1) {
+			int y = joe_towlower(NULL,map->to_map[x]);
+			int z = from_uni(map,y);
+			if (z != -1)
+				map->lower_map[x] = z;
+		}
+	}
+
+	map->next = charmaps;
+	charmaps = map;
+
+	return map;
+}
+
 static void load_builtins(void)
 {
 	int y;
 	struct charmap *map;
 
-	/* UTF-8 map (ties into i18n module) */
+	/* install UTF-8 map (ties into i18n module) */
 	map = malloc(sizeof(struct charmap));
 	map->name = US "utf-8";
 	map->type = 1;
@@ -1061,96 +1095,21 @@ static void load_builtins(void)
 	map->next = charmaps;
 	charmaps = map;
 
-	/* Built-in byte maps */
-	for (y=0; y!=sizeof(builtin_charmaps)/sizeof(struct builtin_charmap); ++y) {
-		int x;
-		map = malloc(sizeof(struct charmap));
-		map->name = (unsigned char *)strdup((char *)builtin_charmaps[y].name);
-		map->type = 0;
-		map->is_punct = byte_ispunct;
-		map->is_print = byte_isprint;
-		map->is_space = byte_isspace;
-		map->is_alpha_ = byte_isalpha_;
-		map->is_alnum_ = byte_isalnum_;
-		map->to_lower = byte_tolower;
-		map->to_uni = to_uni;
-		map->from_uni = from_uni;
-		map->from_size = 0;
-		map->to_map = builtin_charmaps[y].to_uni;
-		for (x=0; x!=256; ++x) {
-			if (map->to_map[x]!=-1) {
-				map->from_map[map->from_size].first = map->to_map[x];
-				map->from_map[map->from_size].last = x;
-				++map->from_size;
-			}
-		}
-			
-		qsort(map->from_map,map->from_size,sizeof(struct pair), (int (*)(const void *, const void *))pair_cmp);
-
-		/* Fill in print, alpha and alnum bit maps */
-
-		for (x=0;x!=32;++x) {
-			map->print_map[x] = 0;
-			map->alpha__map[x] = 0;
-			map->alnum__map[x] = 0;
-		}
-
-		for (x=0; x!=256; ++x)
-			if (map->to_map[x] != -1) {
-				if (joe_iswprint(NULL,map->to_map[x]))
-					set_bit(map->print_map,x);
-				if (joe_iswalpha(NULL,map->to_map[x])) {
-					set_bit(map->alpha__map,x);
-					set_bit(map->alnum__map,x);
-				}
-			}
-
-		/* Set underbar <U+005F> */
-
-		x = from_uni(map,0x5F);
-		if (x != -1) {
-			set_bit(map->alpha__map,x);
-			set_bit(map->alnum__map,x);
-		}
-
-		/* Put digits in alnum map */
-
-		for (x=0x30; x!=0x3A; ++x) {
-			int y = from_uni(map,x);
-			if (y != -1)
-				set_bit(map->alnum__map,y);
-		}
-
-		/* Build case conversion table */
-
-		for (x=0; x!=256; ++x) {
-			map->lower_map[x] = x;
-			if (map->to_map[x] != -1) {
-				int y = joe_towlower(NULL,map->to_map[x]);
-				int z = from_uni(map,y);
-				if (z != -1)
-					map->lower_map[x] = z;
-			}
-		}
-
-		map->next = charmaps;
-		charmaps = map;
-	}
+	/* Load all built-in byte maps */
+	/*
+	for (y=0; y!=sizeof(builtin_charmaps)/sizeof(struct builtin_charmap); ++y)
+		process_builtin(builtin_charmaps + y);
+	*/
 }
-
-/* Builtin table was created with these functions... */
-
-#ifdef junk
 
 /* Parse character map file */
 
-struct builtin_charmap *parse_charmap(char *name)
+struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 {
 	unsigned char buf[1024];
 	unsigned char bf1[1024];
 	unsigned esc_char = '\\';
 	unsigned comment_char = '#';
-	FILE *f = fopen(name,"r");
 	int in_map = 0;
 	int x;
 	int y;
@@ -1161,9 +1120,13 @@ struct builtin_charmap *parse_charmap(char *name)
 		return 0;
 
 	b = malloc(sizeof(struct builtin_charmap));
+
+	b->name = (unsigned char *)strdup((char *)name);
+
 	for (x=0; x!=256; ++x)
 		b->to_uni[x]= -1;
 
+	/* This is a _really_bad_ parser.  The file has to be perfect. */
 	while (fgets((char *)buf,1023,f)) {
 		unsigned char *p = buf;
 		int c;
@@ -1184,14 +1147,16 @@ struct builtin_charmap *parse_charmap(char *name)
 		} else if (in_map && bf1[0]=='<' && bf1[1]=='U') {
 			int uni;
 			int byt;
-			sscanf(bf1+2,"%x",&uni);
+			sscanf((char *)bf1+2,"%x",&uni);
 			parse_ws(&p, comment_char);
 			parse_tows(&p, bf1);
-			sscanf(bf1+2,"%x",&byt);
+			sscanf((char *)bf1+2,"%x",&byt);
 			b->to_uni[byt]=uni;
 		}
 	}
 
+	/* For generating builtin maps from /usr/share/i18n/charmaps/* */
+/*
 	printf("	{ \"%s\"\n",name);
 	for (y=0;y!=256;y+=8) {
 		printf("\t");
@@ -1203,15 +1168,87 @@ struct builtin_charmap *parse_charmap(char *name)
 		}
 		printf("\n");
 	}
+*/
+	fclose(f);
+	return b;
 }
 
-main(int argc,char *argv[])
+/* Byte wide character map to unicode conversion */
+
+/* Compare character map names.  Ignores '-'s and terminates string on '.' */
+/* Chicken and egg problem here.. */
+
+static int map_up(int c)
 {
-	parse_charmap(argv[1]);
+	if (c>='a' && c<='z')
+		return c+'A'-'a';
+	else
+		return c;
 }
 
-#endif
+int map_name_cmp(unsigned char *a,unsigned char *b)
+{
+	while (*a=='-') ++a;
+	while (*b=='-') ++b;
+	while (*a && *b && map_up(*a)==map_up(*b)) {
+		++a;
+		++b;
+		while (*a=='-') ++a;
+		while (*b=='-') ++b;
+	}
+	if (!*a && (*b=='.' || !*b))
+		return 0;
+	else
+		return 1;
+}
 
+/* Find a character map */
+
+struct charmap *find_charmap(unsigned char *name)
+{
+	unsigned char buf[1024];
+	unsigned char *p;
+	struct charmap *m;
+	struct builtin_charmap *b;
+	FILE *f;
+	int y;
+
+	if (!name)
+		return 0;
+
+	/* Install some initial character maps */
+	if (!charmaps)
+		load_builtins();
+
+	/* Already loaded? */
+	for (m=charmaps; m; m=m->next)
+		if (!map_name_cmp(m->name,name))
+			return m;
+
+	/* Check ~/.joe/charmaps */
+	p = (unsigned char *)getenv("HOME");
+	if (p) {
+		snprintf((char *)buf,sizeof(buf),"%s/.joe/charmaps/%s",p,name);
+		f = fopen((char *)buf,"r");
+	}
+
+	/* Check JOERCcharmaps */
+	if (!f) {
+		snprintf((char *)buf,sizeof(buf),"%scharmaps/%s",JOERC,name);
+		f = fopen((char *)buf,"r");
+	}
+
+	/* Parse and install character map from file */
+	if (f && (b = parse_charmap(name,f)))
+		return process_builtin(b);
+
+	/* Check builtin sets */
+	for (y=0; y!=sizeof(builtin_charmaps)/sizeof(struct builtin_charmap); ++y)
+		if (!map_name_cmp(builtin_charmaps[y].name,name))
+			return process_builtin(builtin_charmaps + y);
+
+	return NULL;
+}
 
 /* Test */
 
@@ -1233,19 +1270,65 @@ main(int argc,char *argv[])
 
 unsigned char **get_encodings()
 {
-	unsigned char **t = 0;
-	struct charmap *map;
-	if (!charmaps)
-		load_builtins();
-	for (map=charmaps; map; map=map->next) {
-		unsigned char *r = vsncpy(NULL,0,sz(map->name));
-		t = vaadd(t, r);
+	int y, x;
+	unsigned char **encodings = 0;
+	unsigned char **t;
+	unsigned char *r;
+	unsigned char *oldpwd = pwd();
+	unsigned char *p;
+	unsigned char buf[1024];
+
+	/* Builtin maps */
+
+	r = vsncpy(NULL,0,sc("utf-8"));	
+	encodings = vaadd(encodings, r);
+
+	for (y=0; y!=sizeof(builtin_charmaps)/sizeof(struct builtin_charmap); ++y) {
+		r = vsncpy(NULL,0,sz(builtin_charmaps[y].name));
+		encodings = vaadd(encodings, r);
 	}
-	return t;
+
+	/* External maps */
+
+	p = (unsigned char *)getenv("HOME");
+	if (p) {
+		snprintf((char *)buf,sizeof(buf),"%s/.joe/charmaps",p);
+		if (!chpwd(buf) && (t = rexpnd(US "*"))) {
+			for (x = 0; x != aLEN(t); ++x)
+				if (strcmp(t[x],"..")) {
+					for (y = 0; y != aLEN(encodings); ++y)
+						if (!strcmp(t[x],encodings[y]))
+							break;
+					if (y == aLEN(encodings)) {
+						r = vsncpy(NULL,0,sv(t[x]));
+						encodings = vaadd(encodings,r);
+					}
+				}
+			varm(t);
+		}
+	}
+
+	if (!chpwd(US (JOERC "charmaps")) && (t = rexpnd(US "*"))) {
+		for (x = 0; x != aLEN(t); ++x)
+			if (strcmp(t[x],"..")) {
+				for (y = 0; y != aLEN(encodings); ++y)
+					if (!strcmp(t[x],encodings[y]))
+						break;
+				if (y == aLEN(encodings)) {
+					r = vsncpy(NULL,0,sv(t[x]));
+					encodings = vaadd(encodings,r);
+				}
+			}
+		varm(t);
+	}
+
+	chpwd(oldpwd);
+
+	return encodings;
 }
 
-
 #if 0
+
 /* Convert to uppercase via unicode.  Returns original
    character if there was no conversion. */
 

@@ -42,6 +42,7 @@ static void rmisrch(struct isrch *isrch)
 {				/* Eliminate a struct isrch */
 	if (isrch) {
 		vsrm(isrch->pattern);
+		vsrm(isrch->prompt);
 		frchn(&fri, &isrch->irecs);
 		joe_free(isrch);
 	}

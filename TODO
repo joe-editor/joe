@@ -1,62 +1,43 @@
 Fix for next release:
 
+  highlight other windows
+  why lose state during page down?
+  perl highlighter
+  sh highlighter
+  more syntax files
+
+  byte to byte conversions?
   UTF-8 decoder right at input instead of in qw and utype?
 
   option to force search to be case insensitive
-
   regex: character classes? a-z matches any letter?
-
-  locale for qsort().
-    not that important.
-
-  should parse locale charmap files: make subdirectory for this.
-
-  byte to byte conversions.
-
-  check all instances of 'chars': use unicode to locale symbols instead.
-
-  EBCDIC ?
-    - we assume '\n' is line terminator.
-    - there are many references to '\t' and ' '.
-    - EBCDIC used to be fixed record length (80 columns) anyway.
-
-
-  perl highlighter
-
-  sh highlighter
-
-  more syntax files
-
-
-  move *rc files to .joe directory?
 
   parse *rc file only once?
 
   different symbol for 'joe' directory
 
-
   can't load terminfo- should switch to termcap or provide compiled
   ANSI terminfo built in.
 
-
-  highlight other windows
-  why lose state during page down?
-
-
   Update documentation.
-
 
   Check if file is newer on save.
 
-
   gettext patch
-
 
   don't use -notite by default.
 
 
 New features:
 -----------------------
+
+  move *rc files to .joe directory?
+
+  check all instances of 'chars': use unicode to locale symbols instead.
+  EBCDIC ?
+    - we assume '\n' is line terminator.
+    - there are many references to '\t' and ' '.
+    - EBCDIC used to be fixed record length (80 columns) anyway.
 
 Math: hex, octal more functions. (-lm?)
 

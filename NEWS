@@ -1,3 +1,16 @@
+JOE 3.1
+- Regex and incremental search (jmacs ^S) now work for UTF-8
+- More and improved syntax highlighting files
+- Use ^T E to set character set of file (hit <tab> <tab> for
+  lists of character sets).
+- Can install custom "i18n" style byte oriented character set
+  definition files.
+- No longer depends on iconv() (easier to compile)
+- Fix bug where right arrow was not doing right thing on last line
+- Fix UTF-8 codes between 0x10000 - 0x1FFFF
+- Now prints <XXXX> for unicode control characters
+- Improved smart home, indent, etc.
+
 JOE 3.0 (23 APR 2004)
 - UTF-8
 - Syntax highlighting

@@ -4,29 +4,50 @@ yet.
 UTF-8
 -----
 
-	JOE will send UTF-8 sequences to the screen and accept UTF-8
-sequences from the keyboard if you have the LC_ALL environment variable set
-to a UTF_8 locale:
+JOE now handles two classes of character sets: UTF-8 and byte coded (like
+ISO-8859-1).  It can not yet handle other major classes such as UTF-16 or
+GB2312. There are other restrictions: character sets must use LF (0x0A) or
+CR-LF (0x0D - 0x0A) as line terminators, space must be 0x20 and tab must be
+0x09. Basically, the files must be UNIX or MS-DOS compatible text files.
 
-	export LC_ALL=en_IN.utf-8
+This means EBCDIC will not work properly (but you would need to handle fixed
+record length lines anyway) and character sets which use CR terminated lines
+(MACs) will not yet work.
 
-	Of course the terminal emulator needs to be UTF-8 compatible as
-well.
+The terminal and the file can have different encodings.  JOE will translate
+between the two.  Currently, one of the two must be UTF-8 for translation to
+work.
 
-	Furthermore, if the locale is UTF-8, JOE assumes files are UTF-8
-encoded as well.
+The character set for the terminal and the default character set assumed for
+files is determined by the 'LC_ALL' environment variable (and if that's not
+set, LC_CTYPE and LANG are also checked).
 
-	If the locale is not UTF-8, JOE assumes files are not UTF-8.
+For example, if LC_ALL is set to:
 
-	If you hit ^T U, JOE will change its assumption about the encoding
-of the file, and translate to the coding of the terminal using iconv().  If
-the terminal is utf-8, ^T U will switch the file encoding to the locale with
-the ".utf-8" removed- this is a guess as to the most likely byte encoding of
-in use at the locale.
+	de_DE
 
-	Use ` x to enter a Unicode character in hex.
+Then the character set will be ISO-8859-1.
 
-	Hit ^K <space> to see the Unicode of the character under the cursor.
+If LC_ALL is set to:
+
+	de_DE.UTF-8
+
+The character set will UTF-8.
+
+Hit ^T E to change the coding for the file.  Hit <tab> <tab> at this prompt
+to get a list of available codings.  There are a number of built-in
+character sets, plus you can install character sets in the ~/.joe/charmaps
+and /usr/local/etc/joe/charmaps directories.
+
+Check: /usr/share/i18n/charmaps for example character set files.  Only
+byte oriented character sets will work.  Also, the file should not be
+gzipped (all of the charmap file in /usr/share/i18n/charmaps on my computer
+were compressed).  The parser is very bad, so basically the file has to look
+exactly like the example one in /usr/local/etc/joe/charmaps.
+
+You can hit ^K <space> to see the current character set.
+
+You can hit ` x to enter a Unicode character if the file coding is UTF-8.
 
 Programming
 -----------

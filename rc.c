@@ -594,7 +594,7 @@ static int syntaxcmplt(BW *bw)
 							break;
 					if (y == aLEN(syntaxes)) {
 						unsigned char *r = vsncpy(NULL,0,sv(t[x]));
-						vaadd(syntaxes,r);
+						syntaxes = vaadd(syntaxes,r);
 					}
 				}
 				varm(t);
