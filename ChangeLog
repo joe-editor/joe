@@ -1,4 +1,8 @@
 Sat Jun  8 2002  Vitezslav Samel <samel@mail.cz>
+	* cmd.c:
+	unwrap array elements in initialization of cmds[]
+
+Sat Jun  8 2002  Vitezslav Samel <samel@mail.cz>
 	* va.c, va.h:
 	change aELEMENT #define to typedef
 
