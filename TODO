@@ -1,12 +1,12 @@
 Short list for 3.2:
 
-- update other *rc.in files
+- egmont's Ctrl-selection bug
+
+- in emacs: ^XA save block when no block is selected, we type in >> for
+append (because that't what it does in emacs), but we also put the file name
+in, but we do the two in the wrong order.
 
 - for cygwin: we need to compile with --disable-termcap
-
-- set -marking as the default in jmacs?
-
-- egmont's Ctrl-selection bug
 
 - ^D in selection prompts should bring up menu as in tcsh
 
@@ -24,6 +24,22 @@ Short list for 3.2:
 - search: automatically use 'k' mode if there is a block selected?  Cursor should
   jump to top of block when done?  Modes for this?
 
+- if file is read only, check it out again (for perforce)
+    - Reload modified files (or current window)
+    - Watch loaded file for changes under us (merge differences?)
+
+- Lock files being edited?
+    - one person gets write lock
+    - special lock for NFS
+
+- update help screens: some things have changed (emacs is more like emacs).
+
+UI for changing colors in the editor (or at least dark/light mode)
+
+More colors: UI for using 256 color xterms.
+
+
+
 Others:
 
 - rectangular blocks: make this a local file option?
@@ -35,8 +51,6 @@ Others:
 - regexp for compiler parsing
 
 - nfs locking?
-
-- if file is read only, check it out again (for perforce)
 
 - shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
   shell window.
@@ -56,12 +70,6 @@ stale data.
 
 we are missing many query and prompt window abort handlers, which cause
 small memory leaks.
-
-- update help screens: some things have changed (emacs is more like emacs).
-
- Reload modified files (or current window)
-
-Watch loaded file for changes
 
 regex: character classes? a-z matches any letter?
 
@@ -156,21 +164,10 @@ UTF-8/Internationalization
   There is no good way to do this.  For all rtol, you could use a reversed
 xterm.  For mixed, you need tags to indicate direction.
 
-
-UI for changing colors in the editor (or at least dark/light mode)
-
-More colors: UI for using 256 color xterms.
-
-
- Lock files being edited?
-  one person gets write lock
-
-
  Don't understand:  optionally break hardlinks on save?  what is "tla"?
 
  Use memory mapped files to fast load large files.  Have to not
  count no. lines in each buffer on startup.
-
 
  Emulate other editors?  Brief, EDT?
 

@@ -354,6 +354,7 @@ int unmark(BW *bw)
 {
 	prm(markb);
 	prm(markk);
+	nowmarking = 0;
 	updall();
 	return 0;
 }
