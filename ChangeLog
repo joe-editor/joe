@@ -1,4 +1,9 @@
 Wed Mar 24 2004  Joe Allen <jhallen@world.std.com>
+	* uedit.c:
+	Fix bug where hitting ^Z on first word of file caused joe to lock up
+
+
+Wed Mar 24 2004  Joe Allen <jhallen@world.std.com>
 	* lots of file:
 	First steps at syntax highlighting!
 	This version has support for C only (and the parser is a big hack),

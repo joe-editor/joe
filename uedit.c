@@ -101,15 +101,19 @@ int u_goto_prev(BW *bw)
 	int c = prgetc(p);
 
 	if (isalnum_(c)) {
-		while (isalnum_(c = brc(p)))
-			prgetc(p);
+		while (isalnum_(c=prgetc(p)));
+		/* while (isalnum_(c = brc(p)))
+			prgetc(p);*/
 		if (c != NO_MORE_DATA)
 			pgetc(p);
 	} else if (isspace(c) || ispunct(c)) {
+		while ((c=prgetc(p)), (isspace(c) || ispunct(c)));
+		/*
 		while (isspace(c = brc(p)) || ispunct(c))
-			prgetc(p);
-		while (isalnum_(c = brc(p)))
-			prgetc(p);
+			prgetc(p); */
+		while(isalnum_(c=prgetc(p)));
+/*		while (isalnum_(c = brc(p)))
+			prgetc(p); */
 		if (c != NO_MORE_DATA)
 			pgetc(p);
 	}
@@ -818,7 +822,7 @@ int utypebw(BW *bw, int k)
 			int x = bw->cursor->xcol - bw->offset + bw->x - 1;
 			int *screen = t->scrn + y * t->co;
 
-			if (!upd && piseol(bw->cursor))
+			if (!upd && piseol(bw->cursor) && !bw->o.highlight)
 				t->updtab[y] = 0;
 			if (markb &&
 			    markk &&

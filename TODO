@@ -1,3 +1,7 @@
+Bugs:
+
+ locks up when you do prevword on first word
+
 Syntax highlighting:
 
  No. 1 requested new feature for joe: syntax highlighting.  I have termcap.c
