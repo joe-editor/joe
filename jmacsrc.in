@@ -874,6 +874,7 @@
  Use SP for space
  Use a TO b to generate a range of characters
  Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
+ Use MWDOWN, MWUP for wheel mouse motion
 
  You can also use termcap string capability names.  For example:
 
@@ -1145,6 +1146,7 @@ dnarw		^[ O B
 dnarw		^[ [ B
 dnarw		^# B
 dnslide		^X ^N		Slide down (uemacs)
+dnslide,dnslide,dnslide,dnslide		MWDOWN
 edit		^X ^F		Edit a file: creates orphaned buffers
 eof		^[ >		Go to end of file
 
@@ -1222,6 +1224,7 @@ uparw		^[ O A
 uparw		^[ [ A
 uparw		^# A
 upslide		^X ^P		Slide up (uemacs)
+upslide,upslide,upslide,upslide		MWUP
 yank		^Y		Yank deleted text
 yankpop		^[ y		Yank-pop
 

@@ -13,7 +13,7 @@
 #define LINK(type) struct { type *next; type *prev; }
 
 /* #define KEYS		256 */
-#define KEYS 265	/* 256 ascii + mdown, mup, mdrag, m2down, m2up, m2drag,
+#define KEYS 267	/* 256 ascii + mdown, mup, mdrag, m2down, m2up, m2drag,
                                         m3down, m3up, m3drag */
 #define KEY_MDOWN	256
 #define KEY_MUP		257
@@ -24,6 +24,9 @@
 #define KEY_M3DOWN	262
 #define KEY_M3UP	263
 #define KEY_M3DRAG	264
+#define KEY_MWUP	265
+#define KEY_MWDOWN	266
+
 #define stdsiz		8192
 #define FITHEIGHT	4		/* Minimum text window height */
 #define LINCOLS		6

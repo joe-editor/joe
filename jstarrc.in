@@ -880,6 +880,7 @@
  Use SP for space
  Use a TO b to generate a range of characters
  Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
+ Use MWDOWN, MWUP for wheel mouse motion
 
  You can also use termcap string capability names.  For example:
 
@@ -1103,6 +1104,7 @@ dnarw		^[ O B
 dnarw		^[ [ B
 dnarw		^# B
 dnslide		^Z
+dnslide,dnslide,dnslide,dnslide		MWDOWN
 edit		^K E		Edit a file
 edit		^K ^E
 edit		^K e
@@ -1217,7 +1219,8 @@ uparw		^[ O A
 uparw		^[ [ A
 uparw		^# A
 upslide		^W
-
+upslide,upslide,upslide,upslide		MWUP
+ 
 :prompt			Prompt windows
 :inherit main
 abort		^C

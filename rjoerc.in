@@ -892,6 +892,7 @@
  Use SP for space
  Use a TO b to generate a range of characters
  Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
+ Use MWDOWN, MWUP for wheel mouse motion
 
  You can also use termcap string capability names.  For example:
 
@@ -1024,6 +1025,7 @@ delbol		^[ ^O		Delete to beginning of line
 dnslide		^[ z		Scroll down one line
 dnslide		^[ Z		Scroll down one line
 dnslide		^[ ^Z		Scroll down one line
+dnslide,dnslide,dnslide,dnslide		MWDOWN
  switch,rtn,filt,
  query,parserr	^[ c		Compile
  switch,rtn,filt,
@@ -1057,6 +1059,7 @@ txt		^[ I		Prompt for text and insert it
 upslide		^[ w		Scroll up one line
 upslide		^[ ^W		Scroll up one line
 upslide		^[ W		Scroll up one line
+upslide,upslide,upslide,upslide		MWUP
 yankpop		^[ y		Undelete text
 yankpop		^[ ^Y		Undelete text
 yankpop		^[ Y		Undelete text

@@ -919,6 +919,7 @@
  Use a TO b to generate a range of characters
  Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
  Use MWDOWN, MWUP for wheel mouse motion
+
  You can also use termcap string capability names.  For example:
 
 	.ku		Up
@@ -1096,6 +1097,7 @@ dnslide		^[ z		Scroll down one line
 dnslide		^[ Z		Scroll down one line
 dnslide		^[ ^Z		Scroll down one line
 dnslide,dnslide,dnslide,dnslide		MWDOWN
+compile		^[ c		Compile
 compile		^[ ^C		Compile
 execmd		^[ x		Prompt for command to execute
 execmd		^[ X		Prompt for command to execute
@@ -1126,6 +1128,7 @@ upslide		^[ w		Scroll up one line
 upslide		^[ ^W		Scroll up one line
 upslide		^[ W		Scroll up one line
 upslide,upslide,upslide,upslide		MWUP
+yank		^[ y		Undelete text
 yankpop		^[ ^Y		Undelete text
 yank		^[ Y		Undelete text
 

@@ -94,6 +94,13 @@ void bwfllw(BW *w)
 			pset(w->top, w->cursor);
 			pbkwd(w->top, (w->top->byte % 16) + (w->h-1) * 16);
 		}
+		if (w->cursor->byte%16+60 < w->offset) {
+			w->offset = w->cursor->byte%16+60;
+			msetI(w->t->t->updtab + w->y, 1, w->h);
+		} else if (w->cursor->byte%16+60 >= w->offset + w->w) {
+			w->offset = w->cursor->byte%16+60 - (w->w - 1);
+			msetI(w->t->t->updtab + w->y, 1, w->h);
+		}
 		return;
 	} if (!pisbol(w->top)) {
 		p_goto_bol(w->top);
@@ -789,26 +796,39 @@ void bwgenh(BW *w)
 		unsigned char txt[80];
 		unsigned char bf[16];
 		int x;
-		memset(txt,' ',75);
-		txt[75]=0;
+		memset(txt,' ',76);
+		txt[76]=0;
 		if (!flg) {
-			sprintf(bf,"%8X ",q->byte);
+			sprintf(bf,"%8x ",q->byte);
 			memcpy(txt,bf,9);
-			for (x=0; x!=16; ++x) {
+			for (x=0; x!=8; ++x) {
 				int c = pgetb(q);
 				if (c >= 0) {
-					sprintf(bf,"%2.2X",c);
+					sprintf(bf,"%2.2x",c);
 					txt[10+x*3] = bf[0];
 					txt[10+x*3+1] = bf[1];
 					if (c >= 0x20 && c <= 0x7E)
-						txt[59+x] = c;
+						txt[60+x] = c;
 					else
-						txt[59+x] = '.';
+						txt[60+x] = '.';
+				} else
+					flg = 1;
+			}
+			for (x=8; x!=16; ++x) {
+				int c = pgetb(q);
+				if (c >= 0) {
+					sprintf(bf,"%2.2x",c);
+					txt[11+x*3] = bf[0];
+					txt[11+x*3+1] = bf[1];
+					if (c >= 0x20 && c <= 0x7E)
+						txt[60+x] = c;
+					else
+						txt[60+x] = '.';
 				} else
 					flg = 1;
 			}
 		}
-		genfield(t, screen, attr, 0, y, 0, txt, 75, 0, w->w, 1);
+		genfield(t, screen, attr, 0, y, w->offset, txt, 76, 0, w->w, 1);
 	}
 	prm(q);
 }

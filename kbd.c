@@ -84,6 +84,8 @@ static int keyval(unsigned char *s)
 		return ' ';
 	else if((s[0]=='M'||s[0]=='m') && s[1]) {
 		if(!strcmp(s,"MDOWN")) return KEY_MDOWN;
+		else if(!strcmp(s,"MWDOWN")) return KEY_MWDOWN;
+		else if(!strcmp(s,"MWUP")) return KEY_MWUP;
 		else if(!strcmp(s,"MUP")) return KEY_MUP;
 		else if(!strcmp(s,"MDRAG")) return KEY_MDRAG;
 		else if(!strcmp(s,"M2DOWN")) return KEY_M2DOWN;

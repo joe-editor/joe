@@ -49,6 +49,18 @@ int uxtmouse(BW *bw)
  Cy=ttgetc()-32;
  if(Cy<=0) return -1;
 
+ if((Cb&0x41)==0x40)
+  {
+  fake_key(KEY_MWUP);
+  return 0;
+  }
+
+ if((Cb&0x41)==0x41)
+  {
+  fake_key(KEY_MWDOWN);
+  return 0;
+  }
+
  if((Cb&3)==3)
   /* button released */
   mouseup(Cx,Cy);
@@ -59,6 +71,7 @@ int uxtmouse(BW *bw)
   else
    /* drag */
    mousedrag(Cx,Cy);
+ return 0;
  }
 
 static void fake_key(int c)

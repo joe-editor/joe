@@ -377,7 +377,7 @@ static void disptw(BW *bw, int flg)
 
 	if (bw->o.hex) {
 		w->cury = (bw->cursor->byte-bw->top->byte)/16 + bw->y - w->y;
-		w->curx = (bw->cursor->byte-bw->top->byte)%16 + 59;
+		w->curx = (bw->cursor->byte-bw->top->byte)%16 + 60 - bw->offset;
 	} else {
 		w->cury = bw->cursor->line - bw->top->line + bw->y - w->y;
 		w->curx = bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0);

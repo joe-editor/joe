@@ -891,6 +891,7 @@
  Use SP for space
  Use a TO b to generate a range of characters
  Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
+ Use MWDOWN, MWUP for wheel mouse motion
 
  You can also use termcap string capability names.  For example:
 
@@ -1048,6 +1049,7 @@ dnarw		^N
 dnarw		^[ O B
 dnarw		^[ [ B
 dnarw		^# B
+dnslide,dnslide,dnslide,dnslide		MWDOWN
 drop,msg,"Mark set",rtn	^^	Drop anchor
  toggle_marking	^^		Marking
 edit		^[ E		Edit a file
@@ -1121,6 +1123,7 @@ uparw		^P
 uparw		^[ O A
 uparw		^[ [ A
 uparw		^# A
+upslide,upslide,upslide,upslide		MWUP
 yank		^U		Paste
 yankpop		^[ U		Select yanked text
 yankpop		^[ ^U
