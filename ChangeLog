@@ -1,3 +1,10 @@
+Sun Apr 25 2004  Joe Allen <jhallen@world.std.com>
+	* b.c bw.c scrn.c uedit.c utf8.c utf8.h:
+
+	Better handling of iconv() conversion errors.
+
+	Better handling of error UTF-8 sequences.
+
 Sat Apr 24 2004  Joe Allen <jhallen@world.std.com>
 	* utf8.c, utf8.h, scrn.c, bw.c :
 

@@ -980,17 +980,6 @@ int utypebw(BW *bw, int k)
 			   ((!square && bw->cursor->byte >= markb->byte && bw->cursor->byte < markk->byte) ||
 			    ( square && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line && piscol(bw->cursor) >= markb->xcol && piscol(bw->cursor) < markk->xcol)))
 				atr = INVERSE;
-			if (bw->b->o.utf8) {
-				if (k<32 || k>126 && k<160) {
-					xlat_utf_ctrl(&a, &c);
-					k = c;
-					atr ^= a;
-					}
-			} else {
-				xlat(&a, &c);
-				k = c;
-				atr ^= a;
-			}
 			outatr(bw->b->o.utf8, t, screen + x, attr + x, x, y, k, atr);
 		}
 #endif

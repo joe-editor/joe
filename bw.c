@@ -261,6 +261,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	int amnt;		/* Amount left in this segment of the buffer */
 	int c, ta, c1;
 	unsigned char bc;
+	int ungetit = -1;
 
 	struct utf8_sm utf8_sm;
 
@@ -293,7 +294,12 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
       lp:			/* Display next character */
 	if (amnt)
 		do {
-			bc = *bp++;
+			if (ungetit== -1)
+				bc = *bp++;
+			else {
+				bc = ungetit;
+				ungetit = -1;
+			}
 			if(st!=-1)
 				atr = syn[idx++];
 			if (p->b->o.crlf && bc == '\r') {
@@ -359,11 +365,15 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					c = utf8_decode(&utf8_sm,bc);
 
 					if (c>=0) /* Normal decoded character */
-						wid = mk_wcwidth(c);
+						wid = mk_wcwidth(1,c);
 					else if(c== -1) /* Character taken */
 						wid = -1;
-					else if(c== -2) /* Incomplete sequence (FIXME: do something better here) */
+					else if(c== -2) { /* Incomplete sequence (FIXME: do something better here) */
 						wid = 1;
+						ungetit = c;
+						++amnt;
+						--byte;
+					}
 					else if(c== -3) /* Control character 128-191, 254, 255 */
 						wid = 1;
 				} else {
@@ -399,7 +409,12 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
       loop:			/* Display next character */
 	if (amnt)
 		do {
-			bc = *bp++;
+			if (ungetit== -1)
+				bc = *bp++;
+			else {
+				bc = ungetit;
+				ungetit = -1;
+			}
 			if(st!=-1)
 				atr=syn[idx++];
 			if (p->b->o.crlf && bc == '\r') {
@@ -467,31 +482,22 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					utf8_char = utf8_decode(&utf8_sm,bc);
 
 					if (utf8_char >= 0) { /* Normal decoded character */
-						if (utf8_char<32 || utf8_char==127) { /* ASCII control character */
-							bc = utf8_char;
-							xlat_utf_ctrl(&c, &bc);
-							utf8_char = bc;
-							c1 ^= c;
-							wid = 1;
-						} else {
-							wid = mk_wcwidth(utf8_char);
-						}
-					} else if(c== -1) { /* Character taken */
+						wid = mk_wcwidth(1,utf8_char);
+					} else if(utf8_char== -1) { /* Character taken */
 						wid = -1;
-					} else if(c== -2) { /* Incomplete sequence (FIXME: do something better here) */
+					} else if(utf8_char== -2) { /* Incomplete sequence (FIXME: do something better here) */
+						ungetit = bc;
+						++amnt;
+						--byte;
 						utf8_char = 'X';
 						wid = 1;
-					} else if(c== -3) { /* Invalid UTF-8 start character 128-191, 254, 255 */
+					} else if(utf8_char== -3) { /* Invalid UTF-8 start character 128-191, 254, 255 */
 						/* Show as control character */
-						xlat_utf_ctrl(&c, &bc);
-						utf8_char = bc;
-						c1 ^= c;
 						wid = 1;
+						utf8_char = 'X';
 					}
 				} else { /* Regular */
-					xlat(&c, &bc);
 					utf8_char = bc;
-					c1 ^= c;
 					wid = 1;
 				}
 
@@ -668,7 +674,7 @@ static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, 
 			} else if (bc == '\n')
 				goto eobl;
 			else {
-				xlat(&c, &bc);
+				/* xlat(&c, &bc);*/
 				c ^= c1;
 				screen[x] = c + bc;
 				if (++x == w)
@@ -915,7 +921,7 @@ int ustat(BW *bw)
 	if (c == NO_MORE_DATA)
 		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
 	else
-		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, c, c, c, mk_wcwidth(c));
+		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, c, c, c, mk_wcwidth(bw->o.utf8,c));
 	msgnw(bw->parent, buf);
 	return 0;
 }

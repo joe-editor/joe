@@ -586,6 +586,7 @@ int pgetc(P *p)
 			n = 0;
 		} else { /* 128-191, 254, 255: Not a valid UTF-8 start character */
 			n = 0;
+			c = 'X';
 			/* c -= 384; */
 		}
 
@@ -594,7 +595,7 @@ int pgetc(P *p)
 		if (n) {
 			while (n) {
 				d = brc(p);
-				if((d&0xC0)!=0x80)
+				if ((d&0xC0)!=0x80)
 					break;
 				pgetb(p);
 				c = ((c<<6)|(d&0x3F));
@@ -607,7 +608,7 @@ int pgetc(P *p)
 				c = 'X';
 				wid = 1;
 			} else if (val)
-				wid = mk_wcwidth(c);
+				wid = mk_wcwidth(1,c);
 		} else {
 			wid = 1;
 		}
@@ -716,6 +717,25 @@ int prgetb(P *p)
 int prgetc(P *p)
 {
 	if (p->b->o.utf8) {
+
+		if (pisbol(p))
+			return prgetb(p);
+		else {
+			P *q = pdup(p);
+			P *r;
+			p_goto_bol(q);
+			r = pdup(q);
+			while (q->byte<p->byte) {
+				pset(r, q);
+				pgetc(q);
+			}
+			pset(p,r);
+			prm(r);
+			prm(q);
+			return brch(p);
+		}
+
+#if 0
 		int d = 0;
 		int c;
 		int n = 0;
@@ -752,10 +772,11 @@ int prgetc(P *p)
 
 		if (val && c!='\t' && c!='\n') {
 			p->valcol = 1;
-			p->col -= mk_wcwidth(d);
+			p->col -= mk_wcwidth(1,d);
 		}
 		
 		return d;
+#endif
 	}
 	else {
 		return prgetb(p);
@@ -955,7 +976,7 @@ P *pcol(P *p, long goalcol)
 			if (c == '\t')
 				wid = p->b->o.tab - p->col % p->b->o.tab;
 			else
-				wid = mk_wcwidth(c);
+				wid = mk_wcwidth(1,c);
 
 			if (p->col + wid > goalcol)
 				break;
