@@ -99,6 +99,7 @@ CMD cmds[] = {
 	{US "exsave", TYPETW + TYPEPW, uexsve, NULL, 0, NULL},
 	{US "ffirst", TYPETW + TYPEPW, pffirst, NULL, 0, NULL},
 	{US "filt", TYPETW + TYPEPW + EMOD, ufilt, NULL, 0, NULL},
+	{US "finish", TYPETW + TYPEPW + EMOD, ufinish, NULL, 1, NULL},
 	{US "fnext", TYPETW + TYPEPW, pfnext, NULL, 1, NULL},
 	{US "format", TYPETW + TYPEPW + EFIXXCOL + EMOD, uformat, NULL, 1, NULL},
 	{US "fmtblk", TYPETW + EMOD + EFIXXCOL, ufmtblk, NULL, 1, NULL},

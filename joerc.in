@@ -686,7 +686,6 @@ tomarkk		^[ ^K		Go to end of marked block
 tomarkk		^[ K		Go to end of marked block
 txt		^[ i		Prompt for text and insert it
 txt		^[ I		Prompt for text and insert it
-txt		^[ ^I		Prompt for text and insert it
 upslide		^[ w		Scroll up one line
 upslide		^[ ^W		Scroll up one line
 upslide		^[ W		Scroll up one line
@@ -799,6 +798,7 @@ ffirst		^K ^F
 ffirst		^K f
 filt		^K /		Filter block
  finish		^K ^M		Complete text under cursor
+finish		^[ ^I		Complete text under cursor
 fmtblk		^K J		Format paragraphs in block
 fmtblk		^K ^J
 fmtblk		^K j

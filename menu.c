@@ -12,6 +12,7 @@
 
 #include "scrn.h"
 #include "utils.h"
+#include "va.h"
 #include "vs.h"
 #include "utf8.h"
 #include "w.h"
@@ -435,6 +436,19 @@ static unsigned char *cull(unsigned char *a, unsigned char *b)
 
 	for (x = 0; a[x] && b[x] && a[x] == b[x]; ++x) ;
 	return vstrunc(a, x);
+}
+
+unsigned char *find_longest(unsigned char **lst)
+{
+	unsigned char *com;
+	int x;
+
+	if (!lst || !aLEN(lst))
+		return vstrunc(NULL, 0);
+	com = vsncpy(NULL, 0, sv(lst[0]));
+	for (x = 1; x != aLEN(lst); ++x)
+		com = cull(com, lst[x]);
+	return com;
 }
 
 unsigned char *mcomplete(MENU *m)

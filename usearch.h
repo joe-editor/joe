@@ -22,4 +22,6 @@ int pfnext PARAMS((BW *bw));
 int pqrepl PARAMS((BW *bw));
 int prfirst PARAMS((BW *bw));
 
+int ufinish PARAMS((BW *bw));
+
 #endif

@@ -33,5 +33,6 @@ int umbacks PARAMS((MENU *m));
 void ldmenu PARAMS((MENU *m, unsigned char **s, int cursor));
 
 unsigned char *mcomplete PARAMS((MENU *m));
+unsigned char *find_longest PARAMS((unsigned char **lst));
 
 #endif

@@ -63,7 +63,7 @@ Improvements for programming
 Abbreviations
 
  Tab complete a word in a file, should look through file for matching
- words.
+ words.  Would be nice at search prompt...
 
 Show name of function cursor is in (parse C).  This is useful during
 searches.  (Call ctags *.c *.h?)
@@ -176,9 +176,7 @@ Documentation:
 
 Prompts:
 
- Sort should be column wise, not row wise.
-
- Size of file selection window should be an option
+ Sort should be column wise, not row wise?
 
  HTML-style thing for option selection?
 

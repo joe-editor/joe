@@ -15,6 +15,7 @@ JOE 3.1
   same order on the screen in JOE (before they were shuffled).
 - Menu size is now variable (40% of window size or smaller if
   it's not filled).
+- Added -icase option for case insensitive search by default.
 
 JOE 3.0 (23 APR 2004)
 - UTF-8

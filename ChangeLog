@@ -1,3 +1,10 @@
+Fri May  7 22:37:49 EDT 2004
+	* usearch.c :
+
+	Tab completion at search prompt.
+
+	ESC-Tab completes within text windows.
+
 Fri May  7 16:02:21 EDT 2004
 	* usearch.c, uisrch.c :
 

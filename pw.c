@@ -303,8 +303,7 @@ int simple_cmplt(BW *bw,unsigned char **list)
 	vsrm(line1);
 
 	if (!lst) {
-		if (beep)
-			ttputc(7);
+		ttputc(7);
 		vsrm(line);
 		return -1;
 	}
@@ -326,8 +325,7 @@ int simple_cmplt(BW *bw,unsigned char **list)
 		m->object = com;
 		wabort(m->parent);
 		smode = 2;
-		if(beep)
-			ttputc(7);
+		ttputc(7);
 		return 0;
 	}
 }

@@ -25,6 +25,10 @@
 #include "vs.h"
 #include "charmap.h"
 #include "w.h"
+#include "va.h"
+#include "tty.h"
+#include "menu.h"
+#include "hash.h"
 
 int smode = 0;			/* Decremented to zero by execmd */
 int csmode = 0;			/* Set for continued search mode */
@@ -380,6 +384,203 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	}
 }
 
+unsigned char **word_list;
+
+#define MAX_WORD_SIZE 64
+unsigned char **get_word_list(B *b)
+{
+	unsigned char buf[MAX_WORD_SIZE];
+	unsigned char *s;
+	unsigned char **list = 0;
+	HASH *h;
+	HENTRY *t;
+	P *p;
+	int c;
+	int idx;
+
+	h = htmk(1024);
+
+	p = pdup(b->bof);
+	idx = 0;
+	while ((c=pgetc(p))!=NO_MORE_DATA)
+		if (idx) {
+			if (joe_isalnum_(b->o.charmap, c)) {
+				if (idx!=MAX_WORD_SIZE)
+					buf[idx++] = c;
+			} else {
+				if (idx!=MAX_WORD_SIZE) {
+					buf[idx] = 0;
+					if (!htfind(h,buf)) {
+						s = vsncpy(NULL,0,buf,idx);
+						htadd(h, s, s);
+					}
+				}
+				idx = 0;
+			}
+		} else {
+			if (joe_isalpha_(b->o.charmap, c))
+				buf[idx++] = c;
+		}
+	prm(p);
+
+	for (idx = 0;idx != h->len;++idx)
+		for (t = h->tab[idx];t;t=t->next)
+			list = vaadd(list, t->name);
+	if (list)
+		vasort(list,sLEN(list));	
+
+	htrm(h);
+
+	return list;
+}
+
+void fcmplt_ins(BW *bw, unsigned char *line)
+{
+	P *p = pdup(bw->cursor);
+	int c;
+
+	if (!piseol(bw->cursor)) {
+		int c = brch(bw->cursor);
+		if (joe_isalnum_(bw->b->o.charmap,c))
+			return;
+	}
+
+	/* Move p to beginning of word */
+
+	p = pdup(bw->cursor);
+	do
+		c = prgetc(p);
+		while (joe_isalnum_(bw->b->o.charmap,c));
+	if (c!=NO_MORE_DATA)
+		pgetc(p);
+
+	if (bw->cursor->byte!=p->byte && bw->cursor->byte-p->byte<64) {
+		/* Insert single match */
+		bdel(p,bw->cursor);
+		binsm(bw->cursor,sv(line));
+		pfwrd(bw->cursor,sLEN(line));
+		bw->cursor->xcol = piscol(bw->cursor);
+		prm(p);
+	} else {
+		prm(p);
+	}
+}
+
+int fcmplt_abrt(BW *bw, int x, unsigned char *line)
+{
+	if (line) {
+		fcmplt_ins(bw, line);
+		vsrm(line);
+	}
+	return -1;
+}
+
+int fcmplt_rtn(MENU *m, int x, unsigned char *line)
+{
+	fcmplt_ins(m->parent->win->object, m->list[x]);
+	vsrm(line);
+	m->object = NULL;
+	wabort(m->parent);
+	return 0;
+}
+
+int ufinish(BW *bw)
+{
+	unsigned char *line;
+	unsigned char *line1;
+	unsigned char **lst;
+	P *p;
+	int c;
+	MENU *m;
+
+	/* Make sure we're not in a word */
+
+	if (!piseol(bw->cursor)) {
+		int c = brch(bw->cursor);
+		if (joe_isalnum_(bw->b->o.charmap,c))
+			return -1;
+	}
+
+	/* Move p to beginning of word */
+
+	p = pdup(bw->cursor);
+	do
+		c = prgetc(p);
+		while (joe_isalnum_(bw->b->o.charmap,c));
+	if (c!=NO_MORE_DATA)
+		pgetc(p);
+
+	if (bw->cursor->byte!=p->byte && bw->cursor->byte-p->byte<64) {
+		line = brvs(p, bw->cursor->byte-p->byte);
+
+		/* We have a word */
+
+		/* Get word list */
+		if (word_list)
+			varm(word_list);
+
+		word_list = get_word_list(bw->b);
+
+		if (!word_list) {
+			vsrm(line);
+			prm(p);
+			return -1;
+		}
+
+		line1 = vsncpy(NULL,0,sv(line));
+		line1 = vsadd(line1,'*');
+		lst = regsub(word_list, aLEN(word_list), line1);
+		vsrm(line1);
+
+		if (!lst) {
+			ttputc(7);
+			vsrm(line);
+			return -1;
+		}
+
+		m = mkmenu(bw->parent, lst, fcmplt_rtn, fcmplt_abrt, NULL, 0, line, NULL);
+		if (!m) {
+			varm(lst);
+			vsrm(line);
+			return -1;
+		}
+
+		/* Possible match list is now in lst */
+
+		if (aLEN(lst) == 1)
+			return fcmplt_rtn(m, 0, line);
+		else if (smode)
+			return 0;
+		else {
+			unsigned char *com = mcomplete(m);
+			vsrm(m->object);
+			m->object = com;
+			wabort(m->parent);
+			smode = 2;
+			ttputc(7);
+			return 0;
+		}
+	} else {
+		prm(p);
+		return -1;
+	}
+}
+
+static int srch_cmplt(BW *bw)
+{
+	if (word_list)
+		varm(word_list);
+
+	word_list = get_word_list(((BW *)bw->parent->win->object)->b);
+
+	if (!word_list) {
+		ttputc(7);
+		return 0;
+	}
+
+	return simple_cmplt(bw,word_list);
+}
+
 static int dofirst(BW *bw, int back, int repl)
 {
 	SRCH *srch;
@@ -401,7 +602,7 @@ static int dofirst(BW *bw, int back, int repl)
 	}
 	srch = setmark(mksrch(NULL, NULL, 0, back, -1, repl, 0));
 	srch->addr = bw->cursor->byte;
-	if (wmkpw(bw->parent, US "Find (^C to abort): ", &findhist, set_pattern, srchstr, pfabort, utypebw, srch, NULL, bw->b->o.charmap))
+	if (wmkpw(bw->parent, US "Find (^C to abort): ", &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap))
 		return 0;
 	else {
 		rmsrch(srch);
