@@ -767,8 +767,10 @@ int l;
 void (*out) ();
 {
 	latest->outptr = (void *) out;
-	if (latest->baud != ospeed)
-		latest->baud = ospeed, latest->div = 100000 / ospeed;
+	if (latest->baud != ospeed) {
+		latest->baud = ospeed;
+		latest->div = 100000 / ospeed;
+	}
 	texec(latest, str, l, latesty, latestx);
 }
 #endif

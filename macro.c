@@ -40,8 +40,10 @@ MACRO *mkmacro(int k, int arg, int n, CMD *cmd)
 		int x;
 
 		macro = (MACRO *) joe_malloc(sizeof(MACRO) * 64);
-		for (x = 0; x != 64; ++x)	/* FIXME: why limit to 64? */
-			macro[x].steps = (MACRO **) freemacros, freemacros = macro + x;
+		for (x = 0; x != 64; ++x) {	/* FIXME: why limit to 64? */
+			macro[x].steps = (MACRO **) freemacros;
+			freemacros = macro + x;
+		}
 	}
 	macro = freemacros;
 	freemacros = (MACRO *) macro->steps;

@@ -65,8 +65,10 @@ void edupd(int flg)
 	W *w;
 	int wid, hei;
 
-	if (dostaupd)
-		staupd = 1, dostaupd = 0;
+	if (dostaupd) {
+		staupd = 1;
+		dostaupd = 0;
+	}
 	ttgtsz(&wid, &hei);
 	if ((wid >= 2 && wid != maint->w) || (hei >= 1 && hei != maint->h)) {
 		nresize(maint->t, wid, hei);
@@ -124,9 +126,10 @@ int edloop(int flg)
 		edupd(1);
 		if (!ahead && !have)
 			ahead = 1;
-		if (ungot)
-			c = ungotc, ungot = 0;
-		else
+		if (ungot) {
+			c = ungotc;
+			ungot = 0;
+		} else
 			c = ttgetc();
 		if (!ahead && c == 10)
 			c = 13;

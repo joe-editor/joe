@@ -153,46 +153,67 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char 
 		c = seq[x];
 		seq[x] = 0;
 #ifdef __MSDOS__
-		if (!strcmp(seq + 1, "ku"))
-			capseq = "\0H", seql = 2;
-		else if (!strcmp(seq + 1, "kd"))
-			capseq = "\0P", seql = 2;
-		else if (!strcmp(seq + 1, "kl"))
-			capseq = "\0K", seql = 2;
-		else if (!strcmp(seq + 1, "kr"))
-			capseq = "\0M", seql = 2;
-		else if (!strcmp(seq + 1, "kI"))
-			capseq = "\0R", seql = 2;
-		else if (!strcmp(seq + 1, "kD"))
-			capseq = "\0S", seql = 2;
-		else if (!strcmp(seq + 1, "kh"))
-			capseq = "\0G", seql = 2;
-		else if (!strcmp(seq + 1, "kH"))
-			capseq = "\0O", seql = 2;
-		else if (!strcmp(seq + 1, "kP"))
-			capseq = "\0I", seql = 2;
-		else if (!strcmp(seq + 1, "kN"))
-			capseq = "\0Q", seql = 2;
-		else if (!strcmp(seq + 1, "k1"))
-			capseq = "\0;", seql = 2;
-		else if (!strcmp(seq + 1, "k2"))
-			capseq = "\0<", seql = 2;
-		else if (!strcmp(seq + 1, "k3"))
-			capseq = "\0=", seql = 2;
-		else if (!strcmp(seq + 1, "k4"))
-			capseq = "\0>", seql = 2;
-		else if (!strcmp(seq + 1, "k5"))
-			capseq = "\0?", seql = 2;
-		else if (!strcmp(seq + 1, "k6"))
-			capseq = "\0@", seql = 2;
-		else if (!strcmp(seq + 1, "k7"))
-			capseq = "\0A", seql = 2;
-		else if (!strcmp(seq + 1, "k8"))
-			capseq = "\0B", seql = 2;
-		else if (!strcmp(seq + 1, "k9"))
-			capseq = "\0C", seql = 2;
-		else if (!strcmp(seq + 1, "k0"))
-			capseq = "\0D", seql = 2;
+		if (!strcmp(seq + 1, "ku")) {
+			capseq = "\0H";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "kd")) {
+			capseq = "\0P";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "kl")) {
+			capseq = "\0K";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "kr")) {
+			capseq = "\0M";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "kI")) {
+			capseq = "\0R";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "kD")) {
+			capseq = "\0S";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "kh")) {
+			capseq = "\0G";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "kH")) {
+			capseq = "\0O";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "kP")) {
+			capseq = "\0I";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "kN")) {
+			capseq = "\0Q";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "k1")) {
+			capseq = "\0;";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "k2")) {
+			capseq = "\0<";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "k3")) {
+			capseq = "\0=";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "k4")) {
+			capseq = "\0>";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "k5")) {
+			capseq = "\0?";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "k6")) {
+			capseq = "\0@";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "k7")) {
+			capseq = "\0A";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "k8")) {
+			capseq = "\0B";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "k9")) {
+			capseq = "\0C";
+			seql = 2;
+		} else if (!strcmp(seq + 1, "k0")) {
+			capseq = "\0D";
+			seql = 2;
+		}
 		seq[x] = c;
 		if (seql) {
 			for (seq += x; *seq == ' '; ++seq) ;

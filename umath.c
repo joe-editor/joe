@@ -116,9 +116,10 @@ static double expr(int prec, struct var **rtv)
 	} else if (*ptr == '=' && 2 >= prec) {
 		++ptr;
 		x = expr(2, &dumb);
-		if (v)
-			v->val = x, v->set = 1;
-		else {
+		if (v) {
+			v->val = x;
+			v->set = 1;
+		} else {
 			if (!merr)
 				merr = "Left side of = is not an l-value";
 		}

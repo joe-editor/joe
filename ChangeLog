@@ -1,4 +1,10 @@
 Sun Jun  9 2002  Vitezslav Samel <samel@mail.cz>
+	* b.c, bw.c, cmd.c, hash.c, kbd.c, macro.c, main.c, rc.c, regex.c,
+	termcap.c, tty.c, ublock.c, umath.c, vfile.c:
+	change "expr, expr" to "expr; expr" where appropriate to make sources
+	more readable (should have no impact on code) (take 2)
+
+Sun Jun  9 2002  Vitezslav Samel <samel@mail.cz>
 	* hash.c, hash.h:
 	move hnext() definition into hash.c
 

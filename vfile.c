@@ -601,8 +601,10 @@ void vputs(v, s)
 VFILE *v;
 char *s;
 {
-	while (*s)
-		vputc(v, *s), ++s;
+	while (*s) {
+		vputc(v, *s);
+		++s;
+	}
 }
 
 /* Read a line from a file.  Remove '\n' if there was any */
@@ -737,7 +739,8 @@ char *s;
 		} while (a += 16, b += 16, (cnt -= 16) >= 16);
 
 /*
-	x = a, y = b;
+	x = a;
+	y = b;
 	a += cnt - 15;
 	b += cnt - 15;
 	switch(cnt) {
@@ -757,7 +760,8 @@ char *s;
 	case 2:		if((b[13]=a[13])=='\n'){ a+=14; b+=14; goto zif; }
 	case 1:		if((b[14]=a[14])=='\n'){ a+=15; b+=15; goto zif; }
 	}
-	a = x + cnt, b = y + cnt;
+	a = x + cnt;
+	b = y + cnt;
 	cnt=0;
 	goto ovr;
 zif:	cnt -= a - x - 1;

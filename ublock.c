@@ -514,8 +514,10 @@ int dowrite(BW *bw, char *s, void *object, int *notify)
 			int fl;
 			int ret = 0;
 
-			if ((fl = bsave(markb, s, markk->byte - markb->byte)) != 0)
-				msgnw(bw->parent, msgs[5 + fl]), ret = -1;
+			if ((fl = bsave(markb, s, markk->byte - markb->byte)) != 0) {
+				msgnw(bw->parent, msgs[5 + fl]);
+				ret = -1;
+			}
 			if (lightoff)
 				unmark(bw);
 			vsrm(s);
@@ -722,9 +724,10 @@ int doinsf(BW *bw, char *s, void *object, int *notify)
 		int ret = 0;
 		B *tmp = bload(s);
 
-		if (error)
-			msgnw(bw->parent, msgs[error + 5]), brm(tmp), ret = -1;
-		else
+		if (error) {
+			msgnw(bw->parent, msgs[error + 5]), brm(tmp);
+			ret = -1;
+		} else
 			binsb(bw->cursor, tmp);
 		vsrm(s);
 		bw->cursor->xcol = piscol(bw->cursor);
@@ -855,7 +858,8 @@ static int checkmark(BW *bw)
 		if (square)
 			return 2;
 		else {
-			markall(bw), filtflg = 1;
+			markall(bw);
+			filtflg = 1;
 			return 1;
 	} else {
 		filtflg = 0;

@@ -215,8 +215,10 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 
 	if (!isiz)
 		izopts();
-	if (s[0] == '-')
-		st = 0, ++s;
+	if (s[0] == '-') {
+		st = 0;
+		++s;
+	}
 	for (x = 0; glopts[x].name; ++x)
 		if (!strcmp(glopts[x].name, s)) {
 			switch (glopts[x].type) {
@@ -400,8 +402,10 @@ static int doopt1(BW *bw, char *s, int *xx, int *notify)
 			ret = -1;
 		} else if (v >= glopts[x].low && v <= glopts[x].high)
 			*(int *) ((char *) &bw->o + glopts[x].ofst) = v;
-		else
-			msgnw(bw->parent, "Value out of range"), ret = -1;
+		else {
+			msgnw(bw->parent, "Value out of range");
+			ret = -1;
+		}
 		break;
 	case 7:
 		v = calc(bw, s) - 1.0;
@@ -410,8 +414,10 @@ static int doopt1(BW *bw, char *s, int *xx, int *notify)
 			ret = -1;
 		} else if (v >= glopts[x].low && v <= glopts[x].high)
 			*(int *) ((char *) &bw->o + glopts[x].ofst) = v;
-		else
-			msgnw(bw->parent, "Value out of range"), ret = -1;
+		else {
+			msgnw(bw->parent, "Value out of range");
+			ret = -1;
+		}
 		break;
 	}
 	vsrm(s);

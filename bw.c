@@ -573,19 +573,26 @@ void bwgen(BW *w, int linums)
 
 	if (markv(0) && markk->b == w->b)
 		if (square) {
-			from = markb->xcol, to = markk->xcol, dosquare = 1;
+			from = markb->xcol;
+			to = markk->xcol;
+			dosquare = 1;
 			fromline = markb->line;
 			toline = markk->line;
-		} else
-			from = markb->byte, to = markk->byte;
+		} else {
+			from = markb->byte;
+			to = markk->byte;
+		}
 	else if (marking && markb && markb->b == w->b && w->cursor->byte != markb->byte && !from) {
 		if (square) {
-			from = long_min(w->cursor->xcol, markb->xcol), to = long_max(w->cursor->xcol, markb->xcol);
+			from = long_min(w->cursor->xcol, markb->xcol);
+			to = long_max(w->cursor->xcol, markb->xcol);
 			fromline = long_min(w->cursor->line, markb->line);
 			toline = long_max(w->cursor->line, markb->line);
 			dosquare = 1;
-		} else
-			from = long_min(w->cursor->byte, markb->byte), to = long_max(w->cursor->byte, markb->byte);
+		} else {
+			from = long_min(w->cursor->byte, markb->byte);
+			to = long_max(w->cursor->byte, markb->byte);
+		}
 	}
 
 	if (marking)
@@ -675,13 +682,20 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->pid = 0;
 	w->out = -1;
 	w->b = b;
-	if (prompt || (!window->y && staen))
-		w->y = window->y, w->h = window->h;
-	else
-		w->y = window->y + 1, w->h = window->h - 1;
+	if (prompt || (!window->y && staen)) {
+		w->y = window->y;
+		w->h = window->h;
+	} else {
+		w->y = window->y + 1;
+		w->h = window->h - 1;
+	}
 	if (b->oldcur) {
-		w->top = b->oldtop, b->oldtop = 0, w->top->owner = 0;
-		w->cursor = b->oldcur, b->oldcur = 0, w->cursor->owner = 0;
+		w->top = b->oldtop;
+		b->oldtop = 0;
+		w->top->owner = 0;
+		w->cursor = b->oldcur;
+		b->oldcur = 0;
+		w->cursor->owner = 0;
 	} else {
 		w->top = pdup(b->bof);
 		w->cursor = pdup(b->bof);
@@ -690,10 +704,13 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->object = NULL;
 	w->offset = 0;
 	w->o = w->b->o;
-	if (w->o.linums)
-		w->x = window->x + LINCOLS, w->w = window->w - LINCOLS;
-	else
-		w->x = window->x, w->w = window->w;
+	if (w->o.linums) {
+		w->x = window->x + LINCOLS;
+		w->w = window->w - LINCOLS;
+	} else {
+		w->x = window->x;
+		w->w = window->w;
+	}
 	if (window == window->main) {
 		rmkbd(window->kbd);
 		window->kbd = mkkbd(getcontext(w->o.context));
@@ -740,8 +757,10 @@ int ucrawll(BW *bw)
 	int amnt = bw->w / 2;
 	int curamnt = bw->w / 2;
 
-	if (amnt > bw->offset)
-		amnt = bw->offset, curamnt = bw->offset;
+	if (amnt > bw->offset) {
+		amnt = bw->offset;
+		curamnt = bw->offset;
+	}
 	if (!bw->offset)
 		curamnt = bw->cursor->xcol;
 	if (!curamnt)

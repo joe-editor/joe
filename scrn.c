@@ -499,8 +499,10 @@ SCRN *nopen(CAP *cap)
 		t->insdel = 0;
 
 /* Adjust for high baud rates */
-	if (baud >= 38400)
-		t->scroll = 0, t->insdel = 0;
+	if (baud >= 38400) {
+		t->scroll = 0;
+		t->insdel = 0;
+	}
 
 /* Send out terminal initialization string */
 	if (t->ti)
@@ -869,7 +871,8 @@ docv:
 		break;
 	case 6:
 		texec(t->cap, t->cm, 1, y, x, 0, 0);
-		t->y = y, t->x = x;
+		t->y = y;
+		t->x = x;
 		break;
 	case 7:
 		texec(t->cap, t->cv, 1, y, 0, 0, 0);
@@ -1139,8 +1142,12 @@ void magic(SCRN *t, int y, int *cs, int *s, int placex)
 						++cst;
 					pre = s[x + back - 1] & 255;
 				}
-				if (cst > best)
-					maxaryy = aryy, maxlen = amnt, best = cst, bestback = back;
+				if (cst > best) {
+					maxaryy = aryy;
+					maxlen = amnt;
+					best = cst;
+					bestback = back;
+				}
 			}
 			if (!maxlen) {
 				ofst[x] = t->co - 1;

@@ -338,8 +338,10 @@ static void inscmd(BW *bw, char *line)
 
 static int cmdabrt(BW *bw, int x, char *line)
 {
-	if (line)
-		inscmd(bw, line), vsrm(line);
+	if (line) {
+		inscmd(bw, line);
+		vsrm(line);
+	}
 	return -1;
 }
 

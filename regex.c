@@ -195,8 +195,10 @@ static int skip_special(P *p)
 			return MAXINT - 1;
 		break;
 	case '\'':
-		if ((s = pgetc(p)) == '\\')
-			s = pgetc(p), s = pgetc(p);
+		if ((s = pgetc(p)) == '\\') {
+			s = pgetc(p);
+			s = pgetc(p);
+		}
 		if (s == '\'')
 			return MAXINT - 1;
 		if ((s = pgetc(p)) == '\'')

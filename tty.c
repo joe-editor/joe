@@ -342,8 +342,10 @@ void ttopnn(void)
 	otarg = targ;
 	oltarg = ltarg;
 	arg.sg_flags = ((arg.sg_flags & ~(ECHO | CRMOD | XTABS | ALLDELAY | TILDE)) | CBREAK);
-	if (noxon)
-		targ.t_startc = -1, targ.t_stopc = -1;
+	if (noxon) {
+		targ.t_startc = -1;
+		targ.t_stopc = -1;
+	}
 	targ.t_intrc = -1;
 	targ.t_quitc = -1;
 	targ.t_eofc = -1;

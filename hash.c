@@ -51,7 +51,8 @@ void *htadd(HASH *ht, char *name, void *val)
 	if (!freentry) {
 		entry = (HENTRY *) joe_malloc(sizeof(HENTRY) *64);
 		for (x = 0; x != 64; ++x) {
-			entry[x].next = freentry, freentry = entry + x;
+			entry[x].next = freentry;
+			freentry = entry + x;
 		}
 	}
 	entry = freentry;
