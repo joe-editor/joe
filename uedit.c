@@ -170,10 +170,12 @@ int u_goto_prev(BW *bw)
 		if (c != NO_MORE_DATA)
 			pgetc(p);
 	}
+/*
 	if (p->byte == bw->cursor->byte) {
 		prm(p);
 		return -1;
 	}
+*/
 	pset(bw->cursor, p);
 	prm(p);
 	return 0;
@@ -190,24 +192,24 @@ int u_goto_next(BW *bw)
 	P *p = pdup(bw->cursor);
 	struct charmap *map=bw->b->o.charmap;
 	int c = brch(p);
+	int rtn = -1;
 
-	if (joe_isalnum_(map,c))
+	if (joe_isalnum_(map,c)) {
+		rtn = 0;
 		while (joe_isalnum_(map,(c = brch(p))))
 			pgetc(p);
-	else if (joe_isspace(map,c) || joe_ispunct(map,c)) {
+	} else if (joe_isspace(map,c) || joe_ispunct(map,c)) {
 		while (joe_isspace(map, (c = brch(p))) || joe_ispunct(map,c))
 			pgetc(p);
-		while (joe_isalnum_(map,(c = brch(p))))
+		while (joe_isalnum_(map,(c = brch(p)))) {
+			rtn = 0;
 			pgetc(p);
+		}
 	} else
 		pgetc(p);
-	if (p->byte == bw->cursor->byte) {
-		prm(p);
-		return -1;
-	}
 	pset(bw->cursor, p);
 	prm(p);
-	return 0;
+	return rtn;
 }
 
 static P *pboi(P *p)
@@ -1325,11 +1327,13 @@ static int dosetmark(BW *bw, int c, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
-	if (c >= '0' && c <= '9') {
+	if (c >= '0' && c <= ':') {
 		pdupown(bw->cursor, bw->b->marks + c - '0');
 		poffline(bw->b->marks[c - '0']);
-		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "Mark %d set", c - '0');
-		msgnw(bw->parent, msgbuf);
+		if (c!=':') {
+			snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "Mark %d set", c - '0');
+			msgnw(bw->parent, msgbuf);
+		}
 		return 0;
 	} else {
 		nungetc(c);
@@ -1339,7 +1343,7 @@ static int dosetmark(BW *bw, int c, void *object, int *notify)
 
 int usetmark(BW *bw, int c)
 {
-	if (c >= '0' && c <= '9')
+	if (c >= '0' && c <= ':')
 		return dosetmark(bw, c, NULL, NULL);
 	else if (mkqwna(bw->parent, sc("Set mark (0-9):"), dosetmark, NULL, NULL, NULL))
 		return 0;
@@ -1353,7 +1357,7 @@ static int dogomark(BW *bw, int c, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
-	if (c >= '0' && c <= '9')
+	if (c >= '0' && c <= ':')
 		if (bw->b->marks[c - '0']) {
 			pset(bw->cursor, bw->b->marks[c - '0']);
 			bw->cursor->xcol = piscol(bw->cursor);

@@ -4,7 +4,7 @@ server. CVS package can be downloaded from http://www.cvshome.org/.
 
 Downloading of joe sources via CVS can be done by issuing following command:
 
-cvs -d :pserver:anonymous@cvs.joe-editor.sourceforge.net:/cvsroot/joe-editor co joe-current
+cvs -d :pserver:anonymous@cvs.sourceforge.net:/cvsroot/joe-editor co joe-current
 
 To reduce bandwidth and needless updates, the CVS repository does not
 contain automatically-generated files, even when those files are normally

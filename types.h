@@ -170,7 +170,7 @@ struct buffer {
 	int	changed;
 	int	backup;
 	void	*undo;
-	P	*marks[10];	/* Bookmarks */
+	P	*marks[11];	/* Bookmarks */
 	OPTIONS	o;		/* Options */
 	P	*oldcur;	/* Last cursor position before orphaning */
 	P	*oldtop;	/* Last top screen position before orphaning */

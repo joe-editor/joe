@@ -29,6 +29,7 @@
 #include "utils.h"
 #include "vs.h"
 #include "utf8.h"
+#include "charmap.h"
 #include "w.h"
 
 /* Global options */
@@ -1046,4 +1047,66 @@ int ufilt(BW *bw)
 		return -1;
 	}
 #endif
+}
+
+/* Force region to lower case */
+
+int ulower(BW *bw)
+{
+	if (markv(0)) {
+	        P *p;
+	        int c;
+	        int flg;
+		B *b = bcpy(markb,markk);
+		if (bw->cursor->b==markk->b && bw->cursor->byte==markk->byte)
+			flg = 1;
+		else
+			flg = 0;
+		bdel(markb,markk);
+		b->o.charmap = markb->b->o.charmap;
+		p=pdup(b->bof);
+		while ((c=pgetc(p))!=NO_MORE_DATA) {
+			c = joe_tolower(b->o.charmap,c);
+			binsc(markk,c);
+			pgetc(markk);
+			if (flg)
+				pgetc(bw->cursor);
+		}
+		prm(p);
+		brm(b);
+		bw->cursor->xcol = piscol(bw->cursor);
+		return 0;
+	} else
+		return -1;
+}
+
+/* Force region to upper case */
+
+int uupper(BW *bw)
+{
+	if (markv(0)) {
+	        P *p;
+	        int c;
+	        int flg;
+		B *b = bcpy(markb,markk);
+		if (bw->cursor->b==markk->b && bw->cursor->byte==markk->byte)
+			flg = 1;
+		else
+			flg = 0;
+		bdel(markb,markk);
+		b->o.charmap = markb->b->o.charmap;
+		p=pdup(b->bof);
+		while ((c=pgetc(p))!=NO_MORE_DATA) {
+			c = joe_toupper(b->o.charmap,c);
+			binsc(markk,c);
+			pgetc(markk);
+			if (flg)
+				pgetc(bw->cursor);
+		}
+		prm(p);
+		brm(b);
+		bw->cursor->xcol = piscol(bw->cursor);
+		return 0;
+	} else
+		return -1;
 }

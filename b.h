@@ -25,7 +25,7 @@ B *bmk PARAMS((B *prop));
 void brm PARAMS((B *b));
 
 B *bfind PARAMS((unsigned char *s));
-B *bfind_check PARAMS((unsigned char *s));
+B *bcheck_loaded PARAMS((unsigned char *s));
 B *bfind_reload PARAMS((unsigned char *s));
 
 P *pdup PARAMS((P *p));

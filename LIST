@@ -31,6 +31,8 @@ tomarkk		Move cursor to markk
 yank		Insert top of kill ring
 yankpop		Scroll through kill ring
 yapp		Append next kill to top of kill ring
+upper		Convert everything in block to uppercase
+lower		Convert everything in block to lowercase
 
 Buffers
 -------

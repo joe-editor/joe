@@ -39,6 +39,7 @@ struct charmap {
 	/* Character conversion functions */
 
 	int (*to_lower)(struct charmap *map,int c);
+	int (*to_upper)(struct charmap *map,int c);
 	int (*to_uni)(struct charmap *map,int c);
 	int (*from_uni)(struct charmap *map,int c);
 
@@ -47,6 +48,7 @@ struct charmap {
 	int *to_map;			/* Convert byte to unicode */
 
 	unsigned char lower_map[256];	/* Convert to lower case */
+	unsigned char upper_map[256];
 
 	struct pair from_map[256];	/* Convert from unicode to byte */
 
@@ -70,6 +72,7 @@ int joe_isspace_eof PARAMS((struct charmap *map,int c));
 /* Conversion functions */
 
 #define joe_tolower(map,c) ((map)->to_lower((map),(c)))
+#define joe_toupper(map,c) ((map)->to_upper((map),(c)))
 #define joe_to_uni(map,c) ((map)->to_uni((map),(c)))
 #define joe_from_uni(map,c) ((map)->from_uni((map),(c)))
 unsigned char *lowerize PARAMS((unsigned char *s));

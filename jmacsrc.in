@@ -682,22 +682,25 @@ ctrl		^Q		Quote Ctrl chars
 
   Macros of non-existant emacs functions
 
-psh,nextword,markk,prevword,markb,filt,
-"tr [a-z] [A-Z]",rtn,nextword	^[ u		Upcase word
-psh,nextword,markk,prevword,markb,filt,
-"tr [A-Z] [a-z]",rtn,nextword	^[ l		Downcase word
-psh,nextword,markk,prevword,markb,filt,
-"tr [A-Z] [a-z]",rtn,rtarw,markk,filt,
-"tr [a-z] [A-Z]",rtn,nextword	^[ c		Capitalize word
-psh,markk,filt,"tr [A-Z] [a-z]",rtn		^X ^L	Downcase region
-psh,markk,filt,"tr [a-z] [A-Z]",rtn		^X ^U	Upcase region
+psh,nextword,markk,prevword,markb,upper,nextword	^[ u		Upcase word
+psh,nextword,markk,prevword,markb,lower,nextword	^[ l		Downcase word
+psh,nextword,markk,prevword,markb,lower,rtarw,markk,upper,nextword	^[ c		Capitalize word
+psh,markk,lower		^X ^L	Downcase region
+psh,markk,upper		^X ^U	Upcase region
 psh,ltarw,markb,rtarw,markk,rtarw,
 blkmove,rtarw	^T				Transpose chars
 psh,uparw,bol,markb,dnarw,markk,
 dnarw,blkmove,dnarw		^X ^T		Transpose lines
-psh,prevword,markb,nextword,
-nextword,prevword,markk,nextword,
-nextword,prevword,blkmove,nextword	^[ t	Transpose words
+
+
+ Old way- broken at end of line
+ psh,prevword,markb,nextword,
+ nextword,prevword,markk,nextword,
+ nextword,prevword,blkmove,nextword	^[ t	Transpose words
+
+psh,prevword,nextword,nextword,markk,prevword,markb,setmark,":",
+prevword,nextword,blkmove,markk,prevword,markb,gomark,":",blkmove,nextword	^[ t
+
 eop,bop,markb,eop	^[ h			Mark paragraph
 nextword,prevword,markb,nextword	^[ @	Mark word
 "()",ltarw		^[ (			Insert ()

@@ -978,6 +978,14 @@ int byte_tolower(struct charmap *map,int c)
 		return map->lower_map[c];
 }
 
+int byte_toupper(struct charmap *map,int c)
+{
+	if (c<0 || c>255)
+		return c;
+	else
+		return map->upper_map[c];
+}
+
 /* Load built-in character maps */
 
 static void set_bit(unsigned char *map,int n)
@@ -1009,6 +1017,7 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 	map->is_alpha_ = byte_isalpha_;
 	map->is_alnum_ = byte_isalnum_;
 	map->to_lower = byte_tolower;
+	map->to_upper = byte_toupper;
 	map->to_uni = to_uni;
 	map->from_uni = from_uni;
 	map->from_size = 0;
@@ -1057,7 +1066,7 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 			set_bit(map->alnum__map,y);
 	}
 
-	/* Build case conversion table */
+	/* Build case conversion tables */
 
 	for (x=0; x!=256; ++x) {
 		map->lower_map[x] = x;
@@ -1066,6 +1075,16 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 			int z = from_uni(map,y);
 			if (z != -1)
 				map->lower_map[x] = z;
+		}
+	}
+
+	for (x=0; x!=256; ++x) {
+		map->upper_map[x] = x;
+		if (map->to_map[x] != -1) {
+			int y = joe_towupper(NULL,map->to_map[x]);
+			int z = from_uni(map,y);
+			if (z != -1)
+				map->upper_map[x] = z;
 		}
 	}
 
@@ -1092,6 +1111,7 @@ static void load_builtins(void)
 	map->is_alpha_ = joe_iswalpha_;
 	map->is_alnum_ = joe_iswalnum_;
 	map->to_lower = joe_towlower;
+	map->to_upper = joe_towupper;
 	map->next = charmaps;
 	charmaps = map;
 
