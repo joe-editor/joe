@@ -1,6 +1,8 @@
 
 Short list for 3.2:
 
+check: ^KE , load old file, what happens with locks?
+
 -backpath should get ~ expansion.
 
 perl again: if (-s foo)  looks like s/

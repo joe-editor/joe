@@ -67,9 +67,16 @@ static int get_entries(TAB *tab, int prv)
 	int which = 0;
 	unsigned char *oldpwd = pwd();
 	unsigned char **files;
+	unsigned char *tmp;
 
-	if (chpwd(tab->path))
+	tmp = vsncpy(NULL,0,sv(tab->path));
+	tmp = canonical(tmp);
+
+	if (chpwd(tmp)) {
+		vsrm(tmp);
 		return -1;
+	}
+	vsrm(tmp);
 	files = rexpnd(tab->pattern);
 	if (!files) {
 		chpwd(oldpwd);
@@ -315,7 +322,7 @@ int cmplt(BW *bw)
 	MENU *new;
 	TAB *tab;
 	P *p, *q;
-	unsigned char *cline, *tmp;
+	unsigned char *cline;
 	long a, b;
 	int which;
 	unsigned char **l;
@@ -334,9 +341,9 @@ int cmplt(BW *bw)
 	p_goto_start_of_path(p);
 	ofst = p->byte;
 
-	tmp = brvs(p, (int) (q->byte - p->byte));
-	cline = parsens(tmp, &a, &b);
-	vsrm(tmp);
+	cline = brvs(p, (int) (q->byte - p->byte));
+	/* Don't do it so soon... */
+	/* cline = canonical(cline); */
 	prm(p);
 	prm(q);
 
