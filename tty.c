@@ -97,6 +97,8 @@ int idleout = 1;
 #include "path.h"
 #include "tty.h"
 #include "utils.h"
+#include "mouse.h"
+#include "cmd.h"
 
 /** Aliased defines **/
 
@@ -270,16 +272,50 @@ static RETSIGTYPE dotick(int unused)
 	ticked = 1;
 }
 
+extern int auto_scroll;
+
 void tickoff(void)
 {
+#ifdef HAVE_SETITIMER
+	struct itimerval val;
+	val.it_value.tv_sec = 0;
+	val.it_value.tv_usec = 0;
+	val.it_interval.tv_sec = 0;
+	val.it_interval.tv_usec = 0;
+	setitimer(ITIMER_REAL,&val,NULL);
+#else
 	alarm(0);
+#endif
 }
+
+extern int auto_scroll;
+extern int auto_trig_time;
 
 void tickon(void)
 {
+#ifdef HAVE_SETITIMER
+	struct itimerval val;
+	val.it_interval.tv_sec = 0;
+	val.it_interval.tv_usec = 0;
+	if (auto_scroll) {
+		int tim = auto_trig_time - mnow();
+		if (tim < 0)
+			tim = 1;
+		tim *= 1000;
+		val.it_value.tv_sec = 0;
+		val.it_value.tv_usec = tim;
+	} else {
+		val.it_value.tv_sec = 1;
+		val.it_value.tv_usec = 0;
+	}
+	ticked = 0;
+	joe_set_signal(SIGALRM, dotick);
+	setitimer(ITIMER_REAL,&val,NULL);
+#else
 	ticked = 0;
 	joe_set_signal(SIGALRM, dotick);
 	alarm(1);
+#endif
 }
 
 /* Open terminal */
@@ -571,16 +607,25 @@ int ttgetc(void)
 {
 	int stat;
 	long new_time;
+	int flg;
 
 
 	tickon();
 
       loop:
+      	flg = 0;
+      	/* Status line clock */
 	new_time = time(NULL);
 	if (new_time != last_time) {
 		last_time = new_time;
 		dostaupd = 1;
 		ticked = 1;
+	}
+	/* Autoscroller */
+	if (auto_scroll && mnow() >= auto_trig_time) {
+		do_auto_scroll();
+		ticked = 1;
+		flg = 1;
 	}
 	ttflsh();
 	while (winched) {
@@ -589,7 +634,7 @@ int ttgetc(void)
 		ttflsh();
 	}
 	if (ticked) {
-		edupd(0);
+		edupd(flg);
 		ttflsh();
 		tickon();
 	}

@@ -458,6 +458,28 @@ int execmd(CMD *cmd, int k)
 	return ret;
 }
 
+extern int auto_scroll;
+
+void do_auto_scroll()
+{
+	static CMD *scrup = 0;
+	static CMD *scrdn = 0;
+	static CMD *drag = 0;
+	if (!scrup) {
+		scrup = findcmd(US "upslide");
+		scrdn = findcmd(US "dnslide");
+		drag = findcmd(US "defmdrag");
+	}
+	if (auto_scroll > 0)
+		execmd(scrdn,0);
+	else if (auto_scroll < 0)
+		execmd(scrup,0);
+
+	execmd(drag,0);
+		
+	reset_trig_time();
+}
+
 /* Return command table index for given command name */
 
 HASH *cmdhash = NULL;

@@ -36,6 +36,7 @@ void addcmd PARAMS((unsigned char *s, MACRO *m));
 
 /* Execute a command.  Returns return value of command */
 int execmd PARAMS((CMD *cmd, int k));
+void do_auto_scroll();
 
 extern B *cmdhist;
 

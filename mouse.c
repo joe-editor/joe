@@ -36,6 +36,10 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "utf8.h"
 #include "mouse.h"
 
+int auto_scroll = 0;		/* Set for autoscroll */
+int auto_rate;			/* Rate */
+int auto_trig_time;		/* Time of next scroll */
+
 int rtbutton=0;			/* use button 3 instead of 1 */
 int floatmouse=0;		/* don't fix xcol after tomouse */
 int joexterm=0;			/* set if we're using Joe's modified xterm */
@@ -112,7 +116,7 @@ int uxtmouse(BW *bw)
 	return 0;
 }
 
-static int mnow()
+int mnow()
 {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
@@ -197,6 +201,7 @@ void select_done(struct charmap *map)
 void mouseup(int x,int y)
 {
 	struct timeval tv;
+	auto_scroll = 0;
 	Cx = x, Cy = y;
 	if (selecting) {
 		select_done(((BW *)maint->curwin->object)->b->o.charmap);
@@ -317,9 +322,13 @@ static int tomousestay()
 {
 	BW *bw;
 	int x = Cx - 1,y = Cy - 1;
-	W *w = watpos(maint,x,y);
+	W *w;
+	/*
+	w = watpos(maint,x,y);
 	if(!w || w != maint->curwin)
 		return -1;
+	*/
+	w = maint->curwin;
 	bw = w->object;
 	if (w->watom->what == TYPETW) {
 		if (bw->o.hex) {
@@ -328,17 +337,27 @@ static int tomousestay()
 			long goal_byte;
 			if (goal_col < 0)
 				goal_col = 0;
-			if (goal_col >15)
+			if (goal_col > 15)
 				goal_col = 15;
 			/* window has a status line? */
 			if (((TW *)bw->object)->staon)
-				/* clicked on it? */
-				if (y == w->y) {
-					return -1;
+				if (y <= w->y) {
+					goal_col = 0;
+					goal_line = bw->top->byte/16;
+				} else if (y >= w->y + w->h) {
+					goal_line = bw->top->byte/16 + w->h - 2;
+					goal_col = 15;
 				} else
 					goal_line = y - w->y + bw->top->byte/16 - 1;
 			else
-				goal_line = y - w->y + bw->top->byte/16;
+				if (y < w->y) {
+					goal_col = 0;
+					goal_line = bw->top->byte/16;
+				} else if (y >= w->y + w->h) {
+					goal_line = bw->top->byte/16 + w->h - 1;
+					goal_col = 15;
+				} else
+					goal_line = y - w->y + bw->top->byte/16;
 			goal_byte = goal_line*16L + goal_col;
 			if (goal_byte > bw->b->eof->byte)
 				goal_byte = bw->b->eof->byte;
@@ -353,13 +372,23 @@ static int tomousestay()
 				goal_col = 0;
 			/* window has a status line? */
 			if (((TW *)bw->object)->staon)
-				/* clicked on it? */
-				if (y == w->y)
-					return -1;
-				else
+				if (y <= w->y) {
+					goal_col = 0;
+					goal_line = bw->top->line;
+				} else if (y >= w->y + w->h) {
+					goal_col = 1000;
+					goal_line = w->h + bw->top->line - 2;
+				} else
 					goal_line = y - w->y + bw->top->line - 1;
 			else
-				goal_line = y - w->y + bw->top->line;
+				if (y < w->y) {
+					goal_col = 0;
+					goal_line = bw->top->line;
+				} else if (y >= w->y + w->h) {
+					goal_col = 1000;
+					goal_line = w->h + bw->top->line - 1;
+				} else
+					goal_line = y - w->y + bw->top->line;
 			pline(bw->cursor, goal_line);
 			pcol(bw->cursor, goal_col);
 			tmspos = bw->cursor->xcol = goal_col;
@@ -393,11 +422,20 @@ int udefmdown(BW *xx)
 	marked = reversed = 0;
 }
 
+void reset_trig_time()
+{
+	if (!auto_rate)
+		auto_rate = 1;
+	auto_trig_time = mnow() + 300 / (1 + auto_rate);
+}
+
 int udefmdrag(BW *xx)
 {
 	BW *bw = (BW *)maint->curwin->object;
 	int ax = Cx - 1;
 	int ay = Cy - 1;
+	int new_scroll;
+	int new_rate;
 	if (drag_size) {
 		while (ay > bw->parent->y) {
 			int y = bw->parent->y;
@@ -413,6 +451,38 @@ int udefmdrag(BW *xx)
 		}
 		return 0;
 	}
+
+	if (ay < bw->y) {
+		new_scroll = -1;
+		new_rate = bw->y - ay;
+	}
+	else if (ay >= bw->y + bw->h) {
+		new_scroll = 1;
+		new_rate = ay - (bw->y + bw->h) + 1;
+	} else {
+		new_scroll = 0;
+		new_rate = 1;
+	}
+
+	if (new_rate > 10)
+		new_rate = 10;
+
+	if (!new_scroll)
+		auto_scroll = 0;
+	else if (new_scroll != auto_scroll) {
+		auto_scroll = new_scroll;
+		auto_rate = new_rate;
+		reset_trig_time();
+	} else if (new_rate != auto_rate) {
+/*
+		int left = auto_trig_time - mnow();
+		if (left > 0) {
+			left = left * auto_rate / new_rate;
+		}
+*/
+		auto_rate = new_rate;
+	}
+
 	if (!marked)
 		marked++, umarkb(bw);
 	if (tomousestay())
@@ -537,7 +607,7 @@ void mouseopen()
 	if (usexmouse) {
 		ttputs(US "\33[?1002h");
 		if (joexterm)
-			ttputs(US "\33[?2004h");
+			ttputs(US "\33[?2004h\33[?2007h");
 		ttflsh();
 	}
 #endif
@@ -548,7 +618,7 @@ void mouseclose()
 #ifdef MOUSE_XTERM
 	if (usexmouse) {
 		if (joexterm)
-			ttputs(US "\33[?2004l");
+			ttputs(US "\33[?2007l\33[?2004l");
 		ttputs(US "\33[?1002l");
 		ttflsh();
 	}

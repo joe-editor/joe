@@ -55,6 +55,9 @@ int udefm3down(BW *);
 int udefm3up(BW *);
 int udefm3drag(BW *);
 
+int mnow();
+void reset_trig_time();
+
 /* options */
 extern int floatmouse, rtbutton;
 

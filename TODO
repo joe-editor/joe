@@ -5,9 +5,13 @@ Short (infinite) list for 3.3:
 - grep and grep-find commands
 - smart-end key
 
+-wrap: after it says "Not Found", it will keep saying this until you
+start a new search.
+
 Mouse issues:
 
-- auto scroll when drag past edge
+- autoscroll: keep track of selection type (double-click or triple-click)
+- scroll window with right button down?
 
   help screen mouse commands?
   double-click at prompts hits enter?

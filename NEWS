@@ -6,6 +6,12 @@ JOE 3.3
 
 - Mouse can resize windows and select menu entries
 
+- During selection with the mouse, window will autoscroll when
+  you go past the edge.
+
+- An xterm-patch is included which makes "-mouse" mode work better.  (With
+  the patch, also set "-joexterm").
+
 JOE 3.2
 
 - A Perforce SCM "p4 edit" macro has been supplied (along with the hooks
