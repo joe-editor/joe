@@ -1,3 +1,8 @@
+Mon Jan  7 2002  Vitezslav Samel <samel@mail.cz>
+	* acinclude.m4, configure.ac, tty.c, umath.c, ushell.c, utils.c,
+	utils.h:
+	cleanup signals handling (sigaction() / sigvec() / signal())
+
 Sun Jan  6 2002  Vitezslav Samel <samel@mail.cz>
 	* cmd.c:
 	correct "negated macro" for nbuf/pbuf macros

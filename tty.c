@@ -18,7 +18,6 @@
 #endif
 #endif
 #include <stdio.h>
-#include <signal.h>
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
@@ -176,11 +175,9 @@ static unsigned char havec;	/* Character read in during pending input check */
 int leave = 0;			/* When set, typeahead checking is disabled */
 
 /* TTY mode flag.  1 for open, 0 for closed */
-
 static int ttymode = 0;
 
 /* Signal state flag.  1 for joe, 0 for normal */
-
 static int ttysig = 0;
 
 /* Stuff for shell windows */
@@ -204,29 +201,27 @@ struct packet {
 MPX asyncs[NPROC];
 
 /* Set signals for JOE */
-
 void sigjoe(void)
 {
 	if (ttysig)
 		return;
 	ttysig = 1;
-	signal(SIGHUP, ttsig);
-	signal(SIGTERM, ttsig);
-	signal(SIGINT, SIG_IGN);
-	signal(SIGPIPE, SIG_IGN);
+	joe_set_signal(SIGHUP, ttsig);
+	joe_set_signal(SIGTERM, ttsig);
+	joe_set_signal(SIGINT, SIG_IGN);
+	joe_set_signal(SIGPIPE, SIG_IGN);
 }
 
 /* Restore signals for exiting */
-
 void signrm(void)
 {
 	if (!ttysig)
 		return;
 	ttysig = 0;
-	signal(SIGHUP, SIG_DFL);
-	signal(SIGTERM, SIG_DFL);
-	signal(SIGINT, SIG_DFL);
-	signal(SIGPIPE, SIG_DFL);
+	joe_set_signal(SIGHUP, SIG_DFL);
+	joe_set_signal(SIGTERM, SIG_DFL);
+	joe_set_signal(SIGINT, SIG_DFL);
+	joe_set_signal(SIGPIPE, SIG_DFL);
 }
 
 /* Open terminal and set signals */
@@ -245,20 +240,15 @@ void ttclose(void)
 	signrm();
 }
 
-/* Window size interrupt handler */
-
 static int winched = 0;
-
+#ifdef SIGWINCH
+/* Window size interrupt handler */
 static RETSIGTYPE winchd(int unused)
 {
 	++winched;
-#ifdef SIGWINCH
-	signal(SIGWINCH, winchd);
-#ifdef HAVE_SIGINTERRUPT
-	siginterrupt(SIGWINCH, 1);
-#endif
-#endif
+	REINSTALL_SIGHANDLER(SIGWINCH, winchd);
 }
+#endif
 
 /* Second ticker */
 
@@ -275,24 +265,10 @@ void tickoff(void)
 	alarm(0);
 }
 
-struct sigaction vnew;
-
 void tickon(void)
 {
 	ticked = 0;
-	vnew.sa_handler = dotick;
-
-#ifdef SA_INTERRUPT
-	vnew.sa_flags = SA_INTERRUPT;
-	sigaction(SIGALRM, &vnew, NULL);
-#else
-#ifdef SV_INTERRUPT
-	vnew.sa_flags = SV_INTERRUPT;
-	sigvec(SIGALRM, &vnew, NULL);
-#else
-	signal(SIGALRM, dotick);
-#endif
-#endif
+	joe_set_signal(SIGALRM, dotick);
 	alarm(1);
 }
 
@@ -320,10 +296,7 @@ void ttopnn(void)
 			exit(1);
 		} else {
 #ifdef SIGWINCH
-			signal(SIGWINCH, winchd);
-#ifdef HAVE_SIGINTERRUPT
-			siginterrupt(SIGWINCH, 1);
-#endif
+			joe_set_signal(SIGWINCH, winchd);
 #endif
 			tickon();
 		}
@@ -514,7 +487,7 @@ int ttflsh(void)
 			a.it_interval.tv_usec = 0;
 			a.it_interval.tv_sec = 0;
 			alarm(0);
-			signal(SIGALRM, dosig);
+			joe_set_signal(SIGALRM, dosig);
 			yep = 0;
 			maskit();
 			setitimer(ITIMER_REAL, &a, &b);
@@ -876,8 +849,6 @@ static RETSIGTYPE death(int unused)
 #define SIGCHLD SIGCLD
 #endif
 
-struct sigaction inew;
-
 /* Build a new environment */
 
 extern char **mainenv;
@@ -939,18 +910,7 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 		close(fds[1]);
 		close(comm[0]);
 		dead = 0;
-		inew.sa_handler = death;
-#ifdef SA_INTERRUPT
-		inew.sa_flags = SA_INTERRUPT;
-		sigaction(SIGCHLD, &inew, (struct sigaction *) 0);
-#else
-#ifdef SV_INTERRUPT
-		inew.sa_flags = SV_INTERRUPT;
-		sigvec(SIGCHLD, &inew, (struct sigvec *) 0);
-#else
-		signal(SIGCHLD, death);
-#endif
-#endif
+		joe_set_signal(SIGCHLD, death);
 
 		if (!(pid = fork())) {
 			signrm();

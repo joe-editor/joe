@@ -15,6 +15,9 @@
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>			/* we need size_t, ssize_t */
 #endif
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
 
 /* 
  * Characters which are considered as word characters 
@@ -57,5 +60,19 @@ void *joe_malloc PARAMS((size_t size));
 void *joe_calloc PARAMS((size_t nmemb, size_t size));
 void *joe_realloc PARAMS((void *ptr, size_t size));
 void joe_free PARAMS((void *ptr));
+
+
+#ifndef HAVE_SIGHANDLER_T
+typedef RETSIGTYPE (*sighandler_t)(int);
+#endif
+
+#ifdef NEED_TO_REINSTALL_SIGNAL
+#define REINSTALL_SIGHANDLER(sig, handler) joe_set_signal(sig, handler)
+#else
+#define REINSTALL_SIGHANDLER(sig, handler) do {} while(0)
+#endif
+
+/* wrapper to hide signal interface differrencies */
+int joe_set_signal PARAMS((int signum, sighandler_t handler));
 
 #endif

@@ -9,7 +9,6 @@
 #include "types.h"
 
 #include <stdio.h>
-#include <signal.h>
 #include <string.h>
 
 #include "b.h"
@@ -25,7 +24,7 @@ static RETSIGTYPE fperr(int unused)
 	if (!merr) {
 		merr = "Float point exception";
 	}
-	signal(SIGFPE, fperr);
+	REINSTALL_SIGHANDLER(SIGFPE, fperr);
 }
 
 struct var {
@@ -207,7 +206,7 @@ B *mathhist = 0;
 
 int umath(BW *bw)
 {
-	signal(SIGFPE, fperr);
+	joe_set_signal(SIGFPE, fperr);
 	if (wmkpw(bw->parent, "=", &mathhist, domath, "math", NULL, NULL, NULL, NULL)) {
 		return 0;
 	} else {

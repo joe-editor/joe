@@ -40,7 +40,7 @@ AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([errno.h fcntl.h locale.h sgtty.h stdlib.h string.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
 AC_CHECK_HEADERS([ncurses.h curses.h sys/dirent.h time.h pwd.h paths.h])
-AC_CHECK_HEADERS([term.h sys/types.h sys/stat.h sys/wait.h limits.h])
+AC_CHECK_HEADERS([term.h sys/types.h sys/stat.h sys/wait.h limits.h signal.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_PROTOTYPES
@@ -53,7 +53,13 @@ AC_CHECK_SIZEOF(short, 2)
 AC_CHECK_SIZEOF(int, 4)
 AC_CHECK_SIZEOF(long, 4)
 AC_CHECK_SIZEOF(void *, 4)
-
+AC_CHECK_TYPE([sighandler_t],
+	[AC_DEFINE([HAVE_SIGHANDLER_T], 1, [Define if you have the `sighandler_t' type.])],
+	,
+	[/* if you have signal.h header, include it */
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif])
 
 # Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
@@ -78,8 +84,9 @@ if test x"$ac_cv_func_isblank" = xyes; then
 	joe_ISBLANK
 fi
 AC_CHECK_FUNCS([alarm mkdir mkstemp setlocale strchr strdup utime setpgid])
-AC_CHECK_FUNCS([setitimer siginterrupt sigprocmask])
+AC_CHECK_FUNCS([setitimer sigaction sigvec siginterrupt sigprocmask])
 
+joe_REINSTALL_SIGHANDLERS
 
 dnl not yet :-)
 dnl AM_GNU_GETTEXT
@@ -91,8 +98,7 @@ AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 #  else
 #    define PARAMS(protos) ()
 #  endif
-#endif
-])
+#endif])
 
 AC_CONFIG_FILES([Makefile joe.1 joerc jmacsrc jstarrc rjoerc jpicorc])
 AC_OUTPUT
