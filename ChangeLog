@@ -2,6 +2,9 @@ Mon Nov 29 2004  Joe Allen <jhallen@world.std.com>
 
 	Accept OCaml and 4GL syntax files.
 
+        Accept UTF-8 in help file patch.  Help text is now
+        UTF-8.
+
 Mon Aug  9 2004  Joe Allen <jhallen@world.std.com>
 
 	Fix bug in joe_state code: buffer was not

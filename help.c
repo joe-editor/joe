@@ -14,6 +14,7 @@
 
 #include "blocks.h"
 #include "scrn.h"
+#include "charmap.h"
 #include "utils.h"
 #include "vs.h"
 #include "utf8.h"
@@ -157,15 +158,20 @@ void help_display(SCREEN *t)
 
 	for (y = skiptop; y != t->wind; ++y) {
 		if (t->t->updtab[y]) {
-			unsigned char *start = str;
+			unsigned char *start = str, *eol;
 			int width=0;
 			int nspans=0;
 			int spanwidth;
 			int spancount=0;
 			int spanextra;
+			int len;
+
+			eol = strchr(str, '\n');
+
 			/* First pass: count no. springs \| and determine minimum width */
-			while(*str && *str!='\n')
-				if (*str++ == '\\')
+			while(*str && *str!='\n') {
+				if (*str == '\\') {
+					++str;
 					switch(*str) {
 						case 'i':
 						case 'I':
@@ -189,8 +195,13 @@ void help_display(SCREEN *t)
 							++str;
 							++width;
 					}
-				else
-					++width;
+				} else {
+					len = eol - str;
+					c = utf8_decode_fwrd(&str, &len);
+					width += joe_wcwidth(!!locale_map->type,
+							     c);
+				}
+			}
 			str = start;
 			/* Now calculate span width */
 			if (width >= t->w - 1 || nspans==0) {
@@ -254,14 +265,16 @@ void help_display(SCREEN *t)
 						case 0:	
 							--x;
 							continue;
-						default:
-							c = *str++;
 						}
-					} else {
-						c = *str++;
 					}
-					outatr(locale_map, t->t, t->t->scrn + x + y * t->w, 
-					             t->t->attr + x + y * t->w, x, y, c, atr);
+					len = eol - str;
+					c = utf8_decode_fwrd(&str, &len);
+
+					outatr(locale_map,
+					       t->t, t->t->scrn + x + y * t->w, 
+				       	       t->t->attr + x + y * t->w, x, y,
+					       c, atr);
+					x += (joe_wcwidth(!!locale_map->type, c) - 1);
 				}
 			}
 			atr = 0;
