@@ -1,3 +1,7 @@
+sze jún  2 2004  Joe Allen <jhallen@world.std.com>
+
+	Fix for archaic systems (BSD) with no nl_langinfo(CODESET).
+
 Tue Jun  1 2004  Joe Allen <jhallen@world.std.com>
 
 	Minor fix to c.jsf.in
