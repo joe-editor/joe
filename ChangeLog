@@ -1,13 +1,17 @@
 Sun Feb 20 2004  Joe Allen <jhallen@world.std.com>
 
+	Fix perl highlighter bug: \"fdfdg" is a string.
+
+Sun Feb 20 2004  Joe Allen <jhallen@world.std.com>
+
 	Greatly enhanced ^G (goto matching delimiter) so that it understands
 	quoting and comments and can operate on word delimiters
 	(begin...end).
 
 Sun Feb 20 2004  Joe Allen <jhallen@world.std.com>
 
-	Fix perl highlighter bug (words ending in q
-	got confused with 'q').
+	Fix perl highlighter bug: words ending in q
+	got confused with 'q'.
 
 Wed Jan 19 2004  Joe Allen <jhallen@world.std.com>
 

@@ -40,7 +40,7 @@
 	"1-9"		decimal	recolor=-1
 	"."		maybe_float
 	"\""		string		recolor=-1
-	"\\"		not_string
+#	"\\"		not_string
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
 	"/"		regex		recolor=-1
@@ -58,7 +58,7 @@
 	"1-9"		decimal	recolor=-1
 	"."		maybe_float
 	"\""		string		recolor=-1
-	"\\"		not_string
+#	"\\"		not_string
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
 	"$"		not_string
