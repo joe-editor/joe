@@ -308,6 +308,14 @@
 -smartbacks
 
  SML
+*.sml
+-autoindent
+-syntax sml
+-smarthome
+-smartbacks
+-istep 2
+
+ OCaml lanaguage file
 *.ml
 -autoindent
 -syntax ocaml
