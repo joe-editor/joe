@@ -4,6 +4,7 @@ Wed Mar  2 2005  Joe Allen <jhallen@world.std.com>
 	Make option to enable mouse support
 	Change .joe_state file to use \ for escape
 	Improve math
+	Ignore <a/> in Ctrl-G
 
 Wed Mar  2 2005  Joe Allen <jhallen@world.std.com>
 

@@ -562,6 +562,24 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 	}
 }
 
+/* Return true if <foo /> */
+
+int xml_startend(P *p)
+{
+	int c, d=0;
+	p=pdup(p);
+	while((c=pgetc(p)) != NO_MORE_DATA) {
+		if(d=='/' && c=='>') {
+			prm(p);
+			return 1;
+		} else if(c=='>')
+			break;
+		d=c;
+	}
+	prm(p);
+	return 0;
+}
+
 int tomatch_xml(BW *bw,unsigned char *word,int dir)
 {
 	if (dir== -1) {
@@ -592,7 +610,7 @@ int tomatch_xml(BW *bw,unsigned char *word,int dir)
 					buf[x] = buf[len-x-1];
 					buf[len-x-1] = d;
 				}
-				if (!strcmp(word,buf)) {
+				if (!strcmp(word,buf) && !xml_startend(p)) {
 					if (c=='<') {
 						if (!--cnt) {
 							pset(bw->cursor,p);
@@ -635,7 +653,7 @@ int tomatch_xml(BW *bw,unsigned char *word,int dir)
 					if (c!=NO_MORE_DATA)
 						prgetc(p);
 					buf[len]=0;
-					if (!strcmp(word,buf)) {
+					if (!strcmp(word,buf) && !xml_startend(p)) {
 						if (e) {
 							++cnt;
 						}

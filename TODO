@@ -4,13 +4,11 @@ Short list for 3.2:
 
 	- egmont's Ctrl-selection bug
 
-	- math: insert into text
+	- math: insert into text (create a macro or documentation)
 
 	- ^KC into search window fails.  key to move text into search window
 
 	- ^D in selection prompts should bring up menu like tcsh
-
-	- Ctrl-G xml should ignore <foo>  <foo />  </foo>
 
 	- Ctrl-G for vhdl, for `if `endif and #if #endif
 
