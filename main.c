@@ -132,6 +132,7 @@ int edloop(int flg)
 			ungot = 0;
 		} else
 			c = ttgetc();
+
 		if (!ahead && c == 10)
 			c = 13;
 		m = dokey(maint->curwin->kbd, c);

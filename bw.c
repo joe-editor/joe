@@ -60,6 +60,7 @@ static P *getto(P *p, P *cur, P *top, long int line)
 			pprevl(p);
 		p_goto_bol(p);
 	}
+	p_goto_bol(p);
 	return p;
 }
 
@@ -700,7 +701,7 @@ void bwgen(BW *w, int linums)
 			gennum(w, screen, t, y, t->compose);
 		if (t->updtab[y]) {
 			p = getto(p, w->cursor, w->top, w->top->line + y - w->y);
-			if (t->insdel && !w->x) {
+/*			if (t->insdel && !w->x) {
 				pset(q, p);
 				if (dosquare)
 					if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
@@ -710,7 +711,7 @@ void bwgen(BW *w, int linums)
 				else
 					lgena(t, y, t->compose, w->x, w->x + w->w, q, w->offset, from, to);
 				magic(t, y, screen, t->compose, (int) (w->cursor->xcol - w->offset + w->x));
-			}
+			} */
 			if (dosquare)
 				if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
 					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y),w);
@@ -729,7 +730,7 @@ void bwgen(BW *w, int linums)
 			gennum(w, screen, t, y, t->compose);
 		if (t->updtab[y]) {
 			p = getto(p, w->cursor, w->top, w->top->line + y - w->y);
-			if (t->insdel && !w->x) {
+/*			if (t->insdel && !w->x) {
 				pset(q, p);
 				if (dosquare)
 					if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
@@ -739,7 +740,7 @@ void bwgen(BW *w, int linums)
 				else
 					lgena(t, y, t->compose, w->x, w->x + w->w, q, w->offset, from, to);
 				magic(t, y, screen, t->compose, (int) (w->cursor->xcol - w->offset + w->x));
-			}
+			} */
 			if (dosquare)
 				if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
 					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y),w);

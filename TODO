@@ -1,12 +1,3 @@
-Extensionless files: do not wrap by default
-
-Syntax highlighting:
-
- No. 1 requested new feature for joe: syntax highlighting.  I have termcap.c
- and scrn.c with color support.  I need to merge it in.  I still need a
- database for syntax highlighting.  Emacs re-colors after no activity.
-
-
 Support for more languages:
 
  Paragraph reformat mode for TeX files.

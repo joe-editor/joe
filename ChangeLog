@@ -1,3 +1,11 @@
+Wed Apr  7 2004  Joe ALlen <jhallen@world.std.com>
+	* scrn.c, bw.c:
+
+	Fix highlighting bug: pointer was not always at start of line.
+
+	Assume terminal supports color if it looks like an ansi terminal
+	(this should really be an option).
+
 Tue Apr  6 2004  Joe Allen <jhallen@world.std.com>
 	* Makefile.am, bw.c, configure.ac, joerc.in, rc.c, scrn.c,
 	scrn.h, syntax.c, syntax.h, c.jsf.in, perl.jsf.in, verilog.jsf.in:

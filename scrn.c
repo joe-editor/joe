@@ -359,6 +359,21 @@ SCRN *nopen(CAP *cap)
 		t->avattr |= INVERSE;
       oops:
 
+/* Install color support if it looks like an ansi terminal (it has bold which begins with ESC [) */
+#ifndef TERMINFO
+	if (!t->Sf && t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
+		t->ut = 1;
+		t->Sf = "\\E[3%dm";
+		t->Sb = "\\E[4%dm";
+	}
+#else
+	if (!t->Sf && t->md && t->md[0]=='\033' && t->md[1]=='[') { 
+		t->ut = 1;
+		t->Sf = "\033[3%p1%dm";
+		t->Sb = "\033[4%p1%dm";
+	}
+#endif
+
 	t->so = NULL;
 	t->se = NULL;
 	if (getnum(t->cap, "sg") <= 0 && !t->mr && jgetstr(t->cap, "se")) {
