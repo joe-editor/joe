@@ -16,6 +16,7 @@
 #include "w.h"
 
 extern int dostaupd;
+extern int utf8;
 
 static void menufllw(MENU *m)
 {
@@ -39,7 +40,7 @@ static void menudisp(MENU *m)
 			int atr, z;
 	
 			if (x + y*m->perline + m->top == m->cursor)
-				atr = INVERSE|FG_YELLOW;
+				atr = INVERSE;
 			else
 				atr = 0;
 			if (col == m->w)
@@ -47,18 +48,18 @@ static void menudisp(MENU *m)
 			for (z = 0; m->list[x + y*m->perline + m->top][z]; ++z) {
 				if (col == m->w)
 					break;
-				outatr(m->t->t, s + col, a + col, m->x + col, m->y+y, m->list[x + y*m->perline + m->top][z], atr);
+				outatr(utf8, m->t->t, s + col, a + col, m->x + col, m->y+y, m->list[x + y*m->perline + m->top][z], atr);
 				++col;
 			}
 			while (z < m->width) {
 				if (col == m->w)
 					break;
-				outatr(m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
+				outatr(utf8, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
 				++col;
 				++z;
 			}
 			if (col != m->w) {
-				outatr(m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
+				outatr(utf8, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
 				++col;
 			}
 		}

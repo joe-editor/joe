@@ -96,14 +96,19 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *n
 
 	/* It doesn't exist, so create it */
 	if(x==syntax->nstates) {
+		int y;
 		state=malloc(sizeof(struct high_state));
 		state->name=(unsigned char *)strdup((char *)name);
 		state->no=syntax->nstates;
 		state->color=FG_WHITE;
-		/* FIXME: init cmd table? */
+		if(!syntax->nstates)
+			/* We're the first state */
+			syntax->default_cmd.new_state = state;
 		if(syntax->nstates==syntax->szstates)
 			syntax->states=realloc(syntax->states,sizeof(struct high_state *)*(syntax->szstates*=2));
 		syntax->states[syntax->nstates++]=state;
+		for(y=0; y!=256; ++y)
+			state->cmd[y] = &syntax->default_cmd;
 	} else
 		state = syntax->states[x];
 	return state;
@@ -155,6 +160,11 @@ struct high_syntax *load_dfa(unsigned char *name)
 	syntax->color = 0;
 	syntax->states = malloc(sizeof(struct high_state *)*(syntax->szstates=64));
 	syntax->sync_lines = 50;
+	syntax->default_cmd.noeat = 0;
+	syntax->default_cmd.recolor = 0;
+	syntax->default_cmd.start_buffering = 0;
+	syntax->default_cmd.new_state = 0;
+	syntax->default_cmd.keywords = 0;
 
 	/* Parse file */
 	while(fgets((char *)buf,1023,f)) {

@@ -11,18 +11,6 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-/* Loaded form of syntax file */
-
-struct high_syntax {
-	struct high_syntax *next;	/* Linked list of loaded syntaxes */
-	unsigned char *name;			/* Name of this syntax */
-	struct high_state **states;	/* The states of this syntax.  states[0] is idle state */
-	int nstates;			/* No. states */
-	int szstates;			/* Malloc size of states array */
-	struct high_color *color;	/* Linked list of color definitions */
-	int sync_lines;			/* No. lines back to start parsing when we lose sync.  -1 means start at beginning */
-};
-
 /* Color definition */
 
 struct high_color {
@@ -48,6 +36,19 @@ struct high_cmd {
 	int start_buffering;		/* Set if we should start buffering */
 	struct high_state *new_state;	/* The new state */
 	HASH *keywords;			/* Hash table of keywords */
+};
+
+/* Loaded form of syntax file */
+
+struct high_syntax {
+	struct high_syntax *next;	/* Linked list of loaded syntaxes */
+	unsigned char *name;			/* Name of this syntax */
+	struct high_state **states;	/* The states of this syntax.  states[0] is idle state */
+	int nstates;			/* No. states */
+	int szstates;			/* Malloc size of states array */
+	struct high_color *color;	/* Linked list of color definitions */
+	int sync_lines;			/* No. lines back to start parsing when we lose sync.  -1 means start at beginning */
+	struct high_cmd default_cmd;	/* Default transition for new states */
 };
 
 /* Find a syntax.  Load it if necessary. */

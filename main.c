@@ -177,8 +177,11 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	int c;
 
 #ifdef HAVE_SETLOCALE
-	setlocale(LC_CTYPE, "");
+	setlocale(LC_ALL, "");
+	printf("%s\n",nl_langinfo(CODESET));
 	utf8 = !strcmp(nl_langinfo(CODESET),"UTF-8");
+	if(utf8)
+		printf("utf8! \n");
 #endif
 
 	mainenv = envv;

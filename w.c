@@ -23,6 +23,7 @@
 
 extern int dspasis;		/* Set to display chars above 127 as-is */
 extern int staen;		/* 0 if top-most status line not displayed */
+extern int utf8;
 
 /* Count no. of main windows */
 
@@ -737,7 +738,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 				break;
 			default:
 				if (col++ >= ofst) {
-					outatr(t, scrn, attr, x, y, c, atr);
+					outatr(utf8, t, scrn, attr, x, y, c, atr);
 					++scrn;
 					++attr;
 					++x;
@@ -747,7 +748,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 		} else if (col++ >= ofst) {
 			if (c == '\t')
 				c = ' ';
-			outatr(t, scrn, attr, x, y, c, atr);
+			outatr(utf8, t, scrn, attr, x, y, c, atr);
 			++scrn;
 			++attr;
 			++x;
@@ -772,7 +773,7 @@ void gentxt(SCRN *t, int x, int y, int ofst, unsigned char *s, int len, int flg)
 			if (c == '\t')
 				c = ' ';
 			xlat(&a, &c);
-			outatr(t, scrn, attr, x, y, c, a);
+			outatr(utf8, t, scrn, attr, x, y, c, a);
 			++scrn;
 			++attr;
 			++x;

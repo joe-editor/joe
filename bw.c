@@ -451,7 +451,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				tach = ' ';
 			      dota:
 				do {
-					outatr(t, screen + x, attr + x, x, y, tach, c1|atr);
+					outatr(bw->b->o.utf8,t, screen + x, attr + x, x, y, tach, c1|atr);
 					if (ifhave)
 						goto bye;
 					if (++x == w)
@@ -499,11 +499,11 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					if (x+wid > w) {
 						/* If character hits right most column, don't display it */
 						while (x < w) {
-							outatr(t, screen + x, attr + x, x, y, '>', c1|atr);
+							outatr(bw->b->o.utf8, t, screen + x, attr + x, x, y, '>', c1|atr);
 							x++;
 						}
 					} else {
-						outatr(t, screen + x, attr + x, x, y, utf8_char, c1|atr);
+						outatr(bw->b->o.utf8, t, screen + x, attr + x, x, y, utf8_char, c1|atr);
 						x += wid;
 					}
 				}
@@ -723,7 +723,7 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	else
 		strcpy(buf, "      ");
 	for (z = 0; buf[z]; ++z) {
-		outatr(t, screen + z, attr + z, z, y, buf[z], 0);
+		outatr(w->b->o.utf8, t, screen + z, attr + z, z, y, buf[z], 0);
 		if (ifhave)
 			return;
 		comp[z] = buf[z];

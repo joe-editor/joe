@@ -777,6 +777,7 @@ int uinsc(BW *bw)
  */
 
 struct utf8_sm utype_utf8_sm;
+extern int utf8;
 
 int utypebw(BW *bw, int k)
 {
@@ -801,7 +802,7 @@ int utypebw(BW *bw, int k)
 		int simple;
 
 		/* UTF8 decoder */
-		if(bw->b->o.utf8) {
+		if(utf8) {
 			int utf8_char = utf8_decode(&utype_utf8_sm,k);
 
 			if(utf8_char >= 0)
@@ -854,7 +855,7 @@ int utypebw(BW *bw, int k)
 			    ( square && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line && piscol(bw->cursor) >= markb->xcol && piscol(bw->cursor) < markk->xcol)))
 				a = INVERSE;
 			xlat(&a, &c);
-			outatr(t, screen + x, attr + x, x, y, c, a);
+			outatr(bw->b->o.utf8, t, screen + x, attr + x, x, y, c, a);
 		}
 #endif
 	}

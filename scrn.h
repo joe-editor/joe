@@ -126,25 +126,7 @@ extern unsigned atab[];
 #define FG_RED (14<<FG_SHIFT)
 #define FG_BLACK (15<<FG_SHIFT)
 
-#define outatr(t, scrn, attrf, xx, yy, c, a) do {	\
-	int zz = mk_wcwidth(c);				\
-	if(*(scrn) != (c) || *(attrf) != (a)) {		\
-		*(scrn) = (c);				\
-		*(attrf) = (a);				\
-		if((t)->ins)				\
-			clrins(t);			\
-		if((t)->x != (xx) || (t)->y != (yy))	\
-			cpos((t), (xx), (yy));		\
-		if((t)->attrib != (a))			\
-			set_attr((t), (a));		\
-		utf8_putc(c);				\
-		(t)->x+=zz;				\
-		if(zz==2) {				\
-			(scrn)[1]= -1;			\
-			(attrf)[1]= 0;			\
-		}					\
-	}						\
-} while(0)
+void outatr PARAMS((int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a));
 
 #endif
 
