@@ -137,7 +137,7 @@
 
  -icase         Search is case insensitive by default.
 
--wrap          Search wraps
+ -wrap          Search wraps
 
 -autoswap	Swap markb with markk when necessary
 
