@@ -91,6 +91,7 @@
   %S  '*SHELL*' if there is a shell running in window
   %M  Macro recording message
   %y  Syntax
+  %x  Context (first non-indented line going backwards)
  These formatting escape sequences may also be given:
  
   \i  Inverse
@@ -100,17 +101,26 @@
   \f  Blink
 
 -lmsg \i%k%T%W%I%X %n %m%y%R %M %x
--lmsg \i%k%T%W%I%X %n %m%R %M
+-lmsg \i%k%T%W%I%X %n %y%m%R %M
 
  SECOND SECTION: File name dependant local option settings:
 
  Each line with '*' in the first column indicates the modes which should be
  set for files whose name matches the regular expression.  If more than one
- set for files which match the regular expression.  If more than one regular
- expression matches the file name, then the last matching one is chosen.
+ regular expression matches the file name, then the last matching one is
+ chosen.
+
+ A file contents regular expression may also be specified on a separate line
+ with '+regex'.  If this regular expresssion is given, then both the file name
+ regex and the file contents regex must match for the options to apply.
+
  Here are the modes which can be set:
 
 	-encoding name		Set file coding (for example: utf-8, iso-8859-15)
+	-syntax name		Specify syntax (syntax file called 'name.jsf' will be loaded)
+	-hex			Hex editor mode
+
+	-smarthome		Home key first moves cursor to beginning of line,
 
 	-autoindent		Auto indent
 
@@ -152,35 +162,55 @@
 	Macros for the above options are in the same format as in the key
 	binding section below- but without the key name strings.
  Default local options
+*
 -wordwrap
 
  File name with '.'?  It's probably not a text file.
+*.*
 
  Diff
+*
++#!\+\[ 	]\+\[a-z/]/perl\>
++#!\+\[ 	]/usr/bin/\<perl\>
+-syntax perl
+-smarthome
+-highlight
+*.pl
+ Text file.
 *.txt
 -wordwrap
  SQL file
+*.c
 -autoindent
 -syntax c
 -smarthome
+-highlight
 *.cpp
+*.h
 -autoindent
 -syntax c
 -smarthome
+-highlight
 *.hpp
+*.v
 -autoindent
 -syntax verilog
 -istep 2
+-highlight
 -smarthome
  XML
+ Perl library file
 *.pl
 -syntax java
 -syntax perl
+-highlight
  Hypertext preprocessor file
+ Makefiles and rc files.
 -autoindent
 -autoindent
 *rc
  Pascal
+*.p
 -autoindent
 -syntax pascal
  Mail file

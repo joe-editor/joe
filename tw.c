@@ -73,6 +73,14 @@ static char *stagen(char *stalin, BW *bw, char *s, int fill)
 	while (*s) {
 		if (*s == '%' && s[1]) {
 			switch (*++s) {
+			case 'y':
+				{
+					if (bw->o.syntax) {
+						snprintf(buf, sizeof(buf), "(%s)", bw->o.syntax);
+						stalin = vsncpy(sv(stalin), sz(buf));
+					}
+				}
+				break;
 			case 't':
 				{
 					time_t n = time(NULL);

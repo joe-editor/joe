@@ -93,7 +93,8 @@ struct point {
 
 struct options {
 	OPTIONS	*next;
-	char	*name;
+	char	*name_regex;
+	char	*contents_regex;
 	int	overtype;
 	int	lmargin;
 	int	rmargin;

@@ -12,7 +12,7 @@
 #include "types.h"
 
 extern OPTIONS pdefault;
-void setopt PARAMS((OPTIONS *n, char *name));
+void setopt PARAMS((B *b, char *name));
 
 /* KMAP *kmap_getcontext(char *name);
  * Find and return the KMAP for a given context name.  If none is found, an

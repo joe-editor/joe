@@ -1,4 +1,14 @@
 Thu Apr  8 2004  Joe Allen <jhallen@world.std.com>
+	* bw.c, b.c, joerc.in, rc.c, rc.h, tw.c, types.h:
+
+	Fix screen update bug introduced with Apr 7th change.
+
+	Option settings now can be based on file contents as well as
+	file name.
+
+	Added syntax indicator for status line.
+
+Thu Apr  8 2004  Joe Allen <jhallen@world.std.com>
 	* syntax.c, syntax.h:
 
 	Clean up syntax.c: use hash table for keywords, use subroutine for

@@ -1818,7 +1818,7 @@ B *bload(char *s)
 	if (!s || !s[0]) {
 		error = -1;
 		b = bmk(NULL);
-		setopt(&b->o, "");
+		setopt(b,"");
 		b->rdonly = b->o.readonly;
 		b->er = error;
 		return b;
@@ -1855,7 +1855,7 @@ B *bload(char *s)
 		else
 			error = -4;
 		b = bmk(NULL);
-		setopt(&b->o, n);
+		setopt(b,n);
 		b->rdonly = b->o.readonly;
 		goto opnerr;
 	}
@@ -1881,7 +1881,7 @@ B *bload(char *s)
 
 	/* Read from stream into new buffer */
 	b = bread(fileno(fi), amnt);
-	setopt(&b->o, n);
+	setopt(b,n);
 	b->rdonly = b->o.readonly;
 
 	/* Close stream */
@@ -1949,7 +1949,7 @@ B *bfind(char *s)
 	if (!s || !s[0]) {
 		error = -1;
 		b = bmk(NULL);
-		setopt(&b->o, "");
+		setopt(b,"");
 		b->rdonly = b->o.readonly;
 		b->internal = 0;
 		b->er = error;

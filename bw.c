@@ -60,7 +60,6 @@ static P *getto(P *p, P *cur, P *top, long int line)
 			pprevl(p);
 		p_goto_bol(p);
 	}
-	p_goto_bol(p);
 	return p;
 }
 
@@ -268,6 +267,7 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 
 	if(st!=-1) {
 		tmp=pdup(p);
+		p_goto_bol(tmp);
 		parse(bw->syntax,tmp,st);
 		syn = attr_buf;
 		prm(tmp);

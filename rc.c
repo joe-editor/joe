@@ -26,6 +26,7 @@
 #include "umath.h"
 #include "utils.h"
 #include "vs.h"
+#include "b.h"
 #include "w.h"
 
 #define OPT_BUF_SIZE 300
@@ -61,7 +62,8 @@ extern char *backpath;
 
 OPTIONS pdefault = {
 	NULL,		/* *next */
-	NULL,		/* *name */
+	NULL,		/* *name_regex */
+	NULL,		/* *contents_regex */
 	0,		/* overtype */
 	0,		/* lmargin */
 	76,		/* rmargin */
@@ -91,7 +93,8 @@ OPTIONS pdefault = {
 };
 OPTIONS fdefault = {
 	NULL,		/* *next */
-	NULL,		/* *name */
+	NULL,		/* *name_regex */
+	NULL,		/* *contents_regex */
 	0,		/* overtype */
 	0,		/* lmargin */
 	76,		/* rmargin */
@@ -117,21 +120,36 @@ OPTIONS fdefault = {
 	NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
-/* Set a global or local option 
- * returns 0 for no such option,
- *         1 for option accepted
- *         2 for option + argument accepted
- */
-void setopt(OPTIONS *n, char *name)
+/* Set local options depending on file name and contents */
+void setopt(B *b, char *parsed_name)
 {
 	OPTIONS *o;
+	int x;
+	char *pieces[26];
+	for (x = 0; x!=26; ++x)
+		pieces[x] = NULL;
 
 	for (o = options; o; o = o->next)
-		if (rmatch(o->name, name)) {
-			*n = *o;
-			return;
+		if (rmatch(o->name_regex, parsed_name)) {
+			if(o->contents_regex) {
+				P *p = pdup(b->bof);
+				if (pmatch(pieces,o->contents_regex,strlen(o->contents_regex),p,0,0)) {
+					for (x = 0; x != 26; ++x)
+						vsrm(pieces[x]);
+					prm(p);
+					b->o = *o;
+					return;
+				} else {
+					for (x = 0; x != 26; ++x)
+						vsrm(pieces[x]);
+					prm(p);
+				}
+			} else {
+				b->o = *o;
+				return;
+			}
 		}
-	*n = fdefault;
+	b->o = fdefault;
 }
 
 struct glopts {
@@ -211,6 +229,8 @@ static void izopts(void)
 	isiz = 1;
 }
 
+/* Set a global or local option 
+ */
 int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 {
 	int val;
@@ -618,7 +638,17 @@ int procrc(CAP *cap, unsigned char *name)
 				buf[x] = 0;
 				o->next = options;
 				options = o;
-				o->name = strdup(buf);
+				o->name_regex = strdup(buf);
+			}
+			break;
+		case '+':	/* Set file contents match regex */
+			{
+				int x;
+
+				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != '\r'; ++x) ;
+				buf[x] = 0;
+				if(o)
+					o->contents_regex = strdup(buf+1);
 			}
 			break;
 		case '-':	/* Set an option */
