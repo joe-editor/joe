@@ -211,6 +211,9 @@ static double expr(int prec, int en,struct var **rtv)
 	} else if (*ptr == '-') {
 		++ptr;
 		x = -expr(10, en, &dumb);
+	} else if (*ptr == '!') {
+		++ptr;
+		x = !expr(10, en, &dumb);
 	}
       loop:
 	while (*ptr == ' ' || *ptr == '\t')
@@ -230,6 +233,21 @@ static double expr(int prec, int en,struct var **rtv)
 			if (!merr)
 				merr = US "Called object is not a function";
 		}
+		goto loop;
+	} else if (*ptr == '!' && 10 >= prec) {
+		++ptr;
+		if (x == (int)x && x>=1.0 && x<70.0) {
+			y = 1.0;
+			while (x>1.0) {
+				y *= x;
+				x -= 1.0;
+			}
+			x = y;
+		} else {
+			if (!merr)
+				merr = US "Factorial can only take positive integers";
+		}
+		v = 0;
 		goto loop;
 	} else if (*ptr == '*' && ptr[1] == '*' && 8 > prec) {
 		ptr+=2;

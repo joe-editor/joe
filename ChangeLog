@@ -4,6 +4,8 @@ Wed Mar 16 11:04:19 EST 2005
 
 	Fix line number reporting for joerc file errors.
 
+	Add ! operator to math (factorial and logical not)
+
 Tue Mar 15 14:18:53 EST 2005
 
 	Fix processing of joe.1.in -> joe.1 so

@@ -866,7 +866,7 @@
 \i \i 2+3:ins multiple commands      avg dev  Average, std. deviation             \|\i \i
 \i \i    e pi constants              \uOPERATORS\u                                    \|\i \i
 \i \i     ans previous result        ! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\|\i \i
-\i \i     ans previous result        ^  * / %  + -  < <= > >= == !=  &&  ||  ? :  \|\i \i
+}
 
 {Names
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i

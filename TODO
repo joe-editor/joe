@@ -1,12 +1,12 @@
 
 Short list for 3.2:
 
+joe ~/foo	- Shell expands
+^KE		- Editor expands, but keeps name ~/foo
+locking code	- uses unexpanded
+
 ^KE: hit ~/.joerc: can't create macro
-
-lock with names that begin with '.'
-lock message missing valid keys to hit
-
-add ! (logical not and factorial) to calculator
+parsens() not being called enough...
 
 perl again: if (-s foo)  looks like s/
 
