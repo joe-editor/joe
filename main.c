@@ -341,10 +341,13 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 						if (argv[backopt][0] == '+') {
 							sscanf((char *)(argv[backopt] + 1), "%ld", &lnum);
 							++backopt;
-						} else if (glopt(argv[backopt] + 1, argv[backopt + 1], &bw->o, 0) == 2)
-							backopt += 2;
-						else
-							backopt += 1;
+						} else {
+							if (glopt(argv[backopt] + 1, argv[backopt + 1], &bw->o, 0) == 2)
+								backopt += 2;
+							else
+								backopt += 1;
+							lazy_opts(&bw->o);
+						}
 					}
 				}
 				bw->b->o = bw->o;

@@ -381,14 +381,16 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				break;
 
 			case 9: /* Set syntax */
-				options->syntax_name = (unsigned char *)strdup((char *)arg);
+				if (arg && options)
+					options->syntax_name = (unsigned char *)strdup((char *)arg);
 				/* this was causing all syntax files to be loaded...
 				if (arg && options)
 					options->syntax = load_dfa(arg); */
 				break;
 
 			case 13: /* Set byte mode encoding */
-				options->map_name = (unsigned char *)strdup((char *)arg);
+				if (arg && options)
+					options->map_name = (unsigned char *)strdup((char *)arg);
 				break;
 			}
 			/* This is a stupid hack... */

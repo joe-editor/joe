@@ -27,10 +27,13 @@
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
+
 #ifdef HAVE_OPENPTY
+#ifdef HAVE_PTY_H
 #include <pty.h>
-#include <utmp.h>
 #endif
+#endif
+
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>

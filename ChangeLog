@@ -1,5 +1,11 @@
 Sun May 16 2004  Joe Allen <jhallen@world.std.com>
 
+	Fix -syntax and -encoding on command line.
+
+	Check for "pty.h" when openpty is used.
+
+Sun May 16 2004  Joe Allen <jhallen@world.std.com>
+
 	Fix mason bug.
 	Change ^K ^M back to move block.
 	^K H in jstar mode is "nmark".

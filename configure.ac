@@ -66,7 +66,7 @@ fi
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([errno.h fcntl.h locale.h sgtty.h stdlib.h string.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
-AC_CHECK_HEADERS([sys/dirent.h time.h pwd.h paths.h])
+AC_CHECK_HEADERS([sys/dirent.h time.h pwd.h paths.h pty.h])
 AC_CHECK_HEADERS([sys/types.h sys/stat.h sys/wait.h limits.h signal.h])
 
 AC_CHECK_HEADERS([selinux/selinux.h selinux/context.h])
