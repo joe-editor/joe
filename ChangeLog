@@ -1,3 +1,7 @@
+Mon Jan 19 2004  Marek 'Marx' Grac <xgrac@fi.muni.cz>
+	* utag.c:
+	Correct file position by using tags file generated from ctags 5.5.2
+
 Wed Jul  9 2003  John Morrissey <jwm@horde.net>
 	* configure.ac:
 	look for snprintf() in libdb too (fixes compilation on OSF1)

@@ -90,6 +90,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 							++y;
 							if (buf[y] == '^')
 								buf[--y] = '\\';
+							for (x = y+1; buf[x] && buf[x] != '\n' && buf[x-1] != '/'; ++x);
 						}
 						if (buf[x - 1] == '/' || buf[x - 1] == '?') {
 							--x;
