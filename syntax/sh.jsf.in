@@ -62,6 +62,7 @@ done
 # eat \n so it's not in string.
 :next_line Constant
 	*		todelim		buffer
+	"\n"		next_line
 
 :founddelim Var
 	*		idle		noeat

@@ -44,6 +44,7 @@
 	"`"		backtick	recolor=-1
 	"/"		regex		recolor=-1
 	"<"		maybe_inc
+	"$"		not_string
 	"a-zA-Z_"	ident		buffer
 
 :rest Idle
@@ -58,6 +59,7 @@
 	"\\"		not_string
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
+	"$"		not_string
 	"<"		maybe_inc
 
 :maybe_inc Idle
@@ -96,6 +98,7 @@ done
 # eat \n so it's not in string.
 :next_line Constant
 	*		todelim		buffer
+	"\n"		next_line
 
 :founddelim Var
 	*		idle		noeat
@@ -110,7 +113,7 @@ done
 
 :not_string Idle
 	*		rest noeat
-	"\"'`"		rest
+	"\"'`#"		rest
 
 :line_comment Comment
 	*		line_comment
