@@ -76,6 +76,8 @@ done
 
 :subst Var
 	*		idle
+	"\""		string_dq	recolor=-2
+	"\'"		string_sq	recolor=-2
 	"{"		subst_brack
 	"a-zA-Z_"	subst_name
 	"0-9*@?\-$_!"	idle
