@@ -203,7 +203,7 @@ int parse_ident(unsigned char **pp, unsigned char *buf, int len)
 {
 	unsigned char *p = *pp;
 	if (joe_isalpha_(locale_map,*p)) {
-		while(len && joe_isalpha_(locale_map,*p))
+		while(len && joe_isalnum_(locale_map,*p))
 			*buf++= *p++, --len;
 		*buf=0;
 		while(joe_isalnum_(locale_map,*p))

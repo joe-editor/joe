@@ -367,5 +367,5 @@ done
 :kw Keyword
 	*	idle	noeat
 
-:kw CppKeyword
+:cppkw CppKeyword
 	*	idle	noeat

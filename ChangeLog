@@ -1,3 +1,9 @@
+Wed May  5 2004  Joe ALlen <jhallen@world.std.com>
+	* utils.c, c.jsf.in:
+
+	Fix c++ keywords.
+	Fix parse_ident, which was breaking fortran highlighter.
+
 Tue May  4 2004  Joe Allen <jhallen@world.std.com>
 	* rc.c, selinux.c, syntax.c, ufile.c:
 

@@ -1,15 +1,24 @@
 Fix for next release:
 
+  option to force search to be case insensitive
+
+  UTF-8: regex, incremental search
+
+
+  locale for qsort().
+    not that important.
+
+  should parse locale charmap files: make subdirectory for this.
+
+  byte to byte conversions.
+
+  check all instances of 'chars'.
+
   EBCDIC ?
     - we assume '\n' is line terminator.
     - there are many references to '\t' and ' '.
     - EBCDIC used to be fixed record length (80 columns) anyway.
 
-  locale for qsort().
-
-  check all instances of 'chars'.
-
-  option to force search to be case insensitive
 
   perl highlighter
 
@@ -17,27 +26,32 @@ Fix for next release:
 
   more syntax files
 
+
   move *rc files to .joe directory?
 
   parse *rc file only once?
 
   different symbol for 'joe' directory
 
-  should parse locale charmap files: make subdirectory for this.
 
   can't load terminfo- should switch to termcap or provide compiled
   ANSI terminfo built in.
 
-  UTF-8: regex, incremental search
 
   highlight other windows
   why lose state during page down?
 
+
   Update documentation.
+
 
   Check if file is newer on save.
 
+
   gettext patch
+
+
+  don't use -notite by default.
 
 
 New features:
@@ -215,6 +229,7 @@ Jmacs/Jstar/Jpico:
 
  nextword,nextword,prevword sequence 
  doesn't work for marking next successive word at ends of lines
+ (swap word is broken)
 
  exiting options and i-search with ESC is not pretty
  (it isn't in emacs either)
