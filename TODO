@@ -1,5 +1,9 @@
 Short list for 3.2:
 
+- point to info files in help window
+
+- update other *rc.in files
+
 - for cygwin: we need to compile with --disable-termcap
 
 - set -marking as the default in jmacs?
@@ -12,8 +16,6 @@ Short list for 3.2:
 
 - better string demarcation in highlighter (highlight all words with 's in
   them- need to use pointers instead of buffer to refer to string)
-
-- ^K W doesn't say "block written" when it's done
 
 - .joe_state file:
  - save names of files on command line?
