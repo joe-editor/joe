@@ -26,7 +26,7 @@
 # There are several options:
 #   noeat     	do not eat the character, instead feed it to the next state
 #             	(this tends to make the states smaller, but be careful: you
-#		can make infinite loops).
+#		can make infinite loops).  'noeat' implies 'recolor=-1'.
 #
 #   recolor=-N	Recolor the past N characters with the color of the
 #		target-state.  For example once /* is recognized as the
@@ -34,7 +34,7 @@
 #		comment color.
 #
 #   buffer    	start copying characters to a buffer, beginning with this
-#		one (it's ok, to not terminate buffering with a matching
+#		one (it's ok to not terminate buffering with a matching
 #		'strings' option- the buffer is limited to leading 19
 #		characters).
 #
@@ -52,16 +52,16 @@
 #
 #   The format of the string list is:
 #
-#      "string"   <target-state>
-#      "string"   <target-state>
+#      "string"   <target-state> [<options>s]
+#      "string"   <target-state> [<options>s]
 #      done
+#
+#   (all of the options above are allowed except "strings", "istrings" and "noeat".  noeat is
+#    always implied after a matched string).
 #
 # Weirdness: only states have colors, not transitions.  This means that you
 # sometimes have to make dummy states with '* next-state noeat' just to get
 # a color specification.
-#
-# Weirdness: noeat does not cause the character to be recolored by the next
-# state: you have to use recolor=-1 to have this happen.
 
 # Define no. sync lines
 # You can say:

@@ -1,5 +1,9 @@
 Wed May 19 2004  Joe Allen <jhallen@world.std.com>
 
+	Allow options after strings in syntax files.
+
+Wed May 19 2004  Joe Allen <jhallen@world.std.com>
+
 	More fixes for Cygwin: shell windows now
 	work properly.
 
