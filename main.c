@@ -384,9 +384,9 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	}
 	if (!nonotice) {
 		if (locale_map->type)
-			snprintf((char *)msgbuf,JOE_MSGBUFSIZE,"\\i** Joe's Own Editor v" VERSION " ** (%s) ** Copyright © 2004 **\\i",locale_map->name);
+			joe_snprintf_1((char *)msgbuf,JOE_MSGBUFSIZE,"\\i** Joe's Own Editor v" VERSION " ** (%s) ** Copyright © 2004 **\\i",locale_map->name);
 		else
-			snprintf((char *)msgbuf,JOE_MSGBUFSIZE,"\\i** Joe's Own Editor v" VERSION " ** (%s) ** Copyright (C) 2004 **\\i",locale_map->name);
+			joe_snprintf_1((char *)msgbuf,JOE_MSGBUFSIZE,"\\i** Joe's Own Editor v" VERSION " ** (%s) ** Copyright (C) 2004 **\\i",locale_map->name);
 
 		msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
 	}

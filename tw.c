@@ -151,7 +151,7 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 			case 'y':
 				{
 					if (bw->o.syntax) {
-						snprintf((char *)buf, sizeof(buf), "(%s)", bw->o.syntax->name);
+						joe_snprintf_1((char *)buf, sizeof(buf), "(%s)", bw->o.syntax->name);
 						stalin = vsncpy(sv(stalin), sz(buf));
 					}
 				}
@@ -165,7 +165,7 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 					l = (d[11] - '0') * 10 + d[12] - '0';
 					if (l > 12)
 						l -= 12;
-					snprintf((char *)buf, sizeof(buf), "%2.2d", l);
+					joe_snprintf_1((char *)buf, sizeof(buf), "%2.2d", l);
 					if (buf[0] == '0')
 						buf[0] = fill;
 					stalin = vsncpy(sv(stalin), buf, 2);
@@ -222,21 +222,21 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 					stalin = vsadd(stalin, fill);
 				break;
 			case 'r':
-				snprintf((char *)buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
+				joe_snprintf_1((char *)buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'o':
-				snprintf((char *)buf, sizeof(buf), "%-4ld", bw->cursor->byte);
+				joe_snprintf_1((char *)buf, sizeof(buf), "%-4ld", bw->cursor->byte);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'O':
-				snprintf((char *)buf, sizeof(buf), "%-4lX", bw->cursor->byte);
+				joe_snprintf_1((char *)buf, sizeof(buf), "%-4lX", bw->cursor->byte);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -244,9 +244,9 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				break;
 			case 'a':
 				if (!piseof(bw->cursor))
-					snprintf((char *)buf, sizeof(buf), "%3d", 255 & brc(bw->cursor));
+					joe_snprintf_1((char *)buf, sizeof(buf), "%3d", 255 & brc(bw->cursor));
 				else
-					snprintf((char *)buf, sizeof(buf), "   ");
+					joe_snprintf_0((char *)buf, sizeof(buf), "   ");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -254,16 +254,16 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				break;
 			case 'A':
 				if (!piseof(bw->cursor))
-					snprintf((char *)buf, sizeof(buf), "%2.2X", 255 & brc(bw->cursor));
+					joe_snprintf_1((char *)buf, sizeof(buf), "%2.2X", 255 & brc(bw->cursor));
 				else
-					snprintf((char *)buf, sizeof(buf), "  ");
+					joe_snprintf_0((char *)buf, sizeof(buf), "  ");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'c':
-				snprintf((char *)buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
+				joe_snprintf_1((char *)buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -271,16 +271,16 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				break;
 			case 'p':
 				if (bw->b->eof->byte)
-					snprintf((char *)buf, sizeof(buf), "%3ld", bw->cursor->byte * 100 / bw->b->eof->byte);
+					joe_snprintf_1((char *)buf, sizeof(buf), "%3ld", bw->cursor->byte * 100 / bw->b->eof->byte);
 				else
-					snprintf((char *)buf, sizeof(buf), "100");
+					joe_snprintf_0((char *)buf, sizeof(buf), "100");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'l':
-				snprintf((char *)buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
+				joe_snprintf_1((char *)buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -321,7 +321,7 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				break;
 			case 'M':
 				if (recmac) {
-					snprintf((char *)buf, sizeof(buf), "(Macro %d recording...)", recmac->n);
+					joe_snprintf_1((char *)buf, sizeof(buf), "(Macro %d recording...)", recmac->n);
 					stalin = vsncpy(sv(stalin), sz(buf));
 				}
 				break;

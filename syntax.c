@@ -186,12 +186,12 @@ struct high_syntax *load_dfa(unsigned char *name)
 	/* Load it */
 	p = (unsigned char *)getenv("HOME");
 	if (p) {
-		snprintf((char *)buf,sizeof(buf),"%s/.joe/syntax/%s.jsf",p,name);
+		joe_snprintf_2((char *)buf,sizeof(buf),"%s/.joe/syntax/%s.jsf",p,name);
 		f = fopen((char *)buf,"r");
 	}
 
 	if (!f) {
-		snprintf((char *)buf,sizeof(buf),"%ssyntax/%s.jsf",JOERC,name);
+		joe_snprintf_2((char *)buf,sizeof(buf),"%ssyntax/%s.jsf",JOERC,name);
 		f = fopen((char *)buf,"r");
 	}
 	if(!f)

@@ -244,9 +244,9 @@ int parserrb(B *b)
 	n = parserr(b);
 	bw = find_a_good_bw(b);
 	if (n)
-		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "%ld messages found", n);
+		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%ld messages found", n);
 	else
-		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "No messages found");
+		joe_snprintf_0((char *)msgbuf, JOE_MSGBUFSIZE, "No messages found");
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
@@ -258,9 +258,9 @@ int uparserr(BW *bw)
 	freeall();
 	n = parserr(bw->b);
 	if (n)
-		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "%ld messages found", n);
+		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%ld messages found", n);
 	else
-		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "No messages found");
+		joe_snprintf_0((char *)msgbuf, JOE_MSGBUFSIZE, "No messages found");
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }

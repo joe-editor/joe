@@ -813,11 +813,11 @@ static void mpxend(void)
 
 /* Newer sgi machines can do it the __svr4__ way, but old ones can't */
 
-extern unsigned char *_getpty();
+extern char *_getpty();
 
 static unsigned char *getpty(int *ptyfd)
 {
-	return _getpty(ptyfd, O_RDWR, 0600, 0);
+	return (unsigned char *)_getpty(ptyfd, O_RDWR, 0600, 0);
 }
 
 #else
@@ -1103,7 +1103,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 				execve((char *)cmd, (char **)args, (char **)env);
 
 				/* If shell didn't execute */
-				snprintf((char *)buf,80,"Couldn't execute shell '%s'\n",cmd);
+				joe_snprintf_1((char *)buf,sizeof(buf),"Couldn't execute shell '%s'\n",cmd);
 				write(0,(char *)buf,strlen((char *)buf));
 				sleep(1);
 			}

@@ -213,7 +213,7 @@ unsigned char *mktmp(unsigned char *where)
 				   area returned by mktmp() is destroyed later with
 				   vsrm(); */
 #ifdef HAVE_MKSTEMP
-	snprintf((char *)name, namesize, "%s/joe.tmp.XXXXXX", where);
+	joe_snprintf_1((char *)name, namesize, "%s/joe.tmp.XXXXXX", where);
 	if((fd = mkstemp((char *)name)) == -1)
 		return NULL;	/* FIXME: vflsh() and vflshf() */
 				/* expect mktmp() always succeed!!! */
@@ -226,7 +226,7 @@ unsigned char *mktmp(unsigned char *where)
 #else
       loop:
 	seq = (seq + 1) % 1000;
-	snprintf(name, namesize, "%s/joe.tmp.%03u%03u", where, seq, (unsigned) time(NULL) % 1000);
+	joe_snprintf_3(name, namesize, "%s/joe.tmp.%03u%03u", where, seq, (unsigned) time(NULL) % 1000);
 	if ((fd = open(name, O_RDONLY)) != -1) {
 		close(fd);
 		goto loop;	/* FIXME: possible endless loop --> DoS attack */

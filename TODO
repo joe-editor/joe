@@ -398,8 +398,6 @@ F5	date/time
 
 - continued search mode for jpico?
 
-- snprintf is preventing me from compiling on irix
-
 - search should automatically use 'k' mode if block is
   selected.  Cursor should jump to top of block when done.  Jump
   back to start mode?

@@ -1,3 +1,8 @@
+Fri May 28 2004  Joe Allen <jhallen@world.std.com>
+
+	Now it will use sprintf if snprintf does not exist.
+	Can now build on IRIX 6.2
+
 Thu May 27 2004  Joe Allen <jhallen@world.std.com>
 
 	Fix segfault due to bad management of 'pieces' in rc/setopt().

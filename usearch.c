@@ -603,7 +603,7 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 		if (srch->backwards)
 			binsc(pbw->cursor, 'b');
 		if (srch->repeat >= 0)
-			snprintf((char *)buf, sizeof(buf), "%d", srch->repeat), binss(pbw->cursor, buf);
+			joe_snprintf_1((char *)buf, sizeof(buf), "%d", srch->repeat), binss(pbw->cursor, buf);
 		pset(pbw->cursor, pbw->b->eof);
 		pbw->cursor->xcol = piscol(pbw->cursor);
 		srch->ignore = 0;

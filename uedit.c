@@ -1075,7 +1075,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		if (c >= '0' && c <= '9') {
 			quoteval = c - '0';
 			quotestate = 1;
-			snprintf((char *)buf, sizeof(buf), "ASCII %c--", c);
+			joe_snprintf_1((char *)buf, sizeof(buf), "ASCII %c--", c);
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
 				return -1;
 			else
@@ -1111,7 +1111,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		break;
 	case 1:
 		if (c >= '0' && c <= '9') {
-			snprintf((char *)buf, sizeof(buf), "ASCII %c%c-", quoteval + '0', c);
+			joe_snprintf_2((char *)buf, sizeof(buf), "ASCII %c%c-", quoteval + '0', c);
 			quoteval = quoteval * 10 + c - '0';
 			quotestate = 2;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -1129,7 +1129,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		break;
 	case 3:
 		if (c >= '0' && c <= '9') {
-			snprintf((char *)buf, sizeof(buf), "ASCII 0x%c-", c);
+			joe_snprintf_1((char *)buf, sizeof(buf), "ASCII 0x%c-", c);
 			quoteval = c - '0';
 			quotestate = 4;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -1137,7 +1137,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			else
 				return 0;
 		} else if (c >= 'a' && c <= 'f') {
-			snprintf((char *)buf, sizeof(buf), "ASCII 0x%c-", c + 'A' - 'a');
+			joe_snprintf_1((char *)buf, sizeof(buf), "ASCII 0x%c-", c + 'A' - 'a');
 			quoteval = c - 'a' + 10;
 			quotestate = 4;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -1145,7 +1145,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			else
 				return 0;
 		} else if (c >= 'A' && c <= 'F') {
-			snprintf((char *)buf, sizeof(buf), "ASCII 0x%c-", c);
+			joe_snprintf_1((char *)buf, sizeof(buf), "ASCII 0x%c-", c);
 			quoteval = c - 'A' + 10;
 			quotestate = 4;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -1171,7 +1171,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		break;
 	case 5:
 		if (c >= '0' && c <= '7') {
-			snprintf((char *)buf, sizeof(buf), "ASCII 0%c--", c);
+			joe_snprintf_1((char *)buf, sizeof(buf), "ASCII 0%c--", c);
 			quoteval = c - '0';
 			quotestate = 6;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -1182,7 +1182,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		break;
 	case 6:
 		if (c >= '0' && c <= '7') {
-			snprintf((char *)buf, sizeof(buf), "ASCII 0%c%c-", quoteval + '0', c);
+			joe_snprintf_2((char *)buf, sizeof(buf), "ASCII 0%c%c-", quoteval + '0', c);
 			quoteval = quoteval * 8 + c - '0';
 			quotestate = 7;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -1326,7 +1326,7 @@ static int dosetmark(BW *bw, int c, void *object, int *notify)
 		pdupown(bw->cursor, bw->b->marks + c - '0');
 		poffline(bw->b->marks[c - '0']);
 		if (c!=':') {
-			snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "Mark %d set", c - '0');
+			joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "Mark %d set", c - '0');
 			msgnw(bw->parent, msgbuf);
 		}
 		return 0;
@@ -1358,7 +1358,7 @@ static int dogomark(BW *bw, int c, void *object, int *notify)
 			bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		} else {
-			snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "Mark %d not set", c - '0');
+			joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "Mark %d not set", c - '0');
 			msgnw(bw->parent, msgbuf);
 			return -1;
 	} else {

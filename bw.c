@@ -729,7 +729,7 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	int lin = w->top->line + y - w->y;
 
 	if (lin <= w->b->eof->line)
-		snprintf((char *)buf, sizeof(buf), "%5ld ", w->top->line + y - w->y + 1);
+		joe_snprintf_1((char *)buf, sizeof(buf), "%5ld ", w->top->line + y - w->y + 1);
 	else
 		strcpy((char *)buf, "      ");
 	for (z = 0; buf[z]; ++z) {
@@ -921,9 +921,9 @@ int ustat(BW *bw)
 	int c = brch(bw->cursor);
 
 	if (c == NO_MORE_DATA)
-		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
+		joe_snprintf_4((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
 	else
-		snprintf((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
+		joe_snprintf_9((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
 	msgnw(bw->parent, buf);
 	return 0;
 }

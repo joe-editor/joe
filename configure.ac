@@ -51,7 +51,7 @@ fi
 AC_SEARCH_LIBS(openpty, util, AC_DEFINE_UNQUOTED(HAVE_OPENPTY, 1, [If we have BSD function openpty()]))
 AC_SEARCH_LIBS(login_tty, util, AC_DEFINE_UNQUOTED(HAVE_LOGIN_TTY, 1, [If we have BSD function login_tty()]))
 AC_SEARCH_LIBS(tgetflag, $search_libs, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we have newer terminfo/termcap capabilities]))
-AC_SEARCH_LIBS(snprintf, snprintf db)
+AC_SEARCH_LIBS(snprintf, snprintf db, AC_DEFINE_UNQUOTED(HAVE_SNPRINTF, 1, [If we have snprintf]))
 
 # Checks for header files.
 AC_HEADER_DIRENT
@@ -117,7 +117,6 @@ if test x"$ac_cv_func_isblank" = xyes; then
 	joe_ISBLANK
 fi
 AC_CHECK_FUNCS([alarm mkdir mkstemp putenv setlocale strchr strdup utime setpgid])
-AC_CHECK_FUNC([snprintf],, AC_MSG_ERROR([snprintf not available: I won't build for this ancient system]))
 AC_CHECK_FUNCS([setitimer sigaction sigvec siginterrupt sigprocmask])
 
 joe_REINSTALL_SIGHANDLERS

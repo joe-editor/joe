@@ -591,7 +591,7 @@ static int syntaxcmplt(BW *bw)
 		p = (unsigned char *)getenv("HOME");
 		if (p) {
 			unsigned char buf[1024];
-			snprintf((char *)buf,sizeof(buf),"%s/.joe/syntax",p);
+			joe_snprintf_1((char *)buf,sizeof(buf),"%s/.joe/syntax",p);
 			if (!chpwd(buf) && (t = rexpnd(US "*.jsf"))) {
 				for (x = 0; x != aLEN(t); ++x)
 					*strrchr((char *)t[x],'.') = 0;
@@ -624,7 +624,7 @@ static int doencoding(BW *bw, unsigned char *s, int *xx, int *notify)
 
 	if (map) {
 		bw->o.charmap = map;
-		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "%s encoding assumed for this file", map->name);
+		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%s encoding assumed for this file", map->name);
 		msgnw(bw->parent, msgbuf);
 	} else
 		msgnw(bw->parent, US "Character set not found");
@@ -679,7 +679,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			bw->b->rdonly = bw->o.readonly;
 		break;
 	case 1:
-		snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *glopts[x].set);
+		joe_snprintf_1((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *glopts[x].set);
 		xx = (int *) joe_malloc(sizeof(int));
 
 		*xx = x;
@@ -691,9 +691,9 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			return -1;
 	case 2:
 		if (*(unsigned char **) glopts[x].set)
-			snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *(unsigned char **) glopts[x].set);
+			joe_snprintf_1((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *(unsigned char **) glopts[x].set);
 		else
-			snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, "");
+			joe_snprintf_1((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, "");
 		xx = (int *) joe_malloc(sizeof(int));
 
 		*xx = x;
@@ -704,10 +704,10 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		else
 			return -1;
 	case 5:
-		snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
+		joe_snprintf_1((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
 		goto in;
 	case 7:
-		snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
+		joe_snprintf_1((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
 	      in:xx = (int *) joe_malloc(sizeof(int));
 
 		*xx = x;
@@ -719,7 +719,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			return -1;
 
 	case 9:
-		snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, "");
+		joe_snprintf_1((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, "");
 		m->parent->notify = 0;
 		wabort(m->parent);
 		if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, locale_map))
@@ -728,7 +728,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			return -1;
 
 	case 13:
-		snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, "");
+		joe_snprintf_1((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, "");
 		m->parent->notify = 0;
 		wabort(m->parent);
 		if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, locale_map))
@@ -767,10 +767,10 @@ int umode(BW *bw)
 		s[x] = (unsigned char *) joe_malloc(80);		/* FIXME: why 40 ??? */
 		switch (glopts[x].type) {
 		case 0:
-			snprintf((char *)(s[x]), OPT_BUF_SIZE, "%s%s", glopts[x].menu, *glopts[x].set ? "ON" : "OFF");
+			joe_snprintf_2((char *)(s[x]), OPT_BUF_SIZE, "%s%s", glopts[x].menu, *glopts[x].set ? "ON" : "OFF");
 			break;
 		case 1:
-			snprintf((char *)(s[x]), OPT_BUF_SIZE, "%s%d", glopts[x].menu, *glopts[x].set);
+			joe_snprintf_2((char *)(s[x]), OPT_BUF_SIZE, "%s%d", glopts[x].menu, *glopts[x].set);
 			break;
 		case 2:
 		case 9:
@@ -778,13 +778,13 @@ int umode(BW *bw)
 			strcpy((char *)(s[x]), (char *)glopts[x].menu);
 			break;
 		case 4:
-			snprintf((char *)(s[x]), OPT_BUF_SIZE, "%s%s", glopts[x].menu, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? "ON" : "OFF");
+			joe_snprintf_2((char *)(s[x]), OPT_BUF_SIZE, "%s%s", glopts[x].menu, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? "ON" : "OFF");
 			break;
 		case 5:
-			snprintf((char *)(s[x]), OPT_BUF_SIZE, "%s%d", glopts[x].menu, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
+			joe_snprintf_2((char *)(s[x]), OPT_BUF_SIZE, "%s%d", glopts[x].menu, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
 			break;
 		case 7:
-			snprintf((char *)(s[x]), OPT_BUF_SIZE, "%s%d", glopts[x].menu, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
+			joe_snprintf_2((char *)(s[x]), OPT_BUF_SIZE, "%s%d", glopts[x].menu, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
 			break;
 		}
 	}
