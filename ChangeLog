@@ -1,3 +1,8 @@
+Fri Jan 25 2002  Vitezslav Samel <samel@mail.cz>
+	* termcap.c:
+	strcmp() can return values other than -1/0/+1 (fix supplied by
+	Schermann Gabor <gaborsch@mailbox.hu>)
+
 Sat Jan 19 2002  Vitezslav Samel <samel@mail.cz>
 	* ublock.c:
 	don't use markb and markk after they are freed (fixes segfault)

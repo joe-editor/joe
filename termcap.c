@@ -357,22 +357,20 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 static struct sortentry *findcap(CAP *cap, char *name)
 {
 	int x, y, z;
+	int found;
 
 	x = 0;
 	y = cap->sortlen;
 	z = -1;
 	while (z != (x + y) / 2) {
 		z = (x + y) / 2;
-		switch (strcmp(name, cap->sort[z].name)) {
-		case 1:
+		found = strcmp(name, cap->sort[z].name);
+		if (found > 0)
 			x = z;
-			break;
-		case -1:
+		else if (found < 0)
 			y = z;
-			break;
-		case 0:
+		else
 			return cap->sort + z;
-		}
 	}
 	return 0;
 }
@@ -392,7 +390,7 @@ int getflag(CAP *cap, char *name)
 	if (cap->abuf)
 		return tgetflag(name);
 #endif
-	return findcap(cap, name) != 0;
+	return findcap(cap, name) != NULL;
 }
 
 char *jgetstr(CAP *cap, char *name)
