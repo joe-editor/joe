@@ -86,6 +86,7 @@ CMD cmds[] = {
 	{US "dnarwmenu", TYPEMENU, umdnarw, NULL, 1, US "uparwmenu"}, 
 	{US "dnslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, udnslide, NULL, 1, US "upslide"},
 	{US "drop", TYPETW + TYPEPW, udrop, NULL, 0, NULL},
+	{US "drop_no_redrop", TYPETW + TYPEPW, udrop_no_redrop, NULL, 0, NULL},
 	{US "dupw", TYPETW, uduptw, NULL, 0, NULL},
 	{US "edit", TYPETW + TYPEPW, uedit, NULL, 0, NULL},
 	{US "eof", TYPETW + TYPEPW + EFIXXCOL + EMOVE, u_goto_eof, NULL, 0, NULL},

@@ -14,6 +14,7 @@ blkmove		Move marked block to cursor
 blksave		Save marked block into a file
 copy		Copy block to kill-ring
 drop		Set markb.  If it was already set, eliminate it.
+drop_no_redrop	Set markb.  If it was already set, do nothing.
 filt		Filter block or file through a unix command
 markb		Set beginning of block mark
 markk		Set end of block mark

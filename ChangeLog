@@ -1,4 +1,9 @@
 Thu May  6 2004  Joe Allen <jhallen@world.std.com>
+	* ublock.c :
+
+	Added drop_no_redrop function for Ctrl-rtarw marking.
+
+Thu May  6 2004  Joe Allen <jhallen@world.std.com>
 	* uerror.c :
 
 	Improve error parser: require ':' on error lines.

@@ -689,6 +689,10 @@ upslide,upslide,upslide,upslide		MWUP
 yankpop		^[ y		Undelete text
 yank		^[ Y		Undelete text
 yankpop		^[ Y		Undelete text
+drop_no_redrop,rtarw	^[ [ 1 ; 5 C	Mark right
+drop_no_redrop,ltarw	^[ [ 1 ; 5 D    Mark left
+drop_no_redrop,uparw    ^[ [ 1 ; 5 A    Mark up
+drop_no_redrop,dnarw    ^[ [ 1 ; 5 B    Mark down
 
 nbuf		^[ v		Next buffer
  pbuf		^[ .		Next buffer

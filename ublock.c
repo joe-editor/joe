@@ -258,6 +258,16 @@ int udrop(BW *bw)
 	return 0;
 }
 
+int udrop_no_redrop(BW *bw)
+{
+	prm(markk);
+	if (marking && markb)
+		return 0;
+	else
+		umarkb(bw);
+	return 0;
+}
+
 /* Set end */
 
 int umarkk(BW *bw)
