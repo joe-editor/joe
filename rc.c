@@ -94,6 +94,7 @@ extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode, nobackups
 extern int noxon, lines, staen, columns, Baud, dopadding, orphan, marking, beep, keepup, nonotice;
 extern int notite, usetabs, assume_color, guesscrlf, guessindent, menu_explorer, icase, wrap, autoswap;
 extern int menu_jump;
+extern int xmouse;
 extern unsigned char *backpath;
 
 /* Set to use ~/.joe_state file */
@@ -327,6 +328,7 @@ struct glopts {
 	{US "columns",	1, &columns, NULL, 0, 0, 0, 0, 2, 1024 },
 	{US "skiptop",	1, &skiptop, NULL, 0, 0, 0, 0, 0, 64 },
 	{US "notite",	0, &notite, NULL, 0, 0, 0 },
+	{US "mouse",	0, &xmouse, NULL, 0, 0, 0 },
 	{US "usetabs",	0, &usetabs, NULL, 0, 0, 0 },
 	{US "assume_color", 0, &assume_color, NULL, 0, 0, 0 },
 	{ NULL,		0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0 }

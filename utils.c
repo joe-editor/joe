@@ -487,6 +487,7 @@ void emit_string(FILE *f,unsigned char *s,int len)
 
 int parse_hdlc(unsigned char **pp, unsigned char *buf, int len)
 {
+#if 0
 	unsigned char *p= *pp;
 	int x = 0;
 	if(*p=='~') {
@@ -509,12 +510,65 @@ int parse_hdlc(unsigned char **pp, unsigned char *buf, int len)
 		}
 	}
 	return -1;
+#else
+	unsigned char *p= *pp;
+	int x = 0;
+	if(*p=='"') {
+		++p;
+		while (len && *p && *p!='"')
+			if (*p=='\\') {
+				if (p[1]=='\\' || p[1]=='"') {
+					++p;
+					buf[x++] = *p++;
+					--len;
+				} else if (p[1]=='n') {
+					p+=2;
+					buf[x++] = '\n';
+					--len;
+				} else if (p[1]=='r') {
+					p+=2;
+					buf[x++] = '\r';
+					--len;
+				} else if (p[1]=='0' && p[2]=='0' && p[3]=='0') {
+					p+=4;
+					buf[x++] = 0;
+					--len;
+				} else
+					return -1;
+			} else {
+				buf[x++] = *p++;
+				--len;
+			}
+		buf[x] = 0;
+		while (*p && *p!='"')
+			if (*p=='\\') {
+				if (p[1]=='\\' || p[1]=='"') {
+					p+=2;
+				} else if (p[1]=='n') {
+					p+=2;
+				} else if (p[1]=='r') {
+					p+=2;
+				} else if (p[1]=='0' && p[2]=='0' && p[3]=='0') {
+					p+=4;
+				} else
+					return -1;
+			} else {
+				++p;
+			}
+		if(*p=='"') {
+			*pp= p+1;
+			return x;
+		}
+	}
+	return -1;
+#endif
 }
 
 /* Emit an HDLC string */
 
 void emit_hdlc(FILE *f,unsigned char *s,int len)
 {
+#if 0
 	fputc('~',f);
 	while(len) {
 		if(*s=='~' || *s=='}' || *s==0 || *s=='\n')
@@ -525,6 +579,24 @@ void emit_hdlc(FILE *f,unsigned char *s,int len)
 		--len;
 	}
 	fputc('~',f);
+#else
+	fputc('"',f);
+	while(len) {
+		if (*s=='"' || *s=='\\')
+			fputc('\\',f), fputc(*s,f);
+		else if(*s=='\n')
+			fputc('\\',f), fputc('n',f);
+		else if(*s=='\r')
+			fputc('\\',f), fputc('r',f);
+		else if(*s==0)
+			fputc('\\',f), fputc('0',f), fputc('0',f), fputc('0',f);
+		else
+			fputc(*s,f);
+		++s;
+		--len;
+	}
+	fputc('"',f);
+#endif
 }
 
 /* Parse a character range: a-z */

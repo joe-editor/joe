@@ -1,3 +1,34 @@
+Short list for 3.2:
+
+	- dump Ctrl-SPACE?
+
+	- egmont's Ctrl-selection bug
+
+	- math: hex entry/display, insert into text
+
+	- ^KC into search window fails.  key to move text into search window
+
+	- ^D in selection prompts should bring up menu like tcsh
+
+	- Ctrl-G xml should ignore <foo>  <foo />  </foo>
+
+	- update man page
+
+	- better string demarkation in highlighter (highlight strings with 's in
+	  them- need to use pointers instead of buffer to refer to string)
+
+	- debug .joe_state file
+	  - names of files on command line
+	  - try for previous screen configuration?
+
+
+maybe:
+
+	- security hole with spell checker
+	- regexp for compiler parsing
+	- nfs locking?
+	- if file is read only, check it out again (for jperfs)
+
 Do something with these keys:
 
 -------
@@ -450,7 +481,7 @@ Fix for next release highlight:
   don't use -notite by default.
 
 Watch loaded file for changes
-
+k
 Save all history buffers and keyboard macros in ~/.joe_state file?
 
   Update documentation.

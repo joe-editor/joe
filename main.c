@@ -43,6 +43,7 @@ int nonotice = 0;		/* Set to prevent copyright notice */
 int orphan = 0;
 unsigned char *exmsg = NULL;		/* Message to display when exiting the editor */
 int ttisxterm=0;
+int xmouse=0;
 
 SCREEN *maint;			/* Main edit screen */
 
@@ -322,7 +323,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 
 #ifdef MOUSE_XTERM
 	/* initialize mouse */
-	if ((s=getenv("TERM")) && strstr(s,"xterm")) {
+	if (xmouse && (s=getenv("TERM")) && strstr(s,"xterm")) {
 		ttisxterm=1;
 		ttputs("\33[?1002h");
 		ttflsh();
