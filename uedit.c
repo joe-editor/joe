@@ -508,11 +508,11 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					c=prgetc(q);
 				prm(q);
 				/* VHDL hack */
-				if (c=='d' && bw->o.vhdl_comment) {
+				if ((c=='d' || c=='D') && bw->o.vhdl_comment) {
 					c=prgetc(q);
-					if(c=='n') {
+					if(c=='n' || c=='N') {
 						c=prgetc(q);
-						if(c=='e') {
+						if(c=='e' || c=='E') {
 							c=prgetc(q);
 							if(c==' ' || c=='\t' || c=='\n' || c==NO_MORE_DATA)
 								flg=1;
@@ -611,7 +611,7 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					++cnt;
 				} else if (cnt==1) {
 					if (is_in_any_group(group,buf)) {
-						if (!(buf[0]>='a' && buf[0]<='z'))
+						if (!(buf[0]>='a' && buf[0]<='z' || buf[0]>='A' && buf[0]<='Z'))
 							pgoto(p,p->byte-len+1);
 						else
 							pgoto(p,p->byte-len);
@@ -621,7 +621,7 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					}
 				} else if(is_in_group(last_of_set,buf)) {
 					/* VHDL hack */
-					if (bw->o.vhdl_comment && !strcmp(buf,"end"))
+					if (bw->o.vhdl_comment && (!strcmp(buf,"end") || !strcmp(buf,"END")))
 						while((c=pgetc(p))!=NO_MORE_DATA)
 							if (c==';' || c=='\n')
 								break;
