@@ -228,7 +228,7 @@ static int skip_special(P *p)
 	return s;
 }
 
-int pmatch(char **pieces, char *regex, int len, P *p, int n, int icase)
+int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 {
 	int c, d;
 	P *q = pdup(p);
@@ -314,7 +314,7 @@ int pmatch(char **pieces, char *regex, int len, P *p, int n, int icase)
 					char *oregex = regex;	/* Point to character to skip */
 					int olen = len;
 
-					char *tregex;
+					unsigned char *tregex;
 					int tlen;
 
 					P *r = 0;

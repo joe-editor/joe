@@ -21,6 +21,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include "config.h"
 
-int pmatch PARAMS((char **pieces, char *regex, int len, P *p, int n, int icase));
+int pmatch PARAMS((char **pieces, unsigned char *regex, int len, P *p, int n, int icase));
 
 #endif
