@@ -25,6 +25,7 @@ unsigned char *merr;
 
 int mode_hex;
 int mode_eng;
+int mode_ins;
 
 static RETSIGTYPE fperr(int unused)
 {
@@ -97,6 +98,10 @@ static double expr(int prec, struct var **rtv)
 		} else if (!strcmp(s,"eng")) {
 			mode_hex = 0;
 			mode_eng = 1;
+			v = get("ans");
+			x = v->val;
+		} else if (!strcmp(s,"ins")) {
+			mode_ins = 1;
 			v = get("ans");
 			x = v->val;
 		} else {
@@ -233,7 +238,6 @@ double m_sqrt(double n) { return sqrt(n); }
 double m_cbrt(double n) { return cbrt(n); }
 double m_log(double n) { return log(n); }
 double m_log10(double n) { return log10(n); }
-double m_exp10(double n) { return exp10(n); }
 double m_asin(double n) { return asin(n); }
 double m_acos(double n) { return acos(n); }
 double m_atan(double n) { return atan(n); }
@@ -243,7 +247,7 @@ double m_tanh(double n) { return tanh(n); }
 double m_asinh(double n) { return asinh(n); }
 double m_acosh(double n) { return acosh(n); }
 double m_atanh(double n) { return atanh(n); }
-double m_int(double n) { return rint(n); }
+double m_int(double n) { return (int)(n); }
 double m_floor(double n) { return floor(n); }
 double m_ceil(double n) { return ceil(n); }
 double m_fabs(double n) { return fabs(n); }
@@ -265,12 +269,11 @@ double calc(BW *bw, unsigned char *s)
 		v = get(US "sin"); v->func = m_sin;
 		v = get(US "cos"); v->func = m_cos;
 		v = get(US "tan"); v->func = m_tan;
-		v = get(US "exp"); v->func = m_tan;
+		v = get(US "exp"); v->func = m_exp;
 		v = get(US "sqrt"); v->func = m_sqrt;
 		v = get(US "cbrt"); v->func = m_cbrt;
 		v = get(US "ln"); v->func = m_log;
 		v = get(US "log"); v->func = m_log10;
-		v = get(US "exp10"); v->func = m_exp10;
 		v = get(US "asin"); v->func = m_asin;
 		v = get(US "acos"); v->func = m_acos;
 		v = get(US "atan"); v->func = m_atan;
@@ -329,7 +332,7 @@ double calc(BW *bw, unsigned char *s)
 		while (*ptr == ' ' || *ptr == '\t') {
 			++ptr;
 		}
-		if (*ptr == ';') {
+		if (*ptr == ':') {
 			++ptr;
 			while (*ptr == ' ' || *ptr == '\t') {
 				++ptr;
@@ -363,13 +366,14 @@ static int domath(BW *bw, unsigned char *s, void *object, int *notify)
 		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
 	else
 		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
-	if (bw->parent->watom->what != TYPETW) {
+	if (bw->parent->watom->what != TYPETW || mode_ins) {
 		binsm(bw->cursor, sz(msgbuf));
 		pfwrd(bw->cursor, strlen((char *)msgbuf));
 		bw->cursor->xcol = piscol(bw->cursor);
 	} else {
 		msgnw(bw->parent, msgbuf);
 	}
+	mode_ins = 0;
 	return 0;
 }
 
@@ -378,7 +382,7 @@ B *mathhist = NULL;
 int umath(BW *bw)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(bw->parent, US "=", &mathhist, domath, US "math", NULL, NULL, NULL, NULL, locale_map)) {
+	if (wmkpw(bw->parent, US "=", &mathhist, domath, US "Math", NULL, NULL, NULL, NULL, locale_map)) {
 		return 0;
 	} else {
 		return -1;

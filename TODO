@@ -1,34 +1,235 @@
 Short list for 3.2:
 
-	- dump Ctrl-SPACE?
+- dump Ctrl-SPACE? (I keep hitting it by accident)
 
-	- egmont's Ctrl-selection bug
+- egmont's Ctrl-selection bug
 
-	- math: insert into text (create a macro or documentation)
+- math: insert into text (create a macro or documentation)
 
-	- ^KC into search window fails.  key to move text into search window
+- ^KC into search window fails.  key to move text into search window
 
-	- ^D in selection prompts should bring up menu like tcsh
+- ^D in selection prompts should bring up menu as in tcsh
 
-	- Ctrl-G for vhdl, for `if `endif and #if #endif
+- Ctrl-G for vhdl, for `if `endif and #if #endif
 
-	- update man page
+- update man page
 
-	- better string demarkation in highlighter (highlight strings with 's in
-	  them- need to use pointers instead of buffer to refer to string)
+- better string demarcation in highlighter (highlight all words with 's in
+- them- need to use pointers instead of buffer to refer to string)
 
-	- debug .joe_state file
-	  - names of files on command line
-	  - try for previous screen configuration?
-	  - multiple joes: last one who exits wins
+- ^K W doesn't say "block written" when it's done
+
+- debug .joe_state file
+ - names of files on command line
+ - try for previous screen configuration?
+ - multiple joes: the last one who exits wins
+
+- search should automatically use 'k' mode if block is
+  selected.  Cursor should jump to top of block when done.  Jump
+  back to start mode?
+
+Others:
+
+- security hole with spell checker
+
+- regexp for compiler parsing
+
+- nfs locking?
+
+- if file is read only, check it out again (for perforce)
+
+- shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
+  shell window.
+
+- do not use ^[^[ for anything.  it prevents Alt-arrow
+  from being useful.
+
+- save all files without asking thing for quick compile
+
+- continued search mode for jpico?
+
+- make ^K F prompt with previous text (PICO)?
+
+options are screwed up: we copy window to buffer (to get buffer options
+to the buffer).  But if we have multiple windows, buffer options will have
+stale data.
+
+we are missing many query and prompt window abort handlers, which cause
+small memory leaks.
+
+- update help screens: some things have changed (emacs is more like emacs).
+
+ Reload modified files (or current window)
+
+Watch loaded file for changes
+
+regex: character classes? a-z matches any letter?
+
+parse *rc file only once?
+
+can't load terminfo- should switch to termcap or provide compiled
+ANSI terminfo built in.
+
+gettext patch
+
+Perl compatible regex search.
+
+Improvements for regular text
+-----------------------------
+mode where wordwrap wraps rest of paragraph?
+
+mode where all editing wraps rest of paragraph?
+
+Improvements for programming
+----------------------------
+Jump to definition (tags does this)
+
+Show list of references
+
+Diff mode (need vertical window)
+
+Tie in with CVS
+
+Refactoring
+
+Syntax Highlighting:
+--------------------
+
+Fix for next release highlight:
+
+  other windows why
+  lose state during page down?
+  perl highlighter
+  more syntax files
+
+  byte to byte conversions?
+  UTF-8 decoder right at input instead of in qw and utype?
+
+UTF-8 syntax files?
+
+Support for more languages:
+
+ Paragraph reformat mode for TeX files.
+
+ Reformat paragraph should reformat C function if we're editing C.
+
+File loading/storing:
+
+ Should have switch buffers in current window as more fundamental joe key
+ sequence (it's ^[ u and ^[ v for now).
+
+ Unnamed buffers should be in bufed list (was fixed in the lost joe 2.9)
+
+Jmacs/Jstar/Jpico:
+
+ search and replace 'fred' to 'foo':
+    find 'Fred', gets 'Foo'.
+
+ Rectangle mode for emacs yank system
+
+ Overtype mode works for yank
+
+ ESC args should work differently in emacs
+
+ many negative args do not work properly
+
+ exiting options and i-search with ESC is not pretty
+ (it isn't in emacs either)
+
+Shell windows:
+
+ Better environment settings for shell windows.
+
+Documentation:
+
+ Include documentation for joe hackers.  I wrote a lot of this
+ some time, I need to find it.
+
+ joe should open tty earlier in startup sequence because ^Y
+ is suspend character on sun.
+
+UTF-8/Internationalization
+--------------------------
+
+- right-left mode for Hebrew/Arabic?
+
+  There is no good way to do this.  For all rtol, you could use a reversed
+xterm.  For mixed, you need tags to indicate direction.
 
 
-maybe:
+UI for changing colors in the editor (or at least dark/light mode)
 
-	- security hole with spell checker
-	- regexp for compiler parsing
-	- nfs locking?
-	- if file is read only, check it out again (for perforce)
+More colors: UI for using 256 color xterms.
+
+
+ Lock files being edited?
+  one person gets write lock
+
+
+ Don't understand:  optionally break hardlinks on save?  what is "tla"?
+
+ Use memory mapped files to fast load large files.  Have to not
+ count no. lines in each buffer on startup.
+
+
+ Emulate other editors?  Brief, EDT?
+
+
+Prompts:
+
+ Sort should be column wise, not row wise?
+
+ HTML-style thing for option selection?
+
+
+
+Terminal handling:
+
+ Emit ESC c to reset terminal on startup?
+
+ Look into clearing right-most column.
+
+Macros:
+
+ Interactive macros during file load are broken.  Think about multiple
+ stack hack (otherwise template based C++ callbacks).
+
+
+Mouse:
+
+ ` and autoindent mode are a problem for drag and drop.
+ any way we can distinguish normal typing from a drop?
+ modify xterm...
+
+Major new modes:
+
+ Hex edit mode
+
+ Fixed record length mode
+
+
+Major code improvements:
+
+ Vertical windows (optionally lock-stepped).
+
+
+Major new features:
+
+ Folding
+
+
+Options
+
+ Fix it so all options appear in ^T.  Maybe make hook function
+ to handle major changes.  Need this for major mode change for
+ hex edit mode.
+
+Other requests:
+
+ -cleanup (delete extra lines and extra spaces at ends of lines).
+
+ -show no. utf characters, not no. bytes
+
 
 Do something with these keys:
 
@@ -428,242 +629,3 @@ notepad/cua mode?
 F3	find next
 F5	date/time
 
-- shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
-  shell window.
-
-- do not use ^[^[ for anything.  it prevents Alt-arrow
-  from being useful.
-
-- search should automatically use 'k' mode if block is
-  selected.  Cursor should jump to top of block when done.  Jump
-  back to start mode?
-
-
-
-- save all files without asking thing for quick compile
-
-- better parsing of compile messages
-
-
-
-- continued search mode for jpico?
-
-- make ^K F prompt with previous text (PICO)?
-
-^K X leads to segfault?
-
-if I use ^K C to move search string into search prompt, it says not found
-even though it found it.
-
-options are screwed up: we copy window to buffer (to get buffer options
-to the buffer).  But if we have multiple windows, buffer options will have
-stale data.
-
-we are missing many query and prompt window abort handlers, which cause
-small memory leaks.
-
-- update help screens: some things have changed (emacs is more like emacs).
-
-
-Fix for next release highlight:
-
-  other windows why
-  lose state during page down?
-  perl highlighter
-  more syntax files
-
-  byte to byte conversions?
-  UTF-8 decoder right at input instead of in qw and utype?
-
- Update man page.
-
- Reload modified files (or current window)
-
-  don't use -notite by default.
-
-Watch loaded file for changes
-
-  Update documentation.
-
-shift/alt/ctrl arrow key stuff.
-
-regex: character classes? a-z matches any letter?
-
-  parse *rc file only once?
-
-  different symbol for 'joe' directory
-
-  can't load terminfo- should switch to termcap or provide compiled
-  ANSI terminfo built in.
-
-  gettext patch
-
-
-New features:
------------------------
-
-  move *rc files to .joe directory?
-
-  check all instances of 'chars': use unicode to locale symbols instead.
-  EBCDIC ?
-    - we assume '\n' is line terminator.
-    - there are many references to '\t' and ' '.
-    - EBCDIC used to be fixed record length (80 columns) anyway.
-
-Math: hex, octal more functions. (-lm?)
-
-Perl compatible regex search.
-
-Improvements for regular text
------------------------------
-mode where wordwrap wraps rest of paragraph?
-
-mode where all editing wraps rest of paragraph?
-
-Improvements for programming
-----------------------------
-
-Jump to definition (tags does this)
-
-Show list of references
-
-Diff mode (need vertical window)
-
-Tie in with CVS
-
-Refactoring
-
-Syntax Highlighting:
---------------------
-
-UTF-8 syntax files?
-
-Support for more languages:
-
- Paragraph reformat mode for TeX files.
-
- Reformat paragraph should reformat C function if we're editing C.
-
-File loading/storing:
-
- Should have switch buffers in current window as more fundamental joe key
- sequence (it's ^[ u and ^[ v for now).
-
- Unnamed buffers should be in bufed list (was fixed in the lost joe 2.9)
-
-Jmacs/Jstar/Jpico:
-
- search and replace 'fred' to 'foo':
-    find 'Fred', gets 'Foo'.
-
- Rectangle mode for emacs yank system
-
- Overtype mode works for yank
-
- ESC args should work differently in emacs
-
- many negative args do not work properly
-
- exiting options and i-search with ESC is not pretty
- (it isn't in emacs either)
-
-Shell windows:
-
- Better environment settings for shell windows.
-
-Documentation:
-
- Include documentation for joe hackers.  I wrote a lot of this
- some time, I need to find it.
-
- joe should open tty earlier in startup sequence because ^Y
- is suspend character on sun.
-
-UTF-8/Internationalization
---------------------------
-
-- right-left mode for Hebrew/Arabic?
-
-  There is no good way to do this.  For all rtol, you could use a reversed
-xterm.  For mixed, you need tags to indicate direction.
-
-
-UI for changing colors in the editor (or at least dark/light mode)
-
-More colors: UI for using 256 color xterms.
-
-
- Lock files being edited?
-  one person gets write lock
-
-
- Don't understand:  optionally break hardlinks on save?  what is "tla"?
-
- Use memory mapped files to fast load large files.  Have to not
- count no. lines in each buffer on startup.
-
-
- Emulate other editors?  Brief, EDT?
-
-
-Prompts:
-
- Sort should be column wise, not row wise?
-
- HTML-style thing for option selection?
-
-
-
-Terminal handling:
-
- Emit ESC c to reset terminal on startup?
-
- Look into clearing right-most column.
-
-Macros:
-
- Interactive macros during file load are broken.  Think about multiple
- stack hack (otherwise template based C++ callbacks).
-
-
-Mouse:
-
- ` and autoindent mode are a problem for drag and drop.
- any way we can distinguish normal typing from a drop?
- modify xterm...
-
- mouse mode: mouse can position cursor.  Would be good for
- jcua...
-
-Major new modes:
-
- Hex edit mode
-
- Fixed record length mode
-
-
-Major code improvements:
-
- Vertical windows (optionally lock-stepped).
-
-
-Major new features:
-
- Folding
-
-
-Options
-
- Fix it so all options appear in ^T.  Maybe make hook function
- to handle major changes.  Need this for major mode change for
- hex edit mode.
-
-Other requests:
-
- -cleanup (delete extra lines and extra spaces at ends of lines).
-
- -show no. utf characters, not no. bytes
-
-lock file: give error for edit.
-memory map files
-autosave
