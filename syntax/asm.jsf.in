@@ -1,6 +1,17 @@
-# JOE syntax highlight file for Assembly language
+# JOE syntax highlight file for assembly language
 
-# Highlights ';' comments and C-preprocessor stuff
+# Highlights ';' comments, C-preprocessor stuff and C-like constants.
+
+# Some assembly languages do not use C-preprocessor and use '#' for
+# comments.  For them, eliminate all states up to ':idle'. and change the
+# ";" line in 'idle' to '#'.
+
+# For UNIX assembly ';' actually separates instructions, but I've only seen
+# this for 'rep; movsb'.  If it bothers you eliminate the ';' line in
+# ':idle'.
+
+# This highlighter is too strict for numeric constants.  Many assembly
+# languages allow '000009', which looks like a bad octal constant in C/UNIX.
 
 =Idle
 =Bad		bold red

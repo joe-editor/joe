@@ -173,25 +173,26 @@ void setopt(B *b, unsigned char *parsed_name)
 			if(o->contents_regex) {
 				P *p = pdup(b->bof);
 				if (pmatch(pieces,o->contents_regex,strlen((char *)o->contents_regex),p,0,0)) {
-					for (x = 0; x != 26; ++x)
-						vsrm(pieces[x]);
 					prm(p);
 					b->o = *o;
 					lazy_opts(&b->o);
-					return;
+					goto done;
 				} else {
-					for (x = 0; x != 26; ++x)
-						vsrm(pieces[x]);
 					prm(p);
 				}
 			} else {
 				b->o = *o;
 				lazy_opts(&b->o);
-				return;
+				goto done;
 			}
 		}
+
 	b->o = fdefault;
 	lazy_opts(&b->o);
+
+	done:
+	for (x = 0; x!=26; ++x)
+		vsrm(pieces[x]);
 }
 
 /* Table of options and how to set them */
