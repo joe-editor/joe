@@ -1,4 +1,8 @@
 Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
+	* termcap.c, termcap.h: correct prototype to the output routine
+	the CAP structure (and setcap()/getcap() etc.)
+
+Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
 	* regex.c, regex.h: change regex pointer to be 'unsigned char *regex'
 	This kills some warnings during build.
 

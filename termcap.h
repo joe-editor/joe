@@ -40,7 +40,7 @@ struct cap {
 	int div;		/* tenths of MS per char */
 	int baud;		/* Baud rate */
 	char *pad;		/* Padding string or NULL to use NUL */
-	void (*out) ();		/* Character output routine */
+	void (*out) (char *, char);		/* Character output routine */
 	void *outptr;		/* First arg passed to output routine.  Second
 				   arg is character to write */
 	int dopadding;		/* Set if pad characters should be used */
@@ -83,13 +83,13 @@ struct cap {
  * done for self-refering 'tc=filename' links (so all of core will be
  * allocated if there are any).
  */
-CAP *getcap PARAMS((char *name, unsigned int baud, void (*out) (/* ??? */), void *outptr));
+CAP *getcap PARAMS((char *name, unsigned int baud, void (*out) (char *, char), void *outptr));
 
 /* CAP *setcap(CAP *cap,int baud,void (*out)(void *outptr,char c),void *outptr);
  *
  * Reset baud, out and outptr for a CAP
  */
-CAP *setcap PARAMS((CAP *cap, unsigned int baud, void (*out) (/* ??? */), void *outptr));
+CAP *setcap PARAMS((CAP *cap, unsigned int baud, void (*out) (char *, char), void *outptr));
 
 /* char *jgetstr(CAP *cap,char *name);
  *

@@ -138,7 +138,7 @@ static long findidx(FILE *file, char *name)
 
 /* Load termcap entry */
 
-CAP *getcap(char *name, unsigned int baud, void (*out) (/* ??? */), void *outptr)
+CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *outptr)
 {
 	CAP *cap;
 	FILE *f, *f1;
@@ -372,7 +372,7 @@ static struct sortentry *findcap(CAP *cap, char *name)
 	return 0;
 }
 
-CAP *setcap(CAP *cap, unsigned int baud, void (*out) (/* ??? */), void *outptr)
+CAP *setcap(CAP *cap, unsigned int baud, void (*out) (char *, char), void *outptr)
 {
 	cap->baud = baud;
 	cap->div = 100000 / baud;
@@ -638,14 +638,14 @@ void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 
 static int total;
 
-static void cst(void)
+static void cst(char *ptr, char c)
 {
 	++total;
 }
 
 int tcost(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 {
-	void (*out) () = cap->out;
+	void (*out) (char *, char) = cap->out;
 
 	if (!s)
 		return 10000;
@@ -664,7 +664,7 @@ static void cpl(char *ptr, char c)
 
 char *tcompile(CAP *cap, char *s, int a0, int a1, int a2, int a3)
 {
-	void (*out) () = cap->out;
+	void (*out) (char *, char) = cap->out;
 	int div = cap->div;
 
 	if (!s)
