@@ -302,7 +302,6 @@ void ttopnn(void)
 #ifdef SIGWINCH
 			joe_set_signal(SIGWINCH, winchd);
 #endif
-			tickon();
 		}
 	}
 
@@ -501,7 +500,6 @@ int ttflsh(void)
 			while (!yep)
 				pauseit();
 			unmaskit();
-			tickon();
 		} else
 			joe_write(fileno(termout), obuf, obufp);
 
@@ -565,6 +563,8 @@ int ttgetc(void)
 {
 	int stat;
 
+	tickon();
+
       loop:
 	ttflsh();
 	while (winched) {
@@ -602,9 +602,12 @@ int ttgetc(void)
 				mpxdied(pack.who);
 			goto loop;
 		} else {
-			if (accept != NO_MORE_DATA)
+			if (accept != NO_MORE_DATA) {
+				tickoff();
 				return accept;
+			}
 			else {
+				tickoff();
 				ttsig(0);
 				return 0;
 			}
@@ -620,6 +623,7 @@ int ttgetc(void)
 				ttsig(0);
 		}
 	}
+	tickoff();
 	return havec;
 }
 
@@ -693,7 +697,6 @@ void ttsusp(void)
 {
 	int omode;
 
-	tickoff();
 #ifdef SIGTSTP
 	omode = ttymode;
 	ttclsn();
@@ -706,7 +709,6 @@ void ttsusp(void)
 #else
 	ttshell(NULL);
 #endif
-	tickon();
 }
 
 /* Stuff for asynchronous I/O multiplexing.  We do not use streams or select() because joe

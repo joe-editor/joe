@@ -13,6 +13,11 @@ Wed May 12 2004  Joe Allen <jhallen@world.std.com>
 
 	^X ^C is now much more like emacs.
 
+	Fixed annoying occasional screen update glitch: it was caused
+	by SIGALRM causing dropped output in Linux (doesn't happen on
+	SUN).  So now we arm SIGALRM only when waiting for input.  (SIGALRM
+	is used to keep the clock updated).
+
 Wed May 12 2004  Joe Allen <jhallen@world.std.com>
 
 	Applied Olexiy Avramchenko's <olexiy@irtech.cn.ua> patch

@@ -674,6 +674,8 @@ SCRN *nopen(CAP *cap)
 	leave = 1;
 	ttclose();
 	signrm();
+        fprintf(stderr,"cm=%d ch=%d cv=%d ho=%d lf=%d DO=%d ll=%d up=%d UP=%d cr=%d\n",
+                       t->cm, t->ch, t->cv, t->ho, t->lf, t->DO, t->ll, t->up, t->UP, t->cr);
 	fprintf(stderr,"Sorry, your terminal can't do absolute cursor positioning.\nIt's broken\n");
 	return NULL;
       ok:
@@ -1573,7 +1575,7 @@ void nscroll(SCRN *t)
 
 	for (y = 0; y != t->li; ++y) {
 		q = t->sary[y];
-		if (have)
+		if (ifhave)
 			return;
 		if (q && q != t->li) {
 			if (q > 0) {

@@ -310,10 +310,8 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
 			found = strcmp(qq, cap->sort[z].name);
 			if(found > 0) {
 				x = z;
-				break;
 			} else if(found < 0) {
 				y = z;
-				break;
 			} else {
 				if (c == '@')
 					mmove(cap->sort + z, cap->sort + z + 1, (cap->sortlen-- - (z + 1)) * sizeof(struct sortentry));
@@ -359,6 +357,11 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
 		cap->dopadding = 1;
 	else
 		cap->dopadding = 0;
+
+/* show sorted entries
+	for(x=0;x!=cap->sortlen;++x)
+		printf("%s = %s\n",cap->sort[x].name,cap->sort[x].value);
+*/
 	return setcap(cap, baud, out, outptr);
 }
 
