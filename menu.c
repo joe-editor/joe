@@ -92,12 +92,6 @@ static void menumove(MENU *m, int x, int y)
 	m->y = y;
 }
 
-static void menuresz(MENU *m, int wi, int he)
-{
-	m->w = wi;
-	m->h = he;
-}
-
 static int mlines(unsigned char **s, int w)
 {
 	int x;
@@ -141,6 +135,13 @@ static void mconfig(MENU *m)
 
 		/* lines = (m->nitems + m->perline - 1) / m->perline; */
 	}
+}
+
+static void menuresz(MENU *m, int wi, int he)
+{
+	m->w = wi;
+	m->h = he;
+	mconfig(m);
 }
 
 int umbol(MENU *m)

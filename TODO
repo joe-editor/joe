@@ -1,9 +1,12 @@
 Short list for 3.2:
 
-  exemac for first change: it should be run with cursor in window.
+- - - - - - - -
 
-  -orphan will break -mnew, -mold macros (because macros are run without a
-window on the screen).
+  define characters which make up words
+
+- - - - - - - -
+
+  improve macros: ignore error option, pass args to here option.
 
 - - - - - - - -
 
@@ -11,10 +14,6 @@ window on the screen).
     - Print message when it happens
 
     - Reload modified files (or current window)
-
-- - - - - - - -
-
-- egmont's Ctrl-selection bug
 
 - - - - - - - -
 
@@ -28,6 +27,21 @@ window on the screen).
 
 - - - - - - - -
 
+- search: automatically use 'k' mode if there is a block selected?  Cursor should
+  jump to top of block when done?  Modes for this?
+
+- - - - - - - -
+  exemac for first change: it should be run with cursor in window.
+
+  -orphan will break -mnew, -mold macros (because macros are run without a
+window on the screen).
+
+- - - - - - - -
+
+- egmont's Ctrl-selection bug
+
+- - - - - - - -
+
 - better string demarcation in highlighter (highlight all words with 's in
   them- need to use pointers instead of buffer to refer to string)
 
@@ -38,11 +52,6 @@ window on the screen).
  - try for previous screen configuration?
  - multiple joes: the last one who exits wins
  - don't quote macros, so user can copy them to joerc file
-
-- - - - - - - -
-
-- search: automatically use 'k' mode if there is a block selected?  Cursor should
-  jump to top of block when done?  Modes for this?
 
 - - - - - - - -
 
