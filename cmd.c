@@ -407,6 +407,7 @@ static int docmd(BW *bw, char *s, void *object, int *notify)
 	int ret = -1;
 	CMD *cmd = findcmd(s);
 
+	vsrm(s);	/* allocated in pw.c::rtnpw() */
 	if (!cmd)
 		msgnw(bw->parent, "No such command");
 	else {
