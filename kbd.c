@@ -147,7 +147,7 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char 
 
 	if (!seql && seq[0] == '.' && seq[1]) {
 		int x, c;
-		char *s;
+		unsigned char *s;
 
 		for (x = 0; seq[x] && seq[x] != ' '; ++x) ;
 		c = seq[x];
@@ -222,7 +222,7 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char 
 		s = jgetstr(cap, seq + 1);
 		seq[x] = c;
 		if (s && (s = tcompile(cap, s, 0, 0, 0, 0))
-		    && (sLEN(s) > 1 || s[0] < 0)) {
+		    && (sLEN(s) > 1 || (signed char)s[0] < 0)) {
 			capseq = s;
 			seql = sLEN(s);
 			for (seq += x; *seq == ' '; ++seq) ;

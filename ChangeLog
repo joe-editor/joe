@@ -1,4 +1,8 @@
 Sat Dec  7 2002  Vitezslav Samel <samel@mail.cz>
+	* kbd.c:
+	don't expect all archs have "char == signed char" by default
+
+Sat Dec  7 2002  Vitezslav Samel <samel@mail.cz>
 	* blocks.c, vfile.c:
 	64bit arch fixes: don't expect pointer fits into int (now we assume
 	it fits into unsigned long)
