@@ -484,6 +484,12 @@
 -syntax xml
 
  XML
+*.xsd
+-wordwrap
+-autoindent
+-syntax xml
+
+ HTML
 *.htm
 -wordwrap
 -autoindent

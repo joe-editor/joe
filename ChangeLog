@@ -1,3 +1,8 @@
+Tue Mar  1 2005  Joe Allen <jhallen@world.std.com>
+
+	Allow :s in xml names.
+
+
 Mon Feb 28 2005  Joe Allen <jhallen@world.std.com>
 
 	User defined text delimiters

@@ -400,7 +400,7 @@ unsigned char *find_last_group(unsigned char *group)
 	return group;
 }
 
-#define MAX_WORD_SIZE 31
+#define MAX_WORD_SIZE 255
 
 int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 {
@@ -654,6 +654,22 @@ int tomatch_xml(BW *bw,unsigned char *word,int dir)
 	}
 }
 
+void get_xml_name(P *p,unsigned char *buf)
+{
+	int c;
+	int len=0;
+	p=pdup(p);
+	c=pgetc(p);
+	while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c==':' || c=='-' || c=='.' ||
+	       c >= '0' && c <= '9') {
+		if(len!=MAX_WORD_SIZE)
+			buf[len++]=c;
+		c=pgetc(p);
+	}
+	buf[len]=0;
+	prm(p);
+}
+
 int utomatch(BW *bw)
 {
 	int d;
@@ -667,6 +683,7 @@ int utomatch(BW *bw)
 	if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_') {
 		P *q, *p;
 		unsigned char *buf;
+		unsigned char buf1[MAX_WORD_SIZE+1];
 		unsigned char *list = bw->b->o.text_delimiters;
 		unsigned char *set;
 		unsigned char *group;
@@ -678,6 +695,7 @@ int utomatch(BW *bw)
 		q=pdup(p);
 		p_goto_next(q);
 		buf=brvs(p,q->byte-p->byte);
+		get_xml_name(p,buf1);
 		c=prgetc(p);
 		if (c=='<')
 			flg = 1;
@@ -689,7 +707,7 @@ int utomatch(BW *bw)
 		prm(p); prm(q);
 
 		if (flg) {
-			flg = tomatch_xml(bw, buf, flg);
+			flg = tomatch_xml(bw, buf1, flg);
 			goto done;
 		}
 
