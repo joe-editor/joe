@@ -18,9 +18,9 @@ static void gen(char *s, FILE *fd)
 
       loop:
 	while (c = getc(fd), c == ' ' || c == '\t' || c == '#')
-		do
+		do {
 			c = getc(fd);
-		while (!(c == -1 || c == '\n'));
+		} while (!(c == -1 || c == '\n'));
 	if (c == -1)
 		return;
 	if (c == '\n')
@@ -52,8 +52,7 @@ static void gen(char *s, FILE *fd)
 					}
 					s[y] = c;
 					z = y + 1;
-				}
-				while (c && c != ':');
+				} while (c && c != ':');
 				if (flg)
 					printf(" %lx\n", addr - oaddr);
 			}

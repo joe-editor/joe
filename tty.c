@@ -232,9 +232,9 @@ int jread(int fd, void *buf, int siz)
 {
 	int rt;
 
-	do
+	do {
 		rt = read(fd, buf, siz);
-	while (rt < 0 && errno == EINTR);
+	} while (rt < 0 && errno == EINTR);
 	return rt;
 }
 
@@ -242,9 +242,9 @@ int jwrite(int fd, void *buf, int siz)
 {
 	int rt;
 
-	do
+	do {
 		rt = write(fd, buf, siz);
-	while (rt < 0 && errno == EINTR);
+	} while (rt < 0 && errno == EINTR);
 	return rt;
 }
 
@@ -786,8 +786,7 @@ static void mpxstart(void)
 				pack.ch = c;
 			pack.size = 0;
 			jwrite(mpxsfd, &pack, sizeof(struct packet) - 1024);
-		}
-		while (jread(fds[0], &pack, 1) == 1);
+		} while (jread(fds[0], &pack, 1) == 1);
 		_exit(0);
 	}
 	close(fds[0]);
@@ -797,7 +796,8 @@ static void mpxstart(void)
 static void mpxend(void)
 {
 	kill(kbdpid, 9);
-	while (wait(NULL) < 0 && errno == EINTR) ;
+	while (wait(NULL) < 0 && errno == EINTR)
+		/* do nothing */;
 	close(ackkbd);
 	ackkbd = -1;
 	close(mpxfd);
@@ -1078,7 +1078,8 @@ void mpxdied(MPX *m)
 {
 	if (!--nmpx)
 		mpxend();
-	while (wait(NULL) < 0 && errno == EINTR) ;
+	while (wait(NULL) < 0 && errno == EINTR)
+		/* do nothing */;
 	if (m->die)
 		m->die(m->dieobj);
 	m->func = 0;

@@ -515,9 +515,9 @@ int utw1(BASE *b)
 	do {
 		yn = 0;
 	      loop:
-		do
+		do {
 			wnext(t);
-		while (t->curwin->main == mainw && t->curwin != starting);
+		} while (t->curwin->main == mainw && t->curwin != starting);
 		if (t->curwin->main != mainw) {
 			BW *bw = t->curwin->main->object;
 			if (bw->pid) {
@@ -527,8 +527,7 @@ int utw1(BASE *b)
 			utw0((BASE *)bw), yn = 1;
 			goto loop;
 		}
-	}
-	while (yn);
+	} while (yn);
 	return 0;
 }
 
@@ -536,7 +535,7 @@ void setline(B *b, long int line)
 {
 	W *w = maint->curwin;
 
-	do
+	do {
 		if (w->watom->what == TYPETW) {
 			BW *bw = w->object;
 
@@ -551,7 +550,7 @@ void setline(B *b, long int line)
 					nscrldn(w->t->t, bw->y, bw->y + bw->h, (int) (oline - bw->top->line));
 			}
 		}
-	while ((w = w->link.next) != maint->curwin) ;
+	} while ((w = w->link.next) != maint->curwin);
 }
 
 /* Create a text window.  It becomes the last window on the screen */

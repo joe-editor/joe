@@ -165,10 +165,10 @@ static int skip_special(P *p)
 
 	switch (s = pgetc(p)) {
 		case '"':
-		do
+		do {
 			if ((s = pgetc(p)) == '\\')
 				pgetc(p), s = pgetc(p);
-		while (s != MAXINT && s != '\"') ;
+		} while (s != MAXINT && s != '\"');
 		if (s == '\"')
 			return MAXINT - 1;
 		break;
@@ -192,9 +192,10 @@ static int skip_special(P *p)
 		goto skip;
 		case '{':
 		to = '}';
-	      skip:do
+	      skip:
+		do {
 			s = skip_special(p);
-		while (s != to && s != MAXINT);
+		} while (s != to && s != MAXINT);
 		if (s == to)
 			return MAXINT - 1;
 		break;
@@ -207,8 +208,7 @@ static int skip_special(P *p)
 				while (s == '*')
 					if ((s = pgetc(p)) == '/')
 						return MAXINT - 1;
-			}
-			while (s != MAXINT);
+			} while (s != MAXINT);
 		else if (s != MAXINT)
 			s = prgetc(p);
 		else
@@ -274,8 +274,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 						goto succeed;
 					}
 					c = pgetc(p);
-				}
-				while (c != MAXINT && c != '\n');
+				} while (c != MAXINT && c != '\n');
 				goto fail;
 
 				case 'c':
@@ -287,8 +286,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 						saves(pieces, n, o, pb - o->byte);
 						goto succeed;
 					}
-				}
-				while (skip_special(p) != MAXINT);
+				} while (skip_special(p) != MAXINT);
 				goto fail;
 
 				case '[':
@@ -337,8 +335,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 						pset(p, z);
 						prm(z);
 						c = pgetc(p);
-					}
-					while (c != MAXINT && (*oregex == '\\' ? (tregex = oregex + 2, tlen = olen - 2, brack(&tregex, &tlen, c))
+					} while (c != MAXINT && (*oregex == '\\' ? (tregex = oregex + 2, tlen = olen - 2, brack(&tregex, &tlen, c))
 							       : (icase ? toupper(c) == toupper(*oregex) : c == *oregex)));
 
 				      done:

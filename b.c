@@ -158,8 +158,7 @@ B *bnext(void)
 		b = bufs.link.prev;
 		deque(B, link, &bufs);
 		enqueb(B, link, b, &bufs);
-	}
-	while (b->internal);
+	} while (b->internal);
 	return b;
 }
 
@@ -171,8 +170,7 @@ B *bprev(void)
 		b = bufs.link.next;
 		deque(B, link, &bufs);
 		enquef(B, link, b, &bufs);
-	}
-	while (b->internal);
+	} while (b->internal);
 	return b;
 }
 
@@ -276,9 +274,9 @@ B *boffline(B * b)
 {
 	P *p = b->bof;
 
-	do
+	do {
 		poffline(p);
-	while ((p = p->link.next) != b->bof);
+	} while ((p = p->link.next) != b->bof);
 	return b;
 }
 
@@ -286,9 +284,9 @@ B *bonline(B * b)
 {
 	P *p = b->bof;
 
-	do
+	do {
 		ponline(p);
-	while ((p = p->link.next) != b->bof);
+	} while ((p = p->link.next) != b->bof);
 	return b;
 }
 
@@ -529,8 +527,7 @@ P *pfwrd(P * p, long n)
 					p->byte += GSIZE(p->hdr), n -= GSIZE(p->hdr), p->line += p->hdr->nlines;
 				if (!pnext(p))
 					return 0;
-			}
-			while (n > GSIZE(p->hdr));
+			} while (n > GSIZE(p->hdr));
 		if (p->ofst >= p->hdr->hole) {
 			if (p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole] == '\n')
 				++p->line;
@@ -538,8 +535,7 @@ P *pfwrd(P * p, long n)
 			++p->line;
 		++p->byte;
 		++p->ofst;
-	}
-	while (--n);
+	} while (--n);
 	if (p->ofst == GSIZE(p->hdr))
 		pnext(p);
 	return p;
@@ -595,8 +591,7 @@ P *pbkwd(P * p, long n)
 					p->byte -= p->ofst, n -= p->ofst, p->line -= p->hdr->nlines;
 				if (!pprev(p))
 					return 0;
-			}
-			while (n > GSIZE(p->hdr));
+			} while (n > GSIZE(p->hdr));
 		--p->ofst;
 		--p->byte;
 		if (p->ofst >= p->hdr->hole) {
@@ -604,8 +599,7 @@ P *pbkwd(P * p, long n)
 				--p->line;
 		} else if (p->ptr[p->ofst] == '\n')
 			--p->line;
-	}
-	while (--n);
+	} while (--n);
 	return p;
 }
 
@@ -677,16 +671,14 @@ P *pnextl(P * p)
 				p->byte += GSIZE(p->hdr) - p->ofst;
 				if (!pnext(p))
 					return 0;
-			}
-			while (!p->hdr->nlines);
+			} while (!p->hdr->nlines);
 		if (p->ofst >= p->hdr->hole)
 			c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
 		else
 			c = p->ptr[p->ofst];
 		++p->byte;
 		++p->ofst;
-	}
-	while (c != '\n');
+	} while (c != '\n');
 	++p->line;
 	p->col = 0;
 	p->valcol = 1;
@@ -706,16 +698,14 @@ P *pprevl(P * p)
 				p->byte -= p->ofst;
 				if (!pprev(p))
 					return 0;
-			}
-			while (!p->hdr->nlines);
+			} while (!p->hdr->nlines);
 		--p->ofst;
 		--p->byte;
 		if (p->ofst >= p->hdr->hole)
 			c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
 		else
 			c = p->ptr[p->ofst];
-	}
-	while (c != '\n');
+	} while (c != '\n');
 	--p->line;
 	if (p->b->o.crlf && c == '\n') {
 		int k = prgetc1(p);
@@ -777,8 +767,7 @@ P *pcol(P * p, long goalcol)
 			pnext(p);
 		++p->byte;
 		p->col += wid;
-	}
-	while (p->col != goalcol);
+	} while (p->col != goalcol);
 	return p;
 }
 
@@ -787,9 +776,9 @@ P *pcolwse(P * p, long goalcol)
 	int c;
 
 	pcol(p, goalcol);
-	do
+	do {
 		c = prgetc(p);
-	while (c == ' ' || c == '\t');
+	} while (c == ' ' || c == '\t');
 	if (c != MAXINT)
 		pgetc(p);
 	return p;
@@ -843,9 +832,9 @@ void pbackws(P * p)
 	int c;
 	P *q = pdup(p);
 
-	do
+	do {
 		c = prgetc(q);
-	while (c == ' ' || c == '\t');
+	} while (c == ' ' || c == '\t');
 	if (c != MAXINT)
 		pgetc(q);
 	bdel(q, p);
@@ -891,7 +880,7 @@ static P *ffind(P * p, unsigned char *s, int len)
 	ffwrd(p, len);
 	amnt -= len;
 	x = len;
-	do
+	do {
 		if ((c = frgetc(p)) != s[--x]) {
 			if (table[c] == 255)
 				ffwrd(p, len + 1), amnt -= x + 1;
@@ -904,7 +893,7 @@ static P *ffind(P * p, unsigned char *s, int len)
 			else
 				x = len;
 		}
-	while (x) ;
+	} while (x);
 	return p;
 }
 
@@ -925,7 +914,7 @@ static P *fifind(P * p, unsigned char *s, int len)
 	ffwrd(p, len);
 	amnt -= len;
 	x = len;
-	do
+	do {
 		if ((c = toupper(frgetc(p))) != s[--x]) {
 			if (table[c] == 255)
 				ffwrd(p, len + 1), amnt -= x + 1;
@@ -938,7 +927,7 @@ static P *fifind(P * p, unsigned char *s, int len)
 			else
 				x = len;
 		}
-	while (x) ;
+	} while (x);
 	return p;
 }
 
@@ -1037,7 +1026,7 @@ static P *frfind(P * p, unsigned char *s, int len)
 	mset(table, 255, 256);
 	for (x = len; --x; table[s[x]] = len - x - 1) ;
 	x = 0;
-	do
+	do {
 		if ((c = fpgetc(p)) != s[x++]) {
 			if (table[c] == 255)
 				fbkwd(p, len + 1), amnt -= len - x + 1;
@@ -1050,7 +1039,7 @@ static P *frfind(P * p, unsigned char *s, int len)
 			else
 				x = 0;
 		}
-	while (x != len) ;
+	} while (x != len);
 	fbkwd(p, len);
 	return p;
 }
@@ -1074,7 +1063,7 @@ static P *frifind(P * p, unsigned char *s, int len)
 	mset(table, 255, 256);
 	for (x = len; --x; table[s[x]] = len - x - 1) ;
 	x = 0;
-	do
+	do {
 		if ((c = toupper(fpgetc(p))) != s[x++]) {
 			if (table[c] == 255)
 				fbkwd(p, len + 1), amnt -= len - x + 1;
@@ -1087,7 +1076,7 @@ static P *frifind(P * p, unsigned char *s, int len)
 			else
 				x = 0;
 		}
-	while (x != len) ;
+	} while (x != len);
 	fbkwd(p, len);
 	return p;
 }
@@ -1100,8 +1089,7 @@ static P *rgetto(P * p, P * q)
 				if (p->ofst)
 					p->byte -= p->ofst, p->line -= p->hdr->nlines;
 				pprev(p);
-			}
-			while (p->hdr != q->hdr);
+			} while (p->hdr != q->hdr);
 		--p->ofst;
 		--p->byte;
 		if (p->ofst >= p->hdr->hole) {
@@ -1528,8 +1516,7 @@ static H *bldchn(char *blk, int size, long *nlines)
 		enqueb(H, link, &anchor, l);
 		blk += amnt;
 		size -= amnt;
-	}
-	while (size);
+	} while (size);
 	l = anchor.link.next;
 	deque(H, link, &anchor);
 	return l;

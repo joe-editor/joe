@@ -186,9 +186,9 @@ void sresize(SCREEN * t)
 	if (t->wind < 0)
 		t->wind = 0;
 	w = t->topwin;
-	do
+	do {
 		w->y = -1, w->w = t->w - 1;
-	while (w = w->link.next, w != t->topwin);
+	} while (w = w->link.next, w != t->topwin);
 	wfit(t);
 	updall();
 }
@@ -261,8 +261,7 @@ void wfit(SCREEN * t)
 	do {
 		w->ny = -1;
 		w->nh = geth(w);
-	}
-	while ((w = w->link.next) != t->topwin);
+	} while ((w = w->link.next) != t->topwin);
 
 	/* Fit a group of windows on the screen */
 	w = t->topwin;
@@ -286,10 +285,8 @@ void wfit(SCREEN * t)
 			y += w->nh;
 			left -= w->nh;	/* Increment y value by height of window */
 			w = w->link.next;	/* Next window */
-		}
-		while (w != t->topwin && w->main == w->link.prev->main);
-	}
-	while (w != t->topwin && left >= FITHEIGHT);
+		} while (w != t->topwin && w->main == w->link.prev->main);
+	} while (w != t->topwin && left >= FITHEIGHT);
 
 	/* We can't use extra space to fit a new family on, so give space to parent of
 	 * previous family */
@@ -309,7 +306,7 @@ void wfit(SCREEN * t)
 	 * happened
 	 */
 	w = t->topwin;
-	do
+	do {
 		if (w->y >= 0 && w->ny >= 0)
 			if (w->ny > w->y) {
 				W *l = pw = w;
@@ -349,7 +346,7 @@ void wfit(SCREEN * t)
 				w = w->link.next;
 		else
 			w = w->link.next;
-	while (w != t->topwin);
+	} while (w != t->topwin);
 
 	/* Update current height and position values */
 	w = t->topwin;
@@ -368,8 +365,7 @@ void wfit(SCREEN * t)
 			w->y = -1;
 		w->h = w->nh;
 		w->reqh = 0;
-	}
-	while (w = w->link.next, w != t->topwin);
+	} while (w = w->link.next, w != t->topwin);
 }
 
 /* Goto next window */
@@ -470,10 +466,10 @@ void wshowall(SCREEN * t)
 
 	/* Count no. of main windows */
 	w = t->topwin;
-	do
+	do {
 		if (!w->win)
 			++n;
-	while (w = w->link.next, w != t->topwin) ;
+	} while (w = w->link.next, w != t->topwin);
 
 	/* Compute size to set each window */
 	if ((set = (t->h - t->wind) / n) < FITHEIGHT)
@@ -481,7 +477,7 @@ void wshowall(SCREEN * t)
 
 	/* Set size of each variable size window */
 	w = t->topwin;
-	do
+	do {
 		if (!w->win) {
 			int h = getminh(w);
 
@@ -491,7 +487,7 @@ void wshowall(SCREEN * t)
 				seth(w, set - (h - 2));
 			w->orgwin = 0;
 		}
-	while (w = w->link.next, w != t->topwin) ;
+	} while (w = w->link.next, w != t->topwin);
 
 	/* Do it */
 	wfit(t);
@@ -502,10 +498,10 @@ static void wspread(SCREEN * t)
 	int n = 0;
 	W *w = t->topwin;
 
-	do
+	do {
 		if (w->y >= 0 && !w->win)
 			++n;
-	while (w = w->link.next, w != t->topwin) ;
+	} while (w = w->link.next, w != t->topwin);
 	if (!n) {
 		wfit(t);
 		return;
@@ -515,7 +511,7 @@ static void wspread(SCREEN * t)
 	else
 		n = FITHEIGHT;
 	w = t->topwin;
-	do
+	do {
 		if (!w->win) {
 			int h = getminh(w);
 
@@ -525,7 +521,7 @@ static void wspread(SCREEN * t)
 				seth(w, n - (h - 2));
 			w->orgwin = 0;
 		}
-	while (w = w->link.next, w != t->topwin) ;
+	} while (w = w->link.next, w != t->topwin);
 	wfit(t);
 }
 
@@ -535,12 +531,12 @@ void wshowone(W * w)
 {
 	W *q = w->t->topwin;
 
-	do
+	do {
 		if (!q->win) {
 			seth(q, w->t->h - w->t->wind - (getminh(q) - 2));
 			q->orgwin = 0;
 		}
-	while (q = q->link.next, q != w->t->topwin) ;
+	} while (q = q->link.next, q != w->t->topwin);
 	wfit(w->t);
 }
 
@@ -628,8 +624,7 @@ static int doabort(W * w, int *ret)
 			amnt += doabort(z, ret);
 			goto loop;
 		}
-	}
-	while (z = z->link.next, z != w->t->topwin);
+	} while (z = z->link.next, z != w->t->topwin);
 	if (w->orgwin)
 		seth(w->orgwin, geth(w->orgwin) + geth(w));
 	if (w->t->curwin == w) {

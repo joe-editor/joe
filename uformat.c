@@ -26,7 +26,8 @@ int ucenter(BW *bw)
 	int c;
 
 	p_goto_eol(p);
-	while (isblank(c = prgetc(p))) ;
+	while (isblank(c = prgetc(p)))
+		/* do nothing */;
 	if (c == '\n') {
 		pgetc(p);
 		goto done;
@@ -37,7 +38,8 @@ int ucenter(BW *bw)
 	endcol = piscol(p);
 
 	p_goto_bol(p);
-	while (isblank(c = pgetc(p))) ;
+	while (isblank(c = pgetc(p)))
+		/* do nothing */;
 	if (c == '\n') {
 		prgetc(p);
 		goto done;
@@ -92,7 +94,8 @@ static int pisnpara(P *p)
 
 	q = pdup(p);
 	p_goto_bol(q);
-	while (cpara(c = pgetc(q))) ;
+	while (cpara(c = pgetc(q)))
+		/* do nothing */;
 	prm(q);
 	if (c == '.' || c == '\r' || c == '\n')
 		return 1;
@@ -108,9 +111,9 @@ static long nindent(P *p)
 	long col;
 
 	p_goto_bol(q);
-	do
+	do {
 		col = q->col;
-	while (cpara(pgetc(q)));
+	} while (cpara(pgetc(q)));
 	prm(q);
 	return col;
 }
@@ -223,7 +226,8 @@ int ubop(BW *bw)
 {
 	P *q = pdup(bw->cursor);
 
-      up:while (pisnpara(q) && !pisbof(q) && (!within || !markb || q->byte > markb->byte))
+      up:
+	while (pisnpara(q) && !pisbof(q) && (!within || !markb || q->byte > markb->byte))
 		pprevl(q);
 	pbop(q);
 	if (q->byte != bw->cursor->byte) {
@@ -243,7 +247,8 @@ int ueop(BW *bw)
 {
 	P *q = pdup(bw->cursor);
 
-      up:while (pisnpara(q) && !piseof(q))
+      up:
+	while (pisnpara(q) && !piseof(q))
 		pnextl(q);
 	pbop(q);
 	peop(q);
@@ -273,28 +278,31 @@ void wrapword(P *p, long int indent, int french, char *indents)
 
 	/* Get indentation prefix from beginning of line */
 /*
- if(!indents)
-  {
-  int f=0;
-  P *r=pdup(p);
-  p_goto_bol(r);
-  q=pdup(r);
-  while(cpara(c=brc(q)))
-   {
-   if(!isblank(c)) f=1;
-   pgetc(q);
-   }
-  if(f)
-   {
-   indents=brs(r,q->byte-r->byte); rmf=1;
-   if(indents[0]=='/' && indents[1]=='*') indents[0]=' ';
-   }
-  prm(r); prm(q);
-  }
+	if(!indents) {
+		int f = 0;
+		P *r = pdup(p);
+
+		p_goto_bol(r);
+		q = pdup(r);
+		while(cpara(c = brc(q))) {
+			if(!isblank(c))
+				f = 1;
+			pgetc(q);
+		}
+		if(f) {
+			indents = brs(r, q->byte-r->byte);
+			rmf = 1;
+			if(indents[0] == '/' && indents[1] == '*')
+				indents[0] = ' ';
+		}
+		prm(r);
+		prm(q);
+	}
 */
 
 	/* Get to beginning of word */
-	while (!pisbol(p) && piscol(p) > indent && !isblank(prgetc(p))) ;
+	while (!pisbol(p) && piscol(p) > indent && !isblank(prgetc(p)))
+		/* do nothing */;
 
 	/* If we found the beginning of a word... */
 	if (!pisbol(p) && piscol(p) > indent) {
@@ -522,9 +530,9 @@ int ufmtblk(BW *bw)
 		markk->end = 1;
 		utomarkk(bw);
 		within = 1;
-		do
+		do {
 			ubop(bw), uformat(bw);
-		while (bw->cursor->byte > markb->byte);
+		} while (bw->cursor->byte > markb->byte);
 		within = 0;
 		markk->end = 0;
 		if (lightoff)

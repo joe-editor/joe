@@ -205,12 +205,12 @@ int eraeol(SCRN *t, int x, int y)
 		return 0;
 	s = t->scrn + y * t->co + x;
 	ss = s + w;
-	do
+	do {
 		if (*--ss != ' ') {
 			++ss;
 			break;
 		}
-	while (ss != s) ;
+	} while (ss != s);
 	if ((ss - s > 3 || s[w] != ' ') && t->ce) {
 		cpos(t, x, y);
 		attr(t, 0);
@@ -859,16 +859,16 @@ static void cposs(register SCRN *t, register int x, register int y)
 		if (cstunder < t->cRI && cstunder < x - t->x && cstover > cstunder) {
 			if (ntabs) {
 				t->x = x - x % t->tw;
-				do
+				do {
 					texec(t->cap, t->ta, 1, 0, 0, 0, 0);
-				while (--ntabs);
+				} while (--ntabs);
 			}
 		} else if (cstover < t->cRI && cstover < x - t->x) {
 			t->x = t->tw + x - x % t->tw;
 			++ntabs;
-			do
+			do {
 				texec(t->cap, t->ta, 1, 0, 0, 0, 0);
-			while (--ntabs);
+			} while (--ntabs);
 		}
 	} else if (x < t->x && t->bt) {
 		int ntabs = ((t->x + t->tw - 1) - (t->x + t->tw - 1) % t->tw - ((x + t->tw - 1) - (x + t->tw - 1) % t->tw)) / t->tw;
@@ -885,17 +885,17 @@ static void cposs(register SCRN *t, register int x, register int y)
 		if (cstunder < t->cLE && (t->bs ? cstunder < (t->x - x) * t->cbs : 1)
 		    && cstover > cstunder) {
 			if (ntabs) {
-				do
+				do {
 					texec(t->cap, t->bt, 1, 0, 0, 0, 0);
-				while (--ntabs);
+				} while (--ntabs);
 				t->x = x + t->tw - x % t->tw;
 			}
 		} else if (cstover < t->cRI && (t->bs ? cstover < (t->x - x) * t->cbs : 1)) {
 			t->x = x - x % t->tw;
 			++ntabs;
-			do
+			do {
 				texec(t->cap, t->bt, 1, 0, 0, 0, 0);
-			while (--ntabs);
+			} while (--ntabs);
 		}
 	}
 
@@ -950,8 +950,7 @@ int cpos(register SCRN *t, register int x, register int y)
 				ttputc(c);
 				++cs;
 				++t->x;
-			}
-			while (x != t->x);
+			} while (x != t->x);
 			return 0;
 		}
 	}
@@ -1271,8 +1270,7 @@ void nscroll(SCRN *t)
 						dodnscrl(t, z + q, p + 1, -q);
 						p = z + 1;
 					}
-				}
-				while (p-- != y);
+				} while (p-- != y);
 				y = r - 1;
 			}
 		}

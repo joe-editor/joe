@@ -52,8 +52,7 @@ void dofollows(void)
 		if (w->y != -1 && w->watom->follow && w->object)
 			w->watom->follow(w->object);
 		w = (W *) (w->link.next);
-	}
-	while (w != maint->curwin);
+	} while (w != maint->curwin);
 }
 
 /* Update screen */
@@ -85,8 +84,7 @@ void edupd(int flg)
 			msgout(w);
 		}
 		w = (W *) (w->link.next);
-	}
-	while (w != maint->curwin);
+	} while (w != maint->curwin);
 	cpos(maint->t, maint->curwin->x + maint->curwin->curx, maint->curwin->y + maint->curwin->cury);
 	staupd = 0;
 }

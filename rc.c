@@ -639,7 +639,8 @@ int procrc(CAP * cap, char *name)
 
 			case '{':	/* Ignore help text */
 			{
-				while ((fgets(buf, 256, fd)) && (buf[0] != '}'));
+				while ((fgets(buf, 256, fd)) && (buf[0] != '}'))
+					/* do nothing */;
 				if (buf[0] != '}') {
 					err = 1;
 					fprintf(stderr, "\n%s %d: End of joerc file occured before end of help text\n", name, line);

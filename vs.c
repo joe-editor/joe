@@ -264,8 +264,7 @@ int len;
 		--x;
 		if (!scmp(ary[x], el))
 			return x;
-	}
-	while (x);
+	} while (x);
 	return ~0;
 }
 

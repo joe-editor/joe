@@ -1,3 +1,9 @@
+Sat Dec 01 2001  Vitezslav Samel <samel@mail.cz>
+	* b.c, bw.c, main.c, path.c, rc.c, regex.c, scrn.c, termcap.c,
+	termidx.c, tty.c, tw.c, ublock.c, uedit.c, uerror.c, uformat.c, undo.c,
+	utag.c, vfile.c, vs.c, w.c:
+	change indentation of do {} while(); cycles
+
 Wed Nov 28 2001  Vitezslav Samel <samel@mail.cz>
 	* b.c, b.h, blocks.c, blocks.h, bw.c, bw.h, cmd.c, cmd.h, dir.c,
 	help.c, help.h, kbd.c, kbd.h, macro.c, macro.h, main.c, main.h, menu.c,

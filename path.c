@@ -240,10 +240,10 @@ int rmatch(char *a, char *b)
 		switch (*a) {
 			case '*':
 			++a;
-			do
+			do {
 				if (rmatch(a, b))
 					return 1;
-			while (*b++) ;
+			} while (*b++);
 			return 0;
 			case '[':
 			++a;

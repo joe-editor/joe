@@ -250,8 +250,7 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 				--amnt;
 				goto loop;
 			}
-		}
-		while (--amnt);
+		} while (--amnt);
 	if (bp == p->ptr + SEGSIZ) {
 		if (pnext(p)) {
 			bp = p->ptr;
@@ -322,8 +321,7 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 						goto bye;
 					if (++x == w)
 						goto eosl;
-				}
-				while (--ta);
+				} while (--ta);
 			} else if (bc == '\n')
 				goto eobl;
 			else {
@@ -335,8 +333,7 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 				if (++x == w)
 					goto eosl;
 			}
-		}
-		while (--amnt);
+		} while (--amnt);
 	if (bp == p->ptr + SEGSIZ) {
 		if (pnext(p)) {
 			bp = p->ptr;
@@ -445,8 +442,7 @@ static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, 
 				--amnt;
 				goto loop;
 			}
-		}
-		while (--amnt);
+		} while (--amnt);
 	if (bp == p->ptr + SEGSIZ) {
 		if (pnext(p)) {
 			bp = p->ptr;
@@ -488,8 +484,7 @@ static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, 
 					screen[x] = ' ' + c1;
 					if (++x == w)
 						goto eosl;
-				}
-				while (--ta);
+				} while (--ta);
 			} else if (bc == '\n')
 				goto eobl;
 			else {
@@ -499,8 +494,7 @@ static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, 
 				if (++x == w)
 					goto eosl;
 			}
-		}
-		while (--amnt);
+		} while (--amnt);
 	if (bp == p->ptr + SEGSIZ) {
 		if (pnext(p)) {
 			bp = p->ptr;

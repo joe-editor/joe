@@ -135,12 +135,14 @@ int utag(BW * bw)
 		P *q = pdup(p);
 		int c;
 
-		while (isalnum_(c = prgetc(p))) ;
+		while (isalnum_(c = prgetc(p)))
+			/* do nothing */;
 		if (c != MAXINT) {
 			pgetc(p);
 		}
 		pset(q, p);
-		while (isalnum_(c = pgetc(q))) ;
+		while (isalnum_(c = pgetc(q)))
+			/* do nothing */;
 		if (c != MAXINT) {
 			prgetc(q);
 		}

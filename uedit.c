@@ -100,7 +100,8 @@ int u_goto_prev(BW * bw)
 	if (pisbof(bw->cursor)) {
 		return -1;	/* cursor is at beginning of file */
 	} else if (isspace(prgetc(bw->cursor))) {
-		while ((!pisbof(bw->cursor)) && (isspace(prgetc(bw->cursor)))) ;	/* if cursor is on white-space char then find first non-white-space char */
+		while ((!pisbof(bw->cursor)) && (isspace(prgetc(bw->cursor))))
+			/* do nothing */;	/* if cursor is on white-space char then find first non-white-space char */
 	}
 	if (pisbof(bw->cursor)) {
 		return -1;	/* cursor is at beginning of file */
@@ -127,7 +128,8 @@ int u_goto_next(BW * bw)
 	if (piseof(bw->cursor)) {
 		return -1;	/* cursor is at end of file */
 	} else if (isspace(pgetc(bw->cursor))) {
-		while ((!piseof(bw->cursor)) && (isspace(pgetc(bw->cursor)))) ;	/* if cursor is on white-space char then find first non-white-space char */
+		while ((!piseof(bw->cursor)) && (isspace(pgetc(bw->cursor))))
+			/* do nothing */;	/* if cursor is on white-space char then find first non-white-space char */
 	}
 	if (piseof(bw->cursor)) {
 		return -1;	/* cursor is at end of file */
@@ -683,11 +685,13 @@ int ubackw(BW * bw)
 	int c = prgetc(bw->cursor);
 
 	if (isalnum_(c)) {
-		while (c = prgetc(bw->cursor), isalnum_(c)) ;
+		while (c = prgetc(bw->cursor), isalnum_(c))
+			/* do nothing */;
 		if (c != MAXINT)
 			pgetc(bw->cursor);
 	} else if (isspace(c)) {
-		while (c = prgetc(bw->cursor), isspace(c)) ;
+		while (c = prgetc(bw->cursor), isspace(c))
+			/* do nothing */;
 		if (c != MAXINT)
 			pgetc(bw->cursor);
 	}

@@ -155,8 +155,7 @@ int uredo(BW * bw)
 		inredo = 0;
 		frrec(deque_f(UNDOREC, link, ptr));
 		undo->ptr = undo->ptr->link.next;
-	}
-	while (upto && upto != ptr);
+	} while (upto && upto != ptr);
 	return 0;
 }
 

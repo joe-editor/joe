@@ -61,8 +61,7 @@ static int match(char *s, char *name)
 		while (s[x] != ':' && s[x] != '|' && s[x])
 			++x;
 		s += x + 1;
-	}
-	while (s[-1] == '|');
+	} while (s[-1] == '|');
 	return 0;
 }
 
@@ -76,9 +75,9 @@ static char *lfind(char *s, int pos, FILE *fd, char *name)
 		s = vsmk(1024);
       loop:
 	while (c = getc(fd), c == ' ' || c == '\t' || c == '#')
-		do
+		do {
 			c = getc(fd);
-		while (!(c == -1 || c == '\n'));
+		} while (!(c == -1 || c == '\n'));
 	if (c == -1)
 		return s = vstrunc(s, pos);
 	ungetc(c, fd);
@@ -134,8 +133,7 @@ static long findidx(FILE *file, char *name)
 			} else if (!strcmp(buf + x, name))
 				flg = 1;
 			x = y + 1;
-		}
-		while (c && c != '\n');
+		} while (c && c != '\n');
 		if (flg)
 			return addr;
 	}
@@ -252,9 +250,9 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 	x = sLEN(cap->tbuf);
 	do {
 		cap->tbuf[x] = 0;
-		while (x && cap->tbuf[--x] != ':') ;
-	}
-	while (x && (!cap->tbuf[x + 1] || cap->tbuf[x + 1] == ':'));
+		while (x && cap->tbuf[--x] != ':')
+			/* do nothing */;
+	} while (x && (!cap->tbuf[x + 1] || cap->tbuf[x + 1] == ':'));
 
 	if (cap->tbuf[x + 1] == 't' && cap->tbuf[x + 2] == 'c' && cap->tbuf[x + 3] == '=') {
 		name = vsncpy(NULL, 0, sz(cap->tbuf + x + 4));

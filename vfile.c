@@ -728,38 +728,40 @@ char *s;
 				cnt -= 15;
 				goto ovr;
 			}
-		}
-		while (a += 16, b += 16, (cnt -= 16) >= 16);
+		} while (a += 16, b += 16, (cnt -= 16) >= 16);
 
 /*
- x=a, y=b; a+=cnt-15; b+=cnt-15;
- switch(cnt)
-  {
-  case 15: if((b[0]=a[0])=='\n') { a+=1; b+=1; goto zif; }
-  case 14: if((b[1]=a[1])=='\n') { a+=2; b+=2; goto zif; }
-  case 13: if((b[2]=a[2])=='\n') { a+=3; b+=3; goto zif; }
-  case 12: if((b[3]=a[3])=='\n') { a+=4; b+=4; goto zif; }
-  case 11: if((b[4]=a[4])=='\n') { a+=5; b+=5; goto zif; }
-  case 10: if((b[5]=a[5])=='\n') { a+=6; b+=6; goto zif; }
-  case 9: if((b[6]=a[6])=='\n')  { a+=7; b+=7; goto zif; }
-  case 8: if((b[7]=a[7])=='\n')  { a+=8; b+=8; goto zif; }
-  case 7: if((b[8]=a[8])=='\n')  { a+=9; b+=9; goto zif; }
-  case 6: if((b[9]=a[9])=='\n')  { a+=10; b+=10; goto zif; }
-  case 5: if((b[10]=a[10])=='\n'){ a+=11; b+=11; goto zif; }
-  case 4: if((b[11]=a[11])=='\n'){ a+=12; b+=12; goto zif; }
-  case 3: if((b[12]=a[12])=='\n'){ a+=13; b+=13; goto zif; }
-  case 2: if((b[13]=a[13])=='\n'){ a+=14; b+=14; goto zif; }
-  case 1: if((b[14]=a[14])=='\n'){ a+=15; b+=15; goto zif; }
-  }
- a=x+cnt, b=y+cnt; cnt=0; goto ovr;
- zif: cnt-=a-x-1;
+	x = a, y = b;
+	a += cnt - 15;
+	b += cnt - 15;
+	switch(cnt) {
+	case 15:	if((b[0]=a[0])=='\n') { a+=1; b+=1; goto zif; }
+	case 14:	if((b[1]=a[1])=='\n') { a+=2; b+=2; goto zif; }
+	case 13:	if((b[2]=a[2])=='\n') { a+=3; b+=3; goto zif; }
+	case 12:	if((b[3]=a[3])=='\n') { a+=4; b+=4; goto zif; }
+	case 11:	if((b[4]=a[4])=='\n') { a+=5; b+=5; goto zif; }
+	case 10:	if((b[5]=a[5])=='\n') { a+=6; b+=6; goto zif; }
+	case 9:		if((b[6]=a[6])=='\n')  { a+=7; b+=7; goto zif; }
+	case 8:		if((b[7]=a[7])=='\n')  { a+=8; b+=8; goto zif; }
+	case 7:		if((b[8]=a[8])=='\n')  { a+=9; b+=9; goto zif; }
+	case 6:		if((b[9]=a[9])=='\n')  { a+=10; b+=10; goto zif; }
+	case 5:		if((b[10]=a[10])=='\n'){ a+=11; b+=11; goto zif; }
+	case 4:		if((b[11]=a[11])=='\n'){ a+=12; b+=12; goto zif; }
+	case 3:		if((b[12]=a[12])=='\n'){ a+=13; b+=13; goto zif; }
+	case 2:		if((b[13]=a[13])=='\n'){ a+=14; b+=14; goto zif; }
+	case 1:		if((b[14]=a[14])=='\n'){ a+=15; b+=15; goto zif; }
+	}
+	a = x + cnt, b = y + cnt;
+	cnt=0;
+	goto ovr;
+zif:	cnt -= a - x - 1;
 */
 
 	if (cnt)
-		do
+		do {
 			if ((*b++ = *a++) == '\n')
 				break;
-		while (--cnt) ;
+		} while (--cnt);
 
       ovr:
 

@@ -546,12 +546,12 @@ void setindent(BW *bw)
 	q = pdup(p);
 	indent = pisindent(p);
 
-	do
+	do {
 		if (!pprevl(p))
 			goto done;
 		else
 			p_goto_bol(p);
-	while (pisindent(p) >= indent && !pisblank(p));
+	} while (pisindent(p) >= indent && !pisblank(p));
 	pnextl(p);
       done:
 	p_goto_bol(p);
@@ -561,10 +561,10 @@ void setindent(BW *bw)
 	markb = p;
 	p->owner = &markb;
 
-	do
+	do {
 		if (!pnextl(q))
 			break;
-	while (pisindent(q) >= indent && !pisblank(q)) ;
+	} while (pisindent(q) >= indent && !pisblank(q));
 
 	if (markk)
 		prm(markk);
@@ -586,8 +586,7 @@ int urindent(BW *bw)
 			do {
 				pcol(p, markb->xcol);
 				pfill(p, markb->xcol + bw->o.istep, bw->o.indentc == '\t' ? 1 : 0);
-			}
-			while (pnextl(p) && p->line <= markk->line);
+			} while (pnextl(p) && p->line <= markk->line);
 			prm(p);
 		}
 	} else {
@@ -629,16 +628,14 @@ int ulindent(BW *bw)
 						return -1;
 					}
 				}
-			}
-			while (pnextl(p) && p->line <= markk->line);
+			} while (pnextl(p) && p->line <= markk->line);
 			pset(p, markb);
 			do {
 				pcol(p, markb->xcol);
 				pset(q, p);
 				pcol(q, markb->xcol + bw->o.istep);
 				bdel(p, q);
-			}
-			while (pnextl(p) && p->line <= markk->line);
+			} while (pnextl(p) && p->line <= markk->line);
 			prm(p);
 			prm(q);
 		}
