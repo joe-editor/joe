@@ -33,7 +33,7 @@
 
 :idle Idle
 	*		idle
-	"#"		line_comment	recolor=-1
+	"#"		line_comment_i	recolor=-1
 	"\n"		idle
 	"0"		first_digit	recolor=-1
 	"1-9"		decimal	recolor=-1
@@ -42,16 +42,30 @@
 	"\\"		not_string
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
-#	"/"		regex		recolor=-1
+	"/"		regex		recolor=-1
 	"<"		maybe_inc
 	"a-zA-Z_"	ident		buffer
 
+:rest Idle
+	*		rest
+	"({;~"		idle
+	"#"		line_comment	recolor=-1
+	"\n"		rest
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal	recolor=-1
+	"."		maybe_float
+	"\""		string		recolor=-1
+	"\\"		not_string
+	"'"		char		recolor=-1
+	"`"		backtick	recolor=-1
+	"<"		maybe_inc
+
 :maybe_inc Idle
-	*		idle		noeat
+	*		rest		noeat
 	"<"		maybe_inc1
 
 :maybe_inc1 Idle
-	*		idle		noeat
+	*		rest		noeat
 	" 	"	maybe_inc1
 	"'\""		quoted_inc_start	save_c recolor=-1
 	"A-Za-z_"	inc		buffer noeat
@@ -89,21 +103,25 @@ done
 :regex Constant
 	*		regex
 	"\\"		regex_quote	recolor=-1
-	"/"		idle
+	"/"		rest
 
 :regex_quote Escape
 	*		regex
 
 :not_string Idle
-	*		idle noeat
-	"\"'`"		idle
+	*		rest noeat
+	"\"'`"		rest
 
 :line_comment Comment
 	*		line_comment
+	"\n"		rest
+
+:line_comment_i Comment
+	*		line_comment_i
 	"\n"		idle
 
 :first_digit Constant
-	*		idle	noeat
+	*		rest	noeat
 	"x"		hex
 	"b"		binary
 	"."		float
@@ -112,49 +130,49 @@ done
 	"89"		bad_number	recolor=-1
 
 :bad_number Bad
-	*		idle	noeat
+	*		rest	noeat
 	"0-9"		bad_number
 
 :octal Constant
-	*		idle	noeat
+	*		rest	noeat
 	"0-7_"		octal
 	"89"		bad_number	recolor=-1
 
 :binary Constant
-	*		idle	noeat
+	*		rest	noeat
 	"01_"		binary
 	"2-9"		bad_number	recolor=-1
 
 :hex Constant
-	*		idle	noeat
+	*		rest	noeat
 	"0-9A-Fa-f_"	hex
 
 :decimal Constant
-	*		idle	noeat
+	*		rest	noeat
 	"0-9_"		decimal
 	"eE"		epart
 	"."		float
 
 :maybe_float Constant
-	*		idle	recolor=-2	noeat
+	*		rest	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
 :float Constant
-	*		idle	noeat
+	*		rest	noeat
 	"eE"		epart
 	"0-9_"		float
 
 :epart Constant
-	*		idle	noeat
+	*		rest	noeat
 	"0-9+\-"	enum
 
 :enum Constant
-	*		idle	noeat
+	*		rest	noeat
 	"0-9_"		enum
 
 :string	Constant
 	*		string
-	"\""		idle
+	"\""		rest
 	"\\"		string_escape	recolor=-1
 	"$@"		string_subst	recolor=-1
 
@@ -205,7 +223,7 @@ done
 :char Constant
 	*		char
 	"\n"		reset
-	"'"		idle
+	"'"		rest
 	"\\"		char_escape	recolor=-1
 
 :char_escape	Escape
@@ -214,7 +232,7 @@ done
 
 :backtick	Constant
 	*		backtick
-	"`"		idle
+	"`"		rest
 	"\\"		backtick_escape	recolor=-1
 	"$@"		backtick_subst recolor=-1
 
@@ -263,7 +281,7 @@ done
 	"0-7"		backtick
 
 :ident	Idle
-	*		idle		noeat strings
+	*		rest		noeat strings
 	"if"		kw
 	"unless"	kw
 	"while"		kw
@@ -288,6 +306,10 @@ done
 	"redo"		kw
 	"next"		kw
 	"warn"		kw
+	"return"	kw
+	"printf"	kw
+	"close"		kw
+	"package"	kw
 	"m"		match		noeat
 	"s"		subst		noeat
 	"tr"		subst		noeat
@@ -297,10 +319,10 @@ done
 	"a-zA-Z0-9_"	ident
 
 :type Type
-	*	idle	noeat
+	*	rest	noeat
 
 :kw Keyword
-	*	idle	noeat
+	*	rest	noeat
 
 :match Idle
 	*		inmatch		save_c recolor=-1
@@ -308,7 +330,7 @@ done
 
 :inmatch Constant
 	*		inmatch
-	&		idle
+	&		rest
 	"\\"		inmatch_quote	recolor=-1
 
 :inmatch_quote Escape
@@ -329,7 +351,7 @@ done
 
 :inrepl Constant
 	*		inrepl
-	&		idle
+	&		rest
 	"\\"		inrepl_quote
 
 :inrepl_quote Escape
@@ -349,7 +371,7 @@ done
 
 :repl Constant
 	*		repl
-	&		idle
+	&		rest
 	"\\"		repl_quote
 
 :repl_quote Escape
