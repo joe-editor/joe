@@ -32,6 +32,7 @@ int dspasis = 0;
 int marking = 0;
 extern int square;
 extern int staen;
+extern SCREEN *maint;
 
 static P *getto(P *p, P *cur, P *top, long int line)
 {
@@ -765,7 +766,7 @@ void bwgen(BW *w, int linums)
 			from = markb->byte;
 			to = markk->byte;
 		}
-	else if (marking && markb && markb->b == w->b && w->cursor->byte != markb->byte && !from) {
+	else if (marking && w==maint->curwin->object && markb && markb->b == w->b && w->cursor->byte != markb->byte && !from) {
 		if (square) {
 			from = long_min(w->cursor->xcol, markb->xcol);
 			to = long_max(w->cursor->xcol, markb->xcol);
@@ -778,7 +779,7 @@ void bwgen(BW *w, int linums)
 		}
 	}
 
-	if (marking)
+	if (marking && w==maint->curwin->object)
 		msetI(t->updtab + w->y, 1, w->h);
 
 	y = w->cursor->line - w->top->line + w->y;

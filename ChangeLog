@@ -1,4 +1,12 @@
 Tue May 11 2004  Joe Allen <jhallen@world.std.com>
+
+	Fix marking mode so only window with cursor is
+	effected.
+
+	Ctrl-space clears selection when cursor is in
+	selection, otherwise it starts a new one.
+
+Tue May 11 2004  Joe Allen <jhallen@world.std.com>
 	* b.c ufile.c :
 
 	Update file date on save.

@@ -260,13 +260,22 @@ int udrop(BW *bw)
 
 int udropon(BW *bw)
 {
-	if (markk) {
+	if (markv(0) && bw->cursor->b==markb->b && bw->cursor->byte>=markb->byte && bw->cursor->byte<=markk->byte) {
+		/* Just clear selection */
 		prm(markb); markb=0;
 		prm(markk); markk=0;
 		updall();
 		marking = 0;
 		msgnw(bw->parent, US "Selection cleared.");
 		return 0;
+	} else if (markk) {
+		/* Clear selection and start new one */
+		prm(markb); markb=0;
+		prm(markk); markk=0;
+		updall();
+		marking = 1;
+		msgnw(bw->parent, US "Selection started.");
+		return umarkb(bw);
 	} else if (markb && markb->b==bw->cursor->b) {
 		marking = 0;
 		if (bw->cursor->byte<markb->byte) {
@@ -278,6 +287,7 @@ int udropon(BW *bw)
 			pdupown(bw->cursor, &markk);
 			markk->xcol = bw->cursor->xcol;
 		}
+		updall(); /* Because other windows could be changed */
 		return 0;
 	} else {
 		marking = 1;
