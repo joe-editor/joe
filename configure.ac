@@ -1,12 +1,27 @@
 # Process this file with autoconf to produce a configure script.
-AC_PREREQ(2.52)
 
-# Init automake
-AC_INIT
+# We need AC_PROG_EGREP
+AC_PREREQ(2.54)
+
+#### Here's the only place where to change version number ####
+AC_INIT(joe, 2.9.8-pre1)
 AC_CONFIG_SRCDIR([b.c])
+
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
+
+# Init automake
+AM_INIT_AUTOMAKE
+AM_MAINTAINER_MODE
+AM_CONFIG_HEADER(autoconf.h)
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_EGREP
+AC_PROG_INSTALL
+AC_PROG_LN_S
 
 case "$host" in
 	*-*-solaris*)
@@ -16,23 +31,9 @@ case "$host" in
 	*)	;;
 esac
 
-#### Here's the only place where to change version number ####
-AM_INIT_AUTOMAKE(joe, 2.9.8-pre1)
-
-AM_MAINTAINER_MODE
-AM_CONFIG_HEADER(autoconf.h)
-
-# Checks for programs.
-AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_INSTALL
-AC_PROG_LN_S
-
 # Checks for libraries.
 AC_SEARCH_LIBS(tgetflag, ncurses curses termcap, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we have newer terminfo/termcap capabilities]))
 AC_SEARCH_LIBS(snprintf, snprintf)
-# AC_CHECK_LIB([ncurses], [tgetstr])
-
 
 # Checks for header files.
 AC_HEADER_DIRENT

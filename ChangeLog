@@ -1,3 +1,9 @@
+Sun Jan  5 2003  Vitezslav Samel <samel@mail.cz>
+	* configure.ac:
+	newer versions (>= 2.54) of autoconf need AC_PROG_EGREP to prevent
+	lockup when running configure; this change require autoconf-2.54
+	at least to properly build joe from CVS
+
 Wed Jan  1 2003  Vitezslav Samel <samel@mail.cz>
 	* rc.c:
 	eliminate "expr, expr" to make sources more readable;
