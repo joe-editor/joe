@@ -1,6 +1,9 @@
 Sat Apr 24 2004  Joe Allen <jhallen@world.std.com>
+	* utf8.c, utf8.h, scrn.c, bw.c :
 
 	Fixed utf8 encoder for characters between 0x10000 and 0x1FFFF.
+
+	Print <XXXX> for unicode control characters.
 
 Fri Apr 23 2004  Joe Allen <jhallen@world.std.com>
 

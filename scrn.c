@@ -133,9 +133,15 @@ unsigned xlata[256] = {
 
 void utf8_putc(int utf8_char)
 {
-	unsigned char buf[8];
-	int len = utf8_encode(buf,utf8_char);
-	ttputs(buf);
+	unsigned char buf[16];
+
+	if (unictrl(utf8_char)) {
+		sprintf(buf,"<%X>",utf8_char);
+		ttputs(buf);
+	} else {
+		int len = utf8_encode(buf,utf8_char);
+		ttputs(buf);
+	}
 }
 
 void xlat(int *attr, unsigned char *c)
@@ -217,12 +223,13 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 {
 	if(wide)
 		if(utf8) {
+			int wid;
 			/* UTF-8 char to UTF-8 terminal */
-			int zz;
 			if(*scrn==c && *attrf==a)
 				return;
 
-			zz = mk_wcwidth(c);
+			wid = mk_wcwidth(c);
+
 			*scrn = c;
 			*attrf = a;
 			if(t->ins)
@@ -232,10 +239,11 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 			if(t->attrib != a)
 				set_attr(t, a);
 			utf8_putc(c);
-			t->x+=zz;
-			if(zz==2) {
-				scrn[1]= -1;
-				attrf[1]= 0;
+			t->x+=wid;
+			while (wid>1) {
+				*++scrn= -1;
+				*++attrf= 0;
+				--wid;
 			}
 		} else {
 			/* UTF-8 char to non-UTF-8 terminal */
@@ -258,7 +266,7 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 			t->x++;
 		}
 	else
-		if(!utf8) {
+		if (!utf8) {
 			/* Non UTF-8 char to non UTF-8 terminal */
 			if(*scrn==c && *attrf==a)
 				return;
@@ -276,14 +284,14 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 		} else {
 			/* Non UTF-8 char to UTF-8 terminal */
 			unsigned char buf[10];
-			int zz;
+			int wid;
 			to_utf8(buf,c);
 			c = utf8_decode_string(buf);
 
 			if(*scrn==c && *attrf==a)
 				return;
 
-			zz = mk_wcwidth(c);
+			wid = mk_wcwidth(c);
 			*scrn = c;
 			*attrf = a;
 			if(t->ins)
@@ -293,11 +301,11 @@ void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 			if(t->attrib != a)
 				set_attr(t, a);
 			ttputs(buf);
-			/* utf8_putc(c); */
-			t->x+=zz;
-			if(zz==2) {
-				scrn[1]= -1;
-				attrf[1]= 0;
+			t->x+=wid;
+			while(wid>1) {
+				*++scrn= -1;
+				*++attrf= 0;
+				--wid;
 			}
 		}
 }
@@ -1788,7 +1796,7 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 			/* UTF-8 mode: decode character and determine its width */
 			c = utf8_decode(&sm,c);
 			if (c >= 0) {
-				if (c<32 || c>126 && c<160) { /* Control character */
+				if (c<32 || c==127) { /* Control character */
 					/* Note that this ignore dspasis */
 					a = xlata[c] ^ atr;
 					c = xlatc[c];
@@ -1930,7 +1938,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
 				/* UTF-8 mode: decode character and determine its width */
 				c = utf8_decode(&sm,c);
 				if (c >= 0) {
-					if (c<32 || c>126 && c<160) { /* Control character */
+					if (c<32 || c==127) { /* ASCII control character */
 						/* Note that this ignores dspasis */
 						a = xlata[c] ^ atr;
 						c = xlatc[c];

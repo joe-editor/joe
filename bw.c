@@ -467,7 +467,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					utf8_char = utf8_decode(&utf8_sm,bc);
 
 					if (utf8_char >= 0) { /* Normal decoded character */
-						if (utf8_char<32 || utf8_char>126 && utf8_char<160) { /* Control character */
+						if (utf8_char<32 || utf8_char==127) { /* ASCII control character */
 							bc = utf8_char;
 							xlat_utf_ctrl(&c, &bc);
 							utf8_char = bc;
