@@ -1,5 +1,9 @@
 Sat Feb 26 2005  Joe Allen <jhallen@world.std.com>
 
+	Allow '-' in file names in compiler error parser.
+
+Sat Feb 26 2005  Joe Allen <jhallen@world.std.com>
+
 	Accept patch from Kalan (thearinkalen at users.sourceforge.net)
 	which makes save block prompt if a file is to be overwritten.
 

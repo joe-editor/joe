@@ -120,7 +120,8 @@ static void freeall(void)
 
 /* From joe's joe 2.9 */
 
-/* First word on line with a '.' in it.  This is the file name.  The next number after that is the line number. */
+/* First word (allowing ., /, _ and -) with a . is the file name.  Next number
+   is line number.  Then there should be a ':' */
 
 static int parseit(struct charmap *map,unsigned char *s, long int row)
 {
@@ -137,7 +138,7 @@ static int parseit(struct charmap *map,unsigned char *s, long int row)
 		for (x = y; s[x] && !(joe_isalnum_(map,s[x]) || s[x] == '.' || s[x] == '/'); ++x) ;
 
 		/* Skip to end of first word */
-		for (y = x; joe_isalnum_(map,s[y]) || s[y] == '.' || s[y] == '/'; ++y)
+		for (y = x; joe_isalnum_(map,s[y]) || s[y] == '.' || s[y] == '/' || s[y]=='-'; ++y)
 			if (s[y] == '.')
 				flg = 1;
 	} while (!flg && x!=y);
