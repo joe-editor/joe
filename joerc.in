@@ -642,6 +642,8 @@
  alignment, each line should have the same number of springs.
 
  UTF-8 sequences can be used in the help text (local 8-bit characters can not be used).
+
+{Basic
 \i   Help Screen    \|turn off with ^KH    more help with ESC . (^[.)              \i
 \i \i\|\uCURSOR\u           \|\uGO TO\u            \|\uBLOCK\u      \|\uDELETE\u   \|\uMISC\u         \|\uEXIT\u      \|\i \i
 \i \i\|^B left ^F right \|^U  prev. screen \|^KB begin  \|^D char. \|^KJ reformat \|^KX save  \|\i \i
