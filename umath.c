@@ -186,7 +186,7 @@ static int domath(BW * bw, char *s, void *object, int *notify)
 		return -1;
 	}
 	vsrm(s);
-	snprintf(msgbuf, MSGBUFSIZE, "%G", result);
+	snprintf(msgbuf, JOE_MSGBUFSIZE, "%G", result);
 	if (bw->parent->watom->what != TYPETW) {
 		binsm(bw->cursor, sz(msgbuf));
 		pfwrd(bw->cursor, strlen(msgbuf));

@@ -192,7 +192,7 @@ int uparserr(BW *bw)
 {
 	errbuf = bw->b;
 	freeall();
-	snprintf(msgbuf, MSGBUFSIZE, "Parsed %ld lines", parserr(bw->b));
+	snprintf(msgbuf, JOE_MSGBUFSIZE, "Parsed %ld lines", parserr(bw->b));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }

@@ -248,8 +248,8 @@ int fmtpos PARAMS((char *s, int goal));
 void msgnw PARAMS((W *w, char *s));
 void msgnwt PARAMS((W *w, char *s));
 
-#define MSGBUFSIZE 300
-extern char msgbuf[MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
+#define JOE_MSGBUFSIZE 300
+extern char msgbuf[JOE_MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
 
 void msgout PARAMS((W *w));			/* Output msgnw/msgnwt messages */
 

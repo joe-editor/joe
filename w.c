@@ -860,7 +860,7 @@ void msgout(W * w)
 
 /* Set temporary message */
 
-char msgbuf[MSGBUFSIZE];
+char msgbuf[JOE_MSGBUFSIZE];
 
 /* display message on bottom line of window */
 void msgnw(W *w, char *s)

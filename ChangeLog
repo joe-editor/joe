@@ -1,3 +1,8 @@
+Tue Nov 20 2001  Marek 'marx' Grac <xgrac@fi.muni.cz>
+	* w.h, w.c, usearch.c, ufile.c, macro.c, uerror.c, umath.c:
+	MSGBUFSIZE was renamed to JOE_MSGBUFSIZE, because MSGBUFSIZE is
+	defined on BSD like systems.
+
 Mon Nov 12 2001  Vitezslav Samel <samel@mail.cz>
 	* Makefile.am, deleted chain.asm, kbdhdl.c, kbdhdl.h, msscrn.c,
 	mstty.c, termcap, terminfo: delete unused files from distribution

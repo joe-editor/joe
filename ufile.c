@@ -67,16 +67,16 @@ void genexmsg(BW * bw, int saved, char *name)
 
 	if (name) {
 		if (saved) {
-			snprintf(msgbuf, MSGBUFSIZE, "File %s saved", name);
+			snprintf(msgbuf, JOE_MSGBUFSIZE, "File %s saved", name);
 		} else {
-			snprintf(msgbuf, MSGBUFSIZE, "File %s not saved", name);
+			snprintf(msgbuf, JOE_MSGBUFSIZE, "File %s not saved", name);
 		}
 	} else if (bw->b->changed && bw->b->count == 1) {
-		snprintf(msgbuf, MSGBUFSIZE, "File %s not saved", s);
+		snprintf(msgbuf, JOE_MSGBUFSIZE, "File %s not saved", s);
 	} else if (saved) {
-		snprintf(msgbuf, MSGBUFSIZE, "File %s saved", s);
+		snprintf(msgbuf, JOE_MSGBUFSIZE, "File %s saved", s);
 	} else {
-		snprintf(msgbuf, MSGBUFSIZE, "File %s not changed so no update needed", s);
+		snprintf(msgbuf, JOE_MSGBUFSIZE, "File %s not changed so no update needed", s);
 	}
 	msgnw(bw->parent, msgbuf);
 
