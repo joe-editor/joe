@@ -2,6 +2,8 @@ Fri Mar 18 16:15:19 EST 2005
 
 	Change so that ` up-arrow (or any key) goes to shell.
 
+	Prefer bash over sh for shell.
+
 Thu Mar 17 18:54:06 EST 2005
 
 	Get joe to compile on irix

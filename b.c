@@ -2745,3 +2745,12 @@ int check_mod(B *b)
 	}
 	return 0;
 }
+
+/* True if file exists */
+
+int file_exists(unsigned char *path)
+{
+	struct stat sbuf;
+	if (!path) return 0;
+	return !stat((char *)path, &sbuf);
+}

@@ -138,13 +138,19 @@ int ubknd(BW *bw)
 {
 	unsigned char **a;
 	unsigned char *s;
-        unsigned char *sh=(unsigned char *)getenv("SHELL");
-        if (!sh) {
-        	msgnw(bw->parent, US "\"SHELL\" environment variable not defined or exported");
-        	/* return -1; */
-        	sh = US "/bin/sh";
-        }
+        unsigned char *sh;
 
+        sh=(unsigned char *)getenv("SHELL");
+
+        if (file_exists(sh) && strcmp((char *)sh,"/bin/sh")) goto ok;
+        if (file_exists(sh=US "/bin/bash")) goto ok;
+        if (file_exists(sh=US "/usr/bin/bash")) goto ok;
+        if (file_exists(sh=US "/bin/sh")) goto ok;
+
+        msgnw(bw->parent, US "\"SHELL\" environment variable not defined or exported");
+        return -1;
+
+        ok:
 	a = vamk(3);
 	s = vsncpy(NULL, 0, sz(sh));
 	a = vaadd(a, s);

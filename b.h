@@ -167,5 +167,6 @@ int lock_it(unsigned char *path,unsigned char *buf);
 void unlock_it(unsigned char *path);
 int plain_file(B *b);
 int check_mod(B *b);
+int file_exists(unsigned char *path);
 
 #endif
