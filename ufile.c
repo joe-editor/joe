@@ -673,6 +673,8 @@ int uask(BW *bw)
 	return nask(bw, 0, NULL, NULL);
 }
 
+/* FIXME: unused ???? */
+#if 0
 /* Ask to save file if it is modified.  If user answers yes, run save */
 
 static int nask2(BW *bw, int c, void *object, int *notify)
@@ -705,8 +707,6 @@ static int nask2(BW *bw, int c, void *object, int *notify)
 	}
 }
 
-/* FIXME: unused ???? */
-#if 0
 static int uask2(BW *bw)
 {
 	return nask2(bw, 0, NULL, NULL);

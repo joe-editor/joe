@@ -1,4 +1,7 @@
 Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
+	* ufile.c: comment out unused functions (nask2()/uask2())
+
+Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
 	* uedit.c: correct typo: utype(bw, c) --> utypebw(bw,c)
 	I'm not 100% sure about this, but "works for me here"(tm)
 
