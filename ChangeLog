@@ -1,3 +1,7 @@
+Tue Jun  4 2002  Vitezslav Samel <samel@mail.cz>
+	* scrn.c:
+	don't clear screen when nonzero skiptop is given (part 2)
+
 Mon Jun  3 2002  Vitezslav Samel <samel@mail.cz>
 	* scrn.c:
 	don't clear screen when nonzero skiptop is given
