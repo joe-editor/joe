@@ -1,4 +1,8 @@
 Sat Jun  8 2002  Vitezslav Samel <samel@mail.cz>
+	* va.c, va.h:
+	change aELEMENT #define to typedef
+
+Sat Jun  8 2002  Vitezslav Samel <samel@mail.cz>
 	* ufile.c:
 	change write() to joe_write() to avoid partly copied files
 

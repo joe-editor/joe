@@ -68,13 +68,10 @@ char *msgs[] = {
 /* Set position of gap */
 static void gstgap(H *hdr, char *ptr, int ofst)
 {
-	if (ofst > hdr->hole) {
-		mmove(ptr + hdr->hole, ptr + hdr->ehole, ofst - hdr->hole);
-		vchanged(ptr);
-	} else if (ofst < hdr->hole) {
-		mmove(ptr + hdr->ehole - (hdr->hole - ofst), ptr + ofst, hdr->hole - ofst);
-		vchanged(ptr);
-	}
+	if (ofst > hdr->hole)
+		mmove(ptr + hdr->hole, ptr + hdr->ehole, ofst - hdr->hole), vchanged(ptr);
+	else if (ofst < hdr->hole)
+		mmove(ptr + hdr->ehole - (hdr->hole - ofst), ptr + ofst, hdr->hole - ofst), vchanged(ptr);
 	hdr->ehole = ofst + hdr->ehole - hdr->hole;
 	hdr->hole = ofst;
 }
@@ -93,10 +90,9 @@ static void ginsm(H *hdr, char *ptr, int ofst, char *blk, int size)
 static void grmem(H *hdr, char *ptr, int ofst, char *blk, int size)
 {
 	if (ofst < hdr->hole)
-		if (size > hdr->hole - ofst) {
-			mmove(blk, ptr + ofst, hdr->hole - ofst);
-			mmove(blk + hdr->hole - ofst, ptr + hdr->ehole, size - (hdr->hole - ofst));
-		} else
+		if (size > hdr->hole - ofst)
+			mmove(blk, ptr + ofst, hdr->hole - ofst), mmove(blk + hdr->hole - ofst, ptr + hdr->ehole, size - (hdr->hole - ofst));
+		else
 			mmove(blk, ptr + ofst, size);
 	else
 		mmove(blk, ptr + ofst + hdr->ehole - hdr->hole, size);
@@ -1783,7 +1779,8 @@ char *parsens(char *s, long int *skip, long int *amnt)
 				passwd = getpwnam(n + 1);
 				n[x] = '/';
 				if (passwd) {
-					char *z = vsncpy(NULL, 0, sz(passwd->pw_dir));
+					char *z = vsncpy(NULL, 0,
+							 sz(passwd->pw_dir));
 
 					z = vsncpy(z, sLEN(z), sz(n + x));
 					vsrm(n);

@@ -14,17 +14,17 @@
 #include "utils.h"
 #include "va.h"
 
-aELEMENT(*vamk(int len))
+aELEMENT *vamk(int len)
 {
-	int *new = (int *) joe_malloc((1 + len) * sizeof(aCAST) + 2 * sizeof(int));
+	int *new = (int *) joe_malloc((1 + len) * sizeof(aELEMENT) + 2 * sizeof(int));
 
 	new[0] = len;
 	new[1] = 0;
-	((aELEMENT(*))(new + 2))[0] = aterm;
-	return (aELEMENT(*))(new + 2);
+	((aELEMENT *)(new + 2))[0] = aterm;
+	return (aELEMENT *)(new + 2);
 }
 
-void varm(char **vary)
+void varm(aELEMENT *vary)
 {
 	if (vary) {
 		vazap(vary, 0, aLen(vary));
@@ -32,10 +32,10 @@ void varm(char **vary)
 	}
 }
 
-int alen(char **ary)
+int alen(aELEMENT *ary)
 {
 	if (ary) {
-		aELEMENT(*beg) = ary;
+		aELEMENT *beg = ary;
 		while (acmp(*ary, aterm))
 			++ary;
 		return ary - beg;
@@ -43,20 +43,20 @@ int alen(char **ary)
 		return 0;
 }
 
-aELEMENT(*vaensure(aELEMENT(*vary), int len))
+aELEMENT *vaensure(aELEMENT *vary, int len)
 {
 	if (!vary)
 		vary = vamk(len);
 	else if (len > aSiz(vary)) {
 		len += (len >> 2);
-		vary = (aELEMENT(*))(2 + (int *) joe_realloc((int *) vary - 2, (len + 1) * sizeof(aCAST) + 2 * sizeof(int)));
+		vary = (aELEMENT *)(2 + (int *) joe_realloc((int *) vary - 2, (len + 1) * sizeof(aELEMENT) + 2 * sizeof(int)));
 
 		aSiz(vary) = len;
 	}
 	return vary;
 }
 
-aELEMENT(*vazap(aELEMENT(*vary), int pos, int n))
+aELEMENT *vazap(aELEMENT *vary, int pos, int n)
 {
 	if (vary) {
 		int x;
@@ -74,7 +74,7 @@ aELEMENT(*vazap(aELEMENT(*vary), int pos, int n))
 	return vary;
 }
 
-aELEMENT(*vatrunc(aELEMENT(*vary), int len))
+aELEMENT *vatrunc(aELEMENT *vary, int len)
 {
 	if (!vary || len > aLEN(vary))
 		vary = vaensure(vary, len);
@@ -88,7 +88,7 @@ aELEMENT(*vatrunc(aELEMENT(*vary), int len))
 	return vary;
 }
 
-aELEMENT(*vafill(aELEMENT(*vary), int pos, aELEMENT(el), int len))
+aELEMENT *vafill(aELEMENT *vary, int pos, aELEMENT el, int len)
 {
 	int olen = aLEN(vary), x;
 
@@ -106,7 +106,7 @@ aELEMENT(*vafill(aELEMENT(*vary), int pos, aELEMENT(el), int len))
 }
 
 #ifdef junk
-aELEMENT(*vancpy(aELEMENT(*vary), int pos, aELEMENT(*array), int len))
+aELEMENT *vancpy(aELEMENT *vary, int pos, aELEMENT *array, int len)
 {
 	int olen = aLEN(vary);
 
@@ -118,12 +118,12 @@ aELEMENT(*vancpy(aELEMENT(*vary), int pos, aELEMENT(*array), int len))
 	}
 	if (pos > olen)
 		vary = vafill(vary, olen, ablank, pos - olen);
-	mfwrd(vary + pos, array, len * sizeof(aCAST));
+	mfwrd(vary + pos, array, len * sizeof(aELEMENT));
 	return vary;
 }
 #endif
 
-aELEMENT(*vandup(aELEMENT(*vary), int pos, aELEMENT(*array), int len))
+aELEMENT *vandup(aELEMENT *vary, int pos, aELEMENT *array, int len)
 {
 	int olen = aLEN(vary), x;
 
@@ -140,12 +140,12 @@ aELEMENT(*vandup(aELEMENT(*vary), int pos, aELEMENT(*array), int len))
 	return vary;
 }
 
-aELEMENT(*vadup(aELEMENT(*vary)))
+aELEMENT *vadup(aELEMENT *vary)
 {
 	return vandup(NULL, 0, vary, aLEN(vary));
 }
 
-aELEMENT(*_vaset(aELEMENT(*vary), int pos, aELEMENT(el)))
+aELEMENT *_vaset(aELEMENT *vary, int pos, aELEMENT el)
 {
 	if (!vary || pos + 1 > aSIZ(vary))
 		vary = vaensure(vary, pos + 1);
@@ -165,20 +165,20 @@ aELEMENT(*_vaset(aELEMENT(*vary), int pos, aELEMENT(el)))
 	return vary;
 }
 
-static int _acmp(char **a, char **b)
+static int _acmp(aELEMENT *a, aELEMENT *b)
 {
 	return acmp(*a, *b);
 }
 
-aELEMENT(*vasort(aELEMENT(*ary), int len))
+aELEMENT *vasort(aELEMENT *ary, int len)
 {
 	if (!ary || !len)
 		return ary;
-	qsort(ary, len, sizeof(aCAST), (int (*)(const void *, const void *))_acmp);
+	qsort(ary, len, sizeof(aELEMENT), (int (*)(const void *, const void *))_acmp);
 	return ary;
 }
 
-aELEMENT(*vawords(aELEMENT(*a), char *s, int len, char *sep, int seplen))
+aELEMENT *vawords(aELEMENT *a, char *s, int len, char *sep, int seplen)
 {
 	int x;
 
