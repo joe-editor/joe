@@ -1189,7 +1189,8 @@ int blksum(double *sum, double *sumsq)
 						c=pgetc(q);
 						if (c >= '0' && c <= '9' || c == 'e' || c == 'E' ||
 						    c == 'p' || c == 'P' || c == 'x' || c == 'X' ||
-						    c == '.' || c == '-' || c == '+') {
+						    c == '.' || c == '-' || c == '+' ||
+						    c >= 'a' && c <= 'f' || c >= 'A' && c<='F') {
 							if(x != 79)
 								buf[x++]=c;
 						} else
