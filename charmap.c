@@ -46,6 +46,49 @@ int from_uni(struct charmap *cset, int c)
 
 /* Builtin maps */
 
+/* Aliases */
+
+static struct {
+	unsigned char *alias;
+	unsigned char *builtin;
+} alias_table[] = {
+	{ US "c", US "ascii" },
+	{ US "posix", US "ascii" },
+	{ US "8859-1", US "iso-8859-1" },
+	{ US "8859-2", US "iso-8859-2" },
+	{ US "8859-3", US "iso-8859-3" },
+	{ US "8859-4", US "iso-8859-4" },
+	{ US "8859-5", US "iso-8859-5" },
+	{ US "8859-6", US "iso-8859-6" },
+	{ US "8859-7", US "iso-8859-7" },
+	{ US "8859-8", US "iso-8859-8" },
+	{ US "8859-9", US "iso-8859-9" },
+	{ US "8859-10", US "iso-8859-10" },
+	{ US "8859-11", US "iso-8859-11" },
+	{ US "8859-13", US "iso-8859-13" },
+	{ US "8859-14", US "iso-8859-14" },
+	{ US "8859-15", US "iso-8859-15" },
+	{ US "8859-16", US "iso-8859-16" },
+	{ US "ansi", US "iso-8859-1" },
+	{ US "latin1", US "iso-8859-1" },
+	{ US "latin2", US "iso-8859-2" },
+	{ US "latin3", US "iso-8859-3" },
+	{ US "latin4", US "iso-8859-4" },
+	{ US "cyrillic", US "iso-8859-5" },
+	{ US "arabic", US "iso-8859-6" },
+	{ US "greek", US "iso-8859-7" },
+	{ US "hebrew", US "iso-8859-8" }, /* cp1255 on windows machines? */
+	{ US "latin5", US "iso-8859-9" },
+	{ US "turkish", US "iso-8859-9" },
+	{ US "latin6", US "iso-8859-10" },
+	{ US "nordic", US "iso-8859-10" },
+	{ US "thai", US "iso-8859-11" },
+	{ US "latin7", US "iso-8859-13" },
+	{ US "latin8", US "iso-8859-14" },
+	{ US "latin9", US "iso-8859-15" },
+	{ 0, 0 }
+};
+
 /* I took all the ISO-8859- ones, plus any ones referenced by a locale */
 
 struct builtin_charmap {
@@ -1239,6 +1282,13 @@ struct charmap *find_charmap(unsigned char *name)
 	/* Install some initial character maps */
 	if (!charmaps)
 		load_builtins();
+
+	/* Alias? */
+	for (y=0; alias_table[y].alias; ++y)
+		if (!map_name_cmp(alias_table[y].alias,name)) {
+			name = alias_table[y].builtin;
+			break;
+		}
 
 	/* Already loaded? */
 	for (m=charmaps; m; m=m->next)

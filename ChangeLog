@@ -2,6 +2,9 @@ Mon May 24 2004  Joe Allen <jhallen@world.std.com>
 
 	Fix bg_reg -> bg_red.
 
+	Now we understand aliases for character maps, like latin1 ->
+	iso-8859-1 and 8859-1 -> iso-8859-1.
+
 Mon May 24 2004  Joe Allen <jhallen@world.std.com>
 
 	Smart indent and backspace now work even if cursor

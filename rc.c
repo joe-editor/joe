@@ -621,9 +621,11 @@ static int doencoding(BW *bw, unsigned char *s, int *xx, int *notify)
 
 	map = find_charmap(s);
 
-	if (map)
+	if (map) {
 		bw->o.charmap = map;
-	else
+		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "%s encoding assumed for this file", map->name);
+		msgnw(bw->parent, msgbuf);
+	} else
 		msgnw(bw->parent, US "Character set not found");
 
 	vsrm(s);
