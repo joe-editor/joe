@@ -25,6 +25,7 @@
 =Idle
 =Preproc blue
 =Comment green
+=POD green
 =Constant cyan
 =Escape bold cyan
 =Type bold
@@ -46,6 +47,7 @@
 	"<"		maybe_inc
 	"$"		not_string
 	"a-zA-Z_"	ident		buffer
+	"="		pod_start
 
 :rest Idle
 	*		rest
@@ -61,6 +63,21 @@
 	"`"		backtick	recolor=-1
 	"$"		not_string
 	"<"		maybe_inc
+	"q"		maybe_string	buffer
+
+:pod_start Idle
+	*		pod_start
+	"\n"		pod_block
+
+:pod_block POD
+	*		pod_block
+	"="		pod_ident	buffer
+
+:pod_ident POD
+	*		pod_block	noeat strings
+	"=cut"		rest
+done
+	"a-zA-Z0-9_"	pod_ident
 
 :maybe_inc Idle
 	*		rest		noeat
@@ -122,6 +139,9 @@ done
 :line_comment_i Comment
 	*		line_comment_i
 	"\n"		idle
+
+:end_of_file_comment Comment
+	*		end_of_file_comment
 
 :first_digit Constant
 	*		rest	noeat
@@ -285,6 +305,8 @@ done
 
 :ident	Idle
 	*		rest		noeat strings
+	"BEGIN"		kw
+	"END"		kw
 	"if"		kw
 	"unless"	kw
 	"while"		kw
@@ -317,9 +339,20 @@ done
 	"s"		subst		noeat
 	"tr"		subst		noeat
 	"y"		subst		noeat
-	"qr"		subst		noeat
+	"__END__"	end_of_file_comment
+	"__DATA__"	end_of_file_comment
 done
 	"a-zA-Z0-9_"	ident
+
+:maybe_string Idle
+	*		rest		noeat strings
+	"qr"		match		noeat
+	"qq"		match		noeat
+	"qx"		match		noeat
+	"qw"		match		noeat
+	"q"		match		noeat
+done
+	"a-zA-Z0-9_"	maybe_string
 
 :type Type
 	*	rest	noeat

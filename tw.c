@@ -91,6 +91,7 @@ unsigned char *get_context(BW *bw)
 {
 	P *p = pdup(bw->cursor);
 	static unsigned char buf1[stdsiz];
+	int i, j, spc;
 
 
 	buf1[0] = 0;
@@ -110,7 +111,17 @@ unsigned char *get_context(BW *bw)
 			    stdbuf[0]=='B' && stdbuf[1]=='E' && stdbuf[2]=='G' && stdbuf[3]=='I' && stdbuf[4]=='N' ||
 			    stdbuf[0]=='-' && stdbuf[1]=='-' ||
 			    stdbuf[0]==';')) {
-			    	strcpy((char *)buf1,(char *)stdbuf);
+			    	/* strcpy((char *)buf1,(char *)stdbuf); */
+ 				/* replace tabs to spaces and remove adjoining spaces */
+ 				for (i=0,j=0,spc=0; stdbuf[i]; i++) {
+ 					if (stdbuf[i]=='\t' || stdbuf[i]==' ') {
+ 						if (spc) continue;
+ 						spc = 1;
+ 					}
+ 					else spc = 0;
+ 					buf1[j++] = (stdbuf[i]=='\t')? ' ' : stdbuf[i];
+ 				}
+ 				buf1[j]= '\0';
 				/* Uncomment to get the last line instead of the first line (see above)
 			    	if (pprevl(p)) {
 			    		p_goto_bol(p);

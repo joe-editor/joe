@@ -284,10 +284,10 @@ done
 	"0-7"		string
 
 :string_control Escape
-	*		string_control
+	*		string
+	"\""		string noeat
 	"\n"		reset
-	"\""		idle
-	"diouxXeEfFgGaAcspn%SC"	string
+	"0-9.\-+ #hjILtz$"	string_control
 
 :char Constant
 	*		char

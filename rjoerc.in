@@ -227,6 +227,15 @@
 +\[1-9]\+\[0-9]\[cda]
 -syntax diff
 
+ TeX
+*.tex
+-wordwrap
+-syntax tex
+
+*.sty
+-wordwrap
+-syntax tex
+
  Text file.
 *.txt
 -wordwrap

@@ -1,9 +1,9 @@
 # JOE syntax highlight file for PHP
+# modified by Eric Lin
 
 # TODO:
 #  * octal escape sequences
 #  * heredoc support (as good as possible)
-#  * highlight variables
 #  * highlight function and class names?
 
 # Define no. sync lines
@@ -20,8 +20,11 @@
 =HTML		bold black
 =Comment 	green
 =Constant 	cyan
+=Constant_sq 	blue
 =Escape 	bold cyan
-=Keyword 	bold
+=Keyword 	magenta
+=Var  red
+=Methods  bold
 
 :reset HTML
 	*		reset
@@ -42,6 +45,47 @@
 	"'"		string_sq	recolor=-1
 	"\""		string_dq	recolor=-1
 	"a-zA-Z_"	ident		buffer
+	"$"   php_var recolor=-1
+	"-" maybe_method
+	"{}"  brace recolor=-1
+	
+:brace  Methods
+  * idle  noeat
+	
+:php_var Var
+  *   php_var
+  " ;[]=()" idle  recolor=-1
+  "-" maybe_method recolor=-1
+
+:var_indqstring Var
+  *     string_dq recolor=-1
+  "a-zA-Z_" var_indqstring
+  "\""  idle
+	"\\"		string_dq_esc	recolor=-1
+
+:var_insqstring Var
+  *     string_sq recolor=-1
+  "a-zA-Z_" var_insqstring
+  "'" idle
+	"\\"		string_sq_esc	recolor=-1
+
+:maybe_method Methods
+	*		idle  recolor=-1
+	"?"		idle_qmark 
+	"%"		idle_hash
+	"#"		sh_comment	recolor=-1
+	"/"		slash
+	"0-9"		first_digit	recolor=-1
+	"'"		string_sq	recolor=-1
+	"\""		string_dq	recolor=-1
+	"a-zA-Z_"	ident		buffer
+	"$"   php_var recolor=-1
+	"{}"  brace recolor=-1
+  ">" method  recolor=-2
+  
+:method Methods
+  *   idle  recolor=-1
+  "a-zA-Z_" method  recolor=-1
 
 :idle_qmark Idle
 	*		idle
@@ -74,8 +118,9 @@
 	"\n"		idle
 
 
-:string_sq Constant
+:string_sq Constant_sq
 	*		string_sq
+	"$"     var_insqstring recolor=-1
 	"\'"		idle
 	"\\"		string_sq_esc	recolor=-1
 
@@ -85,6 +130,7 @@
 
 :string_dq Constant
 	*		string_dq
+	"$"     var_indqstring recolor=-1
 	"\""		idle
 	"\\"		string_dq_esc	recolor=-1
 
@@ -126,10 +172,29 @@
 
 :ident Idle
 	*		idle		noeat strings
+	"addslashes" meth
+	"array"		meth
+	"array_keys"  meth
+	"count" meth
+	"date"  meth
+	"chr" meth
+	"empty"		meth
+	"end"	meth
+	"header" meth
+	"highlight_file"  meth
+	"htmlspecialchars"  meth
+	"isset"		meth
+	"shuffle"  meth
+	"strip_tags"  meth
+	"strlen"  meth
+	"strpos"  meth
+	"strrpos" meth
+	"substr"  meth
+	"trim"    meth
 	"and"		kw
-	"array"		kw
 	"as"		kw
 	"break"		kw
+	"case"    kw
 	"class"		kw
 	"continue"	kw
 	"declare"	kw
@@ -139,13 +204,6 @@
 	"echo"		kw
 	"else"		kw
 	"elseif"	kw
-	"empty"		kw
-	"enddeclare"	kw
-	"endfor"	kw
-	"endforeach"	kw
-	"endif"		kw
-	"endswitch"	kw
-	"endwhile"	kw
 	"eval"		kw
 	"exception"	kw
 	"exit"		kw
@@ -157,23 +215,28 @@
 	"if"		kw
 	"include"	kw
 	"include_once"	kw
-	"isset"		kw
 	"list"		kw
 	"new"		kw
 	"or"		kw
 	"print"		kw
+	"private" kw
+	"public"  kw
 	"require"	kw
 	"require_once"	kw
 	"return"	kw
 	"static"	kw
 	"switch"	kw
 	"unset"		kw
-	"use"		kw
-	"var"		kw
 	"while"		kw
-	"xor"		kw
 done
 	"a-zA-Z0-9_"	ident
 
 :kw Keyword
 	*	idle	noeat
+
+:meth Methods
+  * idle  noeat
+
+:var  Var
+  * mark  noeat
+  

@@ -195,6 +195,15 @@
  File name with '.'?  It's probably not a text file.
 *.*
 
+ TeX
+*.tex
+-wordwrap
+-syntax tex
+
+*.sty
+-wordwrap
+-syntax tex
+
  Diff
 *
 +--- 
