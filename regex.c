@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
+#include <ctype.h>
 #include "config.h"
 #include "zstr.h"
 #include "vs.h"
@@ -274,7 +275,7 @@ while(len--)
           (*oregex=='\\' ?
            (tregex=oregex+2, tlen=olen-2, brack(&tregex,&tlen,c))
           :
-           (icase?toup(c)==toup(*oregex):c==*oregex)
+           (icase?toupper(c)==toupper(*oregex):c==*oregex)
           )
         );
 
@@ -304,7 +305,7 @@ while(len--)
    d=pgetc(p);
    if(icase)
     {
-    if(toup(d)!=toup(c)) goto fail;
+    if(toupper(d)!=toupper(c)) goto fail;
     }
    else
     {
@@ -317,7 +318,7 @@ while(len--)
   d=pgetc(p);
   if(icase)
    {
-   if(toup(d)!=toup(c)) goto fail;
+   if(toupper(d)!=toupper(c)) goto fail;
    }
   else
    {

@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
+#include <ctype.h>
 #include "zstr.h"
 
 char _ctaB[]=
@@ -42,8 +43,6 @@ char _ctaA[]=
  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
  };
 
-int toup(a) { return clower(a) ? a+'A'-'a' : a; }
-int todn(a) { return cupper(a) ? a+'a'-'A' : a; }
 unsigned Umin(a,b) unsigned a,b; { return a<b?a:b; }
 unsigned Umax(a,b) unsigned a,b; { return a>b?a:b; }
 int Imin(a,b) { return a<b?a:b; }
@@ -179,26 +178,26 @@ char *l, *r;
  {
  int c;
  loop:
-  if(!toup(l[0]) || toup(l[0])!=toup(r[0])) { c=0; goto done; }
-  if(!toup(l[1]) || toup(l[1])!=toup(r[1])) { c=1; goto done; }
-  if(!toup(l[2]) || toup(l[2])!=toup(r[2])) { c=2; goto done; }
-  if(!toup(l[3]) || toup(l[3])!=toup(r[3])) { c=3; goto done; }
-  if(!toup(l[4]) || toup(l[4])!=toup(r[4])) { c=4; goto done; }
-  if(!toup(l[5]) || toup(l[5])!=toup(r[5])) { c=5; goto done; }
-  if(!toup(l[6]) || toup(l[6])!=toup(r[6])) { c=6; goto done; }
-  if(!toup(l[7]) || toup(l[7])!=toup(r[7])) { c=7; goto done; }
-  if(!toup(l[8]) || toup(l[8])!=toup(r[8])) { c=8; goto done; }
-  if(!toup(l[9]) || toup(l[9])!=toup(r[9])) { c=9; goto done; }
-  if(!toup(l[10]) || toup(l[10])!=toup(r[10])) { c=10; goto done; }
-  if(!toup(l[11]) || toup(l[11])!=toup(r[11])) { c=11; goto done; }
-  if(!toup(l[12]) || toup(l[12])!=toup(r[12])) { c=12; goto done; }
-  if(!toup(l[13]) || toup(l[13])!=toup(r[13])) { c=13; goto done; }
-  if(!toup(l[14]) || toup(l[14])!=toup(r[14])) { c=14; goto done; }
-  if(!toup(l[15]) || toup(l[15])!=toup(r[15])) { c=15; goto done; }
+  if(!toupper(l[0]) || toupper(l[0])!=toupper(r[0])) { c=0; goto done; }
+  if(!toupper(l[1]) || toupper(l[1])!=toupper(r[1])) { c=1; goto done; }
+  if(!toupper(l[2]) || toupper(l[2])!=toupper(r[2])) { c=2; goto done; }
+  if(!toupper(l[3]) || toupper(l[3])!=toupper(r[3])) { c=3; goto done; }
+  if(!toupper(l[4]) || toupper(l[4])!=toupper(r[4])) { c=4; goto done; }
+  if(!toupper(l[5]) || toupper(l[5])!=toupper(r[5])) { c=5; goto done; }
+  if(!toupper(l[6]) || toupper(l[6])!=toupper(r[6])) { c=6; goto done; }
+  if(!toupper(l[7]) || toupper(l[7])!=toupper(r[7])) { c=7; goto done; }
+  if(!toupper(l[8]) || toupper(l[8])!=toupper(r[8])) { c=8; goto done; }
+  if(!toupper(l[9]) || toupper(l[9])!=toupper(r[9])) { c=9; goto done; }
+  if(!toupper(l[10]) || toupper(l[10])!=toupper(r[10])) { c=10; goto done; }
+  if(!toupper(l[11]) || toupper(l[11])!=toupper(r[11])) { c=11; goto done; }
+  if(!toupper(l[12]) || toupper(l[12])!=toupper(r[12])) { c=12; goto done; }
+  if(!toupper(l[13]) || toupper(l[13])!=toupper(r[13])) { c=13; goto done; }
+  if(!toupper(l[14]) || toupper(l[14])!=toupper(r[14])) { c=14; goto done; }
+  if(!toupper(l[15]) || toupper(l[15])!=toupper(r[15])) { c=15; goto done; }
  l+=16; r+=16; goto loop;
  done:
- if(toup(l[c])>toup(r[c])) return 1;
- if(toup(l[c])<toup(r[c])) return -1;
+ if(toupper(l[c])>toupper(r[c])) return 1;
+ if(toupper(l[c])<toupper(r[c])) return -1;
  return 0;
  }
 

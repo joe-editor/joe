@@ -213,7 +213,7 @@ char *vlock();
  * Returns file address of beginning of allocated space
  */
 
-long valloc();
+long my_valloc();
 
 #ifdef junk
 /******************************************************************************
@@ -375,7 +375,7 @@ int _wc();
 	  (v)->addr==((a)&~(PGSIZE-1)) ? \
 	   ( \
 	   vheader((v)->vpage1)->dirty=1, \
-	   ((a)+1>vsize(v) && valloc(v,(a)+1-vsize(v))), \
+	   ((a)+1>vsize(v) && my_valloc(v,(a)+1-vsize(v))), \
 	   (v)->vpage1[(a)&(PGSIZE-1)]=(c) \
 	   ) \
 	  : \

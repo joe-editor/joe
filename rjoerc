@@ -436,6 +436,8 @@ bof		^K ^U
 bof		^K u
 bol		.kh		Goto beginning of line
 bol		^A
+bol		^[ [ H
+bol		^[ [ 1 ~
 center		^K A		Center line
 center		^K ^A
 center		^K a
@@ -458,6 +460,8 @@ eof		^K ^V
 eof		^K v
 eol		.kH		Go to end of line
 eol		^E
+eol		^[ [ F
+eol		^[ [ 4 ~
 exsave		^K X		Save and exit
 exsave		^K ^X
 exsave		^K x

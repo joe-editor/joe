@@ -1,5 +1,6 @@
 /* Search & Replace system */
 
+#include <ctype.h>
 #include "pw.h"
 #include "qw.h"
 #include "vs.h"
@@ -42,7 +43,7 @@ P *p;
  P *end=pdup(p);
  int x;
  for(x=0;x!=sLEN(pattern) && pattern[x]!='\\';++x)
-  if(srch->ignore) pattern[x]=toup(pattern[x]);
+  if(srch->ignore) pattern[x]=toupper(pattern[x]);
  while(srch->ignore?pifind(start,pattern,x):pfind(start,pattern,x))
   {
   pset(end,start);
@@ -84,7 +85,7 @@ P *p;
  P *end=pdup(p);
  int x;
  for(x=0;x!=sLEN(pattern) && pattern[x]!='\\';++x)
-  if(srch->ignore) pattern[x]=toup(pattern[x]);
+  if(srch->ignore) pattern[x]=toupper(pattern[x]);
  while(pbkwd(start,1L) && (srch->ignore?prifind(start,pattern,x):prfind(start,pattern,x)))
   {
   pset(end,start);

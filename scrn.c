@@ -18,6 +18,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include <stdio.h>
 #include <signal.h>
+#include <stdlib.h>
 #include "blocks.h"
 #include "vs.h"
 #include "termcap.h"
@@ -872,7 +873,7 @@ for(x=0;x<t->co-1;)
    {
    int amnt,back;
    int tsfo=t->ary[aryy].loc-x;
-   int cst= -Iabs(tsfo);
+   int cst= -abs(tsfo);
    int pre=32;
    for(amnt=0;x+amnt<t->co-1 && x+tsfo+amnt<t->co-1;++amnt)
     {

@@ -351,6 +351,8 @@ bof		^[ ^Y
 bof		^[ y
 bol		.kh		Goto beginning of line
 bol		^A
+bol		^[ [ H
+bol		^[ [ 1 ~
 center		^[ ^C		Center line
 center		^[ c
 delch		.kD		Delete character
@@ -373,6 +375,8 @@ eof		^[ ^V
 eof		^[ v
 eol		.kH		Go to end of line
 eol		^E
+eol		^[ [ F
+eol		^[ [ 4 ~
 execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute
 execmd		^[ x		Prompt for command to execute

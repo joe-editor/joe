@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
+#include <stdlib.h>
 #include "poshist.h"
 #include "queue.h"
 #include "b.h"
@@ -72,7 +73,7 @@ P *p;
  if(pos.link.prev!=&pos &&
     pos.link.prev->w==w &&
     pos.link.prev->p &&
-    Labs(pos.link.prev->p->line-p->line)<3
+    labs(pos.link.prev->p->line-p->line)<3
    )
   poffline(pset(pos.link.prev->p,p));
  else markpos(w,p);

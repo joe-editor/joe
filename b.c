@@ -15,12 +15,21 @@ details.
 You should have received a copy of the GNU General Public License along with 
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
+/*
+DEADJOE tmp race condition security fix by thomas@suse.de
+at 1999-07-23
+*/
 
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #ifndef __MSDOS__
 #include <pwd.h>
 #endif
 #include <errno.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #include "config.h"
 #include "blocks.h"
@@ -121,7 +130,7 @@ static H *halloc()
  if(qempty(H,link,&ohdrs))
   {
   h=(H *)alitem(&nhdrs,sizeof(H));
-  h->seg=valloc(vmem,(long)SEGSIZ);
+  h->seg=my_valloc(vmem,(long)SEGSIZ);
   }
  else h=deque(H,link,ohdrs.link.next);
  h->hole=0;
@@ -702,8 +711,8 @@ P *p;
 long line;
  {
  if(line>p->b->eof->line) { pset(p,p->b->eof); return p; }
- if(line<Labs(p->line-line)) pset(p,p->b->bof);
- if(Labs(p->b->eof->line-line)<Labs(p->line-line)) pset(p,p->b->eof);
+ if(line<labs(p->line-line)) pset(p,p->b->bof);
+ if(labs(p->b->eof->line-line)<labs(p->line-line)) pset(p,p->b->eof);
  if(p->line==line) { pbol(p); return p; }
  while(line>p->line) pnextl(p);
  if(line<p->line)
@@ -850,7 +859,7 @@ unsigned char *s;
  p->valcol=0;
  mset(table,255,256); for(x=0;x!=len-1;++x) table[s[x]]=x;
  ffwrd(p,len); amnt-=len; x=len; do
-  if((c=toup(frgetc(p)))!=s[--x])
+  if((c=toupper(frgetc(p)))!=s[--x])
    {
    if(table[c]==255) ffwrd(p,len+1), amnt-=x+1;
    else if(x<=table[c]) ffwrd(p,len-x+1), --amnt;
@@ -971,7 +980,7 @@ unsigned char *s;
  p->valcol=0;
  mset(table,255,256); for(x=len;--x;table[s[x]]=len-x-1);
  x=0; do
-  if((c=toup(fpgetc(p)))!=s[x++])
+  if((c=toupper(fpgetc(p)))!=s[x++])
    {
    if(table[c]==255) fbkwd(p,len+1), amnt-=len-x+1;
    else if(len-table[c]<=x) fbkwd(p,x+1), --amnt;
@@ -1990,7 +1999,30 @@ void ttsig(sig)
  {
  long tim=time(0);
  B *b;
- FILE *f=fopen("DEADJOE","a");
+ FILE *f;
+ int tmpfd;
+ struct stat sbuf;
+
+ if((tmpfd = open("DEADJOE", O_RDWR|O_EXCL|O_CREAT, 0600)) < 0) {
+    if(lstat("DEADJOE", &sbuf) < 0)
+      _exit(-1);
+    if(!S_ISREG(sbuf.st_mode) || sbuf.st_uid != geteuid())
+      _exit(-1);
+    /*
+       A race condition still exists between the lstat() and the open()
+       systemcall, which leads to a possible denial-of-service attack
+       by setting the file access mode to 600 for every file the
+       user executing joe has permissions to.
+       This can't be fixed w/o breacking the behavior of the orig. joe!
+    */
+    if((tmpfd = open("DEADJOE", O_RDWR|O_APPEND)) < 0)
+      _exit(-1);
+    if(fchmod(tmpfd,  S_IRUSR|S_IWUSR) < 0)
+      _exit(-1);
+ }
+ if((f = fdopen(tmpfd, "a")) == NULL)
+   _exit(-1);
+ 
  fprintf(f,"\n*** Modified files in JOE when it aborted on %s",ctime(&tim));
  if(sig) fprintf(f,"*** JOE was aborted by signal %d\n",sig);
  else fprintf(f,"*** JOE was aborted because the terminal closed\n");

@@ -1,20 +1,9 @@
- /* Editor startup and main edit loop
-   Copyright (C) 1992 Joseph H. Allen
+/*
+	Editor startup and main edit loop
+	Copyright (C) 1992 Joseph H. Allen
 
-This file is part of JOE (Joe's Own Editor)
-
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
-
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
-
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */ 
+	This file is part of JOE (Joe's Own Editor)
+*/ 
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -49,88 +38,77 @@ SCREEN *maint;		/* Main edit screen */
 
 /* Make windows follow cursor */
 
-void dofollows()
- {
- W *w=maint->curwin;
- do
-  {
-  if(w->y!= -1 && w->watom->follow && w->object) w->watom->follow(w->object);
-  w=(W *)(w->link.next);
-  }
-  while(w!=maint->curwin);
- }
+void dofollows() {
+	W *w = maint->curwin;
+
+	do {
+		if (w->y!= -1 && w->watom->follow && w->object) w->watom->follow(w->object);
+		w = (W *)(w->link.next);
+	} while (w!=maint->curwin);
+}
 
 /* Update screen */
 
 int dostaupd=1;
 extern int staupd;
 
-void edupd(flg)
- {
- W *w;
- int wid,hei;
- if(dostaupd) staupd=1, dostaupd=0;
- ttgtsz(&wid,&hei);
- if(wid>=2 && wid!=maint->w ||
-    hei>=1 && hei!=maint->h)
-  {
-  nresize(maint->t,wid,hei);
-  sresize(maint);
-  }
- dofollows();
- ttflsh();
- nscroll(maint->t);
- dsphlp(maint);
- w=maint->curwin; do
-  {
-  if(w->y!= -1)
-   {
-   if(w->object && w->watom->disp) w->watom->disp(w->object,flg);
-   msgout(w);
-   }
-  w=(W *)(w->link.next);
-  }
-  while(w!=maint->curwin);
- cpos(maint->t,
-      maint->curwin->x+maint->curwin->curx,
-      maint->curwin->y+maint->curwin->cury);
- staupd=0;
- }
+void edupd(flg) {
+	W *w;
+	int wid,hei;
+	if (dostaupd) staupd=1, dostaupd=0;
+	ttgtsz(&wid,&hei);
+	if (wid>=2 && wid!=maint->w || hei>=1 && hei!=maint->h) {
+		nresize(maint->t,wid,hei);
+		sresize(maint);
+	}
+	dofollows();
+	ttflsh();
+	nscroll(maint->t);
+	dsphlp(maint);
+	w = maint->curwin; 
+	do {
+		if (w->y!= -1) {
+			if (w->object && w->watom->disp) w->watom->disp(w->object,flg);
+			msgout(w);
+		}
+		w = (W *)(w->link.next);
+	}
+	while (w!=maint->curwin); cpos(maint->t, maint->curwin->x+maint->curwin->curx, maint->curwin->y+maint->curwin->cury);
+	staupd=0;
+}
 
 static int ahead=0;
 static int ungot=0;
 static int ungotc=0;
 
-void nungetc(c)
- {
- if(c!='C'-'@' && c!='M'-'@')
-  {
-  chmac();
-  ungot=1;
-  ungotc=c;
-  }
- }
+void nungetc(c) {
+	if(c!='C'-'@' && c!='M'-'@') {
+		chmac();
+		ungot=1;
+		ungotc=c;
+	}
+}
 
-int edloop(flg)
- {
- int term=0;
- int ret=0;
- SCRN *n=maint->t;
- if(flg)
-  if(maint->curwin->watom->what==TYPETW) return 0;
-  else maint->curwin->notify= &term;
- while(!leave && (!flg || !term))
-  {
-  MACRO *m;
-  int c;
-  if(exmsg && !flg)
-   {
-   vsrm(exmsg);
-   exmsg=0;
-   }
-  edupd(1);
-  if(!ahead && !have) ahead=1;
-  if(ungot) c=ungotc, ungot=0;
+int edloop(flg) {
+	int term=0;
+	int ret=0;
+	SCRN *n=maint->t;
+
+	if (flg) 
+		if (maint->curwin->watom->what==TYPETW) 
+			return 0;
+		else 
+			maint->curwin->notify= &term;
+		while(!leave && (!flg || !term)) {
+			MACRO *m;
+			int c;
+			if (exmsg && !flg) {
+				vsrm(exmsg);
+				exmsg=0;
+			}
+			edupd(1);
+			if (!ahead && !have) ahead=1;
+			if (ungot) c=ungotc, ungot=0;
   else c=ttgetc();
   if(!ahead && c==10) c=13;
   m=dokey(maint->curwin->kbd,c);

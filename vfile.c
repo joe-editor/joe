@@ -20,13 +20,13 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include "config.h"
 #include "vs.h"
 #include "zstr.h"
 #include "blocks.h"
 #include "queue.h"
 #include "path.h"
-#include "random.h"
 #include "vfile.h"
 
 static VFILE vfiles={{&vfiles,&vfiles}};	/* Known vfiles */
@@ -351,7 +351,7 @@ while(curvalloc>maxvalloc)
 }
 #endif
 
-long valloc(vfile,size)
+long my_valloc(vfile,size)
 VFILE *vfile;
 long size;
 {
@@ -471,7 +471,7 @@ VFILE *vfile;
 long addr;
 char c;
 {
-if(addr+1>vsize(vfile)) valloc(vfile,addr+1-vsize(vfile));
+if(addr+1>vsize(vfile)) my_valloc(vfile,addr+1-vsize(vfile));
 if(vfile->vpage1) vunlock(vfile->vpage1);
 vfile->vpage1=vlock(vfile,vfile->addr=(addr&~(long)(PGSIZE-1)));
 return wc(vfile,addr,c);
@@ -493,7 +493,7 @@ VFILE *vfile;
 long addr;
 short c;
 {
-if(addr+2>vsize(vfile)) valloc(vfile,addr+2-vsize(vfile));
+if(addr+2>vsize(vfile)) my_valloc(vfile,addr+2-vsize(vfile));
 wc(vfile,addr,c);
 wc(vfile,addr+1,c>>8);
 return c;
@@ -517,7 +517,7 @@ VFILE *vfile;
 long addr;
 long c;
 {
-if(addr+4>vsize(vfile)) valloc(vfile,addr+4-vsize(vfile));
+if(addr+4>vsize(vfile)) my_valloc(vfile,addr+4-vsize(vfile));
 wc(vfile,addr,c);
 wc(vfile,addr+1,c>>8);
 wc(vfile,addr+2,c>>16);
@@ -561,7 +561,7 @@ int size;
 long addr=vtell(v);
 char *src;
 int x;
-if(addr+size>vsize(v)) valloc(v,addr+size-vsize(v));
+if(addr+size>vsize(v)) my_valloc(v,addr+size-vsize(v));
 while(size)
  {
  src=vlock(v,addr);

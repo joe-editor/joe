@@ -376,6 +376,8 @@ bknd		^X '		Shell window (joe)
 bof		^[ <		Goto beginning of file
 bol		.kh		Goto beginning of line
 bol		^A
+bol		^[ [ H
+bol		^[ [ 1 ~
 bop		^[ p		(uemacs)
 bufed		^X b
 bknd		^[ '		Shell window
@@ -394,6 +396,8 @@ edit		^X ^F		Edit a file: creates orphaned buffers
 eof		^[ >		Go to end of file
 eol		.kH		Go to end of line
 eol		^E
+eol		^[ [ F
+eol		^[ [ 4 ~
 eop		^[ n		(uemacs)
 execmd		^[ x
 insc		^C		(uemacs)

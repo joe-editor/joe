@@ -1,20 +1,9 @@
-/* Zero terminated strings
-   Copyright (C) 1992 Joseph H. Allen
+/*
+	Zero terminated strings
+	Copyright (C) 1992 Joseph H. Allen
 
-This file is part of JOE (Joe's Own Editor)
-
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
-
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
-
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */ 
+	This file is part of JOE (Joe's Own Editor)
+*/ 
 
 #ifndef _Izstr
 #define _Izstr 1
@@ -38,35 +27,8 @@ extern char _ctaB[], _ctaA[];
 
 /* Character type test macros */
 
-/* Upper case */
-#define cupper(c) (_ctaB[(unsigned char)(c)]&_upp)
-
-/* Lower case */
-#define clower(c) (_ctaB[(unsigned char)(c)]&_low)
-
-/* Letter */
-#define calpha(c) (_ctaB[(unsigned char)(c)]&(_low|_upp))
-
-/* First legal character of a C identifier */
-#define cfirst(c) (_ctaB[(unsigned char)(c)]&(_low|_upp|_und))
-
 /* Remaining legal characters of a C identifier */
 #define crest(c)  (_ctaB[(unsigned char)(c)]&(_low|_upp|_und|_bin|_oct|_dec))
-
-/* Binary digit */
-#define cbin(c)   (_ctaB[(unsigned char)(c)]&(_bin))
-
-/* Octal digit */
-#define coct(c)   (_ctaB[(unsigned char)(c)]&(_bin|_oct))
-
-/* Decimal digit */
-#define cdec(c)   (_ctaB[(unsigned char)(c)]&(_bin|_oct|_dec))
-
-/* Hexadecimal digit */
-#define chex(c)   (_ctaB[(unsigned char)(c)]&(_bin|_oct|_dec|_hex))
-
-/* Floating-point digit */
-#define cfloat(c) (_ctaB[(unsigned char)(c)]&(_bin|_oct|_dec|_flo))
 
 /* Whitespace: tab or space */
 #define cwhite(c)  (_ctaA[(unsigned char)(c)]&(_whi))
@@ -77,18 +39,7 @@ extern char _ctaB[], _ctaA[];
 /* Whitespace: tab, space, newline or nul */
 #define cwhitef(c) (_ctaA[(unsigned char)(c)]&(_whi|_eol|_eos))
 
-/* int Iabs(int n); Return absolute value of given int */
-int Iabs();
-
-/* long Labs(long n); Return absolute value of given long */
-long Labs();
-
-/* int toup(int c); Convert character to uppercase if it was lowercase */
-int toup();
-
-/* int todn(int c); Convert character to lowercase if it was uppercase */
-int todn();
-
+/*************/
 /* unsigned Umin(unsigned a,unsigned b); Return the smaller unsigned integer */
 unsigned Umin();
 
@@ -106,6 +57,7 @@ long Lmax();
 
 /* long Lmin(long a,long b); Return the smaller long */
 long Lmin();
+/*****************/
 
 /* int zlen(char *s); Return length of z-string */
 int zlen();

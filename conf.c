@@ -204,8 +204,10 @@ char *argv[];
  fprintf(f,"\n");
 
  fprintf(f,"char *getenv();\n");
+ fprintf(f,"#ifndef __alpha__\n");
  if(sizeof(long)==8) fprintf(f,"int time();\n");
  else fprintf(f,"long time();\n");
+ fprintf(f,"#endif\n");
  fprintf(f,"void *malloc();\n");
  fprintf(f,"void free();\n");
  fprintf(f,"void *calloc();\n");
