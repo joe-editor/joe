@@ -1,5 +1,9 @@
 Fix for next release:
 
+  locale for qsort().
+
+  check all instances of 'chars'.
+
   option to force search to be case insensitive
 
   update selinux patch

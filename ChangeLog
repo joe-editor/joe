@@ -1,4 +1,13 @@
 Tue May  4 2004  Joe Allen <jhallen@world.std.com>
+	* bw.c, charmap.c, main.c:
+
+	Print locale on startup line.
+
+	Print encoding for ^K <space>.
+
+	Change koi8-T to koi8-t.
+
+Tue May  4 2004  Joe Allen <jhallen@world.std.com>
 	* ChangeLog TODO b.c bw.c charmap.c charmap.h cmd.c help.c 
  	i18n.c i18n.h joerc.in jpicorc.in jstarrc.in macro.c main.c 
  	menu.c pw.c pw.h rc.c regex.c rjoerc.in scrn.c scrn.h syntax.c 

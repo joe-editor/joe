@@ -377,11 +377,15 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	if (help) {
 		help_on(maint);
 	}
-	if (!nonotice)
+	if (!nonotice) {
 		if (locale_map->type)
-			msgnw(((BASE *)lastw(maint)->object)->parent, US ("\\i** Joe's Own Editor v" VERSION " ** Copyright © 2004 **\\i"));
+			snprintf((char *)msgbuf,JOE_MSGBUFSIZE,"\\i** Joe's Own Editor v" VERSION " ** (%s) ** Copyright © 2004 **\\i",locale_map->name);
 		else
-			msgnw(((BASE *)lastw(maint)->object)->parent, US ("\\i** Joe's Own Editor v" VERSION " ** Copyright (C) 2004 **\\i"));
+			snprintf((char *)msgbuf,JOE_MSGBUFSIZE,"\\i** Joe's Own Editor v" VERSION " ** (%s) ** Copyright (C) 2004 **\\i",locale_map->name);
+
+		msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
+	}
+
 	edloop(0);
 	vclose(vmem);
 	nclose(n);
