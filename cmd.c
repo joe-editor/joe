@@ -381,7 +381,8 @@ static int cmdcmplt(BW *bw)
 	ldmenu(m, lst, 0);
 	if (!lst) {
 		wabort(m->parent);
-		ttputc(7);
+		if(beep)
+			ttputc(7);
 		return -1;
 	} else {
 		if (aLEN(lst) == 1)
@@ -395,7 +396,8 @@ static int cmdcmplt(BW *bw)
 			m->object = com;
 			wabort(m->parent);
 			smode = 2;
-			ttputc(7);
+			if(beep)
+				ttputc(7);
 			return 0;
 		}
 	}

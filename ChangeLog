@@ -1,4 +1,9 @@
 Sun Jun  1 2003  Vitezslav Samel <samel@mail.cz>
+	* cmd.c, tab.c, uisrch.c:
+	don't beep when not asked
+	(suggestion by Marc Joosen <marcj@historia.et.tudelft.nl>)
+
+Sun Jun  1 2003  Vitezslav Samel <samel@mail.cz>
 	* configure.ac, ublock.c:
 	NEW FEATURE: when filtering block put JOE_FILENAME= with the right
 	filename into the environment (only when putenv() is available);

@@ -27,6 +27,7 @@
 typedef struct tab TAB;
 
 extern int smode;		/* ??? */
+extern int beep;
 
 struct tab {
 	char *path;		/* current directory */
@@ -300,7 +301,8 @@ int cmplt(BW *bw)
 
 	if (treload(new, 0)) {
 		wabort(new->parent);
-		ttputc(7);
+		if(beep)
+			ttputc(7);
 		return -1;
 	} else if (sLEN(tab->files) == 1)
 		return tabrtn(new, 0, tab);
@@ -313,7 +315,8 @@ int cmplt(BW *bw)
 		tab->orgnam = com;
 		wabort(new->parent);
 		smode = 2;
-		ttputc(7);
+		if(beep)
+			ttputc(7);
 		return 0;
 	}
 }

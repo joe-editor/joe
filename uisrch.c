@@ -19,6 +19,7 @@
 #include "vs.h"
 
 extern int smode;
+extern int beep;
 struct isrch *lastisrch = NULL;	/* Previous search */
 
 unsigned char *lastpat = NULL;	/* Previous pattern */
@@ -63,7 +64,8 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 	}
 	i->start = bw->cursor->byte;
 	if (dopfnext(bw, mksrch(vsncpy(NULL, 0, isrch->pattern + isrch->ofst, sLen(isrch->pattern) - isrch->ofst), NULL, 0, isrch->dir, -1, 0, 0), NULL)) {
-		ttputc(7);
+		if(beep)
+			ttputc(7);
 	}
 	enqueb(IREC, link, &isrch->irecs, i);
 }
@@ -87,7 +89,8 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 			isrch->pattern = vstrunc(isrch->pattern, sLEN(isrch->pattern) - i->what);
 			frirec(deque_f(IREC, link, i));
 		} else {
-			ttputc(7);
+			if(beep)
+				ttputc(7);
 		}
 	} else if (c == 'Q' - '@' || c == '`') {
 		isrch->quote = 1;
@@ -107,7 +110,8 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 			i->disp = i->start = bw->cursor->byte;
 			i->what = 0;
 			if (dopfnext(bw, mksrch(vsncpy(NULL, 0, isrch->pattern + isrch->ofst, sLen(isrch->pattern) - isrch->ofst), NULL, 0, isrch->dir, -1, 0, 0), NULL)) {
-				ttputc(7);
+				if(beep)
+					ttputc(7);
 				frirec(i);
 			} else {
 				enqueb(IREC, link, &isrch->irecs, i);
