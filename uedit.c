@@ -819,6 +819,7 @@ int utypebw(BW *bw, int k)
 	} else {
 		int upd;
 		int simple;
+		int x;
 
 		/* UTF8 decoder */
 		if(utf8) {
@@ -851,6 +852,8 @@ int utypebw(BW *bw, int k)
 		
 		binsc(bw->cursor, k);
 
+		/* We need x position before we move cursor */
+		x = bw->cursor->xcol - bw->offset;
 		pgetc(bw->cursor);
 		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !joe_isblank(k)) {
 			wrapword(bw->cursor, (long) bw->o.lmargin, bw->o.french, NULL);
@@ -859,7 +862,7 @@ int utypebw(BW *bw, int k)
 			udelch(bw);
 		bw->cursor->xcol = piscol(bw->cursor);
 #ifndef __MSDOS__
-		if (bw->cursor->xcol - bw->offset - 1 < 0 || bw->cursor->xcol - bw->offset - 1 >= bw->w)
+		if (x < 0 || x >= bw->w)
 			simple = 0;
 		if (bw->cursor->line < bw->top->line || bw->cursor->line >= bw->top->line + bw->h)
 			simple = 0;
@@ -871,9 +874,9 @@ int utypebw(BW *bw, int k)
 			unsigned char c = k;
 			SCRN *t = bw->parent->t->t;
 			int y = bw->y + bw->cursor->line - bw->top->line;
-			int x = bw->cursor->xcol - bw->offset + bw->x - 1;
 			int *screen = t->scrn + y * t->co;
 			int *attr = t->attr + y * t->co;
+			x += bw->x;
 
 			if (!upd && piseol(bw->cursor) && !bw->o.highlight)
 				t->updtab[y] = 0;

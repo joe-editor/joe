@@ -1,4 +1,12 @@
 Tue Apr 20 2004  Joe Allen <jhallen@world.std.com>
+	* uedit.c :
+
+	Fix bug where double wide characters typed at end of line was
+	screwing up (was assuming that they were one character wide in
+	the utypebw optimization logic).
+
+
+Tue Apr 20 2004  Joe Allen <jhallen@world.std.com>
 	* cmd.c, joerc.in, rc.c, types.h, uedit.c, uedit.h:
 
 	Applied David Phillips' smart home key patch.
