@@ -1782,7 +1782,7 @@ int meta_color(unsigned char *s)
 		return BG_YELLOW;
 	else if(!strcmp((char *)s,"bg_green"))
 		return BG_GREEN;
-	else if(!strcmp((char *)s,"bg_reg"))
+	else if(!strcmp((char *)s,"bg_red"))
 		return BG_RED;
 	else if(!strcmp((char *)s,"bg_black"))
 		return BG_BLACK;

@@ -1,5 +1,9 @@
 Mon May 24 2004  Joe Allen <jhallen@world.std.com>
 
+	Fix bg_reg -> bg_red.
+
+Mon May 24 2004  Joe Allen <jhallen@world.std.com>
+
 	Smart indent and backspace now work even if cursor
 	is not right at indentation point.  Also autoindent
 	does not happen if cursor is on a space or tab character.
