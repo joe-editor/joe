@@ -1,3 +1,7 @@
+Sat Jun  1 2002  Vitezslav Samel <samel@mail.cz>
+	* configure.ac, utils.c:
+	kill warnings when compilling with -Wundef
+
 Tue May 21 2002  Vitezslav Samel <samel@mail.cz>
 	* poshist.c, scrn.c, uformat.c:
 	include some headers which are needed to compile without warnings about

@@ -103,7 +103,7 @@ dnl AM_GNU_GETTEXT
 
 AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 #ifndef PARAMS
-#  if PROTOTYPES
+#  ifdef PROTOTYPES
 #    define PARAMS(protos) protos
 #  else
 #    define PARAMS(protos) ()

@@ -128,27 +128,27 @@ void joe_free(void *ptr)
 int joe_set_signal(int signum, sighandler_t handler)
 {
 	int retval;
-#if HAVE_SIGACTION
+#ifdef HAVE_SIGACTION
 	struct sigaction sact;
 
 	mset(&sact, 0, sizeof(sact));
 	sact.sa_handler = handler;
-#if SA_INTERRUPT
+#ifdef SA_INTERRUPT
 	sact.sa_flags = SA_INTERRUPT;
 #endif
 	retval = sigaction(signum, &sact, NULL);
-#elif HAVE_SIGVEC
+#elif defined(HAVE_SIGVEC)
 	struct sigvec svec;
 
 	mset(&svec, 0, sizeof(svec));
 	svec.sv_handler = handler;
-#if HAVE_SV_INTERRUPT
+#ifdef HAVE_SV_INTERRUPT
 	svec.sv_flags = SV_INTERRUPT;
 #endif
 	retval = sigvec(signum, &svec, NULL);
 #else
 	retval = (signal(signum, handler) != SIG_ERR) ? 0 : -1;
-#if HAVE_SIGINTERRUPT
+#ifdef HAVE_SIGINTERRUPT
 	siginterrupt(signum, 1);
 #endif
 #endif
