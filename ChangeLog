@@ -1,3 +1,12 @@
+Mon Mar 21 11:56:56 EST 2005
+
+	Fix segfault problem
+
+	Xcol problems in hex mode
+
+	Backspace in overtype mode (picture mode
+	needs work).
+
 Sun Mar 20 11:54:44 EST 2005
 
 	Hex edit mode

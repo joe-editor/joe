@@ -468,6 +468,8 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 
 	edloop(0);
 
+	save_state();
+
 	/* Delete all buffer so left over locks get eliminated */
 	brmall();
 
@@ -479,8 +481,6 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	}
 #endif
 	nclose(n);
-
-	save_state();
 
 	if (exmsg)
 		fprintf(stderr, "\n%s\n", exmsg);

@@ -1515,6 +1515,11 @@ int ubacks(BW *bw, int k)
 		int wid;
 		int pure = 1;
 
+		/* Degenerate into ltarw for overtype mode */
+		if (bw->o.overtype) {
+			return u_goto_left(bw);
+		}
+
 		if (pisbof(bw->cursor))
 			return -1;
 

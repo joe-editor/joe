@@ -1,10 +1,11 @@
 
 Short (infinite) list for 3.2:
 
+- backspace in picture mode
+
 - - - - - - - -
 
-- seg fault on exiting?  probably from deleting
-  all buffers.
+- name keyboard macro and append it to .joerc file
 
 - - - - - - - -
 
@@ -18,8 +19,6 @@ Short (infinite) list for 3.2:
 
 - hex edit mode
     - force switch to overtype mode?
-
-    - xcol mess (always set xcol in hex mode?)
 
     - think through i18n consequences (goto
       bol when switch out of it).

@@ -380,9 +380,11 @@ int execmd(CMD *cmd, int k)
 
 	/* We don't execute if we have to fix the column position first
 	 * (i.e., left arrow when cursor is in middle of nowhere) */
-	if ((cmd->flag & ECHKXCOL)
-	    && bw->cursor->xcol != piscol(bw->cursor))
-		goto skip;
+	if (cmd->flag & ECHKXCOL)
+		if (bw->o.hex)
+			bw->cursor->xcol = piscol(bw->cursor);
+		else if (bw->cursor->xcol != piscol(bw->cursor))
+			goto skip;
 
 	/* Don't execute command if we're in wrong type of window */
 	if (!(cmd->flag & maint->curwin->watom->what))
