@@ -70,6 +70,11 @@
 
  -usetabs       Use tabs to help optimize screen update.
 
+-assume_color	Assume terminal has ANSI color support even if termcap/terminfo entry
+		says that it doesn't.  This only applies if the terminal otherwise
+		looks like an ANSI terminal (support bold and capability starts with
+		ESC [).
+
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used
  in these strings:
@@ -214,6 +219,21 @@
 -syntax perl
 -highlight
  Hypertext preprocessor file
+-autoindent
+-syntax php
+-smarthome
+-highlight
+*.py
+-autoindent
+-syntax python
+-smarthome
+-highlight
+*.sh
+-autoindent
+-syntax sh
+-pound_comment
+-highlight
+*profile
  Makefiles and rc files.
 -autoindent
 -autoindent

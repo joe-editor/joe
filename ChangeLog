@@ -1,3 +1,9 @@
+Tue Apr 13 2004  Joe Allen <jhallen@world.std.com>
+	* scrn.c, rc.c, joerc.in:
+
+	Added -assume_color global option.  Need to update
+	other *rc files.
+
 Mon Apr 12 2004  Joe Allen <jhallen@world.std.com>
 	* Makefile.am b.c b.h bw.c scrn.c uedit.c utf8.c utf8.h:
 

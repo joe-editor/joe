@@ -1,13 +1,11 @@
 UTF-8/Internationalization
 --------------------------
 
-- translate for non-utf8 locale to utf8 (in and out)
-
 - think about status line, prompts, regex, rc files, highlighting, ug
 
-- right-left mode for Hebrew/Arabic?
+- check for incorrect pgetc() binsc() pairs.
 
-- Gettext?
+- check paragraph reformat
 
 - 32-bit chars in search/replace \[...] sequences?
 
@@ -18,6 +16,16 @@ UTF-8/Internationalization
 
 - when first char of utf8 is last of line, nothing shows on screen (state
   machine never gets any input).
+
+- interaction with -asis (-utf8 should override it).
+
+
+
+- translate for non-utf8 locale to utf8 (in and out)
+
+- right-left mode for Hebrew/Arabic?
+
+- Gettext?
 
 --- we have converted from char to unsigned char, so normal characters are
 in the range 0 - 255 and EOF is -1 when assigned to an int.  In a UTF-8
@@ -32,12 +40,6 @@ Detect control character and stop incremental search:
 
 (but we will never get a key >=256: we should only get encoded utf-8
 sequence: perhaps all of this is ok).
-
-- interaction with -asis (-utf8 should override it).
-
-- check for incorrect pgetc() binsc() pairs.
-
-- check paragraph reformat
 
 
 0xxx_xxxx	1	0x7F		7
@@ -86,6 +88,7 @@ Subdirectory for syntax file (understand autoconf/automake).
 
 UTF-8 syntax files.
 
+UI for changing colors in the editor (or at least dark/light mode)
 
 
 Support for more languages:

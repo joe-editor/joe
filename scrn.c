@@ -25,6 +25,7 @@ int lines = 0;
 int columns = 0;
 int notite = 0;
 int usetabs = 0;
+int assume_color = 0;
 
 extern int mid;
 
@@ -382,20 +383,23 @@ SCRN *nopen(CAP *cap)
 		t->avattr |= INVERSE;
       oops:
 
-/* Install color support if it looks like an ansi terminal (it has bold which begins with ESC [) */
+
+	if (assume_color) {
+		/* Install color support if it looks like an ansi terminal (it has bold which begins with ESC [) */
 #ifndef TERMINFO
-	if (!t->Sf && t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
-		t->ut = 1;
-		t->Sf =US "\\E[3%dm";
-		t->Sb =US "\\E[4%dm";
-	}
+		if (!t->Sf && t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
+			t->ut = 1;
+			t->Sf =US "\\E[3%dm";
+			t->Sb =US "\\E[4%dm";
+		}
 #else
-	if (!t->Sf && t->md && t->md[0]=='\033' && t->md[1]=='[') { 
-		t->ut = 1;
-		t->Sf =US "\033[3%p1%dm";
-		t->Sb =US "\033[4%p1%dm";
-	}
+		if (!t->Sf && t->md && t->md[0]=='\033' && t->md[1]=='[') { 
+			t->ut = 1;
+			t->Sf =US "\033[3%p1%dm";
+			t->Sb =US "\033[4%p1%dm";
+		}
 #endif
+	}
 
 	t->so = NULL;
 	t->se = NULL;
