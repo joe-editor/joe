@@ -8,6 +8,14 @@ AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
+case "$host" in
+	*-*-solaris*)
+		CPPFLAGS="$CPPFLAGS -I/usr/local/include"
+		LDFLAGS="$LDFLAGS -L/usr/local/lib -R/usr/local/lib"
+		;;
+	*)	;;
+esac
+
 #### Here's the only place where to change version number ####
 AM_INIT_AUTOMAKE(joe, 2.9.8-pre1)
 
@@ -22,6 +30,7 @@ AC_PROG_LN_S
 
 # Checks for libraries.
 AC_SEARCH_LIBS(tgetflag, ncurses curses termcap, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we have newer terminfo/termcap capabilities]))
+AC_SEARCH_LIBS(snprintf, snprintf)
 # AC_CHECK_LIB([ncurses], [tgetstr])
 
 
@@ -84,6 +93,7 @@ if test x"$ac_cv_func_isblank" = xyes; then
 	joe_ISBLANK
 fi
 AC_CHECK_FUNCS([alarm mkdir mkstemp setlocale strchr strdup utime setpgid])
+AC_CHECK_FUNC([snprintf],, AC_MSG_ERROR([snprintf not available: I won't build for this ancient system]))
 AC_CHECK_FUNCS([setitimer sigaction sigvec siginterrupt sigprocmask])
 
 joe_REINSTALL_SIGHANDLERS

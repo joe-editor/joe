@@ -1,3 +1,7 @@
+Sun May  5 2002  Vitezslav Samel <samel@mail.cz>
+	* configure.ac:
+	solaris compile fix; check for snprintf - if not available, kick out
+
 Sun Mar 10 2002  Vitezslav Samel <samel@mail.cz>
 	* uformat.c:
 	remove deadlock when reformating paragraph (badly converted whitel()
