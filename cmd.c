@@ -273,7 +273,7 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 			*notify = 1;
 		return 0;
 	} else {
-		if (mkqw(bw->parent, sc("Could not lock.  Take it? "), steal_lock, NULL, b, notify)) {
+		if (mkqw(bw->parent, sc("Could not lock.  (S)teal, (I)gnore, (Q)uit? "), steal_lock, NULL, b, notify)) {
 			return 0;
 		} else
 			return -1;

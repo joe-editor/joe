@@ -9,6 +9,9 @@
 #include "types.h"
 
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <fcntl.h>
 #ifdef MOUSE_GPM
 #include <gpm.h>
@@ -172,7 +175,10 @@ unsigned char **mainenv;
 int main(int argc, unsigned char **argv, unsigned char **envv)
 {
 	CAP *cap;
+	struct stat sbuf;
 	unsigned char *s;
+	unsigned char *t;
+	long time_t;
 	unsigned char *run;
 #ifdef __MSDOS__
 	unsigned char *rundir;
@@ -257,37 +263,62 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	}
 #else
 
+	/* Name of system joerc file */
+	t = vsncpy(NULL, 0, sc(JOERC));
+	t = vsncpy(sv(t), sv(run));
+	t = vsncpy(sv(t), sc("rc"));
+	if (!stat((char *)t,&sbuf))
+		time_t = sbuf.st_mtime;
+	else
+		time_t = 0;
+
+	/* Local joerc file */
 	s = (unsigned char *)getenv("HOME");
 	if (s) {
+		unsigned char buf[8];
+
 		s = vsncpy(NULL, 0, sz(s));
 		s = vsncpy(sv(s), sc("/."));
 		s = vsncpy(sv(s), sv(run));
 		s = vsncpy(sv(s), sc("rc"));
-		c = procrc(cap, s);
-		if (c == 0)
-			goto donerc;
-		if (c == 1) {
-			unsigned char buf[8];
 
-			fprintf(stderr, "There were errors in '%s'.  Use it anyway?", s);
+		if (!stat((char *)s,&sbuf)) {
+			if (sbuf.st_mtime<time_t) {
+				fprintf(stderr, "Warning: %s is newer than your %s.\n",t,s);
+				fprintf(stderr,"You should update or delete %s\n",s);
+				fprintf(stderr,"Hit enter to continue with %s ",t);
+				fflush(stderr);
+				fgets((char *)buf, 8, stdin);
+				goto use_sys;
+			}
+		}
+
+		c = procrc(cap, s);
+		if (c == 0) {
+			vsrm(t);
+			goto donerc;
+		}
+		if (c == 1) {
+			fprintf(stderr, "There were errors in '%s'.  Use it anyway (y,n)? ", s);
 			fflush(stderr);
 			fgets((char *)buf, 8, stdin);
-			if (buf[0] == 'y' || buf[0] == 'Y')
+			if (buf[0] == 'y' || buf[0] == 'Y') {
+				vsrm(t);
 				goto donerc;
+			}
 		}
 	}
 
+	use_sys:
 	vsrm(s);
-	s = vsncpy(NULL, 0, sc(JOERC));
-	s = vsncpy(sv(s), sv(run));
-	s = vsncpy(sv(s), sc("rc"));
+	s = t;
 	c = procrc(cap, s);
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
 		unsigned char buf[8];
 
-		fprintf(stderr, "There were errors in '%s'.  Use it anyway?", s);
+		fprintf(stderr, "There were errors in '%s'.  Use it anyway (y,n)? ", s);
 		fflush(stderr);
 		fgets((char *)buf, 8, stdin);
 		if (buf[0] == 'y' || buf[0] == 'Y')

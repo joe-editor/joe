@@ -1,3 +1,9 @@
+Wed Mar 16 11:04:19 EST 2005
+
+	Check if system joerc file is newer than local joerc file.
+
+	Fix line number reporting for joerc file errors.
+
 Tue Mar 15 14:18:53 EST 2005
 
 	Fix processing of joe.1.in -> joe.1 so

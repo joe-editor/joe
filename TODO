@@ -1,7 +1,14 @@
 
 Short list for 3.2:
 
-if (-s foo)  looks like s/
+^KE: hit ~/.joerc: can't create macro
+
+lock with names that begin with '.'
+lock message missing valid keys to hit
+
+add ! (logical not and factorial) to calculator
+
+perl again: if (-s foo)  looks like s/
 
 read only doesn't work when there's a process running in the window.
 (it probably shouldn't run).
