@@ -554,8 +554,9 @@ void setindent(BW *bw)
 			goto done;
 		else
 			p_goto_bol(p);
-	} while (pisindent(p) >= indent && !pisblank(p));
+	} while (pisindent(p) >= indent || pisblank(p));
 	pnextl(p);
+	/* Maybe skip blank lines at beginning */
       done:
 	p_goto_bol(p);
 	p->xcol = piscol(p);
@@ -567,8 +568,8 @@ void setindent(BW *bw)
 	do {
 		if (!pnextl(q))
 			break;
-	} while (pisindent(q) >= indent && !pisblank(q));
-
+	} while (pisindent(q) >= indent || pisblank(q));
+	/* Maybe skip blank lines at end */
 	if (markk)
 		prm(markk);
 	q->xcol = piscol(q);
@@ -576,6 +577,31 @@ void setindent(BW *bw)
 	q->owner = &markk;
 
 	updall();
+}
+
+/* Purity check */
+/* Verifies that at least n indentation characters (for non-blank lines) match c */
+/* If n is 0 (for urindent), this fails if c is space but indentation begins with tab */
+
+int purity_check(int c, int n)
+{
+	P *p = pdup(markb);
+	while (p->byte < markk->byte) {
+		int x;
+		p_goto_bol(p);
+		if (!n && c==' ' && brc(p)=='\t') {
+			prm(p);
+			return 0;
+		} else if (!piseol(p))
+			for (x=0; x!=n; ++x)
+				if (pgetc(p)!=c) {
+					prm(p);
+					return 0;
+				}
+		pnextl(p);
+	}
+	prm(p);
+	return 1;
 }
 
 /* Indent more */
@@ -595,7 +621,7 @@ int urindent(BW *bw)
 	} else {
 		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte)
 			setindent(bw);
-		else {
+		else if (purity_check(bw->o.indentc,0)) {
 			P *p = pdup(markb);
 
 			while (p->byte < markk->byte) {
@@ -608,6 +634,10 @@ int urindent(BW *bw)
 				pnextl(p);
 			}
 			prm(p);
+		} else {
+			/* Purity failure */
+			msgnw(bw->parent,"Selected lines not properly indented");
+			return 1;
 		}
 	}
 	return 0;
@@ -647,25 +677,10 @@ int ulindent(BW *bw)
 	} else {
 		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte)
 			setindent(bw);
-		else {
+		else if (purity_check(bw->o.indentc,bw->o.istep)) {
 			P *p = pdup(markb);
 			P *q = pdup(p);
 
-			p_goto_bol(p);
-			while (p->byte < markk->byte) {
-				if (!piseol(p))
-					while (piscol(p) < bw->o.istep) {
-						int c = pgetc(p);
-
-						if (c != ' ' && c != '\t' && c != bw->o.indentc) {
-							prm(p);
-							prm(q);
-							return -1;
-						}
-					}
-				pnextl(p);
-			}
-			pset(p, markb);
 			p_goto_bol(p);
 			while (p->byte < markk->byte) {
 				if (!piseol(p)) {
@@ -678,6 +693,10 @@ int ulindent(BW *bw)
 			}
 			prm(p);
 			prm(q);
+		} else {
+			/* Purity failure */
+			msgnw(bw->parent,"Selected lines not properly indented");
+			return 1;
 		}
 	}
 	return 0;

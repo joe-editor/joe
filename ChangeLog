@@ -1,4 +1,10 @@
 Wed Apr 21 2004  Joe Allen <jhallen@world.std.com>
+	* ublock.c :
+
+	^K , and ^K . now have improved purity checking
+	and automatic block selection.
+
+Wed Apr 21 2004  Joe Allen <jhallen@world.std.com>
 	* rc.c, uedit.c, types.h, joerc.in:
 
 	Added 'smartbacks' option.
