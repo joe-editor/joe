@@ -11,6 +11,15 @@ Short (infinite) list for 3.2:
 
 - - - - - - - -
 
+- hex edit mode
+    - highlight hex bytes
+    - highlight block
+    - force switch to overtype mode?
+    - ^KC should overwrite
+    - think through i18n consequences
+
+- - - - - - - -
+
 - security hole with spell checker
 
 - - - - - - - -

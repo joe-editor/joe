@@ -53,8 +53,9 @@ JOE 3.2
 	yank records
 
 - Joe now has xterm mouse support: when enabled, the mouse can position
-  the cursor and select blocks.  When enabled, shift-click emulates old
-  xterm mouse behavior.
+  the cursor and select blocks.  The mouse wheel will scroll the screen. 
+  When enabled, shift-click emulates old xterm mouse behavior (cut &
+  paste between applications).
 
 - More syntax files: TeX, CSS, OCaml, Delphi, SML and 4GL.  Thanks to
   all of the contributers.

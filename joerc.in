@@ -138,7 +138,7 @@
 
 -joe_state     Use ~/.joe_state file
 
- -mouse		Enable xterm mouse support.  When enabled, left-click will
+-mouse		Enable xterm mouse support.  When enabled, left-click will
 		position the cursor and left-click-drag will select blocks.
 		For normal xterm cut and paste, hold the shift key down.
  -joexterm	If you are using Joe's modified Xterm, which makes -mouse
