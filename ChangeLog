@@ -3,6 +3,9 @@ Wed May 12 2004  Joe Allen <jhallen@world.std.com>
 	Applied Olexiy Avramchenko's <olexiy@irtech.cn.ua> patch
 	on configure.ac.  Also added mail.jsf.in to Makefile.am
 
+	Applied Yura Kalinichenko's <yuk@iceb.vinnitsa.com> "openpty"
+	patch.
+
 Tue May 11 2004  Joe Allen <jhallen@world.std.com>
 
 	Added "upper" and "lower" functions (no longer

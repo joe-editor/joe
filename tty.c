@@ -27,6 +27,10 @@
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
+#ifdef HAVE_OPENPTY
+#include <pty.h>
+#include <utmp.h>
+#endif
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
@@ -798,7 +802,23 @@ static unsigned char *getpty(int *ptyfd)
 }
 
 #else
+#ifdef HAVE_OPENPTY
 
+/* BSD function, present in libc5 and glibc2 */
+
+static unsigned char *getpty(int *ptyfd)
+{
+	int fdm;
+	static unsigned char name[32];
+	int ttyfd;
+
+        if (openpty(ptyfd, &ttyfd, name, NULL, NULL) == 0)
+           return(name);
+        else
+	   return (NULL);
+}
+
+#else
 /* The normal way: for each possible pty/tty pair, try to open the pty and
  * then the corresponding tty.  If both could be opened, close them both and
  * then re-open the pty.  If that succeeded, return with the opened pty and the
@@ -860,6 +880,7 @@ static unsigned char *getpty(int *ptyfd)
 	return NULL;
 }
 
+#endif
 #endif
 #endif
 
