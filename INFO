@@ -1,8 +1,8 @@
-                           Joe's Own Editor 1.0.6
+                           Joe's Own Editor 1.0.7
 
 
 Get it by anonymous ftp
-from: 'world.std.com', file '/src/editors/joe1.0.6.tar.Z'
+from: 'world.std.com', file '/src/editors/joe1.0.7.tar.Z'
 
 If you have questions, problems or suggestions,
 send email to: 'jhallen@world.std.com'
@@ -51,6 +51,9 @@ through a UNIX command.  Also, each place in joe which accepts a file name
 
 	Also, filenames on the command line may be preceeded by +nnn to 
 start editing at a specified line.
+
+	Shell windows.  You can run a shell in a window and any output from 
+commands run in the shell gets stored in a buffer.
 
 	Orthoganality.  Each prompt is actually a normal edit buffer and a 
 copy of a history buffer.  You can use all of the normal edit commands to 

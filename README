@@ -3,23 +3,15 @@ This is Joe's Own Editor.  See the INFO file if you don't know what this is.
 Installation proceedure
 =-=-=-=-=-=-=-=-=-=-=-=
 
+	Choose which *.mak file you want to use and link it to Makefile.
+	For example, for xenix.mak, type 'ln xenix.mak Makefile'
+
 	Decide on the name of the global keymap file if you don't want it
 	to be '/usr/local/lib/joerc' and modify the 'JOERC=' in the
 	'makefile'.  If you're a mere user, copy the joerc file into
 	$HOME/.joerc
 
-	Type 'make' followed by one of the following system names:
-
-		xenix		for xenix 386 systems
-
-		posix		for posix conformant systems (use this for
-				linux)
-
-		bsd		for BSD UNIX
-
-		sv		for old system V UNIX
-
-		hpux		for HPUX systems
+	Type 'make'.
 
 	Then type 'make install' to install joe in
 	/usr/local/bin and /usr/local/lib
@@ -31,15 +23,24 @@ Installation proceedure
 
 	Set the baud rate properly (see below).
 
-** SCO UNIX users **
+*.mak files
+=-=-=-=-=-=
 
-Use the 'make sv', but first edit 'ttysv.c' and add these lines:
-	#include <sys/types.h>
-	#include <sys/stream.h>
-	#include <sys/ptem.h>
-	#undef SIGCONT
+	xenix.mak	For xenix system V (termcap)
+	sv.mak		For primitive system V (termcap)
+	sco.mak		For SCO UNIX and Interactive (terminfo)
+	hpux.mak	For hpux (terminfo)
+	linux.mak	For linux and posix (termcap)
+	bsd.mak		For BSD (SUN, Ultrix) (termcap)
 
-You may also wish to use the terminfo database.  See below.
+If you make a mistake and need to use another make file, you don't have to 
+delete all of the .o files.  Only 'tty.o' depends on what's in the make 
+file.
+
+If a make file for your system doesn't exist here, try one that you think 
+might be close.  If you had to make changes to get a makefile to work, 
+please mail me the new makefile and the type of your system and I'll include 
+it in the next distribution.
 
 USEAGE:	joe filenames
 
@@ -63,6 +64,9 @@ size to be different than whatever the termcap entry or stty says.
 Since most people use terminal emulators, JOE does not send out pad 
 characters.  If you're using a real terminal and the padding matters, set 
 the environment variable DOPADDING.
+
+If you want joe to try to disable ^S/^Q processing, set the environment
+variable NOXON.
 
 A termcap file is included with JOE.  You might consider updating your own 
 termcap file with the entries in it, particularly if you use ANSI/VT100ish 
@@ -115,10 +119,10 @@ understands several new capabilities:
 			beginning of the specified line.  Like 'ESC [ n H' in
 			ansi/vt100.
 
-	But if you really must use the terminfo database, change the
+	But if you really must use the terminfo database, change the 
 'termcap.o' file in the OBJS list in the makefile to 'terminfo.o'.  You'll 
-also have to add '-ltinfo', '-lterminfo' or '-lcurses' to the appropriate link
-line (lines beginning with $(CC)) in the make file.
+also have to add '-ltinfo', '-ltermlib' or '-lcurses' to the appropriate 
+link line (lines beginning with $(CC)) in the make file.  
 
 VOID trouble
 =-=-=-=-=-=-

@@ -18,6 +18,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include "blocks.h"
 #include "random.h"
+#include "msgs.h"
 #include "heap.h"
 
 #define MAXSIZE (MAXINT-16)
@@ -257,7 +258,7 @@ if(!b || b==((FREE *)(long)-1))
   mtrap(size);
   goto loop;
   }
- write(2,"\rOut of memory\r\n",16);
+ write(2,M057,zlen(M057));
  _exit(1);
  }
 b=normalize(b);

@@ -38,11 +38,12 @@ struct tw
  int starow;
  int stacol;
  int staupd;			/* Set if status line should get updated */
+ int stashl;
  };
 
 #define TYPETW 0x100
 
-extern CONTEXT cmain;
+extern CONTEXT cmain,cterm;
 
 /* W *wmktw(SCREEN *t,B *b)
  */
@@ -50,7 +51,5 @@ W *wmktw();
 
 void uaborttw();
 void usplitw();
-void ucheck();
-void ucheckp();
 
 #endif

@@ -34,6 +34,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "undo.h"
 #include "main.h"
 #include "macro.h"
+#include "msgs.h"
 #include "tw.h"
 
 extern char *exmsg;
@@ -72,9 +73,11 @@ nosta0:
 if(bw->b->chnged!=tw->stamod) w->t->t->updtab[w->y]=1;
 if(tw->stahlp!=!!w->t->wind) w->t->t->updtab[w->y]=1;
 if(tw->starec!=recmac) w->t->t->updtab[w->y]=1;
+if(tw->stashl!=!!bw->pid) w->t->t->updtab[w->y]=1;
 
 if(!w->t->t->updtab[w->y]) goto nosta;
 
+tw->stashl=!!bw->pid;
 tw->stahlp=!!w->t->wind;
 tw->stamod=bw->b->chnged;
 tw->starec=recmac;
@@ -97,17 +100,20 @@ if(stacol)
  tw->stalin=vsadd(tw->stalin,' ');
  }
 if(bw->b->name) tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sz(bw->b->name));
-else tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sc("(Unnamed)"));
-if(bw->b->chnged) tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sc(" (Modified)"));
+else tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sz(M081));
+if(bw->b->chnged) tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sz(M082));
 if(recmac)
  {
- sprintf(buf," (Macro %d recording...)",recmac->n);
+ sprintf(buf,M083,recmac->n);
  tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sz(buf));
  }
 
 tw->stalin=vstrunc(tw->stalin,w->w);
 if(!w->t->wind && w->w>=40)
- tw->stalin=vsncpy(tw->stalin,w->w-17,sc("Ctrl-K H for help"));
+ if(tw->stashl)
+  tw->stalin=vsncpy(tw->stalin,w->w-zlen(M084),sz(M084));
+ else
+  tw->stalin=vsncpy(tw->stalin,w->w-zlen(M085),sz(M085));
 
 /* Output status line */
  {
@@ -198,52 +204,58 @@ new->t->curwin=new;
 
 /* User routine for aborting a text window */
 
-void uaborttw(w)
+void naborttw(w,k)
 W *w;
 {
 BW *bw=(BW *)w->object;
 TW *tw=(TW *)bw->object;
+if(k!='y' && k!='Y') return;
+if(bw->pid) uaborttw(w,k);
 if(bw->b->chnged && bw->b->count==1)
- {
- int c=query(w,"Loose changes to this file (y,n)? ");
- if(c!='y' && c!='Y') return;
  if(bw->b->name)
   {
-  exmsg=vsncpy(NULL,0,sc("File "));
+  exmsg=vsncpy(NULL,0,sz(M022));
   exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
-  exmsg=vsncpy(exmsg,sLEN(exmsg),sc(" not saved."));
+  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(M087));
   }
- else exmsg=vsncpy(NULL,0,sc("File (Unnamed) not saved."));
- }
+ else exmsg=vsncpy(NULL,0,sz(M088));
 else if(!exmsg)
- {
  if(bw->b->name)
   {
-  exmsg=vsncpy(NULL,0,sc("File "));
+  exmsg=vsncpy(NULL,0,sz(M022));
   exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
-  exmsg=vsncpy(exmsg,sLEN(exmsg),sc(" not changed so no update needed."));
+  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(M089));
   }
- else exmsg=vsncpy(NULL,0,sc("File (Unnamed) not changed so no update needed."));
- }
+ else exmsg=vsncpy(NULL,0,sz(M090));
 wabort(w);		/* Eliminate this window and it's children */
 if(!leave) if(exmsg) vsrm(exmsg), exmsg=0;
 }
 
-void ucheckp(w)
+void pidabort(w,c)
 W *w;
 {
 BW *bw=(BW *)w->object;
-checkp(bw->b);
+if(c!='y' && c!='Y') return;
+if(bw->pid) kill(bw->pid,1);
 }
 
-void ucheck(w)
+void uaborttw(w,k)
 W *w;
 {
 BW *bw=(BW *)w->object;
-check(bw->b);
+if(bw->pid && bw->cursor->byte==bw->b->eof->byte)
+ {
+ char c=k;
+ write(bw->out,&c,1);
+ return;
+ }
+if(bw->pid) { mkqw(w,M086,pidabort); return; }
+if(bw->b->chnged && bw->b->count==1) mkqw(w,M019,naborttw);
+else naborttw(w,'y');
 }
 
 CONTEXT cmain={"main",0};
+CONTEXT cterm={"term",0};
 
 static void instw(w,b,l,n,flg)
 W *w;
@@ -292,6 +304,7 @@ w->object=(void *)(bw=bwmk(t,b,w->x,w->y+1,w->w,w->h-1));
 bw->object=(void *)(tw=(TW *)malloc(sizeof(TW)));
 tw->staupd=1; /* Unneeded? */
 tw->stanam=0;
+tw->stashl=0;
 tw->starec=recmac;
 tw->stalin=0;
 tw->stamod=0;

@@ -78,13 +78,14 @@
 
 {Advanced
 \i   Help Screen    turn off with ^KH                                            \i
-\i \i ESC nn   repeat next command nn times     ^G   goto matching ( [ {          \i \i
+\i \i ^K \\     repeat next command nn times     ^G   goto matching ( [ {          \i \i
 \i \i ^K SPACE show position status             ^K-  goto prevous place in        \i \i
 \i \i ^K [ 0-9 begin recording macro n               position history             \i \i
 \i \i ^K ]     stop recording                   ^K=  goto next place              \i \i
 \i \i ^K 0-9   play macro n                     ^K,  indent marked block less     \i \i
 \i \i ^K A     center line                      ^K.  indent marked block more     \i \i
 \i \i ^T X     rectangle mode                   ^K;  tag search                   \i \i
+\i \i ^K '     terminal window                                                    \i \i
 }
 
 {Options
@@ -146,7 +147,7 @@
  Use SP for space
  Use a TO b to generate a range of characters
  Use UP DOWN RIGHT LEFT HOME END INS DEL PGUP PGDN
-     F1 F2 F3 F4 F5 F6 F7 F8 F9 F0
+     F1 F2 F3 F4 F5 F6 F7 F8 F9 F0 F10
      for the corresponding termcap key sequence definitions
 
  Simple macros can be made by comma seperating 2 or more command names.  For
@@ -162,14 +163,18 @@
 
 type		^I		Tab
 quote8		^\		Quote Meta chars
-type		SP TO ~		Typeable characters
+type		SP TO ÿ		Typeable characters
 quote		`		Quote Ctrl chars
 
 abort		^C		Abort window
-arg		^[ 1 TO 9	Repeat count
+abort		^K Q
+abort		^K ^Q
+abort		^K q
+arg		^K \		Repeat count
 backs		^?		Backspace
 backs		^H
 backw		^O		Backspace word
+bknd		^K '		Shell window
 blkcpy		^K C		Copy marked block
 blkcpy		^K ^C
 blkcpy		^K c
@@ -345,11 +350,14 @@ uparw		^[ [ A
 
 type		^I		Tab
 quote8		^\		Quote Meta chars
-type		SP TO ~		Typeable characters
+type		SP TO ÿ		Typeable characters
 quote		`		Quote Ctrl chars
 
 abortpw		^C		Abort window
-arg		^[ 1 TO 9	Repeat count
+abortpw		^K Q
+abortpw		^K ^Q
+abortpw		^K q
+arg		^K \		Repeat count
 backs		^?		Backspace
 backs		^H
 backw		^O		Backspace word
@@ -528,11 +536,14 @@ uparw		^[ [ A
 
 complete	^I		Complete file name
 quote8		^\		Quote Meta chars
-type		SP TO ~		Typeable characters
+type		SP TO ÿ		Typeable characters
 quote		`		Quote Ctrl chars
 
 abortpw		^C		Abort window
-arg		^[ 1 TO 9	Repeat count
+abortpw		^K Q
+abortpw		^K ^Q
+abortpw		^K q
+arg		^K \		Repeat count
 backs		^?		Backspace
 backs		^H
 backw		^O		Backspace word
@@ -709,8 +720,13 @@ uparw		^[ [ A
 
 :tab
 
+keytab		^@ TO ÿ
+
 aborttab	^C
-arg		^[ 1 TO 9
+aborttab	^K Q
+aborttab	^K ^Q
+aborttab	^K q
+arg		^K \
 backstab	^?
 backstab	^H
 boftab		^K U
@@ -763,8 +779,13 @@ uparwtab	^[ O A
 
 :help
 
+keyhelp		^@ TO ÿ
+
 aborthelp	^C
-arg		^[ 1 TO 9
+aborthelp	^K Q
+aborthelp	^K ^Q
+aborthelp	^K q
+arg		^K \
 bofhelp		^K U
 bofhelp		^K ^U
 bofhelp		^K u
@@ -812,3 +833,61 @@ uparwhelp	UP
 uparwhelp	^P
 uparwhelp	^[ [ A
 uparwhelp	^[ O A
+
+:query
+
+typeqw		y
+typeqw		Y
+typeqw		n
+typeqw		N
+typeqw		0 TO 9
+
+abortqw		^C
+abortqw		^K Q
+abortqw		^K ^Q
+abortqw		^K q
+explode		^K I
+explode		^K ^I
+explode		^K i
+nextw		^K N
+nextw		^K ^N
+nextw		^K n
+prevw		^K P
+prevw		^K ^P
+prevw		^K p
+retype		^R
+shell		^K Z
+shell		^K ^Z
+shell		^K z
+
+:querya
+
+typeqw		^@ TO ÿ
+
+:querysr
+
+typeqw		y
+typeqw		Y
+typeqw		n
+typeqw		N
+typeqw		r
+typeqw		R
+typeqw		0 TO 9
+
+abortqw		^C
+abortqw		^K Q
+abortqw		^K ^Q
+abortqw		^K q
+explode		^K I
+explode		^K ^I
+explode		^K i
+nextw		^K N
+nextw		^K ^N
+nextw		^K n
+prevw		^K P
+prevw		^K ^P
+prevw		^K p
+retype		^R
+shell		^K Z
+shell		^K ^Z
+shell		^K z

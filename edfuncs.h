@@ -113,6 +113,9 @@ void uitab();
 void uisquare();
 void uiistep();
 void uicindent();
+
 void utag();
+
+void ubknd();
 
 #endif

@@ -44,8 +44,8 @@ struct header
 
 /* A buffer */
 
-extern int force;
-extern char *stdio;		/* If file name is set to this, use stdio */
+extern int force;		/* Add final newline if it's missing
+				   when files are saved when this is set */
 
 struct buffer
  {
@@ -83,7 +83,7 @@ struct point
  long line;			/* Line number */
  long col;			/* Column number */
  long xcol;			/* Extended column number */
- long lbyte;			/* Byte number */
+ long lbyte;			/* Byte number from beg. of line */
  
  P **owner;			/* Owner of this pointer */
  };
@@ -92,13 +92,15 @@ struct point
 /* Buffer management functions */
 /*******************************/
 
-/* B *bmk(void);
+/* B *bmk(int undo);
  * Create a new empty buffer.
  * The following variables get these initializations:
  *     name            NULL
  *     reference count 1
  *     backup flag     1
  *     changed flag    0
+ *
+ * If 'undo' is set, undo records will be kept for the buffer.
  */
 B *bmk();
 
@@ -127,6 +129,11 @@ P *pdup();
  * Duplicate pointer and set ownership of pointer
  */
 P *pdupown();
+
+/* Ownership of a pointer simply means that a variable somewhere is storing
+ * the pointer's address.  If the pointer is removed using 'prm', that
+ * variable (the pointer's owner) gets cleared.
+ */
 
 /* P *pset(P *p,P *n);
  * Force a pointer p to point to the same place as another pointer n.
@@ -203,13 +210,13 @@ int pprev();
 
 /* int pgetcn(P *p);
  * Get character at pointer and advance pointer.  Only updates physical
- * section of pointer.  Workds ok if buffer's end of file pointer is
- * incorrect.  Returns -1 if pointer was at end of buffer.
+ * section of pointer.  Works ok if buffer's end of file pointer is
+ * incorrect.  Returns MAXINT if pointer was at end of buffer.
  */
 int pgetcn();
 
 /* int pgetc(P *p);
- * Get character at pointer and advance pointer.  Returns -1 if pointer
+ * Get character at pointer and advance pointer.  Returns MAXINT if pointer
  * was at end of file.  Works ok if buffer's end of file pointer is incorrect.
  */
 int pgetc();
@@ -228,15 +235,15 @@ P *pfwrdn();
 P *pfwrd();
 
 /* int prgetcn(P *p);
- * Move pointer back one and return character that position.  Returns -1
+ * Move pointer back one and return character that position.  Returns MAXINT
  * if pointer was at beginning of file.  Only updates physical part of
  * pointer.
  */
 int prgetcn();
 
 /* int prgetc(P *p);
- * Move pointer back one and return character at that position.  Returns -1
- * if pointer was at beginning of file.
+ * Move pointer back one and return character at that position.  Returns
+ * MAXINT if pointer was at beginning of file.
  */
 int prgetc();
 
@@ -369,7 +376,6 @@ int bsave();
 /* P *bdel(P *from,P *to);
  * Delete characters from a buffer
  */
-
 P *bdel();
 
 /* P *binsc(P *p,char c);
@@ -404,10 +410,12 @@ int binsfd();
 int binsf();
 
 /* int bload(B *b,char *s);
- * Load a file into a buffer
+ * Load a file into a buffer.  Sets buffer's name, resets undo records.
  */
 int bload();
 
+/* Recalculate all column numbers.  Use for when we change tab width
+ */
 void refigure();
 
 #endif

@@ -28,9 +28,6 @@ extern char *exmsg;		/* Exit message */
 extern int help;
 extern SCREEN *maint;		/* Primary screen */
 
-void eungetc();		/* Unget a character into editor kbd input */
-void edupd();
-int edgetc();		/* Get kbd character / refresh screen */
-int engetc();		/* Get kbd character */
+void exmacro();			/* Execute a macro */
 
 #endif

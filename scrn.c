@@ -24,6 +24,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "termcap.h"
 #include "tty.h"
 #include "zstr.h"
+#include "msgs.h"
 #include "scrn.h"
 
 extern int mid;
@@ -46,6 +47,7 @@ SEQ seqs[NKEYS]=
  { "k7", KEYF7, "F7" },
  { "k8", KEYF8, "F8" },
  { "k9", KEYF9, "F9" },
+ { "k;", KEYF10, "F10" },
  { "kD", KEYDEL, "DEL" },
  { "kI", KEYINS, "INS" },
  { "kh", KEYHOME, "HOME" },
@@ -231,7 +233,7 @@ if(!(t->cap=getcap(NULL,baud,out,NULL)))
  {
  free(t);
  ttclose();
- fprintf(stdout,"Couldn't load termcap/terminfo entry\n");
+ fprintf(stdout,M074);
  return 0;
  }
 
@@ -378,7 +380,7 @@ for(y=0;y!=NKEYS;++y)
  if(getstr(t->cap,seqs[y].seq))
   {
   char *s=tcompile(t->cap,getstr(t->cap,seqs[y].seq));
-  if(s)
+  if(s && (zlen(s)>1 || s[0]<0))
    {
    t->ktab[x].s=s;
    t->ktab[x].l=sLen(s);
@@ -399,8 +401,7 @@ if(t->cr && t->cv) goto ok;
 leave=1;
 ttclose();
 signrm();
-fprintf(stderr,"Sorry, your terminal can't do absolute cursor positioning\n");
-fprintf(stderr,"It\'s broken\n");
+fprintf(stderr,M075);
 return 0;
 ok:
 
@@ -745,7 +746,7 @@ if(y==t->y)
     return;
     }
    else clrins(t);
-  do { int c=*cs++; outatr(t,t->x,t->y,c); } while(x!=t->x);
+  do { int c= *cs++; outatr(t,t->x,t->y,c); } while(x!=t->x);
   return;
   }
  }
@@ -765,20 +766,22 @@ if(x>=t->co-1 || n<=0) return;
 if(t->im || t->ic || t->IC)
  {
  cpos(t,x,y);
- setins(t,x);
  if(n==1 && t->ic || !t->IC)
+  {
+  if(!t->ic) setins(t,x);
   for(a=0;a!=n;++a)
    {
    texec(t->cap,t->ic,1,x);
    outatri(t,x+a,y,s[a]);
    texec(t->cap,t->ip,1,x);
    }
+  if(!t->mi) clrins(t);
+  }
  else
   {
   texec(t->cap,t->IC,1,n);
   for(a=0;a!=n;++a) outatri(t,x+a,y,s[a]);
   }
- if(!t->mi) clrins(t);
  }
 mmove(t->scrn+x+t->co*y+n,t->scrn+x+t->co*y,(t->co-(x+n))*sizeof(int));
 mcpy(t->scrn+x+t->co*y,s,n*sizeof(int));
@@ -1174,7 +1177,7 @@ t->attrib= -1;
 t->ins= -1;
 attr(t,0);
 clrins(t);
-setregn(t);
+setregn(t,0,t->li);
 if(t->cl)
  {
  texec(t->cap,t->cl,1,0);

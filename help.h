@@ -51,6 +51,7 @@ void uhbof();
 void uheof();
 void uhbol();
 void uheol();
+void uhkey();
 
 extern CONTEXT cthelp;
 

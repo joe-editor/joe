@@ -33,22 +33,20 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "macro.h"
 #include "tab.h"
 #include "pw.h"
+#include "qw.h"
 #include "edfuncs.h"
 #include "poshist.h"
 #include "pattern.h"
 #include "help.h"
 #include "vs.h"
+#include "msgs.h"
 #include "main.h"
 
-/* Message to display when exiting the editor */
+int help=0;		/* Set to have help on when starting */
 
-int help=0;
+char *exmsg=0;		/* Message to display when exiting the editor */
 
-char *exmsg=0;
-
-/* Main screen */
-
-SCREEN *maint;
+SCREEN *maint;		/* Main edit screen */
 
 /* Command table */
 
@@ -59,18 +57,18 @@ SCREEN *maint;
 #define EPOS 16
 #define EMOVE 32
 
-int typen;
-
 static CMD cmds[]=
 {
   { "abort", TYPETW, uaborttw },
   { "aborthelp", TYPEHELP, uhabort },
   { "abortpw", TYPEPW, uabortpw },
+  { "abortqw", TYPEQW, uabortqw },
   { "aborttab", TYPETAB, tuabort },
-  { "arg", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uarg },
+  { "arg", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uarg },
   { "backs", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL+EMINOR, ubacks },
   { "backstab", TYPETAB, tbacks },
   { "backw", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, ubackw },
+  { "bknd", TYPETW+TYPEPW, ubknd },
   { "blkcpy", TYPETW+TYPEPW+EFIXXCOL, ublkcpy },
   { "blkdel", TYPETW+TYPEPW+EFIXXCOL, ublkdel },
   { "blkmove", TYPETW+TYPEPW+EFIXXCOL, ublkmove },
@@ -82,8 +80,6 @@ static CMD cmds[]=
   { "bolhelp", TYPEHELP, uhbol },
   { "boltab", TYPETAB, tbol },
   { "center", TYPETW+TYPEPW+EFIXXCOL, ucenter },
-  { "check", TYPETW+TYPEPW+0, ucheck },
-  { "checkp", TYPETW+TYPEPW+0, ucheckp },
   { "complete", TYPETW+TYPEPW, ucmplt },
   { "delbol", TYPETW+TYPEPW+EFIXXCOL, udelbl },
   { "delch", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL+EMINOR, udelch },
@@ -101,31 +97,33 @@ static CMD cmds[]=
   { "eol", TYPETW+TYPEPW+EFIXXCOL, ueol },
   { "eolhelp", TYPEHELP, uheol },
   { "eoltab", TYPETAB, teol },
-  { "explode", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uexpld },
+  { "explode", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uexpld },
   { "exsave", TYPETW+TYPEPW, uexsve },
   { "ffirst", TYPETW+TYPEPW+EMOVE, pffirst },
   { "filt", TYPETW+TYPEPW+EFIXXCOL, ufilt },
   { "fnext", TYPETW+TYPEPW+EFIXXCOL+EMID+EMOVE, pfnext },
   { "format", TYPETW+TYPEPW+EFIXXCOL, uformat },
   { "groww", TYPETW, ugroww },
-  { "help", TYPETW+TYPEPW+TYPETAB, uhelp },
-  { "iasis", TYPETW+TYPEPW+TYPETAB+TYPEHELP+EFIXXCOL, uiasis },
-  { "iforce", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uiforce },
+  { "help", TYPETW+TYPEPW+TYPETAB+TYPEQW, uhelp },
+  { "iasis", TYPETW+TYPEPW+TYPETAB+TYPEHELP+EFIXXCOL+TYPEQW, uiasis },
+  { "iforce", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uiforce },
   { "iindent", TYPETW+TYPEPW, uiindent },
   { "iindentc", TYPETW+TYPEPW, uicindent },
   { "iistep", TYPETW+TYPEPW, uiistep },
   { "ilmargin", TYPETW+TYPEPW, uilmargin },
-  { "imid", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uimid },
+  { "imid", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uimid },
   { "insc", TYPETW+TYPEPW+EFIXXCOL, uinsc },
   { "insf", TYPETW+TYPEPW+0, uinsf },
   { "ipgamnt", TYPETW+TYPEPW, uipgamnt },
   { "irmargin", TYPETW+TYPEPW+TYPETAB, uirmargin },
   { "isquare", TYPETW+TYPEPW, uisquare },
-  { "istacol", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uistacol },
-  { "istarow", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uistarow },
+  { "istacol", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uistacol },
+  { "istarow", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uistarow },
   { "itab", TYPETW+TYPEPW, uitab },
   { "itype", TYPETW+TYPEPW, uitype },
   { "iwrap", TYPETW+TYPEPW, uiwrap },
+  { "keyhelp", TYPEHELP, uhkey },
+  { "keytab", TYPETAB, tkey },
   { "lindent", TYPETW+TYPEPW+EFIXXCOL, ulindent },
   { "line", TYPETW+TYPEPW+EMOVE, uline },
   { "ltarw", TYPETW+TYPEPW+EFIXXCOL+ECHKXCOL, ultarw },
@@ -135,21 +133,21 @@ static CMD cmds[]=
   { "markk", TYPETW+TYPEPW+0, umarkk },
   { "nedge", TYPETW+TYPEPW+EFIXXCOL, unedge },
   { "nextpos", TYPETW+TYPEPW+EFIXXCOL+EMID+EPOS, unextpos },
-  { "nextw", TYPETW+TYPEPW+TYPETAB+TYPEHELP, unextw },
+  { "nextw", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, unextw },
   { "nextword", TYPETW+TYPEPW+EFIXXCOL, unxtwrd },
   { "open", TYPETW+TYPEPW+EFIXXCOL, uopen },
   { "pedge", TYPETW+TYPEPW+EFIXXCOL, upedge },
   { "pgdn", TYPETW+EMOVE, upgdn },
   { "pgup", TYPETW+EMOVE, upgup },
-  { "play", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uplay },
+  { "play", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uplay },
   { "prevpos", TYPETW+TYPEPW+EPOS+EMID+EFIXXCOL, uprevpos },
-  { "prevw", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uprevw },
+  { "prevw", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uprevw },
   { "prevword", TYPETW+TYPEPW+EFIXXCOL+ECHKXCOL, uprvwrd },
   { "quote", TYPETW+TYPEPW+EFIXXCOL, uquote },
   { "quote8", TYPETW+TYPEPW+EFIXXCOL, uquote8 },
-  { "record", TYPETW+TYPEPW+TYPETAB+TYPEHELP, urecord },
+  { "record", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, urecord },
   { "redo", TYPETW+TYPEPW+EFIXXCOL, uredo },
-  { "retype", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uretyp },
+  { "retype", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uretyp },
   { "rindent", TYPETW+TYPEPW+EFIXXCOL, urindent },
   { "rtarw", TYPETW+TYPEPW+EFIXXCOL, urtarw },
   { "rtarwhelp", TYPEHELP, uhrtarw },
@@ -159,14 +157,15 @@ static CMD cmds[]=
   { "rtnpw", TYPEPW+EMID, upromptrtn },
   { "rtntab", TYPETAB, trtn },
   { "save", TYPETW+TYPEPW, usave },
-  { "shell", TYPETW+TYPEPW+TYPETAB+TYPEHELP, ushell },
+  { "shell", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, ushell },
   { "shrinkw", TYPETW, ushrnk },
   { "splitw", TYPETW, usplitw },
   { "stat", TYPETW+TYPEPW, ustat },
-  { "stop", TYPETW+TYPEPW+TYPETAB+TYPEHELP, ustop },
+  { "stop", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, ustop },
   { "tag", TYPETW+TYPEPW, utag },
   { "tomatch", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, utomatch },
   { "type", TYPETW+TYPEPW+EFIXXCOL+EMINOR, utype },
+  { "typeqw", TYPEQW, utypeqw },
   { "undo", TYPETW+TYPEPW+EFIXXCOL, uundo },
   { "uparw", TYPETW+TYPEPW+EMOVE, uuparw },
   { "uparwhelp", TYPEHELP, uhuparw },
@@ -176,9 +175,12 @@ static CMD cmds[]=
 
 CMDTAB cmdtab={cmds,sizeof(cmds)/sizeof(CMD)};
 
+/* Make windows follow cursor */
+
 void dofollows()
 {
-W *w=maint->curwin; do
+W *w=maint->curwin;
+do
  {
  if(w->y!= -1) w->watom->follow(w);
  w=(W *)(w->link.next);
@@ -259,6 +261,8 @@ if(flg) umclear();
 undomark();
 }
 
+/* Execute a macro */
+
 void exemac(m)
 MACRO *m;
 {
@@ -266,62 +270,23 @@ record(m);
 exmacro(m);
 }
 
-static int eungotten;
-static int eungottenc;
+static CONTEXT *cntxts[]=
+ { &cmain,&cterm,&cprmpt,&cttab,&cfprmpt,&cthelp,&cquery,&cquerya,
+   &cquerysr,0 };
 
-static CONTEXT *cntxts[]= { &cmain, &cprmpt,&cttab,&cfprmpt,&cthelp,0 };
-
-void eungetc(c)
-{
-if(c==MAXINT) return;
-if(curmacro)
- {
- --macroptr;
- return;
- }
-else
- {
- eungotten=1;
- eungottenc=c;
- unmac();
- }
-}
-
-int dengetc()
-{
-int c;
-if(eungotten)
- {
- eungotten=0;
- c=eungottenc;
- }
-else c=ngetc(maint->t);
-return c;
-}
-
-int engetc()
-{
-MACRO *m;
-int c;
-if(eungotten)
- {
- eungotten=0;
- c=eungottenc;
- }
-else if(curmacro)
- {
- if(curmacro->n!=macroptr && !curmacro->steps[macroptr]->steps &&
-    curmacro->steps[macroptr]->n==typen) c=curmacro->steps[macroptr++]->k;
- else c=MAXINT;
- }
-else c=ngetc(maint->t);
-record(m=mkmacro(c,1,typen)); rmmacro(m);
-return c;
-}
+/* Update screen */
 
 void edupd()
 {
 W *w;
+int wid,hei;
+ttgtsz(&wid,&hei);
+if(wid>=2 && wid!=maint->w ||
+   hei>=1 && hei!=maint->h)
+ {
+ nresize(maint->t,wid,hei);
+ sresize(maint);
+ }
 dofollows();
 ttflsh();
 nscroll(maint->t);
@@ -353,18 +318,6 @@ cpos(maint->t,
      maint->curwin->y+maint->curwin->cury);
 }
 
-int edgetc()
-{
-edupd();
-return engetc();
-}
-
-int dedgetc()
-{
-edupd();
-return dengetc();
-}
-
 int main(argc,argv)
 int argc;
 char *argv[];
@@ -372,9 +325,6 @@ char *argv[];
 char *s;
 SCRN *n;
 W *w;
-int c;
-P *p;
-typen=findcmd(&cmdtab,"type");
 if(prokbd(".joerc",cntxts))
  {
  s=getenv("HOME");
@@ -386,7 +336,7 @@ if(prokbd(".joerc",cntxts))
   in:;
   if(prokbd(s=JOERC,cntxts))
    {
-   fprintf(stderr,"Couldn\'t open keymap file \'%s\'\n",s);
+   fprintf(stderr,M068,s);
    return 1;
    }
   }
@@ -396,7 +346,7 @@ maint=screate(n);
 
 if(argc<2)
  {
- W *w=wmktw(maint,bmk());
+ W *w=wmktw(maint,bmk(1));
  BW *bw=(BW *)w->object;
  setoptions(bw,"");
  }
@@ -404,6 +354,7 @@ else
  {
  long lnum;
  int omid;
+ int c;
  for(c=1,lnum=0;argv[c];++c)
   if(argv[c][0]=='+' && argv[c][1])
    {
@@ -418,7 +369,7 @@ else
    int fl=0;
    if(!b)
     {
-    b=bmk();
+    b=bmk(1);
     fl=bload(b,argv[c]);
     }
    w=wmktw(maint,b);
@@ -434,18 +385,10 @@ else
  mid=omid;
  }
 if(help) helpon(maint);
-msgnw(lastw(maint),"\\i** Joe's Own Editor v1.0.6 ** Copyright (C) 1992 Joseph H. Allen **\\i");
+msgnw(lastw(maint),M069);
 do
  {
- int wid,hei;
- MACRO *m=dokey(maint->curwin->kbd,dedgetc());
- ttgtsz(&wid,&hei);
- if(wid>=2 && wid!=maint->w ||
-    hei>=1 && hei!=maint->h)
-  {
-  nresize(maint->t,wid,hei);
-  sresize(maint);
-  }
+ MACRO *m=dokey(maint->curwin->kbd,(edupd(),ngetc(n)));
  if(m) exemac(m);
  }
  while(!leave);

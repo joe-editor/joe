@@ -95,7 +95,7 @@ char *buf;
 int amnt;
 promote(File,link,&openfiles,file);
 if(file->fd== -1) reopen(file);
-amnt=read(file->fd,buf,size);
+amnt=jread(file->fd,buf,size);
 if(amnt>0) file->pos+=amnt;
 return amnt;
 }
@@ -108,7 +108,7 @@ int amnt;
 if(!file->writeable) return -1;
 promote(File,link,&openfiles,file);
 if(file->fd== -1) reopen(file);
-amnt=write(file->fd,buf,size);
+amnt=jwrite(file->fd,buf,size);
 if(amnt>0)
  {
  file->pos+=amnt;

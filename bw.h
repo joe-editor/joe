@@ -45,6 +45,9 @@ struct bw
  int indentc;
  
  void *object;
+
+ int pid;					/* Process id */
+ int out;					/* fd to write to process */
  };
 
 extern int mid;

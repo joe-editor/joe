@@ -31,6 +31,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "tw.h"
 #include "zstr.h"
 #include "main.h"
+#include "msgs.h"
 #include "edfuncs.h"
 
 int square=0;		/* Rectangle mode */
@@ -40,14 +41,7 @@ B *filthist=0;
 B *linehist=0;
 B *taghist=0;
 
-char *msgs[]=
-{
-"Error writing file",
-"Error opening file",
-"Error seeking file",
-"Error reading file",
-"New File"
-};
+char *msgs[]= { M009, M010, M011, M012, M013 }; 
 
 /****************/
 /* Window stuff */
@@ -184,7 +178,7 @@ long left,right;
 {
 P *p=pdup(up);
 P *q=pdup(p);
-B *tmp=bmk();
+B *tmp=bmk(0);
 P *z=pdup(tmp->eof);
 pbol(p);
 do
@@ -276,7 +270,7 @@ if(w->t->markb && w->t->markk &&
   prm(w->t->markk);
   return;
   }
-msgnw(w,"No block");
+msgnw(w,M014);
 }
 
 void ublkmove(w)
@@ -325,7 +319,7 @@ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
   updall();
   return;
   }
-msgnw(w,"No block");
+msgnw(w,M014);
 }
 
 void ublkcpy(w)
@@ -360,7 +354,7 @@ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
   updall();
   return;
   }
-msgnw(w,"No block");
+msgnw(w,M014);
 }
 
 void ushell(w)
@@ -389,7 +383,7 @@ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
   }
  else if(fl=bsave(w->t->markb,s,size)) msgnw(w,msgs[5+fl]);
  }
-else msgnw(w,"No block");
+else msgnw(w,M014);
 vsrm(s);
 }
 
@@ -401,10 +395,10 @@ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
    (w->t->markk->byte-w->t->markb->byte)>0 &&
    (!square || w->t->markk->col>w->t->markb->col))
  {
- wmkfpw(w,"Name of file to write (^C to abort): ",&filehist,dowrite,"Names");
+ wmkfpw(w,M015,&filehist,dowrite,"Names");
  return;
  }
-msgnw(w,"No block");
+msgnw(w,M014);
 }
 
 long pindent();
@@ -429,7 +423,7 @@ pnextl(p);
 done:
 pboln(p);
 if(w->t->markb) prm(w->t->markb);
-w->t->markb=p; p->owner=&w->t->markb;
+w->t->markb=p; p->owner= &w->t->markb;
 
 do
  if(!pnextl(q)) break;
@@ -437,7 +431,7 @@ do
 pfcol(q);
 
 if(w->t->markk) prm(w->t->markk);
-w->t->markk=q; q->owner=&w->t->markk;
+w->t->markk=q; q->owner= &w->t->markk;
 
 updall();
 }
@@ -565,7 +559,7 @@ char c;
 if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
    w->t->markk->byte>w->t->markb->byte &&
    (!square || w->t->markk->col>w->t->markb->col)) goto go;
-msgnw(w,"No block");
+msgnw(w,M014);
 return;
 
 go:
@@ -596,7 +590,7 @@ if(fork())
  close(fw[1]);
  if(square)
   {
-  B *tmp=bmk();
+  B *tmp=bmk(0);
   long width;
   long height;
   pdelrect(w->t->markb,w->t->markk,w->t->markb->col,w->t->markk->col,
@@ -647,11 +641,10 @@ BW *bw=(BW *)w->object;
 if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
    (w->t->markk->byte-w->t->markb->byte)>0)
  {
- wmkpw(w,"Command to filter block through (^C to abort): ",
-       &filthist,dofilt,NULL);
+ wmkpw(w,M016,&filthist,dofilt,NULL);
  return;
  }
-msgnw(w,"No block");
+msgnw(w,M014);
 }
 
 /****************************/
@@ -674,7 +667,7 @@ if(!bw->b->backup)
 
  if(system(s))
   {
-  msgnw(w,"Couldn't make backup file... file not saved");
+  msgnw(w,M017);
   vsrm(s);
   return 1;
   }
@@ -715,7 +708,7 @@ void usave(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-W *pw=wmkfpw(w,"Name of file to save (^C to abort): ",&filehist,dosave,"Names");
+W *pw=wmkfpw(w,M018,&filehist,dosave,"Names");
 if(pw && bw->b->name)
  {
  BW *pbw=(BW *)pw->object;
@@ -733,9 +726,9 @@ void *object=bw->object;
 B *b=bfind(s);
 if(!b)
  {
- b=bmk();
+ b=bmk(1);
  if(!zlen(s))
-  msgnwt(w,"New file ");
+  msgnwt(w,M013);
  else
   {
   int fl;
@@ -750,16 +743,20 @@ bw->object=object;
 vsrm(s);
 }
 
+void nedit(w,c)
+W *w;
+{
+BW *bw=(BW *)w->object;
+if(c!='y' && c!='Y') return;
+wmkfpw(w,M020,&filehist,doedit,"Names");
+}
+
 void uedit(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-if(bw->b->count==1 && bw->b->chnged)
- {
- int c=query(w,"Do you really want to throw away this file (y,n,^C)? ");
- if(c!='y' && c!='Y') return;
- }
-wmkfpw(w,"Name of file to edit (^C to abort): ",&filehist,doedit,"Names");
+if(bw->b->count==1 && bw->b->chnged) mkqw(w,M019,nedit);
+else nedit(w,'y');
 }
 
 static void doinsf(w,s)
@@ -770,7 +767,7 @@ BW *bw=(BW *)w->object;
 int fl;
 if(square)
  {
- B *tmp=bmk();
+ B *tmp=bmk(0);
  if(fl=binsf(tmp->bof,s)) msgnw(w,msgs[fl+5]);
  else
   if(bw->overtype) povrrect(bw->cursor,tmp);
@@ -787,7 +784,7 @@ void uinsf(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-wmkfpw(w,"Name of file to insert (^C to abort): ",&filehist,doinsf,"Names");
+wmkfpw(w,M021,&filehist,doinsf,"Names");
 }
 
 extern char *exmsg;
@@ -799,9 +796,9 @@ char *s;
 BW *bw=(BW *)w->object;
 bw->b->name=zdup(s); 
 if(dosave(w,s)) { free(bw->b->name); bw->b->name=0; return; }
-exmsg=vsncpy(NULL,0,sc("File "));
+exmsg=vsncpy(NULL,0,sz(M022));
 exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
-exmsg=vsncpy(exmsg,sLEN(exmsg),sc(" saved."));
+exmsg=vsncpy(exmsg,sLEN(exmsg),sz(M023));
 bw->b->chnged=0;
 wabort(w);
 }
@@ -812,22 +809,22 @@ W *w;
 BW *bw=(BW *)w->object;
 if(!bw->b->chnged)
  {
- exmsg=vsncpy(NULL,0,sc("File "));
+ exmsg=vsncpy(NULL,0,sz(M022));
  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
- exmsg=vsncpy(exmsg,sLEN(exmsg),sc(" not changed so no updated needed."));
+ exmsg=vsncpy(exmsg,sLEN(exmsg),sz(M024));
  wabort(w);
  return;
  }
 if(bw->b->name)
  {
  if(dosave(w,vsncpy(NULL,0,sz(bw->b->name)))) return;
- exmsg=vsncpy(NULL,0,sc("File "));
+ exmsg=vsncpy(NULL,0,sz(M022));
  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
- exmsg=vsncpy(exmsg,sLEN(exmsg),sc(" saved."));
+ exmsg=vsncpy(exmsg,sLEN(exmsg),sz(M023));
  bw->b->chnged=0;
  wabort(w);
  } 
-else wmkfpw(w,"Name of file to save (^C to abort): ",&filehist,doex,"Names");
+else wmkfpw(w,M018,&filehist,doex,"Names");
 }
 
 /*************/
@@ -842,43 +839,65 @@ BW *bw=(BW *)w->object;
 long num=0;
 sscanf(s,"%ld",&num);
 if(num>=1) pline(bw->cursor,num-1), bw->cursor->xcol=bw->cursor->col;
-else msgnw(w,"Invalid line number");
+else msgnw(w,M025);
 vsrm(s);
 }
 
 void uline(w)
 W *w;
 {
-wmkpw(w,"Goto line (^C to abort): ",&linehist,doline,NULL);
+wmkpw(w,M026,&linehist,doline,NULL);
 }
 
 /************************/
 /* Basic edit functions */
 /************************/
 
-void uquote(w)
+void doquote(w,c)
 W *w;
 {
 BW *bw=(BW *)w->object;
-int c=queryn(w,"Ctrl-");
 if((c>=0x40 && c<=0x5F) || (c>='a' && c<='z')) c&=0x1F;
 if(c=='?') c=127;
 utype(w,c);
+bw->cursor->xcol=bw->cursor->col;
+}
+
+void uquote(w)
+W *w;
+{
+mkqwna(w,M027,doquote);
+}
+
+void doquote9(w,c)
+W *w;
+{
+BW *bw=(BW *)w->object;
+if((c>=0x40 && c<=0x5F) || (c>='a' && c<='z')) c&=0x1F;
+if(c=='?') c=127;
+c|=128;
+utype(w,c);
+bw->cursor->xcol=bw->cursor->col;
+}
+
+void doquote8(w,c)
+W *w;
+{
+BW *bw=(BW *)w->object;
+if(c=='`')
+ {
+ mkqwna(w,M029,doquote9);
+ return;
+ }
+c|=128;
+utype(w,c);
+bw->cursor->xcol=bw->cursor->col;
 }
 
 void uquote8(w)
 W *w;
 {
-BW *bw=(BW *)w->object;
-int c=queryn(w,"Meta-");
-if(c=='`')
- {
- c=queryn(w,"Meta-Ctrl-");
- if((c>=0x40 && c<=0x5F) || (c>='a' && c<='z')) c&=0x1F;
- if(c=='?') c=127;
- }
-c|=128;
-utype(w,c);
+mkqwna(w,M028,doquote8);
 }
 
 void uretyp(w)
@@ -1115,15 +1134,16 @@ for(x=0;x!=scrollamnt;++x) pprevl(bw->top);
 pboln(bw->top);
 for(x=0;x!=cursoramnt;++x) pprevl(bw->cursor);
 pboln(bw->cursor); pcol(bw->cursor,bw->cursor->xcol=col);
-if(scrollamnt && scrollamnt<bw->h)
- {
- nscrldn(w->t->t,bw->y,bw->y+bw->h,scrollamnt);
- scrldn(w->t->t->updtab,bw->y,bw->y+bw->h,scrollamnt);
- }
-else if(scrollamnt)
- {
- scrldn(w->t->t->updtab,bw->y,bw->y+bw->h,bw->h);
- }
+if(w->y!= -1)
+ if(scrollamnt && scrollamnt<bw->h)
+  {
+  nscrldn(w->t->t,bw->y,bw->y+bw->h,scrollamnt);
+  scrldn(w->t->t->updtab,bw->y,bw->y+bw->h,scrollamnt);
+  }
+ else if(scrollamnt)
+  {
+  scrldn(w->t->t->updtab,bw->y,bw->y+bw->h,bw->h);
+  }
 }
 
 void scrdn(w,n,flg)
@@ -1148,13 +1168,14 @@ else
 for(x=0;x!=scrollamnt;++x) pnextl(bw->top);
 for(x=0;x!=cursoramnt;++x) pnextl(bw->cursor);
 pcol(bw->cursor,bw->cursor->xcol=col);
-if(scrollamnt && scrollamnt<bw->h)
- {
- int x;
- nscrlup(w->t->t,bw->y,bw->y+bw->h,scrollamnt);
- scrlup(w->t->t->updtab,bw->y,bw->y+bw->h,scrollamnt);
- }
-else if(scrollamnt) scrlup(w->t->t->updtab,bw->y,bw->y+bw->h,bw->h);
+if(w->y!= -1)
+ if(scrollamnt && scrollamnt<bw->h)
+  {
+  int x;
+  nscrlup(w->t->t,bw->y,bw->y+bw->h,scrollamnt);
+  scrlup(w->t->t->updtab,bw->y,bw->y+bw->h,scrollamnt);
+  }
+ else if(scrollamnt) scrlup(w->t->t->updtab,bw->y,bw->y+bw->h,bw->h);
 }
 
 int pgamnt= -1;
@@ -1194,18 +1215,29 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 P *p;
+if(bw->pid && bw->cursor->byte==bw->b->eof->byte)
+ {
+ char c=4;
+ write(bw->pid,&c,1);
+ return;
+ }
 p=pdup(bw->cursor);
 pgetc(p);
 bdel(bw->cursor,p);
 prm(p);
 }
 
-void ubacks(w)
+void ubacks(w,c)
 W *w;
 {
 BW *bw=(BW *)w->object;
 P *p;
-int c;
+if(bw->pid && bw->cursor->byte==bw->b->eof->byte)
+ {
+ char k=c;
+ write(bw->out,&k,1);
+ return;
+ }
 if(bw->overtype && !pisbol(bw->cursor) && !piseol(bw->cursor))
  {
  if((c=prgetc(bw->cursor))!='\t') return;
@@ -1306,13 +1338,15 @@ long endcol, begcol, x;
 int c;
 
 peol(p);
-while(!pisbol(p) && cwhite(c=prgetc(p)));
-if(pisbol(p)) return;
+while(cwhite(c=prgetc(p)));
+if(c=='\n') { pgetc(p); goto done; }
+if(c==MAXINT) goto done;
 pgetc(p); endcol=p->col;
 
 pbol(p);
-while(!piseol(p) && cwhite(c=pgetc(p)));
-if(piseol(p)) return;
+while(cwhite(c=pgetc(p)));
+if(c=='\n') { prgetc(p); goto done; }
+if(c==MAXINT) goto done;
 prgetc(p); begcol=p->col;
 
 if(endcol-begcol>bw->rmargin+bw->lmargin) return;
@@ -1321,6 +1355,7 @@ q=pdup(p); pbol(q); bdel(q,p); prm(q);
 
 for(x=0;x!=(bw->lmargin+bw->rmargin)/2-(endcol-begcol)/2;++x) binsc(p,' ');
 
+done:
 if(!pnextl(p))
  {
  binsc(p,'\n');
@@ -1364,40 +1399,42 @@ P *pbop(p)
 P *p;
 {
 long indent;
-pbol(p);
-indent=pindent(p);
+pbol(p); indent=pindent(p);
 while(!pisbof(p))
  {
  long ind;
- pprevl(p); pboln(p);
- ind=pindent(p);
- if(pblank(p) || ind<indent)
-  {
-  pnextl(p);
-  break;
-  }
+ pprevl(p); pboln(p); ind=pindent(p);
+ if(pblank(p)) { pnextl(p); break; }
  if(ind>indent) break;
+ if(ind<indent)
+  {
+  if(pisbof(p)) break;
+  pprevl(p); pboln(p);
+  if(pblank(p)) { pnextl(p); break; }
+  else { pnextl(p); pnextl(p); break; }
+  }
  }
 return p;
 }
 
-/* Move pointer to end of paragraph */
+/* Move pointer to end of paragraph.  Pointer must already be on first
+ * line of paragraph for this to work correctly.
+ */
 
 P *peop(p)
 P *p;
 {
 long indent;
 pbol(p);
+pnextl(p);
+if(piseof(p) || pblank(p)) { pboln(p); peol(p); return p; }
 indent=pindent(p);
-while(!piseof(p))
+while(pnextl(p))
  {
- long ind;
- pnextl(p);
- ind=pindent(p);
- if(ind>indent || pblank(p)) break;
- if(ind<indent) indent=ind;
+ long ind=pindent(p);
+ if(ind!=indent || pblank(p)) break;
  }
-if(piseof(p))  peol(p);
+if(piseof(p)) { pboln(p); peol(p); }
 return p;
 }
 
@@ -1407,12 +1444,24 @@ void wrapword(p,indent)
 P *p;
 long indent;
 {
+P *q;
 int c;
 long to=p->byte;
-while(!pisbol(p) && p->col>indent && !cwhite(c=prgetc(p)));
+while(!pisbol(p) && p->col>indent && !cwhite(prgetc(p)));
 if(!pisbol(p) && p->col>indent)
  {
+ q=pdup(p);
+ while(!pisbol(q))
+  if(!cwhite(c=prgetc(q)))
+   {
+   pgetc(q);
+   if(c=='.' && q->byte!=p->byte) pgetc(q);
+   break;
+   }
  pgetc(p);
+ to-=p->byte-q->byte;
+ bdel(q,p);
+ prm(q);
  binsc(p,'\n'), ++to;
  pgetc(p);
  if(indent) while(indent--) binsc(p,' '), ++to;
@@ -1442,10 +1491,10 @@ if(pblank(p))
 
 pbop(p);
 curoff=bw->cursor->byte-p->byte;
-peop(bw->cursor);
+pset(bw->cursor,p); peop(bw->cursor);
 
 if(bw->cursor->lbyte) binsc(bw->cursor,'\n'), pgetc(bw->cursor);
-if(piseof(bw->cursor)) binsc(bw->cursor,'\n');
+/* if(piseof(bw->cursor)) binsc(bw->cursor,'\n'); */
 
 indent=pindent(p);
 q=pdup(p); pnextl(q);
@@ -1476,7 +1525,7 @@ while(len--)
   int z;
   while(rlen--)
    {
-   z=*r++;
+   z= *r++;
    if(z=='\n') break;
    if(!cwhite(z)) goto ok;
    }
@@ -1491,15 +1540,22 @@ while(len--)
   }
  }
 
+/* Do rest */
+
 while(len>0)
  if(cwhitel(*b))
   {
-  if(b[-1]=='.' || b[-1]=='?' || b[-1]=='!') binsc(p,' '), pgetc(p);
-  binsc(p,' '); pgetc(p);
+  int f=0;
+  if((b[-1]=='.' || b[-1]=='?' || b[-1]=='!') && cwhitel(b[1])) f=1;
   while(len && cwhitel(*b))
    {
    if(b-buf==curoff) pset(bw->cursor,p);
    ++b, --len;
+   }
+  if(len)
+   {
+   if(f) binsc(p,' '), pgetc(p);
+   binsc(p,' '); pgetc(p);
    }
   }
  else
@@ -1527,6 +1583,12 @@ int c;
 {
 BW *bw=(BW *)w->object;
 P *p;
+if(bw->pid && bw->cursor->byte==bw->b->eof->byte)
+ {
+ char k=c;
+ write(bw->out,&k,1);
+ return;
+ }
 if(pblank(bw->cursor))
  while(bw->cursor->col<bw->lmargin) binsc(bw->cursor,' '), pgetc(bw->cursor);
 binsc(bw->cursor,c);
@@ -1536,12 +1598,17 @@ if(bw->wordwrap && bw->cursor->col>bw->rmargin && !cwhite(c))
 else if(bw->overtype && !piseol(bw->cursor) && c!='\t') udelch(w);
 }
 
-void urtn(w)
+void urtn(w,c)
 W *w;
 {
 BW *bw=(BW *)w->object;
 P *p;
-int c;
+if(bw->pid && bw->cursor->byte==bw->b->eof->byte)
+ {
+ char k=c;
+ write(bw->out,&k,1);
+ return;
+ }
 p=pdup(bw->cursor);
 binsc(bw->cursor,'\n');
 pgetc(bw->cursor);
@@ -1574,7 +1641,7 @@ void *object=bw->object;
 f=fopen("tags","r");
 if(!f)
  {
- msgnw(w,"Couldn\'t open \'tags\' file");
+ msgnw(w,M030);
  vsrm(s);
  return;
  }
@@ -1596,7 +1663,7 @@ while(fgets(buf,512,f))
    if(!b)
     {
     int fl;
-    b=bmk();
+    b=bmk(1);
     if(fl=bload(b,buf+x))
      { msgnwt(w,msgs[fl+5]); brm(b); vsrm(s); fclose(f); return; }
     }
@@ -1617,7 +1684,7 @@ while(fgets(buf,512,f))
      {
      sscanf(buf+y,"%ld",&line);
      if(line>=1) pline(bw->cursor,line-1), bw->cursor->xcol=bw->cursor->col;
-     else msgnw(w,"Invalid line number");
+     else msgnw(w,M025);
      }
     else
      {
@@ -1653,22 +1720,18 @@ while(fgets(buf,512,f))
    }
   }
  }
-msgnw(w,"Not found");
+msgnw(w,M031);
 vsrm(s);
 fclose(f);
 }
 
-void utag(w)
+void ntag(w,c)
 W *w;
 {
 BW *bw=(BW *)w->object;
 W *pw;
-if(bw->b->count==1 && bw->b->chnged)
- {
- int c=query(w,"Do you really want to throw away this file (y,n,^C)? ");
- if(c!='y' && c!='Y') return;
- }
-pw=wmkfpw(w,"Tag string to find (^C to abort): ",&taghist,dotag,NULL);
+if(c!='y' && c!='Y') return;
+pw=wmkfpw(w,M032,&taghist,dotag,NULL);
 if(pw && cword(brc(bw->cursor)))
  {
  BW *pbw=(BW *)pw->object;
@@ -1683,14 +1746,22 @@ if(pw && cword(brc(bw->cursor)))
  }
 }
 
+void utag(w)
+W *w;
+{
+BW *bw=(BW *)w->object;
+if(bw->b->count==1 && bw->b->chnged) mkqw(w,M019,ntag);
+else ntag(w,'y');
+}
+
 /* Mode commands */
 
 void uisquare(w)
 W *w;
 {
 square= !square;
-if(square) msgnw(w,"Rectangle mode selected.  Effects block commands & Insert file");
-else msgnw(w,"Normal text-stream mode selected");
+if(square) msgnw(w,M033);
+else msgnw(w,M034);
 updall();
 }
 
@@ -1699,8 +1770,8 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 bw->autoindent= !bw->autoindent;
-if(bw->autoindent) msgnw(w,"Autoindent enabled");
-else msgnw(w,"Autoindent disabled");
+if(bw->autoindent) msgnw(w,M036);
+else msgnw(w,M037);
 }
 
 void uiwrap(w)
@@ -1708,8 +1779,8 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 bw->wordwrap= !bw->wordwrap;
-if(bw->wordwrap) msgnw(w,"Word wrap enabled");
-else msgnw(w,"Word wrap disabled");
+if(bw->wordwrap) msgnw(w,M037);
+else msgnw(w,M038);
 }
 
 void uitype(w)
@@ -1717,32 +1788,32 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 bw->overtype= !bw->overtype;
-if(bw->overtype==0) msgnw(w,"Insert mode");
-else msgnw(w,"Overtype mode");
+if(bw->overtype==0) msgnw(w,M039);
+else msgnw(w,M040);
 }
 
 void uimid(w)
 W *w;
 {
 mid= !mid;
-if(mid) msgnw(w,"Cursor will be recentered after a scroll");
-else msgnw(w,"Cursor will not be recentered after a scroll");
+if(mid) msgnw(w,M041);
+else msgnw(w,M042);
 }
 
 void uiforce(w)
 W *w;
 {
 force= !force;
-if(force) msgnw(w,"Last line forced to have LF when file saved");
-else msgnw(w,"Last line not forced to have LF");
+if(force) msgnw(w,M043);
+else msgnw(w,M044);
 }
 
 void uiasis(w)
 W *w;
 {
 dspasis= !dspasis;
-if(dspasis) msgnw(w,"Characters above 127 displayed as-is");
-else msgnw(w,"Characters above 127 remapped");
+if(dspasis) msgnw(w,M045);
+else msgnw(w,M046);
 refigure();
 updall();
 }
@@ -1764,11 +1835,11 @@ W *w;
 char *s;
 {
 BW *bw=(BW *)w->object;
-long v=bw->lmargin;
+long v=bw->lmargin+1;
 sscanf(s,"%ld",&v);
 vsrm(s);
-if(v<0 || v>256) v=0;
-bw->lmargin=v;
+if(v<1 || v>256) v=1;
+bw->lmargin=v-1;
 }
 
 void uilmargin(w)
@@ -1776,7 +1847,7 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 char buf[80];
-sprintf(buf,"Left margin %ld (^C to abort): ",bw->lmargin);
+sprintf(buf,M047,bw->lmargin+1);
 wmkpw(w,buf,NULL,dolmar,NULL);
 }
 
@@ -1797,8 +1868,7 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 char buf[80];
-sprintf(buf,"Indent char %d (SPACE=32, TAB=9, ^C to abort): ",
-        bw->indentc);
+sprintf(buf,M048,bw->indentc);
 wmkpw(w,buf,NULL,docindent,NULL);
 }
 
@@ -1819,7 +1889,7 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 char buf[80];
-sprintf(buf,"Indent step %ld (^C to abort): ",bw->istep);
+sprintf(buf,M049,bw->istep);
 wmkpw(w,buf,NULL,doistep,NULL);
 }
 
@@ -1828,11 +1898,11 @@ W *w;
 char *s;
 {
 BW *bw=(BW *)w->object;
-long v=bw->rmargin;
+long v=bw->rmargin+1;
 sscanf(s,"%ld",&v);
 vsrm(s);
-if(v<8 || v>256) v=76;
-bw->rmargin=v;
+if(v<8 || v>256) v=77;
+bw->rmargin=v-1;
 }
 
 void uirmargin(w)
@@ -1840,7 +1910,7 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 char buf[80];
-sprintf(buf,"Right margin %ld (^C to abort): ",bw->rmargin);
+sprintf(buf,M050,bw->rmargin+1);
 wmkpw(w,buf,NULL,dormar,NULL);
 }
 
@@ -1863,7 +1933,7 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 char buf[80];
-sprintf(buf,"Tab width %d (^C to abort): ",bw->b->tab);
+sprintf(buf,M051,bw->b->tab);
 wmkpw(w,buf,NULL,dotab,NULL);
 }
 
@@ -1883,24 +1953,151 @@ void uipgamnt(w)
 W *w;
 {
 char buf[80];
-sprintf(buf,"Lines to keep for pgup/pgdn or -1 for 1/2 (%ld): ",pgamnt);
+sprintf(buf,M052,pgamnt);
 wmkpw(w,buf,NULL,dopgamnt,NULL);
 }
 
-/* Argument setting */
+/* Repeat argument setting */
 
-void uarg(w,c)
+static void doarg(w,s)
+W *w;
+char *s;
+{
+BW *bw=(BW *)w->object;
+long num=0;
+sscanf(s,"%ld",&num);
+if(num>=1) w->t->arg=num;
+vsrm(s);
+}
+
+void uarg(w)
 W *w;
 {
-char buf[80];
-if(c>='1' && c<='9') w->t->arg=(c&0xF);
-else w->t->arg=0;
-sprintf(buf,"Repeat %d (^C to abort)",w->t->arg); msgnw(w,buf);
-while(c=edgetc(), c>='0' && c<='9')
+wmkpw(w,M053,NULL,doarg,NULL);
+}
+
+/* Execute shell command and capture its output */
+
+void cdone(bw)
+BW *bw;
+{
+bw->pid=0;
+close(bw->out); bw->out= -1;
+if(piseof(bw->cursor))
  {
- w->t->arg=w->t->arg*10+(c&0xf);
- sprintf(buf,"%d",w->t->arg); msgnw(w,buf);
+ binss(bw->cursor,M054);
+ peof(bw->cursor);
+ bw->cursor->xcol=bw->cursor->col;
  }
-if(c==3) w->t->arg=0;
-else eungetc(c);
+else
+ {
+ P *q=pdup(bw->b->eof);
+ binss(q,M054);
+ prm(q);
+ }
+}
+
+void cdata(w,dat,siz)
+W *w;
+char *dat;
+{
+BW *bw=(BW *)w->object;
+P *q=pdup(bw->cursor);
+P *r=pdup(bw->b->eof);
+char bf[1024];
+int x, y;
+for(x=y=0;x!=siz;++x)
+ if(dat[x]==13 || dat[x]==0);
+ else if(dat[x]==8 || dat[x]==127)
+  if(y) --y;
+  else
+   if(piseof(bw->cursor))
+    {
+    pset(q,bw->cursor), prgetc(q), bdel(q,bw->cursor);
+    bw->cursor->xcol=bw->cursor->col;
+    }
+   else pset(q,r), prgetc(q), bdel(q,r);
+ else bf[y++]=dat[x];
+if(y)
+ if(piseof(bw->cursor))
+  {
+  binsm(bw->cursor,bf,y);
+  peof(bw->cursor);
+  bw->cursor->xcol=bw->cursor->col;
+  }
+ else binsm(r,bf,y);
+prm(r);
+prm(q);
+}
+
+char **ptys=0;
+char **rexpnd();
+
+void nbknd(w,c)
+W *w;
+{
+BW *bw=(BW *)w->object;
+void *object=bw->object;
+B *b;
+int fd, x;
+char ttyname[32];
+if(c!='y' && c!='Y') return;
+if(bw->pid)
+ {
+ msgnw(w,M055);
+ return;
+ }
+b=bmk(0);
+bwrm(bw);
+w->object=(void *)(bw=bwmk(w->t,b,w->x,w->y+1,w->w,w->h-1));
+wredraw(w);
+setoptions(bw,"");
+bw->object=object;
+
+if(!ptys) ptys=rexpnd(PTYPREFIX,"pty*");
+if(ptys) for(fd=0;ptys[fd];++fd)
+ {
+ zcpy(ttyname,PTYPREFIX);
+ zcat(ttyname,ptys[fd]);
+ if((bw->out=open(ttyname,2))>=0)
+  {
+  ptys[fd][0]='t';
+  zcpy(ttyname,TTYPREFIX); zcat(ttyname,ptys[fd]);
+  ptys[fd][0]='p';
+  x=open(ttyname,2);
+  if(x>=0)
+   {
+   close(x);
+   close(bw->out);
+   zcpy(ttyname,PTYPREFIX); zcat(ttyname,ptys[fd]);
+   bw->out=open(ttyname,2);
+   ptys[fd][0]='t';
+   zcpy(ttyname,TTYPREFIX); zcat(ttyname,ptys[fd]);
+   ptys[fd][0]='p';
+   goto gotone;
+   }
+  else close(bw->out);
+  }
+ }
+msgnw(w,M056);
+return;
+
+gotone:
+
+bw->pid=subshell(bw->out,ttyname);
+
+mpxmk(bw->out,bw->pid,cdata,w,cdone,bw);
+}
+
+void ubknd(w)
+W *w;
+{
+BW *bw=(BW *)w->object;
+if(bw->pid)
+ {
+ msgnw(w,M055);
+ return;
+ }
+if(bw->b->count==1 && bw->b->chnged) mkqw(w,M019,nbknd);
+else nbknd(w,'y');
 }

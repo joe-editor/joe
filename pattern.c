@@ -36,6 +36,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "pathfunc.h"
 #include "va.h"
 #include "edfuncs.h"
+#include "msgs.h"
 #include "pattern.h"
 
 B *findhist=0;
@@ -52,6 +53,8 @@ static void set_replace(w,s)
  { 
  if(w->t->replace) vsrm(w->t->replace);
  w->t->replace=s;
+ w->t->flg=0;
+ w->t->rest=0;
  pfnext(w);
  }
 
@@ -62,6 +65,8 @@ static void set_options(w,s)
  int x;
  w->t->options=0;
  w->t->repeat= -1;
+ w->t->flg=0;
+ w->t->rest=0;
  for(x=0;s[x];++x)
   switch(s[x])
    {
@@ -75,7 +80,7 @@ static void set_options(w,s)
    break;
    }
  vsrm(s);
- if(w->t->options&SRREPLACE) wmkpw(w,"Replace with (^C to abort): ",&findhist,set_replace,"Search");
+ if(w->t->options&SRREPLACE) wmkpw(w,M070,&findhist,set_replace,"Search");
  else pfnext(w);
  }
 
@@ -85,13 +90,13 @@ static void set_pattern(w,s)
  {
  if(w->t->pattern) vsrm(w->t->pattern);
  w->t->pattern=s;
- wmkpw(w,"(I)gnore case (R)eplace (B)ackwards NNN (^C to abort): ",NULL,set_options,"Search");
+ wmkpw(w,M071,NULL,set_options,"Search");
  }
 
 void pffirst(w)
  W *w;
  {
- wmkpw(w,"Find (^C to abort): ",&findhist,set_pattern,"Search"); 
+ wmkpw(w,M072,&findhist,set_pattern,"Search"); 
  }
 
 char *entire=0;
@@ -251,57 +256,70 @@ else
 insert(bw,sv(w->t->replace));
 }
 
+void dopfnext(w,c)
+W *w;
+{
+if(!w->t->pattern || !w->t->replace) { pffirst(w); return; }
+if(c=='N' || c=='n') { pfnext(w); return; }
+if(c=='Y' || c=='y') { replace(w); pfnext(w); return; }
+if(c=='R' || c=='r') { replace(w); w->t->rest=1; pfnext(w); return; }
+mkqwnsr(w,M073,dopfnext);
+}
+
 void pfnext(w)
- W *w;
+W *w;
+{
+BW *bw=(BW *)w->object;
+int orgmid=mid; mid=1;
+if(!w->t->pattern) { pffirst(w); goto done; }
+next:
+if(w->t->repeat!= -1)
+ if(!w->t->repeat) goto done;
+ else --w->t->repeat;
+if(w->t->options&SRBACKWARDS)
  {
- BW *bw=(BW *)w->object;
- int c;
- int rest=0;
- int flg=0;
- int orgmid=mid;
- mid=1;
- if(!w->t->pattern) { pffirst(w); goto done; }
- next:
- if(w->t->repeat!= -1)
-  if(!w->t->repeat) goto done;
-  else --w->t->repeat;
- if(w->t->options&SRBACKWARDS)
-  { if(!searchb(w)) { if(!flg || !(w->t->options&SRREPLACE)) msgnw(w,"Not found"); w->t->repeat= -1; goto done; } }
+ if(!searchb(w))
+  {
+  if(!w->t->flg || !(w->t->options&SRREPLACE)) msgnw(w,M031);
+  w->t->repeat= -1;
+  goto done;
+  }
+ }
+else if(!searchf(w))
+ {
+ if(!w->t->flg || !(w->t->options&SRREPLACE)) msgnw(w,M031);
+ w->t->repeat= -1;
+ goto done;
+ }
+w->t->flg=1;
+if(w->t->options&SRREPLACE)
+ if(w->t->rest)
+  {
+  replace(w);
+  goto next;
+  }
  else
-  if(!searchf(w)) { if(!flg || !(w->t->options&SRREPLACE)) msgnw(w,"Not found"); w->t->repeat= -1; goto done; }
- flg=1;
- if(w->t->options&SRREPLACE)
-  if(rest) { replace(w); goto next; }
+  {
+  if(w->t->options&SRBACKWARDS)
+   {
+   w->t->markb=pdup(bw->cursor);
+   w->t->markk=pdup(bw->cursor);
+   pfwrd(w->t->markk,w->t->foundlen);
+   }
   else
    {
-   do
-    {
-    P *mb=w->t->markb, *mk=w->t->markk;
-    if(w->t->options&SRBACKWARDS)
-     {
-     w->t->markb=pdup(bw->cursor);
-     w->t->markk=pdup(bw->cursor);
-     pfwrd(w->t->markk,w->t->foundlen);
-     }
-    else
-     {
-     w->t->markk=pdup(bw->cursor);
-     w->t->markb=pdup(bw->cursor);
-     pbkwd(w->t->markb,w->t->foundlen);
-     }
-    updall();
-    c=queryn(w,"Replace (Y)es (N)o (R)est (^C to abort)?");
-    prm(w->t->markb); prm(w->t->markk);
-    w->t->markb=mb; w->t->markk=mk;
-    if(c=='N' || c=='n') { goto next; }
-    if(c=='Y' || c=='y') { replace(w); goto next; }
-    if(c=='R' || c=='r') { replace(w); rest=1; goto next; }
-    }
-    while(c!=MAXINT && c!='C'-'@');
+   w->t->markk=pdup(bw->cursor);
+   w->t->markb=pdup(bw->cursor);
+   pbkwd(w->t->markb,w->t->foundlen);
    }
- else if(w->t->repeat!= -1) goto next;
- done:
- updall();
- bw->cursor->xcol=bw->cursor->col;
- mid=orgmid;
- }
+  bw->cursor->xcol=bw->cursor->col;
+  updall();
+  mkqwnsr(w,M073,dopfnext);
+  goto done;
+  }
+else if(w->t->repeat!= -1) goto next;
+done:
+updall();
+bw->cursor->xcol=bw->cursor->col;
+mid=orgmid;
+}

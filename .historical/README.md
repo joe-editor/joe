@@ -7,6 +7,95 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 1.0.7
+**Released: 1992-11-26**
+
+Source recovered from ftp://nic.funet.fi/index/Linux/util/editors
+
+Original announcement:
+```
+Xref: sparky comp.editors:2876 alt.religion.emacs:477 comp.unix.admin:6390 comp.unix.xenix.misc:251 comp.os.linux:18044
+Newsgroups: comp.editors,alt.religion.emacs,comp.unix.admin,comp.unix.xenix.misc,comp.os.linux
+Path: sparky!uunet!spool.mu.edu!sol.ctr.columbia.edu!eff!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: New release: JOE 1.0.7
+Message-ID: <ByBvGL.1D6@world.std.com>
+Organization: The World Public Access UNIX, Brookline, MA
+Date: Thu, 26 Nov 1992 14:41:08 GMT
+Lines: 68
+
+An new release of JOE is ready.  Get it by anonymous ftp from 
+world.std.com, file 'src/editors/joe1.0.7.tar.Z'.  Might have to wait a day 
+as it's a holiday here and the operators might not be in.
+
+Features/fixes for this version:
+-------------------------------
+
+Shell windows - JOE now has shell windows.  They only work if your computer 
+has ptys.  I'm not entirely sure that the code is completely portable, so 
+I'll see how much mail I get...  
+
+NOXON - if this environment variable is set, joe will attempt to turn off 
+^Q/^S processing.
+
+Direct keys to access menus.  If you hit the first letter of a menu item, it 
+gets selected immediatly.
+
+Characters above 127 should now get typed in correctly.  'asis' mode will 
+show all characters above 127 as-is.
+
+Window size changes will now immediatly take effect instead of after a 
+key-stroke.
+
+Center line will work if there's only a single character on the line
+
+'Loose' is now spelled correctly :-)
+
+I changed the way the tty driver is compiled.  Now there's one file, tty.c, 
+with lots of conditional compiling.  So now you choose a makefile to use.
+I'm hoping that people will send me better makefiles for SCO UNIX, ESIX and 
+Interactive.
+
+If both insert character and insert mode are defined for the terminal, 
+only one will be used :-)
+
+If a termcap key sequence is only a single character and that character is 
+less than 128, it's not used.  People were complaining about ADM 3A 
+terminals, which have ^H, ^J, ^K and ^L set for the arrow keys.  
+
+Tabs are displayed correctly in prompts
+
+README file now suggests to try '-ltermlib' to get terminfo working on HPUX
+
+Put ^K Q back in joerc file
+
+Caught a few extra =* and =& which need to be space seperated.
+
+If you kill joe, it tries to restore the tty to the shell state
+
+'make install' tries to create the WHEREJOE and WHERERC directories if they 
+don't exist 
+
+I don't bother setting ospeed, BC, UP and PC in terminfo.c any longer
+
+Not fixed yet
+-------------
+
+Long delay in SCO UNIX using vt100s.  I have no idea what the problem is.
+
+Manual page still doesn't exist
+
+Someone reported that files sometimes don't get written with ^K D.  I 
+haven't been able to reproduce this.  
+-- 
+/*  jhallen@world.std.com */     /* Amazing */            /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
 ## JOE 1.0.6
 **Released: 1992-11-21**
 

@@ -1,4 +1,4 @@
-/* TURBO-C directory interface
+/* Single-key query windows
    Copyright (C) 1992 Joseph H. Allen
 
 This file is part of JOE (Joe's Own Editor)
@@ -16,56 +16,32 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
+#ifndef _Iquery
+#define _Iquery 1
+
 #include "config.h"
-#include "heap.h"
-#include "zstr.h"
-#include "blocks.h"
-#include "dir.h"
 
-int findfirst();
-int findnext();
-
-struct ffblk
+typedef struct query QW;
+struct query
  {
- char ff_reserved[21];
- char ff_attrib;
- int ff_ftime;
- int ff_fdate;
- long ff_fsize;
- char ff_name[13];
+ void (*func)();		/* Func. which gets called when key is hit */
+ char *prompt;			/* Prompt string */
+ int promptlen;			/* Width of prompt string */
+ int promptofst;		/* Prompt scroll offset */
  };
 
-struct duh
- {
- struct ffblk ffblk;
- int first;
- };
+#define TYPEQW 0x1000
 
-void *opendir(name)
-char *name;
-{
-struct duh *duh=(struct duh *)malloc(sizeof(struct duh));
-duh->first=findfirst("*.*",&duh->ffblk,0);
-return duh;
-}
+extern CONTEXT cquery, cquerya, cquerysr;
 
-void closedir(f)
-struct duh *f;
-{
-free(f);
-}
+/* W *mkqw(W *w,char *prompt,void (*func)());
+ * Create a query window for the given window
+ */
+W *mkqw();
+W *mkqwna();
+W *mkqwnsr();
 
-struct direct *readdir(f)
-struct duh *f;
-{
-static struct direct direct;
-while(f->first!= -1)
- if(!f->first)
-  {
-  zcpy(direct.d_name,f->ffblk.ff_name);
-  f->first=1;
-  return &direct;
-  }
- else f->first=findnext(&f->ffblk);
-return 0;
-}
+void uabortqw();
+void utypeqw();
+
+#endif

@@ -17,6 +17,8 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
 #include "main.h"
+#include "msgs.h"
+#include "qw.h"
 #include "macro.h"
 
 /* Create a macro */
@@ -111,20 +113,24 @@ MACRO *m;
 if(recmac) addmacro(recmac->m,dupmacro(m));
 }
 
-void urecord(w)
+void dorecord(w,c)
 W *w;
 {
-int c;
 int n;
 struct recmac *r;
-n=query(w,"Macro to record (0-9 or ^C to abort): ");
-if(n>'9' || n<'0') return;
-unmac(); unmac();
+if(c>'9' || c<'0') return;
+for(n=0;n!=10;++n) if(playmode[n]) return;
 r=(struct recmac *)malloc(sizeof(struct recmac));
 r->m=mkmacro(0,1,0);
 r->next=recmac;
-r->n=n-'0';
+r->n=c-'0';
 recmac=r;
+}
+
+void urecord(w)
+W *w;
+{
+mkqw(w,M067,dorecord);
 }
 
 void ustop()

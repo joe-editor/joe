@@ -286,11 +286,11 @@ P *p;
 int c,d;
 P *q;
 while(len--)
- switch(c=*regex++)
+ switch(c= *regex++)
   {
  case '\\':
   if(!len--) return 0;
-  switch(c=*regex++)
+  switch(c= *regex++)
    {
   case '?':
    d=pgetc(p);
@@ -397,11 +397,11 @@ P *p;
 int c,d;
 P *q;
 while(len--)
- switch(c=*regex++)
+ switch(c= *regex++)
   {
  case '\\':
   if(!len--) return 0;
-  switch(c=*regex++)
+  switch(c= *regex++)
    {
   case '?':
    d=pgetc(p);

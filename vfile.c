@@ -28,6 +28,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "pathfunc.h"
 #include "toomany.h"
 #include "random.h"
+#include "msgs.h"
 #include "vfile.h"
 
 static VFILE vfiles={{&vfiles,&vfiles}};	/* Known vfiles */
@@ -196,7 +197,7 @@ for(y=HTSIZE, x=(random()&(HTSIZE-1));y;x=((x+1)&(HTSIZE-1)), --y)
    pp->next=vp->next;
    goto gotit;
    }
-write(2,"Out of memory\r\n",15);
+write(2,M057,zlen(M057));
 exit(1);
 
 gotit:
@@ -250,7 +251,7 @@ new->name=vsncpy(NULL,0,sz(name));
 new->fd=Fopen(name);
 if(!new->fd)
  {
- fprintf(stderr,"Couldn\'t open \'%s\'\n",name);
+ fprintf(stderr,M068,name);
  free(new);
  return 0;
  }

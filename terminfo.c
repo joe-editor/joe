@@ -37,17 +37,19 @@ cap->abuf=(char *)malloc(4096);
 cap->abufp=cap->abuf;
 cap->baud=baud;
 cap->div=100000/baud;
-ospeed=baud;
+/* ospeed=baud; */
 if(tgetent(cap->tbuf,name)!=1)
  {
  free(cap->tbuf);
  free(cap->abuf);
  return NULL;
  }
+/*
 cap->pad=getstr(cap,"pc");
 if(NULL!=cap->pad) PC=cap->pad[0];
 else PC=0;
 BC=0; UP=0;
+*/
 return cap;
 }
 

@@ -56,12 +56,13 @@ W *w;
 UNDOREC *upto;
 BW *bw=(BW *)w->object;
 UNDO *undo=bw->b->undo;
+if(!undo) return;
 if(!undo->nrecs) return;
 if(!undo->ptr)
  {
  if(undo->recs.link.prev->where!=bw->cursor->byte)
   pfwrd(pbof(bw->cursor),undo->recs.link.prev->where);
- undo->ptr=&undo->recs;
+ undo->ptr= &undo->recs;
 /* return; */
  }
 if(undo->ptr->link.prev==&undo->recs) return;
@@ -95,6 +96,7 @@ W *w;
 UNDOREC *upto;
 BW *bw=(BW *)w->object;
 UNDO *undo=bw->b->undo;
+if(!undo) return;
 if(!undo->ptr) return;
 if(undo->ptr==&undo->recs) return;
 upto=undo->ptr->unit;

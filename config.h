@@ -31,6 +31,10 @@
 #define NULL ((void *)0)
 #endif
 
+#ifndef HZ
+#define HZ 10
+#endif
+
 /* These are for optimizing blocks.c */
 /* #define AUTOINC */	/* Define this if CPU can autoincrement faster than
 			   it can do [reg+offset] addressing */
@@ -49,5 +53,8 @@ int read();
 int write();
 int lseek();
 */
+
+int jread();
+int jwrite();
 
 #endif

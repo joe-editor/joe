@@ -1,0 +1,82 @@
+BUGS
+=-=-
+
+=-=-=
+sync problems with SIGCHLD/wait
+
+=-=-=
+problem with save?
+
+NEW FEATURES
+=-=-=-=-=-=-
+
+=-=-=
+background/demand loading
+
+=-=-=
+hexadecimal edit mode
+
+=-=-=
+fixed record length edit mode
+
+=-=-=
+block restricted search option
+
+=-=-=
+key bindings which depend on file type
+
+=-=-=
+verticle windows  		- difficult to get scrolling to work right
+
+=-=-=
+xedit and folding stuff		- regex too slow?
+
+=-=-=
+multiple line prompts/menu windows
+
+=-=-=
+key layout:
+  delete to beginning of line	?
+  search backwards		?
+  yank/unyank			?/?
+
+PORTABILITY
+=-=-=-=-=-=
+
+=-=-=
+msdos-
+
+ how to get it to recognize CR-LF? - use translating fopen?
+
+ how to give memory back during shell escapes?
+
+=-=-=
+make identifier length significant in first 8 (6?) places for old C compilers
+
+PERFORMACE
+=-=-=-=-=-
+
+=-=-=
+should use temporary edit buffers instead of memory blocks for
+undo, cut, s&r.  Will be faster and eliminate malloc
+problem on small machines
+
+maybe there should be a cut block to buffer function which does no
+copying except at the ends...
+
+at least undo records should be eliminated when a large block is requested
+
+=-=-=
+block coalescing in b.c.
+
+=-=-=
+store number of lines in block headers, maybe could then use faster search
+algorithm
+
+=-=-=
+insert and delete should determine number of columns so that fixup doesn't
+have to call pfcol so much.
+
+=-=-=
+maybe have special access function which automatically fix col only when col
+is accessed

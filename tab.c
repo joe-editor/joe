@@ -32,6 +32,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "menu.h"
 #include "edfuncs.h"
 #include "tty.h"
+#include "msgs.h"
 #include "tab.h"
 
 CONTEXT cttab={"tab",0};
@@ -245,7 +246,7 @@ if(tab->type[m->cursor]==F_DIR)
  tab->pattern=vsncpy(NULL,0,sc("*"));
  if(treload(w,m,tab,0))
   {
-  msgnw(w,"Couldn\'t read directory ");
+  msgnw(w,M076);
   vsrm(tab->pattern); tab->pattern=orgpattern;
   vsrm(tab->path); tab->path=orgpath;
   }
@@ -275,6 +276,30 @@ else
  }
 }
 
+void tkey(w,c)
+W *w;
+{
+MENU *m=(MENU *)w->object;
+int x;
+int n=0;
+c=toup(c);
+for(x=0;x!=sLEN(m->list);++x) if(toup(m->list[x][0])==c) ++n;
+if(!n) return;
+if(n==1)
+ for(x=0;x!=sLEN(m->list);++x)
+  if(toup(m->list[x][0])==c)
+   {
+   m->cursor=x;
+   trtn(w);
+   return;
+   }
+do
+ {
+ ++m->cursor;
+ if(m->cursor==sLEN(m->list)) m->cursor=0;
+ } while(toup(m->list[m->cursor][0])!=c);
+}
+
 void tbacks(w)
 W *w;
 {
@@ -293,7 +318,7 @@ vsrm(e);
 tab->pattern=vsncpy(NULL,0,sc("*"));
 if(treload(w,m,tab,1))
  {
- msgnw(w,"Couldn\'t read directory ");
+ msgnw(w,M076);
  vsrm(tab->pattern); tab->pattern=orgpattern;
  vsrm(tab->path); tab->path=orgpath;
  }
@@ -357,7 +382,6 @@ tab->prv=0;
 vsrm(cline);
 if(treload(new,NULL,tab,0))
  {
-/* msgnw(w,"Couldn\'t read directory "); */
  vsrm(tab->path);
  vsrm(tab->pattern);
  free(tab);

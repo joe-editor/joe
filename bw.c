@@ -26,6 +26,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "b.h"
 #include "scrn.h"
 #include "w.h"
+#include "msgs.h"
 #include "bw.h"
 
 /* Display modes */
@@ -180,6 +181,7 @@ P *p;		/* Buffer pointer */
 long scr;	/* Starting column to display */
 long from,to;	/* Range for marked block */
 {
+int ox=x;
 int done=1;
 long col=0;
 long byte=p->byte;
@@ -265,7 +267,7 @@ if(amnt) do
  ++byte;
  if(bc=='\t')
   {
-  ta=p->b->tab-((x+scr)%p->b->tab);
+  ta=p->b->tab-((x-ox+scr)%p->b->tab);
   dota:
   do
    {
@@ -285,7 +287,7 @@ if(amnt) do
  else if(bc=='\n') goto eobl;
  else
   {
-  if(!dspasis || bc<160 || bc>254)
+  if(!dspasis || bc<128)
    {
    if(bc&128) c^=INVERSE, bc&=127;
    if(bc==127) c|=UNDERLINE, bc='?';
@@ -359,6 +361,7 @@ P *p;		/* Buffer pointer */
 long scr;	/* Starting column to display */
 long from,to;	/* Range for marked block */
 {
+int ox=x;
 int done=1;
 long col=0;
 long byte=p->byte;
@@ -444,7 +447,7 @@ if(amnt) do
  ++byte;
  if(bc=='\t')
   {
-  ta=p->b->tab-((x+scr)%p->b->tab);
+  ta=p->b->tab-((x-ox+scr)%p->b->tab);
   dota:
   do
    {
@@ -456,7 +459,7 @@ if(amnt) do
  else if(bc=='\n') goto eobl;
  else
   {
-  if(!dspasis || bc<160 || bc>254)
+  if(!dspasis || bc<128)
    {
    if(bc&128) c^=INVERSE, bc&=127;
    if(bc==127) c|=UNDERLINE, bc='?';
@@ -622,6 +625,8 @@ B *b;
 int x,y,wi,h;
 {
 BW *w=(BW *)malloc(sizeof(BW));
+w->pid=0;
+w->out= -1;
 w->b=b;
 w->x=x;
 w->y=y;
@@ -660,11 +665,11 @@ BW *bw=(BW *)w->object;
 static char buf[80];
 unsigned c=brc(bw->cursor);
 if(c==MAXINT)
- sprintf(buf,"** ROW=%ld COL=%ld BYTE=%ld/0x%X **",
+ sprintf(buf,M007,
          bw->cursor->line+1,bw->cursor->col+1,bw->cursor->byte,
          bw->cursor->byte,bw->b->eof->line+1,bw->b->eof->byte+1);
 else
- sprintf(buf,"** ROW=%ld COL=%ld BYTE=%ld/0x%X CHAR=%d/0%o/0x%X **",
+ sprintf(buf,M008,
          bw->cursor->line+1,bw->cursor->col+1,bw->cursor->byte,
          bw->cursor->byte,c,c,c);
 msgnw(w,buf);

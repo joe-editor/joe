@@ -30,6 +30,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "zstr.h"
 #include "main.h"
 #include "bw.h"
+#include "msgs.h"
 #include "b.h"
 
 extern int errno;
@@ -183,7 +184,7 @@ enquef(P,link,&frptrs,p);
 static B bufs={{&bufs,&bufs}};
 int tabwidth=8;
 
-B *bmk()
+B *bmk(undo)
 {
 B *new=(B *)malloc(sizeof(B));
 new->tab=tabwidth;
@@ -210,7 +211,8 @@ izque(H,link,new->bof->hdr);
 new->bof->hdr->seg=salloc(new);
 new->bof->ptr=vlock(new->text,new->bof->hdr->seg);
 new->eof=pdup(new->bof);
-undomk(new);
+if(undo) undomk(new);
+else new->undo=0;
 enquef(B,link,&bufs,new);
 return new;
 }
@@ -235,7 +237,7 @@ B *b;
 {
 if(!--b->count)
  {
- undorm(b);
+ if(b->undo) undorm(b);
  splicef(H,link,&frhdrs,b->bof->hdr);
  while(!qempty(P,link,b->bof)) prm(b->bof->link.next);
  prm(b->bof);
@@ -800,10 +802,10 @@ while(size>(amnt=GSIZE(np->hdr)-np->ofst))
  {
  if(np->ofst<np->hdr->hole)
   {
-  if(write(fd,np->ptr+np->ofst,np->hdr->hole-np->ofst)<0) return -5;
-  if(write(fd,np->ptr+np->hdr->ehole,SEGSIZ-np->hdr->ehole)<0) return -5;
+  if(jwrite(fd,np->ptr+np->ofst,np->hdr->hole-np->ofst)<0) return -5;
+  if(jwrite(fd,np->ptr+np->hdr->ehole,SEGSIZ-np->hdr->ehole)<0) return -5;
   }
- else if(write(fd,np->ptr+np->ofst+GGAPSZ(np->hdr),amnt)<0) return -5;
+ else if(jwrite(fd,np->ptr+np->ofst+GGAPSZ(np->hdr),amnt)<0) return -5;
  size-=amnt;
  if(!pnext(np)) break;
  }
@@ -812,14 +814,14 @@ if(amnt)
  if(np->ofst<np->hdr->hole)
   if(amnt>np->hdr->hole-np->ofst)
    {
-   if(write(fd,np->ptr+np->ofst,np->hdr->hole-np->ofst)<0) return -5;
-   if(write(fd,np->ptr+np->hdr->ehole,amnt-np->hdr->hole+np->ofst)<0) return -5;
+   if(jwrite(fd,np->ptr+np->ofst,np->hdr->hole-np->ofst)<0) return -5;
+   if(jwrite(fd,np->ptr+np->hdr->ehole,amnt-np->hdr->hole+np->ofst)<0) return -5;
    }
   else
    {
-   if(write(fd,np->ptr+np->ofst,amnt)<0) return -5;
+   if(jwrite(fd,np->ptr+np->ofst,amnt)<0) return -5;
    }
- else if(write(fd,np->ptr+np->ofst+GGAPSZ(np->hdr),amnt)<0) return -5;
+ else if(jwrite(fd,np->ptr+np->ofst+GGAPSZ(np->hdr),amnt)<0) return -5;
 prm(np);
 return 0; /* Check status returned by fwrite */
 }
@@ -925,7 +927,7 @@ if(force && size && !skip && amnt==MAXINT)
  char nl='\n';
  pfwrdn(p,size-1);
  if(brc(p)!='\n')
-  if(write(fileno(f),&nl,1)<0) flg= -5;
+  if(jwrite(fileno(f),&nl,1)<0) flg= -5;
  }
 err:;
 if(s[0]=='!') pclose(f);
@@ -985,7 +987,7 @@ long nlines=to->line-from->line;/* No. EOLs to delete */
 long amnt=to->byte-from->byte;	/* No. bytes to delete */
 int toamnt;			/* Amount delete from segment in 'to' */
 if(from->byte==to->byte) return from;
-undodel(from,amnt);
+if(from->b->undo) undodel(from,amnt);
 if(from->hdr==to->hdr)
  {
  gdel(from->hdr,from->ptr,from->ofst,(int)amnt);
@@ -1126,7 +1128,7 @@ for(pp=p->link.next;pp!=p;pp=pp->link.next)
   if(pp->hdr==hdr) pp->ofst+=hdramnt;
   }
 for(pp=p->link.next;pp!=p;pp=pp->link.next) if(pp->col==~(long)0) pfcol(pp);
-undoins(p,amnt);
+if(p->b->undo) undoins(p,amnt);
 p->b->chnged=1;
 }
 
@@ -1224,7 +1226,7 @@ int size;
 {
 int a,b;
 if(!size) return -1;
-for(a=b=0;(a<size) && ((b=read(fi,buff+a,size-a))>0);a+=b);
+for(a=b=0;(a<size) && ((b=jread(fi,buff+a,size-a))>0);a+=b);
 return (b<0) ? -1 : a;
 }
 
@@ -1312,13 +1314,13 @@ if(skip)
   int r;
   while(skip>1024)
    {
-   r=read(fileno(fi),buffer,1024);
+   r=jread(fileno(fi),buffer,1024);
    if(r!= -1) skip-=r;
    else { flg= -3; goto err; }
    }
   while(skip)
    {
-   r=read(fileno(fi),buffer,(int)skip);
+   r=jread(fileno(fi),buffer,(int)skip);
    if(r!= -1) skip-=r;
    else { flg= -3; goto err; }
    }
@@ -1359,43 +1361,6 @@ vsrm(s);
 return rtval;
 }
 
-/* View chain */
-
-void check(b)
-B *b;
-{
-H *h;
-for(h=b->bof->hdr->link.next;h!=b->bof->hdr;h=h->link.next)
- {
- printf("\r%8.8X: prev=%X next=%X seq=%lX hole=%d ehole=%d\r\n",
-        h,h->link.prev,h->link.next,h->seg,h->hole,h->ehole);
- }
-printf("\r%8.8X: prev=%X next=%X seq=%lX hole=%d ehole=%d\r\n",
-       h,h->link.prev,h->link.next,h->seg,h->hole,h->ehole);
-}
-
-/* View pointers */
-
-void checkp(b)
-B *b;
-{
-P *p;
-printf("\rPointers\r\n");
- 
-for(p=b->bof->link.next;p!=b->bof;p=p->link.next)
- {
- if(p==b->bof) printf("\rBof: ");
- else if(p==b->eof) printf("\rEof: ");
- else printf("\r");
-  printf("Byte=%ld Hdr=%X Ofst=%d Line=%ld Col=%ld Lbyte=%ld\r\n",
-	 p->byte,p->hdr,p->ofst,p->line,p->col,p->lbyte);
- }
-if(p==b->bof) printf("\rBof: ");
-else if(p==b->eof) printf("\rEof: ");
-else printf("\r");
-printf("Byte=%ld Hdr=%X Ofst=%d Line=%ld Col=%ld Lbyte=%ld\r\n",p->byte,p->hdr,p->ofst,p->line,p->col,p->lbyte);
-}
-
 /* Refigure column numbers */
 
 void refigure()
@@ -1416,18 +1381,19 @@ void ttsig(sig)
 {
 long tim=time(0);
 B *b;
-FILE *f=fopen("DEADJOE","a");
-fprintf(f,"\n*** Modified files in JOE when it aborted on %s",ctime(&tim));
-if(sig) fprintf(f,"*** JOE was aborted by signal %d\n",sig);
-else fprintf(f,"*** JOE was aborted because the terminal closed\n");
+FILE *f=fopen(M001,"a");
+fprintf(f,M002,ctime(&tim));
+if(sig) fprintf(f,M003,sig);
+else fprintf(f,M004);
 fflush(f);
 for(b=bufs.link.next;b!=&bufs;b=b->link.next)
  if(b->chnged)
   {
-  if(b->name) fprintf(f,"\n*** File \'%s\'\n",b->name);
-  else fprintf(f,"\n*** File \'(Unnamed)\'\n",b->name);
+  if(b->name) fprintf(f,M005,b->name);
+  else fprintf(f,M006,b->name);
    fflush(f);
   bsavefd(b->bof,fileno(f),b->eof->byte);
   }
+if(sig) ttclsn();
 _exit(1);
 }

@@ -32,11 +32,16 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "bw.h"
 
 #include "macro.h"
+#include "msgs.h"
 #include "kbd.h"
 
 char **help_names;
 struct help **help_structs;
 struct help *first_help;
+
+void junkey(c)
+{
+}
 
 /* Create a KBD */
 
@@ -46,6 +51,7 @@ CONTEXT *context;
 KBD *kbd=(KBD *)malloc(sizeof(KBD));
 kbd->topmap=context->kmap;
 kbd->curmap=context->kmap;
+kbd->x=0;
 return kbd;
 }
 
@@ -80,15 +86,23 @@ return y;
 MACRO *dokey(kbd,k)
 KBD *kbd;
 {
-int n=findkey(kbd->curmap,k);
+int n;
+if(k<0) k+=256;
+n=findkey(kbd->curmap,k);
 if(n==kbd->curmap->len || (kbd->curmap->keys[n].k&KEYMASK)!=k)
+ {
+ int y;
+ for(y=0;y!=kbd->x;++y) junkey(kbd->seq[y]);
+ junkey(k);
+ kbd->x=0;
  kbd->curmap=kbd->topmap;
+ }
 else if(kbd->curmap->keys[n].k&KEYSUB)
- kbd->curmap=kbd->curmap->keys[n].value.submap;
+ kbd->seq[kbd->x++]=k, kbd->curmap=kbd->curmap->keys[n].value.submap;
 else
  {
  MACRO *macro=kbd->curmap->keys[n].value.macro;
- kbd->curmap=kbd->topmap;
+ kbd->curmap=kbd->topmap; kbd->x=0;
  return macro;
  }
 return 0;
@@ -127,7 +141,7 @@ if(s[0]=='^')
  if(s[1]=='?') return 127;
  else return s[1]&0x1f;
 else if(!zcmp(s,"SP")) return ' ';
-else return s[0];
+else return (unsigned char)s[0];
 }
 
 /* Add a key to a keymap */
@@ -203,7 +217,7 @@ help_names=vatrunc(NULL,0);
 
 if(!fd) return -1;
 
-fprintf(stderr,"Processing keymap file \'%s\'...",name); fflush(stdout);
+fprintf(stderr,M058,name); fflush(stdout);
 
 while(++line, fgets(buf,256,fd))
  {
@@ -256,12 +270,14 @@ while(++line, fgets(buf,256,fd))
     else if(!zcmp(buf+1,"lmargin") && c)
      {
      sscanf(buf+x+1,"%ld",&options->lmargin);
-     if(options->lmargin<0 || options->lmargin>256) options->lmargin=0;
+     if(options->lmargin<1 || options->lmargin>256) options->lmargin=1;
+     else --options->lmargin;
      }
     else if(!zcmp(buf+1,"rmargin") && c)
      {
      sscanf(buf+x+1,"%ld",&options->rmargin);
      if(options->rmargin<8 || options->rmargin>256) options->rmargin=76;
+     else --options->rmargin;
      }
     else if(!zcmp(buf+1,"istep") && c)
      {
@@ -278,8 +294,8 @@ while(++line, fgets(buf,256,fd))
      sscanf(buf+x+1,"%d",&options->indentc);
      if(options->indentc<-128 || options->indentc>255) options->indentc=32;
      }
-    else fprintf(stderr,"\n%s %d: Unknown option",name,line);
-   else fprintf(stderr,"\n%s %d: No pattern selected for option",name,line);
+    else fprintf(stderr,M059,name,line);
+   else fprintf(stderr,M060,name,line);
   continue;
   }
 
@@ -301,9 +317,7 @@ while(++line, fgets(buf,256,fd))
   if(++line, !fgets(buf,256,fd))
    {
    err=1;
-   fprintf(stderr,
-           "\n%s %d: End of keymap file occured before end of help text",
-           name,line);
+   fprintf(stderr,M061,name,line);
    break;
    }
   if(buf[0]=='}')
@@ -340,7 +354,7 @@ while(++line, fgets(buf,256,fd))
     context=cntxts[x];
     break;
     }
-  if(!context) fprintf(stderr,"\n%s %d: Unknown context",name,line), err=1;
+  if(!context) fprintf(stderr,M062,name,line), err=1;
   continue;
   }
  
@@ -410,7 +424,7 @@ while(++line, fgets(buf,256,fd))
    n=findcmd(&cmdtab,buf+x);
    if(n== -1)
     {
-    fprintf(stderr,"\n%s %d: Key function \'%s\' not found",name,line,buf);
+    fprintf(stderr,M063,name,line,buf);
     err=1;
     continue;
     }
@@ -439,7 +453,7 @@ while(++line, fgets(buf,256,fd))
  if(!context)
   {
   err=1;
-  fprintf(stderr,"\n%s %d: No context selected for key",name,line);
+  fprintf(stderr,M064,name,line);
   continue;
   }
 
@@ -515,8 +529,8 @@ while(++line, fgets(buf,256,fd))
   }
  }
 fclose(fd);
-if(err) fprintf(stderr,"\ndone\n");
-else fprintf(stderr,"done\n");
+if(err) fprintf(stderr,M065);
+else fprintf(stderr,M066);
 if (nhelp)
  {
   help_structs=(struct help **) malloc(sizeof(struct help *)*nhelp);

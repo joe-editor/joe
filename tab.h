@@ -49,5 +49,6 @@ void tdnarw();
 void trtarw();
 void trtn();
 void tuparw();
+void tkey();
 
 #endif

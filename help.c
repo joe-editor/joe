@@ -24,6 +24,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "kbd.h"
 #include "scrn.h"
 #include "w.h"
+#include "vs.h"
 #include "menu.h"
 #include "help.h"
 
@@ -161,6 +162,30 @@ hlplns=help_structs[m->cursor]->hlplns;
 prevcursor=m->cursor;
 wabort(w);
 helpon(w->t);
+}
+
+void uhkey(w,c)
+W *w;
+{
+MENU *m=(MENU *)w->object;
+int x;
+int n=0;
+c=toup(c);
+for(x=0;x!=sLEN(m->list);++x) if(toup(m->list[x][0])==c) ++n;
+if(!n) return;
+if(n==1)
+ for(x=0;x!=sLEN(m->list);++x)
+  if(toup(m->list[x][0])==c)
+   {
+   m->cursor=x;
+   uhrtn(w);
+   return;
+   }
+do
+ {
+ ++m->cursor;
+ if(m->cursor==sLEN(m->list)) m->cursor=0;
+ } while(toup(m->list[m->cursor][0])!=c);
 }
 
 void uhabort(w)

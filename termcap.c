@@ -26,6 +26,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "va.h"
 #include "zstr.h"
 #include "queue.h"
+#include "msgs.h"
 #include "termcap.h"
 
 /* Return true if termcap line matches name */
@@ -187,7 +188,7 @@ if(f)
  fstat(fileno(f),&buf);
  fstat(fileno(f1),&buf1);
  if(buf.st_mtime>buf1.st_mtime) idx=findidx(f,name);
- else fprintf(stderr,"%s is out of date\n",idxname);
+ else fprintf(stderr,M077,idxname);
  fclose(f);
  }
 vsrm(idxname);

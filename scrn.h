@@ -28,7 +28,7 @@ typedef struct scrn SCRN;
 
 /* Number of key sequence translation entries */
 
-#define NKEYS 20
+#define NKEYS 21
 
 /* Sepecial key sequence structure */
 
@@ -225,6 +225,7 @@ int ngetc();
 #define KEYF7 267
 #define KEYF8 268
 #define KEYF9 269						/* k9 */
+#define KEYF10 276						/* k; */
 #define KEYDEL 383	/* Delete character */			/* kD */
 #define KEYINS 271	/* Insert character */			/* kI */
 #define KEYHOME 272	/* Home key */				/* kh */

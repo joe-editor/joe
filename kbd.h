@@ -31,8 +31,6 @@ typedef struct kbd KBD;
 
 /* The command table */
 
-extern CMDTAB cmdtab;
-
 typedef struct options OPTIONS;
 struct options
  {
@@ -107,6 +105,8 @@ struct kbd
  {
  KMAP *curmap;		/* Current keymap */
  KMAP *topmap;		/* Top-level keymap */
+ int seq[16];		/* Current sequence of keys */
+ int x;			/* What we're up to */
  };
 
 /* KBD *mkkbd(CONTEXT *context);
@@ -140,5 +140,7 @@ int prokbd();
 int findcmd();
 
 struct help *get_help();
+
+extern CMDTAB cmdtab;
 
 #endif

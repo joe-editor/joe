@@ -32,7 +32,7 @@ struct pos
  };
 
 POS pos={{&pos,&pos}};
-POS *curpos=&pos;
+POS *curpos= &pos;
 int npos=0;
 
 void markpos(w,p)
@@ -53,10 +53,10 @@ if(++npos==20)
 
 void afterpos()
 {
-if(curpos!=&pos)
+if(curpos!= &pos)
  {
  demote(POS,link,&pos,curpos);
- curpos=&pos;
+ curpos= &pos;
  }
 }
 

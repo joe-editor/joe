@@ -530,7 +530,7 @@ if(original)
  else original->hh-=height;
 
 /* Create new keyboard handler for window */
-if(watom->context) new->kbd=mkkbd(watom->context,new);
+if(watom->context) new->kbd=mkkbd(watom->context);
 else new->kbd=0;
 
 /* Put window on the screen */
@@ -675,15 +675,6 @@ genfmt(t,0,y,ofst,s,1);
 return len-ofst;
 }
 
-void msg(w,s)
-W *w;
-char *s;
-{
-cpos(w->t->t,msgout(w->t->t,w->y+w->h-1,s),w->y+w->h-1);
-w->t->t->updtab[w->y+w->h-1]=1;
-engetc(w->t->t);
-}
-
 /* Set temporary message */
 
 void msgnw(w,s)
@@ -698,52 +689,4 @@ W *w;
 char *s;
 {
 w->msgt=s;
-}
-
-/* Single key query */
-
-int query(w,s)
-W *w;
-char *s;
-{
-int ofst;
-int c;
-int len;
-len=fmtlen(s);
-if(len<=w->w-2) ofst=0;
-else ofst=len-(w->w-2);
-genfmt(w->t->t,w->x,w->y+w->h-1,ofst,s,1);
-cpos(w->t->t,w->x+len-ofst,w->y+w->h-1);
-c=engetc(w->t->t);
-w->t->t->updtab[w->y+w->h-1]=1;
-return c;
-}
-
-/* Single key query - leave cursor in curwin */
-
-static void dumb()
-{
-}
-
-static WATOM dummy=
-{
-0,dumb,dumb,dumb,dumb,dumb,dumb,dumb
-};
-
-int queryn(w,s)
-W *w;
-char *s;
-{
-int ofst;
-int len;
-int c;
-W *new=wcreate(w->t,&dummy,w,w,w,1,NULL);
-if(!new) return MAXINT;
-len=fmtlen(s);
-if(len<=w->w-1) ofst=0;
-else ofst=len-(w->w-1);
-genfmt(w->t->t,w->x,new->y,ofst,s,1);
-c=edgetc();
-wabort(new);
-return c;
 }

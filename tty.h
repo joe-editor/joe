@@ -20,6 +20,21 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Itty 1
 
 #include "config.h"
+#include "queue.h"
+
+#define NPROC 8			/* Number of processes we keep track of */
+
+typedef struct mpx MPX;
+struct mpx
+ {
+ int ackfd;			/* Packetizer response descriptor */
+ int kpid;			/* Packetizer process id */
+ int pid;			/* Client process id */
+ void (*func)();		/* Function to call when read occures */
+ void *object;			/* First arg to pass to function */
+ void (*die)();			/* Function: call when client dies or closes */
+ void *dieobj;
+ };
 
 /* void ttopen(void);  Open the tty (attached to stdin) for use inside of JOE
  *
@@ -167,5 +182,20 @@ void signrm();
 /* char *pwd();  Get current working directory into a static buffer.
  */
 char *pwd();
+
+/* MPX *mpxmk(int fd,int pid,
+ *             void (*func)(),void *object,
+ *             void (*die)(),void *dieobj,
+ *            );
+ *
+ * Create an asynchronous input source
+ */
+MPX *mpxmk();
+
+/* int subshell(fd,name);
+ * Execute a subshell.  'name' is name of 'tty' to use.  'fd' is of open
+ * pty, which gets closed after fork().  Returns pid of shell.
+ */
+int subshell();
 
 #endif

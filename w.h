@@ -58,6 +58,8 @@ struct screen
  int options;			/* Search/Replace options */
  int repeat;
  int foundlen;
+ int rest;			/* Set to do rest */
+ int flg;			/* Set after first s/r iteration */
  
  P *markb;			/* Beginning and end of marked block */
  P *markk;
