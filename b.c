@@ -524,8 +524,11 @@ P *pfwrd(P *p, long n)
 	do {
 		if (p->ofst == GSIZE(p->hdr))
 			do {
-				if (!p->ofst)
-					p->byte += GSIZE(p->hdr), n -= GSIZE(p->hdr), p->line += p->hdr->nlines;
+				if (!p->ofst) {
+					p->byte += GSIZE(p->hdr);
+					n -= GSIZE(p->hdr);
+					p->line += p->hdr->nlines;
+				}
 				if (!pnext(p))
 					return 0;
 			} while (n > GSIZE(p->hdr));
@@ -555,9 +558,10 @@ static int prgetc1(P *p)
 	else
 		c = p->ptr[p->ofst];
 	--p->byte;
-	if (c == '\n')
-		--p->line, p->valcol = 0;
-	else {
+	if (c == '\n') {
+		--p->line;
+		p->valcol = 0;
+	} else {
 		if (c == '\t')
 			p->valcol = 0;
 		--p->col;
@@ -590,8 +594,11 @@ P *pbkwd(P *p, long n)
 	do {
 		if (!p->ofst)
 			do {
-				if (p->ofst)
-					p->byte -= p->ofst, n -= p->ofst, p->line -= p->hdr->nlines;
+				if (p->ofst) {
+					p->byte -= p->ofst;
+					n -= p->ofst;
+					p->line -= p->hdr->nlines;
+				}
 				if (!pprev(p))
 					return 0;
 			} while (n > GSIZE(p->hdr));
@@ -832,13 +839,18 @@ void pfill(P *p, long to, int usetabs)
 	piscol(p);
 	if (usetabs)
 		while (p->col < to)
-			if (p->col + p->b->o.tab - p->col % p->b->o.tab <= to)
-				binsc(p, '\t'), pgetc(p);
-			else
-				binsc(p, ' '), pgetc(p);
+			if (p->col + p->b->o.tab - p->col % p->b->o.tab <= to) {
+				binsc(p, '\t');
+				pgetc(p);
+			} else {
+				binsc(p, ' ');
+				pgetc(p);
+			}
 	else
-		while (p->col < to)
-			binsc(p, ' '), pgetc(p);
+		while (p->col < to) {
+			binsc(p, ' ');
+			pgetc(p);
+		}
 }
 
 /* delete sequence of whitespaces - backwards */
@@ -898,12 +910,16 @@ static P *ffind(P *p, unsigned char *s, int len)
 	x = len;
 	do {
 		if ((c = frgetc(p)) != s[--x]) {
-			if (table[c] == 255)
-				ffwrd(p, len + 1), amnt -= x + 1;
-			else if (x <= table[c])
-				ffwrd(p, len - x + 1), --amnt;
-			else
-				ffwrd(p, len - table[c]), amnt -= x - table[c];
+			if (table[c] == 255) {
+				ffwrd(p, len + 1);
+				amnt -= x + 1;
+			} else if (x <= table[c]) {
+				ffwrd(p, len - x + 1);
+				--amnt;
+			} else {
+				ffwrd(p, len - table[c]);
+				amnt -= x - table[c];
+			}
 			if (amnt < 0)
 				return 0;
 			else
@@ -933,12 +949,16 @@ static P *fifind(P *p, unsigned char *s, int len)
 	x = len;
 	do {
 		if ((c = toupper(frgetc(p))) != s[--x]) {
-			if (table[c] == 255)
-				ffwrd(p, len + 1), amnt -= x + 1;
-			else if (x <= table[c])
-				ffwrd(p, len - x + 1), --amnt;
-			else
-				ffwrd(p, len - table[c]), amnt -= x - table[c];
+			if (table[c] == 255) {
+				ffwrd(p, len + 1);
+				amnt -= x + 1;
+			} else if (x <= table[c]) {
+				ffwrd(p, len - x + 1);
+				--amnt;
+			} else {
+				ffwrd(p, len - table[c]);
+				amnt -= x - table[c];
+			}
 			if (amnt < 0)
 				return 0;
 			else
@@ -963,7 +983,8 @@ static P *getto(P *p, P *q)
 		if (p->ofst == GSIZE(p->hdr))
 			pnext(p);
 		while (!p->ofst && p->hdr != q->hdr) {
-			p->byte += GSIZE(p->hdr), p->line += p->hdr->nlines;
+			p->byte += GSIZE(p->hdr);
+			p->line += p->hdr->nlines;
 			pnext(p);
 		}
 	}
@@ -1050,12 +1071,16 @@ static P *frfind(P *p, unsigned char *s, int len)
 	x = 0;
 	do {
 		if ((c = fpgetc(p)) != s[x++]) {
-			if (table[c] == 255)
-				fbkwd(p, len + 1), amnt -= len - x + 1;
-			else if (len - table[c] <= x)
-				fbkwd(p, x + 1), --amnt;
-			else
-				fbkwd(p, len - table[c]), amnt -= len - table[c] - x;
+			if (table[c] == 255) {
+				fbkwd(p, len + 1);
+				amnt -= len - x + 1;
+			} else if (len - table[c] <= x) {
+				fbkwd(p, x + 1);
+				--amnt;
+			} else {
+				fbkwd(p, len - table[c]);
+				amnt -= len - table[c] - x;
+			}
 			if (amnt < 0)
 				return 0;
 			else
@@ -1088,12 +1113,16 @@ static P *frifind(P *p, unsigned char *s, int len)
 	x = 0;
 	do {
 		if ((c = toupper(fpgetc(p))) != s[x++]) {
-			if (table[c] == 255)
-				fbkwd(p, len + 1), amnt -= len - x + 1;
-			else if (len - table[c] <= x)
-				fbkwd(p, x + 1), --amnt;
-			else
-				fbkwd(p, len - table[c]), amnt -= len - table[c] - x;
+			if (table[c] == 255) {
+				fbkwd(p, len + 1);
+				amnt -= len - x + 1;
+			} else if (len - table[c] <= x) {
+				fbkwd(p, x + 1);
+				--amnt;
+			} else {
+				fbkwd(p, len - table[c]);
+				amnt -= len - table[c] - x;
+			}
 			if (amnt < 0)
 				return 0;
 			else
@@ -1111,8 +1140,10 @@ static P *rgetto(P *p, P *q)
 	while (p->hdr != q->hdr || p->ofst != q->ofst) {
 		if (!p->ofst)
 			do {
-				if (p->ofst)
-					p->byte -= p->ofst, p->line -= p->hdr->nlines;
+				if (p->ofst) {
+					p->byte -= p->ofst;
+					p->line -= p->hdr->nlines;
+				}
 				pprev(p);
 			} while (p->hdr != q->hdr);
 		--p->ofst;
@@ -1351,8 +1382,9 @@ static B *bcut(P *from, P *to)
 
 		/* Delete end of from */
 		if (!from->ofst) {
-			/* ..unless from needs to be deleted too */
-			a = from->hdr->link.prev, h = 0;
+			/* ... unless from needs to be deleted too */
+			a = from->hdr->link.prev;
+			h = 0;
 			if (a == from->b->eof->hdr)
 				bofmove = 1;
 		} else {
@@ -1782,8 +1814,7 @@ char *parsens(char *s, long int *skip, long int *amnt)
 				passwd = getpwnam(n + 1);
 				n[x] = '/';
 				if (passwd) {
-					char *z = vsncpy(NULL, 0,
-							 sz(passwd->pw_dir));
+					char *z = vsncpy(NULL, 0, sz(passwd->pw_dir));
 
 					z = vsncpy(z, sLEN(z), sz(n + x));
 					vsrm(n);
@@ -1882,7 +1913,7 @@ B *bload(char *s)
 	b->rdonly = b->o.readonly;
 
 	/* Close stream */
-      err:;
+err:
 #ifndef __MSDOS__
 	if (s[0] == '!')
 		pclose(fi);
@@ -1891,20 +1922,26 @@ B *bload(char *s)
 	if (strcmp(n, "-"))
 		fclose(fi);
 
-      opnerr:;
-	if (s[0] == '!')
-		ttopnn(), nreturn(maint->t);
+opnerr:
+	if (s[0] == '!') {
+		ttopnn();
+		nreturn(maint->t);
+	}
 
 	/* Set name */
 	b->name = joesep(strdup(s));
 
 	/* Set flags */
-	if (error || s[0] == '!' || skip || amnt != MAXLONG)
-		b->backup = 1, b->changed = 0;
-	else if (!strcmp(n, "-"))
-		b->backup = 1, b->changed = 1;
-	else
-		b->backup = 0, b->changed = 0;
+	if (error || s[0] == '!' || skip || amnt != MAXLONG) {
+		b->backup = 1;
+		b->changed = 0;
+	} else if (!strcmp(n, "-")) {
+		b->backup = 1;
+		b->changed = 1;
+	} else {
+		b->backup = 0;
+		b->changed = 0;
+	}
 	if (nowrite)
 		b->rdonly = b->o.readonly = 1;
 
@@ -2007,7 +2044,7 @@ int bsavefd(P *p, int fd, long int size)
 	}
 	prm(np);
 	return error = 0;
-      err:;
+err:
 	prm(np);
 	return error = 5;
 }
@@ -2065,7 +2102,7 @@ int bsave(P *p, char *s, long int size)
 		prm(q);
 	}
 
-      err:;
+err:
 #ifndef __MSDOS__
 	if (s[0] == '!')
 		pclose(f);
@@ -2076,9 +2113,11 @@ int bsave(P *p, char *s, long int size)
 	else
 		fflush(f);
 
-      opnerr:;
-	if (s[0] == '!' || !strcmp(s, "-"))
-		ttopnn(), nreturn(maint->t);
+opnerr:
+	if (s[0] == '!' || !strcmp(s, "-")) {
+		ttopnn();
+		nreturn(maint->t);
+	}
 	return error;
 }
 
