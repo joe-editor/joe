@@ -68,8 +68,8 @@ static int utypeqw(QW *qw, int c)
 	func = qw->func;
 	vsrm(qw->prompt);
 	joe_free(qw);
-	w->object = 0;
-	w->notify = 0;
+	w->object = NULL;
+	w->notify = NULL;
 	wabort(w);
 	if (func)
 		return func(win->object, c, object, notify);
@@ -93,42 +93,42 @@ static int abortqw(QW *qw)
 static WATOM watomqw = {
 	"query",
 	dispqw,
-	0,
+	NULL,
 	abortqw,
-	0,
+	NULL,
 	utypeqw,
-	0,
-	0,
-	0,
-	0,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
 	TYPEQW
 };
 
 static WATOM watqwn = {
 	"querya",
 	dispqwn,
-	0,
+	NULL,
 	abortqw,
-	0,
+	NULL,
 	utypeqw,
-	0,
-	0,
-	0,
-	0,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
 	TYPEQW
 };
 
 static WATOM watqwsr = {
 	"querysr",
 	dispqwn,
-	0,
+	NULL,
 	abortqw,
-	0,
+	NULL,
 	utypeqw,
-	0,
-	0,
-	0,
-	0,
+	NULL,
+	NULL,
+	NULL,
+	NULL,
 	TYPEQW
 };
 
@@ -143,7 +143,7 @@ QW *mkqw(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ?
 	if (!new) {
 		if (notify)
 			*notify = 1;
-		return 0;
+		return NULL;
 	}
 	wfit(new->t);
 	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
@@ -170,7 +170,7 @@ QW *mkqwna(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/*
 	if (!new) {
 		if (notify)
 			*notify = 1;
-		return 0;
+		return NULL;
 	}
 	wfit(new->t);
 	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
@@ -197,7 +197,7 @@ QW *mkqwnsr(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/
 	if (!new) {
 		if (notify)
 			*notify = 1;
-		return 0;
+		return NULL;
 	}
 	wfit(new->t);
 	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));

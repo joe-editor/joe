@@ -560,7 +560,7 @@ static void gennum(BW *w, int *screen, SCRN *t, int y, int *comp)
 void bwgen(BW *w, int linums)
 {
 	int *screen;
-	P *p = 0;
+	P *p = NULL;
 	P *q = pdup(w->cursor);
 	int bot = w->h + w->y;
 	int y;
@@ -691,11 +691,11 @@ BW *bwmk(W *window, B *b, int prompt)
 	}
 	if (b->oldcur) {
 		w->top = b->oldtop;
-		b->oldtop = 0;
-		w->top->owner = 0;
+		b->oldtop = NULL;
+		w->top->owner = NULL;
 		w->cursor = b->oldcur;
-		b->oldcur = 0;
-		w->cursor->owner = 0;
+		b->oldcur = NULL;
+		w->cursor->owner = NULL;
 	} else {
 		w->top = pdup(b->bof);
 		w->cursor = pdup(b->bof);

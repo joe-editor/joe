@@ -216,7 +216,7 @@ char *mktmp(char *where)
 #ifdef HAVE_MKSTEMP
 	snprintf(name, namesize, "%s/joe.tmp.XXXXXX", where);
 	if((fd = mkstemp(name)) == -1)
-		return 0;       /* FIXME: vflsh() and vflshf() */
+		return NULL;	/* FIXME: vflsh() and vflshf() */
 				/* expect mktmp() always succeed!!! */
 
 	fchmod(fd, 0600);       /* Linux glibc 2.0 mkstemp() creates it with */
@@ -233,7 +233,7 @@ char *mktmp(char *where)
 		goto loop;	/* FIXME: possible endless loop --> DoS attack */
 	}
 	if ((fd = creat(name, 0600)) == -1)
-		return 0;	/* FIXME: see above */
+		return NULL;	/* FIXME: see above */
 	else
 		close(fd);
 #endif
@@ -310,7 +310,7 @@ struct direct {
 } direc;
 int dirstate = 0;
 struct ffblk ffblk;
-char *dirpath = 0;
+char *dirpath = NULL;
 
 void *opendir(char *path)
 {
@@ -328,10 +328,10 @@ struct direct *readdir()
 
 	if (dirstate) {
 		if (findnext(&ffblk))
-			return 0;
+			return NULL;
 	} else {
 		if (findfirst("*.*", &ffblk, FA_DIREC))
-			return 0;
+			return NULL;
 		dirstate = 1;
 	}
 
@@ -345,7 +345,7 @@ struct direct *readdir()
 char **rexpnd(char *word)
 {
 	void *dir;
-	char **lst = 0;
+	char **lst = NULL;
 
 	struct dirent *de;
 	dir = opendir(".");

@@ -357,7 +357,7 @@ sELEMENT *vsread(sELEMENT d, int p, int (*getC)(), void *ptr)
 	c = getC(ptr);
 	if (c == MAXINT) {
 		vsrm(d);
-		return 0;
+		return NULL;
 	} else if (c == '\n')
 		return d;
 	else {

@@ -213,8 +213,8 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 
 		insnam(bw, tab->path, tab->files[cursor]);
 		rmtab(tab);
-		m->object = 0;
-		m->abrt = 0;
+		m->object = NULL;
+		m->abrt = NULL;
 		wabort(m->parent);
 		return 0;
 	}
@@ -275,9 +275,9 @@ int cmplt(BW *bw)
 		return -1;
 	}
 
-	tab->files = 0;
-	tab->type = 0;
-	tab->list = 0;
+	tab->files = NULL;
+	tab->type = NULL;
+	tab->list = NULL;
 	tab->prv = 0;
 	tab->len = 0;
 

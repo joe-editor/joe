@@ -155,7 +155,7 @@ static int dorun(BW *bw, char *s, void *object, int *notify)
 	return cstart(bw, "/bin/sh", a, NULL, notify);
 }
 
-B *runhist = 0;
+B *runhist = NULL;
 
 int urun(BW *bw)
 {

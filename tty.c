@@ -118,8 +118,8 @@ int Baud = 0;			/* Baud rate from joerc, cmd line or environment */
 
 /* The terminal */
 
-FILE *termin = 0;
-FILE *termout = 0;
+FILE *termin = NULL;
+FILE *termout = NULL;
 
 /* Original state of tty */
 
@@ -137,7 +137,7 @@ static struct ltchars oltarg;
 
 /* Output buffer, index and size */
 
-char *obuf = 0;
+char *obuf = NULL;
 int obufp = 0;
 int obufsiz;
 
@@ -801,7 +801,7 @@ static char *getpty(int *ptyfd)
 {
 	int x, fd;
 	char *orgpwd = pwd();
-	static char **ptys = 0;
+	static char **ptys = NULL;
 	static char *ttydir;
 	static char *ptydir;
 	static char ttyname[32];
@@ -843,7 +843,7 @@ static char *getpty(int *ptyfd)
 					close(*ptyfd);
 			}
 		}
-	return 0;
+	return NULL;
 }
 
 #endif
@@ -899,13 +899,13 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 	char *name;
 
 	if (!(name = getpty(ptyfd)))
-		return 0;
+		return NULL;
 	for (x = 0; x != NPROC; ++x)
 		if (!asyncs[x].func) {
 			m = asyncs + x;
 			goto ok;
 		}
-	return 0;
+	return NULL;
       ok:
 	ttflsh();
 	++nmpx;
@@ -1013,6 +1013,6 @@ void mpxdied(MPX *m)
 		/* do nothing */;
 	if (m->die)
 		m->die(m->dieobj);
-	m->func = 0;
+	m->func = NULL;
 	edupd(1);
 }

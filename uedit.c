@@ -491,7 +491,7 @@ int udnslide(BW *bw)
 
 /* Move cursor to specified line number */
 
-static B *linehist = 0;		/* History of previously entered line numbers */
+static B *linehist = NULL;	/* History of previously entered line numbers */
 
 static int doline(BW *bw, char *s, void *object, int *notify)
 {
@@ -529,7 +529,7 @@ int uline(BW *bw)
 
 /* Move cursor to specified column number */
 
-static B *colhist = 0;		/* History of previously entered column numbers */
+static B *colhist = NULL;	/* History of previously entered column numbers */
 
 static int docol(BW *bw, char *s, void *object, int *notify)
 {
@@ -565,7 +565,7 @@ int ucol(BW *bw)
 
 /* Move cursor to specified byte number */
 
-static B *bytehist = 0;		/* History of previously entered byte numbers */
+static B *bytehist = NULL;	/* History of previously entered byte numbers */
 
 static int dobyte(BW *bw, char *s, void *object, int *notify)
 {

@@ -55,8 +55,8 @@
 #include "w.h"
 
 extern int orphan;
-char *backpath = 0;		/* Place to store backup files */
-static B *filehist = 0;		/* History of file names */
+char *backpath = NULL;		/* Place to store backup files */
+static B *filehist = NULL;	/* History of file names */
 int nobackups = 0;
 int exask = 0;
 

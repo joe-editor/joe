@@ -168,8 +168,8 @@ SCREEN *screate(SCRN *scrn)
 	t->t = scrn;
 	t->w = scrn->co;
 	t->h = scrn->li;
-	t->topwin = 0;
-	t->curwin = 0;
+	t->topwin = NULL;
+	t->curwin = NULL;
 	t->wind = skiptop;
 	scr = t;
 	return t;
@@ -260,7 +260,7 @@ void wfit(SCREEN *t)
       tryagain:
 	y = t->wind;
 	left = t->h - y;
-	pw = 0;
+	pw = NULL;
 
 	w = t->topwin;
 	do {
@@ -495,7 +495,7 @@ void wshowall(SCREEN *t)
 				seth(w, 2);
 			else
 				seth(w, set - (h - 2));
-			w->orgwin = 0;
+			w->orgwin = NULL;
 		}
 		w = w->link.next;
 	} while (w != t->topwin);
@@ -531,7 +531,7 @@ static void wspread(SCREEN *t)
 				seth(w, 2);
 			else
 				seth(w, n - (h - 2));
-			w->orgwin = 0;
+			w->orgwin = NULL;
 		}
 		w = w->link.next;
 	} while (w != t->topwin);
@@ -547,7 +547,7 @@ void wshowone(W *w)
 	do {
 		if (!q->win) {
 			seth(q, w->t->h - w->t->wind - (getminh(q) - 2));
-			q->orgwin = 0;
+			q->orgwin = NULL;
 		}
 		q = q->link.next;
 	} while (q != w->t->topwin);
@@ -561,7 +561,7 @@ W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height
 	W *new;
 
 	if (height < 1)
-		return 0;
+		return NULL;
 
 	/* Create the window */
 	new = (W *) joe_malloc(sizeof(W));
@@ -577,9 +577,9 @@ W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height
 	new->huh = huh;
 	new->orgwin = original;
 	new->watom = watom;
-	new->object = 0;
-	new->msgb = 0;
-	new->msgt = 0;
+	new->object = NULL;
+	new->msgb = NULL;
+	new->msgt = NULL;
 	/* Set window's target and family */
 /* was:	if (new->win = target) {	which may be mistyped == */
 	if ((new->win = target) != NULL) {	/* A subwindow */
@@ -595,7 +595,7 @@ W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height
 		if (original->h - height <= 2) {
 			/* Not enough space for window */
 			joe_free(new);
-			return 0;
+			return NULL;
 		} else
 			seth(original, original->h - height);
 	}
@@ -604,7 +604,7 @@ W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height
 	if (watom->context)
 		new->kbd = mkkbd(kmap_getcontext(watom->context));
 	else
-		new->kbd = 0;
+		new->kbd = NULL;
 
 	/* Put window on the screen */
 	if (where)
@@ -635,7 +635,7 @@ static int doabort(W *w, int *ret)
 	z = w->t->topwin;
 	do {
 		if (z->orgwin == w)
-			z->orgwin = 0;
+			z->orgwin = NULL;
 		if ((z->win == w || z->main == w) && z->y != -2) {
 			amnt += doabort(z, ret);
 			goto loop;

@@ -163,7 +163,7 @@ static int brack(unsigned char **a, int *la, unsigned char c)
 
 static void savec(char **pieces, int n, char c)
 {
-	char *s = 0;
+	char *s = NULL;
 
 	if (pieces[n])
 		vsrm(pieces[n]);
@@ -247,7 +247,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 {
 	int c, d;
 	P *q = pdup(p);
-	P *o = 0;
+	P *o = NULL;
 
 	while (len--)
 		switch (c = *regex++) {
@@ -327,7 +327,7 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 
 					int match;
 
-					P *r = 0;
+					P *r = NULL;
 
 					o = pdup(p);
 

@@ -15,7 +15,7 @@
 
 #define hnext(accu, c) (((accu) << 4) + ((accu) >> 28) + (c))
 
-static HENTRY *freentry = 0;
+static HENTRY *freentry = NULL;
 
 unsigned long hash(char *s)
 {
@@ -72,5 +72,5 @@ void *htfind(HASH *ht, char *name)
 			return e->val;
 		}
 	}
-	return 0;
+	return NULL;
 }

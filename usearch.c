@@ -29,10 +29,10 @@
 int smode = 0;			/* Decremented to zero by execmd */
 int csmode = 0;			/* Set for continued search mode */
 
-B *findhist = 0;		/* Search string history */
-B *replhist = 0;		/* Replacement string history */
+B *findhist = NULL;		/* Search string history */
+B *replhist = NULL;		/* Replacement string history */
 
-SRCH *globalsrch = 0;		/* Most recent completed search data */
+SRCH *globalsrch = NULL;	/* Most recent completed search data */
 
 SRCHREC fsr = { {&fsr, &fsr} };
 
@@ -75,7 +75,7 @@ static P *searchf(SRCH *srch, P *p)
 	}
 	prm(start);
 	prm(end);
-	return 0;
+	return NULL;
 }
 
 /* Search backwards.
@@ -117,7 +117,7 @@ static P *searchb(SRCH *srch, P *p)
 	}
 	prm(start);
 	prm(end);
-	return 0;
+	return NULL;
 }
 
 /* Make a search stucture */
@@ -130,12 +130,12 @@ static SRCH *setmark(SRCH *srch)
 	srch->markb = markb;
 	if (srch->markb)
 		srch->markb->owner = &srch->markb;
-	markb = 0;
+	markb = NULL;
 
 	srch->markk = markk;
 	if (srch->markk)
 		srch->markk->owner = &srch->markk;
-	markk = 0;
+	markk = NULL;
 
 	return srch;
 }
@@ -152,16 +152,16 @@ SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int re
 	srch->repeat = repeat;
 	srch->replace = replace;
 	srch->rest = rest;
-	srch->entire = 0;
+	srch->entire = NULL;
 	srch->flg = 0;
 	srch->addr = -1;
-	srch->markb = 0;
-	srch->markk = 0;
+	srch->markb = NULL;
+	srch->markk = NULL;
 	srch->valid = 0;
 	srch->block_restrict = 0;
 	izque(SRCHREC, link, &srch->recs);
 	for (x = 0; x != 26; ++x)
-		srch->pieces[x] = 0;
+		srch->pieces[x] = NULL;
 	return srch;
 }
 
@@ -270,8 +270,8 @@ static int pfsave(BW *bw, SRCH *srch)
 			markk->owner = &markk;
 			markk->xcol = piscol(markk);
 		}
-		srch->markb = 0;
-		srch->markk = 0;
+		srch->markb = NULL;
+		srch->markk = NULL;
 
 		updall();
 	}

@@ -25,7 +25,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 {
 	char buf[512];
 	FILE *f;
-	char *t = 0;
+	char *t = NULL;
 
 	if (notify) {
 		*notify = 1;
@@ -123,7 +123,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify)
 	return -1;
 }
 
-static B *taghist = 0;
+static B *taghist = NULL;
 
 int utag(BW *bw)
 {

@@ -236,8 +236,8 @@ WATOM watommenu = {
 	umkey,
 	menuresz,
 	menumove,
-	0,
-	0,
+	NULL,
+	NULL,
 	TYPEMENU
 };
 
@@ -256,7 +256,7 @@ MENU *mkmenu(W *w, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), i
 	if (!new) {
 		if (notify)
 			*notify = 1;
-		return 0;
+		return NULL;
 	}
 	wfit(new->t);
 	new->object = (void *) (m = (MENU *) joe_malloc(sizeof(MENU)));

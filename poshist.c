@@ -33,7 +33,7 @@ static void markpos(W *w, P *p)
 {
 	POS *new = alitem(&frpos, sizeof(POS));
 
-	new->p = 0;
+	new->p = NULL;
 	pdupown(p, &new->p);
 	poffline(new->p);
 	new->w = w;
@@ -70,7 +70,7 @@ void windie(W *w)
 
 	for (n = pos.link.prev; n != &pos; n = n->link.prev) {
 		if (n->w == w) {
-			n->w = 0;
+			n->w = NULL;
 		}
 	}
 }

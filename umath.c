@@ -32,7 +32,7 @@ struct var {
 	int set;
 	double val;
 	struct var *next;
-} *vars = 0;
+} *vars = NULL;
 
 static struct var *get(char *str)
 {
@@ -58,7 +58,7 @@ struct var *dumb;
 static double expr(int prec, struct var **rtv)
 {
 	double x = 0.0;
-	struct var *v = 0;
+	struct var *v = NULL;
 
 	while (*ptr == ' ' || *ptr == '\t') {
 		++ptr;
@@ -203,7 +203,7 @@ static int domath(BW *bw, char *s, void *object, int *notify)
 	return 0;
 }
 
-B *mathhist = 0;
+B *mathhist = NULL;
 
 int umath(BW *bw)
 {

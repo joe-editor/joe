@@ -28,7 +28,7 @@
 #include "vs.h"
 #include "w.h"
 
-MACRO *freemacros = 0;
+MACRO *freemacros = NULL;
 
 /* Create a macro */
 
@@ -47,7 +47,7 @@ MACRO *mkmacro(int k, int arg, int n, CMD *cmd)
 	}
 	macro = freemacros;
 	freemacros = (MACRO *) macro->steps;
-	macro->steps = 0;
+	macro->steps = NULL;
 	macro->size = 0;
 	macro->arg = arg;
 	macro->n = n;
@@ -217,7 +217,7 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 			cmd = findcmd(buf + x);
 			if (!cmd) {
 				*sta = -1;
-				return 0;
+				return NULL;
 			} else if (m) {
 				if (!m->steps) {
 					MACRO *macro = m;
@@ -331,7 +331,7 @@ char *mtext(char *s, MACRO *m)
 static MACRO *kbdmacro[10];
 static int playmode[10];
 
-struct recmac *recmac = 0;
+struct recmac *recmac = NULL;
 
 static void unmac(void)
 {
@@ -358,7 +358,7 @@ int uquery(BW *bw)
 	int ret;
 	struct recmac *tmp = recmac;
 
-	recmac = 0;
+	recmac = NULL;
 	ret = edloop(1);
 	recmac = tmp;
 	return ret;
@@ -366,7 +366,7 @@ int uquery(BW *bw)
 
 /* Macro execution */
 
-MACRO *curmacro = 0;		/* Set if we're in a macro */
+MACRO *curmacro = NULL;		/* Set if we're in a macro */
 static int macroptr;
 static int arg = 0;		/* Repeat argument */
 static int argset = 0;		/* Set if 'arg' is set */

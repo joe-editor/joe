@@ -19,9 +19,9 @@
 #include "vs.h"
 
 extern int smode;
-struct isrch *lastisrch = 0;	/* Previous search */
+struct isrch *lastisrch = NULL;	/* Previous search */
 
-unsigned char *lastpat = 0;	/* Previous pattern */
+unsigned char *lastpat = NULL;	/* Previous pattern */
 
 IREC fri = { {&fri, &fri} };	/* Free-list of irecs */
 

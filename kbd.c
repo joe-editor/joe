@@ -38,7 +38,7 @@ void rmkbd(KBD *k)
 
 void *dokey(KBD *kbd, int n)
 {
-	void *bind = 0;
+	void *bind = NULL;
 
 	/* If we were passed a negative character */
 	if (n < 0)
@@ -114,7 +114,7 @@ static char *range(char *seq, int *vv, int *ww)
 	v = keyval(seq);	/* Get key */
 	w = v;
 	if (w < 0)
-		return 0;
+		return NULL;
 	seq[x] = c;		/* Restore the space or 0 */
 	for (seq += x; *seq == ' '; ++seq) ;	/* Skip over spaces */
 
@@ -126,13 +126,13 @@ static char *range(char *seq, int *vv, int *ww)
 		seq[x] = 0;	/* Zero terminate the string */
 		w = keyval(seq);	/* Get key */
 		if (w < 0)
-			return 0;
+			return NULL;
 		seq[x] = c;	/* Restore the space or 0 */
 		for (seq += x; *seq == ' '; ++seq) ;	/* Skip over spaces */
 	}
 
 	if (v > w)
-		return 0;
+		return NULL;
 
 	*vv = v;
 	*ww = w;
@@ -252,7 +252,7 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char 
 	while (v <= w) {
 		if (*seq || seql) {
 			if (kmap->keys[v].k == 0)
-				kmap->keys[v].value.submap = 0;
+				kmap->keys[v].value.submap = NULL;
 			kmap->keys[v].k = 1;
 			kmap->keys[v].value.submap = kbuild(cap, kmap->keys[v].value.bind, seq, bind, err, capseq, seql);
 		} else {
@@ -319,7 +319,7 @@ int kdel(KMAP *kmap, unsigned char *seq)
 			if (kmap->keys[v].k == 1)
 				rmkmap(kmap->keys[v].value.submap);
 			kmap->keys[v].k = 0;
-			kmap->keys[v].value.bind = 0;
+			kmap->keys[v].value.bind = NULL;
 			if (err != -1)
 				err = 0;
 		}

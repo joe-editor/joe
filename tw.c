@@ -298,8 +298,8 @@ static void disptw(BW *bw, int flg)
 
 static void iztw(TW *tw, int y)
 {
-	tw->stalin = 0;
-	tw->staright = 0;
+	tw->stalin = NULL;
+	tw->staright = NULL;
 	tw->changed = -1;
 	tw->prevline = -1;
 	tw->staon = (!staen || y);
@@ -389,7 +389,7 @@ static int naborttw(BW *bw, int k, void *object, int *notify)
 	bwrm(bw);
 	vsrm(tw->stalin);
 	joe_free(tw);
-	w->object = 0;
+	w->object = NULL;
 	wabort(w);		/* Eliminate this window and it's children */
 	return 0;
 }
@@ -410,7 +410,7 @@ static WATOM watomtw = {
 	"main",
 	disptw,
 	bwfllw,
-	0,
+	NULL,
 	rtntw,
 	utypebw,
 	resizetw,

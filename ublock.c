@@ -37,8 +37,8 @@ extern int marking;
 
 /* Global variables */
 
-P *markb = 0;			/* Beginning and end of block */
-P *markk = 0;
+P *markb = NULL;		/* Beginning and end of block */
+P *markk = NULL;
 
 /* Push markb & markk */
 
@@ -844,7 +844,7 @@ static int dofilt(BW *bw, char *s, void *object, int *notify)
 	return 0;
 }
 
-static B *filthist = 0;
+static B *filthist = NULL;
 
 static void markall(BW *bw)
 {

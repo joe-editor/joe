@@ -321,10 +321,10 @@ SCRN *nopen(CAP *cap)
 
 	t->te = jgetstr(t->cap, "te");
 
-	t->mb = 0;
-	t->md = 0;
-	t->mh = 0;
-	t->mr = 0;
+	t->mb = NULL;
+	t->md = NULL;
+	t->mh = NULL;
+	t->mr = NULL;
 	t->avattr = 0;
 	if (!(t->me = jgetstr(t->cap, "me")))
 		goto oops;
@@ -338,18 +338,18 @@ SCRN *nopen(CAP *cap)
 		t->avattr |= INVERSE;
       oops:
 
-	t->so = 0;
-	t->se = 0;
+	t->so = NULL;
+	t->se = NULL;
 	if (getnum(t->cap, "sg") <= 0 && !t->mr && jgetstr(t->cap, "se")) {
 		if ((t->so = jgetstr(t->cap, "so")) != NULL)
 			t->avattr |= INVERSE;
 		t->se = jgetstr(t->cap, "se");
 	}
 	if (getflag(t->cap, "xs") || getflag(t->cap, "xt"))
-		t->so = 0;
+		t->so = NULL;
 
-	t->us = 0;
-	t->ue = 0;
+	t->us = NULL;
+	t->ue = NULL;
 	if (getnum(t->cap, "ug") <= 0 && jgetstr(t->cap, "ue")) {
 		if ((t->us = jgetstr(t->cap, "us")) != NULL)
 			t->avattr |= UNDERLINE;
@@ -392,19 +392,19 @@ SCRN *nopen(CAP *cap)
 		t->ip = jgetstr(t->cap, "ip");
 		t->mi = getflag(t->cap, "mi");
 	} else {
-		t->dm = 0;
-		t->dc = 0;
-		t->DC = 0;
-		t->ed = 0;
-		t->im = 0;
-		t->ic = 0;
-		t->IC = 0;
-		t->ip = 0;
-		t->ei = 0;
+		t->dm = NULL;
+		t->dc = NULL;
+		t->DC = NULL;
+		t->ed = NULL;
+		t->im = NULL;
+		t->ic = NULL;
+		t->IC = NULL;
+		t->ip = NULL;
+		t->ei = NULL;
 		t->mi = 1;
 	}
 
-	t->bs = 0;
+	t->bs = NULL;
 	if (jgetstr(t->cap, "bc"))
 		t->bs = jgetstr(t->cap, "bc");
 	else if (jgetstr(t->cap, "le"))
@@ -435,8 +435,8 @@ SCRN *nopen(CAP *cap)
 			t->ta = "\11";
 	t->bt = jgetstr(t->cap, "bt");
 	if (getflag(t->cap, "xt")) {
-		t->ta = 0;
-		t->bt = 0;
+		t->ta = NULL;
+		t->bt = NULL;
 	}
 
 	t->cta = tcost(t->cap, t->ta, 1, 2, 2, 0, 0);
@@ -451,7 +451,7 @@ SCRN *nopen(CAP *cap)
 	if (jgetstr(t->cap, "cr"))
 		t->cr = jgetstr(t->cap, "cr");
 	if (getflag(t->cap, "nc") || getflag(t->cap, "xr"))
-		t->cr = 0;
+		t->cr = NULL;
 	t->ccr = tcost(t->cap, t->cr, 1, 2, 2, 0, 0);
 
 	t->cRI = tcost(t->cap, t->RI = jgetstr(t->cap, "RI"), 1, 2, 2, 0, 0);
@@ -480,7 +480,7 @@ SCRN *nopen(CAP *cap)
 	ttclose();
 	signrm();
 	fprintf(stderr, "Sorry, your terminal can't do absolute cursor positioning.\nIt's broken\n");
-	return 0;
+	return NULL;
       ok:
 
 /* Determine if we can scroll */
@@ -511,12 +511,12 @@ SCRN *nopen(CAP *cap)
 		texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 
 /* Initialize variable screen size dependant vars */
-	t->scrn = 0;
-	t->sary = 0;
-	t->updtab = 0;
-	t->compose = 0;
-	t->ofst = 0;
-	t->ary = 0;
+	t->scrn = NULL;
+	t->sary = NULL;
+	t->updtab = NULL;
+	t->compose = NULL;
+	t->ofst = NULL;
+	t->ary = NULL;
 	t->htab = (struct hentry *) joe_malloc(256 * sizeof(struct hentry));
 
 	nresize(t, t->co, t->li);

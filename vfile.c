@@ -28,12 +28,12 @@
 #include "vs.h"
 
 static VFILE vfiles = { {&vfiles, &vfiles} };	/* Known vfiles */
-static VPAGE *freepages = 0;	/* Linked list of free pages */
+static VPAGE *freepages = NULL;	/* Linked list of free pages */
 static VPAGE *htab[HTSIZE];	/* Hash table of page headers */
 static long curvalloc = 0;	/* Amount of memory in use */
 static long maxvalloc = ILIMIT;	/* Maximum allowed */
 char *vbase;			/* Data first entry in vheader refers to */
-VPAGE **vheaders = 0;		/* Array of header addresses */
+VPAGE **vheaders = NULL;	/* Array of header addresses */
 static int vheadsz = 0;		/* No. entries allocated to vheaders */
 
 void vflsh(void)
@@ -49,7 +49,7 @@ void vflsh(void)
 		last = -1;
 	      loop:
 		addr = MAXLONG;
-		vlowest = 0;
+		vlowest = NULL;
 		for (x = 0; x != HTSIZE; x++)
 			for (vp = htab[x]; vp; vp = vp->next)
 				if (vp->addr < addr && vp->addr > last && vp->vfile == vfile && (vp->addr >= vfile->size || (vp->dirty && !vp->count))) {
@@ -86,7 +86,7 @@ void vflshf(VFILE *vfile)
 
       loop:
 	addr = MAXLONG;
-	vlowest = 0;
+	vlowest = NULL;
 	for (x = 0; x != HTSIZE; x++)
 		for (vp = htab[x]; vp; vp = vp->next)
 			if (vp->addr < addr && vp->dirty && vp->vfile == vfile && !vp->count) {
@@ -174,7 +174,7 @@ char *vlock(VFILE *vfile, unsigned long addr)
 				goto gotit;
 			}
 			joe_free(vp);
-			vp = 0;
+			vp = NULL;
 		}
 	}
 
@@ -223,14 +223,14 @@ VFILE *vtmp(void)
 	VFILE *new = (VFILE *) joe_malloc(sizeof(VFILE));
 
 	new->fd = 0;
-	new->name = 0;
+	new->name = NULL;
 	new->alloc = 0;
 	new->size = 0;
 	new->left = 0;
 	new->lv = 0;
-	new->vpage = 0;
+	new->vpage = NULL;
 	new->flags = 1;
-	new->vpage1 = 0;
+	new->vpage1 = NULL;
 	new->addr = -1;
 	return enqueb_f(VFILE, link, &vfiles, new);
 }
@@ -248,16 +248,16 @@ char *name;
 	if (!new->fd) {
 		fprintf(stderr, "Couldn\'t open file \'%s\'\n", name);
 		joe_free(new);
-		return 0;
+		return NULL;
 	}
 	fstat(new->fd, &buf);
 	new->size = buf.st_size;
 	new->alloc = new->size;
 	new->left = 0;
 	new->lv = 0;
-	new->vpage = 0;
+	new->vpage = NULL;
 	new->flags = 0;
-	new->vpage1 = 0;
+	new->vpage1 = NULL;
 	new->addr = -1;
 	return enqueb_f(VFILE, link, &vfiles, new);
 }
@@ -619,7 +619,7 @@ char *s;
 	/* Return with NULL if at end of file */
 	if (vtell(v) == vsize(v)) {
 		vsrm(s);
-		return 0;
+		return NULL;
 	}
 
 	/* Create string if it doesn't exist */

@@ -34,7 +34,7 @@ struct error {
 } errors = { { &errors, &errors} };
 ERROR *errptr = &errors;	/* Current error row */
 
-B *errbuf = 0;			/* Buffer with error messages */
+B *errbuf = NULL;		/* Buffer with error messages */
 
 /* Insert and delete notices */
 
@@ -120,7 +120,7 @@ static void freeall(void)
 static int parseit(char *s, long int row)
 {
 	int x, y;
-	char *name = 0;
+	char *name = NULL;
 	long line = -1;
 	ERROR *err;
 

@@ -38,7 +38,7 @@ extern char *joeterm;
 int help = 0;			/* Set to have help on when starting */
 int nonotice = 0;		/* Set to prevent copyright notice */
 int orphan = 0;
-char *exmsg = 0;		/* Message to display when exiting the editor */
+char *exmsg = NULL;		/* Message to display when exiting the editor */
 
 SCREEN *maint;			/* Main edit screen */
 
@@ -121,7 +121,7 @@ int edloop(int flg)
 
 		if (exmsg && !flg) {
 			vsrm(exmsg);
-			exmsg = 0;
+			exmsg = NULL;
 		}
 		edupd(1);
 		if (!ahead && !have)
@@ -323,7 +323,7 @@ int main(int argc, char **argv, char **envv)
 				++c;
 		} else {
 			B *b = bfind(argv[c]);
-			BW *bw = 0;
+			BW *bw = NULL;
 			int er = error;
 
 			if (!orphan || !opened) {

@@ -34,7 +34,7 @@ static struct context {
 	struct context *next;
 	char *name;
 	KMAP *kmap;
-} *contexts = 0;		/* List of named contexts */
+} *contexts = NULL;		/* List of named contexts */
 
 /* Find a context of a given name- if not found, one with an empty kmap
  * is created.
@@ -55,7 +55,7 @@ KMAP *kmap_getcontext(unsigned char *name)
 	return c->kmap = mkkmap();
 }
 
-OPTIONS *options = 0;
+OPTIONS *options = NULL;
 extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, orphan, marking, beep, keepup, nonotice;
 extern char *backpath;
 
@@ -565,8 +565,8 @@ int umode(BW *bw)
 
 int procrc(CAP *cap, unsigned char *name)
 {
-	OPTIONS *o = 0;		/* Current options */
-	KMAP *context = 0;	/* Current context */
+	OPTIONS *o = NULL;	/* Current options */
+	KMAP *context = NULL;	/* Current context */
 	unsigned char buf[1024];	/* Input buffer */
 	FILE *fd;		/* rc file */
 	int line = 0;		/* Line number */
@@ -611,7 +611,7 @@ int procrc(CAP *cap, unsigned char *name)
 			{
 				unsigned char *opt = buf + 1;
 				int x;
-				unsigned char *arg = 0;
+				unsigned char *arg = NULL;
 
 				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != ' ' && buf[x] != '\t'; ++x) ;
 				if (buf[x] && buf[x] != '\n') {

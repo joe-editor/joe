@@ -31,7 +31,7 @@
 #include "vs.h"
 
 int dopadding = 0;
-char *joeterm = 0;
+char *joeterm = NULL;
 
 /* Default termcap entry */
 
@@ -159,11 +159,11 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 	int sortsiz;
 
 	if (!name && !(name = joeterm) && !(name = getenv("TERM")))
-		return 0;
+		return NULL;
 	cap = (CAP *) joe_malloc(sizeof(CAP));
 	cap->tbuf = vsmk(4096);
-	cap->abuf = 0;
-	cap->sort = 0;
+	cap->abuf = NULL;
+	cap->sort = NULL;
 
 #ifdef TERMINFO
 	cap->abuf = (char *) joe_malloc(4096);
@@ -172,7 +172,7 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 		return setcap(cap, baud, out, outptr);
 	else {
 		joe_free(cap->abuf);
-		cap->abuf = 0;
+		cap->abuf = NULL;
 	}
 #endif
 
@@ -195,7 +195,7 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 				namebuf = vsncpy(NULL, 0, sz(tp));
 				namebuf = vsadd(namebuf, '/');
 			} else
-				namebuf = 0;
+				namebuf = NULL;
 			namebuf = vsncpy(sv(namebuf), sc(".termcap "));
 			namebuf = vsncpy(sv(namebuf), sc(JOERC));
 			namebuf = vsncpy(sv(namebuf), sc("termcap /etc/termcap"));
@@ -322,7 +322,7 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 				else if (c && c != ':')
 					cap->sort[z].value = qq + q + 1;
 				else
-					cap->sort[z].value = 0;
+					cap->sort[z].value = NULL;
 				if (c == ':')
 					goto loop1;
 				else
@@ -338,7 +338,7 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 		if (c && c != ':')
 			cap->sort[y].value = qq + q + 1;
 		else
-			cap->sort[y].value = 0;
+			cap->sort[y].value = NULL;
 		if (c == ':')
 			goto loop1;
 		else
@@ -381,7 +381,7 @@ static struct sortentry *findcap(CAP *cap, char *name)
 		else
 			return cap->sort + z;
 	}
-	return 0;
+	return NULL;
 }
 
 CAP *setcap(CAP *cap, unsigned int baud, void (*out) (char *, char), void *outptr)
@@ -414,7 +414,7 @@ char *jgetstr(CAP *cap, char *name)
 	if (s)
 		return s->value;
 	else
-		return 0;
+		return NULL;
 }
 
 int getnum(CAP *cap, char *name)
@@ -699,7 +699,7 @@ char *tcompile(CAP *cap, char *s, int a0, int a1, int a2, int a3)
 	int div = cap->div;
 
 	if (!s)
-		return 0;
+		return NULL;
 	cap->out = cpl;
 	cap->div = 10000;
 	ssp = vsmk(10);
