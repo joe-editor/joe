@@ -343,6 +343,7 @@ done
 	"sizeof"	kw
 	"typedef"	kw
 	"union"		kw
+	"asm"		kw
 # C++ keywords
 	"class"		cppkw
 	"public"	cppkw
@@ -358,6 +359,7 @@ done
 	"catch"		cppkw
 	"throw"		cppkw
 	"try"		cppkw
+	"typeof"	cppkw
 done
 	"a-zA-Z0-9_"	ident
 

@@ -8,16 +8,132 @@ Installation procedure
 
 	./configure
 	make
+
+At this point you can try JOE without fully installing it by typing "./joe".
+However, you need to copy a few files into your home directory first:
+
+	# This is required for JOE to start:
+	cp joerc ~/.joerc
+
+	# The following are needed if you want syntax highlighting to work:
+	mkdir ~/.joe
+	mkdir ~/.joe/syntax
+	cp syntax/*.jsf ~/.joe/syntax
+
+Otherwise you need to do a real install, which generally requires root
+privileges:
+
+	su root
 	make install
 
-  to build and install joe. The installation step may need increased
-privileges to install into default places (/usr/local). You can then try it
-by typing "joe".
+This will copy the executables to /usr/local/bin and runtime files to
+/usr/local/etc.  After installation, you can then try it by typing "joe".
 
+=-=-=-=-=-=-=-=-=-=-=-=
+Verify the installation
+=-=-=-=-=-=-=-=-=-=-=-=
 
-  To install in your home directory:
+A number of features should be tested:
+
+Shell windows:
+--------------
+
+Please test the installation by trying the shell command: ^K '  A shell
+prompt should appear in the window and you should be able to type "ls".  If
+not, two things could be broken:
+
+   JOE could not open a pseudo terminal (pty), which is unfortunately one of
+the two most incompatible parts of the UNIX API.  Take a look at tty.c-
+there are several methods for opening the pty: mess with the "#ifdefs" until
+you find a method which works (and send a bug report for your operating
+system).
+
+   The SHELL environment variable is not set or exported (Cygwin has this
+problem).  Put:
+
+	export SHELL=/bin/bash
+    or  setenv SHELL /bin/bash
+
+   In you .profile or .cshrc file and send mail to the Cygwin mailing list
+so that they fix this problem.
+
+Process groups:
+---------------
+
+Once you have a shell window open, try to suspend JOE: ^K Z.  Then resume
+it: "fg".  The shell window should still be active.  If not, your operating
+system is not handling process groups properly.  Look for the setsid() or
+setprgp() system calls in tty.c (this is the other most incompatible part of
+the UNIX API).  Currently process groups appear to be broken in Cygwin (so
+if you suspend JOE, any shells get killed).
+
+Resize windows:
+---------------
+
+Try resizing the terminal emulator window: JOE should resize itself to
+properly fit.  If this doesn't work, either ttgtsz() (in tty.c) is not
+reading the size properly, or the SIGWINCH signal is not being received
+by JOE (the handler is winchd() in tty.c).
+
+Baud rate:
+----------
+
+JOE cares about the baud rate as reported by "stty":
+
+	38400 or above:		Joe does not issue scrolling commands
+
+	9600 - 19200:		Joe issues scrolling commands, but does
+				not delay.
+
+	0 - 4800:		Joe defeats output buffering by sleeping
+				after every chunk of data is sent to the
+				screen, by the amount of time that the data
+				should take to get there as determined by
+				the baud rate.  This allows typeahead to
+				interrupt the screen update process: If you
+				hit Page Down 100 times, only the final
+				contents of the screen get sent to the
+				terminal, otherwise you have to wait for all
+				100 pages to get to the screen before you
+				can do anything.
+
+Sleeping should really be used at 9600 baud, but too many systems use 9600
+as the default speed for terminal emulators.  If you are using a real serial
+link to a real terminal, you may want to adjust these thresholds: search for
+"9600" in tty.c.
+
+Padding:
+--------
+
+Ideally either terminals can keep up with the baud rate or they backpressure
+the computer using hardware flow control (RTS and CTS pins on RS-232
+connector).
+
+If not, there are two options, both bad:
+
+Use XON/XOFF (^S/^Q) flow control: this works, but ^S causes the screen to
+freeze, which freaks out new users, plus ^S is the search key in "jmacs".
+
+Use padding: the termcap database indicates how long each command should
+take.  If padding is enabled, JOE will send enough NUL characters after each
+command to account for this time.  You need set the DOPADDING environment
+variable or use the -dopadding option.
+
+You should just buy a modern terminal :-)
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-
+Common ./configure options
+=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+Here are some common ./configure options:
+
+  To have "make intall" install JOE into your home directory:
 
 	./configure --prefix=$HOME
+
+	The executables will end up in $HOME/bin and the runtime
+	files will end up in $HOME/etc.  You need to have $HOME/bin in
+	your path for this to work.
 
 
   For other install options:
@@ -25,7 +141,9 @@ by typing "joe".
 	./configure --help
 
 
-  To force JOE to use /etc/termcap file using its built-in termcap file parser:
+  To force JOE to use /etc/termcap file using its built-in termcap file parser
+  (which is useful if you want to compile JOE so that it doesn't depend on any
+  libraries other than libc):
 
 	./configure --disable-curses --disable-termcap
 
@@ -33,8 +151,14 @@ by typing "joe".
    in the -ltermcap library.  --disable-curses prevents JOE from using the
    termcap emulation functions in the -lcurses library).
 
-  Otherwise, JOE tries to use the terminfo database via the termcap
-  emulation routines: see man tgetent, tgetstr, tgoto, etc.
+  Otherwise, JOE tries to use the terminfo database via termcap
+  emulation routines: see man tgetent, tgetstr, tgoto, etc.  (JOE has its
+  own implementation of "curses", so curses is not required except to get
+  access to the terminfo database).
+
+  Note that even if you don't have an /etc/termcap file, JOE will run: it
+  will assume that the terminal is "ANSI" (but you need to compile it this
+  way for it to be able to use the builtin ANSI termcap entry).
 
 
 =-=-=
