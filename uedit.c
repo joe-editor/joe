@@ -2032,6 +2032,19 @@ int rtntw(BW *bw)
 int uopen(BW *bw)
 {
 	binsc(bw->cursor,'\n');
+	if (bw->o.autoindent && (brch(bw->cursor)!=' ' && brch(bw->cursor)!='\t')) {
+		P *p = pdup(bw->cursor);
+		P *q = pdup(p);
+		int c;
+		pgetc(q);
+		p_goto_bol(p);
+		while (joe_isspace(bw->b->o.charmap,(c = pgetc(p))) && c != '\n') {
+			binsc(q, c);
+			pgetc(q);
+		}
+		prm(p); prm(q);
+	}
+	
 	return 0;
 }
 

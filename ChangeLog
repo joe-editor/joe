@@ -7,6 +7,10 @@ Fri Mar  4 2005  Joe Allen <jhallen@world.std.com>
 
 	Get ^G working for VHDL (VHDL sucks).
 
+	Disable ^K E and ^K ' in prompt windows.
+
+	open ^] now autoindents (again).
+
 Thu Mar  3 2005  Joe Allen <jhallen@world.std.com>
 
 	New help screen for math.
