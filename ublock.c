@@ -472,10 +472,8 @@ int upicokill(BW *bw)
 int ublkmove(BW *bw)
 {
 	if (markv(1)) {
-		if (markb->b->rdonly) {
-			msgnw(bw->parent, US "Read only");
+		if (markb->b!=bw->b && !modify_logic(bw,markb->b))
 			return -1;
-		}
 		if (square) {
 			long height = markk->line - markb->line + 1;
 			long width = markk->xcol - markb->xcol;

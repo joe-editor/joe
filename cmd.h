@@ -39,4 +39,7 @@ int execmd PARAMS((CMD *cmd, int k));
 
 extern B *cmdhist;
 
+int try_lock(BW *bw,B *b);
+int modify_logic(BW *bw,B *b);
+
 #endif

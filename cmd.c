@@ -235,13 +235,13 @@ CMD cmds[] = {
 
 int nolocks;
 
-int steal_lock(BW *bw,int c,unsigned char *s,int *notify)
+int steal_lock(BW *bw,int c,B *b,int *notify)
 {
 	if (c=='s' || c=='S') {
 		unsigned char bf1[256];
 		unsigned char bf[300];
-		unlock_it(bw->b->name);
-		if (lock_it(bw->b->name,bf1)) {
+		unlock_it(b->name);
+		if (lock_it(b->name,bf1)) {
 			int x;
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
@@ -249,7 +249,7 @@ int steal_lock(BW *bw,int c,unsigned char *s,int *notify)
 				joe_snprintf_1(bf,sizeof(bf),"Locked by %s  (S)teal, (I)gnore, (Q)uit? ",bf1);
 			else
 				joe_snprintf_0(bf,sizeof(bf),"Could not create lock.  (S)teal, (I)gnore, (Q)uit? ");
-			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, NULL, notify)) {
+			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, notify)) {
 				return 0;
 			} else {
 				if (notify)
@@ -257,14 +257,14 @@ int steal_lock(BW *bw,int c,unsigned char *s,int *notify)
 				return -1;
 			}
 		} else {
-			bw->b->locked=1;
+			b->locked=1;
 			if (notify)
 				*notify = 1;
 			return 0;
 		}
 	} else if (c=='i' || c=='I') {
-		bw->b->locked=1;
-		bw->b->ignored_lock=1;
+		b->locked=1;
+		b->ignored_lock=1;
 		if (notify)
 			*notify = 1;
 		return 0;
@@ -273,11 +273,71 @@ int steal_lock(BW *bw,int c,unsigned char *s,int *notify)
 			*notify = 1;
 		return 0;
 	} else {
-		if (mkqw(bw->parent, sc("Could not lock.  Take it? "), steal_lock, NULL, NULL, notify)) {
+		if (mkqw(bw->parent, sc("Could not lock.  Take it? "), steal_lock, NULL, b, notify)) {
 			return 0;
 		} else
 			return -1;
 	}
+}
+
+/* Try to lock: start dialog if we can't.  Returns 0 if we couldn't lock */
+
+int try_lock(BW *bw,B *b)
+{
+	/* First time we modify the file */
+	/* If we're a plain file, acquire lock */
+	if (!nolocks && plain_file(b)) {
+		unsigned char bf1[256];
+		unsigned char bf[300];
+		int x;
+		/* It's a plain file- try to lock it */
+		if (lock_it(b->name,bf1)) {
+			for(x=0;bf1[x] && bf1[x]!=':';++x);
+			bf1[x]=0;
+			if(bf1[0])
+				joe_snprintf_1(bf,sizeof(bf),"Locked by %s  (S)teal, (I)gnore, (Q)uit? ",bf1);
+			else
+				joe_snprintf_0(bf,sizeof(bf),"Could not create lock.  (S)teal, (I)gnore, (Q)uit? ");
+			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, NULL)) {
+				uquery(bw);
+				if (!b->locked)
+					return 0;
+			} else
+				return 0;
+		} else {
+			/* Remember to unlock it */
+			b->locked = 1;
+		}
+	}
+	return 1;
+}
+
+/* Called when we are about to modify a buffer */
+/* Returns 0 if we're not allowed to modify buffer */
+
+int modify_logic(BW *bw,B *b)
+{
+	if (!b->didfirst) {
+		/* This happens when we try to block move from a window
+		   which is not on the screen */
+		if (b!=bw->b) {
+			msgnw(bw->parent,US "Modify other window first");
+			return 0;
+		}
+		b->didfirst = 1;
+		if (bw->o.mfirst)
+			exmacro(bw->o.mfirst,1);
+	}
+	if (b->rdonly) {
+		msgnw(bw->parent, US "Read only");
+		if (beep)
+			ttputc(7);
+		return 0;
+	} else if (!b->changed && !b->locked) {
+		if (!try_lock(bw,b))
+			return 0;
+	}
+	return 1;
 }
 
 /* Execute a command n with key k */
@@ -314,42 +374,8 @@ int execmd(CMD *cmd, int k)
 
 	/* We are about to modify the file */
 	if ((maint->curwin->watom->what & TYPETW) && (cmd->flag & EMOD)) {
-		if (!bw->b->didfirst) {
-			bw->b->didfirst = 1;
-			if (bw->o.mfirst)
-				exmacro(bw->o.mfirst,1);
-		}
-		if (bw->b->rdonly) {
-			msgnw(bw->parent, US "Read only");
-			if (beep)
-				ttputc(7);
+		if (!modify_logic(bw,bw->b))
 			goto skip;
-		} else if (!bw->b->changed && !bw->b->locked) {
-			/* First time we modify the file */
-			/* If we're a plain file, acquire lock */
-			if (!nolocks && plain_file(bw->b)) {
-				unsigned char bf1[256];
-				unsigned char bf[300];
-				int x;
-				/* It's a plain file- try to lock it */
-				if (lock_it(bw->b->name,bf1)) {
-					for(x=0;bf1[x] && bf1[x]!=':';++x);
-					bf1[x]=0;
-					if(bf1[0])
-						joe_snprintf_1(bf,sizeof(bf),"Locked by %s  (S)teal, (I)gnore, (Q)uit? ",bf1);
-					else
-						joe_snprintf_0(bf,sizeof(bf),"Could not create lock.  (S)teal, (I)gnore, (Q)uit? ");
-					if (mkqw(bw->parent, sz(bf), steal_lock, NULL, NULL, NULL)) {
-						uquery(bw);
-						if (!bw->b->locked)
-							goto skip;
-					}
-				} else {
-					/* Remember to unlock it */
-					bw->b->locked = 1;
-				}
-			}
-		}
 	}
 
 	/* Execute command */

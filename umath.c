@@ -92,7 +92,42 @@ static double expr(int prec, int en,struct var **rtv)
 		}
 		c = *ptr;
 		*ptr = 0;
-		if (!en) {
+		if (!strcmp(s,"joe")) {
+			*ptr = c;
+			v = 0;
+			x = 0.0;
+			while (*ptr==' ' || *ptr=='\t')
+				++ptr;
+			if (*ptr=='(') {
+				unsigned char *q = ++ptr;
+				MACRO *m;
+				int sta;
+				while (*q && *q!=')')
+					++q;
+				if (*q!=')') {
+					if (!merr)
+						merr = US "Missing )";
+				} else
+					*q++ = 0;
+				if (en) {
+					m = mparse(NULL,ptr,&sta);
+					ptr = q;
+					if (m) {
+						x = !exmacro(m,1);
+						rmmacro(m);
+					} else {
+						if (!merr)
+							merr = US "Syntax error in macro";
+					}
+				} else {
+					ptr = q;
+				}
+			} else {
+				if (!merr)
+					merr = US "Missing (";
+			}
+			c = *ptr;
+		} else if (!en) {
 			v = 0;
 			x = 0.0;
 		} else if (!strcmp(s,"hex")) {
@@ -157,37 +192,6 @@ static double expr(int prec, int en,struct var **rtv)
 			} else if (!merr) {
 				merr = US "No block";
 			}
-		} else if (!strcmp(s,"joe")) {
-			*ptr = c;
-			v = 0;
-			x = 0.0;
-			while (*ptr==' ' || *ptr=='\t')
-				++ptr;
-			if (*ptr=='(') {
-				unsigned char *q = ++ptr;
-				MACRO *m;
-				int sta;
-				while (*q && *q!=')')
-					++q;
-				if (*q!=')') {
-					if (!merr)
-						merr = US "Missing )";
-				} else
-					*q++ = 0;
-				m = mparse(NULL,ptr,&sta);
-				ptr = q;
-				if (m) {
-					x = !exmacro(m,1);
-					rmmacro(m);
-				} else {
-					if (!merr)
-						merr = US "Syntax error in macro";
-				}
-			} else {
-				if (!merr)
-					merr = US "Missing (";
-			}
-			c = *ptr;
 		} else {
 			v = get(s);
 			x = v->val;

@@ -1,8 +1,5 @@
 Short list for 3.2:
 
-  first change logic is broken: search & replace can change the file.  (look
-  at Read Only logic).
-
   exemac for first change: it should be run with cursor in window.
 
   -orphan will break -mnew, -mold macros (because macros are run without a

@@ -675,10 +675,8 @@ static int doreplace(BW *bw, SRCH *srch)
 {
 	P *q;
 
-	if (bw->b->rdonly) {
-		msgnw(bw->parent, US "Read only");
+	if (!modify_logic(bw,bw->b))
 		return -1;
-	}
 	if (markk)
 		markk->end = 1;
 	if (srch->markk)
