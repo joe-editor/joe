@@ -11,6 +11,8 @@ Sat Mar 19 17:08:05 EST 2005
 
 	ubknd and urun were not checking for read only
 
+	Prompt with latest directory
+
 Fri Mar 18 16:15:19 EST 2005
 
 	Change so that ` up-arrow (or any key) goes to shell.

@@ -14,6 +14,10 @@
 /* BW *wmkpw(BW *bw,char *prompt,int (*func)(),char *huh,int (*abrt)(),
              int (*tab)(),void *object,int *notify);
  * Create a prompt window for the given window
+ * file_prompt flags:
+ *   bit 0: ~ expansion
+ *   bit 1: update directory
+ *   bit 2: seed with directory
  */
 BW *wmkpw PARAMS((W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify, struct charmap *map, int file_prompt));
 

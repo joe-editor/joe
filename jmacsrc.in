@@ -59,6 +59,7 @@
  -nomodcheck	Disable periodic checking of disk file newer than buffer
 		(this checking happens on save even with this option).
  -nobackups	If you don't want backup files to be created
+ -nocurdir	Do not prompt with current directory
  -break_links	Delete file before writing, to break hard links
  -exask		^KX always confirms file name
 -beep		Beep on errors and when cursor goes past extremes
@@ -1066,7 +1067,7 @@ stop,msg,"Abort",beep,rtn	^X ^G			Abort message
 
 psh,markk,blkdel	^W			Cut
 
-save,if,"col!=1",then,rtn,endif	^X ^S			Save file
+savenow			^X ^S			Save file
 
 querysave		^X s
 
@@ -1096,7 +1097,7 @@ lose,query,edit		^X ^V			Edit a file: no orphaned buffers
 
 psh,drop,fwrdc-,query,markk,blkdel	^[ z	Cut to char
 
-psh,markk,if,"markv",then,blksave,">>",query,else,save,bol,deleol,">>",query,endif	^X a
+psh,markk,if,"markv",then,blksave,bol,">>",eol,query,else,save,bol,deleol,">>",query,endif	^X a
 
 retype,
 arg,"top+height/2-line",rtn,upslide	^L	Recenter
@@ -1227,6 +1228,16 @@ yankpop		^[ y		Yank-pop
 abort		^G
 abort		^C
 complete	^I
+dnarw,eol	.kd		Go down
+dnarw,eol	^N
+dnarw,eol	^[ O B
+dnarw,eol	^[ [ B
+dnarw,eol	^# B
+uparw,eol	.ku		Go up
+uparw,eol	^# A
+uparw,eol	^P
+uparw,eol	^[ O A
+uparw,eol	^[ [ A
 
 :menu			Selection menus
 :inherit windows

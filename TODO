@@ -7,10 +7,6 @@ Short (infinite) list for 3.2:
 
 - - - - - - - -
 
-- change directory
-
-- - - - - - - -
-
 - update man page
 
 - - - - - - - -
@@ -18,6 +14,11 @@ Short (infinite) list for 3.2:
 - security hole with spell checker
 
 - - - - - - - -
+
+- commands should be as deterministic as possible for
+  easier macro writing.
+     (some prompts give defaults sometime... this is bad)
+     (psh should save all possible state information)
 
 - merge math with macro language
 - tab at math prompt should go through variables, functions.

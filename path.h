@@ -100,5 +100,6 @@ unsigned char **rexpnd_users PARAMS((unsigned char *word));
 
 int chpwd PARAMS((unsigned char *path));
 unsigned char *pwd PARAMS((void));
+unsigned char *simplify_prefix(unsigned char *path);
 
 #endif

@@ -423,3 +423,36 @@ unsigned char *pwd(void)
 
 	return ret;
 }
+
+/* Simplify prefix by using ~ */
+/* Expects s to have trailing / */
+
+unsigned char *simplify_prefix(unsigned char *s)
+{
+	unsigned char *t = (unsigned char *)getenv("HOME");
+	unsigned char *n;
+
+#ifdef junk
+	unsigned char *org = pwd();
+	/* Normalize home */
+	if (t && !chpwd(t)) {
+		t = pwd();
+	} else {
+		t = 0;
+	}
+
+	chpwd(org);
+#endif
+	/* If current directory is prefixed with home directory, use ~... */
+	if (t && !strncmp(s,t,strlen(t)) && (!s[strlen(t)] || s[strlen(t)]=='/')) {
+		n = vsncpy(NULL,0,sc("~/"));
+		/* If anything more than just the home directory, add it */
+		if (s[strlen(t)]) {
+			n = vsncpy(sv(n),s+strlen(t)+1,strlen(s+strlen(t)+1));
+		}
+	} else {
+		n = vsncpy(NULL,0,sv(s));
+	}
+	vsrm(s);
+	return n;
+}

@@ -25,6 +25,9 @@ JOE 3.2
   (possibly rectangular) block of numbers.  Hit ^K H at the math prompt for
   documentation.
 
+- You can now change the current directory in JOE (well, it prompts with
+  the latest used directory).
+
 - Colors can now be specified in the joerc file
 
 - Macro language now has conditionals and modifiers for dealing with

@@ -19,6 +19,7 @@ int ublksave PARAMS((BW *bw));
 int ushell PARAMS((BW *bw));
 int usys PARAMS((BW *bw));
 int usave PARAMS((BW *bw));
+int usavenow PARAMS((BW *bw));
 int uedit PARAMS((BW *bw));
 int uswitch PARAMS((BW *bw));
 int uscratch PARAMS((BW *bw));

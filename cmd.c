@@ -195,6 +195,7 @@ CMD cmds[] = {
 	{US "rtarwmenu", TYPEMENU, umrtarw, NULL, 1, US "ltarwmenu"},
 	{US "rtn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOD, urtn, NULL, 1, NULL},
 	{US "save", TYPETW + TYPEPW, usave, NULL, 0, NULL},
+	{US "savenow", TYPETW + TYPEPW, usavenow, NULL, 0, NULL},
 	{US "scratch", TYPETW + TYPEPW, uscratch, NULL, 0, NULL},
 	{US "select", TYPETW + TYPEPW, uselect, NULL, 0, NULL},
 	{US "setmark", TYPETW + TYPEPW, usetmark, NULL, 0, NULL},

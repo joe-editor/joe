@@ -64,6 +64,8 @@
  -nomodcheck	Disable periodic checking of disk file newer than buffer
 		(this checking happens on save even with this option).
 
+ -nocurdir	Do not prompt with current directory
+
  -nobackups	If you don't want backup files to be created
 
  -break_links	Delete file before writing, to break hard links
@@ -1220,6 +1222,16 @@ uparw		^# A
 :prompt			Prompt windows
 :inherit main
 complete	^I
+dnarw,eol	.kd		Go down
+dnarw,eol	^N
+dnarw,eol	^[ O B
+dnarw,eol	^[ [ B
+dnarw,eol	^# B
+uparw,eol	.ku		Go up
+uparw,eol	^# A
+uparw,eol	^P
+uparw,eol	^[ O A
+uparw,eol	^[ [ A
 
 :menu			Selection menus
 :inherit windows

@@ -9,6 +9,9 @@
 #include "types.h"
 
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "b.h"
 #include "bw.h"
@@ -25,7 +28,13 @@
 #include "vfile.h"
 #include "menu.h"
 #include "va.h"
+#include "path.h"
 #include "w.h"
+
+/* The current directory */
+
+int nocurdir;
+unsigned char *current_dir;
 
 extern int smode;
 extern int joe_beep;
@@ -145,9 +154,15 @@ static int rtnpw(BW *bw)
 		}
 	}
 
-	/* Do ~ expansion */
-	if (pw->file_prompt)
+	/* Do ~ expansion and set new current directory */
+	if (pw->file_prompt&2) {
+		vsrm(current_dir);
+		current_dir=dirprt(s);
+	}
+
+	if (pw->file_prompt) {
 		s = canonical(s);
+	}
 
 	win = w->win;
 	pfunc = pw->pfunc;
@@ -233,6 +248,8 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	W *new;
 	PW *pw;
 	BW *bw;
+	unsigned char *s;
+	unsigned char *t;
 
 	new = wcreate(w->t, &watompw, w, w, w->main, 1, huh, notify);
 	if (!new) {
@@ -263,6 +280,12 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 		p_goto_bol(bw->top);
 	} else {
 		pw->hist = NULL;
+	}
+	/* Install current directory */
+	if ((file_prompt&4) && !nocurdir) {
+		binsm (bw->cursor, sv(current_dir));
+		p_goto_eof(bw->cursor);
+		bw->cursor->xcol = piscol(bw->cursor);
 	}
 	w->t->curwin = new;
 	return bw;
