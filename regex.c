@@ -294,15 +294,21 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 					unsigned char *tregex;
 					int tlen;
 
+					int match;
+
 					P *r = 0;
 
 					o = pdup(p);
 
 					/* Advance over character to skip */
-					if (len >= 2 && regex[0] == '\\' && regex[1] == '[') {
-						regex += 2;
-						len -= 2;
-						brack(&regex, &len, 0);
+					if (len >= 2 && regex[0] == '\\') {
+						if (regex[1] == '[') {
+							regex += 2;
+							len -= 2;
+							brack(&regex, &len, 0);
+						} else {
+							escape(&regex, &len);
+						}
 					} else if (len >= 1)
 						--len, ++regex;
 					else
@@ -323,8 +329,22 @@ int pmatch(char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 						pset(p, z);
 						prm(z);
 						c = pgetc(p);
-					} while (c != MAXINT && (*oregex == '\\' ? (tregex = oregex + 2, tlen = olen - 2, brack(&tregex, &tlen, c))
-							       : (icase ? toupper(c) == toupper(*oregex) : c == *oregex)));
+						tregex = oregex;
+						tlen = olen;
+						if (*oregex == '\\') {
+							if (oregex[1] == '[') {
+								tregex += 2;
+								tlen -= 2;
+								match = brack(&tregex, &tlen, c);
+							} else
+								match = (escape(&tregex, &tlen) == c);
+						} else {
+							if(icase)
+								match = (toupper(c) == toupper(*tregex));
+							else
+								match = (c == *tregex);
+						}
+					} while (c != MAXINT && match);
 
 				      done:
 					if (r)

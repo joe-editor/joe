@@ -1,3 +1,7 @@
+Sun Jan 13 2002  Vitezslav Samel <samel@mail.cz>
+	* regex.c:
+	fix char escaping in \+ case
+
 Sat Jan 12 2002  Vitezslav Samel <samel@mail.cz>
 	* help.c, types.h:
 	get back context help (vanished in cleaning patch to help by marx_sk)
