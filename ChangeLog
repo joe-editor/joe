@@ -1,3 +1,8 @@
+Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
+	* b.c, blocks.c, blocks.h, scrn.c, termcap.c, undo.c, vfile.c, vs.c:
+	use mfwrd() and mbkwd() only as internal functions to mmove().
+	This kills some of the remaining warnings during build.
+
 Wed Nov 07 2001  Vitezslav Samel <samel@mail.cz>
 	*** Release joe-2.9.7 ***
 

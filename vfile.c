@@ -155,7 +155,7 @@ char *vlock(VFILE *vfile, long int addr)
 
 					vheaders = (VPAGE **)
 					    malloc((amnt + vheadsz) * sizeof(VPAGE *));
-					mcpy(vheaders + amnt, t, vheadsz * sizeof(VPAGE *));
+					mmove(vheaders + amnt, t, vheadsz * sizeof(VPAGE *));
 					vheadsz += amnt;
 					vbase = vp->data;
 					free(t);

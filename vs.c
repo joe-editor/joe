@@ -111,7 +111,7 @@ int pos, len;
 	}
 	if (pos > olen)
 		vary = vsfill(vary, olen, sblank, pos - olen);
-	mfwrd(vary + pos, array, len * sizeof(sCAST));
+	mmove(vary + pos, array, len * sizeof(sCAST));
 	return vary;
 }
 
@@ -171,7 +171,7 @@ int pos, n;
 	if (pos >= sLen(vary))
 		vary = vstrunc(vary, pos + n);
 	else {
-		mbkwd(vary + pos + n, vary + pos, sLen(vary) - (pos + n) + 1);
+		mmove(vary + pos + n, vary + pos, sLen(vary) - (pos + n) + 1);
 		sLen(vary) += n;
 	}
 	return vary;
@@ -184,7 +184,7 @@ int pos, n;
 		return vary;
 	if (pos + n >= sLen(vary))
 		return vstrunc(vary, pos);
-	mfwrd(vary + pos, vary + pos + n, sLen(vary) - (pos + n) + 1);
+	mmove(vary + pos, vary + pos + n, sLen(vary) - (pos + n) + 1);
 	sLen(vary) -= n;
 	return vary;
 }

@@ -303,7 +303,7 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (/* ??? */), void *outptr
 				break;
 				case 0:
 				if (c == '@')
-					mfwrd(cap->sort + z, cap->sort + z + 1, (cap->sortlen-- - (z + 1)) * sizeof(struct sortentry));
+					mmove(cap->sort + z, cap->sort + z + 1, (cap->sortlen-- - (z + 1)) * sizeof(struct sortentry));
 
 				else if (c && c != ':')
 					cap->sort[z].value = qq + q + 1;
@@ -318,7 +318,7 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (/* ??? */), void *outptr
 	      in:
 		if (cap->sortlen == sortsiz)
 			cap->sort = (struct sortentry *) realloc(cap->sort, (sortsiz += 32) * sizeof(struct sortentry));
-		mbkwd(cap->sort + y + 1, cap->sort + y, (cap->sortlen++ - y) * sizeof(struct sortentry));
+		mmove(cap->sort + y + 1, cap->sort + y, (cap->sortlen++ - y) * sizeof(struct sortentry));
 
 		cap->sort[y].name = qq;
 		if (c && c != ':')

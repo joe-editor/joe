@@ -252,7 +252,7 @@ static int *mfwrdI(void *dest, void *src, int sz)
  * are copied before the ones at the lowest ('s') are.
  */
 
-char *mbkwd(register char *d, register char *s, register int sz)
+static char *mbkwd(register char *d, register char *s, register int sz)
 {
 	if (s == d)
 		return d;
@@ -343,7 +343,7 @@ char *mbkwd(register char *d, register char *s, register int sz)
  * are copied before the ones at the highest ('s'+'sz'-1) are.
  */
 
-char *mfwrd(register char *d, register char *s, register int sz)
+static char *mfwrd(register char *d, register char *s, register int sz)
 {
 	char *od = d;
 

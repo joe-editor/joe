@@ -997,7 +997,7 @@ static void doinschr(SCRN *t, int x, int y, int *s, int n)
 		}
 	}
 	mmove(t->scrn + x + t->co * y + n, t->scrn + x + t->co * y, (t->co - (x + n)) * sizeof(int));
-	mcpy(t->scrn + x + t->co * y, s, n * sizeof(int));
+	mmove(t->scrn + x + t->co * y, s, n * sizeof(int));
 }
 
 static void dodelchr(SCRN *t, int x, int y, int n)
@@ -1180,7 +1180,7 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt)
 	return;
 
       done:
-	mfwrd(t->scrn + top * t->co, t->scrn + (top + amnt) * t->co, (bot - top - amnt) * t->co * sizeof(int));
+	mmove(t->scrn + top * t->co, t->scrn + (top + amnt) * t->co, (bot - top - amnt) * t->co * sizeof(int));
 
 	if (bot == t->li && t->db) {
 		msetI(t->scrn + (t->li - amnt) * t->co, -1, amnt * t->co);
@@ -1245,7 +1245,7 @@ static void dodnscrl(SCRN *t, int top, int bot, int amnt)
 	msetI(t->updtab + top, 1, bot - top);
 	return;
       done:
-	mbkwd(t->scrn + (top + amnt) * t->co, t->scrn + top * t->co, (bot - top - amnt) * t->co * sizeof(int));
+	mmove(t->scrn + (top + amnt) * t->co, t->scrn + top * t->co, (bot - top - amnt) * t->co * sizeof(int));
 
 	if (!top && t->da) {
 		msetI(t->scrn, -1, amnt * t->co);
