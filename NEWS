@@ -1,32 +1,56 @@
 JOE 3.1
+
 - Regex and incremental search (jmacs ^S) now work for UTF-8
+
 - More and improved syntax highlighting files, including Mason
-- Use ^T E to set character set of file (hit <tab> <tab> for
-  lists of character sets).
+
+- Use ^T E to set character set of file (hit <tab> <tab> at the
+  prompt for a list of available character sets).
+
 - Can install custom "i18n" style byte oriented character set
   definition files.
+
 - No longer depends on iconv() (easier to compile)
+
 - Fix bug where right arrow was not doing right thing on last line
+
 - Fix UTF-8 codes between 0x10000 - 0x1FFFF
+
 - Now prints <XXXX> for unicode control characters
+
 - Improved smart home, indent, etc.
+
 - TAB completion is now more "bash"-like
+
 - When multiple files are given on command line, they end up in
   same order on the screen in JOE (before they were shuffled).
+
 - Menu size is now variable (40% of window size or smaller if
   it's not filled).
+
 - Added -icase option for case insensitive search by default.
+
 - Added -wrap option, which makes searches wrap
+
 - Added status line sequence %x: shows current context (function
   name if you're editing C).
-- Added tab completion at search prompts and ^K <return> for tab
-  completion in text windows.
+
+- Added tab completion at search prompts and ESC-Enter for tab
+  completion within text windows.
+
 - Warn if file changed on save.
+
 - Added Ctrl-space block selection method
+
+- Added Ctrl-arrow key block selection method
+
 - ^K E asks if you want to load original version of the file
+
 - jmacs bugs fixes: upperase word, transpose words, ^X ^C is
   more emacs-like., ^X k and ^X ^V more like emacs.
+
 - Much improved compile system ^[ c
+
 - Much improved jpico
 
 JOE 3.0 (23 APR 2004)

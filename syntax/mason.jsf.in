@@ -241,6 +241,7 @@ done
 	"`"		perl_backtick	recolor=-1
 	"a-zA-Z_"	perl_ident		buffer
 	"%"		perl_maybe_done
+	"&"		perl_maybe_done
 	"<"		perl_maybe_done_1
 
 :perl_maybe_done

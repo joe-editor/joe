@@ -655,9 +655,9 @@ explode		^K I
 explode		^K ^I
 explode		^K i
 help		^J
-help		^K H
-help		^K ^H
-help		^K h
+nmark		^K H
+nmark		^K ^H
+nmark		^K h
 hnext		^[ .
 hprev		^[ ,
 math		^Q M
