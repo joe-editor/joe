@@ -49,6 +49,13 @@ CHK =
 REAL =
 #REAL = -DREALBSD
 
+# Uncomment the line below if your
+# system uses 'struct dirent' instead
+# of 'struct direct' for opendir().
+
+DIRSTRUCT = -DIRECT
+#DIRSTRUCT = -DIRENT
+
 # Uncomment the second line below if your
 # POSIX system has 'sigaction', but not
 # 'signal':
@@ -84,7 +91,7 @@ WHEREJOE = /usr/local/bin
 # for newer HPUX systems, you need to add:  -D_HPUX_SOURCE
 
 CFLAGS = -O \
- $(TTY) $(TIM) $(CHK) $(REAL) $(HARDER) $(PGRP) \
+ $(TTY) $(TIM) $(CHK) $(REAL) $(DIRSTRUCT) $(HARDER) $(PGRP) \
  $(IA) $(IB) $(IC) $(ID) \
  -DJOERC=\"$(WHERERC)/joerc\" \
  -DPTYPREFIX=\"$(WHEREPTY)\" -DTTYPREFIX=\"$(WHERETTY)\"

@@ -159,15 +159,16 @@ else
    }
  msetI(d,
 #if ISIZ>=8
- (c<<(BITS*7))+(c<<(BITS*6))+(c<<(BITS*5))+(c<<(BITS*4))+
+ ((unsigned int)c<<(BITS*7))+((unsigned int)c<<(BITS*6))+
+ ((unsigned int)c<<(BITS*5))+((unsigned int)c<<(BITS*4))+
 #endif
 #if ISIZ>=4
- (c<<(BITS*3))+(c<<(BITS*2))+
+ ((unsigned int)c<<(BITS*3))+((unsigned int)c<<(BITS*2))+
 #endif
 #if ISIZ>=2
- (c<<BITS)+
+ ((unsigned int)c<<BITS)+
 #endif
- c,sz>>SHFT);
+ (unsigned int)c,sz>>SHFT);
  d+=sz&~(ISIZ-1);
  switch(sz&(ISIZ-1))
   {

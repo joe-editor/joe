@@ -7,32 +7,41 @@ joe \- Joe's Own Editor
 JOE is a sane ASCII-text screen editor.  Unlike vi, it is a "mode-less"
 editor- what you type is immediately entered into the file.  However, unlike
 EMACS, it uses a concise command set and generally has the "feel" of
-user-friendly PC editors.  Users of Micro-Pro's WordStar or Boreland's
+user-friendly PC editors.  Users of Micro-Pro's WordStar or Borland's
 "Turbo" languages will feel at home.  JOE goes far beyond those editors in
 providing powerful editing features, however.
 
-JOE is useful for editing programs (especially for programs written in block
-structured languages like C and PASCAL), unformatted ASCII text files (such
-as News articles or e-mail), foreign language text (JOE is not limited to
-7-bit characters), "binary" files (JOE has no line length or file size
-limits), or devices (JOE can edit specified sections of files or devices).
-
+JOE has many uses:
+.HP
+- Editing programs (especially for programs written in block
+structured languages like C and PASCAL) 
+.HP
+- Unformatted ASCII text files (such as News articles or e-mail) 
+.HP
+- Foreign language text (JOE is not limited to 7-bit characters) 
+.HP
+- "binary" files (JOE has no line length or file size limits), or devices (JOE 
+can edit specified sections of files or devices).  
+.PP
 JOE is free software;  you can distribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
 Foundation.  The author has no plans for turning JOE into a commercial or
 share-ware product.  JOE is available over the Internet by anonymous FTP from
-\fBworld.std.com\fR, file: \fBsrc/editors/joe*.tar.Z\fR.
+\fBworld.std.com\fR, file: \fBsrc/editor/joe*.tar.Z\fR.
 
-.SH Usage
-Type \fBjoe\fR followed by zero or more file names.  Each file
-name may be preceeded by a \fB+nnn\fR to have the cursor initially placed on
-line nnn.  If you are editing a new file, you can either give the name of
-the new file here when you invoke the editor, or in the editor when you save
-the new file. A modified syntax for file names is provided for allowing you
-to edit program output, standard input/output or sections of files or
-devices.  See the section \fBFilenames\fR below for details.
+.SH Usage 
 
-Once you are in the editor, you type in text and use special
+To start the editor, type \fBjoe\fR followed by zero or more names of files 
+you want to exit.  Each file name may be preceeded by a number (represented 
+by the \fB+nnn\fR in the example command line) to have the cursor initially 
+placed on line nnn of the file.  If you are editing a new file, you can 
+either give the name of the new file when you invoke the editor, or in 
+the editor when you save the new file.  A modified syntax for file names is 
+provided to allow you to edit program output, standard input/output, or 
+sections of files or devices.  See the section \fBFilenames\fR below for 
+details.  
+
+Once you are in the editor, you can type in text and use special
 control-character sequences to perform other editing tasks.  To find out
 what the control-character sequences are, read the rest of this man page or
 type \fB^K H\fR for help in the editor.  The \fB^\fR means that you hold
@@ -42,7 +51,11 @@ H\fR, a menu of help topics appears on the bottom line.  Use the arrow keys
 (or \fB^F\fR and \fB^B\fR if your terminal has none) to select the topic and
 then press \fBSPACE\fR or \fBRETURN\fR to have help on that topic appear on
 the screen.  Or if you're a fast typist, you may prefer to just hit the
-first letter of the Help topic to have it immediately appear on the screen.
+first letter of the Help topic to have it immediately appear on the screen. 
+The help window will appear in the top half of the screen, and the editing 
+window will be in the lower half of the screen. You can enter and edit text 
+while viewing the help screen. Use the \fB^K H\fR command again to dismiss 
+the help window. 
 
 You can customize the keyboard layout, the help screens and a number of
 behavior defaults by copying JOE's initialization file (usually
@@ -61,28 +74,26 @@ should.  See the section \fBEnvironment variables\fR below.
 .SH Editing Tasks
 .SS Basic Editing
 
-When you type characters into the editor, they normally get inserted into
+When you type characters into the editor, they are normally inserted into
 the file being edited (or appended to the file if the cursor is at the end
 of the file).  This is the normal operating mode of the editor.  If you want
 to replace some existing text, you have to delete the old text before or
 after you type in the replacement text.  The \fBBackspace\fR key can be used
 for deleting text: move the cursor to right after the text you want to
-delete and hit \fBBackspace\fR a number of times.  Hit the \fBEnter\fR or
-\fBReturn\fR key to insert a line-break.  For example, if the cursor was in
-the middle of a line and you hit \fBReturn\fR, the line would be split into
-two lines with the cursor appearing at the beginning of the second line. 
-Hit \fBBackspace\fR at the beginning of a line to eliminate a line-break. 
-Always keep in mind that the text is logically stored as a one dimensional
-stream: there are lines of text with special line-break "control-characters"
-separating them.  \fBReturn\fR inserts these special line-break characters
-and \fBBackspace\fR can delete them.
+delete and hit \fBBackspace\fR a number of times.  
+
+Hit the \fBEnter\fR or \fBReturn\fR key to insert a line-break.  For 
+example, if the cursor was in the middle of a line and you hit \fBReturn\fR, 
+the line would be split into two lines with the cursor appearing at the 
+beginning of the second line.  Hit \fBBackspace\fR at the beginning of a 
+line to eliminate a line-break.
 
 Use the arrow keys to move around the file.  If your keyboard doesn't have
 arrow keys (or if they don't work for some reason), use \fB^F\fR to move
 forwards (right), \fB^B\fR to move backwards (left), \fB^P\fR to move to the
 previous line (up), and \fB^N\fR to move to the next line (down).  The right
 and left arrow keys simply move forwards or backwards one character at a
-time through the stream of text: if you're at the beginning of a line and
+time through the text: if you're at the beginning of a line and
 you press left-arrow, you will end up at the end of the previous line.  The
 up and down arrow keys move forwards and backwards by enough characters so
 that the cursor appears in the same column that it was in on the original
@@ -95,21 +106,23 @@ columns, but this can be changed with the \fB^T D\fR command.  PASCAL and C
 programmers often set TAB STOPS on every 4 columns.
 
 If for some reason your terminal screen gets messed up (for example, if
-you receive a mail notice from biff), you can have the editor retype the
+you receive a mail notice from biff), you can have the editor refresh the
 screen by hitting \fB^R\fR.
 
-There are many other keys for deleting text and moving around the file.  For
-example, hit \fB^D\fR to delete the character the cursor is on instead of
-deleting backwards like \fBBackspace\fR.  \fB^D\fR will also delete a
-line-break if the cursor is at the end of a line.  Type \fB^Y\fR to delete
-the entire line or \fB^J\fR to delete just from the cursor to the end of the
-line.  Hit \fB^A\fR to move the cursor to the beginning of the line it's on. 
-Hit \fB^E\fR to move the cursor to the end of the line.  Hit \fB^U\fR or
-\fB^V\fR for scrolling the cursor up or down 1/2 a screen's worth. 
-"Scrolling" means that the text on the screen moves, but the cursor stays at
-the same place relative to the screen.  Hit \fB^K U\fR or \fB^K V\fR to
-move the cursor to the beginning or the end of the file.  Look at the help
-screens in the editor to find even more delete and movement commands.
+There are many other keys for deleting text and moving around the file.  For 
+example, hit \fB^D\fR to delete the character the cursor is on instead of 
+deleting backwards like \fBBackspace\fR.  \fB^D\fR will also delete a 
+line-break if the cursor is at the end of a line.  Type \fB^Y\fR to delete 
+the entire line the cursor is on or \fB^J\fR to delete just from the cursor 
+to the end of the line.  
+
+Hit \fB^A\fR to move the cursor to the beginning of the line it's on.  Hit 
+\fB^E\fR to move the cursor to the end of the line.  Hit \fB^U\fR or 
+\fB^V\fR for scrolling the cursor up or down 1/2 a screen's worth.  
+"Scrolling" means that the text on the screen moves, but the cursor stays at 
+the same place relative to the screen.  Hit \fB^K U\fR or \fB^K V\fR to move 
+the cursor to the beginning or the end of the file.  Look at the help 
+screens in the editor to find even more delete and movement commands.  
 
 If you make a mistake, you can hit \fB^_\fR to "undo" it.  On most keyboards
 you hit just \fB^-\fR to get \fB^_\fR, but on some you might have to hold
@@ -117,11 +130,12 @@ both the \fBShift\fR and \fBControl\fR keys down at the same time to get it.
 If you "undo" too much, you can "redo" the changes back into existence by
 hitting \fB^^\fR (type this with just \fB^6\fR on most keyboards).
 
-If you were editing in one place within the file, and you then temporarily
-had to look or edit some other place within the file, you can get back to
-the original place by hitting \fB^K -\fR.  You can step through a history of
-places with \fB^K -\fR and \fB^K =\fR, in the same way you can step through
-the history of changes with the "undo" and "redo" commands.
+If you were editing in one place within the file, and you then temporarily 
+had to look or edit some other place within the file, you can get back to 
+the original place by hitting \fB^K -\fR.  This command actually returns you 
+to the last place you made a change in the file.  You can step through a 
+history of places with \fB^K -\fR and \fB^K =\fR, in the same way you can 
+step through the history of changes with the "undo" and "redo" commands.  
 
 When you are done editing the file, hit \fB^K X\fR to exit the editor.  You
 will be prompted for a file name if you hadn't already named the file you
@@ -132,25 +146,27 @@ decide that you don't want the changes you made to a file during a
 particular edit session, you can hit \fB^C\fR to exit the editor without
 saving them.
 
-If, after saving changes to a file you realize that you need the original
-file back, you can find it in your directory, but with a ~ appended to the
-name.
+If you edit a file and save the changes, a "backup" copy of that file is 
+created in the current directory, with a ~ appended to the name, which 
+contains the original version of the file. 
 
 .SS Word wrap and formatting
 
-If you type past the right edge of the screen in a C or PASCAL file, the
-screen will scroll to the right to follow the cursor.  If you type past the
-right edge of the screen in a normal file (one whose name doesn't end in .c, .h
-or .p), JOE will automatically wrap the last word onto the next line so that
-you don't have to hit \fBReturn\fR.  This is called word-wrap mode. 
-Word-wrap can be turned on or off with the \fB^T W\fR command.  JOE's
-initialization file is usually set up so that this mode is automatically
-turned on for all non-program files.  See the section below on the
-\fBjoerc\fR file to change this and other defaults.
+If you type past the right edge of the screen in a C language or PASCAL 
+file, the screen will scroll to the right to follow the cursor.  If you type 
+past the right edge of the screen in a normal file (one whose name doesn't 
+end in .c, .h or .p), JOE will automatically wrap the last word onto the 
+next line so that you don't have to hit \fBReturn\fR.  This is called 
+word-wrap mode.  Word-wrap can be turned on or off with the \fB^T W\fR 
+command.  JOE's initialization file is usually set up so that this mode is 
+automatically turned on for all non-program files.  See the section below on 
+the \fBjoerc\fR file to change this and other defaults.  
 
-Aside for Word-wrap mode, JOE does not automatically keep paragraphs
-formatted like some word-processors.  Instead, if you need a paragraph to be
-reformatted, hit \fB^K J\fR.
+Aside for Word-wrap mode, JOE does not automatically keep paragraphs 
+formatted like some word-processors.  Instead, if you need a paragraph to be 
+reformatted, hit \fB^K J\fR.  This command "fills in" the paragraph that the 
+cursor is in, fitting as many words in a line as is possible.  A paragraph, 
+in this case, is a block of text separated above and below by a blank line.  
 
 The margins which JOE uses for paragraph formatting and word-wrap can be set
 with the \fB^T L\fR and \fB^T R\fR commands.  If the left margin is set to
@@ -161,16 +177,16 @@ If you want to center a line within the margins, use the \fB^K A\fR command.
 
 .SS Over-type mode
 
-Sometimes it's tiresome to have to delete old text before or after
-you insert new text.  This happens, for example, when you are changing a
-table and you want to maintain the column position of the right side of the
-table.  When this occurs, you can put the editor in over-type mode with \fB^T
-T\fR.  When the editor is in this mode, the characters you type in replace
-existing characters, in the way an idealized typewriter would.  Also,
-\fBBackspace\fR simply moves left instead of deletes left, when it's not at
-the end or beginning of a line.  Over-type mode is not the natural way of
-dealing with text electronically, so you should go back to insert-mode as
-soon as possible by typing \fB^T T\fR again.
+Sometimes it's tiresome to have to delete old text before or after you 
+insert new text.  This happens, for example, when you are changing a table 
+and you want to maintain the column position of the right side of the table.  
+When this occurs, you can put the editor in over-type mode with \fB^T T\fR.  
+When the editor is in this mode, the characters you type in replace existing 
+characters, in the way an idealized typewriter would.  Also, \fBBackspace\fR 
+simply moves left instead of deleting the character to the left, when it's 
+not at the end or beginning of a line.  Over-type mode is not the natural 
+way of dealing with text electronically, so you should go back to 
+insert-mode as soon as possible by typing \fB^T T\fR again.  
 
 If you need to insert while you're in over-type mode, hit \fB^@\fR.  This
 inserts a single SPACE into the text.
@@ -192,12 +208,36 @@ a TAB character (which does the same thing the TAB key does).  A useful
 control character to enter is 12 (\fB` L\fR), which causes most printers to
 advance to the top of the page.  You'll notice that JOE displays this
 character as an underlined L.  You can enter the characters above 127, the
-so-called \fBmeta characters\fR, by first hitting \fB^\e\fR.  This adds 128
+\fBmeta characters\fR, by first hitting \fB^\e\fR.  This adds 128
 to the next (possibly control) character entered.  JOE displays characters
 above 128 in inverse-video.  Some foreign languages, which have more letters
 than English, use the meta characters for the rest of their alphabet.  You
 have to put the editor in \fBASIS\fR mode (described later) to have these
 passed untranslated to the terminal.
+
+.SS Prompts
+If you hit \fBTAB\fR at any file name prompt, a list of directory entries
+which match the name you had typed in so far will be generated (or if only
+one directory entry matches, it is immediately appended to the name).  You
+can use the arrow keys to move around this directory menu and press RETURN
+or SPACE to select an item.  If you press the first letter of one of the
+directory entries, it will be selected, or if more than one entry has the
+same first letter, the cursor will jump between those entries.  If you
+select a subdirectory or .., the directory name is appended to the prompt
+and the new directory is loaded into the menu.  You can hit Backspace to go
+back to the previous directory.
+
+Most prompts record a history of the responses you give them.  You can hit
+up and down arrow to step through these histories.
+
+Prompts are actually single line windows with no status line, so you can use
+any editing command that you normally use on text within the prompts.  The
+prompt history is actually just other lines of the same "prompt file".  Thus
+you can can search backwards though the prompt history with the normal \fB^K
+F\fR command if you want.
+
+Since prompts are windows, you can also switch out of them with \fB^K P\fR
+and \fB^K N\fR.
 
 .SS Where am I?
 
@@ -205,7 +245,7 @@ Hit \fB^K SPACE\fR to have JOE report the line number, column number, and
 byte number on the last line of the screen.  The number associated with the
 character the cursor is on (its ASCII code) is also shown.  You can have the
 line number and/or column number always displayed on the status line by
-giving the \fB^T N\fR and \fB^T C\fR commands.
+using the \fB^T N\fR and \fB^T C\fR commands.
 
 .SS File operations
 
@@ -221,18 +261,19 @@ R\fR to insert it.
 
 .SS Temporarily suspending the editor
 
-Hit \fB^K Z\fR to stop the editor and go back to the shell.  You might want
-to do this to stop whatever you're editing and answer an e-mail message or
-read this man page, for example.  You have to type \fBfg\fR or \fBexit\fR
-(you'll be told which when you hit \fB^K Z\fR) to return to the editor.
+If you need to temporarily stop the editor and go back to the shell, hit 
+\fB^K Z\fR.  You might want to do this to stop whatever you're editing and 
+answer an e-mail message or read this man page, for example.  You have to 
+type \fBfg\fR or \fBexit\fR (you'll be told which when you hit \fB^K Z\fR) 
+to return to the editor.  
 
 .SS Searching for text
 
-Hit \fB^K F\fR to have the editor search forwards or backwards for a text
-fragment (\fBstring\fR) for you.  After you hit \fBReturn\fR when you're
-done entering the search text, you are prompted to enter options.  You can
-just hit \fBReturn\fR again to have the editor immediately search forwards
-for the text, or you can enter one or more of these options:
+Hit \fB^K F\fR to have the editor search forwards or backwards for a text 
+fragment (\fBstring\fR) for you.  You will be prompted for the text to 
+search for.  After you hit \fBReturn\fR, you are prompted to enter options.  
+You can just hit \fBReturn\fR again to have the editor immediately search 
+forwards for the text, or you can enter one or more of these options: 
 
 .IP \fBb
 Search backwards instead of forwards.
@@ -242,9 +283,9 @@ Treat uppercase and lower case letters as the same when searching.  Normally
 uppercase and lowercase letters are considered to be different.
 
 .IP \fBnnn
-If you enter a number, JOE searches for the Nth occurrence of the text.  This
-is useful for going to specific places in files structured in some regular
-manner.
+(where \fBnnn\fR is a number) If you enter a number, JOE searches for the 
+Nth occurrence of the text.  This is useful for going to specific places in 
+files structured in some regular manner.  
 
 .IP \fBr
 Replace text.  If you enter the \fBr\fR option, then you will be further
@@ -258,9 +299,7 @@ the search text in the remainder of the file without asking for confirmation
 replacing.
 
 .PP
-You can hit \fB^L\fR to repeat the previous search.  This is normally used
-to find the right occurrence of a string which appears in your file more than
-once.
+You can hit \fB^L\fR to repeat the previous search.  
 
 .SS Regular Expressions
 
@@ -277,7 +316,7 @@ the search text, JOE will find AXB, but not AB or AXXB.
 
 .IP \fB\e^\ \e$
 These match the beginning and end of a line.  For example, if you give
-\fB\e^test\e$\fR, then JOE will find \fBtest\fR on a line by itself.
+\fB\e^test\e$\fR, then JOE with find \fBtest\fR on a line by itself.
 
 .IP \fB\e<\ \e>
 These match the beginning and end of a word.  For example, if you give
@@ -305,7 +344,7 @@ characters within the brackets are both SPACE and TAB, then JOE will find
 whitespace.
 
 .IP \fB\e\e
-If you need to find a \e, this is how you enter it.
+Matches a single \e.
 
 .IP \fB\en
 This finds the special end-of-line or line-break character.
@@ -326,21 +365,47 @@ These get replaced with the text which matched the Nth \fB\e*\fR, \fB\e?\fR,
 .IP \fB\e\e
 Use this if you need to put a \fB\e\fR in the replacement string.
 
-.IP \fB\en
+.IP \fB\en  
 Use this if you need to put a line-break in the replacement string.
+.PP
+Some examples:
+
+Suppose you have a list of addresses, each on a separate line, which starts 
+with "Address:" and has each element separated by commas.  Like so: 
+
+Address: S. Holmes, 221b Baker St., London, England
+
+If you wanted to rearrange the list, to get the country first, then the 
+city, then the person's name, and then the address, you could do this:
+
+Type \fB^K F\fR to start the search, and type:
+
+\fBAddress:\e*,\e*,\e*,\e*\e$\fR 
+
+to match "Address:", the four comma-separated elements, and then the end of 
+the line.  When asked for options, you would type \fBr\fR to replace the 
+string, and then type:
+
+\fBAddress:\e3,\e2,\e0,\e1\fR
+
+To shuffle the information the way you want it. After hitting return, the 
+search would begin, and the sample line would be changed to: 
+
+Address: England, London, S. Holmes, 221b Baker St.
+
 
 .SS Blocks
 
-If you want to move, copy, save or delete a specific section of text, you
-can do it with highlighted blocks.  First, select the block of text you want
-by pressing \fB^K B\fR with the cursor on the first character of the block
-and by pressing \fB^K K\fR with the cursor on the first character after the
-block.  The text between the \fB^K B\fR and \fB^K K\fR should be
-highlighted.  Now you can press \fB^K M\fR to move the highlighted text to
-where the cursor is positioned.  You can press \fB^K C\fR to make a copy of
-the highlighted text and insert it to where the cursor is positioned.  Use
-\fB^K Y\fR to delete the highlighted text.  Use \fB^K W\fR, to write the
-highlighted text to a file.
+If you want to move, copy, save or delete a specific section of text, you 
+can do it with highlighted blocks.  First, move the cursor to the start of 
+the section of text you want to work on, and press \fB^K B\fR.  Then move 
+the cursor to the character just after the end of the text you want to 
+affect and press \fB^K K\fR.  The text between the \fB^K B\fR and \fB^K K\fR 
+should become highlighted.  Now you can move your cursor to someplace else 
+in your document and press \fB^K M\fR to move the highlighted text there.  
+You can press \fB^K C\fR to make a copy of the highlighted text and insert 
+it to where the cursor is positioned.  \fB^K Y\fR to deletes the highlighted 
+text.  \fB^K W\fR, writes the highlighted text to a file.  
 
 A very useful command is \fB^K /\fR, which filters a block of text through a
 unix command.  For example, if you select a list of words with \fB^K B\fR
@@ -349,62 +414,77 @@ sorted.  Another useful unix command for \fB^K /\fR, is \fBtr\fR.  If you
 type \fB^K / tr a-z A-Z\fR, then all of the letters in the highlighted block
 will be converted to uppercase.
 
-After you are finished with some block operations, you can just leave the
-highlighting on if you don't mind it.  If it really bothers you, however,
-just hit \fB^K B ^K K\fR, to turn the highlighting off.
+After you are finished with some block operations, you can just leave the 
+highlighting on if you don't mind it (of course, if you accidently hit \fB^K 
+Y\fR without noticing...).  If it really bothers you, however, just hit 
+\fB^K B ^K K\fR, to turn the highlighting off.  
 
 .SS Indenting program blocks
-Auto-indent mode is enabled or disabled with the \fB^T A\fR command.  The
-\fBjoerc\fR file is normally set up so that files with names ending with .p, .c
+Auto-indent mode toggled with the \fB^T A\fR command.  The
+\fBjoerc\fR is normally set up so that files with names ending with .p, .c
 or .h have auto-indent mode enabled.  When auto-indent mode is enabled and
 you hit \fBReturn\fR, the cursor will be placed in the same column that the
 first non-SPACE/TAB character was in on the original line.
 
-You can use the \fB^K ,\fR and \fB^K .\fR commands to shift a block of text
-to the left or right.  If no highlighting is set when you give these
-commands, the current program block will first be selected.  The number of
-columns these commands shift by is set with the \fB^T I\fR command.  The
-character inserted and deleted to accomplish the shifting can be set with
-the \fB^T K\fR command.
+You can use the \fB^K ,\fR and \fB^K .\fR commands to shift a block of text 
+to the left or right.  If no highlighting is set when you give these 
+commands, the program block the cursor is located in will be selected, and 
+will be moved by subsequent \fB^K ,\fR and \fB^K .\fR commands.  The number 
+of columns these commands shift by is set with the \fB^T I\fR command.  The 
+character inserted and deleted (usually a space) to accomplish the shifting 
+can be set with the \fB^T K\fR command.  
 
 .SS Windows
 You can edit more than one file at the same time or edit two or more
 different places of the same file.  To do this, hit \fB^K O\fR, to split the
 screen into two windows.  Use \fB^K P\fR or \fB^K N\fR to move the cursor
-into the window above or the window below.  Use \fB^K E\fR to edit a new
+into the top window or the lower window.  Use \fB^K E\fR to edit a new
 file in one of the windows.  A window will go away when you save the file
 with \fB^K X\fR or abort the file with \fB^C\fR.  If you abort a file which
-exists in two windows, just the window goes away, not the file.
+exists in two windows, one of the window goes away, not the file.
 
-You can hit \fB^K O\fR within a window to create even more windows.  If you
-have too many windows on the screen, but you don't want to eliminate them,
-you can hit \fB^K I\fR.  This will show only the window the cursor is on, or
-if there was only one window on the screen to begin with, try to fit all of
-the windows on the screen.  If there are more windows than can fit on the
-screen, you can hit \fB^K N\fR on the bottom-most window or \fB^K P\fR on
-the top-most window to get to them.
+You can hit \fB^K O\fR within a window to create even more windows.  If you 
+have too many windows on the screen, but you don't want to eliminate them, 
+you can hit \fB^K I\fR.  This will show only the window the cursor is in, or 
+if there was only one window on the screen to begin with, try to fit all 
+hidden windows on the screen.  If there are more windows than can fit on 
+the screen, you can hit \fB^K N\fR on the bottom-most window or \fB^K P\fR 
+on the top-most window to get to them.  
 
-If you gave more than one file name to JOE when you invoked it on the
-command line, each file will be placed in a different window.
+If you gave more than one file name to JOE on the command line, each file 
+will be placed in a different window.  
 
 You can change the height of the windows with the \fB^K G\fR and \fB^K T\fR
 commands.
 
-.SS Keyboard macros
-If you find that you have to repeat the same long set of key-strokes over
-and over again, you can instead record the set of key-strokes in a macro. 
-To do this, hit \fB^K [\fR followed by a number from 0 to 9.  The status
-line will then say (Macro n recording...).  Now type in one iteration of the
-set of key-strokes you keep having to repeat.  Be sure to include the
-key-strokes needed to position the cursor to the next place where the set of
-key-strokes will next have to be repeated.  Hit \fB^K ]\fR to stop recording
-the macro.  Hit \fB^K\fR followed by the number you recorded the macro in to
-execute one iteration of the key-strokes.
+.SS Keyboard macros 
 
-If you find that the macro you need to record has a repeated set of
+Macros allow you to record a series of keystrokes and replay them with the 
+press of two keys.  This is useful to automate repetitive tasks.  To start a 
+macro recording, hit \fB^K [\fR followed by a number from 0 to 9.  The 
+status line will display (Macro n recording...).  Now, type in the series of 
+keystrokes that you want to be able to repeat.  The commands you type will 
+have their usual effect. Hit \fB^K ]\fR to stop recording the macro.  Hit 
+\fB^K\fR followed by the number you recorded the macro in to execute one 
+iteration of the key-strokes.   
+
+For example, if you want to put "**" in front of a number of lines, you can 
+type:
+
+\fB^K [ ^A ** \fR<down arrow> \fB^K ]\fR
+
+Which starts the macro recording, moves the cursor to the beginning of the 
+line, inserts "**", moves the cursor down one line, and then ends the 
+recording. Since we included the key-strokes needed to position the cursor 
+on the next line, we can repeatedly use this macro without having to move 
+the cursor ourselves, something you should always keep in mind when 
+recording a macro.
+
+If you find that the macro you are recording itself has a repeated set of
 key-strokes in it, you can record a macro within the macro, as long as you
 use a different macro number.  Also you can execute previously recorded
-macros from within new macros.
+macros from within new macros. 
+
 
 .SS Repeat
 You can use the repeat command, \fB^K \e\fR, to repeat a macro, or any other
@@ -413,6 +493,10 @@ edit command or even a normal character, a specified number of times.  Hit
 press \fBReturn\fR.  The next edit command you now give will be repeated
 that many times.
 
+For example, to delete the next 20 lines of text, type:
+
+\fB^K \ 20\fR<return>\fB^Y\fR
+
 .SS Rectangle mode
 Type \fB^T X\fR to have \fB^K B\fR and \fB^K K\fR select rectangular blocks
 instead of stream-of-text blocks.  This mode is useful for moving, copying,
@@ -420,7 +504,7 @@ deleting or saving columns of text.  You can also filter columns of text
 with the \fB^K /\fR command- if you want to sort a column, for example.  The
 insert file command, \fB^K R\fR is also effected.
 
-When rectangle mode is selected, it can be further modified by over-type mode
+When rectangle mode is selected, over-type mode is also useful
 (\fB^T T\fR).  When over-type mode is selected, rectangles will replace
 existing text instead of getting inserted before it.  Also the delete block
 command (\fB^K Y\fR) will clear the selected rectangle with SPACEs and TABs
@@ -429,16 +513,17 @@ block command (\fB^K /\fR), since it will maintain the original width of the
 selected column.
 
 .SS Tag search
-If you are editing a large C program with many source files, you can use the
-\fBctags\fR program to generate a \fBtags\fR file.  This file contains a
-list of program symbols and the files and positions where the symbols are
-defined.  The \fB^K ;\fR command can be used to lookup a symbol, load the
-file where the symbol is defined into the current window and position the
-cursor to where the symbol is defined.  \fB^K ;\fR prompts you for the
-symbol you want, but uses the symbol the cursor happened to originally be on
-as a default.  Since \fB^K ;\fR loads the definition file into the current
-window, you probably want to split the window first with \fB^K O\fR, to have
-both the original file and the definition file loaded.
+If you are editing a large C program with many source files, you can use the 
+\fBctags\fR program to generate a \fBtags\fR file.  This file contains a 
+list of program symbols and the files and positions where the symbols are 
+defined.  The \fB^K ;\fR command can be used to lookup a symbol (functions, 
+defined constants, etc.), load the file where the symbol is defined into the 
+current window and position the cursor to where the symbol is defined.  
+\fB^K ;\fR prompts you for the symbol you want, but uses the symbol the 
+cursor was on as a default.  Since \fB^K ;\fR loads 
+the definition file into the current window, you probably want to split the 
+window first with \fB^K O\fR, to have both the original file and the 
+definition file loaded.  
 
 .SS Shell windows
 Hit \fB^K '\fR to run a command shell in one of JOE's windows.  When the
@@ -456,39 +541,44 @@ not at the end of the window, the shell is \fBkill\fRed.
 
 .SS Other mode settings/options
 .IP \fB^T\ P
-This command sets the number of lines which are kept across the scrolling
-commands, \fB^U\fR and \fB^V\fR.
+This command sets the number of lines which are kept on the screen with the 
+\fB^U\fR and \fB^V\fR commands. For example, setting this value to 3 means 
+that the the last three lines on the screen will be the top three lines of 
+the screen after a \fB^V\fR commands.
 
 .IP \fB^T\ F
 This command sets the editor so that when files are saved, a final
-line-break is always forced to be on the last line.
+line-break is added on the last line if one is not there already.
 
 .IP \fB^T\ M
 This command sets the editor so that when you scroll the screen using the up
-and down arrow keys, the cursor is re-centered to the middle of the screen. 
+and down arrow keys, the cursor line is made the center of the screen. 
 This is automatically set when the editor is used at low baud rates on
 terminals which don't have scrolling.
 
 .IP \fB^T\ H
 This command sets the editor so that characters above 127 are output as-is,
-instead of as inverse versions of the corresponding characters below
+instead of as inverse versions of the same corresponding characters below
 128.
 
-.SH \fBEnvironment\ variables
-For JOE to operate correctly, a number of environment settings must be
-correct.  The throughput (baud rate) of the connection between the computer
-and your terminal must be set correctly for JOE to update the screen
-smoothly and allow typeahead to defer the screen update.  Use the \fBstty
-nnn\fR command to set this.  You want to set it as close as possible to the
-actual effective throughput of the connection.  For example, if the slowest
-segment of the connection is 1200 baud, you want to use this value for
-\fBstty\fR.  The special baud rate of 38400 or \fBextb\fR is used to
-indicate that you have a very-high speed connection, such as a memory mapped
-console or an X-window terminal emulator.  If you can't use \fBstty\fR to
-set the actual throughput (perhaps because of a modem communicating with the
-computer at a different rate than it's communicating over the phone line),
-you can put a numeric value in the \fBBAUD\fR environment variable instead
-(use \fBsetenv BAUD 9600\fR for csh or \fBBAUD=9600; export BAUD\fR for sh).
+.SH \fBEnvironment\ variables 
+
+For JOE to operate correctly, a number of other environment settings must be 
+correct.  The throughput (baud rate) of the connection between the computer 
+and your terminal must be set correctly for JOE to update the screen 
+smoothly and allow typeahead to defer the screen update.  Use the \fBstty 
+nnn\fR command to set this.  You want to set it as close as possible to 
+actual throughput of the connection.  For example, if you are connected via 
+a 1200 baud modem, you want to use this value for \fBstty\fR.  If you are 
+connected via 14.4k modem, but the terminal server you are connected to 
+connects to the computer a 9600 baud, you want to set your speed as 9600 
+baud.  The special baud rate of 38400 or \fBextb\fR is used to indicate that 
+you have a very-high speed connection, such as a memory mapped console or an 
+X-window terminal emulator.  If you can't use \fBstty\fR to set the actual 
+throughput (perhaps because of a modem communicating with the computer at a 
+different rate than it's communicating over the phone line), you can put a 
+numeric value in the \fBBAUD\fR environment variable instead (use \fBsetenv 
+BAUD 9600\fR for csh or \fBBAUD=9600; export BAUD\fR for sh).  
 
 The \fBTERM\fR environment variable must be set to the type of terminal
 you're using.  If the size (number of lines/columns) of your terminal is
@@ -520,8 +610,8 @@ within the editor use \fB^K D !mail jhallen@world.std.com\fR to send the
 file being edited to me.
 
 .IP \fB>>filename
-Use this syntax wherever files are saved to have JOE append to the end of a
-file instead of replacing it.
+Use this to have JOE append the edited text to the end of the file 
+"filename." 
 
 .IP \fBfilename,START,SIZE
 Use this to access a fixed section of a file or device.  \fBSTART\fR and
@@ -535,29 +625,6 @@ standard output.  For example, you can put joe in a pipe of commands:
 \fBquota -v | joe - | mail root\fR, if you want to complain about your low
 quota.
 
-.SH Prompts
-If you hit \fBTAB\fR at any file name prompt, a list of directory entries
-which match the name you had typed in so far will be generated (or if only
-one directory entry matches, it is immediately appended to the name).  You
-can use the arrow keys to move around this directory menu and press RETURN
-or SPACE to select an item.  If you press the first letter of one of the
-directory entries, it will be selected, or if more than one entry has the
-same first letter, the cursor will jump between those entries.  If you
-select a subdirectory or .., the directory name is appended to the prompt
-and the new directory is loaded into the menu.  You can hit Backspace to go
-back to the previous directory.
-
-Most prompts record a history of the responses you give them.  You can hit
-up and down arrow to step through these histories.
-
-Prompts are actually single line windows with no status line, so you can use
-any editing command that you normally use on text within the prompts.  The
-prompt history is actually just other lines of the same "prompt file".  Thus
-you can can search backwards though the prompt history with the normal \fB^K
-F\fR command if you want.
-
-Since prompts are windows, you can also switch out of them with \fB^K P\fR
-and \fB^K N\fR.
 
 .SH The\ joerc file
 \fB^T\fR options, the help screens and the key-sequence to editor command
@@ -569,8 +636,6 @@ further instruction in it.
 
 .SH Acknowledgements
 JOE was whiten by Joseph H. Allen.  If you have bug reports or questions,
-e-mail them to jhallen@world.std.com.
-
-Larry Foard (entropy@world.std.com), gave creative support and wrote
-sections of the editor.  Gary Gray (ggray@world.std.com) put up with my
-annoying enthusiastic editor nonsense.
+e-mail them to jhallen@world.std.com.  Larry Foard (entropy@world.std.com),
+gave creative support and wrote sections of the editor.  Gary Gray
+(ggray@world.std.com) put up with my annoying enthusiastic editor nonsense.

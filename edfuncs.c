@@ -34,6 +34,12 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "msgs.h"
 #include "edfuncs.h"
 
+#ifdef SGI
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#endif
+
 int square=0;		/* Rectangle mode */
 
 B *filehist=0;
@@ -273,6 +279,8 @@ if(w->t->markb && w->t->markk &&
 msgnw(w,M014);
 }
 
+int lightoff=0;
+
 void ublkmove(w)
 W *w;
 {
@@ -313,9 +321,17 @@ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
   {
   binsb(bw->cursor,w->t->markb,w->t->markk);
   ublkdel(w);
-  umarkb(w);
-  umarkk(w);
-  pfwrd(w->t->markk,size);
+  if(lightoff)
+   {
+   prm(w->t->markb);
+   prm(w->t->markk);
+   }
+  else
+   {
+   umarkb(w);
+   umarkk(w);
+   pfwrd(w->t->markk,size);
+   }
   updall();
   return;
   }
@@ -348,9 +364,17 @@ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
  else
   {
   binsb(bw->cursor,w->t->markb,w->t->markk);
-  umarkb(w);
-  umarkk(w);
-  pfwrd(w->t->markk,size);
+  if(lightoff)
+   {
+   prm(w->t->markb);
+   prm(w->t->markk);
+   }
+  else
+   {
+   umarkb(w);
+   umarkk(w);
+   pfwrd(w->t->markk,size);
+   }
   updall();
   return;
   }
@@ -381,7 +405,15 @@ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
   if(fl=bsave(tmp->bof,s,tmp->eof->byte)) msgnw(w,msgs[5+fl]);
   brm(tmp);
   }
- else if(fl=bsave(w->t->markb,s,size)) msgnw(w,msgs[5+fl]);
+ else
+  {
+  if(fl=bsave(w->t->markb,s,size)) msgnw(w,msgs[5+fl]);
+  if(lightoff)
+   {
+   prm(w->t->markb);
+   prm(w->t->markk);
+   }
+  }
  }
 else msgnw(w,M014);
 vsrm(s);
@@ -612,6 +644,11 @@ if(fork())
   szz=w->t->markk->b->eof->byte;
   binsfd(w->t->markk,fr[0],MAXLONG);
   pfwrd(w->t->markk,w->t->markk->b->eof->byte-szz);
+  if(lightoff)
+   {
+   prm(w->t->markb);
+   prm(w->t->markk);
+   }
   }
  close(fr[0]);
  wait(0);
@@ -651,11 +688,13 @@ msgnw(w,M014);
 /* File loading and storing */
 /****************************/
 
+int nobackups=0;
+
 static int backup(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-if(!bw->b->backup)
+if(!bw->b->backup && !nobackups)
  {
  char *s=0;
  /* Create command string */
@@ -803,6 +842,8 @@ bw->b->chnged=0;
 wabort(w);
 }
 
+int exask=0;
+
 void uexsve(w)
 W *w;
 {
@@ -815,7 +856,7 @@ if(!bw->b->chnged)
  wabort(w);
  return;
  }
-if(bw->b->name)
+if(bw->b->name && !exask)
  {
  if(dosave(w,vsncpy(NULL,0,sz(bw->b->name)))) return;
  exmsg=vsncpy(NULL,0,sz(M022));
@@ -824,7 +865,16 @@ if(bw->b->name)
  bw->b->chnged=0;
  wabort(w);
  } 
-else wmkfpw(w,M018,&filehist,doex,"Names");
+else
+ {
+ W *pw=wmkfpw(w,M018,&filehist,doex,"Names");
+ if(pw && bw->b->name)
+  {
+  BW *pbw=(BW *)pw->object;
+  binss(pbw->cursor,bw->b->name);
+  pset(pbw->cursor,pbw->b->eof); pbw->cursor->xcol=pbw->cursor->col;
+  }
+ }
 }
 
 /*************/
@@ -1760,6 +1810,8 @@ void uisquare(w)
 W *w;
 {
 square= !square;
+if(w->t->markb) prm(w->t->markb);
+if(w->t->markk) prm(w->t->markk);
 if(square) msgnw(w,M033);
 else msgnw(w,M034);
 updall();
@@ -2040,7 +2092,7 @@ BW *bw=(BW *)w->object;
 void *object=bw->object;
 B *b;
 int fd, x;
-char ttyname[32];
+char ttyname[32], *ptr;
 if(c!='y' && c!='Y') return;
 if(bw->pid)
  {
@@ -2053,6 +2105,15 @@ w->object=(void *)(bw=bwmk(w->t,b,w->x,w->y+1,w->w,w->h-1));
 wredraw(w);
 setoptions(bw,"");
 bw->object=object;
+
+#ifdef SGI
+ptr=_getpty(&bw->out,O_RDWR,0600,0);
+if(ptr)
+ {
+ zcpy(ttyname,ptr);
+ goto gotone;
+ }
+#else
 
 if(!ptys) ptys=rexpnd(PTYPREFIX,"pty*");
 if(ptys) for(fd=0;ptys[fd];++fd)
@@ -2079,6 +2140,7 @@ if(ptys) for(fd=0;ptys[fd];++fd)
   else close(bw->out);
   }
  }
+#endif
 msgnw(w,M056);
 return;
 

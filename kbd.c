@@ -173,7 +173,7 @@ free(kmap);
 
 OPTIONS *options=0;
 extern int mid, dspasis, dspctrl, force, help, pgamnt, starow, stacol,
-           tabwidth;
+           tabwidth, nobackups, lightoff, exask, skiptop;
 
 void setoptions(bw,name)
 BW *bw;
@@ -252,10 +252,18 @@ while(++line, fgets(buf,256,fd))
   else if(!zcmp(buf+1,"starow")) starow=1;
   else if(!zcmp(buf+1,"force")) force=1;
   else if(!zcmp(buf+1,"help")) help=1;
+  else if(!zcmp(buf+1,"nobackups")) nobackups=1;
+  else if(!zcmp(buf+1,"lightoff")) lightoff=1;
+  else if(!zcmp(buf+1,"exask")) exask=1;
   else if(!zcmp(buf+1,"pg") && c)
    {
    sscanf(buf+x+1,"%d",&pgamnt);
    if(pgamnt<0 || pgamnt>24) pgamnt= -1;
+   }
+  else if(!zcmp(buf+1,"skiptop") && c)
+   {
+   sscanf(buf+x+1,"%d",&skiptop);
+   if(skiptop<0 || skiptop>20) skiptop=0;
    }
   else if(!zcmp(buf+1,"gtab") && c)
    {

@@ -123,7 +123,19 @@ unsigned long upc;	/* Microseconds per character */
 static int speeds[]=
 {
 B50,50,B75,75,B110,110,B134,134,B150,150,B200,200,B300,300,B600,600,B1200,1200,
-B1800,1800,B2400,2400,B4800,4800,B9600,9600,EXTA,19200,EXTB,38400
+B1800,1800,B2400,2400,B4800,4800,B9600,9600,
+
+#ifdef B19200
+B19200,19200,
+#else
+EXTA,19200,
+#endif
+
+#ifdef B38400
+B38400,38400
+#else
+EXTB,38400
+#endif
 };
 
 /* Input buffer */
@@ -291,7 +303,7 @@ ioctl(fileno(termin),TIOCGETP,&arg);
 ioctl(fileno(termin),TIOCGETC,&targ);
 ioctl(fileno(termin),TIOCGLTC,&ltarg);
 oarg=arg; otarg=targ; oltarg=ltarg;
-arg.sg_flags=( (arg.sg_flags&~(ECHO|CRMOD) ) | CBREAK) ;
+arg.sg_flags=( (arg.sg_flags&~(ECHO|CRMOD|XTABS|ALLDELAY|TILDE) ) | CBREAK) ;
 if(getenv("NOXON")) targ.t_startc= -1, targ.t_stopc= -1;
 targ.t_intrc= -1;
 targ.t_quitc= -1;
@@ -566,6 +578,10 @@ struct ttysize getit;
 #else
 #ifdef TIOCGWINSZ
 struct winsize getit;
+#else
+#ifdef WIOCGETD
+struct uwdata uwdat;
+#endif
 #endif
 #endif
 
@@ -584,6 +600,14 @@ if(ioctl(fileno(termout),TIOCGWINSZ,&getit)!= -1)
  *x=getit.ws_col;
  *y=getit.ws_row;
  }
+#else
+#ifdef WIOCGETD
+if(ioctl(fileno(termout),WIOCGETD,&uwdat))
+ {
+ *x=uwdat.uw_width/uwdat.uw_hs;
+ *y=uwdat.uw_height/uwdat.uw_vs;
+ }
+#endif
 #endif
 #endif
 }

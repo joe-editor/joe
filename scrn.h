@@ -23,6 +23,8 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "termcap.h"
 #include "tty.h"
 
+extern int skiptop;
+
 typedef struct seq SEQ;
 typedef struct scrn SCRN;
 
@@ -62,7 +64,7 @@ struct scrn
  char *cd;			/* Clear to end of screen */
  char *te;			/* Restoration string */
 
- int hz;			/* Terminal can't print ~s */
+ int haz;			/* Terminal can't print ~s */
  int os;			/* Terminal overstrikes */
  int eo;			/* Can use blank to erase even if os */
  int ul;			/* _ overstrikes */

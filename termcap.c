@@ -101,7 +101,6 @@ while(fgets(buf,80,file))
  int x=0, flg=0, c, y, z;
  do
   {
-  int y;
   for(y=x;buf[y] && buf[y]!=' ' && buf[y]!='\n';++y);
   c=buf[y]; buf[y]=0;
   if(c=='\n' || !c)
@@ -162,7 +161,6 @@ y=0; ti=0;
 
 if(match(cap->tbuf,name)) goto checktc;
 
-dofiles:
 cap->tbuf=vstrunc(cap->tbuf,0);
 
 nextfile:

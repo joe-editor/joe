@@ -1,11 +1,16 @@
 BUGS
 =-=-
 
+some systems use dirent instead of direct
+
 =-=-=
 sync problems with SIGCHLD/wait
 
 =-=-=
 problem with save?
+
+=-=-=
+line numbers get out of sync
 
 NEW FEATURES
 =-=-=-=-=-=-

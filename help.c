@@ -45,7 +45,7 @@ SCREEN *t;
 char *str=hlptxt;
 int y,x,c;
 int atr=0;
-for(y=0;y!=t->wind;++y)
+for(y=skiptop;y!=t->wind;++y)
  {
  if(t->t->updtab[y])
   {
@@ -86,15 +86,15 @@ void helpon(t)
 SCREEN *t;
 {
 if(!hlptxt) return;
-t->wind=hlplns;
+t->wind=hlplns+skiptop;
 if(t->h-t->wind<FITHEIGHT) t->wind=t->h-FITHEIGHT;
 if(t->wind<0)
  {
- t->wind=0;
+ t->wind=skiptop;
  return;
  }
 chsize(t,t->h-t->wind,t->h);
-msetI(t->t->updtab,1,t->wind);
+msetI(t->t->updtab+skiptop,1,t->wind);
 }
 
 /* Eliminate the help window */
@@ -103,7 +103,7 @@ void helpoff(t)
 SCREEN *t;
 {
 int z=t->wind;
-t->wind=0;
+t->wind=skiptop;
 chsize(t,t->h,t->h-z);
 }
 
@@ -115,7 +115,7 @@ W *w;
 struct help *h;
 if(w->huh) if(h=get_help(w->huh))
  {
- if(w->t->wind) helpoff(w->t);
+ if(w->t->wind!=skiptop) helpoff(w->t);
  hlptxt=h->hlptxt;
  hlpsiz=h->hlpsiz;
  hlpbsz=h->hlpbsz;
@@ -216,7 +216,7 @@ W *w;
 {
 W *new;
 MENU *m;
-if(w->t->wind)
+if(w->t->wind!=skiptop)
  {
  helpoff(w->t);
  return;

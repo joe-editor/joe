@@ -66,7 +66,6 @@ int len;
 if(!vary) vary=vsmk(len);
 else if(len>sSiz(vary))
  {
- int x;
  len+=(len>>2);
  vary=(sELEMENT(*))(2+(int *)realloc(
        (int *)vary-2,(len+1)*sizeof(sCAST)+2*sizeof(int) ));

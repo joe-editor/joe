@@ -20,7 +20,6 @@
  -nobackups	If you don't want backup files to be created
  -lightoff	Turn off highlighting after block copy or move
  -exask		^KX always confirms file name
- -skiptop nnn	Don't use top nnn lines of the screen
 
  SECOND SECTION: File name dependant local option settings:
 

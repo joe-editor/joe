@@ -27,6 +27,8 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "msgs.h"
 #include "scrn.h"
 
+int skiptop=0;
+
 extern int mid;
 
 /* Table of key sequences which we will translate to single codes */
@@ -174,7 +176,7 @@ if(t->ins) clrins(t);
 ch=c; c-=ch;
 if(t->x!=x || t->y!=y) cpos(t,x,y);
 if(c!=t->attrib) attr(t,c);
-if(t->hz && ch=='~') ch='\\';
+if(t->haz && ch=='~') ch='\\';
 ttputc(ch);
 ++t->x;
 }
@@ -189,7 +191,7 @@ unsigned char ch;
 if(c== -1) c=' ';
 ch=c; c-=ch;
 if(c!=t->attrib) attr(t,c);
-if(t->hz && ch=='~') ch='\\';
+if(t->haz && ch=='~') ch='\\';
 ttputc(ch);
 ++t->x;
 }
@@ -248,7 +250,7 @@ if(p=getenv("COLUMNS")) sscanf(p,"%d",&x);
 if(x>7) t->co=x;
 if(y>3) t->li=y;
 
-t->hz=getflag(t->cap,"hz");
+t->haz=getflag(t->cap,"hz");
 t->os=getflag(t->cap,"os");
 t->eo=getflag(t->cap,"eo");
 if(getflag(t->cap,"hc")) t->os=1;
@@ -898,7 +900,7 @@ static void doupscrl(t,top,bot,amnt)
 SCRN *t;
 int top,bot,amnt;
 {
-int a=amnt, x;
+int a=amnt;
 if(!amnt) return;
 attr(t,0);
 if(top==0 && bot==t->li && (t->sf || t->SF))
@@ -954,7 +956,7 @@ static void dodnscrl(t,top,bot,amnt)
 SCRN *t;
 int top,bot,amnt;
 {
-int a=amnt,x;
+int a=amnt;
 if(!amnt) return;
 attr(t,0);
 if(top==0 && bot==t->li && (t->sr || t->SR))
@@ -1166,9 +1168,10 @@ if(amnt==bot-top) msetI(t->updtab+bot-amnt,1,amnt);
 void nredraw(t)
 SCRN *t;
 {
-msetI(t->scrn,-1,t->li*t->co);
+msetI(t->scrn,' ',t->co*skiptop);
+msetI(t->scrn+skiptop*t->co,-1,(t->li-skiptop)*t->co);
 msetI(t->sary,0,t->li);
-msetI(t->updtab,-1,t->li);
+msetI(t->updtab+skiptop,-1,t->li-skiptop);
 t->x= -1;
 t->y= -1;
 t->top=t->li;
@@ -1178,16 +1181,18 @@ t->ins= -1;
 attr(t,0);
 clrins(t);
 setregn(t,0,t->li);
-if(t->cl)
- {
- texec(t->cap,t->cl,1,0);
- t->x=0; t->y=0;
- msetI(t->scrn,' ',t->li*t->co);
- }
-else if(t->cd)
- {
- cpos(t,0,0);
- texec(t->cap,t->cd,1,0);
- msetI(t->scrn,' ',t->li*t->co);
- }
+
+if(!skiptop)
+ if(t->cl)
+  {
+  texec(t->cap,t->cl,1,0);
+  t->x=0; t->y=0;
+  msetI(t->scrn,' ',t->li*t->co);
+  }
+ else if(t->cd)
+  {
+  cpos(t,0,0);
+  texec(t->cap,t->cd,1,0);
+  msetI(t->scrn,' ',t->li*t->co);
+  }
 }

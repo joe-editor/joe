@@ -7,6 +7,74 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 1.0.8
+**Released: 1992-12-19**
+
+Source recovered from http://www.nic.funet.fi/index/unix/editors/joe - also in MCC-1.0 archive on ibiblio
+
+*Archival notes: This version was included with Slackware 2.0.1, MCC 1.0, and SLS*
+
+Author's comments:
+
+```
+Here is the rewrite of JOE.  It now uses the linked-list of gap buffers.  I
+went nuts writing libraries, so for example this one has its own version
+malloc!
+```
+
+Original announcement:
+```
+Newsgroups: comp.editors
+Path: sparky!uunet!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: JOE 1.0.8
+Message-ID: <BzI94r.D2@world.std.com>
+Keywords: brief
+Organization: The World Public Access UNIX, Brookline, MA
+Date: Sat, 19 Dec 1992 11:55:38 GMT
+Lines: 37
+
+A new release of Joe's Own Editor is now available by anonymous ftp from
+world.std.com, file: editors/joe1.0.8.tar.Z.  This release only contains
+some minor changes.  If you have a working joe1.0.7, you probably don't need
+this version.
+
+Here's a list of the chanegs:
+
+- Don't need the patch for the bug with ` anymore
+
+- Added a make option so that 'struct dirent' can be used instead of
+  'struct direct'
+
+- Added some more joerc global options:
+
+  -topskip nnn      editor doesn't touch top n lines of screen
+  -exask            ^K X always confirms the file name to save
+  -lightoff         block highlighting gets shut off after block operations
+  -nobackups        no backup files are made when this is set
+
+- Choose a name other than 'hz', so that systems with hz defined in the
+  wrong include files will work
+
+- Eliminated some more compile warnings
+
+These bugs still exist:
+
+- problem with saving files on some systems
+- occasionally line numbers get out of sync
+- 16-bit chinese characters still don't work
+
+The next release will have lots of changes for getting joe to work on
+segmented 80X86 systems.
+-- 
+/*  jhallen@world.std.com (192.74.137.5) */               /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
 ## JOE 1.0.7
 **Released: 1992-11-26**
 

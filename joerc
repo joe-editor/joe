@@ -17,6 +17,10 @@
  -help		Start with help on
  -pg nnn	No. lines to keep for PgUp/PgDn
  -gtab nnn	Default tab width for prompt windows
+ -nobackups	If you don't want backup files to be created
+ -lightoff	Turn off highlighting after block copy or move
+ -exask		^KX always confirms file name
+ -skiptop nnn	Don't use top nnn lines of the screen
 
  SECOND SECTION: File name dependant local option settings:
 
@@ -304,8 +308,10 @@ nextword	^X		Goto next word
 open		^]		Split line
 pgdn		PGDN		Screen down
 pgdn		^V
+pgdn		^[ [ 6 ~
 pgup		PGUP		Screen up
 pgup		^U
+pgup		^[ [ 5 ~
 play		^K 0 TO 9	Execute macro
 prevpos		^K -
 prevw		^K P		Window above
@@ -490,8 +496,10 @@ nextword	^X		Goto next word
 open		^]		Split line
 pgdn		PGDN		Screen down
 pgdn		^V
+pgdn		^[ [ 6 ~
 pgup		PGUP		Screen up
 pgup		^U
+pgup		^[ [ 5 ~
 play		^K 0 TO 9	Execute macro
 prevpos		^K -
 prevw		^K P		Window above
@@ -676,8 +684,10 @@ nextword	^X		Goto next word
 open		^]		Split line
 pgdn		PGDN		Screen down
 pgdn		^V
+pgdn		^[ [ 6 ~
 pgup		PGUP		Screen up
 pgup		^U
+pgup		^[ [ 5 ~
 play		^K 0 TO 9	Execute macro
 prevpos		^K -
 prevw		^K P		Window above

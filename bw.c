@@ -293,7 +293,7 @@ if(amnt) do
    if(bc==127) c|=UNDERLINE, bc='?';
    else if(bc<32) c|=UNDERLINE, bc+='@';
    }
-  if(t->hz && bc=='~') bc='\\';
+  if(t->haz && bc=='~') bc='\\';
   if(screen[x]!=c+bc)
    {
    screen[x]=c+bc;

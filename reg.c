@@ -18,7 +18,11 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include <stdio.h>
 #include <sys/types.h>
+#ifdef IRECT
 #include <sys/dir.h>
+#else
+#include <dirent.h>
+#endif
 #include "config.h"
 #include "vs.h"
 #include "va.h"
@@ -29,7 +33,11 @@ char *path, *word;
 {
 void *dir;
 char **lst=0;
+#ifdef IRECT
 struct direct *de;
+#else
+struct dirent *de;
+#endif
 if(path && path[0]) dir=opendir(path);
 else dir=opendir(".");
 if(!dir) return 0;
