@@ -388,6 +388,10 @@ static int dosave(BW *bw, struct savereq *req, int *notify)
 					ret = -1;
 				}
 				brm(tmp);
+				if (!ret) {
+					joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "Block written to file %s", req->name);
+					msgnw(bw->parent, msgbuf);
+				}
 				if (lightoff)
 					unmark(bw);
 				vsrm(req->name);
@@ -399,6 +403,10 @@ static int dosave(BW *bw, struct savereq *req, int *notify)
 				if ((fl = bsave(markb, req->name, markk->byte - markb->byte, 0)) != 0) {
 					msgnw(bw->parent, msgs[-fl]);
 					ret = -1;
+				}
+				if (!ret) {
+					joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "Block written to file %s", req->name);
+					msgnw(bw->parent, msgbuf);
 				}
 				if (lightoff)
 					unmark(bw);

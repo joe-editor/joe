@@ -1,5 +1,7 @@
 # JOE syntax highlight file for Perl
 
+-1000
+
 # Still need:
 
 # _ in numbers
@@ -34,7 +36,8 @@
 =Var yellow
 
 :idle Idle
-	*		idle
+	*		rest
+	" 	"	idle
 	"#"		line_comment_i	recolor=-1
 	"\n"		idle
 	"0"		first_digit	recolor=-1
@@ -52,9 +55,9 @@
 
 :rest Idle
 	*		rest
-	"({;~"		idle
+	"({;~"		idle				# should be rest, need to check
 	"#"		line_comment	recolor=-1
-	"\n"		rest
+	"\n"		idle
 	"0"		first_digit	recolor=-1
 	"1-9"		decimal	recolor=-1
 	"."		maybe_float

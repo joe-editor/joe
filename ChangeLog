@@ -1,3 +1,9 @@
+Wed Mar  9 2005  Joe Allen <jhallen@world.std.com>
+
+	^K W now prints a success message.
+
+	More perl highlighter fixes.
+
 Sat Mar  5 2005  Joe Allen <jhallen@world.std.com>
 
 	Fix bug where ^KC to copy text into search
