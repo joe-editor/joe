@@ -405,7 +405,8 @@ int eraeol(SCRN *t, int x, int y, int atr)
 	} while (ss != s);
 	if ((ss - s > 3 || s[w] != ' ' || a[w] != atr) && t->ce) {
 		cpos(t, x, y);
-		set_attr(t, atr); 
+		if(t->attrib != atr)
+			set_attr(t, atr); 
 		texec(t->cap, t->ce, 1, 0, 0, 0, 0);
 		msetI(s, ' ', w);
 		msetI(a, atr, w);
@@ -414,7 +415,7 @@ int eraeol(SCRN *t, int x, int y, int atr)
 			clrins(t);
 		if (t->x != x || t->y != y)
 			cpos(t, x, y);
-		if (t->attrib)
+		if (t->attrib != atr)
 			set_attr(t, atr); 
 		while (s != ss) {
 			*s = ' ';
