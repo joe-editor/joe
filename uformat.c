@@ -460,7 +460,7 @@ int uformat(BW *bw)
 	/* Do rest */
 
 	while (len > 0)
-		if (isspace(*b) || *b == '\r') {
+		if (isblank(*b) || *b == '\n' || *b == '\r') {
 			int f = 0;
 
 			/* Set f if there are two spaces after . ? or ! instead of one */

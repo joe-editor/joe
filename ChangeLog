@@ -1,3 +1,8 @@
+Sun Mar 10 2002  Vitezslav Samel <samel@mail.cz>
+	* uformat.c:
+	remove deadlock when reformating paragraph (badly converted whitel()
+	to isspace() from removed zstr.c in joe-2.9.2)
+
 Wed Jan 30 2002  Vitezslav Samel <samel@mail.cz>
 	* b.c:
 	use GCHAR macro - clean up the source
