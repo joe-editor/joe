@@ -23,6 +23,7 @@
 #include "umath.h"
 #include "utils.h"
 #include "vs.h"
+#include "utf8.h"
 #include "w.h"
 
 /***************/
@@ -775,28 +776,55 @@ int uinsc(BW *bw)
  * to process.
  */
 
+struct utf8_sm utype_utf8_sm;
+
 int utypebw(BW *bw, int k)
 {
 	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
 		unsigned char c = k;
 
+		utype_utf8_sm.state = 0;
+		utype_utf8_sm.ptr = 0;
+
 		joe_write(bw->out, &c, 1);
 	} else if (k == '\t' && bw->o.spaces) {
 		long n = piscol(bw->cursor);
+
+		utype_utf8_sm.state = 0;
+		utype_utf8_sm.ptr = 0;
 
 		n = bw->o.tab - n % bw->o.tab;
 		while (n--)
 			utypebw(bw, ' ');
 	} else {
-		int upd = bw->parent->t->t->updtab[bw->y + bw->cursor->line - bw->top->line];
-		int simple = 1;
+		int upd;
+		int simple;
+
+		/* UTF8 decoder */
+		if(bw->b->o.utf8) {
+			int utf8_char = utf8_decode(&utype_utf8_sm,k);
+
+			if(utf8_char >= 0)
+				k = utf8_char;
+			else
+				return 0;
+		}
+
+		upd = bw->parent->t->t->updtab[bw->y + bw->cursor->line - bw->top->line];
+		simple = 1;
 
 		if (pisblank(bw->cursor))
 			while (piscol(bw->cursor) < bw->o.lmargin) {
 				binsc(bw->cursor, ' ');
 				pgetc(bw->cursor);
 			}
-		binsc(bw->cursor, k), pgetc(bw->cursor);
+
+		if(bw->b->o.utf8)
+			bins_utf8(bw->cursor, k);
+		else
+			binsc(bw->cursor, k);
+
+		pgetc(bw->cursor);
 		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !isblank(k)) {
 			wrapword(bw->cursor, (long) bw->o.lmargin, bw->o.french, NULL);
 			simple = 0;

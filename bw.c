@@ -23,6 +23,7 @@
 #include "ublock.h"
 #include "utils.h"
 #include "syntax.h"
+#include "utf8.h"
 #include "w.h"
 
 /* Display modes */
@@ -261,13 +262,14 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	int c, ta, c1;
 	unsigned char bc;
 
-	int utf8_state=0;		/* 0=not waiting. >0 = N more chars for single utf-8 char */
-	int utf8_char;
+	struct utf8_sm utf8_sm;
 
         int *syn;
         P *tmp;
         int idx=0;
         int atr = 0;
+
+	utf8_init(&utf8_sm);
 
 	if(st!=-1) {
 		tmp=pdup(p);
@@ -352,53 +354,19 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 			} else if (bc == '\n')
 				goto eobl;
 			else {
-				int wid = -1;
+				int wid;
 				if (p->b->o.utf8) {
-					if (utf8_state) {
-						if ((bc&0xC0)==0x80) {
-							--utf8_state;
-							utf8_char = ((utf8_char<<6)|(bc&0x3F));
-							if(!utf8_state)
-								wid = mk_wcwidth(utf8_char);
-						} else {
-							/* FIXME: Do something better here for bad UTF-8 sequence */
-							/* Like print all control chars... */
-							utf8_state = 0;
-							utf8_char = 'X';
-							wid = 1;
-						}
-					} else if ((bc&0xE0)==0xC0) {
-						/* 192 - 223 */
-						utf8_state = 1;
-						utf8_char = (bc&0x1F);
-					} else if ((bc&0xF0)==0xE0) {
-						/* 224 - 239 */
-						utf8_state = 2;
-						utf8_char = (bc&0x0F);
-					} else if ((bc&0xF8)==0xF0) {
-						/* 240 - 247 */
-						utf8_state = 3;
-						utf8_char = (bc&0x07);
-					} else if ((bc&0xFC)==0xF8) {
-						/* 248 - 251 */
-						utf8_state = 4;
-						utf8_char = (bc&0x03);
-					} else if ((bc&0xFE)==0xFC) {
-						/* 252 - 253 */
-						utf8_state = 5;
-						utf8_char = (bc&0x01);
-					} else {
-						/* 0 - 191, 254, 255 */
-						utf8_state = 0;
-						xlat(&c, &bc);
-						utf8_char = bc;
-						c1 ^= c;
+					c = utf8_decode(&utf8_sm,bc);
+
+					if (c>=0) /* Normal decoded character */
+						wid = mk_wcwidth(c);
+					else if(c== -1) /* Character taken */
+						wid = -1;
+					else if(c== -2) /* Incomplete sequence (FIXME: do something better here) */
 						wid = 1;
-					}
+					else if(c== -3) /* Control character 128-191, 254, 255 */
+						wid = 1;
 				} else {
-					xlat(&c, &bc);
-					utf8_char = bc;
-					c1 ^= c;
 					wid = 1;
 				}
 
@@ -493,49 +461,34 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				goto eobl;
 			else {
 				int wid = -1;
-				if (p->b->o.utf8) {
-					if (utf8_state) {
-						if ((bc&0xC0)==0x80) {
-							--utf8_state;
-							utf8_char = ((utf8_char<<6)|(bc&0x3F));
-							if(!utf8_state)
-								wid = mk_wcwidth(utf8_char);
-						} else {
-							/* FIXME: Do something better here for bad UTF-8 sequence */
-							/* Like print all control chars... */
-							utf8_state = 0;
-							utf8_char = 'X';
+				int utf8_char;
+				if (p->b->o.utf8) { /* UTF-8 */
+
+					utf8_char = utf8_decode(&utf8_sm,bc);
+
+					if (utf8_char >= 0) { /* Normal decoded character */
+						if (utf8_char<32 || utf8_char>126 && utf8_char<160) { /* Control character */
+							bc = utf8_char;
+							xlat(&c, &bc);
+							utf8_char = bc;
+							c1 ^= c;
 							wid = 1;
+						} else {
+							wid = mk_wcwidth(utf8_char);
 						}
-					} else if ((bc&0xE0)==0xC0) {
-						/* 192 - 223 */
-						utf8_state = 1;
-						utf8_char = (bc&0x1F);
-					} else if ((bc&0xF0)==0xE0) {
-						/* 224 - 239 */
-						utf8_state = 2;
-						utf8_char = (bc&0x0F);
-					} else if ((bc&0xF8)==0xF0) {
-						/* 240 - 247 */
-						utf8_state = 3;
-						utf8_char = (bc&0x07);
-					} else if ((bc&0xFC)==0xF8) {
-						/* 248 - 251 */
-						utf8_state = 4;
-						utf8_char = (bc&0x03);
-					} else if ((bc&0xFE)==0xFC) {
-						/* 252 - 253 */
-						utf8_state = 5;
-						utf8_char = (bc&0x01);
-					} else {
-						/* 0 - 191, 254, 255 */
-						utf8_state = 0;
+					} else if(c== -1) { /* Character taken */
+						wid = -1;
+					} else if(c== -2) { /* Incomplete sequence (FIXME: do something better here) */
+						utf8_char = 'X';
+						wid = 1;
+					} else if(c== -3) { /* Invalid UTF-8 start character 128-191, 254, 255 */
+						/* Show as control character */
 						xlat(&c, &bc);
 						utf8_char = bc;
 						c1 ^= c;
 						wid = 1;
 					}
-				} else {
+				} else { /* Regular */
 					xlat(&c, &bc);
 					utf8_char = bc;
 					c1 ^= c;

@@ -131,34 +131,9 @@ unsigned xlata[256] = {
 
 void utf8_putc(int utf8_char)
 {
-	if (utf8_char < 0x80 || dspasis) {
-		ttputc(utf8_char);
-	} else if(utf8_char < 0x800) {
-		ttputc(0xc0|(utf8_char>>6));
-		ttputc(0x80|(utf8_char&0x3F));
-	} else if(utf8_char < 0x20000) {
-		ttputc(0xe0|(utf8_char>>12));
-		ttputc(0x80|((utf8_char>>6)&0x3f));
-		ttputc(0x80|((utf8_char)&0x3f));
-	} else if(utf8_char < 0x200000) {
-		ttputc(0xf0|(utf8_char>>18));
-		ttputc(0x80|((utf8_char>>12)&0x3f));
-		ttputc(0x80|((utf8_char>>6)&0x3f));
-		ttputc(0x80|((utf8_char)&0x3f));
-	} else if(utf8_char < 0x4000000) {
-		ttputc(0xf8|(utf8_char>>24));
-		ttputc(0x80|((utf8_char>>18)&0x3f));
-		ttputc(0x80|((utf8_char>>12)&0x3f));
-		ttputc(0x80|((utf8_char>>6)&0x3f));
-		ttputc(0x80|((utf8_char)&0x3f));
-	} else {
-		ttputc(0xfC|(utf8_char>>30));
-		ttputc(0x80|((utf8_char>>24)&0x3f));
-		ttputc(0x80|((utf8_char>>18)&0x3f));
-		ttputc(0x80|((utf8_char>>12)&0x3f));
-		ttputc(0x80|((utf8_char>>6)&0x3f));
-		ttputc(0x80|((utf8_char)&0x3f));
-	}
+	unsigned char buf[8];
+	int len = utf8_encode(buf,utf8_char);
+	ttputs(buf);
 }
 
 void xlat(int *attr, unsigned char *c)
@@ -1121,7 +1096,7 @@ int cpos(register SCRN *t, register int x, register int y)
 				/* We used to space over unknown chars, but they now could be
 				   the right half of a UTF-8 two column character, so we can't.
 				   Also do not try to emit utf-8 sequences here. */
-				if(*cs<0 || *cs>=256)
+				if(*cs<32 || *cs>=127)
 					break;
 
 				if (*as != t->attrib)

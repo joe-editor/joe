@@ -37,6 +37,7 @@
 #include "va.h"
 #include "vfile.h"
 #include "vs.h"
+#include "utf8.h"
 #include "w.h"
 
 unsigned char stdbuf[stdsiz];
@@ -1842,13 +1843,21 @@ P *binsm(P *p, unsigned char *blk, int amnt)
 	return p;
 }
 
-/* insert char 'c' at 'p' */
+/* insert byte 'c' at 'p' */
 P *binsc(P *p, unsigned char c)
 {
 	if (p->b->o.crlf && c == '\n')
 		return binsm(p, US "\r\n", 2);
 	else
 		return binsm(p, &c, 1);
+}
+
+/* UTF-8 encode a character and insert it */
+P *bins_utf8(P *p, int c)
+{
+	unsigned char buf[8];
+	int len = utf8_encode(buf,c);
+	return binsm(p,buf,len);
 }
 
 /* insert zero-terminated string 's' at 'p' */

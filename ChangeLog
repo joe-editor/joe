@@ -1,4 +1,12 @@
 Mon Apr 12 2004  Joe Allen <jhallen@world.std.com>
+	* Makefile.am b.c b.h bw.c scrn.c uedit.c utf8.c utf8.h:
+
+	Input of UTF-8 is now working.  For example, you
+	can cut and paste in an xterm.
+
+	Placed UTF-8 encoder and decoder in separate file.
+
+Mon Apr 12 2004  Joe Allen <jhallen@world.std.com>
 	* bw.c:
 
 	If a double-wide character hits right column, display '>' instead of

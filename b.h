@@ -96,8 +96,13 @@ void bdel PARAMS((P *from, P *to));
 P *binsb PARAMS((P *p, B *b));
 /* insert a block 'blk' of size 'amnt' into buffer at 'p' */
 P *binsm PARAMS((P *p, unsigned char *blk, int amnt)); 
-/* insert character 'c' into buffer at 'p' */
+
+/* insert byte 'c' into buffer at 'p' */
 P *binsc PARAMS((P *p, unsigned char c));
+
+/* UTF-8 encode 'c' and insert is at 'p' */
+P *bins_utf8 PARAMS((P *p, int c));
+
 /* insert zero term. string 's' into buffer at 'p' */
 P *binss PARAMS((P *p, unsigned char *s));
 

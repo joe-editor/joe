@@ -1,3 +1,93 @@
+UTF-8/Internationalization
+--------------------------
+
+- translate for non-utf8 locale to utf8 (in and out)
+
+- think about status line, prompts, regex, rc files, highlighting, ug
+
+- right-left mode for Hebrew/Arabic?
+
+- Gettext?
+
+- 32-bit chars in search/replace \[...] sequences?
+
+- deal with error utf8 sequences: prget and pgetc do not match.
+
+- deal with error utf8 sequences: no way to print control characters which
+  began the sequence.
+
+- when first char of utf8 is last of line, nothing shows on screen (state
+  machine never gets any input).
+
+--- we have converted from char to unsigned char, so normal characters are
+in the range 0 - 255 and EOF is -1 when assigned to an int.  In a UTF-8
+terminal we'll have 0 - MAXINT.  Unfortunately we used >=256 for X key
+sequences.  We need to change these to <-2 to not collide with UTF-8 chars.
+Yuck.  From uisrch.c:
+
+Detect control character and stop incremental search:
+
+	} else if (c >= 0 && c < 32 || c >= 256) {	/* c >= 256 means an X windows sequence like .ku */
+		/* Done when a control character is received */
+
+(but we will never get a key >=256: we should only get encoded utf-8
+sequence: perhaps all of this is ok).
+
+- interaction with -asis (-utf8 should override it).
+
+- check for incorrect pgetc() binsc() pairs.
+
+- check paragraph reformat
+
+
+0xxx_xxxx	1	0x7F		7
+
+10xx_xxxx       error
+
+110x_xxxx	2	0x7FF		11
+ 10xx_xxxx
+
+1110x_xxxx	3	0x1FFFF		17
+ 10xx_xxxx
+ 10xx_xxxx
+
+1111_0xxx	4	0x1FFFFF	21
+ 10xx_xxxx
+ 10xx_xxxx
+ 10xx_xxxx
+
+1111_10xx	5	0x3FFFFFF	26
+ 10xx_xxxx
+ 10xx_xxxx
+ 10xx_xxxx
+ 10xx_xxxx
+
+1111_110x	6	0x7FFFFFFF	31
+ 10xx_xxxx
+ 10xx_xxxx
+ 10xx_xxxx
+ 10xx_xxxx
+ 10xx_xxxx
+
+1111_111x	error
+
+
+
+Syntax Highlighting:
+--------------------
+
+More syntax files.
+
+Recognize more file types (joerc work).
+
+Update other *rc files.
+
+Subdirectory for syntax file (understand autoconf/automake).
+
+UTF-8 syntax files.
+
+
+
 Support for more languages:
 
  Paragraph reformat mode for TeX files.
@@ -72,17 +162,6 @@ Shell windows:
 
  Better environment settings for shell windows.
 
-
-Internationalization:
-
- Gettext: merge yes or no?  I need a non-english speaking
- person to tell how well this works.
-
- UTF-8 support.  Play with UTF-8 xterm.
- 
- Define what constitutes a word for ^X ^Z ^W ^O.
-
- Understand LOCALE
 
 Documentation:
 
