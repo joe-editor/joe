@@ -501,7 +501,7 @@ SCRN *nopen(CAP *cap)
 /* Send out terminal initialization string */
 	if (t->ti)
 		texec(t->cap, t->ti, 1, 0, 0, 0, 0);
-	if (t->cl)
+	if (!skiptop && t->cl)
 		texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 
 /* Initialize variable screen size dependant vars */

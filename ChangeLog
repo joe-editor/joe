@@ -1,3 +1,7 @@
+Mon Jun  3 2002  Vitezslav Samel <samel@mail.cz>
+	* scrn.c:
+	don't clear screen when nonzero skiptop is given
+
 Sat Jun  1 2002  Vitezslav Samel <samel@mail.cz>
 	* configure.ac, utils.c:
 	kill warnings when compilling with -Wundef
