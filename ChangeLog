@@ -1,4 +1,10 @@
 Sat Mar 20 2004  Joe Allen <jhallen@world.std.com>
+	* usearch.c:
+	After every search we reset window left offset to 0 and then make
+	the minimal left-right scroll necessary to get entire found text
+	completely on the screen.
+
+Sat Mar 20 2004  Joe Allen <jhallen@world.std.com>
 	* uerror.c:
 	Slight improvement in compiler error parser.
 

@@ -626,6 +626,22 @@ bye:		if (!srch->flg && !srch->rest) {
 				goto bye;
 			}
 		srch->addr = bw->cursor->byte;
+
+		/* Make sure found text is fully on screen */
+		if(srch->backwards) {
+			bw->offset=0;
+			pfwrd(bw->cursor,sLEN(srch->entire));
+			bw->cursor->xcol = piscol(bw->cursor);
+			dofollows();
+			pbkwd(bw->cursor,sLEN(srch->entire));
+		} else {
+			bw->offset=0;
+			pbkwd(bw->cursor,sLEN(srch->entire));
+			bw->cursor->xcol = piscol(bw->cursor);
+			dofollows();
+			pfwrd(bw->cursor,sLEN(srch->entire));
+		}
+
 		if (srch->replace) {
 			if (square)
 				bw->cursor->xcol = piscol(bw->cursor);

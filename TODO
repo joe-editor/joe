@@ -18,9 +18,6 @@ Immediate things:
  Include documentation for joe hackers.  I wrote a lot of this
  some time, I need to find it.
 
- Search should try to scroll window so that entire found text is displayed on
- screen.  I had implemented this once, but it was broken.
-
  Add .v, .pl, etc. file types to joerc
 
  Make tab completion more like bash?
@@ -71,14 +68,7 @@ Immediate things:
    fg
    oops joe is editing old files...
 
-
-
-
-
-
-
-
-
+ Unnamed buffers should be in bufed list (was fixed in the lost joe 2.9)
 
 FEATURES
 =-=-=-=-
