@@ -7,6 +7,82 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## J 0.0.1
+**Released: 1991-08-23**
+
+Source recovered from usenet
+
+*Archival notes: Small patch to J*
+
+Original announcement:
+```
+Xref: funic comp.editors:2115 alt.religion.emacs:840 alt.sources:2279 comp.unix.xenix.sco:3033
+Path: funic!fuug!mcsun!uunet!bu.edu!m2c!wpi.WPI.EDU!rcarter
+From: rcarter@wpi.WPI.EDU (Randolph Carter (nee. Joseph H. Allen))
+Newsgroups: comp.editors,alt.religion.emacs,alt.sources,comp.unix.xenix.sco
+Subject: Patch for Joe's Editor
+Message-ID: <1991Aug23.012009.820@wpi.WPI.EDU>
+Date: 23 Aug 91 01:20:09 GMT
+Sender: rcarter@wpi.WPI.EDU (Randolph Carter (nee. Joseph H. Allen))
+Organization: Kadath Tours, Inc.
+Lines: 52
+
+
+So much for my testing abilities... I work hard to test all these weird cases
+and then only one day after posting the source someone finds a bug.  Oh well.
+
+The Bug:  Running Undo or Redo before having done any deleting crashes the
+editor
+
+The fix:  Place the following lines in a file called 'patch0.0.1', change to
+the directory containing the file 'j.c' and type this command:
+
+	ed - j.c <patch0.0.1
+
+--- Cut Here ---
+/undo(/
++
+a
+if(!undorecs) return;
+.
+/redo(/
++
+a
+if(!undorecs) return;
+.
+/version/
+s/0.0.0/0.0.1/
+w
+q
+--- Cut Here ---
+
+Then remake the editor.  The release number will be changed to 0.0.1
+
+Also, feel free to change the name of the editor to 'JOE - Joe's Own Editor'
+in case 'j' is already taken on your computer (if you have the language from
+1989 or the editor from 1980).  This will be the name for the next complete
+release of the editor, unless it to is taken :-)
+
+Finally, feel free to change the name of 'keymap.j' file to '.joerc' in case
+you like your initialization files hidden.  To do this, change the line
+
+#define KEYMAP "keymap.j"
+
+ to 
+
+#define KEYMAP ".joerc"
+
+This line can be found right at the beginning of the file j.h (remake the
+editor after you do this).
+-- 
+/*  rcarter@wpi.wpi.edu */      /* Amazing */             /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
 ## J 0.0.0
 **Released: 1991-08-21**
 

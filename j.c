@@ -682,6 +682,7 @@ int undoflag=1;
 
 undo()
 {
+if(!undorecs) return;
 extend=0;
 if(undoptr)
  {
@@ -704,6 +705,7 @@ marke=markb+undoptr->size;
 
 redo()
 {
+if(!undorecs) return;
 extend=0;
 if(undoptr)
  {
@@ -1078,7 +1080,7 @@ if(omsg)
  eputs(omsg);
  invalidate(1);
  }
-sprintf(s,"\033[%d;1H\033[7m** Joe's Editor version 0.0.0 (1991) **          \
+sprintf(s,"\033[%d;1H\033[7m** Joe's Editor version 0.0.1 (1991) **          \
                               \033[m\033[2H",height);
 eputs(s);
 invalidate(height-1);
