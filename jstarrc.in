@@ -313,7 +313,7 @@
 -wordwrap
 
  News/mail files.
-*.article
+*.article*
 -wordwrap
 -syntax mail
 

@@ -32,6 +32,8 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "ublock.h"
 #include "menu.h"
 #include "tty.h"
+#include "charmap.h"
+#include "utf8.h"
 #include "mouse.h"
 
 int rtbutton=0;			/* use button 3 instead of 1 */
@@ -139,7 +141,7 @@ void mousedn(int x,int y)
 	}
 }
 
-void select_done()
+void select_done(struct charmap *map)
 {
 	/* Feed text to xterm */
 	if (joexterm && markv(1)) {
@@ -156,7 +158,32 @@ void select_done()
 			/* Copy text into buffer */
 			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
 				c = pgetc(q);
-				ttputc(c);
+				if (map->type)
+					if (locale_map->type) {
+						/* UTF-8 char to UTF-8 terminal */
+						unsigned char buf[16];
+						utf8_encode(buf,c);
+						ttputs(buf);
+					} else {
+						/* UTF-8 char to non-UTF-8 terminal */
+						c = from_uni(locale_map,c);
+						if (c ==-1)
+							c = '?';
+						ttputc(c);
+					}
+				else
+					if (locale_map->type) {
+						/* Non-UTF-8 to UTF-8 terminal */
+						unsigned char buf[16];
+						c = to_uni(map, c);
+						if (c == -1)
+							c = '?';
+						utf8_encode(buf,c);
+						ttputs(buf);
+					} else {
+						/* Non-UTF-8 to non-UTF-8 terminal */
+						ttputc(c);
+					}
 			}
 			/* Add a new line if we went past right edge of column */
 			if (square && q->byte<markk->byte && piscol(q) >= right)
@@ -172,7 +199,7 @@ void mouseup(int x,int y)
 	struct timeval tv;
 	Cx = x, Cy = y;
 	if (selecting) {
-		select_done();
+		select_done(((BW *)maint->curwin->object)->b->o.charmap);
 		selecting = 0;
 	}
 	switch(clicks) {

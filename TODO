@@ -3,7 +3,6 @@ Short (infinite) list for 3.3:
 
 - dynamic spell checking with highlighter- there should be a way
 - grep and grep-find commands
-- select word wrap for news articles ("article" in file name)
 
 Mouse issues:
 
@@ -16,16 +15,22 @@ Mouse issues:
   right-click is cancel?
   double-click is yes?
 
+- i18n issues:
+
+   hex is screwed up.  utf-8 file encoding needs to be off for hex mode.
+
+   xterm selection is screwed up (xterm patch bug): ESC [ 1 y ..... ESC ESC
+
+   utf-8 characters are handled before state machine decoding.
+
 - - - -
 
 Dangerous situations:
   assume maint->curwin->object is a BW *
-  call interactive functions (like doedit) an expect them
+  call interactive functions (like doedit) and expect them
   to leave maint a buffer window (it could start a prompt).
 
   should check plain file checking.
-
-Querysave is sometimes not saving all files in ESC c?
 
 - - - - - - - -
 

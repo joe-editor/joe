@@ -9,6 +9,9 @@ Tue Mar 29 19:19:42 EST 2005
 
 	Prevent hex mode from prompt windows.
 
+	Fix some i18n issues with mouse:  xterm patch
+	needs to be fixed.
+
 Mon Mar 28 02:17:37 EST 2005
 
 	Apply (and fix) background color patch
