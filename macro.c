@@ -559,7 +559,7 @@ static int doarg(BW *bw, char *s, void *object, int *notify)
 		*notify = 1;
 	num = calc(bw, s);
 	if (merr) {
-		msgnw(bw, merr);
+		msgnw(bw->parent, merr);
 		return -1;
 	}
 	arg = num;

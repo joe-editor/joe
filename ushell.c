@@ -88,7 +88,7 @@ static int cstart(BW * bw, char *name, char **s, void *obj, int *notify)
 		*notify = 1;
 	}
 	varm(s);
-	msgnw(bw, "Sorry, no sub-processes in DOS (yet)");
+	msgnw(bw->parent, "Sorry, no sub-processes in DOS (yet)");
 	return -1;
 #else
 	MPX *m;
@@ -97,7 +97,7 @@ static int cstart(BW * bw, char *name, char **s, void *obj, int *notify)
 		*notify = 1;
 	}
 	if (bw->pid && orphan) {
-		msgnw(bw, "Program already running in this window");
+		msgnw(bw->parent, "Program already running in this window");
 		varm(s);
 		return -1;
 	}
@@ -108,7 +108,7 @@ static int cstart(BW * bw, char *name, char **s, void *obj, int *notify)
 	bw = (BW *) maint->curwin->object;
 	if (!(m = mpxmk(&bw->out, name, s, cdata, bw, cdone, bw))) {
 		varm(s);
-		msgnw(bw, "No ptys available");
+		msgnw(bw->parent, "No ptys available");
 		return -1;
 	} else {
 		bw->pid = m->pid;

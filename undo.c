@@ -433,7 +433,7 @@ int uyankpop(BW * bw)
 int unotmod(BW * bw)
 {
 	bw->b->changed = 0;
-	msgnw(bw, "Modified flag cleared");
+	msgnw(bw->parent, "Modified flag cleared");
 	return 0;
 }
 
@@ -448,7 +448,7 @@ int ucopy(BW * bw)
 			unmark(bw);
 		return 0;
 	} else {
-		msgnw(bw, "No block");
+		msgnw(bw->parent, "No block");
 		return -1;
 	}
 }

@@ -247,7 +247,7 @@ int execmd(CMD *cmd, int k)
 		goto skip;
 
 	if ((maint->curwin->watom->what & TYPETW) && bw->b->rdonly && (cmd->flag & EMOD)) {
-		msgnw(bw, "Read only");
+		msgnw(bw->parent, "Read only");
 		if (beep)
 			ttputc(7);
 		goto skip;
@@ -447,7 +447,7 @@ static int docmd(BW *bw, char *s, void *object, int *notify)
 	CMD *cmd = findcmd(s);
 
 	if (!cmd)
-		msgnw(bw, "No such command");
+		msgnw(bw->parent, "No such command");
 	else {
 		mac = mkmacro(MAXINT, 0, 0, cmd);
 		ret = exmacro(mac, 1);

@@ -400,7 +400,7 @@ static int doreplace(BW *bw, SRCH *srch)
 	P *q;
 
 	if (bw->b->rdonly) {
-		msgnw(bw, "Read only");
+		msgnw(bw->parent, "Read only");
 		return -1;
 	}
 	if (markk)
@@ -592,9 +592,9 @@ int dopfnext(BW *bw, SRCH *srch, int *notify)
 		case 1:
 	      bye:if (!srch->flg && !srch->rest) {
 			if (srch->valid && srch->restrict)
-				msgnw(bw, "Not found (search restricted to marked block)");
+				msgnw(bw->parent, "Not found (search restricted to marked block)");
 			else
-				msgnw(bw, "Not found");
+				msgnw(bw->parent, "Not found");
 			ret = -1;
 		}
 		break;

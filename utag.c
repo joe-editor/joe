@@ -37,7 +37,7 @@ static int dotag(BW * bw, char *s, void *obj, int *notify)
 	}
 	f = fopen("tags", "r");
 	if (!f) {
-		msgnw(bw, "Couldn't open tags file");
+		msgnw(bw->parent, "Couldn't open tags file");
 		vsrm(s);
 		vsrm(t);
 		return -1;
@@ -83,7 +83,7 @@ static int dotag(BW * bw, char *s, void *obj, int *notify)
 							dofollows();
 							mid = omid;
 						} else {
-							msgnw(bw, "Invalid line number");
+							msgnw(bw->parent, "Invalid line number");
 						}
 					} else {
 						if (buf[y] == '/' || buf[y] == '?') {
@@ -116,7 +116,7 @@ static int dotag(BW * bw, char *s, void *obj, int *notify)
 			}
 		}
 	}
-	msgnw(bw, "Not found");
+	msgnw(bw->parent, "Not found");
 	vsrm(s);
 	vsrm(t);
 	fclose(f);

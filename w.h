@@ -231,13 +231,13 @@ void gentxt PARAMS((SCRN *t, int x, int y, int ofst, char *s, int len, int flg))
 int fmtlen PARAMS((char *s));
 int fmtpos PARAMS((char *s, int goal));
 
-/* void msgnw[t](W *w,char *text);
+/* void msgnw[t](W *w, char *s);
  * Display a message which will be eliminated on the next keypress.
  * msgnw displays message on bottom line of window
  * msgnwt displays message on top line of window
  */
-void msgnw PARAMS((BASE *w, char *s));
-void msgnwt PARAMS((BASE *w, char *s));
+void msgnw PARAMS((W *w, char *s));
+void msgnwt PARAMS((W *w, char *s));
 
 #define MSGBUFSIZE 300
 extern char msgbuf[MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */

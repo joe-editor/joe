@@ -193,7 +193,7 @@ int uparserr(BW *bw)
 	errbuf = bw->b;
 	freeall();
 	snprintf(msgbuf, MSGBUFSIZE, "Parsed %ld lines", parserr(bw->b));
-	msgnw(bw, msgbuf);
+	msgnw(bw->parent, msgbuf);
 	return 0;
 }
 
@@ -202,7 +202,7 @@ int unxterr(BW *bw)
 	int omid;
 
 	if (errptr->link.next == &errors) {
-		msgnw(bw, "No more errors");
+		msgnw(bw->parent, "No more errors");
 		return -1;
 	}
 	errptr = errptr->link.next;
@@ -218,7 +218,7 @@ int unxterr(BW *bw)
 	dofollows();
 	mid = omid;
 	bw->cursor->xcol = piscol(bw->cursor);
-	msgnw(bw, errptr->msg);
+	msgnw(bw->parent, errptr->msg);
 	return 0;
 }
 
@@ -227,7 +227,7 @@ int uprverr(BW *bw)
 	int omid;
 
 	if (errptr->link.prev == &errors) {
-		msgnw(bw, "No more errors");
+		msgnw(bw->parent, "No more errors");
 		return -1;
 	}
 	errptr = errptr->link.prev;
@@ -243,6 +243,6 @@ int uprverr(BW *bw)
 	dofollows();
 	mid = omid;
 	bw->cursor->xcol = piscol(bw->cursor);
-	msgnw(bw, errptr->msg);
+	msgnw(bw->parent, errptr->msg);
 	return 0;
 }

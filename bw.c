@@ -718,7 +718,7 @@ int ustat(BW *bw)
 		snprintf(buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
 	else
 		snprintf(buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, 255 & c, 255 & c, 255 & c);
-	msgnw(bw, buf);
+	msgnw(bw->parent, buf);
 	return 0;
 }
 

@@ -493,7 +493,7 @@ int uabortbuf(BW *bw)
 	return naborttw(bw, 'y', NULL, NULL);
 }
 
-/* Kill this window */
+/* Kill current window (orphans buffer) */
 
 int utw0(BASE *b)
 {
@@ -509,7 +509,7 @@ int utw0(BASE *b)
 	return uabort(bw, MAXINT);
 }
 
-/* Only one window */
+/* Kill all other windows (orphans buffers) */
 
 int utw1(BASE *b)
 {
@@ -525,11 +525,12 @@ int utw1(BASE *b)
 			wnext(t);
 		while (t->curwin->main == mainw && t->curwin != starting);
 		if (t->curwin->main != mainw) {
-			if (((BW *) t->curwin->main->object)->pid) {
-				msgnw(t->curwin->main->object, "Process running in this window");
+			BW *bw = t->curwin->main->object;
+			if (bw->pid) {
+				msgnw(bw->parent, "Process running in this window");
 				return -1;
 			}
-			utw0(t->curwin->main->object), yn = 1;
+			utw0((BASE *)bw), yn = 1;
 			goto loop;
 		}
 	}

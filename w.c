@@ -863,14 +863,14 @@ void msgout(W * w)
 char msgbuf[MSGBUFSIZE];
 
 /* display message on bottom line of window */
-void msgnw(BASE *w, char *s)
+void msgnw(W *w, char *s)
 {
-	w->parent->msgb = s;
+	w->msgb = s;
 }
 
-void msgnwt(BASE *w, char *s)
+void msgnwt(W *w, char *s)
 {
-	w->parent->msgt = s;
+	w->msgt = s;
 }
 
 int urtn(BASE * b, int k)

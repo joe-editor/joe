@@ -197,7 +197,7 @@ static int tabrtn(MENU * m, int cursor, TAB * tab)
 		vsrm(e);
 		tab->pattern = vsncpy(NULL, 0, sc("*"));
 		if (treload(m, 0)) {
-			msgnw(m, "Couldn't read directory ");
+			msgnw(m->parent, "Couldn't read directory ");
 			vsrm(tab->pattern);
 			tab->pattern = orgpattern;
 			vsrm(tab->path);
@@ -238,7 +238,7 @@ static int tabbacks(MENU * m, int cursor, TAB * tab)
 	tab->pattern = vsncpy(NULL, 0, sc("*"));
 
 	if (treload(m, 1)) {
-		msgnw(m, "Couldn't read directory ");
+		msgnw(m->parent, "Couldn't read directory ");
 		vsrm(tab->pattern);
 		tab->pattern = orgpattern;
 		vsrm(tab->path);

@@ -511,9 +511,9 @@ static int doline(BW * bw, char *s, void *object, int *notify)
 		return 0;
 	} else {
 		if (merr)
-			msgnw(bw, merr);
+			msgnw(bw->parent, merr);
 		else
-			msgnw(bw, "Invalid line number");
+			msgnw(bw->parent, "Invalid line number");
 		return -1;
 	}
 }
@@ -547,9 +547,9 @@ static int docol(BW * bw, char *s, void *object, int *notify)
 		return 0;
 	} else {
 		if (merr)
-			msgnw(bw, merr);
+			msgnw(bw->parent, merr);
 		else
-			msgnw(bw, "Invalid column number");
+			msgnw(bw->parent, "Invalid column number");
 		return -1;
 	}
 }
@@ -583,9 +583,9 @@ static int dobyte(BW * bw, char *s, void *object, int *notify)
 		return 0;
 	} else {
 		if (merr)
-			msgnw(bw, merr);
+			msgnw(bw->parent, merr);
 		else
-			msgnw(bw, "Invalid byte number");
+			msgnw(bw->parent, "Invalid byte number");
 		return -1;
 	}
 }
@@ -1090,7 +1090,7 @@ static int dosetmark(BW * bw, int c, void *object, int *notify)
 		pdupown(bw->cursor, bw->b->marks + c - '0');
 		poffline(bw->b->marks[c - '0']);
 		snprintf(msgbuf, MSGBUFSIZE, "Mark %d set", c - '0');
-		msgnw(bw, msgbuf);
+		msgnw(bw->parent, msgbuf);
 		return 0;
 	} else {
 		nungetc(c);
@@ -1121,7 +1121,7 @@ static int dogomark(BW * bw, int c, void *object, int *notify)
 			return 0;
 		} else {
 			snprintf(msgbuf, MSGBUFSIZE, "Mark %d not set", c - '0');
-			msgnw(bw, msgbuf);
+			msgnw(bw->parent, msgbuf);
 			return -1;
 	} else {
 		nungetc(c);
@@ -1165,7 +1165,7 @@ static int dofwrdc(BW * bw, int k, void *object, int *notify)
 				break;
 	}
 	if (c == MAXINT) {
-		msgnw(bw, "Not found");
+		msgnw(bw->parent, "Not found");
 		prm(q);
 		return -1;
 	} else {
@@ -1206,7 +1206,7 @@ static int domsg(BASE * b, char *s, void *object, int *notify)
 		*notify = 1;
 	strcpy(msgbuf, s);
 	vsrm(s);
-	msgnw(b, msgbuf);
+	msgnw(b->parent, msgbuf);
 	return 0;
 }
 

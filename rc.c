@@ -389,12 +389,13 @@ static int doopt1(BW * bw, char *s, int *xx, int *notify)
 	switch (glopts[x].type) {
 		case 1:
 		v = calc(bw, s);
-		if (merr)
-			msgnw(bw, merr), ret = -1;
-		else if (v >= glopts[x].low && v <= glopts[x].high)
+		if (merr) {
+			msgnw(bw->parent, merr);
+			ret = -1;
+		} else if (v >= glopts[x].low && v <= glopts[x].high)
 			*glopts[x].set = v;
 		else
-			msgnw(bw, "Value out of range"), ret = -1;
+			msgnw(bw->parent, "Value out of range"), ret = -1;
 		break;
 		case 2:
 		if (s[0])
@@ -402,21 +403,23 @@ static int doopt1(BW * bw, char *s, int *xx, int *notify)
 		break;
 		case 5:
 		v = calc(bw, s);
-		if (merr)
-			msgnw(bw, merr), ret = -1;
-		else if (v >= glopts[x].low && v <= glopts[x].high)
+		if (merr) {
+			msgnw(bw->parent, merr);
+			ret = -1;
+		} else if (v >= glopts[x].low && v <= glopts[x].high)
 			*(int *) ((char *) &bw->o + glopts[x].ofst) = v;
 		else
-			msgnw(bw, "Value out of range"), ret = -1;
+			msgnw(bw->parent, "Value out of range"), ret = -1;
 		break;
 		case 7:
 		v = calc(bw, s) - 1.0;
-		if (merr)
-			msgnw(bw, merr), ret = -1;
-		else if (v >= glopts[x].low && v <= glopts[x].high)
+		if (merr) {
+			msgnw(bw->parent, merr);
+			ret = -1;
+		} else if (v >= glopts[x].low && v <= glopts[x].high)
 			*(int *) ((char *) &bw->o + glopts[x].ofst) = v;
 		else
-			msgnw(bw, "Value out of range"), ret = -1;
+			msgnw(bw->parent, "Value out of range"), ret = -1;
 		break;
 	}
 	vsrm(s);
@@ -444,7 +447,7 @@ static int doopt(MENU * m, int x, void *object, int flg)
 		else
 			*glopts[x].set = 0;
 		uabort(m, MAXINT);
-		msgnw(bw, *glopts[x].set ? glopts[x].yes : glopts[x].no);
+		msgnw(bw->parent, *glopts[x].set ? glopts[x].yes : glopts[x].no);
 		break;
 
 		case 4:
@@ -455,7 +458,7 @@ static int doopt(MENU * m, int x, void *object, int flg)
 		else
 			*(int *) ((char *) &bw->o + glopts[x].ofst) = 0;
 		uabort(m, MAXINT);
-		msgnw(bw, *(int *) ((char *) &bw->o + glopts[x].ofst) ? glopts[x].yes : glopts[x].no);
+		msgnw(bw->parent, *(int *) ((char *) &bw->o + glopts[x].ofst) ? glopts[x].yes : glopts[x].no);
 		if (glopts[x].ofst == (char *) &fdefault.readonly - (char *) &fdefault)
 			bw->b->rdonly = bw->o.readonly;
 		break;

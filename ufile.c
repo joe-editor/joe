@@ -78,7 +78,7 @@ void genexmsg(BW * bw, int saved, char *name)
 	} else {
 		snprintf(msgbuf, MSGBUFSIZE, "File %s not changed so no update needed", s);
 	}
-	msgnw(bw, msgbuf);
+	msgnw(bw->parent, msgbuf);
 
 	if (!exmsg) {
 		if (bw->b->changed && bw->b->count == 1) {
@@ -254,7 +254,7 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 		if (notify) {
 			*notify = 1;
 		}
-		msgnw(bw, "Couldn't make backup file... file not saved");
+		msgnw(bw->parent, "Couldn't make backup file... file not saved");
 		if (callback) {
 			return callback(bw, -1);
 		} else {
@@ -280,7 +280,7 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 		exemac(bw->o.msold);
 	}
 	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte)) != 0) {
-		msgnw(bw, msgs[fl + 5]);
+		msgnw(bw->parent, msgs[fl + 5]);
 		vsrm(req->name);
 		free(req);
 		if (callback) {
@@ -402,7 +402,7 @@ int doedit(BW *bw, char *s, void *obj, int *notify)
 		*notify = 1;
 	}
 	if (bw->pid) {
-		msgnw(bw, "Process running in this window");
+		msgnw(bw->parent, "Process running in this window");
 		return -1;
 	}
 	b = bfind(s);
@@ -419,7 +419,7 @@ int doedit(BW *bw, char *s, void *obj, int *notify)
 		}
 	}
 	if (er) {
-		msgnwt(bw, msgs[er + 5]);
+		msgnwt(bw->parent, msgs[er + 5]);
 		if (er != -1) {
 			ret = -1;
 		}
@@ -443,7 +443,7 @@ int doedit(BW *bw, char *s, void *obj, int *notify)
 int okrepl(BW *bw)
 {
 	if (bw->b->count == 1 && bw->b->changed) {
-		msgnw(bw, "Can't replace modified file");
+		msgnw(bw->parent, "Can't replace modified file");
 		return -1;
 	} else {
 		return 0;
@@ -473,13 +473,13 @@ static int dorepl(BW *bw, char *s, void *obj, int *notify)
 		*notify = 1;
 	}
 	if (bw->pid) {
-		msgnw(bw, "Process running in this window");
+		msgnw(bw->parent, "Process running in this window");
 		return -1;
 	}
 	b = bfind(s);
 	er = error;
 	if (error) {
-		msgnwt(bw, msgs[error + 5]);
+		msgnwt(bw->parent, msgs[error + 5]);
 		if (error != -1) {
 			ret = -1;
 		}
@@ -510,7 +510,7 @@ int unbuf(BW *bw)
 	B *b;
 
 	if (bw->pid) {
-		msgnw(bw, "Process running in this window");
+		msgnw(bw->parent, "Process running in this window");
 		return -1;
 	}
 	b = bnext();
@@ -542,7 +542,7 @@ int upbuf(BW *bw)
 	B *b;
 
 	if (bw->pid) {
-		msgnw(bw, "Process running in this window");
+		msgnw(bw->parent, "Process running in this window");
 		return -1;
 	}
 	b = bprev();
@@ -743,7 +743,7 @@ static int dolose(BW *bw, int c, void *object, int *notify)
 
 int ulose(BW *bw)
 {
-	msgnw(bw, NULL);
+	msgnw(bw->parent, NULL);
 	if (bw->pid) {
 		return ukillpid(bw);
 	}

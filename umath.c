@@ -182,7 +182,7 @@ static int domath(BW * bw, char *s, void *object, int *notify)
 		*notify = 1;
 	}
 	if (merr) {
-		msgnw(bw, merr);
+		msgnw(bw->parent, merr);
 		return -1;
 	}
 	vsrm(s);
@@ -192,7 +192,7 @@ static int domath(BW * bw, char *s, void *object, int *notify)
 		pfwrd(bw->cursor, strlen(msgbuf));
 		bw->cursor->xcol = piscol(bw->cursor);
 	} else {
-		msgnw(bw, msgbuf);
+		msgnw(bw->parent, msgbuf);
 	}
 	return 0;
 }

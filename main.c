@@ -327,7 +327,7 @@ int main(int argc, char **argv, char **envv)
 			if (!orphan || !opened) {
 				bw = wmktw(maint, b);
 				if (er)
-					msgnwt(bw, msgs[5 + er]);
+					msgnwt(bw->parent, msgs[5 + er]);
 			} else
 				b->orphan = 1;
 			if (bw) {
@@ -377,7 +377,7 @@ int main(int argc, char **argv, char **envv)
 		help_on(maint);
 	}
 	if (!nonotice)
-		msgnw(lastw(maint)->object, "\\i** Joe's Own Editor v" VERSION " ** Copyright (C) 2001 **\\i");
+		msgnw(((BASE *)lastw(maint)->object)->parent, "\\i** Joe's Own Editor v" VERSION " ** Copyright (C) 2001 **\\i");
 	edloop(0);
 	vclose(vmem);
 	nclose(n);
