@@ -51,11 +51,13 @@ int force = 0;
 VFILE *vmem;
 
 unsigned char *msgs[] = {
-	US "Error writing file",
-	US "Error opening file",
-	US "Error seeking file",
+	US "No error",
+	US "New File",
 	US "Error reading file",
-	US "New File"
+	US "Error seeking file",
+	US "Error opening file",
+	US "Error writing file",
+	US "File on disk is newer"
 };
 
 /* Get size of gap (amount of free space) */
@@ -2087,6 +2089,8 @@ B *bload(unsigned char *s)
 	int nowrite = 0;
 	P *p;
 	int x;
+	long mod_time = 0;
+	struct stat sbuf;
 
 	if (!s || !s[0]) {
 		error = -1;
@@ -2118,6 +2122,10 @@ B *bload(unsigned char *s)
 		fi = fopen((char *)n, "r");
 		if (!fi)
 			nowrite = 0;
+		if (fi) {
+			fstat(fileno(fi),&sbuf);
+			mod_time = sbuf.st_mtime;
+		}
 	}
 	joesep(n);
 
@@ -2154,6 +2162,7 @@ B *bload(unsigned char *s)
 
 	/* Read from stream into new buffer */
 	b = bread(fileno(fi), amnt);
+	b->mod_time = mod_time;
 	setopt(b,n);
 	b->rdonly = b->o.readonly;
 
@@ -2337,10 +2346,11 @@ err:
 }
 
 /* Save 'size' bytes beginning at 'p' in file 's' */
-int bsave(P *p, unsigned char *s, long int size)
+int bsave(P *p, unsigned char *s, long int size, int flag)
 {
 	FILE *f;
 	long skip, amnt;
+	struct stat sbuf;
 
 	s = parsens(s, &skip, &amnt);
 
@@ -2362,8 +2372,14 @@ int bsave(P *p, unsigned char *s, long int size)
 		f = stdout;
 	} else if (skip || amnt != MAXLONG)
 		f = fopen((char *)s, "r+");
-	else
+	else {
+		if (flag && p->b->name && !strcmp((char *)s,p->b->name)) {
+			stat((char *)s,&sbuf);
+			if (sbuf.st_mtime>p->b->mod_time)
+				return -6;
+		}
 		f = fopen((char *)s, "w");
+	}
 	joesep(s);
 
 	if (!f) {

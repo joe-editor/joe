@@ -782,8 +782,12 @@ yank		^[ [ 2 ; 5 ~    Xterm Ctrl-Ins
 dropon		^@
  bufed		^[ d		Menu of buffers
 nbuf		^[ v		Next buffer
- pbuf		^[ .		Next buffer
- nbuf		^[ ,		Prev buffer
+nbuf		^[ V		Next buffer
+nbuf		^[ ^V		Next buffer
+pbuf		^[ u		Prev buffer
+pbuf		^[ U		Prev buffer
+pbuf		^[ ^U		Prev buffer
+ query		^[ q		Quoted insert
  byte		^[ n		Goto byte
  col		^[ c		Goto column
  abortbuf	^[ k		Kill current buffer- don't mess with windows

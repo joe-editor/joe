@@ -708,9 +708,9 @@ msg,"Fill-column set",rtn		^X f	Set right margin
 bol,rtn,backw,rtn,rtn,uparw,delw	^X ^O	Delete blank lines
 " ",backw," ",insc,delw	^[ SP			Just one space
 " ",backw,insc,delw	^[ \			Delete horizontal space
-stop,msg,"Abort",rtn	^G			Abort message
-stop,msg,"Abort",rtn	^[ ^G			Abort message
-stop,msg,"Abort",rtn	^X ^G			Abort message
+stop,msg,"Abort",beep,rtn	^G			Abort message
+stop,msg,"Abort",beep,rtn	^[ ^G			Abort message
+stop,msg,"Abort",beep,rtn	^X ^G			Abort message
 psh,markk,blkdel	^W			Cut
 save,rtn		^X ^S			Save file
 ask			^X s

@@ -1,4 +1,11 @@
 Mon May 10 2004  Joe Allen <jhallen@world.std.com>
+	* ufile.c b.c :
+
+	Warns if file changed on save.
+
+	Add 'beep' function and updated jmacsrc.in
+
+Mon May 10 2004  Joe Allen <jhallen@world.std.com>
 	* usearch.c, uisrch.c:
 
 	Added '-wrap' flag.  Search wraps when set.

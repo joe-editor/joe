@@ -525,8 +525,8 @@ int dowrite(BW *bw, unsigned char *s, void *object, int *notify)
 					  markk->line - markb->line + 1,
 					  markk->xcol);
 
-			if ((fl = bsave(tmp->bof, s, tmp->eof->byte)) != 0) {
-				msgnw(bw->parent, msgs[5 + fl]);
+			if ((fl = bsave(tmp->bof, s, tmp->eof->byte, 0)) != 0) {
+				msgnw(bw->parent, msgs[-fl]);
 				ret = -1;
 			}
 			brm(tmp);
@@ -538,8 +538,8 @@ int dowrite(BW *bw, unsigned char *s, void *object, int *notify)
 			int fl;
 			int ret = 0;
 
-			if ((fl = bsave(markb, s, markk->byte - markb->byte)) != 0) {
-				msgnw(bw->parent, msgs[5 + fl]);
+			if ((fl = bsave(markb, s, markk->byte - markb->byte, 0)) != 0) {
+				msgnw(bw->parent, msgs[-fl]);
 				ret = -1;
 			}
 			if (lightoff)
@@ -810,7 +810,7 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 
 			tmp = bload(s);
 			if (error) {
-				msgnw(bw->parent, msgs[error + 5]);
+				msgnw(bw->parent, msgs[-error]);
 				brm(tmp);
 				return -1;
 			}
@@ -841,7 +841,7 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 		B *tmp = bload(s);
 
 		if (error) {
-			msgnw(bw->parent, msgs[error + 5]), brm(tmp);
+			msgnw(bw->parent, msgs[-error]), brm(tmp);
 			ret = -1;
 		} else
 			binsb(bw->cursor, tmp);

@@ -164,6 +164,7 @@ struct buffer {
 	P	*bof;
 	P	*eof;
 	unsigned char	*name;
+	long    mod_time;	/* Last modification time for file */
 	int	orphan;
 	int	count;
 	int	changed;

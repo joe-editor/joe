@@ -14,8 +14,7 @@ blkmove		Move marked block to cursor
 blksave		Save marked block into a file
 copy		Copy block to kill-ring
 drop		Set markb.  If it was already set, eliminate it.
-dropon          Set markb.  If it was already set, eliminate it.  Turn on
-                marking mode.
+dropon          Set markb.  If it was already set, eliminate it.  Turn on marking mode.
 select          Set markb.  If it was already set, do nothing.
 filt		Filter block or file through a unix command
 markb		Set beginning of block mark
@@ -116,6 +115,7 @@ hprev		Switch to previous help screen
 Inserting
 ---------
 ctrl		Type next key
+finish		Complete word in text window
 insc		Insert a space 
 open		Insert newline
 quote		Insert a control character
@@ -145,6 +145,7 @@ uparwmenu	Move cursor up in menu
 
 Misc
 ----
+beep		Beep
 execmd		Execute a joe command
 math		Calculator
 mode		Mode prompt

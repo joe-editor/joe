@@ -47,6 +47,12 @@ int uexecmd(BW *bw);
 
 /* Command table */
 
+int ubeep(BW *bw, int k)
+{
+	ttputc(7);
+	return 0;
+}
+
 CMD cmds[] = {
 	{US "abort", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uabort, NULL, 0, NULL},
 	{US "abortbuf", TYPETW, uabortbuf, NULL, 0, NULL},
@@ -56,6 +62,7 @@ CMD cmds[] = {
 	{US "backs", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, ubacks, NULL, 1, US "delch"},
 	{US "backsmenu", TYPEMENU, umbacks, NULL, 1, NULL},
 	{US "backw", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EKILL + EMOD, ubackw, NULL, 1, US "delw"},
+	{US "beep", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ubeep, NULL, 0, NULL},
 	{US "bknd", TYPETW + TYPEPW, ubknd, NULL, 0, NULL},
 	{US "bkwdc", TYPETW + TYPEPW, ubkwdc, NULL, 1, US "fwrdc"},
 	{US "blkcpy", TYPETW + TYPEPW + EFIXXCOL + EMOD, ublkcpy, NULL, 1, NULL},

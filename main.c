@@ -328,7 +328,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 			if (!orphan || !opened) {
 				bw = wmktw(maint, b);
 				if (er)
-					msgnwt(bw->parent, msgs[5 + er]);
+					msgnwt(bw->parent, msgs[-er]);
 			} else
 				b->orphan = 1;
 			if (bw) {

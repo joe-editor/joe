@@ -1,7 +1,5 @@
 Fix for next release:
 
-  need 'beep' function for macros (see Abort in jmacsrc.in)
-
   highlight other windows
   why lose state during page down?
   perl highlighter
@@ -20,8 +18,6 @@ Fix for next release:
   ANSI terminfo built in.
 
   Update documentation.
-
-  Check if file is newer on save.
 
   gettext patch
 
@@ -98,7 +94,7 @@ File loading/storing:
  Save all modified
 
  Should have switch buffers in current window as more fundamental joe key
- sequence.
+ sequence (it's ^[ u and ^[ v for now).
 
  Unnamed buffers should be in bufed list (was fixed in the lost joe 2.9)
 

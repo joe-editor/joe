@@ -125,7 +125,7 @@ B *bfind PARAMS((unsigned char *s));
 B *borphan PARAMS((void));
 
 /* Save 'size' bytes beginning at 'p' into file with name in 's' */
-int bsave PARAMS((P *p, unsigned char *s, long int size));
+int bsave PARAMS((P *p, unsigned char *s, long int size,int flag));
 int bsavefd PARAMS((P *p, int fd, long int size));
 
 unsigned char *parsens PARAMS((unsigned char *s, long int *skip, long int *amnt));

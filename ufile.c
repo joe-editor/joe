@@ -296,8 +296,8 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 	if (bw->b->er == 0 && bw->o.msold) {
 		exemac(bw->o.msold);
 	}
-	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte)) != 0) {
-		msgnw(bw->parent, msgs[fl + 5]);
+	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte, 0)) != 0) {
+		msgnw(bw->parent, msgs[-fl]);
 		vsrm(req->name);
 		joe_free(req);
 		if (callback) {
@@ -355,36 +355,87 @@ static int dosave(BW *bw, unsigned char *s, int (*callback) (), int *notify)
 	}
 }
 
-static int dosave2(BW *bw, int c, unsigned char *s, int *notify)
+static int dosave2(BW *bw, int c, struct savereq *req, int *notify)
 {
+	unsigned char *s = req->name;
+	int (*callback)()= req->callback;
+
 	if (c == 'y' || c == 'Y') {
-		return dosave(bw, s, NULL, notify);
+		joe_free(req);
+		return dosave(bw, s, callback, notify);
 	} else if (c == 'n' || c == 'N') {
 		if (notify) {
 			*notify = 1;
 		}
 		genexmsg(bw, 0, s);
+		joe_free(req);
 		vsrm(s);
 		return -1;
-	} else if (mkqw(bw->parent, sc("File exists.  Overwrite (y,n,^C)? "), dosave2, NULL, s, notify)) {
+	} else if (mkqw(bw->parent, sc("File exists.  Overwrite (y,n,^C)? "), dosave2, NULL, req, notify)) {
 		return 0;
 	} else {
+		/* Should be in abort function */
+		joe_free(req);
+		vsrm(s);
 		return -1;
 	}
 }
 
-static int dosave1(BW *bw, unsigned char *s, void *object, int *notify)
+static int dosave2a(BW *bw, int c, struct savereq *req, int *notify)
 {
+	unsigned char *s = req->name;
+	int (*callback)() = req->callback;
+
+	if (c == 'y' || c == 'Y') {
+		joe_free(req);
+		return dosave(bw, s, callback, notify);
+	} else if (c == 'n' || c == 'N') {
+		if (notify) {
+			*notify = 1;
+		}
+		genexmsg(bw, 0, s);
+		joe_free(req);
+		vsrm(s);
+		return -1;
+	} else if (mkqw(bw->parent, sc("File on disk is newer.  Overwrite (y,n,^C)? "), dosave2a, NULL, req, notify)) {
+		return 0;
+	} else {
+		joe_free(req);
+		vsrm(s);
+		return -1;
+	}
+}
+
+/* Checks if file exists. */
+
+static int dosave1(BW *bw, unsigned char *s, int (*callback) (), int *notify)
+{
+	struct savereq *req = (struct savereq *) joe_malloc(sizeof(struct savereq));
 	int f;
 
-	if (s[0] != '!' && !(s[0] == '>' && s[1] == '>') && (!bw->b->name || strcmp(s, bw->b->name))) {
-		f = open((char *)s, O_RDONLY);
-		if (f != -1) {
-			close(f);
-			return dosave2(bw, 0, s, notify);
+	req->name = s;
+	req->callback = callback;
+
+	if (s[0] != '!' && !(s[0] == '>' && s[1] == '>')) {
+		if (!bw->b->name || strcmp(s, bw->b->name)) {
+			f = open((char *)s, O_RDONLY);
+			if (f != -1) {
+				close(f);
+				return dosave2(bw, 0, req, notify);
+			}
+		}
+		else {
+			struct stat sbuf;
+			if (!stat((char *)s,&sbuf)) {
+				if (sbuf.st_mtime>bw->b->mod_time) {
+					return dosave2a(bw, 0, req, notify);
+				}
+			}
 		}
 	}
-	return dosave(bw, s, object, notify);
+
+	joe_free(req);
+	return dosave(bw, s, callback, notify);
 }
 
 int usave(BW *bw)
@@ -436,7 +487,7 @@ int doedit(BW *bw, unsigned char *s, void *obj, int *notify)
 		}
 	}
 	if (er) {
-		msgnwt(bw->parent, msgs[er + 5]);
+		msgnwt(bw->parent, msgs[-er]);
 		if (er != -1) {
 			ret = -1;
 		}
@@ -496,7 +547,7 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 	b = bfind(s);
 	er = error;
 	if (error) {
-		msgnwt(bw->parent, msgs[error + 5]);
+		msgnwt(bw->parent, msgs[-error]);
 		if (error != -1) {
 			ret = -1;
 		}
@@ -623,7 +674,7 @@ static int exdone1(BW *bw, int flg)
 static int doex(BW *bw, unsigned char *s, void *object,int *notify)
 {
 	bw->b->name = joesep((unsigned char *)strdup((char *)s));
-	return dosave(bw, s, exdone, notify);
+	return dosave1(bw, s, exdone, notify);
 }
 
 int uexsve(BW *bw)
@@ -632,7 +683,7 @@ int uexsve(BW *bw)
 		uabort(bw, -1);
 		return 0;
 	} else if (bw->b->name && !exask) {
-		return dosave(bw, vsncpy(NULL, 0, sz(bw->b->name)), exdone1, NULL);
+		return dosave1(bw, vsncpy(NULL, 0, sz(bw->b->name)), exdone1, NULL);
 	} else {
 		BW *pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, doex, US "Names", NULL, cmplt, NULL, NULL, locale_map);
 
