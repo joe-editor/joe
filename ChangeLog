@@ -1,6 +1,12 @@
 Thu Apr 22 2004  Joe Allen <jhallen@world.std.com>
 	* uedit.c:
 
+	Fixed bugs where overtype and wordwrap modes were interacting.
+	Hope this doesn't cause new bugs...
+
+Thu Apr 22 2004  Joe Allen <jhallen@world.std.com>
+	* uedit.c:
+
 	Now, enter does not insert new line when in overtype mode (unless at
 	end of file).  Somebody asked for this.
 

@@ -893,11 +893,17 @@ int utypebw(BW *bw, int k)
 		/* We need x position before we move cursor */
 		x = piscol(bw->cursor) - bw->offset;
 		pgetc(bw->cursor);
+
+		/* Tabs are weird here... */
+		if (bw->o.overtype && !piseol(bw->cursor) && k != '\t')
+			udelch(bw);
+
+		/* Not sure if we're in right position for wordwrap when we're in overtype mode */
 		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !joe_isblank(k)) {
 			wrapword(bw->cursor, (long) bw->o.lmargin, bw->o.french, NULL);
 			simple = 0;
-		} else if (bw->o.overtype && !piseol(bw->cursor) && k != '\t')
-			udelch(bw);
+		}
+
 		bw->cursor->xcol = piscol(bw->cursor);
 #ifndef __MSDOS__
 		if (x < 0 || x >= bw->w)
