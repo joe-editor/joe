@@ -104,3 +104,69 @@ Shell Windows
 	In general, any character quoted with ` is sent to the shell.
 
 	Also sent to the shell: TAB, Backspace, Enter, ^C and ^D.
+
+Macros
+------
+
+A macro is a comma separated list of commands or named macros.  When the
+macro is executed, each command is executed until either the end of the list
+is reached, or one of the commands fails (non-zero return value from the
+command).  Failed commands beep if you have beeps enabled (^T B).
+
+Sometimes, you expect commands to sometimes fail, but want the rest of the
+commands in the list to be executed anyway.  To mark a command which is
+allowed to fail, postfix it with '!'.  For example, here a macro which hits
+down page in the window above:
+
+	prevw,pgdn!,nextw
+
+If prevw fails, the macro is aborted as usual. Even if pgdn fails (already
+at end of buffer), nextw will be executed so that the cursor is returned to
+the original window.
+
+Repeat arguments can be specified with ^K \.  When a command is executed
+with a repeat argument, it is repeatedly executed the specified number of
+times.  If the repeat argument is negative, an opposite command (if one
+exists) is executed instead.  For example, if you repeat "rtarw" -3 times,
+"ltarw" will be repeated 3 times.  If a negative argument is given for a
+command which does not have an opposite, the repeat argument is ignored.
+
+Normally, if a repeat argument is specified for a macro, the macro is simply
+repeated the given number of times.  If a negative argument is given, the
+argument is ignored.
+
+Sometimes you want to allow negative arguments for macros and have their
+behavior modified.  To do this, postfix each command within the macro which
+should be switched to its opposite for negative arguments with '-'.  For
+example, here is the page down other window macro:
+
+	prevw,pgdn-!,nextw
+
+Now if you execute this with an argument of -2, it will be repeated twice,
+but pgup will be executed instead of pgdn.  (not that several postfix
+modifiers can be placed after each command).
+
+Sometimes when a repeat argument is given to macro, you want only one of the
+commands in the list to be repeated, not the entire macro.  This can be
+indicated as follows:
+
+	prevw,pgdn#!,nextw
+
+If this is executed with an argument of 2, prevw is executed once, pgdn is
+executed twice, and nextw is executed once.
+
+Finally, even more complex semantics can be expressed with the "if" command:
+
+	if~,"arg<0",then,
+		ltarw,
+	else,
+		rtarw,
+	endif
+
+When the macro is executed, the "arg" math variable is set to the given
+repeat argument.  The "argset" variable is set to true if the user set an
+argument, even if it's 1.  If no argument was given, argset is false.
+
+If any command in the list is postfixed with ~ (if above), the macro is not
+repeated, even if there is an argument.  'arg' is still set to the given
+repeat count, however.

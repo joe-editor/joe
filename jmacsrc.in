@@ -766,14 +766,15 @@
 
 {Basic
 \i   Help Screen    \|turn off with ^XH   more help with ^X.                       \i
-\i \i\|\uCURSOR\u           \|\uGO TO\u           \|\uUNDO\u      \|\uMISC\u        \|\uREGION\u     \|\uEXIT\u       \|\i \i
-\i \i\|^B left ^F right \|^[V prev screen \|^XU undo  \|^[^[ option \|^@  mark   \|^XK  quit  \|\i \i
-\i \i\|^P up   ^N down  \|^V  next screen \|^^  redo  \|^[Q format  \|^W  cut    \|^X^C save  \|\i \i
-\i \i\|^[B prev. word   \|^A  beg of line \|\uDELETE\u    \|^L  refresh \|^Y  paste  \|\uFILE\u       \|\i \i
-\i \i\|^[F next word    \|^E  end of line \|^D  char  \|^[$ spell   \|^[Y switch \|^X^W save  \|\i \i
-\i \i\|\uSEARCH\u           \|^[< top of file \|^K  >line \|^[M math    \|^XA save   \|^XI  insert\|\i \i
-\i \i\|^S  forward      \|^[> end of file \|^[D >word \|^[% query   \|^[| filter \|^X^F load  \|\i \i
-\i \i\|^R  backward     \|^[G to line No. \|^[ DEL word<\|  replace \|^XX swap   \|^X^B switch\|\i \i
+\i \i\|\uCURSOR\u           \|\uGO TO\u           \|\uUNDO\u      \|\uMISC\u        \|\uREGION\u     \|\uFILE/EXIT\u  \|\i \i
+\i \i\|^B left ^F right \|^[V prev screen \|^_  undo  \|^[^[ option \|^@  mark   \|^X^C exit  \|\i \i
+\i \i\|^P up   ^N down  \|^V  next screen \|^^  redo  \|^[Q format  \|^X^X swap  \|^Z   shell \|\i \i
+\i \i\|^[B prev. word   \|^A  beg of line \|\uDELETE\u    \|^L  refresh \|^W  cut    \|^XK  abort \|\i \i
+\i \i\|^[F next word    \|^E  end of line \|^D  char  \|^[$ spell   \|^[W copy   \|^X^S save  \|\i \i
+\i \i\|\uSEARCH\u           \|^X[ top of file \|^K  >line \|^[M math    \|^Y  paste  \|^XS  all   \|\i \i
+\i \i\|^S  forward      \|^X] end of file \|^[D >word \|^[X command \|^[Y switch \|^XI  insert\|\i \i
+\i \i\|^R  backward     \|^[G to line No. \|^[ DEL word<\|^XL status\|^XA file   \|^X^F edit  \|\i \i
+\i \i\|^[% find&replace \|^XG matching ([{\|            \|^U  repeat\|^X| filter \|^X^B switch\|\i \i
 }
 
 {Editing 
@@ -781,20 +782,21 @@
 \i \i\|\uCASE\u           \|\uTRANSPOSE\u  \|\uINSERT\u    \|\uMACROS\u            \|\uPROGRAMS\u               \|\i \i
 \i \i\|^[U  Up word   \|^T   Chars \|^O  line  \|^X( record        \|^X^I Indent region     \|\i \i
 \i \i\|^[L  Down word \|^[T  Words \|^C  space \|^X) stop          \|^[.  Tags file find    \|\i \i
-\i \i\|^[C  Cap. word \|^X^T Lines \|`   Ctrl- \|^XE play          \|^XG  To matching ( [ { \|\i \i
-\i \i\|^X^U Up region \|           \|^XT text  \|^XQ query suspend \|^XC  Parse errors      \|\i \i
-\i \i\|^X^L Down region\|          \|          \|^U  repeat prefix \|^XN / ^XP next/prev err\|\i \i
+\i \i\|^[C  Cap. word \|^X^T Lines \|`   Ctrl- \|^XE play          \|^X4. Tags other window \|\i \i
+\i \i\|^X^U Up region \|           \|^[( ()    \|^XQ query suspend \|^XC  Compile           \|\i \i
+\i \i\|^X^L Down region\|          \|          \|                  \|^XN / ^XP next/prev err\|\i \i
 }
 
 {Window
 \i   Help Screen    \|turn off with ^XH   prev. screen ^X,  next screen ^X.        \i
-\i \i\|\uWINDOW\u                      \|\uSCROLL\u     \|\uSHELL\u       \|\uCURSOR\u                    \|\i \i
-\i \i\|^X2  Split window in half   \|^X^P up    \|^Z  Suspend \|^[P prev. paragraph       \|\i \i
-\i \i\|^XO  Switch to other window \|^X^N down  \|^[! Command \|^[N next paragraph        \|\i \i
-\i \i\|^XZ  Grow window            \|^X<  left  \|^[' Window  \|^XG to matching ( [ {     \|\i \i
-\i \i\|^X^Z Shrink window          \|^X>  right \|            \|\uBOOKMARK\u                  \|\i \i
-\i \i\|^X0  Kill window            \|           \|            \|^XJ set                   \|\i \i
-\i \i\|^X1  Kill all other windows \|^X=  status\|            \|^X/ goto                  \|\i \i
+\i \i\|\uWINDOW\u                      \|\uSCROLL\u     \|\uMODE\u        \|\uCURSOR\u                    \|\i \i
+\i \i\|^X2  Split window in half   \|^X^P up    \|^XF rght mgn\|^[P prev. paragraph       \|\i \i
+\i \i\|^XO  Switch to other window \|^X^N down  \|^X^Q rdonly \|^[N next paragraph        \|\i \i
+\i \i\|^XZ  Grow window            \|^X<  left  \|^[~ not mod \|DELETE                    \|\i \i
+\i \i\|^X^Z Shrink window          \|^X>  right \|            \|^[ SP just one space      \|\i \i
+\i \i\|^X0  Kill window            \|\uSHELL\u      \|\uBOOKMARK\u    \|^[ \\  no spaces           \|\i \i
+\i \i\|^X1  Kill all other windows \|^[! Command\|^XJ set     \|^X^O  cut blank lines     \|\i \i
+\i \i\|^[^Z ^[^V other PgUp/PgDn   \|^[' Window \|^X/ goto    \|^[z   cut to character    \|\i \i
 }
 
 {Search
@@ -987,15 +989,28 @@ eol			^[ O F			gnome-terminal
 eol			^[ [ 8 ~		RxVT
 eol			^# SP @		Amiga
 
-  Macros of non-existant emacs functions
+  Macros for non-existant Emacs functions
 
-psh,nextword,markk,prevword,markb,upper,nextword	^[ u		Upcase word
-psh,nextword,markk,prevword,markb,lower,nextword	^[ l		Downcase word
-psh,nextword,markk,prevword,markb,lower,rtarw,markk,upper,nextword	^[ c		Capitalize word
+psh,nextword-,markk,prevword-,markb,upper,nextword-	^[ u		Upcase word
+
+psh,nextword-,markk,prevword-,markb,lower,nextword-	^[ l		Downcase word
+
+psh,if,"arg>=0",then,
+  nextword,markk,prevword,markb,lower,rtarw,markk,upper,nextword,
+else,
+  prevword,markb,nextword,markk,lower,prevword,rtarw,markk,upper,ltarw,
+endif	^[ c			Capitalize word
+
 psh,markk,lower		^X ^L	Downcase region
+
 psh,markk,upper		^X ^U	Upcase region
-psh,ltarw,markb,rtarw,markk,rtarw,
-blkmove,rtarw	^T				Transpose chars
+
+psh,if,"arg>=0",then,
+  ltarw,markb,rtarw,markk,rtarw,blkmove,rtarw,
+else,
+  markk,ltarw,markb,ltarw,blkmove,rtarw,
+endif	^T				Transpose chars
+
 psh,uparw,bol,markb,dnarw,markk,
 dnarw,blkmove,dnarw		^X ^T		Transpose lines
 
@@ -1008,30 +1023,57 @@ dnarw,blkmove,dnarw		^X ^T		Transpose lines
 psh,prevword,nextword,nextword,markk,prevword,markb,setmark,":",
 prevword,nextword,blkmove,markk,prevword,markb,gomark,":",blkmove,nextword	^[ t
 
-eop,bop,markb,eop	^[ h			Mark paragraph
-nextword,prevword,markb,nextword	^[ @	Mark word
+eop-,bop-,markb,eop-	^[ h			Mark paragraph
+
+nextword-,prevword-,markb,nextword-	^[ @	Mark word
+
 "()",ltarw		^[ (			Insert ()
+
 bol,insc,delw		^[ ^			Delete indentation
+
 psh,markk,copy,msg,"Region saved",rtn	^[ w	Yank copy
+
 mode,"Rcol",rtn,
 msg,"Fill-column set",rtn		^X f	Set right margin
+
 bol,rtn,backw,rtn,rtn,uparw,delw	^X ^O	Delete blank lines
+
 " ",backw," ",insc,delw	^[ SP			Just one space
+
 " ",backw,insc,delw	^[ \			Delete horizontal space
+
 stop,msg,"Abort",beep,rtn	^G			Abort message
+
 stop,msg,"Abort",beep,rtn	^[ ^G			Abort message
+
 stop,msg,"Abort",beep,rtn	^X ^G			Abort message
+
 psh,markk,blkdel	^W			Cut
-save,rtn		^X ^S			Save file
-ask			^X s
+
+save,if,"col!=1",then,rtn,endif	^X ^S			Save file
+
+querysave		^X s
+
 drop,msg,"Mark set",rtn	^@			Drop anchor
+
 nextw,pgdn-!,prevw	^[ ^V			Scroll other window down
+
 nextw,pgup-!,prevw	^[ ^Z			Scroll other window up
+
  bol,nedge,pedge	^[ m			Gnu-emacs goto indentation
-nextw,nbuf!,prevw	^X 4 b			Switch buffers other window
+						(prefer ESC m to be math)
+
+nextw,nbuf-!,prevw	^X 4 b			Switch buffers other window
+
 nextw,edit,query,prevw	^X 4 f			Find file other window
+
 nextw,edit,query,prevw	^X 4 ^F
-nextw,tag,query,prevw	^X 4 .			Find tag other window
+
+psh,nextword,prevword,markb,nextword,markk,copy,
+nextw,tag,yank,query,prevw	^X 4 .
+
+
+ nextw,tag,query,prevw	^X 4 .			Find tag other window
 
  Old way...
  exsave			^X ^C			Save file and exit
@@ -1046,15 +1088,21 @@ lose,query		^X k			Kill buffer in window
 
 lose,query,edit		^X ^V			Edit a file: no orphaned buffers
 
-psh,drop,fwrdc,query,markk,blkdel	^[ z	Cut to char
+psh,drop,fwrdc-,query,markk,blkdel	^[ z	Cut to char
+
 psh,markk,if,"markv",then,blksave,">>",query,else,save,bol,deleol,">>",query,endif	^X a
+
  psh,markk,blksave,">>",query	^X a		Append region to file
+
 retype,
 arg,"top+height/2-line",rtn,upslide	^L	Recenter
+
 arg,"top+height/2-line",rtn,dnarw	^[ r	Move to center line
-swap,math,"z=line",rtn,
-swap,msg,math,"line-z",rtn,
+
+psh,markk,swap,math,"z=line",rtn,
+swap,math,"line-z",rtn,msg,math,"ans",rtn,
 " lines in region",rtn			^[ =	Count lines region
+
 mode,"O"				^X ^Q	Toggle read-only
 
 compile					^X c	Compile

@@ -25,6 +25,9 @@
 
 unsigned char *merr;
 
+extern int current_arg;
+extern int current_arg_set;
+
 int mode_hex;
 int mode_eng;
 int mode_ins;
@@ -234,7 +237,7 @@ static double expr(int prec, int en,struct var **rtv)
 				merr = US "Called object is not a function";
 		}
 		goto loop;
-	} else if (*ptr == '!' && 10 >= prec) {
+	} else if (*ptr == '!' && ptr[1]!='=' && 10 >= prec) {
 		++ptr;
 		if (x == (int)x && x>=1.0 && x<70.0) {
 			y = 1.0;
@@ -484,6 +487,12 @@ double calc(BW *bw, unsigned char *s)
 	v->set = 1;
 	v = get(US "rdonly");
 	v->val = tbw->b->rdonly;
+	v->set = 1;
+	v = get(US "arg");
+	v->val = current_arg;
+	v->set = 1;
+	v = get(US "argset");
+	v->val = current_arg_set;
 	v->set = 1;
 	merr = 0;
 	return eval(s);

@@ -1,3 +1,9 @@
+Sat Mar 19 17:08:05 EST 2005
+
+	Fix != in math prompt
+	Add modifiers to macros
+	Improve jmacs
+
 Fri Mar 18 16:15:19 EST 2005
 
 	Change so that ` up-arrow (or any key) goes to shell.

@@ -294,6 +294,7 @@ Variables:
 	char	Set to ASCII val of character under cursor	
 	markv	True if there is a valid block set (^KB ... ^KK)
 	rdonly	True if file is read-only
+	negarg	True for negative repeat arg
 	ans	Result of previous expression
 
 Commands:

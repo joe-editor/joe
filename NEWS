@@ -26,7 +26,8 @@ JOE 3.2
 
 - Colors can now be specified in the joerc file
 
-- Macro language now has conditionals
+- Macro language now has conditionals and modifiers for dealing with
+  repeat arguments.  Jmacs now works better due to this.
 
 - Tab completion works at tags search prompt ^K ;
 

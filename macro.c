@@ -210,7 +210,10 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 
 	/* Do we have a command? */
 	else {
-		for (y = x; buf[y] && buf[y] != '!' && buf[y] !='-' && buf[y] != ',' && buf[y] != ' ' && buf[y] != '\t' && buf[y] != '\n' && buf[x] != '\r'; ++y) ;
+		for (y = x; buf[y] && buf[y]!='#' && buf[y] != '!' &&
+		            buf[y] != '~' && buf[y] !='-' && buf[y] != ',' &&
+		            buf[y] != ' ' && buf[y] != '\t' &&
+		            buf[y] != '\n' && buf[x] != '\r'; ++y) ;
 		if (y != x) {
 			CMD *cmd;
 			int flg = 0;
@@ -221,9 +224,11 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 			buf[x = y] = c;
 
 			/* Parse flags */
-			while (buf[x]=='-' || buf[x]=='!') {
+			while (buf[x]=='-' || buf[x]=='!' || buf[x]=='#' || buf[x]=='~') {
 				if (buf[x]=='-') flg |= 1;
 				if (buf[x]=='!') flg |= 2;
+				if (buf[x]=='#') flg |= 4;
+				if (buf[x]=='~') flg |= 8;
 				++x;
 			}
 
@@ -443,6 +448,9 @@ int exsimple(MACRO *m, int arg, int u)
 	return ret;
 }
 
+int current_arg = 1;
+int current_arg_set = 0;
+
 int exmacro(MACRO *m, int u)
 {
 	int larg;
@@ -451,20 +459,29 @@ int exmacro(MACRO *m, int u)
 	int ret = 0;
 	int main_ret = 0;
 
+	int tmp_arg = current_arg;
+	int tmp_set = current_arg_set;
+
 	/* Take argument */
 
 	if (argset) {
 		larg = arg;
+		current_arg = arg;
+		current_arg_set = 1;
 		arg = 0;
 		argset = 0;
 	} else {
 		larg = 1;
+		current_arg_set = 0;
+		current_arg = 1;
 	}
 
 	/* Just a simple command? */
 
-	if (!m->steps)
-		return exsimple(m, larg, u);
+	if (!m->steps) {
+		ret = exsimple(m, larg, u);
+		goto done;
+	}
 
 	/* Must be a real macro then... */
 
@@ -477,7 +494,7 @@ int exmacro(MACRO *m, int u)
 		if (u)
 			umclear();
 		/* Repeat... */
-		while (larg-- && !leave && !ret) {
+		while (larg && !leave && !ret) {
 			MACRO *tmpmac = curmacro;
 			int tmpptr = macroptr;
 			int x = 0;
@@ -493,13 +510,21 @@ int exmacro(MACRO *m, int u)
 				if(d->steps) oid=ifdepth, oifl=ifflag, oifa=iffail, ifdepth=iffail=0;
 
 				/* If this step wants to know about negative args... */
-				if ((d->flg&1) && negarg) {
+				if ((d->flg&4)) {
+					argset = current_arg_set;
+					arg = current_arg;
+					larg = 1;
+				} else if ((d->flg&1) && negarg) {
 					if (argset) {
 						arg = -arg;
 					} else {
 						argset = 1;
 						arg = -1;
 					}
+				}
+
+				if (d->flg&8) {
+					larg = 1;
 				}
 
 				/* This is the key step of the macro... */
@@ -518,6 +543,7 @@ int exmacro(MACRO *m, int u)
 			/* Pop ^KB ^KK stack */
 			while (nstack > stk)
 				upop(NULL);
+		--larg;
 		}
 		ret |= main_ret;
 
@@ -528,6 +554,12 @@ int exmacro(MACRO *m, int u)
 		if (u)
 			undomark();
 	}
+
+	done:
+
+	current_arg = tmp_arg;
+	current_arg_set = tmp_set;
+
 	return ret;
 }
 

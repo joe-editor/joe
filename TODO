@@ -3,6 +3,14 @@ Short (infinite) list for 3.2:
 
 - - - - - - - -
 
+- regexp for compiler parsing
+
+- - - - - - - -
+
+- empty .joerc file causes lockup
+
+- - - - - - - -
+
 - change directory
 
 - - - - - - - -
@@ -14,28 +22,15 @@ Short (infinite) list for 3.2:
 - merge math with macro language
 - tab at math prompt should go through variables, functions.
 - eliminate need for : separator
-
-  improve macros: ignore error option, pass args to here option.
+- add loops, user defined functions with local variables
+- add comments
+- user should be able to bring up a program and hit 'eval'.
 
 jmacs:
-
- many negative args do not work properly because args
- are not passed to target command in a macro.
-
- some macros are broken because of the bail on any error
- semantic: sometimes we want to ignore errors (emacs scroll
- other window when we hit end of window).
-
-  more powerful macro language -
-    - merge math with commands so quoting not needed
-    - eliminate need for :
-    - add loops, user defined functions with local variables
-    - add comments
-    - user should be able to bring up a program and hit 'eval'.
-
-- - - - - - - -
-
-- regexp for compiler parsing
+ many negative args do not work properly still
+    ^X ^T  transpose lines
+    ^[ t   transpose words
+    ^S return supposed to be normal search
 
 - - - - - - - -
 
@@ -195,8 +190,6 @@ Jmacs:
  Rectangle mode for emacs yank system
 
  Overtype mode works for yank
-
- ESC args should work differently in emacs
 
  exiting options and i-search with ESC is not pretty
  (it isn't in emacs either)
