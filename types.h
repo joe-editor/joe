@@ -149,9 +149,14 @@ struct options {
 	MACRO	*mfirst;	/* Macro to execute on first change */
 };
 
-struct macro { int k; /* Keycode */ int arg; /* Repeat argument */ CMD *cmd;
-	/* Command address */ int n; /* Number of steps */ int size; /*
-	Malloc size of steps */ MACRO **steps; /* Block */
+struct macro {
+	int k; /* Keycode */
+	int flg; /* Flags: bit 0: this step wants the negative arg,
+	                   bit 1: ignore return value of this step, but use it as return value of macro */
+	CMD *cmd; /* Command address */
+	int n; /* Number of steps */
+	int size; /* Malloc size of steps */
+	MACRO **steps; /* Block */
 };
 
 struct recmac {

@@ -34,7 +34,7 @@ MACRO *freemacros = NULL;
 
 /* Create a macro */
 
-MACRO *mkmacro(int k, int arg, int n, CMD *cmd)
+MACRO *mkmacro(int k, int flg, int n, CMD *cmd)
 {
 	MACRO *macro;
 
@@ -42,7 +42,7 @@ MACRO *mkmacro(int k, int arg, int n, CMD *cmd)
 		int x;
 
 		macro = (MACRO *) joe_malloc(sizeof(MACRO) * 64);
-		for (x = 0; x != 64; ++x) {	/* FIXME: why limit to 64? */
+		for (x = 0; x != 64; ++x) {
 			macro[x].steps = (MACRO **) freemacros;
 			freemacros = macro + x;
 		}
@@ -51,7 +51,7 @@ MACRO *mkmacro(int k, int arg, int n, CMD *cmd)
 	freemacros = (MACRO *) macro->steps;
 	macro->steps = NULL;
 	macro->size = 0;
-	macro->arg = arg;
+	macro->flg = flg;
 	macro->n = n;
 	macro->cmd = cmd;
 	macro->k = k;
@@ -92,7 +92,7 @@ void addmacro(MACRO *macro, MACRO *m)
 
 MACRO *dupmacro(MACRO *mac)
 {
-	MACRO *m = mkmacro(mac->k, mac->arg, mac->n, mac->cmd);
+	MACRO *m = mkmacro(mac->k, mac->flg, mac->n, mac->cmd);
 
 	if (mac->steps) {
 		int x;
@@ -112,11 +112,11 @@ MACRO *macstk(MACRO *m, int k)
 	return m;
 }
 
-/* Set arg part of macro */
+/* Set flg part of macro */
 
 MACRO *macsta(MACRO *m, int a)
 {
-	m->arg = a;
+	m->flg = a;
 	return m;
 }
 
@@ -196,12 +196,12 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 				if (!m->steps) {
 					MACRO *macro = m;
 
-					m = mkmacro(-1, 1, 0, NULL);
+					m = mkmacro(-1, 0, 0, NULL);
 					addmacro(m, macro);
 				}
 			} else
-				m = mkmacro(-1, 1, 0, NULL);
-			addmacro(m, mkmacro(buf[x], 1, 0, findcmd(US "type")));
+				m = mkmacro(-1, 0, 0, NULL);
+			addmacro(m, mkmacro(buf[x], 0, 0, findcmd(US "type")));
 			++x;
 		}
 		if (buf[x] == '\"')
@@ -210,13 +210,23 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 
 	/* Do we have a command? */
 	else {
-		for (y = x; buf[y] && buf[y] != ',' && buf[y] != ' ' && buf[y] != '\t' && buf[y] != '\n' && buf[x] != '\r'; ++y) ;
+		for (y = x; buf[y] && buf[y] != '!' && buf[y] !='-' && buf[y] != ',' && buf[y] != ' ' && buf[y] != '\t' && buf[y] != '\n' && buf[x] != '\r'; ++y) ;
 		if (y != x) {
 			CMD *cmd;
+			int flg = 0;
 
 			c = buf[y];
 			buf[y] = 0;
 			cmd = findcmd(buf + x);
+			buf[x = y] = c;
+
+			/* Parse flags */
+			while (buf[x]=='-' || buf[x]=='!') {
+				if (buf[x]=='-') flg |= 1;
+				if (buf[x]=='!') flg |= 2;
+				++x;
+			}
+
 			if (!cmd) {
 				*sta = -1;
 				return NULL;
@@ -224,13 +234,12 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 				if (!m->steps) {
 					MACRO *macro = m;
 
-					m = mkmacro(-1, 1, 0, NULL);
+					m = mkmacro(-1, 0, 0, NULL);
 					addmacro(m, macro);
 				}
-				addmacro(m, mkmacro(-1, 1, 0, cmd));
+				addmacro(m, mkmacro(-1, flg, 0, cmd));
 			} else
-				m = mkmacro(-1, 1, 0, cmd);
-			buf[x = y] = c;
+				m = mkmacro(-1, flg, 0, cmd);
 		}
 	}
 
@@ -392,6 +401,137 @@ static int macroptr;
 static int arg = 0;		/* Repeat argument */
 static int argset = 0;		/* Set if 'arg' is set */
 
+/* Execute a macro which is just a simple command */
+
+int exsimple(MACRO *m, int arg, int u)
+{
+	CMD *cmd = m->cmd;
+	int flg = 0; /* set if we should not try to merge minor changes into single undo record */
+	int ret = 0;
+
+	/* Find command to execute if repeat argument is negative */
+	if (arg < 0) {
+		arg = -arg;
+		if (cmd->negarg)
+			cmd = findcmd(cmd->negarg);
+		else
+			arg = 0; /* Do not execute */
+	}
+
+	/* Check if command doesn't like an arg... */
+	if (arg != 1 && !cmd->arg)
+		arg = 0; /* Do not execute */
+
+	if (arg != 1 || !(cmd->flag & EMINOR)
+	    || maint->curwin->watom->what == TYPEQW)	/* Undo work right for s & r */
+		flg = 1;
+
+	if (ifflag || (cmd->flag&EMETA)) {
+		if (flg && u)
+			umclear();
+		/* Repeat... */
+		while (arg-- && !leave && !ret)
+			ret = execmd(cmd, m->k);
+		if (leave)
+			return ret;
+		if (flg && u)
+			umclear();
+		if (u)
+			undomark();
+	}
+
+	return ret;
+}
+
+int exmacro(MACRO *m, int u)
+{
+	int larg;
+	int negarg = 0;
+	int oid, oifl, oifa;
+	int ret = 0;
+	int main_ret = 0;
+
+	/* Take argument */
+
+	if (argset) {
+		larg = arg;
+		arg = 0;
+		argset = 0;
+	} else {
+		larg = 1;
+	}
+
+	/* Just a simple command? */
+
+	if (!m->steps)
+		return exsimple(m, larg, u);
+
+	/* Must be a real macro then... */
+
+	if (larg < 0) {
+		larg = -larg;
+		negarg = 1;
+	}
+
+	if (ifflag) {
+		if (u)
+			umclear();
+		/* Repeat... */
+		while (larg-- && !leave && !ret) {
+			MACRO *tmpmac = curmacro;
+			int tmpptr = macroptr;
+			int x = 0;
+			int stk = nstack;
+
+			/* Steps of macro... */
+			while (m && x != m->n && !leave && !ret) {
+				MACRO *d;
+
+				d = m->steps[x++];
+				curmacro = m;
+				macroptr = x;
+				if(d->steps) oid=ifdepth, oifl=ifflag, oifa=iffail, ifdepth=iffail=0;
+
+				/* If this step wants to know about negative args... */
+				if ((d->flg&1) && negarg) {
+					if (argset) {
+						arg = -arg;
+					} else {
+						argset = 1;
+						arg = -1;
+					}
+				}
+
+				/* This is the key step of the macro... */
+				if (d->flg&2)
+					main_ret = exmacro(d, 0);
+				else
+					ret = exmacro(d, 0);
+
+				if(d->steps) ifdepth=oid, ifflag=oifl, iffail=oifa;
+				m = curmacro;
+				x = macroptr;
+			}
+			curmacro = tmpmac;
+			macroptr = tmpptr;
+
+			/* Pop ^KB ^KK stack */
+			while (nstack > stk)
+				upop(NULL);
+		}
+		ret |= main_ret;
+
+		if (leave)
+			return ret;
+		if (u)
+			umclear();
+		if (u)
+			undomark();
+	}
+	return ret;
+}
+
+#if 0
 int exmacro(MACRO *m, int u)
 {
 	int larg;
@@ -471,6 +611,7 @@ int exmacro(MACRO *m, int u)
 
 	return ret;
 }
+#endif
 
 /* Execute a macro - for user typing */
 /* Records macro in macro recorder, resets if */
@@ -500,7 +641,7 @@ static int dorecord(BW *bw, int c, void *object, int *notify)
 			return -1;
 	r = (struct recmac *) joe_malloc(sizeof(struct recmac));
 
-	r->m = mkmacro(0, 1, 0, NULL);
+	r->m = mkmacro(0, 0, 0, NULL);
 	r->next = recmac;
 	r->n = c - '0';
 	recmac = r;
@@ -532,7 +673,7 @@ int ustop(void)
 			rmmacro(kbdmacro[r->n]);
 		kbdmacro[r->n] = r->m;
 		if (recmac)
-			record(m = mkmacro(r->n + '0', 1, 0, findcmd(US "play"))), rmmacro(m);
+			record(m = mkmacro(r->n + '0', 0, 0, findcmd(US "play"))), rmmacro(m);
 		joe_free(r);
 	}
 	return 0;

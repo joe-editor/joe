@@ -1025,10 +1025,10 @@ psh,markk,blkdel	^W			Cut
 save,rtn		^X ^S			Save file
 ask			^X s
 drop,msg,"Mark set",rtn	^@			Drop anchor
-nextw,pgdn,prevw	^[ ^V			Scroll other window down
-nextw,pgup,prevw	^[ ^Z			Scroll other window up
+nextw,pgdn-!,prevw	^[ ^V			Scroll other window down
+nextw,pgup-!,prevw	^[ ^Z			Scroll other window up
  bol,nedge,pedge	^[ m			Gnu-emacs goto indentation
-nextw,nbuf,prevw	^X 4 b			Switch buffers other window
+nextw,nbuf!,prevw	^X 4 b			Switch buffers other window
 nextw,edit,query,prevw	^X 4 f			Find file other window
 nextw,edit,query,prevw	^X 4 ^F
 nextw,tag,query,prevw	^X 4 .			Find tag other window
@@ -1132,8 +1132,8 @@ qrepl		^[ ^R		Query replace (uemacs)
 redo		^^		Redo changes
  rfirst		^R		Search backwards
 rsrch		^R		Incremental search backwards
-if,"markv",then,rindent,else,markk,rindent,endif	^X ^I
-if,"markv",then,rindent,else,markk,rindent,endif	^[ ^\
+if,"markv",then,rindent-!,else,markk,rindent-!,endif	^X ^I
+if,"markv",then,rindent-!,else,markk,rindent-!,endif	^[ ^\
  markk,rindent	^[ ^\
 rtarw		.kr		Go right
 rtarw		^F
