@@ -6,8 +6,6 @@ Short list for 3.2:
 
 - ^D in selection prompts should bring up menu as in tcsh
 
-- Ctrl-G for vhdl
-
 - update man page
 
 - better string demarcation in highlighter (highlight all words with 's in

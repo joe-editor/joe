@@ -488,6 +488,7 @@
 -purify
 -vhdl_comment
 -text_delimiters entity|ENTITY|if|IF|component|COMPONENT|loop|LOOP|configuration|CONFIGURATION|units|UNITS|record|RECORD|case|CASE|function|FUNCTION|package|PACKAGE|architecture|ARCHITECTURE|block|BLOCK|process|PROCESS|generate|GENERATE=end|END
+-text_delimiters entity|if|component|loop|configuration|units|record|case|function|package|architecture|block|process|generate=end
  XML
 *.xml
 -wordwrap

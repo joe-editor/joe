@@ -455,22 +455,46 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					} while (c != NO_MORE_DATA && c != '/');
 				} else if (c != NO_MORE_DATA)
 					pgetc(p);
-			} else if (bw->o.cpp_comment && c == '\n') {
+			} else if ((bw->o.cpp_comment || bw->o.pound_comment ||
+			            bw->o.semi_comment || bw->o.vhdl_comment) && c == '\n') {
 				P *q = pdup(p);
 				int cc;
 				p_goto_bol(q);
 				while((cc = pgetc(q)) != '\n') {
-					if (cc == '/') {
+					if (bw->o.pound_comment && cc == '$' && brch(q)=='#') {
+						pgetc(q);
+					} else if(cc=='"') {
+						while ((cc = pgetc(q)) != '\n')
+							if (cc == '"') break;
+							else if (cc == '\\') pgetc(q);
+					} else if (bw->o.cpp_comment && cc == '/') {
 						if (brch(q)=='/') {
 							prgetc(q);
 							pset(p,q);
 							break;
 						}
+					} else if (bw->o.single_quoted && cc == '\'') {
+						while((cc = pgetc(q)) != '\n')
+							if (cc == '\'') break;
+							else if (cc == '\\') pgetc(q);
+					} else if (bw->o.vhdl_comment && cc == '-') {
+						if (brch(q)=='-') {
+							prgetc(q);
+							pset(p,q);
+							break;
+						}
+					} else if (bw->o.pound_comment && cc == '#') {
+						pset(p,q);
+						break;
+					} else if (bw->o.semi_comment && cc == ';') {
+						pset(p,q);
+						break;
 					}
 				}
 				prm(q);
 			} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c>='0' && c<='9' || c=='_') {
 				int x;
+				int flg=0;
 				P *q;
 				len=0;
 				while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
@@ -482,6 +506,19 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 				q=pdup(p);
 				while (c ==' ' || c=='\t')
 					c=prgetc(q);
+				prm(q);
+				/* VHDL hack */
+				if (c=='d' && bw->o.vhdl_comment) {
+					c=prgetc(q);
+					if(c=='n') {
+						c=prgetc(q);
+						if(c=='e') {
+							c=prgetc(q);
+							if(c==' ' || c=='\t' || c=='\n' || c==NO_MORE_DATA)
+								flg=1;
+						}
+					}
+				}
 				prm(q);
 				if (c == set[0])
 					buf[len++] = c;
@@ -495,7 +532,7 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 				}
 				if (is_in_group(last_of_set,buf)) {
 					++cnt;
-				} else if(is_in_group(set,buf) && !--cnt) {
+				} else if(is_in_group(set,buf) && !flg && !--cnt) {
 					pset(bw->cursor,p);
 					prm(p);
 					return 0;
@@ -520,7 +557,15 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 			} else if (c == '"') {
 				while ((c = pgetc(p)) != NO_MORE_DATA)
 					if (c == '"') break;
-					else if (c == '\\') pgetc(p); 
+					else if (c == '\\') pgetc(p);
+			} else if (c == '$' && brch(p)=='#' && bw->o.pound_comment) {
+				pgetc(p);
+			} else if (bw->o.pound_comment && c == '#' ||
+				   bw->o.semi_comment && c == ';' ||
+				   bw->o.vhdl_comment && c == '-' && brch(p) == '-') {
+				while ((c = pgetc(p)) != NO_MORE_DATA)
+					if (c == '\n')
+						break;
 			} else if (bw->o.single_quoted && c == '\'') {
 				while((c = pgetc(p)) != NO_MORE_DATA)
 					if (c == '\'') break;
@@ -575,6 +620,9 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 						return 0;
 					}
 				} else if(is_in_group(last_of_set,buf)) {
+					/* VHDL hack */
+					if (bw->o.vhdl_comment && !strcmp(buf,"end"))
+						p_goto_next(p);
 					--cnt;
 				}
 			}

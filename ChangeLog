@@ -5,6 +5,8 @@ Fri Mar  4 2005  Joe Allen <jhallen@world.std.com>
 
 	Add #if #else #endif matching.
 
+	Get ^G working for VHDL (VHDL sucks).
+
 Thu Mar  3 2005  Joe Allen <jhallen@world.std.com>
 
 	New help screen for math.
