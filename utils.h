@@ -43,6 +43,8 @@ int isspace_eof PARAMS((int c));
  */
 int joe_isblank PARAMS((int c));
 
+unsigned char *lowerize PARAMS((unsigned char *s));
+
 /*
  * Functions which return minimum/maximum of two numbers  
  */

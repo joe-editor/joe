@@ -28,6 +28,7 @@
 #include "vs.h"
 #include "b.h"
 #include "syntax.h"
+#include "va.h"
 #include "w.h"
 
 #define OPT_BUF_SIZE 300
@@ -97,6 +98,7 @@ OPTIONS pdefault = {
 	0,		/* Smart home key */
 	0,		/* Smart backspace key */
 	0,		/* Purify indentation */
+	0,		/* Picture mode */
 	NULL,		/* macro to execute for new files */
 	NULL,		/* macro to execute for existing files */
 	NULL,		/* macro to execute before saving new files */
@@ -135,6 +137,7 @@ OPTIONS fdefault = {
 	0,		/* Smart home key */
 	0,		/* Smart backspace key */
 	0,		/* Purity indentation */
+	0,		/* Picture mode */
 	NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
@@ -226,7 +229,9 @@ struct glopts {
 	{US "smarthome",	4, NULL, (unsigned char *) &fdefault.smarthome, US "Smart home key enabled", US "Smart home key disabled", US "  Smart home key " },
 	{US "smartbacks",	4, NULL, (unsigned char *) &fdefault.smartbacks, US "Smart backspace key enabled", US "Smart backspace key disabled", US "  Smart backspace " },
 	{US "purify",	4, NULL, (unsigned char *) &fdefault.purify, US "Indentation clean up enabled", US "Indentation clean up disabled", US "  Clean up indents " },
-	{US "backpath",	2, (int *) &backpath, NULL, US "Backup files stored in (%s): ", 0, US "Path to backup files " },
+	{US "picture",	4, NULL, (unsigned char *) &fdefault.picture, US "Picture drawing mode enabled", US "Picture drawing mode disabled", US "Picture mode " },
+	{US "backpath",	2, (int *) &backpath, NULL, US "Backup files stored in (%s): ", 0, US "  Path to backup files " },
+	{US "syntax",	9, NULL, NULL, US "Select syntax (^C to abort): ", 0, US "Y Syntax" },
 	{US "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
 	{US "noxon",	0, &noxon, NULL, 0, 0, 0 },
 	{US "orphan",	0, &orphan, NULL, 0, 0, 0 },
@@ -348,7 +353,13 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 					}
 				}
 				break;
+
+			case 9: /* Set syntax */
+				if (arg && options)
+					options->syntax = load_dfa(arg);
+				break;
 			}
+			/* This is a stupid hack... */
 			if ((glopts[x].type & 3) == 0 || !arg)
 				return 1;
 			else
@@ -416,13 +427,6 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			if (options)
 				options->msold = mparse(NULL, arg, &sta);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!strcmp(s, "syntax")) {
-		if (arg) {
-			if (options)
-				options->syntax = load_dfa(arg);
 			ret = 2;
 		} else
 			ret = 1;
@@ -499,6 +503,57 @@ static int doopt1(BW *bw, unsigned char *s, int *xx, int *notify)
 	return ret;
 }
 
+static int dosyntax(BW *bw, unsigned char *s, int *xx, int *notify)
+{
+	int ret = 0;
+	struct high_syntax *syn;
+
+	syn = load_dfa(s);
+
+	if (syn)
+		bw->o.syntax = syn;
+	else
+		msgnw(bw->parent, US "Syntax definition file not found");
+
+	vsrm(s);
+	bw->b->o = bw->o;
+	updall();
+	if (notify)
+		*notify = 1;
+	return ret;
+}
+
+unsigned char **syntaxes = NULL; /* Array of available syntaxes */
+
+static int syntaxcmplt(BW *bw)
+{
+	if (!syntaxes) {
+		unsigned char *oldpwd = pwd();
+		unsigned char **t;
+		int x, y;
+		if (chpwd(US (JOERC "syntax")))
+			return -1;
+		t = rexpnd("*.jsf");
+		if (!t) {
+			chpwd(oldpwd);
+			return -1;
+		}
+		if (!aLEN(t)) {
+			varm(t);
+			chpwd(oldpwd);
+			return -1;
+		}
+
+		for (x = 0; x != aLEN(t); ++x) {
+			unsigned char *r = vsncpy(NULL,0,t[x],(unsigned char *)strrchr((char *)(t[x]),'.')-t[x]);
+			syntaxes = vaadd(syntaxes,r);
+		}
+		varm(t);
+		chpwd(oldpwd);
+	}
+	return simple_cmplt(bw,syntaxes);
+}
+
 static int doopt(MENU *m, int x, void *object, int flg)
 {
 	BW *bw = m->parent->win->object;
@@ -568,6 +623,15 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			return 0;
 		else
 			return -1;
+
+	case 9:
+		snprintf((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, "");
+		m->parent->notify = 0;
+		wabort(m->parent);
+		if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, -1))
+			return 0;
+		else
+			return -1;
 	}
 	if (notify)
 		*notify = 1;
@@ -597,7 +661,7 @@ int umode(BW *bw)
 	s = (unsigned char **) joe_malloc(sizeof(unsigned char *) * (size + 1));
 
 	for (x = 0; x != size; ++x) {
-		s[x] = (unsigned char *) joe_malloc(40);		/* FIXME: why 40 ??? */
+		s[x] = (unsigned char *) joe_malloc(80);		/* FIXME: why 40 ??? */
 		switch (glopts[x].type) {
 		case 0:
 			snprintf((char *)(s[x]), OPT_BUF_SIZE, "%s%s", glopts[x].menu, *glopts[x].set ? "ON" : "OFF");
@@ -606,6 +670,7 @@ int umode(BW *bw)
 			snprintf((char *)(s[x]), OPT_BUF_SIZE, "%s%d", glopts[x].menu, *glopts[x].set);
 			break;
 		case 2:
+		case 9:
 			strcpy((char *)(s[x]), (char *)glopts[x].menu);
 			break;
 		case 4:

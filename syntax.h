@@ -36,6 +36,7 @@ struct high_cmd {
 	int start_buffering;		/* Set if we should start buffering */
 	struct high_state *new_state;	/* The new state */
 	HASH *keywords;			/* Hash table of keywords */
+	int ignore;			/* Set to ignore case */
 };
 
 /* Loaded form of syntax file */

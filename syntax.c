@@ -59,7 +59,7 @@ int parse(struct high_syntax *syntax,P *line,int state)
 			/* Get command for this character */
 			cmd = h->cmd[c];
 			/* Determine new state */
-			if(cmd->keywords && (kw_new_state=htfind(cmd->keywords,buf))) {
+			if (cmd->keywords && (cmd->ignore ? (kw_new_state=htfind(cmd->keywords,lowerize(buf))) : (kw_new_state=htfind(cmd->keywords,buf)))) {
 				h = kw_new_state;
 				/* Recolor keyword */
 				for(x= -(buf_idx+1);x<-1;++x)
@@ -259,6 +259,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 					cmd->start_buffering = 0;
 					cmd->new_state = 0;
 					cmd->keywords = 0;
+					cmd->ignore = 0;
 
 					parse_ws(&p);
 					if(!parse_ident(&p,bf,255)) {
@@ -277,7 +278,9 @@ struct high_syntax *load_dfa(unsigned char *name)
 										fprintf(stderr,"%s %d: Missing value for option\n",name,line);
 								} else
 									fprintf(stderr,"%s %d: Missing value for option\n",name,line);
-							} else if(!strcmp(bf,"strings")) {
+							} else if(!strcmp(bf,"strings") || !strcmp(bf,"istrings")) {
+								if (bf[0]=='i')
+									cmd->ignore = 1;
 								while(fgets((char *)buf,1023,f)) {
 									++line;
 									p = buf;
@@ -286,6 +289,8 @@ struct high_syntax *load_dfa(unsigned char *name)
 										break;
 									if(!parse_string(&p,bf,255)) {
 										parse_ws(&p);
+										if (cmd->ignore)
+											lowerize(bf);
 										if(!parse_ident(&p,bf1,255)) {
 											if(!cmd->keywords)
 												cmd->keywords = htmk(64);

@@ -1,9 +1,26 @@
+-----------------------
+Tasks for next release:
+-----------------------
+
+UTF-8: regex, incremental search, select charset UI
+
+Highlight: more syntax files, fix *rc files, other windows.
+why do we lose highlight state during page down?
+
+Math: need hex and octal entry, some math functions
+
+Misc: update other *rc files, update documentation.
+
+Test test test...
+
+
+
+
+
 Improvements for regular text
 -----------------------------
 mode where wordwrap wraps rest of paragraph?
 mode where all editing wraps rest of paragraph?
-
-tab in overtype should just move the cursor, not insert a tab.
 
 Improvements for programming
 ----------------------------
@@ -115,8 +132,6 @@ sequence: perhaps all of this is ok).
 
 Syntax Highlighting:
 --------------------
-
-UI for seting syntax during run time
 
 More syntax files.
 
@@ -266,8 +281,6 @@ Major new modes:
  Hex edit mode
 
  Fixed record length mode
-
- Picture mode (can type past right column).
 
 
 Major code improvements:

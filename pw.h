@@ -19,4 +19,16 @@ BW *wmkpw PARAMS((W *w, unsigned char *prompt, B **history, int (*func) (), unsi
 
 int ucmplt PARAMS((BW *bw, int k));
 
+/* Function for TAB completion */
+
+unsigned char **regsub PARAMS((unsigned char **z, int len, unsigned char *s));
+
+void cmplt_ins PARAMS((BW *bw,unsigned char *line));
+
+int cmplt_abrt PARAMS((BW *bw,int x, unsigned char *line));
+
+int cmplt_rtn PARAMS((MENU *m,int x,unsigned char *line));
+
+int simple_cmplt PARAMS((BW *bw,unsigned char **list));
+
 #endif

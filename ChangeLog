@@ -1,4 +1,19 @@
 Thu Apr 22 2004  Joe Allen <jhallen@world.std.com>
+	* cmd.c, pw.c, pw.h, rc.c, syntax.c, syntax.h, types.h, uedit.c,
+	utils.c, utils.h, syntax/c.jsf.in:
+
+	Fixed uopen() ^] for overtype mode.
+
+	Added 'istrings' option in syntax files for ignoring case
+	in strings.
+
+	Added ^T Y- allows you to select syntax during run time (tab
+	completion works too!)
+
+	Added ^T P- picture mode: can move and type anywhere on the screen,
+	good for drawing ASCII art.
+
+Thu Apr 22 2004  Joe Allen <jhallen@world.std.com>
 	* uedit.c:
 
 	Tab key only inserts when past end of line in overtype mode.

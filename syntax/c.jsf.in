@@ -42,6 +42,8 @@
 #		given strings, a jump to the target-state in the string list
 #		is taken instead of the normal jump.
 #
+#   istrings	Same as strings, but case is ignored.
+#
 #   The format of the string list is:
 #
 #      "string"   <target-state>

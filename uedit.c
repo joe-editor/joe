@@ -92,10 +92,24 @@ int u_goto_eof(BW *bw)
  */
 int u_goto_left(BW *bw)
 {
-	if (prgetc(bw->cursor) != NO_MORE_DATA)
-		return 0;
-	else
-		return -1;
+	if (bw->o.picture) {
+		if (bw->cursor->xcol) {
+			--bw->cursor->xcol;
+			pcol(bw->cursor,bw->cursor->xcol);
+			return 0;
+		}
+	} else {
+		/* Have to do ECHKXCOL here because of picture mode */
+		if (bw->cursor->xcol != piscol(bw->cursor)) {
+			bw->cursor->xcol = piscol(bw->cursor);
+			return 0;
+		} else if (prgetc(bw->cursor) != NO_MORE_DATA) {
+			bw->cursor->xcol = piscol(bw->cursor);
+			return 0;
+		} else {
+			return -1;
+		}
+	}
 }
 
 /*
@@ -103,10 +117,18 @@ int u_goto_left(BW *bw)
  */
 int u_goto_right(BW *bw)
 {
-	if (pgetc(bw->cursor) != NO_MORE_DATA)
+	if (bw->o.picture) {
+		++bw->cursor->xcol;
+		pcol(bw->cursor,bw->cursor->xcol);
 		return 0;
-	else
-		return -1;
+	} else {
+		if (pgetc(bw->cursor) != NO_MORE_DATA) {
+			bw->cursor->xcol = piscol(bw->cursor);
+			return 0;
+		} else {
+			return -1;
+		}
+	}
 }
 
 /*
@@ -349,6 +371,12 @@ int udnarw(BW *bw)
 {
 	if (bw->cursor->line != bw->b->eof->line) {
 		pnextl(bw->cursor);
+		pcol(bw->cursor, bw->cursor->xcol);
+		return 0;
+	} else if(bw->o.picture) {
+		p_goto_eol(bw->cursor);
+		binsc(bw->cursor,'\n');
+		pgetc(bw->cursor);
 		pcol(bw->cursor, bw->cursor->xcol);
 		return 0;
 	} else
@@ -849,14 +877,19 @@ int utypebw(BW *bw, int k)
 		int col = bw->cursor->xcol;		/* Current cursor column */
 		col = col + bw->o.tab - (col%bw->o.tab);/* Move to next tab stop */
 		pcol(bw->cursor,col);			/* Try to position cursor there */
-		if (piseol(bw->cursor) && piscol(bw->cursor)<col)	/* We moved past end of line, insert a tab */
+		if (!bw->o.picture && piseol(bw->cursor) && piscol(bw->cursor)<col)	/* We moved past end of line, insert a tab (unless in picture mode) */
 			if (bw->o.spaces)
 				pfill(bw->cursor,col,' ');
 			else
 				pfill(bw->cursor,col,'\t');
 		bw->cursor->xcol = col;			/* Put cursor there even if we can't really go there */
 	} else if (k == '\t' && bw->o.spaces) {
-		long n = piscol(bw->cursor);
+		long n;
+
+		if (bw->o.picture)
+			n = bw->cursor->xcol;
+		else
+			n = piscol(bw->cursor);
 
 		utype_utf8_sm.state = 0;
 		utype_utf8_sm.ptr = 0;
@@ -868,6 +901,10 @@ int utypebw(BW *bw, int k)
 		int upd;
 		int simple;
 		int x;
+
+		/* Picture mode */
+		if (bw->o.picture && bw->cursor->xcol!=piscol(bw->cursor))
+			pfill(bw->cursor,bw->cursor->xcol,' '); /* Why no tabs? */
 
 		/* UTF8 decoder */
 		if(utf8) {
@@ -1234,11 +1271,7 @@ int rtntw(BW *bw)
 
 int uopen(BW *bw)
 {
-	P *q = pdup(bw->cursor);
-
-	rtntw(bw);
-	pset(bw->cursor, q);
-	prm(q);
+	binsc(bw->cursor,'\n');
 	return 0;
 }
 

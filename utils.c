@@ -44,6 +44,14 @@ int joe_isblank(int c)
 	return((c == 32) || (c == 9));
 }
 
+unsigned char *lowerize(unsigned char *s)
+{
+	unsigned char *t;
+	for (t=s;*t;t++)
+		*t = (unsigned char)tolower((char)*t);
+	return s;
+}
+
 /*
  * return minimum/maximum of two numbers
  */

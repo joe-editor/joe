@@ -120,6 +120,7 @@ struct options {
 	int	smarthome;	/* Set for smart home key */
 	int	smartbacks;	/* Set for smart backspace key */
 	int	purify;		/* Purify indentation */
+	int	picture;	/* Picture mode */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */

@@ -114,7 +114,7 @@ CMD cmds[] = {
 	{US "lindent", TYPETW + TYPEPW + EFIXXCOL + EMOD, ulindent, NULL, 1, US "rindent"},
 	{US "line", TYPETW + TYPEPW, uline, NULL, 0, NULL},
 	{US "lose", TYPETW + TYPEPW, ulose, NULL, 0, NULL}, 
-	{US "ltarw", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL, u_goto_left, NULL, 1, US "rtarw"},
+	{US "ltarw", TYPETW + TYPEPW /* + EFIXXCOL + ECHKXCOL */, u_goto_left, NULL, 1, US "rtarw"},
 	{US "ltarwmenu", TYPEMENU, umltarw, NULL, 1, US "rtarwmenu"},
 	{US "macros", TYPETW + EFIXXCOL, umacros, NULL, 0, NULL},
 	{US "markb", TYPETW + TYPEPW, umarkb, NULL, 0, NULL},
@@ -158,7 +158,7 @@ CMD cmds[] = {
 	{US "rindent", TYPETW + TYPEPW + EFIXXCOL + EMOD, urindent, NULL, 1, US "lindent"},
 	{US "run", TYPETW + TYPEPW, urun, NULL, 0, NULL},
 	{US "rsrch", TYPETW + TYPEPW, ursrch, NULL, 0, NULL},
-	{US "rtarw", TYPETW + TYPEPW + EFIXXCOL, u_goto_right, NULL, 1, US "ltarw"},
+	{US "rtarw", TYPETW + TYPEPW /* + EFIXXCOL */, u_goto_right, NULL, 1, US "ltarw"}, /* EFIX removed for picture mode */
 	{US "rtarwmenu", TYPEMENU, umrtarw, NULL, 1, US "ltarwmenu"},
 	{US "rtn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOD, urtn, NULL, 1, NULL},
 	{US "save", TYPETW + TYPEPW, usave, NULL, 0, NULL},
@@ -313,97 +313,13 @@ static unsigned char **getcmds(void)
 
 /* Command line */
 
-unsigned char **scmds = NULL;
-
-static unsigned char **regsub(unsigned char **z, int len, unsigned char *s)
-{
-	unsigned char **lst = NULL;
-	int x;
-
-	for (x = 0; x != len; ++x)
-		if (rmatch(s, z[x]))
-			lst = vaadd(lst, vsncpy(NULL, 0, sz(z[x])));
-	return lst;
-}
-
-static void inscmd(BW *bw, unsigned char *line)
-{
-	P *p = pdup(bw->cursor);
-
-	p_goto_bol(p);
-	p_goto_eol(bw->cursor);
-	bdel(p, bw->cursor);
-	binsm(bw->cursor, sv(line));
-	p_goto_eol(bw->cursor);
-	prm(p);
-	bw->cursor->xcol = piscol(bw->cursor);
-}
-
-static int cmdabrt(BW *bw, int x, unsigned char *line)
-{
-	if (line) {
-		inscmd(bw, line);
-		vsrm(line);
-	}
-	return -1;
-}
-
-static int cmdrtn(MENU *m, int x, unsigned char *line)
-{
-	inscmd(m->parent->win->object, m->list[x]);
-	vsrm(line);
-	m->object = NULL;
-	wabort(m->parent);
-	return 0;
-}
+unsigned char **scmds = NULL;	/* Array of command names */
 
 static int cmdcmplt(BW *bw)
 {
-	MENU *m;
-	P *p, *q;
-	unsigned char *line;
-	unsigned char *line1;
-	unsigned char **lst;
-
 	if (!scmds)
 		scmds = getcmds();
-	p = pdup(bw->cursor);
-	p_goto_bol(p);
-	q = pdup(bw->cursor);
-	p_goto_eol(q);
-	line = brvs(p, (int) (q->byte - p->byte));	/* Assumes short lines :-) */
-	prm(p);
-	prm(q);
-	m = mkmenu(bw->parent, NULL, cmdrtn, cmdabrt, NULL, 0, line, NULL);
-	if (!m)
-		return -1;
-	line1 = vsncpy(NULL, 0, sv(line));
-	line1 = vsadd(line1, '*');
-	lst = regsub(scmds, aLEN(scmds), line1);
-	vsrm(line1);
-	ldmenu(m, lst, 0);
-	if (!lst) {
-		wabort(m->parent);
-		if(beep)
-			ttputc(7);
-		return -1;
-	} else {
-		if (aLEN(lst) == 1)
-			return cmdrtn(m, 0, line);
-		else if (smode || isreg(line))
-			return 0;
-		else {
-			unsigned char *com = mcomplete(m);
-
-			vsrm(m->object);
-			m->object = com;
-			wabort(m->parent);
-			smode = 2;
-			if(beep)
-				ttputc(7);
-			return 0;
-		}
-	}
+	return simple_cmplt(bw,scmds);
 }
 
 static int docmd(BW *bw, unsigned char *s, void *object, int *notify)
