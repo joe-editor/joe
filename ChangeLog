@@ -1,4 +1,13 @@
 Thu Apr 15 2004  Joe Allen <jhallen@world.std.com>
+	* utf8.c:
+
+	Added preprocessor directives to utf8.c to check
+	for locale support.  Needs more work: should check
+	for iconv() support.
+
+	Fix bug which happened when no locale env vars set.
+
+Thu Apr 15 2004  Joe Allen <jhallen@world.std.com>
 	* Makefile.am, configure.ac, main.c, scrn.c, uedit.c,
 	ufile.c, utf8.c, utf8.h:
 

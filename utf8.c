@@ -176,6 +176,7 @@ iconv_t from_utf;
 
 void joe_locale()
 {
+#ifdef HAVE_SETLOCALE
 	unsigned char *s, *t;
 
 	s=(unsigned char *)getenv("LC_ALL");
@@ -188,6 +189,8 @@ void joe_locale()
 
 	if (s)
 		s=(unsigned char *)strdup((char *)s);
+	else
+		s="C";
 
 	if (t=(unsigned char *)strrchr((char *)s,'.'))
 		*t = 0;
@@ -203,10 +206,12 @@ void joe_locale()
 
 	to_utf = iconv_open("UTF-8", non_utf8_codeset);
 	from_utf = iconv_open(non_utf8_codeset, "UTF-8");
+#endif
 }
 
 void to_utf8(unsigned char *s,int c)
 {
+#ifdef HAVE_SETLOCALE
 	unsigned char buf[10];
 	unsigned char *bp;
 	int ibuf_sz=1;
@@ -217,10 +222,14 @@ void to_utf8(unsigned char *s,int c)
 
 	iconv(to_utf,(char **)&bp,&ibuf_sz,(char **)&s,&obuf_sz);
 	*s = 0;
+#else
+	utf8_encode(s,c);
+#endif
 }
 
 int from_utf8(unsigned char *s)
 {
+#ifdef HAVE_SETLOCALE
 	int ibuf_sz=10;
 	unsigned char *ibufp=s;
 	
@@ -230,4 +239,7 @@ int from_utf8(unsigned char *s)
 
 	iconv(from_utf,(char **)&s,&ibuf_sz,(char **)&obufp,&obuf_sz);
 	return obuf[0];
+#else
+	return utf8_decode_string(s);
+#endif
 }
