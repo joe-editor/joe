@@ -110,7 +110,7 @@ unsigned char *get_context(BW *bw)
 			    stdbuf[0]=='B' && stdbuf[1]=='E' && stdbuf[2]=='G' && stdbuf[3]=='I' && stdbuf[4]=='N' ||
 			    stdbuf[0]=='-' && stdbuf[1]=='-' ||
 			    stdbuf[0]==';')) {
-			    	strcpy(buf1,stdbuf);
+			    	strcpy((char *)buf1,(char *)stdbuf);
 				/* Uncomment to get the last line instead of the first line (see above)
 			    	if (pprevl(p)) {
 			    		p_goto_bol(p);

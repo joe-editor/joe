@@ -125,20 +125,147 @@ ssize_t joe_write(int fd, void *buf, size_t size)
 	return rt;
 }
 
-/* wrappers to *alloc routines */
+/* Heap checking versions of malloc() */
+
+/* #define HEAP_CHECK 1 */
+
+#ifdef HEAP_CHECK
+
+struct mcheck {
+	struct mcheck *next;
+	int state;		/* 0=malloced, 1=free */
+	int size;		/* size in bytes */
+	int magic;
+};
+
+struct mcheck *first;
+struct mcheck *last;
+
+void check_malloc()
+{
+	struct mcheck *m;
+	int y = 0;
+	for(m=first;m;m=m->next) {
+		unsigned char *ptr = (unsigned char *)m+sizeof(struct mcheck);
+		int x;
+		if(m->magic!=0x55AA55AA) {
+			printf("corrupt heap: head %x\n",ptr);
+			*(int *)0=0;
+		}
+		for(x=0;x!=16384;++x)
+			if(ptr[x+m->size]!=0xAA) {
+				printf("Corrupt heap: tail %x\n",ptr);
+				*(int *)0=0;
+			}
+		if(m->state)
+			for(x=0;x!=m->size;++x)
+				if(ptr[x]!=0x41) {
+					printf("Corrupt heap: modified free block %x\n",ptr);
+					*(int *)0=0;
+				}
+		++y;
+	}
+}
+
+void *joe_malloc(size_t size)
+{
+	struct mcheck *m = (struct mcheck *)malloc(size+sizeof(struct mcheck)+16384);
+	unsigned char *ptr = (unsigned char *)m+sizeof(struct mcheck);
+	int x;
+	m->state = 0;
+	m->size = size;
+	m->magic=0x55AA55AA;
+	m->next = 0;
+
+	if(!size) {
+		printf("0 passed to malloc\n");
+		*(int *)0=0;
+	}
+	for(x=0;x!=16384;++x)
+		ptr[x+size]=0xAA;
+	if(first) {
+		last->next = m;
+		last = m;
+	} else {
+		first = last = m;
+	}
+	check_malloc();
+	/* printf("malloc size=%d addr=%x\n",size,ptr); fflush(stdout); */
+	return ptr;
+}
+
+void *joe_calloc(size_t nmemb, size_t size)
+{
+	size_t sz = nmemb*size;
+	int x;
+	unsigned char *ptr;
+	ptr = joe_malloc(sz);
+	for(x=0;x!=sz;++x)
+		ptr[x] = 0;
+	return ptr;
+}
+
+void *joe_realloc(void *ptr, size_t size)
+{
+	struct mcheck *n;
+	unsigned char *np;
+	struct mcheck *m = (struct mcheck *)((char *)ptr-sizeof(struct mcheck));
+
+	if(!size) {
+		printf("0 passed to realloc\n");
+		*(int *)0=0;
+	}
+
+	np = joe_malloc(size);
+
+	n = (struct mcheck *)(np-sizeof(struct mcheck));
+
+	if(m->size>size)
+		memcpy(np,ptr,size);
+	else
+		memcpy(np,ptr,m->size);
+
+	joe_free(ptr);
+
+	return np;
+}
+
+void joe_free(void *ptr)
+{
+	struct mcheck *m = (struct mcheck *)((char *)ptr-sizeof(struct mcheck));
+	int x;
+	if (m->magic!=0x55AA55AA) {
+		printf("Free non-malloc block %x\n",ptr);
+		*(int *)0=0x0;
+	}
+	if (m->state) {
+		printf("Double-free %x\n",ptr);
+		*(int *)0=0x0;
+	}
+	for(x=0;x!=m->size;++x)
+		((unsigned char *)ptr)[x]=0x41;
+	m->state = 1;
+	check_malloc();
+	/* printf("free=%x\n",ptr); */
+}
+
+#else
+
+/* Normal malloc() */
+
 void *joe_malloc(size_t size)
 {
 	return malloc(size);
 }
 
-void *joe_calloc(size_t nmemb, size_t size)
+void *joe_calloc(size_t nmemb,size_t size)
 {
-	return calloc(nmemb, size);
+	return calloc(nmemb,size);
 }
 
-void *joe_realloc(void *ptr, size_t size)
+void *joe_realloc(void *ptr,size_t size)
 {
-	return realloc(ptr, size);
+	return realloc(ptr,size);
 }
 
 void joe_free(void *ptr)
@@ -146,6 +273,15 @@ void joe_free(void *ptr)
 	free(ptr);
 }
 
+#endif
+
+unsigned char *joe_strdup(unsigned char *bf)
+{
+	int size = strlen((char *)bf);
+	unsigned char *p = (unsigned char *)joe_malloc(size+1);
+	memcpy(p,bf,size+1);
+	return p;
+}
 
 #ifndef SIG_ERR
 #define SIG_ERR ((sighandler_t) -1)

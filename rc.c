@@ -54,7 +54,7 @@ KMAP *kmap_getcontext(unsigned char *name)
 	c = (struct context *) joe_malloc(sizeof(struct context));
 
 	c->next = contexts;
-	c->name = (unsigned char *)strdup((char *)name);
+	c->name = joe_strdup(name);
 	contexts = c;
 	return c->kmap = mkkmap();
 }
@@ -349,7 +349,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			case 2: /* Global variable string option */
 				if (set) {
 					if (arg)
-						*(unsigned char **) glopts[x].set = (unsigned char *)strdup((char *)arg);
+						*(unsigned char **) glopts[x].set = joe_strdup(arg);
 					else
 						*(unsigned char **) glopts[x].set = 0;
 				}
@@ -384,7 +384,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			case 9: /* Set syntax */
 				if (arg && options)
-					options->syntax_name = (unsigned char *)strdup((char *)arg);
+					options->syntax_name = joe_strdup(arg);
 				/* this was causing all syntax files to be loaded...
 				if (arg && options)
 					options->syntax = load_dfa(arg); */
@@ -392,7 +392,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			case 13: /* Set byte mode encoding */
 				if (arg && options)
-					options->map_name = (unsigned char *)strdup((char *)arg);
+					options->map_name = joe_strdup(arg);
 				break;
 			}
 			/* This is a stupid hack... */
@@ -407,14 +407,14 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 	if (!strcmp(s, "lmsg")) {
 		if (arg) {
 			if (options)
-				options->lmsg = (unsigned char *)strdup((char *)arg);
+				options->lmsg = joe_strdup(arg);
 			ret = 2;
 		} else
 			ret = 1;
 	} else if (!strcmp(s, "rmsg")) {
 		if (arg) {
 			if (options)
-				options->rmsg = (unsigned char *)strdup((char *)arg);
+				options->rmsg = joe_strdup(arg);
 			ret = 2;
 		} else
 			ret = 1;
@@ -426,7 +426,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			if (!arg[y])
 				arg[y] = 0;
 			if (options && y)
-				options->context = (unsigned char *)strdup((char *)arg);
+				options->context = joe_strdup(arg);
 			ret = 2;
 		} else
 			ret = 1;
@@ -503,7 +503,7 @@ static int doopt1(BW *bw, unsigned char *s, int *xx, int *notify)
 		break;
 	case 2:
 		if (s[0])
-			*(unsigned char **) glopts[x].set = (unsigned char *)strdup((char *)s);
+			*(unsigned char **) glopts[x].set = joe_strdup(s);
 		break;
 	case 5:
 		v = calc(bw, s);
@@ -842,7 +842,7 @@ int procrc(CAP *cap, unsigned char *name)
 				buf[x] = 0;
 				o->next = options;
 				options = o;
-				o->name_regex = (unsigned char *)strdup((char *)buf);
+				o->name_regex = joe_strdup(buf);
 			}
 			break;
 		case '+':	/* Set file contents match regex */
@@ -852,7 +852,7 @@ int procrc(CAP *cap, unsigned char *name)
 				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != '\r'; ++x) ;
 				buf[x] = 0;
 				if (o)
-					o->contents_regex = (unsigned char *)strdup((char *)(buf+1));
+					o->contents_regex = joe_strdup(buf+1);
 			}
 			break;
 		case '-':	/* Set an option */

@@ -858,7 +858,7 @@ static unsigned char *getpty(int *ptyfd)
 	static unsigned char name[32];
 	int ttyfd;
 
-        if (openpty(ptyfd, &ttyfd, name, NULL, NULL) == 0)
+        if (openpty(ptyfd, &ttyfd, (char *)name, NULL, NULL) == 0)
            return(name);
         else
 	   return (NULL);

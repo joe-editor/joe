@@ -49,7 +49,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 		/* Expand attribute array if necessary */
 		if(attr==attr_end) {
-			attr_buf = realloc(attr_buf,sizeof(int)*(attr_size*2));
+			attr_buf = joe_realloc(attr_buf,sizeof(int)*(attr_size*2));
 			attr = attr_buf + attr_size;
 			attr_size *= 2;
 			attr_end = attr_buf + attr_size;
@@ -89,7 +89,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Save string? */
 			if (cmd->save_s)
-				strcpy(h_state.saved_s,buf);
+				strcpy((char *)h_state.saved_s,(char *)buf);
 
 			/* Save character? */
 			if (cmd->save_c) {
@@ -149,15 +149,15 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *n
 	/* It doesn't exist, so create it */
 	if(x==syntax->nstates) {
 		int y;
-		state=malloc(sizeof(struct high_state));
-		state->name=(unsigned char *)strdup((char *)name);
+		state=joe_malloc(sizeof(struct high_state));
+		state->name=joe_strdup(name);
 		state->no=syntax->nstates;
 		state->color=FG_WHITE;
 		if(!syntax->nstates)
 			/* We're the first state */
 			syntax->default_cmd.new_state = state;
 		if(syntax->nstates==syntax->szstates)
-			syntax->states=realloc(syntax->states,sizeof(struct high_state *)*(syntax->szstates*=2));
+			syntax->states=joe_realloc(syntax->states,sizeof(struct high_state *)*(syntax->szstates*=2));
 		syntax->states[syntax->nstates++]=state;
 		for(y=0; y!=256; ++y)
 			state->cmd[y] = &syntax->default_cmd;
@@ -171,7 +171,7 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *n
 
 static struct high_cmd *mkcmd()
 {
-	struct high_cmd *cmd = malloc(sizeof(struct high_cmd));
+	struct high_cmd *cmd = joe_malloc(sizeof(struct high_cmd));
 	cmd->noeat = 0;
 	cmd->recolor = 0;
 	cmd->start_buffering = 0;
@@ -207,7 +207,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 
 	if(!attr_buf) {
 		attr_size = 1024;
-		attr_buf = malloc(sizeof(int)*attr_size);
+		attr_buf = joe_malloc(sizeof(int)*attr_size);
 	}
 
 	/* Find syntax table */
@@ -232,13 +232,13 @@ struct high_syntax *load_dfa(unsigned char *name)
 		return 0;
 
 	/* Create new one */
-	syntax = malloc(sizeof(struct high_syntax));
-	syntax->name = (unsigned char *)strdup((char *)name);
+	syntax = joe_malloc(sizeof(struct high_syntax));
+	syntax->name = joe_strdup(name);
 	syntax->next = syntax_list;
 	syntax_list = syntax;
 	syntax->nstates = 0;
 	syntax->color = 0;
-	syntax->states = malloc(sizeof(struct high_state *)*(syntax->szstates=64));
+	syntax->states = joe_malloc(sizeof(struct high_state *)*(syntax->szstates=64));
 	syntax->sync_lines = 50;
 	syntax->default_cmd.noeat = 0;
 	syntax->default_cmd.recolor = 0;
@@ -282,8 +282,8 @@ struct high_syntax *load_dfa(unsigned char *name)
 						break;
 				/* If it doesn't exist, create it */
 				if(!color) {
-					color = malloc(sizeof(struct high_color));
-					color->name = (unsigned char *)strdup((char *)bf);
+					color = joe_malloc(sizeof(struct high_color));
+					color->name = joe_strdup(bf);
 					color->color = 0;
 					color->next = syntax->color;
 					syntax->color = color;
@@ -379,7 +379,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 												} else {
 													if(!cmd->keywords)
 														cmd->keywords = htmk(64);
-														htadd(cmd->keywords,(unsigned char *)strdup((char *)bf),kw_cmd);
+														htadd(cmd->keywords,joe_strdup(bf),kw_cmd);
 												}
 												while (parse_ws(&p,'#'), !parse_ident(&p,bf,255))
 													if(!strcmp(bf,"buffer")) {

@@ -346,7 +346,7 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 			bw->b->name = 0;
 		}
 		if (!bw->b->name)
-			bw->b->name = joesep((unsigned char *)strdup((char *)req->name));
+			bw->b->name = joesep(joe_strdup(req->name));
 		if (!strcmp(bw->b->name, req->name)) {
 			bw->b->changed = 0;
 			saverr(bw->b->name);
@@ -1027,7 +1027,7 @@ static int doquerysave(BW *bw,int c,struct savereq *req,int *notify)
 		return doquerysave(bw,0,req,notify);
 	} else {
 		unsigned char buf[1024];
-		joe_snprintf_1(buf,1024,"File %s has been modified.  Save it (y,n,^C)? ",bw->b->name ? bw->b->name : US "(Unnamed)" );
+		joe_snprintf_1((char *)buf,1024,"File %s has been modified.  Save it (y,n,^C)? ",bw->b->name ? bw->b->name : US "(Unnamed)" );
 		if (mkqw(bw->parent, sz(buf), doquerysave, NULL, req, notify)) {
 			return 0;
 			} else {

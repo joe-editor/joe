@@ -50,7 +50,7 @@ static struct var *get(unsigned char *str)
 	v->set = 0;
 	v->next = vars;
 	vars = v;
-	v->name = (unsigned char *)strdup((char *)str);
+	v->name = joe_strdup(str);
 	return v;
 }
 

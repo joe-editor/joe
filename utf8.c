@@ -9,6 +9,7 @@
 
 #include "config.h"
 #include "types.h"
+#include "utils.h"
 
 #include <string.h>
 
@@ -239,7 +240,7 @@ unsigned char *joe_getcodeset(unsigned char *l)
     if (strstr((char *)l, "UTF") || strstr((char*)l, "utf"))
       return US "UTF-8";
 
-    if ((p = strstr((char *)l, "8859-"))) {
+    if ((p = (unsigned char *)strstr((char *)l, "8859-"))) {
       memcpy((char *)buf, "ISO-8859-\0\0", 12);
       p += 5;
       if (*p >= '0' && *p <= '9') {
@@ -314,11 +315,11 @@ void joe_locale()
 	}
 
 	if (s)
-		s=(unsigned char *)strdup((char *)s);
+		s=joe_strdup(s);
 	else
 		s=US "ascii";
 
-	u = (unsigned char *)strdup((char *)s);
+	u = joe_strdup(s);
 
 	if (t=(unsigned char *)strrchr((char *)s,'.'))
 		*t = 0;
@@ -326,7 +327,7 @@ void joe_locale()
 
 #ifdef CODESET
 	setlocale(LC_ALL,(char *)s);
-	non_utf8_codeset = (unsigned char *)strdup(nl_langinfo(CODESET));
+	non_utf8_codeset = joe_strdup((unsigned char *)nl_langinfo(CODESET));
 #else
 	non_utf8_codeset = joe_getcodeset(s);
 #endif
@@ -334,7 +335,7 @@ void joe_locale()
 
 #ifdef CODESET
 	setlocale(LC_ALL,"");
-	codeset = (unsigned char *)strdup(nl_langinfo(CODESET));
+	codeset = joe_strdup((unsigned char *)nl_langinfo(CODESET));
 #else
 	codeset = joe_getcodeset(u);
 #endif

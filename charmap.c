@@ -1051,8 +1051,8 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 {
 	int x;
 	struct charmap *map;
-	map = malloc(sizeof(struct charmap));
-	map->name = (unsigned char *)strdup((char *)builtin->name);
+	map = joe_malloc(sizeof(struct charmap));
+	map->name = joe_strdup(builtin->name);
 	map->type = 0;
 	map->is_punct = byte_ispunct;
 	map->is_print = byte_isprint;
@@ -1143,7 +1143,7 @@ static void load_builtins(void)
 	struct charmap *map;
 
 	/* install UTF-8 map (ties into i18n module) */
-	map = malloc(sizeof(struct charmap));
+	map = joe_malloc(sizeof(struct charmap));
 	map->name = US "utf-8";
 	map->type = 1;
 	map->to_uni = rtn_arg;
@@ -1182,9 +1182,9 @@ struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 	if (!f)
 		return 0;
 
-	b = malloc(sizeof(struct builtin_charmap));
+	b = joe_malloc(sizeof(struct builtin_charmap));
 
-	b->name = (unsigned char *)strdup((char *)name);
+	b->name = joe_strdup(name);
 
 	for (x=0; x!=256; ++x)
 		b->to_uni[x]= -1;

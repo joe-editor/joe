@@ -2714,8 +2714,8 @@ int joe_towupper(struct charmap *foo,int c)
 	if (!data_wctype_toupper_i) {
 		int x;
 		int y = -1;
-		data_wctype_toupper_i = (struct interval *)malloc(sizeof(data_wctype_toupper));
-		toupper_cvt = (int *)malloc(sizeof(data_wctype_toupper)/sizeof(struct interval)*sizeof(int));
+		data_wctype_toupper_i = (struct interval *)joe_malloc(sizeof(data_wctype_toupper));
+		toupper_cvt = (int *)joe_malloc(sizeof(data_wctype_toupper)/sizeof(struct interval)*sizeof(int));
 
 		for (x=0;x!=sizeof(data_wctype_toupper)/sizeof(struct interval);++x) {
 			if (y == -1 || data_wctype_toupper_i[y].first + 1 != data_wctype_toupper[x].first ||
@@ -3508,8 +3508,8 @@ int joe_towlower(struct charmap *foo,int c)
 	if (!data_wctype_tolower_i) {
 		int x;
 		int y = -1;
-		data_wctype_tolower_i = (struct interval *)malloc(sizeof(data_wctype_tolower));
-		tolower_cvt = (int *)malloc(sizeof(data_wctype_tolower)/sizeof(struct interval)*sizeof(int));
+		data_wctype_tolower_i = (struct interval *)joe_malloc(sizeof(data_wctype_tolower));
+		tolower_cvt = (int *)joe_malloc(sizeof(data_wctype_tolower)/sizeof(struct interval)*sizeof(int));
 
 		for (x=0;x!=sizeof(data_wctype_tolower)/sizeof(struct interval);++x) {
 			if (y == -1 || data_wctype_tolower_i[y].last + 1 != data_wctype_tolower[x].first ||

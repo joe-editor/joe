@@ -324,7 +324,7 @@ void addcmd(unsigned char *s, MACRO *m)
 
 	if (!cmdhash)
 		izcmds();
-	cmd->name = (unsigned char *)strdup((char *)s);
+	cmd->name = joe_strdup(s);
 	cmd->flag = 0;
 	cmd->func = NULL;
 	cmd->m = m;

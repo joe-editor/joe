@@ -2186,7 +2186,7 @@ opnerr:
 	}
 
 	/* Set name */
-	b->name = joesep((unsigned char *)strdup(s));
+	b->name = joesep(joe_strdup(s));
 
 	/* Set flags */
 	if (error || s[0] == '!' || skip || amnt != MAXLONG) {
@@ -2310,7 +2310,7 @@ B *bfind_scratch(unsigned char *s)
 	b->internal = 0;
 	b->rdonly = b->o.readonly;
 	b->er = error;
-	b->name = (unsigned char *)strdup((char *)s);
+	b->name = joe_strdup(s);
 	b->scratch = 1;
 	return b;
 }

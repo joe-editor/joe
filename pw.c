@@ -216,7 +216,7 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	pw->abrt = abrt;
 	pw->tab = tab;
 	pw->object = object;
-	pw->prompt = (unsigned char *)strdup((char *)prompt);
+	pw->prompt = joe_strdup(prompt);
 	pw->promptlen = fmtlen(prompt);
 	pw->promptofst = 0;
 	pw->pfunc = func;
