@@ -614,8 +614,7 @@ int udelch(BW *bw)
 {
 	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
 		char c = 4;
-
-		joe_write(bw->pid, &c, 0);	/* FIXME: why would we write zero chars ??? */
+		joe_write(bw->out, &c, 1);	/* Send Ctrl-D to process */
 	} else {
 		P *p;
 

@@ -933,6 +933,7 @@ MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *o
 			ioctl(x, TIOCNOTTY, 0);
 #endif
 
+			setsid();	/* I think you do setprgp(0,0) on systems with no setsid() */
 #ifndef SETPGRP_VOID
 			setpgrp(0, 0);
 #else

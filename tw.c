@@ -425,9 +425,8 @@ int uabort(BW *bw, int k)
 	if (bw->parent->watom != &watomtw)
 		return wabort(bw->parent);
 	if (bw->pid && bw->cursor->byte == bw->b->eof->byte && k != MAXINT) {
-		char c = k;
-
-		joe_write(bw->out, &c, 1);
+		char c = 3;
+		joe_write(bw->out, &c, 1); /* Send Ctrl-C to process */
 		return 0;
 	}
 	if (bw->pid)
