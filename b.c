@@ -51,7 +51,7 @@ int force = 0;
 VFILE *vmem;
 
 unsigned char *msgs[] = {
-	US "No error",
+	US "No error1",
 	US "New File",
 	US "Error reading file",
 	US "Error seeking file",

@@ -1,3 +1,13 @@
+Wed May 26 2004  Joe Allen <jhallen@world.std.com>
+
+	Fix lockup problem: do not allow querysave in
+	prompt windows.
+
+Tue May 25 2004  Joe Allen <jhallen@world.std.com>
+
+	Character set aliases now appear in ^T E tab
+	completion.
+
 Mon May 24 2004  Joe Allen <jhallen@world.std.com>
 
 	Fix bg_reg -> bg_red.

@@ -1358,6 +1358,13 @@ unsigned char **get_encodings()
 		encodings = vaadd(encodings, r);
 	}
 
+	/* Aliases */
+
+	for (y=0; alias_table[y].alias; ++y) {
+		r = vsncpy(NULL,0,sz(alias_table[y].alias));
+		encodings = vaadd(encodings, r);
+	}
+
 	/* External maps */
 
 	p = (unsigned char *)getenv("HOME");

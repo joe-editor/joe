@@ -1,3 +1,441 @@
+Do something with these keys:
+
+-------
+ssh 3.2
+-------
+Arrow: [C [D [A [B
+Home: [2~ (ug! nobody else uses this... )
+End: [4~
+Pgup: [5~
+Pgdn: [6~
+Ins: [2~
+Del: 
+F1: [11~
+F2: [12~
+F3: [13~
+F4: [14~
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrow: -
+Alt-arrow: - (can set this mode, but doesn't work with arrow keys)
+Shift-arrow: -
+
+-----
+PuTTY
+-----
+
+Arrow: [C [D [A [B
+Home: [1~
+End: [4~
+Pgup: [5~
+Pgdn: [6~
+Ins: [2~
+Del: [3~
+F1: [11~
+F2: [12~
+F3: [13~
+F4: [14~
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrow: OC OD OA OB
+Ctrl-home: -
+Ctrl-end: -
+Ctrl-pgup: putty scroll back
+Ctrl-pgdn: putty scroll fwrd
+Ctrl-ins: -
+Ctrl-del: -
+
+Alt-arrow: [C [D [A [B
+Alt-pgup: [5~
+Alt-pgdn: [6~
+Alt-home: [1~
+Alt-end: [4~
+Alt-ins: [2~
+Alt-del: [3~
+
+Shift-arrow: [C [D [A [B
+Shift-home: [1~
+Shift-end: [4~
+Shift-pgup: putty scroll back
+Shift-pgdn: putty scroll fwrd
+Shift-ins: 
+Shift-del: [3~
+
+-----
+XTerm
+-----
+
+Arrow: [C [D [A [B
+Home: [H
+End: [F
+PgUp: [5~
+PgDn: [6~
+Ins: [2~
+Del: [3~
+F1: OP
+F2: OQ
+F3: OR
+F4: OS
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrow: [1;5C [1;5D [1;5A [1;5B
+Ctrl-home: [1;5H
+Ctrl-end: [1;5F
+Ctrl-pgup: [5;5~
+Ctrl-pgdn: [6;5~
+Ctrl-ins: [2;5~
+Ctrl-del: [3;5~
+
+Shift-arrow: [1;2C [1;2D [1;2A [1;2B
+Shift-home: [1;2H
+Shift-end: [1;2F
+Shift-pgup: -
+Shift-pgdn: -
+Shift-ins: ttp://www.gush-shalom.org/archives/kurdi_eng.html
+Shift-del: [3;2~
+
+Shift-ctrl-arrow: [1;6C [1;6D [1;6A [1;6B
+
+Alt-ctrl-arrow: [1;7C [1;7D [1;7A [1;7B
+
+Alt-shift-arrow: [1;4C [1;4D [1;4A [1;4B
+
+Alt-shift-ctrl-arrow: [1;8C [1;8D [1;8A [1;8B
+
+Alt-arrow: [1;3C [1;3D [1;3A [1;3B
+Alt-home: [1;3H
+Alt-end: [1;3F
+Alt-pgup: [5;3~
+Alt-pgdn: [6;3~
+Alt-ins: [2;3~
+Alt-del: [3;3~
+
+----
+rxvt
+----
+Arrow: [C [D [A [B
+Home: [7~
+End: [8~
+Pgup: [5~
+Pgdn: [6~
+Ins: [2~
+Del: [3~
+
+F1: [11~
+F2: [12~
+F3: [13~
+F4: [14~
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrow: Oc Od Oa Ob
+Ctrl-home: [7^
+Ctrl-end: [8^
+Ctrl-pgup: [5^
+Ctrl-pgdn: [6^
+Ctrl-ins: [2^
+Ctrl-del: [3^
+
+Shift-arrow: [c [d [a [b
+
+Shift-ctrl-arrow: [c [b [a [b
+
+Alt-ctrl-arrow: Oc Od Oa Ob
+
+Alt-shift-arrow: [c [d [a [b
+
+Alt-arrow: [C [D [A [B
+
+--------------
+gnome-terminal
+--------------
+
+Arrows: [C [D [A [B
+Home: OH
+End: OF
+PgUp: [5~
+PgDn: [6~
+Ins: [2~
+Del: [3~
+F1: -
+F2: OQ
+F3: OR
+F4: OS
+F5: [15~~
+F6: [17~~
+F7: [18~~
+F8: [19~
+F9: [20~
+F10: -
+F11: [23~
+F12: [24~
+
+Ctrl-arrow: [5C [5D [5A [5B
+Ctrl-home: OH
+Ctrl-end: OF
+Ctrl-pgup: -
+Ctrl-pgdn: -
+Ctrl-ins: [2;5~
+Ctrl-del: [3;5~
+
+Shift-arrows: [2C [2D [2A [2B
+Shift-home: -
+Shift-end: -
+Shift-pgup: -
+Shift-pgdn: -
+Shift-ins: -
+Shift-del: [3;2~
+
+Alt-arrows: [3C [3D [3A [3B
+Alt-home: OH
+Alt-end: OF
+Alt-PgUp: [5;3~
+Alt-PgDn: [6;3~
+Alt-Insert: [2;3~
+Alt-Delete: [3;3~
+
+Ctrl-Alt-arrows: - (window manager takes)
+Ctrl-Shift-arrows: [6C [6D [6A [6B
+Ctrl-Shift-Alt-arrows: [8C [8D [8A [8B
+ 
+-------
+konsole
+-------
+Arrows: [C [D [A [B
+Home: [H
+End: [F
+PgUp: [5~
+PgDn: [6~
+Ins: [2~
+Del: [3~
+F1: OP
+F2: OQ
+F3: OR
+F4: OS
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrows: [C [D [A [B
+Ctrl-home: [H
+Ctrl-end: [F
+Ctrl-PgUp: [5~
+Ctrl-PgDn: [6~
+Ctrl-ins: [2~
+Ctrl-del: [3~
+
+Shift-arrows: -
+Shift-home: [2H
+Shift-end: [2F
+Shift-PgUp: -
+Shift-PgDn: -
+Shift-Ins: -
+Shift-Del: [3;2~
+
+Alt-arrows: [C [D [A  [B
+Alt-home: [H
+Alt-end: [F
+Alt-PgUp: [5~
+Alt-PgDn: [6~
+Alt-Ins: [2~
+Alt-Del: [3~
+
+-------------
+linux console
+-------------
+Arrows: [C [D [A [B
+Home: [1~
+End: [4~
+PgUp: [5~
+PgDn: [6~
+Ins: [2~
+Del: [3~
+F1: [[A
+F2: [[B
+F3: [[C
+F4: [[D
+F5: [[E
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrows: [C [D [A [B
+Ctrl-home: [1~
+Ctrl-end: [4~
+Ctrl-pgup: [5~
+Ctrl-pgdn: [6~
+Ctrl-ins: [2~
+Ctrl-del: [3~
+
+Shift-arrows: [C
+Shift-home: [1~
+
+Alt-arrows: - (switches console)
+Alt-home: [1~
+
+--------------
+cygwin console
+--------------
+Arrows: [C [D [A [B
+Home: [1~
+End: [4~
+PgUp: [5~
+PgDn: [6~
+Ins: [2~
+Del: [3~
+F1: [[A
+F2: [[B
+F3: [[C
+F4: [[D
+F5: [[E
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: [23~
+F12: [24~
+
+Ctrl-arrows: -
+Shift-arrows: -
+
+Alt-enything: prefixed with ESC
+
+-----------------------
+jstar missing sequences
+-----------------------
+^O options (supposed to be set tab width)
+^P print
+^U undo (supossed to be unerase)
+^^ autoindent on/off
+^\ meta (supposed to be refresh screen)
+ESC =  insert math result
+ESC $  insert math result money formatted
+ESC #  insert math equation
+ESC m  Memorandum
+ESC s  isearch fwrd (supposed to be Sincerely)
+ESC c  compile (supposed to be center line)
+^Q U   align paragraph (don't know what this does)
+^Q ^Q  repeat next command once every second
+^Q O   spell check entered word
+^Q W   scroll up- repeat once every second
+^Q Z   scroll down- repeat once every second
+^Q Ins  it does something...
+^Q Home  scroll up repeating
+^Q End   scroll down repeating
+^K M     math
+^K F     run dos comment
+^K N     column mode on
+^K I     column replace mode on
+^K O     copy file
+^K E     rename file
+^K J     erase file
+^K L     change drive
+^K uparw  rename file
+^K dnarw  save and exit
+^K ltarw  save
+^K rtarw  ^K D save
+^K Ins    move
+^K Home   quit
+^K End    quit
+^K '      to markk
+-----------------------
+
+-----------------
+notepad/cua mode?
+-----------------
+^A	select all
+^F	find
+^G	goto line
+^H	replace
+^J	return
+^N	new blank file
+^O	edit file (asks to save current)
+^P	print
+^S	save
+^V	paste
+^Z	undo
+^X	cut
+^C	copy
+F3	find next
+F5	date/time
+
+- continued search mode for jpico?
+
+- snprintf is preventing me from compiling on irix
+
+- search should automatically use 'k' mode if block is
+  selected.  Cursor should jump to top of block when done.  Jump
+  back to start mode?
+
+- save all files without asking thing for quick compile
+
+- better parsing of compile messages
+
+- smarter highlighter- need char and string storage.
+
+- shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
+  shell window.
+
+- make ^K F prompt with previous text (PICO)?
+
+- do not use ^[^[ for anything.  it prevents Alt-arrow
+  from being useful.
+
+^K X leads to segfault?
+
+if I use ^K C to move search string into search prompt, it says not found
+even though it found it.
+
+options are screwed up: we copy window to buffer (to get buffer options
+to the buffer).  But if we have multiple windows, buffer options will have
+stale data.
+
+we are missing many query and prompt window abort handlers, which cause
+small memory leaks.
+
+- check all commands.  Make sure status line updates enough (second timer
+  is not there all of the time anymore).
+
+- update help screens: some things have changed (emacs is more like emacs).
+
+
 Fix for next release highlight:
 
   other windows why

@@ -164,7 +164,7 @@ CMD cmds[] = {
 	{US "pop", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upop, NULL, 0, NULL},
 	{US "qrepl", TYPETW + TYPEPW + EMOD, pqrepl, NULL, 0, NULL},
 	{US "query", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uquery, NULL, 0, NULL},
-	{US "querysave", TYPETW + TYPEPW, uquerysave, NULL, 0, NULL},
+	{US "querysave", TYPETW, uquerysave, NULL, 0, NULL},
 	{US "quote", TYPETW + TYPEPW + EMOD, uquote, NULL, 0, NULL},
 	{US "quote8", TYPETW + TYPEPW + EMOD, uquote8, NULL, 0, NULL},
 	{US "record", TYPETW + TYPEPW + TYPEMENU + TYPEQW, urecord, NULL, 0, NULL},
