@@ -1,3 +1,7 @@
+Wed Jul  9 2003  John Morrissey <jwm@horde.net>
+	* configure.ac:
+	look for snprintf() in libdb too (fixes compilation on OSF1)
+
 Fri Jun 20 2003  Anil Madhavapeddy <anil@recoil.org>
 	* usearch.c:
 	fix boundary to snprintf()

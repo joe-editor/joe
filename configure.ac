@@ -33,7 +33,7 @@ esac
 
 # Checks for libraries.
 AC_SEARCH_LIBS(tgetflag, ncurses curses termcap, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we have newer terminfo/termcap capabilities]))
-AC_SEARCH_LIBS(snprintf, snprintf)
+AC_SEARCH_LIBS(snprintf, snprintf db)
 
 # Checks for header files.
 AC_HEADER_DIRENT
