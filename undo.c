@@ -485,12 +485,14 @@ void load_yank(FILE *f)
 		int len;
 		parse_ws(&p,'#');
 		len = parse_hdlc(&p,bf,4095);
-		rec = alrec();
-		rec->small = (unsigned char *) joe_malloc(len);
-		memcpy(rec->small,bf,len);
-		rec->where = -1;
-		rec->len = len;
-		rec->del = 1;
-		enqueb(UNDOREC, link, &yanked, rec);
+		if (len>0 && len<=SMALL) {
+			rec = alrec();
+			rec->small = (unsigned char *) joe_malloc(len);
+			memcpy(rec->small,bf,len);
+			rec->where = -1;
+			rec->len = len;
+			rec->del = 1;
+			enqueb(UNDOREC, link, &yanked, rec);
+		}
 	}
 }

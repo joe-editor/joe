@@ -582,7 +582,8 @@ void load_macros(FILE *f)
 		if(!parse_int(&p,&n)) {
 			parse_ws(&p, '#');
 			len = parse_hdlc(&p,bf,1023);
-			kbdmacro[n] = mparse(NULL,bf,&sta);
+			if (len>0)
+				kbdmacro[n] = mparse(NULL,bf,&sta);
 		}
 	}
 }

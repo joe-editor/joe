@@ -989,14 +989,16 @@ void load_srch(FILE *f)
 			int len;
 			parse_ws(&p,'#');
 			bf[0] = 0;
-			len = parse_hdlc(&p,bf,1024);
-			pattern = vsncpy(NULL,0,bf,len);
+			len = parse_hdlc(&p,bf,1023);
+			if (len>0)
+				pattern = vsncpy(NULL,0,bf,len);
 		} else if(!parse_kw(&p,US "replacement")) {
 			int len;
 			parse_ws(&p,'#');
 			bf[0] = 0;
-			len = parse_hdlc(&p,bf,1024);
-			replacement = vsncpy(NULL,0,bf,len);
+			len = parse_hdlc(&p,bf,1023);
+			if (len>0)
+				replacement = vsncpy(NULL,0,bf,len);
 		} else if(!parse_kw(&p,US "backwards")) {
 			parse_ws(&p,'#');
 			parse_int(&p,&backwards);

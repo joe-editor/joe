@@ -1077,8 +1077,10 @@ void load_hist(FILE *f,B **bp)
 		int len;
 		parse_ws(&p,'#');
 		len = parse_hdlc(&p,bf,1023);
-		binsm(q,bf,len);
-		pset(q,b->eof);
+		if (len>0) {
+			binsm(q,bf,len);
+			pset(q,b->eof);
+		}
 	}
 
 	prm(q);
