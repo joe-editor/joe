@@ -12,6 +12,7 @@
 #include "types.h"
 #include "scrn.h"
 #include "utils.h"
+#include "hash.h"
 #include "syntax.h"
 
 /* Parse one line.  Returns new state.
@@ -35,7 +36,7 @@ int parse(struct high_syntax *syntax,P *line,int state)
 	/* Get next character */
 	while((c=pgetc(line))!=NO_MORE_DATA) {
 		struct high_cmd *cmd;
-		struct high_keyword *word;
+		struct high_state *kw_new_state;
 		struct high_state *old_state;
 		int x;
 
@@ -54,10 +55,8 @@ int parse(struct high_syntax *syntax,P *line,int state)
 			/* Get command for this character */
 			cmd = h->cmd[c];
 			/* Determine new state */
-			for(word=cmd->keyword_list;word;word=word->next)
-				if(!strcmp(word->name,buf)) break;
-			if(word) {
-				h = word->new_state;
+			if(cmd->keywords && (kw_new_state=htfind(cmd->keywords,buf))) {
+				h = kw_new_state;
 				/* Recolor keyword */
 				for(x= -(buf_idx+1);x<-1;++x)
 					attr[x] = h -> color;
@@ -83,6 +82,33 @@ int parse(struct high_syntax *syntax,P *line,int state)
 	return h->no;
 }
 
+/* Subroutines for load_dfa() */
+
+static struct high_state *find_state(struct high_syntax *syntax,char *name)
+{
+	int x;
+	struct high_state *state;
+
+	/* Find state */
+	for(x=0;x!=syntax->nstates;++x)
+		if(!strcmp(syntax->states[x]->name,name))
+			break;
+
+	/* It doesn't exist, so create it */
+	if(x==syntax->nstates) {
+		state=malloc(sizeof(struct high_state));
+		state->name=strdup(name);
+		state->no=syntax->nstates;
+		state->color=FG_WHITE;
+		/* FIXME: init cmd table? */
+		if(syntax->nstates==syntax->szstates)
+			syntax->states=realloc(syntax->states,sizeof(struct high_state *)*(syntax->szstates*=2));
+		syntax->states[syntax->nstates++]=state;
+	} else
+		state = syntax->states[x];
+	return state;
+}
+
 /* Load syntax file */
 
 struct high_syntax *syntax_list;
@@ -91,13 +117,13 @@ struct high_syntax *load_dfa(char *name)
 {
 	char buf[1024];
 	char bf[256];
+	char bf1[256];
 	int clist[256];
 	char *p;
 	int c;
 	FILE *f;
 	struct high_state *state=0;	/* Current state */
 	struct high_syntax *syntax;	/* New syntax table */
-	int szstates;			/* Malloc size of states table (in syntax) */
 	int line = 0;
 
 	if(!attr_buf) {
@@ -127,7 +153,7 @@ struct high_syntax *load_dfa(char *name)
 	syntax_list = syntax;
 	syntax->nstates = 0;
 	syntax->color = 0;
-	syntax->states = malloc(sizeof(struct high_state *)*(szstates=64));
+	syntax->states = malloc(sizeof(struct high_state *)*(syntax->szstates=64));
 
 	/* Parse file */
 	while(fgets(buf,1023,f)) {
@@ -137,25 +163,7 @@ struct high_syntax *load_dfa(char *name)
 		if(!parse_char(&p, ':')) {
 			if(!parse_ident(&p, bf, 255)) {
 
-				int x;
-
-				/* Find state */
-				for(x=0;x!=syntax->nstates;++x)
-					if(!strcmp(syntax->states[x]->name,bf))
-						break;
-
-				/* It doesn't exist, so create it */
-				if(x==syntax->nstates) {
-					state=malloc(sizeof(struct high_state));
-					state->name=strdup(bf);
-					state->no=syntax->nstates;
-					state->color=FG_WHITE;
-					/* FIXME: init cmd table? */
-					if(syntax->nstates==szstates)
-						syntax->states=realloc(syntax->states,sizeof(struct high_state *)*(szstates*=2));
-					syntax->states[syntax->nstates++]=state;
-				} else
-					state = syntax->states[x];
+				state = find_state(syntax,bf);
 
 				parse_ws(&p);
 				if(!parse_ident(&p,bf,255)) {
@@ -232,29 +240,12 @@ struct high_syntax *load_dfa(char *name)
 					cmd->recolor = 0;
 					cmd->start_buffering = 0;
 					cmd->new_state = 0;
-					cmd->keyword_list = 0;
+					cmd->keywords = 0;
 
 					parse_ws(&p);
 					if(!parse_ident(&p,bf,255)) {
-						struct high_state *h;
 						int z;
-						for(z=0;z!=syntax->nstates;++z)
-							if(!strcmp(syntax->states[z]->name,bf))
-								break;
-
-						if(z==syntax->nstates) {
-							h=malloc(sizeof(struct high_state));
-							h->name=strdup(bf);
-							h->no=syntax->nstates;
-							h->color=FG_WHITE;
-							/* FIXME: init cmd table? */
-							if(syntax->nstates==szstates)
-								syntax->states=realloc(syntax->states,sizeof(struct high_state *)*(szstates*=2));
-							syntax->states[syntax->nstates++]=h;
-						} else
-							h = syntax->states[z];
-
-						cmd->new_state = h;
+						cmd->new_state = find_state(syntax,bf);
 
 						/* Parse options */
 						while (parse_ws(&p), !parse_ident(&p,bf,255))
@@ -276,33 +267,11 @@ struct high_syntax *load_dfa(char *name)
 									if(!parse_field(&p,"done"))
 										break;
 									if(!parse_string(&p,bf,255)) {
-										struct high_keyword *k=malloc(sizeof(struct high_keyword));
-										k->name=strdup(bf);
-										k->next=cmd->keyword_list;
-										k->new_state=0;
-										cmd->keyword_list=k;
 										parse_ws(&p);
-										if(!parse_ident(&p,bf,255)) {
-											struct high_state *h;
-											int z;
-											for(z=0;z!=syntax->nstates;++z)
-												if(!strcmp(syntax->states[z]->name,bf))
-													break;
-
-											if(z==syntax->nstates) {
-												h=malloc(sizeof(struct high_state));
-												h->name=strdup(bf);
-												h->no=syntax->nstates;
-												h->color=FG_WHITE;
-												/* FIXME: init cmd table? */
-												if(syntax->nstates==szstates)
-													syntax->states=realloc(syntax->states,sizeof(struct high_state *)*(szstates*=2));
-												syntax->states[syntax->nstates++]=h;
-											} else
-												h = syntax->states[z];
-
-											k->new_state = h;
-											
+										if(!parse_ident(&p,bf1,255)) {
+											if(!cmd->keywords)
+												cmd->keywords = htmk(64);
+											htadd(cmd->keywords,strdup(bf),find_state(syntax,bf1));
 										} else
 											fprintf(stderr,"%s %d: Missing state name\n",name,line);
 									} else

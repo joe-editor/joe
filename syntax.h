@@ -1,3 +1,8 @@
+#ifndef _Isyntax
+#define _Isyntax 1
+
+#include "hash.h"
+
 /*
  *	Syntax highlighting DFA interpreter
  *	Copyright
@@ -13,6 +18,7 @@ struct high_syntax {
 	char *name;			/* Name of this syntax */
 	struct high_state **states;	/* The states of this syntax.  states[0] is idle state */
 	int nstates;			/* No. states */
+	int szstates;			/* Malloc size of states array */
 	struct high_color *color;	/* Linked list of color definitions */
 };
 
@@ -33,14 +39,6 @@ struct high_state {
 	struct high_cmd *cmd[256];	/* Character table */
 };
 
-/* Keyword list */
-
-struct high_keyword {
-	struct high_keyword *next;
-	char *name;
-	struct high_state *new_state;
-};
-
 /* Command (transition) */
 
 struct high_cmd {
@@ -48,8 +46,7 @@ struct high_cmd {
 	int recolor;			/* No. chars to recolor if <0. */
 	int start_buffering;		/* Set if we should start buffering */
 	struct high_state *new_state;	/* The new state */
-	struct high_keyword *keyword_list;
-  					/* If set, new state comes from matching keyword */
+	HASH *keywords;			/* Hash table of keywords */
 };
 
 /* Find a syntax.  Load it if necessary. */
@@ -60,3 +57,5 @@ struct high_syntax *load_dfa(char *name);
 
 extern int *attr_buf;
 int parse(struct high_syntax *syntax,P *line,int state);
+
+#endif

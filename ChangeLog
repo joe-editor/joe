@@ -1,3 +1,10 @@
+Thu Apr  8 2004  Joe Allen <jhallen@world.std.com>
+	* syntax.c, syntax.h:
+
+	Clean up syntax.c: use hash table for keywords, use subroutine for
+	allocating new states.
+
+
 Wed Apr  7 2004  Joe ALlen <jhallen@world.std.com>
 	* scrn.c, bw.c:
 
