@@ -112,7 +112,7 @@ int uxtmouse(BW *bw)
 	else if ((maint->curwin->watom->what & TYPETW ||
 	          maint->curwin->watom->what & TYPEPW) &&
 	          joexterm && (Cb & 3) == 1)		/* Paste */
-		ttputs(US "\33[y");
+		ttputs(US "\33[?P");
 	return 0;
 }
 
@@ -145,6 +145,83 @@ void mousedn(int x,int y)
 	}
 }
 
+/* Return base64 code character given 6-bit number */
+
+char base64_code[]="\
+ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+abcdefghijklmnopqrstuvwxyz\
+0123456789+/";
+
+int base64_accu = 0;
+int base64_count = 0;
+int base64_pad = 0;
+
+static void ttputs64(unsigned char *p, unsigned length)
+{
+        unsigned char buf[65];
+        unsigned x = 0;
+        while (length--) {
+            switch (base64_count) {
+                case 0:
+                    buf[x++] = base64_code[*p >> 2];
+                    base64_accu = (*p & 0x3);
+                    base64_count = 2;
+                    ++p;
+                    break;
+                case 2:
+                    buf[x++] = base64_code[(base64_accu << 4) + (*p >> 4)];
+                    base64_accu = (*p & 0xF);
+                    base64_count = 4;
+                    ++p;
+                    break;
+                case 4:
+                    buf[x++] = base64_code[(base64_accu << 2) + (*p >> 6)];
+                    buf[x++] = base64_code[*p & 0x3F];
+                    base64_accu = 0;
+                    base64_count = 0;
+                    ++p;
+                    break;
+            }
+            if (x >= 63) {
+                /* Write 63 or 64 characters */
+                base64_pad += x;
+                buf[x] = 0;
+                ttputs(buf);
+                x = 0;
+            }
+        }
+        if (x != 0) {
+            base64_pad += x;
+            buf[x] = 0;
+            ttputs(buf);
+        }
+}
+
+static void ttputs64_flush()
+{
+    unsigned char x;
+    switch (base64_count) {
+        case 0:
+            break;
+        case 2:
+            x = base64_code[base64_accu << 4];
+            ttputc(x);
+            break;
+        case 4:
+            x = base64_code[base64_accu << 2];
+            ttputc(x);
+            break;
+    }
+    if (base64_pad & 3) {
+        x = 4 - (base64_pad & 3);
+        while (x--)
+        	ttputc('=');
+    }
+    base64_count = 0;
+    base64_accu = 0;
+    base64_pad = 0;
+}
+
 void select_done(struct charmap *map)
 {
 	/* Feed text to xterm */
@@ -153,8 +230,10 @@ void select_done(struct charmap *map)
 		long right = markk->xcol;
 		P *q = pdup(markb);
 		int c;
-		ttputs(US "\33[1y");
+		ttputs(US "\33[?2P");
 		while (q->byte < markk->byte) {
+			unsigned char buf[16];
+			int len;
 			/* Skip until we're within columns */
 			while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
 				pgetc(q);
@@ -165,35 +244,38 @@ void select_done(struct charmap *map)
 				if (map->type)
 					if (locale_map->type) {
 						/* UTF-8 char to UTF-8 terminal */
-						unsigned char buf[16];
-						utf8_encode(buf,c);
-						ttputs(buf);
+						len = utf8_encode(buf,c);
+						ttputs64(buf, len);
 					} else {
 						/* UTF-8 char to non-UTF-8 terminal */
 						c = from_uni(locale_map,c);
-						if (c ==-1)
+						if (c == -1)
 							c = '?';
-						ttputc(c);
+						buf[0] = c;
+						ttputs64(buf, 1);
 					}
 				else
 					if (locale_map->type) {
 						/* Non-UTF-8 to UTF-8 terminal */
-						unsigned char buf[16];
 						c = to_uni(map, c);
 						if (c == -1)
 							c = '?';
-						utf8_encode(buf,c);
-						ttputs(buf);
+						len = utf8_encode(buf,c);
+						ttputs64(buf, len);
 					} else {
 						/* Non-UTF-8 to non-UTF-8 terminal */
-						ttputc(c);
+						buf[0] = c;
+						ttputs64(buf, 1);
 					}
 			}
 			/* Add a new line if we went past right edge of column */
-			if (square && q->byte<markk->byte && piscol(q) >= right)
-				ttputc(10);
+			if (square && q->byte<markk->byte && piscol(q) >= right) {
+				buf[0] = 10;
+				ttputs64(buf, 1);
+			}
 		}
-		ttputs(US "\33\33");
+		ttputs64_flush();
+		ttputs(US "\33");
 		prm(q);
 	}
 }

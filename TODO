@@ -703,19 +703,19 @@ ESC c  compile (supposed to be center line)
 -----------------
 notepad/cua mode?
 -----------------
-^A	select all
-^F	find
-^G	goto line
-^H	replace
-^J	return
-^N	new blank file
-^O	edit file (asks to save current)
+- ^A	select all
+- ^F	find
+- ^G	goto line
+X ^H	replace
+X ^J	return
+- ^N	new blank file
+- ^O	edit file (asks to save current)
 ^P	print
-^S	save
-^V	paste
-^Z	undo
-^X	cut
-^C	copy
-F3	find next
-F5	date/time
+- ^S	save
+- ^V	paste
+- ^Z	undo
+- ^X	cut
+- ^C	copy
+- F3	find next
+- F5	date/time
 

@@ -1,662 +1,338 @@
 diff -Naur xterm-200/VTPrsTbl.c xterm-200-new/VTPrsTbl.c
 --- xterm-200/VTPrsTbl.c	2004-11-30 20:27:46.000000000 -0500
-+++ xterm-200-new/VTPrsTbl.c	2005-03-28 18:51:31.000000000 -0500
-@@ -399,6 +399,654 @@
++++ xterm-200-new/VTPrsTbl.c	2005-04-05 22:35:40.000000000 -0400
+@@ -399,6 +399,330 @@
  CASE_PRINT,
  };
  
-+Const PARSE_T take_table[] =		/* TAKE SELECTION DATA */
++Const PARSE_T take_table[] =		/* TAKE Base64 SELECTION DATA */
 +{
 +/*	NUL		SOH		STX		ETX	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	EOT		ENQ		ACK		BEL	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	BS		HT		NL		VT	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	NP		CR		SO		SI	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	DLE		DC1		DC2		DC3	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	DC4		NAK		SYN		ETB	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	CAN		EM		SUB		ESC	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE_ESC,
-+/*	FS		GS		RS		US	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	SP		!		"		#	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	$		%		&		'	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	(		)		*		+	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	,		-		.		/	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	0		1		2		3	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	4		5		6		7	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	8		9		:		;	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	<		=		>		?	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	@		A		B		C	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	D		E		F		G	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	H		I		J		K	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	L		M		N		O	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	P		Q		R		S	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	T		U		V		W	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	X		Y		Z		[	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	\		]		^		_	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	`		a		b		c	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	d		e		f		g	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	h		i		j		k	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	l		m		n		o	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	p		q		r		s	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	t		u		v		w	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	x		y		z		{	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*	|		}		~		DEL	*/
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      0x80            0x81            0x82            0x83    */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      0x84            0x85            0x86            0x87    */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      0x88            0x89            0x8a            0x8b    */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      0x8c            0x8d            0x8e            0x8f    */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      0x90            0x91            0x92            0x93    */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      0x94            0x95            0x96            0x97    */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      0x98            0x99            0x9a            0x9b    */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      0x9c            0x9d            0x9e            0x9f    */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      nobreakspace    exclamdown      cent            sterling        */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      currency        yen             brokenbar       section         */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      diaeresis       copyright       ordfeminine     guillemotleft   */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      notsign         hyphen          registered      macron          */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      degree          plusminus       twosuperior     threesuperior   */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      acute           mu              paragraph       periodcentered  */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      cedilla         onesuperior     masculine       guillemotright  */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      onequarter      onehalf         threequarters   questiondown    */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      Agrave          Aacute          Acircumflex     Atilde          */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      Adiaeresis      Aring           AE              Ccedilla        */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      Egrave          Eacute          Ecircumflex     Ediaeresis      */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      Igrave          Iacute          Icircumflex     Idiaeresis      */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      Eth             Ntilde          Ograve          Oacute          */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      Ocircumflex     Otilde          Odiaeresis      multiply        */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      Ooblique        Ugrave          Uacute          Ucircumflex     */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      Udiaeresis      Yacute          Thorn           ssharp          */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      agrave          aacute          acircumflex     atilde          */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      adiaeresis      aring           ae              ccedilla        */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      egrave          eacute          ecircumflex     ediaeresis      */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      igrave          iacute          icircumflex     idiaeresis      */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      eth             ntilde          ograve          oacute          */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      ocircumflex     otilde          odiaeresis      division        */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      oslash          ugrave          uacute          ucircumflex     */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+/*      udiaeresis      yacute          thorn           ydiaeresis      */
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE,
-+CASE_TAKE
-+};
-+
-+Const PARSE_T take_esc_table[] =	/* SAW ESC in selection data */
-+{
-+/*	NUL		SOH		STX		ETX	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+/*	EOT		ENQ		ACK		BEL	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+/*	BS		HT		NL		VT	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+/*	NP		CR		SO		SI	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+/*	DLE		DC1		DC2		DC3	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+/*	DC4		NAK		SYN		ETB	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+/*	CAN		EM		SUB		ESC	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +CASE_TAKE_DONE,
 +/*	FS		GS		RS		US	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	SP		!		"		#	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	$		%		&		'	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	(		)		*		+	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE,
 +/*	,		-		.		/	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE,
 +/*	0		1		2		3	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	4		5		6		7	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	8		9		:		;	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	<		=		>		?	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	@		A		B		C	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	D		E		F		G	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_QUOTE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	H		I		J		K	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	L		M		N		O	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	P		Q		R		S	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	T		U		V		W	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	X		Y		Z		[	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE_DONE,
 +/*	\		]		^		_	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*	`		a		b		c	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	d		e		f		g	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	h		i		j		k	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	l		m		n		o	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	p		q		r		s	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	t		u		v		w	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
 +/*	x		y		z		{	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE,
++CASE_TAKE_DONE,
 +/*	|		}		~		DEL	*/
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      0x80            0x81            0x82            0x83    */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      0x84            0x85            0x86            0x87    */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      0x88            0x89            0x8a            0x8b    */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      0x8c            0x8d            0x8e            0x8f    */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      0x90            0x91            0x92            0x93    */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      0x94            0x95            0x96            0x97    */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      0x98            0x99            0x9a            0x9b    */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      0x9c            0x9d            0x9e            0x9f    */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      nobreakspace    exclamdown      cent            sterling        */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      currency        yen             brokenbar       section         */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      diaeresis       copyright       ordfeminine     guillemotleft   */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      notsign         hyphen          registered      macron          */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      degree          plusminus       twosuperior     threesuperior   */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      acute           mu              paragraph       periodcentered  */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      cedilla         onesuperior     masculine       guillemotright  */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      onequarter      onehalf         threequarters   questiondown    */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      Agrave          Aacute          Acircumflex     Atilde          */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      Adiaeresis      Aring           AE              Ccedilla        */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      Egrave          Eacute          Ecircumflex     Ediaeresis      */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      Igrave          Iacute          Icircumflex     Idiaeresis      */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      Eth             Ntilde          Ograve          Oacute          */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      Ocircumflex     Otilde          Odiaeresis      multiply        */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      Ooblique        Ugrave          Uacute          Ucircumflex     */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      Udiaeresis      Yacute          Thorn           ssharp          */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      agrave          aacute          acircumflex     atilde          */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      adiaeresis      aring           ae              ccedilla        */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      egrave          eacute          ecircumflex     ediaeresis      */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      igrave          iacute          icircumflex     idiaeresis      */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      eth             ntilde          ograve          oacute          */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      ocircumflex     otilde          odiaeresis      division        */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      oslash          ugrave          uacute          ucircumflex     */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
 +/*      udiaeresis      yacute          thorn           ydiaeresis      */
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE,
-+CASE_TAKE_IGNORE
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE,
++CASE_TAKE_DONE
 +};
 +
  Const PARSE_T csi_table[] =		/* CSI */
  {
  /*	NUL		SOH		STX		ETX	*/
-@@ -553,7 +1201,7 @@
+@@ -877,7 +1201,7 @@
  CASE_GROUND_STATE,
  /*	x		y		z		{	*/
  CASE_DECREQTPARM,
@@ -665,65 +341,199 @@ diff -Naur xterm-200/VTPrsTbl.c xterm-200-new/VTPrsTbl.c
  CASE_GROUND_STATE,
  CASE_GROUND_STATE,
  /*	|		}		~		DEL	*/
-@@ -877,7 +1525,7 @@
+@@ -2774,7 +3098,7 @@
  CASE_GROUND_STATE,
- /*	x		y		z		{	*/
- CASE_DECREQTPARM,
+ CASE_GROUND_STATE,
+ /*	P		Q		R		S	*/
 -CASE_GROUND_STATE,
 +CASE_PASTE,
  CASE_GROUND_STATE,
  CASE_GROUND_STATE,
- /*	|		}		~		DEL	*/
+ CASE_GROUND_STATE,
 diff -Naur xterm-200/VTparse.def xterm-200-new/VTparse.def
 --- xterm-200/VTparse.def	2004-11-30 20:27:46.000000000 -0500
-+++ xterm-200-new/VTparse.def	2005-03-28 17:39:52.000000000 -0500
-@@ -140,3 +140,9 @@
++++ xterm-200-new/VTparse.def	2005-04-05 22:29:16.000000000 -0400
+@@ -140,3 +140,6 @@
  CASE_DECCARA
  CASE_DECRARA
  CASE_CSI_STAR_STATE
 +CASE_PASTE
 +CASE_TAKE
-+CASE_TAKE_IGNORE
-+CASE_TAKE_QUOTE
 +CASE_TAKE_DONE
-+CASE_TAKE_ESC
 diff -Naur xterm-200/VTparse.h xterm-200-new/VTparse.h
 --- xterm-200/VTparse.h	2004-11-30 20:27:46.000000000 -0500
-+++ xterm-200-new/VTparse.h	2005-03-28 17:39:41.000000000 -0500
-@@ -82,6 +82,8 @@
++++ xterm-200-new/VTparse.h	2005-04-06 11:52:19.000000000 -0400
+@@ -82,6 +82,7 @@
  extern Const PARSE_T scrtable[];
  extern Const PARSE_T scstable[];
  extern Const PARSE_T sos_table[];
 +extern Const PARSE_T take_table[];
-+extern Const PARSE_T take_esc_table[];
  
  #if OPT_DEC_LOCATOR
  extern Const PARSE_T csi_tick_table[];
-@@ -244,5 +246,11 @@
+@@ -244,5 +245,8 @@
  #define CASE_DECCARA 128
  #define CASE_DECRARA 129
  #define CASE_CSI_STAR_STATE 130
 +#define CASE_PASTE 131
 +#define CASE_TAKE 132
-+#define CASE_TAKE_IGNORE 133
-+#define CASE_TAKE_QUOTE 134
-+#define CASE_TAKE_DONE 135
-+#define CASE_TAKE_ESC 136
++#define CASE_TAKE_DONE 133
  
  #endif /* included_VTparse_h */
 diff -Naur xterm-200/button.c xterm-200-new/button.c
 --- xterm-200/button.c	2005-02-06 16:42:37.000000000 -0500
-+++ xterm-200-new/button.c	2005-03-30 23:40:53.000000000 -0500
-@@ -1174,7 +1174,7 @@
++++ xterm-200-new/button.c	2005-04-06 11:31:46.000000000 -0400
+@@ -1174,7 +1174,9 @@
      return cutbuffer;
  }
  
 -static void
++int base64_paste = 0;	/* Set if paste data should be sent as base64 */
++
 +void
  _GetSelection(Widget w,
  	      Time ev_time,
  	      String * params,	/* selections in precedence order */
-@@ -1331,7 +1331,6 @@
+@@ -1208,19 +1210,34 @@
+ 	int fmt8 = 8;
+ 	Atom type = XA_STRING;
+ 	char *line;
++	int x;
++
++        /* Selection from X server */
++
++#if OPT_WIDE_CHARS
++        /* Joe Allen - 2005-4-4: assume X's cut buffer is UTF-8 if
++           the xterm is UTF-8 */
++        if (term->screen.utf8_mode)
++            type = XA_UTF8_STRING(XtDisplay(w));
++#endif
+ 
+ 	/* 'line' is freed in SelectionReceived */
+ 	line = XFetchBuffer(XtDisplay(w), &inbytes, cutbuffer);
+ 	nbytes = (unsigned long) inbytes;
++
+ 	if (nbytes > 0)
+ 	    SelectionReceived(w, NULL, &selection, &type, (XtPointer) line,
+ 			      &nbytes, &fmt8);
+ 	else if (num_params > 1)
+ 	    _GetSelection(w, ev_time, params + 1, num_params - 1, NULL);
++        else
++            base64_paste = 0;
+ 	return;
+     } else {
+ 	struct _SelectionList *list;
+ 
++	/* Selection owned by someone */
++
+ 	if (targets == NULL || targets[0] == None) {
+ 	    targets = _SelectionTargets(w);
+ 	}
+@@ -1280,9 +1297,65 @@
+ #  define tty_vwrite(pty,lag,l)		v_write(pty,lag,l)
+ #endif /* defined VMS */
+ 
++/* Return base64 code character given 6-bit number */
++
++char base64_code[]="\
++ABCDEFGHIJKLMNOPQRSTUVWXYZ\
++abcdefghijklmnopqrstuvwxyz\
++0123456789+/";
++
++/* Be careful: _qWriteSelectionData expects these to be initialized
++   to zero.  Base64_flush() is the last step of the conversion, it
++   clears these variables. */
++
++int base64_accu = 0;
++int base64_count = 0;
++int base64_pad = 0;
++
+ static void
+ _qWriteSelectionData(TScreen * screen, Char * lag, unsigned length)
+ {
++    if (base64_paste) {
++        /* Send data as base64 */
++        unsigned char *p = (unsigned char *)lag;
++        Char buf[64];
++        unsigned x = 0;
++        while (length--) {
++            switch (base64_count) {
++                case 0:
++                    buf[x++] = base64_code[*p >> 2];
++                    base64_accu = (*p & 0x3);
++                    base64_count = 2;
++                    ++p;
++                    break;
++                case 2:
++                    buf[x++] = base64_code[(base64_accu << 4) + (*p >> 4)];
++                    base64_accu = (*p & 0xF);
++                    base64_count = 4;
++                    ++p;
++                    break;
++                case 4:
++                    buf[x++] = base64_code[(base64_accu << 2) + (*p >> 6)];
++                    buf[x++] = base64_code[*p & 0x3F];
++                    base64_accu = 0;
++                    base64_count = 0;
++                    ++p;
++                    break;
++            }
++            if (x >= 63) {
++                /* Write 63 or 64 characters */
++                base64_pad += x;
++                tty_vwrite(screen->respond, buf, x);
++                x = 0;
++            }
++        }
++        if (x != 0) {
++            base64_pad += x;
++            tty_vwrite(screen->respond, buf, x);
++        }
++        return;
++    }
++
+ #if OPT_READLINE
+     if (SCREEN_FLAG(screen, paste_quotes)) {
+ 	while (length--) {
+@@ -1295,6 +1368,29 @@
+ }
+ 
+ static void
++base64_flush(TScreen *screen)
++{
++    unsigned char x;
++    switch (base64_count) {
++        case 0:
++            break;
++        case 2:
++            x = base64_code[base64_accu << 4];
++            tty_vwrite(screen->respond, &x, 1);
++            break;
++        case 4:
++            x = base64_code[base64_accu << 2];
++            tty_vwrite(screen->respond, &x, 1);
++            break;
++    }
++    if (base64_pad & 3)
++        tty_vwrite(screen->respond, "===", 4 - (base64_pad & 3));
++    base64_count = 0;
++    base64_accu = 0;
++    base64_pad = 0;
++}
++
++static void
+ _WriteSelectionData(TScreen * screen, Char * line, int length)
+ {
+     /* Write data to pty a line at a time. */
+@@ -1325,13 +1421,14 @@
+     if (lag != end) {
+ 	_qWriteSelectionData(screen, lag, (unsigned) (end - lag));
+     }
++    if (base64_paste)
++        base64_flush(screen);
+ #ifdef VMS
+     tt_pasting = False;
+     tt_start_read();		/* reenable reads or a character may be lost */
  #endif
  }
  
@@ -731,7 +541,7 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
  static void
  _WriteKey(TScreen * screen, Char * in)
  {
-@@ -1350,7 +1349,6 @@
+@@ -1350,7 +1447,6 @@
      line[count++] = '~';
      tty_vwrite(screen->respond, line, count);
  }
@@ -739,13 +549,15 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
  
  /* SelectionReceived: stuff received selection text into pty */
  
-@@ -1434,18 +1432,14 @@
+@@ -1434,18 +1530,20 @@
      if (text_list != NULL && text_list_count != 0) {
  	int i;
  
 -#if OPT_READLINE
 -	if (SCREEN_FLAG(screen, paste_brackets))
-+	if (screen->paste_brackets)
++	if (base64_paste)
++	    _WriteKey(screen, "202");
++	else if (screen->paste_brackets)
  	    _WriteKey(screen, "200");
 -#endif
  	for (i = 0; i < text_list_count; i++) {
@@ -754,13 +566,26 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
  	}
 -#if OPT_READLINE
 -	if (SCREEN_FLAG(screen, paste_brackets))
-+	if (screen->paste_brackets)
++	if (base64_paste) {
++	    tty_vwrite(screen->respond, "\33", 1);
++	    base64_paste = 0;
++        }
++        else if (screen->paste_brackets)
  	    _WriteKey(screen, "201");
 -#endif
  	XFreeStringList(text_list);
      } else
  	goto fail;
-@@ -2452,6 +2446,63 @@
+@@ -1461,6 +1559,8 @@
+ 	_GetSelection(w, list->time,
+ 		      list->params, list->count, list->targets);
+ 	XtFree((char *) client_data);
++    } else {
++        base64_paste = 0;
+     }
+     return;
+ }
+@@ -2452,6 +2552,96 @@
      _OwnSelection(term, params, num_params);
  }
  
@@ -768,6 +593,7 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
 +{
 +    TScreen *screen = &term->screen;
 +    screen->selection_length = 0;
++    base64_count = 0;
 +}
 +
 +void AppendStrToSelectionBuffer(Char *text,int len)
@@ -800,31 +626,78 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
 +
 +void AppendToSelectionBuffer(unsigned c)
 +{
-+#if OPT_WIDE_CHARS
-+    if (c < 128 || !term->screen.utf8_mode) {
-+#endif
-+        Char d = c;
-+        AppendStrToSelectionBuffer(&d, 1);
-+#if OPT_WIDE_CHARS
-+    } else {
-+        Char buf[10];
-+        Char *x = convertToUTF8(buf, c);
-+        AppendStrToSelectionBuffer(buf, x-buf);
++    int six;
++    Char ch;
++
++    /* Decode base64 character */
++    if (c >= 'A' && c <= 'Z')
++        six = c - 'A';
++    else if (c >= 'a' && c <= 'z')
++        six = c - 'a' + 26;
++    else if (c >= '0' && c <= '9')
++        six = c - '0' + 52;
++    else if (c == '+')
++        six = 62;
++    else
++        six = 63;
++
++    /* Accumulate bytes */
++    switch (base64_count) {
++        case 0:
++            base64_accu = six;
++            base64_count = 6;
++            break;
++
++        case 2:
++            ch = (base64_accu << 6) + six;
++            base64_count = 0;
++            AppendStrToSelectionBuffer(&ch, 1);
++            break;
++
++        case 4:
++            ch = (base64_accu << 4) + (six >> 2);
++            base64_accu = (six & 0x3);
++            base64_count = 2;
++            AppendStrToSelectionBuffer(&ch, 1);
++            break;
++
++        case 6:
++            ch = (base64_accu << 2) + (six >> 4);
++            base64_accu = (six & 0xF);
++            base64_count = 4;
++            AppendStrToSelectionBuffer(&ch, 1);
++            break;
 +    }
-+#endif
 +}
 +
 +extern char *select_args[]; /* in charproc.c */
 +
 +void CompleteSelection()
 +{
++    base64_count = 0;
++    base64_accu = 0;
 +    _OwnSelection(term, select_args, 2);
 +}
 +
  static Bool
  _ConvertSelectionHelper(Widget w,
  			Atom * type, XtPointer *value,
-@@ -2885,6 +2936,18 @@
+@@ -2715,9 +2905,14 @@
+ 		 */
+ 		unsigned long length = termw->screen.selection_length;
+ 		Char *data = termw->screen.selection_data;
++#ifdef junk
++/* These days it's better to assume that X server's cut & paste buffers
++   are UTF-8 when the locale is UTF-8.
++    Joe Allen, 2005-04-04 */
+ 		if_OPT_WIDE_CHARS((&(termw->screen)), {
+ 		    data = UTF8toLatin1(data, length, &length);
+ 		});
++#endif
+ 		TRACE(("XStoreBuffer(%d)\n", cutbuffer));
+ 		XStoreBuffer(XtDisplay((Widget) termw),
+ 			     (char *) data,
+@@ -2885,6 +3080,18 @@
      return (result);
  }
  
@@ -843,7 +716,7 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
  static int
  BtnCode(XButtonEvent * event, int button)
  {
-@@ -2904,6 +2967,16 @@
+@@ -2904,6 +3111,16 @@
  
  #define MOUSE_LIMIT (255 - 32)
  
@@ -860,7 +733,7 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
  static void
  EditorButton(XButtonEvent * event)
  {
-@@ -2923,20 +2996,41 @@
+@@ -2923,20 +3140,41 @@
      row = (event->y - screen->border) / FontHeight(screen);
      col = (event->x - OriginX(screen)) / FontWidth(screen);
  
@@ -918,8 +791,8 @@ diff -Naur xterm-200/button.c xterm-200-new/button.c
      if (screen->control_eight_bits) {
 diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
 --- xterm-200/charproc.c	2005-02-06 16:42:38.000000000 -0500
-+++ xterm-200-new/charproc.c	2005-03-30 23:28:21.000000000 -0500
-@@ -1098,6 +1098,18 @@
++++ xterm-200-new/charproc.c	2005-04-06 11:32:53.000000000 -0400
+@@ -1098,6 +1098,20 @@
  
  static struct ParseState myState;
  
@@ -935,10 +808,12 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
 +  0
 +};
 +
++extern int base64_paste;
++
  static Boolean
  doparsing(unsigned c, struct ParseState *sp)
  {
-@@ -1121,7 +1133,19 @@
+@@ -1121,7 +1135,19 @@
  
      do {
  #if OPT_WIDE_CHARS
@@ -959,7 +834,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  	    && my_wcwidth((int) c) == 0) {
  	    int prev, precomposed;
  
-@@ -1366,6 +1390,8 @@
+@@ -1366,6 +1392,8 @@
  	    string_used = 0;
  	}
  
@@ -968,44 +843,33 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  	TRACE(("parse %04X -> %d %s\n", c, sp->nextstate, which_table(sp->parsestate)));
  
  	switch (sp->nextstate) {
-@@ -1654,6 +1680,49 @@
+@@ -1654,6 +1682,38 @@
  	    sp->parsestate = sp->groundtable;
  	    break;
  
 +        case CASE_PASTE: {
 +            int cmd = param[0];
 +            TRACE(("CASE_PASTE - cut & paste\n"));
-+            if (cmd < 1)
++            if (cmd < 2)
 +                cmd = 0;
 +            if (cmd == 0) {
 +                TRACE(("CASE_PASTE - paste selection\n"));
-+                /* Parse current selection */
++                /* Paste current selection */
++                base64_paste = 1; /* Tells _GetSelection data is base64 encoded */
 +                _GetSelection(current_widget, 0, select_args, 2, NULL);
++                /* _GetSelection clears base64_paste */
 +                sp->parsestate = sp->groundtable;
-+            } else if (cmd == 1) {
++            } else if (cmd == 2) {
 +                TRACE(("CASE_PASTE - taking selection data\n"));
 +                ClearSelectionBuffer();
 +                sp->parsestate = take_table;
-+            }
++            } else
++                sp->parsestate = sp->groundtable;
 +            break;
 +        }
 +
 +        case CASE_TAKE: {
 +            AppendToSelectionBuffer(c);
-+            sp->parsestate = take_table;
-+            break;
-+        }
-+
-+        case CASE_TAKE_ESC:
-+            sp->parsestate = take_esc_table;
-+            break;
-+
-+        case CASE_TAKE_IGNORE:
-+            sp->parsestate = take_table;
-+            break;
-+
-+        case CASE_TAKE_QUOTE: {
-+            AppendToSelectionBuffer(0x1B);
 +            sp->parsestate = take_table;
 +            break;
 +        }
@@ -1018,7 +882,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  	case CASE_ECH:
  	    TRACE(("CASE_ECH - erase char\n"));
  	    /* ECH */
-@@ -3877,6 +3946,12 @@
+@@ -3877,6 +3937,12 @@
  	    set_keyboard_type(keyboardIsVT220, func == bitset);
  	    break;
  #endif
@@ -1031,7 +895,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  #if OPT_READLINE
  	case SET_BUTTON1_MOVE_POINT:
  	    set_mouseflag(click1_moves);
-@@ -3887,9 +3962,6 @@
+@@ -3887,9 +3953,6 @@
  	case SET_DBUTTON3_DELETE:
  	    set_mouseflag(dclick3_deletes);
  	    break;
@@ -1041,7 +905,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  	case SET_PASTE_QUOTE:
  	    set_mouseflag(paste_quotes);
  	    break;
-@@ -3993,6 +4065,12 @@
+@@ -3993,6 +4056,12 @@
  		CursorSave(termw);
  	    }
  	    break;
@@ -1054,7 +918,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  #if OPT_READLINE
  	case SET_BUTTON1_MOVE_POINT:
  	    SCREEN_FLAG_save(screen, click1_moves);
-@@ -4003,9 +4081,6 @@
+@@ -4003,9 +4072,6 @@
  	case SET_DBUTTON3_DELETE:
  	    SCREEN_FLAG_save(screen, dclick3_deletes);
  	    break;
@@ -1064,7 +928,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  	case SET_PASTE_QUOTE:
  	    SCREEN_FLAG_save(screen, paste_quotes);
  	    break;
-@@ -4156,6 +4231,11 @@
+@@ -4156,6 +4222,11 @@
  		CursorRestore(termw);
  	    }
  	    break;
@@ -1076,7 +940,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  #if OPT_READLINE
  	case SET_BUTTON1_MOVE_POINT:
  	    SCREEN_FLAG_restore(screen, click1_moves);
-@@ -4166,9 +4246,6 @@
+@@ -4166,9 +4237,6 @@
  	case SET_DBUTTON3_DELETE:
  	    SCREEN_FLAG_restore(screen, dclick3_deletes);
  	    break;
@@ -1088,7 +952,7 @@ diff -Naur xterm-200/charproc.c xterm-200-new/charproc.c
  	    break;
 diff -Naur xterm-200/ctlseqs.ms xterm-200-new/ctlseqs.ms
 --- xterm-200/ctlseqs.ms	2005-01-13 20:50:00.000000000 -0500
-+++ xterm-200-new/ctlseqs.ms	2005-03-28 23:48:16.000000000 -0500
++++ xterm-200-new/ctlseqs.ms	2005-04-06 11:45:04.000000000 -0400
 @@ -792,6 +792,8 @@
    \*(Ps = \*1\*0\*5\*3 \(-> Set SCO function-key mode.
    \*(Ps = \*1\*0\*6\*0 \(-> Set legacy keyboard emulation (X11R6).
@@ -1107,21 +971,23 @@ diff -Naur xterm-200/ctlseqs.ms xterm-200-new/ctlseqs.ms
  .
  .IP \\*(Cs\\*(Pm\\*s\\*m
  Character Attributes (SGR)
-@@ -1086,6 +1090,13 @@
+@@ -1086,6 +1090,15 @@
    \*(Pc is the character to use.
    \*(Pt\*;\*(Pl\*;\*(Pb\*;\*(Pr denotes the rectangle.
  .
-+.IP \\*(Cs\\*(Ps\\*s\\*y
++.IP \\*(Cs\\*?\\*(Ps\\*s\\*P
 +Cut and Paste.
-+  \*(Ps = \*0 \(-> Paste (default).  The current selection is sent to the program.
-+  \*(Ps = \*1 \(-> Select.  Give selected data to Xterm.  All data received
-+until ESC ESC is taken as the new current selection, which then can be pasted by other
-+applications.  If there is an ESC in the selection, it should be quoted with ESC E.
++  \*(Ps = \*1 \(-> Paste (default).  The current selection is sent to the program in Base64:
++ESC [ ? 202 ~ <base64-data> ESC.
++  \*(Ps = \*2 \(-> Select.  Give Base64 encoded selection
++data to Xterm.  Base64 encoded data is sent to the XTerm following this command.  The Data
++is terminated with a single ESC.  This data becomes the new selection, which is then
++available for pasting by other applications.
 +.
  .IP \\*(Cs\\*(Ps\\*s\\*;\\*(Pu\\*s\\*(qu\\*z
  Enable Locator Reporting (DECELR)
  .br
-@@ -1563,6 +1574,14 @@
+@@ -1563,6 +1576,14 @@
  to make the details of switching independent of the application that
  requests the switch.
  .SH
@@ -1136,7 +1002,7 @@ diff -Naur xterm-200/ctlseqs.ms xterm-200-new/ctlseqs.ms
  Mouse Tracking
  .ds RH Mouse Tracking
  .LP
-@@ -1592,6 +1611,7 @@
+@@ -1592,6 +1613,7 @@
  #define SET_VT200_HIGHLIGHT_MOUSE   1001
  #define SET_BTN_EVENT_MOUSE         1002
  #define SET_ANY_EVENT_MOUSE         1003
@@ -1144,7 +1010,7 @@ diff -Naur xterm-200/ctlseqs.ms xterm-200-new/ctlseqs.ms
  .DE
  .LP
  The motion reporting modes are strictly \fIxterm\fP extensions, and are not
-@@ -1605,6 +1625,13 @@
+@@ -1605,6 +1627,13 @@
  For example, \*! specifies the value 1.
  The upper left character position on the terminal is denoted as 1,1.
  
@@ -1188,6 +1054,11 @@ diff -Naur xterm-200/misc.c xterm-200-new/misc.c
  	Input(&term->keyboard, screen, &event->xkey, False);
  }
  
+diff -Naur xterm-200/paste xterm-200-new/paste
+--- xterm-200/paste	1969-12-31 19:00:00.000000000 -0500
++++ xterm-200-new/paste	2005-04-06 11:46:10.000000000 -0400
+@@ -0,0 +1 @@
++[?P
 diff -Naur xterm-200/ptyx.h xterm-200-new/ptyx.h
 --- xterm-200/ptyx.h	2005-01-13 20:50:03.000000000 -0500
 +++ xterm-200-new/ptyx.h	2005-03-28 22:48:06.000000000 -0500
@@ -1214,6 +1085,12 @@ diff -Naur xterm-200/ptyx.h xterm-200-new/ptyx.h
  	unsigned	paste_quotes;
  	unsigned	paste_literal_nl;
  #endif	/* OPT_READLINE */
+diff -Naur xterm-200/select xterm-200-new/select
+--- xterm-200/select	1969-12-31 19:00:00.000000000 -0500
++++ xterm-200-new/select	2005-04-06 11:47:39.000000000 -0400
+@@ -0,0 +1,2 @@
++[?2PSGVsbG8sIHdvcmxkIQo=
++
 diff -Naur xterm-200/xcharmouse.h xterm-200-new/xcharmouse.h
 --- xterm-200/xcharmouse.h	2002-08-24 14:54:39.000000000 -0400
 +++ xterm-200-new/xcharmouse.h	2005-03-28 22:39:35.000000000 -0500

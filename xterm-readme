@@ -15,15 +15,14 @@ can enable "-joexterm" in the joerc file:
 
 			ESC [ 2 0 0 ~ <paste-text> ESC [ 2 0 1 ~
 
-	ESC [ y			Send paste data to program (when JOE gets
-				middle button click, it sends this to xterm
-				to make it send the paste data).
+	ESC [ ? P		Send base64 encoded paste data to program
+				(when JOE gets middle button click, it sends
+				this to xterm to make it send the paste
+				data).
 
-	ESC [ 1 y		Accept all following data until ESC ESC. 
+	ESC [ ? 2 P		Accept base64 encoded paste data until ESC.
 				This data becomes the "selected text" which
 				can be pasted by other applications.
-
-				Any ESCs in the data can be quoted with ESC E
 
 	ESC [ ? 2 0 0 7 h	Enable outside of frame mouse coordinates.
 
@@ -48,3 +47,6 @@ can enable "-joexterm" in the joerc file:
 		coordinates 1 - 223).
 
 Also, this patch makes XTerms compiled with wide character support much faster.
+
+Also, this patch makes XTerm stores UTF-8 data in the server's cut buffer,
+instead of latin1.

@@ -2350,34 +2350,69 @@ int uname_joe(BW *bw)
 	return 0;
 }
 
-/* Insert until magic code: "ESC [ 2 0 1 ~" received */
+/* Insert until non-base64 character received */
 
 int upaste(BW  *bw, int k)
 {
-	unsigned char buf[6];
-	int buf_len = 0;
 	int c;
+	int accu;
+	int count;
 	int tmp_ww = bw->o.wordwrap;
 	int tmp_ai = bw->o.autoindent;
 
 	bw->o.wordwrap = 0;
 	bw->o.autoindent = 0;
+	count = 0;
 
 	while ((c = ttgetc()) != -1) {
-		if (buf_len == 6) {
-			if (buf[0] == 13)
-				rtntw(bw);
-			else
-				utypebw(bw, buf[0]);
-			memmove(buf, buf+1, 5);
-			buf[5] = c;
-		} else
-			buf[buf_len++] = c;
-		if (buf_len == 6 && !strncmp((char *)buf, "\033[201~", 6)) {
+		if (c >= 'A' && c <= 'Z')
+			c = c - 'A';
+		else if (c >= 'a' && c <= 'z')
+			c = c - 'a' + 26;
+		else if (c >= '0' && c <= '9')
+			c = c - '0' + 52;
+		else if (c == '+')
+			c = 62;
+		else if (c == '/')
+			c = 63;
+		else if (c == '=')
+			continue;
+		else
 			break;
+
+		switch (count) {
+			case 0:
+				accu = c;
+				count = 6;
+				break;
+			case 2:
+				accu = (accu << 6) + c;
+				if (accu == 13)
+					rtntw(bw);
+				else
+					utypebw(bw, accu);
+				count = 0;
+				break;
+			case 4:
+				accu = (accu << 4) + (c >> 2);
+				if (accu == 13)
+					rtntw(bw);
+				else
+					utypebw(bw, accu);
+				accu = (c & 0x3);
+				count = 2;
+				break;
+			case 6:
+				accu = (accu << 2) + (c >> 4);
+				if (accu == 13)
+					rtntw(bw);
+				else
+					utypebw(bw, accu);
+				accu = (c & 0xF);
+				count = 4;
+				break;
 		}
 	}
-
 	bw->o.wordwrap = tmp_ww;
 	bw->o.autoindent = tmp_ai;
 
