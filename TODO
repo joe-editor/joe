@@ -1,3 +1,87 @@
+Immediate things:
+
+ No. 1 requested new feature for joe: syntax highlighting.  I have termcap.c
+ and scrn.c with color support.  I need to merge it in.  I still need a
+ database for syntax highlighting.  Emacs re-colors after no activity.
+
+ Gettext: merge yes or no?  I need a non-english speaking
+ person to tell how well this works.
+
+ UTF-8 support.  Play with UTF-8 xterm.
+ 
+ Define what constitutes a word for ^X ^Z ^W ^O.
+
+ Update man page.
+
+ Include documentation for joe hackers.  I wrote a lot of this
+ some time, I need to find it.
+
+ Search should try to scroll window so that entire found text is displayed on
+ screen.  I had implemented this once, but it was broken.
+
+ Error parser for ^[ c is abysmal.  Should define regexes for them.
+
+ Add .v, .pl, etc. file types to joerc
+
+ Get shell windows working in cygwin.  ptys exists but are very broken.
+
+ Make tab completion more like bash?
+
+ Emit ESC c to reset terminal on startup?
+ Don't use tabs by default?
+
+ Mode to prevent te, ti sequences.  I hate the restore previous
+ screen contents on quit behavior.
+
+ Expand math mode (hex, octal, math functions...)
+
+ Interactive macros during file load are broken.  Think about multiple
+ stack hack (otherwise template based C++ callbacks).
+
+ File selection menu window should be more than one line.
+
+ Should have switch buffers in current window as more fundamental joe key
+ sequence.
+
+ Look into clearing right-most column.
+
+ ` and autoindent mode are a problem for drag and drop.
+ any way we can distinguish normal typing from a drop?
+
+ should ignore wordwrap when overtype mode is enabled.  they
+ interact very badly together.
+
+ joe a b c
+ windows are not in order a, b, c
+
+ joe should open tty earlier in startup sequence because ^Y
+ is suspend character on sun.
+
+ Don't understand:  optionally break hardlinks on save?  what is "tla"?
+
+ Ctrl-left arrow, etc. give codes in modern Lini- should somehow make
+ use of these.
+
+ I've seen spell check lock up joe.
+
+ Reopen files which have become newer.  Example given is
+   joe a.c b.c
+   ^K ^Z
+   cvs update
+   P a.c
+   P b.c
+   fg
+   oops joe is editing old files...
+
+
+
+
+
+
+
+
+
+
 FEATURES
 =-=-=-=-
 	-=- syntax higlighting
