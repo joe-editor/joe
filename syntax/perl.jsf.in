@@ -35,34 +35,40 @@
 =Bad bold red
 =Var yellow
 
+# Detect pod
+
 :idle Idle
-	*		rest
-	" 	"	idle
+	*		idle1		noeat
+	"="		pod_start
+
+# allow keywords
+
+:idle1 Idle
+	*		idle1
 	"#"		line_comment_i	recolor=-1
 	"\n"		idle
 	"0"		first_digit	recolor=-1
 	"1-9"		decimal	recolor=-1
 	"."		maybe_float
 	"\""		string		recolor=-1
-#	"\\"		not_string
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
 	"/"		regex		recolor=-1
 	"<"		maybe_inc
 	"$"		not_string
 	"a-zA-Z_"	ident		buffer
-	"="		pod_start
+
+# prevent keywords
 
 :rest Idle
 	*		rest
-	"({;~"		idle				# should be rest, need to check
+	"({;~"		idle1
 	"#"		line_comment	recolor=-1
 	"\n"		idle
 	"0"		first_digit	recolor=-1
 	"1-9"		decimal	recolor=-1
 	"."		maybe_float
 	"\""		string		recolor=-1
-#	"\\"		not_string
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
 	"$"		not_string
@@ -340,6 +346,11 @@ done
 	"close"		kw
 	"package"	kw
 	"m"		match
+	"qr"		match
+	"qq"		match
+	"qx"		match
+	"qw"		match
+	"q"		match
 	"s"		subst
 	"tr"		subst
 	"y"		subst

@@ -1,5 +1,9 @@
 Short list for 3.2:
 
+get updated 'conf' syntax file
+
+- - - - - - - -
+
 - document some things which are in joerc file: like yank, and switch buffers.
 
 - update help screens: some things have changed (emacs is more like emacs).
