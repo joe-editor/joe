@@ -1,3 +1,8 @@
+Tue May 21 2002  Vitezslav Samel <samel@mail.cz>
+	* poshist.c, scrn.c, uformat.c:
+	include some headers which are needed to compile without warnings about
+	implicit function declarations
+
 Sun May  5 2002  Vitezslav Samel <samel@mail.cz>
 	* NEWS:
 	change wrong version for the last entry

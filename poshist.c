@@ -8,6 +8,10 @@
 #include "config.h"
 #include "types.h"
 
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
 #include "b.h"
 #include "queue.h"
 #include "w.h"
