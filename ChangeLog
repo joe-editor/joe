@@ -1,3 +1,7 @@
+Fri Dec 14 2001  Vitezslav Samel <samel@mail.cz>
+	* Makefile.am:
+	add types.h into distribution package
+
 Wed Dec 12 2001  Vitezslav Samel <samel@mail.cz>
 	* acinclude.m4, configure.ac:
 	use our own joe_SETPGRP macro (autoconf's is broken for *BSD)
