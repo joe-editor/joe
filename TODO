@@ -232,8 +232,11 @@ Documentation:
 Prompts:
 
  Make tab completion more like bash?
- Tab character cycle through names like in vim
- ^D in vim shows whole directory
+
+   - mode so that directories are listed, but you don't
+     go into menu mode.
+
+   - ^D brings up list (for tcsh users).
 
  Sort should be column wide, not row wise.
 
@@ -268,12 +271,6 @@ Mouse:
  ` and autoindent mode are a problem for drag and drop.
  any way we can distinguish normal typing from a drop?
  modify xterm...
-
-
-Keyboard:
-
- Ctrl-left arrow, etc. give codes in modern Lini- should somehow make
- use of these.
 
 
 Major new modes:

@@ -1,4 +1,15 @@
 Thu May  6 2004  Joe Allen <jhallen@world.std.com>
+	* umenu.c :
+
+	TAB key now cycles through menu entries.  This is useful
+	for tab completion: just keep hitting tab until you see the
+	file you want, then hit enter.
+
+	TAB completion is more "bash"-like: if you complete a directory
+	name a menu does not appear, the directory just gets added to the
+	prompt.
+
+Thu May  6 2004  Joe Allen <jhallen@world.std.com>
 	* ublock.c :
 
 	Added "select" function for Ctrl-arrow selecting.

@@ -152,6 +152,15 @@ int umrtarw(MENU *m)
 		return -1;
 }
 
+int umtab(MENU *m)
+{
+	if (m->cursor + 1 >= m->nitems)
+		m->cursor = 0;
+	else
+		++ m->cursor;
+	return 0;
+}
+
 int umltarw(MENU *m)
 {
 	if (m->cursor) {

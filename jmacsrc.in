@@ -805,6 +805,7 @@ rtn		^I
 rtn		^X H
 rtn		^X h
 rtn		^X ^H
+tabmenu		^I
 uparwmenu	.ku
 uparwmenu	^P
 uparwmenu	^[ [ A

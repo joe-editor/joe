@@ -899,6 +899,7 @@ rtn		^K H
 rtn		^K h
 rtn		^K ^H
 tabmenu		^I
+uparwmenu	.ku
 uparwmenu	^P
 uparwmenu	^[ [ A
 uparwmenu	^[ O A

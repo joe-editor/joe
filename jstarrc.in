@@ -852,6 +852,7 @@ rtn		^K H
 rtn		^K h
 rtn		^K ^H
 rtn		^J
+tabmenu		^I
 uparwmenu	.ku
 uparwmenu	^E
 uparwmenu	^[ [ A

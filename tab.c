@@ -98,7 +98,7 @@ static int get_entries(TAB *tab, int prv)
 	return which;
 }
 
-static void insnam(BW *bw, unsigned char *path, unsigned char *nam)
+static void insnam(BW *bw, unsigned char *path, unsigned char *nam, int dir)
 {
 	P *p = pdup(bw->cursor);
 
@@ -115,6 +115,10 @@ static void insnam(BW *bw, unsigned char *path, unsigned char *nam)
 	}
 	binsm(bw->cursor, sv(nam));
 	p_goto_eol(bw->cursor);
+	if (dir) {
+		binsm(bw->cursor, sc("/"));
+		p_goto_eol(bw->cursor);
+	}
 	prm(p);
 	bw->cursor->xcol = piscol(bw->cursor);
 }
@@ -162,7 +166,7 @@ static int treload(MENU *m, int flg)
 			tab->list[x] = vsadd(tab->list[x], '*');
 	}
 	ldmenu(m, tab->list, which);
-	insnam(bw, tab->path, tab->pattern);
+	insnam(bw, tab->path, tab->pattern, 0);
 	return 0;
 }
 
@@ -183,6 +187,9 @@ static void rmtab(TAB *tab)
 /*****************************************************************************/
 static int tabrtn(MENU *m, int cursor, TAB *tab)
 {
+#if 0
+	/* Old way: if tab completes a directory, bring up menu of
+	   that directory. */
 	if (tab->type[cursor] == F_DIR) {	/* Switch directories */
 		unsigned char *orgpath = tab->path;
 		unsigned char *orgpattern = tab->pattern;
@@ -210,9 +217,21 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 			return 0;
 		}
 	} else {		/* Select name */
+#endif
+	/* New way: just add directory to path */
+	if (tab->type[cursor] == F_DIR) {
 		BW *bw = m->parent->win->object;
 
-		insnam(bw, tab->path, tab->files[cursor]);
+		insnam(bw, tab->path, tab->files[cursor], 1);
+		rmtab(tab);
+		m->object = NULL;
+		m->abrt = NULL;
+		wabort(m->parent);
+		return 0;
+	} else {
+		BW *bw = m->parent->win->object;
+
+		insnam(bw, tab->path, tab->files[cursor], 0);
 		rmtab(tab);
 		m->object = NULL;
 		m->abrt = NULL;
@@ -254,7 +273,7 @@ static int tabbacks(MENU *m, int cursor, TAB *tab)
 /*****************************************************************************/
 static int tababrt(BW *bw, int cursor, TAB *tab)
 {
-	insnam(bw, tab->orgpath, tab->orgnam);
+	insnam(bw, tab->orgpath, tab->orgnam, 0);
 	rmtab(tab);
 	return -1;
 }
