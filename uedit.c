@@ -622,7 +622,9 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 				} else if(is_in_group(last_of_set,buf)) {
 					/* VHDL hack */
 					if (bw->o.vhdl_comment && !strcmp(buf,"end"))
-						p_goto_next(p);
+						while((c=pgetc(p))!=NO_MORE_DATA)
+							if (c==';' || c=='\n')
+								break;
 					--cnt;
 				}
 			}
