@@ -183,6 +183,7 @@ struct buffer {
 	int ignored_lock;	/* Set if we didn't create a lock and we don't care (locked set in this case) */
 	int didfirst;		/* Set after user attempted first change */
 	long    mod_time;	/* Last modification time for file */
+	long	check_time;	/* Last time we checked the file on disk */
 	int	orphan;
 	int	count;
 	int	changed;

@@ -499,14 +499,9 @@ static int dosave1(BW *bw, unsigned char *s, struct savereq *req, int *notify)
 		}
 		else {
 			/* We're saving a newer version of the same file */
-			struct stat sbuf;
-			if (!stat((char *)s,&sbuf)) {
-				if (sbuf.st_mtime>bw->b->mod_time) {
-					//char *msg = "File on disk is newer. Overwrite (y,n,^C)? ";
-					//req->message = msg;
-					req->message = "File on disk is newer. Overwrite (y,n,^C)? ";
-					return dosave2(bw, 0, req, notify);
-				}
+			if (check_mod(bw->b)) {
+				req->message = "File on disk is newer. Overwrite (y,n,^C)? ";
+				return dosave2(bw, 0, req, notify);
 			}
 		}
 	}

@@ -212,6 +212,8 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->name = NULL;
 	b->er = -3;
 	b->bof = palloc();
+	b->mod_time = 0;
+	b->check_time = time(NULL);
 	izque(P, link, b->bof);
 	b->bof->end = 0;
 	b->bof->b = b;
@@ -2715,4 +2717,19 @@ int plain_file(B *b)
 		return 1;
 	else
 		return 0;
+}
+
+/* True if file changed under us */
+
+int check_mod(B *b)
+{
+	struct stat sbuf;
+	if (!plain_file(b))
+		return 0;
+	if (!stat((char *)b->name,&sbuf)) {
+		if (sbuf.st_mtime>b->mod_time) {
+			return 1;
+		}
+	}
+	return 0;
 }

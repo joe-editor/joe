@@ -1,4 +1,10 @@
+
 Short list for 3.2:
+
+if (-s foo)  looks like s/
+
+read only doesn't work when there's a process running in the window.
+(it probably shouldn't run).
 
 - - - - - - - -
 
@@ -24,10 +30,8 @@ jmacs:
 
 - - - - - - - -
 
-- Watch loaded file for changes under us
-    - Print message when it happens
-
     - Reload modified files (or current window)
+      (can be a macro: ^KE name rtn)
 
 - - - - - - - -
 

@@ -96,7 +96,7 @@ extern int notite, usetabs, assume_color, guesscrlf, guessindent, menu_explorer,
 extern int menu_jump, break_links;
 extern int xmouse;
 extern unsigned char *backpath;
-extern int nolocks;
+extern int nolocks, nomodcheck;
 
 /* Set to use ~/.joe_state file */
 int joe_state;
@@ -296,6 +296,7 @@ struct glopts {
 	{US "joe_state",0, &joe_state, NULL, US "~/.joe_state file will be updated", US "~/.joe_state file will not be updated", US "  Joe_state file " },
 	{US "nobackups",	0, &nobackups, NULL, US "Backup files will not be made", US "Backup files will be made", US "  Disable backups " },
 	{US "nolocks",	0, &nolocks, NULL, US "Files will not be locked", US "Files will be locked", US "  Disable locks " },
+	{US "nomodcheck",	0, &nomodcheck, NULL, US "No mtime check", US "Mtime checking enabled", US "  Disable mtime check " },
 	{US "break_links",	0, &break_links, NULL, US "Hardlinks will be broken", US "Hardlinks not broken", US "  Break hard links " },
 	{US "lightoff",	0, &lightoff, NULL, US "Highlighting turned off after block operations", US "Highlighting not turned off after block operations", US "Auto unmark " },
 	{US "exask",	0, &exask, NULL, US "Prompt for filename in save & exit command", US "Don't prompt for filename in save & exit command", US "  Exit ask " },

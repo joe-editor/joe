@@ -280,6 +280,14 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 	}
 }
 
+int file_changed(BW *bw,int c,B *b,int *notify)
+{
+	if (mkqw(bw->parent, sc("Notice: File on disk changed! (hit ^C to continue)  "), file_changed, NULL, b, notify)) {
+		return 0;
+	} else
+		return -1;
+}
+
 /* Try to lock: start dialog if we can't.  Returns 0 if we couldn't lock */
 
 int try_lock(BW *bw,B *b)
@@ -315,8 +323,19 @@ int try_lock(BW *bw,B *b)
 /* Called when we are about to modify a buffer */
 /* Returns 0 if we're not allowed to modify buffer */
 
+extern long last_time;
+#define CHECK_INTERVAL 15
+int nomodcheck;
+
 int modify_logic(BW *bw,B *b)
 {
+	if (last_time > b->check_time + CHECK_INTERVAL) {
+		b->check_time = last_time;
+		if (!nomodcheck && check_mod(b)) {
+			file_changed(bw,0,b,NULL);
+			return 0;
+		}
+	}
 	if (!b->didfirst) {
 		/* This happens when we try to block move from a window
 		   which is not on the screen */

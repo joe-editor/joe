@@ -15,6 +15,10 @@ JOE 3.2
   deleted when buffer goes from modified to unmodified (or you close the
   file).
 
+- JOE now periodically checks the file on the disk and gives a warning if
+  it changed when you try to modify the buffer.  (JOE already performed this
+  test on file save).
+
 - The built-in calculator (ESC m) is now a full featured scientific
   calculator (I'm shooting for Casio Fx-4000 level here :-), including
   hexadecimal and ability to sum (and perform statistics on) a highlighted
