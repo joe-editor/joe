@@ -1,0 +1,117 @@
+# JOE syntax highlight file for Perl
+
+# Define colors
+
+=Idle
+=Preproc bold blue
+=Comment bold cyan
+=Constant bold magenta
+=Escape bold red
+=Type bold green
+=Keyword bold yellow
+
+:idle Idle
+	*		idle
+	"#"		line_comment	recolor=-1
+	"\n"		idle
+	"0-9"		first_digit	recolor=-1
+	"."		maybe_float
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"a-zA-Z_"	ident		buffer
+
+:line_comment Comment
+	*		line_comment
+	"\n"		idle
+
+:first_digit Constant
+	*		idle	noeat	recolor=-1
+	"xX"		hex
+	"."		float
+	"0-9_"		first_number
+
+:hex Constant
+	*		idle	noeat	recolor=-1
+	"0-9A-Fa-f_"	hex
+
+:first_number Constant
+	*		idle	noeat	recolor=-1
+	"0-9_"		first_number
+	"."		float
+
+:maybe_float Constant
+	*		idle	recolor=-2	noeat
+	"0-9"		float		recolor=-2
+
+:float Constant
+	*		idle	noeat	recolor=-1
+	"eE"		epart
+	"0-9"		float
+
+:epart	Constant
+	*		idle	noeat	recolor=-1
+	"0-9+\-"	enum
+
+:enum	Constant
+	*		idle	noeat	recolor=-1
+	"0-9"		enum
+
+:string	Constant
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+	"%"		string_control	recolor=-1
+
+:string_escape Escape
+	*		string
+	"\n"		string		recolor=-2
+
+:string_control Escape
+	*		string_control
+	"\n"		idle
+	"diouxXeEfFgGaAcspn%SC"	string
+
+:char	Constant
+	*		char
+	"\n"		idle
+	"'"		idle
+	"\\"		char_escape	recolor=-1
+
+:char_escape	Escape
+	*		char
+	"\n"		char		recolor=-2
+
+:ident	Idle
+	*		idle		noeat strings
+	"if"		kw
+	"unless"	kw
+	"while"		kw
+	"until"		kw
+	"foreach"	kw
+	"sub"		kw
+	"my"		kw
+	"do"		kw
+	"if"		kw
+	"else"		kw
+	"elseif"	kw
+	"for"		kw
+	"continue"	kw
+	"last"		kw
+	"print"		kw
+	"reset"		kw
+	"die"		kw
+	"goto"		kw
+	"require"	kw
+	"use"		kw
+	"eval"		kw
+	"redo"		kw
+	"next"		kw
+	"warn"		kw
+done
+	"a-zA-Z0-9_"	ident
+
+:type Type
+	*	idle	noeat
+
+:kw Keyword
+	*	idle	noeat

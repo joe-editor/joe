@@ -53,6 +53,19 @@
 # color specification.
 
 
+# Define colors
+# You can say: bold, inverse, blink, dim, underline, white, cyan, magenta, blue,
+# yellow, green, red, black, bg_white, bg_cyan, bg_magenta, bg_blue, bg_yellow,
+# bg_green, bg_red, and bg_black.
+
+=Idle
+=Preproc bold blue
+=Comment bold cyan
+=Constant bold magenta
+=Escape bold red
+=Type bold green
+=Keyword bold yellow
+
 # Skip whitespace at start of line
 :reset Idle
 	*		first		noeat

@@ -1,3 +1,18 @@
+Tue Apr  6 2004  Joe Allen <jhallen@world.std.com>
+	* Makefile.am, bw.c, configure.ac, joerc.in, rc.c, scrn.c,
+	scrn.h, syntax.c, syntax.h, c.jsf.in, perl.jsf.in, verilog.jsf.in:
+
+	Clean up meaning of default color.
+
+	Allow syntax to be specified in joerc file: "-syntax perl"
+
+	Add class definitions to syntax files.
+
+	Add perl and verilog definitions (they need work).
+
+	Change joerc to assume files with . in their name do not want word
+	wrap enabled (except for .txt).
+
 Thu Apr  1 2004  Joe Allen <jhallen@world.std.com>
 	* scrn.c:
 	Fix color handling for terminals which do not use my defaults :-)

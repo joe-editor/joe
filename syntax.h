@@ -13,6 +13,15 @@ struct high_syntax {
 	char *name;			/* Name of this syntax */
 	struct high_state **states;	/* The states of this syntax.  states[0] is idle state */
 	int nstates;			/* No. states */
+	struct high_color *color;	/* Linked list of color definitions */
+};
+
+/* Color definition */
+
+struct high_color {
+	struct high_color *next;
+	char *name;			/* Symbolic name of color */
+	int color;			/* Color value */
 };
 
 /* State */

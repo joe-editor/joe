@@ -94,26 +94,34 @@ extern unsigned atab[];
 #define AT_MASK		(INVERSE+UNDERLINE+BOLD+BLINK+DIM)
 
 #define BG_SHIFT 13
-#define BG_MASK (7<<BG_SHIFT)
-#define BG_BLACK (0<<BG_SHIFT) /* default */
-#define BG_RED (1<<BG_SHIFT)
-#define BG_GREEN (2<<BG_SHIFT)
-#define BG_YELLOW (3<<BG_SHIFT)
-#define BG_BLUE (4<<BG_SHIFT)
-#define BG_MAGENTA (5<<BG_SHIFT)
-#define BG_CYAN (6<<BG_SHIFT)
-#define BG_WHITE (7<<BG_SHIFT)
+#define BG_VALUE (7<<BG_SHIFT)
+#define BG_NOT_DEFAULT (8<<BG_SHIFT)
+#define BG_MASK (15<<BG_SHIFT)
 
-#define FG_SHIFT 16
-#define FG_MASK (7<<FG_SHIFT)
-#define FG_WHITE (0<<FG_SHIFT) /* default */
-#define FG_CYAN (1<<FG_SHIFT)
-#define FG_MAGENTA (2<<FG_SHIFT)
-#define FG_BLUE (3<<FG_SHIFT)
-#define FG_YELLOW (4<<FG_SHIFT)
-#define FG_GREEN (5<<FG_SHIFT)
-#define FG_RED (6<<FG_SHIFT)
-#define FG_BLACK (7<<FG_SHIFT)
+#define BG_DEFAULT (0<<BG_SHIFT) /* default */
+#define BG_BLACK (8<<BG_SHIFT)
+#define BG_RED (9<<BG_SHIFT)
+#define BG_GREEN (10<<BG_SHIFT)
+#define BG_YELLOW (11<<BG_SHIFT)
+#define BG_BLUE (12<<BG_SHIFT)
+#define BG_MAGENTA (13<<BG_SHIFT)
+#define BG_CYAN (14<<BG_SHIFT)
+#define BG_WHITE (15<<BG_SHIFT)
+
+#define FG_SHIFT 17
+#define FG_VALUE (7<<FG_SHIFT)
+#define FG_NOT_DEFAULT (8<<FG_SHIFT)
+#define FG_MASK (15<<FG_SHIFT)
+
+#define FG_DEFAULT (0<<FG_SHIFT)
+#define FG_WHITE (8<<FG_SHIFT) /* default */
+#define FG_CYAN (9<<FG_SHIFT)
+#define FG_MAGENTA (10<<FG_SHIFT)
+#define FG_BLUE (11<<FG_SHIFT)
+#define FG_YELLOW (12<<FG_SHIFT)
+#define FG_GREEN (13<<FG_SHIFT)
+#define FG_RED (14<<FG_SHIFT)
+#define FG_BLACK (15<<FG_SHIFT)
 
 #define outatr(t, scrn, xx, yy, c, a) do {		\
 	if(*(scrn) != ((c) | (a))) {			\
@@ -171,5 +179,7 @@ void nscroll PARAMS((SCRN *t));
 void magic PARAMS((SCRN *t, int y, int *cs, int *s, int placex));
 
 int clrins PARAMS((SCRN *t));
+
+int meta_color PARAMS((char *s));
 
 #endif

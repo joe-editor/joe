@@ -126,7 +126,7 @@ int get_highlight_state(BW *w,int line)
 	/* Screen y position of requested line */
 	int y = line-w->top->line+w->y;
 
-	if(!w->o.highlight)
+	if(!w->o.highlight || !w->syntax)
 		return -1;
 
 	/* If we know the state, just return it */
@@ -814,7 +814,10 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->top->xcol = 0;
 	w->cursor->xcol = 0;
 	w->top_changed = 1;
-	w->syntax = load_dfa("c");
+	if (w->o.syntax)
+		w->syntax = load_dfa(w->o.syntax);
+	else
+		w->syntax = 0;
 	return w;
 }
 

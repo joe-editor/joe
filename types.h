@@ -111,6 +111,7 @@ struct options {
 	int	spaces;
 	int	crlf;
 	int	highlight;	/* Set to enable highlighting */
+	char	*syntax;	/* Syntax name for highlighting */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */

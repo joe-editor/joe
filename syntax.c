@@ -126,6 +126,7 @@ struct high_syntax *load_dfa(char *name)
 	syntax->next = syntax_list;
 	syntax_list = syntax;
 	syntax->nstates = 0;
+	syntax->color = 0;
 	syntax->states = malloc(sizeof(struct high_state *)*(szstates=64));
 
 	/* Parse file */
@@ -158,26 +159,44 @@ struct high_syntax *load_dfa(char *name)
 
 				parse_ws(&p);
 				if(!parse_ident(&p,bf,255)) {
-					if(!strcmp(bf,"Keyword"))
-						state->color=FG_YELLOW;
-					else if(!strcmp(bf,"Type"))
-						state->color=FG_GREEN;
-					else if(!strcmp(bf,"Constant"))
-						state->color=FG_MAGENTA;
-					else if(!strcmp(bf,"Escape"))
-						state->color=FG_RED;
-					else if(!strcmp(bf,"Idle"))
-						state->color=FG_WHITE;
-					else if(!strcmp(bf,"Comment"))
-						state->color=FG_CYAN;
-					else if(!strcmp(bf,"Preproc"))
-						state->color=FG_BLUE;
-					else
-						state->color=FG_WHITE;
+					struct high_color *color;
+					for(color=syntax->color;color;color=color->next)
+						if(!strcmp(color->name,bf))
+							break;
+					if(color)
+						state->color=color->color;
+					else {
+						state->color=0;
+						fprintf(stderr,"%s %d: Unknown class\n",name,line);
+					}
 				} else
 					fprintf(stderr,"%s %d: Missing color for state definition\n",name,line);
 			} else
 				fprintf(stderr,"%s %d: Missing state name\n",name,line);
+		} else if(!parse_char(&p, '=')) {
+			if(!parse_ident(&p, bf, 255)) {
+				struct high_color *color;
+
+				/* Find color */
+				for(color=syntax->color;color;color=color->next)
+					if(!strcmp(color->name,bf))
+						break;
+				/* If it doesn't exist, create it */
+				if(!color) {
+					color = malloc(sizeof(struct high_color));
+					color->name = strdup(bf);
+					color->color = 0;
+					color->next = syntax->color;
+					syntax->color = color;
+				} else {
+					fprintf(stderr,"%s %d: Class already defined\n",name,line);
+				}
+
+				/* Parse color definition */
+				while(parse_ws(&p), !parse_ident(&p,bf,255)) {
+					color->color |= meta_color(bf);
+				}
+			}
 		} else {
 			c = parse_ws(&p);
 

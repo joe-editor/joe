@@ -142,8 +142,11 @@ int attr(SCRN *t, int c)
 	int e;
 
 	c &= ~255;
-	e = (AT_MASK&t->attrib & ~c) || ((FG_MASK&t->attrib) && !(FG_MASK&c)) || ((BG_MASK&t->attrib) && !(BG_MASK&c));
-	if (e) {		/* If any attribute go off, switch them all off: fixes bug on PCs */
+
+	// Attributes which have gone off
+	e = ((AT_MASK|FG_NOT_DEFAULT|BG_NOT_DEFAULT)&t->attrib & ~c);
+
+	if (e) {	/* If any attribute go off, switch them all off: fixes bug on PCs */
 		if (t->me)
 			texec(t->cap, t->me, 1, 0, 0, 0, 0);
 		else {
@@ -154,13 +157,17 @@ int attr(SCRN *t, int c)
 		}
 		t->attrib = 0;
 	}
+
+	// Attributes which have turned on
 	e = (c & ~t->attrib);
+
 	if (e & INVERSE) {
 		if (t->mr)
 			texec(t->cap, t->mr, 1, 0, 0, 0, 0);
 		else if (t->so)
 			texec(t->cap, t->so, 1, 0, 0, 0, 0);
 	}
+
 	if (e & UNDERLINE)
 		if (t->us)
 			texec(t->cap, t->us, 1, 0, 0, 0, 0);
@@ -173,11 +180,15 @@ int attr(SCRN *t, int c)
 	if (e & DIM)
 		if (t->mh)
 			texec(t->cap, t->mh, 1, 0, 0, 0, 0);
+
 	if ((t->attrib&FG_MASK)!=(c&FG_MASK))
-		if (t->Sf) texec(t->cap,t->Sf,1,7-(((c&FG_MASK)>>FG_SHIFT)),0,0,0);
+		if (t->Sf) texec(t->cap,t->Sf,1,7-(((c&FG_VALUE)>>FG_SHIFT)),0,0,0);
+
 	if ((t->attrib&BG_MASK)!=(c&BG_MASK))
-		if (t->Sb) texec(t->cap,t->Sb,1,((c&BG_MASK)>>BG_SHIFT),0,0,0);
+		if (t->Sb) texec(t->cap,t->Sb,1,((c&BG_VALUE)>>BG_SHIFT),0,0,0);
+
 	t->attrib = c;
+
 	return 0;
 }
 
@@ -1042,9 +1053,10 @@ int cpos(register SCRN *t, register int x, register int y)
 			return 0;
 		}
 	}
-	if ((!t->ms && t->attrib & (INVERSE | UNDERLINE | BG_MASK)) ||
-	    (t->ut && t->attrib&BG_MASK))
+	if ((!t->ms && t->attrib & (INVERSE | UNDERLINE | BG_NOT_DEFAULT)) ||
+	    (t->ut && t->attrib & BG_NOT_DEFAULT))
 		attr(t, t->attrib & ~(INVERSE | UNDERLINE | BG_MASK));
+
 	if (y < t->top || y >= t->bot)
 		setregn(t, 0, t->li);
 	cposs(t, x, y);
@@ -1512,4 +1524,54 @@ void nredraw(SCRN *t)
 			msetI(t->scrn, ' ', t->li * t->co);
 		}
 	}
+}
+
+/* Convert color/attribute name into internal code */
+
+int meta_color(char *s)
+{
+	if(!strcmp(s,"inverse"))
+		return INVERSE;
+	else if(!strcmp(s,"underline"))
+		return UNDERLINE;
+	else if(!strcmp(s,"bold"))
+		return BOLD;
+	else if(!strcmp(s,"blink"))
+		return BLINK;
+	else if(!strcmp(s,"dim"))
+		return DIM;
+	else if(!strcmp(s,"white"))
+		return FG_WHITE;
+	else if(!strcmp(s,"cyan"))
+		return FG_CYAN;
+	else if(!strcmp(s,"magenta"))
+		return FG_MAGENTA;
+	else if(!strcmp(s,"blue"))
+		return FG_BLUE;
+	else if(!strcmp(s,"yellow"))
+		return FG_YELLOW;
+	else if(!strcmp(s,"green"))
+		return FG_GREEN;
+	else if(!strcmp(s,"red"))
+		return FG_RED;
+	else if(!strcmp(s,"black"))
+		return FG_BLACK;
+	else if(!strcmp(s,"bg_white"))
+		return BG_WHITE;
+	else if(!strcmp(s,"bg_cyan"))
+		return BG_CYAN;
+	else if(!strcmp(s,"bg_magenta"))
+		return BG_MAGENTA;
+	else if(!strcmp(s,"bg_blue"))
+		return BG_BLUE;
+	else if(!strcmp(s,"bg_yellow"))
+		return BG_YELLOW;
+	else if(!strcmp(s,"bg_green"))
+		return BG_GREEN;
+	else if(!strcmp(s,"bg_reg"))
+		return BG_RED;
+	else if(!strcmp(s,"bg_black"))
+		return BG_BLACK;
+	else
+		return 0;
 }

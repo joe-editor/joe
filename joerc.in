@@ -4,7 +4,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.joerc
-	2 - @sysconfdir@/joerc
+	2 - ${prefix}/etc/joerc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -155,11 +155,27 @@
 -wordwrap
 
  File name with '.'?  It's probably not a text file.
+
+ Diff
+*.txt
+-wordwrap
+ SQL file
 -autoindent
 -syntax c
+-smarthome
 *.cpp
 -autoindent
 -syntax c
+-smarthome
+*.hpp
+-autoindent
+-syntax verilog
+-istep 2
+-smarthome
+ XML
+*.pl
+-syntax java
+-syntax perl
  Hypertext preprocessor file
 -autoindent
 -autoindent

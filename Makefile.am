@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = COPYING INFO LIST NEWS README README.cvs TODO docs/help-system.html \
 	joerc.in jmacsrc.in jstarrc.in rjoerc.in jpicorc.in \
-	joe.1.in dir.c c.jsf.in \
+	joe.1.in dir.c c.jsf.in perl.jsf.in verilog.jsf.in \
 	docs
 
 sysconf_DATA = joerc jmacsrc jstarrc rjoerc jpicorc c.jsf

@@ -83,6 +83,7 @@ OPTIONS pdefault = {
 	0,		/* crlf */
 #endif
 	0,		/* Highlight */
+	NULL,		/* Syntax */
 	NULL,		/* macro to execute for new files */
 	NULL,		/* macro to execute for existing files */
 	NULL,		/* macro to execute before saving new files */
@@ -112,6 +113,7 @@ OPTIONS fdefault = {
 	0,		/* crlf */
 #endif
 	0,		/* Highlight */
+	NULL,		/* Syntax */
 	NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
@@ -358,6 +360,15 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				options->msold = mparse(NULL, arg, &sta);
 			else if (set == 2)
 				fdefault.msold = mparse(NULL, arg, &sta);
+			ret = 2;
+		} else
+			ret = 1;
+	} else if (!strcmp(s, "syntax")) {
+		if (arg) {
+			if (options)
+				options->syntax = strdup(arg);
+			else if (set == 2)
+				fdefault.syntax = strdup(arg);
 			ret = 2;
 		} else
 			ret = 1;
