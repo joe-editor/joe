@@ -3,10 +3,6 @@ UTF-8/Internationalization
 
 - think about status line, prompts, regex, rc files, highlighting, ug
 
-- check for incorrect pgetc() binsc() pairs.
-
-- check paragraph reformat
-
 - 32-bit chars in search/replace \[...] sequences?
 
 - deal with error utf8 sequences: prget and pgetc do not match.
@@ -19,9 +15,7 @@ UTF-8/Internationalization
 
 - interaction with -asis (-utf8 should override it).
 
-
-
-- translate for non-utf8 locale to utf8 (in and out)
+- translate: allow user to specify charset.  think about isalpha.
 
 - right-left mode for Hebrew/Arabic?
 
@@ -84,11 +78,11 @@ Recognize more file types (joerc work).
 
 Update other *rc files.
 
-Subdirectory for syntax file (understand autoconf/automake).
-
 UTF-8 syntax files.
 
 UI for changing colors in the editor (or at least dark/light mode)
+
+UI for seting syntax during run time
 
 
 Support for more languages:
@@ -250,3 +244,9 @@ Compiling
  Make it work better:
    remove dead windows
    detect errors better
+
+Options
+
+ Fix it so all options appear in ^T.  Maybe make hook function
+ to handle major changes.  Need this for major mode change for
+ hex edit mode.

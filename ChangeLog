@@ -1,3 +1,12 @@
+Fri Apr 16 2004  Joe Allen <jhallen@world.std.com>
+	* b.c, bw.c, rc.c, rc.h, tw.c, types.h, utf8.c:
+
+	Fixed bug where '-syntax' on command line had
+	no effect.
+
+	Now if terminal is UTF-8, the default file type
+	is assumed to be UTF-8.
+
 Thu Apr 15 2004  Joe Allen <jhallen@world.std.com>
 	* utf8.c:
 

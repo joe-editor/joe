@@ -115,7 +115,7 @@ struct options {
 	int	spaces;
 	int	crlf;
 	int	highlight;	/* Set to enable highlighting */
-	unsigned char	*syntax;	/* Syntax name for highlighting */
+	struct high_syntax *syntax;	/* Syntax for highlighting */
 	int	utf8;		/* Set for UTF-8 mode */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
@@ -309,7 +309,6 @@ struct bw {
 	int	out;		/* fd to write to process */
 	int	linums;
 	int	top_changed;	/* Top changed */
-	struct high_syntax *syntax;	/* Syntax table */
 };
 
 struct menu {

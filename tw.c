@@ -24,6 +24,7 @@
 #include "ushell.h"
 #include "utils.h"
 #include "vs.h"
+#include "syntax.h"
 #include "w.h"
 
 extern unsigned char *exmsg;
@@ -76,7 +77,7 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 			case 'y':
 				{
 					if (bw->o.syntax) {
-						snprintf((char *)buf, sizeof(buf), "(%s)", bw->o.syntax);
+						snprintf((char *)buf, sizeof(buf), "(%s)", bw->o.syntax->name);
 						stalin = vsncpy(sv(stalin), sz(buf));
 					}
 				}

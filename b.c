@@ -538,13 +538,14 @@ int pgetc(P *p)
 {
 	if (p->b->o.utf8) {
 		int val;
-		int c;
+		int c, oc;
 		int d;
-		int n;
+		int n, m;
 		int wid;
 
 		val = p->valcol;	/* Remember if column number was valid */
 		c = pgetb(p);		/* Get first byte */
+		oc = c;
 
 		if (c==NO_MORE_DATA)
 			return c;
@@ -564,9 +565,14 @@ int pgetc(P *p)
 		} else if ((c&0xFE)==0xFC) { /* Six bytes */
 			n = 5;
 			c &= 0x01;
-		} else { /* 0-191, 254, 255: ASCII or control character */
+		} else if ((c&0x80)==0x00) { /* One byte */
 			n = 0;
+		} else { /* 128-191, 254, 255: Not a valid UTF-8 start character */
+			n = 0;
+			/* c -= 384; */
 		}
+
+		m = n;
 
 		if (n) {
 			while (n) {
@@ -578,9 +584,12 @@ int pgetc(P *p)
 				--n;
 			}
 			if (n) { /* FIXME: there was a bad UTF-8 sequence */
+				/* How to represent this? */
+				/* pbkwd(p,m-n);
+				c = oc - 384; */
 				c = 'X';
-			}
-			if (val)
+				wid = 1;
+			} else if (val)
 				wid = mk_wcwidth(c);
 		} else {
 			wid = 1;
@@ -719,7 +728,7 @@ int prgetc(P *p)
 			} else if ((c&0xFE)==0xFC) { /* Six chars */
 				d |= ((c&0x01)<<n);
 				break;
-			} else { /* Invalid (0xFE or 0xFF found) */
+			} else { /* FIXME: Invalid (0xFE or 0xFF found) */
 				break;
 			}
 		}
@@ -2133,7 +2142,8 @@ opnerr:
 		b->rdonly = b->o.readonly = 1;
 
 	p=pdup(b->bof);
-	/* FIXME: this is broken if -crlf flag was already set */
+	/* FIXME: this should be an option */
+	b->o.crlf = 0;
 	for(x=0;x!=1024;++x) {
 		int c = pgetc(p);
 		if(c == '\r') {

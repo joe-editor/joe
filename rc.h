@@ -12,6 +12,7 @@
 #include "types.h"
 
 extern OPTIONS pdefault;
+extern OPTIONS fdefault;
 void setopt PARAMS((B *b, unsigned char *name));
 
 /* KMAP *kmap_getcontext(char *name);

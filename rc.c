@@ -27,6 +27,7 @@
 #include "utils.h"
 #include "vs.h"
 #include "b.h"
+#include "syntax.h"
 #include "w.h"
 
 #define OPT_BUF_SIZE 300
@@ -57,9 +58,14 @@ KMAP *kmap_getcontext(unsigned char *name)
 }
 
 OPTIONS *options = NULL;
-extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, orphan, marking, beep, keepup, nonotice;
+
+/* Global variable options */
+extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode, nobackups, lightoff, exask, skiptop;
+extern int noxon, lines, staen, columns, Baud, dopadding, orphan, marking, beep, keepup, nonotice;
 extern int notite, usetabs, assume_color;
 extern unsigned char *backpath;
+
+/* Default options for prompt windows */
 
 OPTIONS pdefault = {
 	NULL,		/* *next */
@@ -93,6 +99,9 @@ OPTIONS pdefault = {
 	NULL,		/* macro to execute before saving new files */
 	NULL,		/* macro to execute before saving existing files */
 };
+
+/* Default options for file windows */
+
 OPTIONS fdefault = {
 	NULL,		/* *next */
 	NULL,		/* *name_regex */
@@ -124,6 +133,7 @@ OPTIONS fdefault = {
 };
 
 /* Set local options depending on file name and contents */
+
 void setopt(B *b, unsigned char *parsed_name)
 {
 	OPTIONS *o;
@@ -155,6 +165,11 @@ void setopt(B *b, unsigned char *parsed_name)
 	b->o = fdefault;
 }
 
+/* Table of options and how to set them */
+
+/* local means it's in an OPTION structure, global means it's in a global
+ * variable */
+
 struct glopts {
 	unsigned char *name;		/* Option name */
 	int type;		/*      0 for global option flag
@@ -163,7 +178,7 @@ struct glopts {
 				   4 for local option flag
 				   5 for local option numeric
 				   6 for local option string
-				   7 for local option numeric+1
+				   7 for local option numeric+1, with range checking
 				 */
 	int *set;		/* Address of global option */
 	unsigned char *addr;		/* Local options structure member address */
@@ -218,6 +233,8 @@ struct glopts {
 	{ NULL,		0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0 }
 };
 
+/* Initialize .ofsts above.  Is this really necessary? */
+
 int isiz = 0;
 
 static void izopts(void)
@@ -236,36 +253,58 @@ static void izopts(void)
 	isiz = 1;
 }
 
-/* Set a global or local option 
+/* Set a global or local option:
+ * 's' is option name
+ * 'arg' is a possible argument string (taken only if option has an arg)
+ * 'options' points to options structure to modify (can be NULL).
+ * 'set'==0: set only in 'options' if it's given.
+ * 'set'!=0: set global variable option.
+ * return value: no. of fields taken (1 or 2), or 0 if option not found.
+ *
+ * So this function is used both to set options, and to parse over options
+ * without setting them.
+ *
+ * These combinations are used:
+ *
+ * glopt(name,arg,NULL,1): set global variable option
+ * glopt(name,arg,NULL,0): parse over option
+ * glopt(name,arg,options,0): set file local option
+ * glopt(name,arg,&fdefault,1): set default file options
+ * glopt(name,arg,options,1): set file local option
  */
+
 int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 {
 	int val;
 	int ret = 0;
-	int st = 1;
+	int st = 1;	/* 1 to set option, 0 to clear it */
 	int x;
 
+	/* Initialize offsets */
 	if (!isiz)
 		izopts();
+
+	/* Clear instead of set? */
 	if (s[0] == '-') {
 		st = 0;
 		++s;
 	}
+
 	for (x = 0; glopts[x].name; ++x)
 		if (!strcmp(glopts[x].name, s)) {
 			switch (glopts[x].type) {
-			case 0:
+			case 0: /* Global variable flag option */
 				if (set)
 					*glopts[x].set = st;
 				break;
-			case 1:
+			case 1: /* Global variable integer option */
 				if (set && arg) {
 					sscanf((char *)arg, "%d", &val);
 					if (val >= glopts[x].low && val <= glopts[x].high)
 						*glopts[x].set = val;
 				}
 				break;
-			case 2:
+			case 2: /* Global variable string option */
 				if (set) {
 					if (arg)
 						*(unsigned char **) glopts[x].set = (unsigned char *)strdup((char *)arg);
@@ -273,28 +312,21 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 						*(unsigned char **) glopts[x].set = 0;
 				}
 				break;
-			case 4:
+			case 4: /* Local option flag */
 				if (options)
 					*(int *) ((unsigned char *) options + glopts[x].ofst) = st;
-				else if (set == 2)
-					*(int *) ((unsigned char *) &fdefault + glopts[x].ofst) = st;
 				break;
-			case 5:
+			case 5: /* Local option integer */
 				if (arg) {
 					if (options) {
 						sscanf((char *)arg, "%d", &val);
 						if (val >= glopts[x].low && val <= glopts[x].high)
 							*(int *) ((unsigned char *)
 								  options + glopts[x].ofst) = val;
-					} else if (set == 2) {
-						sscanf((char *)arg, "%d", &val);
-						if (val >= glopts[x].low && val <= glopts[x].high)
-							*(int *) ((unsigned char *)
-								  &fdefault + glopts[x].ofst) = val;
-					}
+					} 
 				}
 				break;
-			case 7:
+			case 7: /* Local option numeric + 1, with range checking */
 				if (arg) {
 					int zz = 0;
 
@@ -304,9 +336,6 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 						if (options)
 							*(int *) ((unsigned char *)
 								  options + glopts[x].ofst) = zz;
-						else if (set == 2)
-							*(int *) ((unsigned char *)
-								  &fdefault + glopts[x].ofst) = zz;
 					}
 				}
 				break;
@@ -316,12 +345,13 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			else
 				return 2;
 		}
+	/* Why no case 6, string option? */
+	/* Keymap, mold, mnew, etc. are not strings */
+	/* These options do not show up in ^T */
 	if (!strcmp(s, "lmsg")) {
 		if (arg) {
 			if (options)
 				options->lmsg = (unsigned char *)strdup((char *)arg);
-			else if (set == 2)
-				fdefault.lmsg = (unsigned char *)strdup((char *)arg);
 			ret = 2;
 		} else
 			ret = 1;
@@ -329,8 +359,6 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 		if (arg) {
 			if (options)
 				options->rmsg = (unsigned char *)strdup((char *)arg);
-			else if (set == 2)
-				fdefault.rmsg = (unsigned char *)strdup((char *)arg);
 			ret = 2;
 		} else
 			ret = 1;
@@ -352,8 +380,6 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			if (options)
 				options->mnew = mparse(NULL, arg, &sta);
-			else if (set == 2)
-				fdefault.mnew = mparse(NULL, arg, &sta);
 			ret = 2;
 		} else
 			ret = 1;
@@ -363,8 +389,6 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			if (options)
 				options->mold = mparse(NULL, arg, &sta);
-			else if (set == 2)
-				fdefault.mold = mparse(NULL, arg, &sta);
 			ret = 2;
 		} else
 			ret = 1;
@@ -374,8 +398,6 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			if (options)
 				options->msnew = mparse(NULL, arg, &sta);
-			else if (set == 2)
-				fdefault.msnew = mparse(NULL, arg, &sta);
 			ret = 2;
 		} else
 			ret = 1;
@@ -385,17 +407,13 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			if (options)
 				options->msold = mparse(NULL, arg, &sta);
-			else if (set == 2)
-				fdefault.msold = mparse(NULL, arg, &sta);
 			ret = 2;
 		} else
 			ret = 1;
 	} else if (!strcmp(s, "syntax")) {
 		if (arg) {
 			if (options)
-				options->syntax = (unsigned char *)strdup((char *)arg);
-			else if (set == 2)
-				fdefault.syntax = (unsigned char *)strdup((char *)arg);
+				options->syntax = load_dfa(arg);
 			ret = 2;
 		} else
 			ret = 1;
@@ -404,7 +422,9 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 	return ret;
 }
 
-static int optx = 0;
+/* Option setting user interface (^T command) */
+
+static int optx = 0; /* Menu cursor position: remember it for next time */
 
 static int doabrt1(BW *bw, int *xx)
 {
@@ -597,7 +617,6 @@ int umode(BW *bw)
 		return -1;
 }
 
-
 /* Process rc file
  * Returns 0 if the rc file was succefully processed
  *        -1 if the rc file couldn't be opened
@@ -606,7 +625,7 @@ int umode(BW *bw)
 
 int procrc(CAP *cap, unsigned char *name)
 {
-	OPTIONS *o = NULL;	/* Current options */
+	OPTIONS *o = &fdefault;	/* Current options */
 	KMAP *context = NULL;	/* Current context */
 	unsigned char buf[1024];	/* Input buffer */
 	FILE *fd;		/* rc file */
@@ -654,7 +673,7 @@ int procrc(CAP *cap, unsigned char *name)
 
 				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != '\r'; ++x) ;
 				buf[x] = 0;
-				if(o)
+				if (o)
 					o->contents_regex = (unsigned char *)strdup((char *)(buf+1));
 			}
 			break;
@@ -746,7 +765,7 @@ int procrc(CAP *cap, unsigned char *name)
 								break;
 							}
 							context = 0;
-							o = 0;
+							o = &fdefault;
 						} else {
 							err = 1;
 							fprintf(stderr, "\n%s %d: :include missing file name", name, line);

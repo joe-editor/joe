@@ -20,6 +20,7 @@
 #	include <iconv.h>
 #endif
 
+#include "rc.h"
 #include "utf8.h"
 
 /* UTF-8 Encoder
@@ -201,8 +202,10 @@ void joe_locale()
 	setlocale(LC_ALL,"");
 	codeset = (unsigned char *)strdup(nl_langinfo(CODESET));
 
-	if(!strcmp((char *)codeset,"UTF-8"))
+	if(!strcmp((char *)codeset,"UTF-8")) {
 		utf8 = 1;
+		fdefault.utf8 = 1;	/* Default file type */
+	}
 
 	to_utf = iconv_open("UTF-8", non_utf8_codeset);
 	from_utf = iconv_open(non_utf8_codeset, "UTF-8");

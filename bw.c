@@ -127,7 +127,7 @@ int get_highlight_state(BW *w,int line)
 	/* Screen y position of requested line */
 	int y = line-w->top->line+w->y;
 
-	if(!w->o.highlight || !w->syntax)
+	if(!w->o.highlight || !w->o.syntax)
 		return -1;
 
 	/* If we know the state, just return it */
@@ -143,12 +143,12 @@ int get_highlight_state(BW *w,int line)
 		/* We must be on the top line */
 		state = 0;
 		tmp = pdup(w->top);
-		if(w->syntax->sync_lines >= 0 && tmp->line > w->syntax->sync_lines)
-			pline(tmp, tmp->line-w->syntax->sync_lines);
+		if(w->o.syntax->sync_lines >= 0 && tmp->line > w->o.syntax->sync_lines)
+			pline(tmp, tmp->line-w->o.syntax->sync_lines);
 		else
 			p_goto_bof(tmp);
 		while(tmp->line!=y-w->y+w->top->line)
-			state = parse(w->syntax,tmp,state);
+			state = parse(w->o.syntax,tmp,state);
 		w->parent->t->t->syntab[y] = state;
 		w->parent->t->t->updtab[y] = 1;
 		prm(tmp);
@@ -159,7 +159,7 @@ int get_highlight_state(BW *w,int line)
 	pline(tmp, y-w->y+w->top->line);
 	state = w->parent->t->t->syntab[y];
 	while(tmp->line!=w->top->line+w->h-1 && !piseof(tmp)) {
-		state = parse(w->syntax,tmp,state);
+		state = parse(w->o.syntax,tmp,state);
 		w->parent->t->t->syntab[++y] = state;
 		w->parent->t->t->updtab[y] = 1; /* This could be smarter: update only if we changed what was there before */
 		}
@@ -274,7 +274,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	if(st!=-1) {
 		tmp=pdup(p);
 		p_goto_bol(tmp);
-		parse(bw->syntax,tmp,st);
+		parse(bw->o.syntax,tmp,st);
 		syn = attr_buf;
 		prm(tmp);
 	}
@@ -896,10 +896,6 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->top->xcol = 0;
 	w->cursor->xcol = 0;
 	w->top_changed = 1;
-	if (w->o.syntax)
-		w->syntax = load_dfa(w->o.syntax);
-	else
-		w->syntax = 0;
 	return w;
 }
 
