@@ -1,3 +1,13 @@
+Mon May 24 2004  Joe Allen <jhallen@world.std.com>
+
+	Smart indent and backspace now work even if cursor
+	is not right at indentation point.  Also autoindent
+	does not happen if cursor is on a space or tab character.
+
+	Jmacs: ^W (cut) now works if mark is after point.  (Added -autoswap
+	mode).  Also: preserve mark and point positions during block
+	operations.
+
 Wed May 19 2004  Joe Allen <jhallen@world.std.com>
 
 	Allow options after strings in syntax files.

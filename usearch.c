@@ -359,7 +359,7 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 
 static SRCH *setmark(SRCH *srch)
 {
-	if (markv(1))
+	if (markv(0))
 		srch->valid = 1;
 
 	srch->markb = markb;

@@ -737,7 +737,20 @@ int ubacks(BW *bw, int k)
 
 			/* Indent to new position */
 			pfill(bw->cursor,col-indwid,bw->o.indentc);
+		} else if (col<indent && !pisbol(bw->cursor)) {
+			/* We're before indent point: delete indwid worth of space but do not
+			   cross line boundary.  We could probably replace the above with this. */
+			int cw=0;
+			P *p = pdup(bw->cursor);
+			do {
+				c = prgetc(bw->cursor);
+				if(c=='\t') cw += bw->o.tab;
+				else cw += 1;
+				bdel(bw->cursor, p);
+			} while(!pisbol(bw->cursor) && cw<indwid);
+			prm(p);
 		} else {
+			/* Regular backspace */
 			P *p = pdup(bw->cursor);
 			if ((c = prgetc(bw->cursor)) != NO_MORE_DATA)
 				if (!bw->o.overtype || c == '\t' || pisbol(p) || piseol(p))
@@ -905,10 +918,10 @@ int utypebw(BW *bw, int k)
 			else
 				pfill(bw->cursor,col,'\t');
 		bw->cursor->xcol = col;			/* Put cursor there even if we can't really go there */
-	} else if (k == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)==piscol(bw->cursor)) {
+	} else if (k == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)>=piscol(bw->cursor)) {
 		P *p = pdup(bw->cursor);
 		int n = find_indent(p);
-		if (n != -1 && n > pisindent(bw->cursor)) {
+		if (n != -1 && pisindent(bw->cursor)==piscol(bw->cursor) && n > pisindent(bw->cursor)) {
 			if (!pisbol(bw->cursor))
 				udelbl(bw);
 			while (joe_isspace(map,(k = pgetc(p))) && k != '\n') {
@@ -1281,7 +1294,8 @@ int rtntw(BW *bw)
 		unsigned char c;
 
 		binsc(bw->cursor, '\n'), pgetc(bw->cursor);
-		if (bw->o.autoindent) {
+		/* Suppress autoindent if we're on a space or tab... */
+		if (bw->o.autoindent && (brch(bw->cursor)!=' ' && brch(bw->cursor)!='\t')) {
 			p_goto_bol(p);
 			while (joe_isspace(bw->b->o.charmap,(c = pgetc(p))) && c != '\n') {
 				binsc(bw->cursor, c);

@@ -86,6 +86,8 @@
 
  -wrap          Search wraps
 
+ -autoswap	Swap markb with markk when necessary
+
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used
  in these strings:

@@ -65,6 +65,8 @@
 
 -wrap		Search wraps
 
+-autoswap	Swap markb with markk when necessary
+
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used
@@ -537,7 +539,7 @@
 \i   Help Screen    \|turn off with ^XH   prev. screen ^X,  next screen ^X.        \i
 \i \i\|\uCASE\u           \|\uTRANSPOSE\u  \|\uINSERT\u    \|\uMACROS\u            \|\uPROGRAMS\u               \|\i \i
 \i \i\|^[U  Up word   \|^T   Chars \|^O  line  \|^X( record        \|^X^I Indent region     \|\i \i
-\i \i\|^[D  Down word \|^[T  Words \|^C  space \|^X) stop          \|^[.  Tags file find    \|\i \i
+\i \i\|^[L  Down word \|^[T  Words \|^C  space \|^X) stop          \|^[.  Tags file find    \|\i \i
 \i \i\|^[C  Cap. word \|^X^T Lines \|`   Ctrl- \|^XE play          \|^XG  To matching ( [ { \|\i \i
 \i \i\|^X^U Up region \|           \|^XT text  \|^XQ query suspend \|^XC  Parse errors      \|\i \i
 \i \i\|^X^L Down region\|          \|          \|^U  repeat prefix \|^XN / ^XP next/prev err\|\i \i

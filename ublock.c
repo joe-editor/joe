@@ -94,12 +94,21 @@ int upop(BW *bw)
 }
 
 /* Return true if markb/markk are valid */
+/* If r is set, swap markb with markk if necessary */
+
+int autoswap;
 
 int markv(int r)
 {
-	if (markb && markk && markb->b == markk->b && markk->byte > markb->byte && (!square || markk->xcol > markb->xcol))
+	if (markb && markk && markb->b == markk->b && markk->byte > markb->byte && (!square || markk->xcol > markb->xcol)) {
 		return 1;
-	else
+	} else if(autoswap && r && markb && markk && markb->b == markk->b && markb->byte > markk->byte && (!square || markk->xcol < markb->xcol)) {
+		P *p = pdup(markb);
+		prm(markb); markb=0; pdupown(markk, &markb);
+		prm(markk); markk=0; pdupown(p, &markk);
+		prm(p);
+		return 1;
+	} else
 		return 0;
 }
 
@@ -913,12 +922,14 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	int fr[2];
 	int fw[2];
+	int flg = 0;
 
 	if (notify)
 		*notify = 1;
-	if (markb && markk && !square && markb->b == bw->b && markk->b == bw->b && markb->byte == markk->byte)
+	if (markb && markk && !square && markb->b == bw->b && markk->b == bw->b && markb->byte == markk->byte) {
+		flg = 1;
 		goto ok;
-	if (!markv(1)) {
+	} if (!markv(1)) {
 		msgnw(bw->parent, US "No block");
 		return -1;
 	}
@@ -959,8 +970,6 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 	close(fr[1]);
 	close(fw[0]);
 	if (fork()) {
-		long szz;
-
 		close(fw[1]);
 		if (square) {
 			B *tmp;
@@ -993,10 +1002,17 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 			brm(tmp);
 			updall();
 		} else {
-			bdel(markb, markk);
-			szz = markk->b->eof->byte;
-			binsb(markk, bread(fr[0], MAXLONG));
-			pfwrd(markk, markk->b->eof->byte - szz);
+			P *p = pdup(markk);
+			if (!flg)
+				prgetc(p);
+			bdel(markb, p);
+			binsb(p, bread(fr[0], MAXLONG));
+			if (!flg) {
+				pset(p,markk);
+				prgetc(p);
+				bdel(p,markk);
+			}
+			prm(p);
 			if (lightoff)
 				unmark(bw);
 		}
@@ -1078,26 +1094,25 @@ int ufilt(BW *bw)
 
 int ulower(BW *bw)
 {
-	if (markv(0)) {
+	if (markv(1)) {
+		P *q;
 	        P *p;
 	        int c;
-	        int flg;
 		B *b = bcpy(markb,markk);
-		if (bw->cursor->b==markk->b && bw->cursor->byte==markk->byte)
-			flg = 1;
-		else
-			flg = 0;
-		bdel(markb,markk);
+		/* Leave one character in buffer to keep pointers set properly... */
+		q = pdup(markk);
+		prgetc(q);
+		bdel(markb,q);
 		b->o.charmap = markb->b->o.charmap;
 		p=pdup(b->bof);
 		while ((c=pgetc(p))!=NO_MORE_DATA) {
 			c = joe_tolower(b->o.charmap,c);
-			binsc(markk,c);
-			pgetc(markk);
-			if (flg)
-				pgetc(bw->cursor);
+			binsc(q,c);
+			pgetc(q);
 		}
 		prm(p);
+		bdel(q,markk);
+		prm(q);
 		brm(b);
 		bw->cursor->xcol = piscol(bw->cursor);
 		return 0;
@@ -1109,26 +1124,24 @@ int ulower(BW *bw)
 
 int uupper(BW *bw)
 {
-	if (markv(0)) {
+	if (markv(1)) {
+		P *q;
 	        P *p;
 	        int c;
-	        int flg;
 		B *b = bcpy(markb,markk);
-		if (bw->cursor->b==markk->b && bw->cursor->byte==markk->byte)
-			flg = 1;
-		else
-			flg = 0;
-		bdel(markb,markk);
+		q = pdup(markk);
+		prgetc(q);
+		bdel(markb,q);
 		b->o.charmap = markb->b->o.charmap;
 		p=pdup(b->bof);
 		while ((c=pgetc(p))!=NO_MORE_DATA) {
 			c = joe_toupper(b->o.charmap,c);
-			binsc(markk,c);
-			pgetc(markk);
-			if (flg)
-				pgetc(bw->cursor);
+			binsc(q,c);
+			pgetc(q);
 		}
 		prm(p);
+		bdel(q,markk);
+		prm(q);
 		brm(b);
 		bw->cursor->xcol = piscol(bw->cursor);
 		return 0;

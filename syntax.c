@@ -17,8 +17,10 @@
 #include "syntax.h"
 
 /* Parse one line.  Returns new state.
+   'syntax' is the loaded syntax definition for this buffer.
    'line' is advanced to start of next line.
-   Array 'attr' has coloring for each character of line.
+   Global array 'attr_buf' end up with coloring for each character of line.
+   'state' is initial parser state for the line (0 is initial state).
 */
 
 int *attr_buf = 0;
@@ -33,19 +35,19 @@ int parse(struct high_syntax *syntax,P *line,int state)
 	int c;		/* Current character */
 	int *attr_end = attr_buf+attr_size;
 	int *attr = attr_buf;
-	int buf_en = 0;	/* Set for buffering */
+	int buf_en = 0;	/* Set for name buffering */
 	int ofst = 0;	/* record offset after we've stopped buffering */
 
 	/* Get next character */
 	while((c=pgetc(line))!=NO_MORE_DATA) {
-		struct high_cmd *cmd;
-		struct high_cmd *kw_cmd;
+		struct high_cmd *cmd, *kw_cmd;
 		int x;
 
 		/* Hack so we can have UTF-8 characters without crashing */
 		if (c < 0 || c > 255)
 			c = 0x1F;
 
+		/* Expand attribute array if necessary */
 		if(attr==attr_end) {
 			attr_buf = realloc(attr_buf,sizeof(int)*(attr_size*2));
 			attr = attr_buf + attr_size;
@@ -53,8 +55,10 @@ int parse(struct high_syntax *syntax,P *line,int state)
 			attr_end = attr_buf + attr_size;
 		}
 
+		/* Advance to next attribute position (note attr[-1] below) */
 		attr++;
 
+		/* Loop while noeat */
 		do {
 			/* Color with current state */
 			attr[-1] = h->color;
@@ -86,7 +90,7 @@ int parse(struct high_syntax *syntax,P *line,int state)
 				buf_en = 0;
 		} while(cmd->noeat);
 
-		/* Save in buffer */
+		/* Save character in buffer */
 		if (buf_idx<19 && buf_en)
 			buf[buf_idx++]=c;
 		if (!buf_en)
