@@ -1,13 +1,15 @@
 Short list for 3.2:
 
-make path expansion in help screen is correct
-
 - - - - - - - -
 
   define characters which make up words
     There are some A-Zs in tomatch (should use i18n).
 
 - - - - - - - -
+
+- merge math with macro language
+
+- eliminate need for : separator
 
   improve macros: ignore error option, pass args to here option.
 
@@ -79,8 +81,6 @@ Others:
 - keep special meaning of !, >> and , in file names?
 
 - rectangular blocks: make this a local file option?
-
-- merge math with macro language
 
 - security hole with spell checker
 

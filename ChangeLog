@@ -1,3 +1,8 @@
+Tue Mar 15 14:18:53 EST 2005
+
+	Fix processing of joe.1.in -> joe.1 so
+	that paths are properly set up.
+
 Mon Mar 14 11:34:56 EST 2005
 
 	Fix some math and first change bugs.

@@ -14,9 +14,12 @@ sysconf_joedir = $(sysconfdir)/joe
 sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
 
 %rc : %rc.in
-	sed 's,@JOERC\@,$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $< > $@
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $< > $@
 
-MOSTLYCLEANFILES = joerc jmacsrc jstarrc rjoerc jpicorc
+%.1 : %.1.in
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,; s,@BINDIR\@,$(DESTDIR)$(bindir),' < $< > $@
+
+MOSTLYCLEANFILES = joerc jmacsrc jstarrc rjoerc jpicorc joe.1
 
 sysconf_syntaxdir = $(sysconf_joedir)/syntax
 sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
@@ -42,7 +45,7 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 
 
 bin_PROGRAMS = joe termidx
-INCLUDES = -DJOERC="\"$(sysconf_joedir)/\""
+INCLUDES = -DJOERC="\"$(DESTDIR)$(sysconf_joedir)/\""
 
 joe_LDADD = -lm
 
