@@ -101,7 +101,7 @@
 
 -lmsg \i%k%T%W%I%X %n %m%y%R %M %x
 -lmsg \i%k%T%W%I%X %n %m%R %M
--rmsg  %S Row %r Col %c %t    F1 for help
+
  SECOND SECTION: File name dependant local option settings:
 
  Each line with '*' in the first column indicates the modes which should be

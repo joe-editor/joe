@@ -1,4 +1,8 @@
 Sat Dec 01 2001  Vitezslav Samel <samel@mail.cz>
+	* joerc.in:
+	use "Ctrl-K H for help" in -rmsg (F1 doesn't work in all cases)
+
+Sat Dec 01 2001  Vitezslav Samel <samel@mail.cz>
 	* blocks.c, help.c, macro.c, main.c, path.c, rc.c, regex.c, scrn.c,
 	termcap.c, tw.c, ublock.c, uedit.c, usearch.c, vs.c, w.c:
 	change indentation of cases in the switch() statement
