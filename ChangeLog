@@ -1,3 +1,8 @@
+Tue Jun  1 2004  Joe Allen <jhallen@world.std.com>
+
+	Minor fix to c.jsf.in
+	Recognize a bunch of other mail/news files.
+
 Sat May 29 2004  Joe Allen <jhallen@world.std.com>
 
 	Use 'aspell' if it exists.

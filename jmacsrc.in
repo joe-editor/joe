@@ -212,6 +212,44 @@
 *.txt
 -wordwrap
 
+ News/mail files.
+*.article
+-wordwrap
+-syntax mail
+
+*.followup
+-wordwrap
+-syntax mail
+
+*.letter
+-wordwrap
+-syntax mail
+
+ NN newsreader
+*tmp/nn.*
+-wordwrap
+-syntax mail
+
+ mail
+*tmp/Re*
+-wordwrap
+-syntax mail
+
+ elm
+*tmp/snd.*
+-wordwrap
+-syntax mail
+
+ dmail
+*tmp/dmt*
+-wordwrap
+-syntax mail
+
+ pine
+*tmp/pico.*
+-wordwrap
+-syntax mail
+
  Assembly language
 *.asm
 -wordwrap

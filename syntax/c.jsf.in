@@ -278,6 +278,7 @@ done
 :string_control Escape
 	*		string_control
 	"\n"		reset
+	"\""		idle
 	"diouxXeEfFgGaAcspn%SC"	string
 
 :char Constant
