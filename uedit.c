@@ -1030,7 +1030,7 @@ static int doctrl(BW * bw, int c, void *object, int *notify)
 	if (bw->parent->huh == srchstr && c == '\n')
 		utypebw(bw, '\\'), utypebw(bw, 'n');
 	else
-		utype(bw, c);
+		utypebw(bw, c);
 	bw->o.overtype = org;
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;

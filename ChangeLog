@@ -1,4 +1,8 @@
 Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
+	* uedit.c: correct typo: utype(bw, c) --> utypebw(bw,c)
+	I'm not 100% sure about this, but "works for me here"(tm)
+
+Sun Nov 11 2001  Vitezslav Samel <samel@mail.cz>
 	* termcap.c, termcap.h: correct prototype to the output routine
 	the CAP structure (and setcap()/getcap() etc.)
 
