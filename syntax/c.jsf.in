@@ -76,6 +76,7 @@
 # -200     means 200 lines
 # -        means always start parsing from beginning of file when we lose sync
 #          if nothing is specified, the default is -50
+-
 
 # Define colors
 #
@@ -188,7 +189,7 @@ done
 	",:;=()><[]*&|!~+\-%^"	control		recolor=-1
 
 :brace Brace
-	*	idle	noeat
+	*	idle	noeat		recolor=-1
 
 :control Control
 	*	idle	noeat
