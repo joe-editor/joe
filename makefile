@@ -1,7 +1,7 @@
 # Makefile for Joe's Own Editor
 
 CC = cc
-CFLAGS = -O
+CFLAGS = -O -D_HPUX_SOURCE -DJOERC=\"/usr/local/lib/joerc\"
 OBJS = main.o termcap.o vfile.o pathfunc.o queue.o blocks.o vs.o va.o scrn.o \
        b.o bw.o tw.o pw.o help.o heap.o toomany.o queue.o zstr.o edfuncs.o \
        kbd.o w.o reg.o tab.o pattern.o random.o regex.o undo.o menu.o macro.o \

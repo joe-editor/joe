@@ -75,7 +75,7 @@ static void set_options(w,s)
    break;
    }
  vsrm(s);
- if(w->t->options&SRREPLACE) wmkpw(w,"Replace with: ",&findhist,set_replace,"Search");
+ if(w->t->options&SRREPLACE) wmkpw(w,"Replace with (^C to abort): ",&findhist,set_replace,"Search");
  else pfnext(w);
  }
 
@@ -85,13 +85,13 @@ static void set_pattern(w,s)
  {
  if(w->t->pattern) vsrm(w->t->pattern);
  w->t->pattern=s;
- wmkpw(w,"(I)gnore case (R)eplace (B)ackwards NNN: ",NULL,set_options,"Search");
+ wmkpw(w,"(I)gnore case (R)eplace (B)ackwards NNN (^C to abort): ",NULL,set_options,"Search");
  }
 
 void pffirst(w)
  W *w;
  {
- wmkpw(w,"Find: ",&findhist,set_pattern,"Search"); 
+ wmkpw(w,"Find (^C to abort): ",&findhist,set_pattern,"Search"); 
  }
 
 char *entire=0;
@@ -120,7 +120,7 @@ if(w->t->options&SRIGNORE)
    bw->cursor->xcol=bw->cursor->col;
    return 1;
    }
-  if(pgetc(start)== -1) break;
+  if(pgetc(start)== MAXINT) break;
   }
 else
  while(pfindfn(start,w->t->pattern,x))
@@ -138,7 +138,7 @@ else
    bw->cursor->xcol=bw->cursor->col;
    return 1;
    }
-  if(pgetc(start)== -1) break;
+  if(pgetc(start)== MAXINT) break;
   }
 prm(start); prm(end);
 return 0;
@@ -290,7 +290,7 @@ void pfnext(w)
      pbkwd(w->t->markb,w->t->foundlen);
      }
     updall();
-    c=queryn(w,"Replace (Y)es (N)o (R)est (^C) to abort?");
+    c=queryn(w,"Replace (Y)es (N)o (R)est (^C to abort)?");
     prm(w->t->markb); prm(w->t->markk);
     w->t->markb=mb; w->t->markk=mk;
     if(c=='N' || c=='n') { goto next; }

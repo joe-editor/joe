@@ -181,12 +181,12 @@ enquef(P,link,&frptrs,p);
 /* Doubly linked list of buffers */
 
 static B bufs={{&bufs,&bufs}};
+int tabwidth=8;
 
-B *bmk(ctab)
-char **ctab;
+B *bmk()
 {
 B *new=(B *)malloc(sizeof(B));
-new->ctab=ctab;
+new->tab=tabwidth;
 new->backup=1;
 new->chnged=0;
 new->count=1;
@@ -407,8 +407,8 @@ if(c=='\n') ++p->line, p->col=0, p->lbyte=0;
 else
  {
  ++p->lbyte;
- if(c=='\t') p->col+=TABSIZ-p->col%TABSIZ;
- else p->col+=((dspattr||dspasis&&c>=160&&c<=254)?1:zlen(p->b->ctab[c]));
+ if(c=='\t') p->col+=p->b->tab-p->col%p->b->tab;
+ else ++p->col;
  }
 return c;
 }
@@ -468,8 +468,7 @@ else if(c=='\t') pfcol(p);
 else
  {
  --p->lbyte;
- if(dspattr||dspasis&&c>=160&&c<=254) --p->col;
- else p->col-=zlen(p->b->ctab[c]);
+ --p->col;
  }
 return c;
 }
@@ -556,8 +555,8 @@ while(p->hdr!=p->b->bof->hdr->link.prev)
   ++p->byte;
   ++p->ofst;
   ++p->lbyte;
-  if(c=='\t') p->col+=TABSIZ-p->col%TABSIZ;
-  else p->col+=((dspattr||dspasis&&c>=160&&c<=254)?1:zlen(p->b->ctab[c]));
+  if(c=='\t') p->col+=p->b->tab-p->col%p->b->tab;
+  else ++p->col;
   if(p->ofst==GSIZE(p->hdr)) pnext(p); 
   }
  }
@@ -629,8 +628,8 @@ do
  if(p->ofst>=p->hdr->hole) c=p->ptr[p->ofst+p->hdr->ehole-p->hdr->hole];
  else c=p->ptr[p->ofst];
  if(c=='\n') break;
- if(c=='\t') wid=TABSIZ-p->col%TABSIZ;
- else wid=((dspattr||dspasis&&c>=160&&c<=254)?1:zlen(p->b->ctab[c]));
+ if(c=='\t') wid=p->b->tab-p->col%p->b->tab;
+ else wid=1;
  if(p->col+wid>goalcol) break;
  if(++p->ofst==GSIZE(p->hdr)) pnext(p); 
  ++p->byte; ++p->lbyte; p->col+=wid;
@@ -1256,7 +1255,7 @@ while((amnt=bkread(fi,seg=vlock(b->text,vseg=salloc(b)),*max>=SEGSIZ?SEGSIZ:(int
  }
 sfree(b,vseg);
 vunlock(seg);
-if(!total) return 0;
+if(amnt<0) return 0;
 *linesp=lines;
 *totala=total;
 l=anchor.link.next;
@@ -1274,8 +1273,11 @@ int flg;
 H *a;
 if(a=rdchn(p->b,fd,&nlines,&amnt,&max))
  {
- inschn(p,a);
- fixup1(p,amnt,nlines,NULL,0);
+ if(amnt)
+  {
+  inschn(p,a);
+  fixup1(p,amnt,nlines,NULL,0);
+  }
  return 0;
  }
 return -2;
@@ -1403,7 +1405,7 @@ P *p;
 for(b=bufs.link.next;b!=&bufs;b=b->link.next)
  {
  p=b->bof; do
-  pfcol(p);
+  pfcol(p), p->xcol=p->col;
   while(p=p->link.next, p!=b->bof);
  }
 }

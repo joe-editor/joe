@@ -75,7 +75,7 @@ sigjoe();
 ttopnn();
 }
 
-void ttopen()
+void ttopnn()
 {
 int x;
 struct termio newterm;

@@ -43,6 +43,9 @@ struct options
  long rmargin;
  int autoindent;
  int wordwrap;
+ int tab;
+ int indentc;
+ long istep;
  };
 
 void setoptions();
@@ -135,6 +138,7 @@ int prokbd();
  * Return command table index for the named command
  */
 int findcmd();
-struct help *get_help(char *name);
+
+struct help *get_help();
 
 #endif

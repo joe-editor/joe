@@ -3,6 +3,11 @@ This is Joe's Own Editor.  See the INFO file if you don't know what this is.
 Installation proceedure
 =-=-=-=-=-=-=-=-=-=-=-=
 
+	Decide on the name of the global keymap file if you don't want it
+	to be '/usr/local/lib/joerc' and modify the 'JOERC=' in the
+	'makefile'.  If you're a mere user, copy the joerc file into
+	$HOME/.joerc
+
 	Type 'make' followed by one of the following system names:
 
 		xenix		for xenix 386 systems
@@ -19,21 +24,34 @@ Installation proceedure
 	Then type 'make install' to install joe in
 	/usr/local/bin and /usr/local/lib
 
-	Finally type 'make clean' eliminate the .o files
+	Type 'make clean' eliminate the .o files
 
+	Copy termcap to .termcap in your home directory if you want to
+	use it instead of /etc/termcap (see below).
 
-USEAGE
-=-=-=-
+	Set the baud rate properly (see below).
 
-Syntax:	joe filenames
+** SCO UNIX users **
 
-Optionally preceed each filename with +nnn to start at specified line
-number.
+Use the 'make sv', but first edit 'ttysv.c' and add these lines:
+	#include <sys/types.h>
+	#include <sys/stream.h>
+	#include <sys/ptem.h>
+	#undef SIGCONT
 
-The baud rate must be correctly set or either typeahead will not interrupt
-and there will be annoying delays in the screen update.  If you can't set
-the baud rate correctly with 'stty', give a numeric value in the environment
-variable 'BAUD'.
+You may also wish to use the terminfo database.  See below.
+
+USEAGE:	joe filenames
+
+	Optionally preceed each filename with +nnn to start at specified 
+line number.  
+
+** IMPORTANT **
+
+The baud rate must be correctly set or either typeahead will not interrupt 
+the screen update and scrolling wont be used or there will be annoying 
+delays in the screen update.  If you can't set the baud rate correctly with 
+'stty', give a numeric value in the environment variable 'BAUD'.  
 
 The baud rate '38400' or 'extb' means infinite to joe.  Use it for X windows
 and hardware console ttys.  No delays will be generated and scrolling will
@@ -41,6 +59,15 @@ not be used.
 
 Use the LINES and COLUMNS environment variables if you need the terminal
 size to be different than whatever the termcap entry or stty says.
+
+Since most people use terminal emulators, JOE does not send out pad 
+characters.  If you're using a real terminal and the padding matters, set 
+the environment variable DOPADDING.
+
+A termcap file is included with JOE.  You might consider updating your own 
+termcap file with the entries in it, particularly if you use ANSI/VT100ish 
+terminals.  JOE understands some capabilities which are not usually supplied 
+in normal termcap (see below).
 
                                  VARIATIONS
                                  =-=-=-=-=-
@@ -89,7 +116,9 @@ understands several new capabilities:
 			ansi/vt100.
 
 	But if you really must use the terminfo database, change the
-'termcap.o' file in the OBJS list in the makefile to 'terminfo.o'. 
+'termcap.o' file in the OBJS list in the makefile to 'terminfo.o'.  You'll 
+also have to add '-ltinfo', '-lterminfo' or '-lcurses' to the appropriate link
+line (lines beginning with $(CC)) in the make file.
 
 VOID trouble
 =-=-=-=-=-=-

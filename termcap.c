@@ -278,6 +278,8 @@ varm(npbuf);
 vsrm(name);
 
 cap->pad=getstr(cap,"pc");
+if(getenv("DOPADDING")) cap->dopadding=1;
+else cap->dopadding=0;
 return setcap(cap,baud,out,outptr);
 }
 
@@ -441,11 +443,12 @@ while(c= *s++)
  else --s, cap->out(cap->outptr,escape(&s));
 
 /* Output padding characters */
-if(cap->pad)
- while(tenth>=cap->div)
-  for(s=cap->pad;*s;++s) cap->out(cap->outptr,*s), tenth-=cap->div;
-else
- while(tenth>=cap->div) cap->out(cap->outptr,0), tenth-=cap->div;
+if(cap->dopadding)
+ if(cap->pad)
+  while(tenth>=cap->div)
+   for(s=cap->pad;*s;++s) cap->out(cap->outptr,*s), tenth-=cap->div;
+ else
+  while(tenth>=cap->div) cap->out(cap->outptr,0), tenth-=cap->div;
 }
 
 static int total;

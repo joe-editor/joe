@@ -1,113 +1,148 @@
-The rewrite of JOE is finally done.  JOE Version 1.0.0 is here!
+                           Joe's Own Editor 1.0.5
 
-You can get it from:
 
-	tsx-11.mit.edu in pud/linux someplace
-	world.std.com  in the incomming directory
-	VWIS Linux BBS (508)793-9568  in packages/joe.tar.Z
+Get it by anonymous ftp
+from: 'world.std.com', file '/src/editors/joe1.0.5.tar.Z'
 
-Send email to 'jhallen@word.std.com' or to 'rcarter' in the VWIS Linux BBS
+If you have questions, problems or suggestions,
+send email to: 'jhallen@world.std.com'
 
-I apologize to all those people who I promised that joe would be done
-real-soon-now.  I knew that it only take me a few weeks to finish it, but I
-could never seem to get down to it... things like work school and
-procrastination kept interfering...  2000 lines of JOE took a year and a
-half and the remaining 18000 took the last month. 
 
-This release is kind of a beta test of the rewrite.  Not everything I
-promised to implement is done yet, but most things are.
+	JOE is a sane ASCII text screen editor for UNIX.  It is designed to 
+make use of the power and versitility of UNIX, but also to be easy to use.  
+It has the feel of most IBM PC editors.  The key sequences are remeniscent 
+of WordStar and TURBO-PASCAL.  It also has the features UNIX user's should 
+expect: makes full use of termcap/terminfo, is designed to work well over 
+slow networks and low baud rate modems, designed to reduce installation 
+headaches, and has the best features of vi.
 
-These are the new features:
+	JOE is most useful for editing unformatted text, such as USENET news 
+articles and for editing block-structured languages such as C and PASCAL.  
+JOE is ideal for new or casual users but is also is also a powerful enough 
+to please experienced users.
 
-	TERMCAP/TERMINFO support
+Features:
 
-		Joe will now work on any termcap terminal (except for
-overstrike terminals).  A new termcap library is supplied which can use an
-index file to make it faster than terminfo.  A number of terminfo extensions
-are supported and the GNU extensions to the termcap language are supported.
-JOE is not picky about the completeness of the termcap entries.  It should
-work even better than vi in this respect.
+	Full termcap/terminfo support.  Will work on any terminal except for
+overstrike terminals.  A new termcap library is supplied which can use an 
+index file to make it faster then terminfo.  A number of terminfo extensions 
+are supported and the GNU extensions to the termcap language are also 
+supported.  JOE is not picky about the completeness of the termcap entries, 
+it knows what the defaults are.
 
-	Improved scrolling
+	Non-nonsense installation.  JOE has both ^H and DEL mapped to 
+backspace and ^Q and ^S are not used.  JOE compiles to 120-190K on most 
+systems.
 
-		Necessary scrolling is detected at a lower level in the
-editor.  All edit commands will scroll if they need to.
+	Powerful optimal screen update.  Uses scrolling regions the way they 
+are supposed to be used (I.E., without building insert and delete line with 
+them) and uses a powerful line shifting (insert/delete character) algorithm 
+which works if text goes past the ends of lines.  Has defered screen update 
+to handle typeahead.
 
-	Better UNIX integration
-
-		Every place in joe which accepts a file name (including the
-command line) will also accept:
+	VI-style unix integration.  You can filter a highlighted block 
+through a UNIX command.  Also, each place in joe which accepts a file name 
+(including the command line) will also accept: 
 
 		!command		to pipe into or out of a command
 		>>filename		to append to a file
 		filename,start,size	to edit a portion of a file/device
 		-			to use stdin or stdout
 
-		Also, filenames on the command line may be preceeded by +nnn
-to start editing at a specified line.
+	Also, filenames on the command line may be preceeded by +nnn to 
+start editing at a specified line.
 
-	Improved orthoganality
+	Orthoganality.  Each prompt is actually a normal edit buffer and a 
+copy of a history buffer.  You can use all of the normal edit commands to 
+create file names and search strings.  You can use the up arrow key (or 
+search backwards and any other appropriate edit command) to go back through 
+the history of previous responses.  
 
-		Each prompt is actually a normal edit buffer and a copy of a
-history buffer.  You can use all of the normal edit commands to edit the
-file names and search strings.  You can use the up arrow key (and search
-backwards or any other normal edit command) to get back previous responses.
+	Powerful buffering system.  JOE uses a doubly linked list of gap 
+buffers which can spill into /tmp directory files.  You can edit file of any 
+size up to the amount of free disk space and there are no line-length 
+restrictions.  Since the buffering system is block-based, JOE will incur 
+only a minimum of swapping on heavily loaded systems.
 
-	New buffering system
+	TAB-completion and file selection menus.  If you hit tab in a file 
+name prompt, the name is either completed or a menu of possible matches 
+appears.
 
-		Joe now uses a doubly linked list of gap buffers which can
-spill into /tmp directory files.  You can edit files of any size up to the
-amount of free disk space and there are no line length restrictions.
+	Nice help system.  When you ask for help, you get a menu of help 
+screens to shoose from (all definable in an initialization file).   Once a 
+help screen is selected, the help remains on while you continue to use the 
+editor.  Here is the first help screen:
 
-	16-bit system support
+CURSOR           GO TO            BLOCK      DELETE   MISC         EXIT
+^B left ^F right ^U  prev. screen ^KB begin  ^D char. ^KJ reformat ^KX save
+^P up   ^N down  ^V  next screen  ^KK end    ^Y line  ^TT overtype ^C  abort
+^Z previous word ^A  beg. of line ^KM move   ^W >word `   Ctrl-    ^KZ shell
+^X next word     ^E  end of line  ^KC copy   ^O word< ^   Meta-    FILE
+SEARCH           ^KU top of file  ^KW file   ^J >line ^R  retype   ^KE new
+^KF find text    ^KV end of file  ^KY delete ^_ undo  ^@  insert   ^KR insert
+^L  find next    ^KL to line No.  ^K/ filter ^^ redo               ^KD save
 
-		This is not quite done, but joe was written so that it will
-eventually work well on xenix 286 and msdos.
+	Powerful set of editing commands.  Including:
 
-	File name selection menus
+		- search and replace system, including powerful regular 
+		  expressions (including matching of balanced C expressions).
 
-		If you hit tab in a file name prompt, a menu of matching
-names will appear.
+		- tag search
 
-	New help system
+		- paragraph format
 
-		When you ask for help, you get a menu of help screens to
-choose from (all definable in the .joerc file).  Also in certain places
-the help is context sensitive.
+		- undo and redo
 
-	The edit commands are improved:
+		- position history allows you to get back to previous
+		  editing contexts and allows you to quickly flip between
+		  editing contexts
 
-		- search and replace system uses powerful regular expressions
-		  including matching of balanced C expressions
+		- multiple keyboard macros
 
-		- undo and redo now apply to complete edit commands.  If you
-		  accidently reformat paragraph on your C code, you only
-		  have to hit undo once.
+		- multiple windows
 
-		- a position history is supplied so you can to next/prev. place
+		- block move/copy/delete/filter
 
-		- multiple keyboard macros can be defined
+		- rectangle mode
 
-	Many options are supplied:
+		- overtype/insert modes
 
-		row and column numbers can be shown on status line
-		emacs style cursor recentering on scrolls
-		characters between 160-254 can be shown as-is
-		Ctrl and Meta chars can be displayed in joe or emacs style
-		Final newline can be forced on end of file
-		Can start with help on
-		No. pgup/pgdn lines to keep can be specified
-		Left margin as well as right margin can be specified
+		- indent/unindent
 
-	Joe will soon have:
+		- goto matching ( [ {
+
+		- auto-indent mode
+
+	Plus many options can be set:
+
+		- row and column number can be shown on status line
+
+		- can have EMACS-style cursor recentering on scrolls
+
+		- characters between 160-254 can be shown as-is for
+		  scandinavian characters
+
+		- Final newline can be forced on end of file
+
+		- Can start with a help screen on
+
+		- No. of PgUp/PgDn lines to keep can be specified
+
+		- Left/Right margin settings
+
+		- Tab width
+
+		- Indentation step and character
+
+	JOE will soon have:
 
 		Hex dump edit mode
-		Fixed record length edit mode
-		Rectangular blocks
-		Tag search and goto line with error
-		and maybe xedit style folding commands
 
-/*  jallen@ic.sunysb.edu  */     /* Amazing */     /* Joe Allen 129.49.12.74 */
+		Fixed record length edit mode
+
+		Shell windows and background/demand file-loading
+
+/*  jhallen@world.std.com */     /* Amazing */            /* Joseph H. Allen */
 int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
 +r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
 ]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}

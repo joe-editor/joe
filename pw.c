@@ -224,7 +224,7 @@ PW *pw;
 BW *bw;
 new=wcreate(w->t,&watompw,w,w,w->main,1,huh);
 if(!new) return 0;
-new->object=(void *)(bw=bwmk(new->t,bmk(ctab),new->x,new->y,new->w,1));
+new->object=(void *)(bw=bwmk(new->t,bmk(),new->x,new->y,new->w,1));
 bw->object=(void *)(pw=(PW *)malloc(sizeof(PW)));
 pw->prompt=zdup(prompt);
 pw->promptlen=fmtlen(prompt);
@@ -232,7 +232,7 @@ pw->promptofst=0;
 pw->pfunc=func;
 if(history)
  {
- if(!*history) *history=bmk(ctab);
+ if(!*history) *history=bmk();
  pw->hist= *history;
  binsb(bw->cursor,pw->hist->bof,pw->hist->eof);
  bw->b->chnged=0;
@@ -255,7 +255,7 @@ PW *pw;
 BW *bw;
 new=wcreate(w->t,&watomfpw,w,w,w->main,1,huh);
 if(!new) return 0;
-new->object=(void *)(bw=bwmk(new->t,bmk(ctab),new->x,new->y,new->w,1));
+new->object=(void *)(bw=bwmk(new->t,bmk(),new->x,new->y,new->w,1));
 bw->object=(void *)(pw=(PW *)malloc(sizeof(PW)));
 pw->prompt=zdup(prompt);
 pw->promptlen=fmtlen(prompt);
@@ -263,7 +263,7 @@ pw->promptofst=0;
 pw->pfunc=func;
 if(history)
  {
- if(!*history) *history=bmk(ctab);
+ if(!*history) *history=bmk();
  pw->hist= *history;
  binsb(bw->cursor,pw->hist->bof,pw->hist->eof);
  bw->b->chnged=0;

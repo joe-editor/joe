@@ -47,6 +47,7 @@ struct cap
  void (*out)();			/* Character output routine */
  void *outptr;			/* First arg passed to output routine.  Second
  				   arg is character to write */
+ int dopadding;			/* Set if pad characters should be used */
  };
 
 /* CAP *getcap(char *s,int baud,void (*out)(void *outptr,char c),void *outptr);

@@ -23,7 +23,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "b.h"
 #include "w.h"
 
-extern int dspattr;
 extern int dspasis;
 
 typedef struct bw BW;
@@ -42,11 +41,12 @@ struct bw
  int autoindent;
  int wordwrap;
  int overtype;
+ long istep;
+ int indentc;
  
  void *object;
  };
 
-extern char *ctab[];
 extern int mid;
 void bwfllw();
 void bwins();

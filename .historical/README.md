@@ -7,6 +7,181 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 1.0.5
+**Released: 1992-11-21**
+
+Source recovered from usenet
+
+Original announcement:
+```
+Newsgroups: alt.sources
+Path: sparky!uunet!spool.mu.edu!sol.ctr.columbia.edu!eff!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: JOE 1.0.5 Part 1 of 10
+Message-ID: <By2ME0.KoH@world.std.com>
+Organization: The World Public Access UNIX, Brookline, MA
+Date: Sat, 21 Nov 1992 14:46:48 GMT
+Lines: 2353
+
+Submitted-by: jhallen@world.std.com
+Archive-name: joe1.0.5part1
+
+To unpack the archive:  strip the news headers and trailers off of each 
+posting and concatenate them into a single file.  then execute the shell 
+archive with 'sh filename'
+
+
+A new version of Joe's Own Editor is complete.  Get is by anonymous ftp to 
+world.std.com, file: src/editors/joe1.0.5.tar.Z.  Also look for it on 
+'alt.sources' This has a number of fixes and new features: 
+
+- Rectangle/Column mode.  I think I've made a very good implementation of 
+this stuff.  It's really neat, I could have used this earlier.  When this 
+mode is selected, the normal block commands (including filter block through 
+unix command) and insert file work on rectangles.  Also if overtype mode is 
+set, these commands overtype instead.  Also when rectangle mode is set, 
+indent and unindent will work with the insertion/deletion point as the 
+left side of the rectangle instead of the beginning of the lines.
+
+- Can set tab width
+
+- Can set indent/unindent step column-width and fill character
+
+- ^K ;  now does a tags file search
+
+- if there's only one help screen defined, then ^KH immediatly turns on help
+instead of giving a menu
+
+- same deal with TAB completion- if only one item matches, it does a simple
+completion
+
+- unnamed files get the name first given to save file ^K D
+
+- joe is now in a subdirectory in the tar archive.  Also as you can see,
+I'm including the version number along with the name
+
+- the problems with the optimizer on Xenix and with back-tab on SCO UNIX are
+fixed.  You still have to use 'ttysv' with SCO UNIX- I need to get access to
+a SCO UNIX machine to make a tty interface for it.  I think the posix tty 
+interface is probably pretty close.
+
+- string searches were crashing when they got to the end of the file.  this 
+is fixed now.  
+
+Hex dump edit mode, fixed record length edit more and a new 'man' page are 
+on the way.
+
+The only major features which I feel are still missing are shell windows and 
+background loading/demand loading.  These are going to be mess as far as 
+portability so they'll probably take a while.
+```
+
+---
+
+## JOE 1.0.4
+*Release date unknown*
+
+*The source for this release has been lost*
+
+---
+
+## JOE 1.0.3
+**Released: 1992-11-18**
+
+*The source for this release has been lost*
+
+Original announcement:
+```
+Xref: sparky comp.editors:2811 alt.religion.emacs:462 comp.unix.admin:6265 comp.unix.xenix.misc:227 comp.os.linux:17161
+Newsgroups: comp.editors,alt.religion.emacs,comp.unix.admin,comp.unix.xenix.misc,comp.os.linux
+Path: sparky!uunet!iWarp.intel.com|eff!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: JOE 1.0.3
+Message-ID: <BxyA0w.JIu@world.std.com>
+Organization: The World Public Access UNIX, Brookline, MA
+Date: Thu, 19 Nov 1992 06:29:19 GMT
+Lines: 33
+
+With version 1.0.3 I think Joe's Own Editor is beta tested enough so that it 
+will be useable.  I fixed some minor bugs involving the windows, the modifed 
+flag, word wrap, and braindead termcap entries (it turns out that 'al' and 
+'dl' get parameters and that people actually build 'al' and 'dl' out of 
+scrolling regions).  
+
+You can get it by anonymous ftp from: world.std.com, file: 
+src/editors/joe.tar.Z.  Wait until 10 or so EST today to give the operator 
+time to install it.  
+
+Oh also JOE will use the insert and delete character termcap capabilities.
+It's really nice now at low baud rates.
+
+I rearranged the help windows so that all the most basic editing commands 
+are on the first one.  This should be good for when JOE is set up to start 
+with the help on.  This is what it looks like: 
+
+CURSOR           GO TO            BLOCK      DELETE   MISC         EXIT
+^B left ^F right ^U  prev. screen ^KB begin  ^D char. ^KJ reformat ^KX save
+^P up   ^N down  ^V  next screen  ^KK end    ^Y line  ^TT overtype ^C  abort
+^Z previous word ^A  beg. of line ^KM move   ^W >word `   Ctrl-    ^KZ shell
+^X next word     ^E  end of line  ^KC copy   ^O word< ^  Meta-     FILE
+SEARCH           ^KU top of file  ^KW file   ^J >line ^R  retype   ^KE new
+^KF find text    ^KV end of file  ^KY delete ^_ undo  ^@  insert   ^KR insert
+^L  find next    ^KL to line No.  ^K/ filter ^^ redo               ^KD save
+
+I think it's complete enough for most basic editing without being too 
+cryptic.
+-- 
+/*  jhallen@world.std.com */     /* Amazing */            /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
+## JOE 1.0.2
+*Release date unknown*
+
+*The source for this release has been lost*
+
+---
+
+## JOE 1.0.1
+**Released: 1992-11-17**
+
+*The source for this release has been lost*
+
+Original announcement:
+```
+Xref: sparky comp.editors:2782 comp.os.linux:16946 alt.religion.emacs:461
+Newsgroups: comp.editors,comp.os.linux,alt.religion.emacs
+Path: sparky!uunet!destroyer!sol.ctr.columbia.edu!eff!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: Re: JOE 1.0.0 IS FINALLY DONE
+Message-ID: <BxuqM2.1zs@world.std.com>
+Organization: The World Public Access UNIX, Brookline, MA
+References: <Bxty5C.CL1@world.std.com>
+Date: Tue, 17 Nov 1992 08:37:14 GMT
+Lines: 14
+
+In article <Bxty...@world.std.com> jhallen@world.std.com (Joseph H Allen) writes:
+>The rewrite of Joe's Own Editor is finally done.  JOE Version 1.0.0 is here!
+
+>I'll post again as soon as I know where it is exactly :-)
+
+Get joe by anonymous ftp from 'world.std.com', file 'src/editors/joe.tar.Z'
+
+Be sure that joe comes up with version 1.0.1.  There were a few minor bugs I 
+had to fix.
+-- 
+/*  jhallen@world.std.com */     /* Amazing */            /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
 ## JOE 1.0.0
 **Released: 1992-11-16**
 

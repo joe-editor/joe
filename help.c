@@ -84,25 +84,15 @@ for(y=0;y!=t->wind;++y)
 void helpon(t)
 SCREEN *t;
 {
-int z;
-W *w;
+if(!hlptxt) return;
 t->wind=hlplns;
-if(t->wind>t->h-4) t->wind=t->h-4;
+if(t->h-t->wind<FITHEIGHT) t->wind=t->h-FITHEIGHT;
 if(t->wind<0)
  {
  t->wind=0;
  return;
  }
-w=t->topwin; do
- {
- w->hh=w->h;
- w->reqh=w->h*(t->h-t->wind);
- w->reqh/=t->h;
- if(w->win && !w->reqh) w->reqh=1;
- else if(w->reqh<2) w->reqh=2;
- w=(W *)w->link.next;
- } while(w!=t->topwin);
-wfit(t);
+chsize(t,t->h-t->wind,t->h);
 msetI(t->t->updtab,1,t->wind);
 }
 
@@ -111,18 +101,9 @@ msetI(t->t->updtab,1,t->wind);
 void helpoff(t)
 SCREEN *t;
 {
-W *w;
-/*
-w=t->topwin; do
- {
- w->reqh=w->hh;
- w=(W *)w->link.next;
- } while(w!=t->topwin);
-*/
+int z=t->wind;
 t->wind=0;
-/*
-wfit(w->t);*/
-wspread(t);
+chsize(t,t->h,t->h-z);
 }
 
 /* Toggle help on/off */
@@ -167,6 +148,8 @@ void disphelp(w) W *w;
 void followhelp(w) W *w; { MENU *m=(MENU *)w->object; menufllw(m); }
 void wkillhelp(w) W *w; { MENU *m=(MENU *)w->object; if(m) menurm(m); }
 
+int prevcursor=0;
+
 void uhrtn(w)
 W *w;
 {
@@ -175,6 +158,7 @@ hlptxt=help_structs[m->cursor]->hlptxt;
 hlpsiz=help_structs[m->cursor]->hlpsiz;
 hlpbsz=help_structs[m->cursor]->hlpbsz;
 hlplns=help_structs[m->cursor]->hlplns;
+prevcursor=m->cursor;
 wabort(w);
 helpon(w->t);
 }
@@ -182,6 +166,8 @@ helpon(w->t);
 void uhabort(w)
 W *w;
 {
+MENU *m=(MENU *)w->object;
+prevcursor=m->cursor;
 wabort(w);
 }
 
@@ -210,7 +196,14 @@ if(w->t->wind)
  helpoff(w->t);
  return;
  }
+if(!help_names[0]) return;
+if(!help_names[1])
+ {
+ helpon(w->t);
+ return;
+ }
 if(!(new=wcreate(w->t,&watomhelp,w,w,w->main,1,NULL))) return;
 new->object=(void *)(m=mkmenu(new->t,help_names,new->x,new->y,new->w,new->h));
+m->cursor=prevcursor;
 w->t->curwin=new;
 }

@@ -158,7 +158,8 @@ free(kmap);
 }
 
 OPTIONS *options=0;
-extern int mid, dspasis, dspctrl, force, help, pgamnt, starow, stacol;
+extern int mid, dspasis, dspctrl, force, help, pgamnt, starow, stacol,
+           tabwidth;
 
 void setoptions(bw,name)
 BW *bw;
@@ -173,6 +174,9 @@ for(o=options;o;o=o->next)
   bw->rmargin=o->rmargin;
   bw->autoindent=o->autoindent;
   bw->wordwrap=o->wordwrap;
+  bw->istep=o->istep;
+  bw->indentc=o->indentc;
+  bw->b->tab=o->tab;
   break;
   }
 }
@@ -214,6 +218,9 @@ while(++line, fgets(buf,256,fd))
   n->overtype=0;
   n->autoindent=0;
   n->wordwrap=0;
+  n->tab=tabwidth;
+  n->indentc=' ';
+  n->istep=1;
   n->next=options;
   options=n;
   n->name=zdup(buf);
@@ -229,18 +236,20 @@ while(++line, fgets(buf,256,fd))
   else if(!zcmp(buf+1,"asis")) dspasis=1;
   else if(!zcmp(buf+1,"stacol")) stacol=1;
   else if(!zcmp(buf+1,"starow")) starow=1;
-  else if(!zcmp(buf+1,"ctrl")) dspattr=1;
   else if(!zcmp(buf+1,"force")) force=1;
   else if(!zcmp(buf+1,"help")) help=1;
   else if(!zcmp(buf+1,"pg") && c) sscanf(buf+x+1,"%d",&pgamnt);
+  else if(!zcmp(buf+1,"gtab") && c) sscanf(buf+x+1,"%d",&tabwidth);
   else
    if(options)
     if(!zcmp(buf+1,"wordwrap")) options->wordwrap=1;
     else if(!zcmp(buf+1,"autoindent")) options->autoindent=1;
-    else if(!zcmp(buf+1,"typewriter")) options->overtype=2;
     else if(!zcmp(buf+1,"overwrite")) options->overtype=1;
     else if(!zcmp(buf+1,"lmargin") && c) sscanf(buf+x+1,"%ld",&options->lmargin);
     else if(!zcmp(buf+1,"rmargin") && c) sscanf(buf+x+1,"%ld",&options->rmargin);
+    else if(!zcmp(buf+1,"istep") && c) sscanf(buf+x+1,"%ld",&options->istep);
+    else if(!zcmp(buf+1,"tab") && c) sscanf(buf+x+1,"%d",&options->tab);
+    else if(!zcmp(buf+1,"indentc") && c) sscanf(buf+x+1,"%d",&options->indentc);
     else fprintf(stderr,"\n%s %d: Unknown option",name,line);
    else fprintf(stderr,"\n%s %d: No pattern selected for option",name,line);
   continue;
@@ -493,10 +502,11 @@ if (nhelp)
 return 0;
 }
 
-struct help *get_help(char *name)
+struct help *get_help(name)
+ char *name;
  {
   struct help *tmp;
-  for(tmp=first_help;tmp && strcmp(tmp->name,name);tmp=tmp->next);
+  for(tmp=first_help;tmp && zcmp(tmp->name,name);tmp=tmp->next);
   return tmp;
  }
- 
+

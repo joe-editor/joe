@@ -269,6 +269,7 @@ else
    binsm(bw->cursor,sc("/")), peol(bw->cursor);
   }
  binsm(bw->cursor,sv(tab->files[m->cursor])); peol(bw->cursor);
+ bw->cursor->xcol=bw->cursor->col;
  prm(p);
  wabort(w);
  }
@@ -334,8 +335,6 @@ W *w;
 {
 W *new;
 TAB *tab;
-char **list;
-MENU *m;
 P *p, *q;
 char *cline, *tmp;
 BW *bw;
@@ -358,11 +357,17 @@ tab->prv=0;
 vsrm(cline);
 if(treload(new,NULL,tab,0))
  {
- msgnw(w,"Couldn\'t read directory ");
+/* msgnw(w,"Couldn\'t read directory "); */
  vsrm(tab->path);
  vsrm(tab->pattern);
  free(tab);
- wabort(w);
+ w->t->curwin=new;
+ wabort(new);
  }
-else w->t->curwin=new;
+else
+ {
+ w->t->curwin=new;
+ if(!sLEN(tab->files)) tuabort(new);
+ else if(sLEN(tab->files)==1) trtn(new);
+ }
 }

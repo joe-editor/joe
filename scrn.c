@@ -94,65 +94,6 @@ if(e&DIM)
 t->attrib=c;
 }
 
-/* Erase from given screen coordinate to end of line */
-
-int eraeol(t,x,y)
-SCRN *t;
-{
-int *s, *ss;
-int w=t->co-x-1;			/* Don't worry about last column */
-if(w<=0) return 0;
-s=t->scrn+y*t->co+x;
-ss=s+w;
-do if(*--ss!=' ') { ++ss; break; } while(ss!=s);
-if(ss-s>3 && t->ce)
- {
- cpos(t,x,y);
- attr(t,0);
- texec(t->cap,t->ce,1);
- msetI(s,' ',w);
- }
-else while(s!=ss) outatr(t,x,y,' '), ++x, *s++=' ';
-return 0;
-}
-
-/* Output a character with attributes */
-
-
-/*
-void outatr(t,x,y,c)
-SCRN *t;
-{
-unsigned char ch;
-if(c== -1) c=' ';
-ch=c; c-=ch;
-if(t->x!=x || t->y!=y) cpos(t,x,y);
-if(c!=t->attrib) attr(t,c);
-if(t->hz && ch=='~') ch='\\';
-ttputc(ch);
-++t->x;
-}
-*/
-
-void outatr1(t,x,y,c)
-SCRN *t;
-{
-if(t->os && t->eo &&
-   (t->scrn[x+t->co*y]!=' ' || (t->scrn[x+t->co*y]&~255)!=(c&~255)) ||
-   t->ul && (c&255)=='_' && (!t->os || t->eo)
-  )
- outatr(t,x,y,' ');
-outatr(t,x,y,c);
-if(c&UNDERLINE && !t->us)
- {
- cpos(t,x,y), texec(t->cap,t->uc,1);
- if(++t->x==t->co)
-  if(t->am) t->x=0, ++t->y;
-  else if(t->xn) t->x= -1, t->y= -1;
-  else --t->x;
- }
-}
-
 /* Set scrolling region */
 
 void setregn(t,top,bot)
@@ -176,13 +117,13 @@ if(t->top!=top || t->bot!=bot)
 
 /* Enter insert mode */
 
-void setins(t)
+void setins(t,x)
 SCRN *t;
 {
 if(t->ins!=1 && t->im)
  {
  t->ins=1;
- texec(t->cap,t->im,1);
+ texec(t->cap,t->im,1,x);
  }
 }
 
@@ -195,6 +136,80 @@ if(t->ins!=0)
  {
  texec(t->cap,t->ei,1);
  t->ins=0;
+ }
+}
+
+/* Erase from given screen coordinate to end of line */
+
+int eraeol(t,x,y)
+SCRN *t;
+{
+int *s, *ss;
+int w=t->co-x-1;			/* Don't worry about last column */
+if(w<=0) return 0;
+s=t->scrn+y*t->co+x;
+ss=s+w;
+do if(*--ss!=' ') { ++ss; break; } while(ss!=s);
+if((ss-s>3 || s[w]!=' ') && t->ce)
+ {
+ cpos(t,x,y);
+ attr(t,0);
+ texec(t->cap,t->ce,1);
+ msetI(s,' ',w);
+ }
+else while(s!=ss) outatr(t,x,y,' '), ++x, *s++=' ';
+return 0;
+}
+
+/* Output a character with attributes */
+
+void outatr(t,x,y,c)
+SCRN *t;
+{
+unsigned char ch;
+if(c== -1) c=' ';
+if(t->ins) clrins(t);
+ch=c; c-=ch;
+if(t->x!=x || t->y!=y) cpos(t,x,y);
+if(c!=t->attrib) attr(t,c);
+if(t->hz && ch=='~') ch='\\';
+ttputc(ch);
+++t->x;
+}
+
+/* As above but useable in insert mode */
+/* The cursor position must already be correct */
+
+void outatri(t,x,y,c)
+SCRN *t;
+{
+unsigned char ch;
+if(c== -1) c=' ';
+ch=c; c-=ch;
+if(c!=t->attrib) attr(t,c);
+if(t->hz && ch=='~') ch='\\';
+ttputc(ch);
+++t->x;
+}
+
+/* Overstrike terminal handling */
+
+void outatr1(t,x,y,c)
+SCRN *t;
+{
+if(t->os && t->eo &&
+   (t->scrn[x+t->co*y]!=' ' || (t->scrn[x+t->co*y]&~255)!=(c&~255)) ||
+   t->ul && (c&255)=='_' && (!t->os || t->eo)
+  )
+ outatr(t,x,y,' ');
+outatr(t,x,y,c);
+if(c&UNDERLINE && !t->us)
+ {
+ cpos(t,x,y), texec(t->cap,t->uc,1);
+ if(++t->x==t->co)
+  if(t->am) t->x=0, ++t->y;
+  else if(t->xn) t->x= -1, t->y= -1;
+  else --t->x;
  }
 }
 
@@ -224,11 +239,11 @@ t->li=getnum(t->cap,"li"); if(t->li<1) t->li=24;
 t->co=getnum(t->cap,"co"); if(t->co<2) t->co=80;
 x=y=0;
 ttgtsz(&x,&y);
-if(x>3 && y>3) t->li=y, t->co=x;
+if(x>7 && y>3) t->li=y, t->co=x;
 x=y=0;
 if(p=getenv("LINES")) sscanf(p,"%d",&y);
 if(p=getenv("COLUMNS")) sscanf(p,"%d",&x);
-if(x>3) t->co=x;
+if(x>7) t->co=x;
 if(y>3) t->li=y;
 
 t->hz=getflag(t->cap,"hz");
@@ -275,29 +290,19 @@ if(t->uc) t->avattr|=UNDERLINE;
 
 t->ms=getflag(t->cap,"ms");
 
-if(baud<38400)
- {
- t->da=getflag(t->cap,"da");
- t->db=getflag(t->cap,"db");
- t->cs=getstr(t->cap,"cs");
- t->rr=getflag(t->cap,"rr");
- t->sf=getstr(t->cap,"sf");
- t->sr=getstr(t->cap,"sr");
- t->SF=getstr(t->cap,"SF");
- t->SR=getstr(t->cap,"SR");
- t->al=getstr(t->cap,"al");
- t->dl=getstr(t->cap,"dl");
- t->AL=getstr(t->cap,"AL");
- t->DL=getstr(t->cap,"DL");
- if(!getflag(t->cap,"ns") && !t->sf) t->sf="\12";
- }
-else
- {
- t->da=0; t->db=0;
- t->al=0; t->dl=0; t->AL=0; t->DL=0;
- t->cs=0; t->rr=0;
- t->sf=0; t->SF=0; t->sr=0; t->SR=0;
- }
+t->da=getflag(t->cap,"da");
+t->db=getflag(t->cap,"db");
+t->cs=getstr(t->cap,"cs");
+t->rr=getflag(t->cap,"rr");
+t->sf=getstr(t->cap,"sf");
+t->sr=getstr(t->cap,"sr");
+t->SF=getstr(t->cap,"SF");
+t->SR=getstr(t->cap,"SR");
+t->al=getstr(t->cap,"al");
+t->dl=getstr(t->cap,"dl");
+t->AL=getstr(t->cap,"AL");
+t->DL=getstr(t->cap,"DL");
+if(!getflag(t->cap,"ns") && !t->sf) t->sf="\12";
 
 if(!getflag(t->cap,"in") && baud<38400)
  {
@@ -399,18 +404,26 @@ fprintf(stderr,"It\'s broken\n");
 return 0;
 ok:
 
-t->scrn=0; t->sary=0; t->updtab=0;
+/* Determine if we can scroll */
+if((t->sr || t->SR) && (t->sf || t->SF) && t->cs ||
+   (t->al || t->AL) && (t->dl || t->DL)) t->scroll=1;
+else t->scroll=0, mid=1;
+
+/* Determine if we can ins/del within lines */
+if((t->im || t->ic || t->IC) && (t->dc || t->DC)) t->insdel=1;
+else t->insdel=0;
+
+/* Adjust for high baud rates */
+if(baud>=38400) t->scroll=0, t->insdel=0, mid=0;
+
+/* Initialize variable screen size dependant vars */
+t->scrn=0; t->sary=0; t->updtab=0; t->compose=0;
+t->ofst=0; t->ary=0;
+t->htab=(struct hentry *)malloc(256*sizeof(struct hentry));
 nresize(t,t->co,t->li);
 
+/* Send out terminal initialization string */
 if(t->ti) texec(t->cap,t->ti,1);
-
-/* Check if terminal can't scroll */
-if(t->al || t->AL || t->cs) goto sok1;
-if(baud<38400) mid=1;
-sok1:
-if(t->dl || t->DL || t->cs) goto sok2;
-if(baud<38400) mid=1;
-sok2:
 
 return t;
 } 
@@ -420,16 +433,22 @@ return t;
 void nresize(t,w,h)
 SCRN *t;
 {
-if(h<1) h=24;
-if(w<2) w=80;
+if(h<4) h=4;
+if(w<8) w=8;
 t->li=h;
 t->co=w;
 if(t->sary) free(t->sary);
 if(t->updtab) free(t->updtab);
 if(t->scrn) free(t->scrn);
+if(t->compose) free(t->compose);
+if(t->ofst) free(t->ofst);
+if(t->ary) free(t->ary);
 t->scrn=(int *)malloc(t->li*t->co*sizeof(int));
 t->sary=(int *)calloc(t->li,sizeof(int));
 t->updtab=(int *)malloc(t->li*sizeof(int));
+t->compose=(int *)malloc(t->co*sizeof(int));
+t->ofst=(int *)malloc(t->co*sizeof(int));
+t->ary=(struct hentry *)malloc(t->co*sizeof(struct hentry));
 nredraw(t);
 }
 
@@ -653,31 +672,38 @@ if(x>t->x && t->ta)
  else cstover=10000;
  if(cstunder<t->cRI && cstunder<x-t->x && cstover>cstunder)
   {
-  t->x=x-x%t->tw;
-  while(ntabs--) texec(t->cap,t->ta,1);
+  if(ntabs)
+   {
+   t->x=x-x%t->tw;
+   do texec(t->cap,t->ta,1); while(--ntabs);
+   }
   }
  else if(cstover<t->cRI && cstover<x-t->x)
   {
   t->x=t->tw+x-x%t->tw;
   ++ntabs;
-  while(ntabs--) texec(t->cap,t->ta,1);
+  do texec(t->cap,t->ta,1); while(--ntabs);
   }
  }
 else if(x<t->x && t->bt)
  {
- int ntabs=(t->x-x+t->tw-t->x%t->tw)/t->tw;
+ int ntabs=((t->x+t->tw-1)-(t->x+t->tw-1)%t->tw-
+            ((x+t->tw-1)-(x+t->tw-1)%t->tw))/t->tw;
  int cstunder,cstover;
  if(t->bs) cstunder=t->cbt*ntabs+t->cbs*(t->tw-x%t->tw); else cstunder=10000;
  if(x-t->tw>=0) cstover=t->cbt*(ntabs+1)+x%t->tw; else cstover=10000;
  if(cstunder<t->cLE && (t->bs?cstunder<(t->x-x)*t->cbs:1) && cstover>cstunder)
   {
-  t->x=x+t->tw-x%t->tw;
-  while(ntabs--) texec(t->cap,t->bt,1);
+  if(ntabs)
+   {
+   do texec(t->cap,t->bt,1); while(--ntabs);
+   t->x=x+t->tw-x%t->tw;
+   }
   }
  else if(cstover<t->cRI && (t->bs?cstover<(t->x-x)*t->cbs:1))
   {
   t->x=x-x%t->tw; ++ntabs;
-  while(ntabs--) texec(t->cap,t->bt,1);
+  do texec(t->cap,t->bt,1); while(--ntabs);
   }
  }
 
@@ -734,22 +760,23 @@ SCRN *t;
 int x,y,*s,n;
 {
 int a;
-if(x>=t->co-1 || !n) return;
+if(x<0) s-=x, x=0;
+if(x>=t->co-1 || n<=0) return;
 if(t->im || t->ic || t->IC)
  {
  cpos(t,x,y);
- setins(t);
+ setins(t,x);
  if(n==1 && t->ic || !t->IC)
   for(a=0;a!=n;++a)
    {
-   texec(t->cap,t->ic,1);
-   outatr(t,x+a,y,s[a]);
-   texec(t->cap,t->ip,1);
+   texec(t->cap,t->ic,1,x);
+   outatri(t,x+a,y,s[a]);
+   texec(t->cap,t->ip,1,x);
    }
  else
   {
   texec(t->cap,t->IC,1,n);
-  for(a=0;a!=n;++a) outatr(t,x+a,y,s[a]);
+  for(a=0;a!=n;++a) outatri(t,x+a,y,s[a]);
   }
  if(!t->mi) clrins(t);
  }
@@ -762,17 +789,106 @@ SCRN *t;
 int x,y,n;
 {
 int a;
+if(x<0) x=0;
 if(!n || x>=t->co-1) return;
 if(t->dc || t->DC)
  {
  cpos(t,x,y);
- texec(t->cap,t->dm,1);		/* Enter delete mode */
+ texec(t->cap,t->dm,1,x);		/* Enter delete mode */
  if(n==1 && t->dc || !t->DC)
-  for(a=n;a;--a) texec(t->cap,t->dc,1);
+  for(a=n;a;--a) texec(t->cap,t->dc,1,x);
  else texec(t->cap,t->DC,1,n);
- texec(t->cap,t->ed,1);		/* Exit delete mode */
+ texec(t->cap,t->ed,1,x);		/* Exit delete mode */
  }
 mmove(t->scrn+t->co*y+t->x,t->scrn+t->co*y+t->x+n,(t->co-(x+n))*sizeof(int));
+}
+
+/* Insert/Delete within line */
+
+void magic(t,y,cs,s,placex)
+SCRN *t;
+int y,*cs,*s;
+{
+struct hentry *htab=t->htab;
+int *ofst=t->ofst;
+int aryx=1;
+int x;
+if(!(t->im || t->ic || t->IC) ||
+   !(t->dc || t->DC)) return;
+mset(htab,0,256*sizeof(struct hentry));
+msetI(ofst,0,t->co);
+
+/* Build hash table */
+for(x=0;x!=t->co-1;++x)
+ t->ary[aryx].next=htab[cs[x]&255].next,
+ t->ary[aryx].loc=x,
+ ++htab[cs[x]&255].loc,
+ htab[cs[x]&255].next=aryx++;
+
+/* Build offset table */
+for(x=0;x<t->co-1;)
+ if(htab[s[x]&255].loc>=15) ofst[x++]= t->co-1;
+ else
+  {
+  int aryy;
+  int maxaryy;
+  int maxlen=0;
+  int best=0;
+  int bestback=0;
+  int z;
+  for(aryy=htab[s[x]&255].next;aryy;aryy=t->ary[aryy].next)
+   {
+   int amnt,back;
+   int tsfo=t->ary[aryy].loc-x;
+   int cst= -Iabs(tsfo);
+   int pre=32;
+   for(amnt=0;x+amnt<t->co-1 && x+tsfo+amnt<t->co-1;++amnt)
+    {
+    if(cs[x+tsfo+amnt]!=s[x+amnt]) break;
+    else if(s[x+amnt]&255!=32 || pre!=32) ++cst;
+    pre=s[x+amnt]&255;
+    }
+   pre=32;
+   for(back=0;back+x>0 && back+tsfo+x>0;--back)
+    {
+    if(cs[x+tsfo+back-1]!=s[x+back-1]) break;
+    else if(s[x+back-1]&255!=32 || pre!=32) ++cst;
+    pre=s[x+back-1]&255;
+    }
+   if(cst>best) maxaryy=aryy, maxlen=amnt, best=cst, bestback=back;
+   }
+  if(!maxlen) ofst[x]=t->co-1, maxlen=1;
+  else if(best<2) for(z=0;z!=maxlen;++z) ofst[x+z]=t->co-1;
+  else for(z=0;z!=maxlen-bestback;++z)
+   ofst[x+z+bestback]=t->ary[maxaryy].loc-x;
+  x+=maxlen;
+  }
+
+/* Apply scrolling commands */
+
+for(x=0;x!=t->co-1;++x)
+ {
+ int q=ofst[x];
+ if(q && q!=t->co-1)
+  if(q>0)
+   {
+   int z,fu;
+   for(z=x;z!=t->co-1 && ofst[z]==q;++z);
+   while(s[x]==cs[x] && x<placex) ++x;
+   dodelchr(t,x,y,q);
+   for(fu=x;fu!=t->co-1;++fu) if(ofst[fu]!=t->co-1) ofst[fu]-=q;
+   x=z-1;
+   }
+  else
+   {
+   int z,fu;
+   for(z=x;z!=t->co-1 && ofst[z]==q;++z);
+   while(s[x+q]==cs[x+q] && x-q<placex) ++x;
+   doinschr(t,x+q,y,s+x+q,-q);
+   for(fu=x;fu!=t->co-1;++fu) if(ofst[fu]!=t->co-1) ofst[fu]-=q;
+   x=z-1;
+   }
+ }
 }
 
 static void doupscrl(t,top,bot,amnt)
@@ -786,7 +902,7 @@ if(top==0 && bot==t->li && (t->sf || t->SF))
  {
  setregn(t,0,t->li);
  cpos(t,0,t->li-1);
- if(amnt==1 && t->sf || !t->SF) while(a--) texec(t->cap,t->sf,1);
+ if(amnt==1 && t->sf || !t->SF) while(a--) texec(t->cap,t->sf,1,t->li-1);
  else texec(t->cap,t->SF,a,a);
  goto done;
  }
@@ -794,7 +910,7 @@ if(bot==t->li && (t->dl || t->DL))
  {
  setregn(t,0,t->li);
  cpos(t,0,top);
- if(amnt==1 && t->dl || !t->DL) while(a--) texec(t->cap,t->dl,1);
+ if(amnt==1 && t->dl || !t->DL) while(a--) texec(t->cap,t->dl,1,top);
  else texec(t->cap,t->DL,a,a);
  goto done;
  }
@@ -802,18 +918,18 @@ if(t->cs && ( t->sf || t->SF ))
  {
  setregn(t,top,bot);
  cpos(t,0,bot-1);
- if(amnt==1 && t->sf || !t->SF) while(a--) texec(t->cap,t->sf,1);
+ if(amnt==1 && t->sf || !t->SF) while(a--) texec(t->cap,t->sf,1,bot-1);
  else texec(t->cap,t->SF,a,a);
  goto done;
  }
 if((t->dl || t->DL) && (t->al || t->AL))
  {
  cpos(t,0,top);
- if(amnt==1 && t->dl || !t->DL) while(a--) texec(t->cap,t->dl,1);
+ if(amnt==1 && t->dl || !t->DL) while(a--) texec(t->cap,t->dl,1,top);
  else texec(t->cap,t->DL,a,a);
  a=amnt;
  cpos(t,0,bot-amnt);
- if(amnt==1 && t->al || !t->AL) while(a--) texec(t->cap,t->al,1);
+ if(amnt==1 && t->al || !t->AL) while(a--) texec(t->cap,t->al,1,bot-amnt);
  else texec(t->cap,t->AL,a,a);
  goto done;
  }
@@ -843,7 +959,7 @@ if(top==0 && bot==t->li && (t->sr || t->SR))
  setregn(t,0,t->li);
  cpos(t,0,0);
  if(amnt==1 && t->sr || !t->SR)
-  while(a--) texec(t->cap,t->sr,1);
+  while(a--) texec(t->cap,t->sr,1,0);
  else texec(t->cap,t->SR,a,a);
  goto done;
  }
@@ -852,7 +968,7 @@ if(bot==t->li && (t->al || t->AL))
  setregn(t,0,t->li);
  cpos(t,0,top);
  if(amnt==1 && t->al || !t->AL)
-  while(a--) texec(t->cap,t->al,1);
+  while(a--) texec(t->cap,t->al,1,top);
  else texec(t->cap,t->AL,a,a);
  goto done;
  }
@@ -861,7 +977,7 @@ if(t->cs && (t->sr || t->SR))
  setregn(t,top,bot);
  cpos(t,0,top);
  if(amnt==1 && t->sr || !t->SR)
-  while(a--) texec(t->cap,t->sr,1);
+  while(a--) texec(t->cap,t->sr,1,top);
  else texec(t->cap,t->SR,a,a);
  goto done;
  }
@@ -869,12 +985,12 @@ if((t->dl || t->DL) && (t->al || t->AL))
  {
  cpos(t,0,bot-amnt);
  if(amnt==1 && t->dl || !t->DL)
-  while(a--) texec(t->cap,t->dl,1);
+  while(a--) texec(t->cap,t->dl,1,bot-amnt);
  else texec(t->cap,t->DL,a,a);
  a=amnt;
  cpos(t,0,top);
  if(amnt==1 && t->al || !t->AL)
-  while(a--) texec(t->cap,t->al,1);
+  while(a--) texec(t->cap,t->al,1,top);
  else texec(t->cap,t->AL,a,a);
  goto done;
  }
@@ -928,11 +1044,11 @@ msetI(t->sary,0,t->li);
 void nescape(t)
 SCRN *t;
 {
-cpos(t,0,t->li-1);
-eraeol(t,0,t->li-1);
 attr(t,0);
 clrins(t,0);
 setregn(t,0,t->li);
+cpos(t,0,t->li-1);
+eraeol(t,0,t->li-1);
 if(t->te) texec(t->cap,t->te,1);
 }
 
@@ -951,11 +1067,15 @@ leave=1;
 attr(t,0);
 clrins(t);
 setregn(t,0,t->li);
+cpos(t,0,t->li-1);
 if(t->te) texec(t->cap,t->te,1);
 ttclose();
 rmcap(t->cap);
 free(t->scrn);
 free(t->sary);
+free(t->ofst);
+free(t->htab);
+free(t->ary);
 for(x=0;x!=t->tabsize;++x) vsrm(t->ktab[x].s);
 free(t);
 }
@@ -999,8 +1119,6 @@ goto wayup;
 found:
 t->kbufp=0;
 
-/* ttgtsz(&w,&h);
-if((w!=t->co || h!=t->li) && w>=3 && h>=3) tchsize(t,w,h); */
 return c;
 }
 
@@ -1010,6 +1128,7 @@ int top,bot,amnt;
 {
 int x;
 if(!amnt || top>=bot || bot>t->li) return;
+if(amnt<bot-top && bot-top-amnt<amnt/2 || !t->scroll) amnt=bot-top;
 if(amnt<bot-top)
  {
  for(x=bot;x!=top+amnt;--x)
@@ -1028,6 +1147,7 @@ int top,bot,amnt;
 {
 int x;
 if(!amnt || top>=bot || bot>t->li) return;
+if(amnt<bot-top && bot-top-amnt<amnt/2 || !t->scroll) amnt=bot-top;
 if(amnt<bot-top)
  {
  for(x=top+amnt;x!=bot;++x)
@@ -1039,42 +1159,6 @@ if(amnt>bot-top) amnt=bot-top;
 msetI(t->sary+bot-amnt,t->li,amnt);
 if(amnt==bot-top) msetI(t->updtab+bot-amnt,1,amnt);
 }
-
-/*
-void nchsize(t,w,h)
-SCRN *t;
-int w,h;
-{
-int x,y,*tmp;
-if(w==t->co && h==t->li) return;
-
-t->scrn=(int *)realloc(t->scrn,w*h*sizeof(int));
-msetI(t->scrn,-1,w*h);
-
-tmp=(int *)malloc(w*h*sizeof(int));
-for(x=0;x!=w*h;++x) tmp[x]=' ';
-for(y=0;y!=t->li;++y)
- {
- if(y==h) break;
- for(x=0;x!=t->co;++x)
-  {
-  if(x==w) break;
-  tmp[x+y*h]=t->screen[x+y*t->co];
-  }
- }
-free(t->screen); t->screen=tmp;
-
-if(t->li!=h) t->sary=(int *)realloc(t->sary,h*sizeof(int));
-msetI(t->sary,0,h);
-t->x= -1;
-t->y= -1;
-t->top=h;
-t->bot=0;
-t->co=w; t->li=h;
-if(t->placex>=w) t->placex=w-1;
-if(t->placey>=h) t->placey=h-1;
-}
-*/
 
 void nredraw(t)
 SCRN *t;
@@ -1090,16 +1174,17 @@ t->attrib= -1;
 t->ins= -1;
 attr(t,0);
 clrins(t);
+setregn(t);
 if(t->cl)
  {
- texec(t->cap,t->cl,1);
+ texec(t->cap,t->cl,1,0);
  t->x=0; t->y=0;
  msetI(t->scrn,' ',t->li*t->co);
  }
 else if(t->cd)
  {
  cpos(t,0,0);
- texec(t->cap,t->cd,1);
+ texec(t->cap,t->cd,1,0);
  msetI(t->scrn,' ',t->li*t->co);
  }
 }

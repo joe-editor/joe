@@ -32,8 +32,6 @@ typedef struct buffer B;
 #define HDRSIZ 16		/* Text segment header size */
 #define SEGSIZ 1024		/* Text segment size */
 
-#define TABSIZ 8		/* Tab width... this should be a variable */
-
 /* A text segment header */
 
 struct header
@@ -60,8 +58,8 @@ struct buffer
  int count;			/* Reference count */
  int chnged;			/* Set if changed since last save */
  int backup;			/* Set if backup file needn't be written */
- char **ctab;			/* Character table to use with this buffer */
  UNDO *undo;			/* Undo storage */
+ int tab;			/* Tab width */
  };
 
 /* A pointer */
@@ -94,8 +92,8 @@ struct point
 /* Buffer management functions */
 /*******************************/
 
-/* B *bmk(char **ctab);
- * Create a new empty buffer.  Uses given character set table.
+/* B *bmk(void);
+ * Create a new empty buffer.
  * The following variables get these initializations:
  *     name            NULL
  *     reference count 1

@@ -76,7 +76,7 @@ struct window
  int ny,nh;			/* Temporary values for wfit */
  int reqh;			/* Requested new height or 0 for same */
  				/* This is an argument for wfit */
- int hh;			/* Height before help was turned on */
+ int hh;			/* Natural height */
  W *win;			/* Window this one operates on */
  W *main;			/* Main window of this family */
  W *orgwin;			/* Window where space from this window came */
@@ -92,6 +92,9 @@ struct window
  char *huh;			/* Name of window for context sensitive hlp */
  };
 
+/* Minimum text window height */
+#define FITHEIGHT 4
+
 /***************/
 /* Subroutines */
 /***************/
@@ -99,6 +102,7 @@ struct window
 void scrlup();
 void scrldn();
 void prming();
+void updall();
 
 /* int getgrouph(W *);
  * Get height of a family of windows
@@ -137,6 +141,8 @@ SCREEN *screate();
  * Screen size changed
  */
 void sresize();
+
+void chsize();
 
 /* W *wcreate(SCREEN *t,WATOM *watom,W *where,W *target,W *original,int height);
  *

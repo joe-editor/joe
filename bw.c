@@ -30,44 +30,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 /* Display modes */
 int dspasis=0;
-int dspattr=0;
-
-/* Standard character display table */
-char *ctab[]=
-{
-"^@"    ,"^A"   ,"^B"   ,"^C"   ,"^D"   ,"^E"   ,"^F"   ,"^G"   ,
-"^H"    ,"^I"   ,"^J"   ,"^K"   ,"^L"   ,"^M"   ,"^N"   ,"^O"   ,
-"^P"    ,"^Q"   ,"^R"   ,"^S"   ,"^T"   ,"^U"   ,"^V"   ,"^W"   ,
-"^X"    ,"^Y"   ,"^Z"   ,"^["   ,"^\\"  ,"^]"   ,"^^"   ,"^_"   ,
-" "     ,"!"    ,"\""   ,"#"    ,"$"    ,"%"    ,"&"    ,"'"    ,
-"("     ,")"    ,"*"    ,"+"    ,","    ,"-"    ,"."    ,"/"    ,
-"0"     ,"1"    ,"2"    ,"3"    ,"4"    ,"5"    ,"6"    ,"7"    ,
-"8"     ,"9"    ,":"    ,";"    ,"<"    ,"="    ,">"    ,"?"    ,
-"@"     ,"A"    ,"B"    ,"C"    ,"D"    ,"E"    ,"F"    ,"G"    ,
-"H"     ,"I"    ,"J"    ,"K"    ,"L"    ,"M"    ,"N"    ,"O"    ,
-"P"     ,"Q"    ,"R"    ,"S"    ,"T"    ,"U"    ,"V"    ,"W"    ,
-"X"     ,"Y"    ,"Z"    ,"["    ,"\\"   ,"]"    ,"^"    ,"_"    ,
-"`"     ,"a"    ,"b"    ,"c"    ,"d"    ,"e"    ,"f"    ,"g"    ,
-"h"     ,"i"    ,"j"    ,"k"    ,"l"    ,"m"    ,"n"    ,"o"    ,
-"p"     ,"q"    ,"r"    ,"s"    ,"t"    ,"u"    ,"v"    ,"w"    ,
-"x"     ,"y"    ,"z"    ,"{"    ,"|"    ,"}"    ,"~"    ,"^?"   ,
-"M-^@"  ,"M-^A" ,"M-^B" ,"M-^C" ,"M-^D" ,"M-^E" ,"M-^F" ,"M-^G" ,
-"M-^H"  ,"M-^I" ,"M-^J" ,"M-^K" ,"M-^L" ,"M-^M" ,"M-^N" ,"M-^O" ,
-"M-^P"  ,"M-^Q" ,"M-^R" ,"M-^S" ,"M-^T" ,"M-^U" ,"M-^V" ,"M-^W" ,
-"M-^X"  ,"M-^Y" ,"M-^Z" ,"M-^[" ,"M-^\\","M-^]" ,"M-^^" ,"M-^_" ,
-"M- "   ,"M-!"  ,"M-\"" ,"M-#"  ,"M-$"  ,"M-%"  ,"M-&"  ,"M-'"  ,
-"M-("   ,"M-)"  ,"M-*"  ,"M-+"  ,"M-,"  ,"M--"  ,"M-."  ,"M-/"  ,
-"M-0"   ,"M-1"  ,"M-2"  ,"M-3"  ,"M-4"  ,"M-5"  ,"M-6"  ,"M-7"  ,
-"M-8"   ,"M-9"  ,"M-:"  ,"M-;"  ,"M-<"  ,"M-="  ,"M->"  ,"M-?"  ,
-"M-@"   ,"M-A"  ,"M-B"  ,"M-C"  ,"M-D"  ,"M-E"  ,"M-F"  ,"M-G"  ,
-"M-H"   ,"M-I"  ,"M-J"  ,"M-K"  ,"M-L"  ,"M-M"  ,"M-N"  ,"M-O"  ,
-"M-P"   ,"M-Q"  ,"M-R"  ,"M-S"  ,"M-T"  ,"M-U"  ,"M-V"  ,"M-W"  ,
-"M-X"   ,"M-Y"  ,"M-Z"  ,"M-["  ,"M-\\" ,"M-]"  ,"M-^"  ,"M-_"  ,
-"M-`"   ,"M-a"  ,"M-b"  ,"M-c"  ,"M-d"  ,"M-e"  ,"M-f"  ,"M-g"  ,
-"M-h"   ,"M-i"  ,"M-j"  ,"M-k"  ,"M-l"  ,"M-m"  ,"M-n"  ,"M-o"  ,
-"M-p"   ,"M-q"  ,"M-r"  ,"M-s"  ,"M-t"  ,"M-u"  ,"M-v"  ,"M-w"  ,
-"M-x"   ,"M-y"  ,"M-z"  ,"M-{"  ,"M-|"  ,"M-}"  ,"M-~"  ,"M-^?"
-};
+extern int square;
 
 P *getto(p,cur,top,line)
 P *p,*cur,*top;
@@ -161,6 +124,7 @@ int flg;
 if(l+flg+n<w->top->line+w->h && l+flg>=w->top->line && l+flg<=w->b->eof->line)
  {
  int y;
+ if(flg) w->t->t->sary[w->y+l-w->top->line]=w->t->t->li;
  nscrldn(w->t->t,(int)(w->y+l+flg-w->top->line),w->y+w->h,(int)n);
  scrldn(w->t->t->updtab,(int)(w->y+l+flg-w->top->line),w->y+w->h,(int)n);
  }
@@ -207,14 +171,13 @@ else if(l+n<w->top->line+w->h &&
 
 /* Update a single line */
 
-static int lgen(t,y,screen,x,w,p,scr,ct,from,to)
+static int lgen(t,y,screen,x,w,p,scr,from,to)
 SCRN *t;
 int y;
 int *screen;	/* Screen line address */
 int w;		/* Window */
 P *p;		/* Buffer pointer */
 long scr;	/* Starting column to display */
-char **ct;	/* Table of character translations */
 long from,to;	/* Range for marked block */
 {
 int done=1;
@@ -224,7 +187,6 @@ char *bp;		/* Buffer pointer, 0 if not set */
 int amnt;		/* Amount left in this segment of the buffer */
 int c, ta;
 unsigned char bc;
-char *q;
 
 /* Initialize bp and amnt from p */
 if(p->ofst>=p->hdr->hole)
@@ -243,12 +205,20 @@ lp:		/* Display next character */
 if(amnt) do
  {
  bc= *bp++;
- if(byte>=from && byte<to) c=INVERSE;
- else c=0;
+ if(square)
+  {
+  if(col>=from && col<to) c=INVERSE;
+  else c=0;
+  }
+ else
+  {
+  if(byte>=from && byte<to) c=INVERSE;
+  else c=0;
+  }
  ++byte;
  if(bc=='\t')
   {
-  ta=TABSIZ-col%TABSIZ;
+  ta=p->b->tab-col%p->b->tab;
   if(ta+col>scr)
    {
    ta-=scr-col;
@@ -257,13 +227,7 @@ if(amnt) do
   if((col+=ta)==scr) { --amnt; goto loop; }
   }
  else if(bc=='\n') goto eobl;
- else
-  if(dspasis && bc>=160 && bc<=254) { if(++col==scr) { --amnt; goto loop; } }
-  else
-   {
-   q=ct[bc];
-   while(*q++) if(++col==scr) goto doch;
-   }
+ else if(++col==scr) { --amnt; goto loop; }
  }
  while(--amnt);
 if(bp==p->ptr+SEGSIZ)
@@ -286,24 +250,29 @@ else
  amnt=SEGSIZ-p->hdr->ehole;
  goto lp;
  }
-goto eobl;
+goto eof;
 
 loop:		/* Display next character */
 if(amnt) do
  {
  bc= *bp++;
- if(byte>=from && byte<to) c=INVERSE;
- else c=0;
+ if(square)
+  if(col+x>=from && col+x<to) c=INVERSE;
+  else c=0;
+ else
+  if(byte>=from && byte<to) c=INVERSE;
+  else c=0;
  ++byte;
  if(bc=='\t')
   {
-  ta=TABSIZ-((x+scr)%TABSIZ);
+  ta=p->b->tab-((x+scr)%p->b->tab);
   dota:
   do
    {
    if(screen[x]!=' '+c)
     {
     screen[x]=' '+c;
+    if(t->ins) clrins(t);
     if(t->x!=x || t->y!=y) cpos(t,x,y);
     if(c!=t->attrib) attr(t,c);
     ttputc(' '); ++t->x;
@@ -316,36 +285,23 @@ if(amnt) do
  else if(bc=='\n') goto eobl;
  else
   {
-  if(dspasis && bc>=160 && bc<=254)
+  if(!dspasis || bc<160 || bc>254)
    {
-   if(screen[x]!=c+bc)
-    {
-    screen[x]=c+bc;
-    if(t->x!=x || t->y!=y) cpos(t,x,y);
-    if(c!=t->attrib) attr(t,c);
-    ttputc(bc); ++t->x;
-    if(have) goto bye;
-    }
-   if(++x==w) goto eosl;
+   if(bc&128) c^=INVERSE, bc&=127;
+   if(bc==127) c|=UNDERLINE, bc='?';
+   else if(bc<32) c|=UNDERLINE, bc+='@';
    }
-  else
+  if(t->hz && bc=='~') bc='\\';
+  if(screen[x]!=c+bc)
    {
-   q=ct[bc];
-   doch:
-   while(*q)
-    {
-    if(screen[x]!=c+*q)
-     {
-     screen[x]=c+*q;
-     if(t->x!=x || t->y!=y) cpos(t,x,y);
-     if(c!=t->attrib) attr(t,c);
-     ttputc(*q); ++t->x;
-     if(have) goto bye;
-     }
-    if(++x==w) goto eosl;
-    ++q;
-    }
+   screen[x]=c+bc;
+   if(t->ins) clrins(t);
+   if(t->x!=x || t->y!=y) cpos(t,x,y);
+   if(c!=t->attrib) attr(t,c);
+   ttputc(bc); ++t->x;
+   if(have) goto bye;
    }
+  if(++x==w) goto eosl;
   }
  }
  while(--amnt);
@@ -369,8 +325,11 @@ else
  amnt=SEGSIZ-p->hdr->ehole;
  goto loop;
  }
+goto eof;
 
 eobl:		/* End of buffer line found.  Erase to end of screen line */
+++p->line;
+eof:
 if(x!=w) done=eraeol(t,x,y);
 else done=0;
 
@@ -379,7 +338,6 @@ bye:
 if(bp-p->ptr<=p->hdr->hole) p->ofst=bp-p->ptr;
 else p->ofst=bp-p->ptr-(p->hdr->ehole-p->hdr->hole);
 p->byte=byte;
-++p->line;
 return done;
 
 eosl:
@@ -390,14 +348,15 @@ pnextl(p);
 return 0;
 }
 
-static int lgenattr(t,y,screen,x,w,p,scr,ct,from,to)
+/* Generate line into an array */
+
+static int lgena(t,y,screen,x,w,p,scr,from,to)
 SCRN *t;
 int y;
 int *screen;	/* Screen line address */
 int w;		/* Window */
 P *p;		/* Buffer pointer */
 long scr;	/* Starting column to display */
-char **ct;	/* Table of character translations */
 long from,to;	/* Range for marked block */
 {
 int done=1;
@@ -425,12 +384,20 @@ lp:		/* Display next character */
 if(amnt) do
  {
  bc= *bp++;
- if(byte>=from && byte<to) c=INVERSE;
- else c=0;
+ if(square)
+  {
+  if(col>=from && col<to) c=INVERSE;
+  else c=0;
+  }
+ else
+  {
+  if(byte>=from && byte<to) c=INVERSE;
+  else c=0;
+  }
  ++byte;
  if(bc=='\t')
   {
-  ta=TABSIZ-col%TABSIZ;
+  ta=p->b->tab-col%p->b->tab;
   if(ta+col>scr)
    {
    ta-=scr-col;
@@ -468,23 +435,20 @@ loop:		/* Display next character */
 if(amnt) do
  {
  bc= *bp++;
- if(byte>=from && byte<to) c=INVERSE;
- else c=0;
+ if(square)
+  if(col+x>=from && col+x<to) c=INVERSE;
+  else c=0;
+ else
+  if(byte>=from && byte<to) c=INVERSE;
+  else c=0;
  ++byte;
  if(bc=='\t')
   {
-  ta=TABSIZ-((x+scr)%TABSIZ);
+  ta=p->b->tab-((x+scr)%p->b->tab);
   dota:
   do
    {
-   if(screen[x]!=' '+c)
-    {
-    screen[x]=' '+c;
-    if(t->x!=x || t->y!=y) cpos(t,x,y);
-    if(c!=t->attrib) attr(t,c);
-    ttputc(' '); ++t->x;
-    if(have) goto bye;
-    }
+   screen[x]=' '+c;
    if(++x==w) goto eosl;
    }
    while(--ta);
@@ -498,14 +462,7 @@ if(amnt) do
    if(bc==127) c|=UNDERLINE, bc='?';
    else if(bc<32) c|=UNDERLINE, bc+='@';
    }
-  if(screen[x]!=c+bc)
-   {
-   screen[x]=c+bc;
-   if(t->x!=x || t->y!=y) cpos(t,x,y);
-   if(c!=t->attrib) attr(t,c);
-   ttputc(bc); ++t->x;
-   if(have) goto bye;
-   }
+  screen[x]=c+bc;
   if(++x==w) goto eosl;
   }
  }
@@ -530,17 +487,18 @@ else
  amnt=SEGSIZ-p->hdr->ehole;
  goto loop;
  }
-
+goto eof;
 eobl:		/* End of buffer line found.  Erase to end of screen line */
-if(x!=w) done=eraeol(t,x,y);
-else done=0;
+++p->line;
+eof:
+while(x!=w) screen[x++]=' ';
+done=0;
 
 /* Set p to bp/amnt */
 bye:
 if(bp-p->ptr<=p->hdr->hole) p->ofst=bp-p->ptr;
 else p->ofst=bp-p->ptr-(p->hdr->ehole-p->hdr->hole);
 p->byte=byte;
-++p->line;
 return done;
 
 eosl:
@@ -556,25 +514,88 @@ BW *w;
 {
 int *screen;
 P *p=0;
+P *q=pdup(w->cursor);
 int bot=w->h+w->y;
-int y=w->y;
+int y;
+int dosquare=0;
 long from,to;
 from=to=0;
 if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
    w->t->markb->b==w->b)
- from=w->t->markb->byte, to=w->t->markk->byte;
-for(screen=w->t->t->scrn+w->y*w->t->w; y!=bot; ++y, screen+=w->t->w)
+ if(square) from=w->t->markb->col, to=w->t->markk->col, dosquare=1;
+ else from=w->t->markb->byte, to=w->t->markk->byte;
+
+y=w->cursor->line-w->top->line+w->y;
+for(screen=w->t->t->scrn+y*w->t->w;y!=bot; ++y, screen+=w->t->w)
  {
  if(have) break;
  if(w->t->t->updtab[y])
   {
   p=getto(p,w->cursor,w->top,w->top->line+y-w->y);
-  if(dspattr) w->t->t->updtab[y]=lgenattr(w->t->t,y,screen,w->x,w->x+w->w,p,
-                                          w->offset,w->b->ctab,from,to);
-  else w->t->t->updtab[y]=lgen(w->t->t,y,screen,w->x,w->x+w->w,p,w->offset,
-                               w->b->ctab,from,to);
+  if(w->t->t->insdel && !w->x)
+   {
+   pset(q,p);
+   if(dosquare)
+    if(w->top->line+y-w->y>=w->t->markb->line &&
+       w->top->line+y-w->y<=w->t->markk->line)
+     lgena(w->t->t,y,w->t->t->compose,w->x,w->x+w->w,q,w->offset,from,to);
+    else
+     lgena(w->t->t,y,w->t->t->compose,w->x,w->x+w->w,q,w->offset,0L,0L);
+   else
+    lgena(w->t->t,y,w->t->t->compose,w->x,w->x+w->w,q,w->offset,from,to);
+   magic(w->t->t,y,screen,w->t->t->compose,
+         (int)(w->cursor->xcol-w->offset+w->x));
+   }
+  if(dosquare)
+   if(w->top->line+y-w->y>=w->t->markb->line &&
+      w->top->line+y-w->y<=w->t->markk->line)
+    w->t->t->updtab[y]=lgen(w->t->t,y,screen,w->x,w->x+w->w,p,w->offset,
+                            from,to);
+   else
+    w->t->t->updtab[y]=lgen(w->t->t,y,screen,w->x,w->x+w->w,p,w->offset,
+                            0L,0L);
+  else
+   w->t->t->updtab[y]=lgen(w->t->t,y,screen,w->x,w->x+w->w,p,w->offset,
+                           from,to);
   }
  }
+ 
+y=w->y;
+for(screen=w->t->t->scrn+w->y*w->t->w; y!=w->y+w->cursor->line-w->top->line;
+    ++y, screen+=w->t->w)
+ {
+ if(have) break;
+ if(w->t->t->updtab[y])
+  {
+  p=getto(p,w->cursor,w->top,w->top->line+y-w->y);
+  if(w->t->t->insdel && !w->x)
+   {
+   pset(q,p);
+   if(dosquare)
+    if(w->top->line+y-w->y>=w->t->markb->line &&
+       w->top->line+y-w->y<=w->t->markk->line)
+     lgena(w->t->t,y,w->t->t->compose,w->x,w->x+w->w,q,w->offset,from,to);
+    else
+     lgena(w->t->t,y,w->t->t->compose,w->x,w->x+w->w,q,w->offset,0L,0L);
+   else
+    lgena(w->t->t,y,w->t->t->compose,w->x,w->x+w->w,q,w->offset,from,to);
+   magic(w->t->t,y,screen,w->t->t->compose,
+         (int)(w->cursor->xcol-w->offset+w->x));
+   }
+  if(dosquare)
+   if(w->top->line+y-w->y>=w->t->markb->line &&
+      w->top->line+y-w->y<=w->t->markk->line)
+    w->t->t->updtab[y]=lgen(w->t->t,y,screen,w->x,w->x+w->w,p,w->offset,
+                            from,to);
+   else
+    w->t->t->updtab[y]=lgen(w->t->t,y,screen,w->x,w->x+w->w,p,w->offset,
+                            0L,0L);
+  else
+   w->t->t->updtab[y]=lgen(w->t->t,y,screen,w->x,w->x+w->w,p,w->offset,
+                           from,to);
+  }
+ }
+prm(q);
 if(p) prm(p);
 }
 
@@ -612,6 +633,8 @@ w->rmargin=76;
 w->autoindent=0;
 w->wordwrap=0;
 w->overtype=0;
+w->indentc=' ';
+w->istep=1;
 
 w->top=pdup(b->bof);
 w->cursor=pdup(w->top);

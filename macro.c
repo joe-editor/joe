@@ -117,7 +117,7 @@ W *w;
 int c;
 int n;
 struct recmac *r;
-n=query(w,"Macro to record (0-9): ");
+n=query(w,"Macro to record (0-9 or ^C to abort): ");
 if(n>'9' || n<'0') return;
 unmac(); unmac();
 r=(struct recmac *)malloc(sizeof(struct recmac));

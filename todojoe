@@ -1,20 +1,31 @@
 =-=-=
-bindings which depend on file type
+shell window
+background loading
+
+=-=-=
+make identifier length significant in first 8 (6?) places for old C compilers
+
+=-=-=
+block restricted searches
+
+=-=-=
+key bindings which depend on file type
+
+=-=-=
+hexadecimal edit mode
+fixed record length edit mode
 
 =-=-=
 key layout:
-  delbl			?
-  search backwards	?
-  undelete/redelete	?/?
-
-=-=-=
-Test on convergent and MS-DOS
+  delete to beginning of line	?
+  search backwards		?
+  yank/unyank			?/?
 
 =-=-=
 message file for easily changing languages
 
 =-=-=
-should use temporary buffers instead of memory blocks for
+should use temporary edit buffers instead of memory blocks for
 undo, cut, s&r.  Will be faster and eliminate malloc
 problem on small machines (with undo: use a single buffer?)
 
@@ -24,8 +35,6 @@ copying except at the ends...
 at least undo records should be eliminated when a large block is requested
 
 =-=-=
-Get ins/del char to work again
-
 ttybad?
 
 
@@ -37,33 +46,22 @@ msdos-
 
  how to give memory back during shell escapes?
 
- how to give memory back to dos during shell escapes
-
-hexadecimal edit mode / fixed record length edit mode
-
-rectangular blocks
-
-block restricted searches
-
-background loading / shell windows
-
-goto line with error
-
-tag search
-
+=-=-=
 verticle windows  		- difficult to get scrolling to work right
 
-xedit folding stuff		- regex too slow?
+=-=-=
+xedit and folding stuff		- regex too slow?
 
+=-=-=
 multiple line prompts/menu windows
 
+=-=-=
 block coalescing in b.c.
-can you insert/delete given the b->eof pointer? etc..
-  begining of line detector in insert/delete won't work right with multiple
-  insert/deletes seperated by quick movement functions
-  - might be ok... just don't do that...
 
-store number of lines in block headers, maybe could improve search speed
+=-=-=
+store number of lines in block headers, maybe could then use faster search
+algorithm
 
+=-=-=
 insert and delete should determine number of columns so that fixup doesn't
 have to call pfcol so much.

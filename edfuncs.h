@@ -106,9 +106,13 @@ void uiindent();
 void uipgamnt();
 void uimid();
 void uiforce();
-void uictrl();
 void uiasis();
 void uistarow();
 void uistacol();
+void uitab();
+void uisquare();
+void uiistep();
+void uicindent();
+void utag();
 
 #endif

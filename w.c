@@ -86,9 +86,24 @@ int h;
 x=findtopw(w);
 
 /* Add heights of all windows in family */
-for(w=x, h=(w->reqh?w->reqh:w->h);
+for(w=x, h=(w->reqh?w->reqh:w->hh);
     w->link.next!=x && w->link.next->main==x->main;
-    w=w->link.next, h+=(w->reqh?w->reqh:w->h));
+    w=w->link.next, h+=(w->reqh?w->reqh:w->hh));
+
+return h;
+}
+
+/* Determine minimum height of a family */
+
+int getminh(w)
+W *w;
+{
+W *x;
+int h;
+x=findtopw(w);
+for(w=x, h=(w->win?1:2);
+    w->link.next!=x && w->link.next->main==x->main;
+    w=w->link.next, h+=(w->win?1:2));
 
 return h;
 }
@@ -102,6 +117,8 @@ W *x;
 for(x=w;x->link.next->main==w->main && x->link.next!=w;x=x->link.next);
 return x;
 }
+
+/* Find last window on the screen */
 
 W *lastw(t)
 SCREEN *t;
@@ -134,40 +151,39 @@ scr=t;
 return t;
 }
 
+void chsize(t,mul,div)
+SCREEN *t;
+{
+W *w;
+w=t->topwin; do
+ if(!w->win)
+  {
+  w->reqh=getgrouph(w)*mul;
+  w->reqh=w->reqh/div+(w->reqh%div>=div/2?1:0);
+  if(w->reqh<FITHEIGHT) w->reqh=FITHEIGHT;
+  w->reqh-=getminh(w)-2;
+  if(w->reqh<2) w->reqh=2;
+  if(w->reqh>t->h-t->wind) w->reqh=t->h-t->wind;
+  }
+ while(w=w->link.next, w!=t->topwin);
+wfit(t);
+}
+
 void sresize(t)
 SCREEN *t;
 {
 SCRN *scrn=t->t;
 W *w;
-int base=0;
-int n=0;
+int osize=t->h-t->wind;
 t->w=scrn->co;
 t->h=scrn->li;
-if(t->wind>t->h-4) t->wind=t->h-4;
+if(t->h-t->wind<FITHEIGHT) t->wind=t->h-FITHEIGHT;
 if(t->wind<0) t->wind=0;
 w=t->topwin; do
- {
- if(w->y>=0)
-  if(w->win) base+=w->h;
-  else ++n, base+=2;
- w->w=t->w-1;
- }
+ w->y= -1, w->w=t->w-1;
  while(w=w->link.next, w!=t->topwin);
-if(!base)
- {
- wfit(t);
- return;
- }
-if(base>=t->h-t->wind) n=0;
-else n=(t->h-t->wind-base)/n;
-w=t->topwin; do
- if(w->y>=0)
-  {
-  w->y= -1;
-  if(!w->win) w->reqh=2+n;
-  }
- while(w=w->link.next, w!=t->topwin);
-wfit(t);
+chsize(t,t->h-t->wind,osize);
+updall();
 }
 
 void updall()
@@ -222,7 +238,7 @@ tryagain:
 y=t->wind; left=t->h-y; pw=0;
 
 w=t->topwin; do
- w->ny= -1, w->nh=(w->reqh?w->reqh:w->h);
+ w->ny= -1, w->hh=w->nh=(w->reqh?w->reqh:w->hh);
  while((w=w->link.next)!=t->topwin);
 
 /* Fit a group of windows on the screen */
@@ -230,8 +246,7 @@ w=t->topwin; do
  {
  req=getgrouph(w);
  if(req>left)		/* If group is taller than lines left */
-  if(pw) break;		/* Give space to previous family */
-  else adj=req-left;	/* This family gets shorter */
+  adj=req-left;		/* then family gets shorter */
  else adj=0;
  
  /* Fit a family of windows on the screen */
@@ -244,9 +259,9 @@ w=t->topwin; do
   y+=w->nh; left-=w->nh;	/* Increment y value by height of window */
   w=w->link.next;		/* Next window */
   } while(w!=t->topwin && w->main==w->link.prev->main);
- } while(w!=t->topwin);
+ } while(w!=t->topwin && left>=FITHEIGHT);
 
-/* We can't extra space to fit a new family on, so give space to parent of
+/* We can't use extra space to fit a new family on, so give space to parent of
  * previous family */
 pw->nh+=left;
 
@@ -359,18 +374,7 @@ if(t->curwin->link.prev!=t->curwin)
  t->curwin=t->curwin->link.prev;
  if(t->curwin->y== -1)
   {
-  int req;
-  int adj;
-  req=getgrouph(t->curwin);
-  if(req>t->h-t->wind) adj=req-(t->h-t->wind);
-  else adj=0;
-  req-=adj;
-  do
-   {
-   t->topwin=t->topwin->link.prev;
-   if(!t->topwin->win) t->topwin->h-=adj;
-   }
-   while(t->topwin->link.prev->main==t->topwin->main);
+  t->topwin=findtopw(t->curwin);
   wfit(t);
   }
  return 0;
@@ -389,10 +393,10 @@ for(nextw=w->link.next;
     nextw->win && nextw!=w->t->topwin;
     nextw=nextw->link.next);
 if(nextw==w->t->topwin) return -1;
-if(nextw->y== -1 || nextw->h<=2) return -1;
+if(nextw->y== -1 || nextw->hh<=FITHEIGHT) return -1;
 
-w->reqh=w->h+1;		/* Increase this window's height */
-nextw->reqh=nextw->h-1;	/* Decrease this window's height and move it down */
+w->reqh=w->hh+1;	/* Increase this window's height */
+nextw->reqh=nextw->hh-1;/* Decrease this window's height and move it down */
 
 wfit(w->t);
 
@@ -406,7 +410,7 @@ W *w;
 {
 W *nextw, *z;
 /* Is this window too small already? */
-if(w->h<=2) return -1;
+if(w->hh<=FITHEIGHT) return -1;
 
 /* Is there a window we can grow with this window's space? */
 for(nextw=w->link.next;
@@ -414,8 +418,8 @@ for(nextw=w->link.next;
     nextw=nextw->link.next);
 if(nextw==w->t->topwin) return -1;
 
-w->reqh=w->h-1;			/* Decrease window size */
-nextw->reqh=nextw->h+1;		/* Give space to this window */
+w->reqh=w->hh-1;		/* Decrease window size */
+nextw->reqh=nextw->hh+1;	/* Give space to this window */
 
 wfit(w->t);
 return 0;
@@ -426,16 +430,21 @@ return 0;
 void wshowall(t)
 SCREEN *t;
 {
-int base=0;
 int n=0;
+int set;
 W *w=t->topwin; do
- if(w->win) base+=w->h;
- else ++n, base+=2;
+ if(!w->win) ++n;
  while(w=w->link.next, w!=t->topwin);
-if(base>=t->h-t->wind) n=0;
-else n=(t->h-t->wind-base)/n;
+if((t->h-t->wind)/n>=FITHEIGHT) set=(t->h-t->wind)/n;
+else set=FITHEIGHT;
 w=t->topwin; do
- if(!w->win) w->reqh=2+n;
+ if(!w->win)
+  {
+  int h=getminh(w);
+  if(h>=set) w->reqh=2;
+  else w->reqh=set-(h-2);
+  w->orgwin=0;
+  }
  while(w=w->link.next, w!=t->topwin);
 wfit(t);
 }
@@ -443,22 +452,25 @@ wfit(t);
 void wspread(t)
 SCREEN *t;
 {
-int base=0;
 int n=0;
 W *w=t->topwin; do
- if(w->y>=0)
-  if(w->win) base+=(w->reqh?w->reqh:w->h);
-  else ++n, base+=2;
+ if(w->y>=0 && !w->win) ++n;
  while(w=w->link.next, w!=t->topwin);
-if(!base)
+if(!n)
  {
  wfit(t);
  return;
  }
-if(base>=t->h-t->wind) n=0;
-else n=(t->h-t->wind-base)/n;
+if((t->h-t->wind)/n>=FITHEIGHT) n=(t->h-t->wind)/n;
+else n=FITHEIGHT;
 w=t->topwin; do
- if(w->y>=0) if(!w->win) w->reqh=2+n;
+ if(!w->win)
+  {
+  int h=getminh(w);
+  if(h>=n) w->reqh=2;
+  else w->reqh=n-(h-2);
+  w->orgwin=0;
+  }
  while(w=w->link.next, w!=t->topwin);
 wfit(t);
 }
@@ -469,18 +481,10 @@ void wshowone(w)
 W *w;
 {
 W *q=w->t->topwin; do
- if(!q->win) q->reqh=w->t->h-(getgrouph(q)-q->h);
+ if(!q->win)
+  q->reqh=w->t->h-(getgrouph(q)-q->hh), q->orgwin=0;
  while(q=q->link.next, q!=w->t->topwin);
 wfit(w->t);
-
-/*
-int req=getgrouph(w);
-int adj=w->t->h-req;
-w->t->curwin=w;
-w->t->topwin=findtopw(w);
-w->main->reqh=w->main->h+adj;
-wfit(w->t);
-*/
 }
 
 /* Create a window */
@@ -517,13 +521,13 @@ else new->main=new;
 
 /* Get space for window */
 if(original)
- if(original->h-height<=2)
+ if(original->hh-height<=2)
   {
   /* Not enough space for window */
   free(new);
   return 0;
   }
- else original->h-=height;
+ else original->hh-=height;
 
 /* Create new keyboard handler for window */
 if(watom->context) new->kbd=mkkbd(watom->context,new);
@@ -546,7 +550,7 @@ return new;
 static int doabort(w)
 W *w;
 {
-int amnt=w->h;
+int amnt=w->hh;
 W *z, *zn;
 w->y= -2;
 if(w->t->topwin==w) w->t->topwin=w->link.next;
@@ -563,9 +567,8 @@ z=w->t->topwin; do
  while(z=z->link.next, z!=w->t->topwin);
 if(w->orgwin)
  {
- if(w->orgwin->reqh) w->orgwin->reqh+=(w->reqh?w->reqh:w->h);
- else w->orgwin->reqh=w->orgwin->h+(w->reqh?w->reqh:w->h);
- w->orgwin->hh+=w->hh;
+ if(w->orgwin->reqh) w->orgwin->reqh+=(w->reqh?w->reqh:w->hh);
+ else w->orgwin->reqh=w->orgwin->hh+(w->reqh?w->reqh:w->hh);
  }
 if(w->t->curwin==w)
  if(w->t->curwin->win) w->t->curwin=w->t->curwin->win;
@@ -591,16 +594,19 @@ void wabort(w)
 W *w;
 {
 SCREEN *t=w->t;
-if(w->orgwin && w!=w->main)
+if(w!=w->main)
  {
-/* w->orgwin->reqh=(w->orgwin->reqh?w->orgwin->reqh:w->orgwin->h)+w->h; */
  doabort(w);
  if(!leave) wfit(t);
  }
 else
  {
  doabort(w);
- if(!leave) wspread(t);
+ if(!leave)
+  {
+  if(lastw(t)->link.next!=t->topwin) wfit(t);
+  else wspread(t);
+  }
  }
 }
 

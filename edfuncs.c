@@ -33,9 +33,12 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "main.h"
 #include "edfuncs.h"
 
+int square=0;		/* Rectangle mode */
+
 B *filehist=0;
 B *filthist=0;
 B *linehist=0;
+B *taghist=0;
 
 char *msgs[]=
 {
@@ -81,6 +84,157 @@ if(w->t->h-w->t->wind==getgrouph(w)) wshowall(w->t);
 else wshowone(w);
 }
 
+/******************************/
+/* Rectangle mode subroutines */
+/******************************/
+
+void pfill(p,to,usetabs)
+P *p;
+long to;
+{
+if(usetabs)
+ while(p->col<to)
+  if(p->col+p->b->tab-p->col%p->b->tab<=to) binsc(p,'\t'), pgetc(p);
+  else binsc(p,' '), pgetc(p);
+else while(p->col<to) binsc(p,' '), pgetc(p);
+}
+
+/* Insert rectangle into buffer
+ * returns width of inserted matter
+ */
+
+long pinsrect(cur,tmp)
+P *cur;
+B *tmp;
+{
+P *p=pdup(cur);
+P *q=pdup(tmp->bof);
+P *r=pdup(q);
+int usetabs=0;
+long width=0;
+do
+ {
+ long wid=cur->col;
+ while(!piseol(q))
+  if(pgetc(q)=='\t') wid+=cur->b->tab-wid%cur->b->tab, usetabs=1;
+  else ++wid;
+ if(wid-cur->col>width) width=wid-cur->col;
+ } while(pgetc(q)!=MAXINT);
+if(width)
+ {
+ pset(q,tmp->bof);
+ while(pset(r,q), peol(q), (q->line!=tmp->eof->line || q->col))
+  {
+  pcol(p,cur->col);
+  if(p->col<cur->col) pfill(p,cur->col,usetabs);
+  binsb(p,r,q); pfwrd(p,q->byte-r->byte);
+  if(p->col<cur->col+width) pfill(p,cur->col+width,usetabs);
+  if(!pnextl(p)) binsc(p,'\n'), pgetc(p);
+  if(pgetc(q)==MAXINT) break;
+  }
+ }
+prm(p); prm(q); prm(r);
+return width;
+}
+
+/* Overwrite version of above */
+
+long povrrect(cur,tmp)
+P *cur;
+B *tmp;
+{
+P *p=pdup(cur);
+P *q=pdup(tmp->bof);
+P *r=pdup(q);
+P *z=pdup(cur);
+int usetabs=0;
+long width=0;
+long curcol=cur->col;
+do
+ {
+ long wid=curcol;
+ while(!piseol(q))
+  if(pgetc(q)=='\t') wid+=cur->b->tab-wid%cur->b->tab, usetabs=1;
+  else ++wid;
+ if(wid-curcol>width) width=wid-curcol;
+ } while(pgetc(q)!=MAXINT);
+if(width)
+ {
+ pset(q,tmp->bof);
+ while(pset(r,q), peol(q), (q->line!=tmp->eof->line || q->col))
+  {
+  pcol(p,curcol);
+  if(p->col<curcol) pfill(p,curcol,usetabs);
+  pset(z,p); pcol(z,curcol+width); bdel(p,z);
+  binsb(p,r,q); pfwrd(p,q->byte-r->byte);
+  if(p->col<curcol+width) pfill(p,curcol+width,usetabs);
+  if(!pnextl(p)) binsc(p,'\n'), pgetc(p);
+  if(pgetc(q)==MAXINT) break;
+  }
+ }
+prm(p); prm(q); prm(r); prm(z);
+return width;
+}
+
+/* Extract rectangle into a buffer */
+
+B *pextrect(up,down,left,right)
+P *up, *down;
+long left,right;
+{
+P *p=pdup(up);
+P *q=pdup(p);
+B *tmp=bmk();
+P *z=pdup(tmp->eof);
+pbol(p);
+do
+ {
+ pcol(p,left);
+ pset(q,p);
+ pcol(q,right);
+ pset(z,tmp->eof); binsb(z,p,q);
+ pset(z,tmp->eof); binsc(z,'\n');
+ } while(pnextl(p) && p->line<=down->line);
+prm(p); prm(q); prm(z);
+return tmp;
+}
+
+/* Delete rectangle.  Returns true if tabs were used */
+
+int pdelrect(up,down,left,right,overtype)
+P *up, *down;
+long left,right;
+{
+P *p=pdup(up);
+P *q=pdup(p);
+int usetabs=0;
+if(overtype)
+ {
+ int c;
+ pbol(p);
+ do
+  {
+  pcol(p,left);
+  pset(q,p);
+  pcol(q,right);
+  while(p->byte<q->byte) if(pgetc(p)=='\t') { usetabs=1; break; }
+  if(usetabs) break;
+  } while(pnextl(p) && p->line<=down->line);
+ pset(p,up);
+ }
+pbol(p);
+do
+ {
+ pcol(p,left);
+ pset(q,p);
+ pcol(q,right);
+ bdel(p,q);
+ if(overtype) pfill(p,right,usetabs);
+ } while(pnextl(p) && p->line<=down->line);
+prm(p); prm(q);
+return usetabs;
+}
+
 /***************/
 /* Block stuff */
 /***************/
@@ -105,15 +259,17 @@ void ublkdel(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-if(w->t->markb && w->t->markb->b==bw->b &&
-   (!w->t->markk || w->t->markk->b!=bw->b))
- if(bw->cursor->byte<w->t->markb->byte)
-  w->t->markk=w->t->markb, w->t->markk->owner=&w->t->markk,
-  pdupown(bw->cursor,&w->t->markb);
- else if(bw->cursor->byte>w->t->markb->byte) pdupown(bw->cursor,&w->t->markk);
- else prm(w->t->markb), prm(w->t->markk);
-if(w->t->markb && w->t->markk)
- if(w->t->markb->b==w->t->markk->b)
+if(w->t->markb && w->t->markk &&
+   w->t->markb->b==w->t->markk->b &&
+   w->t->markk->byte>w->t->markb->byte &&
+   (!square || w->t->markb->col<w->t->markk->col))
+ if(square)
+  {
+  pdelrect(w->t->markb,w->t->markk,w->t->markb->col,w->t->markk->col,
+           bw->overtype);
+  return;
+  }
+ else
   {
   bdel(w->t->markb,w->t->markk);
   prm(w->t->markb);
@@ -130,43 +286,80 @@ BW *bw=(BW *)w->object;
 long size;
 if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
    (size=w->t->markk->byte-w->t->markb->byte)>0 &&
-   (bw->cursor->b!=w->t->markk->b ||
-    bw->cursor->byte>w->t->markk->byte || bw->cursor->byte<w->t->markb->byte))
- {
- binsb(bw->cursor,w->t->markb,w->t->markk);
- ublkdel(w);
- umarkb(w);
- umarkk(w);
- pfwrd(w->t->markk,size);
- updall();
- return;
- }
+   (!square || w->t->markb->col<w->t->markk->col))
+ if(square)
+  {
+  long height=w->t->markk->line-w->t->markb->line;
+  long width;
+  long ocol=bw->cursor->col;
+  B *tmp=pextrect(w->t->markb,w->t->markk,w->t->markb->col,w->t->markk->col);
+  pdelrect(w->t->markb,w->t->markk,w->t->markb->col,w->t->markk->col,
+           bw->overtype);
+  if(bw->overtype)
+   {
+   while(bw->cursor->col<ocol)
+    if(brc(bw->cursor)==' ') pgetc(bw->cursor);
+    else if(bw->cursor->col+bw->b->tab-bw->cursor->col%bw->b->tab<=
+            bw->cursor->col) pgetc(bw->cursor);
+    else binsc(bw->cursor,' '), pgetc(bw->cursor);
+   width=povrrect(bw->cursor,tmp);
+   }
+  else width=pinsrect(bw->cursor,tmp);
+  brm(tmp);
+  while(bw->cursor->col<ocol) pgetc(bw->cursor);
+  umarkb(w);
+  umarkk(w);
+  pline(w->t->markk,w->t->markk->line+height);
+  pcol(w->t->markk,w->t->markb->col+width);
+  return;
+  }
+ else if(bw->cursor->b!=w->t->markk->b ||
+         bw->cursor->byte>w->t->markk->byte ||
+         bw->cursor->byte<w->t->markb->byte)
+  {
+  binsb(bw->cursor,w->t->markb,w->t->markk);
+  ublkdel(w);
+  umarkb(w);
+  umarkk(w);
+  pfwrd(w->t->markk,size);
+  updall();
+  return;
+  }
 msgnw(w,"No block");
 }
-
 
 void ublkcpy(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
 long size;
-if(w->t->markb && w->t->markb->b==bw->b &&
-   (!w->t->markk || w->t->markk->b!=bw->b))
- if(bw->cursor->byte<w->t->markb->byte)
-  w->t->markk=w->t->markb, w->t->markk->owner=&w->t->markk,
-  pdupown(bw->cursor,&w->t->markb);
- else if(bw->cursor->byte>w->t->markb->byte) pdupown(bw->cursor,&w->t->markk);
- else prm(w->t->markb), prm(w->t->markk);
 if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
-   (size=w->t->markk->byte-w->t->markb->byte)>0)
- {
- binsb(bw->cursor,w->t->markb,w->t->markk);
- umarkb(w);
- umarkk(w);
- pfwrd(w->t->markk,size);
- updall();
- return;
- }
+   (size=w->t->markk->byte-w->t->markb->byte)>0 &&
+   (!square || w->t->markb->col < w->t->markk->col))
+ if(square)
+  {
+  B *tmp=pextrect(w->t->markb,w->t->markk,w->t->markb->col,w->t->markk->col);
+  long width;
+  long height;
+  if(bw->overtype) width=povrrect(bw->cursor,tmp);
+  else width=pinsrect(bw->cursor,tmp);
+  height=w->t->markk->line-w->t->markb->line;
+  brm(tmp);
+  umarkb(w);
+  umarkk(w);
+  pline(w->t->markk,w->t->markk->line+height);
+  pcol(w->t->markk,w->t->markb->col+width);
+  return;
+  }
+ else
+  {
+  binsb(bw->cursor,w->t->markb,w->t->markk);
+  umarkb(w);
+  umarkk(w);
+  pfwrd(w->t->markk,size);
+  updall();
+  return;
+  }
 msgnw(w,"No block");
 }
 
@@ -185,9 +378,16 @@ char *s;
 long size;
 int fl;
 if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
-   (size=w->t->markk->byte-w->t->markb->byte)>0)
+   (size=w->t->markk->byte-w->t->markb->byte)>0 &&
+   (!square || w->t->markk->col>w->t->markb->col))
  {
- if(fl=bsave(w->t->markb,s,size)) msgnw(w,msgs[5+fl]);
+ if(square)
+  {
+  B *tmp=pextrect(w->t->markb,w->t->markk,w->t->markb->col,w->t->markk->col);
+  if(fl=bsave(tmp->bof,s,tmp->eof->byte)) msgnw(w,msgs[5+fl]);
+  brm(tmp);
+  }
+ else if(fl=bsave(w->t->markb,s,size)) msgnw(w,msgs[5+fl]);
  }
 else msgnw(w,"No block");
 vsrm(s);
@@ -197,15 +397,9 @@ void ublksave(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-if(w->t->markb && w->t->markb->b==bw->b &&
-   (!w->t->markk || w->t->markk->b!=bw->b))
- if(bw->cursor->byte<w->t->markb->byte)
-  w->t->markk=w->t->markb, w->t->markk->owner=&w->t->markk,
-  pdupown(bw->cursor,&w->t->markb);
- else if(bw->cursor->byte>w->t->markb->byte) pdupown(bw->cursor,&w->t->markk);
- else prm(w->t->markb), prm(w->t->markk);
 if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
-   (w->t->markk->byte-w->t->markb->byte)>0)
+   (w->t->markk->byte-w->t->markb->byte)>0 &&
+   (!square || w->t->markk->col>w->t->markb->col))
  {
  wmkfpw(w,"Name of file to write (^C to abort): ",&filehist,dowrite,"Names");
  return;
@@ -252,13 +446,21 @@ void urindent(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-if(w->t->markb && w->t->markb->b==bw->b &&
-   (!w->t->markk || w->t->markk->b!=bw->b))
- if(bw->cursor->byte<w->t->markb->byte)
-  w->t->markk=w->t->markb, w->t->markk->owner=&w->t->markk,
-  pdupown(bw->cursor,&w->t->markb);
- else if(bw->cursor->byte>w->t->markb->byte) pdupown(bw->cursor,&w->t->markk);
- else prm(w->t->markb), prm(w->t->markk);
+if(square)
+ {
+ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
+    w->t->markb->byte<=w->t->markk->byte && w->t->markb->col<=w->t->markk->col)
+  {
+  P *p=pdup(w->t->markb);
+  do
+   {
+   pcol(p,w->t->markb->col);
+   pfill(p,w->t->markb->col+bw->istep,bw->indentc=='\t'?1:0);
+   } while(pnextl(p) && p->line<=w->t->markk->line);
+  prm(p);
+  }
+ return;
+ }
 if(!w->t->markb || !w->t->markk || w->t->markb->b!=w->t->markk->b ||
    bw->cursor->byte<w->t->markb->byte || bw->cursor->byte>w->t->markk->byte)
  {
@@ -270,7 +472,7 @@ else
  while(p->byte<w->t->markk->byte)
   {
   pbol(p);
-  binsc(p,' ');
+  while(p->col<bw->istep) binsc(p,bw->indentc), pgetc(p);
   pnextl(p);
   }
  prm(p);
@@ -281,13 +483,39 @@ void ulindent(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-if(w->t->markb && w->t->markb->b==bw->b &&
-   (!w->t->markk || w->t->markk->b!=bw->b))
- if(bw->cursor->byte<w->t->markb->byte)
-  w->t->markk=w->t->markb, w->t->markk->owner=&w->t->markk,
-  pdupown(bw->cursor,&w->t->markb);
- else if(bw->cursor->byte>w->t->markb->byte) pdupown(bw->cursor,&w->t->markk);
- else prm(w->t->markb), prm(w->t->markk);
+if(square)
+ {
+ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
+    w->t->markb->byte<=w->t->markk->byte && w->t->markb->col<=w->t->markk->col)
+  {
+  P *p=pdup(w->t->markb);
+  P *q=pdup(p);
+  do
+   {
+   pcol(p,w->t->markb->col);
+   while(p->col<w->t->markb->col+bw->istep)
+    {
+    int c=pgetc(p);
+    if(c!=' ' && c!='\t' && c!=bw->indentc)
+     {
+     prm(p);
+     prm(q);
+     return;
+     }
+    }
+   } while(pnextl(p) && p->line<=w->t->markk->line);
+  pset(p,w->t->markb);
+  do
+   {
+   pcol(p,w->t->markb->col);
+   pset(q,p);
+   pcol(q,w->t->markb->col+bw->istep);
+   bdel(p,q);
+   } while(pnextl(p) && p->line<=w->t->markk->line);
+  prm(p); prm(q);
+  }
+ return;
+ }
 if(!w->t->markb || !w->t->markk || w->t->markb->b!=w->t->markk->b ||
    bw->cursor->byte<w->t->markb->byte || bw->cursor->byte>w->t->markk->byte)
  {
@@ -296,23 +524,23 @@ if(!w->t->markb || !w->t->markk || w->t->markb->b!=w->t->markk->b ||
 else
  {
  P *p=pdup(w->t->markb);
+ P *q=pdup(p);
  pbol(p);
  while(p->byte<w->t->markk->byte)
   {
-  if(!pindent(p)) { prm(p); return; }
+  if(pindent(p)<bw->istep) { prm(p); return; }
   pnextl(p);
   }
  pset(p,w->t->markb);
  pbol(p);
  while(p->byte<w->t->markk->byte)
   {
-  P *q=pdup(p);
-  pgetc(q);
+  pset(q,p);
+  while(q->col<bw->istep) pgetc(q);
   bdel(p,q);
-  prm(q);
   pnextl(p);
   }
- prm(p);
+ prm(p); prm(q);
  }
 }
 
@@ -324,6 +552,15 @@ BW *bw=(BW *)w->object;
 int fr[2];
 int fw[2];
 char c;
+
+if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
+   w->t->markk->byte>w->t->markb->byte &&
+   (!square || w->t->markk->col>w->t->markb->col)) goto go;
+msgnw(w,"No block");
+return;
+
+go:
+
 pipe(fr);
 pipe(fw);
 nescape(w->t->t);
@@ -348,17 +585,43 @@ if(fork())
  {
  long szz;
  close(fw[1]);
- bdel(w->t->markb,w->t->markk);
- szz=w->t->markk->b->eof->byte;
- binsfd(w->t->markk,fr[0],MAXLONG);
- pfwrd(w->t->markk,w->t->markk->b->eof->byte-szz);
+ if(square)
+  {
+  B *tmp=bmk();
+  long width;
+  long height;
+  pdelrect(w->t->markb,w->t->markk,w->t->markb->col,w->t->markk->col,
+           bw->overtype);
+  binsfd(tmp->bof,fr[0],MAXLONG);
+  if(bw->overtype) width=povrrect(w->t->markb,tmp);
+  else width=pinsrect(w->t->markb,tmp);
+  if(tmp->eof->col || !tmp->eof->line) height=tmp->eof->line;
+  else height=tmp->eof->line-1;
+  pdupown(w->t->markb,&w->t->markk);
+  pline(w->t->markk,w->t->markk->line+height);
+  pcol(w->t->markk,w->t->markb->col+width);
+  brm(tmp);
+  updall();
+  }
+ else
+  {
+  bdel(w->t->markb,w->t->markk);
+  szz=w->t->markk->b->eof->byte;
+  binsfd(w->t->markk,fr[0],MAXLONG);
+  pfwrd(w->t->markk,w->t->markk->b->eof->byte-szz);
+  }
  close(fr[0]);
  wait(0);
  wait(0);
  }
 else
  {
- bsavefd(w->t->markb,fw[1],w->t->markk->byte-w->t->markb->byte);
+ if(square)
+  {
+  B *tmp=pextrect(w->t->markb,w->t->markk,w->t->markb->col,w->t->markk->col);
+  bsavefd(tmp->bof,fw[1],tmp->eof->byte);
+  }
+ else bsavefd(w->t->markb,fw[1],w->t->markk->byte-w->t->markb->byte);
  close(fw[1]);
  _exit(0);
  }
@@ -372,17 +635,11 @@ void ufilt(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-if(w->t->markb && w->t->markb->b==bw->b &&
-   (!w->t->markk || w->t->markk->b!=bw->b))
- if(bw->cursor->byte<w->t->markb->byte)
-  w->t->markk=w->t->markb, w->t->markk->owner=&w->t->markk,
-  pdupown(bw->cursor,&w->t->markb);
- else if(bw->cursor->byte>w->t->markb->byte) pdupown(bw->cursor,&w->t->markk);
- else prm(w->t->markb), prm(w->t->markk);
 if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
    (w->t->markk->byte-w->t->markb->byte)>0)
  {
- wmkpw(w,"Command to filter block through (^C to abort): ",&filthist,dofilt,NULL);
+ wmkpw(w,"Command to filter block through (^C to abort): ",
+       &filthist,dofilt,NULL);
  return;
  }
 msgnw(w,"No block");
@@ -438,7 +695,8 @@ if(fl=bsave(bw->b->bof,s,bw->b->eof->byte))
  }
 else
  {
- bw->b->chnged=0;
+ if(!bw->b->name) bw->b->name=zdup(s);
+ if(!zcmp(bw->b->name,s)) bw->b->chnged=0;
  vsrm(s);
  return 0;
  }
@@ -449,11 +707,11 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 W *pw=wmkfpw(w,"Name of file to save (^C to abort): ",&filehist,dosave,"Names");
-if(bw->b->name)
+if(pw && bw->b->name)
  {
  BW *pbw=(BW *)pw->object;
  binss(pbw->cursor,bw->b->name);
- pset(pbw->cursor,pbw->b->eof);
+ pset(pbw->cursor,pbw->b->eof); pbw->cursor->xcol=pbw->cursor->col;
  }
 }
 
@@ -466,7 +724,7 @@ void *object=bw->object;
 B *b=bfind(s);
 if(!b)
  {
- b=bmk(ctab);
+ b=bmk();
  if(!zlen(s))
   msgnwt(w,"New file ");
  else
@@ -489,7 +747,7 @@ W *w;
 BW *bw=(BW *)w->object;
 if(bw->b->count==1 && bw->b->chnged)
  {
- int c=query(w,"Loose changes to this file (y,n)? ");
+ int c=query(w,"Do you really want to throw away this file (y,n)? ");
  if(c!='y' && c!='Y') return;
  }
 wmkfpw(w,"Name of file to edit (^C to abort): ",&filehist,doedit,"Names");
@@ -501,7 +759,17 @@ char *s;
 {
 BW *bw=(BW *)w->object;
 int fl;
-if(fl=binsf(bw->cursor,s)) msgnw(w,msgs[fl+5]);
+if(square)
+ {
+ B *tmp=bmk();
+ if(fl=binsf(tmp->bof,s)) msgnw(w,msgs[fl+5]);
+ else
+  if(bw->overtype) povrrect(bw->cursor,tmp);
+  else pinsrect(bw->cursor,tmp);
+ brm(tmp);
+ }
+else
+ if(fl=binsf(bw->cursor,s)) msgnw(w,msgs[fl+5]);
 vsrm(s);
 bw->cursor->xcol=bw->cursor->col;
 }
@@ -525,6 +793,7 @@ if(dosave(w,s)) { free(bw->b->name); bw->b->name=0; return; }
 exmsg=vsncpy(NULL,0,sc("File "));
 exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
 exmsg=vsncpy(exmsg,sLEN(exmsg),sc(" saved."));
+bw->b->chnged=0;
 wabort(w);
 }
 
@@ -546,6 +815,7 @@ if(bw->b->name)
  exmsg=vsncpy(NULL,0,sc("File "));
  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
  exmsg=vsncpy(exmsg,sLEN(exmsg),sc(" saved."));
+ bw->b->chnged=0;
  wabort(w);
  } 
 else wmkfpw(w,"Name of file to save (^C to abort): ",&filehist,doex,"Names");
@@ -814,7 +1084,7 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 long col=bw->cursor->xcol;
-pnextl(bw->cursor);
+if(!pnextl(bw->cursor)) pboln(bw->cursor);
 pcol(bw->cursor,bw->cursor->xcol=col);
 }
 
@@ -927,20 +1197,13 @@ W *w;
 BW *bw=(BW *)w->object;
 P *p;
 int c;
-if(bw->overtype==1)
+if(bw->overtype && !pisbol(bw->cursor) && !piseol(bw->cursor))
  {
- ultarw(w);
- return;
- }
-if(bw->overtype==2)
- {
- c=prgetc(bw->cursor);
- if(piseol(bw->cursor) && cwhite(c)) pgetc(bw->cursor);
- else return;
+ if((c=prgetc(bw->cursor))!='\t') return;
+ else if(c!=MAXINT) pgetc(bw->cursor);
  }
 p=pdup(bw->cursor);
-if((c=prgetc(bw->cursor))!= MAXINT)
- bdel(bw->cursor,p);
+if((c=prgetc(bw->cursor))!= MAXINT) bdel(bw->cursor,p);
 prm(p);
 }
 
@@ -1136,15 +1399,16 @@ P *p;
 long indent;
 {
 int c;
+long to=p->byte;
 while(!pisbol(p) && !cwhite(c=prgetc(p)));
 if(!pisbol(p))
  {
  pgetc(p);
- binsc(p,'\n');
+ binsc(p,'\n'), ++to;
  pgetc(p);
- if(indent) while(indent--) binsc(p,' ');
+ if(indent) while(indent--) binsc(p,' '), ++to;
  }
-peol(p);
+pfwrd(p,to-p->byte);
 }
 
 /* Reformat paragraph */
@@ -1172,6 +1436,7 @@ curoff=bw->cursor->byte-p->byte;
 peop(bw->cursor);
 
 if(bw->cursor->lbyte) binsc(bw->cursor,'\n'), pgetc(bw->cursor);
+if(piseof(bw->cursor)) binsc(bw->cursor,'\n');
 
 indent=pindent(p);
 q=pdup(p); pnextl(q);
@@ -1189,13 +1454,6 @@ prm(p);
 /* Do first line */
 b=buf;
 p=pdup(bw->cursor);
-
-/* This improves speed when formatting a paragraph at end of file */
-if(piseof(p))
- {
- binsc(bw->cursor,'\n');
- pgetc(bw->cursor);
- }
 
 while(len--)
  {
@@ -1266,12 +1524,7 @@ binsc(bw->cursor,c);
 pgetc(bw->cursor);
 if(bw->wordwrap && bw->cursor->col>bw->rmargin && !cwhite(c))
  wrapword(bw->cursor,bw->lmargin);
-if(bw->overtype==1) udelch(w);
-else if(bw->overtype==2 && !piseol(bw->cursor))
- {
- int d=brc(bw->cursor);
- if(c=='\t' && d=='\t' || c!='\t' && d!='\t') udelch(w);
- }
+else if(bw->overtype && !piseol(bw->cursor) && c!='\t') udelch(w);
 }
 
 void urtn(w)
@@ -1280,15 +1533,6 @@ W *w;
 BW *bw=(BW *)w->object;
 P *p;
 int c;
-if(bw->overtype==2)
- {
- peol(bw->cursor);
- if(!piseof(bw->cursor))
-  {
-  pgetc(bw->cursor);
-  return;
-  }
- }
 p=pdup(bw->cursor);
 binsc(bw->cursor,'\n');
 pgetc(bw->cursor);
@@ -1298,7 +1542,6 @@ if(bw->autoindent)
  while(cwhite(c=pgetc(p))) binsc(bw->cursor,c), pgetc(bw->cursor);
  }
 prm(p);
-if(bw->overtype==1) udelch(w);
 }
 
 void uopen(w)
@@ -1311,7 +1554,130 @@ pset(bw->cursor,q);
 prm(q);
 }
 
+void dotag(w,s)
+W *w;
+char *s;
+{
+BW *bw=(BW *)w->object;
+char buf[512];
+FILE *f;
+void *object=bw->object;
+f=fopen("tags","r");
+while(fgets(buf,512,f))
+ {
+ int x, y, c;
+ for(x=0;buf[x] && buf[x]!=' ' && buf[x]!='\t';++x);
+ c=buf[x]; buf[x]=0;
+ if(!zcmp(s,buf))
+  {
+  buf[x]=c;
+  while(buf[x]==' ' || buf[x]=='\t') ++x;
+  for(y=x;buf[y] && buf[y]!=' ' && buf[y]!='\t' && buf[y]!='\n';++y);
+  if(x!=y)
+   {
+   B *b;
+   c=buf[y]; buf[y]=0;
+   b=bfind(buf+x);
+   if(!b)
+    {
+    int fl;
+    b=bmk();
+    if(fl=bload(b,buf+x))
+     { msgnwt(w,msgs[fl+5]); brm(b); vsrm(s); fclose(f); return; }
+    }
+   bwrm(bw);
+   w->object=(void *)(bw=bwmk(w->t,b,w->x,w->y+1,w->w,w->h-1));
+   wredraw(w);
+   setoptions(bw,buf+x);
+   bw->object=object;
+   
+   buf[y]=c;
+   while(buf[y]==' ' || buf[y]=='\t') ++y;
+   for(x=y;buf[x] && buf[x]!='\n';++x);
+   buf[x]=0;
+   if(x!=y)
+    {
+    long line=0;
+    if(buf[y]>='0' && buf[y]<='9')
+     {
+     sscanf(buf+y,"%ld",&line);
+     if(line>=1) pline(bw->cursor,line-1), bw->cursor->xcol=bw->cursor->col;
+     else msgnw(w,"Invalid line number");
+     }
+    else
+     {
+     if(buf[y]=='/' || buf[y]=='?')
+      {
+      ++y;
+      if(buf[y]=='^') buf[--y]='\\';
+      }
+     if(buf[x-1]=='/' || buf[x-1]=='?')
+      {
+      --x;
+      buf[x]=0;
+      if(buf[x-1]=='$')
+       {
+       buf[x-1]='\\';
+       buf[x]='$';
+       ++x;
+       buf[x]=0;
+       }
+      }
+     if(x!=y)
+      {
+      w->t->pattern=vsncpy(NULL,0,sz(buf+y));
+      w->t->options=0;
+      w->t->repeat= -1;
+      pfnext(w);
+      }
+     }
+    }
+   vsrm(s);
+   fclose(f);
+   return;
+   }
+  }
+ }
+msgnw(w,"Not found");
+vsrm(s);
+fclose(f);
+}
+
+void utag(w)
+W *w;
+{
+BW *bw=(BW *)w->object;
+W *pw;
+if(bw->b->count==1 && bw->b->chnged)
+ {
+ int c=query(w,"Do you really want to throw away this file (y,n)? ");
+ if(c!='y' && c!='Y') return;
+ }
+pw=wmkfpw(w,"Tag string to find (^C to abort): ",&taghist,dotag,NULL);
+if(pw && cword(brc(bw->cursor)))
+ {
+ BW *pbw=(BW *)pw->object;
+ P *p=pdup(bw->cursor);
+ P *q=pdup(p);
+ int c;
+ while(cword(c=prgetc(p))); if(c!=MAXINT) pgetc(p);
+ pset(q,p); while(cword(c=pgetc(q))); if(c!=MAXINT) prgetc(q);
+ binsb(pbw->cursor,p,q);
+ pset(pbw->cursor,pbw->b->eof); pbw->cursor->xcol=pbw->cursor->col;
+ prm(p); prm(q);
+ }
+}
+
 /* Mode commands */
+
+void uisquare(w)
+W *w;
+{
+square= !square;
+if(square) msgnw(w,"Rectangle mode selected.  Effects block commands & Insert file");
+else msgnw(w,"Normal text-stream mode selected");
+updall();
+}
 
 void uiindent(w)
 W *w;
@@ -1335,10 +1701,9 @@ void uitype(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-if(++bw->overtype==3) bw->overtype=0;
+bw->overtype= !bw->overtype;
 if(bw->overtype==0) msgnw(w,"Insert mode");
-else if(bw->overtype==2) msgnw(w,"Text file overtype mode");
-else msgnw(w,"Binary file overtype mode (preserves size of file)");
+else msgnw(w,"Overtype mode");
 }
 
 void uimid(w)
@@ -1355,16 +1720,6 @@ W *w;
 force= !force;
 if(force) msgnw(w,"Last line forced to have LF when file saved");
 else msgnw(w,"Last line not forced to have LF");
-}
-
-void uictrl(w)
-W *w;
-{
-dspattr= !dspattr;
-if(dspattr) msgnw(w,"Underline & Inverse for Ctrl & Meta chars");
-else msgnw(w,"^ & M- for Ctrl & Meta chars");
-refigure();
-updall();
 }
 
 void uiasis(w)
@@ -1404,9 +1759,50 @@ void uilmargin(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-char buf[30];
-sprintf(buf,"Left margin (%ld): ",bw->lmargin);
+char buf[80];
+sprintf(buf,"Left margin %ld (^C to abort): ",bw->lmargin);
 wmkpw(w,buf,NULL,dolmar,NULL);
+}
+
+static void docindent(w,s)
+W *w;
+char *s;
+{
+BW *bw=(BW *)w->object;
+int v=bw->indentc;
+sscanf(s,"%d",&v);
+vsrm(s);
+bw->indentc=v;
+}
+
+void uicindent(w)
+W *w;
+{
+BW *bw=(BW *)w->object;
+char buf[80];
+sprintf(buf,"Indent char %d (SPACE=32, TAB=9, ^C to abort): ",
+        bw->indentc);
+wmkpw(w,buf,NULL,docindent,NULL);
+}
+
+static void doistep(w,s)
+W *w;
+char *s;
+{
+BW *bw=(BW *)w->object;
+long v=bw->istep;
+sscanf(s,"%ld",&v);
+vsrm(s);
+bw->istep=v;
+}
+
+void uiistep(w)
+W *w;
+{
+BW *bw=(BW *)w->object;
+char buf[80];
+sprintf(buf,"Indent step %ld (^C to abort): ",bw->istep);
+wmkpw(w,buf,NULL,doistep,NULL);
 }
 
 static void dormar(w,s)
@@ -1424,9 +1820,32 @@ void uirmargin(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-char buf[30];
-sprintf(buf,"Right margin (%ld): ",bw->rmargin);
+char buf[80];
+sprintf(buf,"Right margin %ld (^C to abort): ",bw->rmargin);
 wmkpw(w,buf,NULL,dormar,NULL);
+}
+
+static void dotab(w,s)
+W *w;
+char *s;
+{
+BW *bw=(BW *)w->object;
+int v=bw->b->tab;
+sscanf(s,"%ld",&v);
+if(v<0 || v>256) v=8;
+vsrm(s);
+bw->b->tab=v;
+refigure();
+updall();
+}
+
+void uitab(w)
+W *w;
+{
+BW *bw=(BW *)w->object;
+char buf[80];
+sprintf(buf,"Tab width %d (^C to abort): ",bw->b->tab);
+wmkpw(w,buf,NULL,dotab,NULL);
 }
 
 static void dopgamnt(w,s)
@@ -1454,7 +1873,7 @@ wmkpw(w,buf,NULL,dopgamnt,NULL);
 void uarg(w,c)
 W *w;
 {
-char buf[30];
+char buf[80];
 if(c>='1' && c<='9') w->t->arg=(c&0xF);
 else w->t->arg=0;
 sprintf(buf,"%d",w->t->arg); msgnw(w,buf);

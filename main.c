@@ -72,8 +72,8 @@ static CMD cmds[]=
   { "backstab", TYPETAB, tbacks },
   { "backw", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, ubackw },
   { "blkcpy", TYPETW+TYPEPW+0, ublkcpy },
-  { "blkdel", TYPETW+TYPEPW+0, ublkdel },
-  { "blkmove", TYPETW+TYPEPW+0, ublkmove },
+  { "blkdel", TYPETW+TYPEPW+EFIXXCOL, ublkdel },
+  { "blkmove", TYPETW+TYPEPW+EFIXXCOL, ublkmove },
   { "blksave", TYPETW+TYPEPW+0, ublksave },
   { "bof", TYPETW+TYPEPW+EMOVE+EFIXXCOL, ubof },
   { "bofhelp", TYPEHELP, uhbof },
@@ -110,17 +110,20 @@ static CMD cmds[]=
   { "groww", TYPETW, ugroww },
   { "help", TYPETW+TYPEPW+TYPETAB, uhelp },
   { "iasis", TYPETW+TYPEPW+TYPETAB+TYPEHELP+EFIXXCOL, uiasis },
-  { "ictrl", TYPETW+TYPEPW+TYPETAB+TYPEHELP+EFIXXCOL, uictrl },
   { "iforce", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uiforce },
   { "iindent", TYPETW+TYPEPW, uiindent },
+  { "iindentc", TYPETW+TYPEPW, uicindent },
+  { "iistep", TYPETW+TYPEPW, uiistep },
   { "ilmargin", TYPETW+TYPEPW, uilmargin },
   { "imid", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uimid },
   { "insc", TYPETW+TYPEPW+EFIXXCOL, uinsc },
   { "insf", TYPETW+TYPEPW+0, uinsf },
   { "ipgamnt", TYPETW+TYPEPW, uipgamnt },
   { "irmargin", TYPETW+TYPEPW+TYPETAB, uirmargin },
+  { "isquare", TYPETW+TYPEPW, uisquare },
   { "istacol", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uistacol },
   { "istarow", TYPETW+TYPEPW+TYPETAB+TYPEHELP, uistarow },
+  { "itab", TYPETW+TYPEPW, uitab },
   { "itype", TYPETW+TYPEPW, uitype },
   { "iwrap", TYPETW+TYPEPW, uiwrap },
   { "lindent", TYPETW+TYPEPW+0, ulindent },
@@ -161,6 +164,7 @@ static CMD cmds[]=
   { "splitw", TYPETW, usplitw },
   { "stat", TYPETW+TYPEPW, ustat },
   { "stop", TYPETW+TYPEPW+TYPETAB+TYPEHELP, ustop },
+  { "tag", TYPETW+TYPEPW, utag },
   { "tomatch", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, utomatch },
   { "type", TYPETW+TYPEPW+EFIXXCOL+EMINOR, utype },
   { "undo", TYPETW+TYPEPW+EFIXXCOL, uundo },
@@ -191,6 +195,7 @@ if((cmdtab.cmd[n].flag&ECHKXCOL) && bw->cursor->xcol!=bw->cursor->col)
  goto skip;
 if(!(cmdtab.cmd[n].flag&maint->curwin->watom->what)) goto skip;
 cmdtab.cmd[n].func(maint->curwin,k);
+if(leave) return;
 bw=(BW *)maint->curwin->object;
 
 if(!(cmdtab.cmd[n].flag&EPOS) &&
@@ -228,13 +233,13 @@ if( m->steps ||
   ) flg=1;
 
 if(flg) umclear();
-while(arg--)
+while(arg-- && !leave)
  if(m->steps)
   {
   MACRO *tmpmac=curmacro;
   int tmpptr=macroptr;
   int x=0;
-  while(m && x!=m->n)
+  while(m && x!=m->n && !leave)
    {
    MACRO *d;
    d=m->steps[x++];
@@ -248,6 +253,7 @@ while(arg--)
   macroptr=tmpptr;
   }
  else execmd(m->n,m->k);
+if(leave) return;
 if(flg) umclear();
 
 undomark();
@@ -378,7 +384,7 @@ if(prokbd(".joerc",cntxts))
  if(prokbd(s,cntxts))
   {
   in:;
-  if(prokbd(s="/usr/local/lib/joerc",cntxts))
+  if(prokbd(s=JOERC,cntxts))
    {
    fprintf(stderr,"Couldn\'t open keymap file \'%s\'\n",s);
    return 1;
@@ -390,7 +396,7 @@ maint=screate(n);
 
 if(argc<2)
  {
- W *w=wmktw(maint,bmk(ctab));
+ W *w=wmktw(maint,bmk());
  BW *bw=(BW *)w->object;
  setoptions(bw,"");
  }
@@ -412,7 +418,7 @@ else
    int fl=0;
    if(!b)
     {
-    b=bmk(ctab);
+    b=bmk();
     fl=bload(b,argv[c]);
     }
    w=wmktw(maint,b);
@@ -428,7 +434,7 @@ else
  mid=omid;
  }
 if(help) helpon(maint);
-msgnw(lastw(maint),"\\i** Joe's Own Editor v1.0.0 ** Copyright (C) 1992 Joesph H. Allen **\\i");
+msgnw(lastw(maint),"\\i** Joe's Own Editor v1.0.5 ** Copyright (C) 1992 Joseph H. Allen **\\i");
 do
  {
  int wid,hei;
@@ -443,7 +449,6 @@ do
  if(m) exemac(m);
  }
  while(!leave);
-cpos(n,0,n->li-1);
 nclose(n);
 if(exmsg) fprintf(stderr,"\n%s\n",exmsg);
 return 0;

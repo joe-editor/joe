@@ -41,6 +41,12 @@ struct seq
 
 extern SEQ seqs[];
 
+struct hentry
+ {
+ int next;
+ int loc;
+ };
+
 /* Each terminal has one of these */
 
 struct scrn
@@ -128,6 +134,10 @@ struct scrn
  char *ce;			/* Clear to end of line */
  int cce;
 
+ /* Basic abilities */
+ int scroll;			/* Set to use scrolling */
+ int insdel;			/* Set to use insert/delete within line */
+
  /* Key-sequence translation table */
 
  struct
@@ -155,6 +165,11 @@ struct scrn
  int *updtab;			/* Dirty lines table */
  int avattr;			/* Bits set for available attributes */
  int *sary;			/* Scroll buffer array */
+
+ int *compose;			/* Line compose buffer */
+ int *ofst;			/* stuff for magic */
+ struct hentry *htab;
+ struct hentry *ary;
  };
 
 /* SCRN *nopen(void);
@@ -235,14 +250,7 @@ void attr();
  * Output a character at the given screen cooridinate.  The cursor position
  * after this function is executed is indeterminate.
  */
-/* void outatr(); */
-#define outatr(ztz,i,j,c) \
- ( \
-  ( ( (ztz)->x!=(i) || (ztz)->y!=(j) ) ? (cpos(ztz,(i),(j)),0) : 0 ), \
-  ( ((c)&~255)!=(ztz)->attrib ? (attr(ztz,(c)&~255),0) : 0 ), \
-  ++ztz->x, \
-  ttputc(c) \
- )
+void outatr();
 
 /* Character attribute bits */
 
@@ -279,8 +287,11 @@ void nscrldn();
  * Execute buffered scroll requests
  */
 void nscroll();
-/* Macros to get width and height of screen */
-#define NWIDTH(t) ((t)->co)
-#define NHEIGHT(t) ((t)->li)
+
+/* void magic(SCRN *t,int y,int *cur,int *new);
+ *
+ * Figure out and execute line shifting
+ */
+void magic();
 
 #endif
