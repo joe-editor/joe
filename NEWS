@@ -1,4 +1,4 @@
-Overview of changes in JOE 2.9.7 (14 Dec 2001)
+Overview of changes in JOE 2.9.8-pre1 (14 Dec 2001)
 - BUGFIX: don't exchange start and end point of the block in some cases
 - defaulting to turn off -asis (locales take care of this; if joe doesn't
   print characters with 8th bit set properly, check if you have properly

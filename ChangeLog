@@ -1,4 +1,8 @@
 Sun May  5 2002  Vitezslav Samel <samel@mail.cz>
+	* NEWS:
+	change wrong version for the last entry
+
+Sun May  5 2002  Vitezslav Samel <samel@mail.cz>
 	* configure.ac:
 	solaris compile fix; check for snprintf - if not available, kick out
 
