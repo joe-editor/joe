@@ -36,27 +36,36 @@ B50,50,B75,75,B110,110,B134,134,B150,150,B200,200,B300,300,B600,600,B1200,1200,
 B1800,1800,B2400,2400,B4800,4800,B9600,9600,EXTA,19200,EXTB,38400
 };
 
+void tsignal();
+
+sigjoe()
+{
+signal(SIGHUP,tsignal);
+signal(SIGTERM,tsignal);
+signal(SIGINT,SIG_IGN);
+signal(SIGPIPE,SIG_IGN);
+signal(SIGQUIT,SIG_IGN);
+}
+
+signorm()
+{
+signal(SIGHUP,SIG_DFL);
+signal(SIGTERM,SIG_DFL);
+signal(SIGQUIT,SIG_DFL);
+signal(SIGINT,SIG_DFL);
+signal(SIGPIPE,SIG_DFL);
+}
+
 aopen()
 {
 int x;
 struct termio newterm;
 fflush(stdout);
-signal(SIGHUP,tsignal);
-signal(SIGINT,SIG_IGN);
-signal(SIGQUIT,SIG_IGN);
-signal(SIGPIPE,SIG_IGN);
-signal(SIGALRM,SIG_IGN);
-signal(SIGTERM,tsignal);
-signal(SIGUSR1,SIG_IGN);
-signal(SIGUSR2,SIG_IGN);
-signal(SIGPWR,tsignal);
 ioctl(fileno(stdin),TCGETA,&oldterm);
 newterm=oldterm;
 newterm.c_lflag=0;
-newterm.c_iflag&=~(ICRNL|IGNCR);
+newterm.c_iflag&=~(ICRNL|IGNCR|INLCR);
 newterm.c_oflag=0;
-newterm.c_cc[VINTR]= -1;
-newterm.c_cc[VQUIT]= -1;
 newterm.c_cc[VMIN]=1;
 newterm.c_cc[VTIME]=0;
 ioctl(fileno(stdin),TCSETAW,&newterm);
@@ -67,32 +76,21 @@ for(x=0;x!=30;x+=2)
   ccc=DIVISOR/speeds[x+1];
   break;
   }
-if(!obuf)
+if(obuf) free(obuf);
+if(!(TIMES*ccc)) obufsiz=4096;
+else
  {
- if(!(TIMES*ccc)) obufsiz=4096;
- else
-  {
-  obufsiz=1000/(TIMES*ccc);
-  if(obufsiz>4096) obufsiz=4096;
-  }
- if(!obufsiz) obufsiz=1;
- obuf=(unsigned char *)malloc(obufsiz);
+ obufsiz=1000/(TIMES*ccc);
+ if(obufsiz>4096) obufsiz=4096;
  }
+if(!obufsiz) obufsiz=1;
+obuf=(unsigned char *)malloc(obufsiz);
 }
 
 aclose()
 {
 aflush();
 ioctl(fileno(stdin),TCSETAW,&oldterm);
-signal(SIGHUP,SIG_DFL);
-signal(SIGINT,SIG_DFL);
-signal(SIGQUIT,SIG_DFL);
-signal(SIGPIPE,SIG_DFL);
-signal(SIGALRM,SIG_DFL);
-signal(SIGTERM,SIG_DFL);
-signal(SIGUSR1,SIG_DFL);
-signal(SIGUSR2,SIG_DFL);
-signal(SIGPWR,SIG_DFL);
 }
 
 int have=0;
@@ -108,12 +106,43 @@ if(obufp)
 if(!have) if(rdchk(fileno(stdin))>0) have=1;
 }
 
+unsigned char *take=0;
+
 anext()
 {
 unsigned char c;
+if(take)
+ if(*take)
+  {
+  int c;
+  if(*take!='\\') return *take++;
+  ++take;
+  if(!*take) return '\\';
+  else if(*take=='r') c='\r';
+  else if(*take=='b') c=8;
+  else if(*take=='n') c=10;
+  else if(*take=='f') c=12;
+  else if(*take=='a') c=7;
+  else if(*take=='\"') c='\"';
+  else if(*take>='0' && *take<='7')
+        {
+        c= *take++-'0';
+        if(*take>='0' && *take<='7')
+         {
+         c=c*8+*take++-'0';
+         if(*take>='0' && *take<='7') c=c*8+*take++-'0';
+         }
+        --take;
+        }
+  else c= *take;
+  ++take;
+  return c;
+  }
+ else take=0;
 aflush();
-if(read(fileno(stdin),&c,1)<1) tsignal();
+if(read(fileno(stdin),&c,1)<1) tsignal(0);
 have=0;
+if(record) macroadd(c);
 return c;
 }
 
@@ -141,6 +170,8 @@ struct ttysize getit;
 #else
 #ifdef TIOCGWINSZ
 struct winsize getit;
+#else
+char *p;
 #endif
 #endif
 #ifdef TIOCGSIZE
@@ -156,6 +187,11 @@ if(ioctl(fileno(stdout),TIOCGWINSZ,&getit)!= -1)
  if(getit.ws_row>=3) height=getit.ws_row;
  if(getit.ws_col>=2) width=getit.ws_col;
  }
+#else
+if(p=getenv("ROWS")) sscanf(p,"%d",&height);
+if(p=getenv("COLS")) sscanf(p,"%d",&width);
+if(height<3) height=24;
+if(width<2) width=80;
 #endif
 #endif
 }
@@ -177,15 +213,31 @@ down:
 getsize();
 }
 
-shell(s)
-char *s;
+shell()
 {
+int x;
+char *s=(char *)getenv("SHELL");
+if(!s)
+ {
+ puts("\nSHELL variable not set");
+ return;
+ }
+eputs("\nYou are at the command shell.  Type 'exit' to continue editing\r\n");
 aclose();
-if(fork()) wait(0);
+if(x=fork())
+ {
+ if(x!= -1) wait(0);
+ }
 else
  {
+ signorm();
  execl(s,s,0);
  _exit(0);
  }
 aopen();
+}
+
+susp()
+{
+shell();
 }

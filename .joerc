@@ -24,16 +24,17 @@
 		p	picture mode (no picture mode)
 		w	word wrap (no word wrap)
 		t	tab magic (no tab magic)
+		nnn	right margin (default is 76)
 
  Here are the file name dependant mode setting lines:
 
-*		wt		Default for unknown extensions.  This line
+*		wt76		Default for unknown extensions.  This line
 				must appear first.
-*.c		at		C programs
-*.h		at		C header files
-*.p		at		Pascal programs
-*.f		at		Fortran programs
-*.joerc		at		This file
+*.c		at76		C programs
+*.h		at76		C header files
+*.p		at76		Pascal programs
+*.f		at76		Fortran programs
+*.joerc		at76		This file
 
  SECOND SECTION:  Lines between the { and the } are the on-line help text.  Use
  \u to turn underline on or off.  Use \i to turn inverse on or off.  Use \\
@@ -48,14 +49,33 @@
 \i \i^P up    ^N down  ^J >line  ^KJ format ^KM move \uEXIT\u     ^KD save ^KN down   \i \i
 \i \i^U page  ^V page  ^Y line   ^KZ shell  ^KW save ^KX save ^KR read ^KG grow   \i \i
 \i \i^KU top ^KV end   ^K- undo  ^K, indnt< ^KY kill ^C abort/         ^KT shrink \i \i
-\i \i^G matching ([<{` ^K+ redo  ^K. indnt>             close window  ^KE get file\i \i
+\i \i^G matching ([<{` ^K+ redo  ^K. indnt> ^K0 subst   close window  ^KE get file\i \i
+\i \i\uMACROS\u: ^K[ record ^K] stop ^K/ play ^K= repeat                              \i \i
 }
 
  THIRD SECTION:  Key sequence to command bindings.  Use ^@ to ^_ and ^? to
- specify control characters.
+ specify control characters.  Use 'sp' specify the space character.
+
+ A simple macro facility is provided:  commands separated by commas (no
+ whitespace) are executed sequentially.  For example:
+ 
+ bof,eol	^K 5			Goto end of first line
+
+ Also, a quoted string may be placed in the command list to supply keyboard
+ input.  Inside the string: \\=\, \"=", and \r=return.  For example:
+ 
+ "\r",saveit,wsplit,"m.out\r",wedit,setbeg,setend,"make\r",cmdblk	^K 2
+
+ Will save the file in the current window, make a new window, run "make" in a
+ shell and place the results in the new window when ^K 2 is pressed.
+
+ Note how the quoted strings appear before the commands which require them.  A
+ special command 'wait' types any previous string in as if from the keyboard.
+
+ For example:  "Hello\r",wait		^K 7
+ Types "Hello" into the edit buffer when ^K 7 is pressed.
 
 :main
-
 backs		^H			Backspace
 backs		^?
 backword	^O			Backspace word
@@ -67,6 +87,7 @@ bol		^[ [ H
 bol		^K ^[ [ H
 bol		^[ O P
 bol		^K ^[ O P
+cmdblk		^K 0			Pipe a marked block through a command
 cpyblk		^K C			Copy previously marked block
 cpyblk		^K ^C
 cpyblk		^K c
@@ -77,7 +98,7 @@ delblk		^K Y			Delete previously marked block
 delblk		^K ^Y
 delblk		^K y
 delch		^D			Delete character
-deleol		^J			Delete to end of line
+ deleol		^J			Delete to end of line
 dellin		^Y			Delete entire line
 dnarw		^N			Move cursor down
 dnarw		^[ [ B
@@ -114,14 +135,28 @@ insfil		^K r
  inss		^G			Insert a space
 inss		^[ [ L
 inss		^K ^[ [ L
-killlin		^K |			Emacs-style kill line
+killlin		^J			Emacs-style kill line
 killword	^W			Delete word under cursor
 ltarw		^B			Move cursor left
 ltarw		^[ [ D
 ltarw		^K ^[ [ D
 ltarw		^[ O D
 ltarw		^K ^[ O D
+macrob		^K [
+macroe		^K ]
+macrodo		^K /
 mode		^T			Change mode
+ ooverwrite				Overwrite mode off
+ owrap					Word wrap off
+ otabmagic				Tab magic off
+ oautoind				Auto-indent off
+ opic					Picture mode off
+ ioverwrite				Overwrite on/off
+ iwrap					Word wrap on/off
+ itabmagic				Tab Magic on/off
+ iautoind				Auto-indent on/off
+ ipic					Picture mode on/off
+ setrmargin				Set right margin
 moveblk		^K M			Move previously marked block
 moveblk		^K ^M
 moveblk		^K m
@@ -135,13 +170,17 @@ pgup		^[ [ I
 pgup		^K ^[ [ I
 pgup		^[ [ 5 ~
 pgup		^K ^[ [ 5 ~
-push		^K Z			Push to a shell
-push		^K ^Z
-push		^K z
+ push		^K Z			Push to a shell
+ push		^K ^Z
+ push		^K z
+suspend		^K Z			Suspend the editor or push to a shell
+suspend		^K ^Z			if system doesn't have job control
+suspend		^K z
 redo		^K +			Redo
 reformat	^K J			Reformat paragraph
 reformat	^K ^J
 reformat	^K j
+repeat		^K =			Repeat
 rewrite		^R			Retype screen
 rtarw		^F			Move cursor right
 rtarw		^[ [ C
@@ -203,9 +242,7 @@ wshrink		^K t
 wsplit		^K O			Split window
 wsplit		^K ^O
 wsplit		^K o
-
 type		^I			Tab
-
 type		sp			Typable characters
 type		!
 type		"

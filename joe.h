@@ -37,7 +37,7 @@ typedef unsigned TXTSIZ;	/* Integer to hold size of file */
 #define PATHSIZE 256		/* Maximum path length */
 #define KEYMAP ".joerc"		/* Keymap file */
 /* #define KEYDEF "/usr/bin/.joerc"	Default keymap file */
-#define ABORT "aborted"		/* Aborted file */
+#define ABORT "DEADJOE"		/* Aborted file */
 
 /* The current file buffer */
 /* When you change windows, these variables get stored in the 'struct buffer'
@@ -254,6 +254,9 @@ struct buffer
  int changed;		/* Set if buffer changed */
  int backup;		/* Set if backup file has been made */
  unsigned char gfnam[PATHSIZE];	/* Current edit file name.  "" for unnamed */
+ struct undorec *undorecs;
+ struct undorec *redorecs;
+ int nundorecs;
  };
 
 /* Each window has a 'struct window' associated with it */
@@ -309,8 +312,7 @@ typedef struct key KEY;
 struct key
  {
  int k;                 /* Key value */
- int n;                 /* Command number or submap address */
-			/* sizeof(int) had better = sizeof(KMAP *) */
+ int *n;                /* Command number or submap address */
  };
 
 typedef struct kmap KMAP;
@@ -342,7 +344,7 @@ typedef struct context CONTEXT;
 struct context
  {
  CONTEXT *next;		/* List of all contexts */
- char *name;			/* Name of this context */
+ char *name;		/* Name of this context */
  KMAP *kmap;		/* Top level keymap for this context */
  int size;		/* Number of entries in this context */
  CMD *cmd;		/* The entries themselves (sorted) */
@@ -516,8 +518,12 @@ int killword();			/* Delete word */
 int backword();			/* Delete word to the left */
 int wrdl();				/* goto previous word */
 int wrdr();				/* goto next word */
+int macrob();
+int macroe();
+int macrodo();
 int edit();				/* Main edit loop */
-
+int waite();
+int macroadd();
 extern FILE *handle;		/* File handle used for many various things */
 extern TXTSIZ added;		/* Number of chars autoindent added
 				(obsolete?) */

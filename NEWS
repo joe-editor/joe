@@ -1,5 +1,28 @@
 
-Release 0.1.0 of JOE (Joe's Own Editor):  Note that this program was
+Release 0.1.2 of JOE
+
+FIXES AND NEW FEATURES
+
+	* undo/redo are now a real undo system instead of undelete
+
+	* keyboard macros added
+
+	* repeat prefix added
+
+	* capture shell output and pipe block through shell command added
+
+	* A version for Linux is now included
+
+	* Simple macros may be specified in the .joerc file
+
+	* Some bugs in the paragraph reformat routine were fixed
+
+	* The right margin may be specified in the .joerc file
+
+	* A bug where strange things would happen if you typed \ in the
+          search & replace prompt is fixed
+
+Release 0.1.1 of JOE (Joe's Own Editor):  Note that this program was
 previously calles 'E' (which turned out to be the RAND EDITOR and one of the
 synonyms for vi) and 'J' (which turned out to be a language and the name of
 another UNIX editor).  See below for list of big fixes and new features. 

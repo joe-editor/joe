@@ -7,6 +7,105 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 0.1.2
+**Released: 1992-01-23**
+
+Source recovered from usenet
+
+Original announcement:
+```
+Xref: funic comp.editors:3128 alt.sources:3045 alt.os.linux:131 comp.unix.xenix.misc:337
+Path: funic!fuug!mcsun!uunet!caen!garbo.ucc.umass.edu!m2c!wpi.WPI.EDU!rcarter
+From: rcarter@wpi.WPI.EDU (Randolph Carter (nee. Joseph H. Allen))
+Newsgroups: comp.editors,alt.sources,alt.os.linux,comp.unix.xenix.misc
+Subject: JOE Version 0.1.2
+Message-ID: <1992Jan23.112219.60@wpi.WPI.EDU>
+Date: 23 Jan 92 11:22:19 GMT
+Sender: rcarter@wpi.WPI.EDU (Randolph Carter (nee. Joseph H. Allen))
+Organization: Kadath Tours, Inc.
+Lines: 35
+
+
+Here (well on alt.sources, anyway) is what I think (hope) will be the last
+version of JOE before the rewrite (version 1.0.0).  This version includes
+some quick fixes and additions to the previous one: 
+
+	* undo/redo are now a real undo system instead of undelete
+
+	* keyboard macros added
+
+	* repeat prefix added
+
+	* capture shell output and pipe block through shell command added
+
+	* A version for Linux is now included
+
+	* Simple macros may be specified in the .joerc file
+
+	* Some bugs in the paragraph reformat routine were fixed
+
+	* The right margin may be specified in the .joerc file
+
+	* A bug where strange things would happen if you typed \ in the
+          search & replace prompt is fixed
+
+I have time now so I should be able to come out with the rewrite real-soon. 
+Oh, and it looks like it will have a macro language.  It's going to be C
+except that the C pointers will be buffer pointers.  This won't make it more
+complicated to use- the only change I envision beyond what's in 0.1.2 is
+that ^K L will be able to take vi-style regular expressions and editor
+commands.
+-- 
+/*  rcarter@wpi.wpi.edu */      /* Amazing */             /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
+## JOE 0.1.1
+*Release date unknown*
+
+*The source for this release has been lost*
+
+Changelog:
+
+```
+FIXES AND NEW FEATURES FOR THIS VERSION
+
+	* Left arrow jumping fixed
+
+	* No longer touches the IXON IXOFF setting
+
+	* Reference to Gnu EMACS removed from the copyright notice :-)
+
+	* The patch for Undo and Redo is not needed for this version.
+
+	* Name of initialization file changed to '.joerc'
+
+	* Versions for ESIX and POSIX now included
+	  (think you Mike Lijewski for the POSIX driver)
+
+	* Users can now customize the help text.  The help text is now placed
+	  in the initialization file
+
+	* A compile option for passing characters with bit 7 set has been
+	  added.  This is for Iceland
+
+	* Added kill line function for the emacs people.  See 'killlin' in
+          the .joerc file
+
+	* The ioctls TIOCGSIZE and TIOCGWINSZ are used to get the
+	  screen/window size.  If the window changes size, JOE resizes the
+	  screen on the next key press
+
+	* Prompts and messages wider than the screen width are now handled
+	  properly
+```
+
+---
+
 ## JOE 0.1.0
 **Released: 1991-09-03**
 

@@ -25,6 +25,7 @@ Mass Ave, Cambridge, MA 02139, USA.  */
 #include <unistd.h>
 #include "async.h"
 
+void tsignal();
 #define DIVISOR 12000000
 #define TIMES 2
 
@@ -42,31 +43,45 @@ B1800,1800,B2400,2400,B4800,4800,B9600,9600,EXTA,19200,EXTB,38400,B19200,19200,
 B38400,38400
 };
 
+esignal(a,b)
+void (*b)();
+{
+struct sigaction action;
+sigemptyset(&actions.sa_mask);
+action.sa_handler=b;
+sigaction(a,&action,NULL);
+}
+
+sigjoe()
+{
+esignal(SIGHUP,tsignal);
+esignal(SIGTERM,tsignal);
+esignal(SIGPIPE,SIG_IGN);
+esignal(SIGINT,SIG_IGN);
+esignal(SIGQUIT,SIG_IGN);
+}
+
+signorm()
+{
+esignal(SIGHUP,SIG_DFL);
+esignal(SIGTERM,SIG_DFL);
+esignal(SIGQUIT,SIG_DFL);
+esignal(SIGPIPE,SIG_DFL);
+esignal(SIGINT,SIG_DFL);
+}
+
 aopen()
 {
 int x;
-struct sigaction action;
 speed_t baud;
 struct termios newterm;
 fflush(stdout);
 tcdrain(STDOUT_FILENO);
-sigemptyset(&action.sa_mask);
-action.sa_handler=tsignal;
-sigaction(SIGHUP,&action,NULL);
-sigaction(SIGTERM,&action,NULL);
-action.sa_handler=SIG_IGN;
-sigaction(SIGINT,&action,NULL);
-sigaction(SIGQUIT,&action,NULL);
-sigaction(SIGPIPE,&action,NULL);
-sigaction(SIGALRM,&action,NULL);
-sigaction(SIGUSR1,&action,NULL);
-sigaction(SIGUSR2,&action,NULL);
 tcgetattr(STDIN_FILENO,&oldterm);
 newterm=oldterm;
-newterm.c_lflag=0;
-newterm.c_iflag&=~(ICRNL|IGNCR);
-newterm.c_oflag=0;
-/* we needn't worry about special characters since SIGS are disabled */
+newterm.c_lflag&=0;
+newterm.c_iflag&=~(ICRNL|IGNCR|INLCR);
+newterm.c_oflag&=0;
 newterm.c_cc[VMIN]=1;
 newterm.c_cc[VTIME]=0;
 tcsetattr(STDIN_FILENO,TCSANOW,&newterm);
@@ -78,41 +93,28 @@ for(x=0;x!=34;x+=2)
   ccc=DIVISOR/speeds[x+1];
   break;
   }
-if(!obuf)
+if(obuf) free(obuf);
+if(!(TIMES*ccc)) obufsiz=4096;
+else
  {
- if(!(TIMES*ccc)) obufsiz=4096;
- else
-  {
-  obufsiz=1000000/(TIMES*ccc);
-  if(obufsiz>4096) obufsiz=4096;
-  }
- if(!obufsiz) obufsiz=1;
- obuf=(unsigned char *)malloc(obufsiz);
+ obufsiz=1000000/(TIMES*ccc);
+ if(obufsiz>4096) obufsiz=4096;
  }
+if(!obufsiz) obufsiz=1;
+obuf=(unsigned char *)malloc(obufsiz);
 }
 
 aclose()
 {
-struct sigaction action;
 aflush();
 tcsetattr(STDIN_FILENO,TCSANOW,&oldterm);
-sigemptyset(&action.sa_mask);
-action.sa_handler=SIG_DFL;
-sigaction(SIGHUP,&action,NULL);
-sigaction(SIGINT,&action,NULL);
-sigaction(SIGQUIT,&action,NULL);
-sigaction(SIGPIPE,&action,NULL);
-sigaction(SIGALRM,&action,NULL);
-sigaction(SIGTERM,&action,NULL);
-sigaction(SIGUSR1,&action,NULL);
-sigaction(SIGUSR2,&action,NULL);
 }
 
 int have=0;
 static unsigned char havec;
 static int yep;
 
-static dosig()
+static void dosig()
 {
 yep=1;
 }
@@ -129,13 +131,14 @@ if(obufp)
   a.it_value.tv_usec=usec%1000000;
   a.it_interval.tv_usec=0;
   a.it_interval.tv_sec=0;
-  signal(SIGALRM,dosig);
+  action.sa_handler=dosig;
+  esignal(SIGALRM,dosig);
   yep=0;
   sigsetmask(sigmask(SIGALRM));
   setitimer(ITIMER_REAL,&a,&b);
   write(fileno(stdout),obuf,obufp);
   while(!yep) sigpause(0);
-  signal(SIGALRM,SIG_DFL);
+  esignal(SIGALRM,SIG_DFL);
   }
  else write(fileno(stdout),obuf,obufp);
  obufp=0;
@@ -148,11 +151,42 @@ if(!have)
  }
 }
 
+unsigned char *take=0;
+
 anext()
 {
+if(take)
+ if(*take)
+  {
+  int c;
+  if(*take!='\\') return *take++;
+  ++take;
+  if(!*take) return '\\';
+  else if(*take=='r') c='\r';
+  else if(*take=='b') c=8;
+  else if(*take=='n') c=10;
+  else if(*take=='f') c=12;
+  else if(*take=='a') c=7;
+  else if(*take=='\"') c='\"';
+  else if(*take>='0' && *take<='7')
+        {
+        c= *take++-'0';
+        if(*take>='0' && *take<='7')
+         {
+         c=c*8+*take++-'0';
+         if(*take>='0' && *take<='7') c=c*8+*take++-'0';
+         }
+        --take;
+        }
+  else c= *take;
+  ++take;
+  return c;
+  }
+ else take=0;
 aflush();
 if(have) have=0;
-else if(read(STDIN_FILENO,&havec,1)<1) tsignal();
+else if(read(STDIN_FILENO,&havec,1)<1) tsignal(0);
+if(record) macroadd(havec);
 return havec;
 }
 
@@ -180,6 +214,8 @@ struct ttysize getit;
 #else
 #ifdef TIOCGWINSZ
 struct winsize getit;
+#else
+char *p;
 #endif
 #endif
 #ifdef TIOCGSIZE
@@ -195,6 +231,11 @@ if(ioctl(fileno(stdout),TIOCGWINSZ,&getit)!= -1)
  if(getit.ws_row>=3) height=getit.ws_row;
  if(getit.ws_col>=2) width=getit.ws_col;
  }
+#else
+if(p=getenv("ROWS")) sscanf(p,"%d",&height);
+if(p=getenv("COLS")) sscanf(p,"%d",&width);
+if(height<3) height=24;
+if(width<2) width=80;
 #endif
 #endif
 }
@@ -216,15 +257,43 @@ down:
 getsize();
 }
 
-shell(s)
-char *s;
+shell()
 {
+int x;
+char *s=(char *)getenv("SHELL");
+if(!s)
+ {
+ puts("\nSHELL variable not set");
+ return;
+ }
+eputs("\nYou are at the command shell.  Type 'exit' to continue editing\r\n");
 aclose();
-if(fork()) wait(0);
+if(x=fork())
+ {
+ if(x!= -1) wait(0);
+ }
 else
  {
+ signorm();
  execl(s,s,0);
  _exit(0);
  }
 aopen();
+}
+
+susp()
+{
+#ifdef SIGCONT
+eputs("\nThe editor has been suspended.  Type 'fg' to continue editing\r\n");
+yep=0;
+aclose();
+esignal(SIGCONT,dosig);
+sigsetmask(sigmask(SIGCONT));
+kill(0,SIGTSTP);
+while(!yep) sigpause(0);
+esignal(SIGCONT,SIG_DFL);
+aopen();
+#else
+shell();
+#endif
 }

@@ -24,6 +24,8 @@ int aflush();		/* Flush the output and sleep for the amount of time
 			   any typeahead and set 'have' if there is */
 int anext();		/* Call aflush() and then return next char from
 			   terminal */
+int sigjoe();		/* Set signal handling for JOE */
+int signorm();		/* Set signal handling back to default */
 
 extern int have;	/* Set if there is typeahead */
 
@@ -33,15 +35,16 @@ int eputc();		/* Write character to terminal */
 			   aflush() */
 
 int shell();		/* Shell escape */
-int tsignal();              /* JOE's signal handler.  This function saves the
-                           current edit file in 'aborted.joe' and then exists.
-                           Some signals might be set up to call this */
+int susp();		/* Suspend */
 
 int termtype();             /* Determine the following terminal parameters */
 
 extern int width;       /* Screen width */
 extern int height;      /* Screen height */
 extern int scroll;      /* Set=use scrolling regions, Clr=don't use them */
+extern int record;
+extern unsigned char *take;
+		/* String to use as input instead of keyboard */
 
 int getsize();		/* Set width and height again with TIOCGSIZE */
 
