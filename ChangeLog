@@ -1,3 +1,9 @@
+Mon Jun  7 2004  Joe Allen <jhallen@world.std.com>
+
+	Highlighter state now includes a saved string.
+	This improves shell and perl highlighters.
+
+
 sze jún  2 2004  Joe Allen <jhallen@world.std.com>
 
 	Fix for archaic systems (BSD) with no nl_langinfo(CODESET).

@@ -26,6 +26,7 @@ struct high_state {
 	unsigned char *name;		/* Highlight state name */
 	int color;			/* Color for this state */
 	struct high_cmd *cmd[256];	/* Character table */
+	struct high_cmd *delim;		/* Matching delimiter */
 };
 
 /* Command (transition) */
@@ -35,8 +36,11 @@ struct high_cmd {
 	int recolor;			/* No. chars to recolor if <0. */
 	int start_buffering;		/* Set if we should start buffering */
 	int stop_buffering;		/* Set if we should stop buffering */
+	int save_c;			/* Save character */
+	int save_s;			/* Save string */
 	struct high_state *new_state;	/* The new state */
 	HASH *keywords;			/* Hash table of keywords */
+	struct high_cmd *delim;		/* Matching delimiter */
 	int ignore;			/* Set to ignore case */
 };
 
@@ -60,6 +64,10 @@ struct high_syntax *load_dfa(unsigned char *name);
 /* Parse a lines.  Returns new state. */
 
 extern int *attr_buf;
-int parse(struct high_syntax *syntax,P *line,int state);
+HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state);
+
+#define clear_state(s) ((s)->saved_s[0] = (s)->state = 0)
+#define invalidate_state(s) ((s)->state = -1)
+#define move_state(to,from) (*(to)= *(from))
 
 #endif

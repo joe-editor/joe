@@ -73,6 +73,7 @@ int mid = 0;
 void bwfllw(BW *w)
 {
 	P *newtop;
+	int x;
 
 	if (w->cursor->line < w->top->line) {
 		newtop = pdup(w->cursor);
@@ -87,7 +88,8 @@ void bwfllw(BW *w)
 			nscrldn(w->t->t, w->y, w->y + w->h, (int) (w->top->line - newtop->line));
 		else {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
-			msetI(w->t->t->syntab + w->y, -1, w->h);
+			for(x=0; x!=w->h; ++x)
+				invalidate_state(w->t->t->syntab + w->y + x);
 		}
 		pset(w->top, newtop);
 		prm(newtop);
@@ -101,7 +103,8 @@ void bwfllw(BW *w)
 			nscrlup(w->t->t, w->y, w->y + w->h, (int) (newtop->line - w->top->line));
 		else {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
-			msetI(w->t->t->syntab + w->y, -1, w->h);
+			for(x=0; x!=w->h; ++x)
+				invalidate_state(w->t->t->syntab + w->y + x);
 		}
 		pset(w->top, newtop);
 		prm(newtop);
@@ -121,29 +124,31 @@ void bwfllw(BW *w)
    If the state is not known, it is computed and the state for all
    of the remaining lines of the window are also recalculated. */
 
-int get_highlight_state(BW *w,int line)
+HIGHLIGHT_STATE get_highlight_state(BW *w,int line)
 {
 	P *tmp = 0;
-	int state;
+	HIGHLIGHT_STATE state;
 
 	/* Screen y position of requested line */
 	int y = line-w->top->line+w->y;
 
-	if(!w->o.highlight || !w->o.syntax)
-		return -1;
+	if(!w->o.highlight || !w->o.syntax) {
+		invalidate_state(&state);
+		return state;
+	}
 
 	/* If we know the state, just return it */
-	if (w->parent->t->t->syntab[y]>=0)
+	if (w->parent->t->t->syntab[y].state>=0)
 		return w->parent->t->t->syntab[y];
 
 	/* Scan upwards until we have a line with known state or
 	   we're on the first line */
-	while (y > w->y && w->parent->t->t->syntab[y] < 0) --y;
+	while (y > w->y && w->parent->t->t->syntab[y].state < 0) --y;
 
 	/* If we don't have state for this line, calculate by going 100 lines back */
-	if (w->parent->t->t->syntab[y]<0) {
+	if (w->parent->t->t->syntab[y].state<0) {
 		/* We must be on the top line */
-		state = 0;
+		clear_state(&state);
 		tmp = pdup(w->top);
 		if(w->o.syntax->sync_lines >= 0 && tmp->line > w->o.syntax->sync_lines)
 			pline(tmp, tmp->line-w->o.syntax->sync_lines);
@@ -187,6 +192,7 @@ int get_highlight_state(BW *w,int line)
 
 void bwins(BW *w, long int l, long int n, int flg)
 {
+	int q;
 	if (l + flg + n < w->top->line + w->h && l + flg >= w->top->line && l + flg <= w->b->eof->line) {
 		if (flg)
 			w->t->t->sary[w->y + l - w->top->line] = w->t->t->li;
@@ -195,10 +201,12 @@ void bwins(BW *w, long int l, long int n, int flg)
 	if (l < w->top->line + w->h && l >= w->top->line) {
 		if (n >= w->h - (l - w->top->line)) {
 			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, w->h - (int) (l - w->top->line));
-			msetI(w->t->t->syntab + w->y + l - w->top->line, -1, w->h - (int) (l - w->top->line));
+			for(q=0; q!=w->h - (int)(l - w->top->line); ++q)
+				invalidate_state(w->t->t->syntab + w->y + l - w->top->line + q);
 		} else {
 			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, (int) n + 1);
-			msetI(w->t->t->syntab + w->y + l - w->top->line, -1, (int) n + 1);
+			for(q=0; q!=n+1; ++q)
+				invalidate_state(w->t->t->syntab + w->y + l - w->top->line + q);
 		}
 	}
 }
@@ -213,7 +221,7 @@ void bwdel(BW *w, long int l, long int n, int flg)
 
 /* Update highlight for line after first one which changed */
 	if ((l+1) < w->top->line + w->h && (l+1) >= w->top->line) {
-		w->t->t->syntab[w->y + (l+1) - w->top->line] = -1;
+		invalidate_state(w->t->t->syntab + w->y + l + 1 - w->top->line);
 		w->t->t->updtab[w->y + (l+1) - w->top->line] = 1;
 		}
 
@@ -245,7 +253,7 @@ void bwdel(BW *w, long int l, long int n, int flg)
 
 /* Update a single line */
 
-static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long int scr, long int from, long int to,int st,BW *bw)
+static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long int scr, long int from, long int to,HIGHLIGHT_STATE st,BW *bw)
         
       
             			/* Screen line address */
@@ -274,7 +282,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 
 	utf8_init(&utf8_sm);
 
-	if(st!=-1) {
+	if(st.state!=-1) {
 		tmp=pdup(p);
 		p_goto_bol(tmp);
 		parse(bw->o.syntax,tmp,st);
@@ -302,7 +310,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				bc = ungetit;
 				ungetit = -1;
 			}
-			if(st!=-1)
+			if(st.state!=-1)
 				atr = syn[idx++];
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
@@ -418,7 +426,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				bc = ungetit;
 				ungetit = -1;
 			}
-			if(st!=-1)
+			if(st.state!=-1)
 				atr=syn[idx++];
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
@@ -854,9 +862,11 @@ void bwmove(BW *w, int x, int y)
 
 void bwresz(BW *w, int wi, int he)
 {
+	int x;
 	if (he > w->h && w->y != -1) {
 		msetI(w->t->t->updtab + w->y + w->h, 1, he - w->h);
-		msetI(w->t->t->syntab + w->y + w->h, -1, he - w->h);
+		for(x=0;x!=he-w->h; ++x)
+			invalidate_state(w->t->t->syntab + w->y + w->h + x);
 		}
 	w->w = wi;
 	w->h = he;

@@ -14,12 +14,12 @@
 # Within a state, define transitions (jumps) to other states.  Each
 # jump has the form: <character-list> <target-state> [<option>s]
 
-# There are two ways to specify <character-list>s, either * for any
-# character not otherwise specified, or a literal list of characters within
-# quotes (ranges and escape sequences allows).  When the next character
-# matches any in the list, a jump to the target-state is taken and the
-# character is eaten (we advance to the next character of the file to be
-# colored).
+# There are three ways to specify <character-list>s, either * for any
+# character not otherwise specified, & to match the character in the
+# delimiter match buffer or a literal list of characters within quotes
+# (ranges and escape sequences allows).  When the next character matches any
+# in the list, a jump to the target-state is taken and the character is
+# eaten (we advance to the next character of the file to be colored).
 #
 # The * transition should be the first transition specified in the state.
 #
@@ -33,10 +33,14 @@
 #		start of C comment, you want to color the /* with the C
 #		comment color.
 #
-#   buffer    	start copying characters to a buffer, beginning with this
+#   buffer    	start copying characters to a string buffer, beginning with this
 #		one (it's ok to not terminate buffering with a matching
-#		'strings' option- the buffer is limited to leading 19
+#		'strings' option- the buffer is limited to leading 23
 #		characters).
+#
+#   save_c      Save character in delimiter match buffer.
+#
+#   save_s      Copy string buffer to delimiter match buffer.
 #
 #   strings	A list of strings follows.  If the buffer matches any of the
 #		given strings, a jump to the target-state in the string list
@@ -54,6 +58,7 @@
 #
 #      "string"   <target-state> [<options>s]
 #      "string"   <target-state> [<options>s]
+#      "&"        <target-state> [<options>s]   # matches contents of delimiter match buffer
 #      done
 #
 #   (all of the options above are allowed except "strings", "istrings" and "noeat".  noeat is
@@ -62,6 +67,9 @@
 # Weirdness: only states have colors, not transitions.  This means that you
 # sometimes have to make dummy states with '* next-state noeat' just to get
 # a color specification.
+#
+# Delimiter match buffer is for perl and shell: a regex in perl can be s<..>(...)
+# and in shell you can say: <<EOS ....... EOS
 
 # Define no. sync lines
 # You can say:

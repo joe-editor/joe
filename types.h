@@ -66,7 +66,7 @@ typedef struct search SRCH;
 typedef struct srchrec SRCHREC;
 typedef struct vpage VPAGE;
 typedef struct vfile VFILE;
-
+typedef struct highlight_state HIGHLIGHT_STATE;
 
 struct header {
 	LINK(H)	link;		/* LINK ??? */
@@ -341,6 +341,13 @@ struct hentry {
 	int	loc;
 };
 
+/* Try to be only one cache line */
+
+struct highlight_state {
+	int	state;
+	unsigned char saved_s[24];
+};
+
 /* Each terminal has one of these */
 
 #ifdef __MSDOS__
@@ -352,8 +359,7 @@ struct scrn {
 	int	scroll;
 	int	insdel;
 	int	*updtab;	/* Lines which need to be updated */
-	/* HIGHLIGHT_STATE *syntab; */ /* Syntax highlight state at start of each line */
-	int	*syntab;
+	HIGHLIGHT_STATE *syntax;
 	int	*compose;
 	int	*sary;
 };
@@ -460,7 +466,7 @@ struct scrn {
 	int	ins;		/* Set if we're in insert mode */
 
 	int	*updtab;	/* Dirty lines table */
-	int	*syntab;
+	HIGHLIGHT_STATE *syntab;
 	int	avattr;		/* Bits set for available attributes */
 	int	*sary;		/* Scroll buffer array */
 

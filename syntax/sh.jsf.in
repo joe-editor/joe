@@ -5,9 +5,8 @@
 # $(...)
 # ${...}
 
-# <<EOF
-#  ....
-# EOF
+# cat <<EOF xxxxxx
+# xxxxx should be interpreted as other arguments for 'cat'.
 
 # Colors
 
@@ -28,7 +27,44 @@
 	"'"		string_sq	recolor=-1
 	"\""		string_dq	recolor=-1
 	"\`"		string_bq	recolor=-1
+	"<"		maybe_inc
 	"a-zA-Z{}!["	ident		buffer
+
+:maybe_inc Idle
+	*		idle		noeat
+	"<"		maybe_inc1
+
+:maybe_inc1 Idle
+	*		inc		buffer noeat
+	"`&()\\|;'\"<> 	\n"	idle	noeat
+	"-"		skipminus
+
+:skipminus Idle
+	*		inc		buffer noeat
+	"`&()\\|;'\"<> 	\n"	idle	noeat
+
+:inc Var
+	*		inc
+	"`&()\\|;'\"<> 	\n"	skipline	noeat save_s
+
+# Should be treated as a normal line here...
+
+:skipline Constant
+	*		skipline
+	"\n"		next_line
+
+:todelim Constant
+	*		todelim
+	"\n"		next_line	strings
+	"&"		founddelim	noeat
+done
+
+# eat \n so it's not in string.
+:next_line Constant
+	*		todelim		buffer
+
+:founddelim Var
+	*		idle		noeat
 
 :comment Comment
 	*		comment

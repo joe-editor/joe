@@ -42,7 +42,57 @@
 	"\\"		not_string
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
+#	"/"		regex		recolor=-1
+	"<"		maybe_inc
 	"a-zA-Z_"	ident		buffer
+
+:maybe_inc Idle
+	*		idle		noeat
+	"<"		maybe_inc1
+
+:maybe_inc1 Idle
+	*		idle		noeat
+	" 	"	maybe_inc1
+	"'\""		quoted_inc_start	save_c recolor=-1
+	"A-Za-z_"	inc		buffer noeat
+
+:quoted_inc_start Var
+	*		quoted_inc	buffer
+
+:quoted_inc Var
+	*		quoted_inc
+	&		skipline	save_s
+
+:inc Var
+	*		skipline	save_s noeat
+	"A-Za-z0-9_"	inc
+
+# Should be treated as a normal line here...
+
+:skipline Idle
+	*		skipline
+	"\n"		next_line
+
+:todelim Constant
+	*		todelim
+	"\n"		next_line	strings
+	"&"		founddelim	noeat
+done
+
+# eat \n so it's not in string.
+:next_line Constant
+	*		todelim		buffer
+
+:founddelim Var
+	*		idle		noeat
+
+:regex Constant
+	*		regex
+	"\\"		regex_quote	recolor=-1
+	"/"		idle
+
+:regex_quote Escape
+	*		regex
 
 :not_string Idle
 	*		idle noeat
@@ -238,6 +288,11 @@
 	"redo"		kw
 	"next"		kw
 	"warn"		kw
+	"m"		match		noeat
+	"s"		subst		noeat
+	"tr"		subst		noeat
+	"y"		subst		noeat
+	"qr"		subst		noeat
 done
 	"a-zA-Z0-9_"	ident
 
@@ -246,3 +301,56 @@ done
 
 :kw Keyword
 	*	idle	noeat
+
+:match Idle
+	*		inmatch		save_c recolor=-1
+	" 	"	match
+
+:inmatch Constant
+	*		inmatch
+	&		idle
+	"\\"		inmatch_quote	recolor=-1
+
+:inmatch_quote Escape
+	*		inmatch
+
+:subst Idle
+	*		insubst		save_c recolor=-1
+	"<([{`"		delim_insubst	save_c recolor=-1
+	" 	"	subst
+
+:insubst Constant
+	*		insubst
+	&		inrepl
+	"\\"		insubst_quote	recolor=-1
+
+:insubst_quote Escape
+	*		insubst
+
+:inrepl Constant
+	*		inrepl
+	&		idle
+	"\\"		inrepl_quote
+
+:inrepl_quote Escape
+	*		inrepl
+
+:delim_insubst Constant
+	*		delim_insubst
+	&		delim_repl
+	"\\"		delim_quote
+
+:delim_quote Escape
+	*		delim_insubst
+
+:delim_repl Constant
+	*		repl		save_c recolor=-1
+	" 	"	delim_repl
+
+:repl Constant
+	*		repl
+	&		idle
+	"\\"		repl_quote
+
+:repl_quote Escape
+	*		repl
