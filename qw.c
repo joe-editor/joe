@@ -28,7 +28,17 @@ static void dispqw(QW *qw)
 
 	/* Generate prompt */
 	w->t->t->updtab[w->y] = 1;
-	gentxt(w->t->t, w->x, w->y, qw->promptofst, qw->prompt, qw->promptlen, 1);
+	genfield(w->t->t,
+	         w->t->t->scrn + w->y * w->t->t->co + w->x,
+	         w->t->t->attr + w->y * w->t->t->co + w->x,
+	         w->x,
+	         w->y,
+	         qw->promptofst,
+	         qw->prompt,
+	         qw->promptlen,
+	         0,
+	         w->w - w->x,
+	         1);
 }
 
 static void dispqwn(QW *qw)
@@ -51,7 +61,17 @@ static void dispqwn(QW *qw)
 
 	/* Generate prompt */
 	w->t->t->updtab[w->y] = 1;
-	gentxt(w->t->t, w->x, w->y, qw->promptofst, qw->prompt, qw->promptlen, 1);
+	genfield(w->t->t,
+	         w->t->t->scrn + w->y * w->t->t->co + w->x,
+	         w->t->t->attr + w->y * w->t->t->co + w->x,
+	         w->x,
+	         w->y,
+	         qw->promptofst,
+	         qw->prompt,
+	         qw->promptlen,
+	         0,
+	         w->w - w->x,
+	         1);
 }
 
 /* When user hits a key in a query window */

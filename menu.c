@@ -13,10 +13,10 @@
 #include "scrn.h"
 #include "utils.h"
 #include "vs.h"
+#include "utf8.h"
 #include "w.h"
 
 extern int dostaupd;
-extern int utf8;
 
 static void menufllw(MENU *m)
 {
@@ -33,40 +33,49 @@ static void menudisp(MENU *m)
 	int y;
 	int *s = m->t->t->scrn + m->x + m->y * m->t->t->co;
 	int *a = m->t->t->attr + m->x + m->y * m->t->t->co;
+	struct utf8_sm sm;
+
+	utf8_init(&sm);
 
 	for (y = 0; y != m->h; ++y) {
 		col = 0;
 		for (x = 0; x != m->perline && y*m->perline+x+m->top<m->nitems; ++x) {
-			int atr, z;
+			int atr, z, lcol;
 	
 			if (x + y*m->perline + m->top == m->cursor)
 				atr = INVERSE;
 			else
 				atr = 0;
+
 			if (col == m->w)
 				break;
-			for (z = 0; m->list[x + y*m->perline + m->top][z]; ++z) {
-				if (col == m->w)
-					break;
-				outatr(utf8, m->t->t, s + col, a + col, m->x + col, m->y+y, m->list[x + y*m->perline + m->top][z], atr);
-				++col;
-			}
-			while (z < m->width) {
-				if (col == m->w)
-					break;
-				outatr(utf8, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
-				++col;
-				++z;
-			}
+
+			/* Generate field */
+			genfield(m->t->t,
+			         s + col,
+			         a + col,
+			         m->x + col,
+			         m->y + y,
+			         0,
+			         m->list[x + y*m->perline + m->top],
+			         strlen((char *)m->list[x + y*m->perline + m->top]),
+			         atr,
+			         m->width,
+			         0);
+
+			col += m->width;
+
+			/* Space between columns */
 			if (col != m->w) {
 				outatr(utf8, m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
 				++col;
 			}
 		}
+		/* Clear to end of line */
 		if (col != m->w)
-			eraeol(m->t->t, m->x + col, m->y+y);
-	s += m->t->t->co;
-	a += m->t->t->co;
+			eraeol(m->t->t, m->x + col, m->y + y);
+		s += m->t->t->co;
+		a += m->t->t->co;
 	}
 	m->parent->cury = (m->cursor - m->top) / m->perline;
 	m->parent->curx = ((m->cursor - m->top) % m->perline) * (m->width + 1);
@@ -91,9 +100,11 @@ static void mconfig(MENU *m)
 		int x;
 
 		m->top = 0;
-		for (x = 0, m->width = 0; m->list[x]; ++x)
-			if (strlen((char *)m->list[x]) > m->width)
-				m->width = strlen((char *)m->list[x]);
+		for (x = 0, m->width = 0; m->list[x]; ++x) {
+			int d = txtwidth(m->list[x],strlen(m->list[x]));
+			if (d > m->width)
+				m->width = d;
+		}
 		m->nitems = x;
 		if (m->width > m->w)
 			m->width = m->w - 1;

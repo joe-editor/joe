@@ -134,6 +134,7 @@ void outatr PARAMS((int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,in
  * translate character and its attribute into something printable
  */
 void xlat PARAMS((int *attr, unsigned char *c));
+void xlat_utf_ctrl PARAMS((int *attr, unsigned char *c));
 
 /* int eraeol(SCRN *t,int x,int y);
  *
@@ -172,5 +173,20 @@ void magic PARAMS((SCRN *t, int y, int *cs, int *ca, int *s, int *a,int placex))
 int clrins PARAMS((SCRN *t));
 
 int meta_color PARAMS((unsigned char *s));
+
+/* Generate a field */
+void genfield PARAMS((SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,int len,int atr,int width,int flg));
+
+/* Column width of a string takes into account utf-8) */
+int txtwidth PARAMS((unsigned char *s,int len));
+
+/* Generate a field: formatted */
+void genfmt PARAMS((SCRN *t, int x, int y, int ofst, unsigned char *s, int flg));
+
+/* Column width of formatted string */
+int fmtlen PARAMS((unsigned char *s));
+
+/* Offset within formatted string of particular column */
+int fmtpos PARAMS((unsigned char *s, int goal));
 
 #endif

@@ -1,4 +1,15 @@
 Sat Apr 17 2004  Joe Allen <jhallen@world.std.com>
+	* bw.c menu.c qw.c scrn.c scrn.h utf8.h w.c w.h:
+
+	Allow UTF-8 in menu entries.
+
+	Clear up genfield() and genfmt() stuff.  Now control characters in
+	file names are properly displayed.
+
+	When UTF-8 character decodes to 127 - 159, 0 - 31, display it
+	as a control character.
+
+Sat Apr 17 2004  Joe Allen <jhallen@world.std.com>
 	* w.c:
 
 	Oops: fixed status line.

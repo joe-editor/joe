@@ -18,6 +18,7 @@
 #include "blocks.h"
 #include "scrn.h"
 #include "termcap.h"
+#include "utf8.h"
 #include "utils.h"
 
 int skiptop = 0;
@@ -147,6 +148,12 @@ void xlat(int *attr, unsigned char *c)
 	}
 }
 
+void xlat_utf_ctrl(int *attr, unsigned char *c)
+{
+	*attr = xlata[*c];
+	*c = xlatc[*c];
+}
+
 /* Set attributes */
 
 int set_attr(SCRN *t, int c)
@@ -205,8 +212,6 @@ int set_attr(SCRN *t, int c)
 }
 
 /* Output character with attributes */
-
-extern int utf8;
 
 void outatr(int wide,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a)
 {
@@ -1752,4 +1757,317 @@ int meta_color(unsigned char *s)
 		return BG_BLACK;
 	else
 		return 0;
+}
+
+/* Generate a field
+ *
+ * 't' is SCRN to write to.
+ * 'scrn' is address of field in character buffer
+ * 'attr' is address of field in attribute buffer
+ * 'x', 'y' are starting column and line numbers of field
+ * 'ofst' is first column within string to display
+ * 's', 'len' is string to generate in field
+ * 'atr' is screeen attributes (and color) which should be used
+ * 'width' is column width of field
+ * 'flg' if set, erases to end of line
+ */
+
+void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,int len,int atr,int width,int flg)
+{
+	int col;
+	struct utf8_sm sm;
+	int last_col = x + width;
+
+	utf8_init(&sm);
+
+	for (col = 0;len != 0 && x < last_col; len--) {
+		int c = *s++;
+		int a;
+		int wid = 0;
+		if (utf8) {
+			/* UTF-8 mode: decode character and determine its width */
+			c = utf8_decode(&sm,c);
+			if (c >= 0) {
+				if (c<32 || c>126 && c<160) { /* Control character */
+					/* Note that this ignore dspasis */
+					a = xlata[c] ^ atr;
+					c = xlatc[c];
+					wid = 1;
+				} else { /* Normal character */
+					wid = mk_wcwidth(c);
+					a = atr;
+				}
+			}
+		} else {
+			/* Byte mode: character is one column wide */
+			unsigned char bc = c;
+			xlat (&a, &bc); /* Uses dspasis as it should */
+			c = bc;
+			a ^= atr;
+			wid = 1 ;
+		}
+		if (col >= ofst) {
+			if (x + wid > last_col) {
+				/* Character crosses end of field, so fill balance of field with '>' characters instead */
+				while (x < last_col) {
+					outatr(utf8, t, scrn, attr, x, y, '>', atr);
+					++scrn;
+					++attr;
+					++x;
+				}
+			} else if(wid) {
+				/* Emit character */
+				outatr(utf8, t, scrn, attr, x, y, c, a);
+				x += wid;
+				scrn += wid;
+				attr += wid;
+			}
+		} else if ((col + wid) > ofst) {
+			/* Wide character crosses left side of field */
+			wid -= ofst - col;
+			col = ofst;
+			while (wid) {
+				outatr(utf8, t, scrn, attr, x, y, '<', a);
+				++scrn;
+				++attr;
+				++x;
+				++col;
+				--wid;
+			}
+		} else
+			col += wid;
+	}
+	/* Fill balance of field with spaces */
+	while (x < last_col) {
+		outatr(utf8, t, scrn, attr, x, y, ' ', 0);
+		++x;
+		++scrn;
+		++attr;
+	}
+	/* Erase to end of line */
+	if (flg)
+		eraeol(t, x, y);
+}
+
+/* Width function for above */
+
+int txtwidth(unsigned char *s,int len)
+{
+	if (utf8) {
+		int col=0;
+		struct utf8_sm sm;
+		utf8_init(&sm);
+
+		while(len--) {
+			int d = utf8_decode(&sm,*s++);
+			if (d >= 0)
+				col += mk_wcwidth(d);
+		}
+
+		return col;
+	} else
+		return len;
+}
+
+/* Generate text with formatting escape sequences */
+
+void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int flg)
+{
+	int *scrn = t->scrn + y * t->co + x;
+	int *attr = t->attr + y * t->co + x;
+	int atr = 0;
+	int col = 0;
+	int c;
+	struct utf8_sm sm;
+
+	utf8_init(&sm);
+
+	while ((c = *s++) != '\0')
+		if (c == '\\') {
+			switch (c = *s++) {
+			case 'u':
+			case 'U':
+				atr ^= UNDERLINE;
+				break;
+			case 'i':
+			case 'I':
+				atr ^= INVERSE;
+				break;
+			case 'b':
+			case 'B':
+				atr ^= BOLD;
+				break;
+			case 'd':
+			case 'D':
+				atr ^= DIM;
+				break;
+			case 'f':
+			case 'F':
+				atr ^= BLINK;
+				break;
+			case 0:
+				--s;
+				break;
+			default: {
+				unsigned char bc = (c&0x7F);	/* Allow only ASCII here */
+				int a;
+				xlat (&a, &bc); /* Uses dspasis as it should */
+				c = bc;
+				a ^= atr;
+				if (col++ >= ofst) {
+					outatr(utf8, t, scrn, attr, x, y, c, a);
+					++scrn;
+					++attr;
+					++x;
+					}
+				break;
+				}
+			}
+		} else {
+			int wid = 0;
+			int a;
+			if (utf8) {
+				/* UTF-8 mode: decode character and determine its width */
+				c = utf8_decode(&sm,c);
+				if (c >= 0) {
+					if (c<32 || c>126 && c<160) { /* Control character */
+						/* Note that this ignores dspasis */
+						a = xlata[c] ^ atr;
+						c = xlatc[c];
+						wid = 1;
+					} else { /* Normal character */
+						wid = mk_wcwidth(c);
+						a = atr;
+					}
+				}
+			} else {
+				/* Byte mode: character is one column wide */
+				unsigned char bc = c;
+				xlat (&a, &bc); /* Uses dspasis as it should */
+				c = bc;
+				a ^= atr;
+				wid = 1 ;
+			}
+
+			if (col >= ofst) {
+				outatr(utf8, t, scrn, attr, x, y, c, a);
+				scrn += wid;
+				attr += wid;
+				x += wid;
+				col += wid;
+			} else if (col+wid>ofst) {
+				while (col<ofst) {
+					++col;
+					--wid;
+				}
+				while (wid) {
+					outatr(utf8, t, scrn, attr, x, y, '<', atr);
+					++scrn;
+					++attr;
+					++x;
+					++col;
+					--wid;
+				}
+			} else
+				col += wid;
+		}
+	if (flg)
+		eraeol(t, x, y);
+}
+
+/* Determine column width of string with format codes */
+
+int fmtlen(unsigned char *s)
+{
+	int col = 0;
+	struct utf8_sm sm;
+	int c;
+
+	utf8_init(&sm);
+
+	while (c= *s++) {
+		if (c == '\\') {
+			switch (*s++) {
+			case 'u':
+			case 'i':
+			case 'd':
+			case 'f':
+			case 'b':
+			case 'U':
+			case 'I':
+			case 'D':
+			case 'F':
+			case 'B':
+				continue;
+			case 0:
+				return col;
+			default:
+				++col;
+				continue;
+			}
+		} else {
+			int wid = 0;
+			if(utf8) {
+				c = utf8_decode(&sm,c);
+				if (c>=0)
+					wid = mk_wcwidth(c);
+			} else {
+				wid = 1;
+			}
+			col += wid;
+		}
+	}
+	return col;
+}
+
+/* Return offset within format string which corresponds to a particular
+   column */
+
+/* FIXME: this is not valid if we land in the middle of a double-wide character */
+
+int fmtpos(unsigned char *s, int goal)
+{
+	unsigned char *org = s;
+	int col = 0;
+	int c;
+	struct utf8_sm sm;
+
+	utf8_init(&sm);
+
+	while ((c= *s) && col<goal) {
+		s++;
+		if (c == '\\') {
+			switch (*s++) {
+			case 'u':
+			case 'i':
+			case 'd':
+			case 'f':
+			case 'b':
+			case 'U':
+			case 'I':
+			case 'D':
+			case 'F':
+			case 'B':
+				continue;
+			case 0:
+				--s;
+				break;
+			default:
+				++col;
+				continue;
+			}
+		} else {
+			int wid = 0;
+			if(utf8) {
+				c = utf8_decode(&sm,c);
+				if (c>=0)
+					wid = mk_wcwidth(c);
+			} else {
+				wid = 1;
+			}
+			col += wid;
+		}
+	}
+
+	return s - org + goal - col;
 }

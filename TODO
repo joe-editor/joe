@@ -4,15 +4,14 @@ UTF-8/Internationalization
 - think about regex, rc files, highlighting
     32-bit chars in search/replace \[...] sequences?
 
-- deal with error utf8 sequences: prget and pgetc do not match.
+- deal with error utf8 sequences: prget and pgetc do not match, also check
+  bw.c (genfield ignores error sequences).
 
 - deal with error utf8 sequences: no way to print control characters which
   began the sequence.
 
 - when first char of utf8 is last of line, nothing shows on screen (state
   machine never gets any input).
-
-- interaction with -asis (-utf8 should override it).
 
 - translate: allow user to specify charset.  think about isalpha.
 

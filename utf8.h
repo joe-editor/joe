@@ -50,5 +50,6 @@ void to_utf8 PARAMS((unsigned char *s,int c));
 int from_utf8 PARAMS((unsigned char *s));
 
 extern int utf8;
+int mk_wcwidth PARAMS((int c));
 
 #endif

@@ -1,5 +1,4 @@
 /* Updated for JOE:
- *  Binary search is broken (will fix later).
  *  Control chars are width==1 in JOE
  */
 

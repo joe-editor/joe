@@ -143,16 +143,6 @@ void wredraw PARAMS((W *w));
  */
 void updall PARAMS((void));
 
-void gentxt PARAMS((SCRN *t, int x, int y, int ofst, unsigned char *s, int len, int flg));
-int gentxtwidth PARAMS((unsigned char *s));
-
-void genfmt PARAMS((SCRN *t, int x, int y, int ofst, unsigned char *s, int flg));
-
-/* Should be called fmtwidth since this returns column width */
-int fmtlen PARAMS((unsigned char *s));
-
-int fmtpos PARAMS((unsigned char *s, int goal));
-
 /* void msgnw[t](W *w, char *s);
  * Display a message which will be eliminated on the next keypress.
  * msgnw displays message on bottom line of window

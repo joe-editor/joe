@@ -469,7 +469,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 					if (utf8_char >= 0) { /* Normal decoded character */
 						if (utf8_char<32 || utf8_char>126 && utf8_char<160) { /* Control character */
 							bc = utf8_char;
-							xlat(&c, &bc);
+							xlat_utf_ctrl(&c, &bc);
 							utf8_char = bc;
 							c1 ^= c;
 							wid = 1;
@@ -483,7 +483,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 						wid = 1;
 					} else if(c== -3) { /* Invalid UTF-8 start character 128-191, 254, 255 */
 						/* Show as control character */
-						xlat(&c, &bc);
+						xlat_utf_ctrl(&c, &bc);
 						utf8_char = bc;
 						c1 ^= c;
 						wid = 1;
