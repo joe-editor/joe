@@ -3,7 +3,6 @@ Fix for next release:
   highlight other windows
   why lose state during page down?
   perl highlighter
-  sh highlighter
   more syntax files
 
   byte to byte conversions?

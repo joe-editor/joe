@@ -1,3 +1,8 @@
+Sun May  9 02:30:41 EDT 2004
+	* sh.jsf.in :
+
+	Improved shell script highlighter.
+
 Sat May  8 2004  Joe Allen <jhallen@world.std.com>
 	* usearch.c :
 

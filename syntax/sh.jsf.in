@@ -1,4 +1,4 @@
-# JOE syntax highlight file for the POSIX shell
+# JOE syntax highlight file for sh/ksh/bash
 
 # TODO:
 #  * octal escape sequences
@@ -12,6 +12,7 @@
 =Constant 	cyan
 =Escape 	bold cyan
 =Keyword 	bold
+=Var		bold cyan
 
 # Syntax
 
@@ -19,11 +20,11 @@
 	*		idle
 	"#"		comment		recolor=-1
 	"\\"		escape		recolor=-1
-	"$"		expand		recolor=-1
+	"$"		subst		recolor=-1
 	"'"		string_sq	recolor=-1
 	"\""		string_dq	recolor=-1
 	"\`"		string_bq	recolor=-1
-	"a-zA-Z{}!"	ident		buffer
+	"a-zA-Z{}!["	ident		buffer
 
 :comment Comment
 	*		comment
@@ -31,43 +32,117 @@
 
 :escape Escape
 	*		idle
-	"\n"		idle		recolor=-2
 
-:expand Idle
+:subst Var
 	*		idle
+	"{"		subst_brack
+	"a-zA-Z_"	subst_name
+	"0-9*@?\-$_!"	idle
 
+:subst_name Var
+	*		idle		noeat recolor=-1
+	"a-zA-Z0-9_"	subst_name
+
+:subst_brack Var
+	*		subst_brack
+	"}"		idle
+
+# Simplest case: no quoting allowed
 :string_sq Constant
 	*		string_sq
 	"\'"		idle
-	"\\"		string_sq_esc	recolor=-1
 
-:string_sq_esc Escape
-	*		string_sq
-	"\n"		string_sq	recolor=-2
 
+# double-quote: quoting, backqoutes and substitution allowed
 :string_dq Constant
 	*		string_dq
+	"$"		string_dq_subst	recolor=-1
 	"\""		idle
 	"\\"		string_dq_esc	recolor=-1
+	"`"		string_dq_bq	recolor=-1
+
+:string_dq_subst Var
+	*		string_dq	noeat recolor=-2
+	"$0-9!_\-?*@"	string_dq
+	"a-zA-Z_"	string_dq_subst_name
+	"{"		string_dq_subst_brack
+
+:string_dq_subst_name Var
+	*		string_dq	recolor=-1 noeat
+	"a-zA-Z0-9_"	string_dq_subst_name
+
+:string_dq_subst_brack Var
+	*		string_dq_subst_brack
+	"}"		string_dq
 
 :string_dq_esc Escape
-	*		string_dq
+	*		string_dq	recolor=-2
+	"$`\"\\"	string_dq
 	"\n"		string_dq	recolor=-2
 
+:string_dq_bq Constant
+	*		string_dq_bq
+	"$"		string_dq_bq_subst	recolor=-1
+	"\`"		string_dq
+	"\\"		string_dq_bq_esc	recolor=-1
+
+:string_dq_bq_subst Var
+	*		string_dq_bq	noeat recolor=-2
+	"$0-9!_\-?*@"	string_dq_bq
+	"a-zA-Z_"	string_dq_bq_subst_name
+	"{"		string_dq_bq_subst_brack
+
+:string_dq_bq_subst_name Var
+	*		string_dq_bq	recolor=-1 noeat
+	"a-zA-Z0-9_"	string_dq_bq_subst_name
+
+:string_dq_bq_subst_brack Var
+	*		string_dq_bq_subst_brack
+	"}"		string_dq_bq
+
+:string_dq_bq_esc Escape
+	*		string_dq_bq	recolor=-2
+	"$`\"\\"	string_dq_bq
+	"\n"		string_dq_bq	recolor=-2
+
+
+# backquote
 :string_bq Constant
 	*		string_bq
+	"$"		string_bq_subst	recolor=-1
 	"\`"		idle
 	"\\"		string_bq_esc	recolor=-1
 
+# escape in backquote
 :string_bq_esc Escape
-	*		string_bq
+	*		string_bq	recolor=-2
+	"$`\"\\"	string_bq
 	"\n"		string_bq	recolor=-2
-	
+
+# Substitution in a backquote
+:string_bq_subst Var
+	*		string_bq	noeat recolor=-2
+	"$0-9!_\-?*@"	string_bq
+	"a-zA-Z_"	string_bq_subst_name
+	"{"		string_bq_subst_brack
+
+:string_bq_subst_name Var
+	*		string_bq	recolor=-1 noeat
+	"a-zA-Z0-9_"	string_bq_subst_name
+
+:string_bq_subst_brack Var
+	*		string_bq_subst_brack
+	"}"		string_bq
+
+
 :ident Idle
 	*		idle		noeat strings
 	"!"		kw
 	"{"		kw
 	"}"		kw
+	"["		kw
+	"]"		kw
+# primary keywords
 	"case"		kw
 	"do"		kw
 	"done"		kw
@@ -81,6 +156,78 @@
 	"then"		kw
 	"until"		kw
 	"while"		kw
+# I think these are basically keywords too
+	"break"		kw
+	"continue"	kw
+	"return"	kw
+	"eval"		kw
+	"exec"		kw
+	"exit"		kw
+	"test"		kw	# doesn't have to be a shell command
+# variable management
+	"shift"		kw
+	"unset"		kw
+	"export"	kw
+	"readonly"	kw
+# input
+	"read"		kw
+# job control (not likely to be used in scripts)
+	"bg"		kw
+	"fg"		kw
+	"jobs"		kw
+	"suspend"	kw
+# job control (useful in scripts)
+	"kill"		kw
+	"wait"		kw
+# environment control
+	"cd"		kw
+	"chdir"		kw
+	"pwd"		kw
+	"ulimit"	kw
+	"umask"		kw
+# signal handling
+	"trap"		kw
+# misc shell control
+	"hash"		kw
+	"type"		kw
+	"times"		kw
+	"set"		kw
+# shell builtins
+	"echo"		kw
+	"getopts"	kw
+	"login"		kw	# not bash (logout is)
+	"newgrp"	kw	# not in bash
+	"stop"		kw	# not in bash (suspends a process)
+# additional ksh builtins
+	"alias"		kw
+	"select"	kw
+	"function"	kw
+	"command"	kw
+	"fc"		kw
+	"let"		kw
+	"print"		kw
+	"unalias"	kw
+	"whence"	kw
+	"history"	kw
+	"time"		kw
+	"typeset"	kw
+	"local"		kw
+# additional bash builtins
+	"source"	kw
+	"bind"		kw
+	"builtin"	kw
+	"compgen"	kw
+	"complete"	kw
+	"declare"	kw
+	"dirs"		kw
+	"disown"	kw
+	"enable"	kw
+	"help"		kw
+	"logout"	kw
+	"popd"		kw
+	"printf"	kw
+	"pushd"		kw
+	"shopt"		kw
 done
 	"a-zA-Z0-9"	ident
 

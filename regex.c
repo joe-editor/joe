@@ -155,8 +155,6 @@ static int brack(int utf8,unsigned char **a, int *la, int c)
 
 			cl = escape(utf8, &s, &l);
 
-			printf("[%x == %x]",cl,c); fflush(stdout);
-
 			if (l >= 2 && s[0] == '-' && s[1] != ']') {
 				--l;
 				++s;
