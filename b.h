@@ -59,6 +59,7 @@ struct buffer
  P *oldtop;			/* Last top screen position before orphaning */
  int rdonly;			/* Set for read-only */
  int internal;			/* Set for internal buffers */
+ int er;			/* Error code when file was loaded */
  };
 
 extern int force;	/* Set to have final '\n' added to file */

@@ -29,6 +29,7 @@ struct search
  int flg;		/* Set after prompted for first replace */
  SRCHREC recs;		/* Search & replace position history */
  P *markb, *markk;	/* Original marks */
+ int valid;		/* Set if original marks are a valid block */
  long addr;		/* Addr of last replacement or -1 for none */
  int restrict;		/* Search restricted to marked block */
  };

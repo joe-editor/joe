@@ -180,17 +180,18 @@ char *regex;
 P *p;
 {
 int c,d;
-P *q;
+P *q=pdup(p);
+P *o=0;
 while(len--)
  switch(c= *regex++)
   {
  case '\\':
-  if(!len--) return 0;
+  if(!len--) goto fail;
   switch(c= *regex++)
    {
   case '?':
    d=pgetc(p);
-   if(d== MAXINT) return 0;
+   if(d== MAXINT) goto fail;
    savec(pieces,n++,(char)d);
    break;
 
@@ -198,38 +199,37 @@ while(len--)
   case 'x': case 'X': case '0': case '1': case '2': case '3': case '4':
   case '5': case '6': case '7': case '8': case '9':
    regex-=2; len+=2;
-   if(pgetc(p)!= escape(&regex,&len)) return 0;
+   if(pgetc(p)!= escape(&regex,&len)) goto fail;
    break;
 
   case '*':
    /* Find shortest matching sequence */
-   q=pdup(p);
+   o=pdup(p);
    do
     {
     long pb=p->byte;
     if(pmatch(pieces,regex,len,p,n+1,icase))
-     { saves(pieces,n,q,pb-q->byte); prm(q); return 1; }
+     { saves(pieces,n,o,pb-o->byte); goto succeed; }
+    c=pgetc(p);
     }
-    while((c=pgetc(p)), (c!= MAXINT && c!='\n'));
-   pset(p,q); prm(q);
-   return 0;
+    while(c!=MAXINT && c!='\n');
+   goto fail;
 	
   case 'c':
-   q=pdup(p);
+   o=pdup(p);
    do
     {
     long pb=p->byte;
     if(pmatch(pieces,regex,len,p,n+1,icase))
-     { saves(pieces,n,q,pb-q->byte); prm(q); return 1; }
+     { saves(pieces,n,o,pb-o->byte); goto succeed; }
     }
-    while((c=skip_special(p))!= MAXINT);
-   pset(p,q); prm(q);
-   return 0;
+    while(skip_special(p)!= MAXINT);
+   goto fail;
 
   case '[':
    d=pgetc(p);
-   if(d== MAXINT) return 0;
-   if(!brack(&regex,&len,d)) { prgetc(p); return 0; }
+   if(d== MAXINT) goto fail;
+   if(!brack(&regex,&len,d)) goto fail;
    savec(pieces,n++,(char)d);
    break;
 
@@ -242,7 +242,7 @@ while(len--)
    int tlen;
 
    P *r=0;
-   q=pdup(p);
+   o=pdup(p);
 
    /* Advance over character to skip */
    if(len>=2 && regex[0]=='\\' && regex[1]=='[')
@@ -262,14 +262,15 @@ while(len--)
     P *z=pdup(p);
     if(pmatch(pieces,regex,len,p,n+1,icase))
      {
-     saves(pieces,n,q,z->byte-q->byte);
+     saves(pieces,n,o,z->byte-o->byte);
      if(r) prm(r);
      r=pdup(p);
      }
     pset(p,z);
     prm(z);
+    c=pgetc(p);
     }
-   while((c=pgetc(p))!=MAXINT &&
+   while(c!=MAXINT &&
           (*oregex=='\\' ?
            (tregex=oregex+2, tlen=olen-2, brack(&tregex,&tlen,c))
           :
@@ -279,37 +280,35 @@ while(len--)
 
    done:
    if(r) pset(p,r), prm(r);
-   else pset(p,q);
-   prm(q);
-   if(r) return 1;
-   else return 0;
+   if(r) goto succeed;
+   else goto fail;
    }
 
   case '^':
-   if(!pisbol(p)) return 0;
+   if(!pisbol(p)) goto fail;
    break;
 
   case '$':
-   if(!piseol(p)) return 0;
+   if(!piseol(p)) goto fail;
    break;
 
   case '<':
-   if(!pisbow(p)) return 0;
+   if(!pisbow(p)) goto fail;
    break;
   
   case '>':
-   if(!piseow(p)) return 0;
+   if(!piseow(p)) goto fail;
    break;
   
   default:
    d=pgetc(p);
    if(icase)
     {
-    if(toup(d)!=toup(c)) { if(d!=MAXINT) prgetc(p); return 0; }
+    if(toup(d)!=toup(c)) goto fail;
     }
    else
     {
-    if(d!=c) { if(d!= MAXINT) prgetc(p); return 0; }
+    if(d!=c) goto fail;
     }
    }
   break;
@@ -318,12 +317,21 @@ while(len--)
   d=pgetc(p);
   if(icase)
    {
-   if(toup(d)!=toup(c)) { if(d!=MAXINT) prgetc(p); return 0; }
+   if(toup(d)!=toup(c)) goto fail;
    }
   else
    {
-   if(d!=c) { if(d!= MAXINT) prgetc(p); return 0; }
+   if(d!=c) goto fail;
    }
   }
+succeed:
+if(o) prm(o);
+prm(q);
 return 1;
+
+fail:
+if(o) prm(o);
+pset(p,q);
+prm(q);
+return 0;
 }

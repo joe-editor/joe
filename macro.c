@@ -26,13 +26,15 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "ublock.h"
 #include "umath.h"
 #include "uedit.h"
+#include "zstr.h"
 #include "macro.h"
 
 MACRO *freemacros=0;
 
 /* Create a macro */
 
-MACRO *mkmacro(k,arg,n)
+MACRO *mkmacro(k,arg,n,cmd)
+CMD *cmd;
  {
  MACRO *macro;
  if(!freemacros)
@@ -49,6 +51,7 @@ MACRO *mkmacro(k,arg,n)
  macro->size=0;
  macro->arg=arg;
  macro->n=n;
+ macro->cmd=cmd;
  macro->k=k;
  return macro;
  }
@@ -89,7 +92,7 @@ MACRO *macro, *m;
 MACRO *dupmacro(mac)
 MACRO *mac;
  {
- MACRO *m=mkmacro(mac->k,mac->arg,mac->n);
+ MACRO *m=mkmacro(mac->k,mac->arg,mac->n,mac->cmd);
  if(mac->steps)
   {
   int x;
@@ -117,6 +120,196 @@ MACRO *m;
  return m;
  }
 
+/* Parse text into a macro
+ * sta is set to:  ending position in buffer for no error.
+ *                 -1 for syntax error
+ *                 -2 for need more input
+ */
+
+MACRO *mparse(m,buf,sta)
+MACRO *m;
+char *buf;
+int *sta;
+ {
+ int y, c, x=0;
+
+ macroloop:
+
+ /* Skip whitespace */
+ while(cwhite(buf[x])) ++x;
+
+ /* Do we have a string? */
+ if(buf[x]=='\"')
+  {
+  ++x;
+  while(buf[x] && buf[x]!='\"')
+   {
+   if(buf[x]=='\\' && buf[x+1])
+    {
+    ++x;
+    switch(buf[x])
+     {
+    case 'n': buf[x]=10; break;
+    case 'r': buf[x]=13; break;
+    case 'b': buf[x]=8; break;
+    case 'f': buf[x]=12; break;
+    case 'a': buf[x]=7; break;
+    case 't': buf[x]=9; break;
+    case 'x':
+     c=0;
+     if(buf[x+1]>='0' && buf[x+1]<='9') c=c*16+buf[++x]-'0';
+     else if(buf[x+1]>='a' && buf[x+1]<='f' ||
+             buf[x+1]>='A' && buf[x+1]<='F') c=c*16+(buf[++x]&0xF)+9;
+     if(buf[x+1]>='0' && buf[x+1]<='9') c=c*16+buf[++x]-'0';
+     else if(buf[x+1]>='a' && buf[x+1]<='f' ||
+             buf[x+1]>='A' && buf[x+1]<='F') c=c*16+(buf[++x]&0xF)+9;
+     buf[x]=c;
+     break;
+    case '0': case '1': case '2': case '3':
+    case '4': case '5': case '6': case '7':
+    case '8': case '9':
+     c=buf[x]-'0';
+     if(buf[x+1]>='0' && buf[x+1]<='7') c=c*8+buf[++x]-'0';
+     if(buf[x+1]>='0' && buf[x+1]<='7') c=c*8+buf[++x]-'0';
+     buf[x]=c;
+     break;
+     }
+    }
+   if(m)
+    {
+    if(!m->steps)
+     {
+     MACRO *macro=m;
+     m=mkmacro(MAXINT,1,0,NULL);
+     addmacro(m,macro);
+     }
+    }
+   else m=mkmacro(MAXINT,1,0,NULL);
+   addmacro(m,mkmacro(buf[x],1,0,findcmd("type")));
+   ++x;
+   }
+  if(buf[x]=='\"') ++x;
+  }
+
+ /* Do we have a command? */
+ else
+  {
+  for(y=x;
+      buf[y] && buf[y]!=',' && buf[y]!=' ' && buf[y]!='\t' && buf[y]!='\n' && buf[x]!='\r';
+      ++y);
+  if(y!=x)
+   {
+   CMD *cmd;
+   c=buf[y]; buf[y]=0;
+   cmd=findcmd(buf+x);
+   if(!cmd)
+    {
+    *sta = -1;
+    return 0;
+    }
+   else if(m)
+    {
+    if(!m->steps)
+     {
+     MACRO *macro=m;
+     m=mkmacro(MAXINT,1,0,NULL);
+     addmacro(m,macro);
+     }
+    addmacro(m,mkmacro(MAXINT,1,0,cmd));
+    }
+   else m=mkmacro(MAXINT,1,0,cmd);
+   buf[x=y]=c;
+   }
+  }
+
+ /* Skip whitespace */
+ while(cwhite(buf[x])) ++x;
+
+ /* Do we have a comma? */
+ if(buf[x]==',')
+  {
+  ++x;
+  while(cwhite(buf[x])) ++x;
+  if(buf[x] && buf[x]!='\r' && buf[x]!='\n') goto macroloop;
+  *sta= -2;
+  return m;
+  }
+
+ /* Done */
+ *sta=x;
+ return m;
+ }
+
+/* Convert macro to text */
+
+static char *ptr;
+static int first;
+static int instr;
+
+char *unescape(ptr,c)
+char *ptr;
+ {
+ if(c=='"') *ptr++='\\', *ptr++='"';
+ else if(c=='\'') *ptr++='\\', *ptr++='\'';
+ else if(c<32 || c>126)
+  {
+  *ptr++='\\';
+  *ptr++='x';
+  *ptr++="0123456789ABCDEF"[c>>4];
+  *ptr++="0123456789ABCDEF"[c&15];
+  }
+ else *ptr++=c;
+ return ptr;
+ }
+
+void domtext(m)
+MACRO *m;
+ {
+ int x;
+ if(!m) return;
+ if(m->steps)
+  for(x=0;x!=m->n;++x) domtext(m->steps[x]);
+ else
+  {
+  if(instr && zcmp(m->cmd->name,"type")) *ptr++='\"', instr=0;
+  if(first) first=0;
+  else if(!instr) *ptr++=',';
+  if(!zcmp(m->cmd->name,"type"))
+   {
+   if(!instr) *ptr++='\"', instr=1;
+   ptr=unescape(ptr,m->k);
+   }
+  else
+   {
+   for(x=0;m->cmd->name[x];++x) *ptr++=m->cmd->name[x];
+   if(!zcmp(m->cmd->name,"play") ||
+      !zcmp(m->cmd->name,"gomark") ||
+      !zcmp(m->cmd->name,"setmark") ||
+      !zcmp(m->cmd->name,"record") ||
+      !zcmp(m->cmd->name,"uarg"))
+    {
+    *ptr++=',';
+    *ptr++='"';
+    ptr=unescape(ptr,m->k);
+    *ptr++='"';
+    }
+   }
+  }
+ }
+
+char *mtext(s,m)
+char *s;
+MACRO *m;
+ {
+ ptr=s;
+ first=1;
+ instr=0;
+ domtext(m);
+ if(instr) *ptr++='\"';
+ *ptr=0;
+ return s;
+ }
+
 /* Keyboard macro recorder */
 
 static MACRO *kbdmacro[10];
@@ -127,6 +320,11 @@ struct recmac *recmac=0;
 static void unmac()
  {
  if(recmac) rmmacro(recmac->m->steps[--recmac->m->n]);
+ }
+
+void chmac()
+ {
+ if(recmac && recmac->m->n) recmac->m->steps[recmac->m->n-1]->k=3;
  }
 
 static void record(m)
@@ -161,6 +359,7 @@ MACRO *m;
  int larg;
  int negarg=0;
  int flg=0;
+ CMD *cmd;
  int n;
  int ret=0;
 
@@ -173,22 +372,22 @@ MACRO *m;
   if(m->steps) negarg=0;
   else
    {
-   n=m->n;
-   if(!cmds[n].arg) larg=0;
+   cmd=m->cmd;
+   if(!cmd->arg) larg=0;
    else if(negarg)
-    if(cmds[n].negarg) n=findcmd(cmds[n].negarg);
+    if(cmd->negarg) cmd=findcmd(cmd->negarg);
     else larg=0;
    }
   }
  else
   {
-  n=m->n;
+  cmd=m->cmd;
   larg=1;
   }
 
  if( m->steps ||
      larg!=1 ||
-     !(cmds[m->n].flag&EMINOR) ||
+     !(cmd->flag&EMINOR) ||
      maint->curwin->watom->what==TYPEQW		/* Undo work right for s & r */
    ) flg=1;
 
@@ -214,7 +413,7 @@ MACRO *m;
    macroptr=tmpptr;
    while(nstack>stk) upop(NULL);
    }
-  else ret=execmd(n,m->k);
+  else ret=execmd(cmd,m->k);
  if(leave) return ret;
  if(flg && u) umclear();
 
@@ -249,7 +448,7 @@ int *notify;
   }
  for(n=0;n!=10;++n) if(playmode[n]) return -1;
  r=(struct recmac *)malloc(sizeof(struct recmac));
- r->m=mkmacro(0,1,0);
+ r->m=mkmacro(0,1,0,NULL);
  r->next=recmac;
  r->n=c-'0';
  recmac=r;
@@ -278,7 +477,7 @@ int ustop()
   recmac=r->next;
   if(kbdmacro[r->n]) rmmacro(kbdmacro[r->n]);
   kbdmacro[r->n]=r->m;
-  if(recmac) record(m=mkmacro(r->n+'0',1,findcmd("play"))), rmmacro(m);
+  if(recmac) record(m=mkmacro(r->n+'0',1,0,findcmd("play"))), rmmacro(m);
   free(r);
   }
  return 0;
@@ -305,6 +504,26 @@ int *notify;
   nungetc(c);
   return -1;
   }
+ }
+
+int umacros(bw)
+BW *bw;
+ {
+ int x;
+ char buf[1024];
+ peol(bw->cursor);
+ for(x=0;x!=10;++x) if(kbdmacro[x])
+  {
+  mtext(buf,kbdmacro[x]);
+  binss(bw->cursor,buf);
+  peol(bw->cursor);
+  sprintf(buf,"\t^K %c\tMacro %d",x+'0',x);
+  binss(bw->cursor,buf);
+  peol(bw->cursor);
+  binsc(bw->cursor,'\n');
+  pgetc(bw->cursor);
+  }
+ return 0;
  }
 
 int uplay(bw,c)

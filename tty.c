@@ -21,20 +21,13 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 /* These should exist on every UNIX system */
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/ioctl.h>
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
 extern int errno;
 
-/* These depend on which tty structure the UNIX uses */
-
-#ifndef TTYPOSIX
-#ifndef TTYSV
 #include <sys/param.h>
-#endif
-#endif
 
 #include "config.h"
 
@@ -43,15 +36,24 @@ extern int errno;
  * we actually have.
  */
 #ifdef TTYPOSIX
+
+#ifdef SYSPOSIX
+#include <sys/termios.h>
+#else
 #include <termios.h>
-char *getcwd(); char *pwd() { static char buf[1024]; return getcwd(buf,1024); }
+#endif
+
 #else
 #ifdef TTYSV
+
+#ifdef SYSSV
+#include <sys/termio.h>
+#else
 #include <termio.h>
-char *getcwd(); char *pwd() { static char buf[1024]; return getcwd(buf,1024); }
+#endif
+
 #else
 #include <sgtty.h>
-char *getwd(); char *pwd() { static char buf[1024]; return getwd(buf); }
 #endif
 #endif
 
@@ -81,12 +83,6 @@ char *getwd(); char *pwd() { static char buf[1024]; return getwd(buf); }
 #endif
 #endif
 
-#ifdef sgi
-#ifndef __svr4__
-#define __svr4__ 1
-#endif
-#endif
-
 #ifdef __svr4__
 /* I don't think these two are needed if you have 'stropts' (sgi doesn't
  * even have them). */
@@ -100,6 +96,17 @@ char *getwd(); char *pwd() { static char buf[1024]; return getwd(buf); }
 #include "config.h"
 #include "path.h"
 #include "tty.h"
+
+/* The pwd function */
+#ifdef TTYPOSIX
+char *getcwd(); char *pwd() { static char buf[1024]; return getcwd(buf,1024); }
+#else
+#ifdef TTYSV
+char *getcwd(); char *pwd() { static char buf[1024]; return getcwd(buf,1024); }
+#else
+char *getwd(); char *pwd() { static char buf[1024]; return getwd(buf); }
+#endif
+#endif
 
 /** Aliased defines **/
 
@@ -371,7 +378,7 @@ void ttopnn()
  newterm.c_oflag=0;
  newterm.c_cc[VMIN]=1;
  newterm.c_cc[VTIME]=0;
- tcsetattr(fileno(termin),TCSANOW,&newterm);
+ tcsetattr(fileno(termin),TCSADRAIN,&newterm);
  bbaud=cfgetospeed(&newterm);
 #else
 #ifdef TTYSV
@@ -443,7 +450,7 @@ void ttclsn()
  ttflsh();
  
 #ifdef TTYPOSIX
- tcsetattr(fileno(termin),TCSANOW,&oldterm);
+ tcsetattr(fileno(termin),TCSADRAIN,&oldterm);
 #else
 #ifdef TTYSV
  ioctl(fileno(termin),TCSETAW,&oldterm);
@@ -747,6 +754,19 @@ void mpxend()
  * string in static buffer or NULL if couldn't get a pair.
  */
 
+#ifdef sgi
+
+/* Newer sgi machines can do it the __svr4__ way, but old ones can't */
+
+extern char *_getpty();
+
+char *getpty(ptyfd)
+int *ptyfd;
+ {
+ return _getpty(ptyfd,O_RDWR,0600,0);
+ }
+
+#else
 #ifdef __svr4__
 
 /* Strange streams way */
@@ -765,6 +785,7 @@ int *ptyfd;
  }
 
 #else
+
 /* The normal way: for each possible pty/tty pair, try to open the pty and
  * then the corresponding tty.  If both could be opened, close them both and
  * then re-open the pty.  If that succeeded, return with the opened pty and the
@@ -825,6 +846,7 @@ int *ptyfd;
  return 0;
  }
 
+#endif
 #endif
 
 int dead=0;
@@ -920,7 +942,7 @@ void *dieobj;
     /* We could probably have a special TTY set-up for JOE, but for now
      * we'll just use the TTY setup for the TTY was was run on */
 #ifdef TTYPOSIX
-    tcsetattr(0,TCSANOW,&oldterm);
+    tcsetattr(0,TCSADRAIN,&oldterm);
 #else
 #ifdef TTYSV
     ioctl(0,TCSETAW,&oldterm);

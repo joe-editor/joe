@@ -1,5 +1,6 @@
 
                          Initialization file for JOE
+                           WordStar / Turbo-C Joe
 
  JOE looks for this file in:
 	1 - .joerc
@@ -103,6 +104,13 @@
 	-keymap name		Keymap to use if not 'main'
 	-lmsg			Status line definition strings-
 	-rmsg			see previous section for more info.
+	-mnew macro		Macro to execute when new files are loaded
+	-mold macro		Macro to execute when existing files are loaded
+	-msnew macro		Macro to execute when new files are saved
+	-msold macro		Macro to execute when existing files are saved
+
+	Macros for the above options are in the same format as in the key
+	binding section below- but without the key name strings.
 
 *
 -wordwrap
@@ -155,7 +163,7 @@
 \i \i^[) Stop    ^QQ repeat      ^Q, Left  ^[! Command ^QK to ^KK ^[S Forwards    \i \i
 \i \i^[ 0-9 Play ^QM Math                  QUOTE       DELETE     BOOKMARKS       \i \i
 \i \i^[? Query   ^KA Center line           ^P Ctrl-    ^[Y yank   ^K 0-9 Set      \i \i
-\i \i^[H Message                           ^\\ Meta-    ^[O word<  ^Q 0-9 Goto     \i \i
+\i \i^[D Dump    ^[H Message               ^\\ Meta-    ^[O word<  ^Q 0-9 Goto     \i \i
 }
 
 {Programs
@@ -416,6 +424,9 @@ insc		^@
 insf		^K R		Insert a file
 insf		^K ^R
 insf		^K r
+macros		^[ d		Dump macros
+macros		^[ D
+macros		^[ ^D
 mode,"T"	^V		Insert/Overtype
 mode,"T"	.kI
 lindent		^K ,		Indent to left

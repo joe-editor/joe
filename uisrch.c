@@ -98,7 +98,7 @@ int *notify;
   }
  else if((c<32 || c>=256) && c!=MAXINT)
   { /* Done */
-  if(c!='C'-'@') nungetc(c);
+  nungetc(c);
   if(notify) *notify=1;
   lastpat=vstrunc(lastpat,0);
   lastpat=vsncpy(lastpat,0,isrch->pattern+isrch->ofst,sLen(isrch->pattern)-isrch->ofst);

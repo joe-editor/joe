@@ -2,6 +2,7 @@
 #define _Icmd 1
 
 typedef struct cmd CMD;
+typedef struct macro MACRO;
 
 /* Command entry */
 
@@ -10,11 +11,12 @@ struct cmd
  char *name;		/* Command name */
  int flag;		/* Execution flags */
  int (*func)();		/* Function bound to name */
+ MACRO *m;		/* Macro bound to name */
  int arg;		/* 0= arg is meaningless, 1= ok */
  char *negarg;		/* Command to use if arg was negative */
  };
 
-extern CMD cmds[];
+extern CMD cmds[];	/* Built-in commands */
 
 /* Command execution flags */
 
@@ -27,10 +29,11 @@ extern CMD cmds[];
 #define EKILL 64	/* Function is a kill */
 #define EMOD 128	/* Not allowed on readonly files */
 
-/* int findcmd(char *s);
- * Return command table index for the named command
+/* CMD *findcmd(char *s);
+ * Return command address for given name
  */
-int findcmd();
+CMD *findcmd();
+void addcmd();
 
 /* Execute a command.  Returns return value of command */
 int execmd();

@@ -49,10 +49,10 @@ extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode,
 extern char *backpath;
 
 OPTIONS pdefault=
- { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, 0, 0, 0, 0, 0 };
+ { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 OPTIONS fdefault=
- { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, "main", "\\i%n %m %M", " %S Ctrl-K H for help", 0, 0 };
+ { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, "main", "\\i%n %m %M", " %S Ctrl-K H for help", 0, 0, 0, 0, 0, 0 };
 
 void setopt(n,name)
 OPTIONS *n;
@@ -91,6 +91,8 @@ struct glopts
  char *no;	/* Message if option was turned off */
  char *menu;	/* Menu string */
  int ofst;	/* Local options structure member offset */
+ int low;	/* Low limit for numeric options */
+ int high;	/* High limit for numeric options */
  } glopts[]=
  {
   {"overwrite", 4, 0, (char *)&fdefault.overtype,
@@ -100,7 +102,7 @@ struct glopts
 
   {"autoindent", 4, 0, (char *)&fdefault.autoindent,
    "Autoindent enabled",
-   "Autoindent disabled",
+   "Autindent disabled",
    "I Autoindent "},
 
   {"wordwrap", 4, 0, (char *)&fdefault.wordwrap,
@@ -111,18 +113,18 @@ struct glopts
   {"tab", 5, 0, (char *)&fdefault.tab,
    "Tab width (%d): ",
    0,
-   "D Tab width "},
+   "D Tab width ",0,1,64},
 
   {"lmargin", 7, 0, (char *)&fdefault.lmargin,
    "Left margin (%d): ",
    0,
-   "Left margin "},
+   "Left margin ",0,1,64},
 
   {"rmargin", 7, 0, (char *)&fdefault.rmargin,
    "Right margin (%d): ",
    0,
-   "Right margin "},
-  
+   "Right margin ",0,8,256},
+
   {"square", 0, &square, 0,
    "Rectangle mode",
    "Text-stream mode",
@@ -131,12 +133,12 @@ struct glopts
   {"indentc", 5, 0, (char *)&fdefault.indentc,
    "Indent char %d (SPACE=32, TAB=9, ^C to abort): ",
    0,
-   " Indent char "},
+   " Indent char ",0,0,255},
 
   {"istep", 5, 0, (char *)&fdefault.istep,
    "Indent step %d (^C to abort): ",
    0,
-   " Indent step "},
+   " Indent step ",0,1,64},
 
   {"french", 4, 0, (char *)&fdefault.french,
    "One space after periods for paragraph reformat",
@@ -207,7 +209,7 @@ struct glopts
   {"pg", 1, &pgamnt, 0,
    "Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): ",
    0,
-   " No. PgUp/PgDn lines " },
+   " No. PgUp/PgDn lines ", 0, -1, 64 },
 
   {"csmode", 0, &csmode, 0,
    "Start search after a search repeats previous search",
@@ -240,16 +242,16 @@ struct glopts
    0, 0, 0 },
 
   {"lines", 1, &lines, 0,
-   0, 0, 0 },
+   0, 0, 0, 0, 2, 1024 },
 
   {"baud", 1, &Baud, 0,
-   0, 0, 0 }, 
+   0, 0, 0, 0, 50, 32767 }, 
 
   {"columns", 1, &columns, 0,
-   0, 0, 0 },
+   0, 0, 0, 0, 2, 1024 },
 
   {"skiptop", 1, &skiptop, 0,
-   0, 0, 0 }, 
+   0, 0, 0, 0, 0, 64 }, 
 
   { 0, 0, 0 }
  };
@@ -262,7 +264,7 @@ void izopts()
  for(x=0;glopts[x].name;++x)
   switch(glopts[x].type)
    {
-   case 4: case 5: case 6: case 7:
+   case 4: case 5: case 6: case 7: case 8:
    glopts[x].ofst=glopts[x].addr-(char *)&fdefault;
    }
  isiz=1;
@@ -272,6 +274,7 @@ int glopt(s,arg,options,set)
 char *s, *arg;
 OPTIONS *options;
  {
+ int val;
  int ret=0;
  int st=1;
  int x;
@@ -285,7 +288,11 @@ OPTIONS *options;
     case 0: if(set) *glopts[x].set=st;
     break;
     
-    case 1: if(set) if(arg) sscanf(arg,"%d",glopts[x].set);
+    case 1: if(set && arg)
+             {
+             sscanf(arg,"%d",&val);
+             if(val>=glopts[x].low && val<=glopts[x].high) *glopts[x].set=val;
+             }
     break;
 
     case 2: if(set)
@@ -298,17 +305,30 @@ OPTIONS *options;
     break;
     
     case 5: if(arg)
-             if(options) sscanf(arg,"%d",(int *)((char *)options+glopts[x].ofst));
-             else if(set==2) sscanf(arg,"%d",(int *)((char *)&fdefault+glopts[x].ofst));
+             if(options)
+              {
+              sscanf(arg,"%d",&val);
+              if(val>=glopts[x].low && val<=glopts[x].high)
+               *(int *)((char *)options+glopts[x].ofst)=val;
+              }
+             else if(set==2)
+              {
+              sscanf(arg,"%d",&val);
+              if(val>=glopts[x].low && val<=glopts[x].high)
+               *(int *)((char *)&fdefault+glopts[x].ofst)=val;
+              }
     break;
 
     case 7: if(arg)
              {
              int zz=0;
              sscanf(arg,"%d",&zz);
-             if(zz) --zz;
-             if(options) *(int *)((char *)options+glopts[x].ofst)=zz;
-             else if(set==2) *(int *)((char *)&fdefault+glopts[x].ofst)=zz;
+             if(zz>=glopts[x].low && zz <=glopts[x].high)
+              {
+              --zz;
+              if(options) *(int *)((char *)options+glopts[x].ofst)=zz;
+              else if(set==2) *(int *)((char *)&fdefault+glopts[x].ofst)=zz;
+              }
              }
     break;
     }
@@ -347,6 +367,50 @@ OPTIONS *options;
    }
   else ret=1;
   }
+ else if(!zcmp(s,"mnew"))
+  {
+  if(arg)
+   {
+   int sta;
+   if(options) options->mnew=mparse(NULL,arg,&sta);
+   else if(set==2) fdefault.mnew=mparse(NULL,arg,&sta);
+   ret=2;
+   }
+  else ret=1;
+  }
+ else if(!zcmp(s,"mold"))
+  {
+  if(arg)
+   {
+   int sta;
+   if(options) options->mold=mparse(NULL,arg,&sta);
+   else if(set==2) fdefault.mold=mparse(NULL,arg,&sta);
+   ret=2;
+   }
+  else ret=1;
+  }
+ else if(!zcmp(s,"msnew"))
+  {
+  if(arg)
+   {
+   int sta;
+   if(options) options->msnew=mparse(NULL,arg,&sta);
+   else if(set==2) fdefault.msnew=mparse(NULL,arg,&sta);
+   ret=2;
+   }
+  else ret=1;
+  }
+ else if(!zcmp(s,"msold"))
+  {
+  if(arg)
+   {
+   int sta;
+   if(options) options->msold=mparse(NULL,arg,&sta);
+   else if(set==2) fdefault.msold=mparse(NULL,arg,&sta);
+   ret=2;
+   }
+  else ret=1;
+  }
  done: return ret;
  }
 
@@ -375,18 +439,21 @@ int *notify;
   case 1:
    v=calc(bw,s);
    if(merr) msgnw(bw,merr), ret= -1;
-   else *glopts[x].set=v;
+   else if(v>=glopts[x].low && v<=glopts[x].high) *glopts[x].set=v;
+   else msgnw(bw,"Value out of range"), ret= -1;
    break;
   case 2: if(s[0]) *(char **)glopts[x].set=zdup(s); break;
   case 5:
    v=calc(bw,s);
    if(merr) msgnw(bw,merr), ret= -1;
-   else *(int *)((char *)&bw->o+glopts[x].ofst)=v;
+   else if(v>=glopts[x].low && v<=glopts[x].high) *(int *)((char *)&bw->o+glopts[x].ofst)=v;
+   else msgnw(bw,"Value out of range"), ret= -1;
    break;
   case 7:
    v=calc(bw,s)-1.0;
    if(merr) msgnw(bw,merr), ret= -1;
-   else *(int *)((char *)&bw->o+glopts[x].ofst)=v;
+   else if(v>=glopts[x].low && v<=glopts[x].high) *(int *)((char *)&bw->o+glopts[x].ofst)=v;
+   else msgnw(bw,"Value out of range"), ret= -1;
    break;
   }
  vsrm(s);
@@ -627,7 +694,31 @@ char *name;
     for(x=1;!cwhitef(buf[x]);++x);
     c=buf[x]; buf[x]=0;
     if(x!=1)
-     if(!zcmp(buf+1,"inherit"))
+     if(!zcmp(buf+1,"def"))
+      {
+      int y;
+      for(buf[x]=c;cwhite(buf[x]);++x);
+      for(y=x;!cwhitef(buf[y]);++y);
+      c=buf[y]; buf[y]=0;
+      if(y!=x)
+       {
+       int sta;
+       MACRO *m;
+       if(cwhite(c) && (m=mparse(NULL,buf+y+1,&sta)))
+        addcmd(buf+x,m);
+       else
+        {
+        err=1;
+        fprintf(stderr,"\n%s %d: macro missing from :def",name,line);
+        }
+       }
+      else
+       {
+       err=1;
+       fprintf(stderr,"\n%s %d: command name missing from :def",name,line);
+       }
+      }
+     else if(!zcmp(buf+1,"inherit"))
       if(context)
        {
        for(buf[x]=c;cwhite(buf[x]);++x);
@@ -702,104 +793,21 @@ char *name;
      break;
      }
 
-    /* Process macro */
-    m=0; x=0;
+    m=0;
     macroloop:
-    if(buf[x]=='\"')
+    m=mparse(m,buf,&x);
+    if(x== -1)
      {
-     ++x;
-     while(buf[x] && buf[x]!='\"')
-      {
-      if(buf[x]=='\\' && buf[x+1])
-       {
-       ++x;
-       switch(buf[x])
-        {
-       case 'n': buf[x]=10; break;
-       case 'r': buf[x]=13; break;
-       case 'b': buf[x]=8; break;
-       case 'f': buf[x]=12; break;
-       case 'a': buf[x]=7; break;
-       case 't': buf[x]=9; break;
-       case 'x':
-        c=0;
-        if(buf[x+1]>='0' && buf[x+1]<='9') c=c*16+buf[++x]-'0';
-        else if(buf[x+1]>='a' && buf[x+1]<='f' ||
-                buf[x+1]>='A' && buf[x+1]<='F') c=c*16+(buf[++x]&0xF)+9;
-        if(buf[x+1]>='0' && buf[x+1]<='9') c=c*16+buf[++x]-'0';
-        else if(buf[x+1]>='a' && buf[x+1]<='f' ||
-                buf[x+1]>='A' && buf[x+1]<='F') c=c*16+(buf[++x]&0xF)+9;
-        buf[x]=c;
-        break;
-       case '0': case '1': case '2': case '3':
-       case '4': case '5': case '6': case '7':
-       case '8': case '9':
-        c=buf[x]-'0';
-        if(buf[x+1]>='0' && buf[x+1]<='7') c=c*8+buf[++x]-'0';
-        if(buf[x+1]>='0' && buf[x+1]<='7') c=c*8+buf[++x]-'0';
-        buf[x]=c;
-        break;
-        }
-       }
-      if(m)
-       {
-       if(!m->steps)
-        {
-        MACRO *macro=m;
-        m=mkmacro(MAXINT,1,0);
-        addmacro(m,macro);
-        }
-       }
-      else m=mkmacro(MAXINT,1,0);
-      addmacro(m,mkmacro(buf[x],1,findcmd("type")));
-      ++x;
-      }
-     if(buf[x]=='\"') ++x;
+     err=1;
+     fprintf(stderr,"\n%s %d: Unknown command in macro",name,line);
+     break;
      }
-    else
+    else if(x== -2)
      {
-     for(y=x;
-         buf[y] && buf[y]!=',' && buf[y]!=' ' && buf[y]!='\t' && buf[y]!='\n';
-         ++y);
-     if(y!=x)
-      {
-      int n;
-      c=buf[y]; buf[y]=0;
-      n=findcmd(buf+x);
-      if(n== -1)
-       {
-       fprintf(stderr,"\n%s %d: Key function '%s' not found",name,line,buf);
-       err=1;
-       break;
-       }
-      else if(m)
-       {
-       if(!m->steps)
-        {
-        MACRO *macro=m;
-        m=mkmacro(MAXINT,1,0);
-        addmacro(m,macro);
-        }
-       addmacro(m,mkmacro(MAXINT,1,n));
-       }
-      else m=mkmacro(MAXINT,1,n);
-      buf[x=y]=c;
-      }
-     }
-    if(buf[x]==',')
-     {
-     ++x;
-     if(!buf[x] || buf[x]==' ' || buf[x]=='\t' || buf[x]=='\n')
-      {
-      buf[x=0]=0;
-      fgets(buf,1024,fd);
-      }
+     fgets(buf,1024,fd);
      goto macroloop;
      }
     if(!m) break;
-
-    /* Skip to start of key sequence */
-    while(cwhite(buf[x])) ++x;
 
     /* Skip to end of key sequence */
     for(y=x;buf[y]!=0 && buf[y]!='\t' && buf[y]!='\n' && 

@@ -37,6 +37,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "tty.h"
 #include "tab.h"
 #include "uerror.h"
+#include "macro.h"
 #include "ufile.h"
 
 int exask=0;
@@ -165,6 +166,8 @@ int *notify;
  int fl;
  if(notify) *notify=1;
  if(backup(bw)) { vsrm(s); return -1; }
+ if(bw->b->er== -1 && bw->o.msnew) exemac(bw->o.msnew), bw->b->er= -3;
+ if(bw->b->er== 0 && bw->o.msold) exemac(bw->o.msold);
  if(fl=bsave(bw->b->bof,s,bw->b->eof->byte))
   {
   msgnw(bw,msgs[fl+5]);
@@ -245,6 +248,10 @@ int *notify;
  wredraw(bw->parent);
  bw->object=object;
  vsrm(s);
+ if(er== -1 && bw->o.mnew)
+  exemac(bw->o.mnew);
+ if(er==0 && bw->o.mold)
+  exemac(bw->o.mold);
  return ret;
  }
 
@@ -276,6 +283,7 @@ int *notify;
  {
  void *object=bw->object;
  int ret=0;
+ int er;
  W *w=bw->parent;
  B *b;
  if(notify) *notify=1;
@@ -285,6 +293,7 @@ int *notify;
   return -1;
   }
  b=bfind(s);
+ er=error;
  if(error)
   {
   msgnwt(bw,msgs[error+5]);
@@ -297,6 +306,10 @@ int *notify;
  wredraw(bw->parent);
  bw->object=object;
  vsrm(s);
+ if(er== -1 && bw->o.mnew)
+  exemac(bw->o.mnew);
+ if(er==0 && bw->o.mold)
+  exemac(bw->o.mold);
  return ret;
  }
 
@@ -481,6 +494,7 @@ int *notify;
  w->object=(void *)(bw=bwmk(w,bfind(""),0));
  wredraw(bw->parent);
  bw->object=object;
+ if(bw->o.mnew) exemac(bw->o.mnew);
  return 0;
  }
 

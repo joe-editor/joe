@@ -210,6 +210,7 @@ long amnt, nlines;
  b->changed=0;
  b->count=1;
  b->name=0;
+ b->er= -3;
  b->bof=palloc(); izque(P,link,b->bof);
  b->bof->end=0;
  b->bof->b=b;
@@ -1465,12 +1466,12 @@ int hdramnt;
 
  for(pp=p->link.next;pp!=p;pp=pp->link.next)
   if(pp->line==p->line &&
-     (pp->byte>p->byte || pp->end)) pp->valcol=0;
+     (pp->byte>p->byte || pp->end && pp->byte==p->byte)) pp->valcol=0;
  for(pp=p->link.next;pp!=p;pp=pp->link.next)
   if(pp->byte==p->byte && !pp->end)
    if(pp->ptr) pset(pp,p);
    else poffline(pset(pp,p));
-  else if(pp->byte>p->byte || pp->end)
+  else if(pp->byte>p->byte || pp->end && pp->byte==p->byte)
    {
    pp->byte+=amnt;
    pp->line+=nlines;
@@ -1690,6 +1691,7 @@ char *s;
   b=bmk(NULL);
   setopt(&b->o,"");
   b->rdonly=b->o.readonly;
+  b->er=error;
   return b;
   }
 
@@ -1762,6 +1764,7 @@ char *s;
  /* Eliminate parsed name */
  vsrm(n);
 
+ b->er=error;
  return b;
  }
 
@@ -1778,6 +1781,7 @@ char *s;
   setopt(&b->o,"");
   b->rdonly=b->o.readonly;
   b->internal=0;
+  b->er=error;
   return b;
   }
  for(b=bufs.link.next;b!=&bufs;b=b->link.next)

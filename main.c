@@ -101,8 +101,12 @@ static int ungotc=0;
 
 void nungetc(c)
  {
- ungot=1;
- ungotc=c;
+ if(c!='C'-'@')
+  {
+  chmac();
+  ungot=1;
+  ungotc=c;
+  }
  }
 
 int edloop(flg)
@@ -299,7 +303,7 @@ char *argv[];
   else
    {
    B *b=bfind(argv[c]);
-   BW *bw;
+   BW *bw=0;
    int er=error;
    if(!orphan || !opened)
     {
@@ -307,20 +311,26 @@ char *argv[];
     if(er) msgnwt(bw,msgs[5+er]);
     }
    else b->orphan=1;
-   bw->o.readonly=bw->b->rdonly;
-   if(backopt) while(backopt!=c)
-    if(argv[backopt][0]=='+')
-     {
-     long lnum=0;
-     sscanf(argv[backopt]+1,"%ld",&lnum);
-     if(lnum>0) pline(bw->cursor,lnum-1);
-     ++backopt;
-     }
-    else
-     if(glopt(argv[backopt]+1,argv[backopt+1],&bw->o,0)==2) backopt+=2;
-     else backopt+=1;
-   bw->b->o=bw->o;
-   bw->b->rdonly=bw->o.readonly;
+   if(bw)
+    {
+    long lnum=0;
+    bw->o.readonly=bw->b->rdonly;
+    if(backopt) while(backopt!=c)
+     if(argv[backopt][0]=='+')
+      {
+      sscanf(argv[backopt]+1,"%ld",&lnum);
+      ++backopt;
+      }
+     else
+      if(glopt(argv[backopt]+1,argv[backopt+1],&bw->o,0)==2) backopt+=2;
+      else backopt+=1;
+    bw->b->o=bw->o;
+    bw->b->rdonly=bw->o.readonly;
+    maint->curwin=bw->parent;
+    if(er== -1 && bw->o.mnew) exemac(bw->o.mnew);
+    if(er==0 && bw->o.mold) exemac(bw->o.mold);
+    if(lnum>0) pline(bw->cursor,lnum-1);
+    }
    opened=1;
    backopt=0;
    }
@@ -333,10 +343,14 @@ char *argv[];
   mid=omid;
   }
  else
-  wmktw(maint,bfind(""));
+  {
+  BW *bw=wmktw(maint,bfind(""));
+  if(bw->o.mnew) exemac(bw->o.mnew);
+  }
+ maint->curwin=maint->topwin;
  if(help) helpon(maint);
  if(!nonotice)
-  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.2 ** Copyright (C) 1994 Joseph H. Allen **\\i");
+  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.3 ** Copyright (C) 1994 Joseph H. Allen **\\i");
  edloop(0);
  vclose(vmem);
  nclose(n);

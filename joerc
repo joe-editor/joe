@@ -1,5 +1,6 @@
 
                          Initialization file for JOE
+                                Standard Joe
 
  JOE looks for this file in:
 	1 - .joerc
@@ -136,6 +137,14 @@
 	-lmsg			Status line definition strings-
 	-rmsg			see previous section for more info.
 
+	-mnew macro		Macro to execute when new files are loaded
+	-mold macro		Macro to execute when existing files are loaded
+	-msnew macro		Macro to execute when new files are saved
+	-msold macro		Macro to execute when existing files are saved
+
+	Macros for the above options are in the same format as in the key
+	binding section below- but without the key name strings.
+
 *
 -wordwrap
 
@@ -187,7 +196,7 @@
 \i \i^K]     Stop   ^K\\ Repeat      ^[Z Down  ^[! Command ^[K To ^KK ^[S Forwards \i \i
 \i \i^K 0-9  Play   ^[M Math        ^K< Left  \uQUOTE\u       \uDELETE\u     \uBOOKMARKS\u    \i \i
 \i \i^K?     Query  ^KA Center line ^K> Right `  Ctrl-    ^[Y yank   ^[ 0-9 Goto  \i \i
-\i \i^[H     Message                          ^\\ Meta-    ^[O line<  ^[^[   Set   \i \i
+\i \i^[D     Dump   ^[H Message               ^\\ Meta-    ^[O line<  ^[^[   Set   \i \i
 }
 
 {Programs
@@ -274,13 +283,20 @@
  Simple macros can be made by comma seperating 2 or more command names.  For
  example:
 
- bof,bol	^T Z		Goto beginning of last line
+ eof,bol	^T Z		Goto beginning of last line
 
  Also quoted matter is typed in literally:
 
  bol,">",dnarw	.k1		Quote news article line
 
  Macros may cross lines if they end with ,
+
+ Commands or named macros may be created with :def.  For example, you can
+ use:
+
+ :def foo eof,bol
+
+ To define a command foo which will goto the beginning of the last line.
 
 :windows		Bindings common to all windows
 type		^@ TO ÿ		Type a character
@@ -487,6 +503,9 @@ ltarw		.kl		Go left
 ltarw		^B
 ltarw		^[ O D
 ltarw		^[ [ D
+macros		^[ d		Dump keyboard macros
+macros		^[ D
+macros		^[ ^D
 markb		^K B		Set beginning of marked block
 markb		^K ^B
 markb		^K b

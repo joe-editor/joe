@@ -9,9 +9,10 @@
 # to go and where you want the man page
 # to go:
 
-WHEREJOE = /usr/local/bin
-WHERERC = /usr/local/lib
-WHEREMAN = /usr/man/man1
+PREFIX	= /usr
+WHEREJOE = $(PREFIX)/bin
+WHERERC = $(PREFIX)/lib
+WHEREMAN = $(PREFIX)/man/man1
 
 # If you want to be able to edit '-', which causes joe to read in or write out
 # to the stdin/stdout, change the '1' below to '0'.  Be warned however: this
@@ -28,7 +29,7 @@ IDLEOUT = 1
 #
 # for some HPUX systems, you need to add:  -D_HPUX_SOURCE
 
-CFLAGS = -O
+CFLAGS = -O2 -m486
 
 # You may have to include some extra libraries
 # for some systems
@@ -54,16 +55,20 @@ OBJS = b.o blocks.o bw.o cmd.o hash.o help.o kbd.o macro.o main.o menu.o \
  termcap.o tty.o tw.o ublock.o uedit.o uerror.o ufile.o uformat.o uisrch.o \
  umath.o undo.o usearch.o ushell.o utag.o va.o vfile.o vs.o w.o zstr.o
 
-CC = cc
+CC = gcc
 
 # That's it!
 
+all: joe
+
 joe: $(OBJS)
-	$(CC) $(CFLAGS) -o joe $(EXTRALIBS) $(OBJS)
+	$(CC) $(CFLAGS) -o joe $(OBJS) $(EXTRALIBS)
 	rm -f jmacs
 	rm -f jstar
-	ln joe jmacs
-	ln joe jstar
+	rm -f rjoe
+	ln -s joe jmacs
+	ln -s joe jstar
+	ln -s joe rjoe
 
 $(OBJS): config.h
 
@@ -75,28 +80,26 @@ termidx: termidx.o
 	$(CC) $(CFLAGS) -o termidx termidx.o
 
 install: joe termidx
-	strip joe
-	strip termidx
-	if [ ! -d $(WHEREJOE) ]; then mkdir $(WHEREJOE); chmod a+rx $(WHEREJOE); fi
-	rm -f $(WHEREJOE)/joe $(WHEREJOE)/jmacs $(WHEREJOE)/jstar $(WHEREJOE)/termidx
-	mv joe $(WHEREJOE)
-	ln $(WHEREJOE)/joe $(WHEREJOE)/jmacs
-	ln $(WHEREJOE)/joe $(WHEREJOE)/jstar
-	mv termidx $(WHEREJOE)
-	if [ ! -d $(WHERERC) ]; then mkdir $(WHERERC); chmod a+rx $(WHERERC); fi
-	rm -f $(WHERERC)/joerc $(WHERERC)/jmacsrc $(WHERERC)/jstarrc $(WHEREMAN)/joe.1
-	cp joerc $(WHERERC)
-	cp jmacsrc $(WHERERC)
-	cp jstarrc $(WHERERC)
-	cp joe.1 $(WHEREMAN)
-	chmod a+x $(WHEREJOE)/joe
-	chmod a+x $(WHEREJOE)/jmacs
-	chmod a+x $(WHEREJOE)/jstar
-	chmod a+r $(WHERERC)/joerc
-	chmod a+r $(WHERERC)/jmacsrc
-	chmod a+r $(WHERERC)/jstarrc
-	chmod a+r $(WHEREMAN)/joe.1
-	chmod a+x $(WHEREJOE)/termidx
+	if [ ! -d $(WHEREJOE) ]; then \
+		mkdir $(WHEREJOE) ;\
+		chmod a+rx $(WHEREJOE) ;\
+	fi
+	rm -f $(WHEREJOE)/joe $(WHEREJOE)/jmacs $(WHEREJOE)/jstar $(WHEREJOE)/rjoe $(WHEREJOE)/termidx
+	install -s -m755 joe $(WHEREJOE)
+	install -s -m755 termidx $(WHEREJOE)
+	ln -s joe $(WHEREJOE)/jmacs
+	ln -s joe $(WHEREJOE)/jstar
+	ln -s joe $(WHEREJOE)/rjoe
+	if [ ! -d $(WHERERC) ]; then \
+		mkdir $(WHERERC) ;\
+		chmod a+rx $(WHERERC) ;\
+	fi
+	rm -f $(WHERERC)/joerc $(WHERERC)/jmacsrc $(WHERERC)/jstarrc $(WHERERC)/rjoerc $(WHEREMAN)/joe.1
+	install -m644 joerc $(WHERERC)
+	install -m644 jmacsrc $(WHERERC)
+	install -m644 jstarrc $(WHERERC)
+	install -m644 rjoerc $(WHERERC)
+	install -m644 joe.1 $(WHEREMAN)
 
 clean:
-	rm -f $(OBJS) termidx.o conf conf.o config.h
+	rm -f joe jmacs jstar rjoe termidx $(OBJS) termidx.o conf conf.o config.h

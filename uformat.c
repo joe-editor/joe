@@ -60,6 +60,20 @@ BW *bw;
  else return 0;
  }
 
+/* Return true if c is a character which can indent a paragraph */
+
+int cpara(c)
+ {
+ if(c==' ' || c=='\t' || c=='\\' ||
+    c=='>' || c=='|' || c==':' || c=='*' || c=='/' || c==',' || c=='.' ||
+    c=='?' || c==';' || c==']' || c=='}' || c=='=' || c=='+' || c=='-' ||
+    c=='_' || c==')' || c=='&' || c=='^' || c=='%' || c=='$' || c=='#' ||
+    c=='@' || c=='!' || c=='~')
+  return 1;
+ else
+  return 0;
+ }
+
 /* Return true if line is definitly not a paragraph line.
  * Lines which arn't paragraph lines:
  *  1) Blank lines
@@ -71,13 +85,45 @@ P *p;
  {
  P *q;
  int c;
- if(pisblank(p)) return 1;
  q=pdup(p);
  pbol(q);
- while(cwhite(c=pgetc(q)));
+ while(cpara(c=pgetc(q)));
  prm(q);
- if(c=='.') return 1;
+ if(c=='.' || c=='\r' || c=='\n') return 1;
  else return 0;
+ }
+
+/* Determine amount of indentation on current line */
+
+long nindent(p)
+P *p;
+ {
+ P *q=pdup(p);
+ long col;
+ pbol(q);
+ do col=q->col; while(cpara(pgetc(q)));
+ prm(q);
+ return col;
+ }
+
+/* Get indentation prefix column */
+
+long prefix(p)
+P *p;
+ {
+ long len;
+ P *q=pdup(p);
+ pbol(q);
+ while(cpara(brc(q))) pgetc(q);
+ while(!pisbol(q))
+  if(!cwhite(prgetc(q)))
+   {
+   pgetc(q);
+   break;
+   }
+ len=q->col;
+ prm(q);
+ return len;
  }
 
 /* Move pointer to beginning of paragraph
@@ -85,8 +131,9 @@ P *p;
  * This function simply moves backwards until it sees:
  *  0) The beginning of the file
  *  1) A blank line
- *  2) A line with indentation greater than that of the line we started with
- *  3) A line with indentation less than that of the starting line, but with
+ *  2) A line with a different indentation prefix
+ *  3) A line with indentation greater than that of the line we started with
+ *  4) A line with indentation less than that of the starting line, but with
  *     a blank line (or beginning of file) preceeding it.
  */
 
@@ -96,12 +143,14 @@ P *pbop(p)
 P *p;
  {
  long indent;
- pbol(p); indent=pisindent(p);
+ long prelen;
+ pbol(p); indent=nindent(p); prelen=prefix(p);
  while(!pisbof(p) && (!within || !markb || p->byte>markb->byte))
   {
   long ind;
-  pprevl(p); pbol(p); ind=pisindent(p);
-  if(pisnpara(p)) { pnextl(p); break; }
+  long len;
+  pprevl(p); pbol(p); ind=nindent(p); len=prefix(p);
+  if(pisnpara(p) || len!=prelen) { pnextl(p); break; }
   if(ind>indent) break;
   if(ind<indent)
    {
@@ -121,19 +170,23 @@ P *p;
  *  0) The end of the file.
  *  1) A blank line
  *  2) A line with indentation different from the second line of the paragraph
+ *  3) A line with prefix column different from first line
  */
 
 P *peop(p)
 P *p;
  {
  long indent;
+ long prelen;
  if(!pnextl(p) || pisnpara(p) ||
     (within && markk && p->byte>=markk->byte)) return p;
- indent=pisindent(p);
+ indent=nindent(p);
+ prelen=prefix(p);
  while(pnextl(p) && (!within || !markk || p->byte<markk->byte))
   {
-  long ind=pisindent(p);
-  if(ind!=indent || pisnpara(p)) break;
+  long ind=nindent(p);
+  long len=prefix(p);
+  if(ind!=indent || len!=prelen || pisnpara(p)) break;
   }
  return p;
  }
@@ -189,19 +242,48 @@ BW *bw;
   }
  }
 
-/* Wrap word */
+/* Wrap word.  If 'french' is set, only one space will be placed
+ * after . ? or !
+ */
 
-void wrapword(p,indent,french)
+void wrapword(p,indent,french,indents)
 P *p;
 long indent;
+char *indents;
  {
  P *q;
+ int rmf=0;
  int c;
  long to=p->byte;
+
+ /* Get indentation prefix from beginning of line */
+ if(!indents)
+  {
+  int f=0;
+  P *r=pdup(p);
+  pbol(r);
+  q=pdup(r);
+  while(cpara(c=brc(q)))
+   {
+   if(!cwhite(c)) f=1;
+   pgetc(q);
+   }
+  if(f)
+   {
+   indents=brs(r,q->byte-r->byte); rmf=1;
+   if(indents[0]=='/' && indents[1]=='*') indents[0]=' ';
+   }
+  prm(r); prm(q);
+  }
+
  /* Get to beginning of word */
  while(!pisbol(p) && piscol(p)>indent && !cwhite(prgetc(p)));
+
+ /* If we found the beginning of a word... */
  if(!pisbol(p) && piscol(p)>indent)
   {
+  /* Move q to two (or one if 'french' is set) spaces after end of previous
+     word */
   q=pdup(p);
   while(!pisbol(q))
    if(!cwhite(c=prgetc(q)))
@@ -211,16 +293,27 @@ long indent;
     break;
     }
   pgetc(p);
+
+  /* Delete space between start of word and end of previous word */
   to-=p->byte-q->byte;
   bdel(q,p);
   prm(q);
+
+  /* Move word to beginning of next line */
   binsc(p,'\n'), ++to;
 #ifdef __MSDOS__
   ++to;
 #endif
   pgetc(p);
-  if(indent) while(indent--) binsc(p,' '), ++to;
+
+  /* Indent to left margin */
+  if(indents) binss(p,indents), to+=zlen(indents);
+  else while(indent--) binsc(p,' '), ++to;
+
+  if(rmf) free(indents);
   }
+
+ /* Move cursor back to original position */
  pfwrd(p,to-p->byte);
  }
 
@@ -230,6 +323,7 @@ int uformat(bw)
 BW *bw;
  {
  long indent;
+ char *indents;
  char *buf, *b;
  int len;
  long curoff;
@@ -237,41 +331,63 @@ BW *bw;
  P *p, *q;
  p=pdup(bw->cursor); pbol(p);
  
+ /* Do nothing if we're not on a paragraph line */
  if(pisnpara(p))
   {
   prm(p);
   return 0;
   }
  
+ /* Move p to beginning of paragraph, bw->cursor to end of paragraph and
+  * set curoff to original cursor offset within the paragraph */
  pbop(p);
  curoff=bw->cursor->byte-p->byte;
  pset(bw->cursor,p); peop(bw->cursor);
  
+ /* Insure that paragraph ends on a beginning of a line */
  if(!pisbol(bw->cursor)) binsc(bw->cursor,'\n'), pgetc(bw->cursor);
  
+ /* Record indentation of second line of paragraph, of first line if there
+  * is only one line */
  q=pdup(p); pnextl(q);
- if(q->line!=bw->cursor->line) indent=pisindent(q);
- else indent=pisindent(p);
+ if(q->line!=bw->cursor->line)
+  {
+  indent=nindent(q);
+  indents=brs(q,indent);
+  }
+ else
+  {
+  indent=nindent(p);
+  indents=brs(p,indent);
+  }
  prm(q);
+
+ /* But if the left margin is greater, we use that instead */
  if(bw->o.lmargin>indent) indent=bw->o.lmargin;
  
+ /* Cut paragraph into memory buffer */
  buf=(char *)malloc(len=(bw->cursor->byte-p->byte));
  brmem(p,buf,len);
  bdel(p,bw->cursor);
- prm(p);
  
  /* text is in buffer.  insert it at cursor */
  
  /* Do first line */
  b=buf;
- p=pdup(bw->cursor);
  
  while(len--)
   {
+  /* Set cursor position if we're at original offset */
   if(b-buf==curoff) pset(bw->cursor,p);
+
+  /* Get character from buffer */
   c= *b++;
+
+  /* Stop if we found end of line */
   if(c=='\n' ||
      c=='\r' && len && *b=='\n') { ++len; --b; break; }
+
+  /* Stop if we found white-space followed by end of line */
   if(cwhite(c))
    {
    char *r=b;
@@ -286,10 +402,14 @@ BW *bw;
    ++len; --b; break;
    ok:;
    }
+
+  /* Insert character, advance pointer */
   binsc(p,c); pgetc(p);
+
+  /* Do word wrap if we reach right margin */
   if(piscol(p)>bw->o.rmargin && !cwhite(c))
    {
-   wrapword(p,indent,bw->o.french);
+   wrapword(p,indent,bw->o.french,indents);
    break;
    }
   }
@@ -300,12 +420,37 @@ BW *bw;
   if(cwhitel(*b) || *b=='\r')
    {
    int f=0;
+   /* Set f if there are two spaces after . ? or ! instead of one */
    if((b[-1]=='.' || b[-1]=='?' || b[-1]=='!') && cwhitel(b[1])) f=1;
-   while(len && (cwhitel(*b) || *b=='\r'))
+
+   /* Skip past the whitespace.  Skip over indentations */
+   loop:
+
+   if(*b=='\r' && len)
     {
     if(b-buf==curoff) pset(bw->cursor,p);
     ++b, --len;
     }
+
+   if(*b=='\n' && len)
+    {
+    if(b-buf==curoff) pset(bw->cursor,p);
+    ++b, --len;
+    while(cpara(*b) && len)
+     {
+     if(b-buf==curoff) pset(bw->cursor,p);
+     ++b, --len;
+     }
+    }
+
+   if(len && cwhite(*b))
+    {
+    if(b-buf==curoff) pset(bw->cursor,p);
+    ++b, --len;
+    goto loop;
+    }
+
+   /* Insert proper amount of whitespace */
    if(len)
     {
     if(f && !bw->o.french) binsc(p,' '), pgetc(p);
@@ -314,14 +459,16 @@ BW *bw;
    }
   else
    {
+   /* Insert characters of word and wrap if necessary */
    if(b-buf==curoff) pset(bw->cursor,p);
    binsc(p,*b++); --len; pgetc(p);
-   if(piscol(p)>bw->o.rmargin) wrapword(p,indent,bw->o.french);
+   if(piscol(p)>bw->o.rmargin) wrapword(p,indent,bw->o.french,indents);
    }
  
  binsc(p,'\n');
  prm(p);
  free(buf);
+ free(indents);
  return 0;
  }
 

@@ -107,12 +107,16 @@ P *p;
 SRCH *setmark(srch)
 SRCH *srch;
  {
- if(markv(1))
-  {
-  srch->markb=markb; srch->markb->owner= &srch->markb; markb=0;
-  srch->markk=markk; srch->markk->owner= &srch->markk; markk=0;
-  }
- else srch->markb=0, srch->markk=0;
+ if(markv(1)) srch->valid=1;
+
+ srch->markb=markb;
+ if(srch->markb) srch->markb->owner= &srch->markb;
+ markb=0;
+
+ srch->markk=markk;
+ if(srch->markk) srch->markk->owner= &srch->markk;
+ markk=0;
+
  return srch;
  }
 
@@ -133,6 +137,7 @@ char *pattern, *replacement;
  srch->addr= -1;
  srch->markb=0;
  srch->markk=0;
+ srch->valid=0;
  srch->restrict=0;
  izque(SRCHREC,link,&srch->recs);
  for(x=0;x!=26;++x) srch->pieces[x]=0;
@@ -145,13 +150,19 @@ void rmsrch(srch)
 SRCH *srch;
  {
  int x;
+ prm(markb); prm(markk);
  if(srch->markb)
   {
-  prm(markb); prm(markk);
-  if(markb=srch->markb) markb->owner= &markb, markb->xcol=piscol(markb);
-  if(markk=srch->markk) markk->owner= &markk, markk->xcol=piscol(markk);
+  markb=srch->markb;
+  markb->owner= &markb;
+  markb->xcol=piscol(markb);
   }
- else unmark(NULL);
+ if(srch->markk)
+  {
+  markk=srch->markk;
+  markk->owner= &markk;
+  markk->xcol=piscol(markk);
+  }
  for(x=0;x!=26;++x) vsrm(srch->pieces[x]);
  frchn(&fsr,&srch->recs);
  vsrm(srch->pattern);
@@ -234,14 +245,22 @@ SRCH *srch;
   srch->rest=0;
   srch->repeat= -1;
   srch->flg=0;
+
+  prm(markb); prm(markk);
   if(srch->markb)
    {
-   prm(markb); prm(markk);
-   if(markb=srch->markb) markb->owner= &markb, markb->xcol=piscol(markb);
-   if(markk=srch->markk) markk->owner= &markk, markk->xcol=piscol(markk);
-   srch->markb=0; srch->markk=0;
+   markb=srch->markb;
+   markb->owner= &markb;
+   markb->xcol=piscol(markb);
    }
-  else unmark(NULL);
+  if(srch->markk)
+   {
+   markk=srch->markk;
+   markk->owner= &markk;
+   markk->xcol=piscol(markk);
+   }
+  srch->markb=0; srch->markk=0;
+
   updall();
   }
  return -1;
@@ -465,7 +484,7 @@ int restrict(bw,srch)
 BW *bw;
 SRCH *srch;
  {
- if(!srch->markb || !srch->markk || !srch->restrict) return 0;
+ if(!srch->valid || !srch->restrict) return 0;
  bw->cursor->xcol=piscol(bw->cursor);
  if(srch->backwards)
   if(!square)
@@ -521,7 +540,7 @@ SRCH *srch;
  else
   if(srch->rest || srch->repeat!= -1 && srch->replace)
    {
-   if(srch->markb)
+   if(srch->valid)
     switch(restrict(bw,srch))
      {
      case -1: goto again;
@@ -532,7 +551,7 @@ SRCH *srch;
    }
   else if(srch->repeat!= -1)
    {
-   if(srch->markb)
+   if(srch->valid)
     switch(restrict(bw,srch))
      {
      case -1: goto again;
@@ -562,7 +581,7 @@ int *notify;
   case 1:
   bye: if(!srch->flg && !srch->rest)
    {
-   if(srch->markb && srch->restrict)
+   if(srch->valid && srch->restrict)
     msgnw(bw,"Not found (search restricted to marked block)");
    else msgnw(bw,"Not found");
    ret= -1;
@@ -570,7 +589,7 @@ int *notify;
   break;
 
   case 2:
-  if(srch->markb)
+  if(srch->valid)
    switch(restrict(bw,srch))
     {
     case -1: goto again;

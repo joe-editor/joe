@@ -33,16 +33,47 @@ char *argv[];
  /* Figure out what type of tty we have */
  if(g=fopen("/usr/include/termios.h","r"))
   {
-  fprintf(f,"/* Uncomment the tty type.  Leave both uncommented for BSD */\n");
+  fprintf(f,"/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
   fprintf(f,"#define TTYPOSIX 1\n");
+  fprintf(f,"/* #define SYSPOSIX 1*/\n");
   fprintf(f,"/* #define TTYSV 1 */\n");
+  fprintf(f,"/* #define SYSSV 1 */\n");
+  fclose(g);
+  }
+ else if(g=fopen("/usr/include/sys/termios.h","r"))
+  {
+  fprintf(f,"/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
+  fprintf(f,"#define TTYPOSIX 1\n");
+  fprintf(f,"#define SYSPOSIX 1\n");
+  fprintf(f,"/* #define TTYSV 1 */\n");
+  fprintf(f,"/* #define SYSSV 1 */\n");
   fclose(g);
   }
  else if(g=fopen("/usr/include/termio.h","r"))
   {
   fprintf(f,"/* Uncomment the tty type.  Leave both uncommented for BSD */\n");
   fprintf(f,"/* #define TTYPOSIX 1 */\n");
+  fprintf(f,"/* #define SYSPOSIX 1 */\n");
   fprintf(f,"#define TTYSV 1\n");
+  fprintf(f,"/* #define SYSSV 1 */\n");
+  fclose(g);
+  }
+ else if(g=fopen("/usr/include/sys/termio.h","r"))
+  {
+  fprintf(f,"/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
+  fprintf(f,"/* #define TTYPOSIX 1 */\n");
+  fprintf(f,"/* #define SYSPOSIX 1 */\n");
+  fprintf(f,"#define TTYSV 1\n");
+  fprintf(f,"#define SYSSV 1\n");
+  fclose(g);
+  }
+ else
+  {
+  fprintf(f,"/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
+  fprintf(f,"/* #define TTYPOSIX 1 */\n");
+  fprintf(f,"/* #define SYSPOSIX 1 */\n");
+  fprintf(f,"/* #define TTYSV 1 */\n");
+  fprintf(f,"/* #define SYSSV 1 */\n");
   fclose(g);
   }
 

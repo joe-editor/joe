@@ -1,3 +1,30 @@
+** JOE 2.3
+
+- Search & Replace bugs fixed
+   - replace would mess up the end mark of a marked block
+   - a search would trash ^KB if only ^KB was set
+   - regex problem with \*
+
+- Was using TCSANOW in posix driver.  Should have been using TCSADRAIN
+
+- Format paragraph now correctly formats quoted news articles
+
+- Attempted fix for SCO
+
+- Fix for coherent
+
+- Fix for old IRIX/SGI
+
+- Fixed bug where if you used search & replace in a macro, and exiting the
+  search & replace loop with right arrow key, then when you played the macro
+  you got an extra ^[ in the input queue
+
+- Added file hooks
+
+- Added function to insert current keyboard macro into current file
+
+- Added range checks to numeric option settings
+
 ** JOE 2.2
 
 - First attempt at MS-DOS version of joe

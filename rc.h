@@ -2,6 +2,7 @@
 #define _Irc 1
 
 #include "kbd.h"
+#include "macro.h"
 
 typedef struct options OPTIONS;
 struct options
@@ -23,6 +24,10 @@ struct options
  int readonly;
  int french;
  int spaces;
+ MACRO *mnew;		/* Macro to execute for new files */
+ MACRO *mold;		/* Macro to execute for existing files */
+ MACRO *msnew;		/* Macro to execute before saving new files */
+ MACRO *msold;		/* Macro to execute before saving existing files */
  };
 
 extern OPTIONS pdefault;

@@ -20,14 +20,14 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Imacro 1
 
 #include "config.h"
-
-typedef struct macro MACRO;
+#include "cmd.h"
 
 struct macro
  {
  int k;		/* Keycode */
  int arg;	/* Repeat argument */
- int n;		/* Command number or number of steps */
+ CMD *cmd;	/* Command address */
+ int n;		/* Number of steps */
  int size;	/* Malloc size of steps */
  MACRO **steps;	/* Block */
  };
@@ -50,6 +50,12 @@ void rmmacro();
 MACRO *macstk();
 MACRO *macsta();
 
+void chmac();
+
+/* Text to macro / Macro to text */
+MACRO *mparse();
+char *mtext();
+
 /* Execute a macro */
 extern MACRO *curmacro;
 int exemac();
@@ -60,6 +66,7 @@ int uplay();
 int ustop();
 int urecord();
 int uquery();
+int umacros();
 
 /* Repeat prefix user command */
 int uarg();

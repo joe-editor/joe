@@ -7,6 +7,114 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 2.3
+**Released: 1994-12-24**
+
+Source recovered from Redhat 1.1 (Mother's Day Release) source RPP, also from https://ftp.nice.ch/pub/next/unix/editor
+
+Changelog:
+
+```
+- Search & Replace bugs fixed
+   - replace would mess up the end mark of a marked block
+   - a search would trash ^KB if only ^KB was set
+   - regex problem with \*
+
+- Was using TCSANOW in posix driver.  Should have been using TCSADRAIN
+
+- Format paragraph now correctly formats quoted news articles
+
+- Attempted fix for SCO
+
+- Fix for coherent
+
+- Fix for old IRIX/SGI
+
+- Fixed bug where if you used search & replace in a macro, and exiting the
+  search & replace loop with right arrow key, then when you played the macro
+  you got an extra ^[ in the input queue
+
+- Added file hooks
+
+- Added function to insert current keyboard macro into current file
+
+- Added range checks to numeric option settings
+```
+
+Original announcement:
+```
+Path: bga.com!news.sprintlink.net!pipex!uunet!gatekeeper.us.oracle.com!barrnet.net!yggdrasil.com!news
+From: jhallen@world.std.com (Joseph H Allen)
+Newsgroups: comp.archives
+Subject: [comp.editors] Announce: Joe version 2.3
+Followup-To: comp.editors
+Date: 25 Dec 1994 03:24:43 GMT
+Organization: The World Public Access UNIX, Brookline, MA
+Lines: 52
+Sender: ad...@yggdrasil.com
+Approved: ad...@yggdrasil.com
+Distribution: world
+Message-ID: <3diolr$u0h@yggdrasil.com>
+References: <D17qBo.JJw@world.std.com>
+NNTP-Posting-Host: adam.yggdrasil.com
+X-Original-Newsgroups: comp.editors
+X-Original-Date: Thu, 22 Dec 1994 12:50:12 GMT
+
+Archive-name: auto/comp.editors/Announce_Joe_version_2_3
+
+
+Version 2.3 of my editor is ready.  You can get it by anonymous ftp from
+ftp.std.com, file: src/editors/joe2.3.tar.Z.  It should be there later today
+or tomorrow, depending on when the operator installs it.
+
+New features:
+
+Paragraph format and word-wrap now work for quoted news articles, C
+comments, and other text which begins with a common non-alpha indentation
+string.
+
+You can set file-name dependant macros to be executed for each case of: new
+file being created, existing file being loaded, new file being stored, and
+existing file being stored.  This is useful for loading a standard header
+for C files or for appending news signatures.
+
+A new command, ESC D, dumps the currently defined keyboard macros into the
+current file.  They are formatted the same way as macros in the joerc file,
+and can easily be incorperated into it.
+
+Bugs fixed:
+
+Search & replace would eliminate ^KB if it was set and ^KK wasn't.
+
+Replace would mess-up the ^KK of a marked block.
+
+The \* regular expression wasn't working correctly in regular expressions
+which crossed lines.
+
+An obscure bug where exiting a search and replace loop during a macro
+record would cause extra characters to be typed when that macro was
+played.
+
+Was using TCSANOW in the posix driver instead of TCSADRAIN: this caused
+typeahead lossage when entering and existing joe.
+
+Invalid numeric (^T) options would eventually crash the editor.
+
+Portability:
+
+Joe should work without change on SCO UNIX, Coherent and old versions
+IRIX/SGI.  I would appreciate if people with these systems could confirm
+that they have joe working.
+
+-- 
+/*  jhallen@world.std.com (192.74.137.5) */               /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
 ## JOE 2.2
 **Released: 1994-10-06**
 
