@@ -46,6 +46,7 @@ int ttisxterm=0;
 int xmouse=0;
 
 SCREEN *maint;			/* Main edit screen */
+int nowmarking;
 
 /* Make windows follow cursor */
 

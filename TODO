@@ -1,5 +1,8 @@
 Short list for 3.2:
 
+- put -marking back into jmacs, now that it's working properly.  Forgot
+  if ^W is supposed to "undrop" the anchor.
+
 - egmont's Ctrl-selection bug
 
 - ^KC into search window fails.  key to move text into search window
@@ -24,6 +27,8 @@ Short list for 3.2:
   back to start mode?
 
 Others:
+
+- rectangular blocks: make this a local file option?
 
 - merge math with macro language
 

@@ -43,7 +43,7 @@
 #include "kbd.h"
 #include "w.h"
 
-extern int marking;
+extern int nowmarking;
 extern int smode;
 int beep = 0;
 int uexecmd(BW *bw);
@@ -259,7 +259,7 @@ int execmd(CMD *cmd, int k)
 		goto skip;
 
 	/* Complete selection for block commands */
-	if ((cmd->flag & EBLOCK) && marking)
+	if ((cmd->flag & EBLOCK) && nowmarking)
 		utoggle_marking(maint->curwin->object);
 
 	if ((maint->curwin->watom->what & TYPETW) && bw->b->rdonly && (cmd->flag & EMOD)) {

@@ -38,7 +38,7 @@ int square = 0;			/* Set for rectangle mode */
 int lightoff = 0;		/* Set if highlighting should turn off
 
 				   after block operations */
-extern int marking;
+extern int marking, nowmarking;
 
 /* Global variables */
 
@@ -270,7 +270,7 @@ int udrop(BW *bw)
 
 int ubegin_marking(BW *bw)
 {
-	if (marking)
+	if (nowmarking)
 		/* We're marking now... don't stop */
 		return 0;
 	else if (markv(0) && bw->cursor->b==markb->b)
@@ -278,18 +278,18 @@ int ubegin_marking(BW *bw)
 		if (bw->cursor->byte==markb->byte) {
 			pset(markb,markk);
 			prm(markk); markk=0;
-			marking = 1;
+			nowmarking = 1;
 			return 0;
 		} else if(bw->cursor->byte==markk->byte) {
 			prm(markk); markk=0;
-			marking = 1;
+			nowmarking = 1;
 			return 0;
 		}
 	/* Start marking - no message */
 	prm(markb); markb=0;
 	prm(markk); markk=0;
 	updall();
-	marking = 1;
+	nowmarking = 1;
 	return umarkb(bw);
 }
 
@@ -300,7 +300,7 @@ int utoggle_marking(BW *bw)
 		prm(markb); markb=0;
 		prm(markk); markk=0;
 		updall();
-		marking = 0;
+		nowmarking = 0;
 		msgnw(bw->parent, US "Selection cleared.");
 		return 0;
 	} else if (markk) {
@@ -308,11 +308,11 @@ int utoggle_marking(BW *bw)
 		prm(markb); markb=0;
 		prm(markk); markk=0;
 		updall();
-		marking = 1;
+		nowmarking = 1;
 		msgnw(bw->parent, US "Selection started.");
 		return umarkb(bw);
 	} else if (markb && markb->b==bw->cursor->b) {
-		marking = 0;
+		nowmarking = 0;
 		if (bw->cursor->byte<markb->byte) {
 			pdupown(markb, &markk);
 			prm(markb); markb=0;
@@ -325,7 +325,7 @@ int utoggle_marking(BW *bw)
 		updall(); /* Because other windows could be changed */
 		return 0;
 	} else {
-		marking = 1;
+		nowmarking = 1;
 		msgnw(bw->parent, US "Selection started.");
 		return umarkb(bw);
 	}
