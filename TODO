@@ -3,6 +3,14 @@ Short (infinite) list for 3.2:
 
 - - - - - - - -
 
+- change directory
+
+- - - - - - - -
+
+- better editing in shell windows
+
+- - - - - - - -
+
 - merge math with macro language
 - tab at math prompt should go through variables, functions.
 - eliminate need for : separator

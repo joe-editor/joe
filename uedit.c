@@ -1627,6 +1627,14 @@ struct utf8_sm utype_utf8_sm;
 int utypebw(BW *bw, int k)
 {
 	struct charmap *map=bw->b->o.charmap;
+
+	/* Send data to shell window */
+	if (bw->b->pid && piseof(bw->cursor)) {
+		unsigned char c = k;
+		joe_write(bw->b->out, &c, 1);
+		return 0;
+	}
+
 	if (k == '\t' && bw->o.overtype && !piseol(bw->cursor)) { /* TAB in overtype mode is supposed to be just cursor motion */
 		int col = bw->cursor->xcol;		/* Current cursor column */
 		col = col + bw->o.tab - (col%bw->o.tab);/* Move to next tab stop */

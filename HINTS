@@ -67,15 +67,40 @@ Selecting blocks
 end.  These set pointers called markb and markk.  Once these are set you
 can jump to markb with ^[ b and jump to markk with ^[ k.
 
-	New way: hit Ctrl-rtarw to start selecting rightward.  Each time you
-hit Ctrl-rtarw, the block is extended one more to the right.  This uses a
-simple macro: "begin_marking,rtarw,toggle_marking".  Unfortunately, there is
-no standard way to get the keysequence given by the terminal emulator when
-you hit Ctrl-rtarw.  Instead you have to determine this sequence yourself
-and enter it directly in the joerc file.  Some examples are given for xterm
-and gnome-terminal.  Hit ` rtarw to have the sequence shown on your screen. 
-Note that Putty uses ^[ ^[ [ C which will not appear with ` rtarw (also ^[
+	New way: hit Ctrl-rtarw (right arrow) to start selecting rightward. 
+Each time you hit Ctrl-rtarw, the block is extended one more to the right. 
+This uses a simple macro: "begin_marking,rtarw,toggle_marking".
+
+	Unfortunately, there is no standard way to get the keysequence given
+by the terminal emulator when you hit Ctrl-rtarw.  Instead you have to
+determine this sequence yourself and enter it directly in the joerc file. 
+Some examples are given for xterm and gnome-terminal.  Hit ` rtarw within
+JOE to have the sequence shown on your screen.  Note that Putty uses ^[ ^[ [
+C which will not appear with ` rtarw (also ^[
 ^[ is set book mark, so you need to unbind it to do this in Putty).
 
 	Also you can hit Ctrl-delete to cut and Ctrl-insert to paste if the
 sequence for these keys are known.
+
+Xterm Mouse support
+-------------------
+
+Use the -mouse option to enable xterm mouse support.  When enabled, you can
+position the cursor or select text with the mouse.  Unfortunately, text
+selected this way is not paste-able to other X windows.  However, when xterm
+mouse support is enable you can use Shift-left-click and Shift-middle-click
+for normal Xterm select and paste.
+
+Shell Windows
+-------------
+
+	If you use Bash, you can hit:
+		` UP-ARROW and ` DOWN-ARROW to scroll through Bash's history
+		buffer.  Other keys work as well: try ` A to go to beginning
+		of line or ` E to go to end of line.  Unfortunately JOE only
+		emulates a dumb terminal, so you have to use a lot of
+		imagination to do any editing beyond hitting backspace.
+
+	In general, any character quoted with ` is sent to the shell.
+
+	Also sent to the shell: TAB, Backspace, Enter, ^C and ^D.
