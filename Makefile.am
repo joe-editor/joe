@@ -1,8 +1,8 @@
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = COPYING INFO LIST NEWS README TODO \
+EXTRA_DIST = COPYING INFO LIST NEWS README README.cvs TODO docs/help-system.html \
 	joerc.in jmacsrc.in jstarrc.in rjoerc.in jpicorc.in \
-	joe.1.in conf.c chain.asm dir.c kbdhdl.c msscrn.c mstty.c \
+	joe.1.in chain.asm dir.c kbdhdl.c msscrn.c mstty.c \
 	termcap terminfo \
 	docs
 
