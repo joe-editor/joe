@@ -1,0 +1,61 @@
+# JOE syntax highlight file for typical UNIX mail files
+# 2004-04-25 Tomas Szepe <szepe@pinerecords.com>
+
+=Idle
+=Quot1	green
+=Quot2	cyan
+=Sign	magenta
+
+:newline Idle
+	*		knocolor
+	"\n"		newline
+	" "		newline
+	"\t"		newline
+	">"		q1trans		noeat
+	"-"		maybesign1
+
+:maybesign1 Idle
+	*		knocolor
+	"\n"		newline
+	"-"		maybesign2
+
+:maybesign2 Idle
+	*		knocolor
+	"\n"		newline
+	" "		maybesign3
+
+:maybesign3 Idle
+	*		knocolor
+	"\n"		sign
+
+:sign Sign
+	*		sign
+
+:q1trans Quot1
+	*		q1		recolor=-1
+
+:q1 Quot1
+	*		kq1
+	"\n"		newline
+	" "		q1
+	"\t"		q1
+	">"		q2		recolor=-1
+
+:q2 Quot2
+	*		kq2
+	"\n"		newline
+	" "		q2
+	"\t"		q2
+	">"		q1		recolor=-1
+
+:knocolor Idle
+	*		knocolor
+	"\n"		newline
+
+:kq1 Quot1
+	*		kq1
+	"\n"		newline
+
+:kq2 Quot2
+	*		kq2
+	"\n"		newline
