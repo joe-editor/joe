@@ -478,13 +478,13 @@ void save_yank(FILE *f)
 void load_yank(FILE *f)
 {
 	UNDOREC *rec;
-	unsigned char buf[1024];
-	unsigned char bf[1024];
-	while(fgets(buf,1023,f) && strcmp(buf,"done\n")) {
+	unsigned char buf[4096];
+	unsigned char bf[4096];
+	while(fgets(buf,4095,f) && strcmp(buf,"done\n")) {
 		unsigned char *p = buf;
 		int len;
 		parse_ws(&p,'#');
-		len = parse_hdlc(&p,bf,1023);
+		len = parse_hdlc(&p,bf,4095);
 		rec = alrec();
 		rec->small = (unsigned char *) joe_malloc(len);
 		memcpy(rec->small,bf,len);

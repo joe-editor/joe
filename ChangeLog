@@ -1,3 +1,9 @@
+Mon Aug  9 2004  Joe Allen <jhallen@world.std.com>
+
+	Fix bug in joe_state code: buffer was not
+	large enough.
+
+
 Thu Jul  8 2004  Joe Allen <jhallen@world.std.com>
 
 	Merge last two changes (described below...)
