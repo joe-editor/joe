@@ -1819,9 +1819,10 @@ int meta_color(unsigned char *s)
  * 'atr' is screeen attributes (and color) which should be used
  * 'width' is column width of field
  * 'flg' if set, erases to end of line
+ * 'fmt' is array of attributes, one for each byte.  OK if NULL.
  */
 
-void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,int len,int atr,int width,int flg)
+void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,int len,int atr,int width,int flg,int *fmt)
 {
 	int col;
 	struct utf8_sm sm;
@@ -1832,6 +1833,8 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 	for (col = 0;len != 0 && x < last_col; len--) {
 		int c = *s++;
 		int wid = -1;
+		int my_atr = atr;
+		if (fmt) my_atr |= *fmt++;
 		if (locale_map->type) {
 			/* UTF-8 mode: decode character and determine its width */
 			c = utf8_decode(&sm,c);
@@ -1846,14 +1849,14 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 				if (x + wid > last_col) {
 					/* Character crosses end of field, so fill balance of field with '>' characters instead */
 					while (x < last_col) {
-						outatr(locale_map, t, scrn, attr, x, y, '>', atr);
+						outatr(locale_map, t, scrn, attr, x, y, '>', my_atr);
 						++scrn;
 						++attr;
 						++x;
 					}
 				} else if(wid) {
 					/* Emit character */
-					outatr(locale_map, t, scrn, attr, x, y, c, atr);
+					outatr(locale_map, t, scrn, attr, x, y, c, my_atr);
 					x += wid;
 					scrn += wid;
 					attr += wid;
@@ -1863,7 +1866,7 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 				wid -= ofst - col;
 				col = ofst;
 				while (wid) {
-					outatr(locale_map, t, scrn, attr, x, y, '<', atr);
+					outatr(locale_map, t, scrn, attr, x, y, '<', my_atr);
 					++scrn;
 					++attr;
 					++x;

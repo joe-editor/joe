@@ -553,8 +553,20 @@ int ublkcpy(BW *bw)
 			return 0;
 		} else {
 			long size = markk->byte - markb->byte;
+			B *tmp = bcpy(markb, markk);
 
-			binsb(bw->cursor, bcpy(markb, markk));
+			/* Simple overtype for hex mode */
+			if (bw->o.hex && bw->o.overtype) {
+				P *q = pdup(bw->cursor);
+				if (q->byte + size >= q->b->eof->byte)
+					pset(q, q->b->eof);
+				else
+					pfwrd(q, size);
+				bdel(bw->cursor, q);
+				prm(q);
+			}
+
+			binsb(bw->cursor, tmp);
 			if (lightoff)
 				unmark(bw);
 			else {

@@ -62,7 +62,7 @@ static void menudisp(MENU *m)
 			         strlen((char *)m->list[x + y*m->perline + m->top]),
 			         atr,
 			         m->width,
-			         0);
+			         0,NULL);
 
 			col += m->width;
 

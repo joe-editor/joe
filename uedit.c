@@ -1729,6 +1729,20 @@ int utypebw(BW *bw, int k)
 		return 0;
 	}
 
+	/* Hex mode overtype is real simple */
+	if (bw->o.hex && bw->o.overtype) {
+		P *p;
+		unsigned char c = k;
+		binsm(bw->cursor, &c, 1);
+		pgetb(bw->cursor);
+		if (piseof(bw->cursor))
+			return 0;
+		pgetb(p = pdup(bw->cursor));
+		bdel(bw->cursor, p);
+		prm(p);
+		return 0;
+	}
+
 	if (k == '\t' && bw->o.overtype && !piseol(bw->cursor)) { /* TAB in overtype mode is supposed to be just cursor motion */
 		int col = bw->cursor->xcol;		/* Current cursor column */
 		col = col + bw->o.tab - (col%bw->o.tab);/* Move to next tab stop */

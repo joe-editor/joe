@@ -3,6 +3,11 @@ Short (infinite) list for 3.2:
 
 - - - - - - - -
 
+- seg fault on exiting?  probably from deleting
+  all buffers.
+
+- - - - - - - -
+
 - regexp for compiler parsing
 
 - - - - - - - -
@@ -12,11 +17,12 @@ Short (infinite) list for 3.2:
 - - - - - - - -
 
 - hex edit mode
-    - highlight hex bytes
-    - highlight block
     - force switch to overtype mode?
-    - ^KC should overwrite
-    - think through i18n consequences
+
+    - xcol mess (always set xcol in hex mode?)
+
+    - think through i18n consequences (goto
+      bol when switch out of it).
 
 - - - - - - - -
 

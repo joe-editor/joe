@@ -40,7 +40,7 @@ static void dispqw(QW *qw)
 	         qw->promptlen,
 	         0,
 	         w->w - w->x,
-	         1);
+	         1,NULL);
 }
 
 static void dispqwn(QW *qw)
@@ -73,7 +73,7 @@ static void dispqwn(QW *qw)
 	         qw->promptlen,
 	         0,
 	         w->w - w->x,
-	         1);
+	         1,NULL);
 }
 
 /* When user hits a key in a query window */

@@ -800,7 +800,7 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	}
 }
 
-void bwgenh(BW *w)
+void bwgenh(BW *w,long from,long to)
 {
 	int *screen;
 	int *attr;
@@ -814,15 +814,27 @@ void bwgenh(BW *w)
 	attr = t->attr + y*w->t->w;
 	for (screen = t->scrn + y * w->t->w; y != bot; ++y, (screen += w->t->w), (attr += w->t->w)) {
 		unsigned char txt[80];
+		int fmt[80];
 		unsigned char bf[16];
 		int x;
 		memset(txt,' ',76);
+		msetI(fmt,0,76);
 		txt[76]=0;
 		if (!flg) {
 			sprintf(bf,"%8x ",q->byte);
 			memcpy(txt,bf,9);
 			for (x=0; x!=8; ++x) {
-				int c = pgetb(q);
+				int c;
+				if (q->byte==w->cursor->byte && !flg) {
+					fmt[10+x*3] = INVERSE;
+					fmt[10+x*3+1] = INVERSE;
+				}
+				if (q->byte>=from && q->byte<to && !flg) {
+					fmt[10+x*3] |= UNDERLINE;
+					fmt[10+x*3+1] |= UNDERLINE;
+					fmt[60+x] = INVERSE;
+				}
+				c = pgetb(q);
 				if (c >= 0) {
 					sprintf(bf,"%2.2x",c);
 					txt[10+x*3] = bf[0];
@@ -835,7 +847,17 @@ void bwgenh(BW *w)
 					flg = 1;
 			}
 			for (x=8; x!=16; ++x) {
-				int c = pgetb(q);
+				int c;
+				if (q->byte==w->cursor->byte && !flg) {
+					fmt[11+x*3] = INVERSE;
+					fmt[11+x*3+1] = INVERSE;
+				}
+				if (q->byte>=from && q->byte<to && !flg) {
+					fmt[11+x*3] |= UNDERLINE;
+					fmt[11+x*3+1] |= UNDERLINE;
+					fmt[60+x] = INVERSE;
+				}
+				c = pgetb(q);
 				if (c >= 0) {
 					sprintf(bf,"%2.2x",c);
 					txt[11+x*3] = bf[0];
@@ -848,7 +870,7 @@ void bwgenh(BW *w)
 					flg = 1;
 			}
 		}
-		genfield(t, screen, attr, 0, y, w->offset, txt, 76, 0, w->w, 1);
+		genfield(t, screen, attr, 0, y, w->offset, txt, 76, 0, w->w, 1, fmt);
 	}
 	prm(q);
 }
@@ -858,18 +880,13 @@ void bwgen(BW *w, int linums)
 	int *screen;
 	int *attr;
 	P *p = NULL;
-	P *q = pdup(w->cursor);
+	P *q;
 	int bot = w->h + w->y;
 	int y;
 	int dosquare = 0;
 	long from, to;
 	long fromline, toline;
 	SCRN *t = w->t->t;
-
-	if (w->o.hex) {
-		bwgenh(w);
-		return;
-	}
 
 	fromline = toline = from = to = 0;
 
@@ -899,6 +916,17 @@ void bwgen(BW *w, int linums)
 
 	if (marking && w==maint->curwin->object)
 		msetI(t->updtab + w->y, 1, w->h);
+
+	if (w->o.hex) {
+		if (dosquare) {
+			from = 0;
+			to = 0;
+		}
+		bwgenh(w,from,to);
+		return;
+	}
+
+	q = pdup(w->cursor);
 
 	y = w->cursor->line - w->top->line + w->y;
 	attr = t->attr + y*w->t->w;
