@@ -148,6 +148,9 @@ struct high_syntax *load_dfa(unsigned char *name)
 	struct high_syntax *syntax;	/* New syntax table */
 	int line = 0;
 
+	if (!name)
+		return NULL;
+
 	if(!attr_buf) {
 		attr_size = 1024;
 		attr_buf = malloc(sizeof(int)*attr_size);

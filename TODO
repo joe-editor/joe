@@ -1,5 +1,7 @@
 Fix for next release:
 
+  update selinux patch
+
   perl highlighter
 
   sh highlighter

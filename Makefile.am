@@ -5,7 +5,7 @@ EXTRA_DIST = COPYING INFO LIST NEWS README README.cvs TODO docs/help-system.html
 	joe.1.in dir.c syntax/c.jsf.in syntax/perl.jsf.in syntax/verilog.jsf.in \
 	syntax/conf.jsf.in syntax/python.jsf.in syntax/php.jsf.in syntax/sh.jsf.in \
 	syntax/pascal.jsf.in syntax/html.jsf.in syntax/vhdl.jsf.in syntax/fortran.jsf.in \
-	sytnax/java.jsf.in syntax/xml.jsf.in syntax/tcl.jsf.in docs HINTS
+	syntax/java.jsf.in syntax/xml.jsf.in syntax/tcl.jsf.in docs HINTS
 
 sysconf_joedir = $(sysconfdir)/joe
 sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
@@ -26,6 +26,9 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 
 bin_PROGRAMS = joe termidx
 INCLUDES = -DJOERC="\"$(sysconf_joedir)/\""
+
+# Sometimes this is needed...
+joe_LDADD = @REQRD_LIBS@
 
 joe_SOURCES = b.c blocks.c bw.c cmd.c hash.c help.c kbd.c macro.c main.c menu.c \
 	path.c poshist.c pw.c queue.c qw.c rc.c regex.c scrn.c tab.c termcap.c \

@@ -104,6 +104,14 @@ AC_CHECK_FUNCS([setitimer sigaction sigvec siginterrupt sigprocmask])
 
 joe_REINSTALL_SIGHANDLERS
 
+# check if -liconv is necessary
+# if iconv() is in libc, don't bother with -liconv
+AC_CHECK_LIB(c,iconv,
+  [REQRD_LIBS= ],
+  [REQRD_LIBS= -liconv])
+
+AC_SUBST(REQRD_LIBS)
+
 dnl not yet :-)
 dnl AM_GNU_GETTEXT
 

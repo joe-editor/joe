@@ -452,7 +452,7 @@
  Mail file
 *tmp/mutt-*
 -wordwrap
--autoindent
+-syntax mail
 
  THIRD SECTION: Named help screens:
 
