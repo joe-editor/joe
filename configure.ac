@@ -9,7 +9,7 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 #### Here's the only place where to change version number ####
-AM_INIT_AUTOMAKE(joe, 2.9.7-pre3)
+AM_INIT_AUTOMAKE(joe, 2.9.7)
 
 AM_MAINTAINER_MODE
 AM_CONFIG_HEADER(autoconf.h)

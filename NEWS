@@ -1,3 +1,8 @@
+Overview of changes in JOE 2.9.7 (7 Nov 2001)
+- BUGFIX: always save (even not-modified) file
+- BUGFIX: solve problem with freezing after saving unmodified file
+- small documentation update
+
 Overview of Changes in JOE 2.9.7-pre3 (29 Oct 2001)
 - BUGFIX: wordwrap bug fixed (again and I'm sure forever)
 - BUGFIX: don't change window when setting mark in multiwindow mode

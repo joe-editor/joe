@@ -1,4 +1,13 @@
 Wed Nov 07 2001  Vitezslav Samel <samel@mail.cz>
+	*** Release joe-2.9.7 ***
+
+Wed Nov 07 2001  Vitezslav Samel <samel@mail.cz>
+	* configure.ac: bump up version number
+
+Wed Nov 07 2001  Vitezslav Samel <samel@mail.cz>
+	* NEWS: update - prepare for release
+
+Wed Nov 07 2001  Vitezslav Samel <samel@mail.cz>
 	* Makefile.am, deleted conf.c: conf.c not used anymore
 
 Wed Nov 07 2001 Vitezslav Samel <samel@mail.cz>
