@@ -884,10 +884,14 @@ static unsigned char *getpty(int *ptyfd)
 #endif
 #endif
 
+/* Shell dies signal handler.  Puts pty in non-block mode so
+ * that read returns with <1 when all data from process has
+ * been read. */
 int dead = 0;
-
+int death_fd;
 static RETSIGTYPE death(int unused)
 {
+	fcntl(death_fd,F_SETFL,O_NDELAY);
 	wait(NULL);
 	dead = 1;
 }
@@ -985,6 +989,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 
 		/* Flag which indicates child died */
 		dead = 0;
+		death_fd = *ptyfd;
 		joe_set_signal(SIGCHLD, death);
 
 		if (!(pid = fork())) {
@@ -1062,25 +1067,37 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 		/* Tell JOE PID of shell */
 		joe_write(comm[1], &pid, sizeof(pid));
 
+		/* sigpipe should be ignored here. */
+
 		/* This process copies data from shell to JOE until EOF.  It creates a packet
 		   for each data */
+
+
+		/* We don't really get EOF from a pty- it would just wait forever
+		   until someone else writes to the tty.  So: when the shell
+		   dies, the child died signal handler death() puts pty in non-block
+		   mode.  This allows us to read any remaining data- then
+		   read returns 0 and we know we're done. */
+
 	      loop:
 		pack.who = m;
 		pack.ch = 0;
-		if (dead)
-			pack.size = 0;
-		else {
-			pack.size = read(*ptyfd, pack.data, 1024);
-			/* On SUNOS 5.8, the very first read from the pty returns 0 for some reason */
-			if (!pack.size)
-				pack.size = read(*ptyfd, pack.data, 1024);
-		}
+
+		/* Read data from process */
+		pack.size = joe_read(*ptyfd, pack.data, 1024);
+
+		/* On SUNOS 5.8, the very first read from the pty returns 0 for some reason */
+		if (!pack.size)
+			pack.size = joe_read(*ptyfd, pack.data, 1024);
+
 		if (pack.size > 0) {
+			/* Send data to JOE, wait for ack */
 			joe_write(mpxsfd, &pack, sizeof(struct packet) - 1024 + pack.size);
 
 			joe_read(fds[0], &pack, 1);
 			goto loop;
 		} else {
+			/* Shell died: return */
 			pack.ch = NO_MORE_DATA;
 			pack.size = 0;
 			joe_write(mpxsfd, &pack, sizeof(struct packet) - 1024);

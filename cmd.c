@@ -77,6 +77,7 @@ CMD cmds[] = {
 	{US "bop", TYPETW + TYPEPW + EFIXXCOL, ubop, NULL, 1, US "eop"},
 	{US "bos", TYPETW + TYPEPW + EMOVE, ubos, NULL, 0, NULL},
 	{US "bufed", TYPETW, ubufed, NULL, 0, NULL},
+	{US "build", TYPETW + TYPEPW, ubuild, NULL, 0, NULL},
 	{US "byte", TYPETW + TYPEPW, ubyte, NULL, 0, NULL},
 	{US "center", TYPETW + TYPEPW + EFIXXCOL + EMOD, ucenter, NULL, 1, NULL},
 	{US "ctrl", TYPETW + TYPEPW + EMOD, uctrl, NULL, 0, NULL},
@@ -115,6 +116,7 @@ CMD cmds[] = {
 	{US "gomark", TYPETW + TYPEPW + EMOVE, ugomark, NULL, 0, NULL},
 	{US "groww", TYPETW, ugroww, NULL, 1, US "shrinkw"},
 	{US "isrch", TYPETW + TYPEPW, uisrch, NULL, 0, NULL},
+	{US "killjoe", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ukilljoe, NULL, 0, NULL},
 	{US "killproc", TYPETW + TYPEPW, ukillpid, NULL, 0, NULL},
 	{US "help", TYPETW + TYPEPW + TYPEQW, u_help, NULL, 0, NULL},
 	{US "home", TYPETW + TYPEPW + EFIXXCOL, uhome, NULL, 0, NULL},
@@ -161,6 +163,7 @@ CMD cmds[] = {
 	{US "pop", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upop, NULL, 0, NULL},
 	{US "qrepl", TYPETW + TYPEPW + EMOD, pqrepl, NULL, 0, NULL},
 	{US "query", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uquery, NULL, 0, NULL},
+	{US "querysave", TYPETW + TYPEPW, uquerysave, NULL, 0, NULL},
 	{US "quote", TYPETW + TYPEPW + EMOD, uquote, NULL, 0, NULL},
 	{US "quote8", TYPETW + TYPEPW + EMOD, uquote8, NULL, 0, NULL},
 	{US "record", TYPETW + TYPEPW + TYPEMENU + TYPEQW, urecord, NULL, 0, NULL},
@@ -174,6 +177,7 @@ CMD cmds[] = {
 	{US "rtarwmenu", TYPEMENU, umrtarw, NULL, 1, US "ltarwmenu"},
 	{US "rtn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOD, urtn, NULL, 1, NULL},
 	{US "save", TYPETW + TYPEPW, usave, NULL, 0, NULL},
+	{US "scratch", TYPETW + TYPEPW, uscratch, NULL, 0, NULL},
 	{US "select", TYPETW + TYPEPW, uselect, NULL, 0, NULL},
 	{US "setmark", TYPETW + TYPEPW, usetmark, NULL, 0, NULL},
 	{US "shell", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ushell, NULL, 0, NULL},
@@ -245,6 +249,7 @@ int execmd(CMD *cmd, int k)
 	if (leave)
 		return 0;
 
+	/* cmd->func could have changed bw on us */
 	bw = (BW *) maint->curwin->object;
 
 	/* Maintain position history */

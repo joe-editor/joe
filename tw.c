@@ -517,7 +517,7 @@ int uabort(BW *bw, int k)
 	}
 	if (bw->pid)
 		return ukillpid(bw);
-	if (bw->b->changed && bw->b->count == 1)
+	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
 		if (mkqw(bw->parent, sc("Lose changes to this file (y,n,^C)? "), naborttw, NULL, NULL, NULL))
 			return 0;
 		else

@@ -10,18 +10,7 @@ Fix for next release highlight:
 
  Update man page.
 
- Save all modified files
-
  Reload modified files (or current window)
-
-Compiling
- - save modified files before running
- - show last compile command immediately: suggest 'make'
- - do not save scratch buffer
- - show build on screen- don't wait until it's completely finished.  allow
-   ^C during build.
-
- Query save loop? for kill-emacs and compile
 
   don't use -notite by default.
 
@@ -32,8 +21,6 @@ Save all history buffers and keyboard macros in ~/.joe_state file?
   Update documentation.
 
 shift/alt/ctrl arrow key stuff.
-
-ESC ! runs a command in shell window- use this for Compiling.
 
 
 

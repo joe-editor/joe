@@ -1,4 +1,4 @@
-/*
+ /*
  *	Editor engine
  *	Copyright
  *		(C) 1992 Joseph H. Allen
@@ -197,6 +197,7 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->oldtop = NULL;
 	b->backup = 1;
 	b->internal = 1;
+	b->scratch = 0;
 	b->changed = 0;
 	b->count = 1;
 	b->name = NULL;
@@ -2274,6 +2275,41 @@ B *bfind(unsigned char *s)
 		}
 	b = bload(s);
 	b->internal = 0;
+	return b;
+}
+
+/* Find already loaded buffer or load file into new buffer */
+B *bfind_scratch(unsigned char *s)
+{
+	B *b;
+
+	if (!s || !s[0]) {
+		error = -1;
+		b = bmk(NULL);
+		setopt(b,US "");
+		b->rdonly = b->o.readonly;
+		b->internal = 0;
+		b->er = error;
+		return b;
+	}
+	for (b = bufs.link.next; b != &bufs; b = b->link.next)
+		if (b->name && !strcmp(s, b->name)) {
+			if (!b->orphan)
+				++b->count;
+			else
+				b->orphan = 0;
+			error = 0;
+			b->internal = 0;
+			return b;
+		}
+	b = bmk(NULL);
+	error = -1;
+	setopt(b,s);
+	b->internal = 0;
+	b->rdonly = b->o.readonly;
+	b->er = error;
+	b->name = (unsigned char *)strdup((char *)s);
+	b->scratch = 1;
 	return b;
 }
 

@@ -39,6 +39,7 @@ Buffers
 bufed		Buffer menu
 edit		Load file into window: asks to reload if buffer exists
 switch		Load file into window: always uses buffer if it exists
+scratch		Load a scratch buffer into current window
 nbuf		Load next buffer into current window
 pbuf		Load previous buffer into current window
 
@@ -95,6 +96,8 @@ abortbuf	Abort current buffer/window if it is not changed
 ask		Prompt to save current file
 exsave		Save file and exit
 lose		Prompt to lose changes to current file
+querysave	Prompt to save each modified buffer
+killjoe		Exit joe immediately without checking for modified buffers
 
 Files
 -----

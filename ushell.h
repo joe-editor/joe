@@ -13,5 +13,6 @@
 int ubknd PARAMS((BW *bw));
 int ukillpid PARAMS((BW *bw));
 int urun PARAMS((BW *bw));
+int ubuild PARAMS((BW *bw));
 
 #endif

@@ -176,6 +176,7 @@ struct buffer {
 	P	*oldtop;	/* Last top screen position before orphaning */
 	int	rdonly;		/* Set for read-only */
 	int	internal;	/* Set for internal buffers */
+	int	scratch;	/* Set for scratch buffers */
 	int	er;		/* Error code when file was loaded */
 };
 

@@ -668,7 +668,7 @@ stop		^X )		Stop recording macro
 
   ESC-x compile
 
-:def compile switch,"errors",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
+:def compile querysave,query,scratch,"* Build Log *",rtn,markb,eof," ",markk,blkdel,build
 
   Spell-check macros
 
@@ -726,7 +726,8 @@ nextw,edit,query,prevw	^X 4 f			Find file other window
 nextw,edit,query,prevw	^X 4 ^F
 nextw,tag,query,prevw	^X 4 .			Find tag other window
  ask,query,lose,query,abortbuf	^X ^C		Gnu-emacs: Abort buffer in window
-exsave			^X ^C			Save file and exit
+ exsave			^X ^C			Save file and exit
+querysave,query,killjoe	^X ^C			Query to save files, then exit
 lose,query,abortbuf	^X k			Kill buffer in window
 lose,query,edit		^X ^V			Edit a file: no orphaned buffers
 psh,drop,fwrdc,query,markk,blkdel	^[ z	Cut to char

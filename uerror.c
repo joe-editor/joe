@@ -212,9 +212,14 @@ static long parserr(B *b)
 
 int uparserr(BW *bw)
 {
+	int n;
 	errbuf = bw->b;
 	freeall();
-	snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "Parsed %ld lines", parserr(bw->b));
+	n = parserr(bw->b);
+	if (n)
+		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "%ld errors found", n);
+	else
+		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "No errors found");
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }

@@ -145,6 +145,7 @@ int edloop(int flg)
 		if (m)
 			ret = exemac(m);
 	}
+
 	if (term == -1)
 		return -1;
 	else

@@ -1,5 +1,20 @@
 Wed May 12 2004  Joe Allen <jhallen@world.std.com>
 
+	Compile now uses shell window (so you can hit ^C during the
+	compile.
+
+	Shell window termination code fix: now all of the output always
+	makes it to the window.
+
+	Added query save loop to save all modified files before build.
+
+	Added scratch buffers: they are ignored during ^K X, ^C and
+	querysave.
+
+	^X ^C is now much more like emacs.
+
+Wed May 12 2004  Joe Allen <jhallen@world.std.com>
+
 	Applied Olexiy Avramchenko's <olexiy@irtech.cn.ua> patch
 	on configure.ac.  Also added mail.jsf.in to Makefile.am
 

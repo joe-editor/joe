@@ -51,6 +51,24 @@ static void cdone(BW *bw)
 	}
 }
 
+static void cdone_parse(BW *bw)
+{
+	bw->pid = 0;
+	close(bw->out);
+	bw->out = -1;
+	if (piseof(bw->cursor)) {
+		binss(bw->cursor, US "** Program finished **\n");
+		p_goto_eof(bw->cursor);
+		bw->cursor->xcol = piscol(bw->cursor);
+	} else {
+		P *q = pdup(bw->b->eof);
+
+		binss(q, US "** Program finished **\n");
+		prm(q);
+	}
+	uparserr(bw);
+}
+
 /* Executed for each chunk of data we get from the shell */
 
 static void cdata(BW *bw, unsigned char *dat, int siz)
@@ -93,7 +111,7 @@ static void cdata(BW *bw, unsigned char *dat, int siz)
 	prm(q);
 }
 
-static int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify)
+static int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build)
 {
 #ifdef __MSDOS__
 	if (notify) {
@@ -113,12 +131,17 @@ static int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int
 		varm(s);
 		return -1;
 	}
+/*
 	if (doedit(bw, vsncpy(NULL, 0, sc("")), NULL, NULL)) {
 		varm(s);
 		return -1;
 	}
+*/
+	p_goto_eof(bw->cursor);
+/*
 	bw = (BW *) maint->curwin->object;
-	if (!(m = mpxmk(&bw->out, name, s, cdata, bw, cdone, bw))) {
+*/
+	if (!(m = mpxmk(&bw->out, name, s, cdata, bw, build ? cdone_parse : cdone, bw))) {
 		varm(s);
 		msgnw(bw->parent, US "No ptys available");
 		return -1;
@@ -144,7 +167,7 @@ int ubknd(BW *bw)
 	a = vaadd(a, s);
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, NULL);
+	return cstart(bw, sh, a, NULL, NULL, 0);
 }
 
 /* Run a program in a window */
@@ -158,7 +181,7 @@ static int dorun(BW *bw, unsigned char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, US "/bin/sh", a, NULL, notify);
+	return cstart(bw, US "/bin/sh", a, NULL, notify, 0);
 }
 
 B *runhist = NULL;
@@ -166,6 +189,29 @@ B *runhist = NULL;
 int urun(BW *bw)
 {
 	if (wmkpw(bw->parent, US "Program to run: ", &runhist, dorun, US "Run", NULL, NULL, NULL, NULL, locale_map)) {
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
+static int dobuild(BW *bw, unsigned char *s, void *object, int *notify)
+{
+	unsigned char **a = vamk(10);
+	unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+
+	a = vaadd(a, cmd);
+	cmd = vsncpy(NULL, 0, sc("-c"));
+	a = vaadd(a, cmd);
+	a = vaadd(a, s);
+	return cstart(bw, US "/bin/sh", a, NULL, notify, 1);
+}
+
+B *buildhist = NULL;
+
+int ubuild(BW *bw)
+{
+	if (wmkpw(bw->parent, US "Build command (for example, 'make'): ", &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map)) {
 		return 0;
 	} else {
 		return -1;
