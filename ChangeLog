@@ -1,5 +1,21 @@
 Thu May 13 2004  Joe Allen <jhallen@world.std.com>
 
+	Improve exit messages.
+
+	Improve 'lose' which is for jmacs.
+
+	Improve ^X for jpico.
+
+	Got rid of "end of processs" message in shell windows.
+
+	Shell windows can now be orphaned and duplicated (process
+	is associated with B instead of BW).
+
+	Shell window input taken from cmd.c instead of in
+	actual edit functions.
+
+Thu May 13 2004  Joe Allen <jhallen@world.std.com>
+
 	Small compile fix.
 
 Wed May 12 2004  Joe Allen <jhallen@world.std.com>

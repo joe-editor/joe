@@ -678,31 +678,22 @@ int ubyte(BW *bw)
 
 int udelch(BW *bw)
 {
-	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
-		unsigned char c = 4;
-		joe_write(bw->out, &c, 1);	/* Send Ctrl-D to process */
-	} else {
-		P *p;
+	P *p;
 
-		if (piseof(bw->cursor))
-			return -1;
-		pgetc(p = pdup(bw->cursor));
-		bdel(bw->cursor, p);
-		prm(p);
-	}
+	if (piseof(bw->cursor))
+		return -1;
+	pgetc(p = pdup(bw->cursor));
+	bdel(bw->cursor, p);
+	prm(p);
 	return 0;
 }
 
-/* Backspace, or if cursor is at end of file in a shell window, send backspace
- * to shell */
+/* Backspace */
 
 int ubacks(BW *bw, int k)
 {
-	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
-		unsigned char c = k;
-
-		joe_write(bw->out, &c, 1);
-	} else if (bw->parent->watom->what == TYPETW || !pisbol(bw->cursor)) {
+	/* Don't backspace when at beginning of line in prompt windows */
+	if (bw->parent->watom->what == TYPETW || !pisbol(bw->cursor)) {
 		P *p;
 		int c;
 		int indent;
@@ -753,9 +744,9 @@ int ubacks(BW *bw, int k)
 					bdel(bw->cursor, p);
 			prm(p);
 		}
+		return 0;
 	} else
 		return -1;
-	return 0;
 }
 
 /* 
@@ -904,14 +895,7 @@ struct utf8_sm utype_utf8_sm;
 int utypebw(BW *bw, int k)
 {
 	struct charmap *map=bw->b->o.charmap;
-	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
-		unsigned char c = k;
-
-		utype_utf8_sm.state = 0;
-		utype_utf8_sm.ptr = 0;
-
-		joe_write(bw->out, &c, 1);
-	} else if (k == '\t' && bw->o.overtype && !piseol(bw->cursor)) { /* TAB in overtype mode is supposed to be just cursor motion */
+	if (k == '\t' && bw->o.overtype && !piseol(bw->cursor)) { /* TAB in overtype mode is supposed to be just cursor motion */
 		int col = bw->cursor->xcol;		/* Current cursor column */
 		col = col + bw->o.tab - (col%bw->o.tab);/* Move to next tab stop */
 		pcol(bw->cursor,col);			/* Try to position cursor there */
@@ -1281,15 +1265,12 @@ int uctrl(BW *bw)
 		return -1;
 }
 
-/* User hit Return.  Deal with autoindent.  If cursor is at end of shell
- * window buffer, send the return to the shell
+/* User hit Return.  Deal with autoindent.
  */
 
 int rtntw(BW *bw)
 {
-	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
-		joe_write(bw->out, "\n", 1);
-	} else if (bw->o.overtype) {
+	if (bw->o.overtype) {
 		p_goto_eol(bw->cursor);
 		if (piseof(bw->cursor))
 			binsc(bw->cursor, '\n');

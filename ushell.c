@@ -34,47 +34,43 @@ extern int orphan;
 
 /* Executed when shell process terminates */
 
-static void cdone(BW *bw)
+static void cdone(B *b)
 {
-	bw->pid = 0;
-	close(bw->out);
-	bw->out = -1;
-	if (piseof(bw->cursor)) {
-		binss(bw->cursor, US "** Program finished **\n");
-		p_goto_eof(bw->cursor);
-		bw->cursor->xcol = piscol(bw->cursor);
-	} else {
-		P *q = pdup(bw->b->eof);
-
-		binss(q, US "** Program finished **\n");
-		prm(q);
-	}
+	b->pid = 0;
+	close(b->out);
+	b->out = -1;
 }
 
-static void cdone_parse(BW *bw)
+static void cdone_parse(B *b)
 {
-	bw->pid = 0;
-	close(bw->out);
-	bw->out = -1;
-	if (piseof(bw->cursor)) {
-		binss(bw->cursor, US "** Program finished **\n");
-		p_goto_eof(bw->cursor);
-		bw->cursor->xcol = piscol(bw->cursor);
-	} else {
-		P *q = pdup(bw->b->eof);
-
-		binss(q, US "** Program finished **\n");
-		prm(q);
-	}
-	uparserr(bw);
+	b->pid = 0;
+	close(b->out);
+	b->out = -1;
+	parserrb(b);
 }
 
 /* Executed for each chunk of data we get from the shell */
 
-static void cdata(BW *bw, unsigned char *dat, int siz)
+static void cfollow(B *b,long byte)
 {
-	P *q = pdup(bw->cursor);
-	P *r = pdup(bw->b->eof);
+	W *w;
+	 if ((w = maint->topwin) != NULL) {
+	 	do {
+	 		if ((w->watom->what&TYPETW) && ((BW *)w->object)->b==b && ((BW *)w->object)->cursor->byte==byte) {
+	 			BW *bw = (BW *)w->object;
+	 			p_goto_eof(bw->cursor);
+				bw->cursor->xcol = piscol(bw->cursor);
+	 		}
+		w = w->link.next;
+	 	} while (w != maint->topwin);
+	 }
+}
+
+static void cdata(B *b, unsigned char *dat, int siz)
+{
+	P *q = pdup(b->eof);
+	P *r = pdup(b->eof);
+	long byte = q->byte;
 	unsigned char bf[1024];
 	int x, y;
 
@@ -84,11 +80,6 @@ static void cdata(BW *bw, unsigned char *dat, int siz)
 		} else if (dat[x] == 8 || dat[x] == 127) {
 			if (y) {
 				--y;
-			} else if (piseof(bw->cursor)) {
-				pset(q, bw->cursor);
-				prgetc(q);
-				bdel(q, bw->cursor);
-				bw->cursor->xcol = piscol(bw->cursor);
 			} else {
 				pset(q, r);
 				prgetc(q);
@@ -99,16 +90,12 @@ static void cdata(BW *bw, unsigned char *dat, int siz)
 		}
 	}
 	if (y) {
-		if (piseof(bw->cursor)) {
-			binsm(bw->cursor, bf, y);
-			p_goto_eof(bw->cursor);
-			bw->cursor->xcol = piscol(bw->cursor);
-		} else {
-			binsm(r, bf, y);
-		}
+		binsm(r, bf, y);
 	}
 	prm(r);
 	prm(q);
+
+	cfollow(b,byte);
 }
 
 static int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build)
@@ -126,27 +113,19 @@ static int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int
 	if (notify) {
 		*notify = 1;
 	}
-	if (bw->pid && orphan) {
+	if (bw->b->pid) {
 		msgnw(bw->parent, US "Program already running in this window");
 		varm(s);
 		return -1;
 	}
-/*
-	if (doedit(bw, vsncpy(NULL, 0, sc("")), NULL, NULL)) {
-		varm(s);
-		return -1;
-	}
-*/
 	p_goto_eof(bw->cursor);
-/*
-	bw = (BW *) maint->curwin->object;
-*/
-	if (!(m = mpxmk(&bw->out, name, s, cdata, bw, build ? cdone_parse : cdone, bw))) {
+
+	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b))) {
 		varm(s);
 		msgnw(bw->parent, US "No ptys available");
 		return -1;
 	} else {
-		bw->pid = m->pid;
+		bw->b->pid = m->pid;
 	}
 	return 0;
 #endif
@@ -211,10 +190,21 @@ B *buildhist = NULL;
 
 int ubuild(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Build command (for example, 'make'): ", &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map)) {
-		return 0;
-	} else {
+	if (buildhist) {
+		if (bw=wmkpw(bw->parent, US "Build command: ", &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map)) {
+			uuparw(bw);
+			u_goto_eol(bw);
+			bw->cursor->xcol = piscol(bw->cursor);
+			return 0;
+		} else {
 		return -1;
+		}
+	} else {
+		if (wmkpw(bw->parent, US "Enter build command (for example, 'make'): ", &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map)) {
+			return 0;
+		} else {
+		return -1;
+		}
 	}
 }
 
@@ -228,8 +218,8 @@ static int pidabort(BW *bw, int c, void *object, int *notify)
 	if (c != 'y' && c != 'Y') {
 		return -1;
 	}
-	if (bw->pid) {
-		kill(bw->pid, 1);
+	if (bw->b->pid) {
+		kill(bw->b->pid, 1);
 		return -1;
 	} else {
 		return -1;
@@ -238,7 +228,7 @@ static int pidabort(BW *bw, int c, void *object, int *notify)
 
 int ukillpid(BW *bw)
 {
-	if (bw->pid) {
+	if (bw->b->pid) {
 		if (mkqw(bw->parent, sc("Kill program (y,n,^C)?"), pidabort, NULL, NULL, NULL)) {
 			return 0;
 		} else {

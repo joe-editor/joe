@@ -25,7 +25,7 @@ JOE 3.1
 - Added Ctrl-space block selection method
 - ^K E asks if you want to load original version of the file
 - jmacs bugs fixes: upperase word, transpose words, ^X ^C is
-  more emacs-like.
+  more emacs-like., ^X k and ^X ^V more like emacs.
 - Much improved compile system ^[ c
 
 JOE 3.0 (23 APR 2004)

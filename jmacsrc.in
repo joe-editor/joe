@@ -732,8 +732,13 @@ nextw,tag,query,prevw	^X 4 .			Find tag other window
  More like gnu-emacs...
 querysave,query,killjoe	^X ^C			Query to save files, then exit
 
-lose,query,abortbuf	^X k			Kill buffer in window
+ Old way...
+ lose,query,abortbuf	^X k			Kill buffer in window
+
+lose,query		^X k			Kill buffer in window
+
 lose,query,edit		^X ^V			Edit a file: no orphaned buffers
+
 psh,drop,fwrdc,query,markk,blkdel	^[ z	Cut to char
 psh,markk,blksave,">>",query	^X a		Append region to file
 retype,

@@ -92,11 +92,21 @@ prverr		Go to previous parsed error
 Exit
 ----
 abort		Abort current buffer/window.  Prompt if it is changed.
-abortbuf	Abort current buffer/window if it is not changed
-ask		Prompt to save current file
+
+abortbuf	Like above, but just fail if it would have to prompt because
+		it's the last window on a modified buffer.
+
+ask		Prompt to save current file: user says yes return, user says
+		no: run 'abort'.  Use in a macro: "ask,query,exsave"
+
 exsave		Save file and exit
-lose		Prompt to lose changes to current file
+
+lose		emacs kill buffer.  The buffer is deleted- any windows with
+		it get a replacement scratch buffer.
+
 querysave	Prompt to save each modified buffer
+		Use in a macro: "querysave,query,killjoe"
+
 killjoe		Exit joe immediately without checking for modified buffers
 
 Files

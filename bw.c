@@ -867,8 +867,6 @@ BW *bwmk(W *window, B *b, int prompt)
 	BW *w = (BW *) joe_malloc(sizeof(BW));
 
 	w->parent = window;
-	w->pid = 0;
-	w->out = -1;
 	w->b = b;
 	if (prompt || (!window->y && staen)) {
 		w->y = window->y;

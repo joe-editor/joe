@@ -210,6 +210,47 @@ static long parserr(B *b)
 	return nerrs;
 }
 
+BW *find_a_good_bw(B *b)
+{
+	W *w;
+	BW *bw = 0;
+	/* Find lowest window with buffer */
+	if ((w = maint->topwin) != NULL) {
+		do {
+			if ((w->watom->what&TYPETW) && ((BW *)w->object)->b==b && w->y>=0)
+				bw = (BW *)w->object;
+			w = w->link.next;
+		} while (w != maint->topwin);
+	}
+	if (bw)
+		return bw;
+	/* Otherwise just find lowest window */
+	if ((w = maint->topwin) != NULL) {
+		do {
+			if ((w->watom->what&TYPETW) && w->y>=0)
+				bw = (BW *)w->object;
+			w = w->link.next;
+		} while (w != maint->topwin);
+	}
+	return bw;
+}
+
+int parserrb(B *b)
+{
+	BW *bw;
+	int n;
+	errbuf = b;
+	freeall();
+	n = parserr(b);
+	bw = find_a_good_bw(b);
+	if (n)
+		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "%ld messages found", n);
+	else
+		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "No messages found");
+	msgnw(bw->parent, msgbuf);
+	return 0;
+}
+
 int uparserr(BW *bw)
 {
 	int n;
@@ -217,9 +258,9 @@ int uparserr(BW *bw)
 	freeall();
 	n = parserr(bw->b);
 	if (n)
-		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "%ld errors found", n);
+		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "%ld messages found", n);
 	else
-		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "No errors found");
+		snprintf((char *)msgbuf, JOE_MSGBUFSIZE, "No messages found");
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }

@@ -224,6 +224,8 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->eof->byte = amnt;
 	b->eof->line = nlines;
 	b->eof->valcol = 0;
+	b->pid = 0;
+	b->out = -1;
 	enquef(B, link, &bufs, b);
 	pcoalesce(b->bof);
 	pcoalesce(b->eof);
@@ -2405,6 +2407,12 @@ err:
 }
 
 /* Save 'size' bytes beginning at 'p' in file 's' */
+
+/* If flag is set, update original time of file if it makes
+ * sense to do so (it's a normal file, we're saving with
+ * same name as buffer or is about to get this name).
+ */
+
 int bsave(P *p, unsigned char *s, long int size, int flag)
 {
 	FILE *f;
@@ -2472,7 +2480,9 @@ err:
 	else
 		fflush(f);
 
-	if (!error && norm && flag && p->b->name && !strcmp((char *)s,p->b->name)) {
+	/* Update orignal date of file */
+	/* If it's not named, it's about to be */
+	if (!error && norm && flag && (!p->b->name || !strcmp((char *)s,p->b->name))) {
 		if (!stat((char *)s,&sbuf))
 			p->b->mod_time = sbuf.st_mtime;
 	}

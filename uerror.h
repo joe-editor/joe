@@ -13,6 +13,7 @@
 
 int unxterr PARAMS((BW *bw));
 int uprverr PARAMS((BW *bw));
+int parserrb PARAMS((B *b));
 int uparserr PARAMS((BW *bw));
 void inserr PARAMS((unsigned char *name, long int where, long int n, int bol));
 void delerr PARAMS((unsigned char *name, long int where, long int n));

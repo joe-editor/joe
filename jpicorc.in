@@ -693,7 +693,7 @@ spellfile	^[ t
 spellfile	^[ ^T
 
  ask,query,lose,query,abortbuf	^X	Exit after many questions
-exsave		^X		Exit
+ask,query,exsave	^X		Exit
 backs		^?		Backspace
 backs		^H
 backw		^[ H		Backspace word

@@ -316,7 +316,7 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				}
 				break;
 			case 'S':
-				if (bw->pid)
+				if (bw->b->pid)
 					stalin = vsncpy(sv(stalin), sc("*SHELL*"));
 				break;
 			case 'M':
@@ -350,11 +350,12 @@ static void disptw(BW *bw, int flg)
 	w->cury = bw->cursor->line - bw->top->line + bw->y - w->y;
 	w->curx = bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0);
 
-	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed) && (w->y || !staen)) {
+	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen)) {
 		int fill;
 
 		tw->prevline = bw->cursor->line;
 		tw->changed = bw->b->changed;
+		tw->prev_b = bw->b;
 		if (bw->o.rmsg[0])
 			fill = bw->o.rmsg[0];
 		else
@@ -386,6 +387,7 @@ static void iztw(TW *tw, int y)
 	tw->changed = -1;
 	tw->prevline = -1;
 	tw->staon = (!staen || y);
+	tw->prev_b = 0;
 }
 
 extern int dostaupd;
@@ -444,39 +446,6 @@ int uduptw(BW *bw)
 	return 0;
 }
 
-/* User routine for aborting a text window */
-
-static int naborttw(BW *bw, int k, void *object, int *notify)
-{
-	W *w = bw->parent;
-	B *b;
-	TW *tw = (TW *) bw->object;
-
-	if (notify)
-		*notify = 1;
-	if (k != 'y' && k != 'Y')
-		return -1;
-
-	genexmsg(bw, 0, NULL);
-
-	if (countmain(w->t) == 1)
-		if ((b = borphan()) != NULL) {
-			void *object = bw->object;
-
-			bwrm(bw);
-			w->object = (void *) (bw = bwmk(w, b, 0));
-			wredraw(bw->parent);
-			bw->object = object;
-			return 0;
-		}
-	bwrm(bw);
-	vsrm(tw->stalin);
-	joe_free(tw);
-	w->object = NULL;
-	wabort(w);		/* Eliminate this window and it's children */
-	return 0;
-}
-
 static void instw(BW *bw, B *b, long int l, long int n, int flg)
 {
 	if (b == bw->b)
@@ -503,6 +472,63 @@ static WATOM watomtw = {
 	TYPETW
 };
 
+int abortit(BW *bw)
+{
+	W *w;
+	TW *tw;
+	B *b;
+	if (bw->parent->watom != &watomtw)
+		return wabort(bw->parent);
+	if (bw->b->pid && bw->b->count==1)
+		return ukillpid(bw);
+	w = bw->parent;
+	tw = (TW *) bw->object;
+	/* If only one main window on the screen... */
+	if (countmain(w->t) == 1)
+		/* Replace it with an orphaned buffer if there are any */
+		if ((b = borphan()) != NULL) {
+			void *object = bw->object;
+			/* FIXME: Shouldn't we wabort() and wcreate here to kill
+			   any prompt windows? */
+
+			bwrm(bw);
+			w->object = (void *) (bw = bwmk(w, b, 0));
+			wredraw(bw->parent);
+			bw->object = object;
+			return 0;
+		}
+	bwrm(bw);
+	vsrm(tw->stalin);
+	joe_free(tw);
+	w->object = NULL;
+	wabort(w);	/* Eliminate this window and it's children */
+	return 0;
+}
+
+/* User routine for aborting a text window */
+
+static int naborttw(BW *bw, int k, void *object, int *notify)
+{
+	if (notify)
+		*notify = 1;
+	if (k != 'y' && k != 'Y')
+		return -1;
+
+	genexmsg(bw, 0, NULL);
+	return abortit(bw);
+}
+
+static int naborttw1(BW *bw, int k, void *object, int *notify)
+{
+	if (notify)
+		*notify = 1;
+	if (k != 'y' && k != 'Y')
+		return -1;
+
+	if (!exmsg) genexmsg(bw, 0, NULL);
+	return abortit(bw);
+}
+
 /* k is last character types which lead to uabort.  If k is -1, it means uabort
    was called internally, and not by the user: which means uabort will not send
    Ctrl-C to process */
@@ -510,12 +536,7 @@ int uabort(BW *bw, int k)
 {
 	if (bw->parent->watom != &watomtw)
 		return wabort(bw->parent);
-	if (bw->pid && bw->cursor->byte == bw->b->eof->byte && k != -1) {
-		unsigned char c = 3;
-		joe_write(bw->out, &c, 1); /* Send Ctrl-C to process */
-		return 0;
-	}
-	if (bw->pid)
+	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
 		if (mkqw(bw->parent, sc("Lose changes to this file (y,n,^C)? "), naborttw, NULL, NULL, NULL))
@@ -526,14 +547,31 @@ int uabort(BW *bw, int k)
 		return naborttw(bw, 'y', NULL, NULL);
 }
 
-/* Abort buffer */
+/* Same as above, but only calls genexmsg if nobody else has */
+
+int uabort1(BW *bw, int k)
+{
+	if (bw->parent->watom != &watomtw)
+		return wabort(bw->parent);
+	if (bw->b->pid && bw->b->count==1)
+		return ukillpid(bw);
+	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
+		if (mkqw(bw->parent, sc("Lose changes to this file (y,n,^C)? "), naborttw1, NULL, NULL, NULL))
+			return 0;
+		else
+			return -1;
+	else
+		return naborttw1(bw, 'y', NULL, NULL);
+}
+
+/* Abort buffer without prompting: just fail if this is last window on buffer */
 
 int uabortbuf(BW *bw)
 {
 	W *w = bw->parent;
 	B *b;
 
-	if (bw->pid)
+	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
 
 	if (okrepl(bw))
@@ -560,9 +598,6 @@ int utw0(BASE *b)
 
 	if (countmain(b->parent->t) == 1)
 		return -1;
-	if (bw->pid) {
-		return ukillpid(bw);
-	}
 	if (bw->b->count == 1)
 		orphit(bw);
 	return uabort(bw, -1);
@@ -585,10 +620,6 @@ int utw1(BASE *b)
 		} while (t->curwin->main == mainw && t->curwin != starting);
 		if (t->curwin->main != mainw) {
 			BW *bw = t->curwin->main->object;
-			if (bw->pid) {
-				msgnw(bw->parent, US "Process running in this window");
-				return -1;
-			}
 			utw0((BASE *)bw);
 			yn = 1;
 			goto loop;

@@ -178,6 +178,8 @@ struct buffer {
 	int	internal;	/* Set for internal buffers */
 	int	scratch;	/* Set for scratch buffers */
 	int	er;		/* Error code when file was loaded */
+	pid_t	pid;		/* Process id */
+	int	out;		/* fd to write to process */
 };
 
 
@@ -314,8 +316,6 @@ struct bw {
 	OPTIONS	o;
 	void	*object;
 
-	pid_t	pid;		/* Process id */
-	int	out;		/* fd to write to process */
 	int	linums;
 	int	top_changed;	/* Top changed */
 };
@@ -540,6 +540,7 @@ struct tw {
 	int	staon;		/* Set if status line was on */
 	long	prevline;	/* Previous cursor line number */
 	int	changed;	/* Previous changed value */
+	B	*prev_b;	/* Previous buffer (we need to update status line on nbuf/pbuf) */
 };
 
 struct irec {
