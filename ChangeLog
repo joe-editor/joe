@@ -1,3 +1,6 @@
+Thu Nov 22 2001  Marek 'marx' Grac <xgrac@fi.muni.cz>
+	* uedit.c: correction of last change
+
 Tue Nov 20 2001  Marek 'marx' Grac <xgrac@fi.muni.cz>
 	* w.h, w.c, usearch.c, ufile.c, macro.c, uerror.c, umath.c:
 	MSGBUFSIZE was renamed to JOE_MSGBUFSIZE, because MSGBUFSIZE is
