@@ -490,6 +490,12 @@ ltarwmenu	.kl
 ltarwmenu	^B
 ltarwmenu	^[ [ D
 ltarwmenu	^[ O D
+pgdnmenu	.kN		Screen down
+pgdnmenu	^V
+pgdnmenu	^[ [ 6 ~
+pgupmenu	.kP		Screen up
+pgupmenu	^[ v
+pgupmenu	^[ [ 5 ~
 rtarwmenu	.kr
 rtarwmenu	^F
 rtarwmenu	^[ [ C

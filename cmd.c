@@ -135,7 +135,9 @@ CMD cmds[] = {
 	{"pbuf", TYPETW, upbuf, NULL, 1, "nbuf"},
 	{"pedge", TYPETW + TYPEPW + EFIXXCOL, upedge, NULL, 1, "nedge"}, 
 	{"pgdn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgdn, NULL, 1, "pgup"},
+	{"pgdnmenu", TYPEMENU, umpgdn, NULL, 1, "pgupmenu"}, 
 	{"pgup", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgup, NULL, 1, "pgdn"},
+	{"pgupmenu", TYPEMENU, umpgup, NULL, 1, "pgdnmenu"}, 
 	{"picokill", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, upicokill, NULL, 1, NULL},
 	{"play", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uplay, NULL, 1, NULL},	/* EFIXX? */ 
 	{"prevpos", TYPETW + TYPEPW + EPOS + EMID + EFIXXCOL, uprevpos, NULL, 1, "nextpos"}, 

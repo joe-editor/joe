@@ -19,6 +19,8 @@ MENU *mkmenu PARAMS((W *w, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??
 
 int umuparw PARAMS((MENU *m));
 int umdnarw PARAMS((MENU *m));
+int umpgup PARAMS((MENU *m));
+int umpgdn PARAMS((MENU *m));
 int umltarw PARAMS((MENU *m));
 int umrtarw PARAMS((MENU *m));
 int umbof PARAMS((MENU *m));

@@ -575,6 +575,12 @@ ltarwmenu	^B
 ltarwmenu	^[ [ D
 ltarwmenu	^[ O D
 ltarwmenu ^# D
+pgdnmenu	^V
+pgdnmenu	^[ [ 6 ~
+pgdnmenu  ^# S
+pgupmenu	^U
+pgupmenu	^[ [ 5 ~
+pgupmenu  ^# T
 rtarwmenu	^F
 rtarwmenu	^[ [ C
 rtarwmenu ^# C

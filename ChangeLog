@@ -1,4 +1,11 @@
 Sat Mar 20 2004  Joe Allen <jhallen@world.std.com>
+	* menu.c, menu.h, joerc.in, jstarrc.in, jmacsrc.in, rjoerc.in,
+	jpicorc.in, cmd.c:
+	File selection menu is now four lines instead of one line.  This
+	needs a little more work: user should be able to set how many
+	lines it should be in each context.
+
+Sat Mar 20 2004  Joe Allen <jhallen@world.std.com>
 	* usearch.c:
 	After every search we reset window left offset to 0 and then make
 	the minimal left-right scroll necessary to get entire found text

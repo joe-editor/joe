@@ -539,6 +539,12 @@ ltarwmenu	.kl
 ltarwmenu	^S
 ltarwmenu	^[ [ D
 ltarwmenu	^[ O D
+pgdnmenu	.kN		Screen down
+pgdnmenu	^C
+pgdnmenu	^[ [ 6 ~
+pgupmenu	.kP		Screen up
+pgupmenu	^R
+pgupmenu	^[ [ 5 ~
 rtarwmenu	.kr
 rtarwmenu	^D
 rtarwmenu	^[ [ C
