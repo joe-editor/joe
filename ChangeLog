@@ -1,4 +1,9 @@
 Mon May 10 2004  Joe Allen <jhallen@world.std.com>
+	* *rc.in :
+
+	More globs: .cpp, .hpp, .c++, .h++
+
+Mon May 10 2004  Joe Allen <jhallen@world.std.com>
 	* b.c tw.c :
 
 	New status line escape sequence: %x shows current context (function

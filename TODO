@@ -1,17 +1,5 @@
 Fix for next release:
 
-  shell glob:
-	.profile
-	.bash_login
-	.bash_profile
-	.bash_logout
-	/etc/profile
-
-	.cshrc
-	.login
-	.logout
-	.tcshrc
-
   highlight other windows
   why lose state during page down?
   perl highlighter
@@ -70,9 +58,6 @@ mode where all editing wraps rest of paragraph?
 
 Improvements for programming
 ----------------------------
-
-Show name of function cursor is in (parse C).  This is useful during
-searches.  (Call ctags *.c *.h?)
 
 Jump to definition (tags does this)
 

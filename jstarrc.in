@@ -223,8 +223,36 @@
 -smartbacks
 -purify
 
+*.cpp
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+
+*.c++
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+
  C language header file
 *.h
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+
+*.hpp
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+
+*.h++
 -autoindent
 -syntax c
 -smarthome

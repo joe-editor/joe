@@ -250,6 +250,20 @@
 -purify
 -single_quoted
 *.cpp
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+*.c++
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+ C language header file
 *.h
 -autoindent
 -syntax c
@@ -258,6 +272,20 @@
 -purify
 -single_quoted
 *.hpp
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+*.h++
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+ Verilog file
 *.v
 -autoindent
 -syntax verilog
