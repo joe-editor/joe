@@ -22,106 +22,65 @@
 
 #define NOT_ENOUGH_MEMORY -11
 
-struct help *help_actual = NULL;			/* actual help screen */
+struct help *help_actual = NULL;	/* actual help screen */
+struct help *help_ptr = NULL;		/* build pointer */
 
 /* 
  * Process help file
- * Returns 0 if the help file was succefully processed
- *        -1 if the help file couldn't be opened 
- *        NOT_ENOUGH_MEMORY if there is not enough memory
+ * Returns new line number
  */
 
-int help_init(unsigned char *filename)
+int help_init(FILE *fd,unsigned char *bf,int line)
 {
-	FILE *fd;					/* help file */
 	unsigned char buf[1024];			/* input buffer */
+	strcpy((char *)buf,(char *)bf);
 
 	struct help *tmp;
 	unsigned int bfl;				/* buffer length */
 	unsigned int hlpsiz, hlpbsz;			/* number of used/allocated bytes for tmp->text */
 	unsigned char *tempbuf;
 
-	if (!(fd = fopen((char *)filename, "r")))		/* open the help file */
-		return -1;				/* return if we couldn't open the file */
+	if (buf[0] == '{') {			/* start of help screen */
+		tmp = (struct help *) joe_malloc(sizeof(struct help));
 
-	fprintf(stderr, "Processing '%s'...", filename);
-	fflush(stderr);
+		tmp->text = NULL;
+		tmp->lines = 0;
+		hlpsiz = 0;
+		hlpbsz = 0;
+		tmp->name = vsncpy(NULL, 0, sz(buf + 1) - 1);
 
-	while (fgets((char *)buf, sizeof(buf), fd)) {
-		if (buf[0] == '{') {			/* start of help screen */
-			if (!(tmp = (struct help *) joe_malloc(sizeof(struct help)))) {
-				return NOT_ENOUGH_MEMORY;
-			}
-
-			tmp->text = NULL;
-			tmp->lines = 0;
-			hlpsiz = 0;
-			hlpbsz = 0;
-			tmp->name = vsncpy(NULL, 0, sz(buf + 1) - 1);
-
-			while ((fgets((char *)buf, sizeof(buf), fd)) && (buf[0] != '}')) {
-				bfl = strlen((char *)buf);
-				if (hlpsiz + bfl > hlpbsz) {
-					if (tmp->text) {
-						tempbuf = (unsigned char *) joe_realloc(tmp->text, hlpbsz + bfl + 1024);
-						if (!tempbuf) {
-							joe_free(tmp->text);
-							joe_free(tmp);
-							return NOT_ENOUGH_MEMORY;
-						} else {
-							tmp->text = tempbuf;
-						}
-					} else {
-						tmp->text = (unsigned char *) joe_malloc(bfl + 1024);
-						if (!tmp->text) {
-							joe_free(tmp);
-							return NOT_ENOUGH_MEMORY;
-						} else {
-							tmp->text[0] = 0;
-						}
-					}
-					hlpbsz += bfl + 1024;
-				}
-				strcpy((char *)(tmp->text + hlpsiz), (char *)buf);
-				hlpsiz += bfl;
-				++tmp->lines;
-			}
-			if (buf[0] == '}') {		/* set new help screen as actual one */
-				tmp->prev = help_actual;
-				tmp->next = NULL;
-				if (help_actual) {
-					help_actual->next = tmp;
-				}
-				help_actual = tmp;
-			} else {
-				fprintf(stderr, "\nHelp file '%s' is not properly ended with } on new line.\n", filename);
-				fprintf(stderr, "Do you want to accept incomplete help screen (y/n)?");
-				fflush(stderr);
-				fgets((char *)buf, 8, stdin);
-				if (!((buf[0] == 'y') || (buf[0] == 'Y'))) {
-					joe_free(tmp->text);
-					joe_free(tmp);
-					return 0;
+		while ((fgets((char *)buf, sizeof(buf), fd)) && (buf[0] != '}')) {
+			++line;
+			bfl = strlen((char *)buf);
+			if (hlpsiz + bfl > hlpbsz) {
+				if (tmp->text) {
+					tempbuf = (unsigned char *) joe_realloc(tmp->text, hlpbsz + bfl + 1024);
+					tmp->text = tempbuf;
 				} else {
-					tmp->prev = help_actual;
-					tmp->next = NULL;
-					if (help_actual) {
-						help_actual->next = tmp;
-					}
-					help_actual = tmp;
+					tmp->text = (unsigned char *) joe_malloc(bfl + 1024);
+					tmp->text[0] = 0;
 				}
+				hlpbsz += bfl + 1024;
 			}
+			strcpy((char *)(tmp->text + hlpsiz), (char *)buf);
+			hlpsiz += bfl;
+			++tmp->lines;
+		}
+		tmp->prev = help_ptr;
+		tmp->next = NULL;
+		if (help_ptr) {
+			help_ptr->next = tmp;
+		} else {
+			help_actual = tmp;
+		}
+		help_ptr = tmp;
+		if (buf[0] == '}') {		/* set new help screen as actual one */
+			++line;
+		} else {
+			fprintf(stderr, "\n%d: EOF before end of help text\n",line);
 		}
 	}
-	fclose(fd);					/* close help file */
-
-	fprintf(stderr, "done\n");
-	
-	while (help_actual && help_actual->prev) {	/* move to first help screen */
-		help_actual = help_actual->prev;
-	}
-
-	return 0;
+	return line;
 }
 
 /*

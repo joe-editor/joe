@@ -333,7 +333,6 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	return 1;
 
       donerc:
-	help_init(s);
 	for (c = 1; argv[c]; ++c) {
 		if (argv[c][0] == '-') {
 			if (argv[c][1])

@@ -3,32 +3,6 @@ Short (infinite) list for 3.2:
 
 - - - - - - - -
 
-Problems with parsing joerc file: comments are getting included in all
-string options.  Switch to unix standard config file format?
-
-Make joerc file so we load system and local customizations.
-
-- - - - - - - -
-
-can we highlight backup files? files ending in .in?
-
-- - - - - - - -
-
-formatting characters are being interpreted by context printing on status
-line
-
-- - - - - - - -
-
-read only doesn't work when there's a process running in the window.
-(it probably shouldn't run).
-
-- - - - - - - -
-
-  define characters which make up words
-    There are some A-Zs in tomatch (should use i18n).
-
-- - - - - - - -
-
 - merge math with macro language
 - tab at math prompt should go through variables, functions.
 - eliminate need for : separator
@@ -53,8 +27,40 @@ jmacs:
 
 - - - - - - - -
 
+- regexp for compiler parsing
+
+- - - - - - - -
+
     - Reload modified files (or current window)
       (can be a macro: ^KE name rtn)
+
+    (a user asked: can it periodically reload log file like tail -f)?
+
+- - - - - - - -
+
+Problems with parsing joerc file: comments are getting included in all
+string options.  Switch to unix standard config file format?
+
+Make joerc file so we load system and local customizations.
+
+- - - - - - - -
+
+can we highlight backup files? files ending in .in?
+
+- - - - - - - -
+
+formatting characters are being interpreted by context printing on status
+line
+
+- - - - - - - -
+
+read only doesn't work when there's a process running in the window.
+(it probably shouldn't run).
+
+- - - - - - - -
+
+  define characters which make up words
+    There are some A-Zs in tomatch (should use i18n).
 
 - - - - - - - -
 
@@ -94,6 +100,7 @@ More colors: UI for using 256 color xterms.
 - - - - - - - -
 
 Completion list build could take a long time
+in general we should be able to abort long operations...
 
 - - - - - - - -
 
@@ -106,8 +113,6 @@ Others:
 - rectangular blocks: make this a local file option?
 
 - security hole with spell checker
-
-- regexp for compiler parsing
 
 - shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
   shell window.
@@ -129,8 +134,6 @@ we are missing many query and prompt window abort handlers, which cause
 small memory leaks.
 
 regex: character classes? a-z matches any letter?
-
-parse *rc file only once?
 
 can't load terminfo- should switch to termcap or provide compiled
 ANSI terminfo built in.

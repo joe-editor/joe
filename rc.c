@@ -35,6 +35,7 @@
 #include "usearch.h"
 #include "ushell.h"
 #include "undo.h"
+#include "help.h"
 #include "w.h"
 
 #define OPT_BUF_SIZE 300
@@ -982,16 +983,9 @@ int procrc(CAP *cap, unsigned char *name)
 				}
 			}
 			break;
-		case '{':	/* Ignore help text */
+		case '{':	/* Process help text */
 			{
-				while ((fgets((char *)buf, 256, fd)) && (buf[0] != '}'))
-					++line;
-				++line;
-				if (buf[0] != '}') {
-					err = 1;
-					fprintf(stderr, "\n%s %d: End of joerc file occured before end of help text\n", name, line);
-					break;
-				}
+				line = help_init(fd,buf,line);
 			}
 			break;
 		case ':':	/* Select context */
