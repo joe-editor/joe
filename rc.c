@@ -21,6 +21,7 @@
 #include "path.h"
 #include "pw.h"
 #include "tw.h"
+#include "mouse.h"
 #include "uedit.h"
 #include "umath.h"
 #include "utils.h"
@@ -61,6 +62,19 @@ KMAP *kmap_getcontext(unsigned char *name)
 	c->name = joe_strdup(name);
 	contexts = c;
 	return c->kmap = mkkmap();
+}
+
+/* JM - ngetcontext(name) - like getcontext, but return NULL if it
+ * doesn't exist, instead of creating a new one.
+ */
+
+KMAP *ngetcontext(unsigned char *name)
+{
+	struct context *c;
+	for(c=contexts;c;c=c->next)
+		if(!strcmp(c->name,name))
+			return c->kmap;
+	return 0;
 }
 
 OPTIONS *options = NULL;
@@ -289,6 +303,8 @@ struct glopts {
 	{US "vhdl_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US "-- comments enabled", US "-- comments disabled", US "  ^G ignores -- " },
 	{US "semi_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US "; comments enabled", US "; comments disabled", US "  ^G ignores ; " },
 	{US "text_delimiters",	6, NULL, (unsigned char *) &fdefault.text_delimiters, US "Text delimiters (%s): ", 0, US "  Text delimiters " },
+	{US "floatmouse",	0, &floatmouse, 0, "Clicking can move the cursor past end of line", "Clicking past end of line moves cursor to the end", "  Click past end " },
+	{US "rtbutton",	0, &rtbutton, 0, "Mouse action is done with the right button", "Mouse action is done with the left button", "  Right button " },
 	{US "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
 	{US "noxon",	0, &noxon, NULL, 0, 0, 0 },
 	{US "orphan",	0, &orphan, NULL, 0, 0, 0 },

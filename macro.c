@@ -356,16 +356,22 @@ static void record(MACRO *m)
 		addmacro(recmac->m, dupmacro(m));
 }
 
+static int ifdepth=0;		/* JM: Nesting level of if cmds */
+static int ifflag=1;		/* JM: Truth flag for if */
+static int iffail=0;		/* JM: Depth where ifflag became 0 */
+
 /* Query for user input */
 
 int uquery(BW *bw)
 {
 	int ret;
+	int oid=ifdepth, oifl=ifflag, oifa=iffail;
 	struct recmac *tmp = recmac;
 
 	recmac = NULL;
 	ret = edloop(1);
 	recmac = tmp;
+	ifdepth = oid; ifflag = oifl; iffail = oifa;
 	return ret;
 }
 
@@ -381,6 +387,7 @@ int exmacro(MACRO *m, int u)
 	int larg;
 	int negarg = 0;
 	int flg = 0;
+	int oid, oifl, oifa;
 	CMD *cmd;
 	int ret = 0;
 
@@ -415,38 +422,42 @@ int exmacro(MACRO *m, int u)
 	    )
 		flg = 1;
 
-	if (flg && u)
-		umclear();
-	while (larg-- && !leave && !ret)
-		if (m->steps) {
-			MACRO *tmpmac = curmacro;
-			int tmpptr = macroptr;
-			int x = 0;
-			int stk = nstack;
+	if (ifflag || (!m->steps && (cmd->flag&EMETA))) {
+		if (flg && u)
+			umclear();
+		while (larg-- && !leave && !ret)
+			if (m->steps) {
+				MACRO *tmpmac = curmacro;
+				int tmpptr = macroptr;
+				int x = 0;
+				int stk = nstack;
 
-			while (m && x != m->n && !leave && !ret) {
-				MACRO *d;
+				while (m && x != m->n && !leave && !ret) {
+					MACRO *d;
 
-				d = m->steps[x++];
-				curmacro = m;
-				macroptr = x;
-				ret = exmacro(d, 0);
-				m = curmacro;
-				x = macroptr;
-			}
-			curmacro = tmpmac;
-			macroptr = tmpptr;
-			while (nstack > stk)
-				upop(NULL);
-		} else
-			ret = execmd(cmd, m->k);
-	if (leave)
-		return ret;
-	if (flg && u)
-		umclear();
+					d = m->steps[x++];
+					curmacro = m;
+					macroptr = x;
+					if(d->steps) oid=ifdepth, oifl=ifflag, oifa=iffail, ifdepth=iffail=0;
+					ret = exmacro(d, 0);
+					if(d->steps) ifdepth=oid, ifflag=oifl, iffail=oifa;
+					m = curmacro;
+					x = macroptr;
+				}
+				curmacro = tmpmac;
+				macroptr = tmpptr;
+				while (nstack > stk)
+					upop(NULL);
+			} else
+				ret = execmd(cmd, m->k);
+		if (leave)
+			return ret;
+		if (flg && u)
+			umclear();
 
-	if (u)
-		undomark();
+		if (u)
+			undomark();
+	}
 
 	return ret;
 }
@@ -456,6 +467,7 @@ int exmacro(MACRO *m, int u)
 int exemac(MACRO *m)
 {
 	record(m);
+	ifflag=1; ifdepth=iffail=0;
 	return exmacro(m, 1);
 }
 
@@ -624,6 +636,69 @@ int uarg(BW *bw)
 	else
 		return -1;
 }
+
+static int doif(BW *bw,unsigned char *s,void *object,int *notify)
+{
+	long num;
+	if(notify) *notify=1;
+	num=calc(bw,s);
+	if(merr) { msgnw(bw->parent,merr); return -1; }
+	ifflag=(num?1:0);
+	iffail=ifdepth;
+	vsrm(s);
+	return 0;
+}
+
+static int ifabrt()
+{
+	ifdepth--;
+}
+
+int uif(BW *bw)
+{
+	ifdepth++;
+	if (!ifflag) return 0;
+	if (wmkpw(bw->parent,"If (^C to abort): ",NULL,doif,NULL,ifabrt,utypebw,NULL,NULL,NULL)) return 0;
+	else return -1;
+}
+
+int uelsif(BW *bw)
+{
+	if (!ifdepth) {
+		msgnw(bw->parent,"Elsif without if");
+		return -1;
+	} else if(ifflag) {
+		ifflag=iffail=0; /* don't let the next else/elsif get run */
+	} else if(ifdepth == iffail) {
+		ifflag=1;	/* so the script can type the condition :) */
+		if(wmkpw(bw->parent,"Else if: ",NULL,doif,NULL,NULL,utypebw,NULL,NULL,NULL)) return 0;
+		else return -1;
+	}
+}
+
+int uelse(BW *bw)
+{
+	if (!ifdepth) {
+		msgnw(bw->parent,"Else without if");
+		return -1;
+	} else if(ifdepth == iffail) {
+		ifflag = !ifflag;
+	}
+	return 0;
+}
+
+int uendif(BW *bw)
+{
+	if(!ifdepth) {
+		msgnw(bw->parent,"Endif without if");
+		return -1;
+	}
+	if(iffail==ifdepth) iffail--, ifflag=1;
+	ifdepth--;
+	if(ifdepth==0) ifflag=1;
+	return 0;
+}
+
 
 int unaarg;
 int negarg;

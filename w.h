@@ -47,6 +47,11 @@ int countmain PARAMS((SCREEN *t));
  */
 void wfit PARAMS((SCREEN *t));
 
+/* W *watpos(SCREEN *t, int x, int y);
+ * Return the window at the given location, or NULL if there is none
+ */
+W *watpos PARAMS((SCREEN *t, int x, int y));
+
 /*****************/
 /* Main routines */
 /*****************/

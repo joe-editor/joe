@@ -48,6 +48,7 @@ static struct var *get(unsigned char *str)
 	v = (struct var *) joe_malloc(sizeof(struct var));
 
 	v->set = 0;
+	v->val = 0;
 	v->next = vars;
 	vars = v;
 	v->name = joe_strdup(str);
@@ -59,7 +60,7 @@ struct var *dumb;
 
 static double expr(int prec, struct var **rtv)
 {
-	double x = 0.0;
+	double x = 0.0, y;
 	struct var *v = NULL;
 
 	while (*ptr == ' ' || *ptr == '\t') {
@@ -99,21 +100,55 @@ static double expr(int prec, struct var **rtv)
       loop:
 	while (*ptr == ' ' || *ptr == '\t')
 		++ptr;
-	if (*ptr == '*' && 5 > prec) {
+	if (*ptr == '*' && 7 > prec) {
 		++ptr;
-		x *= expr(5, &dumb);
+		x *= expr(7, &dumb);
 		goto loop;
-	} else if (*ptr == '/' && 5 > prec) {
+	} else if (*ptr == '/' && 7 > prec) {
 		++ptr;
-		x /= expr(5, &dumb);
+		x /= expr(7, &dumb);
 		goto loop;
-	} else if (*ptr == '+' && 4 > prec) {
+	} else if(*ptr=='%' && 7>prec) {
 		++ptr;
-		x += expr(4, &dumb);
+		y = expr(7, &dumb);
+		if ((int)y == 0) x = 1.0/0.0;
+		else x = ((int) x) % (int)y;
 		goto loop;
-	} else if (*ptr == '-' && 4 > prec) {
+	} else if (*ptr == '+' && 6 > prec) {
 		++ptr;
-		x -= expr(4, &dumb);
+		x += expr(6, &dumb);
+		goto loop;
+	} else if (*ptr == '-' && 6 > prec) {
+		++ptr;
+		x -= expr(6, &dumb);
+		goto loop;
+	} else if (*ptr == '<' && 5 > prec) {
+		++ptr;
+		if (*ptr == '=') ++ptr, x = (x <= expr(5,&dumb));
+		else x = (x < expr(5,&dumb));
+		goto loop;
+	} else if (*ptr == '>' && 5 > prec) {
+		++ptr;
+		if (*ptr == '=') ++ptr, x=(x >= expr(5,&dumb));
+		else x = (x > expr(5,&dumb));
+		goto loop;
+	} else if (*ptr == '=' && ptr[1] == '=' && 5 > prec) {
+		++ptr, ++ptr;
+		x = (x == expr(5,&dumb));
+		goto loop;
+	} else if (*ptr == '!' && ptr[1] == '=' && 5 > prec) {
+		++ptr, ++ptr;
+		x = (x != expr(5,&dumb));
+		goto loop;
+	} else if(*ptr == '&' && ptr[1] == '&' && 3 > prec) {
+		++ptr, ++ptr;
+		y = expr(3,&dumb);
+		x = (int)x && (int)y;
+		goto loop;
+	} else if(*ptr=='|' && ptr[1]=='|' &&  3 > prec) {
+		++ptr, ++ptr;
+		y = expr(3,&dumb);
+		x = (int)x || (int)y;
 		goto loop;
 	} else if (*ptr == '=' && 2 >= prec) {
 		++ptr;
@@ -136,6 +171,7 @@ double calc(BW *bw, unsigned char *s)
 	double result;
 	struct var *v;
 	BW *tbw = bw->parent->main->object;
+	int c = brch(bw->cursor);
 
 	v = get(US "top");
 	v->val = tbw->top->line + 1;
@@ -157,6 +193,9 @@ double calc(BW *bw, unsigned char *s)
 	v->set = 1;
 	v = get(US "width");
 	v->val = tbw->w;
+	v->set = 1;
+	v = get(US "char");
+	v->val = (c == NO_MORE_DATA ? -1.0 : c);
 	v->set = 1;
 	ptr = s;
 	merr = 0;

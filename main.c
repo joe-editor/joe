@@ -10,6 +10,9 @@
 
 #include <stdio.h>
 #include <fcntl.h>
+#ifdef MOUSE_GPM
+#include <gpm.h>
+#endif
 #include <string.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -39,6 +42,7 @@ int help = 0;			/* Set to have help on when starting */
 int nonotice = 0;		/* Set to prevent copyright notice */
 int orphan = 0;
 unsigned char *exmsg = NULL;		/* Message to display when exiting the editor */
+int ttisxterm=0;
 
 SCREEN *maint;			/* Main edit screen */
 
@@ -73,6 +77,10 @@ void edupd(int flg)
 	if ((wid >= 2 && wid != maint->w) || (hei >= 1 && hei != maint->h)) {
 		nresize(maint->t, wid, hei);
 		sresize(maint);
+#ifdef MOUSE_GPM
+		gpm_mx = wid;
+		gpm_my = hei;
+#endif
 	}
 	dofollows();
 	ttflsh();
@@ -312,6 +320,15 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	maint = screate(n);
 	vmem = vtmp();
 
+#ifdef MOUSE_XTERM
+	/* initialize mouse */
+	if ((s=getenv("TERM")) && !strcmp(s,"xterm")) {
+		ttisxterm=1;
+		ttputs("\33[?1002h");
+		ttflsh();
+	}
+#endif
+
 	for (c = 1, backopt = 0; argv[c]; ++c)
 		if (argv[c][0] == '+' && argv[c][1]) {
 			if (!backopt)
@@ -395,6 +412,12 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 
 	edloop(0);
 	vclose(vmem);
+#ifdef MOUSE_XTERM
+	if(ttisxterm) {
+		ttputs("\33[?1002l");
+		ttflsh();
+	}
+#endif
 	nclose(n);
 
 	save_state();

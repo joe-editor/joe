@@ -3,6 +3,8 @@
 
 #include "autoconf.h"
 
+#define MOUSE_XTERM 1
+
 #ifdef HAVE_SNPRINTF
 
 #define joe_snprintf_0(buf,len,fmt) snprintf((buf),(len),(fmt))

@@ -1,3 +1,15 @@
+Sun Feb 27 2005  Joe Allen <jhallen@world.std.com>
+
+	Added Jesse McGrew's xterm mouse and macro enhancements:
+		added to math: %, ==, !=, >, >=, <, <= operators,
+		plus 'char' is ascii value of character under cursor.
+
+		added functions: if, then, elsif, endif
+
+	Needs work:
+		'if' crashes.
+		xterm selections don't paste into other windows.
+
 Sat Feb 26 2005  Joe Allen <jhallen@world.std.com>
 
 	Tab complete for ^K ; (tags search).

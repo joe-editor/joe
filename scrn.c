@@ -29,7 +29,7 @@ int notite = 0;
 int usetabs = 0;
 int assume_color = 0;
 
-extern int mid;
+extern int mid, ttisxterm;
 
 /* How to display characters (especially the control ones) */
 /* here are characters ... */
@@ -487,6 +487,11 @@ SCRN *nopen(CAP *cap)
 		t->te = 0;
 	else
 		t->te = jgetstr(t->cap,US "te");
+
+	if (ttisxterm) {
+		ttputs("\33[?1002l");
+		ttflsh();
+	}
 
 	t->ut = getflag(t->cap,US "ut");
 	t->Sb = jgetstr(t->cap,US "AB");
@@ -1626,6 +1631,8 @@ void nescape(SCRN *t)
 
 void nreturn(SCRN *t)
 {
+	if (ttisxterm)
+		ttputs("\33[?1002h");
 	if (t->ti)
 		texec(t->cap, t->ti, 1, 0, 0, 0, 0);
 	if (!skiptop && t->cl)

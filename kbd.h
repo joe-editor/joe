@@ -83,4 +83,7 @@ void rmkbd PARAMS((KBD *k));
 */
 void *dokey PARAMS((KBD *kbd, int n));
 
+/* JM - user command handler */
+int ukeymap();
+
 #endif

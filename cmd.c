@@ -13,6 +13,7 @@
 #include "b.h"
 #include "bw.h"
 #include "cmd.h"
+#include "mouse.h"
 #include "hash.h"
 #include "help.h"
 #include "macro.h"
@@ -39,6 +40,7 @@
 #include "va.h"
 #include "vs.h"
 #include "utf8.h"
+#include "kbd.h"
 #include "w.h"
 
 extern int marking;
@@ -88,6 +90,15 @@ CMD cmds[] = {
 	{US "copy", TYPETW + TYPEPW, ucopy, NULL, 0, NULL},
 	{US "crawll", TYPETW + TYPEPW, ucrawll, NULL, 1, US "crawlr"},
 	{US "crawlr", TYPETW + TYPEPW, ucrawlr, NULL, 1, US "crawll"},
+	{US "defmdown", TYPETW+TYPEPW+TYPEQW+TYPEMENU, udefmdown, 0, 0, 0 },
+	{US "defmup", TYPETW+TYPEPW, udefmup, 0, 0, 0 },
+	{US "defmdrag", TYPETW+TYPEPW, udefmdrag, 0, 0, 0 },
+	{US "defm2down", TYPETW+TYPEPW, udefm2down, 0, 0, 0 },
+	{US "defm2up", TYPETW+TYPEPW, udefm2up, 0, 0, 0 },
+	{US "defm2drag", TYPETW+TYPEPW, udefm2drag, 0, 0, 0 },
+	{US "defm3down", TYPETW+TYPEPW, udefm3down, 0, 0, 0 },
+	{US "defm3up", TYPETW+TYPEPW, udefm3up, 0, 0, 0 },
+	{US "defm3drag", TYPETW+TYPEPW, udefm3drag, 0, 0, 0 },
 	{US "delbol", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelbl, NULL, 1, US "deleol"},
 	{US "delch", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, udelch, NULL, 1, US "backs"},
 	{US "deleol", TYPETW + TYPEPW + EKILL + EMOD, udelel, NULL, 1, US "delbol"}, 
@@ -99,6 +110,9 @@ CMD cmds[] = {
 	{US "drop", TYPETW + TYPEPW, udrop, NULL, 0, NULL},
 	{US "dupw", TYPETW, uduptw, NULL, 0, NULL},
 	{US "edit", TYPETW + TYPEPW, uedit, NULL, 0, NULL},
+	{US "else", TYPETW+TYPEPW+TYPEMENU+TYPEQW+EMETA, uelse, 0, 0, 0 },
+	{US "elsif", TYPETW+TYPEPW+TYPEMENU+TYPEQW+EMETA, uelsif, 0, 0, 0 },
+	{US "endif", TYPETW+TYPEPW+TYPEMENU+TYPEQW+EMETA, uendif, 0, 0, 0 },
 	{US "eof", TYPETW + TYPEPW + EFIXXCOL + EMOVE, u_goto_eof, NULL, 0, NULL},
 	{US "eofmenu", TYPEMENU, umeof, NULL, 0, NULL},
 	{US "eol", TYPETW + TYPEPW + EFIXXCOL, u_goto_eol, NULL, 0, NULL},
@@ -116,6 +130,7 @@ CMD cmds[] = {
 	{US "fwrdc", TYPETW + TYPEPW, ufwrdc, NULL, 1, US "bkwdc"},
 	{US "gomark", TYPETW + TYPEPW + EMOVE, ugomark, NULL, 0, NULL},
 	{US "groww", TYPETW, ugroww, NULL, 1, US "shrinkw"},
+	{US "if", TYPETW+TYPEPW+TYPEMENU+TYPEQW+EMETA, uif, 0, 0, 0 },
 	{US "isrch", TYPETW + TYPEPW, uisrch, NULL, 0, NULL},
 	{US "killjoe", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ukilljoe, NULL, 0, NULL},
 	{US "killproc", TYPETW + TYPEPW, ukillpid, NULL, 0, NULL},
@@ -124,6 +139,7 @@ CMD cmds[] = {
 	{US "hnext", TYPETW + TYPEPW + TYPEQW, u_help_next, NULL, 0, NULL},
 	{US "hprev", TYPETW + TYPEPW + TYPEQW, u_help_prev, NULL, 0, NULL},
 	{US "insc", TYPETW + TYPEPW + EFIXXCOL + EMOD, uinsc, NULL, 1, US "delch"},
+	{US "keymap", TYPETW, ukeymap, 0, 0, 0 },    /* JM */
 	{US "insf", TYPETW + TYPEPW + EMOD, uinsf, NULL, 0, NULL}, 
 	{US "lindent", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, ulindent, NULL, 1, US "rindent"},
 	{US "line", TYPETW + TYPEPW, uline, NULL, 0, NULL},
@@ -191,10 +207,12 @@ CMD cmds[] = {
 	{US "tabmenu", TYPEMENU, umtab, NULL, 1, US "ltarwmenu"},
 	{US "tag", TYPETW + TYPEPW, utag, NULL, 0, NULL},
 	{US "toggle_marking", TYPETW + TYPEPW, utoggle_marking, NULL, 0, NULL},
+	{US "then", TYPEPW+EMOD, urtn, 0, 0, 0 },
 	{US "tomarkb", TYPETW + TYPEPW + EFIXXCOL + EBLOCK, utomarkb, NULL, 0, NULL},
 	{US "tomarkbk", TYPETW + TYPEPW + EFIXXCOL + EBLOCK, utomarkbk, NULL, 0, NULL},
 	{US "tomarkk", TYPETW + TYPEPW + EFIXXCOL + EBLOCK, utomarkk, NULL, 0, NULL},
 	{US "tomatch", TYPETW + TYPEPW + EFIXXCOL, utomatch, NULL, 0, NULL},
+	{US "tomouse", TYPETW+TYPEPW+TYPEQW+TYPEMENU, utomouse, 0, 0, 0 },
 	{US "tos", TYPETW + TYPEPW + EMOVE, utos, NULL, 0, NULL},
 	{US "tw0", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw0, NULL, 0, NULL},
 	{US "tw1", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw1, NULL, 0, NULL},
@@ -205,6 +223,7 @@ CMD cmds[] = {
 	{US "uparwmenu", TYPEMENU, umuparw, NULL, 1, US "dnarwmenu"}, 
 	{US "upper", TYPETW + TYPEPW + EMOD + EBLOCK, uupper, NULL, 0, NULL},
 	{US "upslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, uupslide, NULL, 1, US "dnslide"},
+	{US "xtmouse", TYPETW+TYPEPW+TYPEMENU+TYPEQW, uxtmouse, 0, 0, 0 },
 	{US "yank", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyank, NULL, 1, NULL},
 	{US "yapp", TYPETW + TYPEPW + EKILL, uyapp, NULL, 0, NULL},
 	{US "yankpop", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyankpop, NULL, 1, NULL}

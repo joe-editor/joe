@@ -185,10 +185,16 @@ shell		Suspend process or execute a sub-shell
 stat		Display cursor position
 tag		Tags file search
 txt		Insert text
+keymap		Switch to another keymap
 
 Prompts
 -------
 complete	Complete a file-name in a prompt
+if		Only run following cmds if expr is true (non-zero)
+then		Same as rtn but only works in prompt windows
+elsif		Try a new condition
+else		Toggle truth flag
+endif		Start running cmds again
 
 Repeat
 ------
@@ -229,3 +235,16 @@ Undo
 ----
 redo		Re-execute the latest undone change
 undo		Undo last change
+
+Mouse
+-----
+tomouse		Move the cursor to where the mouse was clicked/dragged
+defmdown	Default single-click handlers
+defmdrag	(click to move cursor, drag to select characters)
+defmup
+defm2down	Default double-click handlers
+defm2drag	(drag to select words)
+defm2up
+defm3down	Default triple-click handlers
+defm3drag	(drag to select lines)
+defm3up

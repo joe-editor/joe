@@ -4,7 +4,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.jmacsrc
-	2 - @sysconfdir@/jmacsrc
+	2 - ${prefix}/etc/jmacsrc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -33,6 +33,8 @@
 -pg 1		No. lines to keep for PgUp/PgDn
 -csmode		^KF after a pervious search does a ^L instead
  -backpath path Directory to store backup files
+ -floatmouse	Clicking past end of line moves the cursor past the end
+ -rtbutton	Use the right mouse button for action, instead of the left
  -nonotice	Disable copyright notice
 -noxon		Attempt to turn off ^S/^Q processing
 -orphan		Put extra files given on command line in orphaned buffers
@@ -706,6 +708,7 @@
  Use ^@ through ^_, ^# and ^? for Ctrl chars
  Use SP for space
  Use a TO b to generate a range of characters
+ Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
 
  You can also use termcap string capability names.  For example:
 
@@ -770,6 +773,18 @@ rtn		^M		Return
 shell		^Z		Suspend
 shell		^[ s		Suspend (uemacs)
 stop		^X )		Stop recording macro
+  Mouse handling
+defmdown	MDOWN		Move the cursor to the mouse location
+defmup		MUP
+defmdrag	MDRAG		Select a region of characters
+defm2down	M2DOWN		Select the word at the mouse location
+defm2up		M2UP
+defm2drag	M2DRAG		Select a region of words
+defm3down	M3DOWN		Select the line at the mouse location
+defm3up		M3UP
+defm3drag	M3DRAG		Select a region of lines
+
+xtmouse		^[ [ M		Introduces an xterm mouse event
 
 :main			Text editing window
 :inherit windows
@@ -786,7 +801,7 @@ stop		^X )		Stop recording macro
 :def aspellfile filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell -x -c $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP",rtn,retype
 :def aspellword psh,nextword,markk,prevword,markb,filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell -x -c $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\012';/bin/rm $SPLTMP",rtn,retype,nextword
 
-@SPELL@word	^[ $
+aspellword	^[ $
 
 ctrl		^Q		Quote Ctrl chars
        ctrl		`		Quote Ctrl chars

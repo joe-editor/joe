@@ -241,6 +241,16 @@ void scrdel(B *b, long l, long n, int flg)
 	}
 }
 
+W *watpos(SCREEN *t,int x,int y)
+{
+	W *w=t->topwin;
+	do
+		if(w->y>=0 && w->y<=y && w->y+w->h>y && w->x<=x && w->x+w->w>x)
+			return w;
+		while(w=w->link.next, w!=t->topwin);
+	return 0;
+}
+
 /* Fit as many windows on the screen as is possible beginning with the window
  * at topwin.  Give any extra space which couldn't be used to fit in another
  * window to the last text window on the screen.  This function guarentees
