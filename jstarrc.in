@@ -197,6 +197,13 @@
 *.txt
 -wordwrap
 
+ Mason
+*.mas
+-autoindent
+-syntax mason
+-smarthome
+-smartbacks
+
  Perl
 *
 +#!\+\[ 	]\+\[a-z/]/perl\>

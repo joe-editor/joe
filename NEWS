@@ -1,6 +1,6 @@
 JOE 3.1
 - Regex and incremental search (jmacs ^S) now work for UTF-8
-- More and improved syntax highlighting files
+- More and improved syntax highlighting files, including Mason
 - Use ^T E to set character set of file (hit <tab> <tab> for
   lists of character sets).
 - Can install custom "i18n" style byte oriented character set
@@ -27,6 +27,7 @@ JOE 3.1
 - jmacs bugs fixes: upperase word, transpose words, ^X ^C is
   more emacs-like., ^X k and ^X ^V more like emacs.
 - Much improved compile system ^[ c
+- Much improved jpico
 
 JOE 3.0 (23 APR 2004)
 - UTF-8
