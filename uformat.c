@@ -278,10 +278,12 @@ int ueop(BW *bw)
 void wrapword(P *p, long int indent, int french, unsigned char *indents)
 {
 	P *q;
+	P *r;
+	P *s;
 	int rmf = 0;
 	int c;
 	long to = p->byte;
-
+	
 	/* Get indentation prefix from beginning of line */
 /*
 	if(!indents) {
@@ -332,6 +334,37 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 
 		/* Move word to beginning of next line */
 		binsc(p, '\n');
+		
+		/* Take care that wordwrap is done the right way when overtype mode is active */
+		if (p->b->o.overtype){
+			/* delete the next line break which is unnecessary */
+			r = pdup(p);
+			//p_goto_eol(r);
+			pgetc(r);
+			p_goto_eol(r);
+			s = pdup(r);
+			pgetc(r);
+			bdel(s,r);
+			binsc(r, ' ');
+			
+			/* Now we got to take care that all subsequent lines are not longer than the right margin */
+			/* Move cursor to right margin */
+			pfwrd(r, r->b->o.rmargin - r->col);
+			
+			/* Make a copy of the cursor and move the copied cursor to the end of the line */
+			prm(s);
+			s = pdup(r);
+			p_goto_eol(s);
+			
+			/* If s is located behind r then the line goes beyond the right margin and we need to call wordwrap() for that line. */
+			if (r->byte < s->byte){
+				wrapword(r, indent, french, indents);
+			}
+			
+			prm(r);
+			prm(s);
+		}
+		
 		++to;
 		if (p->b->o.crlf)
 			++to;

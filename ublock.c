@@ -575,7 +575,7 @@ int ublkcpy(BW *bw)
 /* Write highlighted block to a file */
 /* This is called by ublksave in ufile.c */
 
-int dowrite(BW *bw, unsigned char *s, void *object, int *notify)
+/*int dowrite(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -614,7 +614,7 @@ int dowrite(BW *bw, unsigned char *s, void *object, int *notify)
 		msgnw(bw->parent, US "No block");
 		return -1;
 	}
-}
+}*/
 
 /* Set highlighted block on a program block */
 

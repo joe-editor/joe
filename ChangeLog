@@ -1,3 +1,11 @@
+Sat Feb 26 2005  Joe Allen <jhallen@world.std.com>
+
+	Accept patch from Kalan (thearinkalen at users.sourceforge.net)
+	which makes save block prompt if a file is to be overwritten.
+
+	Accept patch from sth2000 at users.sourceforge.net which improves
+	wordwrap when overtype mode is enabled.
+
 Fri Feb 25 2005  Joe Allen <jhallen@world.std.com>
 
 	Fix bash highlighter bug: $"  " and $'  ' are strings.

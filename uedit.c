@@ -308,6 +308,32 @@ int unedge(BW *bw)
  * `ifdef  `ifndef  `else `endif
  *
  */
+
+/* A delimiter set list is a : separated list of delimiter sets.
+   A delimiter set is two or more groups of matching delimiters.
+   A group is a list of equivalent delimiters separated with |.
+
+   For example, here is a delimiter set list, with three sets:
+   	"case|casex|casez=endcase:begin=end:if=elif=else=fi:
+
+   In the first delimiter set: "case," "casex" and "casez" all match with
+   "endcase." In the third set: "if" matches with "elif," which matches with
+   "else," which finally matches with "fi".
+
+   The search goes forward if the delimiter matches any words of any group
+   but the last of in the set.  If the delimiter matches a word in the last
+   group, the search goes backward to the first delimiter.
+*/
+
+/* Return pointer to first matching set in delimiter set list.  Returns NULL
+   if no matches were found. */
+
+unsigned char *have_delim(unsigned char *list,unsigned char *delim)
+{
+	unsigned char *start_of_entry;
+	return start_of_entry;
+}
+
 int tomatch_fwrd(BW *bw,unsigned char *begin_delim,unsigned char *end_delim)
 {
 	P *p=pdup(bw->cursor);

@@ -127,20 +127,6 @@ void genexmsgmulti(BW *bw, int saved, int skipped)
 	exmsg = vsncpy(NULL,0,sz(msgbuf));
 }
 
-/* Write highlighted block to a file */
-
-int ublksave(BW *bw)
-{
-	if (markb && markk && markb->b == markk->b && (markk->byte - markb->byte) > 0 && (!square || piscol(markk) > piscol(markb))) {
-		if (wmkpw(bw->parent, US "Name of file to write (^C to abort): ", &filehist, dowrite, US "Names", NULL, cmplt, NULL, NULL, locale_map)) {
-			return 0;
-		} else {
-			return -1;
-		}
-	} else {
-		return usave(bw);
-	}
-}
 
 /* Shell escape */
 
@@ -278,9 +264,11 @@ struct savereq {
 	B *first;
 	int not_saved;	/* Set if a modified file was not saved */
 	int rename;	/* Set if we're renaming the file during save */
+	int block_save; // Flag, if we want to save a block#
+	char *message; // String for messages to be shown to the user
 };
 
-struct savereq *mksavereq(int (*callback)(), unsigned char *name, B *first,int rename)
+struct savereq *mksavereq(int (*callback)(), unsigned char *name, B *first,int rename, int block_save)
 {
 	struct savereq *req = (struct savereq *) joe_malloc(sizeof(struct savereq));
 	req->callback = callback;
@@ -288,6 +276,7 @@ struct savereq *mksavereq(int (*callback)(), unsigned char *name, B *first,int r
 	req->first = first;
 	req->not_saved = 0;
 	req->rename = rename;
+	req->block_save = block_save;
 	return req;
 }
 
@@ -382,10 +371,53 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 
 static int dosave(BW *bw, struct savereq *req, int *notify)
 {
-	if (backup(bw)) {
-		return saver(bw, 0, req, notify);
-	} else {
-		return saver(bw, 'y', req, notify);
+	if (req->block_save)
+	{
+		if (notify)
+			*notify = 1;
+		if (markv(1)) {
+			if (square) {
+				int fl;
+				int ret = 0;
+				B *tmp = pextrect(markb,
+						  markk->line - markb->line + 1,
+						  markk->xcol);
+						  
+				if ((fl = bsave(tmp->bof, req->name, tmp->eof->byte, 0)) != 0) {
+					msgnw(bw->parent, msgs[-fl]);
+					ret = -1;
+				}
+				brm(tmp);
+				if (lightoff)
+					unmark(bw);
+				vsrm(req->name);
+				return ret;
+			} else {
+				int fl;
+				int ret = 0;
+
+				if ((fl = bsave(markb, req->name, markk->byte - markb->byte, 0)) != 0) {
+					msgnw(bw->parent, msgs[-fl]);
+					ret = -1;
+				}
+				if (lightoff)
+					unmark(bw);
+					vsrm(req->name);
+				return ret;
+			}
+		} else {
+			vsrm(req->name);
+			msgnw(bw->parent, US "No block");
+			return -1;
+		}
+	}
+	else
+	{	
+		if (backup(bw)) {
+			return saver(bw, 0, req, notify);
+		} else {
+			return saver(bw, 'y', req, notify);
+		}
 	}
 }
 
@@ -400,29 +432,10 @@ static int dosave2(BW *bw, int c, struct savereq *req, int *notify)
 		genexmsg(bw, 0, req->name);
 		rmsavereq(req);
 		return -1;
-	} else if (mkqw(bw->parent, sc("File exists.  Overwrite (y,n,^C)? "), dosave2, NULL, req, notify)) {
+	} else if (mkqw(bw->parent, sz(req->message), dosave2, NULL, req, notify)) {
 		return 0;
 	} else {
 		/* Should be in abort function */
-		rmsavereq(req);
-		return -1;
-	}
-}
-
-static int dosave2a(BW *bw, int c, struct savereq *req, int *notify)
-{
-	if (c == 'y' || c == 'Y') {
-		return dosave(bw, req, notify);
-	} else if (c == 'n' || c == 'N') {
-		if (notify) {
-			*notify = 1;
-		}
-		genexmsg(bw, 0, req->name);
-		rmsavereq(req);
-		return -1;
-	} else if (mkqw(bw->parent, sc("File on disk is newer.  Overwrite (y,n,^C)? "), dosave2a, NULL, req, notify)) {
-		return 0;
-	} else {
 		rmsavereq(req);
 		return -1;
 	}
@@ -445,6 +458,9 @@ static int dosave1(BW *bw, unsigned char *s, struct savereq *req, int *notify)
 			f = open((char *)s, O_RDONLY);
 			if (f != -1) {
 				close(f);
+				//char *msg = "File exists. Overwrite (y,n,^C)? ";
+				//req->message = msg;
+				req->message = "File exists. Overwrite (y,n,^C)? ";
 				return dosave2(bw, 0, req, notify);
 			}
 		}
@@ -453,7 +469,10 @@ static int dosave1(BW *bw, unsigned char *s, struct savereq *req, int *notify)
 			struct stat sbuf;
 			if (!stat((char *)s,&sbuf)) {
 				if (sbuf.st_mtime>bw->b->mod_time) {
-					return dosave2a(bw, 0, req, notify);
+					//char *msg = "File on disk is newer. Overwrite (y,n,^C)? ";
+					//req->message = msg;
+					req->message = "File on disk is newer. Overwrite (y,n,^C)? ";
+					return dosave2(bw, 0, req, notify);
 				}
 			}
 		}
@@ -468,7 +487,7 @@ int usave(BW *bw)
 {
 	BW *pbw;
 	
-	pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, dosave1, US "Names", NULL, cmplt, mksavereq(NULL,NULL,NULL,0), NULL, locale_map);
+	pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, dosave1, US "Names", NULL, cmplt, mksavereq(NULL,NULL,NULL,0, 0), NULL, locale_map);
 
 	if (pbw && bw->b->name) {
 		binss(pbw->cursor, bw->b->name);
@@ -481,6 +500,22 @@ int usave(BW *bw)
 		return -1;
 	}
 }
+
+/* Write highlighted block to a file */
+
+int ublksave(BW *bw)
+{
+	if (markb && markk && markb->b == markk->b && (markk->byte - markb->byte) > 0 && (!square || piscol(markk) > piscol(markb))) {
+		if (wmkpw(bw->parent, US "Name of file to write (^C to abort): ", &filehist, dosave1, US "Names", NULL, cmplt, mksavereq(NULL, NULL, NULL, 0, 1), NULL, locale_map)) {
+			return 0;
+		} else {
+			return -1;
+		}
+	} else {
+		return usave(bw);
+	}
+}
+
 
 /* Load file to edit */
 
@@ -829,9 +864,9 @@ int uexsve(BW *bw)
 		return 0;
 	} else if (bw->b->name && !exask) {
 		/* It changed, it's not a scratch buffer and it's named */
-		return dosave1(bw, vsncpy(NULL, 0, sz(bw->b->name)), mksavereq(exdone,NULL,NULL,0), NULL);
+		return dosave1(bw, vsncpy(NULL, 0, sz(bw->b->name)), mksavereq(exdone,NULL,NULL,0,0), NULL);
 	} else {
-		BW *pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, dosave1, US "Names", NULL, cmplt, mksavereq(exdone,NULL,NULL,1), NULL, locale_map);
+		BW *pbw = wmkpw(bw->parent, US "Name of file to save (^C to abort): ", &filehist, dosave1, US "Names", NULL, cmplt, mksavereq(exdone,NULL,NULL,1,0), NULL, locale_map);
 
 		if (pbw && bw->b->name) {
 			binss(pbw->cursor, bw->b->name);
@@ -1057,7 +1092,7 @@ int uquerysave(BW *bw)
 	/* Find a modified buffer */
 	do {
 		if (bw->b->changed && !bw->b->scratch)
-			return doquerysave(bw,0,mksavereq(query_next,NULL,first,0),NULL);
+			return doquerysave(bw,0,mksavereq(query_next,NULL,first,0,0),NULL);
 		else if (unbuf(bw))
 			return -1;
 		bw = w->object;

@@ -31,6 +31,25 @@
 	"timescale"	preproc
 	"define"	preproc
 	"include"	preproc
+	"resetall"	preproc
+	"signed"	preproc
+	"unsigned"	preproc
+	"celldefine"	preproc
+	"endcelldefine"	preproc
+	"default_nettype"	preproc
+	"unconnected_drive"	preproc
+	"nounconnected_drive"	preproc
+	"protect"	preproc
+	"endprotect"	preproc
+	"protected"	preproc
+	"endprotected"	preproc
+	"expand_vectornets"	preproc
+	"noexpand_vectornets"	preproc
+	"autoexpand_vectornets"	preproc
+	"remove_gatename"	preproc
+	"noremove_gatename"	preproc
+	"remove_netname"	preproc
+	"noremove_netname"	preproc
 done
 	"a-zA-Z0-9_"	preident
 
