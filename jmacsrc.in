@@ -394,6 +394,7 @@ dnslide		^X ^N		Slide down (uemacs)
 edit		^X ^F		Edit a file: creates orphaned buffers
 eof		^[ >		Go to end of file
 eol		.kH		Go to end of line
+eol		.@7
 eol		^E
 eol		^[ [ F
 eol		^[ [ 4 ~

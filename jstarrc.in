@@ -405,6 +405,7 @@ eof		^Q C		Go to end of file
 eof		^Q ^C
 eof		^Q c
 eol		.kH		Go to end of line
+eol		.@7
 eol		^[ [ F
 eol		^[ [ 4 ~
 eol		^Q D

@@ -373,6 +373,7 @@ eof		^[ V		Go to end of file
 eof		^[ ^V
 eof		^[ v
 eol		.kH		Go to end of line
+eol		.@7
 eol		^E
 eol		^[ [ F
 eol		^[ [ 4 ~
