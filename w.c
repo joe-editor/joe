@@ -486,6 +486,20 @@ int wshrink(W *w)
 	return 0;
 }
 
+/* Grow window up */
+
+int wgrowup(W *w)
+{
+	return wshrink(w->link.prev->main);
+}
+
+/* Grow window down */
+
+int wgrowdown(W *w)
+{
+	return wgrow(w->link.prev->main);
+}
+
 /* Show all windows */
 
 void wshowall(SCREEN *t)

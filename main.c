@@ -46,7 +46,7 @@ int help = 0;			/* Set to have help on when starting */
 int nonotice = 0;		/* Set to prevent copyright notice */
 int orphan = 0;
 unsigned char *exmsg = NULL;		/* Message to display when exiting the editor */
-int ttisxterm=0;
+int usexmouse=0;
 int xmouse=0;
 
 SCREEN *maint;			/* Main edit screen */
@@ -350,19 +350,14 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 		}
 	}
 
+	/* initialize mouse support */
+	if (xmouse && (s=(unsigned char *)getenv("TERM")) && strstr((char *)s,"xterm"))
+		usexmouse=1;
+
 	if (!(n = nopen(cap)))
 		return 1;
 	maint = screate(n);
 	vmem = vtmp();
-
-#ifdef MOUSE_XTERM
-	/* initialize mouse */
-	if (xmouse && (s=(unsigned char *)getenv("TERM")) && strstr((char *)s,"xterm")) {
-		ttisxterm=1;
-		ttputs(US "\33[?1002h");
-		ttflsh();
-	}
-#endif
 
 	load_state();
 
@@ -474,12 +469,6 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	brmall();
 
 	vclose(vmem);
-#ifdef MOUSE_XTERM
-	if(ttisxterm) {
-		ttputs(US "\33[?1002l");
-		ttflsh();
-	}
-#endif
 	nclose(n);
 
 	if (exmsg)

@@ -233,6 +233,18 @@ int umdnarw(MENU *m)
 	}
 }
 
+void menujump(MENU *m,int x,int y)
+{
+	int pos = m->top;
+	pos += y * m->perline;
+	pos += x / (m->width + 1);
+	if (pos >= m->nitems)
+		pos = m->nitems - 1;
+	if (pos < 0)
+		pos = 0;
+	m->cursor = pos;
+}
+
 int umpgup(MENU *m)
 {
 	int amnt = (m->h+1)/2;

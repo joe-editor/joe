@@ -1,7 +1,6 @@
 
 Short (infinite) list for 3.3:
 
-- mouse should be able to resize windows
 - dynamic spell checking with highlighter- there should be a way
 - grep and grep-find commands
 
@@ -11,6 +10,8 @@ Dangerous situations:
   assume maint->curwin->object is a BW *
   call interactive functions (like doedit) an expect them
   to leave maint a buffer window (it could start a prompt).
+
+  should check plain file checking.
 
 Querysave is sometimes not saving all files in ESC c?
 

@@ -1,3 +1,21 @@
+Sat Mar 26 00:28:58 EST 2005
+
+	Reformat mouse.c
+
+	Apply diff patch
+
+	Apply vpath patch
+
+	Apply electrum's mouse patch (send mouse off code during
+	shell escape)
+
+	Mouse can now resize windows
+
+	Mouse can position cursor in menus.  Double-click selects
+	an item.  Need to add scroll.
+
+--- JOE 3.3 begins ---
+
 Mon Mar 21 11:56:56 EST 2005
 
 	Fix segfault problem

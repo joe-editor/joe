@@ -93,7 +93,7 @@ CMD cmds[] = {
 	{US "defmdown", TYPETW+TYPEPW+TYPEQW+TYPEMENU, udefmdown, 0, 0, 0 },
 	{US "defmup", TYPETW+TYPEPW, udefmup, 0, 0, 0 },
 	{US "defmdrag", TYPETW+TYPEPW, udefmdrag, 0, 0, 0 },
-	{US "defm2down", TYPETW+TYPEPW, udefm2down, 0, 0, 0 },
+	{US "defm2down", TYPETW+TYPEPW+TYPEMENU, udefm2down, 0, 0, 0 },
 	{US "defm2up", TYPETW+TYPEPW, udefm2up, 0, 0, 0 },
 	{US "defm2drag", TYPETW+TYPEPW, udefm2drag, 0, 0, 0 },
 	{US "defm3down", TYPETW+TYPEPW, udefm3down, 0, 0, 0 },

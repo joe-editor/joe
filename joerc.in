@@ -1376,6 +1376,7 @@ uparwmenu	^[ [ A
 uparwmenu	^[ O A
 uparwmenu ^# A
 uparwmenu	MWUP
+
 :query			Single-key query window
 :inherit windows
 

@@ -30,6 +30,9 @@ int gpmopen();		/* initialize the connection. returns 0 on failure. */
 void gpmclose();	/* close the connection. */
 #endif
 
+void mouseopen();	/* initialize mouse */
+void mouseclose();	/* de-initialize mouse */
+
 /* mousedn(int x, int y) - handle a mouse-down event */
 void mousedn(int x, int y);
 

@@ -1310,6 +1310,7 @@ uparwmenu	^P
 uparwmenu	^[ [ A
 uparwmenu ^# A
 uparwmenu	^[ O A
+defm2down	M2DOWN		Hits return key
 
 :querysr		Search & replace query window
 type		^@ TO ÿ

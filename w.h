@@ -124,6 +124,9 @@ int wgrow PARAMS((W *w));
  */
 int wshrink PARAMS((W *w));
 
+int wgrowup PARAMS((W *w));
+int wgrowdown PARAMS((W *w));
+
 /* void wshowone(W *);
  *
  * Show only one window on the screen

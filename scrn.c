@@ -21,6 +21,7 @@
 #include "utf8.h"
 #include "syntax.h"
 #include "utils.h"
+#include "mouse.h"
 
 int skiptop = 0;
 int lines = 0;
@@ -29,7 +30,7 @@ int notite = 0;
 int usetabs = 0;
 int assume_color = 0;
 
-extern int mid, ttisxterm;
+extern int mid;
 
 /* How to display characters (especially the control ones) */
 /* here are characters ... */
@@ -488,11 +489,6 @@ SCRN *nopen(CAP *cap)
 	else
 		t->te = jgetstr(t->cap,US "te");
 
-	if (ttisxterm) {
-		ttputs(US "\33[?1002l");
-		ttflsh();
-	}
-
 	t->ut = getflag(t->cap,US "ut");
 	t->Sb = jgetstr(t->cap,US "AB");
 	if (!t->Sb) t->Sb = jgetstr(t->cap,US "Sb");
@@ -725,6 +721,9 @@ SCRN *nopen(CAP *cap)
 	t->htab = (struct hentry *) joe_malloc(256 * sizeof(struct hentry));
 
 	nresize(t, t->co, t->li);
+
+/* Initialize mouse */
+	mouseopen();
 
 	return t;
 }
@@ -1622,6 +1621,7 @@ void npartial(SCRN *t)
 
 void nescape(SCRN *t)
 {
+	mouseclose();
 	npartial(t);
 	cpos(t, 0, t->li - 1);
 	eraeol(t, 0, t->li - 1);
@@ -1631,8 +1631,7 @@ void nescape(SCRN *t)
 
 void nreturn(SCRN *t)
 {
-	if (ttisxterm)
-		ttputs(US "\33[?1002h");
+	mouseopen();
 	if (t->ti)
 		texec(t->cap, t->ti, 1, 0, 0, 0, 0);
 	if (!skiptop && t->cl)
@@ -1642,6 +1641,7 @@ void nreturn(SCRN *t)
 
 void nclose(SCRN *t)
 {
+	mouseclose();
 	leave = 1;
 	set_attr(t, 0);
 	clrins(t);

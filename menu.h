@@ -35,4 +35,6 @@ void ldmenu PARAMS((MENU *m, unsigned char **s, int cursor));
 unsigned char *mcomplete PARAMS((MENU *m));
 unsigned char *find_longest PARAMS((unsigned char **lst));
 
+void menujump PARAMS((MENU *m, int x, int y));
+
 #endif
