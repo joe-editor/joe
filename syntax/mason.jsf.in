@@ -1,0 +1,702 @@
+# JOE syntax highlight file for HTML
+# This needs lots of work...
+
+# Always reparse from beginning
+-
+
+# Define colors
+
+=Idle
+=Preproc	blue
+=Comment 	green
+=Constant 	cyan
+=Escape 	bold cyan
+=Type		bold
+=Keyword 	bold
+=Bad		bold red
+=Attr		magenta
+
+# HTML section
+
+:reset Idle
+	*		idle		noeat
+	"%"		lperl_idle
+
+:idle Idle
+	*		idle
+	"&"		char		recolor=-1
+	"<"		start
+	"\n"		reset
+
+:char Escape
+	*		char
+	";"		idle
+
+:start Idle
+	*		mark		noeat
+	"!"		bang
+	"%"		mason_tag
+	"&"		perl_idle
+
+:mason_tag
+	*		perl_idle
+	">"		perl_idle
+	"a-z"		mason_tag
+
+:bang Idle
+	*		mark		noeat
+	"-"		maybe_comment
+
+:maybe_comment Idle
+	*		mark		noeat
+	"-"		comment		recolor=-2
+
+:comment Comment
+	*		comment
+	"-"		maybe_end_comment
+
+:maybe_end_comment Comment
+	*		comment
+	"-"		end_comment
+
+:end_comment Bad
+	*		idle
+	"-"		maybe_another_comment
+	" \t\n"		end_comment
+	">"		idle		recolor= -1
+
+:maybe_another_comment Idle
+	*		end_comment
+	"-"		comment		recolor= -2
+
+
+# We're in a markup
+
+:mark Idle
+	*		mark
+	">"		idle
+	"a-zA-Z_"	ident		buffer
+	"0-9"		number		recolor= -1
+	"\""		astring		recolor= -1
+	"\'"		bstring		recolor= -1
+
+:number Constant
+	*		mark	noeat
+	"0-9"		number
+
+
+# Strings
+
+:astring Constant
+	*		astring
+	"\""		mark
+
+:bstring Constant
+	*		bstring
+	"'"		mark
+
+# Keywords
+
+:ident Idle
+	*		mark		noeat istrings
+	"html"		kw
+	"head"		kw
+	"base"		kw
+	"isindex"	kw
+	"link"		kw
+	"meta"		kw
+	"nextid"	kw
+	"script"	kw
+	"title"		kw
+	"body"		kw
+	"address"	kw
+	"blockquote"	kw
+	"form"		kw
+	"input"		kw
+	"select"	kw
+	"option"	kw
+	"textarea"	kw
+	"h1"		kw
+	"h2"		kw
+	"h3"		kw
+	"h4"		kw
+	"h5"		kw
+	"h6"		kw
+	"hr"		kw
+	"dl"		kw
+	"dt"		kw
+	"dd"		kw
+	"ol"		kw
+	"li"		kw
+	"ul"		kw
+	"dir"		kw
+	"menu"		kw
+	"pre"		kw
+	"table"		kw
+	"caption"	kw
+	"tr"		kw
+	"td"		kw
+	"th"		kw
+	"p"		kw
+	"applet"	kw
+	"param"		kw
+	"basefont"	kw
+	"center"	kw
+	"map"		kw
+	"area"		kw
+	"bgsound"	kw
+	"marquee"	kw
+	"frameset"	kw
+	"frame"		kw
+	"noframes"	kw
+	"b"		kw
+	"i"		kw
+	"tt"		kw
+	"big"		kw
+	"small"		kw
+	"sub"		kw
+	"sup"		kw
+	"u"		kw
+	"font"		kw
+	"blink"		kw
+	"nobr"		kw
+	"cite"		kw
+	"code"		kw
+	"em"		kw
+	"kbd"		kw
+	"samp"		kw
+	"strong"	kw
+	"var"		kw
+	"a"		kw
+	"br"		kw
+	"img"		kw
+	"wbr"		kw
+# attributes
+	"href"		attr
+	"target"	attr
+	"prompt"	attr
+	"methods"	attr
+	"name"		attr
+	"rel"		attr
+	"rev"		attr
+	"title"		attr
+	"urn"		attr
+	"http-equiv"	attr
+	"content"	attr
+	"n"		attr
+	"background"	attr
+	"bgcolor"	attr
+	"text"		attr
+	"link"		attr
+	"vlink"		attr
+	"bgproperties"	attr
+	"action"	attr
+	"enctype"	attr
+	"method"	attr
+done
+	"a-zA-Z0-9_"	ident
+
+:kw Keyword
+	*	mark	noeat
+
+:attr Attr
+	*	mark	noeat
+
+# Perl block section
+
+# JOE syntax highlight file for Perl
+
+# Still need:
+
+# _ in numbers
+# 0b for binary
+# \cC for Ctrl-C
+# \x{hex} unicode
+# no escapes in single quotes (except \\ and \')
+# \N{NAME} named character
+
+# / .. / regex
+# s/ .. / .. /
+# $name allowed in regex
+# m//  same as //
+# s///
+# tr/// y///
+# qr//
+
+# can also do this: s(egg)<larva>
+# s' ' ' - no interpolation
+
+# Define colors
+
+:perl_idle Idle
+	*		perl_idle
+	"#"		perl_line_comment	recolor=-1
+	"\n"		perl_idle
+	"0"		perl_first_digit	recolor=-1
+	"1-9"		perl_decimal	recolor=-1
+	"."		perl_maybe_float
+	"\""		perl_string		recolor=-1
+	"\\"		perl_not_string
+	"'"		perl_char		recolor=-1
+	"`"		perl_backtick	recolor=-1
+	"a-zA-Z_"	perl_ident		buffer
+	"%"		perl_maybe_done
+	"<"		perl_maybe_done_1
+
+:perl_maybe_done
+	*		perl_idle	noeat
+	">"		idle
+
+:perl_maybe_done_1
+	*		perl_idle	noeat
+	"/"		perl_maybe_done_2
+
+:perl_maybe_done_2
+	*		perl_idle	noeat
+	"a-z"		perl_maybe_done_2
+	">"		reset
+
+:perl_not_string Idle
+	*		perl_idle noeat
+	"\"'`"		perl_idle
+
+:perl_line_comment Comment
+	*		perl_line_comment
+	"\n"		perl_idle
+
+:perl_first_digit Constant
+	*		perl_idle	noeat
+	"x"		perl_hex
+	"b"		perl_binary
+	"."		perl_float
+	"eE"		perl_epart
+	"0-7"		perl_octal
+	"89"		perl_bad_number	recolor=-1
+
+:perl_bad_number Bad
+	*		perl_idle	noeat
+	"0-9"		perl_bad_number
+
+:perl_octal Constant
+	*		perl_idle	noeat
+	"0-7_"		perl_octal
+	"89"		perl_bad_number	recolor=-1
+
+:perl_binary Constant
+	*		perl_idle	noeat
+	"01_"		perl_binary
+	"2-9"		perl_bad_number	recolor=-1
+
+:perl_hex Constant
+	*		perl_idle	noeat
+	"0-9A-Fa-f_"	perl_hex
+
+:perl_decimal Constant
+	*		perl_idle	noeat
+	"0-9_"		perl_decimal
+	"eE"		perl_epart
+	"."		perl_float
+
+:perl_maybe_float Constant
+	*		perl_idle	recolor=-2	noeat
+	"0-9"		perl_float		recolor=-2
+
+:perl_float Constant
+	*		perl_idle	noeat
+	"eE"		perl_epart
+	"0-9_"		perl_float
+
+:perl_epart Constant
+	*		perl_idle	noeat
+	"0-9+\-"	perl_enum
+
+:perl_enum Constant
+	*		perl_idle	noeat
+	"0-9_"		perl_enum
+
+:perl_string	Constant
+	*		perl_string
+	"\""		perl_idle
+	"\\"		perl_string_escape	recolor=-1
+	"$@"		perl_string_subst	recolor=-1
+
+:perl_string_subst Escape
+	*		perl_string	noeat recolor=-1
+	"a-zA-Z_0-9"	perl_string_subst
+
+:perl_string_escape Escape
+	*		perl_string
+	"x"		perl_string_hex1
+	"c"		perl_string_ctrl
+	"N"		perl_string_named
+	"0-7"		perl_string_octal2
+	"\n"		perl_string		recolor=-2
+
+:perl_string_named Escape
+	*		perl_string
+	"{"		perl_string_named_rest
+
+:perl_string_named_rest Escape
+	*		perl_string_named_rest
+	"}"		perl_string
+
+:perl_string_ctrl Escape
+	*		perl_string
+
+:perl_string_hex1 Escape
+	*		perl_string		noeat
+	"{"		perl_string_unicode
+	"0-9a-fA-F"	perl_string_hex2
+
+:perl_string_unicode Escape
+	*		perl_string_unicode
+	"}"		perl_string
+
+:perl_string_hex2 Escape
+	*		perl_string		noeat
+	"0-9a-fA-F"	perl_string
+
+:perl_string_octal2 Escape
+	*		perl_string		noeat
+	"0-7"		perl_string_octal3
+
+:perl_string_octal3 Escape
+	*		perl_string		noeat
+	"0-7"		perl_string
+
+:perl_char Constant
+	*		perl_char
+	"\n"		perl_reset
+	"'"		perl_idle
+	"\\"		perl_char_escape	recolor=-1
+
+:perl_char_escape	Escape
+	*		perl_char		recolor=-2
+	"\\'"	perl_char
+
+:perl_backtick	Constant
+	*		perl_backtick
+	"`"		perl_idle
+	"\\"		perl_backtick_escape	recolor=-1
+	"$@"		perl_backtick_subst recolor=-1
+
+:perl_backtick_subst Escape
+	*		perl_backtick	noeat recolor=-1
+	"a-zA-Z_0-9"	perl_backtick_subst
+
+:perl_backtick_escape Escape
+	*		perl_backtick
+	"x"		perl_backtick_hex1
+	"c"		perl_backtick_ctrl
+	"N"		perl_backtick_named
+	"0-7"		perl_backtick_octal2
+	"\n"		perl_backtick		recolor=-2
+
+:perl_backtick_named Escape
+	*		perl_backtick
+	"{"		perl_backtick_named_rest
+
+:perl_backtick_named_rest Escape
+	*		perl_backtick_named_rest
+	"}"		perl_backtick
+
+:perl_backtick_ctrl Escape
+	*		perl_backtick
+
+:perl_backtick_hex1 Escape
+	*		perl_backtick		noeat
+	"{"		perl_backtick_unicode
+	"0-9a-fA-F"	perl_backtick_hex2
+
+:perl_backtick_unicode Escape
+	*		perl_backtick_unicode
+	"}"		perl_backtick
+
+:perl_backtick_hex2 Escape
+	*		perl_backtick		noeat
+	"0-9a-fA-F"	perl_backtick
+
+:perl_backtick_octal2 Escape
+	*		perl_backtick		noeat
+	"0-7"		perl_backtick_octal3
+
+:perl_backtick_octal3 Escape
+	*		perl_backtick		noeat
+	"0-7"		perl_backtick
+
+:perl_ident	Idle
+	*		perl_idle		noeat strings
+	"if"		perl_kw
+	"unless"	perl_kw
+	"while"		perl_kw
+	"until"		perl_kw
+	"foreach"	perl_kw
+	"sub"		perl_kw
+	"my"		perl_kw
+	"do"		perl_kw
+	"if"		perl_kw
+	"else"		perl_kw
+	"elsif"		perl_kw
+	"for"		perl_kw
+	"continue"	perl_kw
+	"last"		perl_kw
+	"print"		perl_kw
+	"reset"		perl_kw
+	"die"		perl_kw
+	"goto"		perl_kw
+	"require"	perl_kw
+	"use"		perl_kw
+	"eval"		perl_kw
+	"redo"		perl_kw
+	"next"		perl_kw
+	"warn"		perl_kw
+done
+	"a-zA-Z0-9_"	perl_ident
+
+:perl_type Type
+	*	perl_idle	noeat
+
+:perl_kw Keyword
+	*	perl_idle	noeat
+
+# Perl line section
+
+# JOE syntax highlight file for Perl
+
+# Still need:
+
+# _ in numbers
+# 0b for binary
+# \cC for Ctrl-C
+# \x{hex} unicode
+# no escapes in single quotes (except \\ and \')
+# \N{NAME} named character
+
+# / .. / regex
+# s/ .. / .. /
+# $name allowed in regex
+# m//  same as //
+# s///
+# tr/// y///
+# qr//
+
+# can also do this: s(egg)<larva>
+# s' ' ' - no interpolation
+
+# Define colors
+
+:lperl_idle Idle
+	*		lperl_idle
+	"#"		lperl_line_comment	recolor=-1
+	"\n"		reset
+	"0"		lperl_first_digit	recolor=-1
+	"1-9"		lperl_decimal	recolor=-1
+	"."		lperl_maybe_float
+	"\""		lperl_string		recolor=-1
+	"\\"		lperl_not_string
+	"'"		lperl_char		recolor=-1
+	"`"		lperl_backtick	recolor=-1
+	"a-zA-Z_"	lperl_ident		buffer
+
+:lperl_not_string Idle
+	*		lperl_idle noeat
+	"\"'`"		lperl_idle
+
+:lperl_line_comment Comment
+	*		lperl_line_comment
+	"\n"		reset
+
+:lperl_first_digit Constant
+	*		lperl_idle	noeat
+	"x"		lperl_hex
+	"b"		lperl_binary
+	"."		lperl_float
+	"eE"		lperl_epart
+	"0-7"		lperl_octal
+	"89"		lperl_bad_number	recolor=-1
+
+:lperl_bad_number Bad
+	*		lperl_idle	noeat
+	"0-9"		lperl_bad_number
+
+:lperl_octal Constant
+	*		lperl_idle	noeat
+	"0-7_"		lperl_octal
+	"89"		lperl_bad_number	recolor=-1
+
+:lperl_binary Constant
+	*		lperl_idle	noeat
+	"01_"		lperl_binary
+	"2-9"		lperl_bad_number	recolor=-1
+
+:lperl_hex Constant
+	*		lperl_idle	noeat
+	"0-9A-Fa-f_"	lperl_hex
+
+:lperl_decimal Constant
+	*		lperl_idle	noeat
+	"0-9_"		lperl_decimal
+	"eE"		lperl_epart
+	"."		lperl_float
+
+:lperl_maybe_float Constant
+	*		lperl_idle	recolor=-2	noeat
+	"0-9"		lperl_float		recolor=-2
+
+:lperl_float Constant
+	*		lperl_idle	noeat
+	"eE"		lperl_epart
+	"0-9_"		lperl_float
+
+:lperl_epart Constant
+	*		lperl_idle	noeat
+	"0-9+\-"	lperl_enum
+
+:lperl_enum Constant
+	*		lperl_idle	noeat
+	"0-9_"		lperl_enum
+
+:lperl_string	Constant
+	*		lperl_string
+	"\""		lperl_idle
+	"\\"		lperl_string_escape	recolor=-1
+	"$@"		lperl_string_subst	recolor=-1
+
+:lperl_string_subst Escape
+	*		lperl_string	noeat recolor=-1
+	"a-zA-Z_0-9"	lperl_string_subst
+
+:lperl_string_escape Escape
+	*		lperl_string
+	"x"		lperl_string_hex1
+	"c"		lperl_string_ctrl
+	"N"		lperl_string_named
+	"0-7"		lperl_string_octal2
+	"\n"		reset		recolor=-2
+
+:lperl_string_named Escape
+	*		lperl_string
+	"{"		lperl_string_named_rest
+
+:lperl_string_named_rest Escape
+	*		lperl_string_named_rest
+	"}"		lperl_string
+
+:lperl_string_ctrl Escape
+	*		lperl_string
+
+:lperl_string_hex1 Escape
+	*		lperl_string		noeat
+	"{"		lperl_string_unicode
+	"0-9a-fA-F"	lperl_string_hex2
+
+:lperl_string_unicode Escape
+	*		lperl_string_unicode
+	"}"		lperl_string
+
+:lperl_string_hex2 Escape
+	*		lperl_string		noeat
+	"0-9a-fA-F"	lperl_string
+
+:lperl_string_octal2 Escape
+	*		lperl_string		noeat
+	"0-7"		lperl_string_octal3
+
+:lperl_string_octal3 Escape
+	*		lperl_string		noeat
+	"0-7"		lperl_string
+
+:lperl_char Constant
+	*		lperl_char
+	"\n"		reset
+	"'"		lperl_idle
+	"\\"		lperl_char_escape	recolor=-1
+
+:lperl_char_escape	Escape
+	*		lperl_char		recolor=-2
+	"\\'"	lperl_char
+
+:lperl_backtick	Constant
+	*		lperl_backtick
+	"`"		lperl_idle
+	"\\"		lperl_backtick_escape	recolor=-1
+	"$@"		lperl_backtick_subst recolor=-1
+
+:lperl_backtick_subst Escape
+	*		lperl_backtick	noeat recolor=-1
+	"a-zA-Z_0-9"	lperl_backtick_subst
+
+:lperl_backtick_escape Escape
+	*		lperl_backtick
+	"x"		lperl_backtick_hex1
+	"c"		lperl_backtick_ctrl
+	"N"		lperl_backtick_named
+	"0-7"		lperl_backtick_octal2
+	"\n"		reset		recolor=-2
+
+:lperl_backtick_named Escape
+	*		lperl_backtick
+	"{"		lperl_backtick_named_rest
+
+:lperl_backtick_named_rest Escape
+	*		lperl_backtick_named_rest
+	"}"		lperl_backtick
+
+:lperl_backtick_ctrl Escape
+	*		lperl_backtick
+
+:lperl_backtick_hex1 Escape
+	*		lperl_backtick		noeat
+	"{"		lperl_backtick_unicode
+	"0-9a-fA-F"	lperl_backtick_hex2
+
+:lperl_backtick_unicode Escape
+	*		lperl_backtick_unicode
+	"}"		lperl_backtick
+
+:lperl_backtick_hex2 Escape
+	*		lperl_backtick		noeat
+	"0-9a-fA-F"	lperl_backtick
+
+:lperl_backtick_octal2 Escape
+	*		lperl_backtick		noeat
+	"0-7"		lperl_backtick_octal3
+
+:lperl_backtick_octal3 Escape
+	*		lperl_backtick		noeat
+	"0-7"		lperl_backtick
+
+:lperl_ident	Idle
+	*		lperl_idle		noeat strings
+	"if"		lperl_kw
+	"unless"	lperl_kw
+	"while"		lperl_kw
+	"until"		lperl_kw
+	"foreach"	lperl_kw
+	"sub"		lperl_kw
+	"my"		lperl_kw
+	"do"		lperl_kw
+	"if"		lperl_kw
+	"else"		lperl_kw
+	"elsif"		lperl_kw
+	"for"		lperl_kw
+	"continue"	lperl_kw
+	"last"		lperl_kw
+	"print"		lperl_kw
+	"reset"		lperl_kw
+	"die"		lperl_kw
+	"goto"		lperl_kw
+	"require"	lperl_kw
+	"use"		lperl_kw
+	"eval"		lperl_kw
+	"redo"		lperl_kw
+	"next"		lperl_kw
+	"warn"		lperl_kw
+done
+	"a-zA-Z0-9_"	lperl_ident
+
+:lperl_type Type
+	*	lperl_idle	noeat
+
+:lperl_kw Keyword
+	*	lperl_idle	noeat
