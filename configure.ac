@@ -145,5 +145,5 @@ AC_CONFIG_FILES([Makefile joe.1 joerc jmacsrc jstarrc rjoerc jpicorc
 syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf syntax/sh.jsf syntax/python.jsf
 syntax/conf.jsf syntax/php.jsf syntax/mail.jsf syntax/pascal.jsf syntax/html.jsf
 syntax/vhdl.jsf syntax/fortran.jsf syntax/java.jsf syntax/xml.jsf syntax/tcl.jsf
-charmaps/klingon syntax/lisp.jsf syntax/csh.jsf])
+charmaps/klingon syntax/lisp.jsf syntax/csh.jsf syntax/mason.jsf])
 AC_OUTPUT

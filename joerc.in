@@ -224,6 +224,13 @@
 -wordwrap
 
  News/mail files.
+*.mas
+-autoindent
+-syntax mason
+-smarthome
+-smartbacks
+
+ SML
 *
 +#!\+\[ 	]\+\[a-z/]/perl\>
 -autoindent

@@ -544,7 +544,7 @@
 \i \i^XZ  Grow window            ^X<  left  ^[' Window  ^XG to matching ( [ {     \i \i
 \i \i^X^Z Shrink window          ^X>  right             \uBOOKMARK\u                  \i \i
 \i \i^X0  Kill window                                   ^XJ set                   \i \i
-\i \i^X1  Kill all other windows                        ^X/ goto                  \i \i
+\i \i^X1  Kill all other windows ^X=  status            ^X/ goto                  \i \i
 }
 
 {Search
@@ -833,8 +833,9 @@ save		^X ^W		Write file
 setmark		^X j		Set bookmark
 shrinkw		^X ^Z		(uemacs)
 splitw		^X 2		Split window
-stat		^X l		Show status
-stat		^X =
+stat		^X l		Gnu-Emacs Show status
+stat		^X ?		JED
+stat		^X =		Gnu-Emacs
 swap		^X ^X		Swap mark and cursor
 tag		^[ .		Tag search
 tomatch		^X g		Goto matching parenthasis (joe)

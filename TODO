@@ -79,8 +79,6 @@ Tie in with CVS
 
 Refactoring
 
-- Gettext?
-
 Syntax Highlighting:
 --------------------
 
@@ -128,14 +126,6 @@ Documentation:
 
  joe should open tty earlier in startup sequence because ^Y
  is suspend character on sun.
-
-
-Math mode:
-
- Expand math mode (hex, octal, math functions...)
-
-
-
 
 
 
