@@ -27,7 +27,7 @@
 typedef struct tab TAB;
 
 extern int smode;		/* ??? */
-extern int beep;
+extern int joe_beep;
 int menu_explorer = 0;		/* Stay in menu system when directory selected */
 int menu_jump = 0;		/* Jump into menu */
 
@@ -392,12 +392,12 @@ int cmplt(BW *bw)
 			insnam(bw, tab->orgpath, tab->orgnam, 0, tab->ofst);
 			wabort(new->parent);
 			smode = 2;
-			/* if(beep) */
+			/* if(joe_beep) */
 				ttputc(7);
 			return 0;
 		}
 	} else {
-		/* if(beep) */
+		/* if(joe_beep) */
 			ttputc(7);
 		rmtab(tab);
 		return -1;

@@ -1,3 +1,7 @@
+Thu Mar 17 18:54:06 EST 2005
+
+	Get joe to compile on irix
+
 Wed Mar 16 11:04:19 EST 2005
 
 	Check if system joerc file is newer than local joerc file.

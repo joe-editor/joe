@@ -37,7 +37,7 @@
 #include "charmap.h"
 #include "syntax.h"
 
-extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, beep;
+extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, joe_beep;
 
 extern int idleout;		/* Clear to use /dev/tty for screen */
 extern unsigned char *joeterm;

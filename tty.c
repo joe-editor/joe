@@ -695,7 +695,11 @@ int ttshell(unsigned char *cmd)
 		/* return; */
 	}
 	ttclsn();
-	if ((x = vfork()) != 0) {
+#ifdef HAVE_FORK
+	if ((x = fork()) != 0) {
+#else
+	if ((x = vfork()) != 0) { /* For AMIGA only  */
+#endif
 		if (x != -1)
 			wait(&stat);
 		if (omode)

@@ -29,9 +29,16 @@ Installation procedure
 		- man pages in /usr/local/man
 		- configuration files in /usr/local/etc
 
+  For Cygwin, I've found that you need to add
+  "--disable-curses --disable-termcap" to the above commands.
+
   Build JOE, type:
 
 	make
+
+  Optionally strip JOE of debugging information:
+
+	strip joe
 
   Install JOE, type:
 

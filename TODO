@@ -1,12 +1,31 @@
 
-Short list for 3.2:
+Short (infinite) list for 3.2:
+
+vfork is problem on irix
+globalsrch declared twice
+'%' is a gmake thing
+
+- - - - - - - -
+
+formatting characters are being interpreted by context printing on status
+line
+
+- - - - - - - -
 
 can we highlight backup files? files ending in .in?
+
+- - - - - - - -
 
 Problems with parsing joerc file: comments are getting included in all
 string options.  Switch to unix standard config file format?
 
+Make joerc file so we load system and local customizations.
+
+- - - - - - - -
+
 perl again: if (-s foo)  looks like s/
+
+- - - - - - - -
 
 read only doesn't work when there's a process running in the window.
 (it probably shouldn't run).
@@ -19,7 +38,7 @@ read only doesn't work when there's a process running in the window.
 - - - - - - - -
 
 - merge math with macro language
-
+- tab at math prompt should go through variables, functions.
 - eliminate need for : separator
 
   improve macros: ignore error option, pass args to here option.
@@ -86,6 +105,8 @@ Completion list build could take a long time
 - - - - - - - -
 
 Others:
+
+- completion list of internal commands brings up documentation
 
 - keep special meaning of !, >> and , in file names?
 

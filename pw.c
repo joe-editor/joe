@@ -28,7 +28,7 @@
 #include "w.h"
 
 extern int smode;
-extern int beep;
+extern int joe_beep;
 
 static void disppw(BW *bw, int flg)
 {

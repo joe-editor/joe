@@ -45,7 +45,7 @@
 
 extern int nowmarking;
 extern int smode;
-int beep = 0;
+int joe_beep = 0;
 int uexecmd(BW *bw);
 
 /* Command table */
@@ -349,7 +349,7 @@ int modify_logic(BW *bw,B *b)
 	}
 	if (b->rdonly) {
 		msgnw(bw->parent, US "Read only");
-		if (beep)
+		if (joe_beep)
 			ttputc(7);
 		return 0;
 	} else if (!b->changed && !b->locked) {
@@ -441,7 +441,7 @@ int execmd(CMD *cmd, int k)
 		mid = omid;
 	}
 
-	if (beep && ret)
+	if (joe_beep && ret)
 		ttputc(7);
 	return ret;
 }

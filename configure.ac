@@ -108,6 +108,7 @@ AC_CHECK_TYPE([ssize_t], [], [
 	], [])
 AC_TYPE_SIGNAL
 AC_FUNC_STAT
+AC_FUNC_FORK
 AC_CHECK_FUNCS([getcwd getwd])
 if test x"$ac_cv_func_getcwd" != xyes; then
 	if test x"$ac_cv_func_getwd" != xyes; then

@@ -21,13 +21,13 @@
 #include "vs.h"
 
 extern int smode;
-extern int beep;
+extern int joe_beep;
 extern int icase;
 struct isrch *lastisrch = NULL;	/* Previous search */
 
 unsigned char *lastpat = NULL;	/* Previous pattern */
 
-SRCH *globalsrch;		/* Existing SRCH structure */
+extern SRCH *globalsrch;	/* Existing SRCH structure */
 
 IREC fri = { {&fri, &fri} };	/* Free-list of irecs */
 
@@ -94,7 +94,7 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 	srch->backwards = isrch->dir;
 
 	if (dopfnext(bw, srch, NULL)) {
-		if(beep)
+		if(joe_beep)
 			ttputc(7);
 	}
 	enqueb(IREC, link, &isrch->irecs, i);
@@ -122,7 +122,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 			isrch->pattern = vstrunc(isrch->pattern, sLEN(isrch->pattern) - i->what);
 			frirec(deque_f(IREC, link, i));
 		} else {
-			if(beep)
+			if(joe_beep)
 				ttputc(7);
 		}
 	} else if (c == 'Q' - '@' || c == '`') {
@@ -167,7 +167,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 			srch->backwards = isrch->dir;
 
 			if (dopfnext(bw, srch, NULL)) {
-				if(beep)
+				if(joe_beep)
 					ttputc(7);
 				frirec(i);
 			} else {
