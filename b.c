@@ -180,19 +180,19 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	mset(b->marks, 0, sizeof(b->marks));
 	b->rdonly = 0;
 	b->orphan = 0;
-	b->oldcur = 0;
-	b->oldtop = 0;
+	b->oldcur = NULL;
+	b->oldtop = NULL;
 	b->backup = 1;
 	b->internal = 1;
 	b->changed = 0;
 	b->count = 1;
-	b->name = 0;
+	b->name = NULL;
 	b->er = -3;
 	b->bof = palloc();
 	izque(P, link, b->bof);
 	b->bof->end = 0;
 	b->bof->b = b;
-	b->bof->owner = 0;
+	b->bof->owner = NULL;
 	b->bof->hdr = chn;
 	b->bof->ptr = vlock(vmem, b->bof->hdr->seg);
 	b->bof->ofst = 0;
@@ -232,7 +232,7 @@ void brm(B *b)
 		if (b->changed)
 			abrerr(b->name);
 		if (b == errbuf)
-			errbuf = 0;
+			errbuf = NULL;
 		if (b->undo)
 			undorm(b->undo);
 		hfreechn(b->eof->hdr);
@@ -249,7 +249,7 @@ P *poffline(P *p)
 {
 	if (p->ptr) {
 		vunlock(p->ptr);
-		p->ptr = 0;
+		p->ptr = NULL;
 	}
 	return p;
 }
@@ -286,8 +286,8 @@ P *pdup(P *p)
 	P *n = palloc();
 
 	n->end = 0;
-	n->ptr = 0;
-	n->owner = 0;
+	n->ptr = NULL;
+	n->owner = NULL;
 	enquef(P, link, p, n);
 	return pset(n, p);
 }
@@ -297,7 +297,7 @@ P *pdupown(P *p, P **o)
 	P *n = palloc();
 
 	n->end = 0;
-	n->ptr = 0;
+	n->ptr = NULL;
 	n->owner = o;
 	enquef(P, link, p, n);
 	pset(n, p);
@@ -312,7 +312,7 @@ void prm(P *p)
 	if (!p)
 		return;
 	if (p->owner)
-		*p->owner = 0;
+		*p->owner = NULL;
 	if (p->ptr)
 		vunlock(p->ptr);
 	pfree(deque_f(P, link, p));
@@ -530,7 +530,7 @@ P *pfwrd(P *p, long n)
 					p->line += p->hdr->nlines;
 				}
 				if (!pnext(p))
-					return 0;
+					return NULL;
 			} while (n > GSIZE(p->hdr));
 		if (p->ofst >= p->hdr->hole) {
 			if (p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole] == '\n')
@@ -600,7 +600,7 @@ P *pbkwd(P *p, long n)
 					p->line -= p->hdr->nlines;
 				}
 				if (!pprev(p))
-					return 0;
+					return NULL;
 			} while (n > GSIZE(p->hdr));
 		--p->ofst;
 		--p->byte;
@@ -685,7 +685,7 @@ P *pnextl(P *p)
 			do {
 				p->byte += GSIZE(p->hdr) - p->ofst;
 				if (!pnext(p))
-					return 0;
+					return NULL;
 			} while (!p->hdr->nlines);
 		if (p->ofst >= p->hdr->hole)
 			c = p->ptr[p->ofst + p->hdr->ehole - p->hdr->hole];
@@ -713,7 +713,7 @@ P *pprevl(P *p)
 			do {
 				p->byte -= p->ofst;
 				if (!pprev(p))
-					return 0;
+					return NULL;
 			} while (!p->hdr->nlines);
 		--p->ofst;
 		--p->byte;
@@ -898,7 +898,7 @@ static P *ffind(P *p, unsigned char *s, int len)
 	unsigned char table[256], c;
 
 	if (len > amnt)
-		return 0;
+		return NULL;
 	if (!len)
 		return p;
 	p->valcol = 0;
@@ -921,7 +921,7 @@ static P *ffind(P *p, unsigned char *s, int len)
 				amnt -= x - table[c];
 			}
 			if (amnt < 0)
-				return 0;
+				return NULL;
 			else
 				x = len;
 		}
@@ -937,7 +937,7 @@ static P *fifind(P *p, unsigned char *s, int len)
 	unsigned char table[256], c;
 
 	if (len > amnt)
-		return 0;
+		return NULL;
 	if (!len)
 		return p;
 	p->valcol = 0;
@@ -960,7 +960,7 @@ static P *fifind(P *p, unsigned char *s, int len)
 				amnt -= x - table[c];
 			}
 			if (amnt < 0)
-				return 0;
+				return NULL;
 			else
 				x = len;
 		}
@@ -1002,7 +1002,7 @@ P *pfind(P *p, char *s, int len)
 		return p;
 	} else {
 		prm(q);
-		return 0;
+		return NULL;
 	}
 }
 
@@ -1017,7 +1017,7 @@ P *pifind(P *p, char *s, int len)
 		return p;
 	} else {
 		prm(q);
-		return 0;
+		return NULL;
 	}
 }
 
@@ -1059,7 +1059,7 @@ static P *frfind(P *p, unsigned char *s, int len)
 	if (len > p->b->eof->byte - p->byte) {
 		x = len - (p->b->eof->byte - p->byte);
 		if (amnt < x)
-			return 0;
+			return NULL;
 		amnt -= x;
 		fbkwd(p, x);
 	}
@@ -1082,7 +1082,7 @@ static P *frfind(P *p, unsigned char *s, int len)
 				amnt -= len - table[c] - x;
 			}
 			if (amnt < 0)
-				return 0;
+				return NULL;
 			else
 				x = 0;
 		}
@@ -1101,7 +1101,7 @@ static P *frifind(P *p, unsigned char *s, int len)
 	if (len > p->b->eof->byte - p->byte) {
 		x = len - (p->b->eof->byte - p->byte);
 		if (amnt < x)
-			return 0;
+			return NULL;
 		amnt -= x;
 		fbkwd(p, x);
 	}
@@ -1124,7 +1124,7 @@ static P *frifind(P *p, unsigned char *s, int len)
 				amnt -= len - table[c] - x;
 			}
 			if (amnt < 0)
-				return 0;
+				return NULL;
 			else
 				x = 0;
 		}
@@ -1168,7 +1168,7 @@ P *prfind(P *p, char *s, int len)
 		return p;
 	} else {
 		prm(q);
-		return 0;
+		return NULL;
 	}
 }
 
@@ -1183,7 +1183,7 @@ P *prifind(P *p, char *s, int len)
 		return p;
 	} else {
 		prm(q);
-		return 0;
+		return NULL;
 	}
 }
 
@@ -1332,7 +1332,7 @@ static B *bcut(P *from, P *to)
 	int bofmove = 0;	/* Set if bof got deleted */
 
 	if (!(amnt = to->byte - from->byte))
-		return 0;	/* ...nothing to delete */
+		return NULL;	/* ...nothing to delete */
 
 	nlines = to->line - from->line;
 
@@ -1384,7 +1384,7 @@ static B *bcut(P *from, P *to)
 		if (!from->ofst) {
 			/* ... unless from needs to be deleted too */
 			a = from->hdr->link.prev;
-			h = 0;
+			h = NULL;
 			if (a == from->b->eof->hdr)
 				bofmove = 1;
 		} else {
@@ -1664,7 +1664,7 @@ P *binsb(P *p, B *b)
 P *binsm(P *p, char *blk, int amnt)
 {
 	long nlines;
-	H *h = 0;
+	H *h = NULL;
 	int hdramnt;
 	P *q;
 
@@ -1814,7 +1814,8 @@ char *parsens(char *s, long int *skip, long int *amnt)
 				passwd = getpwnam(n + 1);
 				n[x] = '/';
 				if (passwd) {
-					char *z = vsncpy(NULL, 0, sz(passwd->pw_dir));
+					char *z = vsncpy(NULL, 0,
+							 sz(passwd->pw_dir));
 
 					z = vsncpy(z, sLEN(z), sz(n + x));
 					vsrm(n);
@@ -2002,7 +2003,7 @@ B *borphan(void)
 			b->orphan = 0;
 			return b;
 		}
-	return 0;
+	return NULL;
 }
 
 /* Write 'size' bytes from file beginning at 'p' to open file 'fd'.

@@ -1,5 +1,9 @@
 Wed Jan 30 2002  Vitezslav Samel <samel@mail.cz>
 	* b.c:
+	change 0 to NULL when used as pointer
+
+Wed Jan 30 2002  Vitezslav Samel <samel@mail.cz>
+	* b.c:
 	change "expr, expr" to "expr; expr"
 
 Wed Jan 30 2002  Vitezslav Samel <samel@mail.cz>
