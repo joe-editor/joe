@@ -756,7 +756,6 @@ blkdel		^K ^Y
 blkdel		^K y
 blkmove		^K M		Move marked block
 blkmove		^K ^M
-blkmove		^K ^M
 blksave		^K W		Save marked block
 blksave		^K ^W
 blksave		^K w
@@ -798,7 +797,7 @@ ffirst		^K ^F
 ffirst		^K f
 filt		^K /		Filter block
  finish		^K ^M		Complete text under cursor
-finish		^[ ^I		Complete text under cursor
+finish		^K ^M		Complete text under cursor
 fmtblk		^K J		Format paragraphs in block
 fmtblk		^K ^J
 fmtblk		^K j

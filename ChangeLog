@@ -1,3 +1,9 @@
+Sat May  8 2004  Joe Allen <jhallen@world.std.com>
+	* usearch.c :
+
+	Fixed bug in tab completion in text windows.
+	Change tab completion key to ^K <return>
+
 Fri May  7 22:37:49 EDT 2004
 	* usearch.c :
 

@@ -60,11 +60,6 @@ mode where all editing wraps rest of paragraph?
 Improvements for programming
 ----------------------------
 
-Abbreviations
-
- Tab complete a word in a file, should look through file for matching
- words.  Would be nice at search prompt...
-
 Show name of function cursor is in (parse C).  This is useful during
 searches.  (Call ctags *.c *.h?)
 
