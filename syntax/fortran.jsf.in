@@ -47,7 +47,7 @@
 	"0-9"		second_number		recolor=-2
 	"a-zA-Z"	operator	buffer recolor=-2
 
-:operator idle
+:operator Idle
 	*		idle	noeat
 	"a-zA-Z"	operator
 	"."		idle	istrings
@@ -76,8 +76,8 @@ done
 
 :second_start Constant
 	*	idle	noeat
-	"a-zA-Z"	operator	noeat recolor=-2
-	"dDeE"	epart
+	"a-zA-Z"	operator	buffer recolor=-2
+	"dDeE"	epart1	buffer
 	"0-9"	second_number
 
 :second_number Constant
@@ -87,6 +87,13 @@ done
 
 :epart Constant
 	*		idle	noeat
+	"0-9+\-"	enum
+
+# For distrinuishing between 4.e1 and 4.eq.
+
+:epart1 Constant
+	*		idle	noeat
+	"a-zA-Z"	operator recolor=-3
 	"0-9+\-"	enum
 
 :enum Constant
@@ -103,7 +110,6 @@ done
 	"'"		string
 
 :ident Idle
-done
 	*		idle		noeat istrings
 	"allocate"	kw
 	"allocatable"	kw
@@ -436,7 +442,7 @@ done
 
 
 # Whitespace after an identifier... we wait to see if there is a "("
-:ws_ident
+:ws_ident Idle
 	*		idle		noeat istrings
 	"allocate"	kw
 	"allocatable"	kw

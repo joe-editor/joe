@@ -6,9 +6,8 @@
 # 0b for binary
 # \cC for Ctrl-C
 # \x{hex} unicode
-# \N{NAME} named character
-
 # no escapes in single quotes (except \\ and \')
+# \N{NAME} named character
 
 # / .. / regex
 # s/ .. / .. /
@@ -40,9 +39,14 @@
 	"1-9"		decimal	recolor=-1
 	"."		maybe_float
 	"\""		string		recolor=-1
+	"\\"		not_string
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
 	"a-zA-Z_"	ident		buffer
+
+:not_string Idle
+	*		idle noeat
+	"\"'`"		idle
 
 :line_comment Comment
 	*		line_comment
@@ -50,7 +54,8 @@
 
 :first_digit Constant
 	*		idle	noeat
-	"xX"		hex
+	"x"		hex
+	"b"		binary
 	"."		float
 	"eE"		epart
 	"0-7"		octal
@@ -62,16 +67,21 @@
 
 :octal Constant
 	*		idle	noeat
-	"0-7"		octal
+	"0-7_"		octal
 	"89"		bad_number	recolor=-1
+
+:binary Constant
+	*		idle	noeat
+	"01_"		binary
+	"2-9"		bad_number	recolor=-1
 
 :hex Constant
 	*		idle	noeat
-	"0-9A-Fa-f"	hex
+	"0-9A-Fa-f_"	hex
 
 :decimal Constant
 	*		idle	noeat
-	"0-9"		decimal
+	"0-9_"		decimal
 	"eE"		epart
 	"."		float
 
@@ -82,7 +92,7 @@
 :float Constant
 	*		idle	noeat
 	"eE"		epart
-	"0-9"		float
+	"0-9_"		float
 
 :epart Constant
 	*		idle	noeat
@@ -90,23 +100,45 @@
 
 :enum Constant
 	*		idle	noeat
-	"0-9"		enum
+	"0-9_"		enum
 
 :string	Constant
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
-	"%"		string_control	recolor=-1
+	"$@"		string_subst	recolor=-1
+
+:string_subst Escape
+	*		string	noeat recolor=-1
+	"a-zA-Z_0-9"	string_subst
 
 :string_escape Escape
 	*		string
 	"x"		string_hex1
+	"c"		string_ctrl
+	"N"		string_named
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
+:string_named Escape
+	*		string
+	"{"		string_named_rest
+
+:string_named_rest Escape
+	*		string_named_rest
+	"}"		string
+
+:string_ctrl Escape
+	*		string
+
 :string_hex1 Escape
 	*		string		noeat
+	"{"		string_unicode
 	"0-9a-fA-F"	string_hex2
+
+:string_unicode Escape
+	*		string_unicode
+	"}"		string
 
 :string_hex2 Escape
 	*		string		noeat
@@ -120,11 +152,6 @@
 	*		string		noeat
 	"0-7"		string
 
-:string_control Escape
-	*		string_control
-	"\n"		reset
-	"diouxXeEfFgGaAcspn%SC"	string
-
 :char Constant
 	*		char
 	"\n"		reset
@@ -132,36 +159,58 @@
 	"\\"		char_escape	recolor=-1
 
 :char_escape	Escape
-	*		char
-	"x"		char_hex1
-	"0-7"		char_octal2
-	"\n"		char		recolor=-2
-
-:char_hex1 Escape
-	*		char		noeat
-	"0-9a-fA-F"	char_hex2
-
-:char_hex2 Escape
-	*		char		noeat
-	"0-9a-fA-F"	char
-
-:char_octal2 Escape
-	*		char		noeat
-	"0-7"		char_octal3
-
-:char_octal3 Escape
-	*		char		noeat
-	"0-7"		char
+	*		char		recolor=-2
+	"\\'"	char
 
 :backtick	Constant
 	*		backtick
-	"\n"		idle
 	"`"		idle
 	"\\"		backtick_escape	recolor=-1
+	"$@"		backtick_subst recolor=-1
 
-:backtick_escape	Escape
+:backtick_subst Escape
+	*		backtick	noeat recolor=-1
+	"a-zA-Z_0-9"	backtick_subst
+
+:backtick_escape Escape
 	*		backtick
-	"\n"		backtick	recolor=-2
+	"x"		backtick_hex1
+	"c"		backtick_ctrl
+	"N"		backtick_named
+	"0-7"		backtick_octal2
+	"\n"		backtick		recolor=-2
+
+:backtick_named Escape
+	*		backtick
+	"{"		backtick_named_rest
+
+:backtick_named_rest Escape
+	*		backtick_named_rest
+	"}"		backtick
+
+:backtick_ctrl Escape
+	*		backtick
+
+:backtick_hex1 Escape
+	*		backtick		noeat
+	"{"		backtick_unicode
+	"0-9a-fA-F"	backtick_hex2
+
+:backtick_unicode Escape
+	*		backtick_unicode
+	"}"		backtick
+
+:backtick_hex2 Escape
+	*		backtick		noeat
+	"0-9a-fA-F"	backtick
+
+:backtick_octal2 Escape
+	*		backtick		noeat
+	"0-7"		backtick_octal3
+
+:backtick_octal3 Escape
+	*		backtick		noeat
+	"0-7"		backtick
 
 :ident	Idle
 	*		idle		noeat strings
