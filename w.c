@@ -45,6 +45,7 @@ int countmain(SCREEN *t)
 void wredraw(W *w)
 {
 	msetI(w->t->t->updtab + w->y, 1, w->h);
+	msetI(w->t->t->syntab + w->y, -1, w->h);
 }
 
 /* Find first window in a group */
@@ -200,8 +201,10 @@ void updall(void)
 {
 	int y;
 
-	for (y = 0; y != scr->h; ++y)
+	for (y = 0; y != scr->h; ++y) {
 		scr->t->updtab[y] = 1;
+		scr->t->syntab[y] = -1;
+		}
 }
 
 void scrins(B *b, long l, long n, int flg)
@@ -366,8 +369,10 @@ void wfit(SCREEN *t)
 				if (w->watom->resize)
 					w->watom->resize(w->object, w->w, w->nh);
 			}
-			if (w->y == -1)
+			if (w->y == -1) {
 				msetI(t->t->updtab + w->ny, 1, w->nh);
+				msetI(t->t->syntab + w->ny, -1, w->nh);
+				}
 			w->y = w->ny;
 		} else
 			w->y = -1;

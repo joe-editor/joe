@@ -81,8 +81,10 @@ void bwfllw(BW *w)
 		}
 		if (w->top->line - newtop->line < w->h)
 			nscrldn(w->t->t, w->y, w->y + w->h, (int) (w->top->line - newtop->line));
-		else
+		else {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
+			msetI(w->t->t->syntab + w->y, -1, w->h);
+		}
 		pset(w->top, newtop);
 		prm(newtop);
 	} else if (w->cursor->line >= w->top->line + w->h) {
@@ -93,8 +95,10 @@ void bwfllw(BW *w)
 			newtop = getto(NULL, w->cursor, w->top, w->cursor->line - (w->h - 1));
 		if (newtop->line - w->top->line < w->h)
 			nscrlup(w->t->t, w->y, w->y + w->h, (int) (newtop->line - w->top->line));
-		else
+		else {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
+			msetI(w->t->t->syntab + w->y, -1, w->h);
+		}
 		pset(w->top, newtop);
 		prm(newtop);
 	}
@@ -109,6 +113,68 @@ void bwfllw(BW *w)
 	}
 }
 
+/* Determine highlighting state of a particular line on the window.
+   If the state is not known, it is computed and the state for all
+   of the remaining lines of the window are also recalculated. */
+
+int get_highlight_state(BW *w,int line)
+{
+	P *tmp = 0;
+	int state;
+	int syn[1024];
+
+	/* Screen y position of requested line */
+	int y = line-w->top->line+w->y;
+
+	if(!w->o.highlight)
+		return -1;
+
+	/* If we know the state, just return it */
+	if (w->parent->t->t->syntab[y]>=0)
+		return w->parent->t->t->syntab[y];
+
+	/* Scan upwards until we have a line with known state or
+	   we're on the first line */
+	while (y > w->y && w->parent->t->t->syntab[y] < 0) --y;
+
+	/* If we don't have state for this line, calculate by going 100 lines back */
+	if (w->parent->t->t->syntab[y]<0) {
+		/* We must be on the top line */
+		state = 0;
+		tmp = pdup(w->top);
+		p_goto_bof(tmp); // Fixme
+		while(tmp->line!=y-w->y+w->top->line)
+			state = parse_c(state,syn,tmp);
+		w->parent->t->t->syntab[y] = state;
+		w->parent->t->t->updtab[y] = 1;
+		prm(tmp);
+	}
+
+	/* Color to end of screen */
+	tmp = pdup(w->top);
+	pline(tmp, y-w->y+w->top->line);
+	state = w->parent->t->t->syntab[y];
+	while(tmp->line!=w->top->line+w->h-1 && !piseof(tmp)) {
+		state = parse_c(state,syn,tmp);
+		w->parent->t->t->syntab[++y] = state;
+		w->parent->t->t->updtab[y] = 1; /* This could be smarter: update only if we changed what was there before */
+		}
+	prm(tmp);
+	while(y<w->y+w->h-1) {
+		w->parent->t->t->syntab[++y] = state;
+		}
+
+	/* Line after window */
+	/* state = parse_c(state,syn,tmp); */
+
+	/* If we changed, fix other windows */
+	/* w->state = state; */
+
+	/* Return state of requested line */
+	y = line - w->top->line + w->y;
+	return w->parent->t->t->syntab[y];
+}
+
 /* Scroll a buffer window after an insert occured.  'flg' is set to 1 if
  * the first line was split
  */
@@ -121,10 +187,13 @@ void bwins(BW *w, long int l, long int n, int flg)
 		nscrldn(w->t->t, (int) (w->y + l + flg - w->top->line), w->y + w->h, (int) n);
 	}
 	if (l < w->top->line + w->h && l >= w->top->line) {
-		if (n >= w->h - (l - w->top->line))
+		if (n >= w->h - (l - w->top->line)) {
 			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, w->h - (int) (l - w->top->line));
-		else
+			msetI(w->t->t->syntab + w->y + l - w->top->line, -1, w->h - (int) (l - w->top->line));
+		} else {
 			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, (int) n + 1);
+			msetI(w->t->t->syntab + w->y + l - w->top->line, -1, (int) n + 1);
+		}
 	}
 }
 
@@ -135,6 +204,12 @@ void bwdel(BW *w, long int l, long int n, int flg)
 /* Update the line where the delete began */
 	if (l < w->top->line + w->h && l >= w->top->line)
 		w->t->t->updtab[w->y + l - w->top->line] = 1;
+
+/* Update highlight for line after first one which changed */
+	if ((l+1) < w->top->line + w->h && (l+1) >= w->top->line) {
+		w->t->t->syntab[w->y + (l+1) - w->top->line] = -1;
+		w->t->t->updtab[w->y + (l+1) - w->top->line] = 1;
+		}
 
 /* Update the line where the delete ended */
 	if (l + n < w->top->line + w->h && l + n >= w->top->line)
@@ -164,7 +239,7 @@ void bwdel(BW *w, long int l, long int n, int flg)
 
 /* Update a single line */
 
-static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, long int from, long int to)
+static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, long int from, long int to,int st)
         
       
             			/* Screen line address */
@@ -182,6 +257,22 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 	int c, ta, c1;
 	unsigned char bc;
 
+        int syn[1024];	/* Temporary hack */
+        P *tmp=pdup(p);
+        int idx=0;
+        int atr;
+
+	if(st!=-1) {
+		tmp=pdup(p);
+		parse_c(st,syn,tmp);
+		prm(tmp);
+		}
+	else {
+		for(idx=0;idx!=1024;++idx)
+			syn[idx] = 0;
+		idx = 0;
+		}
+
 /* Initialize bp and amnt from p */
 	if (p->ofst >= p->hdr->hole) {
 		bp = p->ptr + p->hdr->ehole + p->ofst - p->hdr->hole;
@@ -197,6 +288,7 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 	if (amnt)
 		do {
 			bc = *bp++;
+			atr = syn[idx++];
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
 				if (!--amnt) {
@@ -275,6 +367,7 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 	if (amnt)
 		do {
 			bc = *bp++;
+			atr=syn[idx++];
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
 				if (!--amnt) {
@@ -323,7 +416,7 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 				ta = p->b->o.tab - ((x - ox + scr) % p->b->o.tab);
 			      dota:
 				do {
-					outatr(t, screen + x, x, y, ' ', c1);
+					outatr(t, screen + x, x, y, ' ', c1|atr);
 					if (ifhave)
 						goto bye;
 					if (++x == w)
@@ -334,7 +427,7 @@ static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, l
 			else {
 				xlat(&c, &bc);
 				c ^= c1;
-				outatr(t, screen + x, x, y, bc, c);
+				outatr(t, screen + x, x, y, bc, c|atr);
 				if (ifhave)
 					goto bye;
 				if (++x == w)
@@ -568,6 +661,7 @@ void bwgen(BW *w, int linums)
 	long from, to;
 	long fromline, toline;
 	SCRN *t = w->t->t;
+	int state= w->state;
 
 	fromline = toline = from = to = 0;
 
@@ -619,11 +713,11 @@ void bwgen(BW *w, int linums)
 			}
 			if (dosquare)
 				if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
-					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to);
+					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y));
 				else
-					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, 0L, 0L);
+					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,w->top->line+y-w->y));
 			else
-				t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to);
+				t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y));
 		}
 	}
 
@@ -648,11 +742,11 @@ void bwgen(BW *w, int linums)
 			}
 			if (dosquare)
 				if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
-					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to);
+					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y));
 				else
-					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, 0L, 0L);
+					t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,w->top->line+y-w->y));
 			else
-				t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to);
+				t->updtab[y] = lgen(t, y, screen, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y));
 		}
 	}
 	prm(q);
@@ -668,8 +762,10 @@ void bwmove(BW *w, int x, int y)
 
 void bwresz(BW *w, int wi, int he)
 {
-	if (he > w->h && w->y != -1)
+	if (he > w->h && w->y != -1) {
 		msetI(w->t->t->updtab + w->y + w->h, 1, he - w->h);
+		msetI(w->t->t->syntab + w->y + w->h, -1, he - w->h);
+		}
 	w->w = wi;
 	w->h = he;
 }
@@ -717,6 +813,8 @@ BW *bwmk(W *window, B *b, int prompt)
 	}
 	w->top->xcol = 0;
 	w->cursor->xcol = 0;
+	w->top_changed = 1;
+	w->state = 0;
 	return w;
 }
 

@@ -91,6 +91,29 @@ extern unsigned atab[];
 #define BOLD		1024
 #define BLINK		2048
 #define DIM		4096
+#define AT_MASK		(INVERSE+UNDERLINE+BOLD+BLINK+DIM)
+
+#define BG_SHIFT 13
+#define BG_MASK (7<<BG_SHIFT)
+#define BG_BLACK (0<<BG_SHIFT) /* default */
+#define BG_RED (1<<BG_SHIFT)
+#define BG_GREEN (2<<BG_SHIFT)
+#define BG_YELLOW (3<<BG_SHIFT)
+#define BG_BLUE (4<<BG_SHIFT)
+#define BG_MAGENTA (5<<BG_SHIFT)
+#define BG_CYAN (6<<BG_SHIFT)
+#define BG_WHITE (7<<BG_SHIFT)
+
+#define FG_SHIFT 16
+#define FG_MASK (7<<FG_SHIFT)
+#define FG_WHITE (0<<FG_SHIFT) /* default */
+#define FG_CYAN (1<<FG_SHIFT)
+#define FG_MAGENTA (2<<FG_SHIFT)
+#define FG_BLUE (3<<FG_SHIFT)
+#define FG_YELLOW (4<<FG_SHIFT)
+#define FG_GREEN (5<<FG_SHIFT)
+#define FG_RED (6<<FG_SHIFT)
+#define FG_BLACK (7<<FG_SHIFT)
 
 #define outatr(t, scrn, xx, yy, c, a) do {		\
 	if(*(scrn) != ((c) | (a))) {			\

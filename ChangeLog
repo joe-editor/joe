@@ -1,3 +1,17 @@
+Wed Mar 24 2004  Joe Allen <jhallen@world.std.com>
+	* lots of file:
+	First steps at syntax highlighting!
+	This version has support for C only (and the parser is a big hack),
+	and only if all lines in the file are less than 1K.
+	Turn it on with ^T H
+	Todo: some more speed enhancements, a real parser to handle many
+	file types, eliminate long line hack, update other windows during
+	typing, eliminate some cycle saving hacks when highlighting is on.
+
+Mon Mar 22 2004  Joe Allen <jhallen@world.std.com>
+	* jmacsrc.in:
+	Added ^X [ and ^X ].
+
 Sat Mar 20 2004  Joe Allen <jhallen@world.std.com>
 	* menu.c, menu.h, joerc.in, jstarrc.in, jmacsrc.in, rjoerc.in,
 	jpicorc.in, cmd.c:

@@ -111,6 +111,7 @@ struct options {
 	int	french;
 	int	spaces;
 	int	crlf;
+	int	highlight;	/* Set to enable highlighting */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */
@@ -302,6 +303,8 @@ struct bw {
 	pid_t	pid;		/* Process id */
 	int	out;		/* fd to write to process */
 	int	linums;
+	int	top_changed;	/* Top changed */
+	int	state;		/* Highlight state of line following window */
 };
 
 struct menu {
@@ -330,12 +333,13 @@ struct hentry {
 #ifdef __MSDOS__
 
 struct scrn {
-	int	li;
-	int	co;
-	short	*scrn;
+	int	li;		/* Height of screen */
+	int	co;		/* Width of screen */
+	short	*scrn;		/* Buffer */
 	int	scroll;
 	int	insdel;
-	int	*updtab;
+	int	*updtab;	/* Lines which need to be updated */
+	int	*syntab;	/* Syntax highlight state at start of each line */
 	int	*compose;
 	int	*sary;
 };
@@ -374,6 +378,10 @@ struct scrn {
 	char	*mh;		/* Enter dim mode */
 	char	*mr;		/* Enter inverse mode */
 	char	*me;		/* Exit above modes */
+
+	char	*Sb;		/* Set background color */
+	char	*Sf;		/* Set foregrond color */
+	int	ut;		/* Screen erases with background color */
 
 	int	da, db;		/* Extra lines exist above, below */
 	char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
@@ -437,6 +445,7 @@ struct scrn {
 	int	ins;		/* Set if we're in insert mode */
 
 	int	*updtab;	/* Dirty lines table */
+	int	*syntab;
 	int	avattr;		/* Bits set for available attributes */
 	int	*sary;		/* Scroll buffer array */
 

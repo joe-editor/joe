@@ -373,6 +373,7 @@ backw		^[ ^?		Backspace word
 backw		^[ ^H
 bknd		^X '		Shell window (joe)
 bof		^[ <		Goto beginning of file
+bof		^X [
 bol		.kh		Goto beginning of line
 bol		^A
 bol		^[ [ H
@@ -393,6 +394,7 @@ dnarw		^[ [ B
 dnslide		^X ^N		Slide down (uemacs)
 edit		^X ^F		Edit a file: creates orphaned buffers
 eof		^[ >		Go to end of file
+eof		^X ]
 eol		.kH		Go to end of line
 eol		.@7
 eol		^E

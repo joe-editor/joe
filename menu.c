@@ -38,7 +38,7 @@ static void menudisp(MENU *m)
 			int atr, z;
 	
 			if (x + y*m->perline + m->top == m->cursor)
-				atr = INVERSE;
+				atr = INVERSE|FG_YELLOW;
 			else
 				atr = 0;
 			if (col == m->w)

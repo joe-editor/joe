@@ -82,6 +82,7 @@ OPTIONS pdefault = {
 #else
 	0,		/* crlf */
 #endif
+	0,		/* Highlight */
 	NULL,		/* macro to execute for new files */
 	NULL,		/* macro to execute for existing files */
 	NULL,		/* macro to execute before saving new files */
@@ -110,6 +111,7 @@ OPTIONS fdefault = {
 #else
 	0,		/* crlf */
 #endif
+	0,		/* Highlight */
 	NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
@@ -159,6 +161,7 @@ struct glopts {
 	{ "indentc",	5, NULL, (char *) &fdefault.indentc, "Indent char %d (SPACE=32, TAB=9, ^C to abort): ", 0, " Indent char ", 0, 0, 255 },
 	{ "istep",	5, NULL, (char *) &fdefault.istep, "Indent step %d (^C to abort): ", 0, " Indent step ", 0, 1, 64 },
 	{ "french",	4, NULL, (char *) &fdefault.french, "One space after periods for paragraph reformat", "Two spaces after periods for paragraph reformat", " french spacing " },
+	{ "highlight",	4, NULL, (char *) &fdefault.highlight, "Highlighting enabled", "Highlighting disabled", "Highlighting " },
 	{ "spaces",	4, NULL, (char *) &fdefault.spaces, "Inserting spaces when tab key is hit", "Inserting tabs when tab key is hit", " no tabs " },
 	{ "mid",	0, &mid, NULL, "Cursor will be recentered on scrolls", "Cursor will not be recentered on scroll", "Center on scroll " },
 	{ "crlf",	4, NULL, (char *) &fdefault.crlf, "CR-LF is line terminator", "LF is line terminator", "Z CR-LF (MS-DOS) " },
