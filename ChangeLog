@@ -1,4 +1,9 @@
 Wed Jan  1 2003  Vitezslav Samel <samel@mail.cz>
+	* rc.c:
+	eliminate "expr, expr" to make sources more readable;
+	change "magic number" to the sizeof()
+
+Wed Jan  1 2003  Vitezslav Samel <samel@mail.cz>
 	* b.c:
 	pisbow() should match the beginning of file and piseow() should match
 	the end of file

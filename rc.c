@@ -585,7 +585,8 @@ int procrc(CAP *cap, char *name)
 	fprintf(stderr, "Processing '%s'...", name);
 	fflush(stderr);
 
-	while (++line, fgets(buf, 1024, fd))
+	while (fgets(buf, sizeof(buf), fd)) {
+		line++;
 		switch (buf[0]) {
 		case ' ':
 		case '\t':
@@ -756,6 +757,7 @@ int procrc(CAP *cap, char *name)
 			}
 			break;
 		}
+	}
 	fclose(fd);		/* Close rc file */
 
 	/* Print proper ending string */
