@@ -22,7 +22,7 @@
 
  -mid		Cursor is recentered when scrolling is necessary
 
--marking	Text between ^KB and cursor is highlighted (use with -lightoff)
+ -marking	Text between ^KB and cursor is highlighted (use with -lightoff)
 
  -asis		Characters 128 - 255 shown as-is
 
