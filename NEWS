@@ -1,3 +1,17 @@
+JOE 3.0 (23 APR 2004)
+- UTF-8
+- Syntax highlighting
+- Fixed ^C and ^D in shell windows
+- Auto detect CR-LF (MS-DOS) files
+- Fixed (or improved, anyway) shell windows for Cygwin
+- During search & replace, the scroll found text on to screen
+- File selection window is now 4 lines instead of 1
+- David Phillips "smart home" key.
+- Enhanced ^K , and ^K .
+- Enhanced overtype mode
+- Added picture drawing mode (can hit right arrow at ends of lines)
+- Auto detect preferred indentation character TAB or SPACE
+
 Overview of changes in JOE 2.9.8 (5 May 2003)
 - fixed signal handling
 - return of the context help

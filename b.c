@@ -43,6 +43,8 @@
 unsigned char stdbuf[stdsiz];
 
 extern int errno;
+int guesscrlf = 0;
+int guessindent = 0;
 
 int error;
 int force = 0;
@@ -2165,24 +2167,47 @@ opnerr:
 	if (nowrite)
 		b->rdonly = b->o.readonly = 1;
 
-	p=pdup(b->bof);
-	/* FIXME: this should be an option */
-	b->o.crlf = 0;
-	for(x=0;x!=1024;++x) {
-		int c = pgetc(p);
-		if(c == '\r') {
-			b->o.crlf = 1;
-			break;
-			}
-		if(c == '\n') {
-			b->o.crlf = 0;
-			break;
-			}
-		if(c == NO_MORE_DATA)
-			break;
+	/* If first line has CR-LF, assume MS-DOS file */
+	if (guesscrlf) {
+		p=pdup(b->bof);
+		b->o.crlf = 0;
+		for(x=0;x!=1024;++x) {
+			int c = pgetc(p);
+			if(c == '\r') {
+				b->o.crlf = 1;
+				break;
+				}
+			if(c == '\n') {
+				b->o.crlf = 0;
+				break;
+				}
+			if(c == NO_MORE_DATA)
+				break;
+		}
+		prm(p);
 	}
-	prm(p);
-	
+
+	/* Search backwards through file: if first indented line
+	   is indented with a tab, assume indentc is tab */
+	if (guessindent) {
+		p=pdup(b->eof);
+		for (x=0; x!=20; ++x) {
+			p_goto_bol(p);
+			if (pisindent(p)) {
+				if (brc(p)=='\t') {
+					b->o.indentc = '\t';
+					b->o.istep = 1;
+				} else {
+					b->o.indentc = ' ';
+					b->o.istep = 2;
+				}
+				break;
+			}
+			if (prgetc(p)==NO_MORE_DATA)
+				break;
+		}
+		prm(p);
+	}
 
 	/* Eliminate parsed name */
 	vsrm(n);

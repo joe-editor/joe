@@ -4,12 +4,12 @@ Tasks for next release:
 
 UTF-8: regex, incremental search, select charset UI
 
-Highlight: more syntax files, fix *rc files, other windows.
+Highlight: more syntax files, other windows.
 why do we lose highlight state during page down?
 
 Math: need hex and octal entry, some math functions
 
-Misc: update other *rc files, update documentation.
+Misc: update documentation.
 
 Test test test...
 

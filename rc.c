@@ -63,7 +63,7 @@ OPTIONS *options = NULL;
 /* Global variable options */
 extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode, nobackups, lightoff, exask, skiptop;
 extern int noxon, lines, staen, columns, Baud, dopadding, orphan, marking, beep, keepup, nonotice;
-extern int notite, usetabs, assume_color;
+extern int notite, usetabs, assume_color, guesscrlf, guessindent;
 extern unsigned char *backpath;
 
 /* Default options for prompt windows */
@@ -211,6 +211,8 @@ struct glopts {
 	{US "highlight",	4, NULL, (unsigned char *) &fdefault.highlight, US "Highlighting enabled", US "Highlighting disabled", US "Highlighting " },
 	{US "spaces",	4, NULL, (unsigned char *) &fdefault.spaces, US "Inserting spaces when tab key is hit", US "Inserting tabs when tab key is hit", US "  no tabs " },
 	{US "mid",	0, &mid, NULL, US "Cursor will be recentered on scrolls", US "Cursor will not be recentered on scroll", US "Center on scroll " },
+	{US "guess_crlf",0, &guesscrlf, NULL, US "Automatically detect MS-DOS files", US "Do not automatically detect MS-DOS files", US "  Auto detect CR-LF " },
+	{US "guess_indent",0, &guessindent, NULL, US "Automatically detect indentation", US "Do not automatically detect indentation", US "  Guess indent " },
 	{US "crlf",	4, NULL, (unsigned char *) &fdefault.crlf, US "CR-LF is line terminator", US "LF is line terminator", US "Z CR-LF (MS-DOS) " },
 	{US "utf8",	4, NULL, (unsigned char *) &fdefault.utf8, US "UTF-8 encoding enabled", US "UTF-8 encoding disabled", US "U UTF-8 " },
 	{US "linums",	4, NULL, (unsigned char *) &fdefault.linums, US "Line numbers enabled", US "Line numbers disabled", US "N Line numbers " },

@@ -714,7 +714,9 @@ int ubacks(BW *bw, int k)
 		   is a multiple of indentation width, we're not at beginning of line,
 		   'smarthome' option is enabled, and indentation is purely made out of
 		   indent characters (or purify indents is enabled). */
-		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smartbacks && (bw->o.purify || pispure(bw->cursor,bw->o.indentc))) {
+		
+		/* Ignore purify for backspace */
+		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smartbacks && pispure(bw->cursor,bw->o.indentc)) {
 			P *p;
 			int x;
 

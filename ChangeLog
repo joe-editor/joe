@@ -1,3 +1,11 @@
+Fri Apr 23 2004  Joe Allen <jhallen@world.std.com>
+
+	Added -guess_crlf and -guess_indent options.
+
+	Update *rc files.
+
+	Updated documentation.
+
 Thu Apr 22 2004  Joe Allen <jhallen@world.std.com>
 	* cmd.c, pw.c, pw.h, rc.c, syntax.c, syntax.h, types.h, uedit.c,
 	utils.c, utils.h, syntax/c.jsf.in:

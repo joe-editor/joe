@@ -44,6 +44,20 @@
  -help		Start with help on
  -skiptop nnn	Don't use top nnn lines of the screen
 
+-notite         Don't send terminal initialization and termination strings: prevents
+                restoration of screen on exit.
+
+ -usetabs       Use tabs to help optimize screen update.
+
+-assume_color	Assume terminal has ANSI color support even if termcap/terminfo entry
+		says that it doesn't.  This only applies if the terminal otherwise
+		looks like an ANSI terminal (support bold and capability starts with
+		ESC [).
+
+-guess_crlf     Automatically detect MS-DOS files and set -crlf appropriately
+
+-guess_indent	Guess indent character (tab or space).
+
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used
@@ -70,6 +84,7 @@
   %k  Entered prefix keys
   %S  '*SHELL*' if there is a shell running in window
   %M  Macro recording message
+  %y  Syntax
 
  The formatting escape sequences may also be given:
  
@@ -79,7 +94,7 @@
   \d  Dim
   \f  Blink
 
--lmsg \i%k%T%W%I%X %n %m%R %M
+-lmsg \i%k%T%W%I%X %n %y%m%R %M
 -rmsg  %S Row %r Col %c %t  Ctrl-J for help
 
  SECOND SECTION: File name dependant local option settings:
@@ -90,50 +105,296 @@
 
  Here is a list of modes which can be set:
 
-	-wordwrap		Wordwrap
-	-autoindent		Auto indent
-	-overwrite		Overtype mode
-	-lmargin nnn		Left margin
-	-rmargin nnn		Right margin
+	-utf8			File is UTF-8 coded
+
+	-syntax name		Specify syntax (syntax file called
+				'name.jsf' will be loaded)
+
+	-highlight		Enable highlighting
+
+	-smarthome		Home key first moves cursor to the first
+				non-space character, unless already there
+
+	-smartbacks		Backspace key deletes 'istep' number of
+				'indentc's if cursor is at first non-space
+				character.
+
 	-tab nnn		Tab width
+
 	-indentc nnn		Indentation character (32 for space, 9 for tab)
+
 	-istep nnn		Number of indentation columns
+
+	-spaces			TAB inserts spaces instead of tabs.
+
+	-purify			Fix indentation if necessary for rindent, lindent and backs
+				(for example if indentation uses a mix of tabs and spaces,
+				and indentc is space, indentation will be converted to all
+				spaces).
+
+	-crlf			File uses CR-LF at ends of lines
+
+	-wordwrap		Wordwrap
+
+	-autoindent		Auto indent
+
+	-overwrite		Overtype mode
+
+        -picture                Picture mode (right arrow can go past end of lines)
+
+	-lmargin nnn		Left margin
+
+	-rmargin nnn		Right margin
+
+
 	-french			One space after '.', '?' and '!' for wordwrap
 				and paragraph reformat instead of two.  Joe
 				does not change the spacing you give, but
 				sometimes it must put spacing in itself.  This
 				selects how much is inserted.
 
-	-spaces			TAB inserts spaces instead of tabs.
-
 	-linums			Enable line numbers on each line
+
 	-rdonly			File is read-only
+
 	-keymap name		Keymap to use if not 'main'
+
 	-lmsg			Status line definition strings-
 	-rmsg			see previous section for more info.
+
 	-mnew macro		Macro to execute when new files are loaded
 	-mold macro		Macro to execute when existing files are loaded
 	-msnew macro		Macro to execute when new files are saved
 	-msold macro		Macro to execute when existing files are saved
 
+	-square			Rectangular block mode
+
 	Macros for the above options are in the same format as in the key
 	binding section below- but without the key name strings.
 
+ Default local options
+-highlight
+-istep 2
+
+ No '.' in file name?  Assume it's a text file and we want wordwrap on.
 *
 -wordwrap
 
+ File name with '.'?  It's probably not a text file.
+*.*
+
+ Text file.
+*.txt
+-wordwrap
+
+ Perl
+*
++#!\+\[ 	]\+\[a-z/]/perl\>
+-autoindent
+-syntax perl
+
+*.pl
+-autoindent
+-syntax perl
+
+ C language file
 *.c
 -autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
 
+ C language header file
 *.h
 -autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
 
+ Verilog file
+*.v
+-autoindent
+-syntax verilog
+-istep 2
+-smarthome
+-smartbacks
+-purify
+
+ VHDL file
+*.vhd
+-autoindent
+-syntax vhdl
+-istep 2
+-smarthome
+-smartbacks
+-purify
+
+ HTML
+*.htm
+-wordwrap
+-autoindent
+-syntax html
+
+*.html
+-wordwrap
+-autoindent
+-syntax html
+
+ JAVA
+*.java
+-autoindent
+-syntax java
+-smarthome
+-smartbacks
+-purify
+
+ Hypertext preprocessor file
+*.php
+-autoindent
+-syntax php
+-smarthome
+-smartbacks
+-purify
+
+ Python
+*
++#!\+\[ 	]\+\[a-z/]/python\>
+-autoindent
+-syntax python
+-smarthome
+-smartbacks
+-purify
+
+*.py
+-autoindent
+-syntax python
+-smarthome
+-smartbacks
+-purify
+
+ Shell
+*
++#!\+\[ 	]\+\[a-z/]/sh\>
+-autoindent
+-syntax sh
+
+*.sh
+-autoindent
+-syntax sh
+
+ BASH Shell
+*
++#!\+\[ 	]\+\[a-z/]/bash\>
+-autoindent
+-syntax sh
+
+*.bash
+-autoindent
+-syntax sh
+
+ CSH
+*
++#!\+\[ 	]\+\[a-z/]/csh\>
+-autoindent
+-syntax csh
+
+*.csh
+-autoindent
+-syntax csh
+
+ TCSH
+*
++#!\+\[ 	]\+\[a-z/]/tcsh\>
+-autoindent
+-syntax csh
+
+*.tcsh
+-autoindent
+-syntax csh
+
+ KSH
+*
++#!\+\[ 	]\+\[a-z/]/ksh\>
+-autoindent
+-syntax sh
+
+*.ksh
+-autoindent
+-syntax sh
+
+ Makefile
 *akefile
-*AKEFILE
-*rc
+-autoindent
+-syntax conf
 
+*AKEFILE
+-autoindent
+-syntax conf
+
+ Pascal
 *.p
 -autoindent
+-syntax pascal
+-smarthome
+-smartbacks
+-purify
+
+*.pas
+-autoindent
+-syntax pascal
+-smarthome
+-smartbacks
+-purify
+
+ Fortran
+*.f
+-autoindent
+-syntax fortran
+
+*.for
+-autoindent
+-syntax fortran
+
+*.FOR
+-autoindent
+-syntax fortran
+
+ YACC
+*.y
+-autoindent
+-syntax yacc
+
+ LEX
+*.l
+-autoindent
+-syntax lex
+
+ TCL
+*.tcl
+-autoindent
+-syntax tcl
+
+ Joe Syntax File
+*.jsf
+-autoindent
+-syntax conf
+
+ Autoconfig file
+*.ac
+-autoindent
+-syntax conf
+
+ M4 file
+*.m4
+-autoindent
+-syntax m4
+
+ Automake file
+*.am
+-autoindent
+-syntax conf
 
  THIRD SECTION: Named help screens:
 
@@ -210,7 +471,7 @@
 
 {Joe
 \i   Help Screen    turn off with ^J     prev. screen ^[,                        \i
-\i \i Send bug reports to: Joe Allen (jhallen@world.std.com)                      \i \i
+\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \i \i
 }
 
  FOURTH SECTION: Key bindings:
@@ -370,12 +631,12 @@ blksave		^K w
 bof		^Q R		Goto beginning of file
 bof		^Q ^R
 bof		^Q r
-bol		.kh		Goto beginning of line
-bol		^[ [ H
-bol		^[ [ 1 ~
-bol		^Q S
-bol		^Q ^S
-bol		^Q s
+home		.kh		Goto beginning of line
+home		^[ [ H
+home		^[ [ 1 ~
+home		^Q S
+home		^Q ^S
+home		^Q s
 crawll		^Q ,
 crawlr		^Q .
 tos		^Q E

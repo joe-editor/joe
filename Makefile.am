@@ -4,7 +4,7 @@ EXTRA_DIST = COPYING INFO LIST NEWS README README.cvs TODO docs/help-system.html
 	joerc.in jmacsrc.in jstarrc.in rjoerc.in jpicorc.in \
 	joe.1.in dir.c syntax/c.jsf.in syntax/perl.jsf.in syntax/verilog.jsf.in \
 	syntax/conf.jsf.in syntax/python.jsf.in syntax/php.jsf.in syntax/sh.jsf.in \
-	docs
+	docs HINTS
 
 sysconf_joedir = $(sysconfdir)/joe
 sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc

@@ -1,17 +1,17 @@
 
 
-                            Joe's Own Editor 2.9.x
+                            Joe's Own Editor 3.0
 
                   A Free ASCII-Text Screen Editor for UNIX
-                               by Joseph Allen (<= 2.8)
-				Marek 'Marx' Grac (=> 2.9)
+                          by Joseph Allen (<= 2.8)
+                         Marek 'Marx' Grac (=> 2.9)
+                        by Joseph Allen again (=>3.0)
 
 Get it from:
 	http://sourceforge.net/projects/joe-editor
 
 If you have questions, problems or suggestions, 
-        send email to: 'xgrac@fi.muni.cz'
-
+	Use sourceforge: mailing list, bug tracker, discussion groups.
 
 	JOE is the professional freeware ASCII text screen editor for UNIX. 
 It makes full use of the power and versatility of UNIX, but lacks the steep
@@ -121,6 +121,10 @@ SEARCH           ^KU top of file  ^KW file   ^J >line SPELL        ^KE new
 
 	JOE has a powerful set of editing commands suitable for editing both
 text files and programs:
+
+		- UTF-8 support
+
+		- Syntax highlighting
 
 		- search and replace system, including powerful regular 
 		  expressions (including matching of balanced C expressions).
