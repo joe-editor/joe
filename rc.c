@@ -559,7 +559,9 @@ static int syntaxcmplt(BW *bw)
 	if (!syntaxes) {
 		unsigned char *oldpwd = pwd();
 		unsigned char **t;
+		unsigned char *p;
 		int x, y;
+
 		if (chpwd(US (JOERC "syntax")))
 			return -1;
 		t = rexpnd(US "*.jsf");
@@ -577,8 +579,29 @@ static int syntaxcmplt(BW *bw)
 			unsigned char *r = vsncpy(NULL,0,t[x],(unsigned char *)strrchr((char *)(t[x]),'.')-t[x]);
 			syntaxes = vaadd(syntaxes,r);
 		}
-		vasort(av(syntaxes));
 		varm(t);
+
+		p = (unsigned char *)getenv("HOME");
+		if (p) {
+			unsigned char buf[1024];
+			snprintf((char *)buf,sizeof(buf),"%s/.joe/syntax",p);
+			if (!chpwd(buf) && (t = rexpnd(US "*.jsf"))) {
+				for (x = 0; x != aLEN(t); ++x)
+					*strrchr((char *)t[x],'.') = 0;
+				for (x = 0; x != aLEN(t); ++x) {
+					for (y = 0; y != aLEN(syntaxes); ++y)
+						if (!strcmp(t[x],syntaxes[y]))
+							break;
+					if (y == aLEN(syntaxes)) {
+						unsigned char *r = vsncpy(NULL,0,sv(t[x]));
+						vaadd(syntaxes,r);
+					}
+				}
+				varm(t);
+			}
+		}
+
+		vasort(av(syntaxes));
 		chpwd(oldpwd);
 	}
 	return simple_cmplt(bw,syntaxes);

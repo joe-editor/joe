@@ -1,4 +1,11 @@
 Tue May  4 2004  Joe Allen <jhallen@world.std.com>
+	* rc.c, selinux.c, syntax.c, ufile.c:
+
+	Applied new Selinux patch.
+
+	Checks ~/.joe/syntax for syntax files.
+
+Tue May  4 2004  Joe Allen <jhallen@world.std.com>
 	* bw.c, charmap.c, main.c:
 
 	Print locale on startup line.

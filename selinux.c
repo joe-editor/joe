@@ -11,112 +11,141 @@ static int selinux_enabled = -1;
 int
 copy_security_context(const char *from_file, const char *to_file)
 {
+	int status = 0;
 #ifdef WITH_SELINUX
-	if (selinux_enabled == -1)
-		selinux_enabled = is_selinux_enabled();
-	if (selinux_enabled) {
-		security_context_t scontext;
-		if (getfilecon(from_file, &scontext) < 0) {
-			/*
-			 * If the filesystem doesn't support extended
-			 * attributes, the original had no special security
-			 * context and the target cannot have one either.
-			 */
-			if (errno == EOPNOTSUPP)
-				return 0;
+	security_context_t from_context;
+	security_context_t to_context;
 
-			error(0, errno, "Could not get security context for %s",
-			      from_file);
-			return 1;
-		}
-		if (setfilecon(to_file, scontext) < 0) {
-			error(0, errno, "Could not set security context for %s",
-			      to_file);
-			freecon(scontext);
-			return 1;
-		}
-		freecon(scontext);
+	if (selinux_enabled == -1)
+		selinux_enabled = (is_selinux_enabled() > 0);
+
+	if (!selinux_enabled)
+		return 0;
+
+	if (getfilecon(from_file, &from_context) < 0) {
+		/*
+		 * If the filesystem doesn't support extended
+		 * attributes, the original had no special security
+		 * context and the target cannot have one either.
+		 */
+		if (errno == EOPNOTSUPP)
+			return 0;
+
+		error(0, errno, "Could not get security context for %s",
+		      from_file);
+		return 1;
 	}
+
+	if (getfilecon(to_file, &to_context) < 0) {
+		MSG_PUTS(_("\nCould not get security context for "));
+		msg_outtrans(to_file);
+		msg_putchar('\n');
+		freecon(from_context);
+		return 1;
+	}
+
+	if (strcmp(from_context, to_context) != 0) {
+		if (setfilecon(to_file, from_context) < 0) {
+			error(0, errno,
+			      "Could not set security context for %s",
+			      to_file);
+			status = 1;
+		}
+	}
+
+	freecon(to_context);
+	freecon(from_context);
 #endif
-	return 0;
+	return status;
 }
 
 int
 match_default_security_context(const char *from_file)
 {
 #ifdef WITH_SELINUX
-	if (selinux_enabled == -1)
-		selinux_enabled = is_selinux_enabled();
-	if (selinux_enabled) {
-		security_context_t scontext;
-		if (getfilecon(from_file, &scontext) < 0) {
-			/*
-			 * If the filesystem doesn't support extended
-			 * attributes, the original had no special security
-			 * context and the target cannot have one either.
-			 */
-			if (errno == EOPNOTSUPP)
-				return 0;
+	security_context_t scontext;
 
-			error(0, errno, "Could not get security context for %s",
-			      from_file);
-			return 1;
-		}
-		if (setfscreatecon(scontext) < 0) {
-			error(0, errno,
-			      "Could not set default security context for %s",
-			      from_file);
-			freecon(scontext);
-			return 1;
-		}
-		freecon(scontext);
+	if (selinux_enabled == -1)
+		selinux_enabled = (is_selinux_enabled() > 0);
+
+	if (!selinux_enabled)
+		return 0;
+
+	if (getfilecon(from_file, &scontext) < 0) {
+		/*
+		 * If the filesystem doesn't support extended
+		 * attributes, the original had no special security
+		 * context and the target cannot have one either.
+		 */
+		if (errno == EOPNOTSUPP)
+			return 0;
+
+		error(0, errno, "Could not get security context for %s",
+		      from_file);
+		return 1;
 	}
+
+	if (setfscreatecon(scontext) < 0) {
+		error(0, errno,
+		      "Could not set default security context for %s",
+		      from_file);
+		freecon(scontext);
+		return 1;
+	}
+	freecon(scontext);
 #endif
 	return 0;
 }
+
 
 int
 reset_default_security_context()
 {
 #ifdef WITH_SELINUX
 	if (selinux_enabled == -1)
-		selinux_enabled = is_selinux_enabled();
-	if (selinux_enabled) {
-		if (setfscreatecon(0) < 0) {
-			error(0, errno,
-			      "Could not reset default security context");
-			return 1;
-		}
+		selinux_enabled = (is_selinux_enabled() > 0);
+
+	if (!selinux_enabled)
+		return 0;
+
+	if (setfscreatecon(0) < 0) {
+		error(0, errno, "Could not reset default security context");
+		return 1;
 	}
 #endif
 	return 0;
 }
 
+
 int
 output_security_context(char *from_file)
 {
 #ifdef WITH_SELINUX
-	if (selinux_enabled == -1)
-		selinux_enabled = is_selinux_enabled();
-	if (selinux_enabled) {
-		security_context_t scontext;
-		if (getfilecon(from_file, &scontext) < 0) {
-			/*
-			 * If the filesystem doesn't support extended
-			 * attributes, the original had no special security
-			 * context and the target cannot have one either.
-			 */
-			if (errno == EOPNOTSUPP)
-				return 0;
+	security_context_t scontext;
 
-			error(0, errno, "Could not get security context for %s",
-			      from_file);
-			return 1;
-		}
-		error(0, 0, "%s Security Context %s", from_file, scontext);
-		freecon(scontext);
+	if (selinux_enabled == -1)
+		selinux_enabled = (is_selinux_enabled() > 0);
+	if (!selinux_enabled)
+		return 0;
+
+	if (getfilecon(from_file, &scontext) < 0) {
+		/*
+		 * If the filesystem doesn't support extended
+		 * attributes, the original had no special security
+		 * context and the target cannot have one either.
+		 */
+		if (errno == EOPNOTSUPP)
+			return 0;
+		
+		error(0, errno, "Could not get security context for %s",
+		      from_file);
+		return 1;
 	}
+
+	error(0, 0, "%s Security Context %s", from_file, scontext);
+	freecon(scontext);
 #endif
+	return 0;
 }
 
 #if 0

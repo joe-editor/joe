@@ -187,6 +187,7 @@ static int cp(unsigned char *from, unsigned char *to)
 #ifdef WITH_SELINUX
 	copy_security_context(from,to);
 #endif
+
 	return 0;
 }
 

@@ -1,12 +1,15 @@
 Fix for next release:
 
+  EBCDIC ?
+    - we assume '\n' is line terminator.
+    - there are many references to '\t' and ' '.
+    - EBCDIC used to be fixed record length (80 columns) anyway.
+
   locale for qsort().
 
   check all instances of 'chars'.
 
   option to force search to be case insensitive
-
-  update selinux patch
 
   perl highlighter
 
@@ -14,7 +17,9 @@ Fix for next release:
 
   more syntax files
 
-  ~/.joe directory
+  move *rc files to .joe directory?
+
+  parse *rc file only once?
 
   different symbol for 'joe' directory
 
