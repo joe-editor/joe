@@ -1,0 +1,20 @@
+TODO Plan::
+	JOE version 3.0 will be readable source code with documentation.
+	It is possible that last 2.9 version will be 2.9.156 :)	
+
+** JOE 2.9.2 :: 25 Mar 2001
+	- function cwhite() was substituted for isblank()
+		from <ctype.h>
+	- function cwhitel() was substituted for isspace() 
+		from <ctype.h>
+	- function imax(), umax() were removed
+	- functions z*() were substituted for str*()
+		from <string.h>
+** JOE 2.9.1 :: 23 Mar 2001
+	- files random.c and random.h were deleted
+		- function random() is from <stdlib.h>
+	- functions toup(); todn() were deleted
+		- new functions are toupper(), tolower() from <ctype.h>
+		  because they support locales (LC_CTYPE)
+** JOE 2.9 :: 22 Mar 2001
+	- version 2.8 with patches from RedHat/Suse

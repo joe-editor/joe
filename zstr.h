@@ -1,6 +1,8 @@
 /*
 	Zero terminated strings
-	Copyright (C) 1992 Joseph H. Allen
+	Copyright
+		(C) 1992 Joseph H. Allen; 
+		(C) 2001 Marek 'Marx' Grac
 
 	This file is part of JOE (Joe's Own Editor)
 */ 
@@ -30,66 +32,22 @@ extern char _ctaB[], _ctaA[];
 /* Remaining legal characters of a C identifier */
 #define crest(c)  (_ctaB[(unsigned char)(c)]&(_low|_upp|_und|_bin|_oct|_dec))
 
-/* Whitespace: tab or space */
-#define cwhite(c)  (_ctaA[(unsigned char)(c)]&(_whi))
-
-/* Whitespace: tab, space or newline */
-#define cwhitel(c) (_ctaA[(unsigned char)(c)]&(_whi|_eol))
-
 /* Whitespace: tab, space, newline or nul */
 #define cwhitef(c) (_ctaA[(unsigned char)(c)]&(_whi|_eol|_eos))
 
-/*************/
+/* Minimum and maximum functions */
+
 /* unsigned Umin(unsigned a,unsigned b); Return the smaller unsigned integer */
 unsigned Umin();
 
-/* unsigned Umax(unsigned a,unsigned b); Return the larger unsigned integer */
-unsigned Umax();
-
 /* int Imin(int a,int b); Return the lower integer */
 int Imin();
-
-/* int Imax(int a,int b); Return the higher integer */
-int Imax();
 
 /* long Lmax(long a,long b); Return the higher long */
 long Lmax();
 
 /* long Lmin(long a,long b); Return the smaller long */
 long Lmin();
-/*****************/
-
-/* int zlen(char *s); Return length of z-string */
-int zlen();
-
-/* char *zchr(char *s,char c); Return address of first 'c' in 's', or NULL if
- * the end of 's' was found first */
-char *zchr();
-
-/* char *zrchr(char *s,char c); Return address of last 'c' in 's', or NULL if
- * there are none.
- */
-char *zrchr();
-
-/* char *zcpy(char *d,char *s); Copy z-string at s to d */
-char *zcpy();
-
-/* char *zcat(char *d,char *s); Append s onto d */
-char *zcat();
-
-/* char *zdup(char *s); Duplicate z-string into an malloc block */
-char *zdup();
-
-/* int zcmp(char *l,char *r); Compare the strings.  Return -1 if l is
- * less than r; return 0 if l equals r; and return 1 if l is greater than r.
- */
-int zcmp();
-
-/* int zicmp(char *l,char *r); Compare the strings, case insensitive.  Return
- * -1 if l is less than r; return 0 if l equals r; and return 1 if l is greater
- * than r.
- */
-int zicmp();
 
 /* int fields(char *s,char **fields,char sep); Break up z-string containing
  * fields into its componant fields.  This is done by setting the field

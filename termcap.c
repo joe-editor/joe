@@ -19,6 +19,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
 #include "config.h"
 #include "blocks.h"
 #include "vs.h"
@@ -129,7 +130,7 @@ while(fgets(buf,80,file))
    z=0; sscanf(buf+x,"%x",&z);
    addr+=z;
    }
-  else if(!zcmp(buf+x,name)) flg=1;
+  else if(!strcmp(buf+x,name)) flg=1;
   x=y+1;
   }
   while(c && c!='\n');
@@ -286,7 +287,7 @@ if(*pp)
  while(z!=(x+y)/2)
   {
   z=(x+y)/2;
-  switch(zcmp(qq,cap->sort[z].name))
+  switch(strcmp(qq,cap->sort[z].name))
    {
   case  1: x=z; break;
   case -1: y=z; break;
@@ -338,7 +339,7 @@ x=0; y=cap->sortlen; z= -1;
 while(z!=(x+y)/2)
  {
  z=(x+y)/2;
- switch(zcmp(name,cap->sort[z].name))
+ switch(strcmp(name,cap->sort[z].name))
   {
  case  1: x=z; break;
  case -1: y=z; break;

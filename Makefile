@@ -111,5 +111,5 @@ install: joe termidx
 # Cleanup proceedure
 
 clean:
-	rm -f $(OBJS) termidx.o conf conf.o config.h
+	rm -f $(OBJS) termidx.o conf conf.o config.h joe jmacs jpico jstar rjoe
 

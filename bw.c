@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
+#include <string.h>
 #include "config.h"
 #include "tty.h"
 #include "vfile.h"
@@ -562,7 +563,7 @@ int *comp;
  int z;
  int lin=w->top->line+y-w->y;
  if(lin<=w->b->eof->line) sprintf(buf,"%5ld ",w->top->line+y-w->y+1);
- else zcpy(buf,"      ");
+ else strcpy(buf,"      ");
  for(z=0;buf[z];++z)
   {
   outatr(t,screen+z,z,y,buf[z],0);

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
+#include <ctype.h>
+#include <string.h>
 #include "config.h"
 #include "b.h"
 #include "bw.h"
@@ -33,13 +35,13 @@ BW *bw;
  int c;
  
  peol(p);
- while(cwhite(c=prgetc(p)));
+ while(isblank(c=prgetc(p)));
  if(c=='\n') { pgetc(p); goto done; }
  if(c==MAXINT) goto done;
  pgetc(p); endcol=piscol(p);
  
  pbol(p);
- while(cwhite(c=pgetc(p)));
+ while(isblank(c=pgetc(p)));
  if(c=='\n') { prgetc(p); goto done; }
  if(c==MAXINT) goto done;
  prgetc(p); begcol=piscol(p);
@@ -116,7 +118,7 @@ P *p;
  pbol(q);
  while(cpara(brc(q))) pgetc(q);
  while(!pisbol(q))
-  if(!cwhite(prgetc(q)))
+  if(!isblank(prgetc(q)))
    {
    pgetc(q);
    break;
@@ -266,7 +268,7 @@ char *indents;
   q=pdup(r);
   while(cpara(c=brc(q)))
    {
-   if(!cwhite(c)) f=1;
+   if(!isblank(c)) f=1;
    pgetc(q);
    }
   if(f)
@@ -279,7 +281,7 @@ char *indents;
 */
 
  /* Get to beginning of word */
- while(!pisbol(p) && piscol(p)>indent && !cwhite(prgetc(p)));
+ while(!pisbol(p) && piscol(p)>indent && !isblank(prgetc(p)));
 
  /* If we found the beginning of a word... */
  if(!pisbol(p) && piscol(p)>indent)
@@ -288,7 +290,7 @@ char *indents;
      word */
   q=pdup(p);
   while(!pisbol(q))
-   if(!cwhite(c=prgetc(q)))
+   if(!isblank(c=prgetc(q)))
     {
     pgetc(q);
     if((c=='.'||c=='?'||c=='!') && q->byte!=p->byte && !french) pgetc(q);
@@ -307,7 +309,7 @@ char *indents;
   pgetc(p);
 
   /* Indent to left margin */
-  if(indents) binss(p,indents), to+=zlen(indents);
+  if(indents) binss(p,indents), to+=strlen(indents);
   else while(indent--) binsc(p,' '), ++to;
 
   if(rmf) free(indents);
@@ -394,7 +396,7 @@ BW *bw;
      c=='\r' && len && *b=='\n') { ++len; --b; break; }
 
   /* Stop if we found white-space followed by end of line */
-  if(cwhite(c))
+  if(isblank(c))
    {
    char *r=b;
    int rlen=len;
@@ -403,7 +405,7 @@ BW *bw;
     {
     z= *r++;
     if(z=='\n') break;
-    if(!cwhite(z)) goto ok;
+    if(!isblank(z)) goto ok;
     }
    ++len; --b; break;
    ok:;
@@ -413,7 +415,7 @@ BW *bw;
   binsc(p,c); pgetc(p);
 
   /* Do word wrap if we reach right margin */
-  if(piscol(p)>bw->o.rmargin && !cwhite(c))
+  if(piscol(p)>bw->o.rmargin && !isblank(c))
    {
    wrapword(p,indent,bw->o.french,indents);
    break;
@@ -423,11 +425,11 @@ BW *bw;
  /* Do rest */
  
  while(len>0)
-  if(cwhitel(*b) || *b=='\r')
+  if(isspace(*b) || *b=='\r')
    {
    int f=0;
    /* Set f if there are two spaces after . ? or ! instead of one */
-   if((b[-1]=='.' || b[-1]=='?' || b[-1]=='!') && cwhitel(b[1])) f=1;
+   if((b[-1]=='.' || b[-1]=='?' || b[-1]=='!') && isspace(b[1])) f=1;
 
    /* Skip past the whitespace.  Skip over indentations */
    loop:
@@ -449,7 +451,7 @@ BW *bw;
      }
     }
 
-   if(len && cwhite(*b))
+   if(len && isblank(*b))
     {
     if(b-buf==curoff) pset(bw->cursor,p);
     ++b, --len;

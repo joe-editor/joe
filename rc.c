@@ -1,6 +1,8 @@
 /* rc file parser */
 
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
 #include "zstr.h"
 #include "macro.h"
 #include "cmd.h"
@@ -33,10 +35,10 @@ KMAP *getcontext(name)
 char *name;
  {
  struct context *c;
- for(c=contexts;c;c=c->next) if(!zcmp(c->name,name)) return c->kmap;
+ for(c=contexts;c;c=c->next) if(!strcmp(c->name,name)) return c->kmap;
  c=(struct context *)malloc(sizeof(struct context));
  c->next=contexts;
- c->name=zdup(name);
+ c->name=strdup(name);
  contexts=c;
  return c->kmap=mkkmap();
  }
@@ -296,7 +298,7 @@ OPTIONS *options;
  if(!isiz) izopts();
  if(s[0]=='-') st=0, ++s;
  for(x=0;glopts[x].name;++x)
-  if(!zcmp(glopts[x].name,s))
+  if(!strcmp(glopts[x].name,s))
    {
    switch(glopts[x].type)
     {
@@ -311,7 +313,7 @@ OPTIONS *options;
     break;
 
     case 2: if(set)
-             if(arg) *(char **)glopts[x].set=zdup(arg);
+             if(arg) *(char **)glopts[x].set=strdup(arg);
              else *(char **)glopts[x].set=0;
     break;
 
@@ -350,39 +352,39 @@ OPTIONS *options;
    if((glopts[x].type&3)==0 || !arg) return 1;
    else return 2;
    }
- if(!zcmp(s,"lmsg"))
+ if(!strcmp(s,"lmsg"))
   {
   if(arg)
    {
-   if(options) options->lmsg=zdup(arg);
-   else if(set==2) fdefault.lmsg=zdup(arg);
+   if(options) options->lmsg=strdup(arg);
+   else if(set==2) fdefault.lmsg=strdup(arg);
    ret=2;
    }
   else ret=1;
   }
- else if(!zcmp(s,"rmsg"))
+ else if(!strcmp(s,"rmsg"))
   {
   if(arg)
    {
-   if(options) options->rmsg=zdup(arg);
-   else if(set==2) fdefault.rmsg=zdup(arg);
+   if(options) options->rmsg=strdup(arg);
+   else if(set==2) fdefault.rmsg=strdup(arg);
    ret=2;
    }
   else ret=1;
   }
- else if(!zcmp(s,"keymap"))
+ else if(!strcmp(s,"keymap"))
   {
   if(arg)
    {
    int y;
-   for(y=0;!cwhitel(arg[y]);++y);
+   for(y=0;!isspace(arg[y]);++y);
    if(!arg[y]) arg[y]=0;
-   if(options && y) options->context=zdup(arg);
+   if(options && y) options->context=strdup(arg);
    ret=2;
    }
   else ret=1;
   }
- else if(!zcmp(s,"mnew"))
+ else if(!strcmp(s,"mnew"))
   {
   if(arg)
    {
@@ -393,7 +395,7 @@ OPTIONS *options;
    }
   else ret=1;
   }
- else if(!zcmp(s,"mold"))
+ else if(!strcmp(s,"mold"))
   {
   if(arg)
    {
@@ -404,7 +406,7 @@ OPTIONS *options;
    }
   else ret=1;
   }
- else if(!zcmp(s,"msnew"))
+ else if(!strcmp(s,"msnew"))
   {
   if(arg)
    {
@@ -415,7 +417,7 @@ OPTIONS *options;
    }
   else ret=1;
   }
- else if(!zcmp(s,"msold"))
+ else if(!strcmp(s,"msold"))
   {
   if(arg)
    {
@@ -457,7 +459,7 @@ int *notify;
    else if(v>=glopts[x].low && v<=glopts[x].high) *glopts[x].set=v;
    else msgnw(bw,"Value out of range"), ret= -1;
    break;
-  case 2: if(s[0]) *(char **)glopts[x].set=zdup(s); break;
+  case 2: if(s[0]) *(char **)glopts[x].set=strdup(s); break;
   case 5:
    v=calc(bw,s);
    if(merr) msgnw(bw,merr), ret= -1;
@@ -573,7 +575,7 @@ BW *bw;
    case 1: sprintf(s[x],"%s%d",glopts[x].menu,*glopts[x].set);
    break;
 
-   case 2: zcpy(s[x],glopts[x].menu);
+   case 2: strcpy(s[x],glopts[x].menu);
    break;
 
    case 4: sprintf(s[x],"%s%s",glopts[x].menu,*(int *)((char *)&bw->o+glopts[x].ofst)?"ON":"OFF");
@@ -610,7 +612,7 @@ char *name;
  FILE *fd;			/* rc file */
  int line=0;			/* Line number */
  int err=0;			/* Set to 1 if there was a syntax error */
- ossep(zcpy(buf,name));
+ ossep(strcpy(buf,name));
 #ifdef __MSDOS__
  fd=fopen(buf,"rt");
 #else
@@ -636,7 +638,7 @@ char *name;
     buf[x]=0;
     o->next=options;
     options=o;
-    o->name=zdup(buf);
+    o->name=strdup(buf);
     }
    break;
    
@@ -689,14 +691,14 @@ char *name;
       hlplns=tmp->hlplns;
      continue;
      }
-    bfl=zlen(buf);
+    bfl=strlen(buf);
     if(tmp->hlpsiz+bfl>tmp->hlpbsz)
      {
      if(tmp->hlptxt) tmp->hlptxt=(char *)realloc(tmp->hlptxt,tmp->hlpbsz+bfl+1024);
      else tmp->hlptxt=(char *)malloc(bfl+1024), tmp->hlptxt[0]=0;
      tmp->hlpbsz+=bfl+1024;
      }
-    zcpy(tmp->hlptxt+tmp->hlpsiz,buf);
+    strcpy(tmp->hlptxt+tmp->hlpsiz,buf);
     tmp->hlpsiz+=bfl;
     ++tmp->hlplns;
     goto up;
@@ -709,17 +711,17 @@ char *name;
     for(x=1;!cwhitef(buf[x]);++x);
     c=buf[x]; buf[x]=0;
     if(x!=1)
-     if(!zcmp(buf+1,"def"))
+     if(!strcmp(buf+1,"def"))
       {
       int y;
-      for(buf[x]=c;cwhite(buf[x]);++x);
+      for(buf[x]=c;isblank(buf[x]);++x);
       for(y=x;!cwhitef(buf[y]);++y);
       c=buf[y]; buf[y]=0;
       if(y!=x)
        {
        int sta;
        MACRO *m;
-       if(cwhite(c) && (m=mparse(NULL,buf+y+1,&sta)))
+       if(isblank(c) && (m=mparse(NULL,buf+y+1,&sta)))
         addcmd(buf+x,m);
        else
         {
@@ -733,10 +735,10 @@ char *name;
        fprintf(stderr,"\n%s %d: command name missing from :def",name,line);
        }
       }
-     else if(!zcmp(buf+1,"inherit"))
+     else if(!strcmp(buf+1,"inherit"))
       if(context)
        {
-       for(buf[x]=c;cwhite(buf[x]);++x);
+       for(buf[x]=c;isblank(buf[x]);++x);
        for(c=x;!cwhitef(buf[c]);++c);
        buf[c]=0;
        if(c!=x) kcpy(context,getcontext(buf+x));
@@ -751,9 +753,9 @@ char *name;
        err=1;
        fprintf(stderr,"\n%s %d: No context selected for :inherit",name,line);
        }
-     else if(!zcmp(buf+1,"include"))
+     else if(!strcmp(buf+1,"include"))
       {
-      for(buf[x]=c;cwhite(buf[x]);++x);
+      for(buf[x]=c;isblank(buf[x]);++x);
       for(c=x;!cwhitef(buf[c]);++c);
       buf[c]=0;
       if(c!=x)
@@ -773,11 +775,11 @@ char *name;
        fprintf(stderr,"\n%s %d: :include missing file name",name,line);
        }
       }
-     else if(!zcmp(buf+1,"delete"))
+     else if(!strcmp(buf+1,"delete"))
       if(context)
        {
        int y;
-       for(buf[x]=c;cwhite(buf[x]);++x);
+       for(buf[x]=c;isblank(buf[x]);++x);
        for(y=x;buf[y]!=0 && buf[y]!='\t' && buf[y]!='\n' &&
                (buf[y]!=' ' || buf[y+1]!=' ');++y);
        buf[y]=0;

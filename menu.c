@@ -22,6 +22,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "vs.h"
 #include "zstr.h"
 #include "menu.h"
+#include <string.h>
 
 extern int dostaupd;
 
@@ -90,7 +91,7 @@ MENU *m;
   int x;
   m->top=0;
   for(x=0,m->width=0;m->list[x];++x)
-   if(zlen(m->list[x])>m->width) m->width=zlen(m->list[x]);
+   if(strlen(m->list[x])>m->width) m->width=strlen(m->list[x]);
   m->nitems=x;
   if(m->width>m->w) m->width=m->w-1;
   m->perline=m->w/(m->width+1);

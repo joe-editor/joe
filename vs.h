@@ -20,6 +20,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Ivs
 
 #include "config.h"
+#include <string.h>
 
 /***
  *
@@ -60,7 +61,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
  * Three important macros are provided for helping with vsncpy():
  *
  * sc("Hello")   Gives -->  "Hello",sizeof("Hello")-1
- * sz(s)         Gives -->  s,zlen(s)
+ * sz(s)         Gives -->  s,strlen(s)
  * sv(d)         Gives -->  d,sLEN(d)
  *
  * These are used to build arguments for vsncpy().  Many functions

@@ -1,5 +1,6 @@
 /* Compiler error handler */
 
+#include <string.h>
 #include "queue.h"
 #include "b.h"
 #include "vs.h" 
@@ -38,7 +39,7 @@ long n;
  ERROR *e;
  if(name)
   for(e=errors.link.next;e!=&errors;e=e->link.next)
-   if(!zcmp(e->file,name))
+   if(!strcmp(e->file,name))
     if(e->line>where) e->line+=n;
     else if(e->line==where && bol) e->line+=n;
  }
@@ -51,7 +52,7 @@ long n;
  ERROR *e;
  if(name)
   for(e=errors.link.next;e!=&errors;e=e->link.next)
-   if(!zcmp(e->file,name))
+   if(!strcmp(e->file,name))
     if(e->line>where+n) e->line-=n;
     else if(e->line>where) e->line=where;
  }
@@ -64,7 +65,7 @@ char *name;
  ERROR *e;
  if(name)
   for(e=errors.link.next;e!=&errors;e=e->link.next)
-   if(!zcmp(e->file,name)) e->line=e->org;
+   if(!strcmp(e->file,name)) e->line=e->org;
  }
 
 /* Save notice */
@@ -75,7 +76,7 @@ char *name;
  ERROR *e;
  if(name)
   for(e=errors.link.next;e!=&errors;e=e->link.next)
-   if(!zcmp(e->file,name)) e->org=e->line;
+   if(!strcmp(e->file,name)) e->org=e->line;
  }
 
 /* Pool of free error nodes */
@@ -190,7 +191,7 @@ BW *bw;
   return -1;
   }
  errptr=errptr->link.next;
- if(!bw->b->name || zcmp(errptr->file,bw->b->name))
+ if(!bw->b->name || strcmp(errptr->file,bw->b->name))
   {
   if(doedit(bw,vsdup(errptr->file),NULL,NULL)) return -1;
   bw=(BW *)maint->curwin->object;
@@ -215,7 +216,7 @@ BW *bw;
   return -1;
   }
  errptr=errptr->link.prev;
- if(!bw->b->name || zcmp(errptr->file,bw->b->name))
+ if(!bw->b->name || strcmp(errptr->file,bw->b->name))
   {
   if(doedit(bw,vsdup(errptr->file),NULL,NULL)) return -1;
   bw=(BW *)maint->curwin->object;

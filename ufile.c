@@ -20,6 +20,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "config.h"
+#include <string.h>
 
 #ifdef UTIME
 #include <utime.h>
@@ -197,14 +198,14 @@ BW *bw;
   
   ossep(name);
 
-  for(x=zlen(name);name[--x]!='.';)
+  for(x=strlen(name);name[--x]!='.';)
    if(name[x]=='\\' || (name[x]==':' && x==1) || x==0)
     {
-    x=zlen(name);
+    x=strlen(name);
     break;
     }
 
-  zcpy(name+x,".bak");
+  strcpy(name+x,".bak");
 
 #else
 
@@ -280,8 +281,8 @@ int *notify;
   }
  else
   {
-  if(!bw->b->name) bw->b->name=joesep(zdup(req->name));
-  if(!zcmp(bw->b->name,req->name))
+  if(!bw->b->name) bw->b->name=joesep(strdup(req->name));
+  if(!strcmp(bw->b->name,req->name))
    {
    bw->b->changed=0;
    saverr(bw->b->name);
@@ -332,7 +333,7 @@ void *object;
 int *notify;
  {
  int f;
- if(s[0]!='!' && !(s[0]=='>' && s[1]=='>') && (!bw->b->name || zcmp(s,bw->b->name)))
+ if(s[0]!='!' && !(s[0]=='>' && s[1]=='>') && (!bw->b->name || strcmp(s,bw->b->name)))
   {
   f=open(s,O_RDONLY);
   if(f!= -1)
@@ -566,7 +567,7 @@ char *s;
 void *object;
 int *notify;
  {
- bw->b->name=joesep(zdup(s)); 
+ bw->b->name=joesep(strdup(s)); 
  return dosave(bw,s,exdone,notify);
  }
 

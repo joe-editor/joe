@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
+#include <string.h>
 #include "config.h"
 #include "tty.h"
 #include "b.h"
@@ -47,7 +48,7 @@ int get_help(name)
 char *name;
  {
  int x;
- for(x=0;help_structs[x];++x) if(!zcmp(help_structs[x]->name,name)) break;
+ for(x=0;help_structs[x];++x) if(!strcmp(help_structs[x]->name,name)) break;
  if(help_structs[x]) return x;
  else return -1;
  }

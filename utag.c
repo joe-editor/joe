@@ -6,6 +6,7 @@
 */
 
 #include <stdio.h>
+#include <string.h>
 #include "config.h"
 #include "b.h"
 #include "bw.h"
@@ -40,7 +41,7 @@ static int dotag(BW *bw, char *s, void *obj, int *notify) {
 		int x, y, c;
 		for (x=0; buf[x] && buf[x]!=' ' && buf[x]!='\t'; ++x);
 		c = buf[x]; buf[x] = 0;
-		if (!zcmp(s,buf) || t && !zcmp(t,buf)) {
+		if (!strcmp(s,buf) || t && !strcmp(t,buf)) {
 			buf[x] = c;
 			while (buf[x]==' ' || buf[x]=='\t') ++x;
 			for (y=x; buf[y] && buf[y]!=' ' && buf[y]!='\t' && buf[y]!='\n'; ++y);

@@ -25,6 +25,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 extern int errno;
 
 int idleout=1;
@@ -822,21 +823,21 @@ int *ptyfd;
 
  if(ptys) for(fd=0;ptys[fd];++fd)
   {
-  zcpy(ttyname,ptydir); zcat(ttyname,ptys[fd]);
+  strcpy(ttyname,ptydir); strcat(ttyname,ptys[fd]);
   if((*ptyfd=open(ttyname,O_RDWR))>=0)
    {
    ptys[fd][0]='t';
-   zcpy(ttyname,ttydir); zcat(ttyname,ptys[fd]);
+   strcpy(ttyname,ttydir); strcat(ttyname,ptys[fd]);
    ptys[fd][0]='p';
    x=open(ttyname,O_RDWR);
    if(x>=0)
     {
     close(x);
     close(*ptyfd);
-    zcpy(ttyname,ptydir); zcat(ttyname,ptys[fd]);
+    strcpy(ttyname,ptydir); strcat(ttyname,ptys[fd]);
     *ptyfd=open(ttyname,O_RDWR);
     ptys[fd][0]='t';
-    zcpy(ttyname,ttydir); zcat(ttyname,ptys[fd]);
+    strcpy(ttyname,ttydir); strcat(ttyname,ptys[fd]);
     ptys[fd][0]='p';
     return ttyname;
     }

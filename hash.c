@@ -1,5 +1,6 @@
 /* Simple hash table */
 
+#include <string.h>
 #include "zstr.h"
 #include "hash.h"
 
@@ -55,6 +56,6 @@ char *name;
  {
  HENTRY *e;
  for(e=ht->tab[hash(name)&ht->len];e;e=e->next)
-  if(!zcmp(e->name,name)) return e->val;
+  if(!strcmp(e->name,name)) return e->val;
  return 0;
  }

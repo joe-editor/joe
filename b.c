@@ -30,6 +30,7 @@ at 1999-07-23
 #include <errno.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "config.h"
 #include "blocks.h"
@@ -445,7 +446,7 @@ P *p;
  {
  P *q=pdup(p);
  pbol(q);
- while(cwhite(brc(q))) pgetc(q);
+ while(isblank(brc(q))) pgetc(q);
  if(piseol(q))
   {
   prm(q);
@@ -464,7 +465,7 @@ P *p;
  P *q=pdup(p);
  long col;
  pbol(q);
- while(cwhite(brc(q))) pgetc(q);
+ while(isblank(brc(q))) pgetc(q);
  col=q->col;
  prm(q);
  return col;
@@ -1547,7 +1548,7 @@ P *binss(p,s)
 P *p;
 char *s;
  {
- return binsm(p,s,zlen(s));
+ return binsm(p,s,strlen(s));
  }
 
 /* Read 'size' bytes from file or stream.  Stops and returns amnt. read
@@ -1705,7 +1706,7 @@ char *s;
   }
  else
 #endif
- if(!zcmp(n,"-")) fi=stdin;
+ if(!strcmp(n,"-")) fi=stdin;
  else
   {
   fi=fopen(n,"r+");
@@ -1752,17 +1753,17 @@ char *s;
  if(s[0]=='!') pclose(fi);
  else
 #endif
- if(zcmp(n,"-")) fclose(fi);
+ if(strcmp(n,"-")) fclose(fi);
 
  opnerr:;
  if(s[0]=='!') ttopnn(), nreturn(maint->t);
 
  /* Set name */
- b->name=joesep(zdup(s));
+ b->name=joesep(strdup(s));
 
  /* Set flags */
  if(error || s[0]=='!' || skip || amnt!=MAXLONG) b->backup=1, b->changed=0;
- else if(!zcmp(n,"-")) b->backup=1, b->changed=1;
+ else if(!strcmp(n,"-")) b->backup=1, b->changed=1;
  else b->backup=0, b->changed=0;
  if(nowrite) b->rdonly=b->o.readonly=1;
 
@@ -1790,7 +1791,7 @@ char *s;
   return b;
   }
  for(b=bufs.link.next;b!=&bufs;b=b->link.next)
-  if(b->name && !zcmp(s,b->name))
+  if(b->name && !strcmp(s,b->name))
    {
    if(!b->orphan) ++b->count;
    else b->orphan=0;
@@ -1901,7 +1902,7 @@ long size;
  else
 #endif
  if(s[0]=='>' && s[1]=='>') f=fopen(s+2,"a");
- else if(!zcmp(s,"-"))
+ else if(!strcmp(s,"-"))
   {
   nescape(maint->t);
   ttclsn();
@@ -1937,11 +1938,11 @@ long size;
  if(s[0]=='!') pclose(f);
  else
 #endif
- if(zcmp(s,"-")) fclose(f);
+ if(strcmp(s,"-")) fclose(f);
  else fflush(f);
 
  opnerr:;
- if(s[0]=='!' || !zcmp(s,"-")) ttopnn(), nreturn(maint->t);
+ if(s[0]=='!' || !strcmp(s,"-")) ttopnn(), nreturn(maint->t);
  return error;
  }
 

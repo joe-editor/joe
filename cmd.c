@@ -1,5 +1,7 @@
 /* Command execution */
 
+#include <string.h>
+
 #include "config.h"
 #include "vs.h"
 #include "va.h"
@@ -268,7 +270,7 @@ MACRO *m;
  {
  CMD *cmd=(CMD *)malloc(sizeof(CMD));
  if(!cmdhash) izcmds();
- cmd->name=zdup(s);
+ cmd->name=strdup(s);
  cmd->flag=0;
  cmd->func=0;
  cmd->m=m;

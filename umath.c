@@ -1,6 +1,7 @@
 /* Math */
 
 #include <signal.h>
+#include <string.h>
 #include "w.h"
 #include "bw.h"
 #include "pw.h"
@@ -29,12 +30,12 @@ struct var *get(str)
 char *str;
  {
  struct var *v;
- for(v=vars;v;v=v->next) if(!zcmp(v->name,str)) return v;
+ for(v=vars;v;v=v->next) if(!strcmp(v->name,str)) return v;
  v=(struct var *)malloc(sizeof(struct var));
  v->set=0;
  v->next=vars;
  vars=v;
- v->name=zdup(str);
+ v->name=strdup(str);
  return v;
  }
 
@@ -157,7 +158,7 @@ int *notify;
  if(bw->parent->watom->what!=TYPETW)
   {
   binsm(bw->cursor,sz(msgbuf));
-  pfwrd(bw->cursor,zlen(msgbuf));
+  pfwrd(bw->cursor,strlen(msgbuf));
   bw->cursor->xcol=piscol(bw->cursor);
   }
  else msgnw(bw,msgbuf);

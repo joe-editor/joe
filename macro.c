@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
+#include <string.h>
 #include "main.h"
 #include "qw.h"
 #include "pw.h"
@@ -28,6 +29,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "uedit.h"
 #include "zstr.h"
 #include "macro.h"
+#include <ctype.h>
 
 MACRO *freemacros=0;
 
@@ -136,7 +138,7 @@ int *sta;
  macroloop:
 
  /* Skip whitespace */
- while(cwhite(buf[x])) ++x;
+ while(isblank(buf[x])) ++x;
 
  /* Do we have a string? */
  if(buf[x]=='\"')
@@ -223,13 +225,13 @@ int *sta;
   }
 
  /* Skip whitespace */
- while(cwhite(buf[x])) ++x;
+ while(isblank(buf[x])) ++x;
 
  /* Do we have a comma? */
  if(buf[x]==',')
   {
   ++x;
-  while(cwhite(buf[x])) ++x;
+  while(isblank(buf[x])) ++x;
   if(buf[x] && buf[x]!='\r' && buf[x]!='\n') goto macroloop;
   *sta= -2;
   return m;
@@ -271,10 +273,10 @@ MACRO *m;
   for(x=0;x!=m->n;++x) domtext(m->steps[x]);
  else
   {
-  if(instr && zcmp(m->cmd->name,"type")) *ptr++='\"', instr=0;
+  if(instr && strcmp(m->cmd->name,"type")) *ptr++='\"', instr=0;
   if(first) first=0;
   else if(!instr) *ptr++=',';
-  if(!zcmp(m->cmd->name,"type"))
+  if(!strcmp(m->cmd->name,"type"))
    {
    if(!instr) *ptr++='\"', instr=1;
    ptr=unescape(ptr,m->k);
@@ -282,11 +284,11 @@ MACRO *m;
   else
    {
    for(x=0;m->cmd->name[x];++x) *ptr++=m->cmd->name[x];
-   if(!zcmp(m->cmd->name,"play") ||
-      !zcmp(m->cmd->name,"gomark") ||
-      !zcmp(m->cmd->name,"setmark") ||
-      !zcmp(m->cmd->name,"record") ||
-      !zcmp(m->cmd->name,"uarg"))
+   if(!strcmp(m->cmd->name,"play") ||
+      !strcmp(m->cmd->name,"gomark") ||
+      !strcmp(m->cmd->name,"setmark") ||
+      !strcmp(m->cmd->name,"record") ||
+      !strcmp(m->cmd->name,"uarg"))
     {
     *ptr++=',';
     *ptr++='"';

@@ -16,6 +16,8 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
+#include <ctype.h>
+#include <string.h>
 #include "config.h"
 #include "b.h"
 #include "bw.h"
@@ -103,12 +105,12 @@ BW *bw;
  lp:
  d=' ';
  while(c=prgetc(bw->cursor),
-       c!= MAXINT && !crest(c) && (!cwhitel(c) || cwhitel(d)))
+       c!= MAXINT && !crest(c) && (!isspace(c) || isspace(d)))
   d=c; 
  if(c==' ')
   {
   d=prgetc(bw->cursor); if(d!=MAXINT) pgetc(bw->cursor);
-  if(!cwhitel(d)) { pgetc(bw->cursor); goto lp; }
+  if(!isspace(d)) { pgetc(bw->cursor); goto lp; }
   }
  if(c!= MAXINT) pgetc(bw->cursor);
  /* Move to beginning of current word */
@@ -128,12 +130,12 @@ BW *bw;
  lp:
  d=' ';
  while(c=brc(bw->cursor),
-       c!= MAXINT && !crest(c) && (!cwhitel(c) || cwhitel(d)))
+       c!= MAXINT && !crest(c) && (!isspace(c) || isspace(d)))
   d=pgetc(bw->cursor);
  if(c==' ')
   {
   pgetc(bw->cursor); d=brc(bw->cursor); prgetc(bw->cursor);
-  if(!cwhitel(d)) goto lp;
+  if(!isspace(d)) goto lp;
   }
  /* Move to end of current word */
  while(c=brc(bw->cursor), crest(c)) pgetc(bw->cursor);
@@ -144,7 +146,7 @@ P *pboi(p)
 P *p;
  {
  pbol(p);
- while(cwhite(brc(p))) pgetc(p);
+ while(isblank(brc(p))) pgetc(p);
  return p;
  }
 
@@ -158,9 +160,9 @@ P *p;
  q=pdup(p);
  pboi(q);
  if(q->byte==p->byte) goto left;
- if(cwhite(c=brc(p)))
+ if(isblank(c=brc(p)))
   {
-  pset(q,p); if(cwhite(prgetc(q))) goto no;
+  pset(q,p); if(isblank(prgetc(q))) goto no;
   if(c=='\t') goto right;
   pset(q,p); pgetc(q);
   if(pgetc(q)==' ') goto right;
@@ -590,8 +592,8 @@ BW *bw;
  int c=brc(p);
  if(crest(c))
   while(c=brc(p), crest(c)) pgetc(p);
- else if(cwhitel(c) || c=='\r')
-  while(c=brc(p), (cwhitel(c) || c=='\r')) pgetc(p);
+ else if(isspace(c) || c=='\r')
+  while(c=brc(p), (isspace(c) || c=='\r')) pgetc(p);
  else pgetc(p);
  if(p->byte==bw->cursor->byte) { prm(p); return -1; }
  bdel(bw->cursor,p);
@@ -613,9 +615,9 @@ BW *bw;
   while(c=prgetc(bw->cursor), crest(c));
   if(c!= MAXINT) pgetc(bw->cursor);
   }
- else if(cwhitel(c))
+ else if(isspace(c))
   {
-  while(c=prgetc(bw->cursor), cwhitel(c));
+  while(c=prgetc(bw->cursor), isspace(c));
   if(c!= MAXINT) pgetc(bw->cursor);
   }
  if(bw->cursor->byte==p->byte) { prm(p); return -1; }
@@ -703,7 +705,7 @@ int k;
    while(piscol(bw->cursor)<bw->o.lmargin)
     binsc(bw->cursor,' '), pgetc(bw->cursor);
   binsc(bw->cursor,k), pgetc(bw->cursor);
-  if(bw->o.wordwrap && piscol(bw->cursor)>bw->o.rmargin && !cwhite(k))
+  if(bw->o.wordwrap && piscol(bw->cursor)>bw->o.rmargin && !isblank(k))
    wrapword(bw->cursor,(long)bw->o.lmargin,bw->o.french,NULL), simple=0;
   else if(bw->o.overtype && !piseol(bw->cursor) && k!='\t') udelch(bw);
   bw->cursor->xcol=piscol(bw->cursor);
@@ -978,7 +980,7 @@ BW *bw;
   if(bw->o.autoindent)
    {
    pbol(p);
-   while(cwhite(c=pgetc(p)))
+   while(isblank(c=pgetc(p)))
     binsc(bw->cursor,c), pgetc(bw->cursor);
    }
   prm(p);
@@ -1130,7 +1132,7 @@ void *object;
 int *notify;
  {
  if(notify) *notify=1;
- zcpy(msgbuf,s);
+ strcpy(msgbuf,s);
  vsrm(s);
  msgnw(b,msgbuf);
  return 0;

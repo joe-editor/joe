@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "config.h"
 #include "zstr.h"
@@ -74,9 +75,9 @@ char *namepart (char *tmp, char *path) {
 #ifdef __MSDOS__
 	if(path[0] && path[1]==':') path += 2;
 #endif
-	z = path+zlen(path);
+	z = path+strlen(path);
  	while ((z!=path) && (z[-1]!='/')) --z;
- 	return zcpy(tmp,z);
+ 	return strcpy(tmp,z);
 }
 /********************************************************************/
 char *dirprt (char *path) {
@@ -161,7 +162,7 @@ char *mktmp (char *where) {
 #else
  	if (!where) where = "/tmp";
 #endif
-	name=(char *)malloc(zlen(where)+16);
+	name=(char *)malloc(strlen(where)+16);
 loop:
 	sprintf (name,"%s/J%d%d.tmp",where,seq= ++seq%1000,(unsigned)time(NULL)%1000);
  	ossep (name);
@@ -246,7 +247,7 @@ int isreg(char *s) {
 			dirstate = 1;
 		}
 	
-		zcpy (direc.d_name,ffblk.ff_name);
+		strcpy (direc.d_name,ffblk.ff_name);
 		for (x=0; direc.d_name[x]; ++x)
 			direc.d_name[x] = tolower(direc.d_name[x]);
 		return &direc;
@@ -268,7 +269,7 @@ char **rexpnd (char *word) {
 	dir = opendir(".");
 	if (dir) {
 		while (de=readdir(dir))
-			if (zcmp(".",de->d_name))
+			if (strcmp(".",de->d_name))
 				if (rmatch(word,de->d_name))
 					lst = vaadd (lst,vsncpy(NULL,0,sz(de->d_name)));
 		closedir(dir);
@@ -286,8 +287,8 @@ int chpwd (char *path) {
 		path += 2;
 	}
 	if (!path[0]) return 0;
-	zcpy(buf,path);
-	x = zlen(buf);
+	strcpy(buf,path);
+	x = strlen(buf);
 	while(x>1) {
 		--x;
 		if ((buf[x]=='/') || (buf[x]=='\\')) 
