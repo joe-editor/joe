@@ -83,15 +83,15 @@
 	"#"		pre		recolor=-1
 
 :pre Preproc
-	*		idle		noeat
+	*		preproc		noeat
 	" \t"		pre
-	"a-zA-Z"	preident	recolor=-1 buffer
+	"a-z"		preident	recolor=-1 buffer
 
 :preident Preproc
 	*		preproc		noeat strings
 	"define"	predefine
 done
-	"a-zA-Z0-9_"	preident
+	"a-z"		preident
 
 :predefine Preproc
 	*		predefine
@@ -104,7 +104,7 @@ done
 	"a-zA-Z0-9_"	predef_ident	recolor=-1
 
 :predef_ident Define
-	*		ident		noeat recolor=-1
+	*		idle		noeat recolor=-1
 	"a-zA-Z0-9_"	predef_ident
 
 :preproc Preproc
