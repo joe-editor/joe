@@ -32,8 +32,8 @@ struct pw {
              int (*tab)(),void *object,int *notify);
  * Create a prompt window for the given window
  */
-BW *wmkpw (W *w, char *prompt, B **history, int (*func) (), char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify);
+BW *wmkpw(W * w, char *prompt, B ** history, int (*func) (), char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify);
 
-int ucmplt (BW *bw, int k);
+int ucmplt(BW * bw, int k);
 
 #endif

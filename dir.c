@@ -10,35 +10,39 @@ struct direct {
 	char d_name[14];
 };
 
-void *opendir (char *name) {
-	return fopen (name, "r");
+void *opendir(char *name)
+{
+	return fopen(name, "r");
 }
 
-struct direct *readdir (void *f) {
+struct direct *readdir(void *f)
+{
 	static struct direct direct;
 
-	while (1 == fread (&direct, sizeof (struct direct), 1, (FILE *) f)) {
+	while (1 == fread(&direct, sizeof(struct direct), 1, (FILE *) f)) {
 		if (direct.d_ino) {
 			return &direct;
 		}
 	}
-	return 0;	
+	return 0;
 }
 
-void closedir (FILE *f) {
-	fclose (f);
+void closedir(FILE * f)
+{
+	fclose(f);
 }
 
-int mkdir (char *s) {
+int mkdir(char *s)
+{
 	char *y = NULL;
 	int rtval;
 
-	y = vsncpy (sv (y), sc ("/bin/mkdir "));
-	y = vsncpy (sv (y), sz (s));
-	y = vsncpy (sv (y), sc (" 2>/dev/null"));
-	tickoff ();
-	rtval = system (y);
-	tickon ();
-	vsrm (y);
+	y = vsncpy(sv(y), sc("/bin/mkdir "));
+	y = vsncpy(sv(y), sz(s));
+	y = vsncpy(sv(y), sc(" 2>/dev/null"));
+	tickoff();
+	rtval = system(y);
+	tickon();
+	vsrm(y);
 	return rtval;
 }

@@ -1,3 +1,4 @@
+
 /*
 	UNIX Tty and Process interface
 	Copyright (C) 1992 Joseph H. Allen
@@ -7,22 +8,36 @@
 
 /** System include files **/
 
-/* These should exist on every UNIX system */
+#include "config.h"
+
 #include <sys/types.h>
+#ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
+#ifdef GWINSZ_IN_SYS_IOCTL
+#ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
+#endif
+#endif
 #include <stdio.h>
 #include <signal.h>
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
+#endif
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
+#endif
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 extern int errno;
 
 int idleout = 1;
-
-#include <sys/param.h>
 
 #include "config.h"
 
@@ -30,36 +45,20 @@ int idleout = 1;
  * tty interface the system uses and what type of system
  * we actually have.
  */
-#ifdef TTYPOSIX
-
-#ifdef SYSPOSIX
-#include <sys/termios.h>
+#ifdef HAVE_POSIX_TERMIOS
+#  include <termios.h>
+#  include <sys/termios.h>
 #else
-#include <termios.h>
+#  ifdef HAVE_SYSV_TERMIO
+#    include <termio.h>
+#    include <sys/termio.h>
+#  else
+#    include <sgtty.h>
+#  endif
 #endif
 
-#else
-#ifdef TTYSV
-
-#ifdef SYSSV
-#include <sys/termio.h>
-#else
-#include <termio.h>
-#endif
-
-#else
-#include <sgtty.h>
-#endif
-#endif
-
-/* If the signal SIGVTALRM exists, assume we have the setitimer system call
- * and the include file necessary for it.  I'm not so sure that this method
- * of detecting 'setitimer' is foolproof, so this is the only place where
- * SIGVTALRM will be checked... after here the itimer code will look for
- * ITIMER_REAL (which is defined in sys/time.h).
- */
-#ifndef _SEQUENT_
-#ifdef SIGVTALRM
+#ifdef HAVE_SETITIMER
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 #endif
@@ -88,36 +87,28 @@ int idleout = 1;
 
 /* JOE include files */
 
-#include "config.h"
+#include "main.h"
 #include "path.h"
 #include "tty.h"
 
 /* The pwd function */
-#ifdef TTYPOSIX
-char *getcwd ();
-char *
-pwd ()
+#ifdef HAVE_GETCWD
+char *pwd(void)
 {
 	static char buf[1024];
-	return getcwd (buf, 1024);
+
+	return getcwd(buf, 1024);
 }
 #else
-#ifdef TTYSV
-char *getcwd ();
-char *
-pwd ()
+#ifdef HAVE_GETWD
+char *pwd(void)
 {
 	static char buf[1024];
-	return getcwd (buf, 1024);
+
+	return getwd(buf);
 }
 #else
-char *getwd ();
-char *
-pwd ()
-{
-	static char buf[1024];
-	return getwd (buf);
-}
+#error "Don't know how to get current directory"
 #endif
 #endif
 
@@ -157,17 +148,17 @@ FILE *termout = 0;
 
 /* Original state of tty */
 
-#ifdef TTYPOSIX
+#ifdef HAVE_POSIX_TERMIOS
 struct termios oldterm;
-#else
-#ifdef TTYSV
+#else /* HAVE_POSIX_TERMIOS */
+#ifdef HAVE_SYSV_TERMIO
 static struct termio oldterm;
-#else
+#else /* HAVE_SYSV_TERMIO */
 static struct sgttyb oarg;
 static struct tchars otarg;
 static struct ltchars oltarg;
-#endif
-#endif
+#endif /* HAVE_SYSV_TERMIO */
+#endif /* HAVE_POSIX_TERMIOS */
 
 /* Output buffer, index and size */
 
@@ -186,19 +177,19 @@ unsigned long upc;		/* Microseconds per character */
 
 static int speeds[] = {
 	B50, 50, B75, 75, B110, 110, B134, 134, B150, 150, B200, 200, B300,
-		300, B600, 600,
+	300, B600, 600,
 	B1200, 1200, B1800, 1800, B2400, 2400, B4800, 4800, B9600, 9600
 #ifdef EXTA
-		, EXTA, 19200
+	    , EXTA, 19200
 #endif
 #ifdef EXTB
-		, EXTB, 38400
+	    , EXTB, 38400
 #endif
 #ifdef B19200
-		, B19200, 19200
+	    , B19200, 19200
 #endif
 #ifdef B38400
-		, B38400, 38400
+	    , B38400, 38400
 #endif
 };
 
@@ -227,98 +218,92 @@ static int mpxsfd;		/* Clients send packets to this fd */
 static int nmpx = 0;
 static int accept = MAXINT;	/* =MAXINT if we have last packet */
 
-struct packet
-{
+struct packet {
 	MPX *who;
 	int size;
 	int ch;
 	char data[1024];
-}
-pack;
+} pack;
 
 MPX asyncs[NPROC];
 
 /* Versions of 'read' and 'write' which automatically retry during signals
  * (yuck, yuck, yuck... we the #$%#$@ did they have to do this?) */
 
-int
-jread (fd, buf, siz)
-     char *buf;
+int jread(fd, buf, siz)
+char *buf;
 {
 	int rt;
+
 	do
-		rt = read (fd, buf, siz);
+		rt = read(fd, buf, siz);
 	while (rt < 0 && errno == EINTR);
 	return rt;
 }
 
-int
-jwrite (fd, buf, siz)
-     char *buf;
+int jwrite(fd, buf, siz)
+char *buf;
 {
 	int rt;
+
 	do
-		rt = write (fd, buf, siz);
+		rt = write(fd, buf, siz);
 	while (rt < 0 && errno == EINTR);
 	return rt;
 }
 
 /* Set signals for JOE */
 
-void
-sigjoe ()
+void sigjoe()
 {
 	if (ttysig)
 		return;
 	ttysig = 1;
-	signal (SIGHUP, ttsig);
-	signal (SIGTERM, ttsig);
-	signal (SIGINT, SIG_IGN);
-	signal (SIGPIPE, SIG_IGN);
+	signal(SIGHUP, ttsig);
+	signal(SIGTERM, ttsig);
+	signal(SIGINT, SIG_IGN);
+	signal(SIGPIPE, SIG_IGN);
 }
 
 /* Restore signals for exiting */
 
-void
-signrm ()
+void signrm()
 {
 	if (!ttysig)
 		return;
 	ttysig = 0;
-	signal (SIGHUP, SIG_DFL);
-	signal (SIGTERM, SIG_DFL);
-	signal (SIGINT, SIG_DFL);
-	signal (SIGPIPE, SIG_DFL);
+	signal(SIGHUP, SIG_DFL);
+	signal(SIGTERM, SIG_DFL);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGPIPE, SIG_DFL);
 }
 
 /* Open terminal and set signals */
 
-void
-ttopen ()
+void ttopen()
 {
-	sigjoe ();
-	ttopnn ();
+	sigjoe();
+	ttopnn();
 }
 
 /* Close terminal and restore signals */
 
-void
-ttclose ()
+void ttclose()
 {
-	ttclsn ();
-	signrm ();
+	ttclsn();
+	signrm();
 }
 
 /* Window size interrupt handler */
 
 static int winched = 0;
 
-static void
-winchd ()
+static RETSIGTYPE winchd(int unused)
 {
 	++winched;
 #ifdef SIGWINCH
-	signal (SIGWINCH, winchd);
+	signal(SIGWINCH, winchd);
+	siginterrupt(SIGWINCH, 1);
 #endif
 }
 
@@ -326,54 +311,48 @@ winchd ()
 
 int ticked = 0;
 extern int dostaupd;
-static void
-dotick ()
+static RETSIGTYPE dotick(int unused)
 {
 	ticked = 1;
 	dostaupd = 1;
 }
-void
-tickoff ()
+
+void tickoff()
 {
-	alarm (0);
+	alarm(0);
 }
 
 struct sigaction vnew;
 
-void tickon() {
+void tickon()
+{
+	ticked = 0;
 	vnew.sa_handler = dotick;
+
 #ifdef SA_INTERRUPT
 	vnew.sa_flags = SA_INTERRUPT;
+	sigaction(SIGALRM, &vnew, NULL);
 #else
 #ifdef SV_INTERRUPT
 	vnew.sa_flags = SV_INTERRUPT;
-#endif
-#endif
-
-	ticked = 0;
-#ifdef SA_INTERRUPT
-	sigaction (SIGALRM, &vnew, (struct sigaction *) 0);
+	sigvec(SIGALRM, &vnew, NULL);
 #else
-#ifdef SV_INTERRUPT
-	sigvec (SIGALRM, &vnew, (struct sigvec *) 0);
-#else
-	signal (SIGALRM, dotick);
+	signal(SIGALRM, dotick);
 #endif
 #endif
-	alarm (1);
+	alarm(1);
 }
 
 /* Open terminal */
 
-void
-ttopnn ()
+void ttopnn()
 {
 	int x, bbaud;
 
-#ifdef TTYPOSIX
+#ifdef HAVE_POSIX_TERMIOS
 	struct termios newterm;
 #else
-#ifdef TTYSV
+#ifdef HAVE_SYSV_TERMIO
 	struct termio newterm;
 #else
 	struct sgttyb arg;
@@ -382,29 +361,26 @@ ttopnn ()
 #endif
 #endif
 
-	if (!termin)
-		if (idleout ? (!(termin = stdin) || !(termout = stdout)) :
-		    (!(termin = fopen ("/dev/tty", "r")) ||
-		     !(termout = fopen ("/dev/tty", "w"))))
-		  {
-			  fprintf (stderr, "Couldn\'t open /dev/tty\n");
-			  exit (1);
-		  }
-		else
-		  {
+	if (!termin) {
+		if (idleout ? (!(termin = stdin) || !(termout = stdout)) : (!(termin = fopen("/dev/tty", "r")) || !(termout = fopen("/dev/tty", "w")))) {
+			fprintf(stderr, "Couldn\'t open /dev/tty\n");
+			exit(1);
+		} else {
 #ifdef SIGWINCH
-			  signal (SIGWINCH, winchd);
+			signal(SIGWINCH, winchd);
+			siginterrupt(SIGWINCH, 1);
 #endif
-			  tickon ();
-		  }
+			tickon();
+		}
+	}
 
 	if (ttymode)
 		return;
 	ttymode = 1;
-	fflush (termout);
+	fflush(termout);
 
-#ifdef TTYPOSIX
-	tcgetattr (fileno (termin), &oldterm);
+#ifdef HAVE_POSIX_TERMIOS
+	tcgetattr(fileno(termin), &oldterm);
 	newterm = oldterm;
 	newterm.c_lflag = 0;
 	if (noxon)
@@ -414,11 +390,11 @@ ttopnn ()
 	newterm.c_oflag = 0;
 	newterm.c_cc[VMIN] = 1;
 	newterm.c_cc[VTIME] = 0;
-	tcsetattr (fileno (termin), TCSADRAIN, &newterm);
-	bbaud = cfgetospeed (&newterm);
+	tcsetattr(fileno(termin), TCSADRAIN, &newterm);
+	bbaud = cfgetospeed(&newterm);
 #else
-#ifdef TTYSV
-	ioctl (fileno (termin), TCGETA, &oldterm);
+#ifdef HAVE_SYSV_TERMIO
+	ioctl(fileno(termin), TCGETA, &oldterm);
 	newterm = oldterm;
 	newterm.c_lflag = 0;
 	if (noxon)
@@ -428,19 +404,16 @@ ttopnn ()
 	newterm.c_oflag = 0;
 	newterm.c_cc[VMIN] = 1;
 	newterm.c_cc[VTIME] = 0;
-	ioctl (fileno (termin), TCSETAW, &newterm);
+	ioctl(fileno(termin), TCSETAW, &newterm);
 	bbaud = (newterm.c_cflag & CBAUD);
 #else
-	ioctl (fileno (termin), TIOCGETP, &arg);
-	ioctl (fileno (termin), TIOCGETC, &targ);
-	ioctl (fileno (termin), TIOCGLTC, &ltarg);
+	ioctl(fileno(termin), TIOCGETP, &arg);
+	ioctl(fileno(termin), TIOCGETC, &targ);
+	ioctl(fileno(termin), TIOCGLTC, &ltarg);
 	oarg = arg;
 	otarg = targ;
 	oltarg = ltarg;
-	arg.sg_flags =
-		((arg.
-		  sg_flags & ~(ECHO | CRMOD | XTABS | ALLDELAY | TILDE)) |
-		 CBREAK);
+	arg.sg_flags = ((arg.sg_flags & ~(ECHO | CRMOD | XTABS | ALLDELAY | TILDE)) | CBREAK);
 	if (noxon)
 		targ.t_startc = -1, targ.t_stopc = -1;
 	targ.t_intrc = -1;
@@ -453,9 +426,9 @@ ttopnn ()
 	ltarg.t_flushc = -1;
 	ltarg.t_werasc = -1;
 	ltarg.t_lnextc = -1;
-	ioctl (fileno (termin), TIOCSETN, &arg);
-	ioctl (fileno (termin), TIOCSETC, &targ);
-	ioctl (fileno (termin), TIOCSLTC, &ltarg);
+	ioctl(fileno(termin), TIOCSETN, &arg);
+	ioctl(fileno(termin), TIOCSETC, &targ);
+	ioctl(fileno(termin), TIOCSLTC, &ltarg);
 	bbaud = arg.sg_ospeed;
 #endif
 #endif
@@ -463,33 +436,30 @@ ttopnn ()
 	baud = 9600;
 	upc = 0;
 	for (x = 0; x != 30; x += 2)
-		if (bbaud == speeds[x])
-		  {
-			  baud = speeds[x + 1];
-			  break;
-		  }
+		if (bbaud == speeds[x]) {
+			baud = speeds[x + 1];
+			break;
+		}
 	if (Baud)
 		baud = Baud;
 	upc = DIVIDEND / baud;
 	if (obuf)
-		free (obuf);
+		free(obuf);
 	if (!(TIMES * upc))
 		obufsiz = 4096;
-	else
-	  {
-		  obufsiz = 1000000 / (TIMES * upc);
-		  if (obufsiz > 4096)
-			  obufsiz = 4096;
-	  }
+	else {
+		obufsiz = 1000000 / (TIMES * upc);
+		if (obufsiz > 4096)
+			obufsiz = 4096;
+	}
 	if (!obufsiz)
 		obufsiz = 1;
-	obuf = (char *) malloc (obufsiz);
+	obuf = (char *) malloc(obufsiz);
 }
 
 /* Close terminal */
 
-void
-ttclsn ()
+void ttclsn()
 {
 	int oleave;
 
@@ -501,17 +471,17 @@ ttclsn ()
 	oleave = leave;
 	leave = 1;
 
-	ttflsh ();
+	ttflsh();
 
-#ifdef TTYPOSIX
-	tcsetattr (fileno (termin), TCSADRAIN, &oldterm);
+#ifdef HAVE_POSIX_TERMIOS
+	tcsetattr(fileno(termin), TCSADRAIN, &oldterm);
 #else
-#ifdef TTYSV
-	ioctl (fileno (termin), TCSETAW, &oldterm);
+#ifdef HAVE_SYSV_TERMIO
+	ioctl(fileno(termin), TCSETAW, &oldterm);
 #else
-	ioctl (fileno (termin), TIOCSETN, &oarg);
-	ioctl (fileno (termin), TIOCSETC, &otarg);
-	ioctl (fileno (termin), TIOCSLTC, &oltarg);
+	ioctl(fileno(termin), TIOCSETN, &oarg);
+	ioctl(fileno(termin), TIOCSETC, &otarg);
+	ioctl(fileno(termin), TIOCSLTC, &oltarg);
 #endif
 #endif
 
@@ -521,226 +491,211 @@ ttclsn ()
 /* Timer interrupt handler */
 
 static int yep;
-static void
-dosig ()
+static RETSIGTYPE dosig(int unused)
 {
 	yep = 1;
 }
 
 /* FLush output and check for typeahead */
 
-#ifdef ITIMER_REAL
+#ifdef HAVE_SETITIMER
 #ifdef SIG_SETMASK
-maskit ()
+void maskit(void)
 {
 	sigset_t set;
-	sigemptyset (&set);
-	sigaddset (&set, SIGALRM);
-	sigprocmask (SIG_SETMASK, &set, NULL);
+
+	sigemptyset(&set);
+	sigaddset(&set, SIGALRM);
+	sigprocmask(SIG_SETMASK, &set, NULL);
 }
-unmaskit ()
+
+void unmaskit(void)
 {
 	sigset_t set;
-	sigemptyset (&set);
-	sigprocmask (SIG_SETMASK, &set, NULL);
+
+	sigemptyset(&set);
+	sigprocmask(SIG_SETMASK, &set, NULL);
 }
-pauseit ()
+
+void pauseit(void)
 {
 	sigset_t set;
-	sigemptyset (&set);
-	sigsuspend (&set);
+
+	sigemptyset(&set);
+	sigsuspend(&set);
 }
+
 #else
-maskit ()
+void maskit(void)
 {
-	sigsetmask (sigmask (SIGALRM));
+	sigsetmask(sigmask(SIGALRM));
 }
-unmaskit ()
+
+void unmaskit(void)
 {
-	sigsetmask (0);
+	sigsetmask(0);
 }
-pauseit ()
+
+void pauseit(void)
 {
-	sigpause (0);
+	sigpause(0);
 }
+
 #endif
 #endif
 
-int
-ttflsh ()
+int ttflsh()
 {
 	/* Flush output */
-	if (obufp)
-	  {
-		  unsigned long usec = obufp * upc;	/* No. usecs this write should take */
-#ifdef ITIMER_REAL
-		  if (usec >= 500000 / HZ && baud < 9600)
-		    {
-			    struct itimerval a, b;
-			    a.it_value.tv_sec = usec / 1000000;
-			    a.it_value.tv_usec = usec % 1000000;
-			    a.it_interval.tv_usec = 0;
-			    a.it_interval.tv_sec = 0;
-			    alarm (0);
-			    signal (SIGALRM, dosig);
-			    yep = 0;
-			    maskit ();
-			    setitimer (ITIMER_REAL, &a, &b);
-			    jwrite (fileno (termout), obuf, obufp);
-			    while (!yep)
-				    pauseit (0);
-			    unmaskit ();
-			    tickon ();
-		    }
-		  else
-			  jwrite (fileno (termout), obuf, obufp);
+	if (obufp) {
+		unsigned long usec = obufp * upc;	/* No. usecs this write should take */
+
+#ifdef HAVE_SETITIMER
+		if (usec >= 50000 && baud < 9600) {
+			struct itimerval a, b;
+
+			a.it_value.tv_sec = usec / 1000000;
+			a.it_value.tv_usec = usec % 1000000;
+			a.it_interval.tv_usec = 0;
+			a.it_interval.tv_sec = 0;
+			alarm(0);
+			signal(SIGALRM, dosig);
+			yep = 0;
+			maskit();
+			setitimer(ITIMER_REAL, &a, &b);
+			jwrite(fileno(termout), obuf, obufp);
+			while (!yep)
+				pauseit();
+			unmaskit();
+			tickon();
+		} else
+			jwrite(fileno(termout), obuf, obufp);
 
 #else
 
-		  jwrite (fileno (termout), obuf, obufp);
+		jwrite(fileno(termout), obuf, obufp);
 
 #ifdef FIORDCHK
-		  if (baud < 9600 && usec / 1000)
-			  nap (usec / 1000);
+		if (baud < 9600 && usec / 1000)
+			nap(usec / 1000);
 #endif
 
 #endif
 
-		  obufp = 0;
-	  }
+		obufp = 0;
+	}
 
 	/* Ack previous packet */
-	if (ackkbd != -1 && accept != MAXINT && !have)
-	  {
-		  char c = 0;
-		  if (pack.who && pack.who->func)
-			  jwrite (pack.who->ackfd, &c, 1);
-		  else
-			  jwrite (ackkbd, &c, 1);
-		  accept = MAXINT;
-	  }
+	if (ackkbd != -1 && accept != MAXINT && !have) {
+		char c = 0;
+
+		if (pack.who && pack.who->func)
+			jwrite(pack.who->ackfd, &c, 1);
+		else
+			jwrite(ackkbd, &c, 1);
+		accept = MAXINT;
+	}
 
 	/* Check for typeahead or next packet */
 
-	if (!have && !leave)
-		if (ackkbd != -1)
-		  {
-			  fcntl (mpxfd, F_SETFL, O_NDELAY);
-			  if (read
-			      (mpxfd, &pack,
-			       sizeof (struct packet) - 1024) > 0)
-			    {
-				    fcntl (mpxfd, F_SETFL, 0);
-				    jread (mpxfd, pack.data, pack.size);
-				    have = 1, accept = pack.ch;
-			    }
-			  else
-				  fcntl (mpxfd, F_SETFL, 0);
-		  }
-		else
-		  {
-			  /* Set terminal input to non-blocking */
-			  fcntl (fileno (termin), F_SETFL, O_NDELAY);
+	if (!have && !leave) {
+		if (ackkbd != -1) {
+			fcntl(mpxfd, F_SETFL, O_NDELAY);
+			if (read(mpxfd, &pack, sizeof(struct packet) - 1024) > 0) {
+				fcntl(mpxfd, F_SETFL, 0);
+				jread(mpxfd, pack.data, pack.size);
+				have = 1, accept = pack.ch;
+			} else
+				fcntl(mpxfd, F_SETFL, 0);
+		} else {
+			/* Set terminal input to non-blocking */
+			fcntl(fileno(termin), F_SETFL, O_NDELAY);
 
-			  /* Try to read */
-			  if (read (fileno (termin), &havec, 1) == 1)
-				  have = 1;
+			/* Try to read */
+			if (read(fileno(termin), &havec, 1) == 1)
+				have = 1;
 
-			  /* Set terminal back to blocking */
-			  fcntl (fileno (termin), F_SETFL, 0);
-		  }
+			/* Set terminal back to blocking */
+			fcntl(fileno(termin), F_SETFL, 0);
+		}
+	}
 	return 0;
 }
 
 /* Read next character from input */
 
-void mpxdied ();
+void mpxdied();
 
-int
-ttgetc ()
+int ttgetc()
 {
 	int stat;
+
       loop:
-	ttflsh ();
+	ttflsh();
 	while (winched)
-		winched = 0, edupd (1), ttflsh ();
+		winched = 0, edupd(1), ttflsh();
 	if (ticked)
-		edupd (0), ttflsh (), tickon ();
-	if (ackkbd != -1)
-	  {
-		  if (!have)	/* Wait for input */
-		    {
-			    stat =
-				    read (mpxfd, &pack,
-					  sizeof (struct packet) - 1024);
-			    if (pack.size && stat > 0)
-				    jread (mpxfd, pack.data, pack.size);
-			    else if (stat < 1)
-				    if (winched || ticked)
-					    goto loop;
-				    else
-					    ttsig (0);
-			    accept = pack.ch;
-		    }
-		  have = 0;
-		  if (pack.who)	/* Got bknd input */
-		    {
-			    if (accept != MAXINT)
-			      {
-				      if (pack.who->func)
-					      pack.who->func (pack.who->
-							      object,
-							      pack.data,
-							      pack.size),
-						      edupd (1);
-			      }
-			    else
-				    mpxdied (pack.who);
-			    goto loop;
-		    }
-		  else
-		    {
-			    if (accept != MAXINT)
-				    return accept;
-			    else
-			      {
-				      ttsig (0);
-				      return 0;
-			      }
-		    }
-	  }
-	if (have)
+		edupd(0), ttflsh(), tickon();
+	if (ackkbd != -1) {
+		if (!have) {	/* Wait for input */
+			stat = read(mpxfd, &pack, sizeof(struct packet) - 1024);
+
+			if (pack.size && stat > 0) {
+				jread(mpxfd, pack.data, pack.size);
+			} else if (stat < 1) {
+				if (winched || ticked)
+					goto loop;
+				else
+					ttsig(0);
+			}
+			accept = pack.ch;
+		}
 		have = 0;
-	else
-	  {
-		  if (read (fileno (termin), &havec, 1) < 1)
-			  if (winched || ticked)
-				  goto loop;
-			  else
-				  ttsig (0);
-	  }
+		if (pack.who) {	/* Got bknd input */
+			if (accept != MAXINT) {
+				if (pack.who->func)
+					pack.who->func(pack.who->object, pack.data, pack.size), edupd(1);
+			} else
+				mpxdied(pack.who);
+			goto loop;
+		} else {
+			if (accept != MAXINT)
+				return accept;
+			else {
+				ttsig(0);
+				return 0;
+			}
+		}
+	}
+	if (have) {
+		have = 0;
+	} else {
+		if (read(fileno(termin), &havec, 1) < 1) {
+			if (winched || ticked)
+				goto loop;
+			else
+				ttsig(0);
+		}
+	}
 	return havec;
 }
 
 /* Write string to output */
 
-void
-ttputs (s)
-     char *s;
+void ttputs(s)
+char *s;
 {
-	while (*s)
-	  {
-		  obuf[obufp++] = *s++;
-		  if (obufp == obufsiz)
-			  ttflsh ();
-	  }
+	while (*s) {
+		obuf[obufp++] = *s++;
+		if (obufp == obufsiz)
+			ttflsh();
+	}
 }
 
 /* Get window size */
 
-void
-ttgtsz (x, y)
-     int *x, *y;
+void ttgtsz(x, y)
+int *x, *y;
 {
 #ifdef TIOCGSIZE
 	struct ttysize getit;
@@ -754,117 +709,106 @@ ttgtsz (x, y)
 	*y = 0;
 
 #ifdef TIOCGSIZE
-	if (ioctl (fileno (termout), TIOCGSIZE, &getit) != -1)
-	  {
-		  *x = getit.ts_cols;
-		  *y = getit.ts_lines;
-	  }
+	if (ioctl(fileno(termout), TIOCGSIZE, &getit) != -1) {
+		*x = getit.ts_cols;
+		*y = getit.ts_lines;
+	}
 #else
 #ifdef TIOCGWINSZ
-	if (ioctl (fileno (termout), TIOCGWINSZ, &getit) != -1)
-	  {
-		  *x = getit.ws_col;
-		  *y = getit.ws_row;
-	  }
+	if (ioctl(fileno(termout), TIOCGWINSZ, &getit) != -1) {
+		*x = getit.ws_col;
+		*y = getit.ws_row;
+	}
 #endif
 #endif
 }
 
-void
-ttshell (cmd)
-     char *cmd;
+void ttshell(cmd)
+char *cmd;
 {
 	int x, omode = ttymode;
-	char *s = getenv ("SHELL");
+	char *s = getenv("SHELL");
+
 	if (!s)
 		return;
-	ttclsn ();
-	if (x = fork ())
-	  {
-		  if (x != -1)
-			  wait (NULL);
-		  if (omode)
-			  ttopnn ();
-	  }
-	else
-	  {
-		  signrm ();
-		  if (cmd)
-			  execl (s, s, "-c", cmd, NULL);
-		  else
-		    {
-			    fprintf (stderr,
-				     "You are at the command shell.  Type 'exit' to return\n");
-			    execl (s, s, NULL);
-		    }
-		  _exit (0);
-	  }
+	ttclsn();
+	if ((x = fork()) != 0) {
+		if (x != -1)
+			wait(NULL);
+		if (omode)
+			ttopnn();
+	} else {
+		signrm();
+		if (cmd)
+			execl(s, s, "-c", cmd, NULL);
+		else {
+			fprintf(stderr, "You are at the command shell.  Type 'exit' to return\n");
+			execl(s, s, NULL);
+		}
+		_exit(0);
+	}
 }
 
-void
-ttsusp ()
+void ttsusp()
 {
 	int omode;
-	tickoff ();
+
+	tickoff();
 #ifdef SIGTSTP
 	omode = ttymode;
-	ttclsn ();
-	fprintf (stderr,
-		 "You have suspended the program.  Type 'fg' to return\n");
-	kill (0, SIGTSTP);
+	ttclsn();
+	fprintf(stderr, "You have suspended the program.  Type 'fg' to return\n");
+	kill(0, SIGTSTP);
 	if (ackkbd != -1)
-		kill (kbdpid, SIGCONT);
+		kill(kbdpid, SIGCONT);
 	if (omode)
-		ttopnn ();
+		ttopnn();
 #else
-	ttshell (NULL);
+	ttshell(NULL);
 #endif
-	tickon ();
+	tickon();
 }
 
-void
-mpxstart ()
+void mpxstart()
 {
 	int fds[2];
-	pipe (fds);
+
+	pipe(fds);
 	mpxfd = fds[0];
 	mpxsfd = fds[1];
-	pipe (fds);
+	pipe(fds);
 	accept = MAXINT;
 	have = 0;
-	if (!(kbdpid = fork ()))
-	  {
-		  close (fds[1]);
-		  do
-		    {
-			    unsigned char c;
-			    int sta;
-			    pack.who = 0;
-			    sta = jread (fileno (termin), &c, 1);
-			    if (sta == 0)
-				    pack.ch = MAXINT;
-			    else
-				    pack.ch = c;
-			    pack.size = 0;
-			    jwrite (mpxsfd, &pack,
-				    sizeof (struct packet) - 1024);
-		    }
-		  while (jread (fds[0], &pack, 1) == 1);
-		  _exit (0);
-	  }
-	close (fds[0]);
+	if (!(kbdpid = fork())) {
+		close(fds[1]);
+		do {
+			unsigned char c;
+			int sta;
+
+			pack.who = 0;
+			sta = jread(fileno(termin), &c, 1);
+			if (sta == 0)
+				pack.ch = MAXINT;
+			else
+				pack.ch = c;
+			pack.size = 0;
+			jwrite(mpxsfd, &pack, sizeof(struct packet) - 1024);
+		}
+		while (jread(fds[0], &pack, 1) == 1);
+		_exit(0);
+	}
+	close(fds[0]);
 	ackkbd = fds[1];
 }
 
-void
-mpxend ()
+void mpxend()
 {
-	kill (kbdpid, 9);
-	while (wait (NULL) < 0 && errno == EINTR);
-	close (ackkbd);
+	kill(kbdpid, 9);
+	while (wait(NULL) < 0 && errno == EINTR) ;
+	close(ackkbd);
 	ackkbd = -1;
-	close (mpxfd);
-	close (mpxsfd);
+	close(mpxfd);
+	close(mpxsfd);
 	if (have)
 		havec = pack.ch;
 }
@@ -877,13 +821,12 @@ mpxend ()
 
 /* Newer sgi machines can do it the __svr4__ way, but old ones can't */
 
-extern char *_getpty ();
+extern char *_getpty();
 
-char *
-getpty (ptyfd)
-     int *ptyfd;
+char *getpty(ptyfd)
+int *ptyfd;
 {
-	return _getpty (ptyfd, O_RDWR, 0600, 0);
+	return _getpty(ptyfd, O_RDWR, 0600, 0);
 }
 
 #else
@@ -891,18 +834,18 @@ getpty (ptyfd)
 
 /* Strange streams way */
 
-extern char *ptsname ();
+extern char *ptsname();
 
-char *
-getpty (ptyfd)
-     int *ptyfd;
+char *getpty(ptyfd)
+int *ptyfd;
 {
 	int fdm;
 	char *name;
-	*ptyfd = fdm = open ("/dev/ptmx", O_RDWR);
-	grantpt (fdm);
-	unlockpt (fdm);
-	return ptsname (fdm);
+
+	*ptyfd = fdm = open("/dev/ptmx", O_RDWR);
+	grantpt(fdm);
+	unlockpt(fdm);
+	return ptsname(fdm);
 }
 
 #else
@@ -919,60 +862,53 @@ getpty (ptyfd)
  * process and the process gets to be the session leader.
  */
 
-char *
-getpty (ptyfd)
-     int *ptyfd;
+char *getpty(ptyfd)
+int *ptyfd;
 {
 	int x, fd;
-	char *orgpwd = pwd ();
+	char *orgpwd = pwd();
 	static char **ptys = 0;
 	static char *ttydir;
 	static char *ptydir;
 	static char ttyname[32];
 
-	if (!ptys)
-	  {
-		  ttydir = "/dev/pty/";
-		  ptydir = "/dev/ptym/";	/* HPUX systems */
-		  if (chpwd (ptydir) || !(ptys = rexpnd ("pty*")))
-			  if (!ptys)
-			    {
-				    ttydir = ptydir = "/dev/";	/* Everyone else */
-				    if (!chpwd (ptydir))
-					    ptys = rexpnd ("pty*");
-			    }
-	  }
-	chpwd (orgpwd);
+	if (!ptys) {
+		ttydir = "/dev/pty/";
+		ptydir = "/dev/ptym/";	/* HPUX systems */
+		if (chpwd(ptydir) || !(ptys = rexpnd("pty*")))
+			if (!ptys) {
+				ttydir = ptydir = "/dev/";	/* Everyone else */
+				if (!chpwd(ptydir))
+					ptys = rexpnd("pty*");
+			}
+	}
+	chpwd(orgpwd);
 
 	if (ptys)
-		for (fd = 0; ptys[fd]; ++fd)
-		  {
-			  strcpy (ttyname, ptydir);
-			  strcat (ttyname, ptys[fd]);
-			  if ((*ptyfd = open (ttyname, O_RDWR)) >= 0)
-			    {
-				    ptys[fd][0] = 't';
-				    strcpy (ttyname, ttydir);
-				    strcat (ttyname, ptys[fd]);
-				    ptys[fd][0] = 'p';
-				    x = open (ttyname, O_RDWR);
-				    if (x >= 0)
-				      {
-					      close (x);
-					      close (*ptyfd);
-					      strcpy (ttyname, ptydir);
-					      strcat (ttyname, ptys[fd]);
-					      *ptyfd = open (ttyname, O_RDWR);
-					      ptys[fd][0] = 't';
-					      strcpy (ttyname, ttydir);
-					      strcat (ttyname, ptys[fd]);
-					      ptys[fd][0] = 'p';
-					      return ttyname;
-				      }
-				    else
-					    close (*ptyfd);
-			    }
-		  }
+		for (fd = 0; ptys[fd]; ++fd) {
+			strcpy(ttyname, ptydir);
+			strcat(ttyname, ptys[fd]);
+			if ((*ptyfd = open(ttyname, O_RDWR)) >= 0) {
+				ptys[fd][0] = 't';
+				strcpy(ttyname, ttydir);
+				strcat(ttyname, ptys[fd]);
+				ptys[fd][0] = 'p';
+				x = open(ttyname, O_RDWR);
+				if (x >= 0) {
+					close(x);
+					close(*ptyfd);
+					strcpy(ttyname, ptydir);
+					strcat(ttyname, ptys[fd]);
+					*ptyfd = open(ttyname, O_RDWR);
+					ptys[fd][0] = 't';
+					strcpy(ttyname, ttydir);
+					strcat(ttyname, ptys[fd]);
+					ptys[fd][0] = 'p';
+					return ttyname;
+				} else
+					close(*ptyfd);
+			}
+		}
 	return 0;
 }
 
@@ -981,10 +917,9 @@ getpty (ptyfd)
 
 int dead = 0;
 
-void
-death ()
+RETSIGTYPE death(int unused)
 {
-	wait (NULL);
+	wait(NULL);
 	dead = 1;
 }
 
@@ -998,42 +933,39 @@ struct sigaction inew;
 
 extern char **mainenv;
 
-char **
-newenv (old, s)
-     char **old, *s;
+char **newenv(old, s)
+char **old, *s;
 {
 	char **new;
 	int x, y, z;
-	for (x = 0; old[x]; ++x);
-	new = (char **) malloc ((x + 2) * sizeof (char *));
-	for (x = 0, y = 0; old[x]; ++x)
-	  {
-		  for (z = 0; s[z] != '='; ++z)
-			  if (s[z] != old[x][z])
-				  break;
-		  if (s[z] == '=')
-		    {
-			    if (s[z + 1])
-				    new[y++] = s;
-		    }
-		  else
-			  new[y++] = old[x];
-	  }
+
+	for (x = 0; old[x]; ++x) ;
+	new = (char **) malloc((x + 2) * sizeof(char *));
+
+	for (x = 0, y = 0; old[x]; ++x) {
+		for (z = 0; s[z] != '='; ++z)
+			if (s[z] != old[x][z])
+				break;
+		if (s[z] == '=') {
+			if (s[z + 1])
+				new[y++] = s;
+		} else
+			new[y++] = old[x];
+	}
 	if (x == y)
 		new[y++] = s;
 	new[y] = 0;
 	return new;
 }
 
-MPX *
-mpxmk (ptyfd, cmd, args, func, object, die, dieobj)
-     int *ptyfd;
-     char *cmd;
-     char *args[];
-     void (*func) ();
-     void *object;
-     void (*die) ();
-     void *dieobj;
+MPX *mpxmk(ptyfd, cmd, args, func, object, die, dieobj)
+int *ptyfd;
+char *cmd;
+char *args[];
+void (*func) ();
+void *object;
+void (*die) ();
+void *dieobj;
 {
 	int fds[2];
 	int comm[2];
@@ -1041,135 +973,133 @@ mpxmk (ptyfd, cmd, args, func, object, die, dieobj)
 	int x;
 	MPX *m;
 	char *name;
-	if (!(name = getpty (ptyfd)))
+
+	if (!(name = getpty(ptyfd)))
 		return 0;
 	for (x = 0; x != NPROC; ++x)
-		if (!asyncs[x].func)
-		  {
-			  m = asyncs + x;
-			  goto ok;
-		  }
+		if (!asyncs[x].func) {
+			m = asyncs + x;
+			goto ok;
+		}
 	return 0;
       ok:
-	ttflsh ();
+	ttflsh();
 	++nmpx;
 	if (ackkbd == -1)
-		mpxstart ();
+		mpxstart();
 	m->func = func;
 	m->object = object;
 	m->die = die;
 	m->dieobj = dieobj;
-	pipe (fds);
-	pipe (comm);
+	pipe(fds);
+	pipe(comm);
 	m->ackfd = fds[1];
-	if (!(m->kpid = fork ()))
-	  {
-		  close (fds[1]);
-		  close (comm[0]);
-		  dead = 0;
-		  inew.sa_handler = death;
+	if (!(m->kpid = fork())) {
+		close(fds[1]);
+		close(comm[0]);
+		dead = 0;
+		inew.sa_handler = death;
 #ifdef SA_INTERRUPT
-		  inew.sa_flags = SA_INTERRUPT;
-		  sigaction (SIGCHLD, &inew, (struct sigaction *) 0);
+		inew.sa_flags = SA_INTERRUPT;
+		sigaction(SIGCHLD, &inew, (struct sigaction *) 0);
 #else
 #ifdef SV_INTERRUPT
-		 inew.sa_flags = SV_INTERRUPT;
-		  sigvec (SIGCHLD, &inew, (struct sigvec *) 0);
+		inew.sa_flags = SV_INTERRUPT;
+		sigvec(SIGCHLD, &inew, (struct sigvec *) 0);
 #else
-		  signal (SIGCHLD, death);
+		signal(SIGCHLD, death);
 #endif
 #endif
 
-		  if (!(pid = fork ()))
-		    {
-			    signrm ();
-			    close (*ptyfd);
+		if (!(pid = fork())) {
+			signrm();
+			close(*ptyfd);
 
 #ifdef TIOCNOTTY
-			    x = open ("/dev/tty", O_RDWR);
-			    ioctl (x, TIOCNOTTY, 0);
+			x = open("/dev/tty", O_RDWR);
+			ioctl(x, TIOCNOTTY, 0);
 #endif
 
-			    setpgrp (0, 0);
+#ifndef SETPGRP_VOID
+			setpgrp(0, 0);
+#else
+			setpgrp();
+#endif
 
-			    for (x = 0; x != 32; ++x)
-				    close (x);	/* Yes, this is quite a kludge... all in the
+			for (x = 0; x != 32; ++x)
+				close(x);	/* Yes, this is quite a kludge... all in the
 						   name of portability */
 
-			    if ((x = open (name, O_RDWR)) != -1)	/* Standard input */
-			      {
-				      char **env = newenv (mainenv, "TERM=");
+			if ((x = open(name, O_RDWR)) != -1) {	/* Standard input */
+				char **env = newenv(mainenv, "TERM=");
+
 #ifdef __svr4__
-				      ioctl (x, I_PUSH, "ptem");
-				      ioctl (x, I_PUSH, "ldterm");
+				ioctl(x, I_PUSH, "ptem");
+				ioctl(x, I_PUSH, "ldterm");
 #endif
-				      dup (x);
-				      dup (x);	/* Standard output, standard error */
-				      /* (yes, stdin, stdout, and stderr must all be open for reading and
-				       * writing.  On some systems the shell assumes this */
+				dup(x);
+				dup(x);	/* Standard output, standard error */
+				/* (yes, stdin, stdout, and stderr must all be open for reading and
+				 * writing.  On some systems the shell assumes this */
 
-				      /* We could probably have a special TTY set-up for JOE, but for now
-				       * we'll just use the TTY setup for the TTY was was run on */
-#ifdef TTYPOSIX
-				      tcsetattr (0, TCSADRAIN, &oldterm);
+				/* We could probably have a special TTY set-up for JOE, but for now
+				 * we'll just use the TTY setup for the TTY was was run on */
+#ifdef HAVE_POSIX_TERMIOS
+				tcsetattr(0, TCSADRAIN, &oldterm);
 #else
-#ifdef TTYSV
-				      ioctl (0, TCSETAW, &oldterm);
+#ifdef HAVE_SYSV_TERMIO
+				ioctl(0, TCSETAW, &oldterm);
 #else
-				      ioctl (0, TIOCSETN, &oarg);
-				      ioctl (0, TIOCSETC, &otarg);
-				      ioctl (0, TIOCSLTC, &oltarg);
+				ioctl(0, TIOCSETN, &oarg);
+				ioctl(0, TIOCSETC, &otarg);
+				ioctl(0, TIOCSLTC, &oltarg);
 #endif
 #endif
 
-				      /* Execute the shell */
-				      execve (cmd, args, env);
-			      }
+				/* Execute the shell */
+				execve(cmd, args, env);
+			}
 
-			    _exit (0);
-		    }
-		  jwrite (comm[1], &pid, sizeof (int));
+			_exit(0);
+		}
+		jwrite(comm[1], &pid, sizeof(int));
 
-		loop:
-		  pack.who = m;
-		  pack.ch = 0;
-		  if (dead)
-			  pack.size = 0;
-		  else
-			  pack.size = read (*ptyfd, pack.data, 1024);
-		  if (pack.size > 0)
-		    {
-			    jwrite (mpxsfd, &pack,
-				    sizeof (struct packet) - 1024 +
-				    pack.size);
-			    jread (fds[0], &pack, 1);
-			    goto loop;
-		    }
-		  else
-		    {
-			    pack.ch = MAXINT;
-			    pack.size = 0;
-			    jwrite (mpxsfd, &pack,
-				    sizeof (struct packet) - 1024);
-			    _exit (0);
-		    }
-	  }
-	jread (comm[0], &m->pid, sizeof (int));
-	close (comm[0]);
-	close (comm[1]);
-	close (fds[0]);
+	      loop:
+		pack.who = m;
+		pack.ch = 0;
+		if (dead)
+			pack.size = 0;
+		else
+			pack.size = read(*ptyfd, pack.data, 1024);
+		if (pack.size > 0) {
+			jwrite(mpxsfd, &pack, sizeof(struct packet) - 1024 + pack.size);
+
+			jread(fds[0], &pack, 1);
+			goto loop;
+		} else {
+			pack.ch = MAXINT;
+			pack.size = 0;
+			jwrite(mpxsfd, &pack, sizeof(struct packet) - 1024);
+
+			_exit(0);
+		}
+	}
+	jread(comm[0], &m->pid, sizeof(int));
+
+	close(comm[0]);
+	close(comm[1]);
+	close(fds[0]);
 	return m;
 }
 
-void
-mpxdied (m)
-     MPX *m;
+void mpxdied(m)
+MPX *m;
 {
 	if (!--nmpx)
-		mpxend ();
-	while (wait (NULL) < 0 && errno == EINTR);
+		mpxend();
+	while (wait(NULL) < 0 && errno == EINTR) ;
 	if (m->die)
-		m->die (m->dieobj);
+		m->die(m->dieobj);
 	m->func = 0;
-	edupd (1);
+	edupd(1);
 }

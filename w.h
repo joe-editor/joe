@@ -44,7 +44,7 @@ struct screen {
 };
 
 struct window {
-	LINK (W) link;		/* Linked list of windows in order they
+	LINK(W) link;		/* Linked list of windows in order they
 				   appear on the screen */
 
 	SCREEN *t;		/* Screen this thing is on */
@@ -100,34 +100,34 @@ struct base {
 /* int getgrouph(W *);
  * Get height of a family of windows
  */
-int getgrouph ();
+int getgrouph();
 
 /* W *findtopw(W *);
  * Find first (top-most) window of a family
  */
-W *findtopw ();
+W *findtopw();
 
 /* W *findbotw(W *);
  * Find last (bottom-most) window a family
  */
-W *findbotw ();
+W *findbotw();
 
-int demotegroup ();
+int demotegroup();
 
 /* W *lastw(SCREEN *t);
  * Find last window on screen
  */
-W *lastw ();
+W *lastw();
 
 /* Determine number of main windows
  */
-int countmain ();
+int countmain();
 
 /* void wfit(SCREEN *t);
  *
  * Fit all of the windows onto the screen
  */
-void wfit ();
+void wfit();
 
 /*****************/
 /* Main routines */
@@ -137,17 +137,17 @@ void wfit ();
  *
  * Create a screen
  */
-SCREEN *screate ();
+SCREEN *screate();
 
 /* void sresize(SCREEN *t);
  * Screen size changed
  */
-void sresize ();
+void sresize();
 
 /* void chsize(SCREEN *t,int mul,int div)
  * Resize windows: each window is multiplied by the fraction mul/div
  */
-void chsize ();
+void chsize();
 
 /* W *wcreate(SCREEN *t,WATOM *watom,W *where,W *target,W *original,int height);
  *
@@ -169,92 +169,92 @@ void chsize ();
  * Returns the new window or returns 0 if there was not enough space to
  * create the window and maintain family integrity.
  */
-W *wcreate ();
+W *wcreate();
 
 /* int wabort(W *w);
  *
  * Kill a window and it's children
  */
-int wabort ();
+int wabort();
 
 /* int wnext(SCREEN *);
  *
  * Switch to next window
  */
-int wnext ();
+int wnext();
 
 /* int wprev(SCREEN *);
  *
  * Switch to previous window
  */
-int wprev ();
+int wprev();
 
 /* int wgrow(W *);
  *
  * increase size of window.  Return 0 for success, -1 for fail.
  */
-int wgrow ();
+int wgrow();
 
 /* int wshrink(W *);
  *
  * Decrease size of window.  Returns 0 for success, -1 for fail.
  */
-int wshrink ();
+int wshrink();
 
 /* void wshowone(W *);
  *
  * Show only one window on the screen
  */
-void wshowone ();
+void wshowone();
 
 /* void wshowall(SCREEN *);
  *
  * Show all windows on the screen, including the given one
  */
-void wshowall ();
+void wshowall();
 
 /* void wredraw(W *);
  *
  * Force complete redraw of window
  */
-void wredraw ();
+void wredraw();
 
 /* void updall()
  *
  * Redraw all windows
  */
-void updall ();
+void updall();
 
-void genfmt ();
-void gentxt ();
-int fmtlen ();
-int fmtpos ();
+void genfmt();
+void gentxt();
+int fmtlen();
+int fmtpos();
 
 /* void msgnw[t](W *w,char *text);
  * Display a message which will be eliminated on the next keypress.
  * msgnw displays message on bottom line of window
  * msgnwt displays message on top line of window
  */
-void msgnw ();
-void msgnwt ();
+void msgnw();
+void msgnwt();
 
-#define MSGBUFSIZE 80
+#define MSGBUFSIZE 300
 extern char msgbuf[MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
 
-void msgout ();			/* Output msgnw/msgnwt messages */
+void msgout();			/* Output msgnw/msgnwt messages */
 
 /* Common user functions */
 
-int urtn ();			/* User hit return */
-int utype ();			/* User types a character */
-int uretyp ();			/* Refresh the screen */
-int ugroww ();			/* Grow current window */
-int uexpld ();			/* Explode current window or show all windows */
-int ushrnk ();			/* Shrink current window */
-int unextw ();			/* Goto next window */
-int uprevw ();			/* Goto previous window */
+int urtn();			/* User hit return */
+int utype();			/* User types a character */
+int uretyp();			/* Refresh the screen */
+int ugroww();			/* Grow current window */
+int uexpld();			/* Explode current window or show all windows */
+int ushrnk();			/* Shrink current window */
+int unextw();			/* Goto next window */
+int uprevw();			/* Goto previous window */
 
-void scrdel ();
-void scrins ();
+void scrdel();
+void scrins();
 
 #endif

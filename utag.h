@@ -11,6 +11,6 @@
 #include "config.h"
 #include "bw.h"
 
-int utag (BW *bw);
+int utag(BW * bw);
 
 #endif

@@ -2,6 +2,7 @@ FEATURES
 =-=-=-=-
 	-=- syntax higlighting
 	-=- gettext (possibility of translate messages from joe)
+	-=- folding
 
 	from joe2.8
 	-=- picture mode
@@ -53,4 +54,5 @@ Emacs emulation improvements:
 		(it isn't in emacs either)
 	- Allow either direct screen access or normal tty support 
 		for DOS version.
+
 

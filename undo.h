@@ -10,9 +10,8 @@
 typedef struct undo UNDO;
 typedef struct undorec UNDOREC;
 
-struct undorec
-{
-	LINK (UNDOREC) link;
+struct undorec {
+	LINK(UNDOREC) link;
 	UNDOREC *unit;
 	int min;
 	int changed;		/* Status of modified flag before this record */
@@ -23,9 +22,8 @@ struct undorec
 	char *small;		/* Set to malloc block containg a small amount of deleted data */
 };
 
-struct undo
-{
-	LINK (UNDO) link;
+struct undo {
+	LINK(UNDO) link;
 	B *b;
 	int nrecs;
 	UNDOREC recs;
@@ -37,18 +35,18 @@ struct undo
 extern int inundo;
 extern int justkilled;
 
-UNDO *undomk ();
-void undorm ();
-int uundo ();
-int uredo ();
-void umclear ();
-void undomark ();
-void undoins ();
-void undodel ();
-int uyank ();
-int uyankpop ();
-int uyapp ();
-int unotmod ();
-int ucopy ();
+UNDO *undomk();
+void undorm();
+int uundo();
+int uredo();
+void umclear();
+void undomark();
+void undoins();
+void undodel();
+int uyank();
+int uyankpop();
+int uyapp();
+int unotmod();
+int ucopy();
 
 #endif

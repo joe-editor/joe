@@ -8,15 +8,13 @@
 typedef struct search SRCH;
 typedef struct srchrec SRCHREC;
 
-struct srchrec
-{
-	LINK (SRCHREC) link;	/* Linked list of search & replace locations */
+struct srchrec {
+	LINK(SRCHREC) link;	/* Linked list of search & replace locations */
 	int yn;			/* Did we replace? */
 	long addr;		/* Where we were */
 };
 
-struct search
-{
+struct search {
 	char *pattern;		/* Search pattern */
 	char *replacement;	/* Replacement string */
 	int backwards;		/* Set if search should go backwards */
@@ -34,15 +32,15 @@ struct search
 	int restrict;		/* Search restricted to marked block */
 };
 
-SRCH *mksrch ();
-void rmsrch ();
+SRCH *mksrch();
+void rmsrch();
 
-int dopfnext ();
+int dopfnext();
 
-int pffirst ();
-int pfnext ();
+int pffirst();
+int pfnext();
 
-int pqrepl ();
-int prfirst ();
+int pqrepl();
+int prfirst();
 
 #endif

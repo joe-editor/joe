@@ -19,8 +19,7 @@ extern int dspasis;
 
 typedef struct bw BW;
 
-struct bw
-{
+struct bw {
 	W *parent;
 	B *b;
 	P *top;
@@ -38,17 +37,17 @@ struct bw
 };
 
 extern int mid;
-void bwfllw ();
-void bwins ();
-void bwdel ();
-void bwgen ();
-BW *bwmk ();
-void bwmove ();
-void bwresz ();
-void bwrm ();
-int ustat ();
-int ucrawll ();
-int ucrawlr ();
-void orphit ();
+void bwfllw();
+void bwins();
+void bwdel();
+void bwgen();
+BW *bwmk();
+void bwmove();
+void bwresz();
+void bwrm();
+int ustat();
+int ucrawll();
+int ucrawlr();
+void orphit();
 
 #endif

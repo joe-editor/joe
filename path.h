@@ -10,8 +10,7 @@
 
 #include "config.h"
 
-char *ossep ();
-char *joesep ();
+char *joesep();
 
 /* char *namprt(char *path);
  * Return name part of a path.  There is no name if the last character
@@ -21,8 +20,8 @@ char *joesep ();
  * The name part of "/hello/" is ""
  * The name part if "/" is ""
  */
-char *namprt ();
-char *namepart ();
+char *namprt();
+char *namepart();
 
 /* char *dirprt(char *path);
  * Return directory and drive part of a path.  I.E., everything to the
@@ -32,7 +31,7 @@ char *namepart ();
  * The directory part of "/hello/" is "/hello/"
  * The directory part of "/" is "/"
  */
-char *dirprt ();
+char *dirprt();
 
 /* char *begprt(char *path);
  * Return the beginning part of a path.
@@ -41,7 +40,7 @@ char *dirprt ();
  * The beginning part of "/hello/" is "/"
  * The beginning part of "/" is "/"
  */
-char *begprt ();
+char *begprt();
 
 /* char *endprt(char *path);
  * Return the ending part of a path.
@@ -50,7 +49,7 @@ char *begprt ();
  * The ending part of "/hello/" is "hello/"
  * The ending part of "/" is ""
  */
-char *endprt ();
+char *endprt();
 
 /* int mkpath(char *path);
  * Make sure path exists.  If it doesn't, try to create it
@@ -60,13 +59,14 @@ char *endprt ();
  * the drive and path will be elsewhere (not necessarily where they
  * were before mkpath was called).
  */
-int mkpath ();
+int mkpath();
 
 /* char *mktmp(char *);
  * Create an empty temporary file.  The file name created is the string passed
- * to this function postfixed with JXXXXXX.tmp, where XXXXXX is some number.
- */
-char *mktmp ();
+ * to this function postfixed with /joe.tmp.XXXXXX, where XXXXXX is some
+ * string six chars long which makes this file unique.
+*/
+char *mktmp();
 
 /* Change drive and directory */
 #define chddir chdir
@@ -88,15 +88,15 @@ char *mktmp ();
  *  '-' may be specified in sets by placing it at the ends
  *  '[' may be specified in sets by placing it first
  */
-int rmatch ();
-int isreg ();
+int rmatch();
+int isreg();
 
 /* char **rexpnd(char *path,char *pattern);
  * Generate array (see va.h) of file names from directory in 'path'
  * which match the pattern 'pattern'
  */
-char **rexpnd ();
+char **rexpnd();
 
-int chpwd ();
+int chpwd();
 
 #endif

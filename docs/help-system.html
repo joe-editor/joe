@@ -1,0 +1,50 @@
+<HTML>
+	<HEAD>
+		<TITLE> JOE Development -> Help </TITLE>
+	</HEAD>
+	<BODY BGCOLOR="#83CCF4">
+		<CENTER><H2> JOE:: Help system </H2></CENTER>
+		<TABLE>
+			<TR>
+				<TD> Name: </TD>
+				<TD> Help system </TD>
+			</TR>
+			<TR>
+				<TD> Files: </TD>
+				<TD> help.c, help.h </TD>
+			</TR>
+			<TR>
+				<TD> Since: </TD>
+				<TD> 2.9.7pre1 </TD>
+			</TR>
+			<TR>
+				<TD> Main authors: </TD>
+				<TD> Joseph Allen <BR> Marek 'Marx' Grac <A HREF="mailto:xgrac@fi.muni.cz">&lt;xgrac@fi.muni.cz&gt;</A> </TD>
+			</TR>
+		</TABLE>
+		<P>
+			Differences between this and previous version should be hidden
+			to users. Main changes were done in design of source code. I
+			will try to explain <I>what it is</I> and <I>why it is done this
+			way</I>? Main goal was to clean and minimalize source code,
+			remove several global variables, move everything concerned with
+			help to these files.
+		</P>
+		<P>
+			The help system is based on bi-directional list of help screens. 
+			Each help screen has defined two variables, help text (<I>char
+			*hlptxt</I>) and number of lines of help text (<I>int
+			hlplns</I>).  Since this version the help file can/should be
+			separated from *rc files. Advantage of this model is that you
+			can set help to other languages. Usage of standard method
+			(gettext) will be very difficult here, because help has constant
+			width which can't be overcrossed. This method has also no
+			problem with having several help files in each language (for
+			joe, jmacs, ...). Problematics of setting proper help file will
+			be solved in <I>main.c</I> not here.
+		</P>
+		<P>
+			<B> TODO: </B> How to create a help screen.
+		</P>
+	</BODY>
+</HTML>

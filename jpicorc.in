@@ -1,10 +1,10 @@
 
                          Initialization file for JOE
-                           WordStar / Turbo-C Joe
+                                 Super Pico
 
  JOE looks for this file in:
-	1 - $HOME/.jstarrc
-	2 - SYSCONFDIR/jstarrc
+	1 - $HOME/.jpicorc
+	2 - @sysconfdir@/jpicorc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -21,33 +21,54 @@
  --option	Clears the option
 
  -mid		Cursor is recentered when scrolling is necessary
- -marking	Text between ^KB and cursor is highlighted (use with -lightoff)
+
+-marking	Text between ^KB and cursor is highlighted (use with -lightoff)
+
  -asis		Characters 128 - 255 shown as-is
- -force		Force final newline when files are saved
+
+-force		Force final newline when files are saved
+
  -nobackups	If you don't want backup files to be created
- -lightoff	Turn off highlighting after block copy or move
- -exask		^KX always confirms file name
+
+-lightoff	Turn off highlighting after block copy or move
+
+-exask		^KX always confirms file name
+
  -beep		Beep on errors and when cursor goes past extremes
+
  -nosta		Disable top-most status line
+
  -keepup	%k and %c status line escape sequences updated frequently
+
  -pg nnn	No. lines to keep for PgUp/PgDn
+
  -csmode	^KF after a pervious search does a ^L instead
+
  -backpath path Directory to store backup files
+
  -nonotice	Disable copyright notice
--noxon		Attempt to turn off ^S/^Q processing
+
+ -noxon		Attempt to turn off ^S/^Q processing
+
  -orphan	Put extra files given on command line in orphaned buffers
 		instead of in windows
+
  -dopadding	Output pad characters (for when there is no tty handshaking)
+
  -lines nnn	Set no. screen lines
+
  -baud nnn	Set baud rate for terminal optimizations
+
  -columns nnn	Set no. screen columns
- -help		Start with help on
+
+-help		Start with help on
+
  -skiptop nnn	Don't use top nnn lines of the screen
 
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used
- in these string:
+ in these strings:
 
   %t  12 hour time
   %u  24 hour time
@@ -71,7 +92,7 @@
   %S  '*SHELL*' if there is a shell running in window
   %M  Macro recording message
 
- The formatting escape sequences may also be given:
+ These formatting escape sequences may also be given:
  
   \i  Inverse
   \u  Underline
@@ -80,24 +101,32 @@
   \f  Blink
 
 -lmsg \i%k%T%W%I%X %n %m%R %M
--rmsg  %S Row %r Col %c %t  Ctrl-J for help
+-rmsg  %S Row %r Col %c %t  Ctrl-G for help
 
  SECOND SECTION: File name dependant local option settings:
 
  Each line with '*' in the first column indicates the modes which should be
- files which match the regular expression.  If more than one regular
- expression matches the file name, than the last matching one is chosen.
+ set for files which match the regular expression.  If more than one regular
+ expression matches the file name, then the last matching one is chosen.
 
- Here is a list of modes which can be set:
+ Here are the modes which can be set:
 
 	-wordwrap		Wordwrap
+
 	-autoindent		Auto indent
+
 	-overwrite		Overtype mode
+
 	-lmargin nnn		Left margin
+
 	-rmargin nnn		Right margin
+
 	-tab nnn		Tab width
+
 	-indentc nnn		Indentation character (32 for space, 9 for tab)
+
 	-istep nnn		Number of indentation columns
+
 	-french			One space after '.', '?' and '!' for wordwrap
 				and paragraph reformat instead of two.  Joe
 				does not change the spacing you give, but
@@ -107,10 +136,14 @@
 	-spaces			TAB inserts spaces instead of tabs.
 
 	-linums			Enable line numbers on each line
+
 	-rdonly			File is read-only
+
 	-keymap name		Keymap to use if not 'main'
+
 	-lmsg			Status line definition strings-
 	-rmsg			see previous section for more info.
+
 	-mnew macro		Macro to execute when new files are loaded
 	-mold macro		Macro to execute when existing files are loaded
 	-msnew macro		Macro to execute when new files are saved
@@ -144,46 +177,28 @@
  Use \f to turn on/off flash
 
 {Basic
-\i   Help Screen    turn off with ^J     more help with ESC . (^[.)              \i
-\i \i\uCURSOR\u           \uGO TO\u            \uBLOCK\u     \uDELETE\u    \uMISC\u         \uEXIT\u      \i \i
-\i \i^S left ^D right ^R  prev. screen ^KB begin ^G  char  ^B  reformat ^KX save  \i \i
-\i \i^E up   ^X down  ^C  next screen  ^KK end   ^Y  line  ^V  overtype ^KQ abort \i \i
-\i \i^A previous word ^QS beg. of line ^KV move  ^T  >word ^]  refresh  ^KZ shell \i \i
-\i \i^F next word     ^QD end of line  ^KC copy  ^QY >line ^O  options  \uFILE\u      \i \i
-\i \i\uSEARCH\u           ^QR top of file  ^KW file  ^U  undo  \uSPELL\u        ^KE new   \i \i
-\i \i^QF find text    ^QC end of file  ^KY delete ^^ redo  ^QN word     ^KR insert\i \i
-\i \i^L  find next    ^QI to line No.  ^K/ filter          ^QL file     ^KD save  \i \i
-}
-
-{Windows
-\i   Help Screen    turn off with ^J     prev. screen ^[,    next screen ^[.     \i
-\i \i^KO Split the window in half           ^KE Load file into window             \i \i
-\i \i^KG Make current window bigger         ^KT Make current window smaller       \i \i
-\i \i^KN Go to the window below             ^KP Go to the window above            \i \i
-\i \i^KQ Eliminate the current window       ^KI Show all windows / Show one window\i \i
+\i   Help Screen    turn off with ^G     more help with ^[. (ESC .)              \i
+\i \i\uCURSOR\u           \uGO TO\u            \uBLOCK\u      \uDELETE\u    \uMISC\u         \uEXIT\u     \i \i
+\i \i^B left ^F right ^[Y top of file  ^^  mark   ^D  char  ^J   format  ^X save  \i \i
+\i \i^P up   ^N down  ^[V end of file  ^K  cut    ^K  line  ^T   spell   ^C abort \i \i
+\i \i^Y prev. screen  ^A  beg. of line ^U  paste  ^[K >line ^[T  file    ^Z shell \i \i
+\i \i^V next screen   ^E  end of line  ^[U select ^[H word< ^L   refresh \uFILE\u     \i \i
+\i \i^@  prev. word   ^[L line No.     ^O  save   ^[D >word ^[^[ options ^O save  \i \i
+\i \i^_  next word    ^W  find text    ^[/ filter ^[- undo  ^[=  redo    ^R insert\i \i
 }
 
 {Advanced
-\i   Help Screen    turn off with ^J     prev. screen ^[,    next screen ^[.     \i
-\i \iMACROS      MISC            SCROLL    SHELL       GOTO       I-SEARCH        \i \i
-\i \i^[( Record  ^Q? status      ^Q. Right ^K' Window  ^QB to ^KB ^[R Backwards   \i \i
-\i \i^[) Stop    ^QQ repeat      ^Q, Left  ^[! Command ^QK to ^KK ^[S Forwards    \i \i
-\i \i^[ 0-9 Play ^QM Math                  QUOTE       DELETE     BOOKMARKS       \i \i
-\i \i^[? Query   ^KA Center line           ^P Ctrl-    ^[Y yank   ^K 0-9 Set      \i \i
-\i \i^[D Dump    ^[H Message               ^\\ Meta-    ^[O word<  ^Q 0-9 Goto     \i \i
-}
-
-{Programs
-\i   Help Screen    turn off with ^J     prev. screen ^[,    next screen ^[.     \i
-\i \iGOTO                INDENT    COMPILING                                      \i \i
-\i \i^Q[ Mathcing ( [ {  ^K. more  ^[C Compile and parse errors                   \i \i
-\i \i^QP Previous place  ^K, less  ^[E Parse errors                               \i \i
-\i \i^K= Next place                ^[= Goto next error                            \i \i
-\i \i^K; Tags file srch            ^[- Goto previous error                        \i \i
+\i   Help Screen    turn off with ^G     prev. screen ^[,    next screen ^[.     \i
+\i \i\uMACROS\u         \uWINDOW\u          \uWINDOW\u     \uSHELL\u         \uMISC\u                 \i \i
+\i \i^[( 0-9 Record ^[O Split       ^[I Grow   ^[! Command   ^[X Execute command  \i \i
+\i \i^[)     Stop   ^[E Edit file   ^[J Shrink ^[W Window    ^[M Math             \i \i
+\i \i^[ 0-9  Play   ^[P Goto prev.  \uQUOTE\u      \uI-SEARCH\u      ^[C Center line      \i \i
+\i \i^[?     Query  ^[N Goto next   `  Ctrl-   ^[R Backwards ^[G to matching ( [ {\i \i
+\i \i^[\\     Repeat ^[Z Zoom in/out ^\\ Meta-   ^[S Forwards  ^[< ^[> pan left/rght\i \i
 }
 
 {Search
-\i   Help Screen    turn off with ^J     prev. screen ^[,    next screen ^[.     \i
+\i   Help Screen    turn off with ^G     prev. screen ^[,    next screen ^[.     \i
 \i \iSpecial search sequences:                                                    \i \i
 \i \i    \\^  \\$  matches beg./end of line     \\?     match any single char        \i \i
 \i \i    \\<  \\>  matches beg./end of word     \\*     match 0 or more chars        \i \i
@@ -197,7 +212,7 @@
 }
 
 {Names
-\i   Help Screen    turn off with ^J     prev. screen ^[,    next screen ^[.     \i
+\i   Help Screen    turn off with ^G     prev. screen ^[,    next screen ^[.     \i
 \i \i Hit TAB at file name prompts to generate menu of file names                 \i \i
 \i \i Or use up/down keys to access history of previously entered names           \i \i
 \i \i Special file names:                                                         \i \i
@@ -209,7 +224,7 @@
 }
 
 {Joe
-\i   Help Screen    turn off with ^J     prev. screen ^[,                        \i
+\i   Help Screen    turn off with ^G     prev. screen ^[,                        \i
 \i \i Send bug reports to: Joe Allen (jhallen@world.std.com)                      \i \i
 }
 
@@ -257,7 +272,7 @@
  Simple macros can be made by comma seperating 2 or more command names.  For
  example:
 
- bof,bol	^T Z		Goto beginning of last line
+ eof,bol	^T Z		Goto beginning of last line
 
  Also quoted matter is typed in literally:
 
@@ -265,250 +280,164 @@
 
  Macros may cross lines if they end with ,
 
+ Commands or named macros may be created with :def.  For example, you can
+ use:
+
+ :def foo eof,bol
+
+ To define a command foo which will goto the beginning of the last line.
+
 :windows		Bindings common to all windows
-type		^@ TO ÿ
-abort		^K Q
-abort		^K ^Q
-abort		^K q
-abort		^C
-arg		^Q Q
-arg		^Q ^Q
-arg		^Q q
-explode		^K I
-explode		^K ^I
-explode		^K i
-help		^J
-help		^K H
-help		^K ^H
-help		^K h
-hnext		^[ .
-hprev		^[ ,
-math		^Q M
-math		^Q ^M
-math		^Q m
-msg		^[ H
-msg		^[ ^H
-msg		^[ h
-nextw		^K N
-nextw		^K ^N
-nextw		^K n
+type		^@ TO ÿ		Type a character
+abort		^C		Abort window
+arg		^[ \		Repeat next command
+explode		^[ Z		Show all windows or show only one window
+explode		^[ ^Z
+explode		^[ z
+help		^G		Help menu
+help		.k1
+hnext		^[ .		Next help window
+hprev		^[ ,		Previous help window
+math		^[ m		Calculator
+math		^[ M		Calculator
+math		^[ ^M		Calculator
+nextw		^[ N		Goto next window
+nextw		^[ ^N
+nextw		^[ n
 pgdn		.kN		Screen down
+pgdn		^V
 pgdn		^[ [ 6 ~
 pgup		.kP		Screen up
+pgup		^Y
 pgup		^[ [ 5 ~
-play		^[ 0 TO 9
-prevw		^K P
-prevw		^K ^P
-prevw		^K p
-query		^[ ?
-record		^[ (
-retype		^]
-rtn		^M
-shell		^K Z
-shell		^K ^Z
-shell		^K z
-stop		^[ )
+play		^[ 0 TO 9	Execute macro
+prevw		^[ P		Goto previous window
+prevw		^[ ^P
+prevw		^[ p
+query		^[ ?		Macro query insert
+record		^[ (		Record a macro
+retype		^L		Refresh screen
+rtn		^M		Return
+shell		^Z
+stop		^[ )		Stop recording
 
 :main			Text editing window
 :inherit windows
 
  Spell-check macros
+
 :def spellfile filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype
 :def spellword psh,nextword,markk,prevword,markb,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\012';/bin/rm ispell.tmp",rtn,retype,nextword
-spellfile	^Q l
-spellfile	^Q L
-spellfile	^Q ^L
-spellword	^Q n
-spellword	^Q N
-spellword	^Q ^N
 
-rtarw,prevword,markb,nextword,markk	^K T
-rtarw,prevword,markb,nextword,markk	^K ^T
-rtarw,prevword,markb,nextword,markk	^K t
-run		^[ !
-isrch		^[ s
-isrch		^[ S
-isrch		^[ ^S
-rsrch		^[ r
-rsrch		^[ R
-rsrch		^[ ^R
-backw		^[ o
-backw		^[ ^O
-yankpop		^[ y
-yankpop		^[ Y
-yankpop		^[ ^Y
-parserr		^[ E
-parserr		^[ ^E
-parserr		^[ e
-nxterr		^[ =
-prverr		^[ -
-edit,rtn,filt,query,parserr	^[ ^C
-edit,rtn,filt,query,parserr	^[ c
-edit,rtn,filt,query,parserr	^[ C
+spellword	^T
+spellfile	^[ T		Spell check word
+spellfile	^[ t
+spellfile	^[ ^T
 
-quote8		^\		Quote Meta chars
-quote		^P		Quote Ctrl chars
-
+ ask,query,lose,query,abortbuf	^X	Exit after many questions
+exsave		^X		Exit
 backs		^?		Backspace
 backs		^H
-bknd		^K '		Shell window
-bkwdc		^Q H ^@ TO ÿ
-bkwdc		^Q ^H ^@ TO ÿ
-bkwdc		^Q h ^@ TO ÿ
-blkcpy		^K C		Copy marked block
-blkcpy		^K ^C
-blkcpy		^K c
-blkdel		^K Y		Delete marked block
-blkdel		^K ^Y
-blkdel		^K y
-blkmove		^K V		Move marked block
-blkmove		^K ^V
-blkmove		^K v
-blksave		^K W		Save marked block
-blksave		^K ^W
-blksave		^K w
-bof		^Q R		Goto beginning of file
-bof		^Q ^R
-bof		^Q r
+backw		^[ H		Backspace word
+backw		^[ ^?
+backw		^[ ^H
+backw		^[ h
+bknd		^[ W		Shell window
+bknd		^[ w
+bknd		^[ ^W
+bof		^[ Y		Goto beginning of file
+bof		^[ ^Y
+bof		^[ y
 bol		.kh		Goto beginning of line
+bol		^A
 bol		^[ [ H
 bol		^[ [ 1 ~
-bol		^Q S
-bol		^Q ^S
-bol		^Q s
-crawll		^Q ,
-crawlr		^Q .
-tos		^Q E
-tos		^Q ^E
-tos		^Q e
-center		^K A		Center line
-center		^K ^A
-center		^K a
-delbol		^Q ^H
-delbol		^Q ^?
+center		^[ ^C		Center line
+center		^[ c
 delch		.kD		Delete character
-delch		^G
-deleol		^Q Y		Delete to end of line
-deleol		^Q ^Y
-deleol		^Q y
-dellin		^Y		Delete entire line
-delw		^T		Delete word to right
+delch		^D
+deleol		^[ K		Delete to end of line
+deleol		^[ ^K
+deleol		^[ k
+delw		^[ ^D		Delete word
+delw		^[ d
 dnarw		.kd		Go down
-dnarw		^X
+dnarw		^N
 dnarw		^[ O B
 dnarw		^[ [ B
-dnslide		^Z
-edit		^K E		Edit a file
-edit		^K ^E
-edit		^K e
-eof		^Q C		Go to end of file
-eof		^Q ^C
-eof		^Q c
+drop		^^		Marking
+edit		^[ E		Edit a file
+edit		^[ ^E
+edit		^[ e
+eof		^[ V		Go to end of file
+eof		^[ ^V
+eof		^[ v
 eol		.kH		Go to end of line
+eol		^E
 eol		^[ [ F
 eol		^[ [ 4 ~
-eol		^Q D
-eol		^Q ^D
-eol		^Q d
-bos		^Q X
-bos		^Q ^X
-bos		^Q x
-exsave		^K X		Save and exit
-exsave		^K ^X
-exsave		^K x
-ffirst		^Q F		Find first
-ffirst		^Q ^F
-ffirst		^Q f
-qrepl		^Q A		Search & replace
-qrepl		^Q ^A
-qrepl		^Q a
-filt		^K /		Filter block
-fnext		^L		Find next
-format		^B		Format paragraph
-fwrdc		^Q G ^@ TO ÿ
-fwrdc		^Q ^G ^@ TO ÿ
-fwrdc		^Q g ^@ TO ÿ
-gomark		^Q 0 TO 9
-groww		^K G		Grow window
-groww		^K ^G
-groww		^K g
-insc		^@
-insf		^K R		Insert a file
-insf		^K ^R
-insf		^K r
-macros		^[ d		Dump macros
-macros		^[ ^D
-mode,"T"	^V		Insert/Overtype
-mode,"T"	.kI
-lindent		^K ,		Indent to left
-line		^Q I		Goto line no.
-line		^Q ^I
-line		^Q i
+execmd		^[ X		Prompt for command to execute
+execmd		^[ ^X		Prompt for command to execute
+execmd		^[ x		Prompt for command to execute
+ffirst		^W		Find first
+markk,filt		^[ /		Filter block though file
+fmtblk		^J		Format paragraphs in block
+groww		^[ I		Grow window
+groww		^[ ^I
+groww		^[ i
+insc		.kI		Insert a space
+insf		^R		Insert a file
+isrch		^[ S		Forward incremental search
+isrch		^[ ^S		Forward incremental search
+isrch		^[ s		Forward incremental search
+line		^[ L		Goto line no.
+line		^[ ^L
+line		^[ l
 ltarw		.kl		Go left
-ltarw		^S
+ltarw		^B
 ltarw		^[ O D
 ltarw		^[ [ D
-markb		^K B		Set beginning of marked block
-markb		^K ^B
-markb		^K b
-markk		^K K		Set end of marked block
-markk		^K ^K
-markk		^K k
-markl		^K L
-markl		^K ^L
-markl		^K l
-mode		^O
-nextpos		^K =		Goto next position in position history
-nextword	^F		Goto next word
-open		^N		Split line
-pgdn		^C
-pgup		^R
-prevpos		^Q P
-prevpos		^Q ^P
-prevpos		^Q p
-prevword	^A		Previous word
-redo		^^		Redo changes
-rindent		^K .		Indent to right
+mode		^[ ^[		Options menu
+nextword	^@		Goto next word
+open		^]		Split line
+prevword	^_		Previous word
+picokill	^K		Pico kill function
+quote		`		Enter Ctrl chars
+quote8		^\		Enter Meta chars
+redo		^[ =		Redo changes
+rsrch		^[ R		Backward incremental search
+rsrch		^[ ^R		Backward incremental search
+rsrch		^[ r		Backward incremental search
 rtarw		.kr		Go right
-rtarw		^D
+rtarw		^F
 rtarw		^[ O C
 rtarw		^[ [ C
-save		^K D		Save file
-save		^K S
-save		^K ^D
-save		^K ^S
-save		^K d
-save		^K s
-setmark		^K 0 TO 9
-shrinkw		^K T		Shrink window
-shrinkw		^K ^T
-shrinkw		^K t
-splitw		^K O		Split window
-splitw		^K ^O
-splitw		^K o
-stat		^Q ?		Show status
-tag		^K ;
-tomarkb		^Q B		Go to beginning of marked block
-tomarkb		^Q ^B
-tomarkb		^Q b
-tomarkk		^Q K		Go to end of marked block
-tomarkk		^Q ^K
-tomarkk		^Q k
-tomatch		^Q [		Goto matching parenthasis
-tomatch		^Q ^[
-tomatch		^Q ]
-tomatch		^Q ^]
-undo		^U		Undo changes
-undo		^_
+run		^[ !		Run a program in a window
+stat		^[ SP		Cursor position status
+markk,blksave		^O		Save file
+crawll		^[ <		Pan left
+crawlr		^[ >		Pan right
+shrinkw		^[ J		Shrink window
+shrinkw		^[ ^J
+shrinkw		^[ j
+splitw		^[ ^O		Split window
+splitw		^[ o
+tag		^[ ;		Tags file search
+tomatch		^[ G		To matching delimiter
+tomatch		^[ g
+tomatch		^[ ^G
+undo		^[ -		Undo changes
 uparw		.ku		Go up
-uparw		^E
+uparw		^P
 uparw		^[ O A
 uparw		^[ [ A
-upslide		^W
+yank		^U		Paste
+yankpop		^[ U		Select yanked text
+yankpop		^[ ^U
+yankpop		^[ u
 
 :prompt			Prompt windows
 :inherit main
-abort		^C
 complete	^I
 
 :menu			Selection menus
@@ -516,30 +445,26 @@ complete	^I
 abort		^[ ^[
 backsmenu	^?
 backsmenu	^H
-bofmenu		^Q R
-bofmenu		^Q ^R
-bofmenu		^K r
+bofmenu		^K U
+bofmenu		^K ^U
+bofmenu		^K u
 bolmenu		.kh
-bolmenu		^Q S
-bolmenu		^Q ^S
-bolmenu		^Q s
+bolmenu		^A
 dnarwmenu	.kd
-dnarwmenu	^X
+dnarwmenu	^N
 dnarwmenu	^[ [ B
 dnarwmenu	^[ O B
-eofmenu		^Q C
-eofmenu		^Q ^C
-eofmenu		^Q c
+eofmenu		^K V
+eofmenu		^K ^V
+eofmenu		^K v
 eolmenu		.kH
-eolmenu		^Q D
-eolmenu		^Q ^D
-eolmenu		^Q d
+eolmenu		^E
 ltarwmenu	.kl
-ltarwmenu	^S
+ltarwmenu	^B
 ltarwmenu	^[ [ D
 ltarwmenu	^[ O D
 rtarwmenu	.kr
-rtarwmenu	^D
+rtarwmenu	^F
 rtarwmenu	^[ [ C
 rtarwmenu	^[ O C
 rtn		SP
@@ -547,9 +472,8 @@ rtn		^I
 rtn		^K H
 rtn		^K h
 rtn		^K ^H
-rtn		^J
 uparwmenu	.ku
-uparwmenu	^E
+uparwmenu	^P
 uparwmenu	^[ [ A
 uparwmenu	^[ O A
 

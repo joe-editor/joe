@@ -1,0 +1,132 @@
+Wed Oct 10 2001  Vitezslav Samel <samel@mail.cz>
+	*** Release joe-2.9.7-pre2 ***
+
+Wed Oct 10 2001  Vitezslav Samel <samel@mail.cz>
+	* config.h, b.c, bw.c, hash.c, help.c, kbd.c, macro.c, main.c,
+	menu.c, path.c, pw.c, queue.c, qw.c, rc.c, tab.c, tw.c, ufile.c,
+	uformat.c, uisrch.c, undo.c, usearch.c, ushell.c, vs.c, w.c:
+	include <time.h> and <stdlib.h> only in those files which need them
+
+Wed Oct 10 2001  Vitezslav Samel <samel@mail.cz>
+	* configure.ac, main.c: autoconf.ac will be the only place where
+	to change version number; use VERSION #define from automake macro
+	when printing version
+
+Wed Oct 10 2001  Vitezslav Samel <samel@mail.cz>
+	* blocks.c, config.h: cleanup blocks.c; remove cases when AUTOINC
+	is enabled (AUTOINC case is IMHO slower then the other code - and
+	AUTOINC wasn't enabled by default in config.h); change indenting
+	of code in the body of switch() to something more readable
+
+Wed Sep 20 2001  Vitezslav Samel <samel@mail.cz>
+	* help.c: use unsigned int for lengths; remove local copy of filename;
+	replace "magic numbers" with sizeof(buf); rename members of struct
+	help (it's always clear where it belongs; change indentation of
+	switch(); remove goto's (we have continue ;-))
+
+Wed Sep 20 2001  Vitezslav Samel <samel@mail.cz>
+	*** SECURITY ***
+	* configure.ac, path.c: use mkstemp() if available; use <paths.h> if
+	available; this patch changes name of temporary file
+	to joe.tmp.XXXXXX (XXXXXX are unique chars)
+
+Wed Sep 20 2001  Vitezslav Samel <samel@mail.cz>
+	* configure.ac, path.c: use autoconf's way of finding which of
+	struct direct / struct dirent are available; clean up handling
+	of MS-DOS drive letters in the paths
+
+Wed Sep 20 2001  Vitezslav Samel <samel@mail.cz>
+	* tty.c: use full definitions of functions (maskit(), unmaskit(),
+	pauseit()) - it removes some compile warnings
+
+Wed Sep 20 2001  Vitezslav Samel <samel@mail.cz>
+	* tty.c: cleanup SA_INTERRUPT/SV_INTERRUPT handling
+
+Wed Sep 20 2001  Vitezslav Samel <samel@mail.cz>
+	* main.h: add prototype of edupd()
+
+Wed Sep 20 2001  Vitezslav Samel <samel@mail.cz>
+	* uedit.c: use jread()/jwrite() which retry when interrupted
+	by a signal
+
+Wed Sep 20 2001  Vitezslav Samel <samel@mail.cz>
+	* macro.c, uformat.c: include "utils.h" instead of <ctype.h> to have
+	isblank() defined
+
+Wed Sep 19 2001  Vitezslav Samel <samel@mail.cz>
+	* config.h, configure.ac, tty.c: use autoconf's way of detecting which
+	termio()/termios() functions are available; use HAVE_GETWD/HAVE_GETCWD
+	macros instead of TTYPOSIX/TTYSV #defines
+
+Wed Sep 19 2001  Vitezslav Samel <samel@mail.cz>
+	* configure.ac, tty.c: use autoconf's method of finding which header
+	to include to have TIOCGWINSZ defined
+
+Wed Sep 19 2001  Vitezslav Samel <samel@mail.cz>
+	* tty.c: replace ugly "method" of detecting setitimer() with
+	HAVE_SETITIMER macro from autoconf
+
+Wed Sep 19 2001  Vitezslav Samel <samel@mail.cz>
+	* config.h, tty.c: remove improperly used HZ #define
+
+Wed Sep 19 2001  Vitezslav Samel <samel@mail.cz>
+	* tty.h, vfile.c: add prototypes of jread() / jwrite()
+
+Wed Sep 19 2001  Vitezslav Samel <samel@mail.cz>
+	* b.c, tty.c, umath.c: various systems use different signal handler
+	prototypes - make use of RETSIGTYPE macro from autoconf
+
+Wed Sep 19 2001  Vitezslav Samel <samel@mail.cz>
+	* configure.ac, tty.c: various systems use different setpgrp()
+	prototypes - make use of SETPGRP_VOID macro from autoconf
+
+Fri Sep 14 2001  Alexandre P. Nunes <alex@PolesApart.dhs.org>
+	* configure, configure.ac, missing, Makefile.am, Makefile.in,
+	aclocal.m4, autoconf.h.in, config.h, *rc files, b.c, main.c,
+	path.c, tty.c: use recent automake and autoconf configuration
+	system (at the moment we're using automake-1.4-p4, autoconf-2.52)
+
+Thu Jul 20 2001  Marek 'Marx' Grac <xgrac@fi.muni.cz>
+	*** Release joe-2.9.7-pre1 ***
+
+Thu Jul 19 2001  Marek 'Marx' Grac <xgrac@fi.muni.cz>
+	* help.c, help.h, main.c: help system was rebuilt
+	
+Thu Jul 19 2001  Vitezslav Samel <samel@mail.cz>
+	* joe.1, ufile.c: new feature 'backup suffix', when the system 
+	environment SIMPLE_BACKUP_SUFFIX is set then it is used instead of ~.
+	Inspired by patch program.
+	
+Thu Jul 19 2001  Vitezslav Samel <samel@mail.cz>
+	* lot of files: patch which removes a lot of warnings.
+	
+Wed Jul 04 2001  Marek 'Marx' Grac <xgrac@fi.muni.cz>
+
+	* b.c, main.c, path.c, path.h, rc.c, ufile.c: Function 'ossep'
+	was completly removed because it was not possible to access
+	files like test\ in UNIX like systems.
+	
+Wed Jul 04 2001  Marek 'Marx' Grac <xgrac@fi.muni.cz>
+
+	* ufile.c: Several minor changes.
+	
+Wed Jul 04 2001  Marek 'Marx' Grac <xgrac@fi.muni.cz>
+
+	* ufile.c: Problem with freezing when saving unmodified file 
+	is solved. But it is possible that this patch is only partial	
+
+Wed Jul 04 2001  Marek 'Marx' Grac <xgrac@fi.muni.cz>
+
+	* ufile.c: Modified flag is now properly set. It can look
+	awful but pre-first undo record has modified flag set on.
+
+Wed Jul 03 2001  Marek 'Marx' Grac <xgrac@fi.muni.cz>
+
+	* joe-2.9.7pre0.tgz: version 2.9.7pre0 was released
+
+Wed Jul 02 2001  Marek 'Marx' Grac <xgrac@fi.muni.cz>
+
+	* lot of files: I get last version without wordwrap bug (2.9.6pre1) and
+	applied almost all patches which are mentioned in NEWS file. Problem
+	with ${sysconfdir}/joerc is probably still actual, because I was not
+	able to find patch :(

@@ -1,9 +1,20 @@
-/*
-	Device independant tty interface for JOE
-	Copyright (C) 1992 Joseph H. Allen
+/* Device independant tty interface for JOE
+   Copyright (C) 1992 Joseph H. Allen
 
-	This file is part of JOE (Joe's Own Editor)
- */
+This file is part of JOE (Joe's Own Editor)
+
+JOE is free software; you can redistribute it and/or modify it under the 
+terms of the GNU General Public License as published by the Free Software 
+Foundation; either version 1, or (at your option) any later version.  
+
+JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+details.  
+
+You should have received a copy of the GNU General Public License along with 
+JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
+675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifndef _Iscrn
 #define _Iscrn 1
@@ -16,8 +27,7 @@ extern int skiptop;
 
 typedef struct scrn SCRN;
 
-struct hentry
-{
+struct hentry {
 	int next;
 	int loc;
 };
@@ -26,8 +36,7 @@ struct hentry
 
 #ifdef __MSDOS__
 
-struct scrn
-{
+struct scrn {
 	int li;
 	int co;
 	short *scrn;
@@ -39,8 +48,7 @@ struct scrn
 };
 
 #else
-struct scrn
-{
+struct scrn {
 	CAP *cap;		/* Termcap/Terminfo data */
 
 	int li;			/* Screen height */
@@ -151,25 +159,25 @@ struct scrn
  * Open the screen (sets TTY mode so that screen may be used immediatly after
  * the 'nopen').
  */
-SCRN *nopen ();
+SCRN *nopen();
 
 /* void nresize(SCRN *t,int w,int h);
  *
  * Change size of screen.  For example, call this when you find out that
  * the Xterm changed size.
  */
-void nresize ();
+void nresize();
 
 /* void nredraw(SCRN *t);
  *
  * Invalidate all state variables for the terminal.  This way, everything gets
  * redrawn.
  */
-void nredraw ();
+void nredraw();
 
-void npartial ();
-void nescape ();
-void nreturn ();
+void npartial();
+void nescape();
+void nreturn();
 
 /* void nclose(SCRN *t);
  *
@@ -177,19 +185,19 @@ void nreturn ();
  *
  * if 'flg' is set, tclose doesn't mess with the signals.
  */
-void nclose ();
+void nclose();
 
 /* int cpos(SCRN *t,int x,int y);
  *
  * Set cursor position
  */
-int cpos ();
+int cpos();
 
 /* int attr(SCRN *t,int a);
  *
  * Set attributes
  */
-int attr ();
+int attr();
 
 /* void outatr(SCRN *t,int *scrn,int x,int y,int c,int a);
  *
@@ -221,19 +229,19 @@ extern unsigned atab[];
 #define BLINK 2048
 #define DIM 4096
 
-#define outatr(t,scrn,xx,yy,c,a) \
-  ( \
-    (*(scrn)!=((c)|(a))) ? \
-      ( \
-      *(scrn)=((c)|(a)), \
-      ((t)->ins?clrins(t):0), \
-      ((t)->x!=(xx) || (t)->y!=(yy)?cpos((t),(xx),(yy)):0), \
-      ((t)->attrib!=(a)?attr((t),(a)):0), \
-      ttputc(c), ++(t)->x \
-      ) \
-    : \
-      0 \
-  )
+#define outatr(t, scrn, xx, yy, c, a) {			\
+	if(*(scrn) != ((c) | (a))) {			\
+		*(scrn) = ((c) | (a));			\
+		if((t)->ins)				\
+			clrins(t);			\
+		if((t)->x != (xx) || (t)->y != (yy))	\
+			cpos((t), (xx), (yy));		\
+		if((t)->attrib != (a))			\
+			attr((t), (a));			\
+		ttputc(c);				\
+		++(t)->x;				\
+	}						\
+}
 
 #endif
 
@@ -253,7 +261,7 @@ extern int dspasis;
  *
  * Erase from screen coordinate to end of line.
  */
-int eraeol ();
+int eraeol();
 
 /* void nscrlup(SCRN *t,int top,int bot,int amnt);
  *
@@ -261,7 +269,7 @@ int eraeol ();
  * indicate which lines to scroll.  'bot' is the last line to scroll + 1.
  * 'amnt' is distance in lines to scroll.
  */
-void nscrlup ();
+void nscrlup();
 
 /* void nscrldn(SCRN *t,int top,int bot,int amnt);
  *
@@ -269,20 +277,20 @@ void nscrlup ();
  * indicate which lines to scroll.  'bot' is the last line to scroll + 1.
  * 'amnt' is distance in lines to scroll.
  */
-void nscrldn ();
+void nscrldn();
 
 /* void nscroll(SCRN *t);
  *
  * Execute buffered scroll requests
  */
-void nscroll ();
+void nscroll();
 
 /* void magic(SCRN *t,int y,int *cur,int *new);
  *
  * Figure out and execute line shifting
  */
-void magic ();
+void magic();
 
-int clrins ();
+int clrins();
 
 #endif

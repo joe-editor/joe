@@ -5,7 +5,7 @@
 #include "bw.h"
 
 extern char *merr;
-double calc (BW *bw, char *s);
-int umath (BW *bw);
+double calc(BW * bw, char *s);
+int umath(BW * bw);
 
 #endif

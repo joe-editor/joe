@@ -8,70 +8,65 @@
 #include <stdio.h>
 #include <string.h>
 
-gen (s, fd)
-     char *s;
-     FILE *fd;
+void gen(s, fd)
+char *s;
+FILE *fd;
 {
 	int c, x;
 	long addr = 0, oaddr;
+
       loop:
-	while (c = getc (fd), c == ' ' || c == '\t' || c == '#')
+	while (c = getc(fd), c == ' ' || c == '\t' || c == '#')
 		do
-			c = getc (fd);
+			c = getc(fd);
 		while (!(c == -1 || c == '\n'));
 	if (c == -1)
 		return;
 	if (c == '\n')
 		goto loop;
 	oaddr = addr;
-	addr = ftell (fd) - 1;
-	ungetc (c, fd);
+	addr = ftell(fd) - 1;
+	ungetc(c, fd);
 	s[x = 0] = 0;
-	while (1)
-	  {
-		  c = getc (fd);
-		  if (c == -1 || c == '\n')
-		    {
-			    if (x != 0 && s[x - 1] == '\\')
-				    --x;
-			    if (x)
-			      {
-				      int y, z, flg;
-				      s[x] = 0;
-				      z = 0;
-				      flg = 0;
-				      do
-					{
-						for (y = z;
-						     s[y] && s[y] != '|'
-						     && s[y] != ':'; ++y);
-						c = s[y];
-						s[y] = 0;
-						if (strlen (s + z) > 2
-						    && !strchr (s + z, ' ')
-						    && !strchr (s + z, '\t'))
-							(flg
-							 && putchar (' ')),
-								fputs (s + z,
-								       stdout),
-								flg = 1;
-						s[y] = c;
-						z = y + 1;
+	while (1) {
+		c = getc(fd);
+		if (c == -1 || c == '\n') {
+			if (x != 0 && s[x - 1] == '\\')
+				--x;
+			if (x) {
+				int y, z, flg;
+
+				s[x] = 0;
+				z = 0;
+				flg = 0;
+				do {
+					for (y = z; s[y] && s[y] != '|' && s[y] != ':'; ++y) ;
+					c = s[y];
+					s[y] = 0;
+					if (strlen(s + z) > 2 && !strchr(s + z, ' ') && !strchr(s + z, '\t')) {
+						if(flg)
+							putchar(' ');
+						fputs(s + z, stdout);
+						flg = 1;
 					}
-				      while (c && c != ':');
-				      if (flg)
-					      printf (" %x\n", addr - oaddr);
-			      }
-			    goto loop;
-		    }
-		  else if (c == '\r');
-		  else
-			  s[x++] = c;
-	  }
+					s[y] = c;
+					z = y + 1;
+				}
+				while (c && c != ':');
+				if (flg)
+					printf(" %lx\n", addr - oaddr);
+			}
+			goto loop;
+		} else if (c == '\r') ;
+		else
+			s[x++] = c;
+	}
 }
 
-main ()
+int main(int argc, char *argv[])
 {
 	char array[65536];
-	gen (array, stdin);
+
+	gen(array, stdin);
+	return(0);
 }

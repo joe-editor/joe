@@ -4,7 +4,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.joerc
-	2 - SYSCONFDIR/joerc
+	2 - @sysconfdir@/joerc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -65,7 +65,6 @@
 
  -skiptop nnn	Don't use top nnn lines of the screen
 
- Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used
  in these strings:
@@ -91,7 +90,7 @@
   %k  Entered prefix keys
   %S  '*SHELL*' if there is a shell running in window
   %M  Macro recording message
-
+  %y  Syntax
  These formatting escape sequences may also be given:
  
   \i  Inverse
@@ -100,42 +99,42 @@
   \d  Dim
   \f  Blink
 
+-lmsg \i%k%T%W%I%X %n %m%y%R %M %x
 -lmsg \i%k%T%W%I%X %n %m%R %M
 -rmsg  %S Row %r Col %c %t    F1 for help
-
  SECOND SECTION: File name dependant local option settings:
 
  Each line with '*' in the first column indicates the modes which should be
+ set for files whose name matches the regular expression.  If more than one
  set for files which match the regular expression.  If more than one regular
  expression matches the file name, then the last matching one is chosen.
-
  Here are the modes which can be set:
 
-	-wordwrap		Wordwrap
+	-encoding name		Set file coding (for example: utf-8, iso-8859-15)
 
 	-autoindent		Auto indent
 
 	-overwrite		Overtype mode
 
-	-lmargin nnn		Left margin
+        -picture                Picture mode (right arrow can go past end of lines)
 
 	-rmargin nnn		Right margin
+
 
 	-tab nnn		Tab width
 
 	-indentc nnn		Indentation character (32 for space, 9 for tab)
 
 	-istep nnn		Number of indentation columns
-
 	-french			One space after '.', '?' and '!' for wordwrap
 				and paragraph reformat instead of two.  Joe
 				does not change the spacing you give, but
 				sometimes it must put spacing in itself.  This
 				selects how much is inserted.
 
+	-linums			Enable line numbers on each line
 	-spaces			TAB inserts spaces instead of tabs.
 
-	-linums			Enable line numbers on each line
 
 	-rdonly			File is read-only
 
@@ -144,31 +143,31 @@
 	-lmsg			Status line definition strings-
 	-rmsg			see previous section for more info.
 
-	-mnew macro		Macro to execute when new files are loaded
+	-mfirst macro		Macro to execute on first modification
 	-mold macro		Macro to execute when existing files are loaded
 	-msnew macro		Macro to execute when new files are saved
 	-msold macro		Macro to execute when existing files are saved
 
 	Macros for the above options are in the same format as in the key
+	Macros for the above options are in the same format as in the key
 	binding section below- but without the key name strings.
-
-*
+ Default local options
 -wordwrap
 
-*.c
+ File name with '.'?  It's probably not a text file.
 -autoindent
-
-*.h
+-syntax c
+*.cpp
 -autoindent
-
-*akefile
-*AKEFILE
+-syntax c
+ Hypertext preprocessor file
+-autoindent
+-autoindent
 *rc
-
-*.p
+ Pascal
 -autoindent
-
- THIRD SECTION: Named help screens:
+-syntax pascal
+ Mail file
 
  Use \i to turn on/off inverse video
  Use \u to turn on/off underline
@@ -176,7 +175,8 @@
  Use \d to turn on/off dim
  Use \f to turn on/off flash
 
-{Basic
+ Use \| to insert a spring: all springs in a given line are set to the same
+\i   Help Screen    \|turn off with ^KH    more help with ESC . (^[.)              \i
 \i   Help Screen    turn off with ^KH    more help with ESC . (^[.)              \i
 \i \i\uCURSOR\u           \uGO TO\u            \uBLOCK\u      \uDELETE\u   \uMISC\u         \uEXIT\u      \i \i
 \i \i^B left ^F right ^U  prev. screen ^KB begin  ^D char. ^KJ reformat ^KX save  \i \i
@@ -186,17 +186,17 @@
 \i \i\uSEARCH\u           ^KU top of file  ^KW file   ^J >line \uSPELL\u        ^KE edit  \i \i
 \i \i^KF find text    ^KV end of file  ^KY delete ^_ undo  ^[N word     ^KR insert\i \i
 \i \i^L  find next    ^KL to line No.  ^K/ filter ^^ redo  ^[L file     ^KD save  \i \i
-}
 
 {Windows
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \i^KO Split the window in half           ^KE Load file into window             \i \i
 \i \i^KG Make current window bigger         ^KT Make current window smaller       \i \i
 \i \i^KN Go to the window below             ^KP Go to the window above            \i \i
 \i \i^C  Eliminate the current window       ^KI Show all windows / Show one window\i \i
-}
 
 {Advanced
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \i\uMACROS\u         \uMISC\u            \uSCROLL\u    \uSHELL\u       \uGOTO\u       \uI-SEARCH\u     \i \i
 \i \i^K[ 0-9 Record ^K SPACE status ^[W Up    ^K' Window  ^[B To ^KB ^[R Backwards\i \i
@@ -204,18 +204,18 @@
 \i \i^K 0-9  Play   ^[M Math        ^K< Left  \uQUOTE\u       \uDELETE\u     \uBOOKMARKS\u    \i \i
 \i \i^K?     Query  ^KA Center line ^K> Right `  Ctrl-    ^[Y yank   ^[ 0-9 Goto  \i \i
 \i \i^[D     Dump   ^[H Message               ^\\ Meta-    ^[O line<  ^[^[   Set   \i \i
-}
 
 {Programs
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \i\uGOTO\u                 \uINDENT\u   \uCOMPILING\u                                      \i \i
 \i \i^G  Matching ( [ {   ^K, less ^[C Compile and parse errors                   \i \i
 \i \i^K- Previous place   ^K. more ^[E Parse errors                               \i \i
 \i \i^K= Next place                ^[= To next error                              \i \i
 \i \i^K; Tags file search          ^[- To prev. error                             \i \i
-}
 
 {Search
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \iSpecial search sequences:                                                    \i \i
 \i \i    \\^  \\$  matches beg./end of line     \\?     match any single char        \i \i
@@ -227,9 +227,9 @@
 \i \i    \\&     replaced with text which matched search string                    \i \i
 \i \i    \\0 - 9 replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]     \i \i
 \i \i    \\\\     replaced with \\               \\n     replaced with newline        \i \i
-}
 
-{Names
+{Math
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i   Help Screen    turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \i Hit TAB at file name prompts to generate menu of file names                 \i \i
 \i \i Or use up/down keys to access history of previously entered names           \i \i
@@ -239,12 +239,11 @@
 \i \i      -                        Read/Write to/from standard I/O               \i \i
 \i \i      filename,START,SIZE      Read/Write a part of a file/device            \i \i
 \i \i          Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \i \i
-}
 
 {Joe
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,                        \i
 \i   Help Screen    turn off with ^KH    prev. screen ^[,                        \i
 \i \i Send bug reports to: Marek 'Marx' Grac (xgrac@fi.muni.cz)                   \i \i
-}
 
  FOURTH SECTION: Key bindings:
 
@@ -265,10 +264,10 @@
 
  Keys:
 
+ Use ^@ through ^_ , ^# and ^? for Ctrl chars
  Use ^@ through ^_ and ^? for Ctrl chars
- Use SP for space
  Use a TO b to generate a range of characters
-
+ Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
  You can also use termcap string capability names.  For example:
 
 	.ku		Up
@@ -322,8 +321,8 @@ hnext		^[ .		Next help window
 hprev		^[ ,		Previous help window
 math		^[ m		Calculator
 math		^[ M		Calculator
+ math		^[ ^M		Calculator
 math		^[ ^M		Calculator
-msg		^[ h		Display a message
 msg		^[ H		Display a message
 msg		^[ ^H		Display a message
 nextw		^K N		Goto next window
@@ -332,10 +331,10 @@ nextw		^K n
 pgdn		.kN		Screen down
 pgdn		^V
 pgdn		^[ [ 6 ~
-pgup		.kP		Screen up
+pgdn      ^# S
 pgup		^U
 pgup		^[ [ 5 ~
-play		^K 0 TO 9	Execute macro
+pgup      ^# T
 prevw		^K P		Goto previous window
 prevw		^K ^P
 prevw		^K p
@@ -347,34 +346,34 @@ shell		^K Z		Shell escape
 shell		^K ^Z
 shell		^K z
 stop		^K ]		Stop recording
-
+ Mouse handling
 :main			Text editing window
 :inherit windows
 
  Spell-check macros
 
+ Ispell
 :def spellfile filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype
 :def spellword psh,nextword,markk,prevword,markb,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\012';/bin/rm ispell.tmp",rtn,retype,nextword
-
+@SPELL@file	^[ l
 spellfile	^[ l
 spellword	^[ n
-
-
- Extra functions not really part of JOE user interface:
+ Compile
+ Here we guess some common key sequences which either do not have termcap
 
 delbol		^[ o		Delete to beginning of line
 delbol		^[ ^O		Delete to beginning of line
 dnslide		^[ z		Scroll down one line
 dnslide		^[ Z		Scroll down one line
 dnslide		^[ ^Z		Scroll down one line
+dnslide,dnslide,dnslide,dnslide		MWDOWN
 edit,rtn,filt,
 query,parserr	^[ c		Compile
 edit,rtn,filt,
 query,parserr	^[ ^C		Compile
-execmd		^[ x		Prompt for command to execute
 execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute
-isrch		^[ s		Forward incremental search
+finish		^[ ^I		Complete word in document
 isrch		^[ S		Forward incremental search
 isrch		^[ ^S		Forward incremental search
 notmod		^[ ~		Not modified
@@ -393,19 +392,19 @@ tomarkk		^[ k		Go to end of marked block
 tomarkk		^[ ^K		Go to end of marked block
 tomarkk		^[ K		Go to end of marked block
 txt		^[ i		Prompt for text and insert it
-txt		^[ ^I		Prompt for text and insert it
 txt		^[ I		Prompt for text and insert it
+txt		^[ ^I		Prompt for text and insert it
 upslide		^[ w		Scroll up one line
 upslide		^[ ^W		Scroll up one line
 upslide		^[ W		Scroll up one line
+upslide,upslide,upslide,upslide		MWUP
 yankpop		^[ y		Undelete text
-yankpop		^[ ^Y		Undelete text
+yank		^[ Y		Undelete text
 yankpop		^[ Y		Undelete text
 
- bufed		^[ d		Menu of buffers
+nbuf		^[ v		Next buffer
  pbuf		^[ .		Next buffer
  nbuf		^[ ,		Prev buffer
- query		^[ q		Quoted insert
  byte		^[ n		Goto byte
  col		^[ c		Goto column
  abortbuf	^[ k		Kill current buffer- don't mess with windows
@@ -446,18 +445,18 @@ blkdel		^K ^Y
 blkdel		^K y
 blkmove		^K M		Move marked block
 blkmove		^K ^M
-blkmove		^K m
+blkmove		^K ^M
 blksave		^K W		Save marked block
 blksave		^K ^W
 blksave		^K w
 bof		^K U		Goto beginning of file
 bof		^K ^U
 bof		^K u
+ bol		.kh		Goto beginning of line
 bol		.kh		Goto beginning of line
 bol		^A
 bol		^[ [ H
 bol		^[ [ 1 ~
-center		^K A		Center line
 center		^K ^A
 center		^K a
 crawll		^K <		Pan left
@@ -471,24 +470,24 @@ dnarw		.kd		Go down
 dnarw		^N
 dnarw		^[ O B
 dnarw		^[ [ B
-edit		^K E		Edit a file
+dnarw		^# B
 edit		^K ^E
 edit		^K e
 eof		^K V		Go to end of file
 eof		^K ^V
 eof		^K v
 eol		.kH		Go to end of line
-eol		^E
+eol		.@7
+exsave		^K X		Save and exit
 eol		^[ [ F
 eol		^[ [ 4 ~
-exsave		^K X		Save and exit
 exsave		^K ^X
 exsave		^K x
 ffirst		^K F		Find first
 ffirst		^K ^F
 ffirst		^K f
 filt		^K /		Filter block
-fnext		^L		Find next
+ finish		^K ^M		Complete text under cursor
 fmtblk		^K J		Format paragraphs in block
 fmtblk		^K ^J
 fmtblk		^K j
@@ -497,8 +496,8 @@ groww		^K G		Grow window
 groww		^K ^G
 groww		^K g
 insc		.kI		Insert a space
+ insc		^@
 insc		^@
-insf		^K R		Insert a file
 insf		^K ^R
 insf		^K r
 lindent		^K ,		Indent to left
@@ -509,7 +508,7 @@ ltarw		.kl		Go left
 ltarw		^B
 ltarw		^[ O D
 ltarw		^[ [ D
-macros		^[ d		Dump keyboard macros
+ltarw          ^# D
 macros		^[ ^D
 markb		^K B		Set beginning of marked block
 markb		^K ^B
@@ -529,7 +528,7 @@ rtarw		.kr		Go right
 rtarw		^F
 rtarw		^[ O C
 rtarw		^[ [ C
-save		^K D		Save file
+rtarw          ^# C
 save		^K S
 save		^K ^D
 save		^K ^S
@@ -547,18 +546,18 @@ tag		^K ;		Tags file search
 tomatch		^G		Goto matching parenthasis
 undo		^_		Undo changes
 uparw		.ku		Go up
-uparw		^P
+uparw		^# A
 uparw		^[ O A
 uparw		^[ [ A
 
 :prompt			Prompt windows
 :inherit main
-complete	^I
-
+if,"byte>size",then,complete,complete,else,delch,endif	^D
+dnarw,eol	.kd		Go down
 :menu			Selection menus
 :inherit windows
+
 abort		^[ ^[
-backsmenu	^?
 backsmenu	^H
 bofmenu		^K U
 bofmenu		^K ^U
@@ -569,7 +568,7 @@ dnarwmenu	.kd
 dnarwmenu	^N
 dnarwmenu	^[ [ B
 dnarwmenu	^[ O B
-eofmenu		^K V
+dnarwmenu ^# B
 eofmenu		^K ^V
 eofmenu		^K v
 eolmenu		.kH
@@ -578,20 +577,20 @@ ltarwmenu	.kl
 ltarwmenu	^B
 ltarwmenu	^[ [ D
 ltarwmenu	^[ O D
-rtarwmenu	.kr
+ltarwmenu ^# D
 rtarwmenu	^F
 rtarwmenu	^[ [ C
-rtarwmenu	^[ O C
+rtarwmenu ^# C
 rtn		SP
 rtn		^I
 rtn		^K H
 rtn		^K h
 rtn		^K ^H
-uparwmenu	.ku
+tabmenu		^I
 uparwmenu	^P
 uparwmenu	^[ [ A
 uparwmenu	^[ O A
-
+uparwmenu ^# A
 :query			Single-key query window
 :inherit windows
 

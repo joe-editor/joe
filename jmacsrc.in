@@ -4,7 +4,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.jmacsrc
-	2 - SYSCONFDIR/jmacsrc
+	2 - @sysconfdir@/jmacsrc
 
  This file can include other files by placing the following include command
  in the first column:

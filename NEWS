@@ -1,7 +1,29 @@
+Overview of Changes in JOE 2.9.7-pre2 (10 Oct 2001)
+- use automake and autoconf for configuration system (for now versions
+  automake-1.4-p4 and autoconf-2.52)
+- a lot of warnings of compiler were removed
+- SECURITY:: use mkstemp() for temporary files if available
+- code clean up
+    
+Overview of Changes in JOE 2.9.7pre1 (19 Jul 2001)
+- help system was slightly modified
+- a lot of warnings of compiler were removed
+- BUGFIX:: problem with freezing when save was solved (at least partially)
+- BUGFIX:: undo after save of file (again same patch)
+- FEATURE:: suffix of backup copy from SIMPLE_BACKUP_SUFFIX environment 
+  variable
+
+Overview of Changes in JOE 2.9.7pre0 (02 Jul 2001)
+- major BUGFIX:: wordwrap problem
+- BUGFIX:: indentation
+??* JOE can be compiled on Windows platform again
+??* BUGFIX:: problem with ${sysconfdir}/joerc was solved
+
 Overview of Changes in JOE 2.9.6 (13 Apr 2001)
 
+- BUGFIX:: resizing window
 - JOE can be compiled on Windows platform again
-- BUGFIX:: problem with ${sysconfdir}/joerc was solved
+* BUGFIX:: problem with ${sysconfdir}/joerc was solved
 - BUGFIX:: security patch for sprintf
 - BUGFIX:: partially solved problem on Solaris with SegFault
 - BUGFIX:: patch joe-2.8-security (slightly changed)

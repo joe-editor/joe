@@ -6,8 +6,7 @@ typedef struct macro MACRO;
 
 /* Command entry */
 
-struct cmd
-{
+struct cmd {
 	char *name;		/* Command name */
 	int flag;		/* Execution flags */
 	int (*func) ();		/* Function bound to name */
@@ -32,11 +31,11 @@ extern CMD cmds[];		/* Built-in commands */
 /* CMD *findcmd(char *s);
  * Return command address for given name
  */
-CMD *findcmd ();
-void addcmd ();
+CMD *findcmd();
+void addcmd();
 
 /* Execute a command.  Returns return value of command */
-int execmd ();
+int execmd();
 
 extern int beep;
 

@@ -18,7 +18,7 @@ extern void *LAST;
 
 typedef struct stditem STDITEM;
 struct stditem {
-	LINK (STDITEM) link;
+	LINK(STDITEM) link;
 };
 
 
@@ -26,11 +26,17 @@ struct stditem {
 	( \
 	QUEUE=(void *)(item), \
 	((type *)QUEUE)->member.prev=(type *)QUEUE, \
-	((type *)QUEUE)->member.next=(type *)QUEUE, \
-	(type *)QUEUE \
+	((type *)QUEUE)->member.next=(type *)QUEUE \
 	)
 
 #define deque(type,member,item) \
+	( \
+	ITEM=(void *)(item), \
+	((type *)ITEM)->member.prev->member.next=((type *)ITEM)->member.next, \
+	((type *)ITEM)->member.next->member.prev=((type *)ITEM)->member.prev\
+	)
+
+#define deque_f(type,member,item) \
 	( \
 	ITEM=(void *)(item), \
 	((type *)ITEM)->member.prev->member.next=((type *)ITEM)->member.next, \
@@ -51,11 +57,20 @@ struct stditem {
 	((type *)ITEM)->member.next=((type *)QUEUE)->member.next, \
 	((type *)ITEM)->member.prev=(type *)QUEUE, \
 	((type *)QUEUE)->member.next->member.prev=(type *)ITEM, \
-	((type *)QUEUE)->member.next=(type *)ITEM, \
-	(type *)ITEM \
+	((type *)QUEUE)->member.next=(type *)ITEM \
 	)
 
 #define enqueb(type,member,queue,item) \
+	( \
+	ITEM=(void *)(item), \
+	QUEUE=(void *)(queue), \
+	((type *)ITEM)->member.next=(type *)QUEUE, \
+	((type *)ITEM)->member.prev=((type *)QUEUE)->member.prev, \
+	((type *)QUEUE)->member.prev->member.next=(type *)ITEM, \
+	((type *)QUEUE)->member.prev=(type *)ITEM \
+	)
+
+#define enqueb_f(type,member,queue,item) \
 	( \
 	ITEM=(void *)(item), \
 	QUEUE=(void *)(queue), \
@@ -68,12 +83,12 @@ struct stditem {
 
 #define promote(type,member,queue,item) \
 	( \
-	enquef(type,member,(queue),deque(type,member,(item))) \
+	enquef(type,member,(queue),deque_f(type,member,(item))) \
 	)
 
 #define demote(type,member,queue,item) \
 	( \
-	enqueb(type,member,(queue),deque(type,member,(item))) \
+	enqueb(type,member,(queue),deque_f(type,member,(item))) \
 	)
 
 #define splicef(type,member,queue,chain) \
@@ -84,11 +99,21 @@ struct stditem {
 	((type *)LAST)->member.next=((type *)QUEUE)->member.next, \
 	((type *)ITEM)->member.prev=(type *)QUEUE, \
 	((type *)QUEUE)->member.next->member.prev=(type *)LAST, \
-	((type *)QUEUE)->member.next=(type *)ITEM, \
-	(type *)ITEM \
+	((type *)QUEUE)->member.next=(type *)ITEM \
 	)
 
 #define spliceb(type,member,queue,chain) \
+	( \
+	ITEM=(void *)(chain), \
+	LAST=(void *)((type *)ITEM)->member.prev, \
+	QUEUE=(void *)(queue), \
+	((type *)LAST)->member.next=(type *)QUEUE, \
+	((type *)ITEM)->member.prev=((type *)QUEUE)->member.prev, \
+	((type *)QUEUE)->member.prev->member.next=(type *)ITEM, \
+	((type *)QUEUE)->member.prev=(type *)LAST \
+	)
+
+#define spliceb_f(type,member,queue,chain) \
 	( \
 	ITEM=(void *)(chain), \
 	LAST=(void *)((type *)ITEM)->member.prev, \
@@ -111,10 +136,7 @@ struct stditem {
 	(type *)ITEM \
 	)
 
-void *ALITEM (STDITEM *freelist, int itemsize);
-void FRCHN (STDITEM *freelist, STDITEM *chn);
-
-#define alitem(freelist,itemsize) ALITEM((STDITEM *) freelist, itemsize)
-#define frchn(freelist,chn) FRCHN((STDITEM *) freelist, (STDITEM *) chn)
+void *alitem(void *list, int itemsize);
+void frchn(void *list, void *ch);
 
 #endif

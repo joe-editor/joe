@@ -12,20 +12,20 @@ extern int exask;
 
 #include "bw.h"
 
-void genexmsg ();
+void genexmsg();
 
-int ublksave ();
-int ushell ();
-int usave ();
-int uedit ();
-int uinsf ();
-int uexsve ();
-int unbuf ();
-int upbuf ();
-int uask ();
-int ubufed ();
-int ulose ();
-int okrepl ();
-int doedit ();
+int ublksave();
+int ushell();
+int usave();
+int uedit();
+int uinsf();
+int uexsve();
+int unbuf();
+int upbuf();
+int uask();
+int ubufed();
+int ulose();
+int okrepl();
+int doedit();
 
 #endif

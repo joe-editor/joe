@@ -1,9 +1,20 @@
-/*
-	TERMCAP/TERMINFO header file
-	Copyright (C) 1992 Joseph H. Allen
+/* TERMCAP/TERMINFO header file
+   Copyright (C) 1992 Joseph H. Allen
 
-	This file is part of JOE (Joe's Own Editor)
- */
+This file is part of JOE (Joe's Own Editor)
+
+JOE is free software; you can redistribute it and/or modify it under the 
+terms of the GNU General Public License as published by the Free Software 
+Foundation; either version 1, or (at your option) any later version.  
+
+JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+details.  
+
+You should have received a copy of the GNU General Public License along with 
+JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
+675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifndef _Itermcap
 #define _Itermcap 1
@@ -12,14 +23,12 @@
 
 typedef struct cap CAP;
 
-struct sortentry
-{
+struct sortentry {
 	char *name;
 	char *value;
 };
 
-struct cap
-{
+struct cap {
 	char *tbuf;		/* Termcap entry loaded here */
 
 	struct sortentry *sort;	/* Pointers to each capability stored in here */
@@ -74,13 +83,13 @@ struct cap
  * done for self-refering 'tc=filename' links (so all of core will be
  * allocated if there are any).
  */
-CAP *getcap ();
+CAP *getcap();
 
 /* CAP *setcap(CAP *cap,int baud,void (*out)(void *outptr,char c),void *outptr);
  *
  * Reset baud, out and outptr for a CAP
  */
-CAP *setcap ();
+CAP *setcap();
 
 /* char *jgetstr(CAP *cap,char *name);
  *
@@ -89,27 +98,27 @@ CAP *setcap ();
  * the buffer used to load the termcap entry.  It should not be modified or
  * freed.
  */
-char *jgetstr ();
+char *jgetstr();
 
 /* int getflag(CAP *cap,char *name);
  *
  * Return true if the named capability is found in 'cap'.  A fast binary
  * search is used to lookup the capability.
  */
-int getflag ();
+int getflag();
 
 /* int getnum(CAP *cap,char *name);
  *
  * Return value of numeric capability or return -1 if it's not found.  A fast
  * binary search is used to lookup the capability.
  */
-int getnum ();
+int getnum();
 
 /* void rmcap(CAP *cap);
  *
  * Eliminate a CAP entry.
  */
-void rmcap ();
+void rmcap();
 
 /* void texec(CAP *cap,char *str,int l,int a0,int a1,int a2,int a3);
 
@@ -127,7 +136,7 @@ void rmcap ();
 
    'a0' - 'a1' are the arguments for the string
 */
-void texec ();
+void texec();
 
 /* int tcost(CAP *cap,char *str, int l, int a0, int a1, int a2, int a3);
    Return cost in number of characters which need to be sent
@@ -145,7 +154,7 @@ void texec ();
 
    'a0' - 'a3' are arguements passed to the string
 */
-int tcost ();
+int tcost();
 
 /* char *tcompile(CAP *cap,char *str,int a0,int a1,int a2,int a3);
 
@@ -153,16 +162,16 @@ int tcost ();
    string (see vs.h) containing the compiled string capability.
    Pad characters are not placed in the string.
 */
-char *tcompile ();
+char *tcompile();
 
 /* Old termcap support */
 #ifdef junk
-int tgetent ();
-char *tgetstr ();
-int tgetflag ();
-int tgetnum ();
-char *tgoto ();
-void tputs ();
+int tgetent();
+char *tgetstr();
+int tgetflag();
+int tgetnum();
+char *tgoto();
+void tputs();
 extern short ospeed;
 extern char PC, *UP, *BC;
 #endif

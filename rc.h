@@ -5,8 +5,7 @@
 #include "macro.h"
 
 typedef struct options OPTIONS;
-struct options
-{
+struct options {
 	OPTIONS *next;
 	char *name;
 	int overtype;
@@ -32,23 +31,23 @@ struct options
 };
 
 extern OPTIONS pdefault;
-void setopt ();
+void setopt();
 
 /* KMAP *getcontext(char *name);
  * Find and return the KMAP for a given context name.  If none is found, an
  * empty kmap is created, bound to the context name, and returned.
  */
-KMAP *getcontext ();
+KMAP *getcontext();
 
 /* int procrc(CAP *cap, char *name);  Process an rc file
    Returns 0 for success
           -1 for file not found
            1 for syntax error (errors written to stderr)
 */
-int procrc ();
+int procrc();
 
-int glopt ();
-int umode ();
+int glopt();
+int umode();
 
 
 #endif

@@ -10,6 +10,6 @@
 
 #include "bw.h"
 
-int cmplt (BW * bw);
+int cmplt(BW * bw);
 
 #endif

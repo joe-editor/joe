@@ -6,7 +6,7 @@
 
 typedef struct irec IREC;
 struct irec {
-	LINK (IREC) link;
+	LINK(IREC) link;
 	int what;		/* 0 repeat, >0 append n chars */
 	long start;		/* Cursor search position */
 	long disp;		/* Original cursor position */
@@ -20,7 +20,7 @@ struct isrch {
 	int quote;		/* Set to quote next char */
 };
 
-int uisrch (BW *bw);
-int ursrch (BW *bw);
+int uisrch(BW * bw);
+int ursrch(BW * bw);
 
 #endif

@@ -1,9 +1,20 @@
-/*
-	Menu selection window
-	Copyright (C) 1992 Joseph H. Allen
+/* Menu selection window
+   Copyright (C) 1992 Joseph H. Allen
 
-	This file is part of JOE (Joe's Own Editor)
-*/
+This file is part of JOE (Joe's Own Editor)
+
+JOE is free software; you can redistribute it and/or modify it under the 
+terms of the GNU General Public License as published by the Free Software 
+Foundation; either version 1, or (at your option) any later version.  
+
+JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+details.  
+
+You should have received a copy of the GNU General Public License along with 
+JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
+675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifndef _Imenu
 #define _Imenu 1
@@ -33,22 +44,22 @@ struct menu {
 
 /* Create a menu */
 
-MENU *mkmenu ();
+MENU *mkmenu();
 
 /* Menu user functions */
 
-int umuparw (MENU *m);
-int umdnarw (MENU *m);
-int umltarw (MENU *m);
-int umrtarw (MENU *m);
-int umbof (MENU *m);
-int umeof (MENU *m);
-int umbol (MENU *m);
-int umeol (MENU *m);
-int umbacks (MENU *m);
+int umuparw();
+int umdnarw();
+int umltarw();
+int umrtarw();
+int umbof();
+int umeof();
+int umbol();
+int umeol();
+int umbacks();
 
-void ldmenu (MENU *m, char **s, int cursor);
+void ldmenu();
 
-char *mcomplete (MENU *m);
+char *mcomplete();
 
 #endif

@@ -1,3 +1,4 @@
+
 /* DOS TTY INTERFACE */
 
 #include <stdio.h>
@@ -12,173 +13,151 @@ unsigned long upc;
 unsigned baud = 38400;
 int have = 0;
 int leave = 0;
-void
-tickon ()
+void tickon()
 {
 }
-void
-tickoff ()
+
+void tickoff()
 {
 }
 int noxon;
 int Baud;
 
-int
-jread (fd, buf, siz)
-     char *buf;
+int jread(fd, buf, siz)
+char *buf;
 {
-	return read (fd, buf, siz);
+	return read(fd, buf, siz);
 }
 
-int
-jwrite (fd, buf, siz)
-     char *buf;
+int jwrite(fd, buf, siz)
+char *buf;
 {
-	return write (fd, buf, siz);
+	return write(fd, buf, siz);
 }
 
-int
-fork ()
+int fork()
 {
 }
-int
-pipe ()
+int pipe()
 {
 }
-int
-wait ()
+int wait()
 {
 }
-int
-kill ()
+int kill()
 {
 }
 
-int
-setbreak (stat)
+int setbreak(stat)
 {
 	int prv;
+
 	_AX = 0x3300;
-	geninterrupt (0x21);
+	geninterrupt(0x21);
 	prv = _DL;
 	_DX = stat;
 	_AX = 0x3301;
-	geninterrupt (0x21);
+	geninterrupt(0x21);
 	return prv;
 }
 
 int breakflg;
 
-void
-ttopen ()
+void ttopen()
 {
-	obuf = malloc (4096);
+	obuf = malloc(4096);
 	obufsiz = 4096;
 	obufp = 0;
-	breakflg = setbreak (0);
+	breakflg = setbreak(0);
 }
 
-void
-ttopnn ()
+void ttopnn()
 {
-	ttflsh ();
+	ttflsh();
 }
 
-void
-ttclose ()
+void ttclose()
 {
-	ttflsh ();
-	setbreak (breakflg);
+	ttflsh();
+	setbreak(breakflg);
 }
 
-void
-ttclsn ()
+void ttclsn()
 {
-	ttflsh ();
+	ttflsh();
 }
 
 int prefix = 0;
 int prefixc;
 
-int
-ttgetc ()
+int ttgetc()
 {
 	unsigned c;
-	ttflsh ();
-	if (prefix)
-	  {
-		  prefix = 0;
-		  return prefixc;
-	  }
-	c = bioskey (0);
-	if ((c & 255) == 0)
-	  {
-		  prefix = 1;
-		  prefixc = (c >> 8);
-		  return 0;
-	  }
-	else
+
+	ttflsh();
+	if (prefix) {
+		prefix = 0;
+		return prefixc;
+	}
+	c = bioskey(0);
+	if ((c & 255) == 0) {
+		prefix = 1;
+		prefixc = (c >> 8);
+		return 0;
+	} else
 		return (c & 255);
 }
 
-ttflsh ()
+ttflsh()
 {
 	if (obufp)
-		_write (fileno (stdout), obuf, obufp);
+		_write(fileno(stdout), obuf, obufp);
 	obufp = 0;
 }
 
-void
-ttputs (s)
-     char *s;
+void ttputs(s)
+char *s;
 {
 	while (*s)
-		ttputc (*s++);
+		ttputc(*s++);
 }
 
-void
-ttshell ()
+void ttshell()
 {
 }
 
-void
-ttsusp ()
+void ttsusp()
 {
-	system (getenv ("COMSPEC"));
+	system(getenv("COMSPEC"));
 }
 
-void
-ttgtsz (x, y)
-     int *x, *y;
+void ttgtsz(x, y)
+int *x, *y;
 {
 	*x = 0;
 	*y = 0;
 }
 
-void
-sigjoe ()
+void sigjoe()
 {
 }
 
-void
-signrm ()
+void signrm()
 {
 }
 
-char *getcwd ();
-char *
-pwd ()
+char *getcwd();
+char *pwd()
 {
 	static char buf[128];
-	return getcwd (buf, 128);
+
+	return getcwd(buf, 128);
 }
 
-MPX *
-mpxmk ()
+MPX *mpxmk()
 {
 }
 
-int
-subshell ()
+int subshell()
 {
 }

@@ -1,9 +1,20 @@
-/*
-	Variable length arrays of strings
-	Copyright (C) 1992 Joseph H. Allen
+/* Variable length arrays of strings
+   Copyright (C) 1992 Joseph H. Allen
 
-	This file is part of JOE (Joe's Own Editor)
-*/
+This file is part of JOE (Joe's Own Editor)
+
+JOE is free software; you can redistribute it and/or modify it under the 
+terms of the GNU General Public License as published by the Free Software 
+Foundation; either version 1, or (at your option) any later version.  
+
+JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+details.  
+
+You should have received a copy of the GNU General Public License along with 
+JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
+675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifndef _Iva
 #define _Iva
@@ -35,13 +46,13 @@
 /* aELEMENT(*vamk(int len));
  * Create a variable length array.  Space for 'len' elements is preallocated.
  */
-aELEMENT (*vamk (int len));
+aELEMENT(*vamk());
 
 /* void varm(aELEMENT(*vary));
  * Free an array and everything which is in it.  Does nothing if 'vary' is
  * 0.
  */
-void varm (aELEMENT (*vary));
+void varm();
 
 /********************/
 /* Space management */
@@ -78,7 +89,7 @@ void varm (aELEMENT (*vary));
  * Compute length of char or variable length array by searching for termination
  * element.  Returns 0 if 'vary' is 0.
  */
-int alen (aELEMENT (*ary));
+int alen();
 
 /* aELEMENT(*vaensure(aELEMENT(*vary),int len));
  * Make sure there's enough space in the array for 'len' elements.  Whenever
@@ -86,7 +97,7 @@ int alen (aELEMENT (*ary));
  * minimum space in anticipation of future expansion.  If 'vary' is 0,
  * it creates a new array.
  */
-aELEMENT (*vaensure (aELEMENT (*vary), int len));
+aELEMENT(*vaensure());
 
 /* aELEMENT(*vazap(aELEMENT(*vary),int pos,int n));
  * Destroy n elements from an array beginning at pos.  Is ok if pos/n go
@@ -95,13 +106,13 @@ aELEMENT (*vaensure (aELEMENT (*vary), int len));
  * function does not actually write to the array.  This does not stop if
  * a aterm is encountered.
  */
-aELEMENT (*vazap (aELEMENT (*vary), int pos, int n));
+aELEMENT(*vazap());
 
 /* aELEMENT(*vatrunc(aELEMENT(*vary),int len));
  * Truncate array to indicated size.  This zaps or expands with blank elements
  * and sets the LEN() of the array.  A new array is created if 'vary' is 0.
  */
-aELEMENT (*vatrunc (aELEMENT (*vary), int len));
+aELEMENT(*vatrunc());
 
 /************************************/
 /* Function which write to an array */
@@ -115,7 +126,7 @@ aELEMENT (*vatrunc (aELEMENT (*vary), int len));
  * This does not zap previous values.  If you need that to happen, call
  * vazap first.  It does move the terminator around properly though.
  */
-aELEMENT (*vafill (aELEMENT (*vary), int pos, aELEMENT (el), int len));
+aELEMENT(*vafill());
 #ifdef junk
 /* aELEMENT(*vancpy(aELEMENT(*vary),int pos,aELEMENT(*array),int len));
  * Copy 'len' elements from 'array' onto 'vary' beginning at position 'pos'.
@@ -123,14 +134,14 @@ aELEMENT (*vafill (aELEMENT (*vary), int pos, aELEMENT (el), int len));
  * elements are copied, not duplicated.  A new array is created if 'vary' is
  * 0.  This does not zap previous elements.
  */
-aELEMENT (*vancpy (aELEMENT (*vary), int pos, aELEMENT (*array), int len));
+aELEMENT(*vancpy());
 #endif
 /* aELEMENT(*vandup(aELEMENT(*vary),int pos,aELEMENT(*array),int len));
  * Duplicate 'len' elements from 'array' onto 'vary' beginning at position
  * 'pos'.  'array' can be a char array since its length is passed seperately.  A
  * new array is created if 'vary' is 0.
  */
-aELEMENT (*vandup (aELEMENT (*vary), int pos, aELEMENT (*array), int len));
+aELEMENT(*vandup());
 
 /* aELEMENT(*vadup(aELEMENT(*vary)));
  * Duplicate array.  This is just a functionalized version of:
@@ -145,7 +156,7 @@ aELEMENT (*vandup (aELEMENT (*vary), int pos, aELEMENT (*array), int len));
  * functionalized instances of the ones you use most often - especially since
  * the macros aren't safe).
  */
-aELEMENT (*vadup (aELEMENT (*vary)));
+aELEMENT(*vadup());
 
 /* aELEMENT(*vaset(aELEMENT(*vary),int pos,aELEMENT(element)));
  * Set an element in an array.  Any value of 'pos' is valid.  A new array
@@ -153,17 +164,16 @@ aELEMENT (*vadup (aELEMENT (*vary)));
  * deleted.    This does not duplicate 'element'.  If you need 'element'
  * duplicated, call: vaset(vary,pos,adup(element));
  */
-aELEMENT (*_vaset (aELEMENT (*vary), int pos, aELEMENT (el)));
-
+aELEMENT(*_vaset());
 
 #define vaset(v,p,el)  \
- (!(v) || (p)>aLen(v) || (p)==aLen(v) && (p)==aSiz(v) ?  \
+ (!(v) || (p) > aLen(v) || ((p) == aLen(v) && (p) == aSiz(v)) ?  \
   _vaset((v),(p),(el)) \
  : \
-  ((p)==aLen(v) ? \
-   ((v)[(p)+1]=(v)[p], (v)[p]=(el), aLen(v)=(p)+1, (v)) \
+  ((p) == aLen(v) ? \
+   ((v)[(p)+1] = (v)[p], (v)[p] = (el), aLen(v) = (p)+1, (v)) \
   : \
-   (adel((v)[p]), (v)[p]=(el), (v)) \
+   (adel((v)[p]), (v)[p] = (el), (v)) \
   ) \
  )
 
@@ -232,12 +242,12 @@ aELEMENT (*_vaset (aELEMENT (*vary), int pos, aELEMENT (el)));
 /* aELEMENT(*vasort(aELEMENT(*ary),int len))
  * Sort the elements of an array (char or variable length) using qsort().
  */
-aELEMENT (*vasort (aELEMENT (*ary), int len));
+aELEMENT(*vasort());
 
 /* aELEMENT(*vawords(aELEMENT(*a),char *s,int len,char *sep,int seplen));
  * Generate list of strings out of words in 's' seperated with the characters
  * in 'sep'.  The characters in 'sep' must be sorted.
  */
-aELEMENT (*vawords (aELEMENT (*a), char *s, int len, char *sep, int seplen));
+aELEMENT(*vawords());
 
 #endif

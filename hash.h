@@ -20,10 +20,10 @@ struct hash {
 	HENTRY **tab;
 };
 
-unsigned long hash (char *s);
-HASH *htmk (int len);
-void htrm (HASH *ht);
-void *htadd (HASH *ht, char *name, void *val);
-void *htfind (HASH *ht, char *name);
+unsigned long hash(char *s);
+HASH *htmk(int len);
+void htrm(HASH * ht);
+void *htadd(HASH * ht, char *name, void *val);
+void *htfind(HASH * ht, char *name);
 
 #endif

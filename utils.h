@@ -19,7 +19,7 @@
  * 	_ is considered as word character because is often used 
  *	in the names of C/C++ functions
  */
-unsigned int isalnum_ (unsigned int c);
+unsigned int isalnum_(unsigned int c);
 
 /* 
  * Whitespace characters are characters like tab, space, ...
@@ -28,7 +28,7 @@ unsigned int isalnum_ (unsigned int c);
  *	This is because I don't want to be forced to end 
  *	*rc file with \n
  */
-unsigned int isspace_eof (unsigned int c);
+#define isspace_eof(c) (isspace(c) || (!(c)))
 
 /*
  * Define function isblank(c) for non-GNU systems
@@ -40,9 +40,9 @@ unsigned int isspace_eof (unsigned int c);
 /*
  * Functions which return minimum/maximum of two numbers  
  */
-unsigned int uns_min (unsigned int a, unsigned int b);
-signed int   int_min (signed int a, int signed b);
-signed long long_max (signed long a, signed long b);
-signed long long_min (signed long a, signed long b);
+unsigned int uns_min(unsigned int a, unsigned int b);
+signed int int_min(signed int a, int signed b);
+signed long long_max(signed long a, signed long b);
+signed long long_min(signed long a, signed long b);
 
 #endif

@@ -1,3 +1,4 @@
+
 /* Command execution */
 
 #include <string.h>
@@ -33,7 +34,7 @@
 
 extern int smode;
 int beep = 0;
-int uexecmd ();
+int uexecmd();
 
 /* Command table */
 
@@ -43,13 +44,21 @@ CMD cmds[] = {
 	{"arg", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uarg, 0, 0, 0},
 	{"ask", TYPETW + TYPEPW, uask, 0, 0, 0},
 	{"uarg", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uuarg, 0, 0, 0},
-	{"backs", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, ubacks, 0, 1, "delch"},
+
+	{"backs", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD,
+	 ubacks, 0, 1, "delch"},
 	{"backsmenu", TYPEMENU, umbacks, 0, 1, 0},
-	{"backw", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EKILL + EMOD, ubackw, 0, 1, "delw"},
+
+
+	{"backw", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EKILL + EMOD,
+	 ubackw, 0,
+	 1, "delw"},
 	{"bknd", TYPETW + TYPEPW, ubknd, 0, 0, 0},
 	{"bkwdc", TYPETW + TYPEPW, ubkwdc, 0, 1, "fwrdc"},
 	{"blkcpy", TYPETW + TYPEPW + EFIXXCOL + EMOD, ublkcpy, 0, 1, 0},
-	{"blkdel", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, ublkdel, 0, 0, 0},
+
+	{"blkdel", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, ublkdel,
+	 0, 0, 0},
 	{"blkmove", TYPETW + TYPEPW + EFIXXCOL + EMOD, ublkmove, 0, 0, 0},
 	{"blksave", TYPETW + TYPEPW + 0, ublksave, 0, 0, 0},
 	{"bof", TYPETW + TYPEPW + EMOVE + EFIXXCOL, u_goto_bof, 0, 0, 0},
@@ -67,14 +76,26 @@ CMD cmds[] = {
 	{"copy", TYPETW + TYPEPW, ucopy, 0, 0, 0},
 	{"crawll", TYPETW + TYPEPW, ucrawll, 0, 1, "crawlr"},
 	{"crawlr", TYPETW + TYPEPW, ucrawlr, 0, 1, "crawll"},
-	{"delbol", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelbl, 0, 1, "deleol"},
-	{"delch", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, udelch, 0, 1, "backs"},
+
+	{"delbol", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelbl,
+	 0, 1, "deleol"},
+
+	{"delch", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD,
+	 udelch, 0, 1, "backs"},
 	{"deleol", TYPETW + TYPEPW + EKILL + EMOD, udelel, 0, 1, "delbol"},
-	{"dellin", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelln, 0, 1, 0},
-	{"delw", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL + EKILL + EMOD, u_word_delete, 0, 1, "backw"},
-	{"dnarw", TYPETW + TYPEPW + EMOVE, u_goto_down, 0, 1, "uparw"},
+
+	{"dellin", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelln,
+	 0, 1, 0},
+
+	{"delw", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL + EKILL + EMOD,
+	 u_word_delete, 0, 1, "backw"},
+	{"dnarw", TYPETW + TYPEPW + EMOVE, udnarw, 0, 1, "uparw"},
 	{"dnarwmenu", TYPEMENU, umdnarw, 0, 1, "uparwmenu"},
-	{"dnslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, udnslide, 0, 1, "upslide"},
+
+
+	{"dnslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE,
+	 udnslide, 0, 1,
+	 "upslide"},
 	{"drop", TYPETW + TYPEPW, udrop, 0, 0, 0},
 	{"dupw", TYPETW, uduptw, 0, 0, 0},
 	{"edit", TYPETW + TYPEPW, uedit, 0, 0, 0},
@@ -101,10 +122,14 @@ CMD cmds[] = {
 	{"hprev", TYPETW + TYPEPW + TYPEQW, u_help_prev, 0, 0, 0},
 	{"insc", TYPETW + TYPEPW + EFIXXCOL + EMOD, uinsc, 0, 1, "delch"},
 	{"insf", TYPETW + TYPEPW + EMOD, uinsf, 0, 0, 0},
-	{"lindent", TYPETW + TYPEPW + EFIXXCOL + EMOD, ulindent, 0, 1, "rindent"},
+
+	{"lindent", TYPETW + TYPEPW + EFIXXCOL + EMOD, ulindent, 0, 1,
+	 "rindent"},
 	{"line", TYPETW + TYPEPW, uline, 0, 0, 0},
 	{"lose", TYPETW + TYPEPW, ulose, 0, 0, 0},
-	{"ltarw", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL, u_goto_left, 0, 1, "rtarw"},
+
+	{"ltarw", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL, u_goto_left,
+	 0, 1, "rtarw"},
 	{"ltarwmenu", TYPEMENU, umltarw, 0, 1, "rtarwmenu"},
 	{"macros", TYPETW + EFIXXCOL, umacros, 0, 0, 0},
 	{"markb", TYPETW + TYPEPW + 0, umarkb, 0, 0, 0},
@@ -115,9 +140,14 @@ CMD cmds[] = {
 	{"msg", TYPETW + TYPEPW + TYPEQW + TYPEMENU, umsg, 0, 0, 0},
 	{"nbuf", TYPETW, unbuf, 0, 1, "upbuf"},
 	{"nedge", TYPETW + TYPEPW + EFIXXCOL, unedge, 0, 1, "pedge"},
-	{"nextpos", TYPETW + TYPEPW + EFIXXCOL + EMID + EPOS, unextpos, 0, 1, "prevpos"},
-	{"nextw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, unextw, 0, 1, "prevw"},
-	{"nextword", TYPETW + TYPEPW + EFIXXCOL, u_goto_next, 0, 1, "prevword"},
+
+	{"nextpos", TYPETW + TYPEPW + EFIXXCOL + EMID + EPOS, unextpos, 0, 1,
+	 "prevpos"},
+
+	{"nextw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, unextw, 0, 1,
+	 "prevw"},
+	{"nextword", TYPETW + TYPEPW + EFIXXCOL, u_goto_next, 0, 1,
+	 "prevword"},
 	{"nmark", TYPETW + TYPEPW, unmark, 0, 0, 0},
 	{"notmod", TYPETW, unotmod, 0, 0, 0},
 	{"nxterr", TYPETW, unxterr, 0, 1, "prverr"},
@@ -125,13 +155,23 @@ CMD cmds[] = {
 	{"parserr", TYPETW, uparserr, 0, 0, 0},
 	{"pbuf", TYPETW, upbuf, 0, 1, "unbuf"},
 	{"pedge", TYPETW + TYPEPW + EFIXXCOL, upedge, 0, 1, "nedge"},
-	{"pgdn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgdn, 0, 1, "pgup"},
-	{"pgup", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgup, 0, 1, "pgdn"},
-	{"picokill", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, upicokill, 0, 1, 0},
+
+	{"pgdn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgdn, 0,
+	 1, "pgup"},
+	{"pgup", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgup, 0, 1,
+	 "pgdn"},
+	{"picokill", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, upicokill,
+	 0, 1, 0},
 	{"play", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uplay, 0, 1, 0},	/* EFIXX? */
-	{"prevpos", TYPETW + TYPEPW + EPOS + EMID + EFIXXCOL, uprevpos, 0, 1, "nextpos"},
-	{"prevw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uprevw, 0, 1, "nextw"},
-	{"prevword", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL, u_goto_prev, 0, 1, "nextword"},
+
+	{"prevpos", TYPETW + TYPEPW + EPOS + EMID + EFIXXCOL, uprevpos, 0, 1,
+	 "nextpos"},
+
+	{"prevw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uprevw, 0, 1,
+	 "nextw"},
+
+	{"prevword", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL, u_goto_prev, 0, 1,
+	 "nextword"},
 	{"prverr", TYPETW, uprverr, 0, 1, "nxterr"},
 	{"psh", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upsh, 0, 0, 0},
 	{"pop", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upop, 0, 0, 0},
@@ -143,7 +183,9 @@ CMD cmds[] = {
 	{"redo", TYPETW + TYPEPW + EFIXXCOL, uredo, 0, 1, "undo"},
 	{"retype", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uretyp, 0, 0, 0},
 	{"rfirst", TYPETW + TYPEPW, prfirst, 0, 0, 0},
-	{"rindent", TYPETW + TYPEPW + EFIXXCOL + EMOD, urindent, 0, 1, "lindent"},
+
+	{"rindent", TYPETW + TYPEPW + EFIXXCOL + EMOD, urindent, 0, 1,
+	 "lindent"},
 	{"run", TYPETW + TYPEPW, urun, 0, 0, 0},
 	{"rsrch", TYPETW + TYPEPW, ursrch, 0, 0, 0},
 	{"rtarw", TYPETW + TYPEPW + EFIXXCOL, u_goto_right, 0, 1, "ltarw"},
@@ -166,11 +208,19 @@ CMD cmds[] = {
 	{"tw0", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw0, 0, 0, 0},
 	{"tw1", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw1, 0, 0, 0},
 	{"txt", TYPETW + TYPEPW, utxt, 0, 0, 0},
-	{"type", TYPETW + TYPEPW + TYPEQW + TYPEMENU + EMINOR + EMOD, utype, 0, 1, "backs"},
+
+
+	{"type", TYPETW + TYPEPW + TYPEQW + TYPEMENU + EMINOR + EMOD,
+	 utype, 0, 1,
+	 "backs"},
 	{"undo", TYPETW + TYPEPW + EFIXXCOL, uundo, 0, 1, "redo"},
-	{"uparw", TYPETW + TYPEPW + EMOVE, u_goto_up, 0, 1, "dnarw"},
+	{"uparw", TYPETW + TYPEPW + EMOVE, uuparw, 0, 1, "dnarw"},
 	{"uparwmenu", TYPEMENU, umuparw, 0, 1, "dnarwmenu"},
-	{"upslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, uupslide, 0, 1, "dnslide"},
+
+
+	{"upslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE,
+	 uupslide, 0, 1,
+	 "dnslide"},
 	{"yank", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyank, 0, 1, 0},
 	{"yapp", TYPETW + TYPEPW + EKILL, uyapp, 0, 0, 0},
 	{"yankpop", TYPETW + TYPEPW + EFIXXCOL + EMOD, uyankpop, 0, 1, 0}
@@ -178,36 +228,34 @@ CMD cmds[] = {
 
 /* Execute a command n with key k */
 
-int
-execmd (cmd, k)
-     CMD *cmd;
+int execmd(cmd, k)
+CMD *cmd;
 {
 	BW *bw = (BW *) maint->curwin->object;
 	int ret = -1;
 
 	if (cmd->m)
-		return exmacro (cmd->m, 0);
+		return exmacro(cmd->m, 0);
 
 	/* We don't execute if we have to fix the column position first
 	 * (i.e., left arrow when cursor is in middle of nowhere) */
-	if ((cmd->flag & ECHKXCOL) && bw->cursor->xcol != piscol (bw->cursor))
+	if ((cmd->flag & ECHKXCOL)
+	    && bw->cursor->xcol != piscol(bw->cursor))
 		goto skip;
 
 	/* Don't execute command if we're in wrong type of window */
 	if (!(cmd->flag & maint->curwin->watom->what))
 		goto skip;
 
-	if ((maint->curwin->watom->what & TYPETW) && bw->b->rdonly &&
-	    (cmd->flag & EMOD))
-	  {
-		  msgnw (bw, "Read only");
-		  if (beep)
-			  ttputc (7);
-		  goto skip;
-	  }
+	if ((maint->curwin->watom->what & TYPETW) && bw->b->rdonly && (cmd->flag & EMOD)) {
+		msgnw(bw, "Read only");
+		if (beep)
+			ttputc(7);
+		goto skip;
+	}
 
 	/* Execute command */
-	ret = cmd->func (maint->curwin->object, k);
+	ret = cmd->func(maint->curwin->object, k);
 
 	if (smode)
 		--smode;
@@ -220,14 +268,13 @@ execmd (cmd, k)
 
 	/* Maintain position history */
 	/* If command was not a positioning command */
-	if (!(cmd->flag & EPOS) &&
-	    (maint->curwin->watom->what & (TYPETW | TYPEPW)))
-		afterpos ();
+	if (!(cmd->flag & EPOS)
+	    && (maint->curwin->watom->what & (TYPETW | TYPEPW)))
+		afterpos();
 
 	/* If command was not a movement */
-	if (!(cmd->flag & (EMOVE | EPOS)) &&
-	    (maint->curwin->watom->what & (TYPETW | TYPEPW)))
-		aftermove (maint->curwin, bw->cursor);
+	if (!(cmd->flag & (EMOVE | EPOS)) && (maint->curwin->watom->what & (TYPETW | TYPEPW)))
+		aftermove(maint->curwin, bw->cursor);
 
 	if (cmd->flag & EKILL)
 		justkilled = 1;
@@ -239,19 +286,19 @@ execmd (cmd, k)
 	/* Make dislayed cursor column equal the actual cursor column
 	 * for commands which arn't simple vertical movements */
 	if (cmd->flag & EFIXXCOL)
-		bw->cursor->xcol = piscol (bw->cursor);
+		bw->cursor->xcol = piscol(bw->cursor);
 
 	/* Recenter cursor to middle of screen */
-	if (cmd->flag & EMID)
-	  {
-		  int omid = mid;
-		  mid = 1;
-		  dofollows ();
-		  mid = omid;
-	  }
+	if (cmd->flag & EMID) {
+		int omid = mid;
+
+		mid = 1;
+		dofollows();
+		mid = omid;
+	}
 
 	if (beep && ret)
-		ttputc (7);
+		ttputc(7);
 	return ret;
 }
 
@@ -259,51 +306,50 @@ execmd (cmd, k)
 
 HASH *cmdhash = 0;
 
-void
-izcmds ()
+void izcmds()
 {
 	int x;
-	cmdhash = htmk (256);
-	for (x = 0; x != sizeof (cmds) / sizeof (CMD); ++x)
-		htadd (cmdhash, cmds[x].name, cmds + x);
+
+	cmdhash = htmk(256);
+	for (x = 0; x != sizeof(cmds) / sizeof(CMD); ++x)
+		htadd(cmdhash, cmds[x].name, cmds + x);
 }
 
-CMD *
-findcmd (s)
-     char *s;
+CMD *findcmd(s)
+char *s;
 {
 	if (!cmdhash)
-		izcmds ();
-	return (CMD *) htfind (cmdhash, s);
+		izcmds();
+	return (CMD *) htfind(cmdhash, s);
 }
 
-void
-addcmd (s, m)
-     char *s;
-     MACRO *m;
+void addcmd(s, m)
+char *s;
+MACRO *m;
 {
-	CMD *cmd = (CMD *) malloc (sizeof (CMD));
+	CMD *cmd = (CMD *) malloc(sizeof(CMD));
+
 	if (!cmdhash)
-		izcmds ();
-	cmd->name = strdup (s);
+		izcmds();
+	cmd->name = strdup(s);
 	cmd->flag = 0;
 	cmd->func = 0;
 	cmd->m = m;
 	cmd->arg = 1;
 	cmd->negarg = 0;
-	htadd (cmdhash, cmd->name, cmd);
+	htadd(cmdhash, cmd->name, cmd);
 }
 
-char **
-getcmds ()
+char **getcmds()
 {
-	char **s = vaensure (NULL, sizeof (cmds) / sizeof (CMD));
+	char **s = vaensure(NULL, sizeof(cmds) / sizeof(CMD));
 	int x;
 	HENTRY *e;
+
 	for (x = 0; x != cmdhash->len; ++x)
 		for (e = cmdhash->tab[x]; e; e = e->next)
-			s = vaadd (s, vsncpy (NULL, 0, sz (e->name)));
-	vasort (s, aLen (s));
+			s = vaadd(s, vsncpy(NULL, 0, sz(e->name)));
+	vasort(s, aLen(s));
 	return s;
 }
 
@@ -311,125 +357,119 @@ getcmds ()
 
 char **scmds = 0;
 
-char **
-regsub (z, len, s)
-     char **z;
-     char *s;
+char **regsub(z, len, s)
+char **z;
+char *s;
 {
 	char **lst = 0;
 	int x;
+
 	for (x = 0; x != len; ++x)
-		if (rmatch (s, z[x]))
-			lst = vaadd (lst, vsncpy (NULL, 0, sz (z[x])));
+		if (rmatch(s, z[x]))
+			lst = vaadd(lst, vsncpy(NULL, 0, sz(z[x])));
 	return lst;
 }
 
-void
-inscmd (bw, line)
-     BW *bw;
-     char *line;
+void inscmd(bw, line)
+BW *bw;
+char *line;
 {
-	P *p = pdup (bw->cursor);
-	p_goto_bol (p);
-	p_goto_eol (bw->cursor);
-	bdel (p, bw->cursor);
-	binsm (bw->cursor, sv (line));
-	p_goto_eol (bw->cursor);
-	prm (p);
-	bw->cursor->xcol = piscol (bw->cursor);
+	P *p = pdup(bw->cursor);
+
+	p_goto_bol(p);
+	p_goto_eol(bw->cursor);
+	bdel(p, bw->cursor);
+	binsm(bw->cursor, sv(line));
+	p_goto_eol(bw->cursor);
+	prm(p);
+	bw->cursor->xcol = piscol(bw->cursor);
 }
 
-int
-cmdabrt (bw, x, line)
-     BW *bw;
-     char *line;
+int cmdabrt(bw, x, line)
+BW *bw;
+char *line;
 {
 	if (line)
-		inscmd (bw, line), vsrm (line);
+		inscmd(bw, line), vsrm(line);
 	return -1;
 }
 
-int
-cmdrtn (m, x, line)
-     MENU *m;
-     char *line;
+int cmdrtn(m, x, line)
+MENU *m;
+char *line;
 {
-	inscmd (m->parent->win->object, m->list[x]);
-	vsrm (line);
+	inscmd(m->parent->win->object, m->list[x]);
+	vsrm(line);
 	m->object = 0;
-	wabort (m->parent);
+	wabort(m->parent);
 	return 0;
 }
 
-int
-cmdcmplt (bw)
-     BW *bw;
+int cmdcmplt(bw)
+BW *bw;
 {
 	MENU *m;
 	P *p, *q;
 	char *line;
 	char *line1;
 	char **lst;
+
 	if (!scmds)
-		scmds = getcmds ();
-	p = pdup (bw->cursor);
-	p_goto_bol (p);
-	q = pdup (bw->cursor);
-	p_goto_eol (q);
-	line = brvs (p, (int) (q->byte - p->byte));	/* Assumes short lines :-) */
-	prm (p);
-	prm (q);
-	m = mkmenu (bw, NULL, cmdrtn, cmdabrt, NULL, 0, line, NULL);
+		scmds = getcmds();
+	p = pdup(bw->cursor);
+	p_goto_bol(p);
+	q = pdup(bw->cursor);
+	p_goto_eol(q);
+	line = brvs(p, (int) (q->byte - p->byte));	/* Assumes short lines :-) */
+	prm(p);
+	prm(q);
+	m = mkmenu(bw, NULL, cmdrtn, cmdabrt, NULL, 0, line, NULL);
 	if (!m)
 		return -1;
-	line1 = vsncpy (NULL, 0, sv (line));
-	line1 = vsadd (line1, '*');
-	lst = regsub (scmds, aLEN (scmds), line1);
-	vsrm (line1);
-	ldmenu (m, lst, 0);
-	if (!lst)
-	  {
-		  wabort (m->parent);
-		  ttputc (7);
-		  return -1;
-	  }
-	else
-	  {
-		  if (aLEN (lst) == 1)
-			  return cmdrtn (m, 0, line);
-		  else if (smode || isreg (line))
-			  return 0;
-		  else
-		    {
-			    char *com = mcomplete (m);
-			    vsrm (m->object);
-			    m->object = com;
-			    wabort (m->parent);
-			    smode = 2;
-			    ttputc (7);
-			    return 0;
-		    }
-	  }
+	line1 = vsncpy(NULL, 0, sv(line));
+	line1 = vsadd(line1, '*');
+	lst = regsub(scmds, aLEN(scmds), line1);
+	vsrm(line1);
+	ldmenu(m, lst, 0);
+	if (!lst) {
+		wabort(m->parent);
+		ttputc(7);
+		return -1;
+	} else {
+		if (aLEN(lst) == 1)
+			return cmdrtn(m, 0, line);
+		else if (smode || isreg(line))
+			return 0;
+		else {
+			char *com = mcomplete(m);
+
+			vsrm(m->object);
+			m->object = com;
+			wabort(m->parent);
+			smode = 2;
+			ttputc(7);
+			return 0;
+		}
+	}
 }
 
-int
-docmd (bw, s, object, notify)
-     BW *bw;
-     char *s;
-     void *object;
-     int *notify;
+int docmd(bw, s, object, notify)
+BW *bw;
+char *s;
+void *object;
+int *notify;
 {
 	MACRO *mac;
 	int ret = -1;
-	CMD *cmd = findcmd (s);
+	CMD *cmd = findcmd(s);
+
 	if (!cmd)
-		msgnw (bw, "No such command");
-	else
-	  {
-		  mac = mkmacro (MAXINT, 0, 0, cmd);
-		  ret = exmacro (mac, 1);
-		  rmmacro (mac);
-	  }
+		msgnw(bw, "No such command");
+	else {
+		mac = mkmacro(MAXINT, 0, 0, cmd);
+		ret = exmacro(mac, 1);
+		rmmacro(mac);
+	}
 	if (notify)
 		*notify = 1;
 	return ret;
@@ -437,8 +477,9 @@ docmd (bw, s, object, notify)
 
 B *cmdhist = 0;
 
-int uexecmd (BW *bw) {
-	if (wmkpw (bw->parent, "cmd: ", &cmdhist, docmd, "cmd", NULL, cmdcmplt, NULL, NULL)) {
+int uexecmd(BW * bw)
+{
+	if (wmkpw(bw->parent, "cmd: ", &cmdhist, docmd, "cmd", NULL, cmdcmplt, NULL, NULL)) {
 		return 0;
 	} else {
 		return -1;
