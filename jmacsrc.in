@@ -61,7 +61,9 @@
 -menu_explorer Stay in menu system when a directory is selected (otherwise
                 directory is added to path and menu is closed).
 
- -icase         Search is case insensitive by default.
+-icase          Search is case insensitive by default.
+
+-wrap		Search wraps
 
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is

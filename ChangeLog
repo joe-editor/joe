@@ -1,4 +1,9 @@
 Mon May 10 2004  Joe Allen <jhallen@world.std.com>
+	* usearch.c, uisrch.c:
+
+	Added '-wrap' flag.  Search wraps when set.
+
+Mon May 10 2004  Joe Allen <jhallen@world.std.com>
 	* *rc.in :
 
 	More globs: .cpp, .hpp, .c++, .h++

@@ -84,6 +84,8 @@
 
  -icase         Search is case insensitive by default.
 
+ -wrap          Search wraps
+
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used

@@ -545,6 +545,7 @@ struct irec {
 	int	what;		/* 0 repeat, >0 append n chars */
 	long	start;		/* Cursor search position */
 	long	disp;		/* Original cursor position */
+	int	wrap_flag;	/* Wrap flag */
 };
 
 struct isrch {
@@ -582,6 +583,7 @@ struct undo {
 struct srchrec {
 	LINK(SRCHREC)	link;	/* Linked list of search & replace locations */
 	int	yn;		/* Did we replace? */
+	int	wrap_flag;	/* Did we wrap? */
 	long	addr;		/* Where we were */
 };
 
@@ -598,6 +600,8 @@ struct search {
 	int	flg;		/* Set after prompted for first replace */
 	SRCHREC	recs;		/* Search & replace position history */
 	P	*markb, *markk;	/* Original marks */
+	P	*wrap_p;	/* Wrap point */
+	int	wrap_flag;	/* Set if we've wrapped */
 	int	valid;		/* Set if original marks are a valid block */
 	long	addr;		/* Addr of last replacement or -1 for none */
 	int	block_restrict;	/* Search restricted to marked block */

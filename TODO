@@ -1,5 +1,7 @@
 Fix for next release:
 
+  need 'beep' function for macros (see Abort in jmacsrc.in)
+
   highlight other windows
   why lose state during page down?
   perl highlighter
@@ -104,8 +106,6 @@ Jmacs/Jstar/Jpico:
 
  search and replace 'fred' to 'foo':
     find 'Fred', gets 'Foo'.
-
- Jmacs: incremental search should wrap
 
  Rectangle mode for emacs yank system
 

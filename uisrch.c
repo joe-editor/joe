@@ -27,6 +27,8 @@ struct isrch *lastisrch = NULL;	/* Previous search */
 
 unsigned char *lastpat = NULL;	/* Previous pattern */
 
+SRCH *globalsrch;		/* Existing SRCH structure */
+
 IREC fri = { {&fri, &fri} };	/* Free-list of irecs */
 
 static IREC *alirec(void)
@@ -59,6 +61,7 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 {				/* Append text and search */
 	/* Append char and search */
 	IREC *i = alirec();
+	SRCH *srch;
 
 	i->what = len;
 	i->disp = bw->cursor->byte;
@@ -67,7 +70,30 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 		pgoto(bw->cursor, isrch->irecs.link.prev->start);
 	}
 	i->start = bw->cursor->byte;
-	if (dopfnext(bw, mksrch(vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern)), NULL, icase, isrch->dir, -1, 0, 0), NULL)) {
+
+	if (!globalsrch)
+		srch = mksrch(NULL,NULL,icase,isrch->dir,-1,0,0);
+	else {
+		srch = globalsrch;
+		globalsrch = 0;
+	}
+
+	srch->addr = bw->cursor->byte;
+
+	if (!srch->wrap_p || srch->wrap_p->b!=bw->b) {
+		prm(srch->wrap_p);
+		srch->wrap_p = pdup(bw->cursor);
+		srch->wrap_p->owner = &srch->wrap_p;
+		srch->wrap_flag = 0;
+	}
+
+	i->wrap_flag = srch->wrap_flag;
+
+	vsrm(srch->pattern);
+	srch->pattern = vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern));
+	srch->backwards = isrch->dir;
+
+	if (dopfnext(bw, srch, NULL)) {
 		if(beep)
 			ttputc(7);
 	}
@@ -87,6 +113,8 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 	if (c == 8 || c == 127) {	/* Backup */
 		if ((i = isrch->irecs.link.prev) != &isrch->irecs) {
 			pgoto(bw->cursor, i->disp);
+			if (globalsrch)
+				globalsrch->wrap_flag = i->wrap_flag;
 			omid = mid;
 			mid = 1;
 			dofollows();
@@ -111,10 +139,34 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 				iappend(bw, isrch, sv(lastpat));
 			}
 		} else {
+			SRCH *srch;
 			i = alirec();
 			i->disp = i->start = bw->cursor->byte;
 			i->what = 0;
-			if (dopfnext(bw, mksrch(vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern)), NULL, 0, isrch->dir, -1, 0, 0), NULL)) {
+
+			if (!globalsrch)
+				srch = mksrch(NULL,NULL,icase,isrch->dir,-1,0,0);
+			else {
+				srch = globalsrch;
+				globalsrch = 0;
+			}
+
+			srch->addr = bw->cursor->byte;
+
+			if (!srch->wrap_p || srch->wrap_p->b!=bw->b) {
+				prm(srch->wrap_p);
+				srch->wrap_p = pdup(bw->cursor);
+				srch->wrap_p->owner = &srch->wrap_p;
+				srch->wrap_flag = 0;
+			}
+
+			i->wrap_flag = srch->wrap_flag;
+
+			vsrm(srch->pattern);
+			srch->pattern = vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern));
+			srch->backwards = isrch->dir;
+
+			if (dopfnext(bw, srch, NULL)) {
 				if(beep)
 					ttputc(7);
 				frirec(i);
@@ -225,6 +277,10 @@ int uisrch(BW *bw)
 		lastisrch = 0;
 		return itype(bw, 'S' - '@', isrch, NULL);
 	} else {
+		if (globalsrch) {
+			rmsrch(globalsrch);
+			globalsrch = 0;
+		}
 		if (lastisrch) {
 			lastpat = vstrunc(lastpat, 0);
 			lastpat = vsncpy(lastpat, 0, lastisrch->pattern, sLen(lastisrch->pattern));
@@ -243,6 +299,10 @@ int ursrch(BW *bw)
 		lastisrch = 0;
 		return itype(bw, 'R' - '@', isrch, NULL);
 	} else {
+		if (globalsrch) {
+			rmsrch(globalsrch);
+			globalsrch = 0;
+		}
 		if (lastisrch) {
 			lastpat = vstrunc(lastpat, 0);
 			lastpat = vsncpy(lastpat, 0, lastisrch->pattern, sLen(lastisrch->pattern));

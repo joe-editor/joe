@@ -30,6 +30,7 @@
 #include "menu.h"
 #include "hash.h"
 
+int wrap = 0;			/* Allow wrap */
 int smode = 0;			/* Decremented to zero by execmd */
 int csmode = 0;			/* Set for continued search mode */
 int icase = 0;			/* Set to force case insensitive search */
@@ -255,19 +256,25 @@ static int srch_cmplt(BW *bw)
      p is left in its orignal spot
 */
 
-static P *searchf(SRCH *srch, P *p)
+static P *searchf(BW *bw,SRCH *srch, P *p)
 {
 	unsigned char *pattern = srch->pattern;
-	P *start = pdup(p);
-	P *end = pdup(p);
+	P *start;
+	P *end;
 	int x;
+
+	start = pdup(p);
+	end = pdup(p);
 
 	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
 			pattern[x] = joe_tolower(p->b->o.charmap,pattern[x]);
+	wrapped:
 	while (srch->ignore ? pifind(start, pattern, x) : pfind(start, pattern, x)) {
 		pset(end, start);
 		pfwrd(end, (long) x);
+		if (srch->wrap_flag && start->byte>=srch->wrap_p->byte)
+			break;
 		if (pmatch(srch->pieces, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) {
 			srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
 			brmem(start, srch->entire, (int) (end->byte - start->byte));
@@ -279,6 +286,13 @@ static P *searchf(SRCH *srch, P *p)
 		if (pgetc(start) == NO_MORE_DATA)
 			break;
 	}
+	if (wrap && !srch->wrap_flag && srch->wrap_p) {
+		msgnw(bw->parent, US "Wrapped");
+		srch->wrap_flag = 1;
+		p_goto_bof(start);
+		goto wrapped;
+	}
+
 	prm(start);
 	prm(end);
 	return NULL;
@@ -298,20 +312,27 @@ static P *searchf(SRCH *srch, P *p)
      p is left in its orignal spot
 */
 
-static P *searchb(SRCH *srch, P *p)
+static P *searchb(BW *bw,SRCH *srch, P *p)
 {
 	unsigned char *pattern = srch->pattern;
-	P *start = pdup(p);
-	P *end = pdup(p);
+	P *start;
+	P *end;
 	int x;
+
+	start = pdup(p);
+	end = pdup(p);
 
 	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
 			pattern[x] = joe_tolower(p->b->o.charmap,pattern[x]);
+
+	wrapped:
 	while (pbkwd(start, 1L)
 	       && (srch->ignore ? prifind(start, pattern, x) : prfind(start, pattern, x))) {
 		pset(end, start);
 		pfwrd(end, (long) x);
+		if (srch->wrap_flag && start->byte<srch->wrap_p->byte)
+			break;
 		if (pmatch(srch->pieces, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) {
 			srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
 			brmem(start, srch->entire, (int) (end->byte - start->byte));
@@ -321,6 +342,14 @@ static P *searchb(SRCH *srch, P *p)
 			return p;
 		}
 	}
+
+	if (wrap && !srch->wrap_flag && srch->wrap_p) {
+		msgnw(bw->parent, US "Wrapped");
+		srch->wrap_flag = 1;
+		p_goto_eof(start);
+		goto wrapped;
+	}
+
 	prm(start);
 	prm(end);
 	return NULL;
@@ -363,6 +392,8 @@ SRCH *mksrch(unsigned char *pattern, unsigned char *replacement, int ignore, int
 	srch->addr = -1;
 	srch->markb = NULL;
 	srch->markk = NULL;
+	srch->wrap_p = NULL;
+	srch->wrap_flag = 0;
 	srch->valid = 0;
 	srch->block_restrict = 0;
 	izque(SRCHREC, link, &srch->recs);
@@ -379,6 +410,7 @@ void rmsrch(SRCH *srch)
 
 	prm(markb);
 	prm(markk);
+	prm(srch->wrap_p);
 	if (srch->markb) {
 		markb = srch->markb;
 		markb->owner = &markb;
@@ -606,6 +638,8 @@ static int dofirst(BW *bw, int back, int repl)
 	}
 	srch = setmark(mksrch(NULL, NULL, 0, back, -1, repl, 0));
 	srch->addr = bw->cursor->byte;
+	srch->wrap_p = pdup(bw->cursor);
+	srch->wrap_p->owner = &srch->wrap_p;
 	if (wmkpw(bw->parent, US "Find (^C to abort): ", &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap))
 		return 0;
 	else {
@@ -668,6 +702,7 @@ static void visit(SRCH *srch, BW *bw, int yn)
 
 	r->addr = bw->cursor->byte;
 	r->yn = yn;
+	r->wrap_flag = srch->wrap_flag;
 	enqueb(SRCHREC, link, &srch->recs, r);
 }
 
@@ -680,6 +715,7 @@ static void goback(SRCH *srch, BW *bw)
 			uundo(bw);
 		if (bw->cursor->byte != r->addr)
 			pgoto(bw->cursor, r->addr);
+		srch->wrap_flag = r->wrap_flag;
 		demote(SRCHREC, link, &fsr, r);
 	}
 }
@@ -776,9 +812,9 @@ static int fnext(BW *bw, SRCH *srch)
 			--srch->repeat;
 	}
       again:if (srch->backwards)
-		sta = searchb(srch, bw->cursor);
+		sta = searchb(bw, srch, bw->cursor);
 	else
-		sta = searchf(srch, bw->cursor);
+		sta = searchf(bw, srch, bw->cursor);
 	if (!sta) {
 		srch->repeat = -1;
 		return 1;
@@ -905,6 +941,12 @@ int pfnext(BW *bw)
 
 		globalsrch = 0;
 		srch->addr = bw->cursor->byte;
+		if (!srch->wrap_p || srch->wrap_p->b!=bw->b) {
+			prm(srch->wrap_p);
+			srch->wrap_p = pdup(bw->cursor);
+			srch->wrap_p->owner = &srch->wrap_p;
+			srch->wrap_flag = 0;
+		}
 		return dopfnext(bw, setmark(srch), NULL);
 	}
 }
