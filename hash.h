@@ -15,8 +15,8 @@
 
 unsigned long hash PARAMS((char *s));
 HASH *htmk PARAMS((int len));
-void htrm PARAMS((HASH * ht));
-void *htadd PARAMS((HASH * ht, char *name, void *val));
-void *htfind PARAMS((HASH * ht, char *name));
+void htrm PARAMS((HASH *ht));
+void *htadd PARAMS((HASH *ht, char *name, void *val));
+void *htfind PARAMS((HASH *ht, char *name));
 
 #endif

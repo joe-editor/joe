@@ -61,7 +61,7 @@ int exask = 0;
 
 /* Ending message generator */
 /**** message which is shown after closing joe (CTRL+x; CTRL+k) *****/
-void genexmsg(BW * bw, int saved, char *name)
+void genexmsg(BW *bw, int saved, char *name)
 {
 	char *s;
 
@@ -105,7 +105,7 @@ void genexmsg(BW * bw, int saved, char *name)
 
 /* Write highlighted block to a file */
 
-int ublksave(BW * bw)
+int ublksave(BW *bw)
 {
 	if (markb && markk && markb->b == markk->b && (markk->byte - markb->byte) > 0 && (!square || piscol(markk) > piscol(markb))) {
 		if (wmkpw(bw->parent, "Name of file to write (^C to abort): ", &filehist, dowrite, "Names", NULL, cmplt, NULL, NULL)) {
@@ -120,7 +120,7 @@ int ublksave(BW * bw)
 
 /* Shell escape */
 
-int ushell(BW * bw)
+int ushell(BW *bw)
 {
 	nescape(bw->parent->t->t);
 	ttsusp();
@@ -185,7 +185,7 @@ static int cp(char *from, char *to)
  * Returns 1 for error
  */
 
-static int backup(BW * bw)
+static int backup(BW *bw)
 {
 	if (!bw->b->backup && !nobackups && bw->b->name && bw->b->name[0]) {
 		char tmp[1024];

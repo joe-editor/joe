@@ -131,7 +131,7 @@ static double expr(int prec, struct var **rtv)
 	return x;
 }
 
-double calc(BW * bw, char *s)
+double calc(BW *bw, char *s)
 {
 	double result;
 	struct var *v;
@@ -182,7 +182,7 @@ double calc(BW * bw, char *s)
 }
 
 /* Main user interface */
-static int domath(BW * bw, char *s, void *object, int *notify)
+static int domath(BW *bw, char *s, void *object, int *notify)
 {
 	double result = calc(bw, s);
 
@@ -207,7 +207,7 @@ static int domath(BW * bw, char *s, void *object, int *notify)
 
 B *mathhist = 0;
 
-int umath(BW * bw)
+int umath(BW *bw)
 {
 	signal(SIGFPE, fperr);
 	if (wmkpw(bw->parent, "=", &mathhist, domath, "math", NULL, NULL, NULL, NULL)) {

@@ -31,7 +31,7 @@ extern int orphan;
 
 /* Executed when shell process terminates */
 
-static void cdone(BW * bw)
+static void cdone(BW *bw)
 {
 	bw->pid = 0;
 	close(bw->out);
@@ -50,7 +50,7 @@ static void cdone(BW * bw)
 
 /* Executed for each chunk of data we get from the shell */
 
-static void cdata(BW * bw, char *dat, int siz)
+static void cdata(BW *bw, char *dat, int siz)
 {
 	P *q = pdup(bw->cursor);
 	P *r = pdup(bw->b->eof);
@@ -86,7 +86,7 @@ static void cdata(BW * bw, char *dat, int siz)
 	prm(q);
 }
 
-static int cstart(BW * bw, char *name, char **s, void *obj, int *notify)
+static int cstart(BW *bw, char *name, char **s, void *obj, int *notify)
 {
 #ifdef __MSDOS__
 	if (notify) {
@@ -122,7 +122,7 @@ static int cstart(BW * bw, char *name, char **s, void *obj, int *notify)
 #endif
 }
 
-int ubknd(BW * bw)
+int ubknd(BW *bw)
 {
 	char **a;
 	char *s;
@@ -137,7 +137,7 @@ int ubknd(BW * bw)
 
 /* Run a program in a window */
 
-static int dorun(BW * bw, char *s, void *object, int *notify)
+static int dorun(BW *bw, char *s, void *object, int *notify)
 {
 	char **a = vamk(10);
 	char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
@@ -151,7 +151,7 @@ static int dorun(BW * bw, char *s, void *object, int *notify)
 
 B *runhist = 0;
 
-int urun(BW * bw)
+int urun(BW *bw)
 {
 	if (wmkpw(bw->parent, "Program to run: ", &runhist, dorun, "Run", NULL, NULL, NULL, NULL)) {
 		return 0;
@@ -162,7 +162,7 @@ int urun(BW * bw)
 
 /* Kill program */
 
-static int pidabort(BW * bw, int c, void *object, int *notify)
+static int pidabort(BW *bw, int c, void *object, int *notify)
 {
 	if (notify) {
 		*notify = 1;
@@ -178,7 +178,7 @@ static int pidabort(BW * bw, int c, void *object, int *notify)
 	}
 }
 
-int ukillpid(BW * bw)
+int ukillpid(BW *bw)
 {
 	if (bw->pid) {
 		if (mkqw(bw->parent, sc("Kill program (y,n,^C)?"), pidabort, NULL, NULL, NULL)) {

@@ -28,7 +28,7 @@ struct direct *readdir(void *f)
 	return 0;
 }
 
-void closedir(FILE * f)
+void closedir(FILE *f)
 {
 	fclose(f);
 }

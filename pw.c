@@ -27,7 +27,7 @@
 #include "vfile.h"
 #include "w.h"
 
-static void disppw(BW * bw, int flg)
+static void disppw(BW *bw, int flg)
 {
 	W *w = bw->parent;
 	PW *pw = (PW *) bw->object;
@@ -74,7 +74,7 @@ static void disppw(BW * bw, int flg)
 
 extern volatile int dostaupd;
 
-static int rtnpw(BW * bw)
+static int rtnpw(BW *bw)
 {
 	W *w = bw->parent;
 	PW *pw = (PW *) bw->object;
@@ -131,7 +131,7 @@ static int rtnpw(BW * bw)
 	}
 }
 
-int ucmplt(BW * bw, int k)
+int ucmplt(BW *bw, int k)
 {
 	PW *pw = (PW *) bw->object;
 
@@ -142,21 +142,21 @@ int ucmplt(BW * bw, int k)
 	}
 }
 
-static void inspw(BW * bw, B * b, long l, long n, int flg)
+static void inspw(BW *bw, B *b, long l, long n, int flg)
 {
 	if (b == bw->b) {
 		bwins(bw, l, n, flg);
 	}
 }
 
-static void delpw(BW * bw, B * b, long l, long n, int flg)
+static void delpw(BW *bw, B *b, long l, long n, int flg)
 {
 	if (b == bw->b) {
 		bwdel(bw, l, n, flg);
 	}
 }
 
-static int abortpw(BW * b)
+static int abortpw(BW *b)
 {
 	PW *pw = b->object;
 	void *object = pw->object;
@@ -190,7 +190,7 @@ static WATOM watompw = {
 
 /* Create a prompt window */
 
-BW *wmkpw(W * w, char *prompt, B ** history, int (*func) (), char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify)
+BW *wmkpw(W *w, char *prompt, B **history, int (*func) (), char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify)
 {
 	W *new;
 	PW *pw;

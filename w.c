@@ -26,7 +26,7 @@ extern int staen;		/* 0 if top-most status line not displayed */
 
 /* Count no. of main windows */
 
-int countmain(SCREEN * t)
+int countmain(SCREEN *t)
 {
 	int nmain = 1;
 	W *m = t->curwin->main;
@@ -42,14 +42,14 @@ int countmain(SCREEN * t)
 
 /* Redraw a window */
 
-void wredraw(W * w)
+void wredraw(W *w)
 {
 	msetI(w->t->t->updtab + w->y, 1, w->h);
 }
 
 /* Find first window in a group */
 
-W *findtopw(W * w)
+W *findtopw(W *w)
 {
 	W *x;
 
@@ -60,7 +60,7 @@ W *findtopw(W * w)
 /* Determine height of a window.  Returns reqh if it is set, otherwise
  * used fixed or hh scaled to the current screen size */
 
-static int geth(W * w)
+static int geth(W *w)
 {
 	if (w->reqh)
 		return w->reqh;
@@ -72,7 +72,7 @@ static int geth(W * w)
 
 /* Set the height of a window */
 
-static void seth(W * w, int h)
+static void seth(W *w, int h)
 {
 	long tmp;
 
@@ -83,7 +83,7 @@ static void seth(W * w, int h)
 
 /* Determine height of a family of windows.  Uses 'reqh' if it's set */
 
-int getgrouph(W * w)
+int getgrouph(W *w)
 {
 	W *x;
 	int h;
@@ -99,7 +99,7 @@ int getgrouph(W * w)
 
 /* Determine minimum height of a family */
 
-static int getminh(W * w)
+static int getminh(W *w)
 {
 	W *x;
 	int h;
@@ -112,7 +112,7 @@ static int getminh(W * w)
 
 /* Find last window in a group */
 
-W *findbotw(W * w)
+W *findbotw(W *w)
 {
 	W *x;
 
@@ -123,7 +123,7 @@ W *findbotw(W * w)
 /* Demote group of window to end of window list.  Returns true if top window
    was demoted */
 
-int demotegroup(W * w)
+int demotegroup(W *w)
 {
 	W *top = findtopw(w);
 	W *bot = findbotw(w);
@@ -148,7 +148,7 @@ int demotegroup(W * w)
 
 /* Find last window on the screen */
 
-W *lastw(SCREEN * t)
+W *lastw(SCREEN *t)
 {
 	W *x;
 
@@ -160,7 +160,7 @@ W *lastw(SCREEN * t)
 
 SCREEN *scr;
 
-SCREEN *screate(SCRN * scrn)
+SCREEN *screate(SCRN *scrn)
 {
 	SCREEN *t = (SCREEN *) malloc(sizeof(SCREEN));
 
@@ -174,7 +174,7 @@ SCREEN *screate(SCRN * scrn)
 	return t;
 }
 
-void sresize(SCREEN * t)
+void sresize(SCREEN *t)
 {
 	SCRN *scrn = t->t;
 	W *w;
@@ -201,7 +201,7 @@ void updall(void)
 		scr->t->updtab[y] = 1;
 }
 
-void scrins(B * b, long l, long n, int flg)
+void scrins(B *b, long l, long n, int flg)
 {
 	W *w;
 
@@ -215,7 +215,7 @@ void scrins(B * b, long l, long n, int flg)
 	}
 }
 
-void scrdel(B * b, long l, long n, int flg)
+void scrdel(B *b, long l, long n, int flg)
 {
 	W *w;
 
@@ -239,7 +239,7 @@ void scrdel(B * b, long l, long n, int flg)
 static int doabort(W *w, int *ret);
 extern volatile int dostaupd;
 
-void wfit(SCREEN * t)
+void wfit(SCREEN *t)
 {
 	int y;			/* Where next window goes */
 	int left;		/* Lines left on screen */
@@ -370,7 +370,7 @@ void wfit(SCREEN * t)
 
 /* Goto next window */
 
-int wnext(SCREEN * t)
+int wnext(SCREEN *t)
 {
 	if (t->curwin->link.next != t->curwin) {
 		t->curwin = t->curwin->link.next;
@@ -383,7 +383,7 @@ int wnext(SCREEN * t)
 
 /* Goto previous window */
 
-int wprev(SCREEN * t)
+int wprev(SCREEN *t)
 {
 	if (t->curwin->link.prev != t->curwin) {
 		t->curwin = t->curwin->link.prev;
@@ -398,7 +398,7 @@ int wprev(SCREEN * t)
 
 /* Grow window */
 
-int wgrow(W * w)
+int wgrow(W *w)
 {
 	W *nextw;
 
@@ -427,7 +427,7 @@ int wgrow(W * w)
 
 /* Shrink window */
 
-int wshrink(W * w)
+int wshrink(W *w)
 {
 	W *nextw;
 
@@ -458,7 +458,7 @@ int wshrink(W * w)
 
 /* Show all windows */
 
-void wshowall(SCREEN * t)
+void wshowall(SCREEN *t)
 {
 	int n = 0;
 	int set;
@@ -493,7 +493,7 @@ void wshowall(SCREEN * t)
 	wfit(t);
 }
 
-static void wspread(SCREEN * t)
+static void wspread(SCREEN *t)
 {
 	int n = 0;
 	W *w = t->topwin;
@@ -527,7 +527,7 @@ static void wspread(SCREEN * t)
 
 /* Show just one family of windows */
 
-void wshowone(W * w)
+void wshowone(W *w)
 {
 	W *q = w->t->topwin;
 
@@ -542,7 +542,7 @@ void wshowone(W * w)
 
 /* Create a window */
 
-W *wcreate(SCREEN * t, WATOM * watom, W * where, W * target, W * original, int height, char *huh, int *notify)
+W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height, char *huh, int *notify)
 {
 	W *new;
 
@@ -607,7 +607,7 @@ W *wcreate(SCREEN * t, WATOM * watom, W * where, W * target, W * original, int h
 
 /* Abort group of windows */
 
-static int doabort(W * w, int *ret)
+static int doabort(W *w, int *ret)
 {
 	int amnt = geth(w);
 	W *z;
@@ -657,7 +657,7 @@ static int doabort(W * w, int *ret)
 
 /* Abort a window and its children */
 
-int wabort(W * w)
+int wabort(W *w)
 {
 	SCREEN *t = w->t;
 	int ret;
@@ -680,7 +680,7 @@ int wabort(W * w)
 
 /* Generate text with formatting escape sequences */
 
-void genfmt(SCRN * t, int x, int y, int ofst, char *s, int flg)
+void genfmt(SCRN *t, int x, int y, int ofst, char *s, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
 	int atr = 0;
@@ -734,7 +734,7 @@ void genfmt(SCRN * t, int x, int y, int ofst, char *s, int flg)
 
 /* Generate text: no formatting */
 
-void gentxt(SCRN * t, int x, int y, int ofst, char *s, int len, int flg)
+void gentxt(SCRN *t, int x, int y, int ofst, char *s, int len, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
 	int col;
@@ -820,7 +820,7 @@ int fmtpos(char *s, int goal)
 
 /* Display a message and skip the next key */
 
-static void mdisp(SCRN * t, int y, char *s)
+static void mdisp(SCRN *t, int y, char *s)
 {
 	int ofst;
 	int len;
@@ -834,7 +834,7 @@ static void mdisp(SCRN * t, int y, char *s)
 	t->updtab[y] = 1;
 }
 
-void msgout(W * w)
+void msgout(W *w)
 {
 	SCRN *t = w->t->t;
 
@@ -863,7 +863,7 @@ void msgnwt(W *w, char *s)
 	w->msgt = s;
 }
 
-int urtn(BASE * b, int k)
+int urtn(BASE *b, int k)
 {
 	if (b->parent->watom->rtn)
 		return b->parent->watom->rtn(b, k);
@@ -871,7 +871,7 @@ int urtn(BASE * b, int k)
 		return -1;
 }
 
-int utype(BASE * b, int k)
+int utype(BASE *b, int k)
 {
 	if (b->parent->watom->type)
 		return b->parent->watom->type(b, k);
@@ -881,27 +881,27 @@ int utype(BASE * b, int k)
 
 /* Window user commands */
 
-int uprevw(BASE * bw)
+int uprevw(BASE *bw)
 {
 	return wprev(bw->parent->t);
 }
 
-int unextw(BASE * bw)
+int unextw(BASE *bw)
 {
 	return wnext(bw->parent->t);
 }
 
-int ugroww(BASE * bw)
+int ugroww(BASE *bw)
 {
 	return wgrow(bw->parent);
 }
 
-int ushrnk(BASE * bw)
+int ushrnk(BASE *bw)
 {
 	return wshrink(bw->parent);
 }
 
-int uexpld(BASE * bw)
+int uexpld(BASE *bw)
 {
 	if (bw->parent->t->h - bw->parent->t->wind == getgrouph(bw->parent))
 		wshowall(bw->parent->t);
@@ -910,7 +910,7 @@ int uexpld(BASE * bw)
 	return 0;
 }
 
-int uretyp(BASE * bw)
+int uretyp(BASE *bw)
 {
 	nredraw(bw->parent->t->t);
 	return 0;

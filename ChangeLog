@@ -1,3 +1,10 @@
+Sun Dec 09 2001  Vitezslav Samel <samel@mail.cz>
+	* b.c, cmd.c, dir.c, hash.c, hash.h, pw.c, pw.h, rc.c, tab.c, tab.h,
+	uedit.c, uedit.h, ufile.c, uisrch.c, uisrch.h, umath.c, umath.h, undo.c,
+	ushell.c, utag.c, w.c:
+	change function declaration "void a(P * p)" to "void a(P *p)" (when
+	using GNU indent we must use -Ttype to achieve this behaviour)
+
 Sat Dec 08 2001  Vitezslav Samel <samel@mail.cz>
 	* bw.c, scrn.c, scrn.h, uedit.c, w.c:
 	change xlat macro into xlat(int *, char *) function;

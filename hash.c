@@ -35,20 +35,20 @@ HASH *htmk(int len)
 	return t;
 }
 
-void htrm(HASH * ht)
+void htrm(HASH *ht)
 {
 	free(ht->tab);
 	free(ht);
 }
 
-void *htadd(HASH * ht, char *name, void *val)
+void *htadd(HASH *ht, char *name, void *val)
 {
 	int idx = hash(name) & ht->len;
 	HENTRY *entry;
 	int x;
 
 	if (!freentry) {
-		entry = (HENTRY *) malloc(sizeof(HENTRY) * 64);
+		entry = (HENTRY *) malloc(sizeof(HENTRY) *64);
 		for (x = 0; x != 64; ++x) {
 			entry[x].next = freentry, freentry = entry + x;
 		}
@@ -61,7 +61,7 @@ void *htadd(HASH * ht, char *name, void *val)
 	return entry->val = val;
 }
 
-void *htfind(HASH * ht, char *name)
+void *htfind(HASH *ht, char *name)
 {
 	HENTRY *e;
 

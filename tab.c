@@ -56,7 +56,7 @@ struct tab {
  * type is set with the file types
  */
 
-static int get_entries(TAB * tab, int prv)
+static int get_entries(TAB *tab, int prv)
 {
 	int a;
 	int which = 0;
@@ -99,7 +99,7 @@ static int get_entries(TAB * tab, int prv)
 	return which;
 }
 
-static void insnam(BW * bw, char *path, char *nam)
+static void insnam(BW *bw, char *path, char *nam)
 {
 	P *p = pdup(bw->cursor);
 
@@ -129,7 +129,7 @@ static void insnam(BW * bw, char *path, char *nam)
  * Returns with 0 for success
  */
 
-static int treload(MENU * m, int flg)
+static int treload(MENU *m, int flg)
 {
 	TAB *tab = (TAB *) m->object;	/* The menu */
 	W *w = m->parent;	/* Window menu is in */
@@ -164,7 +164,7 @@ static int treload(MENU * m, int flg)
 	return 0;
 }
 
-static void rmtab(TAB * tab)
+static void rmtab(TAB *tab)
 {
 	vsrm(tab->orgpath);
 	vsrm(tab->orgnam);
@@ -179,7 +179,7 @@ static void rmtab(TAB * tab)
 /*****************************************************************************/
 /****************** The user hit return **************************************/
 /*****************************************************************************/
-static int tabrtn(MENU * m, int cursor, TAB * tab)
+static int tabrtn(MENU *m, int cursor, TAB *tab)
 {
 	if (tab->type[cursor] == F_DIR) {	/* Switch directories */
 		char *orgpath = tab->path;
@@ -222,7 +222,7 @@ static int tabrtn(MENU * m, int cursor, TAB * tab)
 /*****************************************************************************/
 /****************** The user hit backspace ***********************************/
 /*****************************************************************************/
-static int tabbacks(MENU * m, int cursor, TAB * tab)
+static int tabbacks(MENU *m, int cursor, TAB *tab)
 {
 	char *orgpath = tab->path;
 	char *orgpattern = tab->pattern;
@@ -251,7 +251,7 @@ static int tabbacks(MENU * m, int cursor, TAB * tab)
 	}
 }
 /*****************************************************************************/
-static int tababrt(BW * bw, int cursor, TAB * tab)
+static int tababrt(BW *bw, int cursor, TAB *tab)
 {
 	insnam(bw, tab->orgpath, tab->orgnam);
 	rmtab(tab);
@@ -260,7 +260,7 @@ static int tababrt(BW * bw, int cursor, TAB * tab)
 /*****************************************************************************/
 /****************** Create a tab window **************************************/
 /*****************************************************************************/
-int cmplt(BW * bw)
+int cmplt(BW *bw)
 {
 	MENU *new;
 	TAB *tab;

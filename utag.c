@@ -21,7 +21,7 @@
 #include "vs.h"
 #include "w.h"
 
-static int dotag(BW * bw, char *s, void *obj, int *notify)
+static int dotag(BW *bw, char *s, void *obj, int *notify)
 {
 	char buf[512];
 	FILE *f;
@@ -125,7 +125,7 @@ static int dotag(BW * bw, char *s, void *obj, int *notify)
 
 static B *taghist = 0;
 
-int utag(BW * bw)
+int utag(BW *bw)
 {
 	BW *pbw;
 

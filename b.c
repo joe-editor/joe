@@ -65,7 +65,7 @@ char *msgs[] = {
 
 /* Set position of gap */
 
-static void gstgap(H * hdr, char *ptr, int ofst)
+static void gstgap(H *hdr, char *ptr, int ofst)
 {
 	if (ofst > hdr->hole)
 		mmove(ptr + hdr->hole, ptr + hdr->ehole, ofst - hdr->hole), vchanged(ptr);
@@ -77,7 +77,7 @@ static void gstgap(H * hdr, char *ptr, int ofst)
 
 /* Insert a block */
 
-static void ginsm(H * hdr, char *ptr, int ofst, char *blk, int size)
+static void ginsm(H *hdr, char *ptr, int ofst, char *blk, int size)
 {
 	if (ofst != hdr->hole)
 		gstgap(hdr, ptr, ofst);
@@ -88,7 +88,7 @@ static void ginsm(H * hdr, char *ptr, int ofst, char *blk, int size)
 
 /* Read block */
 
-static void grmem(H * hdr, char *ptr, int ofst, char *blk, int size)
+static void grmem(H *hdr, char *ptr, int ofst, char *blk, int size)
 {
 	if (ofst < hdr->hole)
 		if (size > hdr->hole - ofst)
@@ -120,12 +120,12 @@ static H *halloc(void)
 	return h;
 }
 
-static void hfree(H * h)
+static void hfree(H *h)
 {
 	enquef(H, link, &ohdrs, h);
 }
 
-static void hfreechn(H * h)
+static void hfreechn(H *h)
 {
 	splicef(H, link, &ohdrs, h);
 }
@@ -139,7 +139,7 @@ static P *palloc(void)
 	return alitem(&frptrs, sizeof(P));
 }
 
-static void pfree(P * p)
+static void pfree(P *p)
 {
 	enquef(P, link, &frptrs, p);
 }
@@ -175,7 +175,7 @@ B *bprev(void)
 
 /* Make a buffer out of a chain */
 
-static B *bmkchn(H * chn, B * prop, long amnt, long nlines)
+static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 {
 	B *b = alitem(&frebufs, sizeof(B));
 
@@ -225,7 +225,7 @@ static B *bmkchn(H * chn, B * prop, long amnt, long nlines)
 
 /* Create an empty buffer */
 
-B *bmk(B * prop)
+B *bmk(B *prop)
 {
 	return bmkchn(halloc(), prop, 0L, 0L);
 }
@@ -234,7 +234,7 @@ B *bmk(B * prop)
 
 extern B *errbuf;
 
-void brm(B * b)
+void brm(B *b)
 {
 	if (b && !--b->count) {
 		if (b->changed)
@@ -253,7 +253,7 @@ void brm(B * b)
 	}
 }
 
-P *poffline(P * p)
+P *poffline(P *p)
 {
 	if (p->ptr) {
 		vunlock(p->ptr);
@@ -262,14 +262,14 @@ P *poffline(P * p)
 	return p;
 }
 
-P *ponline(P * p)
+P *ponline(P *p)
 {
 	if (!p->ptr)
 		p->ptr = vlock(vmem, p->hdr->seg);
 	return p;
 }
 
-B *boffline(B * b)
+B *boffline(B *b)
 {
 	P *p = b->bof;
 
@@ -279,7 +279,7 @@ B *boffline(B * b)
 	return b;
 }
 
-B *bonline(B * b)
+B *bonline(B *b)
 {
 	P *p = b->bof;
 
@@ -289,7 +289,7 @@ B *bonline(B * b)
 	return b;
 }
 
-P *pdup(P * p)
+P *pdup(P *p)
 {
 	P *n = palloc();
 
@@ -300,7 +300,7 @@ P *pdup(P * p)
 	return pset(n, p);
 }
 
-P *pdupown(P * p, P ** o)
+P *pdupown(P *p, P **o)
 {
 	P *n = palloc();
 
@@ -315,7 +315,7 @@ P *pdupown(P * p, P ** o)
 	return n;
 }
 
-void prm(P * p)
+void prm(P *p)
 {
 	if (!p)
 		return;
@@ -326,7 +326,7 @@ void prm(P * p)
 	pfree(deque_f(P, link, p));
 }
 
-P *pset(P * n, P * p)
+P *pset(P *n, P *p)
 {
 	if (n != p) {
 		n->b = p->b;
@@ -347,27 +347,27 @@ P *pset(P * n, P * p)
 	return n;
 }
 
-P *p_goto_bof(P * p)
+P *p_goto_bof(P *p)
 {
 	return pset(p, p->b->bof);
 }
 
-P *p_goto_eof(P * p)
+P *p_goto_eof(P *p)
 {
 	return pset(p, p->b->eof);
 }
 
-int pisbof(P * p)
+int pisbof(P *p)
 {
 	return p->hdr == p->b->bof->hdr && !p->ofst;
 }
 
-int piseof(P * p)
+int piseof(P *p)
 {
 	return p->ofst == GSIZE(p->hdr);
 }
 
-int piseol(P * p)
+int piseol(P *p)
 {
 	int c;
 
@@ -390,7 +390,7 @@ int piseol(P * p)
 	return 0;
 }
 
-int pisbol(P * p)
+int pisbol(P *p)
 {
 	char c;
 
@@ -401,7 +401,7 @@ int pisbol(P * p)
 	return c == '\n';
 }
 
-int pisbow(P * p)
+int pisbow(P *p)
 {
 	P *q = pdup(p);
 	int c = brc(p);
@@ -414,7 +414,7 @@ int pisbow(P * p)
 		return 0;
 }
 
-int piseow(P * p)
+int piseow(P *p)
 {
 	P *q = pdup(p);
 	int d = brc(q);
@@ -427,7 +427,7 @@ int piseow(P * p)
 		return 0;
 }
 
-int pisblank(P * p)
+int pisblank(P *p)
 {
 	P *q = pdup(p);
 
@@ -443,7 +443,7 @@ int pisblank(P * p)
 	}
 }
 
-long pisindent(P * p)
+long pisindent(P *p)
 {
 	P *q = pdup(p);
 	long col;
@@ -456,7 +456,7 @@ long pisindent(P * p)
 	return col;
 }
 
-int pnext(P * p)
+int pnext(P *p)
 {
 	if (p->hdr == p->b->eof->hdr) {
 		p->ofst = GSIZE(p->hdr);
@@ -469,7 +469,7 @@ int pnext(P * p)
 	return 1;
 }
 
-int pprev(P * p)
+int pprev(P *p)
 {
 	if (p->hdr == p->b->bof->hdr) {
 		p->ofst = 0;
@@ -482,7 +482,7 @@ int pprev(P * p)
 	return 1;
 }
 
-int pgetc(P * p)
+int pgetc(P *p)
 {
 	unsigned char c;
 
@@ -514,7 +514,7 @@ int pgetc(P * p)
 	return c;
 }
 
-P *pfwrd(P * p, long n)
+P *pfwrd(P *p, long n)
 {
 	if (!n)
 		return p;
@@ -563,7 +563,7 @@ static int prgetc1(P *p)
 	return c;
 }
 
-int prgetc(P * p)
+int prgetc(P *p)
 {
 	int c = prgetc1(p);
 
@@ -578,7 +578,7 @@ int prgetc(P * p)
 	return c;
 }
 
-P *pbkwd(P * p, long n)
+P *pbkwd(P *p, long n)
 {
 	if (!n)
 		return p;
@@ -602,7 +602,7 @@ P *pbkwd(P * p, long n)
 	return p;
 }
 
-P *pgoto(P * p, long loc)
+P *pgoto(P *p, long loc)
 {
 	if (loc > p->byte)
 		pfwrd(p, loc - p->byte);
@@ -611,7 +611,7 @@ P *pgoto(P * p, long loc)
 	return p;
 }
 
-P *pfcol(P * p)
+P *pfcol(P *p)
 {
 	H *hdr = p->hdr;
 	int ofst = p->ofst;
@@ -622,7 +622,7 @@ P *pfcol(P * p)
 	return p;
 }
 
-P *p_goto_bol(P * p)
+P *p_goto_bol(P *p)
 {
 	if (pprevl(p))
 		pgetc(p);
@@ -631,7 +631,7 @@ P *p_goto_bol(P * p)
 	return p;
 }
 
-P *p_goto_eol(P * p)
+P *p_goto_eol(P *p)
 {
 	if (p->b->o.crlf)
 		while (!piseol(p))
@@ -660,7 +660,7 @@ P *p_goto_eol(P * p)
 	return p;
 }
 
-P *pnextl(P * p)
+P *pnextl(P *p)
 {
 	char c;
 
@@ -686,7 +686,7 @@ P *pnextl(P * p)
 	return p;
 }
 
-P *pprevl(P * p)
+P *pprevl(P *p)
 {
 	char c;
 
@@ -715,7 +715,7 @@ P *pprevl(P * p)
 	return p;
 }
 
-P *pline(P * p, long line)
+P *pline(P *p, long line)
 {
 	if (line > p->b->eof->line) {
 		pset(p, p->b->eof);
@@ -739,7 +739,7 @@ P *pline(P * p, long line)
 	return p;
 }
 
-P *pcol(P * p, long goalcol)
+P *pcol(P *p, long goalcol)
 {
 	p_goto_bol(p);
 	do {
@@ -770,7 +770,7 @@ P *pcol(P * p, long goalcol)
 	return p;
 }
 
-P *pcolwse(P * p, long goalcol)
+P *pcolwse(P *p, long goalcol)
 {
 	int c;
 
@@ -783,7 +783,7 @@ P *pcolwse(P * p, long goalcol)
 	return p;
 }
 
-P *pcoli(P * p, long goalcol)
+P *pcoli(P *p, long goalcol)
 {
 	p_goto_bol(p);
 	while (p->col < goalcol) {
@@ -812,7 +812,7 @@ P *pcoli(P * p, long goalcol)
 	return p;
 }
 
-void pfill(P * p, long to, int usetabs)
+void pfill(P *p, long to, int usetabs)
 {
 	piscol(p);
 	if (usetabs)
@@ -826,7 +826,7 @@ void pfill(P * p, long to, int usetabs)
 			binsc(p, ' '), pgetc(p);
 }
 
-void pbackws(P * p)
+void pbackws(P *p)
 {
 	int c;
 	P *q = pdup(p);
@@ -840,7 +840,7 @@ void pbackws(P * p)
 	prm(q);
 }
 
-static char frgetc(P * p)
+static char frgetc(P *p)
 {
 	if (!p->ofst)
 		pprev(p);
@@ -851,7 +851,7 @@ static char frgetc(P * p)
 		return p->ptr[p->ofst];
 }
 
-static void ffwrd(P * p, int n)
+static void ffwrd(P *p, int n)
 {
 	while (n > GSIZE(p->hdr) - p->ofst) {
 		n -= GSIZE(p->hdr) - p->ofst;
@@ -862,7 +862,7 @@ static void ffwrd(P * p, int n)
 		pnext(p);
 }
 
-static P *ffind(P * p, unsigned char *s, int len)
+static P *ffind(P *p, unsigned char *s, int len)
 {
 	long amnt = p->b->eof->byte - p->byte;
 	int x;
@@ -896,7 +896,7 @@ static P *ffind(P * p, unsigned char *s, int len)
 	return p;
 }
 
-static P *fifind(P * p, unsigned char *s, int len)
+static P *fifind(P *p, unsigned char *s, int len)
 {
 	long amnt = p->b->eof->byte - p->byte;
 	int x;
@@ -930,7 +930,7 @@ static P *fifind(P * p, unsigned char *s, int len)
 	return p;
 }
 
-static P *getto(P * p, P * q)
+static P *getto(P *p, P *q)
 {
 	while (p->hdr != q->hdr || p->ofst != q->ofst) {
 		if (p->ofst >= p->hdr->hole) {
@@ -950,7 +950,7 @@ static P *getto(P * p, P * q)
 	return p;
 }
 
-P *pfind(P * p, char *s, int len)
+P *pfind(P *p, char *s, int len)
 {
 	P *q = pdup(p);
 
@@ -964,7 +964,7 @@ P *pfind(P * p, char *s, int len)
 	}
 }
 
-P *pifind(P * p, char *s, int len)
+P *pifind(P *p, char *s, int len)
 {
 	P *q = pdup(p);
 
@@ -978,7 +978,7 @@ P *pifind(P * p, char *s, int len)
 	}
 }
 
-static void fbkwd(P * p, int n)
+static void fbkwd(P *p, int n)
 {
 	while (n > p->ofst) {
 		n -= p->ofst;
@@ -991,7 +991,7 @@ static void fbkwd(P * p, int n)
 		p->ofst = 0;
 }
 
-static int fpgetc(P * p)
+static int fpgetc(P *p)
 {
 	char c;
 
@@ -1006,7 +1006,7 @@ static int fpgetc(P * p)
 	return c;
 }
 
-static P *frfind(P * p, unsigned char *s, int len)
+static P *frfind(P *p, unsigned char *s, int len)
 {
 	long amnt = p->byte;
 	int x;
@@ -1043,7 +1043,7 @@ static P *frfind(P * p, unsigned char *s, int len)
 	return p;
 }
 
-static P *frifind(P * p, unsigned char *s, int len)
+static P *frifind(P *p, unsigned char *s, int len)
 {
 	long amnt = p->byte;
 	int x;
@@ -1080,7 +1080,7 @@ static P *frifind(P * p, unsigned char *s, int len)
 	return p;
 }
 
-static P *rgetto(P * p, P * q)
+static P *rgetto(P *p, P *q)
 {
 	while (p->hdr != q->hdr || p->ofst != q->ofst) {
 		if (!p->ofst)
@@ -1100,7 +1100,7 @@ static P *rgetto(P * p, P * q)
 	return p;
 }
 
-P *prfind(P * p, char *s, int len)
+P *prfind(P *p, char *s, int len)
 {
 	P *q = pdup(p);
 
@@ -1114,7 +1114,7 @@ P *prfind(P * p, char *s, int len)
 	}
 }
 
-P *prifind(P * p, char *s, int len)
+P *prifind(P *p, char *s, int len)
 {
 	P *q = pdup(p);
 
@@ -1128,7 +1128,7 @@ P *prifind(P * p, char *s, int len)
 	}
 }
 
-B *bcpy(P * from, P * to)
+B *bcpy(P *from, P *to)
 {
 	H anchor, *l;
 	char *ptr;
@@ -1195,7 +1195,7 @@ B *bcpy(P * from, P * to)
 
 /* Coalesce small blocks into a single larger one */
 
-void pcoalesce(P * p)
+void pcoalesce(P *p)
 {
 	if (p->hdr != p->b->eof->hdr && GSIZE(p->hdr) + GSIZE(p->hdr->link.next) <= SEGSIZ - SEGSIZ / 4) {
 		H *hdr = p->hdr->link.next;
@@ -1261,7 +1261,7 @@ void pcoalesce(P * p)
  */
 
 /* This is only to be used for bdel() */
-static B *bcut(P * from, P * to)
+static B *bcut(P *from, P *to)
 {
 	H *h,			/* The deleted text */
 	*i;
@@ -1430,7 +1430,7 @@ static B *bcut(P * from, P * to)
 	return bmkchn(h, from->b, amnt, nlines);
 }
 
-void bdel(P * from, P * to)
+void bdel(P *from, P *to)
 {
 	if (to->byte - from->byte) {
 		B *b = bcut(from, to);
@@ -1448,7 +1448,7 @@ void bdel(P * from, P * to)
  * p->ofst==0
  */
 
-static void bsplit(P * p)
+static void bsplit(P *p)
 {
 	if (p->ofst) {
 		H *hdr;
@@ -1524,7 +1524,7 @@ static H *bldchn(char *blk, int size, long *nlines)
 /* Insert a chain into a buffer */
 /* This does not update pointers */
 
-static void inschn(P * p, H * a)
+static void inschn(P *p, H *a)
 {
 	if (!p->b->eof->byte) {	/* P's buffer is empty: replace the empty segment in p with a */
 		hfree(p->hdr);
@@ -1560,7 +1560,7 @@ static void inschn(P * p, H * a)
 	}
 }
 
-static void fixupins(P * p, long amnt, long nlines, H * hdr, int hdramnt)
+static void fixupins(P *p, long amnt, long nlines, H *hdr, int hdramnt)
 {
 	P *pp;
 
@@ -1593,7 +1593,7 @@ static void fixupins(P * p, long amnt, long nlines, H * hdr, int hdramnt)
 /* Insert a buffer at pointer position */
 /* The buffer goes away */
 
-P *binsb(P * p, B * b)
+P *binsb(P *p, B *b)
 {
 	if (b->eof->byte) {
 		P *q = pdup(p);
@@ -1608,7 +1608,7 @@ P *binsb(P * p, B * b)
 	return p;
 }
 
-P *binsm(P * p, char *blk, int amnt)
+P *binsm(P *p, char *blk, int amnt)
 {
 	long nlines;
 	H *h = 0;

@@ -468,7 +468,7 @@ static int docmd(BW *bw, char *s, void *object, int *notify)
 
 B *cmdhist = 0;
 
-int uexecmd(BW * bw)
+int uexecmd(BW *bw)
 {
 	if (wmkpw(bw->parent, "cmd: ", &cmdhist, docmd, "cmd", NULL, cmdcmplt, NULL, NULL)) {
 		return 0;

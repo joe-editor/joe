@@ -206,7 +206,7 @@ static void izopts(void)
 	isiz = 1;
 }
 
-int glopt(char *s, char *arg, OPTIONS * options, int set)
+int glopt(char *s, char *arg, OPTIONS *options, int set)
 {
 	int val;
 	int ret = 0;
@@ -363,13 +363,13 @@ int glopt(char *s, char *arg, OPTIONS * options, int set)
 
 static int optx = 0;
 
-static int doabrt1(BW * bw, int *xx)
+static int doabrt1(BW *bw, int *xx)
 {
 	free(xx);
 	return -1;
 }
 
-static int doopt1(BW * bw, char *s, int *xx, int *notify)
+static int doopt1(BW *bw, char *s, int *xx, int *notify)
 {
 	int ret = 0;
 	int x = *xx;
@@ -421,7 +421,7 @@ static int doopt1(BW * bw, char *s, int *xx, int *notify)
 	return ret;
 }
 
-static int doopt(MENU * m, int x, void *object, int flg)
+static int doopt(MENU *m, int x, void *object, int flg)
 {
 	BW *bw = m->parent->win->object;
 	int *xx;
@@ -499,7 +499,7 @@ static int doopt(MENU * m, int x, void *object, int flg)
 	return 0;
 }
 
-static int doabrt(MENU * m, int x, char **s)
+static int doabrt(MENU *m, int x, char **s)
 {
 	optx = x;
 	for (x = 0; s[x]; ++x)
@@ -508,7 +508,7 @@ static int doabrt(MENU * m, int x, char **s)
 	return -1;
 }
 
-int umode(BW * bw)
+int umode(BW *bw)
 {
 	int size;
 	char **s;
@@ -555,7 +555,7 @@ int umode(BW * bw)
  *         1 if there was a syntax error in the file
  */
 
-int procrc(CAP * cap, char *name)
+int procrc(CAP *cap, char *name)
 {
 	OPTIONS *o = 0;		/* Current options */
 	KMAP *context = 0;	/* Current context */

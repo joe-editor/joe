@@ -11,7 +11,7 @@
 #include "config.h"
 #include "types.h"
 
-int uisrch PARAMS((BW * bw));
-int ursrch PARAMS((BW * bw));
+int uisrch PARAMS((BW *bw));
+int ursrch PARAMS((BW *bw));
 
 #endif
