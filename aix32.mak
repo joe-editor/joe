@@ -32,15 +32,18 @@ TIM = -DBSDTIMER
 # SYSPARAM is for sys/param.h
 # SYSTIM is for sys/time.h
 # TIM is for time.h
+# AIX is for unistd.h
 
 #IA = -DSCO
 IA =
-IB = -DSYSPARAM
-#IB =
+#IB = -DSYSPARAM
+IB =
 IC = -DSYSTIM
 #IC =
 #ID = -DTIM
 ID =
+IE = -DAIX
+#IE =
 
 # Uncomment the second line below if your
 # system has the Xenix-style 'nap' system
@@ -60,8 +63,8 @@ REAL =
 # system uses 'struct dirent' instead
 # of 'struct direct' for opendir().
 
-DIRSTRUCT = -DIRECT
-#DIRSTRUCT = -DIRENT
+#DIRSTRUCT = -DIRECT
+DIRSTRUCT = -DIRENT
 
 # Uncomment the second line below if your
 # POSIX system has 'sigaction', but not
@@ -90,6 +93,7 @@ WHERETTY = /dev/
 
 WHERERC = /usr/local/lib
 WHEREJOE = /usr/local/bin
+WHEREMAN = /usr/man/man1
 
 # You may also have to add some additional
 # defines to get the include files to work
@@ -99,9 +103,10 @@ WHEREJOE = /usr/local/bin
 
 CFLAGS = -O \
  $(TTY) $(TIM) $(CHK) $(REAL) $(DIRSTRUCT) $(HARDER) $(PGRP) \
- $(IA) $(IB) $(IC) $(ID) $(IDLE) \
+ $(IA) $(IB) $(IC) $(ID) $(IE) $(IDLE) \
  -DJOERC=\"$(WHERERC)/joerc\" \
- -DPTYPREFIX=\"$(WHEREPTY)\" -DTTYPREFIX=\"$(WHERETTY)\"
+ -DPTYPREFIX=\"$(WHEREPTY)\" \
+ -DTTYPREFIX=\"$(WHERETTY)\"
 
 # You may have to include some extra libraries
 # for some systems
@@ -131,7 +136,8 @@ OBJS = main.o termcap.o vfile.o pathfunc.o queue.o blocks.o vs.o va.o scrn.o \
        kbd.o w.o reg.o tab.o pattern.o random.o regex.o undo.o menu.o macro.o \
        poshist.o tty.o msgs.o qw.o
 
-CC = cc
+# CC =
+CC = bsdcc
 
 # That's it!
 
@@ -148,10 +154,13 @@ install: joe termidx
 	mv joe $(WHEREJOE)
 	if [ ! -d $(WHERERC) ]; then mkdir $(WHERERC); chmod a+rx $(WHERERC); fi
 	cp joerc $(WHERERC)
+	if [ ! -d $(WHEREMAN) ]; then mkdir $(WHEREMAN); chmod a+rx $(WHEREMAN); fi
+	cp joe.1 $(WHEREMAN)
 	mv termidx $(WHEREJOE)
 	chmod a+x $(WHEREJOE)/joe
 	chmod a+r $(WHERERC)/joerc
 	chmod a+x $(WHEREJOE)/termidx
+	chmod a+r $(WHEREMAN)/joe.1
 
 clean:
 	rm -f $(OBJS) termidx.o

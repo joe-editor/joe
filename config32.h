@@ -18,7 +18,7 @@
  * normalize(addr)  Normalize a pointer so that the offset part is minimized
  */
 
-#define physical(a) ((long)(a))
+#define physical(a) ((unsigned long)(a))
 #define normalize(a) (a)
 
 #define BITS 8			/* Number of bits in a char */

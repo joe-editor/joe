@@ -255,6 +255,30 @@ pdupown(bw->cursor,&w->t->markk);
 updall();
 }
 
+void utomarkb(w)
+W *w;
+ {
+ BW *bw=(BW *)w->object;
+ if(w->t->markb) pset(bw->cursor,w->t->markb);
+ }
+
+void utomarkk(w)
+W *w;
+ {
+ BW *bw=(BW *)w->object;
+ if(w->t->markk) pset(bw->cursor,w->t->markk);
+ }
+
+void utomarkbk(w)
+W *w;
+ {
+ BW *bw=(BW *)w->object;
+ if(w->t->markb && bw->cursor->byte!=w->t->markb->byte)
+  pset(bw->cursor,w->t->markb);
+ else if(w->t->markk && bw->cursor->byte!=w->t->markk->byte)
+  pset(bw->cursor,w->t->markk);
+ }
+
 void ublkdel(w)
 W *w;
 {
@@ -579,6 +603,8 @@ else
  }
 }
 
+int filtflg=0;
+
 static void dofilt(w,s)
 W *w;
 char *s;
@@ -668,20 +694,44 @@ else
 vsrm(s);
 ttopnn();
 nreturn(w->t->t);
+if(filtflg) umarkb(w), umarkk(w);
 bw->cursor->xcol=bw->cursor->col;
 }
+
+int markset(w)
+W *w;
+ {
+ if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
+    (w->t->markk->byte-w->t->markb->byte)>0)
+  return 1;
+ else
+  return 0;
+ }
+
+void markall(w)
+W *w;
+ {
+ BW *bw=(BW *)w->object;
+ pdupown(bw->cursor->b->bof,&w->t->markb);
+ pdupown(bw->cursor->b->eof,&w->t->markk);
+ updall();
+ }
+
+void checkmark(w)
+W *w;
+ {
+ if(!markset(w)) markall(w), filtflg=1;
+ else filtflg=0;
+ }
 
 void ufilt(w)
 W *w;
 {
 BW *bw=(BW *)w->object;
-if(w->t->markb && w->t->markk && w->t->markb->b==w->t->markk->b &&
-   (w->t->markk->byte-w->t->markb->byte)>0)
- {
- wmkpw(w,M016,&filthist,dofilt,NULL);
- return;
- }
-msgnw(w,M014);
+
+checkmark(w);
+
+wmkpw(w,M016,&filthist,dofilt,NULL);
 }
 
 /****************************/
@@ -1251,13 +1301,23 @@ else scrdn(w,1,1);
 void uupslide(w)
 W *w;
 {
-scrup(w,1,0);
+BW *bw=(BW *)w->object;
+if(bw->top->line)
+ {
+ if(bw->top->line+bw->h-1!=bw->cursor->line) udnarw(w);
+ scrup(w,1,0);
+ }
 }
 
 void udnslide(w)
 W *w;
 {
-scrdn(w,1,0);
+BW *bw=(BW *)w->object;
+if(bw->top->line+bw->h<=bw->top->b->eof->line)
+ {
+ if(bw->top->line!=bw->cursor->line) uuparw(w);
+ scrdn(w,1,0);
+ }
 }
 
 void udelch(w)
@@ -1822,8 +1882,8 @@ W *w;
 {
 BW *bw=(BW *)w->object;
 bw->autoindent= !bw->autoindent;
-if(bw->autoindent) msgnw(w,M036);
-else msgnw(w,M037);
+if(bw->autoindent) msgnw(w,M035);
+else msgnw(w,M036);
 }
 
 void uiwrap(w)

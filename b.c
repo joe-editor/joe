@@ -839,15 +839,14 @@ if(n[x]==',')
  {
  int c;
  n[x]=0;
- if(n[x+1]=='x' || n[x+1]=='X') sscanf(n+x+2,"%lx",skip);
- else if(n[x+1]=='0' && (n[x+2]=='x' || n[x+2]=='X')) sscanf(n+x+3,"%lx",skip);
- else if(n[x+1]=='0') sscanf(n+x+1,"%lo",skip);
- else sscanf(n+x+1,"%d",skip);
+ if(n[x+1]=='x' || n[x+1]=='X') sscanf(n+x+2,"%lx",amnt);
+ else if(n[x+1]=='0' && (n[x+2]=='x' || n[x+2]=='X')) sscanf(n+x+3,"%lx",amnt);
+ else if(n[x+1]=='0') sscanf(n+x+1,"%lo",amnt);
+ else sscanf(n+x+1,"%d",amnt);
  for(--x;x>0 && (n[x]>='0' && n[x]<='9' || n[x]=='x' || n[x]=='X');--x);
  if(n[x]==',')
   {
   n[x]=0;
-  *amnt= *skip;
   if(n[x+1]=='x' || n[x+1]=='X') sscanf(n+x+2,"%lx",skip);
   else if(n[x+1]=='0' && (n[x+2]=='x' || n[x+2]=='X')) sscanf(n+x+3,"%lx",skip);
   else if(n[x+1]=='0') sscanf(n+x+1,"%lo",skip);
@@ -925,9 +924,10 @@ if(force && size && !skip && amnt==MAXINT)
  {
  P *q=pdup(p);
  char nl='\n';
- pfwrdn(p,size-1);
- if(brc(p)!='\n')
+ pfwrdn(q,size-1);
+ if(brc(q)!='\n')
   if(jwrite(fileno(f),&nl,1)<0) flg= -5;
+ prm(q);
  }
 err:;
 if(s[0]=='!') pclose(f);
@@ -1225,7 +1225,7 @@ char *buff;
 int size;
 {
 int a,b;
-if(!size) return -1;
+if(!size) return 0;
 for(a=b=0;(a<size) && ((b=jread(fi,buff+a,size-a))>0);a+=b);
 return (b<0) ? -1 : a;
 }

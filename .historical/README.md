@@ -7,6 +7,172 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 1.0.12
+**Released: 1994-08-18**
+
+Source recovered from Slackware 2.3 source archive
+
+*Archival notes: This version was included with Slackware 2.1-2.3*
+
+Changelog:
+
+```
+1.0.10 - 1.0.12:
+
+- A bug where only two bytes would get written to a file is fixed
+- A bug where JOE wouldn't work on AT&T 3B2s is fixed and screwed up on
+  other computers is fixed
+- Spell check macros are now included with JOE
+- ESC w and ESC x emulate the WordStar ^W and ^X functions
+```
+
+---
+
+## JOE 1.0.11
+**Released: 1994-08-10**
+
+*The source for this release has been lost*
+
+Original announcement:
+```
+Newsgroups: comp.editors
+Path: bga.com!news.sprintlink.net!hookup!usc!math.ohio-state.edu!jussieu.fr!univ-lyon1.fr!swidir.switch.ch!newsfeed.ACO.net!Austria.EU.net!EU.net!uunet!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: Re: New version of JOE: 1.0.10
+Message-ID: <CuC8sK.70s@world.std.com>
+Organization: The World Public Access UNIX, Brookline, MA
+References: <Cu9I3s.Juu@world.std.com>
+Date: Wed, 10 Aug 1994 21:24:20 GMT
+Lines: 12
+
+In article <Cu9I...@world.std.com>,
+Joseph H Allen <jhallen@world.std.com> wrote:
+>A new version of my editor JOE is available by anonymous ftp from
+>ftp.std.com, file: src/editors/joe1.0.10.tar.Z.
+
+Please look for joe1.0.11, not joe1.0.10.  I made a minor mistake when I
+made the joe1.0.10 archive which causes it to scroll slowly on X-terms.
+-- 
+/*  jhallen@world.std.com (192.74.137.5) */               /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
+## JOE 1.0.10
+**Released: 1994-08-09**
+
+*The source for this release has been lost*
+
+Original announcement:
+```
+Newsgroups: comp.editors
+Path: bga.com!news.sprintlink.net!hookup!usc!nic-nac.CSU.net!charnel.ecst.csuchico.edu!olivea!uunet!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: New version of JOE: 1.0.10
+Message-ID: <Cu9I3s.Juu@world.std.com>
+Organization: The World Public Access UNIX, Brookline, MA
+Date: Tue, 9 Aug 1994 09:52:39 GMT
+Lines: 27
+
+A new version of my editor JOE is available by anonymous ftp from
+ftp.std.com, file: src/editors/joe1.0.10.tar.Z.
+
+All JOE users should update to this version since it includes some important
+bug fixes:
+
+	* The '-force' option was broken.  When used, the save file command
+	  ^K D would write only two bytes to your file.
+
+	* A mistake where I was giving C's '%' operator signed instead of
+	  unsigned integers was causing JOE to occasionally crash on some
+	  systems (most notebly AT&T 3B2s).
+
+I've also added some functions for die-hard wordstar users:
+
+	* ESC-w and ESC-z do WordStar style line scrolling
+
+	* ESC-b and ESC-k move the cursor to the beginning or end of the
+	  marked block.  ESC-g swaps the cursor between the two.
+
+	(these keybinding should not be considered standardized yet)
+
+-- 
+/*  jhallen@world.std.com (192.74.137.5) */               /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
+## JOE 1.0.9
+**Released: 1994-04-24**
+
+*The source for this release has been lost*
+
+Changelog:
+
+```
+1.0.9:
+
+- Works for DEC Alpha
+- Works for AIX on RS/6000
+- Autoindent enable/disable message problem is fixed
+```
+
+Original announcement:
+```
+Newsgroups: comp.editors
+Path: gmd.de!nntp.gmd.de!xlink.net!howland.reston.ans.net!cs.utexas.edu!uunet!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: Re: New version of JOE soon ?
+Message-ID: <Cor78z.8Kv@world.std.com>
+Organization: The World Public Access UNIX, Brookline, MA
+References: <CoqKH9.Lyx@un.seqeb.gov.au>
+Date: Sun, 24 Apr 1994 07:53:23 GMT
+Lines: 34
+
+In article <CoqK...@un.seqeb.gov.au> fer...@fuzzy.seqeb.gov.au writes:
+>I read a post from Mr. Allen saying that joe 1.0.9 (with Alpha fixes) would
+>be out in a few days and a new major release in about 2 weeks. That was over
+>a month ago and I haven't heard/seen anything since. 
+
+I just told the sys admin. here to install joe 1.0.9 into the ftp directory
+(anonymous ftp from world.std.com, file src/editors/joe1.0.9.tar.Z).
+It should be there tomorrow.
+
+The new version includes:
+
+  - works for DEC Alpha
+  - works for AIX 3.2 on RS/6000
+  - The cut-off for eliminating output delays has been changed to 9600
+  - The Autoindent messages have been fixed
+
+I would appreciate if someone could verify that the Alpha version compiles. 
+I got it to work, but I don't remember if the linker needs -Bstatic or
+-non_shared (it only works if it doesn't used the shared libraries).
+
+I'm also working on an even newer version of JOE.  Unfortunately it's ending
+up being almost a complete rewrite and it will be some time before it's
+done.  In the mean time, I will maintain the old version a bit more, so keep
+sending me bug reports.
+
+I would especially like any data concerning line numbers going out of sync,
+garbage appearing in the file or ^K S not saving properly.  There's is a
+difficult to find pointer problem causing these bugs on some systems, and I
+would like to fix it.
+-- 
+/*  jhallen@world.std.com (192.74.137.5) */               /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
 ## JOE 1.0.8
 **Released: 1992-12-19**
 

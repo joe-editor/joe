@@ -2,15 +2,14 @@ BUGS
 =-=-
 
 some systems use dirent instead of direct
+(fixed?)
 
 =-=-=
 sync problems with SIGCHLD/wait
 
 =-=-=
-problem with save?
-
-=-=-=
 line numbers get out of sync
+(fixed?)
 
 NEW FEATURES
 =-=-=-=-=-=-

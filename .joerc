@@ -10,7 +10,7 @@
  Put each option you want set in the first column:
 
  -mid		Cursor is recentered when scrolling is necessary
- -asis		Characters 160 - 254 shown as-is
+ -asis		Characters 128 - 255 shown as-is
  -stacol	Column number in status line
  -starow	Row number in status line
  -force		Force final newline when files are saved
@@ -64,11 +64,11 @@
 \i \i\uCURSOR\u           \uGO TO\u            \uBLOCK\u      \uDELETE\u   \uMISC\u         \uEXIT\u      \i \i
 \i \i^B left ^F right ^U  prev. screen ^KB begin  ^D char. ^KJ reformat ^KX save  \i \i
 \i \i^P up   ^N down  ^V  next screen  ^KK end    ^Y line  ^TT overtype ^C  abort \i \i
-\i \i^Z previous word ^A  beg. of line ^KM move   ^W >word `   Ctrl-    ^KZ shell \i \i
-\i \i^X next word     ^E  end of line  ^KC copy   ^O word< ^\\  Meta-    \uFILE\u      \i \i
-\i \i\uSEARCH\u           ^KU top of file  ^KW file   ^J >line ^R  retype   ^KE new   \i \i
-\i \i^KF find text    ^KV end of file  ^KY delete ^_ undo  ^@  insert   ^KR insert\i \i
-\i \i^L  find next    ^KL to line No.  ^K/ filter ^^ redo               ^KD save  \i \i
+\i \i^Z previous word ^A  beg. of line ^KM move   ^W >word ^R  retype   ^KZ shell \i \i
+\i \i^X next word     ^E  end of line  ^KC copy   ^O word< ^@  insert   \uFILE\u      \i \i
+\i \i\uSEARCH\u           ^KU top of file  ^KW file   ^J >line \uQUOTE\u        ^KE new   \i \i
+\i \i^KF find text    ^KV end of file  ^KY delete ^_ undo  `   Ctrl-    ^KR insert\i \i
+\i \i^L  find next    ^KL to line No.  ^K/ filter ^^ redo  ^\\  Meta-    ^KD save  \i \i
 }
 
 {Windows
@@ -82,14 +82,11 @@
 
 {Advanced
 \i   Help Screen    turn off with ^KH                                            \i
-\i \i ^K \\     repeat next command nn times     ^G   goto matching ( [ {          \i \i
-\i \i ^K SPACE show position status             ^K-  goto prevous place in        \i \i
-\i \i ^K [ 0-9 begin recording macro n               position history             \i \i
-\i \i ^K ]     stop recording                   ^K=  goto next place              \i \i
-\i \i ^K 0-9   play macro n                     ^K,  indent marked block less     \i \i
-\i \i ^K A     center line                      ^K.  indent marked block more     \i \i
-\i \i ^T X     rectangle mode                   ^K;  tag search                   \i \i
-\i \i ^K '     terminal window                                                    \i \i
+\i \i\uMACROS\u          \uGOTO\u               \uSPELL\u          \uINDENT\u   \uMISC\u              \i \i
+\i \i^K [ 0-9 Record ^G  Matching ( [ { ^T. Check word ^K, less ^K ' shell window \i \i
+\i \i^K ]     Stop   ^K- Previous place ^T- Check file ^K. more ^K A center line  \i \i
+\i \i^K 0-9   Play   ^K= Next place     \uMISC\u                    ^K \\ repeat       \i \i
+\i \i                ^K; Tags file srch ^TX Rectangular blocks  ^K SPACE  status  \i \i
 }
 
 {Options
@@ -135,24 +132,31 @@
 
 {Joe
 \i   Help Screen    turn off with ^KH                                            \i
-\i \i Joe Allen's email address:  'jhallen@world.std.com' or                      \i \i
-\i \i 'rcarter' on the VWIS Linux BBS (508)793-9568                               \i \i
+\i \i Joe Allen's email address:  'jhallen@world.std.com'                         \i \i
 }
 
  FOURTH SECTION: Key bindings:
 
- :main are the main editing bindings
+ Section names:
+
+ :main    are the main editing bindings
  :fprompt are file name prompt bindings
- :prompt are other prompt bindings
- :tab are file menu bindings
- :help are help menu bindings
+ :prompt  are other prompt bindings
+ :tab     are file menu bindings
+ :help    are help menu bindings
+
+ Keys:
 
  Use ^@ through ^_ and ^? for Ctrl chars
  Use SP for space
  Use a TO b to generate a range of characters
- Use UP DOWN RIGHT LEFT HOME END INS DEL PGUP PGDN
-     F1 F2 F3 F4 F5 F6 F7 F8 F9 F0 F10
+
+ Use UP (ku) DOWN (kd) RIGHT (kr) LEFT (kl) HOME (kh) END (kH) INS (kI) DEL (kD)
+     PGUP (kP) PGDN (kU)
+     F1 (k1) F2 (k2) F3 F4 F5 F6 F7 F8 F9 (k9) F0 (k0) F10 (k;)
      for the corresponding termcap key sequence definitions
+
+ Macros:
 
  Simple macros can be made by comma seperating 2 or more command names.  For
  example:
@@ -163,7 +167,18 @@
 
  bol,">",dnarw	F1		Quote news article line
 
+ IMPORTANT: 'rtn' is the Return key for the edit window
+            'rtnpw' is the Return key for prompt lines
+
+ So to type in a response to a prompt in a macro you should use:
+
+ edit,"tmp.tmp",rtnpw	^T Z	Edit file 'tmp.tmp'
+
 :main
+
+ Spell-check macros
+filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp",rtnpw	^T -
+rtarw,prevword,markb,nextword,markk,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp",rtnpw,markb,markk	^T .
 
 type		^I		Tab
 quote8		^\		Quote Meta chars
@@ -345,14 +360,23 @@ splitw		^K o
 stat		^K SP		Show status
 stop		^K ]		Stop recording macro
 tag		^K ;
+tomarkb		^[ b		Go to beginning of marked block
+tomarkk		^[ k		Go to end of marked block
+tomarkbk	^[ g		Switch between beginning and end of marked
 tomatch		^G		Goto matching parenthasis
 undo		^_		Undo changes
 uparw		UP		Go up
 uparw		^P
 uparw		^[ O A
 uparw		^[ [ A
+upslide		^[ w		Scroll up one line
+dnslide		^[ z		Scroll down one line
 
 :prompt
+
+ Spell-check macros
+filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp",rtnpw	^T -
+rtarw,prevword,markb,nextword,markk,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp",rtnpw,markb,markk	^T .
 
 type		^I		Tab
 quote8		^\		Quote Meta chars
@@ -541,6 +565,10 @@ uparw		^[ O A
 uparw		^[ [ A
 
 :fprompt
+
+ Spell-check macros
+filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp",rtnpw	^T -
+rtarw,prevword,markb,nextword,markk,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp",rtnpw,markb,markk	^T .
 
 complete	^I		Complete file name
 quote8		^\		Quote Meta chars

@@ -6,10 +6,38 @@ Installation proceedure
 	Choose which *.mak file you want to use and link it to Makefile.
 	For example, for xenix.mak, type 'ln xenix.mak Makefile'
 
+	alpha.mak	For OSF on DEC ALPHAs
+
+		Special instructions for alpha.mak:  before running make,
+		type the command:
+		'rm config.h; ln config64.h config.h'
+
+	aix32.mak	For AIX 3.2 RS/6000
+	xenix.mak	For xenix system V (termcap)
+	sv.mak		For primitive system V (termcap)
+	sco.mak		For SCO UNIX and Interactive (terminfo)
+	hpux.mak	For hpux (terminfo)
+	linux.mak	For linux and posix (termcap)
+	bsd.mak		For BSD (SUN, Ultrix) (termcap)
+
 	Decide on the name of the global keymap file if you don't want it
 	to be '/usr/local/lib/joerc' and modify the 'JOERC=' in the
 	'makefile'.  If you're a mere user, copy the joerc file into
 	$HOME/.joerc
+
+	IMPORTANT: Joe can not be used on systems with idle session killers.
+	Joe opens the tty through '/dev/tty', not the standard input/output.
+	This means that the modification time on the real tty does not get
+	updated- some idle job killers use this time to detect when the
+	session is idle- and so joe users will be spontaneously logged off.
+
+	The solution to this problem is either to not use such an idle
+	session killer (idleout on SVR4 is one) or to modify joe to use
+	stdin/stdout to get to the tty- but this will eliminate one of
+	joe's features- being able to edit the stdin/stdout.
+
+	To make joe go through stdin/stdout, edit the makefile and switch
+	the the comment on the '#IDLE = -DIDLEOUT' line.
 
 	Type 'make'.
 
@@ -22,17 +50,6 @@ Installation proceedure
 	use it instead of /etc/termcap (see below).
 
 	Set the baud rate properly (see below).
-
-*.mak files
-=-=-=-=-=-=
-
-	xenix.mak	For xenix system V (termcap)
-	sv.mak		For primitive system V (termcap)
-	sco.mak		For SCO UNIX and Interactive (terminfo)
-	hpux.mak	For hpux (terminfo)
-	linux.mak	For linux and posix (termcap)
-	bsd.mak		For BSD (SUN, Ultrix) (termcap)
-
 If you make a mistake and need to use another make file, you don't have to 
 delete all of the .o files.  Only 'tty.o' depends on what's in the make 
 file.

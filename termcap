@@ -16,8 +16,21 @@
 #                                 is restricted to scrolling region (cursor
 #                                 addressing is still screen relative, however).
 #
-# cb                            - Like cv, but goes to beginning of given
+# cV                            - Like cv, but goes to beginning of given
 #                                 line.
+#
+# JOE understands these key sequence capabilities:
+#
+# k1 - k9			- F1 - F9
+# k0				- F0
+# k;				- F10
+# kh				- Home
+# kH				- End
+# kP				- PageUp
+# kN				- PageDn
+# kI				- Insert
+# kD				- Delete
+# kl kr ku kd			- Left, Right, Up, Down
 #
 ##############################################################################
 
@@ -43,7 +56,7 @@ vt52|dec vt52:\
 
 ansi|Basic Ansi tty:\
 	:co#80:li#25:am:\
-	:ho=\E[H:cm=\E[%i%d;%dH:cb=\E[%i%dH:\
+	:ho=\E[H:cm=\E[%i%d;%dH:cV=\E[%i%dH:\
 	:up=\E[A:UP=\E[%dA:DO=\E[%dB:nd=\E[C:RI=\E[%dC:pt:bs:LE=\E[%dD:\
 	:cd=\E[J:ce=\E[K:cl=\E[H\E[J:\
 	:so=\E[7m:se=\E[m:ms:us=\E[4m:ue=\E[m:\

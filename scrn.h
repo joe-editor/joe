@@ -128,8 +128,8 @@ struct scrn
  int cch;
  char *cv;			/* Set cursor row */
  int ccv;
- char *cb;			/* Goto beginning of specified line */
- int ccb;
+ char *cV;			/* Goto beginning of specified line */
+ int ccV;
  char *cm;			/* Set cursor row and column */
  int ccm;
 

@@ -58,6 +58,11 @@ extern int errno;
 #include <termio.h>
 #endif
 
+#ifdef AIX
+#include <unistd.h>
+#include <sys/ioctl.h>
+#endif
+
 /* JOE include files */
 
 #include "config.h"
@@ -282,7 +287,11 @@ struct termios newterm;
 #endif
 
 if(!termin)
+#ifdef IDLEOUT
+ if(!(termin=stdin) || !(termout=stdout))
+#else
  if(!(termin=fopen("/dev/tty","r")) || !(termout=fopen("/dev/tty","w")))
+#endif
   {
   fprintf(stderr,M078);
   exit(1);
@@ -410,7 +419,7 @@ if(obufp)
  {
  unsigned long usec=obufp*upc;		/* No. usecs this write should take */
 #ifdef BSDTIMER
- if(usec>=500000/HZ && baud<38400)
+ if(usec>=500000/HZ && baud<9600)
   {
   struct itimerval a,b;
   a.it_value.tv_sec=usec/1000000;
@@ -431,7 +440,7 @@ if(obufp)
  write(fileno(termout),obuf,obufp);
 
 #ifdef XENIX
- if(baud<38400 && usec/1000) nap(usec/1000);
+ if(baud<9600 && usec/1000) nap(usec/1000);
 #endif
 
 #endif
@@ -720,7 +729,7 @@ if(!(kbdpid=fork()))
   char c;
   int sta;
   pack.who=0;
-  jread(fileno(termin),&c,1);
+  sta=jread(fileno(termin),&c,1);
   if(sta==0) pack.ch=MAXINT;
   else pack.ch=c;
   pack.size=0;

@@ -2,7 +2,7 @@
 .SH Name
 joe \- Joe's Own Editor
 .SH Syntax
-.B joe [ [+nnn] filename ]...
+.B joe [-options] [ [+nnn] filename ]...
 .SH Description
 JOE is a sane ASCII-text screen editor.  Unlike vi, it is a "mode-less"
 editor- what you type is immediately entered into the file.  However, unlike
@@ -70,6 +70,38 @@ usually resides as \fB/usr/local/bin/joe\fR).
 There are a number of other obscure invocation parameters which may have to
 be set, particularly if your terminal screen is not updating as you think it
 should.  See the section \fBEnvironment variables\fR below.
+
+.SH Command Line Options
+
+The following global options may be specified on the command line:
+
+.IP -nobackups
+If you don't want backup files to be created.
+
+.IP -asis
+Characters 128 - 255 pass through unchanged instead of being shown in
+inverse video.
+
+.IP -stacol
+Display the current column number on the status line.
+
+.IP -starow
+Display the current row number on the status line.
+
+.IP -force
+Force final newline when files are saved.
+
+.IP help
+Start with help on.
+
+.IP -lightoff
+Turn off highlighting after block copy or move.
+
+.IP -exask
+The Save & Exit command (^K X) will ask before saving.
+
+There are other options for controlling the editor.  Take a look in the
+joerc file for details.
 
 .SH Editing Tasks
 .SS Basic Editing

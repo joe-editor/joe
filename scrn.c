@@ -308,7 +308,7 @@ t->AL=getstr(t->cap,"AL");
 t->DL=getstr(t->cap,"DL");
 if(!getflag(t->cap,"ns") && !t->sf) t->sf="\12";
 
-if(!getflag(t->cap,"in") && baud<38400)
+if(!getflag(t->cap,"in") && baud<38400 )
  {
  t->dc=getstr(t->cap,"dc");
  t->DC=getstr(t->cap,"DC");
@@ -372,7 +372,7 @@ t->cUP=tcost(t->cap,t->UP=getstr(t->cap,"UP"),1,2,2);
 t->cDO=tcost(t->cap,t->DO=getstr(t->cap,"DO"),1,2,2);
 t->cch=tcost(t->cap,t->ch=getstr(t->cap,"ch"),1,2,2);
 t->ccv=tcost(t->cap,t->cv=getstr(t->cap,"cv"),1,2,2);
-t->ccb=tcost(t->cap,t->cb=getstr(t->cap,"cb"),1,2,2);
+t->ccV=tcost(t->cap,t->cV=getstr(t->cap,"cV"),1,2,2);
 t->ccm=tcost(t->cap,t->cm=getstr(t->cap,"cm"),1,2,2);
 
 t->cce=tcost(t->cap,t->ce=getstr(t->cap,"ce"),1,2,2);
@@ -581,9 +581,9 @@ if(t->ccv<bestcost && y!=t->y)
  cost=relcost(t,x,y,t->x,y)+tcost(t->cap,t->cv,1,y);
  if(cost<bestcost) bestcost=cost, bestway=5;
  }
-if(t->ccb<bestcost)
+if(t->ccV<bestcost)
  {
- cost=relcost(t,x,y,0,y)+tcost(t->cap,t->cb,1,y);
+ cost=relcost(t,x,y,0,y)+tcost(t->cap,t->cV,1,y);
  if(cost<bestcost) bestcost=cost, bestway=13;
  }
 if(t->ccm<bestcost)
@@ -649,7 +649,7 @@ case 6: texec(t->cap,t->cm,1,y,x); t->y=y, t->x=x; break;
 case 7: texec(t->cap,t->cv,1,y); t->y=y;
         texec(t->cap,t->ch,1,x); t->x=x;
         break;
-case 13: texec(t->cap,t->cb,1,y); t->y=y; t->x=0; break;
+case 13: texec(t->cap,t->cV,1,y); t->y=y; t->x=0; break;
  }
 
 /* Use relative cursor position functions if we're not there yet */

@@ -60,8 +60,8 @@ REAL =
 # system uses 'struct dirent' instead
 # of 'struct direct' for opendir().
 
-DIRSTRUCT = -DIRECT
-#DIRSTRUCT = -DIRENT
+#DIRSTRUCT = -DIRECT
+DIRSTRUCT = -DIRENT
 
 # Uncomment the second line below if your
 # POSIX system has 'sigaction', but not
@@ -97,7 +97,7 @@ WHEREJOE = /usr/local/bin
 #
 # for newer HPUX systems, you need to add:  -D_HPUX_SOURCE
 
-CFLAGS = -O \
+CFLAGS = -non_shared -O \
  $(TTY) $(TIM) $(CHK) $(REAL) $(DIRSTRUCT) $(HARDER) $(PGRP) \
  $(IA) $(IB) $(IC) $(ID) $(IDLE) \
  -DJOERC=\"$(WHERERC)/joerc\" \

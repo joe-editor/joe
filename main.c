@@ -42,6 +42,8 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "msgs.h"
 #include "main.h"
 
+extern int mid, dspasis, dspctrl, force, help, pgamnt, starow, stacol,
+           tabwidth, nobackups, lightoff, exask, skiptop;
 int help=0;		/* Set to have help on when starting */
 
 char *exmsg=0;		/* Message to display when exiting the editor */
@@ -163,6 +165,9 @@ static CMD cmds[]=
   { "stat", TYPETW+TYPEPW, ustat },
   { "stop", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, ustop },
   { "tag", TYPETW+TYPEPW, utag },
+  { "tomarkb", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, utomarkb },
+  { "tomarkbk", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, utomarkbk },
+  { "tomarkk", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, utomarkk },
   { "tomatch", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, utomatch },
   { "type", TYPETW+TYPEPW+EFIXXCOL+EMINOR, utype },
   { "typeqw", TYPEQW, utypeqw },
@@ -325,6 +330,10 @@ char *argv[];
 char *s;
 SCRN *n;
 W *w;
+int opened=0;
+long lnum;
+int omid;
+int c;
 if(prokbd(".joerc",cntxts))
  {
  s=getenv("HOME");
@@ -344,45 +353,51 @@ if(prokbd(".joerc",cntxts))
 if(!(n=nopen())) return 1;
 maint=screate(n);
 
-if(argc<2)
- {
- W *w=wmktw(maint,bmk(1));
- BW *bw=(BW *)w->object;
- setoptions(bw,"");
- }
-else
- {
- long lnum;
- int omid;
- int c;
- for(c=1,lnum=0;argv[c];++c)
-  if(argv[c][0]=='+' && argv[c][1])
+for(c=1,lnum=0;argv[c];++c)
+ if(argv[c][0]=='+' && argv[c][1])
+  {
+  lnum=0;
+  sscanf(argv[c]+1,"%ld",&lnum);
+  if(lnum) --lnum;
+  }
+ else if(!zcmp(argv[c],"-nobackups")) nobackups=1;
+ else if(!zcmp(argv[c],"-asis")) dspasis=1;
+ else if(!zcmp(argv[c],"-stacol")) stacol=1;
+ else if(!zcmp(argv[c],"-starow")) starow=1;
+ else if(!zcmp(argv[c],"-force")) force=1;
+ else if(!zcmp(argv[c],"-help")) help=1;
+ else if(!zcmp(argv[c],"-lightoff")) lightoff=1;
+ else if(!zcmp(argv[c],"-exask")) exask=1;
+ else
+  {
+  B *b=bfind(argv[c]);
+  BW *bw;
+  int fl=0;
+  if(!b)
    {
-   lnum=0;
-   sscanf(argv[c]+1,"%ld",&lnum);
-   if(lnum) --lnum;
+   b=bmk(1);
+   fl=bload(b,argv[c]);
    }
-  else
-   {
-   B *b=bfind(argv[c]);
-   BW *bw;
-   int fl=0;
-   if(!b)
-    {
-    b=bmk(1);
-    fl=bload(b,argv[c]);
-    }
-   w=wmktw(maint,b);
-   if(fl) w->msgt=msgs[5+fl];
-   bw=(BW *)w->object;
-   setoptions(bw,argv[c]);
-   pline(bw->cursor,lnum);
-   lnum=0;
-   }
+  w=wmktw(maint,b);
+  if(fl) w->msgt=msgs[5+fl];
+  bw=(BW *)w->object;
+  setoptions(bw,argv[c]);
+  pline(bw->cursor,lnum);
+  lnum=0;
+  opened=1;
+  }
+if(opened)
+ {
  wshowall(maint);
  omid=mid; mid=1;
  dofollows();
  mid=omid;
+ }
+else
+ {
+ W *w=wmktw(maint,bmk(1));
+ BW *bw=(BW *)w->object;
+ setoptions(bw,"");
  }
 if(help) helpon(maint);
 msgnw(lastw(maint),M069);

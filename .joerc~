@@ -10,7 +10,7 @@
  Put each option you want set in the first column:
 
  -mid		Cursor is recentered when scrolling is necessary
- -asis		Characters 160 - 254 shown as-is
+ -asis		Characters 128 - 255 shown as-is
  -stacol	Column number in status line
  -starow	Row number in status line
  -force		Force final newline when files are saved
@@ -20,6 +20,7 @@
  -nobackups	If you don't want backup files to be created
  -lightoff	Turn off highlighting after block copy or move
  -exask		^KX always confirms file name
+ -skiptop nnn	Don't use top nnn lines of the screen
 
  SECOND SECTION: File name dependant local option settings:
 
@@ -344,12 +345,17 @@ splitw		^K o
 stat		^K SP		Show status
 stop		^K ]		Stop recording macro
 tag		^K ;
+tomarkb		^[ b		Go to beginning of marked block
+tomarkk		^[ k		Go to end of marked block
+tomarkbk	^[ g		Switch between beginning and end of marked
 tomatch		^G		Goto matching parenthasis
 undo		^_		Undo changes
 uparw		UP		Go up
 uparw		^P
 uparw		^[ O A
 uparw		^[ [ A
+upslide		^[ w		Scroll up one line
+dnslide		^[ z		Scroll down one line
 
 :prompt
 

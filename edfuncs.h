@@ -25,6 +25,9 @@ extern char *msgs[];
 
 void umarkb();
 void umarkk();
+void utomarkb();
+void utomarkk();
+void utomarkbk();
 void ublkdel();
 void ublkcpy();
 void ublkmove();

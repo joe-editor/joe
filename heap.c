@@ -28,7 +28,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 typedef struct freeblck FREE;
 struct freeblck
  {
- int size;		/* Includes self, +1 for allocated blocks */
+ long size;		/* Includes self, +1 for allocated blocks */
  			/* Equals '1' for end of heap or segment */
  FREE *next;		/* Data part of allocated blocks begins here */
  FREE *prev;
@@ -45,7 +45,7 @@ static char *heapend=0;	/* Top of heap */
 
 struct skipnode
  {
- int key;
+ long key;
  int nptrs;
  FREE *value;
  struct skipnode *ptrs[1];
@@ -70,10 +70,10 @@ static int bigx=0;
 /* Key is for recomputing skip-list search after a reentrant malloc */
 
 static struct skipnode *skipa(x,key)
-int x, key;
+long x, key;
 {
 struct skipnode *t;
-int amnt;
+long amnt;
 if(freeones[x])
  {
  t=freeones[x];
@@ -88,7 +88,7 @@ if(bigx+amnt>SKIPCHNK || !big)
  if(key)
   {
   struct skipnode *t=top;
-  int y;
+  long y;
   for(y=top->nptrs;--y>=0;)
    {
    while(t->ptrs[y]->key<key) t=t->ptrs[y];
@@ -118,7 +118,7 @@ static void freeit(b)
 FREE *b;
 {
 struct skipnode *t=top;
-int x;
+long x;
 b=normalize(b);
 for(x=top->nptrs;--x>=0;)
  {
@@ -135,7 +135,7 @@ if(t->key==b->size)
  }
 else
  {
- int level;
+ long level;
  for(level=1;random()<0x29000000;++level);
  if(level>15) level=15;
  b->size+=1;
@@ -156,7 +156,7 @@ static void unfreeit(b)
 FREE *b;
 {
 struct skipnode *t;
-int y;
+long y;
 if(b->prev)
  {
  if(b->prev->next=b->next) b->next->prev=b->prev;
@@ -172,7 +172,7 @@ t=t->ptrs[0];
 if(b->next) b->next->prev=0, t->value=b->next;
 else
  {
- int x;
+ long x;
  for(x=0;x!=top->nptrs && update[x]->ptrs[x]==t;++x)
   update[x]->ptrs[x]=t->ptrs[x];
  while(top->nptrs && top->ptrs[top->nptrs-1]==&nil) --top->nptrs;
@@ -182,8 +182,8 @@ else
 
 void *malloc(size)
 {
-int x;
-int flg=0, y;
+long x;
+long flg=0, y;
 FREE *b;
 struct skipnode *t;
 if(!top)
@@ -197,9 +197,9 @@ if(!top)
  top->nptrs=0;
  for(x=0;x!=16;++x) top->ptrs[x]= &nil;
  }
-size+=sizeof(int);
+size+=sizeof(long);
 if(size<sizeof(FREE)) size=sizeof(FREE);
-size=(size+sizeof(int)-1)&~(sizeof(int)-1);
+size=(size+sizeof(long)-1)&~(sizeof(long)-1);
 loop:
 b=0;
 t=top;
@@ -223,14 +223,14 @@ if(t->key!= MAXINT)
  }
 if(b)
  {
- while(!(1&*(int *)((char *)b+b->size)))
+ while(!(1&*(long *)((char *)b+b->size)))
   {
   FREE *c=(FREE *)((char *)b+b->size);
   if((long)b->size+(long)c->size>=MAXSIZE) break;
   b->size+=c->size;
   unfreeit(c);
   }
- if(normalize((char *)b+b->size)+sizeof(int)==heapend)
+ if(normalize((char *)b+b->size)+sizeof(long)==heapend)
   {
   sbrk(-b->size);
   heapend=(char *)b;
@@ -246,9 +246,9 @@ if(b)
   }
  else b->size|=1;
  if(flg) trapflag=0;
- return (void *)((char *)b+sizeof(int));
+ return (void *)((char *)b+sizeof(long));
  }
-b=(FREE *)sbrk(size+sizeof(int));
+b=(FREE *)sbrk(size+sizeof(long));
 if(!b || b==((FREE *)(long)-1))
  {
  if(mtrap && !trapflag)
@@ -264,40 +264,40 @@ if(!b || b==((FREE *)(long)-1))
 b=normalize(b);
 if(normalize(heapend)==(char *)b)
  {
- b=(FREE *)(heapend-sizeof(int));
- size+=sizeof(int);
+ b=(FREE *)(heapend-sizeof(long));
+ size+=sizeof(long);
  }
-heapend=normalize((char *)b+size)+sizeof(int);
-*((int *)heapend-1)=1;
+heapend=normalize((char *)b+size)+sizeof(long);
+*((long *)heapend-1)=1;
 b->size=size|1;
 if(flg) trapflag=0;
-return (void *)((char *)b+sizeof(int));
+return (void *)((char *)b+sizeof(long));
 }
 
 void *memalign(align,size)
-int align,size;
+long align,size;
 {
 FREE *b;
 char *blk;
-int off;
-size+=sizeof(int);
+long off;
+size+=sizeof(long);
 if(size<sizeof(FREE)) size=sizeof(FREE);
-size=(size+sizeof(int)-1)&~(sizeof(int)-1);
-align=(align+sizeof(int)-1)&~(sizeof(int)-1);
-if(!align) align=sizeof(int);
+size=(size+sizeof(long)-1)&~(sizeof(long)-1);
+align=(align+sizeof(long)-1)&~(sizeof(long)-1);
+if(!align) align=sizeof(long);
 if(size>=align) blk=(char *)malloc(size+align+sizeof(FREE));
 else blk=(char *)malloc(align*2+sizeof(FREE));
 off=physical(blk)%align;
 if(off)
  {
- b=(FREE *)(blk-sizeof(int));
+ b=(FREE *)(blk-sizeof(long));
  if(align-off>=sizeof(FREE)) blk+=align-off;
  else blk+=2*align-off;
- *((int *)blk-1)=b->size-(blk-sizeof(int)-(char *)b);
- b->size-= *((int *)blk-1);
+ *((long *)blk-1)=b->size-(blk-sizeof(long)-(char *)b);
+ b->size-= *((long *)blk-1);
  freeit(b);
  }
-b=normalize((FREE *)(blk-sizeof(int)));
+b=normalize((FREE *)(blk-sizeof(long)));
 if((b->size-1-size)>=(size>>2) && b->size-1-size>=sizeof(FREE))
  {
  FREE *c=(FREE *)((char *)b+size);
@@ -305,22 +305,22 @@ if((b->size-1-size)>=(size>>2) && b->size-1-size>=sizeof(FREE))
  b->size=size+1;
  freeit(c);
  }
-return (char *)b+sizeof(int);
+return (char *)b+sizeof(long);
 }
 
 void *realloc(blk,size)
 void *blk;
-int size;
+long size;
 {
 FREE *b;
-int osize;
+long osize;
 if(!blk) return malloc(size);
-b=(FREE *)((char *)blk-sizeof(int));
-osize=b->size-1-sizeof(int);
-size+=sizeof(int);
+b=(FREE *)((char *)blk-sizeof(long));
+osize=b->size-1-sizeof(long);
+size+=sizeof(long);
 if(size<sizeof(FREE)) size=sizeof(FREE);
-size=(size+sizeof(int)-1)&~(sizeof(int)-1);
-while(!(1&*(int *)((char *)b+b->size-1)))
+size=(size+sizeof(long)-1)&~(sizeof(long)-1);
+while(!(1&*(long *)((char *)b+b->size-1)))
  {
  FREE *c=(FREE *)((char *)b+b->size-1);
  if((long)b->size+(long)c->size>=MAXSIZE) break;
@@ -341,14 +341,14 @@ if(size<=b->size-1)
 else
  {
  char *n=(char *)malloc(size);
- FREE *c=(FREE *)(n-sizeof(int));
- if(normalize((char *)c+c->size-1)+sizeof(int)==heapend &&
+ FREE *c=(FREE *)(n-sizeof(long));
+ if(normalize((char *)c+c->size-1)+sizeof(long)==heapend &&
     (FREE *)normalize(((char *)b+b->size-1))==c)
   {
   sbrk(-(c->size-1+b->size-1-size));
   b->size=size+1;
-  heapend=normalize((char *)b+b->size-1)+sizeof(int);
-  *((int *)heapend-1)=1;
+  heapend=normalize((char *)b+b->size-1)+sizeof(long);
+  *((long *)heapend-1)=1;
   return blk;
   }
  mcpy(n,blk,osize);
@@ -362,18 +362,18 @@ void *blk;
 {
 FREE *b;
 if(!blk) return;
-b=(FREE *)((char *)blk-sizeof(int));
+b=(FREE *)((char *)blk-sizeof(long));
 b->size-=1;
-while(!(1&*(int *)((char *)b+b->size)))
+while(!(1&*(long *)((char *)b+b->size)))
  {
  FREE *c=(FREE *)((char *)b+b->size);
  if((long)b->size+(long)c->size>=MAXSIZE) break;
  b->size+=c->size;
  unfreeit(c);
  }
-if(normalize((char *)b+b->size)+sizeof(int)==heapend)
+if(normalize((char *)b+b->size)+sizeof(long)==heapend)
  {
- heapend=(char *)b+sizeof(int);
+ heapend=(char *)b+sizeof(long);
  sbrk(-b->size);
  b->size=1;
  }
@@ -381,7 +381,7 @@ else freeit(b);
 }
 
 void *calloc(a,b)
-int a,b;
+long a,b;
 {
 return (void *)mset((char *)malloc(a*b),0,a*b);
 }

@@ -4,6 +4,13 @@
 # Configuration
 ###############
 
+# Uncomment the second line below if you use
+# an idle job killer which requires that you
+# use the real tty, not /dev/tty
+
+IDLE =
+#IDLE = -DIDLEOUT
+
 # Uncomment one of the lines below to select
 # which TTY structure your system uses:
 
@@ -92,7 +99,7 @@ WHEREJOE = /usr/local/bin
 
 CFLAGS = -O \
  $(TTY) $(TIM) $(CHK) $(REAL) $(DIRSTRUCT) $(HARDER) $(PGRP) \
- $(IA) $(IB) $(IC) $(ID) \
+ $(IA) $(IB) $(IC) $(ID) $(IDLE) \
  -DJOERC=\"$(WHERERC)/joerc\" \
  -DPTYPREFIX=\"$(WHEREPTY)\" -DTTYPREFIX=\"$(WHERETTY)\"
 
@@ -120,7 +127,7 @@ EXTRALIBS =
 # termcap, replace 'termcap.o' below with 'terminfo.o'
 
 OBJS = main.o termcap.o vfile.o pathfunc.o queue.o blocks.o vs.o va.o scrn.o \
-       b.o bw.o tw.o pw.o help.o heap.o toomany.o queue.o zstr.o edfuncs.o \
+       b.o bw.o tw.o pw.o help.o heap.o toomany.o zstr.o edfuncs.o \
        kbd.o w.o reg.o tab.o pattern.o random.o regex.o undo.o menu.o macro.o \
        poshist.o tty.o msgs.o qw.o
 

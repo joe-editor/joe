@@ -88,8 +88,8 @@ WHERETTY = /dev/
 # Set where you want joe to go and where you
 # want joe's initialization file (joerc) to go:
 
-WHERERC = /usr/local/lib
-WHEREJOE = /usr/local/bin
+WHERERC = /usr/lib/joe
+WHEREJOE = /usr/bin
 
 # You may also have to add some additional
 # defines to get the include files to work
