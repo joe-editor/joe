@@ -16,6 +16,8 @@ sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
 %rc : %rc.in
 	sed 's,@JOERC\@,$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $< > $@
 
+MOSTLYCLEANFILES = joerc jmacsrc jstarrc rjoerc jpicorc
+
 sysconf_syntaxdir = $(sysconf_joedir)/syntax
 sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
 	syntax/conf.jsf syntax/python.jsf syntax/php.jsf syntax/sh.jsf \
