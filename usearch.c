@@ -228,7 +228,7 @@ static P *insert(SRCH *srch, P *p, unsigned char *s, int len)
 			} else {
 				unsigned char *a=(unsigned char *)s+x;
 				int l=len-x;
-				binsc(p,escape(&a,&l)); /* Should this be a byte or a char? Probably a char. */
+				binsc(p,escape(p->b->o.charmap->type,&a,&l));
 				pgetc(p);
 				len -= a - (unsigned char *)s;
 				s = a;

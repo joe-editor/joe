@@ -10,6 +10,8 @@
 
 #include "utils.h"
 #include "vs.h"
+#include "charmap.h"
+#include "utf8.h"
 #include "w.h"
 
 static void dispqw(QW *qw)
@@ -76,6 +78,8 @@ static void dispqwn(QW *qw)
 
 /* When user hits a key in a query window */
 
+struct utf8_sm qw_sm;
+
 static int utypeqw(QW *qw, int c)
 {
 	W *win;
@@ -83,6 +87,12 @@ static int utypeqw(QW *qw, int c)
 	int *notify = w->notify;
 	int (*func) ();
 	void *object = qw->object;
+
+	if (locale_map->type) {
+		c = utf8_decode(&qw_sm, c);
+		if (c<0)
+			return 0;
+	}
 
 	win = qw->parent->win;
 	func = qw->func;

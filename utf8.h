@@ -43,6 +43,8 @@ int utf8_decode PARAMS((struct utf8_sm *utf8_sm,unsigned char c));
 
 int utf8_decode_string PARAMS((unsigned char *s));
 
+int utf8_decode_fwrd PARAMS((unsigned char **p,int *plen));
+
 /* Initialize state machine */
 
 void utf8_init PARAMS((struct utf8_sm *utf8_sm));

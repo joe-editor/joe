@@ -11,7 +11,7 @@
 #include "config.h"
 #include "types.h"
 
-int escape PARAMS((unsigned char **a, int *b));
+int escape PARAMS((int utf8,unsigned char **a, int *b));
 int pmatch PARAMS((unsigned char **pieces, unsigned char *regex, int len, P *p, int n, int icase));
 
 #endif

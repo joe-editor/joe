@@ -1,9 +1,10 @@
 Fix for next release:
 
+  UTF-8 decoder right at input instead of in qw and utype?
+
   option to force search to be case insensitive
 
-  UTF-8: regex, incremental search
-
+  regex: character classes? a-z matches any letter?
 
   locale for qsort().
     not that important.
@@ -12,7 +13,7 @@ Fix for next release:
 
   byte to byte conversions.
 
-  check all instances of 'chars'.
+  check all instances of 'chars': use unicode to locale symbols instead.
 
   EBCDIC ?
     - we assume '\n' is line terminator.

@@ -150,7 +150,7 @@ void utf8_init(struct utf8_sm *utf8_sm)
 	utf8_sm->state = 0;
 }
 
-/* Decode a string */
+/* Decode an entire string */
 
 int utf8_decode_string(unsigned char *s)
 {
@@ -160,6 +160,30 @@ int utf8_decode_string(unsigned char *s)
 	utf8_init(&sm);
 	for(x=0;s[x];++x)
 		c = utf8_decode(&sm,s[x]);
+	return c;
+}
+
+/* Decode and advance */
+
+int utf8_decode_fwrd(unsigned char **p,int *plen)
+{
+	struct utf8_sm sm;
+	unsigned char *s = *p;
+	int len = *plen;
+	int c = -2;
+
+	utf8_init(&sm);
+
+	while (len) {
+		--len;
+		c = utf8_decode(&sm,*s++);
+		if (c >= 0)
+			break;
+	}
+
+	*plen = len;
+	*p = s;
+
 	return c;
 }
 

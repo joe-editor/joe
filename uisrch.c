@@ -16,6 +16,8 @@
 #include "tty.h"
 #include "usearch.h"
 #include "utils.h"
+#include "charmap.h"
+#include "utf8.h"
 #include "vs.h"
 
 extern int smode;
@@ -63,7 +65,7 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 		pgoto(bw->cursor, isrch->irecs.link.prev->start);
 	}
 	i->start = bw->cursor->byte;
-	if (dopfnext(bw, mksrch(vsncpy(NULL, 0, isrch->pattern + isrch->ofst, sLen(isrch->pattern) - isrch->ofst), NULL, 0, isrch->dir, -1, 0, 0), NULL)) {
+	if (dopfnext(bw, mksrch(vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern)), NULL, 0, isrch->dir, -1, 0, 0), NULL)) {
 		if(beep)
 			ttputc(7);
 	}
@@ -110,7 +112,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 			i = alirec();
 			i->disp = i->start = bw->cursor->byte;
 			i->what = 0;
-			if (dopfnext(bw, mksrch(vsncpy(NULL, 0, isrch->pattern + isrch->ofst, sLen(isrch->pattern) - isrch->ofst), NULL, 0, isrch->dir, -1, 0, 0), NULL)) {
+			if (dopfnext(bw, mksrch(vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern)), NULL, 0, isrch->dir, -1, 0, 0), NULL)) {
 				if(beep)
 					ttputc(7);
 				frirec(i);
@@ -118,7 +120,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 				enqueb(IREC, link, &isrch->irecs, i);
 			}
 		}
-	} else if (c >= 0 && c < 32 || c >= 256) {	/* c >= 256 means an X windows sequence like .ku */
+	} else if (c >= 0 && c < 32) {
 		/* Done when a control character is received */
 		nungetc(c);
 		if (notify) {
@@ -127,26 +129,72 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		smode = 2;
 		if (lastisrch) {
 			lastpat = vstrunc(lastpat, 0);
-			lastpat = vsncpy(lastpat, 0, lastisrch->pattern + lastisrch->ofst, sLen(lastisrch->pattern) - lastisrch->ofst);
+			lastpat = vsncpy(lastpat, 0, lastisrch->pattern, sLen(lastisrch->pattern));
 			rmisrch(lastisrch);
 		}
 		lastisrch = isrch;
 		return 0;
 	} else if (c != -1) {
+		unsigned char buf[16];
+		int buf_len;
 		/* Search */
-		unsigned char k;
 
-	      in:
-		k = c;
+		in:
+
+		/* Convert to/from utf-8 */
+		if (locale_map->type && !bw->b->o.charmap->type) {
+			utf8_encode(buf,c);
+			c = from_utf8(bw->b->o.charmap,buf);
+		} else if(!locale_map->type && bw->b->o.charmap->type) {
+			to_utf8(locale_map,buf,c);
+			c = utf8_decode_string(buf);
+		}
+
+		if (bw->b->o.charmap->type) {
+			buf_len = utf8_encode(buf,c);
+		} else {
+			buf[0] = c;
+			buf_len = 1;
+		}		
+
 		isrch->quote = 0;
-		iappend(bw, isrch, &k, 1);
+		iappend(bw, isrch, buf, buf_len);
 	}
 	omid = mid;
 	mid = 1;
 	bw->cursor->xcol = piscol(bw->cursor);
 	dofollows();
 	mid = omid;
-	if (mkqwnsr(bw->parent, sv(isrch->pattern), itype, iabrt, isrch, notify)) {
+
+	isrch->prompt = vstrunc(isrch->prompt, isrch->ofst);
+
+	if (locale_map->type && !bw->b->o.charmap->type) {
+		/* Translate bytes to utf-8 */
+		unsigned char buf[16];
+		int x;
+		for (x=0; x!=sLEN(isrch->pattern); ++x) {
+			int c = to_uni(bw->b->o.charmap, isrch->pattern[x]);
+			utf8_encode(buf,c);
+			isrch->prompt = vsncpy(sv(isrch->prompt),sz(buf));
+		}
+	} else if (!locale_map->type && bw->b->o.charmap->type) {
+		/* Translate utf-8 to bytes */
+		unsigned char *p = isrch->pattern;
+		int len = sLEN(isrch->pattern);
+		int c;
+		while (len) {
+			int c = utf8_decode_fwrd(&p, &len);
+			if (c>=0) {
+				c = from_uni(locale_map, c);
+				isrch->prompt = vsadd(isrch->prompt, c);
+			}
+		}
+	} else {
+		/* FIXME: translate when charmaps do not match */
+		isrch->prompt = vsncpy(sv(isrch->prompt),sv(isrch->pattern));
+	}
+
+	if (mkqwnsr(bw->parent, sv(isrch->prompt), itype, iabrt, isrch, notify)) {
 		return 0;
 	} else {
 		rmisrch(isrch);
@@ -159,10 +207,11 @@ static int doisrch(BW *bw, int dir)
 	struct isrch *isrch = (struct isrch *) joe_malloc(sizeof(struct isrch));
 
 	izque(IREC, link, &isrch->irecs);
-	isrch->pattern = vsncpy(NULL, 0, sc("I-find: "));
-	isrch->ofst = sLen(isrch->pattern);
+	isrch->pattern = vsncpy(NULL, 0, NULL, 0);
 	isrch->dir = dir;
 	isrch->quote = 0;
+	isrch->prompt = vsncpy(NULL, 0, sc("I-find: "));
+	isrch->ofst = sLen(isrch->prompt);
 	return itype(bw, -1, isrch, NULL);
 }
 
@@ -176,7 +225,7 @@ int uisrch(BW *bw)
 	} else {
 		if (lastisrch) {
 			lastpat = vstrunc(lastpat, 0);
-			lastpat = vsncpy(lastpat, 0, lastisrch->pattern + lastisrch->ofst, sLen(lastisrch->pattern) - lastisrch->ofst);
+			lastpat = vsncpy(lastpat, 0, lastisrch->pattern, sLen(lastisrch->pattern));
 			rmisrch(lastisrch);
 			lastisrch = 0;
 		}
@@ -194,7 +243,7 @@ int ursrch(BW *bw)
 	} else {
 		if (lastisrch) {
 			lastpat = vstrunc(lastpat, 0);
-			lastpat = vsncpy(lastpat, 0, lastisrch->pattern + lastisrch->ofst, sLen(lastisrch->pattern) - lastisrch->ofst);
+			lastpat = vsncpy(lastpat, 0, lastisrch->pattern, sLen(lastisrch->pattern));
 			rmisrch(lastisrch);
 			lastisrch = 0;
 		}

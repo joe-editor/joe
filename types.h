@@ -549,7 +549,8 @@ struct irec {
 
 struct isrch {
 	IREC	irecs;		/* Linked list of positions */
-	unsigned char	*pattern;	/* Search pattern string/prompt */
+	unsigned char *pattern;	/* Search pattern string */
+	unsigned char *prompt;	/* Prompt (usually same as pattern unless utf-8/byte conversion) */
 	int	ofst;		/* Offset in pattern past prompt */
 	int	dir;		/* 0=fwrd, 1=bkwd */
 	int	quote;		/* Set to quote next char */

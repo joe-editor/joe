@@ -1,4 +1,11 @@
-Wed May  5 2004  Joe ALlen <jhallen@world.std.com>
+Wed May  5 2004  Joe Allen <jhallen@world.std.com>
+ 	* bw.c charmap.c main.c qw.c qw.h regex.c regex.h 
+ 	syntax.c types.h uisrch.c usearch.c utf8.c utf8.h:
+
+	Regex search now works properly with UTF-8 chars.
+	Incremental search now works with UTF-8.
+
+Wed May  5 2004  Joe Allen <jhallen@world.std.com>
 	* utils.c, c.jsf.in:
 
 	Fix c++ keywords.

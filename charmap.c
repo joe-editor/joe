@@ -980,15 +980,12 @@ static int pair_cmp(struct pair *a,struct pair *b)
 
 /* Predicate and conversion functions for byte-oriented charmaps */
 
-int byte_lower(struct charmap *map,int c)
-{
-	return map->lower_map[c];
-}
-
 int byte_ispunct(struct charmap *map,int c)
 {
 	int ofst = (c>>3);
 	int bitn = (1<<(c&7));
+	if (c<0 || c>255)
+		return 0;
 	return (map->print_map[ofst]&bitn) != 0 && (map->alnum__map[ofst]&bitn) == 0; 
 }
 
@@ -996,6 +993,8 @@ int byte_isprint(struct charmap *map,int c)
 {
 	int ofst = (c>>3);
 	int bitn = (1<<(c&7));
+	if (c<0 || c>255)
+		return 0;
 	return (map->print_map[ofst]&bitn) != 0;
 }
 
@@ -1008,6 +1007,8 @@ int byte_isalpha_(struct charmap *map,int c)
 {
 	int ofst = (c>>3);
 	int bitn = (1<<(c&7));
+	if (c<0 || c>255)
+		return 0;
 	return (map->alpha__map[ofst]&bitn) != 0;
 }
 
@@ -1015,12 +1016,17 @@ int byte_isalnum_(struct charmap *map,int c)
 {
 	int ofst = (c>>3);
 	int bitn = (1<<(c&7));
+	if (c<0 || c>255)
+		return 0;
 	return (map->alnum__map[ofst]&bitn) != 0;
 }
 
 int byte_tolower(struct charmap *map,int c)
 {
-	return map->lower_map[c];
+	if (c<0 || c>255)
+		return c;
+	else
+		return map->lower_map[c];
 }
 
 /* Load built-in character maps */
