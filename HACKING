@@ -1,0 +1,144 @@
+------------
+Edit Buffers
+------------
+
+API:
+
+  Look at the comments in b.h for more information.
+
+  B *bfind(unsigned char *name);
+		Load disk file into memory buffer 'B'.
+
+  bsave(P *p,unsigned char *name,int size);
+		Write size bytes from buffer beginning at p to disk file
+
+  brm(b);	Free data structure
+
+Once you have a B you can access the characters in it via P pointers (which
+are like C++ STL iterators).
+
+  B *b = bfind("foo");	Load file into memory
+
+  P *p = pdup(b->bof);	Get pointer to beginning of file (duplicate
+			b->bof which is a P).
+
+  prm(p);		Free p when we're done with it.
+
+  int c=brch(p);	Get character at p.
+  int c=pgetc(p);	Get character at p and advance it.
+  int c=prgetc(p);	Retract p, then return character at it.
+
+    - These return -1 (NO_MORE_DATA) if you try to read end of file or
+      before beginning of file.
+
+    - A pointer can point to any character of the file and right after the
+      end of the file.
+
+    - For UTF-8 files, character can be between 0 and 0x7FFFFFFF
+
+  Publicly readable members of P:
+	p->byte		The byte offset into the buffer
+	p->line		The line number
+	p->xcol		If P is the cursor, this is the column number
+			where the cursor will be displayed on the screen
+			(which does not have to match the column of the
+			character at P).
+
+  Some predicates:
+	pisbof(p);	True if pointer is at beginning of buffer
+	piseof(p);	True if pointer is at end of buffer
+	pisbol(p);	True if pointer is at beginning of line
+	piseol(p);	True if pointer is at end of line
+	pisbow(p);	True if pointer is at beginning of a word
+	piseow(p);	True if pointer is at end of a word
+
+  More information about character at p:
+	piscol(p);	Get column number of character at p.
+
+  Some other ways of moving a P through a B:
+
+	pnextl(p);	Go to beginning of next line
+	pprevl(p);	Go to end of previous line
+	pfwrd(p,int n);	Move forward n characters
+	pbkwd(p,int n);	Move backward n characters
+	p_goto_bof(p);
+	p_goto_eof(p);
+	p_goto_bol(p);
+	p_goto_eol(p);
+
+	pset(p,q);	Move p to same position as q.
+
+	pline(p,n);	Goto to beginning of a specific line.
+	pgoto(p,n);	Goto a specific byte position.
+
+	pfind(P,unsigned char *s,int len);
+			Fast Boyer-Moore search forward.
+
+	prfind(P,unsigned char *s,int len);
+			Fast Boyer-Moore search backward.
+
+		These are very fast- they look at low level
+	data structure and don't go through pgetc().  Boyer-Moore
+	allows you to skip over many characters without reading
+	them, so you can get something like O(n/len).
+
+  Some facts:
+
+    Local operations are fast: pgetc(), prgetc().
+
+    Copy is fast: pset().
+
+    pline() and pgoto() are slower, but look for the closest existing
+    P to start from.
+
+    The column number is stored in P, but it is only updated if
+    it is easy to do so.  If it's hard (like you crossed a line
+    boundary backward) it's marked as invalid.  piscol() then has
+    to recalculate it.
+
+  Modifying a buffer:
+
+    binsc(p,int c);		Insert character at p.
+    bdel(P *from,P *to);	Delete character between two Ps.
+
+  Note that when you insert or delete, all of the Ps after the insertion/
+  deletion point are adjusted so that they continue to point to the same
+  characeter before the insert or delete.
+
+  Insert and Delete create undo records.
+
+  Insert and Delete set dirty flags on lines which are currently being
+  displayed on the screen, so that when you return to the edit loop, these
+  lines automatically get redrawn.
+
+Internal:
+
+  An edit buffer is made up of a doubly-linked list of fixed sized (4 KB)
+gap buffers.  A gap buffer has two parts: a ~16 byte header, which is always
+in memory, and the actual buffer, which can be paged out to a swap file (a
+vfile- see vfile.h).  A gap buffer consists of three regions: text before
+the gap, the gap and text after the gap (which always goes all the way to
+the end of buffer). (hole and ehole in the header indicate the gap
+position).  The size of the gap may be 0 (which is the case when a file is
+first loaded).  Gap buffers are fast for small inserts and deletes when the
+cursor is at the gap (for delete you just adjust a pointer, for insert you
+copy the data into gap).  When you reposition the cursor, you have to move
+the gap before any inserts or deletes occur.  If you had only one window and
+a single large gap buffer for the file, you could always keep the gap at the
+cursor- the right-arrow key copies one character across the gap.
+
+  Of course for edits which span gap buffers or which are larger than a gap
+buffer, you get a big mess of gap buffer splitting and merging plus
+doubly-linked list splicing.
+
+  Still, this buffer method is quite fast: you never have to do large memory
+moves since the gap buffers are limited in size.  To help search for line
+numbers, the number of newlines '\n's contained in each gap buffer is stored
+in the header.  Reads are fast as long as you have a P at the place you
+want to read from, which is almost always the case.
+
+  It should be possible to quickly load files by mapping them directly into
+memory (using mmap()) and treating each 4KB page as a gap buffer with 0 size
+gap.  When page is modified, use copy-on-write to move the page into the
+swap file (change pointer in header).  This is not done now.  Instead the
+file is copied when loaded.
