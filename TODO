@@ -1,19 +1,6 @@
 
 Short (infinite) list for 3.2:
 
-vfork is problem on irix
-globalsrch declared twice
-'%' is a gmake thing
-
-- - - - - - - -
-
-formatting characters are being interpreted by context printing on status
-line
-
-- - - - - - - -
-
-can we highlight backup files? files ending in .in?
-
 - - - - - - - -
 
 Problems with parsing joerc file: comments are getting included in all
@@ -24,6 +11,15 @@ Make joerc file so we load system and local customizations.
 - - - - - - - -
 
 perl again: if (-s foo)  looks like s/
+
+- - - - - - - -
+
+formatting characters are being interpreted by context printing on status
+line
+
+- - - - - - - -
+
+can we highlight backup files? files ending in .in?
 
 - - - - - - - -
 
@@ -59,11 +55,7 @@ jmacs:
 
 - - - - - - - -
 
-- update help screens: some things have changed (emacs is more like emacs).
-
 - update man page
-
-- for cygwin: we need to compile with --disable-termcap
 
 - - - - - - - -
 
@@ -92,6 +84,8 @@ window on the screen).
  - try for previous screen configuration?
  - multiple joes: the last one who exits wins
  - don't quote macros, so user can copy them to joerc file
+
+- turn on by default?
 
 - - - - - - - -
 

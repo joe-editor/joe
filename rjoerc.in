@@ -82,7 +82,9 @@
 
  -csmode	^KF after a pervious search does a ^L instead
 
- -backpath path Directory to store backup files
+ -backpath path
+		Directory to store backup files (one space between 'backpath' and
+		the 'path', no trailing spaces or comments after the path).
 
  -floatmouse	Clicking past end of line moves the cursor past the end
 
@@ -133,7 +135,7 @@
 
  -autoswap	Swap markb with markk when necessary
 
- -joe_state     Use ~/.joe_state file
+-joe_state     Use ~/.joe_state file
 
  -mouse		Enable mouse support
 
