@@ -154,6 +154,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 	syntax->nstates = 0;
 	syntax->color = 0;
 	syntax->states = malloc(sizeof(struct high_state *)*(syntax->szstates=64));
+	syntax->sync_lines = 50;
 
 	/* Parse file */
 	while(fgets((char *)buf,1023,f)) {
@@ -205,6 +206,9 @@ struct high_syntax *load_dfa(unsigned char *name)
 					color->color |= meta_color(bf);
 				}
 			}
+		} else if(!parse_char(&p, '-')) { /* No. sync lines */
+			if(parse_int(&p, &syntax->sync_lines))
+				syntax->sync_lines = -1;
 		} else {
 			c = parse_ws(&p);
 

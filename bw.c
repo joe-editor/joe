@@ -143,8 +143,8 @@ int get_highlight_state(BW *w,int line)
 		/* We must be on the top line */
 		state = 0;
 		tmp = pdup(w->top);
-		if(tmp->line>50)
-			pline(tmp, tmp->line-50);
+		if(w->syntax->sync_lines >= 0 && tmp->line > w->syntax->sync_lines)
+			pline(tmp, tmp->line-w->syntax->sync_lines);
 		else
 			p_goto_bof(tmp);
 		while(tmp->line!=y-w->y+w->top->line)

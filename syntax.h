@@ -20,6 +20,7 @@ struct high_syntax {
 	int nstates;			/* No. states */
 	int szstates;			/* Malloc size of states array */
 	struct high_color *color;	/* Linked list of color definitions */
+	int sync_lines;			/* No. lines back to start parsing when we lose sync.  -1 means start at beginning */
 };
 
 /* Color definition */

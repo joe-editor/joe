@@ -1,4 +1,12 @@
 Tue Apr 13 2004  Joe Allen <jhallen@world.std.com>
+	* bw.c, syntax.c, syntax.h, syntax/php.jsf.in,
+	syntax/c.jsf.in:
+
+	Added '-NNN' syntax to .jsf files.  Allows you
+	to specify number of lines back to start parsing
+	when we don't have the syntax highlighting state.
+
+Tue Apr 13 2004  Joe Allen <jhallen@world.std.com>
 
 	Moved syntax file to syntax/ subdirectory.  They
 	still don't get installed in a subdirectory :-(

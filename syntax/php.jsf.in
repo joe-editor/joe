@@ -6,6 +6,16 @@
 #  * highlight variables
 #  * highlight function and class names?
 
+# Define no. sync lines
+# You can say:
+# -200     means 200 lines
+# -        means always start parsing from beginning of file when we lose sync
+#          if nothing is specified, the default is -50
+
+-
+
+# Define colors
+
 =Idle
 =HTML		bold black
 =Comment 	green
