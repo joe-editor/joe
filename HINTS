@@ -55,6 +55,11 @@ Programming
 	Try ^K , and ^K .  These keys select the current block (based on
 indentation) and shift it left or right by the -istep and -indentc.
 
+	Hit Ctrl-G to jump between matching delimiters.  This works on
+word delimiters for languages like Pascal and Verilog which use begin...end
+to delimit blocks.  If a word is not known, Ctrl-G starts a search with the
+word moved into the search prompt.
+
 Selecting blocks
 ----------------
 

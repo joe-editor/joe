@@ -2,7 +2,16 @@ Short list for 3.2:
 
 - document some things which are in joerc file: like yank, and switch buffers.
 
+- update help screens: some things have changed (emacs is more like emacs).
+
+- update man page
+- update NEWS
+
 - egmont's Ctrl-selection bug
+
+- for cygwin: we need to compile with --disable-termcap
+
+- - - - - - - -
 
 - in emacs: ^XA save block when no block is selected, we type in >> for
 append (because that't what it does in emacs), but we also put the file name
@@ -17,14 +26,16 @@ in, but we do the two in the wrong order.
 
   emacs: ^X^I (indent region) does not work with selection method
 
-- for cygwin: we need to compile with --disable-termcap
+- - - - - - - -
 
 - ^D in selection prompts should bring up menu as in tcsh
 
-- update man page
+- - - - - - - - 
 
 - better string demarcation in highlighter (highlight all words with 's in
   them- need to use pointers instead of buffer to refer to string)
+
+- - - - - - - -
 
 - .joe_state file:
  - save names of files on command line?
@@ -32,22 +43,45 @@ in, but we do the two in the wrong order.
  - multiple joes: the last one who exits wins
  - don't quote macros, so user can copy them to joerc file
 
+- - - - - - - -
+
 - search: automatically use 'k' mode if there is a block selected?  Cursor should
   jump to top of block when done?  Modes for this?
 
-- if file is read only, check it out again (for perforce)
-    - Reload modified files (or current window)
-    - Watch loaded file for changes under us (merge differences?)
-
-- Lock files being edited?
-    - one person gets write lock
-    - special lock for NFS
-
-- update help screens: some things have changed (emacs is more like emacs).
+- - - - - - - -
 
 More colors: UI for using 256 color xterms.
+  - Problems: tgoto takes only two params, so we have to switch to tparm.
+
+- - - - - - - -
+
+- if file is read only, check it out (p4 edit).
+    - automatically?
+    - execute macro on typing in read-only file?
 
 
+- - - - - - - -
+
+- Watch loaded file for changes under us (merge differences?)
+    - Print message when it happens
+
+    - Reload modified files (or current window)
+
+- - - - - - - -
+
+- Lock files being edited?
+    - fcntl lock works over nfs.
+
+    - major problem with this is that you need to keep the file
+      open.  Maybe use creat() locks.
+
+    - lock should just advise user: the problem is someone may have left
+      editor open and there is no way to kill it.
+
+
+
+
+- - - - - - - -
 
 Others:
 
@@ -58,8 +92,6 @@ Others:
 - security hole with spell checker
 
 - regexp for compiler parsing
-
-- nfs locking?
 
 - shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
   shell window.
