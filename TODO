@@ -6,9 +6,6 @@ Short (infinite) list for 3.3:
 - select word wrap for news articles ("article" in file name)
 - scroll menus with mouse
 - mouse when in hex mode, line numbering mode
-- bracketed paste support
-
-- background color patch.
 
 - - - -
 

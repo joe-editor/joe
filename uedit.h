@@ -67,5 +67,6 @@ int ucol PARAMS((BW *bw));
 int utxt PARAMS((BASE *bw));
 int uhome PARAMS((BW *bw));
 int uname_joe PARAMS((BW *bw));
+int upaste PARAMS((BW *bw));
 
 #endif

@@ -31,10 +31,14 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "main.h"
 #include "ublock.h"
 #include "menu.h"
+#include "tty.h"
 #include "mouse.h"
 
 int rtbutton=0;			/* use button 3 instead of 1 */
 int floatmouse=0;		/* don't fix xcol after tomouse */
+int joexterm=0;			/* set if we're using Joe's modified xterm */
+
+static int dragging = 0;	/* Set if we did any dragging */
 
 static int xtmstate;
 static int Cb, Cx, Cy;
@@ -52,17 +56,30 @@ static void fake_key(int c)
 		exemac(m);
 }
 
+int mcoord(int x)
+{
+	if (x>=33 && x<=240)
+		return x - 33 + 1;
+	else if (x==32)
+		return -1 + 1;
+	else if (x>240)
+		return x - 257 + 1;
+}
+
 int uxtmouse(BW *bw)
 {
 	Cb = ttgetc()-32;
-	if(Cb < 0)
+	if (Cb < 0)
 		return -1;
-	Cx = ttgetc() - 32;
-	if (Cx <= 0)
+	Cx = ttgetc();
+	if (Cx < 32)
 		return -1;
-	Cy = ttgetc() - 32;
-	if (Cy <= 0)
+	Cy = ttgetc();
+	if (Cy < 32)
 		return -1;
+
+	Cx = mcoord(Cx);
+	Cy = mcoord(Cy);
 
 	if ((Cb & 0x41) == 0x40) {
 		fake_key(KEY_MWUP);
@@ -84,6 +101,8 @@ int uxtmouse(BW *bw)
 		else
 			/* drag */
 			mousedrag(Cx,Cy);
+	else if (joexterm && (Cb & 3) == 1)		/* Paste */
+		ttputs(US "\33[y");
 	return 0;
 }
 
@@ -120,6 +139,33 @@ void mouseup(int x,int y)
 {
 	struct timeval tv;
 	Cx = x, Cy = y;
+	if (dragging) {
+		/* Feed text to xterm */
+		if (joexterm && markv(1)) {
+			long left = markb->xcol;
+			long right = markk->xcol;
+			P *q = pdup(markb);
+			int c;
+			ttputs(US "\33[1y");
+			while (q->byte < markk->byte) {
+				/* Skip until we're within columns */
+				while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
+					pgetc(q);
+
+				/* Copy text into buffer */
+				while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
+					c = pgetc(q);
+					ttputc(c);
+				}
+				/* Add a new line if we went past right edge of column */
+				if (square && q->byte<markk->byte && piscol(q) >= right)
+					ttputc(13);
+			}
+			ttputs(US "\33\33");
+			prm(q);
+		}
+		dragging = 0;
+	}
 	switch(clicks) {
 		case 1:
 			fake_key(KEY_MUP);
@@ -271,6 +317,7 @@ int udefmdrag(BW *xx)
 		marked++, umarkb(bw);
 	if (tomousestay())
 		return -1;
+	dragging = 1;
 	if (reversed)
 		umarkb(bw);
 	else
@@ -315,6 +362,7 @@ int udefm2drag(BW *xx)
 	BW *bw=(BW *)maint->curwin->object;
 	if (tomousestay())
 		return -1;
+	dragging = 1;
 	if (!reversed && bw->cursor->byte < anchor) {
 		pgoto(markk,anchorn);
 		markk->xcol = piscol(markk);
@@ -361,6 +409,7 @@ int udefm3drag(BW *xx)
 	BW *bw = (BW *)maint->curwin->object;
 	if (tomousestay())
 		return -1;
+	dragging = 1;
 	if (!reversed && bw->cursor->byte < anchor) {
 		pgoto(markk,anchorn);
 		markk->xcol = piscol(markk);
@@ -387,6 +436,8 @@ void mouseopen()
 #ifdef MOUSE_XTERM
 	if (usexmouse) {
 		ttputs(US "\33[?1002h");
+		if (joexterm)
+			ttputs(US "\33[?2004h");
 		ttflsh();
 	}
 #endif
@@ -396,6 +447,8 @@ void mouseclose()
 {
 #ifdef MOUSE_XTERM
 	if (usexmouse) {
+		if (joexterm)
+			ttputs(US "\33[?2004l");
 		ttputs(US "\33[?1002l");
 		ttflsh();
 	}

@@ -1,0 +1,48 @@
+xterm-patch should be applied to xterm-200, which can be found at:
+
+http://dickey.his.com/xterm/xterm.html
+
+
+With this patch, the following escape sequences become available, and you
+can enable "-joexterm" in the joerc file:
+
+	ESC [ ? 2 0 0 4 h	Enable bracketed pastes.
+
+	ESC [ ? 2 0 0 4 l	Disable bracketed pastes.
+
+		When bracketed pastes are enabled, paste
+		data looks like this:
+
+			ESC [ 2 0 0 ~ <paste-text> ESC [ 2 0 1 ~
+
+	ESC [ y			Send paste data to program (when JOE gets
+				middle button click, it sends this to xterm
+				to make it send the paste data).
+
+	ESC [ 1 y		Accept all following data until ESC ESC. 
+				This data becomes the "selected text" which
+				can be pasted by other applications.
+
+				Any ESCs in the data can be quoted with ESC E
+
+	ESC [ ? 2 0 0 7 h	Enable outside of frame mouse coordinates.
+
+	ESC [ ? 2 0 0 7 l	Disable outside of frame mouse coordinates.
+
+		When outside of frame mouse coordinates are enabled, and
+		xterm mouse support is enabled (ESC [ ? 1 0 0 2 h), mouse
+		coordinates are sent even if they are outside of xterm's
+		window frame.
+
+		The coordinate code bytes should be interpreted like this
+		(we need negative coordinates in case mouse is above or to
+		left of window):
+
+			Code			Coordinate
+			----			----------
+			33 - 240		1 - 208  (normal)
+			32			0	 (left/top of frame)
+			241 - 255		-15 - -1 (left/top of frame)
+
+		(When this mode is off, codes 33 - 255 correspond to
+		coordinates 1 - 223).

@@ -2349,3 +2349,37 @@ int uname_joe(BW *bw)
 			return -1;
 	return 0;
 }
+
+/* Insert until magic code: "ESC [ 2 0 1 ~" received */
+
+int upaste(BW  *bw, int k)
+{
+	unsigned char buf[6];
+	int buf_len = 0;
+	int c;
+	int tmp_ww = bw->o.wordwrap;
+	int tmp_ai = bw->o.autoindent;
+
+	bw->o.wordwrap = 0;
+	bw->o.autoindent = 0;
+
+	while ((c = ttgetc()) != -1) {
+		if (buf_len == 6) {
+			if (buf[0] == 13 && !bw->o.hex)
+				rtntw(bw);
+			else
+				utypebw(bw, buf[0]);
+			memmove(buf, buf+1, 5);
+			buf[5] = c;
+		} else
+			buf[buf_len++] = c;
+		if (buf_len == 6 && !strncmp((char *)buf, "\033[201~", 6)) {
+			break;
+		}
+	}
+
+	bw->o.wordwrap = tmp_ww;
+	bw->o.autoindent = tmp_ai;
+
+	return 0;
+}

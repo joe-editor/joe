@@ -104,6 +104,7 @@ extern int bg_menu;
 extern int bg_help;
 extern int bg_prompt;
 extern int bg_msg;
+extern int joexterm;
 
 /* Set to use ~/.joe_state file */
 int joe_state;
@@ -348,6 +349,7 @@ struct glopts {
 	{US "usetabs",	0, &usetabs, NULL, 0, 0, 0 },
 	{US "assume_color", 0, &assume_color, NULL, 0, 0, 0 },
 	{US "assume_256color", 0, &assume_256color, NULL, 0, 0, 0 },
+	{US "joexterm", 0, &joexterm, NULL, 0, 0, 0 },
 	{ NULL,		0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0 }
 };
 

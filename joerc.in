@@ -148,9 +148,12 @@
 		position the cursor and left-click-drag will select blocks.
 		For normal xterm cut and paste, hold the shift key down.
  -joexterm	If you are using Joe's modified Xterm, which makes -mouse
+ -joexterm	If you are using Joe's modified Xterm, which makes -mouse
+
+ -square	Rectangular block mode
 
  -bg_text color	Set background color for text, help, menus, prompts and messages.
- -bg_text color	Set background color for text.
+ -bg_help color	Set background color for help.
  -bg_menu color	Set background color for menus.
  -bg_prompt color
 		Set background color for prompts.
@@ -1057,6 +1060,8 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
  correct, it will override these later on.
 
 paste			^[ [ 2 0 2 ~		Bracketed paste
+paste			^[ [ 2 0 0 ~		Bracketed paste
+insc			^[ [ 2 ~
 insc			^[ [ L			SCO
 
 delch			^[ [ 3 ~
