@@ -277,6 +277,22 @@
 -smarthome
 -smartbacks
 
+ OCaml lanaguage file
+*.ml
+-autoindent
+-syntax ocaml
+-smarthome
+-smartbacks
+-istep 2
+
+ OCaml language interface
+*.mli
+-autoindent
+-syntax ocaml
+-smarthome
+-smartbacks
+-istep 2
+
  Perl
 *
 +#!\+\[ 	]\+\[a-z/]/perl\>
@@ -1070,7 +1086,7 @@ pgupmenu	^[ [ 5 ~
 rtarwmenu	.kr
 rtarwmenu	^D
 rtarwmenu	^[ [ C
-rtarwmenu	#^ C
+rtarwmenu	^# C
 rtarwmenu	^[ O C
 rtn		SP
 rtn		^I

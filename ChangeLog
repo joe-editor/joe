@@ -1,3 +1,7 @@
+Mon Nov 29 2004  Joe Allen <jhallen@world.std.com>
+
+	Accept OCaml and 4GL syntax files.
+
 Mon Aug  9 2004  Joe Allen <jhallen@world.std.com>
 
 	Fix bug in joe_state code: buffer was not

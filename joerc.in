@@ -308,6 +308,22 @@
 -smartbacks
 
  SML
+*.ml
+-autoindent
+-syntax ocaml
+-smarthome
+-smartbacks
+-istep 2
+
+ OCaml language interface
+*.mli
+-autoindent
+-syntax ocaml
+-smarthome
+-smartbacks
+-istep 2
+
+ Perl
 *
 +#!\+\[ 	]\+\[a-z/]/perl\>
 -autoindent
