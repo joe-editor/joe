@@ -32,6 +32,8 @@ int parse(struct high_syntax *syntax,P *line,int state)
 	int c;		/* Current character */
 	int *attr_end = attr_buf+attr_size;
 	int *attr = attr_buf;
+	int buf_en = 0;	/* Set for buffering */
+	int ofst = 0;	/* record offset after we've stopped buffering */
 
 	/* Get next character */
 	while((c=pgetc(line))!=NO_MORE_DATA) {
@@ -64,7 +66,7 @@ int parse(struct high_syntax *syntax,P *line,int state)
 				h = kw_new_state;
 				/* Recolor keyword */
 				for(x= -(buf_idx+1);x<-1;++x)
-					attr[x] = h -> color;
+					attr[x-ofst] = h -> color;
 			} else {
 				h = cmd->new_state;
 				/* Recolor if necessary */
@@ -72,12 +74,22 @@ int parse(struct high_syntax *syntax,P *line,int state)
 					attr[x] = h -> color;
 			}
 			/* Start buffering? */
-			if (cmd->start_buffering)
+			if (cmd->start_buffering) {
 				buf_idx = 0;
+				buf_en = 1;
+				ofst = 0;
+			}
+
+			/* Stop buffering? */
+			if (cmd->stop_buffering)
+				buf_en = 0;
 		} while(cmd->noeat);
 
 		/* Save in buffer */
-		if(buf_idx<19) buf[buf_idx++]=c;
+		if (buf_idx<19 && buf_en)
+			buf[buf_idx++]=c;
+		if (!buf_en)
+			++ofst;
 		buf[buf_idx] = 0;
 
 		if(c=='\n')
@@ -258,6 +270,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 					cmd->noeat = 0;
 					cmd->recolor = 0;
 					cmd->start_buffering = 0;
+					cmd->stop_buffering = 0;
 					cmd->new_state = 0;
 					cmd->keywords = 0;
 					cmd->ignore = 0;
@@ -271,6 +284,8 @@ struct high_syntax *load_dfa(unsigned char *name)
 						while (parse_ws(&p), !parse_ident(&p,bf,255))
 							if(!strcmp(bf,"buffer")) {
 								cmd->start_buffering = 1;
+							} else if(!strcmp(bf,"hold")) {
+								cmd->stop_buffering = 1;
 							} else if(!strcmp(bf,"recolor")) {
 								parse_ws(&p);
 								if(!parse_char(&p,'=')) {

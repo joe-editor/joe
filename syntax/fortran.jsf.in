@@ -1,12 +1,15 @@
 # JOE syntax highlight file for FORTRAN
+# Heavily improved by: Malte Thoma (thoma@uni-muenster.de)
 
 =Idle
 =Comment 	green
 =Constant 	cyan
-=Escape 	bold cyan
-=Type 		bold
-=Keyword 	bold
-=Intrinsic	bold
+=Type 		bold yellow
+=Keyword 	bold 
+=Intrinsic	magenta
+=Preproc        blue
+=Operator	magenta
+=Bad		bold red
 
 # First character of line...
 
@@ -14,7 +17,12 @@
 	*		idle		noeat
 	"\n"		reset
 	"cC*"		comment		recolor=-1
+	"#"		pre		recolor=-1
 
+:pre	Preproc					
+	*		pre				
+	"\n"		reset			
+	
 :comment Comment
 	*		comment
 	"\n"		reset
@@ -31,16 +39,50 @@
 :first_number Constant
 	*		idle	noeat
 	"0-9"		first_number
-	"."		second_number
-	"eE"		epart
+	"."		second_start
+	"eEdD"		epart
 
 :maybe_float Constant
 	*		idle	recolor=-2	noeat
 	"0-9"		second_number		recolor=-2
+	"a-zA-Z"	operator	buffer recolor=-2
+
+:operator idle
+	*		idle	noeat
+	"a-zA-Z"	operator
+	"."		idle	istrings
+	"gt"		op
+	"ge"		op
+	"eq"		op
+	"le"		op
+	"ne"		op
+	"lt"		op
+	"and"		op
+	"or"		op
+	"llt"		op
+	"lle"		op
+	"lgt"		op
+	"lge"		op
+	"not"		op
+	"false"		const
+	"true"		const
+done
+
+:op Operator
+	*	idle	noeat
+
+:const Constant
+	*	idle	noeat
+
+:second_start Constant
+	*	idle	noeat
+	"a-zA-Z"	operator	noeat recolor=-2
+	"dDeE"	epart
+	"0-9"	second_number
 
 :second_number Constant
 	*		idle	noeat
-	"eE"		epart
+	"eEdD"		epart
 	"0-9"		second_number
 
 :epart Constant
@@ -50,8 +92,6 @@
 :enum Constant
 	*		idle	noeat
 	"0-9"		enum
-
-# String
 
 :string	Constant
 	*		string
@@ -63,7 +103,113 @@
 	"'"		string
 
 :ident Idle
+done
 	*		idle		noeat istrings
+	"allocate"	kw
+	"allocatable"	kw
+	"assign"	kw
+	"assignment"	kw
+	"backspace"	kw
+	"block"		kw
+	"blockdata"	kw
+	"call"		kw
+	"case"		kw
+	"character"	type
+	"close"		kw
+	"common"	kw
+	"complex"	type
+	"contains"	kw
+	"continue"	kw
+	"cycle"		kw
+	"data"		kw
+	"deallocate"	kw
+	"default"	kw
+	"dimension"	type
+	"do"		kw
+	"double"	type
+	"doubleprecision"	type
+	"elemental"	kw
+	"else"		kw
+	"elseif"	kw
+	"elsewhere"	kw
+	"end"		kw
+	"endblock"	kw
+	"endblockdata"	kw
+	"enddo"		kw
+	"endfile"	kw
+	"endforall"	kw
+	"endif"		kw
+	"endinterface"	kw
+	"endmodule"	kw
+	"endselect"	kw
+	"endtype"	kw
+	"endwhere"	kw
+	"entry"		kw
+	"equivalence"	kw
+	"exit"		kw
+	"external"	kw
+	"forall"	kw
+	"format"	kw
+	"function"	kw
+	"go"		kw
+	"goto"		kw
+	"if"		kw
+	"implicit"	kw
+	"implicit"	kw
+	"in"		kw
+	"inout"		kw
+	"inquire"	kw
+	"integer"	type
+	"intent"	kw
+	"interface"	kw
+	"intrinsic"	kw
+	"iolength"	kw
+	"kind"		kw
+	"logical"	type
+	"module"	kw
+	"namelist"	kw
+	"none"		kw
+	"nullify"	kw
+	"only"		kw
+	"open"		kw
+	"optional"	kw
+	"out"		kw
+	"parameter"	kw
+	"pause"		kw
+	"pointer"	kw
+	"precision"	type
+	"print"		kw
+	"private"	kw
+	"procedure"	kw
+	"program"	kw
+	"publc"		kw
+	"public"	kw
+	"pure"		kw
+	"read"		kw
+	"real"		type
+	"recursive"	kw
+	"result"	kw
+	"return"	kw
+	"rewind"	kw
+	"save"		kw
+	"select"	kw
+	"selectcase"	kw
+	"sequence"	kw
+	"stat"		kw
+	"stop"		kw
+	"subroutine"	kw
+	"target"	kw
+	"then"		kw
+	"to"		kw
+	"type"		kw
+	"use"		kw
+	"where"		kw
+	"while"		kw
+	"write"		kw
+done
+	"("		idle	noeat istrings
+# Keywords have to be duplicated here...
+	"allocate"	kw
 	"allocatable"	kw
 	"assign"	kw
 	"assignment"	kw
@@ -80,11 +226,344 @@
 	"continue"	kw
 	"cycle"		kw
 	"data"		kw
+	"deallocate"	kw
 	"default"	kw
-	"dimension"	kw
+	"dimension"	type
 	"do"		kw
-	"double"	kw
-	"doubleprecision"	kw
+	"double"	type
+	"doubleprecision"	type
+	"elemental"	kw
+	"else"		kw
+	"elseif"	kw
+	"elsewhere"	kw
+	"end"		kw
+	"endblock"	kw
+	"endblockdata"	kw
+	"enddo"		kw
+	"endfile"	kw
+	"endforall"	kw
+	"endif"		kw
+	"endinterface"	kw
+	"endmodule"	kw
+	"endselect"	kw
+	"endtype"	kw
+	"endwhere"	kw
+	"entry"		kw
+	"equivalence"	kw
+	"exit"		kw
+	"external"	kw
+	"forall"	kw
+	"format"	kw
+	"function"	kw
+	"go"		kw
+	"goto"		kw
+	"if"		kw
+	"implicit"	kw
+	"implicit"	kw
+	"in"		kw
+	"inout"		kw
+	"inquire"	kw
+	"integer"	kw
+	"intent"	kw
+	"interface"	kw
+	"intrinsic"	kw
+	"iolength"	kw
+	"kind"		kw
+	"logical"	type
+	"module"	kw
+	"namelist"	kw
+	"none"		kw
+	"nullify"	kw
+	"only"		kw
+	"open"		kw
+	"optional"	kw
+	"out"		kw
+	"parameter"	kw
+	"pause"		kw
+	"pointer"	kw
+	"precision"	type
+	"print"		kw
+	"private"	kw
+	"procedure"	kw
+	"program"	kw
+	"publc"		kw
+	"public"	kw
+	"pure"		kw
+	"read"		kw
+	"real"		kw
+	"recursive"	kw
+	"result"	kw
+	"return"	kw
+	"rewind"	kw
+	"save"		kw
+	"select"	kw
+	"selectcase"	kw
+	"sequence"	kw
+	"stat"		kw
+	"stop"		kw
+	"subroutine"	kw
+	"target"	kw
+	"then"		kw
+	"to"		kw
+	"type"		kw
+	"use"		kw
+	"where"		kw
+	"while"		kw
+	"write"		kw
+# Here are instrinsics
+	"abs"		intrinsic
+	"achar"		intrinsic
+	"acos"		intrinsic
+	"adjustl"		intrinsic
+	"adjustr"		intrinsic
+	"aimag"		intrinsic
+	"aint"		intrinsic
+	"all"		intrinsic
+	"allocated"		intrinsic
+	"alog"		intrinsic
+	"alog10"	intrinsic
+	"anint"		intrinsic
+	"any"		intrinsic
+	"asin"		intrinsic
+	"associated"		intrinsic
+	"atan"		intrinsic
+	"atan2"		intrinsic
+	"bit_size"		intrinsic
+	"btest"		intrinsic
+	"ceiling"		intrinsic
+	"char"		intrinsic
+	"cmplx"		intrinsic
+	"conjg"		intrinsic
+	"cos"		intrinsic
+	"cosh"		intrinsic
+	"count"		intrinsic
+	"cpu_time"		intrinsic
+	"cshift"		intrinsic
+	"date_and_time"		intrinsic
+	"dble"		intrinsic
+	"digits"		intrinsic
+	"dim"		intrinsic
+	"dot_product"		intrinsic
+	"dprod"		intrinsic
+	"eoshift"		intrinsic
+	"epsilon"		intrinsic
+	"exp"		intrinsic
+	"exponent"		intrinsic
+	"false"		intrinsic
+	"floor"		intrinsic
+	"float"		intrinsic
+	"fraction"		intrinsic
+	"huge"		intrinsic
+	"iachar"		intrinsic
+	"iand"		intrinsic
+	"ibclr"		intrinsic
+	"ibits"		intrinsic
+	"ibset"		intrinsic
+	"ichar"		intrinsic
+	"ieor"		intrinsic
+	"index"		intrinsic
+	"int"		intrinsic
+	"int2"		intrinsic
+	"ior"		intrinsic
+	"ishft"		intrinsic
+	"ishftc"		intrinsic
+	"kind"		intrinsic
+	"lbound"		intrinsic
+	"len"		intrinsic
+	"len_trim"		intrinsic
+	"lge"		intrinsic
+	"lgt"		intrinsic
+	"lle"		intrinsic
+	"llt"		intrinsic
+	"log"		intrinsic
+	"log10"		intrinsic
+	"matmul"		intrinsic
+	"max"		intrinsic
+	"maxexponent"		intrinsic
+	"maxloc"		intrinsic
+	"maxval"		intrinsic
+	"merge"		intrinsic
+	"min"		intrinsic
+	"minexponent"		intrinsic
+	"minloc"		intrinsic
+	"minval"		intrinsic
+	"mod"		intrinsic
+	"modulo"		intrinsic
+	"mvbits"		intrinsic
+	"nearest"		intrinsic
+	"nint"		intrinsic
+	"not"		intrinsic
+	"null"		intrinsic
+	"pack"		intrinsic
+	"present"		intrinsic
+	"product"		intrinsic
+	"radix"		intrinsic
+	"random_number"		intrinsic
+	"random_seed"		intrinsic
+	"range"		intrinsic
+	"real"		intrinsic
+	"repeat"		intrinsic
+	"reshape"		intrinsic
+	"rrspacing"		intrinsic
+	"scale"		intrinsic
+	"scan"		intrinsic
+	"selected_int_kind"		intrinsic
+	"selected_real_kind"		intrinsic
+	"set_exponent"		intrinsic
+	"shape"		intrinsic
+	"sign"		intrinsic
+	"sin"		intrinsic
+	"sinh"		intrinsic
+	"size"		intrinsic
+	"spacing"		intrinsic
+	"spread"		intrinsic
+	"sqrt"		intrinsic
+	"sum"		intrinsic
+	"system_clock"		intrinsic
+	"tan"		intrinsic
+	"tanh"		intrinsic
+	"tiny"		intrinsic
+	"transfer"		intrinsic
+	"transpose"		intrinsic
+	"trim"		intrinsic
+	"true"		intrinsic
+	"ubound"		intrinsic
+	"unpack"		intrinsic
+	"verify"		intrinsic
+done
+	"a-zA-Z0-9_"	ident
+	" \t"	ws_ident	hold
+
+
+# Whitespace after an identifier... we wait to see if there is a "("
+:ws_ident
+	*		idle		noeat istrings
+	"allocate"	kw
+	"allocatable"	kw
+	"assign"	kw
+	"assignment"	kw
+	"backspace"	kw
+	"block"		kw
+	"blockdata"	kw
+	"call"		kw
+	"case"		kw
+	"character"	type
+	"close"		kw
+	"common"	kw
+	"complex"	type
+	"contains"	kw
+	"continue"	kw
+	"cycle"		kw
+	"data"		kw
+	"deallocate"	kw
+	"default"	kw
+	"dimension"	type
+	"do"		kw
+	"double"	type
+	"doubleprecision"	type
+	"elemental"	kw
+	"else"		kw
+	"elseif"	kw
+	"elsewhere"	kw
+	"end"		kw
+	"endblock"	kw
+	"endblockdata"	kw
+	"enddo"		kw
+	"endfile"	kw
+	"endforall"	kw
+	"endif"		kw
+	"endinterface"	kw
+	"endmodule"	kw
+	"endselect"	kw
+	"endtype"	kw
+	"endwhere"	kw
+	"entry"		kw
+	"equivalence"	kw
+	"exit"		kw
+	"external"	kw
+	"forall"	kw
+	"format"	kw
+	"function"	kw
+	"go"		kw
+	"goto"		kw
+	"if"		kw
+	"implicit"	kw
+	"in"		kw
+	"inout"		kw
+	"inquire"	kw
+	"integer"	type
+	"intent"	kw
+	"interface"	kw
+	"intrinsic"	kw
+	"iolength"	kw
+	"kind"		kw
+	"logical"	type
+	"module"	kw
+	"namelist"	kw
+	"none"		kw
+	"nullify"	kw
+	"only"		kw
+	"open"		kw
+	"optional"	kw
+	"out"		kw
+	"parameter"	kw
+	"pause"		kw
+	"pointer"	kw
+	"precision"	type
+	"print"		kw
+	"private"	kw
+	"procedure"	kw
+	"program"	kw
+	"publc"		kw
+	"public"	kw
+	"pure"		kw
+	"read"		kw
+	"real"		type
+	"recursive"	kw
+	"result"	kw
+	"return"	kw
+	"rewind"	kw
+	"save"		kw
+	"select"	kw
+	"selectcase"	kw
+	"sequence"	kw
+	"stat"		kw
+	"stop"		kw
+	"subroutine"	kw
+	"target"	kw
+	"then"		kw
+	"to"		kw
+	"type"		kw
+	"use"		kw
+	"where"		kw
+	"while"		kw
+	"write"		kw
+done
+	"("		idle	noeat istrings
+# Keywords have to be duplicated here...
+	"allocate"	kw
+	"allocatable"	kw
+	"assign"	kw
+	"assignment"	kw
+	"backspace"	kw
+	"block"		kw
+	"blockdata"	kw
+	"call"		kw
+	"case"		kw
+	"character"	type
+	"close"		kw
+	"common"	kw
+	"complex"	type
+	"contains"	kw
+	"continue"	kw
+	"cycle"		kw
+	"data"		kw
+	"deallocate"	kw
+	"default"	kw
+	"dimension"	type
+	"do"		kw
+	"double"	type
+	"doubleprecision"	type
 	"elemental"	kw
 	"else"		kw
 	"elseif"	kw
@@ -121,9 +600,10 @@
 	"intrinsic"	kw
 	"iolength"	kw
 	"kind"		kw
-	"logical"	kw
+	"logical"	type
 	"module"	kw
 	"namelist"	kw
+	"none"		kw
 	"nullify"	kw
 	"only"		kw
 	"open"		kw
@@ -132,7 +612,7 @@
 	"parameter"	kw
 	"pause"		kw
 	"pointer"	kw
-	"precision"	kw
+	"precision"	type
 	"print"		kw
 	"private"	kw
 	"procedure"	kw
@@ -141,7 +621,7 @@
 	"public"	kw
 	"pure"		kw
 	"read"		kw
-	"real"		kw
+	"real"		type
 	"recursive"	kw
 	"result"	kw
 	"return"	kw
@@ -161,6 +641,7 @@
 	"where"		kw
 	"while"		kw
 	"write"		kw
+# Here are instrinsics
 	"abs"		intrinsic
 	"achar"		intrinsic
 	"acos"		intrinsic
@@ -170,6 +651,8 @@
 	"aint"		intrinsic
 	"all"		intrinsic
 	"allocated"		intrinsic
+	"alog"		intrinsic
+	"alog10"	intrinsic
 	"anint"		intrinsic
 	"any"		intrinsic
 	"asin"		intrinsic
@@ -197,7 +680,9 @@
 	"epsilon"		intrinsic
 	"exp"		intrinsic
 	"exponent"		intrinsic
+	"false"		intrinsic
 	"floor"		intrinsic
+	"float"		intrinsic
 	"fraction"		intrinsic
 	"huge"		intrinsic
 	"iachar"		intrinsic
@@ -209,6 +694,7 @@
 	"ieor"		intrinsic
 	"index"		intrinsic
 	"int"		intrinsic
+	"int2"		intrinsic
 	"ior"		intrinsic
 	"ishft"		intrinsic
 	"ishftc"		intrinsic
@@ -222,7 +708,6 @@
 	"llt"		intrinsic
 	"log"		intrinsic
 	"log10"		intrinsic
-	"logical"		intrinsic
 	"matmul"		intrinsic
 	"max"		intrinsic
 	"maxexponent"		intrinsic
@@ -241,7 +726,6 @@
 	"not"		intrinsic
 	"null"		intrinsic
 	"pack"		intrinsic
-	"precision"		intrinsic
 	"present"		intrinsic
 	"product"		intrinsic
 	"radix"		intrinsic
@@ -273,14 +757,19 @@
 	"transfer"		intrinsic
 	"transpose"		intrinsic
 	"trim"		intrinsic
+	"true"		intrinsic
 	"ubound"		intrinsic
 	"unpack"		intrinsic
 	"verify"		intrinsic
 done
-	"a-zA-Z0-9_"	ident
+	" \t"	ws_ident
+
 
 :intrinsic Intrinsic
 	*	idle	noeat
 
 :kw Keyword
+	*	idle	noeat
+
+:type Type
 	*	idle	noeat

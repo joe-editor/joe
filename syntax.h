@@ -34,6 +34,7 @@ struct high_cmd {
 	int noeat;			/* Set to give this character to next state */
 	int recolor;			/* No. chars to recolor if <0. */
 	int start_buffering;		/* Set if we should start buffering */
+	int stop_buffering;		/* Set if we should stop buffering */
 	struct high_state *new_state;	/* The new state */
 	HASH *keywords;			/* Hash table of keywords */
 	int ignore;			/* Set to ignore case */

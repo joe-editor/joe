@@ -1,4 +1,4 @@
-# JOE syntax highlight file for C
+# JOE syntax highlight file for C and C++
 
 # A (deterministic) state machine which performs lexical analysis of C.
 # (This is the "assembly language" of syntax highlighting.  A separate
@@ -44,6 +44,12 @@
 #
 #   istrings	Same as strings, but case is ignored.
 #
+#   hold        Stop buffering string- a future 'strings' or 'istrings' will
+#               look at contents of buffer at this point.  Useful for distinguishing
+#               commands and function calls in some languages 'write 7' is a command
+#               'write (' is a function call- hold lets us stop at the space and delay
+#               the string lookup until the ( or 7.
+#
 #   The format of the string list is:
 #
 #      "string"   <target-state>
@@ -70,13 +76,19 @@
 # bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
 
 =Idle
+=Bad		bold red
 =Preproc 	blue
 =Define		bold blue
 =Comment 	green
+=IncLocal	cyan
+=IncSystem	bold cyan
 =Constant 	cyan
 =Escape 	bold cyan
 =Type 		bold
 =Keyword 	bold
+=CppKeyword	bold
+=Brace		magenta
+=Control
 
 :reset Idle
 	*		first		noeat
@@ -93,17 +105,42 @@
 
 :preident Preproc
 	*		preproc		noeat strings
-	"define"	predefine
+	"define"	predef
+	"include"	preinc
 done
 	"a-z"		preident
 
-:predefine Preproc
-	*		predefine
-	" \t"		predef_ws
+:preinc Preproc
+	*		preinc
+	" \t"		preinc_ws
+	"\n"		reset
+	
+:preinc_ws Preproc
+	*		prebad		recolor=-1
+	" \t"		preinc_ws
+	"\""		preinc_local	recolor=-1
+	"<"		preinc_system	recolor=-1
+
+:preinc_local IncLocal
+	*		preinc_local
+	"\"\n"		reset
+	
+:preinc_system IncSystem
+	*		preinc_system
+	">\n"		reset
+
+:prebad	Bad	
+	*		prebad
 	"\n"		reset
 
+
+:predef Preproc
+	*		predef
+	" \t"		predef_ws
+	"\n"		reset
+	
 :predef_ws Preproc
-	*		idle		noeat
+	*		prebad		recolor=-1
 	" \t"		predef_ws
 	"a-zA-Z0-9_"	predef_ident	recolor=-1
 
@@ -111,15 +148,21 @@ done
 	*		idle		noeat
 	"a-zA-Z0-9_"	predef_ident
 
+
 :preproc Preproc
 	*		preproc
 	"\n"		reset
 	"\\"		preproc_cont
-
+	"/"		preproc_slash
+	
+:preproc_slash Preproc
+	*		preproc		noeat
+	"*"		comment		recolor=-2
+	"/"		line_comment	recolor=-2
+	
 :preproc_cont Preproc
 	*		preproc_cont
 	"\n"		preproc
-	
 
 # All following states are for when we're not in a preprocessor line
 
@@ -127,14 +170,23 @@ done
 	*		idle
 	"\n"		reset
 	"/"		slash
-	"0-9"		first_digit	recolor=-1
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal	recolor=-1
 	"."		maybe_float
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
 	"a-zA-Z_"	ident		buffer
+	"{}"		brace		recolor=-1
+	",:;=()><[]*&|!~+\-%^"	control		recolor=-1
+
+:brace Brace
+	*	idle	noeat
+
+:control Control
+	*	idle	noeat
 
 :slash Idle
-	*		idle		noeat
+	*		idle		noeat recolor=-2	# Not sure about this
 	"*"		comment		recolor=-2
 	"/"		line_comment	recolor=-2
 
@@ -155,15 +207,27 @@ done
 	*		idle	noeat
 	"xX"		hex
 	"."		float
-	"0-9"		first_number
+	"eE"		epart
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+
+:bad_number Bad
+	*		idle	noeat
+	"0-9"		bad_number
+
+:octal Constant
+	*		idle	noeat
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
 
 :hex Constant
 	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
-:first_number Constant
+:decimal Constant
 	*		idle	noeat
-	"0-9"		first_number
+	"0-9"		decimal
+	"eE"		epart
 	"."		float
 
 :maybe_float Constant
@@ -191,7 +255,25 @@ done
 
 :string_escape Escape
 	*		string
+	"x"		string_hex1
+	"0-7"		string_octal2
 	"\n"		string		recolor=-2
+
+:string_hex1 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex2
+
+:string_hex2 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 Escape
+	*		string		noeat
+	"0-7"		string_octal3
+
+:string_octal3 Escape
+	*		string		noeat
+	"0-7"		string
 
 :string_control Escape
 	*		string_control
@@ -206,7 +288,25 @@ done
 
 :char_escape	Escape
 	*		char
+	"x"		char_hex1
+	"0-7"		char_octal2
 	"\n"		char		recolor=-2
+
+:char_hex1 Escape
+	*		char		noeat
+	"0-9a-fA-F"	char_hex2
+
+:char_hex2 Escape
+	*		char		noeat
+	"0-9a-fA-F"	char
+
+:char_octal2 Escape
+	*		char		noeat
+	"0-7"		char_octal3
+
+:char_octal3 Escape
+	*		char		noeat
+	"0-7"		char
 
 :ident Idle
 	*		idle		noeat strings
@@ -243,6 +343,21 @@ done
 	"sizeof"	kw
 	"typedef"	kw
 	"union"		kw
+# C++ keywords
+	"class"		cppkw
+	"public"	cppkw
+	"private"	cppkw
+	"protected"	cppkw
+	"friend"	cppkw
+	"new"		cppkw
+	"delete"	cppkw
+	"bool"		cppkw
+	"namespace"	cppkw
+	"operator"	cppkw
+	"template"	cppkw
+	"catch"		cppkw
+	"throw"		cppkw
+	"try"		cppkw
 done
 	"a-zA-Z0-9_"	ident
 
@@ -250,4 +365,7 @@ done
 	*	idle	noeat
 
 :kw Keyword
+	*	idle	noeat
+
+:kw CppKeyword
 	*	idle	noeat

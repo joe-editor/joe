@@ -1,5 +1,26 @@
 # JOE syntax highlight file for Perl
 
+# Still need:
+
+# _ in numbers
+# 0b for binary
+# \cC for Ctrl-C
+# \x{hex} unicode
+# \N{NAME} named character
+
+# no escapes in single quotes (except \\ and \')
+
+# / .. / regex
+# s/ .. / .. /
+# $name allowed in regex
+# m//  same as //
+# s///
+# tr/// y///
+# qr//
+
+# can also do this: s(egg)<larva>
+# s' ' ' - no interpolation
+
 # Define colors
 
 =Idle
@@ -9,12 +30,14 @@
 =Escape bold cyan
 =Type bold
 =Keyword bold
+=Bad bold red
 
 :idle Idle
 	*		idle
 	"#"		line_comment	recolor=-1
 	"\n"		idle
-	"0-9"		first_digit	recolor=-1
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal	recolor=-1
 	"."		maybe_float
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
@@ -29,15 +52,27 @@
 	*		idle	noeat
 	"xX"		hex
 	"."		float
-	"0-9_"		first_number
+	"eE"		epart
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+
+:bad_number Bad
+	*		idle	noeat
+	"0-9"		bad_number
+
+:octal Constant
+	*		idle	noeat
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
 
 :hex Constant
 	*		idle	noeat
-	"0-9A-Fa-f_"	hex
+	"0-9A-Fa-f"	hex
 
-:first_number Constant
+:decimal Constant
 	*		idle	noeat
-	"0-9_"		first_number
+	"0-9"		decimal
+	"eE"		epart
 	"."		float
 
 :maybe_float Constant
@@ -49,11 +84,11 @@
 	"eE"		epart
 	"0-9"		float
 
-:epart	Constant
+:epart Constant
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum	Constant
+:enum Constant
 	*		idle	noeat
 	"0-9"		enum
 
@@ -65,22 +100,58 @@
 
 :string_escape Escape
 	*		string
+	"x"		string_hex1
+	"0-7"		string_octal2
 	"\n"		string		recolor=-2
+
+:string_hex1 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex2
+
+:string_hex2 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 Escape
+	*		string		noeat
+	"0-7"		string_octal3
+
+:string_octal3 Escape
+	*		string		noeat
+	"0-7"		string
 
 :string_control Escape
 	*		string_control
-	"\n"		idle
+	"\n"		reset
 	"diouxXeEfFgGaAcspn%SC"	string
 
-:char	Constant
+:char Constant
 	*		char
-	"\n"		idle
+	"\n"		reset
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
 :char_escape	Escape
 	*		char
+	"x"		char_hex1
+	"0-7"		char_octal2
 	"\n"		char		recolor=-2
+
+:char_hex1 Escape
+	*		char		noeat
+	"0-9a-fA-F"	char_hex2
+
+:char_hex2 Escape
+	*		char		noeat
+	"0-9a-fA-F"	char
+
+:char_octal2 Escape
+	*		char		noeat
+	"0-7"		char_octal3
+
+:char_octal3 Escape
+	*		char		noeat
+	"0-7"		char
 
 :backtick	Constant
 	*		backtick
@@ -104,7 +175,7 @@
 	"do"		kw
 	"if"		kw
 	"else"		kw
-	"elseif"	kw
+	"elsif"		kw
 	"for"		kw
 	"continue"	kw
 	"last"		kw
