@@ -73,9 +73,13 @@ int idleout=1;
 
 /* I'm not sure if SCO_UNIX and ISC have __svr4__ defined, but I think
    they might */
-#ifdef SCO_UNIX
+#ifdef M_SYS5
+#ifndef M_XENIX
+#include <sys/stream.h>
+#include <sys/ptem.h>
 #ifndef __svr4__
 #define __svr4__ 1
+#endif
 #endif
 #endif
 
@@ -86,10 +90,6 @@ int idleout=1;
 #endif
 
 #ifdef __svr4__
-/* I don't think these two are needed if you have 'stropts' (sgi doesn't
- * even have them). */
-/* #include <sys/stream.h> */
-/* #include <sys/ptem.h> */
 #include <stropts.h>
 #endif
 
@@ -373,7 +373,7 @@ void ttopnn()
  tcgetattr(fileno(termin),&oldterm);
  newterm=oldterm;
  newterm.c_lflag=0;
- if(noxon)  newterm.c_iflag&=~(ICRNL|IGNCR|INLCR|IXON);
+ if(noxon)  newterm.c_iflag&=~(ICRNL|IGNCR|INLCR|IXON|IXOFF);
  else newterm.c_iflag&=~(ICRNL|IGNCR|INLCR);
  newterm.c_oflag=0;
  newterm.c_cc[VMIN]=1;
@@ -385,7 +385,7 @@ void ttopnn()
  ioctl(fileno(termin),TCGETA,&oldterm);
  newterm=oldterm;
  newterm.c_lflag=0;
- if(noxon)  newterm.c_iflag&=~(ICRNL|IGNCR|INLCR|IXON);
+ if(noxon)  newterm.c_iflag&=~(ICRNL|IGNCR|INLCR|IXON|IXOFF);
  else newterm.c_iflag&=~(ICRNL|IGNCR|INLCR);
  newterm.c_oflag=0;
  newterm.c_cc[VMIN]=1;
@@ -869,6 +869,29 @@ struct sigvec inew={death,0,SV_INTERRUPT};
 #endif
 #endif
 
+/* Build a new environment */
+
+extern char **mainenv;
+
+char **newenv(old,s)
+char **old, *s;
+ {
+ char **new;
+ int x,y,z;
+ for(x=0;old[x];++x);
+ new=(char **)malloc((x+2)*sizeof(char *));
+ for(x=0,y=0;old[x];++x)
+  {
+  for(z=0;s[z]!='=';++z) if(s[z]!=old[x][z]) break;
+  if(s[z]=='=')
+   { if(s[z+1]) new[y++]=s; }
+  else new[y++]=old[x];
+  }
+ if(x==y) new[y++]=s;
+ new[y]=0;
+ return new;
+ }
+
 MPX *mpxmk(ptyfd,cmd,args,func,object,die,dieobj)
 int *ptyfd;
 char *cmd;
@@ -931,6 +954,7 @@ void *dieobj;
   
    if((x=open(name,O_RDWR))!= -1)    /* Standard input */
     {
+    char **env=newenv(mainenv,"TERM=");
 #ifdef __svr4__
     ioctl(x,I_PUSH,"ptem");
     ioctl(x,I_PUSH,"ldterm");
@@ -954,7 +978,7 @@ void *dieobj;
 #endif
   
     /* Execute the shell */
-    execv(cmd,args);
+    execve(cmd,args,env);
     }
 
    _exit(0);

@@ -10,8 +10,8 @@ Installation proceedure
 
 	Edit the Makefile to change the following options:
 
-	  Where joe's keymap initialization files will
-	  go if not /usr/local/lib.
+	  Where joe's keymap initialization files, global termcap file and
+	  terminfo source file will go if not /usr/local/lib.
 
 	  Where joe will be placed when you do 'make install'
 	  if not /usr/local/bin.
@@ -25,14 +25,22 @@ Installation proceedure
 
 	Type 'make' to create joe.  You can then try it by typing ./joe.
 
-	Then type 'make install' to install joe.
+	Then log into root and type 'make install' to install joe.
 
 	Type 'make clean' eliminate the .o files
 
-	Copy termcap to .termcap in your home directory if you want to
-	use it instead of /etc/termcap (see below).
-
 	Set the baud rate properly (see below).
+
+	See special notes below for dealing with broken terminals.
+
+	See special notes below for 'JPICO'
+
+	See special notes below for using joe within shell scripts.
+
+	If you want 8-bit characters to get through, you will have to play
+	with your stty settings:
+
+	On Posix/SysV try this command: stty -istrip -iexten -inpck
 
 USEAGE:	joe filenames
 
@@ -65,7 +73,6 @@ line number.
  -help		Start with help on
  -skiptop nnn	Don't use top nnn lines of the screen
 
-
   Options before each file name:
 
  -wordwrap		Wordwrap
@@ -84,6 +91,7 @@ line number.
  -spaces		TAB inserts spaces instead of tabs.
  -linums		Enable line numbers on each line
  -rdonly		File is read-only
+ -crlf			File is uses CR-LF at ends of lines (MS-DOS files)
 
 	These options can also be set in the joerc file.  The NOXON, LINES,
 COLUMNS, DOPADDING and BAUD options can also be set with environment
@@ -103,6 +111,9 @@ command line options '-baud'.
 The baud rate '38400' or 'extb' means infinite to joe.  Use it for X windows
 and hardware console ttys.  No delays will be generated and scrolling will
 not be used.
+
+The baud rate '19200' or 'exta' means that joe will use scrolling, but will
+not delay.
 
 Use the LINES and COLUMNS environment variables or the -lines and -columns
 command line options if you need the terminal size to be different than
@@ -127,9 +138,16 @@ in normal termcap (see below).
 Termcap/Terminfo
 =-=-=-=-=-=-=-=-
 
-	JOE prefers to use the termcap terminal capability database.  You
-have if the file '/etc/termcap' exists.  If it doesn't you can use the
-'termcap' file supplied with joe by copying it to /etc.
+	JOE prefers to use the termcap terminal capability database.  It
+attempts to find this file in:
+
+	$HOME/.termcap		Personal .termcap in your home directory
+	/usr/local/lib/termcap	Joe's termcap file
+	/etc/termcap		Normal system termcap file
+
+	Joe coppies its own termcap file to /usr/local/lib/termcap (or
+wherever the system-wide joerc file is going to go) when 'make install' is
+run.
 
 	Termcap is better than terminfo because it is a more open standard. 
 Programs can directly access the termcap database and future versions of
@@ -168,10 +186,126 @@ understands several new capabilities:
 			ansi/vt100.
 
 	But if you really must use the terminfo database see the
-instructions in the Makefile.
+instructions in the Makefile.  Also a terminfo version of the included
+termcap file is provided, in case you want it added to the terminfo database
+with 'tic'.
 
 VOID trouble
 =-=-=-=-=-=-
 
 	If you're using an old C compiler which doesn't like the 'void'
 type, uncomment the '#define void int' line from the config.h file.
+
+JPICO
+=-=-=
+
+If you want JPICO to act more like real pico when you hit ^X (I.E., to have
+it ask before saving), change the line:
+
+exsave		^X		Exit
+
+to:
+
+ask,query,lose,query,abortbuf	^X	Exit
+
+BROKEN TERMINALS
+=-=-=-=-=-=-=-=-
+"Joe does not update the screen correctly in Procomm"
+"My Xenix console does not scroll correctly"
+
+Old versions of Procomm, many other DOS comm programs and nearly every
+PC-UNIX console (with the exception of Linux) does not emulate VT100s
+properly.  There are usually one or more problems:
+
+	1) Tabs are destructive
+
+	2) Tabs are destructive when inverse mode is set
+
+	3) Scrolling regions are not supported
+
+	4) Cursor positioning is scrolling region relative instead of
+	   screen relative.
+
+	5) Some other program set the tab-stops to something other than
+	   one tab stop every 8 columns.
+
+	6) The erase commands (ESC [ J and ESC [ K) fill with inverse
+	   video blanks instead of plain blanks when inverse mode is set.
+
+	7) Backspace is destructive
+
+Procomm 2.3 works fine- but make sure you have DEC VT100 selected, not 'ANSI
+BBS' and also that backspace (BS) is set to 'non-destructive'.  If you must
+use an old version of Procomm, try using the 'ansisys' or 'nansisys' termcap
+entry.  Unix consoles usually do not have scrolling regions, but instead
+have insert and delete line commands.  The 'fansi' entry and ones derived
+from it will work correctly.  These termcap entries are provided in the
+termcap file which came with joe.  If at all possible have your sysadmin
+install these entries in '/etc/termcap'.  Even if your system normally uses
+the terminfo database, you can copy Joe's termcap file into
+/etc/termcap.
+
+"I don't have root access and can't update the system's termcap file.  How
+ do I get only Joe to use a different termcap entry?"
+
+"My system uses terminfo.  How do I get only Joe to use a different termcap
+ entry?"
+
+What you should do is copy the termcap file which is provided with joe into
+'.termcap' of your home directory.  Now suppose you want Joe to use the
+'fansi' termcap entry:
+
+If you use csh or tcsh, place this in your .cshrc file:
+
+	setenv JOETERM fansi
+
+If you use sh, ksh or bash, place this in your .profile file:
+
+	JOETERM=fansi; export JOETERM
+
+"I don't have root access and can't update the system's termcap file.  How
+ do I get all of my programs to use one of Joe's termcap entries?"
+
+Again, copy termcap into '.termcap' in your home directory, but set the
+environment variables like this:
+
+	setenv TERMCAP $HOME/.termcap
+	setenv TERM fansi
+
+"My system uses terminfo... how do I get all of my programs to use one of
+ Joe's termcap entries?"
+
+First, compile joe for terminfo.  You then have to 'tic' the terminfo
+version of joe's termcap file into your account.  These are the commands for
+doing this:
+
+	1)	cd
+	2)	mkdir .info
+	3)	setenv TERMINFO $HOME/.info
+
+		(or
+
+		TERMINFO=$HOME/.info; export TERMINFO
+
+		if you use bash, sh or ksh)
+
+	4)	tic joe/terminfo
+
+Then put the 'setenv TERMINFO $HOME/.info' line into your .login file or
+'TERMINFO=$HOME/.info; export TERMINFO' in your .profile.  Now all of your
+programs should look up the 'TERM' in your own personal terminfo database.
+
+USING JOE IN A SHELL SCRIPT
+=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+Joe used to use /dev/tty to access the terminal.  This caused a problem with
+idle-session killers (they would kill joe because the real tty device was
+not being accessed for a long time), so now joe only uses /dev/tty if you
+need to pipe a file into joe, as in:  echo "hi" | joe -
+
+If you want to use joe in a shell script which has its stdin/stdout
+redirected, but you don't need to do 'joe -', you should simply redirect
+joe's stdin/stdout to /dev/tty:
+
+	joe filename  </dev/tty >/dev/tty
+

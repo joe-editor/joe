@@ -291,11 +291,20 @@ JOE(1)                                                     JOE(1)
        DOPADDING options may be specified with environment  vari-
        ables.
 
+       The  JOETERM  environment  variable may be set to override
+       the regular TERM environment variable for specifying  your
+       terminal type.
+
        The  following  options may be specified before each file-
        name on the command line:
 
 
        +nnn   The cursor starts on the specified line.
+
+
+       -crlf  Joe uses CR-LF as the end of line sequence  instead
+              of  just  LF.   This  is  for editing MS-DOS or VMS
+              files.
 
 
        -wordwrap
@@ -313,15 +322,6 @@ JOE(1)                                                     JOE(1)
               inserting before them.
 
 
-       -lmargin nnn
-              Sets the left margin.
-
-
-       -rmargin nnn
-              Sets the right margin.
-
-
-
 
 
 
@@ -332,6 +332,14 @@ JOE(1)                                                     JOE(1)
 
 
 JOE(1)                                                     JOE(1)
+
+
+       -lmargin nnn
+              Sets the left margin.
+
+
+       -rmargin nnn
+              Sets the right margin.
 
 
        -tab nnn
@@ -380,14 +388,6 @@ EEddiittiinngg TTaasskkss
        BBaacckkssppaaccee a number of times.
 
        Hit  the  EEnntteerr or RReettuurrnn key to insert a line-break.  For
-       example, if the cursor was in the middle of a line and you
-       hit  RReettuurrnn,  the  line would be split into two lines with
-       the cursor appearing at the beginning of the second  line.
-       Hit  BBaacckkssppaaccee  at  the beginning of a line to eliminate a
-       line-break.
-
-       Use the arrow keys to move around the file.  If your  key-
-       board  doesn't  have arrow keys (or if they don't work for
 
 
 
@@ -400,6 +400,14 @@ EEddiittiinngg TTaasskkss
 JOE(1)                                                     JOE(1)
 
 
+       example, if the cursor was in the middle of a line and you
+       hit  RReettuurrnn,  the  line would be split into two lines with
+       the cursor appearing at the beginning of the second  line.
+       Hit  BBaacckkssppaaccee  at  the beginning of a line to eliminate a
+       line-break.
+
+       Use the arrow keys to move around the file.  If your  key-
+       board  doesn't  have arrow keys (or if they don't work for
        some reason), use ^^FF to move forwards (right), ^^BB to  move
        backwards  (left),  ^^PP  to move to the previous line (up),
        and ^^NN to move to the next line  (down).   The  right  and
@@ -447,14 +455,6 @@ JOE(1)                                                     JOE(1)
        "redo" the changes back into existence by hitting ^^^^ (type
        this with just ^^66 on most keyboards).
 
-       If  you were editing in one place within the file, and you
-       then temporarily had to look  or  edit  some  other  place
-       within the file, you can get back to the original place by
-       hitting ^^KK --.  This command actually returns  you  to  the
-       last  place  you  made a change in the file.  You can step
-       through a history of places with ^^KK -- and  ^^KK  ==,  in  the
-       same  way you can step through the history of changes with
-
 
 
                                                                 7
@@ -466,6 +466,13 @@ JOE(1)                                                     JOE(1)
 JOE(1)                                                     JOE(1)
 
 
+       If  you were editing in one place within the file, and you
+       then temporarily had to look  or  edit  some  other  place
+       within the file, you can get back to the original place by
+       hitting ^^KK --.  This command actually returns  you  to  the
+       last  place  you  made a change in the file.  You can step
+       through a history of places with ^^KK -- and  ^^KK  ==,  in  the
+       same  way you can step through the history of changes with
        the "undo" and "redo" commands.
 
        When you are done editing the file, hit ^^KK XX to  exit  the
@@ -514,13 +521,6 @@ JOE(1)                                                     JOE(1)
        ^^KK AA command.
 
 
-   OOvveerr--ttyyppee mmooddee
-       Sometimes it's tiresome to have to delete old text  before
-       or  after you insert new text.  This happens, for example,
-       when you are changing a table and you want to maintain the
-       column position of the right side of the table.  When this
-       occurs, you can put the editor in over-type mode  with  ^^TT
-
 
 
                                                                 8
@@ -532,6 +532,12 @@ JOE(1)                                                     JOE(1)
 JOE(1)                                                     JOE(1)
 
 
+   OOvveerr--ttyyppee mmooddee
+       Sometimes it's tiresome to have to delete old text  before
+       or  after you insert new text.  This happens, for example,
+       when you are changing a table and you want to maintain the
+       column position of the right side of the table.  When this
+       occurs, you can put the editor in over-type mode  with  ^^TT
        TT.   When  the  editor is in this mode, the characters you
        type in replace existing characters, in the way an  ideal-
        ized  typewriter would.  Also, BBaacckkssppaaccee simply moves left
@@ -580,12 +586,6 @@ JOE(1)                                                     JOE(1)
        it couldn't complete the entire name,  because  there  are
        more than one possible completions, joe beeps.  If you hit
        TTAABB again, joe list the  completions.   You  can  use  the
-       arrow  keys  to  move around this directory menu and press
-       RETURN or SPACE to select an item.  If you press the first
-       letter  of  one  of  the  directory  entries,  it  will be
-       selected, or if more than one entry  has  the  same  first
-       letter,  the  cursor  will jump between those entries.  If
-       you select a subdirectory or ..,  the  directory  name  is
 
 
 
@@ -598,6 +598,12 @@ JOE(1)                                                     JOE(1)
 JOE(1)                                                     JOE(1)
 
 
+       arrow  keys  to  move around this directory menu and press
+       RETURN or SPACE to select an item.  If you press the first
+       letter  of  one  of  the  directory  entries,  it  will be
+       selected, or if more than one entry  has  the  same  first
+       letter,  the  cursor  will jump between those entries.  If
+       you select a subdirectory or ..,  the  directory  name  is
        appended  to  the  prompt  and the new directory is loaded
        into the menu.  You can hit Backspace to go  back  to  the
        previous directory.
@@ -646,12 +652,6 @@ JOE(1)                                                     JOE(1)
        the shell, hit ^^KK ZZ.  You might want to do  this  to  stop
        whatever  you're  editing  and answer an e-mail message or
        read this man page, for example.  You have to type  ffgg  or
-       eexxiitt (you'll be told which when you hit ^^KK ZZ) to return to
-       the editor.
-
-
-   SSeeaarrcchhiinngg ffoorr tteexxtt
-       Hit ^^KK FF to have the editor search forwards  or  backwards
 
 
 
@@ -664,6 +664,12 @@ JOE(1)                                                     JOE(1)
 JOE(1)                                                     JOE(1)
 
 
+       eexxiitt (you'll be told which when you hit ^^KK ZZ) to return to
+       the editor.
+
+
+   SSeeaarrcchhiinngg ffoorr tteexxtt
+       Hit ^^KK FF to have the editor search forwards  or  backwards
        for  a  text  fragment  (ssttrriinngg)  for  you.   You  will be
        prompted for the  text  to  search  for.   After  you  hit
        RReettuurrnn,  you  are prompted to enter options.  You can just
@@ -714,12 +720,6 @@ JOE(1)                                                     JOE(1)
               and then a B.
 
 
-       \\??     This finds exactly one character.  For example,  if
-              you  give  AA\\??BB  as  the search text, JOE will find
-              AXB, but not AB or AXXB.
-
-
-
 
                                                                11
 
@@ -728,6 +728,11 @@ JOE(1)                                                     JOE(1)
 
 
 JOE(1)                                                     JOE(1)
+
+
+       \\??     This finds exactly one character.  For example,  if
+              you  give  AA\\??BB  as  the search text, JOE will find
+              AXB, but not AB or AXXB.
 
 
        \\^^ \\$$  These match the beginning and end of a  line.   For
@@ -779,11 +784,6 @@ JOE(1)                                                     JOE(1)
        \\&&     This gets replaced by the text  which  matched  the
               search  string.   For example, if the search string
               was \\<<\\**\\>>, which matches words, and you give ""\\&&"",
-              then joe will put quote marks around words.
-
-
-       \\00 -- \\99
-              These  get replaced with the text which matched the
 
 
 
@@ -796,6 +796,11 @@ JOE(1)                                                     JOE(1)
 JOE(1)                                                     JOE(1)
 
 
+              then joe will put quote marks around words.
+
+
+       \\00 -- \\99
+              These  get replaced with the text which matched the
               Nth \\**, \\??, \\++, \\cc, \\++, or  \\[[......]]  in  the  search
               string.
 
@@ -845,11 +850,6 @@ JOE(1)                                                     JOE(1)
        to  the  character just after the end of the text you want
        to affect and press ^^KK KK.  The text between the ^^KK  BB  and
        ^^KK  KK  should  become  highlighted.  Now you can move your
-       cursor to someplace else in your document and press  ^^KK  MM
-       to move the highlighted text there.  You can press ^^KK CC to
-       make a copy of the highlighted text and insert it to where
-       the cursor is positioned.  ^^KK YY to deletes the highlighted
-       text.  ^^KK WW, writes the highlighted text to a file.
 
 
 
@@ -861,6 +861,12 @@ JOE(1)                                                     JOE(1)
 
 JOE(1)                                                     JOE(1)
 
+
+       cursor to someplace else in your document and press  ^^KK  MM
+       to move the highlighted text there.  You can press ^^KK CC to
+       make a copy of the highlighted text and insert it to where
+       the cursor is positioned.  ^^KK YY to deletes the highlighted
+       text.  ^^KK WW, writes the highlighted text to a file.
 
        A very useful command is ^^KK //, which filters  a  block  of
        text through a unix command.  For example, if you select a
@@ -909,13 +915,7 @@ JOE(1)                                                     JOE(1)
        don't want to eliminate them, you can hit ^^KK II.  This will
        show  only  the  window  the cursor is in, or if there was
        only one window on the screen to begin with,  try  to  fit
-       all  hidden windows on the screen.  If there are more win-
-       dows than can fit on the screen, you can hit ^^KK NN  on  the
-       bottom-most  window  or ^^KK PP on the top-most window to get
-       to them.
-
-       If you gave more than one file name to JOE on the  command
-       line, each file will be placed in a different window.
+       all  hidden  windows  on  the  screen.   If there are more
 
 
 
@@ -927,6 +927,13 @@ JOE(1)                                                     JOE(1)
 
 JOE(1)                                                     JOE(1)
 
+
+       windows than can fit on the screen, you can hit  ^^KK  NN  on
+       the  bottom-most  window or ^^KK PP on the top-most window to
+       get to them.
+
+       If you gave more than one file name to JOE on the  command
+       line, each file will be placed in a different window.
 
        You can change the height of the windows with the ^^KK GG and
        ^^KK TT commands.
@@ -975,13 +982,6 @@ JOE(1)                                                     JOE(1)
 
        For example, to delete the next 20 lines of text, type:
 
-       ^^KK  2200<return>^^YY
-
-
-   RReeccttaannggllee mmooddee
-       Type  ^^TT XX to have ^^KK BB and ^^KK KK select rectangular blocks
-       instead of stream-of-text blocks.  This mode is useful for
-       moving,  copying, deleting or saving columns of text.  You
 
 
 
@@ -994,6 +994,13 @@ JOE(1)                                                     JOE(1)
 JOE(1)                                                     JOE(1)
 
 
+       ^^KK  2200<return>^^YY
+
+
+   RReeccttaannggllee mmooddee
+       Type  ^^TT XX to have ^^KK BB and ^^KK KK select rectangular blocks
+       instead of stream-of-text blocks.  This mode is useful for
+       moving,  copying, deleting or saving columns of text.  You
        can also filter columns of text with the ^^KK // command-  if
        you  want  to sort a column, for example.  The insert file
        command, ^^KK RR is also effected.
@@ -1042,13 +1049,6 @@ JOE(1)                                                     JOE(1)
        the window, the shell is kkiilllled.
 
 
-EEnnvviirroonnmmeenntt vvaarriiaabblleess
-       For  JOE  to operate correctly, a number of other environ-
-       ment settings must be correct.  The throughput (baud rate)
-       of  the  connection between the computer and your terminal
-       must be  set  correctly  for  JOE  to  update  the  screen
-       smoothly  and  allow typeahead to defer the screen update.
-
 
 
                                                                16
@@ -1060,6 +1060,12 @@ EEnnvviirroonnmmeenntt vvaarriiaabblleess
 JOE(1)                                                     JOE(1)
 
 
+EEnnvviirroonnmmeenntt vvaarriiaabblleess
+       For  JOE  to operate correctly, a number of other environ-
+       ment settings must be correct.  The throughput (baud rate)
+       of  the  connection between the computer and your terminal
+       must be  set  correctly  for  JOE  to  update  the  screen
+       smoothly  and  allow typeahead to defer the screen update.
        Use the ssttttyy nnnnnn command to set this.  You want to set  it
        as  close  as possible to actual throughput of the connec-
        tion.  For example, if you are connected via a  1200  baud
@@ -1107,12 +1113,6 @@ FFiilleennaammeess
        also type:
 
 
-       !!ccoommmmaanndd
-              Read or write data to or from a shell command.  For
-              example, use jjooee ''!!llss'' to get a copy of your direc-
-              tory listing to edit or from within the editor  use
-              ^^KK  DD  !!mmaaiill jjhhaalllleenn@@wwoorrlldd..ssttdd..ccoomm to send the file
-              being edited to me.
 
 
 
@@ -1124,6 +1124,14 @@ FFiilleennaammeess
 
 
 JOE(1)                                                     JOE(1)
+
+
+       !!ccoommmmaanndd
+              Read or write data to or from a shell command.  For
+              example, use jjooee ''!!llss'' to get a copy of your direc-
+              tory listing to edit or from within the editor  use
+              ^^KK  DD  !!mmaaiill jjhhaalllleenn@@wwoorrlldd..ssttdd..ccoomm to send the file
+              being edited to me.
 
 
        >>>>ffiilleennaammee
@@ -1165,14 +1173,6 @@ AAcckknnoowwlleeddggeemmeennttss
        (entropy@world.std.com)        and        Gary        Gray
        (ggray@world.std.com) also helped  with  the  creation  of
        JOE.
-
-
-
-
-
-
-
-
 
 
 

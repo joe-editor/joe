@@ -1,3 +1,39 @@
+** JOE 2.8
+
+- Fixed problem with TERMPATH string
+- Added stupid two-letter names to termcap file
+- Improved jmacs help and command set
+- Improved README file
+
+** JOE 2.7
+
+- putenv() was not portable
+- utime was not portable
+- special utime handling for NeXT
+- forgot to \\ the \s in the default termcap entry
+- changed some key defaults in jpicorc
+- add IXOFF in termio/termios list
+- left margin limit was incorrect
+- allow '.' and '/' in file names for error parsing
+- Needed ptem.h and stream.h for SCO_UNIX window size structure (?)
+- wordwrap no longer propogates indent prefix
+- paragraph format was broken for tab indented paragraphs
+- pipe through shell now goes through stderr too
+- added '-crlf' option
+- looks for termcap file in JOERC/termcap
+
+** JOE 2.6
+
+- Fixed stupid bug in termcap.c which prevented terminfo from working
+
+- ESC h was missing from jpicorc
+
+- Changes suggested by Dan Nelson:
+ - backup files now attempt to have same permissions and times as original
+ - Stat command now ands chars with 255 (don't know why this worked on my system
+   without this...)
+ - Maybe change shell invocation name- have to check this more
+
 ** JOE 2.5
 
 - No longer use ^[ O, ^[ A, ^[ B, ^[ C, or ^[ D for anything because they

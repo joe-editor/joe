@@ -27,7 +27,7 @@
  -force		Force final newline when files are saved
  -nobackups	If you don't want backup files to be created
  -lightoff	Turn off highlighting after block copy or move
--exask		^KX always confirms file name
+ -exask		^KX always confirms file name
 -beep		Beep on errors and when cursor goes past extremes
  -nosta		Disable top-most status line
  -keepup	%k and %c status line escape sequences updated frequently
@@ -148,54 +148,35 @@
 
 {Basic
 \i   Help Screen    turn off with ^XH   more help with ^X.                       \i
-\i \i\uCURSOR\u           \uGO TO\u            \uREGION\u   \uKILL\u      \uMISC\u         \uFILE\u       \i \i
-\i \i^B left ^F right ^[V prev. screen ^@  mark ^D  >char ^[^[ options ^X^F load  \i \i
-\i \i^P up   ^N down  ^V  next screen  ^W  cut  ^K  >line ^[Q reformat ^X^V reload\i \i
-\i \i^[B prev. word   ^A  beg. of line ^[W copy ^[D >word ^L  refresh  ^XK  kill  \i \i
-\i \i^[F next word    ^E  end of line  ^Y  yank ^[^? wrd< ^[$ spell    ^XC  quit  \i \i
-\i \i\uSEARCH\u           ^[< top of file  ^[Y pop            ^U  repeat   ^X^B switch\i \i
-\i \i^S  forward      ^[> end of file  ^[| pipe           \uUNDO\u         ^X^W write \i \i
-\i \i^R  backward     ^XX swap w/mark  ^XA file           ^XU undo     ^X^S save  \i \i
-\i \i^[% query replace^[G goto line no.^[^W append kill   ^^  redo     ^XI  insert\i \i
-}
-
-{Window
-\i   Help Screen    turn off with ^XH   prev. screen ^X,  next screen ^X.        \i
-\i \i^X2  Split window in half     ^[^V   Scroll other window up                  \i \i
-\i \i^XO  Switch to other window   ^[^Z   Scroll other window down                \i \i
-\i \i^X^ / ^XZ Grow window         ^X 4 F Load file into other window             \i \i
-\i \i^X^Z Shrink window            ^X 4 . Tag search in other window              \i \i
-\i \i^X0  Kill window                                                             \i \i
-\i \i^X1  Kill all other windows                                                  \i \i
+\i \i\uCURSOR\u           \uGO TO\u           \uUNDO\u      \uMISC\u        \uREGION\u     \uEXIT\u       \i \i
+\i \i^B left ^F right ^[V prev screen ^XU undo  ^[^[ option ^@  mark   ^XK  quit  \i \i
+\i \i^P up   ^N down  ^V  next screen ^^  redo  ^[Q format  ^W  cut    ^X^C save  \i \i
+\i \i^[B prev. word   ^A  beg of line \uDELETE\u    ^L  refresh ^Y  paste  \uFILE\u       \i \i
+\i \i^[F next word    ^E  end of line ^D  char  ^[$ spell   ^[Y switch ^X^W save  \i \i
+\i \i\uSEARCH\u           ^[< top of file ^K  >line ^[M math    ^XA save   ^XI  insert\i \i
+\i \i^S  forward      ^[> end of file ^[D >word ^[% query   ^[| filter ^X^F load  \i \i
+\i \i^R  backward     ^[G to line No. ^[ DEL word<  replace ^XX swap   ^X^B switch\i \i
 }
 
 {Editing 
 \i   Help Screen    turn off with ^XH   prev. screen ^X,  next screen ^X.        \i
-\i \i\uCASE\u           \uTRANSPOSE\u  \uMARK\u      \uKILL\u             \uINSERT\u   \uCURSOR\u         \i \i
-\i \i^[U  Up word   ^T   Chars ^[@ Word  ^[^  indentation ^O line  ^[P prev. para \i \i
-\i \i^[D  Down word ^[T  Words ^[H Para. ^[Z  to char     ^C space ^[N next para  \i \i
-\i \i^[C  Cap. word ^X^T Lines           ^[\\  spaces      `  Ctrl- ^[R window line\i \i
-\i \i^X^U Up region                      ^X^O blank lines ^[( ()                  \i \i
-\i \i^X^L Down reg                       ^[ SPACE just one space                  \i \i
+\i \i\uCASE\u           \uTRANSPOSE\u  \uINSERT\u    \uMACROS\u            \uPROGRAMS\u               \i \i
+\i \i^[U  Up word   ^T   Chars ^O  line  ^X( record        ^X^I Indent region     \i \i
+\i \i^[D  Down word ^[T  Words ^C  space ^X) stop          ^[.  Tags file find    \i \i
+\i \i^[C  Cap. word ^X^T Lines `   Ctrl- ^XE play          ^XG  To matching ( [ { \i \i
+\i \i^X^U Up region            ^XT text  ^XQ query suspend ^XC  Parse errors      \i \i
+\i \i^X^L Down region                    ^U  repeat prefix ^XN / ^XP next/prev err\i \i
 }
 
-{Advanced
+{Window
 \i   Help Screen    turn off with ^XH   prev. screen ^X,  next screen ^X.        \i
-\i \i\uMACROS\u     \uMISC\u       \uSCROLL\u     \uBOOKMARKS\u \uSTATUS\u         \uSHELL\u              \i \i
-\i \i^X( record ^X= status ^X^P up    ^X/ Goto  ^[~  modified  ^Z  escape         \i \i
-\i \i^X) stop   ^C  insert ^X^N down  ^XJ Set   ^X^Q read only ^[! command        \i \i
-\i \i^XQ query  ^[- bkwd-  ^X<  left  \uQUOTE\u                    ^[Xbknd window     \i \i
-\i \i^XE play       repeat ^X>  right `   Ctrl-                                   \i \i
-}
-
-{Programs 
-\i   Help Screen    turn off with ^XH   prev. screen ^X,  next screen ^X.        \i
-\i \i\uGOTO\u                 \uINDENT\u      \u^[X Commands:\u                               \i \i
-\i \i^XG Matching ( [ {   ^X^I region   parserr - parse errors in buffer          \i \i
-\i \i^[. Tags file search               nxterr  - goto next error                 \i \i
-\i \i                                   prverr  - goto previous error             \i \i
-\i \i                                   bknd    - shell window                    \i \i
-\i \i                                   math    - calculator                      \i \i
+\i \i\uWINDOW\u                      \uSCROLL\u     \uSHELL\u       \uCURSOR\u                    \i \i
+\i \i^X2  Split window in half   ^X^P up    ^Z  Suspend ^[P prev. paragraph       \i \i
+\i \i^XO  Switch to other window ^X^N down  ^[! Command ^[N next paragraph        \i \i
+\i \i^XZ  Grow window            ^X<  left  ^[' Window  ^XG to matching ( [ {     \i \i
+\i \i^X^Z Shrink window          ^X>  right             \uBOOKMARK\u                  \i \i
+\i \i^X0  Kill window                                   ^XJ set                   \i \i
+\i \i^X1  Kill all other windows                        ^X/ goto                  \i \i
 }
 
 {Search
@@ -295,6 +276,8 @@ help		^X h		Help
 help		^X ^H
 hnext		^X .
 hprev		^X ,
+math		^[ m		Calculator
+math		^[ M
 nextw		^X o		Other window
 pgdn		.kN		Screen down
 pgdn		^V
@@ -362,12 +345,13 @@ ask			^X s
 drop,msg,"Mark set",rtn	^@			Drop anchor
 nextw,pgdn,prevw	^[ ^V			Scroll other window down
 nextw,pgup,prevw	^[ ^Z			Scroll other window up
-bol,nedge,pedge	^[ m				To indentation
+ bol,nedge,pedge	^[ m			Gnu-emacs goto indentation
 nextw,nbuf,prevw	^X 4 b			Switch buffers other window
 nextw,edit,query,prevw	^X 4 f			Find file other window
 nextw,edit,query,prevw	^X 4 ^F
 nextw,tag,query,prevw	^X 4 .			Find tag other window
-ask,query,lose,query,abortbuf	^X ^C		Abort buffer in window
+ ask,query,lose,query,abortbuf	^X ^C		Gnu-emacs: Abort buffer in window
+exsave			^X ^C			Save file and exit
 lose,query,abortbuf	^X k			Kill buffer in window
 lose,query,edit		^X ^V			Edit a file: no orphaned buffers
 psh,drop,fwrdc,query,markk,blkdel	^[ z	Cut to char
@@ -380,6 +364,10 @@ swap,msg,math,"line-z",rtn,
 " lines in region",rtn			^[ =	Count lines region
 mode,"O"				^X ^Q	Toggle read-only
 
+edit,rtn,filt,query,parserr		^X c	Compile
+nxterr					^X n
+prverr					^X p
+
 backs		^?		Backspace
 backs		^H
 backw		^[ ^?		Backspace word
@@ -390,6 +378,7 @@ bol		.kh		Goto beginning of line
 bol		^A
 bop		^[ p		(uemacs)
 bufed		^X b
+bknd		^[ '		Shell window
 crawlr		^X >		Scroll to the right
 crawll		^X <		Scroll to the left
 delch		.kD		Delete character
@@ -446,6 +435,7 @@ rtarw		.kr		Go right
 rtarw		^F
 rtarw		^[ O C
 rtarw		^[ [ C
+run		^[ !
 save		^X ^W		Write file
 setmark		^X j		Set bookmark
 shrinkw		^X ^Z		(uemacs)
@@ -456,6 +446,7 @@ swap		^X ^X		Swap mark and cursor
 tag		^[ .		Tag search
 tomatch		^X g		Goto matching parenthasis (joe)
 tomatch		^[ ^F		(uemacs)
+txt		^X t		Prompt for text to insert
 undo		^_		Undo changes
 undo		^X u
 uparw		.ku		Go up

@@ -48,11 +48,21 @@ extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode,
            nonotice;
 extern char *backpath;
 
+#ifdef __MSDOS__
 OPTIONS pdefault=
- { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+ { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };
 
 OPTIONS fdefault=
- { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, "main", "\\i%n %m %M", " %S Ctrl-K H for help", 0, 0, 0, 0, 0, 0 };
+ { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, "main", "\\i%n %m %M",
+   " %S Ctrl-K H for help", 0, 0, 0, 0, 1, 0, 0, 0, 0 };
+#else
+OPTIONS pdefault=
+ { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+OPTIONS fdefault=
+ { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, "main", "\\i%n %m %M",
+   " %S Ctrl-K H for help", 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+#endif
 
 void setopt(n,name)
 OPTIONS *n;
@@ -118,12 +128,12 @@ struct glopts
   {"lmargin", 7, 0, (char *)&fdefault.lmargin,
    "Left margin (%d): ",
    0,
-   "Left margin ",0,1,64},
+   "Left margin ",0,0,63},
 
   {"rmargin", 7, 0, (char *)&fdefault.rmargin,
    "Right margin (%d): ",
    0,
-   "Right margin ",0,8,256},
+   "Right margin ",0,7,255},
 
   {"square", 0, &square, 0,
    "Rectangle mode",
@@ -154,6 +164,11 @@ struct glopts
    "Cursor will be recentered on scrolls",
    "Cursor will not be recentered on scroll",
    "Center on scroll " },
+
+  {"crlf", 4, 0, (char *)&fdefault.crlf,
+   "CR-LF is line terminator",
+   "LF is line terminator",
+   "Z CR-LF (MS-DOS) "},
 
   {"linums", 4, 0, (char *)&fdefault.linums,
    "Line numbers enabled",

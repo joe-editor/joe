@@ -257,6 +257,7 @@ char *indents;
  long to=p->byte;
 
  /* Get indentation prefix from beginning of line */
+/*
  if(!indents)
   {
   int f=0;
@@ -275,6 +276,7 @@ char *indents;
    }
   prm(r); prm(q);
   }
+*/
 
  /* Get to beginning of word */
  while(!pisbol(p) && piscol(p)>indent && !cwhite(prgetc(p)));
@@ -301,9 +303,7 @@ char *indents;
 
   /* Move word to beginning of next line */
   binsc(p,'\n'), ++to;
-#ifdef __MSDOS__
-  ++to;
-#endif
+  if(p->b->o.crlf) ++to;
   pgetc(p);
 
   /* Indent to left margin */
@@ -352,13 +352,19 @@ BW *bw;
  q=pdup(p); pnextl(q);
  if(q->line!=bw->cursor->line)
   {
+  P *r=pdup(q);
   indent=nindent(q);
-  indents=brs(q,indent);
+  pcol(r,indent);
+  indents=brs(q,r->byte-q->byte);
+  prm(r);
   }
  else
   {
+  P *r=pdup(p);
   indent=nindent(p);
-  indents=brs(p,indent);
+  pcol(r,indent);
+  indents=brs(p,r->byte-p->byte);
+  prm(r);
   }
  prm(q);
 

@@ -120,6 +120,30 @@ char *argv[];
 
  fprintf(f,"\n");
 
+ /* Check if we have utime.h */
+ if(g=fopen("/usr/include/utime.h","r"))
+  {
+  fprintf(f,"/* Uncomment if we have utime.h */\n");
+  fprintf(f,"#define UTIME 1\n");
+  fprintf(f,"/* #define SYSUTIME 1 */\n");
+  fclose(g);
+  }
+ else if(g=fopen("/usr/include/sys/utime.h","r"))
+  {
+  fprintf(f,"/* Uncomment if we have utime.h */\n");
+  fprintf(f,"/* #define UTIME 1 */\n");
+  fprintf(f,"#define SYSUTIME 1\n");
+  fclose(g);
+  }
+ else
+  {
+  fprintf(f,"/* Uncomment if we have utime.h */\n");
+  fprintf(f,"/* #define UTIME 1 */\n");
+  fprintf(f,"/* #define SYSUTIME 1 */\n");
+  }
+
+ fprintf(f,"\n");
+
  for(shft=0,x=1;x<isiz;++shft,x<<=1);
  fprintf(f,"#define BITS %d	/* Bits in a byte */\n",bits);
  fprintf(f,"#define ISIZ %d	/* Int size in bytes */\n",isiz);

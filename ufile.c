@@ -18,7 +18,19 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include <stdio.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include "config.h"
+
+#ifdef UTIME
+#include <utime.h>
+#define HAVEUTIME 1
+#else
+#ifdef SYSUTIME
+#include <sys/utime.h>
+#define HAVEUTIME 1
+#endif
+#endif
+
 #include "b.h"
 #include "bw.h"
 #include "scrn.h"
@@ -124,9 +136,20 @@ int cp(from,to)
 char *from, *to;
  {
  int f, g, amnt;
+ struct stat sbuf;
+
+#ifdef HAVEUTIME
+#ifdef NeXT
+ time_t utbuf[2];
+#else
+ struct utimbuf utbuf;
+#endif
+#endif
+
  f=open(from,O_RDONLY);
  if(f<0) return -1;
- g=creat(to,0666);
+ if(fstat(f,&sbuf)<0) return -1;
+ g=creat(to,sbuf.st_mode);
  if(g<0)
   {
   close(f);
@@ -136,7 +159,19 @@ char *from, *to;
   if(amnt!=write(g,stdbuf,amnt)) break;
  close(f); close(g);
  if(amnt) return -1;
- else return 0;
+
+#ifdef HAVEUTIME
+#ifdef NeXT
+ utbuf[0]=(time_t)sbuf.st_atime;
+ utbuf[1]=(time_t)sbuf.st_mtime;
+#else
+ utbuf.actime=sbuf.st_atime;
+ utbuf.modtime=sbuf.st_mtime;
+#endif
+ utime(to,&utbuf);
+#endif
+
+ return 0;
  }
 
 /* Make backup file if it needs to be made

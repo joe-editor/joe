@@ -192,11 +192,18 @@ Each of these options may be specified in the joerc file as well.  In
 addition, the NOXON, BAUD, LINES, COLUMNS and DOPADDING options may be
 specified with environment variables.
 
+The JOETERM environment variable may be set to override the regular TERM
+environment variable for specifying your terminal type.
+
 The following options may be specified before each filename on the command
 line:
 
 .IP +nnn
 The cursor starts on the specified line.
+
+.IP -crlf
+Joe uses CR-LF as the end of line sequence instead of just LF.  This is for
+editing MS-DOS or VMS files.
 
 .IP -wordwrap
 Joe wraps the previous word when you type past the right margin.

@@ -24,6 +24,7 @@ struct options
  int readonly;
  int french;
  int spaces;
+ int crlf;
  MACRO *mnew;		/* Macro to execute for new files */
  MACRO *mold;		/* Macro to execute for existing files */
  MACRO *msnew;		/* Macro to execute before saving new files */

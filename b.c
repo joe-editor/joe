@@ -385,19 +385,18 @@ P *p;
  if(piseof(p)) return 1;
  c=brc(p);
  if(c=='\n') return 1;
-#ifdef __MSDOS__
- if(c=='\r')
-  {
-  P *q=pdup(p);
-  pfwrd(q,1L);
-  if(pgetc(q)=='\n')
+ if(p->b->o.crlf)
+  if(c=='\r')
    {
-   prm(q);
-   return 1;
+   P *q=pdup(p);
+   pfwrd(q,1L);
+   if(pgetc(q)=='\n')
+    {
+    prm(q);
+    return 1;
+    }
+   else prm(q);
    }
-  else prm(q);
-  }
-#endif
  return 0;
  }
 
@@ -499,13 +498,11 @@ P *p;
  if(++p->ofst==GSIZE(p->hdr)) pnext(p); 
  ++p->byte;
  if(c=='\n') ++p->line, p->col=0, p->valcol=1;
-#ifdef __MSDOS__
- else if(c=='\r')
+ else if(p->b->o.crlf && c=='\r')
   {
   if(brc(p)=='\n') return pgetc(p);
   else ++p->col;
   }
-#endif
  else
   {
   if(c=='\t') p->col+=p->b->o.tab-p->col%p->b->o.tab;
@@ -562,15 +559,13 @@ int prgetc(p)
 P *p;
  {
  int c=prgetc1(p);
-#ifdef __MSDOS__
- if(c=='\n')
+ if(p->b->o.crlf && c=='\n')
   {
   c=prgetc1(p);
   if(c=='\r') return '\n';
   if(c!=MAXINT) pgetc(p);
   c='\n';
   }
-#endif
  return c;
  }
 
@@ -629,25 +624,24 @@ P *p;
 P *peol(p)
 P *p;
  {
-#ifdef __MSDOS__
- while(!piseol(p)) pgetc(p);
-#else
- while(p->ofst!=GSIZE(p->hdr))
-  {
-  unsigned char c;
-  if(p->ofst>=p->hdr->hole) c=p->ptr[p->ofst+p->hdr->ehole-p->hdr->hole];
-  else c=p->ptr[p->ofst];
-  if(c=='\n') break;
-  else
+ if(p->b->o.crlf)
+  while(!piseol(p)) pgetc(p);
+ else
+  while(p->ofst!=GSIZE(p->hdr))
    {
-   ++p->byte;
-   ++p->ofst;
-   if(c=='\t') p->col+=p->b->o.tab-p->col%p->b->o.tab;
-   else ++p->col;
-   if(p->ofst==GSIZE(p->hdr)) pnext(p); 
+   unsigned char c;
+   if(p->ofst>=p->hdr->hole) c=p->ptr[p->ofst+p->hdr->ehole-p->hdr->hole];
+   else c=p->ptr[p->ofst];
+   if(c=='\n') break;
+   else
+    {
+    ++p->byte;
+    ++p->ofst;
+    if(c=='\t') p->col+=p->b->o.tab-p->col%p->b->o.tab;
+    else ++p->col;
+    if(p->ofst==GSIZE(p->hdr)) pnext(p); 
+    }
    }
-  }
-#endif
  return p;
  }
 
@@ -695,13 +689,11 @@ P *p;
   }
   while(c!='\n');
  --p->line;
-#ifdef __MSDOS__
- if(c=='\n')
+ if(p->b->o.crlf && c=='\n')
   {
   int k=prgetc1(p);
   if(k!='\r' && k!=MAXINT) pgetc(p);
   }
-#endif
  return p;
  }
 
@@ -735,9 +727,7 @@ long goalcol;
   if(p->ofst>=p->hdr->hole) c=p->ptr[p->ofst+p->hdr->ehole-p->hdr->hole];
   else c=p->ptr[p->ofst];
   if(c=='\n') break;
-#ifdef __MSDOS__
-  if(c=='\r' && piseol(p)) break;
-#endif
+  if(p->b->o.crlf && c=='\r' && piseol(p)) break;
   if(c=='\t') wid=p->b->o.tab-p->col%p->b->o.tab;
   else wid=1;
   if(p->col+wid>goalcol) break;
@@ -1540,11 +1530,8 @@ P *binsc(p,c)
 P *p;
 char c;
  {
-#ifdef __MSDOS__
- if(c=='\n') return binsm(p,"\r\n",2);
- else
-#endif
- return binsm(p,&c,1);
+ if(p->b->o.crlf && c=='\n') return binsm(p,"\r\n",2);
+ else return binsm(p,&c,1);
  }
 
 P *binss(p,s)

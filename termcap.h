@@ -23,8 +23,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 typedef struct cap CAP;
 
-#define TERMPATH ".termcap /etc/termcap"
-
 struct sortentry
  {
  char *name;

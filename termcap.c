@@ -40,14 +40,14 @@ extern char *tgetstr();
 char defentry[]=
 "\
 :co#80:li#25:am:\
-:ho=\E[H:cm=\E[%i%d;%dH:cV=\E[%i%dH:\
-:up=\E[A:UP=\E[%dA:DO=\E[%dB:nd=\E[C:RI=\E[%dC:pt:bs:LE=\E[%dD:\
-:cd=\E[J:ce=\E[K:cl=\E[H\E[J:\
-:so=\E[7m:se=\E[m:ms:us=\E[4m:ue=\E[m:\
-:mb=\E[5m:md=\E[1m:mh=\E[2m:me=\E[m:\
-:ku=\E[A:kd=\E[B:kl=\E[D:kr=\E[C:\
-:al=\E[L:AL=\E[%dL:dl=\E[M:DL=\E[%dM:\
-:ic=\E[@:IC=\E[%d@:dc=\E[P:DC=\E[%dP:\
+:ho=\\E[H:cm=\\E[%i%d;%dH:cV=\\E[%i%dH:\
+:up=\\E[A:UP=\\E[%dA:DO=\\E[%dB:nd=\\E[C:RI=\\E[%dC:LE=\\E[%dD:\
+:cd=\\E[J:ce=\\E[K:cl=\\E[H\\E[J:\
+:so=\\E[7m:se=\\E[m:us=\\E[4m:ue=\\E[m:\
+:mb=\\E[5m:md=\\E[1m:mh=\\E[2m:me=\\E[m:\
+:ku=\\E[A:kd=\\E[B:kl=\\E[D:kr=\\E[C:\
+:al=\\E[L:AL=\\E[%dL:dl=\\E[M:DL=\\E[%dM:\
+:ic=\\E[@:IC=\\E[%d@:dc=\\E[P:DC=\\E[%dP:\
 ";
 
 /* Return true if termcap line matches name */
@@ -182,11 +182,17 @@ else
  {
  if(tp) cap->tbuf=vsncpy(sv(cap->tbuf),sz(tp));
  if((tp=getenv("TERMPATH"))) namebuf=vsncpy(NULL,0,sz(tp));
- else if((tp=getenv("HOME")))
-  namebuf=vsncpy(NULL,0,sz(tp)),
-  namebuf=vsadd(namebuf,'/'),
-  namebuf=vsncpy(sv(namebuf),sz(TERMPATH));
- else namebuf=vsncpy(NULL,0,sz(TERMPATH));
+ else
+  {
+  if((tp=getenv("HOME")))
+   namebuf=vsncpy(NULL,0,sz(tp)),
+   namebuf=vsadd(namebuf,'/');
+  else
+   namebuf=0;
+  namebuf=vsncpy(sv(namebuf),sc(".termcap "));
+  namebuf=vsncpy(sv(namebuf),sc(JOERC));
+  namebuf=vsncpy(sv(namebuf),sc("termcap /etc/termcap"));
+  }
  }
 
 npbuf=vawords(NULL,sv(namebuf),sc("\t :"));
@@ -453,8 +459,9 @@ if(cap->abuf)
  {
  char *a;
  outcap=cap;
- a=tgoto(str,a1,a0);
+ a=tgoto(s,a1,a0);
  tputs(a,l,outout);
+ return;
  }
 #endif
 

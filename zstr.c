@@ -202,11 +202,11 @@ char *l, *r;
  return 0;
  }
 
-int fields(s,fields,sep)
-char *s, **fields, sep;
+int fields(s,fld,sep)
+char *s, **fld, sep;
  {
  int y=1;
- for(fields[0]=s;s=zchr(s,sep);*s=0, fields[y++]= ++s);
+ for(fld[0]=s;s=zchr(s,sep);*s=0, fld[y++]= ++s);
  return y;
  }
 

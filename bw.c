@@ -208,8 +208,7 @@ lp:		/* Display next character */
 if(amnt) do
  {
  bc= *bp++;
-#ifdef __MSDOS__
- if(bc=='\r')
+ if(p->b->o.crlf && bc=='\r')
   {
   ++byte;
   if(!--amnt)
@@ -240,7 +239,6 @@ if(amnt) do
    }
   nnnl: --byte; ++amnt;
   }
-#endif
  if(square)
   if(bc=='\t')
    {
@@ -290,8 +288,7 @@ loop:		/* Display next character */
 if(amnt) do
  {
  bc= *bp++;
-#ifdef __MSDOS__
- if(bc=='\r')
+ if(p->b->o.crlf && bc=='\r')
   {
   ++byte;
   if(!--amnt)
@@ -322,7 +319,6 @@ if(amnt) do
    }
   nnl: --byte; ++amnt;
   }
-#endif
  if(square)
   if(bc=='\t')
    {
@@ -765,7 +761,7 @@ if(c==MAXINT)
 else
  sprintf(buf,"** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) **",
          bw->cursor->line+1,piscol(bw->cursor)+1,bw->cursor->byte,
-         bw->cursor->byte,c,c,c);
+         bw->cursor->byte,255&c,255&c,255&c);
 msgnw(bw,buf);
 return 0;
 }

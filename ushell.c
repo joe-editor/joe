@@ -129,7 +129,7 @@ BW *bw;
  char **a;
  char *s;
  a=vamk(3);
- s=vsncpy(NULL,0,sc("-")); a=vaadd(a,s);
+ s=vsncpy(NULL,0,sz(getenv("SHELL"))); a=vaadd(a,s);
  s=vsncpy(NULL,0,sc("-i")); a=vaadd(a,s);
  return cstart(bw,getenv("SHELL"),a,NULL,NULL);
  }

@@ -115,6 +115,12 @@ install: joe termidx
 	chmod a+r $(WHERERC)/jpicorc
 	chmod a+r $(WHEREMAN)/joe.1
 	chmod a+x $(WHEREJOE)/termidx
+	rm -f $(WHERERC)/termcap
+	cp termcap $(WHERERC)/termcap
+	chmod a+r $(WHERERC)/termcap
+	rm -f $(WHERERC)/terminfo
+	cp terminfo $(WHERERC)/terminfo
+	chmod a+r $(WHERERC)/terminfo
 
 # Cleanup proceedure
 

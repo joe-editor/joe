@@ -112,9 +112,9 @@ long row;
  ERROR *err;
 
  /* Skip to first word */
- for(x=0;s[x] && !crest(s[x]);++x);
+ for(x=0;s[x] && !(crest(s[x]) || s[x]=='.' || s[x]=='/');++x);
  /* Skip to end of first word */
- for(y=x;crest(s[y]) || s[y]=='.';++y);
+ for(y=x;crest(s[y]) || s[y]=='.' || s[y]=='/';++y);
 
  /* Save file name */ 
  if(x!=y) name=vsncpy(NULL,0,s+x,y-x);

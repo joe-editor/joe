@@ -7,6 +7,137 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 2.8
+**Released: 1995-01-23**
+
+Source recovered from Slackware 3.6 source archive
+
+*Archival notes: This is the most widely distributed of the early versions, and was included in nearly every Linux distribution post-1995*
+
+Author's comments:
+
+```
+This is the last version of JOE I wrote before my 9 year hiatus beginning in
+1995.
+```
+
+Changelog:
+
+```
+- Fixed problem with TERMPATH string
+- Added stupid two-letter names to termcap file
+- Improved jmacs help and command set
+- Improved README file
+```
+
+---
+
+## JOE 2.7
+**Released: 1995-01-20**
+
+*The source for this release has been lost*
+
+Changelog:
+
+```
+- putenv() was not portable
+- utime was not portable
+- special utime handling for NeXT
+- forgot to \\ the \s in the default termcap entry
+- changed some key defaults in jpicorc
+- add IXOFF in termio/termios list
+- left margin limit was incorrect
+- allow '.' and '/' in file names for error parsing
+- Needed ptem.h and stream.h for SCO_UNIX window size structure (?)
+- wordwrap no longer propogates indent prefix
+- paragraph format was broken for tab indented paragraphs
+- pipe through shell now goes through stderr too
+- added '-crlf' option
+- looks for termcap file in JOERC/termcap
+```
+
+Original announcement:
+```
+Newsgroups: comp.editors
+Path: nntp.gmd.de!newsserver.jvnc.net!nntpserver.pppl.gov!princeton!gw1.att.com!fnnews.fnal.gov!uwm.edu!vixen.cso.uiuc.edu!howland.reston.ans.net!news.sprintlink.net!pipex!uunet!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: Joe 2.7
+Message-ID: <D2pB3t.50E@world.std.com>
+Organization: The World Public Access UNIX, Brookline, MA
+Date: Fri, 20 Jan 1995 11:11:53 GMT
+Lines: 46
+
+Version 2.7 of my editor JOE is now ready.  You can get it by anonymous ftp
+from world.std.com, file: src/editors/joe2.7.tar.Z or from joe.mednet.net,
+file: pub/joe2.7.tar.Z.
+
+joe.mednet.net (my own machine) will get the latest version faster, but it
+goes through a frame-relay link, so it's a bit slow.
+
+New features and bug fixes for this version:
+
+A new option '-crlf' allows you to edit MS-DOS files in UNIX.
+
+Joe will look in /usr/local/lib/termcap (or wherever you have the joerc file
+installed) for the termcap database before looking at /etc/termcap.  This
+way you can used the supplied termcap file for only joe if you want.
+
+Utime() and Putenv() were not portable and were preventing joe from being
+compiled on some systems.
+
+Forgot to use \\ for \ in the built-in termcap entry (surprisingly, this
+worked under gnu-c- because \e turns into ESC in strings).
+
+Changed some key defaults for JPICO.  ^@ and ^_ are now prev. and next word. 
+Also ^X saves and exits without prompting- this way jpico can be used as the
+alternate editor in pine without having to answer all of the questions
+twice.
+
+Now 'ixoff' as well as 'ixon' are turned off when 'noxon' is set.
+
+Left margin limit check was incorrectly set.
+
+Wordwrap no longer propogates the indentation prefix.
+
+Paragraph format was broken for tab-indented paragraphs.
+
+The pipe block through shell command captures stderr as well as stdin now.
+
+SCO UNIX needs ptem.h and streams.h to get the winsize structure.  Can
+someone tell me one of the compiler defines for SCO?  (do this by compiling
+any file, but with the -v option given to 'cc').  Also I need someone to
+figure out how ptys work on SCO- it's not the standard Sys-V way since
+functions like 'grantpt' are not there (or do I need to include a library?). 
+-- 
+/*  jhallen@world.std.com (192.74.137.5) */               /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
+## JOE 2.6
+**Released: 1995-01-10**
+
+*The source for this release has been lost*
+
+Changelog:
+
+```
+- Fixed stupid bug in termcap.c which prevented terminfo from working
+
+- ESC h was missing from jpicorc
+
+- Changes suggested by Dan Nelson:
+ - backup files now attempt to have same permissions and times as original
+ - Stat command now ands chars with 255 (don't know why this worked on my system
+   without this...)
+ - Maybe change shell invocation name- have to check this more
+```
+
+---
+
 ## JOE 2.5
 **Released: 1995-01-08**
 

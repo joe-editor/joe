@@ -180,12 +180,12 @@
 {Basic
 \i   Help Screen    turn off with ^G     more help with ^[. (ESC .)              \i
 \i \i\uCURSOR\u           \uGO TO\u            \uBLOCK\u      \uDELETE\u    \uMISC\u         \uEXIT\u     \i \i
-\i \i^B left ^F right ^[Y top of file  ^@  mark   ^D  char  ^J   format  ^X save  \i \i
+\i \i^B left ^F right ^[Y top of file  ^^  mark   ^D  char  ^J   format  ^X save  \i \i
 \i \i^P up   ^N down  ^[V end of file  ^K  cut    ^K  line  ^T   spell   ^C abort \i \i
 \i \i^Y prev. screen  ^A  beg. of line ^U  paste  ^[K >line ^[T  file    ^Z shell \i \i
 \i \i^V next screen   ^E  end of line  ^[U select ^[H word< ^L   refresh \uFILE\u     \i \i
-\i \i^[B prev. word   ^[L line No.     ^O  save   ^[D >word ^[^[ options ^O save  \i \i
-\i \i^[F next word    ^W  find text    ^[/ filter ^[- undo  ^[=  redo    ^R insert\i \i
+\i \i^@  prev. word   ^[L line No.     ^O  save   ^[D >word ^[^[ options ^O save  \i \i
+\i \i^_  next word    ^W  find text    ^[/ filter ^[- undo  ^[=  redo    ^R insert\i \i
 }
 
 {Advanced
@@ -335,12 +335,14 @@ spellfile	^[ T		Spell check word
 spellfile	^[ t
 spellfile	^[ ^T
 
-ask,query,lose,query,abortbuf	^X	Exit
+ ask,query,lose,query,abortbuf	^X	Exit after many questions
+exsave		^X		Exit
 backs		^?		Backspace
 backs		^H
 backw		^[ H		Backspace word
 backw		^[ ^?
 backw		^[ ^H
+backw		^[ h
 bknd		^[ W		Shell window
 bknd		^[ w
 bknd		^[ ^W
@@ -362,8 +364,7 @@ dnarw		.kd		Go down
 dnarw		^N
 dnarw		^[ O B
 dnarw		^[ [ B
-drop		^@		Drop/Pull-up anchor
-drop		^^
+drop		^^		Marking
 edit		^[ E		Edit a file
 edit		^[ ^E
 edit		^[ e
@@ -394,12 +395,9 @@ ltarw		^B
 ltarw		^[ O D
 ltarw		^[ [ D
 mode		^[ ^[		Options menu
-nextword	^[ F		Goto next word
-nextword	^[ ^F
-nextword	^[ f
+nextword	^@		Goto next word
 open		^]		Split line
-prevword	^[ ^B		Previous word
-prevword	^[ b
+prevword	^_		Previous word
 picokill	^K		Pico kill function
 quote		`		Enter Ctrl chars
 quote8		^\		Enter Meta chars

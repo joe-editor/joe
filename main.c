@@ -152,9 +152,12 @@ extern void setbreak();
 extern int breakflg;
 #endif
 
-int main(argc,argv)
+char **mainenv;
+
+int main(argc,argv,envv)
 int argc;
 char *argv[];
+char *envv[];
  {
  CAP *cap;
  char *s;
@@ -165,6 +168,8 @@ char *argv[];
  int omid;
  int backopt;
  int c;
+
+ mainenv=envv;
 
 #ifdef __MSDOS__
  _fmode=O_BINARY;
@@ -360,7 +365,7 @@ char *argv[];
  maint->curwin=maint->topwin;
  if(help) helpon(maint);
  if(!nonotice)
-  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.5 ** Copyright (C) 1995 Joseph H. Allen **\\i");
+  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.8 ** Copyright (C) 1995 Joseph H. Allen **\\i");
  edloop(0);
  vclose(vmem);
  nclose(n);
