@@ -1,9 +1,13 @@
 # JOE syntax highlight file for sh/ksh/bash
 
-# TODO:
-#  * octal escape sequences
-#  * highlight variables
-#  * heredoc support (is this even possible?)
+# Think about:
+# $'....'
+# $(...)
+# ${...}
+
+# <<EOF
+#  ....
+# EOF
 
 # Colors
 
@@ -12,7 +16,7 @@
 =Constant 	cyan
 =Escape 	bold cyan
 =Keyword 	bold
-=Var		bold cyan
+=Var		magenta
 
 # Syntax
 

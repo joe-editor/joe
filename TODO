@@ -1,5 +1,17 @@
 Fix for next release:
 
+  shell glob:
+	.profile
+	.bash_login
+	.bash_profile
+	.bash_logout
+	/etc/profile
+
+	.cshrc
+	.login
+	.logout
+	.tcshrc
+
   highlight other windows
   why lose state during page down?
   perl highlighter
@@ -79,27 +91,12 @@ Compiling
  - show build on screen- don't wait until it's completely finished.  allow
    ^C during build.
 
-UTF-8/Internationalization
---------------------------
-
-- right-left mode for Hebrew/Arabic?
-
-  There is no good way to do this.  For all rtol, you could use a reversed
-xterm.  For mixed, you need tags to indicate direction.
-
-
 - Gettext?
 
 Syntax Highlighting:
 --------------------
 
 UTF-8 syntax files?
-
-UI for changing colors in the editor (or at least dark/light mode)
-
-More colors: UI for using 256 color xterms.
-
-
 
 Support for more languages:
 
@@ -109,11 +106,7 @@ Support for more languages:
 
  Reformat paragraph should reformat C function if we're editing C.
 
-
 File loading/storing:
-
- Lock files being edited?
-  one person gets write lock
 
  Save all modified
 
@@ -122,20 +115,12 @@ File loading/storing:
 
  Unnamed buffers should be in bufed list (was fixed in the lost joe 2.9)
 
- Don't understand:  optionally break hardlinks on save?  what is "tla"?
-
- Use memory mapped files to fast load large files.  Have to not
- count no. lines in each buffer on startup.
-
-
 Jmacs/Jstar/Jpico:
 
  search and replace 'fred' to 'foo':
     find 'Fred', gets 'Foo'.
 
  Jmacs: incremental search should wrap
-
- Emulate other editors?  Brief, EDT?
 
  Rectangle mode for emacs yank system
 
@@ -159,27 +144,12 @@ Shell windows:
 
  Better environment settings for shell windows.
 
-
 Documentation:
 
  Update man page.
 
  Include documentation for joe hackers.  I wrote a lot of this
  some time, I need to find it.
-
-
-Prompts:
-
- Sort should be column wise, not row wise?
-
- HTML-style thing for option selection?
-
-
-Terminal handling:
-
- Emit ESC c to reset terminal on startup?
-
- Look into clearing right-most column.
 
  joe should open tty earlier in startup sequence because ^Y
  is suspend character on sun.
@@ -189,6 +159,56 @@ Math mode:
 
  Expand math mode (hex, octal, math functions...)
 
+
+
+
+
+
+
+
+
+
+
+UTF-8/Internationalization
+--------------------------
+
+- right-left mode for Hebrew/Arabic?
+
+  There is no good way to do this.  For all rtol, you could use a reversed
+xterm.  For mixed, you need tags to indicate direction.
+
+
+UI for changing colors in the editor (or at least dark/light mode)
+
+More colors: UI for using 256 color xterms.
+
+
+ Lock files being edited?
+  one person gets write lock
+
+
+ Don't understand:  optionally break hardlinks on save?  what is "tla"?
+
+ Use memory mapped files to fast load large files.  Have to not
+ count no. lines in each buffer on startup.
+
+
+ Emulate other editors?  Brief, EDT?
+
+
+Prompts:
+
+ Sort should be column wise, not row wise?
+
+ HTML-style thing for option selection?
+
+
+
+Terminal handling:
+
+ Emit ESC c to reset terminal on startup?
+
+ Look into clearing right-most column.
 
 Macros:
 

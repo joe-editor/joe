@@ -13,16 +13,16 @@ joe \- Joe's Own Editor
 .B jpico [global-options] [ [local-options] filename ]...
 .SH Description
 JOE is a powerful ASCII-text screen editor.  It has a "mode-less" user
-interface which is similer to many user-friendly PC editors.  Users of
+interface which is similar to many user-friendly PC editors.  Users of
 Micro-Pro's WordStar or Borland's "Turbo" languages will feel at home.  JOE
 is a full featured UNIX screen-editor though, and has many features for
 editing programs and text.
 
-JOE also emulates several other editors.  JSTAR is a close immitation of
-WordStar with many "JOE" extensions.  JPICO is a close immitation of the
+JOE also emulates several other editors.  JSTAR is a close imitation of
+WordStar with many "JOE" extensions.  JPICO is a close imitation of the
 Pine mailing system's PICO editor, but with many extensions and
-improvements.  JMACS is a GNU-EMACS immitation.  RJOE is a restricted
-version of JOE, which allowes you to edit only the files specified on the
+improvements.  JMACS is a GNU-EMACS imitation.  RJOE is a restricted
+version of JOE, which allows you to edit only the files specified on the
 command line.
 
 Although JOE is actually five different editors, it still requires only one
@@ -39,7 +39,7 @@ product.  JOE is available over the Internet from
 .SH Usage 
 
 To start the editor, type \fBjoe\fR followed by zero or more names of files
-you want to edit.  Each file name may be preceeded by a local option setting
+you want to edit.  Each file name may be preceded by a local option setting
 (see the local options table which follows).  Other global options, which
 apply to the editor as a whole, may also be placed on the command line (see
 the global options table which follows).  If you are editing a new file, you
@@ -118,7 +118,7 @@ Joe will beep on command errors and when the cursor goes past extremes.
 Sets the number of screen columns.
 
 .IP -csmode
-Continued search mode: a search immediatly following a search will repeat
+Continued search mode: a search immediately following a search will repeat
 the previous search instead of prompting for new string.  This is useful for
 the the ^[S and ^[R commands and for when joe is trying to be emacs.
 
@@ -786,7 +786,7 @@ of this file (which normally resides in \fB@sysconfdir@/joerc\fR) to
 syntax of the initialization file should be fairly obvious and there are
 further instruction in it.
 
-.SH Acknowledgements
-JOE was writen by Joseph H. Allen.  If you have bug reports or questions,
+.SH Acknowledgments
+JOE was written by Joseph H. Allen.  If you have bug reports or questions,
 e-mail them to jhallen@world.std.com.  Larry Foard (entropy@world.std.com)
 and Gary Gray (ggray@world.std.com) also helped with the creation of JOE.
