@@ -481,6 +481,21 @@ long pisindent(P *p)
 	return col;
 }
 
+/* return true if all characters to left of cursor match c */
+
+int pispure(P *p,int c)
+{
+	P *q = pdup(p);
+	p_goto_bol(q);
+	while (q->byte!=p->byte)
+		if (pgetc(q)!=c) {
+			prm(q);
+			return 0;
+                }
+	prm(q);
+	return 1;
+}
+
 int pnext(P *p)
 {
 	if (p->hdr == p->b->eof->hdr) {

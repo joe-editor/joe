@@ -54,6 +54,7 @@ int pisblank PARAMS((P *p));
 int piseolblank PARAMS((P *p));
 
 long pisindent PARAMS((P *p));
+int pispure PARAMS((P *p,int c));
 
 int pnext PARAMS((P *p));
 int pprev PARAMS((P *p));

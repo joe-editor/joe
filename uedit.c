@@ -49,7 +49,7 @@ int uhome(BW *bw)
 {
 	P *p = pdup(bw->cursor);
 
-	if ((bw->o.smarthome) && (p->col > pisindent(p))) { 
+	if ((bw->o.smarthome) && (piscol(p) > pisindent(p))) { 
 		p_goto_bol(p);
 		while (joe_isblank(brc(p)))
 			pgetc(p);
@@ -659,14 +659,57 @@ int ubacks(BW *bw, int k)
 	} else if (bw->parent->watom->what == TYPETW || !pisbol(bw->cursor)) {
 		P *p;
 		int c;
+		int indent;
+		int col;
+		int indwid;
+		int wid;
+		int pure = 1;
 
 		if (pisbof(bw->cursor))
 			return -1;
-		p = pdup(bw->cursor);
-		if ((c = prgetc(bw->cursor)) != NO_MORE_DATA)
-			if (!bw->o.overtype || c == '\t' || pisbol(p) || piseol(p))
-				bdel(bw->cursor, p);
-		prm(p);
+
+		/* Indentation point of this line */
+		indent = pisindent(bw->cursor);
+
+		/* Column position of cursor */
+		col = piscol(bw->cursor);
+
+		/* Indentation step in columns */
+		if (bw->o.indentc=='\t')
+			wid = bw->o.tab;
+		else
+			wid = 1;
+
+		indwid = (bw->o.istep*wid);
+
+		/* Smart backspace when: cursor is at indentation point, indentation point
+		   is a multiple of indentation width, we're not at beginning of line,
+		   'smarthome' option is enabled, and indentation is purely made out of
+		   indent characters. */
+		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smarthome && pispure(bw->cursor,bw->o.indentc)) {
+			P *p;
+			int x;
+
+			/* Delete all indentation */
+			p = pdup(bw->cursor);
+			p_goto_bol(p);
+			bdel(p,bw->cursor);
+			prm(p);
+
+			/* Indent to new position */
+			col -= indwid;
+
+			for (x=0; x!=col; x+=wid) {
+				binsc(bw->cursor, bw->o.indentc);
+				pgetc(bw->cursor);
+			}
+		} else {
+			P *p = pdup(bw->cursor);
+			if ((c = prgetc(bw->cursor)) != NO_MORE_DATA)
+				if (!bw->o.overtype || c == '\t' || pisbol(p) || piseol(p))
+					bdel(bw->cursor, p);
+			prm(p);
+		}
 	} else
 		return -1;
 	return 0;

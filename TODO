@@ -1,8 +1,42 @@
+Improvements for programming
+----------------------------
+
+Abbreviations
+
+ Tab complete a word in a file, should look through file for matching
+ words.
+
+Should <space> indent-step in smartmode?  Probably not: think about /*
+comments.
+
+urindent and ulindent should check for purity before doing their dirty work.
+
+Show name of function cursor is in
+
+Jump to definition (tags does this)
+
+Show list of references
+
+Diff mode (need vertical window)
+
+Tie in with CVS
+
+Refactoring
+
+Compiling
+
+ Make it work better:
+   remove dead windows
+   detect errors better
+
 UTF-8/Internationalization
 --------------------------
 
 - think about regex, rc files, highlighting
     32-bit chars in search/replace \[...] sequences?
+
+- translate: allow user to specify charset.  think about isalpha.
+
 
 - deal with error utf8 sequences: prget and pgetc do not match, also check
   bw.c (genfield ignores error sequences).
@@ -13,11 +47,15 @@ UTF-8/Internationalization
 - when first char of utf8 is last of line, nothing shows on screen (state
   machine never gets any input).
 
-- translate: allow user to specify charset.  think about isalpha.
 
 - right-left mode for Hebrew/Arabic?
 
+  There is no good way to do this.  For all rtol, you could use a reversed
+xterm.  For mixed, you need tags to indicate direction.
+
+
 - Gettext?
+
 
 --- we have converted from char to unsigned char, so normal characters are
 in the range 0 - 255 and EOF is -1 when assigned to an int.  In a UTF-8
@@ -70,19 +108,20 @@ sequence: perhaps all of this is ok).
 Syntax Highlighting:
 --------------------
 
+UI for seting syntax during run time
+
 More syntax files.
 
 Recognize more file types (joerc work).
 
 Update other *rc files.
 
-UTF-8 syntax files.
+UTF-8 syntax files?
 
 UI for changing colors in the editor (or at least dark/light mode)
 
-UI for seting syntax during run time
-
 More colors: UI for using 256 color xterms.
+
 
 
 Support for more languages:
@@ -148,12 +187,6 @@ Jmacs/Jstar/Jpico:
 
  exiting options and i-search with ESC is not pretty
  (it isn't in emacs either)
-
-Abbreviations
-
- Tab complete a word in a file, should look through file for matching
- words.
-
 
 Shell windows:
 
@@ -231,19 +264,13 @@ Major new modes:
 
 Major code improvements:
 
- Vertical windows
+ Vertical windows (optionally lock-stepped).
 
 
 Major new features:
 
  Folding
 
-
-Compiling
-
- Make it work better:
-   remove dead windows
-   detect errors better
 
 Options
 
@@ -255,7 +282,6 @@ Other requests:
 
  -cleanup (delete extra lines and extra spaces at ends of lines).
 
- Mode where Home is smart: jumps to first non-space character and then
- beginning of line.
+ -show no. utf characters, not no. bytes
 
- Mode where backspace unindents a tab even when in spaces mode.
+ - return key doesn't insert newline in overtype mode option.

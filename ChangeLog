@@ -1,4 +1,9 @@
 Wed Apr 21 2004  Joe Allen <jhallen@world.std.com>
+	* uedit.c, b.c:
+
+	Backspace is now smart when 'smarthome' is set.
+
+Wed Apr 21 2004  Joe Allen <jhallen@world.std.com>
 	* uedit.c :
 
 	Fix new bug caused by previous bug fix :-)
