@@ -59,25 +59,66 @@ OPTIONS *options = 0;
 extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, orphan, marking, beep, keepup, nonotice;
 extern char *backpath;
 
+OPTIONS pdefault = {
+	NULL,		/* *next */
+	NULL,		/* *name */
+	0,		/* overtype */
+	0,		/* lmargin */
+	76,		/* rmargin */
+	0,		/* autoindent */
+	0,		/* wordwrap */
+	8,		/* tab */
+	' ',		/* indent char */
+	1,		/* indent step */
+	NULL,		/* *context */
+	NULL,		/* *lmsg */
+	NULL,		/* *rmsg */
+	0,		/* line numbers */
+	0,		/* read only */
+	0,		/* french spacing */
+	0,		/* spaces */
 #ifdef __MSDOS__
-OPTIONS pdefault = { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-
-	0
-};
-OPTIONS fdefault = { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, "main", "\\i%n %m %M",
-	" %S Ctrl-K H for help", 0, 0, 0, 0, 1, 0, 0, 0, 0
-};
+	1,		/* crlf */
 #else
-OPTIONS pdefault = { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-
-	0
-};
-OPTIONS fdefault = { 0, 0, 0, 0, 76, 0, 0, 8, ' ', 1, "main", "\\i%n %m %M",
-	" %S Ctrl-K H for help", 0, 0, 0, 0, 0, 0, 0, 0, 0
-};
+	0,		/* crlf */
 #endif
+	NULL,		/* macro to execute for new files */
+	NULL,		/* macro to execute for existing files */
+	NULL,		/* macro to execute before saving new files */
+	NULL,		/* macro to execute before saving existing files */
+};
+OPTIONS fdefault = {
+	NULL,		/* *next */
+	NULL,		/* *name */
+	0,		/* overtype */
+	0,		/* lmargin */
+	76,		/* rmargin */
+	0,		/* autoindent */
+	0,		/* wordwrap */
+	8,		/* tab */
+	' ',		/* indent char */
+	1,		/* indent step */
+	"main",		/* *context */
+	"\\i%n %m %M",	/* *lmsg */
+	" %S Ctrl-K H for help",	/* *rmsg */
+	0,		/* line numbers */
+	0,		/* read only */
+	0,		/* french spacing */
+	0,		/* spaces */
+#ifdef __MSDOS__
+	1,		/* crlf */
+#else
+	0,		/* crlf */
+#endif
+	NULL, NULL, NULL, NULL	/* macros (see above) */
+};
 
-void setopt(OPTIONS * n, char *name)
+/* Set a global or local option 
+ * returns 0 for no such option,
+ *         1 for option accepted
+ *         2 for option + argument accepted
+ */
+void setopt(OPTIONS *n, char *name)
 {
 	OPTIONS *o;
 
@@ -88,12 +129,6 @@ void setopt(OPTIONS * n, char *name)
 		}
 	*n = fdefault;
 }
-
-/* Set a global or local option 
- * returns 0 for no such option,
- *         1 for option accepted
- *         2 for option + argument accepted
- */
 
 struct glopts {
 	char *name;		/* Option name */
@@ -114,81 +149,43 @@ struct glopts {
 	int low;		/* Low limit for numeric options */
 	int high;		/* High limit for numeric options */
 } glopts[] = {
-
-	{
-	"overwrite", 4, 0, (char *) &fdefault.overtype, "Overtype mode", "Insert mode", "T Overtype "}
-	, {
-	"autoindent", 4, 0, (char *) &fdefault.autoindent, "Autoindent enabled", "Autindent disabled", "I Autoindent "}
-	, {
-	"wordwrap", 4, 0, (char *) &fdefault.wordwrap, "Wordwrap enabled", "Wordwrap disabled", "Word wrap "}
-	, {
-	"tab", 5, 0, (char *) &fdefault.tab, "Tab width (%d): ", 0, "D Tab width ", 0, 1, 64}
-	, {
-	"lmargin", 7, 0, (char *) &fdefault.lmargin, "Left margin (%d): ", 0, "Left margin ", 0, 0, 63}
-	, {
-	"rmargin", 7, 0, (char *) &fdefault.rmargin, "Right margin (%d): ", 0, "Right margin ", 0, 7, 255}
-	, {
-	"square", 0, &square, 0, "Rectangle mode", "Text-stream mode", "X Rectangle mode "}
-	, {
-	"indentc", 5, 0, (char *) &fdefault.indentc, "Indent char %d (SPACE=32, TAB=9, ^C to abort): ", 0, " Indent char ", 0, 0, 255}
-	, {
-	"istep", 5, 0, (char *) &fdefault.istep, "Indent step %d (^C to abort): ", 0, " Indent step ", 0, 1, 64}
-	, {
-	"french", 4, 0, (char *) &fdefault.french, "One space after periods for paragraph reformat", "Two spaces after periods for paragraph reformat", " french spacing "}
-	, {
-	"spaces", 4, 0, (char *) &fdefault.spaces, "Inserting spaces when tab key is hit", "Inserting tabs when tab key is hit", " no tabs "}
-	, {
-	"mid", 0, &mid, 0, "Cursor will be recentered on scrolls", "Cursor will not be recentered on scroll", "Center on scroll "}
-	, {
-	"crlf", 4, 0, (char *) &fdefault.crlf, "CR-LF is line terminator", "LF is line terminator", "Z CR-LF (MS-DOS) "}
-	, {
-	"linums", 4, 0, (char *) &fdefault.linums, "Line numbers enabled", "Line numbers disabled", "N Line numbers "}
-	, {
-	"marking", 0, &marking, 0, "Anchored block marking on", "Anchored block marking off", "Marking "}
-	, {
-	"asis", 0, &dspasis, 0, "Characters above 127 shown as-is", "Characters above 127 shown in inverse", "Meta chars as-is "}
-	, {
-	"force", 0, &force, 0, "Last line forced to have NL when file saved", "Last line not forces to have NL", "Force last NL "}
-	, {
-	"nobackups", 0, &nobackups, 0, "Backup files will not be made", "Backup files will be made", " Disable backups "}
-	, {
-	"lightoff", 0, &lightoff, 0, "Highlighting turned off after block operations", "Highlighting not turned off after block operations", "Auto unmark "}
-	, {
-	"exask", 0, &exask, 0, "Prompt for filename in save & exit command", "Don't prompt for filename in save & exit command", "Exit ask "}
-	, {
-	"beep", 0, &beep, 0, "Warning bell enabled", "Warning bell disabled", "Beeps "}
-	, {
-	"nosta", 0, &staen, 0, "Top-most status line disabled", "Top-most status line enabled", " Disable status line "}
-	, {
-	"keepup", 0, &keepup, 0, "Status line updated constantly", "Status line updated once/sec", " Fast status line "}
-	, {
-	"pg", 1, &pgamnt, 0, "Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): ", 0, " No. PgUp/PgDn lines ", 0, -1, 64}
-	, {
-	"csmode", 0, &csmode, 0, "Start search after a search repeats previous search", "Start search always starts a new search", "Continued search "}
-	, {
-	"rdonly", 4, 0, (char *) &fdefault.readonly, "Read only", "Full editing", "O Read only "}
-	, {
-	"backpath", 2, (int *) &backpath, 0, "Backup files stored in (%s): ", 0, "Path to backup files "}
-	, {
-	"nonotice", 0, &nonotice, 0, 0, 0, 0}
-	, {
-	"noxon", 0, &noxon, 0, 0, 0, 0}
-	, {
-	"orphan", 0, &orphan, 0, 0, 0, 0}
-	, {
-	"help", 0, &help, 0, 0, 0, 0}
-	, {
-	"dopadding", 0, &dopadding, 0, 0, 0, 0}
-	, {
-	"lines", 1, &lines, 0, 0, 0, 0, 0, 2, 1024}
-	, {
-	"baud", 1, &Baud, 0, 0, 0, 0, 0, 50, 32767}
-	, {
-	"columns", 1, &columns, 0, 0, 0, 0, 0, 2, 1024}
-	, {
-	"skiptop", 1, &skiptop, 0, 0, 0, 0, 0, 0, 64}
-	, {
-	0, 0, 0}
+	{ "overwrite",	4, NULL, (char *) &fdefault.overtype, "Overtype mode", "Insert mode", "T Overtype " },
+	{ "autoindent",	4, NULL, (char *) &fdefault.autoindent, "Autoindent enabled", "Autindent disabled", "I Autoindent " },
+	{ "wordwrap",	4, NULL, (char *) &fdefault.wordwrap, "Wordwrap enabled", "Wordwrap disabled", "Word wrap " },
+	{ "tab",	5, NULL, (char *) &fdefault.tab, "Tab width (%d): ", 0, "D Tab width ", 0, 1, 64 },
+	{ "lmargin",	7, NULL, (char *) &fdefault.lmargin, "Left margin (%d): ", 0, "Left margin ", 0, 0, 63 },
+	{ "rmargin",	7, NULL, (char *) &fdefault.rmargin, "Right margin (%d): ", 0, "Right margin ", 0, 7, 255 },
+	{ "square",	0, &square, NULL, "Rectangle mode", "Text-stream mode", "X Rectangle mode " },
+	{ "indentc",	5, NULL, (char *) &fdefault.indentc, "Indent char %d (SPACE=32, TAB=9, ^C to abort): ", 0, " Indent char ", 0, 0, 255 },
+	{ "istep",	5, NULL, (char *) &fdefault.istep, "Indent step %d (^C to abort): ", 0, " Indent step ", 0, 1, 64 },
+	{ "french",	4, NULL, (char *) &fdefault.french, "One space after periods for paragraph reformat", "Two spaces after periods for paragraph reformat", " french spacing " },
+	{ "spaces",	4, NULL, (char *) &fdefault.spaces, "Inserting spaces when tab key is hit", "Inserting tabs when tab key is hit", " no tabs " },
+	{ "mid",	0, &mid, NULL, "Cursor will be recentered on scrolls", "Cursor will not be recentered on scroll", "Center on scroll " },
+	{ "crlf",	4, NULL, (char *) &fdefault.crlf, "CR-LF is line terminator", "LF is line terminator", "Z CR-LF (MS-DOS) " },
+	{ "linums",	4, NULL, (char *) &fdefault.linums, "Line numbers enabled", "Line numbers disabled", "N Line numbers " },
+	{ "marking",	0, &marking, NULL, "Anchored block marking on", "Anchored block marking off", "Marking " },
+	{ "asis",	0, &dspasis, NULL, "Characters above 127 shown as-is", "Characters above 127 shown in inverse", "Meta chars as-is " },
+	{ "force",	0, &force, NULL, "Last line forced to have NL when file saved", "Last line not forces to have NL", "Force last NL " },
+	{ "nobackups",	0, &nobackups, NULL, "Backup files will not be made", "Backup files will be made", " Disable backups " },
+	{ "lightoff",	0, &lightoff, NULL, "Highlighting turned off after block operations", "Highlighting not turned off after block operations", "Auto unmark " },
+	{ "exask",	0, &exask, NULL, "Prompt for filename in save & exit command", "Don't prompt for filename in save & exit command", "Exit ask " },
+	{ "beep",	0, &beep, NULL, "Warning bell enabled", "Warning bell disabled", "Beeps " },
+	{ "nosta",	0, &staen, NULL, "Top-most status line disabled", "Top-most status line enabled", " Disable status line " },
+	{ "keepup",	0, &keepup, NULL, "Status line updated constantly", "Status line updated once/sec", " Fast status line " },
+	{ "pg",		1, &pgamnt, NULL, "Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): ", 0, " No. PgUp/PgDn lines ", 0, -1, 64 },
+	{ "csmode",	0, &csmode, NULL, "Start search after a search repeats previous search", "Start search always starts a new search", "Continued search " },
+	{ "rdonly",	4, NULL, (char *) &fdefault.readonly, "Read only", "Full editing", "O Read only " },
+	{ "backpath",	2, (int *) &backpath, NULL, "Backup files stored in (%s): ", 0, "Path to backup files " },
+	{ "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
+	{ "noxon",	0, &noxon, NULL, 0, 0, 0 },
+	{ "orphan",	0, &orphan, NULL, 0, 0, 0 },
+	{ "help",	0, &help, NULL, 0, 0, 0 },
+	{ "dopadding",	0, &dopadding, NULL, 0, 0, 0 },
+	{ "lines",	1, &lines, NULL, 0, 0, 0, 0, 2, 1024 },
+	{ "baud",	1, &Baud, NULL, 0, 0, 0, 0, 50, 32767 },
+	{ "columns",	1, &columns, NULL, 0, 0, 0, 0, 2, 1024 },
+	{ "skiptop",	1, &skiptop, NULL, 0, 0, 0, 0, 0, 64 },
+	{ NULL,		0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0 }
 };
 
 int isiz = 0;
