@@ -141,7 +141,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 		return syntax;
 
 	/* Load it */
-	sprintf((char *)buf,"%s%s.jsf",JOERC,name);
+	sprintf((char *)buf,"%ssyntax/%s.jsf",JOERC,name);
 	f=fopen((char *)buf,"r");
 	if(!f)
 		return 0;

@@ -6,9 +6,13 @@ EXTRA_DIST = COPYING INFO LIST NEWS README README.cvs TODO docs/help-system.html
 	syntax/conf.jsf.in syntax/python.jsf.in syntax/php.jsf.in syntax/sh.jsf.in \
 	docs
 
-sysconf_DATA = joerc jmacsrc jstarrc rjoerc jpicorc syntax/c.jsf syntax/perl.jsf \
-	syntax/verilog.jsf syntax/conf.jsf syntax/python.jsf syntax/php.jsf \
-	syntax/sh.jsf
+sysconf_joedir = $(sysconfdir)/joe
+sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
+
+sysconf_syntaxdir = $(sysconf_joedir)/syntax
+sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
+	syntax/conf.jsf syntax/python.jsf syntax/php.jsf syntax/sh.jsf
+
 man_MANS = joe.1
 noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	macro.h main.h menu.h path.h poshist.h pw.h queue.h qw.h rc.h regex.h \
@@ -18,7 +22,7 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 
 
 bin_PROGRAMS = joe termidx
-INCLUDES = -DJOERC="\"@sysconfdir@/\""
+INCLUDES = -DJOERC="\"$(sysconf_joedir)/\""
 
 joe_SOURCES = b.c blocks.c bw.c cmd.c hash.c help.c kbd.c macro.c main.c menu.c \
 	path.c poshist.c pw.c queue.c qw.c rc.c regex.c scrn.c tab.c termcap.c \
