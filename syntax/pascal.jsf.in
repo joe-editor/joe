@@ -1,4 +1,5 @@
 # PASCAL highlighter for JOE
+# With support for Delphi and FPC by Michael Van Canneyt
 
 =Idle
 =Comment green
@@ -12,6 +13,7 @@
 	*		idle
 	"a-zA-Z"	ident		buffer
 	"("		maybe_comment
+	"/"		maybe_linecomment
 	"{"		comment		recolor=-1
 	"'"		string		recolor=-1
 	"0-9"		number		recolor=-1 
@@ -21,6 +23,19 @@
 :maybe_comment Idle
 	*		idle		noeat
 	"*"		comment		recolor=-2
+
+:maybe_linecomment Idle
+	*		idle		noeat
+	"/"		line_comment    recolor=-2
+
+:line_comment Comment
+	*		line_comment
+	"\n"		reset
+
+:comment Comment
+	*		comment
+	"*"		maybe_end_comment
+	"}"		idle
 
 :comment Comment
 	*		comment
@@ -102,12 +117,37 @@
 	"repeat"	kw
 	"set"		kw
 	"then"		kw
-	"to"		kw
 	"type"		kw
 	"until"		kw
 	"var"		kw
 	"while"		kw
 	"with"		kw
+# Delphi keywords
+	"to"		kw
+	"try"		kw
+	"finally"	kw
+	"raise"		kw
+	"absolute"      kw
+	"cdecl"		kw
+	"stdcall"	kw
+	"register"	kw
+	"interface"	kw
+	"library"	kw
+	"constructor"	kw
+	"destructor"	kw
+	"dispinterface" kw
+	"inherited"	kw
+	"public"	kw
+	"private"	kw
+	"published"	kw
+	"protected"	kw
+	"initialization"	kw
+	"finalization"	kw
+	"class"		kw
+	"object"	kw
+	"resourcestring"	kw
+	"property"	kw
+	"threadvar"	kw
 	"integer"	type
 	"boolean"	type
 	"real"		type
