@@ -40,7 +40,7 @@ pbuf		Load previous buffer into current window
 Cursor Motion
 -------------
 bof		Move cursor to beginning of file
-bol		Move cursor to beginning of line
+bol		Move cursor to beginning of line (always)
 bop		Move to beginning of a paragraph
 bos		Move to beginning of screen
 bkwdc		Search backwards for a character
@@ -52,6 +52,7 @@ eol		Move cursor to end of line
 eop		Move cursor to end of paragraph
 fwrdc		Search forward for matching character
 gomark		Move cursor to a bookmark
+home		Move cursor to beginning of line
 line		Move cursor to specified line
 ltarw		Move cursor left
 nedge		Move cursor to next edge

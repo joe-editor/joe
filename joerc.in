@@ -129,10 +129,14 @@
 	-encoding name		Set file coding (for example: utf-8, iso-8859-15)
 	-utf8			File is UTF-8 coded
 	-syntax name		Specify syntax (syntax file called
-	-syntax name		Specify syntax (syntax file called 'name.jsf' will be loaded)
+				'name.jsf' will be loaded)
+
 	-hex			Hex editor mode
 
 	-smarthome		Home key first moves cursor to beginning of line,
+	-smarthome		Home key first moves cursor to the first
+				non-space character, unless already there
+	-smartbacks		Backspace key deletes 'istep' number of
 
 	-wordwrap		Wordwrap
 
@@ -528,8 +532,10 @@ bof		^K U		Goto beginning of file
 bof		^K ^U
 bof		^K u
  bol		.kh		Goto beginning of line
-bol		.kh		Goto beginning of line
-bol		^A
+ bol		^A
+ bol      ^# SP A
+home		^A
+center		^K A		Center line
 center		^K ^A
 center		^K a
 crawll		^K <		Pan left

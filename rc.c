@@ -94,6 +94,7 @@ OPTIONS pdefault = {
 	0,		/* Highlight */
 	NULL,		/* Syntax */
 	0,		/* UTF-8 */
+	0,		/* Smart home key */
 	NULL,		/* macro to execute for new files */
 	NULL,		/* macro to execute for existing files */
 	NULL,		/* macro to execute before saving new files */
@@ -129,6 +130,7 @@ OPTIONS fdefault = {
 	0,		/* Highlight */
 	NULL,		/* Syntax */
 	0,		/* UTF-8 */
+	0,		/* Smart home key */
 	NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
@@ -217,6 +219,7 @@ struct glopts {
 	{US "pg",		1, &pgamnt, NULL, US "Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): ", 0, US "  No. PgUp/PgDn lines ", 0, -1, 64 },
 	{US "csmode",	0, &csmode, NULL, US "Start search after a search repeats previous search", US "Start search always starts a new search", US "Continued search " },
 	{US "rdonly",	4, NULL, (unsigned char *) &fdefault.readonly, US "Read only", US "Full editing", US "O Read only " },
+	{US "smarthome",	4, NULL, (unsigned char *) &fdefault.smarthome, US "Smart home key enabled", US "Smart home key disabled", US "  Smart home key " },
 	{US "backpath",	2, (int *) &backpath, NULL, US "Backup files stored in (%s): ", 0, US "Path to backup files " },
 	{US "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
 	{US "noxon",	0, &noxon, NULL, 0, 0, 0 },

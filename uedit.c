@@ -42,6 +42,25 @@ int u_goto_bol(BW *bw)
 }
 
 /*
+ * Move cursor to first non-whitespace character, unless it is
+ * already there, in which case move it to beginning of line
+ */
+int uhome(BW *bw)
+{
+	P *p = pdup(bw->cursor);
+
+	if ((bw->o.smarthome) && (p->col > pisindent(p))) { 
+		p_goto_bol(p);
+		while (joe_isblank(brc(p)))
+			pgetc(p);
+	} else
+		p_goto_bol(p);
+	pset(bw->cursor, p);
+	prm(p);
+	return 0;
+}
+
+/*
  * Move cursor to end of line
  */
 int u_goto_eol(BW *bw)
@@ -925,23 +944,25 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			else
 				return 0;
 		} else if (c == 'x' || c == 'X') {
-			quotestate = 3;
-			if (!mkqwna(bw->parent, sc("ASCII 0x--"), doquote, NULL, NULL, notify))
-				return -1;
-			else
-				return 0;
+			if (bw->b->o.utf8) {
+				if (!wmkpw(bw->parent, US "Unicode (ISO-10646) character in hex (^C to abort): ", &unicodehist, dounicode,
+				           NULL, NULL, NULL, NULL, NULL, -1))
+					return 0;
+				else
+					return -1;
+			} else {
+				quotestate = 3;
+				if (!mkqwna(bw->parent, sc("ASCII 0x--"), doquote, NULL, NULL, notify))
+					return -1;
+				else
+					return 0;
+			}
 		} else if (c == 'o' || c == 'O') {
 			quotestate = 5;
 			if (!mkqwna(bw->parent, sc("ASCII 0---"), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
-		} else if (c == 'u' || c == 'U') {
-			if (!wmkpw(bw->parent, US "Unicode (ISO-10646) character in hex (^C to abort): ", &unicodehist, dounicode,
-			           NULL, NULL, NULL, NULL, NULL, -1))
-				return 0;
-			else
-				return -1;
 		} else {
 			if ((c >= 0x40 && c <= 0x5F) || (c >= 'a' && c <= 'z'))
 				c &= 0x1F;

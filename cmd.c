@@ -106,6 +106,7 @@ CMD cmds[] = {
 	{US "isrch", TYPETW + TYPEPW, uisrch, NULL, 0, NULL},
 	{US "killproc", TYPETW + TYPEPW, ukillpid, NULL, 0, NULL},
 	{US "help", TYPETW + TYPEPW + TYPEQW, u_help, NULL, 0, NULL},
+	{US "home", TYPETW + TYPEPW + EFIXXCOL, uhome, NULL, 0, NULL},
 	{US "hnext", TYPETW + TYPEPW + TYPEQW, u_help_next, NULL, 0, NULL},
 	{US "hprev", TYPETW + TYPEPW + TYPEQW, u_help_prev, NULL, 0, NULL},
 	{US "insc", TYPETW + TYPEPW + EFIXXCOL + EMOD, uinsc, NULL, 1, US "delch"},

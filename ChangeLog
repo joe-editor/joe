@@ -1,3 +1,10 @@
+Tue Apr 20 2004  Joe Allen <jhallen@world.std.com>
+	* cmd.c, joerc.in, rc.c, types.h, uedit.c, uedit.h:
+
+	Applied David Phillips' smart home key patch.
+
+	Changed  ` u to ` x.
+
 Sun Apr 18 2004  Joe Allen <jhallen@world.std.com>
 	* syntax.c, uedit.c:
 
