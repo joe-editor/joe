@@ -132,13 +132,16 @@ int ubknd(BW *bw)
 {
 	char **a;
 	char *s;
+        char *sh=getenv("SHELL");
+        if (!sh)
+        	sh = "/usr/bin/bash";
 
 	a = vamk(3);
-	s = vsncpy(NULL, 0, sz(getenv("SHELL")));
+	s = vsncpy(NULL, 0, sz(sh));
 	a = vaadd(a, s);
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, getenv("SHELL"), a, NULL, NULL);
+	return cstart(bw, sh, a, NULL, NULL);
 }
 
 /* Run a program in a window */

@@ -1,4 +1,13 @@
-Fri Mar 19 2004  Joe ALlen <jhallen@world.std.com>
+Sat Mar 20 2004  Joe Allen <jhallen@world.std.com>
+	* tty.c, ushell.c:
+	Fix shell window for Cygwin:
+	The problem was that the SHELL environment variable is not defined.
+	So now, if it's not defined we assume /usr/bin/bash.
+	Also, we have to use /dev/ptmx for Cygwin.
+	There is still a problem: have to refresh the screen after shell
+	starts.
+
+Fri Mar 19 2004  Joe Allen <jhallen@world.std.com>
 	* tty.c:
 	Fix shell window for SunOS 5.8
 

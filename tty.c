@@ -754,6 +754,14 @@ static void mpxend(void)
  * string in static buffer or NULL if couldn't get a pair.
  */
 
+#ifdef __svr4__
+#define USEPTMX 1
+#else
+#ifdef __CYGWIN__
+#define USEPTMX 1
+#endif
+#endif
+
 #ifdef sgi
 
 /* Newer sgi machines can do it the __svr4__ way, but old ones can't */
@@ -766,7 +774,7 @@ static char *getpty(int *ptyfd)
 }
 
 #else
-#ifdef __svr4__
+#ifdef USEPTMX
 
 /* Strange streams way */
 

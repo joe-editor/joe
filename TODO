@@ -23,8 +23,6 @@ Immediate things:
 
  Add .v, .pl, etc. file types to joerc
 
- Get shell windows working in cygwin.  ptys exists but are very broken.
-
  Make tab completion more like bash?
 
  Emit ESC c to reset terminal on startup?
