@@ -97,23 +97,26 @@ int u_goto_right(BW *bw)
  */
 int u_goto_prev(BW *bw)
 {
-	if (pisbof(bw->cursor)) {
-		return -1;	/* cursor is at beginning of file */
-	} else if (isspace(prgetc(bw->cursor))) {
-		while ((!pisbof(bw->cursor)) && (isspace(prgetc(bw->cursor))))
-			/* do nothing */;	/* if cursor is on white-space char then find first non-white-space char */
-	}
-	if (pisbof(bw->cursor)) {
-		return -1;	/* cursor is at beginning of file */
-	}
-	pgetc(bw->cursor);
+	P *p = pdup(bw->cursor);
+	int c = prgetc(p);
 
-	while (!pisbof(bw->cursor)) {
-		if (isspace(prgetc(bw->cursor))) {	/* if previous character is white-space then beginning of word was found */
-			pgetc(bw->cursor);
-			break;
-		}
+	if (isalnum_(c)) {
+		while (isalnum_(c = brc(p)))
+			prgetc(p);
+		if (c != NO_MORE_DATA)
+			pgetc(p);
+	} else if (isspace(c)) {
+		while (isspace(c = brc(p)))
+			prgetc(p);
+		if (c != NO_MORE_DATA)
+			pgetc(p);
 	}
+	if (p->byte == bw->cursor->byte) {
+		prm(p);
+		return -1;
+	}
+	pset(bw->cursor, p);
+	prm(p);
 	return 0;
 }
 
@@ -125,23 +128,23 @@ int u_goto_prev(BW *bw)
  */
 int u_goto_next(BW *bw)
 {
-	if (piseof(bw->cursor)) {
-		return -1;	/* cursor is at end of file */
-	} else if (isspace(pgetc(bw->cursor))) {
-		while ((!piseof(bw->cursor)) && (isspace(pgetc(bw->cursor))))
-			/* do nothing */;	/* if cursor is on white-space char then find first non-white-space char */
-	}
-	if (piseof(bw->cursor)) {
-		return -1;	/* cursor is at end of file */
-	}
-	prgetc(bw->cursor);
+	P *p = pdup(bw->cursor);
+	int c = brc(p);
 
-	while (!piseof(bw->cursor)) {
-		if (isspace(pgetc(bw->cursor))) {	/* if next character is white-space then end of word was found */
-			prgetc(bw->cursor);
-			break;
-		}
+	if (isalnum_(c))
+		while (isalnum_(c = brc(p)))
+			pgetc(p);
+	else if (isspace(c))
+		while (isspace(c = brc(p)))
+			pgetc(p);
+	else
+		pgetc(p);
+	if (p->byte == bw->cursor->byte) {
+		prm(p);
+		return -1;
 	}
+	pset(bw->cursor, p);
+	prm(p);
 	return 0;
 }
 

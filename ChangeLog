@@ -1,4 +1,9 @@
 Sat May 31 2003  Vitezslav Samel <samel@mail.cz>
+	* uedit.c:
+	make u_goto_prev()/u_goto_next() act like ubackw()/u_word_delete()
+	when moving cursor, i.e. operate on the same class of characters
+
+Sat May 31 2003  Vitezslav Samel <samel@mail.cz>
 	* configure.ac:
 	change version number to include _CVS suffix
 
