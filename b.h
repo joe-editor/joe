@@ -162,4 +162,7 @@ extern int berror;
 
 unsigned char **getbufs PARAMS((void));
 
+int lock_it(unsigned char *path,unsigned char *buf);
+void unlock_it(unsigned char *path);
+
 #endif

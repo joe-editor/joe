@@ -331,6 +331,12 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	}
 #endif
 
+	/* It would be better if this ran uedit() to load files */
+
+	/* The business with backopt is to load the file first, then apply file
+	 * local options afterwords */
+
+	/* orphan is not compatible with exemac()- macros need a window to exist */
 	for (c = 1, backopt = 0; argv[c]; ++c)
 		if (argv[c][0] == '+' && argv[c][1]) {
 			if (!backopt)
@@ -345,6 +351,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 			BW *bw = NULL;
 			int er = error;
 
+			/* wmktw inserts the window before maint->curwin */
 			if (!orphan || !opened) {
 				bw = wmktw(maint, b);
 				if (er)
@@ -371,18 +378,26 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 				}
 				bw->b->o = bw->o;
 				bw->b->rdonly = bw->o.readonly;
-				if (!opened)
-					maint->curwin = bw->parent;
+				/* Put cursor in window, so macros work properly */
+				maint->curwin = bw->parent;
+				/* Execute macro */
 				if (er == -1 && bw->o.mnew)
 					exemac(bw->o.mnew);
 				if (er == 0 && bw->o.mold)
 					exemac(bw->o.mold);
+				/* Hmm... window might not exist any more... depends on what macro does... */
 				if (lnum > 0)
 					pline(bw->cursor, lnum - 1);
+				/* Go back to first window so windows are in same order as command line  */
+				if (opened)
+					wnext(maint);
+				
 			}
 			opened = 1;
 			backopt = 0;
 		}
+
+	
 
 	if (opened) {
 		wshowall(maint);

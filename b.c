@@ -199,6 +199,8 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->internal = 1;
 	b->scratch = 0;
 	b->changed = 0;
+	b->locked = 0;
+	b->ignored_lock = 0;
 	b->count = 1;
 	b->name = NULL;
 	b->er = -3;
@@ -247,6 +249,9 @@ void brm(B *b)
 	if (b && !--b->count) {
 		if (b->changed)
 			abrerr(b->name);
+		if (b->locked && !b->ignored_lock && b->name && b->name[0]!='!' && b->name[0]!='>') {
+			unlock_it(b->name);
+		}
 		if (b == errbuf)
 			errbuf = NULL;
 		if (b->undo)
@@ -2614,4 +2619,48 @@ RETSIGTYPE ttsig(int sig)
 	if (sig)
 		ttclsn();
 	_exit(1);
+}
+
+
+/* Create lock for a file
+   Return 0 for success or -1 for failure
+*/
+
+int lock_it(unsigned char *path,unsigned char *bf)
+{
+	unsigned char *lock_name=dirprt(path);
+	unsigned char *name=namprt(path);
+	unsigned char buf[1024];
+	unsigned char *user = getenv("USER");
+	unsigned char *host = getenv("HOSTNAME");
+	int len;
+	if (!user) user="me";
+	if (!host) host="here";
+	lock_name=vsncpy(sv(lock_name),sc(".#"));
+	lock_name=vsncpy(sv(lock_name),sv(name));
+	joe_snprintf_3(buf,sizeof(buf),"%s@%s.%d",user,host,getpid());
+	if (!symlink(buf,lock_name)) {
+		vsrm(lock_name);
+		vsrm(name);
+		return 0;
+	}
+	if (bf) {
+		len = readlink(lock_name,bf,255);
+		if (len<0) len = 0;
+		bf[len] = 0;
+	}
+	vsrm(lock_name);
+	vsrm(name);
+	return -1;
+}
+
+void unlock_it(unsigned char *path)
+{
+	unsigned char *lock_name=dirprt(path);
+	unsigned char *name=namprt(path);
+	lock_name=vsncpy(sv(lock_name),sc(".#"));
+	lock_name=vsncpy(sv(lock_name),sv(name));
+	unlink(lock_name);
+	vsrm(lock_name);
+	vsrm(name);
 }

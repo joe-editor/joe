@@ -360,7 +360,17 @@ static int ifdepth=0;		/* JM: Nesting level of if cmds */
 static int ifflag=1;		/* JM: Truth flag for if */
 static int iffail=0;		/* JM: Depth where ifflag became 0 */
 
-/* Query for user input */
+/* Suspend macro record/play to allow for user input.
+ *
+ * Stop recording current macro, make recursive call to edit loop, which
+ * runs until dialog is complete, then continue with macro recording.
+ *
+ * When the macro is played, edit loop is run as a subroutine until dialog
+ * is complete, then uquery returns, which continues macro execution.
+ *
+ * Completion of a dialog is indicated with 'notify' flag (look at interactive
+ * dialogs in ufile.c).
+ */
 
 int uquery(BW *bw)
 {

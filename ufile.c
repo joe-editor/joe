@@ -337,6 +337,7 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 		if (!bw->b->name && req->name[0]!='!' && req->name[0]!='>')
 			bw->b->name = joesep(joe_strdup(req->name));
 		if (bw->b->name && !strcmp(bw->b->name, req->name)) {
+			bw_unlock(bw);
 			bw->b->changed = 0;
 			saverr(bw->b->name);
 		}
@@ -858,6 +859,7 @@ static int exdone(BW *bw, struct savereq *req,int flg,int *notify)
 	if (flg) {
 		return -1;
 	} else {
+		bw_unlock(bw);
 		bw->b->changed = 0;
 		saverr(bw->b->name);
 		return uabort1(bw, -1);

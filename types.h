@@ -178,6 +178,8 @@ struct buffer {
 	P	*bof;
 	P	*eof;
 	unsigned char	*name;
+	int locked;		/* Set if we created a lock for this file */
+	int ignored_lock;	/* Set if we didn't create a lock and we don't care (locked set in this case) */
 	long    mod_time;	/* Last modification time for file */
 	int	orphan;
 	int	count;

@@ -1,5 +1,7 @@
 JOE 3.2
 
+- JOE now has GNU-Emacs compatible file locks.
+
 - The built-in calculator (ESC m) is now a full featured scientific
   calculator (I'm shooting for Casio Fx-4000 level here :-), including
   hexadecimal and ability to sum (and perform statistics on) a highlighted

@@ -1,5 +1,8 @@
 Short list for 3.2:
 
+  -orphan will break -mnew, -mold macros (because macros are run without a
+window on the screen).
+
 - - - - - - - -
 
 - if file is read only, check it out (p4 edit).
@@ -15,17 +18,6 @@ Short list for 3.2:
     - Print message when it happens
 
     - Reload modified files (or current window)
-
-- - - - - - - -
-
-- Lock files being edited?
-    - fcntl lock works over nfs.
-
-    - major problem with this is that you need to keep the file
-      open.  Maybe use creat() locks.
-
-    - lock should just advise user: the problem is someone may have left
-      editor open and there is no way to kill it.
 
 - - - - - - - -
 
@@ -219,12 +211,6 @@ Terminal handling:
  Emit ESC c to reset terminal on startup?
 
  Look into clearing right-most column.
-
-Macros:
-
- Interactive macros during file load are broken.  Think about multiple
- stack hack (otherwise template based C++ callbacks).
-
 
 Mouse:
 

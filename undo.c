@@ -80,6 +80,15 @@ void undorm(UNDO *undo)
 	demote(UNDO, link, &frdos, undo);
 }
 
+void bw_unlock(BW *bw)
+{
+	if (bw->b->locked && !bw->b->ignored_lock && bw->b->name && bw->b->name[0]!='!' &&
+	    bw->b->name[0]!='>' && bw->b->name[0]!='-') {
+		unlock_it(bw->b->name);
+		bw->b->locked = 0;
+	}
+}
+
 static void doundo(BW *bw, UNDOREC *ptr)
 {
 	dostaupd = 1;
@@ -101,6 +110,8 @@ static void doundo(BW *bw, UNDOREC *ptr)
 		bdel(bw->cursor, q);
 		prm(q);
 	}
+	if (bw->b->changed && !ptr->changed)
+		bw_unlock(bw);
 	bw->b->changed = ptr->changed;
 }
 
@@ -437,10 +448,13 @@ int uyankpop(BW *bw)
 
 int unotmod(BW *bw)
 {
+	bw_unlock(bw);
 	bw->b->changed = 0;
 	msgnw(bw->parent, US "Modified flag cleared");
 	return 0;
 }
+
+
 
 int ucopy(BW *bw)
 {
