@@ -16,6 +16,8 @@ Fri Mar  4 2005  Joe Allen <jhallen@world.std.com>
 
 	Accept buffer overflow patch.
 
+	-square is not a local option.
+
 Thu Mar  3 2005  Joe Allen <jhallen@world.std.com>
 
 	New help screen for math.

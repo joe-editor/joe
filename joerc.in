@@ -99,6 +99,8 @@
 
  -mouse		Enable mouse support
  -joexterm	If you are using Joe's modified Xterm, which makes -mouse
+
+ -bg_text color	Set background color for text, help, menus, prompts and messages.
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used
  in these strings:
@@ -219,8 +221,6 @@
 	Macros for the above options are in the same format as in the key
 	binding section below- but without the key name strings.
 
-
-	-square			Rectangular block mode
 	These define the language syntax for ^G (goto matching delimiter):
 
 	-single_quoted		Text between '  ' should be ignored (this is
