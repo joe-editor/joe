@@ -606,7 +606,7 @@ int udelch(BW * bw)
 	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
 		char c = 4;
 
-		jwrite(bw->pid, &c, 0);	/* FIXME: why would we write zero chars ??? */
+		joe_write(bw->pid, &c, 0);	/* FIXME: why would we write zero chars ??? */
 	} else {
 		P *p;
 
@@ -627,7 +627,7 @@ int ubacks(BW * bw, int k)
 	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
 		char c = k;
 
-		jwrite(bw->out, &c, 1);
+		joe_write(bw->out, &c, 1);
 	} else if (bw->parent->watom->what == TYPETW || !pisbol(bw->cursor)) {
 		P *p;
 		int c;
@@ -773,7 +773,7 @@ int utypebw(BW * bw, int k)
 	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
 		char c = k;
 
-		jwrite(bw->out, &c, 1);
+		joe_write(bw->out, &c, 1);
 	} else if (k == '\t' && bw->o.spaces) {
 		long n = piscol(bw->cursor);
 
@@ -1045,7 +1045,7 @@ int uctrl(BW * bw)
 int rtntw(BW * bw)
 {
 	if (bw->pid && bw->cursor->byte == bw->b->eof->byte) {
-		jwrite(bw->out, "\n", 1);
+		joe_write(bw->out, "\n", 1);
 	} else {
 		P *p = pdup(bw->cursor);
 		char c;

@@ -25,6 +25,7 @@
 #include "uedit.h"
 #include "ufile.h"
 #include "ushell.h"
+#include "utils.h"
 #include "vs.h"
 #include "w.h"
 
@@ -427,7 +428,7 @@ int uabort(BW *bw, int k)
 	if (bw->pid && bw->cursor->byte == bw->b->eof->byte && k != MAXINT) {
 		char c = k;
 
-		jwrite(bw->out, &c, 1);
+		joe_write(bw->out, &c, 1);
 		return 0;
 	}
 	if (bw->pid)

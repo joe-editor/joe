@@ -37,8 +37,10 @@ else
 	fi
 fi
 AC_HEADER_TIOCGWINSZ
-AC_CHECK_HEADERS([errno.h fcntl.h locale.h sgtty.h stdlib.h string.h sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
-AC_CHECK_HEADERS([ncurses.h curses.h sys/dirent.h time.h pwd.h paths.h term.h sys/stat.h sys/wait.h])
+AC_CHECK_HEADERS([errno.h fcntl.h locale.h sgtty.h stdlib.h string.h])
+AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
+AC_CHECK_HEADERS([ncurses.h curses.h sys/dirent.h time.h pwd.h paths.h])
+AC_CHECK_HEADERS([term.h sys/types.h sys/stat.h sys/wait.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_PROTOTYPES
@@ -59,6 +61,10 @@ AC_FUNC_LSTAT
 AC_FUNC_MALLOC
 AC_FUNC_SETPGRP
 AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_CHECK_TYPE([ssize_t], [], [
+	AC_DEFINE([ssize_t], [int], [Define to `int' if <sys/types.h> does not define.])
+	], [])
 AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_CHECK_FUNCS([alarm getcwd getwd isblank mkdir mkstemp setlocale strchr strdup utime setpgid setitimer sigprocmask])

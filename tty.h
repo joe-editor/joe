@@ -11,11 +11,6 @@
 #include "config.h"
 #include "types.h"
 
-/* Versions of 'read' and 'write' which automatically retry during signals
- * (yuck, yuck, yuck... we the #$%#$@ did they have to do this?) */
-int jread PARAMS((int fd, void *buf, int siz));
-int jwrite PARAMS((int fd, void *buf, int siz));
-
 /* void ttopen(void);  Open the tty (attached to stdin) for use inside of JOE
  *
  * (0) Call sigjoe()

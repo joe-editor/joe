@@ -9,6 +9,10 @@
 #include "config.h"
 
 #include <ctype.h>
+#include <errno.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
 
 #include "utils.h"
 
@@ -58,6 +62,7 @@ signed long int long_min(signed long int a, signed long int b)
 {
 	return a < b ? a : b;
 }
+
 /* 
  * Characters which are considered as word characters 
  * 	_ is considered as word character because is often used 
@@ -66,4 +71,25 @@ signed long int long_min(signed long int a, signed long int b)
 unsigned int isalnum_(unsigned int c)
 {
 	return (isalnum(c) || (c == 95));
+}
+
+/* Versions of 'read' and 'write' which automatically retry when interrupted */
+ssize_t joe_read(int fd, void *buf, size_t size)
+{
+	ssize_t rt;
+
+	do {
+		rt = read(fd, buf, size);
+	} while (rt < 0 && errno == EINTR);
+	return rt;
+}
+
+ssize_t joe_write(int fd, void *buf, size_t size)
+{
+	ssize_t rt;
+
+	do {
+		rt = write(fd, buf, size);
+	} while (rt < 0 && errno == EINTR);
+	return rt;
 }

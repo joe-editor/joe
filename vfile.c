@@ -23,7 +23,7 @@
 #include "blocks.h"
 #include "queue.h"
 #include "path.h"
-#include "tty.h"
+#include "utils.h"
 #include "vfile.h"
 #include "vs.h"
 
@@ -61,10 +61,10 @@ void vflsh(void)
 				vfile->fd = open(vfile->name, O_RDWR);
 			lseek(vfile->fd, addr, 0);
 			if (addr + PGSIZE > vsize(vfile)) {
-				jwrite(vfile->fd, vlowest->data, (int) (vsize(vfile) - addr));
+				joe_write(vfile->fd, vlowest->data, (int) (vsize(vfile) - addr));
 				vfile->size = vsize(vfile);
 			} else {
-				jwrite(vfile->fd, vlowest->data, PGSIZE);
+				joe_write(vfile->fd, vlowest->data, PGSIZE);
 				if (addr + PGSIZE > vfile->size)
 					vfile->size = addr + PGSIZE;
 			}
@@ -97,10 +97,10 @@ void vflshf(VFILE *vfile)
 		}
 		lseek(vfile->fd, addr, 0);
 		if (addr + PGSIZE > vsize(vfile)) {
-			jwrite(vfile->fd, vlowest->data, (int) (vsize(vfile) - addr));
+			joe_write(vfile->fd, vlowest->data, (int) (vsize(vfile) - addr));
 			vfile->size = vsize(vfile);
 		} else {
-			jwrite(vfile->fd, vlowest->data, PGSIZE);
+			joe_write(vfile->fd, vlowest->data, PGSIZE);
 			if (addr + PGSIZE > vfile->size)
 				vfile->size = addr + PGSIZE;
 		}
@@ -204,10 +204,10 @@ char *vlock(VFILE *vfile, long int addr)
 		}
 		lseek(vfile->fd, addr, 0);
 		if (addr + PGSIZE > vfile->size) {
-			jread(vfile->fd, vp->data, (int) (vfile->size - addr));
+			joe_read(vfile->fd, vp->data, (int) (vfile->size - addr));
 			mset(vp->data + vfile->size - addr, 0, PGSIZE - (int) (vfile->size - addr));
 		} else
-			jread(vfile->fd, vp->data, PGSIZE);
+			joe_read(vfile->fd, vp->data, PGSIZE);
 	} else
 		mset(vp->data, 0, PGSIZE);
 

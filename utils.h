@@ -12,6 +12,10 @@
 
 #include "config.h"
 
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>			/* we need size_t, ssize_t */
+#endif
+
 /* 
  * Characters which are considered as word characters 
  * 	_ is considered as word character because is often used 
@@ -43,5 +47,9 @@ unsigned int uns_min PARAMS((unsigned int a, unsigned int b));
 signed int int_min PARAMS((signed int a, int signed b));
 signed long long_max PARAMS((signed long a, signed long b));
 signed long long_min PARAMS((signed long a, signed long b));
+
+/* Versions of 'read' and 'write' which automatically retry when interrupted */
+ssize_t joe_read PARAMS((int fd, void *buf, size_t siz));
+ssize_t joe_write PARAMS((int fd, void *buf, size_t siz));
 
 #endif

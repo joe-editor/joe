@@ -31,7 +31,6 @@
 #include "queue.h"
 #include "rc.h"
 #include "scrn.h"
-#include "tty.h"
 #include "uerror.h"
 #include "undo.h"
 #include "utils.h"
@@ -1665,7 +1664,7 @@ static int bkread(int fi, char *buff, int size)
 		error = 0;
 		return 0;
 	}
-	for (a = b = 0; (a < size) && ((b = jread(fi, buff + a, size - a)) > 0); a += b) ;
+	for (a = b = 0; (a < size) && ((b = joe_read(fi, buff + a, size - a)) > 0); a += b) ;
 	if (b < 0)
 		error = -2;
 	else
@@ -1965,11 +1964,11 @@ int bsavefd(P *p, int fd, long int size)
 
 	while (size > (amnt = GSIZE(np->hdr) - np->ofst)) {
 		if (np->ofst < np->hdr->hole) {
-			if (jwrite(fd, np->ptr + np->ofst, np->hdr->hole - np->ofst) < 0)
+			if (joe_write(fd, np->ptr + np->ofst, np->hdr->hole - np->ofst) < 0)
 				goto err;
-			if (jwrite(fd, np->ptr + np->hdr->ehole, SEGSIZ - np->hdr->ehole) < 0)
+			if (joe_write(fd, np->ptr + np->hdr->ehole, SEGSIZ - np->hdr->ehole) < 0)
 				goto err;
-		} else if (jwrite(fd, np->ptr + np->ofst + GGAPSZ(np->hdr), amnt) < 0)
+		} else if (joe_write(fd, np->ptr + np->ofst + GGAPSZ(np->hdr), amnt) < 0)
 			goto err;
 		size -= amnt;
 		pnext(np);
@@ -1977,16 +1976,16 @@ int bsavefd(P *p, int fd, long int size)
 	if (size) {
 		if (np->ofst < np->hdr->hole) {
 			if (size > np->hdr->hole - np->ofst) {
-				if (jwrite(fd, np->ptr + np->ofst, np->hdr->hole - np->ofst) < 0)
+				if (joe_write(fd, np->ptr + np->ofst, np->hdr->hole - np->ofst) < 0)
 					goto err;
-				if (jwrite(fd, np->ptr + np->hdr->ehole, (int) size - np->hdr->hole + np->ofst) < 0)
+				if (joe_write(fd, np->ptr + np->hdr->ehole, (int) size - np->hdr->hole + np->ofst) < 0)
 					goto err;
 			} else {
-				if (jwrite(fd, np->ptr + np->ofst, (int) size) < 0)
+				if (joe_write(fd, np->ptr + np->ofst, (int) size) < 0)
 					goto err;
 			}
 		} else {
-			if (jwrite(fd, np->ptr + np->ofst + GGAPSZ(np->hdr), (int) size) < 0)
+			if (joe_write(fd, np->ptr + np->ofst + GGAPSZ(np->hdr), (int) size) < 0)
 				goto err;
 		}
 	}
@@ -2046,7 +2045,7 @@ int bsave(P *p, char *s, long int size)
 		char nl = '\n';
 
 		pfwrd(q, size - 1);
-		if (brc(q) != '\n' && jwrite(fileno(f), &nl, 1) < 0)
+		if (brc(q) != '\n' && joe_write(fileno(f), &nl, 1) < 0)
 			error = -5;
 		prm(q);
 	}
