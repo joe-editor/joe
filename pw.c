@@ -38,6 +38,8 @@ unsigned char *current_dir;
 
 void set_current_dir(unsigned char *s,int simp)
 {
+	if (s[0]=='!' || s[0]=='>' && s[1]=='>')
+		return;
 	vsrm(current_dir);
 	if (s) {
 		current_dir=dirprt(s);

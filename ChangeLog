@@ -7,6 +7,8 @@ Mon Mar 21 11:56:56 EST 2005
 	Backspace in overtype mode (picture mode
 	needs work).
 
+	Don't use paths which begin with ! as directories.
+
 Sun Mar 20 11:54:44 EST 2005
 
 	Hex edit mode

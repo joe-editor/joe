@@ -189,3 +189,22 @@ complete.  It also suspends the automatic 'pop' which happens at the end
 of a macro- so if the macro ends in a dialog you often want to call 'query'
 to prevent the ^KB ^KK positions from being restored too early.
 
+Hex edit mode
+-------------
+
+When this mode is selected (either put -hex on the command line, or look for
+"Hex edit mode" after hitting ^T), the buffer is displayed as a hex dump,
+but all of the editing commands operate the same way.  It is most useful to
+select overtype mode in conjunction with hex dump (hit ^T T).  Then typing
+will not insert.
+
+- To enter the hex byte 0xF8 type ` x F 8
+
+- You can use ^KC to copy a block as usual.  If overtype mode is selected,
+  the block will overwrite the destination data without changing the size of
+  the file.  Otherwise it inserts. 
+
+- Hit ESC x byte <Enter>, to jump to a particular byte offset.  Hex values
+  can be entered into this prompt like this: 0x2000.
+
+- Search, incremental search, and search & replace all operate as usual.
