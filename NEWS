@@ -16,6 +16,11 @@ JOE 3.1
 - Menu size is now variable (40% of window size or smaller if
   it's not filled).
 - Added -icase option for case insensitive search by default.
+- Added -wrap option, which makes searches wrap
+- Added status line sequence %x: shows current context (function
+  name if you're editing C).
+- Added tab completion at search prompts and ^K <return> for tab
+  completion in text windows.
 
 JOE 3.0 (23 APR 2004)
 - UTF-8
