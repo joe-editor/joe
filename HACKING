@@ -142,3 +142,136 @@ memory (using mmap()) and treating each 4KB page as a gap buffer with 0 size
 gap.  When page is modified, use copy-on-write to move the page into the
 swap file (change pointer in header).  This is not done now.  Instead the
 file is copied when loaded.
+
+----------------
+Windowing System
+----------------
+
+There is a tiny object-oriented windowing system built into JOE.  This is
+the class hierarchy:
+
+SCRN
+  A optimizing terminal screen driver (very similar to 'curses').
+    has a pointer to a CAP, which has the terminal capabilities read
+    from termcap or terminfo.
+
+    writes output to screen with calls to the macro ttputc(). (tty.c is the
+    actual interface to the tty device).
+
+    cpos()    - set cursor position
+    outatr()  - draw a character at a screen position with attributes
+    eraeol()  - erase from some position to the end of the line
+
+SCREEN
+  Contains list of windows on the screen (W *topwin).
+
+  Points to window with focus (W *curwin).
+
+  Contains pointer to a 'SCRN', the tty driver for the particular terminal
+  type.
+
+W
+  A window on a screen.
+
+  Has position and size of window.
+
+  Has:
+    void *object- pointer to a structure which inherits window (W should
+    really be a base class for these objects- since C doesn't have this
+    concept, a pointer to the derived class is used instead- the derived
+    class has a pointer to the base class: it's called 'parent').
+
+      Currently this is one of:
+        BW *    a text buffer window (screen update code is here.)
+        QW *    query window (single character yes/no questions)
+        MENU *  file selection menu
+
+      BW * is inherited by (in the same way that a BW inherits a W):
+        PW *    a single line prompt window (file name prompts)
+        TW *    a text buffer window (main editing window).
+
+    WATOM *watom- Gives type of this window.  The WATOM structure has
+    pointers to virtual member functions.
+
+    KBD *kbd- The keyboard handler for this window.  When window has
+    focus, keyboard events are sent to this object.  When key sequences
+    are recognized, macros bound to them are invoked.
+
+Some window are operators on others.  For example ^K E, load a file into a
+window prompt operates on a text window.  If you hit tab, a file selection
+menu which operates on the prompt window appears below this.  When a window
+is the target of operator windows is killed, the operators are killed also.
+
+Currently all windows are currently the width of the screen (should be fixed
+in the future).  The windows are in a big circular list (think of a big loop
+of paper).  The screen is small window onto this list.  So unlike emacs, you
+can have windows which exist, but which are not on the screen.
+
+^K N and ^K P move the cursor to next or previous window.  If the next
+window is off the screen it is moved onto the screen, along with any
+operator windows are target it.
+
+------
+MACROS
+------
+
+- add something here.
+
+-------------
+Screen update
+-------------
+
+- add something here.
+
+-----
+Files
+-----
+main.c		has main().
+
+b.c		Text buffer management
+undo.c		Undo system.
+kbd.c		Keymap datastructure (keysequence to macro bindings).
+macro.c		Keyboard and joerc file macros
+help.c		Implement the on-line help window
+poshist.c	Cursor position history
+rc.c		joerc file loader
+tab.c		tab completion for file selection prompt
+regex.c		regular expressions
+
+blocks.c	Library: fast memcpy() functions (necessary on really old versions of UNIX).
+dir.c		Directory reading functions (for old UNIXs).
+hash.c		Library: simple hash functions.
+vs.c		Automatic variable length strings (like C++ string).
+va.c		Automatic array of strings (like STL container)
+vfile.c		Library: virtual memory functions (allows you to edit files larger than memory)
+utils.c		Misc. utilities
+queue.c		Library: doubly linked lists
+path.c		Library: file name and path manipulation functions
+selinux.c	secure linux functions
+
+i18n.c		Unicode character type information database
+charmap.c	UNICODE to 8-bit conversion functions
+utf8.c		UTF-8 to unicode coding functions
+
+termcap.c	load terminal capabilities from /etc/termcap file or terminfo database
+scrn.c		terminal update functions (curses)
+syntax.c	syntax highlighter
+
+cmd.c		Table of user edit functions
+ublock.c	User edit functions: block moves
+uedit.c		User edit functions: basic edit functions
+uerror.c	User edit functions: parse compiler error messages and goto next error, previous error
+ufile.c		User edit functions: load and save file
+uformat.c	User edit functions: paragraph formatting, centering
+uisrch.c	User edit functions: incremental search
+umath.c		User edit functions: calculator
+usearch.c	User edit functions: search & replace
+ushell.c	User edit functions: subshell
+utag.c		User edit functions: tags file search
+
+menu.c		A class: menu windows
+tw.c		A class: main text editing window
+qw.c		A class: query windows
+pw.c		A class: prompt windows
+bw.c		A class: text buffer window (screen update code is here)
+w.c		A class: base class for all windows
