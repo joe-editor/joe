@@ -189,7 +189,7 @@ done
 	",:;=()><[]*&|!~+\-%^"	control		recolor=-1
 
 :brace Brace
-	*	idle	noeat		recolor=-1
+	*	idle	noeat
 
 :control Control
 	*	idle	noeat
