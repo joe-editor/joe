@@ -1,51 +1,26 @@
-
 This is Joe's Own Editor.  See the INFO file if you don't know what this is.
-
-A preformatted man page is in joe.man.  Joe.1 is an nroff formatted man
-page.
 
 =-=-=-=-=-=-=-=-=-=-=-=
 Installation proceedure
 =-=-=-=-=-=-=-=-=-=-=-=
 
-	Edit the Makefile to change the following options:
+  Joe uses automake and autocnf suites to build itself. Type:
 
-	  Where joe's keymap initialization files, global termcap file and
-	  terminfo source file will go if not /usr/local/lib.
+	./configure
+	make
+	make install
 
-	  Where joe will be placed when you do 'make install'
-	  if not /usr/local/bin.
+  to build and install joe. The installation step may need increased
+priviledges to install into default places (/usr/local). You can then try it
+by typing "joe".
 
-	  Where joe's man page will be placed, if not /usr/man/man1.
+=-=-=
+Usage
+=-=-=
 
-	  If you want to use the terminfo database instead of termcap.
+USAGE:	joe filename [filename ...]
 
-	  Some systems require a few other changes (notably Xenix).  Check
-	  out the comments in the Makefile.
-
-	Type 'make' to create joe.  You can then try it by typing ./joe.
-
-	Then log into root and type 'make install' to install joe.
-
-	Type 'make clean' eliminate the .o files
-
-	Set the baud rate properly (see below).
-
-	See special notes below for dealing with broken terminals.
-
-	See special notes below for 'JPICO'
-
-	See special notes below for using joe within shell scripts.
-
-	If you want 8-bit characters to get through, you will have to play
-	with your stty settings:
-
-	On Posix/SysV try this command: stty -istrip -iexten -inpck
-
-USEAGE:	joe filenames
-
-	Optionally preceed each filename with +nnn to start at specified 
-line number.  
+  Optionally preceed each filename with +nnn to start at specified line number.
 
   Options:
 
@@ -185,17 +160,6 @@ understands several new capabilities:
 			beginning of the specified line.  Like 'ESC [ n H' in
 			ansi/vt100.
 
-	But if you really must use the terminfo database see the
-instructions in the Makefile.  Also a terminfo version of the included
-termcap file is provided, in case you want it added to the terminfo database
-with 'tic'.
-
-VOID trouble
-=-=-=-=-=-=-
-
-	If you're using an old C compiler which doesn't like the 'void'
-type, uncomment the '#define void int' line from the config.h file.
-
 JPICO
 =-=-=
 
@@ -308,4 +272,3 @@ redirected, but you don't need to do 'joe -', you should simply redirect
 joe's stdin/stdout to /dev/tty:
 
 	joe filename  </dev/tty >/dev/tty
-

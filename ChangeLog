@@ -1,3 +1,8 @@
+Sat May  3 2003  Vitezslav Samel <samel@mail.cz>
+	* README:
+	delete untrue statements and mention the new build system;
+	this file needs some more work
+
 Sat Mar 22 2003  Vitezslav Samel <samel@mail.cz>
 	* jstarrc.in, rc.c:
 	fix typos (patch by Jesse McGrew)
