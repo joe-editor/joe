@@ -1034,7 +1034,8 @@ lose,query		^X k			Kill buffer in window
 lose,query,edit		^X ^V			Edit a file: no orphaned buffers
 
 psh,drop,fwrdc,query,markk,blkdel	^[ z	Cut to char
-psh,markk,blksave,">>",query	^X a		Append region to file
+psh,markk,if,"markv",then,blksave,">>",query,else,save,bol,deleol,">>",query,endif	^X a
+ psh,markk,blksave,">>",query	^X a		Append region to file
 retype,
 arg,"top+height/2-line",rtn,upslide	^L	Recenter
 arg,"top+height/2-line",rtn,dnarw	^[ r	Move to center line
@@ -1118,8 +1119,9 @@ qrepl		^[ ^R		Query replace (uemacs)
 redo		^^		Redo changes
  rfirst		^R		Search backwards
 rsrch		^R		Incremental search backwards
-rindent		^X ^I		Indent to the right
-rindent		^[ ^\
+if,"markv",then,rindent,else,markk,rindent,endif	^X ^I
+if,"markv",then,rindent,else,markk,rindent,endif	^[ ^\
+ markk,rindent	^[ ^\
 rtarw		.kr		Go right
 rtarw		^F
 rtarw		^[ O C

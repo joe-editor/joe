@@ -1,6 +1,35 @@
 Short list for 3.2:
 
-get updated 'conf' syntax file
+- - - - - - - -
+
+- if file is read only, check it out (p4 edit).
+    - automatically?
+    - execute macro on typing in read-only file?
+
+- arch/tla wants the editor to break hardlinks on save.  This
+  should be an option in joe (unlink, then write).
+
+- - - - - - - -
+
+- Watch loaded file for changes under us
+    - Print message when it happens
+
+    - Reload modified files (or current window)
+
+- - - - - - - -
+
+- Lock files being edited?
+    - fcntl lock works over nfs.
+
+    - major problem with this is that you need to keep the file
+      open.  Maybe use creat() locks.
+
+    - lock should just advise user: the problem is someone may have left
+      editor open and there is no way to kill it.
+
+- - - - - - - -
+
+- egmont's Ctrl-selection bug
 
 - - - - - - - -
 
@@ -11,30 +40,9 @@ get updated 'conf' syntax file
 - update man page
 - update NEWS
 
-- egmont's Ctrl-selection bug
-
 - for cygwin: we need to compile with --disable-termcap
 
 - - - - - - - -
-
-- in emacs: ^XA save block when no block is selected, we type in >> for
-append (because that't what it does in emacs), but we also put the file name
-in, but we do the two in the wrong order.
-
-   (we could change save so it doesn't stuff name in, but it then break
-    jpico).
-
-
-	save,name
-	blksave
-
-  emacs: ^X^I (indent region) does not work with selection method
-
-- - - - - - - -
-
-- ^D in selection prompts should bring up menu as in tcsh
-
-- - - - - - - - 
 
 - better string demarcation in highlighter (highlight all words with 's in
   them- need to use pointers instead of buffer to refer to string)
@@ -56,34 +64,6 @@ in, but we do the two in the wrong order.
 
 More colors: UI for using 256 color xterms.
   - Problems: tgoto takes only two params, so we have to switch to tparm.
-
-- - - - - - - -
-
-- if file is read only, check it out (p4 edit).
-    - automatically?
-    - execute macro on typing in read-only file?
-
-
-- - - - - - - -
-
-- Watch loaded file for changes under us (merge differences?)
-    - Print message when it happens
-
-    - Reload modified files (or current window)
-
-- - - - - - - -
-
-- Lock files being edited?
-    - fcntl lock works over nfs.
-
-    - major problem with this is that you need to keep the file
-      open.  Maybe use creat() locks.
-
-    - lock should just advise user: the problem is someone may have left
-      editor open and there is no way to kill it.
-
-
-
 
 - - - - - - - -
 
@@ -152,13 +132,7 @@ Fix for next release highlight:
 
   other windows why
   lose state during page down?
-  perl highlighter
-  more syntax files
 
-  byte to byte conversions?
-  UTF-8 decoder right at input instead of in qw and utype?
-
-UTF-8 syntax files?
 
 Support for more languages:
 
@@ -168,12 +142,15 @@ Support for more languages:
 
 File loading/storing:
 
+ Emacs breaks hard links on save.  Vim and Joe preserve them.  Should
+ this be an option.  This has something to do with "tla".
+
  Should have switch buffers in current window as more fundamental joe key
  sequence (it's ^[ u and ^[ v for now).
 
  Unnamed buffers should be in bufed list (was fixed in the lost joe 2.9)
 
-Jmacs/Jstar/Jpico:
+Jmacs:
 
  search and replace 'fred' to 'foo':
     find 'Fred', gets 'Foo'.
@@ -184,7 +161,12 @@ Jmacs/Jstar/Jpico:
 
  ESC args should work differently in emacs
 
- many negative args do not work properly
+ many negative args do not work properly because args
+ are not passed to target command in a macro.
+
+ some macros are broken because of the bail on any error
+ semantic: sometimes we want to ignore errors (emacs scroll
+ other window when we hit end of window).
 
  exiting options and i-search with ESC is not pretty
  (it isn't in emacs either)
@@ -204,17 +186,22 @@ Documentation:
 UTF-8/Internationalization
 --------------------------
 
+byte to byte conversions?
+UTF-8 decoder right at input instead of in qw and utype?
+
+UTF-8 syntax files?
+
 - right-left mode for Hebrew/Arabic?
 
   There is no good way to do this.  For all rtol, you could use a reversed
 xterm.  For mixed, you need tags to indicate direction.
 
- Don't understand:  optionally break hardlinks on save?  what is "tla"?
 
- Use memory mapped files to fast load large files.  Have to not
- count no. lines in each buffer on startup.
 
- Emulate other editors?  Brief, EDT?
+Use memory mapped files to fast load large files.  Have to not
+count no. lines in each buffer on startup.
+
+Emulate other editors?  Brief, EDT?  CUA?
 
 
 Prompts:

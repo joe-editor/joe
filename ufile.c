@@ -334,9 +334,9 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 			joe_free(bw->b->name);
 			bw->b->name = 0;
 		}
-		if (!bw->b->name)
+		if (!bw->b->name && req->name[0]!='!' && req->name[0]!='>')
 			bw->b->name = joesep(joe_strdup(req->name));
-		if (!strcmp(bw->b->name, req->name)) {
+		if (bw->b->name && !strcmp(bw->b->name, req->name)) {
 			bw->b->changed = 0;
 			saverr(bw->b->name);
 		}
@@ -420,7 +420,7 @@ static int dosave(BW *bw, struct savereq *req, int *notify)
 		}
 	}
 	else
-	{	
+	{
 		if (backup(bw)) {
 			return saver(bw, 0, req, notify);
 		} else {

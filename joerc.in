@@ -1273,6 +1273,7 @@ uparw		^[ [ A
 :prompt			Prompt windows
 :inherit main
 if,"byte>size",then,complete,complete,else,delch,endif	^D
+complete	^I
 dnarw,eol	.kd		Go down
 :menu			Selection menus
 :inherit windows

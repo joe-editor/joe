@@ -361,7 +361,8 @@ double m_y1(double n) { return y1(n); }
 
 double calc(BW *bw, unsigned char *s)
 {
-	BW *tbw = bw->parent->main->object;
+	/* BW *tbw = bw->parent->main->object; */
+	BW *tbw = bw;
 	struct var *v;
 	int c = brch(bw->cursor);
 
@@ -412,6 +413,9 @@ double calc(BW *bw, unsigned char *s)
 	v = get(US "byte");
 	v->val = tbw->cursor->byte + 1;
 	v->set = 1;
+	v = get(US "size");
+	v->val = tbw->b->eof->byte;
+	v->set = 1;
 	v = get(US "height");
 	v->val = tbw->h;
 	v->set = 1;
@@ -420,6 +424,9 @@ double calc(BW *bw, unsigned char *s)
 	v->set = 1;
 	v = get(US "char");
 	v->val = (c == NO_MORE_DATA ? -1.0 : c);
+	v->set = 1;
+	v = get(US "markv");
+	v->val = markv(1) ? 1.0 : 0.0;
 	v->set = 1;
 	merr = 0;
 	return eval(s);

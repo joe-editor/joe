@@ -4,6 +4,9 @@ Sat Mar 12 00:31:23 EST 2005
 	Fix some marking bugs in jpico.
 	Allow colors to be specified in joerc file
 	Improve perl again.
+	^D in prompts brings up menu
+	Fix ^X a in jmacs
+	Fix ^X ^I in jmacs (neg arg is broken)
 
 Fri Mar 11 2005  Joe Allen <jhallen@world.std.com>
 
