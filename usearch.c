@@ -617,9 +617,10 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	}
 }
 
-static int dofirst(BW *bw, int back, int repl)
+int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 {
 	SRCH *srch;
+	BW *pbw;
 
 	if (smode && globalsrch) {
 		globalsrch->backwards = back;
@@ -640,9 +641,14 @@ static int dofirst(BW *bw, int back, int repl)
 	srch->addr = bw->cursor->byte;
 	srch->wrap_p = pdup(bw->cursor);
 	srch->wrap_p->owner = &srch->wrap_p;
-	if (wmkpw(bw->parent, US "Find (^C to abort): ", &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap))
+	if (pbw=wmkpw(bw->parent, US "Find (^C to abort): ", &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap)) {
+		if (hint) {
+			binss(pbw->cursor, hint);
+			pset(pbw->cursor, pbw->b->eof);
+			pbw->cursor->xcol = piscol(pbw->cursor);
+		}
 		return 0;
-	else {
+	} else {
 		rmsrch(srch);
 		return -1;
 	}
@@ -650,17 +656,17 @@ static int dofirst(BW *bw, int back, int repl)
 
 int pffirst(BW *bw)
 {
-	return dofirst(bw, 0, 0);
+	return dofirst(bw, 0, 0, NULL);
 }
 
 int prfirst(BW *bw)
 {
-	return dofirst(bw, 1, 0);
+	return dofirst(bw, 1, 0, NULL);
 }
 
 int pqrepl(BW *bw)
 {
-	return dofirst(bw, 0, 1);
+	return dofirst(bw, 0, 1, NULL);
 }
 
 /* Execute next search */

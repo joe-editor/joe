@@ -23,6 +23,7 @@ int pqrepl PARAMS((BW *bw));
 int prfirst PARAMS((BW *bw));
 
 int ufinish PARAMS((BW *bw));
+int dofirst PARAMS((BW *bw, int back, int repl, unsigned char *hint));
 
 extern B *findhist;
 extern B *replhist;

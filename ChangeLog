@@ -1,6 +1,7 @@
 Fri Feb 25 2005  Joe Allen <jhallen@world.std.com>
 
 	Fix bash highlighter bug: $"  " and $'  ' are strings.
+	Ctrl-G starts a search if it doesn't know word under cursor.
 
 Sun Feb 20 2005  Joe Allen <jhallen@world.std.com>
 

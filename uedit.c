@@ -20,6 +20,7 @@
 #include "ublock.h"
 #include "uformat.h"
 #include "umath.h"
+#include "usearch.h"
 #include "utils.h"
 #include "vs.h"
 #include "utf8.h"
@@ -505,8 +506,11 @@ int utomatch(BW *bw)
 			flg=tomatch_bkwd(bw,US "case",US "esac");
 		else if(!strcmp((char *)buf,"done"))
 			flg=tomatch_bkwd(bw,US "do",US "done");
-		else
+		else {
 			flg= -1;
+			/* We don't know the word, so start a search */
+			flg = dofirst(bw, 0, 0, buf);
+		}
 		vsrm(buf);
 		return flg;
 		
