@@ -1,3 +1,9 @@
+Sun Jun  1 2003  Vitezslav Samel <samel@mail.cz>
+	* configure.ac, ublock.c:
+	NEW FEATURE: when filtering block put JOE_FILENAME= with the right
+	filename into the environment (only when putenv() is available);
+	patch by Marc Joosen <marcj@historia.et.tudelft.nl>
+
 Sat May 31 2003  Vitezslav Samel <samel@mail.cz>
 	* uedit.c:
 	make u_goto_prev()/u_goto_next() act like ubackw()/u_word_delete()

@@ -92,7 +92,7 @@ AC_CHECK_FUNCS([isblank])
 if test x"$ac_cv_func_isblank" = xyes; then
 	joe_ISBLANK
 fi
-AC_CHECK_FUNCS([alarm mkdir mkstemp setlocale strchr strdup utime setpgid])
+AC_CHECK_FUNCS([alarm mkdir mkstemp putenv setlocale strchr strdup utime setpgid])
 AC_CHECK_FUNC([snprintf],, AC_MSG_ERROR([snprintf not available: I won't build for this ancient system]))
 AC_CHECK_FUNCS([setitimer sigaction sigvec siginterrupt sigprocmask])
 
