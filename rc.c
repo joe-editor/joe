@@ -165,7 +165,7 @@ struct glopts {
 	{ "linums",	4, NULL, (char *) &fdefault.linums, "Line numbers enabled", "Line numbers disabled", "N Line numbers " },
 	{ "marking",	0, &marking, NULL, "Anchored block marking on", "Anchored block marking off", "Marking " },
 	{ "asis",	0, &dspasis, NULL, "Characters above 127 shown as-is", "Characters above 127 shown in inverse", "Meta chars as-is " },
-	{ "force",	0, &force, NULL, "Last line forced to have NL when file saved", "Last line not forces to have NL", "Force last NL " },
+	{ "force",	0, &force, NULL, "Last line forced to have NL when file saved", "Last line not forced to have NL", "Force last NL " },
 	{ "nobackups",	0, &nobackups, NULL, "Backup files will not be made", "Backup files will be made", " Disable backups " },
 	{ "lightoff",	0, &lightoff, NULL, "Highlighting turned off after block operations", "Highlighting not turned off after block operations", "Auto unmark " },
 	{ "exask",	0, &exask, NULL, "Prompt for filename in save & exit command", "Don't prompt for filename in save & exit command", "Exit ask " },

@@ -1,4 +1,8 @@
 Sat Mar 22 2003  Vitezslav Samel <samel@mail.cz>
+	* jstarrc.in, rc.c:
+	fix typos (patch by Jesse McGrew)
+
+Sat Mar 22 2003  Vitezslav Samel <samel@mail.cz>
 	* cmd.c:
 	fix memleak in docmd() (patch by Jesse McGrew)
 
