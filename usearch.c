@@ -286,7 +286,7 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 		if (pgetc(start) == NO_MORE_DATA)
 			break;
 	}
-	if (wrap && !srch->wrap_flag && srch->wrap_p) {
+	if (srch->allow_wrap && !srch->wrap_flag && srch->wrap_p) {
 		msgnw(bw->parent, US "Wrapped");
 		srch->wrap_flag = 1;
 		p_goto_bof(start);
@@ -343,7 +343,7 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 		}
 	}
 
-	if (wrap && !srch->wrap_flag && srch->wrap_p) {
+	if (srch->allow_wrap && !srch->wrap_flag && srch->wrap_p) {
 		msgnw(bw->parent, US "Wrapped");
 		srch->wrap_flag = 1;
 		p_goto_eof(start);
@@ -393,6 +393,7 @@ SRCH *mksrch(unsigned char *pattern, unsigned char *replacement, int ignore, int
 	srch->markb = NULL;
 	srch->markk = NULL;
 	srch->wrap_p = NULL;
+	srch->allow_wrap = wrap;
 	srch->wrap_flag = 0;
 	srch->valid = 0;
 	srch->block_restrict = 0;
@@ -550,6 +551,14 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 		case 's':
 		case 'S':
 			srch->ignore = 0;
+			break;
+		case 'w':
+		case 'W':
+			srch->allow_wrap = 1;
+			break;
+		case 'n':
+		case 'N':
+			srch->allow_wrap = 0;
 			break;
 		case 'k':
 		case 'K':

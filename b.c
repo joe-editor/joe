@@ -274,6 +274,12 @@ void brm(B *b)
 	}
 }
 
+void brmall()
+{
+	while (!qempty(B, link, &bufs))
+		brm(bufs.link.next);
+}
+
 P *poffline(P *p)
 {
 	if (p->ptr) {

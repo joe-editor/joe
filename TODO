@@ -7,15 +7,15 @@ Short (infinite) list for 3.2:
 
 - - - - - - - -
 
-- empty .joerc file causes lockup
-
-- - - - - - - -
-
 - change directory
 
 - - - - - - - -
 
-- better editing in shell windows
+- update man page
+
+- - - - - - - -
+
+- security hole with spell checker
 
 - - - - - - - -
 
@@ -25,12 +25,30 @@ Short (infinite) list for 3.2:
 - add loops, user defined functions with local variables
 - add comments
 - user should be able to bring up a program and hit 'eval'.
+- use ivy?
 
-jmacs:
- many negative args do not work properly still
-    ^X ^T  transpose lines
-    ^[ t   transpose words
+- - - - - - - -
+
+jmacs glitches:
+    history for incremental search
     ^S return supposed to be normal search
+    ^[ 0 ^K  delete line bkwd (arg set)
+    ^[ @   set mark arg words away
+    ^X ^P  mark page
+    ^X h   mark entire buffer
+    ^X .  set left margin (fill prefix)
+
+- - - - - - - -
+
+- better editing in shell windows
+
+- - - - - - - -
+
+- empty .joerc file causes lockup
+
+- - - - - - - -
+
+- highlight all words which match during search?
 
 - - - - - - - -
 
@@ -52,22 +70,8 @@ can we highlight backup files? files ending in .in?
 
 - - - - - - - -
 
-formatting characters are being interpreted by context printing on status
-line
-
-- - - - - - - -
-
-read only doesn't work when there's a process running in the window.
-(it probably shouldn't run).
-
-- - - - - - - -
-
   define characters which make up words
     There are some A-Zs in tomatch (should use i18n).
-
-- - - - - - - -
-
-- update man page
 
 - - - - - - - -
 
@@ -114,8 +118,6 @@ Others:
 - keep special meaning of !, >> and , in file names?
 
 - rectangular blocks: make this a local file option?
-
-- security hole with spell checker
 
 - shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
   shell window.

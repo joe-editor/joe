@@ -140,6 +140,9 @@ int ubknd(BW *bw)
 	unsigned char *s;
         unsigned char *sh;
 
+        if (!modify_logic(bw,bw->b))
+        	return -1;
+
         sh=(unsigned char *)getenv("SHELL");
 
         if (file_exists(sh) && strcmp((char *)sh,"/bin/sh")) goto ok;
@@ -165,6 +168,9 @@ static int dorun(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	unsigned char **a = vamk(10);
 	unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+
+        if (!modify_logic(bw,bw->b))
+        	return -1;
 
 	a = vaadd(a, cmd);
 	cmd = vsncpy(NULL, 0, sc("-c"));

@@ -464,6 +464,10 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	}
 
 	edloop(0);
+
+	/* Delete all buffer so left over locks get eliminated */
+	brmall();
+
 	vclose(vmem);
 #ifdef MOUSE_XTERM
 	if(ttisxterm) {

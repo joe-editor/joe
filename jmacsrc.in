@@ -771,8 +771,8 @@
 \i \i\|^P up   ^N down  \|^V  next screen \|^^  redo  \|^[Q format  \|^X^X swap  \|^Z   shell \|\i \i
 \i \i\|^[B prev. word   \|^A  beg of line \|\uDELETE\u    \|^L  refresh \|^W  cut    \|^XK  abort \|\i \i
 \i \i\|^[F next word    \|^E  end of line \|^D  char  \|^[$ spell   \|^[W copy   \|^X^S save  \|\i \i
-\i \i\|\uSEARCH\u           \|^X[ top of file \|^K  >line \|^[M math    \|^Y  paste  \|^XS  all   \|\i \i
-\i \i\|^S  forward      \|^X] end of file \|^[D >word \|^[X command \|^[Y switch \|^XI  insert\|\i \i
+\i \i\|\uSEARCH\u           \|^X[ prev page   \|^K  >line \|^[M math    \|^Y  paste  \|^XS  all   \|\i \i
+\i \i\|^S  forward      \|^X] next page   \|^[D >word \|^[X command \|^[Y switch \|^XI  insert\|\i \i
 \i \i\|^R  backward     \|^[G to line No. \|^[ DEL word<\|^XL status\|^XA file   \|^X^F edit  \|\i \i
 \i \i\|^[% find&replace \|^XG matching ([{\|            \|^U  repeat\|^X| filter \|^X^B switch\|\i \i
 }
@@ -955,6 +955,8 @@ xtmouse		^[ [ M		Introduces an xterm mouse event
 
 :def compile querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
 
+:def ensure_other if,"no_windows<2",then,splitw,endif
+
  Ispell
 :def ispellfile filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype
 :def ispellword psh,nextword,markk,prevword,markb,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\012';/bin/rm ispell.tmp",rtn,retype,nextword
@@ -991,14 +993,18 @@ eol			^# SP @		Amiga
 
   Macros for non-existant Emacs functions
 
-psh,nextword-,markk,prevword-,markb,upper,nextword-	^[ u		Upcase word
+psh,nextword-,markk,prevword-,markb,
+upper,nextword-	^[ u		Upcase word
 
-psh,nextword-,markk,prevword-,markb,lower,nextword-	^[ l		Downcase word
+psh,nextword-,markk,prevword-,markb,
+lower,nextword-	^[ l		Downcase word
 
 psh,if,"arg>=0",then,
-  nextword,markk,prevword,markb,lower,rtarw,markk,upper,nextword,
+  nextword,markk,prevword,markb,lower,
+  rtarw,markk,upper,nextword,
 else,
-  prevword,markb,nextword,markk,lower,prevword,rtarw,markk,upper,ltarw,
+  prevword,markb,nextword,markk,lower,
+  prevword,rtarw,markk,upper,ltarw,
 endif	^[ c			Capitalize word
 
 psh,markk,lower		^X ^L	Downcase region
@@ -1006,22 +1012,32 @@ psh,markk,lower		^X ^L	Downcase region
 psh,markk,upper		^X ^U	Upcase region
 
 psh,if,"arg>=0",then,
-  ltarw,markb,rtarw,markk,rtarw,blkmove,rtarw,
+  ltarw,markb,rtarw,markk,rtarw,
+  blkmove,rtarw,
 else,
-  markk,ltarw,markb,ltarw,blkmove,rtarw,
-endif	^T				Transpose chars
+  markk,ltarw,markb,ltarw,blkmove,
+  rtarw,
+endif	^T			Transpose chars
 
-psh,uparw,bol,markb,dnarw,markk,
-dnarw,blkmove,dnarw		^X ^T		Transpose lines
+psh,if,"arg>=0",then,
+  uparw,bol,markb,dnarw,markk,dnarw,
+  blkmove,dnarw,
+else,
+  bol,markk,uparw,markb,uparw,blkmove,
+  dnarw,
+endif	^X ^T			Transpose lines
 
-
- Old way- broken at end of line
- psh,prevword,markb,nextword,
- nextword,prevword,markk,nextword,
- nextword,prevword,blkmove,nextword	^[ t	Transpose words
-
-psh,prevword,nextword,nextword,markk,prevword,markb,setmark,":",
-prevword,nextword,blkmove,markk,prevword,markb,gomark,":",blkmove,nextword	^[ t
+psh,if,"arg>=0",then,
+  prevword,nextword,nextword,markk,
+  prevword,markb,setmark,":",prevword,
+  nextword,blkmove,markk,prevword,
+  markb,gomark,":",blkmove,nextword,
+else,
+  prevword,nextword,markk,
+  prevword,markb,setmark,":",prevword,
+  nextword,blkmove,markk,prevword,
+  markb,gomark,":",blkmove,prevword,nextword,
+endif	^[ t			Transpose words
 
 eop-,bop-,markb,eop-	^[ h			Mark paragraph
 
@@ -1056,33 +1072,23 @@ querysave		^X s
 
 drop,msg,"Mark set",rtn	^@			Drop anchor
 
-nextw,pgdn-!,prevw	^[ ^V			Scroll other window down
+ensure_other,nextw,pgdn-!,prevw	^[ ^V			Scroll other window down
 
-nextw,pgup-!,prevw	^[ ^Z			Scroll other window up
+ensure_other,nextw,pgup-!,prevw	^[ ^Z			Scroll other window up
 
  bol,nedge,pedge	^[ m			Gnu-emacs goto indentation
 						(prefer ESC m to be math)
 
-nextw,nbuf-!,prevw	^X 4 b			Switch buffers other window
+ensure_other,nextw,nbuf-!,prevw	^X 4 b			Switch buffers other window
 
-nextw,edit,query,prevw	^X 4 f			Find file other window
+ensure_other,nextw,edit,query,prevw	^X 4 f			Find file other window
 
-nextw,edit,query,prevw	^X 4 ^F
+ensure_other,nextw,edit,query,prevw	^X 4 ^F
 
 psh,nextword,prevword,markb,nextword,markk,copy,
-nextw,tag,yank,query,prevw	^X 4 .
+ensure_other,prevw,tag," ",bol,deleol,yank,yankpop,query!,nextw	^X 4 .
 
-
- nextw,tag,query,prevw	^X 4 .			Find tag other window
-
- Old way...
- exsave			^X ^C			Save file and exit
-
- More like gnu-emacs...
 querysave,query,killjoe	^X ^C			Query to save files, then exit
-
- Old way...
- lose,query,abortbuf	^X k			Kill buffer in window
 
 lose,query		^X k			Kill buffer in window
 
@@ -1091,8 +1097,6 @@ lose,query,edit		^X ^V			Edit a file: no orphaned buffers
 psh,drop,fwrdc-,query,markk,blkdel	^[ z	Cut to char
 
 psh,markk,if,"markv",then,blksave,">>",query,else,save,bol,deleol,">>",query,endif	^X a
-
- psh,markk,blksave,">>",query	^X a		Append region to file
 
 retype,
 arg,"top+height/2-line",rtn,upslide	^L	Recenter
@@ -1116,12 +1120,14 @@ backw		^[ ^?		Backspace word
 backw		^[ ^H
 bknd		^X '		Shell window (joe)
 bof		^[ <		Goto beginning of file
-bof		^X [
+ffirst,"",rtn,if,"!joe(\"bn\",rtn)",then,bof,msg,"Beginning of buffer",rtn,endif	^X [	Go to next page or eof
+ bof		^X [
 home		.kh		Goto beginning of line
 home		^A
 home		^[ [ H
 home		^[ [ 1 ~
 bop		^[ p		(uemacs)
+bop		^[ {
 bufed		^X b
 bknd		^[ '		Shell window
 crawlr		^X >		Scroll to the right
@@ -1138,13 +1144,17 @@ dnarw		^# B
 dnslide		^X ^N		Slide down (uemacs)
 edit		^X ^F		Edit a file: creates orphaned buffers
 eof		^[ >		Go to end of file
-eof		^X ]
+
+ffirst,"",rtn,if,"!joe(\"n\",rtn)",then,eof,msg,"End of buffer",rtn,endif	^X ]	Go to next page or eof
+
+ eof		^X ]
 eol		.kH		Go to end of line
 eol		.@7
 eol		^E
 eol		^[ [ F
 eol		^[ [ 4 ~
 eop		^[ n		(uemacs)
+eop		^[ }
 execmd		^[ x
 insc		^C		(uemacs)
  ffirst		^S		Search forward

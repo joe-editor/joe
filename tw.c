@@ -119,7 +119,13 @@ unsigned char *get_context(BW *bw)
  						spc = 1;
  					}
  					else spc = 0;
- 					buf1[j++] = (stdbuf[i]=='\t')? ' ' : stdbuf[i];
+ 					if (stdbuf[i]=='\t')
+ 						buf1[j++] = ' ';
+					else if (stdbuf[i]=='\\') {
+						buf1[j++] = '\\';
+						buf1[j++] = '\\';
+					} else
+						buf1[j++] = stdbuf[i];
  				}
  				buf1[j]= '\0';
 				/* Uncomment to get the last line instead of the first line (see above)

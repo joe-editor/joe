@@ -458,29 +458,23 @@ int exmacro(MACRO *m, int u)
 	int oid, oifl, oifa;
 	int ret = 0;
 	int main_ret = 0;
-
-	int tmp_arg = current_arg;
-	int tmp_set = current_arg_set;
+	int o_arg_set = argset;
+	int o_arg = arg;
 
 	/* Take argument */
 
 	if (argset) {
 		larg = arg;
-		current_arg = arg;
-		current_arg_set = 1;
 		arg = 0;
 		argset = 0;
 	} else {
 		larg = 1;
-		current_arg_set = 0;
-		current_arg = 1;
 	}
 
 	/* Just a simple command? */
 
 	if (!m->steps) {
-		ret = exsimple(m, larg, u);
-		goto done;
+		return exsimple(m, larg, u);
 	}
 
 	/* Must be a real macro then... */
@@ -507,12 +501,17 @@ int exmacro(MACRO *m, int u)
 				d = m->steps[x++];
 				curmacro = m;
 				macroptr = x;
+				int tmp_arg = current_arg;
+				int tmp_set = current_arg_set;
+				current_arg = o_arg;
+				current_arg_set = o_arg_set;
+
 				if(d->steps) oid=ifdepth, oifl=ifflag, oifa=iffail, ifdepth=iffail=0;
 
 				/* If this step wants to know about negative args... */
 				if ((d->flg&4)) {
-					argset = current_arg_set;
-					arg = current_arg;
+					argset = o_arg_set;
+					arg = o_arg;
 					larg = 1;
 				} else if ((d->flg&1) && negarg) {
 					if (argset) {
@@ -534,6 +533,8 @@ int exmacro(MACRO *m, int u)
 					ret = exmacro(d, 0);
 
 				if(d->steps) ifdepth=oid, ifflag=oifl, iffail=oifa;
+				current_arg = tmp_arg;
+				current_arg_set = tmp_set;
 				m = curmacro;
 				x = macroptr;
 			}
@@ -554,11 +555,6 @@ int exmacro(MACRO *m, int u)
 		if (u)
 			undomark();
 	}
-
-	done:
-
-	current_arg = tmp_arg;
-	current_arg_set = tmp_set;
 
 	return ret;
 }

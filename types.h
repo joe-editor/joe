@@ -636,6 +636,7 @@ struct search {
 	P	*markb, *markk;	/* Original marks */
 	P	*wrap_p;	/* Wrap point */
 	int	wrap_flag;	/* Set if we've wrapped */
+	int	allow_wrap;	/* Set to allow wrapping */
 	int	valid;		/* Set if original marks are a valid block */
 	long	addr;		/* Addr of last replacement or -1 for none */
 	int	block_restrict;	/* Search restricted to marked block */

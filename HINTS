@@ -113,6 +113,9 @@ macro is executed, each command is executed until either the end of the list
 is reached, or one of the commands fails (non-zero return value from the
 command).  Failed commands beep if you have beeps enabled (^T B).
 
+Macro don't stop modifier
+-------------------------
+
 Sometimes, you expect commands to sometimes fail, but want the rest of the
 commands in the list to be executed anyway.  To mark a command which is
 allowed to fail, postfix it with '!'.  For example, here a macro which hits
@@ -123,6 +126,9 @@ down page in the window above:
 If prevw fails, the macro is aborted as usual. Even if pgdn fails (already
 at end of buffer), nextw will be executed so that the cursor is returned to
 the original window.
+
+Macro repeat argument modifiers
+-------------------------------
 
 Repeat arguments can be specified with ^K \.  When a command is executed
 with a repeat argument, it is repeatedly executed the specified number of
@@ -170,3 +176,16 @@ argument, even if it's 1.  If no argument was given, argset is false.
 If any command in the list is postfixed with ~ (if above), the macro is not
 repeated, even if there is an argument.  'arg' is still set to the given
 repeat count, however.
+
+'psh'/'query' interaction
+-------------------------
+
+The 'psh' command saves the ^KB and ^KK positions on a stack.  When the
+macro completes, (or when the 'pop' command is called) the positions are
+restored.
+
+The 'query' command suspends macro execution until the current dialog is
+complete.  It also suspends the automatic 'pop' which happens at the end
+of a macro- so if the macro ends in a dialog you often want to call 'query'
+to prevent the ^KB ^KK positions from being restored too early.
+

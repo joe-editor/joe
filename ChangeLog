@@ -1,8 +1,15 @@
 Sat Mar 19 17:08:05 EST 2005
 
 	Fix != in math prompt
+
 	Add modifiers to macros
+
 	Improve jmacs
+	Jmacs: orphaned buffers were not having locks deleted
+
+	Fix bug where formatting characters working in context display
+
+	ubknd and urun were not checking for read only
 
 Fri Mar 18 16:15:19 EST 2005
 

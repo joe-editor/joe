@@ -294,7 +294,9 @@ Variables:
 	char	Set to ASCII val of character under cursor	
 	markv	True if there is a valid block set (^KB ... ^KK)
 	rdonly	True if file is read-only
-	negarg	True for negative repeat arg
+	arg	Current repeat argument
+	argset	True if a repeat argument was given
+	no_windows No. buffer windows on the screen
 	ans	Result of previous expression
 
 Commands:

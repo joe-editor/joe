@@ -23,6 +23,7 @@ extern unsigned char *msgs[];
 
 B *bmk PARAMS((B *prop));
 void brm PARAMS((B *b));
+void brmall();
 
 B *bfind PARAMS((unsigned char *s));
 B *bfind_scratch PARAMS((unsigned char *s));

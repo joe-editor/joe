@@ -494,6 +494,9 @@ double calc(BW *bw, unsigned char *s)
 	v = get(US "argset");
 	v->val = current_arg_set;
 	v->set = 1;
+	v = get(US "no_windows");
+	v->val = countmain(bw->parent->t);
+	v->set = 1;
 	merr = 0;
 	return eval(s);
 }
