@@ -3,9 +3,8 @@
                                 Gnu-Emacs Joe
 
  JOE looks for this file in:
-	1 - .jmacsrc
-	2 - $HOME/.jmacsrc
-	3 - /usr/local/lib/jmacsrc
+	1 - $HOME/.jmacsrc
+	2 - SYSCONFDIR/jmacsrc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -40,7 +39,7 @@
 		instead of in windows
 -dopadding	Output pad characters (for when there is no tty handshaking)
  -lines nnn	Set no. screen lines
- -baud nnn	Set baud rate for terminal optimizations
+-baud 19200	Set baud rate for terminal optimizations
  -columns nnn	Set no. screen columns
  -help		Start with help on
  -skiptop nnn	Don't use top nnn lines of the screen

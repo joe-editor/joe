@@ -2,7 +2,6 @@ FEATURES
 =-=-=-=-
 	-=- syntax higlighting
 	-=- gettext (possibility of translate messages from joe)
-	-=- folding
 
 	from joe2.8
 	-=- picture mode
@@ -22,6 +21,9 @@ PROGRAM REDeSIGN:
 	-=- why to use list of help screens and array of help screens
 		when later is only array used ?
 	-=- prepare sources to use gettext
+	-=- add prototypes for functions
+	-=- clean sources
+	-=- add documentation
 
 PORTABILITY
 =-=-=-=-=-=
@@ -51,5 +53,4 @@ Emacs emulation improvements:
 		(it isn't in emacs either)
 	- Allow either direct screen access or normal tty support 
 		for DOS version.
-
 

@@ -33,8 +33,8 @@ determines the personality of the editor.
 JOE is free software;  you can distribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
 Foundation.  I have no plans for turning JOE into a commercial or share-ware
-product.  JOE is available over the Internet by anonymous FTP from
-\fBftp.std.com\fR, file: \fBsrc/editors/joe*.tar.Z\fR.
+product.  JOE is available over the Internet from
+\fBwww.sourceforge.net/projects/joe-editor\fR.
 
 .SH Usage 
 
@@ -79,13 +79,13 @@ ESC .).  Use \fB^K H\fR to dismiss the help window.
 
 You can customize the keyboard layout, the help screens and a number of
 behavior defaults by copying JOE's initialization file (usually
-\fB/usr/local/lib/joerc\fR) to \fB.joerc\fR in your home directory and then
+\fBSYSCONFDIR/joerc\fR) to \fB.joerc\fR in your home directory and then
 by modifying it.  See the section \fBjoerc\fR below.
 
 To have JOE used as your default editor for e-mail and News, you need to set
 the \fBEDITOR\fR and \fBVISUAL\fR environment variables in your shell
 initialization file (\fB.cshrc\fR or \fB.profile\fR) to refer to JOE (joe
-usually resides as \fB/usr/local/bin/joe\fR).
+usually resides as \fBBINDIR/joe\fR).
 
 There are a number of other obscure invocation parameters which may have to
 be set, particularly if your terminal screen is not updating as you think it
@@ -781,7 +781,7 @@ quota.
 .SH The\ joerc file
 \fB^T\fR options, the help screens and the key-sequence to editor command
 bindings are all defined in JOE's initialization file.  If you make a copy
-of this file (which normally resides in \fB/usr/local/lib/joerc\fR) to
+of this file (which normally resides in \fBSYSCONFDIR/joerc\fR) to
 \fB$HOME/.joerc\fR, you can customize these setting to your liking.  The
 syntax of the initialization file should be fairly obvious and there are
 further instruction in it.

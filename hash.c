@@ -3,58 +3,56 @@
 #include <string.h>
 #include "hash.h"
 
-static HENTRY *freentry=0;
+static HENTRY *freentry = 0;
 
-unsigned long hash(s)
-char *s;
- {
- unsigned long accu=0;
- while(*s) accu=hnext(accu,*s++);
- return accu;
- }
+unsigned long hash (char *s) {
+	unsigned long accu = 0;
 
-HASH *htmk(len)
- {
- HASH *t=(HASH *)malloc(sizeof(HASH));
- t->len=len-1;
- t->tab=(HENTRY **)calloc(sizeof(HENTRY *),len);
- return t;
- }
+	while (*s) {
+		accu = hnext (accu, *s++);
+	}
+	return accu;
+}
 
-void htrm(ht)
-HASH *ht;
- {
- free(ht->tab);
- free(ht);
- }
+HASH *htmk (int len) {
+	HASH *t = (HASH *) malloc (sizeof (HASH));
 
-void *htadd(ht,name,val)
-HASH *ht;
-char *name;
-void *val;
- {
- int idx=hash(name)&ht->len;
- HENTRY *entry;
- if(!freentry)
-  {
-  int x;
-  entry=(HENTRY *)malloc(sizeof(HENTRY)*64);
-  for(x=0;x!=64;++x) entry[x].next=freentry, freentry=entry+x;
-  }
- entry=freentry;
- freentry=entry->next;
- entry->next=ht->tab[idx];
- ht->tab[idx]=entry;
- entry->name=name;
- return entry->val=val;
- }
+	t->len = len - 1;
+	t->tab = (HENTRY **) calloc (sizeof (HENTRY *), len);
+	return t;
+}
 
-void *htfind(ht,name)
-HASH *ht;
-char *name;
- {
- HENTRY *e;
- for(e=ht->tab[hash(name)&ht->len];e;e=e->next)
-  if(!strcmp(e->name,name)) return e->val;
- return 0;
- }
+void htrm (HASH *ht) {
+	free (ht->tab);
+	free (ht);
+}
+
+void *htadd (HASH *ht, char *name, void *val) {
+	int idx = hash (name) & ht->len;
+	HENTRY *entry;
+	int x;
+
+	if (!freentry) {
+		entry = (HENTRY *) malloc (sizeof (HENTRY) * 64);
+		for (x = 0; x != 64; ++x) {
+			entry[x].next = freentry, freentry = entry + x;
+		}
+	}
+	entry = freentry;
+	freentry = entry->next;
+	entry->next = ht->tab[idx];
+	ht->tab[idx] = entry;
+	entry->name = name;
+	return entry->val = val;
+}
+
+void *htfind (HASH *ht, char *name) {
+	HENTRY *e;
+
+	for (e = ht->tab[hash (name) & ht->len]; e; e = e->next) {
+		if (!strcmp (e->name, name)) {
+			return e->val;
+		}
+	}
+	return 0;
+}

@@ -1,20 +1,9 @@
-/* TTY interface header file
-   Copyright (C) 1992 Joseph H. Allen
+/*
+	TTY interface header file
+	Copyright (C) 1992 Joseph H. Allen
 
-This file is part of JOE (Joe's Own Editor)
-
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
-
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
-
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */ 
+	This file is part of JOE (Joe's Own Editor)
+ */
 
 #ifndef _Itty
 #define _Itty 1
@@ -26,15 +15,15 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 typedef struct mpx MPX;
 struct mpx
- {
- int ackfd;			/* Packetizer response descriptor */
- int kpid;			/* Packetizer process id */
- int pid;			/* Client process id */
- void (*func)();		/* Function to call when read occures */
- void *object;			/* First arg to pass to function */
- void (*die)();			/* Function: call when client dies or closes */
- void *dieobj;
- };
+{
+	int ackfd;		/* Packetizer response descriptor */
+	int kpid;		/* Packetizer process id */
+	int pid;		/* Client process id */
+	void (*func) ();	/* Function to call when read occures */
+	void *object;		/* First arg to pass to function */
+	void (*die) ();		/* Function: call when client dies or closes */
+	void *dieobj;
+};
 
 /* void ttopen(void);  Open the tty (attached to stdin) for use inside of JOE
  *
@@ -70,8 +59,8 @@ struct mpx
  *     baud) and 'TIMES'==3, the output buffer size is set to 333 characters.
  *     Each time this buffer is completely flushed, 1/3 of a second will go by.
  */
-void ttopen();
-void ttopnn();
+void ttopen ();
+void ttopnn ();
 extern unsigned long upc;
 extern unsigned baud;
 
@@ -88,8 +77,8 @@ extern unsigned baud;
  * (3) Call signrm().  There is also 'void ttyclsn(void)' which does not do
  *     the this step.
  */
-void ttclose();
-void ttclsn();
+void ttclose ();
+void ttclsn ();
 
 /* int ttgetc(void);  Flush the output and get the next character from the tty
  *
@@ -100,7 +89,7 @@ void ttclsn();
  *
  * (3) Clear 'have'
  */
-int ttgetc();
+int ttgetc ();
 
 /* void ttputc(char c);  Write a character to the output buffer.  If it becomes
  * full, call ttflsh()
@@ -113,17 +102,17 @@ extern char *obuf;
 /* void ttputs(char *s);  Write a string to the output buffer.  Any time the
  * output buffer gets full, call ttflsh()
  */
-void ttputs();
+void ttputs ();
 
 /* void ttshell(char *s);  Run a shell command or if 's' is zero, run a
  * sub-shell
  */
-void ttshell();
+void ttshell ();
 
 /* void ttsusp(void);  Suspend the process, or if the UNIX can't do it, call
  * ttshell(NULL)
  */
-void ttsusp();
+void ttsusp ();
 
 /* int ttflsh(void);  Flush the output buffer and check for typeahead.
  *
@@ -153,7 +142,7 @@ void ttsusp();
  *     ttflsh gets called.  'leave' should also be set before shell escapes and
  *     suspends.
  */
-int ttflsh();
+int ttflsh ();
 
 extern int have;
 extern int leave;
@@ -169,11 +158,11 @@ extern int leave;
  * It is called with 'n' set to the number of the caught signal or 0 if the
  * input closed.
  */
-void ttsig();
+void ttsig ();
 
 /* void ttgtsz(int *x,int *y);  Get size of screen from ttsize/winsize
  * structure */
-void ttgtsz();
+void ttgtsz ();
 
 /* You don't have to call these: ttopen/ttclose does it for you.  These
  * may be needed to make your own shell escape sequences.
@@ -184,15 +173,15 @@ void ttgtsz();
  * and trap the software terminate and hangup signals (SIGTERM, SIGHUP) so
  * that 'ttsig' gets called.
  */
-void sigjoe();
+void sigjoe ();
 
 /* void signrm(void);  Set above signals back to their default values.
  */
-void signrm();
+void signrm ();
 
 /* char *pwd();  Get current working directory into a static buffer.
  */
-char *pwd();
+char *pwd ();
 
 /* MPX *mpxmk(int fd,int pid,
  *             void (*func)(),void *object,
@@ -206,18 +195,18 @@ char *pwd();
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk();
+MPX *mpxmk ();
 
 /* int subshell(int *ptyfd);
  * Execute a subshell.  Returns 'pid' of shell or zero if there was a
  * problem.  Returns file descriptor for the connected pty in 'ptyfd'.
  */
-int subshell();
+int subshell ();
 
 extern int noxon;
 extern int Baud;
 
-void tickoff();
-void tickon();
+void tickoff ();
+void tickon ();
 
 #endif

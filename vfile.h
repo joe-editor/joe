@@ -1,20 +1,9 @@
-/* Software virtual memory system
-   Copyright (C) 1992 Joseph H. Allen
+/*
+	Software virtual memory system
+	Copyright (C) 1992 Joseph H. Allen
 
-This file is part of JOE (Joe's Own Editor)
-
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
-
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
-
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */ 
+	This file is part of JOE (Joe's Own Editor)
+*/
 
 /* Additions:
  *
@@ -48,48 +37,48 @@ typedef struct vfile VFILE;
 #ifdef junk
 /* Minimum page size for MS-DOS is 128 (for 32K vheaders table) or 256 (for
  * 64K vheaders table) */
-#define PGSIZE 512              /* Page size in bytes (Must be power of 2) */
-#define LPGSIZE 9               /* LOG base 2 of PGSIZE */
-#define ILIMIT (PGSIZE*128L)    /* Max amount to buffer */
-#define HTSIZE 128              /* Entries in hash table.  Must be pwr of 2 */
+#define PGSIZE 512		/* Page size in bytes (Must be power of 2) */
+#define LPGSIZE 9		/* LOG base 2 of PGSIZE */
+#define ILIMIT (PGSIZE*128L)	/* Max amount to buffer */
+#define HTSIZE 128		/* Entries in hash table.  Must be pwr of 2 */
 #endif
 
-#define INC 16                  /* Pages to allocate each time */
+#define INC 16			/* Pages to allocate each time */
 
 /* Page header */
 
 struct vpage
- {
- VPAGE *next;			/* Next page with same hash value */
- VFILE *vfile;			/* Owner vfile */
- long addr;			/* Address of this page */
- int count;			/* Reference count */
- int dirty;			/* Set if page changed */
- char *data;			/* The data in the page */
- };
+{
+	VPAGE *next;		/* Next page with same hash value */
+	VFILE *vfile;		/* Owner vfile */
+	long addr;		/* Address of this page */
+	int count;		/* Reference count */
+	int dirty;		/* Set if page changed */
+	char *data;		/* The data in the page */
+};
 
 /* File structure */
 
 struct vfile
- {
- LINK(VFILE) link;		/* Doubly linked list of vfiles */
- long size;			/* Number of bytes in physical file */
- long alloc;			/* Number of bytes allocated to file */
- int fd;			/* Physical file */
- int writeable;			/* Set if we can write */
- char *name;			/* File name.  0 if unnamed */
- int flags;			/* Set if this is only a temporary file */
+{
+	LINK (VFILE) link;	/* Doubly linked list of vfiles */
+	long size;		/* Number of bytes in physical file */
+	long alloc;		/* Number of bytes allocated to file */
+	int fd;			/* Physical file */
+	int writeable;		/* Set if we can write */
+	char *name;		/* File name.  0 if unnamed */
+	int flags;		/* Set if this is only a temporary file */
 
- /* For array I/O */
- char *vpage1;			/* Page address */
- long addr;			/* File address of above page */
+	/* For array I/O */
+	char *vpage1;		/* Page address */
+	long addr;		/* File address of above page */
 
- /* For stream I/O */
- char *bufp;			/* Buffer pointer */
- char *vpage;			/* Buffer pointer points in here */
- int left;			/* Space left in bufp */
- int lv;			/* Amount of append space at end of buffer */
- };
+	/* For stream I/O */
+	char *bufp;		/* Buffer pointer */
+	char *vpage;		/* Buffer pointer points in here */
+	int left;		/* Space left in bufp */
+	int lv;			/* Amount of append space at end of buffer */
+};
 
 extern char *vbase;		/* Data first entry in vheader refers to */
 extern VPAGE **vheaders;	/* Array of headers */
@@ -99,7 +88,7 @@ extern VPAGE **vheaders;	/* Array of headers */
  * Open a temporary virtual file.  File goes away when closed.  No actual
  * file is generated if everything fits in memory.
  */
-VFILE *vtmp();
+VFILE *vtmp ();
 
 #ifdef junk
 /* VFILE *vopen(char *name);
@@ -107,7 +96,7 @@ VFILE *vtmp();
  * Open a file for reading and if possible, writing.  If the file could not
  * be opened, NULL is returned.
  */
-VFILE *vopen();
+VFILE *vopen ();
 #endif
 
 /* long vsize(VFILE *);
@@ -127,7 +116,7 @@ VFILE *vopen();
  *
  * Close a file.
  */
-void vclose();
+void vclose ();
 
 #ifdef junk
 /* void vlimit(long amount);
@@ -140,7 +129,7 @@ void vclose();
  * non-referenced vpages.
  */
 
-void vlimit();
+void vlimit ();
 #endif
 
 /* void vflsh(void); 
@@ -148,14 +137,14 @@ void vlimit();
  * Write all changed pages to the disk
  */
 
-void vflsh();
+void vflsh ();
 
 /* void vflshf(VFILE *vfile);
  *
  * Write changed pages for a specific file to the disk
  */
 
-void vflshf();
+void vflshf ();
 
 /* char *vlock(VFILE *vfile,long addr);
  *
@@ -177,7 +166,7 @@ void vflshf();
  * ever might want to is to implement your own version of valloc()).
  */
 
-char *vlock();
+char *vlock ();
 
 /* VPAGE *vheader(char *);
  * Return address of page header for given page
@@ -213,7 +202,7 @@ char *vlock();
  * Returns file address of beginning of allocated space
  */
 
-long my_valloc();
+long my_valloc ();
 
 #ifdef junk
 /******************************************************************************
@@ -226,7 +215,7 @@ long my_valloc();
  * Seek to a file address.  Allocates space to the file if you seek past the
  * end.
  */
-void vseek();
+void vseek ();
 
 /* int vrgetc(VFILE *);
  * int vgetc(VFILE *);
@@ -235,8 +224,8 @@ void vseek();
  * They return MAXINT for end of file / beginning of file.
  */
 
-int _vgetc();
-int _vrgetc();
+int _vgetc ();
+int _vrgetc ();
 
 #define vrgetc(v) \
         ( (v)->left!=PGSIZE ? ( ++(v)->left, (int)(unsigned)*(--(v)->bufp) ) : _vrgetc(v) )
@@ -249,7 +238,7 @@ int _vrgetc();
  * Put character.  Returns character which is written.
  */
 
-int _vputc();
+int _vputc ();
 
 #define vputc(v,c) \
 	( \
@@ -281,14 +270,14 @@ int _vputc();
  * Get long.  No alignment requirements.  Returns -1 if goes past end of file.
  */
 
-long vgetl();
+long vgetl ();
 
 /* short vgetw(VFILE *);
  *
  * Get short.  No alignment requirements.  Returns -1 if goes past end of file.
  */
 
-short vgetw();
+short vgetw ();
 
 /* long vputl(VFILE *,long);
  *
@@ -296,7 +285,7 @@ short vgetw();
  * Returns value written.
  */
 
-long vputl();
+long vputl ();
 
 /* short vputw(VFILE *,short);
  *
@@ -304,7 +293,7 @@ long vputl();
  * Returns value written.
  */
 
-short vputw();
+short vputw ();
 
 /* char *vgets(VFILE *v,char *s);
  *
@@ -317,27 +306,27 @@ short vputw();
  * This requires that you use the 'vs.h' / 'vs.c' library.
  */
 
-char *vgets();
+char *vgets ();
 
 /* void vputs(VFILE *v,char *s);
  *
  * Write zero terminated string. \n is not appended */
 
-void vputs();
+void vputs ();
 
 /* void vread(VFILE *,char *,int size);
  *
  * Read bytes from a virtual file into a local data block
  */
 
-void vread();
+void vread ();
 
 /* void vwrite(VFILE *,char *,int size);
  *
  * Write bytes from a local data block into a virtual file
  */
 
-void vwrite();
+void vwrite ();
 
 /*************************************************************************** 
  * The following functions implement array I/O on top of the above virtual *
@@ -349,7 +338,7 @@ void vwrite();
  * Read character.  Returns MAXINT if past end of file.
  */
 
-int _rc();
+int _rc ();
 
 #define rc(v,a) \
 	( \
@@ -368,7 +357,7 @@ int _rc();
  * space to the file.
  */
 
-int _wc();
+int _wc ();
 
 #define wc(v,a,c) \
 	( \
@@ -387,28 +376,28 @@ int _wc();
  * end of file.
  */
 
-long rl();
+long rl ();
 
 /* long wl(VFILE *vfile,long addr,long c);
  * Write big-endian long.  No alignment requirements.  Automatically expands
  * file if necessary.
  */
 
-long wl();
+long wl ();
 
 /* short rw(VFILE *vfile,long addr);
  * Read big-endian short.  No alignment requirements.  Returns -1 if goes past
  * end of file.
  */
 
-short rw();
+short rw ();
 
 /* short ww(VFILE *vfile,long addr,short c);
  * Write big-endian short.  No alignment requirements.  Automatically expands
  * file if necessary.
  */
 
-short ww();
+short ww ();
 
 #endif
 #endif

@@ -14,52 +14,49 @@ typedef struct buffer B;
 typedef struct point P;
 typedef struct header H;
 
-struct header
-{
-  LINK (H) link;
-  long seg;
-  int hole;
-  int ehole;
-  int nlines;
+struct header {
+	LINK (H) link;			/* ??? */
+	long seg;			/* ??? */
+	int hole;			/* ??? */
+	int ehole;			/* ??? */
+	int nlines;			/* ??? */
 };
 
-struct point
-{
-  LINK (P) link;
+struct point {
+	LINK (P) link;			/* ??? */
+		
+	B *b;				/* ??? */
+	int ofst;			/* ??? */
+	char *ptr;			/* ??? */
+	H *hdr;				/* ??? */
 
-  B *b;
-  int ofst;
-  char *ptr;
-  H *hdr;
+	long byte;			/* ??? */
+	long line;			/* ??? */
+	long col;			/* ??? */
+	long xcol;			/* ??? */
+	int valcol;			/* ??? */
+	int end;			/* ??? */
 
-  long byte;
-  long line;
-  long col;
-  long xcol;
-  int valcol;
-  int end;
-
-  P **owner;
+	P **owner;			/* ??? */
 };
 
-struct buffer
-{
-  LINK (B) link;
-  P *bof;
-  P *eof;
-  char *name;
-  int orphan;
-  int count;
-  int changed;
-  int backup;
-  void *undo;
-  P *marks[10];			/* Bookmarks */
-  OPTIONS o;			/* Options */
-  P *oldcur;			/* Last cursor position before orphaning */
-  P *oldtop;			/* Last top screen position before orphaning */
-  int rdonly;			/* Set for read-only */
-  int internal;			/* Set for internal buffers */
-  int er;			/* Error code when file was loaded */
+struct buffer {
+	LINK (B) link;
+	P *bof;
+	P *eof;
+	char *name;
+	int orphan;
+	int count;
+	int changed;
+	int backup;
+	void *undo;
+	P *marks[10];		/* Bookmarks */
+	OPTIONS o;		/* Options */
+	P *oldcur;		/* Last cursor position before orphaning */
+	P *oldtop;		/* Last top screen position before orphaning */
+	int rdonly;		/* Set for read-only */
+	int internal;		/* Set for internal buffers */
+	int er;			/* Error code when file was loaded */
 };
 
 extern int force;		/* Set to have final '\n' added to file */
@@ -84,8 +81,10 @@ B *boffline ();
 void prm ();
 P *pset ();
 
-P *pbof ();
-P *peof ();
+P *p_goto_bof (P *p);		/* move cursor to begging of file */
+P *p_goto_eof (P *p);		/* move cursor to end of file */
+P *p_goto_bol (P *p);		/* move cursor to begging of line */
+P *p_goto_eol (P *p);		/* move cursor to end of line */
 
 int pisbof ();
 int piseof ();
@@ -114,9 +113,6 @@ P *pgoto ();
 
 P *pfcol ();
 
-P *pbol ();
-
-P *peol ();
 
 P *pnextl ();
 
@@ -211,7 +207,8 @@ char *brvs ();
 B *bnext ();
 B *bprev ();
 
-extern int error;
+#define error berror
+extern int berror;
 
 char **getbufs ();
 

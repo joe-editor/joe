@@ -1,16 +1,9 @@
 
 
-                            Joe's Own Editor 2.9.x
+                             Joe's Own Editor 2.9.x
 
                   A Free ASCII-Text Screen Editor for UNIX
-                               by Joseph Allen (<= 2.8)
-				Marek 'Marx' Grac (=> 2.9)
 
-Get it from:
-	http://sourceforge.net/projects/joe-editor
-
-If you have questions, problems or suggestions,
-send email to: 'xgrac@fi.muni.cz'
 
 
 	JOE is the professional freeware ASCII text screen editor for UNIX. 
@@ -166,7 +159,6 @@ text files and programs:
 
 		- Indentation step and fill character
 
-/*  jhallen@world.std.com */                              /* Joseph H. Allen */
-int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
-+r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
-]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+Any questions, problems, suggestions send to Marek 'Marx' Grac 
+				(xgrac@fi.muni.cz)
+

@@ -1,0 +1,66 @@
+AC_INIT(b.c)
+
+dnl AC_CONFIG_HEADER(joe-config.h)
+
+dnl
+dnl Checks for programs
+dnl
+AC_PROG_CC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+
+dnl
+dnl Checks for libraries
+dnl
+
+dnl Optional:
+
+AC_CHECK_LIB(ncurses, initscr)
+
+dnl
+dnl Checks for header files
+dnl
+AC_HEADER_STDC
+if test "$ac_cv_header_stdc" = "no"; then
+	AC_MSG_ERROR([ANSI C header files are missing])
+fi
+AC_CHECK_HEADERS(sys/types.h sys/stat.h sys/ioctl.h sys/param.h,,AC_MSG_ERROR([Header file <sys/...> is missing]))
+AC_CHECK_HEADERS(fcntl.h,,AC_MSG_ERROR([Header file <fcntl.h> is missing]))
+AC_CHECK_HEADERS(errno.h,,AC_MSG_ERROR([Header file <errno.h> is missing]))
+AC_CHECK_HEADERS(varargs.h,,AC_MSG_ERROR([Header file <varargs.h> is missing]))
+
+dnl Checks for OS-dependent header files
+AC_CANONICAL_SYSTEM
+
+dnl DOS only; 
+dnl AC_CHECK_HEADERS(bios.h,,AC_MSG_ERROR([Header file <bios.h> is missing]))
+dnl AC_CHECK_HEADERS(dos.h,,AC_MSG_ERROR([Header file <dos.h> is missing]))
+
+dnl OS specific: not DOS
+AC_CHECK_HEADERS(pwd.h)
+if test "$ac_cv_header_pwd_h" = "no"; then
+	AC_MSG_ERROR([Header file <pwd.h> is missing])
+fi
+dnl at least 1 of N
+AC_CHECK_HEADERS(bsd/sys/dir.h)
+AC_CHECK_HEADERS(dir.h)
+AC_CHECK_HEADERS(dirent.h)
+AC_CHECK_HEADERS(sys/dir.h)
+AC_CHECK_HEADERS(sys/dirent.h)
+
+dnl TERMIO/S do as in tty.c
+dnl sys/time.h sys/stream.h sys/ptem.h sgtty.h stropts.h
+
+dnl at least 1 of N
+AC_CHECK_HEADERS(utime.h)
+AC_CHECK_HEADERS(sys/utime.h)
+
+dnl Optional
+
+AC_CHECK_HEADERS(locale.h)
+
+dnl
+dnl Checks for system dependant variables
+dnl
+
+AC_OUTPUT(Makefile)

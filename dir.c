@@ -3,46 +3,42 @@
 	Copyright (C) 1992 Joseph H. Allen
 
 	This file is part of JOE (Joe's Own Editor)
-*/ 
+*/
 
-struct direct
- {
- short d_ino;
- char d_name[14];
- };
+struct direct {
+	short d_ino;
+	char d_name[14];
+};
 
-void *opendir(name)
-char *name;
- {
- return fopen(name,"r");
- }
+void *opendir (char *name) {
+	return fopen (name, "r");
+}
 
-struct direct *readdir(f)
-void *f;
- {
- static struct direct direct;
- while(1==fread(&direct,sizeof(struct direct),1,(FILE *)f))
-  if(direct.d_ino) return &direct;
- return 0;
- }
+struct direct *readdir (void *f) {
+	static struct direct direct;
 
-void closedir(f)
-FILE *f;
- {
- fclose(f);
- }
+	while (1 == fread (&direct, sizeof (struct direct), 1, (FILE *) f)) {
+		if (direct.d_ino) {
+			return &direct;
+		}
+	}
+	return 0;	
+}
 
-int mkdir(s)
-char *s;
- {
- char *y=0;
- int rtval;
- y=vsncpy(sv(y),sc("/bin/mkdir "));
- y=vsncpy(sv(y),sz(s));
- y=vsncpy(sv(y),sc(" 2>/dev/null"));
- tickoff();
- rtval=system(y);
- tickon();
- vsrm(y);
- return rtval;
- }
+void closedir (FILE *f) {
+	fclose (f);
+}
+
+int mkdir (char *s) {
+	char *y = NULL;
+	int rtval;
+
+	y = vsncpy (sv (y), sc ("/bin/mkdir "));
+	y = vsncpy (sv (y), sz (s));
+	y = vsncpy (sv (y), sc (" 2>/dev/null"));
+	tickoff ();
+	rtval = system (y);
+	tickon ();
+	vsrm (y);
+	return rtval;
+}

@@ -1,11 +1,53 @@
-** JOE 2.8
+Overview of Changes in JOE 2.9.6 (13 Apr 2001)
+
+- JOE can be compiled on Windows platform again
+- BUGFIX:: problem with ${sysconfdir}/joerc was solved
+- BUGFIX:: security patch for sprintf
+- BUGFIX:: partially solved problem on Solaris with SegFault
+- BUGFIX:: patch joe-2.8-security (slightly changed)
+- BUGFIX:: patch joe-2.8-port
+- BUGFIX:: patch joe-2.8-mips
+- BUGFIX:: patch joe-2.8-vsmk
+- BUGFIX:: patch joe2.8-time
+- *rc files where moved from $(prefix)/lib to $(prefix)/etc or $sysconfdir
+- Makefile.in (and Makefile) was rewritten
+   - special prefix for package (more in Makefile.in)
+   - use of system independent 'mkinstalldirs'
+   - rc files are not rewritten
+- TEST FEATURE:: added autoconf support
+		program can be installed by ./configure; make; make install
+- BUGFIX (v2.9.4):: go to previous word problem solved
+- JOE can be compiled without locale.h again
+- BUGFIX:: patch joe2.8-axphack.patch
+- BUGFIX:: patch joe2.8-resize2.patch
+- BUGFIX:: fixed problem with :include in rc files
+- BUGFIX (v2.9.5):: portability problem with is_blank on nonGNU systems
+
+Overview of Changes in JOE 2.9.5 (28 Mar 2001)
+
+- new BUG:: can't be compiled on non-GNU systems (is_blank()) fixed in v2.9.6
+- BUGFIX:: Fixed problem with resizing. 
+- SECURITY:: .[joe|rjoe|jpico|..]rc in actual directory is ignored
+             because in this file can be defined which program run.
+
+Overview of Changes in JOE 2.9.4 (27 Mar 2001)
+
+- new BUG:: go to previous word; goes one character before this word 
+            fixed in v2.9.6
+- FEATURE:: locale (LC_CTYPE) is accepted when skipping/deleting/... words	
+
+Overview of Changes in JOE 2.9  (22 Mar 2001)
+
+- version 2.8 with patches from RedHat/Suse
+
+Overview of Changes in JOE 2.8
 
 - Fixed problem with TERMPATH string
 - Added stupid two-letter names to termcap file
 - Improved jmacs help and command set
 - Improved README file
 
-** JOE 2.7
+Overview of Changes in JOE 2.7
 
 - putenv() was not portable
 - utime was not portable
@@ -22,106 +64,74 @@
 - added '-crlf' option
 - looks for termcap file in JOERC/termcap
 
-** JOE 2.6
+Overview of Changes in JOE 2.6
 
 - Fixed stupid bug in termcap.c which prevented terminfo from working
-
 - ESC h was missing from jpicorc
-
 - Changes suggested by Dan Nelson:
- - backup files now attempt to have same permissions and times as original
- - Stat command now ands chars with 255 (don't know why this worked on my system
-   without this...)
- - Maybe change shell invocation name- have to check this more
+   - backup files now attempt to have same permissions and times as original
+   - Stat command now ands chars with 255 (don't know why this worked on my system
+     without this...)
+   - Maybe change shell invocation name- have to check this more
 
-** JOE 2.5
+Overview of Changes in JOE 2.5
 
 - No longer use ^[ O, ^[ A, ^[ B, ^[ C, or ^[ D for anything because they
   interfere with arrow keys.
-
 - Couldn't create new files because of bug in readonly setting
-
 - fwrdc/bkwdc were crashing the editor except when called from wordstar
-
 - 'tr' command was not called in a portable way in jmacs
-
 - 'tr' was causing problems with the spell-check macros as well
-
 - filter region was not working: had to add 'query' in ^[ | macro
-
 - Changed incremental search so that whatever key the command is bound to
   can be used to repeat the search (used to only be able to use ^S)
 
-** JOE 2.4
+Overview of Changes in JOE 2.4
 
 - Closing message was incorrect when exit macros (macros where the last
   command is abortbuf) were used.
-
 - SuperPico rc file added
-
 - Write block now writes the entire file if no block is set
-
 - Added pico kill function for pico emulation
   (tried to do this with 'psh,markk,blkdel' where blkdel deletes lines if
    no block is set, but it didn't group the deletes right in the yank
    buffer)
-
 - Filter block would leave the marks set
-
 - Fixed ^@ in joe mode
-
 - Fixed help screen glitches in wordstar mode
-
 - If joe can't make a backup file it now prompts for you to save anyway
-
 - Eliminated IDLEOUT compile option.  Now is the user gives - on the
   command line, joe uses /dev/tty.
-
 - Added %o %O %a %A %X and %R status line messages
-
 - Starts out in read only mode if loaded file can not be written to
-
 - If joe can't find the termcap/terminfo entry, it instead uses the default
-
 - termcap routines are now included even if you use terminfo.  If your
   terminal can't be found in the terminfo database, it will look in
   the termcap database too.
-
 - The JOETERM environment variable can be used to bypass the TERM
   environment variable setting.
 
-** JOE 2.3
+Overview of Changes in JOE 2.3
 
 - Search & Replace bugs fixed
    - replace would mess up the end mark of a marked block
    - a search would trash ^KB if only ^KB was set
    - regex problem with \*
-
 - Was using TCSANOW in posix driver.  Should have been using TCSADRAIN
-
 - Format paragraph now correctly formats quoted news articles
-
 - Attempted fix for SCO
-
 - Fix for coherent
-
 - Fix for old IRIX/SGI
-
 - Fixed bug where if you used search & replace in a macro, and exiting the
   search & replace loop with right arrow key, then when you played the macro
   you got an extra ^[ in the input queue
-
 - Added file hooks
-
 - Added function to insert current keyboard macro into current file
-
 - Added range checks to numeric option settings
-
 - Restricted joe rc file added
-
 - Added ':def' feature for rc files
 
-** JOE 2.2
+Overview of Changes in JOE 2.2
 
 - First attempt at MS-DOS version of joe
    - Direct screen write
@@ -139,11 +149,9 @@
 - tabs not displayed right in nxterr/prverr messages
 - Block moves where the cursor was to the right of the block was broken
 
-** JOE 2.1
+Overview of Changes in JOE 2.1
 
 - rc file wasn't giving correct error messages for missing options
 - the '-nobackups' options was mispelled: '- nobackups'
 - editor was crashing because of problem in undo
 - update bypass in utype has a problem when wordwrapping and scrolling
-
-** JOE 2.0

@@ -1,20 +1,9 @@
-/* Menu selection window
-   Copyright (C) 1992 Joseph H. Allen
+/*
+	Menu selection window
+	Copyright (C) 1992 Joseph H. Allen
 
-This file is part of JOE (Joe's Own Editor)
-
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
-
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
-
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */ 
+	This file is part of JOE (Joe's Own Editor)
+*/
 
 #ifndef _Imenu
 #define _Imenu 1
@@ -24,43 +13,42 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 typedef struct menu MENU;
 
-struct menu
- {
- W *parent;		/* Window we're in */
- char **list;		/* List of items */
- int top;		/* First item on screen */
- int cursor;		/* Item cursor is on */
- int width;		/* Width of widest item, up to 'w' max */
- int perline;		/* Number of items on each line */
- int nitems;		/* No. items in list */
- SCREEN *t;		/* Screen we're on */
- int h,w,x,y;
- int (*abrt)();		/* Abort callback function */
- int (*func)();		/* Return callback function */
- int (*backs)();	/* Backspace callback function */
- void *object;
- };
+struct menu {
+	W *parent;		/* Window we're in */
+	char **list;		/* List of items */
+	int top;		/* First item on screen */
+	int cursor;		/* Item cursor is on */
+	int width;		/* Width of widest item, up to 'w' max */
+	int perline;		/* Number of items on each line */
+	int nitems;		/* No. items in list */
+	SCREEN *t;		/* Screen we're on */
+	int h, w, x, y;
+	int (*abrt) ();		/* Abort callback function */
+	int (*func) ();		/* Return callback function */
+	int (*backs) ();	/* Backspace callback function */
+	void *object;
+};
 
 #define TYPEMENU 0x800
 
 /* Create a menu */
 
-MENU *mkmenu();
+MENU *mkmenu ();
 
 /* Menu user functions */
 
-int umuparw();
-int umdnarw();
-int umltarw();
-int umrtarw();
-int umbof();
-int umeof();
-int umbol();
-int umeol();
-int umbacks();
+int umuparw (MENU *m);
+int umdnarw (MENU *m);
+int umltarw (MENU *m);
+int umrtarw (MENU *m);
+int umbof (MENU *m);
+int umeof (MENU *m);
+int umbol (MENU *m);
+int umeol (MENU *m);
+int umbacks (MENU *m);
 
-void ldmenu();
+void ldmenu (MENU *m, char **s, int cursor);
 
-char *mcomplete();
+char *mcomplete (MENU *m);
 
 #endif

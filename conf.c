@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 
-main (int argc, char **argv) {
+signed int main (signed int argc, char **argv) {
 	int x;
 	int bits = 8;
 	int isiz = sizeof (int);
@@ -25,10 +25,11 @@ main (int argc, char **argv) {
 	fprintf (f, "\n");
 
 	fprintf (f, "/* Uncomment to use TERMINFO database*/\n");
-	if (argv[2][0] == '1')
+	if (argv[2][0] == '1') {
 		fprintf (f, "#define TERMINFO 1\n");
-	else
+	} else {
 		fprintf (f, "/* #define TERMINFO 1 */\n");
+	}
 	fprintf (f, "\n");
 
 	fprintf (f, "/* Path where main.c tries to open rc file */\n");
@@ -36,91 +37,90 @@ main (int argc, char **argv) {
 	fprintf (f, "\n");
 
 	/* Figure out what type of tty we have */
-	if (g = fopen ("/usr/include/termios.h", "r")) {
-		fprintf (f, "/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
-		fprintf (f, "#define TTYPOSIX 1\n");
-		fprintf (f, "/* #define SYSPOSIX 1*/\n");
-		fprintf (f, "/* #define TTYSV 1 */\n");
-		fprintf (f, "/* #define SYSSV 1 */\n");
-		fclose (g);
-	} else if (g = fopen ("/usr/include/sys/termios.h", "r")) {
-		fprintf (f, "/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
-		fprintf (f, "#define TTYPOSIX 1\n");
-		fprintf (f, "#define SYSPOSIX 1\n");
-		fprintf (f, "/* #define TTYSV 1 */\n");
-		fprintf (f, "/* #define SYSSV 1 */\n");
-		fclose (g);
-	} else if (g = fopen ("/usr/include/termio.h", "r")) {
-		fprintf (f, "/* Uncomment the tty type.  Leave both uncommented for BSD */\n");
-		fprintf (f, "/* #define TTYPOSIX 1 */\n");
-		fprintf (f, "/* #define SYSPOSIX 1 */\n");
-		fprintf (f, "#define TTYSV 1\n");
-		fprintf (f, "/* #define SYSSV 1 */\n");
-		fclose (g);
-	} else if (g = fopen ("/usr/include/sys/termio.h", "r")) {
-		fprintf (f, "/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
-		fprintf (f, "/* #define TTYPOSIX 1 */\n");
-		fprintf (f, "/* #define SYSPOSIX 1 */\n");
-		fprintf (f, "#define TTYSV 1\n");
-		fprintf (f, "#define SYSSV 1\n");
-		fclose (g);
+	if ((g = fopen ("/usr/include/termios.h", "r"))) {
+		  fprintf (f, "/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
+		  fprintf (f, "#define TTYPOSIX 1\n");
+		  fprintf (f, "/* #define SYSPOSIX 1*/\n");
+		  fprintf (f, "/* #define TTYSV 1 */\n");
+		  fprintf (f, "/* #define SYSSV 1 */\n");
+		  fclose (g);
+	} else if ((g = fopen ("/usr/include/sys/termios.h", "r"))) {
+		  fprintf (f, "/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
+		  fprintf (f, "#define TTYPOSIX 1\n");
+		  fprintf (f, "#define SYSPOSIX 1\n");
+		  fprintf (f, "/* #define TTYSV 1 */\n");
+		  fprintf (f, "/* #define SYSSV 1 */\n");
+		  fclose (g);
+	} else if ((g = fopen ("/usr/include/termio.h", "r"))) {
+		  fprintf (f, "/* Uncomment the tty type.  Leave both uncommented for BSD */\n");
+		  fprintf (f, "/* #define TTYPOSIX 1 */\n");
+		  fprintf (f, "/* #define SYSPOSIX 1 */\n");
+		  fprintf (f, "#define TTYSV 1\n");
+		  fprintf (f, "/* #define SYSSV 1 */\n");
+		  fclose (g);
+	} else if ((g = fopen ("/usr/include/sys/termio.h", "r"))) {
+		  fprintf (f, "/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
+		  fprintf (f, "/* #define TTYPOSIX 1 */\n");
+		  fprintf (f, "/* #define SYSPOSIX 1 */\n");
+		  fprintf (f, "#define TTYSV 1\n");
+		  fprintf (f, "#define SYSSV 1\n");
+		  fclose (g);
 	} else {
-		fprintf (f, "/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
-		fprintf (f, "/* #define TTYPOSIX 1 */\n");
-		fprintf (f, "/* #define SYSPOSIX 1 */\n");
-		fprintf (f, "/* #define TTYSV 1 */\n");
-		fprintf (f, "/* #define SYSSV 1 */\n");
-		fclose (g);
+		  fprintf (f, "/* Uncomment the tty type.  Leave all uncommented for BSD */\n");
+		  fprintf (f, "/* #define TTYPOSIX 1 */\n");
+		  fprintf (f, "/* #define SYSPOSIX 1 */\n");
+		  fprintf (f, "/* #define TTYSV 1 */\n");
+		  fprintf (f, "/* #define SYSSV 1 */\n");
 	}
 	fprintf (f, "\n");
 
 	/* Figure out what type of directory access we have */
-	if (g = fopen ("/usr/include/dirent.h", "r")) {
-		fprintf (f, "/* Uncomment the directory access type.  Leave all commented for none */\n");
-		fprintf (f, "#define DIRENT 1\n");
-		fprintf (f, "/* #define SYSDIRENT 1 */\n");
-		fprintf (f, "/* #define SYSDIR 1 */\n");
-		fprintf (f, "/* #define BSDSYSDIR 1 */\n");
-		fclose (g);
-	} else if (g = fopen ("/usr/include/sys/dirent.h", "r")) {
-		fprintf (f, "/* Uncomment the directory access type.  Leave all commented for none */\n");
-		fprintf (f, "/* #define DIRENT 1 */\n");
-		fprintf (f, "#define SYSDIRENT 1\n");
-		fprintf (f, "/* #define SYSDIR 1 */\n");
-		fprintf (f, "/* #define BSDSYSDIR 1 */\n");
-		fclose (g);
-	} else if (g = fopen ("/usr/include/sys/dir.h", "r")) {
-		fprintf (f, "/* Uncomment the directory access type.  Leave all commented for none */\n");
-		fprintf (f, "/* #define DIRENT 1 */\n");
-		fprintf (f, "/* #define SYSDIRENT 1 */\n");
-		fprintf (f, "#define SYSDIR 1\n");
-		fprintf (f, "/* #define BSDSYSDIR 1 */\n");
-		fclose (g);
-	} else if (g = fopen ("/usr/include/bsd/sys/dir.h", "r")) {
-		fprintf (f, "/* Uncomment the directory access type.  Leave all commented for none */\n");
-		fprintf (f, "/* #define DIRENT 1 */\n");
-		fprintf (f, "/* #define SYSDIRENT 1 */\n");
-		fprintf (f, "/* #define SYSDIR 1 */\n");
-		fprintf (f, "#define BSDSYSDIR 1\n");
-		fclose (g);
+	if ((g = fopen ("/usr/include/dirent.h", "r"))) {
+		  fprintf (f, "/* Uncomment the directory access type.  Leave all commented for none */\n");
+		  fprintf (f, "#define DIRENT 1\n");
+		  fprintf (f, "/* #define SYSDIRENT 1 */\n");
+		  fprintf (f, "/* #define SYSDIR 1 */\n");
+		  fprintf (f, "/* #define BSDSYSDIR 1 */\n");
+		  fclose (g);
+	} else if ((g = fopen ("/usr/include/sys/dirent.h", "r"))) {
+		  fprintf (f, "/* Uncomment the directory access type.  Leave all commented for none */\n");
+		  fprintf (f, "/* #define DIRENT 1 */\n");
+		  fprintf (f, "#define SYSDIRENT 1\n");
+		  fprintf (f, "/* #define SYSDIR 1 */\n");
+		  fprintf (f, "/* #define BSDSYSDIR 1 */\n");
+		  fclose (g);
+	} else if ((g = fopen ("/usr/include/sys/dir.h", "r"))) {
+		  fprintf (f, "/* Uncomment the directory access type.  Leave all commented for none */\n");
+		  fprintf (f, "/* #define DIRENT 1 */\n");
+		  fprintf (f, "/* #define SYSDIRENT 1 */\n");
+		  fprintf (f, "#define SYSDIR 1\n");
+		  fprintf (f, "/* #define BSDSYSDIR 1 */\n");
+		  fclose (g);
+	} else if ((g = fopen ("/usr/include/bsd/sys/dir.h", "r"))) {
+		  fprintf (f, "/* Uncomment the directory access type.  Leave all commented for none */\n");
+		  fprintf (f, "/* #define DIRENT 1 */\n");
+		  fprintf (f, "/* #define SYSDIRENT 1 */\n");
+		  fprintf (f, "/* #define SYSDIR 1 */\n");
+		  fprintf (f, "#define BSDSYSDIR 1\n");
+		  fclose (g);
 	}
 	fprintf (f, "\n");
 
 	/* Check if we have utime.h */
-	if (g = fopen ("/usr/include/utime.h", "r")) {
-		fprintf (f, "/* Uncomment if we have utime.h */\n");
-		fprintf (f, "#define UTIME 1\n");
-		fprintf (f, "/* #define SYSUTIME 1 */\n");
-		fclose (g);
-	} else if (g = fopen ("/usr/include/sys/utime.h", "r")) {
-		fprintf (f, "/* Uncomment if we have utime.h */\n");
-		fprintf (f, "/* #define UTIME 1 */\n");
-		fprintf (f, "#define SYSUTIME 1\n");
-		fclose (g);
+	if ((g = fopen ("/usr/include/utime.h", "r"))) {
+		  fprintf (f, "/* Uncomment if we have utime.h */\n");
+		  fprintf (f, "#define UTIME 1\n");
+		  fprintf (f, "/* #define SYSUTIME 1 */\n");
+		  fclose (g);
+	} else if ((g = fopen ("/usr/include/sys/utime.h", "r"))) {
+		  fprintf (f, "/* Uncomment if we have utime.h */\n");
+		  fprintf (f, "/* #define UTIME 1 */\n");
+		  fprintf (f, "#define SYSUTIME 1\n");
+		  fclose (g);
 	} else {
-		fprintf (f, "/* Uncomment if we have utime.h */\n");
-		fprintf (f, "/* #define UTIME 1 */\n");
-		fprintf (f, "/* #define SYSUTIME 1 */\n");
+		  fprintf (f, "/* Uncomment if we have utime.h */\n");
+		  fprintf (f, "/* #define UTIME 1 */\n");
+		  fprintf (f, "/* #define SYSUTIME 1 */\n");
 	}
 	fprintf (f, "\n");
 
@@ -156,11 +156,11 @@ main (int argc, char **argv) {
 
 #ifdef __MSDOS__
 	if (sizeof (void *) == 4) {
-		fprintf (f, "#define physical(a) (((unsigned long)(a)&0xFFFF)+(((unsigned long)(a)&0xFFFF0000)>>12))\n");
-		fprintf (f, "#define normalize(a) \\\n\ ((void *)(((unsigned long)(a)&0xFFFF000F)+(((unsigned long)(a)&0x0000FFF0)<<12)))\n");
+		  fprintf (f, "#define physical(a) (((unsigned long)(a)&0xFFFF)+(((unsigned long)(a)&0xFFFF0000)>>12))\n");
+		  fprintf (f, "#define normalize(a) \\\n\ ((void *)(((unsigned long)(a)&0xFFFF000F)+(((unsigned long)(a)&0x0000FFF0)<<12)))\n");
 	} else {
-		fprintf (f, "#define physical(a) ((unsigned long)(a))\n");
-		fprintf (f, "#define normalize(a) (a)\n");
+		  fprintf (f, "#define physical(a) ((unsigned long)(a))\n");
+		  fprintf (f, "#define normalize(a) (a)\n");
 	}
 	fprintf (f, "#define SEGSIZ 1024\n");
 	fprintf (f, "#define PGSIZE 1024\n");
@@ -179,12 +179,14 @@ main (int argc, char **argv) {
 	fprintf (f, "\n");
 
 	fprintf (f, "char *getenv();\n");
-	fprintf (f, "#ifndef __alpha__\n");
-	if (sizeof (long) == 8)
+#if !defined(__linux__) || !defined(__alpha)
+	if (sizeof (long) == 8) {
 		fprintf (f, "int time();\n");
-	else
+	} else 
+#endif
+	{
 		fprintf (f, "long time();\n");
-	fprintf (f, "#endif\n");
+	}
 	fprintf (f, "void *malloc();\n");
 	fprintf (f, "void free();\n");
 	fprintf (f, "void *calloc();\n");
@@ -193,6 +195,15 @@ main (int argc, char **argv) {
 	fprintf (f, "int jwrite();\n");
 	fprintf (f, "\n");
 
+
+	/* Appendix for 2.9.x */
+
+	if ((g = fopen ("/usr/include/locale.h", "r"))) {
+		fprintf (f, "#define __JOE_USE_LOCALE\n");
+		fclose(g);
+	} else {
+		fprintf (f, "/* #define __JOE_USE_LOCALE */ \n");
+	}
 	/* End of file */
 	fprintf (f, "#endif\n");
 	fclose (f);

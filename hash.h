@@ -8,24 +8,22 @@
 #define hnext(accu,c) (((accu)<<4)+((accu)>>28)+(c))
 
 typedef struct entry HENTRY;
-struct entry
- {
- char *name;
- HENTRY *next;
- void *val;
- };
+struct entry {
+	char *name;
+	HENTRY *next;
+	void *val;
+};
 
 typedef struct hash HASH;
-struct hash
- {
- int len;
- HENTRY **tab;
- };
+struct hash {
+	int len;
+	HENTRY **tab;
+};
 
-unsigned long hash();
-HASH *htmk();
-void htrm();
-void *htfind();
-void *htadd();
+unsigned long hash (char *s);
+HASH *htmk (int len);
+void htrm (HASH *ht);
+void *htadd (HASH *ht, char *name, void *val);
+void *htfind (HASH *ht, char *name);
 
 #endif

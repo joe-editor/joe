@@ -10,17 +10,29 @@
 
 extern int pgamnt;
 
-int ubol ();
-int ueol ();
-int ubof ();
-int ueof ();
-int ultarw ();
-int urtarw ();
-int uprvwrd ();
-int unxtwrd ();
+/*
+ * Movable functions
+ *	return 0 if action was done
+ *	return -1 otherwise
+ */
+int u_goto_bol (BW *bw);	/* move cursor to beginning of line */
+int u_goto_eol (BW *bw);	/* move cursor to end of line */
+int u_goto_bof (BW *bw);	/* move cursor to beginning of file */
+int u_goto_eof (BW *bw);	/* move cursor to end of file */
+
+int u_goto_left  (BW *bw);	/* move cursor to left (left arrow) */
+int u_goto_right (BW *bw);	/* move cursor to right (right arrow) */
+int u_goto_up (BW *bw);		/* move cursor to previous line */
+int u_goto_down (BW *bw);	/* move cursor to next line */
+
+int u_goto_prev (BW *bw);	/* move cursor to prev. word, edge, 
+				    or beginning of line */
+int u_goto_next (BW *bw);	/* move cursor to next word, edge,
+				    or end of line */
+
+
+
 int utomatch ();
-int uuparw ();
-int udnarw ();
 int utos ();
 int ubos ();
 void scrup ();
