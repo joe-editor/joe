@@ -927,13 +927,18 @@ int fmtlen(unsigned char *s)
 /* Return offset within format string which corresponds to a particular
    column */
 
+/* FIXME: this is not valid if we land in the middle of a double-wide character */
+
 int fmtpos(unsigned char *s, int goal)
 {
 	unsigned char *org = s;
 	int col = 0;
+	struct utf8_sm sm;
 
-	while (*s && col != goal) {
-		if (*s == '\\')
+	utf8_init(&sm);
+
+	while (*s && col<goal) {
+		if (*s == '\\') {
 			switch (*++s) {
 			case 'u':
 			case 'i':
@@ -948,11 +953,26 @@ int fmtpos(unsigned char *s, int goal)
 				++s;
 				continue;
 			case 0:
-				--s;
+				return col;
+			default:
+				++s;
+				++col;
+				continue;
 			}
-		++col;
-		++s;
+		} else {
+			int wid = 0;
+			if(utf8) {
+				int d = utf8_decode(&sm,*s);
+				if (d>=0)
+					wid = mk_wcwidth(d);
+			} else {
+				wid = 1;
+			}
+			col += wid;
+			++s;
+		}
 	}
+
 	return s - org + goal - col;
 }
 

@@ -1,3 +1,8 @@
+Sat Apr 17 2004  Joe Allen <jhallen@world.std.com>
+	* w.c:
+
+	Oops: fixed status line.
+
 Fri Apr 16 2004  Joe Allen <jhallen@world.std.com>
  	* ChangeLog TODO cmd.c macro.c pw.c pw.h rc.c regex.c ublock.c 
  	uedit.c ufile.c umath.c usearch.c ushell.c utag.c utf8.c w.c 
