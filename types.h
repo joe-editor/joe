@@ -577,7 +577,7 @@ struct search {
 	P	*markb, *markk;	/* Original marks */
 	int	valid;		/* Set if original marks are a valid block */
 	long	addr;		/* Addr of last replacement or -1 for none */
-	int	restrict;	/* Search restricted to marked block */
+	int	block_restrict;	/* Search restricted to marked block */
 };
 
 

@@ -1,3 +1,8 @@
+Sat Dec  7 2002  Vitezslav Samel <samel@mail.cz>
+	* types.h, usearch.c:
+	rename restrict() and restrict member of struct search to make
+	joe compile under HPUX with HP C compiler
+
 Mon Aug  5 2002  Vitezslav Samel <samel@mail.cz>
 	*** SECURITY ***
 	* ufile.c:

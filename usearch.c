@@ -158,7 +158,7 @@ SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int re
 	srch->markb = 0;
 	srch->markk = 0;
 	srch->valid = 0;
-	srch->restrict = 0;
+	srch->block_restrict = 0;
 	izque(SRCHREC, link, &srch->recs);
 	for (x = 0; x != 26; ++x)
 		srch->pieces[x] = 0;
@@ -304,7 +304,7 @@ static int set_options(BW *bw, char *s, SRCH *srch, int *notify)
 			break;
 		case 'k':
 		case 'K':
-			srch->restrict = 1;
+			srch->block_restrict = 1;
 			break;
 		case '0':
 		case '1':
@@ -501,9 +501,9 @@ static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
  * 1 if we're done
  */
 
-static int restrict(BW *bw, SRCH *srch)
+static int restrict_to_block(BW *bw, SRCH *srch)
 {
-	if (!srch->valid || !srch->restrict)
+	if (!srch->valid || !srch->block_restrict)
 		return 0;
 	bw->cursor->xcol = piscol(bw->cursor);
 	if (srch->backwards)
@@ -561,7 +561,7 @@ static int fnext(BW *bw, SRCH *srch)
 		return 1;
 	} else if (srch->rest || (srch->repeat != -1 && srch->replace)) {
 		if (srch->valid)
-			switch (restrict(bw, srch)) {
+			switch (restrict_to_block(bw, srch)) {
 			case -1:
 				goto again;
 			case 1:
@@ -574,7 +574,7 @@ static int fnext(BW *bw, SRCH *srch)
 		goto next;
 	} else if (srch->repeat != -1) {
 		if (srch->valid)
-			switch (restrict(bw, srch)) {
+			switch (restrict_to_block(bw, srch)) {
 			case -1:
 				goto again;
 			case 1:
@@ -603,7 +603,7 @@ again:	switch (fnext(bw, srch)) {
 		break;
 	case 1:
 bye:		if (!srch->flg && !srch->rest) {
-			if (srch->valid && srch->restrict)
+			if (srch->valid && srch->block_restrict)
 				msgnw(bw->parent, "Not found (search restricted to marked block)");
 			else
 				msgnw(bw->parent, "Not found");
@@ -612,7 +612,7 @@ bye:		if (!srch->flg && !srch->rest) {
 		break;
 	case 2:
 		if (srch->valid)
-			switch (restrict(bw, srch)) {
+			switch (restrict_to_block(bw, srch)) {
 			case -1:
 				goto again;
 			case 1:
