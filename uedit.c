@@ -467,7 +467,7 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					}
 				}
 				prm(q);
-			} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_') {
+			} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c>='0' && c<='9' || c=='_') {
 				int x;
 				len=0;
 				while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
@@ -560,6 +560,99 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 	}
 }
 
+int tomatch_xml(BW *bw,unsigned char *word,int dir)
+{
+	if (dir== -1) {
+		/* Backward search */
+		P *p=pdup(bw->cursor);
+		int c;
+		unsigned char buf[MAX_WORD_SIZE+1];
+		int len;
+		int state = 0;
+		int cnt = 1;
+		p_goto_next(p);
+		p_goto_prev(p);
+		while ((c=prgetc(p)) != NO_MORE_DATA) {
+			if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c>='0' && c<='9' || c=='.' || c==':' || c=='-' || c=='_') {
+				int x;
+				len=0;
+				while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9' || c=='.' ||
+				       c == '-' || c == ':') {
+					if(len!=MAX_WORD_SIZE)
+						buf[len++]=c;
+					c=prgetc(p);
+				}
+				if(c!=NO_MORE_DATA)
+					c = pgetc(p);
+				buf[len]=0;
+				for(x=0;x!=len/2;++x) {
+					int d = buf[x];
+					buf[x] = buf[len-x-1];
+					buf[len-x-1] = d;
+				}
+				if (!strcmp(word,buf)) {
+					if (c=='<') {
+						if (!--cnt) {
+							pset(bw->cursor,p);
+							prm(p);
+						}
+					}
+					else if (c=='/') {
+						++cnt;
+					}
+				}
+			}
+		}
+		prm(p);
+		return -1;
+	} else {
+		/* Forward search */
+		P *p=pdup(bw->cursor);
+		int c;
+		unsigned char buf[MAX_WORD_SIZE+1];
+		int len;
+		int state = 0;
+		int cnt = 1;
+		while ((c=pgetc(p)) != NO_MORE_DATA) {
+			if (c == '<') {
+				int e = 1;
+				c = pgetc(p);
+				if (c=='/') {
+					e = 0;
+					c = pgetc(p);
+				}
+				if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c=='_' || c==':' || c=='-' || c=='.') {
+					len=0;
+					while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c==':' || c=='-' || c=='.' ||
+					       c >= '0' && c <= '9') {
+						if(len!=MAX_WORD_SIZE)
+							buf[len++]=c;
+						c=pgetc(p);
+					}
+					if (c!=NO_MORE_DATA)
+						prgetc(p);
+					buf[len]=0;
+					if (!strcmp(word,buf)) {
+						if (e) {
+							++cnt;
+						}
+						else if (!--cnt) {
+							pgoto(p,p->byte-len);
+							pset(bw->cursor,p);
+							prm(p);
+							return 0;
+						}
+					}
+				} else if (c!=NO_MORE_DATA) {
+					prgetc(p);
+				}
+			}
+		}
+		prm(p);
+		return -1;
+	}
+}
+
 int utomatch(BW *bw)
 {
 	int d;
@@ -577,14 +670,27 @@ int utomatch(BW *bw)
 		unsigned char *set;
 		unsigned char *group;
 		unsigned char *word;
-		int flg;
+		int flg=0;
 		p=pdup(bw->cursor);
 		p_goto_next(p);
 		p_goto_prev(p);
 		q=pdup(p);
 		p_goto_next(q);
 		buf=brvs(p,q->byte-p->byte);
+		c=prgetc(p);
+		if (c=='<')
+			flg = 1;
+		else if (c=='/') {
+			c=prgetc(p);
+			if (c=='<')
+				flg = -1;
+		}
 		prm(p); prm(q);
+
+		if (flg) {
+			flg = tomatch_xml(bw, buf, flg);
+			goto done;
+		}
 
 		for (set = list; set && *set; set = next_set(set)) {
 			for (group = set; *group && *group!='=' && *group!=':'; group=next_group(group)) {
