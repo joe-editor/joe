@@ -22,3 +22,36 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 void *QUEUE;
 void *ITEM;
 void *LAST;
+
+typedef struct stditem STDITEM;
+struct stditem
+ {
+ LINK(STDITEM) link;
+ };
+
+void *alitem(freelist,itemsize)
+STDITEM *freelist;
+ {
+ if(qempty(STDITEM,link,freelist))
+  {
+  STDITEM *i=(STDITEM *)malloc(itemsize*16);
+  STDITEM *z=(STDITEM *)((char *)i+itemsize*16);
+  while(i!=z)
+   {
+   enquef(STDITEM,link,freelist,i);
+   i=(STDITEM *)((char *)i+itemsize);
+   }
+  }
+ return (void *)deque(STDITEM,link,freelist->link.prev);
+ }
+
+void frchn(freelist,chn)
+STDITEM *freelist, *chn;
+ {
+ STDITEM *i;
+ if((i=chn->link.prev)!=chn)
+  {
+  deque(STDITEM,link,chn);
+  splicef(STDITEM,link,freelist,i);
+  }
+ }

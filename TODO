@@ -1,21 +1,31 @@
 BUGS
 =-=-
+Rectangle mode for emacs yank system
 
-some systems use dirent instead of direct
-(fixed?)
+Query save loop? for kill-emacs and compile
 
-=-=-=
-sync problems with SIGCHLD/wait
+Emacs reload from file function? ^X ^V (it just works out if ^X ^V kills all
+instances of the buffer)
 
-=-=-=
-line numbers get out of sync
-(fixed?)
+Bufed should display unnamed buffers
+
+ESC args should work differently in emacs
+
+nextword,nextword,prevword sequence doesn't work for marking next successive
+word at ends of lines
+
+should have range checks on numeric option settings
 
 NEW FEATURES
 =-=-=-=-=-=-
 
 =-=-=
-background/demand loading
+Save editor state (last files edited & macros) in a file?
+
+=-=-=
+xedit and folding stuff
+- with seperate valid-line database?
+- display update algorithm will break
 
 =-=-=
 hexadecimal edit mode
@@ -24,25 +34,8 @@ hexadecimal edit mode
 fixed record length edit mode
 
 =-=-=
-block restricted search option
-
-=-=-=
-key bindings which depend on file type
-
-=-=-=
-verticle windows  		- difficult to get scrolling to work right
-
-=-=-=
-xedit and folding stuff		- regex too slow?
-
-=-=-=
-multiple line prompts/menu windows
-
-=-=-=
-key layout:
-  delete to beginning of line	?
-  search backwards		?
-  yank/unyank			?/?
+verticle windows
+- difficult to get scrolling to work right
 
 PORTABILITY
 =-=-=-=-=-=
@@ -50,37 +43,7 @@ PORTABILITY
 =-=-=
 msdos-
 
- how to get it to recognize CR-LF? - use translating fopen?
-
  how to give memory back during shell escapes?
 
 =-=-=
 make identifier length significant in first 8 (6?) places for old C compilers
-
-PERFORMACE
-=-=-=-=-=-
-
-=-=-=
-should use temporary edit buffers instead of memory blocks for
-undo, cut, s&r.  Will be faster and eliminate malloc
-problem on small machines
-
-maybe there should be a cut block to buffer function which does no
-copying except at the ends...
-
-at least undo records should be eliminated when a large block is requested
-
-=-=-=
-block coalescing in b.c.
-
-=-=-=
-store number of lines in block headers, maybe could then use faster search
-algorithm
-
-=-=-=
-insert and delete should determine number of columns so that fixup doesn't
-have to call pfcol so much.
-
-=-=-=
-maybe have special access function which automatically fix col only when col
-is accessed

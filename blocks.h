@@ -16,7 +16,6 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
-
 #ifndef _Iblocks
 #define _Iblocks 1
 
@@ -41,8 +40,9 @@ char *mfwrd();
  */
 char *mbkwd();
 
-/* char *mmove(char *d,char *s,int sz); Copy 'sz' bytes from 's' to 'd'.  Chooses
- * either mbkwd or mfwrd to do this such that the data won't get clobbered.
+/* char *mmove(char *d,char *s,int sz); Copy 'sz' bytes from 's' to 'd'.
+ * Chooses either mbkwd or mfwrd to do this such that the data won't get
+ * clobbered.
  */
 char *mmove();
 
@@ -59,13 +59,19 @@ char *mset();
  * If 'sz'==0 nothing happens
  * Returns orininal value of 'd'
  */
-
 int *msetI();
 
 /* int mcnt(char *blk,char c,int size);
  *
- * Count number of occurances a character appears in a block
+ * Count the number of occurances a character appears in a block
  */
 int mcnt();
 
+#ifdef junk
+/* char *mchr(char *s,char c);
+ *
+ * Return address of first 'c' following 's'.
+ */
+char *mchr();
+#endif
 #endif

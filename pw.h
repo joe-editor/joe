@@ -20,35 +20,30 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Ipw 1
 
 #include "config.h"
-#include "kbd.h"
+#include "bw.h"
 
 typedef struct pw PW;
 
 struct pw
  {
- void (*pfunc)();		/* Func which gets called when RTN is hit */
- char *prompt;			/* Prompt string */
- int promptlen;			/* Width of prompt string */
- int promptofst;		/* Prompt scroll offset */
- B *hist;			/* History buffer */
+ int (*pfunc)();	/* Func which gets called when RTN is hit */
+ int (*abrt)();		/* Func which gets called when window is aborted */
+ int (*tab)();		/* Func which gets called when TAB is hit */
+ char *prompt;		/* Prompt string */
+ int promptlen;		/* Width of prompt string */
+ int promptofst;	/* Prompt scroll offset */
+ B *hist;		/* History buffer */
+ void *object;		/* Object */
  };
 
 #define TYPEPW 0x200
 
-extern CONTEXT cprmpt, cfprmpt;
-
-/* W *wmkpw(W *w,char *prompt,void (*func)());
+/* BW *wmkpw(BW *bw,char *prompt,int (*func)(),char *huh,int (*abrt)(),
+             int (*tab)(),void *object,int *notify);
  * Create a prompt window for the given window
  */
-W *wmkpw();
+BW *wmkpw();
 
-/* W *wmkfpw(W *w,char *prompt,void (*func)());
- * Create a prompt window for the given window
- * Use mappings for file names
- */
-W *wmkfpw();
-
-void uabortpw();
-void upromptrtn();
+int ucmplt();
 
 #endif

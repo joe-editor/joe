@@ -21,13 +21,13 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <sys/stat.h>
 #include "config.h"
 #include "blocks.h"
-#include "heap.h"
 #include "vs.h"
 #include "va.h"
 #include "zstr.h"
 #include "queue.h"
-#include "msgs.h"
 #include "termcap.h"
+
+int dopadding=0;
 
 /* Return true if termcap line matches name */
 
@@ -145,7 +145,7 @@ tp=getenv("TERMCAP");
 if(tp && tp[0]=='/') namebuf=vsncpy(NULL,0,sz(tp));
 else
  {
- if(tp) vsncpy(sv(cap->tbuf),sz(tp));
+ if(tp) cap->tbuf=vsncpy(sv(cap->tbuf),sz(tp));
  if((tp=getenv("TERMPATH"))) namebuf=vsncpy(NULL,0,sz(tp));
  else if((tp=getenv("HOME")))
   namebuf=vsncpy(NULL,0,sz(tp)),
@@ -154,7 +154,7 @@ else
  else namebuf=vsncpy(NULL,0,sz(TERMPATH));
  }
 
-npbuf=vawords(NULL,sv(namebuf),sc("\t "));
+npbuf=vawords(NULL,sv(namebuf),sc("\t :"));
 vsrm(namebuf);
 
 y=0; ti=0;
@@ -186,7 +186,7 @@ if(f)
  fstat(fileno(f),&buf);
  fstat(fileno(f1),&buf1);
  if(buf.st_mtime>buf1.st_mtime) idx=findidx(f,name);
- else fprintf(stderr,M077,idxname);
+ else fprintf(stderr,"%s is out of date\n",idxname);
  fclose(f);
  }
 vsrm(idxname);
@@ -276,8 +276,8 @@ if(ti)
 varm(npbuf);
 vsrm(name);
 
-cap->pad=getstr(cap,"pc");
-if(getenv("DOPADDING")) cap->dopadding=1;
+cap->pad=jgetstr(cap,"pc");
+if(dopadding) cap->dopadding=1;
 else cap->dopadding=0;
 return setcap(cap,baud,out,outptr);
 }
@@ -321,7 +321,7 @@ char *name;
 return findcap(cap,name)!=0;
 }
 
-char *getstr(cap,name)
+char *jgetstr(cap,name)
 CAP *cap;
 char *name;
 {
@@ -476,7 +476,7 @@ static void cpl(ptr,c)
 char *ptr;
 char c;
 {
-vsadd(ssp,c);
+ssp=vsadd(ssp,c);
 }
 
 char *tcompile(cap,s,a0,a1,a2,a3)
@@ -495,12 +495,12 @@ return ssp;
 }
 
 /* Old termcap compatibility */
-
+#ifdef junk
 short ospeed;		/* Output speed */
 char PC, *UP, *BC;		/* Unused */
 static CAP *latest;	/* CAP entry to use */
 
-static stupid(ptr,c)
+static void stupid(ptr,c)
 void (*ptr)();
 char c;
 {
@@ -530,7 +530,7 @@ return getnum(latest,name);
 char *tgetstr(name)
 char *name;
 {
-return getstr(latest,name);
+return jgetstr(latest,name);
 }
 
 static int latestx, latesty;
@@ -552,3 +552,4 @@ latest->outptr=(void *)out;
 if(latest->baud!=ospeed) latest->baud=ospeed, latest->div=100000/ospeed;
 texec(latest,str,l,latesty,latestx);
 }
+#endif

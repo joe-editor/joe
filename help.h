@@ -20,42 +20,28 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Ihelp 1
 
 #include "config.h"
-#include "kbd.h"
 
 extern char *hlptxt;
 extern int hlpsiz, hlpbsz, hlplns;
-void dsphlp();
+extern char **help_names;
+extern struct help **help_structs;
+extern struct help *first_help;
 
-void uhelp();
+void dsphlp();
 
 struct help
  {
-  char *hlptxt;
-  int hlpsiz;
-  int hlpbsz;
-  int hlplns;
-  char *name;
-  struct help *next;
+ char *hlptxt;
+ int hlpsiz;
+ int hlpbsz;
+ int hlplns;
+ char *name;
+ struct help *next;
  };
 
-#define TYPEHELP 0x800
-void uhelpme();
-void uhabort();
-void uhrtn();
-
-void uhrtarw();
-void uhltarw();
-void uhuparw();
-void uhdnarw();
-void uhbof();
-void uheof();
-void uhbol();
-void uheol();
-void uhkey();
-
-extern CONTEXT cthelp;
-
-extern char **help_names;
-extern struct help **help_structs;
+int helpon();
+int uhelp();
+int uhnext();
+int uhprev();
 
 #endif

@@ -19,7 +19,25 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "termcap.h"
 #include "vs.h"
 
+int dopadding=0;
+
+extern char *tgoto();
+extern char *tgetstr();
+
 /* Get terminfo entry */
+
+CAP *setcap(cap,baud,out,outptr)
+CAP *cap;
+unsigned baud;
+void (*out)();
+void *outptr;
+{
+cap->baud=baud;
+cap->div=100000/baud;
+cap->out=out;
+cap->outptr=outptr;
+return cap;
+}
 
 CAP *getcap(name,baud,out,outptr)
 char *name;
@@ -30,33 +48,22 @@ void *outptr;
 CAP *cap;
 if(NULL==name && NULL==(name=getenv("TERM"))) return NULL;
 cap=(CAP *)malloc(sizeof(CAP));
-cap->out=out;
-cap->outptr=outptr;
 cap->tbuf=(char *)malloc(4096);
 cap->abuf=(char *)malloc(4096);
 cap->abufp=cap->abuf;
-cap->baud=baud;
-cap->div=100000/baud;
-/* ospeed=baud; */
 if(tgetent(cap->tbuf,name)!=1)
  {
  free(cap->tbuf);
  free(cap->abuf);
  return NULL;
  }
-/*
-cap->pad=getstr(cap,"pc");
-if(NULL!=cap->pad) PC=cap->pad[0];
-else PC=0;
-BC=0; UP=0;
-*/
-return cap;
+return setcap(cap,baud,out,outptr);
 }
 
 /* Get string capability */
 /* Warning, repeated calls to this will eventually use up all of cap->abuf */
 
-char *getstr(cap,name)
+char *jgetstr(cap,name)
 CAP *cap;
 char *name;
 {
@@ -106,6 +113,7 @@ char *str;
 int l,a0,a1,a2,a3;
 {
 char *a;
+if(!str) return;
 outcap=cap;
 a=tgoto(str,a1,a0);
 tputs(a,l,outout);
@@ -137,7 +145,7 @@ static void cpl(ptr,c)
 char *ptr;
 char c;
 {
-vsadd(ssp,c);
+ssp=vsadd(ssp,c);
 }
 
 char *tcompile(cap,s,a0,a1,a2,a3)

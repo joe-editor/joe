@@ -1,4 +1,4 @@
-/* Variable length strings
+/* Dynamic string library
    Copyright (C) 1992 Joseph H. Allen
 
 This file is part of JOE (Joe's Own Editor)
@@ -21,23 +21,125 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include "config.h"
 
+/***
+ *
+ * This is a dynamic string library which supports strings which automatically
+ * resize themselves when needed.  The strings know their own size, so getting
+ * the length of a string is a fast operation and storing zeroes in the
+ * strings is permissable.
+ *
+ * The strings are stored in malloc blocks and have the following format:
+ *
+ *   <bksize><length><string><zero>
+ *
+ * 'bksize' and 'length' are ints which give the size of the malloc block
+ * and the length of the string.  A zero character always follows the string
+ * for compatibility with normal C zero-terminated strings.  The zero is not
+ * counted in the string length.
+ *
+ * To further the compatibility with C strings, the address of a dynamic string
+ * is at <string> above, not at <bksize> (whose address is the start of the
+ * malloc block).  Thus, dynamic strings can be passed as arguments to UNIX
+ * operating system functions and C library function, but they can not be freed
+ * with free()- a special function is provided in this library for freeing
+ * dynamic strings.
+ *
+ * The primary dynamic string function is:
+ *
+ * char *vsncpy(char *d,int off,char *s,int len);
+ *                              Copy a block of characters at address 's' of
+ *				length 'len' onto the dynamic string 'd' at
+ *				offset 'off'.  The dynamic string is expanded
+ *				to handle any values of 'len' and 'off' which
+ *				might be given.  If 'off' is greater than the
+ *				length of the string, SPACEs are placed in the
+ *				gap.  If 'd' is NULL, a string is created.  If
+ *				'len' is 0, no copying or string expansion
+ *				occurs.
+ *
+ * Three important macros are provided for helping with vsncpy():
+ *
+ * sc("Hello")   Gives -->  "Hello",sizeof("Hello")-1
+ * sz(s)         Gives -->  s,zlen(s)
+ * sv(d)         Gives -->  d,sLEN(d)
+ *
+ * These are used to build arguments for vsncpy().  Many functions
+ * can be created with combinations of sc/sz/sv with vsncpy:
+ *
+ *    s=vsncpy(NULL,0,NULL,0);		Create an empty dynamic string
+ *
+ *    s=vsncpy(NULL,0,sc("Hello"));	Create a dynamic string initialized
+ *					with "Hello"
+ *
+ *    d=vsncpy(NULL,0,sv(s));		Duplicate a dynamic string
+ *
+ *    d=vsncpy(NULL,0,sz(s));		Convert a C string into a dynamic
+ *                                      string.
+ *
+ *    d=vsncpy(sv(d),sv(s));		Append dynamic string s onto d.
+ *
+ *    d=vsncpy(sv(d),sc(".c"));		Append a ".c" extension to d.
+ *
+ *
+ * These lesser functions are also provided:
+ *
+ * void vsrm(char *s);		Free a string.  Do nothing if 's' is NULL.
+ *
+ * int sLEN(char *s);		Return the length of the string 's'.  If 's'
+ *				is NULL, return 0.
+ *
+ * char *vstrunc(char *d,int len);
+ *				Set the length of a string.  Expand the string
+ *				with blanks if necessary.
+ *
+ * char *vsensure(char *d,int len);
+ *				Expand the malloc block for the string if
+ *				necessary so that a string of 'len' chars can
+ *				fit in it.
+ *
+ * sLen(s)=10;			Set the length indicator of the string to 10.
+ *
+ * char *vsins(char *d,int off,int len);
+ *				Insert a gap into a string.
+ *
+ * char *vsdel(char *d,int off,int len);
+ *				Delete characters from a string.
+ *
+ * Other function are provided as well.  Look through the rest of the header
+ * file.  The header file is kind of weird looking because it is intended to
+ * handle dynamic arrays of any type with only a few changes.
+ */
+
 /* Functions and global variable you have to define.  Replace these with
  * macros or defines here if they are not to be actual functions 
  */
 
+/* An element with name 'a' */
 #define sELEMENT(a) char a
+
+/* Cast something to element type */
 #define sCAST char
+
+/* Duplicate an element */
 /* sELEMENT(sdup()); */
 #define sdup(a) (a)
+
+/* Delete an element */
 /* sELEMENT(sdel()); */
 #define sdel(a) 0
+
+/* Compare a single element */
 /* int scmp(); */
 #define scmp(a,b) ((a)>(b)?1:((a)==(b)?0:-1))
 
+/* Compare a single element- case insensitive */
 int sicmp();
 
+/* A blank element */
 /* extern sELEMENT(sblank); */
 #define sblank ' '
+
+/* A termination element */
 /* extern sELEMENT(sterm); */
 #define sterm '\0'
 
@@ -101,15 +203,6 @@ int slen();
  */
 sELEMENT(*vsensure());
 
-/* sELEMENT(*vszap(sELEMENT(*vary),int pos,int n));
- * Destroy n elements from an array beginning at pos.  Is ok if pos/n go
- * past end of array.  This does not change the sLEN() value of the array.
- * This does nothing and returns 0 if 'vary' is 0.  Note that this
- * function does not actually write to the array.  This does not stop if
- * a sterm is encountered.
- */
-sELEMENT(*vszap());
-
 /* sELEMENT(*vstrunc(sELEMENT(*vary),int len));
  * Truncate array to indicated size.  This zaps or expands with blank elements
  * and sets the LEN() of the array.  A new array is created if 'vary' is 0.
@@ -144,13 +237,6 @@ sELEMENT(*vsncpy());
  * new array is created if 'vary' is 0.
  */
 sELEMENT(*vsndup());
-
-/* sELEMENT(*vsfield(sELEMENT(*vary),int pos,int len));
- * Make sure a field exists at 'pos' of length 'len'.  If there isn't one,
- * 'vary' is extended with blank elements.  This does not eliminate elements
- * which already exist in the field.  Use vszap for that.
- */
-sELEMENT(*vsfield());
 
 /* sELEMENT(*vsdup(sELEMENT(*vary)));
  * Duplicate array.  This is just a functionalized version of:
@@ -246,7 +332,7 @@ sELEMENT(*_vsset());
 /**********************/
 /* Insertion/Deletion */
 /**********************/
-
+#ifdef junk
 /* sELEMENT(*vsins(sELEMENT(*vary),int pos,int n));
  * Insert n empty slots into the array.  If 'pos' >= the length of the array,
  * the array is simply extended.  The new slots are not set to anything.
@@ -269,7 +355,7 @@ sELEMENT(*vsdel());
  * Sort the elements of an array (char or variable length) using qsort().
  */
 sELEMENT(*vssort());
-
+#endif
 /* int vsbsearch(sELEMENT(*ary),int len,sELEMENT(element));
  * Do a binary search on a sorted variable length or char array.  Returns position
  * of matching element or the position where the element should be if it was
@@ -278,7 +364,7 @@ sELEMENT(*vssort());
  * Hmm... this should really indicate whether or not the element was found.
  */
 int vsbsearch();
-
+#ifdef junk
 /* int vsfirst(sELEMENT(*ary),int len,sELEMENT(element));
  * Find offset to first matching element in 'vary' or return ~0 if not found.
  */
@@ -294,7 +380,7 @@ int vslast();
  * occurance of 'b' in 'a' or return ~0 if none found.
  */
 int vss();
-
+#endif
 /* int vscmpn(sELEMENT(*a),int alen,sELEMENT(*b),int blen);
  *
  * Compare two arrays using scmp.  If 'a' > 'b', return 1.  If 'a' == 'b',
@@ -308,7 +394,7 @@ int vscmpn();
  * Functionalized version of: vscmpn(sv(a),sv(b));
  */
 int vscmp();
-
+#ifdef junk
 /* int vsicmpn(sELEMENT(*a),int alen,sELEMENT(*b),int blen);
  *
  * Compare two arrays using sicmp.  If 'a' > 'b', return 1.  If 'a' == 'b',
@@ -324,7 +410,7 @@ int vsicmpn();
  * Functionalized version of: vsicmpn(sv(a),sv(b));
  */
 int vsicmp();
-
+#endif
 /* int vsscan(sELEMENT(*a),int alen,sELEMENT(*b),int blen);
  * Find offset of first matching element in 'a' which matches any
  * of the elements passed in 'b'.  Array 'b' must be sorted.
@@ -342,7 +428,7 @@ int vsspan();
 /***************/
 /* Other stuff */
 /***************/
-
+#ifdef junk
 /* char *vsread(char *d,int p,int (*getC)(void *ptr),void *ptr);
  * Replace 'd' with next line read from read-character function 'getC'.  If 
  * 'd' is 0, a new string is allocated.  If there is no more input, the string
@@ -365,40 +451,6 @@ char *vsread();
  * }
  *
  */
-char *vswords();
-
-/* char *vsfmt(char *s,char *fmt,...);
- *
- * (Yeah, yeah.. I really need to make this printf compatible, I know.)
- *
- * Printf (almost) to a variable length string.  If 's' is zero, a string is
- * created.  All chars from 'fmt' are copied to string except for these '%'
- * sequences:
- *
- *    % [' '|'+'|'-'] Base _ FieldWidth . Precision [l] {d|D|u|U|c|s}
- *    %% generates %
- *
- *    '+' means leading + needed for zero and positive numbers
- *    ' ' means leading space needed for zero and positive numbers
- *    '-' means left justified within field instead of right justified
- *    FieldWidth is minimum field width
- *
- *    s     Means insert next zero-terminated string from argument list
- *          Precision means maximum string size
- *
- *    c     Means insert next character from argument list.  The character is
- *          normally passed as an int.  If 'l' is given, the character is
- *          passed as a long.
- *
- *    d signed integer, use lower case letters for digits above 9
- *    D signed integer, use upper case letters for digits above 9
- *    u unsigned integer, use lower case letters for digits above 9
- *    U unsigned integer, use upper case letters for digits above 9
- *          If 'l' is give, a long or unsigned long is requested instead.
- *          Precision is minimum number of digits to generate in number.
- *          Default base is decimal.
- */
-char *vsfmt();
-
-
+char *vwords();
+#endif
 #endif

@@ -25,23 +25,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 extern int skiptop;
 
-typedef struct seq SEQ;
 typedef struct scrn SCRN;
-
-/* Number of key sequence translation entries */
-
-#define NKEYS 21
-
-/* Sepecial key sequence structure */
-
-struct seq
- {
- char *seq;
- int code;
- char *name;
- };
-
-extern SEQ seqs[];
 
 struct hentry
  {
@@ -51,6 +35,21 @@ struct hentry
 
 /* Each terminal has one of these */
 
+#ifdef __MSDOS__
+
+struct scrn
+ {
+ int li;
+ int co;
+ short *scrn;
+ int scroll;
+ int insdel;
+ int *updtab;
+ int *compose;
+ int *sary;
+ };
+
+#else
 struct scrn
  {
  CAP *cap;		/* Termcap/Terminfo data */
@@ -140,23 +139,6 @@ struct scrn
  int scroll;			/* Set to use scrolling */
  int insdel;			/* Set to use insert/delete within line */
 
- /* Key-sequence translation table */
-
- struct
-  {
-  char *s;			/* Key sequence string */
-  int l;			/* Key sequence string length */
-  int n;			/* Value which should be returned for this string */
-  } ktab[NKEYS];
-
- int tabsize;			/* Number of entries in translation table */
-
- /* Input buffer for translations */
-
- char kbuf[32];			/* Keyboard buffer */
- int kbufp;			/* Keyboard buffer index */
- int dumpptr;			/* When we pass unmatched chars */
-
  /* Current state of terminal */
  int *scrn;			/* Current contents of screen */
  int x,y;			/* Current cursor position (-1 for unknown) */
@@ -173,6 +155,7 @@ struct scrn
  struct hentry *htab;
  struct hentry *ary;
  };
+#endif
 
 /* SCRN *nopen(void);
  *
@@ -195,6 +178,7 @@ void nresize();
  */
 void nredraw();
 
+void npartial();
 void nescape();
 void nreturn();
 
@@ -206,62 +190,75 @@ void nreturn();
  */
 void nclose();
 
-/* int ngetc(SCRN *t);
- *
- * Get next input character.  Arrow keys are translated into the integer codes
- * shown below.
- */
-int ngetc();
-
-#define KEYUP 256	/* Arrow keys */			/* ku */
-#define KEYDOWN 257						/* kd */
-#define KEYLEFT 258						/* kl */
-#define KEYRIGHT 259						/* kr */
-#define KEYF0 260	/* Function keys (is F0 really F10?) */ /* k0 */
-#define KEYF1 261						/* k1 */
-#define KEYF2 262
-#define KEYF3 263
-#define KEYF4 270
-#define KEYF5 265
-#define KEYF6 266
-#define KEYF7 267
-#define KEYF8 268
-#define KEYF9 269						/* k9 */
-#define KEYF10 276						/* k; */
-#define KEYDEL 383	/* Delete character */			/* kD */
-#define KEYINS 271	/* Insert character */			/* kI */
-#define KEYHOME 272	/* Home key */				/* kh */
-#define KEYEND 273	/* End key */				/* kH */
-#define KEYPGDN 274	/* Page down key */			/* kN */
-#define KEYPGUP 275	/* Page up key */			/* kP */
-#define KEYBACKS 264	/* Backspace key */			/* kb */
-
-/* void cpos(SCRN *t,int x,int y);
+/* int cpos(SCRN *t,int x,int y);
  *
  * Set cursor position
  */
-void cpos();
+int cpos();
 
-/* void attr(SCRN *t,int a);
+/* int attr(SCRN *t,int a);
  *
  * Set attributes
  */
-void attr();
+int attr();
 
-/* void outatr(SCRN *t,int x,int y,int c);
+/* void outatr(SCRN *t,int *scrn,int x,int y,int c,int a);
  *
  * Output a character at the given screen cooridinate.  The cursor position
  * after this function is executed is indeterminate.
  */
-void outatr();
 
 /* Character attribute bits */
+
+#ifdef __MSDOS__
+
+#define INVERSE 1
+#define UNDERLINE 2
+#define BOLD 4
+#define BLINK 8
+#define DIM 16
+extern unsigned atab[];
+
+#define outatr(t,scrn,x,y,c,a) \
+  ( \
+    (t), (x), (y), *(scrn)=((unsigned)(c)|atab[a]) \
+  )
+
+#else
 
 #define INVERSE 256
 #define UNDERLINE 512
 #define BOLD 1024
 #define BLINK 2048
 #define DIM 4096
+
+#define outatr(t,scrn,xx,yy,c,a) \
+  ( \
+    (*(scrn)!=((c)|(a))) ? \
+      ( \
+      *(scrn)=((c)|(a)), \
+      ((t)->ins?clrins(t):0), \
+      ((t)->x!=(xx) || (t)->y!=(yy)?cpos((t),(xx),(yy)):0), \
+      ((t)->attrib!=(a)?attr((t),(a)):0), \
+      ttputc(c), ++(t)->x \
+      ) \
+    : \
+      0 \
+  )
+
+#endif
+
+extern unsigned xlata[256];
+extern unsigned char xlatc[256];
+extern int dspasis;
+
+#define xlat(a,c) \
+  ( \
+  (dspasis && ((unsigned)(c)>=128)) ? \
+      ((a)=0) \
+    : \
+      (((a)=xlata[(unsigned)(c)]), ((c)=xlatc[(unsigned)(c)])) \
+  )
 
 /* int eraeol(SCRN *t,int x,int y);
  *
@@ -296,5 +293,7 @@ void nscroll();
  * Figure out and execute line shifting
  */
 void magic();
+
+int clrins();
 
 #endif

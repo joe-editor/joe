@@ -39,18 +39,30 @@ struct recmac
  MACRO *m;
  };
 
-extern struct recmac *recmac;	/* Set when macro is recording */
+/* Set when macro is recording: for status line */
+extern struct recmac *recmac;
 
+/* Macro construction functions */
 MACRO *mkmacro();
 void addmacro();
 MACRO *dupmacro();
 void rmmacro();
 MACRO *macstk();
 MACRO *macsta();
-void uplay();
-void ustop();
-void urecord();
-void record();
-void unmac();
+
+/* Execute a macro */
+extern MACRO *curmacro;
+int exemac();
+int exmacro();
+
+/* Keyboard macros user interface */
+int uplay();
+int ustop();
+int urecord();
+int uquery();
+
+/* Repeat prefix user command */
+int uarg();
+int uuarg();
 
 #endif

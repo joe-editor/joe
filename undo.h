@@ -1,67 +1,54 @@
-/* UNDO system
-   Copyright (C) 1992 Joseph H. Allen
-
-This file is part of JOE (Joe's Own Editor)
-
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
-
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
-
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */ 
-
 #ifndef _Iundo
 #define _Iundo 1
 
+#include "config.h"
 #include "queue.h"
-
-/* Number of undo records to keep */
+#include "b.h"
 
 #define UNDOKEEP 100
 
-typedef struct undorec UNDOREC;
 typedef struct undo UNDO;
+typedef struct undorec UNDOREC;
 
-extern int inundo;
-
-/* An undo record */
 struct undorec
  {
- LINK(UNDOREC) link;		/* Doubly linked list of undo records */
- int first;			/* Set if this is the first undo rec */
- int min;			/* Set if this is from a minor change */
- long where;			/* Buffer position this are from */
- int del;			/* Set for delete, Clr for insert */
- int len;			/* No. chars in this rec */
- UNDOREC *unit;			/* Last/First rec in unit */
- char *data;			/* The chars */
+ LINK(UNDOREC) link;
+ UNDOREC *unit;
+ int min;
+ int changed;		/* Status of modified flag before this record */
+ long where;		/* Buffer address of this record */
+ long len;		/* Length of insert or delete */
+ int del;		/* Set if this is a delete */
+ B *big;		/* Set to buffer containing a large amount of deleted data */
+ char *small;		/* Set to malloc block containg a small amount of deleted data */
  };
 
-/* An undo point */
 struct undo
  {
- LINK(UNDO) link;		/* Doubly linked list of undo points */
- UNDOREC recs;			/* Undo records */
- int nrecs;			/* Number of undo records */
- UNDOREC *ptr;			/* Undo/Redo location */
- UNDOREC *first;		/* First of unit */
- UNDOREC *last;			/* Last of unit */
+ LINK(UNDO) link;
+ B *b;
+ int nrecs;
+ UNDOREC recs;
+ UNDOREC *ptr;
+ UNDOREC *first;
+ UNDOREC *last;
  };
 
-void umclear();			/* Prevent combinding of undo recs */
-void undomark();		/* Everything from prev. mark is a unit */
-void undoend();
-void undomk();
+extern int inundo;
+extern int justkilled;
+
+UNDO *undomk();
 void undorm();
-void uundo();
-void uredo();
+int uundo();
+int uredo();
+void umclear();
+void undomark();
 void undoins();
 void undodel();
+int uyank();
+int uyankpop();
+int uyapp();
+int unotmod();
+int ucopy();
 
 #endif

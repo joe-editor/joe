@@ -2,60 +2,61 @@
 .SH Name
 joe \- Joe's Own Editor
 .SH Syntax
-.B joe [-options] [ [+nnn] filename ]...
+.B joe [global-options] [ [local-options] filename ]...
 .SH Description
-JOE is a sane ASCII-text screen editor.  Unlike vi, it is a "mode-less"
-editor- what you type is immediately entered into the file.  However, unlike
-EMACS, it uses a concise command set and generally has the "feel" of
-user-friendly PC editors.  Users of Micro-Pro's WordStar or Borland's
-"Turbo" languages will feel at home.  JOE goes far beyond those editors in
-providing powerful editing features, however.
+JOE is my ASCII-text screen editor.  It has a "mode-less" user interface
+which is similer to many user-friendly PC editors.  Users of Micro-Pro's
+WordStar or Borland's "Turbo" languages will feel at home.  JOE is a full
+featured UNIX screen-editor though, and has many features for editing
+programs and text.
 
-JOE has many uses:
-.HP
-- Editing programs (especially for programs written in block
-structured languages like C and PASCAL) 
-.HP
-- Unformatted ASCII text files (such as News articles or e-mail) 
-.HP
-- Foreign language text (JOE is not limited to 7-bit characters) 
-.HP
-- "binary" files (JOE has no line length or file size limits), or devices (JOE 
-can edit specified sections of files or devices).  
 .PP
 JOE is free software;  you can distribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
-Foundation.  The author has no plans for turning JOE into a commercial or
-share-ware product.  JOE is available over the Internet by anonymous FTP from
-\fBworld.std.com\fR, file: \fBsrc/editor/joe*.tar.Z\fR.
+Foundation.  I have no plans for turning JOE into a commercial or share-ware
+product.  JOE is available over the Internet by anonymous FTP from
+\fBftp.std.com\fR, file: \fBsrc/editors/joe*.tar.Z\fR.
 
 .SH Usage 
 
-To start the editor, type \fBjoe\fR followed by zero or more names of files 
-you want to exit.  Each file name may be preceeded by a number (represented 
-by the \fB+nnn\fR in the example command line) to have the cursor initially 
-placed on line nnn of the file.  If you are editing a new file, you can 
-either give the name of the new file when you invoke the editor, or in 
-the editor when you save the new file.  A modified syntax for file names is 
-provided to allow you to edit program output, standard input/output, or 
-sections of files or devices.  See the section \fBFilenames\fR below for 
-details.  
+To start the editor, type \fBjoe\fR followed by zero or more names of files
+you want to edit.  Each file name may be preceeded by a local option setting
+(see the local options table which follows).  Other global options, which
+apply to the editor as a whole, may also be placed on the command line (see
+the global options table which follows).  If you are editing a new file, you
+can either give the name of the new file when you invoke the editor, or in
+the editor when you save the new file.  A modified syntax for file names is
+provided to allow you to edit program output, standard input/output, or
+sections of files or devices.  See the section \fBFilenames\fR below for
+details.
 
 Once you are in the editor, you can type in text and use special
 control-character sequences to perform other editing tasks.  To find out
 what the control-character sequences are, read the rest of this man page or
-type \fB^K H\fR for help in the editor.  The \fB^\fR means that you hold
-down the \fBControl\fR key while pressing the following key (the same way
-the \fBShift\fR key works for uppercase letters).  Once you have typed \fB^K
-H\fR, a menu of help topics appears on the bottom line.  Use the arrow keys
-(or \fB^F\fR and \fB^B\fR if your terminal has none) to select the topic and
-then press \fBSPACE\fR or \fBRETURN\fR to have help on that topic appear on
-the screen.  Or if you're a fast typist, you may prefer to just hit the
-first letter of the Help topic to have it immediately appear on the screen. 
-The help window will appear in the top half of the screen, and the editing 
-window will be in the lower half of the screen. You can enter and edit text 
-while viewing the help screen. Use the \fB^K H\fR command again to dismiss 
-the help window. 
+type \fB^K H\fR for help in the editor.
+
+Now for some obscure computer-lore:
+
+The \fB^\fR means that you hold down the \fBControl\fR key while pressing
+the following key (the same way the \fBShift\fR key works for uppercase
+letters).  A number of control-key sequences are duplicated on other keys,
+so that you don't need to press the control key: \fBESC\fR will work in
+place of \fB^[\fR, \fBDel\fR will work in place of \fB^?\fR, \fBBackspace\fR
+will work in place of \fB^H\fR, \fBTab\fR will work in place of \fB^I\fR,
+\fBReturn\fR or \fBEnter\fR will work in place of \fB^M\fR and
+\fBLinefeed\fR will work in place of \fB^J\fR.  Some keyboards may give you
+trouble with some control keys.  \fB^_\fR, \fB^^\fR and \fB^@\fR can usually
+be entered without pressing shift (I.E., try \fB^-\fR, \fB^6\fR and
+\fB^2\fR).  Other keyboards may reassign these to other keys.  Try:
+\fB^.\fR, \fB^,\fR and \fB^/\fR.  \fB^SPACE\fR can usually be used in place
+of \fB^@\fR.  \fB^\\\fR and \fB^]\fR are interpreted by many communication
+programs, including telnet and kermit.  Usually you just hit the key twice
+to get it to pass through the communication program.
+
+Once you have typed \fB^K H\fR, the first help window appears at the top of
+the screen.  You can continue to enter and edit text while the help window
+is on.  To page through other topics, hit ^[< and ^[> (that is, ESC < and
+ESC >).  Use \fB^K H\fR to dismiss the help window.
 
 You can customize the keyboard layout, the help screens and a number of
 behavior defaults by copying JOE's initialization file (usually
@@ -75,33 +76,148 @@ should.  See the section \fBEnvironment variables\fR below.
 
 The following global options may be specified on the command line:
 
-.IP -nobackups
-If you don't want backup files to be created.
-
 .IP -asis
-Characters 128 - 255 pass through unchanged instead of being shown in
-inverse video.
+Characters with codes above 127 will be sent to the terminal as-is, instead
+of as inverse of the corresponding character below 128.  If this does not
+work, check your terminal server.
 
-.IP -stacol
-Display the current column number on the status line.
+.IP -backpath\ path
+If this option is given, backup files will be stored in the specified
+directory instead of in each file's original directory.
 
-.IP -starow
-Display the current row number on the status line.
+.IP -baud\ nnn
+Set the baud rate for the purposes of terminal screen optimization.  Joe
+inserts delays for baud rates below 19200, which bypasses tty buffering so
+that typeahead will interrupt the screen output.  Scrolling commands will
+not be used for 38400 baud.  This is useful for X-terms and other console
+ttys which really aren't going over a serial line.
 
-.IP -force
-Force final newline when files are saved.
+.IP -beep
+Joe will beep on command errors and when the cursor goes past extremes.
 
-.IP help
-Start with help on.
+.IP -columns\ nnn
+Sets the number of screen columns.
 
-.IP -lightoff
-Turn off highlighting after block copy or move.
+.IP -csmode
+Continued search mode: a search immediatly following a search will repeat
+the previous search instead of prompting for new string.  This is useful for
+the the ^[S and ^[R commands and for when joe is trying to be emacs.
+
+.IP -dopadding
+Joe usually assumes that there is some kind of flow control between it and
+the tty.  If there isn't, this option will make joe output extra ^@s to the
+tty as specified by the termcap entry.  The extra ^@s allow the terminal to
+catch up after long terminal commands.
 
 .IP -exask
-The Save & Exit command (^K X) will ask before saving.
+This option makes ^KX verify the file name that it's about to write.
 
-There are other options for controlling the editor.  Take a look in the
-joerc file for details.
+.IP -force
+This option makes sure that the last line of the file has a line-feed which
+it's saved.
+
+.IP -help
+The editor will start with the help screen on if this option is given.
+
+.IP -keepup
+Normally the column number and control-key prefix fields of the status lines
+are on a one second delay to reduce CPU consumption, but with this option
+they are updated after each key-stroke.
+
+.IP -lightoff
+The block highlighting will go away after any block command if this option
+is given.
+
+.IP -lines\ nnn
+Sets the number of screen lines.
+
+.IP -marking
+Text between ^KB and the cursor is highlighted (use with -lightoff and a
+modified joerc file to have drop-anchor style block selection).
+
+.IP -mid
+If this option is set and the cursor moves off the window, the window will
+be scrolled so that the cursor is in the center.  This option is forced on
+slow terminals which don't have scrolling commands.
+
+.IP -nobackups
+This option prevents backup files.
+
+.IP -nonotice
+This option prevent the copyright notice from being displayed when the
+editor starts.
+
+.IP -nosta
+This option eliminates the top-most status line.  It's nice for when you
+only want to see your text on the screen or if you're using a vt52.
+
+.IP -noxon
+Attempt to turn off ^S/^Q processing.  This is useful for when joe is trying
+to be WordStar or EMACS.
+
+.IP -orphan
+When this option is active, extra files on the command line will be placed
+in orphaned buffers instead of in extra windows.  This is useful for when
+joe is trying to be emacs.
+
+.IP -pg\ nnn
+This specifies the number of lines to keep after PgUp/PgDn (^U/^V).  If -1
+is given, half the window is kept.
+
+.IP -skiptop\ nnn
+Don't use the top nnn lines of the screen.  Useful for when joe is used as a
+BBS editor.
+
+.LP
+Each of these options may be specified in the joerc file as well.  In
+addition, the NOXON, BAUD, LINES, COLUMNS and DOPADDING options may be
+specified with environment variables.
+
+The following options may be specified before each filename on the command
+line:
+
+.IP +nnn
+The cursor starts on the specified line.
+
+.IP -wordwrap
+Joe wraps the previous word when you type past the right margin.
+
+.IP -autoindent
+When you hit Return on an indented line, the indentation is duplicated onto
+the new line.
+
+.IP -overwrite
+Typing overwrites existing characters instead of inserting before them.
+
+.IP -lmargin\ nnn
+Sets the left margin.
+
+.IP -rmargin\ nnn
+Sets the right margin.
+
+.IP -tab\ nnn
+Sets the tab width.
+
+.IP -indentc\ nnn
+Sets the indentation character for ^K, and ^K. (32 for SPACE, 9 for TAB).
+
+.IP -istep\ nnn
+Sets the indentation step for ^K, and ^K..
+
+.IP -linums
+Line numbers are displayed before each line.
+
+.IP -rdonly
+The file is read only.
+
+.IP -keymap\ name
+Use an alternate section of the joerc file for the key sequence bindings.
+
+.LP
+These options can also be specified in the joerc file.  They can be set
+depending on the file-name extension.  Programs (.c, .h or .p extension)
+usually have autoindent enabled.  Wordwrap is enabled on other files, but rc
+files have it disabled.
 
 .SH Editing Tasks
 .SS Basic Editing
@@ -248,16 +364,17 @@ have to put the editor in \fBASIS\fR mode (described later) to have these
 passed untranslated to the terminal.
 
 .SS Prompts
-If you hit \fBTAB\fR at any file name prompt, a list of directory entries
-which match the name you had typed in so far will be generated (or if only
-one directory entry matches, it is immediately appended to the name).  You
-can use the arrow keys to move around this directory menu and press RETURN
-or SPACE to select an item.  If you press the first letter of one of the
-directory entries, it will be selected, or if more than one entry has the
-same first letter, the cursor will jump between those entries.  If you
-select a subdirectory or .., the directory name is appended to the prompt
-and the new directory is loaded into the menu.  You can hit Backspace to go
-back to the previous directory.
+If you hit \fBTAB\fR at any file name prompt, joe will attempt to complete
+the name you entered as much as possible.  If it couldn't complete the
+entire name, because there are more than one possible completions, joe
+beeps.  If you hit \fBTAB\fR again, joe list the completions.  You can use
+the arrow keys to move around this directory menu and press RETURN or SPACE
+to select an item.  If you press the first letter of one of the directory
+entries, it will be selected, or if more than one entry has the same first
+letter, the cursor will jump between those entries.  If you select a
+subdirectory or .., the directory name is appended to the prompt and the new
+directory is loaded into the menu.  You can hit Backspace to go back to the
+previous directory.
 
 Most prompts record a history of the responses you give them.  You can hit
 up and down arrow to step through these histories.
@@ -277,7 +394,8 @@ Hit \fB^K SPACE\fR to have JOE report the line number, column number, and
 byte number on the last line of the screen.  The number associated with the
 character the cursor is on (its ASCII code) is also shown.  You can have the
 line number and/or column number always displayed on the status line by
-using the \fB^T N\fR and \fB^T C\fR commands.
+setting placing the appropriate escape sequences in the status line setup
+strings.  Edit the joerc file for details.
 
 .SS File operations
 
@@ -452,7 +570,7 @@ Y\fR without noticing...).  If it really bothers you, however, just hit
 \fB^K B ^K K\fR, to turn the highlighting off.  
 
 .SS Indenting program blocks
-Auto-indent mode toggled with the \fB^T A\fR command.  The
+Auto-indent mode toggled with the \fB^T I\fR command.  The
 \fBjoerc\fR is normally set up so that files with names ending with .p, .c
 or .h have auto-indent mode enabled.  When auto-indent mode is enabled and
 you hit \fBReturn\fR, the cursor will be placed in the same column that the
@@ -462,9 +580,7 @@ You can use the \fB^K ,\fR and \fB^K .\fR commands to shift a block of text
 to the left or right.  If no highlighting is set when you give these 
 commands, the program block the cursor is located in will be selected, and 
 will be moved by subsequent \fB^K ,\fR and \fB^K .\fR commands.  The number 
-of columns these commands shift by is set with the \fB^T I\fR command.  The 
-character inserted and deleted (usually a space) to accomplish the shifting 
-can be set with the \fB^T K\fR command.  
+of columns these commands shift by can be set through a \fB^T\fR option.
 
 .SS Windows
 You can edit more than one file at the same time or edit two or more
@@ -571,28 +687,6 @@ passed to the shell.  Type the shell \fBexit\fR command to stop recording
 shell output.  If you press \fB^C\fR in a shell window, when the cursor is
 not at the end of the window, the shell is \fBkill\fRed.
 
-.SS Other mode settings/options
-.IP \fB^T\ P
-This command sets the number of lines which are kept on the screen with the 
-\fB^U\fR and \fB^V\fR commands. For example, setting this value to 3 means 
-that the the last three lines on the screen will be the top three lines of 
-the screen after a \fB^V\fR commands.
-
-.IP \fB^T\ F
-This command sets the editor so that when files are saved, a final
-line-break is added on the last line if one is not there already.
-
-.IP \fB^T\ M
-This command sets the editor so that when you scroll the screen using the up
-and down arrow keys, the cursor line is made the center of the screen. 
-This is automatically set when the editor is used at low baud rates on
-terminals which don't have scrolling.
-
-.IP \fB^T\ H
-This command sets the editor so that characters above 127 are output as-is,
-instead of as inverse versions of the same corresponding characters below
-128.
-
 .SH \fBEnvironment\ variables 
 
 For JOE to operate correctly, a number of other environment settings must be 
@@ -667,7 +761,6 @@ syntax of the initialization file should be fairly obvious and there are
 further instruction in it.
 
 .SH Acknowledgements
-JOE was whiten by Joseph H. Allen.  If you have bug reports or questions,
-e-mail them to jhallen@world.std.com.  Larry Foard (entropy@world.std.com),
-gave creative support and wrote sections of the editor.  Gary Gray
-(ggray@world.std.com) put up with my annoying enthusiastic editor nonsense.
+JOE was writen by Joseph H. Allen.  If you have bug reports or questions,
+e-mail them to jhallen@world.std.com.  Larry Foard (entropy@world.std.com)
+and Gary Gray (ggray@world.std.com) also helped with the creation of JOE.

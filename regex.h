@@ -19,9 +19,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #ifndef _Iregex
 #define _Iregex 1
 
-extern char *pieces[];
-int rmatch();
 int pmatch();
-int pimatch();
 
 #endif

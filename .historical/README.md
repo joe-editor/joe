@@ -7,6 +7,103 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 2.2
+**Released: 1994-10-06**
+
+Source recovered from Slackware 2.1 source archive
+
+*Archival notes: This version was included with Slackware 2.1-3.4*
+
+Author's comments:
+
+```
+I got this version of JOE to work in MS-DOS.
+```
+
+Changelog:
+
+```
+- First attempt at MS-DOS version of joe
+   - Direct screen write
+   - Modifications for dos file/drive names
+   - Use TEMP variable to figure out where to store temporary file
+   - Smaller virtual memory page size
+   - Backslashes in file name problem
+   - CR before an LF looks like an LF
+- Backward search ignore-case was not working
+- Scalable window height was not working fully
+- Spaces in file-names gave a problem with backup file creation
+- TILDE option is not available in all versions of BSD
+- Allow : as seperate for termcap filename list
+- Next error / Prev. error was not tracking right
+- tabs not displayed right in nxterr/prverr messages
+- Block moves where the cursor was to the right of the block was broken
+```
+
+---
+
+## JOE 2.1
+**Released: 1994-09-23**
+
+*The source for this release has been lost*
+
+Changelog:
+
+```
+- rc file wasn't giving correct error messages for missing options
+- the '-nobackups' options was mispelled: '- nobackups'
+- editor was crashing because of problem in undo
+- update bypass in utype has a problem when wordwrapping and scrolling
+```
+
+Original announcement:
+```
+Newsgroups: comp.editors,comp.emacs,alt.os.linux,comp.unix.misc,comp.unix.admin
+Path: bga.com!news.sprintlink.net!howland.reston.ans.net!cs.utexas.edu!uunet!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: Re: JOE 2.0 - Major new version
+Message-ID: <CwKMnt.DLz@world.std.com>
+Organization: The World Public Access UNIX, Brookline, MA
+References: <CwItC9.A22@world.std.com>
+Date: Fri, 23 Sep 1994 07:11:52 GMT
+Lines: 15
+Xref: bga.com comp.editors:2711 comp.emacs:3586 alt.os.linux:305 comp.unix.misc:4030 comp.unix.admin:8546
+
+In article <CwIt...@world.std.com>,
+Joseph H Allen <jhallen@world.std.com> wrote:
+>
+>A major new version of my editor JOE is ready.  It should appear in
+>ftp.std.com, file: src/editors/joe2.0.tar.Z some time tomorrow.
+
+Actually, get version joe2.1.tar.Z.  A bunch of minor bugs were fixed and
+also a problem where joe core dumped after a short time.  This is a new
+major release, so there will probably be a slew of new minor versions
+over the next few days, so keep checking ftp.std.com.
+-- 
+/*  jhallen@world.std.com (192.74.137.5) */               /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
+## JOE 2.0
+*Release date unknown*
+
+*Archival notes: Release date was probably 1994-09-22 or 1994-09-23*
+
+*The source for this release has been lost*
+
+---
+
+## JOE 1.0.13
+**Released: 1994-08-24**
+
+*The source for this release has been lost*
+
+---
+
 ## JOE 1.0.12
 **Released: 1994-08-18**
 

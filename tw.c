@@ -1,4 +1,4 @@
-/* Text editing windows
+ /* Text editing windows
    Copyright (C) 1992 Joseph H. Allen
 
 This file is part of JOE (Joe's Own Editor)
@@ -17,15 +17,11 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
 #include "config.h"
-#include "heap.h"
 #include "w.h"
-#include "toomany.h"
 #include "termcap.h"
 #include "vfile.h"
 #include "b.h"
-#include "edfuncs.h"
 #include "tty.h"
-#include "kbd.h"
 #include "scrn.h"
 #include "bw.h"
 #include "zstr.h"
@@ -34,255 +30,357 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "undo.h"
 #include "main.h"
 #include "macro.h"
-#include "msgs.h"
+#include "uedit.h"
+#include "ufile.h"
+#include "ushell.h"
+#include "qw.h"
 #include "tw.h"
 
+char *ctime();
 extern char *exmsg;
-
-/* Update a text window */
-
-static void followtw(w)
-W *w;
-{
-BW *bw=(BW *)w->object;
-bwfllw(bw);
-}
-
-int starow=0;
-int stacol=0;
-
-static void disptw(w)
-W *w;
-{
-P *p;
-char buf[40];
-BW *bw=(BW *)w->object;
-TW *tw=(TW *)bw->object;
-
-w->cury=bw->cursor->line-bw->top->line+bw->y-w->y;
-w->curx=bw->cursor->xcol-bw->offset+bw->x-w->x;
-
-if(starow!=tw->starow || stacol!=tw->stacol ||
-   starow || stacol) w->t->t->updtab[w->y]=1;
-if(bw->b->name==tw->stanam) goto nosta0;
-if(bw->b->name && tw->stanam && !zcmp(bw->b->name,tw->stanam)) goto nosta0;
-if(tw->stanam) free(tw->stanam), tw->stanam=0;
-if(bw->b->name) tw->stanam=zdup(bw->b->name);
-w->t->t->updtab[w->y]=1;
-nosta0:
-if(bw->b->chnged!=tw->stamod) w->t->t->updtab[w->y]=1;
-if(tw->stahlp!=!!w->t->wind) w->t->t->updtab[w->y]=1;
-if(tw->starec!=recmac) w->t->t->updtab[w->y]=1;
-if(tw->stashl!=!!bw->pid) w->t->t->updtab[w->y]=1;
-
-if(!w->t->t->updtab[w->y]) goto nosta;
-
-tw->stashl=!!bw->pid;
-tw->stahlp=!!w->t->wind;
-tw->stamod=bw->b->chnged;
-tw->starec=recmac;
-tw->stalin=vstrunc(tw->stalin,0);
-
-tw->starow=starow;
-if(starow)
- {
- tw->stalin=vsncpy(tw->stalin,0,sc("R="));
- sprintf(buf,"%4ld",bw->cursor->line+1);
- tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sz(buf));
- tw->stalin=vsadd(tw->stalin,' ');
- }
-tw->stacol=stacol;
-if(stacol)
- {
- tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sc("C="));
- sprintf(buf,"%3ld",bw->cursor->col+1);
- tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sz(buf));
- tw->stalin=vsadd(tw->stalin,' ');
- }
-if(bw->b->name) tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sz(bw->b->name));
-else tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sz(M081));
-if(bw->b->chnged) tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sz(M082));
-if(recmac)
- {
- sprintf(buf,M083,recmac->n);
- tw->stalin=vsncpy(tw->stalin,sLEN(tw->stalin),sz(buf));
- }
-
-tw->stalin=vstrunc(tw->stalin,w->w);
-if(!w->t->wind && w->w>=40)
- if(tw->stashl)
-  tw->stalin=vsncpy(tw->stalin,w->w-zlen(M084),sz(M084));
- else
-  tw->stalin=vsncpy(tw->stalin,w->w-zlen(M085),sz(M085));
-
-/* Output status line */
- {
- int z;
- int *s=w->t->t->scrn+w->x+w->t->t->co*w->y;
- for(z=0;tw->stalin[z];++z)
-  {
-  if(have) goto nosta;
-  if(s[z]!=(unsigned char)tw->stalin[z]+INVERSE)
-   {
-   int c=s[z]=(unsigned char)tw->stalin[z]+INVERSE;
-   outatr(w->t->t,w->x+z,w->y,c);
-   }
-  }
- }
-w->t->t->updtab[w->y]=0;
-nosta:
-
-bwgen(bw);
-}
-
-/* Abort text window */
-
-static void killtw(w)
-W *w;
-{
-BW *bw=(BW *)w->object;
-TW *tw=(TW *)bw->object;
-bwrm(bw);
-vsrm(tw->stalin);
-free(tw);
-}
+int staen=0;
+int staupd=0;
+int keepup=0;
 
 /* Move text window */
 
-static void movetw(w,x,y)
-W *w;
+static void movetw(bw,x,y)
+BW *bw;
 int x,y;
-{
-BW *bw=(BW *)w->object;
-bwmove(bw,x,y+1);
-}
+ {
+ TW *tw=(TW *)bw->object;
+ if(y || !staen)
+  {
+  if(!tw->staon)
+   { /* Scroll down and shrink */
+   nscrldn(bw->parent->t->t,y,bw->parent->nh+y,1);
+   }
+  bwmove(bw,x+(bw->o.linums?LINCOLS:0),y+1);
+  tw->staon=1;
+  }
+ else
+  {
+  if(tw->staon)
+   { /* Scroll up and grow */
+   nscrlup(bw->parent->t->t,y,bw->parent->nh+y,1);
+   }
+  bwmove(bw,x+(bw->o.linums?LINCOLS:0),y);
+  tw->staon=0;
+  }
+ }
 
 /* Resize text window */
 
-static void resizetw(w,wi,he)
-W *w;
+static void resizetw(bw,wi,he)
+BW *bw;
 int wi,he;
-{
-BW *bw=(BW *)w->object;
-bwresz(bw,wi,he-1);
-}
+ {
+ if(bw->parent->ny || !staen)
+  bwresz(bw,wi-(bw->o.linums?LINCOLS:0),he-1);
+ else
+  bwresz(bw,wi-(bw->o.linums?LINCOLS:0),he);
+ }
+
+char *stagen(stalin,bw,s,fill)
+char *stalin;
+BW *bw;
+char *s;
+ {
+ char buf[80];
+ int x;
+ W *w=bw->parent;
+ stalin=vstrunc(stalin,0);
+ while(*s)
+  {
+  if(*s=='%' && s[1])
+   switch(*++s)
+    {
+    case 't':
+     {
+     long n=time(NULL);
+     int l;
+     char *d=ctime(&n);
+     l=(d[11]-'0')*10+d[12]-'0';
+     if(l>12) l-=12;
+     sprintf(buf,"%2.2d",l);
+     if(buf[0]=='0') buf[0]=fill;
+     stalin=vsncpy(sv(stalin),buf,2);
+     stalin=vsncpy(sv(stalin),d+13,3);
+     }
+    break;
+
+    case 'u':
+     {
+     long n=time(NULL);
+     char *d=ctime(&n);
+     stalin=vsncpy(sv(stalin),d+11,5);
+     }
+    break;
+
+    case 'T':
+    if(bw->o.overtype) stalin=vsadd(stalin,'O');
+    else stalin=vsadd(stalin,'I');
+    break;
+    
+    case 'W':
+    if(bw->o.wordwrap) stalin=vsadd(stalin,'W');
+    else stalin=vsadd(stalin,fill);
+    break;
+
+    case 'I':
+    if(bw->o.autoindent) stalin=vsadd(stalin,'A');
+    else stalin=vsadd(stalin,fill);
+    break;
+
+    case 'n':
+    stalin=vsncpy(sv(stalin),sz(bw->b->name?bw->b->name:"Unnamed"));
+    break;
+
+    case 'm':
+    if(bw->b->changed)
+     stalin=vsncpy(sv(stalin),sc("(Modified)"));
+    break;
+
+    case '*':
+    if(bw->b->changed)
+     stalin=vsadd(stalin,'*');
+    else
+     stalin=vsadd(stalin,fill);
+    break;
+
+    case 'r':
+    sprintf(buf,"%-4ld",bw->cursor->line+1);
+    for(x=0;buf[x];++x) if(buf[x]==' ') buf[x]=fill;
+    stalin=vsncpy(sv(stalin),sz(buf));
+    break;
+
+    case 'c':
+    sprintf(buf,"%-3ld",piscol(bw->cursor)+1);
+    for(x=0;buf[x];++x) if(buf[x]==' ') buf[x]=fill;
+    stalin=vsncpy(sv(stalin),sz(buf));
+    break;
+
+    case 'k':
+     {
+     int i;
+     char *cpos=buf;
+     buf[0]=0;
+     if(w->kbd->x && w->kbd->seq[0])
+      for(i=0;i!=w->kbd->x;++i)
+       {
+       int c=w->kbd->seq[i]&127;
+       if(c<32) cpos[0]='^', cpos[1]=c+'@', cpos+=2;
+       else if(c==127) cpos[0]='^', cpos[1]='?', cpos+=2;
+       else cpos[0]=c, cpos+=1;
+       }
+     *cpos++=fill;
+     while(cpos-buf<4) *cpos++=fill;
+     stalin=vsncpy(sv(stalin),buf,cpos-buf);
+     }
+    break;
+
+    case 'S':
+    if(bw->pid) stalin=vsncpy(sv(stalin),sc("*SHELL*"));
+    break;
+
+    case 'M':
+    if(recmac)
+     {
+     sprintf(buf,"(Macro %d recording...)",recmac->n);
+     stalin=vsncpy(sv(stalin),sz(buf));
+     }
+    break;
+
+    default: stalin=vsadd(stalin,*s);
+    }
+  else stalin=vsadd(stalin,*s);
+  ++s;
+  }
+ return stalin;
+ }
+
+static void disptw(bw,flg)
+BW *bw;
+ {
+ W *w=bw->parent;
+ TW *tw=(TW *)bw->object;
+
+ if(bw->o.linums!=bw->linums)
+  {
+  bw->linums=bw->o.linums;
+  resizetw(bw,w->w,w->h);
+  movetw(bw,w->x,w->y);
+  bwfllw(bw);
+  }
+
+ w->cury=bw->cursor->line-bw->top->line+bw->y-w->y;
+ w->curx=bw->cursor->xcol-bw->offset+(bw->o.linums?LINCOLS:0);
+
+ if((staupd || keepup || bw->cursor->line!=tw->prevline ||
+     bw->b->changed!=tw->changed) && (w->y || !staen))
+  {
+  int fill;
+  tw->prevline=bw->cursor->line;
+  tw->changed=bw->b->changed;
+  if(bw->o.rmsg[0]) fill=bw->o.rmsg[0];
+  else fill=' ';
+  tw->stalin=stagen(tw->stalin,bw,bw->o.lmsg,fill);
+  tw->staright=stagen(tw->staright,bw,bw->o.rmsg,fill);
+  if(fmtlen(tw->staright)<w->w)
+   {
+   int x=fmtpos(tw->stalin,w->w-fmtlen(tw->staright));
+   if(x>sLEN(tw->stalin)) tw->stalin=vsfill(sv(tw->stalin),fill,x-sLEN(tw->stalin));
+   tw->stalin=vsncpy(tw->stalin,fmtpos(tw->stalin,w->w-fmtlen(tw->staright)),sv(tw->staright));
+   }
+  tw->stalin=vstrunc(tw->stalin,fmtpos(tw->stalin,w->w));
+  genfmt(w->t->t,w->x,w->y,0,tw->stalin,0);
+  w->t->t->updtab[w->y]=0;
+  }
+
+ if(flg) bwgen(bw,bw->o.linums);
+ }
 
 /* Split current window */
 
-void usplitw(w)
-W *w;
-{
-BW *bw=(BW *)w->object;
-TW *tw=(TW *)bw->object;
-int newh=getgrouph(w);
-W *new;
-TW *newtw;
-BW *newbw;
-if(newh/2<FITHEIGHT) return;
-new=wcreate(w->t,w->watom,findbotw(w),NULL,w,newh/2+(newh&1),NULL);
-if(!new) return;
-new->object=(void *)(newbw=bwmk(w->t,bw->b,new->x,new->y+1,new->w,new->h-1));
-++bw->b->count;
-newbw->lmargin=bw->lmargin;
-newbw->rmargin=bw->rmargin;
-newbw->autoindent=bw->autoindent;
-newbw->wordwrap=bw->wordwrap;
-newbw->overtype=bw->overtype;
-newbw->indentc=bw->indentc;
-newbw->istep=bw->istep;
-newbw->offset=bw->offset;
-newbw->object=(void *)(newtw=(TW *)malloc(sizeof(TW)));
-newtw->staupd=tw->staupd;
-newtw->stanam=0;
-newtw->stalin=0;
-newtw->stamod=0;
-newtw->stahlp=0;
-pset(newbw->top,bw->top);
-pset(newbw->cursor,bw->cursor);
-new->t->curwin=new;
-}
+void iztw(tw,y)
+TW *tw;
+ {
+ tw->stalin=0;
+ tw->staright=0;
+ tw->changed= -1;
+ tw->prevline= -1;
+ tw->staon=(!staen || y);
+ }
+
+extern int dostaupd;
+
+int usplitw(bw)
+BW *bw;
+ {
+ W *w=bw->parent;
+ int newh=getgrouph(w);
+ W *new;
+ TW *newtw;
+ BW *newbw;
+ dostaupd=1;
+ if(newh/2<FITHEIGHT) return -1;
+ new=wcreate(w->t,w->watom,findbotw(w),NULL,w,newh/2+(newh&1),NULL,NULL);
+ if(!new) return -1;
+ wfit(new->t);
+ new->object=(void *)(newbw=bwmk(new,bw->b,0));
+ ++bw->b->count;
+ newbw->offset=bw->offset;
+ newbw->object=(void *)(newtw=(TW *)malloc(sizeof(TW)));
+ iztw(newtw,new->y);
+ pset(newbw->top,bw->top);
+ pset(newbw->cursor,bw->cursor);
+ newbw->cursor->xcol=bw->cursor->xcol;
+ new->t->curwin=new;
+ return 0;
+ }
+
+int uduptw(bw)
+BW *bw;
+ {
+ W *w=bw->parent;
+ int newh=getgrouph(w);
+ W *new;
+ TW *newtw;
+ BW *newbw;
+ dostaupd=1;
+ new=wcreate(w->t,w->watom,findbotw(w),NULL,NULL,newh,NULL,NULL);
+ if(!new) return -1;
+ if(demotegroup(w)) new->t->topwin=new;
+ new->object=(void *)(newbw=bwmk(new,bw->b,0));
+ ++bw->b->count;
+ newbw->offset=bw->offset;
+ newbw->object=(void *)(newtw=(TW *)malloc(sizeof(TW)));
+ iztw(newtw,new->y);
+ pset(newbw->top,bw->top);
+ pset(newbw->cursor,bw->cursor);
+ newbw->cursor->xcol=bw->cursor->xcol;
+ new->t->curwin=new;
+ wfit(w->t);
+ return 0;
+ }
 
 /* User routine for aborting a text window */
 
-void naborttw(w,k)
-W *w;
+int naborttw(bw,k,object,notify)
+BW *bw;
+void *object;
+int *notify;
 {
-BW *bw=(BW *)w->object;
+W *w=bw->parent;
+B *b;
 TW *tw=(TW *)bw->object;
-if(k!='y' && k!='Y') return;
-if(bw->pid) uaborttw(w,k);
-if(bw->b->chnged && bw->b->count==1)
+if(notify) *notify=1;
+if(k!='y' && k!='Y') return -1;
+
+if(countmain(w->t)==1)
+ if(b=borphan())
+  {
+  void *object=bw->object;
+  bwrm(bw);
+  w->object=(void *)(bw=bwmk(w,b,0));
+  wredraw(bw->parent);
+  bw->object=object;
+  return 0;
+  }
+
+if(bw->b->changed && bw->b->count==1)
  if(bw->b->name)
   {
-  exmsg=vsncpy(NULL,0,sz(M022));
+  exmsg=vsncpy(NULL,0,sz("File "));
   exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
-  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(M087));
+  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(" not saved."));
   }
- else exmsg=vsncpy(NULL,0,sz(M088));
+ else exmsg=vsncpy(NULL,0,sz("File (Unnamed) not saved."));
 else if(!exmsg)
  if(bw->b->name)
   {
-  exmsg=vsncpy(NULL,0,sz(M022));
+  exmsg=vsncpy(NULL,0,sz("File "));
   exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
-  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(M089));
+  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(" not changed so no update needed."));
   }
- else exmsg=vsncpy(NULL,0,sz(M090));
+ else exmsg=vsncpy(NULL,0,sz("File (Unnamed) not changed so no update needed."));
+bwrm(bw);
+vsrm(tw->stalin);
+free(tw);
+w->object=0;
 wabort(w);		/* Eliminate this window and it's children */
 if(!leave) if(exmsg) vsrm(exmsg), exmsg=0;
+return 0;
 }
 
-void pidabort(w,c)
-W *w;
-{
-BW *bw=(BW *)w->object;
-if(c!='y' && c!='Y') return;
-if(bw->pid) kill(bw->pid,1);
-}
-
-void uaborttw(w,k)
-W *w;
-{
-BW *bw=(BW *)w->object;
-if(bw->pid && bw->cursor->byte==bw->b->eof->byte)
+static void instw(bw,b,l,n,flg)
+BW *bw;
+B *b;
+long l,n;
+int flg;
  {
- char c=k;
- write(bw->out,&c,1);
- return;
+ if(b==bw->b) bwins(bw,l,n,flg);
  }
-if(bw->pid) { mkqw(w,M086,pidabort); return; }
-if(bw->b->chnged && bw->b->count==1) mkqw(w,M019,naborttw);
-else naborttw(w,'y');
-}
 
-CONTEXT cmain={"main",0};
-CONTEXT cterm={"term",0};
-
-static void instw(w,b,l,n,flg)
-W *w;
+static void deltw(bw,b,l,n,flg)
+BW *bw;
 B *b;
 long l,n;
 int flg;
-{
-BW *bw=(BW *)w->object;
-if(b==bw->b) bwins(bw,l,n,flg);
-}
+ {
+ if(b==bw->b) bwdel(bw,l,n,flg);
+ }
 
-static void deltw(w,b,l,n,flg)
-W *w;
-B *b;
-long l,n;
-int flg;
-{
-BW *bw=(BW *)w->object;
-if(b==bw->b) bwdel(bw,l,n,flg);
-}
+int uabort();
 
 static WATOM watomtw=
 {
-&cmain,
+"main",
 disptw,
-followtw,
-killtw,
+bwfllw,
+0,
+rtntw,
+utypebw,
 resizetw,
 movetw,
 instw,
@@ -290,26 +388,125 @@ deltw,
 TYPETW
 };
 
+int uabort(bw,k)
+BW *bw;
+{
+if(bw->parent->watom!=&watomtw)
+ return wabort(bw->parent);
+if(bw->pid && bw->cursor->byte==bw->b->eof->byte && k!= MAXINT)
+ {
+ char c=k;
+ write(bw->out,&c,1);
+ return 0;
+ }
+if(bw->pid) return ukillpid(bw);
+if(bw->b->changed && bw->b->count==1)
+ if(mkqw(bw,sc("Lose changes to this file (y,n,^C)? "),naborttw,NULL,NULL,NULL)) return 0;
+ else return -1;
+else return naborttw(bw,'y',NULL,NULL);
+}
+
+/* Abort buffer */
+
+int uabortbuf(bw)
+BW *bw;
+ {
+ W *w=bw->parent;
+ B *b;
+ if(bw->pid) return ukillpid(bw);
+
+ if(okrepl(bw)) return -1;
+
+ if(b=borphan())
+  {
+  void *object=bw->object;
+  bwrm(bw);
+  w->object=(void *)(bw=bwmk(w,b,0));
+  wredraw(bw->parent);
+  bw->object=object;
+  return 0;
+  }
+
+ return naborttw(bw,'y',NULL,NULL);
+ }
+
+/* Kill this window */
+
+int utw0(b)
+BASE *b;
+ {
+ BW *bw=b->parent->main->object;
+ if(countmain(b->parent->t)==1) return -1;
+ if(bw->pid) { return ukillpid(bw); }
+ if(bw->b->count==1) orphit(bw);
+ return uabort(bw,MAXINT);
+ }
+
+/* Only one window */
+
+int utw1(b)
+BASE *b;
+ {
+ W *starting=b->parent;
+ W *main=starting->main;
+ SCREEN *t=main->t;
+ int yn;
+
+ do
+  {
+  yn=0;
+  loop:
+  do wnext(t); while(t->curwin->main==main && t->curwin!=starting);
+  if(t->curwin->main!=main)
+   {
+   if(((BW *)t->curwin->main->object)->pid)
+    {
+    msgnw(t->curwin->main->object,"Process running in this window");
+    return -1;
+    }
+   utw0(t->curwin->main->object), yn=1;
+   goto loop;
+   }
+  } while(yn);
+ return 0;
+ }
+
+void setline(b,line)
+B *b;
+long line;
+ {
+ W *w=maint->curwin;
+ do
+  if(w->watom->what==TYPETW)
+   {
+   BW *bw=w->object;
+   if(bw->b==b)
+    {
+    long oline=bw->top->line;
+    pline(bw->top,line);
+    pline(bw->cursor,line);
+    if(w->y>=0 && bw->top->line>oline && bw->top->line-oline<bw->h)
+     nscrlup(w->t->t,bw->y,bw->y+bw->h,(int)(bw->top->line-oline));
+    else if(w->y>=0 && bw->top->line<oline && oline-bw->top->line<bw->h)
+     nscrldn(w->t->t,bw->y,bw->y+bw->h,(int)(oline-bw->top->line));
+    }
+   }
+  while((w=w->link.next)!=maint->curwin);
+ }
+
 /* Create a text window.  It becomes the last window on the screen */
 
-W *wmktw(t,b)
+BW *wmktw(t,b)
 SCREEN *t;
 B *b;
-{
-W *w;
-BW *bw;
-TW *tw;
-w=wcreate(t,&watomtw,NULL,NULL,NULL,t->h,NULL);
-w->object=(void *)(bw=bwmk(t,b,w->x,w->y+1,w->w,w->h-1));
-bw->object=(void *)(tw=(TW *)malloc(sizeof(TW)));
-tw->staupd=1; /* Unneeded? */
-tw->stanam=0;
-tw->stashl=0;
-tw->starec=recmac;
-tw->stalin=0;
-tw->stamod=0;
-tw->stahlp=0;
-tw->starow=starow;
-tw->stacol=stacol;
-return w;
-}
+ {
+ W *w;
+ BW *bw;
+ TW *tw;
+ w=wcreate(t,&watomtw,NULL,NULL,NULL,t->h,NULL,NULL);
+ wfit(w->t);
+ w->object=(void *)(bw=bwmk(w,b,0));
+ bw->object=(void *)(tw=(TW *)malloc(sizeof(TW)));
+ iztw(tw,w->y);
+ return bw;
+ }

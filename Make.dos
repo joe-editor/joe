@@ -1,0 +1,81 @@
+
+.noautodepend
+
+# MS-DOS Makefile for Joe's Own Editor
+
+###############
+# Configuration
+###############
+
+# Set where you want joe to go, where you
+# want joe's initialization file (joerc)
+# to go and where you want the man page
+# to go:
+
+WHEREJOE = /bin
+WHERERC = /lib
+WHEREMAN = /usr/man/man1
+
+# If you want to be able to edit '-', which causes joe to read in or write out
+# to the stdin/stdout, change the '1' below to '0'.  Be warned however: this
+# makes joe use /dev/tty to open the tty, which means that the modification
+# times on the real tty don't get updated.  Idle session killers and screen
+# blankers will think that no one is using the terminal and log you out or
+# blank the screen.
+
+IDLEOUT = 1
+
+# You may also have to add some additional
+# defines to get the include files to work
+# right on some systems.
+#
+# for some HPUX systems, you need to add:  -D_HPUX_SOURCE
+
+CFLAGS = -ml -w- -O2
+
+# You may have to include some extra libraries
+# for some systems
+#
+# for Xenix, add (in this order!!): -ldir -lx
+#
+# For some systems you might have to add: -lbsd
+# to get access to the timer system calls.
+#
+# If you wish to use terminfo, you have to
+# add '-ltinfo', '-lcurses' or '-ltermlib',
+# depending on the system.
+
+EXTRALIBS =
+
+# Object files
+#
+# If you wish to use terminfo instead of
+# termcap, replace 'termcap.o' below with 'terminfo.o'
+
+OBJS = b.obj blocks.obj bw.obj cmd.obj hash.obj help.obj kbd.obj macro.obj \
+ main.obj menu.obj path.obj poshist.obj pw.obj queue.obj qw.obj random.obj \
+ rc.obj regex.obj msscrn.obj tab.obj mstty.obj tw.obj ublock.obj \
+ uedit.obj uerror.obj ufile.obj uformat.obj uisrch.obj umath.obj undo.obj \
+ usearch.obj ushell.obj utag.obj va.obj vfile.obj vs.obj w.obj zstr.obj
+
+CC = bcc
+
+# That's it!
+
+joe: $(OBJS)
+        bcc -ejoe.exe -ml *.obj
+	copy joe.exe jmacs.exe
+	copy joe.exe jstar.exe
+
+# $(OBJS): config.h
+
+config.h:
+        bcc -ml conf.c
+        del conf.obj
+        conf $(WHERERC) $(IDLEOUT)
+
+termidx: termidx.o
+        $(CC) $(CFLAGS) -otermidx termidx.o
+
+clean:
+	rm -f $(OBJS) termidx.o conf conf.o config.h

@@ -1,4 +1,4 @@
-/* Keyboard handler
+/* Key-map handler
    Copyright (C) 1992 Joseph H. Allen
 
 This file is part of JOE (Joe's Own Editor)
@@ -16,547 +16,292 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
-#include <stdio.h>
 #include "config.h"
-#include "heap.h"
-#include "zstr.h"
-#include "va.h"
-
-/* For help text loading in init. file */
-#include "help.h"
-
-/* For special key sequence table */
-#include "scrn.h"
-
-/* For option settings */
-#include "bw.h"
-
 #include "macro.h"
-#include "msgs.h"
+#include "termcap.h"
+#include "vs.h"
 #include "kbd.h"
-
-char **help_names;
-struct help **help_structs;
-struct help *first_help;
-
-void junkey(c)
-{
-}
 
 /* Create a KBD */
 
-KBD *mkkbd(context)
-CONTEXT *context;
-{
-KBD *kbd=(KBD *)malloc(sizeof(KBD));
-kbd->topmap=context->kmap;
-kbd->curmap=context->kmap;
-kbd->x=0;
-return kbd;
-}
+KBD *mkkbd(kmap)
+KMAP *kmap;
+ {
+ KBD *kbd=(KBD *)malloc(sizeof(KBD));
+ kbd->topmap=kmap;
+ kbd->curmap=kmap;
+ kbd->x=0;
+ return kbd;
+ }
 
 /* Eliminate a KBD */
 
 void rmkbd(k)
 KBD *k;
-{
-free(k);
-}
-
-/* Lookup key in keyboard table */
-
-static int findkey(kmap,c)
-KMAP *kmap;
-{
-int x,y,z;
-x=0; y=kmap->len; z= -1;
-if(y)
- while(z!=(x+y)/2)
-  {
-  z=(x+y)/2;
-  if((kmap->keys[z].k&KEYMASK)==c) return z;
-  else if((kmap->keys[z].k&KEYMASK)>c) y=z;
-  else x=z;
-  }
-return y;
-}
+ {
+ free(k);
+ }
 
 /* Process next key for KBD */
 
-MACRO *dokey(kbd,k)
+void *dokey(kbd,n)
 KBD *kbd;
-{
-int n;
-if(k<0) k+=256;
-n=findkey(kbd->curmap,k);
-if(n==kbd->curmap->len || (kbd->curmap->keys[n].k&KEYMASK)!=k)
  {
- int y;
- for(y=0;y!=kbd->x;++y) junkey(kbd->seq[y]);
- junkey(k);
- kbd->x=0;
- kbd->curmap=kbd->topmap;
- }
-else if(kbd->curmap->keys[n].k&KEYSUB)
- kbd->seq[kbd->x++]=k, kbd->curmap=kbd->curmap->keys[n].value.submap;
-else
- {
- MACRO *macro=kbd->curmap->keys[n].value.macro;
- kbd->curmap=kbd->topmap; kbd->x=0;
- return macro;
- }
-return 0;
-}
+ void *bind=0;
 
-/* Return command table index for given command name */
+ /* If we were passed a negative character */
+ if(n<0) n+=256;
 
-int findcmd(cmdtab,s)
-CMDTAB *cmdtab;
-char *s;
-{
-int x,y,z;
-x=0; y=cmdtab->len; z= -1;
-while(z!=(x+y)/2)
- {
- z=(x+y)/2;
- switch(zcmp(s,cmdtab->cmd[z].name))
-  {
- case  1: x=z; break;
- case -1: y=z; break;
- case  0: return z;
+ /* If we're starting from scratch, clear the keymap sequence buffer */
+ if(kbd->curmap==kbd->topmap) kbd->x=0;
+
+ if(kbd->curmap->keys[n].k==1)
+  { /* A prefix key was found */
+  kbd->seq[kbd->x++]=n;
+  kbd->curmap=kbd->curmap->keys[n].value.submap;
   }
+ else
+  { /* A complete key sequence was entered or an unbound key was found */
+  bind=kbd->curmap->keys[n].value.bind;
+/*  kbd->seq[kbd->x++]=n; */
+  kbd->x=0;
+  kbd->curmap=kbd->topmap;
+  }
+ return bind;
  }
-return -1;
-}
 
-/* Return key code for key name */
+/* Return key code for key name or -1 for syntax error */
 
 static int keyval(s)
 char *s;
-{
-int z1;
-for(z1=0;z1!=NKEYS;++z1) if(!zcmp(s,seqs[z1].name))
- return seqs[z1].code;
-if(s[0]=='^')
- if(s[1]=='?') return 127;
- else return s[1]&0x1f;
-else if(!zcmp(s,"SP")) return ' ';
-else return (unsigned char)s[0];
-}
+ {
+ if(s[0]=='^' && s[1] && !s[2])
+  if(s[1]=='?') return 127;
+  else return s[1]&0x1F;
+ else if((s[0]=='S'||s[0]=='s') && (s[1]=='P'||s[1]=='p') && !s[2]) return ' ';
+ else if(s[1] || !s[0]) return -1;
+ else return (unsigned char)s[0];
+ }
 
-/* Add a key to a keymap */
+/* Create an empty keymap */
 
-static void addkey(kmap,n,k,v)
-KMAP *kmap;
-MACRO *v;
-{
-if(kmap->len==kmap->size)
- kmap->keys=(KEY *)realloc(kmap->keys,sizeof(KEY)*(kmap->size+=64));
-mbkwd(kmap->keys+n+1,kmap->keys+n,(kmap->len++-n)*sizeof(KEY));
-kmap->keys[n].k=k;
-kmap->keys[n].value.macro=v;
-}
+KMAP *mkkmap()
+ {
+ KMAP *kmap=(KMAP *)calloc(sizeof(KMAP),1);
+ return kmap;
+ }
 
 /* Eliminate a keymap */
 
-static void rmkmap(kmap)
+void rmkmap(kmap)
 KMAP *kmap;
-{
-int x;
-if(!kmap) return;
-for(x=0;x!=kmap->len;++x)
- if(kmap->keys[x].k&KEYSUB) rmkmap(kmap->keys[x].value.submap);
- else rmmacro(kmap->keys[x].value.macro);
-free(kmap->keys);
-free(kmap);
-}
-
-OPTIONS *options=0;
-extern int mid, dspasis, dspctrl, force, help, pgamnt, starow, stacol,
-           tabwidth, nobackups, lightoff, exask, skiptop;
-
-void setoptions(bw,name)
-BW *bw;
-char *name;
-{
-OPTIONS *o;
-for(o=options;o;o=o->next)
- if(rmatch(o->name,name))
-  {
-  bw->overtype=o->overtype;
-  bw->lmargin=o->lmargin;
-  bw->rmargin=o->rmargin;
-  bw->autoindent=o->autoindent;
-  bw->wordwrap=o->wordwrap;
-  bw->istep=o->istep;
-  bw->indentc=o->indentc;
-  bw->b->tab=o->tab;
-  break;
-  }
-}
-
-/* Process initialization file */
-
-int prokbd(name,cntxts)
-char *name;
-CONTEXT **cntxts;
-{
-CONTEXT *context=0;		/* Current context */
-KMAP *kmap;			/* Current keymap */
-char buf[256];			/* Input buffer */
-FILE *fd=fopen(name,"r");	/* File */
-MACRO *macro=0;
-struct help *tmp;
-int nhelp=0;
-int line=0;			/* Line number */
-int err=0;			/* Set if there was any errors */
-int x,y,n,z,c,d;
-
-first_help=NULL;
-help_names=vatrunc(NULL,0);
-
-if(!fd) return -1;
-
-fprintf(stderr,M058,name); fflush(stdout);
-
-while(++line, fgets(buf,256,fd))
  {
- /* Set file-dependant options */
- if(buf[0]=='*')
+ int x;
+ if(!kmap) return;
+ for(x=0;x!=KEYS;++x) if(kmap->keys[x].k==1) rmkmap(kmap->keys[x].value.submap);
+ free(kmap);
+ }
+
+/* Parse a range */
+
+static char *range(seq,vv,ww)
+char *seq;
+int *vv, *ww;
+ {
+ char c;
+ int x, v, w;
+ for(x=0;seq[x] && seq[x]!=' ';++x);	/* Skip to a space */
+ c=seq[x]; seq[x]=0;			/* Zero terminate the string */
+ v=keyval(seq);				/* Get key */
+ w=v;
+ if(w<0) return 0;
+ seq[x]=c;				/* Restore the space or 0 */
+ for(seq+=x;*seq==' ';++seq);		/* Skip over spaces */
+
+ /* Check for 'TO ' */
+ if((seq[0]=='T' || seq[0]=='t') &&
+    (seq[1]=='O' || seq[1]=='o') && seq[2]==' ')
   {
-  OPTIONS *n=(OPTIONS *)malloc(sizeof(OPTIONS));
-  for(x=0;buf[x] && buf[x]!='\n' && buf[x]!=' ' && buf[x]!='\t';++x);
-  buf[x]=0;
-  n->lmargin=0;
-  n->rmargin=76;
-  n->overtype=0;
-  n->autoindent=0;
-  n->wordwrap=0;
-  n->tab=tabwidth;
-  n->indentc=' ';
-  n->istep=1;
-  n->next=options;
-  options=n;
-  n->name=zdup(buf);
-  continue;
-  }
- 
- if(buf[0]=='-')
-  {
-  int v;
-  for(x=0;buf[x] && buf[x]!='\n' && buf[x]!=' ' && buf[x]!='\t';++x);
-  c=buf[x]; buf[x]=0;
-  if(!zcmp(buf+1,"mid")) mid=1;
-  else if(!zcmp(buf+1,"asis")) dspasis=1;
-  else if(!zcmp(buf+1,"stacol")) stacol=1;
-  else if(!zcmp(buf+1,"starow")) starow=1;
-  else if(!zcmp(buf+1,"force")) force=1;
-  else if(!zcmp(buf+1,"help")) help=1;
-  else if(!zcmp(buf+1,"nobackups")) nobackups=1;
-  else if(!zcmp(buf+1,"lightoff")) lightoff=1;
-  else if(!zcmp(buf+1,"exask")) exask=1;
-  else if(!zcmp(buf+1,"pg") && c)
-   {
-   sscanf(buf+x+1,"%d",&pgamnt);
-   if(pgamnt<0 || pgamnt>24) pgamnt= -1;
-   }
-  else if(!zcmp(buf+1,"skiptop") && c)
-   {
-   sscanf(buf+x+1,"%d",&skiptop);
-   if(skiptop<0 || skiptop>20) skiptop=0;
-   }
-  else if(!zcmp(buf+1,"gtab") && c)
-   {
-   sscanf(buf+x+1,"%d",&tabwidth);
-   if(tabwidth<1 || tabwidth>256) tabwidth=8;
-   }
-  else
-   if(options)
-    if(!zcmp(buf+1,"wordwrap")) options->wordwrap=1;
-    else if(!zcmp(buf+1,"autoindent")) options->autoindent=1;
-    else if(!zcmp(buf+1,"overwrite")) options->overtype=1;
-    else if(!zcmp(buf+1,"lmargin") && c)
-     {
-     sscanf(buf+x+1,"%ld",&options->lmargin);
-     if(options->lmargin<1 || options->lmargin>256) options->lmargin=1;
-     else --options->lmargin;
-     }
-    else if(!zcmp(buf+1,"rmargin") && c)
-     {
-     sscanf(buf+x+1,"%ld",&options->rmargin);
-     if(options->rmargin<8 || options->rmargin>256) options->rmargin=76;
-     else --options->rmargin;
-     }
-    else if(!zcmp(buf+1,"istep") && c)
-     {
-     sscanf(buf+x+1,"%ld",&options->istep);
-     if(options->istep<1 || options->istep>256) options->istep=1;
-     }
-    else if(!zcmp(buf+1,"tab") && c)
-     {
-     sscanf(buf+x+1,"%d",&options->tab);
-     if(options->tab<1 || options->tab>256) options->tab=8;
-     }
-    else if(!zcmp(buf+1,"indentc") && c)
-     {
-     sscanf(buf+x+1,"%d",&options->indentc);
-     if(options->indentc<-128 || options->indentc>255) options->indentc=32;
-     }
-    else fprintf(stderr,M059,name,line);
-   else fprintf(stderr,M060,name,line);
-  continue;
+  for(seq+=2;*seq==' ';++seq);			/* Skip over spaces */
+  for(x=0;seq[x] && seq[x]!=' ';++x);		/* Skip to space */
+  c=seq[x]; seq[x]=0;				/* Zero terminate the string */
+  w=keyval(seq);				/* Get key */
+  if(w<0) return 0;
+  seq[x]=c;					/* Restore the space or 0 */
+  for(seq+=x;*seq==' ';++seq);			/* Skip over spaces */
   }
 
- /* Process help text */
- if(buf[0]=='{')
+ if(v>w) return 0;
+
+ *vv=v; *ww=w;
+ return seq;
+ }
+
+/* Add a binding to a keymap */
+
+static KMAP *kbuild(cap,kmap,seq,bind,err,capseq,seql)
+CAP *cap;
+KMAP *kmap;
+char *seq;
+void *bind;
+int *err;
+char *capseq;
+ {
+ int v, w;
+
+ if(!seql && seq[0]=='.' && seq[1])
   {
-  int bfl;
-  tmp=(struct help *) malloc(sizeof(struct help));
-  nhelp++;
-  tmp->next=first_help;
-  first_help=tmp;
-  tmp->name=vsncpy(NULL,0,sz(buf+1)-1);
-  help_names=vaadd(help_names,tmp->name);
-  tmp->hlptxt=0;
-  tmp->hlpsiz=0;
-  tmp->hlpbsz=0;
-  tmp->hlplns=0;
-  up:
-  if(++line, !fgets(buf,256,fd))
+  int x, c;
+  char *s;
+  for(x=0;seq[x] && seq[x]!=' ';++x);
+  c=seq[x]; seq[x]=0;
+#ifdef __MSDOS__
+  if(!zcmp(seq+1,"ku")) capseq="\0H", seql=2;
+  else if(!zcmp(seq+1,"kd")) capseq="\0P", seql=2;
+  else if(!zcmp(seq+1,"kl")) capseq="\0K", seql=2;
+  else if(!zcmp(seq+1,"kr")) capseq="\0M", seql=2;
+  else if(!zcmp(seq+1,"kI")) capseq="\0R", seql=2;
+  else if(!zcmp(seq+1,"kD")) capseq="\0S", seql=2;
+  else if(!zcmp(seq+1,"kh")) capseq="\0G", seql=2;
+  else if(!zcmp(seq+1,"kH")) capseq="\0O", seql=2;
+  else if(!zcmp(seq+1,"kP")) capseq="\0I", seql=2;
+  else if(!zcmp(seq+1,"kN")) capseq="\0Q", seql=2;
+  else if(!zcmp(seq+1,"k1")) capseq="\0;", seql=2;
+  else if(!zcmp(seq+1,"k2")) capseq="\0<", seql=2;
+  else if(!zcmp(seq+1,"k3")) capseq="\0=", seql=2;
+  else if(!zcmp(seq+1,"k4")) capseq="\0>", seql=2;
+  else if(!zcmp(seq+1,"k5")) capseq="\0?", seql=2;
+  else if(!zcmp(seq+1,"k6")) capseq="\0@", seql=2;
+  else if(!zcmp(seq+1,"k7")) capseq="\0A", seql=2;
+  else if(!zcmp(seq+1,"k8")) capseq="\0B", seql=2;
+  else if(!zcmp(seq+1,"k9")) capseq="\0C", seql=2;
+  else if(!zcmp(seq+1,"k0")) capseq="\0D", seql=2;
+  seq[x]=c;
+  if(seql)
    {
-   err=1;
-   fprintf(stderr,M061,name,line);
-   break;
+   for(seq+=x;*seq==' ';++seq);
    }
-  if(buf[0]=='}')
+#else
+  s=jgetstr(cap,seq+1);
+  seq[x]=c;
+  if(s && (s=tcompile(cap,s)) && (sLEN(s)>1 || s[0]<0))
    {
-   if(!hlptxt)
-    hlptxt=tmp->hlptxt,
-    hlpsiz=tmp->hlpsiz,
-    hlpbsz=tmp->hlpbsz,
-    hlplns=tmp->hlplns;
-   continue;
+   capseq=s;
+   seql=sLEN(s);
+   for(seq+=x;*seq==' ';++seq);
    }
-  bfl=zlen(buf);
-  if(tmp->hlpsiz+bfl>tmp->hlpbsz)
+#endif
+  else
    {
-   if(tmp->hlptxt) tmp->hlptxt=(char *)realloc(tmp->hlptxt,tmp->hlpbsz+bfl+1024);
-   else tmp->hlptxt=(char *)malloc(bfl+1024), tmp->hlptxt[0]=0;
-   tmp->hlpbsz+=bfl+1024;
+   *err= -2;
+   return kmap;
    }
-  zcpy(tmp->hlptxt+tmp->hlpsiz,buf);
-  tmp->hlpsiz+=bfl;
-  ++tmp->hlplns;
-  goto up;
   }
- 
- /* Get context name */
- if(buf[0]==':')
+
+ if(seql)
   {
-  for(x=1;buf[x] && buf[x]!=' ' && buf[x]!='\t' && buf[x]!='\n';++x);
-  buf[x]=0;
-  if(x==1) continue;
-  for(x=0,context=0;cntxts[x];++x)
-   if(!zcmp(buf+1,cntxts[x]->name))
-    {
-    context=cntxts[x];
-    break;
-    }
-  if(!context) fprintf(stderr,M062,name,line), err=1;
-  continue;
-  }
- 
- /* Process Macro */
- x=0;
- macro=0;
- macroloop:
- if(buf[x]=='\"')
-  {
-  ++x;
-  while(buf[x] && buf[x]!='\"')
-   {
-   if(buf[x]=='\\' && buf[x+1])
-    {
-    ++x;
-    switch(buf[x])
-     {
-    case 'n': buf[x]=10; break;
-    case 'r': buf[x]=13; break;
-    case 'b': buf[x]=8; break;
-    case 'f': buf[x]=12; break;
-    case 'a': buf[x]=7; break;
-    case 't': buf[x]=9; break;
-    case 'x':
-     c=0;
-     if(buf[x+1]>='0' && buf[x+1]<='9') c=c*16+buf[++x]-'0';
-     else if(buf[x+1]>='a' && buf[x+1]<='f' ||
-             buf[x+1]>='A' && buf[x+1]<='F') c=c*16+(buf[++x]&0xF)+9;
-     if(buf[x+1]>='0' && buf[x+1]<='9') c=c*16+buf[++x]-'0';
-     else if(buf[x+1]>='a' && buf[x+1]<='f' ||
-             buf[x+1]>='A' && buf[x+1]<='F') c=c*16+(buf[++x]&0xF)+9;
-     buf[x]=c;
-     break;
-    case '0': case '1': case '2': case '3':
-    case '4': case '5': case '6': case '7':
-    case '8': case '9':
-     c=buf[x]-'0';
-     if(buf[x+1]>='0' && buf[x+1]<='7') c=c*8+buf[++x]-'0';
-     if(buf[x+1]>='0' && buf[x+1]<='7') c=c*8+buf[++x]-'0';
-     buf[x]=c;
-     break;
-     }
-    }
-   if(macro)
-    {
-    if(!macro->steps)
-     {
-     MACRO *m=macro;
-     macro=mkmacro(0,1,0);
-     addmacro(macro,m);
-     }
-    addmacro(macro,mkmacro(buf[x],1,findcmd(&cmdtab,"type")));
-    }
-   else macro=mkmacro(buf[x],1,findcmd(&cmdtab,"type"));
-   ++x;
-   }
-  if(buf[x]=='\"') ++x;
+  v=w= (unsigned char)*capseq++;
+  --seql;
   }
  else
   {
-  for(y=x;
-      buf[y] && buf[y]!=',' && buf[y]!=' ' && buf[y]!='\t' && buf[y]!='\n';
-      ++y);
-  if(y!=x)
+  seq=range(seq,&v,&w);
+  if(!seq)
    {
-   z=buf[y]; buf[y]=0;
-   n=findcmd(&cmdtab,buf+x);
-   if(n== -1)
-    {
-    fprintf(stderr,M063,name,line,buf);
-    err=1;
-    continue;
-    }
-   else if(macro)
-    {
-    if(!macro->steps)
-     {
-     MACRO *m=macro;
-     macro=mkmacro(0,1,0);
-     addmacro(macro,m);
-     }
-    addmacro(macro,mkmacro(-1,1,n));
-    }
-   else macro=mkmacro(-1,1,n);
-   buf[x=y]=z;
+   *err= -1;
+   return kmap;
    }
   }
- if(buf[x]==',')
+
+ if(!kmap) kmap=mkkmap();	/* Create new keymap if 'kmap' was NULL */
+
+ /* Make bindings between v and w */
+ while(v<=w)
   {
-  ++x;
-  goto macroloop;
-  }
-
- if(!macro) continue;
-
- if(!context)
-  {
-  err=1;
-  fprintf(stderr,M064,name,line);
-  continue;
-  }
-
- /* Process key sequence */
- kmap=0;
- n= -1;
- while(buf[x]==' ' || buf[x]=='\t') ++x;
- while(1)
-  {
-  int qw,zz;
-  if(buf[x]==' ') ++x;
-  if(!buf[x] || buf[x]=='\n' || buf[x]==' ' || buf[x]=='\t') break;
-  /* Got Next key */
-  for(zz=x;buf[zz]!=' ' && buf[zz] && buf[zz]!='\t' && buf[zz]!='\n';++zz);
-  qw=buf[zz]; buf[zz]=0;
-  d=c=keyval(buf+x);
-  buf[zz]=qw; x=zz;
-
-  if(buf[x]==' ') ++x;
-  if(buf[x]=='T' && buf[x+1]=='O')
+  if(*seq || seql)
    {
-   x+=2;
-   if(buf[x]==' ') ++x;
-   if(buf[x] && buf[x]!='\n' && buf[x]!=' ' && buf[x]!='\t')
-    {
-    for(zz=x;buf[zz]!=' ' && buf[zz] && buf[zz]!='\t' && buf[zz]!='\n';++zz);
-    qw=buf[zz]; buf[zz]=0;
-    d=keyval(buf+x);
-    buf[zz]=qw; x=zz;
-    }
+   if(kmap->keys[v].k==0) kmap->keys[v].value.submap=0;
+   kmap->keys[v].k=1;
+   kmap->keys[v].value.submap=kbuild(cap,kmap->keys[v].value.bind,seq,bind,err,capseq,seql);
    }
-  if(d<c) d=c;
-
-  /* Add it as if it were a submap */
-  if(!kmap)
+  else
    {
-   if(!(kmap=context->kmap))
+   if(kmap->keys[v].k==1) rmkmap(kmap->keys[v].value.submap);
+   kmap->keys[v].k=0;
+   kmap->keys[v].value.bind=
+    /* This bit of code sticks the key value in the macro */
+    (v==w?macstk(bind,v):dupmacro(macstk(bind,v)));
+   }
+  ++v;
+  }
+ return kmap;
+ }
+
+int kadd(cap,kmap,seq,bind)
+CAP *cap;
+KMAP *kmap;
+char *seq;
+void *bind;
+ {
+ int err=0;
+ kbuild(cap,kmap,seq,bind,&err,NULL,0);
+ return err;
+ }
+
+void kcpy(dest,src)
+KMAP *dest, *src;
+ {
+ int x;
+ for(x=0;x!=KEYS;++x)
+  if(src->keys[x].k==1)
+   {
+   if(dest->keys[x].k!=1)
     {
-    kmap=(KMAP *)malloc(sizeof(KMAP));
-    kmap->keys=(KEY *)malloc((kmap->size=128)*sizeof(KEY));
-    kmap->len=0;
-    context->kmap=kmap;
+    dest->keys[x].k=1;
+    dest->keys[x].value.submap=mkkmap();
+    }
+   kcpy(dest->keys[x].value.submap,src->keys[x].value.submap);
+   }
+  else if(src->keys[x].k==0 && src->keys[x].value.bind)
+   {
+   if(dest->keys[x].k==1) rmkmap(dest->keys[x].value.submap);
+   dest->keys[x].value.bind=src->keys[x].value.bind;
+   dest->keys[x].k=0;
+   }
+ }
+
+/* Remove a binding from a keymap */
+
+int kdel(kmap,seq)
+KMAP *kmap;
+char *seq;
+ {
+ int err=1;
+ int v, w;
+
+ seq=range(seq,&v,&w);
+ if(!seq) return -1;
+
+ /* Clear bindings between v and w */
+ while(v<=w)
+  {
+  if(*seq)
+   {
+   if(kmap->keys[v].k==1)
+    {
+    int r=kdel(kmap->keys[v].value.submap,seq);
+    if(err!= -1) err=r;
     }
    }
   else
-   if(kmap->keys[n].k&KEYSUB) kmap=kmap->keys[n].value.submap;
-   else
-    {
-    kmap->keys[n].value.submap=(KMAP *)malloc(sizeof(KMAP));
-    kmap->keys[n].k|=KEYSUB;
-    kmap=kmap->keys[n].value.submap;
-    kmap->keys=(KEY *)malloc((kmap->size=128)*sizeof(KEY));
-    kmap->len=0;
-    }
-  n=findkey(kmap,c);
-  if(n==kmap->len || (kmap->keys[n].k&KEYMASK)!=c) addkey(kmap,n,c,NULL);
-  }
- while(c<=d)
-  {
-  n=findkey(kmap,c);
-  if(n==kmap->len || (kmap->keys[n].k&KEYMASK)!=c)
-   addkey(kmap,n,c,c==d?macstk(macro,c):dupmacro(macstk(macro,c)));
-  else
    {
-   if(kmap->keys[n].k&KEYSUB)
-    rmkmap(kmap->keys[n].value.submap),
-    kmap->keys[n].k&=~KEYSUB;
-   else
-    rmmacro(kmap->keys[n].value.macro);
-   kmap->keys[n].value.macro=(c==d?macstk(macro,c):dupmacro(macstk(macro,c)));
+   if(kmap->keys[v].k==1) rmkmap(kmap->keys[v].value.submap);
+   kmap->keys[v].k=0;
+   kmap->keys[v].value.bind=0;
+   if(err!= -1) err=0;
    }
-  ++c;
+  ++v;
   }
- }
-fclose(fd);
-if(err) fprintf(stderr,M065);
-else fprintf(stderr,M066);
-if (nhelp)
- {
-  help_structs=(struct help **) malloc(sizeof(struct help *)*nhelp);
-  tmp=first_help;
-  while(nhelp--)
-   {
-    help_structs[nhelp]=tmp;
-    tmp=tmp->next;
-   }
- }
-return 0;
-}
 
-struct help *get_help(name)
- char *name;
- {
-  struct help *tmp;
-  for(tmp=first_help;tmp && zcmp(tmp->name,name);tmp=tmp->next);
-  return tmp;
+ return err;
  }
- 

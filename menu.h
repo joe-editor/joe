@@ -26,23 +26,41 @@ typedef struct menu MENU;
 
 struct menu
  {
+ W *parent;		/* Window we're in */
  char **list;		/* List of items */
  int top;		/* First item on screen */
  int cursor;		/* Item cursor is on */
  int width;		/* Width of widest item, up to 'w' max */
  int perline;		/* Number of items on each line */
- SCREEN *t;
+ int nitems;		/* No. items in list */
+ SCREEN *t;		/* Screen we're on */
  int h,w,x,y;
+ int (*abrt)();		/* Abort callback function */
+ int (*func)();		/* Return callback function */
+ int (*backs)();	/* Backspace callback function */
  void *object;
  };
 
-MENU *mkmenu();
-void menufllw();
-void menugen();
-void menumove();
-void menuresz();
-void menurm();
+#define TYPEMENU 0x800
 
-void muparw(), mdnarw(), mltarw(), mrtarw(), mbof(), meof(), mbol(), meol();
+/* Create a menu */
+
+MENU *mkmenu();
+
+/* Menu user functions */
+
+int umuparw();
+int umdnarw();
+int umltarw();
+int umrtarw();
+int umbof();
+int umeof();
+int umbol();
+int umeol();
+int umbacks();
+
+void ldmenu();
+
+char *mcomplete();
 
 #endif

@@ -20,35 +20,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Itab 1
 
 #include "config.h"
-#include "kbd.h"
 
-typedef struct tab TAB;
-
-struct tab
- {
- char *path;
- char *pattern;
- int len;
- char **files;
- char *type;
- int prv;
- };
-
-#define TYPETAB 0x400
-
-void ucmplt();
-extern CONTEXT cttab;
-void tuabort();
-void tbacks();
-void tbof();
-void tbol();
-void teol();
-void teof();
-void tltarw();
-void tdnarw();
-void trtarw();
-void trtn();
-void tuparw();
-void tkey();
+int cmplt();
 
 #endif

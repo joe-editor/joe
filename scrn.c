@@ -19,68 +19,100 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <stdio.h>
 #include <signal.h>
 #include "blocks.h"
-#include "heap.h"
 #include "vs.h"
 #include "termcap.h"
 #include "tty.h"
 #include "zstr.h"
-#include "msgs.h"
 #include "scrn.h"
 
 int skiptop=0;
+int lines=0;
+int columns=0;
 
 extern int mid;
 
-/* Table of key sequences which we will translate to single codes */
+/* How to display characters */
 
-SEQ seqs[NKEYS]=
-{
- { "kd", KEYDOWN, "DOWN" },
- { "ku", KEYUP, "UP" },
- { "kl", KEYLEFT, "LEFT" },
- { "kr", KEYRIGHT, "RIGHT" },
- { "k0", KEYF0, "F0" },
- { "k1", KEYF1, "F1" },
- { "k2", KEYF2, "F2" },
- { "k3", KEYF3, "F3" },
- { "k4", KEYF4, "F4" },
- { "k5", KEYF5, "F5" },
- { "k6", KEYF6, "F6" },
- { "k7", KEYF7, "F7" },
- { "k8", KEYF8, "F8" },
- { "k9", KEYF9, "F9" },
- { "k;", KEYF10, "F10" },
- { "kD", KEYDEL, "DEL" },
- { "kI", KEYINS, "INS" },
- { "kh", KEYHOME, "HOME" },
- { "kH", KEYEND, "END" },
- { "kN", KEYPGDN, "PGDN" },
- { "kP", KEYPGUP, "PGUP" }
-};
+unsigned xlata[256]=
+ {
+ UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,
+ UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,
+ UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,
+ UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,
+ UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,
+ UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,
+ UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,
+ UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,
+ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+ UNDERLINE,
+
+ INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, 
+ INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, 
+ INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, 
+ INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, 
+ INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, 
+ INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, 
+ INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, 
+ INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, INVERSE+UNDERLINE, 
+
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, 
+ INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE, INVERSE,
+ 
+ INVERSE+UNDERLINE, 
+ };
+
+unsigned char xlatc[256]=
+ {
+ 64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,
+ 80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,
+ 32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,
+ 48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,
+ 64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,
+ 80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,
+ 96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,
+ 112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,63,
+ 64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,
+ 80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,
+ 32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,
+ 48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,
+ 64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,
+ 80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,
+ 96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,
+ 112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,63
+ }; 
 
 /* Set attributes */
 
-void attr(t,c)
+int attr(t,c)
 SCRN *t;
 int c;
 {
 int e;
 c&=~255;
 e=(t->attrib&~c);
-if(e&UNDERLINE)
- {
- if(t->ue) texec(t->cap,t->ue,1), e&=~UNDERLINE;
- t->attrib&=~UNDERLINE;
- }
-if(e&INVERSE)
- {
- if(t->se) texec(t->cap,t->se,1), e&=~INVERSE;
- else if(t->me) texec(t->cap,t->me,1), e=0, t->attrib=0;
- t->attrib&=~INVERSE;
- }
-if(e)
+if(e) /* If any attribute go off, switch them all off: fixes bug on PCs */
  {
  if(t->me) texec(t->cap,t->me,1);
+ else
+  {
+  if(t->ue) texec(t->cap,t->ue,1);
+  if(t->se) texec(t->cap,t->se,1);
+  }
  t->attrib=0;
  }
 e=(c&~t->attrib);
@@ -96,6 +128,7 @@ if(e&BOLD)
 if(e&DIM)
  if(t->mh) texec(t->cap,t->mh,1);
 t->attrib=c;
+return 0;
 }
 
 /* Set scrolling region */
@@ -133,7 +166,7 @@ if(t->ins!=1 && t->im)
 
 /* Exit insert mode */
 
-void clrins(t)
+int clrins(t)
 SCRN *t;
 {
 if(t->ins!=0)
@@ -141,6 +174,7 @@ if(t->ins!=0)
  texec(t->cap,t->ei,1);
  t->ins=0;
  }
+return 0;
 }
 
 /* Erase from given screen coordinate to end of line */
@@ -161,24 +195,17 @@ if((ss-s>3 || s[w]!=' ') && t->ce)
  texec(t->cap,t->ce,1);
  msetI(s,' ',w);
  }
-else while(s!=ss) outatr(t,x,y,' '), ++x, *s++=' ';
+else if(s!=ss)
+ {
+ if(t->ins) clrins(t);
+ if(t->x!=x || t->y!=y) cpos(t,x,y);
+ if(t->attrib) attr(t,0);
+ while(s!=ss)
+  {
+  *s=' '; ttputc(' '); ++t->x; ++s;
+  }
+ }
 return 0;
-}
-
-/* Output a character with attributes */
-
-void outatr(t,x,y,c)
-SCRN *t;
-{
-unsigned char ch;
-if(c== -1) c=' ';
-if(t->ins) clrins(t);
-ch=c; c-=ch;
-if(t->x!=x || t->y!=y) cpos(t,x,y);
-if(c!=t->attrib) attr(t,c);
-if(t->haz && ch=='~') ch='\\';
-ttputc(ch);
-++t->x;
 }
 
 /* As above but useable in insert mode */
@@ -196,59 +223,28 @@ ttputc(ch);
 ++t->x;
 }
 
-/* Overstrike terminal handling */
-
-void outatr1(t,x,y,c)
-SCRN *t;
-{
-if(t->os && t->eo &&
-   (t->scrn[x+t->co*y]!=' ' || (t->scrn[x+t->co*y]&~255)!=(c&~255)) ||
-   t->ul && (c&255)=='_' && (!t->os || t->eo)
-  )
- outatr(t,x,y,' ');
-outatr(t,x,y,c);
-if(c&UNDERLINE && !t->us)
- {
- cpos(t,x,y), texec(t->cap,t->uc,1);
- if(++t->x==t->co)
-  if(t->am) t->x=0, ++t->y;
-  else if(t->xn) t->x= -1, t->y= -1;
-  else --t->x;
- }
-}
-
 void out(t,c)
 char *t;
 char c;
-{
-ttputc(c);
-}
+ {
+ ttputc(c);
+ }
 
-SCRN *nopen()
+SCRN *nopen(cap)
+CAP *cap;
 {
 SCRN *t=(SCRN *)malloc(sizeof(SCRN));
 int x,y;
-char *p;
 ttopen();
 
-if(!(t->cap=getcap(NULL,baud,out,NULL)))
- {
- free(t);
- ttclose();
- fprintf(stdout,M074);
- return 0;
- }
+t->cap=cap;
+setcap(cap,baud,out,NULL);
 
 t->li=getnum(t->cap,"li"); if(t->li<1) t->li=24;
 t->co=getnum(t->cap,"co"); if(t->co<2) t->co=80;
 x=y=0;
 ttgtsz(&x,&y);
 if(x>7 && y>3) t->li=y, t->co=x;
-x=y=0;
-if(p=getenv("LINES")) sscanf(p,"%d",&y);
-if(p=getenv("COLUMNS")) sscanf(p,"%d",&x);
-if(x>7) t->co=x;
-if(y>3) t->li=y;
 
 t->haz=getflag(t->cap,"hz");
 t->os=getflag(t->cap,"os");
@@ -260,66 +256,66 @@ else t->ul=0;
 t->xn=getflag(t->cap,"xn");
 t->am=getflag(t->cap,"am");
 
-t->ti=getstr(t->cap,"ti");
-t->cl=getstr(t->cap,"cl");
-t->cd=getstr(t->cap,"cd");
+t->ti=jgetstr(t->cap,"ti");
+t->cl=jgetstr(t->cap,"cl");
+t->cd=jgetstr(t->cap,"cd");
 
-t->te=getstr(t->cap,"te");
+t->te=jgetstr(t->cap,"te");
 
 t->mb=0; t->md=0; t->mh=0; t->mr=0; t->avattr=0;
-if(!(t->me=getstr(t->cap,"me"))) goto oops;
-if((t->mb=getstr(t->cap,"mb"))) t->avattr|=BLINK;
-if((t->md=getstr(t->cap,"md"))) t->avattr|=BOLD;
-if((t->mh=getstr(t->cap,"mh"))) t->avattr|=DIM;
-if((t->mr=getstr(t->cap,"mr"))) t->avattr|=INVERSE;
+if(!(t->me=jgetstr(t->cap,"me"))) goto oops;
+if((t->mb=jgetstr(t->cap,"mb"))) t->avattr|=BLINK;
+if((t->md=jgetstr(t->cap,"md"))) t->avattr|=BOLD;
+if((t->mh=jgetstr(t->cap,"mh"))) t->avattr|=DIM;
+if((t->mr=jgetstr(t->cap,"mr"))) t->avattr|=INVERSE;
 oops:
 
 t->so=0; t->se=0;
-if(getnum(t->cap,"sg")<=0 && !t->mr && getstr(t->cap,"se"))
+if(getnum(t->cap,"sg")<=0 && !t->mr && jgetstr(t->cap,"se"))
  {
- if(t->so=getstr(t->cap,"so")) t->avattr|=INVERSE;
- t->se=getstr(t->cap,"se");
+ if(t->so=jgetstr(t->cap,"so")) t->avattr|=INVERSE;
+ t->se=jgetstr(t->cap,"se");
  }
 if(getflag(t->cap,"xs") || getflag(t->cap,"xt")) t->so=0;
 
 t->us=0; t->ue=0;
-if(getnum(t->cap,"ug")<=0 && getstr(t->cap,"ue"))
+if(getnum(t->cap,"ug")<=0 && jgetstr(t->cap,"ue"))
  {
- if(t->us=getstr(t->cap,"us")) t->avattr|=UNDERLINE;
- t->ue=getstr(t->cap,"ue");
+ if(t->us=jgetstr(t->cap,"us")) t->avattr|=UNDERLINE;
+ t->ue=jgetstr(t->cap,"ue");
  }
 
-if(!(t->uc=getstr(t->cap,"uc"))) if(t->ul) t->uc="_";
+if(!(t->uc=jgetstr(t->cap,"uc"))) if(t->ul) t->uc="_";
 if(t->uc) t->avattr|=UNDERLINE;
 
 t->ms=getflag(t->cap,"ms");
 
 t->da=getflag(t->cap,"da");
 t->db=getflag(t->cap,"db");
-t->cs=getstr(t->cap,"cs");
+t->cs=jgetstr(t->cap,"cs");
 t->rr=getflag(t->cap,"rr");
-t->sf=getstr(t->cap,"sf");
-t->sr=getstr(t->cap,"sr");
-t->SF=getstr(t->cap,"SF");
-t->SR=getstr(t->cap,"SR");
-t->al=getstr(t->cap,"al");
-t->dl=getstr(t->cap,"dl");
-t->AL=getstr(t->cap,"AL");
-t->DL=getstr(t->cap,"DL");
+t->sf=jgetstr(t->cap,"sf");
+t->sr=jgetstr(t->cap,"sr");
+t->SF=jgetstr(t->cap,"SF");
+t->SR=jgetstr(t->cap,"SR");
+t->al=jgetstr(t->cap,"al");
+t->dl=jgetstr(t->cap,"dl");
+t->AL=jgetstr(t->cap,"AL");
+t->DL=jgetstr(t->cap,"DL");
 if(!getflag(t->cap,"ns") && !t->sf) t->sf="\12";
 
 if(!getflag(t->cap,"in") && baud<38400 )
  {
- t->dc=getstr(t->cap,"dc");
- t->DC=getstr(t->cap,"DC");
- t->dm=getstr(t->cap,"dm");
- t->ed=getstr(t->cap,"ed");
+ t->dc=jgetstr(t->cap,"dc");
+ t->DC=jgetstr(t->cap,"DC");
+ t->dm=jgetstr(t->cap,"dm");
+ t->ed=jgetstr(t->cap,"ed");
 
- t->im=getstr(t->cap,"im");
- t->ei=getstr(t->cap,"ei");
- t->ic=getstr(t->cap,"ic");
- t->IC=getstr(t->cap,"IC");
- t->ip=getstr(t->cap,"ip");
+ t->im=jgetstr(t->cap,"im");
+ t->ei=jgetstr(t->cap,"ei");
+ t->ic=jgetstr(t->cap,"ic");
+ t->IC=jgetstr(t->cap,"IC");
+ t->ip=jgetstr(t->cap,"ip");
  t->mi=getflag(t->cap,"mi");
  }
 else
@@ -330,69 +326,52 @@ else
  }
 
 t->bs=0;
-if(getstr(t->cap,"bc")) t->bs=getstr(t->cap,"bc");
-else if(getstr(t->cap,"le")) t->bs=getstr(t->cap,"le");
+if(jgetstr(t->cap,"bc")) t->bs=jgetstr(t->cap,"bc");
+else if(jgetstr(t->cap,"le")) t->bs=jgetstr(t->cap,"le");
 if(getflag(t->cap,"bs")) t->bs="\10";
 
 t->cbs=tcost(t->cap,t->bs,1,2,2);
 
 t->lf="\12";
-if(getstr(t->cap,"do")) t->lf=getstr(t->cap,"do");
+if(jgetstr(t->cap,"do")) t->lf=jgetstr(t->cap,"do");
 t->clf=tcost(t->cap,t->lf,1,2,2);
 
-t->up=getstr(t->cap,"up");
+t->up=jgetstr(t->cap,"up");
 t->cup=tcost(t->cap,t->up,1,2,2);
 
-t->nd=getstr(t->cap,"nd");
+t->nd=jgetstr(t->cap,"nd");
 
 t->tw=8;
 if(getnum(t->cap,"it")>0) t->tw=getnum(t->cap,"it");
 else if(getnum(t->cap,"tw")>0) t->tw=getnum(t->cap,"tw");
 
-if(!(t->ta=getstr(t->cap,"ta"))) if(getflag(t->cap,"pt")) t->ta="\11";
-t->bt=getstr(t->cap,"bt");
+if(!(t->ta=jgetstr(t->cap,"ta"))) if(getflag(t->cap,"pt")) t->ta="\11";
+t->bt=jgetstr(t->cap,"bt");
 if(getflag(t->cap,"xt")) t->ta=0, t->bt=0;
 
 t->cta=tcost(t->cap,t->ta,1,2,2);
 t->cbt=tcost(t->cap,t->bt,1,2,2);
 
-t->ho=getstr(t->cap,"ho");
+t->ho=jgetstr(t->cap,"ho");
 t->cho=tcost(t->cap,t->ho,1,2,2);
-t->ll=getstr(t->cap,"ll");
+t->ll=jgetstr(t->cap,"ll");
 t->cll=tcost(t->cap,t->ll,1,2,2);
 
 t->cr="\15";
-if(getstr(t->cap,"cr")) t->cr=getstr(t->cap,"cr");
+if(jgetstr(t->cap,"cr")) t->cr=jgetstr(t->cap,"cr");
 if(getflag(t->cap,"nc") || getflag(t->cap,"xr")) t->cr=0;
 t->ccr=tcost(t->cap,t->cr,1,2,2);
 
-t->cRI=tcost(t->cap,t->RI=getstr(t->cap,"RI"),1,2,2);
-t->cLE=tcost(t->cap,t->LE=getstr(t->cap,"LE"),1,2,2);
-t->cUP=tcost(t->cap,t->UP=getstr(t->cap,"UP"),1,2,2);
-t->cDO=tcost(t->cap,t->DO=getstr(t->cap,"DO"),1,2,2);
-t->cch=tcost(t->cap,t->ch=getstr(t->cap,"ch"),1,2,2);
-t->ccv=tcost(t->cap,t->cv=getstr(t->cap,"cv"),1,2,2);
-t->ccV=tcost(t->cap,t->cV=getstr(t->cap,"cV"),1,2,2);
-t->ccm=tcost(t->cap,t->cm=getstr(t->cap,"cm"),1,2,2);
+t->cRI=tcost(t->cap,t->RI=jgetstr(t->cap,"RI"),1,2,2);
+t->cLE=tcost(t->cap,t->LE=jgetstr(t->cap,"LE"),1,2,2);
+t->cUP=tcost(t->cap,t->UP=jgetstr(t->cap,"UP"),1,2,2);
+t->cDO=tcost(t->cap,t->DO=jgetstr(t->cap,"DO"),1,2,2);
+t->cch=tcost(t->cap,t->ch=jgetstr(t->cap,"ch"),1,2,2);
+t->ccv=tcost(t->cap,t->cv=jgetstr(t->cap,"cv"),1,2,2);
+t->ccV=tcost(t->cap,t->cV=jgetstr(t->cap,"cV"),1,2,2);
+t->ccm=tcost(t->cap,t->cm=jgetstr(t->cap,"cm"),1,2,2);
 
-t->cce=tcost(t->cap,t->ce=getstr(t->cap,"ce"),1,2,2);
-
-x=0;
-for(y=0;y!=NKEYS;++y)
- if(getstr(t->cap,seqs[y].seq))
-  {
-  char *s=tcompile(t->cap,getstr(t->cap,seqs[y].seq));
-  if(s && (zlen(s)>1 || s[0]<0))
-   {
-   t->ktab[x].s=s;
-   t->ktab[x].l=sLen(s);
-   t->ktab[x].n=seqs[y].code;
-   ++x;
-   }
-  }
-t->tabsize=x;
-t->kbufp=0;
-t->dumpptr= -1;
+t->cce=tcost(t->cap,t->ce=jgetstr(t->cap,"ce"),1,2,2);
 
 /* Make sure terminal can do absolute positioning */
 if(t->cm) goto ok;
@@ -403,21 +382,25 @@ if(t->cr && t->cv) goto ok;
 leave=1;
 ttclose();
 signrm();
-fprintf(stderr,M075);
+fprintf(stderr,"Sorry, your terminal can't do absolute cursor positioning.\nIt's broken\n");
 return 0;
 ok:
 
 /* Determine if we can scroll */
 if((t->sr || t->SR) && (t->sf || t->SF) && t->cs ||
    (t->al || t->AL) && (t->dl || t->DL)) t->scroll=1;
-else t->scroll=0, mid=1;
+else
+ {
+ t->scroll=0;
+ if(baud<38400) mid=1;
+ }
 
 /* Determine if we can ins/del within lines */
 if((t->im || t->ic || t->IC) && (t->dc || t->DC)) t->insdel=1;
 else t->insdel=0;
 
 /* Adjust for high baud rates */
-if(baud>=38400) t->scroll=0, t->insdel=0, mid=0;
+if(baud>=38400) t->scroll=0, t->insdel=0;
 
 /* Initialize variable screen size dependant vars */
 t->scrn=0; t->sary=0; t->updtab=0; t->compose=0;
@@ -466,64 +449,101 @@ static int relcost(t,x,y,ox,oy)
 register SCRN *t;
 register int x,y,ox,oy;
 {
-int cost=0, c;
+int cost=0;
 
 /* If we don't know the cursor position, force use of absolute positioning */
 if(oy== -1 || ox== -1) return 10000;
 
 /* First adjust row */
 if(y>oy)
+ {
+ int dist=y-oy;
  /* Have to go down */
  if(t->lf)
-  if(t->cDO<(c=(y-oy)*t->clf)) cost+=t->cDO;
-  else cost+=c;
- else if(t->DO) cost+=t->cDO;
+  {
+  int mult=dist*t->clf;
+  if(dist<10 && t->cDO<mult) cost+=t->cDO;
+  else if(dist>=10 && t->cDO+1<mult) cost+=t->cDO+1;
+  else cost+=mult;
+  }
+ else if(t->DO)
+  if(dist<10) cost+=t->cDO;
+  else cost+=t->cDO+1;
  else return 10000;
+ }
 else if(y<oy)
+ {
+ int dist=oy-y;
  /* Have to go up */
  if(t->up)
-  if(t->cUP<(c=(oy-y)*t->cup)) cost+=t->cUP;
-  else cost+=c;
- else if(t->UP) cost+=t->cUP;
+  {
+  int mult=dist*t->cup;
+  if(dist<10 && t->cUP<mult) cost+=t->cUP;
+  else if(dist>=10 && t->cUP<mult) cost+=t->cUP+1;
+  else cost+=mult;
+  }
+ else if(t->UP)
+  if(dist<10) cost+=t->cUP;
+  else cost+=t->cUP+1;
  else return 10000;
+ }
 
 /* Now adjust column */
 
 /* Use tabs */
 if(x>ox && t->ta)
  {
- int ntabs=(x-ox+ox%t->tw)/t->tw;
+ int dist=x-ox;
+ int ntabs=(dist+ox%t->tw)/t->tw;
  int cstunder=x%t->tw+t->cta*ntabs, cstover;
  if(x+t->tw<t->co && t->bs) cstover=t->cbs*(t->tw-x%t->tw)+t->cta*(ntabs+1);
  else cstover=10000;
- if(cstunder<t->cRI && cstunder<x-ox && cstover>cstunder)
+ if(dist<10 && cstunder<t->cRI && cstunder<x-ox && cstover>cstunder)
   return cost+cstunder;
- else if(cstover<t->cRI && cstover<x-ox) return cost+cstover;
+ else if(cstunder<t->cRI+1 && cstunder<x-ox && cstover>cstunder)
+  return cost+cstunder;
+ else if(dist<10 && cstover<t->cRI && cstover<x-ox) return cost+cstover;
+ else if(cstover<t->cRI+1 && cstover<x-ox) return cost+cstover;
  }
 else if(x<ox && t->bt)
  {
- int ntabs=(ox-x+t->tw-ox%t->tw)/t->tw;
+ int dist=ox-x; 
+ int ntabs=(dist+t->tw-ox%t->tw)/t->tw;
  int cstunder,cstover;
  if(t->bs) cstunder=t->cbt*ntabs+t->cbs*(t->tw-x%t->tw); else cstunder=10000;
  if(x-t->tw>=0) cstover=t->cbt*(ntabs+1)+x%t->tw; else cstover=10000;
- if(cstunder<t->cLE && (t->bs?cstunder<(ox-x)*t->cbs:1) && cstover>cstunder)
+ if(dist<10 && cstunder<t->cLE && (t->bs?cstunder<(ox-x)*t->cbs:1) && cstover>cstunder)
   return cost+cstunder;
- else if(cstover<t->cRI && (t->bs?cstover<(ox-x)*t->cbs:1)) return cost+cstover;
+ if(cstunder<t->cLE+1 && (t->bs?cstunder<(ox-x)*t->cbs:1) && cstover>cstunder)
+  return cost+cstunder;
+ else if(dist<10 && cstover<t->cRI && (t->bs?cstover<(ox-x)*t->cbs:1)) return cost+cstover;
+ else if(cstover<t->cRI+1 && (t->bs?cstover<(ox-x)*t->cbs:1)) return cost+cstover;
  }
 
 /* Use simple motions */
 if(x<ox)
+ {
+ int dist=ox-x;
  /* Have to go left */
- if(t->bs) 
-  if(t->cLE<(c=(ox-x)*t->cbs)) cost+=t->cLE;
-  else cost+=c;
+ if(t->bs)
+  {
+  int mult=dist*t->cbs;
+  if(t->cLE<mult && dist<10) cost+=t->cLE;
+  else if(t->cLE+1<mult) cost+=t->cLE+1;
+  else cost+=mult;
+  }
  else if(t->LE) cost+=t->cLE;
  else return 10000;
+ }
 else if(x>ox)
+ {
+ int dist=x-ox;
  /* Have to go right */
  /* Hmm.. this should take into account possible attribute changes */
- if(t->cRI<x-ox) cost+=t->cRI;
- else cost+=x-ox;
+ if(t->cRI<dist && dist<10) cost+=t->cRI;
+ else if(t->cRI+1<dist) cost+=t->cRI+1;
+ else cost+=dist;
+ }
 
 return cost;
 }
@@ -556,6 +576,11 @@ bestcost=relcost(t,x,y,t->x,t->y); bestway=0;
  * better (or necessary in case one or both cursor positions are unknown)
  */
 
+if(t->ccm<bestcost)
+ {
+ cost=tcost(t->cap,t->cm,1,y,x);
+ if(cost<bestcost) bestcost=cost, bestway=6;
+ }
 if(t->ccr<bestcost)
  {
  cost=relcost(t,x,y,0,t->y)+t->ccr;
@@ -585,11 +610,6 @@ if(t->ccV<bestcost)
  {
  cost=relcost(t,x,y,0,y)+tcost(t->cap,t->cV,1,y);
  if(cost<bestcost) bestcost=cost, bestway=13;
- }
-if(t->ccm<bestcost)
- {
- cost=tcost(t->cap,t->cm,1,y,x);
- if(cost<bestcost) bestcost=cost, bestway=6;
  }
 if(t->cch+t->ccv<bestcost && x!=t->x && y!=t->y)
  {
@@ -722,40 +742,46 @@ else if(x>t->x)
  if(t->cRI<x-t->x) texec(t->cap,t->RI,1,x-t->x), t->x=x;
  else
   {
+  int *s=t->scrn+t->x+t->y*t->co;
   if(t->ins) clrins(t);
   while(x>t->x)
    {
-   int c=t->scrn[t->x+t->y*t->co];
-   outatr(t,t->x,y,c);
+   int c= (0xFF&*s);
+   int a= (0xFF00&*s);
+   if(a!=t->attrib) attr(t,a);
+   ttputc(c);
+   ++s; ++t->x;
    }
   }
 }
 
-void cpos(t,x,y)
+int cpos(t,x,y)
 register SCRN *t;
 register int x,y;
 {
 if(y==t->y)
  {
- if(x==t->x) return;
- if(x>t->x && x-t->x<4)
+ if(x==t->x) return 0;
+ if(x>t->x && x-t->x<4 && !t->ins)
   {
   int *cs=t->scrn+t->x+t->co*t->y;
-  if(t->ins)
-   if(t->nd)
-    {
-    do texec(t->cap,t->nd,1); while(++t->x!=x);
-    return;
-    }
-   else clrins(t);
-  do { int c= *cs++; outatr(t,t->x,t->y,c); } while(x!=t->x);
-  return;
+  if(t->ins) clrins(t);
+  do
+   {
+   int c= (0xFF& *cs);
+   int a= (0xFF00& *cs);
+   if(a!=t->attrib) attr(t,a);
+   ttputc(c);
+   ++cs; ++t->x;
+   } while(x!=t->x);
+  return 0;
   }
  }
 if(!t->ms && t->attrib&(INVERSE|UNDERLINE))
  attr(t,t->attrib&~(INVERSE|UNDERLINE));
 if(y<t->top || y>=t->bot) setregn(t,0,t->li);
 cposs(t,x,y);
+return 0;
 }
 
 static void doinschr(t,x,y,s,n)
@@ -805,7 +831,8 @@ if(t->dc || t->DC)
  else texec(t->cap,t->DC,1,n);
  texec(t->cap,t->ed,1,x);		/* Exit delete mode */
  }
-mmove(t->scrn+t->co*y+t->x,t->scrn+t->co*y+t->x+n,(t->co-(x+n))*sizeof(int));
+mmove(t->scrn+t->co*y+x,t->scrn+t->co*y+x+n,(t->co-(x+n))*sizeof(int));
+msetI(t->scrn+t->co*y+t->co-n,' ',n);
 }
 
 /* Insert/Delete within line */
@@ -1046,23 +1073,29 @@ for(y=0;y!=t->li;++y)
 msetI(t->sary,0,t->li);
 }
 
+void npartial(t)
+SCRN *t;
+ {
+ attr(t,0);
+ clrins(t);
+ setregn(t,0,t->li);
+ }
+
 void nescape(t)
 SCRN *t;
-{
-attr(t,0);
-clrins(t,0);
-setregn(t,0,t->li);
-cpos(t,0,t->li-1);
-eraeol(t,0,t->li-1);
-if(t->te) texec(t->cap,t->te,1);
-}
+ {
+ npartial(t);
+ cpos(t,0,t->li-1);
+ eraeol(t,0,t->li-1);
+ if(t->te) texec(t->cap,t->te,1);
+ }
 
 void nreturn(t)
 SCRN *t;
-{
-if(t->ti) texec(t->cap,t->ti,1);
-nredraw(t);
-}
+ {
+ if(t->ti) texec(t->cap,t->ti,1);
+ nredraw(t);
+ }
 
 void nclose(t)
 SCRN *t;
@@ -1081,50 +1114,7 @@ free(t->sary);
 free(t->ofst);
 free(t->htab);
 free(t->ary);
-for(x=0;x!=t->tabsize;++x) vsrm(t->ktab[x].s);
 free(t);
-}
-
-int ngetc(t)
-SCRN *t;
-{
-int c,w,h,x;
-wayup:
-if(t->dumpptr>=0)
- {
- c=t->kbuf[t->dumpptr++];
- if(t->dumpptr==t->kbufp)
-  {
-  t->dumpptr= -1;
-  t->kbufp=0;
-  }
- return c;
- }
-up:
-c=ttgetc();
-if(t->kbufp==32) t->kbufp=0;
-t->kbuf[t->kbufp++]=c;
-w=0;
-for(h=0;h!=t->tabsize;++h)
- {
- for(x=0;x!=t->kbufp && x!=t->ktab[h].l;++x)
-  if(t->ktab[h].s[x]!=t->kbuf[x]) goto nomatch;
- if(x==t->ktab[h].l)
-  {
-  c=t->ktab[h].n;
-  goto found;
-  }
- else if(x==t->kbufp) w=1;
- nomatch:;
- }
-if(w) goto up;
-/* Have to dump each char */
-t->dumpptr=0;
-goto wayup;
-found:
-t->kbufp=0;
-
-return c;
 }
 
 void nscrldn(t,top,bot,amnt)
@@ -1139,7 +1129,7 @@ if(amnt<bot-top)
  for(x=bot;x!=top+amnt;--x)
   t->sary[x-1]=(t->sary[x-amnt-1]==t->li?t->li:t->sary[x-amnt-1]-amnt),
   t->updtab[x-1]=t->updtab[x-amnt-1];
- for(x=top;x!=top+amnt;++x) t->updtab[x]=0;
+ for(x=top;x!=top+amnt;++x) t->updtab[x]=1;
  }
 if(amnt>bot-top) amnt=bot-top;
 msetI(t->sary+top,t->li,amnt);
@@ -1158,16 +1148,19 @@ if(amnt<bot-top)
  for(x=top+amnt;x!=bot;++x)
   t->sary[x-amnt]=(t->sary[x]==t->li?t->li:t->sary[x]+amnt),
   t->updtab[x-amnt]=t->updtab[x];
- for(x=bot-amnt;x!=bot;++x) t->updtab[x]=0;
+ for(x=bot-amnt;x!=bot;++x) t->updtab[x]=1;
  }
 if(amnt>bot-top) amnt=bot-top;
 msetI(t->sary+bot-amnt,t->li,amnt);
 if(amnt==bot-top) msetI(t->updtab+bot-amnt,1,amnt);
 }
 
+extern int dostaupd;
+
 void nredraw(t)
 SCRN *t;
 {
+dostaupd=1;
 msetI(t->scrn,' ',t->co*skiptop);
 msetI(t->scrn+skiptop*t->co,-1,(t->li-skiptop)*t->co);
 msetI(t->sary,0,t->li);

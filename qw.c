@@ -17,209 +17,221 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
 #include "config.h"
-#include "heap.h"
 #include "w.h"
 #include "zstr.h"
+#include "vs.h"
 #include "qw.h"
 
-CONTEXT cquery={"query",0}, cquerya={"querya",0}, cquerysr={"querysr",0};
+static void dispqw(qw)
+QW *qw;
+ {
+ W *w=qw->parent;
 
-/* Move query window */
+ /* Scroll buffer and position prompt */
+ if(qw->promptlen>w->w/2+w->w/4) qw->promptofst=qw->promptlen-w->w/2;
+ else qw->promptofst=0;
 
-static void moveqw(w,x,y)
-W *w;
-int x,y;
-{
-}
+ /* Set cursor position */
+ w->curx=qw->promptlen-qw->promptofst;
+ w->cury=0;
 
-/* Resize query window */
+ /* Generate prompt */
+ w->t->t->updtab[w->y]=1;
+ gentxt(w->t->t,w->x,w->y,qw->promptofst,qw->prompt,qw->promptlen,1);
+ }
 
-static void resizeqw(w,wi,he)
-W *w;
-int wi, he;
-{
-}
+static void dispqwn(qw)
+QW *qw;
+ {
+ W *w=qw->parent;
 
-/* Abort query window */
+ /* Scroll buffer and position prompt */
+ if(qw->promptlen>w->w/2+w->w/4) qw->promptofst=qw->promptlen-w->w/2;
+ else qw->promptofst=0;
 
-static void killqw(w)
-W *w;
-{
-QW *qw=(QW *)w->object;
-free(qw->prompt);
-free(qw);
-}
+ /* Set cursor position */
+ if(w->win->watom->follow && w->win->object) w->win->watom->follow(w->win->object);
+ if(w->win->watom->disp && w->win->object) w->win->watom->disp(w->win->object);
+ w->curx=w->win->curx;
+ w->cury=w->win->cury+w->win->y-w->y;
 
-/* Update query window */
-
-static void followqw(w)
-W *w;
-{
-}
-
-static void dispqw(w)
-W *w;
-{
-int x;
-QW *qw=(QW *)w->object;
-
-/* Scroll buffer and position prompt */
-if(qw->promptlen>w->w/2+w->w/4) qw->promptofst=qw->promptlen-w->w/2;
-else qw->promptofst=0;
-
-/* Set cursor position */
-w->curx=qw->promptlen-qw->promptofst;
-w->cury=0;
-
-/* Generate prompt */
-w->t->t->updtab[w->y]=1;
-genfmt(w->t->t,w->x,w->y,qw->promptofst,qw->prompt,1);
-}
-
-static void dispqwn(w)
-W *w;
-{
-int x;
-QW *qw=(QW *)w->object;
-
-/* Scroll buffer and position prompt */
-if(qw->promptlen>w->w/2+w->w/4) qw->promptofst=qw->promptlen-w->w/2;
-else qw->promptofst=0;
-
-/* Set cursor position */
-w->win->watom->follow(w->win);
-w->win->watom->disp(w->win);
-w->curx=w->win->curx;
-w->cury=w->win->cury+w->win->y-w->y;
-
-/* Generate prompt */
-w->t->t->updtab[w->y]=1;
-genfmt(w->t->t,w->x,w->y,qw->promptofst,qw->prompt,1);
-}
+ /* Generate prompt */
+ w->t->t->updtab[w->y]=1;
+ gentxt(w->t->t,w->x,w->y,qw->promptofst,qw->prompt,qw->promptlen,1);
+ }
 
 /* When user hits a key in a query window */
 
-void utypeqw(w,c)
-W *w;
-{
-QW *qw=(QW *)w->object;
-W *win;
-void (*func)();
-win=w->win;
-func=qw->func;
-wabort(w);
-func(win,c);
-}
+int utypeqw(qw,c)
+QW *qw;
+ {
+ W *win;
+ W *w=qw->parent;
+ int *notify=w->notify;
+ int (*func)();
+ void *object=qw->object;
+ win=qw->parent->win;
+ func=qw->func;
+ vsrm(qw->prompt);
+ free(qw);
+ w->object=0;
+ w->notify=0;
+ wabort(w);
+ if(func) return func(win->object,c,object,notify);
+ return -1;
+ }
 
-/* When user aborts a query window with ^C */
-
-void uabortqw(w)
-W *w;
-{
-wabort(w);
-}
-
-void qdumb()
-{
-}
+static int abortqw(qw)
+QW *qw;
+ {
+ W *win=qw->parent->win;
+ void *object=qw->object;
+ int (*abrt)()=qw->abrt;
+ vsrm(qw->prompt);
+ free(qw);
+ if(abrt) return abrt(win->object,object);
+ else return -1;
+ }
 
 static WATOM watomqw=
-{
-&cquery,
-dispqw,
-followqw,
-killqw,
-resizeqw,
-moveqw,
-qdumb,
-qdumb,
-TYPEQW
-};
+ {
+ "query",
+ dispqw,
+ 0,
+ abortqw,
+ 0,
+ utypeqw,
+ 0,
+ 0,
+ 0,
+ 0,
+ TYPEQW
+ };
 
 static WATOM watqwn=
-{
-&cquerya,
-dispqwn,
-followqw,
-killqw,
-resizeqw,
-moveqw,
-qdumb,
-qdumb,
-TYPEQW
-};
+ {
+ "querya",
+ dispqwn,
+ 0,
+ abortqw,
+ 0,
+ utypeqw,
+ 0,
+ 0,
+ 0,
+ 0,
+ TYPEQW
+ };
 
 static WATOM watqwsr=
-{
-&cquerysr,
-dispqwn,
-followqw,
-killqw,
-resizeqw,
-moveqw,
-qdumb,
-qdumb,
-TYPEQW
-};
+ {
+ "querysr",
+ dispqwn,
+ 0,
+ abortqw,
+ 0,
+ utypeqw,
+ 0,
+ 0,
+ 0,
+ 0,
+ TYPEQW
+ };
 
 /* Create a query window */
 
-W *mkqw(w,prompt,func)
-W *w;
+QW *mkqw(obw,prompt,len,func,abrt,object,notify)
+BASE *obw;
 char *prompt;
-void (*func)();
-{
-W *new;
-QW *qw;
-new=wcreate(w->t,&watomqw,w,w,w->main,1,NULL);
-if(!new) return 0;
-new->object=(void *)(qw=(QW *)malloc(sizeof(QW)));
-qw->prompt=zdup(prompt);
-qw->promptlen=fmtlen(prompt);
-qw->promptofst=0;
-qw->func=func;
-w->t->curwin=new;
-return new;
-}
+int (*func)();
+int (*abrt)();
+void *object;
+int *notify;
+ {
+ W *new;
+ QW *qw;
+ W *w=obw->parent;
+ new=wcreate(w->t,&watomqw,w,w,w->main,1,NULL,notify);
+ if(!new)
+  {
+  if(notify) *notify=1;
+  return 0;
+  }
+ wfit(new->t);
+ new->object=(void *)(qw=(QW *)malloc(sizeof(QW)));
+ qw->parent=new;
+ qw->prompt=vsncpy(NULL,0,prompt,len);
+ qw->promptlen=len;
+ qw->promptofst=0;
+ qw->func=func;
+ qw->abrt=abrt;
+ qw->object=object;
+ w->t->curwin=new;
+ return qw;
+ }
 
 /* Same as above, but cursor is left in original window */
 /* For Ctrl-Meta thing */
 
-W *mkqwna(w,prompt,func)
-W *w;
+QW *mkqwna(obw,prompt,len,func,abrt,object,notify)
+BASE *obw;
 char *prompt;
-void (*func)();
-{
-W *new;
-QW *qw;
-new=wcreate(w->t,&watqwn,w,w,w->main,1,NULL);
-if(!new) return 0;
-new->object=(void *)(qw=(QW *)malloc(sizeof(QW)));
-qw->prompt=zdup(prompt);
-qw->promptlen=fmtlen(prompt);
-qw->promptofst=0;
-qw->func=func;
-w->t->curwin=new;
-return new;
-}
+int (*func)();
+int (*abrt)();
+void *object;
+int *notify;
+ {
+ W *new;
+ QW *qw;
+ W *w=obw->parent;
+ new=wcreate(w->t,&watqwn,w,w,w->main,1,NULL,notify);
+ if(!new)
+  {
+  if(notify) *notify=1;
+  return 0;
+  }
+ wfit(new->t);
+ new->object=(void *)(qw=(QW *)malloc(sizeof(QW)));
+ qw->parent=new;
+ qw->prompt=vsncpy(NULL,0,prompt,len);
+ qw->promptlen=len;
+ qw->promptofst=0;
+ qw->func=func;
+ qw->abrt=abrt;
+ qw->object=object;
+ w->t->curwin=new;
+ return qw;
+ }
 
 /* Same as above, but cursor is left in original window */
 /* For search and replace thing */
 
-W *mkqwnsr(w,prompt,func)
-W *w;
+QW *mkqwnsr(obw,prompt,len,func,abrt,object,notify)
+BASE *obw;
 char *prompt;
-void (*func)();
-{
-W *new;
-QW *qw;
-new=wcreate(w->t,&watqwsr,w,w,w->main,1,NULL);
-if(!new) return 0;
-new->object=(void *)(qw=(QW *)malloc(sizeof(QW)));
-qw->prompt=zdup(prompt);
-qw->promptlen=fmtlen(prompt);
-qw->promptofst=0;
-qw->func=func;
-w->t->curwin=new;
-return new;
-}
+int (*func)();
+int (*abrt)();
+void *object;
+int *notify;
+ {
+ W *new;
+ QW *qw;
+ W *w=obw->parent;
+ new=wcreate(w->t,&watqwsr,w,w,w->main,1,NULL,notify);
+ if(!new)
+  {
+  if(notify) *notify=1;
+  return 0;
+  }
+ wfit(new->t);
+ new->object=(void *)(qw=(QW *)malloc(sizeof(QW)));
+ qw->parent=new;
+ qw->prompt=vsncpy(NULL,0,prompt,len);
+ qw->promptlen=len;
+ qw->promptofst=0;
+ qw->func=func;
+ qw->abrt=abrt;
+ qw->object=object;
+ w->t->curwin=new;
+ return qw;
+ }

@@ -24,7 +24,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 void afterpos();
 void aftermove();
 void windie();
-void uprevpos();
-void unextpos();
+int uprevpos();
+int unextpos();
 
 #endif

@@ -22,13 +22,11 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <fcntl.h>
 #include "config.h"
 #include "vs.h"
+#include "zstr.h"
 #include "blocks.h"
-#include "heap.h"
 #include "queue.h"
-#include "pathfunc.h"
-#include "toomany.h"
+#include "path.h"
 #include "random.h"
-#include "msgs.h"
 #include "vfile.h"
 
 static VFILE vfiles={{&vfiles,&vfiles}};	/* Known vfiles */
@@ -45,38 +43,39 @@ void vflsh()
 VPAGE *vp;
 VPAGE *vlowest;
 long addr;
+long last;
 VFILE *vfile;
 int x;
 for(vfile=vfiles.link.next;
     vfile!=&vfiles;
     vfile=vfile->link.next)
  {
+ last= -1;
  loop:
  addr= MAXLONG;
  vlowest=0;
  for(x=0;x!=HTSIZE;x++)
   for(vp=htab[x];vp;vp=vp->next)
-   if(vp->addr<addr && vp->dirty && vp->vfile==vfile && !vp->count)
+   if(vp->addr<addr && vp->addr>last && vp->vfile==vfile &&
+      (vp->addr>=vfile->size || (vp->dirty && !vp->count)))
     addr=vp->addr, vlowest=vp;
  if(vlowest)
   {
-  if(!vfile->name) vfile->name=mktmp("/tmp/");
-  if(!vfile->fd)
-   {
-   vfile->fd=Fopen(vfile->name);
-   }
-  Fseek(vfile->fd,addr);
+  if(!vfile->name) vfile->name=mktmp(NULL);
+  if(!vfile->fd) vfile->fd=open(vfile->name,O_RDWR);
+  lseek(vfile->fd,addr,0);
   if(addr+PGSIZE>vsize(vfile))
    {
-   Fwrite(vfile->fd,vlowest->data,(int)(vsize(vfile)-addr));
+   jwrite(vfile->fd,vlowest->data,(int)(vsize(vfile)-addr));
    vfile->size=vsize(vfile);
    }
   else
    {
-   Fwrite(vfile->fd,vlowest->data,PGSIZE);
+   jwrite(vfile->fd,vlowest->data,PGSIZE);
    if(addr+PGSIZE>vfile->size) vfile->size=addr+PGSIZE;
    }
   vlowest->dirty=0;
+  last=addr;
   goto loop;
   }
  }
@@ -98,26 +97,32 @@ for(x=0;x!=HTSIZE;x++)
    addr=vp->addr, vlowest=vp;
 if(vlowest)
  {
- if(!vfile->name) vfile->name=mktmp("/tmp/");
+ if(!vfile->name) vfile->name=mktmp(NULL);
  if(!vfile->fd)
   {
-  vfile->fd=Fopen(vfile->name);
+  vfile->fd=open(vfile->name,O_RDWR);
   }
- Fseek(vfile->fd,addr);
+ lseek(vfile->fd,addr,0);
  if(addr+PGSIZE>vsize(vfile))
   {
-  Fwrite(vfile->fd,vlowest->data,(int)(vsize(vfile)-addr));
+  jwrite(vfile->fd,vlowest->data,(int)(vsize(vfile)-addr));
   vfile->size=vsize(vfile);
   }
  else
   {
-  Fwrite(vfile->fd,vlowest->data,PGSIZE);
+  jwrite(vfile->fd,vlowest->data,PGSIZE);
   if(addr+PGSIZE>vfile->size) vfile->size=addr+PGSIZE;
   }
  vlowest->dirty=0;
  goto loop;
  }
 }
+
+char *mema(align,size)
+ {
+ char *z=(char *)malloc(align+size);
+ return z+align-physical(z)%align;
+ }
 
 char *vlock(vfile,addr)
 VFILE *vfile;
@@ -143,7 +148,7 @@ if(curvalloc+PGSIZE<=maxvalloc)
  vp=(VPAGE *)malloc(sizeof(VPAGE)*INC);
  if(vp)
   {
-  vp->data=(char *)memalign(PGSIZE,PGSIZE*INC);
+  vp->data=(char *)mema(PGSIZE,PGSIZE*INC);
   if(vp->data)
    {
    int q;
@@ -152,7 +157,7 @@ if(curvalloc+PGSIZE<=maxvalloc)
     vheaders=(VPAGE **)malloc((vheadsz=INC)*sizeof(VPAGE *)),
     vbase=vp->data;
    else
-    if(vp->data<vbase)
+    if(physical(vp->data)<physical(vbase))
      {
      VPAGE **t=vheaders;
      int amnt=(physical(vbase)-physical(vp->data))>>LPGSIZE;
@@ -197,7 +202,7 @@ for(y=HTSIZE, x=(random()&(HTSIZE-1));y;x=((x+1)&(HTSIZE-1)), --y)
    pp->next=vp->next;
    goto gotit;
    }
-write(2,M057,zlen(M057));
+write(2,"vfile: out of memory\n",21);
 exit(1);
 
 gotit:
@@ -212,15 +217,15 @@ if(addr<vfile->size)
  {
  if(!vfile->fd)
   {
-  vfile->fd=Fopen(vfile->name);
+  vfile->fd=open(vfile->name,O_RDWR);
   }
- Fseek(vfile->fd,addr);
+ lseek(vfile->fd,addr,0);
  if(addr+PGSIZE>vfile->size)
   {
-  Fread(vfile->fd,vp->data,(int)(vfile->size-addr));
+  jread(vfile->fd,vp->data,(int)(vfile->size-addr));
   mset(vp->data+vfile->size-addr,0,PGSIZE-(int)(vfile->size-addr));
   }
- else Fread(vfile->fd,vp->data,PGSIZE);
+ else jread(vfile->fd,vp->data,PGSIZE);
  }
 else mset(vp->data,0,PGSIZE);
 
@@ -243,19 +248,23 @@ new->addr= -1;
 return enqueb(VFILE,link,&vfiles,new);
 }
 
+#ifdef junk
+
 VFILE *vopen(name)
 char *name;
 {
+struct stat buf;
 VFILE *new=(VFILE *)malloc(sizeof(VFILE));
 new->name=vsncpy(NULL,0,sz(name));
-new->fd=Fopen(name);
+new->fd=open(name,O_RDWR);
 if(!new->fd)
  {
- fprintf(stderr,M068,name);
+ fprintf(stderr,"Couldn\'t open file \'%s\'\n",name);
  free(new);
  return 0;
  }
-new->size=new->fd->size;
+fstat(new->fd,&buf);
+new->size=buf.st_size;
 new->alloc=new->size;
 new->left=0;
 new->lv=0;
@@ -266,18 +275,22 @@ new->addr= -1;
 return enqueb(VFILE,link,&vfiles,new);
 }
 
+#endif
+
 void vclose(vfile)
 VFILE *vfile;
 {
 VPAGE *vp, *pp;
 int x;
+if(vfile->vpage) vunlock(vfile->vpage);
+if(vfile->vpage1) vunlock(vfile->vpage1);
 if(vfile->name)
  {
  if(vfile->flags) unlink(vfile->name);
  else vflshf(vfile);
  vsrm(vfile->name);
  }
-if(vfile->fd) Fclose(vfile->fd);
+if(vfile->fd) close(vfile->fd);
 free(deque(VFILE,link,vfile));
 for(x=0;x!=HTSIZE;x++)
  for(pp=(VPAGE *)(htab+x), vp=pp->next;vp;)
@@ -291,6 +304,7 @@ for(x=0;x!=HTSIZE;x++)
   else pp=vp, vp=vp->next;
 }
 
+#ifdef junk
 /* this is now broken */
 void vlimit(amount)
 long amount;
@@ -335,6 +349,7 @@ while(curvalloc>maxvalloc)
   return;
   }
 }
+#endif
 
 long valloc(vfile,size)
 VFILE *vfile;
@@ -350,6 +365,8 @@ if(vfile->lv)
  }
 return start;
 }
+
+#ifdef junk
 
 void vseek(vfile,addr)
 VFILE *vfile;
@@ -567,7 +584,7 @@ while(size)
 vseek(v,addr);
 }
 
-/* Write string to vfile */
+/* Write zstring to vfile */
 
 void vputs(v,s)
 VFILE *v;
@@ -576,22 +593,104 @@ char *s;
 while(*s) vputc(v,*s), ++s;
 }
 
-/* Read a line from a file */
+/* Read a line from a file.  Remove '\n' if there was any */
 
 char *vgets(v,s)
 VFILE *v;
 char *s;
-{
-int c;
-int x=0;
-if(!sSIZ(s)) s=vstrunc(s,0);
-while(c=vgetc(v), c!= MAXINT && c!='\n')
  {
- if(x==sSiz(s)) s=vsensure(s,x+10);
- s[x++]=c;
+ char *b, *a, *x, *y;
+ int cnt;
+
+ /* Return with NULL if at end of file */
+ if(vtell(v)==vsize(v))
+  {
+  vsrm(s);
+  return 0;
+  }
+
+ /* Create string if it doesn't exist */
+ if(!s) s=vsmk(80);
+
+ /* Zero string length */
+ sLen(s)=0;
+
+ loop:
+
+ /* Set b to end of string, a to page pointer, and cnt to min which ever
+  * (string or page) has the least space left
+  */
+ b=s+sLen(s);
+ a=v->bufp;
+ cnt=Imin(sSIZ(s)-sLen(s),v->left-v->lv);
+
+ /* Copy until \n is found or until page or buffer out of space */
+ if(cnt>=16) do
+  {
+  if((b[0]=a[0])=='\n') { a+=1; b+=1; goto ovr; }
+  if((b[1]=a[1])=='\n') { a+=2; b+=2; cnt-=1; goto ovr; }
+  if((b[2]=a[2])=='\n') { a+=3; b+=3; cnt-=2; goto ovr; }
+  if((b[3]=a[3])=='\n') { a+=4; b+=4; cnt-=3; goto ovr; }
+  if((b[4]=a[4])=='\n') { a+=5; b+=5; cnt-=4; goto ovr; }
+  if((b[5]=a[5])=='\n') { a+=6; b+=6; cnt-=5; goto ovr; }
+  if((b[6]=a[6])=='\n') { a+=7; b+=7; cnt-=6; goto ovr; }
+  if((b[7]=a[7])=='\n') { a+=8; b+=8; cnt-=7; goto ovr; }
+  if((b[8]=a[8])=='\n') { a+=9; b+=9; cnt-=8; goto ovr; }
+  if((b[9]=a[9])=='\n') { a+=10; b+=10; cnt-=9; goto ovr; }
+  if((b[10]=a[10])=='\n') { a+=11; b+=11; cnt-=10; goto ovr; }
+  if((b[11]=a[11])=='\n') { a+=12; b+=12; cnt-=11; goto ovr; }
+  if((b[12]=a[12])=='\n') { a+=13; b+=13; cnt-=12; goto ovr; }
+  if((b[13]=a[13])=='\n') { a+=14; b+=14; cnt-=13; goto ovr; }
+  if((b[14]=a[14])=='\n') { a+=15; b+=15; cnt-=14; goto ovr; }
+  if((b[15]=a[15])=='\n') { a+=16; b+=16; cnt-=15; goto ovr; }
+  }
+  while(a+=16, b+=16, (cnt-=16)>=16);
+
+/*
+ x=a, y=b; a+=cnt-15; b+=cnt-15;
+ switch(cnt)
+  {
+  case 15: if((b[0]=a[0])=='\n') { a+=1; b+=1; goto zif; }
+  case 14: if((b[1]=a[1])=='\n') { a+=2; b+=2; goto zif; }
+  case 13: if((b[2]=a[2])=='\n') { a+=3; b+=3; goto zif; }
+  case 12: if((b[3]=a[3])=='\n') { a+=4; b+=4; goto zif; }
+  case 11: if((b[4]=a[4])=='\n') { a+=5; b+=5; goto zif; }
+  case 10: if((b[5]=a[5])=='\n') { a+=6; b+=6; goto zif; }
+  case 9: if((b[6]=a[6])=='\n')  { a+=7; b+=7; goto zif; }
+  case 8: if((b[7]=a[7])=='\n')  { a+=8; b+=8; goto zif; }
+  case 7: if((b[8]=a[8])=='\n')  { a+=9; b+=9; goto zif; }
+  case 6: if((b[9]=a[9])=='\n')  { a+=10; b+=10; goto zif; }
+  case 5: if((b[10]=a[10])=='\n'){ a+=11; b+=11; goto zif; }
+  case 4: if((b[11]=a[11])=='\n'){ a+=12; b+=12; goto zif; }
+  case 3: if((b[12]=a[12])=='\n'){ a+=13; b+=13; goto zif; }
+  case 2: if((b[13]=a[13])=='\n'){ a+=14; b+=14; goto zif; }
+  case 1: if((b[14]=a[14])=='\n'){ a+=15; b+=15; goto zif; }
+  }
+ a=x+cnt, b=y+cnt; cnt=0; goto ovr;
+ zif: cnt-=a-x-1;
+*/
+
+ if(cnt) do
+  if((*b++=*a++)=='\n') break;
+  while(--cnt);
+
+ ovr:
+ 
+ /* Update string and page data */
+ sLen(s)=b-s;
+ v->left-=a-v->bufp;
+ v->bufp=a;
+
+ if(!cnt)
+  if(vtell(v)==vsize(v)) b[0]=0;
+  else
+   {
+   if(sLen(s)==sSiz(s)) s=vsensure(s,sLen(s)+(sLen(s)>>1)+16);
+   if(!v->left) vseek(v,vtell(v));
+   goto loop;
+   }
+ else b[-1]=0;
+
+ return s;
  }
-if(x==sSiz(s)) s=vsensure(s,x+1);
-sLen(s)=x;
-s[x]=0;
-return s;
-}
+#endif

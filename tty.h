@@ -51,7 +51,8 @@ struct mpx
  *     Place tty in character at a time mode.
  *     (basically, disable all processing except for XON/XOFF if it's set)
  *
- * (4) Set this new tty state without loosing any typeahead
+ * (4) Set this new tty state without loosing any typeahead (by using the
+ *     proper ioctl).
  *
  * (5) Store the baud rate in the global variable 'baud'
  *
@@ -126,32 +127,42 @@ void ttsusp();
 
 /* int ttflsh(void);  Flush the output buffer and check for typeahead.
  *
- * (1) write() any character in the output buffer to the tty.  Sleep for the
- *     amount of time it should take for all of these characters to get
+ * (1) write() any characters in the output buffer to the tty and then sleep
+ *     for the amount of time it should take for the written characters to get
  *     to the tty.  This is so that any buffering between the editor and the
  *     tty is defeated.  If this is not done, the screen update will not be
  *     able to defer for typeahead.
  *
- *     The best way to do this (and it's currently only possible in BSD) is to
- *     set a timer for the necessary amount, write the characters to the tty,
- *     and then sleep until the timer expires.
+ *     The best way to do the sleep (possible only on systems with the
+ *     setitimer call) is to set a timer for the necessary amount, write the
+ *     characters to the tty, and then sleep until the timer expires.
  *
  *     If this can't be done, it's usually ok to 'write' and then to sleep for
  *     the necessary amount of time.  However, you will notice delays in the
  *     screen update if the 'write' actually takes any significant amount of
  *     time to execute (it usually takes none since all it usually does is
- *     write to an operating system buffer).
+ *     write to an operating system output buffer).
  *
- * (2) If the global variable 'leave' is not set and if the global variable
- *     'have' is not set, check for typeahead.  If there is any, set the global
- *     variable 'have'.  This absolutely must not read any characters from the
- *     'tty' if 'leave' is set or typeahead will be lost when the editor exits
- *     or does a shell escape.
+ * (2) The way we check for typeahead is to put the TTY in nonblocking mode
+ *     and attempt to read a character.  If one could be read, the global
+ *     variable 'have' is set to indicate that there is typeahead pending and
+ *     the character is stored in a single character buffer until ttgetc
+ *     is called.  If the global variable 'leave' is set, the check for
+ *     typeahead is disabled.  This is so that once the program knows that it's
+ *     about to exit, it doesn't eat the first character of your typeahead if
+ *     ttflsh gets called.  'leave' should also be set before shell escapes and
+ *     suspends.
  */
 int ttflsh();
 
 extern int have;
 extern int leave;
+
+#ifdef __MSDOS__
+#define ifhave bioskey(1)
+#else
+#define ifhave have
+#endif
 
 /* void ttsig(int n);  Signal handler you provide.  This is called if the
  * editor gets a hangup signal, termination signal or if the input closes.
@@ -164,12 +175,12 @@ void ttsig();
  * structure */
 void ttgtsz();
 
-/* You don't have to call these: ttopen/ttclose do it for you.  These
+/* You don't have to call these: ttopen/ttclose does it for you.  These
  * may be needed to make your own shell escape sequences.
  */
 
 /* void sigjoe(void);  Set the signal handling for joe.  I.E., ignore all
- * signals the user can generate from the keyboard (SIGINT, SIGQUIT, SIGPIPE)
+ * signals the user can generate from the keyboard (SIGINT, SIGPIPE)
  * and trap the software terminate and hangup signals (SIGTERM, SIGHUP) so
  * that 'ttsig' gets called.
  */
@@ -188,14 +199,25 @@ char *pwd();
  *             void (*die)(),void *dieobj,
  *            );
  *
- * Create an asynchronous input source
+ * Create an asynchronous input source handler for a process
+ *   Child process id in 'pid'
+ *   File descriptor to get input from in 'fd'
+ *   Function to call with received characters in 'func'
+ *   Function to call when process dies in 'die'
+ *   The first arg passed to func and die is object and dieobj
  */
 MPX *mpxmk();
 
-/* int subshell(fd,name);
- * Execute a subshell.  'name' is name of 'tty' to use.  'fd' is of open
- * pty, which gets closed after fork().  Returns pid of shell.
+/* int subshell(int *ptyfd);
+ * Execute a subshell.  Returns 'pid' of shell or zero if there was a
+ * problem.  Returns file descriptor for the connected pty in 'ptyfd'.
  */
 int subshell();
+
+extern int noxon;
+extern int Baud;
+
+void tickoff();
+void tickon();
 
 #endif

@@ -20,36 +20,35 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Itw 1
 
 #include "config.h"
-#include "kbd.h"
 #include "main.h"
+#include "bw.h"
 
 typedef struct tw TW;
-
-extern int starow, stacol;
 
 struct tw
  {
  /* Status line info */
- char *stanam;
  char *stalin;
- int stamod;
- int stahlp;
- struct recmac *starec;
- int starow;
- int stacol;
- int staupd;			/* Set if status line should get updated */
- int stashl;
+ char *staright;
+ int staon;				/* Set if status line was on */
+ long prevline;				/* Previous cursor line number */
+ int changed;				/* Previous changed value */
  };
 
 #define TYPETW 0x100
 
-extern CONTEXT cmain,cterm;
-
-/* W *wmktw(SCREEN *t,B *b)
+/* BW *wmktw(SCREEN *t,B *b)
  */
-W *wmktw();
+BW *wmktw();
 
-void uaborttw();
-void usplitw();
+int usplitw();
+int uduptw();
+int utw0();
+int utw1();
+int uabortbuf();
+int uabort();
+void setline();
+
+extern int staen;
 
 #endif

@@ -22,12 +22,11 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "config.h"
 #include "w.h"
 
-#include "config.h"
-
 extern char *exmsg;		/* Exit message */
-extern int help;
+extern int help;		/* Set to start with help on */
 extern SCREEN *maint;		/* Primary screen */
-
-void exmacro();			/* Execute a macro */
+void nungetc();
+void dofollows();
+int edloop();
 
 #endif

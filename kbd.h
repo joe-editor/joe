@@ -1,4 +1,4 @@
-/* Keyboard handler
+/* Key-map handler
    Copyright (C) 1992 Joseph H. Allen
 
 This file is part of JOE (Joe's Own Editor)
@@ -20,43 +20,23 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Ikbd 1
 
 #include "config.h"
-#include "macro.h"
+#include "scrn.h"
+
+typedef struct kmap KMAP;
+typedef struct kbd KBD;
+#define KEYS 256
 
 typedef struct key KEY;
-typedef struct kmap KMAP;
-typedef struct cmd CMD;
-typedef struct context CONTEXT;
-typedef struct cmdtab CMDTAB;
-typedef struct kbd KBD;
 
-/* The command table */
-
-typedef struct options OPTIONS;
-struct options
- {
- OPTIONS *next;
- char *name;
- int overtype;
- long lmargin;
- long rmargin;
- int autoindent;
- int wordwrap;
- int tab;
- int indentc;
- long istep;
- };
-
-void setoptions();
-
-/* A key to macro binding in a keymap */
+/* A key binding */
 
 struct key
  {
- int k;			/* Key value */
+ int k;			/* Flag: 0=binding, 1=submap */
  union
   {
-  MACRO *macro;		/* Macro or */
-  KMAP *submap;		/* Submap address (for prefix keys) */
+  void *bind;		/* What key is bound to */
+  KMAP *submap;		/* Sub KMAP address (for prefix keys) */
   } value;
  };
 
@@ -64,42 +44,10 @@ struct key
 
 struct kmap
  {
- int len;		/* Number of KEY entries */
- int size;		/* Malloc size of block */
- KEY *keys;		/* KEYs.  Sorted. */
+ KEY keys[KEYS];	/* KEYs */
  };
 
-/* Masks & bits for 'k' entry in KEY */
-
-#define KEYMASK 0x7fff	/* Mask to get key value */
-#define KEYSUB 0x8000	/* Bit set for prefix key */
-
-/* Command entry */
-
-struct cmd
- {
- char *name;		/* Command name */
- int flag;		/* Execution flags */
- void (*func)();	/* Function bound to name */
- };
-
-/* A Context (a set of bindings) */
-
-struct context
- {
- char *name;		/* Name of this context */
- KMAP *kmap;		/* Keymap for this context */
- };
-
-/* Command table */
-
-struct cmdtab
- {
- CMD *cmd;		/* The entries themselves (sorted by name) */
- int len;		/* Number of entries */
- };
-
-/* A keyboard handler */
+/** A keyboard handler **/
 
 struct kbd
  {
@@ -109,8 +57,60 @@ struct kbd
  int x;			/* What we're up to */
  };
 
-/* KBD *mkkbd(CONTEXT *context);
-   Create a keyboard handler for the given context.
+/* KMAP *mkkmap(void);
+ * Create an empty keymap
+ */
+KMAP *mkkmap();
+
+/* void rmkmap(KMAP *kmap);
+ * Free a key map
+ */
+void rmkmap();
+
+/* int kadd(KMAP *kmap,char *seq,void *bind);
+ * Add a key sequence binding to a key map
+ *
+ * Returns 0 for success
+ *        -1 for for invalid key sequence
+ *
+ * A valid key sequence is one or more keys seperated with spaces.  A key
+ * is a single character or one of the following strings:
+ *
+ *    ^?	                   127 (DEL)
+ *
+ *    ^@   -   ^_                  Control characters
+ *
+ *    SP                           32 (space character)
+ *
+ *    UP, DOWN, LEFT, RIGHT,
+ *    F0 - F10, DEL, INS, HOME,
+ *    END, PGUP, PGDN              termcap special characters
+ *
+ * In addition, the last key of a key sequence may be replaced with
+ * a range-fill of the form: <KEY> TO <KEY>
+ *
+ * So for example, if the sequence: ^K A TO Z
+ * is speicified, then the key sequences
+ * ^K A, ^K B, ^K C, ... ^K Z are all bound.
+ */
+int kadd();
+
+/* void kcpy(KMAP *dest,KMAP *src);
+ * Copy all of the entries in the 'src' keymap into the 'dest' keymap
+ */
+void kcpy();
+
+/* int kdel(KMAP *kmap,char *seq);
+ * Delete a binding from a keymap
+ *
+ * Returns 0 for success
+ *        -1 if the given key sequence was invalid
+ *         1 if the given key sequence did not exist
+ */
+int kdel();
+
+/* KBD *mkkbd(KMAP *kmap);
+   Create a keyboard handler which uses the given keymap
 */
 KBD *mkkbd();
 
@@ -120,27 +120,13 @@ KBD *mkkbd();
  */
 void rmkbd();
 
-/* MACRO *dokey(KBD *kbd,char k);
+/* void *dokey(KBD *kbd,int k);
    Handle a key for a KBD:
 
      Returns 0 for invalid or prefix keys
 
-     Returns a macro address for completed key-sequences
+     Returns binding for a completed key sequence
 */
-MACRO *dokey();
-
-/* int prokbd(char *name,CONTEXT **cmds);  Process a keymap set-up file into
-   the list of contexts.  Returns 0 for success or -1 for error
-*/
-int prokbd();
-
-/* int findcmd(CMDTAB *cmdtab,char *s);
- * Return command table index for the named command
- */
-int findcmd();
-
-struct help *get_help();
-
-extern CMDTAB cmdtab;
+void *dokey();
 
 #endif

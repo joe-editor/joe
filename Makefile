@@ -4,113 +4,39 @@
 # Configuration
 ###############
 
-# Uncomment the second line below if you use
-# an idle job killer which requires that you
-# use the real tty, not /dev/tty
+# Set where you want joe to go, where you
+# want joe's initialization file (joerc)
+# to go and where you want the man page
+# to go:
 
-IDLE =
-#IDLE = -DIDLEOUT
+WHEREJOE = /usr/local/bin
+WHERERC = /usr/local/lib
+WHEREMAN = /usr/man/man1
 
-# Uncomment one of the lines below to select
-# which TTY structure your system uses:
+# If you want to be able to edit '-', which causes joe to read in or write out
+# to the stdin/stdout, change the '1' below to '0'.  Be warned however: this
+# makes joe use /dev/tty to open the tty, which means that the modification
+# times on the real tty don't get updated.  Idle session killers and screen
+# blankers will think that no one is using the terminal and log you out or
+# blank the screen.
 
-#TTY = -DBSDTTY
-#TTY = -DSVTTY
-TTY = -DPOSIXTTY
-
-# Uncomment the second line below if your
-# system has the 'setitimer' system call:
-
-#TIM =
-TIM = -DBSDTIMER
-
-# Uncomment which ever addition include
-# files you need in 'tty.c' to get the
-# timer or the tty structure to work .
-#
-# SCO is for sys/stream.h and sys/ptem.h
-# SYSPARAM is for sys/param.h
-# SYSTIM is for sys/time.h
-# TIM is for time.h
-
-#IA = -DSCO
-IA =
-IB = -DSYSPARAM
-#IB =
-IC = -DSYSTIM
-#IC =
-#ID = -DTIM
-ID =
-
-# Uncomment the second line below if your
-# system has the Xenix-style 'nap' system
-# call:
-
-CHK =
-#CHK = -DXENIX
-
-# Uncomment the second line below if your
-# system is real BSD, and hence uses
-# 'getwd' instead of 'getcwd':
-
-REAL =
-#REAL = -DREALBSD
-
-# Uncomment the line below if your
-# system uses 'struct dirent' instead
-# of 'struct direct' for opendir().
-
-DIRSTRUCT = -DIRECT
-#DIRSTRUCT = -DIRENT
-
-# Uncomment the second line below if your
-# POSIX system has 'sigaction', but not
-# 'signal':
-
-HARDER =
-#HARDER = -DREALPOSIX
-
-# Uncomment the method to make new session
-# leaders (or none if you don't have joe control
-# or ptys).  GRPCALL is for 'setpgrp(getpid(),0)'
-# and SIDCALL is for 'setsid()'.  GRPCALL
-# is supposed to be more portable, but
-# 'SIDCALL' always works, if it's provided.
-
-PGRP = -DSIDCALL
-#PGRP = -DGRPCALL
-
-# Set directory where ptys and corresponding ttys can be found
-
-WHEREPTY = /dev/
-WHERETTY = /dev/
-
-# Set where you want joe to go and where you
-# want joe's initialization file (joerc) to go:
-
-WHERERC = /usr/lib/joe
-WHEREJOE = /usr/bin
+IDLEOUT = 1
 
 # You may also have to add some additional
 # defines to get the include files to work
 # right on some systems.
 #
-# for newer HPUX systems, you need to add:  -D_HPUX_SOURCE
+# for some HPUX systems, you need to add:  -D_HPUX_SOURCE
 
-CFLAGS = -O \
- $(TTY) $(TIM) $(CHK) $(REAL) $(DIRSTRUCT) $(HARDER) $(PGRP) \
- $(IA) $(IB) $(IC) $(ID) $(IDLE) \
- -DJOERC=\"$(WHERERC)/joerc\" \
- -DPTYPREFIX=\"$(WHEREPTY)\" -DTTYPREFIX=\"$(WHERETTY)\"
+CFLAGS = -O
 
 # You may have to include some extra libraries
 # for some systems
 #
-# for Xenix, add: -lx
+# for Xenix, add (in this order!!): -ldir -lx
 #
-# for some systems you might have to add: -lbsd
-# to get enough BSD extensions to use -DBSDTIMER
-# above (I think ESIX needs this)
+# For some systems you might have to add: -lbsd
+# to get access to the timer system calls.
 #
 # If you wish to use terminfo, you have to
 # add '-ltinfo', '-lcurses' or '-ltermlib',
@@ -120,23 +46,30 @@ EXTRALIBS =
 
 # Object files
 #
-# for systems with no 'opendir' (older SYS V)
-# or confused 'opendir' (Xenix), add: olddir.o
-#
 # If you wish to use terminfo instead of
 # termcap, replace 'termcap.o' below with 'terminfo.o'
 
-OBJS = main.o termcap.o vfile.o pathfunc.o queue.o blocks.o vs.o va.o scrn.o \
-       b.o bw.o tw.o pw.o help.o heap.o toomany.o zstr.o edfuncs.o \
-       kbd.o w.o reg.o tab.o pattern.o random.o regex.o undo.o menu.o macro.o \
-       poshist.o tty.o msgs.o qw.o
+OBJS = b.o blocks.o bw.o cmd.o hash.o help.o kbd.o macro.o main.o menu.o \
+ path.o poshist.o pw.o queue.o qw.o random.o rc.o regex.o scrn.o tab.o \
+ termcap.o tty.o tw.o ublock.o uedit.o uerror.o ufile.o uformat.o uisrch.o \
+ umath.o undo.o usearch.o ushell.o utag.o va.o vfile.o vs.o w.o zstr.o
 
 CC = cc
 
 # That's it!
 
 joe: $(OBJS)
-	$(CC) $(CFLAGS) -o joe $(OBJS) $(EXTRALIBS)
+	$(CC) $(CFLAGS) -o joe $(EXTRALIBS) $(OBJS)
+	rm -f jmacs
+	rm -f jstar
+	ln joe jmacs
+	ln joe jstar
+
+$(OBJS): config.h
+
+config.h:
+	$(CC) conf.c -o conf
+	./conf $(WHERERC) $(IDLEOUT)
 
 termidx: termidx.o
 	$(CC) $(CFLAGS) -o termidx termidx.o
@@ -145,13 +78,25 @@ install: joe termidx
 	strip joe
 	strip termidx
 	if [ ! -d $(WHEREJOE) ]; then mkdir $(WHEREJOE); chmod a+rx $(WHEREJOE); fi
+	rm -f $(WHEREJOE)/joe $(WHEREJOE)/jmacs $(WHEREJOE)/jstar $(WHEREJOE)/termidx
 	mv joe $(WHEREJOE)
-	if [ ! -d $(WHERERC) ]; then mkdir $(WHERERC); chmod a+rx $(WHERERC); fi
-	cp joerc $(WHERERC)
+	ln $(WHEREJOE)/joe $(WHEREJOE)/jmacs
+	ln $(WHEREJOE)/joe $(WHEREJOE)/jstar
 	mv termidx $(WHEREJOE)
+	if [ ! -d $(WHERERC) ]; then mkdir $(WHERERC); chmod a+rx $(WHERERC); fi
+	rm -f $(WHERERC)/joerc $(WHERERC)/jmacsrc $(WHERERC)/jstarrc $(WHEREMAN)/joe.1
+	cp joerc $(WHERERC)
+	cp jmacsrc $(WHERERC)
+	cp jstarrc $(WHERERC)
+	cp joe.1 $(WHEREMAN)
 	chmod a+x $(WHEREJOE)/joe
+	chmod a+x $(WHEREJOE)/jmacs
+	chmod a+x $(WHEREJOE)/jstar
 	chmod a+r $(WHERERC)/joerc
+	chmod a+r $(WHERERC)/jmacsrc
+	chmod a+r $(WHERERC)/jstarrc
+	chmod a+r $(WHEREMAN)/joe.1
 	chmod a+x $(WHEREJOE)/termidx
 
 clean:
-	rm -f $(OBJS) termidx.o
+	rm -f $(OBJS) termidx.o conf conf.o config.h

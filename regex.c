@@ -22,196 +22,91 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "b.h"
 #include "regex.h"
 
-static int brackz(a,c)
+int escape(a,b)
 unsigned char **a;
-unsigned char c;
-{
-int flag;
-unsigned char *s= *a;
-if(*s=='^' || *s=='*')
+int *b;
  {
- flag=1;
- ++s;
- 
- if(*s==']')
+ int c;
+ unsigned char *s= *a;
+ int l= *b;
+ if(*s=='\\' && l>=2)
   {
-  ++s;
-  if(c==']') flag=0;
-  }
-
- while(*s)
-  if(*s==']') { ++s; break; }
-  else
+  ++s; --l;
+  switch(*s)
    {
-   if(c==*s) flag=0;
-   if(s[1]=='-' && s[2] && s[2]!=']' && s[0]<=s[2])
-    {
-    if(c>=s[0] && c<=s[2]) flag=0;
-    s+=2;
-    }
-   ++s;
+  case 'n': c= 10; break; 
+  case 't': c= 9; break;
+  case 'a': c= 7; break;
+  case 'b': c= 8; break;
+  case 'f': c= 12; break;
+  case 'e': c= 27; break;
+  case 'r': c= 13; break;
+  case '8': c= 8; break;
+  case '9': c= 9; break;
+
+  case '0': case '1': case '2': case '3':
+  case '4': case '5': case '6': case '7':
+   c= *s-'0';
+   if(l>1 && s[1]>='0' && s[1]<='7') c=c*8+s[1]-'0', ++s, --l;
+   if(l>1 && s[1]>='0' && s[1]<='7') c=c*8+s[1]-'0', ++s, --l;
+  break;
+
+  case 'x': case 'X':
+   c=0;
+   if(l>1 && s[1]>='0' && s[1]<='9') c=c*16+s[1]-'0', ++s, --l;
+   else if(l>1 && s[1]>='A' && s[1]<='F') c=c*16+s[1]-'A'+10, ++s, --l;
+   else if(l>1 && s[1]>='a' && s[1]<='f') c=c*16+s[1]-'a'+10, ++s, --l;
+   if(l>1 && s[1]>='0' && s[1]<='9') c=c*16+s[1]-'0', ++s, --l;
+   else if(l>1 && s[1]>='A' && s[1]<='F') c=c*16+s[1]-'A'+10, ++s, --l;
+   else if(l>1 && s[1]>='a' && s[1]<='f') c=c*16+s[1]-'a'+10, ++s, --l;
+  break;
+
+  default: c= *s; break;
    }
-
- *a=s;
- return flag;
- }
-else
- {
- flag=0;
-
- if(*s==']')
-  {
-  ++s;
-  if(c==']') flag=1;
+  ++s; --l;
   }
-
- while(*s)
-  if(*s==']') { ++s; break; }
-  else
-   {
-   if(c==*s) flag=1;
-   if(s[1]=='-' && s[2] && s[2]!=']' && s[0]<=s[2])
-    {
-    if(c>=s[0] && c<=s[2]) flag=1;
-    s+=2;
-    }
-   ++s;
-   }
- 
- *a=s;
- return flag;
+ else (c= *s++), --l;
+ *a= s; *b= l;
+ return c;
  }
-}
 
 static int brack(a,la,c)
 unsigned char **a;
 int *la;
 unsigned char c;
 {
-int flag;
+int inverse=0;
+int flag=0;
 unsigned char *s= *a;
 int l= *la;
 if(!l) return 0;
-if(*s=='^' || *s=='*')
+if(*s=='^' || *s=='*') inverse=1, ++s, --l;
+if(l && *s==']')
  {
- flag=1;
  ++s; --l;
- 
- if(l && *s==']')
-  {
-  ++s; --l;
-  if(c==']') flag=0;
-  }
-
- while(l)
-  if(*s==']') { ++s; --l; break; }
-  else
-   {
-   if(c==*s) flag=0;
-   if(l>=3 && s[1]=='-' && s[2]!=']' && s[0]<=s[2])
-    {
-    if(c>=s[0] && c<=s[2]) flag=0;
-    s+=2; l-=2;
-    }
-   ++s; --l;
-   }
-
- *a=s; *la=l;
- return flag;
+ if(c==']') flag=1;
  }
-else
- {
- flag=0;
-
- if(l && *s==']')
+while(l)
+ if(*s==']') { ++s; --l; break; }
+ else
   {
-  ++s; --l;
-  if(c==']') flag=1;
-  }
-
- while(l)
-  if(*s==']') { ++s; --l; break; }
-  else
+  int cl, cr;
+  cl=escape(&s,&l);
+  if(l>=2 && s[0]=='-' && s[1]!=']')
    {
-   if(c==*s) flag=1;
-   if(l>=3 && s[1]=='-' && s[2]!=']' && s[0]<=s[2])
-    {
-    if(c>=s[0] && c<=s[2]) flag=1;
-    s+=2; l-=2;
-    }
-   ++s; --l;
+   --l; ++s;
+   cr=escape(&s,&l);
+   if(c>=cl && c<=cr) flag=1;
    }
- 
- *a=s; *la=l;
- return flag;
- }
-}
-
-int rmatch(a,b)
-char *a, *b;
-{
-for(;;)
- switch(*a)
-  {
- case '*': ++a;
-           do if(rmatch(a,b)) return 1; while(*b++);
-           return 0;
-
- case '[': ++a;
-           if(!*b) return 0;
-           if(!brackz(&a,*b)) return 0;
-           ++b;
-           break;
-
- case '?': ++a;
-           if(!*b) return 0;
-           ++b;
-           break;
-
- case 0:   if(!*b) return 1;
-           else return 0;
-
- case '\\':
-           if(!*++a) return 0;
-
- default:  if(*a++!=*b++) return 0;
+  else if(c==cl) flag=1;
   }
+*a=s; *la=l;
+if(inverse) return !flag;
+else return flag;
 }
 
-int rimatch(a,b)
-char *a, *b;
-{
-for(;;)
- switch(*a)
-  {
- case '*': ++a;
-           do if(rimatch(a,b)) return 1; while(*b++);
-           return 0;
-
- case '[': ++a;
-           if(!*b) return 0;
-           if(!brackz(&a,*b)) return 0;
-           ++b;
-           break;
-
- case '?': ++a;
-           if(!*b) return 0;
-           ++b;
-           break;
-
- case 0:   if(!*b) return 1;
-           else return 0;
-
- case '\\':
-           if(!*++a) return 0;
-
- default:  if(toup(*a++)!=toup(*b++)) return 0;
-  }
-}
-
-char *pieces[26]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
-static void savec(n,c)
+static void savec(pieces,n,c)
+char *pieces[];
 char c;
 {
 char *s=0;
@@ -220,15 +115,16 @@ s=vsncpy(s,0,&c,1);
 pieces[n]=s;
 }
 
-static void saves(n,p,szz)
+static void saves(pieces,n,p,szz)
+char *pieces[];
 P *p;
 long szz;
 {
 if(szz>=MAXINT-31) pieces[n]=vstrunc(pieces[n],0);
 else
  {
- pieces[n]=vstrunc(pieces[n],szz);
- brmem(p,pieces[n],szz);
+ pieces[n]=vstrunc(pieces[n],(int)szz);
+ brmem(p,pieces[n],(int)szz);
  }
 }
 
@@ -236,7 +132,6 @@ static int skip_special(p)
  P *p;
  {
   int to, s;
-  P *q;
   switch(s=pgetc(p))
    {
     case '"':
@@ -247,10 +142,10 @@ static int skip_special(p)
     break;
 
     case '\'':
-    do
-     if((s=pgetc(p))=='\\') s=pgetc(p), s=pgetc(p);
-     while(s!=MAXINT && s!='\'');
+    if((s=pgetc(p))=='\\') s=pgetc(p), s=pgetc(p);
     if(s=='\'') return MAXINT-1;
+    if((s=pgetc(p))=='\'') return MAXINT-1;
+    if((s=pgetc(p))=='\'') return MAXINT-1;
     break;
 
     case '[': to=']'; goto skip;
@@ -279,7 +174,8 @@ static int skip_special(p)
   return s;
  }
 
-int pmatch(regex,len,p,n)
+int pmatch(pieces,regex,len,p,n,icase)
+char *pieces[];
 char *regex;
 P *p;
 {
@@ -295,23 +191,26 @@ while(len--)
   case '?':
    d=pgetc(p);
    if(d== MAXINT) return 0;
-   savec(n++,(char)d);
+   savec(pieces,n++,(char)d);
    break;
 
-  case 'n':
-   d=pgetc(p);
-   if(d!='\n') return 0;
+  case 'n': case 'r': case 'a': case 'f': case 'b': case 't': case 'e':
+  case 'x': case 'X': case '0': case '1': case '2': case '3': case '4':
+  case '5': case '6': case '7': case '8': case '9':
+   regex-=2; len+=2;
+   if(pgetc(p)!= escape(&regex,&len)) return 0;
    break;
 
   case '*':
+   /* Find shortest matching sequence */
    q=pdup(p);
    do
     {
     long pb=p->byte;
-    if(pmatch(regex,len,p,n+1))
-     { saves(n,q,pb-q->byte); prm(q); return 1; }
+    if(pmatch(pieces,regex,len,p,n+1,icase))
+     { saves(pieces,n,q,pb-q->byte); prm(q); return 1; }
     }
-    while(pgetc(p)!= MAXINT);
+    while((c=pgetc(p)), (c!= MAXINT && c!='\n'));
    pset(p,q); prm(q);
    return 0;
 	
@@ -320,8 +219,8 @@ while(len--)
    do
     {
     long pb=p->byte;
-    if(pmatch(regex,len,p,n+1))
-     { saves(n,q,pb-q->byte); prm(q); return 1; }
+    if(pmatch(pieces,regex,len,p,n+1,icase))
+     { saves(pieces,n,q,pb-q->byte); prm(q); return 1; }
     }
     while((c=skip_special(p))!= MAXINT);
    pset(p,q); prm(q);
@@ -331,36 +230,61 @@ while(len--)
    d=pgetc(p);
    if(d== MAXINT) return 0;
    if(!brack(&regex,&len,d)) { prgetc(p); return 0; }
-   savec(n++,(char)d);
+   savec(pieces,n++,(char)d);
    break;
 
   case '+':
    {
-    char *oregex=regex;
-    int olen=len;
-    q=pdup(p);
-    /* move forward */
-    if (len--,(*regex++=='['))
-     brack(&regex,&len,c);
-    do
+   char *oregex=regex;	/* Point to character to skip */
+   int olen=len;
+
+   char *tregex;
+   int tlen;
+
+   P *r=0;
+   q=pdup(p);
+
+   /* Advance over character to skip */
+   if(len>=2 && regex[0]=='\\' && regex[1]=='[')
+    {
+    regex+=2;
+    len-=2;
+    brack(&regex,&len,0);
+    }
+   else if(len>=1) --len, ++regex;
+   else goto done;
+
+   /* Now oregex/olen point to character to skip over and
+      regex/len point to sequence which follows */
+
+   do
+    {
+    P *z=pdup(p);
+    if(pmatch(pieces,regex,len,p,n+1,icase))
      {
-      long pb=p->byte;
-      if(pmatch(regex,len,p,n+1))
-       { saves(n,q,pb-q->byte); prm(q); return 1; }
-      regex=oregex;
-      len=olen;
+     saves(pieces,n,q,z->byte-q->byte);
+     if(r) prm(r);
+     r=pdup(p);
      }
-    while(
-     (MAXINT!=(c=pgetc(p))) &&
-      (
-       (len--,(*regex++=='[')) ?
-        brack(&regex,&len,c) :
-        regex[-1]==c
-      ));
-    pset(p,q); prm(q);
-    return 0;
+    pset(p,z);
+    prm(z);
+    }
+   while((c=pgetc(p))!=MAXINT &&
+          (*oregex=='\\' ?
+           (tregex=oregex+2, tlen=olen-2, brack(&tregex,&tlen,c))
+          :
+           (icase?toup(c)==toup(*oregex):c==*oregex)
+          )
+        );
+
+   done:
+   if(r) pset(p,r), prm(r);
+   else pset(p,q);
+   prm(q);
+   if(r) return 1;
+   else return 0;
    }
-   
+
   case '^':
    if(!pisbol(p)) return 0;
    break;
@@ -379,124 +303,27 @@ while(len--)
   
   default:
    d=pgetc(p);
-   if(d!=c) { if(d!= MAXINT) prgetc(p); return 0; }
+   if(icase)
+    {
+    if(toup(d)!=toup(c)) { if(d!=MAXINT) prgetc(p); return 0; }
+    }
+   else
+    {
+    if(d!=c) { if(d!= MAXINT) prgetc(p); return 0; }
+    }
    }
   break;
 
  default:
   d=pgetc(p);
-  if(d!=c) { if(d!= MAXINT) prgetc(p); return 0; }
-  }
-return 1;
-}
-
-int pimatch(regex,len,p,n)
-char *regex;
-P *p;
-{
-int c,d;
-P *q;
-while(len--)
- switch(c= *regex++)
-  {
- case '\\':
-  if(!len--) return 0;
-  switch(c= *regex++)
+  if(icase)
    {
-  case '?':
-   d=pgetc(p);
-   if(d==MAXINT) return 0;
-   savec(n++,(char)d);
-   break;
-  
-  case 'n':
-   d=pgetc(p);
-   if(d!='\n') return 0;
-   break;
-  
-  case '*':
-   q=pdup(p);
-   do
-    {
-    long pb=p->byte;
-    if(pimatch(regex,len,p,n+1))
-     { saves(n,q,pb-q->byte); prm(q); return 1; }
-    }
-    while(pgetc(p)!= MAXINT);
-   pset(p,q); prm(q);
-   return 0;
-
-  case 'c':
-   q=pdup(p);
-   do
-    {
-    long pb=p->byte;
-    if(pimatch(regex,len,p,n+1))
-     { saves(n,q,pb-q->byte); prm(q); return 1; }
-    }
-    while((c=skip_special(p))!= MAXINT);
-   pset(p,q); prm(q);
-   return 0;
-
-  case '[':
-   d=pgetc(p);
-   if(d==MAXINT) return 0;
-   if(!brack(&regex,&len,d)) { prgetc(p); return 0; }
-   savec(n++,(char)d);
-   break;
-
-  case '+':
-   {
-    char *oregex=regex;
-    int olen=len;
-    q=pdup(p);
-    /* move forward */
-    if (len--,(*regex++=='['))
-     brack(&regex,&len,c);
-    do
-     {
-      long pb=p->byte;
-      if(pimatch(regex,len,p,n+1))
-       { saves(n,q,pb-q->byte); prm(q); return 1; }
-      regex=oregex;
-      len=olen;
-     }
-    while(
-     (MAXINT!=(c=pgetc(p))) &&
-      (
-       (len--,(*regex++=='[')) ?
-        brack(&regex,&len,c) :
-        toup(regex[-1])==toup(c)
-      ));
-    pset(p,q); prm(q);
-    return 0;
-   }
-
-  case '^':
-   if(!pisbol(p)) return 0;
-   break;
-
-  case '$':
-   if(!piseol(p)) return 0;
-   break;
-
-  case '<':
-   if(!pisbow(p)) return 0;
-   break;
-  
-  case '>':
-   if(!piseow(p)) return 0;
-   break;
-  
-  default:
-   d=pgetc(p);
    if(toup(d)!=toup(c)) { if(d!=MAXINT) prgetc(p); return 0; }
    }
-  break;
-
- default:
-  d=pgetc(p);
-  if(toup(d)!=toup(c)) { if(d!=MAXINT) prgetc(p); return 0; }
+  else
+   {
+   if(d!=c) { if(d!= MAXINT) prgetc(p); return 0; }
+   }
   }
 return 1;
 }

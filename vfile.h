@@ -16,21 +16,45 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
+/* Additions:
+ *
+ * Should we remove size checking from rc()?  Would make it faster...
+ *
+ * Should be able to open more than one stream on a file so that vseek
+ * doesn't have to get called so much when more than one user is involed
+ *
+ * Also should have dupopen call to make more streams for a file
+ *
+ * Make vputs faster
+ *
+ * Should have a version which will use memory mapped files, if they exist
+ * in the os.
+ *
+ * Would be nice if we could transparantly open non-file streams and pipes.
+ * Should there be an buffering option for that?  So we can seek on pipes to
+ * get previously read data?
+ */
+
 #ifndef _Ivfile
 #define _Ivfile 1
 
 #include "config.h"
 #include "queue.h"
-#include "toomany.h"
 
 typedef struct vpage VPAGE;
 typedef struct vfile VFILE;
 
-#define PGSIZE 1024		/* Page size in bytes (Must be power of 2) */
-#define LPGSIZE 10		/* LOG base 2 of PGSIZE */
-#define ILIMIT (PGSIZE*256)	/* Max amount to buffer */
-#define HTSIZE 256		/* Entries in hash table.  Must be pwr of 2 */
-#define INC 8			/* Pages to allocate each time */
+/* These are now defined in config.h */
+#ifdef junk
+/* Minimum page size for MS-DOS is 128 (for 32K vheaders table) or 256 (for
+ * 64K vheaders table) */
+#define PGSIZE 512              /* Page size in bytes (Must be power of 2) */
+#define LPGSIZE 9               /* LOG base 2 of PGSIZE */
+#define ILIMIT (PGSIZE*128L)    /* Max amount to buffer */
+#define HTSIZE 128              /* Entries in hash table.  Must be pwr of 2 */
+#endif
+
+#define INC 16                  /* Pages to allocate each time */
 
 /* Page header */
 
@@ -51,7 +75,7 @@ struct vfile
  LINK(VFILE) link;		/* Doubly linked list of vfiles */
  long size;			/* Number of bytes in physical file */
  long alloc;			/* Number of bytes allocated to file */
- File *fd;			/* Physical file */
+ int fd;			/* Physical file */
  int writeable;			/* Set if we can write */
  char *name;			/* File name.  0 if unnamed */
  int flags;			/* Set if this is only a temporary file */
@@ -64,7 +88,7 @@ struct vfile
  char *bufp;			/* Buffer pointer */
  char *vpage;			/* Buffer pointer points in here */
  int left;			/* Space left in bufp */
- int lv;				/* Amount of append space at end of buffer */
+ int lv;			/* Amount of append space at end of buffer */
  };
 
 extern char *vbase;		/* Data first entry in vheader refers to */
@@ -77,12 +101,14 @@ extern VPAGE **vheaders;	/* Array of headers */
  */
 VFILE *vtmp();
 
+#ifdef junk
 /* VFILE *vopen(char *name);
  *
  * Open a file for reading and if possible, writing.  If the file could not
  * be opened, NULL is returned.
  */
 VFILE *vopen();
+#endif
 
 /* long vsize(VFILE *);
  *
@@ -103,6 +129,7 @@ VFILE *vopen();
  */
 void vclose();
 
+#ifdef junk
 /* void vlimit(long amount);
  *
  * Set limit (in bytes) on amount of memory the virtual file system may
@@ -114,6 +141,7 @@ void vclose();
  */
 
 void vlimit();
+#endif
 
 /* void vflsh(void); 
  *
@@ -187,6 +215,7 @@ char *vlock();
 
 long valloc();
 
+#ifdef junk
 /******************************************************************************
  * The folloing functions implement stream I/O on top of the above software   *
  * virtual memory system                                                      *
@@ -277,10 +306,13 @@ long vputl();
 
 short vputw();
 
-/* char *vgets(VFILE *v,char *s,U p);
+/* char *vgets(VFILE *v,char *s);
  *
- * Read line into a variable length string beginning at 'p'.  If 's' is 0, a
- * new string is created.  The \n is not copied into the string.
+ * Read up to next '\n' or end of file into a variable length string.  If 's'
+ * is 0, a new string is created.  The \n is not copied into the string.
+ *
+ * Eliminates the variable length string and returns NULL if
+ * vgets is called on the end of the file.
  *
  * This requires that you use the 'vs.h' / 'vs.c' library.
  */
@@ -289,18 +321,18 @@ char *vgets();
 
 /* void vputs(VFILE *v,char *s);
  *
- * Write string. \n is not appended */
+ * Write zero terminated string. \n is not appended */
 
 void vputs();
 
-/* void vread(VFILE *,char *,U size);
+/* void vread(VFILE *,char *,int size);
  *
  * Read bytes from a virtual file into a local data block
  */
 
 void vread();
 
-/* void vwrite(VFILE *,char *,U size);
+/* void vwrite(VFILE *,char *,int size);
  *
  * Write bytes from a local data block into a virtual file
  */
@@ -378,4 +410,5 @@ short rw();
 
 short ww();
 
+#endif
 #endif

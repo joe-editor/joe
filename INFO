@@ -1,13 +1,13 @@
 
 
-                           Joe's Own Editor 1.0.12
+                            Joe's Own Editor 2.0
 
                   A Free ASCII-Text Screen Editor for UNIX
                                by Joseph Allen
 
 
 Get it by anonymous ftp
-from: 'ftp.std.com', file '/src/editors/joe1.0.12.tar.Z'
+from: 'ftp.std.com', file '/src/editors/joe2.0.tar.Z'
 
 If you have questions, problems or suggestions,
 send email to: 'jhallen@world.std.com'
@@ -84,7 +84,7 @@ a file name prompt, the name is either completed or a menu of possible
 matches appears.
 
 	JOE stores edit files in a doubly linked list of gap buffers which
-can spill into temporary files.  You can edit files of any size up to the
+can spill into a temporary file.  You can edit files of any size up to the
 amount of free disk space and there are no line-length restrictions.  Since
 the buffering system is block-based, JOE will incur only a minimum of
 swapping on heavily loaded systems.
@@ -96,7 +96,7 @@ is the first help screen:
 
 CURSOR           GO TO            BLOCK      DELETE   MISC         EXIT
 ^B left ^F right ^U  prev. screen ^KB begin  ^D char. ^KJ reformat ^KX save
-^P up   ^N down  ^V  next screen  ^KK end    ^Y line  ^TT overtype ^C  abort
+^P up   ^N down  ^V  next screen  ^KK end    ^Y line  ^T  options  ^C  abort
 ^Z previous word ^A  beg. of line ^KM move   ^W >word ^@  insert   ^KZ shell
 ^X next word     ^E  end of line  ^KC copy   ^O word< ^R  retype   FILE
 SEARCH           ^KU top of file  ^KW file   ^J >line QUOTE        ^KE new
@@ -138,7 +138,7 @@ text files and programs:
 		- can have EMACS-style cursor re-centering on scrolls
 
 		- characters between 128-255 can be shown as-is for
-		  Scandinavian characters
+		  non-english character sets
 
 		- Final newline can be forced on end of file
 

@@ -1,0 +1,26 @@
+** JOE 2.2
+
+- First attempt at MS-DOS version of joe
+   - Direct screen write
+   - Modifications for dos file/drive names
+   - Use TEMP variable to figure out where to store temporary file
+   - Smaller virtual memory page size
+   - Backslashes in file name problem
+   - CR before an LF looks like an LF
+- Backward search ignore-case was not working
+- Scalable window height was not working fully
+- Spaces in file-names gave a problem with backup file creation
+- TILDE option is not available in all versions of BSD
+- Allow : as seperate for termcap filename list
+- Next error / Prev. error was not tracking right
+- tabs not displayed right in nxterr/prverr messages
+- Block moves where the cursor was to the right of the block was broken
+
+** JOE 2.1
+
+- rc file wasn't giving correct error messages for missing options
+- the '-nobackups' options was mispelled: '- nobackups'
+- editor was crashing because of problem in undo
+- update bypass in utype has a problem when wordwrapping and scrolling
+
+** JOE 2.0

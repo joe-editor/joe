@@ -59,6 +59,7 @@ struct cap
  * 'baud'   is the baud rate used for 'texec' to calculate number of pad chars
  * 'out'    is the function 'texec' uses to output characters
  * 'outptr' is the passed as the first arg to 'out'
+ *          the second arg contains the char to output
  *
  * This is how 'getcap' finds the entry:  First a list of file names is
  * built.  If the environment variable 'TERMCAP' begins with a '/', it
@@ -94,14 +95,14 @@ CAP *getcap();
  */ 
 CAP *setcap();
 
-/* char *getstr(CAP *cap,char *name);
+/* char *jgetstr(CAP *cap,char *name);
  *
  * Get value of string capability or return NULL if it's not found.  A fast
  * binary search is used to find the capability.  The char * returned points into
  * the buffer used to load the termcap entry.  It should not be modified or
  * freed.
  */
-char *getstr();
+char *jgetstr();
 
 /* int getflag(CAP *cap,char *name);
  *
@@ -162,12 +163,13 @@ int tcost();
 /* char *tcompile(CAP *cap,char *str,int a0,int a1,int a2,int a3);
 
    Compile a string capability.  Returns a pointer to a variable length
-   string (see vstr.h) containing the compiled string capability.
+   string (see vs.h) containing the compiled string capability.
    Pad characters are not placed in the string.
 */
 char *tcompile();
 
 /* Old termcap support */
+#ifdef junk
 int tgetent();
 char *tgetstr();
 int tgetflag();
@@ -176,5 +178,5 @@ char *tgoto();
 void tputs();
 extern short ospeed;
 extern char PC, *UP, *BC;
-
+#endif
 #endif

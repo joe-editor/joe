@@ -21,24 +21,26 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include "config.h"
 #include "queue.h"
-#include "kbd.h"
 #include "scrn.h"
-#include "b.h"
+#include "kbd.h"
 
 typedef struct watom WATOM;
 typedef struct screen SCREEN;
 typedef struct window W;
+typedef struct base BASE;
 
 struct watom
  {
- CONTEXT *context;
- void (*disp)();
- void (*follow)();
- void (*kill)();
- void (*resize)();
- void (*move)();
- void (*ins)();
- void (*del)();
+ char *context;		/* Context name */
+ void (*disp)();	/* Display window */
+ void (*follow)();	/* Called to have window follow cursor */
+ int (*abort)();	/* Common user functions */
+ int (*rtn)();
+ int (*type)();
+ void (*resize)();	/* Called when window changed size */
+ void (*move)();	/* Called when window moved */
+ void (*ins)();		/* Called on line insertions */ 
+ void (*del)();		/* Called on line deletions */
  int what;		/* Type of this thing */
  };
 
@@ -52,33 +54,33 @@ struct screen
  W *curwin;			/* Window cursor is in */
 
  int w,h;			/* Width and height of this screen */
- 
- char *pattern;			/* pattern being searched for */
- char *replace;			/* what to replace with */
- int options;			/* Search/Replace options */
- int repeat;
- int foundlen;
- int rest;			/* Set to do rest */
- int flg;			/* Set after first s/r iteration */
- 
- P *markb;			/* Beginning and end of marked block */
- P *markk;
-
- int arg;
  };
 
 struct window
  {
  LINK(W) link;			/* Linked list of windows in order they
  				   appear on the screen */
+
  SCREEN *t;			/* Screen this thing is on */
+
  int x,y,w,h;			/* Position and size of window */
-                                /* Currently, x=0, w=width or screen. */
+                                /* Currently, x=0, w=width of screen. */
                                 /* y== -1 if window is not on screen */
+
  int ny,nh;			/* Temporary values for wfit */
+
  int reqh;			/* Requested new height or 0 for same */
  				/* This is an argument for wfit */
- int hh;			/* Natural height */
+
+ int fixed;			/* If this is zero, use 'hh'.  If not, this
+ 				   is a fixed size window and this variable
+ 				   gives its height */
+
+ int hh;			/* Height window would be on a screen with
+ 				   1000 lines.  When the screen size changes
+ 				   this is used to calculate the window's
+ 				   real height */
+
  W *win;			/* Window this one operates on */
  W *main;			/* Main window of this family */
  W *orgwin;			/* Window where space from this window came */
@@ -92,6 +94,15 @@ struct window
  char *msgb;			/* Message at bottom of window */
 
  char *huh;			/* Name of window for context sensitive hlp */
+
+ int *notify;			/* Address of kill notification flag */
+ };
+
+/* Anything which goes in window.object must start like this: */
+
+struct base
+ {
+ W *parent;
  };
 
 /* Minimum text window height */
@@ -100,11 +111,6 @@ struct window
 /***************/
 /* Subroutines */
 /***************/
-
-void scrlup();
-void scrldn();
-void prming();
-void updall();
 
 /* int getgrouph(W *);
  * Get height of a family of windows
@@ -121,9 +127,18 @@ W *findtopw();
  */
 W *findbotw();
 
+int demotegroup();
+
+/* W *lastw(SCREEN *t);
+ * Find last window on screen
+ */
 W *lastw();
 
-/* void wfit(SCREEN *);
+/* Determine number of main windows
+ */
+int countmain();
+
+/* void wfit(SCREEN *t);
  *
  * Fit all of the windows onto the screen
  */
@@ -144,6 +159,9 @@ SCREEN *screate();
  */
 void sresize();
 
+/* void chsize(SCREEN *t,int mul,int div)
+ * Resize windows: each window is multiplied by the fraction mul/div
+ */
 void chsize();
 
 /* W *wcreate(SCREEN *t,WATOM *watom,W *where,W *target,W *original,int height);
@@ -152,7 +170,7 @@ void chsize();
  *
  * 't'		Is the screen the window is placed on
  * 'watom'	Type of new window
- * 'where'	The window placed after this window, or if 'where'==0, the
+ * 'where'	The window is placed after this window, or if 'where'==0, the
  *		window is placed on the end of the screen
  * 'target'	The window operates on this window.  The window becomes a
  *		member of 'target's family or starts a new family if
@@ -168,11 +186,11 @@ void chsize();
  */
 W *wcreate();
 
-/* void wabort(W *w);
+/* int wabort(W *w);
  *
  * Kill a window and it's children
  */
-void wabort();
+int wabort();
 
 /* int wnext(SCREEN *);
  *
@@ -216,37 +234,41 @@ void wshowall();
  */
 void wredraw();
 
-/* void wsquish(SCREEN *,int h);
+/* void updall()
  *
- * Squish all of the windows on the screen so that h lines can fit
+ * Redraw all windows
  */
-void wsquish();
+void updall();
 
-/* void wrestore(SCREEN *);
- *
- * Restore windows to their original heights
+void genfmt();
+void gentxt();
+int fmtlen();
+int fmtpos();
+
+/* void msgnw[t](W *w,char *text);
+ * Display a message which will be eliminated on the next keypress.
+ * msgnw displays message on bottom line of window
+ * msgnwt displays message on top line of window
  */
-void wrestore();
-
-/* void msg(W *w,char *text);
- * Display a message and then continue editing after the next keypress.
- * The message is placed in the last line of 'w'
- */
-int msgout();
-void msg();
-
 void msgnw();
 void msgnwt();
 
-/* int query(W *w,char *text);
- * Single-key query.  'func' gets the key as it's first arg.  The message is
- * displayed on the last line of 'w'.
- */
-int query();
+extern char msgbuf[80];	/* Message composition buffer for msgnw/msgnwt */
 
-/* int queryn(W *w,char *text);
- * As above, but leave cursor in current window
- */
-int queryn();
+void msgout();		/* Output msgnw/msgnwt messages */
+
+/* Common user functions */
+
+int urtn();	/* User hit return */
+int utype();	/* User types a character */
+int uretyp();	/* Refresh the screen */
+int ugroww();	/* Grow current window */
+int uexpld();	/* Explode current window or show all windows */
+int ushrnk();	/* Shrink current window */
+int unextw();	/* Goto next window */
+int uprevw();	/* Goto previous window */
+
+void scrdel();
+void scrins();
 
 #endif

@@ -1,48 +1,31 @@
+
 This is Joe's Own Editor.  See the INFO file if you don't know what this is.
 
+A preformatted man page is in joe.man.  Joe.1 is an nroff formatted man
+page.
+
+=-=-=-=-=-=-=-=-=-=-=-=
 Installation proceedure
 =-=-=-=-=-=-=-=-=-=-=-=
 
-	Choose which *.mak file you want to use and link it to Makefile.
-	For example, for xenix.mak, type 'ln xenix.mak Makefile'
+	Edit the Makefile to change the following options:
 
-	alpha.mak	For OSF on DEC ALPHAs
+	  Where joe's keymap initialization files will
+	  go if not /usr/local/lib.
 
-		Special instructions for alpha.mak:  before running make,
-		type the command:
-		'rm config.h; ln config64.h config.h'
+	  Where joe will be placed when you do 'make install'
+	  if not /usr/local/bin.
 
-	aix32.mak	For AIX 3.2 RS/6000
-	xenix.mak	For xenix system V (termcap)
-	sv.mak		For primitive system V (termcap)
-	sco.mak		For SCO UNIX and Interactive (terminfo)
-	hpux.mak	For hpux (terminfo)
-	linux.mak	For linux and posix (termcap)
-	bsd.mak		For BSD (SUN, Ultrix) (termcap)
+	  Where joe's man page will be placed, if not /usr/man/man1.
 
-	Decide on the name of the global keymap file if you don't want it
-	to be '/usr/local/lib/joerc' and modify the 'JOERC=' in the
-	'makefile'.  If you're a mere user, copy the joerc file into
-	$HOME/.joerc
+	  If you want to use the terminfo database instead of termcap.
 
-	IMPORTANT: Joe can not be used on systems with idle session killers.
-	Joe opens the tty through '/dev/tty', not the standard input/output.
-	This means that the modification time on the real tty does not get
-	updated- some idle job killers use this time to detect when the
-	session is idle- and so joe users will be spontaneously logged off.
+	  Some systems require a few other changes (notably Xenix).  Check
+	  out the comments in the Makefile.
 
-	The solution to this problem is either to not use such an idle
-	session killer (idleout on SVR4 is one) or to modify joe to use
-	stdin/stdout to get to the tty- but this will eliminate one of
-	joe's features- being able to edit the stdin/stdout.
+	Type 'make' to create joe.  You can then try it by typing ./joe.
 
-	To make joe go through stdin/stdout, edit the makefile and switch
-	the the comment on the '#IDLE = -DIDLEOUT' line.
-
-	Type 'make'.
-
-	Then type 'make install' to install joe in
-	/usr/local/bin and /usr/local/lib
+	Then type 'make install' to install joe.
 
 	Type 'make clean' eliminate the .o files
 
@@ -50,40 +33,85 @@ Installation proceedure
 	use it instead of /etc/termcap (see below).
 
 	Set the baud rate properly (see below).
-If you make a mistake and need to use another make file, you don't have to 
-delete all of the .o files.  Only 'tty.o' depends on what's in the make 
-file.
-
-If a make file for your system doesn't exist here, try one that you think 
-might be close.  If you had to make changes to get a makefile to work, 
-please mail me the new makefile and the type of your system and I'll include 
-it in the next distribution.
 
 USEAGE:	joe filenames
 
 	Optionally preceed each filename with +nnn to start at specified 
 line number.  
 
+  Options:
+
+ -mid		Cursor is recentered when scrolling is necessary
+ -marking	Text between ^KB and cursor is highlighted (use with -lightoff)
+ -asis		Characters 128 - 255 shown as-is
+ -force		Force final newline when files are saved
+ -nobackups	If you don't want backup files to be created
+ -lightoff	Turn off highlighting after block copy or move
+ -exask		^KX always confirms file name
+ -beep		Beep on errors and when cursor goes past extremes
+ -nosta		Disable top-most status line
+ -keepup	%k and %c status line escape sequences updated frequently
+ -pg nnn	No. lines to keep for PgUp/PgDn
+ -csmode	^KF after a pervious search does a ^L instead
+ -backpath path Directory to store backup files
+ -nonotice	Disable copyright notice
+ -noxon		Attempt to turn off ^S/^Q processing
+ -orphan	Put extra files given on command line in orphaned buffers
+		instead of in windows
+ -dopadding	Output pad characters (for when there is no tty handshaking)
+ -lines nnn	Set no. screen lines
+ -baud nnn	Set baud rate for terminal optimizations
+ -columns nnn	Set no. screen columns
+ -help		Start with help on
+ -skiptop nnn	Don't use top nnn lines of the screen
+
+
+  Options before each file name:
+
+ -wordwrap		Wordwrap
+ -autoindent		Auto indent
+ -overwrite		Overtype mode
+ -lmargin nnn		Left margin
+ -rmargin nnn		Right margin
+ -tab nnn		Tab width
+ -indentc nnn		Indentation character (32 for space, 9 for tab)
+ -istep nnn		Number of indentation columns
+ -french		One space after '.', '?' and '!' for wordwrap
+			and paragraph reformat instead of two.  Joe
+			does not change the spacing you give, but
+			sometimes it must put spacing in itself.  This
+			selects how much is inserted.
+ -spaces		TAB inserts spaces instead of tabs.
+ -linums		Enable line numbers on each line
+ -rdonly		File is read-only
+
+	These options can also be set in the joerc file.  The NOXON, LINES,
+COLUMNS, DOPADDING and BAUD options can also be set with environment
+variables.
+
 ** IMPORTANT **
 
 The baud rate must be correctly set or either typeahead will not interrupt 
 the screen update and scrolling wont be used or there will be annoying 
 delays in the screen update.  If you can't set the baud rate correctly with 
-'stty', give a numeric value in the environment variable 'BAUD'.  
+'stty', give a numeric value in the environment variable 'BAUD' or to the
+command line options '-baud'.
 
 The baud rate '38400' or 'extb' means infinite to joe.  Use it for X windows
 and hardware console ttys.  No delays will be generated and scrolling will
 not be used.
 
-Use the LINES and COLUMNS environment variables if you need the terminal
-size to be different than whatever the termcap entry or stty says.
+Use the LINES and COLUMNS environment variables or the -lines and -columns
+command line options if you need the terminal size to be different than
+whatever the termcap entry or stty reports.
 
 Since most people use terminal emulators, JOE does not send out pad 
 characters.  If you're using a real terminal and the padding matters, set 
-the environment variable DOPADDING.
+the environment variable DOPADDING or give the command line option
+-dopadding.
 
 If you want joe to try to disable ^S/^Q processing, set the environment
-variable NOXON.
+variable NOXON or command line option -noxon.
 
 A termcap file is included with JOE.  You might consider updating your own 
 termcap file with the entries in it, particularly if you use ANSI/VT100ish 
@@ -130,7 +158,7 @@ understands several new capabilities:
 			mode on vt220s and several clones assume that this
 			mode is always on.
 
-		cb
+		cV
 
 			Like the 'cv' capability, but the cursor goes to the
 			beginning of the specified line.  Like 'ESC [ n H' in
@@ -146,30 +174,3 @@ VOID trouble
 
 	If you're using an old C compiler which doesn't like the 'void'
 type, uncomment the '#define void int' line from the config.h file.
-
-No diropen library
-=-=-=-=-=-=-=-=-=-
-
-	Add 'olddir.o' to the object file list in the makefile.
-
-16-bit systems / MS-DOS systems
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-	The 16-bit segmented system support is not quite finished yet.  If
-you really want to try, copy 'config86.h' to config.h and try compiling with
-ttymsdos.h or ttyxenix.h for Xenix 86/286 systems.  Use large model.
-
-	I still have to make the UNDO system use edit buffers (which use a
-linked list of small blocks) instead of large malloc blocks to store the
-records.  
-
-	Also for MS-DOS you have to go through ansi/nansi/zansi.sys.  There
-also needs to be an \etc\termcap file and a \tmp directory.  Soon I'll make
-a direct screen access version.  Also there's a 'msdir.c' module for making
-the turbo-C directory access functions look like unix opendir functions. 
-You'll probably have to make even more changes (like no password file
-support) to get it to work.
-
-	If someone sends me information about tty drivers on QNX or
-coherent, I'll be happy to try to make JOE work for them (also, do they
-support large model?)

@@ -20,11 +20,15 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Iquery 1
 
 #include "config.h"
+#include "w.h"
 
 typedef struct query QW;
 struct query
  {
- void (*func)();		/* Func. which gets called when key is hit */
+ W *parent;			/* Window we're in */
+ int (*func)();			/* Func. which gets called when key is hit */
+ int (*abrt)();
+ void *object;
  char *prompt;			/* Prompt string */
  int promptlen;			/* Width of prompt string */
  int promptofst;		/* Prompt scroll offset */
@@ -32,16 +36,11 @@ struct query
 
 #define TYPEQW 0x1000
 
-extern CONTEXT cquery, cquerya, cquerysr;
-
-/* W *mkqw(W *w,char *prompt,void (*func)());
+/* QW *mkqw(BW *bw,char *prompt,int (*func)(),int (*abrt)(),void *object);
  * Create a query window for the given window
  */
-W *mkqw();
-W *mkqwna();
-W *mkqwnsr();
-
-void uabortqw();
-void utypeqw();
+QW *mkqw();
+QW *mkqwna();
+QW *mkqwnsr();
 
 #endif

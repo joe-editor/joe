@@ -21,7 +21,10 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 #include "config.h"
 #include "b.h"
+#include "rc.h"
 #include "w.h"
+
+#define LINCOLS 6
 
 extern int dspasis;
 
@@ -29,6 +32,7 @@ typedef struct bw BW;
 
 struct bw
  {
+ W *parent;
  B *b;
  P *top;
  P *cursor;
@@ -36,18 +40,12 @@ struct bw
  SCREEN *t;
  int h,w,x,y;
  
- long lmargin;
- long rmargin;
- int autoindent;
- int wordwrap;
- int overtype;
- long istep;
- int indentc;
- 
+ OPTIONS o;
  void *object;
 
- int pid;					/* Process id */
- int out;					/* fd to write to process */
+ int pid;				/* Process id */
+ int out;				/* fd to write to process */
+ int linums;
  };
 
 extern int mid;
@@ -59,6 +57,9 @@ BW *bwmk();
 void bwmove();
 void bwresz();
 void bwrm();
-void ustat();
+int ustat();
+int ucrawll();
+int ucrawlr();
+void orphit();
 
 #endif

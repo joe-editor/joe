@@ -1,4 +1,4 @@
-/* Editor startup and main edit loop
+ /* Editor startup and main edit loop
    Copyright (C) 1992 Joseph H. Allen
 
 This file is part of JOE (Joe's Own Editor)
@@ -17,397 +17,329 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
 #include <stdio.h>
+#include <fcntl.h>
 #include "config.h"
-#include "vfile.h"
-#include "blocks.h"
+#include "w.h"
 #include "tty.h"
-#include "toomany.h"
-#include "termcap.h"
-#include "scrn.h"
+#include "help.h"
+#include "rc.h"
+#include "vfile.h"
 #include "b.h"
 #include "bw.h"
 #include "tw.h"
-#include "w.h"
 #include "kbd.h"
-#include "zstr.h"
 #include "macro.h"
-#include "tab.h"
-#include "pw.h"
-#include "qw.h"
-#include "edfuncs.h"
-#include "poshist.h"
-#include "pattern.h"
-#include "help.h"
 #include "vs.h"
-#include "msgs.h"
+#include "path.h"
+#include "termcap.h"
 #include "main.h"
 
-extern int mid, dspasis, dspctrl, force, help, pgamnt, starow, stacol,
-           tabwidth, nobackups, lightoff, exask, skiptop;
-int help=0;		/* Set to have help on when starting */
+extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff,
+           exask, skiptop, noxon, lines, staen, columns, Baud, dopadding,
+           marking, beep;
 
+int help=0;		/* Set to have help on when starting */
+int nonotice=0;		/* Set to prevent copyright notice */
+int orphan=0;
 char *exmsg=0;		/* Message to display when exiting the editor */
 
 SCREEN *maint;		/* Main edit screen */
 
-/* Command table */
-
-#define EMID 1
-#define ECHKXCOL 2
-#define EFIXXCOL 4
-#define EMINOR 8
-#define EPOS 16
-#define EMOVE 32
-
-static CMD cmds[]=
-{
-  { "abort", TYPETW, uaborttw },
-  { "aborthelp", TYPEHELP, uhabort },
-  { "abortpw", TYPEPW, uabortpw },
-  { "abortqw", TYPEQW, uabortqw },
-  { "aborttab", TYPETAB, tuabort },
-  { "arg", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uarg },
-  { "backs", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL+EMINOR, ubacks },
-  { "backstab", TYPETAB, tbacks },
-  { "backw", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, ubackw },
-  { "bknd", TYPETW+TYPEPW, ubknd },
-  { "blkcpy", TYPETW+TYPEPW+EFIXXCOL, ublkcpy },
-  { "blkdel", TYPETW+TYPEPW+EFIXXCOL, ublkdel },
-  { "blkmove", TYPETW+TYPEPW+EFIXXCOL, ublkmove },
-  { "blksave", TYPETW+TYPEPW+0, ublksave },
-  { "bof", TYPETW+TYPEPW+EMOVE+EFIXXCOL, ubof },
-  { "bofhelp", TYPEHELP, uhbof },
-  { "boftab", TYPETAB, tbof },
-  { "bol", TYPETW+TYPEPW+EFIXXCOL, ubol },
-  { "bolhelp", TYPEHELP, uhbol },
-  { "boltab", TYPETAB, tbol },
-  { "center", TYPETW+TYPEPW+EFIXXCOL, ucenter },
-  { "complete", TYPETW+TYPEPW, ucmplt },
-  { "delbol", TYPETW+TYPEPW+EFIXXCOL, udelbl },
-  { "delch", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL+EMINOR, udelch },
-  { "deleol", TYPETW+TYPEPW+0, udelel },
-  { "dellin", TYPETW+TYPEPW+EFIXXCOL, udelln },
-  { "delw", TYPETW+TYPEPW+EFIXXCOL+ECHKXCOL, udelw },
-  { "dnarw", TYPETW+TYPEPW+EMOVE, udnarw },
-  { "dnarwhelp", TYPEHELP, uhdnarw },
-  { "dnarwtab", TYPETAB, tdnarw },
-  { "dnslide", TYPETW+EMOVE, udnslide },
-  { "edit", TYPETW+TYPEPW, uedit },
-  { "eof", TYPETW+TYPEPW+EFIXXCOL+EMOVE, ueof },
-  { "eofhelp", TYPEHELP, uheof },
-  { "eoftab", TYPETAB, teof },
-  { "eol", TYPETW+TYPEPW+EFIXXCOL, ueol },
-  { "eolhelp", TYPEHELP, uheol },
-  { "eoltab", TYPETAB, teol },
-  { "explode", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uexpld },
-  { "exsave", TYPETW+TYPEPW, uexsve },
-  { "ffirst", TYPETW+TYPEPW, pffirst },
-  { "filt", TYPETW+TYPEPW, ufilt },
-  { "fnext", TYPETW+TYPEPW, pfnext },
-  { "format", TYPETW+TYPEPW+EFIXXCOL, uformat },
-  { "groww", TYPETW, ugroww },
-  { "help", TYPETW+TYPEPW+TYPETAB+TYPEQW, uhelp },
-  { "iasis", TYPETW+TYPEPW+TYPETAB+TYPEHELP+EFIXXCOL+TYPEQW, uiasis },
-  { "iforce", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uiforce },
-  { "iindent", TYPETW+TYPEPW, uiindent },
-  { "iindentc", TYPETW+TYPEPW, uicindent },
-  { "iistep", TYPETW+TYPEPW, uiistep },
-  { "ilmargin", TYPETW+TYPEPW, uilmargin },
-  { "imid", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uimid },
-  { "insc", TYPETW+TYPEPW+EFIXXCOL, uinsc },
-  { "insf", TYPETW+TYPEPW+0, uinsf },
-  { "ipgamnt", TYPETW+TYPEPW, uipgamnt },
-  { "irmargin", TYPETW+TYPEPW+TYPETAB, uirmargin },
-  { "isquare", TYPETW+TYPEPW, uisquare },
-  { "istacol", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uistacol },
-  { "istarow", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uistarow },
-  { "itab", TYPETW+TYPEPW, uitab },
-  { "itype", TYPETW+TYPEPW, uitype },
-  { "iwrap", TYPETW+TYPEPW, uiwrap },
-  { "keyhelp", TYPEHELP, uhkey },
-  { "keytab", TYPETAB, tkey },
-  { "lindent", TYPETW+TYPEPW+EFIXXCOL, ulindent },
-  { "line", TYPETW+TYPEPW, uline },
-  { "ltarw", TYPETW+TYPEPW+EFIXXCOL+ECHKXCOL, ultarw },
-  { "ltarwhelp", TYPEHELP, uhltarw },
-  { "ltarwtab", TYPETAB, tltarw },
-  { "markb", TYPETW+TYPEPW+0, umarkb },
-  { "markk", TYPETW+TYPEPW+0, umarkk },
-  { "nedge", TYPETW+TYPEPW+EFIXXCOL, unedge },
-  { "nextpos", TYPETW+TYPEPW+EFIXXCOL+EMID+EPOS, unextpos },
-  { "nextw", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, unextw },
-  { "nextword", TYPETW+TYPEPW+EFIXXCOL, unxtwrd },
-  { "open", TYPETW+TYPEPW+EFIXXCOL, uopen },
-  { "pedge", TYPETW+TYPEPW+EFIXXCOL, upedge },
-  { "pgdn", TYPETW+EMOVE, upgdn },
-  { "pgup", TYPETW+EMOVE, upgup },
-  { "play", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uplay },
-  { "prevpos", TYPETW+TYPEPW+EPOS+EMID+EFIXXCOL, uprevpos },
-  { "prevw", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uprevw },
-  { "prevword", TYPETW+TYPEPW+EFIXXCOL+ECHKXCOL, uprvwrd },
-  { "quote", TYPETW+TYPEPW, uquote },
-  { "quote8", TYPETW+TYPEPW, uquote8 },
-  { "record", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, urecord },
-  { "redo", TYPETW+TYPEPW+EFIXXCOL, uredo },
-  { "retype", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, uretyp },
-  { "rindent", TYPETW+TYPEPW+EFIXXCOL, urindent },
-  { "rtarw", TYPETW+TYPEPW+EFIXXCOL, urtarw },
-  { "rtarwhelp", TYPEHELP, uhrtarw },
-  { "rtarwtab", TYPETAB, trtarw },
-  { "rtn", TYPETW+TYPEPW+EFIXXCOL, urtn },
-  { "rtnhelp", TYPEHELP, uhrtn },
-  { "rtnpw", TYPEPW+EMID, upromptrtn },
-  { "rtntab", TYPETAB, trtn },
-  { "save", TYPETW+TYPEPW, usave },
-  { "shell", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, ushell },
-  { "shrinkw", TYPETW, ushrnk },
-  { "splitw", TYPETW, usplitw },
-  { "stat", TYPETW+TYPEPW, ustat },
-  { "stop", TYPETW+TYPEPW+TYPETAB+TYPEHELP+TYPEQW, ustop },
-  { "tag", TYPETW+TYPEPW, utag },
-  { "tomarkb", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, utomarkb },
-  { "tomarkbk", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, utomarkbk },
-  { "tomarkk", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, utomarkk },
-  { "tomatch", TYPETW+TYPEPW+ECHKXCOL+EFIXXCOL, utomatch },
-  { "type", TYPETW+TYPEPW+EFIXXCOL+EMINOR, utype },
-  { "typeqw", TYPEQW, utypeqw },
-  { "undo", TYPETW+TYPEPW+EFIXXCOL, uundo },
-  { "uparw", TYPETW+TYPEPW+EMOVE, uuparw },
-  { "uparwhelp", TYPEHELP, uhuparw },
-  { "uparwtab", TYPETAB, tuparw },
-  { "upslide", TYPETW+EMOVE, uupslide }
-};
-
-CMDTAB cmdtab={cmds,sizeof(cmds)/sizeof(CMD)};
-
 /* Make windows follow cursor */
 
 void dofollows()
-{
-W *w=maint->curwin;
-do
  {
- if(w->y!= -1) w->watom->follow(w);
- w=(W *)(w->link.next);
- }
- while(w!=maint->curwin);
-}
-
-/* Execute a command */
-
-void execmd(n,k)
-{
-BW *bw=(BW *)maint->curwin->object;
-if((cmdtab.cmd[n].flag&ECHKXCOL) && bw->cursor->xcol!=bw->cursor->col)
- goto skip;
-if(!(cmdtab.cmd[n].flag&maint->curwin->watom->what)) goto skip;
-cmdtab.cmd[n].func(maint->curwin,k);
-if(leave) return;
-bw=(BW *)maint->curwin->object;
-
-if(!(cmdtab.cmd[n].flag&EPOS) &&
-   (maint->curwin->watom->what&(TYPETW|TYPEPW)))
- afterpos(maint->curwin,bw->cursor);
-if(!(cmdtab.cmd[n].flag&(EMOVE|EPOS)) &&
-   (maint->curwin->watom->what&(TYPETW|TYPEPW)))
- aftermove(maint->curwin,bw->cursor);
-
-skip:
-if(cmdtab.cmd[n].flag&EFIXXCOL) bw->cursor->xcol=bw->cursor->col;
-if(cmdtab.cmd[n].flag&EMID)
- {
- int omid=mid; mid=1;
- dofollows();
- mid=omid;
- }
-}
-
-MACRO *curmacro=0;
-int macroptr;
-
-void exmacro(m)
-MACRO *m;
-{
-int arg=maint->arg;
-int flg=0;
-maint->arg=0;
-
-if(!arg) arg=1;
-
-if( m->steps ||
-    arg!=1 ||
-    !(cmdtab.cmd[m->n].flag&EMINOR)
-  ) flg=1;
-
-if(flg) umclear();
-while(arg-- && !leave)
- if(m->steps)
+ W *w=maint->curwin;
+ do
   {
-  MACRO *tmpmac=curmacro;
-  int tmpptr=macroptr;
-  int x=0;
-  while(m && x!=m->n && !leave)
-   {
-   MACRO *d;
-   d=m->steps[x++];
-   curmacro=m;
-   macroptr=x;
-   exmacro(d);
-   m=curmacro;
-   x=macroptr;
-   }
-  curmacro=tmpmac;
-  macroptr=tmpptr;
+  if(w->y!= -1 && w->watom->follow && w->object) w->watom->follow(w->object);
+  w=(W *)(w->link.next);
   }
- else execmd(m->n,m->k);
-if(leave) return;
-if(flg) umclear();
-
-undomark();
-}
-
-/* Execute a macro */
-
-void exemac(m)
-MACRO *m;
-{
-record(m);
-exmacro(m);
-}
-
-static CONTEXT *cntxts[]=
- { &cmain,&cterm,&cprmpt,&cttab,&cfprmpt,&cthelp,&cquery,&cquerya,
-   &cquerysr,0 };
+  while(w!=maint->curwin);
+ }
 
 /* Update screen */
 
-void edupd()
-{
-W *w;
-int wid,hei;
-ttgtsz(&wid,&hei);
-if(wid>=2 && wid!=maint->w ||
-   hei>=1 && hei!=maint->h)
+int dostaupd=1;
+extern int staupd;
+
+void edupd(flg)
  {
- nresize(maint->t,wid,hei);
- sresize(maint);
- }
-dofollows();
-ttflsh();
-nscroll(maint->t);
-dsphlp(maint);
-w=maint->curwin; do
- {
- if(w->y!= -1)
+ W *w;
+ int wid,hei;
+ if(dostaupd) staupd=1, dostaupd=0;
+ ttgtsz(&wid,&hei);
+ if(wid>=2 && wid!=maint->w ||
+    hei>=1 && hei!=maint->h)
   {
-  w->watom->disp(w);
-  if(w->msgb)
-   {
-   msgout(w->t->t,w->y+w->h-1,w->msgb);
-   w->msgb=0;
-   w->t->t->updtab[w->y+w->h-1]=1;
-   }
-  if(w->msgt)
-   {
-   int y=w->h>1?1:0;
-   msgout(w->t->t,w->y+y,w->msgt);
-   w->msgt=0;
-   w->t->t->updtab[w->y+y]=1;
-   }
+  nresize(maint->t,wid,hei);
+  sresize(maint);
   }
- w=(W *)(w->link.next);
+ dofollows();
+ ttflsh();
+ nscroll(maint->t);
+ dsphlp(maint);
+ w=maint->curwin; do
+  {
+  if(w->y!= -1)
+   {
+   if(w->object && w->watom->disp) w->watom->disp(w->object,flg);
+   msgout(w);
+   }
+  w=(W *)(w->link.next);
+  }
+  while(w!=maint->curwin);
+ cpos(maint->t,
+      maint->curwin->x+maint->curwin->curx,
+      maint->curwin->y+maint->curwin->cury);
+ staupd=0;
  }
- while(w!=maint->curwin);
-cpos(maint->t,
-     maint->curwin->x+maint->curwin->curx,
-     maint->curwin->y+maint->curwin->cury);
-}
+
+static int ahead=0;
+static int ungot=0;
+static int ungotc=0;
+
+void nungetc(c)
+ {
+ ungot=1;
+ ungotc=c;
+ }
+
+int edloop(flg)
+ {
+ int term=0;
+ int ret=0;
+ SCRN *n=maint->t;
+ if(flg)
+  if(maint->curwin->watom->what==TYPETW) return 0;
+  else maint->curwin->notify= &term;
+ while(!leave && (!flg || !term))
+  {
+  MACRO *m;
+  int c;
+  edupd(1);
+  if(!ahead && !have) ahead=1;
+  if(ungot) c=ungotc, ungot=0;
+  else c=ttgetc();
+  if(!ahead && c==10) c=13;
+  m=dokey(maint->curwin->kbd,c);
+  if(maint->curwin->main && maint->curwin->main!=maint->curwin)
+   {
+   int x=maint->curwin->kbd->x;
+   maint->curwin->main->kbd->x=x;
+   if(x)
+    maint->curwin->main->kbd->seq[x-1]=maint->curwin->kbd->seq[x-1];
+   }
+  if(m) ret=exemac(m);
+  }
+ if(term== -1) return -1;
+ else return ret;
+ }
+
+#ifdef __MSDOS__
+extern void setbreak();
+extern int breakflg;
+#endif
 
 int main(argc,argv)
 int argc;
 char *argv[];
-{
-char *s;
-SCRN *n;
-W *w;
-int opened=0;
-long lnum;
-int omid;
-int c;
-if(prokbd(".joerc",cntxts))
  {
- s=getenv("HOME");
- if(!s) goto in;
- s=vsncpy(NULL,0,sz(s));
- s=vsncpy(s,sLEN(s),sc("/.joerc"));
- if(prokbd(s,cntxts))
-  {
-  in:;
-  if(prokbd(s=JOERC,cntxts))
-   {
-   fprintf(stderr,M068,s);
-   return 1;
-   }
-  }
- }
-if(!(n=nopen())) return 1;
-maint=screate(n);
+ CAP *cap;
+ char *s;
+ char *run;
+ char *rundir;
+ SCRN *n;
+ int opened=0;
+ int omid;
+ int backopt;
+ int c;
 
-for(c=1,lnum=0;argv[c];++c)
- if(argv[c][0]=='+' && argv[c][1])
-  {
-  lnum=0;
-  sscanf(argv[c]+1,"%ld",&lnum);
-  if(lnum) --lnum;
-  }
- else if(!zcmp(argv[c],"-nobackups")) nobackups=1;
- else if(!zcmp(argv[c],"-asis")) dspasis=1;
- else if(!zcmp(argv[c],"-stacol")) stacol=1;
- else if(!zcmp(argv[c],"-starow")) starow=1;
- else if(!zcmp(argv[c],"-force")) force=1;
- else if(!zcmp(argv[c],"-help")) help=1;
- else if(!zcmp(argv[c],"-lightoff")) lightoff=1;
- else if(!zcmp(argv[c],"-exask")) exask=1;
- else
-  {
-  B *b=bfind(argv[c]);
-  BW *bw;
-  int fl=0;
-  if(!b)
+#ifdef __MSDOS__
+ _fmode=O_BINARY;
+ zcpy(stdbuf,argv[0]);
+ joesep(stdbuf);
+ run=namprt(stdbuf);
+ rundir=dirprt(stdbuf);
+ for(c=0;run[c];++c)
+  if(run[c]=='.')
    {
-   b=bmk(1);
-   fl=bload(b,argv[c]);
+   run=vstrunc(run,c);
+   break;
    }
-  w=wmktw(maint,b);
-  if(fl) w->msgt=msgs[5+fl];
-  bw=(BW *)w->object;
-  setoptions(bw,argv[c]);
-  pline(bw->cursor,lnum);
-  lnum=0;
-  opened=1;
+#else
+ run=namprt(argv[0]);
+#endif 
+
+ if(s=getenv("LINES")) sscanf(s,"%d",&lines);
+ if(s=getenv("COLUMNS")) sscanf(s,"%d",&columns);
+ if(s=getenv("BAUD")) sscanf(s,"%u",&Baud);
+ if(getenv("DOPADDING")) dopadding=1;
+ if(getenv("NOXON")) noxon=1;
+
+#ifndef __MSDOS__
+ if(!(cap=getcap(NULL,9600,NULL,NULL)))
+  {
+  fprintf(stderr,"Couldn't load termcap/terminfo entry\n");
+  return 1;
   }
-if(opened)
- {
- wshowall(maint);
- omid=mid; mid=1;
- dofollows();
- mid=omid;
+#endif
+
+#ifdef __MSDOS__
+
+ s=vsncpy(NULL,0,sv(run));
+ s=vsncpy(sv(s),sc("rc"));
+ c=procrc(cap,s);
+ if(c==0) goto donerc;
+ if(c==1)
+  {
+  char buf[8];
+  fprintf(stderr,"There were errors in '%s'.  Use it anyway?",s);
+  fflush(stderr);
+  fgets(buf,8,stdin);
+  if(buf[0]=='y' || buf[0]=='Y') goto donerc;
+  }
+
+ vsrm(s);
+ s=vsncpy(NULL,0,sv(rundir));
+ s=vsncpy(sv(s),sv(run));
+ s=vsncpy(sv(s),sc("rc"));
+ c=procrc(cap,s);
+ if(c==0) goto donerc;
+ if(c==1)
+  {
+  char buf[8];
+  fprintf(stderr,"There were errors in '%s'.  Use it anyway?",s);
+  fflush(stderr);
+  fgets(buf,8,stdin);
+  if(buf[0]=='y' || buf[0]=='Y') goto donerc;
+  }
+
+#else
+
+ s=vsncpy(NULL,0,sc("."));
+ s=vsncpy(sv(s),sv(run));
+ s=vsncpy(sv(s),sc("rc"));
+ c=procrc(cap,s);
+ if(c==0) goto donerc;
+ if(c==1)
+  {
+  char buf[8];
+  fprintf(stderr,"There were errors in '%s'.  Use it anyway?",s);
+  fflush(stderr);
+  fgets(buf,8,stdin);
+  if(buf[0]=='y' || buf[0]=='Y') goto donerc;
+  }
+
+ vsrm(s);
+ s=getenv("HOME");
+ if(s)
+  {
+  s=vsncpy(NULL,0,sz(s));
+  s=vsncpy(sv(s),sc("/."));
+  s=vsncpy(sv(s),sv(run));
+  s=vsncpy(sv(s),sc("rc"));
+  c=procrc(cap,s);
+  if(c==0) goto donerc;
+  if(c==1)
+   {
+   char buf[8];
+   fprintf(stderr,"There were errors in '%s'.  Use it anyway?",s);
+   fflush(stderr);
+   fgets(buf,8,stdin);
+   if(buf[0]=='y' || buf[0]=='Y') goto donerc;
+   }
+  }
+
+ vsrm(s);
+ s=vsncpy(NULL,0,sc(JOERC));
+ s=vsncpy(sv(s),sv(run));
+ s=vsncpy(sv(s),sc("rc"));
+ c=procrc(cap,s);
+ if(c==0) goto donerc;
+ if(c==1)
+  {
+  char buf[8];
+  fprintf(stderr,"There were errors in '%s'.  Use it anyway?",s);
+  fflush(stderr);
+  fgets(buf,8,stdin);
+  if(buf[0]=='y' || buf[0]=='Y') goto donerc;
+  }
+
+#endif
+
+ fprintf(stderr,"Couldn't open '%s'\n",s);
+ return 1;
+
+ donerc:
+ izhelp();
+ for(c=1;argv[c];++c)
+  if(argv[c][0]=='-' && argv[c][1])
+   switch(glopt(argv[c]+1,argv[c+1],NULL,1))
+    {
+    case 0: fprintf(stderr,"Unknown option '%s'\n",argv[c]); break;
+    case 1: break;
+    case 2: ++c; break;
+    }
+
+ if(!(n=nopen(cap))) return 1;
+ maint=screate(n);
+ vmem=vtmp();
+
+ for(c=1,backopt= 0;argv[c];++c)
+  if(argv[c][0]=='+' && argv[c][1])
+   {
+   if(!backopt) backopt=c;
+   }
+  else if(argv[c][0]=='-' && argv[c][1])
+   {
+   if(!backopt) backopt=c;
+   if(glopt(argv[c]+1,argv[c+1],NULL,0)==2) ++c;
+   }
+  else
+   {
+   B *b=bfind(argv[c]);
+   BW *bw;
+   int er=error;
+   if(!orphan || !opened)
+    {
+    bw=wmktw(maint,b);
+    if(er) msgnwt(bw,msgs[5+er]);
+    }
+   else b->orphan=1;
+   bw->o.readonly=bw->b->rdonly;
+   if(backopt) while(backopt!=c)
+    if(argv[backopt][0]=='+')
+     {
+     long lnum=0;
+     sscanf(argv[backopt]+1,"%ld",&lnum);
+     if(lnum>0) pline(bw->cursor,lnum-1);
+     ++backopt;
+     }
+    else
+     if(glopt(argv[backopt]+1,argv[backopt+1],&bw->o,0)==2) backopt+=2;
+     else backopt+=1;
+   bw->b->o=bw->o;
+   bw->b->rdonly=bw->o.readonly;
+   opened=1;
+   backopt=0;
+   }
+
+ if(opened)
+  {
+  wshowall(maint);
+  omid=mid; mid=1;
+  dofollows();
+  mid=omid;
+  }
+ else
+  wmktw(maint,bfind(""));
+ if(help) helpon(maint);
+ if(!nonotice)
+  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.2 ** Copyright (C) 1994 Joseph H. Allen **\\i");
+ edloop(0);
+ vclose(vmem);
+ nclose(n);
+ if(exmsg) fprintf(stderr,"\n%s\n",exmsg);
+ return 0;
  }
-else
- {
- W *w=wmktw(maint,bmk(1));
- BW *bw=(BW *)w->object;
- setoptions(bw,"");
- }
-if(help) helpon(maint);
-msgnw(lastw(maint),M069);
-do
- {
- MACRO *m=dokey(maint->curwin->kbd,(edupd(),ngetc(n)));
- if(m) exemac(m);
- }
- while(!leave);
-nclose(n);
-if(exmsg) fprintf(stderr,"\n%s\n",exmsg);
-return 0;
-}

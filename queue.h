@@ -116,4 +116,7 @@ extern void *LAST;
 	(type *)ITEM \
 	)
 
+void *alitem();
+void frchn();
+
 #endif

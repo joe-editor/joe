@@ -127,7 +127,7 @@ aELEMENT(*vatrunc());
  * vazap first.  It does move the terminator around properly though.
  */
 aELEMENT(*vafill());
-
+#ifdef junk
 /* aELEMENT(*vancpy(aELEMENT(*vary),int pos,aELEMENT(*array),int len));
  * Copy 'len' elements from 'array' onto 'vary' beginning at position 'pos'.
  * 'array' can be a normal char array since the length is passed seperately.  The
@@ -135,20 +135,13 @@ aELEMENT(*vafill());
  * 0.  This does not zap previous elements.
  */
 aELEMENT(*vancpy());
-
+#endif
 /* aELEMENT(*vandup(aELEMENT(*vary),int pos,aELEMENT(*array),int len));
  * Duplicate 'len' elements from 'array' onto 'vary' beginning at position
  * 'pos'.  'array' can be a char array since its length is passed seperately.  A
  * new array is created if 'vary' is 0.
  */
 aELEMENT(*vandup());
-
-/* aELEMENT(*vafield(aELEMENT(*vary),int pos,int len));
- * Make sure a field exists at 'pos' of length 'len'.  If there isn't one,
- * 'vary' is extended with blank elements.  This does not eliminate elements
- * which already exist in the field.  Use vazap for that.
- */
-aELEMENT(*vafield());
 
 /* aELEMENT(*vadup(aELEMENT(*vary)));
  * Duplicate array.  This is just a functionalized version of:
@@ -242,24 +235,6 @@ aELEMENT(*_vaset());
  */
 #define vaget(a,p) ((p)>=aLEN(a)?aterm:(a)[p])
 
-/**********************/
-/* Insertion/Deletion */
-/**********************/
-
-/* aELEMENT(*vains(aELEMENT(*vary),int pos,int n));
- * Insert n empty slots into the array.  If 'pos' >= the length of the array,
- * the array is simply extended.  The new slots are not set to anything.
- * This does not set the elements in the created hole to any particular
- * value: use vafill if you need that to occur.
- */
-aELEMENT(*vains());
-
-/* aELEMENT(*vadel(aELEMENT(*vary),int pos,int n));
- * Delete n slots from the array.  This does not zap the elements first; call
- * vazap first if you need this to happen.
- */
-aELEMENT(*vadel());
-
 /*************************/
 /* Searching and Sorting */
 /*************************/
@@ -269,69 +244,10 @@ aELEMENT(*vadel());
  */
 aELEMENT(*vasort());
 
-/* int vabsearch(aELEMENT(*ary),int len,aELEMENT(element));
- * Do a binary search on a sorted variable length or char array.  Returns position
- * of matching element or the position where the element should be if it was
- * not found.  (You should test with acmp to find out which).
- *
- * Hmm... this should really indicate whether or not the element was found.
- */
-int vabsearch();
-
-/* int vafirst(aELEMENT(*ary),int len,aELEMENT(element));
- * Find offset to first matching element in 'vary' or return ~0 if not found.
- */
-int vafirst();
-
-/* int valast(aELEMENT(*ary),int len,aELEMENT(element));
- * Find offset to last matching element in 'vary' or return ~0 if none found.
- */
-int valast();
-
-/* int vaa(aELEMENT(*a),int alen,aELEMENT(*b),int blen);
- * Do a substring search on 'a'.  Return offset from 'a' to first matching
- * occurance of 'b' in 'a' or return ~0 if none found.
- */
-int vaa();
-
-/* int vacmpn(aELEMENT(*a),int alen,aELEMENT(*b),int blen);
- *
- * Compare two arrays using acmp.  If 'a' > 'b', return 1.  If 'a' == 'b',
- * return 0.  If 'a' < 'b', return -1.  Longer strings are > shorter ones if
- * their beginning match.
- */
-int vacmpn();
-
-/* int vacmp(aELEMENT(*a),aELEMENT(*b));
- *
- * Functionalized version of: vacmpn(av(a),av(b));
- */
-int vacmp();
-
-/* int vascan(aELEMENT(*a),int alen,aELEMENT(*b),int blen);
- * Find offset of first matching element in 'a' which matches any
- * of the elements passed in 'b'.  Array 'b' must be sorted.
- *
- * Hmm... this really needs to return what the found element is.
- */
-int vascan();
-
-/* int vaspan(aELEMENT(*a),int alen,aELEMENT(*b),int blen);
- * Find offset of first matching element in 'a' which does not match any
- * of the elements passed in 'b'.  Array 'b' must be sorted.
- */
-int vaspan();
-
 /* aELEMENT(*vawords(aELEMENT(*a),char *s,int len,char *sep,int seplen));
  * Generate list of strings out of words in 's' seperated with the characters
  * in 'sep'.  The characters in 'sep' must be sorted.
  */
 aELEMENT(*vawords());
-
-/* aELEMENT(*vaiwords(aELEMENT(*a),char *s,int len,char *sep,int seplen));
- * Same as above, but you give the characters to be included in the words
- * instead of the seperators.
- */
-aELEMENT(*vaiwords());
 
 #endif
