@@ -813,6 +813,7 @@
 \i \i\|^KG Make current window bigger         \|^KT Make current window smaller       \|\i \i
 \i \i\|^KN Go to the window below             \|^KP Go to the window above            \|\i \i
 \i \i\|^[V Switch to next buffer              \|^[U Switch to previous buffer         \|\i \i
+\i \i\|^C  Eliminate the current window       \|^KI Show all windows / Show one window\|\i \i
 }
 
 {Advanced
