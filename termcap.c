@@ -22,8 +22,8 @@ int dopadding = 0;
 char *joeterm = 0;
 
 #ifdef TERMINFO
-extern char *tgoto();
-extern char *tgetstr();
+extern char *tgoto(char *, int, int);
+extern char *tgetstr(char *, char **);
 #endif
 
 /* Default termcap entry */
@@ -42,8 +42,7 @@ char defentry[] = "\
 
 /* Return true if termcap line matches name */
 
-static int match(s, name)
-char *s, *name;
+static int match(char *s, char *name)
 {
 	if (s[0] == 0 || s[0] == '#')
 		return 0;
@@ -63,10 +62,7 @@ char *s, *name;
 
 /* Find termcap entry in a file */
 
-static char *lfind(s, pos, fd, name)
-char *s, *name;
-FILE *fd;
-int pos;
+static char *lfind(char *s, int pos, FILE *fd, char *name)
 {
 	int c, x;
 
@@ -113,9 +109,7 @@ int pos;
 
 /* Lookup termcap entry in index */
 
-static long findidx(file, name)
-FILE *file;
-char *name;
+static long findidx(FILE *file, char *name)
 {
 	char buf[80];
 	long addr = 0;
@@ -144,11 +138,7 @@ char *name;
 
 /* Load termcap entry */
 
-CAP *getcap(name, baud, out, outptr)
-char *name;
-unsigned baud;
-void (*out) ();
-void *outptr;
+CAP *getcap(char *name, unsigned int baud, void (*out) (/* ??? */), void *outptr)
 {
 	CAP *cap;
 	FILE *f, *f1;
@@ -359,9 +349,7 @@ void *outptr;
 	return setcap(cap, baud, out, outptr);
 }
 
-struct sortentry *findcap(cap, name)
-CAP *cap;
-char *name;
+static struct sortentry *findcap(CAP *cap, char *name)
 {
 	int x, y, z;
 
@@ -384,11 +372,7 @@ char *name;
 	return 0;
 }
 
-CAP *setcap(cap, baud, out, outptr)
-CAP *cap;
-unsigned baud;
-void (*out) ();
-void *outptr;
+CAP *setcap(CAP *cap, unsigned int baud, void (*out) (/* ??? */), void *outptr)
 {
 	cap->baud = baud;
 	cap->div = 100000 / baud;
@@ -397,9 +381,7 @@ void *outptr;
 	return cap;
 }
 
-int getflag(cap, name)
-CAP *cap;
-char *name;
+int getflag(CAP *cap, char *name)
 {
 #ifdef TERMINFO
 	if (cap->abuf)
@@ -408,9 +390,7 @@ char *name;
 	return findcap(cap, name) != 0;
 }
 
-char *jgetstr(cap, name)
-CAP *cap;
-char *name;
+char *jgetstr(CAP *cap, char *name)
 {
 	struct sortentry *s;
 
@@ -425,9 +405,7 @@ char *name;
 		return 0;
 }
 
-int getnum(cap, name)
-CAP *cap;
-char *name;
+int getnum(CAP *cap, char *name)
 {
 	struct sortentry *s;
 
@@ -441,8 +419,7 @@ char *name;
 	return -1;
 }
 
-void rmcap(cap)
-CAP *cap;
+void rmcap(CAP *cap)
 {
 	vsrm(cap->tbuf);
 	if (cap->abuf)
@@ -452,8 +429,7 @@ CAP *cap;
 	free(cap);
 }
 
-static char escape(s)
-char **s;
+static char escape(char **s)
 {
 	char c = *(*s)++;
 
@@ -501,16 +477,13 @@ char **s;
 }
 
 static CAP *outcap;
-static int outout(c)
+static int outout(int c)
 {
 	outcap->out(outcap->outptr, c);
 	return(c);	/* act like putchar() - return written char */
 }
 
-void texec(cap, s, l, a0, a1, a2, a3)
-CAP *cap;
-char *s;
-int l, a0, a1, a2, a3;
+void texec(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 {
 	int c, tenth = 0, x;
 	int args[4];
@@ -665,15 +638,12 @@ int l, a0, a1, a2, a3;
 
 static int total;
 
-static void cst()
+static void cst(void)
 {
 	++total;
 }
 
-int tcost(cap, s, l, a0, a1, a2, a3)
-CAP *cap;
-char *s;
-int l, a0, a1, a2, a3;
+int tcost(CAP *cap, char *s, int l, int a0, int a1, int a2, int a3)
 {
 	void (*out) () = cap->out;
 
@@ -687,17 +657,12 @@ int l, a0, a1, a2, a3;
 }
 
 static char *ssp;
-static void cpl(ptr, c)
-char *ptr;
-char c;
+static void cpl(char *ptr, char c)
 {
 	ssp = vsadd(ssp, c);
 }
 
-char *tcompile(cap, s, a0, a1, a2, a3)
-CAP *cap;
-char *s;
-int a0, a1, a2, a3;
+char *tcompile(CAP *cap, char *s, int a0, int a1, int a2, int a3)
 {
 	void (*out) () = cap->out;
 	int div = cap->div;

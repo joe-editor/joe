@@ -8,9 +8,34 @@
 */
 
 #include "config.h"
-#include "utils.h"
 
 #include <ctype.h>
+
+#include "utils.h"
+
+/*
+ * Whitespace characters are characters like tab, space, ...
+ *      Every config line in *rc must be end by whitespace but
+ *      EOF is not considered as whitespace by isspace()
+ *      This is because I don't want to be forced to end
+ *      *rc file with \n
+ */
+int isspace_eof(int c)
+{
+	return(isspace(c) || (!c));
+}
+
+/*
+ * Define function isblank(c)
+ *	!!! code which uses isblank() assumes tested char is evaluated
+ *	only once, so it musn't be a macro
+ */
+#ifndef HAVE_WORKING_ISBLANK
+int isblank(int c)
+{
+        return((c == 32) || (c == 9));
+}
+#endif
 
 /*
  * return minimum/maximum of two numbers

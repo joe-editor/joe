@@ -71,7 +71,7 @@ static void disppw(BW * bw, int flg)
 
 extern volatile int dostaupd;
 
-int rtnpw(BW * bw)
+static int rtnpw(BW * bw)
 {
 	W *w = bw->parent;
 	PW *pw = (PW *) bw->object;

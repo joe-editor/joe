@@ -1,6 +1,8 @@
 #ifndef _Icmd
 #define _Icmd 1
 
+#include "config.h"
+
 typedef struct cmd CMD;
 typedef struct macro MACRO;
 
@@ -31,11 +33,11 @@ extern CMD cmds[];		/* Built-in commands */
 /* CMD *findcmd(char *s);
  * Return command address for given name
  */
-CMD *findcmd();
-void addcmd();
+CMD *findcmd PARAMS((char *s));
+void addcmd PARAMS((char *s, MACRO *m));
 
 /* Execute a command.  Returns return value of command */
-int execmd();
+int execmd PARAMS((CMD *cmd, int k));
 
 extern int beep;
 

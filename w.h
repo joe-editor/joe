@@ -12,6 +12,7 @@
 #include "queue.h"
 #include "scrn.h"
 #include "kbd.h"
+#include "b.h"
 
 typedef struct watom WATOM;
 typedef struct screen SCREEN;
@@ -100,34 +101,34 @@ struct base {
 /* int getgrouph(W *);
  * Get height of a family of windows
  */
-int getgrouph();
+int getgrouph PARAMS((W *w));
 
 /* W *findtopw(W *);
  * Find first (top-most) window of a family
  */
-W *findtopw();
+W *findtopw PARAMS((W *w));
 
 /* W *findbotw(W *);
  * Find last (bottom-most) window a family
  */
-W *findbotw();
+W *findbotw PARAMS((W *w));
 
-int demotegroup();
+int demotegroup PARAMS((W *w));
 
 /* W *lastw(SCREEN *t);
  * Find last window on screen
  */
-W *lastw();
+W *lastw PARAMS((SCREEN *t));
 
 /* Determine number of main windows
  */
-int countmain();
+int countmain PARAMS((SCREEN *t));
 
 /* void wfit(SCREEN *t);
  *
  * Fit all of the windows onto the screen
  */
-void wfit();
+void wfit PARAMS((SCREEN *t));
 
 /*****************/
 /* Main routines */
@@ -137,17 +138,17 @@ void wfit();
  *
  * Create a screen
  */
-SCREEN *screate();
+SCREEN *screate PARAMS((SCRN *scrn));
 
 /* void sresize(SCREEN *t);
  * Screen size changed
  */
-void sresize();
+void sresize PARAMS((SCREEN *t));
 
 /* void chsize(SCREEN *t,int mul,int div)
  * Resize windows: each window is multiplied by the fraction mul/div
  */
-void chsize();
+void chsize PARAMS(());
 
 /* W *wcreate(SCREEN *t,WATOM *watom,W *where,W *target,W *original,int height);
  *
@@ -169,92 +170,92 @@ void chsize();
  * Returns the new window or returns 0 if there was not enough space to
  * create the window and maintain family integrity.
  */
-W *wcreate();
+W *wcreate PARAMS((SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height, char *huh, int *notify));
 
 /* int wabort(W *w);
  *
  * Kill a window and it's children
  */
-int wabort();
+int wabort PARAMS((W *w));
 
 /* int wnext(SCREEN *);
  *
  * Switch to next window
  */
-int wnext();
+int wnext PARAMS((SCREEN *t));
 
 /* int wprev(SCREEN *);
  *
  * Switch to previous window
  */
-int wprev();
+int wprev PARAMS((SCREEN *t));
 
 /* int wgrow(W *);
  *
  * increase size of window.  Return 0 for success, -1 for fail.
  */
-int wgrow();
+int wgrow PARAMS((W *w));
 
 /* int wshrink(W *);
  *
  * Decrease size of window.  Returns 0 for success, -1 for fail.
  */
-int wshrink();
+int wshrink PARAMS((W *w));
 
 /* void wshowone(W *);
  *
  * Show only one window on the screen
  */
-void wshowone();
+void wshowone PARAMS((W *w));
 
 /* void wshowall(SCREEN *);
  *
  * Show all windows on the screen, including the given one
  */
-void wshowall();
+void wshowall PARAMS((SCREEN *t));
 
 /* void wredraw(W *);
  *
  * Force complete redraw of window
  */
-void wredraw();
+void wredraw PARAMS((W *w));
 
 /* void updall()
  *
  * Redraw all windows
  */
-void updall();
+void updall PARAMS((void));
 
-void genfmt();
-void gentxt();
-int fmtlen();
-int fmtpos();
+void genfmt PARAMS((SCRN *t, int x, int y, int ofst, char *s, int flg));
+void gentxt PARAMS((SCRN *t, int x, int y, int ofst, char *s, int len, int flg));
+int fmtlen PARAMS((char *s));
+int fmtpos PARAMS((char *s, int goal));
 
 /* void msgnw[t](W *w,char *text);
  * Display a message which will be eliminated on the next keypress.
  * msgnw displays message on bottom line of window
  * msgnwt displays message on top line of window
  */
-void msgnw();
-void msgnwt();
+void msgnw PARAMS((BASE *w, char *s));
+void msgnwt PARAMS((BASE *w, char *s));
 
 #define MSGBUFSIZE 300
 extern char msgbuf[MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
 
-void msgout();			/* Output msgnw/msgnwt messages */
+void msgout PARAMS((W *w));			/* Output msgnw/msgnwt messages */
 
 /* Common user functions */
 
-int urtn();			/* User hit return */
-int utype();			/* User types a character */
-int uretyp();			/* Refresh the screen */
-int ugroww();			/* Grow current window */
-int uexpld();			/* Explode current window or show all windows */
-int ushrnk();			/* Shrink current window */
-int unextw();			/* Goto next window */
-int uprevw();			/* Goto previous window */
+int urtn PARAMS((BASE *b, int k));		/* User hit return */
+int utype PARAMS((BASE *b, int k));		/* User types a character */
+int uretyp PARAMS((BASE *bw));			/* Refresh the screen */
+int ugroww PARAMS((BASE *bw));			/* Grow current window */
+int uexpld PARAMS((BASE *bw));			/* Explode current window or show all windows */
+int ushrnk PARAMS((BASE *bw));			/* Shrink current window */
+int unextw PARAMS((BASE *bw));			/* Goto next window */
+int uprevw PARAMS((BASE *bw));			/* Goto previous window */
 
-void scrdel();
-void scrins();
+void scrdel PARAMS((B *b, long int l, long int n, int flg));
+void scrins PARAMS((B *b, long int l, long int n, int flg));
 
 #endif

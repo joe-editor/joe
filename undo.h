@@ -2,7 +2,7 @@
 #define _Iundo 1
 
 #include "config.h"
-#include "queue.h"
+#include "queue.h"	/* for LINK() macro */
 #include "b.h"
 
 #define UNDOKEEP 100
@@ -35,18 +35,18 @@ struct undo {
 extern int inundo;
 extern int justkilled;
 
-UNDO *undomk();
-void undorm();
-int uundo();
-int uredo();
-void umclear();
-void undomark();
-void undoins();
-void undodel();
-int uyank();
-int uyankpop();
-int uyapp();
-int unotmod();
-int ucopy();
+UNDO *undomk PARAMS((B *b));
+void undorm PARAMS((UNDO *undo));
+int uundo PARAMS((BW *bw));
+int uredo PARAMS((BW *bw));
+void umclear PARAMS((void));
+void undomark PARAMS((void));
+void undoins PARAMS((UNDO *undo, P *p, long int size));
+void undodel PARAMS((UNDO *undo, long int where, B *b));
+int uyank PARAMS((BW *bw));
+int uyankpop PARAMS((BW *bw));
+int uyapp PARAMS((BW *bw));
+int unotmod PARAMS((BW *bw));
+int ucopy PARAMS((BW *bw));
 
 #endif

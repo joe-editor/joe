@@ -57,7 +57,7 @@ W *findtopw(W * w)
 /* Determine height of a window.  Returns reqh if it is set, otherwise
  * used fixed or hh scaled to the current screen size */
 
-int geth(W * w)
+static int geth(W * w)
 {
 	if (w->reqh)
 		return w->reqh;
@@ -69,7 +69,7 @@ int geth(W * w)
 
 /* Set the height of a window */
 
-void seth(W * w, int h)
+static void seth(W * w, int h)
 {
 	long tmp;
 
@@ -96,7 +96,7 @@ int getgrouph(W * w)
 
 /* Determine minimum height of a family */
 
-int getminh(W * w)
+static int getminh(W * w)
 {
 	W *x;
 	int h;
@@ -233,7 +233,7 @@ void scrdel(B * b, long l, long n, int flg)
  * of windows until window with cursor fits on screen).
  */
 
-static int doabort();
+static int doabort(W *w, int *ret);
 extern volatile int dostaupd;
 
 void wfit(SCREEN * t)
@@ -494,7 +494,7 @@ void wshowall(SCREEN * t)
 	wfit(t);
 }
 
-void wspread(SCREEN * t)
+static void wspread(SCREEN * t)
 {
 	int n = 0;
 	W *w = t->topwin;
@@ -862,12 +862,13 @@ void msgout(W * w)
 
 char msgbuf[MSGBUFSIZE];
 
-void msgnw(BASE * w, char *s)
+/* display message on bottom line of window */
+void msgnw(BASE *w, char *s)
 {
 	w->parent->msgb = s;
 }
 
-void msgnwt(BASE * w, char *s)
+void msgnwt(BASE *w, char *s)
 {
 	w->parent->msgt = s;
 }

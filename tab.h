@@ -8,8 +8,10 @@
 #ifndef _JOEtab
 #define _JOEtab 1
 
+#include "config.h"
+
 #include "bw.h"
 
-int cmplt(BW * bw);
+int cmplt PARAMS((BW * bw));
 
 #endif

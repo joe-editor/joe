@@ -30,8 +30,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 /* Create a KBD */
 
-KBD *mkkbd(kmap)
-KMAP *kmap;
+KBD *mkkbd(KMAP *kmap)
 {
 	KBD *kbd = (KBD *) malloc(sizeof(KBD));
 
@@ -43,16 +42,14 @@ KMAP *kmap;
 
 /* Eliminate a KBD */
 
-void rmkbd(k)
-KBD *k;
+void rmkbd(KBD *k)
 {
 	free(k);
 }
 
 /* Process next key for KBD */
 
-void *dokey(kbd, n)
-KBD *kbd;
+void *dokey(KBD *kbd, int n)
 {
 	void *bind = 0;
 
@@ -78,8 +75,7 @@ KBD *kbd;
 
 /* Return key code for key name or -1 for syntax error */
 
-static int keyval(s)
-char *s;
+static int keyval(char *s)
 {
 	if (s[0] == '^' && s[1] && !s[2])
 		if (s[1] == '?')
@@ -97,7 +93,7 @@ char *s;
 
 /* Create an empty keymap */
 
-KMAP *mkkmap()
+KMAP *mkkmap(void)
 {
 	KMAP *kmap = (KMAP *) calloc(sizeof(KMAP), 1);
 
@@ -106,8 +102,7 @@ KMAP *mkkmap()
 
 /* Eliminate a keymap */
 
-void rmkmap(kmap)
-KMAP *kmap;
+void rmkmap(KMAP *kmap)
 {
 	int x;
 
@@ -121,9 +116,7 @@ KMAP *kmap;
 
 /* Parse a range */
 
-static char *range(seq, vv, ww)
-char *seq;
-int *vv, *ww;
+static char *range(char *seq, int *vv, int *ww)
 {
 	char c;
 	int x, v, w;
@@ -161,13 +154,7 @@ int *vv, *ww;
 
 /* Add a binding to a keymap */
 
-static KMAP *kbuild(cap, kmap, seq, bind, err, capseq, seql)
-CAP *cap;
-KMAP *kmap;
-char *seq;
-void *bind;
-int *err;
-char *capseq;
+static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, void *bind, int *err, char *capseq, int seql)
 {
 	int v, w;
 
@@ -226,7 +213,7 @@ char *capseq;
 #else
 		s = jgetstr(cap, seq + 1);
 		seq[x] = c;
-		if (s && (s = tcompile(cap, s))
+		if (s && (s = tcompile(cap, s, 0, 0, 0, 0))
 		    && (sLEN(s) > 1 || s[0] < 0)) {
 			capseq = s;
 			seql = sLEN(s);
@@ -273,11 +260,7 @@ char *capseq;
 	return kmap;
 }
 
-int kadd(cap, kmap, seq, bind)
-CAP *cap;
-KMAP *kmap;
-char *seq;
-void *bind;
+int kadd(CAP *cap, KMAP *kmap, char *seq, void *bind)
 {
 	int err = 0;
 
@@ -285,8 +268,7 @@ void *bind;
 	return err;
 }
 
-void kcpy(dest, src)
-KMAP *dest, *src;
+void kcpy(KMAP *dest, KMAP *src)
 {
 	int x;
 
@@ -307,9 +289,7 @@ KMAP *dest, *src;
 
 /* Remove a binding from a keymap */
 
-int kdel(kmap, seq)
-KMAP *kmap;
-char *seq;
+int kdel(KMAP *kmap, char *seq)
 {
 	int err = 1;
 	int v, w;

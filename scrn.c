@@ -122,9 +122,7 @@ unsigned char xlatc[256] = {
 
 /* Set attributes */
 
-int attr(t, c)
-SCRN *t;
-int c;
+int attr(SCRN *t, int c)
 {
 	int e;
 
@@ -132,43 +130,41 @@ int c;
 	e = (t->attrib & ~c);
 	if (e) {		/* If any attribute go off, switch them all off: fixes bug on PCs */
 		if (t->me)
-			texec(t->cap, t->me, 1);
+			texec(t->cap, t->me, 1, 0, 0, 0, 0);
 		else {
 			if (t->ue)
-				texec(t->cap, t->ue, 1);
+				texec(t->cap, t->ue, 1, 0, 0, 0, 0);
 			if (t->se)
-				texec(t->cap, t->se, 1);
+				texec(t->cap, t->se, 1, 0, 0, 0, 0);
 		}
 		t->attrib = 0;
 	}
 	e = (c & ~t->attrib);
 	if (e & INVERSE) {
 		if (t->mr)
-			texec(t->cap, t->mr, 1);
+			texec(t->cap, t->mr, 1, 0, 0, 0, 0);
 		else if (t->so)
-			texec(t->cap, t->so, 1);
+			texec(t->cap, t->so, 1, 0, 0, 0, 0);
 	}
 	if (e & UNDERLINE)
 		if (t->us)
-			texec(t->cap, t->us, 1);
+			texec(t->cap, t->us, 1, 0, 0, 0, 0);
 	if (e & BLINK)
 		if (t->mb)
-			texec(t->cap, t->mb, 1);
+			texec(t->cap, t->mb, 1, 0, 0, 0, 0);
 	if (e & BOLD)
 		if (t->md)
-			texec(t->cap, t->md, 1);
+			texec(t->cap, t->md, 1, 0, 0, 0, 0);
 	if (e & DIM)
 		if (t->mh)
-			texec(t->cap, t->mh, 1);
+			texec(t->cap, t->mh, 1, 0, 0, 0, 0);
 	t->attrib = c;
 	return 0;
 }
 
 /* Set scrolling region */
 
-void setregn(t, top, bot)
-SCRN *t;
-int top, bot;
+static void setregn(SCRN *t, int top, int bot)
 {
 	if (!t->cs) {
 		t->top = top;
@@ -178,7 +174,7 @@ int top, bot;
 	if (t->top != top || t->bot != bot) {
 		t->top = top;
 		t->bot = bot;
-		texec(t->cap, t->cs, 1, top, bot - 1);
+		texec(t->cap, t->cs, 1, top, bot - 1, 0, 0);
 		t->x = -1;
 		t->y = -1;
 	}
@@ -186,22 +182,20 @@ int top, bot;
 
 /* Enter insert mode */
 
-void setins(t, x)
-SCRN *t;
+static void setins(SCRN *t, int x)
 {
 	if (t->ins != 1 && t->im) {
 		t->ins = 1;
-		texec(t->cap, t->im, 1, x);
+		texec(t->cap, t->im, 1, x, 0, 0, 0);
 	}
 }
 
 /* Exit insert mode */
 
-int clrins(t)
-SCRN *t;
+int clrins(SCRN *t)
 {
 	if (t->ins != 0) {
-		texec(t->cap, t->ei, 1);
+		texec(t->cap, t->ei, 1, 0, 0, 0, 0);
 		t->ins = 0;
 	}
 	return 0;
@@ -209,8 +203,7 @@ SCRN *t;
 
 /* Erase from given screen coordinate to end of line */
 
-int eraeol(t, x, y)
-SCRN *t;
+int eraeol(SCRN *t, int x, int y)
 {
 	int *s, *ss;
 	int w = t->co - x - 1;	/* Don't worry about last column */
@@ -228,7 +221,7 @@ SCRN *t;
 	if ((ss - s > 3 || s[w] != ' ') && t->ce) {
 		cpos(t, x, y);
 		attr(t, 0);
-		texec(t->cap, t->ce, 1);
+		texec(t->cap, t->ce, 1, 0, 0, 0, 0);
 		msetI(s, ' ', w);
 	} else if (s != ss) {
 		if (t->ins)
@@ -250,8 +243,7 @@ SCRN *t;
 /* As above but useable in insert mode */
 /* The cursor position must already be correct */
 
-void outatri(t, x, y, c)
-SCRN *t;
+static void outatri(SCRN *t, int x, int y, int c)
 {
 	unsigned char ch;
 
@@ -267,15 +259,12 @@ SCRN *t;
 	++t->x;
 }
 
-void out(t, c)
-char *t;
-char c;
+static void out(char *t, char c)
 {
 	ttputc(c);
 }
 
-SCRN *nopen(cap)
-CAP *cap;
+SCRN *nopen(CAP *cap)
 {
 	SCRN *t = (SCRN *) malloc(sizeof(SCRN));
 	int x, y;
@@ -406,15 +395,15 @@ CAP *cap;
 	if (getflag(t->cap, "bs"))
 		t->bs = "\10";
 
-	t->cbs = tcost(t->cap, t->bs, 1, 2, 2);
+	t->cbs = tcost(t->cap, t->bs, 1, 2, 2, 0, 0);
 
 	t->lf = "\12";
 	if (jgetstr(t->cap, "do"))
 		t->lf = jgetstr(t->cap, "do");
-	t->clf = tcost(t->cap, t->lf, 1, 2, 2);
+	t->clf = tcost(t->cap, t->lf, 1, 2, 2, 0, 0);
 
 	t->up = jgetstr(t->cap, "up");
-	t->cup = tcost(t->cap, t->up, 1, 2, 2);
+	t->cup = tcost(t->cap, t->up, 1, 2, 2, 0, 0);
 
 	t->nd = jgetstr(t->cap, "nd");
 
@@ -431,31 +420,31 @@ CAP *cap;
 	if (getflag(t->cap, "xt"))
 		t->ta = 0, t->bt = 0;
 
-	t->cta = tcost(t->cap, t->ta, 1, 2, 2);
-	t->cbt = tcost(t->cap, t->bt, 1, 2, 2);
+	t->cta = tcost(t->cap, t->ta, 1, 2, 2, 0, 0);
+	t->cbt = tcost(t->cap, t->bt, 1, 2, 2, 0, 0);
 
 	t->ho = jgetstr(t->cap, "ho");
-	t->cho = tcost(t->cap, t->ho, 1, 2, 2);
+	t->cho = tcost(t->cap, t->ho, 1, 2, 2, 0, 0);
 	t->ll = jgetstr(t->cap, "ll");
-	t->cll = tcost(t->cap, t->ll, 1, 2, 2);
+	t->cll = tcost(t->cap, t->ll, 1, 2, 2, 0, 0);
 
 	t->cr = "\15";
 	if (jgetstr(t->cap, "cr"))
 		t->cr = jgetstr(t->cap, "cr");
 	if (getflag(t->cap, "nc") || getflag(t->cap, "xr"))
 		t->cr = 0;
-	t->ccr = tcost(t->cap, t->cr, 1, 2, 2);
+	t->ccr = tcost(t->cap, t->cr, 1, 2, 2, 0, 0);
 
-	t->cRI = tcost(t->cap, t->RI = jgetstr(t->cap, "RI"), 1, 2, 2);
-	t->cLE = tcost(t->cap, t->LE = jgetstr(t->cap, "LE"), 1, 2, 2);
-	t->cUP = tcost(t->cap, t->UP = jgetstr(t->cap, "UP"), 1, 2, 2);
-	t->cDO = tcost(t->cap, t->DO = jgetstr(t->cap, "DO"), 1, 2, 2);
-	t->cch = tcost(t->cap, t->ch = jgetstr(t->cap, "ch"), 1, 2, 2);
-	t->ccv = tcost(t->cap, t->cv = jgetstr(t->cap, "cv"), 1, 2, 2);
-	t->ccV = tcost(t->cap, t->cV = jgetstr(t->cap, "cV"), 1, 2, 2);
-	t->ccm = tcost(t->cap, t->cm = jgetstr(t->cap, "cm"), 1, 2, 2);
+	t->cRI = tcost(t->cap, t->RI = jgetstr(t->cap, "RI"), 1, 2, 2, 0, 0);
+	t->cLE = tcost(t->cap, t->LE = jgetstr(t->cap, "LE"), 1, 2, 2, 0, 0);
+	t->cUP = tcost(t->cap, t->UP = jgetstr(t->cap, "UP"), 1, 2, 2, 0, 0);
+	t->cDO = tcost(t->cap, t->DO = jgetstr(t->cap, "DO"), 1, 2, 2, 0, 0);
+	t->cch = tcost(t->cap, t->ch = jgetstr(t->cap, "ch"), 1, 2, 2, 0, 0);
+	t->ccv = tcost(t->cap, t->cv = jgetstr(t->cap, "cv"), 1, 2, 2, 0, 0);
+	t->ccV = tcost(t->cap, t->cV = jgetstr(t->cap, "cV"), 1, 2, 2, 0, 0);
+	t->ccm = tcost(t->cap, t->cm = jgetstr(t->cap, "cm"), 1, 2, 2, 0, 0);
 
-	t->cce = tcost(t->cap, t->ce = jgetstr(t->cap, "ce"), 1, 2, 2);
+	t->cce = tcost(t->cap, t->ce = jgetstr(t->cap, "ce"), 1, 2, 2, 0, 0);
 
 /* Make sure terminal can do absolute positioning */
 	if (t->cm)
@@ -496,9 +485,9 @@ CAP *cap;
 
 /* Send out terminal initialization string */
 	if (t->ti)
-		texec(t->cap, t->ti, 1);
+		texec(t->cap, t->ti, 1, 0, 0, 0, 0);
 	if (t->cl)
-		texec(t->cap, t->cl, 1);
+		texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 
 /* Initialize variable screen size dependant vars */
 	t->scrn = 0;
@@ -516,8 +505,7 @@ CAP *cap;
 
 /* Change size of screen */
 
-void nresize(t, w, h)
-SCRN *t;
+void nresize(SCRN *t, int w, int h)
 {
 	if (h < 4)
 		h = 4;
@@ -554,9 +542,7 @@ SCRN *t;
  * This doesn't use the am and bw capabilities although it probably could.
  */
 
-static int relcost(t, x, y, ox, oy)
-register SCRN *t;
-register int x, y, ox, oy;
+static int relcost(register SCRN *t, register int x, register int y, register int ox, register int oy)
 {
 	int cost = 0;
 
@@ -691,9 +677,7 @@ register int x, y, ox, oy;
  * given new row and column and execute them.
  */
 
-static void cposs(t, x, y)
-register SCRN *t;
-register int x, y;
+static void cposs(register SCRN *t, register int x, register int y)
 {
 	register int bestcost, cost;
 	int bestway;
@@ -718,7 +702,7 @@ register int x, y;
  */
 
 	if (t->ccm < bestcost) {
-		cost = tcost(t->cap, t->cm, 1, y, x);
+		cost = tcost(t->cap, t->cm, 1, y, x, 0, 0);
 		if (cost < bestcost)
 			bestcost = cost, bestway = 6;
 	}
@@ -738,47 +722,47 @@ register int x, y;
 			bestcost = cost, bestway = 3;
 	}
 	if (t->cch < bestcost && x != t->x) {
-		cost = relcost(t, x, y, x, t->y) + tcost(t->cap, t->ch, 1, x);
+		cost = relcost(t, x, y, x, t->y) + tcost(t->cap, t->ch, 1, x, 0, 0, 0);
 		if (cost < bestcost)
 			bestcost = cost, bestway = 4;
 	}
 	if (t->ccv < bestcost && y != t->y) {
-		cost = relcost(t, x, y, t->x, y) + tcost(t->cap, t->cv, 1, y);
+		cost = relcost(t, x, y, t->x, y) + tcost(t->cap, t->cv, 1, y, 0, 0, 0);
 		if (cost < bestcost)
 			bestcost = cost, bestway = 5;
 	}
 	if (t->ccV < bestcost) {
-		cost = relcost(t, x, y, 0, y) + tcost(t->cap, t->cV, 1, y);
+		cost = relcost(t, x, y, 0, y) + tcost(t->cap, t->cV, 1, y, 0, 0, 0);
 		if (cost < bestcost)
 			bestcost = cost, bestway = 13;
 	}
 	if (t->cch + t->ccv < bestcost && x != t->x && y != t->y) {
-		cost = tcost(t->cap, t->cv, 1, y - hy) + tcost(t->cap, t->ch, 1, x);
+		cost = tcost(t->cap, t->cv, 1, y - hy, 0, 0, 0) + tcost(t->cap, t->ch, 1, x, 0, 0, 0);
 		if (cost < bestcost)
 			bestcost = cost, bestway = 7;
 	}
 	if (t->ccv + t->ccr < bestcost && y != t->y) {
-		cost = tcost(t->cap, t->cv, 1, y) + tcost(t->cap, t->cr, 1) + relcost(t, x, y, 0, y);
+		cost = tcost(t->cap, t->cv, 1, y, 0, 0, 0) + tcost(t->cap, t->cr, 1, 0, 0, 0, 0) + relcost(t, x, y, 0, y);
 		if (cost < bestcost)
 			bestcost = cost, bestway = 8;
 	}
 	if (t->cll + t->cch < bestcost) {
-		cost = tcost(t->cap, t->ll, 1) + tcost(t->cap, t->ch, 1, x) + relcost(t, x, y, x, hl);
+		cost = tcost(t->cap, t->ll, 1, 0, 0, 0, 0) + tcost(t->cap, t->ch, 1, x, 0, 0, 0) + relcost(t, x, y, x, hl);
 		if (cost < bestcost)
 			bestcost = cost, bestway = 9;
 	}
 	if (t->cll + t->ccv < bestcost) {
-		cost = tcost(t->cap, t->ll, 1) + tcost(t->cap, t->cv, 1, y) + relcost(t, x, y, 0, y);
+		cost = tcost(t->cap, t->ll, 1, 0, 0, 0, 0) + tcost(t->cap, t->cv, 1, y, 0, 0, 0) + relcost(t, x, y, 0, y);
 		if (cost < bestcost)
 			bestcost = cost, bestway = 10;
 	}
 	if (t->cho + t->cch < bestcost) {
-		cost = tcost(t->cap, t->ho, 1) + tcost(t->cap, t->ch, 1, x) + relcost(t, x, y, x, hy);
+		cost = tcost(t->cap, t->ho, 1, 0, 0, 0, 0) + tcost(t->cap, t->ch, 1, x, 0, 0, 0) + relcost(t, x, y, x, hy);
 		if (cost < bestcost)
 			bestcost = cost, bestway = 11;
 	}
 	if (t->cho + t->ccv < bestcost) {
-		cost = tcost(t->cap, t->ho, 1) + tcost(t->cap, t->cv, 1, y) + relcost(t, x, y, 0, y);
+		cost = tcost(t->cap, t->ho, 1, 0, 0, 0, 0) + tcost(t->cap, t->cv, 1, y, 0, 0, 0) + relcost(t, x, y, 0, y);
 		if (cost < bestcost)
 			bestcost = cost, bestway = 12;
 	}
@@ -789,63 +773,63 @@ register int x, y;
 
 	switch (bestway) {
 		case 1:
-		texec(t->cap, t->cr, 1);
+		texec(t->cap, t->cr, 1, 0, 0, 0, 0);
 		t->x = 0;
 		break;
 		case 2:
-		texec(t->cap, t->ho, 1);
+		texec(t->cap, t->ho, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hy;
 		break;
 		case 3:
-		texec(t->cap, t->ll, 1);
+		texec(t->cap, t->ll, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hl;
 		break;
 		case 9:
-		texec(t->cap, t->ll, 1);
+		texec(t->cap, t->ll, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hl;
 		goto doch;
 		case 11:
-		texec(t->cap, t->ho, 1);
+		texec(t->cap, t->ho, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hy;
 	      doch:
 		case 4:
-		texec(t->cap, t->ch, 1, x);
+		texec(t->cap, t->ch, 1, x, 0, 0, 0);
 		t->x = x;
 		break;
 		case 10:
-		texec(t->cap, t->ll, 1);
+		texec(t->cap, t->ll, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hl;
 		goto docv;
 		case 12:
-		texec(t->cap, t->ho, 1);
+		texec(t->cap, t->ho, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hy;
 		goto docv;
 		case 8:
-		texec(t->cap, t->cr, 1);
+		texec(t->cap, t->cr, 1, 0, 0, 0, 0);
 		t->x = 0;
 	      docv:
 		case 5:
-		texec(t->cap, t->cv, 1, y);
+		texec(t->cap, t->cv, 1, y, 0, 0, 0);
 		t->y = y;
 		break;
 		case 6:
-		texec(t->cap, t->cm, 1, y, x);
+		texec(t->cap, t->cm, 1, y, x, 0, 0);
 		t->y = y, t->x = x;
 		break;
 		case 7:
-		texec(t->cap, t->cv, 1, y);
+		texec(t->cap, t->cv, 1, y, 0, 0, 0);
 		t->y = y;
-		texec(t->cap, t->ch, 1, x);
+		texec(t->cap, t->ch, 1, x, 0, 0, 0);
 		t->x = x;
 		break;
 		case 13:
-		texec(t->cap, t->cV, 1, y);
+		texec(t->cap, t->cV, 1, y, 0, 0, 0);
 		t->y = y;
 		t->x = 0;
 		break;
@@ -857,17 +841,17 @@ register int x, y;
 	if (y > t->y) {
 		/* Have to go down */
 		if (!t->lf || t->cDO < (y - t->y) * t->clf)
-			texec(t->cap, t->DO, 1, y - t->y), t->y = y;
+			texec(t->cap, t->DO, 1, y - t->y, 0, 0, 0), t->y = y;
 		else
 			while (y > t->y)
-				texec(t->cap, t->lf, 1), ++t->y;
+				texec(t->cap, t->lf, 1, 0, 0, 0, 0), ++t->y;
 	} else if (y < t->y) {
 		/* Have to go up */
 		if (!t->up || t->cUP < (t->y - y) * t->cup)
-			texec(t->cap, t->UP, 1, t->y - y), t->y = y;
+			texec(t->cap, t->UP, 1, t->y - y, 0, 0, 0), t->y = y;
 		else
 			while (y < t->y)
-				texec(t->cap, t->up, 1), --t->y;
+				texec(t->cap, t->up, 1, 0, 0, 0, 0), --t->y;
 	}
 
 /* Use tabs */
@@ -883,14 +867,14 @@ register int x, y;
 			if (ntabs) {
 				t->x = x - x % t->tw;
 				do
-					texec(t->cap, t->ta, 1);
+					texec(t->cap, t->ta, 1, 0, 0, 0, 0);
 				while (--ntabs);
 			}
 		} else if (cstover < t->cRI && cstover < x - t->x) {
 			t->x = t->tw + x - x % t->tw;
 			++ntabs;
 			do
-				texec(t->cap, t->ta, 1);
+				texec(t->cap, t->ta, 1, 0, 0, 0, 0);
 			while (--ntabs);
 		}
 	} else if (x < t->x && t->bt) {
@@ -909,7 +893,7 @@ register int x, y;
 		    && cstover > cstunder) {
 			if (ntabs) {
 				do
-					texec(t->cap, t->bt, 1);
+					texec(t->cap, t->bt, 1, 0, 0, 0, 0);
 				while (--ntabs);
 				t->x = x + t->tw - x % t->tw;
 			}
@@ -917,7 +901,7 @@ register int x, y;
 			t->x = x - x % t->tw;
 			++ntabs;
 			do
-				texec(t->cap, t->bt, 1);
+				texec(t->cap, t->bt, 1, 0, 0, 0, 0);
 			while (--ntabs);
 		}
 	}
@@ -926,15 +910,15 @@ register int x, y;
 	if (x < t->x) {
 		/* Have to go left */
 		if (!t->bs || t->cLE < (t->x - x) * t->cbs)
-			texec(t->cap, t->LE, 1, t->x - x), t->x = x;
+			texec(t->cap, t->LE, 1, t->x - x, 0, 0, 0), t->x = x;
 		else
 			while (x < t->x)
-				texec(t->cap, t->bs, 1), --t->x;
+				texec(t->cap, t->bs, 1, 0, 0, 0, 0), --t->x;
 	} else if (x > t->x) {
 		/* Have to go right */
 		/* Hmm.. this should take into account possible attribute changes */
 		if (t->cRI < x - t->x)
-			texec(t->cap, t->RI, 1, x - t->x), t->x = x;
+			texec(t->cap, t->RI, 1, x - t->x, 0, 0, 0), t->x = x;
 		else {
 			int *s = t->scrn + t->x + t->y * t->co;
 
@@ -954,9 +938,7 @@ register int x, y;
 	}
 }
 
-int cpos(t, x, y)
-register SCRN *t;
-register int x, y;
+int cpos(register SCRN *t, register int x, register int y)
 {
 	if (y == t->y) {
 		if (x == t->x)
@@ -988,9 +970,7 @@ register int x, y;
 	return 0;
 }
 
-static void doinschr(t, x, y, s, n)
-SCRN *t;
-int x, y, *s, n;
+static void doinschr(SCRN *t, int x, int y, int *s, int n)
 {
 	int a;
 
@@ -1004,14 +984,14 @@ int x, y, *s, n;
 			if (!t->ic)
 				setins(t, x);
 			for (a = 0; a != n; ++a) {
-				texec(t->cap, t->ic, 1, x);
+				texec(t->cap, t->ic, 1, x, 0, 0, 0);
 				outatri(t, x + a, y, s[a]);
-				texec(t->cap, t->ip, 1, x);
+				texec(t->cap, t->ip, 1, x, 0, 0, 0);
 			}
 			if (!t->mi)
 				clrins(t);
 		} else {
-			texec(t->cap, t->IC, 1, n);
+			texec(t->cap, t->IC, 1, n, 0, 0, 0);
 			for (a = 0; a != n; ++a)
 				outatri(t, x + a, y, s[a]);
 		}
@@ -1020,9 +1000,7 @@ int x, y, *s, n;
 	mcpy(t->scrn + x + t->co * y, s, n * sizeof(int));
 }
 
-static void dodelchr(t, x, y, n)
-SCRN *t;
-int x, y, n;
+static void dodelchr(SCRN *t, int x, int y, int n)
 {
 	int a;
 
@@ -1032,13 +1010,13 @@ int x, y, n;
 		return;
 	if (t->dc || t->DC) {
 		cpos(t, x, y);
-		texec(t->cap, t->dm, 1, x);	/* Enter delete mode */
+		texec(t->cap, t->dm, 1, x, 0, 0, 0);	/* Enter delete mode */
 		if ((n == 1 && t->dc) || !t->DC)
 			for (a = n; a; --a)
-				texec(t->cap, t->dc, 1, x);
+				texec(t->cap, t->dc, 1, x, 0, 0, 0);
 		else
-			texec(t->cap, t->DC, 1, n);
-		texec(t->cap, t->ed, 1, x);	/* Exit delete mode */
+			texec(t->cap, t->DC, 1, n, 0, 0, 0);
+		texec(t->cap, t->ed, 1, x, 0, 0, 0);	/* Exit delete mode */
 	}
 	mmove(t->scrn + t->co * y + x, t->scrn + t->co * y + x + n, (t->co - (x + n)) * sizeof(int));
 
@@ -1047,9 +1025,7 @@ int x, y, n;
 
 /* Insert/Delete within line */
 
-void magic(t, y, cs, s, placex)
-SCRN *t;
-int y, *cs, *s;
+void magic(SCRN *t, int y, int *cs, int *s, int placex)
 {
 	struct hentry *htab = t->htab;
 	int *ofst = t->ofst;
@@ -1147,9 +1123,7 @@ int y, *cs, *s;
 	}
 }
 
-static void doupscrl(t, top, bot, amnt)
-SCRN *t;
-int top, bot, amnt;
+static void doupscrl(SCRN *t, int top, int bot, int amnt)
 {
 	int a = amnt;
 
@@ -1161,9 +1135,9 @@ int top, bot, amnt;
 		cpos(t, 0, t->li - 1);
 		if ((amnt == 1 && t->sf) || !t->SF)
 			while (a--)
-				texec(t->cap, t->sf, 1, t->li - 1);
+				texec(t->cap, t->sf, 1, t->li - 1, 0, 0, 0);
 		else
-			texec(t->cap, t->SF, a, a);
+			texec(t->cap, t->SF, a, a, 0, 0, 0);
 		goto done;
 	}
 	if (bot == t->li && (t->dl || t->DL)) {
@@ -1171,9 +1145,9 @@ int top, bot, amnt;
 		cpos(t, 0, top);
 		if ((amnt == 1 && t->dl) || !t->DL)
 			while (a--)
-				texec(t->cap, t->dl, 1, top);
+				texec(t->cap, t->dl, 1, top, 0, 0, 0);
 		else
-			texec(t->cap, t->DL, a, a);
+			texec(t->cap, t->DL, a, a, 0, 0, 0);
 		goto done;
 	}
 	if (t->cs && (t->sf || t->SF)) {
@@ -1181,25 +1155,25 @@ int top, bot, amnt;
 		cpos(t, 0, bot - 1);
 		if ((amnt == 1 && t->sf) || !t->SF)
 			while (a--)
-				texec(t->cap, t->sf, 1, bot - 1);
+				texec(t->cap, t->sf, 1, bot - 1, 0, 0, 0);
 		else
-			texec(t->cap, t->SF, a, a);
+			texec(t->cap, t->SF, a, a, 0, 0, 0);
 		goto done;
 	}
 	if ((t->dl || t->DL) && (t->al || t->AL)) {
 		cpos(t, 0, top);
 		if ((amnt == 1 && t->dl) || !t->DL)
 			while (a--)
-				texec(t->cap, t->dl, 1, top);
+				texec(t->cap, t->dl, 1, top, 0, 0, 0);
 		else
-			texec(t->cap, t->DL, a, a);
+			texec(t->cap, t->DL, a, a, 0, 0, 0);
 		a = amnt;
 		cpos(t, 0, bot - amnt);
 		if ((amnt == 1 && t->al) || !t->AL)
 			while (a--)
-				texec(t->cap, t->al, 1, bot - amnt);
+				texec(t->cap, t->al, 1, bot - amnt, 0, 0, 0);
 		else
-			texec(t->cap, t->AL, a, a);
+			texec(t->cap, t->AL, a, a, 0, 0, 0);
 		goto done;
 	}
 	msetI(t->updtab + top, 1, bot - top);
@@ -1215,9 +1189,7 @@ int top, bot, amnt;
 		msetI(t->scrn + (bot - amnt) * t->co, ' ', amnt * t->co);
 }
 
-static void dodnscrl(t, top, bot, amnt)
-SCRN *t;
-int top, bot, amnt;
+static void dodnscrl(SCRN *t, int top, int bot, int amnt)
 {
 	int a = amnt;
 
@@ -1229,9 +1201,9 @@ int top, bot, amnt;
 		cpos(t, 0, 0);
 		if ((amnt == 1 && t->sr) || !t->SR)
 			while (a--)
-				texec(t->cap, t->sr, 1, 0);
+				texec(t->cap, t->sr, 1, 0, 0, 0, 0);
 		else
-			texec(t->cap, t->SR, a, a);
+			texec(t->cap, t->SR, a, a, 0, 0, 0);
 		goto done;
 	}
 	if (bot == t->li && (t->al || t->AL)) {
@@ -1239,9 +1211,9 @@ int top, bot, amnt;
 		cpos(t, 0, top);
 		if ((amnt == 1 && t->al) || !t->AL)
 			while (a--)
-				texec(t->cap, t->al, 1, top);
+				texec(t->cap, t->al, 1, top, 0, 0, 0);
 		else
-			texec(t->cap, t->AL, a, a);
+			texec(t->cap, t->AL, a, a, 0, 0, 0);
 		goto done;
 	}
 	if (t->cs && (t->sr || t->SR)) {
@@ -1249,25 +1221,25 @@ int top, bot, amnt;
 		cpos(t, 0, top);
 		if ((amnt == 1 && t->sr) || !t->SR)
 			while (a--)
-				texec(t->cap, t->sr, 1, top);
+				texec(t->cap, t->sr, 1, top, 0, 0, 0);
 		else
-			texec(t->cap, t->SR, a, a);
+			texec(t->cap, t->SR, a, a, 0, 0, 0);
 		goto done;
 	}
 	if ((t->dl || t->DL) && (t->al || t->AL)) {
 		cpos(t, 0, bot - amnt);
 		if ((amnt == 1 && t->dl) || !t->DL)
 			while (a--)
-				texec(t->cap, t->dl, 1, bot - amnt);
+				texec(t->cap, t->dl, 1, bot - amnt, 0, 0, 0);
 		else
-			texec(t->cap, t->DL, a, a);
+			texec(t->cap, t->DL, a, a, 0, 0, 0);
 		a = amnt;
 		cpos(t, 0, top);
 		if ((amnt == 1 && t->al) || !t->AL)
 			while (a--)
-				texec(t->cap, t->al, 1, top);
+				texec(t->cap, t->al, 1, top, 0, 0, 0);
 		else
-			texec(t->cap, t->AL, a, a);
+			texec(t->cap, t->AL, a, a, 0, 0, 0);
 		goto done;
 	}
 	msetI(t->updtab + top, 1, bot - top);
@@ -1282,8 +1254,7 @@ int top, bot, amnt;
 		msetI(t->scrn + t->co * top, ' ', amnt * t->co);
 }
 
-void nscroll(t)
-SCRN *t;
+void nscroll(SCRN *t)
 {
 	int y, z, q, r, p;
 
@@ -1316,36 +1287,32 @@ SCRN *t;
 	msetI(t->sary, 0, t->li);
 }
 
-void npartial(t)
-SCRN *t;
+void npartial(SCRN *t)
 {
 	attr(t, 0);
 	clrins(t);
 	setregn(t, 0, t->li);
 }
 
-void nescape(t)
-SCRN *t;
+void nescape(SCRN *t)
 {
 	npartial(t);
 	cpos(t, 0, t->li - 1);
 	eraeol(t, 0, t->li - 1);
 	if (t->te)
-		texec(t->cap, t->te, 1);
+		texec(t->cap, t->te, 1, 0, 0, 0, 0);
 }
 
-void nreturn(t)
-SCRN *t;
+void nreturn(SCRN *t)
 {
 	if (t->ti)
-		texec(t->cap, t->ti, 1);
+		texec(t->cap, t->ti, 1, 0, 0, 0, 0);
 	if (t->cl)
-		texec(t->cap, t->cl, 1);
+		texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 	nredraw(t);
 }
 
-void nclose(t)
-SCRN *t;
+void nclose(SCRN *t)
 {
 	leave = 1;
 	attr(t, 0);
@@ -1353,7 +1320,7 @@ SCRN *t;
 	setregn(t, 0, t->li);
 	cpos(t, 0, t->li - 1);
 	if (t->te)
-		texec(t->cap, t->te, 1);
+		texec(t->cap, t->te, 1, 0, 0, 0, 0);
 	ttclose();
 	rmcap(t->cap);
 	free(t->scrn);
@@ -1364,9 +1331,7 @@ SCRN *t;
 	free(t);
 }
 
-void nscrldn(t, top, bot, amnt)
-SCRN *t;
-int top, bot, amnt;
+void nscrldn(SCRN *t, int top, int bot, int amnt)
 {
 	int x;
 
@@ -1387,9 +1352,7 @@ int top, bot, amnt;
 		msetI(t->updtab + top, 1, amnt);
 }
 
-void nscrlup(t, top, bot, amnt)
-SCRN *t;
-int top, bot, amnt;
+void nscrlup(SCRN *t, int top, int bot, int amnt)
 {
 	int x;
 
@@ -1412,8 +1375,7 @@ int top, bot, amnt;
 
 extern volatile int dostaupd;
 
-void nredraw(t)
-SCRN *t;
+void nredraw(SCRN *t)
 {
 	dostaupd = 1;
 	msetI(t->scrn, ' ', t->co * skiptop);
@@ -1432,13 +1394,13 @@ SCRN *t;
 
 	if (!skiptop) {
 		if (t->cl) {
-			texec(t->cap, t->cl, 1, 0);
+			texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 			t->x = 0;
 			t->y = 0;
 			msetI(t->scrn, ' ', t->li * t->co);
 		} else if (t->cd) {
 			cpos(t, 0, 0);
-			texec(t->cap, t->cd, 1, 0);
+			texec(t->cap, t->cd, 1, 0, 0, 0, 0);
 			msetI(t->scrn, ' ', t->li * t->co);
 		}
 	}

@@ -20,14 +20,15 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Imain 1
 
 #include "config.h"
+
 #include "w.h"
 
 extern char *exmsg;		/* Exit message */
 extern int help;		/* Set to start with help on */
 extern SCREEN *maint;		/* Primary screen */
-void nungetc();
-void dofollows();
-int edloop();
-void edupd();
+void nungetc PARAMS((int c));
+void dofollows PARAMS((void));
+int edloop PARAMS((int flg));
+void edupd PARAMS((int flg));
 
 #endif

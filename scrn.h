@@ -159,25 +159,25 @@ struct scrn {
  * Open the screen (sets TTY mode so that screen may be used immediatly after
  * the 'nopen').
  */
-SCRN *nopen();
+SCRN *nopen PARAMS((CAP *cap));
 
 /* void nresize(SCRN *t,int w,int h);
  *
  * Change size of screen.  For example, call this when you find out that
  * the Xterm changed size.
  */
-void nresize();
+void nresize PARAMS((SCRN *t, int w, int h));
 
 /* void nredraw(SCRN *t);
  *
  * Invalidate all state variables for the terminal.  This way, everything gets
  * redrawn.
  */
-void nredraw();
+void nredraw PARAMS((SCRN *t));
 
-void npartial();
-void nescape();
-void nreturn();
+void npartial PARAMS((SCRN *t));
+void nescape PARAMS((SCRN *t));
+void nreturn PARAMS((SCRN *t));
 
 /* void nclose(SCRN *t);
  *
@@ -185,19 +185,19 @@ void nreturn();
  *
  * if 'flg' is set, tclose doesn't mess with the signals.
  */
-void nclose();
+void nclose PARAMS((SCRN *t));
 
 /* int cpos(SCRN *t,int x,int y);
  *
  * Set cursor position
  */
-int cpos();
+int cpos PARAMS((register SCRN *t, register int x, register int y));
 
 /* int attr(SCRN *t,int a);
  *
  * Set attributes
  */
-int attr();
+int attr PARAMS((SCRN *t, int c));
 
 /* void outatr(SCRN *t,int *scrn,int x,int y,int c,int a);
  *
@@ -261,7 +261,7 @@ extern int dspasis;
  *
  * Erase from screen coordinate to end of line.
  */
-int eraeol();
+int eraeol PARAMS((SCRN *t, int x, int y));
 
 /* void nscrlup(SCRN *t,int top,int bot,int amnt);
  *
@@ -269,7 +269,7 @@ int eraeol();
  * indicate which lines to scroll.  'bot' is the last line to scroll + 1.
  * 'amnt' is distance in lines to scroll.
  */
-void nscrlup();
+void nscrlup PARAMS((SCRN *t, int top, int bot, int amnt));
 
 /* void nscrldn(SCRN *t,int top,int bot,int amnt);
  *
@@ -277,20 +277,20 @@ void nscrlup();
  * indicate which lines to scroll.  'bot' is the last line to scroll + 1.
  * 'amnt' is distance in lines to scroll.
  */
-void nscrldn();
+void nscrldn PARAMS((SCRN *t, int top, int bot, int amnt));
 
 /* void nscroll(SCRN *t);
  *
  * Execute buffered scroll requests
  */
-void nscroll();
+void nscroll PARAMS((SCRN *t));
 
 /* void magic(SCRN *t,int y,int *cur,int *new);
  *
  * Figure out and execute line shifting
  */
-void magic();
+void magic PARAMS((SCRN *t, int y, int *cs, int *s, int placex));
 
-int clrins();
+int clrins PARAMS((SCRN *t));
 
 #endif

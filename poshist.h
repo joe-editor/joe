@@ -12,10 +12,10 @@
 #include "bw.h"
 #include "w.h"
 
-void afterpos(void);
-void aftermove(W * w, P * p);
-void windie(W * w);
-int uprevpos(BW * bw);
-int unextpos(BW * bw);
+void afterpos PARAMS((void));
+void aftermove PARAMS((W * w, P * p));
+void windie PARAMS((W * w));
+int uprevpos PARAMS((BW * bw));
+int unextpos PARAMS((BW * bw));
 
 #endif

@@ -146,7 +146,7 @@ int u_goto_next(BW * bw)
 	return 0;
 }
 
-P *pboi(P * p)
+static P *pboi(P *p)
 {
 	p_goto_bol(p);
 	while (isblank(brc(p)))
@@ -154,7 +154,7 @@ P *pboi(P * p)
 	return p;
 }
 
-int pisedge(P * p)
+static int pisedge(P *p)
 {
 	P *q;
 	int c;
@@ -829,7 +829,7 @@ int utypebw(BW * bw, int k)
 int quotestate;
 int quoteval;
 
-int doquote(BW * bw, int c, void *object, int *notify)
+static int doquote(BW * bw, int c, void *object, int *notify)
 {
 	char buf[40];
 
@@ -843,19 +843,19 @@ int doquote(BW * bw, int c, void *object, int *notify)
 			quoteval = c - '0';
 			quotestate = 1;
 			snprintf(buf, sizeof(buf), "ASCII %c--", c);
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			if (!mkqwna(bw, sz(buf), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
 		} else if (c == 'x' || c == 'X') {
 			quotestate = 3;
-			if (!mkqwna(bw->parent, sc("ASCII 0x--"), doquote, NULL, NULL, notify))
+			if (!mkqwna(bw, sc("ASCII 0x--"), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
 		} else if (c == 'o' || c == 'O') {
 			quotestate = 5;
-			if (!mkqwna(bw->parent, sc("ASCII 0---"), doquote, NULL, NULL, notify))
+			if (!mkqwna(bw, sc("ASCII 0---"), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
@@ -875,7 +875,7 @@ int doquote(BW * bw, int c, void *object, int *notify)
 			snprintf(buf, sizeof(buf), "ASCII %c%c-", quoteval + '0', c);
 			quoteval = quoteval * 10 + c - '0';
 			quotestate = 2;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			if (!mkqwna(bw, sz(buf), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
@@ -895,7 +895,7 @@ int doquote(BW * bw, int c, void *object, int *notify)
 			snprintf(buf, sizeof(buf), "ASCII 0x%c-", c);
 			quoteval = c - '0';
 			quotestate = 4;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			if (!mkqwna(bw, sz(buf), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
@@ -903,7 +903,7 @@ int doquote(BW * bw, int c, void *object, int *notify)
 			snprintf(buf, sizeof(buf), "ASCII 0x%c-", c + 'A' - 'a');
 			quoteval = c - 'a' + 10;
 			quotestate = 4;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			if (!mkqwna(bw, sz(buf), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
@@ -911,7 +911,7 @@ int doquote(BW * bw, int c, void *object, int *notify)
 			snprintf(buf, sizeof(buf), "ASCII 0x%c-", c);
 			quoteval = c - 'A' + 10;
 			quotestate = 4;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			if (!mkqwna(bw, sz(buf), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
@@ -939,7 +939,7 @@ int doquote(BW * bw, int c, void *object, int *notify)
 			snprintf(buf, sizeof(buf), "ASCII 0%c--", c);
 			quoteval = c - '0';
 			quotestate = 6;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			if (!mkqwna(bw, sz(buf), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
@@ -951,7 +951,7 @@ int doquote(BW * bw, int c, void *object, int *notify)
 			snprintf(buf, sizeof(buf), "ASCII 0%c%c-", quoteval + '0', c);
 			quoteval = quoteval * 8 + c - '0';
 			quotestate = 7;
-			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
+			if (!mkqwna(bw, sz(buf), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
@@ -974,13 +974,13 @@ int doquote(BW * bw, int c, void *object, int *notify)
 int uquote(BW * bw)
 {
 	quotestate = 0;
-	if (mkqwna(bw->parent, sc("Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"), doquote, NULL, NULL, NULL))
+	if (mkqwna(bw, sc("Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"), doquote, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
 }
 
-int doquote9(BW * bw, int c, void *object, int *notify)
+static int doquote9(BW * bw, int c, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -994,10 +994,10 @@ int doquote9(BW * bw, int c, void *object, int *notify)
 	return 0;
 }
 
-int doquote8(BW * bw, int c, void *object, int *notify)
+static int doquote8(BW * bw, int c, void *object, int *notify)
 {
 	if (c == '`') {
-		if (mkqwna(bw->parent, sc("Meta-Ctrl-"), doquote9, NULL, NULL, notify))
+		if (mkqwna(bw, sc("Meta-Ctrl-"), doquote9, NULL, NULL, notify))
 			return 0;
 		else
 			return -1;
@@ -1012,7 +1012,7 @@ int doquote8(BW * bw, int c, void *object, int *notify)
 
 int uquote8(BW * bw)
 {
-	if (mkqwna(bw->parent, sc("Meta-"), doquote8, NULL, NULL, NULL))
+	if (mkqwna(bw, sc("Meta-"), doquote8, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -1020,7 +1020,7 @@ int uquote8(BW * bw)
 
 extern char srchstr[];
 
-int doctrl(BW * bw, int c, void *object, int *notify)
+static int doctrl(BW * bw, int c, void *object, int *notify)
 {
 	int org = bw->o.overtype;
 
@@ -1038,7 +1038,7 @@ int doctrl(BW * bw, int c, void *object, int *notify)
 
 int uctrl(BW * bw)
 {
-	if (mkqwna(bw->parent, sc("Quote"), doctrl, NULL, NULL, NULL))
+	if (mkqwna(bw, sc("Quote"), doctrl, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -1082,7 +1082,7 @@ int uopen(BW * bw)
 
 /* Set book-mark */
 
-int dosetmark(BW * bw, int c, void *object, int *notify)
+static int dosetmark(BW * bw, int c, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -1102,7 +1102,7 @@ int usetmark(BW * bw, int c)
 {
 	if (c >= '0' && c <= '9')
 		return dosetmark(bw, c, NULL, NULL);
-	else if (mkqwna(bw->parent, sc("Set mark (0-9):"), dosetmark, NULL, NULL, NULL))
+	else if (mkqwna(bw, sc("Set mark (0-9):"), dosetmark, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -1110,7 +1110,7 @@ int usetmark(BW * bw, int c)
 
 /* Goto book-mark */
 
-int dogomark(BW * bw, int c, void *object, int *notify)
+static int dogomark(BW * bw, int c, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -1133,7 +1133,7 @@ int ugomark(BW * bw, int c)
 {
 	if (c >= '0' && c <= '9')
 		return dogomark(bw, c, NULL, NULL);
-	else if (mkqwna(bw->parent, sc("Goto bookmark (0-9):"), dogomark, NULL, NULL, NULL))
+	else if (mkqwna(bw, sc("Goto bookmark (0-9):"), dogomark, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -1143,7 +1143,7 @@ int ugomark(BW * bw, int c)
 
 static int dobkwdc;
 
-int dofwrdc(BW * bw, int k, void *object, int *notify)
+static int dofwrdc(BW * bw, int k, void *object, int *notify)
 {
 	int c;
 	P *q;
@@ -1181,7 +1181,7 @@ int ufwrdc(BW * bw, int k)
 	dobkwdc = 0;
 	if (k >= 0 && k < 256)
 		return dofwrdc(bw, k, NULL, NULL);
-	else if (mkqw(bw->parent, sc("Fwrd to char: "), dofwrdc, NULL, NULL, NULL))
+	else if (mkqw(bw, sc("Fwrd to char: "), dofwrdc, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -1192,7 +1192,7 @@ int ubkwdc(BW * bw, int k)
 	dobkwdc = 1;
 	if (k >= 0 && k < 256)
 		return dofwrdc(bw, k, NULL, NULL);
-	else if (mkqw(bw->parent, sc("Bkwd to char: "), dofwrdc, NULL, NULL, NULL))
+	else if (mkqw(bw, sc("Bkwd to char: "), dofwrdc, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -1200,7 +1200,7 @@ int ubkwdc(BW * bw, int k)
 
 /* Display a message */
 
-int domsg(BASE * b, char *s, void *object, int *notify)
+static int domsg(BASE * b, char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -1220,7 +1220,7 @@ int umsg(BASE * b)
 
 /* Insert text */
 
-int dotxt(BW * bw, char *s, void *object, int *notify)
+static int dotxt(BW * bw, char *s, void *object, int *notify)
 {
 	int x;
 

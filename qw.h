@@ -38,8 +38,9 @@ struct query {
 /* QW *mkqw(BW *bw,char *prompt,int (*func)(),int (*abrt)(),void *object);
  * Create a query window for the given window
  */
-QW *mkqw();
-QW *mkqwna();
-QW *mkqwnsr();
+/* FIXME: ??? ----> */
+QW *mkqw PARAMS((BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
+QW *mkqwna PARAMS((BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
+QW *mkqwnsr PARAMS((BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
 
 #endif

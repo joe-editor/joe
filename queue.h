@@ -136,7 +136,7 @@ struct stditem {
 	(type *)ITEM \
 	)
 
-void *alitem(void *list, int itemsize);
-void frchn(void *list, void *ch);
+void *alitem PARAMS((void *list, int itemsize));
+void frchn PARAMS((void *list, void *ch));
 
 #endif

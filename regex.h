@@ -19,6 +19,8 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #ifndef _Iregex
 #define _Iregex 1
 
-int pmatch();
+#include "config.h"
+
+int pmatch PARAMS((char **pieces, char *regex, int len, P *p, int n, int icase));
 
 #endif

@@ -39,9 +39,7 @@ SRCHREC fsr = { {&fsr, &fsr} };
      p is left in its orignal spot
 */
 
-P *searchf(srch, p)
-SRCH *srch;
-P *p;
+static P *searchf(SRCH *srch, P *p)
 {
 	char *pattern = srch->pattern;
 	P *start = pdup(p);
@@ -84,9 +82,7 @@ P *p;
      p is left in its orignal spot
 */
 
-P *searchb(srch, p)
-SRCH *srch;
-P *p;
+static P *searchb(SRCH *srch, P *p)
 {
 	char *pattern = srch->pattern;
 	P *start = pdup(p);
@@ -116,8 +112,7 @@ P *p;
 
 /* Make a search stucture */
 
-SRCH *setmark(srch)
-SRCH *srch;
+static SRCH *setmark(SRCH *srch)
 {
 	if (markv(1))
 		srch->valid = 1;
@@ -135,8 +130,7 @@ SRCH *srch;
 	return srch;
 }
 
-SRCH *mksrch(pattern, replacement, ignore, backwards, repeat, replace, rest)
-char *pattern, *replacement;
+SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest)
 {
 	SRCH *srch = (SRCH *) malloc(sizeof(SRCH));
 	int x;
@@ -163,8 +157,7 @@ char *pattern, *replacement;
 
 /* Eliminate a search structure */
 
-void rmsrch(srch)
-SRCH *srch;
+void rmsrch(SRCH *srch)
 {
 	int x;
 
@@ -194,10 +187,7 @@ SRCH *srch;
  * p is advanced past the inserted text
  */
 
-P *insert(srch, p, s, len)
-SRCH *srch;
-P *p;
-char *s;
+static P *insert(SRCH *srch, P *p, char *s, int len)
 {
 	int x;
 
@@ -239,18 +229,14 @@ char *s;
 
 char srchstr[] = "Search";	/* Context sensitive help identifier */
 
-static int pfabort(bw, srch)
-BW *bw;
-SRCH *srch;
+static int pfabort(BW *bw, SRCH *srch)
 {
 	if (srch)
 		rmsrch(srch);
 	return -1;
 }
 
-static int pfsave(bw, srch)
-BW *bw;
-SRCH *srch;
+static int pfsave(BW *bw, SRCH *srch)
 {
 	if (srch) {
 		if (globalsrch)
@@ -280,21 +266,13 @@ SRCH *srch;
 	return -1;
 }
 
-static int set_replace(bw, s, srch, notify)
-BW *bw;
-char *s;
-SRCH *srch;
-int *notify;
+static int set_replace(BW *bw, char *s, SRCH *srch, int *notify)
 {
 	srch->replacement = s;
 	return dopfnext(bw, srch, notify);
 }
 
-static int set_options(bw, s, srch, notify)
-BW *bw;
-char *s;
-SRCH *srch;
-int *notify;
+static int set_options(BW *bw, char *s, SRCH *srch, int *notify)
 {
 	int x;
 
@@ -341,11 +319,7 @@ int *notify;
 		return dopfnext(bw, srch, notify);
 }
 
-static int set_pattern(bw, s, srch, notify)
-BW *bw;
-char *s;
-SRCH *srch;
-int *notify;
+static int set_pattern(BW *bw, char *s, SRCH *srch, int *notify)
 {
 	BW *pbw;
 
@@ -375,8 +349,7 @@ int *notify;
 	}
 }
 
-static int dofirst(bw, back, repl)
-BW *bw;
+static int dofirst(BW *bw, int back, int repl)
 {
 	SRCH *srch;
 
@@ -405,29 +378,24 @@ BW *bw;
 	}
 }
 
-int pffirst(bw)
-BW *bw;
+int pffirst(BW *bw)
 {
 	return dofirst(bw, 0, 0);
 }
 
-int prfirst(bw)
-BW *bw;
+int prfirst(BW *bw)
 {
 	return dofirst(bw, 1, 0);
 }
 
-int pqrepl(bw)
-BW *bw;
+int pqrepl(BW *bw)
 {
 	return dofirst(bw, 0, 1);
 }
 
 /* Execute next search */
 
-static int doreplace(bw, srch)
-BW *bw;
-SRCH *srch;
+static int doreplace(BW *bw, SRCH *srch)
 {
 	P *q;
 
@@ -458,9 +426,7 @@ SRCH *srch;
 	return 0;
 }
 
-static void visit(srch, bw, yn)
-SRCH *srch;
-BW *bw;
+static void visit(SRCH *srch, BW *bw, int yn)
 {
 	SRCHREC *r = (SRCHREC *) alitem(&fsr, sizeof(SRCHREC));
 
@@ -469,9 +435,7 @@ BW *bw;
 	enqueb(SRCHREC, link, &srch->recs, r);
 }
 
-static void goback(srch, bw)
-SRCH *srch;
-BW *bw;
+static void goback(SRCH *srch, BW *bw)
 {
 	SRCHREC *r = srch->recs.link.prev;
 
@@ -484,10 +448,7 @@ BW *bw;
 	}
 }
 
-static int dopfrepl(bw, c, srch, notify)
-BW *bw;
-SRCH *srch;
-int *notify;
+static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 {
 	srch->addr = bw->cursor->byte;
 	if (c == 'N' || c == 'n')
@@ -527,9 +488,7 @@ int *notify;
  * 1 if we're done
  */
 
-int restrict(bw, srch)
-BW *bw;
-SRCH *srch;
+static int restrict(BW *bw, SRCH *srch)
 {
 	if (!srch->valid || !srch->restrict)
 		return 0;
@@ -569,9 +528,7 @@ SRCH *srch;
  *   2) Search string was found.
  */
 
-static int fnext(bw, srch)
-BW *bw;
-SRCH *srch;
+static int fnext(BW *bw, SRCH *srch)
 {
 	P *sta;
 
@@ -618,10 +575,7 @@ SRCH *srch;
 		return 2;
 }
 
-int dopfnext(bw, srch, notify)
-BW *bw;
-SRCH *srch;
-int *notify;
+int dopfnext(BW *bw, SRCH *srch, int *notify)
 {
 	int orgmid = mid;	/* Original mid status */
 	int ret = 0;
@@ -692,8 +646,7 @@ int *notify;
 	return ret;
 }
 
-int pfnext(bw)
-BW *bw;
+int pfnext(BW *bw)
 {
 	if (!globalsrch)	/* Query for search string if there isn't any */
 		return pffirst(bw);

@@ -1,3 +1,10 @@
+Overview of Changes in JOE 2.9.7-pre3 (29 Oct 2001)
+- BUGFIX: wordwrap bug fixed (again and I'm sure forever)
+- BUGFIX: don't change window when setting mark in multiwindow mode
+- BUGFIX: use automake-1.5 to make joe compile on irix-6.5 with non-GNU make
+- continuing code clean up: this code adds strict prototypes which raises
+  a lot of warnings (they seem harmless) - we're working on their removal
+
 Overview of Changes in JOE 2.9.7-pre2 (10 Oct 2001)
 - use automake and autoconf for configuration system (for now versions
   automake-1.4-p4 and autoconf-2.52)

@@ -24,8 +24,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "vs.h"
 #include "qw.h"
 
-static void dispqw(qw)
-QW *qw;
+static void dispqw(QW *qw)
 {
 	W *w = qw->parent;
 
@@ -44,8 +43,7 @@ QW *qw;
 	gentxt(w->t->t, w->x, w->y, qw->promptofst, qw->prompt, qw->promptlen, 1);
 }
 
-static void dispqwn(qw)
-QW *qw;
+static void dispqwn(QW *qw)
 {
 	W *w = qw->parent;
 
@@ -70,8 +68,7 @@ QW *qw;
 
 /* When user hits a key in a query window */
 
-int utypeqw(qw, c)
-QW *qw;
+static int utypeqw(QW *qw, int c)
 {
 	W *win;
 	W *w = qw->parent;
@@ -91,8 +88,7 @@ QW *qw;
 	return -1;
 }
 
-static int abortqw(qw)
-QW *qw;
+static int abortqw(QW *qw)
 {
 	W *win = qw->parent->win;
 	void *object = qw->object;
@@ -150,13 +146,7 @@ static WATOM watqwsr = {
 
 /* Create a query window */
 
-QW *mkqw(obw, prompt, len, func, abrt, object, notify)
-BASE *obw;
-char *prompt;
-int (*func) ();
-int (*abrt) ();
-void *object;
-int *notify;
+QW *mkqw(BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
@@ -184,13 +174,7 @@ int *notify;
 /* Same as above, but cursor is left in original window */
 /* For Ctrl-Meta thing */
 
-QW *mkqwna(obw, prompt, len, func, abrt, object, notify)
-BASE *obw;
-char *prompt;
-int (*func) ();
-int (*abrt) ();
-void *object;
-int *notify;
+QW *mkqwna(BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;
@@ -218,13 +202,7 @@ int *notify;
 /* Same as above, but cursor is left in original window */
 /* For search and replace thing */
 
-QW *mkqwnsr(obw, prompt, len, func, abrt, object, notify)
-BASE *obw;
-char *prompt;
-int (*func) ();
-int (*abrt) ();
-void *object;
-int *notify;
+QW *mkqwnsr(BASE *obw, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify)
 {
 	W *new;
 	QW *qw;

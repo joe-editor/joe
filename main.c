@@ -43,7 +43,7 @@ SCREEN *maint;			/* Main edit screen */
 
 /* Make windows follow cursor */
 
-void dofollows()
+void dofollows(void)
 {
 	W *w = maint->curwin;
 
@@ -60,7 +60,7 @@ void dofollows()
 int dostaupd = 1;
 extern int staupd;
 
-void edupd(flg)
+void edupd(int flg)
 {
 	W *w;
 	int wid, hei;
@@ -94,7 +94,7 @@ static int ahead = 0;
 static int ungot = 0;
 static int ungotc = 0;
 
-void nungetc(c)
+void nungetc(int c)
 {
 	if (c != 'C' - '@' && c != 'M' - '@') {
 		chmac();
@@ -103,7 +103,7 @@ void nungetc(c)
 	}
 }
 
-int edloop(flg)
+int edloop(int flg)
 {
 	int term = 0;
 	int ret = 0;
@@ -155,10 +155,7 @@ extern int breakflg;
 
 char **mainenv;
 
-int main(argc, argv, envv)
-int argc;
-char *argv[];
-char *envv[];
+int main(int argc, char **argv, char **envv)
 {
 	CAP *cap;
 	char *s;

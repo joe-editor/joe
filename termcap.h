@@ -83,13 +83,13 @@ struct cap {
  * done for self-refering 'tc=filename' links (so all of core will be
  * allocated if there are any).
  */
-CAP *getcap();
+CAP *getcap PARAMS((char *name, unsigned int baud, void (*out) (/* ??? */), void *outptr));
 
 /* CAP *setcap(CAP *cap,int baud,void (*out)(void *outptr,char c),void *outptr);
  *
  * Reset baud, out and outptr for a CAP
  */
-CAP *setcap();
+CAP *setcap PARAMS((CAP *cap, unsigned int baud, void (*out) (/* ??? */), void *outptr));
 
 /* char *jgetstr(CAP *cap,char *name);
  *
@@ -98,27 +98,27 @@ CAP *setcap();
  * the buffer used to load the termcap entry.  It should not be modified or
  * freed.
  */
-char *jgetstr();
+char *jgetstr PARAMS((CAP *cap, char *name));
 
 /* int getflag(CAP *cap,char *name);
  *
  * Return true if the named capability is found in 'cap'.  A fast binary
  * search is used to lookup the capability.
  */
-int getflag();
+int getflag PARAMS((CAP *cap, char *name));
 
 /* int getnum(CAP *cap,char *name);
  *
  * Return value of numeric capability or return -1 if it's not found.  A fast
  * binary search is used to lookup the capability.
  */
-int getnum();
+int getnum PARAMS((CAP *cap, char *name));
 
 /* void rmcap(CAP *cap);
  *
  * Eliminate a CAP entry.
  */
-void rmcap();
+void rmcap PARAMS((CAP *cap));
 
 /* void texec(CAP *cap,char *str,int l,int a0,int a1,int a2,int a3);
 
@@ -136,7 +136,7 @@ void rmcap();
 
    'a0' - 'a1' are the arguments for the string
 */
-void texec();
+void texec PARAMS((CAP *cap, char *s, int l, int a0, int a1, int a2, int a3));
 
 /* int tcost(CAP *cap,char *str, int l, int a0, int a1, int a2, int a3);
    Return cost in number of characters which need to be sent
@@ -154,7 +154,7 @@ void texec();
 
    'a0' - 'a3' are arguements passed to the string
 */
-int tcost();
+int tcost PARAMS((CAP *cap, char *s, int l, int a0, int a1, int a2, int a3));
 
 /* char *tcompile(CAP *cap,char *str,int a0,int a1,int a2,int a3);
 
@@ -162,7 +162,7 @@ int tcost();
    string (see vs.h) containing the compiled string capability.
    Pad characters are not placed in the string.
 */
-char *tcompile();
+char *tcompile PARAMS((CAP *cap, char *s, int a0, int a1, int a2, int a3));
 
 /* Old termcap support */
 #ifdef junk

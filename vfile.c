@@ -39,7 +39,7 @@ char *vbase;			/* Data first entry in vheader refers to */
 VPAGE **vheaders = 0;		/* Array of header addresses */
 static int vheadsz = 0;		/* No. entries allocated to vheaders */
 
-void vflsh()
+void vflsh(void)
 {
 	VPAGE *vp;
 	VPAGE *vlowest;
@@ -78,8 +78,7 @@ void vflsh()
 	}
 }
 
-void vflshf(vfile)
-VFILE *vfile;
+void vflshf(VFILE *vfile)
 {
 	VPAGE *vp;
 	VPAGE *vlowest;
@@ -113,16 +112,14 @@ VFILE *vfile;
 	}
 }
 
-char *mema(align, size)
+static char *mema(int align, int size)
 {
 	char *z = (char *) malloc(align + size);
 
 	return z + align - physical(z) % align;
 }
 
-char *vlock(vfile, addr)
-VFILE *vfile;
-long addr;
+char *vlock(VFILE *vfile, long int addr)
 {
 	VPAGE *vp, *pp;
 	int x, y;
@@ -220,7 +217,7 @@ long addr;
 	return vp->data + ofst;
 }
 
-VFILE *vtmp()
+VFILE *vtmp(void)
 {
 	VFILE *new = (VFILE *) malloc(sizeof(VFILE));
 
@@ -266,8 +263,7 @@ char *name;
 
 #endif
 
-void vclose(vfile)
-VFILE *vfile;
+void vclose(VFILE *vfile)
 {
 	VPAGE *vp, *pp;
 	int x;
@@ -344,9 +340,7 @@ long amount;
 }
 #endif
 
-long my_valloc(vfile, size)
-VFILE *vfile;
-long size;
+long my_valloc(VFILE *vfile, long int size)
 {
 	long start = vsize(vfile);
 

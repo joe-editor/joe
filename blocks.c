@@ -23,11 +23,10 @@
 /* Set 'sz' 'int's beginning at 'd' to the value 'c' */
 /* Returns address of block.  Does nothing if 'sz' equals zero */
 
-int *msetI(d, c, sz)
-register int *d, c;
-register int sz;
+int *msetI(void *dest, int c, int sz)
 {
-	int *orgd = d;
+	int	*d = dest;
+	int	*orgd = dest;
 
 	while (sz >= 16) {
 		d[0] = c;
@@ -73,12 +72,10 @@ register int sz;
 /* Set 'sz' 'char's beginning at 'd' to the value 'c' */
 /* Returns address of block.  Does nothing if 'sz' equals zero */
 
-char *mset(d, c, sz)
-register char *d;
-register unsigned char c;
-register int sz;
+char *mset(void *dest, unsigned char c, int sz)
 {
-	char *orgd = d;
+	char	*d = dest;
+	char	*orgd = dest;
 
 	if (sz < 16)
 		switch (sz) {
@@ -143,10 +140,11 @@ register int sz;
 /* Copy a block of integers */
 /* Copy from highest address to lowest */
 
-static int *mbkwdI(d, s, sz)
-register int *d, *s;
-register int sz;
+static int *mbkwdI(void *dest, void *src, int sz)
 {
+	int	*d = dest;
+	int	*s = src;
+
 	if (d == s)
 		return d;
 	d += sz;
@@ -197,11 +195,11 @@ register int sz;
 
 /* Copy a block of 'int's.  Copy from lowest address to highest */
 
-static int *mfwrdI(d, s, sz)
-register int *d, *s;
-register int sz;
+static int *mfwrdI(void *dest, void *src, int sz)
 {
-	int *od = d;
+	int	*d = dest;
+	int	*s = src;
+	int	*od = d;
 
 	if (s == d)
 		return d;
@@ -254,9 +252,7 @@ register int sz;
  * are copied before the ones at the lowest ('s') are.
  */
 
-char *mbkwd(d, s, sz)
-register char *d, *s;
-register int sz;
+char *mbkwd(register char *d, register char *s, register int sz)
 {
 	if (s == d)
 		return d;
@@ -347,9 +343,7 @@ register int sz;
  * are copied before the ones at the highest ('s'+'sz'-1) are.
  */
 
-char *mfwrd(d, s, sz)
-register char *d, *s;
-register int sz;
+char *mfwrd(register char *d, register char *s, register int sz)
 {
 	char *od = d;
 
@@ -467,9 +461,7 @@ register int sz;
 	return od;
 }
 
-char *mmove(d, s, sz)
-char *d, *s;
-int sz;
+void *mmove(void *d, void *s, int sz)
 {
 	if (d > s)
 		mbkwd(d, s, sz);
@@ -480,9 +472,7 @@ int sz;
 
 /* Utility to count number of lines within a segment */
 
-int mcnt(blk, c, size)
-register char *blk, c;
-int size;
+int mcnt(register char *blk, register char c, int size)
 {
 	register int nlines = 0;
 

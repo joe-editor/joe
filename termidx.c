@@ -8,9 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-void gen(s, fd)
-char *s;
-FILE *fd;
+static void gen(char *s, FILE *fd)
 {
 	int c, x;
 	long addr = 0, oaddr;

@@ -12,14 +12,13 @@
 #define _JOEutils 1
 
 #include "config.h"
-#include <ctype.h>
 
 /* 
  * Characters which are considered as word characters 
  * 	_ is considered as word character because is often used 
  *	in the names of C/C++ functions
  */
-unsigned int isalnum_(unsigned int c);
+unsigned int isalnum_ PARAMS((unsigned int c));
 
 /* 
  * Whitespace characters are characters like tab, space, ...
@@ -28,21 +27,22 @@ unsigned int isalnum_(unsigned int c);
  *	This is because I don't want to be forced to end 
  *	*rc file with \n
  */
-#define isspace_eof(c) (isspace(c) || (!(c)))
+int isspace_eof PARAMS((int c));
 
 /*
- * Define function isblank(c) for non-GNU systems
+ * Define function isblank(c)
+ *	isblank() is GNU extension;
+ *	even #including <ctype.h> without additional hackery doesn't import
+ *	the prototype, so we define it here unconditionaly
  */
-#ifndef __USE_GNU
-#define isblank(c) (((c)==32) || ((c)==9))
-#endif
+int isblank PARAMS((int c));
 
 /*
  * Functions which return minimum/maximum of two numbers  
  */
-unsigned int uns_min(unsigned int a, unsigned int b);
-signed int int_min(signed int a, int signed b);
-signed long long_max(signed long a, signed long b);
-signed long long_min(signed long a, signed long b);
+unsigned int uns_min PARAMS((unsigned int a, unsigned int b));
+signed int int_min PARAMS((signed int a, int signed b));
+signed long long_max PARAMS((signed long a, signed long b));
+signed long long_min PARAMS((signed long a, signed long b));
 
 #endif

@@ -157,7 +157,7 @@ int urun(BW * bw)
 
 /* Kill program */
 
-int pidabort(BW * bw, int c, void *object, int *notify)
+static int pidabort(BW * bw, int c, void *object, int *notify)
 {
 	if (notify) {
 		*notify = 1;

@@ -34,14 +34,14 @@ int justkilled = 0;
 
 UNDOREC frrecs = { {&frrecs, &frrecs} };
 
-UNDOREC *alrec()
+static UNDOREC *alrec(void)
 {
 	UNDOREC *rec = (UNDOREC *) alitem(&frrecs, sizeof(UNDOREC));
 
 	return rec;
 }
 
-void frrec(UNDOREC * rec)
+static void frrec(UNDOREC * rec)
 {
 	if (rec->del) {
 		if (rec->len < SMALL)
@@ -76,7 +76,7 @@ void undorm(UNDO * undo)
 	demote(UNDO, link, &frdos, undo);
 }
 
-void doundo(BW * bw, UNDOREC * ptr)
+static void doundo(BW * bw, UNDOREC * ptr)
 {
 	dostaupd = 1;
 
@@ -157,7 +157,7 @@ int uredo(BW * bw)
 	return 0;
 }
 
-void umclear()
+void umclear(void)
 {
 	UNDO *undo;
 
@@ -187,7 +187,7 @@ static void undogc(UNDO * undo)
 		undo->ptr = undo->recs.link.next;
 }
 
-void undomark()
+void undomark(void)
 {
 	UNDO *undo;
 
@@ -247,7 +247,7 @@ int uyapp(BW * bw)
 	return 0;
 }
 
-void yankdel(long where, B * b)
+static void yankdel(long where, B * b)
 {
 	UNDOREC *rec;
 	long size = b->eof->byte;

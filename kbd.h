@@ -20,6 +20,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Ikbd 1
 
 #include "config.h"
+
 #include "scrn.h"
 
 typedef struct kmap KMAP;
@@ -57,12 +58,12 @@ struct kbd {
 /* KMAP *mkkmap(void);
  * Create an empty keymap
  */
-KMAP *mkkmap();
+KMAP *mkkmap PARAMS((void));
 
 /* void rmkmap(KMAP *kmap);
  * Free a key map
  */
-void rmkmap();
+void rmkmap PARAMS((KMAP *kmap));
 
 /* int kadd(KMAP *kmap,char *seq,void *bind);
  * Add a key sequence binding to a key map
@@ -90,12 +91,12 @@ void rmkmap();
  * is speicified, then the key sequences
  * ^K A, ^K B, ^K C, ... ^K Z are all bound.
  */
-int kadd();
+int kadd PARAMS((CAP *cap, KMAP *kmap, char *seq, void *bind));
 
 /* void kcpy(KMAP *dest,KMAP *src);
  * Copy all of the entries in the 'src' keymap into the 'dest' keymap
  */
-void kcpy();
+void kcpy PARAMS((KMAP *dest, KMAP *src));
 
 /* int kdel(KMAP *kmap,char *seq);
  * Delete a binding from a keymap
@@ -104,18 +105,18 @@ void kcpy();
  *        -1 if the given key sequence was invalid
  *         1 if the given key sequence did not exist
  */
-int kdel();
+int kdel PARAMS((KMAP *kmap, char *seq));
 
 /* KBD *mkkbd(KMAP *kmap);
    Create a keyboard handler which uses the given keymap
 */
-KBD *mkkbd();
+KBD *mkkbd PARAMS((KMAP *kmap));
 
 /* void rmkbd(KBD *);
  *
  * Eliminate a keyboard handler
  */
-void rmkbd();
+void rmkbd PARAMS((KBD *k));
 
 /* void *dokey(KBD *kbd,int k);
    Handle a key for a KBD:
@@ -124,6 +125,6 @@ void rmkbd();
 
      Returns binding for a completed key sequence
 */
-void *dokey();
+void *dokey PARAMS((KBD *kbd, int n));
 
 #endif

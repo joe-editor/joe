@@ -37,8 +37,8 @@ struct mpx {
 
 /* Versions of 'read' and 'write' which automatically retry during signals
  * (yuck, yuck, yuck... we the #$%#$@ did they have to do this?) */
-int jread();
-int jwrite();
+int jread PARAMS((int fd, void *buf, int siz));
+int jwrite PARAMS((int fd, void *buf, int siz));
 
 /* void ttopen(void);  Open the tty (attached to stdin) for use inside of JOE
  *
@@ -74,8 +74,8 @@ int jwrite();
  *     baud) and 'TIMES'==3, the output buffer size is set to 333 characters.
  *     Each time this buffer is completely flushed, 1/3 of a second will go by.
  */
-void ttopen();
-void ttopnn();
+void ttopen PARAMS((void));
+void ttopnn PARAMS((void));
 extern unsigned long upc;
 extern unsigned baud;
 
@@ -92,8 +92,8 @@ extern unsigned baud;
  * (3) Call signrm().  There is also 'void ttyclsn(void)' which does not do
  *     the this step.
  */
-void ttclose();
-void ttclsn();
+void ttclose PARAMS((void));
+void ttclsn PARAMS((void));
 
 /* int ttgetc(void);  Flush the output and get the next character from the tty
  *
@@ -104,7 +104,7 @@ void ttclsn();
  *
  * (3) Clear 'have'
  */
-int ttgetc();
+int ttgetc PARAMS((void));
 
 /* void ttputc(char c);  Write a character to the output buffer.  If it becomes
  * full, call ttflsh()
@@ -118,17 +118,17 @@ extern char *obuf;
 /* void ttputs(char *s);  Write a string to the output buffer.  Any time the
  * output buffer gets full, call ttflsh()
  */
-void ttputs();
+void ttputs PARAMS((char *s));
 
 /* void ttshell(char *s);  Run a shell command or if 's' is zero, run a
  * sub-shell
  */
-void ttshell();
+void ttshell PARAMS((char *cmd));
 
 /* void ttsusp(void);  Suspend the process, or if the UNIX can't do it, call
  * ttshell(NULL)
  */
-void ttsusp();
+void ttsusp PARAMS((void));
 
 /* int ttflsh(void);  Flush the output buffer and check for typeahead.
  *
@@ -158,7 +158,7 @@ void ttsusp();
  *     ttflsh gets called.  'leave' should also be set before shell escapes and
  *     suspends.
  */
-int ttflsh();
+int ttflsh PARAMS((void));
 
 extern int have;
 extern int leave;
@@ -174,11 +174,11 @@ extern int leave;
  * It is called with 'n' set to the number of the caught signal or 0 if the
  * input closed.
  */
-void ttsig();
+void ttsig PARAMS((int sig));
 
 /* void ttgtsz(int *x,int *y);  Get size of screen from ttsize/winsize
  * structure */
-void ttgtsz();
+void ttgtsz PARAMS((int *x, int *y));
 
 /* You don't have to call these: ttopen/ttclose does it for you.  These
  * may be needed to make your own shell escape sequences.
@@ -189,15 +189,15 @@ void ttgtsz();
  * and trap the software terminate and hangup signals (SIGTERM, SIGHUP) so
  * that 'ttsig' gets called.
  */
-void sigjoe();
+void sigjoe PARAMS((void));
 
 /* void signrm(void);  Set above signals back to their default values.
  */
-void signrm();
+void signrm PARAMS((void));
 
 /* char *pwd();  Get current working directory into a static buffer.
  */
-char *pwd();
+char *pwd PARAMS((void));
 
 /* MPX *mpxmk(int fd,int pid,
  *             void (*func)(),void *object,
@@ -211,18 +211,18 @@ char *pwd();
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk();
+MPX *mpxmk PARAMS((int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj));
 
 /* int subshell(int *ptyfd);
  * Execute a subshell.  Returns 'pid' of shell or zero if there was a
  * problem.  Returns file descriptor for the connected pty in 'ptyfd'.
  */
-int subshell();
+int subshell PARAMS(());
 
 extern int noxon;
 extern int Baud;
 
-void tickoff();
-void tickon();
+void tickoff PARAMS((void));
+void tickon PARAMS((void));
 
 #endif

@@ -4,10 +4,12 @@ AC_PREREQ(2.52)
 # Init automake
 AC_INIT
 AC_CONFIG_SRCDIR([b.c])
-AC_CANONICAL_TARGET([])
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
 
 #### Here's the only place where to change version number ####
-AM_INIT_AUTOMAKE(joe, 2.9.7-pre2)
+AM_INIT_AUTOMAKE(joe, 2.9.7-pre3)
 
 AM_MAINTAINER_MODE
 AM_CONFIG_HEADER(autoconf.h)
@@ -17,21 +19,6 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AC_CHECK_PROG(UNAME,uname,uname)
-#fine tune gcc flags. this may not work as expected :-)
-if test "$ac_test_CFLAGS" != set ; then
-	if test "x$CC" = xgcc ; then
-		CFLAGS="-O6 -funroll-loops -fomit-frame-pointer -Wall"
-		save_CFLAGS="$CFLAGS"
-		if test x"$UNAME" != x ; then
-			AC_MSG_CHECKING([If desired compiler flags works with this compiler])
-			THECFLAGS="$CFLAGS"
-			CFLAGS="$CFLAGS -march=`$UNAME -m`"
-			AC_TRY_COMPILE([int foo() {};],foo();,[AC_MSG_RESULT([lucky boy])],[AC_MSG_RESULT([no way])
-				CFLAGS="$save_CFLAGS"])
-		fi
-	fi
-fi
 
 # Checks for libraries.
 AC_SEARCH_LIBS(tgetflag, ncurses curses termcap, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we have newer terminfo/termcap capabilities]))
@@ -73,10 +60,23 @@ AC_FUNC_MALLOC
 AC_FUNC_SETPGRP
 AC_TYPE_SIGNAL
 AC_FUNC_STAT
-AC_CHECK_FUNCS([alarm getcwd getwd mkdir mkstemp setlocale strchr strdup utime setpgid setitimer sigprocmask])
+AC_CHECK_FUNCS([alarm getcwd getwd isblank mkdir mkstemp setlocale strchr strdup utime setpgid setitimer sigprocmask])
+if test "$ac_cv_func_isblank" = yes; then
+	joe_ISBLANK
+fi
 
 dnl not yet :-)
 dnl AM_GNU_GETTEXT
+
+AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
+#ifndef PARAMS
+#  if PROTOTYPES
+#    define PARAMS(protos) protos
+#  else
+#    define PARAMS(protos) ()
+#  endif
+#endif
+])
 
 AC_CONFIG_FILES([Makefile joe.1 joerc jmacsrc jstarrc rjoerc jpicorc])
 AC_OUTPUT

@@ -1,7 +1,8 @@
 #ifndef _Iuisrch
 #define _Iuisrch 1
 
-#include "queue.h"
+#include "config.h"
+#include "queue.h"	/* for LINK() macro */
 #include "bw.h"
 
 typedef struct irec IREC;
@@ -20,7 +21,7 @@ struct isrch {
 	int quote;		/* Set to quote next char */
 };
 
-int uisrch(BW * bw);
-int ursrch(BW * bw);
+int uisrch PARAMS((BW * bw));
+int ursrch PARAMS((BW * bw));
 
 #endif

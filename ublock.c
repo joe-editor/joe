@@ -50,8 +50,7 @@ struct marksav {
 MARKSAV markfree = { {&markfree, &markfree} };
 int nstack = 0;
 
-int upsh(bw)
-BW *bw;
+int upsh(BW *bw)
 {
 	MARKSAV *m = alitem(&markfree, sizeof(MARKSAV));
 
@@ -66,8 +65,7 @@ BW *bw;
 	return 0;
 }
 
-int upop(bw)
-BW *bw;
+int upop(BW *bw)
 {
 	MARKSAV *m = markstack.link.prev;
 
@@ -92,7 +90,7 @@ BW *bw;
 
 /* Return true if markb/markk are valid */
 
-int markv(r)
+int markv(int r)
 {
 	if (markb && markk && markb->b == markk->b && markk->byte > markb->byte && (!square || markk->xcol > markb->xcol))
 		return 1;
@@ -118,9 +116,7 @@ int markv(r)
  * right is rightmost column of rectangle + 1
  */
 
-B *pextrect(org, height, right)
-P *org;
-long height, right;
+B *pextrect(P *org, long int height, long int right)
 {
 	P *p = pdup(org);	/* Left part of text to extract */
 	P *q = pdup(p);		/* After right part of text to extract */
@@ -147,9 +143,7 @@ long height, right;
  * Delete a rectangle.
  */
 
-void pdelrect(org, height, right)
-P *org;
-long height, right;
+void pdelrect(P *org, long int height, long int right)
 {
 	P *p = pdup(org);
 	P *q = pdup(p);
@@ -169,9 +163,7 @@ long height, right;
  * Blank-out a rectangle.
  */
 
-void pclrrect(org, height, right, usetabs)
-P *org;
-long height, right;
+void pclrrect(P *org, long int height, long int right, int usetabs)
 {
 	P *p = pdup(org);
 	P *q = pdup(p);
@@ -195,9 +187,7 @@ long height, right;
  * Check if there are any TABs in a rectange
  */
 
-int ptabrect(org, height, right)
-P *org;
-long height, right;
+int ptabrect(P *org, long int height, long int right)
 {
 	P *p = pdup(org);
 
@@ -220,10 +210,7 @@ long height, right;
 
 /* Insert rectangle */
 
-void pinsrect(cur, tmp, width, usetabs)
-P *cur;
-B *tmp;
-long width;
+void pinsrect(P *cur, B *tmp, long int width, int usetabs)
 {
 	P *p = pdup(cur);	/* We insert at & move this pointer */
 	P *q = pdup(tmp->bof);	/* These are for scanning through 'tmp' */
@@ -254,8 +241,7 @@ long width;
 
 /* Set beginning */
 
-int umarkb(bw)
-BW *bw;
+int umarkb(BW *bw)
 {
 	pdupown(bw->cursor, &markb);
 	markb->xcol = bw->cursor->xcol;
@@ -263,8 +249,7 @@ BW *bw;
 	return 0;
 }
 
-int udrop(bw)
-BW *bw;
+int udrop(BW *bw)
 {
 	prm(markk);
 	if (marking && markb)
@@ -276,8 +261,7 @@ BW *bw;
 
 /* Set end */
 
-int umarkk(bw)
-BW *bw;
+int umarkk(BW *bw)
 {
 	pdupown(bw->cursor, &markk);
 	markk->xcol = bw->cursor->xcol;
@@ -287,8 +271,7 @@ BW *bw;
 
 /* Unset marks */
 
-int unmark(bw)
-BW *bw;
+int unmark(BW *bw)
 {
 	prm(markb);
 	prm(markk);
@@ -298,8 +281,7 @@ BW *bw;
 
 /* Mark line */
 
-int umarkl(bw)
-BW *bw;
+int umarkl(BW *bw)
 {
 	p_goto_bol(bw->cursor);
 	umarkb(bw);
@@ -310,8 +292,7 @@ BW *bw;
 	return 0;
 }
 
-int utomarkb(bw)
-BW *bw;
+int utomarkb(BW *bw)
 {
 	if (markb && markb->b == bw->b) {
 		pset(bw->cursor, markb);
@@ -320,8 +301,7 @@ BW *bw;
 		return -1;
 }
 
-int utomarkk(bw)
-BW *bw;
+int utomarkk(BW *bw)
 {
 	if (markk && markk->b == bw->b) {
 		pset(bw->cursor, markk);
@@ -330,8 +310,7 @@ BW *bw;
 		return -1;
 }
 
-int uswap(bw)
-BW *bw;
+int uswap(BW *bw)
 {
 	if (markb && markb->b == bw->b) {
 		P *q = pdup(markb);
@@ -344,8 +323,7 @@ BW *bw;
 		return -1;
 }
 
-int utomarkbk(bw)
-BW *bw;
+int utomarkbk(BW *bw)
 {
 	if (markb && markb->b == bw->b && bw->cursor->byte != markb->byte) {
 		pset(bw->cursor, markb);
@@ -359,10 +337,9 @@ BW *bw;
 
 /* Delete block */
 
-extern int udelln();
+extern int udelln(BW *bw);
 
-int ublkdel(bw)
-BW *bw;
+int ublkdel(BW *bw)
 {
 	if (markv(1)) {
 		if (square)
@@ -387,8 +364,7 @@ BW *bw;
 
 /* Special delete block function for PICO */
 
-int upicokill(bw)
-BW *bw;
+int upicokill(BW *bw)
 {
 	upsh(bw);
 	umarkk(bw);
@@ -413,8 +389,7 @@ BW *bw;
 
 /* Move highlighted block */
 
-int ublkmove(bw)
-BW *bw;
+int ublkmove(BW *bw)
 {
 	if (markv(1)) {
 		if (markb->b->rdonly) {
@@ -472,8 +447,7 @@ BW *bw;
 
 /* Duplicate highlighted block */
 
-int ublkcpy(bw)
-BW *bw;
+int ublkcpy(BW *bw)
 {
 	if (markv(1))
 		if (square) {
@@ -518,11 +492,7 @@ BW *bw;
 /* Write highlighted block to a file */
 /* This is called by ublksave in ufile.c */
 
-int dowrite(bw, s, object, notify)
-BW *bw;
-char *s;
-void *object;
-int *notify;
+int dowrite(BW *bw, char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -560,8 +530,7 @@ int *notify;
 
 /* Set highlighted block on a program block */
 
-void setindent(bw)
-BW *bw;
+void setindent(BW *bw)
 {
 	P *p, *q;
 	long indent;
@@ -604,8 +573,7 @@ BW *bw;
 
 /* Indent more */
 
-int urindent(bw)
-BW *bw;
+int urindent(BW *bw)
 {
 	if (square) {
 		if (markb && markk && markb->b == markk->b && markb->byte <= markk->byte && markb->xcol <= markk->xcol) {
@@ -639,8 +607,7 @@ BW *bw;
 
 /* Indent less */
 
-int ulindent(bw)
-BW *bw;
+int ulindent(BW *bw)
 {
 	if (square) {
 		if (markb && markk && markb->b == markk->b && markb->byte <= markk->byte && markb->xcol <= markk->xcol) {
@@ -712,11 +679,7 @@ BW *bw;
 
 /* Insert a file */
 
-int doinsf(bw, s, object, notify)
-BW *bw;
-char *s;
-void *object;
-int *notify;
+int doinsf(BW *bw, char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -776,11 +739,7 @@ int *notify;
 
 static int filtflg = 0;
 
-static int dofilt(bw, s, object, notify)
-BW *bw;
-char *s;
-void *object;
-int *notify;
+static int dofilt(BW *bw, char *s, void *object, int *notify)
 {
 	int fr[2];
 	int fw[2];
@@ -883,8 +842,7 @@ int *notify;
 
 static B *filthist = 0;
 
-void markall(bw)
-BW *bw;
+static void markall(BW *bw)
 {
 	pdupown(bw->cursor->b->bof, &markb);
 	markb->xcol = 0;
@@ -893,8 +851,7 @@ BW *bw;
 	updall();
 }
 
-int checkmark(bw)
-BW *bw;
+static int checkmark(BW *bw)
 {
 	if (!markv(1))
 		if (square)
@@ -908,8 +865,7 @@ BW *bw;
 	}
 }
 
-int ufilt(bw)
-BW *bw;
+int ufilt(BW *bw)
 {
 #ifdef __MSDOS__
 	msgnw(bw, "Sorry, no sub-processes in DOS (yet)");

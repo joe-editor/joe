@@ -1,9 +1,10 @@
 AUTOMAKE_OPTIONS = foreign
 
-EXTRA_DIST = COPYING INFO LIST NEWS README SOURCES TODO \
+EXTRA_DIST = COPYING INFO LIST NEWS README TODO \
 	joerc.in jmacsrc.in jstarrc.in rjoerc.in jpicorc.in \
-	joe.1.in conf.c chain.asm dir.c kbdhdl.c msscrn.c \
-	mstty.c termcap terminfo
+	joe.1.in conf.c chain.asm dir.c kbdhdl.c msscrn.c mstty.c \
+	termcap terminfo \
+	docs
 
 sysconf_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
 man_MANS = joe.1
@@ -26,7 +27,7 @@ termidx_SOURCES = termidx.c
 
 install-exec-hook:
 	rm -f $(bindir)/jmacs $(bindir)/jstar $(bindir)/rjoe $(bindir)/jpico
-	for i in jmacs jstar rjoe jpico ; do $(LN_S) $(bindir)/joe $(bindir)/$$i ; done
+	for i in jmacs jstar rjoe jpico ; do $(LN_S) joe $(bindir)/$$i ; done
 
 uninstall-local:
 	rm -f $(bindir)/jmacs $(bindir)/jstar $(bindir)/rjoe $(bindir)/jpico

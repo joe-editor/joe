@@ -24,6 +24,7 @@
 #include <time.h>
 #endif
 
+#include "bw.h"
 #include "blocks.h"
 #include "undo.h"
 #include "vs.h"
@@ -34,7 +35,6 @@
 #include "tty.h"
 #include "scrn.h"
 #include "main.h"
-#include "bw.h"
 #include "uerror.h"
 
 #include "b.h"
@@ -544,7 +544,7 @@ P *pfwrd(P * p, long n)
 	return p;
 }
 
-int prgetc1(P * p)
+static int prgetc1(P *p)
 {
 	unsigned char c;
 
@@ -1408,10 +1408,10 @@ static B *bcut(P * from, P * to)
 		pset(from->b->bof, from);
 	if (nlines && !pisbol(from)) {
 		scrdel(from->b, from->line, nlines, 1);
-		delerr(from->b->name, from->line, nlines, 0);
+		delerr(from->b->name, from->line, nlines);
 	} else {
 		scrdel(from->b, from->line, nlines, 0);
-		delerr(from->b->name, from->line, nlines, 1);
+		delerr(from->b->name, from->line, nlines);
 	}
 
 	/* Fix pointers */
@@ -1582,7 +1582,7 @@ static void fixupins(P * p, long amnt, long nlines, H * hdr, int hdramnt)
 		scrins(p->b, p->line, nlines, 1);
 	else
 		scrins(p->b, p->line, nlines, 0);
-	inserr(p->b->name, p->line, nlines);
+	inserr(p->b->name, p->line, nlines, pisbol(p));	/* FIXME: last arg ??? */
 
 	for (pp = p->link.next; pp != p; pp = pp->link.next)
 		if (pp->line == p->line && (pp->byte > p->byte || (pp->end && pp->byte == p->byte)))
@@ -1652,9 +1652,7 @@ P *binsm(P * p, char *blk, int amnt)
 	return p;
 }
 
-P *binsc(p, c)
-P *p;
-char c;
+P *binsc(P *p, char c)
 {
 	if (p->b->o.crlf && c == '\n')
 		return binsm(p, "\r\n", 2);
@@ -1662,9 +1660,7 @@ char c;
 		return binsm(p, &c, 1);
 }
 
-P *binss(p, s)
-P *p;
-char *s;
+P *binss(P *p, char *s)
 {
 	return binsm(p, s, strlen(s));
 }
@@ -1674,8 +1670,7 @@ char *s;
  * Returns with -2 in error for read error or 0 in error for success.
  */
 
-static int bkread(fi, buff, size)
-char *buff;
+static int bkread(int fi, char *buff, int size)
 {
 	int a, b;
 
@@ -1694,8 +1689,7 @@ char *buff;
 /* Read up to 'max' bytes from a file into a buffer */
 /* Returns with 0 in error or -2 in error for read error */
 
-B *bread(fi, max)
-long max;
+B *bread(int fi, long int max)
 {
 	H anchor, *l;
 	long lines = 0, total = 0;
@@ -1731,9 +1725,7 @@ long max;
  * Returns new variable length string.
  */
 
-char *parsens(s, skip, amnt)
-char *s;
-long *skip, *amnt;
+char *parsens(char *s, long int *skip, long int *amnt)
 {
 	char *n = vsncpy(NULL, 0, sz(s));
 	int x;
@@ -1806,8 +1798,7 @@ long *skip, *amnt;
  * -4 for open error
  */
 
-B *bload(s)
-char *s;
+B *bload(char *s)
 {
 	char buffer[SEGSIZ];
 	FILE *fi;
@@ -1921,8 +1912,7 @@ char *s;
 
 /* Find already loaded buffer or load file into new buffer */
 
-B *bfind(s)
-char *s;
+B *bfind(char *s)
 {
 	B *b;
 
@@ -1950,7 +1940,7 @@ char *s;
 	return b;
 }
 
-char **getbufs()
+char **getbufs(void)
 {
 	char **s = vamk(16);
 	B *b;
@@ -1963,7 +1953,7 @@ char **getbufs()
 
 /* Find an orphaned buffer */
 
-B *borphan()
+B *borphan(void)
 {
 	B *b;
 
@@ -1981,9 +1971,7 @@ B *borphan()
  * Don't attempt to write past the end of the file
  */
 
-int bsavefd(p, fd, size)
-P *p;
-long size;
+int bsavefd(P *p, int fd, long int size)
 {
 	P *np = pdup(p);
 	int amnt;
@@ -2024,10 +2012,7 @@ long size;
 
 /* Save 'size' bytes beginning at 'p' in file 's' */
 
-int bsave(p, s, size)
-P *p;
-char *s;
-long size;
+int bsave(P *p, char *s, long int size)
 {
 	FILE *f;
 	long skip, amnt;
@@ -2096,8 +2081,7 @@ long size;
 	return error;
 }
 
-int brc(p)
-P *p;
+int brc(P *p)
 {
 	if (p->ofst == GSIZE(p->hdr))
 		return MAXINT;
@@ -2107,10 +2091,7 @@ P *p;
 		return p->ptr[p->ofst];
 }
 
-char *brmem(p, blk, size)
-P *p;
-char *blk;
-int size;
+char *brmem(P *p, char *blk, int size)
 {
 	char *bk = blk;
 	P *np;
@@ -2129,9 +2110,7 @@ int size;
 	return blk;
 }
 
-char *brs(p, size)
-P *p;
-int size;
+char *brs(P *p, int size)
 {
 	char *s = (char *) malloc(size + 1);
 
@@ -2139,9 +2118,7 @@ int size;
 	return brmem(p, s, size);
 }
 
-char *brvs(p, size)
-P *p;
-int size;
+char *brvs(P *p, int size)
 {
 	char *s = vstrunc(NULL, size);
 
@@ -2150,7 +2127,7 @@ int size;
 
 /* Save edit buffers when editor dies */
 
-extern char *ctime();
+extern char *ctime(const time_t *);
 
 RETSIGTYPE ttsig(int sig)
 {

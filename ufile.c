@@ -14,7 +14,6 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#include "undo.h"
 
 #ifdef UTIME
 #include <utime.h>
@@ -45,6 +44,7 @@
 #include "uerror.h"
 #include "macro.h"
 #include "ufile.h"
+#include "undo.h"
 #include "ushell.h"
 
 extern int orphan;
@@ -124,7 +124,7 @@ int ushell(BW * bw)
 
 /* Copy a file */
 
-int cp(char *from, char *to)
+static int cp(char *from, char *to)
 {
 	int f, g, amnt;
 	struct stat sbuf;
@@ -463,7 +463,7 @@ int uedit(BW *bw)
 
 /* Load file into buffer: can result in an orphaned buffer */
 
-int dorepl(BW *bw, char *s, void *obj, int *notify)
+static int dorepl(BW *bw, char *s, void *obj, int *notify)
 {
 	void *object = bw->object;
 	int ret = 0;
@@ -707,14 +707,17 @@ static int nask2(BW *bw, int c, void *object, int *notify)
 	}
 }
 
-int uask2(BW *bw)
+/* FIXME: unused ???? */
+#if 0
+static int uask2(BW *bw)
 {
 	return nask2(bw, 0, NULL, NULL);
 }
+#endif
 
 /* If buffer is modified, ask if it's ok to lose changes */
 
-int dolose(BW *bw, int c, void *object, int *notify)
+static int dolose(BW *bw, int c, void *object, int *notify)
 {
 	W *w;
 
@@ -759,7 +762,7 @@ int ulose(BW *bw)
 
 /* Buffer list */
 
-int dobuf(MENU *m, int x, char **s)
+static int dobuf(MENU *m, int x, char **s)
 {
 	char *name;
 	BW *bw = m->parent->win->object;
@@ -771,7 +774,7 @@ int dobuf(MENU *m, int x, char **s)
 	return dorepl(bw, name, NULL, notify);
 }
 
-int abrtb(MENU *m, int x, char **s)
+static int abrtb(MENU *m, int x, char **s)
 {
 	varm(s);
 	return -1;

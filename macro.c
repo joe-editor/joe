@@ -32,8 +32,7 @@ MACRO *freemacros = 0;
 
 /* Create a macro */
 
-MACRO *mkmacro(k, arg, n, cmd)
-CMD *cmd;
+MACRO *mkmacro(int k, int arg, int n, CMD *cmd)
 {
 	MACRO *macro;
 
@@ -57,8 +56,7 @@ CMD *cmd;
 
 /* Eliminate a macro */
 
-void rmmacro(macro)
-MACRO *macro;
+void rmmacro(MACRO *macro)
 {
 	if (macro) {
 		if (macro->steps) {
@@ -75,8 +73,7 @@ MACRO *macro;
 
 /* Add a step to block macro */
 
-void addmacro(macro, m)
-MACRO *macro, *m;
+void addmacro(MACRO *macro, MACRO *m)
 {
 	if (macro->n == macro->size) {
 		if (macro->steps)
@@ -89,8 +86,7 @@ MACRO *macro, *m;
 
 /* Duplicate a macro */
 
-MACRO *dupmacro(mac)
-MACRO *mac;
+MACRO *dupmacro(MACRO *mac)
 {
 	MACRO *m = mkmacro(mac->k, mac->arg, mac->n, mac->cmd);
 
@@ -106,8 +102,7 @@ MACRO *mac;
 
 /* Set key part of macro */
 
-MACRO *macstk(m, k)
-MACRO *m;
+MACRO *macstk(MACRO *m, int k)
 {
 	m->k = k;
 	return m;
@@ -115,8 +110,7 @@ MACRO *m;
 
 /* Set arg part of macro */
 
-MACRO *macsta(m, a)
-MACRO *m;
+MACRO *macsta(MACRO *m, int a)
 {
 	m->arg = a;
 	return m;
@@ -128,10 +122,7 @@ MACRO *m;
  *                 -2 for need more input
  */
 
-MACRO *mparse(m, buf, sta)
-MACRO *m;
-char *buf;
-int *sta;
+MACRO *mparse(MACRO *m, char *buf, int *sta)
 {
 	int y, c, x = 0;
 
@@ -265,8 +256,7 @@ static char *ptr;
 static int first;
 static int instr;
 
-char *unescape(ptr, c)
-char *ptr;
+static char *unescape(char *ptr, int c)
 {
 	if (c == '"')
 		*ptr++ = '\\', *ptr++ = '"';
@@ -282,8 +272,7 @@ char *ptr;
 	return ptr;
 }
 
-void domtext(m)
-MACRO *m;
+static void domtext(MACRO *m)
 {
 	int x;
 
@@ -316,9 +305,7 @@ MACRO *m;
 	}
 }
 
-char *mtext(s, m)
-char *s;
-MACRO *m;
+char *mtext(char *s, MACRO *m)
 {
 	ptr = s;
 	first = 1;
@@ -337,20 +324,19 @@ static int playmode[10];
 
 struct recmac *recmac = 0;
 
-static void unmac()
+static void unmac(void)
 {
 	if (recmac)
 		rmmacro(recmac->m->steps[--recmac->m->n]);
 }
 
-void chmac()
+void chmac(void)
 {
 	if (recmac && recmac->m->n)
 		recmac->m->steps[recmac->m->n - 1]->k = 3;
 }
 
-static void record(m)
-MACRO *m;
+static void record(MACRO *m)
 {
 	if (recmac)
 		addmacro(recmac->m, dupmacro(m));
@@ -358,8 +344,7 @@ MACRO *m;
 
 /* Query for user input */
 
-int uquery(bw)
-BW *bw;
+int uquery(BW *bw)
 {
 	int ret;
 	struct recmac *tmp = recmac;
@@ -377,8 +362,7 @@ static int macroptr;
 static int arg = 0;		/* Repeat argument */
 static int argset = 0;		/* Set if 'arg' is set */
 
-int exmacro(m, u)
-MACRO *m;
+int exmacro(MACRO *m, int u)
 {
 	int larg;
 	int negarg = 0;
@@ -453,8 +437,7 @@ MACRO *m;
 
 /* Execute a macro */
 
-int exemac(m)
-MACRO *m;
+int exemac(MACRO *m)
 {
 	record(m);
 	return exmacro(m, 1);
@@ -462,10 +445,7 @@ MACRO *m;
 
 /* Keyboard macro user routines */
 
-static int dorecord(bw, c, object, notify)
-BW *bw;
-void *object;
-int *notify;
+static int dorecord(BW *bw, int c, void *object, int *notify)
 {
 	int n;
 	struct recmac *r;
@@ -488,8 +468,7 @@ int *notify;
 	return 0;
 }
 
-int urecord(bw, c)
-BW *bw;
+int urecord(BW *bw, int c)
 {
 	if (c >= '0' && c <= '9')
 		return dorecord(bw, c, NULL, NULL);
@@ -501,7 +480,7 @@ BW *bw;
 
 extern volatile int dostaupd;
 
-int ustop()
+int ustop(void)
 {
 	unmac();
 	if (recmac) {
@@ -520,10 +499,7 @@ int ustop()
 	return 0;
 }
 
-int doplay(bw, c, object, notify)
-BW *bw;
-void *object;
-int *notify;
+static int doplay(BW *bw, int c, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -543,8 +519,7 @@ int *notify;
 	}
 }
 
-int umacros(bw)
-BW *bw;
+int umacros(BW *bw)
 {
 	int x;
 	char buf[1024];
@@ -564,8 +539,7 @@ BW *bw;
 	return 0;
 }
 
-int uplay(bw, c)
-BW *bw;
+int uplay(BW *bw, int c)
 {
 	if (c >= '0' && c <= '9')
 		return doplay(bw, c, NULL, NULL);
@@ -577,11 +551,7 @@ BW *bw;
 
 /* Repeat-count setting */
 
-static int doarg(bw, s, object, notify)
-BW *bw;
-char *s;
-void *object;
-int *notify;
+static int doarg(BW *bw, char *s, void *object, int *notify)
 {
 	long num;
 
@@ -598,8 +568,7 @@ int *notify;
 	return 0;
 }
 
-int uarg(bw)
-BW *bw;
+int uarg(BW *bw)
 {
 	if (wmkpw(bw->parent, "No. times to repeat next command (^C to abort): ", NULL, doarg, NULL, NULL, utypebw, NULL, NULL))
 		return 0;
@@ -610,10 +579,7 @@ BW *bw;
 int unaarg;
 int negarg;
 
-int douarg(bw, c, object, notify)
-BW *bw;
-void *object;
-int *notify;
+static int douarg(BW *bw, int c, void *object, int *notify)
 {
 	if (c == '-')
 		negarg = !negarg;
@@ -650,8 +616,7 @@ int *notify;
 		return -1;
 }
 
-int uuarg(bw, c)
-BW *bw;
+int uuarg(BW *bw, int c)
 {
 	unaarg = 0;
 	negarg = 0;

@@ -1,7 +1,7 @@
 #ifndef _Imath
 #define _Imath 1
 
-#include "queue.h"
+#include "config.h"
 #include "bw.h"
 
 extern char *merr;

@@ -39,7 +39,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Ivfile 1
 
 #include "config.h"
-#include "queue.h"
+#include "queue.h"	/* for LINK() macro */
 
 typedef struct vpage VPAGE;
 typedef struct vfile VFILE;
@@ -97,7 +97,7 @@ extern VPAGE **vheaders;	/* Array of headers */
  * Open a temporary virtual file.  File goes away when closed.  No actual
  * file is generated if everything fits in memory.
  */
-VFILE *vtmp();
+VFILE *vtmp PARAMS((void));
 
 #ifdef junk
 /* VFILE *vopen(char *name);
@@ -105,7 +105,7 @@ VFILE *vtmp();
  * Open a file for reading and if possible, writing.  If the file could not
  * be opened, NULL is returned.
  */
-VFILE *vopen();
+VFILE *vopen PARAMS(());
 #endif
 
 /* long vsize(VFILE *);
@@ -125,7 +125,7 @@ VFILE *vopen();
  *
  * Close a file.
  */
-void vclose();
+void vclose PARAMS((VFILE *vfile));
 
 #ifdef junk
 /* void vlimit(long amount);
@@ -138,7 +138,7 @@ void vclose();
  * non-referenced vpages.
  */
 
-void vlimit();
+void vlimit PARAMS(());
 #endif
 
 /* void vflsh(void); 
@@ -146,14 +146,14 @@ void vlimit();
  * Write all changed pages to the disk
  */
 
-void vflsh();
+void vflsh PARAMS((void));
 
 /* void vflshf(VFILE *vfile);
  *
  * Write changed pages for a specific file to the disk
  */
 
-void vflshf();
+void vflshf PARAMS((VFILE *vfile));
 
 /* char *vlock(VFILE *vfile,long addr);
  *
@@ -175,7 +175,7 @@ void vflshf();
  * ever might want to is to implement your own version of valloc()).
  */
 
-char *vlock();
+char *vlock PARAMS((VFILE *vfile, long int addr));
 
 /* VPAGE *vheader(char *);
  * Return address of page header for given page
@@ -211,7 +211,7 @@ char *vlock();
  * Returns file address of beginning of allocated space
  */
 
-long my_valloc();
+long my_valloc PARAMS((VFILE *vfile, long int size));
 
 #ifdef junk
 /******************************************************************************
@@ -224,7 +224,7 @@ long my_valloc();
  * Seek to a file address.  Allocates space to the file if you seek past the
  * end.
  */
-void vseek();
+void vseek PARAMS(());
 
 /* int vrgetc(VFILE *);
  * int vgetc(VFILE *);
@@ -233,8 +233,8 @@ void vseek();
  * They return MAXINT for end of file / beginning of file.
  */
 
-int _vgetc();
-int _vrgetc();
+int _vgetc PARAMS(());
+int _vrgetc PARAMS(());
 
 #define vrgetc(v) \
         ( (v)->left!=PGSIZE ? ( ++(v)->left, (int)(unsigned)*(--(v)->bufp) ) : _vrgetc(v) )
@@ -247,7 +247,7 @@ int _vrgetc();
  * Put character.  Returns character which is written.
  */
 
-int _vputc();
+int _vputc PARAMS(());
 
 #define vputc(v,c) \
 	( \
@@ -279,14 +279,14 @@ int _vputc();
  * Get long.  No alignment requirements.  Returns -1 if goes past end of file.
  */
 
-long vgetl();
+long vgetl PARAMS(());
 
 /* short vgetw(VFILE *);
  *
  * Get short.  No alignment requirements.  Returns -1 if goes past end of file.
  */
 
-short vgetw();
+short vgetw PARAMS(());
 
 /* long vputl(VFILE *,long);
  *
@@ -294,7 +294,7 @@ short vgetw();
  * Returns value written.
  */
 
-long vputl();
+long vputl PARAMS(());
 
 /* short vputw(VFILE *,short);
  *
@@ -302,7 +302,7 @@ long vputl();
  * Returns value written.
  */
 
-short vputw();
+short vputw PARAMS(());
 
 /* char *vgets(VFILE *v,char *s);
  *
@@ -315,27 +315,27 @@ short vputw();
  * This requires that you use the 'vs.h' / 'vs.c' library.
  */
 
-char *vgets();
+char *vgets PARAMS(());
 
 /* void vputs(VFILE *v,char *s);
  *
  * Write zero terminated string. \n is not appended */
 
-void vputs();
+void vputs PARAMS(());
 
 /* void vread(VFILE *,char *,int size);
  *
  * Read bytes from a virtual file into a local data block
  */
 
-void vread();
+void vread PARAMS(());
 
 /* void vwrite(VFILE *,char *,int size);
  *
  * Write bytes from a local data block into a virtual file
  */
 
-void vwrite();
+void vwrite PARAMS(());
 
 /*************************************************************************** 
  * The following functions implement array I/O on top of the above virtual *
@@ -385,28 +385,28 @@ int _wc();
  * end of file.
  */
 
-long rl();
+long rl PARAMS(());
 
 /* long wl(VFILE *vfile,long addr,long c);
  * Write big-endian long.  No alignment requirements.  Automatically expands
  * file if necessary.
  */
 
-long wl();
+long wl PARAMS(());
 
 /* short rw(VFILE *vfile,long addr);
  * Read big-endian short.  No alignment requirements.  Returns -1 if goes past
  * end of file.
  */
 
-short rw();
+short rw PARAMS(());
 
 /* short ww(VFILE *vfile,long addr,short c);
  * Write big-endian short.  No alignment requirements.  Automatically expands
  * file if necessary.
  */
 
-short ww();
+short ww PARAMS(());
 
 #endif
 #endif

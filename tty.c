@@ -230,8 +230,7 @@ MPX asyncs[NPROC];
 /* Versions of 'read' and 'write' which automatically retry during signals
  * (yuck, yuck, yuck... we the #$%#$@ did they have to do this?) */
 
-int jread(fd, buf, siz)
-char *buf;
+int jread(int fd, void *buf, int siz)
 {
 	int rt;
 
@@ -241,8 +240,7 @@ char *buf;
 	return rt;
 }
 
-int jwrite(fd, buf, siz)
-char *buf;
+int jwrite(int fd, void *buf, int siz)
 {
 	int rt;
 
@@ -254,7 +252,7 @@ char *buf;
 
 /* Set signals for JOE */
 
-void sigjoe()
+void sigjoe(void)
 {
 	if (ttysig)
 		return;
@@ -267,7 +265,7 @@ void sigjoe()
 
 /* Restore signals for exiting */
 
-void signrm()
+void signrm(void)
 {
 	if (!ttysig)
 		return;
@@ -280,7 +278,7 @@ void signrm()
 
 /* Open terminal and set signals */
 
-void ttopen()
+void ttopen(void)
 {
 	sigjoe();
 	ttopnn();
@@ -288,7 +286,7 @@ void ttopen()
 
 /* Close terminal and restore signals */
 
-void ttclose()
+void ttclose(void)
 {
 	ttclsn();
 	signrm();
@@ -317,14 +315,14 @@ static RETSIGTYPE dotick(int unused)
 	dostaupd = 1;
 }
 
-void tickoff()
+void tickoff(void)
 {
 	alarm(0);
 }
 
 struct sigaction vnew;
 
-void tickon()
+void tickon(void)
 {
 	ticked = 0;
 	vnew.sa_handler = dotick;
@@ -345,7 +343,7 @@ void tickon()
 
 /* Open terminal */
 
-void ttopnn()
+void ttopnn(void)
 {
 	int x, bbaud;
 
@@ -459,7 +457,7 @@ void ttopnn()
 
 /* Close terminal */
 
-void ttclsn()
+void ttclsn(void)
 {
 	int oleave;
 
@@ -500,7 +498,7 @@ static RETSIGTYPE dosig(int unused)
 
 #ifdef HAVE_SETITIMER
 #ifdef SIG_SETMASK
-void maskit(void)
+static void maskit(void)
 {
 	sigset_t set;
 
@@ -509,7 +507,7 @@ void maskit(void)
 	sigprocmask(SIG_SETMASK, &set, NULL);
 }
 
-void unmaskit(void)
+static void unmaskit(void)
 {
 	sigset_t set;
 
@@ -517,7 +515,7 @@ void unmaskit(void)
 	sigprocmask(SIG_SETMASK, &set, NULL);
 }
 
-void pauseit(void)
+static void pauseit(void)
 {
 	sigset_t set;
 
@@ -526,17 +524,17 @@ void pauseit(void)
 }
 
 #else
-void maskit(void)
+static void maskit(void)
 {
 	sigsetmask(sigmask(SIGALRM));
 }
 
-void unmaskit(void)
+static void unmaskit(void)
 {
 	sigsetmask(0);
 }
 
-void pauseit(void)
+static void pauseit(void)
 {
 	sigpause(0);
 }
@@ -544,7 +542,7 @@ void pauseit(void)
 #endif
 #endif
 
-int ttflsh()
+int ttflsh(void)
 {
 	/* Flush output */
 	if (obufp) {
@@ -624,9 +622,9 @@ int ttflsh()
 
 /* Read next character from input */
 
-void mpxdied();
+void mpxdied(MPX *m);
 
-int ttgetc()
+int ttgetc(void)
 {
 	int stat;
 
@@ -682,8 +680,7 @@ int ttgetc()
 
 /* Write string to output */
 
-void ttputs(s)
-char *s;
+void ttputs(char *s)
 {
 	while (*s) {
 		obuf[obufp++] = *s++;
@@ -694,8 +691,7 @@ char *s;
 
 /* Get window size */
 
-void ttgtsz(x, y)
-int *x, *y;
+void ttgtsz(int *x, int *y)
 {
 #ifdef TIOCGSIZE
 	struct ttysize getit;
@@ -723,8 +719,7 @@ int *x, *y;
 #endif
 }
 
-void ttshell(cmd)
-char *cmd;
+void ttshell(char *cmd)
 {
 	int x, omode = ttymode;
 	char *s = getenv("SHELL");
@@ -749,7 +744,7 @@ char *cmd;
 	}
 }
 
-void ttsusp()
+void ttsusp(void)
 {
 	int omode;
 
@@ -769,7 +764,7 @@ void ttsusp()
 	tickon();
 }
 
-void mpxstart()
+static void mpxstart(void)
 {
 	int fds[2];
 
@@ -801,7 +796,7 @@ void mpxstart()
 	ackkbd = fds[1];
 }
 
-void mpxend()
+static void mpxend(void)
 {
 	kill(kbdpid, 9);
 	while (wait(NULL) < 0 && errno == EINTR) ;
@@ -823,8 +818,7 @@ void mpxend()
 
 extern char *_getpty();
 
-char *getpty(ptyfd)
-int *ptyfd;
+static char *getpty(int *ptyfd)
 {
 	return _getpty(ptyfd, O_RDWR, 0600, 0);
 }
@@ -836,8 +830,7 @@ int *ptyfd;
 
 extern char *ptsname();
 
-char *getpty(ptyfd)
-int *ptyfd;
+static char *getpty(int *ptyfd)
 {
 	int fdm;
 	char *name;
@@ -862,8 +855,7 @@ int *ptyfd;
  * process and the process gets to be the session leader.
  */
 
-char *getpty(ptyfd)
-int *ptyfd;
+static char *getpty(int *ptyfd)
 {
 	int x, fd;
 	char *orgpwd = pwd();
@@ -917,7 +909,7 @@ int *ptyfd;
 
 int dead = 0;
 
-RETSIGTYPE death(int unused)
+static RETSIGTYPE death(int unused)
 {
 	wait(NULL);
 	dead = 1;
@@ -933,8 +925,7 @@ struct sigaction inew;
 
 extern char **mainenv;
 
-char **newenv(old, s)
-char **old, *s;
+static char **newenv(char **old, char *s)
 {
 	char **new;
 	int x, y, z;
@@ -958,14 +949,7 @@ char **old, *s;
 	return new;
 }
 
-MPX *mpxmk(ptyfd, cmd, args, func, object, die, dieobj)
-int *ptyfd;
-char *cmd;
-char *args[];
-void (*func) ();
-void *object;
-void (*die) ();
-void *dieobj;
+MPX *mpxmk(int *ptyfd, char *cmd, char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj)
 {
 	int fds[2];
 	int comm[2];
@@ -1092,8 +1076,7 @@ void *dieobj;
 	return m;
 }
 
-void mpxdied(m)
-MPX *m;
+void mpxdied(MPX *m)
 {
 	if (!--nmpx)
 		mpxend();

@@ -2,7 +2,7 @@
 #define _Isrch 1
 
 #include "config.h"
-#include "queue.h"
+#include "queue.h"	/* for LINK() macro */
 #include "b.h"
 
 typedef struct search SRCH;
@@ -32,15 +32,15 @@ struct search {
 	int restrict;		/* Search restricted to marked block */
 };
 
-SRCH *mksrch();
-void rmsrch();
+SRCH *mksrch PARAMS((char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest));
+void rmsrch PARAMS((SRCH *srch));
 
-int dopfnext();
+int dopfnext PARAMS((BW *bw, SRCH *srch, int *notify));
 
-int pffirst();
-int pfnext();
+int pffirst PARAMS((BW *bw));
+int pfnext PARAMS((BW *bw));
 
-int pqrepl();
-int prfirst();
+int pqrepl PARAMS((BW *bw));
+int prfirst PARAMS((BW *bw));
 
 #endif

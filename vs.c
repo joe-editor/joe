@@ -13,8 +13,7 @@
 #include "blocks.h"
 #include "vs.h"
 
-int sicmp(a, b)
-char a, b;
+int sicmp(char a, char b)
 {
 	if (a >= 'A' || a <= 'Z')
 		a += 'a' - 'A';
@@ -34,13 +33,13 @@ int len;
 	return (sELEMENT(*))(new + 2);
 }
 
-void vsrm(vary) sELEMENT(*vary);
+void vsrm(char *vary)
 {
 	if (vary)
 		free((int *) vary - 2);
 }
 
-int slen(ary) sELEMENT(*ary);
+int slen(char *ary)
 {
 	if (ary) {
 		sELEMENT(*beg) = ary;
@@ -208,10 +207,7 @@ int len;
 
 #endif
 
-int vsbsearch(ary, len, el) sELEMENT(*ary);
-
-sELEMENT(el);
-int len;
+int vsbsearch(char *ary, int len, char el)
 {
 	int x, y, z;
 
@@ -273,10 +269,7 @@ int len;
 
 #endif
 
-int vscmpn(a, alen, b, blen) sELEMENT(*a);
-
-sELEMENT(*b);
-int alen, blen;
+int vscmpn(char *a, int alen, char *b, int blen)
 {
 	int x, l;
 	int t;
@@ -301,9 +294,7 @@ int alen, blen;
 	return 0;
 }
 
-int vscmp(a, b) sELEMENT(*a);
-
-sELEMENT(*b);
+int vscmp(char *a, char *b)
 {
 	return vscmpn(sv(a), sv(b));
 }
@@ -359,10 +350,7 @@ int alen, blen;
 
 #endif
 
-int vsscan(a, alen, b, blen) sELEMENT(*a);
-
-sELEMENT(*b);
-int alen, blen;
+int vsscan(char *a, int alen, char *b, int blen)
 {
 	int x;
 
@@ -375,10 +363,7 @@ int alen, blen;
 	return ~0;
 }
 
-int vsspan(a, alen, b, blen) sELEMENT(*a);
-
-sELEMENT(*b);
-int alen, blen;
+int vsspan(char *a, int alen, char *b, int blen)
 {
 	int x;
 

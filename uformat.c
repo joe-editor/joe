@@ -21,8 +21,7 @@
 
 /* Center line cursor is on and move cursor to beginning of next line */
 
-int ucenter(bw)
-BW *bw;
+int ucenter(BW *bw)
 {
 	P *p = bw->cursor, *q;
 	long endcol, begcol, x;
@@ -72,7 +71,7 @@ BW *bw;
 
 /* Return true if c is a character which can indent a paragraph */
 
-int cpara(c)
+static int cpara(int c)
 {
 	if (c == ' ' || c == '\t' || c == '\\' ||
 	    c == '>' || c == '|' || c == ':' || c == '*' || c == '/'
@@ -88,8 +87,7 @@ int cpara(c)
  *  2) Lines which begin with '.'
  */
 
-int pisnpara(p)
-P *p;
+static int pisnpara(P *p)
 {
 	P *q;
 	int c;
@@ -106,8 +104,7 @@ P *p;
 
 /* Determine amount of indentation on current line */
 
-long nindent(p)
-P *p;
+static long nindent(P *p)
 {
 	P *q = pdup(p);
 	long col;
@@ -122,8 +119,7 @@ P *p;
 
 /* Get indentation prefix column */
 
-long prefix(p)
-P *p;
+static long prefix(P *p)
 {
 	long len;
 	P *q = pdup(p);
@@ -154,8 +150,7 @@ P *p;
 
 int within = 0;
 
-P *pbop(p)
-P *p;
+P *pbop(P *p)
 {
 	long indent;
 	long prelen;
@@ -205,8 +200,7 @@ P *p;
  *  3) A line with prefix column different from first line
  */
 
-P *peop(p)
-P *p;
+P *peop(P *p)
 {
 	long indent;
 	long prelen;
@@ -227,8 +221,7 @@ P *p;
 
 /* Motion commands */
 
-int ubop(bw)
-BW *bw;
+int ubop(BW *bw)
 {
 	P *q = pdup(bw->cursor);
 
@@ -248,8 +241,7 @@ BW *bw;
 	}
 }
 
-int ueop(bw)
-BW *bw;
+int ueop(BW *bw)
 {
 	P *q = pdup(bw->cursor);
 
@@ -274,10 +266,7 @@ BW *bw;
  * after . ? or !
  */
 
-void wrapword(p, indent, french, indents)
-P *p;
-long indent;
-char *indents;
+void wrapword(P *p, long int indent, int french, char *indents)
 {
 	P *q;
 	int rmf = 0;
@@ -352,8 +341,7 @@ char *indents;
 
 /* Reformat paragraph */
 
-int uformat(bw)
-BW *bw;
+int uformat(BW *bw)
 {
 	long indent;
 	char *indents;
@@ -530,8 +518,7 @@ BW *bw;
 
 extern int lightoff;
 
-int ufmtblk(bw)
-BW *bw;
+int ufmtblk(BW *bw)
 {
 	if (markv(1) && bw->cursor->byte >= markb->byte && bw->cursor->byte <= markk->byte) {
 		markk->end = 1;

@@ -227,7 +227,7 @@ int help_on(SCREEN *t)
 /*
  * Hide help screen
  */
-void help_off(SCREEN *t)
+static void help_off(SCREEN *t)
 {
 	t->wind = skiptop;
 	wfit(t);

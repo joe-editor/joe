@@ -20,20 +20,20 @@
    Nothing happens if 'd'=='s' or 'sz'==0
    Returns original value of 'd'
  */
-char *mfwrd();
+char *mfwrd PARAMS((register char *d, register char *s, register int sz));
 
 /* char *mbkwd(char *d,char *s,int sz); Copy 'sz' bytes from 's' to 'd'.
    The copy occures in the backward direction (use for inserts)
    Nothing happens if 'd'=='s' or 'sz'==0
    Returns original value of 'd'
  */
-char *mbkwd();
+char *mbkwd PARAMS((register char *d, register char *s, register int sz));
 
 /* char *mmove(char *d,char *s,int sz); Copy 'sz' bytes from 's' to 'd'.
  * Chooses either mbkwd or mfwrd to do this such that the data won't get
  * clobbered.
  */
-char *mmove();
+void *mmove PARAMS((void *d, void *s, int sz));
 
 /* Use this for non-overlapping copies */
 #define mcpy mbkwd
@@ -42,25 +42,25 @@ char *mmove();
  * If 'sz'==0 nothing happens
  * Return original value of 'd'
  */
-char *mset();
+char *mset PARAMS((register void *dest, register unsigned char c, register int sz));
 
 /* int *msetI(int *d,int c,int sz); Set 'sz' ints at 'd' to 'c'.
  * If 'sz'==0 nothing happens
  * Returns orininal value of 'd'
  */
-int *msetI();
+int *msetI PARAMS((void *dest, int c, int sz));
 
 /* int mcnt(char *blk,char c,int size);
  *
  * Count the number of occurances a character appears in a block
  */
-int mcnt();
+int mcnt PARAMS((register char *blk, register char c, int size));
 
 #ifdef junk
 /* char *mchr(char *s,char c);
  *
  * Return address of first 'c' following 's'.
  */
-char *mchr();
+char *mchr PARAMS(());
 #endif
 #endif

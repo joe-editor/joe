@@ -19,17 +19,17 @@ char *lastpat = 0;		/* Previous pattern */
 
 IREC fri = { {&fri, &fri} };	/* Free-list of irecs */
 
-IREC *alirec()
+static IREC *alirec(void)
 {				/* Allocate an IREC */
 	return alitem(&fri, sizeof(IREC));
 }
 
-void frirec(IREC * i)
+static void frirec(IREC * i)
 {				/* Free an IREC */
 	enquef(IREC, link, &fri, i);
 }
 
-void rmisrch(struct isrch *isrch)
+static void rmisrch(struct isrch *isrch)
 {				/* Eliminate a struct isrch */
 	if (isrch) {
 		vsrm(isrch->pattern);
@@ -38,13 +38,13 @@ void rmisrch(struct isrch *isrch)
 	}
 }
 
-int iabrt(BW * bw, struct isrch *isrch)
+static int iabrt(BW * bw, struct isrch *isrch)
 {				/* User hit ^C */
 	rmisrch(isrch);
 	return -1;
 }
 
-void iappend(BW * bw, struct isrch *isrch, char *s, int len)
+static void iappend(BW * bw, struct isrch *isrch, char *s, int len)
 {				/* Append text and search */
 	/* Append char and search */
 	IREC *i = alirec();
@@ -63,7 +63,7 @@ void iappend(BW * bw, struct isrch *isrch, char *s, int len)
 }
 
 /* Main user interface */
-int itype(BW * bw, int c, struct isrch *isrch, int *notify)
+static int itype(BW * bw, int c, struct isrch *isrch, int *notify)
 {
 	IREC *i;
 	int omid;
@@ -143,7 +143,7 @@ int itype(BW * bw, int c, struct isrch *isrch, int *notify)
 	}
 }
 
-int doisrch(BW * bw, int dir)
+static int doisrch(BW * bw, int dir)
 {				/* Create a struct isrch */
 	struct isrch *isrch = (struct isrch *) malloc(sizeof(struct isrch));
 

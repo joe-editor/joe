@@ -32,7 +32,7 @@
 #include "qw.h"
 #include "tw.h"
 
-char *ctime();
+char *ctime(const time_t *);
 extern char *exmsg;
 extern int square;
 int staen = 0;
@@ -41,9 +41,7 @@ int keepup = 0;
 
 /* Move text window */
 
-static void movetw(bw, x, y)
-BW *bw;
-int x, y;
+static void movetw(BW *bw, int x, int y)
 {
 	TW *tw = (TW *) bw->object;
 
@@ -64,9 +62,7 @@ int x, y;
 
 /* Resize text window */
 
-static void resizetw(bw, wi, he)
-BW *bw;
-int wi, he;
+static void resizetw(BW *bw, int wi, int he)
 {
 	if (bw->parent->ny || !staen)
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he - 1);
@@ -74,10 +70,7 @@ int wi, he;
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he);
 }
 
-char *stagen(stalin, bw, s, fill)
-char *stalin;
-BW *bw;
-char *s;
+static char *stagen(char *stalin, BW *bw, char *s, int fill)
 {
 	char buf[80];
 	int x;
@@ -282,8 +275,7 @@ char *s;
 	return stalin;
 }
 
-static void disptw(bw, flg)
-BW *bw;
+static void disptw(BW *bw, int flg)
 {
 	W *w = bw->parent;
 	TW *tw = (TW *) bw->object;
@@ -328,8 +320,7 @@ BW *bw;
 
 /* Split current window */
 
-void iztw(tw, y)
-TW *tw;
+static void iztw(TW *tw, int y)
 {
 	tw->stalin = 0;
 	tw->staright = 0;
@@ -340,8 +331,7 @@ TW *tw;
 
 extern int dostaupd;
 
-int usplitw(bw)
-BW *bw;
+int usplitw(BW *bw)
 {
 	W *w = bw->parent;
 	int newh = getgrouph(w);
@@ -368,8 +358,7 @@ BW *bw;
 	return 0;
 }
 
-int uduptw(bw)
-BW *bw;
+int uduptw(BW *bw)
 {
 	W *w = bw->parent;
 	int newh = getgrouph(w);
@@ -398,10 +387,7 @@ BW *bw;
 
 /* User routine for aborting a text window */
 
-int naborttw(bw, k, object, notify)
-BW *bw;
-void *object;
-int *notify;
+static int naborttw(BW *bw, int k, void *object, int *notify)
 {
 	W *w = bw->parent;
 	B *b;
@@ -432,27 +418,19 @@ int *notify;
 	return 0;
 }
 
-static void instw(bw, b, l, n, flg)
-BW *bw;
-B *b;
-long l, n;
-int flg;
+static void instw(BW *bw, B *b, long int l, long int n, int flg)
 {
 	if (b == bw->b)
 		bwins(bw, l, n, flg);
 }
 
-static void deltw(bw, b, l, n, flg)
-BW *bw;
-B *b;
-long l, n;
-int flg;
+static void deltw(BW *bw, B *b, long int l, long int n, int flg)
 {
 	if (b == bw->b)
 		bwdel(bw, l, n, flg);
 }
 
-int uabort();
+int uabort(BW *bw, int k);
 
 static WATOM watomtw = {
 	"main",
@@ -468,8 +446,7 @@ static WATOM watomtw = {
 	TYPETW
 };
 
-int uabort(bw, k)
-BW *bw;
+int uabort(BW *bw, int k)
 {
 	if (bw->parent->watom != &watomtw)
 		return wabort(bw->parent);
@@ -492,8 +469,7 @@ BW *bw;
 
 /* Abort buffer */
 
-int uabortbuf(bw)
-BW *bw;
+int uabortbuf(BW *bw)
 {
 	W *w = bw->parent;
 	B *b;
@@ -519,8 +495,7 @@ BW *bw;
 
 /* Kill this window */
 
-int utw0(b)
-BASE *b;
+int utw0(BASE *b)
 {
 	BW *bw = b->parent->main->object;
 
@@ -536,8 +511,7 @@ BASE *b;
 
 /* Only one window */
 
-int utw1(b)
-BASE *b;
+int utw1(BASE *b)
 {
 	W *starting = b->parent;
 	W *mainw = starting->main;
@@ -563,9 +537,7 @@ BASE *b;
 	return 0;
 }
 
-void setline(b, line)
-B *b;
-long line;
+void setline(B *b, long int line)
 {
 	W *w = maint->curwin;
 
@@ -589,9 +561,7 @@ long line;
 
 /* Create a text window.  It becomes the last window on the screen */
 
-BW *wmktw(t, b)
-SCREEN *t;
-B *b;
+BW *wmktw(SCREEN *t, B *b)
 {
 	W *w;
 	BW *bw;

@@ -195,7 +195,7 @@ struct glopts {
 
 int isiz = 0;
 
-void izopts(void)
+static void izopts(void)
 {
 	int x;
 
@@ -373,13 +373,13 @@ int glopt(char *s, char *arg, OPTIONS * options, int set)
 
 static int optx = 0;
 
-int doabrt1(BW * bw, int *xx)
+static int doabrt1(BW * bw, int *xx)
 {
 	free(xx);
 	return -1;
 }
 
-int doopt1(BW * bw, char *s, int *xx, int *notify)
+static int doopt1(BW * bw, char *s, int *xx, int *notify)
 {
 	int ret = 0;
 	int x = *xx;
@@ -428,7 +428,7 @@ int doopt1(BW * bw, char *s, int *xx, int *notify)
 	return ret;
 }
 
-int doopt(MENU * m, int x, void *object, int flg)
+static int doopt(MENU * m, int x, void *object, int flg)
 {
 	BW *bw = m->parent->win->object;
 	int *xx;
@@ -511,7 +511,7 @@ int doopt(MENU * m, int x, void *object, int flg)
 	return 0;
 }
 
-int doabrt(MENU * m, int x, char **s)
+static int doabrt(MENU * m, int x, char **s)
 {
 	optx = x;
 	for (x = 0; s[x]; ++x)

@@ -37,10 +37,7 @@ B *errbuf = 0;			/* Buffer with error messages */
 
 /* Insert and delete notices */
 
-void inserr(name, where, n, bol)
-char *name;
-long where;
-long n;
+void inserr(char *name, long int where, long int n, int bol)
 {
 	ERROR *e;
 
@@ -56,10 +53,7 @@ long n;
 	}
 }
 
-void delerr(name, where, n)
-char *name;
-long where;
-long n;
+void delerr(char *name, long int where, long int n)
 {
 	ERROR *e;
 
@@ -77,8 +71,7 @@ long n;
 
 /* Abort notice */
 
-void abrerr(name)
-char *name;
+void abrerr(char *name)
 {
 	ERROR *e;
 
@@ -90,8 +83,7 @@ char *name;
 
 /* Save notice */
 
-void saverr(name)
-char *name;
+void saverr(char *name)
 {
 	ERROR *e;
 
@@ -107,8 +99,7 @@ ERROR errnodes = { {&errnodes, &errnodes}
 
 /* Free an error node */
 
-void freeerr(n)
-ERROR *n;
+static void freeerr(ERROR *n)
 {
 	vsrm(n->file);
 	vsrm(n->msg);
@@ -117,7 +108,7 @@ ERROR *n;
 
 /* Free all errors */
 
-void freeall()
+static void freeall(void)
 {
 	while (!qempty(ERROR, link, &errors))
 		freeerr(deque_f(ERROR, link, errors.link.next));
@@ -126,9 +117,7 @@ void freeall()
 
 /* Parse error messages into database */
 
-int parseit(s, row)
-char *s;
-long row;
+static int parseit(char *s, long int row)
 {
 	int x, y;
 	char *name = 0;
@@ -175,8 +164,7 @@ long row;
 
 /* Parse the error output contained in a buffer */
 
-long parserr(b)
-B *b;
+static long parserr(B *b)
 {
 	P *p = pdup(b->bof);
 	P *q = pdup(p);
@@ -200,8 +188,7 @@ B *b;
 	return nerrs;
 }
 
-int uparserr(bw)
-BW *bw;
+int uparserr(BW *bw)
 {
 	errbuf = bw->b;
 	freeall();
@@ -210,8 +197,7 @@ BW *bw;
 	return 0;
 }
 
-int unxterr(bw)
-BW *bw;
+int unxterr(BW *bw)
 {
 	int omid;
 
@@ -236,8 +222,7 @@ BW *bw;
 	return 0;
 }
 
-int uprverr(bw)
-BW *bw;
+int uprverr(BW *bw)
 {
 	int omid;
 

@@ -25,7 +25,7 @@ POS frpos = { {&frpos, &frpos} };
 POS *curpos = &pos;
 int npos = 0;
 
-void markpos(W * w, P * p)
+static void markpos(W *w, P *p)
 {
 	POS *new = alitem(&frpos, sizeof(POS));
 
@@ -51,7 +51,7 @@ void afterpos(void)
 	}
 }
 
-void aftermove(W * w, P * p)
+void aftermove(W *w, P *p)
 {
 	if (pos.link.prev != &pos && pos.link.prev->w == w && pos.link.prev->p && labs(pos.link.prev->p->line - p->line) < 3) {
 		poffline(pset(pos.link.prev->p, p));
@@ -60,7 +60,7 @@ void aftermove(W * w, P * p)
 	}
 }
 
-void windie(W * w)
+void windie(W *w)
 {
 	POS *n;
 
@@ -71,7 +71,7 @@ void windie(W * w)
 	}
 }
 
-int unextpos(BW * bw)
+int unextpos(BW *bw)
 {
 	W *w = bw->parent;
 
@@ -101,7 +101,7 @@ int unextpos(BW * bw)
 	}
 }
 
-int uprevpos(BW * bw)
+int uprevpos(BW *bw)
 {
 	W *w = bw->parent;
 

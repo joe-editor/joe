@@ -14,7 +14,7 @@
 
 char *merr;
 
-RETSIGTYPE fperr(int unused)
+static RETSIGTYPE fperr(int unused)
 {
 	if (!merr) {
 		merr = "Float point exception";
@@ -29,7 +29,7 @@ struct var {
 	struct var *next;
 } *vars = 0;
 
-struct var *get(char *str)
+static struct var *get(char *str)
 {
 	struct var *v;
 
@@ -50,7 +50,7 @@ struct var *get(char *str)
 char *ptr;
 struct var *dumb;
 
-double expr(int prec, struct var **rtv)
+static double expr(int prec, struct var **rtv)
 {
 	double x = 0.0;
 	struct var *v = 0;
@@ -174,7 +174,7 @@ double calc(BW * bw, char *s)
 }
 
 /* Main user interface */
-int domath(BW * bw, char *s, void *object, int *notify)
+static int domath(BW * bw, char *s, void *object, int *notify)
 {
 	double result = calc(bw, s);
 

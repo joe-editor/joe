@@ -28,14 +28,12 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 extern int dostaupd;
 
-void menufllw(m)
-MENU *m;
+static void menufllw(MENU *m)
 {
 	m->top = m->cursor - m->cursor % m->perline;
 }
 
-void menudisp(m)
-MENU *m;
+static void menudisp(MENU *m)
 {
 	int col;
 	int x;
@@ -75,22 +73,19 @@ MENU *m;
 	m->parent->curx = (m->cursor - m->top) * (m->width + 1);
 }
 
-void menumove(m, x, y)
-MENU *m;
+static void menumove(MENU *m, int x, int y)
 {
 	m->x = x;
 	m->y = y;
 }
 
-void menuresz(m, wi, he)
-MENU *m;
+static void menuresz(MENU *m, int wi, int he)
 {
 	m->w = wi;
 	m->h = he;
 }
 
-void mconfig(m)
-MENU *m;
+static void mconfig(MENU *m)
 {
 	/* Configure menu display parameters */
 	if (m->list) {
@@ -107,30 +102,26 @@ MENU *m;
 	}
 }
 
-int umbol(m)
-MENU *m;
+int umbol(MENU *m)
 {
 	m->cursor = m->top;
 	return 0;
 }
 
-int umbof(m)
-MENU *m;
+int umbof(MENU *m)
 {
 	m->cursor = 0;
 	return 0;
 }
 
-int umeof(m)
-MENU *m;
+int umeof(MENU *m)
 {
 	if (m->nitems)
 		m->cursor = m->nitems - 1;
 	return 0;
 }
 
-int umeol(m)
-MENU *m;
+int umeol(MENU *m)
 {
 	if (m->top + m->perline < m->nitems)
 		m->cursor = m->top + m->perline - 1;
@@ -139,8 +130,7 @@ MENU *m;
 	return 0;
 }
 
-int umrtarw(m)
-MENU *m;
+int umrtarw(MENU *m)
 {
 	if (m->cursor + 1 < m->nitems) {
 		++m->cursor;
@@ -149,8 +139,7 @@ MENU *m;
 		return -1;
 }
 
-int umltarw(m)
-MENU *m;
+int umltarw(MENU *m)
 {
 	if (m->cursor) {
 		--m->cursor;
@@ -159,8 +148,7 @@ MENU *m;
 		return -1;
 }
 
-int umuparw(m)
-MENU *m;
+int umuparw(MENU *m)
 {
 	if (m->cursor >= m->perline) {
 		m->cursor -= m->perline;
@@ -169,8 +157,7 @@ MENU *m;
 		return -1;
 }
 
-int umdnarw(m)
-MENU *m;
+int umdnarw(MENU *m)
 {
 	if (m->cursor + m->perline < m->nitems) {
 		m->cursor += m->perline;
@@ -181,8 +168,7 @@ MENU *m;
 		return -1;
 }
 
-int umrtn(m)
-MENU *m;
+static int umrtn(MENU *m)
 {
 	dostaupd = 1;
 	if (m->func)
@@ -191,8 +177,7 @@ MENU *m;
 		return -1;
 }
 
-int umbacks(m)
-MENU *m;
+int umbacks(MENU *m)
 {
 	if (m->backs)
 		return m->backs(m, m->cursor, m->object);
@@ -200,8 +185,7 @@ MENU *m;
 		return -1;
 }
 
-int umkey(m, c)
-MENU *m;
+static int umkey(MENU *m, int c)
 {
 	int x;
 	int n = 0;
@@ -239,8 +223,7 @@ MENU *m;
 	return -1;
 }
 
-static int menuabort(m)
-MENU *m;
+static int menuabort(MENU *m)
 {
 	W *w = m->parent;
 	int (*func) () = m->abrt;
@@ -269,23 +252,14 @@ WATOM watommenu = {
 	TYPEMENU
 };
 
-void ldmenu(m, s, cursor)
-MENU *m;
-char **s;
+void ldmenu(MENU *m, char **s, int cursor)
 {
 	m->list = s;
 	m->cursor = cursor;
 	mconfig(m);
 }
 
-MENU *mkmenu(obw, s, func, abrt, backs, cursor, object, notify)
-BASE *obw;
-char **s;
-int (*func) ();
-int (*abrt) ();
-int (*backs) ();
-void *object;
-int *notify;
+MENU *mkmenu(BASE *obw, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify)
 {
 	W *w = obw->parent;
 	W *new = wcreate(w->t, &watommenu, w, w, w->main, 1, NULL, notify);
@@ -313,8 +287,7 @@ int *notify;
 	return m;
 }
 
-char *cull(a, b)
-char *a, *b;
+static char *cull(char *a, char *b)
 {
 	int x;
 
@@ -322,8 +295,7 @@ char *a, *b;
 	return vstrunc(a, x);
 }
 
-char *mcomplete(m)
-MENU *m;
+char *mcomplete(MENU *m)
 {
 	char *com;
 	int x;

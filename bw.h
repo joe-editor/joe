@@ -37,17 +37,17 @@ struct bw {
 };
 
 extern int mid;
-void bwfllw();
-void bwins();
-void bwdel();
-void bwgen();
-BW *bwmk();
-void bwmove();
-void bwresz();
-void bwrm();
-int ustat();
-int ucrawll();
-int ucrawlr();
-void orphit();
+void bwfllw PARAMS((BW *w));
+void bwins PARAMS((BW *w, long int l, long int n, int flg));
+void bwdel PARAMS((BW *w, long int l, long int n, int flg));
+void bwgen PARAMS((BW *w, int linums));
+BW *bwmk PARAMS((W *window, B *b, int prompt));
+void bwmove PARAMS((BW *w, int x, int y));
+void bwresz PARAMS((BW *w, int wi, int he));
+void bwrm PARAMS((BW *w));
+int ustat PARAMS((BW *bw));
+int ucrawll PARAMS((BW *bw));
+int ucrawlr PARAMS((BW *bw));
+void orphit PARAMS((BW *bw));
 
 #endif

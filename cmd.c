@@ -34,7 +34,7 @@
 
 extern int smode;
 int beep = 0;
-int uexecmd();
+int uexecmd(BW *bw);
 
 /* Command table */
 
@@ -228,8 +228,7 @@ CMD cmds[] = {
 
 /* Execute a command n with key k */
 
-int execmd(cmd, k)
-CMD *cmd;
+int execmd(CMD *cmd, int k)
 {
 	BW *bw = (BW *) maint->curwin->object;
 	int ret = -1;
@@ -306,7 +305,7 @@ CMD *cmd;
 
 HASH *cmdhash = 0;
 
-void izcmds()
+static void izcmds(void)
 {
 	int x;
 
@@ -315,17 +314,14 @@ void izcmds()
 		htadd(cmdhash, cmds[x].name, cmds + x);
 }
 
-CMD *findcmd(s)
-char *s;
+CMD *findcmd(char *s)
 {
 	if (!cmdhash)
 		izcmds();
 	return (CMD *) htfind(cmdhash, s);
 }
 
-void addcmd(s, m)
-char *s;
-MACRO *m;
+void addcmd(char *s, MACRO *m)
 {
 	CMD *cmd = (CMD *) malloc(sizeof(CMD));
 
@@ -340,7 +336,7 @@ MACRO *m;
 	htadd(cmdhash, cmd->name, cmd);
 }
 
-char **getcmds()
+static char **getcmds(void)
 {
 	char **s = vaensure(NULL, sizeof(cmds) / sizeof(CMD));
 	int x;
@@ -357,9 +353,7 @@ char **getcmds()
 
 char **scmds = 0;
 
-char **regsub(z, len, s)
-char **z;
-char *s;
+static char **regsub(char **z, int len, char *s)
 {
 	char **lst = 0;
 	int x;
@@ -370,9 +364,7 @@ char *s;
 	return lst;
 }
 
-void inscmd(bw, line)
-BW *bw;
-char *line;
+static void inscmd(BW *bw, char *line)
 {
 	P *p = pdup(bw->cursor);
 
@@ -385,18 +377,14 @@ char *line;
 	bw->cursor->xcol = piscol(bw->cursor);
 }
 
-int cmdabrt(bw, x, line)
-BW *bw;
-char *line;
+static int cmdabrt(BW *bw, int x, char *line)
 {
 	if (line)
 		inscmd(bw, line), vsrm(line);
 	return -1;
 }
 
-int cmdrtn(m, x, line)
-MENU *m;
-char *line;
+static int cmdrtn(MENU *m, int x, char *line)
 {
 	inscmd(m->parent->win->object, m->list[x]);
 	vsrm(line);
@@ -405,8 +393,7 @@ char *line;
 	return 0;
 }
 
-int cmdcmplt(bw)
-BW *bw;
+static int cmdcmplt(BW *bw)
 {
 	MENU *m;
 	P *p, *q;
@@ -453,11 +440,7 @@ BW *bw;
 	}
 }
 
-int docmd(bw, s, object, notify)
-BW *bw;
-char *s;
-void *object;
-int *notify;
+static int docmd(BW *bw, char *s, void *object, int *notify)
 {
 	MACRO *mac;
 	int ret = -1;

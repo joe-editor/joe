@@ -29,9 +29,7 @@ int marking = 0;
 extern int square;
 extern int staen;
 
-P *getto(p, cur, top, line)
-P *p, *cur, *top;
-long line;
+static P *getto(P *p, P *cur, P *top, long int line)
 {
 	long dist = MAXLONG;
 	long d;
@@ -60,8 +58,7 @@ long line;
 
 int mid = 0;
 
-void bwfllw(w)
-BW *w;
+void bwfllw(BW *w)
 {
 	P *newtop;
 
@@ -108,10 +105,7 @@ BW *w;
  * the first line was split
  */
 
-void bwins(w, l, n, flg)
-BW *w;
-long l, n;
-int flg;
+void bwins(BW *w, long int l, long int n, int flg)
 {
 	if (l + flg + n < w->top->line + w->h && l + flg >= w->top->line && l + flg <= w->b->eof->line) {
 		if (flg)
@@ -128,10 +122,7 @@ int flg;
 
 /* Scroll current windows after a delete */
 
-void bwdel(w, l, n, flg)
-BW *w;
-long l, n;
-int flg;
+void bwdel(BW *w, long int l, long int n, int flg)
 {
 /* Update the line where the delete began */
 	if (l < w->top->line + w->h && l >= w->top->line)
@@ -165,14 +156,14 @@ int flg;
 
 /* Update a single line */
 
-static int lgen(t, y, screen, x, w, p, scr, from, to)
-SCRN *t;
-int y;
-int *screen;			/* Screen line address */
-int w;				/* Window */
-P *p;				/* Buffer pointer */
-long scr;			/* Starting column to display */
-long from, to;			/* Range for marked block */
+static int lgen(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, long int from, long int to)
+        
+      
+            			/* Screen line address */
+      				/* Window */
+     				/* Buffer pointer */
+         			/* Starting column to display */
+              			/* Range for marked block */
 {
 	int ox = x;
 	int done = 1;
@@ -387,14 +378,14 @@ long from, to;			/* Range for marked block */
 
 /* Generate line into an array */
 
-static int lgena(t, y, screen, x, w, p, scr, from, to)
-SCRN *t;
-int y;
-int *screen;			/* Screen line address */
-int w;				/* Window */
-P *p;				/* Buffer pointer */
-long scr;			/* Starting column to display */
-long from, to;			/* Range for marked block */
+static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, long int from, long int to)
+        
+      
+            			/* Screen line address */
+      				/* Window */
+     				/* Buffer pointer */
+         			/* Starting column to display */
+              			/* Range for marked block */
 {
 	int ox = x;
 	int done = 1;
@@ -546,11 +537,7 @@ long from, to;			/* Range for marked block */
 	return 0;
 }
 
-void gennum(w, screen, t, y, comp)
-BW *w;
-int *screen;
-SCRN *t;
-int *comp;
+static void gennum(BW *w, int *screen, SCRN *t, int y, int *comp)
 {
 	char buf[12];
 	int z;
@@ -568,8 +555,7 @@ int *comp;
 	}
 }
 
-void bwgen(w, linums)
-BW *w;
+void bwgen(BW *w, int linums)
 {
 	int *screen;
 	P *p = 0;
@@ -665,17 +651,13 @@ BW *w;
 		prm(p);
 }
 
-void bwmove(w, x, y)
-BW *w;
-int x, y;
+void bwmove(BW *w, int x, int y)
 {
 	w->x = x;
 	w->y = y;
 }
 
-void bwresz(w, wi, he)
-BW *w;
-int wi, he;
+void bwresz(BW *w, int wi, int he)
 {
 	if (he > w->h && w->y != -1)
 		msetI(w->t->t->updtab + w->y + w->h, 1, he - w->h);
@@ -683,10 +665,7 @@ int wi, he;
 	w->h = he;
 }
 
-BW *bwmk(window, b, prompt)
-W *window;
-B *b;
-int prompt;
+BW *bwmk(W *window, B *b, int prompt)
 {
 	BW *w = (BW *) malloc(sizeof(BW));
 
@@ -722,8 +701,7 @@ int prompt;
 	return w;
 }
 
-void bwrm(w)
-BW *w;
+void bwrm(BW *w)
 {
 	prm(w->top);
 	prm(w->cursor);
@@ -731,8 +709,7 @@ BW *w;
 	free(w);
 }
 
-int ustat(bw)
-BW *bw;
+int ustat(BW *bw)
 {
 	static char buf[80];
 	unsigned c = brc(bw->cursor);
@@ -745,8 +722,7 @@ BW *bw;
 	return 0;
 }
 
-int ucrawlr(bw)
-BW *bw;
+int ucrawlr(BW *bw)
 {
 	int amnt = bw->w / 2;
 
@@ -757,8 +733,7 @@ BW *bw;
 	return 0;
 }
 
-int ucrawll(bw)
-BW *bw;
+int ucrawll(BW *bw)
 {
 	int amnt = bw->w / 2;
 	int curamnt = bw->w / 2;
@@ -776,8 +751,7 @@ BW *bw;
 	return 0;
 }
 
-void orphit(bw)
-BW *bw;
+void orphit(BW *bw)
 {
 	++bw->b->count;
 	bw->b->orphan = 1;

@@ -20,6 +20,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define _Imenu 1
 
 #include "config.h"
+
 #include "w.h"
 
 typedef struct menu MENU;
@@ -43,23 +44,23 @@ struct menu {
 #define TYPEMENU 0x800
 
 /* Create a menu */
-
-MENU *mkmenu();
+/* FIXME: ??? ---> */
+MENU *mkmenu PARAMS((BASE *obw, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify));
 
 /* Menu user functions */
 
-int umuparw();
-int umdnarw();
-int umltarw();
-int umrtarw();
-int umbof();
-int umeof();
-int umbol();
-int umeol();
-int umbacks();
+int umuparw PARAMS((MENU *m));
+int umdnarw PARAMS((MENU *m));
+int umltarw PARAMS((MENU *m));
+int umrtarw PARAMS((MENU *m));
+int umbof PARAMS((MENU *m));
+int umeof PARAMS((MENU *m));
+int umbol PARAMS((MENU *m));
+int umeol PARAMS((MENU *m));
+int umbacks PARAMS((MENU *m));
 
-void ldmenu();
+void ldmenu PARAMS((MENU *m, char **s, int cursor));
 
-char *mcomplete();
+char *mcomplete PARAMS((MENU *m));
 
 #endif

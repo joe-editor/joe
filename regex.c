@@ -22,9 +22,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "b.h"
 #include "regex.h"
 
-int escape(a, b)
-unsigned char **a;
-int *b;
+static int escape(unsigned char **a, int *b)
 {
 	int c;
 	unsigned char *s = *a;
@@ -107,10 +105,7 @@ int *b;
 	return c;
 }
 
-static int brack(a, la, c)
-unsigned char **a;
-int *la;
-unsigned char c;
+static int brack(unsigned char **a, int *la, unsigned char c)
 {
 	int inverse = 0;
 	int flag = 0;
@@ -153,9 +148,7 @@ unsigned char c;
 		return flag;
 }
 
-static void savec(pieces, n, c)
-char *pieces[];
-char c;
+static void savec(char **pieces, int n, char c)
 {
 	char *s = 0;
 
@@ -165,10 +158,7 @@ char c;
 	pieces[n] = s;
 }
 
-static void saves(pieces, n, p, szz)
-char *pieces[];
-P *p;
-long szz;
+static void saves(char **pieces, int n, P *p, long int szz)
 {
 	if (szz >= MAXINT - 31)
 		pieces[n] = vstrunc(pieces[n], 0);
@@ -178,8 +168,7 @@ long szz;
 	}
 }
 
-static int skip_special(p)
-P *p;
+static int skip_special(P *p)
 {
 	int to, s;
 
@@ -239,10 +228,7 @@ P *p;
 	return s;
 }
 
-int pmatch(pieces, regex, len, p, n, icase)
-char *pieces[];
-char *regex;
-P *p;
+int pmatch(char **pieces, char *regex, int len, P *p, int n, int icase)
 {
 	int c, d;
 	P *q = pdup(p);

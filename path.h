@@ -10,7 +10,7 @@
 
 #include "config.h"
 
-char *joesep();
+char *joesep PARAMS((char *path));
 
 /* char *namprt(char *path);
  * Return name part of a path.  There is no name if the last character
@@ -20,8 +20,8 @@ char *joesep();
  * The name part of "/hello/" is ""
  * The name part if "/" is ""
  */
-char *namprt();
-char *namepart();
+char *namprt PARAMS((char *path));
+char *namepart PARAMS((char *tmp, char *path));
 
 /* char *dirprt(char *path);
  * Return directory and drive part of a path.  I.E., everything to the
@@ -31,7 +31,7 @@ char *namepart();
  * The directory part of "/hello/" is "/hello/"
  * The directory part of "/" is "/"
  */
-char *dirprt();
+char *dirprt PARAMS((char *path));
 
 /* char *begprt(char *path);
  * Return the beginning part of a path.
@@ -40,7 +40,7 @@ char *dirprt();
  * The beginning part of "/hello/" is "/"
  * The beginning part of "/" is "/"
  */
-char *begprt();
+char *begprt PARAMS((char *path));
 
 /* char *endprt(char *path);
  * Return the ending part of a path.
@@ -49,7 +49,7 @@ char *begprt();
  * The ending part of "/hello/" is "hello/"
  * The ending part of "/" is ""
  */
-char *endprt();
+char *endprt PARAMS((char *path));
 
 /* int mkpath(char *path);
  * Make sure path exists.  If it doesn't, try to create it
@@ -59,14 +59,14 @@ char *endprt();
  * the drive and path will be elsewhere (not necessarily where they
  * were before mkpath was called).
  */
-int mkpath();
+int mkpath PARAMS((char *path));
 
 /* char *mktmp(char *);
  * Create an empty temporary file.  The file name created is the string passed
  * to this function postfixed with /joe.tmp.XXXXXX, where XXXXXX is some
  * string six chars long which makes this file unique.
 */
-char *mktmp();
+char *mktmp PARAMS((char *where));
 
 /* Change drive and directory */
 #define chddir chdir
@@ -88,15 +88,15 @@ char *mktmp();
  *  '-' may be specified in sets by placing it at the ends
  *  '[' may be specified in sets by placing it first
  */
-int rmatch();
-int isreg();
+int rmatch PARAMS((char *a, char *b));
+int isreg PARAMS((char *s));
 
 /* char **rexpnd(char *path,char *pattern);
  * Generate array (see va.h) of file names from directory in 'path'
  * which match the pattern 'pattern'
  */
-char **rexpnd();
+char **rexpnd PARAMS((char *word));
 
-int chpwd();
+int chpwd PARAMS((char *path));
 
 #endif
