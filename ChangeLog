@@ -1,3 +1,7 @@
+Thu May 13 2004  Joe Allen <jhallen@world.std.com>
+
+	Small compile fix.
+
 Wed May 12 2004  Joe Allen <jhallen@world.std.com>
 
 	Compile now uses shell window (so you can hit ^C during the

@@ -668,7 +668,7 @@ stop		^X )		Stop recording macro
 
   ESC-x compile
 
-:def compile querysave,query,scratch,"* Build Log *",rtn,markb,eof," ",markk,blkdel,build
+:def compile querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
 
   Spell-check macros
 
