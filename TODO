@@ -33,6 +33,8 @@ Short list for 3.2:
 
 - - - - - - - -
 
+- document magic variables in math mode
+
 - document some things which are in joerc file: like yank, and switch buffers.
 
 - update help screens: some things have changed (emacs is more like emacs).

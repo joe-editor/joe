@@ -1,14 +1,41 @@
 JOE 3.2
 
-- More syntax files: TeX, CSS
+- The built-in calculator (ESC m) is now a full featured scientific
+  calculator (I'm shooting for Casio Fx-4000 level here :-), including
+  hexadecimal and ability to sum (and perform statistics on) a highlighted
+  block of numbers.  Hit ^K H at the math prompt for documentation.
 
-- Improved highlighting of Perl, Shell and C/C++
+- Colors can now be specified in the joerc file
+
+- Macro language now has conditionals
+
+- Tab completion works at tags search prompt ^K ;
+
+- ^G now jumps between word delimiters (begin..end in Verilog, #if #else
+  #endif in C, /* .. */ and XML tags).  If it doesn't know the word, it
+  starts a search with the word seeding the prompt.  It is also much smarter
+  about skipping over comments and quoted matter.
+
+- TAB completion is now much more like bash (again :-).  The cursor stays
+  at the file name prompt instead of jumping into the menu system.  Also
+  ^D brings up the menu, like in tcsh.
 
 - Now there is a ~/.joe_state file which stores:
-	history buffers
-	current search string
+	all history buffers
 	current keyboard macros
 	yank records
+
+- Joe now has xterm mouse support: when enabled, the mouse can position
+  the cursor and select blocks.
+
+- More syntax files: TeX, CSS, OCaml, Delphi, SML and 4GL.  Thanks to
+  all of the contributers.
+
+- Vastly improved highlighting of Perl and Shell due to the highlighter now
+  understanding word and balanced delimiters.
+
+- Many bugs have been fixed (every bug which has been entered into the
+  sourceforge project page has been addressed).
 
 JOE 3.1
 
