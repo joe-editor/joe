@@ -196,6 +196,26 @@ elsif		Try a new condition
 else		Toggle truth flag
 endif		Start running cmds again
 
+Here is an example 'if' macro:
+
+if,"char==65",then,"it's an A",else,"it's not an A",endif	^[ q
+
+When you hit ^[ q, if the character under the cursor is an 'A': "it's a A"
+is inserted into the buffer, otherwise "it's not an A" is inserted.
+
+"if" creates a math prompt (like ESC m).  "then" is like "rtn"- it hits the
+return key for this prompt.
+
+Within the math prompt, the following variables are available:
+	char	ASCII value of character under cursor
+	width	Width of screen
+	height	Height of screen
+	byte	byte number
+	col	column number
+	line	line number
+	lines	no. lines in file
+	top	line number of top line of window
+
 Repeat
 ------
 arg		Prompt for repeat argument

@@ -1,6 +1,7 @@
 Sun Feb 27 2005  Joe Allen <jhallen@world.std.com>
 
 	Fix lockup problem from Ctrl-G
+	Fix bugs with new 'if' command.
 
 Sun Feb 27 2005  Joe Allen <jhallen@world.std.com>
 
