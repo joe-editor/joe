@@ -63,7 +63,7 @@
 	"`"		backtick	recolor=-1
 	"$"		not_string
 	"<"		maybe_inc
-	"q"		maybe_string	buffer
+	"a-zA-Z_"	maybe_string	buffer
 
 :pod_start Idle
 	*		pod_start

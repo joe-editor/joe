@@ -110,6 +110,13 @@ OPTIONS pdefault = {
 	0,		/* Smart backspace key */
 	0,		/* Purify indentation */
 	0,		/* Picture mode */
+	0,		/* single_quoted */
+	0,		/* c_comment */
+	0,		/* cpp_comment */
+	0,		/* pound_comment */
+	0,		/* vhdl_comment */
+	0,		/* semi_comment */
+	NULL,		/* text_delimiters */
 	NULL,		/* macro to execute for new files */
 	NULL,		/* macro to execute for existing files */
 	NULL,		/* macro to execute before saving new files */
@@ -152,6 +159,13 @@ OPTIONS fdefault = {
 	0,		/* Smart backspace key */
 	0,		/* Purity indentation */
 	0,		/* Picture mode */
+	0,		/* single_quoted */
+	0,		/* c_comment */
+	0,		/* cpp_comment */
+	0,		/* pound_comment */
+	0,		/* vhdl_comment */
+	0,		/* semi_comment */
+	NULL,		/* text_delimiters */
 	NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
@@ -268,6 +282,13 @@ struct glopts {
 	{US "backpath",	2, (int *) &backpath, NULL, US "Backup files stored in (%s): ", 0, US "  Path to backup files " },
 	{US "syntax",	9, NULL, NULL, US "Select syntax (^C to abort): ", 0, US "Y Syntax" },
 	{US "encoding",13, NULL, NULL, US "Select file character set (^C to abort): ", 0, US "Encoding " },
+	{US "single_quoted",	4, NULL, (unsigned char *) &fdefault.single_quoted, US "Single quoting enabled", US "Single quoting disabled", US "  ^G ignores ' ' " },
+	{US "c_comment",	4, NULL, (unsigned char *) &fdefault.c_comment, US "/* comments enabled", US "/* comments disabled", US "  ^G ignores /**/ " },
+	{US "cpp_comment",	4, NULL, (unsigned char *) &fdefault.cpp_comment, US "// comments enabled", US "// comments disabled", US "  ^G ignores // " },
+	{US "pound_comment",	4, NULL, (unsigned char *) &fdefault.pound_comment, US "# comments enabled", US "# comments disabled", US "  ^G ignores # " },
+	{US "vhdl_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US "-- comments enabled", US "-- comments disabled", US "  ^G ignores -- " },
+	{US "semi_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US "; comments enabled", US "; comments disabled", US "  ^G ignores ; " },
+	{US "text_delimiters",	6, NULL, (unsigned char *) &fdefault.text_delimiters, US "Text delimiters (%s): ", 0, US "  Text delimiters " },
 	{US "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
 	{US "noxon",	0, &noxon, NULL, 0, 0, 0 },
 	{US "orphan",	0, &orphan, NULL, 0, 0, 0 },
@@ -374,6 +395,17 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 							*(int *) ((unsigned char *)
 								  options + glopts[x].ofst) = val;
 					} 
+				}
+				break;
+			case 6: /* Local string option */
+				if (options) {
+					if (arg) {
+						*(unsigned char **) ((unsigned char *)
+								  options + glopts[x].ofst) = joe_strdup(arg);
+					} else {
+						*(unsigned char **) ((unsigned char *)
+								  options + glopts[x].ofst) = 0;
+					}
 				}
 				break;
 			case 7: /* Local option numeric + 1, with range checking */
@@ -512,6 +544,9 @@ static int doopt1(BW *bw, unsigned char *s, int *xx, int *notify)
 	case 2:
 		if (s[0])
 			*(unsigned char **) glopts[x].set = joe_strdup(s);
+		break;
+	case 6:
+		*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst) = joe_strdup(s);
 		break;
 	case 5:
 		v = calc(bw, s);
@@ -686,6 +721,19 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		if (glopts[x].ofst == (unsigned char *) &fdefault.readonly - (unsigned char *) &fdefault)
 			bw->b->rdonly = bw->o.readonly;
 		break;
+	case 6:
+		wabort(m->parent);
+		xx = (int *) joe_malloc(sizeof(int));
+		*xx = x;
+		if(*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst))
+			joe_snprintf_1((char *)buf, OPT_BUF_SIZE, "Delimiters (%s): ",*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst));
+		else
+			joe_snprintf_0((char *)buf, OPT_BUF_SIZE, "Delimiters: ");
+		if(wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map))
+			return 0;
+		else
+			return -1;
+		break;
 	case 1:
 		joe_snprintf_1((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *glopts[x].set);
 		xx = (int *) joe_malloc(sizeof(int));
@@ -783,6 +831,7 @@ int umode(BW *bw)
 		case 2:
 		case 9:
 		case 13:
+		case 6:
 			strcpy((char *)(s[x]), (char *)glopts[x].menu);
 			break;
 		case 4:

@@ -124,19 +124,22 @@ struct options {
 	int	smartbacks;	/* Set for smart backspace key */
 	int	purify;		/* Purify indentation */
 	int	picture;	/* Picture mode */
+	int	single_quoted;	/* Ignore '  ' for ^G */
+	int	c_comment;	/* Ignore text in C comments */
+	int	cpp_comment;	/* Ignore text after // comments */
+	int	pound_comment;	/* Ignore text after # comments */
+	int	vhdl_comment;	/* Ignore text after -- comments */
+	int	semi_comment;	/* Ignore text after ; comments */
+	unsigned char *text_delimiters;	/* Define word delimiters */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */
 	MACRO	*msold;		/* Macro to execute before saving existing files */
 };
 
-struct macro {
-	int	k;		/* Keycode */
-	int	arg;		/* Repeat argument */
-	CMD	*cmd;		/* Command address */
-	int	n;		/* Number of steps */
-	int	size;		/* Malloc size of steps */
-	MACRO	**steps;	/* Block */
+struct macro { int k; /* Keycode */ int arg; /* Repeat argument */ CMD *cmd;
+	/* Command address */ int n; /* Number of steps */ int size; /*
+	Malloc size of steps */ MACRO **steps; /* Block */
 };
 
 struct recmac {

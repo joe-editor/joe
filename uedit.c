@@ -151,10 +151,10 @@ int u_goto_right(BW *bw)
  *
  * WORD is a sequence non-white-space characters
  */
-int u_goto_prev(BW *bw)
+int p_goto_prev(P *ptr)
 {
-	P *p = pdup(bw->cursor);
-	struct charmap *map=bw->b->o.charmap;
+	P *p = pdup(ptr);
+	struct charmap *map=ptr->b->o.charmap;
 	int c = prgetc(p);
 
 	if (joe_isalnum_(map,c)) {
@@ -170,15 +170,14 @@ int u_goto_prev(BW *bw)
 		if (c != NO_MORE_DATA)
 			pgetc(p);
 	}
-/*
-	if (p->byte == bw->cursor->byte) {
-		prm(p);
-		return -1;
-	}
-*/
-	pset(bw->cursor, p);
+	pset(ptr, p);
 	prm(p);
 	return 0;
+}
+
+int u_goto_prev(BW *bw)
+{
+	return p_goto_prev(bw->cursor);
 }
 
 /*
@@ -187,10 +186,10 @@ int u_goto_prev(BW *bw)
  *
  * WORD is a sequence non-white-space characters
  */
-int u_goto_next(BW *bw)
+int p_goto_next(P *ptr)
 {
-	P *p = pdup(bw->cursor);
-	struct charmap *map=bw->b->o.charmap;
+	P *p = pdup(ptr);
+	struct charmap *map=ptr->b->o.charmap;
 	int c = brch(p);
 	int rtn = -1;
 
@@ -207,9 +206,14 @@ int u_goto_next(BW *bw)
 		}
 	} else
 		pgetc(p);
-	pset(bw->cursor, p);
+	pset(ptr, p);
 	prm(p);
 	return rtn;
+}
+
+int u_goto_next(BW *bw)
+{
+	return p_goto_next(bw->cursor);
 }
 
 static P *pboi(P *p)
@@ -283,6 +287,172 @@ int unedge(BW *bw)
 }
 
 /* Move cursor to matching delimiter */
+/*
+ * begin end
+ *
+ * module endmodule
+ *
+ * function endfunction
+ * 
+ * <word </word
+ *
+ * if elif else fi
+ *
+ * do done
+ *
+ * case esac, endcase
+ *
+ * #if #ifdef #ifndef #elseif #else #endif
+ *
+ * `ifdef  `ifndef  `else `endif
+ *
+ */
+int tomatch_fwrd(BW *bw,unsigned char *begin_delim,unsigned char *end_delim)
+{
+	P *p=pdup(bw->cursor);
+	int c;
+	unsigned char buf[32];
+	int len;
+	int state = 0;
+	int cnt = 1;
+	p_goto_next(p);
+	while ((c=pgetc(p)) != NO_MORE_DATA) {
+		if (c == '\\') {
+			pgetc(p);
+		} else if (c == '"') {
+			while ((c = pgetc(p)) != NO_MORE_DATA)
+				if (c == '"') break;
+				else if (c == '\\') pgetc(p); 
+		} else if (bw->o.single_quoted && c == '\'') {
+			while((c = pgetc(p)) != NO_MORE_DATA)
+				if (c == '\'') break;
+				else if (c == '\\') pgetc(p);
+		} else if ((bw->o.c_comment || bw->o.cpp_comment) && c == '/') {
+			c = pgetc(p);
+			if (c == '*') {
+				c = pgetc(p);
+				do {
+					do {
+						if (c == '*') break;
+					} while ((c = pgetc(p)) != NO_MORE_DATA);
+					c = pgetc(p);
+				} while (c != NO_MORE_DATA && c != '/');
+			} else if (c == '/') {
+				while ((c = pgetc(p)) != NO_MORE_DATA)
+					if (c == '\n')
+						break;
+			} else if (c != NO_MORE_DATA)
+				prgetc(p);
+		} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_') {
+			len=0;
+			while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
+				if(len!=31)
+					buf[len++]=c;
+				c=pgetc(p);
+			}
+			if(c!=NO_MORE_DATA)
+				prgetc(p);
+			buf[len]=0;
+			if (!strcmp((char *)buf,(char *)begin_delim)) {
+				++cnt;
+			} else if(!strcmp((char *)buf,(char *)end_delim) && !--cnt) {
+				pgoto(p,p->byte-len);
+				pset(bw->cursor,p);
+				return 0;
+			}
+		}
+	}
+	return -1;
+}
+
+int tomatch_bkwd(BW *bw,unsigned char *begin_delim,unsigned char *end_delim)
+{
+	P *p=pdup(bw->cursor);
+	int c;
+	unsigned char buf[32];
+	int len;
+	int state = 0;
+	int cnt = 1;
+	p_goto_next(p);
+	p_goto_prev(p);
+	while ((c=prgetc(p)) != NO_MORE_DATA) {
+		int peek = prgetc(p);
+		if(peek!=NO_MORE_DATA)
+			pgetc(p);
+		if (peek=='\\') {
+		} else if (c == '"') {
+			while((c = prgetc(p)) != NO_MORE_DATA) {
+				if (c == '"') {
+					c = prgetc(p);
+					if (c != '\\') {
+						if (c != NO_MORE_DATA)
+							pgetc(p);
+						break;
+					}
+				}
+			}
+		} else if (bw->o.single_quoted && c == '\'') {
+			while((c = prgetc(p)) != NO_MORE_DATA)
+				if (c == '\'') {
+					c = prgetc(p);
+					if (c != '\\') {
+						if (c != NO_MORE_DATA)
+							pgetc(p);
+						break;
+					}
+				}
+		} else if (bw->o.c_comment && c == '/') {
+			c = prgetc(p);
+			if (c == '*') {
+				c = prgetc(p);
+				do {
+					do {
+						if (c == '*') break;
+					} while ((c = prgetc(p)) != NO_MORE_DATA);
+					c = prgetc(p);
+				} while (c != NO_MORE_DATA && c != '/');
+			} else if (c != NO_MORE_DATA)
+				pgetc(p);
+		} else if (bw->o.cpp_comment && c == '\n') {
+			P *q = pdup(p);
+			int cc;
+			p_goto_bol(q);
+			while((cc = pgetc(q)) != '\n') {
+				if (cc == '/') {
+					if (brch(q)=='/') {
+						prgetc(q);
+						pset(p,q);
+						break;
+					}
+				}
+			}
+			prm(q);
+		} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_') {
+			int x;
+			len=0;
+			while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
+				if(len!=31)
+					buf[len++]=c;
+				c=prgetc(p);
+			}
+			if(c!=NO_MORE_DATA)
+				pgetc(p);
+			buf[len]=0;
+			for(x=0;x!=len/2;++x) {
+				int d = buf[x];
+				buf[x] = buf[len-x-1];
+				buf[len-x-1] = d;
+			}
+			if (!strcmp((char *)buf,(char *)end_delim)) {
+				++cnt;
+			} else if(!strcmp((char *)buf,(char *)begin_delim) && !--cnt) {
+				pset(bw->cursor,p);
+				return 0;
+			}
+		}
+	}
+	return -1;
+}
 
 int utomatch(BW *bw)
 {
@@ -291,7 +461,74 @@ int utomatch(BW *bw)
 	 f,			/* Character to find */
 	 dir;			/* 1 to search forward, -1 to search backward */
 
-	switch (c = brch(bw->cursor)) {
+	c = brch(bw->cursor);
+
+	/* Check for word delimiters */
+	if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_') {
+		P *q, *p;
+		unsigned char *buf;
+		int flg;
+		p=pdup(bw->cursor);
+		p_goto_next(p);
+		p_goto_prev(p);
+		q=pdup(p);
+		p_goto_next(q);
+		buf=brvs(p,q->byte-p->byte);
+		prm(p); prm(q);
+
+		if(!strcmp((char *)buf,"begin"))
+			flg=tomatch_fwrd(bw,US "begin", US "end");
+		else if(!strcmp((char *)buf,"module"))
+			flg=tomatch_fwrd(bw,US "module", US "endmodule");
+		else if(!strcmp((char *)buf,"function"))
+			flg=tomatch_fwrd(bw,US "function", US "endfunction");
+		else if(!strcmp((char *)buf,"if"))
+			flg=tomatch_fwrd(bw,US "if", US "fi"); // Or endif
+		else if(!strcmp((char *)buf,"case"))
+			flg=tomatch_fwrd(bw,US "case", US "endcase"); // Or esac
+		else if(!strcmp((char *)buf,"do"))
+			flg=tomatch_fwrd(bw,US "do", US "done");
+
+		else if(!strcmp((char *)buf,"end"))
+			flg=tomatch_bkwd(bw,US "begin", US "end");
+		else if(!strcmp((char *)buf,"endmodule"))
+			flg=tomatch_bkwd(bw,US "module", US "endmodule");
+		else if(!strcmp((char *)buf,"endfunction"))
+			flg=tomatch_bkwd(bw,US "function", US "endfunction");
+		else if(!strcmp((char *)buf,"fi"))
+			flg=tomatch_bkwd(bw,US "if", US "fi");
+		else if(!strcmp((char *)buf,"endif"))
+			flg=tomatch_bkwd(bw,US "if", US "endif");
+		else if(!strcmp((char *)buf,"endcase"))
+			flg=tomatch_bkwd(bw,US "case",US "endcase");
+		else if(!strcmp((char *)buf,"esac"))
+			flg=tomatch_bkwd(bw,US "case",US "esac");
+		else if(!strcmp((char *)buf,"done"))
+			flg=tomatch_bkwd(bw,US "do",US "done");
+		else
+			flg= -1;
+		vsrm(buf);
+		return flg;
+		
+	}
+
+	switch (c) {
+	case '/':
+		dir = 1;
+		pgetc(bw->cursor);
+		f = brch(bw->cursor);
+		prgetc(bw->cursor);
+		if(f=='*') f = '/';
+		else {
+			dir = -1;
+			f = prgetc(bw->cursor);
+			if (f!=NO_MORE_DATA)
+				pgetc(bw->cursor);
+			if(f=='*') f = '/';
+			else
+				return -1;
+		}
+		break;
 	case '(':
 		f = ')';
 		dir = 1;
@@ -336,12 +573,82 @@ int utomatch(BW *bw)
 		return -1;
 	}
 
+	/* Search for matching C comment */
+	if (f == '/') {
+		P *p = pdup(bw->cursor);
+		if (dir == 1) {
+			d = pgetc(p);
+			do {
+				do {
+					if (d == '*') break;
+				} while ((d = pgetc(p)) != NO_MORE_DATA);
+				d = pgetc(p);
+			} while (d != NO_MORE_DATA && d != '/');
+			if (d == '/') {
+				pset(bw->cursor,p);
+				prgetc(bw->cursor);
+			}
+		} else {
+			d = prgetc(p);
+			do {
+				do {
+					if (d == '*') break;
+				} while ((d = prgetc(p)) != NO_MORE_DATA);
+				d = prgetc(p);
+			} while (d != NO_MORE_DATA && d != '/');
+			if (d == '/') {
+				pset(bw->cursor,p);
+			}
+		}
+		prm(p);
+		if (d == NO_MORE_DATA)
+			return -1;
+		else
+			return 0;
+	}
+
+	/* Search for matching delimiter: ignore things in comments or strings */
+	/* This really should be language dependent */
 	if (dir == 1) {
 		P *p = pdup(bw->cursor);
 		int cnt = 0;	/* No. levels of delimiters we're in */
 
 		while ((d = pgetc(p)) != NO_MORE_DATA) {
-			if (d == c)
+			if (d == '\\') {
+				pgetc(p);
+			} else if (d == '$' && brch(p)=='#' && bw->o.pound_comment) {
+				pgetc(p);
+			} else if (d == '"') {
+				while ((d = pgetc(p)) != NO_MORE_DATA)
+					if (d == '"') break;
+					else if (d == '\\') pgetc(p);
+			} else if (bw->o.single_quoted && d == '\'' && c!='\'' && c!='`') {
+				while((d = pgetc(p)) != NO_MORE_DATA)
+					if (d == '\'') break;
+					else if (d == '\\') pgetc(p);
+			} else if (bw->o.pound_comment && d == '#' ||
+				   bw->o.semi_comment && d == ';' ||
+				   bw->o.vhdl_comment && d == '-' && brch(p) == '-') {
+				while ((d = pgetc(p)) != NO_MORE_DATA)
+					if (d == '\n')
+						break;
+			} else if ((bw->o.c_comment || bw->o.cpp_comment) && d == '/') {
+				d = pgetc(p);
+				if (bw->o.c_comment && d == '*') {
+					d = pgetc(p);
+					do {
+						do {
+							if (d == '*') break;
+						} while ((d = pgetc(p)) != NO_MORE_DATA);
+						d = pgetc(p);
+					} while (d != NO_MORE_DATA && d != '/');
+				} else if (d == '/') {
+					while ((d = pgetc(p)) != NO_MORE_DATA)
+						if (d == '\n')
+							break;
+				} else if (d != NO_MORE_DATA)
+					prgetc(p);
+			} else if (d == c)
 				++cnt;
 			else if (d == f && !--cnt) {
 				prgetc(p);
@@ -355,7 +662,85 @@ int utomatch(BW *bw)
 		int cnt = 0;	/* No. levels of delimiters we're in */
 
 		while ((d = prgetc(p)) != NO_MORE_DATA) {
-			if (d == c)
+			int peek = prgetc(p);
+			int peek1 = 0;
+			if(peek != NO_MORE_DATA) {
+				peek1 = prgetc(p);
+				if (peek1 != NO_MORE_DATA)
+					pgetc(p);
+				pgetc(p);
+			}
+			if (peek == '\\' && peek1!='\\') {
+			} else if (d == '"') {
+				while((d = prgetc(p)) != NO_MORE_DATA)
+					if (d == '"') {
+						d = prgetc(p);
+						if (d != '\\') {
+							if (d != NO_MORE_DATA)
+								pgetc(p);
+							break;
+						}
+					}
+			} else if (bw->o.c_comment && d =='/') {
+				d = prgetc(p);
+				if (d == '*') {
+					d = prgetc(p);
+					do {
+						do {
+							if (d == '*') break;
+						} while ((d = prgetc(p)) != NO_MORE_DATA);
+						d = prgetc(p);
+					} while (d != NO_MORE_DATA && d != '/');
+				} else if (d != NO_MORE_DATA)
+					pgetc(p);
+			} else if ((bw->o.cpp_comment || bw->o.pound_comment ||
+			            bw->o.semi_comment || bw->o.vhdl_comment) && d == '\n') {
+				P *q = pdup(p);
+				int cc;
+				p_goto_bol(q);
+				while((cc = pgetc(q)) != '\n') {
+					if (bw->o.pound_comment && cc == '$' && brch(q)=='#') {
+						pgetc(q);
+					} else if(cc=='"') {
+						while ((cc = pgetc(q)) != '\n')
+							if (cc == '"') break;
+							else if (cc == '\\') pgetc(q);
+					} else if (bw->o.cpp_comment && cc == '/') {
+						if (brch(q)=='/') {
+							prgetc(q);
+							pset(p,q);
+							break;
+						}
+					} else if (bw->o.single_quoted && cc == '\'') {
+						while((cc = pgetc(q)) != NO_MORE_DATA)
+							if (cc == '\'') break;
+							else if (cc == '\\') pgetc(q);
+					} else if (bw->o.vhdl_comment && cc == '-') {
+						if (brch(q)=='-') {
+							prgetc(q);
+							pset(p,q);
+							break;
+						}
+					} else if (bw->o.pound_comment && cc == '#') {
+						pset(p,q);
+						break;
+					} else if (bw->o.semi_comment && cc == ';') {
+						pset(p,q);
+						break;
+					}
+				}
+				prm(q);
+			} else if (bw->o.single_quoted && d =='\'' && c!='\'' && c!='`') {
+				while((d = prgetc(p)) != NO_MORE_DATA)
+					if (d == '\'') {
+						d = prgetc(p);
+						if (d != '\\') {
+							if (d != NO_MORE_DATA)
+								pgetc(p);
+							break;
+						}
+					}
+			} else if (d == c)
 				++cnt;
 			else if (d == f)
 				if (!cnt--) {
