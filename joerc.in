@@ -805,16 +805,17 @@
 {Math
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \i \uCOMMANDS\u (hit ESC m for math)  \uFUNCTIONS\u                                    \|\i \i
-\i \i Hit ESC m for math:            \uFunctions\u                                    \|\i \i
+\i \i     hex hex display mode       sin cos tab asin acos atan                   \|\i \i
 \i \i     dec decimal mode           sinh cosh tanh asinh acosh atanh             \|\i \i
 \i \i     ins type result into file  sqrt cbrt exp ln log                         \|\i \i
 \i \i    eval evaluate block         int floor ceil abs erg ergc                  \|\i \i
-\i \i    0xff enter number in hex    int floor ceil abs erf erfc                  \|\i \i
-\i \i    3e-4 floating point decimal \uHighlight block of numbers\u                   \|\i \i
+\i \i    0xff enter number in hex    joe(..macro..) - runs an editor macro        \|\i \i
+\i \i    0xff enter number in hex                                                 \|\i \i
+\i \i    a=10 assign a variable      sum cnt  Sum, count                          \|\i \i
 \i \i 2+3:ins multiple commands      avg dev  Average, std. deviation             \|\i \i
-\i \i a=1:b=2 multiple expressions   avg dev  Average, std. deviation             \|\i \i
-\i \i    e pi constants              \uOperators\u                                    \|\i \i
-\i \i     ans previous result        ^  * / %  + -  < <= > >= == !=  &&  ||       \|\i \i
+\i \i    e pi constants              \uOPERATORS\u                                    \|\i \i
+\i \i     ans previous result        ! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\|\i \i
+\i \i     ans previous result        ^  * / %  + -  < <= > >= == !=  &&  ||  ? :  \|\i \i
 
 {Names
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i

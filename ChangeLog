@@ -1,3 +1,8 @@
+Fri Mar  4 2005  Joe Allen <jhallen@world.std.com>
+
+	Add block evaluator and ? operator to math
+	(now it can loop via. recursion :-)
+
 Thu Mar  3 2005  Joe Allen <jhallen@world.std.com>
 
 	New help screen for math.

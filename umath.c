@@ -66,10 +66,15 @@ static struct var *get(unsigned char *str)
 
 unsigned char *ptr;
 struct var *dumb;
+static double eval(unsigned char *s);
 
-static double expr(int prec, struct var **rtv)
+int recur=0;
+
+/* en means enable evaluation */
+
+static double expr(int prec, int en,struct var **rtv)
 {
-	double x = 0.0, y;
+	double x = 0.0, y, z;
 	struct var *v = NULL;
 
 	while (*ptr == ' ' || *ptr == '\t') {
@@ -86,7 +91,10 @@ static double expr(int prec, struct var **rtv)
 		}
 		c = *ptr;
 		*ptr = 0;
-		if (!strcmp(s,"hex")) {
+		if (!en) {
+			v = 0;
+			x = 0.0;
+		} else if (!strcmp(s,"hex")) {
 			mode_hex = 1;
 			mode_eng = 0;
 			v = get("ans");
@@ -137,6 +145,17 @@ static double expr(int prec, struct var **rtv)
 				avg = x / (double)cnt;
 				x = sqrt(xsq + (double)cnt*avg*avg - 2.0*avg*x);
 			}
+		} else if (!strcmp(s,"eval")) {
+			unsigned char *save = ptr;
+			unsigned char *e = blkget();
+			if (e) {
+				v = 0;
+				x = eval(e);
+				joe_free(e);
+				ptr = save;
+			} else if (!merr) {
+				merr = US "No block";
+			}
 		} else {
 			v = get(s);
 			x = v->val;
@@ -146,7 +165,7 @@ static double expr(int prec, struct var **rtv)
 		x = strtod(ptr,(char **)&ptr);
 	} else if (*ptr == '(') {
 		++ptr;
-		x = expr(0, &v);
+		x = expr(0, en, &v);
 		if (*ptr == ')')
 			++ptr;
 		else {
@@ -155,14 +174,14 @@ static double expr(int prec, struct var **rtv)
 		}
 	} else if (*ptr == '-') {
 		++ptr;
-		x = -expr(10, &dumb);
+		x = -expr(10, en, &dumb);
 	}
       loop:
 	while (*ptr == ' ' || *ptr == '\t')
 		++ptr;
 	if (*ptr == '(' && 11 > prec) {
 		++ptr;
-		y = expr(0, &dumb);
+		y = expr(0, en, &dumb);
 		if (*ptr == ')')
 			++ptr;
 		else {
@@ -178,78 +197,93 @@ static double expr(int prec, struct var **rtv)
 		goto loop;
 	} else if (*ptr == '*' && ptr[1] == '*' && 8 > prec) {
 		ptr+=2;
-		x = pow(x, expr(8, &dumb));
+		x = pow(x, expr(8, en, &dumb));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '^' && 8 > prec) {
 		++ptr;
-		x = pow(x, expr(8, &dumb));
+		x = pow(x, expr(8, en, &dumb));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '*' && 7 > prec) {
 		++ptr;
-		x *= expr(7, &dumb);
+		x *= expr(7, en, &dumb);
 		v = 0;
 		goto loop;
 	} else if (*ptr == '/' && 7 > prec) {
 		++ptr;
-		x /= expr(7, &dumb);
+		x /= expr(7, en, &dumb);
 		v = 0;
 		goto loop;
 	} else if(*ptr=='%' && 7>prec) {
 		++ptr;
-		y = expr(7, &dumb);
+		y = expr(7, en, &dumb);
 		if ((int)y == 0) x = 1.0/0.0;
 		else x = ((int) x) % (int)y;
 		v = 0;
 		goto loop;
 	} else if (*ptr == '+' && 6 > prec) {
 		++ptr;
-		x += expr(6, &dumb);
+		x += expr(6, en, &dumb);
 		v = 0;
 		goto loop;
 	} else if (*ptr == '-' && 6 > prec) {
 		++ptr;
-		x -= expr(6, &dumb);
+		x -= expr(6, en, &dumb);
 		v = 0;
 		goto loop;
 	} else if (*ptr == '<' && 5 > prec) {
 		++ptr;
-		if (*ptr == '=') ++ptr, x = (x <= expr(5,&dumb));
-		else x = (x < expr(5,&dumb));
+		if (*ptr == '=') ++ptr, x = (x <= expr(5, en, &dumb));
+		else x = (x < expr(5,en,&dumb));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '>' && 5 > prec) {
 		++ptr;
-		if (*ptr == '=') ++ptr, x=(x >= expr(5,&dumb));
-		else x = (x > expr(5,&dumb));
+		if (*ptr == '=') ++ptr, x=(x >= expr(5,en,&dumb));
+		else x = (x > expr(5,en,&dumb));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '=' && ptr[1] == '=' && 5 > prec) {
 		++ptr, ++ptr;
-		x = (x == expr(5,&dumb));
+		x = (x == expr(5,en,&dumb));
 		v = 0;
 		goto loop;
 	} else if (*ptr == '!' && ptr[1] == '=' && 5 > prec) {
 		++ptr, ++ptr;
-		x = (x != expr(5,&dumb));
+		x = (x != expr(5,en,&dumb));
 		v = 0;
 		goto loop;
-	} else if(*ptr == '&' && ptr[1] == '&' && 3 > prec) {
+	} else if (*ptr == '&' && ptr[1] == '&' && 3 > prec) {
 		++ptr, ++ptr;
-		y = expr(3,&dumb);
+		y = expr(3,x!=0.0 && en,&dumb);
 		x = (int)x && (int)y;
 		v = 0;
 		goto loop;
-	} else if(*ptr=='|' && ptr[1]=='|' &&  3 > prec) {
+	} else if (*ptr=='|' && ptr[1]=='|' &&  3 > prec) {
 		++ptr, ++ptr;
-		y = expr(3,&dumb);
+		y = expr(3,x==0.0 && en,&dumb);
 		x = (int)x || (int)y;
 		v= 0;
 		goto loop;
-	} else if (*ptr == '=' && 2 >= prec) {
+	} else if (*ptr=='?' && 2 >= prec) {
 		++ptr;
-		x = expr(2, &dumb);
+		y = expr(2,x!=0.0 && en,&dumb);
+		if (*ptr==':') {
+			++ptr;
+			z = expr(2,x==0.0 && en,&dumb);
+			if (x != 0.0)
+				x = y;
+			else
+				x = z;
+			v = 0;  
+		} else if (!merr) {
+			merr = US ": missing after ?";
+		}
+		goto loop;
+	} else if (*ptr == '=' && 1 >= prec) {
+		++ptr;
+		x = expr(1, en,&dumb);
 		if (v) {
 			v->val = x;
 			v->set = 1;
@@ -262,6 +296,39 @@ static double expr(int prec, struct var **rtv)
 	}
 	*rtv = v;
 	return x;
+}
+
+static double eval(unsigned char *s)
+{
+	double result;
+	struct var *v;
+	if(++recur==1000) {
+		merr = US "Recursion depth exceeded";
+		--recur;
+		return 0.0;
+	}
+	ptr = s;
+	while (!merr && *ptr) {
+		result = expr(0, 1, &dumb);
+		v = get(US "ans");
+		v->val = result;
+		v->set = 1;
+		if (!merr) {
+			while (*ptr == ' ' || *ptr == '\t' || *ptr == '\r' || *ptr == '\n') {
+				++ptr;
+			}
+			if (*ptr == ':') {
+				++ptr;
+				while (*ptr == ' ' || *ptr == '\t' || *ptr == '\r' || *ptr == '\n') {
+					++ptr;
+				}
+			} else if (*ptr) {
+				merr = US "Extra junk after end of expr";
+			}
+		}
+	}
+	--recur;
+	return result;
 }
 
 double m_sin(double n) { return sin(n); }
@@ -294,9 +361,8 @@ double m_y1(double n) { return y1(n); }
 
 double calc(BW *bw, unsigned char *s)
 {
-	double result;
-	struct var *v;
 	BW *tbw = bw->parent->main->object;
+	struct var *v;
 	int c = brch(bw->cursor);
 
 	if (!vars) {
@@ -355,30 +421,8 @@ double calc(BW *bw, unsigned char *s)
 	v = get(US "char");
 	v->val = (c == NO_MORE_DATA ? -1.0 : c);
 	v->set = 1;
-	ptr = s;
 	merr = 0;
-      up:
-	result = expr(0, &dumb);
-	v = get(US "ans");
-	v->val = result;
-	v->set = 1;
-	if (!merr) {
-		while (*ptr == ' ' || *ptr == '\t') {
-			++ptr;
-		}
-		if (*ptr == ':') {
-			++ptr;
-			while (*ptr == ' ' || *ptr == '\t') {
-				++ptr;
-			}
-			if (*ptr) {
-				goto up;
-			}
-		} else if (*ptr) {
-			merr = US "Extra junk after end of expr";
-		}
-	}
-	return result;
+	return eval(s);
 }
 
 /* Main user interface */
