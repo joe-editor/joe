@@ -24,7 +24,7 @@
 
  -marking	Text between ^KB and cursor is highlighted (use with -lightoff)
 
--asis		Characters 128 - 255 shown as-is
+ -asis		Characters 128 - 255 shown as-is
 
  -force		Force final newline when files are saved
 
@@ -57,7 +57,7 @@
 
  -lines nnn	Set no. screen lines
 
--baud 19200	Set baud rate for terminal optimizations
+ -baud nnn	Set baud rate for terminal optimizations
 
  -columns nnn	Set no. screen columns
 

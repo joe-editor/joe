@@ -1,4 +1,9 @@
 Sat Dec 08 2001  Vitezslav Samel <samel@mail.cz>
+	* joerc.in:
+	turn off asis (setlocale(LC_CTYPE) takes care of it);
+	turn off baudrate (leave optimizations of terminal baudrate on the user)
+
+Sat Dec 08 2001  Vitezslav Samel <samel@mail.cz>
 	* configure.ac, tty.c:
 	make joe compilable (not only) on cygwin - check if siginterrupt() is
 	available on this host
