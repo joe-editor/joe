@@ -146,7 +146,7 @@ CMD cmds[] = {
 	{"math", TYPETW + TYPEPW, umath, 0, 0, 0},
 	{"mode", TYPETW + TYPEPW + TYPEQW, umode, 0, 0, 0},
 	{"msg", TYPETW + TYPEPW + TYPEQW + TYPEMENU, umsg, 0, 0, 0},
-	{"nbuf", TYPETW, unbuf, 0, 1, "upbuf"},
+	{"nbuf", TYPETW, unbuf, 0, 1, "pbuf"},
 	{"nedge", TYPETW + TYPEPW + EFIXXCOL, unedge, 0, 1, "pedge"},
 
 	{"nextpos", TYPETW + TYPEPW + EFIXXCOL + EMID + EPOS, unextpos, 0, 1,
@@ -161,7 +161,7 @@ CMD cmds[] = {
 	{"nxterr", TYPETW, unxterr, 0, 1, "prverr"},
 	{"open", TYPETW + TYPEPW + EFIXXCOL + EMOD, uopen, 0, 1, "deleol"},
 	{"parserr", TYPETW, uparserr, 0, 0, 0},
-	{"pbuf", TYPETW, upbuf, 0, 1, "unbuf"},
+	{"pbuf", TYPETW, upbuf, 0, 1, "nbuf"},
 	{"pedge", TYPETW + TYPEPW + EFIXXCOL, upedge, 0, 1, "nedge"},
 
 	{"pgdn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgdn, 0,

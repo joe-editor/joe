@@ -1,3 +1,7 @@
+Sun Jan  6 2002  Vitezslav Samel <samel@mail.cz>
+	* cmd.c:
+	correct "negated macro" for nbuf/pbuf macros
+
 Fri Dec 14 2001  Vitezslav Samel <samel@mail.cz>
 	*** Release joe-2.9.8-pre1 ***
 
