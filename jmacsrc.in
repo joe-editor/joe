@@ -590,6 +590,10 @@ stop		^X )		Stop recording macro
 :main			Text editing window
 :inherit windows
 
+  ESC-x compile
+
+:def compile edit,"errors",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
+
   Spell-check macros
 
 :def spellfile filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype
@@ -598,7 +602,7 @@ stop		^X )		Stop recording macro
 spellword	^[ $
 
 ctrl		^Q		Quote Ctrl chars
-ctrl		`		Quote Ctrl chars
+       ctrl		`		Quote Ctrl chars
 
   Macros of non-existant emacs functions
 
@@ -656,8 +660,9 @@ swap,msg,math,"line-z",rtn,
 " lines in region",rtn			^[ =	Count lines region
 mode,"O"				^X ^Q	Toggle read-only
 
-edit,rtn,filt,query,parserr		^X c	Compile
+compile					^X c	Compile
 nxterr					^X n
+nxterr					^X `
 prverr					^X p
 
 backs		^?		Backspace

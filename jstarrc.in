@@ -4,7 +4,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.jstarrc
-	2 - @sysconfdir@/jstarrc
+	2 - ${prefix}/etc/jstarrc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -616,6 +616,9 @@ spellword	^Q n
 spellword	^Q N
 spellword	^Q ^N
 
+ Compile macro
+:def compile edit,"errors",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
+
 rtarw,prevword,markb,nextword,markk	^K T
 rtarw,prevword,markb,nextword,markk	^K ^T
 rtarw,prevword,markb,nextword,markk	^K t
@@ -636,9 +639,9 @@ parserr		^[ ^E
 parserr		^[ e
 nxterr		^[ =
 prverr		^[ -
-edit,rtn,filt,query,parserr	^[ ^C
-edit,rtn,filt,query,parserr	^[ c
-edit,rtn,filt,query,parserr	^[ C
+compile		^[ ^C
+compile		^[ c
+compile		^[ C
 
 quote8		^\		Quote Meta chars
 quote		^P		Quote Ctrl chars

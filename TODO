@@ -27,7 +27,6 @@ Fix for next release:
 
   don't use -notite by default.
 
-
 New features:
 -----------------------
 
@@ -51,7 +50,7 @@ Reload file before I began changing it in another buffer
 
 Save all modified files
 
-Save all history buffers in .joestate file?
+Save all history buffers and keyboard macros in ~/.joe_state file?
 
 Improvements for regular text
 -----------------------------
@@ -80,10 +79,11 @@ Tie in with CVS
 Refactoring
 
 Compiling
-
- Make it work better:
-   remove dead windows
-   detect errors better
+ - save modified files before running
+ - show last compile command immediately: suggest 'make'
+ - do not save scratch buffer
+ - show build on screen- don't wait until it's completely finished.  allow
+   ^C during build.
 
 UTF-8/Internationalization
 --------------------------

@@ -646,6 +646,9 @@ stop		^K ]		Stop recording
 spellfile	^[ l
 spellword	^[ n
  Compile
+
+ :def compile switch,"*Build-Log*",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
+:def compile edit,"errors",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
  Here we guess some common key sequences which either do not have termcap
 
 delbol		^[ o		Delete to beginning of line
@@ -654,10 +657,8 @@ dnslide		^[ z		Scroll down one line
 dnslide		^[ Z		Scroll down one line
 dnslide		^[ ^Z		Scroll down one line
 dnslide,dnslide,dnslide,dnslide		MWDOWN
-edit,rtn,filt,
-query,parserr	^[ c		Compile
-edit,rtn,filt,
-query,parserr	^[ ^C		Compile
+compile		^[ ^C		Compile
+execmd		^[ x		Prompt for command to execute
 execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute
 finish		^[ ^I		Complete word in document

@@ -158,8 +158,18 @@ static int parseit(struct charmap *map,unsigned char *s, long int row)
 	if (line != -1)
 		--line;
 
+	/* Look for ':' */
+	flg = 0;
+	while (s[y]) {
+		if (s[y]==':') {
+			flg = 1;
+			break;
+		}
+		++y;
+	}
+
 	if (name) {
-		if (line != -1) {
+		if (line != -1 && flg) {
 			/* We have an error */
 			err = (ERROR *) alitem(&errnodes, sizeof(ERROR));
 			err->file = name;

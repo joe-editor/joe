@@ -1,4 +1,12 @@
 Thu May  6 2004  Joe Allen <jhallen@world.std.com>
+	* uerror.c :
+
+	Improve error parser: require ':' on error lines.
+	Make macro 'compile' for error parsing.
+	'compile' macro always uses same buffer.
+	^X ` in jmacs goes to next error.
+
+Thu May  6 2004  Joe Allen <jhallen@world.std.com>
 	* uedit.c :
 
 	Smart tab looks back 10 lines to determine indentation.
