@@ -11,6 +11,9 @@ Fri Mar  4 2005  Joe Allen <jhallen@world.std.com>
 
 	open ^] now autoindents (again).
 
+	Fix jpico lock-up problem (lmargin option was
+	not checking for invalid value of 0).
+
 Thu Mar  3 2005  Joe Allen <jhallen@world.std.com>
 
 	New help screen for math.
