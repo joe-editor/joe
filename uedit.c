@@ -595,6 +595,7 @@ int tomatch_xml(BW *bw,unsigned char *word,int dir)
 						if (!--cnt) {
 							pset(bw->cursor,p);
 							prm(p);
+							return 0;
 						}
 					}
 					else if (c=='/') {
