@@ -40,7 +40,7 @@ int ulindent PARAMS((BW *bw));
 int ufilt PARAMS((BW *bw));
 int unmark PARAMS((BW *bw));
 int udrop PARAMS((BW *bw));
-int udrop_no_redrop PARAMS((BW *bw));
+int uselect PARAMS((BW *bw));
 int upsh PARAMS((BW *bw));
 int upop PARAMS((BW *bw));
 extern int nstack;

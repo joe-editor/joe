@@ -258,12 +258,9 @@ int udrop(BW *bw)
 	return 0;
 }
 
-int udrop_no_redrop(BW *bw)
+int uselect(BW *bw)
 {
-	prm(markk);
-	if (marking && markb)
-		return 0;
-	else
+	if (!markb)
 		umarkb(bw);
 	return 0;
 }

@@ -1,7 +1,7 @@
 Thu May  6 2004  Joe Allen <jhallen@world.std.com>
 	* ublock.c :
 
-	Added drop_no_redrop function for Ctrl-rtarw marking.
+	Added "select" function for Ctrl-arrow selecting.
 
 Thu May  6 2004  Joe Allen <jhallen@world.std.com>
 	* uerror.c :
