@@ -205,7 +205,8 @@ void help_display(SCREEN *t)
 					} else {
 						c = *str++;
 					}
-					outatr(t->t, t->t->scrn + x + y * t->w, x, y, c, atr);
+					outatr(t->t, t->t->scrn + x + y * t->w, 
+					             t->t->attr + x + y * t->w, x, y, c, atr);
 				}
 			}
 			atr = 0;

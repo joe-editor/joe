@@ -1,3 +1,10 @@
+Fri Apr  9 2004  Joe Allen <jhallen@world.std.com>
+	* Makefile.am, b.c, b.h, bw.c, help.c, main.c, menu.c, rc.c,
+	scrn.c, scrn.h, types.h, uedit.c, w.c, wcwidth.c:
+
+	Initial check-in of UTF-8 support.  Use ^T U to enable UTF-8.
+	JOE is likely to have many bugs at this point.
+
 Thu Apr  8 2004  Joe Allen <jhallen@world.std.com>
 	* bw.c, b.c, joerc.in, rc.c, rc.h, tw.c, types.h:
 

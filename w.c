@@ -704,6 +704,7 @@ int wabort(W *w)
 void genfmt(SCRN *t, int x, int y, int ofst, char *s, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
+	int *attr = t->attr + y * t->co + x;
 	int atr = 0;
 	int col = 0;
 	int c;
@@ -736,8 +737,9 @@ void genfmt(SCRN *t, int x, int y, int ofst, char *s, int flg)
 				break;
 			default:
 				if (col++ >= ofst) {
-					outatr(t, scrn, x, y, c, atr);
+					outatr(t, scrn, attr, x, y, c, atr);
 					++scrn;
+					++attr;
 					++x;
 				}
 				break;
@@ -745,8 +747,9 @@ void genfmt(SCRN *t, int x, int y, int ofst, char *s, int flg)
 		} else if (col++ >= ofst) {
 			if (c == '\t')
 				c = ' ';
-			outatr(t, scrn, x, y, c, atr);
+			outatr(t, scrn, attr, x, y, c, atr);
 			++scrn;
+			++attr;
 			++x;
 		}
 	if (flg)
@@ -758,6 +761,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, char *s, int flg)
 void gentxt(SCRN *t, int x, int y, int ofst, char *s, int len, int flg)
 {
 	int *scrn = t->scrn + y * t->co + x;
+	int *attr = t->attr + y * t->co + x;
 	int col;
 	unsigned char c;
 	int a;
@@ -768,8 +772,9 @@ void gentxt(SCRN *t, int x, int y, int ofst, char *s, int len, int flg)
 			if (c == '\t')
 				c = ' ';
 			xlat(&a, &c);
-			outatr(t, scrn, x, y, c, a);
+			outatr(t, scrn, attr, x, y, c, a);
 			++scrn;
+			++attr;
 			++x;
 		}
 	if (flg)

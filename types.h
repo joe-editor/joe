@@ -113,6 +113,7 @@ struct options {
 	int	crlf;
 	int	highlight;	/* Set to enable highlighting */
 	char	*syntax;	/* Syntax name for highlighting */
+	int	utf8;		/* Set for UTF-8 mode */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */
@@ -440,7 +441,8 @@ struct scrn {
 	int	insdel;		/* Set to use insert/delete within line */
 
 	/* Current state of terminal */
-	int	*scrn;		/* Current contents of screen */
+	int	*scrn;		/* Characters on screen */
+	int	*attr;		/* Attributes on screen */
 	int	x, y;		/* Current cursor position (-1 for unknown) */
 	int	top, bot;	/* Current scrolling region */
 	int	attrib;		/* Current character attributes */

@@ -31,6 +31,7 @@ static void menudisp(MENU *m)
 	int x;
 	int y;
 	int *s = m->t->t->scrn + m->x + m->y * m->t->t->co;
+	int *a = m->t->t->attr + m->x + m->y * m->t->t->co;
 
 	for (y = 0; y != m->h; ++y) {
 		col = 0;
@@ -46,24 +47,25 @@ static void menudisp(MENU *m)
 			for (z = 0; m->list[x + y*m->perline + m->top][z]; ++z) {
 				if (col == m->w)
 					break;
-				outatr(m->t->t, s + col, m->x + col, m->y+y, m->list[x + y*m->perline + m->top][z], atr);
+				outatr(m->t->t, s + col, a + col, m->x + col, m->y+y, m->list[x + y*m->perline + m->top][z], atr);
 				++col;
 			}
 			while (z < m->width) {
 				if (col == m->w)
 					break;
-				outatr(m->t->t, s + col, m->x + col, m->y+y, ' ', 0);
+				outatr(m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
 				++col;
 				++z;
 			}
 			if (col != m->w) {
-				outatr(m->t->t, s + col, m->x + col, m->y+y, ' ', 0);
+				outatr(m->t->t, s + col, a + col, m->x + col, m->y+y, ' ', 0);
 				++col;
 			}
 		}
 		if (col != m->w)
 			eraeol(m->t->t, m->x + col, m->y+y);
 	s += m->t->t->co;
+	a += m->t->t->co;
 	}
 	m->parent->cury = (m->cursor - m->top) / m->perline;
 	m->parent->curx = ((m->cursor - m->top) % m->perline) * (m->width + 1);

@@ -817,6 +817,7 @@ int utypebw(BW *bw, int k)
 			int y = bw->y + bw->cursor->line - bw->top->line;
 			int x = bw->cursor->xcol - bw->offset + bw->x - 1;
 			int *screen = t->scrn + y * t->co;
+			int *attr = t->attr + y * t->co;
 
 			if (!upd && piseol(bw->cursor) && !bw->o.highlight)
 				t->updtab[y] = 0;
@@ -828,7 +829,7 @@ int utypebw(BW *bw, int k)
 			    ( square && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line && piscol(bw->cursor) >= markb->xcol && piscol(bw->cursor) < markk->xcol)))
 				a = INVERSE;
 			xlat(&a, &c);
-			outatr(t, screen + x, x, y, c, a);
+			outatr(t, screen + x, attr + x, x, y, c, a);
 		}
 #endif
 	}

@@ -58,9 +58,12 @@ int cpos PARAMS((register SCRN *t, register int x, register int y));
  *
  * Set attributes
  */
-int attr PARAMS((SCRN *t, int c));
+int set_attr PARAMS((SCRN *t, int c));
 
-/* void outatr(SCRN *t,int *scrn,int x,int y,int c,int a);
+/* Encode character as utf8 */
+void utf8_putc PARAMS((int c));
+
+/* void outatr(SCRN *t,int *scrn,int *attr,int x,int y,int c,int a);
  *
  * Output a character at the given screen cooridinate.  The cursor position
  * after this function is executed is indeterminate.
@@ -77,7 +80,7 @@ int attr PARAMS((SCRN *t, int c));
 #define DIM 16
 extern unsigned atab[];
 
-#define outatr(t,scrn,x,y,c,a) do { \
+#define outatr(t,scrn,attr,x,y,c,a) do { \
 	(t); \
 	(x); \
 	(y); \
@@ -123,17 +126,23 @@ extern unsigned atab[];
 #define FG_RED (14<<FG_SHIFT)
 #define FG_BLACK (15<<FG_SHIFT)
 
-#define outatr(t, scrn, xx, yy, c, a) do {		\
-	if(*(scrn) != ((c) | (a))) {			\
-		*(scrn) = ((c) | (a));			\
+#define outatr(t, scrn, attrf, xx, yy, c, a) do {	\
+	int zz = mk_wcwidth(c);				\
+	if(*(scrn) != (c) || *(attrf) != (a)) {		\
+		*(scrn) = (c);				\
+		*(attrf) = (a);				\
 		if((t)->ins)				\
 			clrins(t);			\
 		if((t)->x != (xx) || (t)->y != (yy))	\
 			cpos((t), (xx), (yy));		\
 		if((t)->attrib != (a))			\
-			attr((t), (a));			\
-		ttputc(c);				\
-		++(t)->x;				\
+			set_attr((t), (a));		\
+		utf8_putc(c);				\
+		(t)->x+=zz;				\
+		if(zz==2) {				\
+			(scrn)[1]= -1;			\
+			(attrf)[1]= 0;			\
+		}					\
 	}						\
 } while(0)
 
@@ -176,7 +185,7 @@ void nscroll PARAMS((SCRN *t));
  *
  * Figure out and execute line shifting
  */
-void magic PARAMS((SCRN *t, int y, int *cs, int *s, int placex));
+void magic PARAMS((SCRN *t, int y, int *cs, int *ca, int *s, int *a,int placex));
 
 int clrins PARAMS((SCRN *t));
 

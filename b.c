@@ -384,7 +384,7 @@ int piseol(P *p)
 			P *q = pdup(p);
 
 			pfwrd(q, 1L);
-			if (pgetc(q) == '\n') {
+			if (pgetb(q) == '\n') {
 				prm(q);
 				return 1;
 			} else
@@ -400,8 +400,8 @@ int pisbol(P *p)
 
 	if (pisbof(p))
 		return 1;
-	c = prgetc(p);
-	pgetc(p);
+	c = prgetb(p);
+	pgetb(p);
 	return c == '\n';
 }
 
@@ -440,7 +440,7 @@ int pisblank(P *p)
 
 	p_goto_bol(q);
 	while (isblank(brc(q)))
-		pgetc(q);
+		pgetb(q);
 	if (piseol(q)) {
 		prm(q);
 		return 1;
@@ -490,8 +490,8 @@ int pprev(P *p)
 	return 1;
 }
 
-/* return current character and move p to the next character */
-int pgetc(P *p)
+/* return current byte and move p to the next byte.  column will be unchanged. */
+int pgetb(P *p)
 {
 	unsigned char c;
 
@@ -501,23 +501,110 @@ int pgetc(P *p)
 	if (++p->ofst == GSIZE(p->hdr))
 		pnext(p);
 	++p->byte;
-
 	if (c == '\n') {
 		++(p->line);
 		p->col = 0;
 		p->valcol = 1;
 	} else if (p->b->o.crlf && c == '\r') {
 		if (brc(p) == '\n')
-			return pgetc(p);
+			return pgetb(p);
 		else
-			++p->col;
+			p->valcol = 0;
 	} else {
-		if (c == '\t')
-			p->col += (p->b->o.tab) - (p->col) % (p->b->o.tab);
-		else
-			++(p->col);
+		p->valcol = 0;
 	}
 	return c;
+}
+
+/* return current character and move p to the next character.  column will be updated if it was valid. */
+int pgetc(P *p)
+{
+	if (p->b->o.utf8) {
+		int val;
+		int c;
+		int d;
+		int n;
+
+		val = p->valcol;	/* Remember if column number was valid */
+		c = pgetb(p);		/* Get first byte */
+
+		if (c==NO_MORE_DATA)
+			return c;
+
+		if ((c&0x80)==0x00) { /* One byte */
+			n = 0;
+		} else if ((c&0xE0)==0xC0) { /* Two bytes */
+			n = 1;
+			c &= 0x1F;
+		} else if ((c&0xF0)==0xE0) { /* Three bytes */
+			n = 2;
+			c &= 0x0F;
+		} else if ((c&0xF8)==0xF0) { /* Four bytes */
+			n = 3;
+			c &= 0x07;
+		} else if ((c&0xFC)==0xF8) { /* Five bytes */
+			n = 4;
+			c &= 0x03;
+		} else if ((c&0xFE)==0xFC) { /* Six bytes */
+			n = 5;
+			c &= 0x01;
+		} else { /* Error */
+			c = '?';
+		}
+
+		while(n) {
+			d = brc(p);
+			if((d&0xC0)!=0x80)
+				break;
+			pgetb(p);
+			c = ((c<<6)|(d&0x3F));
+			--n;
+		}
+
+		if(n) { /* There was an error (FIXME: this needs more thought) */
+			c = '?';
+		}
+
+		if(val) {
+			p->valcol = 1;
+			if (c=='\t')
+				p->col += (p->b->o.tab) - (p->col) % (p->b->o.tab);
+			else if (c=='\n')
+				p->col = 0;
+			else if (c<32)
+				p->col++;
+			else
+				p->col += mk_wcwidth(c);
+		}
+
+		return c;
+	} else {
+		unsigned char c;
+
+		if (p->ofst == GSIZE(p->hdr))
+			return NO_MORE_DATA;
+		c = GCHAR(p);
+		if (++p->ofst == GSIZE(p->hdr))
+			pnext(p);
+		++p->byte;
+
+		if (c == '\n') {
+			++(p->line);
+			p->col = 0;
+			p->valcol = 1;
+		} else if (p->b->o.crlf && c == '\r') {
+			if (brc(p) == '\n')
+				return pgetc(p);
+			else
+				++p->col;
+		} else {
+			if (c == '\t')
+				p->col += (p->b->o.tab) - (p->col) % (p->b->o.tab);
+			else
+				++(p->col);
+		}
+		return c;
+	}
 }
 
 /* move p n characters forward */
@@ -547,7 +634,8 @@ P *pfwrd(P *p, long n)
 	return p;
 }
 
-static int prgetc1(P *p)
+/* move p to the previous byte: does not take into account -crlf mode */
+static int prgetb1(P *p)
 {
 	unsigned char c;
 
@@ -557,31 +645,76 @@ static int prgetc1(P *p)
 	--p->ofst;
 	c = GCHAR(p);
 	--p->byte;
-	if (c == '\n') {
+	p->valcol = 0;
+	if (c == '\n')
 		--p->line;
-		p->valcol = 0;
-	} else {
-		if (c == '\t')
-			p->valcol = 0;
-		--p->col;
+	return c;
+}
+
+/* move p to the previous byte */
+int prgetb(P *p)
+{
+	int c = prgetb1(p);
+
+	if (p->b->o.crlf && c == '\n') {
+		c = prgetb1(p);
+		if (c == '\r')
+			return '\n';
+		if (c != NO_MORE_DATA)
+			pgetb(p);
+		c = '\n';
 	}
 	return c;
 }
 
-/* move p to the previous character */
+/* move p to the previous character (try to keep col updated) */
 int prgetc(P *p)
 {
-	int c = prgetc1(p);
+	if (p->b->o.utf8) {
+		int d = 0;
+		int c;
+		int n = 0;
+		int val = p->valcol;
+		for(;;) {
+			c = prgetb(p);
+			if (c == NO_MORE_DATA)
+				return NO_MORE_DATA;
+			else if ((c&0xC0)==0x80) {
+				d |= ((c&0x3F)<<n);
+				n += 6;
+			} else if ((c&0x80)==0x00) { /* One char */
+				d = c;
+				break;
+			} else if ((c&0xE0)==0xC0) { /* Two chars */
+				d |= ((c&0x1F)<<n);
+				break;
+			} else if ((c&0xF0)==0xE0) { /* Three chars */
+				d |= ((c&0x0F)<<n);
+				break;
+			} else if ((c&0xF8)==0xF0) { /* Four chars */
+				d |= ((c&0x07)<<n);
+				break;
+			} else if ((c&0xFC)==0xF8) { /* Five chars */
+				d |= ((c&0x03)<<n);
+				break;
+			} else if ((c&0xFE)==0xFC) { /* Six chars */
+				d |= ((c&0x01)<<n);
+				break;
+			} else { /* Invalid (0xFE or 0xFF found) */
+				break;
+			}
+		}
 
-	if (p->b->o.crlf && c == '\n') {
-		c = prgetc1(p);
-		if (c == '\r')
-			return '\n';
-		if (c != NO_MORE_DATA)
-			pgetc(p);
-		c = '\n';
+		if (val && c!='\t' && c!='\n') {
+			p->valcol = 1;
+			p->col -= mk_wcwidth(d);
+		}
+		
+		return d;
 	}
-	return c;
+	else {
+		return prgetb(p);
+	}
 }
 
 /* move p n characters backwards */
@@ -622,11 +755,10 @@ P *pgoto(P *p, long loc)
 /* make p->col valid */
 P *pfcol(P *p)
 {
-	H *hdr = p->hdr;
-	int ofst = p->ofst;
+	long pos = p->byte;
 
 	p_goto_bol(p);
-	while (p->ofst != ofst || p->hdr != hdr)
+	while (p->byte < pos)
 		pgetc(p);
 	return p;
 }
@@ -635,7 +767,7 @@ P *pfcol(P *p)
 P *p_goto_bol(P *p)
 {
 	if (pprevl(p))
-		pgetc(p);
+		pgetb(p);
 	p->col = 0;
 	p->valcol = 1;
 	return p;
@@ -644,7 +776,7 @@ P *p_goto_bol(P *p)
 /* move p to the end of line */
 P *p_goto_eol(P *p)
 {
-	if (p->b->o.crlf)
+	if (p->b->o.crlf || p->b->o.utf8)
 		while (!piseol(p))
 			pgetc(p);
 	else
@@ -711,10 +843,10 @@ P *pprevl(P *p)
 	} while (c != '\n');
 	--p->line;
 	if (p->b->o.crlf && c == '\n') {
-		int k = prgetc1(p);
+		int k = prgetb1(p);
 
 		if (k != '\r' && k != NO_MORE_DATA)
-			pgetc(p);
+			pgetb(p);
 	}
 	return p;
 }
@@ -745,35 +877,61 @@ P *pline(P *p, long line)
 }
 
 /* move p to the given 'goalcol' column */
+/* lands at exact column or on character which would cause us to go past goalcol */
 P *pcol(P *p, long goalcol)
 {
 	p_goto_bol(p);
-	do {
-		unsigned char c;
-		int wid;
+	if(p->b->o.utf8) {
+		do {
+			int c;
+			int wid;
 
-		if (p->ofst == GSIZE(p->hdr))
-			break;
-		c = GCHAR(p);
-		if (c == '\n')
-			break;
-		if (p->b->o.crlf && c == '\r' && piseol(p))
-			break;
-		if (c == '\t')
-			wid = p->b->o.tab - p->col % p->b->o.tab;
-		else
-			wid = 1;
-		if (p->col + wid > goalcol)
-			break;
-		if (++p->ofst == GSIZE(p->hdr))
-			pnext(p);
-		++p->byte;
-		p->col += wid;
-	} while (p->col != goalcol);
+			c = brch(p);
+
+			if (c == '\n')
+				break;
+
+			if (p->b->o.crlf && c == '\r' && piseol(p))
+				break;
+
+			if (c == '\t')
+				wid = p->b->o.tab - p->col % p->b->o.tab;
+			else
+				wid = mk_wcwidth(c);
+
+			if (p->col + wid > goalcol)
+				break;
+
+			pgetc(p);
+		} while (p->col != goalcol);
+	} else {
+		do {
+			unsigned char c;
+			int wid;
+
+			if (p->ofst == GSIZE(p->hdr))
+				break;
+			c = GCHAR(p);
+			if (c == '\n')
+				break;
+			if (p->b->o.crlf && c == '\r' && piseol(p))
+				break;
+			if (c == '\t')
+				wid = p->b->o.tab - p->col % p->b->o.tab;
+			else
+				wid = 1;
+			if (p->col + wid > goalcol)
+				break;
+			if (++p->ofst == GSIZE(p->hdr))
+				pnext(p);
+			++p->byte;
+			p->col += wid;
+		} while (p->col != goalcol);
+	}
 	return p;
 }
 
-/* move p into given given 'goalcol' column (even within whitespaces) */
+/* Move to goal column, then skip backwards to just after first non-whitespace character */
 P *pcolwse(P *p, long goalcol)
 {
 	int c;
@@ -787,29 +945,48 @@ P *pcolwse(P *p, long goalcol)
 	return p;
 }
 
-/* FIXME: whats the differnce between pcol() and pcoli() ??? */
+/* Move p to goalcol: stops after first character which equals or exceeds goal col (unlike
+   pcol() which will stops before character which would exceed goal col) */
 P *pcoli(P *p, long goalcol)
 {
 	p_goto_bol(p);
-	while (p->col < goalcol) {
-		unsigned char c;
+	if (p->b->o.utf8) {
+		while (p->col < goalcol) {
+			int c;
+			c = brc(p);
 
-		if (p->ofst == GSIZE(p->hdr))
-			break;
-		c = GCHAR(p);
-		if (c == '\n')
-			break;
-#ifdef __MSDOS
-		if (c == '\r' && piseol(p))
-			break;
-#endif
-		else if (c == '\t')
-			p->col += p->b->o.tab - p->col % p->b->o.tab;
-		else
-			++p->col;
-		if (++p->ofst == GSIZE(p->hdr))
-			pnext(p);
-		++p->byte;
+			if (c == NO_MORE_DATA)
+				break;
+
+			if (c == '\n')
+				break;
+
+			if (p->b->o.crlf && c=='\r' && piseol(p))
+				break;
+
+			pgetc(p);
+		}
+	} else {
+		while (p->col < goalcol) {
+			unsigned char c;
+
+			if (p->ofst == GSIZE(p->hdr))
+				break;
+			c = GCHAR(p);
+			if (c == '\n')
+				break;
+
+			if (p->b->o.crlf && c == '\r' && piseol(p))
+				break;
+
+			if (c == '\t')
+				p->col += p->b->o.tab - p->col % p->b->o.tab;
+			else
+				++p->col;
+			if (++p->ofst == GSIZE(p->hdr))
+				pnext(p);
+			++p->byte;
+		}
 	}
 	return p;
 }
@@ -1918,6 +2095,7 @@ opnerr:
 		b->rdonly = b->o.readonly = 1;
 
 	p=pdup(b->bof);
+	/* FIXME: this is broken if -crlf flag was already set */
 	for(x=0;x!=1024;++x) {
 		int c = pgetc(p);
 		if(c == '\r') {
@@ -2110,11 +2288,27 @@ opnerr:
 	return error;
 }
 
+/* Return byte at p */
+
 int brc(P *p)
 {
 	if (p->ofst == GSIZE(p->hdr))
 		return NO_MORE_DATA;
 	return GCHAR(p);
+}
+
+/* Return character at p */
+
+int brch(P *p)
+{
+	if (p->b->o.utf8) {
+		P *q = pdup(p);
+		int c = pgetc(q);
+		prm(q);
+		return c;
+	} else {
+		return brc(p);
+	}
 }
 
 char *brmem(P *p, char *blk, int size)

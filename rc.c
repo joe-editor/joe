@@ -86,6 +86,7 @@ OPTIONS pdefault = {
 #endif
 	0,		/* Highlight */
 	NULL,		/* Syntax */
+	0,		/* UTF-8 */
 	NULL,		/* macro to execute for new files */
 	NULL,		/* macro to execute for existing files */
 	NULL,		/* macro to execute before saving new files */
@@ -117,6 +118,7 @@ OPTIONS fdefault = {
 #endif
 	0,		/* Highlight */
 	NULL,		/* Syntax */
+	0,		/* UTF-8 */
 	NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
@@ -185,6 +187,7 @@ struct glopts {
 	{ "spaces",	4, NULL, (char *) &fdefault.spaces, "Inserting spaces when tab key is hit", "Inserting tabs when tab key is hit", " no tabs " },
 	{ "mid",	0, &mid, NULL, "Cursor will be recentered on scrolls", "Cursor will not be recentered on scroll", "Center on scroll " },
 	{ "crlf",	4, NULL, (char *) &fdefault.crlf, "CR-LF is line terminator", "LF is line terminator", "Z CR-LF (MS-DOS) " },
+	{ "utf8",	4, NULL, (char *) &fdefault.utf8, "UTF-8 encoding enabled", "UTF-8 encoding disabled", "U UTF-8 " },
 	{ "linums",	4, NULL, (char *) &fdefault.linums, "Line numbers enabled", "Line numbers disabled", "N Line numbers " },
 	{ "marking",	0, &marking, NULL, "Anchored block marking on", "Anchored block marking off", "Marking " },
 	{ "asis",	0, &dspasis, NULL, "Characters above 127 shown as-is", "Characters above 127 shown in inverse", "Meta chars as-is " },

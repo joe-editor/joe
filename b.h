@@ -57,6 +57,9 @@ long pisindent PARAMS((P *p));
 int pnext PARAMS((P *p));
 int pprev PARAMS((P *p));
 
+int pgetb PARAMS((P *p));
+int prgetb PARAMS((P *p));
+
 int pgetc PARAMS((P *p));
 int prgetc PARAMS((P *p));
 
@@ -118,8 +121,11 @@ int bsavefd PARAMS((P *p, int fd, long int size));
 
 char *parsens PARAMS((char *s, long int *skip, long int *amnt));
 
-/* Get character at pointer or return NO_MORE_DATA if pointer is at end of buffer */
+/* Get byte at pointer or return NO_MORE_DATA if pointer is at end of buffer */
 int brc PARAMS((P *p));
+
+/* Get character at pointer or return NO_MORE_DATA if pointer is at end of buffer */
+int brch PARAMS((P *p));
 
 /* Copy 'size' bytes from a buffer beginning at p into block 'blk' */
 char *brmem PARAMS((P *p, char *blk, int size));

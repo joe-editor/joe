@@ -125,6 +125,40 @@ unsigned xlata[256] = {
 	INVERSE, INVERSE, INVERSE, INVERSE + UNDERLINE		/* 256 */
 };
 
+/* Write a multibyte character */
+
+void utf8_putc(int utf8_char)
+{
+	if (utf8_char < 0x80 || dspasis) {
+		ttputc(utf8_char);
+	} else if(utf8_char < 0x800) {
+		ttputc(0xc0|(utf8_char>>6));
+		ttputc(0x80|(utf8_char&0x3F));
+	} else if(utf8_char < 0x20000) {
+		ttputc(0xe0|(utf8_char>>12));
+		ttputc(0x80|((utf8_char>>6)&0x3f));
+		ttputc(0x80|((utf8_char)&0x3f));
+	} else if(utf8_char < 0x200000) {
+		ttputc(0xf0|(utf8_char>>18));
+		ttputc(0x80|((utf8_char>>12)&0x3f));
+		ttputc(0x80|((utf8_char>>6)&0x3f));
+		ttputc(0x80|((utf8_char)&0x3f));
+	} else if(utf8_char < 0x4000000) {
+		ttputc(0xf8|(utf8_char>>24));
+		ttputc(0x80|((utf8_char>>18)&0x3f));
+		ttputc(0x80|((utf8_char>>12)&0x3f));
+		ttputc(0x80|((utf8_char>>6)&0x3f));
+		ttputc(0x80|((utf8_char)&0x3f));
+	} else {
+		ttputc(0xfC|(utf8_char>>30));
+		ttputc(0x80|((utf8_char>>24)&0x3f));
+		ttputc(0x80|((utf8_char>>18)&0x3f));
+		ttputc(0x80|((utf8_char>>12)&0x3f));
+		ttputc(0x80|((utf8_char>>6)&0x3f));
+		ttputc(0x80|((utf8_char)&0x3f));
+	}
+}
+
 void xlat(int *attr, unsigned char *c)
 {
 	if(isprint(*c) || (dspasis && *c > 128 ))
@@ -137,7 +171,7 @@ void xlat(int *attr, unsigned char *c)
 
 /* Set attributes */
 
-int attr(SCRN *t, int c)
+int set_attr(SCRN *t, int c)
 {
 	int e;
 
@@ -235,36 +269,45 @@ int clrins(SCRN *t)
 
 int eraeol(SCRN *t, int x, int y)
 {
-	int *s, *ss;
+	int *s, *ss, *a, *aa;
 	int w = t->co - x - 1;	/* Don't worry about last column */
 
 	if (w <= 0)
 		return 0;
 	s = t->scrn + y * t->co + x;
+	a = t->attr + y * t->co + x;
 	ss = s + w;
+	aa = a + w;
 	do {
 		if (*--ss != ' ') {
 			++ss;
 			break;
+		} else if (*--aa != 0) {
+			++ss;
+			++aa;
+			break;
 		}
 	} while (ss != s);
-	if ((ss - s > 3 || s[w] != ' ') && t->ce) {
+	if ((ss - s > 3 || s[w] != ' ' || a[w] != 0) && t->ce) {
 		cpos(t, x, y);
-		attr(t, 0);
+		set_attr(t, 0);
 		texec(t->cap, t->ce, 1, 0, 0, 0, 0);
 		msetI(s, ' ', w);
+		msetI(a, 0, w);
 	} else if (s != ss) {
 		if (t->ins)
 			clrins(t);
 		if (t->x != x || t->y != y)
 			cpos(t, x, y);
 		if (t->attrib)
-			attr(t, 0);
+			set_attr(t, 0);
 		while (s != ss) {
 			*s = ' ';
+			*a = 0;
 			ttputc(' ');
 			++t->x;
 			++s;
+			++a;
 		}
 	}
 	return 0;
@@ -273,20 +316,17 @@ int eraeol(SCRN *t, int x, int y)
 /* As above but useable in insert mode */
 /* The cursor position must already be correct */
 
-static void outatri(SCRN *t, int x, int y, int c)
+static void outatri(SCRN *t, int x, int y, int c, int a)
 {
-	unsigned char ch;
-
 	if (c == -1)
 		c = ' ';
-	ch = c;
-	c -= ch;
-	if (c != t->attrib)
-		attr(t, c);
-	if (t->haz && ch == '~')
-		ch = '\\';
-	ttputc(ch);
-	++t->x;
+	if (a != t->attrib)
+		set_attr(t, a);
+	if (t->haz && c == '~')
+		c = '\\';
+	utf8_putc(c);
+	t->x+=mk_wcwidth(c);
+	/* ++t->x; */
 }
 
 static void out(char *t, char c)
@@ -548,6 +588,7 @@ SCRN *nopen(CAP *cap)
 
 /* Initialize variable screen size dependant vars */
 	t->scrn = NULL;
+	t->attr = NULL;
 	t->sary = NULL;
 	t->updtab = NULL;
 	t->syntab = NULL;
@@ -579,6 +620,8 @@ void nresize(SCRN *t, int w, int h)
 		joe_free(t->syntab);
 	if (t->scrn)
 		joe_free(t->scrn);
+	if (t->attr)
+		joe_free(t->attr);
 	if (t->compose)
 		joe_free(t->compose);
 	if (t->ofst)
@@ -586,6 +629,7 @@ void nresize(SCRN *t, int w, int h)
 	if (t->ary)
 		joe_free(t->ary);
 	t->scrn = (int *) joe_malloc(t->li * t->co * sizeof(int));
+	t->attr = (int *) joe_malloc(t->li * t->co * sizeof(int));
 	t->sary = (int *) joe_calloc(t->li, sizeof(int));
 	t->updtab = (int *) joe_malloc(t->li * sizeof(int));
 	t->syntab = (int *) joe_malloc(t->li * sizeof(int));
@@ -953,6 +997,7 @@ docv:
 	}
 
 /* Use tabs */
+#if 0
 	if (x > t->x && t->ta) {
 		int ntabs = (x - t->x + t->x % t->tw) / t->tw;
 		int cstunder = x % t->tw + t->cta * ntabs;
@@ -1004,6 +1049,7 @@ docv:
 			} while (--ntabs);
 		}
 	}
+#endif
 
 /* Now adjust column */
 	if (x < t->x) {
@@ -1019,26 +1065,37 @@ docv:
 	} else if (x > t->x) {
 		/* Have to go right */
 		/* Hmm.. this should take into account possible attribute changes */
-		if (t->cRI < x - t->x) {
+		if (x-t->x>1 && t->RI) {
 			texec(t->cap, t->RI, 1, x - t->x, 0, 0, 0);
 			t->x = x;
 		} else {
+			while(x>t->x) {
+				texec(t->cap, t->nd, 1, 0, 0, 0, 0);
+				++t->x;
+			}
+		}
+
+		/* if (t->cRI < x - t->x) { */
+/*		} else {
 			int *s = t->scrn + t->x + t->y * t->co;
+			int *a = t->attr + t->x + t->y * t->co;
 
 			if (t->ins)
 				clrins(t);
 			while (x > t->x) {
-				int a, c;
-				if(*s==-1) c=' ', a=0;
-				else c=(0xFF&*s), a=(~0xFF&*s);
+				int atr, c;
+				if(*s==-1) c=' ', atr=0;
+				else c= *s, atr= *a;
 
-				if (a != t->attrib)
-					attr(t, a);
-				ttputc(c);
+				if (atr != t->attrib)
+					set_attr(t, atr);
+				utf8_putc(c);
 				++s;
+				++a;
 				++t->x;
 			}
 		}
+*/
 	}
 }
 
@@ -1047,8 +1104,10 @@ int cpos(register SCRN *t, register int x, register int y)
 	if (y == t->y) {
 		if (x == t->x)
 			return 0;
+#if 0
 		if (x > t->x && x - t->x < 4 && !t->ins) {
 			int *cs = t->scrn + t->x + t->co * t->y;
+			int *as = t->attr + t->x + t->co * t->y;
 
 			if (t->ins)
 				clrins(t);
@@ -1057,20 +1116,22 @@ int cpos(register SCRN *t, register int x, register int y)
 				int a = (0xFF00 & *cs); */
 				int c, a;
 				if (*cs==-1) c=' ', a=0;
-				else c=(0xFF& *cs), a=(~0xFF& *cs);
+				else c= *cs, a= *as;
 
 				if (a != t->attrib)
-					attr(t, a);
-				ttputc(c);
+					set_attr(t, a);
+				utf8_putc(c);
 				++cs;
+				++as;
 				++t->x;
 			} while (x != t->x);
 			return 0;
 		}
+#endif
 	}
 	if ((!t->ms && t->attrib & (INVERSE | UNDERLINE | BG_NOT_DEFAULT)) ||
-	    (t->ut && t->attrib & BG_NOT_DEFAULT))
-		attr(t, t->attrib & ~(INVERSE | UNDERLINE | BG_MASK));
+	    (t->ut && (t->attrib & BG_NOT_DEFAULT)))
+		set_attr(t, t->attrib & ~(INVERSE | UNDERLINE | BG_MASK));
 
 	if (y < t->top || y >= t->bot)
 		setregn(t, 0, t->li);
@@ -1078,12 +1139,13 @@ int cpos(register SCRN *t, register int x, register int y)
 	return 0;
 }
 
-static void doinschr(SCRN *t, int x, int y, int *s, int n)
+static void doinschr(SCRN *t, int x, int y, int *s, int *as, int n)
 {
 	int a;
 
 	if (x < 0) {
 		s -= x;
+		as -= x;
 		x = 0;
 	}
 	if (x >= t->co - 1 || n <= 0)
@@ -1095,7 +1157,7 @@ static void doinschr(SCRN *t, int x, int y, int *s, int n)
 				setins(t, x);
 			for (a = 0; a != n; ++a) {
 				texec(t->cap, t->ic, 1, x, 0, 0, 0);
-				outatri(t, x + a, y, s[a]);
+				outatri(t, x + a, y, s[a], as[a]);
 				texec(t->cap, t->ip, 1, x, 0, 0, 0);
 			}
 			if (!t->mi)
@@ -1103,11 +1165,13 @@ static void doinschr(SCRN *t, int x, int y, int *s, int n)
 		} else {
 			texec(t->cap, t->IC, 1, n, 0, 0, 0);
 			for (a = 0; a != n; ++a)
-				outatri(t, x + a, y, s[a]);
+				outatri(t, x + a, y, s[a], as[a]);
 		}
 	}
 	mmove(t->scrn + x + t->co * y + n, t->scrn + x + t->co * y, (t->co - (x + n)) * sizeof(int));
+	mmove(t->attr + x + t->co * y + n, t->attr + x + t->co * y, (t->co - (x + n)) * sizeof(int));
 	mmove(t->scrn + x + t->co * y, s, n * sizeof(int));
+	mmove(t->attr + x + t->co * y, s, n * sizeof(int));
 }
 
 static void dodelchr(SCRN *t, int x, int y, int n)
@@ -1129,12 +1193,15 @@ static void dodelchr(SCRN *t, int x, int y, int n)
 		texec(t->cap, t->ed, 1, x, 0, 0, 0);	/* Exit delete mode */
 	}
 	mmove(t->scrn + t->co * y + x, t->scrn + t->co * y + x + n, (t->co - (x + n)) * sizeof(int));
+	mmove(t->attr + t->co * y + x, t->attr + t->co * y + x + n, (t->co - (x + n)) * sizeof(int));
 	msetI(t->scrn + t->co * y + t->co - n, ' ', n);
+	msetI(t->attr + t->co * y + t->co - n, 0, n);
 }
 
 /* Insert/Delete within line */
+/* FIXME: doesn't know about attr */
 
-void magic(SCRN *t, int y, int *cs, int *s, int placex)
+void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 {
 	struct hentry *htab = t->htab;
 	int *ofst = t->ofst;
@@ -1230,7 +1297,7 @@ void magic(SCRN *t, int y, int *cs, int *s, int placex)
 				for (z = x; z != t->co - 1 && ofst[z] == q; ++z) ;
 				while (s[x + q] == cs[x + q] && x - q < placex)
 					++x;
-				doinschr(t, x + q, y, s + x + q, -q);
+				doinschr(t, x + q, y, s + x + q, a + x + q, -q);
 				for (fu = x; fu != t->co - 1; ++fu)
 					if (ofst[fu] != t->co - 1)
 						ofst[fu] -= q;
@@ -1246,7 +1313,7 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt)
 
 	if (!amnt)
 		return;
-	attr(t, 0);
+	set_attr(t, 0);
 	if (top == 0 && bot == t->li && (t->sf || t->SF)) {
 		setregn(t, 0, t->li);
 		cpos(t, 0, t->li - 1);
@@ -1299,13 +1366,17 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt)
 
       done:
 	mmove(t->scrn + top * t->co, t->scrn + (top + amnt) * t->co, (bot - top - amnt) * t->co * sizeof(int));
+	mmove(t->attr + top * t->co, t->attr + (top + amnt) * t->co, (bot - top - amnt) * t->co * sizeof(int));
 
 	if (bot == t->li && t->db) {
 		msetI(t->scrn + (t->li - amnt) * t->co, -1, amnt * t->co);
+		msetI(t->attr + (t->li - amnt) * t->co, 0, amnt * t->co);
 		msetI(t->updtab + t->li - amnt, 1, amnt);
 		msetI(t->syntab + t->li - amnt, -1, amnt);
-	} else
+	} else {
 		msetI(t->scrn + (bot - amnt) * t->co, ' ', amnt * t->co);
+		msetI(t->attr + (bot - amnt) * t->co, 0, amnt * t->co);
+	}
 }
 
 static void dodnscrl(SCRN *t, int top, int bot, int amnt)
@@ -1314,7 +1385,7 @@ static void dodnscrl(SCRN *t, int top, int bot, int amnt)
 
 	if (!amnt)
 		return;
-	attr(t, 0);
+	set_attr(t, 0);
 	if (top == 0 && bot == t->li && (t->sr || t->SR)) {
 		setregn(t, 0, t->li);
 		cpos(t, 0, 0);
@@ -1366,13 +1437,17 @@ static void dodnscrl(SCRN *t, int top, int bot, int amnt)
 	return;
       done:
 	mmove(t->scrn + (top + amnt) * t->co, t->scrn + top * t->co, (bot - top - amnt) * t->co * sizeof(int));
+	mmove(t->attr + (top + amnt) * t->co, t->attr + top * t->co, (bot - top - amnt) * t->co * sizeof(int));
 
 	if (!top && t->da) {
 		msetI(t->scrn, -1, amnt * t->co);
+		msetI(t->attr, 0, amnt * t->co);
 		msetI(t->updtab, 1, amnt);
 		msetI(t->syntab, -1, amnt);
-	} else
+	} else {
 		msetI(t->scrn + t->co * top, ' ', amnt * t->co);
+		msetI(t->attr + t->co * top, 0, amnt * t->co);
+	}
 }
 
 void nscroll(SCRN *t)
@@ -1409,7 +1484,7 @@ void nscroll(SCRN *t)
 
 void npartial(SCRN *t)
 {
-	attr(t, 0);
+	set_attr(t, 0);
 	clrins(t);
 	setregn(t, 0, t->li);
 }
@@ -1435,7 +1510,7 @@ void nreturn(SCRN *t)
 void nclose(SCRN *t)
 {
 	leave = 1;
-	attr(t, 0);
+	set_attr(t, 0);
 	clrins(t);
 	setregn(t, 0, t->li);
 	cpos(t, 0, t->li - 1);
@@ -1444,6 +1519,7 @@ void nclose(SCRN *t)
 	ttclose();
 	rmcap(t->cap);
 	joe_free(t->scrn);
+	joe_free(t->attr);
 	joe_free(t->sary);
 	joe_free(t->ofst);
 	joe_free(t->htab);
@@ -1513,7 +1589,9 @@ void nredraw(SCRN *t)
 {
 	dostaupd = 1;
 	msetI(t->scrn, ' ', t->co * skiptop);
+	msetI(t->attr, 0, t->co * skiptop);
 	msetI(t->scrn + skiptop * t->co, -1, (t->li - skiptop) * t->co);
+	msetI(t->attr + skiptop * t->co, 0, (t->li - skiptop) * t->co);
 	msetI(t->sary, 0, t->li);
 	msetI(t->updtab + skiptop, -1, t->li - skiptop);
 	msetI(t->syntab + skiptop, -1, t->li - skiptop);
@@ -1523,7 +1601,7 @@ void nredraw(SCRN *t)
 	t->bot = 0;
 	t->attrib = -1;
 	t->ins = -1;
-	attr(t, 0);
+	set_attr(t, 0);
 	clrins(t);
 	setregn(t, 0, t->li);
 
@@ -1533,10 +1611,12 @@ void nredraw(SCRN *t)
 			t->x = 0;
 			t->y = 0;
 			msetI(t->scrn, ' ', t->li * t->co);
+			msetI(t->attr, 0, t->li * t->co);
 		} else if (t->cd) {
 			cpos(t, 0, 0);
 			texec(t->cap, t->cd, 1, 0, 0, 0, 0);
 			msetI(t->scrn, ' ', t->li * t->co);
+			msetI(t->attr, 0, t->li * t->co);
 		}
 	}
 }
