@@ -89,6 +89,9 @@ line number.
 COLUMNS, DOPADDING and BAUD options can also be set with environment
 variables.
 
+	The JOETERM environment variable can be set to override the TERM
+environment variable.
+
 ** IMPORTANT **
 
 The baud rate must be correctly set or either typeahead will not interrupt 
@@ -164,10 +167,8 @@ understands several new capabilities:
 			beginning of the specified line.  Like 'ESC [ n H' in
 			ansi/vt100.
 
-	But if you really must use the terminfo database, change the 
-'termcap.o' file in the OBJS list in the makefile to 'terminfo.o'.  You'll 
-also have to add '-ltinfo', '-ltermlib' or '-lcurses' to the appropriate 
-link line (lines beginning with $(CC)) in the make file.  
+	But if you really must use the terminfo database see the
+instructions in the Makefile.
 
 VOID trouble
 =-=-=-=-=-=-

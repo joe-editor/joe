@@ -38,6 +38,8 @@ extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff,
            exask, skiptop, noxon, lines, staen, columns, Baud, dopadding,
            marking, beep;
 
+extern int idleout;	/* Clear to use /dev/tty for screen */
+extern char *joeterm;
 int help=0;		/* Set to have help on when starting */
 int nonotice=0;		/* Set to prevent copyright notice */
 int orphan=0;
@@ -101,7 +103,7 @@ static int ungotc=0;
 
 void nungetc(c)
  {
- if(c!='C'-'@')
+ if(c!='C'-'@' && c!='M'-'@')
   {
   chmac();
   ungot=1;
@@ -121,6 +123,11 @@ int edloop(flg)
   {
   MACRO *m;
   int c;
+  if(exmsg && !flg)
+   {
+   vsrm(exmsg);
+   exmsg=0;
+   }
   edupd(1);
   if(!ahead && !have) ahead=1;
   if(ungot) c=ungotc, ungot=0;
@@ -180,6 +187,7 @@ char *argv[];
  if(s=getenv("BAUD")) sscanf(s,"%u",&Baud);
  if(getenv("DOPADDING")) dopadding=1;
  if(getenv("NOXON")) noxon=1;
+ if(s=getenv("JOETERM")) joeterm=s;
 
 #ifndef __MSDOS__
  if(!(cap=getcap(NULL,9600,NULL,NULL)))
@@ -278,13 +286,15 @@ char *argv[];
  donerc:
  izhelp();
  for(c=1;argv[c];++c)
-  if(argv[c][0]=='-' && argv[c][1])
-   switch(glopt(argv[c]+1,argv[c+1],NULL,1))
-    {
-    case 0: fprintf(stderr,"Unknown option '%s'\n",argv[c]); break;
-    case 1: break;
-    case 2: ++c; break;
-    }
+  if(argv[c][0]=='-')
+   if(argv[c][1])
+    switch(glopt(argv[c]+1,argv[c+1],NULL,1))
+     {
+     case 0: fprintf(stderr,"Unknown option '%s'\n",argv[c]); break;
+     case 1: break;
+     case 2: ++c; break;
+     }
+   else idleout=0;
 
  if(!(n=nopen(cap))) return 1;
  maint=screate(n);
@@ -350,7 +360,7 @@ char *argv[];
  maint->curwin=maint->topwin;
  if(help) helpon(maint);
  if(!nonotice)
-  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.3 ** Copyright (C) 1994 Joseph H. Allen **\\i");
+  msgnw(lastw(maint)->object,"\\i** Joe's Own Editor v2.5 ** Copyright (C) 1995 Joseph H. Allen **\\i");
  edloop(0);
  vclose(vmem);
  nclose(n);

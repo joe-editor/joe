@@ -1,3 +1,59 @@
+** JOE 2.5
+
+- No longer use ^[ O, ^[ A, ^[ B, ^[ C, or ^[ D for anything because they
+  interfere with arrow keys.
+
+- Couldn't create new files because of bug in readonly setting
+
+- fwrdc/bkwdc were crashing the editor except when called from wordstar
+
+- 'tr' command was not called in a portable way in jmacs
+
+- 'tr' was causing problems with the spell-check macros as well
+
+- filter region was not working: had to add 'query' in ^[ | macro
+
+- Changed incremental search so that whatever key the command is bound to
+  can be used to repeat the search (used to only be able to use ^S)
+
+** JOE 2.4
+
+- Closing message was incorrect when exit macros (macros where the last
+  command is abortbuf) were used.
+
+- SuperPico rc file added
+
+- Write block now writes the entire file if no block is set
+
+- Added pico kill function for pico emulation
+  (tried to do this with 'psh,markk,blkdel' where blkdel deletes lines if
+   no block is set, but it didn't group the deletes right in the yank
+   buffer)
+
+- Filter block would leave the marks set
+
+- Fixed ^@ in joe mode
+
+- Fixed help screen glitches in wordstar mode
+
+- If joe can't make a backup file it now prompts for you to save anyway
+
+- Eliminated IDLEOUT compile option.  Now is the user gives - on the
+  command line, joe uses /dev/tty.
+
+- Added %o %O %a %A %X and %R status line messages
+
+- Starts out in read only mode if loaded file can not be written to
+
+- If joe can't find the termcap/terminfo entry, it instead uses the default
+
+- termcap routines are now included even if you use terminfo.  If your
+  terminal can't be found in the terminfo database, it will look in
+  the termcap database too.
+
+- The JOETERM environment variable can be used to bypass the TERM
+  environment variable setting.
+
 ** JOE 2.3
 
 - Search & Replace bugs fixed
@@ -24,6 +80,10 @@
 - Added function to insert current keyboard macro into current file
 
 - Added range checks to numeric option settings
+
+- Restricted joe rc file added
+
+- Added ':def' feature for rc files
 
 ** JOE 2.2
 

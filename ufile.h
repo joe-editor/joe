@@ -23,6 +23,8 @@ extern int exask;
 
 #include "bw.h"
 
+void genexmsg();
+
 int ublksave();
 int ushell();
 int usave();

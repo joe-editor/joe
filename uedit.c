@@ -1097,6 +1097,7 @@ int *notify;
  else
   {
   pset(bw->cursor,q);
+  bw->cursor->xcol=piscol(bw->cursor);
   prm(q);
   return 0;
   }

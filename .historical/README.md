@@ -7,6 +7,171 @@ commits, but are included in the repository for the sake of completeness.
 
 ---
 
+## JOE 2.5
+**Released: 1995-01-08**
+
+Source recovered from http://bio.nic.funet.fi/pub/unix/editors/joe
+
+Changelog:
+
+```
+- No longer use ^[ O, ^[ A, ^[ B, ^[ C, or ^[ D for anything because they
+  interfere with arrow keys.
+
+- Couldn't create new files because of bug in readonly setting
+
+- fwrdc/bkwdc were crashing the editor except when called from wordstar
+
+- 'tr' command was not called in a portable way in jmacs
+
+- 'tr' was causing problems with the spell-check macros as well
+
+- filter region was not working: had to add 'query' in ^[ | macro
+
+- Changed incremental search so that whatever key the command is bound to
+  can be used to repeat the search (used to only be able to use ^S)
+```
+
+---
+
+## JOE 2.4
+**Released: 1995-01-07**
+
+*The source for this release has been lost*
+
+Changelog:
+
+```
+- Closing message was incorrect when exit macros (macros where the last
+  command is abortbuf) were used.
+
+- SuperPico rc file added
+
+- Write block now writes the entire file if no block is set
+
+- Added pico kill function for pico emulation
+  (tried to do this with 'psh,markk,blkdel' where blkdel deletes lines if
+   no block is set, but it didn't group the deletes right in the yank
+   buffer)
+
+- Filter block would leave the marks set
+
+- Fixed ^@ in joe mode
+
+- Fixed help screen glitches in wordstar mode
+
+- If joe can't make a backup file it now prompts for you to save anyway
+
+- Eliminated IDLEOUT compile option.  Now is the user gives - on the
+  command line, joe uses /dev/tty.
+
+- Added %o %O %a %A %X and %R status line messages
+
+- Starts out in read only mode if loaded file can not be written to
+
+- If joe can't find the termcap/terminfo entry, it instead uses the default
+
+- termcap routines are now included even if you use terminfo.  If your
+  terminal can't be found in the terminfo database, it will look in
+  the termcap database too.
+
+- The JOETERM environment variable can be used to bypass the TERM
+  environment variable setting.
+```
+
+Original announcement:
+```
+Newsgroups: comp.mail.pine,comp.editors
+Path: nntp.gmd.de!newsserver.jvnc.net!nntpserver.pppl.gov!princeton!udel!gatech!howland.reston.ans.net!pipex!uunet!world!jhallen
+From: jhallen@world.std.com (Joseph H Allen)
+Subject: JOE 2.4 - Now with SuperPico mode
+Message-ID: <D224M0.HAo@world.std.com>
+Organization: The World Public Access UNIX, Brookline, MA
+Date: Sat, 7 Jan 1995 22:46:48 GMT
+Lines: 77
+Xref: nntp.gmd.de comp.mail.pine:5349 comp.editors:9344
+
+Version 2.4 of my editor is ready.  You can get it by anonymous ftp from
+ftp.std.com, file: src/editors/joe2.4.tar.Z.  It probably will not appear
+until the sysop comes in on monday, however.
+
+This upstart uEMACS hack of an editor has been stealing too many of my
+customers, so I've decided to fight back.  This version of JOE includes
+'JPICO'- a greatly enhanced version of Pico (perhaps I should have called it
+Nano or Micro?).  It includes all of the missing functions from Pico (such
+as go to beginning of file and overtype mode), and generally extends the
+editor while keeping reasonably close to the simple model it provides.  It
+should be especially useful for editing News and mail articles since the
+paragraph formatter can properly format quoted news articles.  Also JOE
+normally can display the line and column number on the status line, allows
+you to set the right-margin and has many other user-friendly features.
+
+Here are the two help screens for JPICO to give you an idea of what you get:
+
+^[ means you hit Ctrl-[ or the ESC key
+
+CURSOR           GO TO            BLOCK      DELETE    MISC         EXIT
+^B left ^F right ^[Y top of file  ^@  mark   ^D  char  ^J   format  ^X save
+^P up   ^N down  ^[V end of file  ^K  cut    ^K  line  ^T   spell   ^C abort
+^Y prev. screen  ^A  beg. of line ^U  paste  ^[K >line ^[T  file    ^Z shell
+^V next screen   ^E  end of line  ^[U select ^[H word< ^L   refresh FILE
+^[B prev. word   ^[L line No.     ^O  save   ^[D >word ^[^[ options ^O save
+^[F next word    ^W  find text    ^[/ filter ^[- undo  ^[=  redo    ^R insert
+
+MACROS         WINDOW          WINDOW     SHELL         MISC
+^[( 0-9 Record ^[O Split       ^[I Grow   ^[! Command   ^[X Execute command
+^[)     Stop   ^[E Edit file   ^[J Shrink ^[W Window    ^[M Math
+^[ 0-9  Play   ^[P Goto prev.  QUOTE      I-SEARCH      ^[C Center line
+^[?     Query  ^[N Goto next   `  Ctrl-   ^[R Backwards ^[G to matching ( [ {
+^[\     Repeat ^[Z Zoom in/out ^\ Meta-   ^[S Forwards  ^[< ^[> pan left/rght
+
+This version of JOE also includes a number of improvements and bug fixes:
+
+You can set the JOETERM environment variable to have JOE use a different
+terminal type then that specified in the normal TERM environment variable.
+You may want to do this since JOE can usually handle the terminal better
+than other programs- for example 'rn' messes up my Xenix console if I let it
+use inverse and underline, but joe doesn't.
+
+If JOE can't find the specified termcap or terminfo entry it uses a default
+extended ansi terminal type instead of giving up.  This should be useful
+with the above option since many terminal emulators and PC UNIX consoles
+are ansi with insert and delete line, but many terminfo and termcap
+databases only provide primitive ansi or vt100.
+
+If you compile joe for terminfo, it includes the termcap routines anyway,
+and searches the termcap database (if it exists) if no terminfo entry can be
+found.
+
+JOE now starts out in read only mode if the specified file can not be
+written to.
+
+If JOE can't make a backup file, it now asks if it should save the file
+anyway.
+
+The IDLEOUT compile option is eliminated.  Instead, if the user specified
+'-' on the command line, joe will use /dev/tty to open the terminal instead
+of stdin/stdout.
+
+More status line options are now available:
+  The ASCII decimal and hex values of the character under the cursor
+  The number of lines in the file
+  What percent of the file the cursor is at
+  The current byte offset into the file
+  Whether rectangular block mode is enabled
+  If the file is read only
+
+A number of glitches in the 'jstar' keymap are fixed.
+
+-- 
+/*  jhallen@world.std.com (192.74.137.5) */               /* Joseph H. Allen */
+int a[1817];main(z,p,q,r){for(p=80;q+p-80;p-=2*a[p])for(z=9;z--;)q=3&(r=time(0)
++r*57)/7,q=q?q-1?q-2?1-p%79?-1:0:p%79-77?1:0:p<1659?79:0:p>158?-79:0,q?!a[p+q*2
+]?a[p+=a[p+=q]=q]=q:0:0;for(;q++-1817;)printf(q%79?"%c":"%c\n"," #"[!a[q-1]]);}
+```
+
+---
+
 ## JOE 2.3
 **Released: 1994-12-24**
 

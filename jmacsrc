@@ -3,9 +3,9 @@
                                 Gnu-Emacs Joe
 
  JOE looks for this file in:
-	1 - .joerc
-	2 - $HOME/.joerc
-	3 - /usr/local/lib/joerc
+	1 - .jmacsrc
+	2 - $HOME/.jmacsrc
+	3 - /usr/local/lib/jmacsrc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -55,12 +55,20 @@
   %T  O for overtype mode, I for insert mode
   %W  W if wordwrap is enabled
   %I  A if autoindent is enabled
+  %X  Rectangle mode indicator
   %n  File name
   %m  '(Modified)' if file has been changed
   %*  '*' if file has been changed
+  %R  Read-only indicator
   %r  Row (line) number
   %c  Column number
+  %o  Byte offset into file
+  %O  Byte offset into file in hex
+  %a  Ascii value of character under cursor
+  %A  Ascii value of character under cursor in hex
   %k  Entered prefix keys
+  %p  Percent of file cursor is at
+  %l  No. lines in file
   %S  '*SHELL*' if there is a shell running in window
   %M  Macro recording message
 
@@ -72,7 +80,7 @@
   \d  Dim
   \f  Blink
 
--lmsg \i%k%T%W%I %* [%n] %M
+-lmsg \i%k%T%W%I%X %* [%n] %M
 -rmsg  %S Row %r Col %c %t  Ctrl-X H for help
 
  SECOND SECTION: File name dependant local option settings:
@@ -309,11 +317,10 @@ stop		^X )		Stop recording macro
 
   Spell-check macros
 
- filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype	^T -
+:def spellfile filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype
+:def spellword psh,nextword,markk,prevword,markb,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\012';/bin/rm ispell.tmp",rtn,retype,nextword
 
-psh,nextword,markk,prevword,markb,filt,
-"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\n';/bin/rm ispell.tmp",
-rtn,retype,nextword	^[ $	Spell check word
+spellword	^[ $
 
 ctrl		^Q		Quote Ctrl chars
 ctrl		`		Quote Ctrl chars
@@ -321,14 +328,14 @@ ctrl		`		Quote Ctrl chars
   Macros of non-existant emacs functions
 
 psh,nextword,markk,prevword,markb,filt,
-"tr a-z A-Z",rtn,nextword	^[ u		Upcase word
+"tr [a-z] [A-Z]",rtn,nextword	^[ u		Upcase word
 psh,nextword,markk,prevword,markb,filt,
-"tr A-Z a-z",rtn,nextword	^[ l		Downcase word
+"tr [A-Z] [a-z]",rtn,nextword	^[ l		Downcase word
 psh,nextword,markk,prevword,markb,filt,
-"tr A-Z a-z",rtn,rtarw,markk,filt,
-"tr a-z A-Z",rtn,nextword	^[ c		Capitalize word
-psh,markk,filt,"tr A-Z a-z",rtn		^X ^L	Downcase region
-psh,markk,filt,"tr a-z A-Z",rtn		^X ^U	Upcase region
+"tr [A-Z] [a-z]",rtn,rtarw,markk,filt,
+"tr [a-z] [A-Z]",rtn,nextword	^[ c		Capitalize word
+psh,markk,filt,"tr [A-Z] [a-z]",rtn		^X ^L	Downcase region
+psh,markk,filt,"tr [a-z] [A-Z]",rtn		^X ^U	Upcase region
 psh,ltarw,markb,rtarw,markk,rtarw,
 blkmove,rtarw	^T				Transpose chars
 psh,uparw,bol,markb,dnarw,markk,
@@ -404,7 +411,7 @@ insc		^C		(uemacs)
  ffirst		^S		Search forward
 isrch		^S
 ffirst		^\
-filt		^[ |		Filter block
+psh,markk,filt,query	^[ |		Filter block
 format		^[ q		Format paragraph
 gomark		^X /		Goto bookmark
 groww		^X ^		Enlarge window
@@ -467,6 +474,7 @@ complete	^I
 
 :menu			Selection menus
 :inherit windows
+abort		^[ ^[
 backsmenu	^?
 backsmenu	^H
 bofmenu		^K U

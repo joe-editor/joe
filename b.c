@@ -1684,6 +1684,7 @@ char *s;
  B *b;
  long skip,amnt;
  char *n;
+ int nowrite=0;
 
  if(!s || !s[0])
   {
@@ -1709,7 +1710,14 @@ char *s;
  else
 #endif
  if(!zcmp(n,"-")) fi=stdin;
- else fi=fopen(n,"r");
+ else
+  {
+  fi=fopen(n,"r+");
+  if(!fi) nowrite=1;
+  else fclose(fi);
+  fi=fopen(n,"r");
+  if(!fi) nowrite=0;
+  }
  joesep(n);
 
  /* Abort if couldn't open */
@@ -1760,6 +1768,7 @@ char *s;
  if(error || s[0]=='!' || skip || amnt!=MAXLONG) b->backup=1, b->changed=0;
  else if(!zcmp(n,"-")) b->backup=1, b->changed=1;
  else b->backup=0, b->changed=0;
+ if(nowrite) b->rdonly=b->o.readonly=1;
 
  /* Eliminate parsed name */
  vsrm(n);

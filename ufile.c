@@ -40,11 +40,56 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "macro.h"
 #include "ufile.h"
 
-int exask=0;
 extern int orphan;
 char *backpath=0;			/* Place to store backup files */
-
 static B *filehist=0;			/* History of file names */
+int nobackups=0;
+int exask=0;
+
+/* Ending message generator */
+
+void genexmsg(bw,saved,name)
+BW *bw;
+char *name;
+ {
+ char *s;
+ if(bw->b->name && bw->b->name[0]) s=bw->b->name;
+ else s="(Unnamed)";
+
+ if(name)
+  if(saved)
+   sprintf(msgbuf,"File %s saved",name);
+  else
+   sprintf(msgbuf,"File %s not saved",name);
+ else
+  if(bw->b->changed && bw->b->count==1)
+   sprintf(msgbuf,"File %s not saved",s);
+  else if(saved)
+   sprintf(msgbuf,"File %s saved",s);
+  else
+   sprintf(msgbuf,"File %s not changed so no update needed",s);
+ msgnw(bw,msgbuf);
+
+ if(!exmsg)
+  if(bw->b->changed && bw->b->count==1)
+   {
+   exmsg=vsncpy(NULL,0,sc("File "));
+   exmsg=vsncpy(sv(exmsg),sz(s));
+   exmsg=vsncpy(sv(exmsg),sc(" not saved."));
+   }
+  else if(saved)
+   {
+   exmsg=vsncpy(NULL,0,sc("File "));
+   exmsg=vsncpy(sv(exmsg),sz(s));
+   exmsg=vsncpy(sv(exmsg),sc(" saved."));
+   }
+  else
+   {
+   exmsg=vsncpy(NULL,0,sc("File "));
+   exmsg=vsncpy(sv(exmsg),sz(s));
+   exmsg=vsncpy(sv(exmsg),sc(" not changed so no update needed."));
+   }
+ }
 
 /* Write highlighted block to a file */
 
@@ -56,11 +101,10 @@ BW *bw;
     (!square || piscol(markk)>piscol(markb)))
   {
   if(wmkpw(bw,
-         "Name of file to write (^C to abort): ",&filehist,dowrite,"Names",NULL,cmplt,NULL,NULL)) return 0;
+           "Name of file to write (^C to abort): ",&filehist,dowrite,"Names",NULL,cmplt,NULL,NULL)) return 0;
   else return -1;
   }
- msgnw(bw,"No block");
- return -1;
+ else return usave(bw);
  }
 
 /* Shell escape */
@@ -74,12 +118,7 @@ BW *bw;
  return 0;
  }
 
-/* Make backup file if it needs to be made
- * Returns 0 if backup file was made or didn't need to be made
- * Returns 1 for error
- */
-
-int nobackups=0;
+/* Copy a file */
 
 int cp(from,to)
 char *from, *to;
@@ -99,6 +138,11 @@ char *from, *to;
  if(amnt) return -1;
  else return 0;
  }
+
+/* Make backup file if it needs to be made
+ * Returns 0 if backup file was made or didn't need to be made
+ * Returns 1 for error
+ */
 
 static int backup(bw)
 BW *bw;
@@ -143,7 +187,6 @@ BW *bw;
   /* Copy original file to backup file */
   if(cp(bw->b->name,name))
    {
-   msgnw(bw,"Couldn't make backup file... file not saved");
    return 1;
    }
   else
@@ -157,43 +200,120 @@ BW *bw;
 
 /* Write file */
 
-static int dosave(bw,s,object,notify)
+struct savereq
+ {
+ int (*callback)();
+ char *name;
+ };
+
+static int saver(bw,c,req,notify)
+BW *bw;
+int c;
+struct savereq *req;
+int *notify;
+ {
+ int (*callback)();
+ int fl;
+ callback=req->callback;
+ if(c=='n' || c=='N')
+  {
+  vsrm(req->name);
+  free(req);
+  if(notify) *notify=1;
+  msgnw(bw,"Couldn't make backup file... file not saved");
+  if(callback) return callback(bw,-1);
+  else return -1;
+  }
+ if(c!='y' && c!='Y')
+  if(mkqw(bw,sc("Could not make backup file.  Save anyway (y,n,^C)? "),saver,NULL,req,notify))
+   return 0;
+  else
+   {
+   if(notify) *notify=1;
+   return -1;
+   }
+ if(notify) *notify=1;
+ if(bw->b->er== -1 && bw->o.msnew) exemac(bw->o.msnew), bw->b->er= -3;
+ if(bw->b->er== 0 && bw->o.msold) exemac(bw->o.msold);
+ if(fl=bsave(bw->b->bof,req->name,bw->b->eof->byte))
+  {
+  msgnw(bw,msgs[fl+5]);
+  vsrm(req->name);
+  free(req);
+  if(callback) return callback(bw,-1);
+  else return -1;
+  }
+ else
+  {
+  if(!bw->b->name) bw->b->name=joesep(zdup(req->name));
+  if(!zcmp(bw->b->name,req->name))
+   {
+   bw->b->changed=0;
+   saverr(bw->b->name);
+   }
+  genexmsg(bw,1,req->name);
+  vsrm(req->name);
+  free(req);
+  if(callback) return callback(bw,0);
+  else return 0;
+  }
+ }
+
+static int dosave(bw,s,callback,notify)
+BW *bw;
+char *s;
+int (*callback)();
+int *notify;
+ {
+ struct savereq *req=(struct savereq *)malloc(sizeof(struct savereq));
+ req->name=s;
+ req->callback=callback;
+ if(backup(bw)) saver(bw,0,req,notify);
+ else saver(bw,'y',req,notify);
+ }
+
+static int dosave2(bw,c,s,notify)
+BW *bw;
+char *s;
+int *notify;
+ {
+ if(c=='y' || c=='Y') return dosave(bw,s,NULL,notify);
+ else if(c=='n' || c=='N')
+  {
+  if(notify) *notify=1;
+  genexmsg(bw,0,s);
+  vsrm(s);
+  return -1;
+  }
+ else
+  if(mkqw(bw,sc("File exists.  Overwrite (y,n,^C)? "),dosave2,NULL,s,notify)) return 0;
+  else return -1;
+ }
+
+static int dosave1(bw,s,object,notify)
 BW *bw;
 char *s;
 void *object;
 int *notify;
  {
- int fl;
- if(notify) *notify=1;
- if(backup(bw)) { vsrm(s); return -1; }
- if(bw->b->er== -1 && bw->o.msnew) exemac(bw->o.msnew), bw->b->er= -3;
- if(bw->b->er== 0 && bw->o.msold) exemac(bw->o.msold);
- if(fl=bsave(bw->b->bof,s,bw->b->eof->byte))
+ int f;
+ if(s[0]!='!' && !(s[0]=='>' && s[1]=='>') && (!bw->b->name || zcmp(s,bw->b->name)))
   {
-  msgnw(bw,msgs[fl+5]);
-  vsrm(s);
-  return -1;
-  }
- else
-  {
-  if(!bw->b->name) bw->b->name=joesep(zdup(s));
-  if(!zcmp(bw->b->name,s))
+  f=open(s,O_RDONLY);
+  if(f!= -1)
    {
-   bw->b->changed=0;
-   saverr(bw->b->name);
+   close(f);
+   return dosave2(bw,0,s,notify);
    }
-  sprintf(msgbuf,"File %s saved",s);
-  msgnw(bw,msgbuf);
-  vsrm(s);
-  return 0;
   }
+ return dosave(bw,s,object,notify);
  }
 
 int usave(bw)
 BW *bw;
  {
  BW *pbw=wmkpw(bw,
-                "Name of file to save (^C to abort): ",&filehist,dosave,"Names",NULL,cmplt,NULL,NULL);
+                "Name of file to save (^C to abort): ",&filehist,dosave1,"Names",NULL,cmplt,NULL,NULL);
  if(pbw && bw->b->name)
   {
   binss(pbw->cursor,bw->b->name);
@@ -373,23 +493,46 @@ BW *bw;
 
 /* Save and exit */
 
+static int exdone(bw,flg)
+BW *bw;
+ {
+ if(flg)
+  {
+  if(bw->b->name) free(bw->b->name);
+  bw->b->name=0;
+  return -1;
+  }
+ else
+  {
+  bw->b->changed=0;
+  saverr(bw->b->name);
+  return uabort(bw,MAXINT);
+  }
+ }
+
+static int exdone1(bw,flg)
+BW *bw;
+ {
+ if(flg)
+  {
+  return -1;
+  }
+ else
+  {
+  bw->b->changed=0;
+  saverr(bw->b->name);
+  return uabort(bw,MAXINT);
+  }
+ }
+
 static int doex(bw,s,object,notify)
 BW *bw;
 char *s;
 void *object;
 int *notify;
  {
- char buf[1024];
  bw->b->name=joesep(zdup(s)); 
- if(dosave(bw,s,object,notify))
-  { free(bw->b->name); bw->b->name=0; return -1; }
- sprintf(buf,"File %s saved.",bw->b->name);
- if(exmsg) free(exmsg);
- exmsg=zdup(buf);
- bw->b->changed=0;
- saverr(bw->b->name);
- uabort(bw,MAXINT);
- return 0;
+ return dosave(bw,s,exdone,notify);
  }
 
 int uexsve(bw)
@@ -398,14 +541,7 @@ BW *bw;
  if(!bw->b->changed) { uabort(bw,MAXINT); return 0; }
  else if(bw->b->name && !exask)
   {
-  if(dosave(bw,vsncpy(NULL,0,sz(bw->b->name)),NULL,NULL)) return -1;
-  exmsg=vsncpy(NULL,0,sz("File "));
-  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
-  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(" saved."));
-  bw->b->changed=0;
-  saverr(bw->b->name);
-  uabort(bw,MAXINT);
-  return 0;
+  return dosave(bw,vsncpy(NULL,0,sz(bw->b->name)),exdone1,NULL);
   } 
  else
   {
@@ -424,38 +560,23 @@ BW *bw;
 
 /* If buffer is modified, prompt for saving */
 
-static int donask(bw,s,object,notify)
-BW *bw;
-char *s;
-void *object;
-int *notify;
- {
- if(!bw->b->name) bw->b->name=joesep(zdup(s)); 
- if(dosave(bw,s,object,notify)) { bw->b->name=0; return -1; }
- exmsg=vsncpy(NULL,0,sz("File "));
- exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
- exmsg=vsncpy(exmsg,sLEN(exmsg),sz(" saved."));
- bw->b->changed=0;
- saverr(bw->b->name);
- return 0;
- }
-
 static int nask(bw,c,object,notify)
 BW *bw;
 void *object;
 int *notify;
  {
  if(c=='y' || c=='Y')
-  if(bw->b->name) return donask(bw,vsncpy(NULL,0,sz(bw->b->name)),object,notify);
+  if(bw->b->name) return dosave1(bw,vsncpy(NULL,0,sz(bw->b->name)),object,notify);
   else
    {
    BW *pbw=wmkpw(bw,
-                 "Name of file to save (^C to abort): ",&filehist,donask,"Names",NULL,cmplt,object,notify);
+                 "Name of file to save (^C to abort): ",&filehist,dosave1,"Names",NULL,cmplt,object,notify);
    if(pbw) return 0;
    else return -1;
    }
  else if(c=='n' || c=='N')
   {
+  genexmsg(bw,0,NULL);
   if(notify) *notify=1;
   return 0;
   }
@@ -478,6 +599,45 @@ BW *bw;
  return nask(bw,0,NULL,NULL);
  }
 
+/* Ask to save file if it is modified.  If user answers yes, run save */
+
+static int nask2(bw,c,object,notify)
+BW *bw;
+void *object;
+int *notify;
+ {
+ if(c=='y' || c=='Y')
+  {
+  BW *pbw=wmkpw(bw,
+                "Name of file to save (^C to abort): ",&filehist,dosave1,"Names",NULL,cmplt,object,notify);
+  if(pbw) return 0;
+  else return -1;
+  }
+ else if(c=='n' || c=='N')
+  {
+  genexmsg(bw,0,NULL);
+  if(notify) *notify=1;
+  return 0;
+  }
+ else
+  if(bw->b->count==1 && bw->b->changed)
+   {
+   if(mkqw(bw,sc("Save changes to this file (y,n,^C)? "),nask,NULL,object,notify)) return 0;
+   else return -1;
+   }
+  else
+   {
+   if(notify) *notify=1;
+   return 0;
+   }
+ }
+
+int uask2(bw)
+BW *bw;
+ {
+ return nask2(bw,0,NULL,NULL);
+ }
+
 /* If buffer is modified, ask if it's ok to lose changes */
 
 int dolose(bw,c,object,notify)
@@ -488,6 +648,7 @@ int *notify;
  W *w;
  if(notify) *notify=1;
  if(c!='y' && c!='Y') return -1;
+ genexmsg(bw,0,NULL);
  if(bw->b->count==1) bw->b->changed=0;
  object=bw->object; w=bw->parent;
  bwrm(bw);
@@ -501,9 +662,10 @@ int *notify;
 int ulose(bw)
 BW *bw;
  {
+ msgnw(bw,NULL);
  if(bw->pid) return ukillpid(bw);
  if(bw->b->count==1 && bw->b->changed)
-  if(mkqw(bw,sc("Lose changed to this file (y,n,^C)? "),dolose,NULL,NULL,NULL)) return 0;
+  if(mkqw(bw,sc("Lose changes to this file (y,n,^C)? "),dolose,NULL,NULL,NULL)) return 0;
   else return -1;
  else return dolose(bw,'y',NULL,NULL);
  }

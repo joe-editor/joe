@@ -19,14 +19,15 @@ char *argv[];
  fprintf(f,"#define _Iconfig 1\n");
  fprintf(f,"\n");
 
+ fprintf(f,"/* Uncomment to use TERMINFO database*/\n");
+ if(argv[2][0]=='1')
+  fprintf(f,"#define TERMINFO 1\n");
+ else
+  fprintf(f,"/* #define TERMINFO 1 */\n");
+ fprintf(f,"\n");
+
  fprintf(f,"/* Path where main.c tries to open rc file */\n");
  fprintf(f,"#define JOERC \"%s/\"\n\n",argv[1]);
-
- fprintf(f,"/* Define to prevent joe from using /dev/tty */\n");
- if(argv[2][0]=='0')
-  fprintf(f,"/* #define IDLEOUT 1 */\n");
- else
-  fprintf(f,"#define IDLEOUT 1\n");
 
  fprintf(f,"\n");
 

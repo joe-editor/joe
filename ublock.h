@@ -40,6 +40,7 @@ int utomarkb();
 int utomarkk();
 int utomarkbk();
 int ublkdel();
+int upicokill();
 int ublkmove();
 int ublkcpy();
 int dowrite();

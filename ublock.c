@@ -324,6 +324,8 @@ BW *bw;
 
 /* Delete block */
 
+extern int udelln();
+
 int ublkdel(bw)
 BW *bw;
  {
@@ -344,6 +346,33 @@ BW *bw;
   if(lightoff) unmark(bw);
   }
  else { msgnw(bw,"No block"); return -1; }
+ return 0;
+ }
+
+/* Special delete block function for PICO */
+
+int upicokill(bw)
+BW *bw;
+ {
+ upsh(bw);
+ umarkk(bw);
+ if(markv(1))
+  {
+  if(square)
+   if(bw->o.overtype)
+    {
+    long ocol=markk->xcol;
+    pclrrect(markb,markk->line-markb->line+1,markk->xcol,
+             ptabrect(markb,markk->line-markb->line+1,markk->xcol));
+    pcol(markk,ocol); markk->xcol=ocol;
+    }
+   else
+    pdelrect(markb,markk->line-markb->line+1,markk->xcol);
+  else
+   bdel(markb,markk);
+  if(lightoff) unmark(bw);
+  }
+ else udelln(bw);
  return 0;
  }
 
@@ -800,7 +829,7 @@ int *notify;
   }
  vsrm(s);
  ttopnn();
- if(filtflg) umarkb(bw), umarkk(bw);
+ if(filtflg) unmark(bw);
  bw->cursor->xcol=piscol(bw->cursor);
  return 0;
  }

@@ -1,13 +1,13 @@
 
 
-                            Joe's Own Editor 2.0
+                            Joe's Own Editor 2.4
 
                   A Free ASCII-Text Screen Editor for UNIX
                                by Joseph Allen
 
 
 Get it by anonymous ftp
-from: 'ftp.std.com', file '/src/editors/joe2.0.tar.Z'
+from: 'ftp.std.com', file '/src/editors/joe2.4.tar.Z'
 
 If you have questions, problems or suggestions,
 send email to: 'jhallen@world.std.com'
@@ -19,9 +19,26 @@ learning curve and basic nonsense you have to deal with in every other UNIX
 editor. JOE has the feel of most IBM PC text editors: The key-sequences are
 reminiscent of WordStar and Turbo-C.  JOE is much more powerful than those
 editors, however.  JOE has all of the features a UNIX user should expect:
-full use of termcap/terminfo, better screen update optimizations than even
-GNU-emacs (JOE is fully usable at 2400 baud), simple installation, and all
-of the UNIX-integration features of VI.
+full use of termcap/terminfo, excellent screen update optimizations (JOE is
+fully useable at 2400 baud), simple installation, and all of the
+UNIX-integration features of VI.
+
+	JOE's initialization file determines much of JOE's personality and
+the name of the initialization file is simply the name of the editor
+executable followed by "rc".  JOE comes with four "rc" files in addition to
+the basic "joerc", which allow it to emulate these editors:
+
+	JPICO	- An enhanced version of the Pine mailer system's PICO
+		  editor.
+
+	JSTAR	- A complete immitation of WordStar including many "JOE"
+		  extensions.
+
+	RJOE	- A restricted version of JOE which allowed you to edit
+		  only the files specified on the command line.
+
+	JMACS	- A GNU-EMACS immitation which is about one order of
+		  magnitude smaller than real GNU-EMACS.
 
 Features:
 
@@ -89,19 +106,18 @@ amount of free disk space and there are no line-length restrictions.  Since
 the buffering system is block-based, JOE will incur only a minimum of
 swapping on heavily loaded systems.
 
-	When you ask for help, you get a small menu of help screens to
-choose from (all definable in an initialization file).  Once a help screen
-is selected, the help remains on while you continue to use the editor.  Here
-is the first help screen:
+	When you ask for help, one of six small help reference cards appears
+on the screen and remains while you continue to use the editor.  Here is the
+first help card:
 
 CURSOR           GO TO            BLOCK      DELETE   MISC         EXIT
 ^B left ^F right ^U  prev. screen ^KB begin  ^D char. ^KJ reformat ^KX save
 ^P up   ^N down  ^V  next screen  ^KK end    ^Y line  ^T  options  ^C  abort
 ^Z previous word ^A  beg. of line ^KM move   ^W >word ^@  insert   ^KZ shell
 ^X next word     ^E  end of line  ^KC copy   ^O word< ^R  retype   FILE
-SEARCH           ^KU top of file  ^KW file   ^J >line QUOTE        ^KE new
-^KF find text    ^KV end of file  ^KY delete ^_ undo  `   Ctrl-    ^KR insert
-^L  find next    ^KL to line No.  ^K/ filter ^^ redo  ^\  Meta-    ^KD save
+SEARCH           ^KU top of file  ^KW file   ^J >line SPELL        ^KE new
+^KF find text    ^KV end of file  ^KY delete ^_ undo  ^[N word     ^KR insert
+^L  find next    ^KL to line No.  ^K/ filter ^^ redo  ^[L file     ^KD save
 
 	JOE has a powerful set of editing commands suitable for editing both
 text files and programs:

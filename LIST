@@ -1,0 +1,197 @@
+Joe commands grouped by function
+
+Background programs
+-------------------
+bknd		Run a shell in a window
+killproc	Kill program in current window
+run		Run a unix command in a window
+
+Blocks
+------
+blkcpy		Copy marked block to cursor
+blkdel		Delete marked block
+blkmove		Move marked block to cursor
+blksave		Save marked block into a file
+copy		Copy block to kill-ring
+drop		Set markb.  If it was already set, eliminate it.
+filt		Filter block or file through a unix command
+markb		Set beginning of block mark
+markk		Set end of block mark
+markl		Mark current line
+nmark		Eliminate markb and markk
+picokill	Delete line or block
+pop		Restore markb and markk values from stack
+psh		Push markb and markk values onto a stack
+swap		Switch cursor with markb
+tomarkb		Move cursor to markb
+tomarkbk	Move cursor to markb or markk
+tomarkk		Move cursor to markk
+yank		Insert top of kill ring
+yankpop		Scroll through kill ring
+yapp		Append next kill to top of kill ring
+
+Buffers
+-------
+bufed		Buffer menu
+edit		Load file into window
+nbuf		Load next buffer into current window
+pbuf		Load previous buffer into current window
+
+Cursor Motion
+-------------
+bof		Move cursor to beginning of file
+bol		Move cursor to beginning of line
+bop		Move to beginning of a paragraph
+bos		Move to beginning of screen
+bkwdc		Search backwards for a character
+byte		Move cursor to specific byte offset into the file.
+col		Move cursor to specific column number.
+dnarw		Move cursor down one line
+eof		Move cursor to end of file
+eol		Move cursor to end of line
+eop		Move cursor to end of paragraph
+fwrdc		Search forward for matching character
+gomark		Move cursor to a bookmark
+line		Move cursor to specified line
+ltarw		Move cursor left
+nedge		Move cursor to next edge
+nextpos		Move cursor to next position in cursor position history
+nextword	Move cursor to end of next word
+pedge		Move cursor to previous edge
+prevpos		Move cursor to previous position in cursor position history
+prevword	Move cursor to beginning of previous word
+rtarw		Move cursor right
+setmark		Set a bookmark
+tomatch		Move cursor to matching delimiter
+tos		Move cursor to top of screen
+uparw		Move cursor up
+
+Deletion
+--------
+backs		Backspace
+backw		Backspace a word
+delbol		Delete to beginning of line
+delch		Delete character under cursor
+deleol		Delete to end of line
+dellin		Delete entire line
+delw		Delete word to right
+
+Error parsing
+-------------
+nxterr		Goto next parsed error
+parserr		Parse errors in current file
+prverr		Go to previous parsed error
+
+Exit
+----
+abort		Abort current buffer/window.  Prompt if it is changed.
+abortbuf	Abort current buffer/window if it is not changed
+ask		Prompt to save current file
+exsave		Save file and exit
+lose		Prompt to lose changes to current file
+
+Files
+-----
+save		Save file
+insf		Insert a file
+
+Formatting
+----------
+center		Center line
+fmtblk		Format all paragraphs in a block
+format		Format current paragraph
+lindent		Indent to the left
+rindent		Indent to the right
+
+Help
+----
+help		Turn help on or off
+hnext		Switch to next help screen
+hprev		Switch to previous help screen
+
+Inserting
+---------
+ctrl		Type next key
+insc		Insert a space 
+open		Insert newline
+quote		Insert a control character
+quote8		Insert a meta character
+rtn		Return key
+type		Insert typed character
+
+Macros
+------
+macros		Insert keyboard macros into current file
+play		Execute a macro
+query		Macro query
+record		Record a macro
+stop		Stop recording macro
+
+Menu
+----
+backsmenu	Undo in file completion menu
+bofmenu		Move to beginning of menu
+bolmenu		Move to beginning of line in a menu
+dnarwmenu	Move down one line in a menu
+eolmenu		Move cursor to end of line in a menu
+eofmenu		Move cursor to end of menu
+ltarwmenu	Move cursor left in a menu
+rtarwmenu	Move cursor right in menu
+uparwmenu	Move cursor up in menu
+
+Misc
+----
+execmd		Execute a joe command
+math		Calculator
+mode		Mode prompt
+msg		Display a message
+notmod		Clear the modified flag
+retype		Refresh screen
+shell		Suspend process or execute a sub-shell
+stat		Display cursor position
+tag		Tags file search
+txt		Insert text
+
+Prompts
+-------
+complete	Complete a file-name in a prompt
+
+Repeat
+------
+arg		Prompt for repeat argument
+uarg		Universal argument
+
+Scrolling
+---------
+crawll		Pan screen left
+crawlr		Pan screen right
+dnslide		Scroll screen down 1 line
+pgdn		Scroll screen down
+pgup		Scroll screen up
+upslide		Scroll up one line
+
+Search and replace
+------------------
+ffirst		Find text
+fnext		Repeat previous search
+isrch		Incremental search forward
+qrepl		Search and replace
+rfirst		Search backwards for text
+rsrch		Reverse incremental search
+
+Windows
+-------
+explode		Display one window or display all windows
+dupw		Duplicate current window
+groww		Increase size of window
+nextw		Move cursor to next window
+prevw		Go to previous window
+shrinkw		Shrink window
+splitw		Split window into two
+tw0		Eliminate this window
+tw1		Show only one window
+
+Undo
+----
+redo		Re-execute the latest undone change
+undo		Undo last change

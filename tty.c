@@ -27,6 +27,8 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include <errno.h>
 extern int errno;
 
+int idleout=1;
+
 #include <sys/param.h>
 
 #include "config.h"
@@ -348,11 +350,9 @@ void ttopnn()
 #endif
  
  if(!termin)
-#ifdef IDLEOUT
-  if(!(termin=stdin) || !(termout=stdout))
-#else
-  if(!(termin=fopen("/dev/tty","r")) || !(termout=fopen("/dev/tty","w")))
-#endif
+  if(idleout ? (!(termin=stdin) || !(termout=stdout)) :
+               (!(termin=fopen("/dev/tty","r")) || 
+               !(termout=fopen("/dev/tty","w"))))
    {
    fprintf(stderr,"Couldn\'t open /dev/tty\n");
    exit(1);

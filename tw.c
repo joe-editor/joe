@@ -38,6 +38,7 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 
 char *ctime();
 extern char *exmsg;
+extern int square;
 int staen=0;
 int staupd=0;
 int keepup=0;
@@ -132,6 +133,11 @@ char *s;
     else stalin=vsadd(stalin,fill);
     break;
 
+    case 'X':
+    if(square) stalin=vsadd(stalin,'X');
+    else stalin=vsadd(stalin,fill);
+    break;
+
     case 'n':
     stalin=vsncpy(sv(stalin),sz(bw->b->name?bw->b->name:"Unnamed"));
     break;
@@ -139,6 +145,11 @@ char *s;
     case 'm':
     if(bw->b->changed)
      stalin=vsncpy(sv(stalin),sc("(Modified)"));
+    break;
+
+    case 'R':
+    if(bw->b->rdonly)
+     stalin=vsncpy(sv(stalin),sc("(Read only)"));
     break;
 
     case '*':
@@ -154,8 +165,49 @@ char *s;
     stalin=vsncpy(sv(stalin),sz(buf));
     break;
 
+    case 'o':
+    sprintf(buf,"%-4ld",bw->cursor->byte);
+    for(x=0;buf[x];++x) if(buf[x]==' ') buf[x]=fill;
+    stalin=vsncpy(sv(stalin),sz(buf));
+    break;
+
+    case 'O':
+    sprintf(buf,"%-4lX",bw->cursor->byte);
+    for(x=0;buf[x];++x) if(buf[x]==' ') buf[x]=fill;
+    stalin=vsncpy(sv(stalin),sz(buf));
+    break;
+
+    case 'a':
+    if(!piseof(bw->cursor)) sprintf(buf,"%3d",255&brc(bw->cursor));
+    else sprintf(buf,"   ");
+    for(x=0;buf[x];++x) if(buf[x]==' ') buf[x]=fill;
+    stalin=vsncpy(sv(stalin),sz(buf));
+    break;
+
+    case 'A':
+    if(!piseof(bw->cursor)) sprintf(buf,"%2.2X",255&brc(bw->cursor));
+    else sprintf(buf,"  ");
+    for(x=0;buf[x];++x) if(buf[x]==' ') buf[x]=fill;
+    stalin=vsncpy(sv(stalin),sz(buf));
+    break;
+
     case 'c':
     sprintf(buf,"%-3ld",piscol(bw->cursor)+1);
+    for(x=0;buf[x];++x) if(buf[x]==' ') buf[x]=fill;
+    stalin=vsncpy(sv(stalin),sz(buf));
+    break;
+
+    case 'p':
+    if(bw->b->eof->byte)
+     sprintf(buf,"%3ld",bw->cursor->byte*100/bw->b->eof->byte);
+    else
+     sprintf(buf,"100");
+    for(x=0;buf[x];++x) if(buf[x]==' ') buf[x]=fill;
+    stalin=vsncpy(sv(stalin),sz(buf));
+    break;
+
+    case 'l':
+    sprintf(buf,"%-4ld",bw->b->eof->line+1);
     for(x=0;buf[x];++x) if(buf[x]==' ') buf[x]=fill;
     stalin=vsncpy(sv(stalin),sz(buf));
     break;
@@ -317,6 +369,8 @@ TW *tw=(TW *)bw->object;
 if(notify) *notify=1;
 if(k!='y' && k!='Y') return -1;
 
+genexmsg(bw,0,NULL);
+
 if(countmain(w->t)==1)
  if(b=borphan())
   {
@@ -327,29 +381,11 @@ if(countmain(w->t)==1)
   bw->object=object;
   return 0;
   }
-
-if(bw->b->changed && bw->b->count==1)
- if(bw->b->name)
-  {
-  exmsg=vsncpy(NULL,0,sz("File "));
-  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
-  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(" not saved."));
-  }
- else exmsg=vsncpy(NULL,0,sz("File (Unnamed) not saved."));
-else if(!exmsg)
- if(bw->b->name)
-  {
-  exmsg=vsncpy(NULL,0,sz("File "));
-  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(bw->b->name));
-  exmsg=vsncpy(exmsg,sLEN(exmsg),sz(" not changed so no update needed."));
-  }
- else exmsg=vsncpy(NULL,0,sz("File (Unnamed) not changed so no update needed."));
 bwrm(bw);
 vsrm(tw->stalin);
 free(tw);
 w->object=0;
 wabort(w);		/* Eliminate this window and it's children */
-if(!leave) if(exmsg) vsrm(exmsg), exmsg=0;
 return 0;
 }
 

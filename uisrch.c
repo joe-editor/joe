@@ -7,6 +7,9 @@
 #include "main.h"
 #include "uisrch.h"
 
+extern int smode;
+struct isrch *lastisrch=0;		/* Previous search */
+
 char *lastpat=0;			/* Previous pattern */
 
 IREC fri={{&fri,&fri}};			/* Free-list of irecs */
@@ -100,10 +103,14 @@ int *notify;
   { /* Done */
   nungetc(c);
   if(notify) *notify=1;
-  lastpat=vstrunc(lastpat,0);
-  lastpat=vsncpy(lastpat,0,isrch->pattern+isrch->ofst,sLen(isrch->pattern)-isrch->ofst);
-  isrch->pattern=0;
-  rmisrch(isrch);
+  smode=2;
+  if(lastisrch)
+   {
+   lastpat=vstrunc(lastpat,0);
+   lastpat=vsncpy(lastpat,0,lastisrch->pattern+lastisrch->ofst,sLen(lastisrch->pattern)-lastisrch->ofst);
+   rmisrch(lastisrch);
+   }
+  lastisrch=isrch;
   return 0;
   }
  else if(c!=MAXINT)
@@ -141,11 +148,43 @@ BW *bw;
 int uisrch(bw)
 BW *bw;
  {
- return doisrch(bw,0);
+ if(smode && lastisrch)
+  {
+  struct isrch *isrch=lastisrch;
+  lastisrch=0;
+  return itype(bw,'S'-'@',isrch,NULL);
+  }
+ else
+  {
+  if(lastisrch)
+   {
+   lastpat=vstrunc(lastpat,0);
+   lastpat=vsncpy(lastpat,0,lastisrch->pattern+lastisrch->ofst,sLen(lastisrch->pattern)-lastisrch->ofst);
+   rmisrch(lastisrch);
+   lastisrch=0;
+   }
+  return doisrch(bw,0);
+  }
  }
 
 int ursrch(bw)
 BW *bw;
  {
- return doisrch(bw,1);
+ if(smode && lastisrch)
+  {
+  struct isrch *isrch=lastisrch;
+  lastisrch=0;
+  return itype(bw,'R'-'@',isrch,NULL);
+  }
+ else
+  {
+  if(lastisrch)
+   {
+   lastpat=vstrunc(lastpat,0);
+   lastpat=vsncpy(lastpat,0,lastisrch->pattern+lastisrch->ofst,sLen(lastisrch->pattern)-lastisrch->ofst);
+   rmisrch(lastisrch);
+   lastisrch=0;
+   }
+  return doisrch(bw,1);
+  }
  }

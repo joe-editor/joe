@@ -16,15 +16,6 @@ WHEREJOE = /bin
 WHERERC = /lib
 WHEREMAN = /usr/man/man1
 
-# If you want to be able to edit '-', which causes joe to read in or write out
-# to the stdin/stdout, change the '1' below to '0'.  Be warned however: this
-# makes joe use /dev/tty to open the tty, which means that the modification
-# times on the real tty don't get updated.  Idle session killers and screen
-# blankers will think that no one is using the terminal and log you out or
-# blank the screen.
-
-IDLEOUT = 1
-
 # You may also have to add some additional
 # defines to get the include files to work
 # right on some systems.
@@ -48,9 +39,6 @@ CFLAGS = -ml -w- -O2
 EXTRALIBS =
 
 # Object files
-#
-# If you wish to use terminfo instead of
-# termcap, replace 'termcap.o' below with 'terminfo.o'
 
 OBJS = b.obj blocks.obj bw.obj cmd.obj hash.obj help.obj kbd.obj macro.obj \
  main.obj menu.obj path.obj poshist.obj pw.obj queue.obj qw.obj random.obj \
@@ -66,6 +54,8 @@ joe: $(OBJS)
         bcc -ejoe.exe -ml *.obj
 	copy joe.exe jmacs.exe
 	copy joe.exe jstar.exe
+	copy joe.exe jpico.exe
+	copy joe.exe rjoe.exe
 
 # $(OBJS): config.h
 

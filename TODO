@@ -1,26 +1,42 @@
 BUGS
 =-=-
-Rectangle mode for emacs yank system
+Emacs emulation inprovements:
 
-Query save loop? for kill-emacs and compile
+ Rectangle mode for emacs yank system
 
-Emacs reload from file function? ^X ^V (it just works out if ^X ^V kills all
-instances of the buffer)
+ Overtype mode works for yank
 
-Bufed should display unnamed buffers
+ Query save loop? for kill-emacs and compile
 
-ESC args should work differently in emacs
+ Emacs reload from file function? ^X ^V (it just works out if ^X ^V kills all
+ instances of the buffer)
 
-nextword,nextword,prevword sequence doesn't work for marking next successive
-word at ends of lines
+ Bufed should display unnamed buffers
 
-should have range checks on numeric option settings
+ ESC args should work differently in emacs
+
+ nextword,nextword,prevword sequence doesn't work for marking next successive
+ word at ends of lines
+
+ exiting options and i-search with ESC is not pretty
+ (it isn't in emacs either)
+
+Allow either direct screen access or normal tty support for DOS version.
 
 NEW FEATURES
 =-=-=-=-=-=-
 
 =-=-=
-Save editor state (last files edited & macros) in a file?
+Picture mode
+
+=-=-=
+Brief emulation? EDT emulation?
+
+=-=-=
+Save editor state
+
+=-=-=
+CR-LF mode for joe editing DOS files in linux?
 
 =-=-=
 xedit and folding stuff

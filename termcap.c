@@ -1,4 +1,4 @@
-/* TERMCAP database interface
+/* TERMCAP/TERMINFO database interface
    Copyright (C) 1992 Joseph H. Allen
 
 This file is part of JOE (Joe's Own Editor)
@@ -28,6 +28,27 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #include "termcap.h"
 
 int dopadding=0;
+char *joeterm=0;
+
+#ifdef TERMINFO
+extern char *tgoto();
+extern char *tgetstr();
+#endif
+
+/* Default termcap entry */
+
+char defentry[]=
+"\
+:co#80:li#25:am:\
+:ho=\E[H:cm=\E[%i%d;%dH:cV=\E[%i%dH:\
+:up=\E[A:UP=\E[%dA:DO=\E[%dB:nd=\E[C:RI=\E[%dC:pt:bs:LE=\E[%dD:\
+:cd=\E[J:ce=\E[K:cl=\E[H\E[J:\
+:so=\E[7m:se=\E[m:ms:us=\E[4m:ue=\E[m:\
+:mb=\E[5m:md=\E[1m:mh=\E[2m:me=\E[m:\
+:ku=\E[A:kd=\E[B:kl=\E[D:kr=\E[C:\
+:al=\E[L:AL=\E[%dL:dl=\E[M:DL=\E[%dM:\
+:ic=\E[@:IC=\E[%d@:dc=\E[P:DC=\E[%dP:\
+";
 
 /* Return true if termcap line matches name */
 
@@ -132,11 +153,25 @@ int x,y,c,z,ti;
 char *tp, *pp, *qq, *namebuf, **npbuf, *idxname;
 int sortsiz;
 
-if(!name && !(name=getenv("TERM"))) return 0;
-name=vsncpy(NULL,0,sz(name));
-
+if(!name && !(name=joeterm) && !(name=getenv("TERM"))) return 0;
 cap=(CAP *)malloc(sizeof(CAP));
-cap->tbuf=vsmk(1024);
+cap->tbuf=vsmk(4096);
+cap->abuf=0;
+cap->sort=0;
+
+#ifdef TERMINFO
+cap->abuf=(char *)malloc(4096);
+cap->abufp=cap->abuf;
+if(tgetent(cap->tbuf,name)==1)
+ return setcap(cap,baud,out,outptr);
+else
+ {
+ free(cap->abuf);
+ cap->abuf=0;
+ }
+#endif
+
+name=vsncpy(NULL,0,sz(name));
 cap->sort=(struct sortentry *)malloc(sizeof(struct sortentry)*(sortsiz=64));
 cap->sortlen=0;
 
@@ -166,12 +201,18 @@ cap->tbuf=vstrunc(cap->tbuf,0);
 nextfile:
 if(!npbuf[y])
  {
+/*
  varm(npbuf);
  vsrm(name);
  vsrm(cap->tbuf);
  free(cap->sort);
  free(cap);
  return 0;
+*/
+ fprintf(stderr,"Couldn't load termcap entry.  Using ansi default\n");
+ ti=0;
+ cap->tbuf=vsncpy(cap->tbuf,0,sc(defentry));
+ goto checktc;
  }
 idx=0;
 idxname=vsncpy(NULL,0,sz(npbuf[y]));
@@ -318,6 +359,9 @@ int getflag(cap,name)
 CAP *cap;
 char *name;
 {
+#ifdef TERMINFO
+if(cap->abuf) return tgetflag(name);
+#endif
 return findcap(cap,name)!=0;
 }
 
@@ -325,7 +369,11 @@ char *jgetstr(cap,name)
 CAP *cap;
 char *name;
 {
-struct sortentry *s=findcap(cap,name);
+struct sortentry *s;
+#ifdef TERMINFO
+if(cap->abuf) return tgetstr(name,&cap->abufp);
+#endif
+s=findcap(cap,name);
 if(s) return s->value;
 else return 0;
 }
@@ -334,7 +382,11 @@ int getnum(cap,name)
 CAP *cap;
 char *name;
 {
-struct sortentry *s=findcap(cap,name);
+struct sortentry *s;
+#ifdef TERMINFO
+if(cap->abuf) return tgetnum(name);
+#endif
+s=findcap(cap,name);
 if(s && s->value) return atoi(s->value);
 return -1;
 }
@@ -343,7 +395,8 @@ void rmcap(cap)
 CAP *cap;
 {
 vsrm(cap->tbuf);
-free(cap->sort);
+if(cap->abuf) free(cap->abuf);
+if(cap->sort) free(cap->sort);
 free(cap);
 }
 
@@ -376,6 +429,12 @@ else if(c=='\\' && **s)
 else return c;
 }
 
+static CAP *outcap;
+static int outout(c)
+ {
+ outcap->out(outcap->outptr,c);
+ }
+
 void texec(cap,s,l,a0,a1,a2,a3)
 CAP *cap;
 char *s;
@@ -386,11 +445,21 @@ int args[4];
 int vars[128];
 int *a=args;
 
-/* Copy args into array (yuk) */
-args[0]=a0; args[1]=a1; args[2]=a2; args[3]=a3;
-
 /* Do nothing if there is no string */
 if(!s) return;
+
+#ifdef TERMINFO
+if(cap->abuf)
+ {
+ char *a;
+ outcap=cap;
+ a=tgoto(str,a1,a0);
+ tputs(a,l,outout);
+ }
+#endif
+
+/* Copy args into array (yuk) */
+args[0]=a0; args[1]=a1; args[2]=a2; args[3]=a3;
 
 /* Get tenths of MS of padding needed */
 while(*s>='0' && *s<='9') tenth=tenth*10+*s++-'0';
@@ -494,7 +563,7 @@ cap->out=out; cap->div=div;
 return ssp;
 }
 
-/* Old termcap compatibility */
+/* Old termcap compatibility (not to be used when TERMINFO is set) */
 #ifdef junk
 short ospeed;		/* Output speed */
 char PC, *UP, *BC;		/* Unused */

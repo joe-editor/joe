@@ -759,11 +759,11 @@ BW *bw;
 static char buf[80];
 unsigned c=brc(bw->cursor);
 if(c==MAXINT)
- sprintf(buf,"** Line %ld  Col %ld  Offset %ld/0x%lX **",
+ sprintf(buf,"** Line %ld  Col %ld  Offset %ld(0x%lx) **",
          bw->cursor->line+1,piscol(bw->cursor)+1,bw->cursor->byte,
          bw->cursor->byte);
 else
- sprintf(buf,"** Line %ld  Col %ld  Offset %ld/0x%lX  Char %d/0%o/0x%X **",
+ sprintf(buf,"** Line %ld  Col %ld  Offset %ld(0x%lx)  Ascii %d(0%o/0x%X) **",
          bw->cursor->line+1,piscol(bw->cursor)+1,bw->cursor->byte,
          bw->cursor->byte,c,c,c);
 msgnw(bw,buf);

@@ -10,14 +10,35 @@ NNaammee
 SSyynnttaaxx
        jjooee [[gglloobbaall--ooppttiioonnss]] [[ [[llooccaall--ooppttiioonnss]] ffiilleennaammee ]]......
 
-DDeessccrriippttiioonn
-       JOE  is my ASCII-text screen editor.  It has a "mode-less"
-       user interface which is similer to many  user-friendly  PC
-       editors.   Users  of  Micro-Pro's  WordStar  or  Borland's
-       "Turbo" languages will feel at home.  JOE is a  full  fea-
-       tured UNIX screen-editor though, and has many features for
-       editing programs and text.
+       jjssttaarr [[gglloobbaall--ooppttiioonnss]] [[ [[llooccaall--ooppttiioonnss]] ffiilleennaammee ]]......
 
+       jjmmaaccss [[gglloobbaall--ooppttiioonnss]] [[ [[llooccaall--ooppttiioonnss]] ffiilleennaammee ]]......
+
+       rrjjooee [[gglloobbaall--ooppttiioonnss]] [[ [[llooccaall--ooppttiioonnss]] ffiilleennaammee ]]......
+
+       jjppiiccoo [[gglloobbaall--ooppttiioonnss]] [[ [[llooccaall--ooppttiioonnss]] ffiilleennaammee ]]......
+
+DDeessccrriippttiioonn
+       JOE  is  a  powerful  ASCII-text  screen editor.  It has a
+       "mode-less" user interface which is similer to many  user-
+       friendly  PC  editors.   Users  of Micro-Pro's WordStar or
+       Borland's "Turbo" languages will feel at home.  JOE  is  a
+       full featured UNIX screen-editor though, and has many fea-
+       tures for editing programs and text.
+
+       JOE also emulates several other editors.  JSTAR is a close
+       immitation  of WordStar with many "JOE" extensions.  JPICO
+       is a close immitation of the Pine  mailing  system's  PICO
+       editor,  but with many extensions and improvements.  JMACS
+       is a GNU-EMACS immitation.  RJOE is a  restricted  version
+       of JOE, which allowes you to edit only the files specified
+       on the command line.
+
+       Although JOE is actually five different editors, it  still
+       requires  only one executable, but one with five different
+       names.  The name of the editor with an "rc" appended gives
+       the  name  of  JOE's initialization file, which determines
+       the personality of the editor.
 
        JOE is free software;  you can distribute it and/or modify
        it  under  the  terms of the GNU General Public License as
@@ -37,6 +58,18 @@ UUssaaggee
        If  you  are  editing  a new file, you can either give the
        name of the new file when you invoke the editor, or in the
        editor  when you save the new file.  A modified syntax for
+
+
+
+                                                                1
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        file names is provided to allow you to edit  program  out-
        put,  standard  input/output,  or  sections  of  files  or
        devices.  See the section FFiilleennaammeess below for details.
@@ -57,31 +90,19 @@ UUssaaggee
        ^^[[,  DDeell  will work in place of ^^??, BBaacckkssppaaccee will work in
        place of ^^HH, TTaabb will work in place of ^^II, RReettuurrnn or EEnntteerr
        will  work  in place of ^^MM and LLiinneeffeeeedd will work in place
-       of ^^JJ.  Some keyboards may  give  you  trouble  with  some
-
-
-
-                                                                1
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
-       control  keys.  ^^__, ^^^^ and ^^@@ can usually be entered with-
-       out pressing shift (I.E., try ^^--, ^^66 and ^^22).  Other  key-
-       boards  may reassign these to other keys.  Try: ^^.., ^^,, and
-       ^^//.  ^^SSPPAACCEE can usually be used in place of ^^@@.  ^^\\ and ^^]]
-       are  interpreted by many communication programs, including
-       telnet and kermit.  Usually you just hit the key twice  to
-       get it to pass through the communication program.
+       of ^^JJ.  Some keyboards may give you trouble with some con-
+       trol  keys.   ^^__, ^^^^ and ^^@@ can usually be entered without
+       pressing shift (I.E., try ^^--, ^^66 and ^^22).  Other keyboards
+       may  reassign  these  to  other keys.  Try: ^^.., ^^,, and ^^//.
+       ^^SSPPAACCEE can usually be used in place of ^^@@.  ^^\\ and ^^]]  are
+       interpreted by many communication programs, including tel-
+       net and kermit.  Usually you just hit the key twice to get
+       it to pass through the communication program.
 
        Once you have typed ^^KK HH, the first help window appears at
        the top of the screen.  You can continue to enter and edit
        text  while  the help window is on.  To page through other
-       topics, hit ^[< and ^[> (that is, ESC < and ESC  >).   Use
+       topics, hit ^[, and ^[. (that is, ESC , and ESC  .).   Use
        ^^KK HH to dismiss the help window.
 
        You  can  customize  the keyboard layout, the help screens
@@ -100,6 +121,19 @@ JOE(1)                                                     JOE(1)
        which may have to be set, particularly  if  your  terminal
        screen  is  not  updating as you think it should.  See the
        section EEnnvviirroonnmmeenntt vvaarriiaabblleess below.
+
+
+
+
+
+
+                                                                2
+
+
+
+
+
+JOE(1)                                                     JOE(1)
 
 
 CCoommmmaanndd LLiinnee OOppttiioonnss
@@ -124,18 +158,6 @@ CCoommmmaanndd LLiinnee OOppttiioonnss
               screen  optimization.   Joe inserts delays for baud
               rates below 19200, which bypasses tty buffering  so
               that  typeahead  will  interrupt the screen output.
-
-
-
-                                                                2
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
               Scrolling commands will not be used for 38400 baud.
               This  is  useful for X-terms and other console ttys
               which really aren't going over a serial line.
@@ -170,6 +192,16 @@ JOE(1)                                                     JOE(1)
               it's about to write.
 
 
+
+                                                                3
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        -force This  option  makes  sure that the last line of the
               file has a line-feed which it's saved.
 
@@ -188,18 +220,6 @@ JOE(1)                                                     JOE(1)
        -lightoff
               The block highlighting will go away after any block
               command if this option is given.
-
-
-
-
-
-                                                                3
-
-
-
-
-
-JOE(1)                                                     JOE(1)
 
 
        -lines nnn
@@ -236,6 +256,18 @@ JOE(1)                                                     JOE(1)
               ful for when joe is trying to be WordStar or EMACS.
 
 
+
+
+
+                                                                4
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        -orphan
               When this option is active, extra files on the com-
               mand  line  will  be  placed  in  orphaned  buffers
@@ -256,18 +288,6 @@ JOE(1)                                                     JOE(1)
 
        Each of these options may be specified in the  joerc  file
        as well.  In addition, the NOXON, BAUD, LINES, COLUMNS and
-
-
-
-                                                                4
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
        DOPADDING options may be specified with environment  vari-
        ables.
 
@@ -301,6 +321,19 @@ JOE(1)                                                     JOE(1)
               Sets the right margin.
 
 
+
+
+
+
+                                                                5
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        -tab nnn
               Sets the tab width.
 
@@ -320,18 +353,6 @@ JOE(1)                                                     JOE(1)
 
        -rdonly
               The file is read only.
-
-
-
-
-
-                                                                5
-
-
-
-
-
-JOE(1)                                                     JOE(1)
 
 
        -keymap name
@@ -367,6 +388,18 @@ EEddiittiinngg TTaasskkss
 
        Use the arrow keys to move around the file.  If your  key-
        board  doesn't  have arrow keys (or if they don't work for
+
+
+
+                                                                6
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        some reason), use ^^FF to move forwards (right), ^^BB to  move
        backwards  (left),  ^^PP  to move to the previous line (up),
        and ^^NN to move to the next line  (down).   The  right  and
@@ -388,17 +421,6 @@ EEddiittiinngg TTaasskkss
        If for some reason your terminal  screen  gets  messed  up
        (for example, if you receive a mail notice from biff), you
        can have the editor refresh the screen by hitting ^^RR.
-
-
-
-                                                                6
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
 
        There are many other keys for  deleting  text  and  moving
        around  the file.  For example, hit ^^DD to delete the char-
@@ -432,6 +454,18 @@ JOE(1)                                                     JOE(1)
        last  place  you  made a change in the file.  You can step
        through a history of places with ^^KK -- and  ^^KK  ==,  in  the
        same  way you can step through the history of changes with
+
+
+
+                                                                7
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        the "undo" and "redo" commands.
 
        When you are done editing the file, hit ^^KK XX to  exit  the
@@ -454,18 +488,6 @@ JOE(1)                                                     JOE(1)
        guage  or PASCAL file, the screen will scroll to the right
        to follow the cursor.  If you type past the right edge  of
        the screen in a normal file (one whose name doesn't end in
-
-
-
-                                                                7
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
        .c, .h or .p), JOE will automatically wrap the  last  word
        onto  the  next line so that you don't have to hit RReettuurrnn.
        This is called word-wrap mode.  Word-wrap can be turned on
@@ -498,6 +520,18 @@ JOE(1)                                                     JOE(1)
        when you are changing a table and you want to maintain the
        column position of the right side of the table.  When this
        occurs, you can put the editor in over-type mode  with  ^^TT
+
+
+
+                                                                8
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        TT.   When  the  editor is in this mode, the characters you
        type in replace existing characters, in the way an  ideal-
        ized  typewriter would.  Also, BBaacckkssppaaccee simply moves left
@@ -520,18 +554,6 @@ JOE(1)                                                     JOE(1)
        ASCII character set).  The numbers outside of this  range,
        from  0  to  255,  aren't usually displayed, but sometimes
        have other special meanings.  The number 10, for  example,
-
-
-
-                                                                8
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
        is used for the line-breaks.  You can enter these special,
        non-displayed ccoonnttrrooll cchhaarraacctteerrss by first  hitting  ``  and
        then  hitting a character in the range @@ AA BB CC ...... XX YY ZZ [[
@@ -564,6 +586,18 @@ JOE(1)                                                     JOE(1)
        selected, or if more than one entry  has  the  same  first
        letter,  the  cursor  will jump between those entries.  If
        you select a subdirectory or ..,  the  directory  name  is
+
+
+
+                                                                9
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        appended  to  the  prompt  and the new directory is loaded
        into the menu.  You can hit Backspace to go  back  to  the
        previous directory.
@@ -586,18 +620,6 @@ JOE(1)                                                     JOE(1)
    WWhheerree aamm II??
        Hit  ^^KK  SSPPAACCEE  to have JOE report the line number, column
        number, and byte number on the last line  of  the  screen.
-
-
-
-                                                                9
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
        The  number associated with the character the cursor is on
        (its ASCII code) is also shown.  You  can  have  the  line
        number and/or column number always displayed on the status
@@ -630,6 +652,18 @@ JOE(1)                                                     JOE(1)
 
    SSeeaarrcchhiinngg ffoorr tteexxtt
        Hit ^^KK FF to have the editor search forwards  or  backwards
+
+
+
+                                                               10
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        for  a  text  fragment  (ssttrriinngg)  for  you.   You  will be
        prompted for the  text  to  search  for.   After  you  hit
        RReettuurrnn,  you  are prompted to enter options.  You can just
@@ -650,18 +684,6 @@ JOE(1)                                                     JOE(1)
               searches  for the Nth occurrence of the text.  This
               is useful for going to  specific  places  in  files
               structured in some regular manner.
-
-
-
-
-
-                                                               10
-
-
-
-
-
-JOE(1)                                                     JOE(1)
 
 
        rr      Replace  text.  If you enter the rr option, then you
@@ -697,6 +719,17 @@ JOE(1)                                                     JOE(1)
               AXB, but not AB or AXXB.
 
 
+
+
+                                                               11
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        \\^^ \\$$  These match the beginning and end of a  line.   For
               example,  if  you give \\^^tteesstt\\$$, then JOE with find
               tteesstt on a line by itself.
@@ -716,18 +749,6 @@ JOE(1)                                                     JOE(1)
               uppercase letter.  If the first character given  in
               the brackets is ^^, then JOE tries to find any char-
               acter not given in the the brackets.
-
-
-
-
-
-                                                               11
-
-
-
-
-
-JOE(1)                                                     JOE(1)
 
 
        \\cc     This works like  \\**,  but  matches  a  balanced  C-
@@ -763,6 +784,18 @@ JOE(1)                                                     JOE(1)
 
        \\00 -- \\99
               These  get replaced with the text which matched the
+
+
+
+                                                               12
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
               Nth \\**, \\??, \\++, \\cc, \\++, or  \\[[......]]  in  the  search
               string.
 
@@ -784,18 +817,6 @@ JOE(1)                                                     JOE(1)
 
        If  you  wanted  to rearrange the list, to get the country
        first, then the city, then the person's name, and then the
-
-
-
-                                                               12
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
        address, you could do this:
 
        Type ^^KK FF to start the search, and type:
@@ -830,6 +851,17 @@ JOE(1)                                                     JOE(1)
        the cursor is positioned.  ^^KK YY to deletes the highlighted
        text.  ^^KK WW, writes the highlighted text to a file.
 
+
+
+                                                               13
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        A very useful command is ^^KK //, which filters  a  block  of
        text through a unix command.  For example, if you select a
        list of words with ^^KK BB and ^^KK KK, and then type ^^KK // ssoorrtt,
@@ -850,18 +882,6 @@ JOE(1)                                                     JOE(1)
        is  normally  set  up so that files with names ending with
        .p, .c or .h have auto-indent mode  enabled.   When  auto-
        indent mode is enabled and you hit RReettuurrnn, the cursor will
-
-
-
-                                                               13
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
        be placed in the same column that the first  non-SPACE/TAB
        character was in on the original line.
 
@@ -897,6 +917,17 @@ JOE(1)                                                     JOE(1)
        If you gave more than one file name to JOE on the  command
        line, each file will be placed in a different window.
 
+
+
+                                                               14
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        You can change the height of the windows with the ^^KK GG and
        ^^KK TT commands.
 
@@ -915,18 +946,6 @@ JOE(1)                                                     JOE(1)
 
        For  example, if you want to put "**" in front of a number
        of lines, you can type:
-
-
-
-
-                                                               14
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
 
        ^^KK [[ ^^AA **** <down arrow> ^^KK ]]
 
@@ -963,6 +982,18 @@ JOE(1)                                                     JOE(1)
        Type  ^^TT XX to have ^^KK BB and ^^KK KK select rectangular blocks
        instead of stream-of-text blocks.  This mode is useful for
        moving,  copying, deleting or saving columns of text.  You
+
+
+
+                                                               15
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        can also filter columns of text with the ^^KK // command-  if
        you  want  to sort a column, for example.  The insert file
        command, ^^KK RR is also effected.
@@ -982,18 +1013,6 @@ JOE(1)                                                     JOE(1)
        files, you can use the ccttaaggss program to  generate  a  ttaaggss
        file.   This  file  contains a list of program symbols and
        the files and positions where  the  symbols  are  defined.
-
-
-
-                                                               15
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
        The  ^^KK  ;;  command  can be used to lookup a symbol (func-
        tions, defined constants, etc.), load the file  where  the
        symbol is defined into the current window and position the
@@ -1029,6 +1048,18 @@ EEnnvviirroonnmmeenntt vvaarriiaabblleess
        of  the  connection between the computer and your terminal
        must be  set  correctly  for  JOE  to  update  the  screen
        smoothly  and  allow typeahead to defer the screen update.
+
+
+
+                                                               16
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        Use the ssttttyy nnnnnn command to set this.  You want to set  it
        as  close  as possible to actual throughput of the connec-
        tion.  For example, if you are connected via a  1200  baud
@@ -1048,18 +1079,6 @@ EEnnvviirroonnmmeenntt vvaarriiaabblleess
 
        The  TTEERRMM  environment variable must be set to the type of
        terminal  you're  using.    If   the   size   (number   of
-
-
-
-                                                               16
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
        lines/columns)  of your terminal is different from what is
        reported in the TERMCAP or TERMINFO  entry,  you  can  set
        this  with the ssttttyy rroowwss nnnn ccoollss nnnn command, or by setting
@@ -1096,6 +1115,17 @@ FFiilleennaammeess
               being edited to me.
 
 
+
+
+                                                               17
+
+
+
+
+
+JOE(1)                                                     JOE(1)
+
+
        >>>>ffiilleennaammee
               Use this to have JOE append the edited text to  the
               end of the file "filename."
@@ -1114,18 +1144,6 @@ FFiilleennaammeess
               write  output to the standard output.  For example,
               you can put joe in a pipe of commands: qquuoottaa  --vv  ||
               jjooee  --  ||  mmaaiill rroooott, if you want to complain about
-
-
-
-                                                               17
-
-
-
-
-
-JOE(1)                                                     JOE(1)
-
-
               your low quota.
 
 
@@ -1147,24 +1165,6 @@ AAcckknnoowwlleeddggeemmeennttss
        (entropy@world.std.com)        and        Gary        Gray
        (ggray@world.std.com) also helped  with  the  creation  of
        JOE.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -3,14 +3,33 @@
 joe \- Joe's Own Editor
 .SH Syntax
 .B joe [global-options] [ [local-options] filename ]...
-.SH Description
-JOE is my ASCII-text screen editor.  It has a "mode-less" user interface
-which is similer to many user-friendly PC editors.  Users of Micro-Pro's
-WordStar or Borland's "Turbo" languages will feel at home.  JOE is a full
-featured UNIX screen-editor though, and has many features for editing
-programs and text.
 
-.PP
+.B jstar [global-options] [ [local-options] filename ]...
+
+.B jmacs [global-options] [ [local-options] filename ]...
+
+.B rjoe [global-options] [ [local-options] filename ]...
+
+.B jpico [global-options] [ [local-options] filename ]...
+.SH Description
+JOE is a powerful ASCII-text screen editor.  It has a "mode-less" user
+interface which is similer to many user-friendly PC editors.  Users of
+Micro-Pro's WordStar or Borland's "Turbo" languages will feel at home.  JOE
+is a full featured UNIX screen-editor though, and has many features for
+editing programs and text.
+
+JOE also emulates several other editors.  JSTAR is a close immitation of
+WordStar with many "JOE" extensions.  JPICO is a close immitation of the
+Pine mailing system's PICO editor, but with many extensions and
+improvements.  JMACS is a GNU-EMACS immitation.  RJOE is a restricted
+version of JOE, which allowes you to edit only the files specified on the
+command line.
+
+Although JOE is actually five different editors, it still requires only one
+executable, but one with five different names.  The name of the editor with
+an "rc" appended gives the name of JOE's initialization file, which
+determines the personality of the editor.
+
 JOE is free software;  you can distribute it and/or modify it under the
 terms of the GNU General Public License as published by the Free Software
 Foundation.  I have no plans for turning JOE into a commercial or share-ware
@@ -55,8 +74,8 @@ to get it to pass through the communication program.
 
 Once you have typed \fB^K H\fR, the first help window appears at the top of
 the screen.  You can continue to enter and edit text while the help window
-is on.  To page through other topics, hit ^[< and ^[> (that is, ESC < and
-ESC >).  Use \fB^K H\fR to dismiss the help window.
+is on.  To page through other topics, hit ^[, and ^[. (that is, ESC , and
+ESC .).  Use \fB^K H\fR to dismiss the help window.
 
 You can customize the keyboard layout, the help screens and a number of
 behavior defaults by copying JOE's initialization file (usually
