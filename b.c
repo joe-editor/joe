@@ -248,7 +248,7 @@ void brm(B *b)
 			prm(b->bof->link.next);
 		prm(b->bof);
 		if (b->name)
-			free(b->name);
+			joe_free(b->name);
 		demote(B, link, &frebufs, b);
 	}
 }
@@ -2098,7 +2098,7 @@ char *brmem(P *p, char *blk, int size)
 
 char *brs(P *p, int size)
 {
-	char *s = (char *) malloc(size + 1);
+	char *s = (char *) joe_malloc(size + 1);
 
 	s[size] = 0;
 	return brmem(p, s, size);

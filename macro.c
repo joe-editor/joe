@@ -39,8 +39,8 @@ MACRO *mkmacro(int k, int arg, int n, CMD *cmd)
 	if (!freemacros) {
 		int x;
 
-		macro = (MACRO *) malloc(sizeof(MACRO) * 64);
-		for (x = 0; x != 64; ++x)
+		macro = (MACRO *) joe_malloc(sizeof(MACRO) * 64);
+		for (x = 0; x != 64; ++x)	/* FIXME: why limit to 64? */
 			macro[x].steps = (MACRO **) freemacros, freemacros = macro + x;
 	}
 	macro = freemacros;
@@ -64,7 +64,7 @@ void rmmacro(MACRO *macro)
 
 			for (x = 0; x != macro->n; ++x)
 				rmmacro(macro->steps[x]);
-			free(macro->steps);
+			joe_free(macro->steps);
 		}
 		macro->steps = (MACRO **) freemacros;
 		freemacros = macro;
@@ -77,9 +77,9 @@ void addmacro(MACRO *macro, MACRO *m)
 {
 	if (macro->n == macro->size) {
 		if (macro->steps)
-			macro->steps = (MACRO **) realloc(macro->steps, (macro->size += 8) * sizeof(MACRO *));
+			macro->steps = (MACRO **) joe_realloc(macro->steps, (macro->size += 8) * sizeof(MACRO *));
 		else
-			macro->steps = (MACRO **) malloc((macro->size = 8) * sizeof(MACRO *));
+			macro->steps = (MACRO **) joe_malloc((macro->size = 8) * sizeof(MACRO *));
 	}
 	macro->steps[macro->n++] = m;
 }
@@ -93,7 +93,7 @@ MACRO *dupmacro(MACRO *mac)
 	if (mac->steps) {
 		int x;
 
-		m->steps = (MACRO **) malloc((m->size = mac->n) * sizeof(MACRO *));
+		m->steps = (MACRO **) joe_malloc((m->size = mac->n) * sizeof(MACRO *));
 		for (x = 0; x != m->n; ++x)
 			m->steps[x] = dupmacro(mac->steps[x]);
 	}
@@ -459,7 +459,7 @@ static int dorecord(BW *bw, int c, void *object, int *notify)
 	for (n = 0; n != 10; ++n)
 		if (playmode[n])
 			return -1;
-	r = (struct recmac *) malloc(sizeof(struct recmac));
+	r = (struct recmac *) joe_malloc(sizeof(struct recmac));
 
 	r->m = mkmacro(0, 1, 0, NULL);
 	r->next = recmac;
@@ -494,7 +494,7 @@ int ustop(void)
 		kbdmacro[r->n] = r->m;
 		if (recmac)
 			record(m = mkmacro(r->n + '0', 1, 0, findcmd("play"))), rmmacro(m);
-		free(r);
+		joe_free(r);
 	}
 	return 0;
 }

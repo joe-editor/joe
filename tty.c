@@ -399,7 +399,7 @@ void ttopnn(void)
 		baud = Baud;
 	upc = DIVIDEND / baud;
 	if (obuf)
-		free(obuf);
+		joe_free(obuf);
 	if (!(TIMES * upc))
 		obufsiz = 4096;
 	else {
@@ -409,7 +409,7 @@ void ttopnn(void)
 	}
 	if (!obufsiz)
 		obufsiz = 1;
-	obuf = (char *) malloc(obufsiz);
+	obuf = (char *) joe_malloc(obufsiz);
 }
 
 /* Close terminal */
@@ -888,7 +888,7 @@ static char **newenv(char **old, char *s)
 	int x, y, z;
 
 	for (x = 0; old[x]; ++x) ;
-	new = (char **) malloc((x + 2) * sizeof(char *));
+	new = (char **) joe_malloc((x + 2) * sizeof(char *));
 
 	for (x = 0, y = 0; old[x]; ++x) {
 		for (z = 0; s[z] != '='; ++z)

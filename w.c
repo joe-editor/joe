@@ -162,7 +162,7 @@ SCREEN *scr;
 
 SCREEN *screate(SCRN *scrn)
 {
-	SCREEN *t = (SCREEN *) malloc(sizeof(SCREEN));
+	SCREEN *t = (SCREEN *) joe_malloc(sizeof(SCREEN));
 
 	t->t = scrn;
 	t->w = scrn->co;
@@ -550,7 +550,7 @@ W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height
 		return 0;
 
 	/* Create the window */
-	new = (W *) malloc(sizeof(W));
+	new = (W *) joe_malloc(sizeof(W));
 	new->notify = notify;
 	new->t = t;
 	new->w = t->w - 1;
@@ -580,7 +580,7 @@ W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height
 	if (original) {
 		if (original->h - height <= 2) {
 			/* Not enough space for window */
-			free(new);
+			joe_free(new);
 			return 0;
 		} else
 			seth(original, original->h - height);
@@ -650,7 +650,7 @@ static int doabort(W *w, int *ret)
 			*w->notify = 1;
 	}
 	rmkbd(w->kbd);
-	free(w);
+	joe_free(w);
 	windie(w);
 	return amnt;
 }

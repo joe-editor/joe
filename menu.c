@@ -9,11 +9,9 @@
 #include "types.h"
 
 #include <string.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 #include "scrn.h"
+#include "utils.h"
 #include "vs.h"
 #include "w.h"
 
@@ -222,7 +220,7 @@ static int menuabort(MENU *m)
 	int x = m->cursor;
 	W *win = w->win;
 
-	free(m);
+	joe_free(m);
 	if (func)
 		return func(win->object, x, object);
 	else
@@ -261,7 +259,7 @@ MENU *mkmenu(W *w, char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), i
 		return 0;
 	}
 	wfit(new->t);
-	new->object = (void *) (m = (MENU *) malloc(sizeof(MENU)));
+	new->object = (void *) (m = (MENU *) joe_malloc(sizeof(MENU)));
 	m->parent = new;
 	m->func = func;
 	m->abrt = abrt;

@@ -13,6 +13,9 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
 
 #include "utils.h"
 
@@ -92,4 +95,25 @@ ssize_t joe_write(int fd, void *buf, size_t size)
 		rt = write(fd, buf, size);
 	} while (rt < 0 && errno == EINTR);
 	return rt;
+}
+
+/* wrappers to *alloc routines */
+void *joe_malloc(size_t size)
+{
+	return malloc(size);
+}
+
+void *joe_calloc(size_t nmemb, size_t size)
+{
+	return calloc(nmemb, size);
+}
+
+void *joe_realloc(void *ptr, size_t size)
+{
+	return realloc(ptr, size);
+}
+
+void joe_free(void *ptr)
+{
+	free(ptr);
 }

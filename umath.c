@@ -10,13 +10,11 @@
 
 #include <stdio.h>
 #include <signal.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 #include <string.h>
 
 #include "b.h"
 #include "pw.h"
+#include "utils.h"
 #include "vs.h"
 #include "w.h"
 
@@ -46,7 +44,7 @@ static struct var *get(char *str)
 			return v;
 		}
 	}
-	v = (struct var *) malloc(sizeof(struct var));
+	v = (struct var *) joe_malloc(sizeof(struct var));
 
 	v->set = 0;
 	v->next = vars;

@@ -10,14 +10,12 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 #include "bw.h"
 #include "blocks.h"
-#include "termcap.h"
 #include "scrn.h"
+#include "termcap.h"
+#include "utils.h"
 
 int skiptop = 0;
 int lines = 0;
@@ -280,7 +278,7 @@ static void out(char *t, char c)
 
 SCRN *nopen(CAP *cap)
 {
-	SCRN *t = (SCRN *) malloc(sizeof(SCRN));
+	SCRN *t = (SCRN *) joe_malloc(sizeof(SCRN));
 	int x, y;
 
 	ttopen();
@@ -510,7 +508,7 @@ SCRN *nopen(CAP *cap)
 	t->compose = 0;
 	t->ofst = 0;
 	t->ary = 0;
-	t->htab = (struct hentry *) malloc(256 * sizeof(struct hentry));
+	t->htab = (struct hentry *) joe_malloc(256 * sizeof(struct hentry));
 
 	nresize(t, t->co, t->li);
 
@@ -528,23 +526,23 @@ void nresize(SCRN *t, int w, int h)
 	t->li = h;
 	t->co = w;
 	if (t->sary)
-		free(t->sary);
+		joe_free(t->sary);
 	if (t->updtab)
-		free(t->updtab);
+		joe_free(t->updtab);
 	if (t->scrn)
-		free(t->scrn);
+		joe_free(t->scrn);
 	if (t->compose)
-		free(t->compose);
+		joe_free(t->compose);
 	if (t->ofst)
-		free(t->ofst);
+		joe_free(t->ofst);
 	if (t->ary)
-		free(t->ary);
-	t->scrn = (int *) malloc(t->li * t->co * sizeof(int));
-	t->sary = (int *) calloc(t->li, sizeof(int));
-	t->updtab = (int *) malloc(t->li * sizeof(int));
-	t->compose = (int *) malloc(t->co * sizeof(int));
-	t->ofst = (int *) malloc(t->co * sizeof(int));
-	t->ary = (struct hentry *) malloc(t->co * sizeof(struct hentry));
+		joe_free(t->ary);
+	t->scrn = (int *) joe_malloc(t->li * t->co * sizeof(int));
+	t->sary = (int *) joe_calloc(t->li, sizeof(int));
+	t->updtab = (int *) joe_malloc(t->li * sizeof(int));
+	t->compose = (int *) joe_malloc(t->co * sizeof(int));
+	t->ofst = (int *) joe_malloc(t->co * sizeof(int));
+	t->ary = (struct hentry *) joe_malloc(t->co * sizeof(struct hentry));
 
 	nredraw(t);
 }
@@ -1335,12 +1333,12 @@ void nclose(SCRN *t)
 		texec(t->cap, t->te, 1, 0, 0, 0, 0);
 	ttclose();
 	rmcap(t->cap);
-	free(t->scrn);
-	free(t->sary);
-	free(t->ofst);
-	free(t->htab);
-	free(t->ary);
-	free(t);
+	joe_free(t->scrn);
+	joe_free(t->sary);
+	joe_free(t->ofst);
+	joe_free(t->htab);
+	joe_free(t->ary);
+	joe_free(t);
 }
 
 void nscrldn(SCRN *t, int top, int bot, int amnt)

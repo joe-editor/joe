@@ -338,7 +338,7 @@ void wrapword(P *p, long int indent, int french, char *indents)
 				binsc(p, ' '), ++to;
 
 		if (rmf)
-			free(indents);
+			joe_free(indents);
 	}
 
 	/* Move cursor back to original position */
@@ -403,7 +403,7 @@ int uformat(BW *bw)
 		indent = bw->o.lmargin;
 
 	/* Cut paragraph into memory buffer */
-	buf = (char *) malloc(len = (bw->cursor->byte - p->byte));
+	buf = (char *) joe_malloc(len = (bw->cursor->byte - p->byte));
 	brmem(p, buf, len);
 	bdel(p, bw->cursor);
 
@@ -515,8 +515,8 @@ int uformat(BW *bw)
 
 	binsc(p, '\n');
 	prm(p);
-	free(buf);
-	free(indents);
+	joe_free(buf);
+	joe_free(indents);
 	return 0;
 }
 

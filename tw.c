@@ -12,9 +12,6 @@
 #ifdef HAVE_TIME_H
 #include <time.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 #include "b.h"
 #include "bw.h"
@@ -326,7 +323,7 @@ int usplitw(BW *bw)
 	new->object = (void *) (newbw = bwmk(new, bw->b, 0));
 	++bw->b->count;
 	newbw->offset = bw->offset;
-	newbw->object = (void *) (newtw = (TW *) malloc(sizeof(TW)));
+	newbw->object = (void *) (newtw = (TW *) joe_malloc(sizeof(TW)));
 	iztw(newtw, new->y);
 	pset(newbw->top, bw->top);
 	pset(newbw->cursor, bw->cursor);
@@ -352,7 +349,7 @@ int uduptw(BW *bw)
 	new->object = (void *) (newbw = bwmk(new, bw->b, 0));
 	++bw->b->count;
 	newbw->offset = bw->offset;
-	newbw->object = (void *) (newtw = (TW *) malloc(sizeof(TW)));
+	newbw->object = (void *) (newtw = (TW *) joe_malloc(sizeof(TW)));
 	iztw(newtw, new->y);
 	pset(newbw->top, bw->top);
 	pset(newbw->cursor, bw->cursor);
@@ -389,7 +386,7 @@ static int naborttw(BW *bw, int k, void *object, int *notify)
 		}
 	bwrm(bw);
 	vsrm(tw->stalin);
-	free(tw);
+	joe_free(tw);
 	w->object = 0;
 	wabort(w);		/* Eliminate this window and it's children */
 	return 0;
@@ -545,7 +542,7 @@ BW *wmktw(SCREEN *t, B *b)
 	w = wcreate(t, &watomtw, NULL, NULL, NULL, t->h, NULL, NULL);
 	wfit(w->t);
 	w->object = (void *) (bw = bwmk(w, b, 0));
-	bw->object = (void *) (tw = (TW *) malloc(sizeof(TW)));
+	bw->object = (void *) (tw = (TW *) joe_malloc(sizeof(TW)));
 	iztw(tw, w->y);
 	return bw;
 }

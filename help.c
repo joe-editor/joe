@@ -11,13 +11,10 @@
 
 #include <stdio.h>
 #include <string.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
 
 #include "blocks.h"
 #include "scrn.h"
+#include "utils.h"
 #include "w.h"
 
 #define NOT_ENOUGH_MEMORY -11
@@ -49,7 +46,7 @@ int help_init(char *filename)
 
 	while (fgets(buf, sizeof(buf), fd)) {
 		if (buf[0] == '{') {			/* start of help screen */
-			if (!(tmp = (struct help *) malloc(sizeof(struct help)))) {
+			if (!(tmp = (struct help *) joe_malloc(sizeof(struct help)))) {
 				return NOT_ENOUGH_MEMORY;
 			}
 
@@ -62,18 +59,18 @@ int help_init(char *filename)
 				bfl = strlen(buf);
 				if (hlpsiz + bfl > hlpbsz) {
 					if (tmp->text) {
-						tempbuf = (char *) realloc(tmp->text, hlpbsz + bfl + 1024);
+						tempbuf = (char *) joe_realloc(tmp->text, hlpbsz + bfl + 1024);
 						if (!tempbuf) {
-							free (tmp->text);
-							free (tmp);
+							joe_free(tmp->text);
+							joe_free(tmp);
 							return NOT_ENOUGH_MEMORY;
 						} else {
 							tmp->text = tempbuf;
 						}
 					} else {
-						tmp->text = (char *) malloc(bfl + 1024);
+						tmp->text = (char *) joe_malloc(bfl + 1024);
 						if (!tmp->text) {
-							free (tmp);
+							joe_free(tmp);
 							return NOT_ENOUGH_MEMORY;
 						} else {
 							tmp->text[0] = 0;
@@ -98,8 +95,8 @@ int help_init(char *filename)
 				fflush(stderr);
 				fgets(buf, 8, stdin);
 				if (!((buf[0] == 'y') || (buf[0] == 'Y'))) {
-					free (tmp->text);
-					free (tmp);
+					joe_free(tmp->text);
+					joe_free(tmp);
 					return 0;
 				} else {
 					tmp->prev = help_actual;

@@ -49,6 +49,7 @@
 #include "uerror.h"
 #include "ufile.h"
 #include "ushell.h"
+#include "utils.h"
 #include "va.h"
 #include "vs.h"
 #include "w.h"
@@ -256,7 +257,7 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 	callback = req->callback;
 	if (c == 'n' || c == 'N') {
 		vsrm(req->name);
-		free(req);
+		joe_free(req);
 		if (notify) {
 			*notify = 1;
 		}
@@ -288,7 +289,7 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte)) != 0) {
 		msgnw(bw->parent, msgs[fl + 5]);
 		vsrm(req->name);
-		free(req);
+		joe_free(req);
 		if (callback) {
 			return callback(bw, -1);
 		} else {
@@ -322,7 +323,7 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 		}
 		genexmsg(bw, 1, req->name);
 		vsrm(req->name);
-		free(req);
+		joe_free(req);
 		if (callback) {
 			return callback(bw, 0);
 		} else {
@@ -333,7 +334,7 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 
 static int dosave(BW *bw, char *s, int (*callback) (), int *notify)
 {
-	struct savereq *req = (struct savereq *) malloc(sizeof(struct savereq));
+	struct savereq *req = (struct savereq *) joe_malloc(sizeof(struct savereq));
 
 	req->name = s;
 	req->callback = callback;
@@ -588,7 +589,7 @@ static int exdone(BW *bw, int flg)
 {
 	if (flg) {
 		if (bw->b->name)
-			free(bw->b->name);
+			joe_free(bw->b->name);
 		bw->b->name = 0;
 		return -1;
 	} else {

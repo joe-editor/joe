@@ -111,7 +111,7 @@ void vflshf(VFILE *vfile)
 
 static char *mema(int align, int size)
 {
-	char *z = (char *) malloc(align + size);
+	char *z = (char *) joe_malloc(align + size);
 
 	return z + align - physical(z) % align;
 }
@@ -135,7 +135,7 @@ char *vlock(VFILE *vfile, long int addr)
 	}
 
 	if (curvalloc + PGSIZE <= maxvalloc) {
-		vp = (VPAGE *) malloc(sizeof(VPAGE) * INC);
+		vp = (VPAGE *) joe_malloc(sizeof(VPAGE) * INC);
 		if (vp) {
 			vp->data = (char *) mema(PGSIZE, PGSIZE * INC);
 			if (vp->data) {
@@ -144,21 +144,21 @@ char *vlock(VFILE *vfile, long int addr)
 				curvalloc += PGSIZE * INC;
 				if (!vheaders)
 					vheaders = (VPAGE **)
-					    malloc((vheadsz = INC)
+					    joe_malloc((vheadsz = INC)
 						   * sizeof(VPAGE *)), vbase = vp->data;
 				else if (physical(vp->data) < physical(vbase)) {
 					VPAGE **t = vheaders;
 					int amnt = (physical(vbase) - physical(vp->data)) >> LPGSIZE;
 
 					vheaders = (VPAGE **)
-					    malloc((amnt + vheadsz) * sizeof(VPAGE *));
+					    joe_malloc((amnt + vheadsz) * sizeof(VPAGE *));
 					mmove(vheaders + amnt, t, vheadsz * sizeof(VPAGE *));
 					vheadsz += amnt;
 					vbase = vp->data;
-					free(t);
+					joe_free(t);
 				} else if (((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE) > vheadsz) {
 					vheaders = (VPAGE **)
-					    realloc(vheaders, (vheadsz = (((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE))) * sizeof(VPAGE *));
+					    joe_realloc(vheaders, (vheadsz = (((physical(vp->data + PGSIZE * INC) - physical(vbase)) >> LPGSIZE))) * sizeof(VPAGE *));
 				}
 				for (q = 1; q != INC; ++q) {
 					vp[q].next = freepages;
@@ -169,7 +169,7 @@ char *vlock(VFILE *vfile, long int addr)
 				vheader(vp->data) = vp;
 				goto gotit;
 			}
-			free(vp);
+			joe_free(vp);
 			vp = 0;
 		}
 	}
@@ -216,7 +216,7 @@ char *vlock(VFILE *vfile, long int addr)
 
 VFILE *vtmp(void)
 {
-	VFILE *new = (VFILE *) malloc(sizeof(VFILE));
+	VFILE *new = (VFILE *) joe_malloc(sizeof(VFILE));
 
 	new->fd = 0;
 	new->name = 0;
@@ -237,13 +237,13 @@ VFILE *vopen(name)
 char *name;
 {
 	struct stat buf;
-	VFILE *new = (VFILE *) malloc(sizeof(VFILE));
+	VFILE *new = (VFILE *) joe_malloc(sizeof(VFILE));
 
 	new->name = vsncpy(NULL, 0, sz(name));
 	new->fd = open(name, O_RDWR);
 	if (!new->fd) {
 		fprintf(stderr, "Couldn\'t open file \'%s\'\n", name);
-		free(new);
+		joe_free(new);
 		return 0;
 	}
 	fstat(new->fd, &buf);
@@ -278,7 +278,7 @@ void vclose(VFILE *vfile)
 	}
 	if (vfile->fd)
 		close(vfile->fd);
-	free(deque_f(VFILE, link, vfile));
+	joe_free(deque_f(VFILE, link, vfile));
 	for (x = 0; x != HTSIZE; x++)
 		for (pp = (VPAGE *) (htab + x), vp = pp->next; vp;)
 			if (vp->vfile == vfile) {
@@ -303,8 +303,8 @@ long amount;
 		if (freepages) {
 			vp = freepages;
 			freepages = vp->next;
-			free(vp->data);
-			free(vp);
+			joe_free(vp->data);
+			joe_free(vp);
 			curvalloc -= PGSIZE;
 		} else {
 		      again:
@@ -312,8 +312,8 @@ long amount;
 				for (pp = (VPAGE *) (htab + x), vp = pp->next; vp; pp = vp, vp = vp->next)
 					if (!vp->count && !vp->dirty) {
 						pp->next = vp->next;
-						free(vp->data);
-						free(vp);
+						joe_free(vp->data);
+						joe_free(vp);
 						if ((curvalloc -= PGSIZE)
 						    <= maxvalloc)
 							return;
@@ -325,8 +325,8 @@ long amount;
 				for (pp = (VPAGE *) (htab + x), vp = pp->next; vp; pp = vp, vp = vp->next)
 					if (!vp->count && !vp->dirty) {
 						pp->next = vp->next;
-						free(vp->data);
-						free(vp);
+						joe_free(vp->data);
+						joe_free(vp);
 						if ((curvalloc -= PGSIZE)
 						    <= maxvalloc)
 							return;

@@ -8,11 +8,8 @@
 #include "config.h"
 #include "types.h"
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
 #include "blocks.h"
+#include "utils.h"
 #include "vs.h"
 
 int sicmp(char a, char b)
@@ -27,7 +24,7 @@ int sicmp(char a, char b)
 sELEMENT(*vsmk(len))
 int len;
 {
-	int *new = (int *) malloc((1 + len) * sizeof(sCAST) + 2 * sizeof(int));
+	int *new = (int *) joe_malloc((1 + len) * sizeof(sCAST) + 2 * sizeof(int));
 
 	new[0] = len;
 	new[1] = 0;
@@ -38,7 +35,7 @@ int len;
 void vsrm(char *vary)
 {
 	if (vary)
-		free((int *) vary - 2);
+		joe_free((int *) vary - 2);
 }
 
 int slen(char *ary)
@@ -59,7 +56,7 @@ int len;
 		vary = vsmk(len);
 	else if (len > sSiz(vary)) {
 		len += (len >> 2);
-		vary = (sELEMENT(*))(2 + (int *) realloc((int *) vary - 2, (len + 1) * sizeof(sCAST) + 2 * sizeof(int)));
+		vary = (sELEMENT(*))(2 + (int *) joe_realloc((int *) vary - 2, (len + 1) * sizeof(sCAST) + 2 * sizeof(int)));
 
 		sSiz(vary) = len;
 	}

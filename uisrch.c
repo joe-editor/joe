@@ -8,10 +8,6 @@
 #include "config.h"
 #include "types.h"
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
 #include "b.h"
 #include "bw.h"
 #include "main.h"
@@ -19,6 +15,7 @@
 #include "qw.h"
 #include "tty.h"
 #include "usearch.h"
+#include "utils.h"
 #include "vs.h"
 
 extern int smode;
@@ -43,7 +40,7 @@ static void rmisrch(struct isrch *isrch)
 	if (isrch) {
 		vsrm(isrch->pattern);
 		frchn(&fri, &isrch->irecs);
-		free(isrch);
+		joe_free(isrch);
 	}
 }
 
@@ -154,7 +151,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 
 static int doisrch(BW *bw, int dir)
 {				/* Create a struct isrch */
-	struct isrch *isrch = (struct isrch *) malloc(sizeof(struct isrch));
+	struct isrch *isrch = (struct isrch *) joe_malloc(sizeof(struct isrch));
 
 	izque(IREC, link, &isrch->irecs);
 	isrch->pattern = vsncpy(NULL, 0, sc("I-find: "));

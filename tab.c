@@ -14,15 +14,13 @@
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 #include "b.h"
 #include "blocks.h"
 #include "menu.h"
 #include "path.h"
 #include "tty.h"
+#include "utils.h"
 #include "va.h"
 #include "w.h"
 
@@ -79,8 +77,8 @@ static int get_entries(TAB *tab, int prv)
 	tab->files = files;
 	vasort(files, tab->len);
 	if (tab->type)
-		free(tab->type);
-	tab->type = (char *) malloc(tab->len);
+		joe_free(tab->type);
+	tab->type = (char *) joe_malloc(tab->len);
 	for (a = 0; a != tab->len; a++) {
 		struct stat buf;
 		mset(&buf, 0, sizeof(struct stat));
@@ -173,8 +171,8 @@ static void rmtab(TAB *tab)
 	vsrm(tab->pattern);
 	varm(tab->files);
 	if (tab->type)
-		free(tab->type);
-	free(tab);
+		joe_free(tab->type);
+	joe_free(tab);
 }
 /*****************************************************************************/
 /****************** The user hit return **************************************/
@@ -268,10 +266,10 @@ int cmplt(BW *bw)
 	char *cline, *tmp;
 	long a, b;
 
-	tab = (TAB *) malloc(sizeof(TAB));
+	tab = (TAB *) joe_malloc(sizeof(TAB));
 	new = mkmenu(bw->parent, NULL, tabrtn, tababrt, tabbacks, 0, tab, NULL);
 	if (!new) {
-		free(tab);
+		joe_free(tab);
 		return -1;
 	}
 

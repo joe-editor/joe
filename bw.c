@@ -662,7 +662,7 @@ void bwresz(BW *w, int wi, int he)
 
 BW *bwmk(W *window, B *b, int prompt)
 {
-	BW *w = (BW *) malloc(sizeof(BW));
+	BW *w = (BW *) joe_malloc(sizeof(BW));
 
 	w->parent = window;
 	w->pid = 0;
@@ -701,7 +701,7 @@ void bwrm(BW *w)
 	prm(w->top);
 	prm(w->cursor);
 	brm(w->b);
-	free(w);
+	joe_free(w);
 }
 
 int ustat(BW *bw)

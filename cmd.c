@@ -10,7 +10,6 @@
 
 #include <string.h>
 
-
 #include "b.h"
 #include "bw.h"
 #include "cmd.h"
@@ -36,6 +35,7 @@
 #include "usearch.h"
 #include "ushell.h"
 #include "utag.h"
+#include "utils.h"
 #include "va.h"
 #include "vs.h"
 #include "w.h"
@@ -331,7 +331,7 @@ CMD *findcmd(char *s)
 
 void addcmd(char *s, MACRO *m)
 {
-	CMD *cmd = (CMD *) malloc(sizeof(CMD));
+	CMD *cmd = (CMD *) joe_malloc(sizeof(CMD));
 
 	if (!cmdhash)
 		izcmds();

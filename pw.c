@@ -9,9 +9,6 @@
 #include "types.h"
 
 #include <string.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 #include "b.h"
 #include "bw.h"
@@ -24,6 +21,7 @@
 #include "tw.h"
 #include "uedit.h"
 #include "undo.h"
+#include "utils.h"
 #include "vfile.h"
 #include "w.h"
 
@@ -117,8 +115,8 @@ static int rtnpw(BW *bw)
 	pfunc = pw->pfunc;
 	object = pw->object;
 	bwrm(bw);
-	free(pw->prompt);
-	free(pw);
+	joe_free(pw->prompt);
+	joe_free(pw);
 	w->object = 0;
 	notify = w->notify;
 	w->notify = 0;
@@ -165,8 +163,8 @@ static int abortpw(BW *b)
 	W *win = b->parent->win;
 
 	bwrm(b);
-	free(pw->prompt);
-	free(pw);
+	joe_free(pw->prompt);
+	joe_free(pw);
 	if (abrt) {
 		return abrt(win->object, object);
 	} else {
@@ -205,7 +203,7 @@ BW *wmkpw(W *w, char *prompt, B **history, int (*func) (), char *huh, int (*abrt
 	}
 	wfit(new->t);
 	new->object = (void *) (bw = bwmk(new, bmk(NULL), 1));
-	bw->object = (void *) (pw = (PW *) malloc(sizeof(PW)));
+	bw->object = (void *) (pw = (PW *) joe_malloc(sizeof(PW)));
 	pw->abrt = abrt;
 	pw->tab = tab;
 	pw->object = object;

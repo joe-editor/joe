@@ -8,10 +8,7 @@
 #include "config.h"
 #include "types.h"
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
+#include "utils.h"
 #include "vs.h"
 #include "w.h"
 
@@ -70,7 +67,7 @@ static int utypeqw(QW *qw, int c)
 	win = qw->parent->win;
 	func = qw->func;
 	vsrm(qw->prompt);
-	free(qw);
+	joe_free(qw);
 	w->object = 0;
 	w->notify = 0;
 	wabort(w);
@@ -86,7 +83,7 @@ static int abortqw(QW *qw)
 	int (*abrt) () = qw->abrt;
 
 	vsrm(qw->prompt);
-	free(qw);
+	joe_free(qw);
 	if (abrt)
 		return abrt(win->object, object);
 	else
@@ -149,7 +146,7 @@ QW *mkqw(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ?
 		return 0;
 	}
 	wfit(new->t);
-	new->object = (void *) (qw = (QW *) malloc(sizeof(QW)));
+	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
 	qw->parent = new;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
 	qw->promptlen = len;
@@ -176,7 +173,7 @@ QW *mkqwna(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/*
 		return 0;
 	}
 	wfit(new->t);
-	new->object = (void *) (qw = (QW *) malloc(sizeof(QW)));
+	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
 	qw->parent = new;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
 	qw->promptlen = len;
@@ -203,7 +200,7 @@ QW *mkqwnsr(W *w, char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/
 		return 0;
 	}
 	wfit(new->t);
-	new->object = (void *) (qw = (QW *) malloc(sizeof(QW)));
+	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
 	qw->parent = new;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
 	qw->promptlen = len;

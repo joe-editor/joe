@@ -47,7 +47,7 @@ KMAP *getcontext(char *name)
 	for (c = contexts; c; c = c->next)
 		if (!strcmp(c->name, name))
 			return c->kmap;
-	c = (struct context *) malloc(sizeof(struct context));
+	c = (struct context *) joe_malloc(sizeof(struct context));
 
 	c->next = contexts;
 	c->name = strdup(name);
@@ -365,7 +365,7 @@ static int optx = 0;
 
 static int doabrt1(BW *bw, int *xx)
 {
-	free(xx);
+	joe_free(xx);
 	return -1;
 }
 
@@ -375,7 +375,7 @@ static int doopt1(BW *bw, char *s, int *xx, int *notify)
 	int x = *xx;
 	int v;
 
-	free(xx);
+	joe_free(xx);
 	switch (glopts[x].type) {
 	case 1:
 		v = calc(bw, s);
@@ -453,7 +453,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		break;
 	case 1:
 		snprintf(buf, OPT_BUF_SIZE, glopts[x].yes, *glopts[x].set);
-		xx = (int *) malloc(sizeof(int));
+		xx = (int *) joe_malloc(sizeof(int));
 
 		*xx = x;
 		m->parent->notify = 0;
@@ -467,7 +467,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			snprintf(buf, OPT_BUF_SIZE, glopts[x].yes, *(char **) glopts[x].set);
 		else
 			snprintf(buf, OPT_BUF_SIZE, glopts[x].yes, "");
-		xx = (int *) malloc(sizeof(int));
+		xx = (int *) joe_malloc(sizeof(int));
 
 		*xx = x;
 		m->parent->notify = 0;
@@ -481,7 +481,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		goto in;
 	case 7:
 		snprintf(buf, OPT_BUF_SIZE, glopts[x].yes, *(int *) ((char *) &bw->o + glopts[x].ofst) + 1);
-	      in:xx = (int *) malloc(sizeof(int));
+	      in:xx = (int *) joe_malloc(sizeof(int));
 
 		*xx = x;
 		m->parent->notify = 0;
@@ -503,8 +503,8 @@ static int doabrt(MENU *m, int x, char **s)
 {
 	optx = x;
 	for (x = 0; s[x]; ++x)
-		free(s[x]);
-	free(s);
+		joe_free(s[x]);
+	joe_free(s);
 	return -1;
 }
 
@@ -516,10 +516,10 @@ int umode(BW *bw)
 
 	bw->b->o.readonly = bw->o.readonly = bw->b->rdonly;
 	for (size = 0; glopts[size].menu; ++size) ;
-	s = (char **) malloc(sizeof(char *) * (size + 1));
+	s = (char **) joe_malloc(sizeof(char *) * (size + 1));
 
 	for (x = 0; x != size; ++x) {
-		s[x] = (char *) malloc(40);
+		s[x] = (char *) joe_malloc(40);		/* FIXME: why 40 ??? */
 		switch (glopts[x].type) {
 		case 0:
 			snprintf(s[x], OPT_BUF_SIZE, "%s%s", glopts[x].menu, *glopts[x].set ? "ON" : "OFF");
@@ -589,7 +589,7 @@ int procrc(CAP *cap, char *name)
 			{
 				int x;
 
-				o = (OPTIONS *) malloc(sizeof(OPTIONS));
+				o = (OPTIONS *) joe_malloc(sizeof(OPTIONS));
 				*o = fdefault;
 				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != ' ' && buf[x] != '\t'; ++x) ;
 				buf[x] = 0;

@@ -21,6 +21,7 @@
 
 #include "blocks.h"
 #include "termcap.h"
+#include "utils.h"
 #include "va.h"
 #include "vs.h"
 
@@ -153,24 +154,24 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 
 	if (!name && !(name = joeterm) && !(name = getenv("TERM")))
 		return 0;
-	cap = (CAP *) malloc(sizeof(CAP));
+	cap = (CAP *) joe_malloc(sizeof(CAP));
 	cap->tbuf = vsmk(4096);
 	cap->abuf = 0;
 	cap->sort = 0;
 
 #ifdef TERMINFO
-	cap->abuf = (char *) malloc(4096);
+	cap->abuf = (char *) joe_malloc(4096);
 	cap->abufp = cap->abuf;
 	if (tgetent(cap->tbuf, name) == 1)
 		return setcap(cap, baud, out, outptr);
 	else {
-		free(cap->abuf);
+		joe_free(cap->abuf);
 		cap->abuf = 0;
 	}
 #endif
 
 	name = vsncpy(NULL, 0, sz(name));
-	cap->sort = (struct sortentry *) malloc(sizeof(struct sortentry) * (sortsiz = 64));
+	cap->sort = (struct sortentry *) joe_malloc(sizeof(struct sortentry) * (sortsiz = 64));
 
 	cap->sortlen = 0;
 
@@ -211,8 +212,8 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
  varm(npbuf);
  vsrm(name);
  vsrm(cap->tbuf);
- free(cap->sort);
- free(cap);
+ joe_free(cap->sort);
+ joe_free(cap);
  return 0;
 */
 		fprintf(stderr, "Couldn't load termcap entry.  Using ansi default\n");
@@ -321,7 +322,7 @@ CAP *getcap(char *name, unsigned int baud, void (*out) (char *, char), void *out
 		}
 	      in:
 		if (cap->sortlen == sortsiz)
-			cap->sort = (struct sortentry *) realloc(cap->sort, (sortsiz += 32) * sizeof(struct sortentry));
+			cap->sort = (struct sortentry *) joe_realloc(cap->sort, (sortsiz += 32) * sizeof(struct sortentry));
 		mmove(cap->sort + y + 1, cap->sort + y, (cap->sortlen++ - y) * sizeof(struct sortentry));
 
 		cap->sort[y].name = qq;
@@ -427,10 +428,10 @@ void rmcap(CAP *cap)
 {
 	vsrm(cap->tbuf);
 	if (cap->abuf)
-		free(cap->abuf);
+		joe_free(cap->abuf);
 	if (cap->sort)
-		free(cap->sort);
-	free(cap);
+		joe_free(cap->sort);
+	joe_free(cap);
 }
 
 static char escape(char **s)

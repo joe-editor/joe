@@ -52,4 +52,10 @@ signed long long_min PARAMS((signed long a, signed long b));
 ssize_t joe_read PARAMS((int fd, void *buf, size_t siz));
 ssize_t joe_write PARAMS((int fd, void *buf, size_t siz));
 
+/* wrappers to *alloc routines */
+void *joe_malloc PARAMS((size_t size));
+void *joe_calloc PARAMS((size_t nmemb, size_t size));
+void *joe_realloc PARAMS((void *ptr, size_t size));
+void joe_free PARAMS((void *ptr));
+
 #endif

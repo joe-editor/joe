@@ -10,9 +10,6 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 #include "b.h"
 #include "bw.h"
@@ -25,6 +22,7 @@
 #include "uedit.h"
 #include "undo.h"
 #include "usearch.h"
+#include "utils.h"
 #include "vs.h"
 #include "w.h"
 
@@ -144,7 +142,7 @@ static SRCH *setmark(SRCH *srch)
 
 SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest)
 {
-	SRCH *srch = (SRCH *) malloc(sizeof(SRCH));
+	SRCH *srch = (SRCH *) joe_malloc(sizeof(SRCH));
 	int x;
 
 	srch->pattern = pattern;
@@ -191,7 +189,7 @@ void rmsrch(SRCH *srch)
 	vsrm(srch->pattern);
 	vsrm(srch->replacement);
 	vsrm(srch->entire);
-	free(srch);
+	joe_free(srch);
 	updall();
 }
 

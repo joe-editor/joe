@@ -8,10 +8,8 @@
 #include "config.h"
 #include "types.h"
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 #include "queue.h"
+#include "utils.h"
 
 void *QUEUE;
 void *ITEM;
@@ -22,7 +20,7 @@ void *alitem(void *list, int itemsize)
 	STDITEM	*freelist = (STDITEM *)list;
 
 	if (qempty(STDITEM, link, freelist)) {
-		STDITEM *i = (STDITEM *) malloc(itemsize * 16);
+		STDITEM *i = (STDITEM *) joe_malloc(itemsize * 16);
 		STDITEM *z = (STDITEM *) ((char *) i + itemsize * 16);
 
 		while (i != z) {

@@ -9,19 +9,17 @@
 #include "types.h"
 
 #include <string.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 #include "macro.h"
 #include "termcap.h"
+#include "utils.h"
 #include "vs.h"
 
 /* Create a KBD */
 
 KBD *mkkbd(KMAP *kmap)
 {
-	KBD *kbd = (KBD *) malloc(sizeof(KBD));
+	KBD *kbd = (KBD *) joe_malloc(sizeof(KBD));
 
 	kbd->topmap = kmap;
 	kbd->curmap = kmap;
@@ -33,7 +31,7 @@ KBD *mkkbd(KMAP *kmap)
 
 void rmkbd(KBD *k)
 {
-	free(k);
+	joe_free(k);
 }
 
 /* Process next key for KBD */
@@ -84,7 +82,7 @@ static int keyval(char *s)
 
 KMAP *mkkmap(void)
 {
-	KMAP *kmap = (KMAP *) calloc(sizeof(KMAP), 1);
+	KMAP *kmap = (KMAP *) joe_calloc(sizeof(KMAP), 1);
 
 	return kmap;
 }
@@ -100,7 +98,7 @@ void rmkmap(KMAP *kmap)
 	for (x = 0; x != KEYS; ++x)
 		if (kmap->keys[x].k == 1)
 			rmkmap(kmap->keys[x].value.submap);
-	free(kmap);
+	joe_free(kmap);
 }
 
 /* Parse a range */
