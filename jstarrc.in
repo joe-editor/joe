@@ -426,6 +426,19 @@
 -pound_comment
 -single_quoted
 
+ SQL file
+*.sql
+-autoindent
+-syntax sql
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-vhdl_comment
+-cpp_comment
+-text_delimiters BEGIN|Begin|begin=END|End|end
+
  C language file
 *.c
 -autoindent

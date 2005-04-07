@@ -275,3 +275,26 @@ qw.c		A class: query windows
 pw.c		A class: prompt windows
 bw.c		A class: text buffer window (screen update code is here)
 w.c		A class: base class for all windows
+
+-------
+Strings
+-------
+
+char *				C-strings: only used for system calls or C-library calls.
+
+unsigned char *			Z-strings: used in JOE for read-only code
+
+vs s				V-strings: exist in heap
+  s.c_string		Get C-string out of it (0 time)
+  z.z_string		Get Z-string out of it (0 time)
+
+vsrm(&s);			Free a vs.
+vs n=vsdup(s)			Duplicate a vs.
+vsadd(&s, 'c')			Append one character.
+vscat(&s, zs, int len)		Concatenate array on end of string
+
+vscat(&s, sc("Hi there"))
+vscat(&s, sv(s))
+vscat(&s, sz(z))
+
+vscmp()

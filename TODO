@@ -1,17 +1,16 @@
 
 Short (infinite) list for 3.3:
 
+- cygwin- make sure we put files in the right place.
+
 - dynamic spell checking with highlighter- there should be a way
 - grep and grep-find commands
 - smart-end key
 
--wrap: after it says "Not Found", it will keep saying this until you
-start a new search.
-
 Mouse issues:
 
 - autoscroll: keep track of selection type (double-click or triple-click)
-- scroll window with right button down?
+- just scroll window with right button down?
 
   help screen mouse commands?
   double-click at prompts hits enter?
@@ -32,6 +31,9 @@ Dangerous situations:
   to leave maint a buffer window (it could start a prompt).
 
   should check plain file checking.
+
+  vs, zstring, cstring, there are too many, each with its own
+  memory management.
 
 - - - - - - - -
 
@@ -79,18 +81,7 @@ Dangerous situations:
 
 - - - - - - - -
 
-- better editing in shell windows
-
-- - - - - - - -
-
-jmacs glitches:
-    history for incremental search
-    ^S return supposed to be normal search
-    ^[ 0 ^K  delete line bkwd (arg set)
-    ^[ @   set mark arg words away
-    ^X ^P  mark page
-    ^X h   mark entire buffer
-    ^X .  set left margin (fill prefix)
+- better editing in shell windows: use for calculator mode too?
 
 - - - - - - - -
 
@@ -168,13 +159,14 @@ Others:
   shell window.
 
 - do not use ^[^[ for anything.  it prevents Alt-arrow
-  from being useful.
+  from being useful.  It's usually bound to options, so at least
+  make options pass unknown characters back to keysequence parser.
 
 - save all files without asking thing for quick compile
 
-- continued search mode for jpico?
-
-- make ^K F prompt with previous text (PICO)?
+- continued search mode for jpico?  Hit ^W for prompt, ^W again for
+  repeat previous search, hit ^W to repeat search again.  Hit any other
+  key and then ^W brings up prompt again.
 
 options are screwed up: we copy window to buffer (to get buffer options
 to the buffer).  But if we have multiple windows, buffer options will have
@@ -241,6 +233,15 @@ Jmacs:
  exiting options and i-search with ESC is not pretty
  (it isn't in emacs either)
 
+jmacs glitches:
+    history for incremental search
+    ^S return supposed to be normal search
+    ^[ 0 ^K  delete line bkwd (arg set)
+    ^[ @   set mark arg words away
+    ^X ^P  mark page
+    ^X h   mark entire buffer
+    ^X .  set left margin (fill prefix)
+
 Shell windows:
 
  Better environment settings for shell windows.
@@ -287,12 +288,6 @@ Terminal handling:
  Emit ESC c to reset terminal on startup?
 
  Look into clearing right-most column.
-
-Mouse:
-
- ` and autoindent mode are a problem for drag and drop.
- any way we can distinguish normal typing from a drop?
- modify xterm...
 
 Major new display modes:
 
