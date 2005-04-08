@@ -215,8 +215,12 @@ done
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
 	"a-zA-Z_"	ident		buffer
+	"\\"		outside_escape	recolor=-1
 	"{}"		brace		recolor=-1
 	",:;=()><[]*&|!~+\-%^"	control		recolor=-1
+
+:outside_escape	Escape
+	*	idle
 
 :brace Brace
 	*	idle	noeat

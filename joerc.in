@@ -491,6 +491,29 @@
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
 
  LEX
+*.l
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+
+*.lex
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+
+ COBOL
 *.cbl
 -syntax cobol
 

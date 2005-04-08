@@ -2,6 +2,7 @@ Fri Apr  8 10:27:24 EDT 2005
 
 	Add awk syntax file
 	Use c syntax file for yacc
+	Use c syntax file for lex
 	Add cobol syntax file
 	Add sed syntax file
 	Add postscript syntax file
