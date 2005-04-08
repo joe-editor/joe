@@ -24,7 +24,16 @@
 
 :first Idle
 	*		idle		noeat
+	"/"		regex
 	"#"		reset_line_comment	recolor=-1
+
+:regex Idle
+	*		regex
+	"/"		idle
+	"\\"		regex_skip
+
+:regex_skip Idle
+	*		regex
 
 :reset_line_comment Comment
 	*		reset_line_comment
@@ -214,6 +223,7 @@
 	"dcgettext"		kw
 	"dcngettext"		kw
 	"function"		kw
+	"return"	kw
 done
 	"a-zA-Z0-9_"	ident
 
