@@ -502,6 +502,13 @@
 -syntax sed
 
  Postscript
+*.ps
+-syntax ps
+
+*.eps
+-syntax ps
+
+ C language file
 *.c
 -autoindent
 -syntax c

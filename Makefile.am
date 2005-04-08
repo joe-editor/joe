@@ -10,7 +10,7 @@ EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA IN
 	syntax/lisp.jsf.in syntax/csh.jsf.in syntax/mail.jsf.in syntax/mason.jsf.in \
 	syntax/diff.jsf.in syntax/asm.jsf.in syntax/tex.jsf.in syntax/css.jsf.in \
 	syntax/ocaml.jsf.in syntax/4gl.jsf.in syntax/sml.jsf.in syntax/sql.jsf.in \
-	syntax/awk.jsf.in syntax/cobol.jsf.in syntax/sed.jsf.in
+	syntax/awk.jsf.in syntax/cobol.jsf.in syntax/sed.jsf.in syntax/ps.jsf.in
 
 sysconf_joedir = $(sysconfdir)/joe
 sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
@@ -43,7 +43,7 @@ sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
 	syntax/lisp.jsf syntax/csh.jsf syntax/mason.jsf syntax/diff.jsf \
 	syntax/asm.jsf syntax/tex.jsf syntax/css.jsf syntax/ocaml.jsf \
 	syntax/4gl.jsf syntax/sml.jsf syntax/sql.jsf syntax/awk.jsf \
-	syntax/cobol.jsf syntax/sed.jsf
+	syntax/cobol.jsf syntax/sed.jsf syntax/ps.jsf
 
 sysconf_charmapsdir = $(sysconf_joedir)/charmaps
 sysconf_charmaps_DATA = charmaps/klingon
