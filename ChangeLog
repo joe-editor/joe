@@ -1,3 +1,8 @@
+Fri Apr  8 10:27:24 EDT 2005
+
+	Add awk syntax file
+	Use c syntax file for yacc
+
 Thu Apr  7 18:25:07 EDT 2005
 
 	Add sql syntax file

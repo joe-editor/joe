@@ -470,6 +470,27 @@
 -text_delimiters BEGIN|Begin|begin=END|End|end
 
  AWK language file
+*.awk
+-autoindent
+-syntax awk
+-smarthome
+-smartbacks
+-purify
+-pound_comment
+
+ YACC
+*.y
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+
+ LEX
 *.c
 -autoindent
 -syntax c
@@ -784,11 +805,6 @@
 -syntax fortran
 
  TCL
- YACC
-*.y
--autoindent
--syntax yacc
-
  LEX
 *.l
 -autoindent
