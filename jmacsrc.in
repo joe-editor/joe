@@ -814,11 +814,6 @@
 -autoindent
 -syntax fortran
 
- LEX
-*.l
--autoindent
--syntax lex
-
  TCL
 *.tcl
 -autoindent
