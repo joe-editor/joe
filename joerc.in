@@ -498,6 +498,10 @@
 -syntax cobol
 
  sed
+*.sed
+-syntax sed
+
+ Postscript
 *.c
 -autoindent
 -syntax c

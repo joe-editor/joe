@@ -468,6 +468,10 @@
 *.cob
 -syntax cobol
 
+ sed
+*.sed
+-syntax sed
+
  C language file
 *.c
 -autoindent
