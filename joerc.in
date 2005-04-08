@@ -491,6 +491,13 @@
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
 
  LEX
+*.cbl
+-syntax cobol
+
+*.cob
+-syntax cobol
+
+ sed
 *.c
 -autoindent
 -syntax c

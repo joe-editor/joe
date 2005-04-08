@@ -460,6 +460,14 @@
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
 
+ COBOL
+*.cbl
+-syntax cobol
+-smarthome
+
+*.cob
+-syntax cobol
+
  C language file
 *.c
 -autoindent
