@@ -134,7 +134,6 @@
 :next Idle
 	*		next
 	"\n"		idle
-	";"		idle
 	"\\"		continue
 
 :continue Idle
