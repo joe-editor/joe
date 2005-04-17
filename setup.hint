@@ -1,0 +1,11 @@
+category: Editors
+requires: cygwin aspell
+sdesc: "Joe's Own Editor - world-famous Wordstar-like text editor"
+ldesc: "Joe's Own Editor - world-famous Wordstar-like text editor
+Includes clones of several other editors:
+  joe - Main user interface
+  jmacs - Gnu-emacs clone
+  jstar - Wordstar clone
+  jpico - PICO clone
+Editor has syntax highlighting, i18n support and works well
+in Cygwin console."

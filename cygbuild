@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Do cygwin build
+
+# this creates: joe-3.3-1.tar.bz2 and joe-3.3-1-src.tar.bz2
+# you also need setup.hint
+
+VERSION=3.3-1
+
+aclocal
+
+autoheader
+
+automake -a -c
+
+autoconf
+
+# Force use of /etc/termcap file because Cygwin's tgoto() is broken
+
+# Install aspell first!
+
+./configure --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/sbin \
+--localstatedir=/var --datadir=/usr/share --mandir=/usr/share/man \
+--infodir=/usr/share/info --disable-curses --disable-termcap
+
+make clean
+
+make
+
+make install
+
+(cd /; tar cf - etc/joe usr/bin/joe.exe usr/bin/jmacs usr/bin/jstar \
+usr/bin/jpico usr/bin/rjoe usr/share/man/man1/joe.1) | bzip2 >joe-$VERSION.tar.bz2
+
+make dist
+
+gunzip <joe-$VERSION.tar.gz | bzip2 >joe-$VERSION-src.tar.bz2
