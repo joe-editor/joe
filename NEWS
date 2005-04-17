@@ -12,6 +12,10 @@ JOE 3.3
 - An xterm-patch is included which makes "-mouse" mode work better.  (With
   the patch, also set "-joexterm").
 
+- More syntax files: AWK, COBOL, SED, Postscript, and SQL
+
+- Improved jpico: search now looks more like real pico
+
 JOE 3.2
 
 - A Perforce SCM "p4 edit" macro has been supplied (along with the hooks

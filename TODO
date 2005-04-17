@@ -119,6 +119,8 @@ can we highlight backup files? files ending in .in?
 - search: automatically use 'k' mode if there is a block selected?  Cursor should
   jump to top of block when done?  Modes for this?
 
+- stop macro execution at ^KK?
+
 - - - - - - - -
   exemac for first change: it should be run with cursor in window.
 
@@ -163,10 +165,6 @@ Others:
   make options pass unknown characters back to keysequence parser.
 
 - save all files without asking thing for quick compile
-
-- continued search mode for jpico?  Hit ^W for prompt, ^W again for
-  repeat previous search, hit ^W to repeat search again.  Hit any other
-  key and then ^W brings up prompt again.
 
 options are screwed up: we copy window to buffer (to get buffer options
 to the buffer).  But if we have multiple windows, buffer options will have
