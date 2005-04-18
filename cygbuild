@@ -19,7 +19,7 @@ autoconf
 
 # Install aspell first!
 
-./configure --prefix=/usr --sysconfdir=/etc --libexecdir=/usr/sbin \
+./configure --prefix=/usr --sysconfdir=/usr/share --libexecdir=/usr/sbin \
 --localstatedir=/var --datadir=/usr/share --mandir=/usr/share/man \
 --infodir=/usr/share/info --disable-curses --disable-termcap
 
@@ -29,7 +29,7 @@ make
 
 make install
 
-(cd /; tar cf - etc/joe usr/bin/joe.exe usr/bin/jmacs usr/bin/jstar \
+(cd /; tar cf - usr/share/joe usr/bin/joe.exe usr/bin/jmacs usr/bin/jstar \
 usr/bin/jpico usr/bin/rjoe usr/share/man/man1/joe.1) | bzip2 >joe-$VERSION.tar.bz2
 
 make dist

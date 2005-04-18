@@ -1,5 +1,5 @@
 category: Editors
-requires: cygwin aspell
+requires: cygwin
 sdesc: "Joe's Own Editor - world-famous Wordstar-like text editor"
 ldesc: "Joe's Own Editor - world-famous Wordstar-like text editor
 Includes clones of several other editors:
@@ -8,4 +8,4 @@ Includes clones of several other editors:
   jstar - Wordstar clone
   jpico - PICO clone
 Editor has syntax highlighting, i18n support and works well
-in Cygwin console."
+in Cygwin console.  Get 'aspell' for spell checking in JOE."

@@ -4,6 +4,8 @@ This is Joe's Own Editor.  See the INFO file if you don't know what this is.
 Installation procedure
 =-=-=-=-=-=-=-=-=-=-=-
 
+  To create a Cygwin binary distribution, use the 'cygbuild' script.
+
   JOE uses the GNU Automake and Autoconf suites to build itself.
 
   Run configure script, type one of these:
