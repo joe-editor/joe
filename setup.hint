@@ -1,11 +1,6 @@
 category: Editors
 requires: cygwin
-sdesc: "Joe's Own Editor - world-famous Wordstar-like text editor"
-ldesc: "Joe's Own Editor - world-famous Wordstar-like text editor
-Includes clones of several other editors:
-  joe - Main user interface
-  jmacs - Gnu-emacs clone
-  jstar - Wordstar clone
-  jpico - PICO clone
-Editor has syntax highlighting, i18n support and works well
-in Cygwin console.  Get 'aspell' for spell checking in JOE."
+sdesc: "An easy to use, modeless text editor."
+ldesc: "JOE is a powerful, easy to use, modeless text editor.
+It uses the same WordStar keybindings used in Borland's development
+environment."
