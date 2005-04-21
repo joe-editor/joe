@@ -1297,6 +1297,7 @@ struct charmap *find_charmap(unsigned char *name)
 
 	/* Check ~/.joe/charmaps */
 	p = (unsigned char *)getenv("HOME");
+	f = 0;
 	if (p) {
 		joe_snprintf_2((char *)buf,sizeof(buf),"%s/.joe/charmaps/%s",p,name);
 		f = fopen((char *)buf,"r");
