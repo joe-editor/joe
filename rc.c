@@ -1273,6 +1273,7 @@ void save_state()
 	fprintf(f,"replace\n"); save_hist(f,replhist);
 	fprintf(f,"run\n"); save_hist(f,runhist);
 	fprintf(f,"build\n"); save_hist(f,buildhist);
+	fprintf(f,"grep\n"); save_hist(f,grephist);
 	fprintf(f,"cmd\n"); save_hist(f,cmdhist);
 	fprintf(f,"math\n"); save_hist(f,mathhist);
 	fprintf(f,"yank\n"); save_yank(f);
@@ -1314,6 +1315,8 @@ void load_state()
 				load_hist(f,&runhist);
 			else if(!strcmp(buf,"build\n"))
 				load_hist(f,&buildhist);
+			else if(!strcmp(buf,"grep\n"))
+				load_hist(f,&grephist);
 			else if(!strcmp(buf,"cmd\n"))
 				load_hist(f,&cmdhist);
 			else if(!strcmp(buf,"math\n"))

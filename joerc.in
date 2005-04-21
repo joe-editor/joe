@@ -927,9 +927,10 @@
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \i\|\uGOTO\u                 \|\uINDENT\u   \|\uCOMPILING\u          \uQUICK\u                       \|\i \i
 \i \i\|^G  Matching ( [ {   \|^K, less \|^[C Compile & parse ^G  find word under cursor \|\i \i
-\i \i\|^K- Previous place   \|^K. more \|^[E Parse errors    ^[ENTER complete word      \|\i \i
+\i \i\|^K- Previous place   \|^K. more \|^[G Grep & parse    ^[ENTER complete word      \|\i \i
 \i \i\|^K= Next place         \|       \|^[= To next error   ^[Y paste deleted text     \|\i \i
 \i \i\|^K; Tags file search   \|       \|^[- To prev. error  ^[^Y cycle through deleted \|\i \i
+\i \i\|                       \|       \|^[ SP Jump to error                            \|\i \i
 }
 
 {Search
@@ -1125,7 +1126,7 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
  Grep
 
-:def grep scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,run
+:def grep_find scratch,"*Grep-Log*",rtn,bof,markb,eof," ",markk,blkdel,grep
 
  Here we guess some common key sequences which either do not have termcap
  sequences or which are frequently wrong.  Note that if the termcap entry is
@@ -1192,9 +1193,9 @@ dnslide,dnslide,dnslide,dnslide		MWDOWN
 compile		^[ c		Compile
 compile		^[ C
 compile		^[ ^C		Compile
-grep		^[ g		Grep
-grep		^[ G		Grep
-grep		^[ ^G		Grep
+grep_find	^[ g		Grep
+grep_find	^[ G		Grep
+grep_find	^[ ^G		Grep
 execmd		^[ x		Prompt for command to execute
 execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute

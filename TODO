@@ -2,10 +2,10 @@
 Short (infinite) list for 3.3:
 
 - cygwin- make sure we put files in the right place.
-- Jump should work properly in * build log * windows (not just grep
-  find windows).
 - dynamic spell checking with highlighter- there should be a way
 - smart-end key
+
+- need current directory for grep-find.
 
 Mouse issues:
 

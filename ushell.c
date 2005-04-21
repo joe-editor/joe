@@ -224,6 +224,28 @@ int ubuild(BW *bw)
 	}
 }
 
+B *grephist = NULL;
+
+int ugrep(BW *bw)
+{
+	if (grephist) {
+		if (bw=wmkpw(bw->parent, US "Grep command: ", &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+			uuparw(bw);
+			u_goto_eol(bw);
+			bw->cursor->xcol = piscol(bw->cursor);
+			return 0;
+		} else {
+		return -1;
+		}
+	} else {
+		if (wmkpw(bw->parent, US "Enter grep command (for example, 'grep -n foo *.c'): ", &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+			return 0;
+		} else {
+		return -1;
+		}
+	}
+}
+
 /* Kill program */
 
 static int pidabort(BW *bw, int c, void *object, int *notify)

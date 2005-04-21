@@ -4,8 +4,6 @@ Thu Apr 21 15:46:09 EDT 2005
 		ESC g   execute grep
 		ESC SP  jump to "file line:"
 
-        (jump should use other window)
-
 	Add xterm-patch to make dist.
 
 Sun Apr 17 12:05:32 EDT 2005
