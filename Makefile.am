@@ -11,7 +11,7 @@ EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA IN
 	syntax/diff.jsf.in syntax/asm.jsf.in syntax/tex.jsf.in syntax/css.jsf.in \
 	syntax/ocaml.jsf.in syntax/4gl.jsf.in syntax/sml.jsf.in syntax/sql.jsf.in \
 	syntax/awk.jsf.in syntax/cobol.jsf.in syntax/sed.jsf.in syntax/ps.jsf.in \
-	cygbuild setup.hint
+	cygbuild setup.hint xterm-patch xterm-readme
 
 sysconf_joedir = $(sysconfdir)/joe
 sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc

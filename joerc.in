@@ -1123,6 +1123,10 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
 :def compile querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
 
+ Grep
+
+:def grep scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,run
+
  Here we guess some common key sequences which either do not have termcap
  sequences or which are frequently wrong.  Note that if the termcap entry is
  correct, it will override these later on.
@@ -1186,12 +1190,17 @@ dnslide		^[ Z		Scroll down one line
 dnslide		^[ ^Z		Scroll down one line
 dnslide,dnslide,dnslide,dnslide		MWDOWN
 compile		^[ c		Compile
+compile		^[ C
 compile		^[ ^C		Compile
+grep		^[ g		Grep
+grep		^[ G		Grep
+grep		^[ ^G		Grep
 execmd		^[ x		Prompt for command to execute
 execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute
 finish		^[ ^I		Complete word in document
 finish		^[ ^M		Complete word: used to be math
+jump		^[ SP
 isrch		^[ s		Forward incremental search
 isrch		^[ S		Forward incremental search
 isrch		^[ ^S		Forward incremental search

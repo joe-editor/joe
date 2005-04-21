@@ -2,9 +2,9 @@
 Short (infinite) list for 3.3:
 
 - cygwin- make sure we put files in the right place.
-
+- Jump should work properly in * build log * windows (not just grep
+  find windows).
 - dynamic spell checking with highlighter- there should be a way
-- grep and grep-find commands
 - smart-end key
 
 Mouse issues:
@@ -22,6 +22,7 @@ Mouse issues:
 - i18n issues:
 
    hex is screwed up.  utf-8 file encoding needs to be off for hex mode.
+   also crlf mode.
 
 - - - -
 

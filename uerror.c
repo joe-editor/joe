@@ -123,12 +123,11 @@ static void freeall(void)
 /* First word (allowing ., /, _ and -) with a . is the file name.  Next number
    is line number.  Then there should be a ':' */
 
-static int parseit(struct charmap *map,unsigned char *s, long int row)
+static void parseone(struct charmap *map,unsigned char *s,unsigned char **rtn_name,long *rtn_line)
 {
 	int x, y, flg;
 	unsigned char *name = NULL;
 	long line = -1;
-	ERROR *err;
 
 	y=0;
 	flg=0;
@@ -169,8 +168,23 @@ static int parseit(struct charmap *map,unsigned char *s, long int row)
 		++y;
 	}
 
+	if (!flg)
+		line = -1;
+
+	*rtn_name = name;
+	*rtn_line = line;
+}
+
+static int parseit(struct charmap *map,unsigned char *s, long int row)
+{
+	unsigned char *name = NULL;
+	long line = -1;
+	ERROR *err;
+
+	parseone(map,s,&name,&line);
+
 	if (name) {
-		if (line != -1 && flg) {
+		if (line != -1) {
 			/* We have an error */
 			err = (ERROR *) alitem(&errnodes, sizeof(ERROR));
 			err->file = name;
@@ -266,52 +280,66 @@ int uparserr(BW *bw)
 	return 0;
 }
 
-int unxterr(BW *bw)
+int jump_to_file_line(BW *bw,unsigned char *file,int line,unsigned char *msg)
 {
 	int omid;
+	if (!bw->b->name || strcmp(file, bw->b->name)) {
+		if (doswitch(bw, vsdup(file), NULL, NULL))
+			return -1;
+		bw = (BW *) maint->curwin->object;
+	}
+	omid = mid;
+	mid = 1;
+	pline(bw->cursor, line);
+	dofollows();
+	mid = omid;
+	bw->cursor->xcol = piscol(bw->cursor);
+	msgnw(bw->parent, msg);
+	return 0;
+}
 
+int ujump(BW *bw)
+{
+	int rtn = -1;
+	P *p = pdup(bw->cursor);
+	P *q = pdup(p);
+	unsigned char *s;
+	p_goto_bol(p);
+	p_goto_eol(q);
+	s = brvs(p, (int) (q->byte - p->byte));
+	prm(p);
+	prm(q);
+	if (s) {
+		unsigned char *name = NULL;
+		long line = -1;
+		parseone(bw->b->o.charmap,s,&name,&line);
+		if (name && line != -1) {
+			rtn = jump_to_file_line(bw,name,line,"");
+			vsrm(name);
+		}
+		vsrm(s);
+	}
+	return rtn;
+}
+
+int unxterr(BW *bw)
+{
 	if (errptr->link.next == &errors) {
 		msgnw(bw->parent, US "No more errors");
 		return -1;
 	}
 	errptr = errptr->link.next;
-	if (!bw->b->name || strcmp(errptr->file, bw->b->name)) {
-		if (doswitch(bw, vsdup(errptr->file), NULL, NULL))
-			return -1;
-		bw = (BW *) maint->curwin->object;
-	}
-	omid = mid;
-	mid = 1;
-	pline(bw->cursor, errptr->line);
 	setline(errbuf, errptr->src);
-	dofollows();
-	mid = omid;
-	bw->cursor->xcol = piscol(bw->cursor);
-	msgnw(bw->parent, errptr->msg);
-	return 0;
+	return jump_to_file_line(bw,errptr->file,errptr->line,errptr->msg);
 }
 
 int uprverr(BW *bw)
 {
-	int omid;
-
 	if (errptr->link.prev == &errors) {
 		msgnw(bw->parent, US "No more errors");
 		return -1;
 	}
 	errptr = errptr->link.prev;
-	if (!bw->b->name || strcmp(errptr->file, bw->b->name)) {
-		if (doswitch(bw, vsdup(errptr->file), NULL, NULL))
-			return -1;
-		bw = (BW *) maint->curwin->object;
-	}
-	omid = mid;
-	mid = 1;
-	pline(bw->cursor, errptr->line);
 	setline(errbuf, errptr->src);
-	dofollows();
-	mid = omid;
-	bw->cursor->xcol = piscol(bw->cursor);
-	msgnw(bw->parent, errptr->msg);
-	return 0;
+	return jump_to_file_line(bw,errptr->file,errptr->line,errptr->msg);
 }

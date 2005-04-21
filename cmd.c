@@ -133,6 +133,7 @@ CMD cmds[] = {
 	{US "groww", TYPETW, ugroww, NULL, 1, US "shrinkw"},
 	{US "if", TYPETW+TYPEPW+TYPEMENU+TYPEQW+EMETA, uif, 0, 0, 0 },
 	{US "isrch", TYPETW + TYPEPW, uisrch, NULL, 0, NULL},
+	{US "jump", TYPETW, ujump, NULL, 0, NULL },
 	{US "killjoe", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ukilljoe, NULL, 0, NULL},
 	{US "killproc", TYPETW + TYPEPW, ukillpid, NULL, 0, NULL},
 	{US "help", TYPETW + TYPEPW + TYPEQW, u_help, NULL, 0, NULL},

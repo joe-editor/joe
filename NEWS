@@ -16,6 +16,9 @@ JOE 3.3
 
 - Improved jpico: search now looks more like real pico
 
+- Grep find: use ESC g to grep.  Then use ESC space to jump to
+  to indicated file/line.
+
 JOE 3.2
 
 - A Perforce SCM "p4 edit" macro has been supplied (along with the hooks
