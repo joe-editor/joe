@@ -1,3 +1,7 @@
+Fri Apr 22 00:47:55 EDT 2005
+
+	Fix ctrl-select bug when near buffer edges
+
 Thu Apr 21 15:46:09 EDT 2005
 
 	Add some grep find support:

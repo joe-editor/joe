@@ -270,10 +270,10 @@ int udrop(BW *bw)
 
 int ubegin_marking(BW *bw)
 {
-	if (nowmarking)
+	if (nowmarking) {
 		/* We're marking now... don't stop */
 		return 0;
-	else if (markv(0) && bw->cursor->b==markb->b)
+	} else if (markv(0) && bw->cursor->b==markb->b)
 		/* Try to extend current block */
 		if (bw->cursor->byte==markb->byte) {
 			pset(markb,markk);

@@ -1155,26 +1155,26 @@ eol			^[ O F			gnome-terminal
 eol			^[ [ 8 ~		RxVT
 eol			^# SP @		Amiga
 
-begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right Xterm
-begin_marking,rtarw,toggle_marking	^[ [ 5 C        Mark right Gnome-terminal
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right Xterm
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C        Mark right Gnome-terminal
  (Almost all termcap entries have ^[ O C as an arrow key).
- begin_marking,rtarw,toggle_marking	^[ O C		Mark right Putty Ctrl-rtarw
-begin_marking,rtarw,toggle_marking	^[ O c		Mark right RxVT Ctrl-rtarw
+ rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O C		Mark right Putty Ctrl-rtarw
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O c		Mark right RxVT Ctrl-rtarw
 
-begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Mark left
-begin_marking,ltarw,toggle_marking	^[ [ 5 D        Mark left
- begin_marking,ltarw,toggle_marking	^[ O D		Mark left Putty Ctrl-ltarw
-begin_marking,ltarw,toggle_marking	^[ O d		Mark left RxVT Ctrl-ltarw
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Mark left
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 5 D        Mark left
+ ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O D		Mark left Putty Ctrl-ltarw
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O d		Mark left RxVT Ctrl-ltarw
 
-begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Mark up
-begin_marking,uparw,toggle_marking	^[ [ 5 A        Mark up
- begin_marking,uparw,toggle_marking	^[ O A		Mark up Putty Ctrl-uparw
-begin_marking,uparw,toggle_marking	^[ O a		Mark up RxVT Ctrl-uparw
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Mark up
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 5 A        Mark up
+ uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O A		Mark up Putty Ctrl-uparw
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O a		Mark up RxVT Ctrl-uparw
 
-begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Mark down
-begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
- begin_marking,dnarw,toggle_marking	^[ O B		Mark down Putty Ctrl-dnarw
-begin_marking,dnarw,toggle_marking	^[ O b		Mark down RxVT Ctrl-dnarw
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Mark down
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
+ dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O B		Mark down Putty Ctrl-dnarw
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O b		Mark down RxVT Ctrl-dnarw
 
 blkdel,nmark   ^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
 blkdel,nmark   ^[ [ 3 ; 5 ~	Xterm Ctrl-Del

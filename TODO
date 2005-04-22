@@ -130,10 +130,6 @@ window on the screen).
 
 - - - - - - - -
 
-- egmont's Ctrl-selection bug
-
-- - - - - - - -
-
 - better string demarcation in highlighter (highlight all words with 's in
   them- need to use pointers instead of buffer to refer to string)
 
