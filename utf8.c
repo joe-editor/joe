@@ -17,10 +17,22 @@
 #include <stdlib.h>
 #endif
 
+/* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
+   JOE uses a limited internal version instead */
+
+#ifndef CODESET
+#undef HAVE_SETLOCALE
+#endif
+
 /* Under AmigaOS we have setlocale() but don't have langinfo.h and associated stuff,
  * so we have to disable the whole piece of code
  */
 #ifdef __amigaos
+#undef HAVE_SETLOCALE
+#endif
+
+/* Cygwin has CODESET, but it's crummy */
+#ifdef __CYGWIN__
 #undef HAVE_SETLOCALE
 #endif
 
@@ -308,7 +320,6 @@ struct charmap *locale_map;
 
 void joe_locale()
 {
-#ifdef HAVE_SETLOCALE
 	unsigned char *s, *t, *u;
 
 	int x;
@@ -332,7 +343,7 @@ void joe_locale()
 		*t = 0;
 
 
-#ifdef CODESET
+#ifdef HAVE_SETLOCALE
 	setlocale(LC_ALL,(char *)s);
 	non_utf8_codeset = joe_strdup((unsigned char *)nl_langinfo(CODESET));
 #else
@@ -340,7 +351,7 @@ void joe_locale()
 #endif
 
 
-#ifdef CODESET
+#ifdef HAVE_SETLOCALE
 	setlocale(LC_ALL,"");
 	codeset = joe_strdup((unsigned char *)nl_langinfo(CODESET));
 #else
@@ -363,12 +374,14 @@ void joe_locale()
 		       joe_isalnum_(locale_map,x), joe_ispunct(locale_map,x), joe_isprint(locale_map,x));
 */
 
+/* Use iconv() */
 #ifdef junk
 	to_utf = iconv_open("UTF-8", (char *)non_utf8_codeset);
 	from_utf = iconv_open((char *)non_utf8_codeset, "UTF-8");
 #endif
 
-#else
+/* For no locale support */
+#ifdef junk
 	locale_map = find_charmap("ascii");
 	fdefault.charmap = locale_map;
 	pdefault.charmap = locale_map;
