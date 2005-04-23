@@ -483,6 +483,27 @@
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
 
+ ADA
+*.adb
+-syntax ada
+-autoindent
+-istep 2
+-smarthome
+-smartbacks
+-purify
+-vhdl_comment
+-text_delimiters declare|Declare|DECLARE|exception|Exception|EXCEPTION|if|If|IF|loop|Loop|LOOP|case|Case|CASE|package|Package|PACKAGE|procedure|Procedure|PROCEDURE|record|Record|RECORD|function|Function|FUNCTION=end|End|END
+
+*.ads
+-syntax ada
+-autoindent
+-istep 2
+-smarthome
+-smartbacks
+-purify
+-vhdl_comment
+-text_delimiters declare|Declare|DECLARE|exception|Exception|EXCEPTION|if|If|IF|loop|Loop|LOOP|case|Case|CASE|package|Package|PACKAGE|procedure|Procedure|PROCEDURE|record|Record|RECORD|function|Function|FUNCTION=end|End|END
+
  COBOL
 *.cbl
 -syntax cobol

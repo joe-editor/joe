@@ -329,7 +329,7 @@ int ujump(BW *bw)
 		parseone(bw->b->o.charmap,s,&name,&line);
 		if (name && line != -1) {
 			unsigned char *msg = srcherr(bw, name, line);
-			unextw(bw);
+			unextw((BASE *)bw);
 			/* Check that we made it to a tw */
 			rtn = jump_to_file_line(maint->curwin->object,name,line,msg);
 			vsrm(name);
