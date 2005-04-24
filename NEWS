@@ -1,18 +1,18 @@
 JOE 3.3
 
-- Can now set default background color
+- The default background color can now be set.
 
-- JOE now supports 256 color xterm
+- JOE now supports 256 color xterm.
 
-- Mouse can resize windows and select menu entries
+- The mouse can now resize windows and select menu entries.
 
-- During selection with the mouse, window will autoscroll when
-  you go past the edge.
+- During selection with the mouse, the window will autoscroll when you go
+  past the edge.
 
 - An xterm-patch is included which makes "-mouse" mode work better.  (With
   the patch, also set "-joexterm").
 
-- More syntax files: AWK, COBOL, SED, Postscript, and SQL
+- Syntax files are provided: ADA, AWK, COBOL, SED, Postscript, and SQL
 
 - Improved jpico: search now looks more like real pico
 

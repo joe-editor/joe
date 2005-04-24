@@ -9,7 +9,6 @@
 #include "types.h"
 
 #include <stdio.h>
-#include <string.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -306,7 +305,7 @@ static void domtext(MACRO *m)
 		for (x = 0; x != m->n; ++x)
 			domtext(m->steps[x]);
 	else {
-		if (instr && strcmp(m->cmd->name, "type")) {
+		if (instr && zcmp(m->cmd->name, US "type")) {
 			*ptr++ = '\"';
 			instr = 0;
 		}
@@ -314,7 +313,7 @@ static void domtext(MACRO *m)
 			first = 0;
 		else if (!instr)
 			*ptr++ = ',';
-		if (!strcmp(m->cmd->name, "type")) {
+		if (!zcmp(m->cmd->name, US "type")) {
 			if (!instr) {
 				*ptr++ = '\"';
 				instr = 1;
@@ -323,7 +322,7 @@ static void domtext(MACRO *m)
 		} else {
 			for (x = 0; m->cmd->name[x]; ++x)
 				*ptr++ = m->cmd->name[x];
-			if (!strcmp(m->cmd->name, "play") || !strcmp(m->cmd->name, "gomark") || !strcmp(m->cmd->name, "setmark") || !strcmp(m->cmd->name, "record") || !strcmp(m->cmd->name, "uarg")) {
+			if (!zcmp(m->cmd->name, US "play") || !zcmp(m->cmd->name, US "gomark") || !zcmp(m->cmd->name, US "setmark") || !zcmp(m->cmd->name, US "record") || !zcmp(m->cmd->name, US "uarg")) {
 				*ptr++ = ',';
 				*ptr++ = '"';
 				ptr = unescape(ptr, m->k);
@@ -757,7 +756,7 @@ void save_macros(FILE *f)
 		if(kbdmacro[x]) {
 			mtext(buf, kbdmacro[x]);
 			fprintf(f,"	%d ",x);
-			emit_hdlc(f,buf,strlen((char *)buf));
+			emit_hdlc(f,buf,zlen(buf));
 			fprintf(f,"\n");
 		}
 	fprintf(f,"done\n");
@@ -767,7 +766,7 @@ void load_macros(FILE *f)
 {
 	unsigned char buf[1024];
 	unsigned char bf[1024];
-	while(fgets((char *)buf,1023,f) && strcmp((char *)buf,"done\n")) {
+	while(fgets((char *)buf,1023,f) && zcmp(buf,US "done\n")) {
 		unsigned char *p = buf;
 		int n;
 		int len;

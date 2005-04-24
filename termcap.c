@@ -136,7 +136,7 @@ static long findidx(FILE *file, unsigned char *name)
 				z = 0;
 				sscanf((char *)(buf + x), "%x", &z);
 				addr += z;
-			} else if (!strcmp(buf + x, name))
+			} else if (!zcmp(buf + x, name))
 				flg = 1;
 			x = y + 1;
 		} while (c && c != '\n');
@@ -307,7 +307,7 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
 			int found;
 
 			z = (x + y) / 2;
-			found = strcmp(qq, cap->sort[z].name);
+			found = zcmp(qq, cap->sort[z].name);
 			if(found > 0) {
 				x = z;
 			} else if(found < 0) {
@@ -375,7 +375,7 @@ static struct sortentry *findcap(CAP *cap, unsigned char *name)
 	z = -1;
 	while (z != (x + y) / 2) {
 		z = (x + y) / 2;
-		found = strcmp(name, cap->sort[z].name);
+		found = zcmp(name, cap->sort[z].name);
 		if (found > 0)
 			x = z;
 		else if (found < 0)

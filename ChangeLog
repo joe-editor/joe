@@ -1,3 +1,7 @@
+Sun Apr 24 00:16:25 EDT 2005
+
+	Fix compiler warnings from gcc-4.0.0
+
 Fri Apr 22 00:47:55 EDT 2005
 
 	Fix ctrl-select bug when near buffer edges

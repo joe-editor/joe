@@ -8,7 +8,6 @@
 #include "config.h"
 #include "types.h"
 
-#include <string.h>
 
 #include "b.h"
 #include "bw.h"
@@ -83,17 +82,17 @@ static int keyval(unsigned char *s)
 		 && (s[1] == 'P' || s[1] == 'p') && !s[2])
 		return ' ';
 	else if((s[0]=='M'||s[0]=='m') && s[1]) {
-		if(!strcmp(s,"MDOWN")) return KEY_MDOWN;
-		else if(!strcmp(s,"MWDOWN")) return KEY_MWDOWN;
-		else if(!strcmp(s,"MWUP")) return KEY_MWUP;
-		else if(!strcmp(s,"MUP")) return KEY_MUP;
-		else if(!strcmp(s,"MDRAG")) return KEY_MDRAG;
-		else if(!strcmp(s,"M2DOWN")) return KEY_M2DOWN;
-		else if(!strcmp(s,"M2UP")) return KEY_M2UP;
-		else if(!strcmp(s,"M2DRAG")) return KEY_M2DRAG;
-		else if(!strcmp(s,"M3DOWN")) return KEY_M3DOWN;
-		else if(!strcmp(s,"M3UP")) return KEY_M3UP;
-		else if(!strcmp(s,"M3DRAG")) return KEY_M3DRAG;
+		if(!zcmp(s,US "MDOWN")) return KEY_MDOWN;
+		else if(!zcmp(s,US "MWDOWN")) return KEY_MWDOWN;
+		else if(!zcmp(s,US "MWUP")) return KEY_MWUP;
+		else if(!zcmp(s,US "MUP")) return KEY_MUP;
+		else if(!zcmp(s,US "MDRAG")) return KEY_MDRAG;
+		else if(!zcmp(s,US "M2DOWN")) return KEY_M2DOWN;
+		else if(!zcmp(s,US "M2UP")) return KEY_M2UP;
+		else if(!zcmp(s,US "M2DRAG")) return KEY_M2DRAG;
+		else if(!zcmp(s,US "M3DOWN")) return KEY_M3DOWN;
+		else if(!zcmp(s,US "M3UP")) return KEY_M3UP;
+		else if(!zcmp(s,US "M3DRAG")) return KEY_M3DRAG;
 		else return s[0];
 	} else if (s[1] || !s[0])
 		return -1;
@@ -176,64 +175,64 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 		c = seq[x];
 		seq[x] = 0;
 #ifdef __MSDOS__
-		if (!strcmp(seq + 1, "ku")) {
+		if (!zcmp(seq + 1, "ku")) {
 			capseq = "\0H";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "kd")) {
+		} else if (!zcmp(seq + 1, US "kd")) {
 			capseq = "\0P";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "kl")) {
+		} else if (!zcmp(seq + 1, US "kl")) {
 			capseq = "\0K";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "kr")) {
+		} else if (!zcmp(seq + 1, US "kr")) {
 			capseq = "\0M";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "kI")) {
+		} else if (!zcmp(seq + 1, US "kI")) {
 			capseq = "\0R";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "kD")) {
+		} else if (!zcmp(seq + 1, US "kD")) {
 			capseq = "\0S";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "kh")) {
+		} else if (!zcmp(seq + 1, US "kh")) {
 			capseq = "\0G";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "kH")) {
+		} else if (!zcmp(seq + 1, US "kH")) {
 			capseq = "\0O";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "kP")) {
+		} else if (!zcmp(seq + 1, US "kP")) {
 			capseq = "\0I";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "kN")) {
+		} else if (!zcmp(seq + 1, US "kN")) {
 			capseq = "\0Q";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "k1")) {
+		} else if (!zcmp(seq + 1, US "k1")) {
 			capseq = "\0;";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "k2")) {
+		} else if (!zcmp(seq + 1, US "k2")) {
 			capseq = "\0<";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "k3")) {
+		} else if (!zcmp(seq + 1, US "k3")) {
 			capseq = "\0=";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "k4")) {
+		} else if (!zcmp(seq + 1, US "k4")) {
 			capseq = "\0>";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "k5")) {
+		} else if (!zcmp(seq + 1, US "k5")) {
 			capseq = "\0?";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "k6")) {
+		} else if (!zcmp(seq + 1, US "k6")) {
 			capseq = "\0@";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "k7")) {
+		} else if (!zcmp(seq + 1, US "k7")) {
 			capseq = "\0A";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "k8")) {
+		} else if (!zcmp(seq + 1, US "k8")) {
 			capseq = "\0B";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "k9")) {
+		} else if (!zcmp(seq + 1, US "k9")) {
 			capseq = "\0C";
 			seql = 2;
-		} else if (!strcmp(seq + 1, "k0")) {
+		} else if (!zcmp(seq + 1, US "k0")) {
 			capseq = "\0D";
 			seql = 2;
 		}

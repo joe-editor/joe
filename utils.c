@@ -15,6 +15,7 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#include <string.h>
 
 #include "i18n.h"
 #include "utf8.h"
@@ -277,12 +278,122 @@ void joe_free(void *ptr)
 
 #endif
 
-unsigned char *joe_strdup(unsigned char *bf)
+size_t zlen(unsigned char *s)
 {
-	int size = strlen((char *)bf);
+	return strlen((char *)s);
+}
+
+int zcmp(unsigned char *a, unsigned char *b)
+{
+	return strcmp((char *)a, (char *)b);
+}
+
+int zncmp(unsigned char *a, unsigned char *b, size_t len)
+{
+	return strncmp((char *)a, (char *)b, len);
+}
+
+unsigned char *zdup(unsigned char *bf)
+{
+	int size = zlen(bf);
 	unsigned char *p = (unsigned char *)joe_malloc(size+1);
 	memcpy(p,bf,size+1);
 	return p;
+}
+
+unsigned char *zcpy(unsigned char *a, unsigned char *b)
+{
+	strcpy((char *)a,(char *)b);
+	return a;
+}
+
+unsigned char *zstr(unsigned char *a, unsigned char *b)
+{
+	return (unsigned char *)strstr((char *)a,(char *)b);
+}
+
+unsigned char *zncpy(unsigned char *a, unsigned char *b, size_t len)
+{
+	strncpy((char *)a,(char *)b,len);
+	return a;
+}
+
+unsigned char *zcat(unsigned char *a, unsigned char *b)
+{
+	strcat((char *)a,(char *)b);
+	return a;
+}
+
+unsigned char *zchr(unsigned char *s, int c)
+{
+	return (unsigned char *)strchr((char *)s,c);
+}
+
+unsigned char *zrchr(unsigned char *s, int c)
+{
+	return (unsigned char *)strrchr((char *)s,c);
+}
+
+void *replenish(void **list,int size)
+{
+	unsigned char *i = joe_malloc(size*16);
+	int x;
+	for (x=0; x!=15; ++x) {
+		fr_single(list, i);
+		i += size;
+	}
+	return i;
+}
+
+/* Destructors */
+
+GC *gc_free_list = 0;
+
+void gc_add(GC **gc, void **var, void (*rm)(void *val))
+{
+	GC *g;
+	for (g = *gc; g; g=g->next)
+		if (g->var == var)
+			return;
+	g = al_single(&gc_free_list, GC);
+	g = gc_free_list;
+	gc_free_list = g->next;
+	g->next = *gc;
+	*gc = g;
+	g->var = var;
+	g->rm = rm;
+}
+
+void gc_collect(GC **gc)
+{
+	GC *g = *gc;
+	while (g) {
+		GC *next = g->next;
+		if (*g->var) {
+			g->rm(*g->var);
+			*g->var = 0;
+		}
+		fr_single(&gc_free_list,g);
+		g = next;
+	}
+	*gc = 0;
+}
+
+/* Zstrings */
+
+void rm_zs(ZS z)
+{
+	joe_free(z.s);
+}
+
+ZS raw_mk_zs(GC **gc,unsigned char *s,int len)
+{
+	ZS zs;
+	zs.s = (unsigned char *)joe_malloc(len+1);
+	if (len)
+		memcpy(zs.s,s,len);
+	zs.s[len] = 0;
+	return zs;
 }
 
 #ifndef SIG_ERR

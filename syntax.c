@@ -8,7 +8,6 @@
 
 #include "config.h"
 #include <stdlib.h>
-#include <string.h>
 #include "types.h"
 #include "scrn.h"
 #include "utils.h"
@@ -70,7 +69,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			else
 				cmd = h->cmd[c];
 			/* Determine new state */
-			if (cmd->delim && !strcmp(h_state.saved_s,buf)) {
+			if (cmd->delim && !zcmp(h_state.saved_s,buf)) {
 				cmd = cmd->delim;
 				h = cmd->new_state;
 				/* Recolor string delimiter */
@@ -91,7 +90,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Save string? */
 			if (cmd->save_s)
-				strcpy((char *)h_state.saved_s,(char *)buf);
+				zcpy(h_state.saved_s,buf);
 
 			/* Save character? */
 			if (cmd->save_c) {
@@ -145,14 +144,14 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *n
 
 	/* Find state */
 	for(x=0;x!=syntax->nstates;++x)
-		if(!strcmp(syntax->states[x]->name,name))
+		if(!zcmp(syntax->states[x]->name,name))
 			break;
 
 	/* It doesn't exist, so create it */
 	if(x==syntax->nstates) {
 		int y;
 		state=joe_malloc(sizeof(struct high_state));
-		state->name=joe_strdup(name);
+		state->name=zdup(name);
 		state->no=syntax->nstates;
 		state->color=FG_WHITE;
 		if(!syntax->nstates)
@@ -202,11 +201,11 @@ struct high_color *find_color(struct high_color *colors,unsigned char *name,unsi
 	struct high_color *color;
 	joe_snprintf_2((char *)bf, sizeof(bf), "%s.%s", syn, name);
 	for (color = colors; color; color = color->next)
-		if (!strcmp(color->name,bf)) break;
+		if (!zcmp(color->name,bf)) break;
 	if (color)
 		return color;
 	for (color = colors; color; color = color->next)
-		if (!strcmp(color->name,name)) break;
+		if (!zcmp(color->name,name)) break;
 	return color;
 }
 
@@ -222,7 +221,7 @@ void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned ch
 		/* If it doesn't exist, create it */
 		if(!color) {
 			color = joe_malloc(sizeof(struct high_color));
-			color->name = joe_strdup(bf);
+			color->name = zdup(bf);
 			color->color = 0;
 			color->next = *color_list;
 			*color_list = color;
@@ -271,7 +270,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 
 	/* Already loaded? */
 	for(syntax=syntax_list;syntax;syntax=syntax->next)
-		if(!strcmp(syntax->name,name))
+		if(!zcmp(syntax->name,name))
 			return syntax;
 
 	/* Load it */
@@ -290,7 +289,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 
 	/* Create new one */
 	syntax = joe_malloc(sizeof(struct high_syntax));
-	syntax->name = joe_strdup(name);
+	syntax->name = zdup(name);
 	syntax->next = syntax_list;
 	syntax_list = syntax;
 	syntax->nstates = 0;
@@ -313,7 +312,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 				if(!parse_ident(&p,bf,255)) {
 					struct high_color *color;
 					for(color=syntax->color;color;color=color->next)
-						if(!strcmp(color->name,bf))
+						if(!zcmp(color->name,bf))
 							break;
 					if(color)
 						state->color=color->color;
@@ -371,15 +370,15 @@ struct high_syntax *load_dfa(unsigned char *name)
 
 						/* Parse options */
 						while (parse_ws(&p,'#'), !parse_ident(&p,bf,255))
-							if(!strcmp(bf,"buffer")) {
+							if(!zcmp(bf,US "buffer")) {
 								cmd->start_buffering = 1;
-							} else if(!strcmp(bf,"hold")) {
+							} else if(!zcmp(bf,US "hold")) {
 								cmd->stop_buffering = 1;
-							} else if(!strcmp(bf,"save_c")) {
+							} else if(!zcmp(bf,US "save_c")) {
 								cmd->save_c = 1;
-							} else if(!strcmp(bf,"save_s")) {
+							} else if(!zcmp(bf,US "save_s")) {
 								cmd->save_s = 1;
-							} else if(!strcmp(bf,"recolor")) {
+							} else if(!zcmp(bf,US "recolor")) {
 								parse_ws(&p,'#');
 								if(!parse_char(&p,'=')) {
 									parse_ws(&p,'#');
@@ -387,7 +386,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 										fprintf(stderr,"%s %d: Missing value for option\n",name,line);
 								} else
 									fprintf(stderr,"%s %d: Missing value for option\n",name,line);
-							} else if(!strcmp(bf,"strings") || !strcmp(bf,"istrings")) {
+							} else if(!zcmp(bf,US "strings") || !zcmp(bf,US "istrings")) {
 								if (bf[0]=='i')
 									cmd->ignore = 1;
 								while(fgets((char *)buf,1023,f)) {
@@ -405,19 +404,19 @@ struct high_syntax *load_dfa(unsigned char *name)
 												struct high_cmd *kw_cmd=mkcmd();
 												kw_cmd->noeat=1;
 												kw_cmd->new_state = find_state(syntax,bf1);
-												if (!strcmp((char *)bf, "&")) {
+												if (!zcmp(bf, US "&")) {
 													cmd->delim = kw_cmd;
 												} else {
 													if(!cmd->keywords)
 														cmd->keywords = htmk(64);
-														htadd(cmd->keywords,joe_strdup(bf),kw_cmd);
+														htadd(cmd->keywords,zdup(bf),kw_cmd);
 												}
 												while (parse_ws(&p,'#'), !parse_ident(&p,bf,255))
-													if(!strcmp(bf,"buffer")) {
+													if(!zcmp(bf,US "buffer")) {
 														kw_cmd->start_buffering = 1;
-													} else if(!strcmp(bf,"hold")) {
+													} else if(!zcmp(bf,US "hold")) {
 														kw_cmd->stop_buffering = 1;
-													} else if(!strcmp(bf,"recolor")) {
+													} else if(!zcmp(bf,US "recolor")) {
 														parse_ws(&p,'#');
 														if(!parse_char(&p,'=')) {
 															parse_ws(&p,'#');
@@ -433,7 +432,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 											fprintf(stderr,"%s %d: Missing string\n",name,line);
 									}
 								}
-							} else if(!strcmp(bf,"noeat")) {
+							} else if(!zcmp(bf,US "noeat")) {
 								cmd->noeat = 1;
 							} else
 								fprintf(stderr,"%s %d: Unknown option\n",name,line);

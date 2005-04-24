@@ -10,7 +10,6 @@
 #include "types.h"
 
 #include <stdio.h>
-#include <string.h>
 
 #include "blocks.h"
 #include "scrn.h"
@@ -52,7 +51,7 @@ int help_init(FILE *fd,unsigned char *bf,int line)
 
 		while ((fgets((char *)buf, sizeof(buf), fd)) && (buf[0] != '}')) {
 			++line;
-			bfl = strlen((char *)buf);
+			bfl = zlen(buf);
 			if (hlpsiz + bfl > hlpbsz) {
 				if (tmp->text) {
 					tempbuf = (unsigned char *) joe_realloc(tmp->text, hlpbsz + bfl + 1024);
@@ -63,7 +62,7 @@ int help_init(FILE *fd,unsigned char *bf,int line)
 				}
 				hlpbsz += bfl + 1024;
 			}
-			strcpy((char *)(tmp->text + hlpsiz), (char *)buf);
+			zcpy(tmp->text + hlpsiz, buf);
 			hlpsiz += bfl;
 			++tmp->lines;
 		}
@@ -95,7 +94,7 @@ struct help *find_context_help(unsigned char *name)
 	while (tmp->prev != NULL)	/* find the first help entry */
 		tmp = tmp->prev;
 
-	while (tmp != NULL && strcmp(tmp->name, name) != 0)
+	while (tmp != NULL && zcmp(tmp->name, name) != 0)
 		tmp = tmp->next;
 
 	return tmp;
@@ -126,7 +125,7 @@ void help_display(SCREEN *t)
 			int spanextra;
 			int len;
 
-			eol = (unsigned char *)strchr((char *)str, '\n');
+			eol = zchr(str, '\n');
 
 			/* First pass: count no. springs \| and determine minimum width */
 			while(*str && *str!='\n') {

@@ -8,8 +8,8 @@
 #include "config.h"
 #include "types.h"
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -814,7 +814,7 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	if (lin <= w->b->eof->line)
 		joe_snprintf_1((char *)buf, sizeof(buf), "%5ld ", w->top->line + y - w->y + 1);
 	else
-		strcpy((char *)buf, "      ");
+		zcpy(buf, US "      ");
 	for (z = 0; buf[z]; ++z) {
 		outatr(w->b->o.charmap, t, screen + z, attr + z, z, y, buf[z], BG_COLOR(bg_text)); 
 		if (ifhave)

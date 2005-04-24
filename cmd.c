@@ -8,7 +8,6 @@
 #include "config.h"
 #include "types.h"
 
-#include <string.h>
 
 #include "b.h"
 #include "bw.h"
@@ -508,7 +507,7 @@ void addcmd(unsigned char *s, MACRO *m)
 
 	if (!cmdhash)
 		izcmds();
-	cmd->name = joe_strdup(s);
+	cmd->name = zdup(s);
 	cmd->flag = 0;
 	cmd->func = NULL;
 	cmd->m = m;

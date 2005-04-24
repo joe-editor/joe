@@ -9,7 +9,6 @@
 #include "types.h"
 
 #include <stdio.h>
-#include <string.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -55,12 +54,12 @@ KMAP *kmap_getcontext(unsigned char *name)
 	struct context *c;
 
 	for (c = contexts; c; c = c->next)
-		if (!strcmp(c->name, name))
+		if (!zcmp(c->name, name))
 			return c->kmap;
 	c = (struct context *) joe_malloc(sizeof(struct context));
 
 	c->next = contexts;
-	c->name = joe_strdup(name);
+	c->name = zdup(name);
 	contexts = c;
 	return c->kmap = mkkmap();
 }
@@ -73,7 +72,7 @@ KMAP *ngetcontext(unsigned char *name)
 {
 	struct context *c;
 	for(c=contexts;c;c=c->next)
-		if(!strcmp(c->name,name))
+		if(!zcmp(c->name,name))
 			return c->kmap;
 	return 0;
 }
@@ -232,7 +231,7 @@ void setopt(B *b, unsigned char *parsed_name)
 		if (rmatch(o->name_regex, parsed_name)) {
 			if(o->contents_regex) {
 				P *p = pdup(b->bof);
-				if (pmatch(pieces,o->contents_regex,strlen((char *)o->contents_regex),p,0,0)) {
+				if (pmatch(pieces,o->contents_regex,zlen(o->contents_regex),p,0,0)) {
 					prm(p);
 					b->o = *o;
 					lazy_opts(&b->o);
@@ -413,7 +412,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 	}
 
 	for (x = 0; glopts[x].name; ++x)
-		if (!strcmp(glopts[x].name, s)) {
+		if (!zcmp(glopts[x].name, s)) {
 			switch (glopts[x].type) {
 			case 0: /* Global variable flag option */
 				if (set)
@@ -429,7 +428,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			case 2: /* Global variable string option */
 				if (set) {
 					if (arg)
-						*(unsigned char **) glopts[x].set = joe_strdup(arg);
+						*(unsigned char **) glopts[x].set = zdup(arg);
 					else
 						*(unsigned char **) glopts[x].set = 0;
 				}
@@ -452,7 +451,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				if (options) {
 					if (arg) {
 						*(unsigned char **) ((unsigned char *)
-								  options + glopts[x].ofst) = joe_strdup(arg);
+								  options + glopts[x].ofst) = zdup(arg);
 					} else {
 						*(unsigned char **) ((unsigned char *)
 								  options + glopts[x].ofst) = 0;
@@ -475,7 +474,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			case 9: /* Set syntax */
 				if (arg && options)
-					options->syntax_name = joe_strdup(arg);
+					options->syntax_name = zdup(arg);
 				/* this was causing all syntax files to be loaded...
 				if (arg && options)
 					options->syntax = load_dfa(arg); */
@@ -483,7 +482,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 			case 13: /* Set byte mode encoding */
 				if (arg && options)
-					options->map_name = joe_strdup(arg);
+					options->map_name = zdup(arg);
 				break;
 			}
 			/* This is a stupid hack... */
@@ -495,21 +494,21 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 	/* Why no case 6, string option? */
 	/* Keymap, mold, mnew, etc. are not strings */
 	/* These options do not show up in ^T */
-	if (!strcmp(s, "lmsg")) {
+	if (!zcmp(s, US "lmsg")) {
 		if (arg) {
 			if (options)
-				options->lmsg = joe_strdup(arg);
+				options->lmsg = zdup(arg);
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "rmsg")) {
+	} else if (!zcmp(s, US "rmsg")) {
 		if (arg) {
 			if (options)
-				options->rmsg = joe_strdup(arg);
+				options->rmsg = zdup(arg);
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "keymap")) {
+	} else if (!zcmp(s, US "keymap")) {
 		if (arg) {
 			int y;
 
@@ -517,11 +516,11 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			if (!arg[y])
 				arg[y] = 0;
 			if (options && y)
-				options->context = joe_strdup(arg);
+				options->context = zdup(arg);
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "mnew")) {
+	} else if (!zcmp(s, US "mnew")) {
 		if (arg) {
 			int sta;
 
@@ -530,7 +529,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "mfirst")) {
+	} else if (!zcmp(s, US "mfirst")) {
 		if (arg) {
 			int sta;
 
@@ -539,7 +538,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "mold")) {
+	} else if (!zcmp(s, US "mold")) {
 		if (arg) {
 			int sta;
 
@@ -548,7 +547,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "msnew")) {
+	} else if (!zcmp(s, US "msnew")) {
 		if (arg) {
 			int sta;
 
@@ -557,7 +556,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "msold")) {
+	} else if (!zcmp(s, US "msold")) {
 		if (arg) {
 			int sta;
 
@@ -566,7 +565,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "bg_text")) {
+	} else if (!zcmp(s, US "bg_text")) {
 		if (arg) {
 			int sta;
 
@@ -578,7 +577,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "bg_help")) {
+	} else if (!zcmp(s, US "bg_help")) {
 		if (arg) {
 			int sta;
 
@@ -586,7 +585,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "bg_menu")) {
+	} else if (!zcmp(s, US "bg_menu")) {
 		if (arg) {
 			int sta;
 
@@ -594,7 +593,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "bg_prompt")) {
+	} else if (!zcmp(s, US "bg_prompt")) {
 		if (arg) {
 			int sta;
 
@@ -602,7 +601,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!strcmp(s, "bg_msg")) {
+	} else if (!zcmp(s, US "bg_msg")) {
 		if (arg) {
 			int sta;
 
@@ -647,10 +646,10 @@ static int doopt1(BW *bw, unsigned char *s, int *xx, int *notify)
 		break;
 	case 2:
 		if (s[0])
-			*(unsigned char **) glopts[x].set = joe_strdup(s);
+			*(unsigned char **) glopts[x].set = zdup(s);
 		break;
 	case 6:
-		*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst) = joe_strdup(s);
+		*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst) = zdup(s);
 		break;
 	case 5:
 		v = calc(bw, s);
@@ -744,7 +743,7 @@ static int syntaxcmplt(BW *bw)
 					*strrchr((char *)t[x],'.') = 0;
 				for (x = 0; x != aLEN(t); ++x) {
 					for (y = 0; y != aLEN(syntaxes); ++y)
-						if (!strcmp(t[x],syntaxes[y]))
+						if (!zcmp(t[x],syntaxes[y]))
 							break;
 					if (y == aLEN(syntaxes)) {
 						unsigned char *r = vsncpy(NULL,0,sv(t[x]));
@@ -936,7 +935,7 @@ int umode(BW *bw)
 		case 9:
 		case 13:
 		case 6:
-			strcpy((char *)(s[x]), (char *)glopts[x].menu);
+			zcpy(s[x], glopts[x].menu);
 			break;
 		case 4:
 			joe_snprintf_2((char *)(s[x]), OPT_BUF_SIZE, "%s%s", glopts[x].menu, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? "ON" : "OFF");
@@ -1011,7 +1010,7 @@ int procrc(CAP *cap, unsigned char *name)
 				buf[x] = 0;
 				o->next = options;
 				options = o;
-				o->name_regex = joe_strdup(buf);
+				o->name_regex = zdup(buf);
 			}
 			break;
 		case '+':	/* Set file contents match regex */
@@ -1021,7 +1020,7 @@ int procrc(CAP *cap, unsigned char *name)
 				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != '\r'; ++x) ;
 				buf[x] = 0;
 				if (o)
-					o->contents_regex = joe_strdup(buf+1);
+					o->contents_regex = zdup(buf+1);
 			}
 			break;
 		case '-':	/* Set an option */
@@ -1055,7 +1054,7 @@ int procrc(CAP *cap, unsigned char *name)
 				c = buf[x];
 				buf[x] = 0;
 				if (x != 1)
-					if (!strcmp(buf + 1, "def")) {
+					if (!zcmp(buf + 1, US "def")) {
 						int y;
 
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
@@ -1077,7 +1076,7 @@ int procrc(CAP *cap, unsigned char *name)
 							err = 1;
 							fprintf(stderr, "\n%s %d: command name missing from :def", name, line);
 						}
-					} else if (!strcmp(buf + 1, "inherit"))
+					} else if (!zcmp(buf + 1, US "inherit"))
 						if (context) {
 							for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
 							for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
@@ -1091,7 +1090,7 @@ int procrc(CAP *cap, unsigned char *name)
 						} else {
 							err = 1;
 							fprintf(stderr, "\n%s %d: No context selected for :inherit", name, line);
-					} else if (!strcmp(buf + 1, "include")) {
+					} else if (!zcmp(buf + 1, US "include")) {
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
 						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
 						buf[c] = 0;
@@ -1111,7 +1110,7 @@ int procrc(CAP *cap, unsigned char *name)
 							err = 1;
 							fprintf(stderr, "\n%s %d: :include missing file name", name, line);
 						}
-					} else if (!strcmp(buf + 1, "delete"))
+					} else if (!zcmp(buf + 1, US "delete"))
 						if (context) {
 							int y;
 
@@ -1228,7 +1227,7 @@ void load_hist(FILE *f,B **bp)
 
 	q = pdup(b->eof);
 
-	while(fgets((char *)buf,1023,f) && strcmp(buf,"done\n")) {
+	while(fgets((char *)buf,1023,f) && zcmp(buf,US "done\n")) {
 		unsigned char *p = buf;
 		int len;
 		parse_ws(&p,'#');
@@ -1244,7 +1243,7 @@ void load_hist(FILE *f,B **bp)
 
 /* Save state */
 
-#define STATE_ID "# JOE state file v1.0\n"
+#define STATE_ID (unsigned char *)"# JOE state file v1.0\n"
 
 void save_state()
 {
@@ -1297,34 +1296,34 @@ void load_state()
 		return;
 
 	/* Only read state information if the version is correct */
-	if (fgets((char *)buf,1024,f) && !strcmp((char *)buf,STATE_ID)) {
+	if (fgets((char *)buf,1024,f) && !zcmp(buf,STATE_ID)) {
 
 		/* Read state information */
 		while(fgets((char *)buf,1023,f)) {
-			if(!strcmp(buf,"search\n"))
+			if(!zcmp(buf,US "search\n"))
 				load_srch(f);
-			else if(!strcmp(buf,"macros\n"))
+			else if(!zcmp(buf,US "macros\n"))
 				load_macros(f);
-			else if(!strcmp(buf,"files\n"))
+			else if(!zcmp(buf,US "files\n"))
 				load_hist(f,&filehist);
-			else if(!strcmp(buf,"find\n"))
+			else if(!zcmp(buf,US "find\n"))
 				load_hist(f,&findhist);
-			else if(!strcmp(buf,"replace\n"))
+			else if(!zcmp(buf,US "replace\n"))
 				load_hist(f,&replhist);
-			else if(!strcmp(buf,"run\n"))
+			else if(!zcmp(buf,US "run\n"))
 				load_hist(f,&runhist);
-			else if(!strcmp(buf,"build\n"))
+			else if(!zcmp(buf,US "build\n"))
 				load_hist(f,&buildhist);
-			else if(!strcmp(buf,"grep\n"))
+			else if(!zcmp(buf,US "grep\n"))
 				load_hist(f,&grephist);
-			else if(!strcmp(buf,"cmd\n"))
+			else if(!zcmp(buf,US "cmd\n"))
 				load_hist(f,&cmdhist);
-			else if(!strcmp(buf,"math\n"))
+			else if(!zcmp(buf,US "math\n"))
 				load_hist(f,&mathhist);
-			else if(!strcmp(buf,"yank\n"))
+			else if(!zcmp(buf,US "yank\n"))
 				load_yank(f);
 			else { /* Unknown... skip until next done */
-				while(fgets((char *)buf,1023,f) && strcmp((char *)buf,"done\n"));
+				while(fgets((char *)buf,1023,f) && zcmp(buf,US "done\n"));
 			}
 		}
 	}

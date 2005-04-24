@@ -16,7 +16,6 @@
 #ifdef MOUSE_GPM
 #include <gpm.h>
 #endif
-#include <string.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -199,7 +198,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 
 #ifdef __MSDOS__
 	_fmode = O_BINARY;
-	strcpy(stdbuf, argv[0]);
+	zcpy(stdbuf, argv[0]);
 	joesep(stdbuf);
 	run = namprt(stdbuf);
 	rundir = dirprt(stdbuf);

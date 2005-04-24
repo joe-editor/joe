@@ -11,9 +11,6 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
 
 #include "b.h"
 #include "ublock.h"
@@ -373,7 +370,7 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 		/* Indent to left margin */
 		if (indents) {
 			binss(p, indents);
-			to += strlen((char *)indents);
+			to += zlen(indents);
 		} else
 			while (indent--) {
 				binsc(p, ' ');

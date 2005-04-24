@@ -35,7 +35,6 @@
 #endif
 
 #include <errno.h>
-#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -956,23 +955,23 @@ static unsigned char *getpty(int *ptyfd)
 
 	if (ptys)
 		for (fd = 0; ptys[fd]; ++fd) {
-			strcpy((char *)ttyname, (char *)ptydir);
-			strcat((char *)ttyname, (char  *)(ptys[fd]));
+			zcpy(ttyname, ptydir);
+			zcat(ttyname, ptys[fd]);
 			if ((*ptyfd = open((char *)ttyname, O_RDWR)) >= 0) {
 				ptys[fd][0] = 't';
-				strcpy((char *)ttyname, (char *)ttydir);
-				strcat((char *)ttyname, (char *)(ptys[fd]));
+				zcpy(ttyname, ttydir);
+				zcat(ttyname, ptys[fd]);
 				ptys[fd][0] = 'p';
 				x = open((char *)ttyname, O_RDWR);
 				if (x >= 0) {
 					close(x);
 					close(*ptyfd);
-					strcpy((char *)ttyname, (char *)ptydir);
-					strcat((char *)ttyname, (char *)(ptys[fd]));
+					zcpy(ttyname, ptydir);
+					zcat(ttyname, ptys[fd]);
 					*ptyfd = open((char *)ttyname, O_RDWR);
 					ptys[fd][0] = 't';
-					strcpy((char *)ttyname, (char *)ttydir);
-					strcat((char *)ttyname, (char *)(ptys[fd]));
+					zcpy(ttyname, ttydir);
+					zcat(ttyname, ptys[fd]);
 					ptys[fd][0] = 'p';
 					return ttyname;
 				} else
@@ -1169,7 +1168,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 
 				/* If shell didn't execute */
 				joe_snprintf_1((char *)buf,sizeof(buf),"Couldn't execute shell '%s'\n",cmd);
-				write(0,(char *)buf,strlen((char *)buf));
+				write(0,(char *)buf,zlen(buf));
 				sleep(1);
 			}
 

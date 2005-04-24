@@ -9,7 +9,6 @@
 #include "types.h"
 
 #include <stdio.h>
-#include <string.h>
 #include <math.h>
 #include <stdlib.h>
 
@@ -53,7 +52,7 @@ static struct var *get(unsigned char *str)
 	struct var *v;
 
 	for (v = vars; v; v = v->next) {
-		if (!strcmp(v->name, str)) {
+		if (!zcmp(v->name, str)) {
 			return v;
 		}
 	}
@@ -64,7 +63,7 @@ static struct var *get(unsigned char *str)
 	v->val = 0;
 	v->next = vars;
 	vars = v;
-	v->name = joe_strdup(str);
+	v->name = zdup(str);
 	return v;
 }
 
@@ -95,7 +94,7 @@ static double expr(int prec, int en,struct var **rtv)
 		}
 		c = *ptr;
 		*ptr = 0;
-		if (!strcmp(s,"joe")) {
+		if (!zcmp(s,US "joe")) {
 			*ptr = c;
 			v = 0;
 			x = 0.0;
@@ -133,39 +132,39 @@ static double expr(int prec, int en,struct var **rtv)
 		} else if (!en) {
 			v = 0;
 			x = 0.0;
-		} else if (!strcmp(s,"hex")) {
+		} else if (!zcmp(s,US "hex")) {
 			mode_hex = 1;
 			mode_eng = 0;
 			v = get(US "ans");
 			x = v->val;
-		} else if (!strcmp(s,"dec")) {
+		} else if (!zcmp(s,US "dec")) {
 			mode_hex = 0;
 			mode_eng = 0;
 			v = get(US "ans");
 			x = v->val;
-		} else if (!strcmp(s,"eng")) {
+		} else if (!zcmp(s,US "eng")) {
 			mode_hex = 0;
 			mode_eng = 1;
 			v = get(US "ans");
 			x = v->val;
-		} else if (!strcmp(s,"ins")) {
+		} else if (!zcmp(s,US "ins")) {
 			mode_ins = 1;
 			v = get(US "ans");
 			x = v->val;
-		} else if (!strcmp(s,"sum")) {
+		} else if (!zcmp(s,US "sum")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
 				merr = US "No numbers in block";
 			v = 0;
-		} else if (!strcmp(s,"cnt")) {
+		} else if (!zcmp(s,US "cnt")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
 				merr = US "No numbers in block";
 			v = 0;
 			x = cnt;
-		} else if (!strcmp(s,"avg")) {
+		} else if (!zcmp(s,US "avg")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
@@ -173,7 +172,7 @@ static double expr(int prec, int en,struct var **rtv)
 			v = 0;
 			if (cnt)
 				x /= (double)cnt;
-		} else if (!strcmp(s,"dev")) {
+		} else if (!zcmp(s,US "dev")) {
 			double xsq;
 			double avg;
 			int cnt = blksum(&x, &xsq);
@@ -184,7 +183,7 @@ static double expr(int prec, int en,struct var **rtv)
 				avg = x / (double)cnt;
 				x = sqrt(xsq + (double)cnt*avg*avg - 2.0*avg*x);
 			}
-		} else if (!strcmp(s,"eval")) {
+		} else if (!zcmp(s,US "eval")) {
 			unsigned char *save = ptr;
 			unsigned char *e = blkget();
 			if (e) {
@@ -522,7 +521,7 @@ static int domath(BW *bw, unsigned char *s, void *object, int *notify)
 		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
 	if (bw->parent->watom->what != TYPETW || mode_ins) {
 		binsm(bw->cursor, sz(msgbuf));
-		pfwrd(bw->cursor, strlen((char *)msgbuf));
+		pfwrd(bw->cursor, zlen(msgbuf));
 		bw->cursor->xcol = piscol(bw->cursor);
 	} else {
 		msgnw(bw->parent, msgbuf);

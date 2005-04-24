@@ -45,7 +45,7 @@ void inserr(unsigned char *name, long int where, long int n, int bol)
 
 	if (name) {
 		for (e = errors.link.next; e != &errors; e = e->link.next) {
-			if (!strcmp(e->file, name)) {
+			if (!zcmp(e->file, name)) {
 				if (e->line > where)
 					e->line += n;
 				else if (e->line == where && bol)
@@ -61,7 +61,7 @@ void delerr(unsigned char *name, long int where, long int n)
 
 	if (name) {
 		for (e = errors.link.next; e != &errors; e = e->link.next) {
-			if (!strcmp(e->file, name)) {
+			if (!zcmp(e->file, name)) {
 				if (e->line > where + n)
 					e->line -= n;
 				else if (e->line > where)
@@ -79,7 +79,7 @@ void abrerr(unsigned char *name)
 
 	if (name)
 		for (e = errors.link.next; e != &errors; e = e->link.next)
-			if (!strcmp(e->file, name))
+			if (!zcmp(e->file, name))
 				e->line = e->org;
 }
 
@@ -91,7 +91,7 @@ void saverr(unsigned char *name)
 
 	if (name)
 		for (e = errors.link.next; e != &errors; e = e->link.next)
-			if (!strcmp(e->file, name))
+			if (!zcmp(e->file, name))
 				e->org = e->line;
 }
 
@@ -283,7 +283,7 @@ int uparserr(BW *bw)
 int jump_to_file_line(BW *bw,unsigned char *file,int line,unsigned char *msg)
 {
 	int omid;
-	if (!bw->b->name || strcmp(file, bw->b->name)) {
+	if (!bw->b->name || zcmp(file, bw->b->name)) {
 		if (doswitch(bw, vsdup(file), NULL, NULL))
 			return -1;
 		bw = (BW *) maint->curwin->object;
@@ -304,7 +304,7 @@ unsigned char *srcherr(BW *bw,unsigned char *file,long line)
 {
 	ERROR *p;
 	for (p = errors.link.next; p != &errors; p=p->link.next)
-		if (!strcmp(p->file,file) && p->org==line) {
+		if (!zcmp(p->file,file) && p->org==line) {
 			errptr = p;
 			setline(errbuf, errptr->src);
 			return errptr->msg;

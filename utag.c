@@ -52,7 +52,7 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 		for (x = 0; buf[x] && buf[x] != ' ' && buf[x] != '\t'; ++x) ;
 		c = buf[x];
 		buf[x] = 0;
-		if (!strcmp(s, buf) || (t && !strcmp(t, buf))) {
+		if (!zcmp(s, buf) || (t && !zcmp(t, buf))) {
 			buf[x] = c;
 			while (buf[x] == ' ' || buf[x] == '\t') {
 				++x;
@@ -147,7 +147,7 @@ static unsigned char **get_tag_list()
 				}
 			}
 			if (pos > 0) {
-				strncpy(tag, buf, pos);
+				zncpy(tag, buf, pos);
 				tag[pos] = '\0';
 			}
 			lst = vaadd(lst, vsncpy(NULL, 0, sz(tag)));

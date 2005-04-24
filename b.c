@@ -18,7 +18,6 @@
 #endif
 #include <errno.h>
 #include <stdlib.h>
-#include <string.h>
 #ifdef HAVE_TIME_H
 #include <time.h>
 #endif
@@ -1969,7 +1968,7 @@ P *binsc(P *p, int c)
 /* insert zero-terminated string 's' at 'p' */
 P *binss(P *p, unsigned char *s)
 {
-	return binsm(p, s, strlen((char *)s));
+	return binsm(p, s, zlen(s));
 }
 
 /* Read 'size' bytes from file or stream.  Stops and returns amnt. read
@@ -2145,7 +2144,7 @@ B *bload(unsigned char *s)
 		fi = popen((char *)(n + 1), "r");
 	} else
 #endif
-	if (!strcmp(n, "-"))
+	if (!zcmp(n, US "-"))
 		fi = stdin;
 	else {
 		fi = fopen((char *)n, "r+");
@@ -2207,7 +2206,7 @@ err:
 		pclose(fi);
 	else
 #endif
-	if (strcmp(n, "-"))
+	if (zcmp(n, US "-"))
 		fclose(fi);
 
 opnerr:
@@ -2217,13 +2216,13 @@ opnerr:
 	}
 
 	/* Set name */
-	b->name = joesep(joe_strdup(s));
+	b->name = joesep(zdup(s));
 
 	/* Set flags */
 	if (error || s[0] == '!' || skip || amnt != MAXLONG) {
 		b->backup = 1;
 		b->changed = 0;
-	} else if (!strcmp(n, "-")) {
+	} else if (!zcmp(n, US "-")) {
 		b->backup = 1;
 		b->changed = 1;
 	} else {
@@ -2297,7 +2296,7 @@ B *bfind(unsigned char *s)
 		return b;
 	}
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->name && !strcmp(s, b->name)) {
+		if (b->name && !zcmp(s, b->name)) {
 			if (!b->orphan)
 				++b->count;
 			else
@@ -2326,7 +2325,7 @@ B *bfind_scratch(unsigned char *s)
 		return b;
 	}
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->name && !strcmp(s, b->name)) {
+		if (b->name && !zcmp(s, b->name)) {
 			if (!b->orphan)
 				++b->count;
 			else
@@ -2341,7 +2340,7 @@ B *bfind_scratch(unsigned char *s)
 	b->internal = 0;
 	b->rdonly = b->o.readonly;
 	b->er = error;
-	b->name = joe_strdup(s);
+	b->name = zdup(s);
 	b->scratch = 1;
 	return b;
 }
@@ -2362,7 +2361,7 @@ B *bcheck_loaded(unsigned char *s)
 		return NULL;
 	}
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->name && !strcmp(s, b->name)) {
+		if (b->name && !zcmp(s, b->name)) {
 			return b;
 		}
 
@@ -2467,7 +2466,7 @@ int bsave(P *p, unsigned char *s, long int size, int flag)
 #endif
 	if (s[0] == '>' && s[1] == '>')
 		f = fopen((char *)(s + 2), "a");
-	else if (!strcmp(s, "-")) {
+	else if (!zcmp(s, US "-")) {
 		nescape(maint->t);
 		ttclsn();
 		f = stdout;
@@ -2542,20 +2541,20 @@ err:
 		pclose(f);
 	else
 #endif
-	if (strcmp(s, "-"))
+	if (zcmp(s, US "-"))
 		fclose(f);
 	else
 		fflush(f);
 
 	/* Update orignal date of file */
 	/* If it's not named, it's about to be */
-	if (!error && norm && flag && (!p->b->name || !strcmp((char *)s,p->b->name))) {
+	if (!error && norm && flag && (!p->b->name || !zcmp(s,p->b->name))) {
 		if (!stat((char *)s,&sbuf))
 			p->b->mod_time = sbuf.st_mtime;
 	}
 
 opnerr:
-	if (s[0] == '!' || !strcmp(s, "-")) {
+	if (s[0] == '!' || !zcmp(s,US "-")) {
 		ttopnn();
 		nreturn(maint->t);
 	}
@@ -2731,7 +2730,7 @@ void unlock_it(unsigned char *path)
 
 int plain_file(B *b)
 {
-	if (b->name && strcmp(b->name,"-") && b->name[0]!='!' && b->name[0]!='>' &&
+	if (b->name && zcmp(b->name,US "-") && b->name[0]!='!' && b->name[0]!='>' &&
 	    !b->scratch)
 		return 1;
 	else

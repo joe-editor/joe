@@ -8,7 +8,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "va.h"
 #include "utils.h"
@@ -1052,7 +1051,7 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 	int x;
 	struct charmap *map;
 	map = joe_malloc(sizeof(struct charmap));
-	map->name = joe_strdup(builtin->name);
+	map->name = zdup(builtin->name);
 	map->type = 0;
 	map->is_punct = byte_ispunct;
 	map->is_print = byte_isprint;
@@ -1184,7 +1183,7 @@ struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 
 	b = joe_malloc(sizeof(struct builtin_charmap));
 
-	b->name = joe_strdup(name);
+	b->name = zdup(name);
 
 	for (x=0; x!=256; ++x)
 		b->to_uni[x]= -1;
@@ -1195,17 +1194,17 @@ struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 		int c;
 		parse_ws(&p, comment_char);
 		parse_tows(&p, bf1);
-		if (!strcmp((char *)bf1,"<comment_char>")) {
+		if (!zcmp(bf1,US "<comment_char>")) {
 			parse_ws(&p, comment_char);
 			parse_tows(&p, bf1);
 			comment_char = bf1[0];
-		} else if (!strcmp((char *)bf1,"<escape_char>")) {
+		} else if (!zcmp(bf1,US "<escape_char>")) {
 			parse_ws(&p, comment_char);
 			parse_tows(&p, bf1);
 			esc_char = bf1[0];
-		} else if (!strcmp((char *)bf1,"CHARMAP")) {
+		} else if (!zcmp(bf1,US "CHARMAP")) {
 			in_map = 1;
-		} else if (!strcmp((char *)bf1,"END")) {
+		} else if (!zcmp(bf1,US "END")) {
 			in_map = 0;
 		} else if (in_map && bf1[0]=='<' && bf1[1]=='U') {
 			int uni;
@@ -1373,9 +1372,9 @@ unsigned char **get_encodings()
 		joe_snprintf_1((char *)buf,sizeof(buf),"%s/.joe/charmaps",p);
 		if (!chpwd(buf) && (t = rexpnd(US "*"))) {
 			for (x = 0; x != aLEN(t); ++x)
-				if (strcmp(t[x],"..")) {
+				if (zcmp(t[x],US "..")) {
 					for (y = 0; y != aLEN(encodings); ++y)
-						if (!strcmp(t[x],encodings[y]))
+						if (!zcmp(t[x],encodings[y]))
 							break;
 					if (y == aLEN(encodings)) {
 						r = vsncpy(NULL,0,sv(t[x]));
@@ -1388,9 +1387,9 @@ unsigned char **get_encodings()
 
 	if (!chpwd(US (JOERC "charmaps")) && (t = rexpnd(US "*"))) {
 		for (x = 0; x != aLEN(t); ++x)
-			if (strcmp(t[x],"..")) {
+			if (zcmp(t[x],US "..")) {
 				for (y = 0; y != aLEN(encodings); ++y)
-					if (!strcmp(t[x],encodings[y]))
+					if (!zcmp(t[x],encodings[y]))
 						break;
 				if (y == aLEN(encodings)) {
 					r = vsncpy(NULL,0,sv(t[x]));

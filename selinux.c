@@ -44,7 +44,7 @@ copy_security_context(const char *from_file, const char *to_file)
 		return 1;
 	}
 
-	if (strcmp(from_context, to_context) != 0) {
+	if (zcmp(from_context, to_context) != 0) {
 		if (setfilecon(to_file, from_context) < 0) {
 			error(0, errno,
 			      "Could not set security context for %s",

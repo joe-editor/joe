@@ -592,11 +592,11 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	if (srch->replace) {
 		if (pico && globalsrch && globalsrch->replacement) {
 			joe_snprintf_1((char *)bf1,30,"%s",globalsrch->replacement);
-			if (strlen((char *)globalsrch->replacement)>29)
-				strcat((char *)bf1,"$");
+			if (zlen(globalsrch->replacement)>29)
+				zcat(bf1,US "$");
 			joe_snprintf_1((char *)buf,sizeof(buf),"Replace with (^C to abort) [%s]: ",bf1);
 		} else
-			strcpy((char *)buf, "Replace with (^C to abort): ");
+			zcpy(buf, US "Replace with (^C to abort): ");
 		if (wmkpw(bw->parent, buf, &replhist, set_replace, srchstr, pfabort, srch_cmplt, srch, notify, bw->b->o.charmap, 0))
 			return 0;
 		else
@@ -674,11 +674,11 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 	srch->wrap_p->owner = &srch->wrap_p;
 	if (pico && globalsrch && globalsrch->pattern) {
 		joe_snprintf_1((char *)bf1,30,"%s",globalsrch->pattern);
-		if (strlen((char *)globalsrch->pattern)>29)
-			strcat((char *)bf1,"$");
+		if (zlen(globalsrch->pattern)>29)
+			zcat(bf1,US "$");
 		joe_snprintf_1((char *)buf,sizeof(buf),"Find (^C to abort) [%s]: ",bf1);
 	} else
-		strcpy((char *)buf, "Find (^C to abort): ");
+		zcpy(buf, US "Find (^C to abort): ");
 	if (pbw=wmkpw(bw->parent, buf, &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap, 0)) {
 		if (hint) {
 			binss(pbw->cursor, hint);
@@ -1024,7 +1024,7 @@ void load_srch(FILE *f)
 	int ignore = 0;
 	int replace = 0;
 	int block_restrict = 0;
-	while(fgets((char *)buf,1023,f) && strcmp((char *)buf,"done\n")) {
+	while(fgets((char *)buf,1023,f) && zcmp(buf,US "done\n")) {
 		unsigned char *p=buf;
 		parse_ws(&p,'#');
 		if(!parse_kw(&p,US "pattern")) {

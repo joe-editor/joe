@@ -8,7 +8,6 @@
 #include "config.h"
 #include "types.h"
 
-#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -282,7 +281,7 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	pw->abrt = abrt;
 	pw->tab = tab;
 	pw->object = object;
-	pw->prompt = joe_strdup(prompt);
+	pw->prompt = zdup(prompt);
 	pw->promptlen = fmtlen(prompt);
 	pw->promptofst = 0;
 	pw->pfunc = func;

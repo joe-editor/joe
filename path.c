@@ -17,7 +17,6 @@
 #include <sys/stat.h>
 #endif
 #include <fcntl.h>
-#include <string.h>
 #include <unistd.h>
 #ifdef HAVE_PATHS_H
 #  include <paths.h>	/* for _PATH_TMP */
@@ -29,6 +28,7 @@
 #include <stdlib.h>
 #endif
 
+#include "utils.h"
 #include "path.h"
 #include "vs.h"
 #include "va.h"
@@ -112,10 +112,10 @@ unsigned char *namepart(unsigned char *tmp, unsigned char *path)
 	unsigned char *z;
 
 	skip_drive_letter(path);
-	z = path + strlen((char *)path);
+	z = path + zlen(path);
 	while ((z != path) && (z[-1] != '/'))
 		--z;
-	return (unsigned char *)strcpy((char *)tmp, (char *)z);
+	return zcpy(tmp, z);
 }
 /********************************************************************/
 unsigned char *dirprt(unsigned char *path)
@@ -211,7 +211,7 @@ unsigned char *mktmp(unsigned char *where)
 	if (!where)
 		where = US _PATH_TMP;
 
-	namesize = strlen((char *)where) + 16;
+	namesize = zlen(where) + 16;
 	name = vsmk(namesize);	/* [G.Ghibo'] we need to use vsmk() and not malloc() as
 				   area returned by mktmp() is destroyed later with
 				   vsrm(); */
@@ -337,7 +337,7 @@ struct direct *readdir()
 		dirstate = 1;
 	}
 
-	strcpy(direc.d_name, ffblk.ff_name);
+	zcpy(direc.d_name, ffblk.ff_name);
 	for (x = 0; direc.d_name[x]; ++x)
 		direc.d_name[x] = tolower(direc.d_name[x]);
 	return &direc;
@@ -391,8 +391,8 @@ int chpwd(unsigned char *path)
 	}
 	if (!path[0])
 		return 0;
-	strcpy(buf, path);
-	x = strlen(buf);
+	zcpy(buf, path);
+	x = zlen(buf);
 	while (x > 1) {
 		--x;
 		if ((buf[x] == '/') || (buf[x] == '\\'))
@@ -444,11 +444,11 @@ unsigned char *simplify_prefix(unsigned char *s)
 #endif
 
 	/* If current directory is prefixed with home directory, use ~... */
-	if (t && !strncmp((char *)s,(char *)t,strlen((char *)t)) && (!s[strlen((char *)t)] || s[strlen((char *)t)]=='/')) {
+	if (t && !strncmp((char *)s,(char *)t,zlen(t)) && (!s[zlen(t)] || s[zlen(t)]=='/')) {
 		n = vsncpy(NULL,0,sc("~/"));
 		/* If anything more than just the home directory, add it */
-		if (s[strlen((char *)t)]) {
-			n = vsncpy(sv(n),s+strlen((char *)t)+1,strlen((char *)(s+strlen((char *)t)+1)));
+		if (s[zlen(t)]) {
+			n = vsncpy(sv(n),s+zlen(t)+1,zlen(s+zlen(t)+1));
 		}
 	} else {
 		n = vsncpy(NULL,0,sz(s));

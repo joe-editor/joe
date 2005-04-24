@@ -218,7 +218,7 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 		unsigned char *orgpattern = tab->pattern;
 		unsigned char *e = endprt(tab->path);
 
-		/* if (!strcmp(tab->files[cursor], "..") && sLEN(e)
+		/* if (!zcmp(tab->files[cursor], US "..") && sLEN(e)
 		    && !(e[0] == '.' && e[1] == '.' && (!e[2] || e[2] == '/')))
 			tab->path = begprt(tab->path);
 		else */ {

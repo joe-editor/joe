@@ -1,6 +1,19 @@
 
 Short (infinite) list for 3.3:
 
+- test i18n in cygwin
+- better grep-find (trigger in ^KE)
+- reformat/reindent function on ^KJ
+- insert last word (last word typed/copied/etc.).
+- orthogonal jump
+- regex for compiler
+- safer hex edit mode
+- win32? DOS?
+- improve mnew/mold etc so we can gzip/gunzip files being
+  edited (maybe recursive call to file recognizer with .gz removed).
+- fix/check formatter for tex files
+- man page
+
 - cygwin- make sure we put files in the right place.
 - dynamic spell checking with highlighter- there should be a way
 - smart-end key

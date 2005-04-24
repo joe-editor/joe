@@ -8,7 +8,6 @@
 #include "config.h"
 #include "types.h"
 
-#include <string.h>
 
 #include "hash.h"
 #include "utils.h"
@@ -68,7 +67,7 @@ void *htfind(HASH *ht, unsigned char *name)
 	HENTRY *e;
 
 	for (e = ht->tab[hash(name) & ht->len]; e; e = e->next) {
-		if (!strcmp(e->name, name)) {
+		if (!zcmp(e->name, name)) {
 			return e->val;
 		}
 	}

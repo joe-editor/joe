@@ -241,14 +241,14 @@ static int backup(BW *bw)
 			joe_snprintf_1(name, sizeof(name), "%s", bw->b->name);
 		}
 
-		for (x = strlen(name); name[--x] != '.';) {
+		for (x = zlen(name); name[--x] != '.';) {
 			if (name[x] == '\\' || (name[x] == ':' && x == 1) || x == 0) {
-				x = strlen(name);
+				x = zlen(name);
 				break;
 			}
 		}
 
-		strcpy(name + x, ".bak");
+		zcpy(name + x, US ".bak");
 
 #else
 
@@ -365,8 +365,8 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 			bw->b->name = 0;
 		}
 		if (!bw->b->name && req->name[0]!='!' && req->name[0]!='>')
-			bw->b->name = joesep(joe_strdup(req->name));
-		if (bw->b->name && !strcmp(bw->b->name, req->name)) {
+			bw->b->name = joesep(zdup(req->name));
+		if (bw->b->name && !zcmp(bw->b->name, req->name)) {
 			bw_unlock(bw);
 			bw->b->changed = 0;
 			saverr(bw->b->name);
@@ -492,7 +492,7 @@ static int dosave1(BW *bw, unsigned char *s, struct savereq *req, int *notify)
 
 	if (s[0] != '!' && !(s[0] == '>' && s[1] == '>')) {
 		/* It's a normal file: not a pipe or append */
-		if (!bw->b->name || strcmp(s, bw->b->name)) {
+		if (!bw->b->name || zcmp(s, bw->b->name)) {
 			/* Newly named file or name is different than buffer */
 			f = open((char *)s, O_RDONLY);
 			if (f != -1) {

@@ -8,6 +8,7 @@
 #include "config.h"
 #include "types.h"
 
+#include <string.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -493,7 +494,7 @@ void load_yank(FILE *f)
 	UNDOREC *rec;
 	unsigned char buf[SMALL*4+80];
 	unsigned char bf[SMALL+1];
-	while(fgets((char *)buf,sizeof(buf)-1,f) && strcmp((char *)buf,"done\n")) {
+	while(fgets((char *)buf,sizeof(buf)-1,f) && zcmp(buf,US "done\n")) {
 		unsigned char *p = buf;
 		int len;
 		parse_ws(&p,'#');

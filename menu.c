@@ -8,7 +8,6 @@
 #include "config.h"
 #include "types.h"
 
-#include <string.h>
 
 #include "scrn.h"
 #include "utils.h"
@@ -61,7 +60,7 @@ static void menudisp(MENU *m)
 			         m->y + y,
 			         0,
 			         m->list[x + y*m->perline + m->top],
-			         strlen((char *)m->list[x + y*m->perline + m->top]),
+			         zlen(m->list[x + y*m->perline + m->top]),
 			         atr,
 			         m->width,
 			         0,NULL);
@@ -81,7 +80,7 @@ static void menudisp(MENU *m)
 		a += m->t->t->co;
 	}
 	m->parent->cury = (m->cursor - m->top) / m->perline;
-	col = txtwidth(m->list[m->cursor],strlen((char *)m->list[m->cursor]));
+	col = txtwidth(m->list[m->cursor],zlen(m->list[m->cursor]));
 	if (col < m->width)
 		m->parent->curx = ((m->cursor - m->top) % m->perline) * (m->width + 1) + col;
 	else
@@ -103,7 +102,7 @@ static int mlines(unsigned char **s, int w)
 	int perline;
 
 	for (x = 0, width = 0; s[x]; ++x) {
-		int d = txtwidth(s[x],strlen((char *)(s[x])));
+		int d = txtwidth(s[x],zlen(s[x]));
 		if (d > width)
 			width = d;
 	}
@@ -126,7 +125,7 @@ static void mconfig(MENU *m)
 
 		m->top = 0;
 		for (x = 0, m->width = 0; m->list[x]; ++x) {
-			int d = txtwidth(m->list[x],strlen((char *)(m->list[x])));
+			int d = txtwidth(m->list[x],zlen(m->list[x]));
 			if (d > m->width)
 				m->width = d;
 		}
