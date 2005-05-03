@@ -570,6 +570,17 @@
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
 
+*.cc
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+
 *.c++
 -autoindent
 -syntax c
