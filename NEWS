@@ -19,6 +19,8 @@ JOE 3.3
 - Grep find: use ESC g to grep.  Then use ESC space to jump to
   to indicated file/line.
 
+- Cygwin setup.exe support
+
 JOE 3.2
 
 - A Perforce SCM "p4 edit" macro has been supplied (along with the hooks
