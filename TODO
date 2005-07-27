@@ -1,5 +1,20 @@
 
-Short (infinite) list for 3.3:
+Short (infinite) list for 3.4:
+
+-smart bs/tab is driving me up the wall:
+
+       if (sdfjklhsdfkjhsdfjkh
+           sdflks dfkjshdf sd
+           sdfkjhsdkjfhsdkhsd)
+           . <- thinks this is indentation point.
+
+-tab should default to tab?
+
+- improve mnew/mold etc so we can gzip/gunzip files being
+  edited (maybe recursive call to file recognizer with .gz removed).
+
+-Modify other window first needs to go away
+
 
 - test i18n in cygwin
 - better grep-find (trigger in ^KE)
@@ -9,8 +24,6 @@ Short (infinite) list for 3.3:
 - regex for compiler
 - safer hex edit mode
 - win32? DOS?
-- improve mnew/mold etc so we can gzip/gunzip files being
-  edited (maybe recursive call to file recognizer with .gz removed).
 - fix/check formatter for tex files
 - man page
 

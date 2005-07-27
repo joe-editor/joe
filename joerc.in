@@ -336,6 +336,11 @@
 +\[1-9]\+\[0-9]\[cda]
 -syntax diff
 
+ Troff
+*.1
+-wordwrap
+-syntax troff
+
  TeX
 *.tex
 -wordwrap
