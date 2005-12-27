@@ -1,3 +1,54 @@
+fixed:
+ can't enter empty string on replacement.
+
+ bufed now prompts with completion, like all other file name commands.
+
+ jump by 5 to 10 cols on left h-scroll
+
+Bugs
+
+1248928	Incorrect syntax highlight of PHP variables	  2005-07-31 12:23	5	nobody	src
+
+1242059	coredump in syntax.c	  2005-07-20 22:10	5	nobody	mpech
+
+1240012	WISHLIST: hscroll by 5 columns when backspacing	* 2005-07-17 19:06	5	nobody	nobody
+
+1232734	Memory Access Failure	* 2005-07-05 06:05	5	nobody	nobody
+
+1231442	joe editor can't handle pseudo-terminals	* 2005-07-02 03:52	5	nobody	tomknight
+
+1227068	Can't input character '&#283;'	* 2005-06-24 08:02	5	nobody	nobody
+
+1221524	first ^L	* 2005-06-15 13:40	5	nobody	egmont
+
+1221499	sysconf_joedir vs sysconf_docdir	* 2005-06-15 13:19	5	nobody	egmont
+
+1219820	backslash not shown in find pattern	* 2005-06-13 09:47	5	nobody	egmont
+
+1218729	diff syntax highlight bugs	* 2005-06-11 05:25	5	nobody	egmont
+
+1218717	Could not (create) lock	* 2005-06-11 04:55	5	nobody	egmont
+
+1218716	inconsistency in non-boolean settings	* 2005-06-11 04:48	5	nobody	egmont
+
+1218708	how to display undisplayable or invalid characters	* 2005-06-11 04:12	5	nobody	egmont
+
+1218701	report character offset	* 2005-06-11 03:59	5	nobody	egmont
+
+1218700	php syntax highlight with black background	* 2005-06-11 03:50	5	nobody	egmont
+
+1218695	accents in the top status bar	* 2005-06-11 03:28	5	nobody	egmont
+
+1218692	attempt to autodetect file encoding	* 2005-06-11 03:26	5	nobody	egmont
+
+1218686	hex mode and syntax highlighting	* 2005-06-11 03:10	5	nobody	egmont
+
+1218685	hex mode and utf-8	* 2005-06-11 03:08	5	nobody	egmont
+
+1218674	percent overflow	* 2005-06-11 02:11	5	nobody	egmont
+
+1211243	segfault for long $HOME	* 2005-05-30 03:03	5	nobody	nobody
+
 
 Short (infinite) list for 3.4:
 

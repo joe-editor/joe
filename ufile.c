@@ -1035,6 +1035,8 @@ int ulose(BW *bw)
 
 /* Buffer list */
 
+#ifdef junk
+
 static int dobuf(MENU *m, int x, unsigned char **s)
 {
 	unsigned char *name;
@@ -1065,6 +1067,45 @@ int ubufed(BW *bw)
 		return -1;
 	}
 }
+
+#endif
+
+unsigned char **sbufs = NULL;	/* Array of command names */
+
+static int bufedcmplt(BW *bw)
+{
+	if (sbufs) {
+		varm(sbufs);
+		sbufs = 0;
+	}
+	if (!sbufs)
+		sbufs = getbufs();
+	return simple_cmplt(bw,sbufs);
+}
+
+static int dobufed(BW *bw, unsigned char *s, void *object, int *notify)
+{
+	BW *target_bw = bw->parent->win->object;
+/* not understanding this...
+	int *notify = bw->parent->notify;
+
+	bw->parent->notify = 0;
+	wabort(bw->parent);
+*/
+	return dorepl(bw, s, NULL, notify);
+}
+
+B *bufhist = NULL;
+
+int ubufed(BW *bw)
+{
+	if (wmkpw(bw->parent, US "Name of buffer to edit (^C to abort): ", &bufhist, dobufed, US "bufed", NULL, bufedcmplt, NULL, NULL, locale_map, 0)) {
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
 
 /* Query save loop */
 

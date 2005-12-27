@@ -1,3 +1,15 @@
+Tue Dec 27 16:56:44 EST 2005
+
+	Allow entry of replacement blank replacement strings when search
+	prompting is enabled (basically eliminate automatic replace-string
+	prompting).
+
+	"bufed" now works like other file name commands (it prompts for a
+	buffer name, and allows completion).
+
+	H-scroll jumps left ~ 10 cols (this needs more work: it should be an
+	option).
+
 Tue May 17 18:20:02 EDT 2005
 
 	Release JOE 3.3

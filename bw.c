@@ -171,9 +171,17 @@ void bwfllwt(BW *w)
 
 /* Adjust column */
 	if (w->cursor->xcol < w->offset) {
-		w->offset = w->cursor->xcol;
+		long target = w->cursor->xcol;
+		if (target < 5)
+			target = 0;
+		else {
+			target -= 5;
+			target -= (target % 5);
+		}
+		w->offset = target;
 		msetI(w->t->t->updtab + w->y, 1, w->h);
-	} else if (w->cursor->xcol >= w->offset + w->w) {
+	}
+	if (w->cursor->xcol >= w->offset + w->w) {
 		w->offset = w->cursor->xcol - (w->w - 1);
 		msetI(w->t->t->updtab + w->y, 1, w->h);
 	}

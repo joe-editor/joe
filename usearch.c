@@ -528,8 +528,10 @@ static int set_replace(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	if (s[0] || !globalsrch || !pico)
 		srch->replacement = s;
 	else {
-		vsrm(s);
-		srch->replacement = vsdup(globalsrch->replacement);
+		/* Use previous string: this prevents replace with empty string */
+		/* vsrm(s);
+		srch->replacement = vsdup(globalsrch->replacement); */
+		srch->replacement = s;
 	}
 	return dopfnext(bw, setmark(srch), notify);
 }
@@ -590,12 +592,12 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	}
 	vsrm(s);
 	if (srch->replace) {
-		if (pico && globalsrch && globalsrch->replacement) {
+		/* if (pico && globalsrch && globalsrch->replacement) {
 			joe_snprintf_1((char *)bf1,30,"%s",globalsrch->replacement);
 			if (zlen(globalsrch->replacement)>29)
 				zcat(bf1,US "$");
 			joe_snprintf_1((char *)buf,sizeof(buf),"Replace with (^C to abort) [%s]: ",bf1);
-		} else
+		} else */
 			zcpy(buf, US "Replace with (^C to abort): ");
 		if (wmkpw(bw->parent, buf, &replhist, set_replace, srchstr, pfabort, srch_cmplt, srch, notify, bw->b->o.charmap, 0))
 			return 0;
