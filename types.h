@@ -208,6 +208,7 @@ struct buffer {
 	int	er;		/* Error code when file was loaded */
 	pid_t	pid;		/* Process id */
 	int	out;		/* fd to write to process */
+	struct lattr_db *db;	/* line attribute database */
 };
 
 
@@ -681,5 +682,7 @@ struct vfile {
 	int	left;		/* Space left in bufp */
 	int	lv;		/* Amount of append space at end of buffer */
 };
+
+#include "lattr.h"
 
 #endif

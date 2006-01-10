@@ -239,6 +239,7 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	enquef(B, link, &bufs, b);
 	pcoalesce(b->bof);
 	pcoalesce(b->eof);
+	b->db = mk_lattr_db();
 	return b;
 }
 
@@ -270,6 +271,7 @@ void brm(B *b)
 		if (b->name)
 			joe_free(b->name);
 		demote(B, link, &frebufs, b);
+		rm_lattr_db(b->db);
 	}
 }
 
@@ -957,10 +959,12 @@ P *pline(P *p, long line)
 		pset(p, p->b->eof);
 		return p;
 	}
-	if (line < labs(p->line - line))
+	if (line < labs(p->line - line)) {
 		pset(p, p->b->bof);
-	if (labs(p->b->eof->line - line) < labs(p->line - line))
+	}
+	if (labs(p->b->eof->line - line) < labs(p->line - line)) {
 		pset(p, p->b->eof);
+	}
 	if (p->line == line) {
 		p_goto_bol(p);
 		return p;
@@ -1702,7 +1706,7 @@ static B *bcut(P *from, P *to)
 
 	if (bofmove)
 		pset(from->b->bof, from);
-	if (nlines && !pisbol(from)) {
+	if (!pisbol(from)) {
 		scrdel(from->b, from->line, nlines, 1);
 		delerr(from->b->name, from->line, nlines);
 	} else {
@@ -1867,7 +1871,7 @@ static void fixupins(P *p, long amnt, long nlines, H *hdr, int hdramnt)
 {
 	P *pp;
 
-	if (nlines && !pisbol(p))
+	if (!pisbol(p))
 		scrins(p->b, p->line, nlines, 1);
 	else
 		scrins(p->b, p->line, nlines, 0);

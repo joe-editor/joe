@@ -201,8 +201,34 @@ void bwfllw(BW *w)
    If the state is not known, it is computed and the state for all
    of the remaining lines of the window are also recalculated. */
 
-HIGHLIGHT_STATE get_highlight_state(BW *w,int line)
+HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 {
+	P *tmp = 0;
+	HIGHLIGHT_STATE state;
+	long ln;
+
+	if(!w->o.highlight || !w->o.syntax) {
+		invalidate_state(&state);
+		return state;
+	}
+
+
+	ln = line;
+
+	lattr_get(w->b->db, &ln, &state);
+
+	if (ln != line) {
+		tmp = pdup(p);
+		pline(tmp, ln);
+		while (tmp->line < line && !piseof(tmp)) {
+			state = parse(w->o.syntax, tmp, state);
+		}
+		if (!piseof(tmp))
+			lattr_set(w->b->db, line, state);
+	}
+	return state;
+
+#ifdef junk
 	P *tmp = 0;
 	HIGHLIGHT_STATE state;
 
@@ -261,6 +287,7 @@ HIGHLIGHT_STATE get_highlight_state(BW *w,int line)
 	/* Return state of requested line */
 	y = line - w->top->line + w->y;
 	return w->parent->t->t->syntab[y];
+#endif
 }
 
 /* Scroll a buffer window after an insert occured.  'flg' is set to 1 if
@@ -270,6 +297,19 @@ HIGHLIGHT_STATE get_highlight_state(BW *w,int line)
 void bwins(BW *w, long int l, long int n, int flg)
 {
 	int q;
+
+	/* If highlighting is enabled... */
+	if (w->o.highlight && w->o.syntax) {
+		lattr_cut(w->b->db, l + 1);
+		if (l <= w->top->line)
+			msetI(w->t->t->updtab + w->y, 1, w->h);
+		else if (l < w->top->line + w->h)
+			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, w->h - (int) (l - w->top->line));
+	}
+
+	if (!n)
+		return;
+
 	if (l + flg + n < w->top->line + w->h && l + flg >= w->top->line && l + flg <= w->b->eof->line) {
 		if (flg)
 			w->t->t->sary[w->y + l - w->top->line] = w->t->t->li;
@@ -292,6 +332,18 @@ void bwins(BW *w, long int l, long int n, int flg)
 
 void bwdel(BW *w, long int l, long int n, int flg)
 {
+	/* If highlighting is enabled... */
+	if (w->o.highlight && w->o.syntax) {
+		lattr_cut(w->b->db, l + 1);
+		if (l <= w->top->line)
+			msetI(w->t->t->updtab + w->y, 1, w->h);
+		else if (l < w->top->line + w->h)
+			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, w->h - (int) (l - w->top->line));
+	}
+
+	if (!n)
+		return;
+
 /* Update the line where the delete began */
 	if (l < w->top->line + w->h && l >= w->top->line)
 		w->t->t->updtab[w->y + l - w->top->line] = 1;
@@ -1005,11 +1057,11 @@ void bwgen(BW *w, int linums)
 			} */
 			if (dosquare)
 				if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
-					t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y),w);
+					t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,p,w->top->line+y-w->y),w);
 				else
-					t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,w->top->line+y-w->y),w);
+					t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,p,w->top->line+y-w->y),w);
 			else
-				t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y),w);
+				t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,p,w->top->line+y-w->y),w);
 		}
 	}
 
@@ -1035,11 +1087,11 @@ void bwgen(BW *w, int linums)
 			} */
 			if (dosquare)
 				if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
-					t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y),w);
+					t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,p,w->top->line+y-w->y),w);
 				else
-					t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,w->top->line+y-w->y),w);
+					t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,p,w->top->line+y-w->y),w);
 			else
-				t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,w->top->line+y-w->y),w);
+				t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,p,w->top->line+y-w->y),w);
 		}
 	}
 	prm(q);

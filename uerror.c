@@ -43,6 +43,9 @@ void inserr(unsigned char *name, long int where, long int n, int bol)
 {
 	ERROR *e;
 
+	if (!n)
+		return;
+
 	if (name) {
 		for (e = errors.link.next; e != &errors; e = e->link.next) {
 			if (!zcmp(e->file, name)) {
@@ -58,6 +61,9 @@ void inserr(unsigned char *name, long int where, long int n, int bol)
 void delerr(unsigned char *name, long int where, long int n)
 {
 	ERROR *e;
+
+	if (!n)
+		return;
 
 	if (name) {
 		for (e = errors.link.next; e != &errors; e = e->link.next) {
