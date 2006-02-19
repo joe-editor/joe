@@ -341,12 +341,13 @@ void bwdel(BW *w, long int l, long int n, int flg)
 			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, w->h - (int) (l - w->top->line));
 	}
 
-	if (!n)
-		return;
-
 /* Update the line where the delete began */
 	if (l < w->top->line + w->h && l >= w->top->line)
 		w->t->t->updtab[w->y + l - w->top->line] = 1;
+
+/* Just a single line? */
+	if (!n)
+		return;
 
 /* Update highlight for line after first one which changed */
 	if ((l+1) < w->top->line + w->h && (l+1) >= w->top->line) {

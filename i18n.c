@@ -13,6 +13,7 @@
 
 #include "charmap.h"
 #include "utf8.h"
+#include "utils.h"
 #include "i18n.h"
 
 /*
