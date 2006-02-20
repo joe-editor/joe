@@ -1,3 +1,11 @@
+Sun Feb 19 22:34:20 EST 2006
+
+	Fix some bugs on itanium: call to joe_malloc was return a (int) and
+then got converted to a pointer.  Likewise with things in termcap.c which
+needed term.h and curses.h.
+
+	Improved speed of highlighting.
+
 Tue Dec 27 16:56:44 EST 2005
 
 	Allow entry of replacement blank replacement strings when search

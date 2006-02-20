@@ -1,3 +1,8 @@
+performace:
+ new ltree.c?
+ getcontext causes huge cpu usage for very large functions (xp_useq.v for
+example).
+
 fixed:
  can't enter empty string on replacement.
 

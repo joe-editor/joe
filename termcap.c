@@ -9,18 +9,31 @@
 #include "types.h"
 
 #include <stdio.h>
+
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
+
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
 #endif
+
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+
 #ifdef TERMINFO
+
+/* Fixes for itanium */
+
 #ifdef HAVE_TERM_H
+#include <term.h>
 #endif
+
+#ifdef HAVE_CURSES_H
+#include <curses.h>
+#endif
+
 #endif
 
 #include "blocks.h"
