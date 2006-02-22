@@ -208,7 +208,6 @@ struct buffer {
 	int	er;		/* Error code when file was loaded */
 	pid_t	pid;		/* Process id */
 	int	out;		/* fd to write to process */
-	struct lattr_db *db;	/* line attribute database */
 };
 
 
@@ -347,6 +346,7 @@ struct bw {
 
 	int	linums;
 	int	top_changed;	/* Top changed */
+	struct lattr_db *db;	/* line attribute database */
 };
 
 struct menu {

@@ -239,7 +239,6 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	enquef(B, link, &bufs, b);
 	pcoalesce(b->bof);
 	pcoalesce(b->eof);
-	b->db = mk_lattr_db();
 	return b;
 }
 
@@ -271,7 +270,6 @@ void brm(B *b)
 		if (b->name)
 			joe_free(b->name);
 		demote(B, link, &frebufs, b);
-		rm_lattr_db(b->db);
 	}
 }
 

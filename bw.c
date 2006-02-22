@@ -215,7 +215,7 @@ HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 
 	ln = line;
 
-	lattr_get(w->b->db, &ln, &state);
+	lattr_get(w->db, &ln, &state);
 
 	if (ln != line) {
 		tmp = pdup(p);
@@ -224,7 +224,7 @@ HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 			state = parse(w->o.syntax, tmp, state);
 		}
 		if (!piseof(tmp))
-			lattr_set(w->b->db, line, state);
+			lattr_set(w->db, line, state);
 	}
 	return state;
 
@@ -300,30 +300,35 @@ void bwins(BW *w, long int l, long int n, int flg)
 
 	/* If highlighting is enabled... */
 	if (w->o.highlight && w->o.syntax) {
-		lattr_cut(w->b->db, l + 1);
-		if (l <= w->top->line)
+		/* Invalidate cache */
+		lattr_cut(w->db, l + 1);
+		/* Force updates */
+		if (l < w->top->line) {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
-		else if (l < w->top->line + w->h)
-			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, w->h - (int) (l - w->top->line));
+			for (q = 0; q != w->h; ++q)
+				invalidate_state(w->t->t->syntab + w->y + q);
+		} else if ((l + 1) < w->top->line + w->h) {
+			int start = l + 1 - w->top->line;
+			int size = w->h - start;
+			msetI(w->t->t->updtab + w->y + start, 1, size);
+			for (q = 0; q != size; ++q)
+				invalidate_state(w->t->t->syntab + w->y + start + q);
+		}
 	}
 
-	if (!n)
-		return;
-
+	/* Scroll */
 	if (l + flg + n < w->top->line + w->h && l + flg >= w->top->line && l + flg <= w->b->eof->line) {
 		if (flg)
 			w->t->t->sary[w->y + l - w->top->line] = w->t->t->li;
 		nscrldn(w->t->t, (int) (w->y + l + flg - w->top->line), w->y + w->h, (int) n);
 	}
+
+	/* Force update of lines in opened hole */
 	if (l < w->top->line + w->h && l >= w->top->line) {
 		if (n >= w->h - (l - w->top->line)) {
 			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, w->h - (int) (l - w->top->line));
-			for(q=0; q!=w->h - (int)(l - w->top->line); ++q)
-				invalidate_state(w->t->t->syntab + w->y + l - w->top->line + q);
 		} else {
 			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, (int) n + 1);
-			for(q=0; q!=n+1; ++q)
-				invalidate_state(w->t->t->syntab + w->y + l - w->top->line + q);
 		}
 	}
 }
@@ -332,30 +337,29 @@ void bwins(BW *w, long int l, long int n, int flg)
 
 void bwdel(BW *w, long int l, long int n, int flg)
 {
+	int q;
+
 	/* If highlighting is enabled... */
 	if (w->o.highlight && w->o.syntax) {
-		lattr_cut(w->b->db, l + 1);
-		if (l <= w->top->line)
+		lattr_cut(w->db, l + 1);
+		if (l < w->top->line) {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
-		else if (l < w->top->line + w->h)
-			msetI(w->t->t->updtab + w->y + l - w->top->line, 1, w->h - (int) (l - w->top->line));
+			for (q = 0; q != w->h; ++q)
+				invalidate_state(w->t->t->syntab + w->y + q);
+		} else if ((l + 1) < w->top->line + w->h) {
+			int start = l + 1 - w->top->line;
+			int size = w->h - start;
+			msetI(w->t->t->updtab + w->y + start, 1, size);
+			for (q = 0; q != size; ++q)
+				invalidate_state(w->t->t->syntab + w->y + start + q);
+		}
 	}
 
-/* Update the line where the delete began */
+	/* Update the line where the delete began */
 	if (l < w->top->line + w->h && l >= w->top->line)
 		w->t->t->updtab[w->y + l - w->top->line] = 1;
 
-/* Just a single line? */
-	if (!n)
-		return;
-
-/* Update highlight for line after first one which changed */
-	if ((l+1) < w->top->line + w->h && (l+1) >= w->top->line) {
-		invalidate_state(w->t->t->syntab + w->y + l + 1 - w->top->line);
-		w->t->t->updtab[w->y + (l+1) - w->top->line] = 1;
-		}
-
-/* Update the line where the delete ended */
+	/* Update the line where the delete ended */
 	if (l + n < w->top->line + w->h && l + n >= w->top->line)
 		w->t->t->updtab[w->y + l + n - w->top->line] = 1;
 
@@ -1160,11 +1164,13 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->top->xcol = 0;
 	w->cursor->xcol = 0;
 	w->top_changed = 1;
+	w->db = mk_lattr_db();
 	return w;
 }
 
 void bwrm(BW *w)
 {
+	rm_lattr_db(w->db);
 	prm(w->top);
 	prm(w->cursor);
 	brm(w->b);
