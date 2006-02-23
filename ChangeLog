@@ -1,3 +1,9 @@
+Thu Feb 23 13:41:20 EST 2006
+
+	Fix bugs with quoted entry.  Now we ignore terminal's encoding on
+quoted entry.
+
+
 Sun Feb 19 22:34:20 EST 2006
 
 	Fix some bugs on itanium: call to joe_malloc was return a (int) and

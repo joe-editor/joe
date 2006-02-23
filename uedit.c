@@ -1725,7 +1725,7 @@ int find_indent(P *p)
 
 struct utf8_sm utype_utf8_sm;
 
-int utypebw_raw(BW *bw, int k, int force_decode)
+int utypebw_raw(BW *bw, int k, int no_decode)
 {
 	struct charmap *map=bw->b->o.charmap;
 
@@ -1803,7 +1803,7 @@ int utypebw_raw(BW *bw, int k, int force_decode)
 			pfill(bw->cursor,bw->cursor->xcol,' '); /* Why no tabs? */
 
 		/* UTF8 decoder */
-		if(locale_map->type || force_decode) {
+		if(locale_map->type && !no_decode) {
 			int utf8_char = utf8_decode(&utype_utf8_sm,k);
 
 			if(utf8_char >= 0)
@@ -1821,7 +1821,7 @@ int utypebw_raw(BW *bw, int k, int force_decode)
 				pgetc(bw->cursor);
 			}
 
-		if (!force_decode) {
+		if (!no_decode) {
 			if(locale_map->type && !bw->b->o.charmap->type) {
 				unsigned char buf[10];
 				utf8_encode(buf,k);
@@ -1897,15 +1897,11 @@ static B *unicodehist = NULL;	/* History of previously entered unicode character
 static int dounicode(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	int num;
-	unsigned char buf[8];
-	int x;
 	sscanf((char *)s,"%x",&num);
 	if (notify)
 		*notify = 1;
 	vsrm(s);
-	utf8_encode(buf,num);
-	for(x=0;buf[x];++x)
-		utypebw_raw(bw, buf[x], 1);
+	utypebw_raw(bw, num, 1);
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
 }
@@ -1956,7 +1952,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 				c &= 0x1F;
 			if (c == '?')
 				c = 127;
-			utypebw(bw, c);
+			utypebw_raw(bw, c, 1);
 			bw->cursor->xcol = piscol(bw->cursor);
 		}
 		break;
@@ -1974,7 +1970,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 	case 2:
 		if (c >= '0' && c <= '9') {
 			quoteval = quoteval * 10 + c - '0';
-			utypebw(bw, quoteval);
+			utypebw_raw(bw, quoteval, 1);
 			bw->cursor->xcol = piscol(bw->cursor);
 		}
 		break;
@@ -2008,15 +2004,15 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 	case 4:
 		if (c >= '0' && c <= '9') {
 			quoteval = quoteval * 16 + c - '0';
-			utypebw(bw, quoteval);
+			utypebw_raw(bw, quoteval, 1);
 			bw->cursor->xcol = piscol(bw->cursor);
 		} else if (c >= 'a' && c <= 'f') {
 			quoteval = quoteval * 16 + c - 'a' + 10;
-			utypebw(bw, quoteval);
+			utypebw_raw(bw, quoteval, 1);
 			bw->cursor->xcol = piscol(bw->cursor);
 		} else if (c >= 'A' && c <= 'F') {
 			quoteval = quoteval * 16 + c - 'A' + 10;
-			utypebw(bw, quoteval);
+			utypebw_raw(bw, quoteval, 1);
 			bw->cursor->xcol = piscol(bw->cursor);
 		}
 		break;
@@ -2045,7 +2041,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 	case 7:
 		if (c >= '0' && c <= '7') {
 			quoteval = quoteval * 8 + c - '0';
-			utypebw(bw, quoteval);
+			utypebw_raw(bw, quoteval, 1);
 			bw->cursor->xcol = piscol(bw->cursor);
 		}
 		break;
@@ -2073,7 +2069,7 @@ static int doquote9(BW *bw, int c, void *object, int *notify)
 	if (c == '?')
 		c = 127;
 	c |= 128;
-	utypebw(bw, c);
+	utypebw_raw(bw, c, 1);
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
 }
@@ -2089,7 +2085,7 @@ static int doquote8(BW *bw, int c, void *object, int *notify)
 	if (notify)
 		*notify = 1;
 	c |= 128;
-	utypebw(bw, c);
+	utypebw_raw(bw, c, 1);
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
 }
@@ -2115,7 +2111,7 @@ static int doctrl(BW *bw, int c, void *object, int *notify)
 		utypebw(bw, '\\');
 		utypebw(bw, 'n');
 	} else
-		utypebw(bw, c);
+		utypebw_raw(bw, c, 1);
 	bw->o.overtype = org;
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
