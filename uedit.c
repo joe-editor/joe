@@ -1725,7 +1725,7 @@ int find_indent(P *p)
 
 struct utf8_sm utype_utf8_sm;
 
-int utypebw(BW *bw, int k)
+int utypebw_raw(BW *bw, int k, int force_decode)
 {
 	struct charmap *map=bw->b->o.charmap;
 
@@ -1803,7 +1803,7 @@ int utypebw(BW *bw, int k)
 			pfill(bw->cursor,bw->cursor->xcol,' '); /* Why no tabs? */
 
 		/* UTF8 decoder */
-		if(locale_map->type) {
+		if(locale_map->type || force_decode) {
 			int utf8_char = utf8_decode(&utype_utf8_sm,k);
 
 			if(utf8_char >= 0)
@@ -1821,14 +1821,16 @@ int utypebw(BW *bw, int k)
 				pgetc(bw->cursor);
 			}
 
-		if(locale_map->type && !bw->b->o.charmap->type) {
-			unsigned char buf[10];
-			utf8_encode(buf,k);
-			k = from_utf8(bw->b->o.charmap,buf);
-		} else if(!locale_map->type && bw->b->o.charmap->type) {
-			unsigned char buf[10];
-			to_utf8(locale_map,buf,k);
-			k = utf8_decode_string(buf);
+		if (!force_decode) {
+			if(locale_map->type && !bw->b->o.charmap->type) {
+				unsigned char buf[10];
+				utf8_encode(buf,k);
+				k = from_utf8(bw->b->o.charmap,buf);
+			} else if(!locale_map->type && bw->b->o.charmap->type) {
+				unsigned char buf[10];
+				to_utf8(locale_map,buf,k);
+				k = utf8_decode_string(buf);
+			}
 		}
 		
 		binsc(bw->cursor, k);
@@ -1883,6 +1885,11 @@ int utypebw(BW *bw, int k)
 	return 0;
 }
 
+int utypebw(BW *bw, int k)
+{
+	return utypebw_raw(bw, k, 0);
+}
+
 /* Quoting */
 
 static B *unicodehist = NULL;	/* History of previously entered unicode characters */
@@ -1898,7 +1905,7 @@ static int dounicode(BW *bw, unsigned char *s, void *object, int *notify)
 	vsrm(s);
 	utf8_encode(buf,num);
 	for(x=0;buf[x];++x)
-		utypebw(bw, buf[x]);
+		utypebw_raw(bw, buf[x], 1);
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
 }
