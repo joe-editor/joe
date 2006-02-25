@@ -10,6 +10,11 @@ two 8 in. floppy drives.  I remember that it took half an hour to link 16K
 of code and that we always printed the assembly language lists on an old GE
 chain printer.</p>
 
+<p>One program I wrote was the screen editor for the CG-2000 character
+generator.  This was ridiculously simple- it had fixed width lines stored in
+a big array.  But it did have formatting- specifically, you could set the
+heights of lines.  ...</p>
+
 <p>At some point, we upgraded to an IBM PC XT and switched to the AD2500
 6809 assembler and used WordStar in "non-document mode" for the editor.  I
 remember being annoyed with WordStar because it did not remember the column
@@ -26,14 +31,16 @@ students writing programs both before and during my time there.  WPI had a
 Decsystem-20 mainframe computer which ran TOPS-20.  This was a famous 36-bit
 computer, especially in the LISP world, because each word was CONS cell and
 could hold two 18-bit addresses.  It had an awesome mail program, which was
-both mail and USENET news in one program.  The shell had tab-completion and
-question-mark help.  It had EMACS, EDT, TECO, and some student written
-editors.  Despite all that, I tended to write in macro using a line editor. 
-I tried the C compiler, but it was really weird- it used 9-bit bytes!  Mind
-you, characters were normally 7-bits on this machine, with 5 characters
-packed into a 36-bit word.  I remember that the operating system manual
-which was written by someone at Stanford (who?) was always missing from the
-library- borrowed months at a time by hackers.
+both mail and USENET news in one program.  The shell had ESC-completion and
+question-mark help (if you hit ? at the end of syntactically correct
+command, it said "(confirm)").  It had EDT, TECO, EMACS written in TECO, and
+a bunch of other editors, many of them student written.  Despite all that, I
+tended to write in macro using a line editor.  I tried the C compiler, but
+it was really weird- it used 9-bit bytes!  Mind you, characters were
+normally 7-bits on this machine, with 5 characters packed into a 36-bit
+word.  I remember that the operating system manual which was written by
+someone at Stanford (who?) was always missing from the library- borrowed
+months at a time by hackers.
 
 <h3>The Encore Multimax - 1987</h3>
 
@@ -44,6 +51,20 @@ editor, so I wrote a screen editor called 'e' for writing BBS messages.
 This is really the first version of JOE.  Other hackers wrote 's'- an
 instant messaging program, and 'superwho'- a program which drew a map show
 which terminal each student was logged in on.
+
+<p>Why not emacs or vi?  I couldn't stand emacs- it was always saying "garbage
+collecting...  done.", used awkward weird keys, formatted my code the wrong
+way and basically just had an arrogant attitude.  It was especially
+frustrating that Ctrl-H was not backspace.  I was certainly too impatient to
+conform to it when I could just write my own editor.</p>
+
+<p>JOE might never have been had I understood how nice vi
+was at the time.  Luckily, the commands were not documented in the 'man'
+page and both it and the UNIX line editors 'ex' and 'ed' did not work like
+the line editors I was familiar with.  Specifically, I thought it was stupid
+that these editor did not allow you to position the cursor past the ends of
+lines (or files), forcing you to use the append command instead of the
+insert command for this case.</p>
 
 <h3>e - 1988</h3>
 
