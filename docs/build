@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# build website
+
+sed "s,@title@,Joe's Own Editor," <header-src.html | cat - frontpage-src.html footer-src.html > index.html
+
+sed "s,@title@,Joe's Own Editor - man page," <header-src.html | cat - manpage-src.html footer-src.html > manpage.html
+
+sed "s,@title@,Joe's Own Editor - Change Log," <header-src.html | cat - changelog-src.html footer-src.html > changelog.html
+
+sed "s,@title@,Joe's Own Editor - News," <header-src.html | cat - news-src.html footer-src.html > news.html
+
+sed "s,@title@,Joe's Own Editor - History," <header-src.html | cat - history-src.html footer-src.html > history.html

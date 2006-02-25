@@ -1,0 +1,165 @@
+<p align=center>Joe's Own Editor 3.2</p>
+
+<p align=center>A Free ASCII-Text Screen Editor for UNIX</p>
+<p align=center>by Joseph Allen (<= 2.8)</p>
+<p align=center>Marek 'Marx' Grac (=> 2.9)</p>
+<p align=center>by Joseph Allen again (=>3.0)</p>
+
+<p>Get it from:</p>
+<p>http://sourceforge.net/projects/joe-editor</p>
+
+<p>If you have questions, problems or suggestions, 
+Use sourceforge: mailing list, bug tracker, discussion groups.</p>
+
+<p>JOE is the professional freeware ASCII text screen editor for UNIX. 
+It makes full use of the power and versatility of UNIX, but lacks the steep
+learning curve and basic nonsense you have to deal with in every other UNIX
+editor. JOE has the feel of most IBM PC text editors: The key-sequences are
+reminiscent of WordStar and Turbo-C.  JOE is much more powerful than those
+editors, however.  JOE has all of the features a UNIX user should expect:
+full use of termcap/terminfo, excellent screen update optimizations (JOE is
+fully usable at 2400 baud), simple installation, and all of the
+UNIX-integration features of VI.</p>
+
+<p>JOE's initialization file determines much of JOE's personality and
+the name of the initialization file is simply the name of the editor
+executable followed by "rc".  JOE comes with four "rc" files in addition to
+the basic "joerc", which allow it to emulate these editors:</p>
+
+<ul>
+<li>JPICO</li>
+<p>An enhanced version of the Pine mailer system's PICO editor.</p>
+
+<li>JSTAR</li>
+<p>A complete imitation of WordStar including many "JOE" extensions.</p>
+
+<li>RJOE</li>
+<p>A restricted version of JOE which allowed you to edit 
+only the files specified on the command line.</p>
+
+<li>JMACS</li>
+<p>A GNU-EMACS imitation which is about one order of magnitude smaller than real
+GNU-EMACS.</p>
+</ul>
+
+<p>Features:</p>
+
+<p>JOE has a well thought-out user-interface with great attention to
+detail.  The Page Up and Page Down functions do not move the cursor relative
+to the edges of the screen.  Left and Right arrow keys work at the beginning
+and ends of lines.  The cursor can move past the ends of lines without
+jumping, but also without inserting or deleting extra spaces at the ends of
+lines. Control characters and characters above 127 can be displayed and
+entered- even ^Q and ^S.  The cursor's row and column number can be
+displayed in the status line.</p>
+
+<p>The key layout is made to reduce terminal incompatibility nonsense. 
+^Q and ^S are not used and both ^H and DEL are mapped to backspace.  Case
+does not matter in key sequences- ^K E, ^K e, and ^K ^E are each mapped to
+the same function.  The arrow keys and PageUp, PageDown, Home, End, Insert
+and Delete keypad keys are read from the termcap entry and are assigned to
+the proper functions.  A simple initialization file, similar to Semware's
+Q-EDIT, allows key-bindings, simple macros and help windows to be
+defined.</p>
+
+<p>JOE has full termcap/terminfo support and will work on any terminal. 
+JOE has the best screen update optimization algorithm available.  It uses
+VT100-style scrolling regions the way they are supposed to be used (I.E.,
+without building insert and delete line functions out of them) and has a
+powerful line shifting (insert/delete character) algorithm which works even
+if text goes past the ends of lines.  JOE has deferred screen update to
+handle typeahead and uses the baud rate reported by 'stty' to ensure that
+deferral is not bypassed by tty buffering.</p>
+
+<p>JOE has multiple windows and lacks the confusing notion of a named
+buffers.  You just have files and windows.  When there are more windows than
+can fit on the screen, the Goto-Next-Window function scrolls through them. 
+The same file can have multiple windows opened on it.</p>
+
+<p>JOE has VI-style unix integration.  You can filter a highlighted
+block through a UNIX command.  Also, each place in joe which accepts a file
+name (including the command line) will also accept:</p>
+
+<ul>
+<li>!command</li>
+<p>to pipe into or out of a command</p>
+<li>&gt;&gt;filename</li>
+<p>to append to a file</p>
+<li>filename,start,size</li>
+<p>to edit a portion of a file/device</p>
+<li>-</li>
+<p>to use stdin or stdout</p>
+</ul>
+
+<p>File names on the command line may be preceded by +nnn to start
+editing at a specified line.</p>
+
+<p>JOE has shell windows.  You can run a shell in a window and any
+output from commands run in the shell gets stored in a buffer.</p>
+
+<p>JOE has an orthogonal event-driven design.  Each prompt is actually
+a normal edit buffer containing a history of all of the responses entered
+for that prompt.  You can use all of the normal edit commands to create file
+names and search strings.  You can use the up arrow key (or search backwards
+and any other appropriate edit command) to go back through the history of
+previous responses.  Prompts are reentrant- meaning that edit commands which
+require prompts can still be used inside of prompts.</p>
+
+<p>JOE has TAB-completion and file selection menus.  If you hit tab in
+a file name prompt, the name is either completed or a menu of possible
+matches appears.</p>
+
+<p>JOE stores edit files in a doubly linked list of gap buffers which
+can spill into a temporary file.  You can edit files of any size up to the
+amount of free disk space and there are no line-length restrictions.  Since
+the buffering system is block-based, JOE will incur only a minimum of
+swapping on heavily loaded systems.</p>
+
+<p>When you ask for help, one of six small help reference cards appears
+on the screen and remains while you continue to use the editor.  Here is the
+first help card:</p>
+
+<p>
+CURSOR           GO TO            BLOCK      DELETE   MISC         EXIT
+^B left ^F right ^U  prev. screen ^KB begin  ^D char. ^KJ reformat ^KX save
+^P up   ^N down  ^V  next screen  ^KK end    ^Y line  ^T  options  ^C  abort
+^Z previous word ^A  beg. of line ^KM move   ^W >word ^@  insert   ^KZ shell
+^X next word     ^E  end of line  ^KC copy   ^O word< ^R  retype   FILE
+SEARCH           ^KU top of file  ^KW file   ^J >line SPELL        ^KE new
+^KF find text    ^KV end of file  ^KY delete ^_ undo  ^[N word     ^KR insert
+^L  find next    ^KL to line No.  ^K/ filter ^^ redo  ^[L file     ^KD save
+</p>
+
+<p>JOE has a powerful set of editing commands suitable for editing both
+text files and programs:</p>
+
+<ul>
+<li>UTF-8 support</li>
+<li>Syntax highlighting</li>
+<li>search and replace system, including powerful regular expressions (including matching of balanced C
+expressions).</li>
+<li>tags file search</li>
+<li>paragraph format</li>
+<li>undo and redo</li>
+<li>position history allows you to get back to previous
+editing contexts and allows you to quickly flip between
+editing contexts</li>
+<li>multiple keyboard macros</li>
+<li>block move/copy/delete/filter</li>
+<li>rectangle (columnar) mode</li>
+<li>overtype/insert modes</li>
+<li>indent/unindent</li>
+<li>goto matching ( [ {</li>
+<li>auto-indent mode</li>
+</ul>
+<p>Plus many options can be set:</p>
+<ul>
+<li>can have EMACS-style cursor re-centering on scrolls</li>
+<li>characters between 128-255 can be shown as-is for non-English character
+sets</li>
+<li>Final newline can be forced on end of file</li>
+<li>Can start with a help screen on</li>
+<li>Left/Right margin settings</li>
+<li>Tab width</li>
+<li>Indentation step and fill character</li>
+</ul>
