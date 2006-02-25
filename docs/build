@@ -11,3 +11,7 @@ sed "s,@title@,Joe's Own Editor - Change Log," <header-src.html | cat - changelo
 sed "s,@title@,Joe's Own Editor - News," <header-src.html | cat - news-src.html footer-src.html > news.html
 
 sed "s,@title@,Joe's Own Editor - History," <header-src.html | cat - history-src.html footer-src.html > history.html
+
+sed "s,@title@,Joe's Own Editor - Hints," <header-src.html | cat - hints-src.html footer-src.html > hints.html
+
+sed "s,@title@,Joe's Own Editor - Hacking," <header-src.html | cat - hacking-src.html footer-src.html > hacking.html

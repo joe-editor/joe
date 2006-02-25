@@ -1,0 +1,284 @@
+<h3>Edit Buffers</h3>
+<p>API:
+</p>
+<p>  Look at the comments in b.h for more information.
+</p>
+<p>  B *bfind(unsigned char *name);
+		Load disk file into memory buffer 'B'.
+</p>
+<p>  bsave(P *p,unsigned char *name,int size);
+		Write size bytes from buffer beginning at p to disk file
+</p>
+<p>  brm(b);	Free data structure
+</p>
+<p>Once you have a B you can access the characters in it via P pointers (which
+are like C++ STL iterators).
+</p>
+<p>  B *b = bfind("foo");	Load file into memory
+</p>
+<p>  P *p = pdup(b-&gt;bof);	Get pointer to beginning of file (duplicate
+			b-&gt;bof which is a P).
+</p>
+<p>  prm(p);		Free p when we're done with it.
+</p>
+<p>  int c=brch(p);	Get character at p.
+  int c=pgetc(p);	Get character at p and advance it.
+  int c=prgetc(p);	Retract p, then return character at it.
+</p>
+<p>    - These return -1 (NO_MORE_DATA) if you try to read end of file or
+      before beginning of file.
+</p>
+<p>    - A pointer can point to any character of the file and right after the
+      end of the file.
+</p>
+<p>    - For UTF-8 files, character can be between 0 and 0x7FFFFFFF
+</p>
+<p>  Publicly readable members of P:
+	p-&gt;byte		The byte offset into the buffer
+	p-&gt;line		The line number
+	p-&gt;xcol		If P is the cursor, this is the column number
+			where the cursor will be displayed on the screen
+			(which does not have to match the column of the
+			character at P).
+</p>
+<p>  Some predicates:
+	pisbof(p);	True if pointer is at beginning of buffer
+	piseof(p);	True if pointer is at end of buffer
+	pisbol(p);	True if pointer is at beginning of line
+	piseol(p);	True if pointer is at end of line
+	pisbow(p);	True if pointer is at beginning of a word
+	piseow(p);	True if pointer is at end of a word
+</p>
+<p>  More information about character at p:
+	piscol(p);	Get column number of character at p.
+</p>
+<p>  Some other ways of moving a P through a B:
+</p>
+<p>	pnextl(p);	Go to beginning of next line
+	pprevl(p);	Go to end of previous line
+	pfwrd(p,int n);	Move forward n characters
+	pbkwd(p,int n);	Move backward n characters
+	p_goto_bof(p);
+	p_goto_eof(p);
+	p_goto_bol(p);
+	p_goto_eol(p);
+</p>
+<p>	pset(p,q);	Move p to same position as q.
+</p>
+<p>	pline(p,n);	Goto to beginning of a specific line.
+	pgoto(p,n);	Goto a specific byte position.
+</p>
+<p>	pfind(P,unsigned char *s,int len);
+			Fast Boyer-Moore search forward.
+</p>
+<p>	prfind(P,unsigned char *s,int len);
+			Fast Boyer-Moore search backward.
+</p>
+<p>		These are very fast- they look at low level
+	data structure and don't go through pgetc().  Boyer-Moore
+	allows you to skip over many characters without reading
+	them, so you can get something like O(n/len).
+</p>
+<p>  Some facts:
+</p>
+<p>    Local operations are fast: pgetc(), prgetc().
+</p>
+<p>    Copy is fast: pset().
+</p>
+<p>    pline() and pgoto() are slower, but look for the closest existing
+    P to start from.
+</p>
+<p>    The column number is stored in P, but it is only updated if
+    it is easy to do so.  If it's hard (like you crossed a line
+    boundary backward) it's marked as invalid.  piscol() then has
+    to recalculate it.
+</p>
+<p>  Modifying a buffer:
+</p>
+<p>    binsc(p,int c);		Insert character at p.
+    bdel(P *from,P *to);	Delete character between two Ps.
+</p>
+<p>  Note that when you insert or delete, all of the Ps after the insertion/
+  deletion point are adjusted so that they continue to point to the same
+  characeter before the insert or delete.
+</p>
+<p>  Insert and Delete create undo records.
+</p>
+<p>  Insert and Delete set dirty flags on lines which are currently being
+  displayed on the screen, so that when you return to the edit loop, these
+  lines automatically get redrawn.
+</p>
+<p>Internal:
+</p>
+<p>  An edit buffer is made up of a doubly-linked list of fixed sized (4 KB)
+gap buffers.  A gap buffer has two parts: a ~16 byte header, which is always
+in memory, and the actual buffer, which can be paged out to a swap file (a
+vfile- see vfile.h).  A gap buffer consists of three regions: text before
+the gap, the gap and text after the gap (which always goes all the way to
+the end of buffer). (hole and ehole in the header indicate the gap
+position).  The size of the gap may be 0 (which is the case when a file is
+first loaded).  Gap buffers are fast for small inserts and deletes when the
+cursor is at the gap (for delete you just adjust a pointer, for insert you
+copy the data into gap).  When you reposition the cursor, you have to move
+the gap before any inserts or deletes occur.  If you had only one window and
+a single large gap buffer for the file, you could always keep the gap at the
+cursor- the right-arrow key copies one character across the gap.
+</p>
+<p>  Of course for edits which span gap buffers or which are larger than a gap
+buffer, you get a big mess of gap buffer splitting and merging plus
+doubly-linked list splicing.
+</p>
+<p>  Still, this buffer method is quite fast: you never have to do large memory
+moves since the gap buffers are limited in size.  To help search for line
+numbers, the number of newlines '\n's contained in each gap buffer is stored
+in the header.  Reads are fast as long as you have a P at the place you
+want to read from, which is almost always the case.
+</p>
+<p>  It should be possible to quickly load files by mapping them directly into
+memory (using mmap()) and treating each 4KB page as a gap buffer with 0 size
+gap.  When page is modified, use copy-on-write to move the page into the
+swap file (change pointer in header).  This is not done now.  Instead the
+file is copied when loaded.
+</p>
+<h3>Windowing System</h3>
+<p>There is a tiny object-oriented windowing system built into JOE.  This is
+the class hierarchy:
+</p>
+<p>SCRN
+  A optimizing terminal screen driver (very similar to 'curses').
+    has a pointer to a CAP, which has the terminal capabilities read
+    from termcap or terminfo.
+</p>
+<p>    writes output to screen with calls to the macro ttputc(). (tty.c is the
+    actual interface to the tty device).
+</p>
+<p>    cpos()    - set cursor position
+    outatr()  - draw a character at a screen position with attributes
+    eraeol()  - erase from some position to the end of the line
+</p>
+<p>SCREEN
+  Contains list of windows on the screen (W *topwin).
+</p>
+<p>  Points to window with focus (W *curwin).
+</p>
+<p>  Contains pointer to a 'SCRN', the tty driver for the particular terminal
+  type.
+</p>
+<p>W
+  A window on a screen.
+</p>
+<p>  Has position and size of window.
+</p>
+<p>  Has:
+    void *object- pointer to a structure which inherits window (W should
+    really be a base class for these objects- since C doesn't have this
+    concept, a pointer to the derived class is used instead- the derived
+    class has a pointer to the base class: it's called 'parent').
+</p>
+<p>      Currently this is one of:
+        BW *    a text buffer window (screen update code is here.)
+        QW *    query window (single character yes/no questions)
+        MENU *  file selection menu
+</p>
+<p>      BW * is inherited by (in the same way that a BW inherits a W):
+        PW *    a single line prompt window (file name prompts)
+        TW *    a text buffer window (main editing window).
+</p>
+<p>    WATOM *watom- Gives type of this window.  The WATOM structure has
+    pointers to virtual member functions.
+</p>
+<p>    KBD *kbd- The keyboard handler for this window.  When window has
+    focus, keyboard events are sent to this object.  When key sequences
+    are recognized, macros bound to them are invoked.
+</p>
+<p>Some window are operators on others.  For example ^K E, load a file into a
+window prompt operates on a text window.  If you hit tab, a file selection
+menu which operates on the prompt window appears below this.  When a window
+is the target of operator windows is killed, the operators are killed also.
+</p>
+<p>Currently all windows are currently the width of the screen (should be fixed
+in the future).  The windows are in a big circular list (think of a big loop
+of paper).  The screen is small window onto this list.  So unlike emacs, you
+can have windows which exist, but which are not on the screen.
+</p>
+<p>^K N and ^K P move the cursor to next or previous window.  If the next
+window is off the screen it is moved onto the screen, along with any
+operator windows are target it.
+</p>
+<h3>MACROS</h3>
+<p>- add something here.
+</p>
+<h3>Screen update</h3>
+<p>- add something here.
+</p>
+<h3>Files</h3>
+main.c		has main().
+</p>
+<p>b.c		Text buffer management
+undo.c		Undo system.
+kbd.c		Keymap datastructure (keysequence to macro bindings).
+macro.c		Keyboard and joerc file macros
+help.c		Implement the on-line help window
+poshist.c	Cursor position history
+rc.c		joerc file loader
+tab.c		tab completion for file selection prompt
+regex.c		regular expressions
+</p>
+<p>blocks.c	Library: fast memcpy() functions (necessary on really old versions of UNIX).
+dir.c		Directory reading functions (for old UNIXs).
+hash.c		Library: simple hash functions.
+vs.c		Automatic variable length strings (like C++ string).
+va.c		Automatic array of strings (like STL container)
+vfile.c		Library: virtual memory functions (allows you to edit files larger than memory)
+utils.c		Misc. utilities
+queue.c		Library: doubly linked lists
+path.c		Library: file name and path manipulation functions
+selinux.c	secure linux functions
+</p>
+<p>i18n.c		Unicode character type information database
+charmap.c	UNICODE to 8-bit conversion functions
+utf8.c		UTF-8 to unicode coding functions
+</p>
+<p>termcap.c	load terminal capabilities from /etc/termcap file or terminfo database
+scrn.c		terminal update functions (curses)
+syntax.c	syntax highlighter
+</p>
+<p>cmd.c		Table of user edit functions
+ublock.c	User edit functions: block moves
+uedit.c		User edit functions: basic edit functions
+uerror.c	User edit functions: parse compiler error messages and goto next error, previous error
+ufile.c		User edit functions: load and save file
+uformat.c	User edit functions: paragraph formatting, centering
+uisrch.c	User edit functions: incremental search
+umath.c		User edit functions: calculator
+usearch.c	User edit functions: search &amp; replace
+ushell.c	User edit functions: subshell
+utag.c		User edit functions: tags file search
+</p>
+<p>menu.c		A class: menu windows
+tw.c		A class: main text editing window
+qw.c		A class: query windows
+pw.c		A class: prompt windows
+bw.c		A class: text buffer window (screen update code is here)
+w.c		A class: base class for all windows
+</p>
+<h3>Strings</h3>
+<p>char *				C-strings: only used for system calls or C-library calls.
+</p>
+<p>unsigned char *			Z-strings: used in JOE for read-only code
+</p>
+<p>vs s				V-strings: exist in heap
+  s.c_string		Get C-string out of it (0 time)
+  z.z_string		Get Z-string out of it (0 time)
+</p>
+<p>vsrm(&amp;s);			Free a vs.
+vs n=vsdup(s)			Duplicate a vs.
+vsadd(&amp;s, 'c')			Append one character.
+vscat(&amp;s, zs, int len)		Concatenate array on end of string
+</p>
+<p>vscat(&amp;s, sc("Hi there"))
+vscat(&amp;s, sv(s))
+vscat(&amp;s, sz(z))
+</p>
+<p>vscmp()
+</p>
