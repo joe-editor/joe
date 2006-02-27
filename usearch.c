@@ -648,6 +648,21 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	}
 }
 
+/* Unescape for text going to genfmt */
+
+void unesc_genfmt(unsigned char *d, unsigned char *s, int max)
+{
+	while (max && *s) {
+		if (*s == '\\')
+			*d++ = '\\';
+		*d++ = *s++;
+		--max;
+	}
+	if (*s)
+		*d++ = '$';
+	*d = 0;
+}
+
 int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 {
 	SRCH *srch;
@@ -675,9 +690,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 	srch->wrap_p = pdup(bw->cursor);
 	srch->wrap_p->owner = &srch->wrap_p;
 	if (pico && globalsrch && globalsrch->pattern) {
-		joe_snprintf_1((char *)bf1,30,"%s",globalsrch->pattern);
-		if (zlen(globalsrch->pattern)>29)
-			zcat(bf1,US "$");
+		unesc_genfmt(bf1, globalsrch->pattern, 30);
 		joe_snprintf_1((char *)buf,sizeof(buf),"Find (^C to abort) [%s]: ",bf1);
 	} else
 		zcpy(buf, US "Find (^C to abort): ");
