@@ -56,7 +56,7 @@
 	"/"		regex		recolor=-1
 	"<"		maybe_inc
 	"$"		not_string	buffer
-	"-a-zA-Z_"	ident		buffer
+	"-a-zA-Z_@%&"	ident		buffer
 
 # prevent keywords
 
@@ -73,7 +73,7 @@
 	"`"		backtick	recolor=-1
 	"$"		not_string	buffer
 	"<"		maybe_inc
-	"a-zA-Z_"	maybe_string	buffer
+	"a-zA-Z_@%&"	maybe_string	buffer
 
 :pod_start Idle
 	*		pod_start
