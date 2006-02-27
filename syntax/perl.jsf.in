@@ -55,7 +55,7 @@
 	"`"		backtick	recolor=-1
 	"/"		regex		recolor=-1
 	"<"		maybe_inc
-	"$"		not_string
+	"$"		not_string	buffer
 	"-a-zA-Z_"	ident		buffer
 
 # prevent keywords
@@ -71,7 +71,7 @@
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
-	"$"		not_string
+	"$"		not_string	buffer
 	"<"		maybe_inc
 	"a-zA-Z_"	maybe_string	buffer
 
@@ -140,6 +140,7 @@ done
 
 :not_string Idle
 	*		rest noeat
+	"A-Za-z_"	ident
 	"\"'`#"		rest
 
 :line_comment Comment

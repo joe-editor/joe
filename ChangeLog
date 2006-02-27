@@ -1,3 +1,7 @@
+Mon Feb 27 01:34:37 EST 2006
+
+	Fix perl highlighter bug.  $q not handled properly.
+
 Thu Feb 23 13:41:20 EST 2006
 
 	Fix bugs with quoted entry.  Now we ignore terminal's encoding on
