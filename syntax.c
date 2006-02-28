@@ -86,7 +86,8 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			}
 			/* Recolor if necessary */
 			for(x=cmd->recolor;x<0;++x)
-				attr[x] = h -> color;
+				if (attr + x >= attr_buf)
+					attr[x] = h -> color;
 
 			/* Save string? */
 			if (cmd->save_s)

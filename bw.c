@@ -1164,6 +1164,7 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->top->xcol = 0;
 	w->cursor->xcol = 0;
 	w->top_changed = 1;
+	w->linums = 0;
 	w->db = mk_lattr_db();
 	return w;
 }
