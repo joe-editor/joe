@@ -332,7 +332,14 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	fprintf(stderr, "Couldn't open '%s'\n", s);
 	return 1;
 
-      donerc:
+	donerc:
+
+	if (validate_rc()) {
+		fprintf(stderr, "rc file has no :main key binding section or no bindings.  Bye.\n");
+		return 1;
+	}
+
+
 	for (c = 1; argv[c]; ++c) {
 		if (argv[c][0] == '-') {
 			if (argv[c][1])

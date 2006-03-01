@@ -46,4 +46,7 @@ void save_state();
 /* Load state */
 void load_state();
 
+/* Validate rc file: return -1 if it's bad (call this after rc file has been loaded) */
+int validate_rc();
+
 #endif

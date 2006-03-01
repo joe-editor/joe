@@ -77,6 +77,22 @@ KMAP *ngetcontext(unsigned char *name)
 	return 0;
 }
 
+/* Validate joerc file */
+
+int validate_rc()
+{
+	KMAP *k = ngetcontext(US "main");
+	int x;
+	/* Make sure main exists */
+	if (!k)
+		return -1;
+	/* Make sure there is at least one key binding */
+	for (x = 0; x != KEYS; ++x)
+		if (k->keys[x].value.bind)
+			return 0;
+	return -1;
+}
+
 unsigned char **get_keymap_list()
 {
 	unsigned char **lst = 0;
