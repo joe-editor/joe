@@ -112,7 +112,7 @@ int uxtmouse(BW *bw)
 	else if ((maint->curwin->watom->what & TYPETW ||
 	          maint->curwin->watom->what & TYPEPW) &&
 	          joexterm && (Cb & 3) == 1)		/* Paste */
-		ttputs(US "\33[?P");
+		ttputs(US "\33]52;;?\33\\");
 	return 0;
 }
 
@@ -230,7 +230,8 @@ void select_done(struct charmap *map)
 		long right = markk->xcol;
 		P *q = pdup(markb);
 		int c;
-		ttputs(US "\33[?2P");
+		/* ttputs(US "\33[?2P"); JOE's xterm */
+		ttputs(US "\33]52;;"); /* New xterm */
 		while (q->byte < markk->byte) {
 			unsigned char buf[16];
 			int len;
@@ -275,7 +276,7 @@ void select_done(struct charmap *map)
 			}
 		}
 		ttputs64_flush();
-		ttputs(US "\33");
+		ttputs(US "\33\\");
 		prm(q);
 	}
 }

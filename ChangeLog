@@ -1,3 +1,9 @@
+Wed Mar  1 10:19:49 EST 2006
+
+	Match how Thomas Dickey implemented the xterm-paste patch.
+	Xterm has a bug: if selection is not owned by xterm, the string
+	is messed up.
+
 Tue Feb 28 18:50:32 EST 2006
 
 	Fix bug where 'complete' command core dumps.

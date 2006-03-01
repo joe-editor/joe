@@ -1112,7 +1112,7 @@ xtmouse		^[ [ M		Introduces an xterm mouse event
  Compile macro
 :def compile querysave,query,scratch,"* Build Log *",rtn,markb,eof," ",markk,blkdel,build
 
-paste			^[ [ 2 0 0 ~		Bracketed paste
+paste			^[ ] 5 2 ; ;		Bracketed paste
 
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO

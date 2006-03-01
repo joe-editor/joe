@@ -2416,6 +2416,10 @@ int upaste(BW  *bw, int k)
 				break;
 		}
 	}
+	/* Terminator is ESC \ */
+	if (c == 033) {
+		ttgetc();
+	}
 	bw->o.wordwrap = tmp_ww;
 	bw->o.autoindent = tmp_ai;
 
