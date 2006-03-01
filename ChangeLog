@@ -3,6 +3,7 @@ Tue Feb 28 18:50:32 EST 2006
 	Fix bug where 'complete' command core dumps.
 	Fix bug where '.' alone with c highlighting enabled core dumps.
 	Don't run editor if joerc file is bad.
+	Improve lock messages.
 
 Mon Feb 27 01:34:37 EST 2006
 

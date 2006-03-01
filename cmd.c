@@ -240,6 +240,9 @@ CMD cmds[] = {
 
 int nolocks;
 
+#define LOCKMSG2 "Could not create lock. (I) edit anyway, (Q) cancel? "
+#define LOCKMSG1 "Locked by %s (S)teal lock, (I) edit anyway, (Q) cancel? "
+
 int steal_lock(BW *bw,int c,B *b,int *notify)
 {
 	if (c=='s' || c=='S') {
@@ -251,9 +254,9 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
 			if(bf1[0])
-				joe_snprintf_1((char *)bf,sizeof(bf),"Locked by %s  (S)teal, (I)gnore, (Q)uit? ",bf1);
+				joe_snprintf_1((char *)bf,sizeof(bf),LOCKMSG1,bf1);
 			else
-				joe_snprintf_0((char *)bf,sizeof(bf),"Could not create lock.  (S)teal, (I)gnore, (Q)uit? ");
+				joe_snprintf_0((char *)bf,sizeof(bf),LOCKMSG2);
 			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, notify)) {
 				return 0;
 			} else {
@@ -278,7 +281,7 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 			*notify = 1;
 		return 0;
 	} else {
-		if (mkqw(bw->parent, sc("Could not lock.  (S)teal, (I)gnore, (Q)uit? "), steal_lock, NULL, b, notify)) {
+		if (mkqw(bw->parent, sc(LOCKMSG2), steal_lock, NULL, b, notify)) {
 			return 0;
 		} else
 			return -1;
@@ -308,9 +311,9 @@ int try_lock(BW *bw,B *b)
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
 			if(bf1[0])
-				joe_snprintf_1((char *)bf,sizeof(bf),"Locked by %s  (S)teal, (I)gnore, (Q)uit? ",bf1);
+				joe_snprintf_1((char *)bf,sizeof(bf),LOCKMSG1,bf1);
 			else
-				joe_snprintf_0((char *)bf,sizeof(bf),"Could not create lock.  (S)teal, (I)gnore, (Q)uit? ");
+				joe_snprintf_0((char *)bf,sizeof(bf),LOCKMSG2);
 			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, NULL)) {
 				uquery(bw);
 				if (!b->locked)

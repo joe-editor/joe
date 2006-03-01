@@ -22,7 +22,7 @@ static void dispqw(QW *qw)
 	W *w = qw->parent;
 
 	/* Scroll buffer and position prompt */
-	if (qw->promptlen > w->w / 2 + w->w / 4)
+	if (qw->promptlen > w->w - 5)
 		qw->promptofst = qw->promptlen - w->w / 2;
 	else
 		qw->promptofst = 0;
