@@ -549,16 +549,16 @@ SCRN *nopen(CAP *cap)
       		t->Co = 256;
 		/* Force 256 color support */
 #ifndef TERMINFO
-		if (!t->Sf && t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
+		if (t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
 			t->ut = 1;
 			t->Sf = US "\\E[38;5;%dm";
 			t->Sb = US "\\E[48;5;%dm";
 		}
 #else
-		if (!t->Sf && t->md && t->md[0]=='\033' && t->md[1]=='[') { 
+		if (t->md && t->md[0]=='\033' && t->md[1]=='[') { 
 			t->ut = 1;
-			t->Sf = US "\033[38;5%p1%dm";
-			t->Sb = US "\033[48;5%p1%dm";
+			t->Sf = US "\033[38;5;%p1%dm";
+			t->Sb = US "\033[48;5;%p1%dm";
 		}
 #endif
 	}

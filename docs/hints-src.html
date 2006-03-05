@@ -1,6 +1,23 @@
 <p>This documentation should go elsewhere, but I haven't gotten around to it
 yet.
 </p>
+
+<h3>Color xterm support</h3>
+
+<p>JOE can make use of monochrome xterm, 8-color xterm, 16-color xterm,
+88-color xterm and 256-color xterm.  The number of colors which xterm
+supports is determined by "configure" script options when the source code is
+compiled.  The termcap or terminfo entry must support how your xterm is
+configured.  On my Slackware Linux distribution, you have to set to TERM
+environment variable to one of these:</p>
+<ul>
+<li>xterm</li>
+<li>xterm-color</li>
+<li>xterm-16color</li>
+<li>xterm-88color</li>
+<li>xterm-256color</li>
+</ul>
+
 <h3>UTF-8</h3>
 <p>JOE now handles two classes of character sets: UTF-8 and byte coded (like
 ISO-8859-1).  It can not yet handle other major classes such as UTF-16 or
@@ -30,7 +47,7 @@ set, LC_CTYPE and LANG are also checked).
 </p>
 <p>	de_DE.UTF-8
 </p>
-<p>The character set will UTF-8.
+<p>The character set will be UTF-8.
 </p>
 <p>Hit ^T E to change the coding for the file.  Hit &lt;tab&gt; &lt;tab&gt; at this prompt
 to get a list of available codings.  There are a number of built-in
