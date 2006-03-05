@@ -3,6 +3,8 @@ performace:
  getcontext causes huge cpu usage for very large functions (xp_useq.v for
 example).
 
+utf8 entry is broken: `x calling utype
+
 fixed:
  can't enter empty string on replacement.
 
