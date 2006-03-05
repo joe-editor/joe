@@ -325,6 +325,8 @@ P *p_goto_start_of_path(P *p)
 /*****************************************************************************/
 /****************** Create a tab window **************************************/
 /*****************************************************************************/
+extern int menu_above;
+
 int cmplt(BW *bw)
 {
 	MENU *new;
@@ -368,12 +370,19 @@ int cmplt(BW *bw)
 
 	/* bash */
 	/* TRY */
-	if (bw->parent->link.prev->watom==&watommenu) {
-		wabort(bw->parent->link.prev);
-		/* smode=2; */
+	if (menu_above) {
+		if (bw->parent->link.prev->watom==&watommenu) {
+			wabort(bw->parent->link.prev);
+			/* smode=2; */
+		}
+	} else {
+		if (bw->parent->link.next->watom==&watommenu) {
+			wabort(bw->parent->link.next);
+			/* smode=2; */
+		}
 	}
 
-	if (l && (new = mkmenu(bw->parent->link.prev, bw->parent, l, tabrtn, tababrt, tabbacks, which, tab, NULL))) {
+	if (l && (new = mkmenu((menu_above ? bw->parent->link.prev : bw->parent), bw->parent, l, tabrtn, tababrt, tabbacks, which, tab, NULL))) {
 		if (sLEN(tab->files) == 1)
 			/* Only one file found, so select it */
 			return tabrtn1(new, 0, tab);

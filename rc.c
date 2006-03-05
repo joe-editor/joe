@@ -121,6 +121,7 @@ extern int bg_prompt;
 extern int bg_msg;
 extern int joexterm;
 extern int pico;
+extern int menu_above;
 
 /* Set to use ~/.joe_state file */
 int joe_state;
@@ -305,6 +306,7 @@ struct glopts {
 	{US "icase",	0, &icase, NULL, US "Ignore case by default", US "Case sensitive by default", US "  Case insensitivity " },
 	{US "wrap",	0, &wrap, NULL, US "Search wraps", US "Search doesn't wrap", US "  Search wraps " },
 	{US "menu_explorer",	0, &menu_explorer, NULL, US "Menu explorer mode", US "Simple completion", US "  Menu explorer " },
+	{US "menu_above",	0, &menu_above, NULL, US "Menu above prompt", US "Menu below prompt", US "  Menu position " },
 	{US "search_prompting",	0, &pico, NULL, US "Search prompting on", US "Search prompting off", US "  Search prompting " },
 	{US "menu_jump",	0, &menu_jump, NULL, US "Jump is on", US "Jump is off", US "  Jump into menu " },
 	{US "autoswap",	0, &autoswap, NULL, US "Autoswap ^KB and ^KK", US "  Autoswap off ", US "  Autoswap mode " },

@@ -421,6 +421,8 @@ void ldmenu(MENU *m, unsigned char **s, int cursor)
 	mconfig(m);
 }
 
+int menu_above;
+
 MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify)
 {
 	W *new;
@@ -436,7 +438,7 @@ MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*ab
 			h = lines;
 	}
 
-	new = wcreate(w->t, &watommenu, w, targ, w->main, h, NULL, notify);
+	new = wcreate(w->t, &watommenu, w, targ, targ->main, h, NULL, notify);
 
 	if (!new) {
 		if (notify)

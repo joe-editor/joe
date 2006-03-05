@@ -13,7 +13,7 @@
 
 /* Create a menu */
 /* FIXME: ??? ---> */
-MENU *mkmenu PARAMS((W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify));
+MENU *mkmenu PARAMS((W *loc, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify));
 
 /* Menu user functions */
 

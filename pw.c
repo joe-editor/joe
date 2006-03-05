@@ -354,6 +354,8 @@ int cmplt_rtn(MENU *m, int x, unsigned char *line)
 extern int menu_jump;
 extern WATOM watommenu;
 
+extern int menu_above;
+
 int simple_cmplt(BW *bw,unsigned char **list)
 {
 	MENU *m;
@@ -381,11 +383,17 @@ int simple_cmplt(BW *bw,unsigned char **list)
 		return -1;
 	}
 
-	if (bw->parent->link.next->watom==&watommenu) {
-		wabort(bw->parent->link.next);
+	if (menu_above) {
+		if (bw->parent->link.prev->watom==&watommenu) {
+			wabort(bw->parent->link.prev);
+		}
+	} else {
+		if (bw->parent->link.next->watom==&watommenu) {
+			wabort(bw->parent->link.next);
+		}
 	}
 
-	m = mkmenu(bw->parent, bw->parent, lst, cmplt_rtn, cmplt_abrt, NULL, 0, line, NULL);
+	m = mkmenu((menu_above ? bw->parent->link.prev : bw->parent), bw->parent, lst, cmplt_rtn, cmplt_abrt, NULL, 0, line, NULL);
 	if (!m) {
 		varm(lst);
 		vsrm(line);
