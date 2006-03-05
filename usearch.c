@@ -201,7 +201,7 @@ int ufinish(BW *bw)
 			return -1;
 		}
 
-		m = mkmenu(bw->parent, lst, fcmplt_rtn, fcmplt_abrt, NULL, 0, line, NULL);
+		m = mkmenu(bw->parent, bw->parent, lst, fcmplt_rtn, fcmplt_abrt, NULL, 0, line, NULL);
 		if (!m) {
 			varm(lst);
 			vsrm(line);

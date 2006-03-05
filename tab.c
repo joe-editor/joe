@@ -367,12 +367,13 @@ int cmplt(BW *bw)
 	l = treload(tab, 0, bw, 0, &which);
 
 	/* bash */
-	if (bw->parent->link.next->watom==&watommenu) {
-		wabort(bw->parent->link.next);
+	/* TRY */
+	if (bw->parent->link.prev->watom==&watommenu) {
+		wabort(bw->parent->link.prev);
 		/* smode=2; */
 	}
 
-	if (l && (new = mkmenu(bw->parent, l, tabrtn, tababrt, tabbacks, which, tab, NULL))) {
+	if (l && (new = mkmenu(bw->parent->link.prev, bw->parent, l, tabrtn, tababrt, tabbacks, which, tab, NULL))) {
 		if (sLEN(tab->files) == 1)
 			/* Only one file found, so select it */
 			return tabrtn1(new, 0, tab);
@@ -397,6 +398,7 @@ int cmplt(BW *bw)
 			return 0;
 		}
 	} else {
+		printf("couldn't create menu...\n"); fflush(stdout);
 		/* if(joe_beep) */
 			ttputc(7);
 		rmtab(tab);

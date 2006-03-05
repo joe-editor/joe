@@ -6,6 +6,9 @@ Sat Mar  4 21:59:22 EST 2006
 
 	Fix .php variable highlighting
 
+	File selection menu is now above prompt instead of below it.  This
+	needs to be an option.
+
 Wed Mar  1 10:19:49 EST 2006
 
 	Match how Thomas Dickey implemented the xterm-paste patch.

@@ -385,7 +385,7 @@ int simple_cmplt(BW *bw,unsigned char **list)
 		wabort(bw->parent->link.next);
 	}
 
-	m = mkmenu(bw->parent, lst, cmplt_rtn, cmplt_abrt, NULL, 0, line, NULL);
+	m = mkmenu(bw->parent, bw->parent, lst, cmplt_rtn, cmplt_abrt, NULL, 0, line, NULL);
 	if (!m) {
 		varm(lst);
 		vsrm(line);
