@@ -2,14 +2,22 @@
 yet.
 </p>
 
+<h3>How do I deselect a highlighted block?</h3>
+<p>Make the block zero size by hitting ^K B ^K K.</p>
+
+<h3>What if I hit ^K by accident?</h3>
+<p>Hit the space bar.  This runs an innocuous command (it shows the line
+number on the status bar).</p>
+
 <h3>Color xterm support</h3>
 
 <p>JOE can make use of monochrome xterm, 8-color xterm, 16-color xterm,
 88-color xterm and 256-color xterm.  The number of colors which xterm
-supports is determined by "configure" script options when the source code is
-compiled.  The termcap or terminfo entry must support how your xterm is
-configured.  On my Slackware Linux distribution, you have to set to TERM
-environment variable to one of these:</p>
+supports is determined by which "configure" script options are set before
+the xterm source code is compiled.  The termcap or terminfo entry must
+support how your xterm is configured.  On my Slackware Linux distribution,
+you have to set the TERM environment variable to one of these:</p>
+
 <ul>
 <li>xterm</li>
 <li>xterm-color</li>
@@ -17,6 +25,13 @@ environment variable to one of these:</p>
 <li>xterm-88color</li>
 <li>xterm-256color</li>
 </ul>
+
+<p>If the termcap/terminfo entry is missing, you can add the "-assume_256color"
+option to the joerc file.  Note that this was broken for terminfo in
+versions of JOE below 3.4.</p>
+
+<p>When it is working, the command: "joe -bg_text bg_222" should have a gray
+background</p>
 
 <h3>UTF-8</h3>
 <p>JOE now handles two classes of character sets: UTF-8 and byte coded (like

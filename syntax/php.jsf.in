@@ -53,9 +53,8 @@
   * idle  noeat
 	
 :php_var Var
-  *   php_var
-  " ;[]=()" idle  recolor=-1
-  "-" maybe_method recolor=-1
+  * idle noeat
+  "a-zA-Z_0-9-ÿ" php_var
 
 :var_indqstring Var
   *     string_dq recolor=-1
