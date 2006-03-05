@@ -1312,10 +1312,18 @@ void scrdn(BW *bw, int n, int flg)
 
 /* Page up */
 
+extern int menu_above;
+
 int upgup(BW *bw)
 {
-	if (bw->parent->link.next->watom==&watommenu) {
-		return umpgup(bw->parent->link.next->object);
+	if (menu_above) {
+		if (bw->parent->link.prev->watom==&watommenu) {
+			return umpgup(bw->parent->link.prev->object);
+		}
+	} else {
+		if (bw->parent->link.next->watom==&watommenu) {
+			return umpgup(bw->parent->link.next->object);
+		}
 	}
 	bw = (BW *) bw->parent->main->object;
 
@@ -1334,8 +1342,14 @@ int upgup(BW *bw)
 
 int upgdn(BW *bw)
 {
-	if (bw->parent->link.next->watom==&watommenu) {
-		return umpgdn(bw->parent->link.next->object);
+	if (menu_above) {
+		if (bw->parent->link.prev->watom==&watommenu) {
+			return umpgdn(bw->parent->link.prev->object);
+		}
+	} else {
+		if (bw->parent->link.next->watom==&watommenu) {
+			return umpgdn(bw->parent->link.next->object);
+		}
 	}
 	bw = (BW *) bw->parent->main->object;
 	if (bw->o.hex ? bw->cursor->byte/16 == bw->b->eof->byte/16 : bw->cursor->line == bw->b->eof->line)

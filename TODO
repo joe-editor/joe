@@ -1,3 +1,6 @@
+we should store location of menu. menu_above could change while menu is
+open (but menu could be deleted, so this raises other problems).
+
 performace:
  new ltree.c?
  getcontext causes huge cpu usage for very large functions (xp_useq.v for
