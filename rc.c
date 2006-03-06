@@ -115,6 +115,7 @@ extern unsigned char *backpath;
 extern int nolocks, nomodcheck, nocurdir;
 extern int assume_256color;
 extern int bg_text;
+extern int bg_stalin;
 extern int bg_menu;
 extern int bg_help;
 extern int bg_prompt;
@@ -583,7 +584,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!zcmp(s, US "bg_text")) {
+	} else if (!zcmp(s, US "text_color")) {
 		if (arg) {
 			int sta;
 
@@ -592,10 +593,11 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			bg_prompt = bg_text;
 			bg_menu = bg_text;
 			bg_msg = bg_text;
+			bg_stalin = bg_text;
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!zcmp(s, US "bg_help")) {
+	} else if (!zcmp(s, US "help_color")) {
 		if (arg) {
 			int sta;
 
@@ -603,7 +605,15 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!zcmp(s, US "bg_menu")) {
+	} else if (!zcmp(s, US "status_color")) {
+		if (arg) {
+			int sta;
+
+			bg_stalin = meta_color(arg);
+			ret = 2;
+		} else
+			ret = 1;
+	} else if (!zcmp(s, US "menu_color")) {
 		if (arg) {
 			int sta;
 
@@ -611,7 +621,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!zcmp(s, US "bg_prompt")) {
+	} else if (!zcmp(s, US "prompt_color")) {
 		if (arg) {
 			int sta;
 
@@ -619,7 +629,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 2;
 		} else
 			ret = 1;
-	} else if (!zcmp(s, US "bg_msg")) {
+	} else if (!zcmp(s, US "msg_color")) {
 		if (arg) {
 			int sta;
 

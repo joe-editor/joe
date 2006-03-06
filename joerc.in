@@ -155,14 +155,15 @@
 
  -square	Rectangular block mode
 
- -bg_text color	Set background color for text, help, menus, prompts and messages.
- -bg_help color	Set background color for help.
- -bg_menu color	Set background color for menus.
- -bg_prompt color
-		Set background color for prompts.
- -bg_msg color	Set background color for messages.
+ -text_color color	Set color for text.
+ -status_color color	Set color for status bar.
+ -help_color color	Set color for help.
+ -menu_color color	Set color for menus.
+ -prompt_color color	Set color for prompts.
+ -msg_color color	Set color for messages.
 
-		For example: -bg_text bg_blue
+		For example: -text_color bg_blue+white
+		Sets the background color to blue and foreground color to white.
 
 -search_prompting
 		Search prompts with previous search request.

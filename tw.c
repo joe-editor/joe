@@ -34,6 +34,7 @@ extern int square;
 int staen = 0;
 int staupd = 0;
 int keepup = 0;
+int bg_stalin;
 
 /* Move text window */
 
@@ -406,7 +407,7 @@ static void disptw(BW *bw, int flg)
 			tw->stalin = vsncpy(tw->stalin, fmtpos(tw->stalin, w->w - fmtlen(tw->staright)), sv(tw->staright));
 		}
 		tw->stalin = vstrunc(tw->stalin, fmtpos(tw->stalin, w->w));
-		genfmt(w->t->t, w->x, w->y, 0, tw->stalin, BG_COLOR(bg_text), 0);
+		genfmt(w->t->t, w->x, w->y, 0, tw->stalin, bg_stalin, 0);
 		w->t->t->updtab[w->y] = 0;
 	}
 

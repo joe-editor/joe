@@ -1793,7 +1793,7 @@ void nredraw(SCRN *t)
 
 /* Convert color/attribute name into internal code */
 
-int meta_color(unsigned char *s)
+int meta_color_single(unsigned char *s)
 {
 	if(!zcmp(s,US "inverse"))
 		return INVERSE;
@@ -1901,6 +1901,27 @@ int meta_color(unsigned char *s)
 
 	else
 		return 0;
+}
+
+int meta_color(unsigned char *s)
+{
+	int code = 0;
+	while (*s) {
+		unsigned char buf[32];
+		int x = 0;
+		while (*s)
+			if (*s && *s != '+') {
+				if (x != sizeof(buf) - 1)
+					buf[x++] = *s;
+				++s;
+			} else
+				break;
+		if (*s == '+')
+			++s;
+		buf[x] = 0;
+		code |= meta_color_single(buf);
+	}
+	return code;
 }
 
 /* Generate a field
