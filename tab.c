@@ -407,7 +407,6 @@ int cmplt(BW *bw)
 			return 0;
 		}
 	} else {
-		printf("couldn't create menu...\n"); fflush(stdout);
 		/* if(joe_beep) */
 			ttputc(7);
 		rmtab(tab);

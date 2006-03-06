@@ -1,3 +1,5 @@
+long prompts for qw.c (locking message) should spill onto multiple lines.
+
 we should store location of menu. menu_above could change while menu is
 open (but menu could be deleted, so this raises other problems).
 

@@ -1,3 +1,10 @@
+- Highlighting now uses less CPU time.
+
+- JOE now matches Thomas Dickey's implementation of xterm patch.
+
+- File selection menu/completion-list is now above the prompt (which is more
+like bash).
+
 - "Bufed" (prompt for a buffer to edit), works like other file prompt
   commands: it's a real prompt with history and completion.
 

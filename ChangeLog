@@ -1,3 +1,7 @@
+Sun Mar  5 12:46:27 EST 2006
+
+	Fix range of %p
+
 Sat Mar  4 21:59:22 EST 2006
 
 	Highlight python docstrings the same as regular strings.
