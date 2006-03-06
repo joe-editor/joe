@@ -259,13 +259,16 @@ static int srch_cmplt(BW *bw)
 
 static P *searchf(BW *bw,SRCH *srch, P *p)
 {
-	unsigned char *pattern = srch->pattern;
+	unsigned char *pattern;
 	P *start;
 	P *end;
 	int x;
 
+	pattern = srch->pattern;
 	start = pdup(p);
 	end = pdup(p);
+
+	try_again:
 
 	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
@@ -277,12 +280,22 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 		if (srch->wrap_flag && start->byte>=srch->wrap_p->byte)
 			break;
 		if (pmatch(srch->pieces, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) {
-			srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
-			brmem(start, srch->entire, (int) (end->byte - start->byte));
-			pset(p, end);
-			prm(start);
-			prm(end);
-			return p;
+			if (end->byte == srch->last_repl) {
+				/* Stuck? */
+				pattern = srch->pattern;
+				pset(start, p);
+				if (pgetc(start) == NO_MORE_DATA)
+					break;
+				pset(end, start);
+				goto try_again;
+			} else {
+				srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
+				brmem(start, srch->entire, (int) (end->byte - start->byte));
+				pset(p, end);
+				prm(start);
+				prm(end);
+				return p;
+			}
 		}
 		if (pgetc(start) == NO_MORE_DATA)
 			break;
@@ -323,6 +336,8 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 	start = pdup(p);
 	end = pdup(p);
 
+	try_again:
+
 	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && (pattern[x]<128 || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
 			pattern[x] = joe_tolower(p->b->o.charmap,pattern[x]);
@@ -335,12 +350,22 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 		if (srch->wrap_flag && start->byte<srch->wrap_p->byte)
 			break;
 		if (pmatch(srch->pieces, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) {
-			srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
-			brmem(start, srch->entire, (int) (end->byte - start->byte));
-			pset(p, start);
-			prm(start);
-			prm(end);
-			return p;
+			if (start->byte == srch->last_repl) {
+				/* Stuck? */
+				pattern = srch->pattern;
+				pset(start, p);
+				if (prgetc(start) == NO_MORE_DATA)
+					break;
+				pset(end, start);
+				goto try_again;
+			} else {
+				srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
+				brmem(start, srch->entire, (int) (end->byte - start->byte));
+				pset(p, start);
+				prm(start);
+				prm(end);
+				return p;
+			}
 		}
 	}
 
@@ -391,6 +416,7 @@ SRCH *mksrch(unsigned char *pattern, unsigned char *replacement, int ignore, int
 	srch->entire = NULL;
 	srch->flg = 0;
 	srch->addr = -1;
+	srch->last_repl = -1;
 	srch->markb = NULL;
 	srch->markk = NULL;
 	srch->wrap_p = NULL;
@@ -440,6 +466,7 @@ void rmsrch(SRCH *srch)
 static P *insert(SRCH *srch, P *p, unsigned char *s, int len)
 {
 	int x;
+	long starting = p->byte;
 
 	while (len) {
 		for (x = 0; x != len && s[x] != '\\'; ++x) ;
@@ -476,6 +503,10 @@ static P *insert(SRCH *srch, P *p, unsigned char *s, int len)
 		} else
 			len = 0;
 	}
+
+	if (srch->backwards)
+		pbkwd (p, p->byte - starting);
+
 	return p;
 }
 
@@ -746,6 +777,7 @@ static int doreplace(BW *bw, SRCH *srch)
 	}
 	insert(srch, bw->cursor, sv(srch->replacement));
 	srch->addr = bw->cursor->byte;
+	srch->last_repl = bw->cursor->byte;
 	if (markk)
 		markk->end = 0;
 	if (srch->markk)
@@ -760,6 +792,7 @@ static void visit(SRCH *srch, BW *bw, int yn)
 	r->addr = bw->cursor->byte;
 	r->yn = yn;
 	r->wrap_flag = srch->wrap_flag;
+	r->last_repl = srch->last_repl;
 	enqueb(SRCHREC, link, &srch->recs, r);
 }
 
@@ -773,6 +806,7 @@ static void goback(SRCH *srch, BW *bw)
 		if (bw->cursor->byte != r->addr)
 			pgoto(bw->cursor, r->addr);
 		srch->wrap_flag = r->wrap_flag;
+		srch->last_repl = r->last_repl;
 		demote(SRCHREC, link, &fsr, r);
 	}
 }
@@ -855,27 +889,30 @@ static int restrict_to_block(BW *bw, SRCH *srch)
  *   0) Search or search & replace is finished.
  *   1) Search string was not found.
  *   2) Search string was found.
+ *   3) Abort due to infinite loop
  */
 
 static int fnext(BW *bw, SRCH *srch)
 {
 	P *sta;
 
-      next:
+	next:
 	if (srch->repeat != -1) {
 		if (!srch->repeat)
 			return 0;
 		else
 			--srch->repeat;
 	}
-      again:if (srch->backwards)
+	again:
+	if (srch->backwards)
 		sta = searchb(bw, srch, bw->cursor);
 	else
 		sta = searchf(bw, srch, bw->cursor);
 	if (!sta) {
 		srch->repeat = -1;
 		return 1;
-	} else if (srch->rest || (srch->repeat != -1 && srch->replace)) {
+	}
+	if (srch->rest || (srch->repeat != -1 && srch->replace)) {
 		if (srch->valid)
 			switch (restrict_to_block(bw, srch)) {
 			case -1:
@@ -925,6 +962,10 @@ bye:		if (!srch->flg && !srch->rest) {
 				msgnw(bw->parent, US "Not found");
 			ret = -1;
 		}
+		break;
+	case 3:
+		msgnw(bw->parent, US "Infinite loop aborted: your search repeatedly matched same place");
+		ret = -1;
 		break;
 	case 2:
 		if (srch->valid)

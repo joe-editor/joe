@@ -4,6 +4,10 @@ Sun Mar  5 12:46:27 EST 2006
 
 	Allow setting of foreground and background colors.
 
+	Fix search problems with ^ $
+	Backward search now moves cursor beginning of insertion point.
+	Still need to fix bugs with undo in search.
+
 Sat Mar  4 21:59:22 EST 2006
 
 	Highlight python docstrings the same as regular strings.

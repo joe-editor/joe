@@ -625,6 +625,7 @@ struct srchrec {
 	int	yn;		/* Did we replace? */
 	int	wrap_flag;	/* Did we wrap? */
 	long	addr;		/* Where we were */
+	long	last_repl;
 };
 
 struct search {
@@ -644,7 +645,8 @@ struct search {
 	int	wrap_flag;	/* Set if we've wrapped */
 	int	allow_wrap;	/* Set to allow wrapping */
 	int	valid;		/* Set if original marks are a valid block */
-	long	addr;		/* Addr of last replacement or -1 for none */
+	long	addr;		/* Where to place cursor after failed restruct_to_block() test */
+	long	last_repl;	/* Address of last replacement (prevents infinite loops) */
 	int	block_restrict;	/* Search restricted to marked block */
 };
 
