@@ -298,8 +298,8 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'p':
-				if (bw->b->eof->byte >= 65536)
-					joe_snprintf_1((char *)buf, sizeof(buf), "%3ld", ((unsigned long)bw->cursor->byte >> 16) * 100 / ((unsigned long)bw->b->eof->byte >> 16));
+				if (bw->b->eof->byte >= 1024*1024)
+					joe_snprintf_1((char *)buf, sizeof(buf), "%3ld", ((unsigned long)bw->cursor->byte >> 10) * 100 / ((unsigned long)bw->b->eof->byte >> 10));
 				else if (bw->b->eof->byte)
 					joe_snprintf_1((char *)buf, sizeof(buf), "%3ld", bw->cursor->byte * 100 / bw->b->eof->byte);
 				else
