@@ -11,19 +11,6 @@ yet.
 <p>Hit the space bar.  This runs an innocuous command (it shows the line
 number on the status bar).</p>
 
-<h3>What's going on if I search for '\$' or '\+ \$' (trying to delete white
-space from ends of lines)?</h3>
-
-<p>Remember that '\$' is a predicate- it matches a position, but does not
-take up any space.  Also remember that '\+' matches _zero_ or more of the
-character which follows.  Thus '\+ \$' will find white space or nothing at
-the end of the line of the first line.  If you try to search and replace
-this with an empty string, you will get an infinite loop.  In JOE 3.4, this
-is detected, and a message is printed, but older versions of JOE would lock
-up.</p>
-
-<p>To delete all spaces at ends of lines, search for this: ' \+ \$'.</p>
-
 <h3>Color xterm support</h3>
 
 <p>JOE can make use of monochrome xterm, 8-color xterm, 16-color xterm,
