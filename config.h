@@ -63,15 +63,20 @@
 
 #define physical(a) ((unsigned long)(a))
 #define normalize(a) (a)
-#ifdef PAGE_SIZE
-#define PGSIZE PAGE_SIZE
-#else
-#define PGSIZE 4096
-#endif
-#define SEGSIZ PGSIZE
+
+/* Log2 of page size */
 #define LPGSIZE 12
-#define ILIMIT (PGSIZE*1024)
-#define HTSIZE 2048
+/* No. bytes in page */
+#define PGSIZE (1<<LPGSIZE)
+/* Gap buffer size (must be same as page size) */
+#define SEGSIZ PGSIZE
+
+/* Max number of pages allowed in core */
+#define NPAGES 8192
+/* Max core memory used in bytes */
+#define ILIMIT (PGSIZE*NPAGES)
+/* Hash table size (should be double the max number of pages) */
+#define HTSIZE (NPAGES*2)
 
 #endif /* real mode ms-dos */
 

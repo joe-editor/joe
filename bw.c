@@ -223,7 +223,7 @@ HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 		while (tmp->line < line && !piseof(tmp)) {
 			state = parse(w->o.syntax, tmp, state);
 		}
-		if (!piseof(tmp))
+		if (tmp->line == line)
 			lattr_set(w->db, line, state);
 		prm(tmp);
 	}
