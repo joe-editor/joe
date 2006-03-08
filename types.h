@@ -106,6 +106,7 @@ struct point {
 	int	end;		/* ??? */
 
 	P	**owner;	/* ??? */
+	unsigned char *tracker;	/* Name of function who pdup()ed me */
 };
 
 struct options {

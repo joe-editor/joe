@@ -68,8 +68,8 @@ static void cfollow(B *b,long byte)
 
 static void cdata(B *b, unsigned char *dat, int siz)
 {
-	P *q = pdup(b->eof);
-	P *r = pdup(b->eof);
+	P *q = pdup(b->eof, US "cdata");
+	P *r = pdup(b->eof, US "cdata");
 	long byte = q->byte;
 	unsigned char bf[1024];
 	int x, y;

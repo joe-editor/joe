@@ -104,7 +104,7 @@ static void doundo(BW *bw, UNDOREC *ptr)
 			boffline(b);
 		}
 	} else {
-		P *q = pdup(bw->cursor);
+		P *q = pdup(bw->cursor, US "doundo");
 
 		pfwrd(q, ptr->len);
 		bdel(bw->cursor, q);
@@ -433,7 +433,7 @@ int uyankpop(BW *bw)
 
 		deque(UNDOREC, link, &yanked);
 		enqueb(UNDOREC, link, ptr, &yanked);
-		q = pdup(bw->cursor);
+		q = pdup(bw->cursor, US "uyankpop");
 		pbkwd(q, ptr->len);
 		inyank = 1;
 		bdel(q, bw->cursor);

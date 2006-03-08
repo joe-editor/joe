@@ -52,7 +52,7 @@ int ucenter(BW *bw)
 	if (endcol - begcol > bw->o.rmargin + bw->o.lmargin)
 		goto done;
 
-	q = pdup(p);
+	q = pdup(p, US "ucenter");
 	p_goto_bol(q);
 	bdel(q, p);
 	prm(q);
@@ -95,7 +95,7 @@ static int pisnpara(P *p)
 	P *q;
 	int c;
 
-	q = pdup(p);
+	q = pdup(p, US "pisnpara");
 	p_goto_bol(q);
 	while (cpara(c = pgetc(q)))
 		/* do nothing */;
@@ -110,7 +110,7 @@ static int pisnpara(P *p)
 
 static long nindent(P *p)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "nindent");
 	long col;
 
 	p_goto_bol(q);
@@ -126,7 +126,7 @@ static long nindent(P *p)
 static long prefix(P *p)
 {
 	long len;
-	P *q = pdup(p);
+	P *q = pdup(p, US "prefix");
 
 	p_goto_bol(q);
 	while (cpara(brch(q)))
@@ -227,7 +227,7 @@ P *peop(P *p)
 
 int ubop(BW *bw)
 {
-	P *q = pdup(bw->cursor);
+	P *q = pdup(bw->cursor, US "ubop");
 
       up:
 	while (pisnpara(q) && !pisbof(q) && (!within || !markb || q->byte > markb->byte))
@@ -248,7 +248,7 @@ int ubop(BW *bw)
 
 int ueop(BW *bw)
 {
-	P *q = pdup(bw->cursor);
+	P *q = pdup(bw->cursor, US "ueop");
 
       up:
 	while (pisnpara(q) && !piseof(q))
@@ -313,7 +313,7 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 	if (!pisbol(p) && piscol(p) > indent) {
 		/* Move q to two (or one if 'french' is set) spaces after end of previous
 		   word */
-		q = pdup(p);
+		q = pdup(p, US "wrapword");
 		while (!pisbol(q))
 			if (!joe_isblank(p->b->o.charmap, (c = prgetc(q)))) {
 				pgetc(q);
@@ -335,11 +335,11 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 		/* Take care that wordwrap is done the right way when overtype mode is active */
 		if (p->b->o.overtype){
 			/* delete the next line break which is unnecessary */
-			r = pdup(p);
+			r = pdup(p, US "wrapword");
 			/* p_goto_eol(r); */
 			pgetc(r);
 			p_goto_eol(r);
-			s = pdup(r);
+			s = pdup(r, US "wrapword");
 			pgetc(r);
 			bdel(s,r);
 			binsc(r, ' ');
@@ -350,7 +350,7 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 			
 			/* Make a copy of the cursor and move the copied cursor to the end of the line */
 			prm(s);
-			s = pdup(r);
+			s = pdup(r, US "wrapword");
 			p_goto_eol(s);
 			
 			/* If s is located behind r then the line goes beyond the right margin and we need to call wordwrap() for that line. */
@@ -397,7 +397,7 @@ int uformat(BW *bw)
 	int c;
 	P *p, *q;
 
-	p = pdup(bw->cursor);
+	p = pdup(bw->cursor, US "uformat");
 	p_goto_bol(p);
 
 	/* Do nothing if we're not on a paragraph line */
@@ -419,17 +419,17 @@ int uformat(BW *bw)
 
 	/* Record indentation of second line of paragraph, of first line if there
 	 * is only one line */
-	q = pdup(p);
+	q = pdup(p, US "uformat");
 	pnextl(q);
 	if (q->line != bw->cursor->line) {
-		P *r = pdup(q);
+		P *r = pdup(q, US "uformat");
 
 		indent = nindent(q);
 		pcol(r, indent);
 		indents = brs(q, r->byte - q->byte);
 		prm(r);
 	} else {
-		P *r = pdup(p);
+		P *r = pdup(p, US "uformat");
 
 		indent = nindent(p);
 		pcol(r, indent);
@@ -453,7 +453,7 @@ int uformat(BW *bw)
 	/* text is in buffer.  insert it at cursor */
 
 	/* Do first line */
-	b = pdup(buf->bof);
+	b = pdup(buf->bof, US "uformat");
 
 	while (!piseof(b)) {
 		/* Set cursor position if we're at original offset */
@@ -495,7 +495,7 @@ int uformat(BW *bw)
 
 			/* Set f if there are two spaces after . ? or ! instead of one */
 			/* (What is c was '\n'?) */
-			d=pdup(b);
+			d=pdup(b, US "uformat");
 			g=prgetc(d);
 			if (g=='.' || g=='?' || g=='!') {
 				pset(d,b);

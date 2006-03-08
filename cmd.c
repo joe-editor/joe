@@ -46,6 +46,7 @@ extern int nowmarking;
 extern int smode;
 int joe_beep = 0;
 int uexecmd(BW *bw);
+int udebug_joe(BW *bw);
 
 /* Command table */
 
@@ -150,6 +151,7 @@ CMD cmds[] = {
 	{US "ltarw", TYPETW + TYPEPW /* + EFIXXCOL + ECHKXCOL */, u_goto_left, NULL, 1, US "rtarw"},
 	{US "ltarwmenu", TYPEMENU, umltarw, NULL, 1, US "rtarwmenu"},
 	{US "macros", TYPETW + EFIXXCOL, umacros, NULL, 0, NULL},
+	{US "debug_joe", TYPETW + EFIXXCOL, udebug_joe, NULL, 0, NULL},
 	{US "markb", TYPETW + TYPEPW, umarkb, NULL, 0, NULL},
 	{US "markk", TYPETW + TYPEPW, umarkk, NULL, 0, NULL},
 	{US "markl", TYPETW + TYPEPW, umarkl, NULL, 0, NULL},

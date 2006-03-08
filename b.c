@@ -161,6 +161,32 @@ static void pfree(P *p)
 static B bufs = { {&bufs, &bufs} };
 static B frebufs = { {&frebufs, &frebufs} };
 
+int udebug_joe(BW *bw)
+{
+	int x;
+	unsigned char buf[1024];
+
+	B *b;
+	P *p;
+
+	binss(bw->cursor, US "Buffers and pointers (the number of pointers per buffer should not grow, except for 20 from markpos):\n\n");
+	pnextl(bw->cursor);
+
+	for (b = bufs.link.next; b != &bufs; b = b->link.next) {
+		if (b->name)
+			joe_snprintf_1((char *)buf, sizeof(buf), "Buffer %s\n", b->name);
+		else
+			joe_snprintf_1((char *)buf, sizeof(buf), "Buffer 0x%x\n", b);
+		binss(bw->cursor, buf);
+		pnextl(bw->cursor);
+		for (p = b->bof->link.next; p != b->bof; p = p->link.next) {
+			joe_snprintf_1((char *)buf, sizeof(buf), "  Pointer created by %s\n", p->tracker);
+			binss(bw->cursor, buf);
+			pnextl(bw->cursor);
+		}
+	}
+}
+
 B *bnext(void)
 {
 	B *b;
@@ -225,7 +251,8 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->bof->col = 0;
 	b->bof->xcol = 0;
 	b->bof->valcol = 1;
-	b->eof = pdup(b->bof);
+	b->bof->tracker = US "bmkchn";
+	b->eof = pdup(b->bof, US "bmkchn");
 	b->eof->end = 1;
 	vunlock(b->eof->ptr);
 	b->eof->hdr = chn->link.prev;
@@ -315,24 +342,26 @@ B *bonline(B *b)
 	return b;
 }
 
-P *pdup(P *p)
+P *pdup(P *p, unsigned char *tr)
 {
 	P *n = palloc();
 
 	n->end = 0;
 	n->ptr = NULL;
 	n->owner = NULL;
+	n->tracker = tr;
 	enquef(P, link, p, n);
 	return pset(n, p);
 }
 
-P *pdupown(P *p, P **o)
+P *pdupown(P *p, P **o, unsigned char *tr)
 {
 	P *n = palloc();
 
 	n->end = 0;
 	n->ptr = NULL;
 	n->owner = o;
+	n->tracker = tr;
 	enquef(P, link, p, n);
 	pset(n, p);
 	if (*o)
@@ -407,7 +436,7 @@ int piseol(P *p)
 		return 1;
 	if (p->b->o.crlf)
 		if (c == '\r') {
-			P *q = pdup(p);
+			P *q = pdup(p, US "piseol");
 
 			pfwrd(q, 1L);
 			if (pgetb(q) == '\n') {
@@ -434,7 +463,7 @@ int pisbol(P *p)
 /* is p at the beginning of word? */
 int pisbow(P *p)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "pisbow");
 	int c = brc(p);
 	int d = prgetc(q);
 
@@ -448,7 +477,7 @@ int pisbow(P *p)
 /* is p at the end of word? */
 int piseow(P *p)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "piseow");
 	int d = brc(q);
 	int c = prgetc(q);
 
@@ -462,7 +491,7 @@ int piseow(P *p)
 /* is p on the blank line (ie. full of spaces/tabs)? */
 int pisblank(P *p)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "pisblank");
 
 	p_goto_bol(q);
 	while (joe_isblank(p->b->o.charmap,brc(q)))
@@ -479,7 +508,7 @@ int pisblank(P *p)
 /* is p at end of line or spaces followed by end of line? */
 int piseolblank(P *p)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "piseolblank");
 
 	while (joe_isblank(p->b->o.charmap,brc(q)))
 		pgetb(q);
@@ -495,7 +524,7 @@ int piseolblank(P *p)
 /* return column of first nonblank character */
 long pisindent(P *p)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "pisindent");
 	long col;
 
 	p_goto_bol(q);
@@ -510,7 +539,7 @@ long pisindent(P *p)
 
 int pispure(P *p,int c)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "pispure");
 	p_goto_bol(q);
 	while (q->byte!=p->byte)
 		if (pgetc(q)!=c) {
@@ -744,10 +773,10 @@ int prgetc(P *p)
 		if (pisbol(p))
 			return prgetb(p);
 		else {
-			P *q = pdup(p);
+			P *q = pdup(p, US "prgetc");
 			P *r;
 			p_goto_bol(q);
-			r = pdup(q);
+			r = pdup(q, US "prgetc");
 			while (q->byte<p->byte) {
 				pset(r, q);
 				pgetc(q);
@@ -1118,7 +1147,7 @@ void pfill(P *p, long to, int usetabs)
 void pbackws(P *p)
 {
 	int c;
-	P *q = pdup(p);
+	P *q = pdup(p, US "pbackws");
 
 	do {
 		c = prgetc(q);
@@ -1250,7 +1279,7 @@ static P *getto(P *p, P *q)
 /* find forward substring s in text pointed by p and set p after found substring */
 P *pfind(P *p, unsigned char *s, int len)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "pfind");
 
 	if (ffind(q, s, len)) {
 		getto(p, q);
@@ -1265,7 +1294,7 @@ P *pfind(P *p, unsigned char *s, int len)
 /* same as pfind() but case insensitive */
 P *pifind(P *p, unsigned char *s, int len)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "pifind");
 
 	if (fifind(q, s, len)) {
 		getto(p, q);
@@ -1411,7 +1440,7 @@ static P *rgetto(P *p, P *q)
 /* find backward substring s in text pointed by p and set p on the first of found substring */
 P *prfind(P *p, unsigned char *s, int len)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "prfind");
 
 	if (frfind(q, s, len)) {
 		rgetto(p, q);
@@ -1426,7 +1455,7 @@ P *prfind(P *p, unsigned char *s, int len)
 /* same as prfind() but case insensitive */
 P *prifind(P *p, unsigned char *s, int len)
 {
-	P *q = pdup(p);
+	P *q = pdup(p, US "prifind");
 
 	if (frifind(q, s, len)) {
 		rgetto(p, q);
@@ -1448,7 +1477,7 @@ B *bcpy(P *from, P *to)
 	if (from->byte >= to->byte)
 		return bmk(from->b);
 
-	q = pdup(from);
+	q = pdup(from, US "bcpy");
 	izque(H, link, &anchor);
 
 	if (q->hdr == to->hdr) {
@@ -1893,13 +1922,14 @@ static void fixupins(P *p, long amnt, long nlines, H *hdr, int hdramnt)
 	if (p->b->undo)
 		undoins(p->b->undo, p, amnt);
 	p->b->changed = 1;
+
 }
 
 /* Insert a buffer at pointer position (the buffer goes away) */
 P *binsb(P *p, B *b)
 {
 	if (b->eof->byte) {
-		P *q = pdup(p);
+		P *q = pdup(p, US "binsb");
 
 		inschn(q, b->bof->hdr);
 		b->eof->hdr = halloc();
@@ -1921,7 +1951,7 @@ P *binsm(P *p, unsigned char *blk, int amnt)
 
 	if (!amnt)
 		return p;
-	q = pdup(p);
+	q = pdup(p, US "binsm");
 	if (amnt <= GGAPSZ(q->hdr)) {
 		h = q->hdr;
 		hdramnt = amnt;
@@ -2236,7 +2266,7 @@ opnerr:
 
 	/* If first line has CR-LF, assume MS-DOS file */
 	if (guesscrlf) {
-		p=pdup(b->bof);
+		p=pdup(b->bof, US "bload");
 		b->o.crlf = 0;
 		for(x=0;x!=1024;++x) {
 			int c = pgetc(p);
@@ -2257,7 +2287,7 @@ opnerr:
 	/* Search backwards through file: if first indented line
 	   is indented with a tab, assume indentc is tab */
 	if (guessindent) {
-		p=pdup(b->eof);
+		p=pdup(b->eof, US "bload");
 		for (x=0; x!=20; ++x) {
 			p_goto_bol(p);
 			if (pisindent(p)) {
@@ -2401,7 +2431,7 @@ B *borphan(void)
  */
 int bsavefd(P *p, int fd, long int size)
 {
-	P *np = pdup(p);
+	P *np = pdup(p, US "bsavefd");
 	int amnt;
 
 	while (size > (amnt = GSIZE(np->hdr) - np->ofst)) {
@@ -2528,7 +2558,7 @@ int bsave(P *p, unsigned char *s, long int size, int flag)
 	bsavefd(p, fileno(f), size);
 
 	if (!error && force && size && !skip && amnt == MAXLONG) {
-		P *q = pdup(p);
+		P *q = pdup(p, US "bsave");
 		unsigned char nl = '\n';
 
 		pfwrd(q, size - 1);
@@ -2577,7 +2607,7 @@ int brc(P *p)
 int brch(P *p)
 {
 	if (p->b->o.charmap->type) {
-		P *q = pdup(p);
+		P *q = pdup(p, US "brch");
 		int c = pgetc(q);
 		prm(q);
 		return c;
@@ -2592,7 +2622,7 @@ unsigned char *brmem(P *p, unsigned char *blk, int size)
 	P *np;
 	int amnt;
 
-	np = pdup(p);
+	np = pdup(p, US "brmem");
 	while (size > (amnt = GSIZE(np->hdr) - np->ofst)) {
 		grmem(np->hdr, np->ptr, np->ofst, bk, amnt);
 		bk += amnt;
@@ -2622,7 +2652,7 @@ unsigned char *brvs(P *p, int size)
 
 unsigned char *brzs(P *p, unsigned char *buf, int size)
 {
-	P *q=pdup(p);
+	P *q=pdup(p, US "brzs");
 	p_goto_eol(q);
 
 	if(q->byte-p->byte<size)

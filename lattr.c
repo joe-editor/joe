@@ -68,7 +68,7 @@ void lattr_del(struct lattr_db *db, struct lattr_node *t)
   joe_free(t);
   }
 
-// Set key to value
+/* Set key to value */
 
 void lattr_set(struct lattr_db *db, lattr_key_t key, lattr_value_t value)
   {
@@ -84,7 +84,7 @@ void lattr_set(struct lattr_db *db, lattr_key_t key, lattr_value_t value)
     }
   }
 
-// Find node with nearest key
+/* Find node with nearest key */
 
 int lattr_get(struct lattr_db *db, lattr_key_t *key, lattr_value_t *value)
   {

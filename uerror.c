@@ -210,8 +210,8 @@ static int parseit(struct charmap *map,unsigned char *s, long int row)
 
 static long parserr(B *b)
 {
-	P *p = pdup(b->bof);
-	P *q = pdup(p);
+	P *p = pdup(b->bof, US "parserr");
+	P *q = pdup(p, US "parserr");
 	long nerrs = 0;
 
 	freeall();
@@ -321,8 +321,8 @@ unsigned char *srcherr(BW *bw,unsigned char *file,long line)
 int ujump(BW *bw)
 {
 	int rtn = -1;
-	P *p = pdup(bw->cursor);
-	P *q = pdup(p);
+	P *p = pdup(bw->cursor, US "ujump");
+	P *q = pdup(p, US "ujump");
 	unsigned char *s;
 	p_goto_bol(p);
 	p_goto_eol(q);

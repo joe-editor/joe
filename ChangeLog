@@ -1,3 +1,8 @@
+Tue Mar  7 23:28:47 EST 2006
+
+	Add joe_debug command.  Fix pointer leak (caused paragraph reformat
+	to be very slow).
+
 Sun Mar  5 12:46:27 EST 2006
 
 	Fix range of %p

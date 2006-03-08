@@ -30,8 +30,8 @@ B *bfind_scratch PARAMS((unsigned char *s));
 B *bcheck_loaded PARAMS((unsigned char *s));
 B *bfind_reload PARAMS((unsigned char *s));
 
-P *pdup PARAMS((P *p));
-P *pdupown PARAMS((P *p, P **o));
+P *pdup PARAMS((P *p, unsigned char *tr));
+P *pdupown PARAMS((P *p, P **o, unsigned char *tr));
 P *poffline PARAMS((P *p));
 P *ponline PARAMS((P *p));
 B *bonline PARAMS((B *b));

@@ -62,9 +62,9 @@ int upsh(BW *bw)
 	m->markb = 0;
 	m->markk = 0;
 	if (markk)
-		pdupown(markk, &m->markk);
+		pdupown(markk, &m->markk, US "upsh");
 	if (markb)
-		pdupown(markb, &m->markb);
+		pdupown(markb, &m->markb, US "upsh");
 	enqueb(MARKSAV, link, &markstack, m);
 	++nstack;
 	return 0;
@@ -103,9 +103,9 @@ int markv(int r)
 	if (markb && markk && markb->b == markk->b && markk->byte > markb->byte && (!square || markk->xcol > markb->xcol)) {
 		return 1;
 	} else if(autoswap && r && markb && markk && markb->b == markk->b && markb->byte > markk->byte && (!square || markk->xcol < markb->xcol)) {
-		P *p = pdup(markb);
-		prm(markb); markb=0; pdupown(markk, &markb);
-		prm(markk); markk=0; pdupown(p, &markk);
+		P *p = pdup(markb, US "markv");
+		prm(markb); markb=0; pdupown(markk, &markb, US "markv");
+		prm(markk); markk=0; pdupown(p, &markk, US "markv");
 		prm(p);
 		return 1;
 	} else
@@ -124,10 +124,10 @@ int markv(int r)
 
 B *pextrect(P *org, long int height, long int right)
 {
-	P *p = pdup(org);	/* Left part of text to extract */
-	P *q = pdup(p);		/* After right part of text to extract */
+	P *p = pdup(org, US "pextrect");	/* Left part of text to extract */
+	P *q = pdup(p, US "pextrect");		/* After right part of text to extract */
 	B *tmp = bmk(NULL);	/* Buffer to extract to */
-	P *z = pdup(tmp->eof);	/* Buffer pointer */
+	P *z = pdup(tmp->eof, US "pextrect");	/* Buffer pointer */
 
 	while (height--) {
 		pcol(p, org->xcol);
@@ -151,8 +151,8 @@ B *pextrect(P *org, long int height, long int right)
 
 void pdelrect(P *org, long int height, long int right)
 {
-	P *p = pdup(org);
-	P *q = pdup(p);
+	P *p = pdup(org, US "pdelrect");
+	P *q = pdup(p, US "pdelrect");
 
 	while (height--) {
 		pcol(p, org->xcol);
@@ -171,8 +171,8 @@ void pdelrect(P *org, long int height, long int right)
 
 void pclrrect(P *org, long int height, long int right, int usetabs)
 {
-	P *p = pdup(org);
-	P *q = pdup(p);
+	P *p = pdup(org, US "pclrrect");
+	P *q = pdup(p, US "pclrrect");
 
 	while (height--) {
 		long pos;
@@ -195,7 +195,7 @@ void pclrrect(P *org, long int height, long int right, int usetabs)
 
 int ptabrect(P *org, long int height, long int right)
 {
-	P *p = pdup(org);
+	P *p = pdup(org, US "ptabrect");
 
 	while (height--) {
 		int c;
@@ -219,9 +219,9 @@ int ptabrect(P *org, long int height, long int right)
 
 void pinsrect(P *cur, B *tmp, long int width, int usetabs)
 {
-	P *p = pdup(cur);	/* We insert at & move this pointer */
-	P *q = pdup(tmp->bof);	/* These are for scanning through 'tmp' */
-	P *r = pdup(q);
+	P *p = pdup(cur, US "pinsrect");	/* We insert at & move this pointer */
+	P *q = pdup(tmp->bof, US "pinsrect");	/* These are for scanning through 'tmp' */
+	P *r = pdup(q, US "pinsrect");
 
 	if (width)
 		while (pset(r, q), p_goto_eol(q), (q->line != tmp->eof->line || piscol(q))) {
@@ -252,7 +252,7 @@ void pinsrect(P *cur, B *tmp, long int width, int usetabs)
 
 int umarkb(BW *bw)
 {
-	pdupown(bw->cursor, &markb);
+	pdupown(bw->cursor, &markb, US "umarkb");
 	markb->xcol = bw->cursor->xcol;
 	updall();
 	return 0;
@@ -314,12 +314,12 @@ int utoggle_marking(BW *bw)
 	} else if (markb && markb->b==bw->cursor->b) {
 		nowmarking = 0;
 		if (bw->cursor->byte<markb->byte) {
-			pdupown(markb, &markk);
+			pdupown(markb, &markk, US "utoggle_marking");
 			prm(markb); markb=0;
-			pdupown(bw->cursor, &markb);
+			pdupown(bw->cursor, &markb, US "utoggle_marking");
 			markb->xcol = bw->cursor->xcol;
 		} else {
-			pdupown(bw->cursor, &markk);
+			pdupown(bw->cursor, &markk, US "utoggle_marking");
 			markk->xcol = bw->cursor->xcol;
 		}
 		updall(); /* Because other windows could be changed */
@@ -342,7 +342,7 @@ int uselect(BW *bw)
 
 int umarkk(BW *bw)
 {
-	pdupown(bw->cursor, &markk);
+	pdupown(bw->cursor, &markk, US "umarkk");
 	markk->xcol = bw->cursor->xcol;
 	updall();
 	return 0;
@@ -393,7 +393,7 @@ int utomarkk(BW *bw)
 int uswap(BW *bw)
 {
 	if (markb && markb->b == bw->b) {
-		P *q = pdup(markb);
+		P *q = pdup(markb, US "uswap");
 
 		umarkb(bw);
 		pset(bw->cursor, q);
@@ -557,7 +557,7 @@ int ublkcpy(BW *bw)
 
 			/* Simple overtype for hex mode */
 			if (bw->o.hex && bw->o.overtype) {
-				P *q = pdup(bw->cursor);
+				P *q = pdup(bw->cursor, US "ublkcpy");
 				if (q->byte + size >= q->b->eof->byte)
 					pset(q, q->b->eof);
 				else
@@ -637,8 +637,8 @@ void setindent(BW *bw)
 	if (pisblank(bw->cursor))
 		return;
 
-	p = pdup(bw->cursor);
-	q = pdup(p);
+	p = pdup(bw->cursor, US "setindent");
+	q = pdup(p, US "setindent");
 	indent = pisindent(p);
 
 	do {
@@ -677,7 +677,7 @@ void setindent(BW *bw)
 
 int purity_check(int c, int n)
 {
-	P *p = pdup(markb);
+	P *p = pdup(markb, US "purity_check");
 	while (p->byte < markk->byte) {
 		int x;
 		p_goto_bol(p);
@@ -701,7 +701,7 @@ int purity_check(int c, int n)
 
 int lindent_check(int c, int n)
 {
-	P *p = pdup(markb);
+	P *p = pdup(markb, US "lindent_check");
 	int indwid;
 	if (c=='\t')
 		indwid = n * p->b->o.tab;
@@ -726,7 +726,7 @@ int urindent(BW *bw)
 {
 	if (square) {
 		if (markb && markk && markb->b == markk->b && markb->byte <= markk->byte && markb->xcol <= markk->xcol) {
-			P *p = pdup(markb);
+			P *p = pdup(markb, US "urindent");
 
 			do {
 				pcol(p, markb->xcol);
@@ -738,8 +738,8 @@ int urindent(BW *bw)
 		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
 			setindent(bw);
 		} else if ( 1 /* bw->o.purify */) {
-			P *p = pdup(markb);
-			P *q = pdup(markb);
+			P *p = pdup(markb, US "urindent");
+			P *q = pdup(markb, US "urindent");
 			int indwid;
 
 			if (bw->o.indentc=='\t')
@@ -762,7 +762,7 @@ int urindent(BW *bw)
 			prm(p);
 			prm(q);
 		} else if (purity_check(bw->o.indentc,0)) {
-			P *p = pdup(markb);
+			P *p = pdup(markb, US "urindent");
 
 			while (p->byte < markk->byte) {
 				p_goto_bol(p);
@@ -789,8 +789,8 @@ int ulindent(BW *bw)
 {
 	if (square) {
 		if (markb && markk && markb->b == markk->b && markb->byte <= markk->byte && markb->xcol <= markk->xcol) {
-			P *p = pdup(markb);
-			P *q = pdup(p);
+			P *p = pdup(markb, US "ulindent");
+			P *q = pdup(p, US "ulindent");
 
 			do {
 				pcol(p, markb->xcol);
@@ -818,8 +818,8 @@ int ulindent(BW *bw)
 		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
 			setindent(bw);
 		} else if (1 /* bw->o.purify */ && lindent_check(bw->o.indentc,bw->o.istep)) {
-			P *p = pdup(markb);
-			P *q = pdup(markb);
+			P *p = pdup(markb, US "ulindent");
+			P *q = pdup(markb, US "ulindent");
 			int indwid;
 
 			if (bw->o.indentc=='\t')
@@ -842,8 +842,8 @@ int ulindent(BW *bw)
 			prm(p);
 			prm(q);
 		} else if (purity_check(bw->o.indentc,bw->o.istep)) {
-			P *p = pdup(markb);
-			P *q = pdup(p);
+			P *p = pdup(markb, US "ulindent");
+			P *q = pdup(p, US "ulindent");
 
 			p_goto_bol(p);
 			while (p->byte < markk->byte) {
@@ -896,7 +896,7 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 				pdelrect(markb, height, width + markb->xcol);
 			}
 			pinsrect(markb, tmp, width, usetabs);
-			pdupown(markb, &markk);
+			pdupown(markb, &markk, US "doinsf");
 			markk->xcol = markb->xcol;
 			if (height) {
 				pline(markk, markk->line + height - 1);
@@ -1009,7 +1009,7 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 			} else
 				pdelrect(markb, markk->line - markb->line + 1, markk->xcol);
 			pinsrect(markb, tmp, width, usetabs);
-			pdupown(markb, &markk);
+			pdupown(markb, &markk, US "dofilt");
 			markk->xcol = markb->xcol;
 			if (height) {
 				pline(markk, markk->line + height - 1);
@@ -1021,7 +1021,7 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 			brm(tmp);
 			updall();
 		} else {
-			P *p = pdup(markk);
+			P *p = pdup(markk, US "dofilt");
 			if (!flg)
 				prgetc(p);
 			bdel(markb, p);
@@ -1062,9 +1062,9 @@ static B *filthist = NULL;
 
 static void markall(BW *bw)
 {
-	pdupown(bw->cursor->b->bof, &markb);
+	pdupown(bw->cursor->b->bof, &markb, US "markall");
 	markb->xcol = 0;
-	pdupown(bw->cursor->b->eof, &markk);
+	pdupown(bw->cursor->b->eof, &markk, US "markall");
 	markk->xcol = piscol(markk);
 	updall();
 }
@@ -1119,11 +1119,11 @@ int ulower(BW *bw)
 	        int c;
 		B *b = bcpy(markb,markk);
 		/* Leave one character in buffer to keep pointers set properly... */
-		q = pdup(markk);
+		q = pdup(markk, US "ulower");
 		prgetc(q);
 		bdel(markb,q);
 		b->o.charmap = markb->b->o.charmap;
-		p=pdup(b->bof);
+		p=pdup(b->bof, US "ulower");
 		while ((c=pgetc(p))!=NO_MORE_DATA) {
 			c = joe_tolower(b->o.charmap,c);
 			binsc(q,c);
@@ -1148,11 +1148,11 @@ int uupper(BW *bw)
 	        P *p;
 	        int c;
 		B *b = bcpy(markb,markk);
-		q = pdup(markk);
+		q = pdup(markk, US "uupper");
 		prgetc(q);
 		bdel(markb,q);
 		b->o.charmap = markb->b->o.charmap;
-		p=pdup(b->bof);
+		p=pdup(b->bof, US "uupper");
 		while ((c=pgetc(p))!=NO_MORE_DATA) {
 			c = joe_toupper(b->o.charmap,c);
 			binsc(q,c);
@@ -1184,7 +1184,7 @@ int blksum(double *sum, double *sumsq)
 {
 	unsigned char buf[80];
 	if (markv(1)) {
-		P *q = pdup(markb);
+		P *q = pdup(markb, US "blksum");
 		int x;
 		int c;
 		double accu = 0.0;
@@ -1245,7 +1245,7 @@ unsigned char *blkget()
 		int c;
 		long left = markb->xcol;
 		long right = markk->xcol;
-		q = pdup(markb);
+		q = pdup(markb, US "blkget");
 		while (q->byte < markk->byte) {
 			/* Skip until we're within columns */
 			while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))

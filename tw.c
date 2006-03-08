@@ -92,7 +92,7 @@ static void resizetw(BW *bw, int wi, int he)
 
 unsigned char *get_context(BW *bw)
 {
-	P *p = pdup(bw->cursor);
+	P *p = pdup(bw->cursor, US "get_context");
 	static unsigned char buf1[stdsiz];
 	int i, j, spc;
 

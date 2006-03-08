@@ -121,7 +121,7 @@ static int get_entries(TAB *tab, int prv)
 
 static void insnam(BW *bw, unsigned char *path, unsigned char *nam, int dir, int ofst)
 {
-	P *p = pdup(bw->cursor);
+	P *p = pdup(bw->cursor, US "insnam");
 
 	pgoto(p, ofst);
 	p_goto_eol(bw->cursor);
@@ -345,9 +345,9 @@ int cmplt(BW *bw)
 	tab->prv = 0;
 	tab->len = 0;
 
-	q = pdup(bw->cursor);
+	q = pdup(bw->cursor, US "cmplt");
 	p_goto_eol(q);
-	p = pdup(q);
+	p = pdup(q, US "cmplt");
 	p_goto_start_of_path(p);
 	ofst = p->byte;
 

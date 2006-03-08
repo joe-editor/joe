@@ -62,7 +62,7 @@ unsigned char **get_word_list(B *b,int ignore)
 
 	h = htmk(1024);
 
-	p = pdup(b->bof);
+	p = pdup(b->bof, US "get_word_list");
 	idx = 0;
 	while ((c=pgetc(p))!=NO_MORE_DATA)
 		if (idx) {
@@ -99,7 +99,7 @@ unsigned char **get_word_list(B *b,int ignore)
 
 void fcmplt_ins(BW *bw, unsigned char *line)
 {
-	P *p = pdup(bw->cursor);
+	P *p = pdup(bw->cursor, US "fcmplt_ins");
 	int c;
 
 	if (!piseol(bw->cursor)) {
@@ -110,7 +110,7 @@ void fcmplt_ins(BW *bw, unsigned char *line)
 
 	/* Move p to beginning of word */
 
-	p = pdup(bw->cursor);
+	p = pdup(bw->cursor, US "fcmplt_ins");
 	do
 		c = prgetc(p);
 		while (joe_isalnum_(bw->b->o.charmap,c));
@@ -166,7 +166,7 @@ int ufinish(BW *bw)
 
 	/* Move p to beginning of word */
 
-	p = pdup(bw->cursor);
+	p = pdup(bw->cursor, US "ufinish");
 	do
 		c = prgetc(p);
 		while (joe_isalnum_(bw->b->o.charmap,c));
@@ -265,8 +265,8 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 	int x;
 
 	pattern = srch->pattern;
-	start = pdup(p);
-	end = pdup(p);
+	start = pdup(p, US "searchf");
+	end = pdup(p, US "searchf");
 
 	try_again:
 
@@ -333,8 +333,8 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 	P *end;
 	int x;
 
-	start = pdup(p);
-	end = pdup(p);
+	start = pdup(p, US "searchb");
+	end = pdup(p, US "searchb");
 
 	try_again:
 
@@ -718,7 +718,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 	}
 	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0);
 	srch->addr = bw->cursor->byte;
-	srch->wrap_p = pdup(bw->cursor);
+	srch->wrap_p = pdup(bw->cursor, US "dofirst");
 	srch->wrap_p->owner = &srch->wrap_p;
 	if (pico && globalsrch && globalsrch->pattern) {
 		unesc_genfmt(bf1, globalsrch->pattern, 30);
@@ -765,7 +765,7 @@ static int doreplace(BW *bw, SRCH *srch)
 		markk->end = 1;
 	if (srch->markk)
 		srch->markk->end = 1;
-	q = pdup(bw->cursor);
+	q = pdup(bw->cursor, US "doreplace");
 	if (srch->backwards) {
 		q = pfwrd(q, (long) sLEN(srch->entire));
 		bdel(bw->cursor, q);
@@ -998,15 +998,15 @@ bye:		if (!srch->flg && !srch->rest) {
 			if (square)
 				bw->cursor->xcol = piscol(bw->cursor);
 			if (srch->backwards) {
-				pdupown(bw->cursor, &markb);
+				pdupown(bw->cursor, &markb, US "dopfnext");
 				markb->xcol = piscol(markb);
-				pdupown(markb, &markk);
+				pdupown(markb, &markk, US "dopfnext");
 				pfwrd(markk, (long) sLEN(srch->entire));
 				markk->xcol = piscol(markk);
 			} else {
-				pdupown(bw->cursor, &markk);
+				pdupown(bw->cursor, &markk, US "dopfnext");
 				markk->xcol = piscol(markk);
-				pdupown(bw->cursor, &markb);
+				pdupown(bw->cursor, &markb, US "dopfnext");
 				pbkwd(markb, (long) sLEN(srch->entire));
 				markb->xcol = piscol(markb);
 			}
@@ -1041,7 +1041,7 @@ int pfnext(BW *bw)
 		srch->addr = bw->cursor->byte;
 		if (!srch->wrap_p || srch->wrap_p->b!=bw->b) {
 			prm(srch->wrap_p);
-			srch->wrap_p = pdup(bw->cursor);
+			srch->wrap_p = pdup(bw->cursor, US "pfnext");
 			srch->wrap_p->owner = &srch->wrap_p;
 			srch->wrap_flag = 0;
 		}

@@ -184,8 +184,8 @@ int utag(BW *bw)
 
 	pbw = wmkpw(bw->parent, US "Tag search: ", &taghist, dotag, NULL, NULL, tag_cmplt, NULL, NULL, locale_map, 0);
 	if (pbw && joe_isalnum_(bw->b->o.charmap,brch(bw->cursor))) {
-		P *p = pdup(bw->cursor);
-		P *q = pdup(p);
+		P *p = pdup(bw->cursor, US "utag");
+		P *q = pdup(p, US "utag");
 		int c;
 
 		while (joe_isalnum_(bw->b->o.charmap,(c = prgetc(p))))

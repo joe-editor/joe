@@ -228,7 +228,7 @@ void select_done(struct charmap *map)
 	if (joexterm && markv(1)) {
 		long left = markb->xcol;
 		long right = markk->xcol;
-		P *q = pdup(markb);
+		P *q = pdup(markb, US "select_done");
 		int c;
 		/* ttputs(US "\33[?2P"); JOE's xterm */
 		ttputs(US "\33]52;;"); /* New xterm */
@@ -576,7 +576,7 @@ int udefmdrag(BW *xx)
 	else
 		umarkk(bw);
 	if ((!reversed && bw->cursor->byte < anchor) || (reversed && bw->cursor->byte > anchor)) {
-		P *q = pdup(markb);
+		P *q = pdup(markb, US "udefmdrag");
 		int tmp = markb->xcol;
 		pset(markb,markk);
 		pset(markk,q);

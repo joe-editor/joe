@@ -248,7 +248,7 @@ void setopt(B *b, unsigned char *parsed_name)
 	for (o = options; o; o = o->next)
 		if (rmatch(o->name_regex, parsed_name)) {
 			if(o->contents_regex) {
-				P *p = pdup(b->bof);
+				P *p = pdup(b->bof, US "setopt");
 				if (pmatch(pieces,o->contents_regex,zlen(o->contents_regex),p,0,0)) {
 					prm(p);
 					b->o = *o;
@@ -1215,8 +1215,8 @@ void save_hist(FILE *f,B *b)
 	unsigned char buf[512];
 	int len;
 	if (b) {
-		P *p = pdup(b->bof);
-		P *q = pdup(b->bof);
+		P *p = pdup(b->bof, US "save_hist");
+		P *q = pdup(b->bof, US "save_hist");
 		if (b->eof->line>10)
 			pline(p,b->eof->line-10);
 		pset(q,p);
@@ -1253,7 +1253,7 @@ void load_hist(FILE *f,B **bp)
 	if (!b)
 		*bp = b = bmk(NULL);
 
-	q = pdup(b->eof);
+	q = pdup(b->eof, US "load_hist");
 
 	while(fgets((char *)buf,1023,f) && zcmp(buf,US "done\n")) {
 		unsigned char *p = buf;
@@ -1290,7 +1290,7 @@ void save_state()
 		return;
 
 	/* Write ID */
-	fprintf(f,"%s",STATE_ID);
+	fprintf(f,"%s",(char *)STATE_ID);
 
 	/* Write state information */
 	fprintf(f,"search\n"); save_srch(f);
