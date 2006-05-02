@@ -220,6 +220,7 @@ void sigjoe(void)
 	ttysig = 1;
 	joe_set_signal(SIGHUP, ttsig);
 	joe_set_signal(SIGTERM, ttsig);
+	joe_set_signal(SIGABRT, ttsig);
 	joe_set_signal(SIGINT, SIG_IGN);
 	joe_set_signal(SIGPIPE, SIG_IGN);
 }
@@ -230,6 +231,7 @@ void signrm(void)
 	if (!ttysig)
 		return;
 	ttysig = 0;
+	joe_set_signal(SIGABRT, SIG_DFL);
 	joe_set_signal(SIGHUP, SIG_DFL);
 	joe_set_signal(SIGTERM, SIG_DFL);
 	joe_set_signal(SIGINT, SIG_DFL);

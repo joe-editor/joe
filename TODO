@@ -1,3 +1,9 @@
+We need a built-in joerc file: then joe will work on a boot disk.
+
+Show path to joerc file.
+
+Parse xterm version number.
+
 long prompts for qw.c (locking message) should spill onto multiple lines.
 
 we should store location of menu. menu_above could change while menu is

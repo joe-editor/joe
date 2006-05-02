@@ -61,6 +61,17 @@ Installation procedure
 
 	joe
 
+  Note: please install xterm version 212 or higher, and use these
+  xterm 'configure' options:
+
+	--enable-256-color
+
+	--enable-paste64
+
+  '--enable-paste64' allows you to use JOE's '-joexterm' option (see JOERC
+  file), which allows mouse left and middle button cut & paste to work with
+  properly with JOE.
+
 =-=-=-=-=-=-=-=-=-=-=-=-=-
 Common ./configure options
 =-=-=-=-=-=-=-=-=-=-=-=-=-

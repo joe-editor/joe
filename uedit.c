@@ -2381,6 +2381,13 @@ int upaste(BW  *bw, int k)
 	bw->o.autoindent = 0;
 	count = 0;
 
+	/* We have to wait for the second ';' */
+	while ((c = ttgetc()) != -1)
+		if (c == ';')
+			break;
+	if (c == -1)
+		goto bye;
+
 	while ((c = ttgetc()) != -1) {
 		if (c >= 'A' && c <= 'Z')
 			c = c - 'A';
@@ -2434,6 +2441,9 @@ int upaste(BW  *bw, int k)
 	if (c == 033) {
 		ttgetc();
 	}
+
+	bye:
+
 	bw->o.wordwrap = tmp_ww;
 	bw->o.autoindent = tmp_ai;
 

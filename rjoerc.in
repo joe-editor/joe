@@ -121,7 +121,7 @@
 		looks like an ANSI terminal (support bold and capability starts with
 		ESC [).
 
- -assume_256color
+-assume_256color
 		Assume terminal has xterm 256 color support (ESC [ 38 ; 5 ; NNN m and
                 ESC [ 48 ; 5 ; NNN m).
 
@@ -1123,7 +1123,7 @@ xtmouse		^[ [ M		Introduces an xterm mouse event
 @SPELL@file	^[ l
 @SPELL@word	^[ n
 
-paste			^[ ] 5 2 ; ;		Bracketed paste
+paste			^[ ] 5 2 ;		Bracketed paste
 
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO

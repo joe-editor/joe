@@ -1,3 +1,11 @@
+Fri Apr 28 15:07:21 EDT 2006
+
+	Yeah! Xterm-212 now works properly with joe.  The '-joexterm' option
+	now works without having to do any patches.
+
+	Note that xterm should be compiled with '--enable-paste64 and
+        --enable-256-color'
+
 Tue Mar  7 23:28:47 EST 2006
 
 	Add joe_debug command.  Fix pointer leak (caused paragraph reformat
