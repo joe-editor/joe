@@ -1,4 +1,11 @@
-- Highlighting now uses less CPU time.
+- Highlighting now uses less CPU time.  Here is a CPU usage comparison for
+  scrolling forwards and backwards through a 35K like C file:
+
+	JOE	.58
+	JED	.57
+	NEDIT	3.26
+	VIM	7.33
+	EMACS	11.98
 
 - JOE now matches Thomas Dickey's implementation of xterm patch.
 
