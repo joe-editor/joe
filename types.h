@@ -209,6 +209,7 @@ struct buffer {
 	int	er;		/* Error code when file was loaded */
 	pid_t	pid;		/* Process id */
 	int	out;		/* fd to write to process */
+	struct lattr_db *db;	/* Linked list of line attribute databases */
 };
 
 
@@ -497,7 +498,6 @@ struct scrn {
 	int	ins;		/* Set if we're in insert mode */
 
 	int	*updtab;	/* Dirty lines table */
-	HIGHLIGHT_STATE *syntab;
 	int	avattr;		/* Bits set for available attributes */
 	int	*sary;		/* Scroll buffer array */
 

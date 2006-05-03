@@ -747,7 +747,6 @@ SCRN *nopen(CAP *cap)
 	t->attr = NULL;
 	t->sary = NULL;
 	t->updtab = NULL;
-	t->syntab = NULL;
 	t->compose = NULL;
 	t->ofst = NULL;
 	t->ary = NULL;
@@ -775,8 +774,6 @@ void nresize(SCRN *t, int w, int h)
 		joe_free(t->sary);
 	if (t->updtab)
 		joe_free(t->updtab);
-	if (t->syntab)
-		joe_free(t->syntab);
 	if (t->scrn)
 		joe_free(t->scrn);
 	if (t->attr)
@@ -791,7 +788,6 @@ void nresize(SCRN *t, int w, int h)
 	t->attr = (int *) joe_malloc(t->li * t->co * sizeof(int));
 	t->sary = (int *) joe_calloc(t->li, sizeof(int));
 	t->updtab = (int *) joe_malloc(t->li * sizeof(int));
-	t->syntab = (HIGHLIGHT_STATE *) joe_malloc(t->li * sizeof(HIGHLIGHT_STATE));
 	t->compose = (int *) joe_malloc(t->co * sizeof(int));
 	t->ofst = (int *) joe_malloc(t->co * sizeof(int));
 	t->ary = (struct hentry *) joe_malloc(t->co * sizeof(struct hentry));
@@ -1519,8 +1515,6 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt, int atr)
 		goto done;
 	}
 	msetI(t->updtab + top, 1, bot - top);
-	for(q=0; q!=bot-top; ++q)
-		invalidate_state(t->syntab + top + q);
 	return;
 
       done:
@@ -1531,8 +1525,6 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt, int atr)
 		msetI(t->scrn + (t->li - amnt) * t->co, -1, amnt * t->co);
 		msetI(t->attr + (t->li - amnt) * t->co, 0, amnt * t->co);
 		msetI(t->updtab + t->li - amnt, 1, amnt);
-		for(q=0; q!=amnt; ++q)
-			invalidate_state(t->syntab + t->li - amnt + q);
 	} else {
 		msetI(t->scrn + (bot - amnt) * t->co, ' ', amnt * t->co);
 		msetI(t->attr + (bot - amnt) * t->co, 0, amnt * t->co); 
@@ -1594,8 +1586,6 @@ static void dodnscrl(SCRN *t, int top, int bot, int amnt, int atr)
 		goto done;
 	}
 	msetI(t->updtab + top, 1, bot - top);
-	for(q=0; q!=bot-top; ++q)
-		invalidate_state(t->syntab + top + q);
 	return;
       done:
 	mmove(t->scrn + (top + amnt) * t->co, t->scrn + top * t->co, (bot - top - amnt) * t->co * sizeof(int));
@@ -1605,8 +1595,6 @@ static void dodnscrl(SCRN *t, int top, int bot, int amnt, int atr)
 		msetI(t->scrn, -1, amnt * t->co);
 		msetI(t->attr, 0, amnt * t->co);
 		msetI(t->updtab, 1, amnt);
-		for(q=0;q!=amnt; ++q)
-			invalidate_state(t->syntab + q);
 	} else {
 		msetI(t->scrn + t->co * top, ' ', amnt * t->co);
 		msetI(t->attr + t->co * top, 0, amnt * t->co); 
@@ -1705,21 +1693,17 @@ void nscrldn(SCRN *t, int top, int bot, int amnt)
 		for (x = bot; x != top + amnt; --x) {
 			t->sary[x - 1] = (t->sary[x - amnt - 1] == t->li ? t->li : t->sary[x - amnt - 1] - amnt);
 			t->updtab[x - 1] = t->updtab[x - amnt - 1];
-			move_state(t->syntab + x - 1, t->syntab + x - amnt - 1);
 		}
 		for (x = top; x != top + amnt; ++x) {
 			t->updtab[x] = 1;
-			invalidate_state(t->syntab + x);
-			}
+		}
 	}
 	if (amnt > bot - top)
 		amnt = bot - top;
 	msetI(t->sary + top, t->li, amnt);
 	if (amnt == bot - top) {
 		msetI(t->updtab + top, 1, amnt);
-		for(x=0; x!=amnt; ++x)
-			invalidate_state(t->syntab + top + x);
-		}
+	}
 }
 
 void nscrlup(SCRN *t, int top, int bot, int amnt)
@@ -1734,20 +1718,16 @@ void nscrlup(SCRN *t, int top, int bot, int amnt)
 		for (x = top + amnt; x != bot; ++x) {
 			t->sary[x - amnt] = (t->sary[x] == t->li ? t->li : t->sary[x] + amnt);
 			t->updtab[x - amnt] = t->updtab[x];
-			move_state(t->syntab + x - amnt, t->syntab + x);
 		}
 		for (x = bot - amnt; x != bot; ++x) {
 			t->updtab[x] = 1;
-			invalidate_state(t->syntab + x);
-			}
+		}
 	}
 	if (amnt > bot - top)
 		amnt = bot - top;
 	msetI(t->sary + bot - amnt, t->li, amnt);
 	if (amnt == bot - top) {
 		msetI(t->updtab + bot - amnt, 1, amnt);
-		for(x=0; x!=amnt; ++x)
-			invalidate_state(t->syntab + bot - amnt + x);
 		}
 }
 
@@ -1763,8 +1743,6 @@ void nredraw(SCRN *t)
 	msetI(t->attr + skiptop * t->co, BG_COLOR(bg_text), (t->li - skiptop) * t->co); 
 	msetI(t->sary, 0, t->li);
 	msetI(t->updtab + skiptop, -1, t->li - skiptop);
-	for(x=0; x!=t->li - skiptop; ++x)
-		invalidate_state(t->syntab + skiptop + x);
 	t->x = -1;
 	t->y = -1;
 	t->top = t->li;

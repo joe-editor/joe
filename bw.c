@@ -146,8 +146,6 @@ void bwfllwt(BW *w)
 			nscrldn(w->t->t, w->y, w->y + w->h, (int) (w->top->line - newtop->line));
 		else {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
-			for(x=0; x!=w->h; ++x)
-				invalidate_state(w->t->t->syntab + w->y + x);
 		}
 		pset(w->top, newtop);
 		prm(newtop);
@@ -162,8 +160,6 @@ void bwfllwt(BW *w)
 			nscrlup(w->t->t, w->y, w->y + w->h, (int) (newtop->line - w->top->line));
 		else {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
-			for(x=0; x!=w->h; ++x)
-				invalidate_state(w->t->t->syntab + w->y + x);
 		}
 		pset(w->top, newtop);
 		prm(newtop);
@@ -212,6 +208,10 @@ HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 		return state;
 	}
 
+	return lattr_get(w->db, w->o.syntax, p, line);
+
+	/* Old way... */
+#ifdef junk
 
 	ln = line;
 
@@ -228,6 +228,7 @@ HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 		prm(tmp);
 	}
 	return state;
+#endif
 
 #ifdef junk
 	P *tmp = 0;
@@ -302,18 +303,14 @@ void bwins(BW *w, long int l, long int n, int flg)
 	/* If highlighting is enabled... */
 	if (w->o.highlight && w->o.syntax) {
 		/* Invalidate cache */
-		lattr_cut(w->db, l + 1);
+		/* lattr_cut(w->db, l + 1); */
 		/* Force updates */
 		if (l < w->top->line) {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
-			for (q = 0; q != w->h; ++q)
-				invalidate_state(w->t->t->syntab + w->y + q);
 		} else if ((l + 1) < w->top->line + w->h) {
 			int start = l + 1 - w->top->line;
 			int size = w->h - start;
 			msetI(w->t->t->updtab + w->y + start, 1, size);
-			for (q = 0; q != size; ++q)
-				invalidate_state(w->t->t->syntab + w->y + start + q);
 		}
 	}
 
@@ -342,17 +339,13 @@ void bwdel(BW *w, long int l, long int n, int flg)
 
 	/* If highlighting is enabled... */
 	if (w->o.highlight && w->o.syntax) {
-		lattr_cut(w->db, l + 1);
+		/* lattr_cut(w->db, l + 1); */
 		if (l < w->top->line) {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
-			for (q = 0; q != w->h; ++q)
-				invalidate_state(w->t->t->syntab + w->y + q);
 		} else if ((l + 1) < w->top->line + w->h) {
 			int start = l + 1 - w->top->line;
 			int size = w->h - start;
 			msetI(w->t->t->updtab + w->y + start, 1, size);
-			for (q = 0; q != size; ++q)
-				invalidate_state(w->t->t->syntab + w->y + start + q);
 		}
 	}
 
@@ -1010,6 +1003,10 @@ void bwgen(BW *w, int linums)
 	long fromline, toline;
 	SCRN *t = w->t->t;
 
+	/* Set w.db to correct value */
+	if (w->o.highlight && w->o.syntax && (!w->db || w->db->syn != w->o.syntax))
+		w->db = find_lattr_db(w->b, w->o.syntax);
+
 	fromline = toline = from = to = 0;
 
 	if (markv(0) && markk->b == w->b)
@@ -1116,9 +1113,7 @@ void bwresz(BW *w, int wi, int he)
 	int x;
 	if (he > w->h && w->y != -1) {
 		msetI(w->t->t->updtab + w->y + w->h, 1, he - w->h);
-		for(x=0;x!=he-w->h; ++x)
-			invalidate_state(w->t->t->syntab + w->y + w->h + x);
-		}
+	}
 	w->w = wi;
 	w->h = he;
 }
@@ -1166,13 +1161,12 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->cursor->xcol = 0;
 	w->top_changed = 1;
 	w->linums = 0;
-	w->db = mk_lattr_db();
+	w->db = 0;
 	return w;
 }
 
 void bwrm(BW *w)
 {
-	rm_lattr_db(w->db);
 	prm(w->top);
 	prm(w->cursor);
 	brm(w->b);

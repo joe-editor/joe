@@ -1,39 +1,77 @@
-/* Line attribute database */
-
-typedef long lattr_key_t;
-typedef HIGHLIGHT_STATE lattr_value_t;
-#define lattr_SKIP_DEPTH 10	/* Max pointers in a node */
-#define lattr_hist 1024		/* Max no. of nodes */
-
-struct lattr_node
-  {
-  LINK(struct lattr_node) link;	/* Doubly-linked list of nodes in age order */
-  lattr_key_t key;		/* Key for this node */
-  int nptrs;			/* No. pointers */
-  lattr_value_t value;		/* Value */
-  struct lattr_node *ptrs[1];	/* Node pointers */
-  };
+/*
+ *	Line attribute cache
+ *	Copyright
+ *		(C) 2006 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 
 struct lattr_db
   {
-  struct lattr_node *top;	/* Skip list root node */
-  struct lattr_node nil;	/* Ending skiplist node and doubly-linked list base */
-  struct lattr_node *update[lattr_SKIP_DEPTH];
-                                /* Search path record */
-  int count;			/* No. nodes */
+  struct lattr_db *next;	/* Linked list of attribute databases */
+  struct high_syntax *syn;	/* This database is for this syntax */
+  B *b;				/* This database is for this buffer */
+
+  /* Use a gap buffer for the attribute records */
+
+  HIGHLIGHT_STATE *buffer;	/* Address of buffer */
+  long hole;			/* Offset to hole */
+  long ehole;			/* Offset to end of hole */
+  long end;			/* Malloc() size of buffer */
+
+  long first_invalid;		/* Lines beginning with this are invalid */
+  long invalid_window;		/* Lines beyond first_invalid+invalid_window might be valid */
   };
 
-struct lattr_db *mk_lattr_db();
-                                /* Initialize database structure */
+struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn);
+                                /* Create database structure */
 
 void rm_lattr_db(struct lattr_db *db);
                                 /* Delete database structure */
 
-void lattr_set(struct lattr_db *db,lattr_key_t key,lattr_value_t value);
-                                /* Set key to value */
+void rm_all_lattr_db(struct lattr_db *db);
+                                /* Delete linked-list of databases */
 
-int lattr_get(struct lattr_db *db,lattr_key_t *key,lattr_value_t *value);
-                                /* Get nearest key/value */
+struct lattr_db *find_lattr_db(B *b, struct high_syntax *y);
+                                /* Find database for a particular syntax.  If one doesn't
+                                   exist, create it and add it to the list for the B */
 
-void lattr_cut(struct lattr_db *db,lattr_key_t key);
-                                /* Delete all nodes which follow key */
+void drop_lattr_db(B *b, struct lattr_db *db);
+                                /* Drop a database if it's no longer needed. This checks through all BWs on a B
+                                   to see if any of them refer to db.  If none, the db is dropped. */
+
+#define lattr_size(db) ((db)->end - ((db)->ehole - (db)->hole))
+
+void lattr_hole(struct lattr_db *db, long pos);
+  /* Set hole position */
+
+void lattr_check(struct lattr_db *db, long size);
+  /* Make sure we have enough space for insert.  If not, expand buffer. */
+
+void lattr_ins(struct lattr_db *db,long line,long size);
+  /* An insert occured, beginning on specified line.  'size' lines were inserted.
+        If this is the first insert, or insert is to same place as last time (either first_invalid==number of
+        lines we have or first_invalid==line+1):
+           Do the insert,
+             set first_invalid to line+1.
+        Otherwise:
+           Delete everything from min(first_invalid,line+1) to end.
+  */
+
+void lattr_del(struct lattr_db *db,long line,long size);
+  /* A deletion occured, beginning on specified line.  'size' lines were deleted.
+        If this is the first delete, or delete is to same place as last time (either first_invalid==number of
+        lines we have or first_invalid==line+1):
+           Do the delete,
+             set first_invalid to line+1.
+        Otherwise:
+           Delete everything from min(first_invalid,line+1) to end.
+  */
+
+HIGHLIGHT_STATE lattr_get(struct lattr_db *db,struct high_syntax *y,P *p,long line);
+  /* Get state for specified line.  If we don't have it, compute it.
+     Records results of any computation so that we don't have to do it again.
+     If first_invalid is < number of lines we have, compute forward until we
+     start matching again as this is a very common case. */
+
+#define lattr_lvalue(db, line) ((line) >= (db)->hole ? (db)->buffer[(line) - (db)->hole + (db)->ehole] : (db)->buffer[line])

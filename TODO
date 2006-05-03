@@ -1,3 +1,6 @@
+Garbage collect line attribute databases.
+
+
 We need a built-in joerc file: then joe will work on a boot disk.
 
 Show path to joerc file.

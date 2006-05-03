@@ -95,6 +95,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Save character? */
 			if (cmd->save_c) {
+				h_state.saved_s[1] = 0;
 				if (c=='<')
 					h_state.saved_s[0] = '>';
 				else if (c=='(')

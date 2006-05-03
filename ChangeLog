@@ -1,3 +1,11 @@
+Wed May  3 16:59:06 EDT 2006
+
+	Improve speed of highlighting.  Now it's comparable to JED's
+	highlighter.  (VIM and emacs are 10x slower).
+
+	Also it should now correctly handle the case of two windows open
+	on a file, each with a different syntax.
+
 Fri Apr 28 15:07:21 EDT 2006
 
 	Yeah! Xterm-212 now works properly with joe.  The '-joexterm' option

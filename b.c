@@ -263,6 +263,7 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->eof->valcol = 0;
 	b->pid = 0;
 	b->out = -1;
+	b->db = 0;
 	enquef(B, link, &bufs, b);
 	pcoalesce(b->bof);
 	pcoalesce(b->eof);
@@ -296,6 +297,8 @@ void brm(B *b)
 		prm(b->bof);
 		if (b->name)
 			joe_free(b->name);
+		if (b->db)
+			rm_all_lattr_db(b->db);
 		demote(B, link, &frebufs, b);
 	}
 }
@@ -1610,6 +1613,7 @@ static B *bcut(P *from, P *to)
 	long amnt;		/* No. bytes to delete */
 	int toamnt;		/* Amount to delete from segment in 'to' */
 	int bofmove = 0;	/* Set if bof got deleted */
+	struct lattr_db *db;
 
 	if (!(amnt = to->byte - from->byte))
 		return NULL;	/* ...nothing to delete */
@@ -1733,6 +1737,8 @@ static B *bcut(P *from, P *to)
 
 	if (bofmove)
 		pset(from->b->bof, from);
+	for (db = from->b->db; db; db = db->next)
+		lattr_del(db, from->line, nlines);
 	if (!pisbol(from)) {
 		scrdel(from->b, from->line, nlines, 1);
 		delerr(from->b->name, from->line, nlines);
@@ -1897,11 +1903,16 @@ static void inschn(P *p, H *a)
 static void fixupins(P *p, long amnt, long nlines, H *hdr, int hdramnt)
 {
 	P *pp;
+	struct lattr_db *db;
 
 	if (!pisbol(p))
 		scrins(p->b, p->line, nlines, 1);
 	else
 		scrins(p->b, p->line, nlines, 0);
+
+	for (db = p->b->db; db; db = db->next)
+		lattr_ins(db, p->line, nlines);
+
 	inserr(p->b->name, p->line, nlines, pisbol(p));	/* FIXME: last arg ??? */
 
 	for (pp = p->link.next; pp != p; pp = pp->link.next)
