@@ -1,4 +1,4 @@
- /*
+/*
  *	Editor engine
  *	Copyright
  *		(C) 1992 Joseph H. Allen
@@ -2027,6 +2027,7 @@ static int bkread(int fi, unsigned char *buff, int size)
 		return 0;
 	}
 	for (a = b = 0; (a < size) && ((b = joe_read(fi, buff + a, size - a)) > 0); a += b) ;
+	printf("Done\n");
 	if (b < 0)
 		error = -2;
 	else
@@ -2187,9 +2188,16 @@ B *bload(unsigned char *s)
 		fi = popen((char *)(n + 1), "r");
 	} else
 #endif
-	if (!zcmp(n, US "-"))
+	if (!zcmp(n, US "-")) {
+		FILE *f;
+		struct stat x, y;
 		fi = stdin;
-	else {
+		/* Make sure stdin is not tty */
+		if (stat("/dev/tty", &x) || fstat(fileno(f), &y) || (x.st_dev == y.st_dev && x.st_ino == y.st_ino)) {
+			b = bmk(NULL);
+			goto empty;
+		}
+	} else {
 		fi = fopen((char *)n, "r+");
 		if (!fi)
 			nowrite = 1;
@@ -2238,6 +2246,7 @@ B *bload(unsigned char *s)
 
 	/* Read from stream into new buffer */
 	b = bread(fileno(fi), amnt);
+	empty:
 	b->mod_time = mod_time;
 	setopt(b,n);
 	b->rdonly = b->o.readonly;

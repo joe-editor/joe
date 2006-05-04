@@ -1,3 +1,7 @@
+Wed May  3 21:10:21 EDT 2006
+
+	Better handling of 'joe -'
+
 Wed May  3 16:59:06 EDT 2006
 
 	Improve speed of highlighting.  Now it's comparable to JED's
