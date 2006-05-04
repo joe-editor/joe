@@ -2027,7 +2027,6 @@ static int bkread(int fi, unsigned char *buff, int size)
 		return 0;
 	}
 	for (a = b = 0; (a < size) && ((b = joe_read(fi, buff + a, size - a)) > 0); a += b) ;
-	printf("Done\n");
 	if (b < 0)
 		error = -2;
 	else
