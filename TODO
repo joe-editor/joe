@@ -1,3 +1,63 @@
+
+1458842 escaping in buffer match
+
+1449521 reformat problems (special chars)
+
+1444112  take syntax highlight patch for sh
+
+1443801  need better latex highlighter
+
+1413863  sigwinch breaks tcsetsw which messes up keyboard?  I haven't seen this
+
+1399448  want gettext support
+
+1348953  joe < file (forgot the -) does weird things
+
+1323285  joe does not repeatedly wrap searches (add an option for this?)
+
+1304794  X at end of line is changed to space when character above 128 in utf-8
+
+1277344  ^# (for amiga) causes problems
+
+1248928  need to integrate user supplied php highlighters (we should
+         highlight the html)
+
+1221524  first ^L doesn't repeat previous search, second one does
+
+1221499  fix sysconf_joedir and sysconf_docdir
+
+1218729  diff highlighting problems
+
+1218717  lock message is confusing.  we need multi-line query windows
+
+1218716  options display is a mess
+
+1218708  ? for unknown characters is not informative (at least highlight the ?)
+
+1218701  report character offset in ^K-<space> (not just byte offset).
+
+1218695  current context (%x) not displayed in proper character set
+
+1218692  try to autodetect coding
+
+1218686  syntax hightlight in hex mode (sheesh!)
+
+1218685  utf-8 problems in hex mode
+
+1001016  improve bash highlighting
+
+1211243  long $HOME causes joe to crash
+
+820497   reload files which have changes (for example after cvs update)
+
+622978   use last column
+
+531899   joe +23 is weird: cursor on startup line
+
+subroutines for highlighter.
+
+work with cscope?  hit F1 to look up man entry for function?
+
 Garbage collect line attribute databases.
 
 
@@ -13,62 +73,8 @@ we should store location of menu. menu_above could change while menu is
 open (but menu could be deleted, so this raises other problems).
 
 performace:
- new ltree.c?
  getcontext causes huge cpu usage for very large functions (xp_useq.v for
-example).
-
-utf8 entry is broken: `x calling utype
-
-fixed:
- can't enter empty string on replacement.
-
- bufed now prompts with completion, like all other file name commands.
-
- jump by 5 to 10 cols on left h-scroll
-
-Bugs
-
-1248928	Incorrect syntax highlight of PHP variables	  2005-07-31 12:23	5	nobody	src
-
-1242059	coredump in syntax.c	  2005-07-20 22:10	5	nobody	mpech
-
-1240012	WISHLIST: hscroll by 5 columns when backspacing	* 2005-07-17 19:06	5	nobody	nobody
-
-1232734	Memory Access Failure	* 2005-07-05 06:05	5	nobody	nobody
-
-1231442	joe editor can't handle pseudo-terminals	* 2005-07-02 03:52	5	nobody	tomknight
-
-1227068	Can't input character '&#283;'	* 2005-06-24 08:02	5	nobody	nobody
-
-1221524	first ^L	* 2005-06-15 13:40	5	nobody	egmont
-
-1221499	sysconf_joedir vs sysconf_docdir	* 2005-06-15 13:19	5	nobody	egmont
-
-1219820	backslash not shown in find pattern	* 2005-06-13 09:47	5	nobody	egmont
-
-1218729	diff syntax highlight bugs	* 2005-06-11 05:25	5	nobody	egmont
-
-1218717	Could not (create) lock	* 2005-06-11 04:55	5	nobody	egmont
-
-1218716	inconsistency in non-boolean settings	* 2005-06-11 04:48	5	nobody	egmont
-
-1218708	how to display undisplayable or invalid characters	* 2005-06-11 04:12	5	nobody	egmont
-
-1218701	report character offset	* 2005-06-11 03:59	5	nobody	egmont
-
-1218700	php syntax highlight with black background	* 2005-06-11 03:50	5	nobody	egmont
-
-1218695	accents in the top status bar	* 2005-06-11 03:28	5	nobody	egmont
-
-1218692	attempt to autodetect file encoding	* 2005-06-11 03:26	5	nobody	egmont
-
-1218686	hex mode and syntax highlighting	* 2005-06-11 03:10	5	nobody	egmont
-
-1218685	hex mode and utf-8	* 2005-06-11 03:08	5	nobody	egmont
-
-1218674	percent overflow	* 2005-06-11 02:11	5	nobody	egmont
-
-1211243	segfault for long $HOME	* 2005-05-30 03:03	5	nobody	nobody
+ example).
 
 
 Short (infinite) list for 3.4:
@@ -196,6 +202,7 @@ Dangerous situations:
       (can be a macro: ^KE name rtn)
 
     (a user asked: can it periodically reload log file like tail -f)?
+    (just run tail -f in shell window)
 
 - - - - - - - -
 
