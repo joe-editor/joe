@@ -248,7 +248,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 	}
 
 	/* Check if we need to shrink */
-	if (p->b->eof->line + 1 < lattr_size(db)) {
+	/* if (p->b->eof->line + 1 < lattr_size(db)) {
 		lattr_hole(db, p->b->eof->line + 1);
 		db->ehole = db->end;
 		if (db->first_invalid > lattr_size(db)) {
@@ -258,7 +258,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 		if (db->invalid_window != -1 && db->first_invalid + db->invalid_window > lattr_size(db)) {
 			db->invalid_window = lattr_size(db) - db->first_invalid;
 		}
-	}
+	} */
 
 	/* Check if we are pointing to a valid record */
 	if (line >= db->first_invalid) {
