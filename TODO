@@ -18,8 +18,6 @@
 1248928  need to integrate user supplied php highlighters (we should
          highlight the html)
 
-1221524  first ^L doesn't repeat previous search, second one does
-
 1221499  fix sysconf_joedir and sysconf_docdir
 
 1218729  diff highlighting problems
