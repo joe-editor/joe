@@ -1,9 +1,12 @@
+- Many bugs have been fixed.  I tried to address every issue in the bug
+  tracker.  Hopefully I didn't create too many new ones :-)
+
 - You can now define which characters can indent paragraphs.  Also the
   default list has been reduced so that formatting of TeX/LaTeX files works
   better.
 
 - Highlighting now uses less CPU time.  Here is a CPU usage comparison for
-  scrolling forwards and backwards through a 35K like C file:
+  scrolling forwards and backwards through a 35K line C file:
 
 	JOE	.58
 	JED	.57
@@ -11,10 +14,11 @@
 	VIM	7.33
 	EMACS	11.98
 
-- JOE now matches Thomas Dickey's implementation of xterm patch.
+- JOE now matches Thomas Dickey's implementation of my xterm patch (but
+  configure it with --paste64).
 
 - File selection menu/completion-list is now above the prompt (which is more
-like bash).
+  like bash).
 
 - "Bufed" (prompt for a buffer to edit), works like other file prompt
   commands: it's a real prompt with history and completion.

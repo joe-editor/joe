@@ -2189,10 +2189,13 @@ B *bload(unsigned char *s)
 #endif
 	if (!zcmp(n, US "-")) {
 		FILE *f;
-		struct stat x, y;
+		struct stat y;
 		fi = stdin;
 		/* Make sure stdin is not tty */
-		if (stat("/dev/tty", &x) || fstat(fileno(f), &y) || (x.st_dev == y.st_dev && x.st_ino == y.st_ino)) {
+		if (fstat(fileno(fi), &y)) 
+			goto no_stat;
+		if (y.st_mode & S_IFCHR) {
+			no_stat:
 			b = bmk(NULL);
 			goto empty;
 		}

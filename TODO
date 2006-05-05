@@ -1,4 +1,3 @@
-
 1444112  take syntax highlight patch for sh
 
 1443801  need better latex highlighter
@@ -47,6 +46,10 @@
 622978   use last column
 
 531899   joe +23 is weird: cursor on startup line
+
+64-bits: look at int / char * casts in rc.c
+
+should use low value [ xx m for colors even when 256 colors is selected.
 
 jump to last place in previous file
 
