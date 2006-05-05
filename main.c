@@ -30,6 +30,7 @@
 #include "termcap.h"
 #include "tw.h"
 #include "vfile.h"
+#include "va.h"
 #include "vs.h"
 #include "w.h"
 #include "utf8.h"
@@ -473,9 +474,21 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	}
 
 	if (!idleout) {
-		if (!isatty(fileno(stdin)))
+		if (!isatty(fileno(stdin)) && modify_logic(maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
 			/* Start shell going in first window */
-			dorun (maint->curwin->object, "/bin/cat", NULL, NULL);
+			unsigned char **a;
+			unsigned char *cmd;
+
+			a = vamk(10);
+			cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+			a = vaadd(a, cmd);
+			cmd = vsncpy(NULL, 0, sc("-c"));
+			a = vaadd(a, cmd);
+			cmd = vsncpy(NULL, 0, sc("/bin/cat"));
+			a = vaadd(a, cmd);
+			
+			cstart (maint->curwin->object, US "/bin/sh", a, NULL, NULL, 0, 1);
+		}
 	}
 
 	edloop(0);

@@ -101,7 +101,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	cfollow(b,byte);
 }
 
-static int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build, int out_only)
+int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build, int out_only)
 {
 #ifdef __MSDOS__
 	if (notify) {
@@ -164,7 +164,7 @@ int ubknd(BW *bw)
 
 /* Run a program in a window */
 
-int dorun(BW *bw, unsigned char *s, void *object, int *notify)
+static int dorun(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	unsigned char **a;
 	unsigned char *cmd;
@@ -179,7 +179,7 @@ int dorun(BW *bw, unsigned char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, US "/bin/sh", a, NULL, notify, 0, 1);
+	return cstart(bw, US "/bin/sh", a, NULL, notify, 0, 0);
 }
 
 B *runhist = NULL;
