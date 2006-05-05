@@ -6,8 +6,6 @@
 
 1399448  want gettext support
 
-1348953  joe < file (forgot the -) does weird things
-
 1323285  joe does not repeatedly wrap searches (add an option for this?)
 
 1304794  X at end of line is changed to space when character above 128 in utf-8
@@ -48,6 +46,8 @@
 531899   joe +23 is weird: cursor on startup line
 
 64-bits: look at int / char * casts in rc.c
+
+get rid of /bin/cat: mpxmk should just have a copy process and not run cat.
 
 should use low value [ xx m for colors even when 256 colors is selected.
 

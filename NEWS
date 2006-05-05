@@ -1,3 +1,19 @@
+- I've changed the way JOE handles '-' and redirected input:
+
+	joe < file		A shell process is started which 'cat's the
+				file into the first buffer.
+
+	tail -f log | joe	A shell process is started which 'cat's the
+				output from 'tail -f' (watch a log file) into
+				the first buffer.
+
+	joe -			JOE does not try to read from stdin, but
+				when the file is saved, it writes to stdout.
+
+	echo "hi" | joe - | mail fred
+				"hi" ends up in first buffer.  When you
+				save, mail is sent.
+
 - Many bugs have been fixed.  I tried to address every issue in the bug
   tracker.  Hopefully I didn't create too many new ones :-)
 

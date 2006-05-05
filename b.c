@@ -2188,6 +2188,7 @@ B *bload(unsigned char *s)
 	} else
 #endif
 	if (!zcmp(n, US "-")) {
+#ifdef junk
 		FILE *f;
 		struct stat y;
 		fi = stdin;
@@ -2199,6 +2200,10 @@ B *bload(unsigned char *s)
 			b = bmk(NULL);
 			goto empty;
 		}
+#endif
+		/* Now we always just create an empty buffer for "-" */
+		b = bmk(NULL);
+		goto empty;
 	} else {
 		fi = fopen((char *)n, "r+");
 		if (!fi)

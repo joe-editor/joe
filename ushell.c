@@ -101,7 +101,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	cfollow(b,byte);
 }
 
-static int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build)
+static int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build, int out_only)
 {
 #ifdef __MSDOS__
 	if (notify) {
@@ -123,7 +123,7 @@ static int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int
 	}
 	p_goto_eof(bw->cursor);
 
-	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b))) {
+	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only))) {
 		varm(s);
 		msgnw(bw->parent, US "No ptys available");
 		return -1;
@@ -159,24 +159,27 @@ int ubknd(BW *bw)
 	a = vaadd(a, s);
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, NULL, 0);
+	return cstart(bw, sh, a, NULL, NULL, 0, 0);
 }
 
 /* Run a program in a window */
 
-static int dorun(BW *bw, unsigned char *s, void *object, int *notify)
+int dorun(BW *bw, unsigned char *s, void *object, int *notify)
 {
-	unsigned char **a = vamk(10);
-	unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+	unsigned char **a;
+	unsigned char *cmd;
 
         if (!modify_logic(bw,bw->b))
         	return -1;
+
+	a = vamk(10);
+	cmd = vsncpy(NULL, 0, sc("/bin/sh"));
 
 	a = vaadd(a, cmd);
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, US "/bin/sh", a, NULL, notify, 0);
+	return cstart(bw, US "/bin/sh", a, NULL, notify, 0, 1);
 }
 
 B *runhist = NULL;
@@ -199,7 +202,7 @@ static int dobuild(BW *bw, unsigned char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, US "/bin/sh", a, NULL, notify, 1);
+	return cstart(bw, US "/bin/sh", a, NULL, notify, 1, 0);
 }
 
 B *buildhist = NULL;

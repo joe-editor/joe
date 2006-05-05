@@ -1033,7 +1033,9 @@ static unsigned char **newenv(unsigned char **old, unsigned char *s)
 
 /* Create a shell process */
 
-MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj)
+/* If out_only is set, leave program's stdin attached to JOE's stdin */
+
+MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only)
 {
 	unsigned char buf[80];
 	int fds[2];
@@ -1083,6 +1085,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 	/* PID number pipe */
 	pipe(comm);
 
+
 	/* Create processes... */
 	if (!(m->kpid = fork())) {
 		/* This process copies data from shell to joe */
@@ -1125,34 +1128,36 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 #endif
 
 #endif
+
 			/* Close all fds */
-			for (x = 0; x != 32; ++x)
+			for (x = (out_only ? 1 : 0); x != 32; ++x)
 				close(x);	/* Yes, this is quite a kludge... all in the
 						   name of portability */
+
 
 			/* Open the TTY */
 			if ((x = open((char *)name, O_RDWR)) != -1) {	/* Standard input */
 				unsigned char **env = newenv(mainenv, US "TERM=");
 
+
+				if (!out_only) {
 #ifdef HAVE_LOGIN_TTY
-				login_tty(x);
+					login_tty(x);
 
 #else
 				/* This tells the fd that it's a tty (I think) */
 #ifdef __svr4__
-				ioctl(x, I_PUSH, "ptem");
-				ioctl(x, I_PUSH, "ldterm");
+					ioctl(x, I_PUSH, "ptem");
+					ioctl(x, I_PUSH, "ldterm");
 #endif
 
 				/* Open stdout, stderr */
-				dup(x);
-				dup(x);	/* Standard output, standard error */
-				/* (yes, stdin, stdout, and stderr must all be open for reading and
-				 * writing.  On some systems the shell assumes this */
+					dup(x);
+					dup(x);	/* Standard output, standard error */
+					/* (yes, stdin, stdout, and stderr must all be open for reading and
+					 * writing.  On some systems the shell assumes this */
 #endif
 
-				/* We could probably have a special TTY set-up for JOE, but for now
-				 * we'll just use the TTY setup for the TTY was was run on */
 #ifdef HAVE_POSIX_TERMIOS
 				tcsetattr(0, TCSADRAIN, &oldterm);
 #else
@@ -1165,12 +1170,21 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 #endif
 #endif
 
+				} else {
+					dup(x); /* Standard error */
+					
+				}
+
+
+				/* We could probably have a special TTY set-up for JOE, but for now
+				 * we'll just use the TTY setup for the TTY was was run on */
+
 				/* Execute the shell */
 				execve((char *)cmd, (char **)args, (char **)env);
 
 				/* If shell didn't execute */
 				joe_snprintf_1((char *)buf,sizeof(buf),"Couldn't execute shell '%s'\n",cmd);
-				write(0,(char *)buf,zlen(buf));
+				write(1,(char *)buf,zlen(buf));
 				sleep(1);
 			}
 

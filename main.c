@@ -36,6 +36,7 @@
 #include "charmap.h"
 #include "syntax.h"
 #include "pw.h"
+#include "ushell.h"
 
 extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, joe_beep;
 
@@ -340,6 +341,9 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	}
 
 
+	if (!isatty(fileno(stdin)))
+		idleout = 0;
+
 	for (c = 1; argv[c]; ++c) {
 		if (argv[c][0] == '-') {
 			if (argv[c][1])
@@ -466,6 +470,12 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 			joe_snprintf_1((char *)msgbuf,JOE_MSGBUFSIZE,"\\i** Joe's Own Editor v" VERSION " ** (%s) ** Copyright (C) 2005 **\\i",locale_map->name);
 
 		msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
+	}
+
+	if (!idleout) {
+		if (!isatty(fileno(stdin)))
+			/* Start shell going in first window */
+			dorun (maint->curwin->object, "/bin/cat", NULL, NULL);
 	}
 
 	edloop(0);

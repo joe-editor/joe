@@ -7,6 +7,8 @@ Fri May  5 10:24:33 EDT 2006
 
 	Fix ^L so that it works the first time.
 
+	Fix input redirection.
+
 Wed May  3 21:10:21 EDT 2006
 
 	Better handling of 'joe -'

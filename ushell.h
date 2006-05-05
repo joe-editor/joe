@@ -15,6 +15,7 @@ int ukillpid PARAMS((BW *bw));
 int urun PARAMS((BW *bw));
 int ubuild PARAMS((BW *bw));
 int ugrep PARAMS((BW *bw));
+int dorun(BW *bw, unsigned char *s, void *object, int *notify);
 
 extern B *runhist;
 extern B *buildhist;
