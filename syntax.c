@@ -236,7 +236,7 @@ void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned ch
 			color->color = gcolor->color;
 		} else {
 			/* Parse color definition */
-			while(parse_ws(&p,'#'), !parse_ident(&p,bf,255)) {
+			while(parse_ws(&p,'#'), !parse_ident(&p,bf,sizeof(bf))) {
 				color->color |= meta_color(bf);
 			}
 		}
@@ -306,12 +306,12 @@ struct high_syntax *load_dfa(unsigned char *name)
 		p = buf;
 		c = parse_ws(&p,'#');
 		if(!parse_char(&p, ':')) {
-			if(!parse_ident(&p, bf, 255)) {
+			if(!parse_ident(&p, bf, sizeof(bf))) {
 
 				state = find_state(syntax,bf);
 
 				parse_ws(&p,'#');
-				if(!parse_ident(&p,bf,255)) {
+				if(!parse_ident(&p,bf,sizeof(bf))) {
 					struct high_color *color;
 					for(color=syntax->color;color;color=color->next)
 						if(!zcmp(color->name,bf))
@@ -346,8 +346,8 @@ struct high_syntax *load_dfa(unsigned char *name)
 					} else if(!parse_field(&p, US "&")) {
 						delim = 1;
 					} else {
-						c = parse_string(&p, bf, 255);
-						if(c)
+						c = parse_string(&p, bf, sizeof(bf));
+						if(c < 0)
 							fprintf(stderr,"%s %d: Bad string\n",name,line);
 						else {
 							int z;
@@ -366,12 +366,12 @@ struct high_syntax *load_dfa(unsigned char *name)
 					/* Create command */
 					cmd = mkcmd();
 					parse_ws(&p,'#');
-					if(!parse_ident(&p,bf,255)) {
+					if(!parse_ident(&p,bf,sizeof(bf))) {
 						int z;
 						cmd->new_state = find_state(syntax,bf);
 
 						/* Parse options */
-						while (parse_ws(&p,'#'), !parse_ident(&p,bf,255))
+						while (parse_ws(&p,'#'), !parse_ident(&p,bf,sizeof(bf)))
 							if(!zcmp(bf,US "buffer")) {
 								cmd->start_buffering = 1;
 							} else if(!zcmp(bf,US "hold")) {
@@ -398,11 +398,11 @@ struct high_syntax *load_dfa(unsigned char *name)
 									if (*p) {
 										if(!parse_field(&p,US "done"))
 											break;
-										if(!parse_string(&p,bf,255)) {
+										if(parse_string(&p,bf,sizeof(bf)) >= 0) {
 											parse_ws(&p,'#');
 											if (cmd->ignore)
 												lowerize(bf);
-											if(!parse_ident(&p,bf1,255)) {
+											if(!parse_ident(&p,bf1,sizeof(bf1))) {
 												struct high_cmd *kw_cmd=mkcmd();
 												kw_cmd->noeat=1;
 												kw_cmd->new_state = find_state(syntax,bf1);
@@ -413,7 +413,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 														cmd->keywords = htmk(64);
 														htadd(cmd->keywords,zdup(bf),kw_cmd);
 												}
-												while (parse_ws(&p,'#'), !parse_ident(&p,bf,255))
+												while (parse_ws(&p,'#'), !parse_ident(&p,bf,sizeof(bf)))
 													if(!zcmp(bf,US "buffer")) {
 														kw_cmd->start_buffering = 1;
 													} else if(!zcmp(bf,US "hold")) {

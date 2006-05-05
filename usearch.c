@@ -1054,12 +1054,12 @@ void save_srch(FILE *f)
 	if(globalsrch) {
 		if(globalsrch->pattern) {
 			fprintf(f,"	pattern ");
-			emit_hdlc(f,globalsrch->pattern,sLEN(globalsrch->pattern));
+			emit_string(f,globalsrch->pattern,sLEN(globalsrch->pattern));
 			fprintf(f,"\n");
 		}
 		if(globalsrch->replacement) {
 			fprintf(f,"	replacement ");
-			emit_hdlc(f,globalsrch->replacement,sLEN(globalsrch->replacement));
+			emit_string(f,globalsrch->replacement,sLEN(globalsrch->replacement));
 			fprintf(f,"\n");
 		}
 		fprintf(f,"	backwards %d\n",globalsrch->backwards);
@@ -1087,14 +1087,14 @@ void load_srch(FILE *f)
 			int len;
 			parse_ws(&p,'#');
 			bf[0] = 0;
-			len = parse_hdlc(&p,bf,1023);
+			len = parse_string(&p,bf,sizeof(bf));
 			if (len>0)
 				pattern = vsncpy(NULL,0,bf,len);
 		} else if(!parse_kw(&p,US "replacement")) {
 			int len;
 			parse_ws(&p,'#');
 			bf[0] = 0;
-			len = parse_hdlc(&p,bf,1023);
+			len = parse_string(&p,bf,sizeof(bf));
 			if (len>0)
 				replacement = vsncpy(NULL,0,bf,len);
 		} else if(!parse_kw(&p,US "backwards")) {

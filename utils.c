@@ -446,13 +446,13 @@ int parse_ws(unsigned char **pp,int cmt)
 	return *p;
 }
 
-/* Parse an identifier into a buffer.  Identifier is truncated to a maximum of len chars. */
+/* Parse an identifier into a buffer.  Identifier is truncated to a maximum of len-1 chars. */
 
 int parse_ident(unsigned char **pp, unsigned char *buf, int len)
 {
 	unsigned char *p = *pp;
 	if (joe_isalpha_(locale_map,*p)) {
-		while(len && joe_isalnum_(locale_map,*p))
+		while(len > 1 && joe_isalnum_(locale_map,*p))
 			*buf++= *p++, --len;
 		*buf=0;
 		while(joe_isalnum_(locale_map,*p))
@@ -476,7 +476,7 @@ int parse_tows(unsigned char **pp, unsigned char *buf)
 	return 0;
 }
 
-/* Parse a keyword */
+/* Parse over a specific keyword */
 
 int parse_kw(unsigned char **pp, unsigned char *kw)
 {
@@ -490,7 +490,7 @@ int parse_kw(unsigned char **pp, unsigned char *kw)
 		return -1;
 }
 
-/* Parse a field */
+/* Parse a field (same as parse_kw, but string must be terminated with whitespace) */
 
 int parse_field(unsigned char **pp, unsigned char *kw)
 {
@@ -504,7 +504,7 @@ int parse_field(unsigned char **pp, unsigned char *kw)
 		return -1;
 }
 
-/* Parse a character */
+/* Parse a specific character */
 
 int parse_char(unsigned char **pp, unsigned char c)
 {
@@ -533,52 +533,52 @@ int parse_int(unsigned char **pp, int *buf)
 		return -1;
 }
 
-/* Parse a string into a buffer.  Returns 0 for success.
-   Leaves escape sequences in string. */
+/* Parse a string of the form "xxxxx" into a fixed-length buffer.  The
+ * address of the buffer is 'buf'.  The length of this buffer is 'len'.  A
+ * terminating NUL is added to the parsed string.  If the string is larger
+ * than the buffer, the string is truncated.
+ *
+ * C string escape sequences are handled.
+ *
+ * 'p' holds an address of the input string pointer.  The pointer
+ * is updated to point right after the parsed string if the function
+ * succeeds.
+ *
+ * Returns the length of the string (not including the added NUL), or
+ * -1 if there is no string or if the input ended before the terminating ".
+ */
 
 int parse_string(unsigned char **pp, unsigned char *buf, int len)
 {
+	unsigned char *start = buf;
 	unsigned char *p= *pp;
 	if(*p=='\"') {
 		++p;
-		while(len && *p && *p!='\"')
-			if(*p=='\\' && p[1] && len>2) {
-				*buf++ = *p++;
-				*buf++ = *p++;
-				len-=2;
-			} else {
-				*buf++ = *p++;
-				--len;
-			}
+		while(len > 1 && *p && *p!='\"') {
+			int x = 50;
+			int c = escape(0, &p, &x);
+			*buf++ = c;
+			--len;
+		}
 		*buf = 0;
 		while(*p && *p!='\"')
 			if(*p=='\\' && p[1])
-				p+=2;
+				p += 2;
 			else
 				p++;
-		if(*p=='\"') {
-			*pp= p+1;
-			return 0;
+		if(*p == '\"') {
+			*pp = p + 1;
+			return buf - start;
 		}
 	}
 	return -1;
 }
 
-/* Parse string escape sequences (fixes them in place- returns new string length) */
-
-int parse_escapes(unsigned char *buf,int len)
-{
-	int x;
-	unsigned char *p;
-	x=0;
-	for(p=buf;len;) {
-		int c = escape(0,&p,&len);
-		buf[x++] = c;
-	}
-	return x;
-}
-
 /* Emit a string with escape sequences */
+
+#if 0
+
+/* Used originally for printing macros */
 
 void emit_string(FILE *f,unsigned char *s,int len)
 {
@@ -593,104 +593,12 @@ void emit_string(FILE *f,unsigned char *s,int len)
 	}
 	fputc('\"',f);
 }
-
-/* Parse an HDLC string (returns length or -1 for error) */
-
-int parse_hdlc(unsigned char **pp, unsigned char *buf, int len)
-{
-#if 0
-	unsigned char *p= *pp;
-	int x = 0;
-	if(*p=='~') {
-		++p;
-		while(len && *p && *p!='~')
-			if(*p=='}' && p[1]) {
-				++p;
-				buf[x++] = 0x20 + *p++;
-				--len;
-			} else {
-				buf[x++] = *p++;
-				--len;
-			}
-		buf[x] = 0;
-		while(*p && *p!='~')
-			++p;
-		if(*p=='~') {
-			*pp= p+1;
-			return x;
-		}
-	}
-	return -1;
-#else
-	unsigned char *p= *pp;
-	int x = 0;
-	if(*p=='"') {
-		++p;
-		while (len && *p && *p!='"')
-			if (*p=='\\') {
-				if (p[1]=='\\' || p[1]=='"') {
-					++p;
-					buf[x++] = *p++;
-					--len;
-				} else if (p[1]=='n') {
-					p+=2;
-					buf[x++] = '\n';
-					--len;
-				} else if (p[1]=='r') {
-					p+=2;
-					buf[x++] = '\r';
-					--len;
-				} else if (p[1]=='0' && p[2]=='0' && p[3]=='0') {
-					p+=4;
-					buf[x++] = 0;
-					--len;
-				} else
-					return -1;
-			} else {
-				buf[x++] = *p++;
-				--len;
-			}
-		buf[x] = 0;
-		while (*p && *p!='"')
-			if (*p=='\\') {
-				if (p[1]=='\\' || p[1]=='"') {
-					p+=2;
-				} else if (p[1]=='n') {
-					p+=2;
-				} else if (p[1]=='r') {
-					p+=2;
-				} else if (p[1]=='0' && p[2]=='0' && p[3]=='0') {
-					p+=4;
-				} else
-					return -1;
-			} else {
-				++p;
-			}
-		if(*p=='"') {
-			*pp= p+1;
-			return x;
-		}
-	}
-	return -1;
 #endif
-}
 
-/* Emit an HDLC string */
+/* Emit a string */
 
-void emit_hdlc(FILE *f,unsigned char *s,int len)
+void emit_string(FILE *f,unsigned char *s,int len)
 {
-#if 0
-	fputc('~',f);
-	while(len) {
-		if(*s=='~' || *s=='}' || *s==0 || *s=='\n')
-			fputc('}',f), fputc(*s-0x20,f);
-		else
-			fputc(*s,f);
-		++s;
-		--len;
-	}
-	fputc('~',f);
-#else
 	fputc('"',f);
 	while(len) {
 		if (*s=='"' || *s=='\\')
@@ -707,7 +615,6 @@ void emit_hdlc(FILE *f,unsigned char *s,int len)
 		--len;
 	}
 	fputc('"',f);
-#endif
 }
 
 /* Parse a character range: a-z */

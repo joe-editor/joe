@@ -1234,7 +1234,7 @@ void save_hist(FILE *f,B *b)
 				len = 512;
 			}
 			fprintf(f,"\t");
-			emit_hdlc(f,buf,len);
+			emit_string(f,buf,len);
 			fprintf(f,"\n");
 			pset(p,q);
 		}
@@ -1263,7 +1263,7 @@ void load_hist(FILE *f,B **bp)
 		unsigned char *p = buf;
 		int len;
 		parse_ws(&p,'#');
-		len = parse_hdlc(&p,bf,1023);
+		len = parse_string(&p,bf,sizeof(bf));
 		if (len>0) {
 			binsm(q,bf,len);
 			pset(q,b->eof);

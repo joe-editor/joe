@@ -480,7 +480,7 @@ void save_yank(FILE *f)
 	for (rec = yanked.link.next; rec != &yanked; rec = rec->link.next) {
 		if (rec->len < SMALL) {
 			fprintf(f,"	");
-			emit_hdlc(f,rec->small,rec->len);
+			emit_string(f,rec->small,rec->len);
 			fprintf(f,"\n");
 		}
 	}
@@ -498,7 +498,7 @@ void load_yank(FILE *f)
 		unsigned char *p = buf;
 		int len;
 		parse_ws(&p,'#');
-		len = parse_hdlc(&p,bf,sizeof(bf)-1);
+		len = parse_string(&p,bf,sizeof(bf));
 		if (len>0 && len<=SMALL) {
 			rec = alrec();
 			rec->small = (unsigned char *) joe_malloc(len);

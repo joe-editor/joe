@@ -756,7 +756,7 @@ void save_macros(FILE *f)
 		if(kbdmacro[x]) {
 			mtext(buf, kbdmacro[x]);
 			fprintf(f,"	%d ",x);
-			emit_hdlc(f,buf,zlen(buf));
+			emit_string(f,buf,zlen(buf));
 			fprintf(f,"\n");
 		}
 	fprintf(f,"done\n");
@@ -774,7 +774,7 @@ void load_macros(FILE *f)
 		parse_ws(&p, '#');
 		if(!parse_int(&p,&n)) {
 			parse_ws(&p, '#');
-			len = parse_hdlc(&p,bf,1023);
+			len = parse_string(&p,bf,sizeof(bf));
 			if (len>0)
 				kbdmacro[n] = mparse(NULL,bf,&sta);
 		}

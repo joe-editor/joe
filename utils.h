@@ -153,9 +153,5 @@ int parse_int PARAMS((unsigned char **p,int *buf));
 int parse_string PARAMS((unsigned char **p,unsigned char *buf,int len));
 int parse_range PARAMS((unsigned char **p,int *first,int *second));
 void emit_string PARAMS((FILE *f,unsigned char *s,int len));
-int parse_escapes PARAMS((unsigned char *buf,int len));
-
-void emit_hdlc PARAMS((FILE *f,unsigned char *s,int len));
-int parse_hdlc PARAMS((unsigned char **p,unsigned char *buf,int len));
 
 #endif
