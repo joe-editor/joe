@@ -1,3 +1,16 @@
+
+820497   reload files which have changes (for example after cvs update)
+
+622978   use last column
+
+1218685  utf-8 problems in hex mode
+
+1218692  try to autodetect coding
+
+1218695  current context (%x) not displayed in proper character set
+
+
+
 1444112  take syntax highlight patch for sh
 
 1443801  need better latex highlighter
@@ -27,23 +40,15 @@
 
 1218701  report character offset in ^K-<space> (not just byte offset).
 
-1218695  current context (%x) not displayed in proper character set
-
-1218692  try to autodetect coding
-
 1218686  syntax hightlight in hex mode (sheesh!)
-
-1218685  utf-8 problems in hex mode
 
 1001016  improve bash highlighting
 
 1211243  long $HOME causes joe to crash
 
-820497   reload files which have changes (for example after cvs update)
-
-622978   use last column
-
 531899   joe +23 is weird: cursor on startup line
+
+
 
 64-bits: look at int / char * casts in rc.c
 
@@ -310,15 +315,6 @@ Tie in with CVS
 
 Refactoring
 
-Syntax Highlighting:
---------------------
-
-Fix for next release highlight:
-
-  other windows why
-  lose state during page down?
-
-
 Support for more languages:
 
  Reformat paragraph should reformat C function if we're editing C.
@@ -418,8 +414,6 @@ Options
 Other requests:
 
  -cleanup (delete extra lines and extra spaces at ends of lines).
-
- -show no. utf characters, not no. bytes
 
 
 Do something with these keys:
