@@ -50,6 +50,8 @@
 
 531899   joe +23 is weird: cursor on startup line
 
+jump to last place in previous file
+
 It would be nice if paragraph formatter new which lines were comment lines. 
 Then it could format this properly:
 

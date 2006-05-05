@@ -1032,9 +1032,9 @@ bye:		if (!srch->flg && !srch->rest) {
 
 int pfnext(BW *bw)
 {
-	if (!globalsrch)	/* Query for search string if there isn't any */
+	if (!globalsrch) {	/* Query for search string if there isn't any */
 		return pffirst(bw);
-	else {
+	} else {
 		SRCH *srch = globalsrch;
 
 		globalsrch = 0;
@@ -1111,6 +1111,6 @@ void load_srch(FILE *f)
 			parse_int(&p,&block_restrict);
 		}
 	}
-	globalsrch = mksrch(pattern,replacement,ignore,backwards,0,replace,0);
+	globalsrch = mksrch(pattern,replacement,ignore,backwards,-1,replace,0);
 	globalsrch->block_restrict = block_restrict;
 }
