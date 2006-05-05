@@ -1,8 +1,6 @@
 
 1458842 escaping in buffer match
 
-1449521 reformat problems (special chars)
-
 1444112  take syntax highlight patch for sh
 
 1443801  need better latex highlighter
@@ -54,6 +52,16 @@
 
 531899   joe +23 is weird: cursor on startup line
 
+It would be nice if paragraph formatter new which lines were comment lines. 
+Then it could format this properly:
+
+% comment
+% comment
+paragraph
+paragraph
+
+.joe_state grows without end
+
 subroutines for highlighter.
 
 work with cscope?  hit F1 to look up man entry for function?
@@ -102,7 +110,6 @@ Short (infinite) list for 3.4:
 - regex for compiler
 - safer hex edit mode
 - win32? DOS?
-- fix/check formatter for tex files
 - man page
 
 - cygwin- make sure we put files in the right place.
@@ -312,8 +319,6 @@ Fix for next release highlight:
 
 
 Support for more languages:
-
- Paragraph reformat mode for TeX files.
 
  Reformat paragraph should reformat C function if we're editing C.
 

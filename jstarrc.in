@@ -189,6 +189,9 @@
 
  Here is a list of modes which can be set:
 
+	-cpara >#!;*/%
+				Characters which can indent paragraphs.
+
 	-encoding name		Set file coding (for example: utf-8, iso-8859-15)
 
 	-syntax name		Specify syntax (syntax file called

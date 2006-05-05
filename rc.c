@@ -112,6 +112,7 @@ extern int notite, usetabs, assume_color, guesscrlf, guessindent, menu_explorer,
 extern int menu_jump, break_links;
 extern int xmouse;
 extern unsigned char *backpath;
+extern unsigned char *cpara_list;
 extern int nolocks, nomodcheck, nocurdir;
 extern int assume_256color;
 extern int bg_text;
@@ -171,6 +172,7 @@ OPTIONS pdefault = {
 	0,		/* semi_comment */
 	0,		/* hex */
 	NULL,		/* text_delimiters */
+	NULL,		/* Characters which can indent paragraphs */
 	NULL,		/* macro to execute for new files */
 	NULL,		/* macro to execute for existing files */
 	NULL,		/* macro to execute before saving new files */
@@ -222,6 +224,7 @@ OPTIONS fdefault = {
 	0,		/* semi_comment */
 	0,		/* hex */
 	NULL,		/* text_delimiters */
+	">*;!#%/",	/* Characters which can indent paragraphs */
 	NULL, NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
@@ -353,6 +356,7 @@ struct glopts {
 	{US "vhdl_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US "-- comments enabled", US "-- comments disabled", US "  ^G ignores -- " },
 	{US "semi_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US "; comments enabled", US "; comments disabled", US "  ^G ignores ; " },
 	{US "text_delimiters",	6, NULL, (unsigned char *) &fdefault.text_delimiters, US "Text delimiters (%s): ", 0, US "  Text delimiters " },
+	{US "cpara",		6, NULL, (unsigned char *) &fdefault.cpara, US "Chars that can indent paragraphs (%s): ", 0, US "  paragraph indent chars " },
 	{US "floatmouse",	0, &floatmouse, 0, US "Clicking can move the cursor past end of line", US "Clicking past end of line moves cursor to the end", US "  Click past end " },
 	{US "rtbutton",	0, &rtbutton, 0, US "Mouse action is done with the right button", US "Mouse action is done with the left button", US "  Right button " },
 	{US "nonotice",	0, &nonotice, NULL, 0, 0, 0 },

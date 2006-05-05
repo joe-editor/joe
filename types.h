@@ -147,6 +147,7 @@ struct options {
 	int	semi_comment;	/* Ignore text after ; comments */
 	int	hex;		/* Hex edit mode */
 	unsigned char *text_delimiters;	/* Define word delimiters */
+	unsigned char *cpara;	/* Characters which can indent paragraphcs */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */

@@ -71,8 +71,24 @@ int ucenter(BW *bw)
 
 /* Return true if c is a character which can indent a paragraph */
 
-static int cpara(int c)
+/*   > is for mail/news
+ *   * is for C comments
+ *   / is for C++ comments
+ *   # is for shell script comments
+ *   % is for TeX comments
+ */
+
+static int cpara(BW *bw, int c)
 {
+	int x;
+	if (c == ' ' || c == '\t')
+		return 1;
+	if (bw->o.cpara)
+		for (x = 0; bw->o.cpara[x]; ++x)
+			if (bw->o.cpara[x] == c)
+				return 1;
+	return 0;
+#ifdef junk
 	if (c == ' ' || c == '\t' || c == '\\' ||
 	    c == '>' || c == '|' || c == ':' || c == '*' || c == '/' ||
 	    c == ',' || c == '.' || c == '?' || c == ';' || c == ']' ||
@@ -82,6 +98,7 @@ static int cpara(int c)
 		return 1;
 	else
 		return 0;
+#endif
 }
 
 /* Return true if line is definitly not a paragraph line.
@@ -90,14 +107,14 @@ static int cpara(int c)
  *  2) Lines which begin with '.'
  */
 
-static int pisnpara(P *p)
+static int pisnpara(BW *bw, P *p)
 {
 	P *q;
 	int c;
 
 	q = pdup(p, US "pisnpara");
 	p_goto_bol(q);
-	while (cpara(c = pgetc(q)))
+	while (cpara(bw, c = pgetc(q)))
 		/* do nothing */;
 	prm(q);
 	if (c == '.' || c == '\r' || c == '\n')
@@ -108,7 +125,7 @@ static int pisnpara(P *p)
 
 /* Determine amount of indentation on current line */
 
-static long nindent(P *p)
+static long nindent(BW *bw, P *p)
 {
 	P *q = pdup(p, US "nindent");
 	long col;
@@ -116,20 +133,20 @@ static long nindent(P *p)
 	p_goto_bol(q);
 	do {
 		col = q->col;
-	} while (cpara(pgetc(q)));
+	} while (cpara(bw, pgetc(q)));
 	prm(q);
 	return col;
 }
 
 /* Get indentation prefix column */
 
-static long prefix(P *p)
+static long prefix(BW *bw, P *p)
 {
 	long len;
 	P *q = pdup(p, US "prefix");
 
 	p_goto_bol(q);
-	while (cpara(brch(q)))
+	while (cpara(bw, brch(q)))
 		pgetc(q);
 	while (!pisbol(q))
 		if (!joe_isblank(p->b->o.charmap, prgetc(q))) {
@@ -154,23 +171,23 @@ static long prefix(P *p)
 
 int within = 0;
 
-P *pbop(P *p)
+P *pbop(BW *bw, P *p)
 {
 	long indent;
 	long prelen;
 
 	p_goto_bol(p);
-	indent = nindent(p);
-	prelen = prefix(p);
+	indent = nindent(bw, p);
+	prelen = prefix(bw, p);
 	while (!pisbof(p) && (!within || !markb || p->byte > markb->byte)) {
 		long ind;
 		long len;
 
 		pprevl(p);
 		p_goto_bol(p);
-		ind = nindent(p);
-		len = prefix(p);
-		if (pisnpara(p) || len != prelen) {
+		ind = nindent(bw, p);
+		len = prefix(bw, p);
+		if (pisnpara(bw, p) || len != prelen) {
 			pnextl(p);
 			break;
 		}
@@ -181,7 +198,7 @@ P *pbop(P *p)
 				break;
 			pprevl(p);
 			p_goto_bol(p);
-			if (pisnpara(p)) {
+			if (pisnpara(bw, p)) {
 				pnextl(p);
 				break;
 			} else {
@@ -204,20 +221,20 @@ P *pbop(P *p)
  *  3) A line with prefix column different from first line
  */
 
-P *peop(P *p)
+P *peop(BW *bw, P *p)
 {
 	long indent;
 	long prelen;
 
-	if (!pnextl(p) || pisnpara(p) || (within && markk && p->byte >= markk->byte))
+	if (!pnextl(p) || pisnpara(bw, p) || (within && markk && p->byte >= markk->byte))
 		return p;
-	indent = nindent(p);
-	prelen = prefix(p);
+	indent = nindent(bw, p);
+	prelen = prefix(bw, p);
 	while (pnextl(p) && (!within || !markk || p->byte < markk->byte)) {
-		long ind = nindent(p);
-		long len = prefix(p);
+		long ind = nindent(bw, p);
+		long len = prefix(bw, p);
 
-		if (ind != indent || len != prelen || pisnpara(p))
+		if (ind != indent || len != prelen || pisnpara(bw, p))
 			break;
 	}
 	return p;
@@ -230,9 +247,9 @@ int ubop(BW *bw)
 	P *q = pdup(bw->cursor, US "ubop");
 
       up:
-	while (pisnpara(q) && !pisbof(q) && (!within || !markb || q->byte > markb->byte))
+	while (pisnpara(bw, q) && !pisbof(q) && (!within || !markb || q->byte > markb->byte))
 		pprevl(q);
-	pbop(q);
+	pbop(bw, q);
 	if (q->byte != bw->cursor->byte) {
 		pset(bw->cursor, q);
 		prm(q);
@@ -251,10 +268,10 @@ int ueop(BW *bw)
 	P *q = pdup(bw->cursor, US "ueop");
 
       up:
-	while (pisnpara(q) && !piseof(q))
+	while (pisnpara(bw, q) && !piseof(q))
 		pnextl(q);
-	pbop(q);
-	peop(q);
+	pbop(bw, q);
+	peop(bw, q);
 	if (q->byte != bw->cursor->byte) {
 		pset(bw->cursor, q);
 		prm(q);
@@ -401,17 +418,17 @@ int uformat(BW *bw)
 	p_goto_bol(p);
 
 	/* Do nothing if we're not on a paragraph line */
-	if (pisnpara(p)) {
+	if (pisnpara(bw, p)) {
 		prm(p);
 		return 0;
 	}
 
 	/* Move p to beginning of paragraph, bw->cursor to end of paragraph and
 	 * set curoff to original cursor offset within the paragraph */
-	pbop(p);
+	pbop(bw, p);
 	curoff = bw->cursor->byte - p->byte;
 	pset(bw->cursor, p);
-	peop(bw->cursor);
+	peop(bw, bw->cursor);
 
 	/* Ensure that paragraph ends on a beginning of a line */
 	if (!pisbol(bw->cursor))
@@ -424,14 +441,14 @@ int uformat(BW *bw)
 	if (q->line != bw->cursor->line) {
 		P *r = pdup(q, US "uformat");
 
-		indent = nindent(q);
+		indent = nindent(bw, q);
 		pcol(r, indent);
 		indents = brs(q, r->byte - q->byte);
 		prm(r);
 	} else {
 		P *r = pdup(p, US "uformat");
 
-		indent = nindent(p);
+		indent = nindent(bw, p);
 		pcol(r, indent);
 		indents = brs(p, r->byte - p->byte);
 		prm(r);
@@ -514,7 +531,7 @@ int uformat(BW *bw)
 					pset(bw->cursor, p);
 
 				pgetc(b);
-				while (cpara(c=brch(b))) {
+				while (cpara(bw, (c=brch(b)))) {
 					if (b->byte == curoff)
 						pset(bw->cursor, p);
 					pgetc(b);
