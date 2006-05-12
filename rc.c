@@ -224,16 +224,27 @@ OPTIONS fdefault = {
 	0,		/* semi_comment */
 	0,		/* hex */
 	NULL,		/* text_delimiters */
-	">*;!#%/",	/* Characters which can indent paragraphs */
+	US ">*;!#%/",	/* Characters which can indent paragraphs */
 	NULL, NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
 /* Update options */
 
-void lazy_opts(OPTIONS *o)
+void lazy_opts(B *b, OPTIONS *o)
 {
 	o->syntax = load_dfa(o->syntax_name);
-	o->charmap = find_charmap(o->map_name);
+	if (!o->map_name) {
+		/* Guess encoding if it's not explicitly given */
+		unsigned char buf[1024];
+		int len = 1024;
+		if (b->eof->byte < 1024)
+			len = b->eof->byte;
+		brmem(b->bof, buf, len);
+		o->charmap = guess_map(buf, len);
+		o->map_name = zdup(o->charmap->name);
+	} else {
+		o->charmap = find_charmap(o->map_name);
+	}
 	if (!o->charmap)
 		o->charmap = locale_map;
 }
@@ -255,20 +266,20 @@ void setopt(B *b, unsigned char *parsed_name)
 				if (pmatch(pieces,o->contents_regex,zlen(o->contents_regex),p,0,0)) {
 					prm(p);
 					b->o = *o;
-					lazy_opts(&b->o);
+					lazy_opts(b, &b->o);
 					goto done;
 				} else {
 					prm(p);
 				}
 			} else {
 				b->o = *o;
-				lazy_opts(&b->o);
+				lazy_opts(b, &b->o);
 				goto done;
 			}
 		}
 
 	b->o = fdefault;
-	lazy_opts(&b->o);
+	lazy_opts(b, &b->o);
 
 	done:
 	for (x = 0; x!=26; ++x)
@@ -354,7 +365,7 @@ struct glopts {
 	{US "cpp_comment",	4, NULL, (unsigned char *) &fdefault.cpp_comment, US "// comments enabled", US "// comments disabled", US "  ^G ignores // " },
 	{US "pound_comment",	4, NULL, (unsigned char *) &fdefault.pound_comment, US "# comments enabled", US "# comments disabled", US "  ^G ignores # " },
 	{US "vhdl_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US "-- comments enabled", US "-- comments disabled", US "  ^G ignores -- " },
-	{US "semi_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US "; comments enabled", US "; comments disabled", US "  ^G ignores ; " },
+	{US "semi_comment",	4, NULL, (unsigned char *) &fdefault.semi_comment, US "; comments enabled", US "; comments disabled", US "  ^G ignores ; " },
 	{US "text_delimiters",	6, NULL, (unsigned char *) &fdefault.text_delimiters, US "Text delimiters (%s): ", 0, US "  Text delimiters " },
 	{US "cpara",		6, NULL, (unsigned char *) &fdefault.cpara, US "Chars that can indent paragraphs (%s): ", 0, US "  paragraph indent chars " },
 	{US "floatmouse",	0, &floatmouse, 0, US "Clicking can move the cursor past end of line", US "Clicking past end of line moves cursor to the end", US "  Click past end " },

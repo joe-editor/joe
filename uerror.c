@@ -306,14 +306,14 @@ int jump_to_file_line(BW *bw,unsigned char *file,int line,unsigned char *msg)
 
 /* Find line in error database: return pointer to message */
 
-unsigned char *srcherr(BW *bw,unsigned char *file,long line)
+ERROR *srcherr(BW *bw,unsigned char *file,long line)
 {
 	ERROR *p;
 	for (p = errors.link.next; p != &errors; p=p->link.next)
-		if (!zcmp(p->file,file) && p->org==line) {
+		if (!zcmp(p->file,file) && p->org == line) {
 			errptr = p;
 			setline(errbuf, errptr->src);
-			return errptr->msg;
+			return errptr;
 			}
 	return 0;
 }
@@ -334,10 +334,13 @@ int ujump(BW *bw)
 		long line = -1;
 		parseone(bw->b->o.charmap,s,&name,&line);
 		if (name && line != -1) {
-			unsigned char *msg = srcherr(bw, name, line);
+			ERROR *p = srcherr(bw, name, line);
 			unextw((BASE *)bw);
 			/* Check that we made it to a tw */
-			rtn = jump_to_file_line(maint->curwin->object,name,line,msg);
+			if (p)
+				rtn = jump_to_file_line(maint->curwin->object,name,p->line,p->msg);
+			else
+				rtn = jump_to_file_line(maint->curwin->object,name,line,NULL);
 			vsrm(name);
 		}
 		vsrm(s);

@@ -16,6 +16,7 @@
 
 :reset Idle
 	*		goo
+	"\n"		reset
 	"d"		goo		buffer
 	"-"		preudiff	buffer
 	"*"		precdiff	buffer
@@ -74,6 +75,7 @@ done
 
 :udiffoldordel Idle
 	*		udiffdel	recolor=-2
+	"\n"		udiffdel	recolor=-2 noeat
 	"-"		udiffold	recolor=-2
 
 :udiffdel DelLine

@@ -9,6 +9,7 @@
 	*		idle
 	"#"		comment		recolor=-1
 	"\""		string		recolor=-1
+	"'"		single		recolor=-1
 
 :comment Comment
 	*		comment
@@ -22,3 +23,12 @@
 :string_escape Escape
 	*		string
 	"\n"		string		recolor=-2
+
+:single String
+	*		single
+	"'"		idle
+	"\\"		single_escape	recolor=-1
+
+:single_escape Escape
+	*		single
+	"\n"		single		recolor=-2

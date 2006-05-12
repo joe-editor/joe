@@ -420,7 +420,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 								backopt += 2;
 							else
 								backopt += 1;
-							lazy_opts(&bw->o);
+							lazy_opts(bw->b, &bw->o);
 						}
 					}
 				}

@@ -27,6 +27,7 @@
 #include "syntax.h"
 #include "path.h"
 #include "w.h"
+#include "utf8.h"
 
 extern int bg_text;
 extern unsigned char *exmsg;
@@ -103,7 +104,7 @@ unsigned char *get_context(BW *bw)
 		p_goto_bol(p);
 		if (!pisindent(p) && !pisblank(p)) {
 			next:
-			brzs(p,stdbuf,stdsiz-1);
+			brzs(p,stdbuf,stdsiz/8); /* To avoid buffer overruns with my_iconv */
 			/* Ignore comment and block structuring lines */
 			if (!(stdbuf[0]=='{' ||
 			    stdbuf[0]=='/' && stdbuf[1]=='*' ||
@@ -163,7 +164,10 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				{
 					if ( bw->o.autoindent) {
 						unsigned char *s = get_context(bw);
-						stalin = vsncpy(sv(stalin), sz(s));
+						/* We need to translate between file's character set to
+						   locale */
+						my_iconv(stdbuf,locale_map,s,bw->o.charmap);
+						stalin = vsncpy(sv(stalin), sz(stdbuf));
 					}
 				}
 				break;
@@ -688,7 +692,7 @@ void setline(B *b, long int line)
 			if (bw->b == b) {
 				long oline = bw->top->line;
 
-				pline(bw->top, line);
+				/* pline(bw->top, line); */
 				pline(bw->cursor, line);
 				if (w->y >= 0 && bw->top->line > oline && bw->top->line - oline < bw->h)
 					nscrlup(w->t->t, bw->y, bw->y + bw->h, (int) (bw->top->line - oline));

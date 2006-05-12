@@ -1,52 +1,95 @@
 
+Compiling:
+----------
+
+Key to jump back to messages list.
+
+Key to bring up help on word under cursor:
+  like pop up window with man page, or google search
+  for the function.
+
+    man -P cat -S 2:3 printf
+
+Tags file search should auto-run ctags if there is no tags file.
+It should update it if any files have changed...
+
+gdb inteface?
+  run  (when segfault, jump to given source location)
+  run-to
+  step-over
+  step-into
+  eval  (to look at variables)
+  peek up stack frame
+
+
+test:
+  %x
+  guess map (make this an option?)
+
+bugs:
+
+  grep ... | joe     missing lots sometime
+
+
+  grep | joe hangs?
+    because joe and grep both are reading from tty.  this is not a bug,
+    except there is no way to kill the grep (^D and ^C have been disabled).
+
+  highlighting screwed up after lots of edits.  damn.
+
+
+
+sh highlighter: $(   ) onle one level of parenthasis.
+  inside of $( ) and ` ` should be parsed as commands.
+
+Makefile.in and Makefile.am need to be the same as Makefile.
+
+
 820497   reload files which have changes (for example after cvs update)
 
 622978   use last column
 
 1218685  utf-8 problems in hex mode
-
-1218692  try to autodetect coding
-
-1218695  current context (%x) not displayed in proper character set
-
-
-
-1444112  take syntax highlight patch for sh
+           ideally we should ignore utf8 and crs in hex mode.
+           next, save and restore them.
+           last, at least clear these modes.
+ when we change from hex back to normal, position the cursor at a valid
+ character.
 
 1443801  need better latex highlighter
-
-1413863  sigwinch breaks tcsetsw which messes up keyboard?  I haven't seen this
-
-1399448  want gettext support
-
-1323285  joe does not repeatedly wrap searches (add an option for this?)
-
-1304794  X at end of line is changed to space when character above 128 in utf-8
-
-1277344  ^# (for amiga) causes problems
 
 1248928  need to integrate user supplied php highlighters (we should
          highlight the html)
 
-1221499  fix sysconf_joedir and sysconf_docdir
 
-1218729  diff highlighting problems
 
-1218717  lock message is confusing.  we need multi-line query windows
-
-1218716  options display is a mess
+1399448  want gettext support
 
 1218708  ? for unknown characters is not informative (at least highlight the ?)
 
 1218701  report character offset in ^K-<space> (not just byte offset).
 
-1218686  syntax hightlight in hex mode (sheesh!)
+1304794  X at end of line is changed to space when character above 128 in utf-8
 
-1001016  improve bash highlighting
+
+
+1277344  ^# (for amiga) causes problems
+
+1221499  fix sysconf_joedir and sysconf_docdir
+
+1323285  joe does not repeatedly wrap searches (add an option for this?)
+
+1218717  lock message is confusing.  we need multi-line query windows
+
+1218716  options display is a mess
+
+1218686  syntax hightlight in hex mode (sheesh!)
 
 1211243  long $HOME causes joe to crash
 
 531899   joe +23 is weird: cursor on startup line
+
+1413863  sigwinch breaks tcsetsw which messes up keyboard?  I haven't seen this
 
 
 

@@ -576,7 +576,7 @@ int parse_string(unsigned char **pp, unsigned char *buf, int len)
 
 /* Emit a string with escape sequences */
 
-#if 0
+#ifdef junk
 
 /* Used originally for printing macros */
 

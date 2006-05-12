@@ -36,6 +36,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	int *attr = attr_buf;
 	int buf_en = 0;	/* Set for name buffering */
 	int ofst = 0;	/* record offset after we've stopped buffering */
+	int mark1 = 0;  /* offset to mark start from current pos */
+	int mark2 = 0;  /* offset to mark end from current pos */
+	int mark_en = 0;/* set if marking */
 
 	buf[0]=0;	/* Forgot this originally... took 5 months to fix! */
 
@@ -89,6 +92,11 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				if (attr + x >= attr_buf)
 					attr[x] = h -> color;
 
+			/* Mark recoloring */
+			if (cmd->recolor_mark)
+				for(x= -mark1;x<-mark2;++x)
+					attr[x] = h -> color;
+
 			/* Save string? */
 			if (cmd->save_s)
 				zcpy(h_state.saved_s,buf);
@@ -120,6 +128,21 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			/* Stop buffering? */
 			if (cmd->stop_buffering)
 				buf_en = 0;
+				
+			/* Set mark begin? */
+			if (cmd->start_mark)
+			{
+				mark2 = 1;
+				mark1 = 1;
+				mark_en = 1;
+			}
+				
+			/* Set mark end? */
+			if(cmd->stop_mark)
+			{
+				mark_en = 0;
+				mark2 = 1;
+			}
 		} while(cmd->noeat);
 
 		/* Save character in buffer */
@@ -128,6 +151,11 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		if (!buf_en)
 			++ofst;
 		buf[buf_idx] = 0;
+		
+		/* Update mark pointers */
+		++mark1;
+		if(!mark_en)
+			++mark2;
 
 		if(c=='\n')
 			break;
@@ -184,6 +212,9 @@ static void iz_cmd(struct high_cmd *cmd)
 	cmd->keywords = 0;
 	cmd->delim = 0;
 	cmd->ignore = 0;
+	cmd->start_mark = 0;
+	cmd->stop_mark = 0;
+	cmd->recolor_mark = 0;
 }
 
 static struct high_cmd *mkcmd()
@@ -436,6 +467,12 @@ struct high_syntax *load_dfa(unsigned char *name)
 								}
 							} else if(!zcmp(bf,US "noeat")) {
 								cmd->noeat = 1;
+							} else if(!zcmp(bf,US "mark")) {
+								cmd->start_mark = 1;
+							} else if(!zcmp(bf,US "markend")) {
+								cmd->stop_mark = 1;
+							} else if(!zcmp(bf,US "recolormark")) {
+								cmd->recolor_mark = 1;
 							} else
 								fprintf(stderr,"%s %d: Unknown option\n",name,line);
 

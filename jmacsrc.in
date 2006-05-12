@@ -858,6 +858,17 @@
 -autoindent
 -syntax fortran
 
+ Cadence SKILL
+*.il
+-semi_comment
+-syntax skill
+-autoindent
+-istep 3
+-indentc 32
+-smartbacks
+-smarthome
+-indentfirst
+
  TCL
 *.tcl
 -autoindent

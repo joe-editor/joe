@@ -218,6 +218,22 @@ void lattr_del(struct lattr_db *db, long line, long size) {
 	}
 }
 
+HIGHLIGHT_STATE *lattr_gt(struct lattr_db *db, long line)
+{
+	HIGHLIGHT_STATE *st;
+	if (line >= db->hole)
+		st = db->buffer + line - db->hole + db->ehole;
+	else
+		st = db->buffer + line;
+	return st;
+}
+
+void lattr_st(struct lattr_db *db, long line, HIGHLIGHT_STATE *state)
+{
+	HIGHLIGHT_STATE *st = lattr_gt(db, line);
+	*st = *state;
+}
+
 /* Get attribute for a specific line */
 
 HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long line) {
@@ -274,7 +290,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 		/* Recompute everything in invalid window */
 		while (ln < db->first_invalid + db->invalid_window /* && ln < line */) {
 			state = parse(y, tmp, state);
-			lattr_lvalue(db, ln) = state;
+			lattr_st(db, ln, &state);
 			++ln;
 		}
 
@@ -286,9 +302,9 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 		while (ln < lattr_size(db) /* && ln < line */) {
 			HIGHLIGHT_STATE *prev;
 			state = parse(y, tmp, state);
-			prev = &lattr_lvalue(db, ln);
+			prev = lattr_gt(db, ln);
 			if (!eq_state(prev, &state))
-				lattr_lvalue(db, ln) = state;
+				lattr_st(db, ln, &state);
 			else {
 				db->first_invalid = lattr_size(db);
 				db->invalid_window = -1;

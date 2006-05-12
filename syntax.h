@@ -32,16 +32,19 @@ struct high_state {
 /* Command (transition) */
 
 struct high_cmd {
-	int noeat;			/* Set to give this character to next state */
+	unsigned noeat : 1;		/* Set to give this character to next state */
+	unsigned start_buffering : 1;	/* Set if we should start buffering */
+	unsigned stop_buffering : 1;	/* Set if we should stop buffering */
+	unsigned save_c : 1;		/* Save character */
+	unsigned save_s : 1;		/* Save string */
+	unsigned ignore : 1;		/* Set to ignore case */
+	unsigned start_mark : 1;	/* Set to begin marked area including this char */
+	unsigned stop_mark : 1;		/* Set to end marked area excluding this char */
+	unsigned recolor_mark : 1;	/* Set to recolor marked area with new state */
 	int recolor;			/* No. chars to recolor if <0. */
-	int start_buffering;		/* Set if we should start buffering */
-	int stop_buffering;		/* Set if we should stop buffering */
-	int save_c;			/* Save character */
-	int save_s;			/* Save string */
 	struct high_state *new_state;	/* The new state */
 	HASH *keywords;			/* Hash table of keywords */
 	struct high_cmd *delim;		/* Matching delimiter */
-	int ignore;			/* Set to ignore case */
 };
 
 /* Loaded form of syntax file */

@@ -28,7 +28,7 @@
 	"\""		string_dq	recolor=-1
 	"\`"		string_bq	recolor=-1
 	"<"		maybe_inc
-	"a-zA-Z{}!["	ident		buffer
+	"a-zA-Z{}![_"	ident		buffer
 
 :maybe_inc Idle
 	*		idle		noeat
@@ -40,8 +40,30 @@
 	"-"		skipminus
 
 :skipminus Idle
-	*		inc		buffer noeat
+	*		inc1		buffer noeat
 	"`&()\\|;'\"<> 	\n"	idle	noeat
+
+:inc1 Var
+	*		inc1
+	"`&()\\|;'\"<> 	\n"	skipline1	noeat save_s
+
+:skipline1 Constant
+	*		skipline1
+	"\n"		next_line1
+
+:todelim1 Constant
+	*		todelim1
+	"\n"		next_line1	strings
+	"&"		founddelim1
+done
+
+:next_line1 Constant
+	*		todelim1	buffer
+	"\t"		next_line1
+	"\n"		next_line1
+
+:founddelim1 Var
+	*		idle		noeat
 
 :inc Var
 	*		inc
@@ -76,6 +98,7 @@ done
 
 :subst Var
 	*		idle
+	"("		string_bq1	recolor=-2
 	"\""		string_dq	recolor=-2
 	"\'"		string_sq	recolor=-2
 	"{"		subst_brack
@@ -178,6 +201,36 @@ done
 	"}"		string_bq
 
 
+# $( backquote
+:string_bq1 Constant
+	*		string_bq1
+	"$"		string_bq1_subst	recolor=-1
+	")"		idle
+	"\\"		string_bq1_esc	recolor=-1
+
+# escape in backquote
+:string_bq1_esc Escape
+	*		string_bq1	recolor=-2
+	"$`\"\\"	string_bq1
+	"\n"		string_bq1	recolor=-2
+
+# Substitution in a backquote
+:string_bq1_subst Var
+	*		string_bq1	noeat recolor=-2
+	"$0-9!_\-?*@"	string_bq1
+	"a-zA-Z_"	string_bq1_subst_name
+	"{"		string_bq1_subst_brack
+
+:string_bq1_subst_name Var
+	*		string_bq1	recolor=-1 noeat
+	"a-zA-Z0-9_"	string_bq1_subst_name
+
+:string_bq1_subst_brack Var
+	*		string_bq1_subst_brack
+	"}"		string_bq1
+
+
+
 :ident Idle
 	*		idle		noeat strings
 	"!"		kw
@@ -272,7 +325,7 @@ done
 	"pushd"		kw
 	"shopt"		kw
 done
-	"a-zA-Z0-9"	ident
+	"a-zA-Z0-9_"	ident
 
 :kw Keyword
 	*	idle	noeat

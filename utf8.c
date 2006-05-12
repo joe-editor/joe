@@ -181,22 +181,46 @@ int utf8_decode_string(unsigned char *s)
 	return c;
 }
 
-/* Decode and advance */
+/* Decode and advance
+ *
+ * Returns: 0 - 7FFFFFFF: decoded character
+ *  -2: incomplete sequence
+ *  -3: bad start of sequence found.
+ *
+ * p/plen are always advanced in such a way that repeated called to utf8_decode_fwrd do not cause
+ * infinite loops.
+ */
 
 int utf8_decode_fwrd(unsigned char **p,int *plen)
 {
 	struct utf8_sm sm;
 	unsigned char *s = *p;
 	int len = *plen;
-	int c = -2;
+	int c = -2; /* Return this on no more input. */
 
 	utf8_init(&sm);
 
 	while (len) {
-		--len;
-		c = utf8_decode(&sm,*s++);
-		if (c >= 0)
+		c = utf8_decode(&sm, *s);
+		if (c >= 0) {
+			/* We've got a character */
+			--len;
+			++s;
 			break;
+		} else if (c == -2) {
+			/* Bad sequence detected.  Caller should feed rest of string in again. */
+			break;
+		} else if (c == -3) {
+			/* Bad start of UTF-8 sequence.  We need to eat this char to avoid infinite loops. */
+			--len;
+			++s;
+			/* But we should tell the caller that something bad was found. */
+			break;
+		} else {
+			/* If c is -1, utf8_decode accepted the character, so we should get the next one. */
+			--len;
+			++s;
+		}
 	}
 
 	*plen = len;
@@ -314,7 +338,10 @@ unsigned char *non_utf8_codeset;
 			/* Codeset of local language non-UTF-8 */
 
 struct charmap *locale_map;
-			/* Character map of terminal */
+			/* Character map of terminal, default map for new files */
+
+struct charmap *locale_map_non_utf8;
+			/* Old, non-utf8 version of locale */
 
 void joe_locale()
 {
@@ -359,6 +386,10 @@ void joe_locale()
 	locale_map = find_charmap(codeset);
 	if (!locale_map)
 		locale_map = find_charmap(US "ascii");
+
+	locale_map_non_utf8 = find_charmap(non_utf8_codeset);
+	if (!locale_map_non_utf8)
+		locale_map_non_utf8 = find_charmap(US "ascii");
 
 	fdefault.charmap = locale_map;
 	pdefault.charmap = locale_map;
@@ -438,4 +469,103 @@ int from_utf8(struct charmap *map,unsigned char *s)
 	else
 		return obuf[0];
 #endif
+}
+
+void my_iconv(unsigned char *dest,struct charmap *dest_map,
+              unsigned char *src,struct charmap *src_map)
+{
+	if (dest_map == src_map) {
+		zcpy (dest, src);
+		return;
+	}
+
+	if (src_map->type) {
+		/* src is UTF-8 */
+		if (dest_map->type) {
+			/* UTF-8 to UTF-8? */
+			zcpy (dest, src);
+		} else {
+			/* UTF-8 to non-UTF-8 */
+			while (*src) {
+				int len = -1;
+				int c = utf8_decode_fwrd(&src, &len);
+				if (c >= 0) {
+					int d = from_uni(dest_map, c);
+					if (d >= 0)
+						*dest++ = d;
+					else
+						*dest++ = '?';
+				} else
+					*dest++ = 'X';
+			}
+			*dest = 0;
+		}
+	} else {
+		/* src is not UTF-8 */
+		if (!dest_map->type) {
+			/* Non UTF-8 to non-UTF-8 */
+			while (*src) {
+				int c = to_uni(src_map, *src++);
+				int d;
+				if (c >= 0) {
+					d = from_uni(dest_map, c);
+					if (d >= 0)
+						*dest++ = d;
+					else
+						*dest++ = '?';
+				} else
+					*dest++ = '?';
+			}
+			*dest = 0;
+		} else {
+			/* Non-UTF-8 to UTF-8 */
+			while (*src) {
+				int c = to_uni(src_map, *src++);
+				if (c >= 0)
+					dest += utf8_encode(dest, c);
+				else
+					*dest++ = '?';
+			}
+			*dest = 0;
+		}
+	}
+}
+
+/* Guess character set */
+
+struct charmap *guess_map(unsigned char *buf, int len)
+{
+	unsigned char *p;
+	int plen;
+	int c;
+	int flag;
+
+	/* No info? Use default */
+	if (!len)
+		return locale_map;
+
+	/* Do we UTF-8? */
+	if (!locale_map->type)
+		/* Nope, use default */
+		return locale_map;
+
+	/* Does it look like UTF-8? */
+	p = buf;
+	plen = len;
+	c = 0;
+	flag = 0;
+	while (plen) {
+		if (*p >= 128)
+			flag = 1;
+		c = utf8_decode_fwrd(&p, &plen);
+		if (c < 0)
+			break;
+	}
+	if (c >= 0 && flag) {
+		/* No decoding errors but there are utf-8 sequences */
+		return find_charmap(US "utf-8");
+	}
+
+	/* Well, it might be non-utf8 version of the locale */
+	return locale_map_non_utf8;
 }

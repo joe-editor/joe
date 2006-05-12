@@ -673,7 +673,7 @@ int doedit(BW *bw, unsigned char *s, void *obj, int *notify)
 	b = bcheck_loaded(s);
 
 	if (b) {
-		if (b->changed)
+		if (b->changed && !b->scratch)
 			/* Modified buffer exists, so ask */
 			return doedit1(bw, 0, s, notify);
 		else

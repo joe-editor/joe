@@ -1,7 +1,29 @@
+Thu May 11 10:27:47 EDT 2006
+
+	Add skill syntax file.
+
+	Fix semi_comment bug.
+
+	^K E does not now ask to load original for scratch buffers.
+
+	ESC SPACE now consults line number tracking database
+
+	Fix diff highlighter bugs
+
+Tue May  9 11:15:22 EDT 2006
+
+	Fix some compiler warnings.
+
+Mon May  8 15:35:20 EDT 2006
+
+	Convert to proper character set in %x
+
+	Guess encoding.
+
 Fri May  5 10:24:33 EDT 2006
 
 	You can now define which characters can indent paragraphs in joerc
-	file: look for '-cpara'.
+	file: look for '-cpara' in joerc file.
 
 	Allow escape sequences in syntax highlight strings.
 
