@@ -49,8 +49,6 @@ struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn)
 	db->hole = 1;
 	db->ehole = db->end;
 	db->buffer = (HIGHLIGHT_STATE *)malloc(db->end * sizeof(HIGHLIGHT_STATE));
-	for (x = 0; x != db->end; ++x)
-		db->buffer[x].state = 50000;
 	db->first_invalid = 1;
 	db->invalid_window = -1;
 	/* State of first line is idle */
@@ -68,7 +66,7 @@ void rm_lattr_db(struct lattr_db *db)
 
 /* Delete linked list of databases */
 
-void rm_all_lattr_db(struct lattr_db *db)\
+void rm_all_lattr_db(struct lattr_db *db)
 {
 	struct lattr_db *n;
 	while (db) {
@@ -96,11 +94,12 @@ void lattr_hole(struct lattr_db *db, long pos)
 void lattr_check(struct lattr_db *db, long amnt)
 {
 	if (amnt > db->ehole - db->hole) {
+		int x;
 		/* Not enough space */
 		/* Amount of additional space needed */
 		amnt = amnt - (db->ehole - db->hole) + 16;
 		db->buffer = (HIGHLIGHT_STATE *)realloc(db->buffer, (db->end + amnt) * sizeof(HIGHLIGHT_STATE));
-		mmove(db->buffer + db->ehole + amnt, db->buffer + db->ehole, db->end - db->ehole);
+		mmove(db->buffer + db->ehole + amnt, db->buffer + db->ehole, (db->end - db->ehole) * sizeof(HIGHLIGHT_STATE));
 		db->ehole += amnt;
 		db->end += amnt;
 	}
@@ -241,6 +240,7 @@ void lattr_st(struct lattr_db *db, long line, HIGHLIGHT_STATE *state)
 
 HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long line)
 {
+	long z;
 
 	/* Past end of file? */
 	if (line > p->b->eof->line) {
@@ -329,6 +329,28 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 		}
 		prm(tmp);
 	}
+
+	/* Check it */
+
+#ifdef junk
+	{
+		HIGHLIGHT_STATE st;
+		P *tmp =pdup(p, US "lattr_get");
+		pline(tmp, 0);
+		clear_state(&st);
+
+		for (z = 0; z != db->first_invalid; ++z) {
+			HIGHLIGHT_STATE *prev;
+			prev = lattr_gt(db, z);
+			if (prev->state != st.state) {
+				printf("** Mismatch!! %d %d %d %d **\n",z,tmp->line,prev->state,st.state);
+				abort();
+			}
+			st = parse(y, tmp, st);
+		}
+		prm(tmp);
+	}
+#endif
 
 	/* Return with attribute */
 	return lattr_lvalue(db, line);
