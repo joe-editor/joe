@@ -35,8 +35,6 @@ bugs:
     because joe and grep both are reading from tty.  this is not a bug,
     except there is no way to kill the grep (^D and ^C have been disabled).
 
-  highlighting screwed up after lots of edits.  damn.
-
 
 
 sh highlighter: $(   ) onle one level of parenthasis.
