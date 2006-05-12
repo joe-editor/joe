@@ -82,32 +82,43 @@ typedef struct vpage VPAGE;
 typedef struct vfile VFILE;
 typedef struct highlight_state HIGHLIGHT_STATE;
 
+/* A buffer is made up of a doubly-linked list of gap buffer.  These are the
+ * buffer headers.  The buffers themselves can be swapped out.  A buffer with
+ * point referring to it is guaranteed to be swapped in.
+ */
+
 struct header {
-	LINK(H)	link;		/* LINK ??? */
-	long	seg;		/* ??? */
-	int	hole;		/* ??? */
-	int	ehole;		/* ??? */
-	int	nlines;		/* ??? */
+	LINK(H)	link;		/* Doubly-linked list of gap buffer headers */
+	long	seg;		/* Swap file offset to gap buffer */
+	int	hole;		/* Offset to gap */
+	int	ehole;		/* Offset to after gap */
+	int	nlines;		/* No. '\n's in this buffer */
 };
+
+/* A pointer to some location within a buffer.  After an insert or delete,
+ * all of the pointers following the insertion or deletion point are
+ * adjusted so that they keep pointing to the same character. */
 
 struct point {
-	LINK(P)	link;		/* ?LINK ??? */
+	LINK(P)	link;		/* Doubly-linked list of pointers for a particular buffer */
 
-	B	*b;		/* ?B ??? */
-	int	ofst;		/* ??? */
-	unsigned char	*ptr;	/* ??? */
-	H	*hdr;		/* ?H ??? */
+	B	*b;		/* Buffer */
+	int	ofst;		/* Gap buffer offset */
+	unsigned char	*ptr;	/* Gap buffer address */
+	H	*hdr;		/* Gap buffer header */
 
-	long	byte;		/* ??? */
-	long	line;		/* ??? */
+	long	byte;		/* Buffer byte offset */
+	long	line;		/* Line number */
 	long	col;		/* current column */
-	long	xcol;		/* ??? */
+	long	xcol;		/* cursor column (can be different from actual column) */
 	int	valcol;		/* bool: is col valid? */
-	int	end;		/* ??? */
+	int	end;		/* set if this is end of file pointer */
 
-	P	**owner;	/* ??? */
+	P	**owner;	/* owner of this pointer.  owner gets cleared if pointer is deleted. */
 	unsigned char *tracker;	/* Name of function who pdup()ed me */
 };
+
+/* Options: both BWs and Bs have one of these */
 
 struct options {
 	OPTIONS	*next;
@@ -183,13 +194,13 @@ struct cmd {
 	unsigned char	*negarg;	/* Command to use if arg was negative */
 };
 
-
+/* A buffer */
 
 struct buffer {
-	LINK(B)	link;
-	P	*bof;
-	P	*eof;
-	unsigned char	*name;
+	LINK(B)	link;		/* Doubly-linked list of all buffers */
+	P	*bof;		/* Beginning of file pointer */
+	P	*eof;		/* End of file pointer */
+	unsigned char	*name;	/* File name */
 	int locked;		/* Set if we created a lock for this file */
 	int ignored_lock;	/* Set if we didn't create a lock and we don't care (locked set in this case) */
 	int didfirst;		/* Set after user attempted first change */
@@ -271,6 +282,8 @@ struct watom {
 	int	what;		/* Type of this thing */
 };
 
+/* A screen with windows */
+
 struct screen {
 	SCRN	*t;		/* Screen data on this screen is output to */
 
@@ -281,6 +294,8 @@ struct screen {
 
 	int	w, h;		/* Width and height of this screen */
 };
+
+/* A window (base class) */
 
 struct window {
 	LINK(W)	link;		/* Linked list of windows in order they
@@ -335,6 +350,8 @@ struct base {
 	W	*parent;
 };
 
+/* A buffer window: there are several kinds, depending on what is in 'object' */
+
 struct bw {
 	W	*parent;
 	B	*b;
@@ -351,6 +368,8 @@ struct bw {
 	int	top_changed;	/* Top changed */
 	struct lattr_db *db;	/* line attribute database */
 };
+
+/* A menu window */
 
 struct menu {
 	W	*parent;	/* Window we're in */
@@ -380,7 +399,7 @@ struct highlight_state {
 	unsigned char saved_s[24];
 };
 
-/* Each terminal has one of these */
+/* Each terminal has one of these: terminal capability database */
 
 #ifdef __MSDOS__
 
@@ -533,6 +552,7 @@ struct cap {
 	int	dopadding;	/* Set if pad characters should be used */
 };
 
+/* Prompt window (a BW) */
 
 struct pw {
 	int	(*pfunc) ();	/* Func which gets called when RTN is hit */
@@ -549,6 +569,8 @@ struct pw {
 struct stditem {
 	LINK(STDITEM)	link;
 };
+
+/* Single-key Query window */
 
 struct query {
 	W	*parent;	/* Window we're in */
@@ -572,6 +594,7 @@ struct mpx {
 	void	*dieobj;
 };
 
+/* Text window (a BW) */
 
 struct tw {
 	unsigned char	*stalin;	/* Status line info */

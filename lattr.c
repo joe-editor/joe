@@ -38,15 +38,19 @@
 
 /* Create a line attribute database */
 
-struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn) {
+struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn)
+{
 	struct lattr_db *db = (struct lattr_db *)joe_malloc(sizeof(struct lattr_db));
+	int x;
 	db->next = 0;
 	db->syn = new_syn;
 	db->b = new_b;
 	db->end = 512;
 	db->hole = 1;
 	db->ehole = db->end;
-	db->buffer = (HIGHLIGHT_STATE *)calloc(db->end, sizeof(HIGHLIGHT_STATE));
+	db->buffer = (HIGHLIGHT_STATE *)malloc(db->end * sizeof(HIGHLIGHT_STATE));
+	for (x = 0; x != db->end; ++x)
+		db->buffer[x].state = 50000;
 	db->first_invalid = 1;
 	db->invalid_window = -1;
 	/* State of first line is idle */
@@ -56,14 +60,16 @@ struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn) {
 
 /* Delete a database */
 
-void rm_lattr_db(struct lattr_db *db) {
+void rm_lattr_db(struct lattr_db *db)
+{
 	free(db->buffer);
 	free(db);
 }
 
 /* Delete linked list of databases */
 
-void rm_all_lattr_db(struct lattr_db *db) {
+void rm_all_lattr_db(struct lattr_db *db)\
+{
 	struct lattr_db *n;
 	while (db) {
 		n = db->next;
@@ -75,29 +81,26 @@ void rm_all_lattr_db(struct lattr_db *db) {
 
 /* Set gap position */
 
-void lattr_hole(struct lattr_db *db, long pos) {
-	if (pos > db->hole) {
-		long amnt = pos - db->hole;
-		mmove(db->buffer + db->hole, db->buffer + db->ehole, amnt * sizeof(HIGHLIGHT_STATE));
-		db->hole = pos;
-		db->ehole += amnt;
-	} else if (pos < db->hole) {
-		long amnt = db->hole - pos;
-		mmove(db->buffer + db->ehole - amnt, db->buffer + pos, amnt * sizeof(HIGHLIGHT_STATE));
-		db->hole = pos;
-		db->ehole -= amnt;
-	}
+void lattr_hole(struct lattr_db *db, long pos)
+{
+	if (pos > db->hole)
+		mmove(db->buffer + db->hole, db->buffer + db->ehole, (pos - db->hole) * sizeof(HIGHLIGHT_STATE));
+	else if (pos < db->hole)
+		mmove(db->buffer + db->ehole - (db->hole - pos), db->buffer + pos, (db->hole - pos) * sizeof(HIGHLIGHT_STATE));
+	db->ehole = pos + db->ehole - db->hole;
+	db->hole = pos;
 }
 
 /* Make sure there is enough space for an insert */
 
-void lattr_check(struct lattr_db *db, long amnt) {
+void lattr_check(struct lattr_db *db, long amnt)
+{
 	if (amnt > db->ehole - db->hole) {
 		/* Not enough space */
 		/* Amount of additional space needed */
 		amnt = amnt - (db->ehole - db->hole) + 16;
 		db->buffer = (HIGHLIGHT_STATE *)realloc(db->buffer, (db->end + amnt) * sizeof(HIGHLIGHT_STATE));
-		mmove(db->buffer + db->ehole, db->buffer + db->ehole + amnt, db->end - db->ehole);
+		mmove(db->buffer + db->ehole + amnt, db->buffer + db->ehole, db->end - db->ehole);
 		db->ehole += amnt;
 		db->end += amnt;
 	}
@@ -105,7 +108,8 @@ void lattr_check(struct lattr_db *db, long amnt) {
 
 /* Find a database for a particular syntax in a buffer.  If none exists, create one. */
 
-struct lattr_db *find_lattr_db(B *b, struct high_syntax *y) {
+struct lattr_db *find_lattr_db(B *b, struct high_syntax *y)
+{
 	struct lattr_db *db;
 	for (db = b->db; db && db->syn != y; db = db->next);
 	if (!db) {
@@ -118,7 +122,8 @@ struct lattr_db *find_lattr_db(B *b, struct high_syntax *y) {
 
 /* Drop a database, but only if no BWs refer to it */
 
-void drop_lattr_db(B *b, struct lattr_db *db) {
+void drop_lattr_db(B *b, struct lattr_db *db)
+{
 #if junk
 	if (!lattr_db_in_use(db)) {
 		if (b->db == db) {
@@ -135,7 +140,8 @@ void drop_lattr_db(B *b, struct lattr_db *db) {
 
 /* An insert occurred */
 
-void lattr_ins(struct lattr_db *db,long line,long size) {
+void lattr_ins(struct lattr_db *db,long line,long size)
+{
 	++line; /* First invalid line is the one following the insert */
 
 	/* Are we before the end? */
@@ -146,25 +152,28 @@ void lattr_ins(struct lattr_db *db,long line,long size) {
 			lattr_check(db, size);
 			db->ehole -= size;
 		}
-		/* Update beginning of invalid window */
-		if (line < db->first_invalid) {
-			if (db->invalid_window != -1)
-				db->invalid_window += db->first_invalid - line;
-			else
-				db->invalid_window = 0;
+		if (db->invalid_window == -1) {
+			/* Create invalid window */
 			db->first_invalid = line;
-		}
-		/* invalid_window can not be set to -1 at this point */
-		/* Update end of invalid window */
-		if (line + size > db->first_invalid + db->invalid_window) {
+			db->invalid_window = size;
+		} else if (line >= db->first_invalid + db->invalid_window) {
+			/* Insert after end of existing window */
 			db->invalid_window = line + size - db->first_invalid;
+		} else if (line >= db->first_invalid) {
+			/* Insert into existing window */
+			db->invalid_window += size;
+		} else {
+			/* Insert before existing window */
+			db->invalid_window += db->first_invalid - line + size;
+			db->first_invalid = line;
 		}
 	}
 }
 
 /* A deletion occurred */
 
-void lattr_del(struct lattr_db *db, long line, long size) {
+void lattr_del(struct lattr_db *db, long line, long size)
+{
 	++line; /* First invalid line is the one following the delete */
 
 	/* Are we before the end? */
@@ -175,46 +184,40 @@ void lattr_del(struct lattr_db *db, long line, long size) {
 			if (size > db->end - db->ehole)
 				size = db->end - db->ehole;
 			db->ehole += size;
-			/* Fix window position */
-			if (db->invalid_window == -1) {
-				/* There is no window */
-				db->first_invalid -= size;
-			} else {
-				/* There is a window: check all of the boundary cases */
-				if (line < db->first_invalid) {
-					if (line + size < db->first_invalid) {
-						db->first_invalid -= size;
-					} else if (line + size < db->first_invalid + db->invalid_window) {
-						db->invalid_window -= line + size - db->first_invalid;
-						db->first_invalid = line;
-					} else {
-						db->first_invalid = line;
-						db->invalid_window = 0;
-					}
-				} else if (line < db->first_invalid + db->invalid_window) {
-					if (line + size < db->first_invalid + db->invalid_window)
-						db->invalid_window -= size;
-					else
-						db->invalid_window = line - db->first_invalid;
-				}
-				/* If we deleted the window */
-				if (db->first_invalid + db->invalid_window == lattr_size(db)) {
-					db->first_invalid = lattr_size(db);
-					db->invalid_window = -1;
-				}
-			}
 		}
-		/* Update beginning of invalid window */
-		if (line < db->first_invalid) {
-			if (db->invalid_window != -1)
-				db->invalid_window += db->first_invalid - line;
-			else
-				db->invalid_window = 0;
+
+		if (db->invalid_window == -1) {
+			/* Create invalid window */
 			db->first_invalid = line;
-		}
-		/* Update end of invalid window */
-		if (line > db->first_invalid && line > db->first_invalid + db->invalid_window)
+			db->invalid_window = 0;
+		} else if (line < db->first_invalid) {
+			/* Delete point is before existing window */
+			if (line + size <= db->first_invalid) {
+				/* End point is before start of window */
+				db->invalid_window = db->first_invalid + db->invalid_window - line - size;
+				db->first_invalid = line;
+			} else if (line + size <= db->first_invalid + db->invalid_window) {
+				/* End point is in window */
+				db->invalid_window -= line + size - db->first_invalid;
+				db->first_invalid = line;
+			} else {
+				/* End point is beyond window */
+				db->invalid_window = 0;
+				db->first_invalid = line;
+			}
+		} else if (line < db->first_invalid + db->invalid_window) {
+			/* Delete point is in window */
+			if (line + size < db->first_invalid + db->invalid_window) {
+				/* Deletion is entirely in window */
+				db->invalid_window -= size;
+			} else {
+				/* End of window got deleted */
+				db->invalid_window = line - db->first_invalid;
+			}
+		} else {
+			/* Delete point is after window */
 			db->invalid_window = line - db->first_invalid;
+		}
 	}
 }
 
@@ -236,7 +239,8 @@ void lattr_st(struct lattr_db *db, long line, HIGHLIGHT_STATE *state)
 
 /* Get attribute for a specific line */
 
-HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long line) {
+HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long line)
+{
 
 	/* Past end of file? */
 	if (line > p->b->eof->line) {
@@ -288,7 +292,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 		pline(tmp, ln - 1);
 
 		/* Recompute everything in invalid window */
-		while (ln < db->first_invalid + db->invalid_window /* && ln < line */) {
+		while (ln < db->first_invalid + db->invalid_window) {
 			state = parse(y, tmp, state);
 			lattr_st(db, ln, &state);
 			++ln;
@@ -299,7 +303,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 		db->first_invalid = ln;
 
 		/* Recompute until match found.  If match is found, we can assume rest is valid */
-		while (ln < lattr_size(db) /* && ln < line */) {
+		while (ln < lattr_size(db)) {
 			HIGHLIGHT_STATE *prev;
 			state = parse(y, tmp, state);
 			prev = lattr_gt(db, ln);
