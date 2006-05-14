@@ -1162,7 +1162,6 @@ struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 {
 	unsigned char buf[1024];
 	unsigned char bf1[1024];
-	unsigned esc_char = '\\';
 	unsigned comment_char = '#';
 	int in_map = 0;
 	int x;
@@ -1191,7 +1190,6 @@ struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 		} else if (!zcmp(bf1,US "<escape_char>")) {
 			parse_ws(&p, comment_char);
 			parse_tows(&p, bf1);
-			esc_char = bf1[0];
 		} else if (!zcmp(bf1,US "CHARMAP")) {
 			in_map = 1;
 		} else if (!zcmp(bf1,US "END")) {

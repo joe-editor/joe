@@ -96,6 +96,9 @@ Common ./configure options
   way for it to be able to use the builtin ANSI termcap entry- if it's
   compiled for terminfo, it can not use its built-in termcap entry).
 
+  Note for MIPS/SGI: to get a 64-bit JOE, do this:
+    CC=cc CFLAGS=-64 ./configure ...
+
 =-=-=-=-=-=-=-=-=-=-=-=
 Verify the installation
 =-=-=-=-=-=-=-=-=-=-=-=

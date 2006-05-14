@@ -579,14 +579,14 @@ int pgetc(P *p)
 {
 	if (p->b->o.charmap->type) {
 		int val;
-		int c, oc;
+		int c; /* , oc; */
 		int d;
-		int n, m;
+		int n; /* , m; */
 		int wid;
 
 		val = p->valcol;	/* Remember if column number was valid */
 		c = pgetb(p);		/* Get first byte */
-		oc = c;
+		/* oc = c; */
 
 		if (c==NO_MORE_DATA)
 			return c;
@@ -614,7 +614,7 @@ int pgetc(P *p)
 			/* c -= 384; */
 		}
 
-		m = n;
+		/* m = n; */
 
 		if (n) {
 			while (n) {
