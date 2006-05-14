@@ -11,13 +11,14 @@
 
 /* Fixes for itanium */
 
+#ifdef HAVE_CURSES_H
+#include <curses.h>
+#endif
+
+/* curses has to come before term.h on SGI */
 #ifdef HAVE_TERM_H
 /* term.h is a disaster: it #defines 'tab' */
 #include <term.h>
-#endif
-
-#ifdef HAVE_CURSES_H
-#include <curses.h>
 #endif
 
 #endif
