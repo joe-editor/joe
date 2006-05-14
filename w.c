@@ -9,7 +9,7 @@
 
 /* Count no. of main windows */
 
-int countmain(SCREEN *t)
+int countmain(Screen *t)
 {
 	int nmain = 1;
 	W *m = t->curwin->main;
@@ -132,7 +132,7 @@ int demotegroup(W *w)
 
 /* Find last window on the screen */
 
-W *lastw(SCREEN *t)
+W *lastw(Screen *t)
 {
 	W *x;
 
@@ -142,11 +142,11 @@ W *lastw(SCREEN *t)
 
 /* Create a screen object */
 
-SCREEN *scr;
+Screen *scr;
 
-SCREEN *screate(SCRN *scrn)
+Screen *screate(SCRN *scrn)
 {
-	SCREEN *t = (SCREEN *) joe_malloc(sizeof(SCREEN));
+	Screen *t = (Screen *) joe_malloc(sizeof(Screen));
 
 	t->t = scrn;
 	t->w = scrn->co;
@@ -158,7 +158,7 @@ SCREEN *screate(SCRN *scrn)
 	return t;
 }
 
-void sresize(SCREEN *t)
+void sresize(Screen *t)
 {
 	SCRN *scrn = t->t;
 	W *w;
@@ -218,7 +218,7 @@ void scrdel(B *b, long l, long n, int flg)
 	}
 }
 
-W *watpos(SCREEN *t,int x,int y)
+W *watpos(Screen *t,int x,int y)
 {
 	W *w=t->topwin;
 	do
@@ -237,7 +237,7 @@ W *watpos(SCREEN *t,int x,int y)
 
 static int doabort(W *w, int *ret);
 
-void wfit(SCREEN *t)
+void wfit(Screen *t)
 {
 	int y;			/* Where next window goes */
 	int left;		/* Lines left on screen */
@@ -373,7 +373,7 @@ void wfit(SCREEN *t)
 
 /* Goto next window */
 
-int wnext(SCREEN *t)
+int wnext(Screen *t)
 {
 	if (t->curwin->link.next != t->curwin) {
 		t->curwin = t->curwin->link.next;
@@ -386,7 +386,7 @@ int wnext(SCREEN *t)
 
 /* Goto previous window */
 
-int wprev(SCREEN *t)
+int wprev(Screen *t)
 {
 	if (t->curwin->link.prev != t->curwin) {
 		t->curwin = t->curwin->link.prev;
@@ -475,7 +475,7 @@ int wgrowdown(W *w)
 
 /* Show all windows */
 
-void wshowall(SCREEN *t)
+void wshowall(Screen *t)
 {
 	int n = 0;
 	int set;
@@ -512,7 +512,7 @@ void wshowall(SCREEN *t)
 	wfit(t);
 }
 
-static void wspread(SCREEN *t)
+static void wspread(Screen *t)
 {
 	int n = 0;
 	W *w = t->topwin;
@@ -564,7 +564,7 @@ void wshowone(W *w)
 
 /* Create a window */
 
-W *wcreate(SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify)
+W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify)
 {
 	W *new;
 
@@ -683,7 +683,7 @@ static int doabort(W *w, int *ret)
 
 int wabort(W *w)
 {
-	SCREEN *t = w->t;
+	Screen *t = w->t;
 	int ret;
 
 	if (w != w->main) {

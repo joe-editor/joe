@@ -17,7 +17,7 @@ int xmouse=0;
 int nonotice;
 int help;
 
-SCREEN *maint;			/* Main edit screen */
+Screen *maint;			/* Main edit screen */
 
 /* Make windows follow cursor */
 

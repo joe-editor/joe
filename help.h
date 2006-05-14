@@ -9,8 +9,8 @@
 #ifndef _JOE_HELP_H
 #define _JOE_HELP_H 1
 
-void help_display PARAMS((SCREEN *t));		/* display text in help window */
-int help_on PARAMS((SCREEN *t));		/* turn help on */
+void help_display PARAMS((Screen *t));		/* display text in help window */
+int help_on PARAMS((Screen *t));		/* turn help on */
 int help_init PARAMS((FILE *fd,unsigned char *bf,int line)); /* read help from rc file */
 
 int u_help PARAMS((BASE *base));		/* toggle help on/off */

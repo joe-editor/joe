@@ -100,7 +100,7 @@ struct help *find_context_help(unsigned char *name)
 /*
  * Display help text
  */
-void help_display(SCREEN *t)
+void help_display(Screen *t)
 {
 	unsigned char *str;
 	int y, x, c, z;
@@ -247,7 +247,7 @@ void help_display(SCREEN *t)
 /*
  * Show help screen 
  */
-int help_on(SCREEN *t)
+int help_on(Screen *t)
 {
 	if (help_actual) {
 		t->wind = help_actual->lines + skiptop;
@@ -269,7 +269,7 @@ int help_on(SCREEN *t)
 /*
  * Hide help screen
  */
-static void help_off(SCREEN *t)
+static void help_off(Screen *t)
 {
 	t->wind = skiptop;
 	wfit(t);

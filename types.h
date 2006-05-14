@@ -169,7 +169,7 @@ typedef struct kmap KMAP;
 typedef struct kbd KBD;
 typedef struct key KEY;
 typedef struct watom WATOM;
-typedef struct screen SCREEN;
+typedef struct screen Screen;
 typedef struct window W;
 typedef struct base BASE;
 typedef struct bw BW;

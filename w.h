@@ -41,7 +41,7 @@ struct window {
 	LINK(W)	link;		/* Linked list of windows in order they
 				   appear on the screen */
 
-	SCREEN	*t;		/* Screen this thing is on */
+	Screen	*t;		/* Screen this thing is on */
 
 	int	x, y, w, h;	/* Position and size of window */
 				/* Currently, x = 0, w = width of screen. */
@@ -111,47 +111,47 @@ W *findbotw PARAMS((W *w));
 
 int demotegroup PARAMS((W *w));
 
-/* W *lastw(SCREEN *t);
+/* W *lastw(Screen *t);
  * Find last window on screen
  */
-W *lastw PARAMS((SCREEN *t));
+W *lastw PARAMS((Screen *t));
 
 /* Determine number of main windows
  */
-int countmain PARAMS((SCREEN *t));
+int countmain PARAMS((Screen *t));
 
-/* void wfit(SCREEN *t);
+/* void wfit(Screen *t);
  *
  * Fit all of the windows onto the screen
  */
-void wfit PARAMS((SCREEN *t));
+void wfit PARAMS((Screen *t));
 
-/* W *watpos(SCREEN *t, int x, int y);
+/* W *watpos(Screen *t, int x, int y);
  * Return the window at the given location, or NULL if there is none
  */
-W *watpos PARAMS((SCREEN *t, int x, int y));
+W *watpos PARAMS((Screen *t, int x, int y));
 
 /*****************/
 /* Main routines */
 /*****************/
 
-/* SCREEN *screate(SCRN *);
+/* Screen *screate(SCRN *);
  *
  * Create a screen
  */
-SCREEN *screate PARAMS((SCRN *scrn));
+Screen *screate PARAMS((SCRN *scrn));
 
-/* void sresize(SCREEN *t);
+/* void sresize(Screen *t);
  * Screen size changed
  */
-void sresize PARAMS((SCREEN *t));
+void sresize PARAMS((Screen *t));
 
-/* void chsize(SCREEN *t,int mul,int div)
+/* void chsize(Screen *t,int mul,int div)
  * Resize windows: each window is multiplied by the fraction mul/div
  */
 void chsize PARAMS(());
 
-/* W *wcreate(SCREEN *t,WATOM *watom,W *where,W *target,W *original,int height);
+/* W *wcreate(Screen *t,WATOM *watom,W *where,W *target,W *original,int height);
  *
  * Try to create a window
  *
@@ -171,7 +171,7 @@ void chsize PARAMS(());
  * Returns the new window or returns 0 if there was not enough space to
  * create the window and maintain family integrity.
  */
-W *wcreate PARAMS((SCREEN *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify));
+W *wcreate PARAMS((Screen *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify));
 
 /* int wabort(W *w);
  *
@@ -179,17 +179,17 @@ W *wcreate PARAMS((SCREEN *t, WATOM *watom, W *where, W *target, W *original, in
  */
 int wabort PARAMS((W *w));
 
-/* int wnext(SCREEN *);
+/* int wnext(Screen *);
  *
  * Switch to next window
  */
-int wnext PARAMS((SCREEN *t));
+int wnext PARAMS((Screen *t));
 
-/* int wprev(SCREEN *);
+/* int wprev(Screen *);
  *
  * Switch to previous window
  */
-int wprev PARAMS((SCREEN *t));
+int wprev PARAMS((Screen *t));
 
 /* int wgrow(W *);
  *
@@ -212,11 +212,11 @@ int wgrowdown PARAMS((W *w));
  */
 void wshowone PARAMS((W *w));
 
-/* void wshowall(SCREEN *);
+/* void wshowall(Screen *);
  *
  * Show all windows on the screen, including the given one
  */
-void wshowall PARAMS((SCREEN *t));
+void wshowall PARAMS((Screen *t));
 
 /* void wredraw(W *);
  *

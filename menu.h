@@ -18,7 +18,7 @@ struct menu {
 	int	width;		/* Width of widest item, up to 'w' max */
 	int	perline;	/* Number of items on each line */
 	int	nitems;		/* No. items in list */
-	SCREEN	*t;		/* Screen we're on */
+	Screen	*t;		/* Screen we're on */
 	int	h, w, x, y;
 	int	(*abrt) ();	/* Abort callback function */
 	int	(*func) ();	/* Return callback function */

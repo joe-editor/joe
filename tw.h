@@ -19,7 +19,7 @@ struct tw {
 	B	*prev_b;	/* Previous buffer (we need to update status line on nbuf/pbuf) */
 };
 
-BW *wmktw PARAMS((SCREEN *t, B *b));
+BW *wmktw PARAMS((Screen *t, B *b));
 
 int usplitw PARAMS((BW *bw));
 int uduptw PARAMS((BW *bw));

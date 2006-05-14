@@ -16,7 +16,7 @@ struct bw {
 	P	*top;
 	P	*cursor;
 	long	offset;
-	SCREEN	*t;
+	Screen	*t;
 	int	h, w, x, y;
 
 	OPTIONS	o;

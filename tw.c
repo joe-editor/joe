@@ -634,7 +634,7 @@ int utw1(BASE *b)
 {
 	W *starting = b->parent;
 	W *mainw = starting->main;
-	SCREEN *t = mainw->t;
+	Screen *t = mainw->t;
 	int yn;
 
 	do {
@@ -677,7 +677,7 @@ void setline(B *b, long int line)
 
 /* Create a text window.  It becomes the last window on the screen */
 
-BW *wmktw(SCREEN *t, B *b)
+BW *wmktw(Screen *t, B *b)
 {
 	W *w;
 	BW *bw;
