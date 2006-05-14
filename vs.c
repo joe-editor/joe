@@ -5,12 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include "blocks.h"
-#include "utils.h"
-#include "vs.h"
 
 int sicmp(unsigned char a, unsigned char b)
 {

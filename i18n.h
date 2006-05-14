@@ -1,9 +1,6 @@
 #ifndef _Ii18n
 #define _Ii18n 1
 
-#include "config.h"
-#include "types.h"
-
 int joe_iswupper PARAMS((struct charmap *,int c));
 int joe_iswlower PARAMS((struct charmap *,int c));
 

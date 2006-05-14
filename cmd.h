@@ -8,11 +8,19 @@
 #ifndef _JOE_CMD_H
 #define _JOE_CMD_H 1
 
-#include "config.h"
-#include "types.h"
+/* Command entry */
+
+struct cmd {
+	unsigned char	*name;		/* Command name */
+	int	flag;		/* Execution flags */
+	int	(*func) ();	/* Function bound to name */
+	MACRO	*m;		/* Macro bound to name */
+	int	arg;		/* 0= arg is meaningless, 1= ok */
+	unsigned char	*negarg;	/* Command to use if arg was negative */
+};
 
 extern CMD cmds[];		/* Built-in commands */
-extern int beep;
+extern int joe_beep;		/* Enable beep on command error */
 
 /* Command execution flags */
 
@@ -38,9 +46,14 @@ void addcmd PARAMS((unsigned char *s, MACRO *m));
 int execmd PARAMS((CMD *cmd, int k));
 void do_auto_scroll();
 
-extern B *cmdhist;
+extern B *cmdhist; /* Command history buffer */
 
-int try_lock(BW *bw,B *b);
-int modify_logic(BW *bw,B *b);
+int try_lock PARAMS((BW *bw,B *b));
+int modify_logic PARAMS((BW *bw,B *b));
+
+int uexecmd PARAMS((BW *bw));
+
+extern int nolocks; /* Disable file locking */
+extern int nomodcheck; /* Disable file modified check */
 
 #endif

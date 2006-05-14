@@ -5,11 +5,9 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
-
 /* This module requires ALIGNED and SIZEOF_INT to be defined correctly */
 
-#include "blocks.h"
+#include "types.h"
 
 #define BITS 8
 

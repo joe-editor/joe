@@ -5,37 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#include "cmd.h"
-#include "kbd.h"
-#include "macro.h"
-#include "menu.h"
-#include "path.h"
-#include "pw.h"
-#include "tw.h"
-#include "mouse.h"
-#include "uedit.h"
-#include "umath.h"
-#include "utils.h"
-#include "vs.h"
-#include "b.h"
-#include "syntax.h"
-#include "va.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "ufile.h"
-#include "usearch.h"
-#include "ushell.h"
-#include "undo.h"
-#include "help.h"
-#include "w.h"
 
 #define OPT_BUF_SIZE 300
 
@@ -104,26 +74,6 @@ unsigned char **get_keymap_list()
 }
 
 OPTIONS *options = NULL;
-
-/* Global variable options */
-extern int mid, dspasis, dspctrl, force, help, pgamnt, square, csmode, nobackups, lightoff, exask, skiptop;
-extern int noxon, lines, staen, columns, Baud, dopadding, orphan, marking, joe_beep, keepup, nonotice;
-extern int notite, usetabs, assume_color, guesscrlf, guessindent, menu_explorer, icase, wrap, autoswap;
-extern int menu_jump, break_links;
-extern int xmouse;
-extern unsigned char *backpath;
-extern unsigned char *cpara_list;
-extern int nolocks, nomodcheck, nocurdir;
-extern int assume_256color;
-extern int bg_text;
-extern int bg_stalin;
-extern int bg_menu;
-extern int bg_help;
-extern int bg_prompt;
-extern int bg_msg;
-extern int joexterm;
-extern int pico;
-extern int menu_above;
 
 /* Set to use ~/.joe_state file */
 int joe_state;
@@ -601,8 +551,6 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 1;
 	} else if (!zcmp(s, US "text_color")) {
 		if (arg) {
-			int sta;
-
 			bg_text = meta_color(arg);
 			bg_help = bg_text;
 			bg_prompt = bg_text;
@@ -614,40 +562,30 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			ret = 1;
 	} else if (!zcmp(s, US "help_color")) {
 		if (arg) {
-			int sta;
-
 			bg_help = meta_color(arg);
 			ret = 2;
 		} else
 			ret = 1;
 	} else if (!zcmp(s, US "status_color")) {
 		if (arg) {
-			int sta;
-
 			bg_stalin = meta_color(arg);
 			ret = 2;
 		} else
 			ret = 1;
 	} else if (!zcmp(s, US "menu_color")) {
 		if (arg) {
-			int sta;
-
 			bg_menu = meta_color(arg);
 			ret = 2;
 		} else
 			ret = 1;
 	} else if (!zcmp(s, US "prompt_color")) {
 		if (arg) {
-			int sta;
-
 			bg_prompt = meta_color(arg);
 			ret = 2;
 		} else
 			ret = 1;
 	} else if (!zcmp(s, US "msg_color")) {
 		if (arg) {
-			int sta;
-
 			bg_msg = meta_color(arg);
 			ret = 2;
 		} else

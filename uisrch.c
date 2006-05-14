@@ -5,29 +5,30 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
 
-#include "b.h"
-#include "bw.h"
-#include "main.h"
-#include "queue.h"
-#include "qw.h"
-#include "tty.h"
-#include "usearch.h"
-#include "utils.h"
-#include "charmap.h"
-#include "utf8.h"
-#include "vs.h"
+typedef struct irec IREC;
 
-extern int smode;
-extern int joe_beep;
-extern int icase;
+struct irec {
+	LINK(IREC)	link;
+	int	what;		/* 0 repeat, >0 append n chars */
+	long	start;		/* Cursor search position */
+	long	disp;		/* Original cursor position */
+	int	wrap_flag;	/* Wrap flag */
+};
+
+struct isrch {
+	IREC	irecs;		/* Linked list of positions */
+	unsigned char *pattern;	/* Search pattern string */
+	unsigned char *prompt;	/* Prompt (usually same as pattern unless utf-8/byte conversion) */
+	int	ofst;		/* Offset in pattern past prompt */
+	int	dir;		/* 0=fwrd, 1=bkwd */
+	int	quote;		/* Set to quote next char */
+};
+
 struct isrch *lastisrch = NULL;	/* Previous search */
 
 unsigned char *lastpat = NULL;	/* Previous pattern */
-
-extern SRCH *globalsrch;	/* Existing SRCH structure */
 
 IREC fri = { {&fri, &fri} };	/* Free-list of irecs */
 
@@ -235,7 +236,6 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		/* Translate utf-8 to bytes */
 		unsigned char *p = isrch->pattern;
 		int len = sLEN(isrch->pattern);
-		int c;
 		while (len) {
 			int c = utf8_decode_fwrd(&p, &len);
 			if (c>=0) {

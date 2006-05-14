@@ -5,32 +5,13 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
 
-#include <unistd.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
 
-#include "b.h"
-#include "pw.h"
-#include "queue.h"
-#include "scrn.h"
-#include "tty.h"
-#include "ublock.h"
-#include "uedit.h"
-#include "utils.h"
-#include "vs.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "w.h"
+int nowmarking;
 
 /* Global options */
 
@@ -38,8 +19,6 @@ int square = 0;			/* Set for rectangle mode */
 int lightoff = 0;		/* Set if highlighting should turn off
 
 				   after block operations */
-extern int marking, nowmarking;
-
 /* Global variables */
 
 P *markb = NULL;		/* Beginning and end of block */
@@ -273,7 +252,7 @@ int ubegin_marking(BW *bw)
 	if (nowmarking) {
 		/* We're marking now... don't stop */
 		return 0;
-	} else if (markv(0) && bw->cursor->b==markb->b)
+	} else if (markv(0) && bw->cursor->b==markb->b) {
 		/* Try to extend current block */
 		if (bw->cursor->byte==markb->byte) {
 			pset(markb,markk);
@@ -285,6 +264,7 @@ int ubegin_marking(BW *bw)
 			nowmarking = 1;
 			return 0;
 		}
+	}
 	/* Start marking - no message */
 	prm(markb); markb=0;
 	prm(markk); markk=0;
@@ -416,8 +396,6 @@ int utomarkbk(BW *bw)
 }
 
 /* Delete block */
-
-extern int udelln(BW *bw);
 
 int ublkdel(BW *bw)
 {
@@ -708,7 +686,6 @@ int lindent_check(int c, int n)
 	else
 		indwid = n;
 	while (p->byte < markk->byte) {
-		int x;
 		p_goto_bol(p);
 		if (!piseol(p) && pisindent(p)<indwid) {
 			prm(p);
@@ -882,8 +859,8 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 					       markk->xcol);
 
 			tmp = bload(s);
-			if (error) {
-				msgnw(bw->parent, msgs[-error]);
+			if (berror) {
+				msgnw(bw->parent, msgs[-berror]);
 				brm(tmp);
 				return -1;
 			}
@@ -913,8 +890,8 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 		int ret = 0;
 		B *tmp = bload(s);
 
-		if (error) {
-			msgnw(bw->parent, msgs[-error]), brm(tmp);
+		if (berror) {
+			msgnw(bw->parent, msgs[-berror]), brm(tmp);
 			ret = -1;
 		} else
 			binsb(bw->cursor, tmp);
@@ -1201,15 +1178,15 @@ int blksum(double *sum, double *sumsq)
 			/* Skip to first number */
 			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
 				c=pgetc(q);
-				if (c >= '0' && c <= '9' || c == '.' || c == '-') {
+				if ((c >= '0' && c <= '9') || c == '.' || c == '-') {
 					/* Copy number into buffer */
 					buf[0]=c; x=1;
 					while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
 						c=pgetc(q);
-						if (c >= '0' && c <= '9' || c == 'e' || c == 'E' ||
+						if ((c >= '0' && c <= '9') || c == 'e' || c == 'E' ||
 						    c == 'p' || c == 'P' || c == 'x' || c == 'X' ||
 						    c == '.' || c == '-' || c == '+' ||
-						    c >= 'a' && c <= 'f' || c >= 'A' && c<='F') {
+						    (c >= 'a' && c <= 'f') || (c >= 'A' && c<='F')) {
 							if(x != 79)
 								buf[x++]=c;
 						} else
@@ -1241,8 +1218,6 @@ unsigned char *blkget()
 		P *q;
 		unsigned char *buf=joe_malloc(markk->byte-markb->byte+1);
 		unsigned char *s=buf;
-		int x;
-		int c;
 		long left = markb->xcol;
 		long right = markk->xcol;
 		q = pdup(markb, US "blkget");

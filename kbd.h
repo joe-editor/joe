@@ -8,8 +8,27 @@
 #ifndef _JOE_KBD_H
 #define _JOE_KBD_H 1
 
-#include "config.h"
-#include "types.h"
+/* A key binding */
+struct key {
+	int	k;			/* Flag: 0=binding, 1=submap */
+	union {
+		void	*bind;		/* What key is bound to */
+		KMAP	*submap;	/* Sub KMAP address (for prefix keys) */
+	} value;
+};
+
+/* A map of keycode to command/sub-map bindings */
+struct kmap {
+	KEY	keys[KEYS];	/* KEYs */
+};
+
+/** A keyboard handler **/
+struct kbd {
+	KMAP	*curmap;	/* Current keymap */
+	KMAP	*topmap;	/* Top-level keymap */
+	int	seq[16];	/* Current sequence of keys */
+	int	x;		/* What we're up to */
+};
 
 /* KMAP *mkkmap(void);
  * Create an empty keymap

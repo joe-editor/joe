@@ -5,29 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#include "b.h"
-#include "cmd.h"
-#include "main.h"
-#include "pw.h"
-#include "qw.h"
-#include "tty.h"
-#include "ublock.h"
-#include "uedit.h"
-#include "umath.h"
-#include "undo.h"
-#include "utils.h"
-#include "vs.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "w.h"
 
 MACRO *freemacros = NULL;
 
@@ -454,7 +432,7 @@ int exmacro(MACRO *m, int u)
 {
 	int larg;
 	int negarg = 0;
-	int oid, oifl, oifa;
+	int oid=0, oifl=0, oifa=0;
 	int ret = 0;
 	int main_ret = 0;
 	int o_arg_set = argset;
@@ -687,8 +665,6 @@ int urecord(BW *bw, int c)
 		return -1;
 }
 
-extern volatile int dostaupd;
-
 int ustop(void)
 {
 	unmac();
@@ -833,6 +809,7 @@ static int doif(BW *bw,unsigned char *s,void *object,int *notify)
 static int ifabrt()
 {
 	ifdepth--;
+	return 0;
 }
 
 int uif(BW *bw)
@@ -855,6 +832,7 @@ int uelsif(BW *bw)
 		if(wmkpw(bw->parent,US "Else if: ",NULL,doif,NULL,NULL,utypebw,NULL,NULL,locale_map,0)) return 0;
 		else return -1;
 	}
+	return 0;
 }
 
 int uelse(BW *bw)

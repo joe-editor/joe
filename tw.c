@@ -5,33 +5,8 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
 
-#include <stdio.h>
-#ifdef HAVE_TIME_H
-#include <time.h>
-#endif
-
-#include "b.h"
-#include "bw.h"
-#include "macro.h"
-#include "main.h"
-#include "qw.h"
-#include "scrn.h"
-#include "uedit.h"
-#include "ufile.h"
-#include "ushell.h"
-#include "utils.h"
-#include "vs.h"
-#include "syntax.h"
-#include "path.h"
-#include "w.h"
-#include "utf8.h"
-
-extern int bg_text;
-extern unsigned char *exmsg;
-extern int square;
 int staen = 0;
 int staupd = 0;
 int keepup = 0;
@@ -103,17 +78,17 @@ unsigned char *get_context(BW *bw)
 	do {
 		p_goto_bol(p);
 		if (!pisindent(p) && !pisblank(p)) {
-			next:
+			/* next: */
 			brzs(p,stdbuf,stdsiz/8); /* To avoid buffer overruns with my_iconv */
 			/* Ignore comment and block structuring lines */
 			if (!(stdbuf[0]=='{' ||
-			    stdbuf[0]=='/' && stdbuf[1]=='*' ||
+			    (stdbuf[0]=='/' && stdbuf[1]=='*') ||
 			    stdbuf[0]=='\f' ||
-			    stdbuf[0]=='/' && stdbuf[1]=='/' ||
+			    (stdbuf[0]=='/' && stdbuf[1]=='/') ||
 			    stdbuf[0]=='#' ||
-			    stdbuf[0]=='b' && stdbuf[1]=='e' && stdbuf[2]=='g' && stdbuf[3]=='i' && stdbuf[4]=='n' ||
-			    stdbuf[0]=='B' && stdbuf[1]=='E' && stdbuf[2]=='G' && stdbuf[3]=='I' && stdbuf[4]=='N' ||
-			    stdbuf[0]=='-' && stdbuf[1]=='-' ||
+			    (stdbuf[0]=='b' && stdbuf[1]=='e' && stdbuf[2]=='g' && stdbuf[3]=='i' && stdbuf[4]=='n') ||
+			    (stdbuf[0]=='B' && stdbuf[1]=='E' && stdbuf[2]=='G' && stdbuf[3]=='I' && stdbuf[4]=='N') ||
+			    (stdbuf[0]=='-' && stdbuf[1]=='-') ||
 			    stdbuf[0]==';')) {
 			    	/* zcpy(buf1,stdbuf); */
  				/* replace tabs to spaces and remove adjoining spaces */
@@ -369,8 +344,6 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 	return stalin;
 }
 
-extern int hex;
-
 static void disptw(BW *bw, int flg)
 {
 	W *w = bw->parent;
@@ -415,11 +388,12 @@ static void disptw(BW *bw, int flg)
 		w->t->t->updtab[w->y] = 0;
 	}
 
-	if (flg)
+	if (flg) {
 		if (bw->o.hex)
 			bwgenh(bw);
 		else
 			bwgen(bw, bw->o.linums);
+	}
 }
 
 /* Split current window */
@@ -433,8 +407,6 @@ static void iztw(TW *tw, int y)
 	tw->staon = (!staen || y);
 	tw->prev_b = 0;
 }
-
-extern int dostaupd;
 
 int usplitw(BW *bw)
 {

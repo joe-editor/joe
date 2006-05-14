@@ -5,23 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#include "bw.h"
-#include "blocks.h"
-#include "scrn.h"
-#include "termcap.h"
-#include "charmap.h"
-#include "utf8.h"
-#include "syntax.h"
-#include "utils.h"
-#include "mouse.h"
 
 int bg_text = 0; /* Background color for text */
 int skiptop = 0;
@@ -31,8 +15,6 @@ int notite = 0;
 int usetabs = 0;
 int assume_color = 0;
 int assume_256color = 0;
-
-extern int mid;
 
 /* How to display characters (especially the control ones) */
 /* here are characters ... */
@@ -179,19 +161,23 @@ int set_attr(SCRN *t, int c)
 		if (t->mh)
 			texec(t->cap, t->mh, 1, 0, 0, 0, 0);
 
-	if ((t->attrib & FG_MASK) != (c & FG_MASK))
-		if (t->Sf)
+	if ((t->attrib & FG_MASK) != (c & FG_MASK)) {
+		if (t->Sf) {
 			if (t->Co & (t->Co - 1))
 				texec(t->cap, t->Sf, 1, ((c & FG_VALUE) >> FG_SHIFT) % t->Co, 0, 0, 0);
 			else
 				texec(t->cap, t->Sf, 1, ((c & FG_VALUE) >> FG_SHIFT) & (t->Co - 1), 0, 0, 0);
+		}
+	}
 
-	if ((t->attrib & BG_MASK) != (c & BG_MASK))
-		if (t->Sb)
+	if ((t->attrib & BG_MASK) != (c & BG_MASK)) {
+		if (t->Sb) {
 			if (t->Co & (t->Co - 1))
 				texec(t->cap, t->Sb, 1, ((c & BG_VALUE) >> BG_SHIFT) % t->Co, 0, 0, 0);
 			else
 				texec(t->cap, t->Sb, 1, ((c & BG_VALUE) >> BG_SHIFT) & (t->Co - 1), 0, 0, 0);
+		}
+	}
 
 	t->attrib = c;
 
@@ -250,7 +236,7 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c
 		} else {
 			/* UTF-8 char to non-UTF-8 terminal */
 			/* Don't convert control chars below 256 */
-			if (c>=32 && c<=126 || c>=160) {
+			if ((c>=32 && c<=126) || c>=160) {
 				if (unictrl(c))
 					a ^= UNDERLINE;
 				c = from_uni(locale_map,c);
@@ -709,7 +695,7 @@ SCRN *nopen(CAP *cap)
 	leave = 1;
 	ttclose();
 	signrm();
-        fprintf(stderr,"cm=%d ch=%d cv=%d ho=%d lf=%d DO=%d ll=%d up=%d UP=%d cr=%d\n",
+        fprintf(stderr,"cm=%p ch=%p cv=%p ho=%p lf=%p DO=%p ll=%p up=%p UP=%p cr=%p\n",
                        t->cm, t->ch, t->cv, t->ho, t->lf, t->DO, t->ll, t->up, t->UP, t->cr);
 	fprintf(stderr,"Sorry, your terminal can't do absolute cursor positioning.\nIt's broken\n");
 	return NULL;
@@ -1381,7 +1367,7 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 			ofst[x++] = t->co - 1;
 		else {
 			int aryy;
-			int maxaryy;
+			int maxaryy = 0;
 			int maxlen = 0;
 			int best = 0;
 			int bestback = 0;
@@ -1463,7 +1449,6 @@ void magic(SCRN *t, int y, int *cs, int *ca,int *s, int *a, int placex)
 static void doupscrl(SCRN *t, int top, int bot, int amnt, int atr)
 {
 	int a = amnt;
-	int q;
 
 	if (!amnt)
 		return;
@@ -1534,7 +1519,6 @@ static void doupscrl(SCRN *t, int top, int bot, int amnt, int atr)
 static void dodnscrl(SCRN *t, int top, int bot, int amnt, int atr)
 {
 	int a = amnt;
-	int q;
 
 	if (!amnt)
 		return;
@@ -1731,11 +1715,8 @@ void nscrlup(SCRN *t, int top, int bot, int amnt)
 		}
 }
 
-extern volatile int dostaupd;
-
 void nredraw(SCRN *t)
 {
-	int x;
 	dostaupd = 1;
 	msetI(t->scrn, ' ', t->co * skiptop);
 	msetI(t->attr, BG_COLOR(bg_text), t->co * skiptop);  
@@ -1938,7 +1919,7 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 			/* Byte mode: character is one column wide */
 			wid = 1 ;
 		}
-		if (wid>=0)
+		if (wid>=0) {
 			if (col >= ofst) {
 				if (x + wid > last_col) {
 					/* Character crosses end of field, so fill balance of field with '>' characters instead */
@@ -1969,6 +1950,7 @@ void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,
 				}
 			} else
 				col += wid;
+		}
 	}
 	/* Fill balance of field with spaces */
 	while (x < last_col) {
@@ -2063,7 +2045,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)
 				wid = 1 ;
 			}
 
-			if (wid>=0)
+			if (wid>=0) {
 				if (col >= ofst) {
 					outatr(locale_map, t, scrn, attr, x, y, c, atr);
 					scrn += wid;
@@ -2085,6 +2067,7 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)
 					}
 				} else
 					col += wid;
+			}
 		}
 	if (flg)
 		eraeol(t, x, y, atr);
@@ -2100,7 +2083,7 @@ int fmtlen(unsigned char *s)
 
 	utf8_init(&sm);
 
-	while (c= *s++) {
+	while ((c= *s++)) {
 		if (c == '\\') {
 			switch (*s++) {
 			case 'u':

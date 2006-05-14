@@ -33,15 +33,12 @@
  */
 
 #include "types.h"
-#include "syntax.h"
-#include "b.h"
 
 /* Create a line attribute database */
 
 struct lattr_db *mk_lattr_db(B *new_b, struct high_syntax *new_syn)
 {
 	struct lattr_db *db = (struct lattr_db *)joe_malloc(sizeof(struct lattr_db));
-	int x;
 	db->next = 0;
 	db->syn = new_syn;
 	db->b = new_b;
@@ -94,7 +91,6 @@ void lattr_hole(struct lattr_db *db, long pos)
 void lattr_check(struct lattr_db *db, long amnt)
 {
 	if (amnt > db->ehole - db->hole) {
-		int x;
 		/* Not enough space */
 		/* Amount of additional space needed */
 		amnt = amnt - (db->ehole - db->hole) + 16;
@@ -240,8 +236,6 @@ void lattr_st(struct lattr_db *db, long line, HIGHLIGHT_STATE *state)
 
 HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long line)
 {
-	long z;
-
 	/* Past end of file? */
 	if (line > p->b->eof->line) {
 		HIGHLIGHT_STATE x;
@@ -251,7 +245,6 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, long
 
 	/* Check if we need to expand */
 	if (line >= lattr_size(db)) {
-		long x;
 		/* Expand by this amount */
 		long amnt = line - lattr_size(db) + 1;
 		/* Set position to end */

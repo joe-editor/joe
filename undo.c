@@ -5,22 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <string.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#include "b.h"
-#include "blocks.h"
-#include "queue.h"
-#include "ublock.h"
-#include "utils.h"
-#include "w.h"
-
-extern int lightoff;
 
 #define SMALL 1024
 
@@ -29,8 +14,6 @@ static UNDO frdos = { {&frdos, &frdos} };
 
 int inundo = 0;
 int inredo = 0;
-
-extern int dostaupd;
 
 UNDOREC yanked = { {&yanked, &yanked} };
 int nyanked = 0;

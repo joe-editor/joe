@@ -5,17 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include "scrn.h"
-#include "utils.h"
-#include "vs.h"
-#include "charmap.h"
-#include "utf8.h"
-#include "w.h"
-
-extern int bg_prompt;
 
 static void dispqw(QW *qw)
 {

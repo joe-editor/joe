@@ -5,15 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h> 
-
-#include "b.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "vs.h"
 
 int escape(int utf8,unsigned char **a, int *b)
 {
@@ -271,7 +263,6 @@ skip:
 
 int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 {
-        unsigned char buf[20];
 	int c, d;
 	P *q = pdup(p, US "pmatch");
 	P *o = NULL;
@@ -373,7 +364,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 
 					P *r = NULL;
 
-					int d;
+					int d = 0;
 
 					o = pdup(p, US "pmatch");
 

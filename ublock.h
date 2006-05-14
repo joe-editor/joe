@@ -8,12 +8,9 @@
 #ifndef _JOE_UBLOCK_H
 #define _JOE_UBLOCK_H 1
 
-#include "config.h"
-#include "types.h"
-
-extern int square;
-extern int lightoff;
-extern P *markb, *markk;
+extern int square; /* Column / rectangular block mode */
+extern int lightoff; /* Automatic turn off highlighting */
+extern P *markb, *markk; /* ^KB and ^KK positions */
 
 void pinsrect PARAMS((P *cur, B *tmp, long int width, int usetabs));
 int ptabrect PARAMS((P *org, long int height, long int right));
@@ -47,8 +44,10 @@ int upsh PARAMS((BW *bw));
 int upop PARAMS((BW *bw));
 int ulower PARAMS((BW *bw));
 int uupper PARAMS((BW *bw));
-extern int nstack;
+extern int nstack; /* No. block markers pushed on stack */
 int blksum PARAMS((double *,double *));
 unsigned char *blkget();
+extern int autoswap; /* Automatically swap markb and markk if need to make a valid block */
+extern int nowmarking; /* Now marking flag (so make block bigger) for Ctrl-arrow key block selection */
 
 #endif

@@ -8,8 +8,28 @@
 #ifndef _JOE_TERMCAP_H
 #define _JOE_TERMCAP_H 1
  
-#include "config.h"
-#include "types.h"
+struct sortentry {
+	unsigned char	*name;
+	unsigned char	*value;
+};
+
+struct cap {
+	unsigned char	*tbuf;		/* Termcap entry loaded here */
+
+	struct sortentry *sort;	/* Pointers to each capability stored in here */
+	int	sortlen;	/* Number of capabilities */
+
+	unsigned char	*abuf;		/* For terminfo compatible version */
+	unsigned char	*abufp;
+
+	int	div;		/* tenths of MS per char */
+	int	baud;		/* Baud rate */
+	unsigned char	*pad;		/* Padding string or NULL to use NUL */
+	void	(*out) (unsigned char *, unsigned char);		/* Character output routine */
+	void	*outptr;	/* First arg passed to output routine.  Second
+				   arg is character to write */
+	int	dopadding;	/* Set if pad characters should be used */
+};
 
 /* CAP *getcap(char *s,int baud,void (*out)(void *outptr,char c),void *outptr);
  *
@@ -140,4 +160,8 @@ void tputs();
 extern short ospeed;
 extern unsigned char PC, *UP, *BC;
 #endif
+
+extern int dopadding;
+extern unsigned char *joeterm;
+
 #endif

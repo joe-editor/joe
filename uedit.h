@@ -8,10 +8,7 @@
 #ifndef _JOE_UEDIT_H
 #define _JOE_UEDIT_H 1
 
-#include "config.h"
-#include "types.h"
-
-extern int pgamnt;
+extern int pgamnt; /* Amount of pgup/pgdn lines to keep */
 
 /*
  * Movable functions
@@ -64,9 +61,9 @@ int unedge PARAMS((BW *bw));
 int upedge PARAMS((BW *bw));
 int ubyte PARAMS((BW *bw));
 int ucol PARAMS((BW *bw));
-int utxt PARAMS((BASE *bw));
+int utxt PARAMS((BW *bw));
 int uhome PARAMS((BW *bw));
 int uname_joe PARAMS((BW *bw));
-int upaste PARAMS((BW *bw));
+int upaste PARAMS((BW *bw, int k));
 
 #endif

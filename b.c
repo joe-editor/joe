@@ -5,53 +5,25 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
 
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #ifdef HAVE_PWD_H
 #include <pwd.h>
 #endif
-#include <errno.h>
-#include <stdlib.h>
-#ifdef HAVE_TIME_H
-#include <time.h>
-#endif
+
+extern int errno;
 
 #ifdef WITH_SELINUX
 #include <selinux/selinux.h>
 static int selinux_enabled = -1;
 #endif
 
-
-#include "b.h"
-#include "blocks.h"
-#include "main.h"
-#include "path.h"
-#include "queue.h"
-#include "rc.h"
-#include "scrn.h"
-#include "uerror.h"
-#include "undo.h"
-#include "utils.h"
-#include "va.h"
-#include "vfile.h"
-#include "vs.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "w.h"
-
 unsigned char stdbuf[stdsiz];
 
-extern int errno;
 int guesscrlf = 0;
 int guessindent = 0;
 
-int error;
+int berror;
 int force = 0;
 VFILE *vmem;
 
@@ -163,7 +135,6 @@ static B frebufs = { {&frebufs, &frebufs} };
 
 int udebug_joe(BW *bw)
 {
-	int x;
 	unsigned char buf[1024];
 
 	B *b;
@@ -176,7 +147,7 @@ int udebug_joe(BW *bw)
 		if (b->name)
 			joe_snprintf_1((char *)buf, sizeof(buf), "Buffer %s\n", b->name);
 		else
-			joe_snprintf_1((char *)buf, sizeof(buf), "Buffer 0x%x\n", b);
+			joe_snprintf_1((char *)buf, sizeof(buf), "Buffer 0x%p\n", (void *)b);
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
 		for (p = b->bof->link.next; p != b->bof; p = p->link.next) {
@@ -185,6 +156,7 @@ int udebug_joe(BW *bw)
 			pnextl(bw->cursor);
 		}
 	}
+	return 0;
 }
 
 B *bnext(void)
@@ -275,9 +247,6 @@ B *bmk(B *prop)
 {
 	return bmkchn(halloc(), prop, 0L, 0L);
 }
-
-
-extern B *errbuf;
 
 /* Eliminate a buffer */
 void brm(B *b)
@@ -1957,7 +1926,7 @@ P *binsm(P *p, unsigned char *blk, int amnt)
 {
 	long nlines;
 	H *h = NULL;
-	int hdramnt;
+	int hdramnt = 0; /* Only used if h is set */
 	P *q;
 
 	if (!amnt)
@@ -2023,14 +1992,14 @@ static int bkread(int fi, unsigned char *buff, int size)
 	int a, b;
 
 	if (!size) {
-		error = 0;
+		berror = 0;
 		return 0;
 	}
 	for (a = b = 0; (a < size) && ((b = joe_read(fi, buff + a, size - a)) > 0); a += b) ;
 	if (b < 0)
-		error = -2;
+		berror = -2;
 	else
-		error = 0;
+		berror = 0;
 	return a;
 }
 
@@ -2044,8 +2013,8 @@ B *bread(int fi, long int max)
 	unsigned char *seg;
 
 	izque(H, link, &anchor);
-	error = 0;
-	while (seg = vlock(vmem, (l = halloc())->seg), !error && (amnt = bkread(fi, seg, max >= SEGSIZ ? SEGSIZ : (int) max))) {
+	berror = 0;
+	while (seg = vlock(vmem, (l = halloc())->seg), !berror && (amnt = bkread(fi, seg, max >= SEGSIZ ? SEGSIZ : (int) max))) {
 		total += amnt;
 		max -= amnt;
 		l->hole = amnt;
@@ -2082,11 +2051,11 @@ unsigned char *parsens(unsigned char *s, long int *skip, long int *amnt)
 	if (n[x] == ',') {
 		n[x] = 0;
 		if (n[x + 1] == 'x' || n[x + 1] == 'X')
-			sscanf((char *)(n + x + 2), "%lx", skip);
+			sscanf((char *)(n + x + 2), "%lx", (unsigned long *)skip);
 		else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-			sscanf((char *)(n + x + 3), "%lx", skip);
+			sscanf((char *)(n + x + 3), "%lx", (unsigned long *)skip);
 		else if (n[x + 1] == '0')
-			sscanf((char *)(n + x + 1), "%lo", skip);
+			sscanf((char *)(n + x + 1), "%lo", (unsigned long *)skip);
 		else
 			sscanf((char *)(n + x + 1), "%ld", skip);
 		for (--x; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
@@ -2094,11 +2063,11 @@ unsigned char *parsens(unsigned char *s, long int *skip, long int *amnt)
 			n[x] = 0;
 			*amnt = *skip;
 			if (n[x + 1] == 'x' || n[x + 1] == 'X')
-				sscanf((char *)(n + x + 2), "%lx", skip);
+				sscanf((char *)(n + x + 2), "%lx", (unsigned long *)skip);
 			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-				sscanf((char *)(n + x + 3), "%lx", skip);
+				sscanf((char *)(n + x + 3), "%lx", (unsigned long *)skip);
 			else if (n[x + 1] == '0')
-				sscanf((char *)(n + x + 1), "%lo", skip);
+				sscanf((char *)(n + x + 1), "%lo", (unsigned long *)skip);
 			else
 				sscanf((char *)(n + x + 1), "%ld", skip);
 		}
@@ -2158,8 +2127,8 @@ unsigned char *canonical(unsigned char *n)
 B *bload(unsigned char *s)
 {
 	unsigned char buffer[SEGSIZ];
-	FILE *fi;
-	B *b;
+	FILE *fi = 0;
+	B *b = 0;
 	long skip, amnt;
 	unsigned char *n;
 	int nowrite = 0;
@@ -2169,11 +2138,11 @@ B *bload(unsigned char *s)
 	struct stat sbuf;
 
 	if (!s || !s[0]) {
-		error = -1;
+		berror = -1;
 		b = bmk(NULL);
 		setopt(b,US "");
 		b->rdonly = b->o.readonly;
-		b->er = error;
+		b->er = berror;
 		return b;
 	}
 
@@ -2223,9 +2192,9 @@ B *bload(unsigned char *s)
 	/* Abort if couldn't open */
 	if (!fi) {
 		if (errno == ENOENT)
-			error = -1;
+			berror = -1;
 		else
-			error = -4;
+			berror = -4;
 		b = bmk(NULL);
 		setopt(b,n);
 		b->rdonly = b->o.readonly;
@@ -2238,15 +2207,15 @@ B *bload(unsigned char *s)
 
 		while (skip > SEGSIZ) {
 			r = bkread(fileno(fi), buffer, SEGSIZ);
-			if (r != SEGSIZ || error) {
-				error = -3;
+			if (r != SEGSIZ || berror) {
+				berror = -3;
 				goto err;
 			}
 			skip -= SEGSIZ;
 		}
 		skip -= bkread(fileno(fi), buffer, (int) skip);
-		if (skip || error) {
-			error = -3;
+		if (skip || berror) {
+			berror = -3;
 			goto err;
 		}
 	}
@@ -2278,7 +2247,7 @@ opnerr:
 	b->name = joesep(zdup(s));
 
 	/* Set flags */
-	if (error || s[0] == '!' || skip || amnt != MAXLONG) {
+	if (berror || s[0] == '!' || skip || amnt != MAXLONG) {
 		b->backup = 1;
 		b->changed = 0;
 	} else if (!zcmp(n, US "-")) {
@@ -2336,7 +2305,7 @@ opnerr:
 	/* Eliminate parsed name */
 	vsrm(n);
 
-	b->er = error;
+	b->er = berror;
 	return b;
 }
 
@@ -2346,12 +2315,12 @@ B *bfind(unsigned char *s)
 	B *b;
 
 	if (!s || !s[0]) {
-		error = -1;
+		berror = -1;
 		b = bmk(NULL);
 		setopt(b,US "");
 		b->rdonly = b->o.readonly;
 		b->internal = 0;
-		b->er = error;
+		b->er = berror;
 		return b;
 	}
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
@@ -2360,7 +2329,7 @@ B *bfind(unsigned char *s)
 				++b->count;
 			else
 				b->orphan = 0;
-			error = 0;
+			berror = 0;
 			b->internal = 0;
 			return b;
 		}
@@ -2375,12 +2344,12 @@ B *bfind_scratch(unsigned char *s)
 	B *b;
 
 	if (!s || !s[0]) {
-		error = -1;
+		berror = -1;
 		b = bmk(NULL);
 		setopt(b,US "");
 		b->rdonly = b->o.readonly;
 		b->internal = 0;
-		b->er = error;
+		b->er = berror;
 		return b;
 	}
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
@@ -2389,16 +2358,16 @@ B *bfind_scratch(unsigned char *s)
 				++b->count;
 			else
 				b->orphan = 0;
-			error = 0;
+			berror = 0;
 			b->internal = 0;
 			return b;
 		}
 	b = bmk(NULL);
-	error = -1;
+	berror = -1;
 	setopt(b,s);
 	b->internal = 0;
 	b->rdonly = b->o.readonly;
-	b->er = error;
+	b->er = berror;
 	b->name = zdup(s);
 	b->scratch = 1;
 	return b;
@@ -2489,10 +2458,10 @@ int bsavefd(P *p, int fd, long int size)
 		}
 	}
 	prm(np);
-	return error = 0;
+	return berror = 0;
 err:
 	prm(np);
-	return error = 5;
+	return berror = 5;
 }
 
 /* Save 'size' bytes beginning at 'p' in file 's' */
@@ -2539,7 +2508,6 @@ int bsave(P *p, unsigned char *s, long int size, int flag)
 			/* Try to copy permissions */
 			if (!stat((char *)s,&sbuf)) {
 				int g;
-				int en=0;
 #ifdef WITH_SELINUX
 				security_context_t se;
 				if (selinux_enabled == -1)
@@ -2547,7 +2515,7 @@ int bsave(P *p, unsigned char *s, long int size, int flag)
 				
 				if (selinux_enabled) {
 					if (getfilecon((char *)s, &se) < 0) {
-						error = -4;
+						berror = -4;
 						goto opnerr;
 					}
 				}
@@ -2572,25 +2540,25 @@ int bsave(P *p, unsigned char *s, long int size, int flag)
 	joesep(s);
 
 	if (!f) {
-		error = -4;
+		berror = -4;
 		goto opnerr;
 	}
 	fflush(f);
 
 	if (skip && lseek(fileno(f), skip, 0) < 0) {
-		error = -3;
+		berror = -3;
 		goto err;
 	}
 
 	bsavefd(p, fileno(f), size);
 
-	if (!error && force && size && !skip && amnt == MAXLONG) {
+	if (!berror && force && size && !skip && amnt == MAXLONG) {
 		P *q = pdup(p, US "bsave");
 		unsigned char nl = '\n';
 
 		pfwrd(q, size - 1);
 		if (brc(q) != '\n' && joe_write(fileno(f), &nl, 1) < 0)
-			error = -5;
+			berror = -5;
 		prm(q);
 	}
 
@@ -2607,7 +2575,7 @@ err:
 
 	/* Update orignal date of file */
 	/* If it's not named, it's about to be */
-	if (!error && norm && flag && (!p->b->name || !zcmp(s,p->b->name))) {
+	if (!berror && norm && flag && (!p->b->name || !zcmp(s,p->b->name))) {
 		if (!stat((char *)s,&sbuf))
 			p->b->mod_time = sbuf.st_mtime;
 	}
@@ -2617,7 +2585,7 @@ opnerr:
 		ttopnn();
 		nreturn(maint->t);
 	}
-	return error;
+	return berror;
 }
 
 /* Return byte at p */

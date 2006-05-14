@@ -8,10 +8,141 @@
 #ifndef _JOE_SCRN_H
 #define _JOE_SCRN_H 1
 
-#include "config.h"
-#include "types.h"
+struct hentry {
+	int	next;
+	int	loc;
+};
 
-#include "tty.h"		/* ttputc() */
+/* Each terminal has one of these: terminal capability database */
+
+#ifdef __MSDOS__
+
+struct scrn {
+	int	li;		/* Height of screen */
+	int	co;		/* Width of screen */
+	short	*scrn;		/* Buffer */
+	int	scroll;
+	int	insdel;
+	int	*updtab;	/* Lines which need to be updated */
+	HIGHLIGHT_STATE *syntax;
+	int	*compose;
+	int	*sary;
+};
+
+#else
+
+struct scrn {
+	CAP	*cap;		/* Termcap/Terminfo data */
+
+	int	li;		/* Screen height */
+	int	co;		/* Screen width */
+
+	unsigned char	*ti;		/* Initialization string */
+	unsigned char	*cl;		/* Home and clear screen... really an
+				   init. string */
+	unsigned char	*cd;		/* Clear to end of screen */
+	unsigned char	*te;		/* Restoration string */
+
+	int	haz;		/* Terminal can't print ~s */
+	int	os;		/* Terminal overstrikes */
+	int	eo;		/* Can use blank to erase even if os */
+	int	ul;		/* _ overstrikes */
+	int	am;		/* Terminal has autowrap, but not magicwrap */
+	int	xn;		/* Terminal has magicwrap */
+
+	unsigned char	*so;		/* Enter standout (inverse) mode */
+	unsigned char	*se;		/* Exit standout mode */
+
+	unsigned char	*us;		/* Enter underline mode */
+	unsigned char	*ue;		/* Exit underline mode */
+	unsigned char	*uc;		/* Single time underline character */
+
+	int	ms;		/* Ok to move when in standout/underline mode */
+
+	unsigned char	*mb;		/* Enter blinking mode */
+	unsigned char	*md;		/* Enter bold mode */
+	unsigned char	*mh;		/* Enter dim mode */
+	unsigned char	*mr;		/* Enter inverse mode */
+	unsigned char	*me;		/* Exit above modes */
+
+	unsigned char	*Sb;		/* Set background color */
+	unsigned char	*Sf;		/* Set foregrond color */
+	int	Co;			/* No. of colors */
+	int	ut;		/* Screen erases with background color */
+
+	int	da, db;		/* Extra lines exist above, below */
+	unsigned char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
+	unsigned char	*cs;		/* Set scrolling region */
+	int	rr;		/* Set for scrolling region relative addressing */
+	unsigned char	*sf, *SF, *sr, *SR;	/* Scroll */
+
+	unsigned char	*dm, *dc, *DC, *ed;	/* Delete characters */
+	unsigned char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
+	int	mi;		/* Set if ok to move while in insert mode */
+
+	unsigned char	*bs;		/* Move cursor left 1 */
+	int	cbs;
+	unsigned char	*lf;		/* Move cursor down 1 */
+	int	clf;
+	unsigned char	*up;		/* Move cursor up 1 */
+	int	cup;
+	unsigned char	*nd;		/* Move cursor right 1 */
+
+	unsigned char	*ta;		/* Move cursor to next tab stop */
+	int	cta;
+	unsigned char	*bt;		/* Move cursor to previous tab stop */
+	int	cbt;
+	int	tw;		/* Tab width */
+
+	unsigned char	*ho;		/* Home cursor to upper left */
+	int	cho;
+	unsigned char	*ll;		/* Home cursor to lower left */
+	int	cll;
+	unsigned char	*cr;		/* Move cursor to left edge */
+	int	ccr;
+	unsigned char	*RI;		/* Move cursor right n */
+	int	cRI;
+	unsigned char	*LE;		/* Move cursor left n */
+	int	cLE;
+	unsigned char	*UP;		/* Move cursor up n */
+	int	cUP;
+	unsigned char	*DO;		/* Move cursor down n */
+	int	cDO;
+	unsigned char	*ch;		/* Set cursor column */
+	int	cch;
+	unsigned char	*cv;		/* Set cursor row */
+	int	ccv;
+	unsigned char	*cV;		/* Goto beginning of specified line */
+	int	ccV;
+	unsigned char	*cm;		/* Set cursor row and column */
+	int	ccm;
+
+	unsigned char	*ce;		/* Clear to end of line */
+	int	cce;
+
+	/* Basic abilities */
+	int	scroll;		/* Set to use scrolling */
+	int	insdel;		/* Set to use insert/delete within line */
+
+	/* Current state of terminal */
+	int	*scrn;		/* Characters on screen */
+	int	*attr;		/* Attributes on screen */
+	int	x, y;		/* Current cursor position (-1 for unknown) */
+	int	top, bot;	/* Current scrolling region */
+	int	attrib;		/* Current character attributes */
+	int	ins;		/* Set if we're in insert mode */
+
+	int	*updtab;	/* Dirty lines table */
+	int	avattr;		/* Bits set for available attributes */
+	int	*sary;		/* Scroll buffer array */
+
+	int	*compose;	/* Line compose buffer */
+	int	*ofst;		/* stuff for magic */
+	struct hentry	*htab;
+	struct hentry	*ary;
+};
+
+#endif
 
 extern int skiptop;
 
@@ -208,5 +339,12 @@ int fmtlen PARAMS((unsigned char *s));
 
 /* Offset within formatted string of particular column */
 int fmtpos PARAMS((unsigned char *s, int goal));
+
+extern int bg_text;
+extern int columns;
+extern int notite;
+extern int usetabs;
+extern int assume_color;
+extern int assume_256color;
 
 #endif

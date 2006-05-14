@@ -5,11 +5,7 @@
  *
  * This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-#include <string.h>
 
 static void gen(unsigned char *s, FILE *fd)
 {

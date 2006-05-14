@@ -5,27 +5,9 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
 
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-
-#include "b.h"
-#include "pw.h"
-#include "utils.h"
-#include "vs.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "ublock.h"
-#include "macro.h"
-#include "w.h"
-
 unsigned char *merr;
-
-extern int current_arg;
-extern int current_arg_set;
 
 int mode_hex;
 int mode_eng;
@@ -200,7 +182,9 @@ static double expr(int prec, int en,struct var **rtv)
 		}
 		*ptr = c;
 	} else if ((*ptr >= '0' && *ptr <= '9') || *ptr == '.') {
-		x = strtod((char *)ptr,(char **)&ptr);
+		char *eptr;
+		x = strtod((char *)ptr,&eptr);
+		ptr = (unsigned char *)eptr;
 	} else if (*ptr == '(') {
 		++ptr;
 		x = expr(0, en, &v);
@@ -356,7 +340,7 @@ static double expr(int prec, int en,struct var **rtv)
 
 static double eval(unsigned char *s)
 {
-	double result;
+	double result = 0.0;
 	struct var *v;
 	if(++recur==1000) {
 		merr = US "Recursion depth exceeded";

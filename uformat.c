@@ -5,17 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#include "b.h"
-#include "ublock.h"
-#include "charmap.h"
-#include "utils.h"
 
 /* Center line cursor is on and move cursor to beginning of next line */
 
@@ -572,8 +562,6 @@ int uformat(BW *bw)
 }
 
 /* Format entire block */
-
-extern int lightoff;
 
 int ufmtblk(BW *bw)
 {

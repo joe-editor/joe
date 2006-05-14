@@ -6,24 +6,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
-
-#include <errno.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#include <string.h>
-
-#include "i18n.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "blocks.h"
-#include "macro.h"
-#include "regex.h"
-#include "utils.h"
+#include "types.h"
 
 
 #if 0
@@ -334,6 +317,8 @@ unsigned char *zrchr(unsigned char *s, int c)
 	return (unsigned char *)strrchr((char *)s,c);
 }
 
+#ifdef junk
+
 void *replenish(void **list,int size)
 {
 	unsigned char *i = joe_malloc(size*16);
@@ -378,6 +363,8 @@ void gc_collect(GC **gc)
 	}
 	*gc = 0;
 }
+
+#endif
 
 /* Zstrings */
 
@@ -521,7 +508,7 @@ int parse_char(unsigned char **pp, unsigned char c)
 int parse_int(unsigned char **pp, int *buf)
 {
 	unsigned char *p = *pp;
-	if (*p>='0' && *p<='9' || *p=='-') {
+	if ((*p>='0' && *p<='9') || *p=='-') {
 		*buf = atoi((char *)p);
 		if(*p=='-')
 			++p;

@@ -10,15 +10,6 @@
 #ifndef _JOE_UTILS_H
 #define _JOE_UTILS_H 1
 
-#include "config.h"
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>			/* we need size_t, ssize_t */
-#endif
-#ifdef HAVE_SIGNAL_H
-#include <signal.h>
-#endif
-
 /* Destructors */
 
 #define AUTO_DESTRUCT GC *gc = 0;

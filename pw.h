@@ -8,8 +8,19 @@
 #ifndef _JOE_PW_H
 #define _JOE_PW_H 1
 
-#include "config.h"
-#include "types.h"
+/* Prompt window (a BW) */
+
+struct pw {
+	int	(*pfunc) ();	/* Func which gets called when RTN is hit */
+	int	(*abrt) ();	/* Func which gets called when window is aborted */
+	int	(*tab) ();	/* Func which gets called when TAB is hit */
+	unsigned char	*prompt;	/* Prompt string */
+	int	promptlen;	/* Width of prompt string */
+	int	promptofst;	/* Prompt scroll offset */
+	B	*hist;		/* History buffer */
+	void	*object;	/* Object */
+	int	file_prompt;	/* Set if this is a file name prompt, so do ~ expansion */
+};
 
 /* BW *wmkpw(BW *bw,char *prompt,int (*func)(),char *huh,int (*abrt)(),
              int (*tab)(),void *object,int *notify);
@@ -35,9 +46,12 @@ int cmplt_rtn PARAMS((MENU *m,int x,unsigned char *line));
 
 int simple_cmplt PARAMS((BW *bw,unsigned char **list));
 
-void setup_history(B **history);
-void append_history(B *hist,unsigned char *s,int len);
-void promote_history(B *hist, long line);
-void set_current_dir(unsigned char *s,int simp);
+void setup_history PARAMS((B **history));
+void append_history PARAMS((B *hist,unsigned char *s,int len));
+void promote_history PARAMS((B *hist, long line));
+void set_current_dir PARAMS((unsigned char *s,int simp));
+
+extern int bg_prompt;
+extern int nocurdir;
 
 #endif

@@ -8,11 +8,12 @@
 #ifndef _JOE_QUEUE
 #define _JOE_QUEUE 1 
 
-#include "config.h"
-
 extern void *ITEM;
 extern void *QUEUE;
 extern void *LAST;
+struct stditem {
+	LINK(STDITEM)	link;
+};
 
 #define izque(type,member,item) do { \
 	QUEUE = (void *)(item); \

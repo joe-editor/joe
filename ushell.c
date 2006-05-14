@@ -5,32 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <unistd.h>
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_SIGNAL_H
-#include <signal.h>
-#endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#include "b.h"
-#include "main.h"
-#include "pw.h"
-#include "qw.h"
-#include "tty.h"
-#include "ufile.h"
-#include "va.h"
-#include "vs.h"
-#include "utf8.h"
-#include "w.h"
-
-extern int orphan;
 
 /* Executed when shell process terminates */
 
@@ -210,7 +185,7 @@ B *buildhist = NULL;
 int ubuild(BW *bw)
 {
 	if (buildhist) {
-		if (bw=wmkpw(bw->parent, US "Build command: ", &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+		if ((bw=wmkpw(bw->parent, US "Build command: ", &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
 			uuparw(bw);
 			u_goto_eol(bw);
 			bw->cursor->xcol = piscol(bw->cursor);
@@ -232,7 +207,7 @@ B *grephist = NULL;
 int ugrep(BW *bw)
 {
 	if (grephist) {
-		if (bw=wmkpw(bw->parent, US "Grep command: ", &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+		if ((bw=wmkpw(bw->parent, US "Grep command: ", &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
 			uuparw(bw);
 			u_goto_eol(bw);
 			bw->cursor->xcol = piscol(bw->cursor);

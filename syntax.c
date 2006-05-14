@@ -6,14 +6,7 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-#include "config.h"
-#include <stdlib.h>
 #include "types.h"
-#include "scrn.h"
-#include "utils.h"
-#include "hash.h"
-#include "charmap.h"
-#include "syntax.h"
 
 /* Parse one line.  Returns new state.
    'syntax' is the loaded syntax definition for this buffer.
@@ -286,7 +279,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 	int clist[256];
 	unsigned char *p;
 	int c;
-	FILE *f;
+	FILE *f = 0;
 	struct high_state *state=0;	/* Current state */
 	struct high_syntax *syntax;	/* New syntax table */
 	int line = 0;

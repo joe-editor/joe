@@ -5,29 +5,10 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-
-#include "b.h"
-#include "blocks.h"
-#include "menu.h"
-#include "path.h"
-#include "tty.h"
-#include "utils.h"
-#include "va.h"
-#include "w.h"
 
 typedef struct tab TAB;
 
-extern int smode;		/* ??? */
-extern int joe_beep;
 int menu_explorer = 0;		/* Stay in menu system when directory selected */
 int menu_jump = 0;		/* Jump into menu */
 
@@ -325,7 +306,6 @@ P *p_goto_start_of_path(P *p)
 /*****************************************************************************/
 /****************** Create a tab window **************************************/
 /*****************************************************************************/
-extern int menu_above;
 
 int cmplt(BW *bw)
 {
@@ -333,7 +313,6 @@ int cmplt(BW *bw)
 	TAB *tab;
 	P *p, *q;
 	unsigned char *cline;
-	long a, b;
 	int which;
 	unsigned char **l;
 	int ofst;

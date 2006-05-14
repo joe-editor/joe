@@ -16,25 +16,11 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
-#include <sys/time.h>
+#include "types.h"
 
-#include "config.h"
-#include "b.h"
-#include "bw.h"
-#include "w.h"
-#include "qw.h"
-#include "tw.h"
-#include "pw.h"
-#include "vs.h"
-#include "kbd.h"
-#include "macro.h"
-#include "main.h"
-#include "ublock.h"
-#include "menu.h"
-#include "tty.h"
-#include "charmap.h"
-#include "utf8.h"
-#include "mouse.h"
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
 
 int auto_scroll = 0;		/* Set for autoscroll */
 int auto_rate;			/* Rate */
@@ -46,7 +32,6 @@ int joexterm=0;			/* set if we're using Joe's modified xterm */
 
 static int selecting = 0;	/* Set if we did any selecting */
 
-static int xtmstate;
 static int Cb, Cx, Cy;
 static int last_msec=0;		/* time in ms when event occurred */
 static int clicks;
@@ -72,6 +57,8 @@ int mcoord(int x)
 		return -1 + 1;
 	else if (x>240)
 		return x - 257 + 1;
+	else
+		return 0; /* This should not happen */
 }
 
 int uxtmouse(BW *bw)
@@ -134,7 +121,7 @@ void mousedn(int x,int y)
 		/* double click */
 		clicks=2;
 		fake_key(KEY_M2DOWN);
-	} else if(clicks=2) {
+	} else if(clicks==2) {
 		/* triple click */
 		clicks=3;
 		fake_key(KEY_M3DOWN);
@@ -283,7 +270,6 @@ void select_done(struct charmap *map)
 
 void mouseup(int x,int y)
 {
-	struct timeval tv;
 	auto_scroll = 0;
 	Cx = x, Cy = y;
 	if (selecting) {
@@ -503,6 +489,7 @@ int udefmdown(BW *xx)
 	bw = (BW *)maint->curwin->object;
 	anchor = bw->cursor->byte;
 	marked = reversed = 0;
+	return 0;
 }
 
 void reset_trig_time()
@@ -515,7 +502,6 @@ void reset_trig_time()
 int udefmdrag(BW *xx)
 {
 	BW *bw = (BW *)maint->curwin->object;
-	int ax = Cx - 1;
 	int ay = Cy - 1;
 	int new_scroll;
 	int new_rate;
@@ -586,10 +572,12 @@ int udefmdrag(BW *xx)
 		reversed = !reversed;
 	}
 	bw->cursor->xcol = tmspos;
+	return 0;
 }
 
 int udefmup(BW *bw)
 {
+	return 0;
 }
 
 int udefm2down(BW *xx)
@@ -609,6 +597,7 @@ int udefm2down(BW *xx)
 	reversed = 0;
 	bw->cursor->xcol = piscol(bw->cursor);
 	selecting = 1;
+	return 0;
 }
 
 int udefm2drag(BW *xx)
@@ -635,10 +624,12 @@ int udefm2drag(BW *xx)
 			u_goto_next(bw), bw->cursor->xcol = piscol(bw->cursor);
 		umarkk(bw);
 	}
+	return 0;
 }
 
 int udefm2up(BW *bw)
 {
+	return 0;
 }
 
 int udefm3down(BW *xx)
@@ -656,6 +647,7 @@ int udefm3down(BW *xx)
 	reversed = 0;
 	bw->cursor->xcol = piscol(bw->cursor);
 	selecting = 1;
+	return 0;
 }
 
 int udefm3drag(BW *xx)
@@ -678,10 +670,12 @@ int udefm3drag(BW *xx)
 		umarkb(bw), markb->xcol = piscol(markb);
 	else
 		umarkk(bw), pnextl(markk), markk->xcol = markk->xcol = piscol(markk);
+	return 0;
 }
 
 int udefm3up(BW *bw)
 {
+	return 0;
 }
 
 void mouseopen()

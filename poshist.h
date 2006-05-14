@@ -8,9 +8,6 @@
 #ifndef _JOE_POSHIST_H
 #define _JOE_POSHIST_H 1
 
-#include "config.h"
-#include "types.h"
-
 void afterpos PARAMS((void));
 void aftermove PARAMS((W *w, P *p));
 void windie PARAMS((W *w));

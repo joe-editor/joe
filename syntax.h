@@ -1,8 +1,6 @@
 #ifndef _Isyntax
 #define _Isyntax 1
 
-#include "hash.h"
-
 /*
  *	Syntax highlighting DFA interpreter
  *	Copyright
@@ -62,12 +60,12 @@ struct high_syntax {
 
 /* Find a syntax.  Load it if necessary. */
 
-struct high_syntax *load_dfa(unsigned char *name);
+struct high_syntax *load_dfa PARAMS((unsigned char *name));
 
 /* Parse a lines.  Returns new state. */
 
 extern int *attr_buf;
-HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state);
+HIGHLIGHT_STATE parse PARAMS((struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state));
 
 #define clear_state(s) ((s)->saved_s[0] = (s)->state = 0)
 #define invalidate_state(s) ((s)->state = -1)
@@ -75,6 +73,6 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state);
 #define eq_state(x,y) ((x)->state == (y)->state && !zcmp((x)->saved_s, (y)->saved_s))
 
 extern struct high_color *global_colors;
-void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned char *name,int line);
+void parse_color_def PARAMS((struct high_color **color_list,unsigned char *p,unsigned char *name,int line));
 
 #endif

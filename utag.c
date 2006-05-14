@@ -5,25 +5,7 @@
  *
  * 	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-
-#include "b.h"
-#include "bw.h"
-#include "main.h"
-#include "pw.h"
-#include "tab.h"
-#include "ufile.h"
-#include "usearch.h"
-#include "utils.h"
-#include "vs.h"
-#include "va.h"
-#include "utf8.h"
-#include "tty.h"
-#include "charmap.h"
-#include "w.h"
 
 static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 {

@@ -2,11 +2,12 @@
  * Example code to show how to copy the security context from one file to
  * another.
  */
+#include "types.h"
+
 #ifdef WITH_SELINUX
 #include <selinux/selinux.h>
 static int selinux_enabled = -1;
 #endif
-#include <errno.h>
 
 int
 copy_security_context(const char *from_file, const char *to_file)

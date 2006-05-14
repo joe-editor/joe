@@ -9,10 +9,6 @@
 #ifndef _Icharmap
 #define _Icharmap 1
 
-#include "config.h"
-#include "utf8.h"
-#include "types.h"
-
 /* For sorted from_map entries */
 
 struct pair {
@@ -82,5 +78,8 @@ struct charmap *find_charmap PARAMS((unsigned char *name));
 
 /* Get available encodings */
 unsigned char **get_encodings PARAMS((void));
+
+int from_uni PARAMS((struct charmap *cset, int c));
+int to_uni PARAMS((struct charmap *cset, int c));
 
 #endif

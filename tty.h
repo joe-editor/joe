@@ -8,8 +8,15 @@
 #ifndef _JOE_TTY_H
 #define _JOE_TTY_H 1
 
-#include "config.h"
-#include "types.h"
+struct mpx {
+	int	ackfd;		/* Packetizer response descriptor */
+	int	kpid;		/* Packetizer process id */
+	int	pid;		/* Client process id */
+	void	(*func) ();	/* Function to call when read occures */
+	void	*object;	/* First arg to pass to function */
+	void	(*die) ();	/* Function: call when client dies or closes */
+	void	*dieobj;
+};
 
 /* void ttopen(void);  Open the tty (attached to stdin) for use inside of JOE
  *
@@ -47,8 +54,8 @@
  */
 void ttopen PARAMS((void));
 void ttopnn PARAMS((void));
-extern unsigned long upc;
-extern unsigned baud;
+extern unsigned long upc; /* Microseconds per character */
+extern unsigned baud; /* Baud rate */
 
 #define TIMES 3
 #define DIVIDEND 10000000
@@ -80,9 +87,9 @@ int ttgetc PARAMS((void));
 /* void ttputc(char c);  Write a character to the output buffer.  If it becomes
  * full, call ttflsh()
  */
-extern int obufp;
-extern int obufsiz;
-extern unsigned char *obuf;
+extern int obufp; /* Output buffer index */
+extern int obufsiz; /* Output buffer size */
+extern unsigned char *obuf; /* Output buffer */
 
 #define ttputc(c) { obuf[obufp++] = (c); if(obufp == obufsiz) ttflsh(); }
 
@@ -131,8 +138,8 @@ void ttsusp PARAMS((void));
  */
 int ttflsh PARAMS((void));
 
-extern int have;
-extern int leave;
+extern int have; /* Set if we have typeahead */
+extern int leave; /* Set if we're exiting (so don't check for typeahead) */
 
 #ifdef __MSDOS__
 #define ifhave bioskey(1)
@@ -186,10 +193,13 @@ MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*
  */
 int subshell PARAMS(());
 
-extern int noxon;
-extern int Baud;
+extern int noxon;			/* Set if ^S/^Q processing should be disabled */
+extern int Baud;			/* Baud rate from joerc, cmd line or environment */
 
 void tickoff PARAMS((void));
 void tickon PARAMS((void));
+
+extern long last_time; /* Current time in seconds */
+extern int idleout; /* Clear to use /dev/tty for screen */
 
 #endif

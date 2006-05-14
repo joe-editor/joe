@@ -8,11 +8,27 @@
 #ifndef _JOE_BW_H
 #define _JOE_BW_H 1
 
-#include "config.h"
-#include "types.h"
+/* A buffer window: there are several kinds, depending on what is in 'object' */
 
-extern int dspasis;
-extern int mid;
+struct bw {
+	W	*parent;
+	B	*b;
+	P	*top;
+	P	*cursor;
+	long	offset;
+	SCREEN	*t;
+	int	h, w, x, y;
+
+	OPTIONS	o;
+	void	*object;
+
+	int	linums;
+	int	top_changed;	/* Top changed */
+	struct lattr_db *db;	/* line attribute database */
+};
+
+extern int dspasis;	/* Display characters above 127 as-is */
+extern int mid;		/* Controls how window scrolls: when set, scroll window enough so that line with cursor becomes centered */
 
 void bwfllw PARAMS((BW *w));
 void bwfllwt PARAMS((BW *w));
@@ -29,5 +45,7 @@ int ustat PARAMS((BW *bw));
 int ucrawll PARAMS((BW *bw));
 int ucrawlr PARAMS((BW *bw));
 void orphit PARAMS((BW *bw));
+
+extern int marking;	/* Anchored block marking mode */
 
 #endif

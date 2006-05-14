@@ -1,3 +1,83 @@
+SQA:
+
+Some of this is a little pedantic these days.  The need for accessing old
+versions of UNIX is less now that Linux and BSD exist on PCs.
+
+Unsigned char:
+
+	Use 'unsigned char', never 'char'.  This is a big pain, but it
+	prevents char to int when you meant unsigned char to int conversion
+	bugs.
+
+gcc:
+
+	Please run gcc -Wall.  Make especially sure that there are no
+	functions used before defined warnings.  These are OK on 32-bit
+	systems, but break on 64-bit systems where sizeof(int) doesn't equal
+	sizeof(void *).
+
+Buffer and file offsets:
+
+	Use 'long'.  We should really be using 'unsigned long'.
+
+Valgrind:
+
+	Please do some checking with 'valgrind'.  This tool finds accesses
+	to uninitialized memory.  It also finds memory leaks.
+
+debug_joe:
+
+	Please hit ESC x debug_joe a few times.  Make sure there are no P
+	leaks (forgot to call prm()).
+
+
+It would be nice:
+
+	If vs type was different from z-string type.
+
+
+Dangerous situations:
+  assume maint->curwin->object is a BW *
+
+  call interactive functions (like doedit) and expect them
+  to leave maint a buffer window (it could start a prompt).
+
+  should check plain file checking.
+
+  vs, zstring, cstring, there are too many, each with its own
+  memory management.
+
+These should be relaxed.  Nobody uses ancient C compilers any more:
+
+Include files:
+
+	You can rely on:
+		stdio.h, string.h, errno.h and math.h
+
+	Everything else needs #ifdefs and a check in the configure script. 
+	Really old systems did not have stdlib.h or unistd.h.  Non UNIX
+	systems don't necessarily have fcntl.h or sys/stat.h.
+
+#if:
+
+	Use #ifdef, not #if.  Old systems did not have #if.  For example,
+	use #ifdef junk instead of #if 0.
+
+PARAMS():
+
+	This should help porting JOE to really old systems (except that the
+	configure script probably wont work).  However, declarations allow
+	the compiler to automatically insert casts.  This can't happen if
+	they are not there.  This has different consequences, depending
+	on the word size:
+
+	32-bit systems:
+		functions should not define float args, only double.
+		should not rely on prototypes for double to long conversions.
+
+	Systems where int is not the same as long (16-bit systems) will
+	have lots of trouble without declarations.
+
 ------------
 Edit Buffers
 ------------

@@ -8,11 +8,23 @@
 #ifndef _JOE_MACRO_H
 #define _JOE_MACRO_H 1
 
-#include "config.h"
-#include "types.h"
+struct macro {
+	int k; /* Keycode */
+	int flg; /* Flags: bit 0: this step wants the negative arg,
+	                   bit 1: ignore return value of this step, but use it as return value of macro */
+	CMD *cmd; /* Command address */
+	int n; /* Number of steps */
+	int size; /* Malloc size of steps */
+	MACRO **steps; /* Block */
+};
 
-/* Set when macro is recording: for status line */
-extern struct recmac *recmac;
+struct recmac {
+	struct recmac *next;
+	int	n;
+	MACRO	*m;
+};
+
+extern struct recmac *recmac; /* Set when macro is recording: for status line */
 
 /* Macro construction functions */
 MACRO *mkmacro PARAMS((int k, int arg, int n, CMD *cmd));
@@ -29,7 +41,7 @@ MACRO *mparse PARAMS((MACRO *m, unsigned char *buf, int *sta));
 unsigned char *mtext PARAMS((unsigned char *s, MACRO *m));
 
 /* Execute a macro */
-extern MACRO *curmacro;
+extern MACRO *curmacro; /* Current macro being executed */
 int exemac PARAMS((MACRO *m));
 int exmacro PARAMS((MACRO *m, int u));
 
@@ -52,5 +64,8 @@ unsigned char *unescape PARAMS((unsigned char *ptr,int c));
 
 void load_macros PARAMS((FILE *f));
 void save_macros PARAMS((FILE *f));
+
+extern int current_arg; /* Current macro repeat argument */
+extern int current_arg_set; /* Set if repeat arg was given */
 
 #endif

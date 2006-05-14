@@ -8,8 +8,6 @@
 #ifndef _JOE_BLOCKS_H
 #define _JOE_BLOCKS_H 1
 
-#include "config.h"
-
 /* char *mmove(char *d,char *s,int sz); Copy 'sz' bytes from 's' to 'd'.
  * Chooses either mbkwd or mfwrd to do this such that the data won't get
  * clobbered.

@@ -5,23 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-#include <unistd.h>
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-#ifdef HAVE_FCNTL_H
-#include <fcntl.h>
-#endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 #ifdef UTIME
 #include <utime.h>
@@ -37,30 +21,7 @@
 int copy_security_context(const char *from_file, const char *to_file);
 #endif
 
-#include "b.h"
-#include "bw.h"
-#include "macro.h"
-#include "main.h"
-#include "menu.h"
-#include "path.h"
-#include "pw.h"
-#include "qw.h"
-#include "scrn.h"
-#include "tab.h"
-#include "tty.h"
-#include "tw.h"
-#include "ublock.h"
-#include "uerror.h"
-#include "ufile.h"
-#include "ushell.h"
-#include "utils.h"
-#include "va.h"
-#include "vs.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "w.h"
-
-extern int orphan;
+int orphan;
 unsigned char *backpath = NULL;		/* Place to store backup files */
 B *filehist = NULL;	/* History of file names */
 int nobackups = 0;
@@ -538,8 +499,6 @@ int usave(BW *bw)
 
 int usavenow(BW *bw)
 {
-	BW *pbw;
-
 	if (bw->b->name) {
 		return dosave1(bw,vsncpy(NULL,0,sz(bw->b->name)),mksavereq(NULL,NULL,NULL,0,0),NULL);
 	} else
@@ -579,7 +538,7 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		}
 
 		b = bfind_reload(s);
-		er = error;
+		er = berror;
 		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
 			if (orphan) {
 				orphit(bw);
@@ -619,7 +578,7 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		}
 
 		b = bfind(s);
-		er = error;
+		er = berror;
 		if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
 			if (orphan) {
 				orphit(bw);
@@ -664,10 +623,6 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 
 int doedit(BW *bw, unsigned char *s, void *obj, int *notify)
 {
-	int ret = 0;
-	int er;
-	void *object;
-	W *w;
 	B *b;
 
 	b = bcheck_loaded(s);
@@ -705,12 +660,6 @@ int uedit(BW *bw)
 
 int doswitch(BW *bw, unsigned char *s, void *obj, int *notify)
 {
-	int ret = 0;
-	int er;
-	void *object;
-	W *w;
-	B *b;
-
 	/* Try buffer, then file */
 	return doedit1(bw, 'n', s, notify);
 }
@@ -737,7 +686,7 @@ int doscratch(BW *bw, unsigned char *s, void *obj, int *notify)
 	}
 
 	b = bfind_scratch(s);
-	er = error;
+	er = berror;
 	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
 		if (orphan) {
 			orphit(bw);
@@ -794,10 +743,10 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 		*notify = 1;
 	}
 	b = bfind(s);
-	er = error;
-	if (error) {
-		msgnwt(bw->parent, msgs[-error]);
-		if (error != -1) {
+	er = berror;
+	if (berror) {
+		msgnwt(bw->parent, msgs[-berror]);
+		if (berror != -1) {
 			ret = -1;
 		}
 	}
@@ -1085,7 +1034,6 @@ static int bufedcmplt(BW *bw)
 
 static int dobufed(BW *bw, unsigned char *s, void *object, int *notify)
 {
-	BW *target_bw = bw->parent->win->object;
 /* not understanding this...
 	int *notify = bw->parent->notify;
 

@@ -8,9 +8,6 @@
 #ifndef _JOE_MAIN_H
 #define _JOE_MAIN_H 1
 
-#include "config.h"
-#include "types.h"
-
 extern unsigned char *exmsg;	/* Exit message */
 extern int help;		/* Set to start with help on */
 extern SCREEN *maint;		/* Primary screen */
@@ -19,5 +16,10 @@ void nungetc PARAMS((int c));
 void dofollows PARAMS((void));
 int edloop PARAMS((int flg));
 void edupd PARAMS((int flg));
+
+extern volatile int dostaupd;	/* Force status line update */
+extern int nonotice; /* Set to prevent copyright notice */
+extern int xmouse; /* XTerm mouse mode request by user (only allowed if terminal looks like xterm) */
+extern unsigned char **mainenv; /* Environment variables passed to JOE */
 
 #endif

@@ -8,8 +8,23 @@
 #ifndef _JOE_MENU_H
 #define _JOE_MENU_H 1
 
-#include "config.h"
-#include "types.h"
+/* A menu window */
+
+struct menu {
+	W	*parent;	/* Window we're in */
+	unsigned char	**list;		/* List of items */
+	int	top;		/* First item on screen */
+	int	cursor;		/* Item cursor is on */
+	int	width;		/* Width of widest item, up to 'w' max */
+	int	perline;	/* Number of items on each line */
+	int	nitems;		/* No. items in list */
+	SCREEN	*t;		/* Screen we're on */
+	int	h, w, x, y;
+	int	(*abrt) ();	/* Abort callback function */
+	int	(*func) ();	/* Return callback function */
+	int	(*backs) ();	/* Backspace callback function */
+	void	*object;
+};
 
 /* Create a menu */
 /* FIXME: ??? ---> */
@@ -38,5 +53,12 @@ unsigned char *mcomplete PARAMS((MENU *m));
 unsigned char *find_longest PARAMS((unsigned char **lst));
 
 void menujump PARAMS((MENU *m, int x, int y));
+
+extern int lines; /* Number of menu lines */
+
+extern WATOM watommenu; /* Menu WATOM */
+
+extern int menu_above; /* Menu position: above or below */
+extern int bg_menu; /* Background color for menu */
 
 #endif

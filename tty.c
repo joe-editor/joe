@@ -5,21 +5,12 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
 
-#include <sys/types.h>
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
 #ifdef GWINSZ_IN_SYS_IOCTL
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
-#endif
-#include <stdio.h>
-#ifdef HAVE_FCNTL_H
-#include <fcntl.h>
 #endif
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
@@ -34,13 +25,7 @@
 #endif
 #endif
 
-#include <errno.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 int idleout = 1;
-
-#include "config.h"
 
 #ifdef __amigaos
 #undef SIGTSTP
@@ -89,15 +74,6 @@ int idleout = 1;
 #ifdef __svr4__
 #include <stropts.h>
 #endif
-
-/* JOE include files */
-
-#include "main.h"
-#include "path.h"
-#include "tty.h"
-#include "utils.h"
-#include "mouse.h"
-#include "cmd.h"
 
 /** Aliased defines **/
 
@@ -267,13 +243,10 @@ static RETSIGTYPE winchd(int unused)
 /* Second ticker */
 
 int ticked = 0;
-extern int dostaupd;
 static RETSIGTYPE dotick(int unused)
 {
 	ticked = 1;
 }
-
-extern int auto_scroll;
 
 void tickoff(void)
 {
@@ -288,9 +261,6 @@ void tickoff(void)
 	alarm(0);
 #endif
 }
-
-extern int auto_scroll;
-extern int auto_trig_time;
 
 void tickon(void)
 {
@@ -911,7 +881,6 @@ static unsigned char *getpty(int *ptyfd)
 
 static unsigned char *getpty(int *ptyfd)
 {
-	int fdm;
 	static unsigned char name[32];
 	int ttyfd;
 
@@ -1004,8 +973,6 @@ static RETSIGTYPE death(int unused)
 #endif
 
 /* Build a new environment, but replace one variable */
-
-extern unsigned char **mainenv;
 
 static unsigned char **newenv(unsigned char **old, unsigned char *s)
 {

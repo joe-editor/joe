@@ -1,16 +1,132 @@
-#ifndef _JOE_TYPES_H
-#define _JOE_TYPES_H
+/* JOE global header file */
 
 #include "config.h"
+
+/* Common header files */
+
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <math.h>
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#else
+typedef int pid_t;
+#endif
+
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
+
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
+#endif
+
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+
+#ifdef HAVE_TIME_H
+#include <time.h>
+#endif
+
+/* Global Defines */
 
 /* Prefix to make string constants unsigned */
 #define US (unsigned char *)
 
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>				/* we need pid_t */
+/* Doubly-linked list node */
+#define LINK(type) struct { type *next; type *prev; }
+
+#ifdef HAVE_SNPRINTF
+
+#define joe_snprintf_0(buf,len,fmt) snprintf((buf),(len),(fmt))
+#define joe_snprintf_1(buf,len,fmt,a) snprintf((buf),(len),(fmt),(a))
+#define joe_snprintf_2(buf,len,fmt,a,b) snprintf((buf),(len),(fmt),(a),(b))
+#define joe_snprintf_3(buf,len,fmt,a,b,c) snprintf((buf),(len),(fmt),(a),(b),(c))
+#define joe_snprintf_4(buf,len,fmt,a,b,c,d) snprintf((buf),(len),(fmt),(a),(b),(c),(d))
+#define joe_snprintf_5(buf,len,fmt,a,b,c,d,e) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e))
+#define joe_snprintf_6(buf,len,fmt,a,b,c,d,e,f) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e),(f))
+#define joe_snprintf_7(buf,len,fmt,a,b,c,d,e,f,g) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e),(f),(g))
+#define joe_snprintf_8(buf,len,fmt,a,b,c,d,e,f,g,h) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e),(f),(g),(h))
+#define joe_snprintf_9(buf,len,fmt,a,b,c,d,e,f,g,h,i) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i))
+#define joe_snprintf_10(buf,len,fmt,a,b,c,d,e,f,g,h,i,j) snprintf((buf),(len),(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i),(j))
+
+#else
+
+#define joe_snprintf_0(buf,len,fmt) sprintf((buf),(fmt))
+#define joe_snprintf_1(buf,len,fmt,a) sprintf((buf),(fmt),(a))
+#define joe_snprintf_2(buf,len,fmt,a,b) sprintf((buf),(fmt),(a),(b))
+#define joe_snprintf_3(buf,len,fmt,a,b,c) sprintf((buf),(fmt),(a),(b),(c))
+#define joe_snprintf_4(buf,len,fmt,a,b,c,d) sprintf((buf),(fmt),(a),(b),(c),(d))
+#define joe_snprintf_5(buf,len,fmt,a,b,c,d,e) sprintf((buf),(fmt),(a),(b),(c),(d),(e))
+#define joe_snprintf_6(buf,len,fmt,a,b,c,d,e,f) sprintf((buf),(fmt),(a),(b),(c),(d),(e),(f))
+#define joe_snprintf_7(buf,len,fmt,a,b,c,d,e,f,g) sprintf((buf),(fmt),(a),(b),(c),(d),(e),(f),(g))
+#define joe_snprintf_8(buf,len,fmt,a,b,c,d,e,f,g,h) sprintf((buf),(fmt),(a),(b),(c),(d),(e),(f),(g),(h))
+#define joe_snprintf_9(buf,len,fmt,a,b,c,d,e,f,g,h,i) sprintf((buf),(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i))
+#define joe_snprintf_10(buf,len,fmt,a,b,c,d,e,f,g,h,i,j) sprintf((buf),(fmt),(a),(b),(c),(d),(e),(f),(g),(h),(i),(j))
+
 #endif
 
-#define LINK(type) struct { type *next; type *prev; }
+/* Largest signed integer */
+#define MAXINT  ((((unsigned int)-1)/2)-1)
+
+/* Largest signed long */
+#define MAXLONG ((((unsigned long)-1L)/2)-1)
+
+#include <stdio.h>
+#ifndef EOF
+#define EOF -1
+#endif
+#define NO_MORE_DATA EOF
+
+#if defined __MSDOS__ && SIZEOF_INT == 2 /* real mode ms-dos compilers */
+#if SIZEOF_VOID_P == 4 /* real mode ms-dos compilers with 'far' memory model or something like that */
+#define physical(a)  (((unsigned long)(a)&0xFFFF)+(((unsigned long)(a)&0xFFFF0000)>>12))
+#define normalize(a) ((void *)(((unsigned long)(a)&0xFFFF000F)+(((unsigned long)(a)&0x0000FFF0)<<12)))
+#else
+#define physical(a) ((unsigned long)(a))
+#define normalize(a) (a)
+#endif /* sizeof(void *) == 4 */
+
+#define SEGSIZ 1024
+#define PGSIZE 1024
+#define LPGSIZE 10
+#define ILIMIT (PGSIZE*96L)
+#define HTSIZE 128
+
+#else /* not real mode ms-dos */
+
+#define physical(a) ((unsigned long)(a))
+#define normalize(a) (a)
+
+/* Log2 of page size */
+#define LPGSIZE 12
+/* No. bytes in page */
+#define PGSIZE (1<<LPGSIZE)
+/* Gap buffer size (must be same as page size) */
+#define SEGSIZ PGSIZE
+
+/* Max number of pages allowed in core */
+#define NPAGES 8192
+/* Max core memory used in bytes */
+#define ILIMIT (PGSIZE*NPAGES)
+/* Hash table size (should be double the max number of pages) */
+#define HTSIZE (NPAGES*2)
+
+#endif /* real mode ms-dos */
+
+
+/* These do not belong here. */
 
 /* #define KEYS		256 */
 #define KEYS 267	/* 256 ascii + mdown, mup, mdrag, m2down, m2up, m2drag,
@@ -39,16 +155,7 @@
 #define TYPEMENU	0x0800
 #define TYPEQW		0x1000
 
-#ifdef junk					/* These are now defined in config.h */
-
-/* Minimum page size for MS-DOS is 128 (for 32K vheaders table) or 256 (for
- * 64K vheaders table) */
-#define PGSIZE 512		/* Page size in bytes (Must be power of 2) */
-#define LPGSIZE 9		/* LOG base 2 of PGSIZE */
-#define ILIMIT (PGSIZE*128L)	/* Max amount to buffer */
-#define HTSIZE 128		/* Entries in hash table.  Must be pwr of 2 */
-#endif
-
+/* Typedefs */
 
 typedef struct header H;
 typedef struct buffer B;
@@ -73,7 +180,6 @@ typedef struct pw PW;
 typedef struct stditem STDITEM;
 typedef struct query QW;
 typedef struct tw TW;
-typedef struct irec IREC;
 typedef struct undo UNDO;
 typedef struct undorec UNDOREC;
 typedef struct search SRCH;
@@ -81,635 +187,58 @@ typedef struct srchrec SRCHREC;
 typedef struct vpage VPAGE;
 typedef struct vfile VFILE;
 typedef struct highlight_state HIGHLIGHT_STATE;
+typedef struct mpx MPX;
 
-/* A buffer is made up of a doubly-linked list of gap buffer.  These are the
- * buffer headers.  The buffers themselves can be swapped out.  A buffer with
- * point referring to it is guaranteed to be swapped in.
- */
-
-struct header {
-	LINK(H)	link;		/* Doubly-linked list of gap buffer headers */
-	long	seg;		/* Swap file offset to gap buffer */
-	int	hole;		/* Offset to gap */
-	int	ehole;		/* Offset to after gap */
-	int	nlines;		/* No. '\n's in this buffer */
-};
-
-/* A pointer to some location within a buffer.  After an insert or delete,
- * all of the pointers following the insertion or deletion point are
- * adjusted so that they keep pointing to the same character. */
-
-struct point {
-	LINK(P)	link;		/* Doubly-linked list of pointers for a particular buffer */
-
-	B	*b;		/* Buffer */
-	int	ofst;		/* Gap buffer offset */
-	unsigned char	*ptr;	/* Gap buffer address */
-	H	*hdr;		/* Gap buffer header */
-
-	long	byte;		/* Buffer byte offset */
-	long	line;		/* Line number */
-	long	col;		/* current column */
-	long	xcol;		/* cursor column (can be different from actual column) */
-	int	valcol;		/* bool: is col valid? */
-	int	end;		/* set if this is end of file pointer */
-
-	P	**owner;	/* owner of this pointer.  owner gets cleared if pointer is deleted. */
-	unsigned char *tracker;	/* Name of function who pdup()ed me */
-};
-
-/* Options: both BWs and Bs have one of these */
-
-struct options {
-	OPTIONS	*next;
-	unsigned char	*name_regex;
-	unsigned char	*contents_regex;
-	int	overtype;
-	int	lmargin;
-	int	rmargin;
-	int	autoindent;
-	int	wordwrap;
-	int	tab;
-	int	indentc;
-	int	istep;
-	unsigned char	*context;
-	unsigned char	*lmsg;
-	unsigned char	*rmsg;
-	int	linums;
-	int	readonly;
-	int	french;
-	int	spaces;
-	int	crlf;
-	int	highlight;	/* Set to enable highlighting */
-	unsigned char *syntax_name;	/* Name of syntax to use */
-	struct high_syntax *syntax;	/* Syntax for highlighting (load_dfa() from syntax_name happens in setopt()) */
-	unsigned char *map_name;	/* Name of character set */
-	struct charmap *charmap;	/* Character set */
-	int	smarthome;	/* Set for smart home key */
-	int	indentfirst;	/* Smart home goes to indentation point first */
-	int	smartbacks;	/* Set for smart backspace key */
-	int	purify;		/* Purify indentation */
-	int	picture;	/* Picture mode */
-	int	single_quoted;	/* Ignore '  ' for ^G */
-	int	c_comment;	/* Ignore text in C comments */
-	int	cpp_comment;	/* Ignore text after // comments */
-	int	pound_comment;	/* Ignore text after # comments */
-	int	vhdl_comment;	/* Ignore text after -- comments */
-	int	semi_comment;	/* Ignore text after ; comments */
-	int	hex;		/* Hex edit mode */
-	unsigned char *text_delimiters;	/* Define word delimiters */
-	unsigned char *cpara;	/* Characters which can indent paragraphcs */
-	MACRO	*mnew;		/* Macro to execute for new files */
-	MACRO	*mold;		/* Macro to execute for existing files */
-	MACRO	*msnew;		/* Macro to execute before saving new files */
-	MACRO	*msold;		/* Macro to execute before saving existing files */
-	MACRO	*mfirst;	/* Macro to execute on first change */
-};
-
-struct macro {
-	int k; /* Keycode */
-	int flg; /* Flags: bit 0: this step wants the negative arg,
-	                   bit 1: ignore return value of this step, but use it as return value of macro */
-	CMD *cmd; /* Command address */
-	int n; /* Number of steps */
-	int size; /* Malloc size of steps */
-	MACRO **steps; /* Block */
-};
-
-struct recmac {
-	struct recmac *next;
-	int	n;
-	MACRO	*m;
-};
-
-
-/* Command entry */
-
-struct cmd {
-	unsigned char	*name;		/* Command name */
-	int	flag;		/* Execution flags */
-	int	(*func) ();	/* Function bound to name */
-	MACRO	*m;		/* Macro bound to name */
-	int	arg;		/* 0= arg is meaningless, 1= ok */
-	unsigned char	*negarg;	/* Command to use if arg was negative */
-};
-
-/* A buffer */
-
-struct buffer {
-	LINK(B)	link;		/* Doubly-linked list of all buffers */
-	P	*bof;		/* Beginning of file pointer */
-	P	*eof;		/* End of file pointer */
-	unsigned char	*name;	/* File name */
-	int locked;		/* Set if we created a lock for this file */
-	int ignored_lock;	/* Set if we didn't create a lock and we don't care (locked set in this case) */
-	int didfirst;		/* Set after user attempted first change */
-	long    mod_time;	/* Last modification time for file */
-	long	check_time;	/* Last time we checked the file on disk */
-	int	orphan;
-	int	count;
-	int	changed;
-	int	backup;
-	void	*undo;
-	P	*marks[11];	/* Bookmarks */
-	OPTIONS	o;		/* Options */
-	P	*oldcur;	/* Last cursor position before orphaning */
-	P	*oldtop;	/* Last top screen position before orphaning */
-	int	rdonly;		/* Set for read-only */
-	int	internal;	/* Set for internal buffers */
-	int	scratch;	/* Set for scratch buffers */
-	int	er;		/* Error code when file was loaded */
-	pid_t	pid;		/* Process id */
-	int	out;		/* fd to write to process */
-	struct lattr_db *db;	/* Linked list of line attribute databases */
-};
-
-
-struct entry {
-	unsigned char	*name;
-	HENTRY	*next;
-	void	*val;
-};
-
-struct hash {
-	int	len;
-	HENTRY	**tab;
-};
-
-
-struct help {
-	unsigned char	*text;		/* help text with attributes */
-	unsigned int	lines;		/* number of lines */
-	struct help	*prev;		/* previous help screen */
-	struct help	*next;		/* nex help screen */
-	unsigned char	*name;		/* context name for context sensitive help */
-};
-
-/* A key binding */
-struct key {
-	int	k;			/* Flag: 0=binding, 1=submap */
-	union {
-		void	*bind;		/* What key is bound to */
-		KMAP	*submap;	/* Sub KMAP address (for prefix keys) */
-	} value;
-};
-
-/* A map of keycode to command/sub-map bindings */
-struct kmap {
-	KEY	keys[KEYS];	/* KEYs */
-};
-
-/** A keyboard handler **/
-struct kbd {
-	KMAP	*curmap;	/* Current keymap */
-	KMAP	*topmap;	/* Top-level keymap */
-	int	seq[16];	/* Current sequence of keys */
-	int	x;		/* What we're up to */
-};
-
-
-struct watom {
-	unsigned char	*context;	/* Context name */
-	void	(*disp) ();	/* Display window */
-	void	(*follow) ();	/* Called to have window follow cursor */
-	int	(*abort) ();	/* Common user functions */
-	int	(*rtn) ();
-	int	(*type) ();
-	void	(*resize) ();	/* Called when window changed size */
-	void	(*move) ();	/* Called when window moved */
-	void	(*ins) ();	/* Called on line insertions */
-	void	(*del) ();	/* Called on line deletions */
-	int	what;		/* Type of this thing */
-};
-
-/* A screen with windows */
-
-struct screen {
-	SCRN	*t;		/* Screen data on this screen is output to */
-
-	int	wind;		/* Number of help lines on this screen */
-
-	W	*topwin;	/* Top-most window showing on screen */
-	W	*curwin;	/* Window cursor is in */
-
-	int	w, h;		/* Width and height of this screen */
-};
-
-/* A window (base class) */
-
-struct window {
-	LINK(W)	link;		/* Linked list of windows in order they
-				   appear on the screen */
-
-	SCREEN	*t;		/* Screen this thing is on */
-
-	int	x, y, w, h;	/* Position and size of window */
-				/* Currently, x = 0, w = width of screen. */
-				/* y == -1 if window is not on screen */
-
-	int	ny, nh;		/* Temporary values for wfit */
-
-	int	reqh;		/* Requested new height or 0 for same */
-				/* This is an argument for wfit */
-
-	int	fixed;		/* If this is zero, use 'hh'.  If not, this
-				   is a fixed size window and this variable
-				   gives its height */
-
-	int	hh;		/* Height window would be on a screen with
-				   1000 lines.  When the screen size changes
-				   this is used to calculate the window's
-				   real height */
-
-	W	*win;		/* Window this one operates on */
-	W	*main;		/* Main window of this family */
-	W	*orgwin;	/* Window where space from this window came */
-	int	curx, cury;	/* Cursor position within window */
-	KBD	*kbd;		/* Keyboard handler for this window */
-	WATOM	*watom;		/* The type of this window */
-	void	*object;	/* Object which inherits this */
-#if 0
-	union {			/* FIXME: instead of void *object we should */
-		BW	*bw;	/* use this union to get strict type checking */
-		PW	*pw;	/* from C compiler (need to check and change */
-		QW	*qw;	/* all of the occurrencies of ->object) */
-		TW	*tw;
-		MENU	*menu;
-		BASE	*base;
-	} object;
-#endif
-
-	unsigned char	*msgt;		/* Message at top of window */
-	unsigned char	*msgb;		/* Message at bottom of window */
-	unsigned char	*huh;		/* Name of window for context sensitive hlp */
-	int	*notify;	/* Address of kill notification flag */
-};
-
-/* Anything which goes in window.object must start like this: */
-struct base {
-	W	*parent;
-};
-
-/* A buffer window: there are several kinds, depending on what is in 'object' */
-
-struct bw {
-	W	*parent;
-	B	*b;
-	P	*top;
-	P	*cursor;
-	long	offset;
-	SCREEN	*t;
-	int	h, w, x, y;
-
-	OPTIONS	o;
-	void	*object;
-
-	int	linums;
-	int	top_changed;	/* Top changed */
-	struct lattr_db *db;	/* line attribute database */
-};
-
-/* A menu window */
-
-struct menu {
-	W	*parent;	/* Window we're in */
-	unsigned char	**list;		/* List of items */
-	int	top;		/* First item on screen */
-	int	cursor;		/* Item cursor is on */
-	int	width;		/* Width of widest item, up to 'w' max */
-	int	perline;	/* Number of items on each line */
-	int	nitems;		/* No. items in list */
-	SCREEN	*t;		/* Screen we're on */
-	int	h, w, x, y;
-	int	(*abrt) ();	/* Abort callback function */
-	int	(*func) ();	/* Return callback function */
-	int	(*backs) ();	/* Backspace callback function */
-	void	*object;
-};
-
-struct hentry {
-	int	next;
-	int	loc;
-};
-
-/* Try to be only one cache line */
+/* Structure which are passed by value */
 
 struct highlight_state {
 	int	state;
 	unsigned char saved_s[24];
 };
 
-/* Each terminal has one of these: terminal capability database */
+/* Include files */
 
-#ifdef __MSDOS__
-
-struct scrn {
-	int	li;		/* Height of screen */
-	int	co;		/* Width of screen */
-	short	*scrn;		/* Buffer */
-	int	scroll;
-	int	insdel;
-	int	*updtab;	/* Lines which need to be updated */
-	HIGHLIGHT_STATE *syntax;
-	int	*compose;
-	int	*sary;
-};
-
-#else
-struct scrn {
-	CAP	*cap;		/* Termcap/Terminfo data */
-
-	int	li;		/* Screen height */
-	int	co;		/* Screen width */
-
-	unsigned char	*ti;		/* Initialization string */
-	unsigned char	*cl;		/* Home and clear screen... really an
-				   init. string */
-	unsigned char	*cd;		/* Clear to end of screen */
-	unsigned char	*te;		/* Restoration string */
-
-	int	haz;		/* Terminal can't print ~s */
-	int	os;		/* Terminal overstrikes */
-	int	eo;		/* Can use blank to erase even if os */
-	int	ul;		/* _ overstrikes */
-	int	am;		/* Terminal has autowrap, but not magicwrap */
-	int	xn;		/* Terminal has magicwrap */
-
-	unsigned char	*so;		/* Enter standout (inverse) mode */
-	unsigned char	*se;		/* Exit standout mode */
-
-	unsigned char	*us;		/* Enter underline mode */
-	unsigned char	*ue;		/* Exit underline mode */
-	unsigned char	*uc;		/* Single time underline character */
-
-	int	ms;		/* Ok to move when in standout/underline mode */
-
-	unsigned char	*mb;		/* Enter blinking mode */
-	unsigned char	*md;		/* Enter bold mode */
-	unsigned char	*mh;		/* Enter dim mode */
-	unsigned char	*mr;		/* Enter inverse mode */
-	unsigned char	*me;		/* Exit above modes */
-
-	unsigned char	*Sb;		/* Set background color */
-	unsigned char	*Sf;		/* Set foregrond color */
-	int	Co;			/* No. of colors */
-	int	ut;		/* Screen erases with background color */
-
-	int	da, db;		/* Extra lines exist above, below */
-	unsigned char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
-	unsigned char	*cs;		/* Set scrolling region */
-	int	rr;		/* Set for scrolling region relative addressing */
-	unsigned char	*sf, *SF, *sr, *SR;	/* Scroll */
-
-	unsigned char	*dm, *dc, *DC, *ed;	/* Delete characters */
-	unsigned char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
-	int	mi;		/* Set if ok to move while in insert mode */
-
-	unsigned char	*bs;		/* Move cursor left 1 */
-	int	cbs;
-	unsigned char	*lf;		/* Move cursor down 1 */
-	int	clf;
-	unsigned char	*up;		/* Move cursor up 1 */
-	int	cup;
-	unsigned char	*nd;		/* Move cursor right 1 */
-
-	unsigned char	*ta;		/* Move cursor to next tab stop */
-	int	cta;
-	unsigned char	*bt;		/* Move cursor to previous tab stop */
-	int	cbt;
-	int	tw;		/* Tab width */
-
-	unsigned char	*ho;		/* Home cursor to upper left */
-	int	cho;
-	unsigned char	*ll;		/* Home cursor to lower left */
-	int	cll;
-	unsigned char	*cr;		/* Move cursor to left edge */
-	int	ccr;
-	unsigned char	*RI;		/* Move cursor right n */
-	int	cRI;
-	unsigned char	*LE;		/* Move cursor left n */
-	int	cLE;
-	unsigned char	*UP;		/* Move cursor up n */
-	int	cUP;
-	unsigned char	*DO;		/* Move cursor down n */
-	int	cDO;
-	unsigned char	*ch;		/* Set cursor column */
-	int	cch;
-	unsigned char	*cv;		/* Set cursor row */
-	int	ccv;
-	unsigned char	*cV;		/* Goto beginning of specified line */
-	int	ccV;
-	unsigned char	*cm;		/* Set cursor row and column */
-	int	ccm;
-
-	unsigned char	*ce;		/* Clear to end of line */
-	int	cce;
-
-	/* Basic abilities */
-	int	scroll;		/* Set to use scrolling */
-	int	insdel;		/* Set to use insert/delete within line */
-
-	/* Current state of terminal */
-	int	*scrn;		/* Characters on screen */
-	int	*attr;		/* Attributes on screen */
-	int	x, y;		/* Current cursor position (-1 for unknown) */
-	int	top, bot;	/* Current scrolling region */
-	int	attrib;		/* Current character attributes */
-	int	ins;		/* Set if we're in insert mode */
-
-	int	*updtab;	/* Dirty lines table */
-	int	avattr;		/* Bits set for available attributes */
-	int	*sary;		/* Scroll buffer array */
-
-	int	*compose;	/* Line compose buffer */
-	int	*ofst;		/* stuff for magic */
-	struct hentry	*htab;
-	struct hentry	*ary;
-};
-#endif
-
-
-struct sortentry {
-	unsigned char	*name;
-	unsigned char	*value;
-};
-
-struct cap {
-	unsigned char	*tbuf;		/* Termcap entry loaded here */
-
-	struct sortentry *sort;	/* Pointers to each capability stored in here */
-	int	sortlen;	/* Number of capabilities */
-
-	unsigned char	*abuf;		/* For terminfo compatible version */
-	unsigned char	*abufp;
-
-	int	div;		/* tenths of MS per char */
-	int	baud;		/* Baud rate */
-	unsigned char	*pad;		/* Padding string or NULL to use NUL */
-	void	(*out) (unsigned char *, unsigned char);		/* Character output routine */
-	void	*outptr;	/* First arg passed to output routine.  Second
-				   arg is character to write */
-	int	dopadding;	/* Set if pad characters should be used */
-};
-
-/* Prompt window (a BW) */
-
-struct pw {
-	int	(*pfunc) ();	/* Func which gets called when RTN is hit */
-	int	(*abrt) ();	/* Func which gets called when window is aborted */
-	int	(*tab) ();	/* Func which gets called when TAB is hit */
-	unsigned char	*prompt;	/* Prompt string */
-	int	promptlen;	/* Width of prompt string */
-	int	promptofst;	/* Prompt scroll offset */
-	B	*hist;		/* History buffer */
-	void	*object;	/* Object */
-	int	file_prompt;	/* Set if this is a file name prompt, so do ~ expansion */
-};
-
-struct stditem {
-	LINK(STDITEM)	link;
-};
-
-/* Single-key Query window */
-
-struct query {
-	W	*parent;	/* Window we're in */
-	int	(*func) ();	/* Func. which gets called when key is hit */
-	int	(*abrt) ();
-	void	*object;
-	unsigned char	*prompt;	/* Prompt string */
-	int	promptlen;	/* Width of prompt string */
-	int	promptofst;	/* Prompt scroll offset */
-};
-
-
-typedef struct mpx MPX;
-struct mpx {
-	int	ackfd;		/* Packetizer response descriptor */
-	int	kpid;		/* Packetizer process id */
-	int	pid;		/* Client process id */
-	void	(*func) ();	/* Function to call when read occures */
-	void	*object;	/* First arg to pass to function */
-	void	(*die) ();	/* Function: call when client dies or closes */
-	void	*dieobj;
-};
-
-/* Text window (a BW) */
-
-struct tw {
-	unsigned char	*stalin;	/* Status line info */
-	unsigned char	*staright;
-	int	staon;		/* Set if status line was on */
-	long	prevline;	/* Previous cursor line number */
-	int	changed;	/* Previous changed value */
-	B	*prev_b;	/* Previous buffer (we need to update status line on nbuf/pbuf) */
-};
-
-struct irec {
-	LINK(IREC)	link;
-	int	what;		/* 0 repeat, >0 append n chars */
-	long	start;		/* Cursor search position */
-	long	disp;		/* Original cursor position */
-	int	wrap_flag;	/* Wrap flag */
-};
-
-struct isrch {
-	IREC	irecs;		/* Linked list of positions */
-	unsigned char *pattern;	/* Search pattern string */
-	unsigned char *prompt;	/* Prompt (usually same as pattern unless utf-8/byte conversion) */
-	int	ofst;		/* Offset in pattern past prompt */
-	int	dir;		/* 0=fwrd, 1=bkwd */
-	int	quote;		/* Set to quote next char */
-};
-
-
-struct undorec {
-	LINK(UNDOREC)	link;
-	UNDOREC	*unit;
-	int	min;
-	int	changed;	/* Status of modified flag before this record */
-	long	where;		/* Buffer address of this record */
-	long	len;		/* Length of insert or delete */
-	int	del;		/* Set if this is a delete */
-	B	*big;		/* Set to buffer containing a large amount of deleted data */
-	unsigned char	*small;		/* Set to malloc block containg a small amount of deleted data */
-};
-
-struct undo {
-	LINK(UNDO)	link;
-	B	*b;
-	int	nrecs;
-	UNDOREC	recs;
-	UNDOREC	*ptr;
-	UNDOREC	*first;
-	UNDOREC	*last;
-};
-
-struct srchrec {
-	LINK(SRCHREC)	link;	/* Linked list of search & replace locations */
-	int	yn;		/* Did we replace? */
-	int	wrap_flag;	/* Did we wrap? */
-	long	addr;		/* Where we were */
-	long	last_repl;
-};
-
-struct search {
-	unsigned char	*pattern;	/* Search pattern */
-	unsigned char	*replacement;	/* Replacement string */
-	int	backwards;	/* Set if search should go backwards */
-	int	ignore;		/* Set if we should ignore case */
-	int	repeat;		/* Set with repeat count (or -1 for no repeat count) */
-	int	replace;	/* Set if this is search & replace */
-	int	rest;		/* Set to do remainder of search & replace w/o query */
-	unsigned char	*entire;	/* Entire matched string */
-	unsigned char	*pieces[26];	/* Peices of the matched string */
-	int	flg;		/* Set after prompted for first replace */
-	SRCHREC	recs;		/* Search & replace position history */
-	P	*markb, *markk;	/* Original marks */
-	P	*wrap_p;	/* Wrap point */
-	int	wrap_flag;	/* Set if we've wrapped */
-	int	allow_wrap;	/* Set to allow wrapping */
-	int	valid;		/* Set if original marks are a valid block */
-	long	addr;		/* Where to place cursor after failed restruct_to_block() test */
-	long	last_repl;	/* Address of last replacement (prevents infinite loops) */
-	int	block_restrict;	/* Search restricted to marked block */
-};
-
-
-
-/* Page header */
-
-struct vpage {
-	VPAGE	*next;		/* Next page with same hash value */
-	VFILE	*vfile;		/* Owner vfile */
-	long	addr;		/* Address of this page */
-	int	count;		/* Reference count */
-	int	dirty;		/* Set if page changed */
-	unsigned char	*data;		/* The data in the page */
-};
-
-/* File structure */
-
-struct vfile {
-	LINK(VFILE)	link;	/* Doubly linked list of vfiles */
-	long	size;		/* Number of bytes in physical file */
-	long	alloc;		/* Number of bytes allocated to file */
-	int	fd;		/* Physical file */
-	int	writeable;	/* Set if we can write */
-	unsigned char	*name;		/* File name.  0 if unnamed */
-	int	flags;		/* Set if this is only a temporary file */
-
-	/* For array I/O */
-	unsigned char	*vpage1;	/* Page address */
-	long	addr;		/* File address of above page */
-
-	/* For stream I/O */
-	unsigned char	*bufp;		/* Buffer pointer */
-	unsigned char	*vpage;		/* Buffer pointer points in here */
-	int	left;		/* Space left in bufp */
-	int	lv;		/* Amount of append space at end of buffer */
-};
-
+#include "b.h"
+#include "blocks.h"
+#include "bw.h"
+#include "charmap.h"
+#include "cmd.h"
+#include "hash.h"
+#include "help.h"
+#include "i18n.h"
+#include "kbd.h"
 #include "lattr.h"
-
-#endif
+#include "macro.h"
+#include "main.h"
+#include "menu.h"
+#include "mouse.h"
+#include "path.h"
+#include "poshist.h"
+#include "pw.h"
+#include "queue.h"
+#include "qw.h"
+#include "rc.h"
+#include "regex.h"
+#include "scrn.h"
+#include "syntax.h"
+#include "tab.h"
+#include "termcap.h"
+#include "tty.h"
+#include "tw.h"
+#include "ublock.h"
+#include "uedit.h"
+#include "uerror.h"
+#include "ufile.h"
+#include "uformat.h"
+#include "uisrch.h"
+#include "umath.h"
+#include "undo.h"
+#include "usearch.h"
+#include "ushell.h"
+#include "utag.h"
+#include "utf8.h"
+#include "utils.h"
+#include "va.h"
+#include "vfile.h"
+#include "vs.h"
+#include "w.h"

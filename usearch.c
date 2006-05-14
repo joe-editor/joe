@@ -5,30 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-
-#include "b.h"
-#include "bw.h"
-#include "main.h"
-#include "pw.h"
-#include "queue.h"
-#include "qw.h"
-#include "regex.h"
-#include "ublock.h"
-#include "uedit.h"
-#include "undo.h"
-#include "usearch.h"
-#include "utils.h"
-#include "vs.h"
-#include "charmap.h"
-#include "w.h"
-#include "va.h"
-#include "tty.h"
-#include "menu.h"
-#include "hash.h"
 
 int wrap = 0;			/* Allow wrap */
 int smode = 0;			/* Decremented to zero by execmd */
@@ -58,7 +35,7 @@ unsigned char **get_word_list(B *b,int ignore)
 	P *p;
 	int c;
 	int idx;
-	int start;
+	int start = 0;
 
 	h = htmk(1024);
 
@@ -570,7 +547,6 @@ static int set_replace(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
 	int x;
-	unsigned char bf1[80];
 	unsigned char buf[80];
 
 	srch->ignore = icase;
@@ -725,7 +701,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 		joe_snprintf_1((char *)buf,sizeof(buf),"Find (^C to abort) [%s]: ",bf1);
 	} else
 		zcpy(buf, US "Find (^C to abort): ");
-	if (pbw=wmkpw(bw->parent, buf, &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap, 0)) {
+	if ((pbw=wmkpw(bw->parent, buf, &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap, 0))) {
 		if (hint) {
 			binss(pbw->cursor, hint);
 			pset(pbw->cursor, pbw->b->eof);

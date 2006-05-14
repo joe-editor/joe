@@ -1,4 +1,8 @@
 
+should force -Wall if compiler is gcc
+
+can not assume 256 colors unless we use ESC [ 30 m for low colors.
+
 Compiling:
 ----------
 
@@ -146,7 +150,7 @@ Short (infinite) list for 3.4:
 - improve mnew/mold etc so we can gzip/gunzip files being
   edited (maybe recursive call to file recognizer with .gz removed).
 
--Modify other window first needs to go away
+- when lock is stolen under us, we don't tell anyone.
 
 
 - test i18n in cygwin

@@ -5,30 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-#include "b.h"
-#include "bw.h"
-#include "help.h"
-#include "kbd.h"
-#include "pw.h"
-#include "scrn.h"
-#include "tab.h"
-#include "termcap.h"
-#include "tw.h"
-#include "uedit.h"
-#include "undo.h"
-#include "utils.h"
-#include "vfile.h"
-#include "menu.h"
-#include "va.h"
-#include "path.h"
-#include "w.h"
 
 /* The current directory */
 
@@ -38,7 +15,7 @@ unsigned char *current_dir;
 
 void set_current_dir(unsigned char *s,int simp)
 {
-	if (s[0]=='!' || s[0]=='>' && s[1]=='>')
+	if (s[0]=='!' || (s[0]=='>' && s[1]=='>'))
 		return;
 	vsrm(current_dir);
 	if (s) {
@@ -52,9 +29,6 @@ void set_current_dir(unsigned char *s,int simp)
 	else
 		current_dir = 0;
 }
-
-extern int smode;
-extern int joe_beep;
 
 static void disppw(BW *bw, int flg)
 {
@@ -142,8 +116,6 @@ void promote_history(B *hist, long line)
 }
 
 /* When user hits return in a prompt window */
-
-extern volatile int dostaupd;
 
 static int rtnpw(BW *bw)
 {
@@ -264,8 +236,6 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	W *new;
 	PW *pw;
 	BW *bw;
-	unsigned char *s;
-	unsigned char *t;
 
 	new = wcreate(w->t, &watompw, w, w, w->main, 1, huh, notify);
 	if (!new) {
@@ -350,11 +320,6 @@ int cmplt_rtn(MENU *m, int x, unsigned char *line)
 	wabort(m->parent);
 	return 0;
 }
-
-extern int menu_jump;
-extern WATOM watommenu;
-
-extern int menu_above;
 
 int simple_cmplt(BW *bw,unsigned char **list)
 {

@@ -5,48 +5,9 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
 
-
-#include "b.h"
-#include "bw.h"
-#include "cmd.h"
-#include "mouse.h"
-#include "hash.h"
-#include "help.h"
-#include "macro.h"
-#include "main.h"
-#include "menu.h"
-#include "path.h"
-#include "poshist.h"
-#include "pw.h"
-#include "rc.h"
-#include "tty.h"
-#include "tw.h"
-#include "ublock.h"
-#include "uedit.h"
-#include "uerror.h"
-#include "ufile.h"
-#include "uformat.h"
-#include "uisrch.h"
-#include "umath.h"
-#include "undo.h"
-#include "usearch.h"
-#include "ushell.h"
-#include "utag.h"
-#include "utils.h"
-#include "va.h"
-#include "vs.h"
-#include "utf8.h"
-#include "kbd.h"
-#include "w.h"
-
-extern int nowmarking;
-extern int smode;
 int joe_beep = 0;
-int uexecmd(BW *bw);
-int udebug_joe(BW *bw);
 
 /* Command table */
 
@@ -333,7 +294,6 @@ int try_lock(BW *bw,B *b)
 /* Called when we are about to modify a buffer */
 /* Returns 0 if we're not allowed to modify buffer */
 
-extern long last_time;
 #define CHECK_INTERVAL 15
 int nomodcheck;
 
@@ -346,25 +306,43 @@ int modify_logic(BW *bw,B *b)
 			return 0;
 		}
 	}
-	if (!b->didfirst) {
-		/* This happens when we try to block move from a window
-		   which is not on the screen */
-		if (b!=bw->b) {
-			msgnw(bw->parent,US "Modify other window first");
-			return 0;
+
+	if (b != bw->b) {
+		if (!b->didfirst) {
+			/* This happens when we try to block move from a window
+			   which is not on the screen */
+			if (bw->o.mfirst) {
+				msgnw(bw->parent,US "Modify other window first for macro");
+				return 0;
+			}
+			b->didfirst = 1;
+			if (bw->o.mfirst)
+				exmacro(bw->o.mfirst,1);
 		}
-		b->didfirst = 1;
-		if (bw->o.mfirst)
-			exmacro(bw->o.mfirst,1);
-	}
-	if (b->rdonly) {
-		msgnw(bw->parent, US "Read only");
-		if (joe_beep)
-			ttputc(7);
-		return 0;
-	} else if (!b->changed && !b->locked) {
-		if (!try_lock(bw,b))
+		if (b->rdonly) {
+			msgnw(bw->parent, US "Other buffer is read only");
+			if (joe_beep)
+				ttputc(7);
 			return 0;
+		} else if (!b->changed && !b->locked) {
+			if (!try_lock(bw,b))
+				return 0;
+		}
+	} else {
+		if (!b->didfirst) {
+			b->didfirst = 1;
+			if (bw->o.mfirst)
+				exmacro(bw->o.mfirst,1);
+		}
+		if (b->rdonly) {
+			msgnw(bw->parent, US "Read only");
+			if (joe_beep)
+				ttputc(7);
+			return 0;
+		} else if (!b->changed && !b->locked) {
+			if (!try_lock(bw,b))
+				return 0;
+		}
 	}
 	return 1;
 }
@@ -381,7 +359,7 @@ int execmd(CMD *cmd, int k)
 
 	/* Send data to shell window: this is broken ^K ^H (help) sends its ^H to shell */
 	if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && piseof(bw->cursor) &&
-	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || cmd->func==utype && k>=32 && k<256)) {
+	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || (cmd->func==utype && k>=32 && k<256))) {
 		unsigned char c = k;
 		joe_write(bw->b->out, &c, 1);
 		return 0;
@@ -392,11 +370,12 @@ int execmd(CMD *cmd, int k)
 
 	/* We don't execute if we have to fix the column position first
 	 * (i.e., left arrow when cursor is in middle of nowhere) */
-	if (cmd->flag & ECHKXCOL)
+	if (cmd->flag & ECHKXCOL) {
 		if (bw->o.hex)
 			bw->cursor->xcol = piscol(bw->cursor);
 		else if (bw->cursor->xcol != piscol(bw->cursor))
 			goto skip;
+	}
 
 	/* Don't execute command if we're in wrong type of window */
 	if (!(cmd->flag & maint->curwin->watom->what))
@@ -463,8 +442,6 @@ int execmd(CMD *cmd, int k)
 		ttputc(7);
 	return ret;
 }
-
-extern int auto_scroll;
 
 void do_auto_scroll()
 {

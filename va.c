@@ -5,14 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#include "utils.h"
-#include "va.h"
+#include "types.h"
 
 aELEMENT *vamk(int len)
 {

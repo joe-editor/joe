@@ -5,20 +5,9 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
 
-
-#include "scrn.h"
-#include "utils.h"
-#include "va.h"
-#include "vs.h"
-#include "utf8.h"
-#include "w.h"
-
 int bg_menu;
-
-extern int dostaupd;
 
 static void menufllw(MENU *m)
 {
@@ -42,7 +31,7 @@ static void menudisp(MENU *m)
 	for (y = 0; y != m->h; ++y) {
 		col = 0;
 		for (x = 0; x != m->perline && y*m->perline+x+m->top<m->nitems; ++x) {
-			int atr, z, lcol;
+			int atr;
 	
 			if (x + y*m->perline + m->top == m->cursor && m->t->curwin==m->parent)
 				atr = INVERSE|BG_COLOR(bg_menu);

@@ -5,26 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#include "blocks.h"
-#include "kbd.h"
-#include "poshist.h"
-#include "queue.h"
-#include "rc.h"
-#include "scrn.h"
-#include "utils.h"
-#include "utf8.h"
-#include "syntax.h"
-#include "w.h"
-
-extern int dspasis;		/* Set to display chars above 127 as-is */
-extern int staen;		/* 0 if top-most status line not displayed */
 
 /* Count no. of main windows */
 
@@ -46,7 +27,6 @@ int countmain(SCREEN *t)
 
 void wredraw(W *w)
 {
-	int x;
 	msetI(w->t->t->updtab + w->y, 1, w->h);
 }
 
@@ -256,7 +236,6 @@ W *watpos(SCREEN *t,int x,int y)
  */
 
 static int doabort(W *w, int *ret);
-extern volatile int dostaupd;
 
 void wfit(SCREEN *t)
 {

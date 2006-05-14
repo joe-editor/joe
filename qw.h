@@ -8,8 +8,17 @@
 #ifndef _JOE_QW_H
 #define _JOE_QW_H 1
 
-#include "config.h"
-#include "types.h"
+/* Single-key Query window */
+
+struct query {
+	W	*parent;	/* Window we're in */
+	int	(*func) ();	/* Func. which gets called when key is hit */
+	int	(*abrt) ();
+	void	*object;
+	unsigned char	*prompt;	/* Prompt string */
+	int	promptlen;	/* Width of prompt string */
+	int	promptofst;	/* Prompt scroll offset */
+};
 
 /* QW *mkqw(W *w, char *prompt, int (*func)(), int (*abrt)(), void *object);
  * Create a query window for the given window

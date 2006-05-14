@@ -1,3 +1,12 @@
+Sun May 14 12:20:40 EDT 2006
+
+	cleanup header files.
+
+	gcc-4.1.0 -Wall run: fixed all but two warnings.
+
+	Precompiled headers now work.  Try: "gcc -O2 -g types.h" before
+	building.  Saves 15 seconds out of a 95 second build.
+
 Fri May 12 15:39:12 EDT 2006
 
 	fix lattr bugs.

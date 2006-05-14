@@ -5,12 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-
-#include "hash.h"
-#include "utils.h"
 
 #define hnext(accu, c) (((accu) << 4) + ((accu) >> 28) + (c))
 
@@ -30,20 +25,29 @@ HASH *htmk(int len)
 {
 	HASH *t = (HASH *) joe_malloc(sizeof(HASH));
 
-	t->len = len - 1;
+	t->len = len;
 	t->tab = (HENTRY **) joe_calloc(sizeof(HENTRY *), len);
 	return t;
 }
 
 void htrm(HASH *ht)
 {
+	int x;
+	for (x = 0; x != ht->len; ++x) {
+		HENTRY *p, *n;
+		for (p = ht->tab[x]; p; p = n) {
+			n = p->next;
+			p->next = freentry;
+			freentry = p;
+		}
+	}
 	joe_free(ht->tab);
 	joe_free(ht);
 }
 
 void *htadd(HASH *ht, unsigned char *name, void *val)
 {
-	int idx = hash(name) & ht->len;
+	int idx = hash(name) & (ht->len - 1);
 	HENTRY *entry;
 	int x;
 
@@ -66,7 +70,7 @@ void *htfind(HASH *ht, unsigned char *name)
 {
 	HENTRY *e;
 
-	for (e = ht->tab[hash(name) & ht->len]; e; e = e->next) {
+	for (e = ht->tab[hash(name) & (ht->len - 1)]; e; e = e->next) {
 		if (!zcmp(e->name, name)) {
 			return e->val;
 		}

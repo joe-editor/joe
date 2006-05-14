@@ -8,10 +8,6 @@
 #ifndef _JOE_VS_H
 #define _JOE_VS_H 1
 
-#include "config.h"
-
-#include <string.h>
-
 /***
  *
  * This is a dynamic string library which supports strings which automatically

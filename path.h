@@ -8,8 +8,6 @@
 #ifndef _JOE_PATH_H
 #define _JOE_PATH_H 1
 
-#include "config.h"
-
 unsigned char *joesep PARAMS((unsigned char *path));
 
 /* char *namprt(char *path);
@@ -100,6 +98,6 @@ unsigned char **rexpnd_users PARAMS((unsigned char *word));
 
 int chpwd PARAMS((unsigned char *path));
 unsigned char *pwd PARAMS((void));
-unsigned char *simplify_prefix(unsigned char *path);
+unsigned char *simplify_prefix PARAMS((unsigned char *path));
 
 #endif

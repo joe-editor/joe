@@ -6,18 +6,15 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
 
-#include <stdio.h>
-
-#include "blocks.h"
-#include "scrn.h"
-#include "charmap.h"
-#include "utils.h"
-#include "vs.h"
-#include "utf8.h"
-#include "w.h"
+struct help {
+	unsigned char	*text;		/* help text with attributes */
+	unsigned int	lines;		/* number of lines */
+	struct help	*prev;		/* previous help screen */
+	struct help	*next;		/* nex help screen */
+	unsigned char	*name;		/* context name for context sensitive help */
+};
 
 #define NOT_ENOUGH_MEMORY -11
 

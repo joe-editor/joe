@@ -8,9 +8,6 @@
 #ifndef _JOE_RC_H
 #define _JOE_RC_H 1
 
-#include "config.h"
-#include "types.h"
-
 extern OPTIONS pdefault;
 extern OPTIONS fdefault;
 void setopt PARAMS((B *b, unsigned char *name));
@@ -48,5 +45,8 @@ void load_state();
 
 /* Validate rc file: return -1 if it's bad (call this after rc file has been loaded) */
 int validate_rc();
+
+/* Update options */
+void lazy_opts PARAMS((B *b, OPTIONS *o));
 
 #endif

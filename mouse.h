@@ -19,8 +19,6 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #ifndef _Imouse
 #define _Imouse 1
 
-#include "config.h"
-
 /* maximum number of milliseconds that can elapse between
    double/triple clicks */
 #define MOUSE_MULTI_THRESH	300
@@ -34,31 +32,36 @@ void mouseopen();	/* initialize mouse */
 void mouseclose();	/* de-initialize mouse */
 
 /* mousedn(int x, int y) - handle a mouse-down event */
-void mousedn(int x, int y);
+void mousedn PARAMS((int x, int y));
 
 /* mouseup(int x, int y) - handle a mouse-up event */
-void mouseup(int x, int y);
+void mouseup PARAMS((int x, int y));
 
 /* mousedrag(int x, int y) - handle a mouse drag event */
-void mousedrag(int x, int y);
+void mousedrag PARAMS((int x, int y));
 
 /* user command handlers */
-int uxtmouse(BW *);		/* handle an xterm mouse control sequence */
-int utomouse(BW *);		/* move the pointer to the mouse */
-int udefmdown(BW *);	/* default mouse click handlers */
-int udefmup(BW *);
-int udefmdrag(BW *);
-int udefm2down(BW *);
-int udefm2up(BW *);
-int udefm2drag(BW *);
-int udefm3down(BW *);
-int udefm3up(BW *);
-int udefm3drag(BW *);
+int uxtmouse PARAMS((BW *));		/* handle an xterm mouse control sequence */
+int utomouse PARAMS((BW *));		/* move the pointer to the mouse */
+int udefmdown PARAMS((BW *));	/* default mouse click handlers */
+int udefmup PARAMS((BW *));
+int udefmdrag PARAMS((BW *));
+int udefm2down PARAMS((BW *));
+int udefm2up PARAMS((BW *));
+int udefm2drag PARAMS((BW *));
+int udefm3down PARAMS((BW *));
+int udefm3up PARAMS((BW *));
+int udefm3drag PARAMS((BW *));
 
 int mnow();
 void reset_trig_time();
 
 /* options */
-extern int floatmouse, rtbutton;
+extern int floatmouse;	/* Allow mouse to set cursor past end of lines */
+extern int rtbutton; /* Use button 3 instead of button 1 */
+
+extern int auto_scroll; /* Set for autoscroll */
+extern int auto_trig_time; /* Time of next scroll */
+extern int joexterm; /* Set if xterm can do base64 paste */
 
 #endif

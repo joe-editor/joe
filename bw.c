@@ -5,35 +5,11 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-#include <string.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-
-#include "b.h"
-#include "blocks.h"
-#include "kbd.h"
-#include "rc.h"
-#include "scrn.h"
-#include "ublock.h"
-#include "utils.h"
-#include "syntax.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "w.h"
 
 /* Display modes */
 int dspasis = 0;
 int marking = 0;
-extern int square;
-extern int staen;
-extern SCREEN *maint;
-extern int bg_text;
 
 static P *getto(P *p, P *cur, P *top, long int line)
 {
@@ -127,7 +103,6 @@ void bwfllwh(BW *w)
 void bwfllwt(BW *w)
 {
 	P *newtop;
-	int x;
 
 	if (!pisbol(w->top)) {
 		p_goto_bol(w->top);
@@ -199,9 +174,7 @@ void bwfllw(BW *w)
 
 HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 {
-	P *tmp = 0;
 	HIGHLIGHT_STATE state;
-	long ln;
 
 	if(!w->o.highlight || !w->o.syntax) {
 		invalidate_state(&state);
@@ -298,8 +271,6 @@ HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 
 void bwins(BW *w, long int l, long int n, int flg)
 {
-	int q;
-
 	/* If highlighting is enabled... */
 	if (w->o.highlight && w->o.syntax) {
 		/* Invalidate cache */
@@ -335,8 +306,6 @@ void bwins(BW *w, long int l, long int n, int flg)
 
 void bwdel(BW *w, long int l, long int n, int flg)
 {
-	int q;
-
 	/* If highlighting is enabled... */
 	if (w->o.highlight && w->o.syntax) {
 		/* lattr_cut(w->db, l + 1); */
@@ -403,7 +372,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 
 	struct utf8_sm utf8_sm;
 
-        int *syn;
+        int *syn = 0;
         P *tmp;
         int idx=0;
         int atr = BG_COLOR(bg_text); 
@@ -501,7 +470,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 			} else if (bc == '\n')
 				goto eobl;
 			else {
-				int wid;
+				int wid = 1;
 				if (p->b->o.charmap->type) {
 					c = utf8_decode(&utf8_sm,bc);
 
@@ -707,7 +676,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 }
 
 /* Generate line into an array */
-
+#ifdef junk
 static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, long int from, long int to)
         
       
@@ -863,6 +832,7 @@ static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, 
 	pnextl(p);
 	return 0;
 }
+#endif
 
 static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 {
@@ -936,7 +906,7 @@ void bwgenh(BW *w)
 		msetI(fmt,BG_COLOR(bg_text),76);
 		txt[76]=0;
 		if (!flg) {
-			sprintf((char *)bf,"%8x ",q->byte);
+			sprintf((char *)bf,"%8lx ",q->byte);
 			memcpy(txt,bf,9);
 			for (x=0; x!=8; ++x) {
 				int c;
@@ -1110,7 +1080,6 @@ void bwmove(BW *w, int x, int y)
 
 void bwresz(BW *w, int wi, int he)
 {
-	int x;
 	if (he > w->h && w->y != -1) {
 		msetI(w->t->t->updtab + w->y + w->h, 1, he - w->h);
 	}

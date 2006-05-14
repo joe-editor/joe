@@ -5,19 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-
-#include "b.h"
-#include "bw.h"
-#include "macro.h"
-#include "termcap.h"
-#include "utils.h"
-#include "rc.h"
-#include "utf8.h"
-#include "tty.h"
-#include "vs.h"
 
 /* Create a KBD */
 
@@ -361,7 +349,7 @@ int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
 	vsrm(s);
 	if(notify) *notify=1;
 	if(!k) {
-		msgnw(bw->parent,"No such keymap");
+		msgnw(bw->parent,US "No such keymap");
 		return -1;
 	}
 	rmkbd(bw->parent->kbd);
@@ -390,6 +378,6 @@ static int keymap_cmplt(BW *bw)
 
 int ukeymap(BASE *bw)
 {
-	if (wmkpw(bw->parent,"Change keymap: ",&keymaphist,dokeymap,"keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
+	if (wmkpw(bw->parent,US "Change keymap: ",&keymaphist,dokeymap,US "keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
 	else return -1;
 }

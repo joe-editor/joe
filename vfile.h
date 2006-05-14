@@ -8,9 +8,38 @@
 #ifndef _JOE_VFILE_H
 #define _JOE_VFILE_H 1
 
-#include "config.h"
-#include "types.h"
+/* Page header */
 
+struct vpage {
+	VPAGE	*next;		/* Next page with same hash value */
+	VFILE	*vfile;		/* Owner vfile */
+	long	addr;		/* Address of this page */
+	int	count;		/* Reference count */
+	int	dirty;		/* Set if page changed */
+	unsigned char	*data;		/* The data in the page */
+};
+
+/* File structure */
+
+struct vfile {
+	LINK(VFILE)	link;	/* Doubly linked list of vfiles */
+	long	size;		/* Number of bytes in physical file */
+	long	alloc;		/* Number of bytes allocated to file */
+	int	fd;		/* Physical file */
+	int	writeable;	/* Set if we can write */
+	unsigned char	*name;		/* File name.  0 if unnamed */
+	int	flags;		/* Set if this is only a temporary file */
+
+	/* For array I/O */
+	unsigned char	*vpage1;	/* Page address */
+	long	addr;		/* File address of above page */
+
+	/* For stream I/O */
+	unsigned char	*bufp;		/* Buffer pointer */
+	unsigned char	*vpage;		/* Buffer pointer points in here */
+	int	left;		/* Space left in bufp */
+	int	lv;		/* Amount of append space at end of buffer */
+};
 /* Additions:
  *
  * Should we remove size checking from rc()?  Would make it faster...

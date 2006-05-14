@@ -5,15 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include <stdio.h>
-#include <string.h>
-#include "config.h"
 #include "types.h"
-#include "utils.h"
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 /* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
    JOE uses a limited internal version instead */
@@ -38,10 +30,6 @@
 #	include <locale.h>
 #       include <langinfo.h>
 #endif
-
-#include "rc.h"
-#include "utf8.h"
-#include "charmap.h"
 
 /* UTF-8 Encoder
  *
@@ -174,7 +162,7 @@ int utf8_decode_string(unsigned char *s)
 {
 	struct utf8_sm sm;
 	int x;
-	int c;
+	int c = -1;
 	utf8_init(&sm);
 	for(x=0;s[x];++x)
 		c = utf8_decode(&sm,s[x]);
@@ -347,8 +335,6 @@ void joe_locale()
 {
 	unsigned char *s, *t, *u;
 
-	int x;
-
 	s=(unsigned char *)getenv("LC_ALL");
 	if (!s) {
 		s=(unsigned char *)getenv("LC_CTYPE");
@@ -364,7 +350,7 @@ void joe_locale()
 
 	u = zdup(s);
 
-	if (t=zrchr(s,'.'))
+	if ((t=zrchr(s,'.')))
 		*t = 0;
 
 

@@ -5,37 +5,11 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-
-#include "b.h"
-#include "bw.h"
-#include "macro.h"
-#include "main.h"
-#include "pw.h"
-#include "qw.h"
-#include "scrn.h"
-#include "ublock.h"
-#include "uformat.h"
-#include "umath.h"
-#include "usearch.h"
-#include "utils.h"
-#include "vs.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "w.h"
 
 /***************/
 /* Global options */
 int pgamnt = -1;		/* No. of PgUp/PgDn lines to keep */
-
-extern WATOM watommenu;
-
-/******** i don't like global var ******/
-
-extern int bg_text;
 
 /* 
  * Move cursor to beginning of line
@@ -134,7 +108,8 @@ int u_goto_left(BW *bw)
 			--bw->cursor->xcol;
 			pcol(bw->cursor,bw->cursor->xcol);
 			return 0;
-		}
+		} else
+			return -1;
 	} else {
 		/* Have to do ECHKXCOL here because of picture mode */
 		if (bw->cursor->xcol != piscol(bw->cursor)) {
@@ -445,7 +420,6 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 		int c;
 		unsigned char buf[MAX_WORD_SIZE+1];
 		int len;
-		int state = 0;
 		int cnt = 1;
 		p_goto_next(p);
 		p_goto_prev(p);
@@ -524,12 +498,12 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					}
 				}
 				prm(q);
-			} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c>='0' && c<='9' || c=='_') {
+			} else if ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || (c>='0' && c<='9') || c=='_') {
 				int x;
 				int flg=0;
 				P *q;
 				len=0;
-				while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
+				while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || (c>='0' && c<='9')) {
 					if(len!=MAX_WORD_SIZE)
 						buf[len++]=c;
 					c=prgetc(p);
@@ -580,7 +554,6 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 		int c;
 		unsigned char buf[MAX_WORD_SIZE+1];
 		int len;
-		int state = 0;
 		int cnt = 1;
 		p_goto_next(p);
 		while ((c=pgetc(p)) != NO_MORE_DATA) {
@@ -592,9 +565,9 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					else if (c == '\\') pgetc(p);
 			} else if (c == '$' && brch(p)=='#' && bw->o.pound_comment) {
 				pgetc(p);
-			} else if (bw->o.pound_comment && c == '#' ||
-				   bw->o.semi_comment && c == ';' ||
-				   bw->o.vhdl_comment && c == '-' && brch(p) == '-') {
+			} else if ((bw->o.pound_comment && c == '#') ||
+				   (bw->o.semi_comment && c == ';') ||
+				   (bw->o.vhdl_comment && c == '-' && brch(p) == '-')) {
 				while ((c = pgetc(p)) != NO_MORE_DATA)
 					if (c == '\n')
 						break;
@@ -628,10 +601,10 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 				len=1;
 				if (c >= 'a' && c <= 'z')
 					goto doit;
-			} else if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_') {
+			} else if ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_') {
 				len=0;
 				doit:
-				while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9') {
+				while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || (c>='0' && c<='9')) {
 					if(len!=MAX_WORD_SIZE)
 						buf[len++]=c;
 					c=pgetc(p);
@@ -643,7 +616,7 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					++cnt;
 				} else if (cnt==1) {
 					if (is_in_any_group(group,buf)) {
-						if (!(buf[0]>='a' && buf[0]<='z' || buf[0]>='A' && buf[0]<='Z'))
+						if (!((buf[0]>='a' && buf[0]<='z') || (buf[0]>='A' && buf[0]<='Z')))
 							pgoto(p,p->byte-len+1);
 						else
 							pgoto(p,p->byte-len);
@@ -692,15 +665,14 @@ int tomatch_xml(BW *bw,unsigned char *word,int dir)
 		int c;
 		unsigned char buf[MAX_WORD_SIZE+1];
 		int len;
-		int state = 0;
 		int cnt = 1;
 		p_goto_next(p);
 		p_goto_prev(p);
 		while ((c=prgetc(p)) != NO_MORE_DATA) {
-			if (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c>='0' && c<='9' || c=='.' || c==':' || c=='-' || c=='_') {
+			if ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || (c>='0' && c<='9') || c=='.' || c==':' || c=='-' || c=='_') {
 				int x;
 				len=0;
-				while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c>='0' && c<='9' || c=='.' ||
+				while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || (c>='0' && c<='9') || c=='.' ||
 				       c == '-' || c == ':') {
 					if(len!=MAX_WORD_SIZE)
 						buf[len++]=c;
@@ -736,7 +708,6 @@ int tomatch_xml(BW *bw,unsigned char *word,int dir)
 		int c;
 		unsigned char buf[MAX_WORD_SIZE+1];
 		int len;
-		int state = 0;
 		int cnt = 1;
 		while ((c=pgetc(p)) != NO_MORE_DATA) {
 			if (c == '<') {
@@ -746,10 +717,10 @@ int tomatch_xml(BW *bw,unsigned char *word,int dir)
 					e = 0;
 					c = pgetc(p);
 				}
-				if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c=='_' || c==':' || c=='-' || c=='.') {
+				if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c=='_' || c==':' || c=='-' || c=='.') {
 					len=0;
-					while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c==':' || c=='-' || c=='.' ||
-					       c >= '0' && c <= '9') {
+					while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || c==':' || c=='-' || c=='.' ||
+					       (c >= '0' && c <= '9')) {
 						if(len!=MAX_WORD_SIZE)
 							buf[len++]=c;
 						c=pgetc(p);
@@ -784,8 +755,8 @@ void get_xml_name(P *p,unsigned char *buf)
 	int len=0;
 	p=pdup(p, US "get_xml_name");
 	c=pgetc(p);
-	while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c==':' || c=='-' || c=='.' ||
-	       c >= '0' && c <= '9') {
+	while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || c==':' || c=='-' || c=='.' ||
+	       (c >= '0' && c <= '9')) {
 		if(len!=MAX_WORD_SIZE)
 			buf[len++]=c;
 		c=pgetc(p);
@@ -809,7 +780,7 @@ void get_delim_name(P *q,unsigned char *buf)
 
 	p=pdup(q, US "get_delim_name");
 	c=pgetc(p);
-	while (c >= 'a' && c <= 'z' || c>='A' && c<='Z' || c=='_' || c >= '0' && c <= '9') {
+	while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || (c >= '0' && c <= '9')) {
 		if(len!=MAX_WORD_SIZE)
 			buf[len++]=c;
 		c=pgetc(p);
@@ -828,8 +799,8 @@ int utomatch(BW *bw)
 	c = brch(bw->cursor);
 
 	/* Check for word delimiters */
-	if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_') {
-		P *q, *p;
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') {
+		P *p;
 		unsigned char buf[MAX_WORD_SIZE+1];
 		unsigned char buf1[MAX_WORD_SIZE+1];
 		unsigned char *list = bw->b->o.text_delimiters;
@@ -985,9 +956,9 @@ int utomatch(BW *bw)
 				while((d = pgetc(p)) != NO_MORE_DATA)
 					if (d == '\'') break;
 					else if (d == '\\') pgetc(p);
-			} else if (bw->o.pound_comment && d == '#' ||
-				   bw->o.semi_comment && d == ';' ||
-				   bw->o.vhdl_comment && d == '-' && brch(p) == '-') {
+			} else if ((bw->o.pound_comment && d == '#') ||
+				   (bw->o.semi_comment && d == ';') ||
+				   (bw->o.vhdl_comment && d == '-' && brch(p) == '-')) {
 				while ((d = pgetc(p)) != NO_MORE_DATA)
 					if (d == '\n')
 						break;
@@ -1312,8 +1283,6 @@ void scrdn(BW *bw, int n, int flg)
 
 /* Page up */
 
-extern int menu_above;
-
 int upgup(BW *bw)
 {
 	if (menu_above) {
@@ -1523,13 +1492,11 @@ int ubacks(BW *bw, int k)
 {
 	/* Don't backspace when at beginning of line in prompt windows */
 	if (bw->parent->watom->what == TYPETW || !pisbol(bw->cursor)) {
-		P *p;
 		int c;
 		int indent;
 		int col;
 		int indwid;
 		int wid;
-		int pure = 1;
 
 		/* Degenerate into ltarw for overtype mode */
 		if (bw->o.overtype) {
@@ -1561,7 +1528,6 @@ int ubacks(BW *bw, int k)
 		/* Ignore purify for backspace */
 		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smartbacks && bw->o.autoindent) {
 			P *p;
-			int x;
 
 			/* Delete all indentation */
 			p = pdup(bw->cursor, US "ubacks");
@@ -1768,11 +1734,12 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 		int col = bw->cursor->xcol;		/* Current cursor column */
 		col = col + bw->o.tab - (col%bw->o.tab);/* Move to next tab stop */
 		pcol(bw->cursor,col);			/* Try to position cursor there */
-		if (!bw->o.picture && piseol(bw->cursor) && piscol(bw->cursor)<col)	/* We moved past end of line, insert a tab (unless in picture mode) */
+		if (!bw->o.picture && piseol(bw->cursor) && piscol(bw->cursor)<col) {	/* We moved past end of line, insert a tab (unless in picture mode) */
 			if (bw->o.spaces)
 				pfill(bw->cursor,col,' ');
 			else
 				pfill(bw->cursor,col,'\t');
+		}
 		bw->cursor->xcol = col;			/* Put cursor there even if we can't really go there */
 	} else if (k == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)>=piscol(bw->cursor)) {
 		P *p = pdup(bw->cursor, US "utypebw_raw");
@@ -1872,9 +1839,7 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 		if (simple && bw->parent->t->t->sary[bw->y + bw->cursor->line - bw->top->line])
 			simple = 0;
 		if (simple && k != '\t' && k != '\n' && !curmacro) {
-			int a;
 			int atr;
-			unsigned char c = k;
 			SCRN *t = bw->parent->t->t;
 			int y = bw->y + bw->cursor->line - bw->top->line;
 			int *screen = t->scrn + y * t->co;
@@ -1911,7 +1876,7 @@ static B *unicodehist = NULL;	/* History of previously entered unicode character
 static int dounicode(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	int num;
-	sscanf((char *)s,"%x",&num);
+	sscanf((char *)s,"%x",(unsigned  *)&num);
 	if (notify)
 		*notify = 1;
 	vsrm(s);
@@ -2111,8 +2076,6 @@ int uquote8(BW *bw)
 	else
 		return -1;
 }
-
-extern unsigned char srchstr[];
 
 static int doctrl(BW *bw, int c, void *object, int *notify)
 {
@@ -2372,7 +2335,7 @@ int uname_joe(BW *bw)
 int upaste(BW  *bw, int k)
 {
 	int c;
-	int accu;
+	int accu = 0;
 	int count;
 	int tmp_ww = bw->o.wordwrap;
 	int tmp_ai = bw->o.autoindent;

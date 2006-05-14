@@ -8,12 +8,9 @@
 #ifndef _JOE_UMATH_H
 #define _JOE_UMATH_H 1
 
-#include "config.h"
-#include "types.h"
-
-extern unsigned char *merr;
-double calc(BW *bw, unsigned char *s);
-int umath(BW *bw);
+extern unsigned char *merr; /* Math error message: set if calc returned an error */
+double calc PARAMS((BW *bw, unsigned char *s));
+int umath PARAMS((BW *bw));
 
 extern B *mathhist;
 

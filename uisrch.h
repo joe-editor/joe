@@ -8,9 +8,6 @@
 #ifndef _JOE_UISRCH_H
 #define _JOE_UISRCH_H 1
 
-#include "config.h"
-#include "types.h"
-
 int uisrch PARAMS((BW *bw));
 int ursrch PARAMS((BW *bw));
 

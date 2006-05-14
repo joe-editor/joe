@@ -5,28 +5,14 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
 #ifdef TERMINFO
 
 /* Fixes for itanium */
 
 #ifdef HAVE_TERM_H
+/* term.h is a disaster: it #defines 'tab' */
 #include <term.h>
 #endif
 
@@ -35,12 +21,6 @@
 #endif
 
 #endif
-
-#include "blocks.h"
-#include "termcap.h"
-#include "utils.h"
-#include "va.h"
-#include "vs.h"
 
 int dopadding = 0;
 unsigned char *joeterm = NULL;
@@ -147,7 +127,7 @@ static long findidx(FILE *file, unsigned char *name)
 			buf[y] = 0;
 			if (c == '\n' || !c) {
 				z = 0;
-				sscanf((char *)(buf + x), "%x", &z);
+				sscanf((char *)(buf + x), "%x", (unsigned *)&z);
 				addr += z;
 			} else if (!zcmp(buf + x, name))
 				flg = 1;
@@ -422,8 +402,13 @@ unsigned char *jgetstr(CAP *cap, unsigned char *name)
 	struct sortentry *s;
 
 #ifdef TERMINFO
-	if (cap->abuf)
-		return (unsigned char *)tgetstr((char *)name, (char **)&cap->abufp);
+	if (cap->abuf) {
+		char *new_ptr = (char *)cap->abufp;
+		char *rtn;
+		rtn = tgetstr((char *)name, &new_ptr);
+		cap->abufp = (unsigned char *)new_ptr;
+		return (unsigned char *)rtn;
+	}
 #endif
 	s = findcap(cap, name);
 	if (s)
@@ -456,7 +441,7 @@ void rmcap(CAP *cap)
 	joe_free(cap);
 }
 
-static unsigned char escape(unsigned char **s)
+static unsigned char escape1(unsigned char **s)
 {
 	unsigned char c = *(*s)++;
 
@@ -558,7 +543,7 @@ void texec(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3)
 /* Output string */
 	while ((c = *s++) != '\0')
 		if (c == '%' && *s) {
-			switch (x = a[0], c = escape(&s)) {
+			switch (x = a[0], c = escape1(&s)) {
 			case 'C':
 				if (x >= 96) {
 					cap->out(cap->outptr, x / 96);
@@ -566,7 +551,7 @@ void texec(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3)
 				}
 			case '+':
 				if (*s)
-					x += escape(&s);
+					x += escape1(&s);
 			case '.':
 				cap->out(cap->outptr, x);
 				++a;
@@ -653,17 +638,17 @@ void texec(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3)
 				a[0] = 16 * (a[0] / 10) + a[0] % 10;
 				break;
 			case '>':
-				if (a[0] > escape(&s))
-					a[0] += escape(&s);
+				if (a[0] > escape1(&s))
+					a[0] += escape1(&s);
 				else
-					escape(&s);
+					escape1(&s);
 			default:
 				cap->out(cap->outptr, '%');
 				cap->out(cap->outptr, c);
 			}
 		} else {
 			--s;
-			cap->out(cap->outptr, escape(&s));
+			cap->out(cap->outptr, escape1(&s));
 		}
 
 /* Output padding characters */

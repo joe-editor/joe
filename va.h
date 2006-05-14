@@ -8,10 +8,6 @@
 #ifndef _JOE_VA_H
 #define _JOE_VA_H 1
 
-#include "config.h"
-
-#include "vs.h"
-
 /* Functions and global variable you have to define.  Replace these with
  * macros or defines here if they are not to be actual functions 
  */

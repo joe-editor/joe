@@ -5,56 +5,19 @@
  *
  * 	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
 #ifdef MOUSE_GPM
 #include <gpm.h>
 #endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
 
-#include "b.h"
-#include "help.h"
-#include "kbd.h"
-#include "macro.h"
-#include "path.h"
-#include "rc.h"
-#include "scrn.h"
-#include "termcap.h"
-#include "tw.h"
-#include "vfile.h"
-#include "va.h"
-#include "vs.h"
-#include "w.h"
-#include "utf8.h"
-#include "charmap.h"
-#include "syntax.h"
-#include "pw.h"
-#include "ushell.h"
-
-extern int mid, dspasis, force, help, pgamnt, nobackups, lightoff, exask, skiptop, noxon, lines, staen, columns, Baud, dopadding, marking, joe_beep;
-
-extern int idleout;		/* Clear to use /dev/tty for screen */
-extern int bg_text;
-extern unsigned char *joeterm;
-int help = 0;			/* Set to have help on when starting */
-int nonotice = 0;		/* Set to prevent copyright notice */
-int orphan = 0;
 unsigned char *exmsg = NULL;		/* Message to display when exiting the editor */
 int usexmouse=0;
 int xmouse=0;
+int nonotice;
+int help;
 
 SCREEN *maint;			/* Main edit screen */
-int nowmarking;
-
-extern B *filehist;		/* History of file names */
 
 /* Make windows follow cursor */
 
@@ -71,8 +34,7 @@ void dofollows(void)
 
 /* Update screen */
 
-int dostaupd = 1;
-extern int staupd;
+volatile int dostaupd = 1;
 
 void edupd(int flg)
 {
@@ -177,13 +139,14 @@ extern int breakflg;
 
 unsigned char **mainenv;
 
-int main(int argc, unsigned char **argv, unsigned char **envv)
+int main(int argc, char **real_argv, char **envv)
 {
 	CAP *cap;
+	unsigned char **argv = (unsigned char **)real_argv;
 	struct stat sbuf;
 	unsigned char *s;
 	unsigned char *t;
-	long time_t;
+	long time_rc;
 	unsigned char *run;
 #ifdef __MSDOS__
 	unsigned char *rundir;
@@ -196,7 +159,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 
 	joe_locale();
 
-	mainenv = envv;
+	mainenv = (unsigned char **)envv;
 
 #ifdef __MSDOS__
 	_fmode = O_BINARY;
@@ -218,7 +181,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	if ((s = (unsigned char *)getenv("COLUMNS")) != NULL)
 		sscanf((char *)s, "%d", &columns);
 	if ((s = (unsigned char *)getenv("BAUD")) != NULL)
-		sscanf((char *)s, "%u", &Baud);
+		sscanf((char *)s, "%u", (unsigned *)&Baud);
 	if (getenv("DOPADDING"))
 		dopadding = 1;
 	if (getenv("NOXON"))
@@ -273,9 +236,9 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 	t = vsncpy(sv(t), sv(run));
 	t = vsncpy(sv(t), sc("rc"));
 	if (!stat((char *)t,&sbuf))
-		time_t = sbuf.st_mtime;
+		time_rc = sbuf.st_mtime;
 	else
-		time_t = 0;
+		time_rc = 0;
 
 	/* Local joerc file */
 	s = (unsigned char *)getenv("HOME");
@@ -288,7 +251,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 		s = vsncpy(sv(s), sc("rc"));
 
 		if (!stat((char *)s,&sbuf)) {
-			if (sbuf.st_mtime<time_t) {
+			if (sbuf.st_mtime < time_rc) {
 				fprintf(stderr, "Warning: %s is newer than your %s.\n",t,s);
 				fprintf(stderr,"You should update or delete %s\n",s);
 				fprintf(stderr,"Hit enter to continue with %s ",t);
@@ -391,7 +354,7 @@ int main(int argc, unsigned char **argv, unsigned char **envv)
 		} else {
 			B *b = bfind(argv[c]);
 			BW *bw = NULL;
-			int er = error;
+			int er = berror;
 
 			/* This is too annoying */
 			/* set_current_dir(argv[c],1); */

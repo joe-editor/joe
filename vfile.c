@@ -5,27 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif
-#include <fcntl.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#include <unistd.h>
-
-#include "blocks.h"
-#include "queue.h"
-#include "path.h"
-#include "utils.h"
-#include "vfile.h"
-#include "vs.h"
 
 static VFILE vfiles = { {&vfiles, &vfiles} };	/* Known vfiles */
 static VPAGE *freepages = NULL;	/* Linked list of free pages */

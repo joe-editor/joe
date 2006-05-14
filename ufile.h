@@ -8,10 +8,7 @@
 #ifndef _JOE_UFILE_H
 #define _JOE_UFILE_H 1
 
-#include "config.h"
-#include "types.h"
-
-extern int exask;
+extern int exask; /* Ask for file name during ^K X */
 
 void genexmsg PARAMS((BW *bw, int saved, unsigned char *name));
 
@@ -35,6 +32,10 @@ int doswitch PARAMS((BW *bw, unsigned char *s, void *obj, int *notify));
 int uquerysave PARAMS((BW *bw));
 int ukilljoe PARAMS((BW *bw));
 
-extern B *filehist;
+extern B *filehist; /* History of file names */
+
+extern int nobackups; /* Set to disable backup files */
+extern unsigned char *backpath; /* Path to backup files if not current directory */
+extern int orphan; /* Set to keep orphaned buffers (buffers with no windows)  */
 
 #endif

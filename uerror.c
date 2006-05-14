@@ -5,21 +5,7 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "config.h"
 #include "types.h"
-
-#include <stdio.h>
-
-#include "b.h"
-#include "bw.h"
-#include "main.h"
-#include "queue.h"
-#include "tw.h"
-#include "ufile.h"
-#include "utils.h"
-#include "vs.h"
-#include "charmap.h"
-#include "w.h"
 
 /* Error database */
 
@@ -265,7 +251,7 @@ int parserrb(B *b)
 	n = parserr(b);
 	bw = find_a_good_bw(b);
 	if (n)
-		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%ld messages found", n);
+		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%d messages found", n);
 	else
 		joe_snprintf_0((char *)msgbuf, JOE_MSGBUFSIZE, "No messages found");
 	msgnw(bw->parent, msgbuf);
@@ -279,7 +265,7 @@ int uparserr(BW *bw)
 	freeall();
 	n = parserr(bw->b);
 	if (n)
-		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%ld messages found", n);
+		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%d messages found", n);
 	else
 		joe_snprintf_0((char *)msgbuf, JOE_MSGBUFSIZE, "No messages found");
 	msgnw(bw->parent, msgbuf);
