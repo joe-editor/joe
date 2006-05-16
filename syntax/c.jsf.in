@@ -17,8 +17,8 @@
 # There are three ways to specify <character-list>s, either * for any
 # character not otherwise specified, & to match the character in the
 # delimiter match buffer or a literal list of characters within quotes
-# (ranges and escape sequences allows).  When the next character matches any
-# in the list, a jump to the target-state is taken and the character is
+# (ranges and escape sequences allowed).  When the next character matches
+# any in the list, a jump to the target-state is taken and the character is
 # eaten (we advance to the next character of the file to be colored).
 #
 # The * transition should be the first transition specified in the state.
@@ -31,7 +31,17 @@
 #   recolor=-N	Recolor the past N characters with the color of the
 #		target-state.  For example once /* is recognized as the
 #		start of C comment, you want to color the /* with the C
-#		comment color.
+#		comment color with recolor=-2.
+#
+#   mark	Mark beginning of a region with current position.
+#
+#   markend	Mark end of region.
+#
+#   recolormark Recolor all of the characters in the marked region with
+#               the color of the target-state.  If markend is not given,
+#		all of the characters up to the current position are recolored.
+#		Note that the marked region can not cross line boundaries and
+#               must be on the same line as recolormark.
 #
 #   buffer    	start copying characters to a string buffer, beginning with this
 #		one (it's ok to not terminate buffering with a matching
@@ -71,6 +81,66 @@
 # Delimiter match buffer is for perl and shell: a regex in perl can be s<..>(...)
 # and in shell you can say: <<EOS ....... EOS
 
+# New feature: subroutines
+
+# Highlighter state machines can now make subroutine calls.  This works by
+# template instantiation: the called state machine is included in your
+# current state machine, but is modified so that the return address points
+# to the called.  There is still no run-time stack (the state is represented
+# as a single integer plus the saved delimiter string).
+
+# Recursion is allowed, but is self limited to 5 levels.
+
+# To call a subroutine, use the 'call' option:
+#
+#	"\""	fred	call=string(dquote)
+#
+# The subroutine called 'string' is called and the jump to 'fred' is
+# ignored.  The 'dquote' option is passed to the subroutine.
+#
+# The subroutine itself returns to the caller like this:
+#       "\""	whatever  return
+#
+# If we're in a subroutine, the return is made.  Otherwise the jump
+# to 'whatever' is made.
+#
+# There are several ways of delimiting subroutines which show up in how it
+# is called.  Here are the options:
+#
+# call=string()		  A file called string.jsf is the subroutine.
+#                         The entire file is the subroutine.  The starting
+#                         point is the first state in the file.
+#
+# call=library.string()	  A file called library.jsf has the subroutine.
+#                         The subroutine within the file is called string.
+#
+# call=.string()          There is a subroutine called string in the current file.
+#
+# When a subroutine is within a file, but is not the whole file, it is delimited
+# as follows:
+#
+#  .subr string
+#
+#  . . . states for string subroutine . . .
+#
+#  .end
+#
+# Option flags can be passed to subroutines which control preprocessor-like
+# directives.  For example:
+#
+# .ifdef dquote
+#    "\""	idle	return
+# .endif
+# .ifdef squote
+#    "'"	idle 	return
+# .endif
+#
+# .else if also available.  .ifdefs can be nested.
+
+
+# Obsolete feature: the sync lines specification no longer matter.  We now always parse
+# from the beginning of the file.  Here is the old description:
+#
 # Define no. sync lines
 # You can say:
 # -200     means 200 lines

@@ -251,7 +251,7 @@ struct glopts {
 				   6 for local option string
 				   7 for local option numeric+1, with range checking
 				 */
-	int *set;		/* Address of global option */
+	void *set;		/* Address of global option */
 	unsigned char *addr;		/* Local options structure member address */
 	unsigned char *yes;		/* Message if option was turned on, or prompt string */
 	unsigned char *no;		/* Message if option was turned off */
@@ -307,7 +307,7 @@ struct glopts {
 	{US "smartbacks",	4, NULL, (unsigned char *) &fdefault.smartbacks, US "Smart backspace key enabled", US "Smart backspace key disabled", US "  Smart backspace " },
 	{US "purify",	4, NULL, (unsigned char *) &fdefault.purify, US "Indentation clean up enabled", US "Indentation clean up disabled", US "  Clean up indents " },
 	{US "picture",	4, NULL, (unsigned char *) &fdefault.picture, US "Picture drawing mode enabled", US "Picture drawing mode disabled", US "Picture mode " },
-	{US "backpath",	2, (int *) &backpath, NULL, US "Backup files stored in (%s): ", 0, US "  Path to backup files " },
+	{US "backpath",	2, &backpath, NULL, US "Backup files stored in (%s): ", 0, US "  Path to backup files " },
 	{US "syntax",	9, NULL, NULL, US "Select syntax (^C to abort): ", 0, US "Y Syntax" },
 	{US "encoding",13, NULL, NULL, US "Select file character set (^C to abort): ", 0, US "Encoding " },
 	{US "single_quoted",	4, NULL, (unsigned char *) &fdefault.single_quoted, US "Single quoting enabled", US "Single quoting disabled", US "  ^G ignores ' ' " },
@@ -400,13 +400,13 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 			switch (glopts[x].type) {
 			case 0: /* Global variable flag option */
 				if (set)
-					*glopts[x].set = st;
+					*(int *)glopts[x].set = st;
 				break;
 			case 1: /* Global variable integer option */
 				if (set && arg) {
 					sscanf((char *)arg, "%d", &val);
 					if (val >= glopts[x].low && val <= glopts[x].high)
-						*glopts[x].set = val;
+						*(int *)glopts[x].set = val;
 				}
 				break;
 			case 2: /* Global variable string option */
@@ -619,7 +619,7 @@ static int doopt1(BW *bw, unsigned char *s, int *xx, int *notify)
 			msgnw(bw->parent, merr);
 			ret = -1;
 		} else if (v >= glopts[x].low && v <= glopts[x].high)
-			*glopts[x].set = v;
+			*(int *)glopts[x].set = v;
 		else {
 			msgnw(bw->parent, US "Value out of range");
 			ret = -1;
@@ -785,13 +785,13 @@ static int doopt(MENU *m, int x, void *object, int flg)
 	switch (glopts[x].type) {
 	case 0:
 		if (!flg)
-			*glopts[x].set = !*glopts[x].set;
+			*(int *)glopts[x].set = !*(int *)glopts[x].set;
 		else if (flg == 1)
-			*glopts[x].set = 1;
+			*(int *)glopts[x].set = 1;
 		else
-			*glopts[x].set = 0;
+			*(int *)glopts[x].set = 0;
 		wabort(m->parent);
-		msgnw(bw->parent, *glopts[x].set ? glopts[x].yes : glopts[x].no);
+		msgnw(bw->parent, *(int *)glopts[x].set ? glopts[x].yes : glopts[x].no);
 		break;
 	case 4:
 		if (!flg)
@@ -819,7 +819,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			return -1;
 		break;
 	case 1:
-		joe_snprintf_1((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *glopts[x].set);
+		joe_snprintf_1((char *)buf, OPT_BUF_SIZE, (char *)glopts[x].yes, *(int *)glopts[x].set);
 		xx = (int *) joe_malloc(sizeof(int));
 
 		*xx = x;
@@ -907,10 +907,10 @@ int umode(BW *bw)
 		s[x] = (unsigned char *) joe_malloc(80);		/* FIXME: why 40 ??? */
 		switch (glopts[x].type) {
 		case 0:
-			joe_snprintf_2((char *)(s[x]), OPT_BUF_SIZE, "%s%s", glopts[x].menu, *glopts[x].set ? "ON" : "OFF");
+			joe_snprintf_2((char *)(s[x]), OPT_BUF_SIZE, "%s%s", glopts[x].menu, *(int *)glopts[x].set ? "ON" : "OFF");
 			break;
 		case 1:
-			joe_snprintf_2((char *)(s[x]), OPT_BUF_SIZE, "%s%d", glopts[x].menu, *glopts[x].set);
+			joe_snprintf_2((char *)(s[x]), OPT_BUF_SIZE, "%s%d", glopts[x].menu, *(int *)glopts[x].set);
 			break;
 		case 2:
 		case 9:

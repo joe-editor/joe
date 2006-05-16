@@ -1,4 +1,9 @@
 
+option for search & replace to continue on the next window
+  also to next file in grep-find output.
+
+
+
 should force -Wall if compiler is gcc
 
 can not assume 256 colors unless we use ESC [ 30 m for low colors.

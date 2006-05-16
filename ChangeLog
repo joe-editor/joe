@@ -1,3 +1,11 @@
+Tue May 16 01:31:16 EDT 2006
+
+	Get rid of last type punning warning.
+
+	Add subroutines to syntax highlighter.
+
+	Fix .tcl highlighting glitch.
+
 Sun May 14 12:20:40 EDT 2006
 
 	cleanup header files.

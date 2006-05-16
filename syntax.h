@@ -27,6 +27,13 @@ struct high_state {
 	struct high_cmd *delim;		/* Matching delimiter */
 };
 
+/* Parameter list */
+
+struct syparm {
+	struct syparm *next;
+	unsigned char *name;
+};
+
 /* Command (transition) */
 
 struct high_cmd {
@@ -43,6 +50,9 @@ struct high_cmd {
 	struct high_state *new_state;	/* The new state */
 	HASH *keywords;			/* Hash table of keywords */
 	struct high_cmd *delim;		/* Matching delimiter */
+	unsigned char *call;		/* Set with name of file with subroutine */
+	unsigned char *call_subr;	/* Set with name of subroutine (or NULL for whole file) */
+	struct syparm *parms;		/* Parameters for call */
 };
 
 /* Loaded form of syntax file */
@@ -56,6 +66,8 @@ struct high_syntax {
 	struct high_color *color;	/* Linked list of color definitions */
 	int sync_lines;			/* No. lines back to start parsing when we lose sync.  -1 means start at beginning */
 	struct high_cmd default_cmd;	/* Default transition for new states */
+	int istates;			/* Loaded no. states */
+	int recur;			/* Recursion depth counter */
 };
 
 /* Find a syntax.  Load it if necessary. */
