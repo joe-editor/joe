@@ -15,7 +15,7 @@
 
 
 :begin Idle
-	*		begin call=.perl()
+	*		begin noeat call=.perl()
 
 #
 # Perl as a subroutine for Mason
