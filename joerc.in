@@ -443,6 +443,11 @@
 -smartbacks
 -istep 2
 
+ Ruby
+*.rb
+-autoindent
+-syntax ruby
+
  Perl
 *
 +#!\+\[ 	]\+\[a-z/]/perl\>
