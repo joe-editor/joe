@@ -5,6 +5,8 @@ Fri May 19 13:29:11 EDT 2006
 	Update php, html, css and java highlighters to take
 	advantage of subroutines.
 
+	Add LUA
+
 Tue May 16 01:31:16 EDT 2006
 
 	Get rid of last type punning warning.

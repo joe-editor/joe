@@ -885,6 +885,11 @@
 -smarthome
 -indentfirst
 
+ LUA
+*.lua
+-autoindent
+-syntax lua
+
  TCL
 *.tcl
 -autoindent

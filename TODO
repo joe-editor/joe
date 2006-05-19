@@ -1,4 +1,12 @@
 
+ruby (ack! it's like perl!)
+allow options after string and istring?
+revisit <
+
+
+
+
+
 option for search & replace to continue on the next window
   also to next file in grep-find output.
 

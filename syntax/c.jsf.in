@@ -58,6 +58,9 @@
 #
 #   istrings	Same as strings, but case is ignored.
 #
+#               Note: strings and istrings should be the last option on the
+#		line.  They cause any options which follow them to be ignored.
+#
 #   hold        Stop buffering string- a future 'strings' or 'istrings' will
 #               look at contents of buffer at this point.  Useful for distinguishing
 #               commands and function calls in some languages 'write 7' is a command

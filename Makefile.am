@@ -12,7 +12,7 @@ EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA IN
 	syntax/ocaml.jsf.in syntax/4gl.jsf.in syntax/sml.jsf.in syntax/sql.jsf.in \
 	syntax/awk.jsf.in syntax/cobol.jsf.in syntax/sed.jsf.in syntax/ps.jsf.in \
 	cygbuild setup.hint xterm-patch xterm-readme syntax/ada.jsf.in syntax/troff.jsf.in \
-	syntax/haskell.jsf.in syntax/rexx.jsf.in syntax/skill.jsf.in
+	syntax/haskell.jsf.in syntax/rexx.jsf.in syntax/skill.jsf.in syntax/lua.jsf.in
 
 sysconf_joedir = $(sysconfdir)/joe
 sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
@@ -46,7 +46,8 @@ sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
 	syntax/asm.jsf syntax/tex.jsf syntax/css.jsf syntax/ocaml.jsf \
 	syntax/4gl.jsf syntax/sml.jsf syntax/sql.jsf syntax/awk.jsf \
 	syntax/cobol.jsf syntax/sed.jsf syntax/ps.jsf syntax/ada.jsf \
-	syntax/troff.jsf syntax/haskell.jsf syntax/rexx.jsf syntax/skill.jsf
+	syntax/troff.jsf syntax/haskell.jsf syntax/rexx.jsf syntax/skill.jsf \
+	syntax/lua.jsf
 
 sysconf_charmapsdir = $(sysconf_joedir)/charmaps
 sysconf_charmaps_DATA = charmaps/klingon
