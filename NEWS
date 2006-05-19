@@ -35,7 +35,7 @@
 	EMACS	11.98
 
 - JOE now matches Thomas Dickey's implementation of my xterm patch (but
-  configure it with --paste64).
+  configure xterm with --paste64).
 
 - File selection menu/completion-list is now above the prompt (which is more
   like bash).

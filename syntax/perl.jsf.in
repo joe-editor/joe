@@ -1,27 +1,5 @@
 # JOE syntax highlight file for Perl
 
--1000
-
-# Still need:
-
-# _ in numbers
-# 0b for binary
-# \cC for Ctrl-C
-# \x{hex} unicode
-# no escapes in single quotes (except \\ and \')
-# \N{NAME} named character
-
-# / .. / regex
-# s/ .. / .. /
-# $name allowed in regex
-# m//  same as //
-# s///
-# tr/// y///
-# qr//
-
-# can also do this: s(egg)<larva>
-# s' ' ' - no interpolation
-
 # Define colors
 
 =Idle
@@ -35,10 +13,25 @@
 =Bad bold red
 =Var yellow
 
+
+:begin Idle
+	*		begin call=.perl()
+
+#
+# Perl as a subroutine for Mason
+#
+
+.subr perl
+
 # Detect pod
 
 :idle Idle
 	*		idle1		noeat
+.ifdef mason_line
+	"\n"		idle return
+.else
+	"\n"		idle
+.endif
 	"="		pod_start
 
 # allow keywords
@@ -46,7 +39,7 @@
 :idle1 Idle
 	*		idle1
 	"#"		line_comment_i	recolor=-1
-	"\n"		idle
+	"\n"		idle noeat
 	"0"		first_digit	recolor=-1
 	"1-9"		decimal	recolor=-1
 	"."		maybe_float
@@ -56,7 +49,16 @@
 	"/"		regex		recolor=-1
 	"<"		maybe_inc
 	"$"		not_string	buffer
+.ifdef mason_block
+	"&%"		perl_maybe_done	buffer
+	"-a-zA-Z_@"	ident		buffer
+.else
 	"-a-zA-Z_@%&"	ident		buffer
+.endif
+
+:perl_maybe_done Idle
+	*		ident noeat
+	">"		idle1	return
 
 # prevent keywords
 
@@ -64,7 +66,7 @@
 	*		rest
 	"({;~"		idle1
 	"#"		line_comment	recolor=-1
-	"\n"		idle
+	"\n"		idle noeat
 	"0"		first_digit	recolor=-1
 	"1-9"		decimal	recolor=-1
 	"."		maybe_float
@@ -73,7 +75,16 @@
 	"`"		backtick	recolor=-1
 	"$"		not_string	buffer
 	"<"		maybe_inc
+.ifdef mason_block
+	"%&"		perl_maybe_done1 buffer
+	"a-zA-Z_@"	maybe_string	buffer
+.else
 	"a-zA-Z_@%&"	maybe_string	buffer
+.endif
+
+:perl_maybe_done Idle
+	*		maybe_string noeat
+	">"		idle1	return
 
 :pod_start Idle
 	*		pod_start
@@ -91,7 +102,16 @@ done
 
 :maybe_inc Idle
 	*		rest		noeat
+.ifdef mason_block
+	"/"		perl_maybe_done_2
+.endif
 	"<"		maybe_inc1
+
+:perl_maybe_done_2 Idle
+	*		perl_idle	noeat
+	"a-z"		perl_maybe_done_2
+	">"		idle
+
 
 :maybe_inc1 Idle
 	*		rest		noeat
@@ -149,7 +169,7 @@ done
 
 :line_comment_i Comment
 	*		line_comment_i
-	"\n"		idle
+	"\n"		idle noeat
 
 :end_of_file_comment Comment
 	*		end_of_file_comment
@@ -256,7 +276,7 @@ done
 
 :char Constant
 	*		char
-	"\n"		reset
+	"\n"		idle noeat
 	"'"		rest
 	"\\"		char_escape	recolor=-1
 
@@ -428,3 +448,5 @@ done
 
 :repl_quote Escape
 	*		repl
+
+.end

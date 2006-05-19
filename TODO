@@ -1,6 +1,4 @@
-
-ruby (ack! it's like perl!)
-allow options after string and istring?
+allow options after string and istring? -just note it for now.
 revisit <
 
 
@@ -73,8 +71,6 @@ Makefile.in and Makefile.am need to be the same as Makefile.
 
 1443801  need better latex highlighter
 
-1248928  need to integrate user supplied php highlighters (we should
-         highlight the html)
 
 
 

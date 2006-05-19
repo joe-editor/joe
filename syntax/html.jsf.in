@@ -53,9 +53,16 @@
 
 .subr html
 
+:reset Background
+	*	idle noeat
+.ifdef mason
+	"%"	reset call=perl.perl(mason_line)
+.endif
+
 # Rules
 :idle Background
 	*	idle
+	"\n"	reset
 	"<"	tag_begin recolor=-1
 	"&"	idle call=.entity() recolor=-1
 :mistake_idle Mystery
@@ -65,6 +72,9 @@
 :tag_begin TagEdge
 	*			tag_name_first buffer noeat recolor=-1
 	"/"			tag_name_first buffer
+.ifdef mason
+	"&"			idle call=perl.perl(mason_block)
+.endif
 	"!"			sgml_tag recolor=-2
 .ifdef php
 	"?%"			idle call=php.php()
