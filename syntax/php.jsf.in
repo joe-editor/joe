@@ -54,6 +54,36 @@
 :idle_done Idle
 	*		idle noeat
 	"/"		idle noeat recolor=-2 return
+	"<"		idle_here
+
+:idle_here Idle
+	*		idle noeat
+	"<"		here_doc
+
+:here_doc Idle
+	*		idle noeat
+	" 	"	here_doc
+	"A-Za-z_"	here_name buffer
+
+:here_name Idle
+	*		inhere_doc save_s
+	"A-Za-z_0-9"	here_name
+
+:inhere_doc Constant
+	*		inhere_not_eol
+	"\n"		inhere_doc
+	"A-Za-z_"	inhere_name buffer
+
+:inhere_not_eol Constant
+	*		inhere_not_eol
+	"\n"		inhere_doc
+
+:inhere_name Constant
+	*		inhere_doc
+	";"		inhere_doc strings
+	"&"		idle
+done
+	"A-Za-z_0-9"	inhere_name
 	
 :brace  Methods
   * idle  noeat

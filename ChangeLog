@@ -7,6 +7,8 @@ Fri May 19 13:29:11 EDT 2006
 
 	Add LUA
 
+	Heredoc support for PHP
+
 Tue May 16 01:31:16 EDT 2006
 
 	Get rid of last type punning warning.
