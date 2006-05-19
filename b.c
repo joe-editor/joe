@@ -156,6 +156,7 @@ int udebug_joe(BW *bw)
 			pnextl(bw->cursor);
 		}
 	}
+	dump_syntax(bw);
 	return 0;
 }
 

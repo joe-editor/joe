@@ -16,6 +16,15 @@
 =Brace		magenta
 =Control
 
+:begin Idle
+	*	begin	noeat call=.java()
+
+#
+# Java as a subroute- for use as java script in html
+#
+
+.subr java
+
 :idle Idle
 	*		idle
 	"\n"		idle
@@ -27,7 +36,16 @@
 	"'"		char		recolor=-1
 	"a-zA-Z_"	ident		buffer
 	"{}"		brace		recolor=-1
+.ifdef script
+	",:;=()>[]*&|!~+\-%^"	control		recolor=-1
+	"<"		maybe_done
+.else
 	",:;=()><[]*&|!~+\-%^"	control		recolor=-1
+.endif
+
+:maybe_done Control
+	*	idle	noeat
+	"/"	idle	noeat return recolor=-2
 
 :brace Brace
 	*	idle	noeat
@@ -224,3 +242,5 @@ done
 
 :operator Operator
 	*	idle	noeat
+
+.end

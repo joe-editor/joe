@@ -87,4 +87,6 @@ HIGHLIGHT_STATE parse PARAMS((struct high_syntax *syntax,P *line,HIGHLIGHT_STATE
 extern struct high_color *global_colors;
 void parse_color_def PARAMS((struct high_color **color_list,unsigned char *p,unsigned char *name,int line));
 
+void dump_syntax PARAMS((BW *bw));
+
 #endif

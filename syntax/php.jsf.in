@@ -2,7 +2,6 @@
 # modified by Eric Lin
 
 # TODO:
-#  * octal escape sequences
 #  * heredoc support (as good as possible)
 #  * highlight function and class names?
 
@@ -17,26 +16,29 @@
 # Define colors
 
 =Idle
-=HTML		bold black
 =Comment 	green
 =Constant 	cyan
 =Constant_sq 	blue
 =Escape 	bold cyan
-=Keyword 	magenta
+=Keyword 	bold
 =Var  red
 =Methods  bold
 
-:reset HTML
-	*		reset
-	"<"		reset_lt
+# Call HTML highlighter.  It will call the PHP highlighter subroutine in this file.
 
-:reset_lt HTML
-	*		reset
-	"?"		idle		recolor=-2
-	"%"		idle		recolor=-2
+:begin Idle
+	*	call_failed	noeat call=html.html(php)
+
+:call_failed Var
+	*	call_failed
+
+# PHP highlighter.
+
+.subr php
 
 :idle Idle
 	*		idle
+	"<"		idle_done
 	"?"		idle_qmark
 	"%"		idle_hash
 	"#"		sh_comment	recolor=-1
@@ -48,6 +50,10 @@
 	"$"   php_var recolor=-1
 	"-" maybe_method
 	"{}"  brace recolor=-1
+
+:idle_done Idle
+	*		idle noeat
+	"/"		idle noeat recolor=-2 return
 	
 :brace  Methods
   * idle  noeat
@@ -88,11 +94,11 @@
 
 :idle_qmark Idle
 	*		idle
-	">"		reset
+	">"		idle return
 
 :idle_hash Idle
 	*		idle	noeat
-	">"		reset
+	">"		idle return
 
 :sh_comment Comment
 	*		sh_comment
@@ -141,7 +147,12 @@
 	*		idle	noeat
 	"xX"		hex
 	"."		float
-	"0-9"		first_number
+	"0"		octal
+	"1-9"		first_number
+
+:octal Constant
+	*		idle	noeat
+	"0-7"		octal
 
 :hex Constant
 	*		idle	noeat
@@ -238,4 +249,5 @@ done
 
 :var  Var
   * mark  noeat
-  
+
+.end

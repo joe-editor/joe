@@ -13,15 +13,29 @@
 =Keyword  bold white
 =HTML
 
+:begin Idle
+	*	begin	noeat call=.css()
+
+#
+# For <style> in html
+#
+
+.subr css
+
 :reset HTML
 	*		  reset
+	"<"	maybe_done
 	"/"		slash
 	"#"   id_block recolor=-1
 	"."   class_block recolor=-1
 	"a-zA-Z"  tag_block recolor=-1
 
+:maybe_done HTML
+	*	reset noeat
+	"/"	reset noeat return recolor=-2
+
 :slash Idle
-	*		idle		noeat
+	*		reset		noeat
 	"*"		comment		recolor=-2
 
 :comment Comment
@@ -30,7 +44,7 @@
 
 :maybe_end_comment Comment
 	*		comment
-	"/"		idle
+	"/"		reset
 	"*"		maybe_end_comment
 
 :id_block Id
@@ -85,3 +99,4 @@
   "/" style_block
   "*" maybe_end_style_comment
   
+.end

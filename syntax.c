@@ -273,32 +273,44 @@ void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned ch
 	}
 }
 
-/* Dump sytnax file */
-
-void dump_syntax(struct high_syntax *syntax)
-{
-	int x;
-	printf("Syntax name=%s, nstates=%d\n",syntax->name,syntax->nstates);
-	for(x=0;x!=syntax->nstates;++x) {
-		int y;
-		int f = -1;
-		struct high_state *s = syntax->states[x];
-		printf("   state %s %x\n",s->name,s->color);
-		for (y = 0; y != 256; ++y) {
-			if (f == -1)
-				f = y;
-			else if (s->cmd[f]->new_state != s->cmd[y]->new_state) {
-				printf("     [%d-%d] -> %s %d\n",f,y-1,s->cmd[f]->new_state->name,s->cmd[f]->recolor);
-				f = y;
-			}
-		}
-		printf("     [%d-%d] -> %s %d\n",f,y-1,s->cmd[f]->new_state->name,s->cmd[f]->recolor);
-	}
-}
-
 /* Load syntax file */
 
 struct high_syntax *syntax_list;
+
+/* Dump sytnax file */
+
+void dump_syntax(BW *bw)
+{
+	struct high_syntax *syntax;
+	for (syntax = syntax_list; syntax; syntax = syntax->next) {
+		int x;
+		unsigned char buf[1024];
+		joe_snprintf_2((char *)buf, sizeof(buf), "Syntax name=%s, nstates=%d\n",syntax->name,syntax->nstates);
+		binss(bw->cursor, buf);
+		pnextl(bw->cursor);
+		for(x=0;x!=syntax->nstates;++x) {
+			int y;
+			int f = -1;
+			struct high_state *s = syntax->states[x];
+			joe_snprintf_2((char *)buf, sizeof(buf), "   state %s %x\n",s->name,s->color);
+			binss(bw->cursor, buf);
+			pnextl(bw->cursor);
+			for (y = 0; y != 256; ++y) {
+				if (f == -1)
+					f = y;
+				else if (s->cmd[f]->new_state != s->cmd[y]->new_state) {
+					joe_snprintf_4((char *)buf, sizeof(buf), "     [%d-%d] -> %s %d\n",f,y-1,s->cmd[f]->new_state->name,s->cmd[f]->recolor);
+					binss(bw->cursor, buf);
+					pnextl(bw->cursor);
+					f = y;
+				}
+			}
+			joe_snprintf_4((char *)buf, sizeof(buf), "     [%d-%d] -> %s %d\n",f,y-1,s->cmd[f]->new_state->name,s->cmd[f]->recolor);
+			binss(bw->cursor, buf);
+			pnextl(bw->cursor);
+		}
+	}
+}
 
 struct ifstack {
 	struct ifstack *next;
@@ -367,6 +379,9 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 	if(!f)
 		return 0;
 
+	/* Color are always file local */
+	syntax->color = 0;
+
 	/* Parse file */
 	while(fgets((char *)buf,1023,f)) {
 		++line;
@@ -433,8 +448,13 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 			} else {
 				fprintf(stderr,"%s %d: Missing control statement name\n",name,line);
 			}
-		} else if ((stack && stack->ignore) || (subr && !this_one) || (!subr && inside_subr)) {
-			/* Ignore this line */
+		} else if (stack && stack->ignore) {
+			/* Ignore this line because of ifdef */
+		} else if(!parse_char(&p, '=')) {
+			/* Parse color */
+			parse_color_def(&syntax->color,p,name,line);
+		} else if ((subr && !this_one) || (!subr && inside_subr)) {
+			/* Ignore this line because it's not the code we want */
 		} else if(!parse_char(&p, ':')) {
 			if(!parse_ident(&p, bf, sizeof(bf))) {
 
@@ -459,8 +479,6 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 					fprintf(stderr,"%s %d: Missing color for state definition\n",name,line);
 			} else
 				fprintf(stderr,"%s %d: Missing state name\n",name,line);
-		} else if(!parse_char(&p, '=')) {
-			parse_color_def(&syntax->color,p,name,line);
 		} else if(!parse_char(&p, '-')) { /* No. sync lines */
 			if(parse_int(&p, &syntax->sync_lines))
 				syntax->sync_lines = -1;
@@ -734,12 +752,15 @@ void link_syntax(struct high_syntax *syntax)
 					unsigned char buf[256];
 					struct high_state *sub;
 					int needs_link = 0;
-					joe_snprintf_2((char *)buf1,sizeof(buf1),"%d.%s",depth,cmd->call);
-					if (!(sub = find_sub(sub_list, buf1, cmd->new_state))) {
+					joe_snprintf_3((char *)buf1,sizeof(buf1),"%d.%s.%s",depth,cmd->call,cmd->call_subr);
+					/* printf("%s is looking for %s.%s\n",state->name,cmd->call,(cmd->call_subr?cmd->call_subr:US "")); */
+					if ( 1 ) { /* !(sub = find_sub(sub_list, buf1, cmd->new_state))) { */
+						/* printf("loading...\n"); */
 						joe_snprintf_2((char *)buf,sizeof(buf),"%d.%d.",depth,inst++);
 						sub = append_dfa(syntax,buf,cmd->call,cmd->new_state,&needs_link,cmd->parms,cmd->call_subr);
 						if (sub)
 							sub_list = add_sub(sub_list, buf1, cmd->new_state, sub);
+
 					}
 					if (sub)
 						cmd->new_state = sub;

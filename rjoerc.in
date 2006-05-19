@@ -548,6 +548,20 @@
 *.cob
 -syntax cobol
 
+ REXX
+*.rex
+-syntax rexx
+-autoindent
+
+*.REX
+-syntax rexx
+-autoindent
+
+*
++#!\+\[ 	]\+\[a-z/]/rxx\>
+-syntax rexx
+-autoindent
+
  sed
 *.sed
 -syntax sed
