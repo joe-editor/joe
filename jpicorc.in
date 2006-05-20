@@ -1113,11 +1113,11 @@ nextw		^[ n
 pgdn		.kN		Screen down
 pgdn		^V
 pgdn		^[ [ 6 ~
-pgdn      ^# S
+ pgdn      ^# S
 pgup		.kP		Screen up
 pgup		^Y
 pgup		^[ [ 5 ~
-pgup      ^# T
+ pgup      ^# T
 play		^[ 0 TO 9	Execute macro
 prevw		^[ P		Goto previous window
 prevw		^[ ^P
@@ -1177,13 +1177,13 @@ home			^[ [ 1 ~		Putty, Linux, Cygwin
 home			^[ [ H			Xterm, Konsole, SCO
 home			^[ O H			gnome-terminal
 home			^[ [ 7 ~		RxVT
-home			^# SP A		Amiga
+ home			^# SP A		Amiga
 
 eol			^[ [ 4 ~		Putty, Linux, Cygwin, ssh
 eol			^[ [ F			Xterm, Konsole, SCO
 eol			^[ O F			gnome-terminal
 eol			^[ [ 8 ~		RxVT
-eol			^# SP @		Amiga
+ eol			^# SP @		Amiga
 
  ask,query,lose,query,abortbuf	^X	Exit after many questions
 ask,query,exsave	^X		Exit
@@ -1214,7 +1214,7 @@ dnarw		.kd		Go down
 dnarw		^N
 dnarw		^[ O B
 dnarw		^[ [ B
-dnarw		^# B
+ dnarw		^# B
 dnslide,dnslide,dnslide,dnslide		MWDOWN
 drop,msg,"Mark set",rtn	^^	Drop anchor
  toggle_marking	^^		Marking
@@ -1253,7 +1253,7 @@ ltarw		.kl		Go left
 ltarw		^B
 ltarw		^[ O D
 ltarw		^[ [ D
-ltarw          ^# D
+ ltarw          ^# D
 mode		^[ ^[		Options menu
 nextword	^@		Goto next word
 open		^]		Split line
@@ -1269,7 +1269,7 @@ rtarw		.kr		Go right
 rtarw		^F
 rtarw		^[ O C
 rtarw		^[ [ C
-rtarw          ^# C
+ rtarw          ^# C
 run		^[ !		Run a program in a window
 stat		^C   		Cursor position status
 psh,markk,blksave,query	^O		Save file
@@ -1287,7 +1287,7 @@ uparw		.ku		Go up
 uparw		^P
 uparw		^[ O A
 uparw		^[ [ A
-uparw		^# A
+ uparw		^# A
 upslide,upslide,upslide,upslide		MWUP
 yank		^U		Paste
 yankpop		^[ U		Select yanked text
@@ -1308,9 +1308,9 @@ dnarw,eol	.kd		Go down
 dnarw,eol	^N
 dnarw,eol	^[ O B
 dnarw,eol	^[ [ B
-dnarw,eol	^# B
+ dnarw,eol	^# B
 uparw,eol	.ku		Go up
-uparw,eol	^# A
+ uparw,eol	^# A
 uparw,eol	^P
 uparw,eol	^[ O A
 uparw,eol	^[ [ A
@@ -1326,13 +1326,13 @@ bolmenu			^[ [ 1 ~		Putty, Linux, Cygwin
 bolmenu			^[ [ H			Xterm, Konsole
 bolmenu			^[ O H			gnome-terminal
 bolmenu			^[ [ 7 ~		RxVT
-bolmenu			^# SP A		Amiga
+ bolmenu			^# SP A		Amiga
 
 eolmenu			^[ [ 4 ~		Putty, Linux, Cygwin, ssh
 eolmenu			^[ [ F			Xterm, Konsole
 eolmenu			^[ O F			gnome-terminal
 eolmenu			^[ [ 8 ~		RxVT
-eolmenu			^# SP @		Amiga
+ eolmenu			^# SP @		Amiga
 
 abort		^[ ^[
 backsmenu	^?
@@ -1346,7 +1346,7 @@ dnarwmenu	.kd
 dnarwmenu	^N
 dnarwmenu	^[ [ B
 dnarwmenu	^[ O B
-dnarwmenu ^# B
+ dnarwmenu ^# B
 eofmenu		^K V
 eofmenu		^K ^V
 eofmenu		^K v
@@ -1355,20 +1355,20 @@ eolmenu		^E
 ltarwmenu	.kl
 ltarwmenu	^B
 ltarwmenu	^[ [ D
-ltarwmenu ^# D
+ ltarwmenu ^# D
 ltarwmenu	^[ O D
 pgdnmenu	.kN		Screen down
 pgdnmenu	^V
 pgdnmenu	^[ [ 6 ~
-pgdnmenu  ^# S
+ pgdnmenu  ^# S
 pgupmenu	.kP		Screen up
 pgupmenu	^Y
 pgupmenu	^[ [ 5 ~
-pgupmenu  ^# T
+ pgupmenu  ^# T
 rtarwmenu	.kr
 rtarwmenu	^F
 rtarwmenu	^[ [ C
-rtarwmenu ^# C
+ rtarwmenu ^# C
 rtarwmenu	^[ O C
 rtn		SP
 rtn		^I
@@ -1379,7 +1379,7 @@ tabmenu		^I
 uparwmenu	.ku
 uparwmenu	^P
 uparwmenu	^[ [ A
-uparwmenu ^# A
+ uparwmenu ^# A
 uparwmenu	^[ O A
 defm2down	M2DOWN		Hits return key
 

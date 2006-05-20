@@ -120,6 +120,9 @@ struct scrn {
 	unsigned char	*ce;		/* Clear to end of line */
 	int	cce;
 
+	int assume_256;		/* Assume terminal has 256 color mode, but use
+	                           regular mode for standard colors just in case */
+
 	/* Basic abilities */
 	int	scroll;		/* Set to use scrolling */
 	int	insdel;		/* Set to use insert/delete within line */

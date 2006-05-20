@@ -11,6 +11,11 @@ Fri May 19 13:29:11 EDT 2006
 
 	Add Ruby
 
+	Eliminate ^# from *rc files.   This is only used in Amiga, and it
+	screws up i18n.
+
+	Assume256 color now uses normal entry for colors less than t->Co.
+
 Tue May 16 01:31:16 EDT 2006
 
 	Get rid of last type punning warning.

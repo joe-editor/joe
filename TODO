@@ -1,18 +1,9 @@
 allow options after string and istring? -just note it for now.
-revisit <
-
-
-
-
 
 option for search & replace to continue on the next window
   also to next file in grep-find output.
 
-
-
 should force -Wall if compiler is gcc
-
-can not assume 256 colors unless we use ESC [ 30 m for low colors.
 
 Compiling:
 ----------
@@ -50,13 +41,10 @@ bugs:
     because joe and grep both are reading from tty.  this is not a bug,
     except there is no way to kill the grep (^D and ^C have been disabled).
 
-
-
 sh highlighter: $(   ) onle one level of parenthasis.
   inside of $( ) and ` ` should be parsed as commands.
 
 Makefile.in and Makefile.am need to be the same as Makefile.
-
 
 820497   reload files which have changes (for example after cvs update)
 
@@ -69,11 +57,6 @@ Makefile.in and Makefile.am need to be the same as Makefile.
  when we change from hex back to normal, position the cursor at a valid
  character.
 
-1443801  need better latex highlighter
-
-
-
-
 1399448  want gettext support
 
 1218708  ? for unknown characters is not informative (at least highlight the ?)
@@ -82,9 +65,6 @@ Makefile.in and Makefile.am need to be the same as Makefile.
 
 1304794  X at end of line is changed to space when character above 128 in utf-8
 
-
-
-1277344  ^# (for amiga) causes problems
 
 1221499  fix sysconf_joedir and sysconf_docdir
 
@@ -106,8 +86,6 @@ Makefile.in and Makefile.am need to be the same as Makefile.
 
 get rid of /bin/cat: mpxmk should just have a copy process and not run cat.
 
-should use low value [ xx m for colors even when 256 colors is selected.
-
 jump to last place in previous file
 
 It would be nice if paragraph formatter new which lines were comment lines. 
@@ -120,12 +98,9 @@ paragraph
 
 .joe_state grows without end
 
-subroutines for highlighter.
-
 work with cscope?  hit F1 to look up man entry for function?
 
 Garbage collect line attribute databases.
-
 
 We need a built-in joerc file: then joe will work on a boot disk.
 

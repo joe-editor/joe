@@ -163,19 +163,33 @@ int set_attr(SCRN *t, int c)
 
 	if ((t->attrib & FG_MASK) != (c & FG_MASK)) {
 		if (t->Sf) {
-			if (t->Co & (t->Co - 1))
-				texec(t->cap, t->Sf, 1, ((c & FG_VALUE) >> FG_SHIFT) % t->Co, 0, 0, 0);
-			else
-				texec(t->cap, t->Sf, 1, ((c & FG_VALUE) >> FG_SHIFT) & (t->Co - 1), 0, 0, 0);
+			int color = ((c & FG_VALUE) >> FG_SHIFT);
+			if (t->assume_256 && color >= t->Co) {
+				unsigned char bf[32];
+				joe_snprintf_1((char *)bf,sizeof(bf),"\033[38;5;%dm",color);
+				ttputs(bf);
+			} else {
+				if (t->Co & (t->Co - 1))
+					texec(t->cap, t->Sf, 1, color % t->Co, 0, 0, 0);
+				else
+					texec(t->cap, t->Sf, 1, color & (t->Co - 1), 0, 0, 0);
+			}
 		}
 	}
 
 	if ((t->attrib & BG_MASK) != (c & BG_MASK)) {
 		if (t->Sb) {
-			if (t->Co & (t->Co - 1))
-				texec(t->cap, t->Sb, 1, ((c & BG_VALUE) >> BG_SHIFT) % t->Co, 0, 0, 0);
-			else
-				texec(t->cap, t->Sb, 1, ((c & BG_VALUE) >> BG_SHIFT) & (t->Co - 1), 0, 0, 0);
+			int color = ((c & BG_VALUE) >> BG_SHIFT);
+			if (t->assume_256 && color >= t->Co) {
+				unsigned char bf[32];
+				joe_snprintf_1((char *)bf,sizeof(bf),"\033[48;5;%dm",color);
+				ttputs(bf);
+			} else {
+				if (t->Co & (t->Co - 1))
+					texec(t->cap, t->Sb, 1, color % t->Co, 0, 0, 0);
+				else
+					texec(t->cap, t->Sb, 1, color & (t->Co - 1), 0, 0, 0);
+			}
 		}
 	}
 
@@ -513,7 +527,7 @@ SCRN *nopen(CAP *cap)
       oops:
 
 
-	if (assume_color) {
+	if (assume_color || assume_256color) {
 		/* Install 8 color support if it looks like an ansi terminal (it has bold which begins with ESC [) */
 #ifndef TERMINFO
 		if (!t->Sf && t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
@@ -531,20 +545,26 @@ SCRN *nopen(CAP *cap)
 #endif
 	}
 
+	t->assume_256 = 0;
       	if (assume_256color && t->Co < 256) {
-      		t->Co = 256;
 		/* Force 256 color support */
 #ifndef TERMINFO
 		if (t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
+			t->assume_256 = 1;
+#ifdef junk
 			t->ut = 1;
 			t->Sf = US "\\E[38;5;%dm";
 			t->Sb = US "\\E[48;5;%dm";
+#endif
 		}
 #else
 		if (t->md && t->md[0]=='\033' && t->md[1]=='[') { 
+			t->assume_256 = 1;
+#ifdef junk
 			t->ut = 1;
 			t->Sf = US "\033[38;5;%p1%dm";
 			t->Sb = US "\033[48;5;%p1%dm";
+#endif
 		}
 #endif
 	}
