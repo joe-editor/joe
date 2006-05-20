@@ -1,5 +1,8 @@
 /*
  *	Fast block move/copy subroutines
+ *
+ *      These exist because memmove on older UNIXs was really slow.
+ *
  *	Copyright
  *		(C) 1992 Joseph H. Allen
  *

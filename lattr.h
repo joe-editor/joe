@@ -8,7 +8,7 @@
 
 struct lattr_db
   {
-  struct lattr_db *next;	/* Linked list of attribute databases */
+  struct lattr_db *next;	/* Linked list of attribute databases owned by a B */
   struct high_syntax *syn;	/* This database is for this syntax */
   B *b;				/* This database is for this buffer */
 
@@ -21,6 +21,7 @@ struct lattr_db
 
   long first_invalid;		/* Lines beginning with this are invalid */
   long invalid_window;		/* Lines beyond first_invalid+invalid_window might be valid */
+                                /* -1 means all lines are valid */
   };
 
 struct lattr_db *mk_lattr_db PARAMS((B *new_b, struct high_syntax *new_syn));
@@ -50,22 +51,12 @@ void lattr_check PARAMS((struct lattr_db *db, long size));
 
 void lattr_ins PARAMS((struct lattr_db *db,long line,long size));
   /* An insert occured, beginning on specified line.  'size' lines were inserted.
-        If this is the first insert, or insert is to same place as last time (either first_invalid==number of
-        lines we have or first_invalid==line+1):
-           Do the insert,
-             set first_invalid to line+1.
-        Otherwise:
-           Delete everything from min(first_invalid,line+1) to end.
+     Adjust invalid window to cover inserted area.
   */
 
 void lattr_del PARAMS((struct lattr_db *db,long line,long size));
   /* A deletion occured, beginning on specified line.  'size' lines were deleted.
-        If this is the first delete, or delete is to same place as last time (either first_invalid==number of
-        lines we have or first_invalid==line+1):
-           Do the delete,
-             set first_invalid to line+1.
-        Otherwise:
-           Delete everything from min(first_invalid,line+1) to end.
+     Adjust invalid window to cover deleted area.
   */
 
 HIGHLIGHT_STATE lattr_get PARAMS((struct lattr_db *db,struct high_syntax *y,P *p,long line));
