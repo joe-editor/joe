@@ -58,7 +58,7 @@
 
 :perl_maybe_done Idle
 	*		ident noeat
-	">"		idle1	return
+	">"		idle1	recolor=-2 return
 
 # prevent keywords
 
@@ -84,7 +84,7 @@
 
 :perl_maybe_done Idle
 	*		maybe_string noeat
-	">"		idle1	return
+	">"		idle1	recolor=-2 return
 
 :pod_start Idle
 	*		pod_start

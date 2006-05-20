@@ -124,11 +124,11 @@ done
 
 :idle_qmark Idle
 	*		idle
-	">"		idle return
+	">"		idle recolor=-2 return
 
 :idle_hash Idle
 	*		idle	noeat
-	">"		idle return
+	">"		idle recolor=-2 return
 
 :sh_comment Comment
 	*		sh_comment

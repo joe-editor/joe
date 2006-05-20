@@ -73,14 +73,18 @@
 	*			tag_name_first buffer noeat recolor=-1
 	"/"			tag_name_first buffer
 .ifdef mason
-	"&"			idle call=perl.perl(mason_block)
+	"&"			rtn_php call=perl.perl(mason_block)
 .endif
 	"!"			sgml_tag recolor=-2
 .ifdef php
-	"?%"			idle call=php.php()
+	"?%"			rtn_php call=php.php()
 .else
 	"?"			xml_pi recolor=-2
 .endif
+
+# this state allows php and perl to recolor the ?> %> or &> properly.
+:rtn_php TagEdge
+	*			idle noeat
 
 :tag_name_first Mystery
 	*			tag_idle noeat
@@ -88,8 +92,8 @@
 
 :tag_name TagName
 	*			tag_idle noeat strings
-	"script"		stag_idle
-	"style"			ytag_idle
+	"script"		stag_enter_idle
+	"style"			ytag_enter_idle
 done
 	"-A-Za-z0-9._:"		tag_name
 
@@ -122,6 +126,9 @@ done
 	*	tag_idle noeat
 
 # We're about to entry a script...
+
+:stag_enter_idle TagName
+	*	stag_idle noeat
 
 :stag_idle Background
 	*			smistake_tag recolor=-1
@@ -159,6 +166,9 @@ done
 	*	stag_idle noeat
 
 # We're about to entry a script...
+
+:ytag_enter_idle TagName
+	*	ytag_idle noeat
 
 :ytag_idle Background
 	*			ymistake_tag recolor=-1

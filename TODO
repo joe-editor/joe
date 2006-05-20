@@ -104,8 +104,6 @@ Makefile.in and Makefile.am need to be the same as Makefile.
 
 
 
-64-bits: look at int / char * casts in rc.c
-
 get rid of /bin/cat: mpxmk should just have a copy process and not run cat.
 
 should use low value [ xx m for colors even when 256 colors is selected.
