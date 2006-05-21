@@ -13,6 +13,7 @@ struct srchrec {
 	int	yn;		/* Did we replace? */
 	int	wrap_flag;	/* Did we wrap? */
 	long	addr;		/* Where we were */
+	B *b;			/* Buffer address is in */
 	long	last_repl;
 };
 
@@ -36,9 +37,12 @@ struct search {
 	long	addr;		/* Where to place cursor after failed restruct_to_block() test */
 	long	last_repl;	/* Address of last replacement (prevents infinite loops) */
 	int	block_restrict;	/* Search restricted to marked block */
+	int	all;		/* Set to continue in other windows */
+	B	*first;		/* Starting buffer */
+	B	*current;	/* Current buffer */
 };
 
-SRCH *mksrch PARAMS((unsigned char *pattern, unsigned char *replacement, int ignore, int backwards, int repeat, int replace, int rest));
+SRCH *mksrch PARAMS((unsigned char *pattern, unsigned char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all));
 void rmsrch PARAMS((SRCH *srch));
 
 int dopfnext PARAMS((BW *bw, SRCH *srch, int *notify));

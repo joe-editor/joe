@@ -378,11 +378,14 @@ static SRCH *setmark(SRCH *srch)
 	return srch;
 }
 
-SRCH *mksrch(unsigned char *pattern, unsigned char *replacement, int ignore, int backwards, int repeat, int replace, int rest)
+SRCH *mksrch(unsigned char *pattern, unsigned char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all)
 {
 	SRCH *srch = (SRCH *) joe_malloc(sizeof(SRCH));
 	int x;
 
+	srch->first = NULL;
+	srch->current = NULL;
+	srch->all = all;
 	srch->pattern = pattern;
 	srch->replacement = replacement;
 	srch->ignore = ignore;
@@ -553,6 +556,10 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 
 	for (x = 0; s[x]; ++x) {
 		switch (s[x]) {
+		case 'a':
+		case 'A':
+			srch->all = 1;
+			break;
 		case 'r':
 		case 'R':
 			srch->replace = 1;
@@ -620,9 +627,9 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	unsigned char *p;
 
 	if (icase)
-		p = US "case (S)ensitive (R)eplace (B)ackwards Bloc(K) NNN (^C to abort): ";
+		p = US "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): ";
 	else
-		p = US "(I)gnore (R)eplace (B)ackwards Bloc(K) NNN (^C to abort): ";
+		p = US "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): ";
 
 	vsrm(srch->pattern);
 	if (s[0] || !globalsrch || !pico)
@@ -692,7 +699,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 			prgetc(bw->cursor);
 		return urtn((BASE *)bw, -1);
 	}
-	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0);
+	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0, 0);
 	srch->addr = bw->cursor->byte;
 	srch->wrap_p = pdup(bw->cursor, US "dofirst");
 	srch->wrap_p->owner = &srch->wrap_p;
@@ -764,11 +771,11 @@ static int doreplace(BW *bw, SRCH *srch)
 static void visit(SRCH *srch, BW *bw, int yn)
 {
 	SRCHREC *r = (SRCHREC *) alitem(&fsr, sizeof(SRCHREC));
-
 	r->addr = bw->cursor->byte;
 	r->yn = yn;
 	r->wrap_flag = srch->wrap_flag;
 	r->last_repl = srch->last_repl;
+	r->b = bw->b;
 	enqueb(SRCHREC, link, &srch->recs, r);
 }
 
@@ -777,8 +784,15 @@ static void goback(SRCH *srch, BW *bw)
 	SRCHREC *r = srch->recs.link.prev;
 
 	if (r != &srch->recs) {
-		if (r->yn)
+		srch->current = r->b;
+		if (r->yn) {
 			uundo(bw);
+		}
+		if (r->b != bw->b) {
+			W *w = bw->parent;
+			get_buffer_in_window(bw, r->b);
+			bw = (BW *)w->object;
+		}
 		if (bw->cursor->byte != r->addr)
 			pgoto(bw->cursor, r->addr);
 		srch->wrap_flag = r->wrap_flag;
@@ -805,9 +819,10 @@ static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 		srch->rest = 1;
 		return dopfnext(bw, srch, notify);
 	} else if (c == 8 || c == 127 || c == 'b' || c == 'B') {
+		W *w = bw->parent;
 		goback(srch, bw);
-		goback(srch, bw);
-		return dopfnext(bw, srch, notify);
+		goback(srch, (BW *)w->object);
+		return dopfnext((BW *)w->object, srch, notify);
 	} else if (c != -1) {
 		if (notify)
 			*notify = 1;
@@ -872,6 +887,11 @@ static int fnext(BW *bw, SRCH *srch)
 {
 	P *sta;
 
+	if (!srch->first) {
+		srch->first = bw->b;
+		srch->current = bw->b;
+	}
+
 	next:
 	if (srch->repeat != -1) {
 		if (!srch->repeat)
@@ -884,6 +904,17 @@ static int fnext(BW *bw, SRCH *srch)
 		sta = searchb(bw, srch, bw->cursor);
 	else
 		sta = searchf(bw, srch, bw->cursor);
+	if (!sta && srch->all) {
+		B *b = bafter(srch->current);
+		if (b != srch->first) {
+			W *w = bw->parent;
+			srch->current = b;
+			get_buffer_in_window(bw, b);
+			bw = (BW *)w->object;
+			p_goto_bof(bw->cursor);
+			goto again;
+		}
+	}
 	if (!sta) {
 		srch->repeat = -1;
 		return 1;
@@ -919,6 +950,8 @@ static int fnext(BW *bw, SRCH *srch)
 
 int dopfnext(BW *bw, SRCH *srch, int *notify)
 {
+	W *w;
+	int fnr;
 	int orgmid = mid;	/* Original mid status */
 	int ret = 0;
 
@@ -927,7 +960,10 @@ int dopfnext(BW *bw, SRCH *srch, int *notify)
 		smode = 2;	/* We have started a search mode */
 	if (srch->replace)
 		visit(srch, bw, 0);
-again:	switch (fnext(bw, srch)) {
+again:	w = bw->parent;
+	fnr = fnext(bw, srch);
+	bw  = (BW *)w->object;
+	switch (fnr) {
 	case 0:
 		break;
 	case 1:
@@ -1087,6 +1123,6 @@ void load_srch(FILE *f)
 			parse_int(&p,&block_restrict);
 		}
 	}
-	globalsrch = mksrch(pattern,replacement,ignore,backwards,-1,replace,0);
+	globalsrch = mksrch(pattern,replacement,ignore,backwards,-1,replace,0,0);
 	globalsrch->block_restrict = block_restrict;
 }

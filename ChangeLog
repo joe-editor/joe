@@ -1,3 +1,11 @@
+Sat May 20 17:03:48 EDT 2006
+
+	Improve compile window
+
+	Jump to previous file cursor position.
+
+	'a' option for search & replace.
+
 Fri May 19 13:29:11 EDT 2006
 
 	Add REX.  Fix highlighter subroutine bugs.

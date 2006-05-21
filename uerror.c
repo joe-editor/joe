@@ -321,10 +321,10 @@ int ujump(BW *bw)
 		parseone(bw->b->o.charmap,s,&name,&line);
 		if (name && line != -1) {
 			ERROR *p = srcherr(bw, name, line);
-			unextw((BASE *)bw);
+			uprevw((BASE *)bw);
 			/* Check that we made it to a tw */
 			if (p)
-				rtn = jump_to_file_line(maint->curwin->object,name,p->line,p->msg);
+				rtn = jump_to_file_line(maint->curwin->object,name,p->line,NULL /* p->msg */);
 			else
 				rtn = jump_to_file_line(maint->curwin->object,name,line,NULL);
 			vsrm(name);
@@ -342,7 +342,7 @@ int unxterr(BW *bw)
 	}
 	errptr = errptr->link.next;
 	setline(errbuf, errptr->src);
-	return jump_to_file_line(bw,errptr->file,errptr->line,errptr->msg);
+	return jump_to_file_line(bw,errptr->file,errptr->line,NULL /* errptr->msg */);
 }
 
 int uprverr(BW *bw)
@@ -353,5 +353,5 @@ int uprverr(BW *bw)
 	}
 	errptr = errptr->link.prev;
 	setline(errbuf, errptr->src);
-	return jump_to_file_line(bw,errptr->file,errptr->line,errptr->msg);
+	return jump_to_file_line(bw,errptr->file,errptr->line,NULL /* errptr->msg */);
 }

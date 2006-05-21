@@ -119,6 +119,8 @@ CMD cmds[] = {
 	{US "math", TYPETW + TYPEPW, umath, NULL, 0, NULL},
 	{US "mode", TYPETW + TYPEPW + TYPEQW, umode, NULL, 0, NULL},
 	{US "msg", TYPETW + TYPEPW + TYPEQW + TYPEMENU, umsg, NULL, 0, NULL},
+	{US "mfit", TYPETW, umfit, NULL, 0, NULL},
+	{US "mwind", TYPETW, umwind, NULL, 0, NULL},
 	{US "name", TYPETW + TYPEPW, uname_joe, NULL, 0, NULL}, 
 	{US "nbuf", TYPETW, unbuf, NULL, 1, US "pbuf"},
 	{US "nedge", TYPETW + TYPEPW + EFIXXCOL, unedge, NULL, 1, US "pedge"}, 

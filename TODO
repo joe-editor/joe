@@ -1,20 +1,49 @@
-allow options after string and istring? -just note it for now.
+test:
 
-option for search & replace to continue on the next window
-  also to next file in grep-find output.
+  %x
 
-should force -Wall if compiler is gcc
+  guess map (make this an option?)
+
+=-=-=-=-=
+
+- Make window is not working as well as grep-find now.
+
+- We need regexp for error parsing.
+
+=-=-=-=-=
+
+- better grep-find (trigger in ^KE)
+
+- need current directory for grep-find.
+
+- search & replace on all files found with grep find:
+  maybe load all grep-find files?
+
+=-=-=-=-=
+
+- search: automatically use 'k' mode if there is a block selected?  Cursor
+  should jump to top of block when done?  Modes for this?
+
+- stop macro execution at ^KK?
+
+It would be nice if paragraph formatter knew which lines were comment lines. 
+Then it could format this properly:
+
+% comment
+% comment
+paragraph
+paragraph
 
 Compiling:
 ----------
-
-Key to jump back to messages list.
 
 Key to bring up help on word under cursor:
   like pop up window with man page, or google search
   for the function.
 
     man -P cat -S 2:3 printf
+
+work with cscope?  hit F1 to look up man entry for function?
 
 Tags file search should auto-run ctags if there is no tags file.
 It should update it if any files have changed...
@@ -27,15 +56,24 @@ gdb inteface?
   eval  (to look at variables)
   peek up stack frame
 
+We need a built-in joerc file: then joe will work on a boot disk.
 
-test:
-  %x
-  guess map (make this an option?)
+Show path to joerc file.
+
+syntax file errors should go to a pop-up error window.
+
+long prompts for qw.c (locking message) should spill onto multiple lines.
+
+
+
+
+allow options after string and istring? -just note it for now.
+
+should force -Wall if compiler is gcc
 
 bugs:
 
   grep ... | joe     missing lots sometime
-
 
   grep | joe hangs?
     because joe and grep both are reading from tty.  this is not a bug,
@@ -83,32 +121,13 @@ Makefile.in and Makefile.am need to be the same as Makefile.
 1413863  sigwinch breaks tcsetsw which messes up keyboard?  I haven't seen this
 
 
-
 get rid of /bin/cat: mpxmk should just have a copy process and not run cat.
-
-jump to last place in previous file
-
-It would be nice if paragraph formatter new which lines were comment lines. 
-Then it could format this properly:
-
-% comment
-% comment
-paragraph
-paragraph
 
 .joe_state grows without end
 
-work with cscope?  hit F1 to look up man entry for function?
-
 Garbage collect line attribute databases.
 
-We need a built-in joerc file: then joe will work on a boot disk.
-
-Show path to joerc file.
-
 Parse xterm version number.
-
-long prompts for qw.c (locking message) should spill onto multiple lines.
 
 we should store location of menu. menu_above could change while menu is
 open (but menu could be deleted, so this raises other problems).
@@ -136,11 +155,9 @@ Short (infinite) list for 3.4:
 
 
 - test i18n in cygwin
-- better grep-find (trigger in ^KE)
 - reformat/reindent function on ^KJ
 - insert last word (last word typed/copied/etc.).
 - orthogonal jump
-- regex for compiler
 - safer hex edit mode
 - win32? DOS?
 - man page
@@ -149,7 +166,6 @@ Short (infinite) list for 3.4:
 - dynamic spell checking with highlighter- there should be a way
 - smart-end key
 
-- need current directory for grep-find.
 
 Mouse issues:
 
@@ -190,8 +206,6 @@ Dangerous situations:
 - name keyboard macro and append it to .joerc file
 
 - - - - - - - -
-
-- regexp for compiler parsing
 
 - - - - - - - -
 
@@ -261,11 +275,6 @@ can we highlight backup files? files ending in .in?
     There are some A-Zs in tomatch (should use i18n).
 
 - - - - - - - -
-
-- search: automatically use 'k' mode if there is a block selected?  Cursor should
-  jump to top of block when done?  Modes for this?
-
-- stop macro execution at ^KK?
 
 - - - - - - - -
   exemac for first change: it should be run with cursor in window.

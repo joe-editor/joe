@@ -133,6 +133,12 @@ static void pfree(P *p)
 static B bufs = { {&bufs, &bufs} };
 static B frebufs = { {&frebufs, &frebufs} };
 
+B *bafter(B *b)
+{
+	for (b = b->link.next; b->internal || b->scratch || b == &bufs; b = b->link.next);
+	return b;
+}
+
 int udebug_joe(BW *bw)
 {
 	unsigned char buf[1024];
@@ -2414,7 +2420,7 @@ B *borphan(void)
 	B *b;
 
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->orphan) {
+		if (b->orphan && !b->scratch) {
 			b->orphan = 0;
 			return b;
 		}

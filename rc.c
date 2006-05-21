@@ -1257,6 +1257,7 @@ void save_state()
 	fprintf(f,"cmd\n"); save_hist(f,cmdhist);
 	fprintf(f,"math\n"); save_hist(f,mathhist);
 	fprintf(f,"yank\n"); save_yank(f);
+	fprintf(f,"file_pos\n"); save_file_pos(f);
 	fclose(f);
 }
 
@@ -1303,6 +1304,8 @@ void load_state()
 				load_hist(f,&mathhist);
 			else if(!zcmp(buf,US "yank\n"))
 				load_yank(f);
+			else if (!zcmp(buf,US "file_pos\n"))
+				load_file_pos(f);
 			else { /* Unknown... skip until next done */
 				while(fgets((char *)buf,1023,f) && zcmp(buf,US "done\n"));
 			}

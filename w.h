@@ -253,6 +253,8 @@ int uexpld PARAMS((BASE *bw));			/* Explode current window or show all windows *
 int ushrnk PARAMS((BASE *bw));			/* Shrink current window */
 int unextw PARAMS((BASE *bw));			/* Goto next window */
 int uprevw PARAMS((BASE *bw));			/* Goto previous window */
+int umwind PARAMS((BW *bw));			/* Go to message window */
+int umfit PARAMS((BW *bw));			/* Fit two windows on screen */
 
 void scrdel PARAMS((B *b, long int l, long int n, int flg));
 void scrins PARAMS((B *b, long int l, long int n, int flg));

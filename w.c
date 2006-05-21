@@ -801,3 +801,74 @@ int uretyp(BASE *bw)
 	nredraw(bw->parent->t->t);
 	return 0;
 }
+
+/* Get message window on screen */
+
+W *find_window(Screen *t, B *b)
+{
+	W *w = t->topwin;
+	do {
+		if (w->watom == &watomtw && ((BW *)w->object)->b == b)
+			return w;
+		w = w->link.next;
+	} while(w != t->topwin);
+	return 0;
+}
+
+int umwind(BW *bw)
+{
+	W *msgw;
+	if (!errbuf) {
+		msgnw(bw->parent, US "There is no message buffer");
+		return -1;
+	}
+
+	/* Find message window */
+	msgw = find_window(bw->parent->t, errbuf);
+
+	if (msgw) {
+		/* The window exists */
+		bw->parent->t->curwin = msgw;
+		wshowone(msgw);
+		return 0;
+	} else {
+		/* Make it the current window */
+		msgw = bw->parent;
+		get_buffer_in_window(bw, errbuf);
+		wshowone(msgw);
+		return 0;
+	}
+	return -1;
+}
+
+/* Fit previous window and current window on screen.  If there is no previous window,
+ * split the current window to create one. */
+
+int umfit(BW *bw)
+{
+	W *p;
+	W *w = bw->parent->main;
+	Screen *t = w->t;
+	wshowone(w);
+	p = findtopw(w)->link.prev->main;
+	if (p == w) {
+		/* We have to split */
+		usplitw(bw);
+	}
+	w = t->curwin;
+	p = findtopw(w)->link.prev->main;
+	if (p == w) {
+		return -1;
+	}
+	/* Request size */
+	if (p->t->h - 6 < 3)
+		return -1;
+	seth(p, p->t->h - 6);
+	t->topwin = p;
+	t->curwin = p;
+	/* Fit them on the screen */
+	wfit(t);
+	t->curwin = w;
+	wfit(t);
+	return 0;
+}

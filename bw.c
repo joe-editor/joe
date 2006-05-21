@@ -979,7 +979,14 @@ void bwgen(BW *w, int linums)
 
 	fromline = toline = from = to = 0;
 
-	if (markv(0) && markk->b == w->b)
+	if (w->b == errbuf) {
+		P *tmp = pdup(w->cursor, US "bwgen");
+		p_goto_bol(tmp);
+		from = tmp->byte;
+		pnextl(tmp);
+		to = tmp->byte;
+		prm(tmp);
+	} else if (markv(0) && markk->b == w->b)
 		if (square) {
 			from = markb->xcol;
 			to = markk->xcol;
@@ -1134,8 +1141,88 @@ BW *bwmk(W *window, B *b, int prompt)
 	return w;
 }
 
+/* Database of last file positions */
+
+static struct file_pos {
+	LINK(struct file_pos) link;
+	unsigned char *name;
+	long line;
+} file_pos = { { &file_pos, &file_pos } };
+
+static int file_pos_count;
+
+struct file_pos *find_file_pos(unsigned char *name)
+{
+	struct file_pos *p;
+	for (p = file_pos.link.next; p != &file_pos; p = p->link.next)
+		if (!zcmp(p->name, name)) {
+			promote(struct file_pos,link,&file_pos,p);
+			return p;
+		}
+	p = (struct file_pos *)malloc(sizeof(struct file_pos));
+	p->name = zdup(name);
+	p->line = 0;
+	enquef(struct file_pos,link,&file_pos,p);
+	if (++file_pos_count == 20) {
+		free(deque_f(struct file_pos,link,file_pos.link.prev));
+		--file_pos_count;
+	}
+	return p;
+}
+
+long get_file_pos(unsigned char *name)
+{
+	if (name) {
+		struct file_pos *p = find_file_pos(name);
+		return p->line;
+	} else {
+		return 0;
+	}
+}
+
+void set_file_pos(unsigned char *name, long pos)
+{
+	if (name) {
+		struct file_pos *p = find_file_pos(name);
+		p->line = pos;
+	}
+}
+
+void save_file_pos(FILE *f)
+{
+	struct file_pos *p;
+	for (p = file_pos.link.next; p != &file_pos; p = p->link.next) {
+		fprintf(f,"	%ld ",p->line);
+		emit_string(f,p->name,zlen(p->name));
+		fprintf(f,"\n");
+	}
+	fprintf(f,"done\n");
+}
+
+void load_file_pos(FILE *f)
+{
+	unsigned char buf[1024];
+	while (fgets((char *)buf,sizeof(buf)-1,f) && zcmp(buf,US "done\n")) {
+		unsigned char *p = buf;
+		long pos;
+		unsigned char name[1024];
+		parse_ws(&p,'#');
+		if (!parse_long(&p, &pos)) {
+			parse_ws(&p, '#');
+			if (parse_string(&p, name, sizeof(name)) > 0) {
+				set_file_pos(name, pos);
+			}
+		}
+	}
+}
+
 void bwrm(BW *w)
 {
+	if (w->b == errbuf && w->b->count == 1) {
+		/* Do not lose message buffer */
+		orphit(w);
+	}
+	set_file_pos(w->b->name,w->cursor->line);
 	prm(w->top);
 	prm(w->cursor);
 	brm(w->b);

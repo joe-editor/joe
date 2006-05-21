@@ -520,6 +520,23 @@ int parse_int(unsigned char **pp, int *buf)
 		return -1;
 }
 
+/* Parse a long */
+
+int parse_long(unsigned char **pp, long *buf)
+{
+	unsigned char *p = *pp;
+	if ((*p>='0' && *p<='9') || *p=='-') {
+		*buf = atol((char *)p);
+		if(*p=='-')
+			++p;
+		while(*p>='0' && *p<='9')
+			++p;
+		*pp = p;
+		return 0;
+	} else
+		return -1;
+}
+
 /* Parse a string of the form "xxxxx" into a fixed-length buffer.  The
  * address of the buffer is 'buf'.  The length of this buffer is 'len'.  A
  * terminating NUL is added to the parsed string.  If the string is larger

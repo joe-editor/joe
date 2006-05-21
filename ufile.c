@@ -767,17 +767,12 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 	return ret;
 }
 
-/* Switch to next buffer in window */
+/* Switch to a particular buffer */
 
-int unbuf(BW *bw)
+int get_buffer_in_window(BW *bw, B *b)
 {
 	void *object = bw->object;
 	W *w = bw->parent;
-	B *b;
-	b = bnext();
-	if (b == bw->b) {
-		b = bnext();
-	}
 	if (b == bw->b) {
 		return 0;
 		/* return -1; this helps with querysave (no error when only one buffer) */
@@ -797,32 +792,26 @@ int unbuf(BW *bw)
 	return 0;
 }
 
+/* Switch to next buffer in window */
+
+int unbuf(BW *bw)
+{
+	B *b;
+	b = bnext();
+	if (b == bw->b) {
+		b = bnext();
+	}
+	return get_buffer_in_window(bw,b);
+}
+
 int upbuf(BW *bw)
 {
-	void *object = bw->object;
-	W *w = bw->parent;
 	B *b;
 	b = bprev();
 	if (b == bw->b) {
 		b = bprev();
 	}
-	if (b == bw->b) {
-		return 0;
-		/* return -1; */
-	}
-	if (!b->orphan) {
-		++b->count;
-	} else {
-		b->orphan = 0;
-	}
-	if (bw->b->count == 1) {
-		orphit(bw);
-	}
-	bwrm(bw);
-	w->object = (void *) (bw = bwmk(w, b, 0));
-	wredraw(bw->parent);
-	bw->object = object;
-	return 0;
+	return get_buffer_in_window(bw, b);
 }
 
 int uinsf(BW *bw)

@@ -268,6 +268,7 @@ unsigned char *brvs PARAMS((P *p, int size));
 unsigned char *brzs PARAMS((P *p, unsigned char *buf, int size));
 
 B *bnext PARAMS((void));
+B *bafter PARAMS((B *b));
 B *bprev PARAMS((void));
 
 extern int berror;	/* bload error status code (use msgs[-berror] to get message) */

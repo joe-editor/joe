@@ -92,7 +92,7 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 							vsrm(s);
 							vsrm(t);
 							fclose(f);
-							return dopfnext(bw, mksrch(vsncpy(NULL, 0, sz(buf + y)), NULL, 0, 0, -1, 0, 0), NULL);
+							return dopfnext(bw, mksrch(vsncpy(NULL, 0, sz(buf + y)), NULL, 0, 0, -1, 0, 0, 0), NULL);
 						}
 					}
 				}

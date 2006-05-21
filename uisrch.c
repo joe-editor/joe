@@ -73,7 +73,7 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 	i->start = bw->cursor->byte;
 
 	if (!globalsrch)
-		srch = mksrch(NULL,NULL,icase,isrch->dir,-1,0,0);
+		srch = mksrch(NULL,NULL,icase,isrch->dir,-1,0,0,0);
 	else {
 		srch = globalsrch;
 		globalsrch = 0;
@@ -146,7 +146,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 			i->what = 0;
 
 			if (!globalsrch)
-				srch = mksrch(NULL,NULL,icase,isrch->dir,-1,0,0);
+				srch = mksrch(NULL,NULL,icase,isrch->dir,-1,0,0,0);
 			else {
 				srch = globalsrch;
 				globalsrch = 0;

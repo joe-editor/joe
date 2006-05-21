@@ -40,7 +40,7 @@ static void disppw(BW *bw, int flg)
 	}
 
 	/* Scroll buffer and position prompt */
-	if (pw->promptlen > w->w / 2 + w->w / 4) {
+	if (pw->promptlen > w->w - 5) {
 		pw->promptofst = pw->promptlen - w->w / 2;
 		if (piscol(bw->cursor) < w->w - (pw->promptlen - pw->promptofst)) {
 			bw->offset = 0;

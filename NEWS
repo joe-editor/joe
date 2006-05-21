@@ -1,5 +1,12 @@
+- New option for search and replace: 'A' for all buffers.  Search & replace
+  will occur on all files loaded in JOE.
+
+- JOE now restores cursor position in previously visited files.
+
+- Build and grep window are a little saner.
+
 - Syntax highlighter definition files (.jsf files) can now have subroutines. 
-  This eases highlighter reuse: for example, Mason and PHP can share an HTML
+  This eases highlighter reuse: for example, Mason and PHP can share the HTML
   highlighter.
 
 - I've changed the way JOE handles '-' and redirected input:
@@ -18,7 +25,7 @@
 				"hi" ends up in first buffer.  When you
 				save, mail is sent.
 
-- Many bugs have been fixed.  I tried to address every issue in the bug
+- Many bugs have been fixed.  I've tried to address every issue in the bug
   tracker.  Hopefully I didn't create too many new ones :-)
 
 - You can now define which characters can indent paragraphs.  Also the

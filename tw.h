@@ -36,4 +36,6 @@ extern int staupd;
 extern int keepup;
 extern int bg_stalin;
 
+extern WATOM watomtw;
+
 #endif

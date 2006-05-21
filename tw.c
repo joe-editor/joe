@@ -474,7 +474,7 @@ static void deltw(BW *bw, B *b, long int l, long int n, int flg)
 		bwdel(bw, l, n, flg);
 }
 
-static WATOM watomtw = {
+WATOM watomtw = {
 	US "main",
 	disptw,
 	bwfllw,
@@ -670,9 +670,14 @@ void setline(B *b, long int line)
 					nscrlup(w->t->t, bw->y, bw->y + bw->h, (int) (bw->top->line - oline));
 				else if (w->y >= 0 && bw->top->line < oline && oline - bw->top->line < bw->h)
 					nscrldn(w->t->t, bw->y, bw->y + bw->h, (int) (oline - bw->top->line));
+				msetI(bw->t->t->updtab + bw->y, 1, bw->h);
 			}
 		}
 	} while ((w = w->link.next) != maint->curwin);
+	/* In case error buffer was orphaned */
+	if (errbuf == b && b->oldcur) {
+		pline(b->oldcur, line);
+	}
 }
 
 /* Create a text window.  It becomes the last window on the screen */

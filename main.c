@@ -399,6 +399,8 @@ int main(int argc, char **real_argv, char **envv)
 				/* Hmm... window might not exist any more... depends on what macro does... */
 				if (lnum > 0)
 					pline(bw->cursor, lnum - 1);
+				else
+					pline(bw->cursor, get_file_pos(bw->b->name));
 				/* Go back to first window so windows are in same order as command line  */
 				if (opened)
 					wnext(maint);

@@ -31,6 +31,7 @@ int okrepl PARAMS((BW *bw));
 int doswitch PARAMS((BW *bw, unsigned char *s, void *obj, int *notify));
 int uquerysave PARAMS((BW *bw));
 int ukilljoe PARAMS((BW *bw));
+int get_buffer_in_window PARAMS((BW *bw, B *b));
 
 extern B *filehist; /* History of file names */
 
