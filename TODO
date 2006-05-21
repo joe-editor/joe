@@ -16,8 +16,7 @@ test:
 
 - need current directory for grep-find.
 
-- search & replace on all files found with grep find:
-  maybe load all grep-find files?
+- grep-find should also work for output from ls and find.
 
 =-=-=-=-=
 

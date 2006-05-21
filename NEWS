@@ -1,9 +1,29 @@
-- New option for search and replace: 'A' for all buffers.  Search & replace
-  will occur on all files loaded in JOE.
+
+- Multi-file search and replace:
+
+    There are two new search and replace options:
+
+      'a': the search covers all loaded buffers.  So you can say:
+
+            joe *.c
+            and then ^KF foo <return>
+                     ra <return>
+                     bar <return>
+            to replace all instances of foo in all .c files.
+
+      'e': the search covers all files in the error list.
+
+            You can use grep-find to create a list of files:
+
+            ESC g
+             grep -n foo f*.c
+            ^KF foo <return>
+            re
+            bar <return>
 
 - JOE now restores cursor position in previously visited files.
 
-- Build and grep window are a little saner.
+- Build and grep window work more smoothly.
 
 - Syntax highlighter definition files (.jsf files) can now have subroutines. 
   This eases highlighter reuse: for example, Mason and PHP can share the HTML

@@ -133,6 +133,9 @@ static void pfree(P *p)
 static B bufs = { {&bufs, &bufs} };
 static B frebufs = { {&frebufs, &frebufs} };
 
+/* Find next buffer in list: for multi-file search and replace */
+/* This does not bump reference count on found buffer */
+
 B *bafter(B *b)
 {
 	for (b = b->link.next; b->internal || b->scratch || b == &bufs; b = b->link.next);
@@ -2333,14 +2336,14 @@ B *bfind(unsigned char *s)
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
 		if (b->name && !zcmp(s, b->name)) {
 			if (!b->orphan)
-				++b->count;
+				++b->count; /* Assumes caller is going to put this in a window! */
 			else
 				b->orphan = 0;
 			berror = 0;
 			b->internal = 0;
 			return b;
 		}
-	b = bload(s);
+	b = bload(s); /* Returns count==1 */
 	b->internal = 0;
 	return b;
 }
@@ -2414,7 +2417,7 @@ unsigned char **getbufs(void)
 	return s;
 }
 
-/* Find an orphaned buffer */
+/* Find an orphaned buffer: b->count of returned buffer should be 1. */
 B *borphan(void)
 {
 	B *b;

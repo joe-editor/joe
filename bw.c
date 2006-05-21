@@ -1273,9 +1273,12 @@ int ucrawll(BW *bw)
 	return 0;
 }
 
+/* If we are about to call bwrm, and b->count is 1, and orphan mode
+ * is set, call this. */
+
 void orphit(BW *bw)
 {
-	++bw->b->count;
+	++bw->b->count; /* Assumes bwrm() is abour to be called */
 	bw->b->orphan = 1;
 	pdupown(bw->cursor, &bw->b->oldcur, US "orphit");
 	pdupown(bw->top, &bw->b->oldtop, US "orphit");

@@ -15,13 +15,46 @@ struct error {
 	LINK(ERROR) link;	/* Linked list of errors */
 	long line;		/* Target line number */
 	long org;		/* Original target line number */
-	unsigned char *file;		/* Target file name */
+	unsigned char *file;	/* Target file name */
 	long src;		/* Error-file line number */
-	unsigned char *msg;		/* The message */
+	unsigned char *msg;	/* The message */
 } errors = { { &errors, &errors} };
 ERROR *errptr = &errors;	/* Current error row */
 
 B *errbuf = NULL;		/* Buffer with error messages */
+
+/* Function which allows stepping through all error buffers,
+   for multi-file search and replace.  Give it a buffer.  It finds next
+   buffer in error list.  Look at 'berror' for error information. */
+
+/* This is made to work like bafter: it does not increment refcount of buffer */
+
+B *beafter(B *b)
+{
+	struct error *e;
+	int er;
+	for (e = errors.link.next; e != &errors; e = e->link.next)
+		if (!zcmp(b->name, e->file))
+			break;
+	if (e == &errors) {
+		/* Given buffer is not in list?  Return first buffer in list. */
+		e = errors.link.next;
+	}
+	while (e != &errors && !zcmp(b->name, e->file))
+		e = e->link.next;
+	berror = 0;
+	if (e != &errors) {
+		B *b = bfind(e->file);
+		/* bfind bumps refcount, so we have to unbump it */
+		if (b->count == 1)
+			b->orphan = 1; /* Oops */
+		else
+			--b->count;
+		er = berror;
+		return b;
+	}
+	return 0;
+}
 
 /* Insert and delete notices */
 
@@ -153,6 +186,10 @@ static void parseone(struct charmap *map,unsigned char *s,unsigned char **rtn_na
 	/* Look for ':' */
 	flg = 0;
 	while (s[y]) {
+	/* Allow : anywhere on line: works for MIPS C compiler */
+/*
+	for (y = 0; s[y];)
+*/
 		if (s[y]==':') {
 			flg = 1;
 			break;

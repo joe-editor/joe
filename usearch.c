@@ -560,6 +560,10 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 		case 'A':
 			srch->all = 1;
 			break;
+		case 'e':
+		case 'E':
+			srch->all = 2;
+			break;
 		case 'r':
 		case 'R':
 			srch->replace = 1;
@@ -905,14 +909,23 @@ static int fnext(BW *bw, SRCH *srch)
 	else
 		sta = searchf(bw, srch, bw->cursor);
 	if (!sta && srch->all) {
-		B *b = bafter(srch->current);
-		if (b != srch->first) {
+		B *b;
+		if (srch->all == 2)
+			b = beafter(srch->current);
+		else {
+			berror = 0;
+			b = bafter(srch->current);
+		}
+		if (b && b != srch->first && !berror) {
 			W *w = bw->parent;
 			srch->current = b;
+			/* this bumps reference count of b */
 			get_buffer_in_window(bw, b);
 			bw = (BW *)w->object;
 			p_goto_bof(bw->cursor);
 			goto again;
+		} else if (berror) {
+			msgnw(bw->parent, msgs[-berror]);
 		}
 	}
 	if (!sta) {

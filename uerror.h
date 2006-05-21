@@ -17,7 +17,7 @@ void inserr PARAMS((unsigned char *name, long int where, long int n, int bol));
 void delerr PARAMS((unsigned char *name, long int where, long int n));
 void abrerr PARAMS((unsigned char *name));
 void saverr PARAMS((unsigned char *name));
-
+B *beafter PARAMS((B *));
 extern B *errbuf; /* Buffer which has error messages */
 
 #endif
