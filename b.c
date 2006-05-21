@@ -246,6 +246,7 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->pid = 0;
 	b->out = -1;
 	b->db = 0;
+	b->parseone = 0;
 	enquef(B, link, &bufs, b);
 	pcoalesce(b->bof);
 	pcoalesce(b->eof);

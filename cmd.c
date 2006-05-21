@@ -168,6 +168,7 @@ CMD cmds[] = {
 	{US "select", TYPETW + TYPEPW, uselect, NULL, 0, NULL},
 	{US "setmark", TYPETW + TYPEPW, usetmark, NULL, 0, NULL},
 	{US "shell", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ushell, NULL, 0, NULL},
+	{US "showerr", TYPETW + TYPEPW, ucurrent_msg, NULL, 0, NULL},
 	{US "shrinkw", TYPETW, ushrnk, NULL, 1, US "groww"},
 	{US "splitw", TYPETW, usplitw, NULL, 0, NULL},
 	{US "stat", TYPETW + TYPEPW, ustat, NULL, 0, NULL},

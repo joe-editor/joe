@@ -16,8 +16,6 @@ test:
 
 - need current directory for grep-find.
 
-- grep-find should also work for output from ls and find.
-
 =-=-=-=-=
 
 - search: automatically use 'k' mode if there is a block selected?  Cursor

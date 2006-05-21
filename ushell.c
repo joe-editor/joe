@@ -96,7 +96,7 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 		varm(s);
 		return -1;
 	}
-	p_goto_eof(bw->cursor);
+	/* p_goto_eof(bw->cursor); */
 
 	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only))) {
 		varm(s);
@@ -206,6 +206,8 @@ B *grephist = NULL;
 
 int ugrep(BW *bw)
 {
+	/* Set parser to grep */
+	bw->b->parseone = parseone_grep;
 	if (grephist) {
 		if ((bw=wmkpw(bw->parent, US "Grep command: ", &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
 			uuparw(bw);

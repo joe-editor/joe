@@ -204,7 +204,44 @@ static void parseone(struct charmap *map,unsigned char *s,unsigned char **rtn_na
 	*rtn_line = line;
 }
 
-static int parseit(struct charmap *map,unsigned char *s, long int row)
+/* Parser for file name lists from grep, find and ls.
+ *
+ * filename
+ * filename:*
+ * filename:line-number:*
+ */
+
+void parseone_grep(struct charmap *map,unsigned char *s,unsigned char **rtn_name,long *rtn_line)
+{
+	int y;
+	unsigned char *name = NULL;
+	long line = -1;
+
+	/* Skip to first : or end of line */
+	for (y = 0;s[y] && s[y] != ':';++y);
+	if (y) {
+		/* This should be the file name */
+		name = vsncpy(NULL,0,s,y);
+		line = 0;
+		if (s[y] == ':') {
+			/* Maybe there's a line number */
+			++y;
+			while (s[y] >= '0' && s[y] <= '9')
+				line = line * 10 + (s[y++] - '0');
+			--line;
+			if (line < 0 || s[y] != ':') {
+				/* Line number is only valid if there's a second : */
+				line = 0;
+			}
+		}
+	}
+
+	*rtn_name = name;
+	*rtn_line = line;
+}
+
+static int parseit(struct charmap *map,unsigned char *s, long int row,
+  void (*parseone)(struct charmap *map, unsigned char *s, unsigned char **rtn_name, long *rtn_line))
 {
 	unsigned char *name = NULL;
 	long line = -1;
@@ -245,7 +282,7 @@ static long parserr(B *b)
 		p_goto_eol(p);
 		s = brvs(q, (int) (p->byte - q->byte));
 		if (s) {
-			nerrs += parseit(b->o.charmap, s, q->line);
+			nerrs += parseit(b->o.charmap, s, q->line, (b->parseone ? b->parseone : parseone));
 			vsrm(s);
 		}
 	} while (pgetc(p) != NO_MORE_DATA);
@@ -327,6 +364,19 @@ int jump_to_file_line(BW *bw,unsigned char *file,int line,unsigned char *msg)
 	return 0;
 }
 
+/* Show current message */
+
+int ucurrent_msg(BW *bw)
+{
+	if (errptr != &errors) {
+		msgnw(bw->parent, errptr->msg);
+		return 0;
+	} else {
+		msgnw(bw->parent, US "No messages");
+		return -1;
+	}
+}
+
 /* Find line in error database: return pointer to message */
 
 ERROR *srcherr(BW *bw,unsigned char *file,long line)
@@ -355,7 +405,10 @@ int ujump(BW *bw)
 	if (s) {
 		unsigned char *name = NULL;
 		long line = -1;
-		parseone(bw->b->o.charmap,s,&name,&line);
+		if (bw->b->parseone)
+			bw->b->parseone(bw->b->o.charmap,s,&name,&line);
+		else
+			parseone(bw->b->o.charmap,s,&name,&line);
 		if (name && line != -1) {
 			ERROR *p = srcherr(bw, name, line);
 			uprevw((BASE *)bw);

@@ -120,6 +120,9 @@ struct buffer {
 	pid_t	pid;		/* Process id */
 	int	out;		/* fd to write to process */
 	struct lattr_db *db;	/* Linked list of line attribute databases */
+	void (*parseone)(struct charmap *map,unsigned char *s,unsigned char **rtn_name,
+	                 long *rtn_line);
+	                        /* Error parser for this buffer */
 };
 
 /* 31744 */

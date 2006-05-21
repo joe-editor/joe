@@ -19,5 +19,7 @@ void abrerr PARAMS((unsigned char *name));
 void saverr PARAMS((unsigned char *name));
 B *beafter PARAMS((B *));
 extern B *errbuf; /* Buffer which has error messages */
+void parseone_grep PARAMS((struct charmap *map, unsigned char *s, unsigned char **rtn_name, long *rtn_line));
+int ucurrent_msg PARAMS((BW *bw));
 
 #endif
