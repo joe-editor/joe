@@ -3,7 +3,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.joerc
-	2 - @JOERC@/joerc
+	2 - /home/Joe/etc/joe/joerc
 
  This file can include other files by placing the following include command
  in the first column:
@@ -1057,8 +1057,8 @@
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,                        \i
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
 \i \i \|\i \i
-\i \i  default joerc file is here @JOERC@/joerc \|\i \i
-\i \i  additional documentation can be found here @JOERC@/doc \|\i \i
+\i \i  default joerc file is here /home/Joe/etc/joe/joerc \|\i \i
+\i \i  additional documentation can be found here /home/Joe/etc/joe/doc \|\i \i
 }
 
  FOURTH SECTION: Key bindings:
@@ -1194,8 +1194,8 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 :def aspellfile filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell -x -c $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP",rtn,retype
 :def aspellword psh,nextword,markk,prevword,markb,filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell -x -c $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\012';/bin/rm $SPLTMP",rtn,retype,nextword
 
-@SPELL@file	^[ l
-@SPELL@word	^[ n
+aspellfile	^[ l
+aspellword	^[ n
 
  Compile
 
@@ -1210,6 +1210,11 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
  Here we guess some common key sequences which either do not have termcap
  sequences or which are frequently wrong.  Note that if the termcap entry is
  correct, it will override these later on.
+
+ Man page
+
+:def man scratch,"* Man Page *",rtn,bof,markb,eof," ",markk,blkdel," ",ltarw,run,"man -P cat -S 2:3 "
+
 
 paste			^[ ] 5 2 ;		Bracketed paste
 
