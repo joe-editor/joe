@@ -278,7 +278,7 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 			break;
 	}
 	if (srch->allow_wrap && !srch->wrap_flag && srch->wrap_p) {
-		msgnw(bw->parent, US "Wrapped");
+		msgnw(bw->parent, joe_gettext(_("Wrapped")));
 		srch->wrap_flag = 1;
 		p_goto_bof(start);
 		goto wrapped;
@@ -347,7 +347,7 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 	}
 
 	if (srch->allow_wrap && !srch->wrap_flag && srch->wrap_p) {
-		msgnw(bw->parent, US "Wrapped");
+		msgnw(bw->parent, joe_gettext(_("Wrapped")));
 		srch->wrap_flag = 1;
 		p_goto_eof(start);
 		goto wrapped;
@@ -611,12 +611,12 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	vsrm(s);
 	if (srch->replace) {
 		/* if (pico && globalsrch && globalsrch->replacement) {
-			joe_snprintf_1((char *)bf1,30,"%s",globalsrch->replacement);
+			joe_snprintf_1(bf1,30,"%s",globalsrch->replacement);
 			if (zlen(globalsrch->replacement)>29)
 				zcat(bf1,US "$");
-			joe_snprintf_1((char *)buf,sizeof(buf),"Replace with (^C to abort) [%s]: ",bf1);
+			joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Replace with (^C to abort) [%s]: ")),bf1);
 		} else */
-			zcpy(buf, US "Replace with (^C to abort): ");
+			zcpy(buf, joe_gettext(_("Replace with (^C to abort): ")));
 		if (wmkpw(bw->parent, buf, &replhist, set_replace, srchstr, pfabort, srch_cmplt, srch, notify, bw->b->o.charmap, 0))
 			return 0;
 		else
@@ -631,9 +631,9 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	unsigned char *p;
 
 	if (icase)
-		p = US "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): ";
+		p = joe_gettext(_("case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
 	else
-		p = US "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): ";
+		p = joe_gettext(_("(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
 
 	vsrm(srch->pattern);
 	if (s[0] || !globalsrch || !pico)
@@ -652,7 +652,7 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 		if (srch->backwards)
 			binsc(pbw->cursor, 'b');
 		if (srch->repeat >= 0)
-			joe_snprintf_1((char *)buf, sizeof(buf), "%d", srch->repeat), binss(pbw->cursor, buf);
+			joe_snprintf_1(buf, sizeof(buf), "%d", srch->repeat), binss(pbw->cursor, buf);
 		pset(pbw->cursor, pbw->b->eof);
 		pbw->cursor->xcol = piscol(pbw->cursor);
 		srch->ignore = 0;
@@ -709,9 +709,9 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 	srch->wrap_p->owner = &srch->wrap_p;
 	if (pico && globalsrch && globalsrch->pattern) {
 		unesc_genfmt(bf1, globalsrch->pattern, 30);
-		joe_snprintf_1((char *)buf,sizeof(buf),"Find (^C to abort) [%s]: ",bf1);
+		joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Find (^C to abort) [%s]: ")),bf1);
 	} else
-		zcpy(buf, US "Find (^C to abort): ");
+		zcpy(buf, joe_gettext(_("Find (^C to abort): ")));
 	if ((pbw=wmkpw(bw->parent, buf, &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap, 0))) {
 		if (hint) {
 			binss(pbw->cursor, hint);
@@ -834,7 +834,7 @@ static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 		nungetc(c);
 		return 0;
 	}
-	if (mkqwnsr(bw->parent, sc("Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"), dopfrepl, pfsave, srch, notify))
+	if (mkqwnsr(bw->parent, sz(joe_gettext(_("Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"))), dopfrepl, pfsave, srch, notify))
 		return 0;
 	else
 		return pfsave(bw, srch);
@@ -925,7 +925,7 @@ static int fnext(BW *bw, SRCH *srch)
 			p_goto_bof(bw->cursor);
 			goto again;
 		} else if (berror) {
-			msgnw(bw->parent, msgs[-berror]);
+			msgnw(bw->parent, joe_gettext(msgs[-berror]));
 		}
 	}
 	if (!sta) {
@@ -982,14 +982,14 @@ again:	w = bw->parent;
 	case 1:
 bye:		if (!srch->flg && !srch->rest) {
 			if (srch->valid && srch->block_restrict)
-				msgnw(bw->parent, US "Not found (search restricted to marked block)");
+				msgnw(bw->parent, joe_gettext(_("Not found (search restricted to marked block)")));
 			else
-				msgnw(bw->parent, US "Not found");
+				msgnw(bw->parent, joe_gettext(_("Not found")));
 			ret = -1;
 		}
 		break;
 	case 3:
-		msgnw(bw->parent, US "Infinite loop aborted: your search repeatedly matched same place");
+		msgnw(bw->parent, joe_gettext(_("Infinite loop aborted: your search repeatedly matched same place")));
 		ret = -1;
 		break;
 	case 2:

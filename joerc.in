@@ -125,6 +125,10 @@
 		Assume terminal has xterm 256 color support (ESC [ 38 ; 5 ; NNN m and
                 ESC [ 48 ; 5 ; NNN m).
 
+-guess_non_utf8	Allow guess of non-UTF-8 file encoding in a UTF-8 locale.
+
+ -guess_utf8	Allow guess of UTF-8 file encoding in non-UTF-8 locale.
+
 -guess_crlf     Automatically detect MS-DOS files and set -crlf appropriately
 
 -guess_indent	Guess indent character (tab or space).
@@ -164,6 +168,8 @@
 
 		For example: -text_color bg_blue+white
 		Sets the background color to blue and foreground color to white.
+
+-restore	Restore previous cursor position when files are opened
 
 -search_prompting
 		Search prompts with previous search request.
@@ -1201,11 +1207,11 @@ aspellword	^[ n
 
  :def compile switch,"*Build-Log*",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
 
-:def compile querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
+:def compile mwind!,mfit!,querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
 
  Grep
 
-:def grep_find scratch,"*Grep-Log*",rtn,bof,markb,eof," ",markk,blkdel,grep
+:def grep_find mwind!,mfit!,scratch,"*Grep-Log*",rtn,bof,markb,eof," ",markk,blkdel,grep
 
  Here we guess some common key sequences which either do not have termcap
  sequences or which are frequently wrong.  Note that if the termcap entry is
@@ -1285,16 +1291,16 @@ execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute
 finish		^[ ^I		Complete word in document
 finish		^[ ^M		Complete word: used to be math
-jump		^[ SP
+mwind,mfit,jump,bol		^[ SP
 isrch		^[ s		Forward incremental search
 isrch		^[ S		Forward incremental search
 isrch		^[ ^S		Forward incremental search
 notmod		^[ ~		Not modified
-nxterr		^[ =		To next error
+mwind,mfit,prevw,nxterr		^[ =		To next error
 parserr		^[ e		Parse errors in current buffer
 parserr		^[ E		Parse errors in current buffer
 parserr		^[ ^E		Parse errors in current buffer
-prverr		^[ -		To previous error
+mwind,mfit,prevw,prverr		^[ -		To previous error
 rsrch		^[ r		Backward incremental search
 rsrch		^[ R		Backward incremental search
 rsrch		^[ ^R		Backward incremental search

@@ -166,7 +166,7 @@ int set_attr(SCRN *t, int c)
 			int color = ((c & FG_VALUE) >> FG_SHIFT);
 			if (t->assume_256 && color >= t->Co) {
 				unsigned char bf[32];
-				joe_snprintf_1((char *)bf,sizeof(bf),"\033[38;5;%dm",color);
+				joe_snprintf_1(bf,sizeof(bf),"\033[38;5;%dm",color);
 				ttputs(bf);
 			} else {
 				if (t->Co & (t->Co - 1))
@@ -182,7 +182,7 @@ int set_attr(SCRN *t, int c)
 			int color = ((c & BG_VALUE) >> BG_SHIFT);
 			if (t->assume_256 && color >= t->Co) {
 				unsigned char bf[32];
-				joe_snprintf_1((char *)bf,sizeof(bf),"\033[48;5;%dm",color);
+				joe_snprintf_1(bf,sizeof(bf),"\033[48;5;%dm",color);
 				ttputs(bf);
 			} else {
 				if (t->Co & (t->Co - 1))
@@ -717,7 +717,7 @@ SCRN *nopen(CAP *cap)
 	signrm();
         fprintf(stderr,"cm=%p ch=%p cv=%p ho=%p lf=%p DO=%p ll=%p up=%p UP=%p cr=%p\n",
                        t->cm, t->ch, t->cv, t->ho, t->lf, t->DO, t->ll, t->up, t->UP, t->cr);
-	fprintf(stderr,"Sorry, your terminal can't do absolute cursor positioning.\nIt's broken\n");
+	fprintf(stderr,(char *)joe_gettext(_("Sorry, your terminal can't do absolute cursor positioning.\nIt's broken\n")));
 	return NULL;
       ok:
 

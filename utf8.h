@@ -58,4 +58,7 @@ void my_iconv PARAMS((unsigned char *dest,struct charmap *dest_map,
 
 struct charmap *guess_map PARAMS((unsigned char *buf, int len));
 
+extern int guess_non_utf8;
+extern int guess_utf8;
+
 #endif

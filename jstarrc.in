@@ -99,6 +99,10 @@
 		Assume terminal has xterm 256 color support (ESC [ 38 ; 5 ; NNN m and
                 ESC [ 48 ; 5 ; NNN m).
 
+-guess_non_utf8	Allow guess of non-UTF-8 file encoding in a UTF-8 locale.
+
+ -guess_utf8	Allow guess of UTF-8 file encoding in non-UTF-8 locale.
+
 -guess_crlf     Automatically detect MS-DOS files and set -crlf appropriately
 
 -guess_indent	Guess indent character (tab or space).
@@ -137,6 +141,8 @@
 
 		For example: -text_color bg_blue+white
 		Sets the background color to blue and foreground color to white.
+
+-restore	Restore previous cursor position when files are opened
 
  -search_prompting
 		Search prompts with previous search request.
@@ -1152,7 +1158,16 @@ xtmouse		^[ [ M		Introduces an xterm mouse event
 @SPELL@word	^Q ^N
 
  Compile macro
+
 :def compile querysave,query,scratch,"* Build Log *",rtn,markb,eof," ",markk,blkdel,build
+
+ Grep
+
+:def grep_find mwind!,mfit!,scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
+
+ Man page
+
+:def man scratch,"* Man Page *",rtn,bof,markb,eof," ",markk,blkdel," ",ltarw,run,"man -P cat -S 2:3 "
 
 paste			^[ ] 5 2 ;		Bracketed paste
 
@@ -1195,8 +1210,8 @@ yankpop		^[ ^Y
 parserr		^[ E
 parserr		^[ ^E
 parserr		^[ e
-nxterr		^[ =
-prverr		^[ -
+mwind,mfit,prevw,nxterr		^[ =
+mwind,mfit,prevw,prverr		^[ -
 compile		^[ ^C
 compile		^[ c
 compile		^[ C

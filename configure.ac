@@ -133,8 +133,8 @@ joe_REINSTALL_SIGHANDLERS
 #
 #AC_SUBST(REQRD_LIBS)
 
-dnl not yet :-)
-dnl AM_GNU_GETTEXT
+dnl OK lets try it...
+AM_GNU_GETTEXT
 
 AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 #ifndef PARAMS

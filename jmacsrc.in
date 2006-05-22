@@ -103,6 +103,10 @@
 
 -guess_indent	Guess indent character (tab or space).
 
+-guess_non_utf8	Allow guess of non-UTF-8 file encoding in a UTF-8 locale.
+
+ -guess_utf8	Allow guess of UTF-8 file encoding in non-UTF-8 locale.
+
 -menu_above	Position menu/list above prompt when enabled.  Otherwise position
 		below prompt.
 
@@ -136,6 +140,8 @@
 
 		For example: -text_color bg_blue+white
 		Sets the background color to blue and foreground color to white.
+
+-restore	Restore previous cursor position when files are opened
 
  -search_prompting
 		Search prompts with previous search request.
@@ -1121,7 +1127,15 @@ xtmouse		^[ [ M		Introduces an xterm mouse event
 
   ESC-x compile
 
-:def compile querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
+:def compile mwind!,mfit!,querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
+
+ Grep
+
+:def grep_find mwind!,mfit!,scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
+
+ Man page
+
+:def man scratch,"* Man Page *",rtn,bof,markb,eof," ",markk,blkdel," ",ltarw,run,"man -P cat -S 2:3 "
 
 :def ensure_other if,"no_windows<2",then,splitw,endif
 
@@ -1280,9 +1294,9 @@ swap,math,"line-z",rtn,msg,math,"ans",rtn,
 mode,"O"				^X ^Q	Toggle read-only
 
 compile					^X c	Compile
-nxterr					^X n
-nxterr					^X `
-prverr					^X p
+mwind,mfit,prevw,nxterr					^X n
+mwind,mfit,prevw,nxterr					^X `
+mwind,mfit,prevw,prverr					^X p
 
 backs		^?		Backspace
 backs		^H

@@ -1385,14 +1385,14 @@ static int doline(BW *bw, unsigned char *s, void *object, int *notify)
 		if (merr)
 			msgnw(bw->parent, merr);
 		else
-			msgnw(bw->parent, US "Invalid line number");
+			msgnw(bw->parent, joe_gettext(_("Invalid line number")));
 		return -1;
 	}
 }
 
 int uline(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Go to line (^C to abort): ", &linehist, doline, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
+	if (wmkpw(bw->parent, joe_gettext(_("Go to line (^C to abort): ")), &linehist, doline, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
 		return 0;
 	else
 		return -1;
@@ -1421,14 +1421,14 @@ static int docol(BW *bw, unsigned char *s, void *object, int *notify)
 		if (merr)
 			msgnw(bw->parent, merr);
 		else
-			msgnw(bw->parent, US "Invalid column number");
+			msgnw(bw->parent, joe_gettext(_("Invalid column number")));
 		return -1;
 	}
 }
 
 int ucol(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Go to column (^C to abort): ", &colhist, docol, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
+	if (wmkpw(bw->parent, joe_gettext(_("Go to column (^C to abort): ")), &colhist, docol, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
 		return 0;
 	else
 		return -1;
@@ -1457,14 +1457,14 @@ static int dobyte(BW *bw, unsigned char *s, void *object, int *notify)
 		if (merr)
 			msgnw(bw->parent, merr);
 		else
-			msgnw(bw->parent, US "Invalid byte number");
+			msgnw(bw->parent, joe_gettext(_("Invalid byte number")));
 		return -1;
 	}
 }
 
 int ubyte(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Go to byte (^C to abort): ", &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
+	if (wmkpw(bw->parent, joe_gettext(_("Go to byte (^C to abort): ")), &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
 		return 0;
 	else
 		return -1;
@@ -1901,14 +1901,14 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		if (c >= '0' && c <= '9') {
 			quoteval = c - '0';
 			quotestate = 1;
-			joe_snprintf_1((char *)buf, sizeof(buf), "ASCII %c--", c);
+			joe_snprintf_1(buf, sizeof(buf), "ASCII %c--", c);
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
 				return -1;
 			else
 				return 0;
 		} else if (c == 'x' || c == 'X') {
 			if (bw->b->o.charmap->type) {
-				if (!wmkpw(bw->parent, US "Unicode (ISO-10646) character in hex (^C to abort): ", &unicodehist, dounicode,
+				if (!wmkpw(bw->parent, joe_gettext(_("Unicode (ISO-10646) character in hex (^C to abort): ")), &unicodehist, dounicode,
 				           NULL, NULL, NULL, NULL, NULL, locale_map, 0))
 					return 0;
 				else
@@ -1937,7 +1937,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		break;
 	case 1:
 		if (c >= '0' && c <= '9') {
-			joe_snprintf_2((char *)buf, sizeof(buf), "ASCII %c%c-", quoteval + '0', c);
+			joe_snprintf_2(buf, sizeof(buf), "ASCII %c%c-", quoteval + '0', c);
 			quoteval = quoteval * 10 + c - '0';
 			quotestate = 2;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -1955,7 +1955,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		break;
 	case 3:
 		if (c >= '0' && c <= '9') {
-			joe_snprintf_1((char *)buf, sizeof(buf), "ASCII 0x%c-", c);
+			joe_snprintf_1(buf, sizeof(buf), "ASCII 0x%c-", c);
 			quoteval = c - '0';
 			quotestate = 4;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -1963,7 +1963,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			else
 				return 0;
 		} else if (c >= 'a' && c <= 'f') {
-			joe_snprintf_1((char *)buf, sizeof(buf), "ASCII 0x%c-", c + 'A' - 'a');
+			joe_snprintf_1(buf, sizeof(buf), "ASCII 0x%c-", c + 'A' - 'a');
 			quoteval = c - 'a' + 10;
 			quotestate = 4;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -1971,7 +1971,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 			else
 				return 0;
 		} else if (c >= 'A' && c <= 'F') {
-			joe_snprintf_1((char *)buf, sizeof(buf), "ASCII 0x%c-", c);
+			joe_snprintf_1(buf, sizeof(buf), "ASCII 0x%c-", c);
 			quoteval = c - 'A' + 10;
 			quotestate = 4;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -1997,7 +1997,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		break;
 	case 5:
 		if (c >= '0' && c <= '7') {
-			joe_snprintf_1((char *)buf, sizeof(buf), "ASCII 0%c--", c);
+			joe_snprintf_1(buf, sizeof(buf), "ASCII 0%c--", c);
 			quoteval = c - '0';
 			quotestate = 6;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -2008,7 +2008,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 		break;
 	case 6:
 		if (c >= '0' && c <= '7') {
-			joe_snprintf_2((char *)buf, sizeof(buf), "ASCII 0%c%c-", quoteval + '0', c);
+			joe_snprintf_2(buf, sizeof(buf), "ASCII 0%c%c-", quoteval + '0', c);
 			quoteval = quoteval * 8 + c - '0';
 			quotestate = 7;
 			if (!mkqwna(bw->parent, sz(buf), doquote, NULL, NULL, notify))
@@ -2033,7 +2033,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 int uquote(BW *bw)
 {
 	quotestate = 0;
-	if (mkqwna(bw->parent, sc("Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"), doquote, NULL, NULL, NULL))
+	if (mkqwna(bw->parent, sz(joe_gettext(_("Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"))), doquote, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -2096,7 +2096,7 @@ static int doctrl(BW *bw, int c, void *object, int *notify)
 
 int uctrl(BW *bw)
 {
-	if (mkqwna(bw->parent, sc("Quote"), doctrl, NULL, NULL, NULL))
+	if (mkqwna(bw->parent, sz(joe_gettext(_("Quote"))), doctrl, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -2163,7 +2163,7 @@ static int dosetmark(BW *bw, int c, void *object, int *notify)
 		pdupown(bw->cursor, bw->b->marks + c - '0', US "dosetmark");
 		poffline(bw->b->marks[c - '0']);
 		if (c!=':') {
-			joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "Mark %d set", c - '0');
+			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Mark %d set")), c - '0');
 			msgnw(bw->parent, msgbuf);
 		}
 		return 0;
@@ -2177,7 +2177,7 @@ int usetmark(BW *bw, int c)
 {
 	if (c >= '0' && c <= ':')
 		return dosetmark(bw, c, NULL, NULL);
-	else if (mkqwna(bw->parent, sc("Set mark (0-9):"), dosetmark, NULL, NULL, NULL))
+	else if (mkqwna(bw->parent, sz(joe_gettext(_("Set mark (0-9):"))), dosetmark, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -2195,7 +2195,7 @@ static int dogomark(BW *bw, int c, void *object, int *notify)
 			bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		} else {
-			joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "Mark %d not set", c - '0');
+			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Mark %d not set")), c - '0');
 			msgnw(bw->parent, msgbuf);
 			return -1;
 	} else {
@@ -2208,7 +2208,7 @@ int ugomark(BW *bw, int c)
 {
 	if (c >= '0' && c <= '9')
 		return dogomark(bw, c, NULL, NULL);
-	else if (mkqwna(bw->parent, sc("Goto bookmark (0-9):"), dogomark, NULL, NULL, NULL))
+	else if (mkqwna(bw->parent, sz(joe_gettext(_("Goto bookmark (0-9):"))), dogomark, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -2240,7 +2240,7 @@ static int dofwrdc(BW *bw, int k, void *object, int *notify)
 				break;
 	}
 	if (c == NO_MORE_DATA) {
-		msgnw(bw->parent, US "Not found");
+		msgnw(bw->parent, joe_gettext(_("Not found")));
 		prm(q);
 		return -1;
 	} else {
@@ -2256,7 +2256,7 @@ int ufwrdc(BW *bw, int k)
 	dobkwdc = 0;
 	if (k >= 0 && k < 256)
 		return dofwrdc(bw, k, NULL, NULL);
-	else if (mkqw(bw->parent, sc("Fwrd to char: "), dofwrdc, NULL, NULL, NULL))
+	else if (mkqw(bw->parent, sz(joe_gettext(_("Forward to char: "))), dofwrdc, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -2267,7 +2267,7 @@ int ubkwdc(BW *bw, int k)
 	dobkwdc = 1;
 	if (k >= 0 && k < 256)
 		return dofwrdc(bw, k, NULL, NULL);
-	else if (mkqw(bw->parent, sc("Bkwd to char: "), dofwrdc, NULL, NULL, NULL))
+	else if (mkqw(bw->parent, sz(joe_gettext(_("Backward to char: "))), dofwrdc, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -2287,7 +2287,7 @@ static int domsg(BASE *b, unsigned char *s, void *object, int *notify)
 
 int umsg(BASE *b)
 {
-	if (wmkpw(b->parent, US "Msg (^C to abort): ", NULL, domsg, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
+	if (wmkpw(b->parent, joe_gettext(_("Message (^C to abort): ")), NULL, domsg, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
 		return 0;
 	else
 		return -1;
@@ -2309,7 +2309,7 @@ static int dotxt(BW *bw, unsigned char *s, void *object, int *notify)
 
 int utxt(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Insert (^C to abort): ", NULL, dotxt, NULL, NULL, utypebw, NULL, NULL, bw->b->o.charmap, 0))
+	if (wmkpw(bw->parent, joe_gettext(_("Insert (^C to abort): ")), NULL, dotxt, NULL, NULL, utypebw, NULL, NULL, bw->b->o.charmap, 0))
 		return 0;
 	else
 		return -1;

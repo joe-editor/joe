@@ -257,7 +257,7 @@ unsigned char *joe_getcodeset(unsigned char *l)
   static unsigned char buf[16];
   unsigned char *p;
   
-  if (((l = (unsigned char *)getenv("LC_ALL"))   && *l) ||
+  if (l || ((l = (unsigned char *)getenv("LC_ALL"))   && *l) ||
       ((l = (unsigned char *)getenv("LC_CTYPE")) && *l) ||
       ((l = (unsigned char *)getenv("LANG"))     && *l)) {
 
@@ -364,6 +364,11 @@ void joe_locale()
 
 #ifdef HAVE_SETLOCALE
 	setlocale(LC_ALL,"");
+#ifdef ENABLE_NLS
+	/* Set up gettext() */
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	textdomain(PACKAGE);
+#endif
 	codeset = zdup((unsigned char *)nl_langinfo(CODESET));
 #else
 	codeset = joe_getcodeset(u);
@@ -519,6 +524,9 @@ void my_iconv(unsigned char *dest,struct charmap *dest_map,
 
 /* Guess character set */
 
+int guess_non_utf8;
+int guess_utf8;
+
 struct charmap *guess_map(unsigned char *buf, int len)
 {
 	unsigned char *p;
@@ -527,12 +535,7 @@ struct charmap *guess_map(unsigned char *buf, int len)
 	int flag;
 
 	/* No info? Use default */
-	if (!len)
-		return locale_map;
-
-	/* Do we UTF-8? */
-	if (!locale_map->type)
-		/* Nope, use default */
+	if (!len || (!guess_non_utf8 && !guess_utf8))
 		return locale_map;
 
 	/* Does it look like UTF-8? */
@@ -541,17 +544,30 @@ struct charmap *guess_map(unsigned char *buf, int len)
 	c = 0;
 	flag = 0;
 	while (plen) {
+		/* Break if we could possibly run out of data in
+		   the middle of utf-8 sequence */
+		if (plen < 7)
+			break;
 		if (*p >= 128)
 			flag = 1;
 		c = utf8_decode_fwrd(&p, &plen);
 		if (c < 0)
 			break;
 	}
-	if (c >= 0 && flag) {
-		/* No decoding errors but there are utf-8 sequences */
-		return find_charmap(US "utf-8");
+
+	if (flag && c >= 0) {
+		/* There are characters above 128, and there are no utf-8 errors */
+		if (locale_map->type || !guess_utf8)
+			return locale_map;
+		else
+			return find_charmap(US "utf-8");
 	}
 
-	/* Well, it might be non-utf8 version of the locale */
-	return locale_map_non_utf8;
+	if (!flag || !guess_non_utf8) {
+		/* No characters above 128 */
+		return locale_map;
+	} else {
+		/* Choose non-utf8 version of locale */
+		return locale_map_non_utf8;
+	}
 }

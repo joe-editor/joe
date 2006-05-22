@@ -259,9 +259,11 @@ shrinkw		Shrink window
 splitw		Split window into two
 tw0		Eliminate this window
 tw1		Show only one window
-mwind		Get error messages window
+mwind		Get error messages window on the screen and put cursor in it.
 mfit		Fit two windows on the screen: make current window 6 lines,
-		and give rest of space to window above.
+		and give rest of space to window above.  The window above is
+		either the existing previous window, a newly created one if
+		there wasn't one.
 
 Undo
 ----

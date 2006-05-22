@@ -1,12 +1,6 @@
-test:
-
-  %x
-
-  guess map (make this an option?)
+querysave problems?
 
 =-=-=-=-=
-
-- Make window is not working as well as grep-find now.
 
 - We need regexp for error parsing.
 

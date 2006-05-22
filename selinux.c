@@ -32,13 +32,13 @@ copy_security_context(const char *from_file, const char *to_file)
 		if (errno == EOPNOTSUPP)
 			return 0;
 
-		error(0, errno, "Could not get security context for %s",
+		error(0, errno, (char *)joe_gettext(_("Could not get security context for %s")),
 		      from_file);
 		return 1;
 	}
 
 	if (getfilecon(to_file, &to_context) < 0) {
-		MSG_PUTS(_("\nCould not get security context for "));
+		MSG_PUTS(_(joe_gettext(_("\nCould not get security context for "))));
 		msg_outtrans(to_file);
 		msg_putchar('\n');
 		freecon(from_context);
@@ -48,7 +48,7 @@ copy_security_context(const char *from_file, const char *to_file)
 	if (zcmp(from_context, to_context) != 0) {
 		if (setfilecon(to_file, from_context) < 0) {
 			error(0, errno,
-			      "Could not set security context for %s",
+			      (char *)joe_gettext(_("Could not set security context for %s")),
 			      to_file);
 			status = 1;
 		}
@@ -81,14 +81,14 @@ match_default_security_context(const char *from_file)
 		if (errno == EOPNOTSUPP)
 			return 0;
 
-		error(0, errno, "Could not get security context for %s",
+		error(0, errno, (char *)joe_gettext(_("Could not get security context for %s")),
 		      from_file);
 		return 1;
 	}
 
 	if (setfscreatecon(scontext) < 0) {
 		error(0, errno,
-		      "Could not set default security context for %s",
+		      (char *)joe_gettext(_("Could not set default security context for %s")),
 		      from_file);
 		freecon(scontext);
 		return 1;
@@ -110,7 +110,7 @@ reset_default_security_context()
 		return 0;
 
 	if (setfscreatecon(0) < 0) {
-		error(0, errno, "Could not reset default security context");
+		error(0, errno, (char *)joe_gettext(_("Could not reset default security context")));
 		return 1;
 	}
 #endif
@@ -138,12 +138,12 @@ output_security_context(char *from_file)
 		if (errno == EOPNOTSUPP)
 			return 0;
 		
-		error(0, errno, "Could not get security context for %s",
+		error(0, errno,(char *)joe_gettext(_("Could not get security context for %s")),
 		      from_file);
 		return 1;
 	}
 
-	error(0, 0, "%s Security Context %s", from_file, scontext);
+	error(0, 0, (char *)joe_gettext(_("%s Security Context %s")), from_file, scontext);
 	freecon(scontext);
 #endif
 	return 0;

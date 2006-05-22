@@ -150,7 +150,7 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 			case 'y':
 				{
 					if (bw->o.syntax) {
-						joe_snprintf_1((char *)buf, sizeof(buf), "(%s)", bw->o.syntax->name);
+						joe_snprintf_1(buf, sizeof(buf), "(%s)", bw->o.syntax->name);
 						stalin = vsncpy(sv(stalin), sz(buf));
 					}
 				}
@@ -164,7 +164,7 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 					l = (d[11] - '0') * 10 + d[12] - '0';
 					if (l > 12)
 						l -= 12;
-					joe_snprintf_1((char *)buf, sizeof(buf), "%2.2d", l);
+					joe_snprintf_1(buf, sizeof(buf), "%2.2d", l);
 					if (buf[0] == '0')
 						buf[0] = fill;
 					stalin = vsncpy(sv(stalin), buf, 2);
@@ -210,17 +210,17 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 					stalin = vsncpy(sv(stalin), sv(tmp));
 					vsrm(tmp);
 				} else {
-					stalin = vsncpy(sv(stalin), sc("Unnamed"));
+					stalin = vsncpy(sv(stalin), sz(joe_gettext(_("Unnamed"))));
 				}
 				}
 				break;
 			case 'm':
 				if (bw->b->changed)
-					stalin = vsncpy(sv(stalin), sc("(Modified)"));
+					stalin = vsncpy(sv(stalin), sz(joe_gettext(_("(Modified)"))));
 				break;
 			case 'R':
 				if (bw->b->rdonly)
-					stalin = vsncpy(sv(stalin), sc("(Read only)"));
+					stalin = vsncpy(sv(stalin), sz(joe_gettext(_("(Read only)"))));
 				break;
 			case '*':
 				if (bw->b->changed)
@@ -229,21 +229,21 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 					stalin = vsadd(stalin, fill);
 				break;
 			case 'r':
-				joe_snprintf_1((char *)buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
+				joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'o':
-				joe_snprintf_1((char *)buf, sizeof(buf), "%-4ld", bw->cursor->byte);
+				joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->cursor->byte);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'O':
-				joe_snprintf_1((char *)buf, sizeof(buf), "%-4lX", bw->cursor->byte);
+				joe_snprintf_1(buf, sizeof(buf), "%-4lX", bw->cursor->byte);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -251,9 +251,9 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				break;
 			case 'a':
 				if (!piseof(bw->cursor))
-					joe_snprintf_1((char *)buf, sizeof(buf), "%3d", 255 & brc(bw->cursor));
+					joe_snprintf_1(buf, sizeof(buf), "%3d", 255 & brc(bw->cursor));
 				else
-					joe_snprintf_0((char *)buf, sizeof(buf), "   ");
+					joe_snprintf_0(buf, sizeof(buf), "   ");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -261,16 +261,16 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				break;
 			case 'A':
 				if (!piseof(bw->cursor))
-					joe_snprintf_1((char *)buf, sizeof(buf), "%2.2X", 255 & brc(bw->cursor));
+					joe_snprintf_1(buf, sizeof(buf), "%2.2X", 255 & brc(bw->cursor));
 				else
-					joe_snprintf_0((char *)buf, sizeof(buf), "  ");
+					joe_snprintf_0(buf, sizeof(buf), "  ");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'c':
-				joe_snprintf_1((char *)buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
+				joe_snprintf_1(buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -278,18 +278,18 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				break;
 			case 'p':
 				if (bw->b->eof->byte >= 1024*1024)
-					joe_snprintf_1((char *)buf, sizeof(buf), "%3ld", ((unsigned long)bw->cursor->byte >> 10) * 100 / ((unsigned long)bw->b->eof->byte >> 10));
+					joe_snprintf_1(buf, sizeof(buf), "%3ld", ((unsigned long)bw->cursor->byte >> 10) * 100 / ((unsigned long)bw->b->eof->byte >> 10));
 				else if (bw->b->eof->byte)
-					joe_snprintf_1((char *)buf, sizeof(buf), "%3ld", bw->cursor->byte * 100 / bw->b->eof->byte);
+					joe_snprintf_1(buf, sizeof(buf), "%3ld", bw->cursor->byte * 100 / bw->b->eof->byte);
 				else
-					joe_snprintf_0((char *)buf, sizeof(buf), "100");
+					joe_snprintf_0(buf, sizeof(buf), "100");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'l':
-				joe_snprintf_1((char *)buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
+				joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -326,11 +326,11 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				break;
 			case 'S':
 				if (bw->b->pid)
-					stalin = vsncpy(sv(stalin), sc("*SHELL*"));
+					stalin = vsncpy(sv(stalin), sz(joe_gettext(_("*SHELL*"))));
 				break;
 			case 'M':
 				if (recmac) {
-					joe_snprintf_1((char *)buf, sizeof(buf), "(Macro %d recording...)", recmac->n);
+					joe_snprintf_1(buf, sizeof(buf), joe_gettext(_("(Macro %d recording...)")), recmac->n);
 					stalin = vsncpy(sv(stalin), sz(buf));
 				}
 				break;
@@ -555,7 +555,7 @@ int uabort(BW *bw, int k)
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
-		if (mkqw(bw->parent, sc("Lose changes to this file (y,n,^C)? "), naborttw, NULL, NULL, NULL))
+		if (mkqw(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw, NULL, NULL, NULL))
 			return 0;
 		else
 			return -1;
@@ -581,7 +581,7 @@ int uabort1(BW *bw, int k)
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
-		if (mkqw(bw->parent, sc("Lose changes to this file (y,n,^C)? "), naborttw1, NULL, NULL, NULL))
+		if (mkqw(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw1, NULL, NULL, NULL))
 			return 0;
 		else
 			return -1;

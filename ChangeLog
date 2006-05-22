@@ -2,6 +2,9 @@ Sun May 21 12:28:10 EST 2006
 
 	'e' option for search & replace.
 
+	Add -guess_utf8 and -guess_non_utf8 options.
+
+	Add gettext() support.
 
 Sat May 20 17:03:48 EDT 2006
 

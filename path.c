@@ -202,7 +202,7 @@ unsigned char *mktmp(unsigned char *where)
 				   area returned by mktmp() is destroyed later with
 				   vsrm(); */
 #ifdef HAVE_MKSTEMP
-	joe_snprintf_1((char *)name, namesize, "%s/joe.tmp.XXXXXX", where);
+	joe_snprintf_1(name, namesize, "%s/joe.tmp.XXXXXX", where);
 	if((fd = mkstemp((char *)name)) == -1)
 		return NULL;	/* FIXME: vflsh() and vflshf() */
 				/* expect mktmp() always succeed!!! */

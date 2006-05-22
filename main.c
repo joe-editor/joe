@@ -191,7 +191,7 @@ int main(int argc, char **real_argv, char **envv)
 
 #ifndef __MSDOS__
 	if (!(cap = getcap(NULL, 9600, NULL, NULL))) {
-		fprintf(stderr, "Couldn't load termcap/terminfo entry\n");
+		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap/terminfo entry\n")));
 		return 1;
 	}
 #endif
@@ -206,7 +206,7 @@ int main(int argc, char **real_argv, char **envv)
 	if (c == 1) {
 		unsigned char buf[8];
 
-		fprintf(stderr, "There were errors in '%s'.  Use it anyway?", s);
+		fprintf(stderr, (char *)joe_gettext(_("There were errors in '%s'.  Use it anyway?")), s);
 		fflush(stderr);
 		fgets(buf, 8, stdin);
 		if (buf[0] == 'y' || buf[0] == 'Y')
@@ -223,7 +223,7 @@ int main(int argc, char **real_argv, char **envv)
 	if (c == 1) {
 		unsigned char buf[8];
 
-		fprintf(stderr, "There were errors in '%s'.  Use it anyway?", s);
+		fprintf(stderr, (char *)joe_gettext(_("There were errors in '%s'.  Use it anyway?")), s);
 		fflush(stderr);
 		fgets(buf, 8, stdin);
 		if (buf[0] == 'y' || buf[0] == 'Y')
@@ -252,9 +252,9 @@ int main(int argc, char **real_argv, char **envv)
 
 		if (!stat((char *)s,&sbuf)) {
 			if (sbuf.st_mtime < time_rc) {
-				fprintf(stderr, "Warning: %s is newer than your %s.\n",t,s);
-				fprintf(stderr,"You should update or delete %s\n",s);
-				fprintf(stderr,"Hit enter to continue with %s ",t);
+				fprintf(stderr,(char *)joe_gettext(_("Warning: %s is newer than your %s.\n")),t,s);
+				fprintf(stderr,(char *)joe_gettext(_("You should update or delete %s\n")),s);
+				fprintf(stderr,(char *)joe_gettext(_("Hit enter to continue with %s ")),t);
 				fflush(stderr);
 				fgets((char *)buf, 8, stdin);
 				goto use_sys;
@@ -267,7 +267,7 @@ int main(int argc, char **real_argv, char **envv)
 			goto donerc;
 		}
 		if (c == 1) {
-			fprintf(stderr, "There were errors in '%s'.  Use it anyway (y,n)? ", s);
+			fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
 			fflush(stderr);
 			fgets((char *)buf, 8, stdin);
 			if (buf[0] == 'y' || buf[0] == 'Y') {
@@ -286,7 +286,7 @@ int main(int argc, char **real_argv, char **envv)
 	if (c == 1) {
 		unsigned char buf[8];
 
-		fprintf(stderr, "There were errors in '%s'.  Use it anyway (y,n)? ", s);
+		fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
 		fflush(stderr);
 		fgets((char *)buf, 8, stdin);
 		if (buf[0] == 'y' || buf[0] == 'Y')
@@ -294,13 +294,13 @@ int main(int argc, char **real_argv, char **envv)
 	}
 #endif
 
-	fprintf(stderr, "Couldn't open '%s'\n", s);
+	fprintf(stderr,(char *)joe_gettext(_("Couldn't open '%s'\n")), s);
 	return 1;
 
 	donerc:
 
 	if (validate_rc()) {
-		fprintf(stderr, "rc file has no :main key binding section or no bindings.  Bye.\n");
+		fprintf(stderr,(char *)joe_gettext(_("rc file has no :main key binding section or no bindings.  Bye.\n")));
 		return 1;
 	}
 
@@ -313,7 +313,7 @@ int main(int argc, char **real_argv, char **envv)
 			if (argv[c][1])
 				switch (glopt(argv[c] + 1, argv[c + 1], NULL, 1)) {
 				case 0:
-					fprintf(stderr, "Unknown option '%s'\n", argv[c]);
+					fprintf(stderr,(char *)joe_gettext(_("Unknown option '%s'\n")), argv[c]);
 					break;
 				case 1:
 					break;
@@ -366,7 +366,7 @@ int main(int argc, char **real_argv, char **envv)
 			if (!orphan || !opened) {
 				bw = wmktw(maint, b);
 				if (er)
-					msgnwt(bw->parent, msgs[-er]);
+					msgnwt(bw->parent, joe_gettext(msgs[-er]));
 			} else
 				b->orphan = 1;
 			if (bw) {
@@ -430,10 +430,7 @@ int main(int argc, char **real_argv, char **envv)
 		help_on(maint);
 	}
 	if (!nonotice) {
-		if (locale_map->type)
-			joe_snprintf_1((char *)msgbuf,JOE_MSGBUFSIZE,"\\i** Joe's Own Editor v" VERSION " ** (%s) ** Copyright © 2005 **\\i",locale_map->name);
-		else
-			joe_snprintf_1((char *)msgbuf,JOE_MSGBUFSIZE,"\\i** Joe's Own Editor v" VERSION " ** (%s) ** Copyright (C) 2005 **\\i",locale_map->name);
+		joe_snprintf_3(msgbuf,JOE_MSGBUFSIZE,joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
 
 		msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
 	}

@@ -171,7 +171,7 @@ unsigned char *vlock(VFILE *vfile, unsigned long addr)
 				pp->next = vp->next;
 				goto gotit;
 			}
-	write(2, "vfile: out of memory\n", 21);
+	write(2, (char *)sz(joe_gettext(_("vfile: out of memory\n"))));
 	exit(1);
 
       gotit:
@@ -226,7 +226,7 @@ unsigned char *name;
 	new->name = vsncpy(NULL, 0, sz(name));
 	new->fd = open(name, O_RDWR);
 	if (!new->fd) {
-		fprintf(stderr, "Couldn\'t open file \'%s\'\n", name);
+		fprintf(stderr, (char *)joe_gettext(_("Couldn\'t open file \'%s\'\n")), name);
 		joe_free(new);
 		return NULL;
 	}

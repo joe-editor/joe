@@ -216,7 +216,7 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
  joe_free(cap);
  return 0;
 */
-		fprintf(stderr, "Couldn't load termcap entry.  Using ansi default\n");
+		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap entry.  Using ansi default\n")));
 		ti = 0;
 		cap->tbuf = vsncpy(cap->tbuf, 0, sc(defentry));
 		goto checktc;
@@ -237,7 +237,7 @@ CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *
 		if (buf.st_mtime > buf1.st_mtime)
 			idx = findidx(f, name);
 		else
-			fprintf(stderr, "%s is out of date\n", idxname);
+			fprintf(stderr, (char *)joe_gettext(_("%s is out of date\n")), idxname);
 		fclose(f);
 	}
 	vsrm(idxname);

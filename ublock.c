@@ -281,7 +281,7 @@ int utoggle_marking(BW *bw)
 		prm(markk); markk=0;
 		updall();
 		nowmarking = 0;
-		msgnw(bw->parent, US "Selection cleared.");
+		msgnw(bw->parent, joe_gettext(_("Selection cleared.")));
 		return 0;
 	} else if (markk) {
 		/* Clear selection and start new one */
@@ -289,7 +289,7 @@ int utoggle_marking(BW *bw)
 		prm(markk); markk=0;
 		updall();
 		nowmarking = 1;
-		msgnw(bw->parent, US "Selection started.");
+		msgnw(bw->parent, joe_gettext(_("Selection started.")));
 		return umarkb(bw);
 	} else if (markb && markb->b==bw->cursor->b) {
 		nowmarking = 0;
@@ -306,7 +306,7 @@ int utoggle_marking(BW *bw)
 		return 0;
 	} else {
 		nowmarking = 1;
-		msgnw(bw->parent, US "Selection started.");
+		msgnw(bw->parent, joe_gettext(_("Selection started.")));
 		return umarkb(bw);
 	}
 }
@@ -414,7 +414,7 @@ int ublkdel(BW *bw)
 		if (lightoff)
 			unmark(bw);
 	} else {
-		msgnw(bw->parent, US "No block");
+		msgnw(bw->parent, joe_gettext(_("No block")));
 		return -1;
 	}
 	return 0;
@@ -500,7 +500,7 @@ int ublkmove(BW *bw)
 			return 0;
 		}
 	}
-	msgnw(bw->parent, US "No block");
+	msgnw(bw->parent, joe_gettext(_("No block")));
 	return -1;
 }
 
@@ -556,7 +556,7 @@ int ublkcpy(BW *bw)
 			return 0;
 		}
 	} else {
-		msgnw(bw->parent, US "No block");
+		msgnw(bw->parent, joe_gettext(_("No block")));
 		return -1;
 	}
 }
@@ -577,7 +577,7 @@ int ublkcpy(BW *bw)
 					  markk->xcol);
 
 			if ((fl = bsave(tmp->bof, s, tmp->eof->byte, 0)) != 0) {
-				msgnw(bw->parent, msgs[-fl]);
+				msgnw(bw->parent, joe_gettext(msgs[-fl]));
 				ret = -1;
 			}
 			brm(tmp);
@@ -590,7 +590,7 @@ int ublkcpy(BW *bw)
 			int ret = 0;
 
 			if ((fl = bsave(markb, s, markk->byte - markb->byte, 0)) != 0) {
-				msgnw(bw->parent, msgs[-fl]);
+				msgnw(bw->parent, joe_gettext(msgs[-fl]));
 				ret = -1;
 			}
 			if (lightoff)
@@ -600,7 +600,7 @@ int ublkcpy(BW *bw)
 		}
 	} else {
 		vsrm(s);
-		msgnw(bw->parent, US "No block");
+		msgnw(bw->parent, US _(_("No block")));
 		return -1;
 	}
 }*/
@@ -753,7 +753,7 @@ int urindent(BW *bw)
 			prm(p);
 		} else {
 			/* Purity failure */
-			msgnw(bw->parent,US "Selected lines not properly indented");
+			msgnw(bw->parent,joe_gettext(_("Selected lines not properly indented")));
 			return 1;
 		}
 	}
@@ -836,7 +836,7 @@ int ulindent(BW *bw)
 			prm(q);
 		} else {
 			/* Purity failure */
-			msgnw(bw->parent,US "Selected lines not properly indented");
+			msgnw(bw->parent,joe_gettext(_("Selected lines not properly indented")));
 			return 1;
 		}
 	}
@@ -860,7 +860,7 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 
 			tmp = bload(s);
 			if (berror) {
-				msgnw(bw->parent, msgs[-berror]);
+				msgnw(bw->parent, joe_gettext(msgs[-berror]));
 				brm(tmp);
 				return -1;
 			}
@@ -884,14 +884,14 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 			updall();
 			return 0;
 		} else {
-			msgnw(bw->parent, US "No block");
+			msgnw(bw->parent, joe_gettext(_("No block")));
 			return -1;
 	} else {
 		int ret = 0;
 		B *tmp = bload(s);
 
 		if (berror) {
-			msgnw(bw->parent, msgs[-berror]), brm(tmp);
+			msgnw(bw->parent, joe_gettext(msgs[-berror])), brm(tmp);
 			ret = -1;
 		} else
 			binsb(bw->cursor, tmp);
@@ -918,7 +918,7 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 		flg = 1;
 		goto ok;
 	} if (!markv(1)) {
-		msgnw(bw->parent, US "No block");
+		msgnw(bw->parent, joe_gettext(_("No block")));
 		return -1;
 	}
       ok:
@@ -1064,23 +1064,23 @@ static int checkmark(BW *bw)
 int ufilt(BW *bw)
 {
 #ifdef __MSDOS__
-	msgnw(bw->parent, "Sorry, no sub-processes in DOS (yet)");
+	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
 	return -1;
 #else
 	switch (checkmark(bw)) {
 	case 0:
-		if (wmkpw(bw->parent, US "Command to filter block through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL, locale_map, 1))
+		if (wmkpw(bw->parent, joe_gettext(_("Command to filter block through (^C to abort): ")), &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL, locale_map, 1))
 			return 0;
 		else
 			return -1;
 	case 1:
-		if (wmkpw(bw->parent, US "Command to filter file through (^C to abort): ", &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL, locale_map, 1))
+		if (wmkpw(bw->parent, joe_gettext(_("Command to filter file through (^C to abort): ")), &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL, locale_map, 1))
 			return 0;
 		else
 			return -1;
 	case 2:
 	default:
-		msgnw(bw->parent, US "No block");
+		msgnw(bw->parent, joe_gettext(_("No block")));
 		return -1;
 	}
 #endif

@@ -433,7 +433,7 @@ int unotmod(BW *bw)
 {
 	bw_unlock(bw);
 	bw->b->changed = 0;
-	msgnw(bw->parent, US "Modified flag cleared");
+	msgnw(bw->parent, joe_gettext(_("Modified flag cleared")));
 	return 0;
 }
 
@@ -450,7 +450,7 @@ int ucopy(BW *bw)
 			unmark(bw);
 		return 0;
 	} else {
-		msgnw(bw->parent, US "No block");
+		msgnw(bw->parent, joe_gettext(_("No block")));
 		return -1;
 	}
 }

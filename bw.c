@@ -841,7 +841,7 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	int lin = w->top->line + y - w->y;
 
 	if (lin <= w->b->eof->line)
-		joe_snprintf_1((char *)buf, sizeof(buf), "%5ld ", w->top->line + y - w->y + 1);
+		joe_snprintf_1(buf, sizeof(buf), "%5ld ", w->top->line + y - w->y + 1);
 	else
 		zcpy(buf, US "      ");
 	for (z = 0; buf[z]; ++z) {
@@ -1170,9 +1170,11 @@ struct file_pos *find_file_pos(unsigned char *name)
 	return p;
 }
 
+int restore_file_pos;
+
 long get_file_pos(unsigned char *name)
 {
-	if (name) {
+	if (name && restore_file_pos) {
 		struct file_pos *p = find_file_pos(name);
 		return p->line;
 	} else {
@@ -1235,9 +1237,9 @@ int ustat(BW *bw)
 	int c = brch(bw->cursor);
 
 	if (c == NO_MORE_DATA)
-		joe_snprintf_4((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx) **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
+		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %ld(0x%lx) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
 	else
-		joe_snprintf_9((char *)buf, sizeof(buf), "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **", bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
+		joe_snprintf_9(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
 	msgnw(bw->parent, buf);
 	return 0;
 }

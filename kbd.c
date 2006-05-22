@@ -349,7 +349,7 @@ int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
 	vsrm(s);
 	if(notify) *notify=1;
 	if(!k) {
-		msgnw(bw->parent,US "No such keymap");
+		msgnw(bw->parent,joe_gettext(_("No such keymap")));
 		return -1;
 	}
 	rmkbd(bw->parent->kbd);
@@ -378,6 +378,6 @@ static int keymap_cmplt(BW *bw)
 
 int ukeymap(BASE *bw)
 {
-	if (wmkpw(bw->parent,US "Change keymap: ",&keymaphist,dokeymap,US "keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
+	if (wmkpw(bw->parent,joe_gettext(_("Change keymap: ")),&keymaphist,dokeymap,US "keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
 	else return -1;
 }

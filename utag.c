@@ -23,7 +23,7 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 	}
 	f = fopen("tags", "r");
 	if (!f) {
-		msgnw(bw->parent, US "Couldn't open tags file");
+		msgnw(bw->parent, joe_gettext(_("Couldn't open tags file")));
 		vsrm(s);
 		vsrm(t);
 		return -1;
@@ -69,7 +69,7 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 							dofollows();
 							mid = omid;
 						} else {
-							msgnw(bw->parent, US "Invalid line number");
+							msgnw(bw->parent, joe_gettext(_("Invalid line number")));
 						}
 					} else {
 						if (buf[y] == '/' || buf[y] == '?') {
@@ -103,7 +103,7 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 			}
 		}
 	}
-	msgnw(bw->parent, US "Not found");
+	msgnw(bw->parent, joe_gettext(_("Not found")));
 	vsrm(s);
 	vsrm(t);
 	fclose(f);
@@ -164,7 +164,7 @@ int utag(BW *bw)
 {
 	BW *pbw;
 
-	pbw = wmkpw(bw->parent, US "Tag search: ", &taghist, dotag, NULL, NULL, tag_cmplt, NULL, NULL, locale_map, 0);
+	pbw = wmkpw(bw->parent, joe_gettext(_("Tag search: ")), &taghist, dotag, NULL, NULL, tag_cmplt, NULL, NULL, locale_map, 0);
 	if (pbw && joe_isalnum_(bw->b->o.charmap,brch(bw->cursor))) {
 		P *p = pdup(bw->cursor, US "utag");
 		P *q = pdup(p, US "utag");

@@ -52,4 +52,6 @@ void save_file_pos PARAMS((FILE *f));
 void load_file_pos PARAMS((FILE *f));
 long get_file_pos PARAMS((unsigned char *name));
 
+extern int restore_file_pos;
+
 #endif

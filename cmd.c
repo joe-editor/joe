@@ -206,8 +206,8 @@ CMD cmds[] = {
 
 int nolocks;
 
-#define LOCKMSG2 "Could not create lock. (I) edit anyway, (Q) cancel? "
-#define LOCKMSG1 "Locked by %s (S)teal lock, (I) edit anyway, (Q) cancel? "
+#define LOCKMSG2 _("Could not create lock. (I) edit anyway, (Q) cancel? ")
+#define LOCKMSG1 _("Locked by %s (S)teal lock, (I) edit anyway, (Q) cancel? ")
 
 int steal_lock(BW *bw,int c,B *b,int *notify)
 {
@@ -220,9 +220,9 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
 			if(bf1[0])
-				joe_snprintf_1((char *)bf,sizeof(bf),LOCKMSG1,bf1);
+				joe_snprintf_1(bf,sizeof(bf),joe_gettext(LOCKMSG1),bf1);
 			else
-				joe_snprintf_0((char *)bf,sizeof(bf),LOCKMSG2);
+				joe_snprintf_0(bf,sizeof(bf),joe_gettext(LOCKMSG2));
 			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, notify)) {
 				return 0;
 			} else {
@@ -247,7 +247,7 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 			*notify = 1;
 		return 0;
 	} else {
-		if (mkqw(bw->parent, sc(LOCKMSG2), steal_lock, NULL, b, notify)) {
+		if (mkqw(bw->parent, sz(joe_gettext(LOCKMSG2)), steal_lock, NULL, b, notify)) {
 			return 0;
 		} else
 			return -1;
@@ -256,7 +256,7 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 
 int file_changed(BW *bw,int c,B *b,int *notify)
 {
-	if (mkqw(bw->parent, sc("Notice: File on disk changed! (hit ^C to continue)  "), file_changed, NULL, b, notify)) {
+	if (mkqw(bw->parent, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), file_changed, NULL, b, notify)) {
 		return 0;
 	} else
 		return -1;
@@ -277,9 +277,9 @@ int try_lock(BW *bw,B *b)
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
 			if(bf1[0])
-				joe_snprintf_1((char *)bf,sizeof(bf),LOCKMSG1,bf1);
+				joe_snprintf_1(bf,sizeof(bf),LOCKMSG1,bf1);
 			else
-				joe_snprintf_0((char *)bf,sizeof(bf),LOCKMSG2);
+				joe_snprintf_0(bf,sizeof(bf),LOCKMSG2);
 			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, NULL)) {
 				uquery(bw);
 				if (!b->locked)
@@ -315,7 +315,7 @@ int modify_logic(BW *bw,B *b)
 			/* This happens when we try to block move from a window
 			   which is not on the screen */
 			if (bw->o.mfirst) {
-				msgnw(bw->parent,US "Modify other window first for macro");
+				msgnw(bw->parent,joe_gettext(_("Modify other window first for macro")));
 				return 0;
 			}
 			b->didfirst = 1;
@@ -323,7 +323,7 @@ int modify_logic(BW *bw,B *b)
 				exmacro(bw->o.mfirst,1);
 		}
 		if (b->rdonly) {
-			msgnw(bw->parent, US "Other buffer is read only");
+			msgnw(bw->parent,joe_gettext(_("Other buffer is read only")));
 			if (joe_beep)
 				ttputc(7);
 			return 0;
@@ -338,7 +338,7 @@ int modify_logic(BW *bw,B *b)
 				exmacro(bw->o.mfirst,1);
 		}
 		if (b->rdonly) {
-			msgnw(bw->parent, US "Read only");
+			msgnw(bw->parent,joe_gettext(_("Read only")));
 			if (joe_beep)
 				ttputc(7);
 			return 0;
@@ -533,7 +533,7 @@ static int docmd(BW *bw, unsigned char *s, void *object, int *notify)
 
 	vsrm(s);	/* allocated in pw.c::rtnpw() */
 	if (!cmd)
-		msgnw(bw->parent, US "No such command");
+		msgnw(bw->parent,joe_gettext(_("No such command")));
 	else {
 		mac = mkmacro(-1, 0, 0, cmd);
 		ret = exmacro(mac, 1);
@@ -548,7 +548,7 @@ B *cmdhist = NULL;
 
 int uexecmd(BW *bw)
 {
-	if (wmkpw(bw->parent, US "cmd: ", &cmdhist, docmd, US "cmd", NULL, cmdcmplt, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(bw->parent, joe_gettext(US _("Command: ")), &cmdhist, docmd, US "cmd", NULL, cmdcmplt, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;

@@ -16,7 +16,7 @@ int mode_ins;
 static RETSIGTYPE fperr(int unused)
 {
 	if (!merr) {
-		merr = US "Float point exception";
+		merr = joe_gettext(_("Float point exception"));
 	}
 	REINSTALL_SIGHANDLER(SIGFPE, fperr);
 }
@@ -90,7 +90,7 @@ static double expr(int prec, int en,struct var **rtv)
 					++q;
 				if (*q!=')') {
 					if (!merr)
-						merr = US "Missing )";
+						merr = joe_gettext(_("Missing )"));
 				} else
 					*q++ = 0;
 				if (en) {
@@ -101,14 +101,14 @@ static double expr(int prec, int en,struct var **rtv)
 						rmmacro(m);
 					} else {
 						if (!merr)
-							merr = US "Syntax error in macro";
+							merr = joe_gettext(_("Syntax error in macro"));
 					}
 				} else {
 					ptr = q;
 				}
 			} else {
 				if (!merr)
-					merr = US "Missing (";
+					merr = joe_gettext(_("Missing ("));
 			}
 			c = *ptr;
 		} else if (!en) {
@@ -137,20 +137,20 @@ static double expr(int prec, int en,struct var **rtv)
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
-				merr = US "No numbers in block";
+				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 		} else if (!zcmp(s,US "cnt")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
-				merr = US "No numbers in block";
+				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 			x = cnt;
 		} else if (!zcmp(s,US "avg")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
-				merr = US "No numbers in block";
+				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 			if (cnt)
 				x /= (double)cnt;
@@ -159,7 +159,7 @@ static double expr(int prec, int en,struct var **rtv)
 			double avg;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
-				merr = US "No numbers in block";
+				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 			if (cnt) {
 				avg = x / (double)cnt;
@@ -174,7 +174,7 @@ static double expr(int prec, int en,struct var **rtv)
 				joe_free(e);
 				ptr = save;
 			} else if (!merr) {
-				merr = US "No block";
+				merr = joe_gettext(_("No block"));
 			}
 		} else {
 			v = get(s);
@@ -192,7 +192,7 @@ static double expr(int prec, int en,struct var **rtv)
 			++ptr;
 		else {
 			if (!merr)
-				merr = US "Missing )";
+				merr = joe_gettext(_("Missing )"));
 		}
 	} else if (*ptr == '-') {
 		++ptr;
@@ -211,13 +211,13 @@ static double expr(int prec, int en,struct var **rtv)
 			++ptr;
 		else {
 			if (!merr)
-				merr = US "Missing )";
+				merr = joe_gettext(_("Missing )"));
 		}
 		if (v && v->func)
 			x = v->func(y);
 		else {
 			if (!merr)
-				merr = US "Called object is not a function";
+				merr = joe_gettext(_("Called object is not a function"));
 		}
 		goto loop;
 	} else if (*ptr == '!' && ptr[1]!='=' && 10 >= prec) {
@@ -231,7 +231,7 @@ static double expr(int prec, int en,struct var **rtv)
 			x = y;
 		} else {
 			if (!merr)
-				merr = US "Factorial can only take positive integers";
+				merr = joe_gettext(_("Factorial can only take positive integers"));
 		}
 		v = 0;
 		goto loop;
@@ -329,7 +329,7 @@ static double expr(int prec, int en,struct var **rtv)
 			v->set = 1;
 		} else {
 			if (!merr)
-				merr = US "Left side of = is not an l-value";
+				merr = joe_gettext(_("Left side of = is not an l-value"));
 		}
 		v = 0;
 		goto loop;
@@ -343,7 +343,7 @@ static double eval(unsigned char *s)
 	double result = 0.0;
 	struct var *v;
 	if(++recur==1000) {
-		merr = US "Recursion depth exceeded";
+		merr = joe_gettext(_("Recursion depth exceeded"));
 		--recur;
 		return 0.0;
 	}
@@ -363,7 +363,7 @@ static double eval(unsigned char *s)
 					++ptr;
 				}
 			} else if (*ptr) {
-				merr = US "Extra junk after end of expr";
+				merr = joe_gettext(_("Extra junk after end of expr"));
 			}
 		}
 	}
@@ -498,11 +498,11 @@ static int domath(BW *bw, unsigned char *s, void *object, int *notify)
 	}
 	vsrm(s);
 	if (mode_hex)
-		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "0x%lX", (long)result);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%lX", (long)result);
 	else if (mode_eng)
-		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
 	else
-		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
 	if (bw->parent->watom->what != TYPETW || mode_ins) {
 		binsm(bw->cursor, sz(msgbuf));
 		pfwrd(bw->cursor, zlen(msgbuf));

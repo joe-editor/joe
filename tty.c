@@ -309,7 +309,7 @@ void ttopnn(void)
 
 	if (!termin) {
 		if (idleout ? (!(termin = stdin) || !(termout = stdout)) : (!(termin = fopen("/dev/tty", "r")) || !(termout = fopen("/dev/tty", "w")))) {
-			fprintf(stderr, "Couldn\'t open /dev/tty\n");
+			fprintf(stderr, (char *)joe_gettext(_("Couldn\'t open /dev/tty\n")));
 			exit(1);
 		} else {
 #ifdef SIGWINCH
@@ -726,7 +726,7 @@ int ttshell(unsigned char *cmd)
 		if (cmd)
 			execl((char *)s, (char *)s, "-c", cmd, NULL);
 		else {
-			fprintf(stderr, "You are at the command shell.  Type 'exit' to return\n");
+			fprintf(stderr, (char *)joe_gettext(_("You are at the command shell.  Type 'exit' to return\n")));
 			execl((char *)s, (char *)s, NULL);
 		}
 		_exit(0);
@@ -790,7 +790,7 @@ void ttsusp(void)
 	omode = ttymode;
 	mpxsusp();
 	ttclsn();
-	fprintf(stderr, "You have suspended the program.  Type 'fg' to return\n");
+	fprintf(stderr, (char *)joe_gettext(_("You have suspended the program.  Type 'fg' to return\n")));
 	kill(0, SIGTSTP);
 #ifdef junk
 	/* Hmmm... this should not have been necessary */
@@ -1150,7 +1150,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 				execve((char *)cmd, (char **)args, (char **)env);
 
 				/* If shell didn't execute */
-				joe_snprintf_1((char *)buf,sizeof(buf),"Couldn't execute shell '%s'\n",cmd);
+				joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Couldn't execute shell '%s'\n")),cmd);
 				write(1,(char *)buf,zlen(buf));
 				sleep(1);
 			}

@@ -264,7 +264,7 @@ static int doisrch(BW *bw, int dir)
 	isrch->pattern = vsncpy(NULL, 0, NULL, 0);
 	isrch->dir = dir;
 	isrch->quote = 0;
-	isrch->prompt = vsncpy(NULL, 0, sc("I-find: "));
+	isrch->prompt = vsncpy(NULL, 0, sz(joe_gettext(_("I-find: "))));
 	isrch->ofst = sLen(isrch->prompt);
 	return itype(bw, -1, isrch, NULL);
 }

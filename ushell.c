@@ -83,7 +83,7 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 		*notify = 1;
 	}
 	varm(s);
-	msgnw(bw->parent, "Sorry, no sub-processes in DOS (yet)");
+	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
 	return -1;
 #else
 	MPX *m;
@@ -92,7 +92,7 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 		*notify = 1;
 	}
 	if (bw->b->pid) {
-		msgnw(bw->parent, US "Program already running in this window");
+		msgnw(bw->parent, joe_gettext(_("Program already running in this window")));
 		varm(s);
 		return -1;
 	}
@@ -100,7 +100,7 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notif
 
 	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only))) {
 		varm(s);
-		msgnw(bw->parent, US "No ptys available");
+		msgnw(bw->parent, joe_gettext(_("No ptys available")));
 		return -1;
 	} else {
 		bw->b->pid = m->pid;
@@ -125,7 +125,7 @@ int ubknd(BW *bw)
         if (file_exists(sh=US "/usr/bin/bash")) goto ok;
         if (file_exists(sh=US "/bin/sh")) goto ok;
 
-        msgnw(bw->parent, US "\"SHELL\" environment variable not defined or exported");
+        msgnw(bw->parent, joe_gettext(_("\"SHELL\" environment variable not defined or exported")));
         return -1;
 
         ok:
@@ -161,7 +161,7 @@ B *runhist = NULL;
 
 int urun(BW *bw)
 {
-	if (wmkpw(bw->parent, US "Program to run: ", &runhist, dorun, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+	if (wmkpw(bw->parent, joe_gettext(_("Program to run: ")), &runhist, dorun, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
 		return 0;
 	} else {
 		return -1;
@@ -185,7 +185,7 @@ B *buildhist = NULL;
 int ubuild(BW *bw)
 {
 	if (buildhist) {
-		if ((bw=wmkpw(bw->parent, US "Build command: ", &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
+		if ((bw=wmkpw(bw->parent, joe_gettext(_("Build command: ")), &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
 			uuparw(bw);
 			u_goto_eol(bw);
 			bw->cursor->xcol = piscol(bw->cursor);
@@ -194,7 +194,7 @@ int ubuild(BW *bw)
 		return -1;
 		}
 	} else {
-		if (wmkpw(bw->parent, US "Enter build command (for example, 'make'): ", &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+		if (wmkpw(bw->parent, joe_gettext(_("Enter build command (for example, 'make'): ")), &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
 			return 0;
 		} else {
 		return -1;
@@ -209,7 +209,7 @@ int ugrep(BW *bw)
 	/* Set parser to grep */
 	bw->b->parseone = parseone_grep;
 	if (grephist) {
-		if ((bw=wmkpw(bw->parent, US "Grep command: ", &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
+		if ((bw=wmkpw(bw->parent, joe_gettext(_("Grep command: ")), &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
 			uuparw(bw);
 			u_goto_eol(bw);
 			bw->cursor->xcol = piscol(bw->cursor);
@@ -218,7 +218,7 @@ int ugrep(BW *bw)
 		return -1;
 		}
 	} else {
-		if (wmkpw(bw->parent, US "Enter grep command (for example, 'grep -n foo *.c'): ", &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+		if (wmkpw(bw->parent, joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): ")), &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
 			return 0;
 		} else {
 		return -1;
@@ -247,7 +247,7 @@ static int pidabort(BW *bw, int c, void *object, int *notify)
 int ukillpid(BW *bw)
 {
 	if (bw->b->pid) {
-		if (mkqw(bw->parent, sc("Kill program (y,n,^C)?"), pidabort, NULL, NULL, NULL)) {
+		if (mkqw(bw->parent, sz(joe_gettext(_("Kill program (y,n,^C)?"))), pidabort, NULL, NULL, NULL)) {
 			return 0;
 		} else {
 			return -1;

@@ -659,7 +659,7 @@ int urecord(BW *bw, int c)
 {
 	if (c >= '0' && c <= '9')
 		return dorecord(bw, c, NULL, NULL);
-	else if (mkqw(bw->parent, sc("Macro to record (0-9 or ^C to abort): "), dorecord, NULL, NULL, NULL))
+	else if (mkqw(bw->parent, sz(joe_gettext(_("Macro to record (0-9 or ^C to abort): "))), dorecord, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -715,7 +715,7 @@ int umacros(BW *bw)
 			mtext(buf, kbdmacro[x]);
 			binss(bw->cursor, buf);
 			p_goto_eol(bw->cursor);
-			joe_snprintf_2((char *)buf, JOE_MSGBUFSIZE, "\t^K %c\tMacro %d", x + '0', x);
+			joe_snprintf_2(buf, JOE_MSGBUFSIZE, "\t^K %c\tMacro %d", x + '0', x);
 			binss(bw->cursor, buf);
 			p_goto_eol(bw->cursor);
 			binsc(bw->cursor, '\n');
@@ -761,7 +761,7 @@ int uplay(BW *bw, int c)
 {
 	if (c >= '0' && c <= '9')
 		return doplay(bw, c, NULL, NULL);
-	else if (mkqwna(bw->parent, sc("Play-"), doplay, NULL, NULL, NULL))
+	else if (mkqwna(bw->parent, sz(joe_gettext(_("Play-"))), doplay, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -788,7 +788,7 @@ static int doarg(BW *bw, unsigned char *s, void *object, int *notify)
 
 int uarg(BW *bw)
 {
-	if (wmkpw(bw->parent, US "No. times to repeat next command (^C to abort): ", NULL, doarg, NULL, NULL, utypebw, NULL, NULL, locale_map,0))
+	if (wmkpw(bw->parent, joe_gettext(_("No. times to repeat next command (^C to abort): ")), NULL, doarg, NULL, NULL, utypebw, NULL, NULL, locale_map,0))
 		return 0;
 	else
 		return -1;
@@ -816,20 +816,20 @@ int uif(BW *bw)
 {
 	ifdepth++;
 	if (!ifflag) return 0;
-	if (wmkpw(bw->parent,US "If (^C to abort): ",NULL,doif,NULL,ifabrt,utypebw,NULL,NULL,locale_map,0)) return 0;
+	if (wmkpw(bw->parent,joe_gettext(_("If (^C to abort): ")),NULL,doif,NULL,ifabrt,utypebw,NULL,NULL,locale_map,0)) return 0;
 	else return -1;
 }
 
 int uelsif(BW *bw)
 {
 	if (!ifdepth) {
-		msgnw(bw->parent,US "Elsif without if");
+		msgnw(bw->parent,joe_gettext(_("Elsif without if")));
 		return -1;
 	} else if(ifflag) {
 		ifflag=iffail=0; /* don't let the next else/elsif get run */
 	} else if(ifdepth == iffail) {
 		ifflag=1;	/* so the script can type the condition :) */
-		if(wmkpw(bw->parent,US "Else if: ",NULL,doif,NULL,NULL,utypebw,NULL,NULL,locale_map,0)) return 0;
+		if(wmkpw(bw->parent,joe_gettext(_("Else if: ")),NULL,doif,NULL,NULL,utypebw,NULL,NULL,locale_map,0)) return 0;
 		else return -1;
 	}
 	return 0;
@@ -838,7 +838,7 @@ int uelsif(BW *bw)
 int uelse(BW *bw)
 {
 	if (!ifdepth) {
-		msgnw(bw->parent,US "Else without if");
+		msgnw(bw->parent,joe_gettext(_("Else without if")));
 		return -1;
 	} else if(ifdepth == iffail) {
 		ifflag = !ifflag;
@@ -849,7 +849,7 @@ int uelse(BW *bw)
 int uendif(BW *bw)
 {
 	if(!ifdepth) {
-		msgnw(bw->parent,US "Endif without if");
+		msgnw(bw->parent,joe_gettext(_("Endif without if")));
 		return -1;
 	}
 	if(iffail==ifdepth) iffail--, ifflag=1;
@@ -892,7 +892,7 @@ static int douarg(BW *bw, int c, void *object, int *notify)
 			*notify = 1;
 		return 0;
 	}
-	joe_snprintf_2((char *)msgbuf, JOE_MSGBUFSIZE, "Repeat %s%d", negarg ? "-" : "", unaarg);
+	joe_snprintf_2(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Repeat %s%d")), negarg ? "-" : "", unaarg);
 	if (mkqwna(bw->parent, sz(msgbuf), douarg, NULL, NULL, notify))
 		return 0;
 	else
@@ -905,7 +905,7 @@ int uuarg(BW *bw, int c)
 	negarg = 0;
 	if ((c >= '0' && c <= '9') || c == '-')
 		return douarg(bw, c, NULL, NULL);
-	else if (mkqwna(bw->parent, sc("Repeat"), douarg, NULL, NULL, NULL))
+	else if (mkqwna(bw->parent, sz(joe_gettext(_("Repeat"))), douarg, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;

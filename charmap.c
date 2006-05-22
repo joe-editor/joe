@@ -1286,13 +1286,13 @@ struct charmap *find_charmap(unsigned char *name)
 	p = (unsigned char *)getenv("HOME");
 	f = 0;
 	if (p) {
-		joe_snprintf_2((char *)buf,sizeof(buf),"%s/.joe/charmaps/%s",p,name);
+		joe_snprintf_2(buf,sizeof(buf),"%s/.joe/charmaps/%s",p,name);
 		f = fopen((char *)buf,"r");
 	}
 
 	/* Check JOERCcharmaps */
 	if (!f) {
-		joe_snprintf_2((char *)buf,sizeof(buf),"%scharmaps/%s",JOERC,name);
+		joe_snprintf_2(buf,sizeof(buf),"%scharmaps/%s",JOERC,name);
 		f = fopen((char *)buf,"r");
 	}
 
@@ -1357,7 +1357,7 @@ unsigned char **get_encodings()
 
 	p = (unsigned char *)getenv("HOME");
 	if (p) {
-		joe_snprintf_1((char *)buf,sizeof(buf),"%s/.joe/charmaps",p);
+		joe_snprintf_1(buf,sizeof(buf),"%s/.joe/charmaps",p);
 		if (!chpwd(buf) && (t = rexpnd(US "*"))) {
 			for (x = 0; x != aLEN(t); ++x)
 				if (zcmp(t[x],US "..")) {

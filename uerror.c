@@ -325,9 +325,9 @@ int parserrb(B *b)
 	n = parserr(b);
 	bw = find_a_good_bw(b);
 	if (n)
-		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%d messages found", n);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
 	else
-		joe_snprintf_0((char *)msgbuf, JOE_MSGBUFSIZE, "No messages found");
+		joe_snprintf_0(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("No messages found")));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
@@ -339,9 +339,9 @@ int uparserr(BW *bw)
 	freeall();
 	n = parserr(bw->b);
 	if (n)
-		joe_snprintf_1((char *)msgbuf, JOE_MSGBUFSIZE, "%d messages found", n);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
 	else
-		joe_snprintf_0((char *)msgbuf, JOE_MSGBUFSIZE, "No messages found");
+		joe_snprintf_0(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("No messages found")));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
@@ -372,7 +372,7 @@ int ucurrent_msg(BW *bw)
 		msgnw(bw->parent, errptr->msg);
 		return 0;
 	} else {
-		msgnw(bw->parent, US "No messages");
+		msgnw(bw->parent, joe_gettext(_("No messages")));
 		return -1;
 	}
 }
@@ -427,7 +427,7 @@ int ujump(BW *bw)
 int unxterr(BW *bw)
 {
 	if (errptr->link.next == &errors) {
-		msgnw(bw->parent, US "No more errors");
+		msgnw(bw->parent, joe_gettext(_("No more errors")));
 		return -1;
 	}
 	errptr = errptr->link.next;
@@ -438,7 +438,7 @@ int unxterr(BW *bw)
 int uprverr(BW *bw)
 {
 	if (errptr->link.prev == &errors) {
-		msgnw(bw->parent, US "No more errors");
+		msgnw(bw->parent, joe_gettext(_("No more errors")));
 		return -1;
 	}
 	errptr = errptr->link.prev;

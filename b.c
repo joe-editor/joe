@@ -28,13 +28,13 @@ int force = 0;
 VFILE *vmem;
 
 unsigned char *msgs[] = {
-	US "No error",
-	US "New File",
-	US "Error reading file",
-	US "Error seeking file",
-	US "Error opening file",
-	US "Error writing file",
-	US "File on disk is newer"
+	US _("No error"),
+	US _("New File"),
+	US _("Error reading file"),
+	US _("Error seeking file"),
+	US _("Error opening file"),
+	US _("Error writing file"),
+	US _("File on disk is newer")
 };
 
 /* Get size of gap (amount of free space) */
@@ -154,13 +154,13 @@ int udebug_joe(BW *bw)
 
 	for (b = bufs.link.next; b != &bufs; b = b->link.next) {
 		if (b->name)
-			joe_snprintf_1((char *)buf, sizeof(buf), "Buffer %s\n", b->name);
+			joe_snprintf_1(buf, sizeof(buf), "Buffer %s\n", b->name);
 		else
-			joe_snprintf_1((char *)buf, sizeof(buf), "Buffer 0x%p\n", (void *)b);
+			joe_snprintf_1(buf, sizeof(buf), "Buffer 0x%p\n", (void *)b);
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
 		for (p = b->bof->link.next; p != b->bof; p = p->link.next) {
-			joe_snprintf_1((char *)buf, sizeof(buf), "  Pointer created by %s\n", p->tracker);
+			joe_snprintf_1(buf, sizeof(buf), "  Pointer created by %s\n", p->tracker);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 		}
@@ -2700,18 +2700,18 @@ RETSIGTYPE ttsig(int sig)
 	if ((f = fdopen(tmpfd, "a")) == NULL)
 		_exit(-1);
 
-	fprintf(f, "\n*** Modified files in JOE when it aborted on %s", ctime(&tim));
+	fprintf(f, (char *)joe_gettext(_("\n*** These modified files were found in JOE when it aborted on %s")), ctime(&tim));
 	if (sig)
-		fprintf(f, "*** JOE was aborted by signal %d\n", sig);
+		fprintf(f, (char *)joe_gettext(_("*** JOE was aborted by UNIX signal %d\n")), sig);
 	else
-		fprintf(f, "*** JOE was aborted because the terminal closed\n");
+		fprintf(f, (char *)joe_gettext(_("*** JOE was aborted because the terminal closed\n")));
 	fflush(f);
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
 		if (b->changed) {
 			if (b->name)
-				fprintf(f, "\n*** File \'%s\'\n", b->name);
+				fprintf(f, (char *)joe_gettext(_("\n*** File \'%s\'\n")), b->name);
 			else
-				fprintf(f, "\n*** File \'(Unnamed)\'\n");
+				fprintf(f, (char *)joe_gettext(_("\n*** File \'(Unnamed)\'\n")));
 			fflush(f);
 			bsavefd(b->bof, fileno(f), b->eof->byte);
 		}
@@ -2737,7 +2737,7 @@ int lock_it(unsigned char *path,unsigned char *bf)
 	if (!host) host=US "here";
 	lock_name=vsncpy(sv(lock_name),sc(".#"));
 	lock_name=vsncpy(sv(lock_name),sv(name));
-	joe_snprintf_3((char *)buf,sizeof(buf),"%s@%s.%d",user,host,getpid());
+	joe_snprintf_3(buf,sizeof(buf),"%s@%s.%d",user,host,getpid());
 	if (!symlink((char *)buf,(char *)lock_name)) {
 		vsrm(lock_name);
 		vsrm(name);

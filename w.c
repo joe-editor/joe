@@ -819,7 +819,7 @@ int umwind(BW *bw)
 {
 	W *msgw;
 	if (!errbuf) {
-		msgnw(bw->parent, US "There is no message buffer");
+		msgnw(bw->parent, joe_gettext(_("There is no message buffer")));
 		return -1;
 	}
 
