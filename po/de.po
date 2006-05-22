@@ -1,0 +1,932 @@
+# JOE german translation
+# Copyright (C) 2006 Joseph H Allen
+# This file is distributed under the same license as the PACKAGE package.
+# Joe Allen
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: joe 3.3\n"
+"POT-Creation-Date: 2006-05-22 10:21-0400\n"
+"PO-Revision-Date: 2006-05-22 11:21-0400\n"
+"Last-Translator: Joe Allen <jhallen@world.std.com>\n"
+"Language-Team: German <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: b.c:31
+msgid "No error"
+msgstr "No error"
+
+#: b.c:32
+msgid "New File"
+msgstr "New File 1"
+
+#: b.c:33
+msgid "Error reading file"
+msgstr "Error reading file"
+
+#: b.c:34
+msgid "Error seeking file"
+msgstr "Error seeking file"
+
+#: b.c:35
+msgid "Error opening file"
+msgstr "Error opening file"
+
+#: b.c:36
+msgid "Error writing file"
+msgstr "Error writing file"
+
+#: b.c:37
+msgid "File on disk is newer"
+msgstr "File on disk is newer"
+
+#: b.c:2703
+#, c-format
+msgid ""
+"\n"
+"*** These modified files were found in JOE when it aborted on %s"
+msgstr ""
+"\n"
+"*** These modified files were found in JOE when it aborted on %s"
+
+#: b.c:2705
+#, c-format
+msgid "*** JOE was aborted by UNIX signal %d\n"
+msgstr "*** JOE was aborted by UNIX signal %d\n"
+
+#: b.c:2707
+msgid "*** JOE was aborted because the terminal closed\n"
+msgstr "*** JOE was aborted because the terminal closed\n"
+
+#: b.c:2712
+#, c-format
+msgid ""
+"\n"
+"*** File '%s'\n"
+msgstr ""
+"\n"
+"*** File '%s'\n"
+
+#: b.c:2714
+msgid ""
+"\n"
+"*** File '(Unnamed)'\n"
+msgstr ""
+"\n"
+"*** File '(Unnamed)'\n"
+
+#: bw.c:1240
+#, c-format
+msgid "** Line %ld  Col %ld  Offset %ld(0x%lx) **"
+msgstr "** Line %ld  Col %ld  Offset %ld(0x%lx) **"
+
+#: bw.c:1242
+#, c-format
+msgid "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **"
+msgstr "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **"
+
+#: cmd.c:209
+msgid "Could not create lock. (I) edit anyway, (Q) cancel? "
+msgstr "Could not create lock. (I) edit anyway, (Q) cancel? "
+
+#: cmd.c:210
+#, c-format
+msgid "Locked by %s (S)teal lock, (I) edit anyway, (Q) cancel? "
+msgstr "Locked by %s (S)teal lock, (I) edit anyway, (Q) cancel? "
+
+#: cmd.c:259
+msgid "Notice: File on disk changed! (hit ^C to continue)  "
+msgstr "Notice: File on disk changed! (hit ^C to continue)  "
+
+#: cmd.c:318
+msgid "Modify other window first for macro"
+msgstr "Modify other window first for macro"
+
+#: cmd.c:326
+msgid "Other buffer is read only"
+msgstr "Other buffer is read only"
+
+#: cmd.c:341
+msgid "Read only"
+msgstr "Read only"
+
+#: cmd.c:536
+msgid "No such command"
+msgstr "No such command"
+
+#: cmd.c:551
+msgid "Command: "
+msgstr "Command: "
+
+#: help.c:77
+#, c-format
+msgid ""
+"\n"
+"%d: EOF before end of help text\n"
+msgstr ""
+"\n"
+"%d: EOF before end of help text\n"
+
+#: kbd.c:352
+msgid "No such keymap"
+msgstr "No such keymap"
+
+#: kbd.c:381
+msgid "Change keymap: "
+msgstr "Change keymap: "
+
+#: macro.c:662
+msgid "Macro to record (0-9 or ^C to abort): "
+msgstr "Macro to record (0-9 or ^C to abort): "
+
+#: macro.c:764
+msgid "Play-"
+msgstr "Play-"
+
+#: macro.c:791
+msgid "No. times to repeat next command (^C to abort): "
+msgstr "No. times to repeat next command (^C to abort): "
+
+#: macro.c:819
+msgid "If (^C to abort): "
+msgstr "If (^C to abort): "
+
+#: macro.c:826
+msgid "Elsif without if"
+msgstr "Elsif without if"
+
+#: macro.c:832
+msgid "Else if: "
+msgstr "Else if: "
+
+#: macro.c:841
+msgid "Else without if"
+msgstr "Else without if"
+
+#: macro.c:852
+msgid "Endif without if"
+msgstr "Endif without if"
+
+#: macro.c:895
+#, c-format
+msgid "Repeat %s%d"
+msgstr "Repeat %s%d"
+
+#: macro.c:908
+msgid "Repeat"
+msgstr "Repeat"
+
+#: main.c:194
+msgid "Couldn't load termcap/terminfo entry\n"
+msgstr "Couldn't load termcap/terminfo entry\n"
+
+#: main.c:209 main.c:226
+#, c-format
+msgid "There were errors in '%s'.  Use it anyway?"
+msgstr "There were errors in '%s'.  Use it anyway?"
+
+#: main.c:255
+#, c-format
+msgid "Warning: %s is newer than your %s.\n"
+msgstr "Warning: %s is newer than your %s.\n"
+
+#: main.c:256
+#, c-format
+msgid "You should update or delete %s\n"
+msgstr "You should update or delete %s\n"
+
+#: main.c:257
+#, c-format
+msgid "Hit enter to continue with %s "
+msgstr "Hit enter to continue with %s "
+
+#: main.c:270 main.c:289
+#, c-format
+msgid "There were errors in '%s'.  Use it anyway (y,n)? "
+msgstr "There were errors in '%s'.  Use it anyway (y,n)? "
+
+#: main.c:297
+#, c-format
+msgid "Couldn't open '%s'\n"
+msgstr "Couldn't open '%s'\n"
+
+#: main.c:303
+msgid "rc file has no :main key binding section or no bindings.  Bye.\n"
+msgstr "rc file has no :main key binding section or no bindings.  Bye.\n"
+
+#: main.c:316
+#, c-format
+msgid "Unknown option '%s'\n"
+msgstr "Unknown option '%s'\n"
+
+#: main.c:433
+#, c-format
+msgid "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
+msgstr "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
+
+#: rc.c:627 rc.c:646 rc.c:658
+msgid "Value out of range"
+msgstr "Value out of range"
+
+#: rc.c:682
+msgid "Syntax definition file not found"
+msgstr "Syntax definition file not found"
+
+#: rc.c:757
+#, c-format
+msgid "%s encoding assumed for this file"
+msgstr "%s encoding assumed for this file"
+
+#: rc.c:760
+msgid "Character set not found"
+msgstr "Character set not found"
+
+#: rc.c:816
+#, c-format
+msgid "Delimiters (%s): "
+msgstr "Delimiters (%s): "
+
+#: rc.c:818
+msgid "Delimiters: "
+msgstr "Delimiters: "
+
+#: rc.c:968
+#, c-format
+msgid "Processing '%s'..."
+msgstr "Processing '%s'..."
+
+#: rc.c:1024
+#, c-format
+msgid ""
+"\n"
+"%s %d: Unknown option %s"
+msgstr ""
+"\n"
+"%s %d: Unknown option %s"
+
+#: rc.c:1057
+#, c-format
+msgid ""
+"\n"
+"%s %d: macro missing from :def"
+msgstr ""
+"\n"
+"%s %d: macro missing from :def"
+
+#: rc.c:1061
+#, c-format
+msgid ""
+"\n"
+"%s %d: command name missing from :def"
+msgstr ""
+"\n"
+"%s %d: command name missing from :def"
+
+#: rc.c:1072
+#, c-format
+msgid ""
+"\n"
+"%s %d: context name missing from :inherit"
+msgstr ""
+"\n"
+"%s %d: context name missing from :inherit"
+
+#: rc.c:1076
+#, c-format
+msgid ""
+"\n"
+"%s %d: No context selected for :inherit"
+msgstr ""
+"\n"
+"%s %d: No context selected for :inherit"
+
+#: rc.c:1087
+#, c-format
+msgid ""
+"\n"
+"%s %d: Couldn't open %s"
+msgstr ""
+"\n"
+"%s %d: Couldn't open %s"
+
+#: rc.c:1095
+#, c-format
+msgid ""
+"\n"
+"%s %d: :include missing file name"
+msgstr ""
+"\n"
+"%s %d: :include missing file name"
+
+#: rc.c:1108
+#, c-format
+msgid ""
+"\n"
+"%s %d: No context selected for :delete"
+msgstr ""
+"\n"
+"%s %d: No context selected for :delete"
+
+#: rc.c:1113
+#, c-format
+msgid ""
+"\n"
+"%s %d: Invalid context name"
+msgstr ""
+"\n"
+"%s %d: Invalid context name"
+
+#: rc.c:1124
+#, c-format
+msgid ""
+"\n"
+"%s %d: No context selected for macro to key-sequence binding"
+msgstr ""
+"\n"
+"%s %d: No context selected for macro to key-sequence binding"
+
+#: rc.c:1133
+#, c-format
+msgid ""
+"\n"
+"%s %d: Unknown command in macro"
+msgstr ""
+"\n"
+"%s %d: Unknown command in macro"
+
+#: rc.c:1149
+#, c-format
+msgid ""
+"\n"
+"%s %d: Bad key sequence '%s'"
+msgstr ""
+"\n"
+"%s %d: Bad key sequence '%s'"
+
+#: rc.c:1160
+msgid ""
+"\n"
+"done\n"
+msgstr ""
+"\n"
+"done\n"
+
+#: rc.c:1162
+msgid "done\n"
+msgstr "done\n"
+
+#: scrn.c:720
+msgid ""
+"Sorry, your terminal can't do absolute cursor positioning.\n"
+"It's broken\n"
+msgstr ""
+"Sorry, your terminal can't do absolute cursor positioning.\n"
+"It's broken\n"
+
+#: selinux.c:35 selinux.c:84 selinux.c:141
+#, c-format
+msgid "Could not get security context for %s"
+msgstr "Could not get security context for %s"
+
+#: selinux.c:41
+msgid ""
+"\n"
+"Could not get security context for "
+msgstr ""
+"\n"
+"Could not get security context for "
+
+#: selinux.c:51
+#, c-format
+msgid "Could not set security context for %s"
+msgstr "Could not set security context for %s"
+
+#: selinux.c:91
+#, c-format
+msgid "Could not set default security context for %s"
+msgstr "Could not set default security context for %s"
+
+#: selinux.c:113
+msgid "Could not reset default security context"
+msgstr "Could not reset default security context"
+
+#: selinux.c:146
+#, c-format
+msgid "%s Security Context %s"
+msgstr "%s Security Context %s"
+
+#: syntax.c:261
+#, c-format
+msgid "%s %d: Class already defined\n"
+msgstr "%s %d: Class already defined\n"
+
+#: syntax.c:341
+#, c-format
+msgid "%s %d: Missing )\n"
+msgstr "%s %d: Missing )\n"
+
+#: syntax.c:410
+#, c-format
+msgid "%s %d: missing parameter for ifdef\n"
+msgstr "%s %d: missing parameter for ifdef\n"
+
+#: syntax.c:420
+#, c-format
+msgid "%s %d: else with no matching if\n"
+msgstr "%s %d: else with no matching if\n"
+
+#: syntax.c:427
+#, c-format
+msgid "%s %d: endif with no matching if\n"
+msgstr "%s %d: endif with no matching if\n"
+
+#: syntax.c:431 syntax.c:559
+#, c-format
+msgid "%s %d: Missing subroutine name\n"
+msgstr "%s %d: Missing subroutine name\n"
+
+#: syntax.c:446
+#, c-format
+msgid "%s %d: Unknown control statement\n"
+msgstr "%s %d: Unknown control statement\n"
+
+#: syntax.c:449
+#, c-format
+msgid "%s %d: Missing control statement name\n"
+msgstr "%s %d: Missing control statement name\n"
+
+#: syntax.c:476
+#, c-format
+msgid "%s %d: Unknown class\n"
+msgstr "%s %d: Unknown class\n"
+
+#: syntax.c:479
+#, c-format
+msgid "%s %d: Missing color for state definition\n"
+msgstr "%s %d: Missing color for state definition\n"
+
+#: syntax.c:481 syntax.c:609
+#, c-format
+msgid "%s %d: Missing state name\n"
+msgstr "%s %d: Missing state name\n"
+
+#: syntax.c:502
+#, c-format
+msgid "%s %d: Bad string\n"
+msgstr "%s %d: Bad string\n"
+
+#: syntax.c:542 syntax.c:544 syntax.c:553 syntax.c:567 syntax.c:603
+#: syntax.c:605
+#, c-format
+msgid "%s %d: Missing value for option\n"
+msgstr "%s %d: Missing value for option\n"
+
+#: syntax.c:607 syntax.c:623
+#, c-format
+msgid "%s %d: Unknown option\n"
+msgstr "%s %d: Unknown option\n"
+
+#: syntax.c:611
+#, c-format
+msgid "%s %d: Missing string\n"
+msgstr "%s %d: Missing string\n"
+
+#: syntax.c:632
+#, c-format
+msgid "%s %d: Missing jump\n"
+msgstr "%s %d: Missing jump\n"
+
+#: syntax.c:634
+#, c-format
+msgid "%s %d: No state\n"
+msgstr "%s %d: No state\n"
+
+#: syntax.c:636
+#, c-format
+msgid "%s %d: Unknown character\n"
+msgstr "%s %d: Unknown character\n"
+
+#: syntax.c:643
+#, c-format
+msgid "%s %d: ifdef with no matching endif\n"
+msgstr "%s %d: ifdef with no matching endif\n"
+
+#: tab.c:212 tab.c:271
+msgid "Couldn't read directory "
+msgstr "Couldn't read directory "
+
+#: termcap.c:219
+msgid "Couldn't load termcap entry.  Using ansi default\n"
+msgstr "Couldn't load termcap entry.  Using ansi default\n"
+
+#: termcap.c:240
+#, c-format
+msgid "%s is out of date\n"
+msgstr "%s is out of date\n"
+
+#: tty.c:312
+msgid "Couldn't open /dev/tty\n"
+msgstr "Couldn't open /dev/tty\n"
+
+#: tty.c:729
+msgid "You are at the command shell.  Type 'exit' to return\n"
+msgstr "You are at the command shell.  Type 'exit' to return\n"
+
+#: tty.c:793
+msgid "You have suspended the program.  Type 'fg' to return\n"
+msgstr "You have suspended the program.  Type 'fg' to return\n"
+
+#: tty.c:1153
+#, c-format
+msgid "Couldn't execute shell '%s'\n"
+msgstr "Couldn't execute shell '%s'\n"
+
+#: tw.c:213
+msgid "Unnamed"
+msgstr "Unnamed"
+
+#: tw.c:219
+msgid "(Modified)"
+msgstr "(Modified)"
+
+#: tw.c:223
+msgid "(Read only)"
+msgstr "(Read only)"
+
+#: tw.c:329
+msgid "*SHELL*"
+msgstr "*SHELL*"
+
+#: tw.c:333
+#, c-format
+msgid "(Macro %d recording...)"
+msgstr "(Macro %d recording...)"
+
+#: tw.c:558 tw.c:584 ufile.c:951
+msgid "Lose changes to this file (y,n,^C)? "
+msgstr "Lose changes to this file (y,n,^C)? "
+
+#: ublock.c:284
+msgid "Selection cleared."
+msgstr "Selection cleared."
+
+#: ublock.c:292 ublock.c:309
+msgid "Selection started."
+msgstr "Selection started."
+
+#: ublock.c:417 ublock.c:503 ublock.c:559 ublock.c:887 ublock.c:921
+#: ublock.c:1083 ufile.c:397 umath.c:177 undo.c:453
+msgid "No block"
+msgstr "No block"
+
+#: ublock.c:756 ublock.c:839
+msgid "Selected lines not properly indented"
+msgstr "Selected lines not properly indented"
+
+#: ublock.c:1067 ushell.c:86
+msgid "Sorry, no sub-processes in DOS (yet)"
+msgstr "Sorry, no sub-processes in DOS (yet)"
+
+#: ublock.c:1072
+msgid "Command to filter block through (^C to abort): "
+msgstr "Command to filter block through (^C to abort): "
+
+#: ublock.c:1077
+msgid "Command to filter file through (^C to abort): "
+msgstr "Command to filter file through (^C to abort): "
+
+#: uedit.c:1388 utag.c:72
+msgid "Invalid line number"
+msgstr "Invalid line number"
+
+#: uedit.c:1395
+msgid "Go to line (^C to abort): "
+msgstr "Go to line (^C to abort): "
+
+#: uedit.c:1424
+msgid "Invalid column number"
+msgstr "Invalid column number"
+
+#: uedit.c:1431
+msgid "Go to column (^C to abort): "
+msgstr "Go to column (^C to abort): "
+
+#: uedit.c:1460
+msgid "Invalid byte number"
+msgstr "Invalid byte number"
+
+#: uedit.c:1467
+msgid "Go to byte (^C to abort): "
+msgstr "Go to byte (^C to abort): "
+
+#: uedit.c:1911
+msgid "Unicode (ISO-10646) character in hex (^C to abort): "
+msgstr "Unicode (ISO-10646) character in hex (^C to abort): "
+
+#: uedit.c:2036
+msgid "Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"
+msgstr "Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"
+
+#: uedit.c:2099
+msgid "Quote"
+msgstr "Quote"
+
+#: uedit.c:2166
+#, c-format
+msgid "Mark %d set"
+msgstr "Mark %d set"
+
+#: uedit.c:2180
+msgid "Set mark (0-9):"
+msgstr "Set mark (0-9):"
+
+#: uedit.c:2198
+#, c-format
+msgid "Mark %d not set"
+msgstr "Mark %d not set"
+
+#: uedit.c:2211
+msgid "Goto bookmark (0-9):"
+msgstr "Goto bookmark (0-9):"
+
+#: uedit.c:2243 usearch.c:987 utag.c:106
+msgid "Not found"
+msgstr "Not found"
+
+#: uedit.c:2259
+msgid "Forward to char: "
+msgstr "Forward to char: "
+
+#: uedit.c:2270
+msgid "Backward to char: "
+msgstr "Backward to char: "
+
+#: uedit.c:2290
+msgid "Message (^C to abort): "
+msgstr "Message (^C to abort): "
+
+#: uedit.c:2312
+msgid "Insert (^C to abort): "
+msgstr "Insert (^C to abort): "
+
+#: uerror.c:328 uerror.c:342
+#, c-format
+msgid "%d messages found"
+msgstr "%d messages found"
+
+#: uerror.c:330 uerror.c:344
+msgid "No messages found"
+msgstr "No messages found"
+
+#: uerror.c:375
+msgid "No messages"
+msgstr "No messages"
+
+#: uerror.c:430 uerror.c:441
+msgid "No more errors"
+msgstr "No more errors"
+
+#: ufile.c:39
+msgid "(Unnamed)"
+msgstr "(Unnamed)"
+
+#: ufile.c:44 ufile.c:51
+#, c-format
+msgid "File %s saved"
+msgstr "File %s saved"
+
+#: ufile.c:46 ufile.c:49
+#, c-format
+msgid "File %s not saved"
+msgstr "File %s not saved"
+
+#: ufile.c:53
+#, c-format
+msgid "File %s not changed so no update needed"
+msgstr "File %s not changed so no update needed"
+
+#: ufile.c:67
+msgid "Some files have not been saved."
+msgstr "Some files have not been saved."
+
+#: ufile.c:69
+msgid "All modified files have been saved."
+msgstr "All modified files have been saved."
+
+#: ufile.c:71
+msgid "No modified files, so no updates needed."
+msgstr "No modified files, so no updates needed."
+
+#: ufile.c:107
+msgid "System (^C to abort): "
+msgstr "System (^C to abort): "
+
+#: ufile.c:271
+msgid "Couldn't make backup file... file not saved"
+msgstr "Couldn't make backup file... file not saved"
+
+#: ufile.c:283
+msgid "Could not make backup file.  Save anyway (y,n,^C)? "
+msgstr "Could not make backup file.  Save anyway (y,n,^C)? "
+
+#: ufile.c:371 ufile.c:387
+#, c-format
+msgid "Block written to file %s"
+msgstr "Block written to file %s"
+
+#: ufile.c:450
+msgid "File exists. Overwrite (y,n,^C)? "
+msgstr "File exists. Overwrite (y,n,^C)? "
+
+#: ufile.c:457
+msgid "File on disk is newer. Overwrite (y,n,^C)? "
+msgstr "File on disk is newer. Overwrite (y,n,^C)? "
+
+#: ufile.c:472 ufile.c:840 ufile.c:1044
+msgid "Name of file to save (^C to abort): "
+msgstr "Name of file to save (^C to abort): "
+
+#: ufile.c:500
+msgid "Name of file to write (^C to abort): "
+msgstr "Name of file to write (^C to abort): "
+
+#: ufile.c:602
+msgid "Load original file from disk (y,n,^C)? "
+msgstr "Load original file from disk (y,n,^C)? "
+
+#: ufile.c:632
+msgid "Can't replace modified file"
+msgstr "Can't replace modified file"
+
+#: ufile.c:641
+msgid "Name of file to edit (^C to abort): "
+msgstr "Name of file to edit (^C to abort): "
+
+#: ufile.c:656 ufile.c:1026
+msgid "Name of buffer to edit (^C to abort): "
+msgstr "Name of buffer to edit (^C to abort): "
+
+#: ufile.c:712
+msgid "Name of scratch buffer to edit (^C to abort): "
+msgstr "Name of scratch buffer to edit (^C to abort): "
+
+#: ufile.c:806
+msgid "Name of file to insert (^C to abort): "
+msgstr "Name of file to insert (^C to abort): "
+
+#: ufile.c:874
+msgid "Save changes to this file (y,n,^C)? "
+msgstr "Save changes to this file (y,n,^C)? "
+
+#: ufile.c:1078
+#, c-format
+msgid "File %s has been modified.  Save it (y,n,^C)? "
+msgstr "File %s has been modified.  Save it (y,n,^C)? "
+
+#: uisrch.c:267
+msgid "I-find: "
+msgstr "I-find: "
+
+#: umath.c:19
+msgid "Float point exception"
+msgstr "Float point exception"
+
+#: umath.c:93 umath.c:195 umath.c:214
+msgid "Missing )"
+msgstr "Missing )"
+
+#: umath.c:104
+msgid "Syntax error in macro"
+msgstr "Syntax error in macro"
+
+#: umath.c:111
+msgid "Missing ("
+msgstr "Missing ("
+
+#: umath.c:140 umath.c:146 umath.c:153 umath.c:162
+msgid "No numbers in block"
+msgstr "No numbers in block"
+
+#: umath.c:220
+msgid "Called object is not a function"
+msgstr "Called object is not a function"
+
+#: umath.c:234
+msgid "Factorial can only take positive integers"
+msgstr "Factorial can only take positive integers"
+
+#: umath.c:332
+msgid "Left side of = is not an l-value"
+msgstr "Left side of = is not an l-value"
+
+#: umath.c:346
+msgid "Recursion depth exceeded"
+msgstr "Recursion depth exceeded"
+
+#: umath.c:366
+msgid "Extra junk after end of expr"
+msgstr "Extra junk after end of expr"
+
+#: undo.c:436
+msgid "Modified flag cleared"
+msgstr "Modified flag cleared"
+
+#: usearch.c:281 usearch.c:350
+msgid "Wrapped"
+msgstr "Wrapped"
+
+#: usearch.c:619
+msgid "Replace with (^C to abort): "
+msgstr "Replace with (^C to abort): "
+
+#: usearch.c:634
+msgid ""
+"case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to "
+"abort): "
+msgstr ""
+"case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to "
+"abort): "
+
+#: usearch.c:636
+msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "
+msgstr "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "
+
+#: usearch.c:712
+#, c-format
+msgid "Find (^C to abort) [%s]: "
+msgstr "Find (^C to abort) [%s]: "
+
+#: usearch.c:714
+msgid "Find (^C to abort): "
+msgstr "Find (^C to abort): "
+
+#: usearch.c:837
+msgid "Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"
+msgstr "Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"
+
+#: usearch.c:985
+msgid "Not found (search restricted to marked block)"
+msgstr "Not found (search restricted to marked block)"
+
+#: usearch.c:992
+msgid "Infinite loop aborted: your search repeatedly matched same place"
+msgstr "Infinite loop aborted: your search repeatedly matched same place"
+
+#: ushell.c:95
+msgid "Program already running in this window"
+msgstr "Program already running in this window"
+
+#: ushell.c:103
+msgid "No ptys available"
+msgstr "No ptys available"
+
+#: ushell.c:128
+msgid "\"SHELL\" environment variable not defined or exported"
+msgstr "\"SHELL\" environment variable not defined or exported"
+
+#: ushell.c:164
+msgid "Program to run: "
+msgstr "Program to run: "
+
+#: ushell.c:188
+msgid "Build command: "
+msgstr "Build command: "
+
+#: ushell.c:197
+msgid "Enter build command (for example, 'make'): "
+msgstr "Enter build command (for example, 'make'): "
+
+#: ushell.c:212
+msgid "Grep command: "
+msgstr "Grep command: "
+
+#: ushell.c:221
+msgid "Enter grep command (for example, 'grep -n foo *.c'): "
+msgstr "Enter grep command (for example, 'grep -n foo *.c'): "
+
+#: ushell.c:250
+msgid "Kill program (y,n,^C)?"
+msgstr "Kill program (y,n,^C)?"
+
+#: utag.c:26
+msgid "Couldn't open tags file"
+msgstr "Couldn't open tags file"
+
+#: utag.c:167
+msgid "Tag search: "
+msgstr "Tag search: "
+
+#: vfile.c:174
+msgid "vfile: out of memory\n"
+msgstr "vfile: out of memory\n"
+
+#: vfile.c:229
+#, c-format
+msgid "Couldn't open file '%s'\n"
+msgstr "Couldn't open file '%s'\n"
+
+#: w.c:822
+msgid "There is no message buffer"
+msgstr "There is no message buffer"

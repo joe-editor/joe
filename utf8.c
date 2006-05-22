@@ -7,13 +7,6 @@
  */
 #include "types.h"
 
-/* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
-   JOE uses a limited internal version instead */
-
-#ifndef CODESET
-#undef HAVE_SETLOCALE
-#endif
-
 /* Under AmigaOS we have setlocale() but don't have langinfo.h and associated stuff,
  * so we have to disable the whole piece of code
  */
@@ -29,6 +22,13 @@
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #	include <locale.h>
 #       include <langinfo.h>
+#endif
+
+/* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
+   JOE uses a limited internal version instead */
+
+#ifndef CODESET
+#undef HAVE_SETLOCALE
 #endif
 
 /* UTF-8 Encoder
@@ -362,12 +362,16 @@ void joe_locale()
 #endif
 
 
+	printf("Joe locale\n");
 #ifdef HAVE_SETLOCALE
+	printf("Set locale\n");
 	setlocale(LC_ALL,"");
 #ifdef ENABLE_NLS
 	/* Set up gettext() */
-	bindtextdomain(PACKAGE, LOCALEDIR);
-	textdomain(PACKAGE);
+	printf("Setting up gettext %s %s\n",PACKAGE,LOCALEDIR);
+	printf("%s\n",bindtextdomain(PACKAGE, LOCALEDIR));
+	printf("%s\n",textdomain(PACKAGE));
+	printf("%s\n",joe_gettext("New File"));
 #endif
 	codeset = zdup((unsigned char *)nl_langinfo(CODESET));
 #else

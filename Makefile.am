@@ -1,6 +1,9 @@
 AUTOMAKE_OPTIONS = foreign
+SUBDIRS = po
 
-EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA INSTALL.cvs \
+localedir = $(datadir)/locale
+
+EXTRA_DIST = config.rpath  COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA INSTALL.cvs \
 	TODO docs/help-system.html \
 	joerc.in jmacsrc.in jstarrc.in rjoerc.in jpicorc.in \
 	joe.1.in dir.c syntax/c.jsf.in syntax/perl.jsf.in syntax/verilog.jsf.in \
@@ -65,7 +68,7 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 
 
 bin_PROGRAMS = joe termidx
-INCLUDES = -DJOERC="\"$(DESTDIR)$(sysconf_joedir)/\""
+INCLUDES = -DJOERC="\"$(DESTDIR)$(sysconf_joedir)/\"" -DLOCALEDIR="\"$(localedir)\""
 
 joe_LDADD = -lm
 
@@ -88,3 +91,5 @@ distclean-local:
 	rm -f *~
 
 .PHONY: termcap
+
+
