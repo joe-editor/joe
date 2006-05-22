@@ -1100,7 +1100,11 @@ static int query_next(BW *bw, struct savereq *req,int flg,int *notify)
 int uquerysave(BW *bw)
 {
 	W *w = bw->parent;
-	B *first = bw->b;
+	B *first;
+
+	/* Get synchronized with buffer ring */
+	unbuf(bw);
+	first = bw->b;
 
 	/* Find a modified buffer */
 	do {
