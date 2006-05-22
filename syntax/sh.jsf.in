@@ -37,10 +37,16 @@
 :maybe_inc1 Idle
 	*		inc		buffer noeat
 	"`&()\\|;'\"<> 	\n"	idle	noeat
+	"\\"		skipquote
 	"-"		skipminus
 
 :skipminus Idle
 	*		inc1		buffer noeat
+	"\\"		skipquote
+	"`&()\\|;'\"<> 	\n"	idle	noeat
+
+:skipquote Idle
+	*		inc		buffer noeat
 	"`&()\\|;'\"<> 	\n"	idle	noeat
 
 :inc1 Var
@@ -97,7 +103,7 @@ done
 	*		idle
 
 :subst Var
-	*		idle
+	*		idle noeat
 	"("		string_bq1	recolor=-2
 	"\""		string_dq	recolor=-2
 	"\'"		string_sq	recolor=-2

@@ -1,8 +1,10 @@
-gettext(): figure out ./configure
+gettext:
+  use intl subdirectory?
+  use m4 subdirectory?
 
-=-=-=-=-=
+  help text and man page for each language?
 
-querysave problems?  it doesn't catch all files.
+  joerc.de_DE?
 
 =-=-=-=-=
 
@@ -89,8 +91,6 @@ Makefile.in and Makefile.am need to be the same as Makefile.
            last, at least clear these modes.
  when we change from hex back to normal, position the cursor at a valid
  character.
-
-1399448  want gettext support
 
 1218708  ? for unknown characters is not informative (at least highlight the ?)
 
@@ -323,8 +323,6 @@ regex: character classes? a-z matches any letter?
 
 can't load terminfo- should switch to termcap or provide compiled
 ANSI terminfo built in.
-
-gettext patch
 
 Perl compatible regex search.
 

@@ -1,7 +1,8 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = po
 
-localedir = $(datadir)/locale
+# This must match the definition in po/Makefile
+localedir = $(sysconfdir)/joe/locale
 
 EXTRA_DIST = config.rpath  COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA INSTALL.cvs \
 	TODO docs/help-system.html \
