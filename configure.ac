@@ -134,7 +134,7 @@ joe_REINSTALL_SIGHANDLERS
 #AC_SUBST(REQRD_LIBS)
 
 dnl OK lets try it...
-AM_GNU_GETTEXT([external])
+dnl AM_GNU_GETTEXT([external])
 
 AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 #ifndef PARAMS
@@ -148,7 +148,7 @@ AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 # Check for programs..
 AC_CHECK_PROG(SPELL,aspell,aspell,ispell)
 
-AC_CONFIG_FILES([Makefile po/Makefile.in
+AC_CONFIG_FILES([Makefile
 syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf syntax/sh.jsf syntax/python.jsf
 syntax/conf.jsf syntax/php.jsf syntax/mail.jsf syntax/pascal.jsf syntax/html.jsf
 syntax/vhdl.jsf syntax/fortran.jsf syntax/java.jsf syntax/xml.jsf syntax/tcl.jsf

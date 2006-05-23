@@ -39,12 +39,16 @@ typedef int pid_t;
 #include <time.h>
 #endif
 
+#define joe_gettext(s) my_gettext((char *)(s))
+
+/*
 #ifdef ENABLE_NLS
 #include <libintl.h>
 #define joe_gettext(s) (unsigned char *)gettext((char *)(s))
 #else
 #define joe_gettext(s) ((unsigned char *)(s))
 #endif
+*/
 
 /* Strings needing translation are marked with this macro */
 #define _(s) (s)
@@ -252,3 +256,4 @@ struct highlight_state {
 #include "vfile.h"
 #include "vs.h"
 #include "w.h"
+#include "gettext.h"

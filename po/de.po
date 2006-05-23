@@ -6,7 +6,6 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: joe 3.3\n"
-"Report-Msgid-Bugs-To: http://joe-editor.sourceforge.net\n"
 "POT-Creation-Date: 2006-05-22 22:56-0400\n"
 "PO-Revision-Date: 2006-05-22 11:21-0400\n"
 "Last-Translator: Joe Allen <jhallen@world.std.com>\n"
@@ -14,6 +13,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: http://joe-editor.sourceforge.net\n"
 
 #: b.c:31
 msgid "No error"

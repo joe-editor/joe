@@ -19,6 +19,11 @@
 #undef HAVE_SETLOCALE
 #endif
 
+/* If it looks old, forget it */
+#ifndef CODESET
+#undef HAVE_SETLOCALE
+#endif
+
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #	include <locale.h>
 #       include <langinfo.h>
@@ -26,10 +31,6 @@
 
 /* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
    JOE uses a limited internal version instead */
-
-#ifndef CODESET
-#undef HAVE_SETLOCALE
-#endif
 
 /* UTF-8 Encoder
  *
@@ -325,6 +326,9 @@ unsigned char *codeset;	/* Codeset of terminal */
 unsigned char *non_utf8_codeset;
 			/* Codeset of local language non-UTF-8 */
 
+unsigned char *locale_lang;
+			/* Our local language */
+
 struct charmap *locale_map;
 			/* Character map of terminal, default map for new files */
 
@@ -353,6 +357,7 @@ void joe_locale()
 	if ((t=zrchr(s,'.')))
 		*t = 0;
 
+	locale_lang = s;
 
 #ifdef HAVE_SETLOCALE
 	setlocale(LC_ALL,(char *)s);
@@ -362,12 +367,15 @@ void joe_locale()
 #endif
 
 
+	printf("joe_locale\n");
 #ifdef HAVE_SETLOCALE
+	printf("set_locale\n");
 	setlocale(LC_ALL,"");
 #ifdef ENABLE_NLS
 	/* Set up gettext() */
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
+	printf("%s %s %s\n",PACKAGE,LOCALEDIR,joe_gettext("New File"));
 #endif
 	codeset = zdup((unsigned char *)nl_langinfo(CODESET));
 #else
@@ -406,6 +414,7 @@ void joe_locale()
 	fdefault.charmap = locale_map;
 	pdefault.charmap = locale_map;
 #endif
+	init_gettext(locale_lang);
 }
 
 void to_utf8(struct charmap *map,unsigned char *s,int c)

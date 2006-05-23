@@ -1,0 +1,121 @@
+/* JOE's gettext() library.  Why?  Once again we can not rely on the
+ * system's or GNU's gettext being installed properly */
+
+#include "types.h"
+
+/* Load a .po file and add entries to hash table */
+
+HASH *gettext_ht;
+
+unsigned char *my_gettext(unsigned char *s)
+{
+	if (gettext_ht) {
+		unsigned char *r = htfind(gettext_ht, s);
+		if (r)
+			s = r;
+	}
+	return s;
+}
+
+int load_po(FILE *f)
+{
+	unsigned char buf[1024];
+	unsigned char msgid[1024];
+	unsigned char msgstr[1024];
+	unsigned char bf[8192];
+	struct charmap *po_map = locale_map;
+	int utf8 = 0;
+	int preload_flag = 0;
+	msgid[0] = 0;
+	msgstr[0] = 0;
+	while (preload_flag || fgets(buf,sizeof(buf)-1,f)) {
+		unsigned char *p;
+		preload_flag = 0;
+		p = buf;
+		parse_ws(&p, '#');
+		if (!parse_field(&p, US "msgid")) {
+			int ofst = 0;
+			int len;
+			msgid[0] = 0;
+			parse_ws(&p, '#');
+			while ((len = parse_string(&p, msgid + ofst, sizeof(msgid)-ofst)) >= 0) {
+				preload_flag = 0;
+				ofst += len;
+				parse_ws(&p, '#');
+				if (!*p) {
+					if (fgets(buf,sizeof(buf) - 1,f)) {
+						p = buf;
+						preload_flag = 1;
+						parse_ws(&p, '#');
+					} else {
+						goto bye;
+					}
+				}
+			}
+		} else if (!parse_field(&p, US "msgstr")) {
+			int ofst = 0;
+			int len;
+			msgstr[0] = 0;
+			parse_ws(&p, '#');
+			while ((len = parse_string(&p, msgstr + ofst, sizeof(msgstr)-ofst)) >= 0) {
+				preload_flag = 0;
+				ofst += len;
+				parse_ws(&p, '#');
+				if (!*p) {
+					if (fgets(buf,sizeof(buf) - 1,f)) {
+						p = buf;
+						preload_flag = 1;
+						parse_ws(&p, '#');
+					} else {
+						break;
+					}
+				}
+			}
+			if (msgid[0] && msgstr[0]) {
+				/* Convert to locale character map */
+				my_iconv(bf,locale_map,msgstr,po_map);
+				/* Add to hash table */
+				htadd(gettext_ht, zdup(msgid), zdup(bf));
+			} else if (!msgid[0] && msgstr[0]) {
+				unsigned char *p = strstr(msgstr, "charset=");
+				if (p) {
+					/* Copy character set name up to next delimiter */
+					int x;
+					p += sizeof("charset=");
+					while (*p == ' ' || *p == '\t') ++p;
+					for (x = 0; p[x] && p[x] !='\n' && p[x] != '\r' && p[x] != ' ' &&
+					            p[x] != '\t' && p[x] != ';' && p[x] != ','; ++x)
+					            msgid[x] = p[x];
+					msgid[x] = 0;
+					po_map = find_charmap(msgid);
+					if (!po_map)
+						po_map = locale_map;
+				}
+			}
+		}
+	}
+	bye:
+	fclose(f);
+	return 0;
+}
+
+/* Initialize my_gettext().  Call after locale_map has been set. */
+
+void init_gettext(unsigned char *s)
+{
+	FILE *f;
+	unsigned char buf[1024];
+	joe_snprintf_2(buf, sizeof(buf), "%slang/%s.po",JOERC,s);
+	if (f = fopen(buf, "r")) {
+		/* Try specific language, like en_GB */
+		gettext_ht = htmk(256);
+		load_po(f);
+	} else if (s[0] && s[1]) {
+		/* Try generic language, like en */
+		joe_snprintf_3(buf, sizeof(buf), "%slang/%c%c.po",JOERC,s[0],s[1]);
+		if (f = fopen(buf, "r")) {
+			gettext_ht = htmk(256);
+			load_po(f);
+		}
+	}
+}

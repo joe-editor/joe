@@ -1,5 +1,4 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = po
 
 # This must match the definition in po/Makefile
 localedir = $(datadir)/locale
@@ -16,7 +15,8 @@ EXTRA_DIST = m4/ChangeLog  config.rpath  COPYING LIST HACKING ChangeLog NEWS REA
 	syntax/ocaml.jsf.in syntax/4gl.jsf.in syntax/sml.jsf.in syntax/sql.jsf.in \
 	syntax/awk.jsf.in syntax/cobol.jsf.in syntax/sed.jsf.in syntax/ps.jsf.in \
 	cygbuild setup.hint xterm-patch xterm-readme syntax/ada.jsf.in syntax/troff.jsf.in \
-	syntax/haskell.jsf.in syntax/rexx.jsf.in syntax/skill.jsf.in syntax/lua.jsf.in syntax/ruby.jsf.in
+	syntax/haskell.jsf.in syntax/rexx.jsf.in syntax/skill.jsf.in syntax/lua.jsf.in syntax/ruby.jsf.in \
+	po/ru.po po/de.po po/joe.pot
 
 sysconf_joedir = $(sysconfdir)/joe
 sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
@@ -53,6 +53,9 @@ sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
 	syntax/troff.jsf syntax/haskell.jsf syntax/rexx.jsf syntax/skill.jsf \
 	syntax/lua.jsf syntax/ruby.jsf
 
+sysconf_langdir = $(sysconf_joedir)/lang
+sysconf_lang_DATA = po/ru.po po/de.po
+
 sysconf_charmapsdir = $(sysconf_joedir)/charmaps
 sysconf_charmaps_DATA = charmaps/klingon
 
@@ -65,11 +68,11 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	scrn.h tab.h termcap.h tty.h tw.h types.h ublock.h uedit.h uerror.h \
 	ufile.h uformat.h uisrch.h umath.h undo.h usearch.h ushell.h utag.h \
 	utils.h va.h vfile.h vs.h w.h utf8.h syntax.h i18n.h charmap.h mouse.h \
-	lattr.h
+	lattr.h gettext.h
 
 
 bin_PROGRAMS = joe termidx
-INCLUDES = -DJOERC="\"$(DESTDIR)$(sysconf_joedir)/\"" -DLOCALEDIR="\"$(localedir)\""
+INCLUDES = -DJOERC="\"$(DESTDIR)$(sysconf_joedir)/\""
 
 joe_LDADD = -lm
 
@@ -77,7 +80,7 @@ joe_SOURCES = b.c blocks.c bw.c cmd.c hash.c help.c kbd.c macro.c main.c menu.c 
 	path.c poshist.c pw.c queue.c qw.c rc.c regex.c scrn.c tab.c termcap.c \
 	tty.c tw.c ublock.c uedit.c uerror.c ufile.c uformat.c uisrch.c umath.c \
 	undo.c usearch.c ushell.c utag.c va.c vfile.c vs.c w.c utils.c syntax.c \
-	utf8.c selinux.c i18n.c charmap.c mouse.c lattr.c
+	utf8.c selinux.c i18n.c charmap.c mouse.c lattr.c gettext.c
 
 termidx_SOURCES = termidx.c
 
@@ -92,7 +95,3 @@ distclean-local:
 	rm -f *~
 
 .PHONY: termcap
-
-
-
-ACLOCAL_AMFLAGS = -I m4

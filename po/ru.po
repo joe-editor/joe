@@ -5,7 +5,6 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 2.9.6\n"
-"Report-Msgid-Bugs-To: http://joe-editor.sourceforge.net\n"
 "POT-Creation-Date: 2006-05-22 22:56-0400\n"
 "PO-Revision-Date: 2006-05-22 22:56-0400\n"
 "Last-Translator: Yura Kalinichenko <yuk@iceb.vinnitsa.com>\n"
@@ -13,6 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: http://joe-editor.sourceforge.net\n"
 
 #: b.c:31
 #, fuzzy
