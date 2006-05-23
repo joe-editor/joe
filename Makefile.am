@@ -4,7 +4,7 @@ SUBDIRS = po
 # This must match the definition in po/Makefile
 localedir = $(datadir)/locale
 
-EXTRA_DIST = config.rpath  COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA INSTALL.cvs \
+EXTRA_DIST = m4/ChangeLog  config.rpath  COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA INSTALL.cvs \
 	TODO docs/help-system.html \
 	joerc.in jmacsrc.in jstarrc.in rjoerc.in jpicorc.in \
 	joe.1.in dir.c syntax/c.jsf.in syntax/perl.jsf.in syntax/verilog.jsf.in \
@@ -94,3 +94,5 @@ distclean-local:
 .PHONY: termcap
 
 
+
+ACLOCAL_AMFLAGS = -I m4

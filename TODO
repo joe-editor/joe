@@ -1,3 +1,13 @@
+only give lock message if lock already exists.
+
+warning every minute about the lock is too much.
+
+option for compile window size (or make mfit prompt for the size)
+
+multi-file search & replace: check for deleted 'B *'.
+
+pipe into joe is broken.
+
 gettext:
   use intl subdirectory?
   use m4 subdirectory?
@@ -30,6 +40,8 @@ Then it could format this properly:
 % comment
 paragraph
 paragraph
+
+actually, this works.  autowrap doesn't do it (it should be an option).
 
 Compiling:
 ----------
@@ -104,8 +116,6 @@ Makefile.in and Makefile.am need to be the same as Makefile.
 1323285  joe does not repeatedly wrap searches (add an option for this?)
 
 1218717  lock message is confusing.  we need multi-line query windows
-
-1218716  options display is a mess
 
 1218686  syntax hightlight in hex mode (sheesh!)
 

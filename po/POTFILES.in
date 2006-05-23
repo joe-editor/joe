@@ -27,7 +27,6 @@ syntax.c
 tab.c
 termcap.c
 termidx.c
-test.c
 tty.c
 tw.c
 ublock.c
