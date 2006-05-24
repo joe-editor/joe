@@ -231,16 +231,42 @@ int main(int argc, char **real_argv, char **envv)
 	}
 #else
 
-	/* Name of system joerc file */
+	/* Name of system joerc file.  Try to find one with matching language... */
+	
+	/* Try full language: like joerc.de_DE */
 	t = vsncpy(NULL, 0, sc(JOERC));
 	t = vsncpy(sv(t), sv(run));
-	t = vsncpy(sv(t), sc("rc"));
+	t = vsncpy(sv(t), sc("rc."));
+	t = vsncpy(sv(t), sz(locale_lang));
 	if (!stat((char *)t,&sbuf))
 		time_rc = sbuf.st_mtime;
-	else
-		time_rc = 0;
+	else {
+		/* Try generic language: like joerc.de */
+		if (locale_lang[0] && locale_lang[1] && locale_lang[2]=='_') {
+			vsrm(t);
+			t = vsncpy(NULL, 0, sc(JOERC));
+			t = vsncpy(sv(t), sv(run));
+			t = vsncpy(sv(t), sc("rc."));
+			t = vsncpy(sv(t), locale_lang, 2);
+			if (!stat((char *)t,&sbuf))
+				time_rc = sbuf.st_mtime;
+			else
+				goto nope;
+		} else {
+			nope:
+			vsrm(t);
+			/* Try Joe's bad english */
+			t = vsncpy(NULL, 0, sc(JOERC));
+			t = vsncpy(sv(t), sv(run));
+			t = vsncpy(sv(t), sc("rc"));
+			if (!stat((char *)t,&sbuf))
+				time_rc = sbuf.st_mtime;
+			else
+				time_rc = 0;
+		}
+	}
 
-	/* Local joerc file */
+	/* User's joerc file */
 	s = (unsigned char *)getenv("HOME");
 	if (s) {
 		unsigned char buf[8];

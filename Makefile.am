@@ -1,12 +1,9 @@
 AUTOMAKE_OPTIONS = foreign
 
-# This must match the definition in po/Makefile
-localedir = $(datadir)/locale
-
 EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA INSTALL.cvs \
 	TODO docs/help-system.html \
-	joerc.in jmacsrc.in jstarrc.in rjoerc.in jpicorc.in \
-	joe.1.in dir.c syntax/c.jsf.in syntax/perl.jsf.in syntax/verilog.jsf.in \
+	rc/joerc.in rc/joerc.ru.in rc/jmacsrc.in rc/jstarrc.in rc/rjoerc.in rc/jpicorc.in \
+	man/joe.1.in man/joe.ru.1.in dir.c syntax/c.jsf.in syntax/perl.jsf.in syntax/verilog.jsf.in \
 	syntax/conf.jsf.in syntax/python.jsf.in syntax/php.jsf.in syntax/sh.jsf.in \
 	syntax/pascal.jsf.in syntax/html.jsf.in syntax/vhdl.jsf.in syntax/fortran.jsf.in \
 	syntax/java.jsf.in syntax/xml.jsf.in syntax/tcl.jsf.in charmaps/klingon.in HINTS \
@@ -19,27 +16,33 @@ EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA IN
 	po/ru.po po/de.po po/joe.pot
 
 sysconf_joedir = $(sysconfdir)/joe
-sysconf_joe_DATA = joerc jmacsrc jstarrc rjoerc jpicorc
+sysconf_joe_DATA = rc/joerc rc/joerc.ru rc/jmacsrc rc/jstarrc rc/rjoerc rc/jpicorc
 
-joerc : joerc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/joerc.in > $@
+rc/joerc : rc/joerc.in
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/joerc.in > $@
 
-jmacsrc : jmacsrc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/jmacsrc.in > $@
+rc/joerc.ru : rc/joerc.ru.in
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/joerc.ru.in > $@
 
-jstarrc : jstarrc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/jstarrc.in > $@
+rc/jmacsrc : rc/jmacsrc.in
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jmacsrc.in > $@
 
-jpicorc : jpicorc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/jpicorc.in > $@
+rc/jstarrc : rc/jstarrc.in
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jstarrc.in > $@
 
-rjoerc : rjoerc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rjoerc.in > $@
+rc/jpicorc : rc/jpicorc.in
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jpicorc.in > $@
 
-joe.1 : joe.1.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,; s,@BINDIR\@,$(DESTDIR)$(bindir),' < $(srcdir)/joe.1.in > $@
+rc/rjoerc : rc/rjoerc.in
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/rjoerc.in > $@
 
-MOSTLYCLEANFILES = joerc jmacsrc jstarrc rjoerc jpicorc joe.1
+man/joe.1 : man/joe.1.in
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,; s,@BINDIR\@,$(DESTDIR)$(bindir),' < $(srcdir)/man/joe.1.in > $@
+
+man/joe.ru.1 : man/joe.ru.1.in
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,; s,@BINDIR\@,$(DESTDIR)$(bindir),' < $(srcdir)/man/joe.ru.1.in > $@
+
+MOSTLYCLEANFILES = rc/joerc rc/joerc.ru rc/jmacsrc rc/jstarrc rc/rjoerc rc/jpicorc man/joe.1
 
 sysconf_syntaxdir = $(sysconf_joedir)/syntax
 sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
@@ -62,7 +65,7 @@ sysconf_charmaps_DATA = charmaps/klingon
 sysconf_docdir = $(sysconf_joedir)/doc
 sysconf_doc_DATA = LIST README HINTS ChangeLog HACKING NEWS
 
-man_MANS = joe.1
+man_MANS = man/joe.1 man/joe.ru.1
 noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	macro.h main.h menu.h path.h poshist.h pw.h queue.h qw.h rc.h regex.h \
 	scrn.h tab.h termcap.h tty.h tw.h types.h ublock.h uedit.h uerror.h \
