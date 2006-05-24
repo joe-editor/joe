@@ -1,4 +1,11 @@
-- Gettext support.
+- Better internationalization (i18n):
+
+    JOE now uses gettext(), so that internal messages can be translated to
+    the local language.  The /etc/joe directory now has a lang subdirectory
+    for the .po files.
+
+    Internationalized joerc files are now possible.  If LANG is en_GB, JOE
+    tries successively to load joerc.en_GB, joerc.en and joerc.
 
 - Multi-file search and replace:
 
@@ -21,6 +28,9 @@
             ^KF foo <return>
             re
             bar <return>
+
+            You can also use 'ls' and 'find' instead of grep to
+	    create the file list.
 
 - JOE now restores cursor position in previously visited files.
 
@@ -73,7 +83,8 @@
 
 - Automatic horizontal left scroll jumps by 5-10 columns.
 
-- New sytnax files: troff, Haskell, Cadance SKILL, REXX, LUA, RUBY
+- New syntax files: troff, Haskell, Cadance SKILL, REXX, LUA, RUBY.  Many of
+  the existing syntax files have been improved.
 
 JOE 3.3
 
