@@ -3,8 +3,6 @@
 
 #include "types.h"
 
-/* Load a .po file and add entries to hash table */
-
 HASH *gettext_ht;
 
 unsigned char *my_gettext(unsigned char *s)
@@ -16,6 +14,9 @@ unsigned char *my_gettext(unsigned char *s)
 	}
 	return s;
 }
+
+/* Load a .po file, convert entries to local character set and add them to
+ * hash table */
 
 int load_po(FILE *f)
 {
