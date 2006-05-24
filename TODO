@@ -1,14 +1,30 @@
--restore: it should work during ^K E too (maybe
+---------
+Must fix:
+---------
+
+  -restore: it should work during ^K E too (maybe
   in bload())?  Have an option for this.
+
+  bugs:
+
+    grep ... | joe     missing lots sometime
+
+    pipe into joe is broken.   If it's a regular file, we should just load it.
+
+  i18n man page not getting installed in the right place.
+
+  Make sure all file types are in all *rc files.
+
+  Make joerc merge program and run it on joerc.ru
+
+  Need utf-8 vs. 8-bit mode for help text in joerc file.
+
+=-=-=-=-=
 
 option for compile window size (or make mfit prompt for the size)
 
 multi-file search & replace: check for deleted 'B *'.
 
-pipe into joe is broken.   If it's a regular file, we should
-just load it.
-
-i18n man page not getting installed in the right place.
 
 =-=-=-=-=
 
@@ -36,6 +52,14 @@ paragraph
 paragraph
 
 actually, this works.  autowrap doesn't do it (it should be an option).
+
+/* blah blah blah <reformat>
+
+should not become
+/* blah
+/* blah
+/* blah
+ (special case for C).
 
 Compiling:
 ----------
@@ -73,14 +97,6 @@ long prompts for qw.c (locking message) should spill onto multiple lines.
 allow options after string and istring? -just note it for now.
 
 should force -Wall if compiler is gcc
-
-bugs:
-
-  grep ... | joe     missing lots sometime
-
-  grep | joe hangs?
-    because joe and grep both are reading from tty.  this is not a bug,
-    except there is no way to kill the grep (^D and ^C have been disabled).
 
 sh highlighter: $(   ) onle one level of parenthasis.
   inside of $( ) and ` ` should be parsed as commands.
@@ -280,11 +296,6 @@ can we highlight backup files? files ending in .in?
 
   -orphan will break -mnew, -mold macros (because macros are run without a
 window on the screen).
-
-- - - - - - - -
-
-- better string demarcation in highlighter (highlight all words with 's in
-  them- need to use pointers instead of buffer to refer to string)
 
 - - - - - - - -
 

@@ -367,15 +367,15 @@ void joe_locale()
 #endif
 
 
-	printf("joe_locale\n");
+	/* printf("joe_locale\n"); */
 #ifdef HAVE_SETLOCALE
-	printf("set_locale\n");
+	/* printf("set_locale\n"); */
 	setlocale(LC_ALL,"");
 #ifdef ENABLE_NLS
 	/* Set up gettext() */
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
-	printf("%s %s %s\n",PACKAGE,LOCALEDIR,joe_gettext("New File"));
+	/* printf("%s %s %s\n",PACKAGE,LOCALEDIR,joe_gettext("New File")); */
 #endif
 	codeset = zdup((unsigned char *)nl_langinfo(CODESET));
 #else
