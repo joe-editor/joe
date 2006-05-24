@@ -1,9 +1,5 @@
 -restore: it should work during ^K E too (maybe
-  in bload())?
-
-only give lock message if lock already exists.
-
-warning every minute about the lock is too much.
+  in bload())?  Have an option for this.
 
 option for compile window size (or make mfit prompt for the size)
 
@@ -12,13 +8,7 @@ multi-file search & replace: check for deleted 'B *'.
 pipe into joe is broken.   If it's a regular file, we should
 just load it.
 
-gettext:
-  use intl subdirectory?
-  use m4 subdirectory?
-
-  help text and man page for each language?
-
-  joerc.de_DE?
+i18n man page not getting installed in the right place.
 
 =-=-=-=-=
 

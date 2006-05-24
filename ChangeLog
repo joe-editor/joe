@@ -3,6 +3,10 @@ Wed May 24 11:01:53 EDT 2006
 	Rearrange directories.
 	Check for localized joerc file, like joerc.ru.
 
+	Only complain if lock already exists on a file.
+
+	Give file changed under us notice only once.
+
 Tue May 23 17:28:48 EDT 2006
 
 	Switch to my own gettext() library.

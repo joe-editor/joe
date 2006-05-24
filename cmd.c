@@ -257,6 +257,7 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 int file_changed(BW *bw,int c,B *b,int *notify)
 {
 	if (mkqw(bw->parent, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), file_changed, NULL, b, notify)) {
+		b->gave_notice = 1;
 		return 0;
 	} else
 		return -1;
@@ -304,7 +305,7 @@ int modify_logic(BW *bw,B *b)
 {
 	if (last_time > b->check_time + CHECK_INTERVAL) {
 		b->check_time = last_time;
-		if (!nomodcheck && check_mod(b)) {
+		if (!nomodcheck && !b->gave_notice && check_mod(b)) {
 			file_changed(bw,0,b,NULL);
 			return 0;
 		}

@@ -104,6 +104,7 @@ struct buffer {
 	int didfirst;		/* Set after user attempted first change */
 	long    mod_time;	/* Last modification time for file */
 	long	check_time;	/* Last time we checked the file on disk */
+	int	gave_notice;	/* Set if we already gave file changed notice for this file */
 	int	orphan;		/* Set if buffer is orphaned: refcount is bumped up by one in this case */
 	int	count;		/* Reference count.  Buffer is deleted if brm decrements count to 0 */
 	int	changed;

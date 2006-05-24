@@ -25,7 +25,6 @@ int load_po(FILE *f)
 	unsigned char msgstr[1024];
 	unsigned char bf[8192];
 	struct charmap *po_map = locale_map;
-	int utf8 = 0;
 	int preload_flag = 0;
 	msgid[0] = 0;
 	msgstr[0] = 0;
@@ -107,14 +106,14 @@ void init_gettext(unsigned char *s)
 	FILE *f;
 	unsigned char buf[1024];
 	joe_snprintf_2(buf, sizeof(buf), "%slang/%s.po",JOERC,s);
-	if (f = fopen(buf, "r")) {
+	if ((f = fopen(buf, "r"))) {
 		/* Try specific language, like en_GB */
 		gettext_ht = htmk(256);
 		load_po(f);
 	} else if (s[0] && s[1]) {
 		/* Try generic language, like en */
 		joe_snprintf_3(buf, sizeof(buf), "%slang/%c%c.po",JOERC,s[0],s[1]);
-		if (f = fopen(buf, "r")) {
+		if ((f = fopen(buf, "r"))) {
 			gettext_ht = htmk(256);
 			load_po(f);
 		}

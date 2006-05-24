@@ -212,6 +212,7 @@ static B *bmkchn(H *chn, B *prop, long amnt, long nlines)
 	b->internal = 1;
 	b->scratch = 0;
 	b->changed = 0;
+	b->gave_notice = 0;
 	b->locked = 0;
 	b->ignored_lock = 0;
 	b->didfirst = 0;
@@ -2738,7 +2739,8 @@ int lock_it(unsigned char *path,unsigned char *bf)
 	lock_name=vsncpy(sv(lock_name),sc(".#"));
 	lock_name=vsncpy(sv(lock_name),sv(name));
 	joe_snprintf_3(buf,sizeof(buf),"%s@%s.%d",user,host,getpid());
-	if (!symlink((char *)buf,(char *)lock_name)) {
+	/* Fail only if there was an existing lock */
+	if (!symlink((char *)buf,(char *)lock_name) || errno != EEXIST) {
 		vsrm(lock_name);
 		vsrm(name);
 		return 0;
