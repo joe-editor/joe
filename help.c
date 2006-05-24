@@ -97,6 +97,8 @@ struct help *find_context_help(unsigned char *name)
 	return tmp;
 }
 
+int help_is_utf8;
+
 /*
  * Display help text
  */
@@ -153,9 +155,13 @@ void help_display(Screen *t)
 					}
 				} else {
 					len = eol - str;
-					c = utf8_decode_fwrd(&str, &len);
-					width += joe_wcwidth(!!locale_map->type,
-							     c);
+					if (help_is_utf8)
+						c = utf8_decode_fwrd(&str, &len);
+					else {
+						c = *str++;
+						--len;
+					}
+					width += joe_wcwidth(!!locale_map->type, c);
 				}
 			}
 			str = start;
@@ -224,7 +230,12 @@ void help_display(Screen *t)
 						}
 					}
 					len = eol - str;
-					c = utf8_decode_fwrd(&str, &len);
+					if (help_is_utf8)
+						c = utf8_decode_fwrd(&str, &len);
+					else {
+						c = *str++;
+						--len;
+					}
 
 					outatr(locale_map,
 					       t->t, t->t->scrn + x + y * t->w, 

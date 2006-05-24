@@ -512,6 +512,7 @@ int ublksave(BW *bw)
 
 int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 {
+	int omid;
 	int ret = 0;
 	int er;
 	void *object;
@@ -556,6 +557,13 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		if (er == 0 && bw->o.mold) {
 			exmacro(bw->o.mold,1);
 		}
+		/* Restore cursor line */
+		pline(bw->cursor, get_file_pos(bw->b->name));
+		omid = mid;
+		mid = 1;
+		dofollows();
+		mid = omid;
+		
 		return ret;
 	} else if(c=='n' || c=='N') {
 		/* Edit already loaded buffer */
@@ -596,6 +604,12 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		if (er == 0 && bw->o.mold) {
 			exmacro(bw->o.mold,1);
 		}
+		/* Restore cursor line */
+		pline(bw->cursor, get_file_pos(bw->b->name));
+		omid = mid;
+		mid = 1;
+		dofollows();
+		mid = omid;
 		return ret;
 	} else {
 		/* FIXME: need abort handler to prevent leak */
@@ -721,6 +735,7 @@ int uscratch(BW *bw)
 static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 {
 	void *object = bw->object;
+	int omid;
 	int ret = 0;
 	int er;
 	W *w = bw->parent;
@@ -751,6 +766,12 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 	if (er == 0 && bw->o.mold) {
 		exmacro(bw->o.mold,1);
 	}
+	/* Restore cursor line */
+	pline(bw->cursor, get_file_pos(bw->b->name));
+	omid = mid;
+	mid = 1;
+	dofollows();
+	mid = omid;
 	return ret;
 }
 

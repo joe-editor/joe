@@ -17,5 +17,6 @@ int u_help PARAMS((BASE *base));		/* toggle help on/off */
 int u_help_next PARAMS((BASE *base));		/* goto next help screen */
 int u_help_prev PARAMS((BASE *base));		/* goto prev help screen */
 extern int bg_help;				/* Background color for help */
+extern int help_is_utf8;			/* Set if help text is UTF-8 */
 
 #endif

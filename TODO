@@ -2,8 +2,11 @@
 Must fix:
 ---------
 
-  -restore: it should work during ^K E too (maybe
-  in bload())?  Have an option for this.
+  Russian joerc is not really a joerc file.
+
+  -restore:
+     when we exit jmacs (querysave, killjoe), line numbers are not saved.
+
 
   bugs:
 
@@ -11,13 +14,13 @@ Must fix:
 
     pipe into joe is broken.   If it's a regular file, we should just load it.
 
+
   i18n man page not getting installed in the right place.
 
-  Make sure all file types are in all *rc files.
+
+  Make sure all file types and options are in all *rc files.
 
   Make joerc merge program and run it on joerc.ru
-
-  Need utf-8 vs. 8-bit mode for help text in joerc file.
 
 =-=-=-=-=
 

@@ -324,6 +324,7 @@ struct glopts {
 	{US "floatmouse",	0, &floatmouse, 0, US _("Clicking can move the cursor past end of line"), US _("Clicking past end of line moves cursor to the end"), US _("  Click past end ") },
 	{US "rtbutton",	0, &rtbutton, 0, US _("Mouse action is done with the right button"), US _("Mouse action is done with the left button"), US _("  Right button ") },
 	{US "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
+	{US "help_is_utf8",	0, &help_is_utf8, NULL, 0, 0, 0 },
 	{US "noxon",	0, &noxon, NULL, 0, 0, 0 },
 	{US "orphan",	0, &orphan, NULL, 0, 0, 0 },
 	{US "help",	0, &help, NULL, 0, 0, 0 },

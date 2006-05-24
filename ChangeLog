@@ -7,6 +7,11 @@ Wed May 24 11:01:53 EDT 2006
 
 	Give file changed under us notice only once.
 
+	New -help_is_utf8 option- allows help text to be either UTF-8 or
+	8-bit.
+
+	Restore cursor position works for ^K E
+
 Tue May 23 17:28:48 EDT 2006
 
 	Switch to my own gettext() library.
