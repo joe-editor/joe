@@ -43,41 +43,8 @@ bin_PROGRAMS = joe$(EXEEXT) termidx$(EXEEXT)
 DIST_COMMON = README $(am__configure_deps) $(noinst_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/autoconf.h.in $(top_srcdir)/charmaps/klingon.in \
-	$(top_srcdir)/configure $(top_srcdir)/syntax/4gl.jsf.in \
-	$(top_srcdir)/syntax/ada.jsf.in \
-	$(top_srcdir)/syntax/asm.jsf.in \
-	$(top_srcdir)/syntax/awk.jsf.in $(top_srcdir)/syntax/c.jsf.in \
-	$(top_srcdir)/syntax/cobol.jsf.in \
-	$(top_srcdir)/syntax/conf.jsf.in \
-	$(top_srcdir)/syntax/csh.jsf.in \
-	$(top_srcdir)/syntax/css.jsf.in \
-	$(top_srcdir)/syntax/diff.jsf.in \
-	$(top_srcdir)/syntax/fortran.jsf.in \
-	$(top_srcdir)/syntax/haskell.jsf.in \
-	$(top_srcdir)/syntax/html.jsf.in \
-	$(top_srcdir)/syntax/java.jsf.in \
-	$(top_srcdir)/syntax/lisp.jsf.in \
-	$(top_srcdir)/syntax/lua.jsf.in \
-	$(top_srcdir)/syntax/mail.jsf.in \
-	$(top_srcdir)/syntax/mason.jsf.in \
-	$(top_srcdir)/syntax/ocaml.jsf.in \
-	$(top_srcdir)/syntax/pascal.jsf.in \
-	$(top_srcdir)/syntax/perl.jsf.in \
-	$(top_srcdir)/syntax/php.jsf.in $(top_srcdir)/syntax/ps.jsf.in \
-	$(top_srcdir)/syntax/python.jsf.in \
-	$(top_srcdir)/syntax/rexx.jsf.in \
-	$(top_srcdir)/syntax/ruby.jsf.in \
-	$(top_srcdir)/syntax/sed.jsf.in $(top_srcdir)/syntax/sh.jsf.in \
-	$(top_srcdir)/syntax/skill.jsf.in \
-	$(top_srcdir)/syntax/sml.jsf.in \
-	$(top_srcdir)/syntax/sql.jsf.in \
-	$(top_srcdir)/syntax/tcl.jsf.in \
-	$(top_srcdir)/syntax/tex.jsf.in \
-	$(top_srcdir)/syntax/troff.jsf.in \
-	$(top_srcdir)/syntax/verilog.jsf.in \
-	$(top_srcdir)/syntax/vhdl.jsf.in \
-	$(top_srcdir)/syntax/xml.jsf.in COPYING ChangeLog INSTALL NEWS \
-	TODO config.guess config.sub depcomp install-sh missing \
+	$(top_srcdir)/configure COPYING ChangeLog INSTALL NEWS TODO \
+	config.guess config.sub depcomp install-sh missing \
 	mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -89,22 +56,10 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno configure.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = autoconf.h
-CONFIG_CLEAN_FILES = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
-	syntax/sh.jsf syntax/python.jsf syntax/conf.jsf syntax/php.jsf \
-	syntax/mail.jsf syntax/pascal.jsf syntax/html.jsf \
-	syntax/vhdl.jsf syntax/fortran.jsf syntax/java.jsf \
-	syntax/xml.jsf syntax/tcl.jsf charmaps/klingon syntax/lisp.jsf \
-	syntax/csh.jsf syntax/mason.jsf syntax/diff.jsf syntax/asm.jsf \
-	syntax/css.jsf syntax/tex.jsf syntax/ocaml.jsf syntax/4gl.jsf \
-	syntax/sml.jsf syntax/sql.jsf syntax/awk.jsf syntax/cobol.jsf \
-	syntax/sed.jsf syntax/ps.jsf syntax/ada.jsf syntax/troff.jsf \
-	syntax/haskell.jsf syntax/rexx.jsf syntax/skill.jsf \
-	syntax/lua.jsf syntax/ruby.jsf
-am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
+CONFIG_CLEAN_FILES = charmaps/klingon
+am__installdirs = "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(sysconf_charmapsdir)" \
-	"$(DESTDIR)$(sysconf_docdir)" "$(DESTDIR)$(sysconf_joedir)" \
-	"$(DESTDIR)$(sysconf_langdir)" \
-	"$(DESTDIR)$(sysconf_syntaxdir)"
+	"$(DESTDIR)$(sysconf_docdir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_joe_OBJECTS = b.$(OBJEXT) blocks.$(OBJEXT) bw.$(OBJEXT) \
@@ -134,9 +89,12 @@ CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(joe_SOURCES) $(termidx_SOURCES)
 DIST_SOURCES = $(joe_SOURCES) $(termidx_SOURCES)
-man1dir = $(mandir)/man1
-NROFF = nroff
-MANS = $(man_MANS)
+RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
+	html-recursive info-recursive install-data-recursive \
+	install-exec-recursive install-info-recursive \
+	install-recursive installcheck-recursive installdirs-recursive \
+	pdf-recursive ps-recursive uninstall-info-recursive \
+	uninstall-recursive
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -145,15 +103,11 @@ am__vpath_adj = case $$p in \
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 sysconf_charmapsDATA_INSTALL = $(INSTALL_DATA)
 sysconf_docDATA_INSTALL = $(INSTALL_DATA)
-sysconf_joeDATA_INSTALL = $(INSTALL_DATA)
-sysconf_langDATA_INSTALL = $(INSTALL_DATA)
-sysconf_syntaxDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(sysconf_charmaps_DATA) $(sysconf_doc_DATA) \
-	$(sysconf_joe_DATA) $(sysconf_lang_DATA) \
-	$(sysconf_syntax_DATA)
+DATA = $(sysconf_charmaps_DATA) $(sysconf_doc_DATA)
 HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
+DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -254,43 +208,16 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 AUTOMAKE_OPTIONS = foreign
+SUBDIRS = man rc po syntax
 EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA INSTALL.cvs \
-	TODO docs/help-system.html \
-	rc/joerc.in rc/jicerc.ru.in rc/jmacsrc.in rc/jstarrc.in rc/rjoerc.in rc/jpicorc.in \
-	man/joe.1.in man/joe.ru.1.in dir.c syntax/c.jsf.in syntax/perl.jsf.in syntax/verilog.jsf.in \
-	syntax/conf.jsf.in syntax/python.jsf.in syntax/php.jsf.in syntax/sh.jsf.in \
-	syntax/pascal.jsf.in syntax/html.jsf.in syntax/vhdl.jsf.in syntax/fortran.jsf.in \
-	syntax/java.jsf.in syntax/xml.jsf.in syntax/tcl.jsf.in charmaps/klingon.in HINTS \
-	syntax/lisp.jsf.in syntax/csh.jsf.in syntax/mail.jsf.in syntax/mason.jsf.in \
-	syntax/diff.jsf.in syntax/asm.jsf.in syntax/tex.jsf.in syntax/css.jsf.in \
-	syntax/ocaml.jsf.in syntax/4gl.jsf.in syntax/sml.jsf.in syntax/sql.jsf.in \
-	syntax/awk.jsf.in syntax/cobol.jsf.in syntax/sed.jsf.in syntax/ps.jsf.in \
-	cygbuild setup.hint xterm-patch xterm-readme syntax/ada.jsf.in syntax/troff.jsf.in \
-	syntax/haskell.jsf.in syntax/rexx.jsf.in syntax/skill.jsf.in syntax/lua.jsf.in syntax/ruby.jsf.in \
-	po/ru.po po/de.po po/joe.pot
+	TODO docs/help-system.html dir.c charmaps/klingon.in HINTS \
+	cygbuild setup.hint xterm-patch xterm-readme
 
 sysconf_joedir = $(sysconfdir)/joe
-sysconf_joe_DATA = rc/joerc rc/jicerc.ru rc/jmacsrc rc/jstarrc rc/rjoerc rc/jpicorc
-MOSTLYCLEANFILES = rc/joerc rc/jicerc.ru rc/jmacsrc rc/jstarrc rc/rjoerc rc/jpicorc man/joe.1
-sysconf_syntaxdir = $(sysconf_joedir)/syntax
-sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
-	syntax/conf.jsf syntax/python.jsf syntax/php.jsf syntax/sh.jsf \
-	syntax/mail.jsf syntax/pascal.jsf syntax/html.jsf syntax/vhdl.jsf \
-	syntax/fortran.jsf syntax/java.jsf syntax/xml.jsf syntax/tcl.jsf \
-	syntax/lisp.jsf syntax/csh.jsf syntax/mason.jsf syntax/diff.jsf \
-	syntax/asm.jsf syntax/tex.jsf syntax/css.jsf syntax/ocaml.jsf \
-	syntax/4gl.jsf syntax/sml.jsf syntax/sql.jsf syntax/awk.jsf \
-	syntax/cobol.jsf syntax/sed.jsf syntax/ps.jsf syntax/ada.jsf \
-	syntax/troff.jsf syntax/haskell.jsf syntax/rexx.jsf syntax/skill.jsf \
-	syntax/lua.jsf syntax/ruby.jsf
-
-sysconf_langdir = $(sysconf_joedir)/lang
-sysconf_lang_DATA = po/ru.po po/de.po
 sysconf_charmapsdir = $(sysconf_joedir)/charmaps
 sysconf_charmaps_DATA = charmaps/klingon
 sysconf_docdir = $(sysconf_joedir)/doc
 sysconf_doc_DATA = LIST README HINTS ChangeLog HACKING NEWS
-man_MANS = man/joe.1 man/joe.ru.1
 noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	macro.h main.h menu.h path.h poshist.h pw.h queue.h qw.h rc.h regex.h \
 	scrn.h tab.h termcap.h tty.h tw.h types.h ublock.h uedit.h uerror.h \
@@ -308,7 +235,7 @@ joe_SOURCES = b.c blocks.c bw.c cmd.c hash.c help.c kbd.c macro.c main.c menu.c 
 
 termidx_SOURCES = termidx.c
 all: autoconf.h
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
@@ -362,81 +289,7 @@ $(srcdir)/autoconf.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f autoconf.h stamp-h1
-syntax/c.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/c.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/perl.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/perl.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/verilog.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/verilog.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/sh.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/sh.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/python.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/python.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/conf.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/conf.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/php.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/php.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/mail.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/mail.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/pascal.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/pascal.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/html.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/html.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/vhdl.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/vhdl.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/fortran.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/fortran.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/java.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/java.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/xml.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/xml.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/tcl.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/tcl.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
 charmaps/klingon: $(top_builddir)/config.status $(top_srcdir)/charmaps/klingon.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/lisp.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/lisp.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/csh.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/csh.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/mason.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/mason.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/diff.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/diff.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/asm.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/asm.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/css.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/css.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/tex.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/tex.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/ocaml.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/ocaml.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/4gl.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/4gl.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/sml.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/sml.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/sql.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/sql.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/awk.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/awk.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/cobol.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/cobol.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/sed.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/sed.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/ps.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/ps.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/ada.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/ada.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/troff.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/troff.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/haskell.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/haskell.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/rexx.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/rexx.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/skill.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/skill.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/lua.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/lua.jsf.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-syntax/ruby.jsf: $(top_builddir)/config.status $(top_srcdir)/syntax/ruby.jsf.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
@@ -536,51 +389,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
 uninstall-info-am:
-install-man1: $(man1_MANS) $(man_MANS)
-	@$(NORMAL_INSTALL)
-	test -z "$(man1dir)" || $(mkdir_p) "$(DESTDIR)$(man1dir)"
-	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
-	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
-	for i in $$l2; do \
-	  case "$$i" in \
-	    *.1*) list="$$list $$i" ;; \
-	  esac; \
-	done; \
-	for i in $$list; do \
-	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
-	  else file=$$i; fi; \
-	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
-	  case "$$ext" in \
-	    1*) ;; \
-	    *) ext='1' ;; \
-	  esac; \
-	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
-	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
-	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
-	  echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
-	  $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst"; \
-	done
-uninstall-man1:
-	@$(NORMAL_UNINSTALL)
-	@list='$(man1_MANS) $(dist_man1_MANS) $(nodist_man1_MANS)'; \
-	l2='$(man_MANS) $(dist_man_MANS) $(nodist_man_MANS)'; \
-	for i in $$l2; do \
-	  case "$$i" in \
-	    *.1*) list="$$list $$i" ;; \
-	  esac; \
-	done; \
-	for i in $$list; do \
-	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
-	  case "$$ext" in \
-	    1*) ;; \
-	    *) ext='1' ;; \
-	  esac; \
-	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
-	  inst=`echo $$inst | sed -e 's/^.*\///'`; \
-	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
-	  echo " rm -f '$(DESTDIR)$(man1dir)/$$inst'"; \
-	  rm -f "$(DESTDIR)$(man1dir)/$$inst"; \
-	done
 install-sysconf_charmapsDATA: $(sysconf_charmaps_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(sysconf_charmapsdir)" || $(mkdir_p) "$(DESTDIR)$(sysconf_charmapsdir)"
@@ -615,56 +423,76 @@ uninstall-sysconf_docDATA:
 	  echo " rm -f '$(DESTDIR)$(sysconf_docdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(sysconf_docdir)/$$f"; \
 	done
-install-sysconf_joeDATA: $(sysconf_joe_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(sysconf_joedir)" || $(mkdir_p) "$(DESTDIR)$(sysconf_joedir)"
-	@list='$(sysconf_joe_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(sysconf_joeDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(sysconf_joedir)/$$f'"; \
-	  $(sysconf_joeDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(sysconf_joedir)/$$f"; \
-	done
 
-uninstall-sysconf_joeDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(sysconf_joe_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(sysconf_joedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(sysconf_joedir)/$$f"; \
-	done
-install-sysconf_langDATA: $(sysconf_lang_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(sysconf_langdir)" || $(mkdir_p) "$(DESTDIR)$(sysconf_langdir)"
-	@list='$(sysconf_lang_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(sysconf_langDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(sysconf_langdir)/$$f'"; \
-	  $(sysconf_langDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(sysconf_langdir)/$$f"; \
-	done
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+$(RECURSIVE_TARGETS):
+	@failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+	  case $$f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	  || eval $$failcom; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
 
-uninstall-sysconf_langDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(sysconf_lang_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(sysconf_langdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(sysconf_langdir)/$$f"; \
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+	  case $$f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	dot_seen=no; \
+	case "$@" in \
+	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
+	  *) list='$(SUBDIRS)' ;; \
+	esac; \
+	rev=''; for subdir in $$list; do \
+	  if test "$$subdir" = "."; then :; else \
+	    rev="$$subdir $$rev"; \
+	  fi; \
+	done; \
+	rev="$$rev ."; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	  || eval $$failcom; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
 	done
-install-sysconf_syntaxDATA: $(sysconf_syntax_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(sysconf_syntaxdir)" || $(mkdir_p) "$(DESTDIR)$(sysconf_syntaxdir)"
-	@list='$(sysconf_syntax_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(sysconf_syntaxDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(sysconf_syntaxdir)/$$f'"; \
-	  $(sysconf_syntaxDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(sysconf_syntaxdir)/$$f"; \
-	done
-
-uninstall-sysconf_syntaxDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(sysconf_syntax_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(sysconf_syntaxdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(sysconf_syntaxdir)/$$f"; \
+ctags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) ctags); \
 	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
@@ -677,10 +505,23 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS:  $(HEADERS) $(SOURCES) autoconf.h.in $(TAGS_DEPENDENCIES) \
+TAGS: tags-recursive $(HEADERS) $(SOURCES) autoconf.h.in $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
+	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
+	  include_option=--etags-include; \
+	  empty_fix=.; \
+	else \
+	  include_option=--include; \
+	  empty_fix=; \
+	fi; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test ! -f $$subdir/TAGS || \
+	      tags="$$tags $$include_option=$$here/$$subdir/TAGS"; \
+	  fi; \
+	done; \
 	list='$(SOURCES) $(HEADERS) autoconf.h.in $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -693,7 +534,7 @@ TAGS:  $(HEADERS) $(SOURCES) autoconf.h.in $(TAGS_DEPENDENCIES) \
 	    $$tags $$unique; \
 	fi
 ctags: CTAGS
-CTAGS:  $(HEADERS) $(SOURCES) autoconf.h.in $(TAGS_DEPENDENCIES) \
+CTAGS: ctags-recursive $(HEADERS) $(SOURCES) autoconf.h.in $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
@@ -718,7 +559,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/charmaps $(distdir)/docs $(distdir)/man $(distdir)/po $(distdir)/rc $(distdir)/syntax
+	$(mkdir_p) $(distdir)/charmaps $(distdir)/docs $(distdir)/syntax
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -743,6 +584,21 @@ distdir: $(DISTFILES)
 	    test -f $(distdir)/$$file \
 	    || cp -p $$d/$$file $(distdir)/$$file \
 	    || exit 1; \
+	  fi; \
+	done
+	list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d "$(distdir)/$$subdir" \
+	    || $(mkdir_p) "$(distdir)/$$subdir" \
+	    || exit 1; \
+	    distdir=`$(am__cd) $(distdir) && pwd`; \
+	    top_distdir=`$(am__cd) $(top_distdir) && pwd`; \
+	    (cd $$subdir && \
+	      $(MAKE) $(AM_MAKEFLAGS) \
+	        top_distdir="$$top_distdir" \
+	        distdir="$$distdir/$$subdir" \
+	        distdir) \
+	      || exit 1; \
 	  fi; \
 	done
 	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
@@ -843,28 +699,28 @@ distcleancheck: distclean
 	       $(distcleancheck_listfiles) ; \
 	       exit 1; } >&2
 check-am: all-am
-check: check-am
-all-am: Makefile $(PROGRAMS) $(MANS) $(DATA) $(HEADERS) autoconf.h
-installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(sysconf_charmapsdir)" "$(DESTDIR)$(sysconf_docdir)" "$(DESTDIR)$(sysconf_joedir)" "$(DESTDIR)$(sysconf_langdir)" "$(DESTDIR)$(sysconf_syntaxdir)"; do \
+check: check-recursive
+all-am: Makefile $(PROGRAMS) $(DATA) $(HEADERS) autoconf.h
+installdirs: installdirs-recursive
+installdirs-am:
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(sysconf_charmapsdir)" "$(DESTDIR)$(sysconf_docdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
-install: install-am
-install-exec: install-exec-am
-install-data: install-data-am
-uninstall: uninstall-am
+install: install-recursive
+install-exec: install-exec-recursive
+install-data: install-data-recursive
+uninstall: uninstall-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-am
+installcheck: installcheck-recursive
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
 	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
 	  `test -z '$(STRIP)' || \
 	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
 mostlyclean-generic:
-	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 
 clean-generic:
 
@@ -874,112 +730,83 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-am
+clean: clean-recursive
 
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
-distclean: distclean-am
+distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-hdr distclean-local distclean-tags
 
-dvi: dvi-am
+dvi: dvi-recursive
 
 dvi-am:
 
-html: html-am
+html: html-recursive
 
-info: info-am
+info: info-recursive
 
 info-am:
 
-install-data-am: install-man install-sysconf_charmapsDATA \
-	install-sysconf_docDATA install-sysconf_joeDATA \
-	install-sysconf_langDATA install-sysconf_syntaxDATA
+install-data-am: install-sysconf_charmapsDATA install-sysconf_docDATA
 
 install-exec-am: install-binPROGRAMS
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) install-exec-hook
 
-install-info: install-info-am
+install-info: install-info-recursive
 
-install-man: install-man1
+install-man:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-am
+maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-am
+mostlyclean: mostlyclean-recursive
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic
 
-pdf: pdf-am
+pdf: pdf-recursive
 
 pdf-am:
 
-ps: ps-am
+ps: ps-recursive
 
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS uninstall-info-am uninstall-local \
-	uninstall-man uninstall-sysconf_charmapsDATA \
-	uninstall-sysconf_docDATA uninstall-sysconf_joeDATA \
-	uninstall-sysconf_langDATA uninstall-sysconf_syntaxDATA
+	uninstall-sysconf_charmapsDATA uninstall-sysconf_docDATA
 
-uninstall-man: uninstall-man1
+uninstall-info: uninstall-info-recursive
 
-.PHONY: CTAGS GTAGS all all-am am--refresh check check-am clean \
-	clean-binPROGRAMS clean-generic ctags dist dist-all dist-bzip2 \
-	dist-gzip dist-shar dist-tarZ dist-zip distcheck distclean \
+.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am am--refresh check \
+	check-am clean clean-binPROGRAMS clean-generic clean-recursive \
+	ctags ctags-recursive dist dist-all dist-bzip2 dist-gzip \
+	dist-shar dist-tarZ dist-zip distcheck distclean \
 	distclean-compile distclean-generic distclean-hdr \
-	distclean-local distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
-	install-data-am install-exec install-exec-am install-exec-hook \
-	install-info install-info-am install-man install-man1 \
+	distclean-local distclean-recursive distclean-tags \
+	distcleancheck distdir distuninstallcheck dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-exec install-exec-am \
+	install-exec-hook install-info install-info-am install-man \
 	install-strip install-sysconf_charmapsDATA \
-	install-sysconf_docDATA install-sysconf_joeDATA \
-	install-sysconf_langDATA install-sysconf_syntaxDATA \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-info-am \
-	uninstall-local uninstall-man uninstall-man1 \
-	uninstall-sysconf_charmapsDATA uninstall-sysconf_docDATA \
-	uninstall-sysconf_joeDATA uninstall-sysconf_langDATA \
-	uninstall-sysconf_syntaxDATA
+	install-sysconf_docDATA installcheck installcheck-am \
+	installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic maintainer-clean-recursive \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-recursive pdf pdf-am ps ps-am tags tags-recursive \
+	uninstall uninstall-am uninstall-binPROGRAMS uninstall-info-am \
+	uninstall-local uninstall-sysconf_charmapsDATA \
+	uninstall-sysconf_docDATA
 
-
-rc/joerc : rc/joerc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/joerc.in > $@
-
-rc/jicerc.ru : rc/jicerc.ru.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jicerc.ru.in > $@
-
-rc/jmacsrc : rc/jmacsrc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jmacsrc.in > $@
-
-rc/jstarrc : rc/jstarrc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jstarrc.in > $@
-
-rc/jpicorc : rc/jpicorc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jpicorc.in > $@
-
-rc/rjoerc : rc/rjoerc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/rjoerc.in > $@
-
-man/joe.1 : man/joe.1.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,; s,@BINDIR\@,$(DESTDIR)$(bindir),' < $(srcdir)/man/joe.1.in > $@
-
-man/joe.ru.1 : man/joe.ru.1.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,; s,@BINDIR\@,$(DESTDIR)$(bindir),' < $(srcdir)/man/joe.ru.1.in > $@
 
 install-exec-hook:
 	rm -f $(DESTDIR)$(bindir)/jmacs $(DESTDIR)$(bindir)/jstar $(DESTDIR)$(bindir)/rjoe $(DESTDIR)$(bindir)/jpico

@@ -14,6 +14,8 @@ Wed May 24 11:01:53 EDT 2006
 
 	Improve sh highlighter
 
+	Rearrange again: now we use SUBDIRS
+
 Tue May 23 17:28:48 EDT 2006
 
 	Switch to my own gettext() library.

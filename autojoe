@@ -1,0 +1,21 @@
+# The automake and autoconf commands which need to be run
+
+#!/bin/sh
+
+aclocal
+
+autoheader
+
+automake -a -c
+
+automake -a -c man/Makefile
+
+automake -a -c man/ru/Makefile
+
+automake -a -c rc/Makefile
+
+automake -a -c syntax/Makefile
+
+automake -a -c po/Makefile
+
+autoconf

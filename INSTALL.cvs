@@ -30,10 +30,7 @@ In case you aren't used to running autoconf manually to generate the
 necessary configure script, here are necessary steps:
 
 	cd directory_with_sources
-	aclocal
-	autoheader
-	automake -a -c
-	autoconf
+	./autojoe
 
 Now you can build joe as you are used to with the downloaded .tar.gz
 package, ie.:

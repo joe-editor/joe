@@ -1,63 +1,12 @@
 AUTOMAKE_OPTIONS = foreign
 
+SUBDIRS = man rc po syntax
+
 EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA INSTALL.cvs \
-	TODO docs/help-system.html \
-	rc/joerc.in rc/jicerc.ru.in rc/jmacsrc.in rc/jstarrc.in rc/rjoerc.in rc/jpicorc.in \
-	man/joe.1.in man/joe.ru.1.in dir.c syntax/c.jsf.in syntax/perl.jsf.in syntax/verilog.jsf.in \
-	syntax/conf.jsf.in syntax/python.jsf.in syntax/php.jsf.in syntax/sh.jsf.in \
-	syntax/pascal.jsf.in syntax/html.jsf.in syntax/vhdl.jsf.in syntax/fortran.jsf.in \
-	syntax/java.jsf.in syntax/xml.jsf.in syntax/tcl.jsf.in charmaps/klingon.in HINTS \
-	syntax/lisp.jsf.in syntax/csh.jsf.in syntax/mail.jsf.in syntax/mason.jsf.in \
-	syntax/diff.jsf.in syntax/asm.jsf.in syntax/tex.jsf.in syntax/css.jsf.in \
-	syntax/ocaml.jsf.in syntax/4gl.jsf.in syntax/sml.jsf.in syntax/sql.jsf.in \
-	syntax/awk.jsf.in syntax/cobol.jsf.in syntax/sed.jsf.in syntax/ps.jsf.in \
-	cygbuild setup.hint xterm-patch xterm-readme syntax/ada.jsf.in syntax/troff.jsf.in \
-	syntax/haskell.jsf.in syntax/rexx.jsf.in syntax/skill.jsf.in syntax/lua.jsf.in syntax/ruby.jsf.in \
-	po/ru.po po/de.po po/joe.pot
+	TODO docs/help-system.html dir.c charmaps/klingon.in HINTS \
+	cygbuild setup.hint xterm-patch xterm-readme autojoe
 
 sysconf_joedir = $(sysconfdir)/joe
-sysconf_joe_DATA = rc/joerc rc/jicerc.ru rc/jmacsrc rc/jstarrc rc/rjoerc rc/jpicorc
-
-rc/joerc : rc/joerc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/joerc.in > $@
-
-rc/jicerc.ru : rc/jicerc.ru.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jicerc.ru.in > $@
-
-rc/jmacsrc : rc/jmacsrc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jmacsrc.in > $@
-
-rc/jstarrc : rc/jstarrc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jstarrc.in > $@
-
-rc/jpicorc : rc/jpicorc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jpicorc.in > $@
-
-rc/rjoerc : rc/rjoerc.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/rjoerc.in > $@
-
-man/joe.1 : man/joe.1.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,; s,@BINDIR\@,$(DESTDIR)$(bindir),' < $(srcdir)/man/joe.1.in > $@
-
-man/joe.ru.1 : man/joe.ru.1.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,; s,@BINDIR\@,$(DESTDIR)$(bindir),' < $(srcdir)/man/joe.ru.1.in > $@
-
-MOSTLYCLEANFILES = rc/joerc rc/jicerc.ru rc/jmacsrc rc/jstarrc rc/rjoerc rc/jpicorc man/joe.1
-
-sysconf_syntaxdir = $(sysconf_joedir)/syntax
-sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
-	syntax/conf.jsf syntax/python.jsf syntax/php.jsf syntax/sh.jsf \
-	syntax/mail.jsf syntax/pascal.jsf syntax/html.jsf syntax/vhdl.jsf \
-	syntax/fortran.jsf syntax/java.jsf syntax/xml.jsf syntax/tcl.jsf \
-	syntax/lisp.jsf syntax/csh.jsf syntax/mason.jsf syntax/diff.jsf \
-	syntax/asm.jsf syntax/tex.jsf syntax/css.jsf syntax/ocaml.jsf \
-	syntax/4gl.jsf syntax/sml.jsf syntax/sql.jsf syntax/awk.jsf \
-	syntax/cobol.jsf syntax/sed.jsf syntax/ps.jsf syntax/ada.jsf \
-	syntax/troff.jsf syntax/haskell.jsf syntax/rexx.jsf syntax/skill.jsf \
-	syntax/lua.jsf syntax/ruby.jsf
-
-sysconf_langdir = $(sysconf_joedir)/lang
-sysconf_lang_DATA = po/ru.po po/de.po
 
 sysconf_charmapsdir = $(sysconf_joedir)/charmaps
 sysconf_charmaps_DATA = charmaps/klingon
@@ -65,14 +14,12 @@ sysconf_charmaps_DATA = charmaps/klingon
 sysconf_docdir = $(sysconf_joedir)/doc
 sysconf_doc_DATA = LIST README HINTS ChangeLog HACKING NEWS
 
-man_MANS = man/joe.1 man/joe.ru.1
 noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	macro.h main.h menu.h path.h poshist.h pw.h queue.h qw.h rc.h regex.h \
 	scrn.h tab.h termcap.h tty.h tw.h types.h ublock.h uedit.h uerror.h \
 	ufile.h uformat.h uisrch.h umath.h undo.h usearch.h ushell.h utag.h \
 	utils.h va.h vfile.h vs.h w.h utf8.h syntax.h i18n.h charmap.h mouse.h \
 	lattr.h gettext.h
-
 
 bin_PROGRAMS = joe termidx
 INCLUDES = -DJOERC="\"$(DESTDIR)$(sysconf_joedir)/\""
