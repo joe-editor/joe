@@ -2,8 +2,6 @@
 Must fix:
 ---------
 
-  Russian joerc is not really a joerc file.
-
   -restore:
      when we exit jmacs (querysave, killjoe), line numbers are not saved.
 
@@ -19,7 +17,6 @@ Must fix:
 
 
   Make sure all file types and options are in all *rc files.
-
   Make joerc merge program and run it on joerc.ru
 
 =-=-=-=-=

@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA INSTALL.cvs \
 	TODO docs/help-system.html \
-	rc/joerc.in rc/joerc.ru.in rc/jmacsrc.in rc/jstarrc.in rc/rjoerc.in rc/jpicorc.in \
+	rc/joerc.in rc/jicerc.ru.in rc/jmacsrc.in rc/jstarrc.in rc/rjoerc.in rc/jpicorc.in \
 	man/joe.1.in man/joe.ru.1.in dir.c syntax/c.jsf.in syntax/perl.jsf.in syntax/verilog.jsf.in \
 	syntax/conf.jsf.in syntax/python.jsf.in syntax/php.jsf.in syntax/sh.jsf.in \
 	syntax/pascal.jsf.in syntax/html.jsf.in syntax/vhdl.jsf.in syntax/fortran.jsf.in \
@@ -16,13 +16,13 @@ EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA IN
 	po/ru.po po/de.po po/joe.pot
 
 sysconf_joedir = $(sysconfdir)/joe
-sysconf_joe_DATA = rc/joerc rc/joerc.ru rc/jmacsrc rc/jstarrc rc/rjoerc rc/jpicorc
+sysconf_joe_DATA = rc/joerc rc/jicerc.ru rc/jmacsrc rc/jstarrc rc/rjoerc rc/jpicorc
 
 rc/joerc : rc/joerc.in
 	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/joerc.in > $@
 
-rc/joerc.ru : rc/joerc.ru.in
-	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/joerc.ru.in > $@
+rc/jicerc.ru : rc/jicerc.ru.in
+	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jicerc.ru.in > $@
 
 rc/jmacsrc : rc/jmacsrc.in
 	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' < $(srcdir)/rc/jmacsrc.in > $@
@@ -42,7 +42,7 @@ man/joe.1 : man/joe.1.in
 man/joe.ru.1 : man/joe.ru.1.in
 	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,; s,@BINDIR\@,$(DESTDIR)$(bindir),' < $(srcdir)/man/joe.ru.1.in > $@
 
-MOSTLYCLEANFILES = rc/joerc rc/joerc.ru rc/jmacsrc rc/jstarrc rc/rjoerc rc/jpicorc man/joe.1
+MOSTLYCLEANFILES = rc/joerc rc/jicerc.ru rc/jmacsrc rc/jstarrc rc/rjoerc rc/jpicorc man/joe.1
 
 sysconf_syntaxdir = $(sysconf_joedir)/syntax
 sysconf_syntax_DATA = syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf \
