@@ -44,7 +44,7 @@ int help_init(FILE *fd,unsigned char *bf,int line)
 		tmp->lines = 0;
 		hlpsiz = 0;
 		hlpbsz = 0;
-		tmp->name = vsncpy(NULL, 0, sz(bf + 1) - 1);
+		tmp->name = vsncpy(NULL, 0, sz(bf + 1) - 1); /* -1 kill the \n */
 
 		while ((fgets((char *)buf, sizeof(buf), fd)) && (buf[0] != '}')) {
 			++line;

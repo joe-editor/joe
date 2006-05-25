@@ -980,13 +980,13 @@ int procrc(CAP *cap, unsigned char *name)
 			break;	/* Skip comment lines */
 
 		case '=':	/* Define a global color */
-			{
+			{ /* # introduces comment */
 			parse_color_def(&global_colors,buf+1,name,line);
 			}
 			break;
 
 		case '*':	/* Select file types for file-type dependant options */
-			{
+			{ /* Space and tab introduce comments- which means we can't have them in the regex */
 				int x;
 
 				o = (OPTIONS *) joe_malloc(sizeof(OPTIONS));
@@ -999,7 +999,7 @@ int procrc(CAP *cap, unsigned char *name)
 			}
 			break;
 		case '+':	/* Set file contents match regex */
-			{
+			{ /* No comments allowed- entire line used. */
 				int x;
 
 				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != '\r'; ++x) ;
@@ -1009,7 +1009,7 @@ int procrc(CAP *cap, unsigned char *name)
 			}
 			break;
 		case '-':	/* Set an option */
-			{
+			{ /* parse option and arg.  arg goes to end of line.  This is bad. */
 				unsigned char *opt = buf + 1;
 				int x;
 				unsigned char *arg = NULL;
@@ -1026,8 +1026,8 @@ int procrc(CAP *cap, unsigned char *name)
 				}
 			}
 			break;
-		case '{':	/* Process help text */
-			{
+		case '{':	/* Process help text.  No comment allowed after {name */
+			{	/* everything after } is ignored. */
 				line = help_init(fd,buf,line);
 			}
 			break;
@@ -1061,7 +1061,7 @@ int procrc(CAP *cap, unsigned char *name)
 							err = 1;
 							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: command name missing from :def")), name, line);
 						}
-					} else if (!zcmp(buf + 1, US "inherit"))
+					} else if (!zcmp(buf + 1, US "inherit")) {
 						if (context) {
 							for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
 							for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
@@ -1075,6 +1075,7 @@ int procrc(CAP *cap, unsigned char *name)
 						} else {
 							err = 1;
 							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: No context selected for :inherit")), name, line);
+						}
 					} else if (!zcmp(buf + 1, US "include")) {
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
 						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
@@ -1095,7 +1096,7 @@ int procrc(CAP *cap, unsigned char *name)
 							err = 1;
 							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: :include missing file name")), name, line);
 						}
-					} else if (!zcmp(buf + 1, US "delete"))
+					} else if (!zcmp(buf + 1, US "delete")) {
 						if (context) {
 							int y;
 
@@ -1107,8 +1108,10 @@ int procrc(CAP *cap, unsigned char *name)
 						} else {
 							err = 1;
 							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: No context selected for :delete")), name, line);
-					} else
+						}
+					} else {
 						context = kmap_getcontext(buf + 1);
+					}
 				else {
 					err = 1;
 					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Invalid context name")), name, line);

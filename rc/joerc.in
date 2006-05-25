@@ -3,7 +3,7 @@
 
  JOE looks for this file in:
 	1 - $HOME/.joerc
-	2 - /home/Joe/etc/joe/joerc
+	2 - @JOERC@/joerc
 
  This file can include other files by placing the following include command
  in the first column:
