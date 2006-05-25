@@ -5,18 +5,14 @@ Must fix:
   -restore:
      when we exit jmacs (querysave, killjoe), line numbers are not saved.
 
-
   bugs:
 
     grep ... | joe     missing lots sometime
 
     pipe into joe is broken.   If it's a regular file, we should just load it.
 
-
-  i18n man page not getting installed in the right place.
-
-
   Make sure all file types and options are in all *rc files.
+
   Make joerc merge program and run it on joerc.ru
 
 =-=-=-=-=
