@@ -1126,33 +1126,42 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 #endif
 
 #ifdef HAVE_POSIX_TERMIOS
-				tcsetattr(0, TCSADRAIN, &oldterm);
+					tcsetattr(0, TCSADRAIN, &oldterm);
 #else
 #ifdef HAVE_SYSV_TERMIO
-				ioctl(0, TCSETAW, &oldterm);
+					ioctl(0, TCSETAW, &oldterm);
 #else
-				ioctl(0, TIOCSETN, &oarg);
-				ioctl(0, TIOCSETC, &otarg);
-				ioctl(0, TIOCSLTC, &oltarg);
+					ioctl(0, TIOCSETN, &oarg);
+					ioctl(0, TIOCSETC, &otarg);
+					ioctl(0, TIOCSLTC, &oltarg);
 #endif
 #endif
+					/* We could probably have a special TTY set-up for JOE, but for now
+					 * we'll just use the TTY setup for the TTY was was run on */
+
+					/* Execute the shell */
+					execve((char *)cmd, (char **)args, (char **)env);
+
+					/* If shell didn't execute */
+					joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Couldn't execute shell '%s'\n")),cmd);
+					write(1,(char *)buf,zlen(buf));
+					sleep(1);
 
 				} else {
+					unsigned char buf[1024];
+					int len;
 					dup(x); /* Standard error */
 					
+					for (;;) {
+						len = read(0, buf, sizeof(buf));
+						if (len > 0)
+							write(1, buf, len);
+						else
+							break;
+					}
 				}
 
 
-				/* We could probably have a special TTY set-up for JOE, but for now
-				 * we'll just use the TTY setup for the TTY was was run on */
-
-				/* Execute the shell */
-				execve((char *)cmd, (char **)args, (char **)env);
-
-				/* If shell didn't execute */
-				joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Couldn't execute shell '%s'\n")),cmd);
-				write(1,(char *)buf,zlen(buf));
-				sleep(1);
 			}
 
 			_exit(0);
