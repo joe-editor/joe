@@ -133,6 +133,14 @@ static void pfree(P *p)
 static B bufs = { {&bufs, &bufs} };
 static B frebufs = { {&frebufs, &frebufs} };
 
+void set_file_pos_orphaned()
+{
+	B *b;
+	for (b = bufs.link.next; b != &bufs; b = b->link.next)
+		if (b->orphan && b->oldcur)
+			set_file_pos(b->name,b->oldcur->line);
+}
+
 /* Find next buffer in list: for multi-file search and replace */
 /* This does not bump reference count on found buffer */
 

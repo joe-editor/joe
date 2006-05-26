@@ -9,6 +9,8 @@
 
 #define SMALL 1024
 
+#define MAX_YANK 100
+
 static UNDO undos = { {&undos, &undos} };
 static UNDO frdos = { {&frdos, &frdos} };
 
@@ -287,7 +289,7 @@ static void yankdel(long where, B *b)
 			rec->len += size;
 			rec->where = where;
 		} else {
-			if (++nyanked == 100) {
+			if (++nyanked == MAX_YANK) {
 				frrec(deque_f(UNDOREC, link, yanked.link.next));
 				--nyanked;
 			}
@@ -483,6 +485,10 @@ void load_yank(FILE *f)
 		parse_ws(&p,'#');
 		len = parse_string(&p,bf,sizeof(bf));
 		if (len>0 && len<=SMALL) {
+			if (++nyanked == MAX_YANK) {
+				frrec(deque_f(UNDOREC, link, yanked.link.next));
+				--nyanked;
+			}
 			rec = alrec();
 			rec->small = (unsigned char *) joe_malloc(len);
 			memcpy(rec->small,bf,len);

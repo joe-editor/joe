@@ -286,6 +286,7 @@ struct glopts {
 	{US "guess_indent",0, &guessindent, NULL, US _("Automatically detect indentation"), US _("Do not automatically detect indentation"), US _("  Guess indent ") },
 	{US "guess_non_utf8",0, &guess_non_utf8, NULL, US _("Automatically detect non-UTF-8 in UTF-8 locale"), US _("Do not automatically detect non-UTF-8"), US _("  Guess non-UTF-8 ") },
 	{US "guess_utf8",0, &guess_utf8, NULL, US _("Automatically detect UTF-8 in non-UTF-8 locale"), US _("Do not automatically detect UTF-8"), US _("  Guess UTF-8 ") },
+	{US "transpose",0, &transpose, NULL, US _("Menu is transposed"), US _("Menus are not transposed"), US _("  Transpose menus ") },
 	{US "crlf",	4, NULL, (unsigned char *) &fdefault.crlf, US _("CR-LF is line terminator"), US _("LF is line terminator"), US _("Z CR-LF (MS-DOS) ") },
 	{US "linums",	4, NULL, (unsigned char *) &fdefault.linums, US _("Line numbers enabled"), US _("Line numbers disabled"), US _("N Line numbers ") },
 	{US "marking",	0, &marking, NULL, US _("Anchored block marking on"), US _("Anchored block marking off"), US _("  Marking ") },

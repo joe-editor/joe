@@ -1,17 +1,48 @@
----------
-Must fix:
----------
+autodetect xterm?  it doesn't give enough information.
 
-  -restore:
-     when we exit jmacs (querysave, killjoe), line numbers are not saved.
+did shell window in joe-3.2 3.2 create a new window?
 
-  bugs:
+  bugs?
 
     grep ... | joe     missing lots sometime
 
     pipe into joe is broken.   If it's a regular file, we should just load it.
 
   Make joerc merge program and run it on joerc.ru
+
+=-=-=-=-=
+
+Improvements for regular text
+-----------------------------
+mode where wordwrap wraps rest of paragraph?
+
+mode where all editing wraps rest of paragraph?
+
+=-=-=-=-=
+
+Prompts:
+
+ Sort should be column wise, not row wise?
+
+=-=-=-=-=
+
+Load status window...
+
+ Show path to joerc file.
+
+ syntax file errors should go to a pop-up error window.
+
+=-=-=-=-=
+
+We need a built-in joerc file: then joe will work on a boot disk.
+
+=-=-=-=-=
+
+long prompts for qw.c (locking message) should spill onto multiple lines.
+
+=-=-=-=-=
+
+should force -Wall if compiler is gcc
 
 =-=-=-=-=
 
@@ -82,20 +113,7 @@ gdb inteface?
   eval  (to look at variables)
   peek up stack frame
 
-We need a built-in joerc file: then joe will work on a boot disk.
-
-Show path to joerc file.
-
-syntax file errors should go to a pop-up error window.
-
-long prompts for qw.c (locking message) should spill onto multiple lines.
-
-
-
-
 allow options after string and istring? -just note it for now.
-
-should force -Wall if compiler is gcc
 
 sh highlighter: $(   ) onle one level of parenthasis.
   inside of $( ) and ` ` should be parsed as commands.
@@ -136,8 +154,6 @@ Makefile.in and Makefile.am need to be the same as Makefile.
 
 
 get rid of /bin/cat: mpxmk should just have a copy process and not run cat.
-
-.joe_state grows without end
 
 Garbage collect line attribute databases.
 
@@ -339,12 +355,6 @@ can't load terminfo- should switch to termcap or provide compiled
 ANSI terminfo built in.
 
 Perl compatible regex search.
-
-Improvements for regular text
------------------------------
-mode where wordwrap wraps rest of paragraph?
-
-mode where all editing wraps rest of paragraph?
 
 Improvements for programming
 ----------------------------

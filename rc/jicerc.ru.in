@@ -144,6 +144,11 @@
 -menu_explorer  Оставаться в меню при выборе директории (в противном случае 
                 директория дописывается к пути и меню закрывается).
 
+-menu_above	Position menu/list above prompt when enabled.  Otherwise position
+		below prompt.
+
+-transpose	Transpose rows with columns in all menus.
+
  -menu_jump	Перемещаться по меню выбора файла по нажатию клавиши Tab (иначе 
 		меню появляется, но курсор остается на запросе имени файла).
 

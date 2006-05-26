@@ -1,8 +1,14 @@
 Fri May 26 11:13:10 EDT 2006
 
+	Autoindent now happens for word-wrap.
+
 	Fix ':include' so that it searches ~/.joe and JOERC
 
 	Put file type table in a separate file.
+
+	Limit no. yank records stored in .joe_state
+
+	new '-transpose' flag transposes all menus.
 
 Wed May 24 11:01:53 EDT 2006
 

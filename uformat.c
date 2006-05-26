@@ -279,7 +279,7 @@ int ueop(BW *bw)
  * after . ? or !
  */
 
-void wrapword(P *p, long int indent, int french, unsigned char *indents)
+void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
 {
 	P *q;
 	P *r;
@@ -287,8 +287,43 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 	int rmf = 0;
 	int c;
 	long to = p->byte;
+	int my_indents = 0;
 	
-	/* Get indentation prefix from beginning of line */
+	/* autoindent when called by utype */
+	if (bw->o.autoindent && !indents) {
+		/* Get indentation prefix from beginning of line */
+		s = pdup(p, US "wrapword");
+		p_goto_bol(s);
+		pbop(bw, s);
+		/* Record indentation of second line of paragraph, of first line if there
+		 * is only one line */
+		q = pdup(s, US "wrapword");
+		pnextl(q);
+		if (q->line != p->line) {
+			P *r = pdup(q, US "wrapword");
+
+			indent = nindent(bw, q);
+			pcol(r, indent);
+			indents = brs(q, r->byte - q->byte);
+			prm(r);
+		} else {
+			P *r = pdup(s, US "uformat");
+
+			indent = nindent(bw, s);
+			pcol(r, indent);
+			indents = brs(s, r->byte - s->byte);
+			prm(r);
+		}
+		my_indents = 1;
+		prm(q);
+		prm(s);
+		/* Fix C */
+		if (indents[0] == '/' && indents[1] == '*' && indents[2] == ' ')
+			indents[0] = ' ';
+
+	}
+
+
 /*
 	if(!indents) {
 		int f = 0;
@@ -362,7 +397,7 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 			
 			/* If s is located behind r then the line goes beyond the right margin and we need to call wordwrap() for that line. */
 			if (r->byte < s->byte){
-				wrapword(r, indent, french, indents);
+				wrapword(bw, r, indent, french, indents);
 			}
 			
 			prm(r);
@@ -390,6 +425,8 @@ void wrapword(P *p, long int indent, int french, unsigned char *indents)
 
 	/* Move cursor back to original position */
 	pfwrd(p, to - p->byte);
+	if (my_indents)
+		joe_free(indents);
 }
 
 /* Reformat paragraph */
@@ -445,6 +482,10 @@ int uformat(BW *bw)
 	}
 	prm(q);
 
+	/* Fix C */
+	if (indents[0] == '/' && indents[1] == '*' && indents[2] == ' ')
+		indents[0] = ' ';
+
 	/* But if the left margin is greater, we use that instead */
 	if (bw->o.lmargin > indent)
 		indent = bw->o.lmargin;
@@ -486,7 +527,7 @@ int uformat(BW *bw)
 
 		/* Do word wrap if we reach right margin */
 		if (piscol(p) > bw->o.rmargin && !joe_isblank(p->b->o.charmap,c)) {
-			wrapword(p, indent, bw->o.french, indents);
+			wrapword(bw, p, indent, bw->o.french, indents);
 			break;
 		}
 	}
@@ -550,7 +591,7 @@ int uformat(BW *bw)
 			binsc(p, pgetc(b));
 			pgetc(p);
 			if (piscol(p) > bw->o.rmargin)
-				wrapword(p, indent, bw->o.french, indents);
+				wrapword(bw, p, indent, bw->o.french, indents);
 		}
 	}
 

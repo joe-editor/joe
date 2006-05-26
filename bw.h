@@ -54,4 +54,6 @@ long get_file_pos PARAMS((unsigned char *name));
 
 extern int restore_file_pos;
 
+void set_file_pos_all PARAMS((Screen *t));
+
 #endif

@@ -393,8 +393,17 @@ int main(int argc, char **real_argv, char **envv)
 				bw = wmktw(maint, b);
 				if (er)
 					msgnwt(bw->parent, joe_gettext(msgs[-er]));
-			} else
+			} else {
+				long line;
 				b->orphan = 1;
+				b->oldcur = pdup(b->bof, US "main");
+				pline(b->oldcur, get_file_pos(b->name));
+				line = b->oldcur->line - (maint->h - 1) / 2;
+				if (line < 0)
+					line = 0;
+				b->oldtop = pdup(b->oldcur, US "main");
+				pline(b->oldtop, line);
+			}
 			if (bw) {
 				long lnum = 0;
 

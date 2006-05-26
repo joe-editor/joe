@@ -139,6 +139,8 @@
 -menu_above	Position menu/list above prompt when enabled.  Otherwise position
 		below prompt.
 
+-transpose	Transpose rows with columns in all menus.
+
  -menu_explorer	Stay in menu system when a directory is selected (otherwise
                 directory is added to path and menu is closed).
 
@@ -154,11 +156,14 @@
 -joe_state     Use ~/.joe_state file
 
  -mouse		Enable xterm mouse support.  When enabled, left-click will
-		position the cursor and left-click-drag will select blocks.
+		position the cursor and left-click-drag will select blocks
 		For normal xterm cut and paste, hold the shift key down.
 
- -joexterm	If you are using Joe's modified Xterm, which makes -mouse
-		mode work better (cut & paste work transparently).
+ -joexterm	If you are using XTerm version 212 or higher, and if it was
+		configured with --enable-paste64, set this flag: it allows
+		mouse cut & paste to work properly (text selected with the
+		mouse can be pasted into other application, and middle
+		button clicks paste into JOE).
 
  -square	Rectangular block mode
 

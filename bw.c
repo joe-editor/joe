@@ -1143,6 +1143,8 @@ BW *bwmk(W *window, B *b, int prompt)
 
 /* Database of last file positions */
 
+#define MAX_FILE_POS 20 /* Maximum number of file positions we track */
+
 static struct file_pos {
 	LINK(struct file_pos) link;
 	unsigned char *name;
@@ -1163,7 +1165,7 @@ struct file_pos *find_file_pos(unsigned char *name)
 	p->name = zdup(name);
 	p->line = 0;
 	enquef(struct file_pos,link,&file_pos,p);
-	if (++file_pos_count == 20) {
+	if (++file_pos_count == MAX_FILE_POS) {
 		free(deque_f(struct file_pos,link,file_pos.link.prev));
 		--file_pos_count;
 	}
@@ -1193,7 +1195,7 @@ void set_file_pos(unsigned char *name, long pos)
 void save_file_pos(FILE *f)
 {
 	struct file_pos *p;
-	for (p = file_pos.link.next; p != &file_pos; p = p->link.next) {
+	for (p = file_pos.link.prev; p != &file_pos; p = p->link.prev) {
 		fprintf(f,"	%ld ",p->line);
 		emit_string(f,p->name,zlen(p->name));
 		fprintf(f,"\n");
@@ -1216,6 +1218,23 @@ void load_file_pos(FILE *f)
 			}
 		}
 	}
+}
+
+/* Save file position for all windows */
+
+void set_file_pos_all(Screen *t)
+{
+	/* Step through all windows */
+	W *w = t->topwin;
+	do {
+		if (w->watom == &watomtw) {
+			BW *bw = w->object;
+			set_file_pos(bw->b->name, bw->cursor->line);
+		}
+		w = w->link.next;
+	} while(w != t->topwin);
+	/* Set through orphaned buffers */
+	set_file_pos_orphaned();
 }
 
 void bwrm(BW *w)

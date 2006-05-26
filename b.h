@@ -291,4 +291,6 @@ extern int guesscrlf; /* Try to guess line ending when set */
 extern int guessindent; /* Try to guess indent character and step when set */
 extern int break_links; /* Break hard links on write */
 
+void set_file_pos_orphaned();
+
 #endif

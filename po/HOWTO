@@ -1,0 +1,24 @@
+To create a translation for JOE:
+
+	- Create a new .po file and edit in your translations.  You can
+start with any of the existing .po files, or the joe.pot file.
+
+	- Verify the .po file with:
+
+		msgfmt --check-format de.po
+
+	This verifies that the number of printf format string directives
+has been preserved in your translations.  It also generates a binary
+version of the .po, but we don't need it.
+
+	- Copy the .po file into ~/.joe/lang  You should be able to try it
+now.  Run JOE like this to set a particular language: LANG=de_DE joe
+
+	- Translate the on-line help in the joerc file and call it joerc.de
+
+	- If you feeling ambitious, translate the man page.  It goes
+	here: /usr/share/man/de/man1/joe.1
+
+	- Upload the files to the patch area of
+http://sourceforge.net/projects/joe-editor so that others can use them.  I will
+include them in the next version of JOE.

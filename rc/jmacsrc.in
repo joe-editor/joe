@@ -112,6 +112,8 @@
 -menu_above	Position menu/list above prompt when enabled.  Otherwise position
 		below prompt.
 
+-transpose	Transpose rows with columns in all menus.
+
  -menu_explorer Stay in menu system when a directory is selected (otherwise
                 directory is added to path and menu is closed).
 

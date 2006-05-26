@@ -1143,6 +1143,9 @@ int uquerysave(BW *bw)
 
 int ukilljoe(BW *bw)
 {
+	/* Save file positions */
+	set_file_pos_all(bw->parent->t);
+	/* FIXME: emacs checks for unsaved modified buffers at this point */
 	leave = 1;
 	return 0;
 }

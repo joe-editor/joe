@@ -16,7 +16,9 @@ struct menu {
 	int	top;		/* First item on screen */
 	int	cursor;		/* Item cursor is on */
 	int	width;		/* Width of widest item, up to 'w' max */
-	int	perline;	/* Number of items on each line */
+	int 	fitline;	/* Number of items we can fit on each line */
+	int	perline;	/* Number of items we place on each line */
+	int	lines;		/* Total no. of lines */
 	int	nitems;		/* No. items in list */
 	Screen	*t;		/* Screen we're on */
 	int	h, w, x, y;
@@ -60,5 +62,6 @@ extern WATOM watommenu; /* Menu WATOM */
 
 extern int menu_above; /* Menu position: above or below */
 extern int bg_menu; /* Background color for menu */
+extern int transpose;
 
 #endif
