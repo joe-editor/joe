@@ -841,9 +841,13 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 	int lin = w->top->line + y - w->y;
 
 	if (lin <= w->b->eof->line)
-		joe_snprintf_1(buf, sizeof(buf), "%5ld ", w->top->line + y - w->y + 1);
-	else
-		zcpy(buf, US "      ");
+		joe_snprintf_1(buf, sizeof(buf), "%9ld ", w->top->line + y - w->y + 1);
+	else {
+		int x;
+		for (x = 0; x != LINCOLS; ++x)
+			buf[x] = ' ';
+		buf[x] = 0;
+	}
 	for (z = 0; buf[z]; ++z) {
 		outatr(w->b->o.charmap, t, screen + z, attr + z, z, y, buf[z], BG_COLOR(bg_text)); 
 		if (ifhave)

@@ -20,12 +20,6 @@ mode where all editing wraps rest of paragraph?
 
 =-=-=-=-=
 
-Prompts:
-
- Sort should be column wise, not row wise?
-
-=-=-=-=-=
-
 Load status window...
 
  Show path to joerc file.
@@ -72,24 +66,6 @@ multi-file search & replace: check for deleted 'B *'.
   should jump to top of block when done?  Modes for this?
 
 - stop macro execution at ^KK?
-
-It would be nice if paragraph formatter knew which lines were comment lines. 
-Then it could format this properly:
-
-% comment
-% comment
-paragraph
-paragraph
-
-actually, this works.  autowrap doesn't do it (it should be an option).
-
-/* blah blah blah <reformat>
-
-should not become
-/* blah
-/* blah
-/* blah
- (special case for C).
 
 Compiling:
 ----------
