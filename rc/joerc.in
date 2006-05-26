@@ -87,8 +87,9 @@
  -csmode	^KF after a pervious search does a ^L instead
 
  -backpath path
-		Directory to store backup files (one space between 'backpath' and
-		the 'path', no trailing spaces or comments after the path).
+		Directory to store backup files (one space between
+		'backpath' and the 'path', no trailing spaces or comments
+		after the path).
 
  -floatmouse	Clicking past end of line moves the cursor past the end
  
@@ -113,8 +114,8 @@
 
  -skiptop nnn	Don't use top nnn lines of the screen
 
--notite         Don't send terminal initialization and termination strings: prevents
-                restoration of screen on exit.
+-notite         Don't send terminal initialization and termination strings:
+                prevents restoration of screen on exit.
 
  -usetabs       Use tabs to help optimize screen update.
 
@@ -161,12 +162,18 @@
 
  -square	Rectangular block mode
 
- -text_color color	Set color for text.
- -status_color color	Set color for status bar.
- -help_color color	Set color for help.
- -menu_color color	Set color for menus.
- -prompt_color color	Set color for prompts.
- -msg_color color	Set color for messages.
+ -text_color color
+		Set color for text.
+ -status_color color
+		Set color for status bar.
+ -help_color color
+		Set color for help.
+ -menu_color color
+		Set color for menus.
+ -prompt_color color
+		Set color for prompts.
+ -msg_color color
+		Set color for messages.
 
 		For example: -text_color bg_blue+white
 		Sets the background color to blue and foreground color to white.
@@ -232,9 +239,11 @@
 	-cpara >#!;*/%
 				Characters which can indent paragraphs.
 
-	-encoding name		Set file coding (for example: utf-8, iso-8859-15)
+	-encoding name
+				Set file coding (for example: utf-8, iso-8859-15)
 
-	-syntax name		Specify syntax (syntax file called
+	-syntax name
+				Specify syntax (syntax file called
 				'name.jsf' will be loaded)
 
 	-hex			Hex editor mode
@@ -289,16 +298,22 @@
 
 	-rdonly			File is read-only
 
-	-keymap name		Keymap to use if not 'main'
+	-keymap name
+				Keymap to use if not 'main'
 
 	-lmsg			Status line definition strings-
 	-rmsg			see previous section for more info.
 
-	-mfirst macro		Macro to execute on first modification
-	-mnew macro		Macro to execute when new files are loaded
-	-mold macro		Macro to execute when existing files are loaded
-	-msnew macro		Macro to execute when new files are saved
-	-msold macro		Macro to execute when existing files are saved
+	-mfirst macro
+				Macro to execute on first modification
+	-mnew macro
+				Macro to execute when new files are loaded
+	-mold macro
+				Macro to execute when existing files are loaded
+	-msnew macro
+				Macro to execute when new files are saved
+	-msold macro
+				Macro to execute when existing files are saved
 
 	Macros for the above options are in the same format as in the key
 	binding section below- but without the key name strings.
@@ -327,7 +342,8 @@
 -highlight
 -istep 2
 
- Use this macro (put in first column) to have joe "p4 edit" a file you're about to change.
+ Perforce macro: use this macro (put in first column) to have joe "p4 edit"
+ a file you're about to change.
 
  -mfirst if,"rdonly && joe(sys,\"p4 edit \",name,rtn)",then,mode,"o",msg,"executed \"p4 edit ",name,"\"",rtn,endif
 
@@ -1089,11 +1105,12 @@
 
  Keys:
 
- Use ^@ through ^_ , ^# and ^? for Ctrl chars
+ Use ^@ through ^_ and ^? for Ctrl chars
  Use SP for space
  Use a TO b to generate a range of characters
  Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
  Use MWDOWN, MWUP for wheel mouse motion
+ Use ^# for 0x9B (for Amiga).  But warning: this breaks UTF-8 keyboards.
 
  You can also use termcap string capability names.  For example:
 
@@ -1208,22 +1225,19 @@ aspellword	^[ n
 
  Compile
 
- :def compile switch,"*Build-Log*",rtn,markb,eof," ",markk,blkdel,filt,query,parserr
-
 :def compile mwind!,mfit!,querysave,query,scratch,"* Build Log *",rtn,bof,markb,eof," ",markk,blkdel,build
 
  Grep
 
 :def grep_find mwind!,mfit!,scratch,"*Grep-Log*",rtn,bof,markb,eof," ",markk,blkdel,grep
 
- Here we guess some common key sequences which either do not have termcap
- sequences or which are frequently wrong.  Note that if the termcap entry is
- correct, it will override these later on.
-
  Man page
 
 :def man scratch,"* Man Page *",rtn,bof,markb,eof," ",markk,blkdel," ",ltarw,run,"man -P cat -S 2:3 "
 
+ Here we guess some common key sequences which either do not have termcap
+ sequences or which are frequently wrong.  Note that if the termcap entry is
+ correct, it will override these later on.
 
 paste			^[ ] 5 2 ;		Bracketed paste
 

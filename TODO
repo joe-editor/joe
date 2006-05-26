@@ -2,6 +2,8 @@
 Must fix:
 ---------
 
+  :include should search rc file, not current directory
+
   -restore:
      when we exit jmacs (querysave, killjoe), line numbers are not saved.
 
