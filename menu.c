@@ -214,11 +214,13 @@ int umbof(MENU *m)
 
 int umeof(MENU *m)
 {
-	if (m->nitems)
+	if (m->nitems) {
 		if (transpose && (m->nitems % m->lines != 0)) {
 			m->cursor = m->lines - 1 + (m->lines * (m->perline - 2));
-		} else
+		} else {
 			m->cursor = m->nitems - 1;
+		}
+	}
 	return 0;
 }
 

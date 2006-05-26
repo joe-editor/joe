@@ -76,7 +76,8 @@
   configure xterm with --paste64).
 
 - File selection menu/completion-list is now above the prompt (which is more
-  like bash).
+  like bash).  Also it is transposed, so that it is sorted by columns
+  instead of rows.
 
 - "Bufed" (prompt for a buffer to edit), works like other file prompt
   commands: it's a real prompt with history and completion.

@@ -51,6 +51,7 @@ extern int marking;	/* Anchored block marking mode */
 void save_file_pos PARAMS((FILE *f));
 void load_file_pos PARAMS((FILE *f));
 long get_file_pos PARAMS((unsigned char *name));
+void set_file_pos PARAMS((unsigned char *name, long pos));
 
 extern int restore_file_pos;
 
