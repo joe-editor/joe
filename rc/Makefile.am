@@ -1,8 +1,8 @@
 sysconf_joedir = $(sysconfdir)/joe
 
-sysconf_joe_DATA = joerc jicerc.ru jmacsrc jstarrc rjoerc jpicorc
+sysconf_joe_DATA = joerc jicerc.ru jmacsrc jstarrc rjoerc jpicorc ftyperc
 
-EXTRA_DIST = joerc.in jicerc.ru.in jmacsrc.in jstarrc.in jpicorc.in rjoerc.in
+EXTRA_DIST = joerc.in jicerc.ru.in jmacsrc.in jstarrc.in jpicorc.in rjoerc.in ftyperc
 
 joerc : joerc.in
 	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' $< > $@

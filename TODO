@@ -2,8 +2,6 @@
 Must fix:
 ---------
 
-  :include should search rc file, not current directory
-
   -restore:
      when we exit jmacs (querysave, killjoe), line numbers are not saved.
 
@@ -13,9 +11,12 @@ Must fix:
 
     pipe into joe is broken.   If it's a regular file, we should just load it.
 
-  Make sure all file types and options are in all *rc files.
-
   Make joerc merge program and run it on joerc.ru
+
+=-=-=-=-=
+
+- rc file format needs revamping:  You can not put comments on lines with string
+  arguments.
 
 =-=-=-=-=
 

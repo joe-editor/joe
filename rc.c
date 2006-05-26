@@ -1081,12 +1081,28 @@ int procrc(CAP *cap, unsigned char *name)
 						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
 						buf[c] = 0;
 						if (c != x) {
-							switch (procrc(cap, buf + x)) {
+							unsigned char bf[1024];
+							unsigned char *p = getenv("HOME");
+							int rtn = -1;
+							bf[0] = 0;
+							if (p && buf[x] != '/') {
+								joe_snprintf_2(bf,sizeof(bf),"%s/.joe/%s",p,buf + x);
+								rtn = procrc(cap, bf);
+							}
+							if (rtn == -1 && buf[x] != '/') {
+								joe_snprintf_2(bf,sizeof(bf),"%s%s",JOERC,buf + x);
+								rtn = procrc(cap, bf);
+							}
+							if (rtn == -1 && buf[x] == '/') {
+								joe_snprintf_1(bf,sizeof(bf),"%s",buf + x);
+								rtn = procrc(cap, bf);
+							}
+							switch (rtn) {
 							case 1:
 								err = 1;
 								break;
 							case -1:
-								fprintf(stderr, (char *)joe_gettext(_("\n%s %d: Couldn't open %s")), name, line, buf + x);
+								fprintf(stderr, (char *)joe_gettext(_("\n%s %d: Couldn't open %s")), name, line, bf);
 								err = 1;
 								break;
 							}

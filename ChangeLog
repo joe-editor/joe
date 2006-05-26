@@ -1,3 +1,9 @@
+Fri May 26 11:13:10 EDT 2006
+
+	Fix ':include' so that it searches ~/.joe and JOERC
+
+	Put file type table in a separate file.
+
 Wed May 24 11:01:53 EDT 2006
 
 	Rearrange directories.

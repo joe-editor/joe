@@ -55,6 +55,8 @@
  -option	Установка опции
  --option	Сброс опции
 
+ -help_is_utf8	Set if help text is in UTF-8 format.  Leave clear if it's a raw 8-bit format.
+
  -mid		При скроллинге выполнять центрирование курсора
 
  -marking	Подсвечивать текст между началом блока и курсором 
@@ -127,9 +129,13 @@
 -assume_color	Предполагать, что терминал поддерживает цвет в стандарте ANSI,
 		даже если это не указано в описании termcap/terminfo.
 
- -assume_256color
+-assume_256color
 		Предполагать, что терминал поддерживает 256 цветов в стиле xterm 
 		(ESC [ 38 ; 5 ; NNN m и ESC [ 48 ; 5 ; NNN m).
+
+-guess_non_utf8	Allow guess of non-UTF-8 file encoding in a UTF-8 locale.
+
+ -guess_utf8	Allow guess of UTF-8 file encoding in non-UTF-8 locale.
 
 -guess_crlf     Автоопределять файлы MS-DOS и соотв. устанавливать -crlf
 
@@ -172,6 +178,8 @@
 		Установить цвет фона для сообщений.
 
 		Например: -bg_text bg_blue
+
+-restore	Restore previous cursor position when files are opened
 
 -search_prompting
 		Запрашивать образец для последующих поисков.
@@ -230,7 +238,10 @@
 
  Вы можете установить следующие опции:
 
-	-имя_кодировки
+	-cpara >#!;*/%
+				Characters which can indent paragraphs.
+
+	-encoding name
 				Установить кодировку файла (например: utf-8, iso-8859-15)
 
 	-syntax name
@@ -347,590 +358,12 @@
 
  Нет '.' в имени файла?  Предполагаем, что это - текстовый файл, 
  и включаем перенос слов
-*
--wordwrap
 
  Имя файла с '.'?  Вероятно, это не текстовый файл.
-*.*
 
- Diff
-*
---- 
--syntax diff
+ File type table is now in a separate file.  You can copy this file to ~/.joe and customize it.
 
-*
-*** 
--syntax diff
-
-*
-\[1-9]\+\[0-9]\[cda]
--syntax diff
-
- TeX
-*.tex
--wordwrap
--syntax tex
-
-*.sty
--wordwrap
--syntax tex
-
- Текстовый файл
-*.txt
--wordwrap
-
- News/mail files.
-*.article*
--wordwrap
--syntax mail
-
-*.followup
--wordwrap
--syntax mail
-
-*.letter
--wordwrap
--syntax mail
-
- NN newsreader
-*tmp/nn.*
--wordwrap
--syntax mail
-
- mail
-*tmp/Re*
--wordwrap
--syntax mail
-
- elm
-*tmp/snd.*
--wordwrap
--syntax mail
-
- dmail
-*tmp/dmt*
--wordwrap
--syntax mail
-
- pine
-*tmp/pico.*
--wordwrap
--syntax mail
-
- Assembly language
-*.asm
--wordwrap
--syntax asm
-
-*.s
--wordwrap
--syntax asm
-
-*.S
--wordwrap
--syntax asm
-
- Mason
-*.mas
--autoindent
--syntax mason
--smarthome
--smartbacks
-
- SML
-*.sml
--autoindent
--syntax sml
--smarthome
--smartbacks
--istep 2
-
- OCaml lanaguage file
-*.ml
--autoindent
--syntax ocaml
--smarthome
--smartbacks
--istep 2
-
- OCaml language interface
-*.mli
--autoindent
--syntax ocaml
--smarthome
--smartbacks
--istep 2
-
- Perl
-*
-#!\+\[ 	]\+\[a-z/]/perl\>
--autoindent
--syntax perl
--smarthome
--smartbacks
--pound_comment
--single_quoted
-
-*.pl
--autoindent
--syntax perl
--smarthome
--smartbacks
--pound_comment
--single_quoted
-
-*.pm
--autoindent
--syntax perl
--smarthome
--smartbacks
-
--pound_comment
--single_quoted
-
- SQL file
-*.sql
--autoindent
--syntax sql
--smarthome
--smartbacks
--purify
--single_quoted
--c_comment
--vhdl_comment
--cpp_comment
--text_delimiters BEGIN|Begin|begin=END|End|end
-
- AWK language file
-*.awk
--autoindent
--syntax awk
--smarthome
--smartbacks
--purify
--pound_comment
-
- YACC
-*.y
--autoindent
--syntax c
--smarthome
--smartbacks
--purify
--single_quoted
--c_comment
--cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
-
- LEX
-*.l
--autoindent
--syntax c
--smarthome
--smartbacks
--purify
--single_quoted
--c_comment
--cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
-
-*.lex
--autoindent
--syntax c
--smarthome
--smartbacks
--purify
--single_quoted
--c_comment
--cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
-
- ADA
-*.adb
--syntax ada
--autoindent
--istep 2
--smarthome
--smartbacks
--purify
--vhdl_comment
--text_delimiters declare|Declare|DECLARE|exception|Exception|EXCEPTION|if|If|IF|loop|Loop|LOOP|case|Case|CASE|package|Package|PACKAGE|procedure|Procedure|PROCEDURE|record|Record|RECORD|function|Function|FUNCTION=end|End|END
-
-*.ads
--syntax ada
--autoindent
--istep 2
--smarthome
--smartbacks
--purify
--vhdl_comment
--text_delimiters declare|Declare|DECLARE|exception|Exception|EXCEPTION|if|If|IF|loop|Loop|LOOP|case|Case|CASE|package|Package|PACKAGE|procedure|Procedure|PROCEDURE|record|Record|RECORD|function|Function|FUNCTION=end|End|END
-
- COBOL
-*.cbl
--syntax cobol
-
-*.cob
--syntax cobol
-
- sed
-*.sed
--syntax sed
-
- Postscript
-*.ps
--syntax ps
-
-*.eps
--syntax ps
-
- Программа на C 
-*.c
--autoindent
--syntax c
--smarthome
--smartbacks
--purify
--linums
--single_quoted
--c_comment
--cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
-
-*.cpp
--autoindent
--syntax c
--smarthome
--smartbacks
--purify
--single_quoted
--c_comment
--cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
-
-*.cc
--autoindent
--syntax c
--smarthome
--smartbacks
--purify
--single_quoted
--c_comment
--cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
-
-*.c++
--autoindent
--syntax c
--smarthome
--smartbacks
--purify
--single_quoted
--c_comment
--cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
-
- Заголовок программы на C
-*.h
--autoindent
--syntax c
--smarthome
--smartbacks
--purify
--linums
-
-*.hpp
--autoindent
--syntax c
--smarthome
--smartbacks
--purify
--single_quoted
--c_comment
--cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
-
-*.h++
--autoindent
--syntax c
--smarthome
--smartbacks
--purify
--single_quoted
--c_comment
--cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
-
- Verilog file
-*.v
--autoindent
--syntax verilog
--istep 2
--smarthome
--smartbacks
--purify
-
- Verilog header file
-*.vh
--autoindent
--syntax verilog
--istep 2
--smarthome
--smartbacks
--purify
--c_comment
--cpp_comment
--text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
-
- VHDL file
-*.vhd
--autoindent
--syntax vhdl
--istep 2
--smarthome
--smartbacks
--purify
--vhdl_comment
--text_delimiters entity|ENTITY|if|IF|component|COMPONENT|loop|LOOP|configuration|CONFIGURATION|units|UNITS|record|RECORD|case|CASE|function|FUNCTION|package|PACKAGE|architecture|ARCHITECTURE|block|BLOCK|process|PROCESS|generate|GENERATE=end|END
-
- XML
-*.xml
--wordwrap
--autoindent
--syntax xml
-
- XML
-*.xsd
--wordwrap
--autoindent
--syntax xml
-
- HTML
-*.htm
--wordwrap
--autoindent
--syntax html
-
-*.html
--wordwrap
--autoindent
--syntax html
-
- JAVA
-*.java
--autoindent
--syntax java
--smarthome
--smartbacks
--purify
-
- Hypertext preprocessor file
-*.php
--autoindent
--syntax php
--smarthome
--smartbacks
--purify
-
- Python
-*
-#!\+\[ 	]\+\[a-z/]/python\>
--autoindent
--syntax python
--smarthome
--smartbacks
--purify
-
-*.py
--autoindent
--syntax python
--smarthome
--smartbacks
--purify
-
- CSH
-*
-#!\+\[ 	]\+\[a-z/]/csh\>
--autoindent
--syntax csh
--pound_comment
-
-*.csh
--autoindent
--syntax csh
-
-*.login
--autoindent
--syntax csh
--pound_comment
-
-*.logout
--autoindent
--syntax csh
--pound_comment
-
- TCSH
-*
-#!\+\[ 	]\+\[a-z/]/tcsh\>
--autoindent
--syntax csh
--pound_comment
-
-*.tcsh
--autoindent
--syntax csh
-
-*.tcshrc
--autoindent
--syntax csh
--pound_comment
-
- Shell
-*
-#!\+\[ 	]\+\[a-z/]/sh\>
--autoindent
--syntax sh
--pound_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
-
-*.sh
--autoindent
--syntax sh
--pound_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
-
-*profile
--autoindent
--syntax sh
--pound_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
-
- BASH Shell
-*
-#!\+\[ 	]\+\[a-z/]/bash\>
--autoindent
--syntax sh
--pound_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
-
-*.bash
--autoindent
--syntax sh
--pound_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
-
-*.bash_login
--autoindent
--syntax sh
--pound_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
-
-*.bash_logout
--autoindent
--syntax sh
--pound_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
-
- LISP
-*.lisp
--autoindent
--syntax lisp
--semi_comment
-
-*.lsp
--autoindent
--syntax lisp
--semi_comment
-
-*.el
--autoindent
--syntax lisp
--semi_comment
-
- KSH
-*
-#!\+\[ 	]\+\[a-z/]/ksh\>
--autoindent
--syntax sh
--pound_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
-
-*.ksh
--autoindent
--syntax sh
--pound_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
-
- Makefile
-*akefile
--autoindent
--syntax conf
--pound_comment
-
-*AKEFILE
--autoindent
--syntax conf
--pound_comment
-
- Pascal
-*.p
--autoindent
--syntax pascal
--smarthome
--smartbacks
--purify
--text_delimiters begin|BEGIN|record|RECORD|case|CASE=end|END:repeat|REPEAT=until|UNTIL
-
-*.pas
--autoindent
--syntax pascal
--smarthome
--smartbacks
--purify
--text_delimiters begin|BEGIN|record|RECORD|case|CASE=end|END:repeat|REPEAT=until|UNTIL
-
- Fortran
-*.f
--autoindent
--syntax fortran
-
-*.for
--autoindent
--syntax fortran
-
-*.FOR
--autoindent
--syntax fortran
-
- TCL
-*.tcl
--autoindent
--syntax tcl
-
- Joe Syntax File
-*.jsf
--autoindent
--syntax conf
-
- Autoconfig file
-*.ac
--autoindent
--syntax conf
-
- M4 file
-*.m4
--autoindent
--syntax m4
-
- Automake file
-*.am
--autoindent
--syntax conf
-
- Mail file
-*tmp/mutt-*
--wordwrap
--syntax mail
+:include ftyperc
 
  ТРЕТЬЯ СЕКЦИЯ: Экраны подсказки:
 
@@ -1118,10 +551,10 @@ nextw		^[ [ 1 ; 3 C	правый Alt в (новом) xterm
 nextw		^[ [ 3 C	правый Alt в gnome-terminal
 pgdn		.kN		На экран вниз
 pgdn		^V
-pgdn      ^# S
+ pgdn      ^# S
 pgup		.kP		На экран вверх
 pgup		^U
-pgup      ^# T
+ pgup      ^# T
 play		^K 0 TO 9	Выполнить макро
 prevw		^K P		На следующее окно
 prevw		^K ^P
@@ -1431,9 +864,9 @@ dnarw,eol	.kd		Go down
 dnarw,eol	^N
 dnarw,eol	^[ O B
 dnarw,eol	^[ [ B
-dnarw,eol	^# B
+ dnarw,eol	^# B
 uparw,eol	.ku		Go up
-uparw,eol	^# A
+ uparw,eol	^# A
 uparw,eol	^P
 uparw,eol	^[ O A
 uparw,eol	^[ [ A
