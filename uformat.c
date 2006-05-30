@@ -113,24 +113,32 @@ static int pisnpara(BW *bw, P *p)
 		return 0;
 }
 
-/* Determine amount of indentation on current line */
+/* Determine amount of indentation on current line.  Set first
+   to include '-' and '*' bullets. */
 
-static long nindent(BW *bw, P *p)
+static long nindent(BW *bw, P *p, int first)
 {
 	P *q = pdup(p, US "nindent");
 	long col;
+	int c;
 
 	p_goto_bol(q);
 	do {
 		col = q->col;
-	} while (cpara(bw, pgetc(q)));
+	} while (cpara(bw, (c = pgetc(q))));
+	if (first && (c == '-' || c == '*')) {
+		c = pgetc(q);
+		if (c == ' ') {
+			col = q->col;
+		}
+	}
 	prm(q);
 	return col;
 }
 
 /* Get indentation prefix column */
 
-static long prefix(BW *bw, P *p)
+static long prefix(BW *bw, P *p,int up)
 {
 	long len;
 	P *q = pdup(p, US "prefix");
@@ -138,12 +146,26 @@ static long prefix(BW *bw, P *p)
 	p_goto_bol(q);
 	while (cpara(bw, brch(q)))
 		pgetc(q);
-	while (!pisbol(q))
-		if (!joe_isblank(p->b->o.charmap, prgetc(q))) {
+	while (!pisbol(q)) {
+		int c;
+		if (!joe_isblank(p->b->o.charmap, (c = prgetc(q)))) {
+		/*
+			if (up && (c == '*' || c == '-')) {
+				if (!pisbol(q)) {
+					c = prgetc(q);
+					pgetc(q);
+					if (c == ' ' || c == '\t')
+						goto skip;
+				} else
+					goto skip;
+			}
 			pgetc(q);
+		*/
 			break;
+			skip:;
 		}
-	len = q->col;
+	}
+	len = piscol(q);
 	prm(q);
 	return len;
 }
@@ -167,25 +189,38 @@ P *pbop(BW *bw, P *p)
 	long prelen;
 
 	p_goto_bol(p);
-	indent = nindent(bw, p);
-	prelen = prefix(bw, p);
+	indent = nindent(bw, p, 0);
+	prelen = prefix(bw, p, 0);
 	while (!pisbof(p) && (!within || !markb || p->byte > markb->byte)) {
 		long ind;
 		long len;
 
 		pprevl(p);
 		p_goto_bol(p);
-		ind = nindent(bw, p);
-		len = prefix(bw, p);
+		ind = nindent(bw, p, 0);
+		len = prefix(bw, p, 0);
 		if (pisnpara(bw, p) || len != prelen) {
 			pnextl(p);
 			break;
 		}
-		if (ind > indent)
+		if (ind > indent) {
+			int ok = 1;
+			P *q = pdup(p, US "pbop");
+			if (pprevl(q)) {
+				p_goto_bol(q);
+				if (nindent(bw, q, 0) == ind)
+					ok = 0;
+			}
+			prm(q);
+			if (!ok)
+				pnextl(p);
 			break;
+		}
 		if (ind < indent) {
-			if (pisbof(p))
+			break;
+			if (pisbof(p)) {
 				break;
+			}
 			pprevl(p);
 			p_goto_bol(p);
 			if (pisnpara(bw, p)) {
@@ -218,11 +253,11 @@ P *peop(BW *bw, P *p)
 
 	if (!pnextl(p) || pisnpara(bw, p) || (within && markk && p->byte >= markk->byte))
 		return p;
-	indent = nindent(bw, p);
-	prelen = prefix(bw, p);
+	indent = nindent(bw, p, 0);
+	prelen = prefix(bw, p, 0);
 	while (pnextl(p) && (!within || !markk || p->byte < markk->byte)) {
-		long ind = nindent(bw, p);
-		long len = prefix(bw, p);
+		long ind = nindent(bw, p, 0);
+		long len = prefix(bw, p, 0);
 
 		if (ind != indent || len != prelen || pisnpara(bw, p))
 			break;
@@ -290,37 +325,53 @@ void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
 	int my_indents = 0;
 	
 	/* autoindent when called by utype */
-	if (bw->o.autoindent && !indents) {
+	if (!indents) {
 		/* Get indentation prefix from beginning of line */
 		s = pdup(p, US "wrapword");
 		p_goto_bol(s);
 		pbop(bw, s);
-		/* Record indentation of second line of paragraph, of first line if there
-		 * is only one line */
+		/* Record indentation of second line of paragraph, of first
+		 * line if there is only one line */
 		q = pdup(s, US "wrapword");
 		pnextl(q);
-		if (q->line != p->line) {
+		if (q->line < p->line) {
+			/* Second line */
 			P *r = pdup(q, US "wrapword");
 
-			indent = nindent(bw, q);
+			indent = nindent(bw, q, 0);
 			pcol(r, indent);
 			indents = brs(q, r->byte - q->byte);
 			prm(r);
 		} else {
+			/* First line */
 			P *r = pdup(s, US "uformat");
+			int x;
 
-			indent = nindent(bw, s);
+			indent = nindent(bw, s, 1);
 			pcol(r, indent);
 			indents = brs(s, r->byte - s->byte);
 			prm(r);
+			/* Ignore blanks unless autoindent is on */
+			for (x = 0; indents[x] == ' ' || indents[x] == '\t'; ++x);
+			if (!indents[x] && !bw->o.autoindent) {
+				indents[0] = 0;
+				x = 0;
+			}
+			/* Don't duplicate bullet, but leave VHDL comment */
+			while (indents[x])
+				++x;
+			if (x >= 2 && indents[x - 1] == ' ' &&
+			    ((indents[x - 2] == '*' && (x == 2 || indents[x - 3] == ' ' || indents[x - 3] == '\t')) || indents[x - 2] == '-' && (x == 2 || indents[x - 3] != '-'))) {
+			    	indents[x - 2] = ' ';
+			}
+			/* Fix C comment */
+			if (x >= 3 && indents[x - 3] == '/' && indents[x - 2] == '*' && indents[x - 1] == ' ')
+				indents[x - 3] = ' ';
+			
 		}
 		my_indents = 1;
 		prm(q);
 		prm(s);
-		/* Fix C */
-		if (indents[0] == '/' && indents[1] == '*' && indents[2] == ' ')
-			indents[0] = ' ';
-
 	}
 
 
@@ -468,14 +519,14 @@ int uformat(BW *bw)
 	if (q->line != bw->cursor->line) {
 		P *r = pdup(q, US "uformat");
 
-		indent = nindent(bw, q);
+		indent = nindent(bw, q, 0);
 		pcol(r, indent);
 		indents = brs(q, r->byte - q->byte);
 		prm(r);
 	} else {
 		P *r = pdup(p, US "uformat");
 
-		indent = nindent(bw, p);
+		indent = nindent(bw, p, 0);
 		pcol(r, indent);
 		indents = brs(p, r->byte - p->byte);
 		prm(r);

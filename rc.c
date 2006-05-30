@@ -174,7 +174,7 @@ OPTIONS fdefault = {
 	0,		/* semi_comment */
 	0,		/* hex */
 	NULL,		/* text_delimiters */
-	US ">*;!#%/",	/* Characters which can indent paragraphs */
+	US ">;!#%/",	/* Characters which can indent paragraphs */
 	NULL, NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
