@@ -81,7 +81,7 @@ int load_po(FILE *f)
 				if (p) {
 					/* Copy character set name up to next delimiter */
 					int x;
-					p += sizeof("charset=");
+					p += sizeof("charset=") - 1;
 					while (*p == ' ' || *p == '\t') ++p;
 					for (x = 0; p[x] && p[x] !='\n' && p[x] != '\r' && p[x] != ' ' &&
 					            p[x] != '\t' && p[x] != ';' && p[x] != ','; ++x)
