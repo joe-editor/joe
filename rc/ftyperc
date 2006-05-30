@@ -163,6 +163,7 @@
 -vhdl_comment
 -cpp_comment
 -text_delimiters BEGIN|Begin|begin=END|End|end
+-cpara >#!;*/%
 
  AWK language file
 *.awk
@@ -184,6 +185,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
 
  LEX
 *.l
@@ -196,6 +198,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
 
 *.lex
 -autoindent
@@ -207,6 +210,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
 
  ADA
 *.adb
@@ -272,6 +276,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
 
 *.cpp
 -autoindent
@@ -283,6 +288,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
 
 *.cc
 -autoindent
@@ -294,6 +300,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
 
 *.c++
 -autoindent
@@ -305,6 +312,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
 
  C language header file
 *.h
@@ -317,6 +325,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
 
 *.hpp
 -autoindent
@@ -328,6 +337,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
 
 *.h++
 -autoindent
@@ -339,6 +349,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
 
  Verilog file
 *.v
@@ -351,6 +362,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
+-cpara >#!;*/%
 
  Verilog header file
 *.vh
@@ -363,6 +375,7 @@
 -c_comment
 -cpp_comment
 -text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
+-cpara >#!;*/%
 
  VHDL file
 *.vhd
@@ -405,6 +418,7 @@
 -smarthome
 -smartbacks
 -purify
+-cpara >#!;*/%
 
  Hypertext preprocessor file
 *.php

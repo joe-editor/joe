@@ -50,6 +50,7 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 					return -1;
 				}
 				bw = (BW *) maint->curwin->object;
+				p_goto_bof(bw->cursor);
 				buf[y] = c;
 				while (buf[y] == ' ' || buf[y] == '\t') {
 					++y;
