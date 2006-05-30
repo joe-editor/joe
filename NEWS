@@ -1,3 +1,5 @@
+- Paragraph reformatter and word wrap now handle '*' and '-' bullet lists.
+
 - Better internationalization (i18n):
 
     JOE now uses gettext(), so that internal messages can be translated to
@@ -34,7 +36,8 @@
 
 - JOE now restores cursor position in previously visited files.
 
-- Build and grep window work more smoothly.
+- Build and grep window work more like Turbo-C: the messages window is
+  forced onto the screen when you hit ^[ = and ^[ -.
 
 - Syntax highlighter definition files (.jsf files) can now have subroutines. 
   This eases highlighter reuse: for example, Mason and PHP can share the HTML
@@ -63,8 +66,10 @@
   default list has been reduced so that formatting of TeX/LaTeX files works
   better.
 
-- Highlighting now uses less CPU time.  Here is a CPU usage comparison for
-  scrolling forwards and backwards through a 35K line C file:
+- Highlighting now uses less CPU time and always parses from the beginning
+  of the file (the number of sync lines option is deprecated).  Here is a
+  CPU usage comparison for scrolling forwards and backwards through a 35K
+  line C file:
 
 	JOE	.58
 	JED	.57

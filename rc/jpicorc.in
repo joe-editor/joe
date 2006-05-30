@@ -392,6 +392,20 @@
 \i \i    \\\\      replaced with \\               \\n     replaced with newline       \|\i \i
 }
 
+{SearchOptions
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \iSearch options:                                                              \|\i \i
+\i \i   r Replace                                                                 \|\i \i
+\i \i   k Restrict search to highlighted block, which can be rectangular          \|\i \i
+\i \i   b Search backward instead of forward                                      \|\i \i
+\i \i   i Ignore case                                                             \|\i \i
+\i \i   a Search across all loaded files                                          \|\i \i
+\i \i   e Search across all files in Grep or Compile error list                   \|\i \i
+\i \i   w Wrap to beginning of file for this search                               \|\i \i
+\i \i   n Do not wrap to beginning of file for this search                        \|\i \i
+\i \i   nnn Perform exaclty nnn replacements                                      \|\i \i
+}
+
 {Math
 \i   Help Screen    \|turn off with ^G     prev. screen ^[,    next screen ^[.     \i
 \i \i \uCOMMANDS\u (hit ESC m for math)  \uFUNCTIONS\u                                    \|\i \i

@@ -496,6 +496,7 @@ static P *insert(SRCH *srch, P *p, unsigned char *s, int len)
  * and execute first search */
 
 unsigned char srchstr[] = "Search";	/* Context sensitive help identifier */
+unsigned char srchopt[] = "SearchOptions";
 
 static int pfabort(BW *bw, SRCH *srch)
 {
@@ -642,7 +643,7 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 		vsrm(s);
 		srch->pattern = vsdup(globalsrch->pattern);
 	}
-	if ((pbw = wmkpw(bw->parent, p, NULL, set_options, srchstr, pfabort, utypebw, srch, notify, bw->b->o.charmap, 0)) != NULL) {
+	if ((pbw = wmkpw(bw->parent, p, NULL, set_options, srchopt, pfabort, utypebw, srch, notify, bw->b->o.charmap, 0)) != NULL) {
 		unsigned char buf[10];
 
 		if (srch->ignore)

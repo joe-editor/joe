@@ -211,7 +211,7 @@ AUTOMAKE_OPTIONS = foreign
 SUBDIRS = man rc po syntax
 EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA INSTALL.cvs \
 	TODO docs/help-system.html dir.c charmaps/klingon.in HINTS \
-	cygbuild setup.hint xterm-patch xterm-readme
+	cygbuild setup.hint xterm-patch xterm-readme autojoe
 
 sysconf_joedir = $(sysconfdir)/joe
 sysconf_charmapsdir = $(sysconf_joedir)/charmaps
