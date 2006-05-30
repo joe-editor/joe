@@ -361,7 +361,7 @@ void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
 			while (indents[x])
 				++x;
 			if (x >= 2 && indents[x - 1] == ' ' &&
-			    ((indents[x - 2] == '*' && (x == 2 || indents[x - 3] == ' ' || indents[x - 3] == '\t')) || indents[x - 2] == '-' && (x == 2 || indents[x - 3] != '-'))) {
+			    ((indents[x - 2] == '*' && (x == 2 || indents[x - 3] == ' ' || indents[x - 3] == '\t')) || (indents[x - 2] == '-' && (x == 2 || indents[x - 3] != '-')))) {
 			    	indents[x - 2] = ' ';
 			}
 			/* Fix C comment */
