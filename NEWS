@@ -1,3 +1,5 @@
+JOE 3.4
+
 - Paragraph reformatter and word wrap now handle '*' and '-' bullet lists.
 
 - Better internationalization (i18n):
