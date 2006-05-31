@@ -2,6 +2,38 @@
 yet.
 </p>
 
+<h3>Multi-file search and replace</h3>
+
+<p>There are two new search and replace options:</p>
+
+<ul>
+<li>'a': The search covers all loaded buffers.  So you can say:
+<ul>
+<li>joe *.c</li>
+<li>^K F foo &lt;return&gt;</li>
+<li>ra &lt;return&gt;</li>
+<li>bar &lt;return&gt;</li>
+</ul>to replace all instances of "foo" with "bar" in all .c files.
+</li>
+<li>'e': The search covers all files in the grep or make error list.  You
+can use a UNIX command to generate a list of files and search and replace
+through the list:
+<ul>
+<li>ESC g</li>
+<li>grep -n foo f*.c &lt;return&gt;</li>
+<li>^K F foo &lt;return&gt;</li>
+<li>re &lt;return&gt;</li>
+<li>bar &lt;return&gt;</li>
+to replace all instances of "foo" with "bar" in all .c files which begin
+with f.  You can also use "ls" and "find" instead of grep to create the file
+list.
+</ul>
+</li>
+</ul>
+
+<p>Incidentally, you can hit ^K H at the search and replace options prompt
+to bring up a list of all search and replace options.</p>
+
 <h3>Grep-find</h3>
 
 <p>Hit ESC g to bring up the prompt.  Enter a command which results in file
