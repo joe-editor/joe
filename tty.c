@@ -866,8 +866,6 @@ extern char *ptsname();
 static unsigned char *getpty(int *ptyfd)
 {
 	int fdm;
-	unsigned char *name;
-
 	*ptyfd = fdm = open("/dev/ptmx", O_RDWR);
 	grantpt(fdm);
 	unlockpt(fdm);

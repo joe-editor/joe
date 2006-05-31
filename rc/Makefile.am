@@ -22,4 +22,4 @@ jpicorc : jpicorc.in
 rjoerc : rjoerc.in
 	sed 's,@JOERC\@,$(DESTDIR)$(sysconf_joedir),; s,@SPELL\@,@SPELL@,' $< > $@
 
-MOSTLYCLEANFILES = $(sysconf_joe_DATA)
+MOSTLYCLEANFILES = $(joerc jicerc.ru jmacsrc jstarrc rjoerc jpicorc)
