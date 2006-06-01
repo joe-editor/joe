@@ -194,6 +194,8 @@ stat		Display cursor position
 tag		Tags file search
 txt		Insert text
 name		Insert current file name
+language	Insert current language
+charset		Insert current character set
 keymap		Switch to another keymap
 
 Prompts

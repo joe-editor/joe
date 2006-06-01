@@ -365,6 +365,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 	int line = 0;
 	int this_one = 0;
 	int inside_subr = 0;
+	unsigned char *short_name = name;
 
 	/* Load it */
 	p = (unsigned char *)getenv("HOME");
@@ -549,7 +550,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 								if(!parse_char(&p,'=')) {
 									parse_ws(&p,'#');
 									if (!parse_char(&p,'.')) {
-										cmd->call = zdup(name);
+										cmd->call = zdup(short_name);
 										goto subr;
 									} else if (parse_ident(&p,bf1,sizeof(bf1)))
 										i_printf_2((char *)joe_gettext(_("%s %d: Missing value for option\n")),name,line);
