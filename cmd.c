@@ -45,6 +45,7 @@ CMD cmds[] = {
 	{US "byte", TYPETW + TYPEPW, ubyte, NULL, 0, NULL},
 	{US "cancel", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ucancel, NULL, 0, NULL},
 	{US "center", TYPETW + TYPEPW + EFIXXCOL + EMOD, ucenter, NULL, 1, NULL},
+	{US "charset", TYPETW + TYPEPW, ucharset, NULL, 0, NULL}, 
 	{US "ctrl", TYPETW + TYPEPW + EMOD, uctrl, NULL, 0, NULL},
 	{US "col", TYPETW + TYPEPW, ucol, NULL, 0, NULL},
 	{US "complete", TYPEPW + EMINOR + EMOD, ucmplt, NULL, 0, NULL},
@@ -105,6 +106,7 @@ CMD cmds[] = {
 	{US "insc", TYPETW + TYPEPW + EFIXXCOL + EMOD, uinsc, NULL, 1, US "delch"},
 	{US "keymap", TYPETW, ukeymap, 0, 0, 0 },    /* JM */
 	{US "insf", TYPETW + TYPEPW + EMOD, uinsf, NULL, 0, NULL}, 
+	{US "language", TYPETW + TYPEPW, ulanguage, NULL, 0, NULL}, 
 	{US "lindent", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, ulindent, NULL, 1, US "rindent"},
 	{US "line", TYPETW + TYPEPW, uline, NULL, 0, NULL},
 	{US "lose", TYPETW + TYPEPW, ulose, NULL, 0, NULL}, 

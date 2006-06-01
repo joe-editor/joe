@@ -49,4 +49,7 @@ int validate_rc();
 /* Update options */
 void lazy_opts PARAMS((B *b, OPTIONS *o));
 
+int ucharset PARAMS((BW *bw));
+int ulanguage PARAMS((BW *bw));
+
 #endif

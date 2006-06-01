@@ -71,6 +71,7 @@ struct options {
 	struct high_syntax *syntax;	/* Syntax for highlighting (load_dfa() from syntax_name happens in setopt()) */
 	unsigned char *map_name;	/* Name of character set */
 	struct charmap *charmap;	/* Character set */
+	unsigned char *language;	/* Language of this buffer (for spell) */
 	int	smarthome;	/* Set for smart home key */
 	int	indentfirst;	/* Smart home goes to indentation point first */
 	int	smartbacks;	/* Set for smart backspace key */

@@ -7,6 +7,34 @@
  */
 #include "types.h"
 
+/* Commands which just type in variable values */
+
+int ucharset(BW *bw)
+{
+	unsigned char *s;
+	W *w=bw->parent->main;
+	s=((BW *)w->object)->o.charmap->name;
+	if (!s || !*s)
+		return -1;
+	while (*s)
+		if (utypebw(bw,*s++))
+			return -1;
+	return 0;
+}
+
+int ulanguage(BW *bw)
+{
+	unsigned char *s;
+	W *w=bw->parent->main;
+	s=((BW *)w->object)->o.language;
+	if (!s || !*s)
+		return -1;
+	while (*s)
+		if (utypebw(bw,*s++))
+			return -1;
+	return 0;
+}
+
 #define OPT_BUF_SIZE 300
 
 static struct context {
@@ -109,6 +137,7 @@ OPTIONS pdefault = {
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
 	NULL,		/* Character set */
+	NULL,		/* Language */
 	0,		/* Smart home key */
 	0,		/* Goto indent first */
 	0,		/* Smart backspace key */
@@ -161,6 +190,7 @@ OPTIONS fdefault = {
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
 	NULL,		/* Character set */
+	NULL,		/* Language */
 	0,		/* Smart home key */
 	0,		/* Goto indent first */
 	0,		/* Smart backspace key */
@@ -197,6 +227,8 @@ void lazy_opts(B *b, OPTIONS *o)
 	}
 	if (!o->charmap)
 		o->charmap = locale_map;
+	if (!o->language)
+		o->language = zdup(locale_lang);
 }
 
 /* Set local options depending on file name and contents */
@@ -321,6 +353,7 @@ struct glopts {
 	{US "vhdl_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, US _("-- comments enabled"), US _("-- comments disabled"), US _("  ^G ignores --... ") },
 	{US "semi_comment",	4, NULL, (unsigned char *) &fdefault.semi_comment, US _("; comments enabled"), US _("; comments disabled"), US _("  ^G ignores ;... ") },
 	{US "text_delimiters",	6, NULL, (unsigned char *) &fdefault.text_delimiters, US _("Text delimiters (%s): "), 0, US _("  Text delimiters ") },
+	{US "language",	6, NULL, (unsigned char *) &fdefault.language, US _("Language (%s): "), 0, US _("V Language ") },
 	{US "cpara",		6, NULL, (unsigned char *) &fdefault.cpara, US _("Characters which can indent paragraphs (%s): "), 0, US _("  Paragraph indent chars ") },
 	{US "floatmouse",	0, &floatmouse, 0, US _("Clicking can move the cursor past end of line"), US _("Clicking past end of line moves cursor to the end"), US _("  Click past end ") },
 	{US "rtbutton",	0, &rtbutton, 0, US _("Mouse action is done with the right button"), US _("Mouse action is done with the left button"), US _("  Right button ") },
@@ -815,9 +848,9 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		xx = (int *) joe_malloc(sizeof(int));
 		*xx = x;
 		if(*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst))
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(_("Delimiters (%s): ")),*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst));
+			joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[x].yes,*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst));
 		else
-			joe_snprintf_0(buf, OPT_BUF_SIZE, joe_gettext(_("Delimiters: ")));
+			joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[x].yes,"");
 		if(wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
 			return 0;
 		else
