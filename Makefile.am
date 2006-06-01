@@ -22,7 +22,7 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	lattr.h gettext.h
 
 bin_PROGRAMS = joe termidx
-INCLUDES = -DJOERC="\"$(DESTDIR)$(sysconf_joedir)/\""
+INCLUDES = -DJOERC="\"$(sysconf_joedir)/\""
 
 joe_LDADD = -lm
 

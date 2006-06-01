@@ -1,7 +1,7 @@
 dnl ------------------
 dnl Check for properly working isblank()
 dnl ------------------
-AC_DEFUN(joe_ISBLANK,
+AC_DEFUN([joe_ISBLANK],
 	[AC_CACHE_CHECK([whether isblank() works correctly with side effect expressions],
 		[joe_cv_isblank],
 		[AC_TRY_RUN([
@@ -25,7 +25,7 @@ dnl ------------------
 dnl Check if setpgrp must have two arguments
 dnl autoconf-own macro is damaged for *BSD systems
 dnl ------------------
-AC_DEFUN(joe_SETPGRP,
+AC_DEFUN([joe_SETPGRP],
 	[AC_CACHE_CHECK([whether setpgrp() takes no arguments],
 		[joe_cv_setpgrp_void],
 		[AC_TRY_RUN([
@@ -48,7 +48,7 @@ int main() {
 dnl ------------------
 dnl Check to see if signal handlers must be reinstalled when invoked
 dnl ------------------
-AC_DEFUN(joe_REINSTALL_SIGHANDLERS,
+AC_DEFUN([joe_REINSTALL_SIGHANDLERS],
 	[AC_CACHE_CHECK([whether sighandlers must be reinstalled],
 		[joe_cv_reinstall_sighandlers],
 		[AC_TRY_RUN([
