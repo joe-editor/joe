@@ -329,7 +329,7 @@ Commands:
 
 		For example:
 
-			joe(cmd,"[ 1 == 1 ]",rtn)
+			joe(sys,"[ 1 == 1 ]",rtn)
 
 		([ 1 == 1 ]) is a shell command.  "[" is a synonym for
 		the "test" UNIX command.
@@ -340,7 +340,7 @@ Commands:
 		"if" is a math expression.  So for example, the
 		macro:
 
-		if,"joe(cmd,\"[ 1 == 1 ]\",rtn)",then,"TRUE",endif
+		if,"joe(sys,\"[ 1 == 1 ]\",rtn)",then,"TRUE",endif
 
 		Types TRUE into the buffer.
 
