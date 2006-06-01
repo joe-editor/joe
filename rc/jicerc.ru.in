@@ -640,7 +640,7 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
  Grep
 
-:def grep_find scratch,"*Grep-Log*",rtn,bof,markb,eof," ",markk,blkdel,grep
+:def grep_find scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
 
 paste			^[ [ 2 0 2 ~		Bracketed paste
 rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right Xterm

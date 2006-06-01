@@ -17,7 +17,8 @@ struct query {
 	void	*object;
 	unsigned char	*prompt;	/* Prompt string */
 	int	promptlen;	/* Width of prompt string */
-	int	promptofst;	/* Prompt scroll offset */
+	int	org_w;
+	int	org_h;
 };
 
 /* QW *mkqw(W *w, char *prompt, int (*func)(), int (*abrt)(), void *object);

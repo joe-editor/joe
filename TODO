@@ -34,10 +34,6 @@ We need a built-in joerc file: then joe will work on a boot disk.
 
 =-=-=-=-=
 
-long prompts for qw.c (locking message) should spill onto multiple lines.
-
-=-=-=-=-=
-
 should force -Wall if compiler is gcc
 
 =-=-=-=-=
@@ -119,8 +115,6 @@ Makefile.in and Makefile.am need to be the same as Makefile.
 1221499  fix sysconf_joedir and sysconf_docdir
 
 1323285  joe does not repeatedly wrap searches (add an option for this?)
-
-1218717  lock message is confusing.  we need multi-line query windows
 
 1218686  syntax hightlight in hex mode (sheesh!)
 

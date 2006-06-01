@@ -206,8 +206,8 @@ CMD cmds[] = {
 
 int nolocks;
 
-#define LOCKMSG2 _("Could not create lock. (I) edit anyway, (Q) cancel? ")
-#define LOCKMSG1 _("Locked by %s (S)teal lock, (I) edit anyway, (Q) cancel? ")
+#define LOCKMSG2 _("Could not create lock. (I) edit anyway, (Q) cancel edit? ")
+#define LOCKMSG1 _("Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? ")
 
 int steal_lock(BW *bw,int c,B *b,int *notify)
 {
@@ -530,8 +530,17 @@ static int docmd(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	MACRO *mac;
 	int ret = -1;
-	CMD *cmd = findcmd(s);
 
+	mac = mparse(NULL, s, &ret);
+	if (ret < 0) {
+		msgnw(bw->parent,joe_gettext(_("No such command")));
+	} else {
+		ret = exmacro(mac, 1);
+		rmmacro(mac);
+	}
+
+#ifdef junk
+	CMD *cmd = findcmd(s);
 	vsrm(s);	/* allocated in pw.c::rtnpw() */
 	if (!cmd)
 		msgnw(bw->parent,joe_gettext(_("No such command")));
@@ -540,6 +549,8 @@ static int docmd(BW *bw, unsigned char *s, void *object, int *notify)
 		ret = exmacro(mac, 1);
 		rmmacro(mac);
 	}
+#endif
+
 	if (notify)
 		*notify = 1;
 	return ret;

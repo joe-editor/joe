@@ -139,6 +139,19 @@ extern int breakflg;
 
 unsigned char **mainenv;
 
+B *startup_log;
+
+unsigned char i_msg[128];
+
+void internal_msg(unsigned char *s)
+{
+	P *t = pdup(startup_log->eof, US "internal_msg");
+	binss(t, s);
+	prm(t);
+}
+
+
+
 int main(int argc, char **real_argv, char **envv)
 {
 	CAP *cap;
@@ -360,6 +373,8 @@ int main(int argc, char **real_argv, char **envv)
 	maint = screate(n);
 	vmem = vtmp();
 
+	startup_log = bfind_scratch(US "* Startup Log *");
+
 	load_state();
 
 	/* It would be better if this ran uedit() to load files */
@@ -460,6 +475,14 @@ int main(int argc, char **real_argv, char **envv)
 			exmacro(bw->o.mnew,1);
 	}
 	maint->curwin = maint->topwin;
+
+	if (startup_log->eof->byte) {
+		BW *bw = wmktw(maint, startup_log);
+		startup_log = 0;
+		maint->curwin = bw->parent;
+		wshowall(maint);
+		uparserr(bw);
+	}
 
 	if (help) {
 		help_on(maint);
