@@ -1,12 +1,18 @@
-full path needs to go in line number restore code
+Immediate:
 
-yes/no questions.
+ full path needs to go in line number restore code
+
+ yes/no questions.
+
+ relead
+
+ ^C breaks in Cygwin when piping into joe
+
+ empty syntax file crashes.
 
 startup log should pop up whenever syntax files are loaded.
 
 joerc file is funny because of the :include
-
-^C breaks in Cygwin when piping into joe
 
 autodetect xterm?  it doesn't give enough information.
 
@@ -243,10 +249,6 @@ Dangerous situations:
 - - - - - - - -
 
 - better editing in shell windows: use for calculator mode too?
-
-- - - - - - - -
-
-- empty .joerc file causes lockup
 
 - - - - - - - -
 

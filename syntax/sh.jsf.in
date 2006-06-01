@@ -21,14 +21,18 @@
 
 :idle Idle
 	*		idle
+	")"		subst_char	recolor=-1
+	"`"		subst_char	recolor=-1
 	"#"		comment		recolor=-1
 	"\\"		escape		recolor=-1
 	"$"		subst		recolor=-1
 	"'"		string_sq	recolor=-1
 	"\""		string_dq	recolor=-1
-	"\`"		string_bq	recolor=-1
 	"<"		maybe_inc
 	"a-zA-Z{}![_"	ident		buffer
+
+:subst_char Var
+	*		idle	noeat
 
 :maybe_inc Idle
 	*		idle		noeat
@@ -126,7 +130,7 @@ done
 
 :subst Var
 	*		idle noeat
-	"("		string_bq1	recolor=-2
+	"("		idle
 	"\""		string_dq	recolor=-2
 	"\'"		string_sq	recolor=-2
 	"{"		subst_brack
@@ -227,37 +231,6 @@ done
 :string_bq_subst_brack Var
 	*		string_bq_subst_brack
 	"}"		string_bq
-
-
-# $( backquote
-:string_bq1 Constant
-	*		string_bq1
-	"$"		string_bq1_subst	recolor=-1
-	")"		idle
-	"\\"		string_bq1_esc	recolor=-1
-
-# escape in backquote
-:string_bq1_esc Escape
-	*		string_bq1	recolor=-2
-	"$`\"\\"	string_bq1
-	"\n"		string_bq1	recolor=-2
-
-# Substitution in a backquote
-:string_bq1_subst Var
-	*		string_bq1	noeat recolor=-2
-	"$0-9!_\-?*@"	string_bq1
-	"a-zA-Z_"	string_bq1_subst_name
-	"{"		string_bq1_subst_brack
-
-:string_bq1_subst_name Var
-	*		string_bq1	recolor=-1 noeat
-	"a-zA-Z0-9_"	string_bq1_subst_name
-
-:string_bq1_subst_brack Var
-	*		string_bq1_subst_brack
-	"}"		string_bq1
-
-
 
 :ident Idle
 	*		idle		noeat strings
