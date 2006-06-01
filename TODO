@@ -95,9 +95,6 @@ gdb inteface?
 
 allow options after string and istring? -just note it for now.
 
-sh highlighter: $(   ) onle one level of parenthasis.
-  inside of $( ) and ` ` should be parsed as commands.
-
 Makefile.in and Makefile.am need to be the same as Makefile.
 
 820497   reload files which have changes (for example after cvs update)
@@ -130,9 +127,6 @@ Makefile.in and Makefile.am need to be the same as Makefile.
 
 1413863  sigwinch breaks tcsetsw which messes up keyboard?  I haven't seen this
 
-
-get rid of /bin/cat: mpxmk should just have a copy process and not run cat.
-
 Garbage collect line attribute databases.
 
 Parse xterm version number.
@@ -161,8 +155,6 @@ Short (infinite) list for 3.4:
 
 - when lock is stolen under us, we don't tell anyone.
 
-
-- test i18n in cygwin
 - reformat/reindent function on ^KJ
 - insert last word (last word typed/copied/etc.).
 - orthogonal jump
@@ -212,8 +204,6 @@ Dangerous situations:
 - - - - - - - -
 
 - name keyboard macro and append it to .joerc file
-
-- - - - - - - -
 
 - - - - - - - -
 
@@ -406,11 +396,7 @@ Emulate other editors?  Brief, EDT?  CUA?
 
 Prompts:
 
- Sort should be column wise, not row wise?
-
  HTML-style thing for option selection?
-
-
 
 Terminal handling:
 
