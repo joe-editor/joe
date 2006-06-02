@@ -3,18 +3,6 @@ To create a translation for JOE:
 	- Create a new .po file and edit in your translations.  You can
 start with any of the existing .po files, or the joe.pot file.
 
-	- Strings containing <> are character sets for single-key answers,
-	  like 'y' for yes and 'n' for no.  The format of these strings
-	  should be:
-		"xxx<>yyy"
-
-		  where: xxx is a list of 8-bit characters.
-		    and: yyy is a list of UTF-8 characters.
-
-	  Both the 8-bit and UTF-8 versions of the characters must always be
-	  given.  For example, "yY<>yY" is the yes_string for english.  'y'
-	  and 'Y' can be entered by the user.
-
 	- Verify the .po file with:
 
 		msgfmt --check-format de.po

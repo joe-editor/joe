@@ -1463,11 +1463,11 @@ msgid "System (^C to abort): "
 msgstr "System (^C to abort): "
 
 #: ufile.c:273
-msgid "yY<>yY"
+msgid "yY"
 msgstr ""
 
 #: ufile.c:274
-msgid "nN<>nN"
+msgid "nN"
 msgstr ""
 
 #: ufile.c:313
@@ -1610,11 +1610,11 @@ msgid "Find (^C to abort): "
 msgstr "Find (^C to abort): "
 
 #: usearch.c:809
-msgid "rR<>rR"
+msgid "rR"
 msgstr ""
 
 #: usearch.c:810
-msgid "bB<>bB"
+msgid "bB"
 msgstr ""
 
 #: usearch.c:841

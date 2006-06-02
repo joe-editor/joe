@@ -1,10 +1,10 @@
 Immediate:
 
- full path needs to go in line number restore code
+ full path needs to go in line number restore code?
 
- yes/no questions.
+ yes/no questions: search & replace options.
 
- relead
+ reload
 
  ^C breaks in Cygwin when piping into joe
 
