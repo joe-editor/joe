@@ -527,7 +527,7 @@ static int naborttw(BW *bw, int k, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
-	if (k != 'y' && k != 'Y')
+	if (k != YES_CODE && !yncheck(yes_string, k))
 		return -1;
 
 	genexmsg(bw, 0, NULL);
@@ -538,7 +538,7 @@ static int naborttw1(BW *bw, int k, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
-	if (k != 'y' && k != 'Y')
+	if (k != YES_CODE && !yncheck(yes_string, k))
 		return -1;
 
 	if (!exmsg) genexmsg(bw, 0, NULL);
@@ -560,7 +560,7 @@ int uabort(BW *bw, int k)
 		else
 			return -1;
 	else
-		return naborttw(bw, 'y', NULL, NULL);
+		return naborttw(bw, YES_CODE, NULL, NULL);
 }
 
 int ucancel(BW *bw, int k)
@@ -586,7 +586,7 @@ int uabort1(BW *bw, int k)
 		else
 			return -1;
 	else
-		return naborttw1(bw, 'y', NULL, NULL);
+		return naborttw1(bw, YES_CODE, NULL, NULL);
 }
 
 /* Abort buffer without prompting: just fail if this is last window on buffer */
@@ -612,7 +612,7 @@ int uabortbuf(BW *bw)
 		return 0;
 	}
 
-	return naborttw(bw, 'y', NULL, NULL);
+	return naborttw(bw, YES_CODE, NULL, NULL);
 }
 
 /* Kill current window (orphans buffer) */

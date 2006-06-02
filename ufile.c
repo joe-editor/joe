@@ -264,10 +264,52 @@ static void rmsavereq(struct savereq *req)
 	joe_free(req);
 }
 
+/* Check if character 'c' is in the set.
+ * 'c' should be unicode if the locale is UTF-8, otherwise it's
+ * an 8-bit character.  'set' should be of this format: "xxxx<>yyyy".  xxxx
+ * is a list of 8-bit characters. yyyy is a list of UTF-8 characters.
+ */
+
+unsigned char *yes_string = _("yY<>yY");
+unsigned char *no_string = _("nN<>nN");
+
+int yncheck(unsigned char *set, int c)
+{
+	if (locale_map->type) {
+		/* 'c' is unicode */
+		while (set[0] && !(set[0] == '<' && set[1] == '>'))
+			++set;
+		if (set[0] == '<') {
+			set += 2;
+			while (*set) {
+				if (c == utf8_decode_fwrd(&set, NULL))
+					return 1;
+			}
+		}
+		return 0;
+	} else {
+		/* 'c' is 8-bit */
+		while (set[0] && !(set[0] == '<' && set[1] == '>')) {
+			if (set[0] == c)
+				return 1;
+			++set;
+		}
+		return 0;
+	}
+}
+
+int ynchecks(unsigned char *set, unsigned char *s)
+{
+	if (locale_map->type)
+		return yncheck(set, utf8_decode_fwrd(&s, NULL));
+	else
+		return yncheck(set, s[0]);
+}
+
 static int saver(BW *bw, int c, struct savereq *req, int *notify)
 {
 	int fl;
-	if (c == 'n' || c == 'N') {
+	if (c == NO_CODE || yncheck(no_string, c)) {
 		msgnw(bw->parent, joe_gettext(_("Couldn't make backup file... file not saved")));
 		if (req->callback) {
 			return req->callback(bw, req, -1, notify);
@@ -279,7 +321,7 @@ static int saver(BW *bw, int c, struct savereq *req, int *notify)
 			return -1;
 		}
 	}
-	if (c != 'y' && c != 'Y') {
+	if (c != YES_CODE && !yncheck(yes_string, c)) {
 		if (mkqw(bw->parent, sz(joe_gettext(_("Could not make backup file.  Save anyway (y,n,^C)? "))), saver, NULL, req, notify)) {
 			return 0;
 		} else {
@@ -403,16 +445,16 @@ static int dosave(BW *bw, struct savereq *req, int *notify)
 		if (backup(bw)) {
 			return saver(bw, 0, req, notify);
 		} else {
-			return saver(bw, 'y', req, notify);
+			return saver(bw, YES_CODE, req, notify);
 		}
 	}
 }
 
 static int dosave2(BW *bw, int c, struct savereq *req, int *notify)
 {
-	if (c == 'y' || c == 'Y') {
+	if (c == YES_CODE || yncheck(yes_string, c)) {
 		return dosave(bw, req, notify);
-	} else if (c == 'n' || c == 'N') {
+	} else if (c == NO_CODE || yncheck(no_string, c)) {
 		if (notify) {
 			*notify = 1;
 		}
@@ -518,7 +560,7 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 	void *object;
 	W *w;
 	B *b;
-	if (c=='y' || c=='Y') {
+	if (c == YES_CODE || yncheck(yes_string, c)) {
 		/* Reload from file */
 
 		if (notify) {
@@ -565,7 +607,7 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		mid = omid;
 		
 		return ret;
-	} else if(c=='n' || c=='N') {
+	} else if (c == NO_CODE || yncheck(no_string, c)) {
 		/* Edit already loaded buffer */
 
 		if (notify) {
@@ -634,10 +676,10 @@ int doedit(BW *bw, unsigned char *s, void *obj, int *notify)
 			return doedit1(bw, 0, s, notify);
 		else
 			/* Buffer not modified- just use it as is */
-			return doedit1(bw, 'n', s, notify);
+			return doedit1(bw, NO_CODE, s, notify);
 	} else
 		/* File not in buffer: don't ask */
-		return doedit1(bw, 'y', s, notify);
+		return doedit1(bw, YES_CODE, s, notify);
 }
 
 int okrepl(BW *bw)
@@ -662,7 +704,7 @@ int uedit(BW *bw)
 int doswitch(BW *bw, unsigned char *s, void *obj, int *notify)
 {
 	/* Try buffer, then file */
-	return doedit1(bw, 'n', s, notify);
+	return doedit1(bw, NO_CODE, s, notify);
 }
 
 int uswitch(BW *bw)
@@ -880,12 +922,12 @@ int uexsve(BW *bw)
 
 static int nask(BW *bw, int c, void *object, int *notify)
 {
-	if (c == 'y' || c == 'Y') {
+	if (c == YES_CODE || yncheck(yes_string, c)) {
 		/* uexsve macro should be here... */
 		if(notify)
 			*notify = 1;
 		return 0;
-	} else if (c == 'n' || c == 'N') {
+	} else if (c == NO_CODE || yncheck(no_string, c)) {
 		if(notify)
 			*notify = -1;
 		genexmsg(bw, 0, NULL);
@@ -922,7 +964,7 @@ static int dolose(BW *bw, int c, void *object, int *notify)
 	if (notify) {
 		*notify = 1;
 	}
-	if (c != 'y' && c != 'Y') {
+	if (c != YES_CODE && !yncheck(yes_string, c)) {
 		return -1;
 	}
 
@@ -975,7 +1017,7 @@ int ulose(BW *bw)
 			return -1;
 		}
 	} else {
-		return dolose(bw, 'y', NULL, NULL);
+		return dolose(bw, YES_CODE, NULL, NULL);
 	}
 }
 
@@ -1057,7 +1099,7 @@ int ubufed(BW *bw)
 static int doquerysave(BW *bw,int c,struct savereq *req,int *notify)
 {
 	W *w = bw->parent;
-	if (c == 'y' || c == 'Y') {
+	if (c == YES_CODE || yncheck(yes_string, c)) {
 		if (bw->b->name && bw->b->name[0])
 			return dosave1(bw, vsncpy(NULL,0,sz(bw->b->name)), req, notify);
 		else {
@@ -1071,7 +1113,7 @@ static int doquerysave(BW *bw,int c,struct savereq *req,int *notify)
 				return -1;
 			}
 		}
-	} else if (c == 'n' || c == 'N') {
+	} else if (c == NO_CODE || yncheck(no_string, c)) {
 		/* Find next buffer to save */
 		if (bw->b->changed)
 			req->not_saved = 1;
@@ -1115,7 +1157,7 @@ static int query_next(BW *bw, struct savereq *req,int flg,int *notify)
 		rmsavereq(req);
 		return -1;
 	} else
-		return doquerysave(bw,'N',req,notify);
+		return doquerysave(bw,NO_CODE,req,notify);
 }
 
 int uquerysave(BW *bw)

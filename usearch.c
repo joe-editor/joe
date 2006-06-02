@@ -806,24 +806,27 @@ static void goback(SRCH *srch, BW *bw)
 	}
 }
 
+unsigned char *rest_string = _("rR<>rR");
+unsigned char *backup_string = _("bB<>bB");
+
 static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 {
 	srch->addr = bw->cursor->byte;
-	if (c == 'N' || c == 'n')
+	if (c == NO_CODE || yncheck(no_string, c))
 		return dopfnext(bw, srch, notify);
-	else if (c == 'Y' || c == 'y' || c == ' ') {
+	else if (c == YES_CODE || yncheck(yes_string, c) || c == ' ') {
 		srch->recs.link.prev->yn = 1;
 		if (doreplace(bw, srch)) {
 			pfsave(bw, srch);
 			return -1;
 		} else
 			return dopfnext(bw, srch, notify);
-	} else if (c == 'R' || c == 'r') {
+	} else if (c == yncheck(rest_string, c)) {
 		if (doreplace(bw, srch))
 			return -1;
 		srch->rest = 1;
 		return dopfnext(bw, srch, notify);
-	} else if (c == 8 || c == 127 || c == 'b' || c == 'B') {
+	} else if (c == 8 || c == 127 || yncheck(backup_string, c)) {
 		W *w = bw->parent;
 		goback(srch, bw);
 		goback(srch, (BW *)w->object);

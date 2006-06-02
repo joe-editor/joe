@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: joe 3.3\n"
-"POT-Creation-Date: 2006-05-22 22:56-0400\n"
+"POT-Creation-Date: 2006-06-02 10:51-0400\n"
 "PO-Revision-Date: 2006-05-22 11:21-0400\n"
 "Last-Translator: Joe Allen <jhallen@world.std.com>\n"
 "Language-Team: German <de@li.org>\n"
@@ -43,34 +43,34 @@ msgstr "Error writing file"
 msgid "File on disk is newer"
 msgstr "File on disk is newer"
 
-#: b.c:2703
-#, c-format
-msgid ""
-"\n"
-"*** These modified files were found in JOE when it aborted on %s"
-msgstr ""
-"\n"
-"*** These modified files were found in JOE when it aborted on %s"
-
-#: b.c:2705
-#, c-format
-msgid "*** JOE was aborted by UNIX signal %d\n"
-msgstr "*** JOE was aborted by UNIX signal %d\n"
-
-#: b.c:2707
-msgid "*** JOE was aborted because the terminal closed\n"
-msgstr "*** JOE was aborted because the terminal closed\n"
-
 #: b.c:2712
 #, c-format
 msgid ""
 "\n"
+"*** These modified files were found in JOE when it aborted on %s"
+msgstr ""
+"\n"
+"*** These modified files were found in JOE when it aborted on %s"
+
+#: b.c:2714
+#, c-format
+msgid "*** JOE was aborted by UNIX signal %d\n"
+msgstr "*** JOE was aborted by UNIX signal %d\n"
+
+#: b.c:2716
+msgid "*** JOE was aborted because the terminal closed\n"
+msgstr "*** JOE was aborted because the terminal closed\n"
+
+#: b.c:2721
+#, c-format
+msgid ""
+"\n"
 "*** File '%s'\n"
 msgstr ""
 "\n"
 "*** File '%s'\n"
 
-#: b.c:2714
+#: b.c:2723
 msgid ""
 "\n"
 "*** File '(Unnamed)'\n"
@@ -78,46 +78,47 @@ msgstr ""
 "\n"
 "*** File '(Unnamed)'\n"
 
-#: bw.c:1240
+#: bw.c:1263
 #, c-format
 msgid "** Line %ld  Col %ld  Offset %ld(0x%lx) **"
 msgstr "** Line %ld  Col %ld  Offset %ld(0x%lx) **"
 
-#: bw.c:1242
+#: bw.c:1265
 #, c-format
 msgid "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **"
 msgstr "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **"
 
-#: cmd.c:209
-msgid "Could not create lock. (I) edit anyway, (Q) cancel? "
+#: cmd.c:211
+#, fuzzy
+msgid "Could not create lock. (I) edit anyway, (Q) cancel edit? "
 msgstr "Could not create lock. (I) edit anyway, (Q) cancel? "
 
-#: cmd.c:210
-#, c-format
-msgid "Locked by %s (S)teal lock, (I) edit anyway, (Q) cancel? "
+#: cmd.c:212
+#, fuzzy, c-format
+msgid "Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? "
 msgstr "Locked by %s (S)teal lock, (I) edit anyway, (Q) cancel? "
 
-#: cmd.c:259
+#: cmd.c:261
 msgid "Notice: File on disk changed! (hit ^C to continue)  "
 msgstr "Notice: File on disk changed! (hit ^C to continue)  "
 
-#: cmd.c:318
+#: cmd.c:321
 msgid "Modify other window first for macro"
 msgstr "Modify other window first for macro"
 
-#: cmd.c:326
+#: cmd.c:329
 msgid "Other buffer is read only"
 msgstr "Other buffer is read only"
 
-#: cmd.c:341 rc.c:307
+#: cmd.c:344 rc.c:340
 msgid "Read only"
 msgstr "Read only"
 
-#: cmd.c:536
+#: cmd.c:538 cmd.c:548
 msgid "No such command"
 msgstr "No such command"
 
-#: cmd.c:551
+#: cmd.c:565
 msgid "Command: "
 msgstr "Command: "
 
@@ -179,811 +180,823 @@ msgstr "Repeat %s%d"
 msgid "Repeat"
 msgstr "Repeat"
 
-#: main.c:194
+#: main.c:207
 msgid "Couldn't load termcap/terminfo entry\n"
 msgstr "Couldn't load termcap/terminfo entry\n"
 
-#: main.c:209 main.c:226
+#: main.c:222 main.c:239
 #, c-format
 msgid "There were errors in '%s'.  Use it anyway?"
 msgstr "There were errors in '%s'.  Use it anyway?"
 
-#: main.c:255
+#: main.c:294
 #, c-format
 msgid "Warning: %s is newer than your %s.\n"
 msgstr "Warning: %s is newer than your %s.\n"
 
-#: main.c:256
+#: main.c:295
 #, c-format
 msgid "You should update or delete %s\n"
 msgstr "You should update or delete %s\n"
 
-#: main.c:257
+#: main.c:296
 #, c-format
 msgid "Hit enter to continue with %s "
 msgstr "Hit enter to continue with %s "
 
-#: main.c:270 main.c:289
+#: main.c:309 main.c:328
 #, c-format
 msgid "There were errors in '%s'.  Use it anyway (y,n)? "
 msgstr "There were errors in '%s'.  Use it anyway (y,n)? "
 
-#: main.c:297
+#: main.c:336
 #, c-format
 msgid "Couldn't open '%s'\n"
 msgstr "Couldn't open '%s'\n"
 
-#: main.c:303
+#: main.c:342
 msgid "rc file has no :main key binding section or no bindings.  Bye.\n"
 msgstr "rc file has no :main key binding section or no bindings.  Bye.\n"
 
-#: main.c:316
+#: main.c:355
 #, c-format
 msgid "Unknown option '%s'\n"
 msgstr "Unknown option '%s'\n"
 
-#: main.c:433
+#: main.c:491
 #, c-format
 msgid "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
 msgstr "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
 
-#: rc.c:263
+#: rc.c:295
 msgid "Overtype mode"
 msgstr ""
 
-#: rc.c:263
+#: rc.c:295
 msgid "Insert mode"
 msgstr ""
 
-#: rc.c:263
+#: rc.c:295
 msgid "T Overtype "
 msgstr ""
 
-#: rc.c:264
+#: rc.c:296
 msgid "Hex edit mode"
 msgstr ""
 
-#: rc.c:264
+#: rc.c:296
 msgid "Text edit mode"
 msgstr ""
 
-#: rc.c:264
+#: rc.c:296
 msgid "  Hex edit mode "
 msgstr ""
 
-#: rc.c:265
+#: rc.c:297
 msgid "Autoindent enabled"
 msgstr ""
 
-#: rc.c:265
+#: rc.c:297
 msgid "Autoindent disabled"
 msgstr ""
 
-#: rc.c:265
+#: rc.c:297
 msgid "I Autoindent "
 msgstr ""
 
-#: rc.c:266
+#: rc.c:298
 msgid "Wordwrap enabled"
 msgstr ""
 
-#: rc.c:266
+#: rc.c:298
 msgid "Wordwrap disabled"
 msgstr ""
 
-#: rc.c:266
+#: rc.c:298
 msgid "W Word wrap "
 msgstr ""
 
-#: rc.c:267
+#: rc.c:299
 #, c-format
 msgid "Tab width (%d): "
 msgstr ""
 
-#: rc.c:267
+#: rc.c:299
 msgid "D Tab width "
 msgstr "1234"
 
-#: rc.c:268
+#: rc.c:300
 #, fuzzy, c-format
 msgid "Left margin (%d): "
 msgstr "Set mark (0-9):"
 
-#: rc.c:268
+#: rc.c:300
 #, fuzzy
 msgid "L Left margin "
 msgstr "Set mark (0-9):"
 
-#: rc.c:269
+#: rc.c:301
 #, c-format
 msgid "Right margin (%d): "
 msgstr ""
 
-#: rc.c:269
+#: rc.c:301
 msgid "R Right margin "
 msgstr ""
 
-#: rc.c:270
+#: rc.c:302
 msgid "Restore cursor position when files loaded"
 msgstr ""
 
-#: rc.c:270
+#: rc.c:302
 msgid "Don't restore cursor when files loaded"
 msgstr ""
 
-#: rc.c:270
+#: rc.c:302
 msgid "  Restore cursor "
 msgstr ""
 
-#: rc.c:271
+#: rc.c:303
 msgid "Rectangle mode"
 msgstr ""
 
-#: rc.c:271
+#: rc.c:303
 msgid "Text-stream mode"
 msgstr ""
 
-#: rc.c:271
+#: rc.c:303
 msgid "X Rectangle mode "
 msgstr ""
 
-#: rc.c:272
+#: rc.c:304
 msgid "Search ignores case by default"
 msgstr ""
 
-#: rc.c:272
+#: rc.c:304
 msgid "Case sensitive search by default"
 msgstr ""
 
-#: rc.c:272
+#: rc.c:304
 msgid "  Case insensitivity "
 msgstr ""
 
-#: rc.c:273
+#: rc.c:305
 msgid "Search wraps"
 msgstr ""
 
-#: rc.c:273
+#: rc.c:305
 msgid "Search doesn't wrap"
 msgstr ""
 
-#: rc.c:273
+#: rc.c:305
 msgid "  Search wraps "
 msgstr ""
 
-#: rc.c:274
+#: rc.c:306
 msgid "Menu explorer mode"
 msgstr ""
 
-#: rc.c:274
+#: rc.c:306
 msgid "Simple completion mode"
 msgstr ""
 
-#: rc.c:274
+#: rc.c:306
 msgid "  Menu explorer "
 msgstr ""
 
-#: rc.c:275
+#: rc.c:307
 msgid "Menu above prompt"
 msgstr ""
 
-#: rc.c:275
+#: rc.c:307
 msgid "Menu below prompt"
 msgstr ""
 
-#: rc.c:275
+#: rc.c:307
 msgid "  Menu position "
 msgstr ""
 
-#: rc.c:276
+#: rc.c:308
 msgid "Search prompting on"
 msgstr ""
 
-#: rc.c:276
+#: rc.c:308
 msgid "Search prompting off"
 msgstr ""
 
-#: rc.c:276
+#: rc.c:308
 msgid "  Search prompting "
 msgstr ""
 
-#: rc.c:277
+#: rc.c:309
 msgid "Jump into menu is on"
 msgstr ""
 
-#: rc.c:277
+#: rc.c:309
 msgid "Jump into menu is off"
 msgstr ""
 
-#: rc.c:277
+#: rc.c:309
 msgid "  Jump into menu "
 msgstr ""
 
-#: rc.c:278
+#: rc.c:310
 msgid "Autoswap ^KB and ^KK"
 msgstr ""
 
-#: rc.c:278
+#: rc.c:310
 msgid "Autoswap off "
 msgstr ""
 
-#: rc.c:278
+#: rc.c:310
 msgid "  Autoswap mode "
 msgstr ""
 
-#: rc.c:279
+#: rc.c:311
 #, c-format
 msgid "Indent char %d (SPACE=32, TAB=9, ^C to abort): "
 msgstr ""
 
-#: rc.c:279
+#: rc.c:311
 msgid "  Indent char "
 msgstr ""
 
-#: rc.c:280
+#: rc.c:312
 #, fuzzy, c-format
 msgid "Indent step %d (^C to abort): "
 msgstr "Insert (^C to abort): "
 
-#: rc.c:280
+#: rc.c:312
 msgid "  Indent step "
 msgstr ""
 
-#: rc.c:281
+#: rc.c:313
 msgid "One space after periods for paragraph reformat"
 msgstr ""
 
-#: rc.c:281
+#: rc.c:313
 msgid "Two spaces after periods for paragraph reformat"
 msgstr ""
 
-#: rc.c:281
+#: rc.c:313
 msgid "  French spacing "
 msgstr ""
 
-#: rc.c:282
+#: rc.c:314
 msgid "Highlighting enabled"
 msgstr ""
 
-#: rc.c:282
+#: rc.c:314
 msgid "Highlighting disabled"
 msgstr ""
 
-#: rc.c:282
+#: rc.c:314
 msgid "H Highlighting "
 msgstr ""
 
-#: rc.c:283
+#: rc.c:315
 msgid "Inserting spaces when tab key is hit"
 msgstr ""
 
-#: rc.c:283
+#: rc.c:315
 msgid "Inserting tabs when tab key is hit"
 msgstr ""
 
-#: rc.c:283
+#: rc.c:315
 msgid "  No tabs "
 msgstr ""
 
-#: rc.c:284
+#: rc.c:316
 msgid "Cursor will be recentered on scrolls"
 msgstr ""
 
-#: rc.c:284
+#: rc.c:316
 msgid "Cursor will not be recentered on scroll"
 msgstr ""
 
-#: rc.c:284
+#: rc.c:316
 msgid "C Center on scroll "
 msgstr ""
 
-#: rc.c:285
+#: rc.c:317
 msgid "Automatically detect MS-DOS files"
 msgstr ""
 
-#: rc.c:285
+#: rc.c:317
 msgid "Do not automatically detect MS-DOS files"
 msgstr ""
 
-#: rc.c:285
+#: rc.c:317
 msgid "  Auto detect CR-LF "
 msgstr ""
 
-#: rc.c:286
+#: rc.c:318
 msgid "Automatically detect indentation"
 msgstr ""
 
-#: rc.c:286
+#: rc.c:318
 msgid "Do not automatically detect indentation"
 msgstr ""
 
-#: rc.c:286
+#: rc.c:318
 msgid "  Guess indent "
 msgstr ""
 
-#: rc.c:287
+#: rc.c:319
 msgid "Automatically detect non-UTF-8 in UTF-8 locale"
 msgstr ""
 
-#: rc.c:287
+#: rc.c:319
 msgid "Do not automatically detect non-UTF-8"
 msgstr ""
 
-#: rc.c:287
+#: rc.c:319
 msgid "  Guess non-UTF-8 "
 msgstr ""
 
-#: rc.c:288
+#: rc.c:320
 msgid "Automatically detect UTF-8 in non-UTF-8 locale"
 msgstr ""
 
-#: rc.c:288
+#: rc.c:320
 msgid "Do not automatically detect UTF-8"
 msgstr ""
 
-#: rc.c:288
+#: rc.c:320
 msgid "  Guess UTF-8 "
 msgstr ""
 
-#: rc.c:289
+#: rc.c:321
+msgid "Menu is transposed"
+msgstr ""
+
+#: rc.c:321
+msgid "Menus are not transposed"
+msgstr ""
+
+#: rc.c:321
+msgid "  Transpose menus "
+msgstr ""
+
+#: rc.c:322
 msgid "CR-LF is line terminator"
 msgstr ""
 
-#: rc.c:289
+#: rc.c:322
 msgid "LF is line terminator"
 msgstr ""
 
-#: rc.c:289
+#: rc.c:322
 msgid "Z CR-LF (MS-DOS) "
 msgstr ""
 
-#: rc.c:290
+#: rc.c:323
 #, fuzzy
 msgid "Line numbers enabled"
 msgstr "No numbers in block"
 
-#: rc.c:290
+#: rc.c:323
 #, fuzzy
 msgid "Line numbers disabled"
 msgstr "No numbers in block"
 
-#: rc.c:290
+#: rc.c:323
 #, fuzzy
 msgid "N Line numbers "
 msgstr "Invalid line number"
 
-#: rc.c:291
+#: rc.c:324
 msgid "Anchored block marking on"
 msgstr ""
 
-#: rc.c:291
+#: rc.c:324
 msgid "Anchored block marking off"
 msgstr ""
 
-#: rc.c:291
+#: rc.c:324
 msgid "  Marking "
 msgstr ""
 
-#: rc.c:292
+#: rc.c:325
 msgid "Characters above 127 shown as-is"
 msgstr ""
 
-#: rc.c:292
+#: rc.c:325
 msgid "Characters above 127 shown in inverse"
 msgstr ""
 
-#: rc.c:292
+#: rc.c:325
 msgid "  Meta chars as-is "
 msgstr ""
 
-#: rc.c:293
+#: rc.c:326
 msgid "Last line forced to have NL when file saved"
 msgstr ""
 
-#: rc.c:293
+#: rc.c:326
 msgid "Last line not forced to have NL"
 msgstr ""
 
-#: rc.c:293
+#: rc.c:326
 msgid "  Force last NL "
 msgstr ""
 
-#: rc.c:294
+#: rc.c:327
 msgid "~/.joe_state file will be updated"
 msgstr ""
 
-#: rc.c:294
+#: rc.c:327
 msgid "~/.joe_state file will not be updated"
 msgstr ""
 
-#: rc.c:294
+#: rc.c:327
 msgid "  Joe_state file "
 msgstr ""
 
-#: rc.c:295
+#: rc.c:328
 msgid "Backup files will not be made"
 msgstr ""
 
-#: rc.c:295
+#: rc.c:328
 msgid "Backup files will be made"
 msgstr ""
 
-#: rc.c:295
+#: rc.c:328
 msgid "  Disable backups "
 msgstr ""
 
-#: rc.c:296
+#: rc.c:329
 msgid "Files will not be locked"
 msgstr ""
 
-#: rc.c:296
+#: rc.c:329
 msgid "Files will be locked"
 msgstr ""
 
-#: rc.c:296
+#: rc.c:329
 msgid "  Disable locks "
 msgstr ""
 
-#: rc.c:297
+#: rc.c:330
 msgid "No file modification time check"
 msgstr ""
 
-#: rc.c:297
+#: rc.c:330
 msgid "File modification time checking enabled"
 msgstr ""
 
-#: rc.c:297
+#: rc.c:330
 msgid "  Disable mtime check "
 msgstr ""
 
-#: rc.c:298
+#: rc.c:331
 msgid "No current dir"
 msgstr ""
 
-#: rc.c:298
+#: rc.c:331
 msgid "Current dir enabled"
 msgstr ""
 
-#: rc.c:298
+#: rc.c:331
 msgid "  Disable current dir "
 msgstr ""
 
-#: rc.c:299
+#: rc.c:332
 msgid "Hardlinks will be broken"
 msgstr ""
 
-#: rc.c:299
+#: rc.c:332
 msgid "Hardlinks not broken"
 msgstr ""
 
-#: rc.c:299
+#: rc.c:332
 msgid "  Break hard links "
 msgstr ""
 
-#: rc.c:300
+#: rc.c:333
 msgid "Highlighting turned off after block operations"
 msgstr ""
 
-#: rc.c:300
+#: rc.c:333
 msgid "Highlighting not turned off after block operations"
 msgstr ""
 
-#: rc.c:300
+#: rc.c:333
 msgid "  Auto unmark "
 msgstr ""
 
-#: rc.c:301
+#: rc.c:334
 msgid "Prompt for filename in save & exit command"
 msgstr ""
 
-#: rc.c:301
+#: rc.c:334
 msgid "Don't prompt for filename in save & exit command"
 msgstr ""
 
-#: rc.c:301
+#: rc.c:334
 msgid "  Exit ask "
 msgstr ""
 
-#: rc.c:302
+#: rc.c:335
 msgid "Warning bell enabled"
 msgstr ""
 
-#: rc.c:302
+#: rc.c:335
 msgid "Warning bell disabled"
 msgstr ""
 
-#: rc.c:302
+#: rc.c:335
 msgid "B Beeps "
 msgstr ""
 
-#: rc.c:303
+#: rc.c:336
 msgid "Top-most status line disabled"
 msgstr ""
 
-#: rc.c:303
+#: rc.c:336
 msgid "Top-most status line enabled"
 msgstr ""
 
-#: rc.c:303
+#: rc.c:336
 msgid "  Disable status line "
 msgstr ""
 
-#: rc.c:304
+#: rc.c:337
 msgid "Status line updated constantly"
 msgstr ""
 
-#: rc.c:304
+#: rc.c:337
 msgid "Status line updated once/sec"
 msgstr ""
 
-#: rc.c:304
+#: rc.c:337
 msgid "  Fast status line "
 msgstr ""
 
-#: rc.c:305
+#: rc.c:338
 #, c-format
 msgid "Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): "
 msgstr ""
 
-#: rc.c:305
+#: rc.c:338
 msgid "  No. PgUp/PgDn lines "
 msgstr ""
 
-#: rc.c:306
+#: rc.c:339
 msgid "Start search after a search repeats previous search"
 msgstr ""
 
-#: rc.c:306
+#: rc.c:339
 msgid "Start search always starts a new search"
 msgstr ""
 
-#: rc.c:306
+#: rc.c:339
 msgid "  Continued search "
 msgstr ""
 
-#: rc.c:307
+#: rc.c:340
 msgid "Full editing"
 msgstr ""
 
-#: rc.c:307
+#: rc.c:340
 #, fuzzy
 msgid "O Read only "
 msgstr "Read only"
 
-#: rc.c:308
+#: rc.c:341
 msgid "Smart home key enabled"
 msgstr ""
 
-#: rc.c:308
+#: rc.c:341
 msgid "Smart home key disabled"
 msgstr ""
 
-#: rc.c:308
+#: rc.c:341
 msgid "  Smart home key "
 msgstr ""
 
-#: rc.c:309
+#: rc.c:342
 msgid "Smart home goes to indentation first"
 msgstr ""
 
-#: rc.c:309
+#: rc.c:342
 msgid "Smart home goes home first"
 msgstr ""
 
-#: rc.c:309
+#: rc.c:342
 msgid "  To indent first "
 msgstr ""
 
-#: rc.c:310
+#: rc.c:343
 msgid "Smart backspace key enabled"
 msgstr ""
 
-#: rc.c:310
+#: rc.c:343
 msgid "Smart backspace key disabled"
 msgstr ""
 
-#: rc.c:310
+#: rc.c:343
 msgid "  Smart backspace "
 msgstr ""
 
-#: rc.c:311
+#: rc.c:344
 msgid "Indentation clean up enabled"
 msgstr ""
 
-#: rc.c:311
+#: rc.c:344
 msgid "Indentation clean up disabled"
 msgstr ""
 
-#: rc.c:311
+#: rc.c:344
 msgid "  Clean up indents "
 msgstr ""
 
-#: rc.c:312
+#: rc.c:345
 msgid "Picture drawing mode enabled"
 msgstr ""
 
-#: rc.c:312
+#: rc.c:345
 msgid "Picture drawing mode disabled"
 msgstr ""
 
-#: rc.c:312
+#: rc.c:345
 msgid "P Picture mode "
 msgstr ""
 
-#: rc.c:313
+#: rc.c:346
 #, c-format
 msgid "Backup files stored in (%s): "
 msgstr ""
 
-#: rc.c:313
+#: rc.c:346
 msgid "  Path to backup files "
 msgstr ""
 
-#: rc.c:314
+#: rc.c:347
 #, fuzzy
 msgid "Select syntax (^C to abort): "
 msgstr "System (^C to abort): "
 
-#: rc.c:314
+#: rc.c:347
 msgid "Y Syntax"
 msgstr ""
 
-#: rc.c:315
+#: rc.c:348
 #, fuzzy
 msgid "Select file character set (^C to abort): "
 msgstr "Name of file to insert (^C to abort): "
 
-#: rc.c:315
+#: rc.c:348
 msgid "E Encoding "
 msgstr ""
 
-#: rc.c:316
+#: rc.c:349
 msgid "Single quoting enabled"
 msgstr ""
 
-#: rc.c:316
+#: rc.c:349
 msgid "Single quoting disabled"
 msgstr ""
 
-#: rc.c:316
+#: rc.c:349
 msgid "  ^G ignores '... ' "
 msgstr ""
 
-#: rc.c:317
+#: rc.c:350
 msgid "/* comments enabled"
 msgstr ""
 
-#: rc.c:317
+#: rc.c:350
 msgid "/* comments disabled"
 msgstr ""
 
-#: rc.c:317
+#: rc.c:350
 msgid "  ^G ignores /*...*/ "
 msgstr ""
 
-#: rc.c:318
+#: rc.c:351
 msgid "// comments enabled"
 msgstr ""
 
-#: rc.c:318
+#: rc.c:351
 msgid "// comments disabled"
 msgstr ""
 
-#: rc.c:318
+#: rc.c:351
 msgid "  ^G ignores //... "
 msgstr ""
 
-#: rc.c:319
+#: rc.c:352
 msgid "# comments enabled"
 msgstr ""
 
-#: rc.c:319
+#: rc.c:352
 msgid "# comments disabled"
 msgstr ""
 
-#: rc.c:319
+#: rc.c:352
 msgid "  ^G ignores #... "
 msgstr ""
 
-#: rc.c:320
+#: rc.c:353
 msgid "-- comments enabled"
 msgstr ""
 
-#: rc.c:320
+#: rc.c:353
 msgid "-- comments disabled"
 msgstr ""
 
-#: rc.c:320
+#: rc.c:353
 msgid "  ^G ignores --... "
 msgstr ""
 
-#: rc.c:321
+#: rc.c:354
 msgid "; comments enabled"
 msgstr ""
 
-#: rc.c:321
+#: rc.c:354
 msgid "; comments disabled"
 msgstr ""
 
-#: rc.c:321
+#: rc.c:354
 msgid "  ^G ignores ;... "
 msgstr ""
 
-#: rc.c:322
+#: rc.c:355
 #, fuzzy, c-format
 msgid "Text delimiters (%s): "
 msgstr "Delimiters (%s): "
 
-#: rc.c:322
+#: rc.c:355
 #, fuzzy
 msgid "  Text delimiters "
 msgstr "Delimiters: "
 
-#: rc.c:323
+#: rc.c:356
+#, c-format
+msgid "Language (%s): "
+msgstr ""
+
+#: rc.c:356
+msgid "V Language "
+msgstr ""
+
+#: rc.c:357
 #, c-format
 msgid "Characters which can indent paragraphs (%s): "
 msgstr ""
 
-#: rc.c:323
+#: rc.c:357
 msgid "  Paragraph indent chars "
 msgstr ""
 
-#: rc.c:324
+#: rc.c:358
 msgid "Clicking can move the cursor past end of line"
 msgstr ""
 
-#: rc.c:324
+#: rc.c:358
 msgid "Clicking past end of line moves cursor to the end"
 msgstr ""
 
-#: rc.c:324
+#: rc.c:358
 msgid "  Click past end "
 msgstr ""
 
-#: rc.c:325
+#: rc.c:359
 msgid "Mouse action is done with the right button"
 msgstr ""
 
-#: rc.c:325
+#: rc.c:359
 msgid "Mouse action is done with the left button"
 msgstr ""
 
-#: rc.c:325
+#: rc.c:359
 msgid "  Right button "
 msgstr ""
 
-#: rc.c:627 rc.c:646 rc.c:658
+#: rc.c:662 rc.c:681 rc.c:693
 msgid "Value out of range"
 msgstr "Value out of range"
 
-#: rc.c:682
+#: rc.c:717
 msgid "Syntax definition file not found"
 msgstr "Syntax definition file not found"
 
-#: rc.c:757
+#: rc.c:792
 #, c-format
 msgid "%s encoding assumed for this file"
 msgstr "%s encoding assumed for this file"
 
-#: rc.c:760
+#: rc.c:795
 msgid "Character set not found"
 msgstr "Character set not found"
 
-#: rc.c:816
-#, c-format
-msgid "Delimiters (%s): "
-msgstr "Delimiters (%s): "
-
-#: rc.c:818
-msgid "Delimiters: "
-msgstr "Delimiters: "
-
-#: rc.c:968
+#: rc.c:1003
 #, c-format
 msgid "Processing '%s'..."
 msgstr "Processing '%s'..."
 
-#: rc.c:1024
+#: rc.c:1059
 #, c-format
 msgid ""
 "\n"
@@ -992,7 +1005,7 @@ msgstr ""
 "\n"
 "%s %d: Unknown option %s"
 
-#: rc.c:1057
+#: rc.c:1092
 #, c-format
 msgid ""
 "\n"
@@ -1001,7 +1014,7 @@ msgstr ""
 "\n"
 "%s %d: macro missing from :def"
 
-#: rc.c:1061
+#: rc.c:1096
 #, c-format
 msgid ""
 "\n"
@@ -1010,7 +1023,7 @@ msgstr ""
 "\n"
 "%s %d: command name missing from :def"
 
-#: rc.c:1072
+#: rc.c:1107
 #, c-format
 msgid ""
 "\n"
@@ -1019,7 +1032,7 @@ msgstr ""
 "\n"
 "%s %d: context name missing from :inherit"
 
-#: rc.c:1076
+#: rc.c:1111
 #, c-format
 msgid ""
 "\n"
@@ -1028,7 +1041,7 @@ msgstr ""
 "\n"
 "%s %d: No context selected for :inherit"
 
-#: rc.c:1087
+#: rc.c:1139
 #, c-format
 msgid ""
 "\n"
@@ -1037,7 +1050,7 @@ msgstr ""
 "\n"
 "%s %d: Couldn't open %s"
 
-#: rc.c:1095
+#: rc.c:1147
 #, c-format
 msgid ""
 "\n"
@@ -1045,53 +1058,53 @@ msgid ""
 msgstr ""
 "\n"
 "%s %d: :include missing file name"
-
-#: rc.c:1108
-#, c-format
-msgid ""
-"\n"
-"%s %d: No context selected for :delete"
-msgstr ""
-"\n"
-"%s %d: No context selected for :delete"
-
-#: rc.c:1113
-#, c-format
-msgid ""
-"\n"
-"%s %d: Invalid context name"
-msgstr ""
-"\n"
-"%s %d: Invalid context name"
-
-#: rc.c:1124
-#, c-format
-msgid ""
-"\n"
-"%s %d: No context selected for macro to key-sequence binding"
-msgstr ""
-"\n"
-"%s %d: No context selected for macro to key-sequence binding"
-
-#: rc.c:1133
-#, c-format
-msgid ""
-"\n"
-"%s %d: Unknown command in macro"
-msgstr ""
-"\n"
-"%s %d: Unknown command in macro"
-
-#: rc.c:1149
-#, c-format
-msgid ""
-"\n"
-"%s %d: Bad key sequence '%s'"
-msgstr ""
-"\n"
-"%s %d: Bad key sequence '%s'"
 
 #: rc.c:1160
+#, c-format
+msgid ""
+"\n"
+"%s %d: No context selected for :delete"
+msgstr ""
+"\n"
+"%s %d: No context selected for :delete"
+
+#: rc.c:1167
+#, c-format
+msgid ""
+"\n"
+"%s %d: Invalid context name"
+msgstr ""
+"\n"
+"%s %d: Invalid context name"
+
+#: rc.c:1178
+#, c-format
+msgid ""
+"\n"
+"%s %d: No context selected for macro to key-sequence binding"
+msgstr ""
+"\n"
+"%s %d: No context selected for macro to key-sequence binding"
+
+#: rc.c:1187
+#, c-format
+msgid ""
+"\n"
+"%s %d: Unknown command in macro"
+msgstr ""
+"\n"
+"%s %d: Unknown command in macro"
+
+#: rc.c:1203
+#, c-format
+msgid ""
+"\n"
+"%s %d: Bad key sequence '%s'"
+msgstr ""
+"\n"
+"%s %d: Bad key sequence '%s'"
+
+#: rc.c:1214
 msgid ""
 "\n"
 "done\n"
@@ -1099,7 +1112,7 @@ msgstr ""
 "\n"
 "done\n"
 
-#: rc.c:1162
+#: rc.c:1216
 msgid "done\n"
 msgstr "done\n"
 
@@ -1153,88 +1166,88 @@ msgstr "%s %d: Class already defined\n"
 msgid "%s %d: Missing )\n"
 msgstr "%s %d: Missing )\n"
 
-#: syntax.c:410
+#: syntax.c:413
 #, c-format
 msgid "%s %d: missing parameter for ifdef\n"
 msgstr "%s %d: missing parameter for ifdef\n"
 
-#: syntax.c:420
+#: syntax.c:423
 #, c-format
 msgid "%s %d: else with no matching if\n"
 msgstr "%s %d: else with no matching if\n"
 
-#: syntax.c:427
+#: syntax.c:430
 #, c-format
 msgid "%s %d: endif with no matching if\n"
 msgstr "%s %d: endif with no matching if\n"
 
-#: syntax.c:431 syntax.c:559
+#: syntax.c:434 syntax.c:562
 #, c-format
 msgid "%s %d: Missing subroutine name\n"
 msgstr "%s %d: Missing subroutine name\n"
 
-#: syntax.c:446
+#: syntax.c:449
 #, c-format
 msgid "%s %d: Unknown control statement\n"
 msgstr "%s %d: Unknown control statement\n"
 
-#: syntax.c:449
+#: syntax.c:452
 #, c-format
 msgid "%s %d: Missing control statement name\n"
 msgstr "%s %d: Missing control statement name\n"
 
-#: syntax.c:476
+#: syntax.c:479
 #, c-format
 msgid "%s %d: Unknown class\n"
 msgstr "%s %d: Unknown class\n"
 
-#: syntax.c:479
+#: syntax.c:482
 #, c-format
 msgid "%s %d: Missing color for state definition\n"
 msgstr "%s %d: Missing color for state definition\n"
 
-#: syntax.c:481 syntax.c:609
+#: syntax.c:484 syntax.c:612
 #, c-format
 msgid "%s %d: Missing state name\n"
 msgstr "%s %d: Missing state name\n"
 
-#: syntax.c:502
+#: syntax.c:505
 #, c-format
 msgid "%s %d: Bad string\n"
 msgstr "%s %d: Bad string\n"
 
-#: syntax.c:542 syntax.c:544 syntax.c:553 syntax.c:567 syntax.c:603
-#: syntax.c:605
+#: syntax.c:545 syntax.c:547 syntax.c:556 syntax.c:570 syntax.c:606
+#: syntax.c:608
 #, c-format
 msgid "%s %d: Missing value for option\n"
 msgstr "%s %d: Missing value for option\n"
 
-#: syntax.c:607 syntax.c:623
+#: syntax.c:610 syntax.c:626
 #, c-format
 msgid "%s %d: Unknown option\n"
 msgstr "%s %d: Unknown option\n"
 
-#: syntax.c:611
+#: syntax.c:614
 #, c-format
 msgid "%s %d: Missing string\n"
 msgstr "%s %d: Missing string\n"
 
-#: syntax.c:632
+#: syntax.c:635
 #, c-format
 msgid "%s %d: Missing jump\n"
 msgstr "%s %d: Missing jump\n"
 
-#: syntax.c:634
+#: syntax.c:637
 #, c-format
 msgid "%s %d: No state\n"
 msgstr "%s %d: No state\n"
 
-#: syntax.c:636
+#: syntax.c:639
 #, c-format
 msgid "%s %d: Unknown character\n"
 msgstr "%s %d: Unknown character\n"
 
-#: syntax.c:643
+#: syntax.c:646
 #, c-format
 msgid "%s %d: ifdef with no matching endif\n"
 msgstr "%s %d: ifdef with no matching endif\n"
@@ -1264,7 +1277,7 @@ msgstr "You are at the command shell.  Type 'exit' to return\n"
 msgid "You have suspended the program.  Type 'fg' to return\n"
 msgstr "You have suspended the program.  Type 'fg' to return\n"
 
-#: tty.c:1153
+#: tty.c:1144
 #, c-format
 msgid "Couldn't execute shell '%s'\n"
 msgstr "Couldn't execute shell '%s'\n"
@@ -1290,7 +1303,7 @@ msgstr "*SHELL*"
 msgid "(Macro %d recording...)"
 msgstr "(Macro %d recording...)"
 
-#: tw.c:558 tw.c:584 ufile.c:951
+#: tw.c:558 tw.c:584 ufile.c:1014
 msgid "Lose changes to this file (y,n,^C)? "
 msgstr "Lose changes to this file (y,n,^C)? "
 
@@ -1303,7 +1316,7 @@ msgid "Selection started."
 msgstr "Selection started."
 
 #: ublock.c:417 ublock.c:503 ublock.c:559 ublock.c:887 ublock.c:921
-#: ublock.c:1083 ufile.c:397 umath.c:177 undo.c:453
+#: ublock.c:1083 ufile.c:439 umath.c:177 undo.c:455
 msgid "No block"
 msgstr "No block"
 
@@ -1323,7 +1336,7 @@ msgstr "Command to filter block through (^C to abort): "
 msgid "Command to filter file through (^C to abort): "
 msgstr "Command to filter file through (^C to abort): "
 
-#: uedit.c:1388 utag.c:72
+#: uedit.c:1388 utag.c:73
 msgid "Invalid line number"
 msgstr "Invalid line number"
 
@@ -1377,7 +1390,7 @@ msgstr "Mark %d not set"
 msgid "Goto bookmark (0-9):"
 msgstr "Goto bookmark (0-9):"
 
-#: uedit.c:2243 usearch.c:987 utag.c:106
+#: uedit.c:2243 usearch.c:991 utag.c:107
 msgid "Not found"
 msgstr "Not found"
 
@@ -1449,64 +1462,72 @@ msgstr "No modified files, so no updates needed."
 msgid "System (^C to abort): "
 msgstr "System (^C to abort): "
 
-#: ufile.c:271
+#: ufile.c:273
+msgid "yY<>yY"
+msgstr ""
+
+#: ufile.c:274
+msgid "nN<>nN"
+msgstr ""
+
+#: ufile.c:313
 msgid "Couldn't make backup file... file not saved"
 msgstr "Couldn't make backup file... file not saved"
 
-#: ufile.c:283
+#: ufile.c:325
 msgid "Could not make backup file.  Save anyway (y,n,^C)? "
 msgstr "Could not make backup file.  Save anyway (y,n,^C)? "
 
-#: ufile.c:371 ufile.c:387
+#: ufile.c:413 ufile.c:429
 #, c-format
 msgid "Block written to file %s"
 msgstr "Block written to file %s"
 
-#: ufile.c:450
+#: ufile.c:492
 msgid "File exists. Overwrite (y,n,^C)? "
 msgstr "File exists. Overwrite (y,n,^C)? "
 
-#: ufile.c:457
+#: ufile.c:499
 msgid "File on disk is newer. Overwrite (y,n,^C)? "
 msgstr "File on disk is newer. Overwrite (y,n,^C)? "
 
-#: ufile.c:472 ufile.c:840 ufile.c:1044
+#: ufile.c:514 ufile.c:903 ufile.c:1107
 msgid "Name of file to save (^C to abort): "
 msgstr "Name of file to save (^C to abort): "
 
-#: ufile.c:500
+#: ufile.c:542
 msgid "Name of file to write (^C to abort): "
 msgstr "Name of file to write (^C to abort): "
 
-#: ufile.c:602
+#: ufile.c:658
 msgid "Load original file from disk (y,n,^C)? "
 msgstr "Load original file from disk (y,n,^C)? "
 
-#: ufile.c:632
+#: ufile.c:688
 msgid "Can't replace modified file"
 msgstr "Can't replace modified file"
 
-#: ufile.c:641
+#: ufile.c:697
 msgid "Name of file to edit (^C to abort): "
 msgstr "Name of file to edit (^C to abort): "
 
-#: ufile.c:656 ufile.c:1026
+#: ufile.c:712 ufile.c:1089
 msgid "Name of buffer to edit (^C to abort): "
 msgstr "Name of buffer to edit (^C to abort): "
 
-#: ufile.c:712
+#: ufile.c:768
 msgid "Name of scratch buffer to edit (^C to abort): "
 msgstr "Name of scratch buffer to edit (^C to abort): "
 
-#: ufile.c:806
+#: ufile.c:869
 msgid "Name of file to insert (^C to abort): "
 msgstr "Name of file to insert (^C to abort): "
 
-#: ufile.c:874
+#: ufile.c:937
 msgid "Save changes to this file (y,n,^C)? "
 msgstr "Save changes to this file (y,n,^C)? "
 
-#: ufile.c:1078
+#: ufile.c:1141
 #, c-format
 msgid "File %s has been modified.  Save it (y,n,^C)? "
 msgstr "File %s has been modified.  Save it (y,n,^C)? "
@@ -1555,7 +1576,7 @@ msgstr "Recursion depth exceeded"
 msgid "Extra junk after end of expr"
 msgstr "Extra junk after end of expr"
 
-#: undo.c:436
+#: undo.c:438
 msgid "Modified flag cleared"
 msgstr "Modified flag cleared"
 
@@ -1563,11 +1584,11 @@ msgstr "Modified flag cleared"
 msgid "Wrapped"
 msgstr "Wrapped"
 
-#: usearch.c:619
+#: usearch.c:620
 msgid "Replace with (^C to abort): "
 msgstr "Replace with (^C to abort): "
 
-#: usearch.c:634
+#: usearch.c:635
 msgid ""
 "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to "
 "abort): "
@@ -1575,28 +1596,36 @@ msgstr ""
 "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to "
 "abort): "
 
-#: usearch.c:636
+#: usearch.c:637
 msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "
 msgstr "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "
 
-#: usearch.c:712
+#: usearch.c:713
 #, c-format
 msgid "Find (^C to abort) [%s]: "
 msgstr "Find (^C to abort) [%s]: "
 
-#: usearch.c:714
+#: usearch.c:715
 msgid "Find (^C to abort): "
 msgstr "Find (^C to abort): "
 
-#: usearch.c:837
+#: usearch.c:809
+msgid "rR<>rR"
+msgstr ""
+
+#: usearch.c:810
+msgid "bB<>bB"
+msgstr ""
+
+#: usearch.c:841
 msgid "Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"
 msgstr "Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"
 
-#: usearch.c:985
+#: usearch.c:989
 msgid "Not found (search restricted to marked block)"
 msgstr "Not found (search restricted to marked block)"
 
-#: usearch.c:992
+#: usearch.c:996
 msgid "Infinite loop aborted: your search repeatedly matched same place"
 msgstr "Infinite loop aborted: your search repeatedly matched same place"
 
@@ -1640,7 +1669,7 @@ msgstr "Kill program (y,n,^C)?"
 msgid "Couldn't open tags file"
 msgstr "Couldn't open tags file"
 
-#: utag.c:167
+#: utag.c:168
 msgid "Tag search: "
 msgstr "Tag search: "
 
@@ -1656,3 +1685,9 @@ msgstr "Couldn't open file '%s'\n"
 #: w.c:822
 msgid "There is no message buffer"
 msgstr "There is no message buffer"
+
+#~ msgid "Delimiters (%s): "
+#~ msgstr "Delimiters (%s): "
+
+#~ msgid "Delimiters: "
+#~ msgstr "Delimiters: "

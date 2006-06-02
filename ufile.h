@@ -39,4 +39,11 @@ extern int nobackups; /* Set to disable backup files */
 extern unsigned char *backpath; /* Path to backup files if not current directory */
 extern int orphan; /* Set to keep orphaned buffers (buffers with no windows)  */
 
+extern unsigned char *yes_string;
+extern unsigned char *no_string;
+#define YES_CODE -10
+#define NO_CODE -20
+int yncheck PARAMS((unsigned char *string, int c));
+int ynchecks PARAMS((unsigned char *string, unsigned char *s));
+
 #endif

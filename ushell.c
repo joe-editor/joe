@@ -233,7 +233,7 @@ static int pidabort(BW *bw, int c, void *object, int *notify)
 	if (notify) {
 		*notify = 1;
 	}
-	if (c != 'y' && c != 'Y') {
+	if (c != YES_CODE && !yncheck(yes_string, c)) {
 		return -1;
 	}
 	if (bw->b->pid) {

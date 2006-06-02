@@ -1,3 +1,7 @@
+Fri Jun  2 10:49:21 EDT 2006
+
+	internationalized y/n handling.
+
 Wed May 31 22:37:56 EDT 2006
 
 	query windows can now be multi-line.  Also they should handle wide

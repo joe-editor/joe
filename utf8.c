@@ -184,8 +184,12 @@ int utf8_decode_fwrd(unsigned char **p,int *plen)
 {
 	struct utf8_sm sm;
 	unsigned char *s = *p;
-	int len = *plen;
+	int len;
 	int c = -2; /* Return this on no more input. */
+	if (plen)
+		len = *plen;
+	else
+		len = -1;
 
 	utf8_init(&sm);
 
@@ -212,7 +216,8 @@ int utf8_decode_fwrd(unsigned char **p,int *plen)
 		}
 	}
 
-	*plen = len;
+	if (plen)
+		*plen = len;
 	*p = s;
 
 	return c;

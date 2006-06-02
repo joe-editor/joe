@@ -70,4 +70,7 @@ extern int pico;
 extern unsigned char srchstr[];
 extern SRCH *globalsrch;
 
+extern unsigned char *rest_string;
+extern unsigned char *backup_string;
+
 #endif
