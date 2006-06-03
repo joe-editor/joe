@@ -21,7 +21,7 @@
 
 :idle Idle
 	*		idle
-	")"		subst_char	recolor=-1
+#	")"		subst_char	recolor=-1
 	"`"		subst_char	recolor=-1
 	"#"		comment		recolor=-1
 	"\\"		escape		recolor=-1
@@ -130,7 +130,7 @@ done
 
 :subst Var
 	*		idle noeat
-	"("		idle
+	"("		idle	recolor=-2 # don't try for now
 	"\""		string_dq	recolor=-2
 	"\'"		string_sq	recolor=-2
 	"{"		subst_brack

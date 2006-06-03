@@ -2,6 +2,8 @@ Sat Jun  3 09:48:41 EDT 2006
 
 	new syntax file: m4
 
+	make rc parsing faster.
+
 Fri Jun  2 10:49:21 EDT 2006
 
 	internationalized y/n handling.

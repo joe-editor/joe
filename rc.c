@@ -379,12 +379,16 @@ struct glopts {
 /* Initialize .ofsts above.  Is this really necessary? */
 
 int isiz = 0;
+HASH *opt_tab;
 
 static void izopts(void)
 {
 	int x;
 
-	for (x = 0; glopts[x].name; ++x)
+	opt_tab = htmk(128);
+
+	for (x = 0; glopts[x].name; ++x) {
+		htadd(opt_tab, glopts[x].name, glopts + x);
 		switch (glopts[x].type) {
 		case 4:
 		case 5:
@@ -393,6 +397,7 @@ static void izopts(void)
 		case 8:
 			glopts[x].ofst = glopts[x].addr - (unsigned char *) &fdefault;
 		}
+	}
 	isiz = 1;
 }
 
@@ -422,6 +427,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 	int ret = 0;
 	int st = 1;	/* 1 to set option, 0 to clear it */
 	int x;
+	struct glopts *opt;
 
 	/* Initialize offsets */
 	if (!isiz)
@@ -433,201 +439,203 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 		++s;
 	}
 
-	for (x = 0; glopts[x].name; ++x)
-		if (!zcmp(glopts[x].name, s)) {
-			switch (glopts[x].type) {
-			case 0: /* Global variable flag option */
-				if (set)
-					*(int *)glopts[x].set = st;
-				break;
-			case 1: /* Global variable integer option */
-				if (set && arg) {
-					sscanf((char *)arg, "%d", &val);
-					if (val >= glopts[x].low && val <= glopts[x].high)
-						*(int *)glopts[x].set = val;
-				}
-				break;
-			case 2: /* Global variable string option */
-				if (set) {
-					if (arg)
-						*(unsigned char **) glopts[x].set = zdup(arg);
-					else
-						*(unsigned char **) glopts[x].set = 0;
-				}
-				break;
-			case 4: /* Local option flag */
-				if (options)
-					*(int *) ((unsigned char *) options + glopts[x].ofst) = st;
-				break;
-			case 5: /* Local option integer */
-				if (arg) {
-					if (options) {
-						sscanf((char *)arg, "%d", &val);
-						if (val >= glopts[x].low && val <= glopts[x].high)
-							*(int *) ((unsigned char *)
-								  options + glopts[x].ofst) = val;
-					} 
-				}
-				break;
-			case 6: /* Local string option */
-				if (options) {
-					if (arg) {
-						*(unsigned char **) ((unsigned char *)
-								  options + glopts[x].ofst) = zdup(arg);
-					} else {
-						*(unsigned char **) ((unsigned char *)
-								  options + glopts[x].ofst) = 0;
-					}
-				}
-				break;
-			case 7: /* Local option numeric + 1, with range checking */
-				if (arg) {
-					int zz = 0;
+	opt = htfind(opt_tab, s);
 
-					sscanf((char *)arg, "%d", &zz);
-					if (zz >= glopts[x].low && zz <= glopts[x].high) {
-						--zz;
-						if (options)
-							*(int *) ((unsigned char *)
-								  options + glopts[x].ofst) = zz;
-					}
-				}
-				break;
-
-			case 9: /* Set syntax */
-				if (arg && options)
-					options->syntax_name = zdup(arg);
-				/* this was causing all syntax files to be loaded...
-				if (arg && options)
-					options->syntax = load_dfa(arg); */
-				break;
-
-			case 13: /* Set byte mode encoding */
-				if (arg && options)
-					options->map_name = zdup(arg);
-				break;
+	if (opt) {
+		switch (opt->type) {
+		case 0: /* Global variable flag option */
+			if (set)
+				*(int *)opt->set = st;
+			break;
+		case 1: /* Global variable integer option */
+			if (set && arg) {
+				sscanf((char *)arg, "%d", &val);
+				if (val >= opt->low && val <= opt->high)
+					*(int *)opt->set = val;
 			}
-			/* This is a stupid hack... */
-			if ((glopts[x].type & 3) == 0 || !arg)
-				return 1;
-			else
-				return 2;
+			break;
+		case 2: /* Global variable string option */
+			if (set) {
+				if (arg)
+					*(unsigned char **) opt->set = zdup(arg);
+				else
+					*(unsigned char **) opt->set = 0;
+			}
+			break;
+		case 4: /* Local option flag */
+			if (options)
+				*(int *) ((unsigned char *) options + opt->ofst) = st;
+			break;
+		case 5: /* Local option integer */
+			if (arg) {
+				if (options) {
+					sscanf((char *)arg, "%d", &val);
+					if (val >= opt->low && val <= opt->high)
+						*(int *) ((unsigned char *)
+							  options + opt->ofst) = val;
+				} 
+			}
+			break;
+		case 6: /* Local string option */
+			if (options) {
+				if (arg) {
+					*(unsigned char **) ((unsigned char *)
+							  options + opt->ofst) = zdup(arg);
+				} else {
+					*(unsigned char **) ((unsigned char *)
+							  options + opt->ofst) = 0;
+				}
+			}
+			break;
+		case 7: /* Local option numeric + 1, with range checking */
+			if (arg) {
+				int zz = 0;
+
+				sscanf((char *)arg, "%d", &zz);
+				if (zz >= opt->low && zz <= opt->high) {
+					--zz;
+					if (options)
+						*(int *) ((unsigned char *)
+							  options + opt->ofst) = zz;
+				}
+			}
+			break;
+
+		case 9: /* Set syntax */
+			if (arg && options)
+				options->syntax_name = zdup(arg);
+			/* this was causing all syntax files to be loaded...
+			if (arg && options)
+				options->syntax = load_dfa(arg); */
+			break;
+
+		case 13: /* Set byte mode encoding */
+			if (arg && options)
+				options->map_name = zdup(arg);
+			break;
 		}
-	/* Why no case 6, string option? */
-	/* Keymap, mold, mnew, etc. are not strings */
-	/* These options do not show up in ^T */
-	if (!zcmp(s, US "lmsg")) {
-		if (arg) {
-			if (options)
-				options->lmsg = zdup(arg);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "rmsg")) {
-		if (arg) {
-			if (options)
-				options->rmsg = zdup(arg);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "keymap")) {
-		if (arg) {
-			int y;
+		/* This is a stupid hack... */
+		if ((opt->type & 3) == 0 || !arg)
+			return 1;
+		else
+			return 2;
+	} else {
+		/* Why no case 6, string option? */
+		/* Keymap, mold, mnew, etc. are not strings */
+		/* These options do not show up in ^T */
+		if (!zcmp(s, US "lmsg")) {
+			if (arg) {
+				if (options)
+					options->lmsg = zdup(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "rmsg")) {
+			if (arg) {
+				if (options)
+					options->rmsg = zdup(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "keymap")) {
+			if (arg) {
+				int y;
 
-			for (y = 0; !joe_isspace(locale_map,arg[y]); ++y) ;
-			if (!arg[y])
-				arg[y] = 0;
-			if (options && y)
-				options->context = zdup(arg);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "mnew")) {
-		if (arg) {
-			int sta;
+				for (y = 0; !joe_isspace(locale_map,arg[y]); ++y) ;
+				if (!arg[y])
+					arg[y] = 0;
+				if (options && y)
+					options->context = zdup(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "mnew")) {
+			if (arg) {
+				int sta;
 
-			if (options)
-				options->mnew = mparse(NULL, arg, &sta);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "mfirst")) {
-		if (arg) {
-			int sta;
+				if (options)
+					options->mnew = mparse(NULL, arg, &sta);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "mfirst")) {
+			if (arg) {
+				int sta;
 
-			if (options)
-				options->mfirst = mparse(NULL, arg, &sta);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "mold")) {
-		if (arg) {
-			int sta;
+				if (options)
+					options->mfirst = mparse(NULL, arg, &sta);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "mold")) {
+			if (arg) {
+				int sta;
 
-			if (options)
-				options->mold = mparse(NULL, arg, &sta);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "msnew")) {
-		if (arg) {
-			int sta;
+				if (options)
+					options->mold = mparse(NULL, arg, &sta);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "msnew")) {
+			if (arg) {
+				int sta;
 
-			if (options)
-				options->msnew = mparse(NULL, arg, &sta);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "msold")) {
-		if (arg) {
-			int sta;
+				if (options)
+					options->msnew = mparse(NULL, arg, &sta);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "msold")) {
+			if (arg) {
+				int sta;
 
-			if (options)
-				options->msold = mparse(NULL, arg, &sta);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "text_color")) {
-		if (arg) {
-			bg_text = meta_color(arg);
-			bg_help = bg_text;
-			bg_prompt = bg_text;
-			bg_menu = bg_text;
-			bg_msg = bg_text;
-			bg_stalin = bg_text;
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "help_color")) {
-		if (arg) {
-			bg_help = meta_color(arg);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "status_color")) {
-		if (arg) {
-			bg_stalin = meta_color(arg);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "menu_color")) {
-		if (arg) {
-			bg_menu = meta_color(arg);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "prompt_color")) {
-		if (arg) {
-			bg_prompt = meta_color(arg);
-			ret = 2;
-		} else
-			ret = 1;
-	} else if (!zcmp(s, US "msg_color")) {
-		if (arg) {
-			bg_msg = meta_color(arg);
-			ret = 2;
-		} else
-			ret = 1;
+				if (options)
+					options->msold = mparse(NULL, arg, &sta);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "text_color")) {
+			if (arg) {
+				bg_text = meta_color(arg);
+				bg_help = bg_text;
+				bg_prompt = bg_text;
+				bg_menu = bg_text;
+				bg_msg = bg_text;
+				bg_stalin = bg_text;
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "help_color")) {
+			if (arg) {
+				bg_help = meta_color(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "status_color")) {
+			if (arg) {
+				bg_stalin = meta_color(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "menu_color")) {
+			if (arg) {
+				bg_menu = meta_color(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "prompt_color")) {
+			if (arg) {
+				bg_prompt = meta_color(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, US "msg_color")) {
+			if (arg) {
+				bg_msg = meta_color(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		}
 	}
 
 	return ret;
