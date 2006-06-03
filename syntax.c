@@ -162,19 +162,16 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 static struct high_state *find_state(struct high_syntax *syntax,unsigned char *prefix,unsigned char *name)
 {
-	int x;
 	unsigned char buf[256];
 	struct high_state *state;
 
 	joe_snprintf_2(buf, sizeof(buf), "%s%s", prefix, name);
 
 	/* Find state */
-	for(x=0;x!=syntax->nstates;++x)
-		if(!zcmp(syntax->states[x]->name,buf))
-			break;
+	state = htfind(syntax->ht_states, buf);
 
 	/* It doesn't exist, so create it */
-	if(x==syntax->nstates) {
+	if(!state) {
 		int y;
 		state=joe_malloc(sizeof(struct high_state));
 		state->name=zdup(buf);
@@ -189,8 +186,9 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *p
 		for(y=0; y!=256; ++y)
 			state->cmd[y] = &syntax->default_cmd;
 		state->delim = 0;
-	} else
-		state = syntax->states[x];
+		htadd(syntax->ht_states, state->name, state);
+	}
+
 	return state;
 }
 
@@ -682,7 +680,8 @@ struct high_syntax *load_dfa(unsigned char *name)
 	syntax->next = syntax_list;
 	syntax->nstates = 0;
 	syntax->color = 0;
-	syntax->states = joe_malloc(sizeof(struct high_state *)*(syntax->szstates=64));
+	syntax->states = joe_malloc(sizeof(struct high_state *)*(syntax->szstates = 64));
+	syntax->ht_states = htmk(syntax->szstates);
 	syntax->sync_lines = 50;
 	syntax->recur = 0;
 	iz_cmd(&syntax->default_cmd);
@@ -697,6 +696,7 @@ struct high_syntax *load_dfa(unsigned char *name)
 		joe_free(syntax->name);
 		joe_free(syntax->states);
 		joe_free(syntax);
+		htrm(syntax->ht_states);
 		return 0;
 	}
 }
@@ -745,7 +745,7 @@ void link_syntax(struct high_syntax *syntax)
 		int x = start;
 		int nstates = syntax->nstates;
 		start = nstates;
-		for (; x!= nstates; ++x) {
+		for (; x != nstates; ++x) {
 			struct high_state *state = syntax->states[x];
 			int y;
 			for(y = 0; y != 256; ++y) {

@@ -28,7 +28,7 @@ int load_po(FILE *f)
 	int preload_flag = 0;
 	msgid[0] = 0;
 	msgstr[0] = 0;
-	while (preload_flag || fgets(buf,sizeof(buf)-1,f)) {
+	while (preload_flag || fgets((char *)buf,sizeof(buf)-1,f)) {
 		unsigned char *p;
 		preload_flag = 0;
 		p = buf;
@@ -43,7 +43,7 @@ int load_po(FILE *f)
 				ofst += len;
 				parse_ws(&p, '#');
 				if (!*p) {
-					if (fgets(buf,sizeof(buf) - 1,f)) {
+					if (fgets((char *)buf,sizeof(buf) - 1,f)) {
 						p = buf;
 						preload_flag = 1;
 						parse_ws(&p, '#');
@@ -62,7 +62,7 @@ int load_po(FILE *f)
 				ofst += len;
 				parse_ws(&p, '#');
 				if (!*p) {
-					if (fgets(buf,sizeof(buf) - 1,f)) {
+					if (fgets((char *)buf,sizeof(buf) - 1,f)) {
 						p = buf;
 						preload_flag = 1;
 						parse_ws(&p, '#');
@@ -77,7 +77,7 @@ int load_po(FILE *f)
 				/* Add to hash table */
 				htadd(gettext_ht, zdup(msgid), zdup(bf));
 			} else if (!msgid[0] && msgstr[0]) {
-				unsigned char *p = strstr(msgstr, "charset=");
+				unsigned char *p = (unsigned char *)strstr((char *)msgstr, "charset=");
 				if (p) {
 					/* Copy character set name up to next delimiter */
 					int x;
@@ -106,14 +106,14 @@ void init_gettext(unsigned char *s)
 	FILE *f;
 	unsigned char buf[1024];
 	joe_snprintf_2(buf, sizeof(buf), "%slang/%s.po",JOERC,s);
-	if ((f = fopen(buf, "r"))) {
+	if ((f = fopen((char *)buf, "r"))) {
 		/* Try specific language, like en_GB */
 		gettext_ht = htmk(256);
 		load_po(f);
 	} else if (s[0] && s[1]) {
 		/* Try generic language, like en */
 		joe_snprintf_3(buf, sizeof(buf), "%slang/%c%c.po",JOERC,s[0],s[1]);
-		if ((f = fopen(buf, "r"))) {
+		if ((f = fopen((char *)buf, "r"))) {
 			gettext_ht = htmk(256);
 			load_po(f);
 		}

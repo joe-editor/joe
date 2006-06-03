@@ -270,8 +270,8 @@ static void rmsavereq(struct savereq *req)
  * is a list of 8-bit characters. yyyy is a list of UTF-8 characters.
  */
 
-unsigned char *yes_string = _("yY");
-unsigned char *no_string = _("nN");
+unsigned char *yes_string = (unsigned char *) _("yY");
+unsigned char *no_string = (unsigned char *) _("nN");
 
 int yncheck(unsigned char *set, int c)
 {

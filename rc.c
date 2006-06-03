@@ -426,7 +426,6 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 	int val;
 	int ret = 0;
 	int st = 1;	/* 1 to set option, 0 to clear it */
-	int x;
 	struct glopts *opt;
 
 	/* Initialize offsets */
@@ -1124,7 +1123,7 @@ int procrc(CAP *cap, unsigned char *name)
 						buf[c] = 0;
 						if (c != x) {
 							unsigned char bf[1024];
-							unsigned char *p = getenv("HOME");
+							unsigned char *p = (unsigned char *)getenv("HOME");
 							int rtn = -1;
 							bf[0] = 0;
 							if (p && buf[x] != '/') {

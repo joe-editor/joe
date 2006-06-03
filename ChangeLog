@@ -2,7 +2,11 @@ Sat Jun  3 09:48:41 EDT 2006
 
 	new syntax files: m4 joerc
 
-	make rc parsing faster.
+	use hash table in rc file parser.
+
+	use hash table in syntax parser.
+
+	add auto-expanding hash table.
 
 Fri Jun  2 10:49:21 EDT 2006
 

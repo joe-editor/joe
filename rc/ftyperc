@@ -661,6 +661,9 @@
 -syntax conf
 
  JOERC file
+*ftyperc
+-syntax joerc
+
 *joerc
 -syntax joerc
 

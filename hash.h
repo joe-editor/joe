@@ -9,14 +9,16 @@
 #define _JOE_HASH_H 1
 
 struct entry {
-	unsigned char	*name;
-	HENTRY	*next;
-	void	*val;
+	HENTRY *next;
+	unsigned char *name;
+	unsigned hash_val;
+	void *val;
 };
 
 struct hash {
-	int	len;
-	HENTRY	**tab;
+	unsigned len;
+	HENTRY **tab;
+	unsigned nentries;
 };
 
 /* Compute hash code for a string */

@@ -806,8 +806,8 @@ static void goback(SRCH *srch, BW *bw)
 	}
 }
 
-unsigned char *rest_string = _("rR");
-unsigned char *backup_string = _("bB");
+unsigned char *rest_string = (unsigned char *) _("rR");
+unsigned char *backup_string = (unsigned char *) _("bB");
 
 static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 {

@@ -39,7 +39,7 @@ typedef int pid_t;
 #include <time.h>
 #endif
 
-#define joe_gettext(s) my_gettext((char *)(s))
+#define joe_gettext(s) my_gettext((unsigned char *)(s))
 
 /*
 #ifdef ENABLE_NLS

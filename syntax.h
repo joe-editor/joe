@@ -61,6 +61,7 @@ struct high_syntax {
 	struct high_syntax *next;	/* Linked list of loaded syntaxes */
 	unsigned char *name;			/* Name of this syntax */
 	struct high_state **states;	/* The states of this syntax.  states[0] is idle state */
+	HASH *ht_states;		/* Hash table of states */
 	int nstates;			/* No. states */
 	int szstates;			/* Malloc size of states array */
 	struct high_color *color;	/* Linked list of color definitions */

@@ -7,16 +7,39 @@
 =Brace		bold magenta
 =Kw		bold
 
+:start Idle
+	*		start call=.m4()
+
+.subr m4
+
+.ifdef quote
+:idle Constant
+.else
 :idle Idle
+.endif
 	*		idle
-	"[]"		quote recolor=-1
-	")"		brace recolor=-1
+	"["		idle recolor=-1 call=.m4(quote)
+#	"["		idle recolor=-1 call=.quote()
 	"a-zA-Z_"	ident buffer mark
+.ifdef quote
+	"]"		idle return
+.endif
+.ifdef brace
+	")"		endbrace recolor=-1
+.endif
 
 :quote Constant
-	*		idle noeat
+	*		quote
+	"]"		idle
 
+:endbrace Brace
+	*		idle noeat return
+
+.ifdef quote
+:ident Constant
+.else
 :ident Idle
+.endif
 	*		maybe_macro noeat strings
 	"builtin"	maybe_kw
 	"changecom"	maybe_kw
@@ -85,4 +108,14 @@ done
 	"("		brace recolor=-1
 
 :brace Brace
-	*		idle noeat
+	*		idle noeat call=.m4(brace)
+
+.end
+
+.subr quote
+:idle Constant
+	*	idle
+	"]"	idle return
+	"["	idle call=.quote()
+
+.end
