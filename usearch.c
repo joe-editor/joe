@@ -806,8 +806,8 @@ static void goback(SRCH *srch, BW *bw)
 	}
 }
 
-unsigned char *rest_string = _("rR<>rR");
-unsigned char *backup_string = _("bB<>bB");
+unsigned char *rest_string = _("rR");
+unsigned char *backup_string = _("bB");
 
 static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 {
@@ -821,7 +821,7 @@ static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 			return -1;
 		} else
 			return dopfnext(bw, srch, notify);
-	} else if (c == yncheck(rest_string, c)) {
+	} else if (yncheck(rest_string, c)) {
 		if (doreplace(bw, srch))
 			return -1;
 		srch->rest = 1;

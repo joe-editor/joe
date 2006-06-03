@@ -1,6 +1,14 @@
+Sat Jun  3 09:48:41 EDT 2006
+
+	new syntax file: m4
+
 Fri Jun  2 10:49:21 EDT 2006
 
 	internationalized y/n handling.
+
+	new spell check macro which uses 'language'
+
+	fix sh highlight bug: do not try to highlight $( )
 
 Wed May 31 22:37:56 EDT 2006
 

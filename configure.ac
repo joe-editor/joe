@@ -157,5 +157,5 @@ charmaps/klingon syntax/lisp.jsf syntax/csh.jsf syntax/mason.jsf syntax/diff.jsf
 syntax/asm.jsf syntax/css.jsf syntax/tex.jsf syntax/ocaml.jsf syntax/4gl.jsf
 syntax/sml.jsf syntax/sql.jsf syntax/awk.jsf syntax/cobol.jsf syntax/sed.jsf
 syntax/ps.jsf syntax/ada.jsf syntax/troff.jsf syntax/haskell.jsf
-syntax/rexx.jsf syntax/skill.jsf syntax/lua.jsf syntax/ruby.jsf])
+syntax/rexx.jsf syntax/skill.jsf syntax/lua.jsf syntax/ruby.jsf syntax/m4.jsf])
 AC_OUTPUT

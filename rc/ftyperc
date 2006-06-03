@@ -483,6 +483,11 @@
 -syntax csh
 -pound_comment
 
+ M4
+*.m4
+-autoindent
+-syntax m4
+
  Shell
 *
 +#!\+\[ 	]\+\[a-z/]/sh\>
