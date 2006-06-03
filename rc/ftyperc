@@ -634,7 +634,7 @@
  Autoconfig file
 *.ac
 -autoindent
--syntax conf
+-syntax m4
 
  M4 file
 *.m4
@@ -646,7 +646,48 @@
 -autoindent
 -syntax conf
 
+ Config files
+*.in
+-autoindent
+-syntax conf
+
  Mail file
 *tmp/mutt-*
 -wordwrap
 -syntax mail
+
+ System RC file
+*rc
+-syntax conf
+
+ JOERC file
+*joerc
+-syntax joerc
+
+*jmacsrc
+-syntax joerc
+
+*jstarrc
+-syntax joerc
+
+*rjoerc
+-syntax joerc
+
+*jpicorc
+-syntax joerc
+
+*joerc.in
+-syntax joerc
+
+*jmacsrc.in
+-syntax joerc
+
+*jstarrc.in
+-syntax joerc
+
+*rjoerc.in
+-syntax joerc
+
+*jpicorc.in
+-syntax joerc
+
