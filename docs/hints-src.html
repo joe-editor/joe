@@ -2,6 +2,92 @@
 yet.
 </p>
 
+<h3>Completion and selection menus</h3>
+
+<p>You can hit TAB in just about any prompt to request JOE to complete the
+word you are typing.  If JOE beeps, there are either no completions or many. 
+As with the "bash" shell, hit TAB twice to bring up a list of all the
+possibilities.  This list is actually a menu, but by default, the cursor
+does not jump into it since it is usually easier to just type in your
+selection. You can, however, jump into the menu window with ^K P (move to
+previous window) and use the arrow keys and &lt;Enter&gt; to make your
+selection.  Also in a menu, you can hit the first letter of any of the items
+to make the cursor jump directly to it.  The ^T option menu works like
+this.</p>
+
+<p>If the menu is too large to fit in the window, you can hit Page Up and
+Page Down to scroll it (even if you have not jumped into it).</p>
+
+<p>TAB completion works in the search and replace prompts as well.  In this
+case, JOE tries to complete the word based on the contents of the buffer. 
+If you need search for the TAB character itself, you can enter it with `
+TAB</p>
+
+<p>Finally, you can hit ESC &lt;Enter&gt; in a text window to request JOE to
+complete the word you are typing.  As with the search prompt, JOE tries to
+complete the word based on the contents of the buffer.  It will bring up a
+menu of possibilities if you hit ESC &lt;Enter&gt; twice.</p>
+
+<h3>Xterm Mouse support</h3>
+
+<p>There are two levels of mouse support.  The -mouse option enables the
+first level, which will work with any stock Xterm.  If -joexterm is also
+set, mouse support is enhanced, but you need a recent version of XTerm,
+and it needs to be configured with the --enable-paste64 option.</p>
+
+<p>When -mouse is set, you can:</p>
+
+<ul>
+<li>Left-click in a text window to set the cursor position.  Left-click in a
+different window to move the cursor to a different window.</li>
+
+<li>Select text with the mouse.  Left-click and drag to select some text- it
+will be as if you had used ^KB and ^KK to mark it. Left-click (but don't
+drag) to position the cursor somewhere else.  Middle click to copy the
+selected text to the cursor- it will be as if you had hit ^KC.  If you drag
+past the edge of the text window, the window will auto-scroll to select more
+text.  Unfortunately, Xterm does not send any codes when the cursor is
+outside of the Xterm frame itself, so this only works if the mouse is still
+contained within the Xterm frame.  I've sent a patch to the Xterm maintainer
+to improve this, but he has not taken it yet.</p>
+
+<li>Resize windows with the mouse: click and hold on a status line
+dividing two windows to move it.</li>
+
+<li>Select menu entries (such as any completion menu or the ^T options
+menu): click on the menu item to position the cursor on it.  Double-click on
+a menu item to select it (same as hitting return with cursor on it).</li>
+
+<li>If your mouse has a wheel, turning the wheel will scroll the window with
+the cursor.</li>
+</ul>
+
+<p>Unfortunately, when -mouse is selected, cut &amp; paste between X windows
+does not work as it normally does in a shell window (left-click and drag to
+select, middle click to paste).  Instead, you have to hold the shift key
+down to do this: shift-left-click and drag to select, and shift-middle click
+to paste.  Note that pasting text into JOE this way has problems: any `
+characters will get messed up because ` means quote the following control
+character.  Also if auto-indent is enabled, pasted text will not be indented
+properly.</p>
+
+<p>When -joexterm is set (and you have ./configured Xterm with
+--enable-paste64):</p>
+
+<ul>
+
+<li>Cut &amp; paste are properly integrated with X.  Text selected with
+left-click-drag is available for pasting into other X windows (even if the
+selected text is larger than the text window).  Text selected in other X
+windows can be pasted into JOE with middle-click.  There are no problems
+pasting text containing ` or with auto-indent.</li>
+
+</ul>
+
+<p>--enable-paste64 allows an application program to communicate Base-64
+encoded selection data to and from the Xterm.  The program has full control
+over what is in the selection data and when it is received or sent.</p>
+
 <h3>Multi-file search and replace</h3>
 
 <p>There are two new search and replace options:</p>
@@ -10,9 +96,9 @@ yet.
 <li>'a': The search covers all loaded buffers.  So you can say:
 <ul>
 <li>joe *.c</li>
-<li>^K F foo &lt;return&gt;</li>
-<li>ra &lt;return&gt;</li>
-<li>bar &lt;return&gt;</li>
+<li>^K F foo &lt;Enter&gt;</li>
+<li>ra &lt;Enter&gt;</li>
+<li>bar &lt;Enter&gt;</li>
 </ul>to replace all instances of "foo" with "bar" in all .c files.
 </li>
 <li>'e': The search covers all files in the grep or make error list.  You
@@ -20,10 +106,10 @@ can use a UNIX command to generate a list of files and search and replace
 through the list:
 <ul>
 <li>ESC g</li>
-<li>grep -n foo f*.c &lt;return&gt;</li>
-<li>^K F foo &lt;return&gt;</li>
-<li>re &lt;return&gt;</li>
-<li>bar &lt;return&gt;</li>
+<li>grep -n foo f*.c &lt;Enter&gt;</li>
+<li>^K F foo &lt;Enter&gt;</li>
+<li>re &lt;Enter&gt;</li>
+<li>bar &lt;Enter&gt;</li>
 to replace all instances of "foo" with "bar" in all .c files which begin
 with f.  You can also use "ls" and "find" instead of grep to create the file
 list.
@@ -54,13 +140,13 @@ line.  Also, you can use ESC = and ESC - to step through each line</p>
 <p>Hit the space bar.  This runs an innocuous command (it shows the line
 number on the status bar).</p>
 
-<h3>Color xterm support</h3>
+<h3>Color Xterm support</h3>
 
-<p>JOE can make use of monochrome xterm, 8-color xterm, 16-color xterm,
-88-color xterm and 256-color xterm.  The number of colors which xterm
+<p>JOE can make use of monochrome Xterm, 8-color Xterm, 16-color Xterm,
+88-color Xterm and 256-color Xterm.  The number of colors which Xterm
 supports is determined by which "configure" script options are set before
-the xterm source code is compiled.  The termcap or terminfo entry must
-support how your xterm is configured.  On my Slackware Linux distribution,
+the Xterm source code is compiled.  The termcap or terminfo entry must
+support how your Xterm is configured.  On my Slackware Linux distribution,
 you have to set the TERM environment variable to one of these:</p>
 
 <ul>
@@ -145,20 +231,13 @@ This uses a simple macro: "begin_marking,rtarw,toggle_marking".
 <p>	Unfortunately, there is no standard way to get the keysequence given
 by the terminal emulator when you hit Ctrl-rtarw.  Instead you have to
 determine this sequence yourself and enter it directly in the joerc file. 
-Some examples are given for xterm and gnome-terminal.  Hit ` rtarw within
+Some examples are given for Xterm and gnome-terminal.  Hit ` rtarw within
 JOE to have the sequence shown on your screen.  Note that Putty uses ^[ ^[ [
 C which will not appear with ` rtarw (also ^[
 ^[ is set book mark, so you need to unbind it to do this in Putty).
 </p>
 <p>	Also you can hit Ctrl-delete to cut and Ctrl-insert to paste if the
 sequence for these keys are known.
-</p>
-<h3>Xterm Mouse support</h3>
-<p>Use the -mouse option to enable xterm mouse support.  When enabled, you can
-position the cursor or select text with the mouse.  Unfortunately, text
-selected this way is not paste-able to other X windows.  However, when xterm
-mouse support is enable you can use Shift-left-click and Shift-middle-click
-for normal Xterm select and paste.
 </p>
 <h3>Shell Windows</h3>
 <p>	If you use Bash, you can hit:
