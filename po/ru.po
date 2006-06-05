@@ -6,14 +6,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 2.9.6\n"
-"POT-Creation-Date: 2006-06-02 10:51-0400\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-06-04 21:57-0400\n"
 "PO-Revision-Date: 2006-05-22 22:56-0400\n"
 "Last-Translator: Yura Kalinichenko <yuk@iceb.vinnitsa.com>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=koi8-r\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: http://joe-editor.sourceforge.net\n"
 
 #: b.c:31
 msgid "No error"
@@ -99,28 +99,40 @@ msgstr ""
 msgid "Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? "
 msgstr "Заблокировано %s  (S)захватить, (I)игнорировать, (Q)выйти? "
 
-#: cmd.c:261
+#: cmd.c:214 usearch.c:559
+msgid "sS"
+msgstr ""
+
+#: cmd.c:215
+msgid "qQ"
+msgstr ""
+
+#: cmd.c:216 usearch.c:557
+msgid "iI"
+msgstr ""
+
+#: cmd.c:265
 msgid "Notice: File on disk changed! (hit ^C to continue)  "
 msgstr "Внимание: Файл на диске изменен! (нажмите ^C для продолжения) "
 
-#: cmd.c:321
+#: cmd.c:325
 #, fuzzy
 msgid "Modify other window first for macro"
 msgstr "Сначала модифицируйте другое окно"
 
-#: cmd.c:329
+#: cmd.c:333
 msgid "Other buffer is read only"
 msgstr ""
 
-#: cmd.c:344 rc.c:340
+#: cmd.c:348 rc.c:340
 msgid "Read only"
 msgstr "ТолькоЧтн"
 
-#: cmd.c:538 cmd.c:548
+#: cmd.c:542 cmd.c:552
 msgid "No such command"
 msgstr "Нет такой команды"
 
-#: cmd.c:565
+#: cmd.c:569
 #, fuzzy
 msgid "Command: "
 msgstr "Команда поиска: "
@@ -1006,36 +1018,36 @@ msgstr "Действие мыши активируется левой кнопкой"
 msgid "  Right button "
 msgstr "  Правая кнопка "
 
-#: rc.c:662 rc.c:681 rc.c:693
+#: rc.c:669 rc.c:688 rc.c:700
 msgid "Value out of range"
 msgstr "Значение вне допустимого"
 
-#: rc.c:717
+#: rc.c:724
 msgid "Syntax definition file not found"
 msgstr "Файл определения синтаксиса не найден"
 
-#: rc.c:792
+#: rc.c:799
 #, c-format
 msgid "%s encoding assumed for this file"
 msgstr "Предполагается, что файл в кодировке %s"
 
-#: rc.c:795
+#: rc.c:802
 msgid "Character set not found"
 msgstr "Кодировка неизвестна"
 
-#: rc.c:1003
+#: rc.c:1010
 #, c-format
 msgid "Processing '%s'..."
 msgstr "Обработка '%s'..."
 
-#: rc.c:1059
+#: rc.c:1066
 #, c-format
 msgid ""
 "\n"
 "%s %d: Unknown option %s"
 msgstr ""
 
-#: rc.c:1092
+#: rc.c:1099
 #, c-format
 msgid ""
 "\n"
@@ -1044,7 +1056,7 @@ msgstr ""
 "\n"
 "%s %d: макро отсутствует от :def"
 
-#: rc.c:1096
+#: rc.c:1103
 #, c-format
 msgid ""
 "\n"
@@ -1053,7 +1065,7 @@ msgstr ""
 "\n"
 "%s %d: имя команды отсутствует от :def"
 
-#: rc.c:1107
+#: rc.c:1114
 #, c-format
 msgid ""
 "\n"
@@ -1062,7 +1074,7 @@ msgstr ""
 "\n"
 "%s %d: наименование контекста отсутствует от :inherit"
 
-#: rc.c:1111
+#: rc.c:1118
 #, c-format
 msgid ""
 "\n"
@@ -1071,7 +1083,7 @@ msgstr ""
 "\n"
 "%s %d: Не выбран контекст для :inherit"
 
-#: rc.c:1139
+#: rc.c:1146
 #, c-format
 msgid ""
 "\n"
@@ -1080,7 +1092,7 @@ msgstr ""
 "\n"
 "%s %d: Не могу открыть %s"
 
-#: rc.c:1147
+#: rc.c:1154
 #, c-format
 msgid ""
 "\n"
@@ -1089,7 +1101,7 @@ msgstr ""
 "\n"
 "%s %d: :include без имени файла"
 
-#: rc.c:1160
+#: rc.c:1167
 #, c-format
 msgid ""
 "\n"
@@ -1098,7 +1110,7 @@ msgstr ""
 "\n"
 "%s %d: Не выбран контекст для :delete"
 
-#: rc.c:1167
+#: rc.c:1174
 #, c-format
 msgid ""
 "\n"
@@ -1107,7 +1119,7 @@ msgstr ""
 "\n"
 "%s %d: Недопустимое имя контекста"
 
-#: rc.c:1178
+#: rc.c:1185
 #, c-format
 msgid ""
 "\n"
@@ -1116,7 +1128,7 @@ msgstr ""
 "\n"
 "%s %d: Не выбран контекст для макро раскладки клавиатуры"
 
-#: rc.c:1187
+#: rc.c:1194
 #, c-format
 msgid ""
 "\n"
@@ -1125,7 +1137,7 @@ msgstr ""
 "\n"
 "%s %d: Неизвестная команда в макро"
 
-#: rc.c:1203
+#: rc.c:1210
 #, c-format
 msgid ""
 "\n"
@@ -1134,7 +1146,7 @@ msgstr ""
 "\n"
 "%s %d: Недопустимая последовательность клавиш '%s'"
 
-#: rc.c:1214
+#: rc.c:1221
 msgid ""
 "\n"
 "done\n"
@@ -1142,7 +1154,7 @@ msgstr ""
 "\n"
 "выполнено\n"
 
-#: rc.c:1216
+#: rc.c:1223
 msgid "done\n"
 msgstr "сделано\n"
 
@@ -1186,98 +1198,98 @@ msgstr "Не могу сбросить контекст секретности по умолчанию"
 msgid "%s Security Context %s"
 msgstr "%s Контекст Секрет. %s"
 
-#: syntax.c:261
+#: syntax.c:259
 #, c-format
 msgid "%s %d: Class already defined\n"
 msgstr "%s %d: Класс уже определен\n"
 
-#: syntax.c:341
+#: syntax.c:339
 #, fuzzy, c-format
 msgid "%s %d: Missing )\n"
 msgstr "%s %d: Отсутствует переход\n"
 
-#: syntax.c:413
+#: syntax.c:411
 #, fuzzy, c-format
 msgid "%s %d: missing parameter for ifdef\n"
 msgstr "%s %d: Отсутствует значение для опции\n"
 
-#: syntax.c:423
+#: syntax.c:421
 #, c-format
 msgid "%s %d: else with no matching if\n"
 msgstr ""
 
-#: syntax.c:430
+#: syntax.c:428
 #, c-format
 msgid "%s %d: endif with no matching if\n"
 msgstr ""
 
-#: syntax.c:434 syntax.c:562
+#: syntax.c:432 syntax.c:560
 #, fuzzy, c-format
 msgid "%s %d: Missing subroutine name\n"
 msgstr "%s %d: Отсутствует имя состояния\n"
 
-#: syntax.c:449
+#: syntax.c:447
 #, fuzzy, c-format
 msgid "%s %d: Unknown control statement\n"
 msgstr "%s %d: Неизвестная опция\n"
 
-#: syntax.c:452
+#: syntax.c:450
 #, fuzzy, c-format
 msgid "%s %d: Missing control statement name\n"
 msgstr "%s %d: Отсутствует имя состояния\n"
 
-#: syntax.c:479
+#: syntax.c:477
 #, c-format
 msgid "%s %d: Unknown class\n"
 msgstr "%s %d: Неизвестный класс\n"
 
-#: syntax.c:482
+#: syntax.c:480
 #, c-format
 msgid "%s %d: Missing color for state definition\n"
 msgstr "%s %d: Отсутствует цвет для определения состояния\n"
 
-#: syntax.c:484 syntax.c:612
+#: syntax.c:482 syntax.c:610
 #, c-format
 msgid "%s %d: Missing state name\n"
 msgstr "%s %d: Отсутствует имя состояния\n"
 
-#: syntax.c:505
+#: syntax.c:503
 #, c-format
 msgid "%s %d: Bad string\n"
 msgstr "%s %d: Неверная строка\n"
 
-#: syntax.c:545 syntax.c:547 syntax.c:556 syntax.c:570 syntax.c:606
-#: syntax.c:608
+#: syntax.c:543 syntax.c:545 syntax.c:554 syntax.c:568 syntax.c:604
+#: syntax.c:606
 #, c-format
 msgid "%s %d: Missing value for option\n"
 msgstr "%s %d: Отсутствует значение для опции\n"
 
-#: syntax.c:610 syntax.c:626
+#: syntax.c:608 syntax.c:624
 #, c-format
 msgid "%s %d: Unknown option\n"
 msgstr "%s %d: Неизвестная опция\n"
 
-#: syntax.c:614
+#: syntax.c:612
 #, c-format
 msgid "%s %d: Missing string\n"
 msgstr "%s %d: Отсутствует строка\n"
 
-#: syntax.c:635
+#: syntax.c:633
 #, c-format
 msgid "%s %d: Missing jump\n"
 msgstr "%s %d: Отсутствует переход\n"
 
-#: syntax.c:637
+#: syntax.c:635
 #, c-format
 msgid "%s %d: No state\n"
 msgstr "%s %d: Нет состояния\n"
 
-#: syntax.c:639
+#: syntax.c:637
 #, c-format
 msgid "%s %d: Unknown character\n"
 msgstr "%s %d: Неизвестный символ\n"
 
-#: syntax.c:646
+#: syntax.c:644
 #, c-format
 msgid "%s %d: ifdef with no matching endif\n"
 msgstr ""
@@ -1333,7 +1345,7 @@ msgstr ""
 msgid "(Macro %d recording...)"
 msgstr "(Запись макро %d...)"
 
-#: tw.c:558 tw.c:584 ufile.c:1014
+#: tw.c:558 tw.c:584 ufile.c:1010
 msgid "Lose changes to this file (y,n,^C)? "
 msgstr "Отменить изменения файла (y,n,^C)? "
 
@@ -1346,7 +1358,7 @@ msgid "Selection started."
 msgstr "Отметка начата."
 
 #: ublock.c:417 ublock.c:503 ublock.c:559 ublock.c:887 ublock.c:921
-#: ublock.c:1083 ufile.c:439 umath.c:177 undo.c:455
+#: ublock.c:1083 ufile.c:435 umath.c:177 undo.c:455
 msgid "No block"
 msgstr "Нет блока"
 
@@ -1420,7 +1432,7 @@ msgstr "Метка %d не установлена"
 msgid "Goto bookmark (0-9):"
 msgstr "Перейти к закладке (0-9): "
 
-#: uedit.c:2243 usearch.c:991 utag.c:107
+#: uedit.c:2243 usearch.c:995 utag.c:107
 msgid "Not found"
 msgstr "Не найден"
 
@@ -1443,21 +1455,21 @@ msgstr "Сообщ. (^C для отмены): "
 msgid "Insert (^C to abort): "
 msgstr "Вставить (^C для отмены): "
 
-#: uerror.c:328 uerror.c:342
+#: uerror.c:330 uerror.c:344
 #, fuzzy, c-format
 msgid "%d messages found"
 msgstr "%ld сообщений найдено"
 
-#: uerror.c:330 uerror.c:344
+#: uerror.c:332 uerror.c:346
 msgid "No messages found"
 msgstr "Ни одного сообщения не найдено"
 
-#: uerror.c:375
+#: uerror.c:377
 #, fuzzy
 msgid "No messages"
 msgstr "Ни одного сообщения не найдено"
 
-#: uerror.c:430 uerror.c:441
+#: uerror.c:432 uerror.c:443
 msgid "No more errors"
 msgstr "Больше нет ошибок"
 
@@ -1500,68 +1512,68 @@ msgstr "Система (^C для отмены): "
 msgid "yY"
 msgstr ""
 
-#: ufile.c:274
+#: ufile.c:274 usearch.c:561
 msgid "nN"
 msgstr ""
 
-#: ufile.c:313
+#: ufile.c:309
 msgid "Couldn't make backup file... file not saved"
 msgstr "Не могу создать резервный файл... файл не сохранён"
 
-#: ufile.c:325
+#: ufile.c:321
 msgid "Could not make backup file.  Save anyway (y,n,^C)? "
 msgstr "Не могу создать резервный файл. Сохранять все равно (y,n,^C)? "
 
-#: ufile.c:413 ufile.c:429
+#: ufile.c:409 ufile.c:425
 #, c-format
 msgid "Block written to file %s"
 msgstr "Блок записан в файл %s"
 
-#: ufile.c:492
+#: ufile.c:488
 msgid "File exists. Overwrite (y,n,^C)? "
 msgstr "Файл существует. Перезаписывать (y,n,^C)? "
 
-#: ufile.c:499
+#: ufile.c:495
 msgid "File on disk is newer. Overwrite (y,n,^C)? "
 msgstr "Имеющийся на диске файл - более новый. Перезаписывать (y,n,^C)? "
 
-#: ufile.c:514 ufile.c:903 ufile.c:1107
+#: ufile.c:510 ufile.c:899 ufile.c:1103
 msgid "Name of file to save (^C to abort): "
 msgstr "Имя файла для сохранения (^C для отмены): "
 
-#: ufile.c:542
+#: ufile.c:538
 msgid "Name of file to write (^C to abort): "
 msgstr "Имя файла для записи (^C для отмены): "
 
-#: ufile.c:658
+#: ufile.c:654
 msgid "Load original file from disk (y,n,^C)? "
 msgstr "Имя файла для сохранения (^C для отмены): "
 
-#: ufile.c:688
+#: ufile.c:684
 msgid "Can't replace modified file"
 msgstr "Не могу заменить модифицированный файл"
 
-#: ufile.c:697
+#: ufile.c:693
 msgid "Name of file to edit (^C to abort): "
 msgstr "Имя файла для редактирования (^C для отмены): "
 
-#: ufile.c:712 ufile.c:1089
+#: ufile.c:708 ufile.c:1085
 msgid "Name of buffer to edit (^C to abort): "
 msgstr "Имя буфера для редактирования (^C для отмены): "
 
-#: ufile.c:768
+#: ufile.c:764
 msgid "Name of scratch buffer to edit (^C to abort): "
 msgstr "Имя буфера черновика для редактирования (^C для отмены): "
 
-#: ufile.c:869
+#: ufile.c:865
 msgid "Name of file to insert (^C to abort): "
 msgstr "Имя файла для вставки (^C для отмены): "
 
-#: ufile.c:937
+#: ufile.c:933
 msgid "Save changes to this file (y,n,^C)? "
 msgstr "Сохранить изменения этого файла (y,n,^C)? "
 
-#: ufile.c:1141
+#: ufile.c:1137
 #, c-format
 msgid "File %s has been modified.  Save it (y,n,^C)? "
 msgstr "Файл %s изменен. Сохранить его (y,n,^C)? "
@@ -1618,48 +1630,64 @@ msgstr "Флаг модификации сброшен"
 msgid "Wrapped"
 msgstr "Сначала"
 
-#: usearch.c:620
+#: usearch.c:553
+msgid "aA"
+msgstr ""
+
+#: usearch.c:554
+msgid "eE"
+msgstr ""
+
+#: usearch.c:555 usearch.c:813
+msgid "rR"
+msgstr ""
+
+#: usearch.c:556 usearch.c:814
+msgid "bB"
+msgstr ""
+
+#: usearch.c:558
+msgid "kK"
+msgstr ""
+
+#: usearch.c:560
+msgid "wW"
+msgstr ""
+
+#: usearch.c:618
 msgid "Replace with (^C to abort): "
 msgstr "Чем заменять (^C для отмены): "
 
-#: usearch.c:635
+#: usearch.c:633
 #, fuzzy
 msgid ""
 "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to "
 "abort): "
 msgstr "(S)учет регистра (R)замена (B)назад бло(K) NNN (^C - отмена): "
 
-#: usearch.c:637
+#: usearch.c:635
 #, fuzzy
 msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "
 msgstr "(I)игн.рег. (R)замена (B)назад бло(K) NNN (^C - отмена): "
 
-#: usearch.c:713
+#: usearch.c:717
 #, c-format
 msgid "Find (^C to abort) [%s]: "
 msgstr "Что искать (^C для отмены) [%s]: "
 
-#: usearch.c:715
+#: usearch.c:719
 msgid "Find (^C to abort): "
 msgstr "Что искать (^C для отмены): "
 
-#: usearch.c:809
-msgid "rR"
-msgstr ""
-
-#: usearch.c:810
-msgid "bB"
-msgstr ""
-
-#: usearch.c:841
+#: usearch.c:845
 msgid "Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"
 msgstr "Заменять (Y)да (N)нет (R)всё (B)вернуть (^C для отмены): "
 
-#: usearch.c:989
+#: usearch.c:993
 msgid "Not found (search restricted to marked block)"
 msgstr "Не найдено (поиск ограничен блоком)"
 
-#: usearch.c:996
+#: usearch.c:1000
 msgid "Infinite loop aborted: your search repeatedly matched same place"
 msgstr ""
 
