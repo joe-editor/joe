@@ -1,3 +1,19 @@
+JOE 3.5
+
+- Query windows now expand to multiple lines if necessary
+
+- Single key queries are now internationalized (set local versions in the
+  .po file)
+
+- Spell check language can be set in the editor
+
+- New syntax files: m4, joerc
+
+- New debug window for highlight file syntax errors.
+
+- Macros can be typed at the ESC X prompt (before it used to accept only
+  commands).
+
 JOE 3.4
 
 - Paragraph reformatter and word wrap now handle '*' and '-' bullet lists.
