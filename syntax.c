@@ -693,10 +693,10 @@ struct high_syntax *load_dfa(unsigned char *name)
 		syntax_list = syntax;
 		return syntax;
 	} else {
+		htrm(syntax->ht_states);
 		joe_free(syntax->name);
 		joe_free(syntax->states);
 		joe_free(syntax);
-		htrm(syntax->ht_states);
 		return 0;
 	}
 }
