@@ -527,7 +527,7 @@ static int naborttw(BW *bw, int k, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
-	if (k != YES_CODE && !yncheck(yes_string, k))
+	if (k != YES_CODE && !yncheck(yes_key, k))
 		return -1;
 
 	genexmsg(bw, 0, NULL);
@@ -538,7 +538,7 @@ static int naborttw1(BW *bw, int k, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
-	if (k != YES_CODE && !yncheck(yes_string, k))
+	if (k != YES_CODE && !yncheck(yes_key, k))
 		return -1;
 
 	if (!exmsg) genexmsg(bw, 0, NULL);

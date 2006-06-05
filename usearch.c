@@ -548,67 +548,65 @@ static int set_replace(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	return dopfnext(bw, setmark(srch), notify);
 }
 
+/* Option characters */
+
+unsigned char *all_key = (unsigned char *) _("aA");
+unsigned char *list_key = (unsigned char *) _("eE");
+unsigned char *replace_key = (unsigned char *) _("rR");
+unsigned char *backwards_key = (unsigned char *) _("bB");
+unsigned char *ignore_key = (unsigned char *) _("iI");
+unsigned char *block_key = (unsigned char *) _("kK");
+unsigned char *noignore_key = (unsigned char *) _("sS");
+unsigned char *wrap_key = (unsigned char *) _("wW");
+unsigned char *nowrap_key = (unsigned char *) _("nN");
+
+/* Get next character from string and advance it, locale dependent */
+
+int fwrd_c(unsigned char **s)
+{
+	if (locale_map->type)
+		return utf8_decode_fwrd(s, NULL);
+	else {
+		int c = **s;
+		*s = *s + 1;
+		return c;
+	}
+}
+
 static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
-	int x;
 	unsigned char buf[80];
+	unsigned char *t;
 
 	srch->ignore = icase;
 
-	for (x = 0; s[x]; ++x) {
-		switch (s[x]) {
-		case 'a':
-		case 'A':
+	t = s;
+	while (*t) {
+		int c = fwrd_c(&t);
+		if (yncheck(all_key, c))
 			srch->all = 1;
-			break;
-		case 'e':
-		case 'E':
+		else if (yncheck(list_key, c))
 			srch->all = 2;
-			break;
-		case 'r':
-		case 'R':
+		else if (yncheck(replace_key, c))
 			srch->replace = 1;
-			break;
-		case 'b':
-		case 'B':
+		else if (yncheck(backwards_key, c))
 			srch->backwards = 1;
-			break;
-		case 'i':
-		case 'I':
+		else if (yncheck(ignore_key, c))
 			srch->ignore = 1;
-			break;
-		case 's':
-		case 'S':
+		else if (yncheck(noignore_key, c))
 			srch->ignore = 0;
-			break;
-		case 'w':
-		case 'W':
+		else if (yncheck(wrap_key, c))
 			srch->allow_wrap = 1;
-			break;
-		case 'n':
-		case 'N':
+		else if (yncheck(nowrap_key, c))
 			srch->allow_wrap = 0;
-			break;
-		case 'k':
-		case 'K':
+		else if (yncheck(block_key, c))
 			srch->block_restrict = 1;
-			break;
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
+		else if (c >= '0' && c <= '9') {
 			if (srch->repeat == -1)
 				srch->repeat = 0;
-			srch->repeat = srch->repeat * 10 + s[x] - '0';
-			break;
+			srch->repeat = srch->repeat * 10 + c - '0';
 		}
-	}
+	}	
 	vsrm(s);
 	if (srch->replace) {
 		/* if (pico && globalsrch && globalsrch->replacement) {
@@ -646,12 +644,18 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 	if ((pbw = wmkpw(bw->parent, p, NULL, set_options, srchopt, pfabort, utypebw, srch, notify, bw->b->o.charmap, 0)) != NULL) {
 		unsigned char buf[10];
 
-		if (srch->ignore)
-			binsc(pbw->cursor, 'i');
-		if (srch->replace)
-			binsc(pbw->cursor, 'r');
-		if (srch->backwards)
-			binsc(pbw->cursor, 'b');
+		if (srch->ignore) {
+			unsigned char *t = joe_gettext(ignore_key);
+			binsc(pbw->cursor, fwrd_c(&t));
+		}
+		if (srch->replace) {
+			unsigned char *t = joe_gettext(replace_key);
+			binsc(pbw->cursor, fwrd_c(&t));
+		}
+		if (srch->backwards) {
+			unsigned char *t = joe_gettext(backwards_key);
+			binsc(pbw->cursor, fwrd_c(&t));
+		}
 		if (srch->repeat >= 0)
 			joe_snprintf_1(buf, sizeof(buf), "%d", srch->repeat), binss(pbw->cursor, buf);
 		pset(pbw->cursor, pbw->b->eof);
@@ -806,27 +810,27 @@ static void goback(SRCH *srch, BW *bw)
 	}
 }
 
-unsigned char *rest_string = (unsigned char *) _("rR");
-unsigned char *backup_string = (unsigned char *) _("bB");
+unsigned char *rest_key = (unsigned char *) _("rR");
+unsigned char *backup_key = (unsigned char *) _("bB");
 
 static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 {
 	srch->addr = bw->cursor->byte;
-	if (c == NO_CODE || yncheck(no_string, c))
+	if (c == NO_CODE || yncheck(no_key, c))
 		return dopfnext(bw, srch, notify);
-	else if (c == YES_CODE || yncheck(yes_string, c) || c == ' ') {
+	else if (c == YES_CODE || yncheck(yes_key, c) || c == ' ') {
 		srch->recs.link.prev->yn = 1;
 		if (doreplace(bw, srch)) {
 			pfsave(bw, srch);
 			return -1;
 		} else
 			return dopfnext(bw, srch, notify);
-	} else if (yncheck(rest_string, c)) {
+	} else if (yncheck(rest_key, c)) {
 		if (doreplace(bw, srch))
 			return -1;
 		srch->rest = 1;
 		return dopfnext(bw, srch, notify);
-	} else if (c == 8 || c == 127 || yncheck(backup_string, c)) {
+	} else if (c == 8 || c == 127 || yncheck(backup_key, c)) {
 		W *w = bw->parent;
 		goback(srch, bw);
 		goback(srch, (BW *)w->object);

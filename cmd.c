@@ -211,9 +211,13 @@ int nolocks;
 #define LOCKMSG2 _("Could not create lock. (I) edit anyway, (Q) cancel edit? ")
 #define LOCKMSG1 _("Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? ")
 
+unsigned char *steallock_key= (unsigned char *) _("sS");
+unsigned char *canceledit_key= (unsigned char *) _("qQ");
+unsigned char *ignorelock_key= (unsigned char *) _("iI");
+
 int steal_lock(BW *bw,int c,B *b,int *notify)
 {
-	if (c=='s' || c=='S') {
+	if (yncheck(steallock_key, c)) {
 		unsigned char bf1[256];
 		unsigned char bf[300];
 		unlock_it(b->name);
@@ -238,13 +242,13 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 				*notify = 1;
 			return 0;
 		}
-	} else if (c=='i' || c=='I') {
+	} else if (yncheck(ignorelock_key, c)) {
 		b->locked=1;
 		b->ignored_lock=1;
 		if (notify)
 			*notify = 1;
 		return 0;
-	} else if (c=='q' || c=='Q') {
+	} else if (yncheck(canceledit_key, c)) {
 		if (notify)
 			*notify = 1;
 		return 0;

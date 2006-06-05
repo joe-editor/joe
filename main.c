@@ -222,7 +222,7 @@ int main(int argc, char **real_argv, char **envv)
 		fprintf(stderr, (char *)joe_gettext(_("There were errors in '%s'.  Use it anyway?")), s);
 		fflush(stderr);
 		fgets(buf, 8, stdin);
-		if (yn_checks(yes_string, buf))
+		if (yn_checks(yes_key, buf))
 			goto donerc;
 	}
 
@@ -239,7 +239,7 @@ int main(int argc, char **real_argv, char **envv)
 		fprintf(stderr, (char *)joe_gettext(_("There were errors in '%s'.  Use it anyway?")), s);
 		fflush(stderr);
 		fgets(buf, 8, stdin);
-		if (yn_checks(yes_string, buf))
+		if (yn_checks(yes_key, buf))
 			goto donerc;
 	}
 #else
@@ -309,7 +309,7 @@ int main(int argc, char **real_argv, char **envv)
 			fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
 			fflush(stderr);
 			fgets((char *)buf, 8, stdin);
-			if (ynchecks(yes_string, buf)) {
+			if (ynchecks(yes_key, buf)) {
 				vsrm(t);
 				goto donerc;
 			}
@@ -328,7 +328,7 @@ int main(int argc, char **real_argv, char **envv)
 		fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
 		fflush(stderr);
 		fgets((char *)buf, 8, stdin);
-		if (ynchecks(yes_string, buf))
+		if (ynchecks(yes_key, buf))
 			goto donerc;
 	}
 #endif

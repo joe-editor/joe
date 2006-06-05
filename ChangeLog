@@ -8,6 +8,10 @@ Sat Jun  3 09:48:41 EDT 2006
 
 	add auto-expanding hash table.
 
+	i18n of other single-key prompts.  add joe_gettext to yncheck.
+
+	fix bug coredump when doing multi-file search and replace
+
 Fri Jun  2 10:49:21 EDT 2006
 
 	internationalized y/n handling.

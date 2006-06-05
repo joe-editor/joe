@@ -32,15 +32,17 @@ B *errbuf = NULL;		/* Buffer with error messages */
 B *beafter(B *b)
 {
 	struct error *e;
+	unsigned char *name = b->name;
 	int er;
+	if (!name) name = US "";
 	for (e = errors.link.next; e != &errors; e = e->link.next)
-		if (!zcmp(b->name, e->file))
+		if (!zcmp(name, e->file))
 			break;
 	if (e == &errors) {
 		/* Given buffer is not in list?  Return first buffer in list. */
 		e = errors.link.next;
 	}
-	while (e != &errors && !zcmp(b->name, e->file))
+	while (e != &errors && !zcmp(name, e->file))
 		e = e->link.next;
 	berror = 0;
 	if (e != &errors) {
