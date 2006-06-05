@@ -23,17 +23,20 @@ case, JOE tries to complete the word based on the contents of the buffer.
 If you need search for the TAB character itself, you can enter it with `
 TAB</p>
 
-<p>Finally, you can hit ESC &lt;Enter&gt; in a text window to request JOE to
+<p>Also, you can hit ESC &lt;Enter&gt; in a text window to request JOE to
 complete the word you are typing.  As with the search prompt, JOE tries to
 complete the word based on the contents of the buffer.  It will bring up a
 menu of possibilities if you hit ESC &lt;Enter&gt; twice.</p>
+
+<p>At the ^K ; (tags search) prompt, TAB completion uses the ctags file to
+get its data</p>
 
 <h3>Xterm Mouse support</h3>
 
 <p>There are two levels of mouse support.  The -mouse option enables the
 first level, which will work with any stock Xterm.  If -joexterm is also
 set, mouse support is enhanced, but you need a recent version of XTerm,
-and it needs to be configured with the --enable-paste64 option.</p>
+and it needs to be ./configured with the --enable-paste64 option.</p>
 
 <p>When -mouse is set, you can:</p>
 
@@ -128,8 +131,7 @@ instances of 'fred' in the *.c files.  You need the '-n' to get the line
 numbers.</p>
 
 <p>Now you can hit ESC space on one of the lines to jump to the selected
-file.  Hit ^K - to get back to the list so that you can jump to a different
-line.  Also, you can use ESC = and ESC - to step through each line</p>
+file.  Also, you can use ESC = and ESC - to step through each line.</p>
 
 <h3>How do I deselect a highlighted block?</h3>
 
@@ -210,16 +212,39 @@ exactly like the example one in /usr/local/etc/joe/charmaps.
 </p>
 <p>You can hit ` x to enter a Unicode character if the file coding is UTF-8.
 </p>
-<h3>Programming</h3>
+<h3>Indenting blocks</h3>
 <p>	Try ^K , and ^K .  These keys select the current block (based on
-indentation) and shift it left or right by the -istep and -indentc.
-</p>
-<p>	Hit Ctrl-G to jump between matching delimiters.  This works on
-word delimiters for languages like Pascal and Verilog which use begin...end
-to delimit blocks.  If a word is not known, Ctrl-G starts a search with the
-word moved into the search prompt.
-</p>
+indentation) and shift it left or right by the amount in -istep and with the
+character in -indentc.</p>
+
+<h3>Goto matching delimiter</h3>
+
+<p>	Hit Ctrl-G to jump between matching delimiters.  This works on both
+character delimiters (like '(' and ')') and word delimiters for languages
+like Pascal and Verilog which use "begin" and "end" to delimit blocks.  If a
+word is not known, Ctrl-G starts a search with the word moved into the
+search prompt. </p>
+
+<p>	For Ctrl-G to work on word delimiters, the cursor must be positioned
+on the first letter of the word.  So in XML, if the cursor is on the &lt; in
+&lt;foo&gt;, it will jump to the &gt;.  But if it is one the 'f', it will
+jump to the matching &lt;/foo&gt;.  Likewise, in C, ^G will jump between
+#if, #else and #endif, but you need to position the cursor on the letter,
+not the '#'.</p>
+
+<p>	Ctrl-G is smart enough to skip delimiters found in quoted or
+commented-out matter.  You need to tell JOE how your language indicates
+this: see the <b>ftyperc</b> file for examples of how this is done.</p>
+
+<h3>Cursor position history</h3>
+
+<p>	Hit ^K - and ^K = to step through different places of the loaded
+files that you've visited.  This makes it easy to get back to your starting
+place when you make an excursion to some other area of the file you're
+editing.</p>
+
 <h3>Selecting blocks</h3>
+
 <p>	The "classic" way is to hit ^K B at the beginning and ^K K at the
 end.  These set pointers called markb and markk.  Once these are set you
 can jump to markb with ^[ b and jump to markk with ^[ k.
