@@ -107,7 +107,7 @@ static void dispqwn(QW *qw)
 	if (w->win->watom->follow && w->win->object)
 		w->win->watom->follow(w->win->object);
 	if (w->win->watom->disp && w->win->object)
-		w->win->watom->disp(w->win->object);
+		w->win->watom->disp(w->win->object, 1);
 	w->curx = w->win->curx;
 	w->cury = w->win->cury + w->win->y - w->y;
 
