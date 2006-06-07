@@ -400,7 +400,7 @@
 \i \i\|^K[ 0-9 Record \|^K SPACE status \|^[W Up    \|^K' Window  \|^[B To ^KB \|^[R Backwards\|\i \i
 \i \i\|^K]     Stop   \|^K\\ Repeat      \|^[Z Down  \|^[! Command \|^[K To ^KK \|^[S Forwards \|\i \i
 \i \i\|^K 0-9  Play   \|\uINSERT\u          \|^K< Left  \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u    \|\i \i
-\i \i\|^K?     Query  \|^] split line   \|^K> Right \|`  Ctrl-    \|^[Y yank   \|^[ 0-9 Goto  \|\i \i
+\i \i\|^K?     Query  \|^] split line   \|^K> Right \|^[' Ctrl-   \|^[Y yank   \|^[ 0-9 Goto  \|\i \i
 \i \i\|^[D     Dump   \|^SPACE ins space\|          \|^\\ Meta-    \|^[O line<  \|^[^[   Set   \|\i \i
 }
 
@@ -766,7 +766,9 @@ pbuf		^[ ^U		Prev buffer
  Standard JOE user interface
 
 quote8		^\		Enter Meta chars
-quote		`		Enter Ctrl chars
+ quote		`		Enter Ctrl chars
+quote		^[ '		Enter Ctrl chars
+quote		^Q
 
 backs		^?		Backspace
 backs		^H
