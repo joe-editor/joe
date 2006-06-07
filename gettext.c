@@ -1,9 +1,26 @@
 /* JOE's gettext() library.  Why?  Once again we can not rely on the
  * system's or GNU's gettext being installed properly */
 
+/* One modification from standard gettext: comments are allowed at
+ * the start of strings: "|comment|comment|comment|foo".  The leading
+ * '|' is required to indicate the comment.
+ *
+ * Comments can be used to make two otherwise identical strings distinct.
+ */
+
 #include "types.h"
 
 HASH *gettext_ht;
+
+unsigned char *ignore_prefix(unsigned char *set)
+{
+	unsigned char *s = zrchr(set, '|');
+	if (s)
+		++s;
+	else
+		s = set;
+	return s;
+}
 
 unsigned char *my_gettext(unsigned char *s)
 {
@@ -12,7 +29,10 @@ unsigned char *my_gettext(unsigned char *s)
 		if (r)
 			s = r;
 	}
-	return s;
+	if (s[0] == '|')
+		return ignore_prefix(s);
+	else
+		return s;
 }
 
 /* Load a .po file, convert entries to local character set and add them to

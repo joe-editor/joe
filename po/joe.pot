@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-06-04 21:57-0400\n"
+"POT-Creation-Date: 2006-06-06 22:57-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,14 +73,14 @@ msgid ""
 "*** File '(Unnamed)'\n"
 msgstr ""
 
-#: bw.c:1263
+#: bw.c:1264
 #, c-format
-msgid "** Line %ld  Col %ld  Offset %ld(0x%lx) **"
+msgid "** Line %ld  Col %ld  Offset %lld(0x%llx) **"
 msgstr ""
 
-#: bw.c:1265
+#: bw.c:1266
 #, c-format
-msgid "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **"
+msgid "** Line %ld  Col %ld  Offset %lld(0x%llx)  %s %d(0%o/0x%X) Width %d **"
 msgstr ""
 
 #: cmd.c:211
@@ -92,16 +92,16 @@ msgstr ""
 msgid "Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? "
 msgstr ""
 
-#: cmd.c:214 usearch.c:559
-msgid "sS"
+#: cmd.c:214
+msgid "|steal the lock|sS"
 msgstr ""
 
 #: cmd.c:215
-msgid "qQ"
+msgid "|cancel edit due to lock|qQ"
 msgstr ""
 
-#: cmd.c:216 usearch.c:557
-msgid "iI"
+#: cmd.c:216
+msgid "|ignore lock, continue with edit|iI"
 msgstr ""
 
 #: cmd.c:265
@@ -1231,19 +1231,19 @@ msgstr ""
 msgid "%s is out of date\n"
 msgstr ""
 
-#: tty.c:312
+#: tty.c:314
 msgid "Couldn't open /dev/tty\n"
 msgstr ""
 
-#: tty.c:729
+#: tty.c:731
 msgid "You are at the command shell.  Type 'exit' to return\n"
 msgstr ""
 
-#: tty.c:793
+#: tty.c:795
 msgid "You have suspended the program.  Type 'fg' to return\n"
 msgstr ""
 
-#: tty.c:1144
+#: tty.c:1146
 #, c-format
 msgid "Couldn't execute shell '%s'\n"
 msgstr ""
@@ -1566,8 +1566,16 @@ msgstr ""
 msgid "bB"
 msgstr ""
 
+#: usearch.c:557
+msgid "|ignore case|iI"
+msgstr ""
+
 #: usearch.c:558
 msgid "kK"
+msgstr ""
+
+#: usearch.c:559
+msgid "sS"
 msgstr ""
 
 #: usearch.c:560

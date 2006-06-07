@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: joe 3.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-06-04 21:57-0400\n"
+"POT-Creation-Date: 2006-06-06 22:57-0400\n"
 "PO-Revision-Date: 2006-05-22 11:21-0400\n"
 "Last-Translator: Joe Allen <jhallen@world.std.com>\n"
 "Language-Team: German <de@li.org>\n"
@@ -78,14 +78,14 @@ msgstr ""
 "\n"
 "*** File '(Unnamed)'\n"
 
-#: bw.c:1263
-#, c-format
-msgid "** Line %ld  Col %ld  Offset %ld(0x%lx) **"
+#: bw.c:1264
+#, fuzzy, c-format
+msgid "** Line %ld  Col %ld  Offset %lld(0x%llx) **"
 msgstr "** Line %ld  Col %ld  Offset %ld(0x%lx) **"
 
-#: bw.c:1265
-#, c-format
-msgid "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **"
+#: bw.c:1266
+#, fuzzy, c-format
+msgid "** Line %ld  Col %ld  Offset %lld(0x%llx)  %s %d(0%o/0x%X) Width %d **"
 msgstr "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **"
 
 #: cmd.c:211
@@ -98,17 +98,18 @@ msgstr "Could not create lock. (I) edit anyway, (Q) cancel? "
 msgid "Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? "
 msgstr "Locked by %s (S)teal lock, (I) edit anyway, (Q) cancel? "
 
-#: cmd.c:214 usearch.c:559
-msgid "sS"
+#: cmd.c:214
+msgid "|steal the lock|sS"
 msgstr ""
 
 #: cmd.c:215
-msgid "qQ"
+msgid "|cancel edit due to lock|qQ"
 msgstr ""
 
-#: cmd.c:216 usearch.c:557
-msgid "iI"
-msgstr ""
+#: cmd.c:216
+#, fuzzy
+msgid "|ignore lock, continue with edit|iI"
+msgstr "Hit enter to continue with %s "
 
 #: cmd.c:265
 msgid "Notice: File on disk changed! (hit ^C to continue)  "
@@ -1277,19 +1278,19 @@ msgstr "Couldn't load termcap entry.  Using ansi default\n"
 msgid "%s is out of date\n"
 msgstr "%s is out of date\n"
 
-#: tty.c:312
+#: tty.c:314
 msgid "Couldn't open /dev/tty\n"
 msgstr "Couldn't open /dev/tty\n"
 
-#: tty.c:729
+#: tty.c:731
 msgid "You are at the command shell.  Type 'exit' to return\n"
 msgstr "You are at the command shell.  Type 'exit' to return\n"
 
-#: tty.c:793
+#: tty.c:795
 msgid "You have suspended the program.  Type 'fg' to return\n"
 msgstr "You have suspended the program.  Type 'fg' to return\n"
 
-#: tty.c:1144
+#: tty.c:1146
 #, c-format
 msgid "Couldn't execute shell '%s'\n"
 msgstr "Couldn't execute shell '%s'\n"
@@ -1612,8 +1613,16 @@ msgstr ""
 msgid "bB"
 msgstr ""
 
+#: usearch.c:557
+msgid "|ignore case|iI"
+msgstr ""
+
 #: usearch.c:558
 msgid "kK"
+msgstr ""
+
+#: usearch.c:559
+msgid "sS"
 msgstr ""
 
 #: usearch.c:560

@@ -211,9 +211,9 @@ int nolocks;
 #define LOCKMSG2 _("Could not create lock. (I) edit anyway, (Q) cancel edit? ")
 #define LOCKMSG1 _("Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? ")
 
-unsigned char *steallock_key= (unsigned char *) _("sS");
-unsigned char *canceledit_key= (unsigned char *) _("qQ");
-unsigned char *ignorelock_key= (unsigned char *) _("iI");
+unsigned char *steallock_key= (unsigned char *) _("|steal the lock|sS");
+unsigned char *canceledit_key= (unsigned char *) _("|cancel edit due to lock|qQ");
+unsigned char *ignorelock_key= (unsigned char *) _("|ignore lock, continue with edit|iI");
 
 int steal_lock(BW *bw,int c,B *b,int *notify)
 {

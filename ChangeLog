@@ -1,3 +1,10 @@
+Tue Jun  6 22:58:41 EDT 2006
+
+	allow |comments| in gettext strings.
+
+	dnelson's patches for large files,
+	tty.c include file problems and $(srcdir).
+
 Sat Jun  3 09:48:41 EDT 2006
 
 	new syntax files: m4 joerc
