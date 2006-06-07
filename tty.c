@@ -23,6 +23,9 @@
 #ifdef HAVE_PTY_H
 #include <pty.h>
 #endif
+#ifdef HAVE_LIBUTIL_H
+#include <libutil.h>
+#endif
 #endif
 
 int idleout = 1;
@@ -37,7 +40,6 @@ int idleout = 1;
  */
 #ifdef HAVE_POSIX_TERMIOS
 #  include <termios.h>
-#  include <sys/termios.h>
 #else
 #  ifdef HAVE_SYSV_TERMIO
 #    include <termio.h>

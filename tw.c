@@ -236,14 +236,14 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'o':
-				joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->cursor->byte);
+				joe_snprintf_1(buf, sizeof(buf), "%-4lld", bw->cursor->byte);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
 				stalin = vsncpy(sv(stalin), sz(buf));
 				break;
 			case 'O':
-				joe_snprintf_1(buf, sizeof(buf), "%-4lX", bw->cursor->byte);
+				joe_snprintf_1(buf, sizeof(buf), "%-4llX", bw->cursor->byte);
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -278,9 +278,9 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				break;
 			case 'p':
 				if (bw->b->eof->byte >= 1024*1024)
-					joe_snprintf_1(buf, sizeof(buf), "%3ld", ((unsigned long)bw->cursor->byte >> 10) * 100 / ((unsigned long)bw->b->eof->byte >> 10));
+					joe_snprintf_1(buf, sizeof(buf), "%3lld", (bw->cursor->byte >> 10) * 100 / (bw->b->eof->byte >> 10));
 				else if (bw->b->eof->byte)
-					joe_snprintf_1(buf, sizeof(buf), "%3ld", bw->cursor->byte * 100 / bw->b->eof->byte);
+					joe_snprintf_1(buf, sizeof(buf), "%3lld", bw->cursor->byte * 100 / bw->b->eof->byte);
 				else
 					joe_snprintf_0(buf, sizeof(buf), "100");
 				for (x = 0; buf[x]; ++x)

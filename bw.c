@@ -910,7 +910,7 @@ void bwgenh(BW *w)
 		msetI(fmt,BG_COLOR(bg_text),76);
 		txt[76]=0;
 		if (!flg) {
-			sprintf((char *)bf,"%8lx ",q->byte);
+			sprintf((char *)bf,"%8llx ",q->byte);
 			memcpy(txt,bf,9);
 			for (x=0; x!=8; ++x) {
 				int c;
@@ -1139,6 +1139,7 @@ BW *bwmk(W *window, B *b, int prompt)
 	}
 	w->top->xcol = 0;
 	w->cursor->xcol = 0;
+	w->linums = 0;
 	w->top_changed = 1;
 	w->linums = 0;
 	w->db = 0;
@@ -1260,9 +1261,9 @@ int ustat(BW *bw)
 	int c = brch(bw->cursor);
 
 	if (c == NO_MORE_DATA)
-		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %ld(0x%lx) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
+		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %lld(0x%llx) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
 	else
-		joe_snprintf_9(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
+		joe_snprintf_9(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %lld(0x%llx)  %s %d(0%o/0x%X) Width %d **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
 	msgnw(bw->parent, buf);
 	return 0;
 }

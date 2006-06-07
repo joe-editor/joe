@@ -109,6 +109,22 @@ typedef int pid_t;
 /* Largest signed long */
 #define MAXLONG ((((unsigned long)-1L)/2)-1)
 
+/* Largest signed long long */
+#define MAXLONGLONG ((((unsigned long long)-1L)/2)-1)
+
+/* Largest off_t */
+/* BSD provides a correct OFF_MAX macro, but AIX provides a broken one,
+   so do it ourselves. */
+#if (SIZEOF_OFF_T == SIZEOF_INT)
+#define MAXOFF MAXINT
+#elif (SIZEOF_OFF_T == SIZEOF_LONG)
+#define MAXOFF MAXLONG
+#elif (SIZEOF_OFF_T == SIZEOF_LONG_LONG)
+#define MAXOFF MAXLONGLONG
+#else
+#error off_t is not an int, long, or long long?
+#endif
+
 #include <stdio.h>
 #ifndef EOF
 #define EOF -1

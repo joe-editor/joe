@@ -20,15 +20,15 @@ void vflsh(void)
 {
 	VPAGE *vp;
 	VPAGE *vlowest;
-	long addr;
-	long last;
+	off_t addr;
+	off_t last;
 	VFILE *vfile;
 	int x;
 
 	for (vfile = vfiles.link.next; vfile != &vfiles; vfile = vfile->link.next) {
 		last = -1;
 	      loop:
-		addr = MAXLONG;
+		addr = MAXOFF;
 		vlowest = NULL;
 		for (x = 0; x != HTSIZE; x++)
 			for (vp = htab[x]; vp; vp = vp->next)
@@ -61,11 +61,11 @@ void vflshf(VFILE *vfile)
 {
 	VPAGE *vp;
 	VPAGE *vlowest;
-	long addr;
+	off_t addr;
 	int x;
 
       loop:
-	addr = MAXLONG;
+	addr = MAXOFF;
 	vlowest = NULL;
 	for (x = 0; x != HTSIZE; x++)
 		for (vp = htab[x]; vp; vp = vp->next)
@@ -100,11 +100,11 @@ static unsigned char *mema(int align, int size)
 	return z + align - physical(z) % align;
 }
 
-unsigned char *vlock(VFILE *vfile, unsigned long addr)
+unsigned char *vlock(VFILE *vfile, off_t addr)
 {
 	VPAGE *vp, *pp;
 	int x, y;
-	int ofst = (addr & (PGSIZE - 1));
+	off_t ofst = (addr & (PGSIZE - 1));
 
 	addr -= ofst;
 
@@ -323,9 +323,9 @@ long amount;
 }
 #endif
 
-long my_valloc(VFILE *vfile, long int size)
+off_t my_valloc(VFILE *vfile, off_t size)
 {
-	long start = vsize(vfile);
+	off_t start = vsize(vfile);
 
 	vfile->alloc = start + size;
 	if (vfile->lv) {

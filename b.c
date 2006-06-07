@@ -2060,7 +2060,7 @@ B *bread(int fi, long int max)
  *
  * Returns new variable length string.
  */
-unsigned char *parsens(unsigned char *s, long int *skip, long int *amnt)
+unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 {
 	unsigned char *n = vsncpy(NULL, 0, sz(s));
 	int x;
@@ -2071,25 +2071,25 @@ unsigned char *parsens(unsigned char *s, long int *skip, long int *amnt)
 	if (n[x] == ',') {
 		n[x] = 0;
 		if (n[x + 1] == 'x' || n[x + 1] == 'X')
-			sscanf((char *)(n + x + 2), "%lx", (unsigned long *)skip);
+			sscanf((char *)(n + x + 2), "%llx", skip);
 		else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-			sscanf((char *)(n + x + 3), "%lx", (unsigned long *)skip);
+			sscanf((char *)(n + x + 3), "%llx", skip);
 		else if (n[x + 1] == '0')
-			sscanf((char *)(n + x + 1), "%lo", (unsigned long *)skip);
+			sscanf((char *)(n + x + 1), "%llo", skip);
 		else
-			sscanf((char *)(n + x + 1), "%ld", skip);
+			sscanf((char *)(n + x + 1), "%lld", skip);
 		for (--x; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
 		if (n[x] == ',') {
 			n[x] = 0;
 			*amnt = *skip;
 			if (n[x + 1] == 'x' || n[x + 1] == 'X')
-				sscanf((char *)(n + x + 2), "%lx", (unsigned long *)skip);
+				sscanf((char *)(n + x + 2), "%llx", skip);
 			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-				sscanf((char *)(n + x + 3), "%lx", (unsigned long *)skip);
+				sscanf((char *)(n + x + 3), "%llx", skip);
 			else if (n[x + 1] == '0')
-				sscanf((char *)(n + x + 1), "%lo", (unsigned long *)skip);
+				sscanf((char *)(n + x + 1), "%llo", skip);
 			else
-				sscanf((char *)(n + x + 1), "%ld", skip);
+				sscanf((char *)(n + x + 1), "%lld", skip);
 		}
 	}
 	/* Don't do this here: do it in prompt buffer instead, so we're just like
@@ -2149,7 +2149,7 @@ B *bload(unsigned char *s)
 	unsigned char buffer[SEGSIZ];
 	FILE *fi = 0;
 	B *b = 0;
-	long skip, amnt;
+	off_t skip, amnt;
 	unsigned char *n;
 	int nowrite = 0;
 	P *p;
@@ -2445,7 +2445,7 @@ B *borphan(void)
  * error is set to -5 for write error or 0 for success.
  * Don't attempt to write past the end of the file
  */
-int bsavefd(P *p, int fd, long int size)
+int bsavefd(P *p, int fd, off_t size)
 {
 	P *np = pdup(p, US "bsavefd");
 	int amnt;
@@ -2493,10 +2493,10 @@ err:
 
 int break_links; /* Set to break hard links on writes */
 
-int bsave(P *p, unsigned char *s, long int size, int flag)
+int bsave(P *p, unsigned char *s, off_t size, int flag)
 {
 	FILE *f;
-	long skip, amnt;
+	off_t skip, amnt;
 	struct stat sbuf;
 	int norm = 0;
 

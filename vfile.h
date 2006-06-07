@@ -13,7 +13,7 @@
 struct vpage {
 	VPAGE	*next;		/* Next page with same hash value */
 	VFILE	*vfile;		/* Owner vfile */
-	long	addr;		/* Address of this page */
+	off_t	addr;		/* Address of this page */
 	int	count;		/* Reference count */
 	int	dirty;		/* Set if page changed */
 	unsigned char	*data;		/* The data in the page */
@@ -23,8 +23,8 @@ struct vpage {
 
 struct vfile {
 	LINK(VFILE)	link;	/* Doubly linked list of vfiles */
-	long	size;		/* Number of bytes in physical file */
-	long	alloc;		/* Number of bytes allocated to file */
+	off_t	size;		/* Number of bytes in physical file */
+	off_t	alloc;		/* Number of bytes allocated to file */
 	int	fd;		/* Physical file */
 	int	writeable;	/* Set if we can write */
 	unsigned char	*name;		/* File name.  0 if unnamed */
@@ -78,7 +78,7 @@ VFILE *vtmp PARAMS((void));
 VFILE *vopen PARAMS(());
 #endif
 
-/* long vsize(VFILE *);
+/* off_t vsize(VFILE *);
  *
  * Return size of file
  */
@@ -125,7 +125,7 @@ void vflsh PARAMS((void));
 
 void vflshf PARAMS((VFILE *vfile));
 
-/* char *vlock(VFILE *vfile,long addr);
+/* char *vlock(VFILE *vfile,off_t addr);
  *
  * Translate virtual address to physical address.  'addr' does not have
  * to be on any particular alignment, but if you wish to access more than
@@ -145,7 +145,7 @@ void vflshf PARAMS((VFILE *vfile));
  * ever might want to is to implement your own version of valloc()).
  */
 
-unsigned char *vlock PARAMS((VFILE *vfile, unsigned long addr));
+unsigned char *vlock PARAMS((VFILE *vfile, off_t addr));
 
 /* VPAGE *vheader(char *);
  * Return address of page header for given page
@@ -181,7 +181,7 @@ unsigned char *vlock PARAMS((VFILE *vfile, unsigned long addr));
  * Returns file address of beginning of allocated space
  */
 
-long my_valloc PARAMS((VFILE *vfile, long int size));
+off_t my_valloc PARAMS((VFILE *vfile, off_t size));
 
 #ifdef junk
 /******************************************************************************
@@ -378,5 +378,5 @@ short rw PARAMS(());
 
 short ww PARAMS(());
 
-#endif
+#endif /* junk */
 #endif

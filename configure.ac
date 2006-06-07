@@ -56,6 +56,7 @@ AC_SEARCH_LIBS(tgetflag, $search_libs, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we ha
 AC_SEARCH_LIBS(snprintf, snprintf db, AC_DEFINE_UNQUOTED(HAVE_SNPRINTF, 1, [If we have snprintf]))
 
 # Checks for header files.
+AC_SYS_LARGEFILE
 AC_HEADER_DIRENT
 AC_SYS_POSIX_TERMIOS
 if test "$ac_cv_sys_posix_termios" = "yes"; then
@@ -69,7 +70,7 @@ fi
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([errno.h fcntl.h locale.h sgtty.h stdlib.h string.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
-AC_CHECK_HEADERS([sys/dirent.h time.h pwd.h paths.h pty.h])
+AC_CHECK_HEADERS([sys/dirent.h time.h pwd.h paths.h pty.h libutil.h])
 AC_CHECK_HEADERS([sys/types.h sys/stat.h sys/wait.h limits.h signal.h])
 AC_CHECK_HEADERS([curses.h term.h])
 
@@ -89,6 +90,7 @@ AC_CHECK_SIZEOF(char, 1)
 AC_CHECK_SIZEOF(short, 2)
 AC_CHECK_SIZEOF(int, 4)
 AC_CHECK_SIZEOF(long, 4)
+AC_CHECK_SIZEOF(long long, 4)
 AC_CHECK_SIZEOF(void *, 4)
 AC_CHECK_TYPE([sighandler_t],
 	[AC_DEFINE([HAVE_SIGHANDLER_T], 1, [Define if you have the `sighandler_t' type.])],
@@ -104,6 +106,8 @@ AC_FUNC_LSTAT
 joe_SETPGRP
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
+AC_TYPE_OFF_T
+AC_CHECK_SIZEOF(off_t, 4)
 AC_CHECK_TYPE([ssize_t], [], [
 	AC_DEFINE([ssize_t], [int], [Define to `int' if <sys/types.h> does not define.])
 	], [])
