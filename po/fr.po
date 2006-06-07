@@ -6,15 +6,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: joe 3.3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-06-04 21:57-0400\n"
+"POT-Creation-Date: 2006-06-07 01:45-0400\n"
 "PO-Revision-Date: 2006-05-30 17:05+0200\n"
 "Last-Translator: Sébastien Koechlin <seb.joe@koocotte.org>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
-
+"Report-Msgid-Bugs-To: \n"
 
 #: b.c:31
 msgid "No error"
@@ -79,15 +78,16 @@ msgstr ""
 "\n"
 "*** Fichier '(Sans nom)'\n"
 
-#: bw.c:1263
-#, c-format
-msgid "** Line %ld  Col %ld  Offset %ld(0x%lx) **"
+#: bw.c:1264
+#, fuzzy, c-format
+msgid "** Line %ld  Col %ld  Offset %lld(0x%llx) **"
 msgstr "** Ligne %ld  Col %ld  Position %ld(0x%lx) **"
 
-#: bw.c:1265
-#, c-format
-msgid "** Line %ld  Col %ld  Offset %ld(0x%lx)  %s %d(0%o/0x%X) Width %d **"
-msgstr "** Ligne %ld  Col %ld  Position %ld(0x%lx)  %s %d(0%o/0x%X) Largeur %d **"
+#: bw.c:1266
+#, fuzzy, c-format
+msgid "** Line %ld  Col %ld  Offset %lld(0x%llx)  %s %d(0%o/0x%X) Width %d **"
+msgstr ""
+"** Ligne %ld  Col %ld  Position %ld(0x%lx)  %s %d(0%o/0x%X) Largeur %d **"
 
 #: cmd.c:211
 msgid "Could not create lock. (I) edit anyway, (Q) cancel edit? "
@@ -96,19 +96,22 @@ msgstr "Impossible de créer le verrou. (E)diter tout de même, (A)bandonner ? "
 #: cmd.c:212
 #, c-format
 msgid "Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? "
-msgstr "Verrouillé par %s. (S)'approprier le verrou, (E)diter tout de même, (A)bandonner ? "
+msgstr ""
+"Verrouillé par %s. (S)'approprier le verrou, (E)diter tout de même, (A)"
+"bandonner ? "
 
-#: cmd.c:214 usearch.c:559
-msgid "sS"
-msgstr "sS"
+#: cmd.c:214
+msgid "|steal the lock|sS"
+msgstr ""
 
 #: cmd.c:215
-msgid "qQ"
-msgstr "qQaA"
+msgid "|cancel edit due to lock|qQ"
+msgstr ""
 
-#: cmd.c:216 usearch.c:557
-msgid "iI"
-msgstr "iIeE"
+#: cmd.c:216
+#, fuzzy
+msgid "|ignore lock, continue with edit|iI"
+msgstr "Pressez Entrée pour continuer avec %s "
 
 #: cmd.c:265
 msgid "Notice: File on disk changed! (hit ^C to continue)  "
@@ -424,7 +427,8 @@ msgstr ""
 #: rc.c:311
 #, c-format
 msgid "Indent char %d (SPACE=32, TAB=9, ^C to abort): "
-msgstr "Caractère d'indentation (Espace=32, Tabulation=9, ^C pour quitter) (%d): "
+msgstr ""
+"Caractère d'indentation (Espace=32, Tabulation=9, ^C pour quitter) (%d): "
 
 #: rc.c:311
 msgid "  Indent char "
@@ -513,7 +517,8 @@ msgstr ""
 
 #: rc.c:319
 msgid "Automatically detect non-UTF-8 in UTF-8 locale"
-msgstr "Détection automatique des fichiers non UTF-8 lorsque la locale est UTF-8"
+msgstr ""
+"Détection automatique des fichiers non UTF-8 lorsque la locale est UTF-8"
 
 #: rc.c:319
 msgid "Do not automatically detect non-UTF-8"
@@ -525,7 +530,8 @@ msgstr ""
 
 #: rc.c:320
 msgid "Automatically detect UTF-8 in non-UTF-8 locale"
-msgstr "Détection automatique des fichiers UTF-8 lorsque la locale n'est pas UTF-8"
+msgstr ""
+"Détection automatique des fichiers UTF-8 lorsque la locale n'est pas UTF-8"
 
 #: rc.c:320
 msgid "Do not automatically detect UTF-8"
@@ -958,7 +964,8 @@ msgstr "Un clic peut déplacer le curseur au dela de la fin de la ligne"
 
 #: rc.c:358
 msgid "Clicking past end of line moves cursor to the end"
-msgstr "Un clic au dela de la fin de la ligne déplace le curseur à la fin de la ligne"
+msgstr ""
+"Un clic au dela de la fin de la ligne déplace le curseur à la fin de la ligne"
 
 #: rc.c:358
 msgid "  Click past end "
@@ -1247,19 +1254,19 @@ msgstr "Impossible de lire l'entrée termcap. Utilisation des valeurs ansi"
 msgid "%s is out of date\n"
 msgstr "%s est obsolète"
 
-#: tty.c:312
+#: tty.c:314
 msgid "Couldn't open /dev/tty\n"
 msgstr "Impossible d'ouvrir /dev/tty\n"
 
-#: tty.c:729
+#: tty.c:731
 msgid "You are at the command shell.  Type 'exit' to return\n"
 msgstr "Vous êtes dans le shell. Faites 'exit' pour revenir\n"
 
-#: tty.c:793
+#: tty.c:795
 msgid "You have suspended the program.  Type 'fg' to return\n"
 msgstr "Vous avez suspendu le programme. Faites 'fg' pour revenir à JOE\n"
 
-#: tty.c:1144
+#: tty.c:1146
 #, c-format
 msgid "Couldn't execute shell '%s'\n"
 msgstr "Impossible d'exécuter le shell '%s'\n"
@@ -1344,7 +1351,8 @@ msgstr "Aller à l'octet (^C pour abandonner): "
 
 #: uedit.c:1911
 msgid "Unicode (ISO-10646) character in hex (^C to abort): "
-msgstr "Code hexadécimal du caractère unicode (ISO-10646) (^C pour abandonner): "
+msgstr ""
+"Code hexadécimal du caractère unicode (ISO-10646) (^C pour abandonner): "
 
 #: uedit.c:2036
 msgid "Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"
@@ -1445,12 +1453,12 @@ msgid "System (^C to abort): "
 msgstr ""
 
 #: ufile.c:273
-msgid "yY"
-msgstr "yYoO"
+msgid "|yes|yY"
+msgstr ""
 
-#: ufile.c:274 usearch.c:561
-msgid "nN"
-msgstr "nN"
+#: ufile.c:274
+msgid "|no|nN"
+msgstr ""
 
 #: ufile.c:309
 msgid "Couldn't make backup file... file not saved"
@@ -1458,7 +1466,9 @@ msgstr "Impossible de créer le fichier de sauvegarde. Fichier non enregistré"
 
 #: ufile.c:321
 msgid "Could not make backup file.  Save anyway (y,n,^C)? "
-msgstr "Impossible de créer le fichier de sauvegarde. Enregistrer quand même (o,n,^C) ? "
+msgstr ""
+"Impossible de créer le fichier de sauvegarde. Enregistrer quand même (o,n,"
+"^C) ? "
 
 #: ufile.c:409 ufile.c:425
 #, c-format
@@ -1567,28 +1577,42 @@ msgid "Wrapped"
 msgstr ""
 
 #: usearch.c:553
-msgid "aA"
+msgid "|all files|aA"
 msgstr ""
 
 #: usearch.c:554
-msgid "eE"
+#, fuzzy
+msgid "|error list files|eE"
+msgstr "Erreur à l'écriture du fichier"
+
+#: usearch.c:555
+msgid "|search and replace|rR"
 msgstr ""
 
-#: usearch.c:555 usearch.c:813
-msgid "rR"
+#: usearch.c:556
+msgid "|backwards|bB"
 msgstr ""
 
-#: usearch.c:556 usearch.c:814
-msgid "bB"
+#: usearch.c:557
+msgid "|ignore case|iI"
 msgstr ""
 
 #: usearch.c:558
-msgid "kK"
+msgid "|restrict to highlighted block|kK"
+msgstr ""
+
+#: usearch.c:559
+msgid "|don't ignore case|sS"
 msgstr ""
 
 #: usearch.c:560
-msgid "wW"
+msgid "|wrap|wW"
 msgstr ""
+
+#: usearch.c:561
+#, fuzzy
+msgid "|don't wrap|nN"
+msgstr "La recherche ne recommence pas au début du fichier"
 
 #: usearch.c:618
 msgid "Replace with (^C to abort): "
@@ -1613,6 +1637,14 @@ msgstr "Chercher (^C pour abandonner) [%s]: "
 msgid "Find (^C to abort): "
 msgstr "Chercher (^C pour abandonner): "
 
+#: usearch.c:813
+msgid "|rest of file|rR"
+msgstr ""
+
+#: usearch.c:814
+msgid "|backup|bB"
+msgstr ""
+
 #: usearch.c:845
 msgid "Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"
 msgstr ""
@@ -1623,7 +1655,8 @@ msgstr "Non trouvé (recherche limité au bloc sélectionné)"
 
 #: usearch.c:1000
 msgid "Infinite loop aborted: your search repeatedly matched same place"
-msgstr "Boucle infinie: votre recherche correspond continuellement à la même place"
+msgstr ""
+"Boucle infinie: votre recherche correspond continuellement à la même place"
 
 #: ushell.c:95
 msgid "Program already running in this window"
@@ -1681,3 +1714,18 @@ msgstr "Impossible d'ouvrir le fichier '%s'\n"
 #: w.c:822
 msgid "There is no message buffer"
 msgstr "Il n'y a pas de message"
+
+#~ msgid "sS"
+#~ msgstr "sS"
+
+#~ msgid "qQ"
+#~ msgstr "qQaA"
+
+#~ msgid "iI"
+#~ msgstr "iIeE"
+
+#~ msgid "yY"
+#~ msgstr "yYoO"
+
+#~ msgid "nN"
+#~ msgstr "nN"
