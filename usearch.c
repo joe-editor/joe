@@ -550,15 +550,15 @@ static int set_replace(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 
 /* Option characters */
 
-unsigned char *all_key = (unsigned char *) _("aA");
-unsigned char *list_key = (unsigned char *) _("eE");
-unsigned char *replace_key = (unsigned char *) _("rR");
-unsigned char *backwards_key = (unsigned char *) _("bB");
+unsigned char *all_key = (unsigned char *) _("|all files|aA");
+unsigned char *list_key = (unsigned char *) _("|error list files|eE");
+unsigned char *replace_key = (unsigned char *) _("|search and replace|rR");
+unsigned char *backwards_key = (unsigned char *) _("|backwards|bB");
 unsigned char *ignore_key = (unsigned char *) _("|ignore case|iI");
-unsigned char *block_key = (unsigned char *) _("kK");
-unsigned char *noignore_key = (unsigned char *) _("sS");
-unsigned char *wrap_key = (unsigned char *) _("wW");
-unsigned char *nowrap_key = (unsigned char *) _("nN");
+unsigned char *block_key = (unsigned char *) _("|restrict to highlighted block|kK");
+unsigned char *noignore_key = (unsigned char *) _("|don't ignore case|sS");
+unsigned char *wrap_key = (unsigned char *) _("|wrap|wW");
+unsigned char *nowrap_key = (unsigned char *) _("|don't wrap|nN");
 
 /* Get next character from string and advance it, locale dependent */
 
@@ -810,8 +810,8 @@ static void goback(SRCH *srch, BW *bw)
 	}
 }
 
-unsigned char *rest_key = (unsigned char *) _("rR");
-unsigned char *backup_key = (unsigned char *) _("bB");
+unsigned char *rest_key = (unsigned char *) _("|rest of file|rR");
+unsigned char *backup_key = (unsigned char *) _("|backup|bB");
 
 static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
 {

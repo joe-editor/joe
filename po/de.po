@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: joe 3.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-06-06 22:57-0400\n"
+"POT-Creation-Date: 2006-06-07 01:45-0400\n"
 "PO-Revision-Date: 2006-05-22 11:21-0400\n"
 "Last-Translator: Joe Allen <jhallen@world.std.com>\n"
 "Language-Team: German <de@li.org>\n"
@@ -1476,11 +1476,11 @@ msgid "System (^C to abort): "
 msgstr "System (^C to abort): "
 
 #: ufile.c:273
-msgid "yY"
+msgid "|yes|yY"
 msgstr ""
 
-#: ufile.c:274 usearch.c:561
-msgid "nN"
+#: ufile.c:274
+msgid "|no|nN"
 msgstr ""
 
 #: ufile.c:309
@@ -1598,19 +1598,20 @@ msgid "Wrapped"
 msgstr "Wrapped"
 
 #: usearch.c:553
-msgid "aA"
+msgid "|all files|aA"
 msgstr ""
 
 #: usearch.c:554
-msgid "eE"
+#, fuzzy
+msgid "|error list files|eE"
+msgstr "Error writing file"
+
+#: usearch.c:555
+msgid "|search and replace|rR"
 msgstr ""
 
-#: usearch.c:555 usearch.c:813
-msgid "rR"
-msgstr ""
-
-#: usearch.c:556 usearch.c:814
-msgid "bB"
+#: usearch.c:556
+msgid "|backwards|bB"
 msgstr ""
 
 #: usearch.c:557
@@ -1618,15 +1619,19 @@ msgid "|ignore case|iI"
 msgstr ""
 
 #: usearch.c:558
-msgid "kK"
+msgid "|restrict to highlighted block|kK"
 msgstr ""
 
 #: usearch.c:559
-msgid "sS"
+msgid "|don't ignore case|sS"
 msgstr ""
 
 #: usearch.c:560
-msgid "wW"
+msgid "|wrap|wW"
+msgstr ""
+
+#: usearch.c:561
+msgid "|don't wrap|nN"
 msgstr ""
 
 #: usearch.c:618
@@ -1653,6 +1658,14 @@ msgstr "Find (^C to abort) [%s]: "
 #: usearch.c:719
 msgid "Find (^C to abort): "
 msgstr "Find (^C to abort): "
+
+#: usearch.c:813
+msgid "|rest of file|rR"
+msgstr ""
+
+#: usearch.c:814
+msgid "|backup|bB"
+msgstr ""
 
 #: usearch.c:845
 msgid "Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"
