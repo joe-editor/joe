@@ -1,3 +1,7 @@
+Sat Jun 10 10:06:41 EST 2006
+
+	Fix menu bug: coredump on left arrow.
+
 Tue Jun  6 22:58:41 EDT 2006
 
 	allow |comments| in gettext strings.
