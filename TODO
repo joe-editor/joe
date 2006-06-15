@@ -2,17 +2,15 @@ Immediate:
 
  full path needs to go in line number restore code?
 
- yes/no questions: search & replace options.
-
  reload
 
  ^C breaks in Cygwin when piping into joe
 
- empty syntax file crashes.
+ empty syntax file crashes?
 
 startup log should pop up whenever syntax files are loaded.
 
-joerc file is funny because of the :include
+joerc file messages are funny because of the :include
 
 autodetect xterm?  it doesn't give enough information.
 
@@ -33,10 +31,6 @@ Improvements for regular text
 mode where wordwrap wraps rest of paragraph?
 
 mode where all editing wraps rest of paragraph?
-
-=-=-=-=-=
-
-We need a built-in joerc file: then joe will work on a boot disk.
 
 =-=-=-=-=
 
@@ -253,9 +247,6 @@ Dangerous situations:
     (just run tail -f in shell window)
 
 - - - - - - - -
-
-Problems with parsing joerc file: comments are getting included in all
-string options.  Switch to unix standard config file format?
 
 Make joerc file so we load system and local customizations.
 

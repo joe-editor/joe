@@ -162,7 +162,7 @@ static long prefix(BW *bw, P *p,int up)
 			pgetc(q);
 		*/
 			break;
-			skip:;
+		/* 	skip:; */
 		}
 	}
 	len = piscol(q);
