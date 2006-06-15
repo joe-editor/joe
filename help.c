@@ -28,7 +28,7 @@ struct help *help_ptr = NULL;		/* build pointer */
  * Returns new line number
  */
 
-int help_init(FILE *fd,unsigned char *bf,int line)
+int help_init(JFILE *fd,unsigned char *bf,int line)
 {
 	unsigned char buf[1024];			/* input buffer */
 
@@ -46,7 +46,7 @@ int help_init(FILE *fd,unsigned char *bf,int line)
 		hlpbsz = 0;
 		tmp->name = vsncpy(NULL, 0, sz(bf + 1) - 1); /* -1 kill the \n */
 
-		while ((fgets((char *)buf, sizeof(buf), fd)) && (buf[0] != '}')) {
+		while ((jfgets((char *)buf, sizeof(buf), fd)) && (buf[0] != '}')) {
 			++line;
 			bfl = zlen(buf);
 			if (hlpsiz + bfl > hlpbsz) {

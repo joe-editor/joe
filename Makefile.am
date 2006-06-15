@@ -30,7 +30,8 @@ joe_SOURCES = b.c blocks.c bw.c cmd.c hash.c help.c kbd.c macro.c main.c menu.c 
 	path.c poshist.c pw.c queue.c qw.c rc.c regex.c scrn.c tab.c termcap.c \
 	tty.c tw.c ublock.c uedit.c uerror.c ufile.c uformat.c uisrch.c umath.c \
 	undo.c usearch.c ushell.c utag.c va.c vfile.c vs.c w.c utils.c syntax.c \
-	utf8.c selinux.c i18n.c charmap.c mouse.c lattr.c gettext.c
+	utf8.c selinux.c i18n.c charmap.c mouse.c lattr.c gettext.c builtin.c \
+	builtins.c
 
 termidx_SOURCES = termidx.c
 

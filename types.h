@@ -230,6 +230,7 @@ typedef struct vpage VPAGE;
 typedef struct vfile VFILE;
 typedef struct highlight_state HIGHLIGHT_STATE;
 typedef struct mpx MPX;
+typedef struct jfile JFILE;
 
 /* Structure which are passed by value */
 
@@ -285,3 +286,4 @@ struct highlight_state {
 #include "vs.h"
 #include "w.h"
 #include "gettext.h"
+#include "builtin.h"

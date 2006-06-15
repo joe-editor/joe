@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: joe 3.3\n"
-"POT-Creation-Date: 2006-06-07 01:45-0400\n"
+"POT-Creation-Date: 2006-06-15 14:12-0400\n"
 "PO-Revision-Date: 2006-05-30 17:05+0200\n"
 "Last-Translator: Sébastien Koechlin <seb.joe@koocotte.org>\n"
 "Language-Team: French <fr@li.org>\n"
@@ -43,7 +43,7 @@ msgstr "Erreur à l'écriture du fichier"
 msgid "File on disk is newer"
 msgstr "Le fichier sur le disque est plus récent"
 
-#: b.c:2712
+#: b.c:2736
 #, c-format
 msgid ""
 "\n"
@@ -52,16 +52,16 @@ msgstr ""
 "\n"
 "*** Ces fichiers modifiés étaient ouvert dans JOE quand il a quitté le %s"
 
-#: b.c:2714
+#: b.c:2738
 #, c-format
 msgid "*** JOE was aborted by UNIX signal %d\n"
 msgstr "*** JOE a quitté à la réception du signal UNIX %d\n"
 
-#: b.c:2716
+#: b.c:2740
 msgid "*** JOE was aborted because the terminal closed\n"
 msgstr "*** JOE a quitté suite à la fermeture du terminal\n"
 
-#: b.c:2721
+#: b.c:2745
 #, c-format
 msgid ""
 "\n"
@@ -70,7 +70,7 @@ msgstr ""
 "\n"
 "*** Fichier '%s'\n"
 
-#: b.c:2723
+#: b.c:2747
 msgid ""
 "\n"
 "*** File '(Unnamed)'\n"
@@ -78,16 +78,16 @@ msgstr ""
 "\n"
 "*** Fichier '(Sans nom)'\n"
 
-#: bw.c:1264
+#: bw.c:1274
 #, fuzzy, c-format
-msgid "** Line %ld  Col %ld  Offset %lld(0x%llx) **"
-msgstr "** Ligne %ld  Col %ld  Position %ld(0x%lx) **"
+msgid "** Line %ld  Col %ld  Offset %s(0x%s) **"
+msgstr "** Ligne %ld  Col %ld  Position %s(0x%s) **"
 
-#: bw.c:1266
+#: bw.c:1276
 #, fuzzy, c-format
-msgid "** Line %ld  Col %ld  Offset %lld(0x%llx)  %s %d(0%o/0x%X) Width %d **"
+msgid "** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **"
 msgstr ""
-"** Ligne %ld  Col %ld  Position %ld(0x%lx)  %s %d(0%o/0x%X) Largeur %d **"
+"** Ligne %ld  Col %ld  Position %s(0x%lx)  %s %d(0%o/0x%X) Largeur %d **"
 
 #: cmd.c:211
 msgid "Could not create lock. (I) edit anyway, (Q) cancel edit? "
@@ -217,26 +217,26 @@ msgstr "Vous devez mettre à jour ou effacer %s\n"
 msgid "Hit enter to continue with %s "
 msgstr "Pressez Entrée pour continuer avec %s "
 
-#: main.c:309 main.c:328
+#: main.c:309 main.c:328 main.c:345
 #, c-format
 msgid "There were errors in '%s'.  Use it anyway (y,n)? "
 msgstr "Il y a des erreurs dans '%s'. L'utiliser quand même (o,n) ?"
 
-#: main.c:336
+#: main.c:353
 #, c-format
 msgid "Couldn't open '%s'\n"
 msgstr "Impossible d'ouvrir '%s'\n"
 
-#: main.c:342
+#: main.c:359
 msgid "rc file has no :main key binding section or no bindings.  Bye.\n"
-msgstr "Le fichier de configuration n'a pas de section :main"
+msgstr "Le fichier de configuration n'a pas de section :main\n"
 
-#: main.c:355
+#: main.c:372
 #, c-format
 msgid "Unknown option '%s'\n"
 msgstr "Option inconnue: '%s'\n"
 
-#: main.c:491
+#: main.c:508
 #, c-format
 msgid "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
 msgstr ""
@@ -1148,7 +1148,7 @@ msgstr ""
 #: syntax.c:259
 #, c-format
 msgid "%s %d: Class already defined\n"
-msgstr "%s %d: Classe déjà définie"
+msgstr "%s %d: Classe déjà définie\n"
 
 #: syntax.c:339
 #, c-format
@@ -1173,7 +1173,7 @@ msgstr "%s %d: Le endif ne correspond à aucun if\n"
 #: syntax.c:432 syntax.c:560
 #, c-format
 msgid "%s %d: Missing subroutine name\n"
-msgstr "%s %d: Il manque le nom de la sous-routine"
+msgstr "%s %d: Il manque le nom de la sous-routine\n"
 
 #: syntax.c:447
 #, c-format
@@ -1247,12 +1247,12 @@ msgstr "Impossible de lire le contenu du répertoire"
 
 #: termcap.c:219
 msgid "Couldn't load termcap entry.  Using ansi default\n"
-msgstr "Impossible de lire l'entrée termcap. Utilisation des valeurs ansi"
+msgstr "Impossible de lire l'entrée termcap. Utilisation des valeurs ansi\n"
 
 #: termcap.c:240
 #, c-format
 msgid "%s is out of date\n"
-msgstr "%s est obsolète"
+msgstr "%s est obsolète\n"
 
 #: tty.c:314
 msgid "Couldn't open /dev/tty\n"

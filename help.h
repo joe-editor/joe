@@ -11,7 +11,7 @@
 
 void help_display PARAMS((Screen *t));		/* display text in help window */
 int help_on PARAMS((Screen *t));		/* turn help on */
-int help_init PARAMS((FILE *fd,unsigned char *bf,int line)); /* read help from rc file */
+int help_init PARAMS((JFILE *fd,unsigned char *bf,int line)); /* read help from rc file */
 
 int u_help PARAMS((BASE *base));		/* toggle help on/off */
 int u_help_next PARAMS((BASE *base));		/* goto next help screen */

@@ -7,8 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-06-07 01:45-0400\n"
+"POT-Creation-Date: 2006-06-15 14:12-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,43 +43,43 @@ msgstr ""
 msgid "File on disk is newer"
 msgstr ""
 
-#: b.c:2712
+#: b.c:2736
 #, c-format
 msgid ""
 "\n"
 "*** These modified files were found in JOE when it aborted on %s"
 msgstr ""
 
-#: b.c:2714
+#: b.c:2738
 #, c-format
 msgid "*** JOE was aborted by UNIX signal %d\n"
 msgstr ""
 
-#: b.c:2716
+#: b.c:2740
 msgid "*** JOE was aborted because the terminal closed\n"
 msgstr ""
 
-#: b.c:2721
+#: b.c:2745
 #, c-format
 msgid ""
 "\n"
 "*** File '%s'\n"
 msgstr ""
 
-#: b.c:2723
+#: b.c:2747
 msgid ""
 "\n"
 "*** File '(Unnamed)'\n"
 msgstr ""
 
-#: bw.c:1264
+#: bw.c:1274
 #, c-format
-msgid "** Line %ld  Col %ld  Offset %lld(0x%llx) **"
+msgid "** Line %ld  Col %ld  Offset %s(0x%s) **"
 msgstr ""
 
-#: bw.c:1266
+#: bw.c:1276
 #, c-format
-msgid "** Line %ld  Col %ld  Offset %lld(0x%llx)  %s %d(0%o/0x%X) Width %d **"
+msgid "** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **"
 msgstr ""
 
 #: cmd.c:211
@@ -208,26 +207,26 @@ msgstr ""
 msgid "Hit enter to continue with %s "
 msgstr ""
 
-#: main.c:309 main.c:328
+#: main.c:309 main.c:328 main.c:345
 #, c-format
 msgid "There were errors in '%s'.  Use it anyway (y,n)? "
 msgstr ""
 
-#: main.c:336
+#: main.c:353
 #, c-format
 msgid "Couldn't open '%s'\n"
 msgstr ""
 
-#: main.c:342
+#: main.c:359
 msgid "rc file has no :main key binding section or no bindings.  Bye.\n"
 msgstr ""
 
-#: main.c:355
+#: main.c:372
 #, c-format
 msgid "Unknown option '%s'\n"
 msgstr ""
 
-#: main.c:491
+#: main.c:508
 #, c-format
 msgid "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
 msgstr ""

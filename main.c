@@ -331,6 +331,23 @@ int main(int argc, char **real_argv, char **envv)
 		if (ynchecks(yes_key, buf))
 			goto donerc;
 	}
+
+	/* Try built-in joerc */
+	s = vsncpy(NULL, 0, sc("*"));
+	s = vsncpy(sv(s), sv(run));
+	s = vsncpy(sv(s), sc("rc"));
+	c = procrc(cap, s);
+	if (c == 0)
+		goto donerc;
+	if (c == 1) {
+		unsigned char buf[8];
+
+		fprintf(stderr,(char *)joe_gettext(_("There were errors in '%s'.  Use it anyway (y,n)? ")), s);
+		fflush(stderr);
+		fgets((char *)buf, 8, stdin);
+		if (ynchecks(yes_key, buf))
+			goto donerc;
+	}
 #endif
 
 	fprintf(stderr,(char *)joe_gettext(_("Couldn't open '%s'\n")), s);

@@ -992,16 +992,16 @@ int procrc(CAP *cap, unsigned char *name)
 	OPTIONS *o = &fdefault;	/* Current options */
 	KMAP *context = NULL;	/* Current context */
 	unsigned char buf[1024];	/* Input buffer */
-	FILE *fd;		/* rc file */
+	JFILE *fd;		/* rc file */
 	int line = 0;		/* Line number */
 	int err = 0;		/* Set to 1 if there was a syntax error */
 
 	strncpy((char *)buf, (char *)name, sizeof(buf) - 1);
 	buf[sizeof(buf)-1] = '\0';
 #ifdef __MSDOS__
-	fd = fopen((char *)buf, "rt");
+	fd = jfopen(buf, "rt");
 #else
-	fd = fopen((char *)buf, "r");
+	fd = jfopen(buf, "r");
 #endif
 
 	if (!fd)
@@ -1010,7 +1010,7 @@ int procrc(CAP *cap, unsigned char *name)
 	fprintf(stderr,(char *)joe_gettext(_("Processing '%s'...")), name);
 	fflush(stderr);
 
-	while (fgets((char *)buf, sizeof(buf), fd)) {
+	while (jfgets((char *)buf, sizeof(buf), fd)) {
 		line++;
 		switch (buf[0]) {
 		case ' ':
@@ -1194,7 +1194,7 @@ int procrc(CAP *cap, unsigned char *name)
 					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Unknown command in macro")), name, line);
 					break;
 				} else if (x == -2) {
-					fgets((char *)buf, 1024, fd);
+					jfgets((char *)buf, 1024, fd);
 					++line;
 					goto macroloop;
 				}
@@ -1214,7 +1214,7 @@ int procrc(CAP *cap, unsigned char *name)
 			break;
 		}
 	}
-	fclose(fd);		/* Close rc file */
+	jfclose(fd);		/* Close rc file */
 
 	/* Print proper ending string */
 	if (err)

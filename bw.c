@@ -1257,13 +1257,23 @@ void bwrm(BW *w)
 
 int ustat(BW *bw)
 {
-	static unsigned char buf[80];
+	static unsigned char buf[160];
+	unsigned char bf1[100];
+	unsigned char bf2[100];
 	int c = brch(bw->cursor);
 
+	if (sizeof(off_t) > 4) {
+		joe_snprintf_1(bf1, sizeof(bf1), "%lld", bw->cursor->byte);
+		joe_snprintf_1(bf2, sizeof(bf2), "%llx", bw->cursor->byte);
+	} else {
+		joe_snprintf_1(bf1, sizeof(bf1), "%ld", bw->cursor->byte);
+		joe_snprintf_1(bf2, sizeof(bf2), "%lx", bw->cursor->byte);
+	}
+
 	if (c == NO_MORE_DATA)
-		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %lld(0x%llx) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte);
+		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2);
 	else
-		joe_snprintf_9(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %lld(0x%llx)  %s %d(0%o/0x%X) Width %d **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bw->cursor->byte, bw->cursor->byte, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
+		joe_snprintf_9(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
 	msgnw(bw->parent, buf);
 	return 0;
 }
