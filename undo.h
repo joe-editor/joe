@@ -51,4 +51,6 @@ void load_yank PARAMS((FILE *f));
 void save_yank PARAMS((FILE *f));
 void bw_unlock PARAMS((BW *bw));
 
+extern int undo_keep;
+
 #endif

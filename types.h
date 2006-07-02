@@ -189,7 +189,6 @@ typedef int pid_t;
 #define FITHEIGHT	4		/* Minimum text window height */
 #define LINCOLS		10
 #define NPROC		8		/* Number of processes we keep track of */
-#define UNDOKEEP	100
 #define INC		16		/* Pages to allocate each time */
 
 #define TYPETW		0x0100

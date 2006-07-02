@@ -91,6 +91,8 @@
 
  -pg nnn	Количество строк, оставляемых при PgUp/PgDn
 
+ -undo_keep nnn	Number of undo records to keep.  0 for infinite.
+
  -csmode	^KF после предыдущего поиска действует как ^L
 
  -backpath path

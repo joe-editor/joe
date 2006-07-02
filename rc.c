@@ -336,6 +336,7 @@ struct glopts {
 	{US "nosta",	0, &staen, NULL, US _("Top-most status line disabled"), US _("Top-most status line enabled"), US _("  Disable status line ") },
 	{US "keepup",	0, &keepup, NULL, US _("Status line updated constantly"), US _("Status line updated once/sec"), US _("  Fast status line ") },
 	{US "pg",		1, &pgamnt, NULL, US _("Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): "), 0, US _("  No. PgUp/PgDn lines "), 0, -1, 64 },
+	{US "undo_keep",		1, &undo_keep, NULL, US _("No. undo records to keep, or (0 for infinite): "), 0, US _("  No. undo records "), 0, -1, 64 },
 	{US "csmode",	0, &csmode, NULL, US _("Start search after a search repeats previous search"), US _("Start search always starts a new search"), US _("  Continued search ") },
 	{US "rdonly",	4, NULL, (unsigned char *) &fdefault.readonly, US _("Read only"), US _("Full editing"), US _("O Read only ") },
 	{US "smarthome",	4, NULL, (unsigned char *) &fdefault.smarthome, US _("Smart home key enabled"), US _("Smart home key disabled"), US _("  Smart home key ") },

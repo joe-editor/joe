@@ -7,6 +7,8 @@
  */
 #include "types.h"
 
+int undo_keep = 100; /* Number of undo records to keep */
+
 #define SMALL 1024
 
 #define MAX_YANK 100
@@ -195,8 +197,10 @@ void undomark(void)
 			undo->first->unit = undo->last;
 			undo->last->unit = undo->first;
 			undo->first = undo->last = 0;
-			if (++undo->nrecs == UNDOKEEP)
-				undogc(undo);
+			++undo->nrecs;
+			if (undo_keep)
+				while (undo->nrecs > undo_keep)
+					undogc(undo);
 		}
 }
 

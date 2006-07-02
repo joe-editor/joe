@@ -68,6 +68,8 @@
  -nosta		Disable top-most status line
  -keepup	%k and %c status line escape sequences updated frequently
  -pg nnn	No. lines to keep for PgUp/PgDn
+ -undo_keep nnn	Number of undo records to keep.  0 for infinite.
+
  -csmode	^KF after a pervious search does a ^L instead
 
  -backpath path

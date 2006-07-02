@@ -14,6 +14,15 @@ JOE 3.5
 - Macros can be typed at the ESC X prompt (before it used to accept only
   commands).
 
+- Built-in joerc file allows joe to run even if /etc/joe directory is
+  missing.
+
+- Support for 'long long' allows editing parts of files larger than 4GB. 
+  For example, you can say: joe /dev/hda,0x100000000,0x1000 to edit the 4KB
+  block at offset 4GB of a hard drive.
+
+- Option which allows you set how many undo records to keep.
+
 JOE 3.4
 
 - Paragraph reformatter and word wrap now handle '*' and '-' bullet lists.
