@@ -26,18 +26,6 @@ int justkilled = 0;
 
 UNDOREC frrecs = { {&frrecs, &frrecs} };
 
-static undodump()
-{
-	UNDO *undo;
-	for (undo = undos.link.next; undo != &undos; undo = undo->link.next) {
-		UNDOREC *rec;
-		printf("\rUNDO %x nrecs=%d ptr=%x first=%x last=%x\n",undo,undo->nrecs,undo->ptr,undo->first,undo->last);
-		for (rec = undo->recs.link.next; rec != &undo->recs; rec = rec->link.next) {
-			printf("	recs=%x, del=%d, unit=%x\n",rec,rec->del,rec->unit);
-		}
-	}
-}
-
 static UNDOREC *alrec(void)
 {
 	UNDOREC *rec = (UNDOREC *) alitem(&frrecs, sizeof(UNDOREC));
