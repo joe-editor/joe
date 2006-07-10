@@ -1,3 +1,8 @@
+Mon Jul 10 13:38:04 EDT 2006
+
+	Fix bug from undo_keep: undo_keep has to be a multiple of 2 for redo
+	to work properly.
+
 Wed Jun 21 09:16:49 EDT 2006
 
 	New undo_keep option.

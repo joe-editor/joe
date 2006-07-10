@@ -17,7 +17,7 @@ static UNDO undos = { {&undos, &undos} };
 static UNDO frdos = { {&frdos, &frdos} };
 
 int inundo = 0;
-int inredo = 0;
+int inredo = 0;	/* Turns off recording of undo records */
 
 UNDOREC yanked = { {&yanked, &yanked} };
 int nyanked = 0;
@@ -25,6 +25,18 @@ int inyank = 0;
 int justkilled = 0;
 
 UNDOREC frrecs = { {&frrecs, &frrecs} };
+
+static undodump()
+{
+	UNDO *undo;
+	for (undo = undos.link.next; undo != &undos; undo = undo->link.next) {
+		UNDOREC *rec;
+		printf("\rUNDO %x nrecs=%d ptr=%x first=%x last=%x\n",undo,undo->nrecs,undo->ptr,undo->first,undo->last);
+		for (rec = undo->recs.link.next; rec != &undo->recs; rec = rec->link.next) {
+			printf("	recs=%x, del=%d, unit=%x\n",rec,rec->del,rec->unit);
+		}
+	}
+}
 
 static UNDOREC *alrec(void)
 {
@@ -122,14 +134,13 @@ int uundo(BW *bw)
 	if (undo->ptr->link.prev == &undo->recs)
 		return -1;
 	upto = undo->ptr->link.prev->unit;
-      loop:
-	undo->ptr = undo->ptr->link.prev;
-	pgoto(bw->cursor, undo->ptr->where);
-	inundo = 1;
-	doundo(bw, undo->ptr);
-	inundo = 0;
-	if (upto && upto != undo->ptr)
-		goto loop;
+	do {
+		undo->ptr = undo->ptr->link.prev;
+		pgoto(bw->cursor, undo->ptr->where);
+		inundo = 1;
+		doundo(bw, undo->ptr);
+		inundo = 0;
+	} while (upto && upto != undo->ptr);
 	return 0;
 }
 
@@ -152,9 +163,11 @@ int uredo(BW *bw)
 		inredo = 1;
 		doundo(bw, ptr);
 		inredo = 0;
-		frrec(deque_f(UNDOREC, link, ptr));
+		frrec(deque_f(UNDOREC, link, ptr)); /* Delete record created by undo command */
 		undo->ptr = undo->ptr->link.next;
 	} while (upto && upto != ptr);
+	/* We just deleted one undo record */
+	--undo->nrecs;
 	return 0;
 }
 
@@ -177,11 +190,14 @@ static void undogc(UNDO *undo)
 	UNDOREC *unit = undo->recs.link.next->unit;
 	int flg = 0;
 
-	if (undo->ptr && undo->ptr->link.prev == &undo->recs)
-		flg = 1;
 	if (unit)
-		while (unit != undo->recs.link.next)
+		while (unit != undo->recs.link.next) {
+			if (undo->recs.link.next == undo->ptr)
+				flg = 1;
 			frrec(deque_f(UNDOREC, link, undo->recs.link.next));
+		}
+	if (undo->recs.link.next == undo->ptr)
+		flg = 1;
 	frrec(deque_f(UNDOREC, link, undo->recs.link.next));
 	--undo->nrecs;
 	if (flg)
@@ -191,6 +207,10 @@ static void undogc(UNDO *undo)
 void undomark(void)
 {
 	UNDO *undo;
+
+	/* Force undo_keep to be a multiple of 2.  Redo needs pairs of undo records. */
+	if (undo_keep & 1)
+		++undo_keep;
 
 	for (undo = undos.link.next; undo != &undos; undo = undo->link.next)
 		if (undo->first) {
@@ -204,9 +224,8 @@ void undomark(void)
 		}
 }
 
-/* Delete the alternate time-line after the user has resumed editing after
- * undoing some number of changes
- */
+/* Forget pointer to latest "undone" record.  This is called when the first non-undo
+ * command is executed after a bunch of undo commands, which then prevents redo. */
 
 static void undoover(UNDO *undo)
 {
