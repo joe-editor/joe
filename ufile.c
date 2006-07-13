@@ -1163,6 +1163,7 @@ int uquerysave(BW *bw)
 
 	/* Get synchronized with buffer ring */
 	unbuf(bw);
+	bw = w->object;
 	first = bw->b;
 
 	/* Find a modified buffer */
