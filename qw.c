@@ -128,8 +128,6 @@ static void dispqwn(QW *qw)
 		         BG_COLOR(bg_prompt),
 		         w->w - w->x,
 		         1,NULL);
-		w->cury = y;
-		w->curx = w->x + joe_wcswidth(locale_map, s, l);
 	}
 }
 

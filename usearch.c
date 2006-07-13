@@ -635,7 +635,7 @@ static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 		p = joe_gettext(_("(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
 
 	vsrm(srch->pattern);
-	if (s[0] || !globalsrch || !pico)
+	if (sLEN(s) || !globalsrch || !pico)
 		srch->pattern = s;
 	else {
 		vsrm(s);

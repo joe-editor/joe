@@ -2,6 +2,11 @@ Thu Jul 13 09:53:31 EDT 2006
 
 	Fix possible querysave bug.
 
+	Fix query window bug: cursor was not left in original windows for
+	new multi-line query window thing.
+
+	Fix bug where we could not find ^@
+
 Mon Jul 10 13:38:04 EDT 2006
 
 	Fix bug from undo_keep: undo_keep has to be a multiple of 2 for redo
