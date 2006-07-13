@@ -537,7 +537,7 @@ static int pfsave(BW *bw, SRCH *srch)
 
 static int set_replace(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 {
-	if (s[0] || !globalsrch || !pico)
+	if (sLEN(s) || !globalsrch || !pico)
 		srch->replacement = s;
 	else {
 		/* Use previous string: this prevents replace with empty string */
