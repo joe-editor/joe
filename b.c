@@ -2073,50 +2073,50 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 		if (n[x] == ',') {
 			n[x] = 0;
 
-			if (sizeof(off_t) > 4) {
-				if (n[x + 1] == 'x' || n[x + 1] == 'X')
-					sscanf((char *)(n + x + 2), "%llx", skip);
-				else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-					sscanf((char *)(n + x + 3), "%llx", skip);
-				else if (n[x + 1] == '0')
-					sscanf((char *)(n + x + 1), "%llo", skip);
-				else
-					sscanf((char *)(n + x + 1), "%lld", skip);
-			} else {
-				if (n[x + 1] == 'x' || n[x + 1] == 'X')
-					sscanf((char *)(n + x + 2), "%lx", skip);
-				else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-					sscanf((char *)(n + x + 3), "%lx", skip);
-				else if (n[x + 1] == '0')
-					sscanf((char *)(n + x + 1), "%lo", skip);
-				else
-					sscanf((char *)(n + x + 1), "%ld", skip);
-			}
+#if SIZEOF_LONG_LONG && SIZEOF_OFF_T == SIZEOF_LONG_LONG
+			if (n[x + 1] == 'x' || n[x + 1] == 'X')
+				sscanf((char *)(n + x + 2), "%llx", skip);
+			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
+				sscanf((char *)(n + x + 3), "%llx", skip);
+			else if (n[x + 1] == '0')
+				sscanf((char *)(n + x + 1), "%llo", skip);
+			else
+				sscanf((char *)(n + x + 1), "%lld", skip);
+#else
+			if (n[x + 1] == 'x' || n[x + 1] == 'X')
+				sscanf((char *)(n + x + 2), "%lx", skip);
+			else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
+				sscanf((char *)(n + x + 3), "%lx", skip);
+			else if (n[x + 1] == '0')
+				sscanf((char *)(n + x + 1), "%lo", skip);
+			else
+				sscanf((char *)(n + x + 1), "%ld", skip);
+#endif
 			--x;
 			if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 				for (; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
 				if (n[x] == ',') {
 					n[x] = 0;
 					*amnt = *skip;
-					if (sizeof(off_t) > 4) {
-						if (n[x + 1] == 'x' || n[x + 1] == 'X')
-							sscanf((char *)(n + x + 2), "%llx", skip);
-						else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-							sscanf((char *)(n + x + 3), "%llx", skip);
-						else if (n[x + 1] == '0')
-							sscanf((char *)(n + x + 1), "%llo", skip);
-						else
-							sscanf((char *)(n + x + 1), "%lld", skip);
-					} else {
-						if (n[x + 1] == 'x' || n[x + 1] == 'X')
-							sscanf((char *)(n + x + 2), "%lx", skip);
-						else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
-							sscanf((char *)(n + x + 3), "%lx", skip);
-						else if (n[x + 1] == '0')
-							sscanf((char *)(n + x + 1), "%lo", skip);
-						else
-							sscanf((char *)(n + x + 1), "%ld", skip);
-					}
+#if SIZEOF_LONG_LONG && SIZEOF_OFF_T == SIZEOF_LONG_LONG
+					if (n[x + 1] == 'x' || n[x + 1] == 'X')
+						sscanf((char *)(n + x + 2), "%llx", skip);
+					else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
+						sscanf((char *)(n + x + 3), "%llx", skip);
+					else if (n[x + 1] == '0')
+						sscanf((char *)(n + x + 1), "%llo", skip);
+					else
+						sscanf((char *)(n + x + 1), "%lld", skip);
+#else
+					if (n[x + 1] == 'x' || n[x + 1] == 'X')
+						sscanf((char *)(n + x + 2), "%lx", skip);
+					else if (n[x + 1] == '0' && (n[x + 2] == 'x' || n[x + 2] == 'X'))
+						sscanf((char *)(n + x + 3), "%lx", skip);
+					else if (n[x + 1] == '0')
+						sscanf((char *)(n + x + 1), "%lo", skip);
+					else
+						sscanf((char *)(n + x + 1), "%ld", skip);
+#endif
 				}
 			}
 		}

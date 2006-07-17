@@ -910,7 +910,11 @@ void bwgenh(BW *w)
 		msetI(fmt,BG_COLOR(bg_text),76);
 		txt[76]=0;
 		if (!flg) {
+#if SIZEOF_LONG_LONG && SIZEOF_LONG_LONG == SIZEOF_OFF_T
 			sprintf((char *)bf,"%8llx ",q->byte);
+#else
+			sprintf((char *)bf,"%8lx ",q->byte);
+#endif
 			memcpy(txt,bf,9);
 			for (x=0; x!=8; ++x) {
 				int c;
@@ -1262,13 +1266,13 @@ int ustat(BW *bw)
 	unsigned char bf2[100];
 	int c = brch(bw->cursor);
 
-	if (sizeof(off_t) > 4) {
+#if SIZEOF_LONG_LONG && SIZEOF_LONG_LONG == SIZEOF_OFF_T
 		joe_snprintf_1(bf1, sizeof(bf1), "%lld", bw->cursor->byte);
 		joe_snprintf_1(bf2, sizeof(bf2), "%llx", bw->cursor->byte);
-	} else {
+#else
 		joe_snprintf_1(bf1, sizeof(bf1), "%ld", bw->cursor->byte);
 		joe_snprintf_1(bf2, sizeof(bf2), "%lx", bw->cursor->byte);
-	}
+#endif
 
 	if (c == NO_MORE_DATA)
 		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2);
