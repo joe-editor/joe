@@ -863,7 +863,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			return 0;
 		else
 			return -1;
-		break;
+		/* break; warns on some systems */
 	case 1:
 		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), *(int *)glopts[x].set);
 		xx = (int *) joe_malloc(sizeof(int));

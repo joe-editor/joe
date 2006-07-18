@@ -33,7 +33,6 @@ B *beafter(B *b)
 {
 	struct error *e;
 	unsigned char *name = b->name;
-	int er;
 	if (!name) name = US "";
 	for (e = errors.link.next; e != &errors; e = e->link.next)
 		if (!zcmp(name, e->file))
@@ -52,7 +51,6 @@ B *beafter(B *b)
 			b->orphan = 1; /* Oops */
 		else
 			--b->count;
-		er = berror;
 		return b;
 	}
 	return 0;

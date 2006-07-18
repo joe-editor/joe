@@ -147,8 +147,8 @@ static long prefix(BW *bw, P *p,int up)
 	while (cpara(bw, brch(q)))
 		pgetc(q);
 	while (!pisbol(q)) {
-		int c;
-		if (!joe_isblank(p->b->o.charmap, (c = prgetc(q)))) {
+		/* int c; */
+		if (!joe_isblank(p->b->o.charmap, ( /* c = */ prgetc(q)))) {
 		/*
 			if (up && (c == '*' || c == '-')) {
 				if (!pisbol(q)) {
