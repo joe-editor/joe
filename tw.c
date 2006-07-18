@@ -68,7 +68,7 @@ static void resizetw(BW *bw, int wi, int he)
 
 unsigned char *get_context(BW *bw)
 {
-	P *p = pdup(bw->cursor, US "get_context");
+	P *p = pdup(bw->cursor, UC "get_context");
 	static unsigned char buf1[stdsiz];
 	int i, j, spc;
 
@@ -475,7 +475,7 @@ static void deltw(BW *bw, B *b, long int l, long int n, int flg)
 }
 
 WATOM watomtw = {
-	US "main",
+	UC "main",
 	disptw,
 	bwfllw,
 	NULL,

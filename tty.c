@@ -718,7 +718,7 @@ int ttshell(unsigned char *cmd)
 	unsigned char *s = (unsigned char *)getenv("SHELL");
 
 	if (!s) {
-		s = US "/bin/sh";
+		s = UC "/bin/sh";
 		/* return; */
 	}
 	ttclsn();
@@ -922,13 +922,13 @@ static unsigned char *getpty(int *ptyfd)
 	static unsigned char ttyname[32];
 
 	if (!ptys) {
-		ttydir = US "/dev/pty/";
-		ptydir = US "/dev/ptym/";	/* HPUX systems */
-		if (chpwd(ptydir) || !(ptys = rexpnd(US "pty*")))
+		ttydir = UC "/dev/pty/";
+		ptydir = UC "/dev/ptym/";	/* HPUX systems */
+		if (chpwd(ptydir) || !(ptys = rexpnd(UC "pty*")))
 			if (!ptys) {
-				ttydir = ptydir = US "/dev/";	/* Everyone else */
+				ttydir = ptydir = UC "/dev/";	/* Everyone else */
 				if (!chpwd(ptydir))
-					ptys = rexpnd(US "pty*");
+					ptys = rexpnd(UC "pty*");
 			}
 	}
 	chpwd(orgpwd);
@@ -1113,7 +1113,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 
 			/* Open the TTY */
 			if ((x = open((char *)name, O_RDWR)) != -1) {	/* Standard input */
-				unsigned char **env = newenv(mainenv, US "TERM=");
+				unsigned char **env = newenv(mainenv, UC "TERM=");
 
 
 				if (!out_only) {

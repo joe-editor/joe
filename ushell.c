@@ -43,8 +43,8 @@ static void cfollow(B *b,long byte)
 
 static void cdata(B *b, unsigned char *dat, int siz)
 {
-	P *q = pdup(b->eof, US "cdata");
-	P *r = pdup(b->eof, US "cdata");
+	P *q = pdup(b->eof, UC "cdata");
+	P *r = pdup(b->eof, UC "cdata");
 	long byte = q->byte;
 	unsigned char bf[1024];
 	int x, y;
@@ -120,10 +120,10 @@ int ubknd(BW *bw)
 
         sh=(unsigned char *)getenv("SHELL");
 
-        if (file_exists(sh) && zcmp(sh,US "/bin/sh")) goto ok;
-        if (file_exists(sh=US "/bin/bash")) goto ok;
-        if (file_exists(sh=US "/usr/bin/bash")) goto ok;
-        if (file_exists(sh=US "/bin/sh")) goto ok;
+        if (file_exists(sh) && zcmp(sh,UC "/bin/sh")) goto ok;
+        if (file_exists(sh=UC "/bin/bash")) goto ok;
+        if (file_exists(sh=UC "/usr/bin/bash")) goto ok;
+        if (file_exists(sh=UC "/bin/sh")) goto ok;
 
         msgnw(bw->parent, joe_gettext(_("\"SHELL\" environment variable not defined or exported")));
         return -1;
@@ -154,14 +154,14 @@ static int dorun(BW *bw, unsigned char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, US "/bin/sh", a, NULL, notify, 0, 0);
+	return cstart(bw, UC "/bin/sh", a, NULL, notify, 0, 0);
 }
 
 B *runhist = NULL;
 
 int urun(BW *bw)
 {
-	if (wmkpw(bw->parent, joe_gettext(_("Program to run: ")), &runhist, dorun, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+	if (wmkpw(bw->parent, joe_gettext(_("Program to run: ")), &runhist, dorun, UC "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
 		return 0;
 	} else {
 		return -1;
@@ -177,7 +177,7 @@ static int dobuild(BW *bw, unsigned char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, US "/bin/sh", a, NULL, notify, 1, 0);
+	return cstart(bw, UC "/bin/sh", a, NULL, notify, 1, 0);
 }
 
 B *buildhist = NULL;
@@ -185,7 +185,7 @@ B *buildhist = NULL;
 int ubuild(BW *bw)
 {
 	if (buildhist) {
-		if ((bw=wmkpw(bw->parent, joe_gettext(_("Build command: ")), &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
+		if ((bw=wmkpw(bw->parent, joe_gettext(_("Build command: ")), &buildhist, dobuild, UC "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
 			uuparw(bw);
 			u_goto_eol(bw);
 			bw->cursor->xcol = piscol(bw->cursor);
@@ -194,7 +194,7 @@ int ubuild(BW *bw)
 		return -1;
 		}
 	} else {
-		if (wmkpw(bw->parent, joe_gettext(_("Enter build command (for example, 'make'): ")), &buildhist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+		if (wmkpw(bw->parent, joe_gettext(_("Enter build command (for example, 'make'): ")), &buildhist, dobuild, UC "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
 			return 0;
 		} else {
 		return -1;
@@ -209,7 +209,7 @@ int ugrep(BW *bw)
 	/* Set parser to grep */
 	bw->b->parseone = parseone_grep;
 	if (grephist) {
-		if ((bw=wmkpw(bw->parent, joe_gettext(_("Grep command: ")), &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
+		if ((bw=wmkpw(bw->parent, joe_gettext(_("Grep command: ")), &grephist, dobuild, UC "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
 			uuparw(bw);
 			u_goto_eol(bw);
 			bw->cursor->xcol = piscol(bw->cursor);
@@ -218,7 +218,7 @@ int ugrep(BW *bw)
 		return -1;
 		}
 	} else {
-		if (wmkpw(bw->parent, joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): ")), &grephist, dobuild, US "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
+		if (wmkpw(bw->parent, joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): ")), &grephist, dobuild, UC "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
 			return 0;
 		} else {
 		return -1;

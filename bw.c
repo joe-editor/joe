@@ -29,7 +29,7 @@ static P *getto(P *p, P *cur, P *top, long int line)
 			dist = d;
 			best = top;
 		}
-		p = pdup(best, US "getto");
+		p = pdup(best, UC "getto");
 		p_goto_bol(p);
 	}
 	while (line > p->line)
@@ -109,7 +109,7 @@ void bwfllwt(BW *w)
 	}
 
 	if (w->cursor->line < w->top->line) {
-		newtop = pdup(w->cursor, US "bwfllwt");
+		newtop = pdup(w->cursor, UC "bwfllwt");
 		p_goto_bol(newtop);
 		if (mid) {
 			if (newtop->line >= w->h / 2)
@@ -191,7 +191,7 @@ HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 	lattr_get(w->db, &ln, &state);
 
 	if (ln != line) {
-		tmp = pdup(p, US "get_highlight_state");
+		tmp = pdup(p, UC "get_highlight_state");
 		pline(tmp, ln);
 		while (tmp->line < line && !piseof(tmp)) {
 			state = parse(w->o.syntax, tmp, state);
@@ -227,7 +227,7 @@ HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 	if (w->parent->t->t->syntab[y].state<0) {
 		/* We must be on the top line */
 		clear_state(&state);
-		tmp = pdup(w->top, US "get_highlight_state");
+		tmp = pdup(w->top, UC "get_highlight_state");
 		if(w->o.syntax->sync_lines >= 0 && tmp->line > w->o.syntax->sync_lines)
 			pline(tmp, tmp->line-w->o.syntax->sync_lines);
 		else
@@ -240,7 +240,7 @@ HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 	}
 
 	/* Color to end of screen */
-	tmp = pdup(w->top, US "get_highlight_state");
+	tmp = pdup(w->top, UC "get_highlight_state");
 	pline(tmp, y-w->y+w->top->line);
 	state = w->parent->t->t->syntab[y];
 	while(tmp->line!=w->top->line+w->h-1 && !piseof(tmp)) {
@@ -380,7 +380,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	utf8_init(&utf8_sm);
 
 	if(st.state!=-1) {
-		tmp=pdup(p, US "lgen");
+		tmp=pdup(p, UC "lgen");
 		p_goto_bol(tmp);
 		parse(bw->o.syntax,tmp,st);
 		syn = attr_buf;
@@ -860,7 +860,7 @@ void bwgenh(BW *w)
 {
 	int *screen;
 	int *attr;
-	P *q = pdup(w->top, US "bwgenh");
+	P *q = pdup(w->top, UC "bwgenh");
 	int bot = w->h + w->y;
 	int y;
 	SCRN *t = w->t->t;
@@ -988,7 +988,7 @@ void bwgen(BW *w, int linums)
 	fromline = toline = from = to = 0;
 
 	if (w->b == errbuf) {
-		P *tmp = pdup(w->cursor, US "bwgen");
+		P *tmp = pdup(w->cursor, UC "bwgen");
 		p_goto_bol(tmp);
 		from = tmp->byte;
 		pnextl(tmp);
@@ -1021,7 +1021,7 @@ void bwgen(BW *w, int linums)
 	if (marking && w == (BW *)maint->curwin->object)
 		msetI(t->updtab + w->y, 1, w->h);
 
-	q = pdup(w->cursor, US "bwgen");
+	q = pdup(w->cursor, UC "bwgen");
 
 	y = w->cursor->line - w->top->line + w->y;
 	attr = t->attr + y*w->t->w;
@@ -1123,8 +1123,8 @@ BW *bwmk(W *window, B *b, int prompt)
 		b->oldcur = NULL;
 		w->cursor->owner = NULL;
 	} else {
-		w->top = pdup(b->bof, US "bwmk");
-		w->cursor = pdup(b->bof, US "bwmk");
+		w->top = pdup(b->bof, UC "bwmk");
+		w->cursor = pdup(b->bof, UC "bwmk");
 	}
 	w->t = window->t;
 	w->object = NULL;
@@ -1215,7 +1215,7 @@ void save_file_pos(FILE *f)
 void load_file_pos(FILE *f)
 {
 	unsigned char buf[1024];
-	while (fgets((char *)buf,sizeof(buf)-1,f) && zcmp(buf,US "done\n")) {
+	while (fgets((char *)buf,sizeof(buf)-1,f) && zcmp(buf,UC "done\n")) {
 		unsigned char *p = buf;
 		long pos;
 		unsigned char name[1024];
@@ -1320,6 +1320,6 @@ void orphit(BW *bw)
 {
 	++bw->b->count; /* Assumes bwrm() is abour to be called */
 	bw->b->orphan = 1;
-	pdupown(bw->cursor, &bw->b->oldcur, US "orphit");
-	pdupown(bw->top, &bw->b->oldtop, US "orphit");
+	pdupown(bw->cursor, &bw->b->oldcur, UC "orphit");
+	pdupown(bw->top, &bw->b->oldtop, UC "orphit");
 }

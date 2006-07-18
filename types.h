@@ -56,7 +56,7 @@ typedef int pid_t;
 /* Global Defines */
 
 /* Prefix to make string constants unsigned */
-#define US (unsigned char *)
+#define UC (unsigned char *)
 
 /* Doubly-linked list node */
 #define LINK(type) struct { type *next; type *prev; }

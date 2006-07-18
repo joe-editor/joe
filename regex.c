@@ -264,7 +264,7 @@ skip:
 int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, int icase)
 {
 	int c, d;
-	P *q = pdup(p, US "pmatch");
+	P *q = pdup(p, UC "pmatch");
 	P *o = NULL;
 	int utf8 = p->b->o.charmap->type;
 	struct charmap *map = p->b->o.charmap;
@@ -322,7 +322,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 				break;
 			case '*':
 				/* Find shortest matching sequence */
-				o = pdup(p, US "pmatch");
+				o = pdup(p, UC "pmatch");
 				do {
 					long pb = p->byte;
 
@@ -334,7 +334,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 				} while (c != NO_MORE_DATA && c != '\n');
 				goto fail;
 			case 'c':
-				o = pdup(p, US "pmatch");
+				o = pdup(p, UC "pmatch");
 				do {
 					long pb = p->byte;
 
@@ -366,7 +366,7 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 
 					int d = 0;
 
-					o = pdup(p, US "pmatch");
+					o = pdup(p, UC "pmatch");
 
 					/* Advance over character to skip.  Save character in d unless
 					   we're skipping over a \[..] */
@@ -399,13 +399,13 @@ int pmatch(unsigned char **pieces, unsigned char *regex, int len, P *p, int n, i
 					   regex/len point to sequence which follows */
 
 					do {
-						P *z = pdup(p, US "pmatch");
+						P *z = pdup(p, UC "pmatch");
 
 						if (pmatch(pieces, regex, len, p, n + 1, icase)) {
 							saves(pieces, n, o, z->byte - o->byte);
 							if (r)
 								prm(r);
-							r = pdup(p, US "pmatch");
+							r = pdup(p, UC "pmatch");
 						}
 						pset(p, z);
 						prm(z);

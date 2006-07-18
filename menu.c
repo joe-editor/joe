@@ -571,7 +571,7 @@ static int menuabort(MENU *m)
 }
 
 WATOM watommenu = {
-	US "menu",
+	UC "menu",
 	menudisp,
 	menufllw,
 	menuabort,

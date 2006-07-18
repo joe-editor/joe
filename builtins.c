@@ -4,8 +4,8 @@
 
 unsigned char *builtins[]=
 {
-	US "joerc",
-		US "-notite\n"
+	UC "joerc",
+		UC "-notite\n"
 		"-assume_color\n"
 		"-assume_256color\n"
 		"-guess_non_utf8\n"
@@ -450,8 +450,8 @@ unsigned char *builtins[]=
 		"type		^@ TO ÿ\n"
 		":querysr		Search & replace query window\n"
 		"type		^@ TO ÿ\n"
-,	US "c.jsf.in",
-		US "=Idle\n"
+,	UC "c.jsf.in",
+		UC "=Idle\n"
 		"=Bad		bold red\n"
 		"=Preproc 	blue\n"
 		"=Define		bold blue\n"

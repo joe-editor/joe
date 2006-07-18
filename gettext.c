@@ -53,7 +53,7 @@ int load_po(FILE *f)
 		preload_flag = 0;
 		p = buf;
 		parse_ws(&p, '#');
-		if (!parse_field(&p, US "msgid")) {
+		if (!parse_field(&p, UC "msgid")) {
 			int ofst = 0;
 			int len;
 			msgid[0] = 0;
@@ -72,7 +72,7 @@ int load_po(FILE *f)
 					}
 				}
 			}
-		} else if (!parse_field(&p, US "msgstr")) {
+		} else if (!parse_field(&p, UC "msgstr")) {
 			int ofst = 0;
 			int len;
 			msgstr[0] = 0;

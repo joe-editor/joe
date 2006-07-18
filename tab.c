@@ -102,7 +102,7 @@ static int get_entries(TAB *tab, int prv)
 
 static void insnam(BW *bw, unsigned char *path, unsigned char *nam, int dir, int ofst)
 {
-	P *p = pdup(bw->cursor, US "insnam");
+	P *p = pdup(bw->cursor, UC "insnam");
 
 	pgoto(p, ofst);
 	p_goto_eol(bw->cursor);
@@ -199,7 +199,7 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 		unsigned char *orgpattern = tab->pattern;
 		unsigned char *e = endprt(tab->path);
 
-		/* if (!zcmp(tab->files[cursor], US "..") && sLEN(e)
+		/* if (!zcmp(tab->files[cursor], UC "..") && sLEN(e)
 		    && !(e[0] == '.' && e[1] == '.' && (!e[2] || e[2] == '/')))
 			tab->path = begprt(tab->path);
 		else */ {
@@ -324,9 +324,9 @@ int cmplt(BW *bw)
 	tab->prv = 0;
 	tab->len = 0;
 
-	q = pdup(bw->cursor, US "cmplt");
+	q = pdup(bw->cursor, UC "cmplt");
 	p_goto_eol(q);
-	p = pdup(q, US "cmplt");
+	p = pdup(q, UC "cmplt");
 	p_goto_start_of_path(p);
 	ofst = p->byte;
 
