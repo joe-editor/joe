@@ -20,11 +20,20 @@
 #endif
 
 #ifdef HAVE_OPENPTY
+
 #ifdef HAVE_PTY_H
 #include <pty.h>
 #endif
+
 #ifdef HAVE_LIBUTIL_H
 #include <libutil.h>
+#endif
+
+#endif
+
+#ifdef HAVE_LOGIN_TTY
+#ifdef HAVE_UTMP_H
+#include <utmp.h>
 #endif
 #endif
 
@@ -1009,7 +1018,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 	int comm[2];
 	pid_t pid;
 	int x;
-	MPX *m;
+	MPX *m = 0;
 	unsigned char *name;
 
 	/* Get pty/tty pair */

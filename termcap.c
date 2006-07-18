@@ -5,20 +5,29 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#include "types.h"
-
 #ifdef TERMINFO
 
-/* Fixes for itanium */
+/* JOE defines "US" which is a global variable in curses.h, so curses has to
+   come before types.h */
 
 #ifdef HAVE_CURSES_H
 #include <curses.h>
 #endif
 
+#endif
+
+#include "types.h"
+
+#ifdef TERMINFO
+
 /* curses has to come before term.h on SGI */
 #ifdef HAVE_TERM_H
 /* term.h is a disaster: it #defines 'tab' */
 #include <term.h>
+#endif
+
+#ifdef HAVE_TERMCAP_H
+#include <termcap.h>
 #endif
 
 #endif

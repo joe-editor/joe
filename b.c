@@ -602,7 +602,7 @@ int pgetc(P *p)
 		int c; /* , oc; */
 		int d;
 		int n; /* , m; */
-		int wid;
+		int wid = 0;
 
 		val = p->valcol;	/* Remember if column number was valid */
 		c = pgetb(p);		/* Get first byte */

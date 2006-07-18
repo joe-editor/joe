@@ -5,7 +5,7 @@ struct jfile {
 	unsigned char *p;	/* Built-in file pointer */
 };
 
-JFILE *jfopen(unsigned char *name, unsigned char *mode);
+JFILE *jfopen(unsigned char *name, char *mode);
 unsigned char *jfgets(unsigned char *buf,int len,JFILE *f);
 int jfclose(JFILE *f);
 

@@ -7,7 +7,7 @@
  */
 #include "types.h"
 
-JFILE *jfopen(unsigned char *name, unsigned char *mode)
+JFILE *jfopen(unsigned char *name, char *mode)
 {
 	if (name[0] == '*') {
 		int x;
