@@ -23,6 +23,8 @@ JOE 3.5
 
 - Option which allows you set how many undo records to keep.
 
+- You can give a path to the tags file in the TAGS environment variable.
+
 JOE 3.4
 
 - Paragraph reformatter and word wrap now handle '*' and '-' bullet lists.

@@ -21,12 +21,22 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 		t = vsncpy(sv(t), sc(":"));
 		t = vsncpy(sv(t), sv(s));
 	}
+	/* first try to open the tags file in the current directory */
 	f = fopen("tags", "r");
 	if (!f) {
-		msgnw(bw->parent, joe_gettext(_("Couldn't open tags file")));
-		vsrm(s);
-		vsrm(t);
-		return -1;
+		/* if there's no tags file in the current dir, then query
+		   for the environment variable TAGS.
+		*/
+		char *tagspath = getenv("TAGS");
+		if(tagspath){
+			f = fopen(tagspath, "r");    
+		}
+		if(!f){
+			msgnw(bw->parent, joe_gettext(_("Couldn't open tags file")));
+			vsrm(s);
+			vsrm(t);
+			return -1;
+		}
 	}
 	while (fgets((char *)buf, 512, f)) {
 		int x, y, c;

@@ -1,3 +1,8 @@
+Tue Jul 18 14:20:39 EDT 2006
+
+	Tags file patch: allows you to put a path in TAGS environment
+	variable.
+
 Thu Jul 13 09:53:31 EDT 2006
 
 	Fix possible querysave bug.
