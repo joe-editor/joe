@@ -838,7 +838,6 @@ int umwind(BW *bw)
 		wshowone(msgw);
 		return 0;
 	}
-	return -1;
 }
 
 /* Fit previous window and current window on screen.  If there is no previous window,

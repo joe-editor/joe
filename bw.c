@@ -880,7 +880,7 @@ void bwgenh(BW *w)
 			from = markb->byte;
 			to = markk->byte;
 		}
-	else if (marking && w==maint->curwin->object && markb && markb->b == w->b && w->cursor->byte != markb->byte && !from) {
+	else if (marking && w == (BW *)maint->curwin->object && markb && markb->b == w->b && w->cursor->byte != markb->byte && !from) {
 		if (square) {
 			from = long_min(w->cursor->xcol, markb->xcol);
 			to = long_max(w->cursor->xcol, markb->xcol);
@@ -891,7 +891,7 @@ void bwgenh(BW *w)
 		}
 	}
 
-	if (marking && w==maint->curwin->object)
+	if (marking && w == (BW *)maint->curwin->object)
 		msetI(t->updtab + w->y, 1, w->h);
 
 	if (dosquare) {
@@ -1005,7 +1005,7 @@ void bwgen(BW *w, int linums)
 			from = markb->byte;
 			to = markk->byte;
 		}
-	else if (marking && w==maint->curwin->object && markb && markb->b == w->b && w->cursor->byte != markb->byte && !from) {
+	else if (marking && w == (BW *)maint->curwin->object && markb && markb->b == w->b && w->cursor->byte != markb->byte && !from) {
 		if (square) {
 			from = long_min(w->cursor->xcol, markb->xcol);
 			to = long_max(w->cursor->xcol, markb->xcol);
@@ -1018,7 +1018,7 @@ void bwgen(BW *w, int linums)
 		}
 	}
 
-	if (marking && w==maint->curwin->object)
+	if (marking && w == (BW *)maint->curwin->object)
 		msetI(t->updtab + w->y, 1, w->h);
 
 	q = pdup(w->cursor, US "bwgen");

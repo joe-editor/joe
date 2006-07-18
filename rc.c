@@ -1011,7 +1011,7 @@ int procrc(CAP *cap, unsigned char *name)
 	fprintf(stderr,(char *)joe_gettext(_("Processing '%s'...")), name);
 	fflush(stderr);
 
-	while (jfgets((char *)buf, sizeof(buf), fd)) {
+	while (jfgets(buf, sizeof(buf), fd)) {
 		line++;
 		switch (buf[0]) {
 		case ' ':
@@ -1195,7 +1195,7 @@ int procrc(CAP *cap, unsigned char *name)
 					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Unknown command in macro")), name, line);
 					break;
 				} else if (x == -2) {
-					jfgets((char *)buf, 1024, fd);
+					jfgets(buf, 1024, fd);
 					++line;
 					goto macroloop;
 				}

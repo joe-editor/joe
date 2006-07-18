@@ -13,6 +13,8 @@ int mode_hex;
 int mode_eng;
 int mode_ins;
 
+double vzero = 0.0;
+
 static RETSIGTYPE fperr(int unused)
 {
 	if (!merr) {
@@ -258,7 +260,7 @@ static double expr(int prec, int en,struct var **rtv)
 	} else if(*ptr=='%' && 7>prec) {
 		++ptr;
 		y = expr(7, en, &dumb);
-		if ((int)y == 0) x = 1.0/0.0;
+		if ((int)y == 0) x = 1.0/vzero;
 		else x = ((int) x) % (int)y;
 		v = 0;
 		goto loop;

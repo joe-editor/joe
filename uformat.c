@@ -218,7 +218,7 @@ P *pbop(BW *bw, P *p)
 		}
 		if (ind < indent) {
 			break;
-			if (pisbof(p)) {
+			/* if (pisbof(p)) {
 				break;
 			}
 			pprevl(p);
@@ -230,7 +230,7 @@ P *pbop(BW *bw, P *p)
 				pnextl(p);
 				pnextl(p);
 				break;
-			}
+			} */
 		}
 	}
 	return p;

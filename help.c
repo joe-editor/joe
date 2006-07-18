@@ -46,7 +46,7 @@ int help_init(JFILE *fd,unsigned char *bf,int line)
 		hlpbsz = 0;
 		tmp->name = vsncpy(NULL, 0, sz(bf + 1) - 1); /* -1 kill the \n */
 
-		while ((jfgets((char *)buf, sizeof(buf), fd)) && (buf[0] != '}')) {
+		while ((jfgets(buf, sizeof(buf), fd)) && (buf[0] != '}')) {
 			++line;
 			bfl = zlen(buf);
 			if (hlpsiz + bfl > hlpbsz) {
