@@ -91,7 +91,7 @@ static void doundo(BW *bw, UNDOREC *ptr)
 			boffline(b);
 		}
 	} else {
-		P *q = pdup(bw->cursor, UC "doundo");
+		P *q = pdup(bw->cursor, USTR "doundo");
 
 		pfwrd(q, ptr->len);
 		bdel(bw->cursor, q);
@@ -429,7 +429,7 @@ int uyankpop(BW *bw)
 
 		deque(UNDOREC, link, &yanked);
 		enqueb(UNDOREC, link, ptr, &yanked);
-		q = pdup(bw->cursor, UC "uyankpop");
+		q = pdup(bw->cursor, USTR "uyankpop");
 		pbkwd(q, ptr->len);
 		inyank = 1;
 		bdel(q, bw->cursor);
@@ -490,7 +490,7 @@ void load_yank(FILE *f)
 	UNDOREC *rec;
 	unsigned char buf[SMALL*4+80];
 	unsigned char bf[SMALL+1];
-	while(fgets((char *)buf,sizeof(buf)-1,f) && zcmp(buf,UC "done\n")) {
+	while(fgets((char *)buf,sizeof(buf)-1,f) && zcmp(buf,USTR "done\n")) {
 		unsigned char *p = buf;
 		int len;
 		parse_ws(&p,'#');

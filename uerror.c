@@ -33,7 +33,7 @@ B *beafter(B *b)
 {
 	struct error *e;
 	unsigned char *name = b->name;
-	if (!name) name = UC "";
+	if (!name) name = USTR "";
 	for (e = errors.link.next; e != &errors; e = e->link.next)
 		if (!zcmp(name, e->file))
 			break;
@@ -270,8 +270,8 @@ static int parseit(struct charmap *map,unsigned char *s, long int row,
 
 static long parserr(B *b)
 {
-	P *p = pdup(b->bof, UC "parserr");
-	P *q = pdup(p, UC "parserr");
+	P *p = pdup(b->bof, USTR "parserr");
+	P *q = pdup(p, USTR "parserr");
 	long nerrs = 0;
 
 	freeall();
@@ -394,8 +394,8 @@ ERROR *srcherr(BW *bw,unsigned char *file,long line)
 int ujump(BW *bw)
 {
 	int rtn = -1;
-	P *p = pdup(bw->cursor, UC "ujump");
-	P *q = pdup(p, UC "ujump");
+	P *p = pdup(bw->cursor, USTR "ujump");
+	P *q = pdup(p, USTR "ujump");
 	unsigned char *s;
 	p_goto_bol(p);
 	p_goto_eol(q);

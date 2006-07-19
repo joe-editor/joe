@@ -462,10 +462,10 @@ SCRN *nopen(CAP *cap)
 	t->cap = cap;
 	setcap(cap, baud, out, NULL);
 
-	t->li = getnum(t->cap,UC "li");
+	t->li = getnum(t->cap,USTR "li");
 	if (t->li < 1)
 		t->li = 24;
-	t->co = getnum(t->cap,UC "co");
+	t->co = getnum(t->cap,USTR "co");
 	if (t->co < 2)
 		t->co = 80;
 	x = y = 0;
@@ -475,37 +475,37 @@ SCRN *nopen(CAP *cap)
 		t->co = x;
 	}
 
-	t->haz = getflag(t->cap,UC "hz");
-	t->os = getflag(t->cap,UC "os");
-	t->eo = getflag(t->cap,UC "eo");
-	if (getflag(t->cap,UC "hc"))
+	t->haz = getflag(t->cap,USTR "hz");
+	t->os = getflag(t->cap,USTR "os");
+	t->eo = getflag(t->cap,USTR "eo");
+	if (getflag(t->cap,USTR "hc"))
 		t->os = 1;
-	if (t->os || getflag(t->cap,UC "ul"))
+	if (t->os || getflag(t->cap,USTR "ul"))
 		t->ul = 1;
 	else
 		t->ul = 0;
 
-	t->xn = getflag(t->cap,UC "xn");
-	t->am = getflag(t->cap,UC "am");
+	t->xn = getflag(t->cap,USTR "xn");
+	t->am = getflag(t->cap,USTR "am");
 
 	if (notite)
 		t->ti = 0;
 	else
-		t->ti = jgetstr(t->cap,UC "ti");
-	t->cl = jgetstr(t->cap,UC "cl");
-	t->cd = jgetstr(t->cap,UC "cd");
+		t->ti = jgetstr(t->cap,USTR "ti");
+	t->cl = jgetstr(t->cap,USTR "cl");
+	t->cd = jgetstr(t->cap,USTR "cd");
 
 	if (notite)
 		t->te = 0;
 	else
-		t->te = jgetstr(t->cap,UC "te");
+		t->te = jgetstr(t->cap,USTR "te");
 
-	t->ut = getflag(t->cap,UC "ut");
-	t->Sb = jgetstr(t->cap,UC "AB");
-	if (!t->Sb) t->Sb = jgetstr(t->cap,UC "Sb");
-	t->Sf = jgetstr(t->cap,UC "AF");
-	if (!t->Sf) t->Sf = jgetstr(t->cap,UC "Sf");
-	t->Co = getnum(t->cap,UC "Co");
+	t->ut = getflag(t->cap,USTR "ut");
+	t->Sb = jgetstr(t->cap,USTR "AB");
+	if (!t->Sb) t->Sb = jgetstr(t->cap,USTR "Sb");
+	t->Sf = jgetstr(t->cap,USTR "AF");
+	if (!t->Sf) t->Sf = jgetstr(t->cap,USTR "Sf");
+	t->Co = getnum(t->cap,USTR "Co");
 	if (t->Co == -1)
 		t->Co = 8;
 
@@ -514,15 +514,15 @@ SCRN *nopen(CAP *cap)
 	t->mh = NULL;
 	t->mr = NULL;
 	t->avattr = 0;
-	if (!(t->me = jgetstr(t->cap,UC "me")))
+	if (!(t->me = jgetstr(t->cap,USTR "me")))
 		goto oops;
-	if ((t->mb = jgetstr(t->cap,UC "mb")))
+	if ((t->mb = jgetstr(t->cap,USTR "mb")))
 		t->avattr |= BLINK;
-	if ((t->md = jgetstr(t->cap,UC "md")))
+	if ((t->md = jgetstr(t->cap,USTR "md")))
 		t->avattr |= BOLD;
-	if ((t->mh = jgetstr(t->cap,UC "mh")))
+	if ((t->mh = jgetstr(t->cap,USTR "mh")))
 		t->avattr |= DIM;
-	if ((t->mr = jgetstr(t->cap,UC "mr")))
+	if ((t->mr = jgetstr(t->cap,USTR "mr")))
 		t->avattr |= INVERSE;
       oops:
 
@@ -532,15 +532,15 @@ SCRN *nopen(CAP *cap)
 #ifndef TERMINFO
 		if (!t->Sf && t->md && t->md[0]=='\\' && t->md[1]=='E' && t->md[2]=='[') { 
 			t->ut = 1;
-			t->Sf = UC "\\E[3%dm";
-			t->Sb = UC "\\E[4%dm";
+			t->Sf = USTR "\\E[3%dm";
+			t->Sb = USTR "\\E[4%dm";
 			t->Co = 8;
 		}
 #else
 		if (!t->Sf && t->md && t->md[0]=='\033' && t->md[1]=='[') { 
 			t->ut = 1;
-			t->Sf = UC "\033[3%p1%dm";
-			t->Sb = UC "\033[4%p1%dm";
+			t->Sf = USTR "\033[3%p1%dm";
+			t->Sb = USTR "\033[4%p1%dm";
 		}
 #endif
 	}
@@ -553,8 +553,8 @@ SCRN *nopen(CAP *cap)
 			t->assume_256 = 1;
 #ifdef junk
 			t->ut = 1;
-			t->Sf = UC "\\E[38;5;%dm";
-			t->Sb = UC "\\E[48;5;%dm";
+			t->Sf = USTR "\\E[38;5;%dm";
+			t->Sb = USTR "\\E[48;5;%dm";
 #endif
 		}
 #else
@@ -562,8 +562,8 @@ SCRN *nopen(CAP *cap)
 			t->assume_256 = 1;
 #ifdef junk
 			t->ut = 1;
-			t->Sf = UC "\033[38;5;%p1%dm";
-			t->Sb = UC "\033[48;5;%p1%dm";
+			t->Sf = USTR "\033[38;5;%p1%dm";
+			t->Sb = USTR "\033[48;5;%p1%dm";
 #endif
 		}
 #endif
@@ -571,57 +571,57 @@ SCRN *nopen(CAP *cap)
 
 	t->so = NULL;
 	t->se = NULL;
-	if (getnum(t->cap,UC "sg") <= 0 && !t->mr && jgetstr(t->cap,UC "se")) {
-		if ((t->so = jgetstr(t->cap,UC "so")) != NULL)
+	if (getnum(t->cap,USTR "sg") <= 0 && !t->mr && jgetstr(t->cap,USTR "se")) {
+		if ((t->so = jgetstr(t->cap,USTR "so")) != NULL)
 			t->avattr |= INVERSE;
-		t->se = jgetstr(t->cap,UC "se");
+		t->se = jgetstr(t->cap,USTR "se");
 	}
-	if (getflag(t->cap,UC "xs") || getflag(t->cap,UC "xt"))
+	if (getflag(t->cap,USTR "xs") || getflag(t->cap,USTR "xt"))
 		t->so = NULL;
 
 	t->us = NULL;
 	t->ue = NULL;
-	if (getnum(t->cap,UC "ug") <= 0 && jgetstr(t->cap,UC "ue")) {
-		if ((t->us = jgetstr(t->cap,UC "us")) != NULL)
+	if (getnum(t->cap,USTR "ug") <= 0 && jgetstr(t->cap,USTR "ue")) {
+		if ((t->us = jgetstr(t->cap,USTR "us")) != NULL)
 			t->avattr |= UNDERLINE;
-		t->ue = jgetstr(t->cap,UC "ue");
+		t->ue = jgetstr(t->cap,USTR "ue");
 	}
 
-	if (!(t->uc = jgetstr(t->cap,UC "uc")))
+	if (!(t->uc = jgetstr(t->cap,USTR "uc")))
 		if (t->ul)
-			t->uc =UC "_";
+			t->uc =USTR "_";
 	if (t->uc)
 		t->avattr |= UNDERLINE;
 
-	t->ms = getflag(t->cap,UC "ms");
+	t->ms = getflag(t->cap,USTR "ms");
 
-	t->da = getflag(t->cap,UC "da");
-	t->db = getflag(t->cap,UC "db");
-	t->cs = jgetstr(t->cap,UC "cs");
-	t->rr = getflag(t->cap,UC "rr");
-	t->sf = jgetstr(t->cap,UC "sf");
-	t->sr = jgetstr(t->cap,UC "sr");
-	t->SF = jgetstr(t->cap,UC "SF");
-	t->SR = jgetstr(t->cap,UC "SR");
-	t->al = jgetstr(t->cap,UC "al");
-	t->dl = jgetstr(t->cap,UC "dl");
-	t->AL = jgetstr(t->cap,UC "AL");
-	t->DL = jgetstr(t->cap,UC "DL");
-	if (!getflag(t->cap,UC "ns") && !t->sf)
-		t->sf =UC "\12";
+	t->da = getflag(t->cap,USTR "da");
+	t->db = getflag(t->cap,USTR "db");
+	t->cs = jgetstr(t->cap,USTR "cs");
+	t->rr = getflag(t->cap,USTR "rr");
+	t->sf = jgetstr(t->cap,USTR "sf");
+	t->sr = jgetstr(t->cap,USTR "sr");
+	t->SF = jgetstr(t->cap,USTR "SF");
+	t->SR = jgetstr(t->cap,USTR "SR");
+	t->al = jgetstr(t->cap,USTR "al");
+	t->dl = jgetstr(t->cap,USTR "dl");
+	t->AL = jgetstr(t->cap,USTR "AL");
+	t->DL = jgetstr(t->cap,USTR "DL");
+	if (!getflag(t->cap,USTR "ns") && !t->sf)
+		t->sf =USTR "\12";
 
-	if (!getflag(t->cap,UC "in") && baud < 38400) {
-		t->dc = jgetstr(t->cap,UC "dc");
-		t->DC = jgetstr(t->cap,UC "DC");
-		t->dm = jgetstr(t->cap,UC "dm");
-		t->ed = jgetstr(t->cap,UC "ed");
+	if (!getflag(t->cap,USTR "in") && baud < 38400) {
+		t->dc = jgetstr(t->cap,USTR "dc");
+		t->DC = jgetstr(t->cap,USTR "DC");
+		t->dm = jgetstr(t->cap,USTR "dm");
+		t->ed = jgetstr(t->cap,USTR "ed");
 
-		t->im = jgetstr(t->cap,UC "im");
-		t->ei = jgetstr(t->cap,UC "ei");
-		t->ic = jgetstr(t->cap,UC "ic");
-		t->IC = jgetstr(t->cap,UC "IC");
-		t->ip = jgetstr(t->cap,UC "ip");
-		t->mi = getflag(t->cap,UC "mi");
+		t->im = jgetstr(t->cap,USTR "im");
+		t->ei = jgetstr(t->cap,USTR "ei");
+		t->ic = jgetstr(t->cap,USTR "ic");
+		t->IC = jgetstr(t->cap,USTR "IC");
+		t->ip = jgetstr(t->cap,USTR "ip");
+		t->mi = getflag(t->cap,USTR "mi");
 	} else {
 		t->dm = NULL;
 		t->dc = NULL;
@@ -636,36 +636,36 @@ SCRN *nopen(CAP *cap)
 	}
 
 	t->bs = NULL;
-	if (jgetstr(t->cap,UC "bc"))
-		t->bs = jgetstr(t->cap,UC "bc");
-	else if (jgetstr(t->cap,UC "le"))
-		t->bs = jgetstr(t->cap,UC "le");
-	if (getflag(t->cap,UC "bs"))
-		t->bs =UC "\10";
+	if (jgetstr(t->cap,USTR "bc"))
+		t->bs = jgetstr(t->cap,USTR "bc");
+	else if (jgetstr(t->cap,USTR "le"))
+		t->bs = jgetstr(t->cap,USTR "le");
+	if (getflag(t->cap,USTR "bs"))
+		t->bs =USTR "\10";
 
 	t->cbs = tcost(t->cap, t->bs, 1, 2, 2, 0, 0);
 
-	t->lf =UC "\12";
-	if (jgetstr(t->cap,UC "do"))
-		t->lf = jgetstr(t->cap,UC "do");
+	t->lf =USTR "\12";
+	if (jgetstr(t->cap,USTR "do"))
+		t->lf = jgetstr(t->cap,USTR "do");
 	t->clf = tcost(t->cap, t->lf, 1, 2, 2, 0, 0);
 
-	t->up = jgetstr(t->cap,UC "up");
+	t->up = jgetstr(t->cap,USTR "up");
 	t->cup = tcost(t->cap, t->up, 1, 2, 2, 0, 0);
 
-	t->nd = jgetstr(t->cap,UC "nd");
+	t->nd = jgetstr(t->cap,USTR "nd");
 
 	t->tw = 8;
-	if (getnum(t->cap,UC "it") > 0)
-		t->tw = getnum(t->cap,UC "it");
-	else if (getnum(t->cap,UC "tw") > 0)
-		t->tw = getnum(t->cap,UC "tw");
+	if (getnum(t->cap,USTR "it") > 0)
+		t->tw = getnum(t->cap,USTR "it");
+	else if (getnum(t->cap,USTR "tw") > 0)
+		t->tw = getnum(t->cap,USTR "tw");
 
-	if (!(t->ta = jgetstr(t->cap,UC "ta")))
-		if (getflag(t->cap,UC "pt"))
-			t->ta =UC "\11";
-	t->bt = jgetstr(t->cap,UC "bt");
-	if (getflag(t->cap,UC "xt")) {
+	if (!(t->ta = jgetstr(t->cap,USTR "ta")))
+		if (getflag(t->cap,USTR "pt"))
+			t->ta =USTR "\11";
+	t->bt = jgetstr(t->cap,USTR "bt");
+	if (getflag(t->cap,USTR "xt")) {
 		t->ta = NULL;
 		t->bt = NULL;
 	}
@@ -678,28 +678,28 @@ SCRN *nopen(CAP *cap)
 	t->cta = tcost(t->cap, t->ta, 1, 2, 2, 0, 0);
 	t->cbt = tcost(t->cap, t->bt, 1, 2, 2, 0, 0);
 
-	t->ho = jgetstr(t->cap,UC "ho");
+	t->ho = jgetstr(t->cap,USTR "ho");
 	t->cho = tcost(t->cap, t->ho, 1, 2, 2, 0, 0);
-	t->ll = jgetstr(t->cap,UC "ll");
+	t->ll = jgetstr(t->cap,USTR "ll");
 	t->cll = tcost(t->cap, t->ll, 1, 2, 2, 0, 0);
 
-	t->cr =UC "\15";
-	if (jgetstr(t->cap,UC "cr"))
-		t->cr = jgetstr(t->cap,UC "cr");
-	if (getflag(t->cap,UC "nc") || getflag(t->cap,UC "xr"))
+	t->cr =USTR "\15";
+	if (jgetstr(t->cap,USTR "cr"))
+		t->cr = jgetstr(t->cap,USTR "cr");
+	if (getflag(t->cap,USTR "nc") || getflag(t->cap,USTR "xr"))
 		t->cr = NULL;
 	t->ccr = tcost(t->cap, t->cr, 1, 2, 2, 0, 0);
 
-	t->cRI = tcost(t->cap, t->RI = jgetstr(t->cap,UC "RI"), 1, 2, 2, 0, 0);
-	t->cLE = tcost(t->cap, t->LE = jgetstr(t->cap,UC "LE"), 1, 2, 2, 0, 0);
-	t->cUP = tcost(t->cap, t->UP = jgetstr(t->cap,UC "UP"), 1, 2, 2, 0, 0);
-	t->cDO = tcost(t->cap, t->DO = jgetstr(t->cap,UC "DO"), 1, 2, 2, 0, 0);
-	t->cch = tcost(t->cap, t->ch = jgetstr(t->cap,UC "ch"), 1, 2, 2, 0, 0);
-	t->ccv = tcost(t->cap, t->cv = jgetstr(t->cap,UC "cv"), 1, 2, 2, 0, 0);
-	t->ccV = tcost(t->cap, t->cV = jgetstr(t->cap,UC "cV"), 1, 2, 2, 0, 0);
-	t->ccm = tcost(t->cap, t->cm = jgetstr(t->cap,UC "cm"), 1, 2, 2, 0, 0);
+	t->cRI = tcost(t->cap, t->RI = jgetstr(t->cap,USTR "RI"), 1, 2, 2, 0, 0);
+	t->cLE = tcost(t->cap, t->LE = jgetstr(t->cap,USTR "LE"), 1, 2, 2, 0, 0);
+	t->cUP = tcost(t->cap, t->UP = jgetstr(t->cap,USTR "UP"), 1, 2, 2, 0, 0);
+	t->cDO = tcost(t->cap, t->DO = jgetstr(t->cap,USTR "DO"), 1, 2, 2, 0, 0);
+	t->cch = tcost(t->cap, t->ch = jgetstr(t->cap,USTR "ch"), 1, 2, 2, 0, 0);
+	t->ccv = tcost(t->cap, t->cv = jgetstr(t->cap,USTR "cv"), 1, 2, 2, 0, 0);
+	t->ccV = tcost(t->cap, t->cV = jgetstr(t->cap,USTR "cV"), 1, 2, 2, 0, 0);
+	t->ccm = tcost(t->cap, t->cm = jgetstr(t->cap,USTR "cm"), 1, 2, 2, 0, 0);
 
-	t->cce = tcost(t->cap, t->ce = jgetstr(t->cap,UC "ce"), 1, 2, 2, 0, 0);
+	t->cce = tcost(t->cap, t->ce = jgetstr(t->cap,USTR "ce"), 1, 2, 2, 0, 0);
 
 /* Make sure terminal can do absolute positioning */
 	if (t->cm)
@@ -1774,83 +1774,83 @@ void nredraw(SCRN *t)
 
 int meta_color_single(unsigned char *s)
 {
-	if(!zcmp(s,UC "inverse"))
+	if(!zcmp(s,USTR "inverse"))
 		return INVERSE;
-	else if(!zcmp(s,UC "underline"))
+	else if(!zcmp(s,USTR "underline"))
 		return UNDERLINE;
-	else if(!zcmp(s,UC "bold"))
+	else if(!zcmp(s,USTR "bold"))
 		return BOLD;
-	else if(!zcmp(s,UC "blink"))
+	else if(!zcmp(s,USTR "blink"))
 		return BLINK;
-	else if(!zcmp(s,UC "dim"))
+	else if(!zcmp(s,USTR "dim"))
 		return DIM;
 
 	/* ISO colors */
-	else if(!zcmp(s,UC "white"))
+	else if(!zcmp(s,USTR "white"))
 		return FG_WHITE;
-	else if(!zcmp(s,UC "cyan"))
+	else if(!zcmp(s,USTR "cyan"))
 		return FG_CYAN;
-	else if(!zcmp(s,UC "magenta"))
+	else if(!zcmp(s,USTR "magenta"))
 		return FG_MAGENTA;
-	else if(!zcmp(s,UC "blue"))
+	else if(!zcmp(s,USTR "blue"))
 		return FG_BLUE;
-	else if(!zcmp(s,UC "yellow"))
+	else if(!zcmp(s,USTR "yellow"))
 		return FG_YELLOW;
-	else if(!zcmp(s,UC "green"))
+	else if(!zcmp(s,USTR "green"))
 		return FG_GREEN;
-	else if(!zcmp(s,UC "red"))
+	else if(!zcmp(s,USTR "red"))
 		return FG_RED;
-	else if(!zcmp(s,UC "black"))
+	else if(!zcmp(s,USTR "black"))
 		return FG_BLACK;
-	else if(!zcmp(s,UC "bg_white"))
+	else if(!zcmp(s,USTR "bg_white"))
 		return BG_WHITE;
-	else if(!zcmp(s,UC "bg_cyan"))
+	else if(!zcmp(s,USTR "bg_cyan"))
 		return BG_CYAN;
-	else if(!zcmp(s,UC "bg_magenta"))
+	else if(!zcmp(s,USTR "bg_magenta"))
 		return BG_MAGENTA;
-	else if(!zcmp(s,UC "bg_blue"))
+	else if(!zcmp(s,USTR "bg_blue"))
 		return BG_BLUE;
-	else if(!zcmp(s,UC "bg_yellow"))
+	else if(!zcmp(s,USTR "bg_yellow"))
 		return BG_YELLOW;
-	else if(!zcmp(s,UC "bg_green"))
+	else if(!zcmp(s,USTR "bg_green"))
 		return BG_GREEN;
-	else if(!zcmp(s,UC "bg_red"))
+	else if(!zcmp(s,USTR "bg_red"))
 		return BG_RED;
-	else if(!zcmp(s,UC "bg_black"))
+	else if(!zcmp(s,USTR "bg_black"))
 		return BG_BLACK;
 
 	/* 16 color xterm support: codes 8 - 15 are brighter versions of above */
-	else if(!zcmp(s,UC "WHITE"))
+	else if(!zcmp(s,USTR "WHITE"))
 		return FG_BWHITE;
-	else if(!zcmp(s,UC "CYAN"))
+	else if(!zcmp(s,USTR "CYAN"))
 		return FG_BCYAN;
-	else if(!zcmp(s,UC "MAGENTA"))
+	else if(!zcmp(s,USTR "MAGENTA"))
 		return FG_BMAGENTA;
-	else if(!zcmp(s,UC "BLUE"))
+	else if(!zcmp(s,USTR "BLUE"))
 		return FG_BBLUE;
-	else if(!zcmp(s,UC "YELLOW"))
+	else if(!zcmp(s,USTR "YELLOW"))
 		return FG_BYELLOW;
-	else if(!zcmp(s,UC "GREEN"))
+	else if(!zcmp(s,USTR "GREEN"))
 		return FG_BGREEN;
-	else if(!zcmp(s,UC "RED"))
+	else if(!zcmp(s,USTR "RED"))
 		return FG_BRED;
-	else if(!zcmp(s,UC "BLACK"))
+	else if(!zcmp(s,USTR "BLACK"))
 		return FG_BBLACK;
-	else if(!zcmp(s,UC "bg_WHITE"))
+	else if(!zcmp(s,USTR "bg_WHITE"))
 		return BG_BWHITE;
-	else if(!zcmp(s,UC "bg_CYAN"))
+	else if(!zcmp(s,USTR "bg_CYAN"))
 		return BG_BCYAN;
-	else if(!zcmp(s,UC "bg_MAGENTA"))
+	else if(!zcmp(s,USTR "bg_MAGENTA"))
 		return BG_BMAGENTA;
-	else if(!zcmp(s,UC "bg_BLUE"))
+	else if(!zcmp(s,USTR "bg_BLUE"))
 		return BG_BBLUE;
-	else if(!zcmp(s,UC "bg_YELLOW"))
+	else if(!zcmp(s,USTR "bg_YELLOW"))
 		return BG_BYELLOW;
-	else if(!zcmp(s,UC "bg_GREEN"))
+	else if(!zcmp(s,USTR "bg_GREEN"))
 		return BG_BGREEN;
-	else if(!zcmp(s,UC "bg_RED"))
+	else if(!zcmp(s,USTR "bg_RED"))
 		return BG_BRED;
-	else if(!zcmp(s,UC "bg_BLACK"))
+	else if(!zcmp(s,USTR "bg_BLACK"))
 		return BG_BBLACK;
 
 	/* Look at the "256colres.pl" PERL script in the xterm source

@@ -79,7 +79,7 @@ KMAP *ngetcontext(unsigned char *name)
 
 int validate_rc()
 {
-	KMAP *k = ngetcontext(UC "main");
+	KMAP *k = ngetcontext(USTR "main");
 	int x;
 	/* Make sure main exists */
 	if (!k)
@@ -173,9 +173,9 @@ OPTIONS fdefault = {
 	8,		/* tab */
 	' ',		/* indent char */
 	1,		/* indent step */
-	UC "main",		/* *context */
-	UC "\\i%n %m %M",	/* *lmsg */
-	UC " %S Ctrl-K H for help",	/* *rmsg */
+	USTR "main",		/* *context */
+	USTR "\\i%n %m %M",	/* *lmsg */
+	USTR " %S Ctrl-K H for help",	/* *rmsg */
 	0,		/* line numbers */
 	0,		/* read only */
 	0,		/* french spacing */
@@ -204,7 +204,7 @@ OPTIONS fdefault = {
 	0,		/* semi_comment */
 	0,		/* hex */
 	NULL,		/* text_delimiters */
-	UC ">;!#%/",	/* Characters which can indent paragraphs */
+	USTR ">;!#%/",	/* Characters which can indent paragraphs */
 	NULL, NULL, NULL, NULL, NULL	/* macros (see above) */
 };
 
@@ -244,7 +244,7 @@ void setopt(B *b, unsigned char *parsed_name)
 	for (o = options; o; o = o->next)
 		if (rmatch(o->name_regex, parsed_name)) {
 			if(o->contents_regex) {
-				P *p = pdup(b->bof, UC "setopt");
+				P *p = pdup(b->bof, USTR "setopt");
 				if (pmatch(pieces,o->contents_regex,zlen(o->contents_regex),p,0,0)) {
 					prm(p);
 					b->o = *o;
@@ -292,88 +292,88 @@ struct glopts {
 	int low;		/* Low limit for numeric options */
 	int high;		/* High limit for numeric options */
 } glopts[] = {
-	{UC "overwrite",4, NULL, (unsigned char *) &fdefault.overtype, UC _("Overtype mode"), UC _("Insert mode"), UC _("T Overtype ") },
-	{UC "hex",4, NULL, (unsigned char *) &fdefault.hex, UC _("Hex edit mode"), UC _("Text edit mode"), UC _("  Hex edit mode ") },
-	{UC "autoindent",	4, NULL, (unsigned char *) &fdefault.autoindent, UC _("Autoindent enabled"), UC _("Autoindent disabled"), UC _("I Autoindent ") },
-	{UC "wordwrap",	4, NULL, (unsigned char *) &fdefault.wordwrap, UC _("Wordwrap enabled"), UC _("Wordwrap disabled"), UC _("W Word wrap ") },
-	{UC "tab",	5, NULL, (unsigned char *) &fdefault.tab, UC _("Tab width (%d): "), 0, UC _("D Tab width "), 0, 1, 64 },
-	{UC "lmargin",	7, NULL, (unsigned char *) &fdefault.lmargin, UC _("Left margin (%d): "), 0, UC _("L Left margin "), 0, 1, 63 },
-	{UC "rmargin",	7, NULL, (unsigned char *) &fdefault.rmargin, UC _("Right margin (%d): "), 0, UC _("R Right margin "), 0, 7, 255 },
-	{UC "restore",	0, &restore_file_pos, NULL, UC _("Restore cursor position when files loaded"), UC _("Don't restore cursor when files loaded"), UC _("  Restore cursor ") },
-	{UC "square",	0, &square, NULL, UC _("Rectangle mode"), UC _("Text-stream mode"), UC _("X Rectangle mode ") },
-	{UC "icase",	0, &icase, NULL, UC _("Search ignores case by default"), UC _("Case sensitive search by default"), UC _("  Case insensitivity ") },
-	{UC "wrap",	0, &wrap, NULL, UC _("Search wraps"), UC _("Search doesn't wrap"), UC _("  Search wraps ") },
-	{UC "menu_explorer",	0, &menu_explorer, NULL, UC _("Menu explorer mode"), UC _("Simple completion mode"), UC _("  Menu explorer ") },
-	{UC "menu_above",	0, &menu_above, NULL, UC _("Menu above prompt"), UC _("Menu below prompt"), UC _("  Menu position ") },
-	{UC "search_prompting",	0, &pico, NULL, UC _("Search prompting on"), UC _("Search prompting off"), UC _("  Search prompting ") },
-	{UC "menu_jump",	0, &menu_jump, NULL, UC _("Jump into menu is on"), UC _("Jump into menu is off"), UC _("  Jump into menu ") },
-	{UC "autoswap",	0, &autoswap, NULL, UC _("Autoswap ^KB and ^KK"), UC _("Autoswap off "), UC _("  Autoswap mode ") },
-	{UC "indentc",	5, NULL, (unsigned char *) &fdefault.indentc, UC _("Indent char %d (SPACE=32, TAB=9, ^C to abort): "), 0, UC _("  Indent char "), 0, 0, 255 },
-	{UC "istep",	5, NULL, (unsigned char *) &fdefault.istep, UC _("Indent step %d (^C to abort): "), 0, UC _("  Indent step "), 0, 1, 64 },
-	{UC "french",	4, NULL, (unsigned char *) &fdefault.french, UC _("One space after periods for paragraph reformat"), UC _("Two spaces after periods for paragraph reformat"), UC _("  French spacing ") },
-	{UC "highlight",	4, NULL, (unsigned char *) &fdefault.highlight, UC _("Highlighting enabled"), UC _("Highlighting disabled"), UC _("H Highlighting ") },
-	{UC "spaces",	4, NULL, (unsigned char *) &fdefault.spaces, UC _("Inserting spaces when tab key is hit"), UC _("Inserting tabs when tab key is hit"), UC _("  No tabs ") },
-	{UC "mid",	0, &mid, NULL, UC _("Cursor will be recentered on scrolls"), UC _("Cursor will not be recentered on scroll"), UC _("C Center on scroll ") },
-	{UC "guess_crlf",0, &guesscrlf, NULL, UC _("Automatically detect MS-DOS files"), UC _("Do not automatically detect MS-DOS files"), UC _("  Auto detect CR-LF ") },
-	{UC "guess_indent",0, &guessindent, NULL, UC _("Automatically detect indentation"), UC _("Do not automatically detect indentation"), UC _("  Guess indent ") },
-	{UC "guess_non_utf8",0, &guess_non_utf8, NULL, UC _("Automatically detect non-UTF-8 in UTF-8 locale"), UC _("Do not automatically detect non-UTF-8"), UC _("  Guess non-UTF-8 ") },
-	{UC "guess_utf8",0, &guess_utf8, NULL, UC _("Automatically detect UTF-8 in non-UTF-8 locale"), UC _("Do not automatically detect UTF-8"), UC _("  Guess UTF-8 ") },
-	{UC "transpose",0, &transpose, NULL, UC _("Menu is transposed"), UC _("Menus are not transposed"), UC _("  Transpose menus ") },
-	{UC "crlf",	4, NULL, (unsigned char *) &fdefault.crlf, UC _("CR-LF is line terminator"), UC _("LF is line terminator"), UC _("Z CR-LF (MS-DOS) ") },
-	{UC "linums",	4, NULL, (unsigned char *) &fdefault.linums, UC _("Line numbers enabled"), UC _("Line numbers disabled"), UC _("N Line numbers ") },
-	{UC "marking",	0, &marking, NULL, UC _("Anchored block marking on"), UC _("Anchored block marking off"), UC _("  Marking ") },
-	{UC "asis",	0, &dspasis, NULL, UC _("Characters above 127 shown as-is"), UC _("Characters above 127 shown in inverse"), UC _("  Meta chars as-is ") },
-	{UC "force",	0, &force, NULL, UC _("Last line forced to have NL when file saved"), UC _("Last line not forced to have NL"), UC _("  Force last NL ") },
-	{UC "joe_state",0, &joe_state, NULL, UC _("~/.joe_state file will be updated"), UC _("~/.joe_state file will not be updated"), UC _("  Joe_state file ") },
-	{UC "nobackups",	0, &nobackups, NULL, UC _("Backup files will not be made"), UC _("Backup files will be made"), UC _("  Disable backups ") },
-	{UC "nolocks",	0, &nolocks, NULL, UC _("Files will not be locked"), UC _("Files will be locked"), UC _("  Disable locks ") },
-	{UC "nomodcheck",	0, &nomodcheck, NULL, UC _("No file modification time check"), UC _("File modification time checking enabled"), UC _("  Disable mtime check ") },
-	{UC "nocurdir",	0, &nocurdir, NULL, UC _("No current dir"), UC _("Current dir enabled"), UC _("  Disable current dir ") },
-	{UC "break_links",	0, &break_links, NULL, UC _("Hardlinks will be broken"), UC _("Hardlinks not broken"), UC _("  Break hard links ") },
-	{UC "lightoff",	0, &lightoff, NULL, UC _("Highlighting turned off after block operations"), UC _("Highlighting not turned off after block operations"), UC _("  Auto unmark ") },
-	{UC "exask",	0, &exask, NULL, UC _("Prompt for filename in save & exit command"), UC _("Don't prompt for filename in save & exit command"), UC _("  Exit ask ") },
-	{UC "beep",	0, &joe_beep, NULL, UC _("Warning bell enabled"), UC _("Warning bell disabled"), UC _("B Beeps ") },
-	{UC "nosta",	0, &staen, NULL, UC _("Top-most status line disabled"), UC _("Top-most status line enabled"), UC _("  Disable status line ") },
-	{UC "keepup",	0, &keepup, NULL, UC _("Status line updated constantly"), UC _("Status line updated once/sec"), UC _("  Fast status line ") },
-	{UC "pg",		1, &pgamnt, NULL, UC _("Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): "), 0, UC _("  No. PgUp/PgDn lines "), 0, -1, 64 },
-	{UC "undo_keep",		1, &undo_keep, NULL, UC _("No. undo records to keep, or (0 for infinite): "), 0, UC _("  No. undo records "), 0, -1, 64 },
-	{UC "csmode",	0, &csmode, NULL, UC _("Start search after a search repeats previous search"), UC _("Start search always starts a new search"), UC _("  Continued search ") },
-	{UC "rdonly",	4, NULL, (unsigned char *) &fdefault.readonly, UC _("Read only"), UC _("Full editing"), UC _("O Read only ") },
-	{UC "smarthome",	4, NULL, (unsigned char *) &fdefault.smarthome, UC _("Smart home key enabled"), UC _("Smart home key disabled"), UC _("  Smart home key ") },
-	{UC "indentfirst",	4, NULL, (unsigned char *) &fdefault.indentfirst, UC _("Smart home goes to indentation first"), UC _("Smart home goes home first"), UC _("  To indent first ") },
-	{UC "smartbacks",	4, NULL, (unsigned char *) &fdefault.smartbacks, UC _("Smart backspace key enabled"), UC _("Smart backspace key disabled"), UC _("  Smart backspace ") },
-	{UC "purify",	4, NULL, (unsigned char *) &fdefault.purify, UC _("Indentation clean up enabled"), UC _("Indentation clean up disabled"), UC _("  Clean up indents ") },
-	{UC "picture",	4, NULL, (unsigned char *) &fdefault.picture, UC _("Picture drawing mode enabled"), UC _("Picture drawing mode disabled"), UC _("P Picture mode ") },
-	{UC "backpath",	2, &backpath, NULL, UC _("Backup files stored in (%s): "), 0, UC _("  Path to backup files ") },
-	{UC "syntax",	9, NULL, NULL, UC _("Select syntax (^C to abort): "), 0, UC _("Y Syntax") },
-	{UC "encoding",13, NULL, NULL, UC _("Select file character set (^C to abort): "), 0, UC _("E Encoding ") },
-	{UC "single_quoted",	4, NULL, (unsigned char *) &fdefault.single_quoted, UC _("Single quoting enabled"), UC _("Single quoting disabled"), UC _("  ^G ignores '... ' ") },
-	{UC "c_comment",	4, NULL, (unsigned char *) &fdefault.c_comment, UC _("/* comments enabled"), UC _("/* comments disabled"), UC _("  ^G ignores /*...*/ ") },
-	{UC "cpp_comment",	4, NULL, (unsigned char *) &fdefault.cpp_comment, UC _("// comments enabled"), UC _("// comments disabled"), UC _("  ^G ignores //... ") },
-	{UC "pound_comment",	4, NULL, (unsigned char *) &fdefault.pound_comment, UC _("# comments enabled"), UC _("# comments disabled"), UC _("  ^G ignores #... ") },
-	{UC "vhdl_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, UC _("-- comments enabled"), UC _("-- comments disabled"), UC _("  ^G ignores --... ") },
-	{UC "semi_comment",	4, NULL, (unsigned char *) &fdefault.semi_comment, UC _("; comments enabled"), UC _("; comments disabled"), UC _("  ^G ignores ;... ") },
-	{UC "text_delimiters",	6, NULL, (unsigned char *) &fdefault.text_delimiters, UC _("Text delimiters (%s): "), 0, UC _("  Text delimiters ") },
-	{UC "language",	6, NULL, (unsigned char *) &fdefault.language, UC _("Language (%s): "), 0, UC _("V Language ") },
-	{UC "cpara",		6, NULL, (unsigned char *) &fdefault.cpara, UC _("Characters which can indent paragraphs (%s): "), 0, UC _("  Paragraph indent chars ") },
-	{UC "floatmouse",	0, &floatmouse, 0, UC _("Clicking can move the cursor past end of line"), UC _("Clicking past end of line moves cursor to the end"), UC _("  Click past end ") },
-	{UC "rtbutton",	0, &rtbutton, 0, UC _("Mouse action is done with the right button"), UC _("Mouse action is done with the left button"), UC _("  Right button ") },
-	{UC "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
-	{UC "help_is_utf8",	0, &help_is_utf8, NULL, 0, 0, 0 },
-	{UC "noxon",	0, &noxon, NULL, 0, 0, 0 },
-	{UC "orphan",	0, &orphan, NULL, 0, 0, 0 },
-	{UC "help",	0, &help, NULL, 0, 0, 0 },
-	{UC "dopadding",	0, &dopadding, NULL, 0, 0, 0 },
-	{UC "lines",	1, &lines, NULL, 0, 0, 0, 0, 2, 1024 },
-	{UC "baud",	1, &Baud, NULL, 0, 0, 0, 0, 50, 32767 },
-	{UC "columns",	1, &columns, NULL, 0, 0, 0, 0, 2, 1024 },
-	{UC "skiptop",	1, &skiptop, NULL, 0, 0, 0, 0, 0, 64 },
-	{UC "notite",	0, &notite, NULL, 0, 0, 0 },
-	{UC "mouse",	0, &xmouse, NULL, 0, 0, 0 },
-	{UC "usetabs",	0, &usetabs, NULL, 0, 0, 0 },
-	{UC "assume_color", 0, &assume_color, NULL, 0, 0, 0 },
-	{UC "assume_256color", 0, &assume_256color, NULL, 0, 0, 0 },
-	{UC "joexterm", 0, &joexterm, NULL, 0, 0, 0 },
+	{USTR "overwrite",4, NULL, (unsigned char *) &fdefault.overtype, USTR _("Overtype mode"), USTR _("Insert mode"), USTR _("T Overtype ") },
+	{USTR "hex",4, NULL, (unsigned char *) &fdefault.hex, USTR _("Hex edit mode"), USTR _("Text edit mode"), USTR _("  Hex edit mode ") },
+	{USTR "autoindent",	4, NULL, (unsigned char *) &fdefault.autoindent, USTR _("Autoindent enabled"), USTR _("Autoindent disabled"), USTR _("I Autoindent ") },
+	{USTR "wordwrap",	4, NULL, (unsigned char *) &fdefault.wordwrap, USTR _("Wordwrap enabled"), USTR _("Wordwrap disabled"), USTR _("W Word wrap ") },
+	{USTR "tab",	5, NULL, (unsigned char *) &fdefault.tab, USTR _("Tab width (%d): "), 0, USTR _("D Tab width "), 0, 1, 64 },
+	{USTR "lmargin",	7, NULL, (unsigned char *) &fdefault.lmargin, USTR _("Left margin (%d): "), 0, USTR _("L Left margin "), 0, 1, 63 },
+	{USTR "rmargin",	7, NULL, (unsigned char *) &fdefault.rmargin, USTR _("Right margin (%d): "), 0, USTR _("R Right margin "), 0, 7, 255 },
+	{USTR "restore",	0, &restore_file_pos, NULL, USTR _("Restore cursor position when files loaded"), USTR _("Don't restore cursor when files loaded"), USTR _("  Restore cursor ") },
+	{USTR "square",	0, &square, NULL, USTR _("Rectangle mode"), USTR _("Text-stream mode"), USTR _("X Rectangle mode ") },
+	{USTR "icase",	0, &icase, NULL, USTR _("Search ignores case by default"), USTR _("Case sensitive search by default"), USTR _("  Case insensitivity ") },
+	{USTR "wrap",	0, &wrap, NULL, USTR _("Search wraps"), USTR _("Search doesn't wrap"), USTR _("  Search wraps ") },
+	{USTR "menu_explorer",	0, &menu_explorer, NULL, USTR _("Menu explorer mode"), USTR _("Simple completion mode"), USTR _("  Menu explorer ") },
+	{USTR "menu_above",	0, &menu_above, NULL, USTR _("Menu above prompt"), USTR _("Menu below prompt"), USTR _("  Menu position ") },
+	{USTR "search_prompting",	0, &pico, NULL, USTR _("Search prompting on"), USTR _("Search prompting off"), USTR _("  Search prompting ") },
+	{USTR "menu_jump",	0, &menu_jump, NULL, USTR _("Jump into menu is on"), USTR _("Jump into menu is off"), USTR _("  Jump into menu ") },
+	{USTR "autoswap",	0, &autoswap, NULL, USTR _("Autoswap ^KB and ^KK"), USTR _("Autoswap off "), USTR _("  Autoswap mode ") },
+	{USTR "indentc",	5, NULL, (unsigned char *) &fdefault.indentc, USTR _("Indent char %d (SPACE=32, TAB=9, ^C to abort): "), 0, USTR _("  Indent char "), 0, 0, 255 },
+	{USTR "istep",	5, NULL, (unsigned char *) &fdefault.istep, USTR _("Indent step %d (^C to abort): "), 0, USTR _("  Indent step "), 0, 1, 64 },
+	{USTR "french",	4, NULL, (unsigned char *) &fdefault.french, USTR _("One space after periods for paragraph reformat"), USTR _("Two spaces after periods for paragraph reformat"), USTR _("  French spacing ") },
+	{USTR "highlight",	4, NULL, (unsigned char *) &fdefault.highlight, USTR _("Highlighting enabled"), USTR _("Highlighting disabled"), USTR _("H Highlighting ") },
+	{USTR "spaces",	4, NULL, (unsigned char *) &fdefault.spaces, USTR _("Inserting spaces when tab key is hit"), USTR _("Inserting tabs when tab key is hit"), USTR _("  No tabs ") },
+	{USTR "mid",	0, &mid, NULL, USTR _("Cursor will be recentered on scrolls"), USTR _("Cursor will not be recentered on scroll"), USTR _("C Center on scroll ") },
+	{USTR "guess_crlf",0, &guesscrlf, NULL, USTR _("Automatically detect MS-DOS files"), USTR _("Do not automatically detect MS-DOS files"), USTR _("  Auto detect CR-LF ") },
+	{USTR "guess_indent",0, &guessindent, NULL, USTR _("Automatically detect indentation"), USTR _("Do not automatically detect indentation"), USTR _("  Guess indent ") },
+	{USTR "guess_non_utf8",0, &guess_non_utf8, NULL, USTR _("Automatically detect non-UTF-8 in UTF-8 locale"), USTR _("Do not automatically detect non-UTF-8"), USTR _("  Guess non-UTF-8 ") },
+	{USTR "guess_utf8",0, &guess_utf8, NULL, USTR _("Automatically detect UTF-8 in non-UTF-8 locale"), USTR _("Do not automatically detect UTF-8"), USTR _("  Guess UTF-8 ") },
+	{USTR "transpose",0, &transpose, NULL, USTR _("Menu is transposed"), USTR _("Menus are not transposed"), USTR _("  Transpose menus ") },
+	{USTR "crlf",	4, NULL, (unsigned char *) &fdefault.crlf, USTR _("CR-LF is line terminator"), USTR _("LF is line terminator"), USTR _("Z CR-LF (MS-DOS) ") },
+	{USTR "linums",	4, NULL, (unsigned char *) &fdefault.linums, USTR _("Line numbers enabled"), USTR _("Line numbers disabled"), USTR _("N Line numbers ") },
+	{USTR "marking",	0, &marking, NULL, USTR _("Anchored block marking on"), USTR _("Anchored block marking off"), USTR _("  Marking ") },
+	{USTR "asis",	0, &dspasis, NULL, USTR _("Characters above 127 shown as-is"), USTR _("Characters above 127 shown in inverse"), USTR _("  Meta chars as-is ") },
+	{USTR "force",	0, &force, NULL, USTR _("Last line forced to have NL when file saved"), USTR _("Last line not forced to have NL"), USTR _("  Force last NL ") },
+	{USTR "joe_state",0, &joe_state, NULL, USTR _("~/.joe_state file will be updated"), USTR _("~/.joe_state file will not be updated"), USTR _("  Joe_state file ") },
+	{USTR "nobackups",	0, &nobackups, NULL, USTR _("Backup files will not be made"), USTR _("Backup files will be made"), USTR _("  Disable backups ") },
+	{USTR "nolocks",	0, &nolocks, NULL, USTR _("Files will not be locked"), USTR _("Files will be locked"), USTR _("  Disable locks ") },
+	{USTR "nomodcheck",	0, &nomodcheck, NULL, USTR _("No file modification time check"), USTR _("File modification time checking enabled"), USTR _("  Disable mtime check ") },
+	{USTR "nocurdir",	0, &nocurdir, NULL, USTR _("No current dir"), USTR _("Current dir enabled"), USTR _("  Disable current dir ") },
+	{USTR "break_links",	0, &break_links, NULL, USTR _("Hardlinks will be broken"), USTR _("Hardlinks not broken"), USTR _("  Break hard links ") },
+	{USTR "lightoff",	0, &lightoff, NULL, USTR _("Highlighting turned off after block operations"), USTR _("Highlighting not turned off after block operations"), USTR _("  Auto unmark ") },
+	{USTR "exask",	0, &exask, NULL, USTR _("Prompt for filename in save & exit command"), USTR _("Don't prompt for filename in save & exit command"), USTR _("  Exit ask ") },
+	{USTR "beep",	0, &joe_beep, NULL, USTR _("Warning bell enabled"), USTR _("Warning bell disabled"), USTR _("B Beeps ") },
+	{USTR "nosta",	0, &staen, NULL, USTR _("Top-most status line disabled"), USTR _("Top-most status line enabled"), USTR _("  Disable status line ") },
+	{USTR "keepup",	0, &keepup, NULL, USTR _("Status line updated constantly"), USTR _("Status line updated once/sec"), USTR _("  Fast status line ") },
+	{USTR "pg",		1, &pgamnt, NULL, USTR _("Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): "), 0, USTR _("  No. PgUp/PgDn lines "), 0, -1, 64 },
+	{USTR "undo_keep",		1, &undo_keep, NULL, USTR _("No. undo records to keep, or (0 for infinite): "), 0, USTR _("  No. undo records "), 0, -1, 64 },
+	{USTR "csmode",	0, &csmode, NULL, USTR _("Start search after a search repeats previous search"), USTR _("Start search always starts a new search"), USTR _("  Continued search ") },
+	{USTR "rdonly",	4, NULL, (unsigned char *) &fdefault.readonly, USTR _("Read only"), USTR _("Full editing"), USTR _("O Read only ") },
+	{USTR "smarthome",	4, NULL, (unsigned char *) &fdefault.smarthome, USTR _("Smart home key enabled"), USTR _("Smart home key disabled"), USTR _("  Smart home key ") },
+	{USTR "indentfirst",	4, NULL, (unsigned char *) &fdefault.indentfirst, USTR _("Smart home goes to indentation first"), USTR _("Smart home goes home first"), USTR _("  To indent first ") },
+	{USTR "smartbacks",	4, NULL, (unsigned char *) &fdefault.smartbacks, USTR _("Smart backspace key enabled"), USTR _("Smart backspace key disabled"), USTR _("  Smart backspace ") },
+	{USTR "purify",	4, NULL, (unsigned char *) &fdefault.purify, USTR _("Indentation clean up enabled"), USTR _("Indentation clean up disabled"), USTR _("  Clean up indents ") },
+	{USTR "picture",	4, NULL, (unsigned char *) &fdefault.picture, USTR _("Picture drawing mode enabled"), USTR _("Picture drawing mode disabled"), USTR _("P Picture mode ") },
+	{USTR "backpath",	2, &backpath, NULL, USTR _("Backup files stored in (%s): "), 0, USTR _("  Path to backup files ") },
+	{USTR "syntax",	9, NULL, NULL, USTR _("Select syntax (^C to abort): "), 0, USTR _("Y Syntax") },
+	{USTR "encoding",13, NULL, NULL, USTR _("Select file character set (^C to abort): "), 0, USTR _("E Encoding ") },
+	{USTR "single_quoted",	4, NULL, (unsigned char *) &fdefault.single_quoted, USTR _("Single quoting enabled"), USTR _("Single quoting disabled"), USTR _("  ^G ignores '... ' ") },
+	{USTR "c_comment",	4, NULL, (unsigned char *) &fdefault.c_comment, USTR _("/* comments enabled"), USTR _("/* comments disabled"), USTR _("  ^G ignores /*...*/ ") },
+	{USTR "cpp_comment",	4, NULL, (unsigned char *) &fdefault.cpp_comment, USTR _("// comments enabled"), USTR _("// comments disabled"), USTR _("  ^G ignores //... ") },
+	{USTR "pound_comment",	4, NULL, (unsigned char *) &fdefault.pound_comment, USTR _("# comments enabled"), USTR _("# comments disabled"), USTR _("  ^G ignores #... ") },
+	{USTR "vhdl_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, USTR _("-- comments enabled"), USTR _("-- comments disabled"), USTR _("  ^G ignores --... ") },
+	{USTR "semi_comment",	4, NULL, (unsigned char *) &fdefault.semi_comment, USTR _("; comments enabled"), USTR _("; comments disabled"), USTR _("  ^G ignores ;... ") },
+	{USTR "text_delimiters",	6, NULL, (unsigned char *) &fdefault.text_delimiters, USTR _("Text delimiters (%s): "), 0, USTR _("  Text delimiters ") },
+	{USTR "language",	6, NULL, (unsigned char *) &fdefault.language, USTR _("Language (%s): "), 0, USTR _("V Language ") },
+	{USTR "cpara",		6, NULL, (unsigned char *) &fdefault.cpara, USTR _("Characters which can indent paragraphs (%s): "), 0, USTR _("  Paragraph indent chars ") },
+	{USTR "floatmouse",	0, &floatmouse, 0, USTR _("Clicking can move the cursor past end of line"), USTR _("Clicking past end of line moves cursor to the end"), USTR _("  Click past end ") },
+	{USTR "rtbutton",	0, &rtbutton, 0, USTR _("Mouse action is done with the right button"), USTR _("Mouse action is done with the left button"), USTR _("  Right button ") },
+	{USTR "nonotice",	0, &nonotice, NULL, 0, 0, 0 },
+	{USTR "help_is_utf8",	0, &help_is_utf8, NULL, 0, 0, 0 },
+	{USTR "noxon",	0, &noxon, NULL, 0, 0, 0 },
+	{USTR "orphan",	0, &orphan, NULL, 0, 0, 0 },
+	{USTR "help",	0, &help, NULL, 0, 0, 0 },
+	{USTR "dopadding",	0, &dopadding, NULL, 0, 0, 0 },
+	{USTR "lines",	1, &lines, NULL, 0, 0, 0, 0, 2, 1024 },
+	{USTR "baud",	1, &Baud, NULL, 0, 0, 0, 0, 50, 32767 },
+	{USTR "columns",	1, &columns, NULL, 0, 0, 0, 0, 2, 1024 },
+	{USTR "skiptop",	1, &skiptop, NULL, 0, 0, 0, 0, 0, 64 },
+	{USTR "notite",	0, &notite, NULL, 0, 0, 0 },
+	{USTR "mouse",	0, &xmouse, NULL, 0, 0, 0 },
+	{USTR "usetabs",	0, &usetabs, NULL, 0, 0, 0 },
+	{USTR "assume_color", 0, &assume_color, NULL, 0, 0, 0 },
+	{USTR "assume_256color", 0, &assume_256color, NULL, 0, 0, 0 },
+	{USTR "joexterm", 0, &joexterm, NULL, 0, 0, 0 },
 	{ NULL,		0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0 }
 };
 
@@ -523,21 +523,21 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 		/* Why no case 6, string option? */
 		/* Keymap, mold, mnew, etc. are not strings */
 		/* These options do not show up in ^T */
-		if (!zcmp(s, UC "lmsg")) {
+		if (!zcmp(s, USTR "lmsg")) {
 			if (arg) {
 				if (options)
 					options->lmsg = zdup(arg);
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "rmsg")) {
+		} else if (!zcmp(s, USTR "rmsg")) {
 			if (arg) {
 				if (options)
 					options->rmsg = zdup(arg);
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "keymap")) {
+		} else if (!zcmp(s, USTR "keymap")) {
 			if (arg) {
 				int y;
 
@@ -549,7 +549,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "mnew")) {
+		} else if (!zcmp(s, USTR "mnew")) {
 			if (arg) {
 				int sta;
 
@@ -558,7 +558,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "mfirst")) {
+		} else if (!zcmp(s, USTR "mfirst")) {
 			if (arg) {
 				int sta;
 
@@ -567,7 +567,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "mold")) {
+		} else if (!zcmp(s, USTR "mold")) {
 			if (arg) {
 				int sta;
 
@@ -576,7 +576,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "msnew")) {
+		} else if (!zcmp(s, USTR "msnew")) {
 			if (arg) {
 				int sta;
 
@@ -585,7 +585,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "msold")) {
+		} else if (!zcmp(s, USTR "msold")) {
 			if (arg) {
 				int sta;
 
@@ -594,7 +594,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "text_color")) {
+		} else if (!zcmp(s, USTR "text_color")) {
 			if (arg) {
 				bg_text = meta_color(arg);
 				bg_help = bg_text;
@@ -605,31 +605,31 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "help_color")) {
+		} else if (!zcmp(s, USTR "help_color")) {
 			if (arg) {
 				bg_help = meta_color(arg);
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "status_color")) {
+		} else if (!zcmp(s, USTR "status_color")) {
 			if (arg) {
 				bg_stalin = meta_color(arg);
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "menu_color")) {
+		} else if (!zcmp(s, USTR "menu_color")) {
 			if (arg) {
 				bg_menu = meta_color(arg);
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "prompt_color")) {
+		} else if (!zcmp(s, USTR "prompt_color")) {
 			if (arg) {
 				bg_prompt = meta_color(arg);
 				ret = 2;
 			} else
 				ret = 1;
-		} else if (!zcmp(s, UC "msg_color")) {
+		} else if (!zcmp(s, USTR "msg_color")) {
 			if (arg) {
 				bg_msg = meta_color(arg);
 				ret = 2;
@@ -742,9 +742,9 @@ static int syntaxcmplt(BW *bw)
 		unsigned char *p;
 		int x, y;
 
-		if (chpwd(UC (JOERC "syntax")))
+		if (chpwd(USTR (JOERC "syntax")))
 			return -1;
-		t = rexpnd(UC "*.jsf");
+		t = rexpnd(USTR "*.jsf");
 		if (!t) {
 			chpwd(oldpwd);
 			return -1;
@@ -765,7 +765,7 @@ static int syntaxcmplt(BW *bw)
 		if (p) {
 			unsigned char buf[1024];
 			joe_snprintf_1(buf,sizeof(buf),"%s/.joe/syntax",p);
-			if (!chpwd(buf) && (t = rexpnd(UC "*.jsf"))) {
+			if (!chpwd(buf) && (t = rexpnd(USTR "*.jsf"))) {
 				for (x = 0; x != aLEN(t); ++x)
 					*strrchr((char *)t[x],'.') = 0;
 				for (x = 0; x != aLEN(t); ++x) {
@@ -1081,7 +1081,7 @@ int procrc(CAP *cap, unsigned char *name)
 				c = buf[x];
 				buf[x] = 0;
 				if (x != 1)
-					if (!zcmp(buf + 1, UC "def")) {
+					if (!zcmp(buf + 1, USTR "def")) {
 						int y;
 
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
@@ -1103,7 +1103,7 @@ int procrc(CAP *cap, unsigned char *name)
 							err = 1;
 							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: command name missing from :def")), name, line);
 						}
-					} else if (!zcmp(buf + 1, UC "inherit")) {
+					} else if (!zcmp(buf + 1, USTR "inherit")) {
 						if (context) {
 							for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
 							for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
@@ -1118,7 +1118,7 @@ int procrc(CAP *cap, unsigned char *name)
 							err = 1;
 							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: No context selected for :inherit")), name, line);
 						}
-					} else if (!zcmp(buf + 1, UC "include")) {
+					} else if (!zcmp(buf + 1, USTR "include")) {
 						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
 						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
 						buf[c] = 0;
@@ -1154,7 +1154,7 @@ int procrc(CAP *cap, unsigned char *name)
 							err = 1;
 							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: :include missing file name")), name, line);
 						}
-					} else if (!zcmp(buf + 1, UC "delete")) {
+					} else if (!zcmp(buf + 1, USTR "delete")) {
 						if (context) {
 							int y;
 
@@ -1233,8 +1233,8 @@ void save_hist(FILE *f,B *b)
 	unsigned char buf[512];
 	int len;
 	if (b) {
-		P *p = pdup(b->bof, UC "save_hist");
-		P *q = pdup(b->bof, UC "save_hist");
+		P *p = pdup(b->bof, USTR "save_hist");
+		P *q = pdup(b->bof, USTR "save_hist");
 		if (b->eof->line>10)
 			pline(p,b->eof->line-10);
 		pset(q,p);
@@ -1271,9 +1271,9 @@ void load_hist(FILE *f,B **bp)
 	if (!b)
 		*bp = b = bmk(NULL);
 
-	q = pdup(b->eof, UC "load_hist");
+	q = pdup(b->eof, USTR "load_hist");
 
-	while(fgets((char *)buf,1023,f) && zcmp(buf,UC "done\n")) {
+	while(fgets((char *)buf,1023,f) && zcmp(buf,USTR "done\n")) {
 		unsigned char *p = buf;
 		int len;
 		parse_ws(&p,'#');
@@ -1347,32 +1347,32 @@ void load_state()
 
 		/* Read state information */
 		while(fgets((char *)buf,1023,f)) {
-			if(!zcmp(buf,UC "search\n"))
+			if(!zcmp(buf,USTR "search\n"))
 				load_srch(f);
-			else if(!zcmp(buf,UC "macros\n"))
+			else if(!zcmp(buf,USTR "macros\n"))
 				load_macros(f);
-			else if(!zcmp(buf,UC "files\n"))
+			else if(!zcmp(buf,USTR "files\n"))
 				load_hist(f,&filehist);
-			else if(!zcmp(buf,UC "find\n"))
+			else if(!zcmp(buf,USTR "find\n"))
 				load_hist(f,&findhist);
-			else if(!zcmp(buf,UC "replace\n"))
+			else if(!zcmp(buf,USTR "replace\n"))
 				load_hist(f,&replhist);
-			else if(!zcmp(buf,UC "run\n"))
+			else if(!zcmp(buf,USTR "run\n"))
 				load_hist(f,&runhist);
-			else if(!zcmp(buf,UC "build\n"))
+			else if(!zcmp(buf,USTR "build\n"))
 				load_hist(f,&buildhist);
-			else if(!zcmp(buf,UC "grep\n"))
+			else if(!zcmp(buf,USTR "grep\n"))
 				load_hist(f,&grephist);
-			else if(!zcmp(buf,UC "cmd\n"))
+			else if(!zcmp(buf,USTR "cmd\n"))
 				load_hist(f,&cmdhist);
-			else if(!zcmp(buf,UC "math\n"))
+			else if(!zcmp(buf,USTR "math\n"))
 				load_hist(f,&mathhist);
-			else if(!zcmp(buf,UC "yank\n"))
+			else if(!zcmp(buf,USTR "yank\n"))
 				load_yank(f);
-			else if (!zcmp(buf,UC "file_pos\n"))
+			else if (!zcmp(buf,USTR "file_pos\n"))
 				load_file_pos(f);
 			else { /* Unknown... skip until next done */
-				while(fgets((char *)buf,1023,f) && zcmp(buf,UC "done\n"));
+				while(fgets((char *)buf,1023,f) && zcmp(buf,USTR "done\n"));
 			}
 		}
 	}

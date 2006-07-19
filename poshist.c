@@ -25,7 +25,7 @@ static void markpos(W *w, P *p)
 	POS *new = alitem(&frpos, sizeof(POS));
 
 	new->p = NULL;
-	pdupown(p, &new->p, UC "markpos");
+	pdupown(p, &new->p, USTR "markpos");
 	poffline(new->p);
 	new->w = w;
 	enqueb(POS, link, &pos, new);

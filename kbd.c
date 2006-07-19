@@ -70,17 +70,17 @@ static int keyval(unsigned char *s)
 		 && (s[1] == 'P' || s[1] == 'p') && !s[2])
 		return ' ';
 	else if((s[0]=='M'||s[0]=='m') && s[1]) {
-		if(!zcmp(s,UC "MDOWN")) return KEY_MDOWN;
-		else if(!zcmp(s,UC "MWDOWN")) return KEY_MWDOWN;
-		else if(!zcmp(s,UC "MWUP")) return KEY_MWUP;
-		else if(!zcmp(s,UC "MUP")) return KEY_MUP;
-		else if(!zcmp(s,UC "MDRAG")) return KEY_MDRAG;
-		else if(!zcmp(s,UC "M2DOWN")) return KEY_M2DOWN;
-		else if(!zcmp(s,UC "M2UP")) return KEY_M2UP;
-		else if(!zcmp(s,UC "M2DRAG")) return KEY_M2DRAG;
-		else if(!zcmp(s,UC "M3DOWN")) return KEY_M3DOWN;
-		else if(!zcmp(s,UC "M3UP")) return KEY_M3UP;
-		else if(!zcmp(s,UC "M3DRAG")) return KEY_M3DRAG;
+		if(!zcmp(s,USTR "MDOWN")) return KEY_MDOWN;
+		else if(!zcmp(s,USTR "MWDOWN")) return KEY_MWDOWN;
+		else if(!zcmp(s,USTR "MWUP")) return KEY_MWUP;
+		else if(!zcmp(s,USTR "MUP")) return KEY_MUP;
+		else if(!zcmp(s,USTR "MDRAG")) return KEY_MDRAG;
+		else if(!zcmp(s,USTR "M2DOWN")) return KEY_M2DOWN;
+		else if(!zcmp(s,USTR "M2UP")) return KEY_M2UP;
+		else if(!zcmp(s,USTR "M2DRAG")) return KEY_M2DRAG;
+		else if(!zcmp(s,USTR "M3DOWN")) return KEY_M3DOWN;
+		else if(!zcmp(s,USTR "M3UP")) return KEY_M3UP;
+		else if(!zcmp(s,USTR "M3DRAG")) return KEY_M3DRAG;
 		else return s[0];
 	} else if (s[1] || !s[0])
 		return -1;
@@ -166,61 +166,61 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 		if (!zcmp(seq + 1, "ku")) {
 			capseq = "\0H";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "kd")) {
+		} else if (!zcmp(seq + 1, USTR "kd")) {
 			capseq = "\0P";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "kl")) {
+		} else if (!zcmp(seq + 1, USTR "kl")) {
 			capseq = "\0K";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "kr")) {
+		} else if (!zcmp(seq + 1, USTR "kr")) {
 			capseq = "\0M";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "kI")) {
+		} else if (!zcmp(seq + 1, USTR "kI")) {
 			capseq = "\0R";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "kD")) {
+		} else if (!zcmp(seq + 1, USTR "kD")) {
 			capseq = "\0S";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "kh")) {
+		} else if (!zcmp(seq + 1, USTR "kh")) {
 			capseq = "\0G";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "kH")) {
+		} else if (!zcmp(seq + 1, USTR "kH")) {
 			capseq = "\0O";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "kP")) {
+		} else if (!zcmp(seq + 1, USTR "kP")) {
 			capseq = "\0I";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "kN")) {
+		} else if (!zcmp(seq + 1, USTR "kN")) {
 			capseq = "\0Q";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "k1")) {
+		} else if (!zcmp(seq + 1, USTR "k1")) {
 			capseq = "\0;";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "k2")) {
+		} else if (!zcmp(seq + 1, USTR "k2")) {
 			capseq = "\0<";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "k3")) {
+		} else if (!zcmp(seq + 1, USTR "k3")) {
 			capseq = "\0=";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "k4")) {
+		} else if (!zcmp(seq + 1, USTR "k4")) {
 			capseq = "\0>";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "k5")) {
+		} else if (!zcmp(seq + 1, USTR "k5")) {
 			capseq = "\0?";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "k6")) {
+		} else if (!zcmp(seq + 1, USTR "k6")) {
 			capseq = "\0@";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "k7")) {
+		} else if (!zcmp(seq + 1, USTR "k7")) {
 			capseq = "\0A";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "k8")) {
+		} else if (!zcmp(seq + 1, USTR "k8")) {
 			capseq = "\0B";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "k9")) {
+		} else if (!zcmp(seq + 1, USTR "k9")) {
 			capseq = "\0C";
 			seql = 2;
-		} else if (!zcmp(seq + 1, UC "k0")) {
+		} else if (!zcmp(seq + 1, USTR "k0")) {
 			capseq = "\0D";
 			seql = 2;
 		}
@@ -378,6 +378,6 @@ static int keymap_cmplt(BW *bw)
 
 int ukeymap(BASE *bw)
 {
-	if (wmkpw(bw->parent,joe_gettext(_("Change keymap: ")),&keymaphist,dokeymap,UC "keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
+	if (wmkpw(bw->parent,joe_gettext(_("Change keymap: ")),&keymaphist,dokeymap,USTR "keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
 	else return -1;
 }

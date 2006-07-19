@@ -78,7 +78,7 @@ static double expr(int prec, int en,struct var **rtv)
 		}
 		c = *ptr;
 		*ptr = 0;
-		if (!zcmp(s,UC "joe")) {
+		if (!zcmp(s,USTR "joe")) {
 			*ptr = c;
 			v = 0;
 			x = 0.0;
@@ -116,39 +116,39 @@ static double expr(int prec, int en,struct var **rtv)
 		} else if (!en) {
 			v = 0;
 			x = 0.0;
-		} else if (!zcmp(s,UC "hex")) {
+		} else if (!zcmp(s,USTR "hex")) {
 			mode_hex = 1;
 			mode_eng = 0;
-			v = get(UC "ans");
+			v = get(USTR "ans");
 			x = v->val;
-		} else if (!zcmp(s,UC "dec")) {
+		} else if (!zcmp(s,USTR "dec")) {
 			mode_hex = 0;
 			mode_eng = 0;
-			v = get(UC "ans");
+			v = get(USTR "ans");
 			x = v->val;
-		} else if (!zcmp(s,UC "eng")) {
+		} else if (!zcmp(s,USTR "eng")) {
 			mode_hex = 0;
 			mode_eng = 1;
-			v = get(UC "ans");
+			v = get(USTR "ans");
 			x = v->val;
-		} else if (!zcmp(s,UC "ins")) {
+		} else if (!zcmp(s,USTR "ins")) {
 			mode_ins = 1;
-			v = get(UC "ans");
+			v = get(USTR "ans");
 			x = v->val;
-		} else if (!zcmp(s,UC "sum")) {
+		} else if (!zcmp(s,USTR "sum")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
-		} else if (!zcmp(s,UC "cnt")) {
+		} else if (!zcmp(s,USTR "cnt")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 			x = cnt;
-		} else if (!zcmp(s,UC "avg")) {
+		} else if (!zcmp(s,USTR "avg")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
@@ -156,7 +156,7 @@ static double expr(int prec, int en,struct var **rtv)
 			v = 0;
 			if (cnt)
 				x /= (double)cnt;
-		} else if (!zcmp(s,UC "dev")) {
+		} else if (!zcmp(s,USTR "dev")) {
 			double xsq;
 			double avg;
 			int cnt = blksum(&x, &xsq);
@@ -167,7 +167,7 @@ static double expr(int prec, int en,struct var **rtv)
 				avg = x / (double)cnt;
 				x = sqrt(xsq + (double)cnt*avg*avg - 2.0*avg*x);
 			}
-		} else if (!zcmp(s,UC "eval")) {
+		} else if (!zcmp(s,USTR "eval")) {
 			unsigned char *save = ptr;
 			unsigned char *e = blkget();
 			if (e) {
@@ -320,7 +320,7 @@ static double expr(int prec, int en,struct var **rtv)
 				x = z;
 			v = 0;  
 		} else if (!merr) {
-			merr = UC ": missing after ?";
+			merr = USTR ": missing after ?";
 		}
 		goto loop;
 	} else if (*ptr == '=' && 1 >= prec) {
@@ -352,7 +352,7 @@ static double eval(unsigned char *s)
 	ptr = s;
 	while (!merr && *ptr) {
 		result = expr(0, 1, &dumb);
-		v = get(UC "ans");
+		v = get(USTR "ans");
 		v->val = result;
 		v->set = 1;
 		if (!merr) {
@@ -409,77 +409,77 @@ double calc(BW *bw, unsigned char *s)
 	int c = brch(bw->cursor);
 
 	if (!vars) {
-		v = get(UC "sin"); v->func = m_sin;
-		v = get(UC "cos"); v->func = m_cos;
-		v = get(UC "tan"); v->func = m_tan;
-		v = get(UC "exp"); v->func = m_exp;
-		v = get(UC "sqrt"); v->func = m_sqrt;
-		v = get(UC "cbrt"); v->func = m_cbrt;
-		v = get(UC "ln"); v->func = m_log;
-		v = get(UC "log"); v->func = m_log10;
-		v = get(UC "asin"); v->func = m_asin;
-		v = get(UC "acos"); v->func = m_acos;
-		v = get(UC "atan"); v->func = m_atan;
-		v = get(UC "pi"); v->val = M_PI; v->set = 1;
-		v = get(UC "e"); v->val = M_E; v->set = 1;
-		v = get(UC "sinh"); v->func = m_sinh;
-		v = get(UC "cosh"); v->func = m_cosh;
-		v = get(UC "tanh"); v->func = m_tanh;
-		v = get(UC "asinh"); v->func = m_asinh;
-		v = get(UC "acosh"); v->func = m_acosh;
-		v = get(UC "atanh"); v->func = m_atanh;
-		v = get(UC "int"); v->func = m_int;
-		v = get(UC "floor"); v->func = m_floor;
-		v = get(UC "ceil"); v->func = m_ceil;
-		v = get(UC "abs"); v->func = m_fabs;
-		v = get(UC "erf"); v->func = m_erf;
-		v = get(UC "erfc"); v->func = m_erfc;
-		v = get(UC "j0"); v->func = m_j0;
-		v = get(UC "j1"); v->func = m_j1;
-		v = get(UC "y0"); v->func = m_y0;
-		v = get(UC "y1"); v->func = m_y1;
+		v = get(USTR "sin"); v->func = m_sin;
+		v = get(USTR "cos"); v->func = m_cos;
+		v = get(USTR "tan"); v->func = m_tan;
+		v = get(USTR "exp"); v->func = m_exp;
+		v = get(USTR "sqrt"); v->func = m_sqrt;
+		v = get(USTR "cbrt"); v->func = m_cbrt;
+		v = get(USTR "ln"); v->func = m_log;
+		v = get(USTR "log"); v->func = m_log10;
+		v = get(USTR "asin"); v->func = m_asin;
+		v = get(USTR "acos"); v->func = m_acos;
+		v = get(USTR "atan"); v->func = m_atan;
+		v = get(USTR "pi"); v->val = M_PI; v->set = 1;
+		v = get(USTR "e"); v->val = M_E; v->set = 1;
+		v = get(USTR "sinh"); v->func = m_sinh;
+		v = get(USTR "cosh"); v->func = m_cosh;
+		v = get(USTR "tanh"); v->func = m_tanh;
+		v = get(USTR "asinh"); v->func = m_asinh;
+		v = get(USTR "acosh"); v->func = m_acosh;
+		v = get(USTR "atanh"); v->func = m_atanh;
+		v = get(USTR "int"); v->func = m_int;
+		v = get(USTR "floor"); v->func = m_floor;
+		v = get(USTR "ceil"); v->func = m_ceil;
+		v = get(USTR "abs"); v->func = m_fabs;
+		v = get(USTR "erf"); v->func = m_erf;
+		v = get(USTR "erfc"); v->func = m_erfc;
+		v = get(USTR "j0"); v->func = m_j0;
+		v = get(USTR "j1"); v->func = m_j1;
+		v = get(USTR "y0"); v->func = m_y0;
+		v = get(USTR "y1"); v->func = m_y1;
 	}
 
-	v = get(UC "top");
+	v = get(USTR "top");
 	v->val = tbw->top->line + 1;
 	v->set = 1;
-	v = get(UC "lines");
+	v = get(USTR "lines");
 	v->val = tbw->b->eof->line + 1;
 	v->set = 1;
-	v = get(UC "line");
+	v = get(USTR "line");
 	v->val = tbw->cursor->line + 1;
 	v->set = 1;
-	v = get(UC "col");
+	v = get(USTR "col");
 	v->val = tbw->cursor->col + 1;
 	v->set = 1;
-	v = get(UC "byte");
+	v = get(USTR "byte");
 	v->val = tbw->cursor->byte + 1;
 	v->set = 1;
-	v = get(UC "size");
+	v = get(USTR "size");
 	v->val = tbw->b->eof->byte;
 	v->set = 1;
-	v = get(UC "height");
+	v = get(USTR "height");
 	v->val = tbw->h;
 	v->set = 1;
-	v = get(UC "width");
+	v = get(USTR "width");
 	v->val = tbw->w;
 	v->set = 1;
-	v = get(UC "char");
+	v = get(USTR "char");
 	v->val = (c == NO_MORE_DATA ? -1.0 : c);
 	v->set = 1;
-	v = get(UC "markv");
+	v = get(USTR "markv");
 	v->val = markv(1) ? 1.0 : 0.0;
 	v->set = 1;
-	v = get(UC "rdonly");
+	v = get(USTR "rdonly");
 	v->val = tbw->b->rdonly;
 	v->set = 1;
-	v = get(UC "arg");
+	v = get(USTR "arg");
 	v->val = current_arg;
 	v->set = 1;
-	v = get(UC "argset");
+	v = get(USTR "argset");
 	v->val = current_arg_set;
 	v->set = 1;
-	v = get(UC "no_windows");
+	v = get(USTR "no_windows");
 	v->val = countmain(bw->parent->t);
 	v->set = 1;
 	merr = 0;
@@ -521,7 +521,7 @@ B *mathhist = NULL;
 int umath(BW *bw)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(bw->parent, UC "=", &mathhist, domath, UC "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(bw->parent, USTR "=", &mathhist, domath, USTR "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;

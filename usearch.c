@@ -39,7 +39,7 @@ unsigned char **get_word_list(B *b,int ignore)
 
 	h = htmk(1024);
 
-	p = pdup(b->bof, UC "get_word_list");
+	p = pdup(b->bof, USTR "get_word_list");
 	idx = 0;
 	while ((c=pgetc(p))!=NO_MORE_DATA)
 		if (idx) {
@@ -76,7 +76,7 @@ unsigned char **get_word_list(B *b,int ignore)
 
 void fcmplt_ins(BW *bw, unsigned char *line)
 {
-	P *p = pdup(bw->cursor, UC "fcmplt_ins");
+	P *p = pdup(bw->cursor, USTR "fcmplt_ins");
 	int c;
 
 	if (!piseol(bw->cursor)) {
@@ -87,7 +87,7 @@ void fcmplt_ins(BW *bw, unsigned char *line)
 
 	/* Move p to beginning of word */
 
-	p = pdup(bw->cursor, UC "fcmplt_ins");
+	p = pdup(bw->cursor, USTR "fcmplt_ins");
 	do
 		c = prgetc(p);
 		while (joe_isalnum_(bw->b->o.charmap,c));
@@ -143,7 +143,7 @@ int ufinish(BW *bw)
 
 	/* Move p to beginning of word */
 
-	p = pdup(bw->cursor, UC "ufinish");
+	p = pdup(bw->cursor, USTR "ufinish");
 	do
 		c = prgetc(p);
 		while (joe_isalnum_(bw->b->o.charmap,c));
@@ -242,8 +242,8 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 	int x;
 
 	pattern = srch->pattern;
-	start = pdup(p, UC "searchf");
-	end = pdup(p, UC "searchf");
+	start = pdup(p, USTR "searchf");
+	end = pdup(p, USTR "searchf");
 
 	try_again:
 
@@ -310,8 +310,8 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 	P *end;
 	int x;
 
-	start = pdup(p, UC "searchb");
-	end = pdup(p, UC "searchb");
+	start = pdup(p, USTR "searchb");
+	end = pdup(p, USTR "searchb");
 
 	try_again:
 
@@ -612,7 +612,7 @@ static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
 		/* if (pico && globalsrch && globalsrch->replacement) {
 			joe_snprintf_1(bf1,30,"%s",globalsrch->replacement);
 			if (zlen(globalsrch->replacement)>29)
-				zcat(bf1,UC "$");
+				zcat(bf1,USTR "$");
 			joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Replace with (^C to abort) [%s]: ")),bf1);
 		} else */
 			zcpy(buf, joe_gettext(_("Replace with (^C to abort): ")));
@@ -710,7 +710,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 	}
 	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0, 0);
 	srch->addr = bw->cursor->byte;
-	srch->wrap_p = pdup(bw->cursor, UC "dofirst");
+	srch->wrap_p = pdup(bw->cursor, USTR "dofirst");
 	srch->wrap_p->owner = &srch->wrap_p;
 	if (pico && globalsrch && globalsrch->pattern) {
 		unesc_genfmt(bf1, globalsrch->pattern, 30);
@@ -757,7 +757,7 @@ static int doreplace(BW *bw, SRCH *srch)
 		markk->end = 1;
 	if (srch->markk)
 		srch->markk->end = 1;
-	q = pdup(bw->cursor, UC "doreplace");
+	q = pdup(bw->cursor, USTR "doreplace");
 	if (srch->backwards) {
 		q = pfwrd(q, (long) sLEN(srch->entire));
 		bdel(bw->cursor, q);
@@ -1031,15 +1031,15 @@ bye:		if (!srch->flg && !srch->rest) {
 			if (square)
 				bw->cursor->xcol = piscol(bw->cursor);
 			if (srch->backwards) {
-				pdupown(bw->cursor, &markb, UC "dopfnext");
+				pdupown(bw->cursor, &markb, USTR "dopfnext");
 				markb->xcol = piscol(markb);
-				pdupown(markb, &markk, UC "dopfnext");
+				pdupown(markb, &markk, USTR "dopfnext");
 				pfwrd(markk, (long) sLEN(srch->entire));
 				markk->xcol = piscol(markk);
 			} else {
-				pdupown(bw->cursor, &markk, UC "dopfnext");
+				pdupown(bw->cursor, &markk, USTR "dopfnext");
 				markk->xcol = piscol(markk);
-				pdupown(bw->cursor, &markb, UC "dopfnext");
+				pdupown(bw->cursor, &markb, USTR "dopfnext");
 				pbkwd(markb, (long) sLEN(srch->entire));
 				markb->xcol = piscol(markb);
 			}
@@ -1074,7 +1074,7 @@ int pfnext(BW *bw)
 		srch->addr = bw->cursor->byte;
 		if (!srch->wrap_p || srch->wrap_p->b!=bw->b) {
 			prm(srch->wrap_p);
-			srch->wrap_p = pdup(bw->cursor, UC "pfnext");
+			srch->wrap_p = pdup(bw->cursor, USTR "pfnext");
 			srch->wrap_p->owner = &srch->wrap_p;
 			srch->wrap_flag = 0;
 		}
@@ -1113,33 +1113,33 @@ void load_srch(FILE *f)
 	int ignore = 0;
 	int replace = 0;
 	int block_restrict = 0;
-	while(fgets((char *)buf,1023,f) && zcmp(buf,UC "done\n")) {
+	while(fgets((char *)buf,1023,f) && zcmp(buf,USTR "done\n")) {
 		unsigned char *p=buf;
 		parse_ws(&p,'#');
-		if(!parse_kw(&p,UC "pattern")) {
+		if(!parse_kw(&p,USTR "pattern")) {
 			int len;
 			parse_ws(&p,'#');
 			bf[0] = 0;
 			len = parse_string(&p,bf,sizeof(bf));
 			if (len>0)
 				pattern = vsncpy(NULL,0,bf,len);
-		} else if(!parse_kw(&p,UC "replacement")) {
+		} else if(!parse_kw(&p,USTR "replacement")) {
 			int len;
 			parse_ws(&p,'#');
 			bf[0] = 0;
 			len = parse_string(&p,bf,sizeof(bf));
 			if (len>0)
 				replacement = vsncpy(NULL,0,bf,len);
-		} else if(!parse_kw(&p,UC "backwards")) {
+		} else if(!parse_kw(&p,USTR "backwards")) {
 			parse_ws(&p,'#');
 			parse_int(&p,&backwards);
-		} else if(!parse_kw(&p,UC "ignore")) {
+		} else if(!parse_kw(&p,USTR "ignore")) {
 			parse_ws(&p,'#');
 			parse_int(&p,&ignore);
-		} else if(!parse_kw(&p,UC "replace")) {
+		} else if(!parse_kw(&p,USTR "replace")) {
 			parse_ws(&p,'#');
 			parse_int(&p,&replace);
-		} else if(!parse_kw(&p,UC "block_restrict")) {
+		} else if(!parse_kw(&p,USTR "block_restrict")) {
 			parse_ws(&p,'#');
 			parse_int(&p,&block_restrict);
 		}

@@ -83,7 +83,7 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 
 	if (!srch->wrap_p || srch->wrap_p->b!=bw->b) {
 		prm(srch->wrap_p);
-		srch->wrap_p = pdup(bw->cursor, UC "iappend");
+		srch->wrap_p = pdup(bw->cursor, USTR "iappend");
 		srch->wrap_p->owner = &srch->wrap_p;
 		srch->wrap_flag = 0;
 	}
@@ -156,7 +156,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 
 			if (!srch->wrap_p || srch->wrap_p->b!=bw->b) {
 				prm(srch->wrap_p);
-				srch->wrap_p = pdup(bw->cursor, UC "itype");
+				srch->wrap_p = pdup(bw->cursor, USTR "itype");
 				srch->wrap_p->owner = &srch->wrap_p;
 				srch->wrap_flag = 0;
 			}

@@ -347,7 +347,7 @@ CAP *my_getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned cha
 	varm(npbuf);
 	vsrm(name);
 
-	cap->pad = jgetstr(cap, UC "pc");
+	cap->pad = jgetstr(cap, USTR "pc");
 	if (dopadding)
 		cap->dopadding = 1;
 	else

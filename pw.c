@@ -89,7 +89,7 @@ void setup_history(B **history)
 
 void append_history(B *hist,unsigned char *s,int len)
 {
-	P *q = pdup(hist->eof, UC "append_history");
+	P *q = pdup(hist->eof, USTR "append_history");
 	binsm(q, s, len);
 	p_goto_eof(q);
 	binsc(q, '\n');
@@ -100,14 +100,14 @@ void append_history(B *hist,unsigned char *s,int len)
 
 void promote_history(B *hist, long line)
 {
-	P *q = pdup(hist->bof, UC "promote_history");
+	P *q = pdup(hist->bof, USTR "promote_history");
 	P *r;
 	P *t;
 
 	pline(q, line);
-	r = pdup(q, UC "promote_history");
+	r = pdup(q, USTR "promote_history");
 	pnextl(r);
-	t = pdup(hist->eof, UC "promote_history");
+	t = pdup(hist->eof, USTR "promote_history");
 	binsb(t, bcpy(q, r));
 	bdel(q, r);
 	prm(q);
@@ -216,7 +216,7 @@ static int abortpw(BW *b)
 }
 
 static WATOM watompw = {
-	UC "prompt",
+	USTR "prompt",
 	disppw,
 	bwfllwt,
 	abortpw,
@@ -292,7 +292,7 @@ unsigned char **regsub(unsigned char **z, int len, unsigned char *s)
 
 void cmplt_ins(BW *bw, unsigned char *line)
 {
-	P *p = pdup(bw->cursor, UC "cmplt_ins");
+	P *p = pdup(bw->cursor, USTR "cmplt_ins");
 
 	p_goto_bol(p);
 	p_goto_eol(bw->cursor);
@@ -329,9 +329,9 @@ int simple_cmplt(BW *bw,unsigned char **list)
 	unsigned char *line1;
 	unsigned char **lst;
 
-	p = pdup(bw->cursor, UC "simple_cmplt");
+	p = pdup(bw->cursor, USTR "simple_cmplt");
 	p_goto_bol(p);
-	q = pdup(bw->cursor, UC "simple_cmplt");
+	q = pdup(bw->cursor, USTR "simple_cmplt");
 	p_goto_eol(q);
 	line = brvs(p, (int) (q->byte - p->byte));	/* Assumes short lines :-) */
 	prm(p);

@@ -178,7 +178,7 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 				}
 			} else
 				m = mkmacro(-1, 0, 0, NULL);
-			addmacro(m, mkmacro(buf[x], 0, 0, findcmd(UC "type")));
+			addmacro(m, mkmacro(buf[x], 0, 0, findcmd(USTR "type")));
 			++x;
 		}
 		if (buf[x] == '\"')
@@ -283,7 +283,7 @@ static void domtext(MACRO *m)
 		for (x = 0; x != m->n; ++x)
 			domtext(m->steps[x]);
 	else {
-		if (instr && zcmp(m->cmd->name, UC "type")) {
+		if (instr && zcmp(m->cmd->name, USTR "type")) {
 			*ptr++ = '\"';
 			instr = 0;
 		}
@@ -291,7 +291,7 @@ static void domtext(MACRO *m)
 			first = 0;
 		else if (!instr)
 			*ptr++ = ',';
-		if (!zcmp(m->cmd->name, UC "type")) {
+		if (!zcmp(m->cmd->name, USTR "type")) {
 			if (!instr) {
 				*ptr++ = '\"';
 				instr = 1;
@@ -300,7 +300,7 @@ static void domtext(MACRO *m)
 		} else {
 			for (x = 0; m->cmd->name[x]; ++x)
 				*ptr++ = m->cmd->name[x];
-			if (!zcmp(m->cmd->name, UC "play") || !zcmp(m->cmd->name, UC "gomark") || !zcmp(m->cmd->name, UC "setmark") || !zcmp(m->cmd->name, UC "record") || !zcmp(m->cmd->name, UC "uarg")) {
+			if (!zcmp(m->cmd->name, USTR "play") || !zcmp(m->cmd->name, USTR "gomark") || !zcmp(m->cmd->name, USTR "setmark") || !zcmp(m->cmd->name, USTR "record") || !zcmp(m->cmd->name, USTR "uarg")) {
 				*ptr++ = ',';
 				*ptr++ = '"';
 				ptr = unescape(ptr, m->k);
@@ -678,7 +678,7 @@ int ustop(void)
 			rmmacro(kbdmacro[r->n]);
 		kbdmacro[r->n] = r->m;
 		if (recmac)
-			record(m = mkmacro(r->n + '0', 0, 0, findcmd(UC "play"))), rmmacro(m);
+			record(m = mkmacro(r->n + '0', 0, 0, findcmd(USTR "play"))), rmmacro(m);
 		joe_free(r);
 	}
 	return 0;
@@ -742,7 +742,7 @@ void load_macros(FILE *f)
 {
 	unsigned char buf[1024];
 	unsigned char bf[1024];
-	while(fgets((char *)buf,1023,f) && zcmp(buf,UC "done\n")) {
+	while(fgets((char *)buf,1023,f) && zcmp(buf,USTR "done\n")) {
 		unsigned char *p = buf;
 		int n;
 		int len;
