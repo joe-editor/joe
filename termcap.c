@@ -18,10 +18,6 @@
 #include <term.h>
 #endif
 
-#ifdef HAVE_TERMCAP_H
-#include <termcap.h>
-#endif
-
 #endif
 
 int dopadding = 0;
