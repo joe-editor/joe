@@ -16,7 +16,7 @@ sysconf_doc_DATA = LIST README HINTS ChangeLog HACKING NEWS
 
 noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	macro.h main.h menu.h path.h poshist.h pw.h queue.h qw.h rc.h regex.h \
-	scrn.h tab.h termcap.h tty.h tw.h types.h ublock.h uedit.h uerror.h \
+	scrn.h tab.h termcapj.h tty.h tw.h types.h ublock.h uedit.h uerror.h \
 	ufile.h uformat.h uisrch.h umath.h undo.h usearch.h ushell.h utag.h \
 	utils.h va.h vfile.h vs.h w.h utf8.h syntax.h i18n.h charmap.h mouse.h \
 	lattr.h gettext.h builtin.h

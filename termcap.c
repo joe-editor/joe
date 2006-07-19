@@ -143,7 +143,7 @@ static long findidx(FILE *file, unsigned char *name)
 
 /* Load termcap entry */
 
-CAP *getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *, unsigned char), void *outptr)
+CAP *my_getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *, unsigned char), void *outptr)
 {
 	CAP *cap;
 	FILE *f, *f1;
@@ -727,7 +727,7 @@ unsigned char c;
 int tgetent(buf, name)
 unsigned char *buf, *name;
 {
-	latest = getcap(name, 9600, stupid, NULL);
+	latest = my_getcap(name, 9600, stupid, NULL);
 	if (latest)
 		return 1;
 	else

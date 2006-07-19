@@ -264,7 +264,7 @@ struct highlight_state {
 #include "scrn.h"
 #include "syntax.h"
 #include "tab.h"
-#include "termcap.h"
+#include "termcapj.h"
 #include "tty.h"
 #include "tw.h"
 #include "ublock.h"

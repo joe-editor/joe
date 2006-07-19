@@ -203,7 +203,7 @@ int main(int argc, char **real_argv, char **envv)
 		joeterm = s;
 
 #ifndef __MSDOS__
-	if (!(cap = getcap(NULL, 9600, NULL, NULL))) {
+	if (!(cap = my_getcap(NULL, 9600, NULL, NULL))) {
 		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap/terminfo entry\n")));
 		return 1;
 	}
