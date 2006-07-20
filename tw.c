@@ -69,44 +69,44 @@ static void resizetw(BW *bw, int wi, int he)
 unsigned char *get_context(BW *bw)
 {
 	P *p = pdup(bw->cursor, USTR "get_context");
-	static unsigned char buf1[stdsiz];
-	int i, j, spc;
+	unsigned char *buf = 0;
+	unsigned char *buf1;
+	int i, spc;
 
 
-	buf1[0] = 0;
+	buf1 = vsmk(128);
 	/* Find first line with 0 indentation which is not a comment line */
 	do {
 		p_goto_bol(p);
 		if (!pisindent(p) && !pisblank(p)) {
 			/* next: */
-			brzs(p,stdbuf,stdsiz/8); /* To avoid buffer overruns with my_iconv */
+			buf = brlinevs(buf, p);
 			/* Ignore comment and block structuring lines */
-			if (!(stdbuf[0]=='{' ||
-			    (stdbuf[0]=='/' && stdbuf[1]=='*') ||
-			    stdbuf[0]=='\f' ||
-			    (stdbuf[0]=='/' && stdbuf[1]=='/') ||
-			    stdbuf[0]=='#' ||
-			    (stdbuf[0]=='b' && stdbuf[1]=='e' && stdbuf[2]=='g' && stdbuf[3]=='i' && stdbuf[4]=='n') ||
-			    (stdbuf[0]=='B' && stdbuf[1]=='E' && stdbuf[2]=='G' && stdbuf[3]=='I' && stdbuf[4]=='N') ||
-			    (stdbuf[0]=='-' && stdbuf[1]=='-') ||
-			    stdbuf[0]==';')) {
-			    	/* zcpy(buf1,stdbuf); */
+			if (!(buf[0]=='{' ||
+			    (buf[0]=='/' && buf[1]=='*') ||
+			    buf[0]=='\f' ||
+			    (buf[0]=='/' && buf[1]=='/') ||
+			    buf[0]=='#' ||
+			    (buf[0]=='b' && buf[1]=='e' && buf[2]=='g' && buf[3]=='i' && buf[4]=='n') ||
+			    (buf[0]=='B' && buf[1]=='E' && buf[2]=='G' && buf[3]=='I' && buf[4]=='N') ||
+			    (buf[0]=='-' && buf[1]=='-') ||
+			    buf[0]==';')) {
  				/* replace tabs to spaces and remove adjoining spaces */
- 				for (i=0,j=0,spc=0; stdbuf[i]; i++) {
- 					if (stdbuf[i]=='\t' || stdbuf[i]==' ') {
+ 				buf1 = vstrunc(buf1, 0);
+ 				for (i=0,spc=0; buf[i]; i++) {
+ 					if (buf[i]=='\t' || buf[i]==' ') {
  						if (spc) continue;
  						spc = 1;
  					}
  					else spc = 0;
- 					if (stdbuf[i]=='\t')
- 						buf1[j++] = ' ';
-					else if (stdbuf[i]=='\\') {
-						buf1[j++] = '\\';
-						buf1[j++] = '\\';
+ 					if (buf[i]=='\t')
+ 						buf1 = vsadd(buf1, ' ');
+					else if (buf[i]=='\\') {
+						buf1 = vsadd(buf1, '\\');
+						buf1 = vsadd(buf1, '\\');
 					} else
-						buf1[j++] = stdbuf[i];
+						buf1 = vsadd(buf1, buf[i]);
  				}
- 				buf1[j]= '\0';
 				/* Uncomment to get the last line instead of the first line (see above)
 			    	if (pprevl(p)) {
 			    		p_goto_bol(p);
@@ -132,6 +132,7 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 	W *w = bw->parent;
 
 	stalin = vstrunc(stalin, 0);
+	obj_perm(stalin);
 	while (*s) {
 		if (*s == '%' && s[1]) {
 			switch (*++s) {
@@ -139,10 +140,8 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				{
 					if ( bw->o.autoindent) {
 						unsigned char *s = get_context(bw);
-						/* We need to translate between file's character set to
-						   locale */
-						my_iconv(stdbuf,locale_map,s,bw->o.charmap);
-						stalin = vsncpy(sv(stalin), sz(stdbuf));
+						unsigned char *t = my_iconv(NULL,locale_map,s,bw->o.charmap);
+						stalin = vscat(stalin, sv(t));
 					}
 				}
 				break;
@@ -208,7 +207,6 @@ static unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, in
 				if (bw->b->name) {
 					unsigned char *tmp = simplify_prefix(bw->b->name);
 					stalin = vsncpy(sv(stalin), sv(tmp));
-					vsrm(tmp);
 				} else {
 					stalin = vsncpy(sv(stalin), sz(joe_gettext(_("Unnamed"))));
 				}
@@ -379,8 +377,8 @@ static void disptw(BW *bw, int flg)
 		if (fmtlen(tw->staright) < w->w) {
 			int x = fmtpos(tw->stalin, w->w - fmtlen(tw->staright));
 
-			if (x > sLEN(tw->stalin))
-				tw->stalin = vsfill(sv(tw->stalin), fill, x - sLEN(tw->stalin));
+			if (x > vslen(tw->stalin))
+				tw->stalin = vsfill(sv(tw->stalin), fill, x - vslen(tw->stalin));
 			tw->stalin = vsncpy(tw->stalin, fmtpos(tw->stalin, w->w - fmtlen(tw->staright)), sv(tw->staright));
 		}
 		tw->stalin = vstrunc(tw->stalin, fmtpos(tw->stalin, w->w));
@@ -514,7 +512,7 @@ int abortit(BW *bw)
 			return 0;
 		}
 	bwrm(bw);
-	vsrm(tw->stalin);
+	obj_free(tw->stalin);
 	joe_free(tw);
 	w->object = NULL;
 	wabort(w);	/* Eliminate this window and it's children */

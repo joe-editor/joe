@@ -1370,7 +1370,6 @@ static int doline(BW *bw, unsigned char *s, void *object, int *notify)
 
 	if (notify)
 		*notify = 1;
-	vsrm(s);
 	if (num >= 1 && !merr) {
 		int tmp = mid;
 
@@ -1408,7 +1407,6 @@ static int docol(BW *bw, unsigned char *s, void *object, int *notify)
 
 	if (notify)
 		*notify = 1;
-	vsrm(s);
 	if (num >= 1 && !merr) {
 		int tmp = mid;
 
@@ -1444,7 +1442,6 @@ static int dobyte(BW *bw, unsigned char *s, void *object, int *notify)
 
 	if (notify)
 		*notify = 1;
-	vsrm(s);
 	if (num >= 0 && !merr) {
 		int tmp = mid;
 
@@ -1879,7 +1876,6 @@ static int dounicode(BW *bw, unsigned char *s, void *object, int *notify)
 	sscanf((char *)s,"%x",(unsigned  *)&num);
 	if (notify)
 		*notify = 1;
-	vsrm(s);
 	utypebw_raw(bw, num, 1);
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
@@ -2163,8 +2159,7 @@ static int dosetmark(BW *bw, int c, void *object, int *notify)
 		pdupown(bw->cursor, bw->b->marks + c - '0', USTR "dosetmark");
 		poffline(bw->b->marks[c - '0']);
 		if (c!=':') {
-			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Mark %d set")), c - '0');
-			msgnw(bw->parent, msgbuf);
+			msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("Mark %d set")), c - '0'));
 		}
 		return 0;
 	} else {
@@ -2195,8 +2190,7 @@ static int dogomark(BW *bw, int c, void *object, int *notify)
 			bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		} else {
-			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Mark %d not set")), c - '0');
-			msgnw(bw->parent, msgbuf);
+			msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("Mark %d not set")), c - '0'));
 			return -1;
 	} else {
 		nungetc(c);
@@ -2279,9 +2273,7 @@ static int domsg(BASE *b, unsigned char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
-	zcpy(msgbuf, s);
-	vsrm(s);
-	msgnw(b->parent, msgbuf);
+	msgnw(b->parent, s);
 	return 0;
 }
 
@@ -2301,9 +2293,8 @@ static int dotxt(BW *bw, unsigned char *s, void *object, int *notify)
 
 	if (notify)
 		*notify = 1;
-	for (x = 0; x != sLEN(s); ++x)
+	for (x = 0; x != vslen(s); ++x)
 		utypebw(bw, s[x]);
-	vsrm(s);
 	return 0;
 }
 

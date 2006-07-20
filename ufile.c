@@ -32,6 +32,7 @@ int exask = 0;
 void genexmsg(BW *bw, int saved, unsigned char *name)
 {
 	unsigned char *s;
+	unsigned char *m;
 
 	if (bw->b->name && bw->b->name[0]) {
 		s = bw->b->name;
@@ -41,38 +42,43 @@ void genexmsg(BW *bw, int saved, unsigned char *name)
 
 	if (name) {
 		if (saved) {
-			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("File %s saved")), name);
+			m = vsfmt(NULL, 0, joe_gettext(_("File %s saved")), name);
 		} else {
-			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("File %s not saved")), name);
+			m = vsfmt(NULL, 0, joe_gettext(_("File %s not saved")), name);
 		}
 	} else if (bw->b->changed && bw->b->count == 1) {
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("File %s not saved")), s);
+		m = vsfmt(NULL, 0, joe_gettext(_("File %s not saved")), s);
 	} else if (saved) {
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("File %s saved")), s);
+		m = vsfmt(NULL, 0, joe_gettext(_("File %s saved")), s);
 	} else {
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("File %s not changed so no update needed")), s);
+		m = vsfmt(NULL, 0, joe_gettext(_("File %s not changed so no update needed")), s);
 	}
 	if (exmsg)
-		vsrm(exmsg);
+		obj_free(exmsg);
 
-	exmsg = vsncpy(NULL,0,sz(msgbuf));
-	msgnw(bw->parent, msgbuf);
+	exmsg = m;
+	obj_perm(exmsg);
+	msgnw(bw->parent, m);
 }
 
 /* For ^X ^C */
 void genexmsgmulti(BW *bw, int saved, int skipped)
 {
+	unsigned char *m;
 	if (saved)
 		if (skipped)
-			joe_snprintf_0(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Some files have not been saved.")));
+			m = vsdupz(joe_gettext(_("Some files have not been saved.")));
 		else
-			joe_snprintf_0(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("All modified files have been saved.")));
+			m = vsdupz(joe_gettext(_("All modified files have been saved.")));
 	else
-		joe_snprintf_0(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("No modified files, so no updates needed.")));
+		m = vsdupz(joe_gettext(_("No modified files, so no updates needed.")));
 
-	msgnw(bw->parent, msgbuf);
+	msgnw(bw->parent, m);
 
-	exmsg = vsncpy(NULL,0,sz(msgbuf));
+	if (exmsg)
+		obj_free(exmsg);
+	exmsg = m;
+	obj_perm(exmsg);
 }
 
 
@@ -98,7 +104,6 @@ static int dosys(BW *bw, unsigned char *s, void *object, int *notify)
 
 	if (notify)
 		*notify = 1;
-	vsrm(s);
 	return rtn;
 }
 
@@ -116,6 +121,7 @@ static int cp(unsigned char *from, unsigned char *to)
 {
 	int f, g, amnt;
 	struct stat sbuf;
+	char buf[8192];
 
 #ifdef HAVEUTIME
 #ifdef NeXT
@@ -137,8 +143,8 @@ static int cp(unsigned char *from, unsigned char *to)
 		close(f);
 		return -1;
 	}
-	while ((amnt = read(f, stdbuf, stdsiz)) > 0) {
-		if (amnt != joe_write(g, stdbuf, amnt)) {
+	while ((amnt = read(f, buf, sizeof(buf))) > 0) {
+		if (amnt != joe_write(g, buf, amnt)) {
 			break;
 		}
 	}
@@ -174,8 +180,7 @@ static int cp(unsigned char *from, unsigned char *to)
 static int backup(BW *bw)
 {
 	if (!bw->b->backup && !nobackups && bw->b->name && bw->b->name[0]) {
-		unsigned char tmp[1024];
-		unsigned char name[1024];
+		unsigned char *name = 0;
 
 #ifdef __MSDOS__
 		int x;
@@ -183,20 +188,20 @@ static int backup(BW *bw)
 		if (backpath) {
 			unsigned char *t = vsncpy(NULL,0,sz(backpath));
 			t = canonical(t);
-			joe_snprintf_2(name, sizeof(name), "%s/%s", t, namepart(tmp, bw->b->name));
-			vsrm(t);
+			name = vsfmt(name, 0, USTR "%s/%s", t, namepart(tmp, bw->b->name));
 		} else {
-			joe_snprintf_1(name, sizeof(name), "%s", bw->b->name);
+			name = vsfmt(name, 0, USTR "%s", bw->b->name);
 		}
 
-		for (x = zlen(name); name[--x] != '.';) {
+		for (x = vslen(name); name[--x] != '.';) {
 			if (name[x] == '\\' || (name[x] == ':' && x == 1) || x == 0) {
-				x = zlen(name);
+				x = vslen(name);
 				break;
 			}
 		}
 
-		zcpy(name + x, USTR ".bak");
+		name = vsncpy(name, x, sc(".bak"));
+		name = vstrunc(name, x + 4);
 
 #else
 
@@ -209,10 +214,9 @@ static int backup(BW *bw)
 		if (backpath) {
 			unsigned char *t = vsncpy(NULL, 0, sz(backpath));
 			t = canonical(t);
-			joe_snprintf_3(name, sizeof(name), "%s/%s%s", t, namepart(tmp, bw->b->name), simple_backup_suffix);
-			vsrm(t);
+			name = vsfmt(name, 0, USTR "%s/%s%s", t, namprt(bw->b->name), simple_backup_suffix);
 		} else {
-			joe_snprintf_2(name, sizeof(name), "%s%s", bw->b->name, simple_backup_suffix);
+			name = vsfmt(name, 0, USTR "%s%s", bw->b->name, simple_backup_suffix);
 		}
 		
 		/* Attempt to delete backup file first */
@@ -260,7 +264,7 @@ struct savereq *mksavereq(int (*callback)(), unsigned char *name, B *first,int r
 
 static void rmsavereq(struct savereq *req)
 {
-	vsrm(req->name);
+	obj_free(req->name);
 	joe_free(req);
 }
 
@@ -406,12 +410,11 @@ static int dosave(BW *bw, struct savereq *req, int *notify)
 				}
 				brm(tmp);
 				if (!ret) {
-					joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Block written to file %s")), req->name);
-					msgnw(bw->parent, msgbuf);
+					msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("Block written to file %s")), req->name));
 				}
 				if (lightoff)
 					unmark(bw);
-				vsrm(req->name);
+				rmsavereq(req);
 				return ret;
 			} else {
 				int fl;
@@ -422,16 +425,15 @@ static int dosave(BW *bw, struct savereq *req, int *notify)
 					ret = -1;
 				}
 				if (!ret) {
-					joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Block written to file %s")), req->name);
-					msgnw(bw->parent, msgbuf);
+					msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("Block written to file %s")), req->name));
 				}
 				if (lightoff)
 					unmark(bw);
-					vsrm(req->name);
+				rmsavereq(req);
 				return ret;
 			}
 		} else {
-			vsrm(req->name);
+			rmsavereq(req);
 			msgnw(bw->parent, joe_gettext(_("No block")));
 			return -1;
 		}
@@ -473,8 +475,9 @@ static int dosave1(BW *bw, unsigned char *s, struct savereq *req, int *notify)
 	int f;
 
 	if (req->name)
-		vsrm(req->name);
+		obj_free(req->name);
 	req->name = s;
+	obj_perm(req->name);
 
 	if (s[0] != '!' && !(s[0] == '>' && s[1] == '>')) {
 		/* It's a normal file: not a pipe or append */
@@ -588,7 +591,6 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		w->object = (void *) (bw = bwmk(w, b, 0));
 		wredraw(bw->parent);
 		bw->object = object;
-		vsrm(s);
 		if (er == -1 && bw->o.mnew) {
 			exmacro(bw->o.mnew,1);
 		}
@@ -635,7 +637,6 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		w->object = (void *) (bw = bwmk(w, b, 0));
 		wredraw(bw->parent);
 		bw->object = object;
-		vsrm(s);
 		if (er == -1 && bw->o.mnew) {
 			exmacro(bw->o.mnew,1);
 		}
@@ -654,7 +655,6 @@ int doedit1(BW *bw,int c,unsigned char *s,int *notify)
 		if (mkqw(bw->parent, sz(joe_gettext(_("Load original file from disk (y,n,^C)? "))), doedit1, NULL, s, notify))
 			return 0;
 		else {
-			vsrm(s);
 			return -1;
 		}
 	}
@@ -749,7 +749,6 @@ int doscratch(BW *bw, unsigned char *s, void *obj, int *notify)
 	w->object = (void *) (bw = bwmk(w, b, 0));
 	wredraw(bw->parent);
 	bw->object = object;
-	vsrm(s);
 	if (er == -1 && bw->o.mnew) {
 		exmacro(bw->o.mnew,1);
 	}
@@ -797,7 +796,6 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 	w->object = (void *) (bw = bwmk(w, b, 0));
 	wredraw(bw->parent);
 	bw->object = object;
-	vsrm(s);
 	if (er == -1 && bw->o.mnew) {
 		exmacro(bw->o.mnew,1);
 	}
@@ -1042,6 +1040,7 @@ static int abrtb(MENU *m, int x, unsigned char **s)
 int ubufed(BW *bw)
 {
 	unsigned char **s = getbufs();
+	vaperm(s);
 
 	vasort(av(s));
 	if (mkmenu(bw->parent, bw->parent, s, dobuf, abrtb, NULL, 0, s, NULL))
@@ -1062,8 +1061,10 @@ static int bufedcmplt(BW *bw)
 		varm(sbufs);
 		sbufs = 0;
 	}
-	if (!sbufs)
+	if (!sbufs) {
 		sbufs = getbufs();
+		vaperm(sbufs);
+	}
 	return simple_cmplt(bw,sbufs);
 }
 
@@ -1133,9 +1134,9 @@ static int doquerysave(BW *bw,int c,struct savereq *req,int *notify)
 
 		return doquerysave(bw,0,req,notify);
 	} else {
-		unsigned char buf[1024];
-		joe_snprintf_1(buf,1024,joe_gettext(_("File %s has been modified.  Save it (y,n,^C)? ")),bw->b->name ? bw->b->name : USTR "(Unnamed)" );
-		if (mkqw(bw->parent, sz(buf), doquerysave, NULL, req, notify)) {
+		unsigned char *buf = 0;
+		buf = vsfmt(buf, 0, joe_gettext(_("File %s has been modified.  Save it (y,n,^C)? ")),bw->b->name ? bw->b->name : USTR "(Unnamed)" );
+		if (mkqw(bw->parent, sv(buf), doquerysave, NULL, req, notify)) {
 			return 0;
 			} else {
 			/* Should be in abort function */

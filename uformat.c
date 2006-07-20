@@ -148,7 +148,7 @@ static long prefix(BW *bw, P *p,int up)
 		pgetc(q);
 	while (!pisbol(q)) {
 		/* int c; */
-		if (!joe_isblank(p->b->o.charmap, ( /* c = */ prgetc(q)))) {
+		if (!joe_isblank(p->b->o.charmap, (/* c = */ prgetc(q)))) {
 		/*
 			if (up && (c == '*' || c == '-')) {
 				if (!pisbol(q)) {
@@ -218,7 +218,8 @@ P *pbop(BW *bw, P *p)
 		}
 		if (ind < indent) {
 			break;
-			/* if (pisbof(p)) {
+			/*
+			if (pisbof(p)) {
 				break;
 			}
 			pprevl(p);

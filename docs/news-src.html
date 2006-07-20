@@ -1,5 +1,14 @@
 <p>CVS (not released yet)</p>
 
+<p>- New "semi-automatic variable" based string library to be used
+throughout the editor.  This will help eliminate many fixed-length arrays,
+because it makes the dynamic string library easier to use.</p>
+
+<p>- libpcl, the "Portable Co-routine Library" will soon be used in JOE. 
+This will make dialog code easier to write.</p> 
+
+<p>JOE 3.5</p>
+
 <p>- Query windows now expand to multiple lines if necessary</p>
 
 <p>- Single key queries are now internationalized (set local versions in the
@@ -13,6 +22,15 @@
 
 <p>- Macros can be typed at the ESC X prompt (before it used to accept only
   commands).</p>
+
+<p>- Built-in joerc file allows joe to run even if /etc/joe directory is
+  missing.</p>
+
+<p>- Support for 'long long' allows editing parts of files larger than 4GB. 
+  For example, you can say: joe /dev/hda,0x100000000,0x1000 to edit the 4KB
+  block at offset 4GB of a hard drive.</p>
+
+<p>- Option which allows you set how many undo records to keep.</p>
 
 <p>JOE 3.4
 </p>

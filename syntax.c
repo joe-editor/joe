@@ -162,10 +162,11 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 static struct high_state *find_state(struct high_syntax *syntax,unsigned char *prefix,unsigned char *name)
 {
-	unsigned char buf[256];
+	unsigned char *buf = vsmk(128);
 	struct high_state *state;
 
-	joe_snprintf_2(buf, sizeof(buf), "%s%s", prefix, name);
+	buf = vscatz(buf, prefix);
+	buf = vscatz(buf, name);
 
 	/* Find state */
 	state = htfind(syntax->ht_states, buf);
@@ -188,7 +189,7 @@ static struct high_state *find_state(struct high_syntax *syntax,unsigned char *p
 		state->delim = 0;
 		htadd(syntax->ht_states, state->name, state);
 	}
-
+	obj_free(buf);
 	return state;
 }
 
@@ -227,22 +228,23 @@ struct high_color *global_colors;
 
 struct high_color *find_color(struct high_color *colors,unsigned char *name,unsigned char *syn)
 {
-	unsigned char bf[256];
+	unsigned char *bf = vsmk(128);
 	struct high_color *color;
-	joe_snprintf_2(bf, sizeof(bf), "%s.%s", syn, name);
+	bf = vsfmt(bf, 0, USTR "%s.%s", syn, name);
 	for (color = colors; color; color = color->next)
 		if (!zcmp(color->name,bf)) break;
 	if (color)
 		return color;
 	for (color = colors; color; color = color->next)
 		if (!zcmp(color->name,name)) break;
+	obj_free(bf);
 	return color;
 }
 
 void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned char *name,int line)
 {
-	unsigned char bf[256];
-	if(!parse_tows(&p, bf)) {
+	unsigned char *bf = 0;
+	if(!parse_tows(&p, &bf)) {
 		struct high_color *color, *gcolor;
 
 		/* Find color */
@@ -264,7 +266,7 @@ void parse_color_def(struct high_color **color_list,unsigned char *p,unsigned ch
 			color->color = gcolor->color;
 		} else {
 			/* Parse color definition */
-			while(parse_ws(&p,'#'), !parse_ident(&p,bf,sizeof(bf))) {
+			while(parse_ws(&p,'#'), !parse_ident(&p,&bf)) {
 				color->color |= meta_color(bf);
 			}
 		}
@@ -280,30 +282,30 @@ struct high_syntax *syntax_list;
 void dump_syntax(BW *bw)
 {
 	struct high_syntax *syntax;
+	unsigned char *buf = 0;
 	for (syntax = syntax_list; syntax; syntax = syntax->next) {
 		int x;
-		unsigned char buf[1024];
-		joe_snprintf_2(buf, sizeof(buf), "Syntax name=%s, nstates=%d\n",syntax->name,syntax->nstates);
+		buf = vsfmt(buf, 0, USTR "Syntax name=%s, nstates=%d\n",syntax->name,syntax->nstates);
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
 		for(x=0;x!=syntax->nstates;++x) {
 			int y;
 			int f = -1;
 			struct high_state *s = syntax->states[x];
-			joe_snprintf_2(buf, sizeof(buf), "   state %s %x\n",s->name,s->color);
+			buf = vsfmt(buf, 0, USTR "   state %s %x\n",s->name,s->color);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 			for (y = 0; y != 256; ++y) {
 				if (f == -1)
 					f = y;
 				else if (s->cmd[f]->new_state != s->cmd[y]->new_state) {
-					joe_snprintf_4(buf, sizeof(buf), "     [%d-%d] -> %s %d\n",f,y-1,s->cmd[f]->new_state->name,s->cmd[f]->recolor);
+					buf = vsfmt(buf, 0, USTR "     [%d-%d] -> %s %d\n",f,y-1,s->cmd[f]->new_state->name,s->cmd[f]->recolor);
 					binss(bw->cursor, buf);
 					pnextl(bw->cursor);
 					f = y;
 				}
 			}
-			joe_snprintf_4(buf, sizeof(buf), "     [%d-%d] -> %s %d\n",f,y-1,s->cmd[f]->new_state->name,s->cmd[f]->recolor);
+			buf = vsfmt(buf, 0, USTR "     [%d-%d] -> %s %d\n",f,y-1,s->cmd[f]->new_state->name,s->cmd[f]->recolor);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 		}
@@ -321,7 +323,7 @@ struct ifstack {
 struct syparm *parse_parms(unsigned char **ptr,unsigned char *name,int line)
 {
 	unsigned char *p = *ptr;
-	unsigned char bf[256];
+	unsigned char *bf = 0;
 	struct syparm *sy = 0;
 
 	parse_ws(&p, '#');
@@ -330,7 +332,7 @@ struct syparm *parse_parms(unsigned char **ptr,unsigned char *name,int line)
 			parse_ws(&p, '#');
 			if (!parse_char(&p, ')'))
 				break;
-			else if (!parse_ident(&p,bf,sizeof(bf))) {
+			else if (!parse_ident(&p,&bf)) {
 				struct syparm *n = (struct syparm *)joe_malloc(sizeof(struct syparm));
 				n->next = sy;
 				sy = n;
@@ -349,10 +351,10 @@ struct syparm *parse_parms(unsigned char **ptr,unsigned char *name,int line)
 struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix, unsigned char *name, struct high_state *rtn,
                               int *needs_link,struct syparm *parms,unsigned char *subr)
 {
-	unsigned char full_name[1024];
-	unsigned char buf[1024];
-	unsigned char bf[256];
-	unsigned char bf1[256];
+	unsigned char *full_name = vsmk(128);
+	unsigned char *buf = vsmk(128);
+	unsigned char *bf = 0;
+	unsigned char *bf1 = 0;
 	int clist[256];
 	unsigned char *p;
 	int c;
@@ -368,12 +370,12 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 	/* Load it */
 	p = (unsigned char *)getenv("HOME");
 	if (p) {
-		joe_snprintf_2(full_name,sizeof(full_name),"%s/.joe/syntax/%s.jsf",p,name);
+		full_name = vsfmt(full_name, 0, USTR "%s/.joe/syntax/%s.jsf",p,name);
 		f = fopen((char *)full_name,"r");
 	}
 
 	if (!f) {
-		joe_snprintf_2(full_name,sizeof(full_name),"%ssyntax/%s.jsf",JOERC,name);
+		full_name = vsfmt(full_name, 0, USTR "%ssyntax/%s.jsf",JOERC,name);
 		f = fopen((char *)full_name,"r");
 	}
 	if(!f)
@@ -384,12 +386,12 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 	syntax->color = 0;
 
 	/* Parse file */
-	while(fgets((char *)buf,1023,f)) {
+	while(vsgets(&buf,f)) {
 		++line;
 		p = buf;
 		c = parse_ws(&p,'#');
 		if (!parse_char(&p, '.')) {
-			if (!parse_ident(&p, bf, sizeof(bf))) {
+			if (!parse_ident(&p, &bf)) {
 				if (!zcmp(bf, USTR "ifdef")) {
 					struct ifstack *st = (struct ifstack *)joe_malloc(sizeof(struct ifstack));
 					st->next = stack;
@@ -399,7 +401,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 					st->line = line;
 					if (!stack || !stack->ignore) {
 						parse_ws(&p,'#');
-						if (!parse_ident(&p, bf, sizeof(bf))) {
+						if (!parse_ident(&p, &bf)) {
 							struct syparm *sy;
 							for (sy = parms; sy; sy = sy->next)
 								if (!zcmp(sy->name, bf))
@@ -428,7 +430,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 						i_printf_2((char *)joe_gettext(_("%s %d: endif with no matching if\n")),name,line);
 				} else if (!zcmp(bf, USTR "subr")) {
 					parse_ws(&p, '#');
-					if (parse_ident(&p, bf, sizeof(bf))) {
+					if (parse_ident(&p, &bf)) {
 						i_printf_2((char *)joe_gettext(_("%s %d: Missing subroutine name\n")),name,line);
 					} else {
 						if (!stack || !stack->ignore) {
@@ -457,7 +459,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 		} else if ((subr && !this_one) || (!subr && inside_subr)) {
 			/* Ignore this line because it's not the code we want */
 		} else if(!parse_char(&p, ':')) {
-			if(!parse_ident(&p, bf, sizeof(bf))) {
+			if(!parse_ident(&p, &bf)) {
 
 				state = find_state(syntax,prefix,bf);
 
@@ -465,7 +467,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 					first = state;
 
 				parse_ws(&p,'#');
-				if(!parse_ident(&p,bf,sizeof(bf))) {
+				if(!parse_ident(&p,&bf)) {
 					struct high_color *color;
 					for(color=syntax->color;color;color=color->next)
 						if(!zcmp(color->name,bf))
@@ -498,7 +500,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 					} else if(!parse_field(&p, USTR "&")) {
 						delim = 1;
 					} else {
-						c = parse_string(&p, bf, sizeof(bf));
+						c = parse_string(&p, &bf);
 						if(c < 0)
 							i_printf_2((char *)joe_gettext(_("%s %d: Bad string\n")),name,line);
 						else {
@@ -518,12 +520,12 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 					/* Create command */
 					cmd = mkcmd();
 					parse_ws(&p,'#');
-					if(!parse_ident(&p,bf,sizeof(bf))) {
+					if(!parse_ident(&p,&bf)) {
 						int z;
 						cmd->new_state = find_state(syntax,prefix,bf);
 
 						/* Parse options */
-						while (parse_ws(&p,'#'), !parse_ident(&p,bf,sizeof(bf)))
+						while (parse_ws(&p,'#'), !parse_ident(&p,&bf))
 							if(!zcmp(bf,USTR "buffer")) {
 								cmd->start_buffering = 1;
 							} else if(!zcmp(bf,USTR "hold")) {
@@ -550,13 +552,13 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 									if (!parse_char(&p,'.')) {
 										cmd->call = zdup(short_name);
 										goto subr;
-									} else if (parse_ident(&p,bf1,sizeof(bf1)))
+									} else if (parse_ident(&p,&bf1))
 										i_printf_2((char *)joe_gettext(_("%s %d: Missing value for option\n")),name,line);
 									else {
 										cmd->call = zdup(bf1);
 										if (!parse_char(&p,'.')) {
 											subr:
-											if (parse_ident(&p,bf1,sizeof(bf1)))
+											if (parse_ident(&p,&bf1))
 												i_printf_2((char *)joe_gettext(_("%s %d: Missing subroutine name\n")),name,line);
 											else
 												cmd->call_subr = zdup(bf1);
@@ -569,18 +571,18 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 							} else if(!zcmp(bf,USTR "strings") || !zcmp(bf,USTR "istrings")) {
 								if (bf[0]=='i')
 									cmd->ignore = 1;
-								while(fgets((char *)buf,1023,f)) {
+								while(vsgets(&buf,f)) {
 									++line;
 									p = buf;
 									c = parse_ws(&p,'#');
 									if (*p) {
 										if(!parse_field(&p,USTR "done"))
 											break;
-										if(parse_string(&p,bf,sizeof(bf)) >= 0) {
+										if(parse_string(&p,&bf) >= 0) {
 											parse_ws(&p,'#');
 											if (cmd->ignore)
 												lowerize(bf);
-											if(!parse_ident(&p,bf1,sizeof(bf1))) {
+											if(!parse_ident(&p,&bf1)) {
 												struct high_cmd *kw_cmd=mkcmd();
 												kw_cmd->noeat=1;
 												kw_cmd->new_state = find_state(syntax,prefix,bf1);
@@ -591,7 +593,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 														cmd->keywords = htmk(64);
 														htadd(cmd->keywords,zdup(bf),kw_cmd);
 												}
-												while (parse_ws(&p,'#'), !parse_ident(&p,bf,sizeof(bf)))
+												while (parse_ws(&p,'#'), !parse_ident(&p,&bf))
 													if(!zcmp(bf,USTR "buffer")) {
 														kw_cmd->start_buffering = 1;
 													} else if(!zcmp(bf,USTR "hold")) {
@@ -647,6 +649,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 
 	fclose(f);
 
+	obj_free(full_name);
 	return first;
 }
 
@@ -751,15 +754,15 @@ void link_syntax(struct high_syntax *syntax)
 			for(y = 0; y != 256; ++y) {
 				struct high_cmd *cmd = state->cmd[y];
 				if (cmd->call) {
-					unsigned char buf1[256];
-					unsigned char buf[256];
+					unsigned char *buf1 = vsmk(128);
+					unsigned char *buf = vsmk(128);
 					struct high_state *sub;
 					int needs_link = 0;
-					joe_snprintf_3(buf1,sizeof(buf1),"%d.%s.%s",depth,cmd->call,cmd->call_subr);
+					buf1 = vsfmt(buf1, 0, USTR "%d.%s.%s",depth,cmd->call,cmd->call_subr);
 					/* printf("%s is looking for %s.%s\n",state->name,cmd->call,(cmd->call_subr?cmd->call_subr:USTR "")); */
 					if ( 1 ) { /* !(sub = find_sub(sub_list, buf1, cmd->new_state))) { */
 						/* printf("loading...\n"); */
-						joe_snprintf_2(buf,sizeof(buf),"%d.%d.",depth,inst++);
+						buf = vsfmt(buf, 0, USTR "%d.%d.",depth,inst++);
 						sub = append_dfa(syntax,buf,cmd->call,cmd->new_state,&needs_link,cmd->parms,cmd->call_subr);
 						if (sub)
 							sub_list = add_sub(sub_list, buf1, cmd->new_state, sub);
@@ -768,6 +771,7 @@ void link_syntax(struct high_syntax *syntax)
 					if (sub)
 						cmd->new_state = sub;
 					cmd->call = 0;
+					obj_free(buf1);
 				}
 			}
 		}

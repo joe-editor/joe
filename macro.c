@@ -198,6 +198,8 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 			c = buf[y];
 			buf[y] = 0;
 			cmd = findcmd(buf + x);
+			if (!cmd)
+				printf("Unknown command |%s|\n",buf + x);
 			buf[x = y] = c;
 
 			/* Parse flags */
@@ -247,78 +249,76 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 
 /* Convert macro to text */
 
-static unsigned char *ptr;
 static int first;
 static int instr;
 
 unsigned char *unescape(unsigned char *ptr, int c)
 {
 	if (c == '"') {
-		*ptr++ = '\\';
-		*ptr++ = '"';
+		ptr = vsadd(ptr, '\\');
+		ptr = vsadd(ptr, '"');
 	} else if (c == '\\') {
-		*ptr++ = '\\';
-		*ptr++ = '\\';
+		ptr = vsadd(ptr, '\\');
+		ptr = vsadd(ptr, '\\');
 	} else if (c == '\'') {
-		*ptr++ = '\\';
-		*ptr++ = '\'';
+		ptr = vsadd(ptr, '\\');
+		ptr = vsadd(ptr, '\'');
 	} else if (c < 32 || c > 126) {
 		/* FIXME: what if c > 256 or c < 0 ? */
-		*ptr++ = '\\';
-		*ptr++ = 'x';
-		*ptr++ = "0123456789ABCDEF"[c >> 4];
-		*ptr++ = "0123456789ABCDEF"[c & 15];
+		ptr = vsadd(ptr, '\\');
+		ptr = vsadd(ptr, 'x');
+		ptr = vsadd(ptr, "0123456789ABCDEF"[c >> 4]);
+		ptr = vsadd(ptr, "0123456789ABCDEF"[c & 15]);
 	} else
-		*ptr++ = c;
+		ptr = vsadd(ptr, c);
 	return ptr;
 }
 
-static void domtext(MACRO *m)
+static unsigned char *domtext(unsigned char *ptr, MACRO *m)
 {
 	int x;
 
 	if (!m)
-		return;
+		return ptr;
 	if (m->steps)
 		for (x = 0; x != m->n; ++x)
-			domtext(m->steps[x]);
+			ptr = domtext(ptr, m->steps[x]);
 	else {
 		if (instr && zcmp(m->cmd->name, USTR "type")) {
-			*ptr++ = '\"';
+			ptr = vsadd(ptr, '"');
 			instr = 0;
 		}
 		if (first)
 			first = 0;
 		else if (!instr)
-			*ptr++ = ',';
+			ptr = vsadd(ptr, ',');
 		if (!zcmp(m->cmd->name, USTR "type")) {
 			if (!instr) {
-				*ptr++ = '\"';
+				ptr = vsadd(ptr, '"');
 				instr = 1;
 			}
 			ptr = unescape(ptr, m->k);
 		} else {
-			for (x = 0; m->cmd->name[x]; ++x)
-				*ptr++ = m->cmd->name[x];
+			ptr = vscatz(ptr, m->cmd->name);
 			if (!zcmp(m->cmd->name, USTR "play") || !zcmp(m->cmd->name, USTR "gomark") || !zcmp(m->cmd->name, USTR "setmark") || !zcmp(m->cmd->name, USTR "record") || !zcmp(m->cmd->name, USTR "uarg")) {
-				*ptr++ = ',';
-				*ptr++ = '"';
+				ptr = vsadd(ptr, ',');
+				ptr = vsadd(ptr, '"');
 				ptr = unescape(ptr, m->k);
-				*ptr++ = '"';
+				ptr = vsadd(ptr, '"');
 			}
 		}
 	}
+	return ptr;
 }
 
 unsigned char *mtext(unsigned char *s, MACRO *m)
 {
-	ptr = s;
+	s = vstrunc(s, 0);
 	first = 1;
 	instr = 0;
-	domtext(m);
+	s = domtext(s, m);
 	if (instr)
-		*ptr++ = '\"';
-	*ptr = 0;
+		s = vsadd(s, '"');
 	return s;
 }
 
@@ -707,16 +707,15 @@ static int doplay(BW *bw, int c, void *object, int *notify)
 int umacros(BW *bw)
 {
 	int x;
-	unsigned char buf[1024];
+	unsigned char *buf = vsmk(128);
 
 	p_goto_eol(bw->cursor);
 	for (x = 0; x != 10; ++x)
 		if (kbdmacro[x]) {
-			mtext(buf, kbdmacro[x]);
+			buf = mtext(buf, kbdmacro[x]);
 			binss(bw->cursor, buf);
 			p_goto_eol(bw->cursor);
-			joe_snprintf_2(buf, JOE_MSGBUFSIZE, "\t^K %c\tMacro %d", x + '0', x);
-			binss(bw->cursor, buf);
+			binss(bw->cursor, vsfmt(buf, 0, USTR "\t^K %c\tMacro %d", x + '0', x));
 			p_goto_eol(bw->cursor);
 			binsc(bw->cursor, '\n');
 			pgetc(bw->cursor);
@@ -727,10 +726,10 @@ int umacros(BW *bw)
 void save_macros(FILE *f)
 {
 	int x;
-	unsigned char buf[1024];
+	unsigned char *buf = 0;
 	for(x = 0; x!= 10; ++x)
 		if(kbdmacro[x]) {
-			mtext(buf, kbdmacro[x]);
+			buf = mtext(buf, kbdmacro[x]);
 			fprintf(f,"	%d ",x);
 			emit_string(f,buf,zlen(buf));
 			fprintf(f,"\n");
@@ -740,9 +739,9 @@ void save_macros(FILE *f)
 
 void load_macros(FILE *f)
 {
-	unsigned char buf[1024];
-	unsigned char bf[1024];
-	while(fgets((char *)buf,1023,f) && zcmp(buf,USTR "done\n")) {
+	unsigned char *buf = 0;
+	unsigned char *bf = 0;
+	while(vsgets(&buf,f) && zcmp(buf,USTR "done")) {
 		unsigned char *p = buf;
 		int n;
 		int len;
@@ -750,7 +749,7 @@ void load_macros(FILE *f)
 		parse_ws(&p, '#');
 		if(!parse_int(&p,&n)) {
 			parse_ws(&p, '#');
-			len = parse_string(&p,bf,sizeof(bf));
+			len = parse_string(&p,&bf);
 			if (len>0)
 				kbdmacro[n] = mparse(NULL,bf,&sta);
 		}
@@ -782,7 +781,6 @@ static int doarg(BW *bw, unsigned char *s, void *object, int *notify)
 	}
 	arg = num;
 	argset = 1;
-	vsrm(s);
 	return 0;
 }
 
@@ -802,7 +800,6 @@ static int doif(BW *bw,unsigned char *s,void *object,int *notify)
 	if(merr) { msgnw(bw->parent,merr); return -1; }
 	ifflag=(num?1:0);
 	iffail=ifdepth;
-	vsrm(s);
 	return 0;
 }
 
@@ -864,6 +861,7 @@ int negarg;
 
 static int douarg(BW *bw, int c, void *object, int *notify)
 {
+	unsigned char *m;
 	if (c == '-')
 		negarg = !negarg;
 	else if (c >= '0' && c <= '9')
@@ -892,8 +890,8 @@ static int douarg(BW *bw, int c, void *object, int *notify)
 			*notify = 1;
 		return 0;
 	}
-	joe_snprintf_2(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Repeat %s%d")), negarg ? "-" : "", unaarg);
-	if (mkqwna(bw->parent, sz(msgbuf), douarg, NULL, NULL, notify))
+	m = vsfmt(NULL, 0, joe_gettext(_("Repeat %s%d")), negarg ? "-" : "", unaarg);
+	if (mkqwna(bw->parent, sv(m), douarg, NULL, NULL, notify))
 		return 0;
 	else
 		return -1;

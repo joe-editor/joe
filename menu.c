@@ -646,10 +646,10 @@ unsigned char *find_longest(unsigned char **lst)
 	unsigned char *com;
 	int x;
 
-	if (!lst || !aLEN(lst))
+	if (!valen(lst))
 		return vstrunc(NULL, 0);
 	com = vsncpy(NULL, 0, sv(lst[0]));
-	for (x = 1; x != aLEN(lst); ++x)
+	for (x = 1; x != valen(lst); ++x)
 		com = cull(com, lst[x]);
 	return com;
 }

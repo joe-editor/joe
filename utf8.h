@@ -54,7 +54,7 @@ int mk_wcwidth PARAMS((int wide,int c));
 extern struct charmap *locale_map;	/* Default bytemap of terminal */
 extern unsigned char *locale_lang;	/* Locale language (like de_DE) */
 
-void my_iconv PARAMS((unsigned char *dest,struct charmap *dest_map,
+unsigned char *my_iconv PARAMS((unsigned char *dest,struct charmap *dest_map,
               unsigned char *src,struct charmap *src_map));
 
 struct charmap *guess_map PARAMS((unsigned char *buf, int len));

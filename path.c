@@ -87,7 +87,7 @@ unsigned char *namprt(unsigned char *path)
 	unsigned char *z;
 
 	skip_drive_letter(path);
-	z = path + slen(path);
+	z = path + zlen(path);
 	while ((z != path) && (z[-1] != '/'))
 		--z;
 	return vsncpy(NULL, 0, sz(z));
@@ -107,7 +107,7 @@ unsigned char *namepart(unsigned char *tmp, unsigned char *path)
 unsigned char *dirprt(unsigned char *path)
 {
 	unsigned char *b = path;
-	unsigned char *z = path + slen(path);
+	unsigned char *z = path + zlen(path);
 
 	skip_drive_letter(b);
 	while ((z != b) && (z[-1] != '/'))
@@ -117,7 +117,7 @@ unsigned char *dirprt(unsigned char *path)
 /********************************************************************/
 unsigned char *begprt(unsigned char *path)
 {
-	unsigned char *z = path + slen(path);
+	unsigned char *z = path + zlen(path);
 	int drv = 0;
 
 	do_if_drive_letter(path, drv = 2);
@@ -134,7 +134,7 @@ unsigned char *begprt(unsigned char *path)
 /********************************************************************/
 unsigned char *endprt(unsigned char *path)
 {
-	unsigned char *z = path + slen(path);
+	unsigned char *z = path + zlen(path);
 	int drv = 0;
 
 	do_if_drive_letter(path, drv = 2);
@@ -202,7 +202,7 @@ unsigned char *mktmp(unsigned char *where)
 				   area returned by mktmp() is destroyed later with
 				   vsrm(); */
 #ifdef HAVE_MKSTEMP
-	joe_snprintf_1(name, namesize, "%s/joe.tmp.XXXXXX", where);
+	name = vsfmt(name, 0, USTR "%s/joe.tmp.XXXXXX", where);
 	if((fd = mkstemp((char *)name)) == -1)
 		return NULL;	/* FIXME: vflsh() and vflshf() */
 				/* expect mktmp() always succeed!!! */
@@ -215,7 +215,7 @@ unsigned char *mktmp(unsigned char *where)
 #else
       loop:
 	seq = (seq + 1) % 1000;
-	joe_snprintf_3(name, namesize, "%s/joe.tmp.%03u%03u", where, seq, (unsigned) time(NULL) % 1000);
+	name = vsfmt(name, 0, USTR "%s/joe.tmp.%03u%03u", where, seq, (unsigned) time(NULL) % 1000);
 	if ((fd = open(name, O_RDONLY)) != -1) {
 		close(fd);
 		goto loop;	/* FIXME: possible endless loop --> DoS attack */

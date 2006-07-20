@@ -40,6 +40,7 @@ void edupd(int flg)
 {
 	W *w;
 	int wid, hei;
+	unsigned char *gc = vsmk(1);
 
 	if (dostaupd) {
 		staupd = 1;
@@ -69,6 +70,7 @@ void edupd(int flg)
 	} while (w != maint->curwin);
 	cpos(maint->t, maint->curwin->x + maint->curwin->curx, maint->curwin->y + maint->curwin->cury);
 	staupd = 0;
+	obj_free(gc);
 }
 
 static int ahead = 0;
@@ -100,7 +102,7 @@ int edloop(int flg)
 		int c;
 
 		if (exmsg && !flg) {
-			vsrm(exmsg);
+			obj_free(exmsg);
 			exmsg = NULL;
 		}
 		edupd(1);
@@ -169,17 +171,20 @@ int main(int argc, char **real_argv, char **envv)
 	int omid;
 	int backopt;
 	int c;
+	unsigned char *gc = vsmk(1); /* Startup garbage collection */
 
 	joe_locale();
+	fdefault.charmap = locale_map;
+	pdefault.charmap = locale_map;
 
 	mainenv = (unsigned char **)envv;
 
 #ifdef __MSDOS__
 	_fmode = O_BINARY;
-	zcpy(stdbuf, argv[0]);
-	joesep(stdbuf);
-	run = namprt(stdbuf);
-	rundir = dirprt(stdbuf);
+	s = vscpyz(NULL, argv[0]);
+	joesep(s);
+	run = namprt(s);
+	rundir = dirprt(s);
 	for (c = 0; run[c]; ++c)
 		if (run[c] == '.') {
 			run = vstrunc(run, c);
@@ -203,7 +208,7 @@ int main(int argc, char **real_argv, char **envv)
 		joeterm = s;
 
 #ifndef __MSDOS__
-	if (!(cap = my_getcap(NULL, 9600, NULL, NULL))) {
+	if (!(cap = getcap(NULL, 9600, NULL, NULL))) {
 		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap/terminfo entry\n")));
 		return 1;
 	}
@@ -226,7 +231,6 @@ int main(int argc, char **real_argv, char **envv)
 			goto donerc;
 	}
 
-	vsrm(s);
 	s = vsncpy(NULL, 0, sv(rundir));
 	s = vsncpy(sv(s), sv(run));
 	s = vsncpy(sv(s), sc("rc"));
@@ -256,7 +260,6 @@ int main(int argc, char **real_argv, char **envv)
 	else {
 		/* Try generic language: like joerc.de */
 		if (locale_lang[0] && locale_lang[1] && locale_lang[2]=='_') {
-			vsrm(t);
 			t = vsncpy(NULL, 0, sc(JOERC));
 			t = vsncpy(sv(t), sv(run));
 			t = vsncpy(sv(t), sc("rc."));
@@ -267,7 +270,6 @@ int main(int argc, char **real_argv, char **envv)
 				goto nope;
 		} else {
 			nope:
-			vsrm(t);
 			/* Try Joe's bad english */
 			t = vsncpy(NULL, 0, sc(JOERC));
 			t = vsncpy(sv(t), sv(run));
@@ -302,7 +304,6 @@ int main(int argc, char **real_argv, char **envv)
 
 		c = procrc(cap, s);
 		if (c == 0) {
-			vsrm(t);
 			goto donerc;
 		}
 		if (c == 1) {
@@ -310,14 +311,12 @@ int main(int argc, char **real_argv, char **envv)
 			fflush(stderr);
 			fgets((char *)buf, 8, stdin);
 			if (ynchecks(yes_key, buf)) {
-				vsrm(t);
 				goto donerc;
 			}
 		}
 	}
 
 	use_sys:
-	vsrm(s);
 	s = t;
 	c = procrc(cap, s);
 	if (c == 0)
@@ -505,9 +504,8 @@ int main(int argc, char **real_argv, char **envv)
 		help_on(maint);
 	}
 	if (!nonotice) {
-		joe_snprintf_3(msgbuf,JOE_MSGBUFSIZE,joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
-
-		msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
+		unsigned char *m = vsfmt(NULL, 0, joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
+		msgnw(((BASE *)lastw(maint)->object)->parent, m);
 	}
 
 	if (!idleout) {
@@ -528,6 +526,7 @@ int main(int argc, char **real_argv, char **envv)
 		}
 	}
 
+	obj_free(gc); /* Clean up after startup */
 	edloop(0);
 
 	save_state();

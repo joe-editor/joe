@@ -18,6 +18,7 @@ unsigned char *builtins[]=
 		"-search_prompting\n"
 		"-lmsg \\i%k%T%W%I%X %n %m%y%R %M %x\n"
 		"-rmsg  %S Row %r Col %c %t  Ctrl-K H for help\n"
+		"-highlight\n"
 		"-istep 2\n"
 		"{Basic\n"
 		"\\i   Help Screen    \\|turn off with ^KH    more help with ESC . (^[.)              \\i\n"

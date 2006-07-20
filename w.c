@@ -726,27 +726,33 @@ void msgout(W *w)
 
 	if (w->msgb) {
 		mdisp(t, w->y + w->h - 1, w->msgb);
+		obj_free(w->msgb);
 		w->msgb = 0;
 	}
 	if (w->msgt) {
 		mdisp(t, w->y + ((w->h > 1 && (w->y || !staen)) ? 1 : 0), w->msgt);
+		obj_free(w->msgt);
 		w->msgt = 0;
 	}
 }
 
 /* Set temporary message */
 
-unsigned char msgbuf[JOE_MSGBUFSIZE];
-
 /* display message on bottom line of window */
 void msgnw(W *w, unsigned char *s)
 {
-	w->msgb = s;
+	if (w->msgb)
+		obj_free(w->msgb);
+	w->msgb = vsdupz(s);
+	obj_perm(w->msgb);
 }
 
 void msgnwt(W *w, unsigned char *s)
 {
-	w->msgt = s;
+	if (w->msgt)
+		obj_free(w->msgt);
+	w->msgt = vsdupz(s);
+	obj_perm(w->msgt);
 }
 
 int urtn(BASE *b, int k)

@@ -135,16 +135,17 @@ int joe_set_signal PARAMS((int signum, sighandler_t handler));
 
 /* Simple parsers */
 int parse_ws PARAMS((unsigned char **p,int cmt));
-int parse_ident PARAMS((unsigned char **p,unsigned char *buf,int len));
+int parse_ident PARAMS((unsigned char **p,unsigned char **buf));
 int parse_kw PARAMS((unsigned char **p,unsigned char *kw));
 long parse_num PARAMS((unsigned char **p));
-int parse_tows PARAMS((unsigned char **p,unsigned char *buf));
+int parse_tows PARAMS((unsigned char **p,unsigned char **buf));
 int parse_field PARAMS((unsigned char **p,unsigned char *field));
 int parse_char PARAMS((unsigned char  **p,unsigned char c));
 int parse_int PARAMS((unsigned char **p,int *buf));
 int parse_long PARAMS((unsigned char **p,long  *buf));
-int parse_string PARAMS((unsigned char **p,unsigned char *buf,int len));
+int parse_string PARAMS((unsigned char **p,unsigned char **dst));
 int parse_range PARAMS((unsigned char **p,int *first,int *second));
 void emit_string PARAMS((FILE *f,unsigned char *s,int len));
+int escape PARAMS((int utf8,unsigned char **a, int *b));
 
 #endif

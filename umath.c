@@ -489,6 +489,7 @@ double calc(BW *bw, unsigned char *s)
 /* Main user interface */
 static int domath(BW *bw, unsigned char *s, void *object, int *notify)
 {
+	unsigned char buf[128];
 	double result = calc(bw, s);
 
 	if (notify) {
@@ -498,19 +499,18 @@ static int domath(BW *bw, unsigned char *s, void *object, int *notify)
 		msgnw(bw->parent, merr);
 		return -1;
 	}
-	vsrm(s);
 	if (mode_hex)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%lX", (long)result);
+		joe_snprintf_1(buf, sizeof(buf), "0x%lX", (long)result);
 	else if (mode_eng)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
+		joe_snprintf_1(buf, sizeof(buf), "%.16G", result);
 	else
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
+		joe_snprintf_1(buf, sizeof(buf), "%.16G", result);
 	if (bw->parent->watom->what != TYPETW || mode_ins) {
-		binsm(bw->cursor, sz(msgbuf));
-		pfwrd(bw->cursor, zlen(msgbuf));
+		binsm(bw->cursor, sz(buf));
+		pfwrd(bw->cursor, zlen(buf));
 		bw->cursor->xcol = piscol(bw->cursor);
 	} else {
-		msgnw(bw->parent, msgbuf);
+		msgnw(bw->parent, buf);
 	}
 	mode_ins = 0;
 	return 0;

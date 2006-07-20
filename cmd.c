@@ -219,17 +219,17 @@ int steal_lock(BW *bw,int c,B *b,int *notify)
 {
 	if (yncheck(steallock_key, c)) {
 		unsigned char bf1[256];
-		unsigned char bf[300];
+		unsigned char *bf = 0;
 		unlock_it(b->name);
 		if (lock_it(b->name,bf1)) {
 			int x;
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
 			if(bf1[0])
-				joe_snprintf_1(bf,sizeof(bf),joe_gettext(LOCKMSG1),bf1);
+				bf = vsfmt(bf, 0, joe_gettext(LOCKMSG1),bf1);
 			else
-				joe_snprintf_0(bf,sizeof(bf),joe_gettext(LOCKMSG2));
-			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, notify)) {
+				bf = vsfmt(bf, 0, joe_gettext(LOCKMSG2));
+			if (mkqw(bw->parent, sv(bf), steal_lock, NULL, b, notify)) {
 				return 0;
 			} else {
 				if (notify)
@@ -362,6 +362,7 @@ int modify_logic(BW *bw,B *b)
 int execmd(CMD *cmd, int k)
 {
 	BW *bw = (BW *) maint->curwin->object;
+	unsigned char *gc = vsmk(1); /* Garbage collection point */
 	int ret = -1;
 
 	/* Warning: bw is a BW * only if maint->curwin->watom->what &
@@ -372,11 +373,15 @@ int execmd(CMD *cmd, int k)
 	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || (cmd->func==utype && k>=32 && k<256))) {
 		unsigned char c = k;
 		joe_write(bw->b->out, &c, 1);
+		obj_free(gc);
 		return 0;
 	}
 
-	if (cmd->m)
-		return exmacro(cmd->m, 0);
+	if (cmd->m) {
+		ret = exmacro(cmd->m, 0);
+		obj_free(gc);
+		return ret;
+	}
 
 	/* We don't execute if we have to fix the column position first
 	 * (i.e., left arrow when cursor is in middle of nowhere) */
@@ -408,8 +413,10 @@ int execmd(CMD *cmd, int k)
 		--smode;
 
 	/* Don't update anything if we're going to leave */
-	if (leave)
+	if (leave) {
+		obj_free(gc);
 		return 0;
+	}
 
 	/* cmd->func could have changed bw on us */
 	/* This is bad: maint->curwin might not be the same window */
@@ -450,6 +457,7 @@ int execmd(CMD *cmd, int k)
 
 	if (joe_beep && ret)
 		ttputc(7);
+	obj_free(gc);
 	return ret;
 }
 
@@ -517,7 +525,7 @@ static unsigned char **getcmds(void)
 	for (x = 0; x != cmdhash->len; ++x)
 		for (e = cmdhash->tab[x]; e; e = e->next)
 			s = vaadd(s, vsncpy(NULL, 0, sz(e->name)));
-	vasort(s, aLen(s));
+	vasort(av(s));
 	return s;
 }
 
@@ -527,8 +535,10 @@ unsigned char **scmds = NULL;	/* Array of command names */
 
 static int cmdcmplt(BW *bw)
 {
-	if (!scmds)
+	if (!scmds) {
 		scmds = getcmds();
+		vaperm(scmds);
+	}
 	return simple_cmplt(bw,scmds);
 }
 
@@ -544,18 +554,6 @@ static int docmd(BW *bw, unsigned char *s, void *object, int *notify)
 		ret = exmacro(mac, 1);
 		rmmacro(mac);
 	}
-
-#ifdef junk
-	CMD *cmd = findcmd(s);
-	vsrm(s);	/* allocated in pw.c::rtnpw() */
-	if (!cmd)
-		msgnw(bw->parent,joe_gettext(_("No such command")));
-	else {
-		mac = mkmacro(-1, 0, 0, cmd);
-		ret = exmacro(mac, 1);
-		rmmacro(mac);
-	}
-#endif
 
 	if (notify)
 		*notify = 1;

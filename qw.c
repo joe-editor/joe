@@ -128,6 +128,8 @@ static void dispqwn(QW *qw)
 		         BG_COLOR(bg_prompt),
 		         w->w - w->x,
 		         1,NULL);
+		w->cury = y;
+		w->curx = w->x + joe_wcswidth(locale_map, s, l);
 	}
 }
 
@@ -151,7 +153,7 @@ static int utypeqw(QW *qw, int c)
 
 	win = qw->parent->win;
 	func = qw->func;
-	vsrm(qw->prompt);
+	obj_free(qw->prompt);
 	joe_free(qw);
 	w->object = NULL;
 	w->notify = NULL;
@@ -167,7 +169,7 @@ static int abortqw(QW *qw)
 	void *object = qw->object;
 	int (*abrt) () = qw->abrt;
 
-	vsrm(qw->prompt);
+	obj_free(qw->prompt);
 	joe_free(qw);
 	if (abrt)
 		return abrt(win->object, object);
@@ -237,6 +239,7 @@ QW *mkqw(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*ab
 	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
 	qw->parent = new;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
+	obj_perm(qw->prompt);
 	qw->promptlen = len;
 	qw->org_w = w->w;
 	qw->org_h = h;
@@ -268,6 +271,7 @@ QW *mkqwna(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*
 	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
 	qw->parent = new;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
+	obj_perm(qw->prompt);
 	qw->promptlen = len;
 	qw->org_w = w->w;
 	qw->org_h = h;
@@ -299,6 +303,7 @@ QW *mkqwnsr(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (
 	new->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
 	qw->parent = new;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
+	obj_perm(qw->prompt);
 	qw->promptlen = len;
 	qw->org_w = w->w;
 	qw->org_h = h;

@@ -21,20 +21,13 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 		t = vsncpy(sv(t), sc(":"));
 		t = vsncpy(sv(t), sv(s));
 	}
-	/* first try to open the tags file in the current directory */
 	f = fopen("tags", "r");
 	if (!f) {
-		/* if there's no tags file in the current dir, then query
-		   for the environment variable TAGS.
-		*/
 		char *tagspath = getenv("TAGS");
-		if(tagspath){
-			f = fopen(tagspath, "r");    
-		}
-		if(!f){
+		if (tagspath)
+			f = fopen(tagspath, "r");
+		if (!f) {
 			msgnw(bw->parent, joe_gettext(_("Couldn't open tags file")));
-			vsrm(s);
-			vsrm(t);
 			return -1;
 		}
 	}
@@ -54,8 +47,6 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 				c = buf[y];
 				buf[y] = 0;
 				if (doswitch(bw, vsncpy(NULL, 0, sz(buf + x)), NULL, NULL)) {
-					vsrm(s);
-					vsrm(t);
 					fclose(f);
 					return -1;
 				}
@@ -100,23 +91,17 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 							}
 						}
 						if (x != y) {
-							vsrm(s);
-							vsrm(t);
 							fclose(f);
 							return dopfnext(bw, mksrch(vsncpy(NULL, 0, sz(buf + y)), NULL, 0, 0, -1, 0, 0, 0), NULL);
 						}
 					}
 				}
-				vsrm(s);
-				vsrm(t);
 				fclose(f);
 				return 0;
 			}
 		}
 	}
 	msgnw(bw->parent, joe_gettext(_("Not found")));
-	vsrm(s);
-	vsrm(t);
 	fclose(f);
 	return -1;
 }
@@ -158,8 +143,10 @@ static int tag_cmplt(BW *bw)
 	if (tag_word_list)
 		varm(tag_word_list); */
 
-	if (!tag_word_list)
+	if (!tag_word_list) {
 		tag_word_list = get_tag_list();
+		vaperm(tag_word_list);
+	}
 
 	if (!tag_word_list) {
 		ttputc(7);

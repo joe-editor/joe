@@ -238,9 +238,6 @@ void updall PARAMS((void));
 void msgnw PARAMS((W *w, unsigned char *s));
 void msgnwt PARAMS((W *w, unsigned char *s));
 
-#define JOE_MSGBUFSIZE 300
-extern unsigned char msgbuf[JOE_MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
-
 void msgout PARAMS((W *w));			/* Output msgnw/msgnwt messages */
 
 /* Common user functions */

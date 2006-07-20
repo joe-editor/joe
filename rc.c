@@ -35,8 +35,6 @@ int ulanguage(BW *bw)
 	return 0;
 }
 
-#define OPT_BUF_SIZE 300
-
 static struct context {
 	struct context *next;
 	unsigned char *name;
@@ -265,7 +263,7 @@ void setopt(B *b, unsigned char *parsed_name)
 
 	done:
 	for (x = 0; x!=26; ++x)
-		vsrm(pieces[x]);
+		obj_free(pieces[x]);
 }
 
 /* Table of options and how to set them */
@@ -703,7 +701,6 @@ static int doopt1(BW *bw, unsigned char *s, int *xx, int *notify)
 		}
 		break;
 	}
-	vsrm(s);
 	bw->b->o = bw->o;
 	wfit(bw->parent->t);
 	updall();
@@ -724,7 +721,6 @@ static int dosyntax(BW *bw, unsigned char *s, int *xx, int *notify)
 	else
 		msgnw(bw->parent, joe_gettext(_("Syntax definition file not found")));
 
-	vsrm(s);
 	bw->b->o = bw->o;
 	updall();
 	if (notify)
@@ -749,35 +745,34 @@ static int syntaxcmplt(BW *bw)
 			chpwd(oldpwd);
 			return -1;
 		}
-		if (!aLEN(t)) {
-			varm(t);
+		if (!valen(t)) {
 			chpwd(oldpwd);
 			return -1;
 		}
 
-		for (x = 0; x != aLEN(t); ++x) {
+		syntaxes = vamk(1);
+		vaperm(syntaxes);
+
+		for (x = 0; x != valen(t); ++x) {
 			unsigned char *r = vsncpy(NULL,0,t[x],(unsigned char *)strrchr((char *)(t[x]),'.')-t[x]);
 			syntaxes = vaadd(syntaxes,r);
 		}
-		varm(t);
 
 		p = (unsigned char *)getenv("HOME");
 		if (p) {
-			unsigned char buf[1024];
-			joe_snprintf_1(buf,sizeof(buf),"%s/.joe/syntax",p);
+			unsigned char *buf = vsfmt(NULL, 0, USTR "%s/.joe/syntax",p);
 			if (!chpwd(buf) && (t = rexpnd(USTR "*.jsf"))) {
-				for (x = 0; x != aLEN(t); ++x)
+				for (x = 0; x != valen(t); ++x)
 					*strrchr((char *)t[x],'.') = 0;
-				for (x = 0; x != aLEN(t); ++x) {
-					for (y = 0; y != aLEN(syntaxes); ++y)
+				for (x = 0; x != valen(t); ++x) {
+					for (y = 0; y != valen(syntaxes); ++y)
 						if (!zcmp(t[x],syntaxes[y]))
 							break;
-					if (y == aLEN(syntaxes)) {
+					if (y == valen(syntaxes)) {
 						unsigned char *r = vsncpy(NULL,0,sv(t[x]));
 						syntaxes = vaadd(syntaxes,r);
 					}
 				}
-				varm(t);
 			}
 		}
 
@@ -797,12 +792,10 @@ static int doencoding(BW *bw, unsigned char *s, int *xx, int *notify)
 
 	if (map) {
 		bw->o.charmap = map;
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%s encoding assumed for this file")), map->name);
-		msgnw(bw->parent, msgbuf);
+		msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("%s encoding assumed for this file")), map->name));
 	} else
 		msgnw(bw->parent, joe_gettext(_("Character set not found")));
 
-	vsrm(s);
 	bw->b->o = bw->o;
 	updall();
 	if (notify)
@@ -821,12 +814,14 @@ static int encodingcmplt(BW *bw)
 	return simple_cmplt(bw,encodings);
 }
 
-static int doopt(MENU *m, int x, void *object, int flg)
+static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 {
 	BW *bw = m->parent->win->object;
 	int *xx;
-	unsigned char buf[OPT_BUF_SIZE];
+	unsigned char *buf = 0;
 	int *notify = m->parent->notify;
+
+	varm(vary);
 
 	switch (glopts[x].type) {
 	case 0:
@@ -856,16 +851,16 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		xx = (int *) joe_malloc(sizeof(int));
 		*xx = x;
 		if(*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst))
-			joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[x].yes,*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst));
+			buf = vsfmt(buf, 0, glopts[x].yes, *(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst));
 		else
-			joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[x].yes,"");
+			buf = vsfmt(buf, 0, glopts[x].yes,"");
 		if(wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
 			return 0;
 		else
 			return -1;
-		/* break; warns on some systems */
+		/* break; */
 	case 1:
-		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), *(int *)glopts[x].set);
+		buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *)glopts[x].set);
 		xx = (int *) joe_malloc(sizeof(int));
 
 		*xx = x;
@@ -877,9 +872,9 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			return -1;
 	case 2:
 		if (*(unsigned char **) glopts[x].set)
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), *(unsigned char **) glopts[x].set);
+			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(unsigned char **) glopts[x].set);
 		else
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), "");
+			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
 		xx = (int *) joe_malloc(sizeof(int));
 
 		*xx = x;
@@ -890,10 +885,10 @@ static int doopt(MENU *m, int x, void *object, int flg)
 		else
 			return -1;
 	case 5:
-		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
+		buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
 		goto in;
 	case 7:
-		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
+		buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
 	      in:xx = (int *) joe_malloc(sizeof(int));
 
 		*xx = x;
@@ -905,7 +900,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			return -1;
 
 	case 9:
-		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), "");
+		buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
 		m->parent->notify = 0;
 		wabort(m->parent);
 		if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, locale_map, 0))
@@ -914,7 +909,7 @@ static int doopt(MENU *m, int x, void *object, int flg)
 			return -1;
 
 	case 13:
-		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), "");
+		buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
 		m->parent->notify = 0;
 		wabort(m->parent);
 		if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, locale_map, 0))
@@ -933,49 +928,46 @@ static int doopt(MENU *m, int x, void *object, int flg)
 static int doabrt(MENU *m, int x, unsigned char **s)
 {
 	optx = x;
-	for (x = 0; s[x]; ++x)
-		joe_free(s[x]);
-	joe_free(s);
+	varm(s);
 	return -1;
 }
 
 int umode(BW *bw)
 {
-	int size;
-	unsigned char **s;
+	unsigned char **s = vamk(50);
 	int x;
 
-	bw->b->o.readonly = bw->o.readonly = bw->b->rdonly;
-	for (size = 0; glopts[size].menu; ++size) ;
-	s = (unsigned char **) joe_malloc(sizeof(unsigned char *) * (size + 1));
+	vaperm(s);
 
-	for (x = 0; x != size; ++x) {
-		s[x] = (unsigned char *) joe_malloc(80);		/* FIXME: why 40 ??? */
+	bw->b->o.readonly = bw->o.readonly = bw->b->rdonly;
+
+	for (x = 0; glopts[x].menu; ++x) {
+		unsigned char *t = vsmk(40);
 		switch (glopts[x].type) {
 		case 0:
-			joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%s", joe_gettext(glopts[x].menu), *(int *)glopts[x].set ? "ON" : "OFF");
+			t = vsfmt(t, 0, joe_gettext(glopts[x].menu), *(int *)glopts[x].set ? "ON" : "OFF");
 			break;
 		case 1:
-			joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%d", joe_gettext(glopts[x].menu), *(int *)glopts[x].set);
+			t = vsfmt(t, 0, USTR "%s%d", joe_gettext(glopts[x].menu), *(int *)glopts[x].set);
 			break;
 		case 2:
 		case 9:
 		case 13:
 		case 6:
-			zcpy(s[x], joe_gettext(glopts[x].menu));
+			t = vscpyz(t,joe_gettext(glopts[x].menu));
 			break;
 		case 4:
-			joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%s", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? "ON" : "OFF");
+			t = vsfmt(t, 0, USTR "%s%s", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? "ON" : "OFF");
 			break;
 		case 5:
-			joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%d", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
+			t = vsfmt(t, 0, USTR "%s%d", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
 			break;
 		case 7:
-			joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%d", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
+			t = vsfmt(t, 0, USTR "%s%d", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
 			break;
 		}
+		s = vaadd(s, t);
 	}
-	s[x] = 0;
 	if (mkmenu(bw->parent, bw->parent, s, doopt, doabrt, NULL, optx, s, NULL))
 		return 0;
 	else
@@ -992,17 +984,15 @@ int procrc(CAP *cap, unsigned char *name)
 {
 	OPTIONS *o = &fdefault;	/* Current options */
 	KMAP *context = NULL;	/* Current context */
-	unsigned char buf[1024];	/* Input buffer */
+	unsigned char *buf = vsmk(128);	/* Input buffer */
 	JFILE *fd;		/* rc file */
 	int line = 0;		/* Line number */
 	int err = 0;		/* Set to 1 if there was a syntax error */
 
-	strncpy((char *)buf, (char *)name, sizeof(buf) - 1);
-	buf[sizeof(buf)-1] = '\0';
 #ifdef __MSDOS__
-	fd = jfopen(buf, "rt");
+	fd = jfopen(name, "rt");
 #else
-	fd = jfopen(buf, "r");
+	fd = jfopen(name, "r");
 #endif
 
 	if (!fd)
@@ -1011,7 +1001,7 @@ int procrc(CAP *cap, unsigned char *name)
 	fprintf(stderr,(char *)joe_gettext(_("Processing '%s'...")), name);
 	fflush(stderr);
 
-	while (jfgets(buf, sizeof(buf), fd)) {
+	while (jfgets(&buf, fd)) {
 		line++;
 		switch (buf[0]) {
 		case ' ':
@@ -1123,20 +1113,19 @@ int procrc(CAP *cap, unsigned char *name)
 						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
 						buf[c] = 0;
 						if (c != x) {
-							unsigned char bf[1024];
+							unsigned char *bf = 0;
 							unsigned char *p = (unsigned char *)getenv("HOME");
 							int rtn = -1;
-							bf[0] = 0;
 							if (p && buf[x] != '/') {
-								joe_snprintf_2(bf,sizeof(bf),"%s/.joe/%s",p,buf + x);
+								bf = vsfmt(bf, 0, USTR "%s/.joe/%s",p,buf + x);
 								rtn = procrc(cap, bf);
 							}
 							if (rtn == -1 && buf[x] != '/') {
-								joe_snprintf_2(bf,sizeof(bf),"%s%s",JOERC,buf + x);
+								bf = vsfmt(bf, 0, USTR "%s%s",JOERC,buf + x);
 								rtn = procrc(cap, bf);
 							}
 							if (rtn == -1 && buf[x] == '/') {
-								joe_snprintf_1(bf,sizeof(bf),"%s",buf + x);
+								bf = vsfmt(bf, 0, USTR "%s",buf + x);
 								rtn = procrc(cap, bf);
 							}
 							switch (rtn) {
@@ -1195,7 +1184,7 @@ int procrc(CAP *cap, unsigned char *name)
 					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Unknown command in macro")), name, line);
 					break;
 				} else if (x == -2) {
-					jfgets(buf, 1024, fd);
+					jfgets(&buf, fd);
 					++line;
 					goto macroloop;
 				}
@@ -1230,30 +1219,20 @@ int procrc(CAP *cap, unsigned char *name)
 
 void save_hist(FILE *f,B *b)
 {
-	unsigned char buf[512];
-	int len;
+	unsigned char *buf = vsmk(128);
 	if (b) {
 		P *p = pdup(b->bof, USTR "save_hist");
-		P *q = pdup(b->bof, USTR "save_hist");
 		if (b->eof->line>10)
 			pline(p,b->eof->line-10);
-		pset(q,p);
 		while (!piseof(p)) {
-			pnextl(q);
-			if (q->byte-p->byte<512) {
-				len = q->byte - p->byte;
-				brmem(p,buf,len);
-			} else {
-				brmem(p,buf,512);
-				len = 512;
-			}
+			buf = brlinevs(buf, p);
+			buf = vsadd(buf, '\n');
+			pnextl(p);
 			fprintf(f,"\t");
-			emit_string(f,buf,len);
+			emit_string(f,sv(buf));
 			fprintf(f,"\n");
-			pset(p,q);
 		}
 		prm(p);
-		prm(q);
 	}
 	fprintf(f,"done\n");
 }
@@ -1263,8 +1242,8 @@ void save_hist(FILE *f,B *b)
 void load_hist(FILE *f,B **bp)
 {
 	B *b;
-	unsigned char buf[1024];
-	unsigned char bf[1024];
+	unsigned char *buf = 0;
+	unsigned char *bf = 0;
 	P *q;
 
 	b = *bp;
@@ -1273,11 +1252,11 @@ void load_hist(FILE *f,B **bp)
 
 	q = pdup(b->eof, USTR "load_hist");
 
-	while(fgets((char *)buf,1023,f) && zcmp(buf,USTR "done\n")) {
+	while(vsgets(&buf,f) && zcmp(buf,USTR "done")) {
 		unsigned char *p = buf;
 		int len;
 		parse_ws(&p,'#');
-		len = parse_string(&p,bf,sizeof(bf));
+		len = parse_string(&p,&bf);
 		if (len>0) {
 			binsm(q,bf,len);
 			pset(q,b->eof);
@@ -1289,26 +1268,26 @@ void load_hist(FILE *f,B **bp)
 
 /* Save state */
 
-#define STATE_ID (unsigned char *)"# JOE state file v1.0\n"
+#define STATE_ID (unsigned char *)"# JOE state file v1.0"
 
 void save_state()
 {
-	unsigned char *home = (unsigned char *)getenv("HOME");
+	unsigned char *path = (unsigned char *)getenv("HOME");
 	int old_mask;
 	FILE *f;
 	if (!joe_state)
 		return;
-	if (!home)
+	if (!path)
 		return;
-	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
+	path = vsfmt(NULL,0,USTR "%s/.joe_state",path);
 	old_mask = umask(0066);
-	f = fopen((char *)stdbuf,"w");
+	f = fopen((char *)path,"w");
 	umask(old_mask);
 	if(!f)
 		return;
 
 	/* Write ID */
-	fprintf(f,"%s",(char *)STATE_ID);
+	fprintf(f,"%s\n",(char *)STATE_ID);
 
 	/* Write state information */
 	fprintf(f,"search\n"); save_srch(f);
@@ -1330,49 +1309,49 @@ void save_state()
 
 void load_state()
 {
-	unsigned char *home = (unsigned char *)getenv("HOME");
-	unsigned char buf[1024];
+	unsigned char *path = (unsigned char *)getenv("HOME");
+	unsigned char *buf = vsmk(128);
 	FILE *f;
 	if (!joe_state)
 		return;
-	if (!home)
+	if (!path)
 		return;
-	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
-	f = fopen((char *)stdbuf,"r");
+	path = vsfmt(NULL,0,USTR "%s/.joe_state",path);
+	f = fopen((char *)path,"r");
 	if(!f)
 		return;
 
 	/* Only read state information if the version is correct */
-	if (fgets((char *)buf,1024,f) && !zcmp(buf,STATE_ID)) {
+	if (vsgets(&buf, f) && !zcmp(buf,STATE_ID)) {
 
 		/* Read state information */
-		while(fgets((char *)buf,1023,f)) {
-			if(!zcmp(buf,USTR "search\n"))
+		while(vsgets(&buf,f)) {
+			if(!zcmp(buf,USTR "search"))
 				load_srch(f);
-			else if(!zcmp(buf,USTR "macros\n"))
+			else if(!zcmp(buf,USTR "macros"))
 				load_macros(f);
-			else if(!zcmp(buf,USTR "files\n"))
+			else if(!zcmp(buf,USTR "files"))
 				load_hist(f,&filehist);
-			else if(!zcmp(buf,USTR "find\n"))
+			else if(!zcmp(buf,USTR "find"))
 				load_hist(f,&findhist);
-			else if(!zcmp(buf,USTR "replace\n"))
+			else if(!zcmp(buf,USTR "replace"))
 				load_hist(f,&replhist);
-			else if(!zcmp(buf,USTR "run\n"))
+			else if(!zcmp(buf,USTR "run"))
 				load_hist(f,&runhist);
-			else if(!zcmp(buf,USTR "build\n"))
+			else if(!zcmp(buf,USTR "build"))
 				load_hist(f,&buildhist);
-			else if(!zcmp(buf,USTR "grep\n"))
+			else if(!zcmp(buf,USTR "grep"))
 				load_hist(f,&grephist);
-			else if(!zcmp(buf,USTR "cmd\n"))
+			else if(!zcmp(buf,USTR "cmd"))
 				load_hist(f,&cmdhist);
-			else if(!zcmp(buf,USTR "math\n"))
+			else if(!zcmp(buf,USTR "math"))
 				load_hist(f,&mathhist);
-			else if(!zcmp(buf,USTR "yank\n"))
+			else if(!zcmp(buf,USTR "yank"))
 				load_yank(f);
-			else if (!zcmp(buf,USTR "file_pos\n"))
+			else if (!zcmp(buf,USTR "file_pos"))
 				load_file_pos(f);
 			else { /* Unknown... skip until next done */
-				while(fgets((char *)buf,1023,f) && zcmp(buf,USTR "done\n"));
+				while(vsgets(&buf,f) && zcmp(buf,USTR "done"));
 			}
 		}
 	}

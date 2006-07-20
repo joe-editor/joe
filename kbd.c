@@ -232,9 +232,9 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 		s = jgetstr(cap, seq + 1);
 		seq[x] = c;
 		if (s && (s = tcompile(cap, s, 0, 0, 0, 0))
-		    && (sLEN(s) > 1 || (signed char)s[0] < 0)) {
+		    && (vslen(s) > 1 || (signed char)s[0] < 0)) {
 			capseq = s;
-			seql = sLEN(s);
+			seql = vslen(s);
 			for (seq += x; *seq == ' '; ++seq) ;
 		}
 #endif
@@ -346,7 +346,6 @@ B *keymaphist=0;
 int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
 {
 	KMAP *k=ngetcontext(s);
-	vsrm(s);
 	if(notify) *notify=1;
 	if(!k) {
 		msgnw(bw->parent,joe_gettext(_("No such keymap")));
@@ -361,12 +360,10 @@ static unsigned char **keymap_list;
 
 static int keymap_cmplt(BW *bw)
 {
-	/* Reload every time: we should really check date of tags file...
-	  if (tag_word_list)
-	  	varm(tag_word_list); */
-
-	if (!keymap_list)
+	if (!keymap_list) {
 		keymap_list = get_keymap_list();
+		vaperm(keymap_list);
+	}
 
 	if (!keymap_list) {
 		ttputc(7);

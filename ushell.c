@@ -130,6 +130,7 @@ int ubknd(BW *bw)
 
         ok:
 	a = vamk(3);
+	vaperm(a);
 	s = vsncpy(NULL, 0, sz(sh));
 	a = vaadd(a, s);
 	s = vsncpy(NULL, 0, sc("-i"));

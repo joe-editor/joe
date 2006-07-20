@@ -895,7 +895,6 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 			ret = -1;
 		} else
 			binsb(bw->cursor, tmp);
-		vsrm(s);
 		bw->cursor->xcol = piscol(bw->cursor);
 		return ret;
 	}
@@ -950,11 +949,10 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 #ifdef HAVE_PUTENV
 		fname = vsncpy(NULL, 0, sc("JOE_FILENAME="));
 		name = bw->b->name ? bw->b->name : (unsigned char *)"Unnamed";
-		if((len = slen(name)) >= 512)	/* limit filename length */
+		if((len = zlen(name)) >= 512)	/* limit filename length */
 			len = 512;
 		fname = vsncpy(sv(fname), name, len);
 		putenv((char *)fname);
-		vsrm(fname);
 #endif
 		execl("/bin/sh", "/bin/sh", "-c", s, NULL);
 		_exit(0);
@@ -1027,7 +1025,6 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 		close(fw[1]);
 		_exit(0);
 	}
-	vsrm(s);
 	ttopnn();
 	if (filtflg)
 		unmark(bw);

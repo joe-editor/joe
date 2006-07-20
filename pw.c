@@ -17,17 +17,16 @@ void set_current_dir(unsigned char *s,int simp)
 {
 	if (s[0]=='!' || (s[0]=='>' && s[1]=='>'))
 		return;
-	vsrm(current_dir);
+	obj_free(current_dir);
 	if (s) {
 		current_dir=dirprt(s);
 		if (simp) {
-			unsigned char *tmp = simplify_prefix(current_dir);
-			vsrm(current_dir);
-			current_dir = tmp;
+			current_dir = simplify_prefix(current_dir);
 		}
 	}
 	else
 		current_dir = 0;
+	obj_perm(current_dir);
 }
 
 static void disppw(BW *bw, int flg)
@@ -132,7 +131,7 @@ static int rtnpw(BW *bw)
 	p_goto_eol(bw->cursor);
 	byte = bw->cursor->byte;
 	p_goto_bol(bw->cursor);
-	s = brvs(bw->cursor, (int) (byte - bw->cursor->byte));
+	s = brvs(NULL, bw->cursor, (int) (byte - bw->cursor->byte));
 
 	/* Save text into history buffer */
 	if (pw->hist) {
@@ -307,7 +306,7 @@ int cmplt_abrt(BW *bw, int x, unsigned char *line)
 {
 	if (line) {
 		/* cmplt_ins(bw, line); */
-		vsrm(line);
+		obj_free(line);
 	}
 	return -1;
 }
@@ -315,7 +314,7 @@ int cmplt_abrt(BW *bw, int x, unsigned char *line)
 int cmplt_rtn(MENU *m, int x, unsigned char *line)
 {
 	cmplt_ins(m->parent->win->object, m->list[x]);
-	vsrm(line);
+	obj_free(line);
 	m->object = NULL;
 	wabort(m->parent);
 	return 0;
@@ -333,18 +332,16 @@ int simple_cmplt(BW *bw,unsigned char **list)
 	p_goto_bol(p);
 	q = pdup(bw->cursor, USTR "simple_cmplt");
 	p_goto_eol(q);
-	line = brvs(p, (int) (q->byte - p->byte));	/* Assumes short lines :-) */
+	line = brvs(NULL, p, (int) (q->byte - p->byte));	/* Assumes short lines :-) */
 	prm(p);
 	prm(q);
 
 	line1 = vsncpy(NULL, 0, sv(line));
 	line1 = vsadd(line1, '*');
-	lst = regsub(list, aLEN(list), line1);
-	vsrm(line1);
+	lst = regsub(av(list), line1);
 
 	if (!lst) {
 		ttputc(7);
-		vsrm(line);
 		return -1;
 	}
 
@@ -358,13 +355,13 @@ int simple_cmplt(BW *bw,unsigned char **list)
 		}
 	}
 
+	obj_perm(line);
+	vaperm(lst);
 	m = mkmenu((menu_above ? bw->parent->link.prev : bw->parent), bw->parent, lst, cmplt_rtn, cmplt_abrt, NULL, 0, line, NULL);
 	if (!m) {
-		varm(lst);
-		vsrm(line);
 		return -1;
 	}
-	if (aLEN(lst) == 1)
+	if (valen(lst) == 1)
 		return cmplt_rtn(m, 0, line);
 	else if (smode || isreg(line)) {
 		if (!menu_jump)
@@ -373,8 +370,9 @@ int simple_cmplt(BW *bw,unsigned char **list)
 	} else {
 		unsigned char *com = mcomplete(m);
 
-		vsrm(m->object);
+		obj_free(m->object);
 		m->object = com;
+		obj_perm(com);
 		
 		cmplt_ins(bw, com);
 		wabort(m->parent);

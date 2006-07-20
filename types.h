@@ -185,7 +185,6 @@ typedef int pid_t;
 #define KEY_MWUP	265
 #define KEY_MWDOWN	266
 
-#define stdsiz		8192
 #define FITHEIGHT	4		/* Minimum text window height */
 #define LINCOLS		10
 #define NPROC		8		/* Number of processes we keep track of */
@@ -230,6 +229,7 @@ typedef struct vfile VFILE;
 typedef struct highlight_state HIGHLIGHT_STATE;
 typedef struct mpx MPX;
 typedef struct jfile JFILE;
+typedef struct obj Obj;
 
 /* Structure which are passed by value */
 
@@ -280,9 +280,8 @@ struct highlight_state {
 #include "utag.h"
 #include "utf8.h"
 #include "utils.h"
-#include "va.h"
 #include "vfile.h"
-#include "vs.h"
 #include "w.h"
 #include "gettext.h"
 #include "builtin.h"
+#include "obj.h"

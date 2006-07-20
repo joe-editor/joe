@@ -1,3 +1,139 @@
+<h3>Semi-Automatic Variables</h3>
+<p>JOE 3.6 uses "semi-automatic" variables for strings.  There is a global
+"object-stack", accessed through these functions:</p>
+
+<table width="100%" cellspacing=0>
+<colgroup>
+<col width="300">
+<tbody>
+<tr><td>void *obj_malloc(int size);</td><td>Allocate a block of memory.</td></tr>
+<tr><td>void *obj_realloc(void *ptr, int size);</td><td>Change allocation size.</td></tr>
+<tr><td>void obj_free(void *ptr);</td><td>Free a specified block and all newer blocks.</td></tr>
+<tr><td>void obj_perm(void *ptr);</td><td>Mark a block as permanent, which in effect moves the block from the stack to the heap.</td></tr>
+<tr><td>int obj_len(void *ptr);</td><td>Access hidden "length" part of block (string length).</td></tr>
+<tr><td>int obj_size(void *ptr);</td><td>Access hidden "size" part of block (allocation size).</td></tr>
+</tbody>
+</table>
+
+<p>These functions remember the order of allocation.  When an allocated
+block is freed, it and all newer blocks are freed as well.  For example, in:</p>
+
+<pre>
+unsigned char *a = obj_malloc(10);
+unsigned char *b = obj_malloc(10);
+unsigned char *c = obj_malloc(10);
+unsigned char *d = obj_malloc(10);
+
+obj_free(b);
+</pre>
+
+<p>b, c, and d are all freed, but a remains allocated.  The top-level edit
+loop is structured to call obj_free after every editor command:</p>
+
+<pre>
+unsigned char *gc = obj_malloc(1);
+execmd(...); /* Execute edit commands */
+obj_free(gc); /* Collect garbage */
+</pre>
+
+<p>Thus, you rarely have to call obj_free- the only time you might want to do
+it is if you are calling obj_malloc in a loop.  This could cause a large
+amount of memory to be allocated, so obj_free() should be called at the
+end of each loop iteration.</p>
+
+<p>obj_perm() marks an object as a heap object instead of a stack object. 
+When a heap object is freed, only itself is freed- the stack is not
+modified.  Also when the stack is freed, heap objects are not touched.</p>
+
+<h3>Variable Strings</h3>
+
+<p>JOE uses dynamic strings built on top of the global object stack
+functions. These strings automatically resize themselves to fit their
+contents.  They also know their own length, which allows you to have NULs in
+the middle of a string.  They also always have a terminating NUL to make
+them compatible with C-strings.  In fact they have (almost) the same type as
+C-strings: unsigned char *.  The length is hidden in the obj_malloc data
+structure.  These functions are provided:</p>
+
+<table width="100%" cellspacing=0>
+<colgroup>
+<col width="400">
+<tbody>
+<tr><td>unsigned char *vsmk(int prealloc);</td><td>Allocate a zero length string, but with enough space to grow to the specified length.</td></tr>
+<tr><td>int vslen(unsigned char *s);</td><td>Return string length or 0 if s is NULL.</td></tr>
+<tr><td>unsigned char *vsensure(unsigned char *s, int len);</td><td>Make sure there is enough space for a string of the specified length.</td></tr>
+<tr><td>usnigned char *vstrunc(unsigned char *s, int len);</td><td>Set length of string: the string is truncated or extended with spaces to the specified length.</td></tr>
+<tr><td>unsigned char *vsncpy(unsigned char *s,int offset,unsigned char *block, int block_size);</td><td>Copy a memory block to a string.  The string is extended with spaces if offset &gt; string length.</td></tr>
+<tr><td>unsigned char *vsdupz(unsigned char *s);</td><td>Duplicate a z-string to a variable string.</td></tr>
+<tr><td>unsigned char *vsdup(unsigned char *s);</td><td>Duplicate a variable string.</td></tr>
+<tr><td>unsigned char *vscpyz(unsigned char *s,unsigned char *z);</td><td>Copy a z-string to a variable string.</td></tr>
+<tr><td>unsigned char *vscpy(unsigned char *s,unsigned char *block,int size);</td><td>Copy a memory block to a variable string.</td></tr>
+<tr><td>unsigned char *vscatz(unsigned char *s,unsigned char *z);</td><td>Append a z-string to a variable string.</td></tr>
+<tr><td>unsigned char *vscat(unsigned char *s,unsigned char *block,int size);</td><td>Append a memory block to a variable string.</td></tr>
+<tr><td>unsigned char *vsadd(unsigned char *s,unsigned char c);</td><td>Append a single character to a string.</td></tr>
+<tr><td>unsigned char *vsfmt(unsigned char *s,int offset,const char *format,...);</td><td>Sprintf() to a variable string.</td></tr>
+<tr><td>unsigned char *vsgets(unsigned char **sp,FILE *f);</td><td>fgets() to a variable string (returns NULL on EOF, does not put '\n' in the string).</td></tr>
+</tbody>
+</table>
+
+<p>Note that it is OK to pass NULL in place of 's' in any of the above
+functions.  In this case, a new string is allocated.</p>
+
+<p>Most of these function return the address of the variable string, in case
+it was modified.  One exception is vsgets()- it takes an address of a
+variable holding the string.  It returns the string address, but it also
+writes it to the variable directly.</p>
+
+<p>Many of the above functions take a memory block, which is specified by an
+address and a length.  These macros can be used to help contruct these
+arguments:</p>
+
+<table width="100%" cellspacing=0>
+<colgroup>
+<col width="350">
+<tbody>
+<tr><td>#define sc(s) (s), (sizeof(s)-1)</td><td>For string constants.</td></tr>
+<tr><td>#define sz(s) (s), zlen(s)</td><td>For C-strings (zlen is the same as strlen).</td></tr>
+<tr><td>#define sv(s) (s), vslen(s)</td><td>For variable strings.</td></tr>
+</tbody>
+</table>
+
+
+<p>So for example, vscatz is defined as:</p>
+
+<pre>
+unsigned char *vscatz(unsigned char *s, unsigned char *z);
+{
+	return vsncpy(sv(s), sz(z));
+}
+</pre>
+
+<h3>Variable arrays of variable strings</h3>
+
+<p>JOE also semi-automatic variable arrays of variable strings.  These
+functions are provided:</p>
+
+<table width="100%" cellspacing=0>
+<colgroup>
+<col width="400">
+<tbody>
+<tr><td>unsigned char *vamk(int prealloc);</td><td>Allocate a zero length array, but with enough space to grow to the specified length.</td></tr>
+<tr><td>void varm(unsigned char **a);</td><td>Free an array.</td></tr>
+<tr><td>int valen(unsigned char *a);</td><td>Return array length or 0 if a is NULL.</td></tr>
+<tr><td>unsigned char *vaensure(unsigned char *s, int len);</td><td>Make sure there is enough space for an array of the specified length.</td></tr>
+<tr><td>usnigned char *vatrunc(unsigned char *s, int len);</td><td>Set length of array: the array is truncated or extended with NULLs to the specified length.</td></tr>
+<tr><td>unsigned char *vaadd(unsigned char **a,unsigned char *s);</td><td>Append a single string to an array.</td></tr>
+<tr><td>unsigned char *vasort(unsigned char **a,int len);</td><td>Sort an array.</td></tr>
+<tr><td>unsigned char *vawords(unsigned char **a,unsigned char *s,int len, unsigned char *sep, int seplen);</td><td>Convert a word list in s (words separated by characters given in sep/seplen) into an array of strings.</td></tr>
+<tr><td>void vaperm(unsigned char **a);</td><td>Mark an array as preferment (heap instead of stack).</td></tr>
+</tbody>
+</table>
+
+<p>When an array is marked as permanent, any strings in the array also
+marked as permanent, and any string later added to the array are also marked
+as permanent.</p>
+
+
 <h3>Edit Buffers</h3>
 <p>API:
 </p>
@@ -261,24 +397,4 @@ qw.c		A class: query windows
 pw.c		A class: prompt windows
 bw.c		A class: text buffer window (screen update code is here)
 w.c		A class: base class for all windows
-</p>
-<h3>Strings</h3>
-<p>char *				C-strings: only used for system calls or C-library calls.
-</p>
-<p>unsigned char *			Z-strings: used in JOE for read-only code
-</p>
-<p>vs s				V-strings: exist in heap
-  s.c_string		Get C-string out of it (0 time)
-  z.z_string		Get Z-string out of it (0 time)
-</p>
-<p>vsrm(&amp;s);			Free a vs.
-vs n=vsdup(s)			Duplicate a vs.
-vsadd(&amp;s, 'c')			Append one character.
-vscat(&amp;s, zs, int len)		Concatenate array on end of string
-</p>
-<p>vscat(&amp;s, sc("Hi there"))
-vscat(&amp;s, sv(s))
-vscat(&amp;s, sz(z))
-</p>
-<p>vscmp()
 </p>
