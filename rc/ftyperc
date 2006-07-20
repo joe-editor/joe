@@ -25,6 +25,10 @@
 -wordwrap
 -syntax troff
 
+*.1.in
+-wordwrap
+-syntax troff
+
  TeX
 *.tex
 -wordwrap
@@ -327,6 +331,18 @@
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
 -cpara >#!;*/%
 
+*.h.in
+-autoindent
+-syntax c
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+-c_comment
+-cpp_comment
+-text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-cpara >#!;*/%
+
 *.hpp
 -autoindent
 -syntax c
@@ -483,11 +499,6 @@
 -syntax csh
 -pound_comment
 
- M4
-*.m4
--autoindent
--syntax m4
-
  Shell
 *
 +#!\+\[ 	]\+\[a-z/]/sh\>
@@ -570,6 +581,11 @@
 -syntax conf
 -pound_comment
 
+*akefile.in
+-autoindent
+-syntax conf
+-pound_comment
+
 *AKEFILE
 -autoindent
 -syntax conf
@@ -631,6 +647,10 @@
 -autoindent
 -syntax conf
 
+*.jsf.in
+-autoindent
+-syntax conf
+
  Autoconfig file
 *.ac
 -autoindent
@@ -643,11 +663,6 @@
 
  Automake file
 *.am
--autoindent
--syntax conf
-
- Config files
-*.in
 -autoindent
 -syntax conf
 
