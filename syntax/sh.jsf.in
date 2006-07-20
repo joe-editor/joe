@@ -135,7 +135,7 @@ done
 	"\'"		string_sq	recolor=-2
 	"{"		subst_brack
 	"a-zA-Z_"	subst_name
-	"0-9*@?\-$_!"	idle
+	"0-9*@?\-$_!#"	idle
 
 :subst_name Var
 	*		idle		noeat recolor=-1

@@ -1,3 +1,9 @@
+Thu Jul 20 15:23:23 EDT 2006
+
+	Fix $# in shell highlighter.
+
+	Fix .in files in ftype
+
 Tue Jul 18 14:20:39 EDT 2006
 
 	Tags file patch: allows you to put a path in TAGS environment
