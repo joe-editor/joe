@@ -348,53 +348,54 @@ operator windows are target it.
 <p>- add something here.
 </p>
 <h3>Files</h3>
-main.c		has main().
-</p>
-<p>b.c		Text buffer management
-undo.c		Undo system.
-kbd.c		Keymap datastructure (keysequence to macro bindings).
-macro.c		Keyboard and joerc file macros
-help.c		Implement the on-line help window
-poshist.c	Cursor position history
-rc.c		joerc file loader
-tab.c		tab completion for file selection prompt
-regex.c		regular expressions
-</p>
-<p>blocks.c	Library: fast memcpy() functions (necessary on really old versions of UNIX).
-dir.c		Directory reading functions (for old UNIXs).
-hash.c		Library: simple hash functions.
-vs.c		Automatic variable length strings (like C++ string).
-va.c		Automatic array of strings (like STL container)
-vfile.c		Library: virtual memory functions (allows you to edit files larger than memory)
-utils.c		Misc. utilities
-queue.c		Library: doubly linked lists
-path.c		Library: file name and path manipulation functions
-selinux.c	secure linux functions
-</p>
-<p>i18n.c		Unicode character type information database
-charmap.c	UNICODE to 8-bit conversion functions
-utf8.c		UTF-8 to unicode coding functions
-</p>
-<p>termcap.c	load terminal capabilities from /etc/termcap file or terminfo database
-scrn.c		terminal update functions (curses)
-syntax.c	syntax highlighter
-</p>
-<p>cmd.c		Table of user edit functions
-ublock.c	User edit functions: block moves
-uedit.c		User edit functions: basic edit functions
-uerror.c	User edit functions: parse compiler error messages and goto next error, previous error
-ufile.c		User edit functions: load and save file
-uformat.c	User edit functions: paragraph formatting, centering
-uisrch.c	User edit functions: incremental search
-umath.c		User edit functions: calculator
-usearch.c	User edit functions: search &amp; replace
-ushell.c	User edit functions: subshell
-utag.c		User edit functions: tags file search
-</p>
-<p>menu.c		A class: menu windows
-tw.c		A class: main text editing window
-qw.c		A class: query windows
-pw.c		A class: prompt windows
-bw.c		A class: text buffer window (screen update code is here)
-w.c		A class: base class for all windows
-</p>
+
+<table width="100%" cellspacing=0>
+<colgroup>
+<col width="300">
+<tbody>
+<tr><td>main.c</td><td>Has main()</td></tr>
+<tr><td>b.c</td><td>Text buffer management</td></tr>
+<tr><td>undo.c</td><td>Undo system</td></tr>
+<tr><td>kbd.c</td><td>Keymap datastructure (keysequence to macro bindings).</td></tr>
+<tr><td>macro.c</td><td>Keyboard and joerc file macros</td></tr>
+<tr><td>help.c</td><td>Implement the on-line help window</td></tr>
+<tr><td>poshist.c</td><td>Cursor position history</td></tr>
+<tr><td>rc.c</td><td>joerc file loader</td></tr>
+<tr><td>tab.c</td><td>tab completion for file selection prompt</td></tr>
+<tr><td>regex.c</td><td>regular expressions</td></tr>
+<tr><td>blocks.c</td><td>Library: fast memcpy() functions (necessary on really old versions of UNIX).</td></tr>
+<tr><td>dir.c</td><td>Directory reading functions (for old UNIXs).</td></tr>
+<tr><td>hash.c</td><td>Library: simple hash functions.</td></tr>
+<tr><td>obj.c</td><td>Semi-automatic objects, plus dynamic string and array library</td></tr>
+<tr><td>vfile.c</td><td>Library: virtual memory functions (allows you to edit files larger than memory)</td></tr>
+<tr><td>utils.c</td><td>Misc. utilities</td></tr>
+<tr><td>queue.c</td><td>Library: doubly linked lists</td></tr>
+<tr><td>path.c</td><td>Library: file name and path manipulation functions</td></tr>
+<tr><td>selinux.c</td><td>secure linux functions</td></tr>
+<tr><td>i18n.c</td><td>Unicode character type information database</td></tr>
+<tr><td>charmap.c</td><td>UNICODE to 8-bit conversion functions</td></tr>
+<tr><td>utf8.c</td><td>UTF-8 to unicode coding functions</td></tr>
+<tr><td>termcap.c</td><td>load terminal capabilities from /etc/termcap file or terminfo database</td></tr>
+<tr><td>scrn.c</td><td>terminal update functions (curses)</td></tr>
+<tr><td>syntax.c</td><td>syntax highlighter</td></tr>
+<tr><td>cmd.c</td><td>Table of user edit functions</td></tr>
+<tr><td>ublock.c</td><td>User edit functions: block moves</td></tr>
+<tr><td>uedit.c</td><td>User edit functions: basic edit functions</td></tr>
+<tr><td>uerror.c</td><td>User edit functions: parse compiler error messages and goto next error, previous error</td></tr>
+<tr><td>ufile.c</td><td>User edit functions: load and save file</td></tr>
+<tr><td>uformat.c</td><td>User edit functions: paragraph formatting, centering</td></tr>
+<tr><td>uisrch.c</td><td>User edit functions: incremental search</td></tr>
+<tr><td>umath.c</td><td>User edit functions: calculator</td></tr>
+<tr><td>usearch.c</td><td>User edit functions: search &amp; replace</td></tr>
+<tr><td>ushell.c</td><td>User edit functions: subshell</td></tr>
+<tr><td>utag.c</td><td>User edit functions: tags file search</td></tr>
+<tr><td>menu.c</td><td>A class: menu windows</td></tr>
+<tr><td>tw.c</td><td>A class: main text editing window</td></tr>
+<tr><td>qw.c</td><td>A class: query windows</td></tr>
+<tr><td>pw.c</td><td>A class: prompt windows</td></tr>
+<tr><td>bw.c</td><td>A class: text buffer window (screen update code is here)</td></tr>
+<tr><td>w.c</td><td>A class: base class for all windows</td></tr>
+</tbody>
+</table>
+
+
