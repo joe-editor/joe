@@ -184,9 +184,22 @@ static double expr(int prec, int en,struct var **rtv)
 		}
 		*ptr = c;
 	} else if ((*ptr >= '0' && *ptr <= '9') || *ptr == '.') {
-		char *eptr;
-		x = strtod((char *)ptr,&eptr);
-		ptr = (unsigned char *)eptr;
+		if (ptr[0] == '0' && ptr[1] == 'x') {
+			x = 0.0;
+			ptr += 2;
+			while ((*ptr >= '0' && *ptr <= '9') || (*ptr >= 'a' && *ptr <='f') ||
+			       (*ptr >= 'A' && *ptr <= 'F'))
+				if (*ptr >= '0' && *ptr <= '9')
+					x = x * 16.0 + *ptr++ - '0';
+				else if (*ptr >= 'a' && *ptr <= 'f')
+					x = x * 16.0 + *ptr++ - 'a' + 10;
+				else
+					x = x * 16.0 + *ptr++ - 'A' + 10;
+		} else {
+			char *eptr;
+			x = strtod((char *)ptr,&eptr);
+			ptr = (unsigned char *)eptr;
+		}
 	} else if (*ptr == '(') {
 		++ptr;
 		x = expr(0, en, &v);

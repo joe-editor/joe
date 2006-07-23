@@ -821,8 +821,6 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 	unsigned char *buf = 0;
 	int *notify = m->parent->notify;
 
-	varm(vary);
-
 	switch (glopts[x].type) {
 	case 0:
 		if (!flg)

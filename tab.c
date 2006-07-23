@@ -197,9 +197,9 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 	if (menu_explorer && tab->type[cursor] == F_DIR) {	/* Switch directories */
 		unsigned char *orgpath = tab->path;
 		unsigned char *orgpattern = tab->pattern;
-		unsigned char *e = endprt(tab->path);
+		/* unsigned char *e = endprt(tab->path);
 
-		/* if (!zcmp(tab->files[cursor], USTR "..") && sLEN(e)
+		if (!zcmp(tab->files[cursor], USTR "..") && sLEN(e)
 		    && !(e[0] == '.' && e[1] == '.' && (!e[2] || e[2] == '/')))
 			tab->path = begprt(tab->path);
 		else */ {
