@@ -42,10 +42,12 @@ void edupd(int flg)
 	int wid, hei;
 	unsigned char *gc = vsmk(1);
 
+	/* dostaupd is set once a second to force status line update */
 	if (dostaupd) {
-		staupd = 1;
+		staupd = 1; /* Flag for status update in disptw */
 		dostaupd = 0;
 	}
+	/* Resize screen if necessary */
 	ttgtsz(&wid, &hei);
 	if ((wid >= 2 && wid != maint->w) || (hei >= 1 && hei != maint->h)) {
 		nresize(maint->t, wid, hei);
@@ -55,10 +57,14 @@ void edupd(int flg)
 		gpm_my = hei;
 #endif
 	}
+	/* Move windows so that cursors stays on screen */
 	dofollows();
 	ttflsh();
+	/* Send scrolling commands to terminal */
 	nscroll(maint->t, BG_COLOR(bg_text));
+	/* Display help */
 	help_display(maint);
+	/* Update all windows */
 	w = maint->curwin;
 	do {
 		if (w->y != -1) {
@@ -68,12 +74,13 @@ void edupd(int flg)
 		}
 		w = (W *) (w->link.next);
 	} while (w != maint->curwin);
+	/* Set cursor position */
 	cpos(maint->t, maint->curwin->x + maint->curwin->curx, maint->curwin->y + maint->curwin->cury);
 	staupd = 0;
 	obj_free(gc);
 }
 
-static int ahead = 0;
+static int ahead = 0;	/* Set when typeahead from before editor started is exhausted */
 static int ungot = 0;
 static int ungotc = 0;
 
@@ -86,37 +93,53 @@ void nungetc(int c)
 	}
 }
 
+/* Main loop */
+
 int edloop(int flg)
 {
 	int term = 0;
 	int ret = 0;
 
 	if (flg) {
+		/* Macro query requested if flg is set.  We return when user has finished the query */
 		if (maint->curwin->watom->what == TYPETW)
+			/* Query not allowed for regular windows: only prompts */
 			return 0;
 		else
+			/* When prompt is done, it will set term */
 			maint->curwin->notify = &term;
 	}
-	while (!leave && (!flg || !term)) {
+	/* Here is the loop.  Loop while we're not exiting the editor (or query is not done)... */
+	while (!leave && !term) {
 		MACRO *m;
 		int c;
 
+		/* Free exit message if we're not leaving */
 		if (exmsg && !flg) {
 			obj_free(exmsg);
 			exmsg = NULL;
 		}
+		/* Update the screen */
 		edupd(1);
+		/* Set ahead when typeahead from before editor startup is done */
 		if (!ahead && !have)
 			ahead = 1;
+		/* Get next character (including nungetc() one) */
 		if (ungot) {
 			c = ungotc;
 			ungot = 0;
 		} else
 			c = ttgetc();
-
+		/* Deal with typeahead from before editor starting: tty was in
+		   cooked mode so it converted carriage returns to line
+		   feeds.  Convert them back here. */
 		if (!ahead && c == 10)
 			c = 13;
+		/* Give key to current keyboard handler: it returns a macro to execute when
+		   a full sequence is decoded.  */
 		m = dokey(maint->curwin->kbd, c);
+		/* Make sure main window of group has copy of current key sequence so that it
+		   is displayed in the status line (why doesn't status line code figure this out?) */
 		if (maint->curwin->main && maint->curwin->main != maint->curwin) {
 			int x = maint->curwin->kbd->x;
 
@@ -124,10 +147,11 @@ int edloop(int flg)
 			if (x)
 				maint->curwin->main->kbd->seq[x - 1] = maint->curwin->kbd->seq[x - 1];
 		}
+		/* Execute macro */
 		if (m)
 			ret = exemac(m);
 	}
-
+	/* prompt can force return of error, which aborts macro */
 	if (term == -1)
 		return -1;
 	else
