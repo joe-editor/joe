@@ -198,8 +198,6 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 			c = buf[y];
 			buf[y] = 0;
 			cmd = findcmd(buf + x);
-			if (!cmd)
-				printf("Unknown command |%s|\n",buf + x);
 			buf[x = y] = c;
 
 			/* Parse flags */
