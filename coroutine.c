@@ -85,6 +85,27 @@ void call_it()
 
 /* Allocate a stack */
 
+/* Only some versions of solaris have makecontext bugs... */
+/* This fix is from sthreads.c of Michal Trojnara's stunnel program */
+
+#if defined(CPU_SPARC) && ( \
+  defined(OS_SOLARIS2_0) || \
+  defined(OS_SOLARIS2_1) || \
+  defined(OS_SOLARIS2_2) || \
+  defined(OS_SOLARIS2_3) || \
+  defined(OS_SOLARIS2_4) || \
+  defined(OS_SOLARIS2_5) || \
+  defined(OS_SOLARIS2_6) || \
+  defined(OS_SOLARIS2_7) || \
+  defined(OS_SOLARIS2_8))
+
+#define SUN_BUG 1
+
+#else
+
+#define SUN_BUG 0
+
+#endif
 struct stack *mkstack()
 {
 	struct stack *stack;
@@ -93,7 +114,7 @@ struct stack *mkstack()
 		free_stacks = stack->next;
 		stack->caller = 0;
 #ifdef USE_UCONTEXT
-		makecontext(stack->uc, call_it, 0);
+		makecontext(stack->uc, call_it, SUN_BUG);
 #endif
 		return stack;
 	}
@@ -104,11 +125,11 @@ struct stack *mkstack()
 	stack->uc->uc_link = 0;
 	stack->uc->uc_stack.ss_size = STACK_SIZE;
 	stack->uc->uc_stack.ss_sp = malloc(STACK_SIZE);
-#ifdef __sgi
+#if defined(__sgi) || SUN_BUG==1
 	stack->uc->uc_stack.ss_sp = (char *)stack->uc->uc_stack.ss_sp + STACK_SIZE - 8;
 #endif
 	stack->uc->uc_stack.ss_flags = 0;
-	makecontext(stack->uc, call_it, 0);
+	makecontext(stack->uc, call_it, SUN_BUG);
 	return stack;
 #else
 	current_stack = stack;
