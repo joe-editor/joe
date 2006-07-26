@@ -381,3 +381,48 @@ int simple_cmplt(BW *bw,unsigned char **list)
 		return 0;
 	}
 }
+
+/* Simplified prompting... */
+
+unsigned char *answer;
+
+int prompt_cont(BW *bw, unsigned char *s, void *object, int *notify)
+{
+	Coroutine *t = (Coroutine *)object;
+	answer = s;
+	obj_perm(answer);
+
+	co_resume(t, 0);
+
+	if (notify)
+		*notify = 1;
+
+	return 0;
+}
+
+int prompt_abrt(BW *bw, void *object)
+{
+	Coroutine *t = (Coroutine *)object;
+	answer = 0;
+	co_resume(t, -1);
+	return -1;
+}
+
+unsigned char *ask(W *w, unsigned char *prompt, B **history,
+                   unsigned char *huh, int (*tab)(), int *notify,
+                   struct charmap *map, int file_prompt)
+{
+	Coroutine t;
+	BW *bw = wmkpw(w, prompt, history, prompt_cont, huh, prompt_abrt, tab, 
+	               &t, notify, map, file_prompt);
+	if (!bw)
+		return 0;
+
+	/* We get woken up when user hits return */
+	if (!co_yield(&t, 0)) {
+		obj_temp(answer);
+		return answer;
+	} else {
+		return 0;
+	}
+}

@@ -1,5 +1,11 @@
-/* Global object stack, plus dynamic string and dynamic array functions
- * built on top of them. */
+/*
+ * Global object stack, plus dynamic string and dynamic array functions
+ * built on top of them.
+ *	Copyright
+ *		(C) 2006 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 
 /* Object structure */
 
@@ -50,6 +56,10 @@ void *obj_realloc(void *ptr, int new_size);
 /* Turn object from stack allocated to heap allocated */
 
 void obj_perm(void *ptr);
+
+/* Turn object from heap allocated to stack allocated */
+
+void obj_temp(void *ptr);
 
 /* Return true if object is a heap object, false if stack */
 

@@ -359,10 +359,27 @@ int modify_logic(BW *bw,B *b)
 
 /* Execute a command n with key k */
 
+int call_cmd(va_list args)
+{
+	unsigned char *gc;
+	int rtn;
+	int (*func)(void *obj, int k);
+	void *obj;
+	int k;
+	func = va_arg(args, int (*)(void *obj, int));
+	obj = va_arg(args, void *);
+	k = va_arg(args, int);
+
+	gc = vsmk(1);
+	rtn = func(obj, k);
+	obj_free(gc);
+
+	return rtn;
+}
+
 int execmd(CMD *cmd, int k)
 {
 	BW *bw = (BW *) maint->curwin->object;
-	unsigned char *gc = vsmk(1); /* Garbage collection point */
 	int ret = -1;
 
 	/* Warning: bw is a BW * only if maint->curwin->watom->what &
@@ -373,13 +390,11 @@ int execmd(CMD *cmd, int k)
 	(k==3 || k==9 || k==13 || k==8 || k==127 || k==4 || (cmd->func==utype && k>=32 && k<256))) {
 		unsigned char c = k;
 		joe_write(bw->b->out, &c, 1);
-		obj_free(gc);
 		return 0;
 	}
 
 	if (cmd->m) {
 		ret = exmacro(cmd->m, 0);
-		obj_free(gc);
 		return ret;
 	}
 
@@ -407,14 +422,14 @@ int execmd(CMD *cmd, int k)
 	}
 
 	/* Execute command */
-	ret = cmd->func(maint->curwin->object, k);
+	ret = co_call(call_cmd, cmd->func, maint->curwin->object, k);
+	/* ret = cmd->func(maint->curwin->object, k); */
 
 	if (smode)
 		--smode;
 
 	/* Don't update anything if we're going to leave */
 	if (leave) {
-		obj_free(gc);
 		return 0;
 	}
 
@@ -457,7 +472,6 @@ int execmd(CMD *cmd, int k)
 
 	if (joe_beep && ret)
 		ttputc(7);
-	obj_free(gc);
 	return ret;
 }
 

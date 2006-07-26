@@ -1,3 +1,7 @@
+Tue Jul 25 22:26:26 EDT 2006
+
+	Add coroutines
+
 Mon Jul 24 00:36:06 EDT 2006
 
 	Get rid of debug message
@@ -10,6 +14,10 @@ Sat Jul 22 22:51:25 EDT 2006
 
 	Don't depend on strtod to convert from hex in umath.c.  Strtod does
 	this only in glibc.
+
+	Add global object stack
+
+JOE 3.5 --->
 
 Thu Jul 20 15:23:23 EDT 2006
 

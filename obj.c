@@ -1,8 +1,13 @@
-/* Global object stack, dynamic string and dynamic array of strings
- * functions. */
+/*
+ * Global object stack, plus dynamic string and dynamic array functions
+ * built on top of them.
+ *	Copyright
+ *		(C) 2006 Joseph H. Allen
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 
 #include "types.h"
-#include <stdarg.h>
 
 /* Object stack */
 
@@ -78,6 +83,15 @@ void obj_perm(void *ptr)
 			blk->link.next = 0;
 			blk->link.prev = 0;
 		}
+	}
+}
+
+void obj_temp(void *ptr)
+{
+	if (ptr) {
+		Obj *blk = obj_base(ptr);
+		if (!blk->link.next)
+			enqueb(Obj, link, obj_stack, blk);
 	}
 }
 

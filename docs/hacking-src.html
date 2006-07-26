@@ -1,3 +1,90 @@
+<h3>Coroutines in JOE</h3>
+
+<p>JOE 3.6 now uses co-routines to help reduce the amount of event-driven
+code which has to be written.  All previous versions of JOE were entirely in
+the event driven coding style, which made user dialog code a chore to write. 
+Now, with the help of co-routines, dialog code can be written as old
+fashioned blocking code which is much cleaner, even through JOE can have
+multiple un-finished dialogs on the screen.</p>
+
+<p>The coroutine library has only three functions:</p>
+
+<table width="100%" cellspacing=0> <colgroup> <col width="300"> <tbody>
+<tr><td>int co_call(int (*func)(va_list args),...);</td><td>Call a function
+as a co-routine.</td></tr> <tr><td>int co_yield(Coroutine *t, int
+val);</td><td>Suspend current co-routine and return to caller with given
+return value.</td></tr> <tr><td>int co_resume(Coroutine *t, int
+val);</td><td>Suspend current co-routine and resume specified one with given
+return value.</td></tr> </tbody> </table>
+
+<p>co_call() invokes 'func' as a co-routine- it will run on its own stack.
+'func' is called immediately upon the call to co_call. All of the arguments
+after func are passed as a va_list to the function.  co_call calls va_start
+and va_end, 'func' should call va_arg once for each passed argument (see
+stdarg.h).  When 'func' returns, the co-routine is destroyed and co_call()
+returns with the return value of 'func'.  If the co-routine yields by
+calling co_yield, co_call returns with the return value specified in the
+call to co_yield.  Note that co_call only ever returns once for a particular
+call.</p>
+
+<p>co_yield() suspends the current co-routine and returns with the specified
+return value to the caller (either to co_call or co_resume).  co_yield()
+writes information about the co-routine to the 'Coroutine' structure whose
+address is passed to co_yield.  The Coroutine structure's address is used as
+a handle for the co-routine and can be passed to co_resume().</p>
+
+<p>co_resume() suspends the current co-routine (henceforth called the
+original co-routine) and resumes the specified co-routine.  When the
+specified co-routine returns (when the function given in the co_call that
+created the co-routine returns), the original co-routine is continued and
+co_resume() returns with the function's return value. If the specified
+co-routine yields, the original co-routine is continued and co_resume()
+returns with the return value specified in the call to co_yield.</p>
+
+<p>The co-routine library is structured this way (which is different from
+the usual way where you get a co-routine handle immediately upon creation,
+for example see Knuth) to encourage proper stack un-winding.  Basically, a
+co-routine can not be forcibly destroyed.  Instead, each created co-routine
+is only destroyed when the initial function returns.</p>
+
+<p>The co-routine library is based on ucontext.h and the getcontext,
+swapcontext, makecontext and setcontext system calls.  If the system does
+not have these calls, it uses setjmp/longjmp tricks in a highly portable
+way: the stacks for each co-routine are allocated off the top of the main
+stack.  The main stack grows after each allocation.  The stacks are never
+freed, but they are reused.  This works for any machine with a single normal
+stack.  It will not work on IA64 (two stacks) or Cray (the stack is really a
+linked list).</p>
+
+<p>I was originally going to use simple cooperative multi-threading, with
+only two basic calls: sleep_on() and wake_up() (inspired by old versions of
+the Linux kernel) and a top-level scheduler.  Sleep_on would suspend the
+current thread, and create a new thread which runs just the scheduler. 
+Wake_up would mark a thread as ready to run, and on the next return to the
+scheduler, it would be run.</p>
+
+<p>This turns out to not be powerful enough to implement JOE's keyboard
+macro language, at least without much rewriting and inelegance. It could be
+done, but the keyboard macro player would have to feed events into the
+top-level scheduler or would have to be integrated with it, whereas in older
+versions of JOE (even without co-routines) the macro player just calls the
+edit functions (more or less) directly.  The problem is that sleep_on
+(called by a function asking for user input) would suspend the task all the
+way up to the scheduler including the macro player, thus preventing the
+macro player from simulating user input.</p>
+
+<p>On the other hand with real co-routines, the macro player will call each
+edit function as a co-routine (which I like to think of as a task with a
+very clear return point).  If the edit function has to yield, it returns
+immediately to the macro player for the next macro step.  If the yield is
+due to a request for input, the macro player supplies it by calling the
+recorded edit functions.  If the macro wants to allow the user to provide
+input (using the "query" function, also known as an interactive macro), it
+can itself yield (since it is also running in a coroutine) back to the
+top-level edit loop.  The macro player is continued when the user finishes
+supplying the input (hits the return key at a prompt).  Several interactive
+macros can be running at once with this scheme.</p>
+
 <h3>Semi-Automatic Variables</h3>
 <p>JOE 3.6 uses "semi-automatic" variables for strings.  There is a global
 "object-stack", accessed through these functions:</p>

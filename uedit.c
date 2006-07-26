@@ -2287,6 +2287,7 @@ int umsg(BASE *b)
 
 /* Insert text */
 
+/*
 static int dotxt(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	int x;
@@ -2304,6 +2305,21 @@ int utxt(BW *bw)
 		return 0;
 	else
 		return -1;
+}
+*/
+
+int utxt(BW *bw)
+{
+	int x;
+	unsigned char *s;
+
+	s = ask(bw->parent, joe_gettext(_("Insert (^C to abort): ")),
+	        NULL, NULL, utypebw, NULL, bw->b->o.charmap, 0);
+
+	for (x = 0; x != vslen(s); ++x)
+		utypebw(bw, s[x]);
+
+	return 0;
 }
 
 /* Insert current file name */

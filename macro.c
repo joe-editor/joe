@@ -381,8 +381,6 @@ static int macroptr;
 static int arg = 0;		/* Repeat argument */
 static int argset = 0;		/* Set if 'arg' is set */
 
-/* Execute a macro which is just a simple command */
-
 int exsimple(MACRO *m, int arg, int u)
 {
 	CMD *cmd = m->cmd;

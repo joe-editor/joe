@@ -176,33 +176,24 @@ void internal_msg(unsigned char *s)
 	prm(t);
 }
 
+/* Determine name editor was invoked as and process <name>rc file */
 
+CAP *cap;
+unsigned char **argv;
 
-int main(int argc, char **real_argv, char **envv)
+int joerc()
 {
-	CAP *cap;
-	unsigned char **argv = (unsigned char **)real_argv;
 	struct stat sbuf;
+	int c;
+	time_t time_rc;
 	unsigned char *s;
 	unsigned char *t;
-	long time_rc;
 	unsigned char *run;
 #ifdef __MSDOS__
 	unsigned char *rundir;
 #endif
-	SCRN *n;
-	int opened = 0;
-	int omid;
-	int backopt;
-	int c;
-	unsigned char *gc = vsmk(1); /* Startup garbage collection */
 
-	joe_locale();
-	fdefault.charmap = locale_map;
-	pdefault.charmap = locale_map;
-
-	mainenv = (unsigned char **)envv;
-
+	/* Figure out name editor was invoked under */
 #ifdef __MSDOS__
 	_fmode = O_BINARY;
 	s = vscpyz(NULL, argv[0]);
@@ -216,26 +207,6 @@ int main(int argc, char **real_argv, char **envv)
 		}
 #else
 	run = namprt(argv[0]);
-#endif
-
-	if ((s = (unsigned char *)getenv("LINES")) != NULL)
-		sscanf((char *)s, "%d", &lines);
-	if ((s = (unsigned char *)getenv("COLUMNS")) != NULL)
-		sscanf((char *)s, "%d", &columns);
-	if ((s = (unsigned char *)getenv("BAUD")) != NULL)
-		sscanf((char *)s, "%u", (unsigned *)&Baud);
-	if (getenv("DOPADDING"))
-		dopadding = 1;
-	if (getenv("NOXON"))
-		noxon = 1;
-	if ((s = (unsigned char *)getenv("JOETERM")) != NULL)
-		joeterm = s;
-
-#ifndef __MSDOS__
-	if (!(cap = getcap(NULL, 9600, NULL, NULL))) {
-		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap/terminfo entry\n")));
-		return 1;
-	}
 #endif
 
 #ifdef __MSDOS__
@@ -383,10 +354,48 @@ int main(int argc, char **real_argv, char **envv)
 		return 1;
 	}
 
+	return 0;
+}
 
-	if (!isatty(fileno(stdin)))
-		idleout = 0;
+/* Copy environment variables to global variables */
 
+void process_env()
+{
+	unsigned char *s;
+
+	if ((s = (unsigned char *)getenv("LINES")) != NULL)
+		sscanf((char *)s, "%d", &lines);
+
+	if ((s = (unsigned char *)getenv("COLUMNS")) != NULL)
+		sscanf((char *)s, "%d", &columns);
+
+	if ((s = (unsigned char *)getenv("BAUD")) != NULL)
+		sscanf((char *)s, "%u", (unsigned *)&Baud);
+
+	if (getenv("DOPADDING"))
+		dopadding = 1;
+
+	if (getenv("NOXON"))
+		noxon = 1;
+
+	if ((s = (unsigned char *)getenv("JOETERM")) != NULL)
+		joeterm = s;
+
+}
+
+void setup_mouse()
+{
+	unsigned char *s;
+
+	/* initialize mouse support */
+	if (xmouse && (s=(unsigned char *)getenv("TERM")) && strstr((char *)s,"xterm"))
+		usexmouse=1;
+}
+
+void process_global_options()
+{
+	int c;
+	/* Process global options */
 	for (c = 1; argv[c]; ++c) {
 		if (argv[c][0] == '-') {
 			if (argv[c][1])
@@ -403,21 +412,14 @@ int main(int argc, char **real_argv, char **envv)
 				idleout = 0;
 		}
 	}
+}
 
-	/* initialize mouse support */
-	if (xmouse && (s=(unsigned char *)getenv("TERM")) && strstr((char *)s,"xterm"))
-		usexmouse=1;
-
-	if (!(n = nopen(cap)))
-		return 1;
-	maint = screate(n);
-	vmem = vtmp();
-
-	startup_log = bfind_scratch(USTR "* Startup Log *");
-
-	load_state();
-
-	/* It would be better if this ran uedit() to load files */
+void process_args()
+{
+	int c;
+	int backopt;
+	int omid;
+	int opened = 0;
 
 	/* The business with backopt is to load the file first, then apply file
 	 * local options afterwords */
@@ -499,23 +501,30 @@ int main(int argc, char **real_argv, char **envv)
 			opened = 1;
 			backopt = 0;
 		}
-
-	
-
 	if (opened) {
+		/* Show all files on the screen */
 		wshowall(maint);
+		/* Temporarily set 'mid' option so that cursor is centered
+		   in each window */
 		omid = mid;
 		mid = 1;
 		dofollows();
 		mid = omid;
 	} else {
+		/* Create empty window */
 		BW *bw = wmktw(maint, bfind(USTR ""));
 
 		if (bw->o.mnew)
 			exmacro(bw->o.mnew,1);
 	}
+	/* Set window with cursor to first window on screen */
 	maint->curwin = maint->topwin;
+}
 
+/* Show startup log if there were any messages */
+
+void show_startup_log()
+{
 	if (startup_log->eof->byte) {
 		BW *bw = wmktw(maint, startup_log);
 		startup_log = 0;
@@ -523,45 +532,198 @@ int main(int argc, char **real_argv, char **envv)
 		wshowall(maint);
 		uparserr(bw);
 	}
+}
 
+/* Set up piping into JOE */
+
+void setup_pipein()
+{
+	if (!idleout && modify_logic(maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
+		/* Start shell going in first window */
+		/* This is silly- mpx should be able to just read from stdin */
+
+		unsigned char **a = vamk(3);
+		a = vaadd(a, vsncpy(NULL, 0, sc("/bin/sh")));
+		a = vaadd(a, vsncpy(NULL, 0, sc("-c")));
+		a = vaadd(a, vsncpy(NULL, 0, sc("/bin/cat")));
+
+		cstart(maint->curwin->object, USTR "/bin/sh", a, NULL, NULL, 0, 1);
+	}
+}
+
+/* Scheduler wants us to get some work */
+
+SCRN *main_scrn;
+
+void get_work()
+{
+	MACRO *m;
+	int c;
+
+	/* Free exit message if we're not leaving */
+	if (exmsg) {
+		obj_free(exmsg);
+		exmsg = NULL;
+	}
+	/* Update the screen */
+	edupd(1);
+	/* Set ahead when typeahead from before editor startup is done */
+	if (!ahead && !have)
+		ahead = 1;
+	/* Get next character (including nungetc() one) */
+	if (ungot) {
+		c = ungotc;
+		ungot = 0;
+	} else
+		c = ttgetc();
+	/* Deal with typeahead from before editor starting: tty was in
+	   cooked mode so it converted carriage returns to line
+	   feeds.  Convert them back here. */
+	if (!ahead && c == 10)
+		c = 13;
+	/* Give key to current keyboard handler: it returns a macro to execute when
+	   a full sequence is decoded.  */
+	m = dokey(maint->curwin->kbd, c);
+	/* Make sure main window of group has copy of current key sequence so that it
+	   is displayed in the status line (why doesn't status line code figure this out?) */
+	if (maint->curwin->main && maint->curwin->main != maint->curwin) {
+		int x = maint->curwin->kbd->x;
+
+		maint->curwin->main->kbd->x = x;
+		if (x)
+			maint->curwin->main->kbd->seq[x - 1] = maint->curwin->kbd->seq[x - 1];
+	}
+	/* Execute macro */
+	if (m)
+		exemac(m);
+
+	/* Exit editor? */
+	if (leave) {
+		/* Write ~/.joe_state file */
+		save_state();
+
+		/* Delete all buffer so left over locks get eliminated */
+		brmall();
+
+		/* Delete temporary software virtual memory file */
+		vclose(vmem);
+	
+		/* Close terminal (restores mode) */
+		nclose(main_scrn);
+
+		/* Display exit message */
+		if (exmsg)
+			fprintf(stderr, "\n%s\n", exmsg);
+
+		/* Bye */
+		exit(0);
+	}
+}
+
+unsigned char *startup_gc;
+
+int main(int argc, char **real_argv, char **envv)
+{
+	/* Save arguments */
+	argv = (unsigned char **)real_argv;
+
+	/* Remember environment vector for sub-shells */
+	mainenv = (unsigned char **)envv;
+
+	/* Garbage collect startup process */
+	startup_gc = vsmk(1);
+
+	/* Set up locale (determines character set of terminal) */
+	joe_locale();
+	fdefault.charmap = locale_map;
+	pdefault.charmap = locale_map;
+
+	/* Copy some environment variables to global variables */
+	process_env();
+
+	/* Try to get termcap entry before we get too far */
+#ifndef __MSDOS__
+	if (!(cap = getcap(NULL, 9600, NULL, NULL))) {
+		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap/terminfo entry\n")));
+		return 1;
+	}
+#endif
+
+	/* Process JOERC file */
+	if (joerc())
+		return 1;
+
+	/* Is somebody piping something into JOE, or is stdin the tty? */
+	if (!isatty(fileno(stdin)))
+		/* If stdin is not /dev/tty, set flag so that
+		   nopen opens /dev/tty instead of using stdin/stdout */
+		idleout = 0;
+
+	/* First scan of argv: process global options on command line */
+	process_global_options();
+
+	/* Enable mouse if we're an xterm and mouse option was given in rc
+	 * file or as a command line option */
+	setup_mouse();
+
+	/* Setup tty handler (sets cbreak mode, turns off cooked) */
+	if (!(main_scrn = nopen(cap)))
+		return 1;
+
+	/* Initialize windowing system */
+	maint = screate(main_scrn);
+
+	/* Setup software virtual memory */
+	vmem = vtmp();
+
+	/* Create startup log buffer */
+	startup_log = bfind_scratch(USTR "* Startup Log *");
+
+	/* Read in ~/.joe_state file */
+	load_state();
+
+	/* Read files given on command line and process local options */
+	process_args();
+
+	/* Show startup log if there were any messages */
+	show_startup_log();
+
+	/* Turn on help if requested by global option */
 	if (help) {
 		help_on(maint);
 	}
+
+	/* Display startup message unless disabled by global option */
 	if (!nonotice) {
-		unsigned char *m = vsfmt(NULL, 0, joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
-		msgnw(((BASE *)lastw(maint)->object)->parent, m);
+		msgnw(((BASE *)lastw(maint)->object)->parent,
+		  vsfmt(NULL, 0, joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)")));
 	}
 
-	if (!idleout) {
-		if (!isatty(fileno(stdin)) && modify_logic(maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
-			/* Start shell going in first window */
-			unsigned char **a;
-			unsigned char *cmd;
+	/* Setup reading in from stdin to first window if something was
+	   piped into JOE */
+	setup_pipein();
 
-			a = vamk(10);
-			cmd = vsncpy(NULL, 0, sc("/bin/sh"));
-			a = vaadd(a, cmd);
-			cmd = vsncpy(NULL, 0, sc("-c"));
-			a = vaadd(a, cmd);
-			cmd = vsncpy(NULL, 0, sc("/bin/cat"));
-			a = vaadd(a, cmd);
-			
-			cstart (maint->curwin->object, USTR "/bin/sh", a, NULL, NULL, 0, 1);
-		}
-	}
+	/* Clean up startup gargbage */
+	obj_free(startup_gc);
 
-	obj_free(gc); /* Clean up after startup */
+	/* Run the editor */
 	edloop(0);
 
+	/* Write ~/.joe_state file */
 	save_state();
 
-	/* Delete all buffer so left over locks get eliminated */
+	/* Delete all buffers so left over locks get eliminated */
 	brmall();
 
+	/* Delete temporary software virtual memory file */
 	vclose(vmem);
-	nclose(n);
 
+	/* Close terminal (restores mode) */
+	nclose(main_scrn);
+
+	/* Display exit message */
 	if (exmsg)
 		fprintf(stderr, "\n%s\n", exmsg);
+
 	return 0;
 }

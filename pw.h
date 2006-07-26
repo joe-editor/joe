@@ -20,6 +20,8 @@ struct pw {
 	B	*hist;		/* History buffer */
 	void	*object;	/* Object */
 	int	file_prompt;	/* Set if this is a file name prompt, so do ~ expansion */
+
+	Coroutine *task;	/* Task to continue when prompt done */
 };
 
 /* BW *wmkpw(BW *bw,char *prompt,int (*func)(),char *huh,int (*abrt)(),
@@ -31,6 +33,8 @@ struct pw {
  *   bit 2: seed with directory
  */
 BW *wmkpw PARAMS((W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify, struct charmap *map, int file_prompt));
+
+unsigned char *ask(W *w, unsigned char *prompt, B **history, unsigned char *huh, int (*tab)(), int *notify, struct charmap *map, int file_prompt);
 
 int ucmplt PARAMS((BW *bw, int k));
 
