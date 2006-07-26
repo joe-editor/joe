@@ -1364,12 +1364,19 @@ int udnslide(BW *bw)
 
 static B *linehist = NULL;	/* History of previously entered line numbers */
 
-static int doline(BW *bw, unsigned char *s, void *object, int *notify)
+int uline(BW *bw)
 {
-	long num = calc(bw, s);
+	long num;
+	unsigned char *s;
 
-	if (notify)
-		*notify = 1;
+	s = ask(bw->parent, joe_gettext(_("Go to line (^C to abort): ")), &linehist,
+	        NULL, NULL, NULL, locale_map, 0);
+
+	if (!s)
+		return -1;
+
+	num = calc(bw, s);
+
 	if (num >= 1 && !merr) {
 		int tmp = mid;
 
@@ -1389,24 +1396,23 @@ static int doline(BW *bw, unsigned char *s, void *object, int *notify)
 	}
 }
 
-int uline(BW *bw)
-{
-	if (wmkpw(bw->parent, joe_gettext(_("Go to line (^C to abort): ")), &linehist, doline, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
-		return 0;
-	else
-		return -1;
-}
-
 /* Move cursor to specified column number */
 
 static B *colhist = NULL;	/* History of previously entered column numbers */
 
-static int docol(BW *bw, unsigned char *s, void *object, int *notify)
+int ucol(BW *bw)
 {
-	long num = calc(bw, s);
+	long num;
+	unsigned char *s;
 
-	if (notify)
-		*notify = 1;
+	s = ask(bw->parent, joe_gettext(_("Go to column (^C to abort): ")), &colhist,
+	        NULL, NULL, NULL, locale_map, 0);
+
+	if (!s)
+		return -1;
+
+	num = calc(bw, s);
+
 	if (num >= 1 && !merr) {
 		int tmp = mid;
 
@@ -1424,24 +1430,20 @@ static int docol(BW *bw, unsigned char *s, void *object, int *notify)
 	}
 }
 
-int ucol(BW *bw)
-{
-	if (wmkpw(bw->parent, joe_gettext(_("Go to column (^C to abort): ")), &colhist, docol, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
-		return 0;
-	else
-		return -1;
-}
-
 /* Move cursor to specified byte number */
 
 static B *bytehist = NULL;	/* History of previously entered byte numbers */
 
-static int dobyte(BW *bw, unsigned char *s, void *object, int *notify)
+int ubyte(BW *bw)
 {
-	long num = calc(bw, s);
+	long num;
+	unsigned char *s;
 
-	if (notify)
-		*notify = 1;
+	s = ask(bw->parent, joe_gettext(_("Go to byte (^C to abort): ")), &bytehist,
+	        NULL, NULL, NULL, locale_map, 0);
+
+	num = calc(bw, s);
+
 	if (num >= 0 && !merr) {
 		int tmp = mid;
 
@@ -1457,14 +1459,6 @@ static int dobyte(BW *bw, unsigned char *s, void *object, int *notify)
 			msgnw(bw->parent, joe_gettext(_("Invalid byte number")));
 		return -1;
 	}
-}
-
-int ubyte(BW *bw)
-{
-	if (wmkpw(bw->parent, joe_gettext(_("Go to byte (^C to abort): ")), &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
-		return 0;
-	else
-		return -1;
 }
 
 /* Delete character under cursor
@@ -2269,44 +2263,20 @@ int ubkwdc(BW *bw, int k)
 
 /* Display a message */
 
-static int domsg(BASE *b, unsigned char *s, void *object, int *notify)
+int umsg(BASE *b)
 {
-	if (notify)
-		*notify = 1;
+	unsigned char *s;
+	s = ask(b->parent, joe_gettext(_("Message (^C to abort): ")), NULL,
+	        NULL, NULL, NULL, locale_map, 0);
+
+	if (!s)
+		return -1;
+
 	msgnw(b->parent, s);
 	return 0;
 }
 
-int umsg(BASE *b)
-{
-	if (wmkpw(b->parent, joe_gettext(_("Message (^C to abort): ")), NULL, domsg, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
-		return 0;
-	else
-		return -1;
-}
-
 /* Insert text */
-
-/*
-static int dotxt(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	int x;
-
-	if (notify)
-		*notify = 1;
-	for (x = 0; x != vslen(s); ++x)
-		utypebw(bw, s[x]);
-	return 0;
-}
-
-int utxt(BW *bw)
-{
-	if (wmkpw(bw->parent, joe_gettext(_("Insert (^C to abort): ")), NULL, dotxt, NULL, NULL, utypebw, NULL, NULL, bw->b->o.charmap, 0))
-		return 0;
-	else
-		return -1;
-}
-*/
 
 int utxt(BW *bw)
 {
