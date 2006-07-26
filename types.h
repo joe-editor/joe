@@ -41,7 +41,11 @@ typedef int pid_t;
 #endif
 
 #ifdef HAVE_UCONTEXT_H
-/* #define USE_UCONTEXT 1 */
+
+#ifndef __sparc /* Makecontext is broken in many version of solaris */
+#define USE_UCONTEXT 1
+#endif
+
 #endif
 
 #ifdef USE_UCONTEXT

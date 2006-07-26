@@ -22,7 +22,7 @@ void make_space();
 void record_stack()
 {
 	int create = 1;
-	int rtn;
+	int rtn = 0;
 	for (;;) {
 		/* Save PC and SP address in jmp_buf */
 		if (setjmp(current_stack->go)) {
@@ -88,6 +88,7 @@ void call_it()
 /* Only some versions of solaris have makecontext bugs... */
 /* This fix is from sthreads.c of Michal Trojnara's stunnel program */
 
+/* This fix doesn't appear to work with gcc, as these symbols aren't defined */
 #if defined(CPU_SPARC) && ( \
   defined(OS_SOLARIS2_0) || \
   defined(OS_SOLARIS2_1) || \
@@ -106,6 +107,7 @@ void call_it()
 #define SUN_BUG 0
 
 #endif
+
 struct stack *mkstack()
 {
 	struct stack *stack;
@@ -181,7 +183,7 @@ int co_yield(Coroutine *t, int val)
 	izque(Obj,link,obj_stack);
 
 	/* Save current context */
-	if (rtn = setjmp(t->cont)) {
+	if ((rtn = setjmp(t->cont))) {
 		/* Somebody continued us... */
 		obj_stack[0] = t->saved_obj_stack;
 		return rtn - 10; /* 10 added to longjmp */
@@ -205,8 +207,6 @@ int co_resume(Coroutine *t,int val)
 {
 	Coroutine self[1];
 #ifdef USE_UCONTEXT
-	Coroutine *n;
-
 	/* Save current stack */
 	self->stack = current_stack;
 
@@ -241,7 +241,7 @@ int co_resume(Coroutine *t,int val)
 	izque(Obj,link,obj_stack);
 
 	/* Save current context */
-	if (rtn = setjmp(self->cont)) {
+	if ((rtn = setjmp(self->cont))) {
 		/* Somebody continued us... */
 		obj_stack[0] = self->saved_obj_stack;
 		return rtn - 10; /* 10 added to longjmp */
@@ -326,7 +326,7 @@ int co_call(int (*func)(va_list args), ...)
 	current_stack->caller = self;
 
 	/* Save current context */
-	if (rtn = setjmp(self->cont)) {
+	if ((rtn = setjmp(self->cont))) {
 		/* Somebody continued us... */
 		obj_stack[0] = self->saved_obj_stack;
 		va_end(ap);
