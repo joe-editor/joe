@@ -4,7 +4,7 @@
 code which has to be written.  All previous versions of JOE were entirely in
 the event driven coding style, which made user dialog code a chore to write. 
 Now, with the help of co-routines, dialog code can be written as old
-fashioned blocking code which is much cleaner, even through JOE can have
+fashioned blocking code which is much cleaner, even though JOE can have
 multiple un-finished dialogs on the screen.</p>
 
 <p>The coroutine library has only three functions:</p>
@@ -26,11 +26,12 @@ co-routine and resume specified one with given return value.</td></tr>
 'func' is called immediately upon the call to co_call. All of the arguments
 after func are passed as a va_list to the function.  co_call calls va_start
 and va_end, 'func' should call va_arg once for each passed argument (see
-stdarg.h).  When 'func' returns, the co-routine is destroyed and co_call()
-returns with the return value of 'func'.  If the co-routine yields by
-calling co_yield, co_call returns with the return value specified in the
-call to co_yield.  Note that co_call only ever returns once for a particular
-call.</p>
+stdarg.h).  The co-routine should not yield before it has finished reading
+all of the arguments, otherwise va_end will be called early.  When 'func'
+returns, the co-routine is destroyed and co_call() returns with the return
+value of 'func'.  If the co-routine yields by calling co_yield, co_call
+returns with the return value specified in the call to co_yield.  Note that
+co_call only ever returns once for a particular call.</p>
 
 <p>co_yield() suspends the current co-routine and returns with the specified
 return value to the caller (either to co_call or co_resume).  co_yield()
@@ -154,7 +155,7 @@ structure.  These functions are provided:</p>
 <tr><td>unsigned char *vsmk(int prealloc);</td><td>Allocate a zero length string, but with enough space to grow to the specified length.</td></tr>
 <tr><td>int vslen(unsigned char *s);</td><td>Return string length or 0 if s is NULL.</td></tr>
 <tr><td>unsigned char *vsensure(unsigned char *s, int len);</td><td>Make sure there is enough space for a string of the specified length.</td></tr>
-<tr><td>usnigned char *vstrunc(unsigned char *s, int len);</td><td>Set length of string: the string is truncated or extended with spaces to the specified length.</td></tr>
+<tr><td>unsigned char *vstrunc(unsigned char *s, int len);</td><td>Set length of string: the string is truncated or extended with spaces to the specified length.</td></tr>
 <tr><td>unsigned char *vsncpy(unsigned char *s,int offset,unsigned char *block, int block_size);</td><td>Copy a memory block to a string.  The string is extended with spaces if offset &gt; string length.</td></tr>
 <tr><td>unsigned char *vsdupz(unsigned char *s);</td><td>Duplicate a z-string to a variable string.</td></tr>
 <tr><td>unsigned char *vsdup(unsigned char *s);</td><td>Duplicate a variable string.</td></tr>
@@ -177,7 +178,7 @@ variable holding the string.  It returns the string address, but it also
 writes it to the variable directly.</p>
 
 <p>Many of the above functions take a memory block, which is specified by an
-address and a length.  These macros can be used to help contruct these
+address and a length.  These macros can be used to help construct these
 arguments:</p>
 
 <table width="100%" cellspacing=0>
@@ -213,7 +214,7 @@ functions are provided:</p>
 <tr><td>void varm(unsigned char **a);</td><td>Free an array.</td></tr>
 <tr><td>int valen(unsigned char *a);</td><td>Return array length or 0 if a is NULL.</td></tr>
 <tr><td>unsigned char *vaensure(unsigned char *s, int len);</td><td>Make sure there is enough space for an array of the specified length.</td></tr>
-<tr><td>usnigned char *vatrunc(unsigned char *s, int len);</td><td>Set length of array: the array is truncated or extended with NULLs to the specified length.</td></tr>
+<tr><td>unsigned char *vatrunc(unsigned char *s, int len);</td><td>Set length of array: the array is truncated or extended with NULLs to the specified length.</td></tr>
 <tr><td>unsigned char *vaadd(unsigned char **a,unsigned char *s);</td><td>Append a single string to an array.</td></tr>
 <tr><td>unsigned char *vasort(unsigned char **a,int len);</td><td>Sort an array.</td></tr>
 <tr><td>unsigned char *vawords(unsigned char **a,unsigned char *s,int len, unsigned char *sep, int seplen);</td><td>Convert a word list in s (words separated by characters given in sep/seplen) into an array of strings.</td></tr>
@@ -317,7 +318,7 @@ are like C++ STL iterators).
 <p>    bdel(P *from,P *to);	Delete character between two Ps.</p>
 <p>  Note that when you insert or delete, all of the Ps after the insertion/
   deletion point are adjusted so that they continue to point to the same
-  characeter before the insert or delete.
+  character before the insert or delete.
 </p>
 <p>  Insert and Delete create undo records.
 </p>
@@ -445,7 +446,7 @@ action instead of the state table.</p>
 
 <p>This parser is fast and simple and powerful enough to lexically analyze
 more than 40 languages.  However a few enhancements were made to improve
-both the class of lanuages which can be highlighted and to improve the ease
+both the class of languages which can be highlighted and to improve the ease
 of writing the state machine.  To support "here" documents in perl and sh,
 as well as to simplify matching delimiters (like open with close
 parenthesis), a string (from the string buffer) can be stored along with the
@@ -472,10 +473,10 @@ In the original implementation, the state of the first line of each window
 is maintained and the parser is invoked during the screen update algorithm
 to highlight all of the lines on the screen.  This works well when the
 window remains in place or when it scrolls forward through the file. 
-However, if the window scrolls backwards you may have to reparse the entire
+However, if the window scrolls backward you may have to reparse the entire
 file or from the nearest previous window if there happens to be one.  This
 can be slow for large files, and certainly wastes a lot of CPU time when
-scrolling backwards through a file.</p>
+scrolling backward through a file.</p>
 
 <p>One attempt to solve this was to instead of starting at the beginning of
 the file, to instead assume that the line 200 lines (a configurable option)
@@ -489,7 +490,7 @@ each line in the file, from the beginning of the file to last line actually
 displayed on the screen.  This solves the scrolling problem, but introduces
 a new one: how to keep the line attribute database up to date.  This turns
 out to not be so difficult.  First of all, the states are stored in a
-gap-buffer, which makes it easy to perform insertions and deletetions. 
+gap-buffer, which makes it easy to perform insertions and deletions. 
 Whenever lines are inserted or deleted in the file, the line attribute
 database is expanded or contracted to keep in sync.  Now, when any change is
 made to the file, we reparse from just before the start of the change until
