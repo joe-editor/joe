@@ -420,6 +420,85 @@ operator windows are target it.</p>
 <h3>Screen update</h3>
 <p>- add something here.
 </p>
+<h3>Syntax Highlighter</h3>
+
+<p>There are two parts to the syntax highlighter: the parser (in syntax.c)
+and the line attribute database (in lattr.c).  The parser is simple enough:
+it is a finite state machine interpreter.  You supply a line of text and the
+starting state, and it returns the starting state of the next line and an
+array containing the color to be used for each character.  Each state has a
+color.  The line is scanned left to right, character by character: the state
+and the character index a table, which gives an action, which includes the
+next state.</p>
+
+<p>The action specifies the next state, and also indicates whether some
+previous N characters (including the current) should be "recolored" with the
+color of the next state, or whether the color of the current state should be
+used for the character.  The action also indicates whether to move on to the
+next character, or to stay put and re-evaluate the current character with
+the new state.  This leads to simpler hand-coding of the state machine, but
+can create an infinite loop.  The action also indicates if the character
+should be added to a string buffer.  The string buffer can be used (when
+specified by an action) as a key for a hash table look-up (typically filled
+with key-words).  If there is a match, the hash-table entry supplies the
+action instead of the state table.</p>
+
+<p>This parser is fast and simple and powerful enough to lexically analyze
+more than 40 languages.  However a few enhancements were made to improve
+both the class of lanuages which can be highlighted and to improve the ease
+of writing the state machine.  To support "here" documents in perl and sh,
+as well as to simplify matching delimiters (like open with close
+parenthesis), a string (from the string buffer) can be stored along with the
+state.  This can be matched against the string buffer.  So first the
+terminating word from the here document is stored in the string, and then
+the state machine looks forward until it finds this string to determine the
+end of the here document.</p>
+
+<p>The state is only a single integer, not an entire stack.  The parser can
+therefore not handle recursive grammars. Unfortunately, some languages have
+recursive elements in their lexical structure.  One way to deal with this is
+to support only a very limited recursion depth by tediously repeating a set
+of states in the hand written state machine N times, where N is your maximum
+recursion depth.  To ease writing this type of thing, and also to allow
+state machine to be reused in cases where one language is embedded within
+another (PHP in HTML, for example), a macro system was added to the state
+machine loader.  Recursion is allowed in the macro calls, but is limited to
+a depth of 5.</p>
+
+<h3>Line attribute database</h3>
+
+<p>The second part of the syntax highlighter is the line attribute database.
+In the original implementation, the state of the first line of each window
+is maintained and the parser is invoked during the screen update algorithm
+to highlight all of the lines on the screen.  This works well when the
+window remains in place or when it scrolls forward through the file. 
+However, if the window scrolls backwards you may have to reparse the entire
+file or from the nearest previous window if there happens to be one.  This
+can be slow for large files, and certainly wastes a lot of CPU time when
+scrolling backwards through a file.</p>
+
+<p>One attempt to solve this was to instead of starting at the beginning of
+the file, to instead assume that the line 200 lines (a configurable option)
+back was at the initial state, parse forward from there and hope for the
+best.  Sometimes the state machine would find itself back in the proper
+state, but not always- to the point where most syntaxes had specified to
+just always reparse from the beginning of the file.</p>
+
+<p>Finally, the line attribute database was added.  It stores the state of
+each line in the file, from the beginning of the file to last line actually
+displayed on the screen.  This solves the scrolling problem, but introduces
+a new one: how to keep the line attribute database up to date.  This turns
+out to not be so difficult.  First of all, the states are stored in a
+gap-buffer, which makes it easy to perform insertions and deletetions. 
+Whenever lines are inserted or deleted in the file, the line attribute
+database is expanded or contracted to keep in sync.  Now, when any change is
+made to the file, we reparse from just before the start of the change until
+the state of the beginning of a line again matches the corresponding entry
+in the database.  If a match is found, the rest of the database is assumed
+to be correct.  Some changes will require a large amount of reparsing, but
+many will not.  In any case, the the highlighting on the screen is always
+correct.</p>
+
 <h3>Files</h3>
 
 <table width="100%" cellspacing=0>
@@ -437,6 +516,7 @@ operator windows are target it.</p>
 <tr><td>help.c</td><td>Implement the on-line help window</td></tr>
 <tr><td>i18n.c</td><td>Unicode character type information database</td></tr>
 <tr><td>kbd.c</td><td>Keymap data structure (keysequence to macro bindings).</td></tr>
+<tr><td>lattr.c</td><td>Line attribute database</td></tr>
 <tr><td>macro.c</td><td>Keyboard and joerc file macros</td></tr>
 <tr><td>main.c</td><td>Has main() and top level edit loop</td></tr>
 <tr><td>menu.c</td><td>A class: menu windows</td></tr>
