@@ -466,9 +466,9 @@ another (PHP in HTML, for example), a macro system was added to the state
 machine loader.  Recursion is allowed in the macro calls, but is limited to
 a depth of 5.</p>
 
-<h3>Line attribute database</h3>
+<h3>Line attribute cache</h3>
 
-<p>The second part of the syntax highlighter is the line attribute database.
+<p>The second part of the syntax highlighter is the line attribute cache.
 In the original implementation, the state of the first line of each window
 is maintained and the parser is invoked during the screen update algorithm
 to highlight all of the lines on the screen.  This works well when the
@@ -485,19 +485,19 @@ best.  Sometimes the state machine would find itself back in the proper
 state, but not always- to the point where most syntaxes had specified to
 just always reparse from the beginning of the file.</p>
 
-<p>Finally, the line attribute database was added.  It stores the state of
-each line in the file, from the beginning of the file to last line actually
-displayed on the screen.  This solves the scrolling problem, but introduces
-a new one: how to keep the line attribute database up to date.  This turns
-out to not be so difficult.  First of all, the states are stored in a
+<p>Finally, the line attribute cache was added.  It stores the parser state
+at the beginning of each line, from the beginning of the file to last line
+actually displayed on the screen.  This solves the scrolling problem, but
+introduces a new one: how to keep the line attribute cache up to date.  This
+turns out to not be so difficult.  First of all, the states are stored in a
 gap-buffer, which makes it easy to perform insertions and deletions. 
-Whenever lines are inserted or deleted in the file, the line attribute
-database is expanded or contracted to keep in sync.  Now, when any change is
-made to the file, we reparse from just before the start of the change until
-the state of the beginning of a line again matches the corresponding entry
-in the database.  If a match is found, the rest of the database is assumed
-to be correct.  Some changes will require a large amount of reparsing, but
-many will not.  In any case, the the highlighting on the screen is always
+Whenever lines are inserted or deleted in the file, the line attribute cache
+is expanded or contracted to keep in sync.  Now, when any change is made to
+the file, we reparse from just before the start of the change until the
+state of the beginning of a line again matches the corresponding entry in
+the cache.  If a match is found, the rest of the cache is assumed to be
+correct.  Some changes will require a large amount of reparsing, but many
+will not.  In any case, the the highlighting on the screen is always
 correct.</p>
 
 <h3>Files</h3>
@@ -517,7 +517,7 @@ correct.</p>
 <tr><td>help.c</td><td>Implement the on-line help window</td></tr>
 <tr><td>i18n.c</td><td>Unicode character type information database</td></tr>
 <tr><td>kbd.c</td><td>Keymap data structure (keysequence to macro bindings).</td></tr>
-<tr><td>lattr.c</td><td>Line attribute database</td></tr>
+<tr><td>lattr.c</td><td>Line attribute cache</td></tr>
 <tr><td>macro.c</td><td>Keyboard and joerc file macros</td></tr>
 <tr><td>main.c</td><td>Has main() and top level edit loop</td></tr>
 <tr><td>menu.c</td><td>A class: menu windows</td></tr>
