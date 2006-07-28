@@ -207,6 +207,8 @@ static int tabrtn(MENU *m, int cursor, TAB *tab)
 			tab->path = vsncpy(sv(tab->path), sv(m->list[cursor]));
 		}
 		tab->pattern = vsncpy(NULL, 0, sc("*"));
+		obj_perm(tab->path);
+		obj_perm(tab->pattern);
 		if (!treload(m->object, m, m->parent->win->object, 0, NULL)) {
 			msgnw(m->parent, joe_gettext(_("Couldn't read directory ")));
 			obj_free(tab->pattern);
@@ -257,13 +259,15 @@ static int tabbacks(MENU *m, int cursor, TAB *tab)
 	unsigned char *orgpattern = tab->pattern;
 	unsigned char *e = endprt(tab->path);
 
-	if (vslen(e) && vslen(tab->path)!=tab->first_len)
+	if (vslen(e) && vslen(tab->path)!=tab->first_len) {
 		tab->path = begprt(tab->path);
-	else {
+		obj_perm(tab->path);
+	} else {
 		wabort(m->parent);
 		return 0;
 	}
 	tab->pattern = vsncpy(NULL, 0, sc("*"));
+	obj_perm(tab->pattern);
 
 	if (!treload(m->object, m, m->parent->win->object, 1, NULL)) {
 		msgnw(m->parent, joe_gettext(_("Couldn't read directory ")));
