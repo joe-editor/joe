@@ -1,4 +1,4 @@
-<h3>JOE options:</h3>
+<h3>JOE options (environment variables at the bottom):</h3>
 
 
 <table width="100%" cellspacing=20 border=0 cellpadding=0>
@@ -7,7 +7,9 @@
 </colgroup>
 <tbody>
 
-<tr valign="top"><td>asis</td><td>Display character above 127 as-is instead of quoted</td></tr>
+<tr valign="top"><td>asis</td><td>Pass characters above 127 directly to
+terminal instead of showing them as inverse of corresponding character below
+128.</td></tr>
 
 <tr valign="top"><td>assume_256color</td><td>Assume ANSI-like terminal emulator supports 256 colors even if termcap entry says it doesn't.</td></tr>
 
@@ -41,8 +43,8 @@ the "get window size" ioctl.</td></tr>
 
 <tr valign="top"><td>crlf</td><td>Set MS-DOS line endings.</td></tr>
 
-<tr valign="top"><td>csmode</td><td>Enable continued search mode: ^KF does the same thing
-as ^L</td></tr>
+<tr valign="top"><td>csmode</td><td>Enable continued search mode: Successive
+^KFs repeat the current search instead of prompting for a new one.</td></tr>
 
 <tr valign="top"><td>dopadding</td><td>Enable JOE to send padding NULs to the terminal (for very old terminals).</td></tr>
 
@@ -145,7 +147,8 @@ file, only your text is on the screen).</td></tr>
 set up to save and restore the terminal screen contents when JOE starts and
 exits.</td></tr>
 
-<tr valign="top"><td>noxon</td><td>Disable ^S and ^Q flow control.</td></tr>
+<tr valign="top"><td>noxon</td><td>Disable ^S and ^Q flow control, possibly
+allowing ^S and ^Q to be used as editor keys.</td></tr>
 
 <tr valign="top"><td>orphan</td><td>Orphan extra files given on the command line instead
 of creating windows for them (the files are loaded, but you need to use
@@ -213,6 +216,82 @@ tabs.</td></tr>
 <tr valign="top"><td>wordwrap</td><td>Enable wordwrap mode.</td></tr>
 
 <tr valign="top"><td>wrap</td><td>Enable search to wrap to beginning of file.</td></tr>
+
+</tbody>
+</table>
+
+<h3>Environment variables:</h3>
+<table width="100%" cellspacing=20 border=0 cellpadding=0>
+<colgroup>
+<col width="125">
+</colgroup>
+<tbody>
+
+<tr valign="top"><td>BAUD</td><td>Tell JOE the baud rate of the terminal (overrides value reported by stty).</td></tr>
+
+<tr valign="top"><td>COLUMNS</td><td>Set number of columns in terminal emulator (in case
+termcap entry is wrong).  This is only useful on old system which don't have
+the "get window size" ioctl.</td></tr>
+
+<tr valign="top"><td>DOPADDING</td><td>Enable JOE to send padding NULs to the terminal
+when set (for very old terminals).</td></tr>
+
+<tr valign="top"><td>HOME</td><td>Used to get path to home directory for ~
+expansion and also to find ~/.joerc file ~/.joe directory.</td></tr>
+
+<tr valign="top"><td>HOSTNAME</td><td>Used to get hostname to put in EMACS
+compatible locks.</td></tr>
+
+<tr valign="top"><td>JOETERM</td><td>Gives terminal type: JOE will use this instead of TERM if it's set.</td></tr>
+
+<tr valign="top"><td>LANG</td><td>Sets locale (like en_US.utf-8).  JOE uses
+the first of these which is set: LC_ALL, LC_CTYPE, LANG.</td></tr>
+
+<tr valign="top"><td>LC_ALL</td><td>Sets locale (like en_US.utf-8).  JOE
+uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.</td></tr>
+
+<tr valign="top"><td>LC_CTYPE</td><td>Sets locale (like en_US.utf-8).  JOE
+uses the first of these which is set: LC_ALL, LC_CTYPE, LANG.</td></tr>
+
+<tr valign="top"><td>LINES</td><td>Set number of lines in terminal emulator (in case
+termcap entry is wrong).  This is only useful on old system which don't have
+the "get window size" ioctl.</td></tr>
+
+<tr valign="top"><td>NOXON</td><td>Disable ^S and ^Q flow control, possibly
+allowing ^S and ^Q to be used as editor keys.</td></tr>
+
+<tr valign="top"><td>SHELL</td><td>Path to shell (like /bin/sh).  This is
+used in several places: If you are on a system with no job control, this
+shell is invoked when you hit ^KZ.  Also this is shell which is run in shell
+windows.  If SHELL is not set (Cygwin) or if it's set to /bin/sh, JOE
+invokes the first of these which exists: /bin/bash, /usr/bin/bash, /bin/sh.</td></tr>
+
+<tr valign="top"><td>SIMPLE_BACKUP_SUFFIX</td><td>If this is set, it is
+appended to the file name instead of ~ to create the backup file name.</td></tr>
+
+<tr valign="top"><td>TAGS</td><td>If set to a path to a file, JOE tries to
+use this as the "tags" file if there is no "tags" file in the current
+directory.</td></tr>
+
+<tr valign="top"><td>TEMP</td><td>If set, gives path to directory to open
+swapfile instead of /tmp</td></tr>
+
+<tr valign="top"><td>TERMCAP</td><td>Used by JOE's built-in termcap file
+parser (not used for terminfo).  A termcap entry can be placed directly in
+this variable (which will be used if it matches TERM), or if it begins with
+/, it gives a list of paths to termcap files to search.</td></tr>
+
+<tr valign="top"><td>TERMPATH</td><td>Gives list of paths to termcap files
+to search when TERMCAP has a termcap entry (otherwise it's ignored).</td></tr>
+
+<tr valign="top"><td></td><td>The default list of paths to termcap files
+(when TERMCAP and TERMPATH do not have it) is: "~/.termcap /etc/joe/termcap
+/etc/termcap"</td></tr>
+
+<tr valign="top"><td>TERM</td><td>Gives terminal type, like "vt100" or "xterm".</td></tr>
+
+<tr valign="top"><td>USER</td><td>Used to get user name for EMACS compatible
+file locks.</td></tr>
 
 </tbody>
 </table>
