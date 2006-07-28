@@ -49,34 +49,45 @@ selected rectangular block of numbers and their sum:</p>
 
 <p>JOE has the following features:</p>
 <ul>
-<li>Multi-file search and replace</li>
+<li>Multi-file search and replace- file list is either given on command line
+or by a UNIX command (grep/find) run from within JOE</li>
 <li>Mouse support, including wheel</li>
 <li>UTF-8 support</li>
-<li>Syntax highlighting</li>
+<li>Syntax highlighting for more than 40 languages</li>
 <li>Hexadecimal edit mode</li>
 <li>Non-destructive editing of binary files even when handling MS-DOS or
 UNIX line endings</li>
-<li>TAB completion and history for all prompts</li>
-<li>EMACS-style file locks</li>
+<li>Swap file allows editing files larger than memory</li>
+<li>On-line help</li>
+<li>Bash-like TAB completion and history for all prompts</li>
+<li>EMACS-compatible file locks</li>
 <li>Shell windows</li>
-<li>Goto matching ( [ { &lt;</li>
-<li>Goto matching word delimiter, including XML tags</li>
+<li>Compile and step through errors or Grep and step through finds.</li>
+<li>Goto matching character delimiter ( [ { &lt; which skips comments and
+quoted matter.</li>
+<li>Goto matching word delimiter, including XML tags and C preprocessor
+directives.</li>
 <li>Ctrl-arrow key block selection</li>
 <li>Search and replace system, including regular expression and optional
 incremental search</li>
 <li>Tags file search</li>
 <li>Paragraph format</li>
-<li>Undo and Redo</li>
+<li>Unlimited Undo and Redo</li>
 <li>Cursor position history</li>
-<li>Multiple keyboard macros</li>
+<li>Multiple interactive keyboard macros</li>
 <li>Block move/copy/delete/filter</li>
-<li>Rectangle (columnar) mode</li>
+<li>Rectangle (columnar) block mode- search and replace can be narrowed to
+the rectangular block.  Rectangular blocks can be filtered through UNIX
+commands.</li>
 <li>Overtype/Insert modes</li>
 <li>Indent/Unindent</li>
 <li>Auto-indent mode</li>
+<li>Picture mode for ASCII graphics</li>
+<li>Line number mode display line number of each line</li>
 <li>Powerful scientific calculator with block statistics functions</li>
 <li>Termcap/Terminfo support allows JOE to use any terminal or terminal
 emulator</li>
+<li>Can accept data from a pipe, for example: ls | joe</li>
 </ul>
 
 <p>JOE does not have these features (yet):</p>
@@ -91,7 +102,7 @@ emulator</li>
 <li>Automatic unzip/untar</li>
 <li>Built-in FTP</li>
 <li>X-Window version (use inside a terminal emulator)</li>
-<li>Native Windows version (use Cygwin)</li>
+<li>Native Windows version (but you can use JOE in Cygwin)</li>
 </ul>
 
 <p>Here are some other editors to consider:</p>
