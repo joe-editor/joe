@@ -16,4 +16,6 @@ sed "s,@title@,Joe's Own Editor - Hints," <header-src.html | cat - hints-src.htm
 
 sed "s,@title@,Joe's Own Editor - Hacking," <header-src.html | cat - hacking-src.html footer-src.html > hacking.html
 
-sed "s,@title@,Joe's Own Editor - Hacking," <header-src.html | cat - list-src.html footer-src.html > list.html
+sed "s,@title@,Joe's Own Editor - Commands," <header-src.html | cat - list-src.html footer-src.html > list.html
+
+sed "s,@title@,Joe's Own Editor - Options," <header-src.html | cat - options-src.html footer-src.html > options.html

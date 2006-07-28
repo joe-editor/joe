@@ -9,15 +9,15 @@ multiple un-finished dialogs on the screen.</p>
 
 <p>The coroutine library has only three functions:</p>
 
-<table width="100%" cellspacing=0> <colgroup> <col width="300"> <tbody>
+<table width="100%" cellspacing=20 border=0 cellpadding=0> <colgroup> <col width="300"> <tbody>
 
-<tr><td>int co_call(int (*func)(va_list args),...);</td><td>Call a function
+<tr valign="top"><td>int co_call(int (*func)(va_list args),...);</td><td>Call a function
 as a co-routine.</td></tr>
 
-<tr><td>int co_yield(Coroutine *t, int val);</td><td>Suspend current
+<tr valign="top"><td>int co_yield(Coroutine *t, int val);</td><td>Suspend current
 co-routine and return to caller with given return value.</td></tr>
 
-<tr><td>int co_resume(Coroutine *t, int val);</td><td>Suspend current
+<tr valign="top"><td>int co_resume(Coroutine *t, int val);</td><td>Suspend current
 co-routine and resume specified one with given return value.</td></tr>
 
 </tbody> </table>
@@ -95,16 +95,16 @@ macros can be running at once with this scheme.</p>
 <p>JOE 3.6 uses "semi-automatic" variables for strings.  There is a global
 "object-stack", accessed through these functions:</p>
 
-<table width="100%" cellspacing=0>
+<table width="100%" cellspacing=20 border=0 cellpadding=0>
 <colgroup>
 <col width="300">
 <tbody>
-<tr><td>void *obj_malloc(int size);</td><td>Allocate a block of memory.</td></tr>
-<tr><td>void *obj_realloc(void *ptr, int size);</td><td>Change allocation size.</td></tr>
-<tr><td>void obj_free(void *ptr);</td><td>Free a specified block and all newer blocks.</td></tr>
-<tr><td>void obj_perm(void *ptr);</td><td>Mark a block as permanent, which in effect moves the block from the stack to the heap.</td></tr>
-<tr><td>int obj_len(void *ptr);</td><td>Access hidden "length" part of block (string length).</td></tr>
-<tr><td>int obj_size(void *ptr);</td><td>Access hidden "size" part of block (allocation size).</td></tr>
+<tr valign="top"><td>void *obj_malloc(int size);</td><td>Allocate a block of memory.</td></tr>
+<tr valign="top"><td>void *obj_realloc(void *ptr, int size);</td><td>Change allocation size.</td></tr>
+<tr valign="top"><td>void obj_free(void *ptr);</td><td>Free a specified block and all newer blocks.</td></tr>
+<tr valign="top"><td>void obj_perm(void *ptr);</td><td>Mark a block as permanent, which in effect moves the block from the stack to the heap.</td></tr>
+<tr valign="top"><td>int obj_len(void *ptr);</td><td>Access hidden "length" part of block (string length).</td></tr>
+<tr valign="top"><td>int obj_size(void *ptr);</td><td>Access hidden "size" part of block (allocation size).</td></tr>
 </tbody>
 </table>
 
@@ -148,24 +148,24 @@ them compatible with C-strings.  In fact they have (almost) the same type as
 C-strings: unsigned char *.  The length is hidden in the obj_malloc data
 structure.  These functions are provided:</p>
 
-<table width="100%" cellspacing=0>
+<table width="100%" cellspacing=20 border=0 cellpadding=0>
 <colgroup>
 <col width="400">
 <tbody>
-<tr><td>unsigned char *vsmk(int prealloc);</td><td>Allocate a zero length string, but with enough space to grow to the specified length.</td></tr>
-<tr><td>int vslen(unsigned char *s);</td><td>Return string length or 0 if s is NULL.</td></tr>
-<tr><td>unsigned char *vsensure(unsigned char *s, int len);</td><td>Make sure there is enough space for a string of the specified length.</td></tr>
-<tr><td>unsigned char *vstrunc(unsigned char *s, int len);</td><td>Set length of string: the string is truncated or extended with spaces to the specified length.</td></tr>
-<tr><td>unsigned char *vsncpy(unsigned char *s,int offset,unsigned char *block, int block_size);</td><td>Copy a memory block to a string.  The string is extended with spaces if offset &gt; string length.</td></tr>
-<tr><td>unsigned char *vsdupz(unsigned char *s);</td><td>Duplicate a z-string to a variable string.</td></tr>
-<tr><td>unsigned char *vsdup(unsigned char *s);</td><td>Duplicate a variable string.</td></tr>
-<tr><td>unsigned char *vscpyz(unsigned char *s,unsigned char *z);</td><td>Copy a z-string to a variable string.</td></tr>
-<tr><td>unsigned char *vscpy(unsigned char *s,unsigned char *block,int size);</td><td>Copy a memory block to a variable string.</td></tr>
-<tr><td>unsigned char *vscatz(unsigned char *s,unsigned char *z);</td><td>Append a z-string to a variable string.</td></tr>
-<tr><td>unsigned char *vscat(unsigned char *s,unsigned char *block,int size);</td><td>Append a memory block to a variable string.</td></tr>
-<tr><td>unsigned char *vsadd(unsigned char *s,unsigned char c);</td><td>Append a single character to a string.</td></tr>
-<tr><td>unsigned char *vsfmt(unsigned char *s,int offset,const char *format,...);</td><td>Sprintf() to a variable string.</td></tr>
-<tr><td>unsigned char *vsgets(unsigned char **sp,FILE *f);</td><td>fgets() to a variable string (returns NULL on EOF, does not put '\n' in the string).</td></tr>
+<tr valign="top"><td>unsigned char *vsmk(int prealloc);</td><td>Allocate a zero length string, but with enough space to grow to the specified length.</td></tr>
+<tr valign="top"><td>int vslen(unsigned char *s);</td><td>Return string length or 0 if s is NULL.</td></tr>
+<tr valign="top"><td>unsigned char *vsensure(unsigned char *s, int len);</td><td>Make sure there is enough space for a string of the specified length.</td></tr>
+<tr valign="top"><td>unsigned char *vstrunc(unsigned char *s, int len);</td><td>Set length of string: the string is truncated or extended with spaces to the specified length.</td></tr>
+<tr valign="top"><td>unsigned char *vsncpy(unsigned char *s,int offset,unsigned char *block, int block_size);</td><td>Copy a memory block to a string.  The string is extended with spaces if offset &gt; string length.</td></tr>
+<tr valign="top"><td>unsigned char *vsdupz(unsigned char *s);</td><td>Duplicate a z-string to a variable string.</td></tr>
+<tr valign="top"><td>unsigned char *vsdup(unsigned char *s);</td><td>Duplicate a variable string.</td></tr>
+<tr valign="top"><td>unsigned char *vscpyz(unsigned char *s,unsigned char *z);</td><td>Copy a z-string to a variable string.</td></tr>
+<tr valign="top"><td>unsigned char *vscpy(unsigned char *s,unsigned char *block,int size);</td><td>Copy a memory block to a variable string.</td></tr>
+<tr valign="top"><td>unsigned char *vscatz(unsigned char *s,unsigned char *z);</td><td>Append a z-string to a variable string.</td></tr>
+<tr valign="top"><td>unsigned char *vscat(unsigned char *s,unsigned char *block,int size);</td><td>Append a memory block to a variable string.</td></tr>
+<tr valign="top"><td>unsigned char *vsadd(unsigned char *s,unsigned char c);</td><td>Append a single character to a string.</td></tr>
+<tr valign="top"><td>unsigned char *vsfmt(unsigned char *s,int offset,const char *format,...);</td><td>Sprintf() to a variable string.</td></tr>
+<tr valign="top"><td>unsigned char *vsgets(unsigned char **sp,FILE *f);</td><td>fgets() to a variable string (returns NULL on EOF, does not put '\n' in the string).</td></tr>
 </tbody>
 </table>
 
@@ -181,13 +181,13 @@ writes it to the variable directly.</p>
 address and a length.  These macros can be used to help construct these
 arguments:</p>
 
-<table width="100%" cellspacing=0>
+<table width="100%" cellspacing=20 border=0 cellpadding=0>
 <colgroup>
 <col width="350">
 <tbody>
-<tr><td>#define sc(s) (s), (sizeof(s)-1)</td><td>For string constants.</td></tr>
-<tr><td>#define sz(s) (s), zlen(s)</td><td>For C-strings (zlen is the same as strlen).</td></tr>
-<tr><td>#define sv(s) (s), vslen(s)</td><td>For variable strings.</td></tr>
+<tr valign="top"><td>#define sc(s) (s), (sizeof(s)-1)</td><td>For string constants.</td></tr>
+<tr valign="top"><td>#define sz(s) (s), zlen(s)</td><td>For C-strings (zlen is the same as strlen).</td></tr>
+<tr valign="top"><td>#define sv(s) (s), vslen(s)</td><td>For variable strings.</td></tr>
 </tbody>
 </table>
 
@@ -206,19 +206,19 @@ unsigned char *vscatz(unsigned char *s, unsigned char *z);
 <p>JOE also semi-automatic variable arrays of variable strings.  These
 functions are provided:</p>
 
-<table width="100%" cellspacing=0>
+<table width="100%" cellspacing=20 border=0 cellpadding=0>
 <colgroup>
 <col width="400">
 <tbody>
-<tr><td>unsigned char *vamk(int prealloc);</td><td>Allocate a zero length array, but with enough space to grow to the specified length.</td></tr>
-<tr><td>void varm(unsigned char **a);</td><td>Free an array.</td></tr>
-<tr><td>int valen(unsigned char *a);</td><td>Return array length or 0 if a is NULL.</td></tr>
-<tr><td>unsigned char *vaensure(unsigned char *s, int len);</td><td>Make sure there is enough space for an array of the specified length.</td></tr>
-<tr><td>unsigned char *vatrunc(unsigned char *s, int len);</td><td>Set length of array: the array is truncated or extended with NULLs to the specified length.</td></tr>
-<tr><td>unsigned char *vaadd(unsigned char **a,unsigned char *s);</td><td>Append a single string to an array.</td></tr>
-<tr><td>unsigned char *vasort(unsigned char **a,int len);</td><td>Sort an array.</td></tr>
-<tr><td>unsigned char *vawords(unsigned char **a,unsigned char *s,int len, unsigned char *sep, int seplen);</td><td>Convert a word list in s (words separated by characters given in sep/seplen) into an array of strings.</td></tr>
-<tr><td>void vaperm(unsigned char **a);</td><td>Mark an array as preferment (heap instead of stack).</td></tr>
+<tr valign="top"><td>unsigned char *vamk(int prealloc);</td><td>Allocate a zero length array, but with enough space to grow to the specified length.</td></tr>
+<tr valign="top"><td>void varm(unsigned char **a);</td><td>Free an array.</td></tr>
+<tr valign="top"><td>int valen(unsigned char *a);</td><td>Return array length or 0 if a is NULL.</td></tr>
+<tr valign="top"><td>unsigned char *vaensure(unsigned char *s, int len);</td><td>Make sure there is enough space for an array of the specified length.</td></tr>
+<tr valign="top"><td>unsigned char *vatrunc(unsigned char *s, int len);</td><td>Set length of array: the array is truncated or extended with NULLs to the specified length.</td></tr>
+<tr valign="top"><td>unsigned char *vaadd(unsigned char **a,unsigned char *s);</td><td>Append a single string to an array.</td></tr>
+<tr valign="top"><td>unsigned char *vasort(unsigned char **a,int len);</td><td>Sort an array.</td></tr>
+<tr valign="top"><td>unsigned char *vawords(unsigned char **a,unsigned char *s,int len, unsigned char *sep, int seplen);</td><td>Convert a word list in s (words separated by characters given in sep/seplen) into an array of strings.</td></tr>
+<tr valign="top"><td>void vaperm(unsigned char **a);</td><td>Mark an array as preferment (heap instead of stack).</td></tr>
 </tbody>
 </table>
 
@@ -502,53 +502,53 @@ correct.</p>
 
 <h3>Files</h3>
 
-<table width="100%" cellspacing=0>
+<table width="100%" cellspacing=20 border=0 cellpadding=0>
 <colgroup>
 <col width="100">
 <tbody>
-<tr><td>b.c</td><td>Text buffer management</td></tr>
-<tr><td>blocks.c</td><td>Library: fast memcpy() functions (necessary on really old versions of UNIX).</td></tr>
-<tr><td>bw.c</td><td>A class: text buffer window (screen update code is here)</td></tr>
-<tr><td>charmap.c</td><td>UNICODE to 8-bit conversion functions</td></tr>
-<tr><td>cmd.c</td><td>Table of user edit functions</td></tr>
-<tr><td>coroutine.c</td><td>Coroutine library</td></tr>
-<tr><td>dir.c</td><td>Directory reading functions (for old UNIXs).</td></tr>
-<tr><td>hash.c</td><td>Library: automatically expanding hash table functions.</td></tr>
-<tr><td>help.c</td><td>Implement the on-line help window</td></tr>
-<tr><td>i18n.c</td><td>Unicode character type information database</td></tr>
-<tr><td>kbd.c</td><td>Keymap data structure (keysequence to macro bindings).</td></tr>
-<tr><td>lattr.c</td><td>Line attribute cache</td></tr>
-<tr><td>macro.c</td><td>Keyboard and joerc file macros</td></tr>
-<tr><td>main.c</td><td>Has main() and top level edit loop</td></tr>
-<tr><td>menu.c</td><td>A class: menu windows</td></tr>
-<tr><td>obj.c</td><td>Semi-automatic objects, plus dynamic string and array library</td></tr>
-<tr><td>path.c</td><td>Library: file name and path manipulation functions</td></tr>
-<tr><td>poshist.c</td><td>Cursor position history</td></tr>
-<tr><td>pw.c</td><td>A class: prompt windows</td></tr>
-<tr><td>queue.c</td><td>Library: doubly linked lists</td></tr>
-<tr><td>qw.c</td><td>A class: single-key query windows</td></tr>
-<tr><td>rc.c</td><td>Joerc file loader</td></tr>
-<tr><td>regex.c</td><td>Regular expressions</td></tr>
-<tr><td>scrn.c</td><td>Terminal update functions (like curses)</td></tr>
-<tr><td>selinux.c</td><td>Secure linux (for RedHat) functions</td></tr>
-<tr><td>syntax.c</td><td>Syntax highlighter</td></tr>
-<tr><td>tab.c</td><td>Tab completion for file selection prompt</td></tr>
-<tr><td>termcap.c</td><td>Load terminal capabilities from /etc/termcap file or terminfo database</td></tr>
-<tr><td>tw.c</td><td>A class: main text editing window</td></tr>
-<tr><td>ublock.c</td><td>User edit functions: block moves</td></tr>
-<tr><td>uedit.c</td><td>User edit functions: basic edit functions</td></tr>
-<tr><td>uerror.c</td><td>User edit functions: parse compiler error messages and goto next error, previous error</td></tr>
-<tr><td>ufile.c</td><td>User edit functions: load and save file</td></tr>
-<tr><td>uformat.c</td><td>User edit functions: paragraph formatting, centering</td></tr>
-<tr><td>uisrch.c</td><td>User edit functions: incremental search</td></tr>
-<tr><td>umath.c</td><td>User edit functions: calculator</td></tr>
-<tr><td>undo.c</td><td>Undo system</td></tr>
-<tr><td>usearch.c</td><td>User edit functions: search &amp; replace</td></tr>
-<tr><td>ushell.c</td><td>User edit functions: subshell</td></tr>
-<tr><td>utag.c</td><td>User edit functions: tags file search</td></tr>
-<tr><td>utf8.c</td><td>UTF-8 to unicode coding functions</td></tr>
-<tr><td>utils.c</td><td>Misc. utilities</td></tr>
-<tr><td>vfile.c</td><td>Library: virtual memory functions (allows you to edit files larger than memory)</td></tr>
-<tr><td>w.c</td><td>A class: base class for all windows</td></tr>
+<tr valign="top"><td>b.c</td><td>Text buffer management</td></tr>
+<tr valign="top"><td>blocks.c</td><td>Library: fast memcpy() functions (necessary on really old versions of UNIX).</td></tr>
+<tr valign="top"><td>bw.c</td><td>A class: text buffer window (screen update code is here)</td></tr>
+<tr valign="top"><td>charmap.c</td><td>UNICODE to 8-bit conversion functions</td></tr>
+<tr valign="top"><td>cmd.c</td><td>Table of user edit functions</td></tr>
+<tr valign="top"><td>coroutine.c</td><td>Coroutine library</td></tr>
+<tr valign="top"><td>dir.c</td><td>Directory reading functions (for old UNIXs).</td></tr>
+<tr valign="top"><td>hash.c</td><td>Library: automatically expanding hash table functions.</td></tr>
+<tr valign="top"><td>help.c</td><td>Implement the on-line help window</td></tr>
+<tr valign="top"><td>i18n.c</td><td>Unicode character type information database</td></tr>
+<tr valign="top"><td>kbd.c</td><td>Keymap data structure (keysequence to macro bindings).</td></tr>
+<tr valign="top"><td>lattr.c</td><td>Line attribute cache</td></tr>
+<tr valign="top"><td>macro.c</td><td>Keyboard and joerc file macros</td></tr>
+<tr valign="top"><td>main.c</td><td>Has main() and top level edit loop</td></tr>
+<tr valign="top"><td>menu.c</td><td>A class: menu windows</td></tr>
+<tr valign="top"><td>obj.c</td><td>Semi-automatic objects, plus dynamic string and array library</td></tr>
+<tr valign="top"><td>path.c</td><td>Library: file name and path manipulation functions</td></tr>
+<tr valign="top"><td>poshist.c</td><td>Cursor position history</td></tr>
+<tr valign="top"><td>pw.c</td><td>A class: prompt windows</td></tr>
+<tr valign="top"><td>queue.c</td><td>Library: doubly linked lists</td></tr>
+<tr valign="top"><td>qw.c</td><td>A class: single-key query windows</td></tr>
+<tr valign="top"><td>rc.c</td><td>Joerc file loader</td></tr>
+<tr valign="top"><td>regex.c</td><td>Regular expressions</td></tr>
+<tr valign="top"><td>scrn.c</td><td>Terminal update functions (like curses)</td></tr>
+<tr valign="top"><td>selinux.c</td><td>Secure linux (for RedHat) functions</td></tr>
+<tr valign="top"><td>syntax.c</td><td>Syntax highlighter</td></tr>
+<tr valign="top"><td>tab.c</td><td>Tab completion for file selection prompt</td></tr>
+<tr valign="top"><td>termcap.c</td><td>Load terminal capabilities from /etc/termcap file or terminfo database</td></tr>
+<tr valign="top"><td>tw.c</td><td>A class: main text editing window</td></tr>
+<tr valign="top"><td>ublock.c</td><td>User edit functions: block moves</td></tr>
+<tr valign="top"><td>uedit.c</td><td>User edit functions: basic edit functions</td></tr>
+<tr valign="top"><td>uerror.c</td><td>User edit functions: parse compiler error messages and goto next error, previous error</td></tr>
+<tr valign="top"><td>ufile.c</td><td>User edit functions: load and save file</td></tr>
+<tr valign="top"><td>uformat.c</td><td>User edit functions: paragraph formatting, centering</td></tr>
+<tr valign="top"><td>uisrch.c</td><td>User edit functions: incremental search</td></tr>
+<tr valign="top"><td>umath.c</td><td>User edit functions: calculator</td></tr>
+<tr valign="top"><td>undo.c</td><td>Undo system</td></tr>
+<tr valign="top"><td>usearch.c</td><td>User edit functions: search &amp; replace</td></tr>
+<tr valign="top"><td>ushell.c</td><td>User edit functions: subshell</td></tr>
+<tr valign="top"><td>utag.c</td><td>User edit functions: tags file search</td></tr>
+<tr valign="top"><td>utf8.c</td><td>UTF-8 to unicode coding functions</td></tr>
+<tr valign="top"><td>utils.c</td><td>Misc. utilities</td></tr>
+<tr valign="top"><td>vfile.c</td><td>Library: virtual memory functions (allows you to edit files larger than memory)</td></tr>
+<tr valign="top"><td>w.c</td><td>A class: base class for all windows</td></tr>
 </tbody>
 </table>
