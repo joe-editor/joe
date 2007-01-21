@@ -33,6 +33,10 @@ extern Obj obj_stack[1];	/* The stack */
 /* Round up to min size, which should be a power of 2 */
 #define round_up(n, to) (((n) + to) & ~(to - 1))
 
+Obj get_obj_stack(); /* Get current stack, setup a new one in its place */
+
+void set_obj_stack(Obj o); /* Restore a saved stack. */
+
 /* Object memory allocation */
 
 /* Free specified object.  If object is on the stack, all more recently

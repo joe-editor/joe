@@ -1370,7 +1370,7 @@ int uline(BW *bw)
 	unsigned char *s;
 
 	s = ask(bw->parent, joe_gettext(_("Go to line (^C to abort): ")), &linehist,
-	        NULL, NULL, NULL, locale_map, 0);
+	        NULL, NULL, NULL, locale_map, 0, 0, NULL);
 
 	if (!s)
 		return -1;
@@ -1406,7 +1406,7 @@ int ucol(BW *bw)
 	unsigned char *s;
 
 	s = ask(bw->parent, joe_gettext(_("Go to column (^C to abort): ")), &colhist,
-	        NULL, NULL, NULL, locale_map, 0);
+	        NULL, NULL, NULL, locale_map, 0, 0, NULL);
 
 	if (!s)
 		return -1;
@@ -1440,7 +1440,7 @@ int ubyte(BW *bw)
 	unsigned char *s;
 
 	s = ask(bw->parent, joe_gettext(_("Go to byte (^C to abort): ")), &bytehist,
-	        NULL, NULL, NULL, locale_map, 0);
+	        NULL, NULL, NULL, locale_map, 0, 0, NULL);
 
 	num = calc(bw, s);
 
@@ -2267,7 +2267,7 @@ int umsg(BASE *b)
 {
 	unsigned char *s;
 	s = ask(b->parent, joe_gettext(_("Message (^C to abort): ")), NULL,
-	        NULL, NULL, NULL, locale_map, 0);
+	        NULL, NULL, NULL, locale_map, 0, 0, NULL);
 
 	if (!s)
 		return -1;
@@ -2284,7 +2284,7 @@ int utxt(BW *bw)
 	unsigned char *s;
 
 	s = ask(bw->parent, joe_gettext(_("Insert (^C to abort): ")),
-	        NULL, NULL, utypebw, NULL, bw->b->o.charmap, 0);
+	        NULL, NULL, utypebw, NULL, bw->b->o.charmap, 0, 0, NULL);
 
 	for (x = 0; x != vslen(s); ++x)
 		utypebw(bw, s[x]);

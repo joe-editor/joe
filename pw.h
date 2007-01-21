@@ -34,7 +34,7 @@ struct pw {
  */
 BW *wmkpw PARAMS((W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify, struct charmap *map, int file_prompt));
 
-unsigned char *ask(W *w, unsigned char *prompt, B **history, unsigned char *huh, int (*tab)(), int *notify, struct charmap *map, int file_prompt);
+unsigned char *ask(W *w, unsigned char *prompt, B **history, unsigned char *huh, int (*tab)(), int *notify, struct charmap *map, int file_prompt, int retrieve_last, unsigned char *preload);
 
 int ucmplt PARAMS((BW *bw, int k));
 

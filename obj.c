@@ -9,9 +9,30 @@
 
 #include "types.h"
 
-/* Object stack */
+/* Global Object stack */
 
 Obj obj_stack[1] = { { { obj_stack, obj_stack } } };
+
+/* Save current stack and create a new one. */
+
+Obj get_obj_stack()
+{
+	Obj o = obj_stack[0];
+	izque(Obj, link, obj_stack);
+	return o;
+}
+
+/* Free current stack, restore a saved stack. */
+
+void set_obj_stack(Obj o)
+{
+	Obj *blk, *nxt;
+	for (blk = obj_stack->link.next; blk != obj_stack; blk = nxt) {
+		nxt = blk->link.next;
+		joe_free(deque_f(Obj, link, blk));
+	}
+	obj_stack[0] = o;
+}
 
 /* Allocate an object on the object stack.  If size is 0, a minimum sized
  * object is allocated */

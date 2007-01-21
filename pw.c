@@ -382,18 +382,25 @@ int simple_cmplt(BW *bw,unsigned char **list)
 	}
 }
 
-/* Simplified prompting... */
+/* Simplified prompting... convert original event-driven style to
+ * coroutine model */
 
-unsigned char *answer;
+struct prompt_result {
+	Coroutine t;
+	unsigned char *answer;
+};
 
 int prompt_cont(BW *bw, unsigned char *s, void *object, int *notify)
 {
-	Coroutine *t = (Coroutine *)object;
-	answer = s;
-	obj_perm(answer);
+	struct prompt_result *r = (struct prompt_result *)object;
+	r->answer = s;
 
-	co_resume(t, 0);
+	/* move answer to original coroutine's obj_stack */
+	obj_perm(r->answer);
 
+	co_resume(&r->t, 0);
+
+	/* This can't be right: caller must decide when to set notify */
 	if (notify)
 		*notify = 1;
 
@@ -402,26 +409,46 @@ int prompt_cont(BW *bw, unsigned char *s, void *object, int *notify)
 
 int prompt_abrt(BW *bw, void *object)
 {
-	Coroutine *t = (Coroutine *)object;
-	answer = 0;
-	co_resume(t, -1);
+	struct prompt_result *r = (struct prompt_result *)object;
+	r->answer = 0;
+	co_resume(&r->t, -1);
 	return -1;
 }
 
-unsigned char *ask(W *w, unsigned char *prompt, B **history,
-                   unsigned char *huh, int (*tab)(), int *notify,
-                   struct charmap *map, int file_prompt)
+unsigned char *ask(W *w,			/* Prompt goes below this window */
+                   unsigned char *prompt,	/* Prompt text */
+                   B **history,			/* History buffer to use */
+                   unsigned char *huh,		/* Name of help screen for this prompt */
+                   int (*tab)(),		/* Called when tab key is pressed */
+                   int *notify,			/* Set when prompt is done (for macros) */
+                   struct charmap *map,		/* Character map for prompt */
+                   int file_prompt,		/* Set for file-name tilde expansion */
+                   int retrieve_last,		/* Set for cursor to go on last line of history */
+                   unsigned char *preload)	/* Text to preload into prompt */
 {
-	Coroutine t;
+	struct prompt_result t;
 	BW *bw = wmkpw(w, prompt, history, prompt_cont, huh, prompt_abrt, tab, 
 	               &t, notify, map, file_prompt);
 	if (!bw)
 		return 0;
 
+	if (preload) {
+		/* Load hint, put cursor after it */
+		binss(bw->cursor, preload);
+		pset(bw->cursor, bw->b->eof);
+		bw->cursor->xcol = piscol(bw->cursor);
+	} else if (retrieve_last) {
+		/* One step back through history */
+		uuparw(bw);
+		u_goto_eol(bw);
+		bw->cursor->xcol = piscol(bw->cursor);
+	}
+
 	/* We get woken up when user hits return */
-	if (!co_yield(&t, 0)) {
-		obj_temp(answer);
-		return answer;
+	if (!co_yield(&t.t, 0)) {
+		/* Moving answer to original coroutine's stack */
+		obj_temp(t.answer);
+		return t.answer;
 	} else {
 		return 0;
 	}

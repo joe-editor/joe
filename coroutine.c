@@ -153,9 +153,9 @@ int co_yield(Coroutine *t, int val)
 	/* Save current stack */
 	t->stack = current_stack;
 
-	/* Save object stack */
-	t->saved_obj_stack = obj_stack[0];
-	izque(Obj,link,obj_stack);
+	/* Save object stack: create one which gets immediately destroyed
+	   by return to co_call or co_resume. */
+	t->saved_obj_stack = get_obj_stack();
 
 	/* Return to creator */
 	n = current_stack->caller;
@@ -169,7 +169,7 @@ int co_yield(Coroutine *t, int val)
 	swapcontext(t->uc, n->uc);
 
 	/* Somebody continued us... */
-	obj_stack[0] = t->saved_obj_stack;
+	set_obj_stack(t->saved_obj_stack);
 
 	return rtval;
 #else
@@ -179,13 +179,12 @@ int co_yield(Coroutine *t, int val)
 	t->stack = current_stack;
 
 	/* Save object stack */
-	t->saved_obj_stack = obj_stack[0];
-	izque(Obj,link,obj_stack);
+	t->saved_obj_stack = get_obj_stack();
 
 	/* Save current context */
 	if ((rtn = setjmp(t->cont))) {
 		/* Somebody continued us... */
-		obj_stack[0] = t->saved_obj_stack;
+		set_obj_stack(t->saved_obj_stack);
 		return rtn - 10; /* 10 added to longjmp */
 	} else {
 		/* Return to creator */
@@ -210,9 +209,9 @@ int co_resume(Coroutine *t,int val)
 	/* Save current stack */
 	self->stack = current_stack;
 
-	/* Save object stack */
-	self->saved_obj_stack = obj_stack[0];
-	izque(Obj,link,obj_stack);
+	/* Save object stack.  Create new one which is detroyed by return
+	   to co_yield. */
+	self->saved_obj_stack = get_obj_stack();
 
 	/* Resume specified coroutine */
 	current_stack = t->stack;
@@ -227,7 +226,7 @@ int co_resume(Coroutine *t,int val)
 	swapcontext(self->uc, t->uc);
 
 	/* Somebody continued us... */
-	obj_stack[0] = self->saved_obj_stack;
+	set_obj_stack(self->saved_obj_stack);
 
 	return rtval;
 #else
@@ -237,13 +236,12 @@ int co_resume(Coroutine *t,int val)
 	self->stack = current_stack;
 
 	/* Save object stack */
-	self->saved_obj_stack = obj_stack[0];
-	izque(Obj,link,obj_stack);
+	self->saved_obj_stack = get_obj_stack();
 
 	/* Save current context */
 	if ((rtn = setjmp(self->cont))) {
 		/* Somebody continued us... */
-		obj_stack[0] = self->saved_obj_stack;
+		set_obj_stack(self->saved_obj_stack);
 		return rtn - 10; /* 10 added to longjmp */
 	} else {
 		/* Continue specified */
@@ -276,9 +274,8 @@ int co_call(int (*func)(va_list args), ...)
 	/* Save current stack */
 	self->stack = current_stack;
 
-	/* Save object stack */
-	self->saved_obj_stack = obj_stack[0];
-	izque(Obj,link,obj_stack);
+	/* Save object stack, create new one for this call */
+	self->saved_obj_stack = get_obj_stack();
 
 	/* Allocate stack for co-routine */
 	current_stack = mkstack();
@@ -294,7 +291,8 @@ int co_call(int (*func)(va_list args), ...)
 	swapcontext(self->uc, current_stack->uc);
 
 	/* Somebody continued us... */
-	obj_stack[0] = self->saved_obj_stack;
+	/* Free object stack we created above, restore original. */
+	set_obj_stack(self->saved_obj_stack);
 
 	va_end(ap);
 
@@ -312,8 +310,7 @@ int co_call(int (*func)(va_list args), ...)
 	}
 
 	self->stack = current_stack;
-	self->saved_obj_stack = obj_stack[0];
-	izque(Obj, link, obj_stack);
+	self->saved_obj_stack = get_obj_stack();
 
 	/* Allocate stack for co-routine */
 	current_stack = mkstack();
@@ -328,7 +325,7 @@ int co_call(int (*func)(va_list args), ...)
 	/* Save current context */
 	if ((rtn = setjmp(self->cont))) {
 		/* Somebody continued us... */
-		obj_stack[0] = self->saved_obj_stack;
+		set_obj_stack(self->saved_obj_stack);
 		va_end(ap);
 		return rtn - 10; /* 10 added to longjmp */
 	} else {
