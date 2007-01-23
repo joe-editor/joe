@@ -905,22 +905,66 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 
 static int filtflg = 0;
 
-static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
+static B *filthist = NULL;
+
+static void markall(BW *bw)
 {
+	pdupown(bw->cursor->b->bof, &markb, USTR "markall");
+	markb->xcol = 0;
+	pdupown(bw->cursor->b->eof, &markk, USTR "markall");
+	markk->xcol = piscol(markk);
+	updall();
+}
+
+static int checkmark(BW *bw)
+{
+	if (!markv(1))
+		if (square)
+			return 2;
+		else {
+			markall(bw);
+			filtflg = 1;
+			return 1;
+	} else {
+		filtflg = 0;
+		return 0;
+	}
+}
+
+int ufilt(BW *bw)
+{
+#ifdef __MSDOS__
+	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
+	return -1;
+#else
 	int fr[2];
 	int fw[2];
 	int flg = 0;
+	unsigned char *s;
+	switch (checkmark(bw)) {
+		case 0:
+			s = joe_gettext(_("Command to filter block through (^C to abort): "));
+			break;
+		case 1:
+			s = joe_gettext(_("Command to filter file through (^C to abort): "));
+			break;
+		default:
+			msgnw(bw->parent, joe_gettext(_("No block")));
+			return -1;
+	}
+	s = ask(bw->parent, s, &filthist, NULL, utypebw, NULL, locale_map, 0, 0, NULL);
 
-	if (notify)
-		*notify = 1;
+	/* if (notify)
+		*notify = 1; */
 	if (markb && markk && !square && markb->b == bw->b && markk->b == bw->b && markb->byte == markk->byte) {
-		flg = 1;
+		flg = 1; /* Empty block */
 		goto ok;
-	} if (!markv(1)) {
+	}
+	if (!markv(1)) {
 		msgnw(bw->parent, joe_gettext(_("No block")));
 		return -1;
 	}
-      ok:
+	ok:
 
 	pipe(fr);
 	pipe(fw);
@@ -932,8 +976,8 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 	if (!vfork()) { /* For AMIGA only */
 #endif
 #ifdef HAVE_PUTENV
-		unsigned char		*fname, *name;
-		unsigned	len;
+		unsigned char *fname, *name;
+		unsigned len;
 #endif
 		signrm();
 		close(0);
@@ -1030,56 +1074,6 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 		unmark(bw);
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
-}
-
-static B *filthist = NULL;
-
-static void markall(BW *bw)
-{
-	pdupown(bw->cursor->b->bof, &markb, USTR "markall");
-	markb->xcol = 0;
-	pdupown(bw->cursor->b->eof, &markk, USTR "markall");
-	markk->xcol = piscol(markk);
-	updall();
-}
-
-static int checkmark(BW *bw)
-{
-	if (!markv(1))
-		if (square)
-			return 2;
-		else {
-			markall(bw);
-			filtflg = 1;
-			return 1;
-	} else {
-		filtflg = 0;
-		return 0;
-	}
-}
-
-int ufilt(BW *bw)
-{
-#ifdef __MSDOS__
-	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
-	return -1;
-#else
-	switch (checkmark(bw)) {
-	case 0:
-		if (wmkpw(bw->parent, joe_gettext(_("Command to filter block through (^C to abort): ")), &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL, locale_map, 1))
-			return 0;
-		else
-			return -1;
-	case 1:
-		if (wmkpw(bw->parent, joe_gettext(_("Command to filter file through (^C to abort): ")), &filthist, dofilt, NULL, NULL, utypebw, NULL, NULL, locale_map, 1))
-			return 0;
-		else
-			return -1;
-	case 2:
-	default:
-		msgnw(bw->parent, joe_gettext(_("No block")));
-		return -1;
-	}
 #endif
 }
 

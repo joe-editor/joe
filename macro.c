@@ -764,53 +764,49 @@ int uplay(BW *bw, int c)
 
 /* Repeat-count setting */
 
-static int doarg(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	long num;
-
-	if (notify)
-		*notify = 1;
-	num = calc(bw, s);
-	if (merr) {
-		msgnw(bw->parent, merr);
-		return -1;
-	}
-	arg = num;
-	argset = 1;
-	return 0;
-}
-
 int uarg(BW *bw)
 {
-	if (wmkpw(bw->parent, joe_gettext(_("No. times to repeat next command (^C to abort): ")), NULL, doarg, NULL, NULL, utypebw, NULL, NULL, locale_map,0))
+	unsigned char *s = ask(bw->parent, joe_gettext(_("No. times to repeat next command (^C to abort): ")),
+	NULL, NULL, utypebw, NULL, locale_map, 0, 0, NULL);
+	if (s) {
+		long num;
+		num = calc(bw, s);
+		if (merr) {
+			msgnw(bw->parent, merr);
+			return -1;
+		}
+		arg = num;
+		argset = 1;
 		return 0;
-	else
+	} else {
 		return -1;
+	}
 }
 
-static int doif(BW *bw,unsigned char *s,void *object,int *notify)
+int iftest(BW *bw, unsigned char *prompt)
 {
-	long num;
-	if(notify) *notify=1;
-	num=calc(bw,s);
-	if(merr) { msgnw(bw->parent,merr); return -1; }
-	ifflag=(num?1:0);
-	iffail=ifdepth;
-	return 0;
-}
-
-static int ifabrt()
-{
-	ifdepth--;
-	return 0;
+	unsigned char *s = ask(bw->parent,prompt,NULL,NULL,utypebw,NULL,locale_map,0,0,NULL);
+	if (s) {
+		long num;
+		num=calc(bw,s);
+		if(merr) {
+			msgnw(bw->parent,merr);
+			return -1;
+		}
+		ifflag = (num ? 1 : 0);
+		iffail = ifdepth;
+		return 0;
+	} else {
+		ifdepth--;
+		return 0; /* return -1 for prompt creation error? */
+	}
 }
 
 int uif(BW *bw)
 {
 	ifdepth++;
 	if (!ifflag) return 0;
-	if (wmkpw(bw->parent,joe_gettext(_("If (^C to abort): ")),NULL,doif,NULL,ifabrt,utypebw,NULL,NULL,locale_map,0)) return 0;
-	else return -1;
+	return iftest(bw, joe_gettext(_("If (^C to abort): ")));
 }
 
 int uelsif(BW *bw)
@@ -822,8 +818,7 @@ int uelsif(BW *bw)
 		ifflag=iffail=0; /* don't let the next else/elsif get run */
 	} else if(ifdepth == iffail) {
 		ifflag=1;	/* so the script can type the condition :) */
-		if(wmkpw(bw->parent,joe_gettext(_("Else if: ")),NULL,doif,NULL,NULL,utypebw,NULL,NULL,locale_map,0)) return 0;
-		else return -1;
+		return iftest(bw,joe_gettext(_("Else if: ")));
 	}
 	return 0;
 }

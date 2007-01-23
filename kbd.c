@@ -343,19 +343,6 @@ int kdel(KMAP *kmap, unsigned char *seq)
 
 B *keymaphist=0;
 
-int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
-{
-	KMAP *k=ngetcontext(s);
-	if(notify) *notify=1;
-	if(!k) {
-		msgnw(bw->parent,joe_gettext(_("No such keymap")));
-		return -1;
-	}
-	rmkbd(bw->parent->kbd);
-	bw->parent->kbd=mkkbd(k);
-	return 0;
-}
-
 static unsigned char **keymap_list;
 
 static int keymap_cmplt(BW *bw)
@@ -375,6 +362,20 @@ static int keymap_cmplt(BW *bw)
 
 int ukeymap(BASE *bw)
 {
-	if (wmkpw(bw->parent,joe_gettext(_("Change keymap: ")),&keymaphist,dokeymap,USTR "keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
-	else return -1;
+	KMAP *k;
+	unsigned char *s = ask(bw->parent, joe_gettext(_("Change keymap: ")),
+	&keymaphist,USTR "keymap",keymap_cmplt,NULL,locale_map,0,0,NULL);
+	if (s) {
+		KMAP *k=ngetcontext(s);
+		/* if(notify) *notify=1; */
+		if(!k) {
+			msgnw(bw->parent,joe_gettext(_("No such keymap")));
+			return -1;
+		}
+		rmkbd(bw->parent->kbd);
+		bw->parent->kbd=mkkbd(k);
+		return 0;
+	} else {
+		return -1;
+	}
 }

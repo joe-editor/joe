@@ -643,91 +643,6 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 static int optx = 0; /* Menu cursor position: remember it for next time */
 
-static int doabrt1(BW *bw, int *xx)
-{
-	joe_free(xx);
-	return -1;
-}
-
-static int doopt1(BW *bw, unsigned char *s, int *xx, int *notify)
-{
-	int ret = 0;
-	int x = *xx;
-	int v;
-
-	joe_free(xx);
-	switch (glopts[x].type) {
-	case 1:
-		v = calc(bw, s);
-		if (merr) {
-			msgnw(bw->parent, merr);
-			ret = -1;
-		} else if (v >= glopts[x].low && v <= glopts[x].high)
-			*(int *)glopts[x].set = v;
-		else {
-			msgnw(bw->parent, joe_gettext(_("Value out of range")));
-			ret = -1;
-		}
-		break;
-	case 2:
-		if (s[0])
-			*(unsigned char **) glopts[x].set = zdup(s);
-		break;
-	case 6:
-		*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst) = zdup(s);
-		break;
-	case 5:
-		v = calc(bw, s);
-		if (merr) {
-			msgnw(bw->parent, merr);
-			ret = -1;
-		} else if (v >= glopts[x].low && v <= glopts[x].high)
-			*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = v;
-		else {
-			msgnw(bw->parent, joe_gettext(_("Value out of range")));
-			ret = -1;
-		}
-		break;
-	case 7:
-		v = calc(bw, s) - 1.0;
-		if (merr) {
-			msgnw(bw->parent, merr);
-			ret = -1;
-		} else if (v >= glopts[x].low && v <= glopts[x].high)
-			*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = v;
-		else {
-			msgnw(bw->parent, joe_gettext(_("Value out of range")));
-			ret = -1;
-		}
-		break;
-	}
-	bw->b->o = bw->o;
-	wfit(bw->parent->t);
-	updall();
-	if (notify)
-		*notify = 1;
-	return ret;
-}
-
-static int dosyntax(BW *bw, unsigned char *s, int *xx, int *notify)
-{
-	int ret = 0;
-	struct high_syntax *syn;
-
-	syn = load_dfa(s);
-
-	if (syn)
-		bw->o.syntax = syn;
-	else
-		msgnw(bw->parent, joe_gettext(_("Syntax definition file not found")));
-
-	bw->b->o = bw->o;
-	updall();
-	if (notify)
-		*notify = 1;
-	return ret;
-}
-
 unsigned char **syntaxes = NULL; /* Array of available syntaxes */
 
 static int syntaxcmplt(BW *bw)
@@ -782,27 +697,6 @@ static int syntaxcmplt(BW *bw)
 	return simple_cmplt(bw,syntaxes);
 }
 
-static int doencoding(BW *bw, unsigned char *s, int *xx, int *notify)
-{
-	int ret = 0;
-	struct charmap *map;
-
-
-	map = find_charmap(s);
-
-	if (map) {
-		bw->o.charmap = map;
-		msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("%s encoding assumed for this file")), map->name));
-	} else
-		msgnw(bw->parent, joe_gettext(_("Character set not found")));
-
-	bw->b->o = bw->o;
-	updall();
-	if (notify)
-		*notify = 1;
-	return ret;
-}
-
 unsigned char **encodings = NULL; /* Array of available encodinges */
 
 static int encodingcmplt(BW *bw)
@@ -816,111 +710,171 @@ static int encodingcmplt(BW *bw)
 
 static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 {
+	int ret = 0;
 	BW *bw = m->parent->win->object;
-	int *xx;
 	unsigned char *buf = 0;
+	unsigned char *s;
 	int *notify = m->parent->notify;
-
+	wabort (m->parent);
 	switch (glopts[x].type) {
-	case 0:
-		if (!flg)
-			*(int *)glopts[x].set = !*(int *)glopts[x].set;
-		else if (flg == 1)
-			*(int *)glopts[x].set = 1;
-		else
-			*(int *)glopts[x].set = 0;
-		wabort(m->parent);
-		msgnw(bw->parent, *(int *)glopts[x].set ? joe_gettext(glopts[x].yes) : joe_gettext(glopts[x].no));
-		break;
-	case 4:
-		if (!flg)
-			*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = !*(int *) ((unsigned char *) &bw->o + glopts[x].ofst);
-		else if (flg == 1)
-			*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = 1;
-		else
-			*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = 0;
-		wabort(m->parent);
-		msgnw(bw->parent, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? joe_gettext(glopts[x].yes) : joe_gettext(glopts[x].no));
-		if (glopts[x].ofst == (unsigned char *) &fdefault.readonly - (unsigned char *) &fdefault)
-			bw->b->rdonly = bw->o.readonly;
-		break;
-	case 6:
-		wabort(m->parent);
-		xx = (int *) joe_malloc(sizeof(int));
-		*xx = x;
-		if(*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst))
-			buf = vsfmt(buf, 0, glopts[x].yes, *(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst));
-		else
-			buf = vsfmt(buf, 0, glopts[x].yes,"");
-		if(wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
-		/* break; */
-	case 1:
-		buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *)glopts[x].set);
-		xx = (int *) joe_malloc(sizeof(int));
+		case 0: { /* Global option flag */
+			if (!flg)
+				*(int *)glopts[x].set = !*(int *)glopts[x].set;
+			else if (flg == 1)
+				*(int *)glopts[x].set = 1;
+			else
+				*(int *)glopts[x].set = 0;
+			msgnw(bw->parent, *(int *)glopts[x].set ? joe_gettext(glopts[x].yes) : joe_gettext(glopts[x].no));
+			break;
+		} case 4: { /* Local option flag */
+			if (!flg)
+				*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = !*(int *) ((unsigned char *) &bw->o + glopts[x].ofst);
+			else if (flg == 1)
+				*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = 1;
+			else
+				*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = 0;
+			msgnw(bw->parent, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? joe_gettext(glopts[x].yes) : joe_gettext(glopts[x].no));
+			if (glopts[x].ofst == (unsigned char *) &fdefault.readonly - (unsigned char *) &fdefault)
+				bw->b->rdonly = bw->o.readonly;
+			break;
+		} case 6: { /* Local option string */
+			/* Get current string */
+			s = *(unsigned char **)((unsigned char *)&bw->o + glopts[x].ofst);
+			if (!s)
+				s = USTR "";
+			/* Generate message */
+			buf = vsfmt(buf, 0, glopts[x].yes, s);
 
-		*xx = x;
-		m->parent->notify = 0;
-		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
-	case 2:
-		if (*(unsigned char **) glopts[x].set)
-			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(unsigned char **) glopts[x].set);
-		else
+			s = ask(bw->parent, buf, NULL, NULL, utypebw, notify, locale_map, 0, 0, NULL);
+			if (s) {
+				*(unsigned char **)((unsigned char *)&bw->o + glopts[x].ofst) = zdup(s);
+				break;
+			} else {
+				return -1;
+			}
+		} case 1: { /* global option numeric */
+			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *)glopts[x].set);
+			m->parent->notify = 0;
+			s = ask(bw->parent, buf, NULL, NULL, utypebw, notify, locale_map, 0, 0, NULL);
+			if (s) {
+				int v = calc(bw, s);
+				if (merr) {
+					msgnw(bw->parent, merr);
+					ret = -1;
+				} else if (v >= glopts[x].low && v <= glopts[x].high)
+					*(int *)glopts[x].set = v;
+				else {
+					msgnw(bw->parent, joe_gettext(_("Value out of range")));
+					ret = -1;
+				}
+
+				break;
+			} else
+				return -1;
+		} case 2: { /* global option string */
+			s = *(unsigned char **) glopts[x].set;
+			if (!s)
+				s = USTR "";
+			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), s);
+			m->parent->notify = 0;
+
+			s = ask(bw->parent, buf, NULL, NULL, utypebw, notify, locale_map, 0, 0, NULL);
+			if (s) {
+				*(unsigned char **)glopts[x].ofst = zdup(s);
+				break;
+			} else {
+				return -1;
+			}
+		} case 5: { /* local option numeric */
+			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
+			m->parent->notify = 0;
+			s = ask(bw->parent, buf, NULL, NULL, utypebw, notify, locale_map, 0, 0, NULL);
+			if (s) {
+				double v = calc(bw, s);
+				if (merr) {
+					msgnw(bw->parent, merr);
+					ret = -1;
+				} else if (v >= glopts[x].low && v <= glopts[x].high) {
+					*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = v;
+				} else {
+					msgnw(bw->parent, joe_gettext(_("Value out of range")));
+					ret = -1;
+				}
+				break;
+			} else {
+				return -1;
+			}
+		} case 7: { /* local option numeric+1, with range checking */
+			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
+			m->parent->notify = 0;
+
+			s = ask(bw->parent, buf, NULL, NULL, utypebw, notify, locale_map, 0, 0, NULL);
+
+			if (s) {
+				double v = calc(bw, s) - 1.0;
+				if (merr) {
+					msgnw(bw->parent, merr);
+					ret = -1;
+				} else if (v >= glopts[x].low && v <= glopts[x].high) {
+					*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = v;
+				} else {
+					msgnw(bw->parent, joe_gettext(_("Value out of range")));
+					ret = -1;
+				}
+				break;
+			} else {
+				return -1;
+			}
+		} case 9: { /* Choose syntax */
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
-		xx = (int *) joe_malloc(sizeof(int));
+			m->parent->notify = 0;
 
-		*xx = x;
-		m->parent->notify = 0;
-		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
-	case 5:
-		buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
-		goto in;
-	case 7:
-		buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
-	      in:xx = (int *) joe_malloc(sizeof(int));
+			s = ask(bw->parent, buf, NULL, NULL, syntaxcmplt, notify, locale_map, 0, 0, NULL);
 
-		*xx = x;
-		m->parent->notify = 0;
-		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
+			if (s) {
+				struct high_syntax *syn;
 
-	case 9:
-		buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
-		m->parent->notify = 0;
-		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
+				syn = load_dfa(s);
 
-	case 13:
-		buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
-		m->parent->notify = 0;
-		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
+				if (syn) {
+					bw->o.syntax = syn;
+					break;
+				} else {
+					msgnw(bw->parent, joe_gettext(_("Syntax definition file not found")));
+					return -1;
+				}
+			} else {
+				return -1;
+			}
+		} case 13: { /* Choose encoding */
+			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
+			m->parent->notify = 0;
+
+			s = ask(bw->parent, buf, NULL, NULL, encodingcmplt, notify, locale_map, 0, 0, NULL);
+			if (s) {
+				struct charmap *map;
+
+				map = find_charmap(s);
+
+				if (map) {
+					bw->o.charmap = map;
+					msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("%s encoding assumed for this file")), map->name));
+					break;
+				} else {
+					msgnw(bw->parent, joe_gettext(_("Character set not found")));
+					return -1;
+				}
+			} else {
+				return -1;
+			}
+		}
 	}
 	if (notify)
 		*notify = 1;
 	bw->b->o = bw->o;
 	wfit(bw->parent->t);
 	updall();
-	return 0;
+	return ret;
 }
 
 static int doabrt(MENU *m, int x, unsigned char **s)

@@ -1864,17 +1864,6 @@ int utypebw(BW *bw, int k)
 
 static B *unicodehist = NULL;	/* History of previously entered unicode characters */
 
-static int dounicode(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	int num;
-	sscanf((char *)s,"%x",(unsigned  *)&num);
-	if (notify)
-		*notify = 1;
-	utypebw_raw(bw, num, 1);
-	bw->cursor->xcol = piscol(bw->cursor);
-	return 0;
-}
-
 int quotestate;
 int quoteval;
 
@@ -1898,10 +1887,16 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 				return 0;
 		} else if (c == 'x' || c == 'X') {
 			if (bw->b->o.charmap->type) {
-				if (!wmkpw(bw->parent, joe_gettext(_("Unicode (ISO-10646) character in hex (^C to abort): ")), &unicodehist, dounicode,
-				           NULL, NULL, NULL, NULL, NULL, locale_map, 0))
+				unsigned char *s = ask(bw->parent, joe_gettext(_("Unicode (ISO-10646) character in hex (^C to abort): ")), &unicodehist, NULL, utypebw, NULL, locale_map, 0, 0, NULL);
+				if (s) {
+					int num;
+					sscanf((char *)s,"%x",(unsigned *)&num);
+					/* if (notify)
+						*notify = 1; */
+					utypebw_raw(bw, num, 1);
+					bw->cursor->xcol = piscol(bw->cursor);
 					return 0;
-				else
+				} else
 					return -1;
 			} else {
 				quotestate = 3;

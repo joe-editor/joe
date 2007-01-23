@@ -556,31 +556,24 @@ static int cmdcmplt(BW *bw)
 	return simple_cmplt(bw,scmds);
 }
 
-static int docmd(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	MACRO *mac;
-	int ret = -1;
-
-	mac = mparse(NULL, s, &ret);
-	if (ret < 0) {
-		msgnw(bw->parent,joe_gettext(_("No such command")));
-	} else {
-		ret = exmacro(mac, 1);
-		rmmacro(mac);
-	}
-
-	if (notify)
-		*notify = 1;
-	return ret;
-}
-
 B *cmdhist = NULL;
 
 int uexecmd(BW *bw)
 {
-	if (wmkpw(bw->parent, joe_gettext(USTR _("Command: ")), &cmdhist, docmd, USTR "cmd", NULL, cmdcmplt, NULL, NULL, locale_map, 0)) {
-		return 0;
-	} else {
-		return -1;
+	MACRO *mac;
+	int ret = -1;
+	unsigned char *s = ask(bw->parent, joe_gettext(USTR _("Command: ")),
+	&cmdhist, USTR _("cmd"), cmdcmplt, NULL, locale_map, 0, 0, NULL);
+
+	if (s) {
+		mac = mparse(NULL, s, &ret);
+		if (ret < 0 || !mac) {
+			msgnw(bw->parent, joe_gettext(_("No such command")));
+		} else {
+			ret = exmacro(mac, 1);
+			rmmacro(mac);
+		}
 	}
+
+	return ret;
 }
