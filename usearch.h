@@ -73,6 +73,4 @@ extern SRCH *globalsrch;
 extern unsigned char *rest_key;
 extern unsigned char *backup_key;
 
-int fwrd_c PARAMS((unsigned char **s));
-
 #endif

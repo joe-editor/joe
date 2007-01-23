@@ -540,21 +540,6 @@ static int pfsave(BW *bw, SRCH *srch)
 	return -1;
 }
 
-static int set_replace(BW *bw, unsigned char *s, SRCH *srch, int *notify)
-{
-	if (vslen(s) || !globalsrch || !pico) {
-		srch->replacement = s;
-		obj_perm(s);
-	} else {
-		/* Use previous string: this prevents replace with empty string */
-		/* vsrm(s);
-		srch->replacement = vsdup(globalsrch->replacement); */
-		srch->replacement = s;
-		obj_perm(s);
-	}
-	return dopfnext(bw, setmark(srch), notify);
-}
-
 /* Option characters */
 
 unsigned char *all_key = (unsigned char *) _("|all files|aA");
@@ -567,138 +552,11 @@ unsigned char *noignore_key = (unsigned char *) _("|don't ignore case|sS");
 unsigned char *wrap_key = (unsigned char *) _("|wrap|wW");
 unsigned char *nowrap_key = (unsigned char *) _("|don't wrap|nN");
 
-/* Get next character from string and advance it, locale dependent */
-
-int fwrd_c(unsigned char **s)
-{
-	if (locale_map->type)
-		return utf8_decode_fwrd(s, NULL);
-	else {
-		int c = **s;
-		*s = *s + 1;
-		return c;
-	}
-}
-
-static int set_options(BW *bw, unsigned char *s, SRCH *srch, int *notify)
-{
-	unsigned char buf[80];
-	unsigned char *t;
-
-	srch->ignore = icase;
-
-	t = s;
-	while (*t) {
-		int c = fwrd_c(&t);
-		if (yncheck(all_key, c))
-			srch->all = 1;
-		else if (yncheck(list_key, c))
-			srch->all = 2;
-		else if (yncheck(replace_key, c))
-			srch->replace = 1;
-		else if (yncheck(backwards_key, c))
-			srch->backwards = 1;
-		else if (yncheck(ignore_key, c))
-			srch->ignore = 1;
-		else if (yncheck(noignore_key, c))
-			srch->ignore = 0;
-		else if (yncheck(wrap_key, c))
-			srch->allow_wrap = 1;
-		else if (yncheck(nowrap_key, c))
-			srch->allow_wrap = 0;
-		else if (yncheck(block_key, c))
-			srch->block_restrict = 1;
-		else if (c >= '0' && c <= '9') {
-			if (srch->repeat == -1)
-				srch->repeat = 0;
-			srch->repeat = srch->repeat * 10 + c - '0';
-		}
-	}	
-	if (srch->replace) {
-		/* if (pico && globalsrch && globalsrch->replacement) {
-			joe_snprintf_1(bf1,30,"%s",globalsrch->replacement);
-			if (zlen(globalsrch->replacement)>29)
-				zcat(bf1,USTR "$");
-			joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Replace with (^C to abort) [%s]: ")),bf1);
-		} else */
-			zcpy(buf, joe_gettext(_("Replace with (^C to abort): ")));
-		if (wmkpw(bw->parent, buf, &replhist, set_replace, srchstr, pfabort, srch_cmplt, srch, notify, bw->b->o.charmap, 0))
-			return 0;
-		else
-			return -1;
-	} else
-		return dopfnext(bw, setmark(srch), notify);
-}
-
-static int set_pattern(BW *bw, unsigned char *s, SRCH *srch, int *notify)
-{
-	BW *pbw;
-	unsigned char *p;
-
-	if (icase)
-		p = joe_gettext(_("case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
-	else
-		p = joe_gettext(_("(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
-
-	obj_free(srch->pattern);
-	if (vslen(s) || !globalsrch || !pico) {
-		srch->pattern = s;
-		obj_perm(s);
-	} else {
-		srch->pattern = vsdup(globalsrch->pattern);
-		obj_perm(srch->pattern);
-	}
-	if ((pbw = wmkpw(bw->parent, p, NULL, set_options, srchopt, pfabort, utypebw, srch, notify, bw->b->o.charmap, 0)) != NULL) {
-		unsigned char buf[10];
-
-		if (srch->ignore) {
-			unsigned char *t = joe_gettext(ignore_key);
-			binsc(pbw->cursor, fwrd_c(&t));
-		}
-		if (srch->replace) {
-			unsigned char *t = joe_gettext(replace_key);
-			binsc(pbw->cursor, fwrd_c(&t));
-		}
-		if (srch->backwards) {
-			unsigned char *t = joe_gettext(backwards_key);
-			binsc(pbw->cursor, fwrd_c(&t));
-		}
-		if (srch->repeat >= 0)
-			joe_snprintf_1(buf, sizeof(buf), "%d", srch->repeat), binss(pbw->cursor, buf);
-		pset(pbw->cursor, pbw->b->eof);
-		pbw->cursor->xcol = piscol(pbw->cursor);
-		srch->ignore = 0;
-		srch->replace = 0;
-		srch->backwards = 0;
-		srch->repeat = -1;
-		return 0;
-	} else {
-		rmsrch(srch);
-		return -1;
-	}
-}
-
-/* Unescape for text going to genfmt */
-
-void unesc_genfmt(unsigned char *d, unsigned char *s, int max)
-{
-	while (max && *s) {
-		if (*s == '\\')
-			*d++ = '\\';
-		*d++ = *s++;
-		--max;
-	}
-	if (*s)
-		*d++ = '$';
-	*d = 0;
-}
-
 int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 {
 	SRCH *srch;
-	BW *pbw;
 	unsigned char bf1[32];
-	unsigned char *buf = 0;
+	unsigned char *s = 0;
 
 	if (smode && globalsrch) {
 		globalsrch->backwards = back;
@@ -721,16 +579,120 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 	srch->wrap_p->owner = &srch->wrap_p;
 	if (pico && globalsrch && globalsrch->pattern) {
 		unesc_genfmt(bf1, globalsrch->pattern, sizeof(bf1)-2);
-		buf = vsfmt(buf, 0, joe_gettext(_("Find (^C to abort) [%s]: ")),bf1);
+		s = vsfmt(s, 0, joe_gettext(_("Find (^C to abort) [%s]: ")),bf1);
 	} else
-		buf = vsdupz(joe_gettext(_("Find (^C to abort): ")));
-	if ((pbw=wmkpw(bw->parent, buf, &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap, 0))) {
-		if (hint) {
-			binss(pbw->cursor, hint);
-			pset(pbw->cursor, pbw->b->eof);
-			pbw->cursor->xcol = piscol(pbw->cursor);
+		s = vsdupz(joe_gettext(_("Find (^C to abort): ")));
+
+	s = ask(bw->parent, s, &findhist, srchstr, srch_cmplt, NULL, bw->b->o.charmap, 0, 0, hint);
+
+	if (s) {
+		unsigned char *p;
+		unsigned char buf[80];
+		unsigned char *bufp;
+		if (icase)
+			p = joe_gettext(_("case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
+		else
+			p = joe_gettext(_("(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
+
+		obj_free(srch->pattern);
+		if (vslen(s) || !globalsrch || !pico) {
+			srch->pattern = s;
+			obj_perm(s);
+		} else {
+			srch->pattern = vsdup(globalsrch->pattern);
+			obj_perm(srch->pattern);
 		}
-		return 0;
+
+		bufp = buf;
+		if (srch->ignore) {
+			unsigned char *t = joe_gettext(ignore_key);
+			copy_c(&bufp, &t);
+		}
+		if (srch->replace) {
+			unsigned char *t = joe_gettext(replace_key);
+			copy_c(&bufp, &t);
+		}
+		if (srch->backwards) {
+			unsigned char *t = joe_gettext(backwards_key);
+			copy_c(&bufp, &t);
+		}
+		if (srch->repeat >= 0) {
+			joe_snprintf_1(bufp, sizeof(buf) - (bufp - buf), "%d", srch->repeat);
+			bufp += zlen(bufp);
+		}
+		srch->ignore = 0;
+		srch->replace = 0;
+		srch->backwards = 0;
+		srch->repeat = -1;
+
+		*bufp = 0;
+
+		s = ask(bw->parent, p, NULL, srchopt, utypebw, NULL, bw->b->o.charmap, 0, 0, buf);
+
+		if (s) {
+			unsigned char buf[80];
+			unsigned char *t;
+
+			srch->ignore = icase;
+
+			t = s;
+			while (*t) {
+				int c = fwrd_c(&t);
+				if (yncheck(all_key, c))
+					srch->all = 1;
+				else if (yncheck(list_key, c))
+					srch->all = 2;
+				else if (yncheck(replace_key, c))
+					srch->replace = 1;
+				else if (yncheck(backwards_key, c))
+					srch->backwards = 1;
+				else if (yncheck(ignore_key, c))
+					srch->ignore = 1;
+				else if (yncheck(noignore_key, c))
+					srch->ignore = 0;
+				else if (yncheck(wrap_key, c))
+					srch->allow_wrap = 1;
+				else if (yncheck(nowrap_key, c))
+					srch->allow_wrap = 0;
+				else if (yncheck(block_key, c))
+					srch->block_restrict = 1;
+				else if (c >= '0' && c <= '9') {
+					if (srch->repeat == -1)
+						srch->repeat = 0;
+					srch->repeat = srch->repeat * 10 + c - '0';
+				}
+			}	
+			if (srch->replace) {
+				/* if (pico && globalsrch && globalsrch->replacement) {
+					joe_snprintf_1(bf1,30,"%s",globalsrch->replacement);
+					if (zlen(globalsrch->replacement)>29)
+						zcat(bf1,USTR "$");
+					joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Replace with (^C to abort) [%s]: ")),bf1);
+				} else
+					zcpy(buf, joe_gettext(_("Replace with (^C to abort): "))); */
+
+				s = ask(bw->parent, joe_gettext(_("Replace with (^C to abort): ")), &replhist, srchstr, srch_cmplt, NULL, bw->b->o.charmap, 0, 0, NULL);
+				if (s) {
+					if (vslen(s) || !globalsrch || !pico) {
+						srch->replacement = s;
+						obj_perm(s);
+					} else {
+						/* Use previous string: this prevents replace with empty string */
+						/* vsrm(s);
+						srch->replacement = vsdup(globalsrch->replacement); */
+						srch->replacement = s;
+						obj_perm(s);
+					}
+					return dopfnext(bw, setmark(srch), NULL);
+				} else
+					return -1;
+			} else
+				return dopfnext(bw, setmark(srch), NULL);
+			return 0;
+		} else {
+			rmsrch(srch);
+			return -1;
+		}
 	} else {
 		rmsrch(srch);
 		return -1;

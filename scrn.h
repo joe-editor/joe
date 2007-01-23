@@ -334,6 +334,8 @@ void genfield PARAMS((SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned 
 /* Column width of a string takes into account utf-8) */
 int txtwidth PARAMS((unsigned char *s,int len));
 
+void unesc_genfmt(unsigned char *d, unsigned char *s, int max);
+
 /* Generate a field: formatted */
 void genfmt PARAMS((SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg));
 

@@ -2004,6 +2004,21 @@ int txtwidth(unsigned char *s,int len)
 		return len;
 }
 
+/* Unescape for text going to genfmt */
+
+void unesc_genfmt(unsigned char *d, unsigned char *s, int max)
+{
+	while (max && *s) {
+		if (*s == '\\')
+			*d++ = '\\';
+		*d++ = *s++;
+		--max;
+	}
+	if (*s)
+		*d++ = '$';
+	*d = 0;
+}
+
 /* Generate text with formatting escape sequences */
 
 void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)

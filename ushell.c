@@ -140,66 +140,58 @@ int ubknd(BW *bw)
 
 /* Run a program in a window */
 
-static int dorun(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	unsigned char **a;
-	unsigned char *cmd;
-
-        if (!modify_logic(bw,bw->b))
-        	return -1;
-
-	a = vamk(10);
-	cmd = vsncpy(NULL, 0, sc("/bin/sh"));
-
-	a = vaadd(a, cmd);
-	cmd = vsncpy(NULL, 0, sc("-c"));
-	a = vaadd(a, cmd);
-	a = vaadd(a, s);
-	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 0, 0);
-}
-
 B *runhist = NULL;
 
 int urun(BW *bw)
 {
-	if (wmkpw(bw->parent, joe_gettext(_("Program to run: ")), &runhist, dorun, USTR "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
-		return 0;
+	unsigned char *s = ask(bw->parent, joe_gettext(_("Program to run: ")), &runhist, USTR "Run",
+	                       utypebw, NULL, locale_map, 0, 0, NULL);
+
+	if (s) {
+		unsigned char **a;
+		unsigned char *cmd;
+
+		if (!modify_logic(bw,bw->b))
+			return -1;
+
+		a = vamk(10);
+		cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+
+		a = vaadd(a, cmd);
+		cmd = vsncpy(NULL, 0, sc("-c"));
+		a = vaadd(a, cmd);
+		a = vaadd(a, s);
+		return cstart(bw, USTR "/bin/sh", a, NULL, NULL /* notify*/, 0, 0);
 	} else {
 		return -1;
 	}
-}
-
-static int dobuild(BW *bw, unsigned char *s, void *object, int *notify)
-{
-	unsigned char **a = vamk(10);
-	unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
-
-	a = vaadd(a, cmd);
-	cmd = vsncpy(NULL, 0, sc("-c"));
-	a = vaadd(a, cmd);
-	a = vaadd(a, s);
-	return cstart(bw, USTR "/bin/sh", a, NULL, notify, 1, 0);
 }
 
 B *buildhist = NULL;
 
 int ubuild(BW *bw)
 {
+	unsigned char *s;
+	int prev = 0;
 	if (buildhist) {
-		if ((bw=wmkpw(bw->parent, joe_gettext(_("Build command: ")), &buildhist, dobuild, USTR "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
-			uuparw(bw);
-			u_goto_eol(bw);
-			bw->cursor->xcol = piscol(bw->cursor);
-			return 0;
-		} else {
-		return -1;
-		}
+		s = joe_gettext(_("Build command: "));
+		prev = 1;
 	} else {
-		if (wmkpw(bw->parent, joe_gettext(_("Enter build command (for example, 'make'): ")), &buildhist, dobuild, USTR "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
-			return 0;
-		} else {
+		s = joe_gettext(_("Enter build command (for example, 'make'): "));
+	}
+	/* "file prompt" was set for this... */
+	s = ask(bw->parent, s, &buildhist, USTR "Run", utypebw, NULL, locale_map, 0, prev, NULL);
+	if (s) {
+		unsigned char **a = vamk(10);
+		unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+
+		a = vaadd(a, cmd);
+		cmd = vsncpy(NULL, 0, sc("-c"));
+		a = vaadd(a, cmd);
+		a = vaadd(a, s);
+		return cstart(bw, USTR "/bin/sh", a, NULL, NULL /* notify */, 1, 0);
+	} else {
 		return -1;
-		}
 	}
 }
 
@@ -207,23 +199,27 @@ B *grephist = NULL;
 
 int ugrep(BW *bw)
 {
-	/* Set parser to grep */
-	bw->b->parseone = parseone_grep;
+	unsigned char *s;
+	int prev = 0;
 	if (grephist) {
-		if ((bw=wmkpw(bw->parent, joe_gettext(_("Grep command: ")), &grephist, dobuild, USTR "Run", NULL, NULL, NULL, NULL, locale_map, 1))) {
-			uuparw(bw);
-			u_goto_eol(bw);
-			bw->cursor->xcol = piscol(bw->cursor);
-			return 0;
-		} else {
-		return -1;
-		}
+		s = joe_gettext(_("Grep command: "));
+		prev = 1;
 	} else {
-		if (wmkpw(bw->parent, joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): ")), &grephist, dobuild, USTR "Run", NULL, NULL, NULL, NULL, locale_map, 1)) {
-			return 0;
-		} else {
+		s = joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): "));
+	}
+	/* "file prompt" was set for this... */
+	s = ask(bw->parent, s, &grephist, USTR "Run", utypebw, NULL, locale_map, 0, prev, NULL);
+	if (s) {
+		unsigned char **a = vamk(10);
+		unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+
+		a = vaadd(a, cmd);
+		cmd = vsncpy(NULL, 0, sc("-c"));
+		a = vaadd(a, cmd);
+		a = vaadd(a, s);
+		return cstart(bw, USTR "/bin/sh", a, NULL, NULL /*notify */, 1, 0);
+	} else {
 		return -1;
-		}
 	}
 }
 

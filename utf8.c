@@ -223,6 +223,32 @@ int utf8_decode_fwrd(unsigned char **p,int *plen)
 	return c;
 }
 
+/* Get next character from string and advance it, locale dependent */
+
+int fwrd_c(unsigned char **s)
+{
+	if (locale_map->type)
+		return utf8_decode_fwrd(s, NULL);
+	else {
+		int c = **s;
+		*s = *s + 1;
+		return c;
+	}
+}
+
+/* Copy character from one string to another */
+
+void copy_c(unsigned char **d, unsigned char **s)
+{
+	if (locale_map->type) {
+		*d += utf8_encode(*d, utf8_decode_fwrd(s, NULL));
+	} else if (**s) {
+		**d = **s;
+		(*s)++;
+		(*d)++;
+	}
+}
+
 /* For systems (BSD) with no nl_langinfo(CODESET) */
 
 /*
