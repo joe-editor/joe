@@ -745,7 +745,7 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			/* Generate message */
 			buf = vsfmt(buf, 0, glopts[x].yes, s);
 
-			s = ask(bw->parent, buf, NULL, NULL, utypebw, notify, locale_map, 0, 0, NULL);
+			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 			if (s) {
 				*(unsigned char **)((unsigned char *)&bw->o + glopts[x].ofst) = zdup(s);
 				break;
@@ -755,7 +755,7 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 		} case 1: { /* global option numeric */
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *)glopts[x].set);
 			m->parent->notify = 0;
-			s = ask(bw->parent, buf, NULL, NULL, utypebw, notify, locale_map, 0, 0, NULL);
+			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 			if (s) {
 				int v = calc(bw, s);
 				if (merr) {
@@ -778,7 +778,7 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), s);
 			m->parent->notify = 0;
 
-			s = ask(bw->parent, buf, NULL, NULL, utypebw, notify, locale_map, 0, 0, NULL);
+			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 			if (s) {
 				*(unsigned char **)glopts[x].ofst = zdup(s);
 				break;
@@ -788,7 +788,7 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 		} case 5: { /* local option numeric */
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
 			m->parent->notify = 0;
-			s = ask(bw->parent, buf, NULL, NULL, utypebw, notify, locale_map, 0, 0, NULL);
+			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 			if (s) {
 				double v = calc(bw, s);
 				if (merr) {
@@ -808,7 +808,7 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
 			m->parent->notify = 0;
 
-			s = ask(bw->parent, buf, NULL, NULL, utypebw, notify, locale_map, 0, 0, NULL);
+			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 
 			if (s) {
 				double v = calc(bw, s) - 1.0;
@@ -829,7 +829,7 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
 			m->parent->notify = 0;
 
-			s = ask(bw->parent, buf, NULL, NULL, syntaxcmplt, notify, locale_map, 0, 0, NULL);
+			s = ask(bw->parent, buf, NULL, NULL, syntaxcmplt, locale_map, 0, 0, NULL);
 
 			if (s) {
 				struct high_syntax *syn;
@@ -850,7 +850,7 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
 			m->parent->notify = 0;
 
-			s = ask(bw->parent, buf, NULL, NULL, encodingcmplt, notify, locale_map, 0, 0, NULL);
+			s = ask(bw->parent, buf, NULL, NULL, encodingcmplt, locale_map, 0, 0, NULL);
 			if (s) {
 				struct charmap *map;
 

@@ -583,7 +583,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 	} else
 		s = vsdupz(joe_gettext(_("Find (^C to abort): ")));
 
-	s = ask(bw->parent, s, &findhist, srchstr, srch_cmplt, NULL, bw->b->o.charmap, 0, 0, hint);
+	s = ask(bw->parent, s, &findhist, srchstr, srch_cmplt, bw->b->o.charmap, 0, 0, hint);
 
 	if (s) {
 		unsigned char *p;
@@ -627,7 +627,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 
 		*bufp = 0;
 
-		s = ask(bw->parent, p, NULL, srchopt, utypebw, NULL, bw->b->o.charmap, 0, 0, buf);
+		s = ask(bw->parent, p, NULL, srchopt, utypebw, bw->b->o.charmap, 0, 0, buf);
 
 		if (s) {
 			unsigned char buf[80];
@@ -671,7 +671,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 				} else
 					zcpy(buf, joe_gettext(_("Replace with (^C to abort): "))); */
 
-				s = ask(bw->parent, joe_gettext(_("Replace with (^C to abort): ")), &replhist, srchstr, srch_cmplt, NULL, bw->b->o.charmap, 0, 0, NULL);
+				s = ask(bw->parent, joe_gettext(_("Replace with (^C to abort): ")), &replhist, srchstr, srch_cmplt, bw->b->o.charmap, 0, 0, NULL);
 				if (s) {
 					if (vslen(s) || !globalsrch || !pico) {
 						srch->replacement = s;

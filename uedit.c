@@ -1370,7 +1370,7 @@ int uline(BW *bw)
 	unsigned char *s;
 
 	s = ask(bw->parent, joe_gettext(_("Go to line (^C to abort): ")), &linehist,
-	        NULL, NULL, NULL, locale_map, 0, 0, NULL);
+	        NULL, NULL, locale_map, 0, 0, NULL);
 
 	if (!s)
 		return -1;
@@ -1406,7 +1406,7 @@ int ucol(BW *bw)
 	unsigned char *s;
 
 	s = ask(bw->parent, joe_gettext(_("Go to column (^C to abort): ")), &colhist,
-	        NULL, NULL, NULL, locale_map, 0, 0, NULL);
+	        NULL, NULL, locale_map, 0, 0, NULL);
 
 	if (!s)
 		return -1;
@@ -1440,7 +1440,7 @@ int ubyte(BW *bw)
 	unsigned char *s;
 
 	s = ask(bw->parent, joe_gettext(_("Go to byte (^C to abort): ")), &bytehist,
-	        NULL, NULL, NULL, locale_map, 0, 0, NULL);
+	        NULL, NULL, locale_map, 0, 0, NULL);
 
 	num = calc(bw, s);
 
@@ -1887,7 +1887,7 @@ static int doquote(BW *bw, int c, void *object, int *notify)
 				return 0;
 		} else if (c == 'x' || c == 'X') {
 			if (bw->b->o.charmap->type) {
-				unsigned char *s = ask(bw->parent, joe_gettext(_("Unicode (ISO-10646) character in hex (^C to abort): ")), &unicodehist, NULL, utypebw, NULL, locale_map, 0, 0, NULL);
+				unsigned char *s = ask(bw->parent, joe_gettext(_("Unicode (ISO-10646) character in hex (^C to abort): ")), &unicodehist, NULL, utypebw, locale_map, 0, 0, NULL);
 				if (s) {
 					int num;
 					sscanf((char *)s,"%x",(unsigned *)&num);
@@ -2262,7 +2262,7 @@ int umsg(BASE *b)
 {
 	unsigned char *s;
 	s = ask(b->parent, joe_gettext(_("Message (^C to abort): ")), NULL,
-	        NULL, NULL, NULL, locale_map, 0, 0, NULL);
+	        NULL, NULL, locale_map, 0, 0, NULL);
 
 	if (!s)
 		return -1;
@@ -2279,7 +2279,7 @@ int utxt(BW *bw)
 	unsigned char *s;
 
 	s = ask(bw->parent, joe_gettext(_("Insert (^C to abort): ")),
-	        NULL, NULL, utypebw, NULL, bw->b->o.charmap, 0, 0, NULL);
+	        NULL, NULL, utypebw, bw->b->o.charmap, 0, 0, NULL);
 
 	for (x = 0; x != vslen(s); ++x)
 		utypebw(bw, s[x]);

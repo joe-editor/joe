@@ -30,7 +30,7 @@ int upicokill PARAMS((BW *bw));
 int ublkmove PARAMS((BW *bw));
 int ublkcpy PARAMS((BW *bw));
 int dowrite PARAMS((BW *bw, unsigned char *s, void *object, int *notify));
-int doinsf PARAMS((BW *bw, unsigned char *s, void *object, int *notify));
+int uinsf PARAMS((BW *bw));
 void setindent PARAMS((BW *bw));
 int urindent PARAMS((BW *bw));
 int ulindent PARAMS((BW *bw));

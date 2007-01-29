@@ -87,7 +87,7 @@ int utag(BW *bw)
 {
 	unsigned char *s = get_word_under_cursor(bw);
 
-	s = ask(bw->parent, joe_gettext(_("Tag search: ")), &taghist, NULL, tag_cmplt, NULL, locale_map, 0, 0, s);
+	s = ask(bw->parent, joe_gettext(_("Tag search: ")), &taghist, NULL, tag_cmplt, locale_map, 0, 0, s);
 
 	if (s) {
 		unsigned char buf[512];
@@ -128,7 +128,7 @@ int utag(BW *bw)
 				if (x != y) {
 					c = buf[y];
 					buf[y] = 0;
-					if (doswitch(bw, vsncpy(NULL, 0, sz(buf + x)), NULL, NULL)) {
+					if (doswitch(bw, vsncpy(NULL, 0, sz(buf + x)))) {
 						fclose(f);
 						return -1;
 					}

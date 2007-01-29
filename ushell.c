@@ -145,7 +145,7 @@ B *runhist = NULL;
 int urun(BW *bw)
 {
 	unsigned char *s = ask(bw->parent, joe_gettext(_("Program to run: ")), &runhist, USTR "Run",
-	                       utypebw, NULL, locale_map, 0, 0, NULL);
+	                       utypebw, locale_map, 0, 0, NULL);
 
 	if (s) {
 		unsigned char **a;
@@ -180,7 +180,7 @@ int ubuild(BW *bw)
 		s = joe_gettext(_("Enter build command (for example, 'make'): "));
 	}
 	/* "file prompt" was set for this... */
-	s = ask(bw->parent, s, &buildhist, USTR "Run", utypebw, NULL, locale_map, 0, prev, NULL);
+	s = ask(bw->parent, s, &buildhist, USTR "Run", utypebw, locale_map, 0, prev, NULL);
 	if (s) {
 		unsigned char **a = vamk(10);
 		unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
@@ -208,7 +208,7 @@ int ugrep(BW *bw)
 		s = joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): "));
 	}
 	/* "file prompt" was set for this... */
-	s = ask(bw->parent, s, &grephist, USTR "Run", utypebw, NULL, locale_map, 0, prev, NULL);
+	s = ask(bw->parent, s, &grephist, USTR "Run", utypebw, locale_map, 0, prev, NULL);
 	if (s) {
 		unsigned char **a = vamk(10);
 		unsigned char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
@@ -225,30 +225,13 @@ int ugrep(BW *bw)
 
 /* Kill program */
 
-static int pidabort(BW *bw, int c, void *object, int *notify)
-{
-	if (notify) {
-		*notify = 1;
-	}
-	if (c != YES_CODE && !yncheck(yes_key, c)) {
-		return -1;
-	}
-	if (bw->b->pid) {
-		kill(bw->b->pid, 1);
-		return -1;
-	} else {
-		return -1;
-	}
-}
-
 int ukillpid(BW *bw)
 {
 	if (bw->b->pid) {
-		if (mkqw(bw->parent, sz(joe_gettext(_("Kill program (y,n,^C)?"))), pidabort, NULL, NULL, NULL)) {
-			return 0;
-		} else {
-			return -1;
-		}
+		int c = query(bw->parent, sz(joe_gettext(_("Kill program (y,n,^C)?"))), 0);
+		if (bw->b->pid && (c == YES_CODE || yncheck(yes_key, c)))
+			kill(bw->b->pid, 1);
+		return -1;
 	} else {
 		return 0;
 	}

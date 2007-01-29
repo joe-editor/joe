@@ -29,4 +29,6 @@ QW *mkqw PARAMS((W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), 
 QW *mkqwna PARAMS((W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
 QW *mkqwnsr PARAMS((W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify));
 
+int query(W *w, unsigned char *prompt, int len, int flg);
+
 #endif

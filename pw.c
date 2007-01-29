@@ -420,7 +420,6 @@ unsigned char *ask(W *w,			/* Prompt goes below this window */
                    B **history,			/* History buffer to use */
                    unsigned char *huh,		/* Name of help screen for this prompt */
                    int (*tab)(),		/* Called when tab key is pressed */
-                   int *notify,			/* Set when prompt is done (for macros) */
                    struct charmap *map,		/* Character map for prompt */
                    int file_prompt,		/* Set for file-name tilde expansion */
                    int retrieve_last,		/* Set for cursor to go on last line of history */
@@ -428,7 +427,7 @@ unsigned char *ask(W *w,			/* Prompt goes below this window */
 {
 	struct prompt_result t;
 	BW *bw = wmkpw(w, prompt, history, prompt_cont, huh, prompt_abrt, tab, 
-	               &t, notify, map, file_prompt);
+	               &t, NULL, map, file_prompt);
 	if (!bw)
 		return 0;
 

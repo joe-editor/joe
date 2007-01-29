@@ -86,7 +86,7 @@ static int ungotc = 0;
 
 void nungetc(int c)
 {
-	if (c != 'C' - '@' && c != 'M' - '@') {
+	if (c != 'C' - '@' && c != 'M' - '@' && c != -1) {
 		chmac();
 		ungot = 1;
 		ungotc = c;

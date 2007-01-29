@@ -288,7 +288,7 @@ int try_lock(BW *bw,B *b)
 			else
 				joe_snprintf_0(bf,sizeof(bf),LOCKMSG2);
 			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, NULL)) {
-				uquery(bw);
+				uquery(bw); /* Don't accept macro input for this... */
 				if (!b->locked)
 					return 0;
 			} else
@@ -563,7 +563,7 @@ int uexecmd(BW *bw)
 	MACRO *mac;
 	int ret = -1;
 	unsigned char *s = ask(bw->parent, joe_gettext(USTR _("Command: ")),
-	&cmdhist, USTR _("cmd"), cmdcmplt, NULL, locale_map, 0, 0, NULL);
+	&cmdhist, USTR _("cmd"), cmdcmplt, locale_map, 0, 0, NULL);
 
 	if (s) {
 		mac = mparse(NULL, s, &ret);

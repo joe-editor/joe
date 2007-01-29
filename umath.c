@@ -507,7 +507,7 @@ int umath(BW *bw)
 {
 	unsigned char *s;
 	joe_set_signal(SIGFPE, fperr);
-	s = ask(bw->parent, USTR "=", &mathhist, USTR "Math", utypebw, NULL, locale_map, 0, 0, NULL);
+	s = ask(bw->parent, USTR "=", &mathhist, USTR "Math", utypebw, locale_map, 0, 0, NULL);
 	if (s) {
 		unsigned char buf[128];
 		double result = calc(bw, s);

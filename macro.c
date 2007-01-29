@@ -534,88 +534,6 @@ int exmacro(MACRO *m, int u)
 	return ret;
 }
 
-#if 0
-int exmacro(MACRO *m, int u)
-{
-	int larg;
-	int negarg = 0;
-	int flg = 0;
-	int oid, oifl, oifa;
-	CMD *cmd;
-	int ret = 0;
-
-	if (argset) {
-		larg = arg;
-		arg = 0;
-		argset = 0;
-		if (larg < 0) {
-			negarg = 1;
-			larg = -larg;
-		}
-		if (m->steps)
-			negarg = 0;
-		else {
-			cmd = m->cmd;
-			if (!cmd->arg)
-				larg = 0;
-			else if (negarg) {
-				if (cmd->negarg)
-					cmd = findcmd(cmd->negarg);
-				else
-					larg = 0;
-			}
-		}
-	} else {
-		cmd = m->cmd;
-		larg = 1;
-	}
-
-	if (m->steps || larg != 1 || !(cmd->flag & EMINOR)
-	    || maint->curwin->watom->what == TYPEQW	/* Undo work right for s & r */
-	    )
-		flg = 1;
-
-	if (ifflag || (!m->steps && (cmd->flag&EMETA))) {
-		if (flg && u)
-			umclear();
-		while (larg-- && !leave && !ret)
-			if (m->steps) {
-				MACRO *tmpmac = curmacro;
-				int tmpptr = macroptr;
-				int x = 0;
-				int stk = nstack;
-
-				while (m && x != m->n && !leave && !ret) {
-					MACRO *d;
-
-					d = m->steps[x++];
-					curmacro = m;
-					macroptr = x;
-					if(d->steps) oid=ifdepth, oifl=ifflag, oifa=iffail, ifdepth=iffail=0;
-					ret = exmacro(d, 0);
-					if(d->steps) ifdepth=oid, ifflag=oifl, iffail=oifa;
-					m = curmacro;
-					x = macroptr;
-				}
-				curmacro = tmpmac;
-				macroptr = tmpptr;
-				while (nstack > stk)
-					upop(NULL);
-			} else
-				ret = execmd(cmd, m->k);
-		if (leave)
-			return ret;
-		if (flg && u)
-			umclear();
-
-		if (u)
-			undomark();
-	}
-
-	return ret;
-}
-#endif
-
 /* Execute a macro - for user typing */
 /* Records macro in macro recorder, resets if */
 
@@ -628,13 +546,12 @@ int exemac(MACRO *m)
 
 /* Keyboard macro user routines */
 
-static int dorecord(BW *bw, int c, void *object, int *notify)
+int urecord(BW *bw, int c)
 {
 	int n;
 	struct recmac *r;
-
-	if (notify)
-		*notify = 1;
+	if (c < '0' || c > '9')
+		c = query(bw->parent, sz(joe_gettext(_("Macro to record (0-9 or ^C to abort): "))), 0);
 	if (c > '9' || c < '0') {
 		nungetc(c);
 		return -1;
@@ -643,22 +560,11 @@ static int dorecord(BW *bw, int c, void *object, int *notify)
 		if (playmode[n])
 			return -1;
 	r = (struct recmac *) joe_malloc(sizeof(struct recmac));
-
 	r->m = mkmacro(0, 0, 0, NULL);
 	r->next = recmac;
 	r->n = c - '0';
 	recmac = r;
 	return 0;
-}
-
-int urecord(BW *bw, int c)
-{
-	if (c >= '0' && c <= '9')
-		return dorecord(bw, c, NULL, NULL);
-	else if (mkqw(bw->parent, sz(joe_gettext(_("Macro to record (0-9 or ^C to abort): "))), dorecord, NULL, NULL, NULL))
-		return 0;
-	else
-		return -1;
 }
 
 int ustop(void)
@@ -680,25 +586,6 @@ int ustop(void)
 	return 0;
 }
 
-static int doplay(BW *bw, int c, void *object, int *notify)
-{
-	if (notify)
-		*notify = 1;
-	if (c >= '0' && c <= '9') {
-		int ret;
-
-		c -= '0';
-		if (playmode[c] || !kbdmacro[c])
-			return -1;
-		playmode[c] = 1;
-		ret = exmacro(kbdmacro[c], 0);
-		playmode[c] = 0;
-		return ret;
-	} else {
-		nungetc(c);
-		return -1;
-	}
-}
 
 int umacros(BW *bw)
 {
@@ -754,12 +641,21 @@ void load_macros(FILE *f)
 
 int uplay(BW *bw, int c)
 {
-	if (c >= '0' && c <= '9')
-		return doplay(bw, c, NULL, NULL);
-	else if (mkqwna(bw->parent, sz(joe_gettext(_("Play-"))), doplay, NULL, NULL, NULL))
-		return 0;
-	else
+	if (c < '0' || c > '9')
+		c = query(bw->parent, sz(joe_gettext(_("Play-"))), 1);
+	if (c >= '0' && c <= '9') {
+		int ret;
+		c -= '0';
+		if (playmode[c] || !kbdmacro[c])
+			return -1;
+		playmode[c] = 1;
+		ret = exmacro(kbdmacro[c], 0);
+		playmode[c] = 0;
+		return ret;
+	} else {
+		nungetc(c);
 		return -1;
+	}
 }
 
 /* Repeat-count setting */
@@ -767,7 +663,7 @@ int uplay(BW *bw, int c)
 int uarg(BW *bw)
 {
 	unsigned char *s = ask(bw->parent, joe_gettext(_("No. times to repeat next command (^C to abort): ")),
-	NULL, NULL, utypebw, NULL, locale_map, 0, 0, NULL);
+	NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 	if (s) {
 		long num;
 		num = calc(bw, s);
@@ -785,7 +681,7 @@ int uarg(BW *bw)
 
 int iftest(BW *bw, unsigned char *prompt)
 {
-	unsigned char *s = ask(bw->parent,prompt,NULL,NULL,utypebw,NULL,locale_map,0,0,NULL);
+	unsigned char *s = ask(bw->parent,prompt,NULL,NULL,utypebw,locale_map,0,0,NULL);
 	if (s) {
 		long num;
 		num=calc(bw,s);
@@ -850,52 +746,41 @@ int uendif(BW *bw)
 int unaarg;
 int negarg;
 
-static int douarg(BW *bw, int c, void *object, int *notify)
-{
-	unsigned char *m;
-	if (c == '-')
-		negarg = !negarg;
-	else if (c >= '0' && c <= '9')
-		unaarg = unaarg * 10 + c - '0';
-	else if (c == 'U' - '@')
-		if (unaarg)
-			unaarg *= 4;
-		else
-			unaarg = 16;
-	else if (c == 7 || c == 3 || c == 32) {
-		if (notify)
-			*notify = 1;
-		return -1;
-	} else {
-		nungetc(c);
-		if (unaarg)
-			arg = unaarg;
-		else if (negarg)
-			arg = 1;
-		else
-			arg = 4;
-		if (negarg)
-			arg = -arg;
-		argset = 1;
-		if (notify)
-			*notify = 1;
-		return 0;
-	}
-	m = vsfmt(NULL, 0, joe_gettext(_("Repeat %s%d")), negarg ? "-" : "", unaarg);
-	if (mkqwna(bw->parent, sv(m), douarg, NULL, NULL, notify))
-		return 0;
-	else
-		return -1;
-}
-
 int uuarg(BW *bw, int c)
 {
+	unsigned char *m;
 	unaarg = 0;
 	negarg = 0;
-	if ((c >= '0' && c <= '9') || c == '-')
-		return douarg(bw, c, NULL, NULL);
-	else if (mkqwna(bw->parent, sz(joe_gettext(_("Repeat"))), douarg, NULL, NULL, NULL))
-		return 0;
-	else
-		return -1;
+
+	if (c != '-' && (c < '0' || c > '9'))
+		c = query(bw->parent, sz(joe_gettext(_("Repeat"))), 1);
+
+	for (;;) {
+		if (c == '-')
+			negarg = !negarg;
+		else if (c >= '0' && c <= '9')
+			unaarg = unaarg * 10 + c - '0';
+		else if (c == 'U' - '@')
+			if (unaarg)
+				unaarg *= 4;
+			else
+				unaarg = 16;
+		else if (c == 7 || c == 3 || c == 32 || c == -1) {
+			return -1;
+		} else {
+			nungetc(c);
+			if (unaarg)
+				arg = unaarg;
+			else if (negarg)
+				arg = 1;
+			else
+				arg = 4;
+			if (negarg)
+				arg = -arg;
+			argset = 1;
+			return 0;
+		}
+		m = vsfmt(NULL, 0, joe_gettext(_("Repeat %s%d")), negarg ? "-" : "", unaarg);
+		c = query(bw->parent, sv(m), 1);
+	}
 }

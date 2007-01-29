@@ -347,7 +347,7 @@ int jump_to_file_line(BW *bw,unsigned char *file,int line,unsigned char *msg)
 {
 	int omid;
 	if (!bw->b->name || zcmp(file, bw->b->name)) {
-		if (doswitch(bw, vsdup(file), NULL, NULL))
+		if (doswitch(bw, vsdup(file)))
 			return -1;
 		bw = (BW *) maint->curwin->object;
 	}

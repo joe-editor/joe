@@ -845,61 +845,67 @@ int ulindent(BW *bw)
 
 /* Insert a file */
 
-int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
+int uinsf(BW *bw)
 {
-	if (notify)
-		*notify = 1;
-	if (square)
-		if (markv(1)) {
-			B *tmp;
-			long width = markk->xcol - markb->xcol;
-			long height;
-			int usetabs = ptabrect(markb,
-					       markk->line - markb->line + 1,
-					       markk->xcol);
+	unsigned char *s = ask(bw->parent, joe_gettext(_("Name of file to insert (^C to abort): ")), &filehist,
+	                       USTR "Names", cmplt, locale_map, 3, 0, NULL);
+	if (s) {
+		/* if (notify)
+			*notify = 1; */
+		if (square)
+			if (markv(1)) {
+				B *tmp;
+				long width = markk->xcol - markb->xcol;
+				long height;
+				int usetabs = ptabrect(markb,
+						       markk->line - markb->line + 1,
+						       markk->xcol);
 
-			tmp = bload(s);
-			if (berror) {
-				msgnw(bw->parent, joe_gettext(msgs[-berror]));
+				tmp = bload(s);
+				if (berror) {
+					msgnw(bw->parent, joe_gettext(msgs[-berror]));
+					brm(tmp);
+					return -1;
+				}
+				if (piscol(tmp->eof))
+					height = tmp->eof->line + 1;
+				else
+					height = tmp->eof->line;
+				if (bw->o.overtype) {
+					pclrrect(markb, long_max(markk->line - markb->line + 1, height), markk->xcol, usetabs);
+					pdelrect(markb, height, width + markb->xcol);
+				}
+				pinsrect(markb, tmp, width, usetabs);
+				pdupown(markb, &markk, USTR "doinsf");
+				markk->xcol = markb->xcol;
+				if (height) {
+					pline(markk, markk->line + height - 1);
+					pcol(markk, markb->xcol + width);
+					markk->xcol = markb->xcol + width;
+				}
 				brm(tmp);
+				updall();
+				return 0;
+			} else {
+				msgnw(bw->parent, joe_gettext(_("No block")));
 				return -1;
-			}
-			if (piscol(tmp->eof))
-				height = tmp->eof->line + 1;
-			else
-				height = tmp->eof->line;
-			if (bw->o.overtype) {
-				pclrrect(markb, long_max(markk->line - markb->line + 1, height), markk->xcol, usetabs);
-				pdelrect(markb, height, width + markb->xcol);
-			}
-			pinsrect(markb, tmp, width, usetabs);
-			pdupown(markb, &markk, USTR "doinsf");
-			markk->xcol = markb->xcol;
-			if (height) {
-				pline(markk, markk->line + height - 1);
-				pcol(markk, markb->xcol + width);
-				markk->xcol = markb->xcol + width;
-			}
-			brm(tmp);
-			updall();
-			return 0;
 		} else {
-			msgnw(bw->parent, joe_gettext(_("No block")));
-			return -1;
-	} else {
-		int ret = 0;
-		B *tmp = bload(s);
+			int ret = 0;
+			B *tmp = bload(s);
 
-		if (berror) {
-			msgnw(bw->parent, joe_gettext(msgs[-berror])), brm(tmp);
-			ret = -1;
-		} else
-			binsb(bw->cursor, tmp);
-		bw->cursor->xcol = piscol(bw->cursor);
-		return ret;
+			if (berror) {
+				msgnw(bw->parent, joe_gettext(msgs[-berror])), brm(tmp);
+				ret = -1;
+			} else
+				binsb(bw->cursor, tmp);
+			bw->cursor->xcol = piscol(bw->cursor);
+			return ret;
+		}
+		return 0;
+	} else {
+		return -1;
 	}
 }
-
 
 /* Filter highlighted block through a UNIX command */
 
@@ -952,7 +958,7 @@ int ufilt(BW *bw)
 			msgnw(bw->parent, joe_gettext(_("No block")));
 			return -1;
 	}
-	s = ask(bw->parent, s, &filthist, NULL, utypebw, NULL, locale_map, 0, 0, NULL);
+	s = ask(bw->parent, s, &filthist, NULL, utypebw, locale_map, 0, 0, NULL);
 
 	/* if (notify)
 		*notify = 1; */

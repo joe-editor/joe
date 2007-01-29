@@ -313,3 +313,59 @@ QW *mkqwnsr(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (
 	w->t->curwin = new;
 	return qw;
 }
+
+/* Simplified prompting... convert original event-driven style to
+ * coroutine model */
+
+struct query_result {
+	Coroutine t;
+	int answer;
+};
+
+int query_cont(BW *bw, int c, void *object, int *notify)
+{
+	struct query_result *r = (struct query_result *)object;
+	r->answer = c;
+
+	co_resume(&r->t, 0);
+
+	/* This can't be right: caller must decide when to set notify */
+	if (notify)
+		*notify = 1;
+
+	return 0;
+}
+
+int query_abrt(BW *bw, void *object)
+{
+	struct query_result *r = (struct query_result *)object;
+	co_resume(&r->t, -1);
+	return -1;
+}
+
+int query(W *w,				/* Prompt goes below this window */
+          unsigned char *prompt,	/* Prompt text */
+          int len,			/* Length of prompt text */
+          int flg)			/* Options: 0 = normal, 1 = cursor left in original,
+						    2 = same as 1, but QW type code is different. */
+{
+	struct query_result t;
+	QW *qw;
+	if (flg == 2)
+		qw = mkqwnsr(w, prompt, len, query_cont, query_abrt, &t, NULL);
+	else if (flg == 1)
+		qw = mkqwna(w, prompt, len, query_cont, query_abrt, &t, NULL);
+	else
+		qw = mkqw(w, prompt, len, query_cont, query_abrt, &t, NULL);
+
+	if (!qw)
+		return -1;
+
+	/* We get woken up when user hits a key */
+	if (!co_yield(&t.t, 0)) {
+		/* Moving answer to original coroutine's stack */
+		return t.answer;
+	} else {
+		return -1;
+	}
+}
