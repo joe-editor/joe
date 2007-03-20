@@ -7,7 +7,7 @@ Now, with the help of co-routines, dialog code can be written as old
 fashioned blocking code which is much cleaner, even though JOE can have
 multiple un-finished dialogs on the screen.</p>
 
-<p>The coroutine library has only three functions:</p>
+<p>The coroutine library has only three (now four) functions:</p>
 
 <table width="100%" cellspacing=20 border=0 cellpadding=0> <colgroup> <col width="300"> <tbody>
 
@@ -19,6 +19,12 @@ co-routine and return to caller with given return value.</td></tr>
 
 <tr valign="top"><td>int co_resume(Coroutine *t, int val);</td><td>Suspend current
 co-routine and resume specified one with given return value.</td></tr>
+
+<tr valign="top"><td>int co_suspend(Coroutine *u, int val);</td><td>Suspend
+current co-routine (remembering its suspended invoking coroutines) and
+resume the top-level.  The current coroutine is stored in u.  When u is
+resumed and returns, the suspended chain is resumed (the resumer is
+continued when the chain tries to continue the top level.</td></tr>
 
 </tbody> </table>
 
@@ -46,6 +52,12 @@ created the co-routine returns), the original co-routine is continued and
 co_resume() returns with the function's return value. If the specified
 co-routine yields, the original co-routine is continued and co_resume()
 returns with the return value specified in the call to co_yield.</p>
+
+<p>co_suspend() is like co_resume, except that the top-level task is resumed
+instead of the calling co-routine.  This has the effect of suspending the
+entire chain of co-routines which invoked the caller of co_suspend. 
+Co_suspend stores the suspended co_routine in another co_routine.  That
+co_routine will resume this one when it finally returns.</p>
 
 <p>The co-routine library is structured this way (which is different from
 the usual way where you get a co-routine handle immediately upon creation,
@@ -87,9 +99,10 @@ due to a request for input, the macro player supplies it by calling the
 recorded edit functions.  If the macro wants to allow the user to provide
 input (using the "query" function, also known as an interactive macro), it
 can itself yield (since it is also running in a coroutine) back to the
-top-level edit loop.  The macro player is continued when the user finishes
-supplying the input (hits the return key at a prompt).  Several interactive
-macros can be running at once with this scheme.</p>
+top-level edit loop (in actuality, the macro player calls a function which
+calls co_suspend() to do this).  The macro player is continued when the user
+finishes supplying the input (hits the return key at a prompt).  Several
+interactive macros can be running at once with this scheme.</p>
 
 <h3>Semi-Automatic Variables</h3>
 <p>JOE 3.6 uses "semi-automatic" variables for strings.  There is a global

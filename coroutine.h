@@ -6,14 +6,21 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
+/* A stack */
+
 #define STACK_SIZE (sizeof(void *) * 32768)
 
 struct stack {
 	struct stack *next;			/* Next free stack */
-	Coroutine *caller;			/* Calling co-routine */
+	Coroutine *chain;			/* Resume this coroutine in place of caller when
+	                                           the coroutine associated with the stack returns.  The chained
+	                                           coroutine will eventually continue caller. */
+	Coroutine *caller;			/* Most recent coroutine which continued us (the
+	                                           co_calling co-routine if this is the first execution) */
 	int (*func)(va_list args);		/* Function to call */
 	va_list args;
 
+	/* initial PC, SP to use for call to func */
 #ifdef USE_UCONTEXT
 	ucontext_t uc[1];
 #else
@@ -22,11 +29,16 @@ struct stack {
 #endif
 };
 
+/* Stack of currently running co-routine */
+
 extern struct stack *current_stack;
+
+/* A suspended co-routine */
 
 struct coroutine {
 	struct stack *stack;		/* To restore current stack */
 	Obj saved_obj_stack;		/* To restore obj stack */
+	/* To restore PC, SP, regs... */
 #ifdef USE_UCONTEXT
 	ucontext_t uc[1];
 #else
@@ -50,6 +62,14 @@ int co_yield(Coroutine *t, int val);
  */
 
 int co_resume(Coroutine *t, int val);
+
+/* Suspend current co-routine (remember its chain of invokers) and resume top-level.
+ * 'u' points to a previously yielded coroutine.  The suspended
+ * co-routine will be placed in 't'.  When t returns (when it is resumed, and
+ * then it returns), the suspended co-routine chain will be resume (this
+ * function will return). */
+
+int co_suspend(Coroutine *u, int val);
 
 /* Call a function as a co-routine (it runs with its own stack).  co_call
  * returns when the specified function returns (in which case the function's

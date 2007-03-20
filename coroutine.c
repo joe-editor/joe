@@ -29,8 +29,17 @@ void record_stack()
 			/* Run scheduler in this stack.  It will return with a task to continue */
 			rtn = current_stack->func(current_stack->args); /* Call function... */
 		} else if (!create) {
+			Coroutine *t;
+			if (current_stack->chain) {
+				/* Get to end of chain */
+				for (t = current_stack->chain; t->stack->caller; t = t->stack->caller);
+				/* Install caller there */
+				t->stack->caller = current_stack->caller;
+				/* Resume chain instead of caller */
+				current_stack->caller = current_stack->chain;
+			}
 			/* Free this stack */
-			Coroutine *t = current_stack->caller;
+			t = current_stack->caller;
 			current_stack->next = free_stacks;
 			free_stacks = current_stack;
 			/* Continue task */
@@ -73,6 +82,16 @@ void call_it()
 	Coroutine *t;
 	/* Execute function */
 	rtval = current_stack->func(current_stack->args);
+	/* There's a chain... */
+	if (current_stack->chain) {
+		/* Get to end of chain */
+		for (t = current_stack->chain; t->stack->caller; t = t->stack->caller);
+		/* Install caller there */
+		t->stack->caller = current_stack->caller;
+		/* Resume chain instead of caller */
+		current_stack->caller = current_stack->chain;
+	}
+
 	/* Free stack and resume caller */
 	t = current_stack->caller;
 	current_stack->next = free_stacks;
@@ -115,6 +134,7 @@ struct stack *mkstack()
 		stack = free_stacks;
 		free_stacks = stack->next;
 		stack->caller = 0;
+		stack->chain = 0;
 #ifdef USE_UCONTEXT
 		makecontext(stack->uc, call_it, SUN_BUG);
 #endif
@@ -122,6 +142,7 @@ struct stack *mkstack()
 	}
 	stack = (struct stack *)malloc(sizeof(struct stack));
 	stack->caller = 0;
+	stack->chain = 0;
 #ifdef USE_UCONTEXT
 	getcontext(stack->uc);
 	stack->uc->uc_link = 0;
@@ -256,6 +277,69 @@ int co_resume(Coroutine *t,int val)
 #endif
 }
 
+/* Suspend current co-routine and resume top */
+
+int co_suspend(Coroutine *u,int val)
+{
+	Coroutine *t, *v;
+	Coroutine self[1];
+
+	/* Find top-level */
+	for (v = u; v->stack->caller->stack->caller; v = v->stack->caller);
+	t = v->stack->caller;
+	v->stack->caller = 0;
+
+#ifdef USE_UCONTEXT
+	/* Save current stack */
+	self->stack = current_stack;
+
+	/* Save object stack.  Create new one which is detroyed by return
+	   to co_yield. */
+	self->saved_obj_stack = get_obj_stack();
+
+	/* Resume specified coroutine */
+	current_stack = t->stack;
+
+	/* u resumes us when he's done. */
+	u->stack->chain = self;
+
+	/* Give return value to co_yield() */
+	rtval = val;
+
+	/* Switch */
+	swapcontext(self->uc, t->uc);
+
+	/* Somebody continued us... */
+	set_obj_stack(self->saved_obj_stack);
+
+	return rtval;
+#else
+	int rtn;
+
+	/* Save current stack */
+	self->stack = current_stack;
+
+	/* Save object stack */
+	self->saved_obj_stack = get_obj_stack();
+
+	/* Save current context */
+	if ((rtn = setjmp(self->cont))) {
+		/* Somebody continued us... */
+		set_obj_stack(self->saved_obj_stack);
+		return rtn - 10; /* 10 added to longjmp */
+	} else {
+		/* Continue specified */
+		current_stack = t->stack;
+		
+		/* u resumes us when he's done */
+		u->stack->chain = self;
+
+		/* Go */
+		longjmp(t->cont, rtn + 10);
+	}
+#endif
+}
+
 /* Call a function as a co-routine */
 
 int co_call(int (*func)(va_list args), ...)
@@ -269,6 +353,7 @@ int co_call(int (*func)(va_list args), ...)
 	if (!current_stack) {
 		current_stack = (struct stack *)malloc(sizeof(struct stack));
 		current_stack->caller = 0;
+		current_stack->chain = 0;
 	}
 
 	/* Save current stack */
@@ -305,6 +390,7 @@ int co_call(int (*func)(va_list args), ...)
 		/* Startup... record main stack */
 		current_stack = (struct stack *)malloc(sizeof(struct stack));
 		current_stack->caller = 0;
+		current_stack->chain = 0;
 		if (!setjmp(rtn_create_stk))
 			record_stack();
 	}

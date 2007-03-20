@@ -20,8 +20,6 @@ struct pw {
 	B	*hist;		/* History buffer */
 	void	*object;	/* Object */
 	int	file_prompt;	/* Set if this is a file name prompt, so do ~ expansion */
-
-	Coroutine *task;	/* Task to continue when prompt done */
 };
 
 /* BW *wmkpw(BW *bw,char *prompt,int (*func)(),char *huh,int (*abrt)(),
