@@ -431,6 +431,7 @@ unsigned char *ask(W *w,			/* Prompt goes below this window */
 	if (!bw)
 		return 0;
 
+	bw->parent->coro = &t.t;
 	if (preload) {
 		/* Load hint, put cursor after it */
 		binss(bw->cursor, preload);

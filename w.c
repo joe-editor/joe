@@ -573,6 +573,7 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height
 
 	/* Create the window */
 	new = (W *) joe_malloc(sizeof(W));
+	new->coro = 0;
 	new->notify = notify;
 	new->t = t;
 	new->w = t->w - 1;

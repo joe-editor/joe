@@ -148,8 +148,10 @@ int edloop(int flg)
 				maint->curwin->main->kbd->seq[x - 1] = maint->curwin->kbd->seq[x - 1];
 		}
 		/* Execute macro */
-		if (m)
-			ret = exemac(m);
+		if (m) {
+			ret = co_call(exemac, m);
+			/* ret = exemac(m); */
+		}
 	}
 	/* prompt can force return of error, which aborts macro */
 	if (term == -1)

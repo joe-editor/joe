@@ -284,11 +284,6 @@ int co_suspend(Coroutine *u,int val)
 	Coroutine *t, *v;
 	Coroutine self[1];
 
-	/* Find top-level */
-	for (v = u; v->stack->caller->stack->caller; v = v->stack->caller);
-	t = v->stack->caller;
-	v->stack->caller = 0;
-
 #ifdef USE_UCONTEXT
 	/* Save current stack */
 	self->stack = current_stack;
@@ -296,6 +291,10 @@ int co_suspend(Coroutine *u,int val)
 	/* Save object stack.  Create new one which is detroyed by return
 	   to co_yield. */
 	self->saved_obj_stack = get_obj_stack();
+
+	for (v = self; v->stack->caller->stack->caller; v = v->stack->caller);
+	t = v->stack->caller; /* t points to top-most coroutine */
+	v->stack->caller = 0;
 
 	/* Resume specified coroutine */
 	current_stack = t->stack;
@@ -321,6 +320,10 @@ int co_suspend(Coroutine *u,int val)
 
 	/* Save object stack */
 	self->saved_obj_stack = get_obj_stack();
+
+	for (v = self; v->stack->caller->stack->caller; v = v->stack->caller);
+	t = v->stack->caller; /* t points to top-most coroutine */
+	v->stack->caller = 0;
 
 	/* Save current context */
 	if ((rtn = setjmp(self->cont))) {

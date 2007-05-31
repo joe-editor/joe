@@ -82,6 +82,7 @@ struct window {
 	unsigned char	*msgt;		/* Message at top of window */
 	unsigned char	*msgb;		/* Message at bottom of window */
 	unsigned char	*huh;		/* Name of window for context sensitive hlp */
+	Coroutine *coro;	/* Coroutine which is resumed when this prompt window is finished */
 	int	*notify;	/* Address of kill notification flag */
 };
 

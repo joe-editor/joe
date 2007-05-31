@@ -65,8 +65,8 @@ int co_resume(Coroutine *t, int val);
 
 /* Suspend current co-routine (remember its chain of invokers) and resume top-level.
  * 'u' points to a previously yielded coroutine.  The suspended
- * co-routine will be placed in 't'.  When t returns (when it is resumed, and
- * then it returns), the suspended co-routine chain will be resume (this
+ * co-routine will be placed in 'u'.  When u returns (when it is resumed, and
+ * then it returns), the suspended co-routine chain will be resumed (this
  * function will return). */
 
 int co_suspend(Coroutine *u, int val);

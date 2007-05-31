@@ -363,6 +363,26 @@ static int iffail=0;		/* JM: Depth where ifflag became 0 */
 
 int uquery(BW *bw)
 {
+	int ret = 0;
+	/* Suspend current macro until current prompt is complete. */
+	if (bw->parent->coro) {
+		/* Save macro execution state */
+		int oid = ifdepth;
+		int oifl = ifflag;
+		int oifa = iffail;
+		struct recmac *tmp = recmac;
+		recmac = 0;
+		/* Suspend macro: co_suspend suspends the macro player which called us and chains it
+		   to bw->parent->coro so that it continues when bw->parent->coro is done */
+		ret = co_suspend(bw->parent->coro, 0);
+		/* Continue macro */
+		recmac = tmp;
+		ifdepth = oid;
+		ifflag = oifl;
+		iffail = oifa;
+	}
+
+#if 0
 	int ret;
 	int oid=ifdepth, oifl=ifflag, oifa=iffail;
 	struct recmac *tmp = recmac;
@@ -371,6 +391,7 @@ int uquery(BW *bw)
 	ret = edloop(1);
 	recmac = tmp;
 	ifdepth = oid; ifflag = oifl; iffail = oifa;
+#endif
 	return ret;
 }
 
@@ -537,8 +558,9 @@ int exmacro(MACRO *m, int u)
 /* Execute a macro - for user typing */
 /* Records macro in macro recorder, resets if */
 
-int exemac(MACRO *m)
+int exemac(va_list args)
 {
+	MACRO *m = va_arg(args, MACRO *);
 	record(m);
 	ifflag=1; ifdepth=iffail=0;
 	return exmacro(m, 1);
