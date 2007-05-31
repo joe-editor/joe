@@ -507,6 +507,7 @@ int umath(BW *bw)
 {
 	unsigned char *s;
 	joe_set_signal(SIGFPE, fperr);
+	again:
 	s = ask(bw->parent, USTR "=", &mathhist, USTR "Math", utypebw, locale_map, 0, 0, NULL);
 	if (s) {
 		unsigned char buf[128];
@@ -533,6 +534,7 @@ int umath(BW *bw)
 			msgnw(bw->parent, buf);
 		}
 		mode_ins = 0;
+		goto again;
 		return 0;
 	} else {
 		return -1;

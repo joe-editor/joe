@@ -575,7 +575,7 @@ int doedit(BW *bw,int c,unsigned char *s,int *notify)
 		object = bw->object;
 		w = bw->parent;
 		bwrm(bw);
-		w->object = (void *) (bw = bwmk(w, b, 0));
+		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 		wredraw(bw->parent);
 		bw->object = object;
 		if (er == -1 && bw->o.mnew) {
@@ -621,7 +621,7 @@ int doedit(BW *bw,int c,unsigned char *s,int *notify)
 		object = bw->object;
 		w = bw->parent;
 		bwrm(bw);
-		w->object = (void *) (bw = bwmk(w, b, 0));
+		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 		wredraw(bw->parent);
 		bw->object = object;
 		if (er == -1 && bw->o.mnew) {
@@ -737,7 +737,7 @@ int uscratch(BW *bw)
 		object = bw->object;
 		w = bw->parent;
 		bwrm(bw);
-		w->object = (void *) (bw = bwmk(w, b, 0));
+		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 		wredraw(bw->parent);
 		bw->object = object;
 		if (er == -1 && bw->o.mnew) {
@@ -778,7 +778,7 @@ static int dorepl(BW *bw, unsigned char *s, void *obj, int *notify)
 		orphit(bw);
 	}
 	bwrm(bw);
-	w->object = (void *) (bw = bwmk(w, b, 0));
+	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 	wredraw(bw->parent);
 	bw->object = object;
 	if (er == -1 && bw->o.mnew) {
@@ -815,7 +815,7 @@ int get_buffer_in_window(BW *bw, B *b)
 		orphit(bw);
 	}
 	bwrm(bw);
-	w->object = (void *) (bw = bwmk(w, b, 0));
+	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 	wredraw(bw->parent);
 	bw->object = object;
 	return 0;
@@ -947,14 +947,14 @@ static int dolose(BW *bw, int c, void *object, int *notify)
 					   any prompt windows? */
 
 					bwrm(bw);
-					w->object = (void *) (bw = bwmk(w, new_b, 0));
+					w->object = (void *) (bw = bwmk(w, new_b, 0, NULL));
 					wredraw(w);
 					bw->object = object;
 				} else {
 					BW *bw = (BW *)w->object;
 					object = bw->object;
 					bwrm(bw);
-					w->object = (void *) (bw = bwmk(w, bfind(USTR ""), 0));
+					w->object = (void *) (bw = bwmk(w, bfind(USTR ""), 0, NULL));
 					wredraw(w);
 					bw->object = object;
 					if (bw->o.mnew)

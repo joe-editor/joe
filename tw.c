@@ -421,7 +421,7 @@ int usplitw(BW *bw)
 	if (!new)
 		return -1;
 	wfit(new->t);
-	new->object = (void *) (newbw = bwmk(new, bw->b, 0));
+	new->object = (void *) (newbw = bwmk(new, bw->b, 0, NULL));
 	++bw->b->count;
 	newbw->offset = bw->offset;
 	newbw->object = (void *) (newtw = (TW *) joe_malloc(sizeof(TW)));
@@ -447,7 +447,7 @@ int uduptw(BW *bw)
 		return -1;
 	if (demotegroup(w))
 		new->t->topwin = new;
-	new->object = (void *) (newbw = bwmk(new, bw->b, 0));
+	new->object = (void *) (newbw = bwmk(new, bw->b, 0, NULL));
 	++bw->b->count;
 	newbw->offset = bw->offset;
 	newbw->object = (void *) (newtw = (TW *) joe_malloc(sizeof(TW)));
@@ -506,7 +506,7 @@ int abortit(BW *bw)
 			   any prompt windows? */
 
 			bwrm(bw);
-			w->object = (void *) (bw = bwmk(w, b, 0));
+			w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 			wredraw(bw->parent);
 			bw->object = object;
 			return 0;
@@ -519,30 +519,6 @@ int abortit(BW *bw)
 	return 0;
 }
 
-/* User routine for aborting a text window */
-
-static int naborttw(BW *bw, int k, void *object, int *notify)
-{
-	if (notify)
-		*notify = 1;
-	if (k != YES_CODE && !yncheck(yes_key, k))
-		return -1;
-
-	genexmsg(bw, 0, NULL);
-	return abortit(bw);
-}
-
-static int naborttw1(BW *bw, int k, void *object, int *notify)
-{
-	if (notify)
-		*notify = 1;
-	if (k != YES_CODE && !yncheck(yes_key, k))
-		return -1;
-
-	if (!exmsg) genexmsg(bw, 0, NULL);
-	return abortit(bw);
-}
-
 /* k is last character types which lead to uabort.  If k is -1, it means uabort
    was called internally, and not by the user: which means uabort will not send
    Ctrl-C to process */
@@ -552,13 +528,13 @@ int uabort(BW *bw, int k)
 		return wabort(bw->parent);
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
-	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
-		if (mkqw(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw, NULL, NULL, NULL))
-			return 0;
-		else
+	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch) {
+		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		if (!yncheck(yes_key, c))
 			return -1;
-	else
-		return naborttw(bw, YES_CODE, NULL, NULL);
+	}
+	genexmsg(bw, 0, NULL);
+	return abortit(bw);
 }
 
 int ucancel(BW *bw, int k)
@@ -578,13 +554,13 @@ int uabort1(BW *bw, int k)
 		return wabort(bw->parent);
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw);
-	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
-		if (mkqw(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw1, NULL, NULL, NULL))
-			return 0;
-		else
+	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch) {
+		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		if (!yncheck(yes_key, c))
 			return -1;
-	else
-		return naborttw1(bw, YES_CODE, NULL, NULL);
+	}
+	if (!exmsg) genexmsg(bw, 0, NULL);
+	return abortit(bw);
 }
 
 /* Abort buffer without prompting: just fail if this is last window on buffer */
@@ -604,13 +580,14 @@ int uabortbuf(BW *bw)
 		void *object = bw->object;
 
 		bwrm(bw);
-		w->object = (void *) (bw = bwmk(w, b, 0));
+		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 		wredraw(bw->parent);
 		bw->object = object;
 		return 0;
 	}
 
-	return naborttw(bw, YES_CODE, NULL, NULL);
+	genexmsg(bw, 0, NULL);
+	return abortit(bw);
 }
 
 /* Kill current window (orphans buffer) */
@@ -688,7 +665,7 @@ BW *wmktw(Screen *t, B *b)
 
 	w = wcreate(t, &watomtw, NULL, NULL, NULL, t->h, NULL, NULL);
 	wfit(w->t);
-	w->object = (void *) (bw = bwmk(w, b, 0));
+	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 	bw->object = (void *) (tw = (TW *) joe_malloc(sizeof(TW)));
 	iztw(tw, w->y);
 	return bw;

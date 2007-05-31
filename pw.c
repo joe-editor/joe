@@ -31,12 +31,22 @@ void set_current_dir(unsigned char *s,int simp)
 
 static void disppw(BW *bw, int flg)
 {
+	unsigned char *bf;
+	int i;
 	W *w = bw->parent;
 	PW *pw = (PW *) bw->object;
 
 	if (!flg) {
 		return;
 	}
+
+	/* Try a nice graphics separator */
+	bf = joe_malloc(w->w + 1);
+	for (i = 0; i != w->w; ++i)
+		bf[i] = '-';
+	bf[i] = 0;
+	genfmt(w->t->t, w->x, w->y, 0, bf, bg_stalin, 0);
+	joe_free(bf);
 
 	/* Scroll buffer and position prompt */
 	if (pw->promptlen > w->w - 5) {
@@ -61,15 +71,25 @@ static void disppw(BW *bw, int flg)
 
 	/* Set cursor position */
 	w->curx = piscol(bw->cursor) - bw->offset + pw->promptlen - pw->promptofst;
-	w->cury = 0;
+	w->cury = bw->cursor->line - bw->top->line + 1;
+	/* w->cury = w->h - 1; */
 
 	/* Generate prompt */
-	w->t->t->updtab[w->y] = 1;
-	genfmt(w->t->t, w->x, w->y, pw->promptofst, pw->prompt, BG_COLOR(bg_prompt), 0);
+	w->t->t->updtab[w->y + w->cury] = 1;
+	if (w->cury != pw->oldcury) {
+		int n;
+		for (n = 0; n != w->h; ++n)
+			w->t->t->updtab[w->y + n] = 1;
+		pw->oldcury = w->cury;
+	}
+	/* w->t->t->updtab[w->y + w->h - 1] = 1;
+	genfmt(w->t->t, w->x, w->y + w->h - 1, pw->promptofst, pw->prompt, BG_COLOR(bg_prompt), 0); */
 
 	/* Position and size buffer */
-	bwmove(bw, w->x + pw->promptlen - pw->promptofst, w->y);
-	bwresz(bw, w->w - (pw->promptlen - pw->promptofst), 1);
+	/* bwmove(bw, w->x + pw->promptlen - pw->promptofst, w->y);
+	bwresz(bw, w->w - (pw->promptlen - pw->promptofst), w->h); */
+	bwmove(bw, w->x, w->y + 1);
+	bwresz(bw, w->w, w->h - 1);
 
 	/* Generate buffer */
 	bwgen(bw, 0);
@@ -236,18 +256,20 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 	PW *pw;
 	BW *bw;
 
-	new = wcreate(w->t, &watompw, w, w, w->main, 1, huh, notify);
+	new = wcreate(w->t, &watompw, w, w, w->main, 2, huh, notify);
 	if (!new) {
 		if (notify) {
 			*notify = 1;
 		}
 		return NULL;
 	}
+	new->fixed = 0;
 	wfit(new->t);
-	new->object = (void *) (bw = bwmk(new, bmk(NULL), 1));
+	new->object = (void *) (bw = bwmk(new, bmk(NULL), 0, prompt));
 	bw->b->o.charmap = map;
 	bw->object = (void *) (pw = (PW *) joe_malloc(sizeof(PW)));
 	pw->abrt = abrt;
+	pw->oldcury = -1;
 	pw->tab = tab;
 	pw->object = object;
 	pw->prompt = zdup(prompt);
@@ -261,8 +283,8 @@ BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned cha
 		binsb(bw->cursor, bcpy(pw->hist->bof, pw->hist->eof));
 		bw->b->changed = 0;
 		p_goto_eof(bw->cursor);
-		p_goto_eof(bw->top);
-		p_goto_bol(bw->top);
+		/* p_goto_eof(bw->top);
+		p_goto_bol(bw->top); */
 	} else {
 		pw->hist = NULL;
 	}

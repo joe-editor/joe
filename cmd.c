@@ -93,7 +93,7 @@ CMD cmds[] = {
 	{USTR "fwrdc", TYPETW + TYPEPW, ufwrdc, NULL, 1, USTR "bkwdc"},
 	{USTR "gomark", TYPETW + TYPEPW + EMOVE, ugomark, NULL, 0, NULL},
 	{USTR "grep", TYPETW, ugrep, NULL, 0, NULL},
-	{USTR "groww", TYPETW, ugroww, NULL, 1, USTR "shrinkw"},
+	{USTR "groww", TYPETW+TYPEPW, ugroww, NULL, 1, USTR "shrinkw"},
 	{USTR "if", TYPETW+TYPEPW+TYPEMENU+TYPEQW+EMETA, uif, 0, 0, 0 },
 	{USTR "isrch", TYPETW + TYPEPW, uisrch, NULL, 0, NULL},
 	{USTR "jump", TYPETW, ujump, NULL, 0, NULL },
@@ -215,60 +215,6 @@ unsigned char *steallock_key= (unsigned char *) _("|steal the lock|sS");
 unsigned char *canceledit_key= (unsigned char *) _("|cancel edit due to lock|qQ");
 unsigned char *ignorelock_key= (unsigned char *) _("|ignore lock, continue with edit|iI");
 
-int steal_lock(BW *bw,int c,B *b,int *notify)
-{
-	if (yncheck(steallock_key, c)) {
-		unsigned char bf1[256];
-		unsigned char *bf = 0;
-		unlock_it(b->name);
-		if (lock_it(b->name,bf1)) {
-			int x;
-			for(x=0;bf1[x] && bf1[x]!=':';++x);
-			bf1[x]=0;
-			if(bf1[0])
-				bf = vsfmt(bf, 0, joe_gettext(LOCKMSG1),bf1);
-			else
-				bf = vsfmt(bf, 0, joe_gettext(LOCKMSG2));
-			if (mkqw(bw->parent, sv(bf), steal_lock, NULL, b, notify)) {
-				return 0;
-			} else {
-				if (notify)
-					*notify = -1;
-				return -1;
-			}
-		} else {
-			b->locked=1;
-			if (notify)
-				*notify = 1;
-			return 0;
-		}
-	} else if (yncheck(ignorelock_key, c)) {
-		b->locked=1;
-		b->ignored_lock=1;
-		if (notify)
-			*notify = 1;
-		return 0;
-	} else if (yncheck(canceledit_key, c)) {
-		if (notify)
-			*notify = 1;
-		return 0;
-	} else {
-		if (mkqw(bw->parent, sz(joe_gettext(LOCKMSG2)), steal_lock, NULL, b, notify)) {
-			return 0;
-		} else
-			return -1;
-	}
-}
-
-int file_changed(BW *bw,int c,B *b,int *notify)
-{
-	if (mkqw(bw->parent, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), file_changed, NULL, b, notify)) {
-		b->gave_notice = 1;
-		return 0;
-	} else
-		return -1;
-}
-
 /* Try to lock: start dialog if we can't.  Returns 0 if we couldn't lock */
 
 int try_lock(BW *bw,B *b)
@@ -280,23 +226,29 @@ int try_lock(BW *bw,B *b)
 		unsigned char bf[300];
 		int x;
 		/* It's a plain file- try to lock it */
-		if (lock_it(b->name,bf1)) {
+		while (lock_it(b->name,bf1)) {
+			int c;
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
 			if(bf1[0])
 				joe_snprintf_1(bf,sizeof(bf),LOCKMSG1,bf1);
 			else
 				joe_snprintf_0(bf,sizeof(bf),LOCKMSG2);
-			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, NULL)) {
-				uquery(bw); /* Don't accept macro input for this... */
-				if (!b->locked)
-					return 0;
-			} else
+			c = query(bw->parent, sz(bf), 0); /* This should not take input from macro */
+			if (c == -1)
 				return 0;
-		} else {
-			/* Remember to unlock it */
-			b->locked = 1;
+			else if (yncheck(steallock_key, c)) {
+				unlock_it(b->name);
+			} else if (yncheck(ignorelock_key, c)) {
+				b->locked = 1;
+				b->ignored_lock = 1;
+				return 1;
+			} else if (yncheck(canceledit_key, c)) {
+				return 0;
+			}
 		}
+		/* Remember to unlock it */
+		b->locked = 1;
 	}
 	return 1;
 }
@@ -312,7 +264,9 @@ int modify_logic(BW *bw,B *b)
 	if (last_time > b->check_time + CHECK_INTERVAL) {
 		b->check_time = last_time;
 		if (!nomodcheck && !b->gave_notice && check_mod(b)) {
-			file_changed(bw,0,b,NULL);
+			int c = query(bw->parent, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), 0); /* Should not take macro input */
+			if (c != -1)
+				b->gave_notice = 1;
 			return 0;
 		}
 	}

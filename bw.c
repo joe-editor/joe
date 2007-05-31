@@ -1031,6 +1031,7 @@ void bwgen(BW *w, int linums)
 		if (linums)
 			gennum(w, screen, attr, t, y, t->compose);
 		if (t->updtab[y]) {
+			int idx = w->x;
 			p = getto(p, w->cursor, w->top, w->top->line + y - w->y);
 /*			if (t->insdel && !w->x) {
 				pset(q, p);
@@ -1043,13 +1044,17 @@ void bwgen(BW *w, int linums)
 					lgena(t, y, t->compose, w->x, w->x + w->w, q, w->offset, from, to);
 				magic(t, y, screen, attr, t->compose, (int) (w->cursor->xcol - w->offset + w->x));
 			} */
+			if (w->prompt && y == w->cursor->line - w->top->line + w->y) {
+				genfmt(w->t->t, w->x, y, w->promptofst, w->prompt, BG_COLOR(bg_prompt), 0);
+				idx += w->promptlen - w->promptofst;
+			}
 			if (dosquare)
 				if (w->top->line + y - w->y >= fromline && w->top->line + y - w->y <= toline)
-					t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,p,w->top->line+y-w->y),w);
+					t->updtab[y] = lgen(t, y, screen, attr, idx, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,p,w->top->line+y-w->y),w);
 				else
-					t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,p,w->top->line+y-w->y),w);
+					t->updtab[y] = lgen(t, y, screen, attr, idx, w->x + w->w, p, w->offset, 0L, 0L, get_highlight_state(w,p,w->top->line+y-w->y),w);
 			else
-				t->updtab[y] = lgen(t, y, screen, attr, w->x, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,p,w->top->line+y-w->y),w);
+				t->updtab[y] = lgen(t, y, screen, attr, idx, w->x + w->w, p, w->offset, from, to, get_highlight_state(w,p,w->top->line+y-w->y),w);
 		}
 	}
 
@@ -1102,9 +1107,19 @@ void bwresz(BW *w, int wi, int he)
 	w->h = he;
 }
 
-BW *bwmk(W *window, B *b, int prompt)
+BW *bwmk(W *window, B *b, int prompt, unsigned char *ps)
 {
 	BW *w = (BW *) joe_malloc(sizeof(BW));
+
+	if (ps) {
+		w->prompt = zdup(ps);
+		w->promptlen = fmtlen(ps);
+		w->promptofst = 0;
+	} else {
+		w->prompt = 0;
+		w->promptlen = 0;
+		w->promptofst = 0;
+	}
 
 	w->parent = window;
 	w->b = b;
@@ -1256,6 +1271,8 @@ void bwrm(BW *w)
 	prm(w->top);
 	prm(w->cursor);
 	brm(w->b);
+	if (w->prompt)
+		joe_free(w->prompt);
 	joe_free(w);
 }
 
