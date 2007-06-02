@@ -87,7 +87,7 @@ msgstr "** Ligne %ld  Col %ld  Position %s(0x%s) **"
 #, fuzzy, c-format
 msgid "** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **"
 msgstr ""
-"** Ligne %ld  Col %ld  Position %s(0x%lx)  %s %d(0%o/0x%X) Largeur %d **"
+"** Ligne %ld  Col %ld  Position %s(0x%s)  %s %d(0%o/0x%X) Largeur %d **"
 
 #: cmd.c:211
 msgid "Could not create lock. (I) edit anyway, (Q) cancel edit? "
@@ -106,12 +106,12 @@ msgstr ""
 
 #: cmd.c:215
 msgid "|cancel edit due to lock|qQ"
-msgstr ""
+msgstr "|cancel edit due to lock|qQaA"
 
 #: cmd.c:216
 #, fuzzy
 msgid "|ignore lock, continue with edit|iI"
-msgstr "Pressez Entrée pour continuer avec %s "
+msgstr "|ignore lock, continue with edit|iIeE"
 
 #: cmd.c:265
 msgid "Notice: File on disk changed! (hit ^C to continue)  "
@@ -1453,7 +1453,7 @@ msgid "System (^C to abort): "
 msgstr ""
 
 #: ufile.c:273
-msgid "|yes|yY"
+msgid "|yes|yYoO"
 msgstr ""
 
 #: ufile.c:274
@@ -1583,7 +1583,7 @@ msgstr ""
 #: usearch.c:554
 #, fuzzy
 msgid "|error list files|eE"
-msgstr "Erreur à l'écriture du fichier"
+msgstr ""
 
 #: usearch.c:555
 msgid "|search and replace|rR"
@@ -1612,7 +1612,7 @@ msgstr ""
 #: usearch.c:561
 #, fuzzy
 msgid "|don't wrap|nN"
-msgstr "La recherche ne recommence pas au début du fichier"
+msgstr ""
 
 #: usearch.c:618
 msgid "Replace with (^C to abort): "
@@ -1714,6 +1714,15 @@ msgstr "Impossible d'ouvrir le fichier '%s'\n"
 #: w.c:822
 msgid "There is no message buffer"
 msgstr "Il n'y a pas de message"
+
+#~msgid "|error list files|eE"
+#~msgstr "Erreur à l'écriture du fichier"
+
+#~msgid "|don't wrap|nN"
+#~msgstr "La recherche ne recommence pas au début du fichier"
+
+#~msgid "|ignore lock, continue with edit|iI"
+#~ msgstr "Pressez Entrée pour continuer avec %s "
 
 #~ msgid "sS"
 #~ msgstr "sS"
