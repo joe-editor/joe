@@ -95,9 +95,6 @@ int utag(BW *bw)
 		FILE *f;
 		unsigned char *t = NULL;
 
-		/* if (notify) {
-			*notify = 1;
-		} */
 		if (bw->b->name) {
 			t = vsncpy(t, 0, sz(bw->b->name));
 			t = vsncpy(sv(t), sc(":"));
@@ -193,7 +190,7 @@ int utag(BW *bw)
 							if (z) {
 								fclose(f);
 								buf1[z] = 0;
-								return dopfnext(bw, mksrch(vsncpy(NULL, 0, sz(buf1)), NULL, 0, 0, -1, 0, 0, 0), NULL);
+								return dopfnext(bw, mksrch(vsncpy(NULL, 0, sz(buf1)), NULL, 0, 0, -1, 0, 0, 0));
 							}
 						}
 					}

@@ -142,7 +142,6 @@ static int rtnpw(BW *bw)
 	PW *pw = (PW *) bw->object;
 	unsigned char *s;
 	W *win;
-	int *notify;
 	int (*pfunc) ();
 	void *object;
 	long byte;
@@ -178,14 +177,12 @@ static int rtnpw(BW *bw)
 	joe_free(pw->prompt);
 	joe_free(pw);
 	w->object = NULL;
-	notify = w->notify;
-	w->notify = 0;
 	wabort(w);
 	dostaupd = 1;
 
 	/* Call callback function */
 	if (pfunc) {
-		return pfunc(win->object, s, object, notify);
+		return pfunc(win->object, s, object);
 	} else {
 		return -1;
 	}
@@ -250,17 +247,14 @@ static WATOM watompw = {
 
 /* Create a prompt window */
 
-BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, int *notify,struct charmap *map,int file_prompt)
+BW *wmkpw(W *w, unsigned char *prompt, B **history, int (*func) (), unsigned char *huh, int (*abrt) (), int (*tab) (), void *object, struct charmap *map,int file_prompt)
 {
 	W *new;
 	PW *pw;
 	BW *bw;
 
-	new = wcreate(w->t, &watompw, w, w, w->main, 2, huh, notify);
+	new = wcreate(w->t, &watompw, w, w, w->main, 2, huh);
 	if (!new) {
-		if (notify) {
-			*notify = 1;
-		}
 		return NULL;
 	}
 	new->fixed = 0;
@@ -379,7 +373,7 @@ int simple_cmplt(BW *bw,unsigned char **list)
 
 	obj_perm(line);
 	vaperm(lst);
-	m = mkmenu((menu_above ? bw->parent->link.prev : bw->parent), bw->parent, lst, cmplt_rtn, cmplt_abrt, NULL, 0, line, NULL);
+	m = mkmenu((menu_above ? bw->parent->link.prev : bw->parent), bw->parent, lst, cmplt_rtn, cmplt_abrt, NULL, 0, line);
 	if (!m) {
 		return -1;
 	}
@@ -412,7 +406,7 @@ struct prompt_result {
 	unsigned char *answer;
 };
 
-int prompt_cont(BW *bw, unsigned char *s, void *object, int *notify)
+int prompt_cont(BW *bw, unsigned char *s, void *object)
 {
 	struct prompt_result *r = (struct prompt_result *)object;
 	r->answer = s;
@@ -421,10 +415,6 @@ int prompt_cont(BW *bw, unsigned char *s, void *object, int *notify)
 	obj_perm(r->answer);
 
 	co_resume(&r->t, 0);
-
-	/* This can't be right: caller must decide when to set notify */
-	if (notify)
-		*notify = 1;
 
 	return 0;
 }
@@ -449,7 +439,7 @@ unsigned char *ask(W *w,			/* Prompt goes below this window */
 {
 	struct prompt_result t;
 	BW *bw = wmkpw(w, prompt, history, prompt_cont, huh, prompt_abrt, tab, 
-	               &t, NULL, map, file_prompt);
+	               &t, map, file_prompt);
 	if (!bw)
 		return 0;
 

@@ -76,21 +76,15 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	cfollow(b,byte);
 }
 
-int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int *notify, int build, int out_only)
+int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build, int out_only)
 {
 #ifdef __MSDOS__
-	if (notify) {
-		*notify = 1;
-	}
 	varm(s);
 	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
 	return -1;
 #else
 	MPX *m;
 
-	if (notify) {
-		*notify = 1;
-	}
 	if (bw->b->pid) {
 		msgnw(bw->parent, joe_gettext(_("Program already running in this window")));
 		varm(s);
@@ -135,7 +129,7 @@ int ubknd(BW *bw)
 	a = vaadd(a, s);
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, NULL, 0, 0);
+	return cstart(bw, sh, a, NULL, 0, 0);
 }
 
 /* Run a program in a window */
@@ -161,7 +155,7 @@ int urun(BW *bw)
 		cmd = vsncpy(NULL, 0, sc("-c"));
 		a = vaadd(a, cmd);
 		a = vaadd(a, s);
-		return cstart(bw, USTR "/bin/sh", a, NULL, NULL /* notify*/, 0, 0);
+		return cstart(bw, USTR "/bin/sh", a, NULL, 0, 0);
 	} else {
 		return -1;
 	}
@@ -189,7 +183,7 @@ int ubuild(BW *bw)
 		cmd = vsncpy(NULL, 0, sc("-c"));
 		a = vaadd(a, cmd);
 		a = vaadd(a, s);
-		return cstart(bw, USTR "/bin/sh", a, NULL, NULL /* notify */, 1, 0);
+		return cstart(bw, USTR "/bin/sh", a, NULL, 1, 0);
 	} else {
 		return -1;
 	}
@@ -217,7 +211,7 @@ int ugrep(BW *bw)
 		cmd = vsncpy(NULL, 0, sc("-c"));
 		a = vaadd(a, cmd);
 		a = vaadd(a, s);
-		return cstart(bw, USTR "/bin/sh", a, NULL, NULL /*notify */, 1, 0);
+		return cstart(bw, USTR "/bin/sh", a, NULL, 1, 0);
 	} else {
 		return -1;
 	}

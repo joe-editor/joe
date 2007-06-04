@@ -367,7 +367,6 @@ int ukeymap(BASE *bw)
 	&keymaphist,USTR "keymap",keymap_cmplt,locale_map,0,0,NULL);
 	if (s) {
 		KMAP *k=ngetcontext(s);
-		/* if(notify) *notify=1; */
 		if(!k) {
 			msgnw(bw->parent,joe_gettext(_("No such keymap")));
 			return -1;

@@ -234,7 +234,7 @@ int try_lock(BW *bw,B *b)
 				joe_snprintf_1(bf,sizeof(bf),LOCKMSG1,bf1);
 			else
 				joe_snprintf_0(bf,sizeof(bf),LOCKMSG2);
-			c = query(bw->parent, sz(bf), 0); /* This should not take input from macro */
+			c = query(bw->parent, sz(bf), QW_NOMACRO); /* This should not take input from macro */
 			if (c == -1)
 				return 0;
 			else if (yncheck(steallock_key, c)) {
@@ -264,7 +264,7 @@ int modify_logic(BW *bw,B *b)
 	if (last_time > b->check_time + CHECK_INTERVAL) {
 		b->check_time = last_time;
 		if (!nomodcheck && !b->gave_notice && check_mod(b)) {
-			int c = query(bw->parent, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), 0); /* Should not take macro input */
+			int c = query(bw->parent, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), QW_NOMACRO); /* Should not take macro input */
 			if (c != -1)
 				b->gave_notice = 1;
 			return 0;

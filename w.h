@@ -83,7 +83,6 @@ struct window {
 	unsigned char	*msgb;		/* Message at bottom of window */
 	unsigned char	*huh;		/* Name of window for context sensitive hlp */
 	Coroutine *coro;	/* Coroutine which is resumed when this prompt window is finished */
-	int	*notify;	/* Address of kill notification flag */
 };
 
 /* Anything which goes in window.object must start like this: */
@@ -172,7 +171,7 @@ void chsize PARAMS(());
  * Returns the new window or returns 0 if there was not enough space to
  * create the window and maintain family integrity.
  */
-W *wcreate PARAMS((Screen *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify));
+W *wcreate PARAMS((Screen *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh));
 
 /* int wabort(W *w);
  *

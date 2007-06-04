@@ -708,14 +708,12 @@ static int encodingcmplt(BW *bw)
 	return simple_cmplt(bw,encodings);
 }
 
-static int doopt(MENU *m, int x, unsigned char **vary, int flg)
+static int doopt(BW *bw, int x, unsigned char **vary, int flg)
 {
 	int ret = 0;
-	BW *bw = m->parent->win->object;
 	unsigned char *buf = 0;
 	unsigned char *s;
-	int *notify = m->parent->notify;
-	wabort (m->parent);
+	varm(vary);
 	switch (glopts[x].type) {
 		case 0: { /* Global option flag */
 			if (!flg)
@@ -754,7 +752,6 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			}
 		} case 1: { /* global option numeric */
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *)glopts[x].set);
-			m->parent->notify = 0;
 			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 			if (s) {
 				int v = calc(bw, s);
@@ -776,7 +773,6 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			if (!s)
 				s = USTR "";
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), s);
-			m->parent->notify = 0;
 
 			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 			if (s) {
@@ -787,7 +783,6 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			}
 		} case 5: { /* local option numeric */
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
-			m->parent->notify = 0;
 			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 			if (s) {
 				double v = calc(bw, s);
@@ -806,8 +801,6 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			}
 		} case 7: { /* local option numeric+1, with range checking */
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
-			m->parent->notify = 0;
-
 			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 
 			if (s) {
@@ -827,8 +820,6 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			}
 		} case 9: { /* Choose syntax */
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
-			m->parent->notify = 0;
-
 			s = ask(bw->parent, buf, NULL, NULL, syntaxcmplt, locale_map, 0, 0, NULL);
 
 			if (s) {
@@ -848,8 +839,6 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			}
 		} case 13: { /* Choose encoding */
 			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
-			m->parent->notify = 0;
-
 			s = ask(bw->parent, buf, NULL, NULL, encodingcmplt, locale_map, 0, 0, NULL);
 			if (s) {
 				struct charmap *map;
@@ -869,19 +858,10 @@ static int doopt(MENU *m, int x, unsigned char **vary, int flg)
 			}
 		}
 	}
-	if (notify)
-		*notify = 1;
 	bw->b->o = bw->o;
 	wfit(bw->parent->t);
 	updall();
 	return ret;
-}
-
-static int doabrt(MENU *m, int x, unsigned char **s)
-{
-	optx = x;
-	varm(s);
-	return -1;
 }
 
 int umode(BW *bw)
@@ -920,10 +900,12 @@ int umode(BW *bw)
 		}
 		s = vaadd(s, t);
 	}
-	if (mkmenu(bw->parent, bw->parent, s, doopt, doabrt, NULL, optx, s, NULL))
-		return 0;
-	else
+	x = choose(bw->parent, bw->parent, s, &optx);
+	if (x == -1) {
+		varm(s);
 		return -1;
+	}
+	return doopt(bw, optx, s, x);
 }
 
 /* Process rc file

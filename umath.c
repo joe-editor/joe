@@ -513,9 +513,6 @@ int umath(BW *bw)
 		unsigned char buf[128];
 		double result = calc(bw, s);
 
-		/* if (notify) {
-			*notify = 1;
-		} */
 		if (merr) {
 			msgnw(bw->parent, merr);
 			return -1;

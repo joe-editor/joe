@@ -95,7 +95,7 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 	obj_perm(srch->pattern);
 	srch->backwards = isrch->dir;
 
-	if (dopfnext(bw, srch, NULL)) {
+	if (dopfnext(bw, srch)) {
 		if(joe_beep)
 			ttputc(7);
 	}
@@ -104,11 +104,12 @@ static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 
 /* Main user interface */
 /* When called with c==-1, it just creates the prompt */
-static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
+static int itype(BW *bw, int c, struct isrch *isrch)
 {
 	IREC *i;
 	int omid;
 
+	again:
 	if (isrch->quote) {
 		goto in;
 	}
@@ -169,7 +170,7 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 			obj_perm(srch->pattern);
 			srch->backwards = isrch->dir;
 
-			if (dopfnext(bw, srch, NULL)) {
+			if (dopfnext(bw, srch)) {
 				if(joe_beep)
 					ttputc(7);
 				frirec(i);
@@ -180,9 +181,6 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 	} else if (c >= 0 && c < 32) {
 		/* Done when a control character is received */
 		nungetc(c);
-		if (notify) {
-			*notify = 1;
-		}
 		smode = 2;
 		if (lastisrch) {
 			lastpat = vstrunc(lastpat, 0);
@@ -250,9 +248,10 @@ static int itype(BW *bw, int c, struct isrch *isrch, int *notify)
 		isrch->prompt = vsncpy(sv(isrch->prompt),sv(isrch->pattern));
 	}
 
-	if (mkqwnsr(bw->parent, sv(isrch->prompt), itype, iabrt, isrch, notify)) {
-		return 0;
-	} else {
+	c = query(bw->parent, sv(isrch->prompt), QW_SR);
+	if (c != -1)
+		goto again;
+	else {
 		rmisrch(isrch);
 		return -1;
 	}
@@ -268,7 +267,7 @@ static int doisrch(BW *bw, int dir)
 	isrch->quote = 0;
 	isrch->prompt = vsncpy(NULL, 0, sz(joe_gettext(_("I-find: "))));
 	isrch->ofst = vslen(isrch->prompt);
-	return itype(bw, -1, isrch, NULL);
+	return itype(bw, -1, isrch);
 }
 
 int uisrch(BW *bw)
@@ -277,7 +276,7 @@ int uisrch(BW *bw)
 		struct isrch *isrch = lastisrch;
 
 		lastisrch = 0;
-		return itype(bw, 'S' - '@', isrch, NULL);
+		return itype(bw, 'S' - '@', isrch);
 	} else {
 		if (globalsrch) {
 			rmsrch(globalsrch);
@@ -299,7 +298,7 @@ int ursrch(BW *bw)
 		struct isrch *isrch = lastisrch;
 
 		lastisrch = 0;
-		return itype(bw, 'R' - '@', isrch, NULL);
+		return itype(bw, 'R' - '@', isrch);
 	} else {
 		if (globalsrch) {
 			rmsrch(globalsrch);

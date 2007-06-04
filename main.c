@@ -95,27 +95,17 @@ void nungetc(int c)
 
 /* Main loop */
 
-int edloop(int flg)
+int edloop()
 {
-	int term = 0;
 	int ret = 0;
 
-	if (flg) {
-		/* Macro query requested if flg is set.  We return when user has finished the query */
-		if (maint->curwin->watom->what == TYPETW)
-			/* Query not allowed for regular windows: only prompts */
-			return 0;
-		else
-			/* When prompt is done, it will set term */
-			maint->curwin->notify = &term;
-	}
 	/* Here is the loop.  Loop while we're not exiting the editor (or query is not done)... */
-	while (!leave && !term) {
+	while (!leave) {
 		MACRO *m;
 		int c;
 
 		/* Free exit message if we're not leaving */
-		if (exmsg && !flg) {
+		if (exmsg) {
 			obj_free(exmsg);
 			exmsg = NULL;
 		}
@@ -154,10 +144,7 @@ int edloop(int flg)
 		}
 	}
 	/* prompt can force return of error, which aborts macro */
-	if (term == -1)
-		return -1;
-	else
-		return ret;
+	return ret;
 }
 
 #ifdef __MSDOS__
@@ -549,78 +536,13 @@ void setup_pipein()
 		a = vaadd(a, vsncpy(NULL, 0, sc("-c")));
 		a = vaadd(a, vsncpy(NULL, 0, sc("/bin/cat")));
 
-		cstart(maint->curwin->object, USTR "/bin/sh", a, NULL, NULL, 0, 1);
+		cstart(maint->curwin->object, USTR "/bin/sh", a, NULL, 0, 1);
 	}
 }
 
 /* Scheduler wants us to get some work */
 
 SCRN *main_scrn;
-
-void get_work()
-{
-	MACRO *m;
-	int c;
-
-	/* Free exit message if we're not leaving */
-	if (exmsg) {
-		obj_free(exmsg);
-		exmsg = NULL;
-	}
-	/* Update the screen */
-	edupd(1);
-	/* Set ahead when typeahead from before editor startup is done */
-	if (!ahead && !have)
-		ahead = 1;
-	/* Get next character (including nungetc() one) */
-	if (ungot) {
-		c = ungotc;
-		ungot = 0;
-	} else
-		c = ttgetc();
-	/* Deal with typeahead from before editor starting: tty was in
-	   cooked mode so it converted carriage returns to line
-	   feeds.  Convert them back here. */
-	if (!ahead && c == 10)
-		c = 13;
-	/* Give key to current keyboard handler: it returns a macro to execute when
-	   a full sequence is decoded.  */
-	m = dokey(maint->curwin->kbd, c);
-	/* Make sure main window of group has copy of current key sequence so that it
-	   is displayed in the status line (why doesn't status line code figure this out?) */
-	if (maint->curwin->main && maint->curwin->main != maint->curwin) {
-		int x = maint->curwin->kbd->x;
-
-		maint->curwin->main->kbd->x = x;
-		if (x)
-			maint->curwin->main->kbd->seq[x - 1] = maint->curwin->kbd->seq[x - 1];
-	}
-	/* Execute macro */
-	if (m)
-		exemac(m);
-
-	/* Exit editor? */
-	if (leave) {
-		/* Write ~/.joe_state file */
-		save_state();
-
-		/* Delete all buffer so left over locks get eliminated */
-		brmall();
-
-		/* Delete temporary software virtual memory file */
-		vclose(vmem);
-	
-		/* Close terminal (restores mode) */
-		nclose(main_scrn);
-
-		/* Display exit message */
-		if (exmsg)
-			fprintf(stderr, "\n%s\n", exmsg);
-
-		/* Bye */
-		exit(0);
-	}
-}
 
 unsigned char *startup_gc;
 
@@ -709,7 +631,7 @@ int main(int argc, char **real_argv, char **envv)
 	obj_free(startup_gc);
 
 	/* Run the editor */
-	edloop(0);
+	edloop();
 
 	/* Write ~/.joe_state file */
 	save_state();

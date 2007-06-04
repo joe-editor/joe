@@ -328,11 +328,18 @@ int clrins PARAMS((SCRN *t));
 
 int meta_color PARAMS((unsigned char *s));
 
+/* Return width of a string */
+int joe_wcswidth(struct charmap *map, unsigned char *s, int len);
+
+/* Calculate no. lines needed to fit a string within a given width: used to break up
+ * prompts into multiple lines in qw.c */
+int break_height(struct charmap *map, unsigned char **src, int *src_len, int wid, int n);
+
 /* Generate a field */
 void genfield PARAMS((SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,int len,int atr,int width,int flg,int *fmt));
 
 /* Column width of a string takes into account utf-8) */
-int txtwidth PARAMS((unsigned char *s,int len));
+int txtwidth PARAMS((struct charmap *map,unsigned char *s,int len));
 
 void unesc_genfmt(unsigned char *d, unsigned char *s, int max);
 

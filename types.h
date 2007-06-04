@@ -247,6 +247,8 @@ struct highlight_state {
 
 /* Include files */
 
+#include "obj.h"
+#include "coroutine.h"
 #include "b.h"
 #include "blocks.h"
 #include "bw.h"
@@ -291,5 +293,3 @@ struct highlight_state {
 #include "w.h"
 #include "gettext.h"
 #include "builtin.h"
-#include "obj.h"
-#include "coroutine.h"

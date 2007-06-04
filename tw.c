@@ -417,7 +417,7 @@ int usplitw(BW *bw)
 	dostaupd = 1;
 	if (newh / 2 < FITHEIGHT)
 		return -1;
-	new = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL, NULL);
+	new = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL);
 	if (!new)
 		return -1;
 	wfit(new->t);
@@ -442,7 +442,7 @@ int uduptw(BW *bw)
 	BW *newbw;
 
 	dostaupd = 1;
-	new = wcreate(w->t, w->watom, findbotw(w), NULL, NULL, newh, NULL, NULL);
+	new = wcreate(w->t, w->watom, findbotw(w), NULL, NULL, newh, NULL);
 	if (!new)
 		return -1;
 	if (demotegroup(w))
@@ -663,7 +663,7 @@ BW *wmktw(Screen *t, B *b)
 	BW *bw;
 	TW *tw;
 
-	w = wcreate(t, &watomtw, NULL, NULL, NULL, t->h, NULL, NULL);
+	w = wcreate(t, &watomtw, NULL, NULL, NULL, t->h, NULL);
 	wfit(w->t);
 	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 	bw->object = (void *) (tw = (TW *) joe_malloc(sizeof(TW)));

@@ -1,3 +1,13 @@
+bw = w->object in uquerysave....
+incremental search/replace is broken....
+
+^C allowed for uask?
+
+check fake_key in mouse
+
+usearch: in a search & replace, the entire dialog ends up being recursive.
+also this is why highlighting is not happening in search & replace.
+
 Immediate:
 
  full path needs to go in line number restore code?

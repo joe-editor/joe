@@ -16,7 +16,7 @@ struct stack {
 	                                           the coroutine associated with the stack returns.  The chained
 	                                           coroutine will eventually continue caller. */
 	Coroutine *caller;			/* Most recent coroutine which continued us (the
-	                                           co_calling co-routine if this is the first execution) */
+	                                           calling co-routine if this is the first execution) */
 	int (*func)(va_list args);		/* Function to call */
 	va_list args;
 
@@ -29,15 +29,13 @@ struct stack {
 #endif
 };
 
-/* Stack of currently running co-routine */
-
-extern struct stack *current_stack;
-
 /* A suspended co-routine */
 
 struct coroutine {
 	struct stack *stack;		/* To restore current stack */
 	Obj saved_obj_stack;		/* To restore obj stack */
+	int override;			/* To use override_val instead of normal return value */
+	int override_val;
 	/* To restore PC, SP, regs... */
 #ifdef USE_UCONTEXT
 	ucontext_t uc[1];
@@ -45,6 +43,14 @@ struct coroutine {
 	jmp_buf cont;
 #endif
 };
+
+/* Call a function as a co-routine (it runs with its own stack).  co_call
+ * returns when the specified function returns (in which case the function's
+ * return value is returned) or when the co-routine yields (in which case
+ * the second argument to co_yield() is returned.
+ */
+
+int co_call(int (*func)(va_list args), ...);
 
 /* Suspend current co-routine and return to calling co-routine with
  * specified return value.  t points to a Coroutine structure which gets
@@ -63,18 +69,32 @@ int co_yield(Coroutine *t, int val);
 
 int co_resume(Coroutine *t, int val);
 
-/* Suspend current co-routine (remember its chain of invokers) and resume top-level.
- * 'u' points to a previously yielded coroutine.  The suspended
- * co-routine will be placed in 'u'.  When u returns (when it is resumed, and
- * then it returns), the suspended co-routine chain will be resumed (this
- * function will return). */
-
-int co_suspend(Coroutine *u, int val);
-
-/* Call a function as a co-routine (it runs with its own stack).  co_call
- * returns when the specified function returns (in which case the function's
- * return value is returned) or when the co-routine yields (in which case
- * the second argument to co_yield() is returned.
+/* Suspend current task: that is, suspend current co-routines and its chain
+ * chain of invoking co-routines all the way back to the top level.  The top
+ * level is resumed with the given return value.  The task is saved in t. 
+ * The task can later be scheduled for continuation.
  */
 
-int co_call(int (*func)(va_list args), ...);
+int co_suspend(Coroutine *t, int val);
+
+/* Schedule a task to resume after the current task completes: in other
+ * words, the task is continued with the given return value after the next
+ * time we return to the top level.  This function returns immediately:
+ * it just schedules the task for execution.
+ */
+
+void co_sched(Coroutine *t, int val);
+
+/* Suspend current task and stick a pointer to it in 'u', which should point
+ * to a previously yielded co-routine.  The top level is resumed with the
+ * return value given in 'val'.  The task will be scheduled when the
+ * co-routine in 'u' returns.  It will be resumed with u's return value.
+ * Note that the scheduling happens on return, and not on yield.
+ *
+ * This function is for macro query suspend, where a dialog is to get all of
+ * its user input from the user and not from a macro.  When the dialog
+ * function is done (which is indicated by the co-routine u returning) the
+ * macro player is scheduled to continue.
+ */
+
+int co_query_suspend(Coroutine *u, int val);

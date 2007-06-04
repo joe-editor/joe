@@ -350,15 +350,6 @@ static int ifflag=1;		/* JM: Truth flag for if */
 static int iffail=0;		/* JM: Depth where ifflag became 0 */
 
 /* Suspend macro record/play to allow for user input.
- *
- * Stop recording current macro, make recursive call to edit loop, which
- * runs until dialog is complete, then continue with macro recording.
- *
- * When the macro is played, edit loop is run as a subroutine until dialog
- * is complete, then uquery returns, which continues macro execution.
- *
- * Completion of a dialog is indicated with 'notify' flag (look at interactive
- * dialogs in ufile.c).
  */
 
 int uquery(BW *bw)
@@ -374,24 +365,13 @@ int uquery(BW *bw)
 		recmac = 0;
 		/* Suspend macro: co_suspend suspends the macro player which called us and chains it
 		   to bw->parent->coro so that it continues when bw->parent->coro is done */
-		ret = co_suspend(bw->parent->coro, 0);
+		ret = co_query_suspend(bw->parent->coro, 0);
 		/* Continue macro */
 		recmac = tmp;
 		ifdepth = oid;
 		ifflag = oifl;
 		iffail = oifa;
 	}
-
-#if 0
-	int ret;
-	int oid=ifdepth, oifl=ifflag, oifa=iffail;
-	struct recmac *tmp = recmac;
-
-	recmac = NULL;
-	ret = edloop(1);
-	recmac = tmp;
-	ifdepth = oid; ifflag = oifl; iffail = oifa;
-#endif
 	return ret;
 }
 
@@ -664,7 +644,7 @@ void load_macros(FILE *f)
 int uplay(BW *bw, int c)
 {
 	if (c < '0' || c > '9')
-		c = query(bw->parent, sz(joe_gettext(_("Play-"))), 1);
+		c = query(bw->parent, sz(joe_gettext(_("Play-"))), QW_STAY);
 	if (c >= '0' && c <= '9') {
 		int ret;
 		c -= '0';
@@ -775,7 +755,7 @@ int uuarg(BW *bw, int c)
 	negarg = 0;
 
 	if (c != '-' && (c < '0' || c > '9'))
-		c = query(bw->parent, sz(joe_gettext(_("Repeat"))), 1);
+		c = query(bw->parent, sz(joe_gettext(_("Repeat"))), QW_STAY);
 
 	for (;;) {
 		if (c == '-')
@@ -803,6 +783,6 @@ int uuarg(BW *bw, int c)
 			return 0;
 		}
 		m = vsfmt(NULL, 0, joe_gettext(_("Repeat %s%d")), negarg ? "-" : "", unaarg);
-		c = query(bw->parent, sv(m), 1);
+		c = query(bw->parent, sv(m), QW_STAY);
 	}
 }

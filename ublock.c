@@ -564,10 +564,8 @@ int ublkcpy(BW *bw)
 /* Write highlighted block to a file */
 /* This is called by ublksave in ufile.c */
 
-/*int dowrite(BW *bw, unsigned char *s, void *object, int *notify)
+/*int dowrite(BW *bw, unsigned char *s, void *object)
 {
-	if (notify)
-		*notify = 1;
 	if (markv(1)) {
 		if (square) {
 			int fl;
@@ -850,8 +848,6 @@ int uinsf(BW *bw)
 	unsigned char *s = ask(bw->parent, joe_gettext(_("Name of file to insert (^C to abort): ")), &filehist,
 	                       USTR "Names", cmplt, locale_map, 3, 0, NULL);
 	if (s) {
-		/* if (notify)
-			*notify = 1; */
 		if (square)
 			if (markv(1)) {
 				B *tmp;
@@ -960,8 +956,6 @@ int ufilt(BW *bw)
 	}
 	s = ask(bw->parent, s, &filthist, NULL, utypebw, locale_map, 0, 0, NULL);
 
-	/* if (notify)
-		*notify = 1; */
 	if (markb && markk && !square && markb->b == bw->b && markk->b == bw->b && markb->byte == markk->byte) {
 		flg = 1; /* Empty block */
 		goto ok;

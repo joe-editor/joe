@@ -366,7 +366,7 @@ int cmplt(BW *bw)
 		}
 	}
 
-	if (l && (new = mkmenu((menu_above ? bw->parent->link.prev : bw->parent), bw->parent, l, tabrtn, tababrt, tabbacks, which, tab, NULL))) {
+	if (l && (new = mkmenu((menu_above ? bw->parent->link.prev : bw->parent), bw->parent, l, tabrtn, tababrt, tabbacks, which, tab))) {
 		if (valen(tab->files) == 1)
 			/* Only one file found, so select it */
 			return tabrtn1(new, 0, tab);

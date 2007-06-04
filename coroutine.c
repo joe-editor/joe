@@ -7,19 +7,19 @@
  */
 #include "types.h"
 
-struct stack *current_stack;	/* Current stack */
-struct stack *free_stacks;	/* Free stacks */
+static struct stack *current_stack;	/* Current stack */
+static struct stack *free_stacks;	/* Free stacks */
 
 #ifndef USE_UCONTEXT
 
-jmp_buf create_stk;	/* longjmp here to create another stack */
-jmp_buf rtn_create_stk;	/* Return address for stack creation longjmp call */
+static jmp_buf create_stk;	/* longjmp here to create another stack */
+static jmp_buf rtn_create_stk;	/* Return address for stack creation longjmp call */
 
 /* Record current stack location */
 
-void make_space();
+static void make_space();
 
-void record_stack()
+static void record_stack()
 {
 	int create = 1;
 	int rtn = 0;
@@ -28,18 +28,16 @@ void record_stack()
 		if (setjmp(current_stack->go)) {
 			/* Run scheduler in this stack.  It will return with a task to continue */
 			rtn = current_stack->func(current_stack->args); /* Call function... */
+			if (current_stack->chain) {
+				co_sched(current_stack->chain, rtn);
+				current_stack->chain = 0;
+			}
 		} else if (!create) {
 			Coroutine *t;
-			if (current_stack->chain) {
-				/* Get to end of chain */
-				for (t = current_stack->chain; t->stack->caller; t = t->stack->caller);
-				/* Install caller there */
-				t->stack->caller = current_stack->caller;
-				/* Resume chain instead of caller */
-				current_stack->caller = current_stack->chain;
-			}
 			/* Free this stack */
 			t = current_stack->caller;
+			if (t->override)
+				rtn = t->override_val;
 			current_stack->next = free_stacks;
 			free_stacks = current_stack;
 			/* Continue task */
@@ -57,7 +55,7 @@ void record_stack()
 
 /* Make space on the stack */
 
-void make_space()
+static void make_space()
 {
 	char buf[STACK_SIZE];
 	/* Make sure compiler does not optimize out buf */
@@ -75,25 +73,24 @@ void make_space()
 
 /* Execute function and resume calling co-routine */
 
-int rtval;
+static int rtval;
 
-void call_it()
+static void call_it()
 {
 	Coroutine *t;
 	/* Execute function */
 	rtval = current_stack->func(current_stack->args);
 	/* There's a chain... */
 	if (current_stack->chain) {
-		/* Get to end of chain */
-		for (t = current_stack->chain; t->stack->caller; t = t->stack->caller);
-		/* Install caller there */
-		t->stack->caller = current_stack->caller;
-		/* Resume chain instead of caller */
-		current_stack->caller = current_stack->chain;
+		/* Schedule it... */
+		co_sched(current_stack->chain, rtval);
+		current_stack->chain = 0;
 	}
 
 	/* Free stack and resume caller */
 	t = current_stack->caller;
+	if (t->override)
+		rtval = t->override_val;
 	current_stack->next = free_stacks;
 	free_stacks = current_stack;
 	current_stack = t->stack;
@@ -127,7 +124,7 @@ void call_it()
 
 #endif
 
-struct stack *mkstack()
+static struct stack *mkstack()
 {
 	struct stack *stack;
 	if (free_stacks) {
@@ -172,6 +169,8 @@ int co_yield(Coroutine *t, int val)
 	Coroutine *n;
 
 	/* Save current stack */
+	t->override = 0;
+	t->override_val = 0;
 	t->stack = current_stack;
 
 	/* Save object stack: create one which gets immediately destroyed
@@ -181,10 +180,14 @@ int co_yield(Coroutine *t, int val)
 	/* Return to creator */
 	n = current_stack->caller;
 	current_stack->caller = 0;
+
 	current_stack = n->stack;
 
 	/* Give return value to creator */
-	rtval = val;
+	if (n->override)
+		rtval = n->override_val;
+	else
+		rtval = val;
 
 	/* Switch */
 	swapcontext(t->uc, n->uc);
@@ -196,6 +199,8 @@ int co_yield(Coroutine *t, int val)
 #else
 	int rtn;
 
+	t->override = 0;
+	t->override_val = 0;
 	/* Save current stack */
 	t->stack = current_stack;
 
@@ -214,9 +219,11 @@ int co_yield(Coroutine *t, int val)
 		current_stack->caller = 0;
 
 		current_stack = t->stack;
+		if (t->override)
+			val = t->override_val;
 
 		/* Go */
-		longjmp(t->cont, rtn + 10);
+		longjmp(t->cont, val + 10);
 	}
 #endif
 }
@@ -225,7 +232,10 @@ int co_yield(Coroutine *t, int val)
 
 int co_resume(Coroutine *t,int val)
 {
+	struct stack *i;
 	Coroutine self[1];
+	self->override = 0;
+	self->override_val = 0;
 #ifdef USE_UCONTEXT
 	/* Save current stack */
 	self->stack = current_stack;
@@ -238,10 +248,15 @@ int co_resume(Coroutine *t,int val)
 	current_stack = t->stack;
 
 	/* Who to resume when coroutine returns */
-	current_stack->caller = self;
+	for (i = current_stack; i->caller; i = i->caller->stack);
+	i->caller = self;
+	/* This is OK if nobody resumes a task: current_stack->caller = self; */
 
 	/* Give return value to co_yield() */
-	rtval = val;
+	if (t->override)
+		rtval = t->override_val;
+	else
+		rtval = val;
 
 	/* Switch */
 	swapcontext(self->uc, t->uc);
@@ -269,20 +284,115 @@ int co_resume(Coroutine *t,int val)
 		current_stack = t->stack;
 		
 		/* Who to return to */
-		current_stack->caller = self;
+		for (i = current_stack; i->caller; i = i->caller->stack);
+		i->caller = self;
+		/* This is OK if nobody resumes a task: current_stack->caller = self; */
+
+		if (t->override)
+			val = t->override_val;
 
 		/* Go */
-		longjmp(t->cont, rtn + 10);
+		longjmp(t->cont, val + 10);
 	}
 #endif
 }
 
+/* Suspend current co-routine and yield to top */
+
+int co_suspend(Coroutine *t,int val)
+{
+	Coroutine *v, *n;
+
+#ifdef USE_UCONTEXT
+	/* Save current stack */
+	t->stack = current_stack;
+	t->override = 0;
+	t->override_val = 0;
+
+	/* Save object stack.  Create new one which is detroyed by return
+	   to co_yield. */
+	t->saved_obj_stack = get_obj_stack();
+
+	/* Find top level */
+	for (v = t; v->stack->caller->stack->caller; v = v->stack->caller);
+	n = v->stack->caller; /* n points to top-most coroutine */
+	v->stack->caller = 0;
+
+	/* Resume specified coroutine */
+	current_stack = n->stack;
+
+	/* Give return value to co_yield() */
+	rtval = val;
+
+	/* Switch */
+	swapcontext(t->uc, n->uc);
+
+	/* Somebody continued us... */
+	set_obj_stack(t->saved_obj_stack);
+
+	return rtval;
+#else
+	int rtn;
+
+	/* Save current stack */
+	t->stack = current_stack;
+	t->override = 0;
+	t->override_val = 0;
+
+	/* Save object stack */
+	t->saved_obj_stack = get_obj_stack();
+
+	/* Save current context */
+	if ((rtn = setjmp(t->cont))) {
+		/* Somebody continued us... */
+		set_obj_stack(t->saved_obj_stack);
+		return rtn - 10; /* 10 added to longjmp */
+	} else {
+		/* Find top level */
+		for (v = t; v->stack->caller->stack->caller; v = v->stack->caller);
+		n = v->stack->caller; /* n points to top-most coroutine */
+		v->stack->caller = 0;
+
+		/* Continue specified */
+		current_stack = n->stack;
+
+		/* Go */
+		longjmp(n->cont, rtn + 10);
+	}
+#endif
+}
+
+/* Schedule a task to resume after this one completes */
+
+void co_sched(Coroutine *t, int val)
+{
+	Coroutine *u;
+	Coroutine *v;
+	Coroutine self[1];
+
+	/* Find top-level */
+	self->stack = current_stack;
+	for (v = self; v->stack->caller->stack->caller; v = v->stack->caller);
+	/* v->stack->caller is top-most coroutine */
+
+	/* Find end of t */
+	for (u = t; u->stack->caller; u = u->stack->caller);
+
+	/* Insert t just before top */
+	u->stack->caller = v->stack->caller;
+	v->stack->caller = t;
+	t->override = 1;
+	t->override_val = val;
+}
+
 /* Suspend current co-routine and resume top */
 
-int co_suspend(Coroutine *u,int val)
+int co_query_suspend(Coroutine *u,int val)
 {
 	Coroutine *t, *v;
 	Coroutine self[1];
+	self->override = 0;
+	self->override_val =0;
 
 #ifdef USE_UCONTEXT
 	/* Save current stack */
@@ -349,6 +459,8 @@ int co_call(int (*func)(va_list args), ...)
 {
 	Coroutine self[1];
 	va_list ap;
+	self->override = 0;
+	self->override_val = 0;
 
 #ifdef USE_UCONTEXT
 	va_start(ap, func);

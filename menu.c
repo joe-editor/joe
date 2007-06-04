@@ -119,14 +119,14 @@ static void menudisp(MENU *m)
 	}
 	if (transpose) {
 		m->parent->cury = (m->cursor % m->lines) - m->top;
-		col = txtwidth(m->list[m->cursor],zlen(m->list[m->cursor]));
+		col = txtwidth(locale_map,m->list[m->cursor],zlen(m->list[m->cursor]));
 		if (col < m->width)
 			m->parent->curx = (m->cursor / m->lines) * (m->width + 1) + col;
 		else
 			m->parent->curx = (m->cursor / m->lines) * (m->width + 1) + m->width;
 	} else {
 		m->parent->cury = (m->cursor - m->top) / m->perline;
-		col = txtwidth(m->list[m->cursor],zlen(m->list[m->cursor]));
+		col = txtwidth(locale_map,m->list[m->cursor],zlen(m->list[m->cursor]));
 		if (col < m->width)
 			m->parent->curx = ((m->cursor - m->top) % m->perline) * (m->width + 1) + col;
 		else
@@ -149,7 +149,7 @@ static int mlines(unsigned char **s, int w)
 	int perline;
 
 	for (x = 0, width = 0; s[x]; ++x) {
-		int d = txtwidth(s[x],zlen(s[x]));
+		int d = txtwidth(locale_map,s[x],zlen(s[x]));
 		if (d > width)
 			width = d;
 	}
@@ -172,7 +172,7 @@ static void mconfig(MENU *m)
 
 		m->top = 0;
 		for (x = 0, m->width = 0; m->list[x]; ++x) {
-			int d = txtwidth(m->list[x],zlen(m->list[x]));
+			int d = txtwidth(locale_map,m->list[x],zlen(m->list[x]));
 			if (d > m->width)
 				m->width = d;
 		}
@@ -525,7 +525,7 @@ static int umkey(MENU *m, int c)
 
 	if (c == '0') {
 		if (m->func)
-			return m->func(m, m->cursor, m->object, -1);
+			return m->func(m, m->cursor, m->object, 2);
 		else
 			return -1;
 	}
@@ -594,7 +594,7 @@ void ldmenu(MENU *m, unsigned char **s, int cursor)
 
 int menu_above;
 
-MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object, int *notify)
+MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object)
 {
 	W *new;
 	MENU *m;
@@ -609,11 +609,9 @@ MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*ab
 			h = lines;
 	}
 
-	new = wcreate(w->t, &watommenu, w, targ, targ->main, h, NULL, notify);
+	new = wcreate(w->t, &watommenu, w, targ, targ->main, h, NULL);
 
 	if (!new) {
-		if (notify)
-			*notify = 1;
 		return NULL;
 	}
 	wfit(new->t);
@@ -632,6 +630,71 @@ MENU *mkmenu(W *w, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*ab
 	ldmenu(m, s, cursor);
 	w->t->curwin = new;
 	return m;
+}
+
+/* Simplified menu */
+
+struct choose_result {
+	Coroutine t;
+	int answer;
+};
+
+int choose_cont(MENU *m, int c, void *object,int flg)
+{
+	struct choose_result *r = (struct choose_result *)object;
+	m->object = NULL;
+	wabort(m->parent);
+	r->answer = c;
+	co_resume(&r->t, flg);
+	return 0;
+}
+
+int choose_abrt(BW *bw, int c, void *object)
+{
+	if (object) {
+		struct choose_result *r = (struct choose_result *)object;
+		r->answer = c;
+		co_resume(&r->t, -1);
+		return -1;
+	}
+}
+
+int choose_baks(MENU *m, int c, void *object)
+{
+	struct choose_result *r = (struct choose_result *)object;
+	m->object = NULL;
+	wabort(m->parent);
+	r->answer = c;
+	co_resume(&r->t, 3);
+	return -1;
+}
+
+/* Return value:
+    0 means return hit
+    1 means '1' hit
+    2 means '0' hit
+    -1 means ^C hit (menu abort)
+    3 means backspace hit
+    in all cases, final cursor position is recorded in *cursor
+*/
+
+int choose(W *w,				/* Menu goes below this window */
+           W *targ,				/* But menu is for this window */
+           unsigned char **s,			/* Array of menu items */
+           int *cursor)				/* Cursor position in and out */
+{
+	struct choose_result t;
+	int ret;
+	MENU *m;
+	m = mkmenu(w, targ, s, choose_cont, choose_abrt, choose_baks, *cursor, &t);
+
+	if (!m)
+		return -1;
+
+	/* We get woken up when user hits a key */
+	ret = co_yield(&t.t, 0);
+	*cursor = t.answer;
+	return ret;
 }
 
 static unsigned char *cull(unsigned char *a, unsigned char *b)

@@ -564,7 +564,7 @@ void wshowone(W *w)
 
 /* Create a window */
 
-W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify)
+W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh)
 {
 	W *new;
 
@@ -574,7 +574,6 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height
 	/* Create the window */
 	new = (W *) joe_malloc(sizeof(W));
 	new->coro = 0;
-	new->notify = notify;
 	new->t = t;
 	new->w = t->w - 1;
 	seth(new, height);
@@ -667,12 +666,8 @@ static int doabort(W *w, int *ret)
 	deque(W, link, w);
 	if (w->watom->abort && w->object) {
 		*ret = w->watom->abort(w->object);
-		if (w->notify)
-			*w->notify = -1;
 	} else {
 		*ret = -1;
-		if (w->notify)
-			*w->notify = 1;
 	}
 	rmkbd(w->kbd);
 	joe_free(w);

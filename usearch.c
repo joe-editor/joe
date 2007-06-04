@@ -178,7 +178,7 @@ int ufinish(BW *bw)
 		}
 		vaperm(lst);
 
-		m = mkmenu(bw->parent, bw->parent, lst, fcmplt_rtn, fcmplt_abrt, NULL, 0, line, NULL);
+		m = mkmenu(bw->parent, bw->parent, lst, fcmplt_rtn, fcmplt_abrt, NULL, 0, line);
 		if (!m) {
 			varm(lst);
 			return -1;
@@ -683,11 +683,11 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 						srch->replacement = s;
 						obj_perm(s);
 					}
-					return dopfnext(bw, setmark(srch), NULL);
+					return dopfnext(bw, setmark(srch));
 				} else
 					return -1;
 			} else
-				return dopfnext(bw, setmark(srch), NULL);
+				return dopfnext(bw, setmark(srch));
 			return 0;
 		} else {
 			rmsrch(srch);
@@ -782,37 +782,37 @@ static void goback(SRCH *srch, BW *bw)
 unsigned char *rest_key = (unsigned char *) _("|rest of file|rR");
 unsigned char *backup_key = (unsigned char *) _("|backup|bB");
 
-static int dopfrepl(BW *bw, int c, SRCH *srch, int *notify)
+static int dopfrepl(BW *bw, int c, SRCH *srch)
 {
+	again:
 	srch->addr = bw->cursor->byte;
 	if (c == NO_CODE || yncheck(no_key, c))
-		return dopfnext(bw, srch, notify);
+		return dopfnext(bw, srch);
 	else if (c == YES_CODE || yncheck(yes_key, c) || c == ' ') {
 		srch->recs.link.prev->yn = 1;
 		if (doreplace(bw, srch)) {
 			pfsave(bw, srch);
 			return -1;
 		} else
-			return dopfnext(bw, srch, notify);
+			return dopfnext(bw, srch);
 	} else if (yncheck(rest_key, c)) {
 		if (doreplace(bw, srch))
 			return -1;
 		srch->rest = 1;
-		return dopfnext(bw, srch, notify);
+		return dopfnext(bw, srch);
 	} else if (c == 8 || c == 127 || yncheck(backup_key, c)) {
 		W *w = bw->parent;
 		goback(srch, bw);
 		goback(srch, (BW *)w->object);
-		return dopfnext((BW *)w->object, srch, notify);
+		return dopfnext((BW *)w->object, srch);
 	} else if (c != -1) {
-		if (notify)
-			*notify = 1;
 		pfsave(bw, srch);
 		nungetc(c);
 		return 0;
 	}
-	if (mkqwnsr(bw->parent, sz(joe_gettext(_("Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"))), dopfrepl, pfsave, srch, notify))
-		return 0;
+	c = query(bw->parent, sz(joe_gettext(_("Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"))), QW_SR);
+	if (c != -1)
+		goto again;
 	else
 		return pfsave(bw, srch);
 }
@@ -938,12 +938,14 @@ static int fnext(BW *bw, SRCH *srch)
 		return 2;
 }
 
-int dopfnext(BW *bw, SRCH *srch, int *notify)
+int dopfnext(BW *bw, SRCH *srch)
 {
 	W *w;
 	int fnr;
 	int orgmid = mid;	/* Original mid status */
 	int ret = 0;
+
+	printf("dopfnext\n"); fflush(stdout); sleep(1);
 
 	mid = 1;		/* Screen recenters mode during search */
 	if (csmode)
@@ -1013,9 +1015,9 @@ bye:		if (!srch->flg && !srch->rest) {
 				markb->xcol = piscol(markb);
 			}
 			srch->flg = 1;
-			if (dopfrepl(bw, -1, srch, notify))
+			/* This call should not be here... */
+			if (dopfrepl(bw, -1, srch))
 				ret = -1;
-			notify = 0;
 			srch = 0;
 		}
 		break;
@@ -1023,8 +1025,7 @@ bye:		if (!srch->flg && !srch->rest) {
 	bw->cursor->xcol = piscol(bw->cursor);
 	dofollows();
 	mid = orgmid;
-	if (notify)
-		*notify = 1;
+	printf("update\n"); fflush(stdout); sleep(1);
 	if (srch)
 		pfsave(bw, srch);
 	else
@@ -1047,7 +1048,7 @@ int pfnext(BW *bw)
 			srch->wrap_p->owner = &srch->wrap_p;
 			srch->wrap_flag = 0;
 		}
-		return dopfnext(bw, setmark(srch), NULL);
+		return dopfnext(bw, setmark(srch));
 	}
 }
 
