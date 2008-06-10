@@ -2502,7 +2502,7 @@ int bsavefd(P *p, int fd, off_t size)
 	return berror = 0;
 err:
 	prm(np);
-	return berror = 5;
+	return berror = -5;
 }
 
 /* Save 'size' bytes beginning at 'p' in file 's' */
