@@ -19,14 +19,14 @@
 #undef HAVE_SETLOCALE
 #endif
 
-/* If it looks old, forget it */
-#ifndef CODESET
-#undef HAVE_SETLOCALE
-#endif
-
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #	include <locale.h>
 #       include <langinfo.h>
+#endif
+
+/* If we didn't find a CODESET in locale.h/langinfo.h, forget about setlocale */
+#ifndef CODESET
+#undef HAVE_SETLOCALE
 #endif
 
 /* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
