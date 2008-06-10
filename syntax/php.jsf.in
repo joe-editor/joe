@@ -98,12 +98,6 @@ done
   "\""  idle
 	"\\"		string_dq_esc	recolor=-1
 
-:var_insqstring Var
-  *     string_sq recolor=-1
-  "a-zA-Z_" var_insqstring
-  "'" idle
-	"\\"		string_sq_esc	recolor=-1
-
 :maybe_method Methods
 	*		idle  recolor=-1
 	"?"		idle_qmark 
@@ -155,7 +149,6 @@ done
 
 :string_sq Constant_sq
 	*		string_sq
-	"$"     var_insqstring recolor=-1
 	"\'"		idle
 	"\\"		string_sq_esc	recolor=-1
 
