@@ -10,6 +10,7 @@
 static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 {
 	unsigned char buf[512];
+	unsigned char buf1[512];
 	FILE *f;
 	unsigned char *t = NULL;
 
@@ -71,6 +72,7 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 					long line = 0;
 
 					if (buf[y] >= '0' && buf[y] <= '9') {
+						/* It's a line number */
 						sscanf((char *)(buf + y), "%ld", &line);
 						if (line >= 1) {
 							int omid = mid;
@@ -83,27 +85,46 @@ static int dotag(BW *bw, unsigned char *s, void *obj, int *notify)
 							msgnw(bw->parent, joe_gettext(_("Invalid line number")));
 						}
 					} else {
+						int z = 0;
+						/* It's a search string. New versions of
+						   ctags have real regex with vi command.  Old
+						   ones do not always quote / and depend on it
+						   being last char on line. */
 						if (buf[y] == '/' || buf[y] == '?') {
-							++y;
-							if (buf[y] == '^')
-								buf[--y] = '\\';
-							for (x = y+1; buf[x] && buf[x] != '\n' && buf[x-1] != '/'; ++x);
-						}
-						if (buf[x - 1] == '/' || buf[x - 1] == '?') {
-							--x;
-							buf[x] = 0;
-							if (buf[x - 1] == '$') {
-								buf[x - 1] = '\\';
-								buf[x] = '$';
-								++x;
-								buf[x] = 0;
+							int ch = buf[y++];
+							/* Find terminating / or ? */
+							for (x = y + zlen(buf + y); x != y; --x)
+								if (buf[x] == ch)
+									break;
+							/* Copy characters, convert to JOE regex... */
+							if (buf[y] == '^') {
+								buf1[z++] = '\\';
+								buf1[z++] = '^';
+								++y;
+							}
+							while (buf[y] && buf[y] != '\n' && !(buf[y] == ch && y == x)) {
+								if (buf[y] == '$' && buf[y+1] == ch) {
+									++y;
+									buf1[z++] = '\\';
+									buf1[z++] = '$';
+								} else if (buf[y] == '\\' && buf[y+1]) {
+									/* This is going to cause problem...
+									   old ctags did not have escape */
+									++y;
+									if (buf[y] == '\\')
+										buf1[z++] = '\\';
+									buf1[z++] = buf[y++];
+								} else {
+									buf1[z++] = buf[y++];
+								}
 							}
 						}
-						if (x != y) {
+						if (z) {
 							vsrm(s);
 							vsrm(t);
 							fclose(f);
-							return dopfnext(bw, mksrch(vsncpy(NULL, 0, sz(buf + y)), NULL, 0, 0, -1, 0, 0, 0), NULL);
+							buf1[z] = 0;
+							return dopfnext(bw, mksrch(vsncpy(NULL, 0, sz(buf1)), NULL, 0, 0, -1, 0, 0, 0), NULL);
 						}
 					}
 				}

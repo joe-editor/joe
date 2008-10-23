@@ -113,6 +113,12 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 	while (joe_isblank(locale_map,buf[x]))
 		++x;
 
+	/* If the buffer is only whitespace then treat as unknown command */
+	if (!buf[x]) {
+		*sta = -1;
+		return NULL;
+	}
+
 	/* Do we have a string? */
 	if (buf[x] == '\"') {
 		++x;
