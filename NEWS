@@ -1,3 +1,9 @@
+- Fix ^G in perl mode when you hit it on second brace in:
+	{\'
+	\'}
+
+- Fix LUA highlighter (dirk_s)
+
 - Fix crash from bad va_arg usage (dnelson)
 
 - Fix crash from mktmp() not generating perm string (dnelson)

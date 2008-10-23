@@ -180,9 +180,6 @@
 	*		line_comment
 	"\n"		idle
 
-:control Control
-	*	idle	noeat
-
 :first_digit Constant
 	*		idle	noeat
 	"xX"		hex
