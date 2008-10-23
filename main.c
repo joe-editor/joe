@@ -391,6 +391,7 @@ int main(int argc, char **real_argv, char **envv)
 	vmem = vtmp();
 
 	startup_log = bfind_scratch(USTR "* Startup Log *");
+	startup_log->internal = 1;
 
 	load_state();
 

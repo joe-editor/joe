@@ -117,6 +117,7 @@ OPTIONS pdefault = {
 	76,		/* rmargin */
 	0,		/* autoindent */
 	0,		/* wordwrap */
+	0,		/* nobackup */
 	8,		/* tab */
 	' ',		/* indent char */
 	1,		/* indent step */
@@ -170,6 +171,7 @@ OPTIONS fdefault = {
 	76,		/* rmargin */
 	0,		/* autoindent */
 	0,		/* wordwrap */
+	0,		/* nobackup */
 	8,		/* tab */
 	' ',		/* indent char */
 	1,		/* indent step */
@@ -325,6 +327,7 @@ struct glopts {
 	{USTR "asis",	0, &dspasis, NULL, USTR _("Characters above 127 shown as-is"), USTR _("Characters above 127 shown in inverse"), USTR _("  Meta chars as-is ") },
 	{USTR "force",	0, &force, NULL, USTR _("Last line forced to have NL when file saved"), USTR _("Last line not forced to have NL"), USTR _("  Force last NL ") },
 	{USTR "joe_state",0, &joe_state, NULL, USTR _("~/.joe_state file will be updated"), USTR _("~/.joe_state file will not be updated"), USTR _("  Joe_state file ") },
+	{USTR "nobackup",	4, NULL, (unsigned char *) &fdefault.nobackup, USTR _("Nobackup enabled"), USTR _("Nobackup disabled"), USTR _("  No backup ") },
 	{USTR "nobackups",	0, &nobackups, NULL, USTR _("Backup files will not be made"), USTR _("Backup files will be made"), USTR _("  Disable backups ") },
 	{USTR "nolocks",	0, &nolocks, NULL, USTR _("Files will not be locked"), USTR _("Files will be locked"), USTR _("  Disable locks ") },
 	{USTR "nomodcheck",	0, &nomodcheck, NULL, USTR _("No file modification time check"), USTR _("File modification time checking enabled"), USTR _("  Disable mtime check ") },

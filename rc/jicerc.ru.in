@@ -15,8 +15,8 @@
  в командной строке. Кроме того, опции NOXON, LINES, COLUMNS, DOPADDING и BAUD
  могут задаваться с помощью переменных среды):
 
- Override colors of lexical classes specified in syntax files:
- Put each color override you want in the first column.
+ Перекрытие цветов лексических классов, определенных в синтаксических файлах:
+ Поместите желаемый перекрывающий цвет в первую колонку.
 
  Допустимые цвета
    bold (яркость) inverse (инверсия) blink (мерцание) 
@@ -55,7 +55,8 @@
  -option	Установка опции
  --option	Сброс опции
 
- -help_is_utf8	Set if help text is in UTF-8 format.  Leave clear if it's a raw 8-bit format.
+ -help_is_utf8	Установить, если текст подсказки - в кодировке UTF-8.  Иначе будет считаться, что она -
+		в обычной 8-битной кодировке.
 
  -mid		При скроллинге выполнять центрирование курсора
 
@@ -72,7 +73,7 @@
 		(при сохранении этот контроль все равно производится - даже несмотря на наличие
 		данной опции).
 
- -nocurdir	Do not prompt with current directory
+ -nocurdir	Не вставлять текущую директорию в запрос файла
 
  -nobackups	Если не желаете, чтобы создавались резервные файлы
 
@@ -91,7 +92,8 @@
 
  -pg nnn	Количество строк, оставляемых при PgUp/PgDn
 
- -undo_keep nnn	Number of undo records to keep.  0 for infinite.
+ -undo_keep nnn	Количество последних изменений, запоминаемых для возможного "отката".
+		0 - если запоминать без ограничений.
 
  -csmode	^KF после предыдущего поиска действует как ^L
 
@@ -146,10 +148,10 @@
 -menu_explorer  Оставаться в меню при выборе директории (в противном случае 
                 директория дописывается к пути и меню закрывается).
 
--menu_above	Position menu/list above prompt when enabled.  Otherwise position
-		below prompt.
+-menu_above	Если разрешено - меню/списки будут располагаться над строкой запроса.
+		Иначе - под ней.
 
--transpose	Transpose rows with columns in all menus.
+-transpose	Перемещать строки с колонками во всех меню.
 
  -menu_jump	Перемещаться по меню выбора файла по нажатию клавиши Tab (иначе 
 		меню появляется, но курсор остается на запросе имени файла).
@@ -162,7 +164,7 @@
 
 -joe_state     Использовать файл сохранения состояния ~/.joe_state
 
- -mouse		Включить поддержку мыши в xterm. При этом нажатие левой кнопки мыши
+-mouse		Включить поддержку мыши в xterm. При этом нажатие левой кнопки мыши
 		будет перемещать курсор, ее нажатие-оттягивание - отмечать блок.
 		Для выполнения стандартного в xterm запоминания в буфер и
 		извлечения из него - прижмите клавишу Shift.
@@ -173,20 +175,23 @@
 
  -square	Режим прямоугольных блоков
 
- -bg_text color	
-		Установить цвет фона для текста, подсказки, меню, запросов и сообщений.
- -bg_help color	
-		Установить цвет фона для подсказки.
- -bg_menu color	
-		Установить цвет фона для меню.
- -bg_prompt color
-		Установить цвет фона для подсказок.
- -bg_msg color	
-		Установить цвет фона для сообщений.
+ -text_color color
+		Установить цвет для текста.
+ -status_color color
+		Установить цвет для строки состояния.
+ -help_color color
+		Установить цвет для подсказки.
+ -menu_color color
+		Установить цвет для меню.
+ -prompt_color color
+		Установить цвет для запросов.
+ -msg_color color
+		Установить цвет для сообщений.
 
-		Например: -bg_text bg_blue
+		Например: -text_color bg_blue+white
+		Устанавливает голубой фон и белый цвет переднего плана.
 
--restore	Restore previous cursor position when files are opened
+-restore	Восстанавливать предыдущую позицию курсора при открытии файлов.
 
 -search_prompting
 		Запрашивать образец для последующих поисков.
@@ -363,12 +368,7 @@
 
  -mfirst if,"rdonly && joe(sys,\"p4 edit \",name,rtn)",then,mode,"o",msg,"executed \"p4 edit ",name,"\"",rtn,endif
 
- Нет '.' в имени файла?  Предполагаем, что это - текстовый файл, 
- и включаем перенос слов
-
- Имя файла с '.'?  Вероятно, это не текстовый файл.
-
- File type table is now in a separate file.  You can copy this file to ~/.joe and customize it.
+ Таблица типов файлов теперь находится в отдельном файле. Вы можете скопировать его в ~/.joe и настроить.
 
 :include ftyperc
 
@@ -385,8 +385,8 @@
  дополняется еще одним пробелом). Совет: если требуется вертикальное 
  выравнивание - в каждой строке должно быть одинаковое количество пружинок.
 
- В тексте подсказки следует использоват символы UTF-8 (а не локальные 8-ные
- символы),если joe не собран с опцией конфигурации --enable-rawhelp.
+ Используйте глобальную опцию '-help_is_utf8' чтобы разрешить UTF-8 в тексте
+ подсказки. Иначе предполагается локальная 8-битная кодировка.
 
 {Basic
 \i   Окно ПОДСКАЗКИ - \|выключить по F1    след.экран -  ^N                        \i
@@ -486,6 +486,9 @@
 {Joe
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,                        \i
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \|\i \i
+\i \i \|\i \i
+\i \i  default joerc file is here @JOERC@/joerc \|\i \i
+\i \i  additional documentation can be found here @JOERC@/doc \|\i \i
 }
 
  ЧЕТВЕРТАЯ СЕКЦИЯ: Раскладки клавиатуры:
@@ -630,8 +633,8 @@ if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 :def ispellword psh,nextword,markk,prevword,markb,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\012';/bin/rm ispell.tmp",rtn,retype,nextword
 
  Aspell
-:def aspellfile filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell -x -c $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP",rtn,retype
-:def aspellword psh,nextword,markk,prevword,markb,filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell -x -c $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\012';/bin/rm $SPLTMP",rtn,retype,nextword
+:def aspellfile filt,"SPLTMP=`mktemp -t joespell.XXXXXXXXXX`;cat >$SPLTMP;aspell -x -c $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP",rtn,retype
+:def aspellword psh,nextword,markk,prevword,markb,filt,"SPLTMP=`mktemp -t joespell.XXXXXXXXXX`;cat >$SPLTMP;aspell -x -c $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\012';/bin/rm $SPLTMP",rtn,retype,nextword
 
 @SPELL@file	^[ l
 @SPELL@word	^[ n

@@ -284,9 +284,9 @@ int try_lock(BW *bw,B *b)
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
 			if(bf1[0])
-				joe_snprintf_1(bf,sizeof(bf),LOCKMSG1,bf1);
+				joe_snprintf_1(bf,sizeof(bf),joe_gettext(LOCKMSG1),bf1);
 			else
-				joe_snprintf_0(bf,sizeof(bf),LOCKMSG2);
+				joe_snprintf_0(bf,sizeof(bf),joe_gettext(LOCKMSG2));
 			if (mkqw(bw->parent, sz(bf), steal_lock, NULL, b, NULL)) {
 				uquery(bw);
 				if (!b->locked)

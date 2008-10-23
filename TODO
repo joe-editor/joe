@@ -1,3 +1,12 @@
+For JOE-3.6
+	document ` in 'txt' (format test as status line)
+	additional formatting things in status line
+		`%n		filename
+		`%dd		day
+		`%dm		month
+		`%dY		year
+		`%Ename%	environment variable
+
 Immediate:
 
  full path needs to go in line number restore code?

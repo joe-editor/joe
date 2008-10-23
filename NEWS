@@ -1,3 +1,45 @@
+- Improved conf.jsf (dirk_s)
+
+- Added local option (-nobackup) to suppress backup files (peje)
+
+- Add Matlab syntax file (neer)
+
+- Improve mail syntax highlighter (jqh)
+
+- Fix crash when calling syntax file as subroutine (hal9042)
+
+- Get "ctags" tag search to work again
+
+- Fix crash when JOE tries to write to unwritable file
+
+- Fix crash when entering blank macro ESC x <return>
+
+- Improve Verilog highlighter
+
+- Fix crash when typing ESC x !ls
+
+- Add C++ keywords to highlighter (otterpop81)
+
+- Added RPM spec file syntax spec.jsf
+
+- Improve 'istring' (.jsf command) (hal9042)
+
+- Update French .po file (jengelh)
+
+- Fix infinite search/replace loop bug (yugk)
+
+- New feature: insert status line format string using 'txt' (tykef)
+
+- Update Russion .po file (yugk)
+
+- Update Russian manpage (yugk)
+
+- Update jicerc Russian rc file (yugk)
+
+- Fix lock prompt message (yugk)
+
+- Add Ukrainian .po file (yugk)
+
 JOE 3.5
 
 - Query windows now expand to multiple lines if necessary

@@ -2297,10 +2297,20 @@ int umsg(BASE *b)
 
 static int dotxt(BW *bw, unsigned char *s, void *object, int *notify)
 {
-	int x;
+	int x,fill;
+	char *str;
 
 	if (notify)
 		*notify = 1;
+	if (s[0]=='`') {   
+	   str=vsmk(1024);
+	   fill=' ';
+	   str=stagen(str,bw,&s[1],fill);
+	   if (str) {
+	     for(x=0;x!=sLEN(str);++x) utypebw(bw,str[x]);
+	     vsrm(str);
+	     }
+	} else
 	for (x = 0; x != sLEN(s); ++x)
 		utypebw(bw, s[x]);
 	vsrm(s);

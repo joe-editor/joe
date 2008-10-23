@@ -79,12 +79,12 @@ msgstr ""
 "*** Fichier '(Sans nom)'\n"
 
 #: bw.c:1274
-#, fuzzy, c-format
+#, c-format
 msgid "** Line %ld  Col %ld  Offset %s(0x%s) **"
 msgstr "** Ligne %ld  Col %ld  Position %s(0x%s) **"
 
 #: bw.c:1276
-#, fuzzy, c-format
+#, c-format
 msgid "** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **"
 msgstr ""
 "** Ligne %ld  Col %ld  Position %s(0x%lx)  %s %d(0%o/0x%X) Largeur %d **"
@@ -239,7 +239,7 @@ msgstr "Option inconnue: '%s'\n"
 #: main.c:508
 #, c-format
 msgid "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
-msgstr ""
+msgstr "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
 
 #: rc.c:295
 msgid "Overtype mode"
@@ -275,7 +275,7 @@ msgstr "Auto-indentation désactivée"
 
 #: rc.c:297
 msgid "I Autoindent "
-msgstr ""
+msgstr "I Auto-indent "
 
 #: rc.c:298
 msgid "Wordwrap enabled"
@@ -305,7 +305,7 @@ msgstr "Marge gauche (%d): "
 
 #: rc.c:300
 msgid "L Left margin "
-msgstr ""
+msgstr "L Marge gauche "
 
 #: rc.c:301
 #, c-format
@@ -314,7 +314,7 @@ msgstr "Marge droite (%d): "
 
 #: rc.c:301
 msgid "R Right margin "
-msgstr ""
+msgstr "R Marge droite "
 
 #: rc.c:302
 msgid "Restore cursor position when files loaded"
@@ -563,7 +563,7 @@ msgstr "LF marque la fin d'une ligne (UNIX)"
 
 #: rc.c:322
 msgid "Z CR-LF (MS-DOS) "
-msgstr ""
+msgstr "Z CR-LF (MS-DOS) "
 
 #: rc.c:323
 msgid "Line numbers enabled"
@@ -849,7 +849,7 @@ msgstr "Syntaxe à utiliser (^C pour abandonner): "
 
 #: rc.c:347
 msgid "Y Syntax"
-msgstr ""
+msgstr "Y Syntaxe"
 
 #: rc.c:348
 msgid "Select file character set (^C to abort): "
@@ -857,7 +857,7 @@ msgstr "Jeu de caractères à utiliser (^C pour abandonner): "
 
 #: rc.c:348
 msgid "E Encoding "
-msgstr ""
+msgstr "E Codage"
 
 #: rc.c:349
 msgid "Single quoting enabled"
@@ -947,7 +947,7 @@ msgstr "Langue (%s): "
 
 #: rc.c:356
 msgid "V Language "
-msgstr ""
+msgstr "V Langue "
 
 #: rc.c:357
 #, c-format

@@ -283,7 +283,7 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 		p_goto_bof(start);
 		goto wrapped;
 	}
-
+	srch->last_repl = -1;
 	prm(start);
 	prm(end);
 	return NULL;
@@ -352,7 +352,7 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 		p_goto_eof(start);
 		goto wrapped;
 	}
-
+	srch->last_repl = -1;
 	prm(start);
 	prm(end);
 	return NULL;

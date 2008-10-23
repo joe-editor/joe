@@ -228,6 +228,9 @@ MACRO *mparse(MACRO *m, unsigned char *buf, int *sta)
 				addmacro(m, mkmacro(-1, flg, 0, cmd));
 			} else
 				m = mkmacro(-1, flg, 0, cmd);
+		} else { /* not a valid command */
+			*sta = -1;
+			return NULL;
 		}
 	}
 
