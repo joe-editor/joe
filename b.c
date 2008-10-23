@@ -2341,7 +2341,7 @@ opnerr:
 					b->o.istep = 1;
 				} else {
 					b->o.indentc = ' ';
-					b->o.istep = 2;
+					/* b->o.istep = 2; */
 				}
 				break;
 			}

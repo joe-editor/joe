@@ -79,7 +79,8 @@ int autoswap;
 
 int markv(int r)
 {
-	if (markb && markk && markb->b == markk->b && markk->byte > markb->byte && (!square || markk->xcol > markb->xcol)) {
+	if (markb && markk && markb->b == markk->b && (r == 2 ? markk->byte >= markb->byte : markk->byte > markb->byte) &&
+	    (!square || (r == 2 ? markk->xcol >= markb->xcol : markk->xcol > markb->xcol))) {
 		return 1;
 	} else if(autoswap && r && markb && markk && markb->b == markk->b && markb->byte > markk->byte && (!square || markk->xcol < markb->xcol)) {
 		P *p = pdup(markb, USTR "markv");
@@ -202,7 +203,7 @@ void pinsrect(P *cur, B *tmp, long int width, int usetabs)
 	P *q = pdup(tmp->bof, USTR "pinsrect");	/* These are for scanning through 'tmp' */
 	P *r = pdup(q, USTR "pinsrect");
 
-	if (width)
+//	if (width)
 		while (pset(r, q), p_goto_eol(q), (q->line != tmp->eof->line || piscol(q))) {
 			pcol(p, cur->xcol);
 			if (piscol(p) < cur->xcol)
@@ -850,7 +851,7 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 	if (notify)
 		*notify = 1;
 	if (square)
-		if (markv(1)) {
+		if (markv(2)) {
 			B *tmp;
 			long width = markk->xcol - markb->xcol;
 			long height;

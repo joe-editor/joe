@@ -436,6 +436,15 @@
 -purify
 -cpara >#!;*/%
 
+ Javascript
+*.js
+-autoindent
+-syntax java
+-smarthome
+-smartbacks
+-purify
+-cpara >#!;*/%
+
  Hypertext preprocessor file
 *.php
 -autoindent
