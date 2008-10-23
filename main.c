@@ -602,6 +602,7 @@ int main(int argc, char **real_argv, char **envv)
 
 	/* Create startup log buffer */
 	startup_log = bfind_scratch(USTR "* Startup Log *");
+	startup_log->internal = 1;
 
 	/* Read in ~/.joe_state file */
 	load_state();

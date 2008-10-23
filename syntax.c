@@ -22,7 +22,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 {
 	struct high_state *h = syntax->states[h_state.state];
 			/* Current state */
-	unsigned char buf[24];	/* Name buffer (trunc after 23 characters) */
+	unsigned char buf[24];		/* Name buffer (trunc after 23 characters) */
+	unsigned char lbuf[24];		/* Lower case version of name buffer */
+	unsigned char lsaved_s[24];	/* Lower case version of delimiter match buffer */
 	int buf_idx=0;	/* Index into buffer */
 	int c;		/* Current character */
 	int *attr_end = attr_buf+attr_size;
@@ -64,14 +66,23 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				cmd = h->delim;
 			else
 				cmd = h->cmd[c];
+			/* Lowerize strings for case-insensitive matching */
+			if (cmd->ignore) {
+				zcpy(lbuf,buf);
+				lowerize(lbuf);
+				if (cmd->delim) {
+					zcpy(lsaved_s,h_state.saved_s);
+					lowerize(lsaved_s);
+				}
+			}
 			/* Determine new state */
-			if (cmd->delim && !zcmp(h_state.saved_s,buf)) {
+			if (cmd->delim && (cmd->ignore ? !zcmp(lsaved_s,lbuf) : !zcmp(h_state.saved_s,buf))) {
 				cmd = cmd->delim;
 				h = cmd->new_state;
 				/* Recolor string delimiter */
 				for(x= -(buf_idx+1);x<-1;++x)
 					attr[x-ofst] = h -> color;
-			} else if (cmd->keywords && (cmd->ignore ? (kw_cmd=htfind(cmd->keywords,lowerize(buf))) : (kw_cmd=htfind(cmd->keywords,buf)))) {
+			} else if (cmd->keywords && (cmd->ignore ? (kw_cmd=htfind(cmd->keywords,lbuf)) : (kw_cmd=htfind(cmd->keywords,buf)))) {
 				cmd = kw_cmd;
 				h = cmd->new_state;
 				/* Recolor keyword */
@@ -758,7 +769,7 @@ void link_syntax(struct high_syntax *syntax)
 					unsigned char *buf = vsmk(128);
 					struct high_state *sub;
 					int needs_link = 0;
-					buf1 = vsfmt(buf1, 0, USTR "%d.%s.%s",depth,cmd->call,cmd->call_subr);
+					buf1 = vsfmt(buf1, 0, USTR "%d.%s.%s",depth,cmd->call,(cmd->call_subr?cmd->call_subr:USTR ""));
 					/* printf("%s is looking for %s.%s\n",state->name,cmd->call,(cmd->call_subr?cmd->call_subr:USTR "")); */
 					if ( 1 ) { /* !(sub = find_sub(sub_list, buf1, cmd->new_state))) { */
 						/* printf("loading...\n"); */

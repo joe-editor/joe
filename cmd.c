@@ -231,9 +231,9 @@ int try_lock(BW *bw,B *b)
 			for(x=0;bf1[x] && bf1[x]!=':';++x);
 			bf1[x]=0;
 			if(bf1[0])
-				joe_snprintf_1(bf,sizeof(bf),LOCKMSG1,bf1);
+				joe_snprintf_1(bf,sizeof(bf),joe_gettext(LOCKMSG1),bf1);
 			else
-				joe_snprintf_0(bf,sizeof(bf),LOCKMSG2);
+				joe_snprintf_0(bf,sizeof(bf),joe_gettext(LOCKMSG2));
 			c = query(bw->parent, sz(bf), QW_NOMACRO); /* This should not take input from macro */
 			if (c == -1)
 				return 0;
@@ -313,14 +313,16 @@ int modify_logic(BW *bw,B *b)
 
 /* Execute a command n with key k */
 
+typedef int(cmd_func_t)(void *obj, int);
+
 int call_cmd(va_list args)
 {
 	unsigned char *gc;
 	int rtn;
-	int (*func)(void *obj, int k);
+	cmd_func_t *func;
 	void *obj;
 	int k;
-	func = va_arg(args, int (*)(void *obj, int));
+	func = va_arg(args, cmd_func_t *);
 	obj = va_arg(args, void *);
 	k = va_arg(args, int);
 

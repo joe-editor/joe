@@ -247,6 +247,8 @@
 
 	-wordwrap		Wordwrap
 
+	-nobackup		If you don't want backup file to be created
+
 	-autoindent		Auto indent
 
 	-overwrite		Overtype mode

@@ -55,6 +55,7 @@ struct options {
 	int	rmargin;
 	int	autoindent;
 	int	wordwrap;
+	int	nobackup;
 	int	tab;
 	int	indentc;
 	int	istep;

@@ -2239,14 +2239,24 @@ int umsg(BASE *b)
 
 int utxt(BW *bw)
 {
-	int x;
+	int x, fill;
 	unsigned char *s;
 
 	s = ask(bw->parent, joe_gettext(_("Insert (^C to abort): ")),
 	        NULL, NULL, utypebw, bw->b->o.charmap, 0, 0, NULL);
 
-	for (x = 0; x != vslen(s); ++x)
-		utypebw(bw, s[x]);
+	if (s[0] == '`') {
+		unsigned char *str = vsmk(1024);
+		fill = ' ';
+		str = stagen(str, bw, &s[1], fill);
+		if (str) {
+			for (x = 0; x != vslen(str); ++x)
+				utypebw(bw, str[x]);
+		}
+	} else {
+		for (x = 0; x != vslen(s); ++x)
+			utypebw(bw, s[x]);
+	}
 
 	return 0;
 }

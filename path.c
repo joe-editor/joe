@@ -225,6 +225,7 @@ unsigned char *mktmp(unsigned char *where)
 	else
 		close(fd);
 #endif
+	obj_perm(name);
 	return name;
 }
 /********************************************************************/

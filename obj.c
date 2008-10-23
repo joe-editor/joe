@@ -550,6 +550,10 @@ unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, 
           {
           /* Get string */
           s = va_arg(ap, unsigned char *);
+
+          if (!s)
+            s = USTR "(null)";
+
           if (!prec)
             actual = zlen(s);
           else

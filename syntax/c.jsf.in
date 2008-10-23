@@ -462,21 +462,38 @@ done
 	"union"		kw
 	"asm"		kw
 # C++ keywords
-	"class"		cppkw
-	"public"	cppkw
-	"private"	cppkw
-	"protected"	cppkw
-	"friend"	cppkw
-	"new"		cppkw
-	"delete"	cppkw
-	"bool"		cppkw
-	"namespace"	cppkw
-	"operator"	cppkw
-	"template"	cppkw
-	"catch"		cppkw
-	"throw"		cppkw
-	"try"		cppkw
-	"typeof"	cppkw
+	#"asm"			cppkw (listed above as a C keyword)
+	"bool"			cppkw
+	"catch"			cppkw
+	"class"			cppkw
+	"const_cast"		cppkw
+	"delete"		cppkw
+	"dynamic_cast"		cppkw
+	"explicit"		cppkw
+	"false"			cppkw
+	"friend"		cppkw
+	#"inline"		cppkw (listed above as a C keyword)
+	"mutable"		cppkw
+	"namespace"		cppkw
+	"new"			cppkw
+	"operator"		cppkw
+	"private"		cppkw
+	"protected"		cppkw
+	"public"		cppkw
+	"reinterpret_cast"	cppkw
+	"static_cast"		cppkw
+	"template"		cppkw
+	"this"			cppkw
+	"throw"			cppkw
+	"true"			cppkw
+	"try"			cppkw
+	"typeid"		cppkw
+	"typename"		cppkw
+	"using"			cppkw
+	"virtual"		cppkw
+	"wchar_t"		type
+# Non-Standard
+	"typeof"		cppkw
 done
 	"a-zA-Z0-9_"	ident
 

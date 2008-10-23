@@ -661,6 +661,11 @@
 -autoindent
 -syntax m4
 
+ Matlab
+*.m
+-autoindent
+-syntax matlab
+
  Automake file
 *.am
 -autoindent

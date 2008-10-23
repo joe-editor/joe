@@ -171,7 +171,7 @@ static int cp(unsigned char *from, unsigned char *to)
 
 static int backup(BW *bw)
 {
-	if (!bw->b->backup && !nobackups && bw->b->name && bw->b->name[0]) {
+	if (!bw->b->backup && !nobackups && !bw->o.nobackup && bw->b->name && bw->b->name[0]) {
 		unsigned char *name = 0;
 
 #ifdef __MSDOS__
