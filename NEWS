@@ -1,3 +1,7 @@
+- Guessindent no longer overrides istep if indendation is space.
+
+- Fix low limit of lmargin
+
 - Fix ^G in perl mode when you hit it on second brace in:
 	{\'
 	\'}
