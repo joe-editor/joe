@@ -1,3 +1,9 @@
+- Fix ^G in perl mode when you hit it on second brace in:
+	{\'
+	\'}
+
+- Fix LUA highlighter (dirk_s)
+
 - Improved conf.jsf (dirk_s)
 
 - Added local option (-nobackup) to suppress backup files (peje)

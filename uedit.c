@@ -1030,12 +1030,17 @@ int utomatch(BW *bw)
 				int cc;
 				p_goto_bol(q);
 				while((cc = pgetc(q)) != '\n') {
-					if (bw->o.pound_comment && cc == '$' && brch(q)=='#') {
+					if (bw->o.pound_comment && cc == '$' && brch(q) == '#') {
 						pgetc(q);
+					} else if (cc == '\\') {
+						if (pgetc(q) == '\n')
+							break;
 					} else if(cc=='"') {
 						while ((cc = pgetc(q)) != '\n')
 							if (cc == '"') break;
 							else if (cc == '\\') pgetc(q);
+						if (cc == '\n')
+							break;
 					} else if (bw->o.cpp_comment && cc == '/') {
 						if (brch(q)=='/') {
 							prgetc(q);
@@ -1046,6 +1051,8 @@ int utomatch(BW *bw)
 						while((cc = pgetc(q)) != '\n')
 							if (cc == '\'') break;
 							else if (cc == '\\') pgetc(q);
+						if (cc == '\n')
+							break;
 					} else if (bw->o.vhdl_comment && cc == '-') {
 						if (brch(q)=='-') {
 							prgetc(q);
