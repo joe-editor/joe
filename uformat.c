@@ -362,14 +362,14 @@ void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
 				}
 				indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, x);
 			}
-			/* Don't duplicate if it looks like a bullet */
 			for (x = 0; indents[x] && (indents[x] == ' ' || indents[x] == '\t'); ++x);
 			y = zlen(indents);
 			while (y && (indents[y - 1] == ' ' || indents[y - 1] == '\t'))
 				--y;
-			/* We have non-space between x and y */
-			if (y == x + 1 && (indents[x] == '*' || indents[x] == '-'))
-				indents[x] = ' ';
+			/* Don't duplicate bullet */
+			if (y && (indents[y - 1] == '*' || indents[y - 1] == '-') &&
+			    (y == 1 || indents[y - 2] == ' ' || indents[y - 2] == '\t'))
+			    	indents[y - 1] = ' ';
 			/* Fix C comment */
 			if (indents[x] == '/' && indents[x + 1] == '*')
 				indents[x] = ' ';
@@ -546,14 +546,14 @@ int uformat(BW *bw)
 			}
 			indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, x);
 		}
-		/* Don't duplicate if it looks like a bullet */
 		for (x = 0; indents[x] && (indents[x] == ' ' || indents[x] == '\t'); ++x);
 		y = zlen(indents);
 		while (y && (indents[y - 1] == ' ' || indents[y - 1] == '\t'))
 			--y;
-		/* We have non-space between x and y */
-		if (y == x + 1 && (indents[x] == '*' || indents[x] == '-'))
-			indents[x] = ' ';
+		/* Don't duplicate if it looks like a bullet */
+		if (y && (indents[y - 1] == '*' || indents[y - 1] == '-') &&
+		    (y == 1 || indents[y - 2] == ' ' || indents[y - 2] == '\t'))
+			indents[y - 1] = ' ';
 		/* Fix C comment */
 		if (indents[x] == '/' && indents[x + 1] == '*')
 			indents[x] = ' ';
