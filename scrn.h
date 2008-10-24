@@ -340,6 +340,7 @@ void genfield PARAMS((SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned 
 
 /* Column width of a string takes into account utf-8) */
 int txtwidth PARAMS((struct charmap *map,unsigned char *s,int len));
+int txtwidth1 PARAMS((struct charmap *map, int tabwidth, unsigned char *s, int len));
 
 void unesc_genfmt(unsigned char *d, unsigned char *s, int max);
 
