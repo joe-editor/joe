@@ -8,6 +8,7 @@
 =Keyword bold
 =Operator bold
 =Function bold
+=Bad bold red
 
 :idle Idle
 	*		idle
@@ -16,6 +17,9 @@
 	"/"		maybe_linecomment
 	"{"		comment		recolor=-1
 	"'"		string		recolor=-1
+	"$"		maybe_hex_number
+	"%"		maybe_bin_number
+	"&"		maybe_oct_number
 	"0-9"		number		recolor=-1 
 
 # Comments
@@ -59,6 +63,36 @@
 	"'"		string
 
 # Numeric constant
+
+:maybe_hex_number Idle
+	*		idle		noeat
+	"0-9A-Fa-f"	hex_number	recolor=-2
+
+:maybe_bin_number Idle
+	*		idle		noeat
+	"01"		bin_number	recolor=-2
+
+:maybe_oct_number Idle
+	*		idle		noeat
+	"0-7"		oct_number	recolor=-2
+
+:bad Bad
+	*		idle		noeat
+
+:hex_number	Constant
+	*		idle		noeat
+	"0-9"		hex_number
+	"a-fA-F"	hex_number
+
+:bin_number	Constant
+	*		idle		noeat
+	"01"		bin_number
+	"2-9"		bad		recolor=-1
+
+:oct_number	Constant
+	*		idle		noeat
+	"0-7"		oct_number
+	"89"		bad		recolor=-1
 
 :number Constant
 	*		idle		noeat
