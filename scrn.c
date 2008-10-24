@@ -2004,6 +2004,36 @@ int txtwidth(unsigned char *s,int len)
 		return len;
 }
 
+int txtwidth1(struct charmap *map,int tabwidth,unsigned char *s,int len)
+{
+	if (map->type) {
+		int col=0;
+		struct utf8_sm sm;
+		utf8_init(&sm);
+
+		while(len--) {
+			int d = utf8_decode(&sm,*s++);
+			if (d == '\t') {
+				++col;
+				col += tabwidth - (col % tabwidth);
+			} else if (d >= 0)
+				col += joe_wcwidth(1,d);
+		}
+
+		return col;
+	} else {
+		int col = 0;
+		while (len--) {
+			if (*s++ == '\t') {
+				++col;
+				col += tabwidth - (col % tabwidth);
+			} else
+				++col;
+		}
+		return col;
+	}
+}
+
 /* Generate text with formatting escape sequences */
 
 void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)

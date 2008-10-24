@@ -1,3 +1,6 @@
+- Paragraph format of single line paragraph is indented only if autoindent
+  is enabled. (jqh)
+
 - Guessindent no longer overrides istep if indendation is space.
 
 - Fix low limit of lmargin

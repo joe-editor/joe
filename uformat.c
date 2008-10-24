@@ -345,29 +345,34 @@ void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
 		} else {
 			/* First line */
 			P *r = pdup(s, USTR "uformat");
-			int x;
+			int x, y;
 
 			indent = nindent(bw, s, 1);
 			pcol(r, indent);
 			indents = brs(s, r->byte - s->byte);
 			prm(r);
-			/* Ignore blanks unless autoindent is on */
-			for (x = 0; indents[x] == ' ' || indents[x] == '\t'; ++x);
-			if (!indents[x] && !bw->o.autoindent) {
-				indents[0] = 0;
-				x = 0;
+			if (!bw->o.autoindent) {
+				/* Don't indent second line of single-line paragraphs if autoindent is off */
+				int x = zlen(indents);
+				while (x && (indents[x - 1] == ' ' || indents[x - 1] == '\t'))
+					indents[--x] = 0;
+				if (x) {
+					indents[x++] = ' ';
+					indents[x] = 0;
+				}
+				indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, x);
 			}
-			/* Don't duplicate bullet, but leave VHDL comment */
-			while (indents[x])
-				++x;
-			if (x >= 2 && indents[x - 1] == ' ' &&
-			    ((indents[x - 2] == '*' && (x == 2 || indents[x - 3] == ' ' || indents[x - 3] == '\t')) || (indents[x - 2] == '-' && (x == 2 || indents[x - 3] != '-')))) {
-			    	indents[x - 2] = ' ';
-			}
+			/* Don't duplicate if it looks like a bullet */
+			for (x = 0; indents[x] && (indents[x] == ' ' || indents[x] == '\t'); ++x);
+			y = zlen(indents);
+			while (y && (indents[y - 1] == ' ' || indents[y - 1] == '\t'))
+				--y;
+			/* We have non-space between x and y */
+			if (y == x + 1 && (indents[x] == '*' || indents[x] == '-'))
+				indents[x] = ' ';
 			/* Fix C comment */
-			if (x >= 3 && indents[x - 3] == '/' && indents[x - 2] == '*' && indents[x - 1] == ' ')
-				indents[x - 3] = ' ';
-			
+			if (indents[x] == '/' && indents[x + 1] == '*')
+				indents[x] = ' ';
 		}
 		my_indents = 1;
 		prm(q);
@@ -525,17 +530,35 @@ int uformat(BW *bw)
 		prm(r);
 	} else {
 		P *r = pdup(p, USTR "uformat");
-
+		int x, y;
 		indent = nindent(bw, p, 0);
 		pcol(r, indent);
 		indents = brs(p, r->byte - p->byte);
 		prm(r);
+		if (!bw->o.autoindent) {
+			/* Don't indent second line of single-line paragraphs if autoindent is off */
+			int x = zlen(indents);
+			while (x && (indents[x - 1] == ' ' || indents[x - 1] == '\t'))
+				indents[--x] = 0;
+			if (x) {
+				indents[x++] = ' ';
+				indents[x] = 0;
+			}
+			indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, x);
+		}
+		/* Don't duplicate if it looks like a bullet */
+		for (x = 0; indents[x] && (indents[x] == ' ' || indents[x] == '\t'); ++x);
+		y = zlen(indents);
+		while (y && (indents[y - 1] == ' ' || indents[y - 1] == '\t'))
+			--y;
+		/* We have non-space between x and y */
+		if (y == x + 1 && (indents[x] == '*' || indents[x] == '-'))
+			indents[x] = ' ';
+		/* Fix C comment */
+		if (indents[x] == '/' && indents[x + 1] == '*')
+			indents[x] = ' ';
 	}
 	prm(q);
-
-	/* Fix C */
-	if (indents[0] == '/' && indents[1] == '*' && indents[2] == ' ')
-		indents[0] = ' ';
 
 	/* But if the left margin is greater, we use that instead */
 	if (bw->o.lmargin > indent)
