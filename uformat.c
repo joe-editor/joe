@@ -376,6 +376,18 @@ void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
 			if (indents[x] == '/' && indents[x + 1] == '*')
 				indents[x] = ' ';
 		}
+		if (bw->o.lmargin > indent) {
+			int x;
+			for (x = 0; indents[x] == ' ' || indents[x] == '\t'; ++x);
+			if (!indents[x]) {
+				joe_free(indents);
+				indent = bw->o.lmargin;
+				indents = joe_malloc(indent+1);
+				for (x = 0; x != indent; ++x)
+					indents[x] = ' ';
+				indents[x] = 0;
+			}
+		}
 		my_indents = 1;
 		prm(q);
 		prm(s);
@@ -563,8 +575,18 @@ int uformat(BW *bw)
 	prm(q);
 
 	/* But if the left margin is greater, we use that instead */
-	if (bw->o.lmargin > indent)
-		indent = bw->o.lmargin;
+	if (bw->o.lmargin > indent) {
+		int x;
+		for (x = 0; indents[x] == ' ' || indents[x] == '\t'; ++x);
+		if (!indents[x]) {
+			joe_free(indents);
+			indent = bw->o.lmargin;
+			indents = joe_malloc(indent+1);
+			for (x = 0; x != indent; ++x)
+				indents[x] = ' ';
+			indents[x] = 0;
+		}
+	}
 
 	/* Cut paragraph into new buffer */
 	
