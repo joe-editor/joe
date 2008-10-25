@@ -125,6 +125,7 @@ OPTIONS pdefault = {
 	0,		/* line numbers */
 	0,		/* read only */
 	0,		/* french spacing */
+	0,		/* flowed text */
 	0,		/* spaces */
 #ifdef __MSDOS__
 	1,		/* crlf */
@@ -181,6 +182,7 @@ OPTIONS fdefault = {
 	0,		/* line numbers */
 	0,		/* read only */
 	0,		/* french spacing */
+	0,		/* flowed text */
 	0,		/* spaces */
 #ifdef __MSDOS__
 	1,		/* crlf */
@@ -315,6 +317,7 @@ struct glopts {
 	{USTR "indentc",	5, NULL, (unsigned char *) &fdefault.indentc, USTR _("Indent char %d (SPACE=32, TAB=9, ^C to abort): "), 0, USTR _("  Indent char "), 0, 0, 255 },
 	{USTR "istep",	5, NULL, (unsigned char *) &fdefault.istep, USTR _("Indent step %d (^C to abort): "), 0, USTR _("  Indent step "), 0, 1, 64 },
 	{USTR "french",	4, NULL, (unsigned char *) &fdefault.french, USTR _("One space after periods for paragraph reformat"), USTR _("Two spaces after periods for paragraph reformat"), USTR _("  French spacing ") },
+	{USTR "flowed",	4, NULL, (unsigned char *) &fdefault.flowed, USTR _("One space after paragraph lines"), USTR _("No spaces after paragraph lines"), USTR _("  Flowed text ") },
 	{USTR "highlight",	4, NULL, (unsigned char *) &fdefault.highlight, USTR _("Highlighting enabled"), USTR _("Highlighting disabled"), USTR _("H Highlighting ") },
 	{USTR "spaces",	4, NULL, (unsigned char *) &fdefault.spaces, USTR _("Inserting spaces when tab key is hit"), USTR _("Inserting tabs when tab key is hit"), USTR _("  No tabs ") },
 	{USTR "mid",	0, &mid, NULL, USTR _("Cursor will be recentered on scrolls"), USTR _("Cursor will not be recentered on scroll"), USTR _("C Center on scroll ") },

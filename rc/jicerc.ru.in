@@ -312,6 +312,9 @@
 
 	-rmargin nnn		Правая граница
 
+	-flowed			Put one space after intermediate paragraph lines
+				for support of flowed text.
+
 
 	-french			Один пробел после '.', '?' and '!' при 
 				переносе слов и форматировании абзацев вместо 
