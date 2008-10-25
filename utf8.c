@@ -371,9 +371,9 @@ void joe_locale()
 	unsigned char *s, *t, *u;
 
 	s=(unsigned char *)getenv("LC_ALL");
-	if (!s) {
+	if (!s || !*s) {
 		s=(unsigned char *)getenv("LC_CTYPE");
-		if (!s) {
+		if (!s || !*s) {
 			s=(unsigned char *)getenv("LANG");
 		}
 	}
