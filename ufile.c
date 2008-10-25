@@ -490,7 +490,7 @@ int usave(BW *bw)
 	unsigned char *s = ask(bw->parent, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist, USTR "Names", cmplt,
 	                       locale_map, bw->b->name ? 1 : 7, 0, bw->b->name);
 	if (s) {
-		return dosave1(bw, s, mksavereq(NULL,NULL,NULL,0, 0));
+		return dosave1(bw, s, mksavereq(NULL,NULL,NULL,1, 0));
 	} else {
 		return -1;
 	}
