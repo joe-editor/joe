@@ -65,6 +65,7 @@ struct options {
 	int	linums;
 	int	readonly;
 	int	french;
+	int	flowed;
 	int	spaces;
 	int	crlf;
 	int	highlight;	/* Set to enable highlighting */

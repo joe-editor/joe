@@ -1,3 +1,5 @@
+- Add -flowed option: adds a space after paragraph lines.
+
 - Fix German and French .po files: they were cause search&replace to break.
 
 - Look at LC_MESSAGES to get the language to use for editor messages.

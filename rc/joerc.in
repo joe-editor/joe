@@ -302,6 +302,8 @@
 
 	-rmargin nnn		Right margin
 
+	-flowed			Put one space after intermediate paragraph lines
+				for support of flowed text.
 
 	-french			One space after '.', '?' and '!' for wordwrap
 				and paragraph reformat instead of two.  Joe

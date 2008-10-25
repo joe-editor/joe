@@ -439,6 +439,12 @@ void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
 		bdel(q, p);
 		prm(q);
 
+		if (bw->o.flowed) {
+			binsc(p, ' ');
+			pgetc(p);
+			++to;
+		}
+
 		/* Move word to beginning of next line */
 		binsc(p, '\n');
 		
