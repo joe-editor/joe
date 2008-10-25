@@ -508,7 +508,7 @@ int usave(BW *bw)
 	BW *pbw;
 	
 	pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist, dosave1, USTR "Names", NULL, cmplt,
-	            mksavereq(NULL,NULL,NULL,0, 0), NULL, locale_map, bw->b->name ? 1 : 7);
+	            mksavereq(NULL,NULL,NULL, 1, 0), NULL, locale_map, bw->b->name ? 1 : 7);
 
 	if (pbw && bw->b->name) {
 		binss(pbw->cursor, bw->b->name);
