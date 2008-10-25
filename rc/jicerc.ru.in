@@ -77,10 +77,11 @@
 
  -nobackups	Если не желаете, чтобы создавались резервные файлы
 
- -break_links	Удалять файл перед записью, для разрыва жестких ссылок
+ -break_hardlinks
+		Удалять файл перед записью, для разрыва жестких ссылок
 		(but don't break symbolic links).
 
- -break_symlinks
+ -break_links
 		Delete file before writing, to break hard links
 		and symbolic links.
 
