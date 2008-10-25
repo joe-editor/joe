@@ -63,6 +63,12 @@
  -nobackups	If you don't want backup files to be created
  -nocurdir	Do not prompt with current directory
  -break_links	Delete file before writing, to break hard links
+		(but don't break symbolic links).
+
+ -break_symlinks
+		Delete file before writing, to break hard links
+		and symbolic links.
+
  -exask		^KX always confirms file name
 -beep		Beep on errors and when cursor goes past extremes
  -nosta		Disable top-most status line
