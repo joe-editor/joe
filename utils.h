@@ -38,6 +38,7 @@ signed long long_min PARAMS((signed long a, signed long b));
 /* Versions of 'read' and 'write' which automatically retry when interrupted */
 ssize_t joe_read PARAMS((int fd, void *buf, size_t siz));
 ssize_t joe_write PARAMS((int fd, void *buf, size_t siz));
+int joe_ioctl PARAMS((int fd, int req, void *ptr));
 
 /* wrappers to *alloc routines */
 void *joe_malloc PARAMS((size_t size));

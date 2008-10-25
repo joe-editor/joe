@@ -346,7 +346,7 @@ void ttopnn(void)
 	bbaud = cfgetospeed(&newterm);
 #else
 #ifdef HAVE_SYSV_TERMIO
-	ioctl(fileno(termin), TCGETA, &oldterm);
+	joe_ioctl(fileno(termin), TCGETA, &oldterm);
 	newterm = oldterm;
 	newterm.c_lflag = 0;
 	if (noxon)
@@ -356,12 +356,12 @@ void ttopnn(void)
 	newterm.c_oflag = 0;
 	newterm.c_cc[VMIN] = 1;
 	newterm.c_cc[VTIME] = 0;
-	ioctl(fileno(termin), TCSETAW, &newterm);
+	joe_ioctl(fileno(termin), TCSETAW, &newterm);
 	bbaud = (newterm.c_cflag & CBAUD);
 #else
-	ioctl(fileno(termin), TIOCGETP, &arg);
-	ioctl(fileno(termin), TIOCGETC, &targ);
-	ioctl(fileno(termin), TIOCGLTC, &ltarg);
+	joe_ioctl(fileno(termin), TIOCGETP, &arg);
+	joe_ioctl(fileno(termin), TIOCGETC, &targ);
+	joe_ioctl(fileno(termin), TIOCGLTC, &ltarg);
 	oarg = arg;
 	otarg = targ;
 	oltarg = ltarg;
@@ -380,9 +380,9 @@ void ttopnn(void)
 	ltarg.t_flushc = -1;
 	ltarg.t_werasc = -1;
 	ltarg.t_lnextc = -1;
-	ioctl(fileno(termin), TIOCSETN, &arg);
-	ioctl(fileno(termin), TIOCSETC, &targ);
-	ioctl(fileno(termin), TIOCSLTC, &ltarg);
+	joe_ioctl(fileno(termin), TIOCSETN, &arg);
+	joe_ioctl(fileno(termin), TIOCSETC, &targ);
+	joe_ioctl(fileno(termin), TIOCSLTC, &ltarg);
 	bbaud = arg.sg_ospeed;
 #endif
 #endif
@@ -431,11 +431,11 @@ void ttclsn(void)
 	tcsetattr(fileno(termin), TCSADRAIN, &oldterm);
 #else
 #ifdef HAVE_SYSV_TERMIO
-	ioctl(fileno(termin), TCSETAW, &oldterm);
+	joe_ioctl(fileno(termin), TCSETAW, &oldterm);
 #else
-	ioctl(fileno(termin), TIOCSETN, &oarg);
-	ioctl(fileno(termin), TIOCSETC, &otarg);
-	ioctl(fileno(termin), TIOCSLTC, &oltarg);
+	joe_ioctl(fileno(termin), TIOCSETN, &oarg);
+	joe_ioctl(fileno(termin), TIOCSETC, &otarg);
+	joe_ioctl(fileno(termin), TIOCSLTC, &oltarg);
 #endif
 #endif
 
@@ -694,13 +694,13 @@ void ttgtsz(int *x, int *y)
 	*y = 0;
 
 #ifdef TIOCGSIZE
-	if (ioctl(fileno(termout), TIOCGSIZE, &getit) != -1) {
+	if (joe_ioctl(fileno(termout), TIOCGSIZE, &getit) != -1) {
 		*x = getit.ts_cols;
 		*y = getit.ts_lines;
 	}
 #else
 #ifdef TIOCGWINSZ
-	if (ioctl(fileno(termout), TIOCGWINSZ, &getit) != -1) {
+	if (joe_ioctl(fileno(termout), TIOCGWINSZ, &getit) != -1) {
 		*x = getit.ws_col;
 		*y = getit.ws_row;
 	}
@@ -1090,7 +1090,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 
 #ifdef TIOCNOTTY
 			x = open("/dev/tty", O_RDWR);
-			ioctl(x, TIOCNOTTY, 0);
+			joe_ioctl(x, TIOCNOTTY, 0);
 #endif
 
 			setsid();	/* I think you do setprgp(0,0) on systems with no setsid() */
@@ -1120,8 +1120,8 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 #else
 				/* This tells the fd that it's a tty (I think) */
 #ifdef __svr4__
-					ioctl(x, I_PUSH, "ptem");
-					ioctl(x, I_PUSH, "ldterm");
+					joe_ioctl(x, I_PUSH, "ptem");
+					joe_ioctl(x, I_PUSH, "ldterm");
 #endif
 
 				/* Open stdout, stderr */
@@ -1135,11 +1135,11 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 					tcsetattr(0, TCSADRAIN, &oldterm);
 #else
 #ifdef HAVE_SYSV_TERMIO
-					ioctl(0, TCSETAW, &oldterm);
+					joe_ioctl(0, TCSETAW, &oldterm);
 #else
-					ioctl(0, TIOCSETN, &oarg);
-					ioctl(0, TIOCSETC, &otarg);
-					ioctl(0, TIOCSLTC, &oltarg);
+					joe_ioctl(0, TIOCSETN, &oarg);
+					joe_ioctl(0, TIOCSETC, &otarg);
+					joe_ioctl(0, TIOCSLTC, &oltarg);
 #endif
 #endif
 					/* We could probably have a special TTY set-up for JOE, but for now

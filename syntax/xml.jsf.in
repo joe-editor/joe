@@ -137,15 +137,21 @@
 
 :astring Constant
 	*		astring
-	"<>"		error		noeat recolor=-1
+	"<"		error		noeat recolor=-1
 	"&"		achar		recolor=-1
 	"\""		endstring
 
+#	">"		error		noeat recolor=-1
+
+
 :bstring Constant
 	*		bstring
-	"<>"		error		noeat recolor=-1
+	"<"		error		noeat recolor=-1
 	"&"		bchar		recolor=-1
 	"'"		endstring
+
+#	">"		error		noeat recolor=-1
+
 
 :achar EntityRef
 	*		error		noeat recolor=-1
