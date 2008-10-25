@@ -33,10 +33,14 @@
 *.tex
 -wordwrap
 -syntax tex
+-tex_comment
+-no_double_quoted
 
 *.sty
 -wordwrap
 -syntax tex
+-tex_comment
+-no_double_quoted
 
  Text file.
 *.txt
