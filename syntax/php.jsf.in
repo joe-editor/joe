@@ -46,6 +46,7 @@
 	"0-9"		first_digit	recolor=-1
 	"'"		string_sq	recolor=-1
 	"\""		string_dq	recolor=-1
+	"\`"		string_bq	recolor=-1
 	"a-zA-Z_"	ident		buffer
 	"$"   php_var recolor=-1
 	"-" maybe_method
@@ -97,6 +98,12 @@ done
   "a-zA-Z_" var_indqstring
   "\""  idle
 	"\\"		string_dq_esc	recolor=-1
+
+:var_inbqstring Var
+  *     string_bq recolor=-1
+  "a-zA-Z_" var_inbqstring
+  "\`"  idle
+	"\\"		string_bq_esc	recolor=-1
 
 :var_insqstring Var
   *     string_sq recolor=-1
@@ -172,6 +179,16 @@ done
 :string_dq_esc Escape
 	*		string_dq
 	"\n"		string_dq	recolor=-2
+	
+:string_bq Constant
+	*		string_bq
+	"$"     var_inbqstring recolor=-1
+	"\`"		idle
+	"\\"		string_bq_esc	recolor=-1
+
+:string_bq_esc Escape
+	*		string_bq
+	"\n"		string_bq	recolor=-2
 	
 :first_digit Constant
 	*		idle	noeat
