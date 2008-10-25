@@ -111,6 +111,15 @@ ssize_t joe_write(int fd, void *buf, size_t size)
 	return rt;
 }
 
+int joe_ioctl(int fd, int req, void *ptr)
+{
+	int rt;
+	do {
+		rt = ioctl(fd, req, ptr);
+	} while (rt == -1 && errno == EINTR);
+	return rt;
+}
+
 /* Heap checking versions of malloc() */
 
 /* #define HEAP_CHECK 1 */
