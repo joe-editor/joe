@@ -99,10 +99,21 @@ done
 
 :tag_idle Background
 	*			mistake_tag recolor=-1
+	"<"			tag_maybe_php recolor=-1
 	" \t\n"		tag_idle
 	"/"			tag_end recolor=-1 
 	">"			tag_end noeat recolor=-1
 	"-A-Za-z0-9._:"		tag_param noeat recolor=-1
+
+:tag_maybe_php Mystery
+	*			tag_idle
+	"?"			tag_call_php recolor=-2
+
+:tag_call_php TagEdge
+	*			rtn_php_tag noeat call=php.php()
+
+:rtn_php_tag TagEdge
+	*			tag_idle noeat
 
 :tag_param TagParam
 	*			tag_idle noeat recolor=-1
@@ -245,7 +256,20 @@ done
 .ifdef squote
 	"'"	tag_value_quoted return
 .endif
-	"&"	tag_value_quoted call=.entity() recolor=-1
+	"<"	tag_value_maybe_php
+
+:tag_value_maybe_php TagValue
+	*	tag_value_quoted	noeat
+	"?"	tag_value_call_php recolor=-2
+
+:tag_value_call_php TagEdge
+	*	tag_value_rtn_php	noeat call=php.php()
+
+:tag_value_rtn_php TagEdge
+	*	tag_value_quoted	noeat
+
+# Too many non-html things can be in quotes to do this...
+#	"&"	tag_value_quoted call=.entity() recolor=-1
 
 :mistake_tag_value Mystery
 	*	tag_value_quoted noeat

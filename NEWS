@@ -1,3 +1,5 @@
+- Improve HTML highlighter... if you see <? it's probably a script...
+
 - Check for EINTR from ioctl
 
 - > allowed in xml content
