@@ -669,7 +669,7 @@ that many times.
 
 For example, to delete the next 20 lines of text, type:
 
-\fB^K \ 20\fR<return>\fB^Y\fR
+\fB^K \e\ 20\fR<return>\fB^Y\fR
 
 .SS Rectangle mode
 Type \fB^T X\fR to have \fB^K B\fR and \fB^K K\fR select rectangular blocks
