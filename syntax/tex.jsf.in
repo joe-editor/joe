@@ -45,7 +45,7 @@
 
 :parameter Parameter
 	*		idle		noeat
-	"0-9"		parameter
+	"0-9"		idle
 
 :brace Brace
 	*		idle		noeat
