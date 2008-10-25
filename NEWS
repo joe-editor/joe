@@ -1,3 +1,6 @@
+- Added -break_symlinks option and changed -break_links option to not
+  break symbolic links.
+
 - Paragraph format of single line paragraph is indented only if autoindent
   is enabled. (jqh)
 
