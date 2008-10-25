@@ -188,7 +188,7 @@ static int mpxfd;		/* Editor reads packets from this fd */
 static int mpxsfd;		/* Clients send packets to this fd */
 
 static int nmpx = 0;
-static int accept = NO_MORE_DATA;	/* =-1 if we have last packet */
+static int acceptch = NO_MORE_DATA;	/* =-1 if we have last packet */
 
 struct packet {
 	MPX *who;
@@ -542,14 +542,14 @@ int ttflsh(void)
 	}
 
 	/* Ack previous packet */
-	if (ackkbd != -1 && accept != NO_MORE_DATA && !have) {
+	if (ackkbd != -1 && acceptch != NO_MORE_DATA && !have) {
 		unsigned char c = 0;
 
 		if (pack.who && pack.who->func)
 			joe_write(pack.who->ackfd, &c, 1);
 		else
 			joe_write(ackkbd, &c, 1);
-		accept = NO_MORE_DATA;
+		acceptch = NO_MORE_DATA;
 	}
 
 	/* Check for typeahead or next packet */
@@ -561,7 +561,7 @@ int ttflsh(void)
 				fcntl(mpxfd, F_SETFL, 0);
 				joe_read(mpxfd, pack.data, pack.size);
 				have = 1;
-				accept = pack.ch;
+				acceptch = pack.ch;
 			} else
 				fcntl(mpxfd, F_SETFL, 0);
 		} else {
@@ -632,11 +632,11 @@ int ttgetc(void)
 				else
 					ttsig(0);
 			}
-			accept = pack.ch;
+			acceptch = pack.ch;
 		}
 		have = 0;
 		if (pack.who) {	/* Got bknd input */
-			if (accept != NO_MORE_DATA) {
+			if (acceptch != NO_MORE_DATA) {
 				if (pack.who->func) {
 					pack.who->func(pack.who->object, pack.data, pack.size);
 					edupd(1);
@@ -645,9 +645,9 @@ int ttgetc(void)
 				mpxdied(pack.who);
 			goto loop;
 		} else {
-			if (accept != NO_MORE_DATA) {
+			if (acceptch != NO_MORE_DATA) {
 				tickoff();
-				return accept;
+				return acceptch;
 			}
 			else {
 				tickoff();
@@ -751,7 +751,7 @@ static void mpxresume(void)
 {
 	int fds[2];
 	pipe(fds);
-	accept = NO_MORE_DATA;
+	acceptch = NO_MORE_DATA;
 	have = 0;
 	if (!(kbdpid = fork())) {
 		close(fds[1]);

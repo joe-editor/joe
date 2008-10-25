@@ -45,8 +45,11 @@
 :content Idle
 	*		content
 	"<"		tag		recolor=-1
-	">"		error		noeat recolor=-1
 	"&"		entityref	recolor=-1
+
+# > is allowed
+#	">"		error		noeat recolor=-1
+
 
 # In several contexts a space is an error, and since a coloured space is
 # not visible, we colour the next non-space character as well.

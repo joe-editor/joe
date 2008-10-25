@@ -1,3 +1,5 @@
+- > allowed in xml content
+
 - Add -flowed option: adds a space after paragraph lines.
 
 - Fix German and French .po files: they were cause search&replace to break.
