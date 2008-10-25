@@ -1583,7 +1583,7 @@ msgstr ""
 #: usearch.c:554
 #, fuzzy
 msgid "|error list files|eE"
-msgstr "Erreur à l'écriture du fichier"
+msgstr ""
 
 #: usearch.c:555
 msgid "|search and replace|rR"

@@ -1604,7 +1604,7 @@ msgstr ""
 #: usearch.c:554
 #, fuzzy
 msgid "|error list files|eE"
-msgstr "Error writing file"
+msgstr ""
 
 #: usearch.c:555
 msgid "|search and replace|rR"
