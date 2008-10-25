@@ -334,6 +334,9 @@ unsigned char *non_utf8_codeset;
 unsigned char *locale_lang;
 			/* Our local language */
 
+unsigned char *locale_msgs;
+			/* Language to use for editor messages */
+
 struct charmap *locale_map;
 			/* Character map of terminal, default map for new files */
 
@@ -343,6 +346,24 @@ struct charmap *locale_map_non_utf8;
 void joe_locale()
 {
 	unsigned char *s, *t, *u;
+
+	s=(unsigned char *)getenv("LC_ALL");
+	if (!s || !*s) {
+		s=(unsigned char *)getenv("LC_MESSAGES");
+		if (!s || !*s) {
+			s=(unsigned char *)getenv("LANG");
+		}
+	}
+
+	if (s)
+		s=zdup(s);
+	else
+		s=USTR "ascii";
+
+	if ((t=zrchr(s,'.')))
+		*t = 0;
+
+	locale_msgs = s;
 
 	s=(unsigned char *)getenv("LC_ALL");
 	if (!s || !*s) {
@@ -419,7 +440,7 @@ void joe_locale()
 	fdefault.charmap = locale_map;
 	pdefault.charmap = locale_map;
 #endif
-	init_gettext(locale_lang);
+	init_gettext(locale_msgs);
 }
 
 void to_utf8(struct charmap *map,unsigned char *s,int c)

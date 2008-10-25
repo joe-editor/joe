@@ -250,17 +250,17 @@ int main(int argc, char **real_argv, char **envv)
 	t = vsncpy(NULL, 0, sc(JOERC));
 	t = vsncpy(sv(t), sv(run));
 	t = vsncpy(sv(t), sc("rc."));
-	t = vsncpy(sv(t), sz(locale_lang));
+	t = vsncpy(sv(t), sz(locale_msgs));
 	if (!stat((char *)t,&sbuf))
 		time_rc = sbuf.st_mtime;
 	else {
 		/* Try generic language: like joerc.de */
-		if (locale_lang[0] && locale_lang[1] && locale_lang[2]=='_') {
+		if (locale_msgs[0] && locale_msgs[1] && locale_msgs[2]=='_') {
 			vsrm(t);
 			t = vsncpy(NULL, 0, sc(JOERC));
 			t = vsncpy(sv(t), sv(run));
 			t = vsncpy(sv(t), sc("rc."));
-			t = vsncpy(sv(t), locale_lang, 2);
+			t = vsncpy(sv(t), locale_msgs, 2);
 			if (!stat((char *)t,&sbuf))
 				time_rc = sbuf.st_mtime;
 			else
