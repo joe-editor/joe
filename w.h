@@ -149,7 +149,7 @@ void sresize PARAMS((Screen *t));
 /* void chsize(Screen *t,int mul,int div)
  * Resize windows: each window is multiplied by the fraction mul/div
  */
-void chsize PARAMS(());
+/* void chsize PARAMS(()); */
 
 /* W *wcreate(Screen *t,WATOM *watom,W *where,W *target,W *original,int height);
  *

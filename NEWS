@@ -1,4 +1,8 @@
+- > allowed in xml content
+
 - Add -flowed option: adds a space after paragraph lines.
+
+- Fix problem in German .po file
 
 - Added -no_double_quoted and -tex_comment for TeX
 
