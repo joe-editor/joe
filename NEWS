@@ -1,3 +1,5 @@
+- Added -no_double_quoted and -tex_comment for TeX
+
 - Added -break_symlinks option and changed -break_links option to not
   break symbolic links.
 

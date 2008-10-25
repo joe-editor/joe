@@ -339,6 +339,9 @@
 				not good for regular text since ' is
 				normally used alone as an apostrophe)
 
+	-no_double_quoted	Text between " " should not be ignored (useful
+				for TeX).
+
 	-c_comment		Text between /* */ should be ignored
 
 	-cpp_comment		Text after // should be ignored

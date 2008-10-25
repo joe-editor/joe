@@ -145,11 +145,13 @@ OPTIONS pdefault = {
 	0,		/* Purify indentation */
 	0,		/* Picture mode */
 	0,		/* single_quoted */
+	0,		/* no_double_quoted */
 	0,		/* c_comment */
 	0,		/* cpp_comment */
 	0,		/* pound_comment */
 	0,		/* vhdl_comment */
 	0,		/* semi_comment */
+	0,		/* tex_comment */
 	0,		/* hex */
 	NULL,		/* text_delimiters */
 	NULL,		/* Characters which can indent paragraphs */
@@ -199,11 +201,13 @@ OPTIONS fdefault = {
 	0,		/* Purity indentation */
 	0,		/* Picture mode */
 	0,		/* single_quoted */
+	0,		/* no_double_quoted */
 	0,		/* c_comment */
 	0,		/* cpp_comment */
 	0,		/* pound_comment */
 	0,		/* vhdl_comment */
 	0,		/* semi_comment */
+	0,		/* tex_comment */
 	0,		/* hex */
 	NULL,		/* text_delimiters */
 	USTR ">;!#%/",	/* Characters which can indent paragraphs */
@@ -352,11 +356,13 @@ struct glopts {
 	{USTR "syntax",	9, NULL, NULL, USTR _("Select syntax (^C to abort): "), 0, USTR _("Y Syntax") },
 	{USTR "encoding",13, NULL, NULL, USTR _("Select file character set (^C to abort): "), 0, USTR _("E Encoding ") },
 	{USTR "single_quoted",	4, NULL, (unsigned char *) &fdefault.single_quoted, USTR _("Single quoting enabled"), USTR _("Single quoting disabled"), USTR _("  ^G ignores '... ' ") },
+	{USTR "no_double_quoted",4, NULL, (unsigned char *) &fdefault.no_double_quoted, USTR _("Double quoting disabled"), USTR _("Double quoting enabled"), USTR _("  ^G ignores \"... \" ") },
 	{USTR "c_comment",	4, NULL, (unsigned char *) &fdefault.c_comment, USTR _("/* comments enabled"), USTR _("/* comments disabled"), USTR _("  ^G ignores /*...*/ ") },
 	{USTR "cpp_comment",	4, NULL, (unsigned char *) &fdefault.cpp_comment, USTR _("// comments enabled"), USTR _("// comments disabled"), USTR _("  ^G ignores //... ") },
 	{USTR "pound_comment",	4, NULL, (unsigned char *) &fdefault.pound_comment, USTR _("# comments enabled"), USTR _("# comments disabled"), USTR _("  ^G ignores #... ") },
 	{USTR "vhdl_comment",	4, NULL, (unsigned char *) &fdefault.vhdl_comment, USTR _("-- comments enabled"), USTR _("-- comments disabled"), USTR _("  ^G ignores --... ") },
 	{USTR "semi_comment",	4, NULL, (unsigned char *) &fdefault.semi_comment, USTR _("; comments enabled"), USTR _("; comments disabled"), USTR _("  ^G ignores ;... ") },
+	{USTR "tex_comment",	4, NULL, (unsigned char *) &fdefault.tex_comment, USTR _("% comments enabled"), USTR _("% comments disabled"), USTR _("  ^G ignores %... ") },
 	{USTR "text_delimiters",	6, NULL, (unsigned char *) &fdefault.text_delimiters, USTR _("Text delimiters (%s): "), 0, USTR _("  Text delimiters ") },
 	{USTR "language",	6, NULL, (unsigned char *) &fdefault.language, USTR _("Language (%s): "), 0, USTR _("V Language ") },
 	{USTR "cpara",		6, NULL, (unsigned char *) &fdefault.cpara, USTR _("Characters which can indent paragraphs (%s): "), 0, USTR _("  Paragraph indent chars ") },
