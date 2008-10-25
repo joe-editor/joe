@@ -234,7 +234,7 @@ void lazy_opts(B *b, OPTIONS *o)
 	if (!o->charmap)
 		o->charmap = locale_map;
 	if (!o->language)
-		o->language = zdup(locale_lang);
+		o->language = zdup(locale_msgs);
 }
 
 /* Set local options depending on file name and contents */

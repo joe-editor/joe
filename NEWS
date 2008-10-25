@@ -1,3 +1,7 @@
+- Fix German and French .po files: they were cause search&replace to break.
+
+- Look at LC_MESSAGES to get the language to use for editor messages.
+
 - Added -no_double_quoted and -tex_comment for TeX
 
 - Added -break_symlinks option and changed -break_links option to not
