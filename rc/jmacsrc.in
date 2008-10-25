@@ -62,10 +62,11 @@
 		(this checking happens on save even with this option).
  -nobackups	If you don't want backup files to be created
  -nocurdir	Do not prompt with current directory
- -break_links	Delete file before writing, to break hard links
+ -break_hardlinks
+		Delete file before writing, to break hard links
 		(but don't break symbolic links).
 
- -break_symlinks
+ -break_links
 		Delete file before writing, to break hard links
 		and symbolic links.
 
