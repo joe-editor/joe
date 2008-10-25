@@ -11,6 +11,14 @@
 #include <pwd.h>
 #endif
 
+#ifndef S_ISLNK
+#ifdef S_IFLNK
+#define S_ISLNK(n) (((n) & (S_IFMT)) == (S_IFLNK))
+#else
+#define S_ISLNK(n) (0)
+#endif
+#endif
+
 extern int errno;
 
 #ifdef WITH_SELINUX
@@ -2513,6 +2521,7 @@ err:
  */
 
 int break_links; /* Set to break hard links on writes */
+int break_symlinks; /* Set to break symbolic links and hard links on writes */
 
 int bsave(P *p, unsigned char *s, off_t size, int flag)
 {
@@ -2543,12 +2552,14 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 		f = fopen((char *)s, "r+");
 	else {
 		/* Normal file save */
-		if (break_links) {
+		if (break_links || break_symlinks) {
 			struct stat sbuf;
 
 			/* Try to copy permissions */
-			if (!stat((char *)s,&sbuf)) {
+			if (!lstat((char *)s,&sbuf)) {
 				int g;
+				if (!break_symlinks && S_ISLNK(sbuf.st_mode))
+					goto nobreak;
 #ifdef WITH_SELINUX
 				security_context_t se;
 				if (selinux_enabled == -1)
@@ -2570,6 +2581,7 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 				}
 #endif
 				close(g);
+				nobreak:;
 			} else {
 				unlink((char *)s);
 			}
