@@ -9,11 +9,11 @@
 -
 
 =Idle
-=Head	bold white
+=Head	bold
 =HdTo	red bg_white
-=HdFrom	bold yellow
+=HdFrom	bold red
 =HdSbj	bold magenta
-=HdDate	bold white
+=HdDate	bold
 =HdRRT	black bg_white
 =HdGrp	bold white bg_red
 =HdFuT	bold red bg_yellow
