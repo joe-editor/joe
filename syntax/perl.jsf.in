@@ -46,13 +46,13 @@
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
-	"/"		regex		recolor=-1
 	"<"		maybe_inc
 	"$"		not_string	buffer
 .ifdef mason_block
 	"&%"		perl_maybe_done	buffer
 	"-a-zA-Z_@"	ident		buffer
 .else
+	"/"		regex		recolor=-1
 	"-a-zA-Z_@%&"	ident		buffer
 .endif
 
@@ -76,15 +76,11 @@
 	"$"		not_string	buffer
 	"<"		maybe_inc
 .ifdef mason_block
-	"%&"		perl_maybe_done1 buffer
+	"&%"		perl_maybe_done buffer
 	"a-zA-Z_@"	maybe_string	buffer
 .else
 	"a-zA-Z_@%&"	maybe_string	buffer
 .endif
-
-:perl_maybe_done Idle
-	*		maybe_string noeat
-	">"		idle1	recolor=-2 return
 
 :pod_start Idle
 	*		pod_start
