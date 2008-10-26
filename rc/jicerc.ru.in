@@ -493,11 +493,25 @@
 }
 
 {Joe
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,                        \i
+\i   Окно ПОДСКАЗКИ - \|выключить по F1    пред.экран - ^P     след. экран ^N      \i
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor             \|\i \i
 \i \i \|\i \i
 \i \i  default joerc file is here @JOERC@/joerc \|\i \i
 \i \i  additional documentation can be found here @JOERC@/doc \|\i \i
+}
+
+{CharTable
+\i   Help Screen    \|turn off with F1     prev. screen ^P                         \i
+\i \i\| Dec  \u 0123 4567  8901 2345    0123 4567  8901 2345 \u  Dec \|\i \i
+\i \i\|     |                                              |     \|\i \i
+\i \i\|   0 | \u@ABC\u \uDEFG\u  \uHIJK\u \uLMNO\u    \i\u@ABC\u\i \i\uDEFG\u\i  \i\uHIJK\u\i \i\uLMNO\u\i | 128 \|\i \i
+\i \i\|  16 | \uPQRS\u \uTUVW\u  \uXYZ[\u \u\\]^_\u    \i\uPQRS\u\i \i\uTUVW\u\i  \i\uXYZ[\u\i \i\u\\]^_\u\i | 144 \|\i \i
+\i \i\|  32 |  !"# $%&'  ()*+ ,-./    ═║╒ё ╓╔╕╖  ╗╘╙╚ ╛╜╝╞ | 160 \|\i \i
+\i \i\|  48 | 0123 4567  89:; <=>?    ╟╠╡Ё ╢╣╤╥  ╦╧╨╩ ╪╫╬© | 176 \|\i \i
+\i \i\|  64 | @ABC DEFG  HIJK LMNO    юабц дефг  хийк лмно | 192 \|\i \i
+\i \i\|  80 | PQRS TUVW  XYZ[ \\]^_    пярс тужв  ьызш эщчъ | 208 \|\i \i
+\i \i\|  96 | `abc defg  hijk lmno    ЮАБЦ ДЕФГ  ХИЙК ЛМНО | 224 \|\i \i
+\i \i\| 112 | pqrs tuvw  xyz{ |}~    ПЯРС ТУЖВ  ЬЫЗШ ЭЩЧЪ | 240 \|\i \i
 }
 
  ЧЕТВЕРТАЯ СЕКЦИЯ: Раскладки клавиатуры:
