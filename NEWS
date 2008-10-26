@@ -1,3 +1,5 @@
+- Fix bug where backup file did not get modtime of original
+
 - New diff highlighter
 
 - Fix paragraph format when overtype is on
