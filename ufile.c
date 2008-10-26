@@ -7,13 +7,11 @@
  */
 #include "types.h"
 
-#ifdef UTIME
+#ifdef HAVE_UTIME_H
 #include <utime.h>
-#define HAVEUTIME 1
 #else
-#ifdef SYSUTIME
+#ifdef HAVE_SYS_UTIME_H
 #include <sys/utime.h>
-#define HAVEUTIME 1
 #endif
 #endif
 
@@ -115,7 +113,7 @@ static int cp(unsigned char *from, unsigned char *to)
 	struct stat sbuf;
 	char buf[8192];
 
-#ifdef HAVEUTIME
+#ifdef HAVE_UTIME
 #ifdef NeXT
 	time_t utbuf[2];
 #else
@@ -146,7 +144,7 @@ static int cp(unsigned char *from, unsigned char *to)
 		return -1;
 	}
 
-#ifdef HAVEUTIME
+#ifdef HAVE_UTIME
 #ifdef NeXT
 	utbuf[0] = (time_t) sbuf.st_atime;
 	utbuf[1] = (time_t) sbuf.st_mtime;

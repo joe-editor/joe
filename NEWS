@@ -1,3 +1,5 @@
+- Fix problem where backup file did not get time of original
+
 - New diff highlighter
 
 - Fix paragraph format when overtype is on
