@@ -551,7 +551,7 @@ int uformat(BW *bw)
 	} else {
 		P *r = pdup(p, USTR "uformat");
 		int x, y;
-		indent = nindent(bw, p, 0);
+		indent = nindent(bw, p, 1); /* allowing * and - here */
 		pcol(r, indent);
 		indents = brs(p, r->byte - p->byte);
 		prm(r);
