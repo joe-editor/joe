@@ -1,3 +1,5 @@
+- Preserve setuid bit
+
 - Fix problem where backup file did not get time of original
 
 - New diff highlighter
