@@ -1,3 +1,5 @@
+- Fix paragraph format when overtype is on
+
 - Fix non-french spacing
 
 - Fix bug with joe +2 on single line files

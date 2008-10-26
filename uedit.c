@@ -1842,7 +1842,7 @@ int utypebw_raw(BW *bw, int k, int no_decode)
 
 		/* Not sure if we're in right position for wordwrap when we're in overtype mode */
 		if (bw->o.wordwrap && piscol(bw->cursor) > bw->o.rmargin && !joe_isblank(map,k)) {
-			wrapword(bw, bw->cursor, (long) bw->o.lmargin, bw->o.french, NULL);
+			wrapword(bw, bw->cursor, (long) bw->o.lmargin, bw->o.french, 0, NULL);
 			simple = 0;
 		}
 

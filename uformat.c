@@ -314,7 +314,7 @@ int ueop(BW *bw)
  * after . ? or !
  */
 
-void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
+void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned char *indents)
 {
 	P *q;
 	P *r;
@@ -448,8 +448,8 @@ void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
 		/* Move word to beginning of next line */
 		binsc(p, '\n');
 		
-		/* Take care that wordwrap is done the right way when overtype mode is active */
-		if (p->b->o.overtype){
+		/* When overtype is on, do not insert lines */
+		if (!no_over && p->b->o.overtype){
 			/* delete the next line break which is unnecessary */
 			r = pdup(p, USTR "wrapword");
 			/* p_goto_eol(r); */
@@ -470,10 +470,11 @@ void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
 			p_goto_eol(s);
 			
 			/* If s is located behind r then the line goes beyond the right margin and we need to call wordwrap() for that line. */
+/*
 			if (r->byte < s->byte){
-				wrapword(bw, r, indent, french, indents);
+				wrapword(bw, r, indent, french, 1, indents);
 			}
-			
+*/			
 			prm(r);
 			prm(s);
 		}
@@ -631,7 +632,7 @@ int uformat(BW *bw)
 
 		/* Do word wrap if we reach right margin */
 		if (piscol(p) > bw->o.rmargin && !joe_isblank(p->b->o.charmap,c)) {
-			wrapword(bw, p, indent, bw->o.french, indents);
+			wrapword(bw, p, indent, bw->o.french, 1, indents);
 			break;
 		}
 	}
@@ -698,7 +699,7 @@ int uformat(BW *bw)
 			binsc(p, pgetc(b));
 			pgetc(p);
 			if (piscol(p) > bw->o.rmargin)
-				wrapword(bw, p, indent, bw->o.french, indents);
+				wrapword(bw, p, indent, bw->o.french, 1, indents);
 		}
 	}
 
