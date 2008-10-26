@@ -369,9 +369,9 @@ void wrapword(BW *bw, P *p, long int indent, int french, unsigned char *indents)
 			while (y && (indents[y - 1] == ' ' || indents[y - 1] == '\t'))
 				--y;
 			/* Don't duplicate bullet */
-			if (y && (indents[y - 1] == '*' || indents[y - 1] == '-') &&
+/*			if (y && (indents[y - 1] == '*' || indents[y - 1] == '-') &&
 			    (y == 1 || indents[y - 2] == ' ' || indents[y - 2] == '\t'))
-				indents[y - 1] = ' ';
+				indents[y - 1] = ' '; */
 			/* Fix C comment */
 			if (indents[x] == '/' && indents[x + 1] == '*')
 				indents[x] = ' ';
@@ -571,9 +571,9 @@ int uformat(BW *bw)
 		while (y && (indents[y - 1] == ' ' || indents[y - 1] == '\t'))
 			--y;
 		/* Don't duplicate bullet */
-		if (y && (indents[y - 1] == '*' || indents[y - 1] == '-') &&
+/*		if (y && (indents[y - 1] == '*' || indents[y - 1] == '-') &&
 		    (y == 1 || indents[y - 2] == ' ' || indents[y - 2] == '\t'))
-			indents[y - 1] = ' ';
+			indents[y - 1] = ' '; */
 		/* Fix C comment */
 		if (indents[x] == '/' && indents[x + 1] == '*')
 			indents[x] = ' ';
@@ -622,8 +622,10 @@ int uformat(BW *bw)
 		}
 
 		/* Stop if we found white-space followed by end of line */
-		if (joe_isblank(b->b->o.charmap, c) && piseolblank(b))
+		if (joe_isblank(b->b->o.charmap, c) && piseolblank(b)) {
+			prgetc(b);
 			break;
+		}
 
 		/* Insert character, advance pointer */
 		binsc(p, c);
@@ -650,10 +652,11 @@ int uformat(BW *bw)
 			d=pdup(b, USTR "uformat");
 			g=prgetc(d);
 			if (g=='.' || g=='?' || g=='!') {
-				pset(d,b);
+				f = 1;
+/*				pset(d,b);
 				pgetc(d);
 				if (joe_isspace(bw->b->o.charmap,brch(d)))
-					f = 1;
+					f = 1; */
 			}
 			prm(d);
 			

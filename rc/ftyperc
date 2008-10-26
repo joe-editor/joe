@@ -407,6 +407,7 @@
 -purify
 -vhdl_comment
 -text_delimiters entity|ENTITY|if|IF|component|COMPONENT|loop|LOOP|configuration|CONFIGURATION|units|UNITS|record|RECORD|case|CASE|function|FUNCTION|package|PACKAGE|architecture|ARCHITECTURE|block|BLOCK|process|PROCESS|generate|GENERATE=end|END
+-cpara >#!;*-/%
 
  XML
 *.xml
@@ -674,9 +675,9 @@
 -autoindent
 -syntax m4
 
- Matlab
+ Matlab file
 *.m
--autoindent
+-wordwrap
 -syntax matlab
 
  Automake file
