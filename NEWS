@@ -1,3 +1,5 @@
+- Preserve setuid bit
+
 - Fix bug where backup file did not get modtime of original
 
 - New diff highlighter

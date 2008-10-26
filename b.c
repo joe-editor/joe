@@ -2533,9 +2533,10 @@ int break_symlinks; /* Set to break symbolic links and hard links on writes */
 
 int bsave(P *p, unsigned char *s, off_t size, int flag)
 {
+	struct stat sbuf;
+	int have_stat = 0;
 	FILE *f;
 	off_t skip, amnt;
-	struct stat sbuf;
 	int norm = 0;
 
 	s = parsens(s, &skip, &amnt);
@@ -2559,14 +2560,17 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 	} else if (skip || amnt != MAXLONG)
 		f = fopen((char *)s, "r+");
 	else {
+		have_stat = !stat((char *)s, &sbuf);
+		if (!have_stat)
+			sbuf.st_mode = 0666;
 		/* Normal file save */
 		if (break_links || break_symlinks) {
-			struct stat sbuf;
+			struct stat lsbuf;
 
 			/* Try to copy permissions */
-			if (!lstat((char *)s,&sbuf)) {
+			if (!lstat((char *)s,&lsbuf)) {
 				int g;
-				if (!break_symlinks && S_ISLNK(sbuf.st_mode)) {
+				if (!break_symlinks && S_ISLNK(lsbuf.st_mode)) {
 					goto nobreak;
 				}
 
@@ -2623,6 +2627,11 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 		if (brc(q) != '\n' && joe_write(fileno(f), &nl, 1) < 0)
 			berror = -5;
 		prm(q);
+	}
+
+	/* Restore setuid bit */
+	if (!berror && have_stat) {
+		fchmod(fileno(f), sbuf.st_mode);
 	}
 
 err:
