@@ -1,3 +1,9 @@
+- Fix non-french spacing
+
+- Fix bug with joe +2 on single line files
+
+- Add syntax file for .jsf files
+
 - Add ASCII table to joerc help
 
 - ^KD renames file

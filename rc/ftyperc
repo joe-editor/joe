@@ -659,11 +659,14 @@
  Joe Syntax File
 *.jsf
 -autoindent
--syntax conf
+-syntax jsf
+-smarthome
+
 
 *.jsf.in
 -autoindent
--syntax conf
+-syntax jsf
+-smarthome
 
  Autoconfig file
 *.ac
