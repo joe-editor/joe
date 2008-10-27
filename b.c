@@ -2526,6 +2526,9 @@ err:
 /* If flag is set, update original time of file if it makes
  * sense to do so (it's a normal file, we're saving with
  * same name as buffer or is about to get this name).
+ *
+ * If flag is set to 2, we update original time even if file
+ * name changed (i.e., we're renaming the file).
  */
 
 int break_links; /* Set to break hard links on writes */
@@ -2647,7 +2650,7 @@ err:
 
 	/* Update orignal date of file */
 	/* If it's not named, it's about to be */
-	if (!berror && norm && flag && (!p->b->name || !zcmp(s,p->b->name))) {
+	if (!berror && norm && flag && (!p->b->name || flag == 2 || !zcmp(s,p->b->name))) {
 		if (!stat((char *)s,&sbuf))
 			p->b->mod_time = sbuf.st_mtime;
 	}
