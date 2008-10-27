@@ -1,3 +1,5 @@
+- Make mail.jsf more forgiving for those of us who still use old UNIX mail
+
 - Fix file rename bugs
 
 - Improve ubop: can reformat a block of paragraphs again.  Reformat
