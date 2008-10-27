@@ -1,3 +1,10 @@
+- Improve ubop: can reformat a block of paragraphs again.  Reformat
+  of adjacent paragraphs working again.
+
+- Improve XML highlighter: allow \r in whitespace
+
+JOE 3.6
+
 - Preserve setuid bit
 
 - Fix problem where backup file did not get time of original
