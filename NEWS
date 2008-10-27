@@ -1,3 +1,5 @@
+- Fix file rename bugs
+
 - Improve ubop: can reformat a block of paragraphs again.  Reformat
   of adjacent paragraphs working again.
 

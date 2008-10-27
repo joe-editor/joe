@@ -324,7 +324,7 @@ static int saver(BW *bw, int c, struct savereq *req)
 	if (bw->b->er == 0 && bw->o.msold) {
 		exmacro(bw->o.msold,1);
 	}
-	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte, 1)) != 0) {
+	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte, req->rename ? 2 : 1)) != 0) {
 		msgnw(bw->parent, joe_gettext(msgs[-fl]));
 		if (req->callback) {
 			return req->callback(bw, req, -1);
@@ -334,6 +334,7 @@ static int saver(BW *bw, int c, struct savereq *req)
 		}
 	} else {
 		if (req->rename) {
+			bw_unlock(bw);
 			joe_free(bw->b->name);
 			bw->b->name = 0;
 		}
