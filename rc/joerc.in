@@ -225,6 +225,10 @@
   %M  Macro recording message
   %y  Syntax
   %x  Context (first non-indented line going backwards)
+  %dd day
+  %dm month
+  %dY year
+  %Ename%  value of environment variable
 
  These formatting escape sequences may also be given:
  

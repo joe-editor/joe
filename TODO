@@ -1,4 +1,30 @@
 For JOE-3.6
+
+	allow some form of escaping in file names
+
+	turn off utf-8 during hex display mode.  The issue is that
+	utf-8 mode is shared by all windows on the buffer, so turning
+	it off means turning it off for all windows.
+
+	improve guess indent?  Take LCM of many line indentations?
+
+	bop/eop is broken.  when it's fixed, perhaps we can:
+
+          mode where wordwrap wraps rest of paragraph?
+
+          mode where all editing wraps rest of paragraph?
+
+	handling of bullets could be better, but conflicts with C comments
+
+	a common operation is search&replace within a selected block. 
+	possibly cursor should go to start of block after each operation.
+
+	a common operation is macro execution to end of selected block.	
+	abort macro when it reaches ^K K? EMACS has "narrow to region"
+	concept to deal with this.
+
+	a common operation is clearing a shell buffer: make a key for this?
+
 	document ` in 'txt' (format test as status line)
 	additional formatting things in status line
 		`%n		filename
@@ -35,14 +61,6 @@ did shell window in joe-3.2 3.2 create a new window?
 
 =-=-=-=-=
 
-Improvements for regular text
------------------------------
-mode where wordwrap wraps rest of paragraph?
-
-mode where all editing wraps rest of paragraph?
-
-=-=-=-=-=
-
 should force -Wall if compiler is gcc
 
 =-=-=-=-=
@@ -66,13 +84,6 @@ multi-file search & replace: check for deleted 'B *'.
 - better grep-find (trigger in ^KE)
 
 - need current directory for grep-find.
-
-=-=-=-=-=
-
-- search: automatically use 'k' mode if there is a block selected?  Cursor
-  should jump to top of block when done?  Modes for this?
-
-- stop macro execution at ^KK?
 
 Compiling:
 ----------
