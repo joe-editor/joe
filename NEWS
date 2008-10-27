@@ -1,3 +1,7 @@
+- Improve XML highlighter: allow \r in whitespace
+
+JOE 3.6
+
 - Preserve setuid bit
 
 - Fix bug where backup file did not get modtime of original
