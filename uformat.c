@@ -187,10 +187,12 @@ P *pbop(BW *bw, P *p)
 {
 	long indent;
 	long prelen;
+	P *last;
 
 	p_goto_bol(p);
 	indent = nindent(bw, p, 0);
 	prelen = prefix(bw, p, 0);
+	last = pdup(p, USTR "pbop");
 	while (!pisbof(p) && (!within || !markb || p->byte > markb->byte)) {
 		long ind;
 		long len;
@@ -200,10 +202,11 @@ P *pbop(BW *bw, P *p)
 		ind = nindent(bw, p, 0);
 		len = prefix(bw, p, 0);
 		if (pisnpara(bw, p) || len != prelen) {
-			pnextl(p);
+			pset(p, last);
 			break;
 		}
 		if (ind > indent) {
+/*
 			int ok = 1;
 			P *q = pdup(p, USTR "pbop");
 			if (pprevl(q)) {
@@ -214,9 +217,11 @@ P *pbop(BW *bw, P *p)
 			prm(q);
 			if (!ok)
 				pnextl(p);
+*/
 			break;
 		}
 		if (ind < indent) {
+			pset(p, last);
 			break;
 			/* if (pisbof(p)) {
 				break;
@@ -232,7 +237,9 @@ P *pbop(BW *bw, P *p)
 				break;
 			} */
 		}
+		pset(last, p);
 	}
+	prm(last);
 	return p;
 }
 

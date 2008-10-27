@@ -1,3 +1,6 @@
+- Improve ubop: can reformat a block of paragraphs again.  Reformat
+  of adjacent indented paragraphs working again.
+
 - Improve XML highlighter: allow \r in whitespace
 
 JOE 3.6
