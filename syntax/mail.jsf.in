@@ -26,7 +26,11 @@
 
 :first Idle
 	*		hbol		noeat
-	"\n"		nohead
+	"\n"		newline
+	">|:~}#]"	newline		noeat
+
+# Require header
+#	"\n"		nohead
 
 :nohead HdBad
 	*		nohead
@@ -35,6 +39,7 @@
 	*		hbad		recolor=-1
 	"\n"		newline
 	"A-Z"		bufhdrs		buffer
+	"-"		newline		noeat
 
 :hbad HdBad
 	*		hbad
