@@ -1,3 +1,7 @@
+- Don't use bold yellow, it's bad for white screens.
+
+- Fix TeX highlighter: don't highlight "
+
 - Make mail.jsf more forgiving for those of us who still use old UNIX mail
 
 - Fix file rename bugs
