@@ -56,7 +56,7 @@
 
 :error Error
 	*		error_visible	noeat recolor=-1
-	" \t\n"		error
+	" \t\r\n"	error
 
 :error_visible Error
 	*		content
@@ -87,13 +87,19 @@
 :end_tag2 Tag
 	*		error		noeat recolor=-1
 	"A-Za-z0-9._:-"	end_tag2
-	" \t\n"		end_tag3
+	" \t\r\n"	end_tag2_sp	recolor=-1
 	">"		content
+
+:end_tag2_sp Idle
+	*		end_tag3	noeat
 
 :end_tag3 Tag
 	*		error		noeat recolor=-1
-	" \t\n"		end_tag3
+	" \t\r\n"	end_tag3_sp	recolor=-1
 	">"		content
+
+:end_tag3_sp Idle
+	*		end_tag_3	noeat
 
 # Matched: <tag
 
@@ -101,8 +107,11 @@
 	*		error		noeat recolor=-1
 	"A-Za-z0-9._:-"	start_or_empty_tag
 	"/"		empty_tag
-	" \t\n"		tag_space
+	" \t\r\n"	start_or_empty_tag_sp	recolor=-1
 	">"		content
+
+:start_or_empty_tag_sp Idle
+	*		tag_space	noeat
 
 # Matched: <tag/
 
@@ -114,24 +123,40 @@
 
 :tag_space Attr
 	*		error		noeat recolor=-1
-	" \t\n"		tag_space
+	" \t\r\n"	tag_space_sp	recolor=-1
 	"A-Za-z_:"	attr
 	"/"		empty_tag	recolor=-1
 	">"		close_tag	recolor=-1
+
+:tag_space_sp Idle
+	*		tag_space	noeat
 
 # Matched: <tag attr
 
 :attr Attr
 	*		error		noeat recolor=-1
 	"A-Za-z0-9._:-" attr
+	" \t\r\n"	attr_sp		recolor=-1
+	"="		string
+
+:attr_sp Idle
+	*		attr_before	noeat
+
+:attr_before Attr
+	*		error		noeat recolor=-1
+	" \t\r\n"	attr_sp		recolor=-1
 	"="		string
 
 # Matched: <tag attr=
 
 :string Attr
 	*		error		noeat recolor=-1
+	" \t\r\n"	string_sp	recolor=-1
 	"\""		astring		recolor=-1
 	"'"		bstring		recolor=-1
+
+:string_sp Idle
+	*		string		noeat
 
 # Matched: <tag attr="
 
@@ -169,7 +194,7 @@
 
 :endstring Attr
 	*		error		noeat recolor=-1
-	" \t\n"		tag_space
+	" \t\r\n"	tag_space_sp
 	"/"		empty_tag	recolor=-1
 	">"		close_tag	recolor=-1
 
