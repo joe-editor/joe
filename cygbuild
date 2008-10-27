@@ -2,11 +2,11 @@
 
 # Do cygwin build
 
-# this creates: joe-3.3-1.tar.bz2 and joe-3.3-1-src.tar.bz2
+# this creates: joe-3.6-1.tar.bz2 and joe-3.6-1-src.tar.bz2
 # you also need setup.hint
 
-JOEVERSION=3.5
-CYGVERSION=3.5-1
+JOEVERSION=3.6
+CYGVERSION=3.6-1
 
 ./autojoe
 
