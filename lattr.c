@@ -74,6 +74,20 @@ void rm_all_lattr_db(struct lattr_db *db)
 	}
 }
 
+/* Reset linked list of databases (because of file reload) */
+
+void reset_all_lattr_db(struct lattr_db *db)
+{
+	struct lattr_db *n;
+	for (n = db; n; n=n->next) {
+		n->hole = 1;
+		n->ehole = n->end;
+		n->first_invalid = 1;
+		n->invalid_window = -1;
+		clear_state(n->buffer+0);
+	}
+}
+
 /* Set gap position */
 
 void lattr_hole(struct lattr_db *db, long pos)

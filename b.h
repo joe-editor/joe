@@ -299,4 +299,6 @@ extern int break_symlinks; /* Break symbolic links on write */
 
 void set_file_pos_orphaned();
 
+void breplace(B *b, B *n);
+
 #endif
