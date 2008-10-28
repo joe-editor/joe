@@ -304,6 +304,113 @@ void brmall()
 		brm(bufs.link.next);
 }
 
+/* Replace contents of b with n.  n is destroyed. */
+
+void breplace(B *b, B *n)
+{
+	P *p, *next;
+
+	/* Take out many references to b */
+
+	abrerr(b->name);
+
+	if (b->locked && !b->ignored_lock && plain_file(b)) {
+		unlock_it(b->name);
+		b->locked = 0;
+	}
+
+	if (b == errbuf)
+		errbuf = NULL;
+
+	if (b->undo) {
+		undorm(b->undo);
+		b->undo = 0;
+	}
+
+	/* Remove all vfile references */
+	for (p = b->eof->link.next; p != b->eof; p = p->link.next)
+		if (p->ptr)
+			vunlock(p->ptr);
+	if (b->eof->ptr)
+		vunlock(b->eof->ptr);
+
+	/* Delete buffer */
+	hfreechn(b->eof->hdr);
+
+	/* Delete file name */
+	if (b->name)
+		joe_free(b->name);
+
+	reset_all_lattr_db(b->db);
+	
+	/* Take new name */
+	b->name = zdup(n->name);
+
+	/* Take bof Pointer */
+	/* Taking n->bof's vlock */
+	b->bof->ofst = n->bof->ofst;
+	b->bof->ptr = n->bof->ptr;
+	b->bof->hdr = n->bof->hdr;
+	b->bof->byte = 0;
+	b->bof->line = 0;
+	b->bof->col = 0;
+	b->bof->xcol = 0;
+	b->bof->valcol = 1;
+	b->bof->end = 0;
+
+	/* Take eof Pointer */
+	/* Taking b->eof's vlock */
+	b->eof->ofst = n->eof->ofst;
+	b->eof->ptr = n->eof->ptr;
+	b->eof->hdr = n->eof->hdr;
+	b->eof->byte = n->eof->byte;
+	b->eof->line = n->eof->line;
+	b->eof->col = n->eof->col;
+	b->eof->xcol = n->eof->xcol;
+	b->eof->valcol = n->eof->valcol;
+	b->eof->end = 1;
+
+	/* Reset other pointers */
+	for (p = b->eof->link.next; p != b->eof; p = p->link.next)
+		if (p != b->bof) {
+			long goal_line = p->line;
+			long goal_col = p->xcol;
+			p->ptr = 0; /* No need for pset to unlock: we already did it */
+			if (goal_line > b->eof->line) {
+				pset(p, b->eof);
+				p_goto_bol(p);
+			} else {
+				pset(p, b->bof);
+				pline(p, goal_line);
+				pcol(p, goal_col);
+			}
+		}
+
+	/* OK, delete pointers from n */
+	for (p = n->eof->link.next; p != n->eof; p = next) {
+		next = p->link.next;
+		if (p != n->bof)
+			prm(p);
+	}
+
+	/* Delete bof and eof pointers */
+	/* Don't delete their locks, they were transferred. */
+	n->bof->ptr = 0;
+	prm(n->bof);
+	n->bof = 0;
+	n->eof->ptr = 0;
+	prm(n->eof);
+	n->eof = 0;
+
+	b->undo = undomk(b);
+	b->changed = 0;
+	b->rdonly = n->rdonly;
+	b->mod_time = n->mod_time;
+
+	/* Delete rest of n */
+	brm(n);
+}
+
 P *poffline(P *p)
 {
 	if (p->ptr) {

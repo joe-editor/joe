@@ -33,6 +33,9 @@ void rm_lattr_db PARAMS((struct lattr_db *db));
 void rm_all_lattr_db PARAMS((struct lattr_db *db));
                                 /* Delete linked-list of databases */
 
+void reset_all_lattr_db PARAMS((struct lattr_db *db));
+                                /* Delete linked-list of databases */
+
 struct lattr_db *find_lattr_db PARAMS((B *b, struct high_syntax *y));
                                 /* Find database for a particular syntax.  If one doesn't
                                    exist, create it and add it to the list for the B */

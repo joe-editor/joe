@@ -1049,3 +1049,26 @@ int ukilljoe(BW *bw)
 	leave = 1;
 	return 0;
 }
+
+ureload(BW *bw)
+{
+	B *n;
+	if (!plain_file(bw->b)) {
+		msgnw(bw->parent, joe_gettext(_("Can only reload plain files")));
+		return -1;
+	}
+	if (bw->b->changed) {
+		msgnw(bw->parent, joe_gettext(_("Can only reload if buffer is not modifed")));
+		return -1;
+	}
+	n = bload(bw->b->name);
+	if (berror) {
+		brm(n);
+		msgnw(bw->parent, joe_gettext(msgs[-berror]));
+		return -1;
+	}
+	breplace(bw->b, n);
+	nredraw(bw->parent->t->t);
+	msgnw(bw->parent, joe_gettext(_("File reloaded")));
+	return 0;
+}

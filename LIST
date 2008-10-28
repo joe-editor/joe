@@ -130,6 +130,7 @@ Files
 save		Save file
 savenow		Save immediately, unless file name is not known
 insf		Insert a file
+reload		Reload current file
 
 Formatting
 ----------
