@@ -14,9 +14,17 @@ CYGVERSION=3.6-1
 
 # Install aspell first!
 
-./configure --prefix=/usr --sysconfdir=/usr/share --libexecdir=/usr/sbin \
---localstatedir=/var --datadir=/usr/share --mandir=/usr/share/man \
---infodir=/usr/share/info --disable-curses --disable-termcap
+./configure \
+  --prefix=/usr \
+  --sysconfdir=/etc \
+  --libexecdir=/usr/sbin \
+  --localstatedir=/var \
+  --datadir=/usr/share \
+  --mandir=/usr/share/man \
+  --infodir=/usr/share/info \
+  --docdir=/usr/share/doc/joe-${JOEVERSION} \
+  --disable-curses \
+  --disable-termcap
 
 make clean
 

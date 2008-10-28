@@ -1,7 +1,7 @@
-sysconf_joedir = $(sysconfdir)/joe
+data_joedir = $(datadir)/joe
 
-sysconf_langdir = $(sysconf_joedir)/lang
+data_langdir = $(data_joedir)/lang
 
-sysconf_lang_DATA = ru.po de.po fr.po uk.po
+data_lang_DATA = ru.po de.po fr.po uk.po
 
-EXTRA_DIST = $(sysconf_lang_DATA)
+EXTRA_DIST = $(data_lang_DATA)

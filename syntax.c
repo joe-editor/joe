@@ -386,7 +386,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 	}
 
 	if (!f) {
-		full_name = vsfmt(full_name, 0, USTR "%ssyntax/%s.jsf",JOERC,name);
+		full_name = vsfmt(full_name, 0, USTR "%ssyntax/%s.jsf",JOEDATA,name);
 		f = fopen((char *)full_name,"r");
 	}
 	if(!f)

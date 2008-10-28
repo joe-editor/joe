@@ -495,8 +495,10 @@
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
 \i \i \|\i \i
 \i \i  default joerc file is here @JOERC@/joerc \|\i \i
-\i \i  additional documentation can be found here @JOERC@/doc \|\i \i
+\i \i  default syntax and i18n files are here @JOEDATA@ \|\i \i
+\i \i  additional documentation can be found here @JOEDOC@ \|\i \i
 }
+
 {CharTable
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,                        \i
 \i \i\| Dec  \u 0123 4567  8901 2345    0123 4567  8901 2345 \u  Dec \|\i \i

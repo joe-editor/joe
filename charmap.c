@@ -1292,7 +1292,7 @@ struct charmap *find_charmap(unsigned char *name)
 
 	/* Check JOERCcharmaps */
 	if (!f) {
-		buf = vsfmt(buf, 0, USTR "%scharmaps/%s",JOERC,name);
+		buf = vsfmt(buf, 0, USTR "%scharmaps/%s",JOEDATA,name);
 		f = fopen((char *)buf,"r");
 	}
 
@@ -1373,7 +1373,7 @@ unsigned char **get_encodings()
 		}
 	}
 
-	if (!chpwd(USTR (JOERC "charmaps")) && (t = rexpnd(USTR "*"))) {
+	if (!chpwd(USTR (JOEDATA "charmaps")) && (t = rexpnd(USTR "*"))) {
 		for (x = 0; x != valen(t); ++x)
 			if (zcmp(t[x],USTR "..")) {
 				for (y = 0; y != valen(encodings); ++y)

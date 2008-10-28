@@ -126,14 +126,14 @@ int load_po(FILE *f)
 void init_gettext(unsigned char *s)
 {
 	FILE *f;
-	unsigned char *buf = vsfmt(NULL,0, USTR "%slang/%s.po",JOERC,s);
+	unsigned char *buf = vsfmt(NULL,0, USTR "%slang/%s.po",JOEDATA,s);
 	if ((f = fopen((char *)buf, "r"))) {
 		/* Try specific language, like en_GB */
 		gettext_ht = htmk(256);
 		load_po(f);
 	} else if (s[0] && s[1]) {
 		/* Try generic language, like en */
-		unsigned char *bf = vsfmt(NULL,0,USTR "%slang/%c%c.po",JOERC,s[0],s[1]);
+		unsigned char *bf = vsfmt(NULL,0,USTR "%slang/%c%c.po",JOEDATA,s[0],s[1]);
 		if ((f = fopen((char *)bf, "r"))) {
 			gettext_ht = htmk(256);
 			load_po(f);
