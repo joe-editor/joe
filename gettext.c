@@ -125,14 +125,14 @@ void init_gettext(unsigned char *s)
 {
 	FILE *f;
 	unsigned char buf[1024];
-	joe_snprintf_2(buf, sizeof(buf), "%slang/%s.po",JOERC,s);
+	joe_snprintf_2(buf, sizeof(buf), "%slang/%s.po",JOEDATA,s);
 	if ((f = fopen((char *)buf, "r"))) {
 		/* Try specific language, like en_GB */
 		gettext_ht = htmk(256);
 		load_po(f);
 	} else if (s[0] && s[1]) {
 		/* Try generic language, like en */
-		joe_snprintf_3(buf, sizeof(buf), "%slang/%c%c.po",JOERC,s[0],s[1]);
+		joe_snprintf_3(buf, sizeof(buf), "%slang/%c%c.po",JOEDATA,s[0],s[1]);
 		if ((f = fopen((char *)buf, "r"))) {
 			gettext_ht = htmk(256);
 			load_po(f);

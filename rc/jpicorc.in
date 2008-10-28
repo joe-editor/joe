@@ -450,8 +450,9 @@
 \i   Help Screen    \|turn off with ^G     prev. screen ^[,    next screen ^[.     \i
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
 \i \i \|\i \i
-\i \i  default joerc file is here @JOERC@/jpicorc \|\i \i
-\i \i  additional documentation can be found here @JOERC@/doc \|\i \i
+\i \i  default joerc file is here @JOERC@/joerc \|\i \i
+\i \i  default syntax and i18n files are here @JOEDATA@ \|\i \i
+\i \i  additional documentation can be found here @JOEDOC@ \|\i \i
 }
 
 {CharTable

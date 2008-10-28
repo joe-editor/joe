@@ -7,12 +7,13 @@ EXTRA_DIST = COPYING LIST HACKING ChangeLog NEWS README INSTALL INSTALL.AMIGA IN
 	cygbuild setup.hint xterm-patch xterm-readme autojoe
 
 sysconf_joedir = $(sysconfdir)/joe
+data_joedir = $(datadir)/joe
 
-sysconf_charmapsdir = $(sysconf_joedir)/charmaps
-sysconf_charmaps_DATA = charmaps/klingon
+data_charmapsdir = $(data_joedir)/charmaps
+data_charmaps_DATA = charmaps/klingon
 
-sysconf_docdir = $(sysconf_joedir)/doc
-sysconf_doc_DATA = LIST README HINTS ChangeLog HACKING NEWS
+data_docdir = $(docdir)
+data_doc_DATA = LIST README HINTS ChangeLog HACKING NEWS
 
 noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	macro.h main.h menu.h path.h poshist.h pw.h queue.h qw.h rc.h regex.h \
@@ -22,7 +23,7 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	lattr.h gettext.h builtin.h
 
 bin_PROGRAMS = joe termidx
-INCLUDES = -DJOERC="\"$(sysconf_joedir)/\""
+INCLUDES = -DJOERC="\"$(sysconf_joedir)/\"" -DJOEDATA="\"$(data_joedir)/\""
 
 joe_LDADD = -lm
 

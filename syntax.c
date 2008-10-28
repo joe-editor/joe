@@ -384,7 +384,7 @@ struct high_state *append_dfa(struct high_syntax *syntax, unsigned char *prefix,
 	}
 
 	if (!f) {
-		joe_snprintf_2(full_name,sizeof(full_name),"%ssyntax/%s.jsf",JOERC,name);
+		joe_snprintf_2(full_name,sizeof(full_name),"%ssyntax/%s.jsf",JOEDATA,name);
 		f = fopen((char *)full_name,"r");
 	}
 	if(!f)
