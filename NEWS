@@ -1,3 +1,5 @@
+- Abort cleanly when malloc returns NULL
+
 - Add reload command to reload file from disk
 
 - Modify configure scrips to use docdir for extra documents and

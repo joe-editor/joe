@@ -2865,23 +2865,30 @@ RETSIGTYPE ttsig(int sig)
 	if ((f = fdopen(tmpfd, "a")) == NULL)
 		_exit(-1);
 
-	fprintf(f, (char *)joe_gettext(_("\n*** These modified files were found in JOE when it aborted on %s")), ctime(&tim));
-	if (sig)
-		fprintf(f, (char *)joe_gettext(_("*** JOE was aborted by UNIX signal %d\n")), sig);
+	/* Do not use joe_gettext() here or you might get an infinite loop */
+	fprintf(f, "\n*** These modified files were found in JOE when it aborted on %s", ctime(&tim));
+	if (sig == -1)
+		fprintf(f, "*** JOE was aborted due to malloc returning NULL\n");
+	else if (sig)
+		fprintf(f, "*** JOE was aborted by UNIX signal %d\n", sig);
 	else
-		fprintf(f, (char *)joe_gettext(_("*** JOE was aborted because the terminal closed\n")));
+		fprintf(f, "*** JOE was aborted because the terminal closed\n");
 	fflush(f);
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
 		if (b->changed) {
 			if (b->name)
-				fprintf(f, (char *)joe_gettext(_("\n*** File \'%s\'\n")), b->name);
+				fprintf(f, "\n*** File \'%s\'\n", b->name);
 			else
-				fprintf(f, (char *)joe_gettext(_("\n*** File \'(Unnamed)\'\n")));
+				fprintf(f, "\n*** File \'(Unnamed)\'\n");
 			fflush(f);
 			bsavefd(b->bof, fileno(f), b->eof->byte);
 		}
 	if (sig)
 		ttclsn();
+	if (sig == -1)
+		printf("\n*** JOE was aborted due to malloc returning NULL.  Buffers saved in DEADJOE\n");
+	else if (sig)
+		printf("\n*** JOE was aborted by UNIX signal %d.  Buffers saved in DEADJOE\n", sig);
 	_exit(1);
 }
 
