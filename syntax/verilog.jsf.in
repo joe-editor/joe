@@ -152,7 +152,7 @@ done
 :string_control Escape
 	*		string_control
 	"\n"		reset
-	"efghdobcvstmEFGHDOBCVSTM%"	string
+	"efghdobcvstmxEFGHDOBCVSTM%"	string
 
 # Identifiers
 
