@@ -2852,9 +2852,9 @@ RETSIGTYPE ttsig(int sig)
 
 	if ((tmpfd = open("DEADJOE", O_RDWR | O_EXCL | O_CREAT, 0600)) < 0) {
 		if (lstat("DEADJOE", &sbuf) < 0)
-			_exit(-1);
+			_exit(1);
 		if (!S_ISREG(sbuf.st_mode) || sbuf.st_uid != geteuid())
-			_exit(-1);
+			_exit(1);
 		/*
 		   A race condition still exists between the lstat() and the open()
 		   systemcall, which leads to a possible denial-of-service attack
@@ -2863,12 +2863,12 @@ RETSIGTYPE ttsig(int sig)
 		   This can't be fixed w/o breacking the behavior of the orig. joe!
 		 */
 		if ((tmpfd = open("DEADJOE", O_RDWR | O_APPEND)) < 0)
-			_exit(-1);
+			_exit(1);
 		if (fchmod(tmpfd, S_IRUSR | S_IWUSR) < 0)
-			_exit(-1);
+			_exit(1);
 	}
 	if ((ttsig_f = fdopen(tmpfd, "a")) == NULL)
-		_exit(-1);
+		_exit(1);
 
 	/* Do not use joe_gettext() here or you might get an infinite loop */
 	fprintf(ttsig_f, "\n*** These modified files were found in JOE when it aborted on %s", ctime(&tim));
@@ -2893,11 +2893,11 @@ RETSIGTYPE ttsig(int sig)
 	if (sig)
 		ttclsn();
 	if (sig == -2)
-		fprintf(ttsig_f, "*** JOE was aborted due to swap file I/O error\n");
+		fprintf(stderr,"\n*** JOE was aborted due to swap file I/O error\n");
 	else if (sig == -1)
-		printf("\n*** JOE was aborted due to malloc returning NULL.  Buffers saved in DEADJOE\n");
+		fprintf(stderr,"\n*** JOE was aborted due to malloc returning NULL.  Buffers saved in DEADJOE\n");
 	else if (sig)
-		printf("\n*** JOE was aborted by UNIX signal %d.  Buffers saved in DEADJOE\n", sig);
+		fprintf(stderr,"\n*** JOE was aborted by UNIX signal %d.  Buffers saved in DEADJOE\n", sig);
 	_exit(1);
 }
 
