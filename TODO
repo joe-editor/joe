@@ -1,5 +1,7 @@
 For JOE-3.6
 
+	file reload: allows me to fix the perforce macro
+
 	allow some form of escaping in file names
 
 	turn off utf-8 during hex display mode.  The issue is that

@@ -1188,15 +1188,13 @@ int ukilljoe(BW *bw)
 	return 0;
 }
 
-ureload(BW *bw)
+static int doreload(BW *bw, int c, void *object, int *notify)
 {
 	B *n;
-	if (!plain_file(bw->b)) {
-		msgnw(bw->parent, joe_gettext(_("Can only reload plain files")));
-		return -1;
+	if (notify) {
+		*notify = 1;
 	}
-	if (bw->b->changed) {
-		msgnw(bw->parent, joe_gettext(_("Can only reload if buffer is not modifed")));
+	if (c != YES_CODE && !yncheck(yes_key, c)) {
 		return -1;
 	}
 	n = bload(bw->b->name);
@@ -1209,4 +1207,20 @@ ureload(BW *bw)
 	nredraw(bw->parent->t->t);
 	msgnw(bw->parent, joe_gettext(_("File reloaded")));
 	return 0;
+}
+
+int ureload(BW *bw)
+{
+	if (!plain_file(bw->b)) {
+		msgnw(bw->parent, joe_gettext(_("Can only reload plain files")));
+		return -1;
+	}
+	if (bw->b->changed) {
+		if (mkqw(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), doreload, NULL, NULL, NULL)) {
+			return 0;
+		} else {
+			return -1;
+		}
+	}
+	return doreload(bw, YES_CODE, NULL, NULL);
 }
