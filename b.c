@@ -136,7 +136,7 @@ static void pfree(P *p)
 }
 
 /* Doubly linked list of buffers and free buffer structures */
-static B bufs = { {&bufs, &bufs} };
+B bufs = { {&bufs, &bufs} };
 static B frebufs = { {&frebufs, &frebufs} };
 
 void set_file_pos_orphaned()

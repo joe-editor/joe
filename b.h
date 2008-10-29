@@ -131,6 +131,8 @@ struct buffer {
 	                        /* Error parser for this buffer */
 };
 
+extern B bufs;
+
 extern int force;		/* Set to have final '\n' added to file */
 extern int tabwidth;		/* Default tab width */
 

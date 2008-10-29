@@ -1074,3 +1074,27 @@ ureload(BW *bw)
 	msgnw(bw->parent, joe_gettext(_("File reloaded")));
 	return 0;
 }
+
+int ureload_all(BW *bw)
+{
+	int count = 0;
+	int er = 0;
+	B *b;
+	for (b = bufs.link.next; b != &bufs; b = b->link.next)
+		if (!b->changed && plain_file(b)) {
+			B *n = bload(b->name);
+			if (berror) {
+				msgnw(bw->parent, joe_gettext(msgs[-berror]));
+				er = -1;
+				brm(n);
+			} else {
+				breplace(b, n);
+				++count;
+			}
+		}
+	nredraw(bw->parent->t->t);
+	if (!er) {
+		msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("%d files reloaded")), count));
+	}
+	return er;
+}
