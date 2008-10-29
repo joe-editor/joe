@@ -8,7 +8,7 @@
 =Kw		bold
 
 :start Idle
-	*		start call=.m4()
+	*		start noeat call=.m4()
 
 .subr m4
 
