@@ -1,3 +1,5 @@
+- Call ttsig on vfile I/O errors.
+
 - Abort cleanly when malloc returns NULL
 
 - Add reload command to reload file from disk
