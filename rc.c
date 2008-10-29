@@ -235,6 +235,10 @@ void lazy_opts(B *b, OPTIONS *o)
 		o->charmap = locale_map;
 	if (!o->language)
 		o->language = zdup(locale_msgs);
+	/* Hex not allowed with UTF-8 */
+	if (o->hex && o->charmap->type) {
+		o->charmap = find_charmap(USTR "c");
+	}
 }
 
 /* Set local options depending on file name and contents */
@@ -721,6 +725,19 @@ static int encodingcmplt(BW *bw)
 	return simple_cmplt(bw,encodings);
 }
 
+int check_for_hex(BW *bw)
+{
+	W *w;
+	BW *org;
+	if (bw->o.hex)
+		return 1;
+	for (w = bw->parent->link.next; w != bw->parent; w = w->link.next)
+		if ((w->watom == &watomtw || w->watom == &watompw) && ((BW *)w->object)->b == bw->b &&
+		    ((BW *)w->object)->o.hex)
+		    	return 1;
+	return 0;
+}
+ 
 static int doopt(BW *bw, int x, unsigned char **vary, int flg)
 {
 	int ret = 0;
@@ -747,6 +764,15 @@ static int doopt(BW *bw, int x, unsigned char **vary, int flg)
 			msgnw(bw->parent, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? joe_gettext(glopts[x].yes) : joe_gettext(glopts[x].no));
 			if (glopts[x].ofst == (unsigned char *) &fdefault.readonly - (unsigned char *) &fdefault)
 				bw->b->rdonly = bw->o.readonly;
+			if (glopts[x].ofst == (unsigned char *) &fdefault.hex - (unsigned char *) &fdefault &&
+			    bw->o.hex &&
+			    bw->b->o.charmap->type) {
+			    	/* Kill UTF-8 if we are turning on hex */
+			    	bw->o.charmap = find_charmap("c");
+			    	bw->b->o = bw->o;
+			    	wfit(bw->parent->t);
+			    	updall();
+			}
 			break;
 		} case 6: { /* Local option string */
 			/* Get current string */
@@ -857,6 +883,10 @@ static int doopt(BW *bw, int x, unsigned char **vary, int flg)
 				struct charmap *map;
 
 				map = find_charmap(s);
+				if (map && map->type && check_for_hex(bw)) {
+					msgnw(bw->parent, joe_gettext(_("UTF-8 encoding not allowed with hexadecimal windows")));
+					return -1;
+				}
 
 				if (map) {
 					bw->o.charmap = map;

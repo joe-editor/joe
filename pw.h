@@ -57,4 +57,6 @@ void set_current_dir PARAMS((unsigned char *s,int simp));
 extern int bg_prompt;
 extern int nocurdir;
 
+extern WATOM watompw;
+
 #endif

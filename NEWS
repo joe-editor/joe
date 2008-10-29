@@ -1,3 +1,5 @@
+- Turn off UTF-8 when we enter hex mode
+
 - Call ttsig on vfile I/O errors.
 
 - Abort cleanly when malloc returns NULL
