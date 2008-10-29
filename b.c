@@ -2845,13 +2845,18 @@ unsigned char *brzs(P *p, unsigned char *buf, int size)
 
 /* Save edit buffers when editor dies */
 
+FILE *ttsig_f = 0;
+
 RETSIGTYPE ttsig(int sig)
 {
 	time_t tim = time(NULL);
 	B *b;
-	FILE *f;
 	int tmpfd;
 	struct stat sbuf;
+
+	/* Do not allow double-fault */
+	if (ttsig_f)
+		_exit(1);
 
 	if ((tmpfd = open("DEADJOE", O_RDWR | O_EXCL | O_CREAT, 0600)) < 0) {
 		if (lstat("DEADJOE", &sbuf) < 0)
@@ -2870,29 +2875,33 @@ RETSIGTYPE ttsig(int sig)
 		if (fchmod(tmpfd, S_IRUSR | S_IWUSR) < 0)
 			_exit(-1);
 	}
-	if ((f = fdopen(tmpfd, "a")) == NULL)
+	if ((ttsig_f = fdopen(tmpfd, "a")) == NULL)
 		_exit(-1);
 
-	fprintf(f, "\n*** These modified files were found in JOE when it aborted on %s", ctime(&tim));
-	if (sig == -1)
-		fprintf(f, "*** JOE was aborted due to malloc returning NULL\n");
+	fprintf(ttsig_f, "\n*** These modified files were found in JOE when it aborted on %s", ctime(&tim));
+	if (sig == -2)
+		fprintf(ttsig_f, "*** JOE was aborted due to swap file I/O error\n");
+	else if (sig == -1)
+		fprintf(ttsig_f, "*** JOE was aborted due to malloc returning NULL\n");
 	else if (sig)
-		fprintf(f, "*** JOE was aborted by UNIX signal %d\n", sig);
+		fprintf(ttsig_f, "*** JOE was aborted by UNIX signal %d\n", sig);
 	else
-		fprintf(f, "*** JOE was aborted because the terminal closed\n");
-	fflush(f);
+		fprintf(ttsig_f, "*** JOE was aborted because the terminal closed\n");
+	fflush(ttsig_f);
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
 		if (b->changed) {
 			if (b->name)
-				fprintf(f, (char *)joe_gettext(_("\n*** File \'%s\'\n")), b->name);
+				fprintf(ttsig_f, (char *)joe_gettext(_("\n*** File \'%s\'\n")), b->name);
 			else
-				fprintf(f, (char *)joe_gettext(_("\n*** File \'(Unnamed)\'\n")));
-			fflush(f);
-			bsavefd(b->bof, fileno(f), b->eof->byte);
+				fprintf(ttsig_f, (char *)joe_gettext(_("\n*** File \'(Unnamed)\'\n")));
+			fflush(ttsig_f);
+			bsavefd(b->bof, fileno(ttsig_f), b->eof->byte);
 		}
 	if (sig)
 		ttclsn();
-	if (sig == -1)
+	if (sig == -2)
+		fprintf(ttsig_f, "*** JOE was aborted due to swap file I/O error\n");
+	else if (sig == -1)
 		printf("\n*** JOE was aborted due to malloc returning NULL.  Buffers saved in DEADJOE\n");
 	else if (sig)
 		printf("\n*** JOE was aborted by UNIX signal %d.  Buffers saved in DEADJOE\n", sig);
