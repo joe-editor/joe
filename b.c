@@ -286,10 +286,12 @@ void brm(B *b)
 			errbuf = NULL;
 		if (b->undo)
 			undorm(b->undo);
-		hfreechn(b->eof->hdr);
-		while (!qempty(P, link, b->bof))
-			prm(b->bof->link.next);
-		prm(b->bof);
+		if (b->eof) {
+			hfreechn(b->eof->hdr);
+			while (!qempty(P, link, b->bof))
+				prm(b->bof->link.next);
+			prm(b->bof);
+		}
 		if (b->name)
 			joe_free(b->name);
 		if (b->db)

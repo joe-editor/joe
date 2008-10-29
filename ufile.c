@@ -1058,8 +1058,10 @@ ureload(BW *bw)
 		return -1;
 	}
 	if (bw->b->changed) {
-		msgnw(bw->parent, joe_gettext(_("Can only reload if buffer is not modifed")));
-		return -1;
+		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		if (c != YES_CODE && !yncheck(yes_key, c)) {
+			return -1;
+		}
 	}
 	n = bload(bw->b->name);
 	if (berror) {
