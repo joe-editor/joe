@@ -250,17 +250,26 @@ void joe_free(void *ptr)
 
 void *joe_malloc(size_t size)
 {
-	return malloc(size);
+	void *p = malloc(size);
+	if (!p)
+		ttsig(-1);
+	return p;
 }
 
 void *joe_calloc(size_t nmemb,size_t size)
 {
-	return calloc(nmemb,size);
+	void *p = calloc(nmemb, size);
+	if (!p)
+		ttsig(-1);
+	return p;
 }
 
 void *joe_realloc(void *ptr,size_t size)
 {
-	return realloc(ptr,size);
+	void *p = realloc(ptr, size);
+	if (!p)
+		ttsig(-1);
+	return p;
 }
 
 void joe_free(void *ptr)
