@@ -215,7 +215,7 @@ static int abortpw(BW *b)
 	}
 }
 
-static WATOM watompw = {
+WATOM watompw = {
 	USTR "prompt",
 	disppw,
 	bwfllwt,
