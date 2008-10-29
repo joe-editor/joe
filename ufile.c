@@ -1224,3 +1224,28 @@ int ureload(BW *bw)
 	}
 	return doreload(bw, YES_CODE, NULL, NULL);
 }
+
+int ureload_all(BW *bw)
+{
+	int count = 0;
+	int er = 0;
+	B *b;
+	for (b = bufs.link.next; b != &bufs; b = b->link.next)
+		if (!b->changed && plain_file(b)) {
+			B *n = bload(b->name);
+			if (berror) {
+				msgnw(bw->parent, joe_gettext(msgs[-berror]));
+				er = -1;
+				brm(n);
+			} else {
+				breplace(b, n);
+				++count;
+			}
+		}
+	nredraw(bw->parent->t->t);
+	if (!er) {
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d files reloaded")), count);
+		msgnw(bw->parent, msgbuf);
+	}
+	return er;
+}

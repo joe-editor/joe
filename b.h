@@ -131,6 +131,8 @@ struct buffer {
 	                        /* Error parser for this buffer */
 };
 
+extern B bufs;
+
 /* 31744 */
 extern unsigned char stdbuf[stdsiz];	/* Convenient global buffer */
 
