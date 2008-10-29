@@ -41,12 +41,16 @@ void vflsh(void)
 				vfile->name = mktmp(NULL);
 			if (!vfile->fd)
 				vfile->fd = open((char *)(vfile->name), O_RDWR);
+			if (vfile->fd < 0)
+				ttsig(-2);
 			lseek(vfile->fd, addr, 0);
 			if (addr + PGSIZE > vsize(vfile)) {
-				joe_write(vfile->fd, vlowest->data, (int) (vsize(vfile) - addr));
+				if (joe_write(vfile->fd, vlowest->data, (int) (vsize(vfile) - addr)) < 0)
+					ttsig(-2);
 				vfile->size = vsize(vfile);
 			} else {
-				joe_write(vfile->fd, vlowest->data, PGSIZE);
+				if (joe_write(vfile->fd, vlowest->data, PGSIZE) < 0)
+					ttsig(-2);
 				if (addr + PGSIZE > vfile->size)
 					vfile->size = addr + PGSIZE;
 			}
@@ -79,12 +83,16 @@ void vflshf(VFILE *vfile)
 		if (!vfile->fd) {
 			vfile->fd = open((char *)(vfile->name), O_RDWR);
 		}
+		if (vfile->fd < 0)
+			ttsig(-2);
 		lseek(vfile->fd, addr, 0);
 		if (addr + PGSIZE > vsize(vfile)) {
-			joe_write(vfile->fd, vlowest->data, (int) (vsize(vfile) - addr));
+			if (joe_write(vfile->fd, vlowest->data, (int) (vsize(vfile) - addr)) < 0)
+				ttsig(-2);
 			vfile->size = vsize(vfile);
 		} else {
-			joe_write(vfile->fd, vlowest->data, PGSIZE);
+			if (joe_write(vfile->fd, vlowest->data, PGSIZE) < 0)
+				ttsig(-2);
 			if (addr + PGSIZE > vfile->size)
 				vfile->size = addr + PGSIZE;
 		}
@@ -186,12 +194,16 @@ unsigned char *vlock(VFILE *vfile, off_t addr)
 		if (!vfile->fd) {
 			vfile->fd = open((char *)(vfile->name), O_RDWR);
 		}
+		if (vfile->fd < 0)
+			ttsig(-2);
 		lseek(vfile->fd, addr, 0);
 		if (addr + PGSIZE > vfile->size) {
-			joe_read(vfile->fd, vp->data, (int) (vfile->size - addr));
+			if (joe_read(vfile->fd, vp->data, (int) (vfile->size - addr)) < 0)
+				ttsig(-2);
 			mset(vp->data + vfile->size - addr, 0, PGSIZE - (int) (vfile->size - addr));
 		} else
-			joe_read(vfile->fd, vp->data, PGSIZE);
+			if (joe_read(vfile->fd, vp->data, PGSIZE) < 0)
+				ttsig(-2);
 	} else
 		mset(vp->data, 0, PGSIZE);
 
