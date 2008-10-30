@@ -708,7 +708,8 @@ querysave,query,killjoe	^X ^C			Query to save files, then exit
 
 lose,query		^X k			Kill buffer in window
 
-lose,query,edit		^X ^V			Edit a file: no orphaned buffers
+ lose,query,edit		^X ^V		Edit a file: no orphaned buffers
+reload			^X ^V			Reload current file
 
 psh,drop,fwrdc-,query,markk,blkdel	^[ z	Cut to char
 
