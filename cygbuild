@@ -33,8 +33,8 @@ make
 make install
 
 (cd /; tar cf - etc/joe usr/share/joe usr/share/doc/joe-${JOEVERSION} \
-usr/bin/joe.exe usr/bin/jmacs.exe usr/bin/jstar.exe \
-usr/bin/jpico.exe usr/bin/rjoe.exe `cd /; \
+usr/bin/joe.exe usr/bin/jmacs usr/bin/jstar \
+usr/bin/jpico usr/bin/rjoe `cd /; \
 find usr/share/man -name 'joe.1'`) | bzip2 >joe-$CYGVERSION.tar.bz2
 
 make dist
