@@ -432,9 +432,9 @@
 \i \i\|\uGOTO\u                 \|\uINDENT\u   \|\uCOMPILING\u          \uQUICK\u                       \|\i \i
 \i \i\|^G  Matching ( [ {   \|^K, less \|^[C Compile & parse ^G  find word under cursor \|\i \i
 \i \i\|^K- Previous place   \|^K. more \|^[G Grep & parse    ^[ENTER complete word      \|\i \i
-\i \i\|^K= Next place         \|       \|^[= To next error   ^[Y paste deleted text     \|\i \i
-\i \i\|^K; Tags file search   \|       \|^[- To prev. error  ^[^Y cycle through deleted \|\i \i
-\i \i\|                       \|       \|^[ SP Jump to error                            \|\i \i
+\i \i\|^K= Next place       \|\uFILE\u     \|^[= To next error   ^[Y paste deleted text     \|\i \i
+\i \i\|^K; Tags file search \|^K `     \|^[- To prev. error  ^[^Y cycle through deleted \|\i \i
+\i \i\|                     \| revert  \|^[ SP Jump to error                            \|\i \i
 }
 
 {Search
@@ -900,6 +900,7 @@ nextword	^X		Goto next word
 open		^]		Split line
 prevpos		^K -		Previous position in history
 prevword	^Z		Previous word
+reload		^K `		Revert file
 redo		^^		Redo changes
 rindent		^K .		Indent to right
 rtarw		.kr		Go right
