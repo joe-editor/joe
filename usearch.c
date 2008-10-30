@@ -795,7 +795,7 @@ static int dopfrepl(BW *bw, int c, SRCH *srch)
 			return -1;
 		} else
 			return dopfnext(bw, srch);
-	} else if (yncheck(rest_key, c)) {
+	} else if (yncheck(rest_key, c) || c == '!') {
 		if (doreplace(bw, srch))
 			return -1;
 		srch->rest = 1;
