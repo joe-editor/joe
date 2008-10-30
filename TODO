@@ -1,12 +1,6 @@
 For JOE-3.6
 
-	file reload: allows me to fix the perforce macro
-
 	allow some form of escaping in file names
-
-	turn off utf-8 during hex display mode.  The issue is that
-	utf-8 mode is shared by all windows on the buffer, so turning
-	it off means turning it off for all windows.
 
 	improve guess indent?  Take LCM of many line indentations?
 
@@ -38,8 +32,6 @@ For JOE-3.6
 Immediate:
 
  full path needs to go in line number restore code?
-
- reload
 
  ^C breaks in Cygwin when piping into joe
 
