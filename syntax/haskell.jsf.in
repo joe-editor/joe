@@ -1,8 +1,5 @@
 # JOE syntax highlight file for Haskell
 
-# Missing: nesting of nested comments. Needs joe support.
-# fudged in one level of nesting
-
 # Define colors
 #
 # bold inverse blink dim underline
@@ -50,30 +47,25 @@
 	"-"		ncommentstart	recolor=-2
 	
 :ncommentstart Comment
-	*		ncomment
+	*		reset		noeat call=.comment()
 	"#"		pragma		recolor=-3
-	
+
+.subr comment
+
 :ncomment Comment
 	*		ncomment
 	"-"		ncommentmaybeend
 	"{"		ncommentmaybenest
-	
+
 :ncommentmaybeend Comment
 	*		ncomment	noeat
-	"}"		reset
+	"}"		ncomment	return
 
 :ncommentmaybenest Comment
-	*		ncomment
-	"-"		ncommentnest
+	*		ncomment	noeat
+	"-"		ncomment	call=.comment()
 
-:ncommentnest Comment
-	*		ncommentnest
-	"-"		ncommentnestmaybeend
-#	"{"		ncommentnestmaybenest
-
-:ncommentnestmaybeend Comment
-	*		ncommentnest	noeat
-	"}"		ncomment
+.end
 
 :pragma Pragma
 	*		pragma

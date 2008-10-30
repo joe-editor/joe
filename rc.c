@@ -220,7 +220,7 @@ OPTIONS fdefault = {
 
 void lazy_opts(B *b, OPTIONS *o)
 {
-	o->syntax = load_dfa(o->syntax_name);
+	o->syntax = load_syntax(o->syntax_name);
 	if (!o->map_name) {
 		/* Guess encoding if it's not explicitly given */
 		unsigned char buf[1024];
@@ -523,7 +523,7 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 				options->syntax_name = zdup(arg);
 			/* this was causing all syntax files to be loaded...
 			if (arg && options)
-				options->syntax = load_dfa(arg); */
+				options->syntax = load_syntax(arg); */
 			break;
 
 		case 13: /* Set byte mode encoding */
@@ -734,7 +734,7 @@ static int dosyntax(BW *bw, unsigned char *s, int *xx, int *notify)
 	int ret = 0;
 	struct high_syntax *syn;
 
-	syn = load_dfa(s);
+	syn = load_syntax(s);
 
 	if (syn)
 		bw->o.syntax = syn;

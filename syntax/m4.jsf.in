@@ -18,7 +18,7 @@
 :idle Idle
 .endif
 	*		idle
-	"["		idle recolor=-1 call=.m4(quote)
+	"["		idle recolor=-1 call=.m4(quote -brace)
 #	"["		idle recolor=-1 call=.quote()
 	"a-zA-Z_"	ident buffer mark
 .ifdef quote
@@ -108,7 +108,7 @@ done
 	"("		brace recolor=-1
 
 :brace Brace
-	*		idle noeat call=.m4(brace)
+	*		idle noeat call=.m4(brace -quote)
 
 .end
 

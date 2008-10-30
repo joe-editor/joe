@@ -234,8 +234,9 @@ typedef struct jfile JFILE;
 /* Structure which are passed by value */
 
 struct highlight_state {
-	int	state;
-	unsigned char saved_s[24];
+	struct high_frame *stack;   /* Pointer to the current frame in the call stack */
+	int state;                  /* Current state in the current subroutine */
+	unsigned char saved_s[24];  /* Buffer for saved delimiters */
 };
 
 /* Include files */
