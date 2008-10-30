@@ -344,13 +344,13 @@
 \i   Help Screen    \|turn off with ^XH   more help with ^X.                       \i
 \i \i\|\uCURSOR\u           \|\uGO TO\u           \|\uUNDO\u      \|\uMISC\u        \|\uREGION\u     \|\uFILE/EXIT\u  \|\i \i
 \i \i\|^B left ^F right \|^[V prev screen \|^_  undo  \|^[^[ option \|^@  mark   \|^X^C exit  \|\i \i
-\i \i\|^P up   ^N down  \|^V  next screen \|^^  redo  \|^[Q format  \|^X^X swap  \|^Z   shell \|\i \i
-\i \i\|^[B prev. word   \|^A  beg of line \|\uDELETE\u    \|^L  refresh \|^W  cut    \|^XK  abort \|\i \i
+\i \i\|^P up   ^N down  \|^V  next screen \|^^  redo  \|^[Q format  \|^X^X swap  \|^X^F find  \|\i \i
+\i \i\|^[B prev. word   \|^A  beg of line \|\uDELETE\u    \|^L  refresh \|^W  cut    \|^X^V revert\|\i \i
 \i \i\|^[F next word    \|^E  end of line \|^D  char  \|^[$ spell   \|^[W copy   \|^X^S save  \|\i \i
 \i \i\|\uSEARCH\u           \|^X[ prev page   \|^K  >line \|^[M math    \|^Y  paste  \|^XS  all   \|\i \i
 \i \i\|^S  forward      \|^X] next page   \|^[D >word \|^[X command \|^[Y switch \|^XI  insert\|\i \i
-\i \i\|^R  backward     \|^[G to line No. \|^[ DEL word<\|^XL status\|^XA file   \|^X^F edit  \|\i \i
-\i \i\|^[% find&replace \|^XG matching ([{\|            \|^U  repeat\|^X| filter \|^X^B switch\|\i \i
+\i \i\|^R  backward     \|^[G to line No. \|^[ DEL    \|^XL status  \|^XA file   \|^XK  kill  \|\i \i
+\i \i\|^[% find&replace \|^XG matching ([{\|    word< \|^U  repeat  \|^X| filter \|^X^B switch\|\i \i
 }
 
 {Editing 
@@ -358,7 +358,7 @@
 \i \i\|\uCASE\u           \|\uTRANSPOSE\u  \|\uINSERT\u    \|\uMACROS\u            \|\uPROGRAMS\u               \|\i \i
 \i \i\|^[U  Up word   \|^T   Chars \|^O  line  \|^X( record        \|^X^I Indent region     \|\i \i
 \i \i\|^[L  Down word \|^[T  Words \|^C  space \|^X) stop          \|^[.  Tags file find    \|\i \i
-\i \i\|^[C  Cap. word \|^X^T Lines \|`   Ctrl- \|^XE play          \|^X4. Tags other window \|\i \i
+\i \i\|^[C  Cap. word \|^X^T Lines \|^Q  Ctrl- \|^XE play          \|^X4. Tags other window \|\i \i
 \i \i\|^X^U Up region \|           \|^[( ()    \|^XQ query suspend \|^XC  Compile           \|\i \i
 \i \i\|^X^L Down region\|          \|          \|                  \|^XN / ^XP next/prev err\|\i \i
 }
@@ -368,7 +368,7 @@
 \i \i\|\uWINDOW\u                      \|\uSCROLL\u     \|\uMODE\u        \|\uCURSOR\u                    \|\i \i
 \i \i\|^X2  Split window in half   \|^X^P up    \|^XF rght mgn\|^[P prev. paragraph       \|\i \i
 \i \i\|^XO  Switch to other window \|^X^N down  \|^X^Q rdonly \|^[N next paragraph        \|\i \i
-\i \i\|^XZ  Grow window            \|^X<  left  \|^[~ not mod \|DELETE                    \|\i \i
+\i \i\|^XZ  Grow window            \|^X<  left  \|^[~ not mod \|\uDELETE\u                    \|\i \i
 \i \i\|^X^Z Shrink window          \|^X>  right \|            \|^[ SP just one space      \|\i \i
 \i \i\|^X0  Kill window            \|\uSHELL\u      \|\uBOOKMARK\u    \|^[ \\  no spaces           \|\i \i
 \i \i\|^X1  Kill all other windows \|^[! Command\|^XJ set     \|^X^O  cut blank lines     \|\i \i
