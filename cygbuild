@@ -5,8 +5,8 @@
 # this creates: joe-3.6-1.tar.bz2 and joe-3.6-1-src.tar.bz2
 # you also need setup.hint
 
-JOEVERSION=3.6
-CYGVERSION=3.6-1
+JOEVERSION=3.7
+CYGVERSION=3.7-1
 
 ./autojoe
 
@@ -32,8 +32,10 @@ make
 
 make install
 
-(cd /; tar cf - usr/share/joe usr/bin/joe.exe usr/bin/jmacs.exe usr/bin/jstar.exe \
-usr/bin/jpico.exe usr/bin/rjoe.exe `cd /; find usr/share/man -name 'joe.1'`) | bzip2 >joe-$CYGVERSION.tar.bz2
+(cd /; tar cf - etc/joe usr/share/joe usr/doc/joe-${JOEVERSION} \
+usr/bin/joe.exe usr/bin/jmacs.exe usr/bin/jstar.exe \
+usr/bin/jpico.exe usr/bin/rjoe.exe `cd /; \
+find usr/share/man -name 'joe.1'`) | bzip2 >joe-$CYGVERSION.tar.bz2
 
 make dist
 
