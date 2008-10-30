@@ -70,7 +70,7 @@ struct options {
 	int	crlf;
 	int	highlight;	/* Set to enable highlighting */
 	unsigned char *syntax_name;	/* Name of syntax to use */
-	struct high_syntax *syntax;	/* Syntax for highlighting (load_dfa() from syntax_name happens in setopt()) */
+	struct high_syntax *syntax;	/* Syntax for highlighting (load_syntax() from syntax_name happens in setopt()) */
 	unsigned char *map_name;	/* Name of character set */
 	struct charmap *charmap;	/* Character set */
 	unsigned char *language;	/* Language of this buffer (for spell) */

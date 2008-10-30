@@ -654,9 +654,15 @@
 :call_parameters_ws Idle
 	*		call_parameter_bad	recolor=-1
 	" \t"		call_parameters_ws
+	"-"		call_parameter_undef
 	"A-Za-z_"	call_parameter		recolor=-1
 	")"		options_ws
 	"#\n"		bad			noeat
+
+# We saw a "-".  The next character should start the parameter being undefined.
+:call_parameter_undef Parameter
+	*		call_parameters_ws	noeat
+	"A-Za-z_"	call_parameter		recolor=-2
 
 # Highlight the remainder of the parameter.
 :call_parameter Parameter

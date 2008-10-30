@@ -1,3 +1,5 @@
+- Charles Tabony's (vectorshifts's) highlighter stack patch
+
 - ! is replace all in replace prompt
 
 - Turn off UTF-8 when we enter hex mode
