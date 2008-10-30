@@ -28,11 +28,19 @@
 
 *
 +Only in
--syntax _diff
+-syntax diff
 
 *
 +Nur in
--syntax _diff
+-syntax diff
+
+*
++Index: \[A-Za-z]
+-syntax diff
+
+*
++? \[A-Za-z]
+-syntax diff
 
  Troff
 *.1
@@ -474,7 +482,7 @@
 
  Python
 *
-+#!\+\[ 	]\+\[a-z/]/python\>
++#!\+\[ 	]\+\[a-z/]\+\[ 	]python\>
 -autoindent
 -syntax python
 -smarthome
