@@ -691,6 +691,8 @@ yankpop		^[ Y		Undelete text
  yank		^[ ^Y		Undelete previous text
  yapp		^[ w		Append next delete to previous yank
 
+insc		^@
+
  Standard JOE user interface
 
 quote8		^\		Enter Meta chars
