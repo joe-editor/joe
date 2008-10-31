@@ -125,6 +125,22 @@ unsigned char *get_context(BW *bw)
 	return buf1;
 }
 
+unsigned char *duplicate_backslashes(unsigned char *s, int len)
+{
+	unsigned char *m;
+	int x, count;
+	for (x = count = 0; x != len; ++x)
+		if (s[x] == '\\')
+			++count;
+	m = vsmk(len + count);
+	for (x = 0; x != len; ++x) {
+		m = vsadd(m, s[x]);
+		if (s[x] == '\\')
+			m = vsadd(m, '\\');
+	}
+	return m;
+}
+
 /* static */unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, int fill)
 {
 	unsigned char buf[80];
@@ -241,7 +257,8 @@ unsigned char *get_context(BW *bw)
 				{
 				if (bw->b->name) {
 					unsigned char *tmp = simplify_prefix(bw->b->name);
-					stalin = vsncpy(sv(stalin), sv(tmp));
+					unsigned char *tmp1 = duplicate_backslashes(sv(tmp));
+					stalin = vsncpy(sv(stalin), sv(tmp1));
 				} else {
 					stalin = vsncpy(sv(stalin), sz(joe_gettext(_("Unnamed"))));
 				}
