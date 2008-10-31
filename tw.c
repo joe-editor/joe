@@ -286,7 +286,7 @@ unsigned char *get_context(BW *bw)
 				break;
 			case 'a':
 				if (!piseof(bw->cursor))
-					joe_snprintf_1(buf, sizeof(buf), "%3d", 255 & brc(bw->cursor));
+					joe_snprintf_1(buf, sizeof(buf), "%3d", brch(bw->cursor));
 				else
 					joe_snprintf_0(buf, sizeof(buf), "   ");
 				for (x = 0; buf[x]; ++x)
@@ -296,7 +296,7 @@ unsigned char *get_context(BW *bw)
 				break;
 			case 'A':
 				if (!piseof(bw->cursor))
-					joe_snprintf_1(buf, sizeof(buf), "%2.2X", 255 & brc(bw->cursor));
+					joe_snprintf_1(buf, sizeof(buf), "%2.2X", brch(bw->cursor));
 				else
 					joe_snprintf_0(buf, sizeof(buf), "  ");
 				for (x = 0; buf[x]; ++x)
