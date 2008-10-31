@@ -815,7 +815,7 @@ static int doopt(BW *bw, int x, unsigned char **vary, int flg)
 
 			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
 			if (s) {
-				*(unsigned char **)glopts[x].ofst = zdup(s);
+				*(unsigned char **)glopts[x].set = zdup(s);
 				break;
 			} else {
 				return -1;
