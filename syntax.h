@@ -90,7 +90,7 @@ struct high_syntax *load_syntax PARAMS((unsigned char *name));
 extern int *attr_buf;
 HIGHLIGHT_STATE parse PARAMS((struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state));
 
-#define clear_state(s) ((s)->saved_s[0] = (s)->state = (s)->stack = 0)
+#define clear_state(s) (((s)->saved_s[0] = 0), ((s)->state = 0), ((s)->stack = 0))
 #define invalidate_state(s) ((s)->state = -1)
 #define move_state(to,from) (*(to)= *(from))
 #define eq_state(x,y) ((x)->state == (y)->state && (x)->stack == (y)->stack && !zcmp((x)->saved_s, (y)->saved_s))
