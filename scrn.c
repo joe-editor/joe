@@ -2072,6 +2072,8 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)
 			case 0:
 				--s;
 				break;
+			case '@':
+				c = 0;
 			default: {
 				if (col++ >= ofst) {
 					outatr(locale_map, t, scrn, attr, x, y, (c&0x7F), atr);

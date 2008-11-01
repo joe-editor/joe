@@ -303,4 +303,6 @@ void set_file_pos_orphaned();
 
 void breplace(B *b, B *n);
 
+unsigned char *dequote(unsigned char *);
+
 #endif

@@ -2326,6 +2326,20 @@ long pisindentg(P *p)
 	return col;
 }
 
+unsigned char *dequote(unsigned char *s)
+{
+        static unsigned char buf[1024];
+        unsigned char *p = buf;
+        while (*s) {
+                if (*s =='\\')
+                        ++s;
+                if (*s)
+                        *p++ = *s++;
+        }
+        *p = 0;
+        return buf;
+}
+
 /* Load file into new buffer and return the new buffer */
 /* Returns with error set to 0 for success,
  * -1 for new file (file doesn't exist)
@@ -2362,7 +2376,7 @@ B *bload(unsigned char *s)
 	if (n[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		fi = popen((char *)(n + 1), "r");
+		fi = popen((char *)dequote(n + 1), "r");
 	} else
 #endif
 	if (!zcmp(n, USTR "-")) {
@@ -2383,12 +2397,12 @@ B *bload(unsigned char *s)
 		b = bmk(NULL);
 		goto empty;
 	} else {
-		fi = fopen((char *)n, "r+");
+		fi = fopen((char *)dequote(n), "r+");
 		if (!fi)
 			nowrite = 1;
 		else
 			fclose(fi);
-		fi = fopen((char *)n, "r");
+		fi = fopen((char *)dequote(n), "r");
 		if (!fi)
 			nowrite = 0;
 		if (fi) {
@@ -2747,19 +2761,19 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 	if (s[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		f = popen((char *)(s + 1), "w");
+		f = popen((char *)dequote(s + 1), "w");
 	} else
 #endif
 	if (s[0] == '>' && s[1] == '>')
-		f = fopen((char *)(s + 2), "a");
+		f = fopen((char *)dequote(s + 2), "a");
 	else if (!zcmp(s, USTR "-")) {
 		nescape(maint->t);
 		ttclsn();
 		f = stdout;
 	} else if (skip || amnt != MAXLONG)
-		f = fopen((char *)s, "r+");
+		f = fopen((char *)dequote(s), "r+");
 	else {
-		have_stat = !stat((char *)s, &sbuf);
+		have_stat = !stat((char *)dequote(s), &sbuf);
 		if (!have_stat)
 			sbuf.st_mode = 0666;
 		/* Normal file save */
@@ -2767,7 +2781,7 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 			struct stat lsbuf;
 
 			/* Try to copy permissions */
-			if (!lstat((char *)s,&lsbuf)) {
+			if (!lstat((char *)dequote(s),&lsbuf)) {
 				int g;
 				if (!break_symlinks && S_ISLNK(lsbuf.st_mode)) {
 					goto nobreak;
@@ -2785,22 +2799,22 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 					}
 				}
 #endif
-				unlink((char *)s);
-				g = creat((char *)s, sbuf.st_mode & ~(S_ISUID | S_ISGID));
+				unlink((char *)dequote(s));
+				g = creat((char *)dequote(s), sbuf.st_mode & ~(S_ISUID | S_ISGID));
 #ifdef WITH_SELINUX
 				if (selinux_enabled) {
-					setfilecon((char *)s, &se);
+					setfilecon((char *)dequote(s), &se);
 					freecon(se);
 				}
 #endif
 				close(g);
 				nobreak:;
 			} else {
-				unlink((char *)s);
+				unlink((char *)dequote(s));
 			}
 		}
 
-		f = fopen((char *)s, "w");
+		f = fopen((char *)dequote(s), "w");
 		norm = 1;
 	}
 	joesep(s);
@@ -2847,7 +2861,7 @@ err:
 	/* Update orignal date of file */
 	/* If it's not named, it's about to be */
 	if (!berror && norm && flag && (!p->b->name || flag == 2 || !zcmp(s,p->b->name))) {
-		if (!stat((char *)s,&sbuf))
+		if (!stat((char *)dequote(s),&sbuf))
 			p->b->mod_time = sbuf.st_mtime;
 	}
 
@@ -3000,8 +3014,9 @@ RETSIGTYPE ttsig(int sig)
    Return 0 for success or -1 for failure
 */
 
-int lock_it(unsigned char *path,unsigned char *bf)
+int lock_it(unsigned char *qpath,unsigned char *bf)
 {
+        unsigned char *path = dequote(qpath);
 	unsigned char *lock_name=dirprt(path);
 	unsigned char *name=namprt(path);
 	unsigned char buf[1024];
@@ -3029,8 +3044,9 @@ int lock_it(unsigned char *path,unsigned char *bf)
 	return -1;
 }
 
-void unlock_it(unsigned char *path)
+void unlock_it(unsigned char *qpath)
 {
+        unsigned char *path = dequote(qpath);
 	unsigned char *lock_name=dirprt(path);
 	unsigned char *name=namprt(path);
 	lock_name=vsncpy(sv(lock_name),sc(".#"));

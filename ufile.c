@@ -207,10 +207,10 @@ static int backup(BW *bw)
 		if (backpath) {
 			unsigned char *t = vsncpy(NULL, 0, sz(backpath));
 			t = canonical(t);
-			joe_snprintf_3(name, sizeof(name), "%s/%s%s", t, namepart(tmp, bw->b->name), simple_backup_suffix);
+			joe_snprintf_3(name, sizeof(name), "%s/%s%s", t, namepart(tmp, dequote(bw->b->name)), simple_backup_suffix);
 			vsrm(t);
 		} else {
-			joe_snprintf_2(name, sizeof(name), "%s%s", bw->b->name, simple_backup_suffix);
+			joe_snprintf_2(name, sizeof(name), "%s%s", dequote(bw->b->name), simple_backup_suffix);
 		}
 		
 		/* Attempt to delete backup file first */
@@ -219,7 +219,7 @@ static int backup(BW *bw)
 #endif
 
 		/* Copy original file to backup file */
-		if (cp(bw->b->name, name)) {
+		if (cp(dequote(bw->b->name), name)) {
 			return 1;
 		} else {
 			bw->b->backup = 1;
@@ -479,7 +479,7 @@ static int dosave1(BW *bw, unsigned char *s, struct savereq *req, int *notify)
 		/* It's a normal file: not a pipe or append */
 		if (!bw->b->name || zcmp(s, bw->b->name)) {
 			/* Newly named file or name is different than buffer */
-			f = open((char *)s, O_RDONLY);
+			f = open((char *)dequote(s), O_RDONLY);
 			if (f != -1) {
 				close(f);
 				/* char *msg = "File exists. Overwrite (y,n,^C)? ";
