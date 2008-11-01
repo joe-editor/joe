@@ -342,7 +342,7 @@ void genfield PARAMS((SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned 
 int txtwidth PARAMS((struct charmap *map,unsigned char *s,int len));
 int txtwidth1 PARAMS((struct charmap *map, int tabwidth, unsigned char *s, int len));
 
-void unesc_genfmt(unsigned char *d, unsigned char *s, int max);
+void unesc_genfmt(unsigned char *d, unsigned char *s, int len, int max);
 
 /* Generate a field: formatted */
 void genfmt PARAMS((SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg));

@@ -578,7 +578,7 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 	srch->wrap_p = pdup(bw->cursor, USTR "dofirst");
 	srch->wrap_p->owner = &srch->wrap_p;
 	if (pico && globalsrch && globalsrch->pattern) {
-		unesc_genfmt(bf1, globalsrch->pattern, sizeof(bf1)-2);
+		unesc_genfmt(bf1, sv(globalsrch->pattern), sizeof(bf1)-2);
 		s = vsfmt(s, 0, joe_gettext(_("Find (^C to abort) [%s]: ")),bf1);
 	} else
 		s = vsdupz(joe_gettext(_("Find (^C to abort): ")));

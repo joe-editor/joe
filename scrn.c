@@ -2081,15 +2081,24 @@ int txtwidth1(struct charmap *map,int tabwidth,unsigned char *s,int len)
 
 /* Unescape for text going to genfmt */
 
-void unesc_genfmt(unsigned char *d, unsigned char *s, int max)
+void unesc_genfmt(unsigned char *d, unsigned char *s, int len, int max)
 {
-	while (max && *s) {
-		if (*s == '\\')
+	while (max > 0 && len) {
+		if (!*s) {
 			*d++ = '\\';
-		*d++ = *s++;
+			*d++ = '@';
+			++s;
+		} else {
+			if (*s == '\\') {
+				*d++ = '\\';
+				--max;
+			}
+			*d++ = *s++;
+		}
+		--len;
 		--max;
 	}
-	if (*s)
+	if (len)
 		*d++ = '$';
 	*d = 0;
 }
@@ -2132,6 +2141,8 @@ void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg)
 			case 0:
 				--s;
 				break;
+			case '@':
+				c = 0;
 			default: {
 				if (col++ >= ofst) {
 					outatr(locale_map, t, scrn, attr, x, y, (c&0x7F), atr);
