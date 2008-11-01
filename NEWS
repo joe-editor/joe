@@ -1,3 +1,8 @@
+- Treat \ as a quote character for file I/O.  Now you can edit
+  files like !test with \!test
+
+- Print NULs in default search string.  Handle many \s properly.
+
 - Allow backslashes in filenames
 
 - Fix %A to print unicode
