@@ -737,168 +737,214 @@ int check_for_hex(BW *bw)
 		    	return 1;
 	return 0;
 }
- 
-static int doopt(BW *bw, int x, unsigned char **vary, int flg)
+
+struct rc_menu {
+	struct rc_menu *next;	/* Next one in list */
+	unsigned char *name;	/* Name of this menu */
+	int last_position;	/* Last cursor position */
+	int size;		/* Number of entries */
+	unsigned char **entries;/* Option or sub-menu name */
+} *menus;
+
+struct menu_instance {
+	struct rc_menu *menu;
+	unsigned char **s;
+};
+
+int find_option(unsigned char *s)
+{
+	int y;
+	for (y = 0; glopts[y].name; ++y)
+		if (!zcmp(glopts[y].name, s))
+			return y;
+	return -1;
+}
+
+struct rc_menu *find_menu(unsigned char *s)
+{
+	struct rc_menu *m;
+	for (m = menus; m; m = m->next)
+		if (!zcmp(m->name, s))
+			break;
+	return m;
+}
+
+int display_menu(BW *bw, struct rc_menu *menu);
+
+static int doopt(BW *bw, int x, struct menu_instance *mi, int flg)
 {
 	int ret = 0;
+	struct rc_menu *menu = mi->menu;
 	unsigned char *buf = 0;
 	unsigned char *s;
-	varm(vary);
-	switch (glopts[x].type) {
-		case 0: { /* Global option flag */
-			if (!flg)
-				*(int *)glopts[x].set = !*(int *)glopts[x].set;
-			else if (flg == 1)
-				*(int *)glopts[x].set = 1;
-			else
-				*(int *)glopts[x].set = 0;
-			msgnw(bw->parent, *(int *)glopts[x].set ? joe_gettext(glopts[x].yes) : joe_gettext(glopts[x].no));
-			break;
-		} case 4: { /* Local option flag */
-			if (!flg)
-				*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = !*(int *) ((unsigned char *) &bw->o + glopts[x].ofst);
-			else if (flg == 1)
-				*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = 1;
-			else
-				*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = 0;
-			msgnw(bw->parent, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? joe_gettext(glopts[x].yes) : joe_gettext(glopts[x].no));
-			if (glopts[x].ofst == (unsigned char *) &fdefault.readonly - (unsigned char *) &fdefault)
-				bw->b->rdonly = bw->o.readonly;
-			if (glopts[x].ofst == (unsigned char *) &fdefault.hex - (unsigned char *) &fdefault &&
-			    bw->o.hex &&
-			    bw->b->o.charmap->type) {
-			    	/* Kill UTF-8 if we are turning on hex */
-			    	bw->o.charmap = find_charmap("c");
-			    	bw->b->o = bw->o;
-			    	wfit(bw->parent->t);
-			    	updall();
-			}
-			break;
-		} case 6: { /* Local option string */
-			/* Get current string */
-			s = *(unsigned char **)((unsigned char *)&bw->o + glopts[x].ofst);
-			if (!s)
-				s = USTR "";
-			/* Generate message */
-			buf = vsfmt(buf, 0, glopts[x].yes, s);
 
-			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
-			if (s) {
-				*(unsigned char **)((unsigned char *)&bw->o + glopts[x].ofst) = zdup(s);
-				break;
-			} else {
-				return -1;
-			}
-		} case 1: { /* global option numeric */
-			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *)glopts[x].set);
-			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
-			if (s) {
-				int v = calc(bw, s);
-				if (merr) {
-					msgnw(bw->parent, merr);
-					ret = -1;
-				} else if (v >= glopts[x].low && v <= glopts[x].high)
-					*(int *)glopts[x].set = v;
-				else {
-					msgnw(bw->parent, joe_gettext(_("Value out of range")));
-					ret = -1;
-				}
+	int y = find_option(menu->entries[x]);
 
+	if (y >= 0) {
+		switch (glopts[y].type) {
+			case 0: { /* Global option flag */
+				if (!flg)
+					*(int *)glopts[y].set = !*(int *)glopts[y].set;
+				else if (flg == 1)
+					*(int *)glopts[y].set = 1;
+				else
+					*(int *)glopts[y].set = 0;
+				msgnw(bw->parent, *(int *)glopts[y].set ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
 				break;
-			} else
-				return -1;
-		} case 2: { /* global option string */
-			s = *(unsigned char **) glopts[x].set;
-			if (!s)
-				s = USTR "";
-			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), s);
-
-			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
-			if (s) {
-				*(unsigned char **)glopts[x].set = zdup(s);
-				break;
-			} else {
-				return -1;
-			}
-		} case 5: { /* local option numeric */
-			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
-			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
-			if (s) {
-				double v = calc(bw, s);
-				if (merr) {
-					msgnw(bw->parent, merr);
-					ret = -1;
-				} else if (v >= glopts[x].low && v <= glopts[x].high) {
-					*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = v;
-				} else {
-					msgnw(bw->parent, joe_gettext(_("Value out of range")));
-					ret = -1;
+			} case 4: { /* Local option flag */
+				if (!flg)
+					*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = !*(int *) ((unsigned char *) &bw->o + glopts[y].ofst);
+				else if (flg == 1)
+					*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = 1;
+				else
+					*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = 0;
+				msgnw(bw->parent, *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
+				if (glopts[y].ofst == (unsigned char *) &fdefault.readonly - (unsigned char *) &fdefault)
+					bw->b->rdonly = bw->o.readonly;
+				if (glopts[y].ofst == (unsigned char *) &fdefault.hex - (unsigned char *) &fdefault &&
+				    bw->o.hex &&
+				    bw->b->o.charmap->type) {
+					/* Kill UTF-8 if we are turning on hex */
+					bw->o.charmap = find_charmap("c");
+					bw->b->o = bw->o;
+					wfit(bw->parent->t);
+					updall();
 				}
 				break;
-			} else {
-				return -1;
-			}
-		} case 7: { /* local option numeric+1, with range checking */
-			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
-			s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
+			} case 6: { /* Local option string */
+				/* Get current string */
+				s = *(unsigned char **)((unsigned char *)&bw->o + glopts[y].ofst);
+				if (!s)
+					s = USTR "";
+				/* Generate message */
+				buf = vsfmt(buf, 0, glopts[y].yes, s);
 
-			if (s) {
-				double v = calc(bw, s) - 1.0;
-				if (merr) {
-					msgnw(bw->parent, merr);
-					ret = -1;
-				} else if (v >= glopts[x].low && v <= glopts[x].high) {
-					*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = v;
-				} else {
-					msgnw(bw->parent, joe_gettext(_("Value out of range")));
-					ret = -1;
-				}
-				break;
-			} else {
-				return -1;
-			}
-		} case 9: { /* Choose syntax */
-			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
-			s = ask(bw->parent, buf, NULL, NULL, syntaxcmplt, locale_map, 0, 0, NULL);
-
-			if (s) {
-				struct high_syntax *syn;
-
-				syn = load_syntax(s);
-
-				if (syn) {
-					bw->o.syntax = syn;
+				s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
+				if (s) {
+					*(unsigned char **)((unsigned char *)&bw->o + glopts[y].ofst) = zdup(s);
 					break;
 				} else {
-					msgnw(bw->parent, joe_gettext(_("Syntax definition file not found")));
 					return -1;
 				}
-			} else {
-				return -1;
-			}
-		} case 13: { /* Choose encoding */
-			buf = vsfmt(buf, 0, joe_gettext(glopts[x].yes), "");
-			s = ask(bw->parent, buf, NULL, NULL, encodingcmplt, locale_map, 0, 0, NULL);
-			if (s) {
-				struct charmap *map;
+			} case 1: { /* global option numeric */
+				buf = vsfmt(buf, 0, joe_gettext(glopts[y].yes), *(int *)glopts[y].set);
+				s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
+				if (s) {
+					int v = calc(bw, s);
+					if (merr) {
+						msgnw(bw->parent, merr);
+						ret = -1;
+					} else if (v >= glopts[y].low && v <= glopts[y].high)
+						*(int *)glopts[y].set = v;
+					else {
+						msgnw(bw->parent, joe_gettext(_("Value out of range")));
+						ret = -1;
+					}
 
-				map = find_charmap(s);
-				if (map && map->type && check_for_hex(bw)) {
-					msgnw(bw->parent, joe_gettext(_("UTF-8 encoding not allowed with hexadecimal windows")));
+					break;
+				} else
 					return -1;
-				}
+			} case 2: { /* global option string */
+				s = *(unsigned char **) glopts[y].set;
+				if (!s)
+					s = USTR "";
+				buf = vsfmt(buf, 0, joe_gettext(glopts[y].yes), s);
 
-				if (map) {
-					bw->o.charmap = map;
-					msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("%s encoding assumed for this file")), map->name));
+				s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
+				if (s) {
+					*(unsigned char **)glopts[y].set = zdup(s);
 					break;
 				} else {
-					msgnw(bw->parent, joe_gettext(_("Character set not found")));
 					return -1;
 				}
-			} else {
-				return -1;
+			} case 5: { /* local option numeric */
+				buf = vsfmt(buf, 0, joe_gettext(glopts[y].yes), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst));
+				s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
+				if (s) {
+					double v = calc(bw, s);
+					if (merr) {
+						msgnw(bw->parent, merr);
+						ret = -1;
+					} else if (v >= glopts[y].low && v <= glopts[y].high) {
+						*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = v;
+					} else {
+						msgnw(bw->parent, joe_gettext(_("Value out of range")));
+						ret = -1;
+					}
+					break;
+				} else {
+					return -1;
+				}
+			} case 7: { /* local option numeric+1, with range checking */
+				buf = vsfmt(buf, 0, joe_gettext(glopts[y].yes), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) + 1);
+				s = ask(bw->parent, buf, NULL, NULL, utypebw, locale_map, 0, 0, NULL);
+
+				if (s) {
+					double v = calc(bw, s) - 1.0;
+					if (merr) {
+						msgnw(bw->parent, merr);
+						ret = -1;
+					} else if (v >= glopts[y].low && v <= glopts[y].high) {
+						*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = v;
+					} else {
+						msgnw(bw->parent, joe_gettext(_("Value out of range")));
+						ret = -1;
+					}
+					break;
+				} else {
+					return -1;
+				}
+			} case 9: { /* Choose syntax */
+				buf = vsfmt(buf, 0, joe_gettext(glopts[y].yes), "");
+				s = ask(bw->parent, buf, NULL, NULL, syntaxcmplt, locale_map, 0, 0, NULL);
+
+				if (s) {
+					struct high_syntax *syn;
+
+					syn = load_syntax(s);
+
+					if (syn) {
+						bw->o.syntax = syn;
+						break;
+					} else {
+						msgnw(bw->parent, joe_gettext(_("Syntax definition file not found")));
+						return -1;
+					}
+				} else {
+					return -1;
+				}
+			} case 13: { /* Choose encoding */
+				buf = vsfmt(buf, 0, joe_gettext(glopts[y].yes), "");
+				s = ask(bw->parent, buf, NULL, NULL, encodingcmplt, locale_map, 0, 0, NULL);
+				if (s) {
+					struct charmap *map;
+
+					map = find_charmap(s);
+					if (map && map->type && check_for_hex(bw)) {
+						msgnw(bw->parent, joe_gettext(_("UTF-8 encoding not allowed with hexadecimal windows")));
+						return -1;
+					}
+
+					if (map) {
+						bw->o.charmap = map;
+						msgnw(bw->parent, vsfmt(NULL, 0, joe_gettext(_("%s encoding assumed for this file")), map->name));
+						break;
+					} else {
+						msgnw(bw->parent, joe_gettext(_("Character set not found")));
+						return -1;
+					}
+				} else {
+					return -1;
+				}
 			}
+		}
+	} else {
+		struct rc_menu *sub_menu = find_menu(menu->entries[x]);
+		if (sub_menu) {
+			return display_menu(bw, sub_menu);
+		} else {
+			msgnw(bw->parent, joe_gettext(_("Unknown menu or option")));
+			return -1;
 		}
 	}
 	bw->b->o = bw->o;
@@ -907,49 +953,112 @@ static int doopt(BW *bw, int x, unsigned char **vary, int flg)
 	return ret;
 }
 
-int umode(BW *bw)
+struct menu_instance *create_menu(BW *bw, struct rc_menu *menu)
 {
-	unsigned char **s = vamk(50);
+	struct menu_instance *m = (struct menu_instance *)joe_malloc(sizeof(struct menu_instance));
+	unsigned char **s = vamk(20);
 	int x;
-
 	vaperm(s);
-
-	bw->b->o.readonly = bw->o.readonly = bw->b->rdonly;
-
-	for (x = 0; glopts[x].menu; ++x) {
-		unsigned char *t = vsmk(40);
-		switch (glopts[x].type) {
-		case 0:
-			t = vsfmt(t, 0, joe_gettext(glopts[x].menu), *(int *)glopts[x].set ? "ON" : "OFF");
-			break;
-		case 1:
-			t = vsfmt(t, 0, USTR "%s%d", joe_gettext(glopts[x].menu), *(int *)glopts[x].set);
-			break;
-		case 2:
-		case 9:
-		case 13:
-		case 6:
-			t = vscpyz(t,joe_gettext(glopts[x].menu));
-			break;
-		case 4:
-			t = vsfmt(t, 0, USTR "%s%s", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? "ON" : "OFF");
-			break;
-		case 5:
-			t = vsfmt(t, 0, USTR "%s%d", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
-			break;
-		case 7:
-			t = vsfmt(t, 0, USTR "%s%d", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
-			break;
+	for (x = 0; x != menu->size; ++x) {
+		int y;
+		if ((y = find_option(menu->entries[x])) >= 0) {
+			unsigned char *t = vsmk(40);
+			switch (glopts[y].type) {
+			case 0:
+				t = vsfmt(t, 0, joe_gettext(glopts[y].menu), *(int *)glopts[y].set ? "ON" : "OFF");
+				break;
+			case 1:
+				t = vsfmt(t, 0, USTR "%s%d", joe_gettext(glopts[y].menu), *(int *)glopts[y].set);
+				break;
+			case 2:
+			case 9:
+			case 13:
+			case 6:
+				t = vscpyz(t,joe_gettext(glopts[y].menu));
+				break;
+			case 4:
+				t = vsfmt(t, 0, USTR "%s%s", joe_gettext(glopts[y].menu), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) ? "ON" : "OFF");
+				break;
+			case 5:
+				t = vsfmt(t, 0, USTR "%s%d", joe_gettext(glopts[y].menu), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst));
+				break;
+			case 7:
+				t = vsfmt(t, 0, USTR "%s%d", joe_gettext(glopts[y].menu), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) + 1);
+				break;
+			}
+			s = vaadd(s, t);
+		} else {
+			s = vaadd(s, vsncpy(NULL, 0, sz(menu->entries[x])));
 		}
-		s = vaadd(s, t);
 	}
-	x = choose(bw->parent, bw->parent, s, &optx);
+	m->menu = menu;
+	m->s = s;
+	return m;
+}
+
+int display_menu(BW *bw, struct rc_menu *menu)
+{
+	struct menu_instance *m = create_menu(bw, menu);
+	int x = choose(bw->parent, bw->parent, m->s, &menu->last_position);
 	if (x == -1) {
-		varm(s);
+		varm(m->s);
+		joe_free(m);
 		return -1;
 	}
-	return doopt(bw, optx, s, x);
+	return doopt(bw, menu->last_position, m, x);
 }
+
+/* ^T command */
+
+int umode(BW *bw)
+{
+	struct rc_menu *menu = find_menu("root");
+
+	if (menu) {
+		bw->b->o.readonly = bw->o.readonly = bw->b->rdonly;
+		return display_menu(bw, menu);
+	} else {
+		msgnw(bw->parent, joe_gettext(_("No root menu in rc file")));
+		return -1;
+	}
+}
+
+int menu_init(JFILE *fd, unsigned char *bf, int line)
+{
+	unsigned char *buf = vsmk(128);
+	if (bf[0] == '[') {
+		unsigned char *name = vsncpy(NULL, 0, sz(bf + 1));
+		struct rc_menu *menu = find_menu(name);
+		obj_perm(name);
+		if (!menu) {
+			menu = (struct rc_menu *)joe_malloc(sizeof(struct rc_menu));
+			menu->name = name;
+			menu->next = menus;
+			menus = menu;
+			menu->last_position = 0;
+			menu->size = 0;
+			menu->entries = vamk(1);
+			vaperm(menu->entries);
+		} else {
+		}
+		while ((jfgets(&buf, fd)) && (buf[0] != ']')) {
+			++line;
+			if (buf[0]) {
+				unsigned char *entry = vsncpy(NULL, 0, sz(buf));
+				menu->entries = vaadd(menu->entries, entry);
+				++menu->size;
+			}
+		}
+		if (buf[0] == ']') {
+			++line;
+		} else {
+			fprintf(stderr, (char *)joe_gettext(_("\n%d: EOF before end of menu text\n")),line);
+		}
+	}
+	return line;
+}
+
+
 
 /* Process rc file
  * Returns 0 if the rc file was succefully processed
@@ -1038,6 +1147,11 @@ int procrc(CAP *cap, unsigned char *name)
 		case '{':	/* Process help text.  No comment allowed after {name */
 			{	/* everything after } is ignored. */
 				line = help_init(fd,buf,line);
+			}
+			break;
+		case '[':	/* Process menu definition */
+			{
+				line = menu_init(fd,buf,line);
 			}
 			break;
 		case ':':	/* Select context */

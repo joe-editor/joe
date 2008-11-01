@@ -332,6 +332,126 @@
 
 :include ftyperc
 
+ SECOND and 1/2 SECTION: Option menu layout
+
+[root
+overwrite
+hex
+autoindent
+wordwrap
+tab
+lmargin
+rmargin
+square
+indentc
+istep
+highlight
+crlf
+linums
+beep
+rdonly
+syntax
+encoding
+asis
+language
+picture
+  more options
+]
+
+[  more options
+  ^G options
+  search options
+  paragraph options
+  autoindent options
+  file options
+  menu options
+  global options
+  cursor options
+  marking options
+  tab/indent options
+]
+
+[  menu options
+menu_explorer
+menu_above
+menu_jump
+transpose
+]
+
+[  file options
+restore
+guess_crlf
+guess_indent
+guess_non_utf8
+guess_utf8
+force
+nobackup
+]
+
+[  global options
+nolocks
+nobackups
+nomodcheck
+nocurdir
+exask
+nosta
+keepup
+break_hardlinks
+break_links
+joe_state
+undo_keep
+backpath
+nonotice
+help_is_utf8
+noxon
+]
+
+[  cursor options
+pg
+mid
+floatmouse
+rtbutton
+]
+
+[  marking options
+autoswap
+marking
+lightoff
+]
+
+[  tab/indent options
+smarthome
+smartbacks
+indentfirst
+purify
+spaces
+]
+
+[  search options
+icase
+wrap
+search_prompting
+csmode
+]
+
+[  paragraph options
+french
+flowed
+cpara
+]
+
+[  ^G options
+single_quoted
+no_double_quoted
+c_comment
+cpp_comment
+pound_comment
+vhdl_comment
+semi_comment
+tex_comment
+text_delimiters
+]
+
  THIRD SECTION: Named help screens:
 
  Use \i to turn on/off inverse video

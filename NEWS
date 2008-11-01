@@ -1,3 +1,5 @@
+- ^T is now a user definable menu system
+
 - Treat \ as a quote character for file I/O.  Now you can edit
   files like !test with \!test
 
