@@ -2185,7 +2185,7 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 	x = obj_len(n) - 1;
 	if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 		for (x = obj_len(n) - 1; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
-		if (n[x] == ',') {
+		if (n[x] == ',' && x && n[x-1] != '\\') {
 			n[x] = 0;
 #if SIZEOF_LONG_LONG && SIZEOF_LONG_LONG == SIZEOF_OFF_T
 			if (n[x + 1] == 'x' || n[x + 1] == 'X')
@@ -2209,7 +2209,7 @@ unsigned char *parsens(unsigned char *s, off_t *skip, off_t *amnt)
 			--x;
 			if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 				for (; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
-				if (n[x] == ',') {
+				if (n[x] == ',' && x && n[x-1] != '\\') {
 					n[x] = 0;
 					*amnt = *skip;
 
