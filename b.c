@@ -2278,6 +2278,49 @@ unsigned char *canonical(unsigned char *n)
 	return n;
 }
 
+int euclid(int a, int b)
+{
+	if (!a)
+		return b;
+	while (b)
+		if (a > b)
+			a -= b;
+		else
+			b -= a;
+	return a;
+}
+
+/* return column of first nonblank character, but don't count comments */
+int found_space;
+int found_tab;
+
+long pisindentg(P *p)
+{
+	int i_spc = 0;
+	int i_tab = 0;
+	P *q = pdup(p, USTR "pisindentg");
+	long col;
+	int ch;
+
+	p_goto_bol(q);
+	while (joe_isblank(p->b->o.charmap,ch = brc(q))) {
+		if (ch == ' ')
+			i_spc = 1;
+		else if (ch == '\t')
+			i_tab = 1;
+		pgetc(q);
+	}
+	col = q->col;
+	if (ch == '*' || ch == '/' || ch == '-' || ch =='%' || ch == '#' || ch == '\r' || ch == '\n')
+		col = 0;
+	if (col) {
+		found_space |= i_spc;
+		found_tab |= i_tab;
+	}
+	prm(q);
+	return col;
+}
+
 /* Load file into new buffer and return the new buffer */
 /* Returns with error set to 0 for success,
  * -1 for new file (file doesn't exist)
@@ -2444,21 +2487,65 @@ opnerr:
 	/* Search backwards through file: if first indented line
 	   is indented with a tab, assume indentc is tab */
 	if (guessindent) {
+		int i, x, y;
+		int guessed_step = 0;
+		int hist[20];
+		int hist_val[20];
+		int nhist = 0;
+		int old_max;
+		int max;
+		int maxi;
+		found_space = 0;
+		found_tab = 0;
 		p=pdup(b->eof, USTR "bload");
-		for (x=0; x!=20; ++x) {
+		/* Create histogram of indentation values */
+		for (y = 0; y != 50; ++y) {
 			p_goto_bol(p);
-			if (pisindent(p)) {
-				if (brc(p)=='\t') {
-					b->o.indentc = '\t';
-					b->o.istep = 1;
-				} else {
-					b->o.indentc = ' ';
-					/* b->o.istep = 2; */
+			if (i = pisindentg(p)) {
+				for (x = 0; x != nhist; ++x)
+					if (hist_val[x] == i)
+						break;
+				if (x == nhist && nhist != 20) {
+					hist[nhist] = 1;
+					hist_val[nhist] = i;
+					++nhist;
+				} else if (x != nhist) {
+					++hist[x];
 				}
-				break;
 			}
 			if (prgetc(p)==NO_MORE_DATA)
 				break;
+		}
+		/* Find GCM of top 3 most popular indentation values */
+		old_max = 0;
+		for (y = 0; y != 3; ++y) {
+			max = 0;
+			for (x = 0; x != nhist; ++x)
+				if (hist[x] > max) {
+					max = hist[x];
+					maxi = x;
+				}
+			if (max) {
+				if (!old_max)
+					old_max = max;
+				if (guessed_step)
+					guessed_step = euclid(guessed_step, hist_val[maxi]);
+				else
+					guessed_step = hist_val[maxi];
+				hist[maxi] = 0;
+			}
+		}
+		/* If guessed value is large, scale it down some */
+		while (!(guessed_step & 1) && guessed_step > 8)
+			guessed_step >>= 1;
+
+		if (found_tab && !found_space) {
+			b->o.indentc = '\t';
+			b->o.istep = 1;
+		} else if (found_space) {
+			b->o.indentc = ' ';
+			if (guessed_step)
+				b->o.istep = guessed_step;
 		}
 		prm(p);
 	}
