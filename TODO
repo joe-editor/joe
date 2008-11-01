@@ -1,10 +1,8 @@
 For JOE-3.6
 
-	allow some form of escaping in file names
+	auto reload of modified files?  a mode for this?
 
-	improve guess indent?  Take LCM of many line indentations?
-
-	bop/eop is broken.  when it's fixed, perhaps we can:
+	tab completion should escape file names for joe
 
           mode where wordwrap wraps rest of paragraph?
 
@@ -105,25 +103,13 @@ allow options after string and istring? -just note it for now.
 
 Makefile.in and Makefile.am need to be the same as Makefile.
 
-820497   reload files which have changes (for example after cvs update)
-
 622978   use last column
-
-1218685  utf-8 problems in hex mode
-           ideally we should ignore utf8 and crs in hex mode.
-           next, save and restore them.
-           last, at least clear these modes.
- when we change from hex back to normal, position the cursor at a valid
- character.
 
 1218708  ? for unknown characters is not informative (at least highlight the ?)
 
 1218701  report character offset in ^K-<space> (not just byte offset).
 
 1304794  X at end of line is changed to space when character above 128 in utf-8
-
-
-1221499  fix sysconf_joedir and sysconf_docdir
 
 1323285  joe does not repeatedly wrap searches (add an option for this?)
 
@@ -222,12 +208,9 @@ Dangerous situations:
 - hex edit mode
     - force switch to overtype mode?
 
-    - think through i18n consequences (goto
-      bol when switch out of it).
-
 - - - - - - - -
 
-- security hole with spell checker
+- security hole with spell checker: abs path to checker needed.
 
 - - - - - - - -
 
@@ -253,9 +236,6 @@ Dangerous situations:
 - highlight all words which match during search?
 
 - - - - - - - -
-
-    - Reload modified files (or current window)
-      (can be a macro: ^KE name rtn)
 
     (a user asked: can it periodically reload log file like tail -f)?
     (just run tail -f in shell window)
@@ -297,8 +277,6 @@ in general we should be able to abort long operations...
 Others:
 
 - completion list of internal commands brings up documentation
-
-- keep special meaning of !, >> and , in file names?
 
 - rectangular blocks: make this a local file option?
 
