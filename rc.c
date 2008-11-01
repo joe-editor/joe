@@ -858,112 +858,162 @@ static int encodingcmplt(BW *bw)
 	return simple_cmplt(bw,encodings);
 }
 
-static int doopt(MENU *m, int x, void *object, int flg)
+struct rc_menu {
+	struct rc_menu *next;	/* Next one in list */
+	unsigned char *name;	/* Name of this menu */
+	int last_position;	/* Last cursor position */
+	int size;		/* Number of entries */
+	unsigned char **entries;/* Option or sub-menu name */
+} *menus;
+
+struct menu_instance {
+	struct rc_menu *menu;
+	unsigned char **s;
+};
+
+int find_option(unsigned char *s)
 {
+	int y;
+	for (y = 0; glopts[y].name; ++y)
+		if (!zcmp(glopts[y].name, s))
+			return y;
+	return -1;
+}
+
+struct rc_menu *find_menu(unsigned char *s)
+{
+	struct rc_menu *m;
+	for (m = menus; m; m = m->next)
+		if (!zcmp(m->name, s))
+			break;
+	return m;
+}
+
+int display_menu(BW *bw, struct rc_menu *menu, int *notify);
+
+static int doopt(MENU *m, int x, struct menu_instance *mi, int flg)
+{
+	struct rc_menu *menu = mi->menu;
 	BW *bw = m->parent->win->object;
 	int *xx;
 	unsigned char buf[OPT_BUF_SIZE];
 	int *notify = m->parent->notify;
 
-	switch (glopts[x].type) {
-	case 0:
-		if (!flg)
-			*(int *)glopts[x].set = !*(int *)glopts[x].set;
-		else if (flg == 1)
-			*(int *)glopts[x].set = 1;
-		else
-			*(int *)glopts[x].set = 0;
-		wabort(m->parent);
-		msgnw(bw->parent, *(int *)glopts[x].set ? joe_gettext(glopts[x].yes) : joe_gettext(glopts[x].no));
-		break;
-	case 4:
-		if (!flg)
-			*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = !*(int *) ((unsigned char *) &bw->o + glopts[x].ofst);
-		else if (flg == 1)
-			*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = 1;
-		else
-			*(int *) ((unsigned char *) &bw->o + glopts[x].ofst) = 0;
-		wabort(m->parent);
-		msgnw(bw->parent, *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? joe_gettext(glopts[x].yes) : joe_gettext(glopts[x].no));
-		if (glopts[x].ofst == (unsigned char *) &fdefault.readonly - (unsigned char *) &fdefault)
-			bw->b->rdonly = bw->o.readonly;
-		/* Kill UTF-8 mode if we switch to hex display */
-		if (glopts[x].ofst == (unsigned char *) &fdefault.hex - (unsigned char *) &fdefault &&
-		    bw->o.hex &&
-		    bw->b->o.charmap->type) {
-			doencoding(bw, vsncpy(NULL, 0, sc("C")), NULL, NULL);
+	int y = find_option(menu->entries[x]);
+
+	if (y >= 0) {
+		switch (glopts[y].type) {
+		case 0:
+			if (!flg)
+				*(int *)glopts[y].set = !*(int *)glopts[y].set;
+			else if (flg == 1)
+				*(int *)glopts[y].set = 1;
+			else
+				*(int *)glopts[y].set = 0;
+			wabort(m->parent);
+			msgnw(bw->parent, *(int *)glopts[y].set ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
+			break;
+		case 4:
+			if (!flg)
+				*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = !*(int *) ((unsigned char *) &bw->o + glopts[y].ofst);
+			else if (flg == 1)
+				*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = 1;
+			else
+				*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = 0;
+			wabort(m->parent);
+			msgnw(bw->parent, *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
+			if (glopts[y].ofst == (unsigned char *) &fdefault.readonly - (unsigned char *) &fdefault)
+				bw->b->rdonly = bw->o.readonly;
+			/* Kill UTF-8 mode if we switch to hex display */
+			if (glopts[y].ofst == (unsigned char *) &fdefault.hex - (unsigned char *) &fdefault &&
+			    bw->o.hex &&
+			    bw->b->o.charmap->type) {
+				doencoding(bw, vsncpy(NULL, 0, sc("C")), NULL, NULL);
+			}
+			break;
+		case 6:
+			wabort(m->parent);
+			xx = (int *) joe_malloc(sizeof(int));
+			*xx = x;
+			if(*(unsigned char **)((unsigned char *)&bw->o+glopts[y].ofst))
+				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes,*(unsigned char **)((unsigned char *)&bw->o+glopts[y].ofst));
+			else
+				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes,"");
+			if(wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
+				return 0;
+			else
+				return -1;
+			/* break; warns on some systems */
+		case 1:
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *)glopts[y].set);
+			xx = (int *) joe_malloc(sizeof(int));
+
+			*xx = x;
+			m->parent->notify = 0;
+			wabort(m->parent);
+			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
+				return 0;
+			else
+				return -1;
+		case 2:
+			if (*(unsigned char **) glopts[y].set)
+				joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(unsigned char **) glopts[y].set);
+			else
+				joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
+			xx = (int *) joe_malloc(sizeof(int));
+
+			*xx = x;
+			m->parent->notify = 0;
+			wabort(m->parent);
+			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
+				return 0;
+			else
+				return -1;
+		case 5:
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst));
+			goto in;
+		case 7:
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) + 1);
+		      in:xx = (int *) joe_malloc(sizeof(int));
+
+			*xx = x;
+			m->parent->notify = 0;
+			wabort(m->parent);
+			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
+				return 0;
+			else
+				return -1;
+
+		case 9:
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
+			m->parent->notify = 0;
+			wabort(m->parent);
+			if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, locale_map, 0))
+				return 0;
+			else
+				return -1;
+
+		case 13:
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
+			m->parent->notify = 0;
+			wabort(m->parent);
+			if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, locale_map, 0))
+				return 0;
+			else
+				return -1;
 		}
-		break;
-	case 6:
-		wabort(m->parent);
-		xx = (int *) joe_malloc(sizeof(int));
-		*xx = x;
-		if(*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst))
-			joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[x].yes,*(unsigned char **)((unsigned char *)&bw->o+glopts[x].ofst));
-		else
-			joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[x].yes,"");
-		if(wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
-			return 0;
-		else
+	} else {
+		struct rc_menu *sub_menu = find_menu(menu->entries[x]);
+		if (sub_menu) {
+			wabort(m->parent);
+			return display_menu(bw, sub_menu, notify);
+		} else {
+			if (notify)
+				*notify = -1;
+			wabort(m->parent);
+			msgnw(bw->parent, joe_gettext(_("Unknown menu or option")));
 			return -1;
-		/* break; warns on some systems */
-	case 1:
-		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), *(int *)glopts[x].set);
-		xx = (int *) joe_malloc(sizeof(int));
-
-		*xx = x;
-		m->parent->notify = 0;
-		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
-	case 2:
-		if (*(unsigned char **) glopts[x].set)
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), *(unsigned char **) glopts[x].set);
-		else
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), "");
-		xx = (int *) joe_malloc(sizeof(int));
-
-		*xx = x;
-		m->parent->notify = 0;
-		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
-	case 5:
-		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
-		goto in;
-	case 7:
-		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
-	      in:xx = (int *) joe_malloc(sizeof(int));
-
-		*xx = x;
-		m->parent->notify = 0;
-		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
-
-	case 9:
-		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), "");
-		m->parent->notify = 0;
-		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
-
-	case 13:
-		joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[x].yes), "");
-		m->parent->notify = 0;
-		wabort(m->parent);
-		if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, locale_map, 0))
-			return 0;
-		else
-			return -1;
+		}
 	}
 	if (notify)
 		*notify = 1;
@@ -973,56 +1023,119 @@ static int doopt(MENU *m, int x, void *object, int flg)
 	return 0;
 }
 
-static int doabrt(MENU *m, int x, unsigned char **s)
+static int doabrt(MENU *m, int x, struct menu_instance *mi)
 {
-	optx = x;
-	for (x = 0; s[x]; ++x)
-		joe_free(s[x]);
-	joe_free(s);
+	mi->menu->last_position = x;
+	for (x = 0; mi->s[x]; ++x)
+		joe_free(mi->s[x]);
+	joe_free(mi->s);
+	joe_free(mi);
 	return -1;
 }
 
-int umode(BW *bw)
+struct menu_instance *create_menu(BW *bw, struct rc_menu *menu)
 {
-	int size;
-	unsigned char **s;
+	struct menu_instance *m = (struct menu_instance *)joe_malloc(sizeof(struct menu_instance));
+	unsigned char **s = (unsigned char **)joe_malloc(sizeof(unsigned char *) * (menu->size + 1));
 	int x;
-
-	bw->b->o.readonly = bw->o.readonly = bw->b->rdonly;
-	for (size = 0; glopts[size].menu; ++size) ;
-	s = (unsigned char **) joe_malloc(sizeof(unsigned char *) * (size + 1));
-
-	for (x = 0; x != size; ++x) {
-		s[x] = (unsigned char *) joe_malloc(80);		/* FIXME: why 40 ??? */
-		switch (glopts[x].type) {
-		case 0:
-			joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%s", joe_gettext(glopts[x].menu), *(int *)glopts[x].set ? "ON" : "OFF");
-			break;
-		case 1:
-			joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%d", joe_gettext(glopts[x].menu), *(int *)glopts[x].set);
-			break;
-		case 2:
-		case 9:
-		case 13:
-		case 6:
-			zcpy(s[x], joe_gettext(glopts[x].menu));
-			break;
-		case 4:
-			joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%s", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) ? "ON" : "OFF");
-			break;
-		case 5:
-			joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%d", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst));
-			break;
-		case 7:
-			joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%d", joe_gettext(glopts[x].menu), *(int *) ((unsigned char *) &bw->o + glopts[x].ofst) + 1);
-			break;
+	for (x = 0; x != menu->size; ++x) {
+		int y;
+		if ((y = find_option(menu->entries[x])) >= 0) {
+			s[x] = (unsigned char *) joe_malloc(OPT_BUF_SIZE);		/* FIXME: why 40 ??? */
+			switch (glopts[y].type) {
+				case 0:
+					joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%s", joe_gettext(glopts[y].menu), *(int *)glopts[y].set ? "ON" : "OFF");
+					break;
+				case 1:
+					joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%d", joe_gettext(glopts[y].menu), *(int *)glopts[y].set);
+					break;
+				case 2:
+				case 9:
+				case 13:
+				case 6:
+					zcpy(s[x], joe_gettext(glopts[y].menu));
+					break;
+				case 4:
+					joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%s", joe_gettext(glopts[y].menu), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) ? "ON" : "OFF");
+					break;
+				case 5:
+					joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%d", joe_gettext(glopts[y].menu), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst));
+					break;
+				case 7:
+					joe_snprintf_2((s[x]), OPT_BUF_SIZE, "%s%d", joe_gettext(glopts[y].menu), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) + 1);
+					break;
+			}
+		} else {
+			s[x] = zdup(menu->entries[x]);
 		}
 	}
 	s[x] = 0;
-	if (mkmenu(bw->parent, bw->parent, s, doopt, doabrt, NULL, optx, s, NULL))
+	m->menu = menu;
+	m->s = s;
+	return m;
+}
+
+int display_menu(BW *bw, struct rc_menu *menu, int *notify)
+{
+	struct menu_instance *m = create_menu(bw, menu);
+	if (mkmenu(bw->parent, bw->parent, m->s, doopt, doabrt, NULL, menu->last_position, m, notify))
 		return 0;
 	else
 		return -1;
+}
+
+/* ^T command */
+
+int umode(BW *bw)
+{
+	struct rc_menu *menu = find_menu("root");
+
+	if (menu) {
+		bw->b->o.readonly = bw->o.readonly = bw->b->rdonly;
+		return display_menu(bw, find_menu("root"), NULL);
+	} else {
+		msgnw(bw->parent, joe_gettext(_("No root menu in rc file")));
+		return -1;
+	}
+}
+
+int menu_init(JFILE *fd, unsigned char *bf, int line)
+{
+	unsigned char buf[1024];
+	if (bf[0] == '[') {
+		unsigned char *name = vsncpy(NULL, 0, sz(bf + 1) - 1);
+		struct rc_menu *menu = find_menu(name);
+		if (!menu) {
+			menu = (struct rc_menu *)joe_malloc(sizeof(struct rc_menu));
+			menu->name = name;
+			menu->next = menus;
+			menus = menu;
+			menu->last_position = 0;
+			menu->size = 0;
+			menu->entries = 0;
+		} else {
+			vsrm(name);
+		}
+		while ((jfgets(buf, sizeof(buf), fd)) && (buf[0] != ']')) {
+			++line;
+			if (buf[0]) {
+				unsigned char *entry = vsncpy(NULL, 0, sz(buf) - 1);
+				++menu->size;
+				if (!menu->entries) {
+					menu->entries = (unsigned char **)joe_malloc(sizeof(unsigned char *) * menu->size);
+				} else {
+					menu->entries = (unsigned char **)joe_realloc(menu->entries, sizeof(unsigned char *) * menu->size);
+				}
+				menu->entries[menu->size - 1] = entry;
+			}
+		}
+		if (buf[0] == ']') {
+			++line;
+		} else {
+			fprintf(stderr, (char *)joe_gettext(_("\n%d: EOF before end of menu text\n")),line);
+		}
+	}
+	return line;
 }
 
 /* Process rc file
@@ -1114,6 +1227,11 @@ int procrc(CAP *cap, unsigned char *name)
 		case '{':	/* Process help text.  No comment allowed after {name */
 			{	/* everything after } is ignored. */
 				line = help_init(fd,buf,line);
+			}
+			break;
+		case '[':	/* Process menu definition */
+			{
+				line = menu_init(fd,buf,line);
 			}
 			break;
 		case ':':	/* Select context */
