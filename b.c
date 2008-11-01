@@ -2783,7 +2783,7 @@ int bsave(P *p, unsigned char *s, off_t size, int flag)
 					selinux_enabled = (is_selinux_enabled() > 0);
 				
 				if (selinux_enabled) {
-					if (getfilecon((char *)s, &se) < 0) {
+					if (getfilecon((char *)dequote(s), &se) < 0) {
 						berror = -4;
 						goto opnerr;
 					}
