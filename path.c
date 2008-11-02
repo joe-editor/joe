@@ -67,7 +67,9 @@
 #endif
 
 #ifndef PATH_MAX
-#warning What should we include to have PATH_MAX defined?
+/* #warning is gcc extension
+  #warning What should we include to have PATH_MAX defined?
+*/
 #define PATH_MAX	4096
 #endif
 

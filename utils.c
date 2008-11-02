@@ -8,6 +8,9 @@
  */
 #include "types.h"
 
+#ifdef HAVE_SYS_IOCTL_H
+#include <sys/ioctl.h>
+#endif
 
 #if 0
 int joe_ispunct(int wide,struct charmap *map,int c)

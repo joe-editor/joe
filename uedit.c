@@ -2314,7 +2314,7 @@ int umsg(BASE *b)
 static int dotxt(BW *bw, unsigned char *s, void *object, int *notify)
 {
 	int x,fill;
-	char *str;
+	unsigned char *str;
 
 	if (notify)
 		*notify = 1;

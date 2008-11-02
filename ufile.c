@@ -154,7 +154,7 @@ static int cp(unsigned char *from, unsigned char *to)
 	utbuf.actime = sbuf.st_atime;
 	utbuf.modtime = sbuf.st_mtime;
 #endif
-	utime(to, &utbuf);
+	utime((char *)to, &utbuf);
 #endif
 
 #ifdef WITH_SELINUX

@@ -805,7 +805,6 @@ static int syntaxcmplt(BW *bw)
 int check_for_hex(BW *bw)
 {
 	W *w;
-	BW *org;
 	if (bw->o.hex)
 		return 1;
 	for (w = bw->parent->link.next; w != bw->parent; w = w->link.next)
@@ -1041,7 +1040,6 @@ int menu_flg; /* Key used to select menu entry */
 static int execmenu(MENU *m, int x, struct menu_instance *mi, int flg)
 {
 	struct rc_menu *menu = mi->menu;
-	BW *bw = m->parent->win->object;
 	int *notify = m->parent->notify;
 	if (notify)
 		*notify = 1;
@@ -1103,10 +1101,10 @@ int display_menu(BW *bw, struct rc_menu *menu, int *notify)
 
 unsigned char *get_status(BW *bw, unsigned char *s)
 {
-	static char buf[OPT_BUF_SIZE];
+	static unsigned char buf[OPT_BUF_SIZE];
 	int y = find_option(s);
 	if (y == -1)
-		return "???";
+		return USTR "???";
 	else {
 		switch (glopts[y].type) {
 			case 0: {
@@ -1135,7 +1133,6 @@ unsigned char **getmenus(void)
 {
 	unsigned char **s = vaensure(NULL, 20);
 	struct rc_menu *m;
-	int x;
 
 	for (m = menus; m; m = m->next)
 		s = vaadd(s, vsncpy(NULL, 0, sz(m->name)));
@@ -1184,7 +1181,6 @@ unsigned char **getoptions(void)
 {
 	unsigned char **s = vaensure(NULL, 20);
 	int x;
-	HENTRY *e;
 
 	for (x = 0; glopts[x].name; ++x)
 		s = vaadd(s, vsncpy(NULL, 0, sz(glopts[x].name)));

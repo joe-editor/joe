@@ -192,14 +192,13 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'd':
 				{
-					int l;
 					if (s[1]) switch (*++s) {
-						case 'd' : sprintf(buf,"%02d",cas->tm_mday); break;
-						case 'm' : sprintf(buf,"%02d",cas->tm_mon + 1); break;
-						case 'y' : sprintf(buf,"%02d",cas->tm_year % 100); break;
-						case 'Y' : sprintf(buf,"%04d",cas->tm_year + 1900); break;
-						case 'w' : sprintf(buf,"%d",cas->tm_wday); break;
-						case 'D' : sprintf(buf,"%03d",cas->tm_yday); break;
+						case 'd' : joe_snprintf_1(buf, sizeof(buf), "%02d",cas->tm_mday); break;
+						case 'm' : joe_snprintf_1(buf, sizeof(buf), "%02d",cas->tm_mon + 1); break;
+						case 'y' : joe_snprintf_1(buf, sizeof(buf), "%02d",cas->tm_year % 100); break;
+						case 'Y' : joe_snprintf_1(buf, sizeof(buf), "%04d",cas->tm_year + 1900); break;
+						case 'w' : joe_snprintf_1(buf, sizeof(buf), "%d",cas->tm_wday); break;
+						case 'D' : joe_snprintf_1(buf, sizeof(buf), "%03d",cas->tm_yday); break;
 						default : buf[0]='d'; buf[1]=*s; buf[2]=0;
 					} else {
 						buf[0]='d'; buf[1]=0;
@@ -210,14 +209,14 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 
 			case 'E':
 				{
+					unsigned char *ch;
 					int l;
-					char *ch;
 					buf[0]=0;
 					for(l=0;s[l+1] && s[l+1] != '%'; l++) buf[l]=s[l+1];
 					if (s[l+1]=='%' && buf[0]) {
 						buf[l]=0;
 						s+=l+1;
-						ch=getenv(buf);
+						ch=(unsigned char *)getenv((char *)buf);
 						if (ch) stalin=vsncpy(sv(stalin),sz(ch));
 					} 
 				}
@@ -225,8 +224,8 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 
 			case 'Z':
 				{
+					unsigned char *ch;
 					int l;
-					char *ch;
 					buf[0]=0;
 					for(l=0;s[l+1] && s[l+1] != '%'; l++) buf[l]=s[l+1];
 					if (s[l+1]=='%' && buf[0]) {

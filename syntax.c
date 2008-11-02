@@ -346,12 +346,12 @@ void dump_syntax(BW *bw)
 		joe_snprintf_3(buf, sizeof(buf), "Syntax name=%s, subr=%s, nstates=%d\n",syntax->name,syntax->subr,syntax->nstates);
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
-		zcpy(buf, "params=(");
+		zcpy(buf, USTR "params=(");
 		for(params = syntax->params; params; params = params->next) {
-			zcat(buf, " ");
+			zcat(buf, USTR " ");
 			zcat(buf, params->name);
 		}
-		zcat(buf, " )\n");
+		zcat(buf, USTR " )\n");
 		binss(bw->cursor, buf);
 		pnextl(bw->cursor);
 		for(x=0;x!=syntax->nstates;++x) {
@@ -451,7 +451,6 @@ void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsig
 	unsigned char buf[1024];
 	unsigned char bf[256];
 	unsigned char bf1[256];
-	int c;
 
 	while (parse_ws(&p,'#'), !parse_ident(&p,bf,sizeof(bf)))
 		if(!zcmp(bf,USTR "buffer")) {
@@ -500,7 +499,7 @@ void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsig
 			while(fgets((char *)buf,1023,f)) {
 				++line;
 				p = buf;
-				c = parse_ws(&p,'#');
+				parse_ws(&p,'#');
 				if (*p) {
 					if(!parse_field(&p,USTR "done"))
 						break;
