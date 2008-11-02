@@ -40,7 +40,6 @@ static void dispqw(QW *qw)
 
 static void dispqwn(QW *qw)
 {
-	int y;
 	W *w = qw->parent;
 	/* Set cursor position */
 	if (w->win->watom->follow && w->win->object)
@@ -83,7 +82,6 @@ static int abortqw(QW *qw)
 {
 	struct query_result *r = qw->result;
 	int flg = qw->flg;
-	W *win = qw->parent->win;
 	obj_free(qw->prompt);
 	joe_free(qw);
 	r->answer = -1;

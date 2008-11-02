@@ -452,7 +452,6 @@ void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsig
 	unsigned char *buf = vsmk(128);
 	unsigned char *bf = 0;
 	unsigned char *bf1 = 0;
-	int c;
 
 	while (parse_ws(&p,'#'), !parse_ident(&p,&bf))
 		if(!zcmp(bf,USTR "buffer")) {
@@ -501,7 +500,7 @@ void parse_options(struct high_syntax *syntax,struct high_cmd *cmd,FILE *f,unsig
 			while(vsgets(&buf,f)) {
 				++line;
 				p = buf;
-				c = parse_ws(&p,'#');
+				parse_ws(&p,'#');
 				if (*p) {
 					if(!parse_field(&p,USTR "done"))
 						break;

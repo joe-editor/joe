@@ -362,7 +362,6 @@ static int keymap_cmplt(BW *bw)
 
 int ukeymap(BASE *bw)
 {
-	KMAP *k;
 	unsigned char *s = ask(bw->parent, joe_gettext(_("Change keymap: ")),
 	&keymaphist,USTR "keymap",keymap_cmplt,locale_map,0,0,NULL);
 	if (s) {

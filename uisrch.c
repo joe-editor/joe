@@ -52,12 +52,6 @@ static void rmisrch(struct isrch *isrch)
 	}
 }
 
-static int iabrt(BW *bw, struct isrch *isrch)
-{				/* User hit ^C */
-	rmisrch(isrch);
-	return -1;
-}
-
 static void iappend(BW *bw, struct isrch *isrch, unsigned char *s, int len)
 {				/* Append text and search */
 	/* Append char and search */

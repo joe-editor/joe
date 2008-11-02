@@ -655,8 +655,8 @@ int choose_abrt(BW *bw, int c, void *object)
 		struct choose_result *r = (struct choose_result *)object;
 		r->answer = c;
 		co_resume(&r->t, -1);
-		return -1;
 	}
+	return -1;
 }
 
 int choose_baks(MENU *m, int c, void *object)

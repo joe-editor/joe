@@ -503,13 +503,6 @@ static P *insert(SRCH *srch, P *p, unsigned char *s, int len)
 unsigned char srchstr[] = "Search";	/* Context sensitive help identifier */
 unsigned char srchopt[] = "SearchOptions";
 
-static int pfabort(BW *bw, SRCH *srch)
-{
-	if (srch)
-		rmsrch(srch);
-	return -1;
-}
-
 static int pfsave(BW *bw, SRCH *srch)
 {
 	if (srch) {
@@ -630,7 +623,6 @@ int dofirst(BW *bw, int back, int repl, unsigned char *hint)
 		s = ask(bw->parent, p, NULL, srchopt, utypebw, bw->b->o.charmap, 0, 0, buf);
 
 		if (s) {
-			unsigned char buf[80];
 			unsigned char *t;
 
 			srch->ignore = icase;

@@ -726,7 +726,6 @@ static int encodingcmplt(BW *bw)
 int check_for_hex(BW *bw)
 {
 	W *w;
-	BW *org;
 	if (bw->o.hex)
 		return 1;
 	for (w = bw->parent->link.next; w != bw->parent; w = w->link.next)
@@ -834,7 +833,7 @@ static int olddoopt(BW *bw, int y, int flg)
 				    bw->o.hex &&
 				    bw->b->o.charmap->type) {
 					/* Kill UTF-8 if we are turning on hex */
-					bw->o.charmap = find_charmap("c");
+					bw->o.charmap = find_charmap(USTR "c");
 					bw->b->o = bw->o;
 					wfit(bw->parent->t);
 					updall();
@@ -995,19 +994,19 @@ unsigned char *get_status(BW *bw, unsigned char *s)
 {
 	int y = find_option(s);
 	if (y == -1)
-		return "???";
+		return USTR "???";
 	else {
 		switch (glopts[y].type) {
 			case 0: {
 				return *(int *)glopts[y].set ? USTR "ON" : USTR "OFF";
 			} case 1: {
-				return vsfmt(NULL, 0, "%d", *(int *)glopts[y].set);
+				return vsfmt(NULL, 0, USTR "%d", *(int *)glopts[y].set);
 			} case 4: {
 				return *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) ? USTR "ON" : USTR "OFF";
 			} case 5: {
-				return vsfmt(NULL, 0, "%d", *(int *) ((unsigned char *) &bw->o + glopts[y].ofst));
+				return vsfmt(NULL, 0, USTR "%d", *(int *) ((unsigned char *) &bw->o + glopts[y].ofst));
 			} case 7: {
-				return vsfmt(NULL, 0, "%d", *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) + 1);
+				return vsfmt(NULL, 0, USTR "%d", *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) + 1);
 			} default: {
 				return USTR "";
 			}
@@ -1021,7 +1020,6 @@ unsigned char **getmenus(void)
 {
 	unsigned char **s = vaensure(NULL, 20);
 	struct rc_menu *m;
-	int x;
 	vaperm(s);
 
 	for (m = menus; m; m = m->next)
@@ -1060,7 +1058,6 @@ unsigned char **getoptions(void)
 {
 	unsigned char **s = vaensure(NULL, 20);
 	int x;
-	HENTRY *e;
 	vaperm(s);
 
 	for (x = 0; glopts[x].name; ++x)

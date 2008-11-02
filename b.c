@@ -2515,7 +2515,7 @@ opnerr:
 		/* Create histogram of indentation values */
 		for (y = 0; y != 50; ++y) {
 			p_goto_bol(p);
-			if (i = pisindentg(p)) {
+			if ((i = pisindentg(p))) {
 				for (x = 0; x != nhist; ++x)
 					if (hist_val[x] == i)
 						break;
