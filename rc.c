@@ -974,6 +974,8 @@ static int olddoopt(BW *bw, int y, int flg)
 	return ret;
 }
 
+int menu_flg;
+
 int display_menu(BW *bw, struct rc_menu *menu)
 {
 	unsigned char **s = vamk(20);
@@ -985,6 +987,7 @@ int display_menu(BW *bw, struct rc_menu *menu)
 	if (x == -1) {
 		return -1;
 	}
+	menu_flg = x;
 	return exmacro(menu->entries[menu->last_position]->m, 1);
 }
 
@@ -1085,7 +1088,9 @@ int umode(BW *bw)
 		msgnw(bw->parent, joe_gettext(_("No such option")));
 		return -1;
 	} else {
-		return olddoopt(bw, y, 0);
+		int flg = menu_flg;
+		menu_flg = 0;
+		return olddoopt(bw, y, flg);
 	}
 }
 
