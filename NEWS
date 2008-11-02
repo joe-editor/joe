@@ -1,3 +1,6 @@
+- backspace/DEL means 'n' in replace prompt for better emacs
+  compatibility
+
 - Menus are now made up of macros instead of options.
 
 	New commands:
