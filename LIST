@@ -188,6 +188,7 @@ beep		Beep
 execmd		Execute a joe command
 math		Calculator
 mode		Mode prompt
+menu		Menu prompt
 msg		Display a message
 notmod		Clear the modified flag
 retype		Refresh screen
