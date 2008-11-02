@@ -786,7 +786,8 @@ static int dopfrepl(BW *bw, int c, SRCH *srch)
 {
 	again:
 	srch->addr = bw->cursor->byte;
-	if (c == NO_CODE || yncheck(no_key, c))
+	/* for jamcs backspace means no */
+	if (c == 8 || c == 127 || c == NO_CODE || yncheck(no_key, c))
 		return dopfnext(bw, srch);
 	else if (c == YES_CODE || yncheck(yes_key, c) || c == ' ') {
 		srch->recs.link.prev->yn = 1;
@@ -800,7 +801,7 @@ static int dopfrepl(BW *bw, int c, SRCH *srch)
 			return -1;
 		srch->rest = 1;
 		return dopfnext(bw, srch);
-	} else if (c == 8 || c == 127 || yncheck(backup_key, c)) {
+	} else if (/* c == 8 || c == 127 || */ yncheck(backup_key, c)) {
 		W *w = bw->parent;
 		goback(srch, bw);
 		goback(srch, (BW *)w->object);

@@ -203,7 +203,7 @@
   \f  Blink
 
 -lmsg \i%k%T%W%I%X %* [%n] %y %M
--rmsg  %S Row %r Col %c %t  Ctrl-X H for help
+-rmsg  %S Row %r Col %c %t  ^X^H for help
 
  SECOND SECTION: File name dependant local option settings:
 
@@ -457,7 +457,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  Use \f to turn on/off flash
 
 {Basic
-\i   Help Screen    \|turn off with ^XH   more help with ^X.                       \i
+\i   Help Screen    \|turn off with ^X^H  more help with ^X.                       \i
 \i \i\|\uCURSOR\u           \|\uGO TO\u           \|\uUNDO\u      \|\uMISC\u        \|\uREGION\u     \|\uFILE/EXIT\u  \|\i \i
 \i \i\|^B left ^F right \|^[V prev screen \|^_  undo  \|^[^[ option \|^@  mark   \|^X^C exit  \|\i \i
 \i \i\|^P up   ^N down  \|^V  next screen \|^^  redo  \|^[Q format  \|^X^X swap  \|^X^F find  \|\i \i
@@ -470,7 +470,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Editing 
-\i   Help Screen    \|turn off with ^XH   prev. screen ^X,  next screen ^X.        \i
+\i   Help Screen    \|turn off with ^X^H  prev. screen ^X,  next screen ^X.        \i
 \i \i\|\uCASE\u           \|\uTRANSPOSE\u  \|\uINSERT\u    \|\uMACROS\u            \|\uPROGRAMS\u               \|\i \i
 \i \i\|^[U  Up word   \|^T   Chars \|^O  line  \|^X( record        \|^X^I Indent region     \|\i \i
 \i \i\|^[L  Down word \|^[T  Words \|^C  space \|^X) stop          \|^[.  Tags file find    \|\i \i
@@ -480,7 +480,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Window
-\i   Help Screen    \|turn off with ^XH   prev. screen ^X,  next screen ^X.        \i
+\i   Help Screen    \|turn off with ^X^H  prev. screen ^X,  next screen ^X.        \i
 \i \i\|\uWINDOW\u                      \|\uSCROLL\u     \|\uMODE\u        \|\uCURSOR\u                    \|\i \i
 \i \i\|^X2  Split window in half   \|^X^P up    \|^XF rght mgn\|^[P prev. paragraph       \|\i \i
 \i \i\|^XO  Switch to other window \|^X^N down  \|^X^Q rdonly \|^[N next paragraph        \|\i \i
@@ -492,7 +492,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Search
-\i   Help Screen    \|turn off with ^XH   prev. screen ^X,  next screen ^X.        \i
+\i   Help Screen    \|turn off with ^X^H  prev. screen ^X,  next screen ^X.        \i
 \i \iSpecial search sequences:                                                    \|\i \i
 \i \i    \\^  \\$  matches beg./end of line      \\?     match any single char       \|\i \i
 \i \i    \\<  \\>  matches beg./end of word      \\*     match 0 or more chars       \|\i \i
@@ -506,7 +506,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {SearchOptions
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i   Help Screen    \|turn off with ^X^H   prev. screen ^X,    next screen ^X.     \i
 \i \iSearch options:                                                              \|\i \i
 \i \i   r Replace                                                                 \|\i \i
 \i \i   k Restrict search to highlighted block, which can be rectangular          \|\i \i
@@ -520,7 +520,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Math
-\i   Help Screen    \|turn off with ^XH    prev. screen ^X,    next screen ^X.     \i
+\i   Help Screen    \|turn off with ^X^H   prev. screen ^X,    next screen ^X.     \i
 \i \i \uCOMMANDS\u (hit ESC m for math)  \uFUNCTIONS\u                                    \|\i \i
 \i \i     hex hex display mode       sin cos tab asin acos atan                   \|\i \i
 \i \i     dec decimal mode           sinh cosh tanh asinh acosh atanh             \|\i \i
@@ -535,7 +535,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Names
-\i   Help Screen    \|turn off with ^XH    prev. screen ^X,    next screen ^X.     \i
+\i   Help Screen    \|turn off with ^X^H   prev. screen ^X,    next screen ^X.     \i
 \i \i Hit TAB at file name prompts to generate menu of file names                 \|\i \i
 \i \i Or use up/down keys to access history of previously entered names           \|\i \i
 \i \i Special file names:                                                         \|\i \i
@@ -547,7 +547,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Joe
-\i   Help Screen    \|turn off with ^XH    prev. screen ^X,    next screen ^X.     \i
+\i   Help Screen    \|turn off with ^X^H   prev. screen ^X,    next screen ^X.     \i
 \i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
 \i \i \|\i \i
 \i \i  default joerc file is here @JOERC@/joerc \|\i \i
@@ -556,7 +556,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {CharTable
-\i   Help Screen    \|turn off with ^XH    prev. screen ^X,                        \i
+\i   Help Screen    \|turn off with ^X^H   prev. screen ^X,                        \i
 \i \i\| Dec  \u 0123 4567  8901 2345    0123 4567  8901 2345 \u  Dec \|\i \i
 \i \i\|     |                                              |     \|\i \i
 \i \i\|   0 | \u@ABC\u \uDEFG\u  \uHIJK\u \uLMNO\u    \i\u@ABC\u\i \i\uDEFG\u\i  \i\uHIJK\u\i \i\uLMNO\u\i | 128 \|\i \i
@@ -633,8 +633,10 @@ tw1		^X 1		Delete other windows: can make orphan buffers
 uarg		^U		Repeat prefix
 uarg		^[ -
 uarg		^[ 0 TO 9
-help		^X h		Help
 help		^X ^H
+help		.k1
+help		^[ O P
+help		^[ [ 1 1 ~
 hnext		^X .
 hprev		^X ,
 math		^[ m		Calculator
@@ -724,6 +726,13 @@ eol			^[ [ 8 ~		RxVT
  eol			^# SP @		Amiga
 
   Macros for non-existant Emacs functions
+
+ Better off not having this: JOE automatically figure out the fill
+ prefix.  If you really want to set the left margin, use ^[ ^[ L.
+ mode,"lmargin",rtn,"col",rtn	^X .			Left fill prefix (left margin)
+
+eof,drop,msg,"Mark set",rtn,bof	^X H			Select entire file
+eof,drop,msg,"Mark set",rtn,bof	^X h
 
 psh,nextword-,markk,prevword-,markb,
 upper,nextword-	^[ u		Upcase word
