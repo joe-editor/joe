@@ -341,8 +341,11 @@ jmacs glitches:
     ^[ 0 ^K  delete line bkwd (arg set)
     ^[ @   set mark arg words away
     ^X ^P  mark page
-    ^X h   mark entire buffer
+
     ^X .  set left margin (fill prefix)
+           (better off not setting this: JOE automatically sets
+	    the fill prefix).
+   
 
 Shell windows:
 
