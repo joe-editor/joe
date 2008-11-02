@@ -59,7 +59,7 @@ unsigned char *builtins[]=
 		"mode,\"transpose\",rtn	% % Transpose menus %Ztranspose%\n"
 		":defmenu ^G\n"
 		"mode,\"single_quoted\",rtn	% % ^G ignores '...' %Zsingle_quoted%\n"
-		"mode,\"no_double_quoted\",rtn	% % ^G no ignore "..." %Zno_double_quoted%\n"
+		"mode,\"no_double_quoted\",rtn	% % ^G no ignore \"...\" %Zno_double_quoted%\n"
 		"mode,\"c_comment\",rtn	% % ^G ignores /*...*/ %Zc_comment%\n"
 		"mode,\"cpp_comment\",rtn	% % ^G ignores //... %Zcpp_comment%\n"
 		"mode,\"pound_comment\",rtn	% % ^G ignores #... %Zpound_comment%\n"
