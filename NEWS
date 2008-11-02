@@ -1,3 +1,20 @@
+- Menus are now made up of macros instead of options.
+
+	New commands:
+		menu	Prompt for a menu to display with tab
+			completion.
+
+		mode	Prompt for an option to change with tab
+			completion.
+
+	Menus are defined in joerc file with :defmenu command.
+
+	Menu entries are the pair: macro string.  String is a
+	format string displayed in the menu.  Macro is executed
+	when then menu entry is selected.
+
+	Use this to add your own macros to ^T.
+
 - ^T is now a user definable menu system
 
 - Treat \ as a quote character for file I/O.  Now you can edit

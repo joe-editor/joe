@@ -660,8 +660,6 @@ int glopt(unsigned char *s, unsigned char *arg, OPTIONS *options, int set)
 
 /* Option setting user interface (^T command) */
 
-static int optx = 0; /* Menu cursor position: remember it for next time */
-
 static int doabrt1(BW *bw, int *xx)
 {
 	joe_free(xx);
@@ -858,12 +856,19 @@ static int encodingcmplt(BW *bw)
 	return simple_cmplt(bw,encodings);
 }
 
+/* Menus of macros */
+
+struct rc_menu_entry {
+	MACRO *m;
+	unsigned char *name;
+};
+
 struct rc_menu {
 	struct rc_menu *next;	/* Next one in list */
 	unsigned char *name;	/* Name of this menu */
 	int last_position;	/* Last cursor position */
 	int size;		/* Number of entries */
-	unsigned char **entries;/* Option or sub-menu name */
+	struct rc_menu_entry **entries;
 } *menus;
 
 struct menu_instance {
@@ -889,17 +894,39 @@ struct rc_menu *find_menu(unsigned char *s)
 	return m;
 }
 
-int display_menu(BW *bw, struct rc_menu *menu, int *notify);
-
-static int doopt(MENU *m, int x, struct menu_instance *mi, int flg)
+struct rc_menu *create_menu(unsigned char *name)
 {
-	struct rc_menu *menu = mi->menu;
-	BW *bw = m->parent->win->object;
+	struct rc_menu *menu = find_menu(name);
+	if (menu)
+		return menu;
+	menu = (struct rc_menu *)joe_malloc(sizeof(struct rc_menu));
+	menu->name = zdup(name);
+	menu->next = menus;
+	menus = menu;
+	menu->last_position = 0;
+	menu->size = 0;
+	menu->entries = 0;
+	return menu;
+}
+
+void add_menu_entry(struct rc_menu *menu, unsigned char *entry_name, MACRO *m)
+{
+	struct rc_menu_entry *e = (struct rc_menu_entry *)joe_malloc(sizeof(struct rc_menu_entry));
+	e->m = m;
+	e->name = zdup(entry_name);
+	++menu->size;
+	if (!menu->entries) {
+		menu->entries = (struct rc_menu_entry **)joe_malloc(menu->size * sizeof(struct rc_menu_entry *));
+	} else {
+		menu->entries = (struct rc_menu_entry **)joe_realloc(menu->entries, menu->size * sizeof(struct rc_menu_entry *));
+	}
+	menu->entries[menu->size - 1] = e;
+}
+
+static int olddoopt(BW *bw, int y, int flg, int *notify)
+{
 	int *xx;
 	unsigned char buf[OPT_BUF_SIZE];
-	int *notify = m->parent->notify;
-
-	int y = find_option(menu->entries[x]);
 
 	if (y >= 0) {
 		switch (glopts[y].type) {
@@ -910,7 +937,6 @@ static int doopt(MENU *m, int x, struct menu_instance *mi, int flg)
 				*(int *)glopts[y].set = 1;
 			else
 				*(int *)glopts[y].set = 0;
-			wabort(m->parent);
 			msgnw(bw->parent, *(int *)glopts[y].set ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
 			break;
 		case 4:
@@ -920,7 +946,6 @@ static int doopt(MENU *m, int x, struct menu_instance *mi, int flg)
 				*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = 1;
 			else
 				*(int *) ((unsigned char *) &bw->o + glopts[y].ofst) = 0;
-			wabort(m->parent);
 			msgnw(bw->parent, *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
 			if (glopts[y].ofst == (unsigned char *) &fdefault.readonly - (unsigned char *) &fdefault)
 				bw->b->rdonly = bw->o.readonly;
@@ -932,9 +957,8 @@ static int doopt(MENU *m, int x, struct menu_instance *mi, int flg)
 			}
 			break;
 		case 6:
-			wabort(m->parent);
 			xx = (int *) joe_malloc(sizeof(int));
-			*xx = x;
+			*xx = y;
 			if(*(unsigned char **)((unsigned char *)&bw->o+glopts[y].ofst))
 				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes,*(unsigned char **)((unsigned char *)&bw->o+glopts[y].ofst));
 			else
@@ -948,9 +972,7 @@ static int doopt(MENU *m, int x, struct menu_instance *mi, int flg)
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *)glopts[y].set);
 			xx = (int *) joe_malloc(sizeof(int));
 
-			*xx = x;
-			m->parent->notify = 0;
-			wabort(m->parent);
+			*xx = y;
 			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
 				return 0;
 			else
@@ -962,9 +984,7 @@ static int doopt(MENU *m, int x, struct menu_instance *mi, int flg)
 				joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
 			xx = (int *) joe_malloc(sizeof(int));
 
-			*xx = x;
-			m->parent->notify = 0;
-			wabort(m->parent);
+			*xx = y;
 			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
 				return 0;
 			else
@@ -976,9 +996,7 @@ static int doopt(MENU *m, int x, struct menu_instance *mi, int flg)
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) + 1);
 		      in:xx = (int *) joe_malloc(sizeof(int));
 
-			*xx = x;
-			m->parent->notify = 0;
-			wabort(m->parent);
+			*xx = y;
 			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
 				return 0;
 			else
@@ -986,8 +1004,6 @@ static int doopt(MENU *m, int x, struct menu_instance *mi, int flg)
 
 		case 9:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
-			m->parent->notify = 0;
-			wabort(m->parent);
 			if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, locale_map, 0))
 				return 0;
 			else
@@ -995,24 +1011,10 @@ static int doopt(MENU *m, int x, struct menu_instance *mi, int flg)
 
 		case 13:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
-			m->parent->notify = 0;
-			wabort(m->parent);
 			if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, locale_map, 0))
 				return 0;
 			else
 				return -1;
-		}
-	} else {
-		struct rc_menu *sub_menu = find_menu(menu->entries[x]);
-		if (sub_menu) {
-			wabort(m->parent);
-			return display_menu(bw, sub_menu, notify);
-		} else {
-			if (notify)
-				*notify = -1;
-			wabort(m->parent);
-			msgnw(bw->parent, joe_gettext(_("Unknown menu or option")));
-			return -1;
 		}
 	}
 	if (notify)
@@ -1027,18 +1029,35 @@ static int doabrt(MENU *m, int x, struct menu_instance *mi)
 {
 	mi->menu->last_position = x;
 	for (x = 0; mi->s[x]; ++x)
-		joe_free(mi->s[x]);
+		vsrm(mi->s[x]);
+		/* joe_free(mi->s[x]); */
 	joe_free(mi->s);
 	joe_free(mi);
 	return -1;
 }
 
-struct menu_instance *create_menu(BW *bw, struct rc_menu *menu)
+static int execmenu(MENU *m, int x, struct menu_instance *mi, int flg)
+{
+	struct rc_menu *menu = mi->menu;
+	BW *bw = m->parent->win->object;
+	int *notify = m->parent->notify;
+	if (notify)
+		*notify = 1;
+	wabort(m->parent);
+	return exmacro(menu->entries[x]->m, 1);
+}
+
+int display_menu(BW *bw, struct rc_menu *menu, int *notify)
 {
 	struct menu_instance *m = (struct menu_instance *)joe_malloc(sizeof(struct menu_instance));
 	unsigned char **s = (unsigned char **)joe_malloc(sizeof(unsigned char *) * (menu->size + 1));
 	int x;
 	for (x = 0; x != menu->size; ++x) {
+		/* s[x] = zdup(menu->entries[x]->name); */
+		s[x] = stagen(NULL, bw, menu->entries[x]->name, ' ');
+
+
+#if 0
 		int y;
 		if ((y = find_option(menu->entries[x])) >= 0) {
 			s[x] = (unsigned char *) joe_malloc(OPT_BUF_SIZE);		/* FIXME: why 40 ??? */
@@ -1068,74 +1087,142 @@ struct menu_instance *create_menu(BW *bw, struct rc_menu *menu)
 		} else {
 			s[x] = zdup(menu->entries[x]);
 		}
+#endif
 	}
 	s[x] = 0;
 	m->menu = menu;
 	m->s = s;
-	return m;
-}
-
-int display_menu(BW *bw, struct rc_menu *menu, int *notify)
-{
-	struct menu_instance *m = create_menu(bw, menu);
-	if (mkmenu(bw->parent, bw->parent, m->s, doopt, doabrt, NULL, menu->last_position, m, notify))
+	if (mkmenu(bw->parent, bw->parent, m->s, execmenu, doabrt, NULL, menu->last_position, m, notify))
 		return 0;
 	else
 		return -1;
 }
 
+unsigned char *get_status(BW *bw, unsigned char *s)
+{
+	static char buf[OPT_BUF_SIZE];
+	int y = find_option(s);
+	if (y == -1)
+		return "???";
+	else {
+		switch (glopts[y].type) {
+			case 0: {
+				return *(int *)glopts[y].set ? USTR "ON" : USTR "OFF";
+			} case 1: {
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *(int *)glopts[y].set);
+				return buf;
+			} case 4: {
+				return *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) ? USTR "ON" : USTR "OFF";
+			} case 5: {
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *(int *) ((unsigned char *) &bw->o + glopts[y].ofst));
+				return buf;
+			} case 7: {
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *(int *) ((unsigned char *) &bw->o + glopts[y].ofst) + 1);
+				return buf;
+			} default: {
+				return USTR "";
+			}
+		}
+	}
+}
+
 /* ^T command */
 
-int umode(BW *bw)
+unsigned char **getmenus(void)
 {
-	struct rc_menu *menu = find_menu("root");
+	unsigned char **s = vaensure(NULL, 20);
+	struct rc_menu *m;
+	int x;
 
-	if (menu) {
-		bw->b->o.readonly = bw->o.readonly = bw->b->rdonly;
-		return display_menu(bw, find_menu("root"), NULL);
+	for (m = menus; m; m = m->next)
+		s = vaadd(s, vsncpy(NULL, 0, sz(m->name)));
+	vasort(s, aLen(s));
+	return s;
+}
+
+unsigned char **smenus = NULL;	/* Array of command names */
+
+static int menucmplt(BW *bw)
+{
+	if (!smenus)
+		smenus = getmenus();
+	return simple_cmplt(bw,smenus);
+}
+
+static int domenu(BW *bw, unsigned char *s, void *object, int *notify)
+{
+	struct rc_menu *menu = find_menu(s);
+	vsrm(s);
+	if (!menu) {
+		msgnw(bw->parent, joe_gettext(_("No such menu")));
+		if (notify)
+			*notify = 1;
+		return -1;
 	} else {
-		msgnw(bw->parent, joe_gettext(_("No root menu in rc file")));
+		bw->b->o.readonly = bw->o.readonly = bw->b->rdonly;
+		return display_menu(bw, menu, notify);
+	}
+}
+
+B *menuhist = NULL;
+
+int umenu(BW *bw)
+{
+	if (wmkpw(bw->parent, joe_gettext(_("Menu: ")), &menuhist, domenu, USTR "menu", NULL, menucmplt, NULL, NULL, locale_map, 0)) {
+		return 0;
+	} else {
 		return -1;
 	}
 }
 
-int menu_init(JFILE *fd, unsigned char *bf, int line)
+/* Simplified mode command */
+
+unsigned char **getoptions(void)
 {
-	unsigned char buf[1024];
-	if (bf[0] == '[') {
-		unsigned char *name = vsncpy(NULL, 0, sz(bf + 1) - 1);
-		struct rc_menu *menu = find_menu(name);
-		if (!menu) {
-			menu = (struct rc_menu *)joe_malloc(sizeof(struct rc_menu));
-			menu->name = name;
-			menu->next = menus;
-			menus = menu;
-			menu->last_position = 0;
-			menu->size = 0;
-			menu->entries = 0;
-		} else {
-			vsrm(name);
-		}
-		while ((jfgets(buf, sizeof(buf), fd)) && (buf[0] != ']')) {
-			++line;
-			if (buf[0]) {
-				unsigned char *entry = vsncpy(NULL, 0, sz(buf) - 1);
-				++menu->size;
-				if (!menu->entries) {
-					menu->entries = (unsigned char **)joe_malloc(sizeof(unsigned char *) * menu->size);
-				} else {
-					menu->entries = (unsigned char **)joe_realloc(menu->entries, sizeof(unsigned char *) * menu->size);
-				}
-				menu->entries[menu->size - 1] = entry;
-			}
-		}
-		if (buf[0] == ']') {
-			++line;
-		} else {
-			fprintf(stderr, (char *)joe_gettext(_("\n%d: EOF before end of menu text\n")),line);
-		}
+	unsigned char **s = vaensure(NULL, 20);
+	int x;
+	HENTRY *e;
+
+	for (x = 0; glopts[x].name; ++x)
+		s = vaadd(s, vsncpy(NULL, 0, sz(glopts[x].name)));
+	vasort(s, aLen(s));
+	return s;
+}
+
+/* Command line */
+
+unsigned char **sopts = NULL;	/* Array of command names */
+
+static int optcmplt(BW *bw)
+{
+	if (!sopts)
+		sopts = getoptions();
+	return simple_cmplt(bw,sopts);
+}
+
+static int doopt(BW *bw, unsigned char *s, void *object, int *notify)
+{
+	int y = find_option(s);
+	vsrm(s);
+	if (y == -1) {
+		msgnw(bw->parent, joe_gettext(_("No such option")));
+		if (notify)
+			*notify = 1;
+		return -1;
+	} else {
+		return olddoopt(bw, y, 0, notify);
 	}
-	return line;
+}
+
+B *opthist = NULL;
+
+int umode(BW *bw)
+{
+	if (wmkpw(bw->parent, joe_gettext(USTR _("Option: ")), &opthist, doopt, USTR "opt", NULL, optcmplt, NULL, NULL, locale_map, 0)) {
+		return 0;
+	} else {
+		return -1;
+	}
 }
 
 /* Process rc file
@@ -1148,6 +1235,7 @@ int procrc(CAP *cap, unsigned char *name)
 {
 	OPTIONS *o = &fdefault;	/* Current options */
 	KMAP *context = NULL;	/* Current context */
+	struct rc_menu *current_menu = NULL;
 	unsigned char buf[1024];	/* Input buffer */
 	JFILE *fd;		/* rc file */
 	int line = 0;		/* Line number */
@@ -1227,11 +1315,6 @@ int procrc(CAP *cap, unsigned char *name)
 		case '{':	/* Process help text.  No comment allowed after {name */
 			{	/* everything after } is ignored. */
 				line = help_init(fd,buf,line);
-			}
-			break;
-		case '[':	/* Process menu definition */
-			{
-				line = menu_init(fd,buf,line);
 			}
 			break;
 		case ':':	/* Select context */
@@ -1328,8 +1411,28 @@ int procrc(CAP *cap, unsigned char *name)
 							err = 1;
 							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: No context selected for :delete")), name, line);
 						}
+					} else if (!zcmp(buf + 1, USTR "defmap")) {
+						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
+						buf[c] = 0;
+						if (c != x) {
+							context = kmap_getcontext(buf + x);
+							current_menu = 0;
+						} else {
+							err = 1;
+							fprintf(stderr, (char *)joe_gettext(_("\n%s %d: :defmap missing name")), name, line);
+						}
+					} else if (!zcmp(buf + 1, USTR "defmenu")) {
+						for (buf[x] = c; joe_isblank(locale_map,buf[x]); ++x) ;
+						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
+						buf[c] = 0;
+						current_menu = create_menu(buf + x);
+						context = 0;
 					} else {
 						context = kmap_getcontext(buf + 1);
+						current_menu = 0;
+						/* err = 1;
+						fprintf(stderr, (char *)joe_gettext(_("\n%s %d: unknown :command")), name, line);*/
 					}
 				else {
 					err = 1;
@@ -1342,7 +1445,7 @@ int procrc(CAP *cap, unsigned char *name)
 				int x, y;
 				MACRO *m;
 
-				if (!context) {
+				if (!context && !current_menu) {
 					err = 1;
 					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: No context selected for macro to key-sequence binding")), name, line);
 					break;
@@ -1367,10 +1470,15 @@ int procrc(CAP *cap, unsigned char *name)
 				for (y = x; buf[y] != 0 && buf[y] != '\t' && buf[y] != '\n' && (buf[y] != ' ' || buf[y + 1] != ' '); ++y) ;
 				buf[y] = 0;
 
-				/* Add binding to context */
-				if (kadd(cap, context, buf + x, m) == -1) {
-					fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Bad key sequence '%s'")), name, line, buf + x);
-					err = 1;
+				if (current_menu) {
+					/* Add menu entry */
+					add_menu_entry(current_menu, buf + x, m);
+				} else {
+					/* Add binding to context */
+					if (kadd(cap, context, buf + x, m) == -1) {
+						fprintf(stderr,(char *)joe_gettext(_("\n%s %d: Bad key sequence '%s'")), name, line, buf + x);
+						err = 1;
+					}
 				}
 			}
 			break;
