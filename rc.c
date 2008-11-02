@@ -1036,6 +1036,8 @@ static int doabrt(MENU *m, int x, struct menu_instance *mi)
 	return -1;
 }
 
+int menu_flg; /* Key used to select menu entry */
+
 static int execmenu(MENU *m, int x, struct menu_instance *mi, int flg)
 {
 	struct rc_menu *menu = mi->menu;
@@ -1044,6 +1046,7 @@ static int execmenu(MENU *m, int x, struct menu_instance *mi, int flg)
 	if (notify)
 		*notify = 1;
 	wabort(m->parent);
+	menu_flg = flg;
 	return exmacro(menu->entries[x]->m, 1);
 }
 
@@ -1210,7 +1213,9 @@ static int doopt(BW *bw, unsigned char *s, void *object, int *notify)
 			*notify = 1;
 		return -1;
 	} else {
-		return olddoopt(bw, y, 0, notify);
+		int flg = menu_flg;
+		menu_flg = 0;
+		return olddoopt(bw, y, flg, notify);
 	}
 }
 
