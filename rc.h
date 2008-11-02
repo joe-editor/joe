@@ -36,6 +36,7 @@ int procrc PARAMS((CAP *cap, unsigned char *name));
 int glopt PARAMS((unsigned char *s, unsigned char *arg, OPTIONS *options, int set));
 
 int umode PARAMS((BW *bw));
+int umenu PARAMS((BW *bw));
 
 /* Save state */
 void save_state();
@@ -51,5 +52,7 @@ void lazy_opts PARAMS((B *b, OPTIONS *o));
 
 int ucharset PARAMS((BW *bw));
 int ulanguage PARAMS((BW *bw));
+
+unsigned char *get_status(BW *bw, unsigned char *s);
 
 #endif

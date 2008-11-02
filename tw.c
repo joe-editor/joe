@@ -221,6 +221,21 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				}
 				break;
 
+			case 'Z':
+				{
+					int l;
+					char *ch;
+					buf[0]=0;
+					for(l=0;s[l+1] && s[l+1] != '%'; l++) buf[l]=s[l+1];
+					if (s[l+1]=='%' && buf[0]) {
+						buf[l]=0;
+						s+=l+1;
+						ch=get_status(bw, buf);
+						if (ch) stalin=vsncpy(sv(stalin),sz(ch));
+					} 
+				}
+				break;
+
 			case 'u':
 				{
 					time_t n = time(NULL);
