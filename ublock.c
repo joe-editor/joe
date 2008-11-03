@@ -203,7 +203,7 @@ void pinsrect(P *cur, B *tmp, long int width, int usetabs)
 	P *q = pdup(tmp->bof, USTR "pinsrect");	/* These are for scanning through 'tmp' */
 	P *r = pdup(q, USTR "pinsrect");
 
-//	if (width)
+/*	if (width) */
 		while (pset(r, q), p_goto_eol(q), (q->line != tmp->eof->line || piscol(q))) {
 			pcol(p, cur->xcol);
 			if (piscol(p) < cur->xcol)
