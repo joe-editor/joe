@@ -2,5 +2,5 @@
 
 FILES="history.html news.html changelog.html manpage.html index.html hints.html hacking.html capture.gif elaborate.gif cg2000.jpg trs80_16.jpg list.html options.html"
 
-scp $FILES jhallen@shell.sourceforge.net:/home/groups/j/jo/joe-editor/htdocs
+scp $FILES jhallen,joe-editor@web.sourceforge.net:htdocs
 

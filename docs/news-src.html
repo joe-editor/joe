@@ -1,3 +1,164 @@
+<p>JOE 3.7</p>
+
+<p>- backspace/DEL means 'n' in replace prompt for better emacs
+compatibility </p>
+
+<p>- Menus are now made up of macros instead of options.</p>
+
+<p>	New commands:</p>
+
+<p>		'menu'	Prompt for a menu to display with tab
+			completion.</p>
+
+<p>		'mode'	Prompt for an option to change with tab
+			completion.</p>
+
+<p>	Menus are defined in joerc file with :defmenu command.</p>
+
+<p>	Menu entries are the pair: macro string.  String is a
+	format string displayed in the menu.  Macro is executed
+	when then menu entry is selected.</p>
+
+<p>	Use this to add your own macros to ^T.</p>
+
+<p>- ^T is now a user definable menu system</p>
+
+<p>- Treat \ as a quote character for file I/O.  Now you can edit
+  files like !test with \!test</p>
+
+<p>- Print NULs in default search string.  Handle many backslashes properly.</p>
+
+<p>- Allow backslashes in file names</p>
+
+<p>- Fix %A to print unicode</p>
+
+<p>- Charles Tabony's (vectorshifts's) highlighter stack patch</p>
+
+<p>- ! is relace all in replace prompt</p>
+
+<p>- Turn off UTF-8 when we enter hex mode</p>
+
+<p>- Call ttsig on vfile I/O errors.</p>
+
+<p>- Abort cleanly when malloc returns NULL</p>
+
+<p>- Add reload command to reload file from disk</p>
+
+<p>- Modify configure scrips to use docdir for extra documents and
+  datadir/joe for syntax and i18n files.</p>
+
+<p>- Don't use bold yellow, it's bad for white screens</p>
+
+<p>- Fix TeX highlighter: don't highlight "</p>
+
+<p>- Make mail.jsf more forgiving for those of us who still use old UNIX
+mail</p>
+
+<p>- Fix file rename bugs</p>
+
+<p>- Improve ubop: can reformat a block of paragraphs again.  Reformat
+  of adjacent indented paragraphs working again.</p>
+
+<p>- Improve XML highlighter: allow \r in whitespace</p>
+
+<p>JOE 3.6</p>
+
+<p>- Preserve setuid bit</p>
+
+<p>- Fix bug where backup file did not get modtime of original</p>
+
+<p>- New diff highlighter</p>
+
+<p>- Fix paragraph format when overtype is on</p>
+
+<p>- Fix non-french spacing</p>
+
+<p>- Fix bug with joe +2 on single line files</p>
+
+<p>- Add syntax file for .jsf files</p>
+
+<p>- Add ASCII table to joerc help</p>
+
+<p>- ^KD renames file</p>
+
+<p>- Improve HTML highlighter... if you see &lt;? it's probably a script...</p>
+
+<p>- Check for EINTR from ioctl</p>
+
+<p>- > allowed in xml content</p>
+
+<p>- Add -flowed option: adds a space after paragraph lines.</p>
+
+<p>- Fix German and French .po files: they were cause search&amp;replace to
+break.</p>
+
+<p>- Look at LC_MESSAGES to get the language to use for editor messages.</p>
+
+<p>- Added -no_double_quoted and -tex_comment for TeX</p>
+
+<p>- Added -break_symlinks option and changed -break_links option to not
+  break symbolic links.</p>
+
+<p>- Paragraph format of single line paragraph is indented only if autoindent
+  is enabled. (jqh)</p>
+
+<p>- Guessindent no longer overrides istep if indendation is space.</p>
+
+<p>- Fix low limit of lmargin</p>
+
+<p>- Allow inserting file in rectangle mode even if selected rectangle is
+  zero-width.</p>
+
+<p>- .js is Javascript</p>
+
+<p>- Fix ^G in perl mode when you hit it on second brace in:
+	{\'
+	\'}</p>
+
+<p>- Fix LUA highlighter (dirk_s)</p>
+
+<p>- Improved conf.jsf (dirk_s)</p>
+
+<p>- Added local option (-nobackup) to suppress backup files (peje)</p>
+
+<p>- Add Matlab syntax file (neer)</p>
+
+<p>- Improve mail syntax highlighter (jqh)</p>
+
+<p>- Fix crash when calling syntax file as subroutine (hal9042)</p>
+
+<p>- Get "ctags" tag search to work again</p>
+
+<p>- Fix crash when JOE tries to write to unwritable file</p>
+
+<p>- Fix crash when entering blank macro ESC x <return></p>
+
+<p>- Improve Verilog highlighter</p>
+
+<p>- Fix crash when typing ESC x !ls</p>
+
+<p>- Add C++ keywords to highlighter (otterpop81)</p>
+
+<p>- Added RPM spec file syntax spec.jsf</p>
+
+<p>- Improve 'istring' (.jsf command) (hal9042)</p>
+
+<p>- Update French .po file (jengelh)</p>
+
+<p>- Fix infinite search/replace loop bug (yugk)</p>
+
+<p>- New feature: insert status line format string using 'txt' (tykef)</p>
+
+<p>- Update Russion .po file (yugk)</p>
+
+<p>- Update Russian manpage (yugk)</p>
+
+<p>- Update jicerc Russian rc file (yugk)</p>
+
+<p>- Fix lock prompt message (yugk)</p>
+
+<p>- Add Ukrainian .po file (yugk)</p>
+
 <p>CVS (not released yet)</p>
 
 <p>- New "semi-automatic variable" based string library to be used
