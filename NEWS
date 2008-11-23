@@ -1,3 +1,7 @@
+- check for math functions
+
+- Use *joerc if *fancyjoerc not there.
+
 - update status line immediately on resize.
 
 - va_copy fix.
