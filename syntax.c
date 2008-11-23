@@ -116,6 +116,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 					frame->return_state = cmd->new_state;
 					*frame_ptr = frame;
 					stack = frame;
+					++stack_count;
 				}
 				h = stack->syntax->states[0];
 			} else if (cmd->rtn) {
@@ -129,7 +130,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			} else if (cmd->reset) {
 				/* Reset the state and call stack */
 				h = syntax->states[0];
-				stack = syntax->stack_base;
+				stack = 0;
 			} else {
 				/* Normal edge */
 				h = cmd->new_state;
