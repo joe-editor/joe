@@ -1,3 +1,6 @@
+- fix window size detection bug: can't take out types.h
+  from tty.c
+
 - update status line immediately on resize.
 
 - va_copy fix.
