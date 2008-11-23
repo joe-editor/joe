@@ -615,6 +615,7 @@ int ttgetc(void)
 	ttflsh();
 	while (winched) {
 		winched = 0;
+		dostaupd = 1;
 		edupd(1);
 		ttflsh();
 	}
