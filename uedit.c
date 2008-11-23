@@ -581,7 +581,7 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 					else if (c == '\\') pgetc(p);
 			} else if ((bw->o.c_comment || bw->o.cpp_comment) && c == '/') {
 				c = pgetc(p);
-				if (c == '*') {
+				if (bw->o.c_comment && c == '*') {
 					c = pgetc(p);
 					do {
 						do {
@@ -589,7 +589,7 @@ int tomatch_word(BW *bw,unsigned char *set,unsigned char *group)
 						} while ((c = pgetc(p)) != NO_MORE_DATA);
 						c = pgetc(p);
 					} while (c != NO_MORE_DATA && c != '/');
-				} else if (c == '/') {
+				} else if (bw->o.cpp_comment && c == '/') {
 					while ((c = pgetc(p)) != NO_MORE_DATA)
 						if (c == '\n')
 							break;
@@ -977,7 +977,7 @@ int utomatch(BW *bw)
 						} while ((d = pgetc(p)) != NO_MORE_DATA);
 						d = pgetc(p);
 					} while (d != NO_MORE_DATA && d != '/');
-				} else if (d == '/') {
+				} else if (bw->o.cpp_comment && d == '/') {
 					while ((d = pgetc(p)) != NO_MORE_DATA)
 						if (d == '\n')
 							break;
