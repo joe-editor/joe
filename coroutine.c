@@ -482,7 +482,11 @@ int co_call(int (*func)(va_list args), ...)
 
 	/* Set function to call in stack */
 	current_stack->func = func;
+#ifdef va_copy
+	va_copy(current_stack->args, ap);
+#else
 	current_stack->args = ap;
+#endif
 
 	/* Who to resume when function returns */
 	current_stack->caller = self;
@@ -518,7 +522,11 @@ int co_call(int (*func)(va_list args), ...)
 
 	/* Set function to call in stack */
 	current_stack->func = func;
+#ifdef va_copy
+	va_copy(current_stack->args, ap);
+#else
 	current_stack->args = ap;
+#endif
 
 	/* Set where we return to */
 	current_stack->caller = self;
