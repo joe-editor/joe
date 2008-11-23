@@ -7,13 +7,12 @@
  */
 #include "types.h"
 
-/* not needed: ioctl() moved to utils.c
+/* Needed for TIOCGWINSZ detection below */
 #ifdef GWINSZ_IN_SYS_IOCTL
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
 #endif
 #endif
-*/
 
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
