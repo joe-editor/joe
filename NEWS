@@ -1,3 +1,5 @@
+- fix segfault from -orphan
+
 - fix window size detection bug: can't take out types.h
   from tty.c
 

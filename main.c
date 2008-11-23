@@ -431,7 +431,7 @@ int main(int argc, char **real_argv, char **envv)
 				b->orphan = 1;
 				b->oldcur = pdup(b->bof, USTR "main");
 				pline(b->oldcur, get_file_pos(b->name));
-				p_goto_bol(bw->cursor);
+				p_goto_bol(b->oldcur);
 				line = b->oldcur->line - (maint->h - 1) / 2;
 				if (line < 0)
 					line = 0;
