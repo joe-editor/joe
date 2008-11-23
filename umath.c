@@ -373,33 +373,218 @@ static double eval(unsigned char *s)
 	return result;
 }
 
+/* These don't all exist on some systems... */
+
+#ifdef HAVE_SIN
 double m_sin(double n) { return sin(n); }
+#else
+#ifdef sin
+double m_sin(double n) { return sin(n); }
+#endif
+#endif
+
+#ifdef HAVE_COS
 double m_cos(double n) { return cos(n); }
+#else
+#ifdef cos
+double m_cos(double n) { return cos(n); }
+#endif
+#endif
+
+#ifdef HAVE_TAN
 double m_tan(double n) { return tan(n); }
+#else
+#ifdef tan
+double m_tan(double n) { return tan(n); }
+#endif
+#endif
+
+#ifdef HAVE_EXP
 double m_exp(double n) { return exp(n); }
+#else
+#ifdef exp
+double m_exp(double n) { return exp(n); }
+#endif
+#endif
+
+#ifdef HAVE_SQRT
 double m_sqrt(double n) { return sqrt(n); }
+#else
+#ifdef sqrt
+double m_sqrt(double n) { return sqrt(n); }
+#endif
+#endif
+
+#ifdef HAVE_CBRT
 double m_cbrt(double n) { return cbrt(n); }
+#else
+#ifdef cbrt
+double m_cbrt(double n) { return cbrt(n); }
+#endif
+#endif
+
+#ifdef HAVE_LOG
 double m_log(double n) { return log(n); }
+#else
+#ifdef log
+double m_log(double n) { return log(n); }
+#endif
+#endif
+
+#ifdef HAVE_LOG10
 double m_log10(double n) { return log10(n); }
+#else
+#ifdef log10
+double m_log10(double n) { return log10(n); }
+#endif
+#endif
+
+#ifdef HAVE_ASIN
 double m_asin(double n) { return asin(n); }
+#else
+#ifdef asin
+double m_asin(double n) { return asin(n); }
+#endif
+#endif
+
+#ifdef HAVE_ACOS
 double m_acos(double n) { return acos(n); }
+#else
+#ifdef acos
+double m_acos(double n) { return acos(n); }
+#endif
+#endif
+
+#ifdef HAVE_ATAN
 double m_atan(double n) { return atan(n); }
+#else
+#ifdef atan
+double m_atan(double n) { return atan(n); }
+#endif
+#endif
+
+#ifdef HAVE_SINH
 double m_sinh(double n) { return sinh(n); }
+#else
+#ifdef sinh
+double m_sinh(double n) { return sinh(n); }
+#endif
+#endif
+
+#ifdef HAVE_COSH
 double m_cosh(double n) { return cosh(n); }
+#else
+#ifdef cosh
+double m_cosh(double n) { return cosh(n); }
+#endif
+#endif
+
+#ifdef HAVE_TANH
 double m_tanh(double n) { return tanh(n); }
+#else
+#ifdef tanh
+double m_tanh(double n) { return tanh(n); }
+#endif
+#endif
+
+#ifdef HAVE_ASINH
 double m_asinh(double n) { return asinh(n); }
+#else
+#ifdef asinh
+double m_asinh(double n) { return asinh(n); }
+#endif
+#endif
+
+#ifdef HAVE_ACOSH
 double m_acosh(double n) { return acosh(n); }
+#else
+#ifdef acosh
+double m_acosh(double n) { return acosh(n); }
+#endif
+#endif
+
+#ifdef HAVE_ATANH
 double m_atanh(double n) { return atanh(n); }
-double m_int(double n) { return (int)(n); }
+#else
+#ifdef atanh
+double m_atanh(double n) { return atanh(n); }
+#endif
+#endif
+
+#ifdef HAVE_FLOOR
 double m_floor(double n) { return floor(n); }
+#else
+#ifdef floor
+double m_floor(double n) { return floor(n); }
+#endif
+#endif
+
+#ifdef HAVE_CEIL
 double m_ceil(double n) { return ceil(n); }
+#else
+#ifdef ceil
+double m_ceil(double n) { return ceil(n); }
+#endif
+#endif
+
+#ifdef HAVE_FABS
 double m_fabs(double n) { return fabs(n); }
+#else
+#ifdef fabs
+double m_fabs(double n) { return fabs(n); }
+#endif
+#endif
+
+#ifdef HAVE_ERF
 double m_erf(double n) { return erf(n); }
+#else
+#ifdef erf
+double m_erf(double n) { return erf(n); }
+#endif
+#endif
+
+#ifdef HAVE_ERFC
 double m_erfc(double n) { return erfc(n); }
+#else
+#ifdef erfc
+double m_erfc(double n) { return erfc(n); }
+#endif
+#endif
+
+#ifdef HAVE_J0
 double m_j0(double n) { return j0(n); }
+#else
+#ifdef j0
+double m_j0(double n) { return j0(n); }
+#endif
+#endif
+
+#ifdef HAVE_J1
 double m_j1(double n) { return j1(n); }
+#else
+#ifdef j1
+double m_j1(double n) { return j1(n); }
+#endif
+#endif
+
+#ifdef HAVE_Y0
 double m_y0(double n) { return y0(n); }
+#else
+#ifdef y0
+double m_y0(double n) { return y0(n); }
+#endif
+#endif
+
+#ifdef HAVE_Y1
 double m_y1(double n) { return y1(n); }
+#else
+#ifdef y1
+double m_y1(double n) { return y1(n); }
+#endif
+#endif
+
+
+double m_int(double n) { return (int)(n); }
 
 double calc(BW *bw, unsigned char *s)
 {
@@ -409,35 +594,203 @@ double calc(BW *bw, unsigned char *s)
 	int c = brch(bw->cursor);
 
 	if (!vars) {
+#ifdef HAVE_SIN
 		v = get(USTR "sin"); v->func = m_sin;
+#else
+#ifdef sin
+		v = get(USTR "sin"); v->func = m_sin;
+#endif
+#endif
+#ifdef HAVE_COS
 		v = get(USTR "cos"); v->func = m_cos;
+#else
+#ifdef cos
+		v = get(USTR "cos"); v->func = m_cos;
+#endif
+#endif
+#ifdef HAVE_TAN
 		v = get(USTR "tan"); v->func = m_tan;
+#else
+#ifdef tan
+		v = get(USTR "tan"); v->func = m_tan;
+#endif
+#endif
+#ifdef HAVE_EXP
 		v = get(USTR "exp"); v->func = m_exp;
+#else
+#ifdef exp
+		v = get(USTR "exp"); v->func = m_exp;
+#endif
+#endif
+#ifdef HAVE_SQRT
 		v = get(USTR "sqrt"); v->func = m_sqrt;
+#else
+#ifdef sqrt
+		v = get(USTR "sqrt"); v->func = m_sqrt;
+#endif
+#endif
+#ifdef HAVE_CBRT
 		v = get(USTR "cbrt"); v->func = m_cbrt;
+#else
+#ifdef cbrt
+		v = get(USTR "cbrt"); v->func = m_cbrt;
+#endif
+#endif
+#ifdef HAVE_LN
 		v = get(USTR "ln"); v->func = m_log;
+#else
+#ifdef ln
+		v = get(USTR "ln"); v->func = m_log;
+#endif
+#endif
+#ifdef HAVE_LOG
 		v = get(USTR "log"); v->func = m_log10;
+#else
+#ifdef log
+		v = get(USTR "log"); v->func = m_log10;
+#endif
+#endif
+#ifdef HAVE_ASIN
 		v = get(USTR "asin"); v->func = m_asin;
+#else
+#ifdef asin
+		v = get(USTR "asin"); v->func = m_asin;
+#endif
+#endif
+#ifdef HAVE_ACOS
 		v = get(USTR "acos"); v->func = m_acos;
+#else
+#ifdef acos
+		v = get(USTR "acos"); v->func = m_acos;
+#endif
+#endif
+#ifdef HAVE_ATAN
 		v = get(USTR "atan"); v->func = m_atan;
+#else
+#ifdef atan
+		v = get(USTR "atan"); v->func = m_atan;
+#endif
+#endif
+#ifdef HAVE_M_PI
 		v = get(USTR "pi"); v->val = M_PI; v->set = 1;
+#else
+#ifdef m_pi
+		v = get(USTR "pi"); v->val = M_PI; v->set = 1;
+#endif
+#endif
+#ifdef HAVE_M_E
 		v = get(USTR "e"); v->val = M_E; v->set = 1;
+#else
+#ifdef m_e
+		v = get(USTR "e"); v->val = M_E; v->set = 1;
+#endif
+#endif
+#ifdef HAVE_SINH
 		v = get(USTR "sinh"); v->func = m_sinh;
+#else
+#ifdef sinh
+		v = get(USTR "sinh"); v->func = m_sinh;
+#endif
+#endif
+#ifdef HAVE_COSH
 		v = get(USTR "cosh"); v->func = m_cosh;
+#else
+#ifdef cosh
+		v = get(USTR "cosh"); v->func = m_cosh;
+#endif
+#endif
+#ifdef HAVE_TANH
 		v = get(USTR "tanh"); v->func = m_tanh;
+#else
+#ifdef tanh
+		v = get(USTR "tanh"); v->func = m_tanh;
+#endif
+#endif
+#ifdef HAVE_ASINH
 		v = get(USTR "asinh"); v->func = m_asinh;
+#else
+#ifdef asinh
+		v = get(USTR "asinh"); v->func = m_asinh;
+#endif
+#endif
+#ifdef HAVE_ACOSH
 		v = get(USTR "acosh"); v->func = m_acosh;
+#else
+#ifdef acosh
+		v = get(USTR "acosh"); v->func = m_acosh;
+#endif
+#endif
+#ifdef HAVE_ATANH
 		v = get(USTR "atanh"); v->func = m_atanh;
-		v = get(USTR "int"); v->func = m_int;
+#else
+#ifdef atanh
+		v = get(USTR "atanh"); v->func = m_atanh;
+#endif
+#endif
+#ifdef HAVE_FLOOR
 		v = get(USTR "floor"); v->func = m_floor;
+#else
+#ifdef floor
+		v = get(USTR "floor"); v->func = m_floor;
+#endif
+#endif
+#ifdef HAVE_CEIL
 		v = get(USTR "ceil"); v->func = m_ceil;
+#else
+#ifdef ceil
+		v = get(USTR "ceil"); v->func = m_ceil;
+#endif
+#endif
+#ifdef HAVE_ABS
 		v = get(USTR "abs"); v->func = m_fabs;
+#else
+#ifdef abs
+		v = get(USTR "abs"); v->func = m_fabs;
+#endif
+#endif
+#ifdef HAVE_ERF
 		v = get(USTR "erf"); v->func = m_erf;
+#else
+#ifdef erf
+		v = get(USTR "erf"); v->func = m_erf;
+#endif
+#endif
+#ifdef HAVE_ERFC
 		v = get(USTR "erfc"); v->func = m_erfc;
+#else
+#ifdef erfc
+		v = get(USTR "erfc"); v->func = m_erfc;
+#endif
+#endif
+#ifdef HAVE_J0
 		v = get(USTR "j0"); v->func = m_j0;
+#else
+#ifdef j0
+		v = get(USTR "j0"); v->func = m_j0;
+#endif
+#endif
+#ifdef HAVE_J1
 		v = get(USTR "j1"); v->func = m_j1;
+#else
+#ifdef j1
+		v = get(USTR "j1"); v->func = m_j1;
+#endif
+#endif
+#ifdef HAVE_Y0
 		v = get(USTR "y0"); v->func = m_y0;
+#else
+#ifdef y0
+		v = get(USTR "y0"); v->func = m_y0;
+#endif
+#endif
+#ifdef HAVE_Y1
 		v = get(USTR "y1"); v->func = m_y1;
+#else
+#ifdef y1
+		v = get(USTR "y1"); v->func = m_y1;
+#endif
+#endif
+		v = get(USTR "int"); v->func = m_int;
 	}
 
 	v = get(USTR "top");

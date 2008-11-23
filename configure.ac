@@ -127,6 +127,35 @@ fi
 AC_CHECK_FUNCS([alarm mkdir mkstemp putenv setlocale strchr strdup utime setpgid])
 AC_CHECK_FUNCS([setitimer sigaction sigvec siginterrupt sigprocmask])
 
+dnl Math functions... "-lm" doesn't always have them all on embedded systems
+
+AC_SEARCH_LIBS(sin, m, AC_DEFINE_UNQUOTED(HAVE_SIN, 1, [If we have sin()]))
+AC_SEARCH_LIBS(cos, m, AC_DEFINE_UNQUOTED(HAVE_COS, 1, [If we have cos()]))
+AC_SEARCH_LIBS(tan, m, AC_DEFINE_UNQUOTED(HAVE_TAN, 1, [If we have tan()]))
+AC_SEARCH_LIBS(exp, m, AC_DEFINE_UNQUOTED(HAVE_EXP, 1, [If we have exp()]))
+AC_SEARCH_LIBS(sqrt, m, AC_DEFINE_UNQUOTED(HAVE_SQRT, 1, [If we have sqrt()]))
+AC_SEARCH_LIBS(cbrt, m, AC_DEFINE_UNQUOTED(HAVE_CBRT, 1, [If we have cbrt()]))
+AC_SEARCH_LIBS(log, m, AC_DEFINE_UNQUOTED(HAVE_LOG, 1, [If we have log()]))
+AC_SEARCH_LIBS(log10, m, AC_DEFINE_UNQUOTED(HAVE_LOG10, 1, [If we have log10()]))
+AC_SEARCH_LIBS(asin, m, AC_DEFINE_UNQUOTED(HAVE_ASIN, 1, [If we have asin()]))
+AC_SEARCH_LIBS(acos, m, AC_DEFINE_UNQUOTED(HAVE_ACOS, 1, [If we have acos()]))
+AC_SEARCH_LIBS(atan, m, AC_DEFINE_UNQUOTED(HAVE_ATAN, 1, [If we have atan()]))
+AC_SEARCH_LIBS(sinh, m, AC_DEFINE_UNQUOTED(HAVE_SINH, 1, [If we have sinh()]))
+AC_SEARCH_LIBS(cosh, m, AC_DEFINE_UNQUOTED(HAVE_COSH, 1, [If we have cosh()]))
+AC_SEARCH_LIBS(tanh, m, AC_DEFINE_UNQUOTED(HAVE_TANH, 1, [If we have tanh()]))
+AC_SEARCH_LIBS(asinh, m, AC_DEFINE_UNQUOTED(HAVE_ASINH, 1, [If we have asinh()]))
+AC_SEARCH_LIBS(acosh, m, AC_DEFINE_UNQUOTED(HAVE_ACOSH, 1, [If we have acosh()]))
+AC_SEARCH_LIBS(atanh, m, AC_DEFINE_UNQUOTED(HAVE_ATANH, 1, [If we have atanh()]))
+AC_SEARCH_LIBS(floor, m, AC_DEFINE_UNQUOTED(HAVE_FLOOR, 1, [If we have floor()]))
+AC_SEARCH_LIBS(ceil, m, AC_DEFINE_UNQUOTED(HAVE_CEIL, 1, [If we have ceil()]))
+AC_SEARCH_LIBS(fabs, m, AC_DEFINE_UNQUOTED(HAVE_FABS, 1, [If we have fabs()]))
+AC_SEARCH_LIBS(erf, m, AC_DEFINE_UNQUOTED(HAVE_ERF, 1, [If we have erf()]))
+AC_SEARCH_LIBS(erfc, m, AC_DEFINE_UNQUOTED(HAVE_ERFC, 1, [If we have erfc()]))
+AC_SEARCH_LIBS(j0, m, AC_DEFINE_UNQUOTED(HAVE_J0, 1, [If we have j0()]))
+AC_SEARCH_LIBS(j1, m, AC_DEFINE_UNQUOTED(HAVE_J1, 1, [If we have j1()]))
+AC_SEARCH_LIBS(y0, m, AC_DEFINE_UNQUOTED(HAVE_Y0, 1, [If we have y0()]))
+AC_SEARCH_LIBS(y1, m, AC_DEFINE_UNQUOTED(HAVE_Y1, 1, [If we have y1()]))
+
 joe_REINSTALL_SIGHANDLERS
 
 # check if -liconv is necessary

@@ -337,6 +337,12 @@ int main(int argc, char **real_argv, char **envv)
 	s = vsncpy(sv(s), sv(run));
 	s = vsncpy(sv(s), sc("rc"));
 	c = procrc(cap, s);
+	if (c != 0 && c != 1) {
+		/* If *fancyjoerc not present, use *joerc which is always there */
+		s = vstrunc(s, 0);
+		s = vsncpy(sv(s),sc("*joerc"));
+		c = procrc(cap, s);
+	}
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {

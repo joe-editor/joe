@@ -25,7 +25,7 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 bin_PROGRAMS = joe termidx
 INCLUDES = -DJOERC="\"$(sysconf_joedir)/\"" -DJOEDATA="\"$(data_joedir)/\""
 
-joe_LDADD = -lm
+# joe_LDADD = -lm
 
 joe_SOURCES = b.c blocks.c bw.c cmd.c hash.c help.c kbd.c macro.c main.c menu.c \
 	path.c poshist.c pw.c queue.c qw.c rc.c regex.c scrn.c tab.c termcap.c \
