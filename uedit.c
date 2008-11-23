@@ -1553,7 +1553,7 @@ int ubacks(BW *bw, int k)
 
 			/* Indent to new position */
 			pfill(bw->cursor,col-indwid,bw->o.indentc);
-		} else if (col<indent && !pisbol(bw->cursor)) {
+		} else if (col<indent && bw->o.smartbacks && !pisbol(bw->cursor)) {
 			/* We're before indent point: delete indwid worth of space but do not
 			   cross line boundary.  We could probably replace the above with this. */
 			int cw=0;

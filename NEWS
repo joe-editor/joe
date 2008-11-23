@@ -1,3 +1,11 @@
+- update status line immediately on resize.
+
+- va_copy fix.
+
+- don't smartbackspace when smartbacks is off.
+
+JOE 3.7
+
 - backspace/DEL means 'n' in replace prompt for better emacs
   compatibility
 
