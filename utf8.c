@@ -86,9 +86,9 @@ int utf8_encode(unsigned char *buf,int c)
 /* UTF-8 Decoder
  *
  * Returns 0 - 7FFFFFFF: decoded character
- *                   -1: character accepted, nothing decoded yet.
- *                   -2: incomplete sequence
- *                   -3: no sequence started, but character is between 128 - 191, 254 or 255
+ *                   -1: byte accepted, no character decoded yet.
+ *                   -2: incomplete byte sequence
+ *                   -3: no byte sequence started, but character is between 128 - 191, 254 or 255
  */
 
 int utf8_decode(struct utf8_sm *utf8_sm,unsigned char c)
