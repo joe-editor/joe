@@ -814,7 +814,7 @@ int pgetc(P *p)
 	}
 }
 
-/* move p n characters forward */
+/* move p n bytes forward */
 P *pfwrd(P *p, long n)
 {
 	if (!n)
@@ -944,7 +944,7 @@ int prgetc(P *p)
 	}
 }
 
-/* move p n characters backwards */
+/* move p n bytes backwards */
 P *pbkwd(P *p, long n)
 {
 	if (!n)
