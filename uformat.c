@@ -361,9 +361,10 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 			if (!bw->o.autoindent) {
 				/* Don't indent second line of single-line paragraphs if autoindent is off */
 				int x = zlen(indents);
+				int orgx = x;
 				while (x && (indents[x - 1] == ' ' || indents[x - 1] == '\t'))
 					indents[--x] = 0;
-				if (x) {
+				if (x && orgx != x) {
 					indents[x++] = ' ';
 					indents[x] = 0;
 				}
