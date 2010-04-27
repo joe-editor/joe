@@ -1,3 +1,5 @@
+- Fix crash when hitting -----------.. wordwrap bug.
+
 - Check for math functions
 
 - Use *joerc if *fancyjoerc not there.
