@@ -195,11 +195,9 @@ retype		Refresh screen
 shell		Suspend process or execute a sub-shell
 stat		Display cursor position
 tag		Tags file search
-
 txt		Insert text.  If first character of entered text, then the rest
 		of the text is treated as if it were a status line
 		definition string, like -lmsg and -rmsg.
-
 name		Insert current file name
 language	Insert current language
 charset		Insert current character set

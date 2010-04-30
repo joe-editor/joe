@@ -5,7 +5,7 @@ AC_PREREQ(2.54)
 
 #### Here's the only place where to change version number ####
 AC_INIT(joe, 3.7)
-AC_CONFIG_SRCDIR([b.c])
+AC_CONFIG_SRCDIR([joe/b.c])
 
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
@@ -14,7 +14,7 @@ AC_CANONICAL_TARGET
 # Init automake
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
-AM_CONFIG_HEADER(autoconf.h)
+AM_CONFIG_HEADER(joe/autoconf.h)
 
 # Checks for programs.
 AC_PROG_CC
@@ -72,7 +72,7 @@ AC_CHECK_HEADERS([errno.h fcntl.h locale.h sgtty.h stdlib.h string.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
 AC_CHECK_HEADERS([sys/dirent.h time.h pwd.h paths.h pty.h libutil.h])
 AC_CHECK_HEADERS([sys/types.h sys/stat.h sys/wait.h limits.h signal.h])
-AC_CHECK_HEADERS([curses.h term.h utmp.h sys/utime.h ucontext.h])
+AC_CHECK_HEADERS([curses.h term.h utmp.h sys/utime.h])
 
 AC_CHECK_HEADERS([selinux/selinux.h selinux/context.h])
 if test "$ac_cv_header_selinux_selinux_h" = "yes" -a "$ac_cv_header_selinux_context_h" = "yes" ; then
@@ -181,7 +181,7 @@ AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 # Check for programs..
 AC_CHECK_PROG(SPELL,aspell,aspell,ispell)
 
-AC_CONFIG_FILES([Makefile rc/Makefile man/Makefile man/ru/Makefile
+AC_CONFIG_FILES([Makefile joe/Makefile rc/Makefile man/Makefile man/ru/Makefile
 syntax/Makefile po/Makefile
 syntax/c.jsf syntax/perl.jsf syntax/verilog.jsf syntax/sh.jsf syntax/python.jsf
 syntax/conf.jsf syntax/php.jsf syntax/mail.jsf syntax/pascal.jsf syntax/html.jsf

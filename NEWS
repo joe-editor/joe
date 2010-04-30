@@ -1,12 +1,21 @@
-- check for math functions
+- Fix bug where undo was acting strangly in shell windows.
+
+- Fix crash when hitting -----------.. wordwrap bug.
+
+- Check for math functions
 
 - Use *joerc if *fancyjoerc not there.
+
+- fix segfault from -orphan
+
+- fix window size detection bug: can't take out types.h
+  from tty.c
 
 - update status line immediately on resize.
 
 - va_copy fix.
 
-- don't ever smartbackspace when smartbacks is off
+- don't smartbackspace when smartbacks is off.
 
 JOE 3.7
 
@@ -37,13 +46,13 @@ JOE 3.7
 
 - Print NULs in default search string.  Handle many \s properly.
 
-- Allow backslashes in filenames
+- Allow backslashes in file names
 
 - Fix %A to print unicode
 
 - Charles Tabony's (vectorshifts's) highlighter stack patch
 
-- ! is replace all in replace prompt
+- ! is relace all in replace prompt
 
 - Turn off UTF-8 when we enter hex mode
 
@@ -56,7 +65,7 @@ JOE 3.7
 - Modify configure scrips to use docdir for extra documents and
   datadir/joe for syntax and i18n files.
 
-- Don't use bold yellow, it's bad for white screens.
+- Don't use bold yellow, it's bad for white screens
 
 - Fix TeX highlighter: don't highlight "
 
@@ -65,7 +74,7 @@ JOE 3.7
 - Fix file rename bugs
 
 - Improve ubop: can reformat a block of paragraphs again.  Reformat
-  of adjacent paragraphs working again.
+  of adjacent indented paragraphs working again.
 
 - Improve XML highlighter: allow \r in whitespace
 
@@ -73,7 +82,7 @@ JOE 3.6
 
 - Preserve setuid bit
 
-- Fix problem where backup file did not get time of original
+- Fix bug where backup file did not get modtime of original
 
 - New diff highlighter
 
@@ -97,7 +106,9 @@ JOE 3.6
 
 - Add -flowed option: adds a space after paragraph lines.
 
-- Fix problem in German .po file
+- Fix German and French .po files: they were cause search&replace to break.
+
+- Look at LC_MESSAGES to get the language to use for editor messages.
 
 - Added -no_double_quoted and -tex_comment for TeX
 
@@ -111,15 +122,16 @@ JOE 3.6
 
 - Fix low limit of lmargin
 
+- Allow inserting file in rectangle mode even if selected rectangle is
+  zero-width.
+
+- .js is Javascript
+
 - Fix ^G in perl mode when you hit it on second brace in:
 	{\'
 	\'}
 
 - Fix LUA highlighter (dirk_s)
-
-- Fix crash from bad va_arg usage (dnelson)
-
-- Fix crash from mktmp() not generating perm string (dnelson)
 
 - Improved conf.jsf (dirk_s)
 

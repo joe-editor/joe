@@ -1453,8 +1453,8 @@ msgid "System (^C to abort): "
 msgstr ""
 
 #: ufile.c:273
-msgid "|yes|yYoO"
-msgstr ""
+msgid "|yes|yY"
+msgstr "|yes|yYoO"
 
 #: ufile.c:274
 msgid "|no|nN"

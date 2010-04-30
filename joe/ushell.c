@@ -74,6 +74,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	prm(q);
 
 	cfollow(b,byte);
+	undomark();
 }
 
 int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build, int out_only)
