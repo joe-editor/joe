@@ -102,6 +102,13 @@ char *zlcpy(char *a, ptrdiff_t siz, const char *b);
 /* Like strncat, but result is always zero-terminated */ 
 char *zlcat(char *a, ptrdiff_t siz, const char *b);
 
+/* Functions which support zero-terminated strings of ints */
+
+ptrdiff_t Zlen(const int *s);
+int Zcmp(const int *a, const int *b);
+int *Zlcpy(int *a, ptrdiff_t siz, const int *b);
+int *Zdup(const int *s);
+ 
 /*
  * Functions which return minimum/maximum of two numbers  
  */
@@ -158,7 +165,9 @@ ptrdiff_t zhtodiff(const char *s);
 int ztoi(const char *s);
 int zhtoi(const char *s);
 ptrdiff_t parse_string(const char **p,char *buf,ptrdiff_t len);
+ptrdiff_t parse_Zstring(const char **p,int *buf,ptrdiff_t len);
 int parse_range(const char **p,int *first,int *second);
+int parse_class(const char **p, struct interval **array, int *size);
 void emit_string(FILE *f,const char *s,ptrdiff_t len);
 
 void jsort(void *base, ptrdiff_t num, ptrdiff_t size, int (*compar)(const void *a, const void *b));

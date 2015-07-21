@@ -529,6 +529,69 @@ ptrdiff_t zhtodiff(const char *s)
 	return (ptrdiff_t)val;
 }
 
+/* Compare zero-terminated strings of ints */
+
+int Zcmp(const int *a, const int *b)
+{
+	while (*a && *b && *a == *b) {
+		++a;
+		++b;
+	}
+	if (*a > *b)
+		return 1;
+	else if (*a < *b)
+		return -1;
+	else
+		return 0;
+}
+
+/* Copy b into buffer a of length len.  A will always end up NUL terminated. */
+
+int *Zlcpy(int *a, ptrdiff_t len, const int *b)
+{
+	int *org = a;
+	if (!len) {
+		fprintf(stderr, "Zlcpy called with len == 0\n");
+		exit(1);
+	}
+	--len;
+	while (len && *b) {
+		*a++ = *b++;
+		--len;
+	}
+	*a = 0;
+	return org;
+}
+
+/* Length of an int string */
+
+ptrdiff_t Zlen(const int *s)
+{
+	ptrdiff_t len = 0; 
+	for (;;) {
+		if (!s[0]) return 0 + len;
+		if (!s[1]) return 1 + len;
+		if (!s[2]) return 2 + len;
+		if (!s[3]) return 3 + len;
+		if (!s[4]) return 4 + len;
+		if (!s[5]) return 5 + len;
+		if (!s[6]) return 6 + len;
+		if (!s[7]) return 7 + len;
+		s += 8;
+		len += 8;
+	}
+}
+
+/* Duplicate an int string */
+
+int *Zdup(const int *bf)
+{
+	ptrdiff_t size = (1 + Zlen(bf)) * SIZEOF(int);
+	int *p = (int *)joe_malloc(size);
+	memcpy(p, bf, (size_t)size);
+	return p;
+}
+
 #ifndef SIG_ERR
 #define SIG_ERR ((sighandler_t) -1)
 #endif
@@ -732,17 +795,37 @@ ptrdiff_t parse_string(const char **pp, char *buf, ptrdiff_t len)
 	if(*p=='\"') {
 		++p;
 		while(len > 1 && *p && *p!='\"') {
-			ptrdiff_t x = 50;
-			int c = escape(0, &p, &x);
+			int c = escape(0, &p, NULL);
 			*buf++ = TO_CHAR_OK(c);
 			--len;
 		}
 		*buf = 0;
-		while(*p && *p!='\"')
-			if(*p=='\\' && p[1])
-				p += 2;
-			else
-				p++;
+		while(*p && *p!='\"') {
+			int c = escape(0, &p, NULL);
+		}
+		if(*p == '\"') {
+			*pp = p + 1;
+			return buf - start;
+		}
+	}
+	return -1;
+}
+
+ptrdiff_t parse_Zstring(const char **pp, int *buf, ptrdiff_t len)
+{
+	int *start = buf;
+	const char *p= *pp;
+	if(*p=='\"') {
+		++p;
+		while(len > 1 && *p && *p!='\"') {
+			int c = escape(1, &p, NULL);
+			*buf++ = c;
+			--len;
+		}
+		*buf = 0;
+		while(*p && *p!='\"') {
+			int c = escape(1, &p, NULL);
+		}
 		if(*p == '\"') {
 			*pp = p + 1;
 			return buf - start;
@@ -830,6 +913,62 @@ int parse_range(const char * *pp, int *first, int *second)
 		b = a;
 	*first = a;
 	*second = b;
+	*pp = p;
+	return 0;
+}
+
+int parse_class(const char * *pp, struct interval **array, int *size)
+{
+	static struct interval simple;
+	const char *p= *pp;
+	int a, b;
+	if(!*p)
+		return -1;
+
+/*
+	if(*p=='\\' && p[1]) {
+		++p;
+		if(*p=='n')
+			a = '\n';
+		else if(*p=='t')
+  			a = '\t';
+		else
+			a = *p;
+		++p;
+	} else
+		a = *p++;
+	if(*p=='-' && p[1]) {
+		++p;
+		if(*p=='\\' && p[1]) {
+			++p;
+			if(*p=='n')
+				b = '\n';
+			else if(*p=='t')
+				b = '\t';
+			else
+				b = *p;
+			++p;
+		} else
+			b = *p++;
+	} else
+		b = a;
+*/
+
+	a = escape(1, &p, NULL);
+
+	if(*p == '-' && p[1]) {
+		++p;
+		b = escape(1, &p, NULL);
+	} else
+		b = a;
+
+
+	if (b < a)
+		b = a;
+	simple.first = a;
+	simple.last = b;
+	*array = &simple;
+	*size = 1;
 	*pp = p;
 	return 0;
 }

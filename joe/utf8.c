@@ -178,6 +178,8 @@ int utf8_decode_string(const char *s)
  *
  * p/plen are always advanced in such a way that repeated called to utf8_decode_fwrd do not cause
  * infinite loops.
+ *
+ * Pass NULL in plen for zero-terminated strings
  */
 
 int utf8_decode_fwrd(const char **p,ptrdiff_t *plen)
@@ -193,7 +195,7 @@ int utf8_decode_fwrd(const char **p,ptrdiff_t *plen)
 
 	utf8_init(&sm);
 
-	while (len) {
+	while (plen ? (len != 0) : (*s != 0)) {
 		c = utf8_decode(&sm, *s);
 		if (c >= 0) {
 			/* We've got a character */

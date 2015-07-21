@@ -11,7 +11,11 @@
 	* JOE can now be compiled by C++ compilers as well as C compilers.  This is useful because C++ compilers sometimes warn about issues that C compilers miss.
 
 * Key sequences in the joerc file are now UTF-8 coded Unicode.
-	* Also you can specify Unicode in hexadecimal with: U+F123
+	* Also you can specify Unicode in hexadecimal like this: U+F123
+
+* Character lists and strings in syntax files are now UTF-8 coded Unicode.
+
+* Fix bug where \\ was not parsed correctly within syntax file character lists unless it was at the end of the string.
 
 * Fix bug where position cursor history operations would mix
   pointers between different buffers if user had switched buffers

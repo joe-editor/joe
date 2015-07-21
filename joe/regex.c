@@ -7,13 +7,20 @@
  */
 #include "types.h"
 
+/* Parse one character.  It can be UTF-8 if utf8 is set.  b has pointer to string length or NULL for zero-terminated strings */
+
 int escape(int utf8,const char **a, ptrdiff_t *b)
 {
 	int c;
 	const char *s = *a;
-	ptrdiff_t l = *b;
+	ptrdiff_t l;
 
-	if (*s == '\\' && l >= 2) {
+	if (b)
+		l = *b;
+	else
+		l = -1;
+
+	if (*s == '\\' && (b ? l >= 2 : s[1])) {
 		++s; --l;
 		switch (*s) {
 		case 'n':
@@ -62,11 +69,11 @@ int escape(int utf8,const char **a, ptrdiff_t *b)
 		case '7':
 			c = *s - '0';
 			++s; --l;
-			if (l > 0 && *s >= '0' && *s <= '7') {
+			if ((!b || l > 0) && *s >= '0' && *s <= '7') {
 				c = c * 8 + s[1] - '0';
 				++s; --l;
 			}
-			if (l > 0 && *s >= '0' && *s <= '7') {
+			if ((!b || l > 0) && *s >= '0' && *s <= '7') {
 				c = c * 8 + s[1] - '0';
 				++s; --l;
 			}
@@ -75,31 +82,31 @@ int escape(int utf8,const char **a, ptrdiff_t *b)
 		case 'X':
 			c = 0;
 			++s; --l;
-			if (l > 0 && *s >= '0' && *s <= '9') {
+			if ((!b || l > 0) && *s >= '0' && *s <= '9') {
 				c = c * 16 + *s - '0';
 				++s; --l;
-			} else if (l > 0 && *s >= 'A' && *s <= 'F') {
+			} else if ((!b || l > 0) && *s >= 'A' && *s <= 'F') {
 				c = c * 16 + *s - 'A' + 10;
 				++s; --l;
-			} else if (l > 0 && *s >= 'a' && *s <= 'f') {
+			} else if ((!b || l > 0) && *s >= 'a' && *s <= 'f') {
 				c = c * 16 + *s - 'a' + 10;
 				++s; --l;
 			}
 
-			if (l > 0 && *s >= '0' && *s <= '9') {
+			if ((!b || l > 0) && *s >= '0' && *s <= '9') {
 				c = c * 16 + *s - '0';
 				++s; --l;
-			} else if (l > 0 && *s >= 'A' && *s <= 'F') {
+			} else if ((!b || l > 0) && *s >= 'A' && *s <= 'F') {
 				c = c * 16 + *s - 'A' + 10;
 				++s; --l;
-			} else if (l > 0 && *s >= 'a' && *s <= 'f') {
+			} else if ((!b || l > 0) && *s >= 'a' && *s <= 'f') {
 				c = c * 16 + *s - 'a' + 10;
 				++s; --l;
 			}
 			break;
 		default:
 			if (utf8)
-				c = utf8_decode_fwrd(&s, &l);
+				c = utf8_decode_fwrd(&s, (b ? &l : NULL));
 			else {
 				c = *s++;
 				--l;
@@ -107,13 +114,14 @@ int escape(int utf8,const char **a, ptrdiff_t *b)
 			break;
 		}
 	} else if (utf8) {
-		c = utf8_decode_fwrd(&s,&l);
+		c = utf8_decode_fwrd(&s, (b ? &l : NULL));
 	} else {
 		c = *s++;
 		--l;
 	}
 	*a = s;
-	*b = l;
+	if (b)
+		*b = l;
 	return c;
 }
 

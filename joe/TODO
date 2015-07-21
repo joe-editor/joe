@@ -1,3 +1,11 @@
+accept character classes, not just UTF-8 in syntax files.
+
+long paths not working with cd command in shell windows?
+
+[fixed]
+we parse strings, which does escape processing.
+  but then we call parse_class on the parse string which also does escape processing.
+
 cursor position history probably not working
 when buffers switch in windows.
 
