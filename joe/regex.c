@@ -9,7 +9,9 @@
 
 /* Parse one character.  It can be UTF-8 if utf8 is set.  b has pointer to string length or NULL for zero-terminated strings */
 
-int escape(int utf8,const char **a, ptrdiff_t *b)
+/* Returns the character or -256 for a category (in which case *cat is filled in if it's not NULL */
+
+int escape(int utf8, const char **a, ptrdiff_t *b, struct unicat **cat)
 {
 	int c;
 	const char *s = *a;
@@ -20,98 +22,124 @@ int escape(int utf8,const char **a, ptrdiff_t *b)
 	else
 		l = -1;
 
-	if (*s == '\\' && (b ? l >= 2 : s[1])) {
+	if (*s == '\\' && (b ? l >= 2 : s[1])) { /* Backslash.. */
 		++s; --l;
 		switch (*s) {
-		case 'n':
-			c = 10;
-			++s; --l;
-			break;
-		case 't':
-			c = 9;
-			++s; --l;
-			break;
-		case 'a':
-			c = 7;
-			++s; --l;
-			break;
-		case 'b':
-			c = 8;
-			++s; --l;
-			break;
-		case 'f':
-			c = 12;
-			++s; --l;
-			break;
-		case 'e':
-			c = 27;
-			++s; --l;
-			break;
-		case 'r':
-			c = 13;
-			++s; --l;
-			break;
-		case '8':
-			c = 8;
-			++s; --l;
-			break;
-		case '9':
-			c = 9;
-			++s; --l;
-			break;
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-			c = *s - '0';
-			++s; --l;
-			if ((!b || l > 0) && *s >= '0' && *s <= '7') {
-				c = c * 8 + s[1] - '0';
+			case 'n': { /* Newline */
+				c = 10;
 				++s; --l;
+				break;
+			} case 't': case '9': { /* Tab */
+				c = 9;
+				++s; --l;
+				break;
+			} case 'a': { /* Alert */
+				c = 7;
+				++s; --l;
+				break;
+			} case 'b': case '8': { /* Backspace */
+				c = 8;
+				++s; --l;
+				break;
+			} case 'f': { /* Formfeed */
+				c = 12;
+				++s; --l;
+				break;
+			} case 'e': { /* Escape */
+				c = 27;
+				++s; --l;
+				break;
+			} case 'r': { /* Carriage return */
+				c = 13;
+				++s; --l;
+				break;
+			} case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': { /* Octal */
+				c = *s - '0';
+				++s; --l;
+				if ((!b || l > 0) && *s >= '0' && *s <= '7') {
+					c = c * 8 + s[1] - '0';
+					++s; --l;
+				}
+				if ((!b || l > 0) && *s >= '0' && *s <= '7') {
+					c = c * 8 + s[1] - '0';
+					++s; --l;
+				}
+				break;
+			} case 'p': { /* Character class */
+				++s; --l;
+				c = 'X';
+				if ((!b || l > 0) && *s == '{') {
+					++s; --l;
+					char buf[80];
+					ptrdiff_t idx = 0;
+					while ((!b || l > 0) && *s && *s != '}') {
+						if (idx != SIZEOF(buf) - 1)
+							buf[idx++] = *s;
+						++s; --l;
+					}
+					if ((!b || l > 0) && *s == '}') {
+						++s; --l;
+					}
+					buf[idx] = 0;
+					c = -256;
+					if (cat)
+						*cat = unicatlookup(buf);
+				}
+				break;
+			} case 'x': case 'X': { /* Hex or unicode */
+				c = 0;
+				++s; --l;
+				if ((!b || l > 0) && *s == '{') {
+					++s; --l;
+					while (!b || l > 0) {
+						if (*s >= '0' && *s <= '9') {
+							c = c * 16 + *s - '0';
+							++s; --l;
+						} else if (*s >= 'A' && *s <= 'F') {
+							c = c * 16 + *s - 'A' + 10;
+							++s; --l;
+						} else if (*s >= 'a' && *s <= 'f') {
+							c = c * 16 + *s - 'a' + 10;
+							++s; --l;
+						} else {
+							break;
+						}
+					}
+					if ((!b || l > 0) && *s == '}') {
+						++s; --l;
+					}
+				} else {
+					if ((!b || l > 0) && *s >= '0' && *s <= '9') {
+						c = c * 16 + *s - '0';
+						++s; --l;
+					} else if ((!b || l > 0) && *s >= 'A' && *s <= 'F') {
+						c = c * 16 + *s - 'A' + 10;
+						++s; --l;
+					} else if ((!b || l > 0) && *s >= 'a' && *s <= 'f') {
+						c = c * 16 + *s - 'a' + 10;
+						++s; --l;
+					}
+					if ((!b || l > 0) && *s >= '0' && *s <= '9') {
+						c = c * 16 + *s - '0';
+						++s; --l;
+					} else if ((!b || l > 0) && *s >= 'A' && *s <= 'F') {
+						c = c * 16 + *s - 'A' + 10;
+						++s; --l;
+					} else if ((!b || l > 0) && *s >= 'a' && *s <= 'f') {
+						c = c * 16 + *s - 'a' + 10;
+						++s; --l;
+					}
+				}
+				break;
+			} default: { /* Character as-is after backslash */
+				if (utf8)
+					c = utf8_decode_fwrd(&s, (b ? &l : NULL));
+				else {
+					c = *s++;
+					--l;
+				}
+				break;
 			}
-			if ((!b || l > 0) && *s >= '0' && *s <= '7') {
-				c = c * 8 + s[1] - '0';
-				++s; --l;
-			}
-			break;
-		case 'x':
-		case 'X':
-			c = 0;
-			++s; --l;
-			if ((!b || l > 0) && *s >= '0' && *s <= '9') {
-				c = c * 16 + *s - '0';
-				++s; --l;
-			} else if ((!b || l > 0) && *s >= 'A' && *s <= 'F') {
-				c = c * 16 + *s - 'A' + 10;
-				++s; --l;
-			} else if ((!b || l > 0) && *s >= 'a' && *s <= 'f') {
-				c = c * 16 + *s - 'a' + 10;
-				++s; --l;
-			}
-
-			if ((!b || l > 0) && *s >= '0' && *s <= '9') {
-				c = c * 16 + *s - '0';
-				++s; --l;
-			} else if ((!b || l > 0) && *s >= 'A' && *s <= 'F') {
-				c = c * 16 + *s - 'A' + 10;
-				++s; --l;
-			} else if ((!b || l > 0) && *s >= 'a' && *s <= 'f') {
-				c = c * 16 + *s - 'a' + 10;
-				++s; --l;
-			}
-			break;
-		default:
-			if (utf8)
-				c = utf8_decode_fwrd(&s, (b ? &l : NULL));
-			else {
-				c = *s++;
-				--l;
-			}
-			break;
 		}
 	} else if (utf8) {
 		c = utf8_decode_fwrd(&s, (b ? &l : NULL));
@@ -152,17 +180,23 @@ static int brack(int utf8,const char **a, ptrdiff_t *la, int c)
 			break;
 		} else {
 			int cl, cr;
+			struct unicat *cat = NULL;
 
-			cl = escape(utf8, &s, &l);
+			cl = escape(utf8, &s, &l, &cat);
 
-			if (l >= 2 && s[0] == '-' && s[1] != ']') {
-				--l;
-				++s;
-				cr = escape(utf8, &s, &l);
-				if (c >= cl && c <= cr)
+			if (cl == -256) {
+				flag = unicatcheck(cat, c);
+			} else {
+
+				if (l >= 2 && s[0] == '-' && s[1] != ']') {
+					--l;
+					++s;
+					cr = escape(utf8, &s, &l, NULL);
+					if (c >= cl && c <= cr)
+						flag = 1;
+				} else if (c == cl)
 					flag = 1;
-			} else if (c == cl)
-				flag = 1;
+			}
 		}
 	*a = s;
 	*la = l;
@@ -313,6 +347,7 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 			case 'e':
 			case 'x':
 			case 'X':
+			case 'p':
 			case '0':
 			case '1':
 			case '2':
@@ -322,13 +357,22 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 			case '6':
 			case '7':
 			case '8':
-			case '9':
+			case '9': {
+				struct unicat *cat = NULL;
+				int e;
+				d = pgetc(p);
 				regex -= 2;
 				len += 2;
-				if (pgetc(p) != escape(utf8, &regex, &len))
-					goto fail;
+				e = escape(utf8, &regex, &len, &cat);
+				if (e != -256) {
+					if (e != d)
+						goto fail;
+				} else {
+					if (!unicatcheck(cat, d))
+						goto fail;
+				}
 				break;
-			case '*':
+			} case '*':
 				/* Find shortest matching sequence */
 				o = pdup(p, "pmatch");
 				do {
@@ -363,6 +407,7 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 			case '+':
 				{
 					const char *oregex = regex;	/* Point to character to skip */
+					struct unicat *cat = NULL;
 					ptrdiff_t olen = len;
 
 					const char *tregex;
@@ -384,8 +429,8 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 							len -= 2;
 							brack(utf8, &regex, &len, 0);
 						} else {
-							d = escape(utf8, &regex, &len);
-							if (icase)
+							d = escape(utf8, &regex, &len, &cat);
+							if (icase && d != -256)
 								d = joe_tolower(map,d);
 						}
 					} else if (utf8) {
@@ -425,6 +470,8 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 								tregex += 2;
 								tlen -= 2;
 								match = brack(utf8, &tregex, &tlen, c);
+							} else if (d == -256) {
+								match = unicatcheck(cat, c);
 							} else
 								match = (d == c);
 						} else {

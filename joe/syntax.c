@@ -129,12 +129,13 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	line->b->o.ansi = ansi_mode;
 	h_state.saved_s[0] = state;
 	h_state.saved_s[1] = accu;
+	h_state.saved_s[2] = 0; /* Because we Zcmp(saved_s) */
 	h_state.state = current_attr;
 //	*(int *)(h_state.saved_s + 8) = new_attr;
 	return h_state;
 }
 
-HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state)
+HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state,struct charmap *charmap)
 {
 	struct high_frame *stack;
 	struct high_state *h;
@@ -185,7 +186,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		if (c < 0)
 			c += 256;
 
-		/* If it isn't already, we should convert the character to unicode */
+		/* If it isn't already, convert character to unicode */
+		if (!charmap->type)
+			c = to_uni(charmap, c);
 
 		/* Create or expand attribute array if necessary */
 		if(attr==attr_end) {

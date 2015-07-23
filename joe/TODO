@@ -1,4 +1,35 @@
-accept character classes, not just UTF-8 in syntax files.
+Accept character classes, not just UTF-8 in syntax files.
+[done]
+
+Improve syntax files to work with unicode.
+
+Improve speed of regex? Compile to perfect hash? At least sort the
+intervals?
+
+Auto generate the toupper / tolower from i18n.c  Eliminate i18n.c
+
+Added some more convenient classes:
+   see http://www.w3.org/TR/xml11/#NT-NameStartChar
+   see http://www.w3.org/TR/xmlschma11-2/#regexs
+	\d	Digit: same as \p{Nd}
+	\D	opposite
+	\s	space, tab, newline, return
+	\S	opposite
+	\i	NameStartChar
+			: A-Z _ a-z C0-D6 D8-F6 F8-2FF 370-37D 37F-1FFF 200C-200D 2070-218F 2C00-2FEF 3001-D7FF F900-FDCF FDF0-FFFD 10000-EFFFF
+	\I	opposite
+	\c	NameChar
+			\i - . 0-9 B7 0300-036F 203F-2040
+	\C	opposite
+	\w	word character: [\x{0}-\x{10ffff}]-[\p{P}\p{Z}\p{C}]
+	\W	opposite
+	\p{block-name}
+
+Java:
+  isJavaIdentifierStart: \p{Nl} \p{L} \p{Pc} \p{Sc}
+  isJavaIdentifierPart: isJavaIdentifierStart \p{Mn} \p{Mc} \p{Nd} ignorable
+  ignorable: 0x00-0x08, 0x0e-0x1b, 0x7f-0x9F
+
 
 long paths not working with cd command in shell windows?
 

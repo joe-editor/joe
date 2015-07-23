@@ -300,7 +300,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, ptrd
 
 		/* Recompute everything in invalid window */
 		while (ln < db->first_invalid + db->invalid_window) {
-			state = parse(y, tmp, state);
+			state = parse(y, tmp, state, p->b->o.charmap);
 			lattr_st(db, ln, &state);
 			++ln;
 		}
@@ -312,7 +312,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, ptrd
 		/* Recompute until match found.  If match is found, we can assume rest is valid */
 		while (ln < lattr_size(db)) {
 			HIGHLIGHT_STATE *prev;
-			state = parse(y, tmp, state);
+			state = parse(y, tmp, state, p->b->o.charmap);
 			prev = lattr_gt(db, ln);
 			if (!eq_state(prev, &state))
 				lattr_st(db, ln, &state);
@@ -353,7 +353,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, ptrd
 				printf("** Mismatch!! %d %d %d %d **\n",z,tmp->line,prev->state,st.state);
 				abort();
 			}
-			st = parse(y, tmp, st);
+			st = parse(y, tmp, st, p->b->o.charmap);
 		}
 		prm(tmp);
 	}

@@ -185,87 +185,6 @@ static HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, off_t line)
 	}
 
 	return lattr_get(w->db, w->o.syntax, p, line); /* FIXME: lattr database should be a in vfile */
-
-	/* Old way... */
-#ifdef junk
-
-	ln = line;
-
-	lattr_get(w->db, &ln, &state);
-
-	if (ln != line) {
-		tmp = pdup(p, "get_highlight_state");
-		pline(tmp, ln);
-		while (tmp->line < line && !piseof(tmp)) {
-			state = parse(w->o.syntax, tmp, state);
-		}
-		if (tmp->line == line)
-			lattr_set(w->db, line, state);
-		prm(tmp);
-	}
-	return state;
-#endif
-
-#ifdef junk
-	P *tmp = 0;
-	HIGHLIGHT_STATE state;
-
-	/* Screen y position of requested line */
-	int y = line-w->top->line+w->y;
-
-	if(!w->o.highlight || !w->o.syntax) {
-		invalidate_state(&state);
-		return state;
-	}
-
-	/* If we know the state, just return it */
-	if (w->parent->t->t->syntab[y].state>=0)
-		return w->parent->t->t->syntab[y];
-
-	/* Scan upwards until we have a line with known state or
-	   we're on the first line */
-	while (y > w->y && w->parent->t->t->syntab[y].state < 0) --y;
-
-	/* If we don't have state for this line, calculate by going 100 lines back */
-	if (w->parent->t->t->syntab[y].state<0) {
-		/* We must be on the top line */
-		clear_state(&state);
-		tmp = pdup(w->top, "get_highlight_state");
-		if(w->o.syntax->sync_lines >= 0 && tmp->line > w->o.syntax->sync_lines)
-			pline(tmp, tmp->line-w->o.syntax->sync_lines);
-		else
-			p_goto_bof(tmp);
-		while(tmp->line!=y-w->y+w->top->line)
-			state = parse(w->o.syntax,tmp,state);
-		w->parent->t->t->syntab[y] = state;
-		w->parent->t->t->updtab[y] = 1;
-		prm(tmp);
-	}
-
-	/* Color to end of screen */
-	tmp = pdup(w->top, "get_highlight_state");
-	pline(tmp, y-w->y+w->top->line);
-	state = w->parent->t->t->syntab[y];
-	while(tmp->line!=w->top->line+w->h-1 && !piseof(tmp)) {
-		state = parse(w->o.syntax,tmp,state);
-		w->parent->t->t->syntab[++y] = state;
-		w->parent->t->t->updtab[y] = 1; /* This could be smarter: update only if we changed what was there before */
-		}
-	prm(tmp);
-	while(y<w->y+w->h-1) {
-		w->parent->t->t->syntab[++y] = state;
-		}
-
-	/* Line after window */
-	/* state = parse_c(state,syn,tmp); */
-
-	/* If we changed, fix other windows */
-	/* w->state = state; */
-
-	/* Return state of requested line */
-	y = line - w->top->line + w->y;
-	return w->parent->t->t->syntab[y];
-#endif
 }
 
 /* Scroll a buffer window after an insert occured.  'flg' is set to 1 if
@@ -412,7 +331,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int *screen, int *attr, ptrdiff_t x, ptrdi
 	if(st.state!=-1) {
 		tmp=pdup(p, "lgen");
 		p_goto_bol(tmp);
-		parse(bw->o.syntax,tmp,st);
+		parse(bw->o.syntax,tmp,st,p->b->o.charmap);
 		syn = attr_buf;
 		prm(tmp);
 	}

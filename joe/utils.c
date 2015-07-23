@@ -795,13 +795,13 @@ ptrdiff_t parse_string(const char **pp, char *buf, ptrdiff_t len)
 	if(*p=='\"') {
 		++p;
 		while(len > 1 && *p && *p!='\"') {
-			int c = escape(0, &p, NULL);
+			int c = escape(0, &p, NULL, NULL);
 			*buf++ = TO_CHAR_OK(c);
 			--len;
 		}
 		*buf = 0;
 		while(*p && *p!='\"') {
-			int c = escape(0, &p, NULL);
+			int c = escape(0, &p, NULL, NULL);
 		}
 		if(*p == '\"') {
 			*pp = p + 1;
@@ -818,13 +818,13 @@ ptrdiff_t parse_Zstring(const char **pp, int *buf, ptrdiff_t len)
 	if(*p=='\"') {
 		++p;
 		while(len > 1 && *p && *p!='\"') {
-			int c = escape(1, &p, NULL);
+			int c = escape(1, &p, NULL, NULL);
 			*buf++ = c;
 			--len;
 		}
 		*buf = 0;
 		while(*p && *p!='\"') {
-			int c = escape(1, &p, NULL);
+			int c = escape(1, &p, NULL, NULL);
 		}
 		if(*p == '\"') {
 			*pp = p + 1;
@@ -921,6 +921,7 @@ int parse_class(const char * *pp, struct interval **array, int *size)
 {
 	static struct interval simple;
 	const char *p= *pp;
+	struct unicat *cat = NULL;
 	int a, b;
 	if(!*p)
 		return -1;
@@ -954,11 +955,18 @@ int parse_class(const char * *pp, struct interval **array, int *size)
 		b = a;
 */
 
-	a = escape(1, &p, NULL);
+	a = escape(1, &p, NULL, &cat);
+
+	if (a == -256 && cat) {
+		*array = cat->table;
+		*size = cat->size;
+		*pp = p;
+		return 0;
+	}
 
 	if(*p == '-' && p[1]) {
 		++p;
-		b = escape(1, &p, NULL);
+		b = escape(1, &p, NULL, NULL);
 	} else
 		b = a;
 

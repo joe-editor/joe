@@ -1,3 +1,5 @@
+/* Perfect hash mapping tables */
+
 #define PHASH_WAYS 6
 
 struct Phash_entry {
@@ -19,3 +21,24 @@ void rmphash(struct Phash *h);
 int phash_find(struct Phash *h, unsigned key);
 
 void phash_add(struct Phash *h, unsigned key, int val);
+
+/* Perfect hash set tables */
+
+struct Pset_entry {
+	unsigned keys[PHASH_WAYS];
+};
+
+struct Pset {
+	unsigned select;
+	unsigned len;
+	unsigned count;
+	struct Pset_entry *table;
+};
+
+struct Pset *mkpset(unsigned sel, unsigned len);
+
+void rmpset(struct Pset *h);
+
+int pset_find(struct Pset *h, unsigned key);
+
+void pset_add(struct Pset *h, unsigned key);

@@ -13,7 +13,17 @@
 * Key sequences in the joerc file are now UTF-8 coded Unicode.
 	* Also you can specify Unicode in hexadecimal like this: U+F123
 
-* Character lists and strings in syntax files are now UTF-8 coded Unicode.
+* Character lists and strings in syntax files are now UTF-8 coded Unicode.  Character classes and unicode characters may also be specified in regular expressions.
+	* Use \x{f123} to specify a particular character.
+	* use \p{Lu} to specify a Unicode character class: any one of
+		L, Lu, Ll, Lt, Lm, Lo
+		M, Mn, Mc, Me
+		N, Nd, Nl, No
+		P, Pc, Pd, Ps, Pe, Pi, Pf, Po
+		S, Sm, Sc, Sk, So
+		Z, Zs, Zl, Zp
+		C, Cc, Cf, Cs, Co, Cn
+	See: ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values
 
 * Fix bug where \\ was not parsed correctly within syntax file character lists unless it was at the end of the string.
 

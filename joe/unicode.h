@@ -2,6 +2,7 @@ struct unicat {
 	char *name;
 	int size;
 	struct interval *table;
+	struct unicat *next;
 };
 
 extern struct unicat unicat[];
@@ -25,3 +26,7 @@ struct uniblock {
 extern struct uniblock uniblocks[];
 
 int *lowerize(int *d, ptrdiff_t len, const int *s);
+
+struct unicat *unicatlookup(const char *name);
+
+int unicatcheck(struct unicat *cat, int ch);

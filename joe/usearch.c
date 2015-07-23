@@ -499,7 +499,7 @@ static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len)
 			} else {
 				const char *a=s+x;
 				ptrdiff_t l=len-x;
-				binsc(p,escape(p->b->o.charmap->type,&a,&l));
+				binsc(p,escape(p->b->o.charmap->type,&a,&l,NULL));
 				pgetc(p);
 				len -= a - s;
 				s = a;

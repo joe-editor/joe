@@ -472,7 +472,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 		} while (d != NO_MORE_DATA && d != '\n');
 		if (d != NO_MORE_DATA)
 			pgetc(q);
-		parse(bw->o.syntax, q, lattr_get(bw->db, bw->o.syntax, q, q->line));
+		parse(bw->o.syntax, q, lattr_get(bw->db, bw->o.syntax, q, q->line),bw->o.charmap);
 		initial_context = attr_buf[col] & CONTEXT_MASK;
 	}
 
@@ -491,7 +491,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 				} while (d != NO_MORE_DATA && d != '\n');
 				if (d != NO_MORE_DATA)
 					pgetc(q);
-				parse(bw->o.syntax, q, lattr_get(bw->db, bw->o.syntax, q, q->line));
+				parse(bw->o.syntax, q, lattr_get(bw->db, bw->o.syntax, q, q->line), bw->o.charmap);
 				continue;
 			}
 
@@ -653,7 +653,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 		/* Forward search */
 		while ((d = pgetc(p)) != NO_MORE_DATA) {
 			if (query_highlighter && d == '\n') {
-				parse(bw->o.syntax, q, lattr_get(bw->db, bw->o.syntax, q, q->line));
+				parse(bw->o.syntax, q, lattr_get(bw->db, bw->o.syntax, q, q->line), bw->o.charmap);
 				col = 0;
 				continue;
 			}

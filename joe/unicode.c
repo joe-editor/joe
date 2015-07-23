@@ -68,6 +68,59 @@ int *lowerize(int *d, ptrdiff_t len, const int *s)
 	return org;
 }
 
+/* Lookup unicode category */
+
+static struct unicat *derived;
+
+struct unicat *unicatlookup(const char *cat)
+{
+	struct unicat *der;
+	ptrdiff_t x, y;
+	ptrdiff_t size;
+	/* Native category like Lu */
+	for (x = 0; unicat[x].name; ++x)
+		if (!zcmp(unicat[x].name, cat))
+			return &unicat[x];
+	/* Derived category like L: maybe we already have it? */
+	for (der = derived; der; der = der->next)
+		if (!zcmp(der->name, cat))
+			return der;
+	/* We don't have it: try to create it */
+	size = 0;
+	for (x = 0; unicat[x].name; ++x)
+		if (!zncmp(unicat[x].name, cat, zlen(cat)))
+			size += unicat[x].size;
+	/* No match */
+	if (!size)
+		return 0;
+	der = (struct unicat *)joe_malloc(sizeof(struct unicat));
+	der->next = derived;
+	derived = der;
+	der->name = zdup(cat);
+	der->size = size;
+	der->table = (struct interval *)joe_malloc(sizeof(struct interval) * der->size);
+	y = 0;
+	for (x = 0; unicat[x].name; ++x)
+		if (!zncmp(unicat[x].name, cat, zlen(cat))) {
+			mcpy(der->table + y, unicat[x].table, sizeof(struct interval) * unicat[x].size);
+			y += unicat[x].size;
+		}
+	return der;
+}
+
+int unicatcheck(struct unicat *cat, int ch)
+{
+	ptrdiff_t x;
+	if (!cat)
+		return 0;
+	if (ch < 0)
+		ch += 256;
+	for (x = 0; x != cat->size; ++x)
+		if (ch >= cat->table[x].first && ch <= cat->table[x].last)
+			return 1;
+	return 0;
+}
+
 /*
 int main()
 {

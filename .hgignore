@@ -4,8 +4,10 @@
 \.o$
 DEADJOE$
 Makefile(\.in)?$
-
+core$
+joe-.*\.tar.gz$
 syntax/.*\.jsf$
+\#$
 charmaps/klingon$
 rc/.*rc$
 rc/jicerc\.ru$
@@ -13,7 +15,7 @@ joe/(stringify|termidx|joe)$
 joe/\.deps
 joe/autoconf\.h(\.in)?$
 
-config\.(guess|status|sub)$
+config\.(guess|status|sub|log)$
 autom4te\.cache
 aclocal\.m4$
 configure$

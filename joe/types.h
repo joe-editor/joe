@@ -301,6 +301,7 @@ struct highlight_state {
 #include "queue.h"
 #include "qw.h"
 #include "rc.h"
+#include "unicode.h"
 #include "regex.h"
 #include "scrn.h"
 #include "syntax.h"
@@ -333,5 +334,4 @@ struct highlight_state {
 #include "options.h"
 #include "selinux.h"
 #include "phash.h"
-#include "unicode.h"
 #include "Zhash.h"
