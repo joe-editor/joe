@@ -15,7 +15,7 @@
 
 * Character lists and strings in syntax files are now UTF-8 coded Unicode.  Character classes and unicode characters may also be specified in regular expressions.
 	* Use \x{f123} to specify a particular character.
-	* use \p{Lu} to specify a Unicode character class: any one of
+	* Use \p{Lu} to specify a Unicode character class: any one of
 		L, Lu, Ll, Lt, Lm, Lo
 		M, Mn, Mc, Me
 		N, Nd, Nl, No
@@ -23,7 +23,9 @@
 		S, Sm, Sc, Sk, So
 		Z, Zs, Zl, Zp
 		C, Cc, Cf, Cs, Co, Cn
-	See: ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values
+		See: ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values
+	* Use \p{Cherokee} to specify any character from a named Unicode block.
+
 
 * Fix bug where \\ was not parsed correctly within syntax file character lists unless it was at the end of the string.
 

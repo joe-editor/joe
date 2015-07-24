@@ -6,6 +6,8 @@ Improve syntax files to work with unicode.
 Improve speed of regex? Compile to perfect hash? At least sort the
 intervals?
 
+Digit values
+
 Auto generate the toupper / tolower from i18n.c  Eliminate i18n.c
 
 Added some more convenient classes:

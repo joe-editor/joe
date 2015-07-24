@@ -88,7 +88,7 @@ struct unicat *unicatlookup(const char *cat)
 	/* We don't have it: try to create it */
 	size = 0;
 	for (x = 0; unicat[x].name; ++x)
-		if (!zncmp(unicat[x].name, cat, zlen(cat)))
+		if (unicat[x].name[1] && !unicat[x].name[2] && !zncmp(unicat[x].name, cat, zlen(cat)))
 			size += unicat[x].size;
 	/* No match */
 	if (!size)
@@ -101,7 +101,7 @@ struct unicat *unicatlookup(const char *cat)
 	der->table = (struct interval *)joe_malloc(sizeof(struct interval) * der->size);
 	y = 0;
 	for (x = 0; unicat[x].name; ++x)
-		if (!zncmp(unicat[x].name, cat, zlen(cat))) {
+		if (unicat[x].name[1] && !unicat[x].name[2] && !zncmp(unicat[x].name, cat, zlen(cat))) {
 			mcpy(der->table + y, unicat[x].table, sizeof(struct interval) * unicat[x].size);
 			y += unicat[x].size;
 		}

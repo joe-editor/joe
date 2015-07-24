@@ -23,6 +23,12 @@
         c = buf[y]; buf[y] = 0; \
     } while (0)
 
+#define TOEND1 \
+    do { \
+        for (y = x; buf[y] && buf[y] != '#' && buf[y] != ';' && buf[y] != '\n' && buf[y] != '\r'; ++y); \
+        c = buf[y]; buf[y] = 0; \
+    } while (0)
+
 #define COMMA \
     do { \
         if (first) { \
@@ -129,7 +135,7 @@ int unifold(char *name)
             } else {
                 /* Jump */
                 COMMA;
-                printf("    { 0x%x, 0x%x, 0x%x, 0x0, 0x0 }", in_low, in_high, out_low);
+                printf("	{ 0x%x, 0x%x, 0x%x, 0x0, 0x0 }", in_low, in_high, out_low);
                 in_low = in_high = inval;
                 out_low = out_high = outval[0];
             }
@@ -137,16 +143,16 @@ int unifold(char *name)
             /* Character to string mapping */
             if (in_low != 0) {
                 COMMA;
-                printf("    { 0x%x, 0x%x, 0x%x, 0x0, 0x0 }", in_low, in_high, out_low);
+                printf("	{ 0x%x, 0x%x, 0x%x, 0x0, 0x0 }", in_low, in_high, out_low);
                 in_low = 0;
             }
             COMMA;
-            printf("    { 0x%x, 0x%x, 0x%x, 0x%x, 0x%x }", inval, inval, outval[0], outval[1], outval[2] );
+            printf("	{ 0x%x, 0x%x, 0x%x, 0x%x, 0x%x }", inval, inval, outval[0], outval[1], outval[2] );
         }
     }
     if (in_low != 0) {
         COMMA;
-        printf("    { 0x%x, 0x%x, 0x%x, 0x0, 0x0 }", in_low, in_high, out_low);
+        printf("	{ 0x%x, 0x%x, 0x%x, 0x0, 0x0 }", in_low, in_high, out_low);
     }
     COMMA;
     printf("	{ 0x0, 0x0, 0x0, 0x0, 0x0 }");
@@ -161,19 +167,23 @@ struct cat {
     struct cat *next;
     char *name;
     int size;
+    int idx;
 } *cats;
 
-void addcat(char *s)
+struct cat *addcat(char *s)
 {
     struct cat *c;
     for (c = cats; c; c = c->next)
         if (!strcmp(c->name, s))
-            break;
+            return c;
     if (!c) {
         c = (struct cat *)malloc(sizeof(struct cat));
         c->next = cats;
         cats = c;
         c->name = strdup(s);
+        c->size = 0;
+        c->idx = -1;
+        return c;
         /* printf("New categry %s\n", s); */
     }
 }
@@ -211,7 +221,7 @@ int unicat(char *name)
     }
 
     /* Generate a table for each category */
-    for (cat = cats; cat; cat = cat->next) {
+    for (cat = cats; cat; cat = cat->next) if (cat->idx == -1) {
         rewind(f);
         int count = 0;
         low = high = -2;
@@ -254,11 +264,15 @@ int unicat(char *name)
     printf("\n");
     printf("struct unicat unicat[] = {\n");
     for (cat = cats; cat; cat = cat->next) {
-        printf("	{ \"%s\", %d, %s_table },\n", cat->name, cat->size, cat->name);
+        if (cat->idx == -1)
+            printf("	{ \"%s\", %d, %s_table, 0 },\n", cat->name, cat->size, cat->name);
+        else
+            printf("	{ \"%s\", %d, uniblocks + %d, 0 },\n", cat->name, cat->size, cat->idx);
     }
-    printf("	{ 0, 0, 0 }\n");
+    printf("	{ 0, 0, 0, 0 }\n");
     printf("};\n");
     fclose(f);
+    return 0;
 }
 
 /* Generate block name table */
@@ -268,29 +282,41 @@ int uniblocks(char *name)
     FILE *f;
     char buf[1024];
     int first = 0;
+    int idx = 0;
     /** Create table of block names **/
     f = fopen(name, "r");
     if (!f) {
         fprintf(stderr,"Couldn't open %s\n", name);
         return -1;
     }
-    printf("\n/* Unicode block names */\n");
+    printf("\n/* Unicode blocks */\n");
     printf("\n");
-    printf("struct uniblock uniblocks[] = {\n");
+    printf("struct interval uniblocks[] = {\n");
     while (fgets(buf, sizeof(buf), f)) {
         if (buf[0] >= '0' && buf[0] <= '9' ||
             buf[0] >= 'A' && buf[0] <= 'F' ||
             buf[0] >= 'a' && buf[0] <= 'f') {
-                int first;
-                int last;
+                unsigned low;
+                unsigned high;
                 char buf1[1024];
-                sscanf(buf, "%x..%x; %s", &first, &last, buf1);
+                int x, y, c;
+                struct cat *cat;
+                TOFIRST;
+                TOEND;
+                sscanf(buf, "%x..%x", &low, &high);
+                TONEXT;
+                TOEND1;
                 COMMA;
-                printf("    { %d, %d, \"%s\" }", first, last, buf1);
+                printf("	{ 0x%x, 0x%x } /* %s */", low, high, buf + x);
+                cat = addcat(buf + x);
+                cat->size = 1;
+                cat->idx = idx;
+                ++idx;
         }
     }
     fclose(f);
     printf("\n};\n");
+    return 0;
 }
 
 int main(int argc, char *argv[])
@@ -299,12 +325,14 @@ int main(int argc, char *argv[])
     printf("/* Unicode facts */\n");
     printf("\n");
     printf("#include \"types.h\"\n");
+    rtn = uniblocks("Blocks.txt");
+    if (rtn)
+        return rtn;
     rtn = unicat("UnicodeData.txt");
     if (rtn)
         return rtn;
     rtn = unifold("CaseFolding.txt");
     if (rtn)
         return rtn;
-    rtn = uniblocks("Blocks.txt");
-    return rtn;
+    return 0;
 }

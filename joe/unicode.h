@@ -17,14 +17,6 @@ struct casefold {
 
 extern struct casefold fold_table[];
 
-struct uniblock {
-	int first;
-	int last;
-	char *name;
-};
-
-extern struct uniblock uniblocks[];
-
 int *lowerize(int *d, ptrdiff_t len, const int *s);
 
 struct unicat *unicatlookup(const char *name);
