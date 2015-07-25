@@ -187,3 +187,138 @@ void pset_add(struct Pset *h, unsigned key)
 	/* Delete old table */
 	joe_free(table);
 }
+
+#define RTREE_LEVELS 4
+
+int rtree_alloc_unopt(struct Rtree_level_unopt *l)
+{
+	int a = l->alloc++;
+	int x;
+	if (a == l->len) {
+		l->len *= 2;
+		l->table = (struct Rtree_entry_unopt *)joe_realloc(l->table, SIZEOF(struct Rtree_entry_unopt) * l->len);
+	}
+	for (x = 0; x != 32; ++x)
+		l->table[a].data[x] = -1;
+	l->table[a].equiv = -1;
+	l->table[a].repl = -1;
+	return a;
+}
+
+void rtree_free_unopt(struct Rtree *r)
+{
+	ptrdiff_t x;
+	if (r->unopt) {
+		for (x = 0; x != RTREE_LEVELS; ++x) {
+			if (r->unopt[x].table)
+				joe_free(r->unopt[x].table);
+		}
+		joe_free(r->unopt);
+		r->unopt = 0;
+	}
+}
+
+struct Rtree *mkrtree()
+{
+	ptrdiff_t x;
+	struct Rtree *r = (struct Rtree *)joe_malloc(SIZEOF(struct Rtree));
+	r->unopt = (struct Rtree_level_unopt *)joe_malloc(SIZEOF(struct Rtree_level_unopt) * RTREE_LEVELS);
+	for (x = 0; x != RTREE_LEVELS; ++x) {
+		r->unopt[x].alloc = 0;
+		r->unopt[x].len = 1;
+		r->unopt[x].table = (struct Rtree_entry_unopt *)joe_malloc(SIZEOF(struct Rtree_entry_unopt) * r->unopt[x].len);
+	}
+	rtree_alloc_unopt(&r->unopt[0]);
+	r->table = 0;
+	return r;
+}
+
+void rtree_show(struct Rtree *r)
+{
+	int x;
+	for (x = 0; x != RTREE_LEVELS; ++x)
+		printf("level %d has %d entries\r\n", x, r->unopt[x].alloc);
+/*
+	for (x = 0; x != 32; ++x) {
+		int i = r->top.data[x];
+		if (i != -1) {
+			for (y = 0; y != 32; ++y) {
+				int j = r->table[i].data[y];
+				if (j != -1) {
+					for (z = 0; z != 32; ++z) {
+						int k = r->table[j].data[z];
+						if (k != -1) {
+							for (a = 0; a != 32; ++a) {
+								int l = r->table[k].data[a];
+								printf("%d.%d.%d.%d = %d\r\n",(int)x,(int)y,(int)z,(int)a,l);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+*/
+}
+
+void rmrtree(struct Rtree *r)
+{
+	rtree_free_unopt(r);
+	if (r->table)
+		joe_free(r->table);
+	joe_free(r);
+}
+
+int rtree_find_unopt(struct Rtree *r, int key)
+{
+	int idx = r->unopt[0].table[0].data[0x1f & (key >> 15)];
+	idx = r->unopt[1].table[idx].data[0x1f & (key >> 10)];
+	idx = r->unopt[2].table[idx].data[0x1f & (key >> 5)];
+	return r->unopt[3].table[idx].data[0x1f & (key >> 0)];
+}
+
+int rtree_find(struct Rtree *r, int key)
+{
+	int idx = r->top.data[0x1f & (key >> 15)];
+	idx = r->table[idx].data[0x1f & (key >> 10)];
+	idx = r->table[idx].data[0x1f & (key >> 5)];
+	return r->table[idx].data[0x1f & (key >> 0)];
+}
+
+void rtree_add(struct Rtree *r, int key, short data)
+{
+	int idx[RTREE_LEVELS - 1];
+
+	idx[0] = r->unopt[0].table[0].data[0x1f & (key >> 15)];
+	if (idx[0] == -1) {
+		idx[0] = r->unopt[0].table[0].data[0x1f & (key >> 15)] = rtree_alloc_unopt(&r->unopt[1]);
+	}
+
+	idx[1] = r->unopt[1].table[idx[0]].data[0x1f & (key >> 10)];
+	if (idx[1] == -1) {
+		idx[1] = r->unopt[1].table[idx[0]].data[0x1f & (key >> 10)] = rtree_alloc_unopt(&r->unopt[2]);
+	}
+
+	idx[2] = r->unopt[2].table[idx[1]].data[0x1f & (key >> 5)];
+	if (idx[2] == -1) {
+		idx[2] = r->unopt[2].table[idx[1]].data[0x1f & (key >> 5)] = rtree_alloc_unopt(&r->unopt[3]);
+	}
+
+	r->unopt[3].table[idx[2]].data[0x1f & (key >> 0)] = data;
+}
+
+void rtree_opt(struct Rtree *r)
+{
+	int x;
+	for (x = RTREE_LEVELS - 1; x >= 0; --x) {
+		int y;
+		for (y = 0; y < r->unopt[x].alloc - 1; ++y) {
+			int z;
+			for (z = y + 1; z != r->unopt[x].alloc; ++z) {
+				if (r->unopt[x].table[y].equiv == -1)
+					if (!memcmp(r->unopt[x].table[y].data, r->unopt[x].table[z].data, 32 * SIZEOF(int)))
+						r->unopt[x].table[y].equiv = y;
+			}
+		}
+	}
+}

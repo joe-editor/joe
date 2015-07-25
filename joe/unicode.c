@@ -75,8 +75,9 @@ static struct unicat *derived;
 struct unicat *unicatlookup(const char *cat)
 {
 	struct unicat *der;
-	ptrdiff_t x, y;
+	ptrdiff_t x, y, z, a;
 	ptrdiff_t size;
+	struct Rtree *r;
 	/* Native category like Lu */
 	for (x = 0; unicat[x].name; ++x)
 		if (!zcmp(unicat[x].name, cat))
@@ -105,6 +106,16 @@ struct unicat *unicatlookup(const char *cat)
 			mcpy(der->table + y, unicat[x].table, sizeof(struct interval) * unicat[x].size);
 			y += unicat[x].size;
 		}
+
+/*
+	r = mkrtree();
+	for (x = 0; x != der->size; ++x)
+		for (y = der->table[x].first; y <= der->table[x].last; ++y)
+			rtree_add(r, y, -2);
+	printf("\r\n\n%s: %d\r\n\n", cat, der->size);
+	rtree_show(r);
+	sleep(15);
+*/
 	return der;
 }
 

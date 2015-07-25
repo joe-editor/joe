@@ -42,3 +42,41 @@ void rmpset(struct Pset *h);
 int pset_find(struct Pset *h, unsigned key);
 
 void pset_add(struct Pset *h, unsigned key);
+
+/* Radix tree */
+
+struct Rtree_entry_unopt {
+	int data[32];
+	int equiv; /* Which one this is equivalent to */
+	int repl; /* Which one we are replacing it with */
+};
+
+struct Rtree_level_unopt {
+	int alloc;
+	int len;
+	struct Rtree_entry_unopt *table;
+};
+
+struct Rtree_entry {
+	short data[32];
+};
+
+struct Rtree {
+	/* Unoptimized */
+	struct Rtree_level_unopt *unopt;
+	/* Optimized */
+	struct Rtree_entry top;
+	struct Rtree_entry *table;
+};
+
+struct Rtree *mkrtree();
+
+void rtree_show(struct Rtree *r);
+
+void rmrtree(struct Rtree *r);
+
+int rtree_find(struct Rtree *r, int key);
+
+void rtree_add(struct Rtree *r, int key, short data);
+
+void rtree_opt(struct Rtree *r);
