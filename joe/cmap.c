@@ -8,15 +8,7 @@
 
 #include "types.h"
 
-struct bind mkbinding(void *thing, int what)
-{
-	struct bind bind;
-	bind.thing = thing;
-	bind.what = what;
-	return bind;
-}
-
-struct interval_list *mkinterval(struct interval_list *next, int first, int last, struct bind map)
+struct interval_list *mkinterval(struct interval_list *next, int first, int last, void *map)
 {
 	struct interval_list *interval_list = (struct interval_list *)joe_malloc(SIZEOF(struct interval_list));
 	interval_list->next = next;
@@ -37,18 +29,18 @@ void rminterval(struct interval_list *interval_list)
 
 /* Add a single character range to an interval list */
 
-struct interval_list *interval_add(struct interval_list *interval_list, int first, int last, struct bind map)
+struct interval_list *interval_add(struct interval_list *interval_list, int first, int last, void *map)
 {
 	struct interval_list *e, **p;
 	for (p = &interval_list; *p;) {
 		e = *p;
-		if (first > e->interval.last + 1 || (first > e->interval.last && (map.thing != e->map.thing))) {
+		if (first > e->interval.last + 1 || (first > e->interval.last && (map != e->map))) {
 			/* e is below new range, skip it */
 			p = &e->next;
-		} else if (e->interval.first > last + 1 || (e->interval.first > last && (map.thing != e->map.thing))) {
+		} else if (e->interval.first > last + 1 || (e->interval.first > last && (map != e->map))) {
 			/* e is fully above new range, so insert new one here */
 			break;
-		} else if (e->map.thing == map.thing) {
+		} else if (e->map == map) {
 			/* merge e into new */
 			if (e->interval.first <= first) {
 				if (e->interval.last >= last) { /* && e->interval.first <= first */
@@ -81,7 +73,7 @@ struct interval_list *interval_add(struct interval_list *interval_list, int firs
 					e->interval.last = first - 1;
 				} else { /* e->interval.last > last && e->interval.first < first */
 					int org = e->interval.last;
-					struct bind orgmap = e->map;
+					void *orgmap = e->map;
 					e->interval.last = first - 1;
 					p = &e->next;
 					*p = mkinterval(*p, first, last, map);
@@ -108,7 +100,7 @@ struct interval_list *interval_add(struct interval_list *interval_list, int firs
 
 /* Add a list of intervals (typically representing a character class) to an interval list */
 
-struct interval_list *interval_set(struct interval_list *interval_list, struct interval *list, int size, struct bind map)
+struct interval_list *interval_set(struct interval_list *interval_list, struct interval *list, int size, void *map)
 {
 	int x;
 	for (x = 0; x != size; ++x)
@@ -116,19 +108,19 @@ struct interval_list *interval_set(struct interval_list *interval_list, struct i
 	return interval_list;
 }
 
-struct bind interval_lookup(struct interval_list *list, int item)
+void *interval_lookup(struct interval_list *list, void *dflt, int item)
 {
 	while (list) {
 		if (item >= list->interval.first && item <= list->interval.last)
 			return list->map;
 		list = list->next;
 	}
-	return mkbinding(NULL, 0);
+	return dflt;
 }
 
 /* Build a cmap from an interval list */
 
-void cmap_build(struct cmap *cmap, struct interval_list *list, struct bind dflt_map)
+void cmap_build(struct cmap *cmap, struct interval_list *list, void *dflt_map)
 {
 	struct interval_list *l;
 	int x;
@@ -180,7 +172,7 @@ void clr_cmap(struct cmap *cmap)
 
 /* Lookup a character in a cmap, return its assigned mapping */
 
-struct bind cmap_lookup(struct cmap *cmap, int ch)
+void *cmap_lookup(struct cmap *cmap, int ch)
 {
 	if (ch < 128)
 		return cmap->direct_map[ch];
@@ -202,6 +194,45 @@ struct bind cmap_lookup(struct cmap *cmap, int ch)
 	}
 	no_match:
 	return cmap->dflt_map;
+}
+
+static int itest(const void *ia, const void *ib)
+{
+	struct interval *a = (struct interval *)ia;
+	struct interval *b = (struct interval *)ib;
+	if (a->first > b->first)
+		return 1;
+	else if (a->first < b->first)
+		return -1;
+	else
+		return 0;
+}
+
+void interval_sort(struct interval *array, ptrdiff_t num)
+{
+	jsort(array, num, SIZEOF(struct interval), itest);
+}
+
+int interval_test(struct interval *array, ptrdiff_t size, int ch)
+{
+	if (size) {
+		ptrdiff_t min = 0;
+		ptrdiff_t mid;
+		ptrdiff_t max = size - 1;
+		if (ch < array[min].first || ch > array[max].last)
+			goto no_match;
+		while (max >= min) {
+			mid = (min + max) / 2;
+			if (ch > array[mid].last)
+				min = mid + 1;
+			else if (ch < array[mid].first)
+				max = mid - 1;
+			else
+				return mid;
+		}
+	}
+	no_match:
+	return -1;
 }
 
 #ifdef junk
@@ -230,15 +261,253 @@ int main(int argc, char *argv)
 	while (gets(buf)) {
 		if (buf[0] == 'a') {
 			int first, last;
-			char buf1[100];
-			sscanf(buf + 1," %d %d %s",&first,&last,buf1);
-			printf("a %d %d %s\n", first, last, buf1);
-			list = interval_add(list, first, last, mkbind(find(buf1), 0));
+			int map;
+			sscanf(buf + 1," %d %d %d",&first,&last,&map);
+			printf("a %d %d %d\n", first, last, map);
+			list = interval_add(list, first, last, map);
 		} else if (buf[0] == 's') {
 			struct interval_list *l;
 			for (l = list; l; l = l->next)
-				printf("%d %d %s\n",l->interval.first,l->interval.last,l->map.thing);
+				printf("%d %d %d\n",l->interval.first,l->interval.last,l->map);
 		}
 	}
 }
 #endif
+
+void *rtree_lookup(struct Rtree *r, int ch)
+{
+	int a = (0x3f & (ch >> 14));
+	int b = (0x1f & (ch >> 9));
+	int c = (0x1f & (ch >> 4));
+	int d = (0x0f & (ch >> 0));
+	if (a || b) { /* Full lookup for character >= 512 */
+		int idx = r->top.entry[a];
+		if (idx != -1) {
+			idx = r->second.table.b[idx].entry[b];
+			if (idx != -1) {
+				idx = r->third.table.c[idx].entry[c];
+				if (idx != -1)
+					return r->leaf.table.d[idx].entry[d];
+			}
+		}
+	} else { /* Quick lookup for character < 512 */
+		int idx = r->mid.entry[c];
+		if (idx != -1)
+			return r->leaf.table.d[idx].entry[d];
+	}
+	return NULL;
+}
+
+void rtree_init(struct Rtree *r)
+{
+	int x;
+	for (x = 0; x != 64; ++x)
+		r->top.entry[x] = -1;
+
+	r->second.alloc = 0;
+	r->second.size = 1;
+	r->second.table.b = (struct Mid *)joe_malloc(r->second.size * SIZEOF(struct Mid));
+
+	r->third.alloc = 0;
+	r->third.size = 1;
+	r->third.table.c = (struct Mid *)joe_malloc(r->third.size * SIZEOF(struct Mid));
+
+	r->leaf.alloc = 0;
+	r->leaf.size = 1;
+	r->leaf.table.d = (struct Leaf *)joe_malloc(r->leaf.size * SIZEOF(struct Leaf));
+}
+
+void rtree_clr(struct Rtree *r)
+{
+	joe_free(r->second.table.b);
+	joe_free(r->third.table.c);
+	joe_free(r->leaf.table.d);
+}
+
+int rtree_alloc(struct Level *l, int levelno)
+{
+	int x;
+	if (l->alloc == l->size) {
+		l->size *= 2;
+		switch (levelno) {
+			case 1: {
+				l->table.b = (struct Mid *)joe_realloc(l->table.b, l->size * SIZEOF(struct Mid));
+				break;
+			} case 2: {
+				l->table.c = (struct Mid *)joe_realloc(l->table.c, l->size * SIZEOF(struct Mid));
+				break;
+			} case 3: {
+				l->table.d = (struct Leaf *)joe_realloc(l->table.d, l->size * SIZEOF(struct Leaf));
+				break;
+			}
+		}
+	}
+	switch (levelno) {
+		case 1: {
+			for (x = 0; x != 32; ++x)
+				l->table.b[l->alloc].entry[x] = -1;
+			break;
+		} case 2: {
+			for (x = 0; x != 32; ++x)
+				l->table.c[l->alloc].entry[x] = -1;
+			break;
+		} case 3: {
+			for (x = 0; x != 16; ++x)
+				l->table.d[l->alloc].entry[x] = NULL;
+			break;
+		}
+	}
+	return l->alloc++;
+}
+
+void rtree_add(struct Rtree *r, int ch, void *map)
+{
+	int a = (0x3f & (ch >> 14));
+	int b = (0x1f & (ch >> 9));
+	int c = (0x1f & (ch >> 4));
+	int d = (0x0f & (ch >> 0));
+
+	int ia;
+	int ib;
+	int ic;
+	int id;
+
+	ib = r->top.entry[a];
+	if (ib == -1) {
+		r->top.entry[a] = ib = rtree_alloc(&r->second, 1);
+	}
+
+	ic = r->second.table.b[ib].entry[b];
+	if (ic == -1) {
+		r->second.table.b[ib].entry[b] = ic = rtree_alloc(&r->third, 2);
+	}
+
+	id = r->third.table.c[ic].entry[c];
+	if (id == -1) {
+		r->third.table.c[ic].entry[c] = id = rtree_alloc(&r->leaf, 3);
+	}
+
+	r->leaf.table.d[id].entry[d] = map;
+}
+
+/* Optimize radix tree: de-duplicate leaf nodes and setup mid */
+
+struct rhentry {
+	struct rhentry *next;
+	struct Leaf *leaf;
+	int idx;
+};
+
+ptrdiff_t rhhash(struct Leaf *l)
+{
+	ptrdiff_t hval = 0;
+	int x;
+	for (x = 0; x != 16; ++x)
+		hval = (hval << 4) + (hval >> 28) + (ptrdiff_t)l->entry[x];
+	return hval;
+		
+}
+
+void rtree_opt(struct Rtree *r)
+{
+	int idx;
+	int x;
+	int rhsize;
+	struct rhentry **rhtable;
+	int *equiv;
+	int *repl;
+	int dupcount;
+	int newalloc;
+	struct Leaf *l;
+
+	/* De-duplicate leaf nodes (it's not worth bothering with interior nodes) */
+
+	equiv = joe_malloc(SIZEOF(int) * r->leaf.alloc);
+	repl = joe_malloc(SIZEOF(int) * r->leaf.alloc);
+
+	/* Create hash table index of all the leaf nodes */
+	dupcount = 0;
+	rhsize = 1024;
+	rhtable = joe_calloc(SIZEOF(struct rhentry *), rhsize);
+	for (x = 0; x != r->leaf.alloc; ++x) {
+		struct rhentry *rh;
+		idx = ((rhsize - 1) & rhhash(r->leaf.table.d + x));
+		/* Already exists? */
+		for (rh = rhtable[idx]; rh; rh = rh->next)
+			if (!memcmp(rh->leaf, r->leaf.table.d + x, SIZEOF(struct Leaf)))
+				break;
+		if (rh) {
+			equiv[x] = rh->idx;
+			++dupcount;
+		} else {
+			equiv[x] = -1;
+			rh = (struct rhentry *)joe_malloc(SIZEOF(struct rhentry));
+			rh->next = rhtable[idx];
+			rh->idx = x;
+			rh->leaf = r->leaf.table.d + x;
+			rhtable[idx] = rh;
+		}
+	}
+	/* Free hash table */
+	for (x = 0; x != 1024; ++x) {
+		struct rhentry *rh, *nh;
+		for (rh = rhtable[x]; rh; rh = nh) {
+			nh = rh->next;
+			joe_free(rh);
+		}
+	}
+	joe_free(rhtable);
+
+	/* Create new leaf table */
+	newalloc = r->leaf.alloc - dupcount;
+	l = joe_malloc(SIZEOF(struct Leaf) * newalloc);
+
+	/* Copy entries */
+	idx = 0;
+	for (x = 0; x != r->leaf.alloc; ++x)
+		if (equiv[x] == -1) {
+			mcpy(l + idx, r->leaf.table.d + x, sizeof(struct Leaf));
+			repl[x] = idx;
+			++idx;
+		}
+	for (x = 0; x != r->leaf.alloc; ++x)
+		if (equiv[x] != -1) {
+			repl[x] = repl[equiv[x]];
+		}
+
+	/* Install new table */
+	joe_free(r->leaf.table.d);
+	r->leaf.table.d = l;
+	r->leaf.alloc = newalloc;
+	r->leaf.size = newalloc;
+
+	/* Remap third level */
+	for (x = 0; x != r->third.alloc; ++x)
+		for (idx = 0; idx != 32; ++idx)
+			if (r->third.table.c[x].entry[idx] != -1)
+				r->third.table.c[x].entry[idx] = repl[r->third.table.c[x].entry[idx]];
+
+	joe_free(equiv);
+	joe_free(repl);
+
+	/* Set up mid table */
+	for (x = 0; x != 32; ++x)
+		r->mid.entry[x] = -1;
+	idx = r->top.entry[0];
+	if (idx != -1) {
+		idx = r->second.table.b[idx].entry[0];
+		if (idx != -1) {
+			mcpy(r->mid.entry, r->third.table.c[idx].entry, 32 * SIZEOF(short));
+		}
+	}
+}
+
+void rtree_set(struct Rtree *r, struct interval *array, int size, void *map)
+{
+	int y;
+	for (y = 0; y != size; ++y) {
+		int x;
+		for (x = array[y].first; x <= array[y].last; ++x)
+			rtree_add(r, x, map);
+	}
+}

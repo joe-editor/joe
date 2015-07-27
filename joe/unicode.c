@@ -74,6 +74,10 @@ static struct unicat *derived;
 
 struct unicat *unicatlookup(const char *cat)
 {
+	struct interval_list *l = 0;
+	struct cmap cmap;
+	time_t ti;
+
 	struct unicat *der;
 	ptrdiff_t x, y, z, a;
 	ptrdiff_t size;
@@ -106,16 +110,49 @@ struct unicat *unicatlookup(const char *cat)
 			mcpy(der->table + y, unicat[x].table, sizeof(struct interval) * unicat[x].size);
 			y += unicat[x].size;
 		}
+	interval_sort(der->table, der->size);
 
-/*
+#if 0
+	for (x = 0; x != der->size; ++x)
+		printf("\r\n%d %d\r\n", der->table[x].first, der->table[x].last);
+
+	sleep(10);
+#endif
+
+#if 0
+	l = interval_set(l, der->table, der->size, (void *)1);
+	cmap_build(&cmap, l, NULL);
+	ti = time(0);
+	y = 0;
+	for (x = 0; x != 1000000000; ++x) {
+		y += (ptrdiff_t)cmap_lookup(&cmap, 0xA0);
+	}
+	ti = time(0) - ti;
+	printf("%d %d\n", ti, y);
+#endif
+
+#if 0
 	r = mkrtree();
 	for (x = 0; x != der->size; ++x)
 		for (y = der->table[x].first; y <= der->table[x].last; ++y)
-			rtree_add(r, y, -2);
+			rtree_add(r, y, 1);
 	printf("\r\n\n%s: %d\r\n\n", cat, der->size);
 	rtree_show(r);
+
+//	rtree_opt(r);
+
+	ti = time(0);
+	y = 0;
+	for (x = 0; x != 1000000000; ++x) {
+		y += rtree_find_unopt(r, 0xA0);
+	}
+	ti = time(0) - ti;
+	printf("%d %d\n", ti, y);
+	
+
 	sleep(15);
-*/
+#endif
+
 	return der;
 }
 
@@ -126,9 +163,10 @@ int unicatcheck(struct unicat *cat, int ch)
 		return 0;
 	if (ch < 0)
 		ch += 256;
-	for (x = 0; x != cat->size; ++x)
-		if (ch >= cat->table[x].first && ch <= cat->table[x].last)
-			return 1;
+	return interval_test(cat->table, cat->size, ch) != -1;
+//	for (x = 0; x != cat->size; ++x)
+//		if (ch >= cat->table[x].first && ch <= cat->table[x].last)
+//			return 1;
 	return 0;
 }
 

@@ -8,9 +8,10 @@
 
 /* A map of keycode to command/sub-map bindings */
 struct kmap {
+	ptrdiff_t what;		/* 1 for kmap, 0 for macro */
 	struct cmap cmap;	/* Character map: (optimized version of src) */
 	struct interval_list *src;	/* Interval list which is source of cmap */
-	struct bind dflt;		/* Default binding which is source of cmap */
+	void *dflt;		/* Default binding which is source of cmap */
 	int cmap_version;	/* When cmap_version != src_version, we update cmap */
 	int src_version;	/* Increment this whenever src is changed */
 };

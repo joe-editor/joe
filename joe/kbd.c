@@ -33,7 +33,7 @@ void rmkbd(KBD *k)
 
 MACRO *dokey(KBD *kbd, int n)
 {
-	struct bind bind;
+	KMAP *bind;
 
 	/* If we were passed a negative character */
 	if (n < 0)
@@ -48,17 +48,17 @@ MACRO *dokey(KBD *kbd, int n)
 		cmap_build(&kbd->curmap->cmap, kbd->curmap->src, kbd->curmap->dflt);
 		kbd->curmap->cmap_version = kbd->curmap->src_version;
 	}
-	bind = cmap_lookup(&kbd->curmap->cmap, n);
-	if (bind.what == 1) {	/* A prefix key was found */
+	bind = (KMAP *)cmap_lookup(&kbd->curmap->cmap, n);
+	if (bind->what == 1) {	/* A prefix key was found */
 		kbd->seq[kbd->x++] = n;
-		kbd->curmap = (KMAP *)bind.thing;
-		bind.thing = 0;
+		kbd->curmap = bind;
+		bind = 0;
 	} else {	/* A complete sequence was found */
 		kbd->x = 0;
 		kbd->curmap = kbd->topmap;
 	}
 
-	return (MACRO *)bind.thing;
+	return (MACRO *)bind;
 }
 
 /* Return key code for key name or -1 for syntax error */
@@ -112,7 +112,7 @@ static int keyval(char *s)
 KMAP *mkkmap(void)
 {
 	KMAP *kmap = (KMAP *) joe_calloc(SIZEOF(KMAP), 1);
-
+	kmap->what = 1;
 	return kmap;
 }
 
@@ -125,13 +125,13 @@ void rmkmap(KMAP *kmap)
 		return;
 	for (l = kmap->src; l; l = n) {
 		n = l->next;
-		if (l->map.what == 1) {
-			rmkmap((KMAP *)l->map.thing);
+		if (((KMAP *)l->map)->what == 1) {
+			rmkmap((KMAP *)l->map);
 		}
 		joe_free(l);
 	}
-	if (kmap->dflt.what == 1)
-		rmkmap((KMAP *)kmap->dflt.thing);
+	if (kmap->dflt && ((KMAP *)kmap->dflt)->what == 1)
+		rmkmap((KMAP *)kmap->dflt);
 	clr_cmap(&kmap->cmap);
 	joe_free(kmap);
 }
@@ -288,14 +288,14 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, MACRO *bind, int *err, cons
 	/* Make bindings between v and w */
 	if (v <= w) {
 		if (*seq || seql) {
-			struct bind old = interval_lookup(kmap->src, v);
-			if (!old.thing || !old.what) {
-				kmap->src = interval_add(kmap->src, v, w, mkbinding(kbuild(cap, NULL, seq, bind, err, capseq, seql), 1));
+			KMAP *old = (KMAP *)interval_lookup(kmap->src, NULL, v);
+			if (!old || !old->what) {
+				kmap->src = interval_add(kmap->src, v, w, kbuild(cap, NULL, seq, bind, err, capseq, seql));
 				++kmap->src_version;
 			} else
-				kbuild(cap, (KMAP *)old.thing, seq, bind, err, capseq, seql);
+				kbuild(cap, old, seq, bind, err, capseq, seql);
 		} else {
-			kmap->src = interval_add(kmap->src, v, w, mkbinding(bind, 0));
+			kmap->src = interval_add(kmap->src, v, w, bind);
 			++kmap->src_version;
 		}
 	}
@@ -314,10 +314,10 @@ void kcpy(KMAP *dest, KMAP *src)
 {
 	struct interval_list *l;
 	for (l = src->src; l; l = l->next) {
-		if (l->map.what == 1) {
+		if (((KMAP *)l->map)->what == 1) {
 			KMAP *k = mkkmap();
-			kcpy(k, (KMAP *)l->map.thing);
-			dest->src = interval_add(dest->src, l->interval.first, l->interval.last, mkbinding(k, 1));
+			kcpy(k, (KMAP *)l->map);
+			dest->src = interval_add(dest->src, l->interval.first, l->interval.last, k);
 			++dest->src_version;
 		} else {
 			dest->src = interval_add(dest->src, l->interval.first, l->interval.last, l->map);
@@ -340,16 +340,16 @@ int kdel(KMAP *kmap, char *seq)
 	/* Clear bindings between v and w */
 	if (v <= w) {
 		if (*seq) {
-			struct bind old = interval_lookup(kmap->src, v);
-			if (old.what == 1) {
-				kdel((KMAP *)old.thing, seq);
+			KMAP *old = (KMAP *)interval_lookup(kmap->src, NULL, v);
+			if (old->what == 1) {
+				kdel(old, seq);
 			} else {
-				kmap->src = interval_add(kmap->src, v, w, mkbinding(NULL, 0));
+				kmap->src = interval_add(kmap->src, v, w, NULL);
 				++kmap->src_version;
 				
 			}
 		} else {
-			kmap->src = interval_add(kmap->src, v, w, mkbinding(NULL, 0));
+			kmap->src = interval_add(kmap->src, v, w, NULL);
 			++kmap->src_version;
 		}
 	}
@@ -393,7 +393,7 @@ KMAP *ngetcontext(const char *name)
 
 int kmap_empty(KMAP *k)
 {
-	return k->src == NULL && k->dflt.thing == NULL;
+	return k->src == NULL && k->dflt == NULL;
 }
 
 /* JM */

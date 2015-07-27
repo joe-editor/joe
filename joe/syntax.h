@@ -20,9 +20,7 @@ struct high_state {
 	ptrdiff_t no;			/* State number */
 	const char *name;			/* Highlight state name */
 	int color;			/* Color for this state */
-	/* struct high_cmd *cmd[256]; */	/* Character table */
-	struct cmap cmap;		/* Character map (character -> struct high_cmd *) */
-	struct interval_list *src;	/* Source for character map */
+	struct Rtree rtree;		/* Character map (character ->struct high_cmd *) */
 	struct high_cmd *dflt;		/* Default for no match */
 	struct high_cmd *delim;		/* Matching delimiter */
 };

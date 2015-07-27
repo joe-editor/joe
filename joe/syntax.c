@@ -222,8 +222,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			if (h->delim && c == h_state.saved_s[0] && h_state.saved_s[1] == 0)
 				cmd = h->delim;
 			else {
-				struct bind b = cmap_lookup(&h->cmap, c);
-				cmd = (struct high_cmd *)b.thing;
+				cmd = (struct high_cmd *)rtree_lookup(&h->rtree, c);
+				if (!cmd)
+					cmd = h->dflt;
 			}
 
 			/* Lowerize strings for case-insensitive matching */
@@ -383,7 +384,7 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 		if(syntax->nstates==syntax->szstates)
 			syntax->states=(struct high_state **)joe_realloc(syntax->states,SIZEOF(struct high_state *)*(syntax->szstates*=2));
 		syntax->states[syntax->nstates++]=state;
-		state->src = 0;
+		rtree_init(&state->rtree);
 		state->dflt = &syntax->default_cmd;
 		state->delim = 0;
 		htadd(syntax->ht_states, state->name, state);
@@ -401,7 +402,7 @@ static void build_cmaps(struct high_syntax *syntax)
 		HENTRY *p;
 		for (p = syntax->ht_states->tab[x]; p; p = p->next) {
 			struct high_state *st = (struct high_state *)p->val;
-			cmap_build(&st->cmap, st->src, mkbinding(st->dflt, 0));
+			rtree_opt(&st->rtree);
 		}
 	}
 }
@@ -520,12 +521,12 @@ void dump_syntax(BW *bw)
 			joe_snprintf_2(buf, SIZEOF(buf), "   state %s %x\n",s->name,s->color);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
-			for (l = s->src; l; l = l->next) {
-				struct high_cmd *h = (struct high_cmd *)l->map.thing;
-				joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",l->interval.first,l->interval.last,(h->new_state ? h->new_state->name : "ERROR! Unknown state!"),(int)h->recolor);
-				binss(bw->cursor, buf);
-				pnextl(bw->cursor);
-			}
+//			for (l = s->src; l; l = l->next) {
+//				struct high_cmd *h = (struct high_cmd *)l->map;
+//				joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",l->interval.first,l->interval.last,(h->new_state ? h->new_state->name : "ERROR! Unknown state!"),(int)h->recolor);
+//				binss(bw->cursor, buf);
+//				pnextl(bw->cursor);
+//			}
 			joe_snprintf_2(buf, SIZEOF(buf), "     default -> %s %d\n",(s->dflt->new_state ? s->dflt->new_state->name : "ERROR! Unknown state!"),(int)s->dflt->recolor);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
@@ -861,10 +862,9 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 					} else {
 						struct interval *array;
 						int size;
-						struct bind bi = mkbinding(cmd, 0);
 						++p;
 						while(*p != '"' && !parse_class(&p, &array, &size)) {
-							state->src = interval_set(state->src, array, size, bi);
+							rtree_set(&state->rtree, array, size, cmd);
 						}
 						if (*p != '"')
 							logerror_2(joe_gettext(_("%s %d: Bad string\n")),name,line);

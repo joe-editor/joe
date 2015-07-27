@@ -9,6 +9,7 @@
 /* A macro or macro step */
 
 struct macro {
+	ptrdiff_t what;		/* 1 for kmap, 0 for macro */
 	int k; /* Keycode */
 	int flg; /* Flags: bit 0: this step wants the negative arg,
 	                   bit 1: ignore return value of this step, but use it as return value of macro */

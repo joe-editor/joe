@@ -32,6 +32,7 @@ MACRO *mkmacro(int k, int flg, ptrdiff_t n, CMD *cmd)
 	macro->n = n;
 	macro->cmd = cmd;
 	macro->k = k;
+	macro->what = 0;
 	return macro;
 }
 

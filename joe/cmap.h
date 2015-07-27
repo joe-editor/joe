@@ -14,57 +14,97 @@ struct interval {
 	int last;
 };
 
-/* Something bound to a character */
+/* Sort an interval array */
+void interval_sort(struct interval *array, ptrdiff_t size);
 
-struct bind {
-	void *thing;	/* Address of thing */
-	int what;	/* What is it? (we could use LSBs for thing for this, but not portable) */
-};
+/* Test if character is in a sorted interval array using binary search */
+int interval_test(struct interval *array, ptrdiff_t size, int ch);
+
 
 /* An interval list item (for lists of interval to bind mappings) */
 
 struct interval_list {
 	struct interval_list *next; /* Next item in list */
 	struct interval interval; /* Range of characters */
-	struct bind map; /* What it's bound to */
+	void *map;
 };
 
-/* An interval map item (for arrays of interval to bind mappings) */
+struct interval_list *mkinterval(struct interval_list *next, int first, int last, void *map);
+
+void rminterval(struct interval_list *item);
+
+/* Add a single interval to an interval list */
+struct interval_list *interval_add(struct interval_list *interval_list, int first, int last, void *map);
+
+/* Add set of intervals (a character class) to an interval list */
+struct interval_list *interval_set(struct interval_list *list, struct interval *array, int size, void *map);
+
+/* Look up single character in an interval list, return what it's mapped to */
+void *interval_lookup(struct interval_list *list, void *dflt, int ch);
+
+
+/* An interval map item */
 
 struct interval_map {
-	struct interval interval; /* Range of characters */
-	struct bind map; /* What it's bound to */
+	struct interval interval;
+	void *map;
 };
 
 /* A character map */
 
 struct cmap {
-	struct bind direct_map[128];	/* Direct mapping for ASCII range */
+	void *direct_map[128];		/* Direct mapping for ASCII range */
 	ptrdiff_t size;			/* No. items in range_map */
 	struct interval_map *range_map;	/* Sorted range map */
-	struct bind dflt_map;		/* Matches when none of the above do */
+	void *dflt_map;
 };
 
-struct bind mkbinding(void *thing, int what);
-
-struct interval_list *mkinterval(struct interval_list *next, int first, int last, struct bind map);
-
-void rminterval(struct interval_list *item);
-
-/* Add a single interval to an interval list */
-struct interval_list *interval_add(struct interval_list *interval_list, int first, int last, struct bind map);
-
-/* Add set of intervals (a character class) to an interval list */
-struct interval_list *interval_set(struct interval_list *list, struct interval *array, int size, struct bind map);
-
-/* Look up single character in an interval list, return what it's mapped to */
-struct bind interval_lookup(struct interval_list *list, int item);
-
 /* Build character map from interval list */
-void cmap_build(struct cmap *cmap, struct interval_list *list, struct bind map);
+void cmap_build(struct cmap *cmap, struct interval_list *list, void *dflt_map);
 
 /* Clear a cmap */
 void clr_cmap(struct cmap *cmap);
 
 /* Look up single character in a character map, return what it's mapped to */
-struct bind cmap_lookup(struct cmap *cmap, int ch);
+void *cmap_lookup(struct cmap *cmap, int ch);
+
+
+/* A radix tree */
+
+struct First {
+	short entry[64];
+};
+
+struct Mid {
+	short entry[32];
+};
+
+struct Leaf {
+	void *entry[16];
+};
+
+struct Level {
+	int alloc;
+	int size;
+	union {
+		struct Mid *b;
+		struct Mid *c;
+		struct Leaf *d;
+	} table;
+};
+
+struct Rtree {
+	struct First top;
+	struct Level second;
+	struct Mid mid;
+	struct Level third;
+	struct Level leaf;
+};
+
+void rtree_init(struct Rtree *r);
+void rtree_clr(struct Rtree *r);
+void *rtree_lookup(struct Rtree *r, int ch);
+void rtree_add(struct Rtree *r, int ch, void *map);
+void rtree_opt(struct Rtree *r);
+
+void rtree_set(struct Rtree *r, struct interval *array, int size, void *map);

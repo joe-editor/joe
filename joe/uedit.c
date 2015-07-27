@@ -1781,6 +1781,7 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 	/* Character map of buffer */
 	struct charmap *map = bw->b->o.charmap;
 
+
 	/* Send data to shell window */
 	if ((bw->b->pid && !bw->b->vt && piseof(bw->cursor)) ||
 	   ( bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)) {
@@ -1789,8 +1790,10 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 	   		ptrdiff_t len = utf8_encode(buf, k);
 	   		joe_write(bw->b->out, buf, len);
 	   	} else {
-	   		if (!no_decode)
+	   		if (!no_decode) {
 		   		k = from_uni(locale_map, k);
+				printf("\n[%d]\n", k); fflush(stdout);
+			}
 	   		if (k != -1) {
 	   			char c = TO_CHAR_OK(k);
 	   			joe_write(bw->b->out, &c, 1);

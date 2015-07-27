@@ -43,10 +43,11 @@ int pset_find(struct Pset *h, unsigned key);
 
 void pset_add(struct Pset *h, unsigned key);
 
+#if 0
 /* Radix tree */
 
 struct Rtree_entry_unopt {
-	int data[32];
+	int data[64];
 	int equiv; /* Which one this is equivalent to */
 	int repl; /* Which one we are replacing it with */
 };
@@ -58,7 +59,7 @@ struct Rtree_level_unopt {
 };
 
 struct Rtree_entry {
-	short data[32];
+	short data[64];
 };
 
 struct Rtree {
@@ -75,8 +76,10 @@ void rtree_show(struct Rtree *r);
 
 void rmrtree(struct Rtree *r);
 
+int rtree_find_unopt(struct Rtree *r, int key);
 int rtree_find(struct Rtree *r, int key);
 
 void rtree_add(struct Rtree *r, int key, short data);
 
 void rtree_opt(struct Rtree *r);
+#endif
