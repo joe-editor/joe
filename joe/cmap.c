@@ -274,12 +274,30 @@ int main(int argc, char *argv)
 }
 #endif
 
+#define LEAFSIZE 16
+#define LEAFMASK 0xF
+#define LEAFSHIFT 0
+
+#define THIRDSIZE 32
+#define THIRDMASK 0x1f
+#define THIRDSHIFT 4
+
+#define SECONDSIZE 32
+#define SECONDMASK 0x1f
+#define SECONDSHIFT 9
+
+#define TOPSIZE 68
+#define TOPMASK 0x7f
+#define TOPSHIFT 14
+
 void *rtree_lookup(struct Rtree *r, int ch)
 {
-	int a = (0x3f & (ch >> 14));
-	int b = (0x1f & (ch >> 9));
-	int c = (0x1f & (ch >> 4));
-	int d = (0x0f & (ch >> 0));
+	int a = (TOPMASK & (ch >> TOPSHIFT));
+	int b = (SECONDMASK & (ch >> SECONDSHIFT));
+	int c = (THIRDMASK & (ch >> THIRDSHIFT));
+	int d = (LEAFMASK & (ch >> LEAFSHIFT));
+	if (a >= TOPSIZE)
+		return NULL;
 	if (a || b) { /* Full lookup for character >= 512 */
 		int idx = r->top.entry[a];
 		if (idx != -1) {
@@ -301,7 +319,7 @@ void *rtree_lookup(struct Rtree *r, int ch)
 void rtree_init(struct Rtree *r)
 {
 	int x;
-	for (x = 0; x != 64; ++x)
+	for (x = 0; x != TOPSIZE; ++x)
 		r->top.entry[x] = -1;
 
 	r->second.alloc = 0;
@@ -344,15 +362,15 @@ int rtree_alloc(struct Level *l, int levelno)
 	}
 	switch (levelno) {
 		case 1: {
-			for (x = 0; x != 32; ++x)
+			for (x = 0; x != SECONDSIZE; ++x)
 				l->table.b[l->alloc].entry[x] = -1;
 			break;
 		} case 2: {
-			for (x = 0; x != 32; ++x)
+			for (x = 0; x != THIRDSIZE; ++x)
 				l->table.c[l->alloc].entry[x] = -1;
 			break;
 		} case 3: {
-			for (x = 0; x != 16; ++x)
+			for (x = 0; x != LEAFSIZE; ++x)
 				l->table.d[l->alloc].entry[x] = NULL;
 			break;
 		}
@@ -362,15 +380,18 @@ int rtree_alloc(struct Level *l, int levelno)
 
 void rtree_add(struct Rtree *r, int ch, void *map)
 {
-	int a = (0x3f & (ch >> 14));
-	int b = (0x1f & (ch >> 9));
-	int c = (0x1f & (ch >> 4));
-	int d = (0x0f & (ch >> 0));
+	int a = (TOPMASK & (ch >> TOPSHIFT));
+	int b = (THIRDMASK & (ch >> SECONDSHIFT));
+	int c = (SECONDMASK & (ch >> THIRDSHIFT));
+	int d = (LEAFMASK & (ch >> LEAFSHIFT));
 
 	int ia;
 	int ib;
 	int ic;
 	int id;
+
+	if (a >= TOPSIZE)
+		return;
 
 	ib = r->top.entry[a];
 	if (ib == -1) {
@@ -402,7 +423,7 @@ ptrdiff_t rhhash(struct Leaf *l)
 {
 	ptrdiff_t hval = 0;
 	int x;
-	for (x = 0; x != 16; ++x)
+	for (x = 0; x != LEAFSIZE; ++x)
 		hval = (hval << 4) + (hval >> 28) + (ptrdiff_t)l->entry[x];
 	return hval;
 		
@@ -483,7 +504,7 @@ void rtree_opt(struct Rtree *r)
 
 	/* Remap third level */
 	for (x = 0; x != r->third.alloc; ++x)
-		for (idx = 0; idx != 32; ++idx)
+		for (idx = 0; idx != THIRDSIZE; ++idx)
 			if (r->third.table.c[x].entry[idx] != -1)
 				r->third.table.c[x].entry[idx] = repl[r->third.table.c[x].entry[idx]];
 
@@ -491,13 +512,13 @@ void rtree_opt(struct Rtree *r)
 	joe_free(repl);
 
 	/* Set up mid table */
-	for (x = 0; x != 32; ++x)
+	for (x = 0; x != THIRDSIZE; ++x)
 		r->mid.entry[x] = -1;
 	idx = r->top.entry[0];
 	if (idx != -1) {
 		idx = r->second.table.b[idx].entry[0];
 		if (idx != -1) {
-			mcpy(r->mid.entry, r->third.table.c[idx].entry, 32 * SIZEOF(short));
+			mcpy(r->mid.entry, r->third.table.c[idx].entry, SIZEOF(r->mid.entry));
 		}
 	}
 }

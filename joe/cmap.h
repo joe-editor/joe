@@ -72,7 +72,7 @@ void *cmap_lookup(struct cmap *cmap, int ch);
 /* A radix tree */
 
 struct First {
-	short entry[64];
+	short entry[68];
 };
 
 struct Mid {
