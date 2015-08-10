@@ -196,45 +196,6 @@ void *cmap_lookup(struct cmap *cmap, int ch)
 	return cmap->dflt_map;
 }
 
-static int itest(const void *ia, const void *ib)
-{
-	struct interval *a = (struct interval *)ia;
-	struct interval *b = (struct interval *)ib;
-	if (a->first > b->first)
-		return 1;
-	else if (a->first < b->first)
-		return -1;
-	else
-		return 0;
-}
-
-void interval_sort(struct interval *array, ptrdiff_t num)
-{
-	jsort(array, num, SIZEOF(struct interval), itest);
-}
-
-int interval_test(struct interval *array, ptrdiff_t size, int ch)
-{
-	if (size) {
-		ptrdiff_t min = 0;
-		ptrdiff_t mid;
-		ptrdiff_t max = size - 1;
-		if (ch < array[min].first || ch > array[max].last)
-			goto no_match;
-		while (max >= min) {
-			mid = (min + max) / 2;
-			if (ch > array[mid].last)
-				min = mid + 1;
-			else if (ch < array[mid].first)
-				max = mid - 1;
-			else
-				return mid;
-		}
-	}
-	no_match:
-	return -1;
-}
-
 #ifdef junk
 struct slist {
 	struct slist *next;
@@ -274,6 +235,8 @@ int main(int argc, char *argv)
 }
 #endif
 
+/* Radix tree maps */
+
 #define LEAFSIZE 16
 #define LEAFMASK 0xF
 #define LEAFSHIFT 0
@@ -312,6 +275,27 @@ void *rtree_lookup(struct Rtree *r, int ch)
 		int idx = r->mid.entry[c];
 		if (idx != -1)
 			return r->leaf.table.d[idx].entry[d];
+	}
+	return NULL;
+}
+
+void *rtree_lookup_unopt(struct Rtree *r, int ch)
+{
+	int a = (TOPMASK & (ch >> TOPSHIFT));
+	int b = (SECONDMASK & (ch >> SECONDSHIFT));
+	int c = (THIRDMASK & (ch >> THIRDSHIFT));
+	int d = (LEAFMASK & (ch >> LEAFSHIFT));
+	int idx;
+	if (a >= TOPSIZE)
+		return NULL;
+	idx = r->top.entry[a];
+	if (idx != -1) {
+		idx = r->second.table.b[idx].entry[b];
+		if (idx != -1) {
+			idx = r->third.table.c[idx].entry[c];
+			if (idx != -1)
+				return r->leaf.table.d[idx].entry[d];
+		}
 	}
 	return NULL;
 }

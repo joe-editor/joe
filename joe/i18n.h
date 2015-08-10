@@ -1,3 +1,4 @@
+#if 0
 int joe_iswupper(struct charmap *,int c);
 int joe_iswlower(struct charmap *,int c);
 
@@ -15,6 +16,7 @@ int joe_iswgraph(struct charmap *,int c);
 int joe_iswprint(struct charmap *,int c);
 int joe_iswxdigit(struct charmap *,int c);
 int joe_iswblank(struct charmap *,int c);
+#endif
 
 int joe_wcwidth(int wide,int c);
 /* Looking for wswidth? Take a look at scrn.c/txtwidth() */

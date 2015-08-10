@@ -2825,7 +2825,11 @@ struct interval Nd_table[] = {
 	{ 0x118e0, 0x118e9 },
 	{ 0x16a60, 0x16a69 },
 	{ 0x16b50, 0x16b59 },
-	{ 0x1d7ce, 0x1d7ff }
+	{ 0x1d7ce, 0x1d7d7 },
+	{ 0x1d7d8, 0x1d7e1 },
+	{ 0x1d7e2, 0x1d7eb },
+	{ 0x1d7ec, 0x1d7f5 },
+	{ 0x1d7f6, 0x1d7ff }
 };
 
 struct interval Pd_table[] = {
@@ -3278,7 +3282,7 @@ struct unicat unicat[] = {
 	{ "Pc", 6, Pc_table, 0 },
 	{ "Sk", 28, Sk_table, 0 },
 	{ "Lu", 622, Lu_table, 0 },
-	{ "Nd", 50, Nd_table, 0 },
+	{ "Nd", 54, Nd_table, 0 },
 	{ "Pd", 17, Pd_table, 0 },
 	{ "Sm", 64, Sm_table, 0 },
 	{ "Pe", 72, Pe_table, 0 },

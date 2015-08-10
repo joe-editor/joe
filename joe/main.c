@@ -295,6 +295,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 	int backopt;
 	int c;
 
+	joe_iswinit();
 	joe_locale();
 
 	mainenv = envv;

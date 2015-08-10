@@ -194,7 +194,9 @@ int unicat(char *name)
     char buf[1024];
     struct cat *cat;
     int low, high;
+    int diglow, dighigh;
     int line = 0;
+    int nd;
 
     /** Create table of categories from UnicodeData.txt **/
 
@@ -206,48 +208,91 @@ int unicat(char *name)
 
     /* First pass: find all category codes */
     while (fgets(buf, sizeof(buf), f)) {
-        int x, y;
+        int x, y, c;
         ++line;
-        for (x = 0; buf[x] && buf[x] != ';'; ++x); /* Skip to first ; */
-        if (buf[x] == ';') {
-            for (x = x + 1; buf[x] && buf[x] != ';'; ++x); /* Skip to second ; */
-            if (buf[x] == ';') {
-                ++x;
-                for (y = x; buf[y] && buf[y] != ';'; ++y); /* Skip to third ; */
-                buf[y] = 0;
-                addcat(buf + x);
-            }
-        }
+
+        TOFIRST;
+
+        /* Skip blank lines */
+        if (buf[x] == '\r' || buf[x] == '\n' || buf[x] == '#' || !buf[x])
+            continue;
+
+        TOEND1; /* First field: code point */
+
+        TONEXT;
+        TOEND1; /* Second field: name */
+        
+        TONEXT;
+        TOEND1; /* Third field: category */
+
+        if (buf[0]) addcat(buf + x);
     }
 
     /* Generate a table for each category */
     for (cat = cats; cat; cat = cat->next) if (cat->idx == -1) {
-        rewind(f);
+        rewind(f); line = 0;
         int count = 0;
         low = high = -2;
         printf("\n");
         printf("struct interval %s_table[] = {\n", cat->name);
+        nd = !strcmp(cat->name, "Nd"); /* Set for digit table */
         while (fgets(buf, sizeof(buf), f)) {
-            int x, y;
+            int x, y, c;
             int val;
-            sscanf(buf, "%x", &val);
-            for (x = 0; buf[x] && buf[x] != ';'; ++x); /* Skip to first ; */
-            if (buf[x] == ';') {
-                for (x = x + 1; buf[x] && buf[x] != ';'; ++x); /* Skip to second ; */
-                if (buf[x] == ';') {
-                    ++x;
-                    for (y = x; buf[y] && buf[y] != ';'; ++y); /* Skip to third ; */
-                    buf[y] = 0;
-                    if (!strcmp(buf + x, cat->name)) {
-                        if (val == high + 1) {
+
+            ++line;
+
+            TOFIRST;
+
+            /* Skip blank lines */
+            if (buf[x] == '\r' || buf[x] == '\n' || buf[x] == '#' || !buf[x])
+                continue;
+
+            TOEND1; /* First field: code point */
+            sscanf(buf + x, "%x", &val);
+
+            TONEXT;
+            TOEND1; /* Second field: name */
+            
+            TONEXT;
+            TOEND1; /* Third field: category */
+
+            if (!strcmp(buf + x, cat->name)) {
+                if (nd) { /* For digits: group them by 10 */
+                    int digval;
+                    TONEXT;
+                    TOEND1; /* Fourth field */ 
+                    TONEXT;
+                    TOEND1; /* Fifth field */ 
+                    TONEXT;
+                    TOEND1; /* Sixth field */ 
+                    TONEXT;
+                    TOEND1; /* Seventh field */ 
+                    TONEXT;
+                    TOEND1; /* Eighth field */ 
+                    if (buf[x] >= '0' && buf[x] <= '9') {
+                        digval = buf[x] - '0';
+                        if (val == high + 1 && digval == dighigh + 1) {
                             high = val;
+                            dighigh = digval;
                         } else {
                             if (low != -2) {
                                 ++count;
                                 printf("	{ 0x%x, 0x%x },\n", low, high);
                             }
                             low = high = val;
+                            diglow = dighigh = digval;
                         }
+                    }
+                } else {
+                    if (val == high + 1) {
+                        high = val;
+                    } else {
+                        if (low != -2) {
+                            ++count;
+                            printf("	{ 0x%x, 0x%x },\n", low, high);
+                        }
+                        low = high = val;
                     }
                 }
             }
@@ -271,6 +316,7 @@ int unicat(char *name)
     }
     printf("	{ 0, 0, 0, 0 }\n");
     printf("};\n");
+
     fclose(f);
     return 0;
 }

@@ -353,7 +353,7 @@ static struct interval data_wctype_upper[]=
 	{ 0x00010400, 0x00010425 }
 };
 
-MAKE_ISW(upper)
+// MAKE_ISW(upper)
 
 static struct interval data_wctype_lower[]=
 {
@@ -467,7 +467,7 @@ static struct interval data_wctype_lower[]=
 	{ 0x00010428, 0x0001044D }
 };
 
-MAKE_ISW(lower)
+// MAKE_ISW(lower)
 
 struct interval data_wctype_alpha[]=
 {
@@ -825,8 +825,9 @@ struct interval data_wctype_alpha[]=
 	{ 0x0002F800, 0x0002FA1D }
 };
 
-MAKE_ISW(alpha)
+// MAKE_ISW(alpha)
 
+/*
 int joe_iswalpha_(struct charmap *foo,int c)
 {
 	if (c==0x5F)
@@ -842,13 +843,14 @@ int joe_iswalnum_(struct charmap *foo,int c)
 	else
 		return joe_iswalpha(foo,c);
 }
+*/
 
 struct interval data_wctype_digit[]=
 {
 	{ 0x0030, 0x0039 }
 };
 
-MAKE_ISW(digit)
+// MAKE_ISW(digit)
 
 struct interval data_wctype_space[]=
 {
@@ -863,7 +865,7 @@ struct interval data_wctype_space[]=
 	{ 0x3000, 0x3000 }
 };
 
-MAKE_ISW(space)
+// MAKE_ISW(space)
 
 struct interval data_wctype_ctrl[]=
 {
@@ -873,7 +875,7 @@ struct interval data_wctype_ctrl[]=
 	{ 0x2029, 0x2029 }
 };
 
-MAKE_ISW(ctrl)
+// MAKE_ISW(ctrl)
 
 struct interval data_wctype_punct[]=
 {
@@ -1128,7 +1130,7 @@ struct interval data_wctype_punct[]=
 	{ 0x00100000, 0x0010FFFD }
 };
 
-MAKE_ISW(punct)
+// MAKE_ISW(punct)
 
 struct interval data_wctype_graph[]=
 {
@@ -1523,7 +1525,7 @@ struct interval data_wctype_graph[]=
 	{ 0x00100000, 0x0010FFFD }
 };
 
-MAKE_ISW(graph)
+// MAKE_ISW(graph)
 
 struct interval data_wctype_print[]=
 {
@@ -1917,7 +1919,7 @@ struct interval data_wctype_print[]=
 	{ 0x00100000, 0x0010FFFD }
 };
 
-MAKE_ISW(print)
+// MAKE_ISW(print)
 
 struct interval data_wctype_xdigit[]=
 {
@@ -1926,7 +1928,7 @@ struct interval data_wctype_xdigit[]=
 	{ 0x0061, 0x0066 }
 };
 
-MAKE_ISW(xdigit)
+// MAKE_ISW(xdigit)
 
 struct interval data_wctype_blank[]=
 {
@@ -1939,7 +1941,7 @@ struct interval data_wctype_blank[]=
 	{ 0x3000, 0x3000 }
 };
 
-MAKE_ISW(blank)
+// MAKE_ISW(blank)
 
 /* Conversion functions */
 

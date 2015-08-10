@@ -6,21 +6,6 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-/* An interval.  A character matches if it's in the range.
-   An array of these can be used to define a character class. */
-
-struct interval {
-	int first;
-	int last;
-};
-
-/* Sort an interval array */
-void interval_sort(struct interval *array, ptrdiff_t size);
-
-/* Test if character is in a sorted interval array using binary search */
-int interval_test(struct interval *array, ptrdiff_t size, int ch);
-
-
 /* An interval list item (for lists of interval to bind mappings) */
 
 struct interval_list {
@@ -68,30 +53,7 @@ void clr_cmap(struct cmap *cmap);
 /* Look up single character in a character map, return what it's mapped to */
 void *cmap_lookup(struct cmap *cmap, int ch);
 
-
-/* A radix tree */
-
-struct First {
-	short entry[68];
-};
-
-struct Mid {
-	short entry[32];
-};
-
-struct Leaf {
-	void *entry[16];
-};
-
-struct Level {
-	int alloc;
-	int size;
-	union {
-		struct Mid *b;
-		struct Mid *c;
-		struct Leaf *d;
-	} table;
-};
+/* A radix tree map: (unicode character) -> (void *) */
 
 struct Rtree {
 	struct First top;
@@ -104,6 +66,7 @@ struct Rtree {
 void rtree_init(struct Rtree *r);
 void rtree_clr(struct Rtree *r);
 void *rtree_lookup(struct Rtree *r, int ch);
+void *rtree_lookup_unopt(struct Rtree *r, int ch);
 void rtree_add(struct Rtree *r, int ch, void *map);
 void rtree_opt(struct Rtree *r);
 

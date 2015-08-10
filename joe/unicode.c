@@ -209,3 +209,181 @@ int main(int argc, char *argv[])
 	}
 }
 */
+
+static struct Rset rset_upper[1];
+
+int joe_iswupper(struct charmap *foo, int ch) { return rset_lookup(rset_upper, ch); }
+
+static struct Rset rset_lower[1];
+
+int joe_iswlower(struct charmap *foo, int ch) { return rset_lookup(rset_lower, ch); }
+
+static struct Rset rset_alpha[1];
+
+int joe_iswalpha(struct charmap *foo, int ch) { return rset_lookup(rset_alpha, ch); }
+
+static struct Rset rset_alpha_[1];
+
+int joe_iswalpha_(struct charmap *foo, int ch) { return rset_lookup(rset_alpha_, ch); }
+
+static struct Rset rset_alnum[1];
+
+int joe_iswalnum(struct charmap *foo, int ch) { return rset_lookup(rset_alnum, ch); }
+
+static struct Rset rset_alnum_[1];
+
+int joe_iswalnum_(struct charmap *foo, int ch) { return rset_lookup(rset_alnum_, ch); }
+
+static struct Rset rset_digit[1];
+
+int joe_iswdigit(struct charmap *foo, int ch) { return rset_lookup(rset_digit, ch); }
+
+static struct Rset rset_xdigit[1];
+
+int joe_iswxdigit(struct charmap *foo, int ch) { return rset_lookup(rset_xdigit, ch); }
+
+static struct Rset rset_punct[1];
+
+int joe_iswpunct(struct charmap *foo, int ch) { return rset_lookup(rset_punct, ch); }
+
+static struct Rset rset_space[1];
+
+int joe_iswspace(struct charmap *foo, int ch) { return rset_lookup(rset_space, ch); }
+
+static struct Rset rset_blank[1];
+
+int joe_iswblank(struct charmap *foo, int ch) { return rset_lookup(rset_blank, ch); }
+
+static struct Rset rset_ctrl[1];
+
+int joe_iswctrl(struct charmap *foo, int ch) { return rset_lookup(rset_ctrl, ch); }
+
+static struct Rset rset_graph[1];
+
+int joe_iswgraph(struct charmap *foo, int ch) { return rset_lookup(rset_graph, ch); }
+
+static struct Rset rset_print[1];
+
+int joe_iswprint(struct charmap *foo, int ch) { return rset_lookup(rset_print, ch); }
+
+void joe_iswinit()
+{
+	struct unicat *cat;
+	struct interval x[1];
+
+	rset_init(rset_upper);
+	if ((cat = unicatlookup("Lu"))) rset_set(rset_upper, cat->table, cat->size);
+	rset_opt(rset_upper);
+	/* printf("\nUpper\n"); rset_show(rset_upper); */
+
+	rset_init(rset_lower);
+	if ((cat = unicatlookup("Ll"))) rset_set(rset_lower, cat->table, cat->size);
+	rset_opt(rset_lower);
+	/* printf("\nLower\n"); rset_show(rset_lower); */
+
+	rset_init(rset_alpha);
+	if ((cat = unicatlookup("L"))) rset_set(rset_alpha, cat->table, cat->size);
+	if ((cat = unicatlookup("M"))) rset_set(rset_alpha, cat->table, cat->size);
+	rset_opt(rset_alpha);
+	/* printf("\nAlpha\n"); rset_show(rset_alpha); */
+
+	rset_init(rset_alpha_);
+	if ((cat = unicatlookup("L"))) rset_set(rset_alpha_, cat->table, cat->size);
+	if ((cat = unicatlookup("M"))) rset_set(rset_alpha_, cat->table, cat->size);
+	if ((cat = unicatlookup("Pc"))) rset_set(rset_alpha_, cat->table, cat->size);
+	rset_opt(rset_alpha_);
+	/* printf("\nAlpha_\n"); rset_show(rset_alpha_); */
+
+	rset_init(rset_alnum);
+	if ((cat = unicatlookup("L"))) rset_set(rset_alnum, cat->table, cat->size);
+	if ((cat = unicatlookup("M"))) rset_set(rset_alnum, cat->table, cat->size);
+	if ((cat = unicatlookup("N"))) rset_set(rset_alnum, cat->table, cat->size);
+	rset_opt(rset_alnum);
+	/* printf("\nAlnum\n"); rset_show(rset_alnum); */
+
+	rset_init(rset_alnum_);
+	if ((cat = unicatlookup("L"))) rset_set(rset_alnum_, cat->table, cat->size);
+	if ((cat = unicatlookup("M"))) rset_set(rset_alnum_, cat->table, cat->size);
+	if ((cat = unicatlookup("N"))) rset_set(rset_alnum_, cat->table, cat->size);
+	if ((cat = unicatlookup("Pc"))) rset_set(rset_alnum_, cat->table, cat->size);
+	rset_opt(rset_alnum_);
+	/* printf("\nAlnum_\n"); rset_show(rset_alnum_); */
+
+	rset_init(rset_digit);
+	if ((cat = unicatlookup("Nd"))) rset_set(rset_digit, cat->table, cat->size);
+	rset_opt(rset_digit);
+	/* printf("\nDigit\n"); rset_show(rset_digit); */
+
+	rset_init(rset_xdigit);
+	if ((cat = unicatlookup("Nd"))) rset_set(rset_xdigit, cat->table, cat->size);
+	x->first = 'A'; x->last = 'F'; rset_set(rset_xdigit, x, 1);
+	x->first = 'a'; x->last = 'f'; rset_set(rset_xdigit, x, 1);
+	rset_opt(rset_xdigit);
+	/* printf("\nXdigit\n"); rset_show(rset_xdigit); */
+
+	rset_init(rset_punct);
+	if ((cat = unicatlookup("P"))) rset_set(rset_punct, cat->table, cat->size);
+	rset_opt(rset_punct);
+	/* printf("\nPunct\n"); rset_show(rset_punct); */
+
+	rset_init(rset_space);
+	rset_add(rset_space, ' ');
+	rset_add(rset_space, '\t');
+	rset_add(rset_space, '\r');
+	rset_add(rset_space, '\n');
+	rset_add(rset_space, '\f');
+	if ((cat = unicatlookup("Z"))) rset_set(rset_space, cat->table, cat->size);
+	rset_opt(rset_space);
+	/* printf("\nSpace\n"); rset_show(rset_space); */
+
+	rset_init(rset_blank);
+	rset_add(rset_blank, ' ');
+	rset_add(rset_blank, '\t');
+	if ((cat = unicatlookup("Zs"))) rset_set(rset_blank, cat->table, cat->size);
+	rset_opt(rset_blank);
+	/* printf("\nBlank\n"); rset_show(rset_blank); */
+
+	rset_init(rset_ctrl);
+	if ((cat = unicatlookup("C"))) rset_set(rset_ctrl, cat->table, cat->size);
+	if ((cat = unicatlookup("Zl"))) rset_set(rset_ctrl, cat->table, cat->size);
+	if ((cat = unicatlookup("Zp"))) rset_set(rset_ctrl, cat->table, cat->size);
+	rset_opt(rset_ctrl);
+	/* printf("\nCtrl\n"); rset_show(rset_ctrl); */
+
+	rset_init(rset_graph);
+	if ((cat = unicatlookup("L"))) rset_set(rset_graph, cat->table, cat->size);
+	if ((cat = unicatlookup("M"))) rset_set(rset_graph, cat->table, cat->size);
+	if ((cat = unicatlookup("S"))) rset_set(rset_graph, cat->table, cat->size);
+	if ((cat = unicatlookup("N"))) rset_set(rset_graph, cat->table, cat->size);
+	if ((cat = unicatlookup("P"))) rset_set(rset_graph, cat->table, cat->size);
+	rset_opt(rset_graph);
+	/* printf("\nGraph\n"); rset_show(rset_graph); */
+
+	rset_init(rset_print);
+	if ((cat = unicatlookup("L"))) rset_set(rset_print, cat->table, cat->size);
+	if ((cat = unicatlookup("M"))) rset_set(rset_print, cat->table, cat->size);
+	if ((cat = unicatlookup("S"))) rset_set(rset_print, cat->table, cat->size);
+	if ((cat = unicatlookup("N"))) rset_set(rset_print, cat->table, cat->size);
+	if ((cat = unicatlookup("P"))) rset_set(rset_print, cat->table, cat->size);
+	if ((cat = unicatlookup("Zs"))) rset_set(rset_print, cat->table, cat->size);
+	rset_opt(rset_print);
+	/* printf("\nPrint\n"); rset_show(rset_print); */
+	/* exit(-1); */
+}
+
+/* Digit value of any \p{Nd} digit */
+
+static struct unicat *digtable = 0;
+
+int digval(int ch)
+{
+	if (!digtable)
+		digtable = unicatlookup("Nd");
+	if (digtable) {
+		int idx = interval_test(digtable->table, digtable->size, ch);
+		if (idx != -1) {
+			return ch - digtable->table[idx].first;
+		}
+	}
+	return -1;
+}

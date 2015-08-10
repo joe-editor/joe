@@ -280,6 +280,7 @@ struct highlight_state {
 
 /* Include files */
 
+#include "cclass.h"
 #include "cmap.h"
 #include "b.h"
 #include "blocks.h"
