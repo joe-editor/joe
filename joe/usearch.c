@@ -22,7 +22,7 @@ SRCHREC fsr = { {&fsr, &fsr} };
 
 /* Clear compiled version of pattern */
 
-void clrcomp(SRCH *srch)
+static void clrcomp(SRCH *srch)
 {
 	if (srch->comp) {
 		joe_regfree(srch->comp);
@@ -468,8 +468,6 @@ SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int re
 
 void rmsrch(SRCH *srch)
 {
-	int x;
-
 	if (srch->comp)
 		joe_regfree(srch->comp);
 	prm(markb);
@@ -1020,6 +1018,7 @@ static int restrict_to_block(BW *bw, SRCH *srch)
  *   1) Search string was not found.
  *   2) Search string was found.
  *   3) Abort due to infinite loop
+ *   4) Abort due to compile error
  */
 
 static int fnext(BW *bw, SRCH *srch)
@@ -1045,6 +1044,10 @@ static int fnext(BW *bw, SRCH *srch)
 	/* Compile pattern if we don't already have it */
 	if (!srch->comp) {
 		srch->comp = joe_regcomp(bw->b->o.charmap, srch->pattern, sLEN(srch->pattern), 0);
+		if (srch->comp->err) {
+			msgnw(bw->parent, joe_gettext(srch->comp->err));
+			return 4;
+		}
 	}
 	if (srch->backwards)
 		sta = searchb(bw, srch, bw->cursor);
@@ -1132,6 +1135,9 @@ bye:		if (!srch->flg && !srch->rest) {
 		break;
 	case 3:
 		msgnw(bw->parent, joe_gettext(_("Infinite loop aborted: your search repeatedly matched same place")));
+		ret = -1;
+		break;
+	case 4:
 		ret = -1;
 		break;
 	case 2:

@@ -333,7 +333,6 @@ int pmatch(Regmatch_t *matches, int nmatch, const char *regex, ptrdiff_t len, P 
 	int utf8 = p->b->o.charmap->type;
 	struct charmap *map = p->b->o.charmap;
 	struct utf8_sm sm;
-	int x;
 	off_t byte;
 
 	utf8_init(&sm);
@@ -595,7 +594,7 @@ fail:
 
 /* Create tree node */
 
-int mk_node(struct regcomp *r, int ty, int nl, int nr)
+static int mk_node(struct regcomp *r, int ty, int nl, int nr)
 {
 	int no;
 	if (r->len == r->size) {
@@ -613,13 +612,13 @@ int mk_node(struct regcomp *r, int ty, int nl, int nr)
 
 /* Print tree */
 
-void ind(int x)
+static void ind(int x)
 {
 	while (x--)
 		printf("  ");
 }
 
-void show(struct regcomp *r, int no, int x)
+static void show(struct regcomp *r, int no, int x)
 {
 	if (no != -1) {
 		if (r->nodes[no].type >= 0) {
@@ -637,7 +636,7 @@ void show(struct regcomp *r, int no, int x)
 
 /* Conventional syntax regex */
 
-int do_parse_conventional(struct regcomp *g, int prec)
+static int do_parse_conventional(struct regcomp *g, int prec)
 {
 	int no = -1;
 
@@ -823,7 +822,7 @@ int do_parse_conventional(struct regcomp *g, int prec)
 
 /* JOE syntax regex */
 
-int do_parse(struct regcomp *g, int prec)
+static int do_parse(struct regcomp *g, int prec)
 {
 	int no = -1;
 
@@ -842,6 +841,8 @@ int do_parse(struct regcomp *g, int prec)
 			}
 			if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == ')') {
 				g->ptr += 2; g->l -= 2;
+			} else if (!g->err) {
+				g->err = "Missing \\\\)";
 			}
 			goto again;
 		} else if (g->l >= 2 && g->ptr[0] == '?' && g->ptr[1] == ':') {
@@ -854,9 +855,8 @@ int do_parse(struct regcomp *g, int prec)
 		}
 		if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == ')') {
 			g->ptr += 2; g->l -= 2;
-		} else {
-			printf("Unbalanced parenthesis\n");
-			return 0;
+		} else if (!g->err) {
+			g->err = "Missing \\\\)";
 		}
 	} else if (g->l >= 2 && g->ptr[0] == '\\' && (g->ptr[1] == '^' || g->ptr[1] == '$' || g->ptr[1] == '>' || g->ptr[1] == '<' /* ||
 	                                              g->ptr[1] == 'b' || g->ptr[1] == 'B' || g->ptr[1] == 'A' || g->ptr[1] == 'Z' ||
@@ -901,6 +901,8 @@ int do_parse(struct regcomp *g, int prec)
 		}
 		if (g->l && *g->ptr == ']') {
 			++g->ptr; --g->l;
+		} else if (!g->err) {
+			g->err = "Missing ]";
 		}
 		if (inv)
 			cclass_inv(m);
@@ -959,6 +961,8 @@ int do_parse(struct regcomp *g, int prec)
 			if (g->l && *g->ptr == '}') {
 				++g->ptr;
 				--g->l;
+			} else if (!g->err) {
+				g->err = "Missing }";
 			}
 			/* Turn max into optional */
 			if (max > min)
@@ -1006,7 +1010,7 @@ int do_parse(struct regcomp *g, int prec)
 
 /* Disassembler */
 
-void unasm(Frag *f)
+static void unasm(Frag *f)
 {
 	int pc = 0;
 	printf("PC	INSN\n");
@@ -1040,11 +1044,11 @@ void unasm(Frag *f)
 				break;
 			case iFORK: {
 				int arg = fetchi(f, &pc);
-				printf("%d:	fork %d\n", i, arg + (pc - (int)sizeof(int)));
+				printf("%d:	fork %d\n", i, arg + (pc - (int)SIZEOF(int)));
 				break;
 			} case iJUMP: {
 				int arg = fetchi(f, &pc);
-				printf("%d:	jump %d\n", i, arg + (pc - (int)sizeof(int)));
+				printf("%d:	jump %d\n", i, arg + (pc - (int)SIZEOF(int)));
 				break;
 			} case iCLASS: {
 				struct Cclass *r = fetchp(f, &pc);
@@ -1061,7 +1065,7 @@ void unasm(Frag *f)
 
 /* Convert parse-tree into code with infinite loops */
 
-void codegen(struct regcomp *g, int no, int *end)
+static void codegen(struct regcomp *g, int no, int *end)
 {
 	while(no != -1) {
 		switch (g->nodes[no].type) {
@@ -1082,7 +1086,7 @@ void codegen(struct regcomp *g, int no, int *end)
 				int targ, start;
 				emiti(g->frag, iFORK);
 				targ = emiti(g->frag, 0);
-				align_frag(g->frag, sizeof(int));
+				align_frag(g->frag, SIZEOF(int));
 				start = g->frag->len;
 				codegen(g, g->nodes[no].r, 0);
 				emiti(g->frag, iFORK);
@@ -1092,7 +1096,7 @@ void codegen(struct regcomp *g, int no, int *end)
 			}
 			case -'+': {
 				int start;
-				align_frag(g->frag, sizeof(int));
+				align_frag(g->frag, SIZEOF(int));
 				start = g->frag->len;
 				codegen(g, g->nodes[no].r, 0);
 				emiti(g->frag, iFORK);
@@ -1111,7 +1115,6 @@ void codegen(struct regcomp *g, int no, int *end)
 				int alt;
 				int first;
 				int my_end = 0;
-				int next;
 				if (!end) {
 					end = &my_end;
 					first = 1;
@@ -1175,29 +1178,27 @@ void codegen(struct regcomp *g, int no, int *end)
 
 /* User level of parser: call it with a regex- it returns a program in a malloc block */
 
-struct regcomp *joe_regcomp(struct charmap *cmap, const unsigned char *s, ptrdiff_t len, int cflags)
+struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, int cflags)
 {
 	int no;
 	struct regcomp *g;
-	int a, b;
 
 	g = (struct regcomp *)joe_malloc(SIZEOF(struct regcomp));
 	g->len = 0;
 	g->size = 10;
 	g->nodes = (struct node *)joe_malloc(SIZEOF(struct node) * g->size);
 	g->cmap = cmap;
+	iz_frag(g->frag, SIZEOF(int));
+	g->bra_no = 0;
+	g->err = 0;
 
 	/* Parse expression */
 	g->ptr = s;
 	g->l = len;
 	no = do_parse(g, 0);
 
-	if (g->l) {
-#ifdef DEBUG
-		fprintf(stderr,"Extra junk at end of expression\n");
-#endif
-		joe_regfree(g);
-		return 0;
+	if (g->l && !g->err) {
+		g->err = "Extra junk at end of expression";
 	}
 
 	/* Print parse tree */
@@ -1207,8 +1208,6 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const unsigned char *s, ptrdif
 #endif
 
 	/* Convert tree into NFA in the form of byte code */
-	iz_frag(g->frag, sizeof(int));
-	g->bra_no = 0;
 
 	/* Surround regex with .*(  ).* */
 #if 0
@@ -1263,6 +1262,7 @@ void joe_regfree(struct regcomp *g)
 {
 	if (g->nodes)
 		joe_free(g->nodes);
+	clr_frag(g->frag);
 	joe_free(g);
 }
 
@@ -1322,7 +1322,7 @@ struct thread
 	Regmatch_t pos[MAX_MATCHES];
 };
 
-int better(Regmatch_t *a, Regmatch_t *b, int bra_no)
+static int better(Regmatch_t *a, Regmatch_t *b, int bra_no)
 {
 	int y;
 	for (y = 0; y != bra_no; ++y) {
@@ -1338,7 +1338,7 @@ int better(Regmatch_t *a, Regmatch_t *b, int bra_no)
 	return 0;
 }
 
-int add_thread(struct thread *pool, unsigned char *start, int l, int le, unsigned char *pc, Regmatch_t *pos, int bra_no)
+static int add_thread(struct thread *pool, unsigned char *start, int l, int le, unsigned char *pc, Regmatch_t *pos, int bra_no)
 {
 	int x;
 	Regmatch_t *d;
@@ -1399,7 +1399,7 @@ int add_thread(struct thread *pool, unsigned char *start, int l, int le, unsigne
 	return le + 1;
 }
 
-int add_thread1(struct thread *pool, unsigned char *start, int l, int le, unsigned char *pc, Regmatch_t *pos, int bra_no)
+static int add_thread1(struct thread *pool, unsigned char *start, int l, int le, unsigned char *pc, Regmatch_t *pos, int bra_no)
 {
 	int x;
 	Regmatch_t *d;
@@ -1471,87 +1471,86 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 		byte = p->byte; c = pgetc(p);
 		/* Give character to all threads */
 		for (t = cl; t != cle; ++t) {
-			int i;
 			unsigned char *pc = pool[t].pc;
 			for (;;) {
 				int i;
 				i = *(int *)pc;
 				switch (i) {
 					case iCHAR: {
-						if (c == *(int *)(pc + sizeof(int))) {
-							nle = add_thread(pool, g->frag->start, nl, nle, pc + 2 * sizeof(int), pool[t].pos, bra_no);
+						if (c == *(int *)(pc + SIZEOF(int))) {
+							nle = add_thread(pool, g->frag->start, nl, nle, pc + 2 * SIZEOF(int), pool[t].pos, bra_no);
 						}
 						break;
 					}
 					case iDOT: {
 						if (c != NO_MORE_DATA)
 							/* . doesn't match end of string */
-							nle = add_thread(pool, g->frag->start, nl, nle, pc + sizeof(int), pool[t].pos, bra_no);
+							nle = add_thread(pool, g->frag->start, nl, nle, pc + SIZEOF(int), pool[t].pos, bra_no);
 						break;
 					}
 					case iBOL: {
 						if (start_bol || d == '\n') {
-							pc += sizeof(int);
+							pc += SIZEOF(int);
 							continue;
 						}
 						break;
 					}
 					case iEOL: {
 						if (c == NO_MORE_DATA || c == '\n') {
-							pc += sizeof(int);
+							pc += SIZEOF(int);
 							continue;
 						}
 						break;
 					}
 					case iBOW: {
 						if (joe_isalnum_(g->cmap, c) && !joe_isalnum_(g->cmap, d)) {
-							pc += sizeof(int);
+							pc += SIZEOF(int);
 							continue;
 						}
 						break;
 					}
 					case iEOW: {
 						if (!joe_isalnum_(g->cmap, c) && joe_isalnum_(g->cmap, d)) {
-							pc += sizeof(int);
+							pc += SIZEOF(int);
 							continue;
 						}
 						break;
 					}
 					case iBRA: {
-						int idx = *(int *)(pc + sizeof(int));
+						int idx = *(int *)(pc + SIZEOF(int));
 						if (idx < bra_no)
 							pool[t].pos[idx].rm_so = byte;
-						pc += 2 * sizeof(int);
+						pc += 2 * SIZEOF(int);
 						continue;
 					}
 					case iKET: {
-						int idx = *(int *)(pc + sizeof(int));
+						int idx = *(int *)(pc + SIZEOF(int));
 						if (idx < bra_no)
 							pool[t].pos[idx].rm_eo = byte;
-						pc += 2 * sizeof(int);
+						pc += 2 * SIZEOF(int);
 						continue;
 					}
 					case iFORK: {
-						cle = add_thread1(pool, g->frag->start, cl, cle, pc + *(int *)(pc + sizeof(int)) + sizeof(int), pool[t].pos, bra_no);
+						cle = add_thread1(pool, g->frag->start, cl, cle, pc + *(int *)(pc + SIZEOF(int)) + SIZEOF(int), pool[t].pos, bra_no);
 						if (cle - cl == MAX_THREADS) {
 							match = -2;
 							break;
 						}
-						pc += 2 * sizeof(int);
+						pc += 2 * SIZEOF(int);
 						continue;
 					}
 					case iJUMP: {
-						pc += *(int *)(pc + sizeof(int)) + sizeof(int);
+						pc += *(int *)(pc + SIZEOF(int)) + SIZEOF(int);
 						continue;
 					}
 					case iCLASS: {
 						struct Cclass *cclass;
-						pc += sizeof(int);
-						pc += align_o((pc - (unsigned char *)0), sizeof(struct Cclass *));
+						pc += SIZEOF(int);
+						pc += align_o((pc - (unsigned char *)0), SIZEOF(struct Cclass *));
 						cclass = *(struct Cclass **)pc;
 						if (cclass_lookup(cclass, c)) {
-							pc += sizeof(struct Cclass *);
-							pc += align_o((pc - (unsigned char *)0), sizeof(int));
+							pc += SIZEOF(struct Cclass *);
+							pc += align_o((pc - (unsigned char *)0), SIZEOF(int));
 							nle = add_thread(pool, g->frag->start, nl, nle, pc, pool[t].pos, bra_no);
 						}
 						break;

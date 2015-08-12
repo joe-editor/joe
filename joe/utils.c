@@ -801,7 +801,7 @@ ptrdiff_t parse_string(const char **pp, char *buf, ptrdiff_t len)
 		}
 		*buf = 0;
 		while(*p && *p!='\"') {
-			int c = escape(0, &p, NULL, NULL);
+			escape(0, &p, NULL, NULL);
 		}
 		if(*p == '\"') {
 			*pp = p + 1;
@@ -824,7 +824,7 @@ ptrdiff_t parse_Zstring(const char **pp, int *buf, ptrdiff_t len)
 		}
 		*buf = 0;
 		while(*p && *p!='\"') {
-			int c = escape(1, &p, NULL, NULL);
+			escape(1, &p, NULL, NULL);
 		}
 		if(*p == '\"') {
 			*pp = p + 1;

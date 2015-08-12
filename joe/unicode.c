@@ -17,7 +17,7 @@
 
 PHASH *fold_hash_table;
 
-void init_fold_hash_table()
+static void init_fold_hash_table()
 {
 	int x;
 	fold_hash_table = mkphash(0x1FF, 512);

@@ -17,6 +17,11 @@ void fin_code(Frag *f)
 	f->size = f->len;
 }
 
+void clr_frag(Frag *f)
+{
+	joe_free(f->start);
+}
+
 /* Expand a fragment */
 
 /* Expand code block by at least 'size' words */
@@ -39,8 +44,8 @@ void expand_frag(Frag *frag, int size)
 int emitb_noalign(Frag *f, char c)
 {
 	int start;
-	if (f->len + sizeof(unsigned char) > f->size)
-		expand_frag(f, sizeof(unsigned char));
+	if (f->len + SIZEOF(unsigned char) > f->size)
+		expand_frag(f, SIZEOF(unsigned char));
 	start = f->len;
 	f->start[f->len++] = c;
 	return start;
@@ -71,13 +76,13 @@ int emitb(Frag *f, char c)
 int emith(Frag *f, short c)
 {
 	int start;
-	if (f->len & (sizeof(short) - 1))
-		align_frag(f, sizeof(short));
-	if (f->len + sizeof(short) > f->size)
-		expand_frag(f, sizeof(short));
+	if (f->len & (SIZEOF(short) - 1))
+		align_frag(f, SIZEOF(short));
+	if (f->len + SIZEOF(short) > f->size)
+		expand_frag(f, SIZEOF(short));
 	start = f->len;
 	*(short *)(f->start + f->len) = c;
-	f->len += sizeof(short);
+	f->len += SIZEOF(short);
 	if (f->len & (f->align - 1))
 		align_frag(f, f->align);
 	return start;
@@ -88,13 +93,13 @@ int emith(Frag *f, short c)
 int emiti(Frag *f, int c)
 {
 	int start;
-	if (f->len & (sizeof(int) - 1))
-		align_frag(f, sizeof(int));
-	if (f->len + sizeof(int) > f->size)
-		expand_frag(f, sizeof(int));
+	if (f->len & (SIZEOF(int) - 1))
+		align_frag(f, SIZEOF(int));
+	if (f->len + SIZEOF(int) > f->size)
+		expand_frag(f, SIZEOF(int));
 	start = f->len;
 	*(int *)(f->start + f->len) = c;
-	f->len += sizeof(int);
+	f->len += SIZEOF(int);
 	if (f->len & (f->align - 1))
 		align_frag(f, f->align);
 	return start;
@@ -105,13 +110,13 @@ int emiti(Frag *f, int c)
 int emitd(Frag *f, double d)
 {
 	int start;
-	if (f->len & (sizeof(double) - 1))
-		align_frag(f, sizeof(double));
-	if (f->len + sizeof(double) > f->size)
-		expand_frag(f, sizeof(double));
+	if (f->len & (SIZEOF(double) - 1))
+		align_frag(f, SIZEOF(double));
+	if (f->len + SIZEOF(double) > f->size)
+		expand_frag(f, SIZEOF(double));
 	start = f->len;
 	*(double *)(f->start + f->len) = d;
-	f->len += sizeof(double);
+	f->len += SIZEOF(double);
 	if (f->len & (f->align - 1))
 		align_frag(f, f->align);
 	return start;
@@ -122,13 +127,13 @@ int emitd(Frag *f, double d)
 int emitp(Frag *f, void *p)
 {
 	int start;
-	if (f->len & (sizeof(void *) - 1))
-		align_frag(f, sizeof(void *));
-	if (f->len + sizeof(void *) > f->size)
-		expand_frag(f, sizeof(void *));
+	if (f->len & (SIZEOF(void *) - 1))
+		align_frag(f, SIZEOF(void *));
+	if (f->len + SIZEOF(void *) > f->size)
+		expand_frag(f, SIZEOF(void *));
 	start = f->len;
 	*(void **)(f->start + f->len) = p;
-	f->len += sizeof(void *);
+	f->len += SIZEOF(void *);
 	if (f->len & (f->align - 1))
 		align_frag(f, f->align);
 	return start;
@@ -146,7 +151,7 @@ int emits(Frag *f, unsigned char *s, int len)
 		expand_frag(f, len + 1);
 
 	if (len)
-		memcpy(f->start + f->len, s, len);
+		mcpy(f->start + f->len, s, len);
 
 	f->start[f->len + len] = 0;
 
@@ -167,7 +172,7 @@ int emit_branch(Frag *f, int target)
 
 void fixup_branch(Frag *f, int pos)
 {
-	align_frag(f, sizeof(int));
+	align_frag(f, SIZEOF(int));
 	fragi(f, pos) = f->len - pos;
 }
 
@@ -176,7 +181,7 @@ void fixup_branch(Frag *f, int pos)
 void frag_link(Frag *f, int chain)
 {
 	int ket;
-	align_frag(f, sizeof(int));
+	align_frag(f, SIZEOF(int));
 	ket = f->len;
 	while (chain) {
 		int next = fragi(f, chain);
@@ -189,9 +194,9 @@ short fetchh(Frag *f, int *pcp)
 {
 	int pc = *pcp;
 	short i;
-	pc += align_o(pc, sizeof(short));
+	pc += align_o(pc, SIZEOF(short));
 	i = fragh(f, pc);
-	pc += sizeof(short);
+	pc += SIZEOF(short);
 	if (pc & (f->align - 1))
 		pc += align_o(pc, f->align);
 	*pcp = pc;
@@ -202,9 +207,9 @@ int fetchi(Frag *f, int *pcp)
 {
 	int pc = *pcp;
 	int i;
-	pc += align_o(pc, sizeof(int));
+	pc += align_o(pc, SIZEOF(int));
 	i = fragi(f, pc);
-	pc += sizeof(int);
+	pc += SIZEOF(int);
 	if (pc & (f->align - 1))
 		pc += align_o(pc, f->align);
 	*pcp = pc;
@@ -215,9 +220,9 @@ void *fetchp(Frag *f, int *pcp)
 {
 	int pc = *pcp;
 	void *p;
-	pc += align_o(pc, sizeof(void *));
+	pc += align_o(pc, SIZEOF(void *));
 	p = fragp(f, pc);
-	pc += sizeof(void *);
+	pc += SIZEOF(void *);
 	if (pc & (f->align - 1))
 		pc += align_o(pc, f->align);
 	*pcp = pc;

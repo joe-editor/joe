@@ -16,6 +16,8 @@ struct frag {
 
 void iz_frag(Frag *, int alignmnet);
 
+void clr_frag(Frag *);
+
 /* Generate byte offset you need to add to p so that
  * it is an exact multiple of size (which is a power of 2).
  */

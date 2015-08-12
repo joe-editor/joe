@@ -208,7 +208,6 @@ void lazy_opts(B *b, OPTIONS *o)
 void setopt(B *b, const char *parsed_name)
 {
 	OPTIONS *o;
-	int x;
 
 	for (o = options_list; o; o = o->next)
 		if (rmatch(o->name_regex, parsed_name)) {

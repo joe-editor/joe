@@ -517,7 +517,6 @@ void dump_syntax(BW *bw)
 		pnextl(bw->cursor);
 		for(x=0;x!=syntax->nstates;++x) {
 			struct high_state *s = syntax->states[x];
-			struct interval_list *l;
 			joe_snprintf_2(buf, SIZEOF(buf), "   state %s %x\n",s->name,s->color);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);

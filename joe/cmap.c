@@ -326,7 +326,7 @@ void rtree_clr(struct Rtree *r)
 	joe_free(r->leaf.table.d);
 }
 
-int rtree_alloc(struct Level *l, int levelno)
+static int rtree_alloc(struct Level *l, int levelno)
 {
 	int x;
 	if (l->alloc == l->size) {
@@ -369,7 +369,6 @@ void rtree_add(struct Rtree *r, int ch, void *map)
 	int c = (SECONDMASK & (ch >> THIRDSHIFT));
 	int d = (LEAFMASK & (ch >> LEAFSHIFT));
 
-	int ia;
 	int ib;
 	int ic;
 	int id;
@@ -403,7 +402,7 @@ struct rhentry {
 	int idx;
 };
 
-ptrdiff_t rhhash(struct Leaf *l)
+static ptrdiff_t rhhash(struct Leaf *l)
 {
 	ptrdiff_t hval = 0;
 	int x;

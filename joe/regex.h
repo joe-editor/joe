@@ -63,19 +63,22 @@ struct regcomp {
 	ptrdiff_t l;			/* Input string remaining length */
 	struct charmap *cmap;
 	struct node *nodes;		/* NFA nodes */
-	ptrdiff_t len;			/* Number of allocated nodes */
-	ptrdiff_t size;			/* Malloc size of nodes */
+	int len;			/* Number of allocated nodes */
+	int size;			/* Malloc size of nodes */
 	
 	/* Bracket number */
 	int bra_no;
 
 	/* NFA in form of generated code */
 	Frag frag[1];
+
+	const char *err;		/* Compiler error message */
 };
 
 /* Compile an expression s/len into a struct regcomp
+ * Check err for compile errors.
  */
-struct regcomp *joe_regcomp(struct charmap *charmap, const unsigned char *s, ptrdiff_t len, int icase);
+struct regcomp *joe_regcomp(struct charmap *charmap, const char *s, ptrdiff_t len, int icase);
 
 void joe_regfree(struct regcomp *r);
 

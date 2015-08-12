@@ -11,7 +11,7 @@
 
 /* Select bits in val which are set in sel and compress them all to the right */
 
-unsigned gather(unsigned val,unsigned sel)
+static unsigned gather(unsigned val,unsigned sel)
 {
 	unsigned long mk, mp, mv, t;
 	int i;
@@ -24,9 +24,9 @@ unsigned gather(unsigned val,unsigned sel)
 		mp = mp ^ (mp << 8);
 		mp = mp ^ (mp << 16);
 		mv = mp & sel;
-		sel = sel ^ mv | (mv >> (1 << i));
+		sel = (sel ^ mv) | (mv >> (1 << i));
 		t = val & mv;
-		val = val ^ t | (t >> (1 << i));
+		val = (val ^ t) | (t >> (1 << i));
 		mk = mk & ~mp;
 	}
 	return val;
