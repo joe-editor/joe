@@ -150,7 +150,7 @@ static int rset_alloc(struct Level *l, int levelno)
 	return l->alloc++;
 }
 
-void rset_add(struct Rset *r, int ch)
+void rset_add(struct Rset *r, int ch, int che)
 {
 	int a = (TOPMASK & (ch >> TOPSHIFT));
 	int b = (THIRDMASK & (ch >> SECONDSHIFT));
@@ -160,20 +160,39 @@ void rset_add(struct Rset *r, int ch)
 	int ib;
 	int ic;
 
-	if (a >= TOPSIZE)
-		return;
+	while (ch <= che) {
 
-	ib = r->top.entry[a];
-	if (ib == -1) {
-		r->top.entry[a] = ib = rset_alloc(&r->second, 1);
+		if (a >= TOPSIZE)
+			return;
+
+		ib = r->top.entry[a];
+		if (ib == -1) {
+			r->top.entry[a] = ib = rset_alloc(&r->second, 1);
+		}
+
+		while (ch <= che) {
+			ic = r->second.table.b[ib].entry[b];
+			if (ic == -1) {
+				r->second.table.b[ib].entry[b] = ic = rset_alloc(&r->third, 2);
+			}
+			while (ch <= che) {
+				r->third.table.c[ic].entry[c] |= (1 << d);
+				++ch;
+				if (++d == LEAFSIZE) {
+					d = 0;
+					if (++c == THIRDSIZE) {
+						c = 0;
+						break;
+					}
+				}
+			}
+			if (++b == SECONDSIZE) {
+				b = 0;
+				break;
+			}
+		}
+		++a;
 	}
-
-	ic = r->second.table.b[ib].entry[b];
-	if (ic == -1) {
-		r->second.table.b[ib].entry[b] = ic = rset_alloc(&r->third, 2);
-	}
-
-	r->third.table.c[ic].entry[c] |= (1 << d);
 }
 
 /* Optimize radix tree: setup mid */
@@ -198,9 +217,10 @@ void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size)
 {
 	ptrdiff_t y;
 	for (y = 0; y != size; ++y) {
-		int x;
+		rset_add(r, array[y].first, array[y].last);
+/*		int x;
 		for (x = array[y].first; x <= array[y].last; ++x)
-			rset_add(r, x);
+			rset_add(r, x); */
 	}
 }
 

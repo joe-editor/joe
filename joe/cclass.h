@@ -75,7 +75,7 @@ void rset_init(struct Rset *r);
 void rset_clr(struct Rset *r);
 int rset_lookup(struct Rset *r, int ch);
 int rset_lookup_unopt(struct Rset *r, int ch);
-void rset_add(struct Rset *r, int ch);
+void rset_add(struct Rset *r, int ch, int che);
 void rset_opt(struct Rset *r);
 void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size);
 void rset_show(struct Rset *r);

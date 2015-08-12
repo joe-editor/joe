@@ -237,22 +237,6 @@ int main(int argc, char *argv)
 
 /* Radix tree maps */
 
-#define LEAFSIZE 16
-#define LEAFMASK 0xF
-#define LEAFSHIFT 0
-
-#define THIRDSIZE 32
-#define THIRDMASK 0x1f
-#define THIRDSHIFT 4
-
-#define SECONDSIZE 32
-#define SECONDMASK 0x1f
-#define SECONDSHIFT 9
-
-#define TOPSIZE 68
-#define TOPMASK 0x7f
-#define TOPSHIFT 14
-
 void *rtree_lookup(struct Rtree *r, int ch)
 {
 	int a = (TOPMASK & (ch >> TOPSHIFT));
@@ -362,7 +346,7 @@ static int rtree_alloc(struct Level *l, int levelno)
 	return l->alloc++;
 }
 
-void rtree_add(struct Rtree *r, int ch, void *map)
+void rtree_add(struct Rtree *r, int ch, int che, void *map)
 {
 	int a = (TOPMASK & (ch >> TOPSHIFT));
 	int b = (THIRDMASK & (ch >> SECONDSHIFT));
@@ -373,25 +357,48 @@ void rtree_add(struct Rtree *r, int ch, void *map)
 	int ic;
 	int id;
 
-	if (a >= TOPSIZE)
-		return;
+	while (ch <= che) {
 
-	ib = r->top.entry[a];
-	if (ib == -1) {
-		r->top.entry[a] = ib = rtree_alloc(&r->second, 1);
+		if (a >= TOPSIZE)
+			return;
+
+		ib = r->top.entry[a];
+		if (ib == -1) {
+			r->top.entry[a] = ib = rtree_alloc(&r->second, 1);
+		}
+
+		while (ch <= che) {
+			ic = r->second.table.b[ib].entry[b];
+			if (ic == -1) {
+				r->second.table.b[ib].entry[b] = ic = rtree_alloc(&r->third, 2);
+			}
+
+			while (ch <= che) {
+				id = r->third.table.c[ic].entry[c];
+				if (id == -1) {
+					r->third.table.c[ic].entry[c] = id = rtree_alloc(&r->leaf, 3);
+				}
+
+				while (ch <= che) {
+					r->leaf.table.d[id].entry[d] = map;
+					++ch;
+					if (++d == LEAFSIZE) {
+						d = 0;
+						break;
+					}
+				}
+				if (++c == THIRDSIZE) {
+					c = 0;
+					break;
+				}
+			}
+			if (++b == SECONDSIZE) {
+				b = 0;
+				break;
+			}
+		}
+		++a;
 	}
-
-	ic = r->second.table.b[ib].entry[b];
-	if (ic == -1) {
-		r->second.table.b[ib].entry[b] = ic = rtree_alloc(&r->third, 2);
-	}
-
-	id = r->third.table.c[ic].entry[c];
-	if (id == -1) {
-		r->third.table.c[ic].entry[c] = id = rtree_alloc(&r->leaf, 3);
-	}
-
-	r->leaf.table.d[id].entry[d] = map;
 }
 
 /* Optimize radix tree: de-duplicate leaf nodes and setup mid */
@@ -510,8 +517,11 @@ void rtree_set(struct Rtree *r, struct interval *array, ptrdiff_t len, void *map
 {
 	ptrdiff_t y;
 	for (y = 0; y != len; ++y) {
+		rtree_add(r, array[y].first, array[y].last, map);
+/*
 		int x;
 		for (x = array[y].first; x <= array[y].last; ++x)
 			rtree_add(r, x, map);
+*/
 	}
 }

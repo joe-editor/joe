@@ -7,6 +7,7 @@ New regex engine:
   check performance and memory leaks
   add \c
   check char to int promotions
+  add code to allow use of boyer-moore
 
 Improve syntax files to work with unicode.
 

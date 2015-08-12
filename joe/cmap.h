@@ -67,7 +67,7 @@ void rtree_init(struct Rtree *r);
 void rtree_clr(struct Rtree *r);
 void *rtree_lookup(struct Rtree *r, int ch);
 void *rtree_lookup_unopt(struct Rtree *r, int ch);
-void rtree_add(struct Rtree *r, int ch, void *map);
+void rtree_add(struct Rtree *r, int ch, int che, void *map);
 void rtree_opt(struct Rtree *r);
 
 void rtree_set(struct Rtree *r, struct interval *array, ptrdiff_t len, void *map);
