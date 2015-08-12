@@ -97,7 +97,7 @@ int rset_lookup_unopt(struct Rset *r, int ch)
 			return ((1 << d) & idx) != 0;
 		}
 	}
-	return NULL;
+	return 0;
 }
 
 void rset_init(struct Rset *r)
