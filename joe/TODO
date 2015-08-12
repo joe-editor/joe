@@ -1,14 +1,30 @@
-Accept character classes, not just UTF-8 in syntax files.
-[done]
+
+long paths not working with cd command in shell windows?
+
+New regex engine:
+  syntax ok? update help if it is..
+  switch to it for ftyperc?
+  check performance and memory leaks
+  add \c
+  check char to int promotions
 
 Improve syntax files to work with unicode.
 
-Improve speed of regex? Compile to perfect hash? At least sort the
-intervals?
+Auto generate the toupper / tolower from i18n.c  Eliminate i18n.c
+
+Can we find an updated version of wcwidth?
+
+Get rid of i18n file..
 
 Digit values
+[wrote function, but not using it]
 
-Auto generate the toupper / tolower from i18n.c  Eliminate i18n.c
+Accept character classes, not just UTF-8 in syntax files.
+[done]
+
+Improve speed of regex? Compile to perfect hash? At least sort the
+intervals?
+[done]
 
 Added some more convenient classes:
    see http://www.w3.org/TR/xml11/#NT-NameStartChar
@@ -32,8 +48,6 @@ Java:
   isJavaIdentifierPart: isJavaIdentifierStart \p{Mn} \p{Mc} \p{Nd} ignorable
   ignorable: 0x00-0x08, 0x0e-0x1b, 0x7f-0x9F
 
-
-long paths not working with cd command in shell windows?
 
 [fixed]
 we parse strings, which does escape processing.

@@ -6,7 +6,8 @@
 
 * New regular expression engine
 	* Old one was a recursive matcher, new one is compiled Thompson NFA matcher
-	* JOE now supports full regular expressions (but regex characters are escaped)
+	* JOE now supports full regular expressions (but regex characters are
+	  escaped), so:
 		* It now supports alternative: X\|Y
 		* It now supports grouping and submatch addressing with parenthesis: a\(inside\)b
 		* You can specify an explicit number of matches: X\{3} for XXX
@@ -15,9 +16,9 @@
 * Submatches within regular expressions can now be any size (up to the size of the disk!).  Before this,
   they were limited to 16K.
 
-* Update character class database to the latest version (based on UnicodeData.txt)
+* Character class database has been updated to the latest version (based on UnicodeData.txt)
 
-* Switch to new character class data structure for faster Unicode (uses
+* Switched to new character class data structure for faster Unicode (uses
   radix search instead of binary search).
 
 * Code clean up
