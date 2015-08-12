@@ -1484,7 +1484,7 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 						break;
 					}
 					case iDOT: {
-						if (c)
+						if (c != NO_MORE_DATA)
 							/* . doesn't match end of string */
 							nle = add_thread(pool, g->frag->start, nl, nle, pc + sizeof(int), pool[t].pos, bra_no);
 						break;
