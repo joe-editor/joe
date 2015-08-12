@@ -303,6 +303,7 @@ struct highlight_state {
 #include "qw.h"
 #include "rc.h"
 #include "unicode.h"
+#include "frag.h"
 #include "regex.h"
 #include "scrn.h"
 #include "syntax.h"

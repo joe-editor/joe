@@ -83,9 +83,9 @@ void rset_show(struct Rset *r);
 /* A character class */
 
 struct Cclass {
-	ptrdiff_t size; /* Malloc size of array */
-	ptrdiff_t len; /* Number of entries in array */
-	struct interval *array; /* sorted, non-overlapping, non-adjacent */
+	ptrdiff_t size; /* Malloc size of intervals */
+	ptrdiff_t len; /* Number of entries in intervals */
+	struct interval *intervals; /* sorted, non-overlapping, non-adjacent */
 	struct Rset rset[1]; /* Radix tree version of character class */
 };
 
@@ -102,10 +102,11 @@ void cclass_add(struct Cclass *cclass, int first, int last);
 void cclass_sub(struct Cclass *cclass, int first, int last);
 
 /* Merge one character class into another */
-void cclass_union(struct Cclass *cclass, struct interval *array, int len);
+void cclass_union(struct Cclass *cclass, struct Cclass *n);
+void cclass_merge(struct Cclass *cclass, struct interval *intervals, int len);
 
 /* Subtract one character class from another */
-void cclass_diff(struct Cclass *cclass, struct interval *array, int len);
+void cclass_diff(struct Cclass *cclass, struct Cclass *n);
 
 /* Compute inverse of a character class */
 void cclass_inv(struct Cclass *cclass);
@@ -120,3 +121,5 @@ void cclass_opt(struct Cclass *cclass);
 
 /* Return true if character is in the class */
 int cclass_lookup(struct Cclass *cclass, int ch);
+
+void cclass_show(struct Cclass *cclass);

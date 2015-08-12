@@ -91,8 +91,7 @@ static void iappend(BW *bw, struct isrch *isrch, char *s, ptrdiff_t len)
 
 	i->wrap_flag = srch->wrap_flag;
 
-	vsrm(srch->pattern);
-	srch->pattern = vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern));
+	setpat(srch, vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern)));
 	srch->backwards = isrch->dir;
 
 	if (dopfnext(bw, srch, NULL)) {
@@ -167,8 +166,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 
 			i->wrap_flag = srch->wrap_flag;
 
-			vsrm(srch->pattern);
-			srch->pattern = vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern));
+			setpat(srch, vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern)));
 			srch->backwards = isrch->dir;
 
 			if (dopfnext(bw, srch, NULL)) {

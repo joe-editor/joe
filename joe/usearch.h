@@ -15,16 +15,19 @@ struct srchrec {
 	off_t	last_repl;
 };
 
+#define NMATCHES 26
+
 struct search {
 	char	*pattern;	/* Search pattern */
+	struct regcomp *comp;	/* Compiled pattern */
 	char	*replacement;	/* Replacement string */
 	int	backwards;	/* Set if search should go backwards */
 	int	ignore;		/* Set if we should ignore case */
 	int	repeat;		/* Set with repeat count (or -1 for no repeat count) */
 	int	replace;	/* Set if this is search & replace */
 	int	rest;		/* Set to do remainder of search & replace w/o query */
-	char	*entire;	/* Entire matched string */
-	char	*pieces[26];	/* Peices of the matched string */
+	Regmatch_t pieces[NMATCHES];	/* Sub-matches we found */
+	Regmatch_t entire;	/* Entire matching string */
 	int	flg;		/* Set after prompted for first replace */
 	SRCHREC	recs;		/* Search & replace position history */
 	P	*markb, *markk;	/* Original marks */
@@ -42,6 +45,8 @@ struct search {
 
 SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all);
 void rmsrch(SRCH *srch);
+
+void setpat(SRCH *srch, char *pattern);
 
 int dopfnext(BW *bw, SRCH *srch, int *notify);
 

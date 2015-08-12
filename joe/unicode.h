@@ -1,7 +1,7 @@
 struct unicat {
 	char *name;
-	int size;
-	struct interval *table;
+	int len;
+	struct interval *intervals;
 	struct unicat *next;
 };
 
@@ -19,9 +19,26 @@ extern struct casefold fold_table[];
 
 int *lowerize(int *d, ptrdiff_t len, const int *s);
 
-struct unicat *unicatlookup(const char *name);
+struct Cclass *unicode(const char *name);
 
-int unicatcheck(struct unicat *cat, int ch);
+extern struct Cclass cclass_upper[1];
+extern struct Cclass cclass_lower[1];
+extern struct Cclass cclass_alpha[1];
+extern struct Cclass cclass_alpha_[1];
+extern struct Cclass cclass_alnum[1];
+extern struct Cclass cclass_alnum_[1];
+extern struct Cclass cclass_digit[1];
+extern struct Cclass cclass_notdigit[1];
+extern struct Cclass cclass_xdigit[1];
+extern struct Cclass cclass_punct[1];
+extern struct Cclass cclass_space[1];
+extern struct Cclass cclass_notspace[1];
+extern struct Cclass cclass_blank[1];
+extern struct Cclass cclass_ctrl[1];
+extern struct Cclass cclass_graph[1];
+extern struct Cclass cclass_print[1];
+extern struct Cclass cclass_word[1];
+extern struct Cclass cclass_notword[1];
 
 void joe_iswinit();
 

@@ -20,6 +20,25 @@ SRCH *globalsrch = NULL;	/* Most recent completed search data */
 
 SRCHREC fsr = { {&fsr, &fsr} };
 
+/* Clear compiled version of pattern */
+
+void clrcomp(SRCH *srch)
+{
+	if (srch->comp) {
+		joe_regfree(srch->comp);
+		srch->comp = 0;
+	}
+}
+
+/* Set pattern, clear compiled version of it */
+
+void setpat(SRCH *srch, char *s)
+{
+	vsrm(srch->pattern);
+	srch->pattern = s;
+	clrcomp(srch);
+}
+
 /* Completion stuff: should go somewhere else */
 
 char **word_list;
@@ -267,16 +286,20 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 
 	try_again:
 
+	x = 0;
+/* rethink for joe_regexec
 	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && ((pattern[x] >= 0 && pattern[x] < 128) || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
 			pattern[x] = TO_CHAR_OK(joe_tolower(p->b->o.charmap,pattern[x]));
+*/
 	wrapped:
 	while (srch->ignore ? pifind(start, pattern, x) : pfind(start, pattern, x)) {
 		pset(end, start);
-		pfwrd(end, x);
+		/* pfwrd(end, x); */ /* Comment out for regexec */
 		if (srch->wrap_flag && start->byte>=srch->wrap_p->byte)
 			break;
-		if (pmatch(srch->pieces, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) {
+/*		if (!pmatch(srch->pieces, NMATCHES, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) { */
+		if (!joe_regexec(srch->comp, end, NMATCHES, srch->pieces, srch->ignore)) {
 			if (end->byte == srch->last_repl && !flag) {
 				/* Stuck on zero-width regex? */
 				pattern = srch->pattern;
@@ -287,8 +310,8 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 				++flag; /* Try repeating, but only one time */
 				goto try_again;
 			} else {
-				srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
-				brmem(start, srch->entire, (int) (end->byte - start->byte));
+				srch->entire.rm_so = start->byte;
+				srch->entire.rm_eo = end->byte;
 				pset(p, end);
 				prm(start);
 				prm(end);
@@ -338,18 +361,21 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 
 	try_again:
 
+	x = 0;
+/* rethink for joe_regexec
 	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && ((pattern[x] >= 0 && pattern[x] < 128) || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
 			pattern[x] = TO_CHAR_OK(joe_tolower(p->b->o.charmap, pattern[x]));
-
+*/
 	wrapped:
 	while (pbkwd(start, 1L)
 	       && (srch->ignore ? prifind(start, pattern, x) : prfind(start, pattern, x))) {
 		pset(end, start);
-		pfwrd(end, x);
+		/* pfwrd(end, x); */ /* Comment out for joe_regexec */
 		if (srch->wrap_flag && start->byte<srch->wrap_p->byte)
 			break;
-		if (pmatch(srch->pieces, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) {
+/*		if (!pmatch(srch->pieces, NMATCHES, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) { */
+		if (!joe_regexec(srch->comp, end, NMATCHES, srch->pieces, srch->ignore)) {
 			if (start->byte == srch->last_repl && !flag) {
 				/* Stuck? */
 				pattern = srch->pattern;
@@ -360,8 +386,8 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 				++flag;
 				goto try_again;
 			} else {
-				srch->entire = vstrunc(srch->entire, (int) (end->byte - start->byte));
-				brmem(start, srch->entire, (int) (end->byte - start->byte));
+				srch->entire.rm_so = start->byte;
+				srch->entire.rm_so = end->byte;
 				pset(p, start);
 				prm(start);
 				prm(end);
@@ -411,13 +437,13 @@ SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int re
 	srch->current = NULL;
 	srch->all = all;
 	srch->pattern = pattern;
+	srch->comp = 0;
 	srch->replacement = replacement;
 	srch->ignore = ignore;
 	srch->backwards = backwards;
 	srch->repeat = repeat;
 	srch->replace = replace;
 	srch->rest = rest;
-	srch->entire = NULL;
 	srch->flg = 0;
 	srch->addr = -1;
 	srch->last_repl = -1;
@@ -429,8 +455,12 @@ SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int re
 	srch->valid = 0;
 	srch->block_restrict = 0;
 	izque(SRCHREC, link, &srch->recs);
-	for (x = 0; x != 26; ++x)
-		srch->pieces[x] = NULL;
+	for (x = 0; x != NMATCHES; ++x) {
+		srch->pieces[x].rm_so = -1;
+		srch->pieces[x].rm_eo = -1;
+	}
+	srch->entire.rm_so = -1;
+	srch->entire.rm_eo = -1;
 	return srch;
 }
 
@@ -440,6 +470,8 @@ void rmsrch(SRCH *srch)
 {
 	int x;
 
+	if (srch->comp)
+		joe_regfree(srch->comp);
 	prm(markb);
 	prm(markk);
 	prm(srch->wrap_p);
@@ -453,12 +485,9 @@ void rmsrch(SRCH *srch)
 		markk->owner = &markk;
 		markk->xcol = piscol(markk);
 	}
-	for (x = 0; x != 26; ++x)
-		vsrm(srch->pieces[x]);
 	frchn(&fsr, &srch->recs);
 	vsrm(srch->pattern);
 	vsrm(srch->replacement);
-	vsrm(srch->entire);
 	joe_free(srch);
 	updall();
 }
@@ -467,10 +496,11 @@ void rmsrch(SRCH *srch)
  * p is advanced past the inserted text
  */
 
-static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len)
+static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len, B **entire, B **pieces)
 {
 	ptrdiff_t x;
 	off_t starting = p->byte;
+	int nth;
 
 	while (len) {
 		for (x = 0; x != len && s[x] != '\\'; ++x) ;
@@ -480,27 +510,35 @@ static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len)
 			len -= x;
 			s += x;
 		} else if (len >= 2) {
-			if (((s[1] >= 'a' && s[1] <= 'z') || (s[1] >= 'A' && s[1] <= 'Z'))
-				 && srch->pieces[(s[1] & 0x1f) - 1]) {
-				binsm(p, sv(srch->pieces[(s[1] & 0x1f) - 1]));
-				pfwrd(p, sLEN(srch->pieces[(s[1] & 0x1f) - 1]));
+			if ((s[1] >= 'a' && s[1] <= 'z') || (s[1] >= 'A' && s[1] <= 'Z')) {
+				nth = (s[1] & 0x1f) - 1;
+				insertit:
+				if (pieces[nth]) {
+					off_t l = pieces[nth]->eof->byte;
+					binsb(p, bcpy(pieces[nth]->bof, pieces[nth]->eof));
+					pfwrd(p, l);
+				}
 				s += 2;
 				len -= 2;
-			} else if (s[1] >= '0' && s[1] <= '9' && srch->pieces[s[1] - '0']) {
-				binsm(p, sv(srch->pieces[s[1] - '0']));
-				pfwrd(p, sLEN(srch->pieces[s[1] - '0']));
-				s += 2;
-				len -= 2;
-			} else if (s[1] == '&' && srch->entire) {
-				binsm(p, sv(srch->entire));
-				pfwrd(p, sLEN(srch->entire));
+			} else if (s[1] >= '0' && s[1] <= '9') {
+				nth = s[1] - '0';
+				goto insertit;
+			} else if (s[1] == '&') {
+				if (*entire) {
+					off_t l = entire[0]->eof->byte;
+					binsb(p, bcpy(entire[0]->bof, entire[0]->eof));
+					pfwrd(p, l);
+				}
 				s += 2;
 				len -= 2;
 			} else {
-				const char *a=s+x;
-				ptrdiff_t l=len-x;
-				binsc(p,escape(p->b->o.charmap->type,&a,&l,NULL));
-				pgetc(p);
+				const char *a = s + x;
+				ptrdiff_t l = len - x;
+				int ch = escape(p->b->o.charmap->type, &a, &l, NULL);
+				if (ch != -256) {
+					binsc(p, ch);
+					pgetc(p);
+				}
 				len -= a - s;
 				s = a;
 			}
@@ -668,12 +706,11 @@ static int set_pattern(W *w, char *s, void *obj, int *notify)
 	else
 		p = joe_gettext(_("(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "));
 
-	vsrm(srch->pattern);
-	if (sLEN(s) || !globalsrch || !pico)
-		srch->pattern = s;
-	else {
+	if (sLEN(s) || !globalsrch || !pico) {
+		setpat(srch, s);
+	} else {
 		vsrm(s);
-		srch->pattern = vsdup(globalsrch->pattern);
+		setpat(srch, vsdup(globalsrch->pattern));
 	}
 	if ((pbw = wmkpw(bw->parent, p, NULL, set_options, srchopt, pfabort, utypebw, srch, notify, bw->b->o.charmap, 0)) != NULL) {
 		char buf[10];
@@ -798,7 +835,12 @@ int pqrepl(W *w, int k)
 
 static int doreplace(BW *bw, SRCH *srch)
 {
+	P *from, *to;
 	P *q;
+
+	int x;
+	B *pieces[NMATCHES];
+	B *entire;
 
 	if (!modify_logic(bw,bw->b))
 		return -1;
@@ -806,17 +848,49 @@ static int doreplace(BW *bw, SRCH *srch)
 		markk->end = 1;
 	if (srch->markk)
 		srch->markk->end = 1;
+
+	/* Copy matched strings before we delete */
+	from = pdup(bw->cursor, "doreplace:from");
+	to = pdup(bw->cursor, "doreplace:to");
+	for (x = 0; x != NMATCHES; ++x) {
+		Regmatch_t *m = &srch->pieces[x];
+		if (m->rm_eo > m->rm_so) {
+			pgoto(from, m->rm_so);
+			pgoto(to, m->rm_eo);
+			pieces[x] = bcpy(from, to);
+		} else {
+			pieces[x] = 0;
+		}
+	}
+	if (srch->entire.rm_eo > srch->entire.rm_so) {
+		pgoto(from, srch->entire.rm_so);
+		pgoto(to, srch->entire.rm_eo);
+		entire = bcpy(from, to);
+	} else {
+		entire = 0;
+	}
+	prm(from);
+	prm(to);
+
 	q = pdup(bw->cursor, "doreplace");
 	if (srch->backwards) {
-		q = pfwrd(q, sLEN(srch->entire));
+		q = pfwrd(q, srch->entire.rm_eo - srch->entire.rm_so);
 		bdel(bw->cursor, q);
 		prm(q);
 	} else {
-		q = pbkwd(q, sLEN(srch->entire));
+		q = pbkwd(q, (srch->entire.rm_eo - srch->entire.rm_so));
 		bdel(q, bw->cursor);
 		prm(q);
 	}
-	insert(srch, bw->cursor, sv(srch->replacement));
+	insert(srch, bw->cursor, sv(srch->replacement), &entire, pieces);
+
+	/* Delete copies */
+	for (x = 0; x != NMATCHES; ++x)
+		if (pieces[x])
+			brm(pieces[x]);
+	if (entire)
+		brm(entire);
+
 	srch->addr = bw->cursor->byte;
 	srch->last_repl = bw->cursor->byte;
 	if (markk)
@@ -916,26 +990,26 @@ static int restrict_to_block(BW *bw, SRCH *srch)
 		if (!square) {
 			if (bw->cursor->byte < srch->markb->byte)
 				return 1;
-			else if (bw->cursor->byte + sLEN(srch->entire) > srch->markk->byte)
+			else if (bw->cursor->byte + (srch->entire.rm_eo - srch->entire.rm_so) > srch->markk->byte)
 				return -1;
 		} else {
 			if (bw->cursor->line < srch->markb->line)
 				return 1;
 			else if (bw->cursor->line > srch->markk->line)
 				return -1;
-			else if (piscol(bw->cursor) + sLEN(srch->entire) > srch->markk->xcol || piscol(bw->cursor) < srch->markb->xcol)
+			else if (piscol(bw->cursor) + (srch->entire.rm_eo - srch->entire.rm_so) > srch->markk->xcol || piscol(bw->cursor) < srch->markb->xcol)
 				return -1;
 	} else if (!square) {
 		if (bw->cursor->byte > srch->markk->byte)
 			return 1;
-		else if (bw->cursor->byte - sLEN(srch->entire) < srch->markb->byte)
+		else if (bw->cursor->byte - (srch->entire.rm_eo - srch->entire.rm_so) < srch->markb->byte)
 			return -1;
 	} else {
 		if (bw->cursor->line > srch->markk->line)
 			return 1;
 		if (bw->cursor->line < srch->markb->line)
 			return -1;
-		if (piscol(bw->cursor) > srch->markk->xcol || piscol(bw->cursor) - sLEN(srch->entire) < srch->markb->xcol)
+		if (piscol(bw->cursor) > srch->markk->xcol || piscol(bw->cursor) - (srch->entire.rm_eo - srch->entire.rm_so) < srch->markb->xcol)
 			return -1;
 	}
 	return 0;
@@ -965,6 +1039,13 @@ static int fnext(BW *bw, SRCH *srch)
 			--srch->repeat;
 	}
 	again:
+	/* Clear compiled version of pattern if character map changed (perhaps because we switched buffer) */
+	if (srch->comp && srch->comp->cmap != bw->b->o.charmap)
+		clrcomp(srch);
+	/* Compile pattern if we don't already have it */
+	if (!srch->comp) {
+		srch->comp = joe_regcomp(bw->b->o.charmap, srch->pattern, sLEN(srch->pattern), 0);
+	}
 	if (srch->backwards)
 		sta = searchb(bw, srch, bw->cursor);
 	else
@@ -1068,16 +1149,16 @@ bye:		if (!srch->flg && !srch->rest) {
 		/* Make sure found text is fully on screen */
 		if(srch->backwards) {
 			bw->offset=0;
-			pfwrd(bw->cursor,sLEN(srch->entire));
+			pfwrd(bw->cursor,(srch->entire.rm_eo - srch->entire.rm_so));
 			bw->cursor->xcol = piscol(bw->cursor);
 			dofollows();
-			pbkwd(bw->cursor,sLEN(srch->entire));
+			pbkwd(bw->cursor,(srch->entire.rm_eo - srch->entire.rm_so));
 		} else {
 			bw->offset=0;
-			pbkwd(bw->cursor,sLEN(srch->entire));
+			pbkwd(bw->cursor,(srch->entire.rm_eo - srch->entire.rm_so));
 			bw->cursor->xcol = piscol(bw->cursor);
 			dofollows();
-			pfwrd(bw->cursor,sLEN(srch->entire));
+			pfwrd(bw->cursor,(srch->entire.rm_eo - srch->entire.rm_so));
 		}
 
 		if (srch->replace) {
@@ -1087,13 +1168,13 @@ bye:		if (!srch->flg && !srch->rest) {
 				pdupown(bw->cursor, &markb, "dopfnext");
 				markb->xcol = piscol(markb);
 				pdupown(markb, &markk, "dopfnext");
-				pfwrd(markk, sLEN(srch->entire));
+				pfwrd(markk, (srch->entire.rm_eo - srch->entire.rm_so));
 				markk->xcol = piscol(markk);
 			} else {
 				pdupown(bw->cursor, &markk, "dopfnext");
 				markk->xcol = piscol(markk);
 				pdupown(bw->cursor, &markb, "dopfnext");
-				pbkwd(markb, sLEN(srch->entire));
+				pbkwd(markb, (srch->entire.rm_eo - srch->entire.rm_so));
 				markb->xcol = piscol(markb);
 			}
 			srch->flg = 1;

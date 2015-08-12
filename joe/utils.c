@@ -921,7 +921,7 @@ int parse_class(const char * *pp, struct interval **array, int *size)
 {
 	static struct interval simple;
 	const char *p= *pp;
-	struct unicat *cat = NULL;
+	struct Cclass *cat = NULL;
 	int a, b;
 	if(!*p)
 		return -1;
@@ -958,8 +958,8 @@ int parse_class(const char * *pp, struct interval **array, int *size)
 	a = escape(1, &p, NULL, &cat);
 
 	if (a == -256 && cat) {
-		*array = cat->table;
-		*size = cat->size;
+		*array = cat->intervals;
+		*size = cat->len;
 		*pp = p;
 		return 0;
 	}

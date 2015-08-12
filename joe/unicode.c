@@ -68,321 +68,276 @@ int *lowerize(int *d, ptrdiff_t len, const int *s)
 	return org;
 }
 
-/* Lookup unicode category */
+/* Get a character class containing all characters matching a particular unicode category or block */
 
-static struct unicat *derived;
+HASH *unicat_hash;
 
-struct unicat *unicatlookup(const char *cat)
+struct Cclass *unicode(const char *cat)
 {
-	struct interval_list *l = 0;
-	struct cmap cmap;
-	time_t ti;
-
-	struct unicat *der;
-	ptrdiff_t x, y, z, a;
-	ptrdiff_t size;
-	struct Rtree *r;
-	/* Native category like Lu */
-	for (x = 0; unicat[x].name; ++x)
-		if (!zcmp(unicat[x].name, cat))
-			return &unicat[x];
-	/* Derived category like L: maybe we already have it? */
-	for (der = derived; der; der = der->next)
-		if (!zcmp(der->name, cat))
-			return der;
-	/* We don't have it: try to create it */
-	size = 0;
-	for (x = 0; unicat[x].name; ++x)
-		if (unicat[x].name[1] && !unicat[x].name[2] && !zncmp(unicat[x].name, cat, zlen(cat)))
-			size += unicat[x].size;
-	/* No match */
-	if (!size)
-		return 0;
-	der = (struct unicat *)joe_malloc(sizeof(struct unicat));
-	der->next = derived;
-	derived = der;
-	der->name = zdup(cat);
-	der->size = size;
-	der->table = (struct interval *)joe_malloc(sizeof(struct interval) * der->size);
-	y = 0;
-	for (x = 0; unicat[x].name; ++x)
-		if (unicat[x].name[1] && !unicat[x].name[2] && !zncmp(unicat[x].name, cat, zlen(cat))) {
-			mcpy(der->table + y, unicat[x].table, sizeof(struct interval) * unicat[x].size);
-			y += unicat[x].size;
-		}
-	interval_sort(der->table, der->size);
-
-#if 0
-	for (x = 0; x != der->size; ++x)
-		printf("\r\n%d %d\r\n", der->table[x].first, der->table[x].last);
-
-	sleep(10);
-#endif
-
-#if 0
-	l = interval_set(l, der->table, der->size, (void *)1);
-	cmap_build(&cmap, l, NULL);
-	ti = time(0);
-	y = 0;
-	for (x = 0; x != 1000000000; ++x) {
-		y += (ptrdiff_t)cmap_lookup(&cmap, 0xA0);
-	}
-	ti = time(0) - ti;
-	printf("%d %d\n", ti, y);
-#endif
-
-#if 0
-	r = mkrtree();
-	for (x = 0; x != der->size; ++x)
-		for (y = der->table[x].first; y <= der->table[x].last; ++y)
-			rtree_add(r, y, 1);
-	printf("\r\n\n%s: %d\r\n\n", cat, der->size);
-	rtree_show(r);
-
-//	rtree_opt(r);
-
-	ti = time(0);
-	y = 0;
-	for (x = 0; x != 1000000000; ++x) {
-		y += rtree_find_unopt(r, 0xA0);
-	}
-	ti = time(0) - ti;
-	printf("%d %d\n", ti, y);
-	
-
-	sleep(15);
-#endif
-
-	return der;
-}
-
-int unicatcheck(struct unicat *cat, int ch)
-{
-	ptrdiff_t x;
-	if (!cat)
-		return 0;
-	if (ch < 0)
-		ch += 256;
-	return interval_test(cat->table, cat->size, ch) != -1;
-//	for (x = 0; x != cat->size; ++x)
-//		if (ch >= cat->table[x].first && ch <= cat->table[x].last)
-//			return 1;
-	return 0;
-}
-
-/*
-int main()
-{
-	int hi[]={'H','E','L','L','O',0};
-	int out[49];
-	int x;
-	lowerize(out, SIZEOF(out)/SIZEOF(out[0]), hi);
-	for (x = 0; x != 10; ++x)
-	  printf("%d\n", out[x]);
-}
-*/
-
-/*
-int main(int argc, char *argv[])
-{
-	char buf[80];
-	PHASH *h;
-	init_fold_hash_table();
-	h = fold_hash_table;
-	printf("Select=%x Len=%u Count=%u Size=%u\n", h->select, h->len, h->count, (h->len * sizeof(struct Phash_entry)));
-	while (gets(buf)) {
-		if (buf[0] == 'f') {
-			unsigned key;
-			int val;
-			sscanf(buf + 2,"%x", &key);
-			val = phash_find(h, key);
-			if (val != -1)
-				printf("%d %x..%x\n", val, fold_table[val].first, fold_table[val].last);
-		} else if (buf[0] == 's') {
-			unsigned y, x;
-			for (y = 0; y != h->len; ++y) {
-				for (x = 0; x != PHASH_WAYS; ++x)
-					if (h->table[y].vals[x])
-						printf("%x.%x: %x\n", y, x, h->table[y].keys[x]);
+	struct Cclass *m;
+	if (!unicat_hash)
+		unicat_hash = htmk(256);
+	m = htfind(unicat_hash, cat);
+	if (!m) {
+		int x;
+		m = (struct Cclass *)joe_malloc(SIZEOF(struct Cclass));
+		cclass_init(m);
+		for (x = 0; unicat[x].name; ++x)
+			/* Match exact category name or set of categories like 'L' matches 'Ll', 'Lu', etc. */
+			if (!zcmp(unicat[x].name, cat) || (cat[0] == unicat[x].name[0] && !cat[1] && unicat[x].name[1] && !unicat[x].name[2])) {
+				cclass_merge(m, unicat[x].intervals, unicat[x].len);
 			}
+		if (!m->len) {
+			joe_free(m);
+			m = 0;
+		} else {
+			cclass_opt(m);
+			htadd(unicat_hash, zdup(cat), m);
 		}
 	}
+	return m;
 }
+
+/* iswxxx functions */
+
+struct Cclass cclass_upper[1];
+int joe_iswupper(struct charmap *foo, int ch) { return cclass_lookup(cclass_upper, ch); }
+
+struct Cclass cclass_lower[1];
+int joe_iswlower(struct charmap *foo, int ch) { return cclass_lookup(cclass_lower, ch); }
+
+struct Cclass cclass_alpha[1];
+int joe_iswalpha(struct charmap *foo, int ch) { return cclass_lookup(cclass_alpha, ch); }
+
+struct Cclass cclass_alpha_[1];
+int joe_iswalpha_(struct charmap *foo, int ch) { return cclass_lookup(cclass_alpha_, ch); }
+
+struct Cclass cclass_alnum[1];
+int joe_iswalnum(struct charmap *foo, int ch) { return cclass_lookup(cclass_alnum, ch); }
+
+struct Cclass cclass_alnum_[1];
+int joe_iswalnum_(struct charmap *foo, int ch) { return cclass_lookup(cclass_alnum_, ch); }
+
+struct Cclass cclass_digit[1];
+int joe_iswdigit(struct charmap *foo, int ch) { return cclass_lookup(cclass_digit, ch); }
+
+struct Cclass cclass_notdigit[1];
+
+struct Cclass cclass_xdigit[1];
+int joe_iswxdigit(struct charmap *foo, int ch) { return cclass_lookup(cclass_xdigit, ch); }
+
+struct Cclass cclass_punct[1];
+int joe_iswpunct(struct charmap *foo, int ch) { return cclass_lookup(cclass_punct, ch); }
+
+struct Cclass cclass_space[1];
+int joe_iswspace(struct charmap *foo, int ch) { return cclass_lookup(cclass_space, ch); }
+
+struct Cclass cclass_notspace[1];
+
+struct Cclass cclass_blank[1];
+int joe_iswblank(struct charmap *foo, int ch) { return cclass_lookup(cclass_blank, ch); }
+
+struct Cclass cclass_ctrl[1];
+int joe_iswctrl(struct charmap *foo, int ch) { return cclass_lookup(cclass_ctrl, ch); }
+
+struct Cclass cclass_graph[1];
+int joe_iswgraph(struct charmap *foo, int ch) { return cclass_lookup(cclass_graph, ch); }
+
+struct Cclass cclass_print[1];
+int joe_iswprint(struct charmap *foo, int ch) { return cclass_lookup(cclass_print, ch); }
+
+struct Cclass cclass_word[1];
+struct Cclass cclass_notword[1];
+
+/* This is how ASCII is classified in UNICODE:
+
+       Cc: 00 - 1F, 7F
+       Zs: 20
+       Po: ! " # % & ' * , . / : ; ? @ \
+       Sc: $
+       Pd: -
+       Ps: ( [ {
+       Pe: ) ] }
+       Sm: + < = > | ~
+       Sk: ^ `
+       Pc: _
+       Nd: 0 - 9
+       Lu: A - Z
+       Ll: a - z
+
+   Notes: For "blank", you probably want Zs and tab
+          For "whitespace", you probably want Zs, tab, newline, carriage return and form-feed
+          For "identifier start", you probably want letters, Pc and maybe Sc
+          For "identifier rest", you probably want letters, digits, Pc and maybe Sc
+   
+Convenient character classes:
+
+   see http://www.w3.org/TR/xml11/#NT-NameStartChar
+   see http://www.w3.org/TR/xmlschma11-2/#regexs
+
+	cclass_digit:		\d	Digit: same as \p{Nd}
+	cclass_notdigit:	\D	opposite
+
+	cclass_space:		\s	space, tab, newline, return [JOE also includes formfeed!]
+	cclass_notspace:	\S	opposite
+
+				\i	NameStartChar
+					: A-Z _ a-z C0-D6 D8-F6 F8-2FF 370-37D 37F-1FFF 200C-200D
+					2070-218F 2C00-2FEF 3001-D7FF F900-FDCF FDF0-FFFD 10000-EFFFF
+				\I	opposite
+
+				\c	NameChar
+					\i - . 0-9 B7 0300-036F 203F-2040
+				\C	opposite
+
+	cclass_word:		\w	word character: [\x{0}-\x{10ffff}]-[\p{P}\p{Z}\p{C}]
+	cclass_notword:		\W	opposite
 */
-
-static struct Rset rset_upper[1];
-
-int joe_iswupper(struct charmap *foo, int ch) { return rset_lookup(rset_upper, ch); }
-
-static struct Rset rset_lower[1];
-
-int joe_iswlower(struct charmap *foo, int ch) { return rset_lookup(rset_lower, ch); }
-
-static struct Rset rset_alpha[1];
-
-int joe_iswalpha(struct charmap *foo, int ch) { return rset_lookup(rset_alpha, ch); }
-
-static struct Rset rset_alpha_[1];
-
-int joe_iswalpha_(struct charmap *foo, int ch) { return rset_lookup(rset_alpha_, ch); }
-
-static struct Rset rset_alnum[1];
-
-int joe_iswalnum(struct charmap *foo, int ch) { return rset_lookup(rset_alnum, ch); }
-
-static struct Rset rset_alnum_[1];
-
-int joe_iswalnum_(struct charmap *foo, int ch) { return rset_lookup(rset_alnum_, ch); }
-
-static struct Rset rset_digit[1];
-
-int joe_iswdigit(struct charmap *foo, int ch) { return rset_lookup(rset_digit, ch); }
-
-static struct Rset rset_xdigit[1];
-
-int joe_iswxdigit(struct charmap *foo, int ch) { return rset_lookup(rset_xdigit, ch); }
-
-static struct Rset rset_punct[1];
-
-int joe_iswpunct(struct charmap *foo, int ch) { return rset_lookup(rset_punct, ch); }
-
-static struct Rset rset_space[1];
-
-int joe_iswspace(struct charmap *foo, int ch) { return rset_lookup(rset_space, ch); }
-
-static struct Rset rset_blank[1];
-
-int joe_iswblank(struct charmap *foo, int ch) { return rset_lookup(rset_blank, ch); }
-
-static struct Rset rset_ctrl[1];
-
-int joe_iswctrl(struct charmap *foo, int ch) { return rset_lookup(rset_ctrl, ch); }
-
-static struct Rset rset_graph[1];
-
-int joe_iswgraph(struct charmap *foo, int ch) { return rset_lookup(rset_graph, ch); }
-
-static struct Rset rset_print[1];
-
-int joe_iswprint(struct charmap *foo, int ch) { return rset_lookup(rset_print, ch); }
 
 void joe_iswinit()
 {
-	struct unicat *cat;
-	struct interval x[1];
+	/* Upper */
+	cclass_init(cclass_upper);
+	cclass_union(cclass_upper, unicode("Lu"));
+	cclass_opt(cclass_upper);
 
-	rset_init(rset_upper);
-	if ((cat = unicatlookup("Lu"))) rset_set(rset_upper, cat->table, cat->size);
-	rset_opt(rset_upper);
-	/* printf("\nUpper\n"); rset_show(rset_upper); */
+	/* Lower */
+	cclass_init(cclass_lower);
+	cclass_union(cclass_lower, unicode("Ll"));
+	cclass_opt(cclass_lower);
 
-	rset_init(rset_lower);
-	if ((cat = unicatlookup("Ll"))) rset_set(rset_lower, cat->table, cat->size);
-	rset_opt(rset_lower);
-	/* printf("\nLower\n"); rset_show(rset_lower); */
+	/* Alphabetical */
+	cclass_init(cclass_alpha);
+	cclass_union(cclass_alpha, unicode("L"));
+	cclass_union(cclass_alpha, unicode("M"));
+	cclass_opt(cclass_alpha);
 
-	rset_init(rset_alpha);
-	if ((cat = unicatlookup("L"))) rset_set(rset_alpha, cat->table, cat->size);
-	if ((cat = unicatlookup("M"))) rset_set(rset_alpha, cat->table, cat->size);
-	rset_opt(rset_alpha);
-	/* printf("\nAlpha\n"); rset_show(rset_alpha); */
+	/* Alphabetical + underscores */
+	cclass_init(cclass_alpha_);
+	cclass_union(cclass_alpha_, unicode("L"));
+	cclass_union(cclass_alpha_, unicode("M"));
+	cclass_union(cclass_alpha_, unicode("Pc"));
+	cclass_opt(cclass_alpha_);
 
-	rset_init(rset_alpha_);
-	if ((cat = unicatlookup("L"))) rset_set(rset_alpha_, cat->table, cat->size);
-	if ((cat = unicatlookup("M"))) rset_set(rset_alpha_, cat->table, cat->size);
-	if ((cat = unicatlookup("Pc"))) rset_set(rset_alpha_, cat->table, cat->size);
-	rset_opt(rset_alpha_);
-	/* printf("\nAlpha_\n"); rset_show(rset_alpha_); */
+	/* Alphanumeric */
+	cclass_init(cclass_alnum);
+	cclass_union(cclass_alnum, unicode("L"));
+	cclass_union(cclass_alnum, unicode("M"));
+	cclass_union(cclass_alnum, unicode("N"));
+	cclass_opt(cclass_alnum);
 
-	rset_init(rset_alnum);
-	if ((cat = unicatlookup("L"))) rset_set(rset_alnum, cat->table, cat->size);
-	if ((cat = unicatlookup("M"))) rset_set(rset_alnum, cat->table, cat->size);
-	if ((cat = unicatlookup("N"))) rset_set(rset_alnum, cat->table, cat->size);
-	rset_opt(rset_alnum);
-	/* printf("\nAlnum\n"); rset_show(rset_alnum); */
+	/* Alphanumeric + underscores */
+	cclass_init(cclass_alnum_);
+	cclass_union(cclass_alnum_, unicode("L"));
+	cclass_union(cclass_alnum_, unicode("M"));
+	cclass_union(cclass_alnum_, unicode("N"));
+	cclass_union(cclass_alnum_, unicode("Pc"));
+	cclass_opt(cclass_alnum_);
 
-	rset_init(rset_alnum_);
-	if ((cat = unicatlookup("L"))) rset_set(rset_alnum_, cat->table, cat->size);
-	if ((cat = unicatlookup("M"))) rset_set(rset_alnum_, cat->table, cat->size);
-	if ((cat = unicatlookup("N"))) rset_set(rset_alnum_, cat->table, cat->size);
-	if ((cat = unicatlookup("Pc"))) rset_set(rset_alnum_, cat->table, cat->size);
-	rset_opt(rset_alnum_);
-	/* printf("\nAlnum_\n"); rset_show(rset_alnum_); */
+	/* Digit */
+	cclass_init(cclass_digit);
+	cclass_union(cclass_digit, unicode("Nd"));
+	cclass_opt(cclass_digit);
 
-	rset_init(rset_digit);
-	if ((cat = unicatlookup("Nd"))) rset_set(rset_digit, cat->table, cat->size);
-	rset_opt(rset_digit);
-	/* printf("\nDigit\n"); rset_show(rset_digit); */
+	/* Not a digit */
+	cclass_init(cclass_notdigit);
+	cclass_union(cclass_notdigit, cclass_digit);
+	cclass_inv(cclass_notdigit);
+	cclass_opt(cclass_notdigit);
 
-	rset_init(rset_xdigit);
-	if ((cat = unicatlookup("Nd"))) rset_set(rset_xdigit, cat->table, cat->size);
-	x->first = 'A'; x->last = 'F'; rset_set(rset_xdigit, x, 1);
-	x->first = 'a'; x->last = 'f'; rset_set(rset_xdigit, x, 1);
-	rset_opt(rset_xdigit);
-	/* printf("\nXdigit\n"); rset_show(rset_xdigit); */
+	/* Hex digit */
+	cclass_init(cclass_xdigit);
+	cclass_union(cclass_xdigit, unicode("Nd"));
+	cclass_add(cclass_xdigit, 'a', 'f');
+	cclass_add(cclass_xdigit, 'A', 'F');
+	cclass_opt(cclass_xdigit);
 
-	rset_init(rset_punct);
-	if ((cat = unicatlookup("P"))) rset_set(rset_punct, cat->table, cat->size);
-	rset_opt(rset_punct);
-	/* printf("\nPunct\n"); rset_show(rset_punct); */
+	/* Punctuation */
+	cclass_init(cclass_punct);
+	cclass_union(cclass_punct, unicode("P"));
+	cclass_opt(cclass_punct);
 
-	rset_init(rset_space);
-	rset_add(rset_space, ' ');
-	rset_add(rset_space, '\t');
-	rset_add(rset_space, '\r');
-	rset_add(rset_space, '\n');
-	rset_add(rset_space, '\f');
-	if ((cat = unicatlookup("Z"))) rset_set(rset_space, cat->table, cat->size);
-	rset_opt(rset_space);
-	/* printf("\nSpace\n"); rset_show(rset_space); */
+	/* Whitespace */
+	cclass_init(cclass_space);
+	cclass_add(cclass_space, '\t', '\t');
+	cclass_add(cclass_space, '\r', '\r');
+	cclass_add(cclass_space, '\n', '\n');
+	cclass_add(cclass_space, '\f', '\f');
+	cclass_union(cclass_space, unicode("Z"));
+	cclass_opt(cclass_space);
 
-	rset_init(rset_blank);
-	rset_add(rset_blank, ' ');
-	rset_add(rset_blank, '\t');
-	if ((cat = unicatlookup("Zs"))) rset_set(rset_blank, cat->table, cat->size);
-	rset_opt(rset_blank);
-	/* printf("\nBlank\n"); rset_show(rset_blank); */
+	/* Not whitespace */
+	cclass_init(cclass_notspace);
+	cclass_union(cclass_notspace, cclass_space);
+	cclass_inv(cclass_notspace);
+	cclass_opt(cclass_notspace);
 
-	rset_init(rset_ctrl);
-	if ((cat = unicatlookup("C"))) rset_set(rset_ctrl, cat->table, cat->size);
-	if ((cat = unicatlookup("Zl"))) rset_set(rset_ctrl, cat->table, cat->size);
-	if ((cat = unicatlookup("Zp"))) rset_set(rset_ctrl, cat->table, cat->size);
-	rset_opt(rset_ctrl);
-	/* printf("\nCtrl\n"); rset_show(rset_ctrl); */
+	/* Blanks: tab included */
+	cclass_init(cclass_blank);
+	cclass_add(cclass_blank, '\t', '\t');
+	cclass_union(cclass_blank, unicode("Zs"));
+	cclass_opt(cclass_blank);
 
-	rset_init(rset_graph);
-	if ((cat = unicatlookup("L"))) rset_set(rset_graph, cat->table, cat->size);
-	if ((cat = unicatlookup("M"))) rset_set(rset_graph, cat->table, cat->size);
-	if ((cat = unicatlookup("S"))) rset_set(rset_graph, cat->table, cat->size);
-	if ((cat = unicatlookup("N"))) rset_set(rset_graph, cat->table, cat->size);
-	if ((cat = unicatlookup("P"))) rset_set(rset_graph, cat->table, cat->size);
-	rset_opt(rset_graph);
-	/* printf("\nGraph\n"); rset_show(rset_graph); */
+	/* Control characters */
+	cclass_init(cclass_ctrl);
+	cclass_union(cclass_ctrl, unicode("C"));
+	cclass_union(cclass_ctrl, unicode("Zl"));
+	cclass_union(cclass_ctrl, unicode("Zp"));
+	cclass_opt(cclass_ctrl);
 
-	rset_init(rset_print);
-	if ((cat = unicatlookup("L"))) rset_set(rset_print, cat->table, cat->size);
-	if ((cat = unicatlookup("M"))) rset_set(rset_print, cat->table, cat->size);
-	if ((cat = unicatlookup("S"))) rset_set(rset_print, cat->table, cat->size);
-	if ((cat = unicatlookup("N"))) rset_set(rset_print, cat->table, cat->size);
-	if ((cat = unicatlookup("P"))) rset_set(rset_print, cat->table, cat->size);
-	if ((cat = unicatlookup("Zs"))) rset_set(rset_print, cat->table, cat->size);
-	rset_opt(rset_print);
-	/* printf("\nPrint\n"); rset_show(rset_print); */
-	/* exit(-1); */
+	/* Printable characters (kind of inverse of control characters) */
+	cclass_init(cclass_print);
+	cclass_union(cclass_print, unicode("L"));
+	cclass_union(cclass_print, unicode("M"));
+	cclass_union(cclass_print, unicode("S"));
+	cclass_union(cclass_print, unicode("N"));
+	cclass_union(cclass_print, unicode("P"));
+	cclass_union(cclass_print, unicode("Zs"));
+	cclass_opt(cclass_print);
+
+	/* Graphical characters (no spaces) */
+	cclass_init(cclass_graph);
+	cclass_union(cclass_graph, unicode("L"));
+	cclass_union(cclass_graph, unicode("M"));
+	cclass_union(cclass_graph, unicode("S"));
+	cclass_union(cclass_graph, unicode("N"));
+	cclass_union(cclass_graph, unicode("P"));
+	cclass_opt(cclass_graph);
+
+	/* Not word characters */
+	cclass_init(cclass_notword);
+	cclass_union(cclass_notword, unicode("C"));
+	cclass_union(cclass_notword, unicode("P"));
+	cclass_union(cclass_notword, unicode("Z"));
+	cclass_opt(cclass_notword);
+
+	/* Word characters */
+	cclass_init(cclass_word);
+	cclass_union(cclass_word, cclass_notword);
+	cclass_inv(cclass_word);
+	cclass_opt(cclass_word);
 }
 
+
 /* Digit value of any \p{Nd} digit */
+/* Note that intervals in Nd table are not merged! */
 
 static struct unicat *digtable = 0;
 
 int digval(int ch)
 {
-	if (!digtable)
-		digtable = unicatlookup("Nd");
+	if (!digtable) {
+		int x;
+		for (x = 0; unicat[x].name; ++x)
+			if (!zcmp(unicat[x].name, "Nd")) {
+				digtable = &unicat[x];
+				break;
+			}
+	}
 	if (digtable) {
-		int idx = interval_test(digtable->table, digtable->size, ch);
+		int idx = interval_test(digtable->intervals, digtable->len, ch);
 		if (idx != -1) {
-			return ch - digtable->table[idx].first;
+			return ch - digtable->intervals[idx].first;
 		}
 	}
 	return -1;

@@ -209,15 +209,12 @@ void setopt(B *b, const char *parsed_name)
 {
 	OPTIONS *o;
 	int x;
-	char *pieces[26];
-	for (x = 0; x!=26; ++x)
-		pieces[x] = NULL;
 
 	for (o = options_list; o; o = o->next)
 		if (rmatch(o->name_regex, parsed_name)) {
 			if(o->contents_regex) {
 				P *p = pdup(b->bof, "setopt");
-				if (pmatch(pieces,o->contents_regex,zlen(o->contents_regex),p,0,0)) {
+				if (0 == pmatch(NULL, 0, o->contents_regex, zlen(o->contents_regex), p, 0, 0)) {
 					prm(p);
 					b->o = *o;
 					lazy_opts(b, &b->o);
@@ -235,9 +232,7 @@ void setopt(B *b, const char *parsed_name)
 	b->o = fdefault;
 	lazy_opts(b, &b->o);
 
-	done:
-	for (x = 0; x!=26; ++x)
-		vsrm(pieces[x]);
+	done:;
 }
 
 /* Table of options and how to set them */

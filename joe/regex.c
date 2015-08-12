@@ -9,11 +9,12 @@
 
 /* Parse one character.  It can be UTF-8 if utf8 is set.  b has pointer to string length or NULL for zero-terminated strings */
 
-/* Returns the character or -256 for a category (in which case *cat is filled in if it's not NULL */
+/* Returns the character or -256 for a category (in which case *cat is filled in if it's not NULL) */
+/* Returns NUL if a/b is at end of string */
 
-int escape(int utf8, const char **a, ptrdiff_t *b, struct unicat **cat)
+int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 {
-	int c;
+	int c = 0;
 	const char *s = *a;
 	ptrdiff_t l;
 
@@ -22,10 +23,60 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct unicat **cat)
 	else
 		l = -1;
 
-	if (*s == '\\' && (b ? l >= 2 : s[1])) { /* Backslash.. */
+	if ((b ? l >= 2 : s[1]) && *s == '\\') { /* Backslash.. */
 		++s; --l;
 		switch (*s) {
-			case 'n': { /* Newline */
+			case 'w': { /* Word */
+				++s; --l;
+				c = -256;
+				
+				if (cat)
+					*cat = cclass_word;
+				break;
+			} case 'W': { /* Not a word */
+				++s; --l;
+				c = -256;
+				
+				if (cat)
+					*cat = cclass_notword;
+				break;
+			} case 's': { /* Space */
+				++s; --l;
+				c = -256;
+				
+				if (cat)
+					*cat = cclass_space;
+				break;
+			} case 'S': { /* Not a space */
+				++s; --l;
+				c = -256;
+				
+				if (cat)
+					*cat = cclass_notspace;
+				break;
+			} case 'd': { /* Digit */
+				++s; --l;
+				c = -256;
+				
+				if (cat)
+					*cat = cclass_digit;
+				break;
+			} case 'D': { /* Not a digit */
+				++s; --l;
+				c = -256;
+				
+				if (cat)
+					*cat = cclass_notdigit;
+				break;
+			} case 'c': { /* Control */
+				c = 0;
+				++s; --l;
+				if (l) {
+					c = (*s++ & 0x1F);
+					--l;
+				}
+				break;
+			} case 'n': { /* Newline */
 				c = 10;
 				++s; --l;
 				break;
@@ -65,7 +116,7 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct unicat **cat)
 					++s; --l;
 				}
 				break;
-			} case 'p': { /* Character class */
+			} case 'p': { /* Character class made from unicode category */
 				++s; --l;
 				c = 'X';
 				if ((!b || l > 0) && *s == '{') {
@@ -83,7 +134,7 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct unicat **cat)
 					buf[idx] = 0;
 					c = -256;
 					if (cat)
-						*cat = unicatlookup(buf);
+						*cat = unicode(buf);
 				}
 				break;
 			} case 'x': case 'X': { /* Hex or unicode */
@@ -141,11 +192,13 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct unicat **cat)
 				break;
 			}
 		}
-	} else if (utf8) {
-		c = utf8_decode_fwrd(&s, (b ? &l : NULL));
-	} else {
-		c = *s++;
-		--l;
+	} else if (!b || l > 0) {
+		if (utf8) {
+			c = utf8_decode_fwrd(&s, (b ? &l : NULL));
+		} else {
+			c = *s++;
+			--l;
+		}
 	}
 	*a = s;
 	if (b)
@@ -180,12 +233,12 @@ static int brack(int utf8,const char **a, ptrdiff_t *la, int c)
 			break;
 		} else {
 			int cl, cr;
-			struct unicat *cat = NULL;
+			struct Cclass *cat = NULL;
 
 			cl = escape(utf8, &s, &l, &cat);
 
 			if (cl == -256) {
-				flag = unicatcheck(cat, c);
+				flag = cclass_lookup(cat, c);
 			} else {
 
 				if (l >= 2 && s[0] == '-' && s[1] != ']') {
@@ -204,37 +257,6 @@ static int brack(int utf8,const char **a, ptrdiff_t *la, int c)
 		return !flag;
 	else
 		return flag;
-}
-
-static void savec(int utf8,char **pieces, ptrdiff_t n, int c)
-{
-	char buf[16];
-	ptrdiff_t len;
-	char *s = NULL;
-
-	if (utf8)
-		len = utf8_encode(buf,c);
-	else {
-		buf[0] = TO_CHAR_OK(c);
-		len = 1;
-	}
-
-	if (pieces[n])
-		vsrm(pieces[n]);
-	s = vsncpy(s, 0, buf, len);
-	pieces[n] = s;
-}
-
-#define MAX_REGEX_SAVED 16384 /* Largest regex string we will save */
-
-static void saves(char **pieces, ptrdiff_t n, P *p, off_t szz)
-{
-	if (szz > MAX_REGEX_SAVED)
-		pieces[n] = vstrunc(pieces[n], 0);
-	else {
-		pieces[n] = vstrunc(pieces[n], (int) szz);
-		brmem(p, pieces[n], (int) szz);
-	}
 }
 
 /* Returns -1 (NO_MORE_DATA) for end of file.
@@ -303,7 +325,7 @@ skip:
 	return s;
 }
 
-int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, int icase)
+int pmatch(Regmatch_t *matches, int nmatch, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, int icase)
 {
 	int c, d;
 	P *q = pdup(p, "pmatch");
@@ -311,6 +333,8 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 	int utf8 = p->b->o.charmap->type;
 	struct charmap *map = p->b->o.charmap;
 	struct utf8_sm sm;
+	int x;
+	off_t byte;
 
 	utf8_init(&sm);
 
@@ -333,11 +357,22 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 				goto fail;
 			switch (c = *regex++) {
 			case '?':
+				byte = p->byte;
 				d = pgetc(p);
 				if (d == NO_MORE_DATA)
 					goto fail;
-				savec(utf8, pieces, n++, d);
+				if (n < nmatch) {
+					matches[n].rm_so = byte;
+					matches[n].rm_eo = p->byte;
+				}
+				++n;
 				break;
+			case 'd':
+			case 'D':
+			case 'w':
+			case 'W':
+			case 's':
+			case 'S':
 			case 'n':
 			case 'r':
 			case 'a':
@@ -358,7 +393,7 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 			case '7':
 			case '8':
 			case '9': {
-				struct unicat *cat = NULL;
+				struct Cclass *cat = NULL;
 				int e;
 				d = pgetc(p);
 				regex -= 2;
@@ -368,7 +403,7 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 					if (e != d)
 						goto fail;
 				} else {
-					if (!unicatcheck(cat, d))
+					if (!cclass_lookup(cat, d))
 						goto fail;
 				}
 				break;
@@ -378,8 +413,11 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 				do {
 					off_t pb = p->byte;
 
-					if (pmatch(pieces, regex, len, p, n + 1, icase)) {
-						saves(pieces, n, o, pb - o->byte);
+					if (!pmatch(matches, nmatch, regex, len, p, n + 1, icase)) {
+						if (n < nmatch) {
+							matches[n].rm_so = o->byte;
+							matches[n].rm_eo = pb;
+						}
 						goto succeed;
 					}
 					c = pgetc(p);
@@ -390,24 +428,32 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 				do {
 					off_t pb = p->byte;
 
-					if (pmatch(pieces, regex, len, p, n + 1, icase)) {
-						saves(pieces, n, o, pb - o->byte);
+					if (!pmatch(matches, nmatch, regex, len, p, n + 1, icase)) {
+						if (n < nmatch) {
+							matches[n].rm_so = o->byte;
+							matches[n].rm_eo = pb;
+						}
 						goto succeed;
 					}
 				} while (skip_special(p) != NO_MORE_DATA);
 				goto fail;
 			case '[':
+				byte = p->byte;
 				d = pgetc(p);
 				if (d == NO_MORE_DATA)
 					goto fail;
 				if (!brack(utf8, &regex, &len, d))
 					goto fail;
-				savec(utf8, pieces, n++, d);
+				if (n < nmatch) {
+					matches[n].rm_so = byte;
+					matches[n].rm_eo = p->byte;
+				}
+				++n;
 				break;
 			case '+':
 				{
 					const char *oregex = regex;	/* Point to character to skip */
-					struct unicat *cat = NULL;
+					struct Cclass *cat = NULL;
 					ptrdiff_t olen = len;
 
 					const char *tregex;
@@ -454,8 +500,11 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 					do {
 						P *z = pdup(p, "pmatch");
 
-						if (pmatch(pieces, regex, len, p, n + 1, icase)) {
-							saves(pieces, n, o, z->byte - o->byte);
+						if (!pmatch(matches, nmatch, regex, len, p, n + 1, icase)) {
+							if (n < nmatch) {
+								matches[n].rm_so = o->byte;
+								matches[n].rm_eo = z->byte;
+							}
 							if (r)
 								prm(r);
 							r = pdup(p, "pmatch");
@@ -471,7 +520,7 @@ int pmatch(char **pieces, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, i
 								tlen -= 2;
 								match = brack(utf8, &tregex, &tlen, c);
 							} else if (d == -256) {
-								match = unicatcheck(cat, c);
+								match = cclass_lookup(cat, c);
 							} else
 								match = (d == c);
 						} else {
@@ -532,12 +581,1020 @@ succeed:
 	if (o)
 		prm(o);
 	prm(q);
-	return 1;
+	return 0;
 
 fail:
 	if (o)
 		prm(o);
 	pset(p, q);
 	prm(q);
+	return 1;
+}
+
+/* Compile regular expression */
+
+/* Create tree node */
+
+int mk_node(struct regcomp *r, int ty, int nl, int nr)
+{
+	int no;
+	if (r->len == r->size) {
+		r->size *= 2;
+		r->nodes = (struct node *)joe_realloc(r->nodes, SIZEOF(struct node) * r->size);
+	}
+	no = r->len++;
+
+	r->nodes[no].type = ty;
+	r->nodes[no].r = nr;
+	r->nodes[no].l = nl;
+	cclass_init(r->nodes[no].cclass);
+	return no;
+}
+
+/* Print tree */
+
+void ind(int x)
+{
+	while (x--)
+		printf("  ");
+}
+
+void show(struct regcomp *r, int no, int x)
+{
+	if (no != -1) {
+		if (r->nodes[no].type >= 0) {
+			ind(x); printf("'%c'\n", r->nodes[no].type);
+		} else {
+			ind(x); printf("%c\n", -r->nodes[no].type);
+		}
+		if (r->nodes[no].type == -'[') {
+			ind(x + 1); cclass_show(r->nodes[no].cclass);
+		}
+		show(r, r->nodes[no].l, x + 1);
+		show(r, r->nodes[no].r, x + 1);
+	}
+}
+
+/* Conventional syntax regex */
+
+int do_parse_conventional(struct regcomp *g, int prec)
+{
+	int no = -1;
+
+	/* Get first item */
+	again:
+	if (!g->l || *g->ptr == ')' || *g->ptr == '|') {
+		no = -1;
+	} else if (*g->ptr == '(') {
+		++g->ptr; --g->l;
+		if (g->l >= 2 && g->ptr[0] == '?' && g->ptr[1] == '#') {
+			/* Ignore comment */
+			/* printf("Comment\n"); */
+			g->ptr += 2; g->l -= 2;
+			while (g->l && *g->ptr != ')') {
+				++g->ptr; --g->l;
+			}
+			if (g->l && *g->ptr == ')') {
+				++g->ptr; --g->l;
+			}
+			goto again;
+		} else if (g->l >= 2 && g->ptr[0] == '?' && g->ptr[1] == ':') {
+			/* Grouping, no sub-match addressing */
+			g->ptr += 2;
+			no = mk_node(g, -'(', -1, do_parse_conventional(g, 0));
+		} else {
+			/* Grouping with sub-match addressing */
+			no = mk_node(g, -'{', -1, do_parse_conventional(g, 0));
+		}
+		if (g->l && *g->ptr == ')') {
+			++g->ptr; --g->l;
+		} else {
+			printf("Unbalanced parenthesis\n");
+			return 0;
+		}
+	} else if (g->l && (*g->ptr == '.' || *g->ptr == '^' || *g->ptr == '$')) {
+		no = mk_node(g, -*g->ptr++, -1, -1);
+		--g->l;
+	} else if (g->l >= 2 && g->ptr[0] == '\\' &&
+	           (g->ptr[1] == 'b' || g->ptr[1] == 'B' || g->ptr[1] == 'A' || g->ptr[1] == 'Z' || g->ptr[1] == 'z' ||
+	            g->ptr[1] == '>' || g->ptr[1] == '<')) {
+		++g->ptr;
+		--g->l;
+		no = mk_node(g, -*g->ptr++, -1, -1);
+		--g->l;
+	} else if (g->l && *g->ptr == '[') {
+		no = mk_node(g, -'[', -1, -1);
+		struct Cclass *m = g->nodes[no].cclass;
+		int inv = 0;
+		++g->ptr; --g->l;
+		if (g->l && *g->ptr == '^') {
+			inv = 1;
+			++g->ptr; --g->l;
+		}
+		if (g->l && *g->ptr == ']') {
+			cclass_add(m, ']', ']');
+			++g->ptr; --g->l;
+		}
+		while (g->l && *g->ptr != ']') {
+			struct Cclass *cat;
+			int first, last;
+
+			first = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+
+			if (first == -256) {
+				if (cat)
+					cclass_union(m, cat);
+			} else {
+				if (g->l >= 2 &&  *g->ptr == '-') {
+					++g->ptr;
+					--g->l;
+					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+				} else {
+					last = first;
+				}
+				cclass_add(m, first, last);
+			}
+		}
+		if (g->l && *g->ptr == ']') {
+			++g->ptr; --g->l;
+		}
+		if (inv)
+			cclass_inv(m);
+	} else {
+		struct Cclass *cat;
+		int ch = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+		if (ch == -256) {
+			no = mk_node(g, -'[', -1, -1);
+			cclass_union(g->nodes[no].cclass, cat);
+		} else {
+			no = mk_node(g, ch, -1, -1);
+		}
+	}
+
+	/* Extend it */
+	for (;;) {
+		if (g->l && *g->ptr == '*') {
+			while (g->l && *g->ptr == '*') {
+				++g->ptr;
+				--g->l;
+			}
+			no = mk_node(g, -'*', -1, no);
+		} else if (g->l && *g->ptr == '+') {
+			while (g->l && *g->ptr == '+') {
+				++g->ptr;
+				--g->l;
+			}
+			no = mk_node(g, -'+', -1, no);
+		} else if (g->l && *g->ptr == '?') {
+			while (g->l && *g->ptr == '?') {
+				++g->ptr;
+				--g->l;
+			}
+			no = mk_node(g, -'?', -1, no);
+		} else if (g->l && *g->ptr == '{') {
+			int org = no;
+			int min = 0, max = 0;
+			++g->ptr;
+			--g->l;
+			while (g->l && *g->ptr >= '0' && *g->ptr <= '9') {
+				min = min * 10 + *g->ptr++ - '0';
+				--g->l;
+			}
+			if (g->l && *g->ptr == ',') {
+				++g->ptr;
+				--g->l;
+				if (g->l && *g->ptr >= '0' && *g->ptr <= '9') {
+					while (g->l && *g->ptr >= '0' && *g->ptr <= '9') {
+						max = max * 10 + *g->ptr++ - '0';
+						g->l--;
+					}
+				} else {
+					max = -1;
+				}
+			}
+			if (g->l && *g->ptr == '}') {
+				++g->ptr;
+				--g->l;
+			}
+			/* Turn max into optional */
+			if (max > min)
+				max -= min;
+			/* Do min */
+			no = -1;
+			while (min--) {
+				if (no == -1)
+					no = org;
+				else
+					no = mk_node(g, -',', no, org);
+			}
+			if (max == 0) {
+				/* Exact */
+			} else if (max == -1) {
+				/* Open */
+				no = mk_node(g, -',', no, mk_node(g, -'*', -1, org));
+			} else {
+				/* Max */
+				int q = -1;
+				while (max--) {
+					if (q == -1)
+						q = mk_node(g, -'?', -1, org);
+					else
+						q = mk_node(g, -'?', -1, mk_node(g, -',', q, org));
+				}
+				no = mk_node(g, -',', no, q);
+			}
+		} else if (g->l && *g->ptr == '|') {
+			if (prec < 1) {
+				++g->ptr;
+				--g->l;
+				no = mk_node(g,-'|', no, do_parse_conventional(g, 1));
+			} else {
+				break;
+			}
+		} else if (!g->l || *g->ptr == ')') {
+			break;
+		} else if (prec < 2) {
+			no = mk_node(g, -',', no, do_parse_conventional(g, 2));
+		} else
+			break;
+	}
+	return no;
+}
+
+/* JOE syntax regex */
+
+int do_parse(struct regcomp *g, int prec)
+{
+	int no = -1;
+
+	/* Get first item */
+	again:
+	if (!g->l || (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == ')') || (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '|')) {
+		no = -1;
+	} else if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '(') {
+		g->ptr += 2; g->l -= 2;
+		if (g->l >= 2 && g->ptr[0] == '?' && g->ptr[1] == '#') {
+			/* Ignore comment */
+			/* printf("Comment\n"); */
+			g->ptr += 2; g->l -= 2;
+			while (g->l >= 2 && !(g->ptr[0] == '\\' && g->ptr[1] == ')')) {
+				++g->ptr; --g->l;
+			}
+			if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == ')') {
+				g->ptr += 2; g->l -= 2;
+			}
+			goto again;
+		} else if (g->l >= 2 && g->ptr[0] == '?' && g->ptr[1] == ':') {
+			/* Grouping, no sub-match addressing */
+			g->ptr += 2;
+			no = mk_node(g, -'(', -1, do_parse(g, 0));
+		} else {
+			/* Grouping with sub-match addressing */
+			no = mk_node(g, -'{', -1, do_parse(g, 0));
+		}
+		if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == ')') {
+			g->ptr += 2; g->l -= 2;
+		} else {
+			printf("Unbalanced parenthesis\n");
+			return 0;
+		}
+	} else if (g->l >= 2 && g->ptr[0] == '\\' && (g->ptr[1] == '^' || g->ptr[1] == '$' || g->ptr[1] == '>' || g->ptr[1] == '<' /* ||
+	                                              g->ptr[1] == 'b' || g->ptr[1] == 'B' || g->ptr[1] == 'A' || g->ptr[1] == 'Z' ||
+	                                              g->ptr[1] == 'z' */)) {
+		no = mk_node(g, -g->ptr[1], -1, -1);
+		g->ptr += 2; g->l -= 2;
+	} else if (g->l >= 2 && g->ptr[0] == '\\' && (g->ptr[1] == '.')) {
+		no = mk_node(g, -'.', -1, -1);
+		g->ptr += 2; g->l -= 2;
+	} else if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '[') {
+		no = mk_node(g, -'[', -1, -1);
+		struct Cclass *m = g->nodes[no].cclass;
+		int inv = 0;
+		g->ptr += 2; g->l -= 2;
+		if (g->l && *g->ptr == '^') {
+			inv = 1;
+			++g->ptr; --g->l;
+		}
+		if (g->l && *g->ptr == ']') {
+			cclass_add(m, ']', ']');
+			++g->ptr; --g->l;
+		}
+		while (g->l && *g->ptr != ']') {
+			struct Cclass *cat;
+			int first, last;
+
+			first = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+
+			if (first == -256) {
+				if (cat)
+					cclass_union(m, cat);
+			} else {
+				if (g->l >= 2 &&  *g->ptr == '-') {
+					++g->ptr;
+					--g->l;
+					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+				} else {
+					last = first;
+				}
+				cclass_add(m, first, last);
+			}
+		}
+		if (g->l && *g->ptr == ']') {
+			++g->ptr; --g->l;
+		}
+		if (inv)
+			cclass_inv(m);
+	} else {
+		struct Cclass *cat;
+		int ch = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+		if (ch == -256) {
+			no = mk_node(g, -'[', -1, -1);
+			cclass_union(g->nodes[no].cclass, cat);
+		} else {
+			no = mk_node(g, ch, -1, -1);
+		}
+	}
+
+	/* Extend it */
+	for (;;) {
+		if (g->l >=2 && g->ptr[0] == '\\' && g->ptr[1] == '*') {
+			while (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '*') {
+				g->ptr += 2;
+				g->l -= 2;
+			}
+			no = mk_node(g, -'*', -1, no);
+		} else if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '+') {
+			while (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '+') {
+				g->ptr += 2;
+				g->l -= 2;
+			}
+			no = mk_node(g, -'+', -1, no);
+		} else if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '?') {
+			while (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '?') {
+				g->ptr += 2;
+				g->l -= 2;
+			}
+			no = mk_node(g, -'?', -1, no);
+		} else if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '{') {
+			int org = no;
+			int min = 0, max = 0;
+			g->ptr += 2;
+			g->l -= 2;
+			while (g->l && *g->ptr >= '0' && *g->ptr <= '9') {
+				min = min * 10 + *g->ptr++ - '0';
+				--g->l;
+			}
+			if (g->l && *g->ptr == ',') {
+				++g->ptr;
+				--g->l;
+				if (g->l && *g->ptr >= '0' && *g->ptr <= '9') {
+					while (g->l && *g->ptr >= '0' && *g->ptr <= '9') {
+						max = max * 10 + *g->ptr++ - '0';
+						g->l--;
+					}
+				} else {
+					max = -1;
+				}
+			}
+			if (g->l && *g->ptr == '}') {
+				++g->ptr;
+				--g->l;
+			}
+			/* Turn max into optional */
+			if (max > min)
+				max -= min;
+			/* Do min */
+			no = -1;
+			while (min--) {
+				if (no == -1)
+					no = org;
+				else
+					no = mk_node(g, -',', no, org);
+			}
+			if (max == 0) {
+				/* Exact */
+			} else if (max == -1) {
+				/* Open */
+				no = mk_node(g, -',', no, mk_node(g, -'*', -1, org));
+			} else {
+				/* Max */
+				int q = -1;
+				while (max--) {
+					if (q == -1)
+						q = mk_node(g, -'?', -1, org);
+					else
+						q = mk_node(g, -'?', -1, mk_node(g, -',', q, org));
+				}
+				no = mk_node(g, -',', no, q);
+			}
+		} else if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '|') {
+			if (prec < 1) {
+				g->ptr += 2; g->l -= 2;
+				no = mk_node(g, -'|', no, do_parse(g, 1));
+			} else {
+				break;
+			}
+		} else if (!g->l || (g->ptr[0] == '\\' && g->ptr[1] == ')')) {
+			break;
+		} else if (prec < 2) {
+			no = mk_node(g, -',', no, do_parse(g, 2));
+		} else
+			break;
+	}
+	return no;
+}
+
+/* Disassembler */
+
+void unasm(Frag *f)
+{
+	int pc = 0;
+	printf("PC	INSN\n");
+	printf("--	----\n");
+	for (;;) {
+		int i = pc;
+		switch(fetchi(f, &pc)) {
+			case iCHAR:
+				printf("%d:	'%c'\n", i, fetchi(f, &pc));
+				break;
+			case iDOT:
+				printf("%d:	.\n", i);
+				break;
+			case iBOL:
+				printf("%d:	^\n", i);
+				break;
+			case iEOL:
+				printf("%d:	$\n", i);
+				break;
+			case iBOW:
+				printf("%d:	<\n", i);
+				break;
+			case iEOW:
+				printf("%d:	>\n", i);
+				break;
+			case iBRA:
+				printf("%d:	bra %d\n", i, fetchi(f, &pc));
+				break;
+			case iKET:
+				printf("%d:	ket %d\n", i, fetchi(f, &pc));
+				break;
+			case iFORK: {
+				int arg = fetchi(f, &pc);
+				printf("%d:	fork %d\n", i, arg + (pc - (int)sizeof(int)));
+				break;
+			} case iJUMP: {
+				int arg = fetchi(f, &pc);
+				printf("%d:	jump %d\n", i, arg + (pc - (int)sizeof(int)));
+				break;
+			} case iCLASS: {
+				struct Cclass *r = fetchp(f, &pc);
+				printf("%d:	class ", i);
+				cclass_show(r);
+				break;
+			}
+			case iEND:
+				printf("%d:	end\n", i);
+				return;
+		}
+	}
+}
+
+/* Convert parse-tree into code with infinite loops */
+
+void codegen(struct regcomp *g, int no, int *end)
+{
+	while(no != -1) {
+		switch (g->nodes[no].type) {
+			case -'{': {
+				int my_bra_no = g->bra_no++;
+				emiti(g->frag, iBRA);
+				emiti(g->frag, my_bra_no);
+				codegen(g, g->nodes[no].r, 0);
+				emiti(g->frag, iKET);
+				emiti(g->frag, my_bra_no);
+				break;
+			}
+			case -'(': {
+				no = g->nodes[no].r;
+				continue;
+			}
+			case -'*': {
+				int targ, start;
+				emiti(g->frag, iFORK);
+				targ = emiti(g->frag, 0);
+				align_frag(g->frag, sizeof(int));
+				start = g->frag->len;
+				codegen(g, g->nodes[no].r, 0);
+				emiti(g->frag, iFORK);
+				emit_branch(g->frag, start);
+				fixup_branch(g->frag,targ);
+				break;
+			}
+			case -'+': {
+				int start;
+				align_frag(g->frag, sizeof(int));
+				start = g->frag->len;
+				codegen(g, g->nodes[no].r, 0);
+				emiti(g->frag, iFORK);
+				emit_branch(g->frag, start);
+				break;
+			}
+			case -'?': {
+				int targ;
+				emiti(g->frag, iFORK);
+				targ = emiti(g->frag, 0);
+				codegen(g, g->nodes[no].r, 0);
+				fixup_branch(g->frag, targ);
+				break;
+			}
+			case -'|': {
+				int alt;
+				int first;
+				int my_end = 0;
+				int next;
+				if (!end) {
+					end = &my_end;
+					first = 1;
+				} else {
+					first = 0;
+				}
+				emiti(g->frag, iFORK);
+				alt = emiti(g->frag, 0);
+				/* First */
+				codegen(g, g->nodes[no].l, 0);
+				emiti(g->frag, iJUMP);
+				*end = emiti(g->frag, *end);
+				/* Rest */
+				fixup_branch(g->frag, alt);
+				codegen(g, g->nodes[no].r, end);
+				/* All JUMPs go here */
+				if (first) {
+					frag_link(g->frag, *end);
+				}
+				break;
+			}
+			case -',': {
+				codegen(g, g->nodes[no].l, 0);
+				no = g->nodes[no].r;
+				continue; /* This keeps recursion depth low */
+			}
+			case -'.': {
+				emiti(g->frag, iDOT);
+				break;
+			}
+			case -'^': {
+				emiti(g->frag, iBOL);
+				break;
+			}
+			case -'$': {
+				emiti(g->frag, iEOL);
+				break;
+			}
+			case -'<': {
+				emiti(g->frag, iBOW);
+				break;
+			}
+			case -'>': {
+				emiti(g->frag, iEOW);
+				break;
+			}
+			case -'[': {
+				emiti(g->frag, iCLASS);
+				emitp(g->frag, g->nodes[no].cclass);
+				break;
+			}
+			default: {
+				emiti(g->frag, iCHAR);
+				emiti(g->frag, g->nodes[no].type);
+				break;
+			}
+		}
+		break;
+	}
+}
+
+/* User level of parser: call it with a regex- it returns a program in a malloc block */
+
+struct regcomp *joe_regcomp(struct charmap *cmap, const unsigned char *s, ptrdiff_t len, int cflags)
+{
+	int no;
+	struct regcomp *g;
+	int a, b;
+
+	g = (struct regcomp *)joe_malloc(SIZEOF(struct regcomp));
+	g->len = 0;
+	g->size = 10;
+	g->nodes = (struct node *)joe_malloc(SIZEOF(struct node) * g->size);
+	g->cmap = cmap;
+
+	/* Parse expression */
+	g->ptr = s;
+	g->l = len;
+	no = do_parse(g, 0);
+
+	if (g->l) {
+#ifdef DEBUG
+		fprintf(stderr,"Extra junk at end of expression\n");
+#endif
+		joe_regfree(g);
+		return 0;
+	}
+
+	/* Print parse tree */
+#ifdef DEBUG
+	printf("Parse tree:\n");
+	show(g, no, 0);
+#endif
+
+	/* Convert tree into NFA in the form of byte code */
+	iz_frag(g->frag, sizeof(int));
+	g->bra_no = 0;
+
+	/* Surround regex with .*(  ).* */
+#if 0
+	/* .* */
+	emiti(g->frag, iFORK);
+	b = emit_branch(g->frag, 0);
+#ifdef DEBUG
+	printf("Total size = %d\n",g->frag->len);
+#endif
+	a = emiti(g->frag, iDOT);
+	emiti(g->frag, iFORK);
+	emit_branch(g->frag, a);
+	fixup_branch(g->frag, b);
+
+	/* ( */
+	emiti(g->frag, iBRA);
+	emiti(g->frag, 0);
+#endif
+	/* User's regex */
+	codegen(g, no, 0);
+#if 0
+	/* ) */
+	emiti(g->frag, iKET);
+	emiti(g->frag, 0);
+
+	/* .* */
+	emiti(g->frag, iFORK);
+	b = emit_branch(g->frag, 0);
+	a = emiti(g->frag, iDOT);
+	emiti(g->frag, iFORK);
+	emit_branch(g->frag, a);
+	fixup_branch(g->frag, b);
+#endif
+	emiti(g->frag, iEND);
+
+	/* Give back space */
+	fin_code(g->frag);
+
+	/* Free parse tree */
+	/* joe_free(g->nodes); g->nodes = 0; */
+
+	/* Unassemble code */
+#ifdef DEBUG
+	printf("NFA-program:\n");
+	unasm(g->frag);
+	printf("Total size = %d\n",g->frag->len);
+#endif
+	return g;
+}
+
+void joe_regfree(struct regcomp *g)
+{
+	if (g->nodes)
+		joe_free(g->nodes);
+	joe_free(g);
+}
+
+#if 0
+int rmatch(const unsigned char *pattern, const unsigned char *s, ...)
+{
+	int match;
+	Regex_t r[1];
+	Regmatch_t pmatch[MAX_MATCHES];
+	unsigned char **results[MAX_MATCHES];
+	int n = 0;
+	va_list ap;
+	va_start(ap, s);
+
+	while (results[n] = va_arg(ap, unsigned char **))
+		++n;
+
+	printf("%d\n",n);
+
+	va_end(ap);
+
+	if (Regcomp(r, pattern, 0))
+		return -1;
+
+	if (n > r[0]->bra_no) {
+		Regfree(r);
+		return -2;
+	}
+
+	match = Regexec(r, s, n, pmatch, 0);
+
+	Regfree(r);
+
+	if (!match) {
+		int x;
+		for (x = 0; x != n; ++x) {
+			int y;
+			int start = pmatch[x].rm_so;
+			int len = pmatch[x].rm_eo - pmatch[x].rm_so;
+			unsigned char *q = (unsigned char *)malloc(len + 1);
+			for (y = 0; y != len; ++y)
+				q[y] = s[start + y];
+			q[y] = 0;
+			*results[x] = q;
+		}
+	}
+	
+	return match;
+}
+#endif
+
+/* Regular expression matcher */
+
+struct thread
+{
+	unsigned char *pc;
+	Regmatch_t pos[MAX_MATCHES];
+};
+
+int better(Regmatch_t *a, Regmatch_t *b, int bra_no)
+{
+	int y;
+	for (y = 0; y != bra_no; ++y) {
+		if (a[y].rm_so < b[y].rm_so)
+			return 1;
+		if (a[y].rm_so > b[y].rm_so)
+			return 0;
+		if (a[y].rm_eo > b[y].rm_eo)
+			return 1;
+		if (a[y].rm_eo < b[y].rm_eo)
+			return 0;
+	}
 	return 0;
+}
+
+int add_thread(struct thread *pool, unsigned char *start, int l, int le, unsigned char *pc, Regmatch_t *pos, int bra_no)
+{
+	int x;
+	Regmatch_t *d;
+	int t;
+
+	for (t = l; t != le; ++t) {
+		if (pool[t].pc == pc) {
+			/* PCs are same, state is same... */
+			int y;
+			for (y = 0; y != bra_no; ++y) {
+				if (pool[t].pos[y].rm_so == pos[y].rm_so &&
+				    pool[t].pos[y].rm_eo == pos[y].rm_eo) {
+				    	/* Identical... move on */
+				} else if (pool[t].pos[y].rm_eo != -1 && pos[y].rm_eo != -1) {
+					/* Both are complete */
+					if (pool[t].pos[y].rm_so < pos[y].rm_so)
+						return le; /* Current one starts earlier */
+					else if (pool[t].pos[y].rm_so > pos[y].rm_so) {
+						/* New one starts earlier */
+						for (x = 0; x != bra_no; ++x) pool[t].pos[x] = pos[x];
+						return le;
+					} else if (pool[t].pos[y].rm_eo > pos[y].rm_eo) {
+						/* Current is longer */
+						return le;
+					} else if (pool[t].pos[y].rm_eo < pos[y].rm_eo) {
+						/* New one is longer */
+						for (x = 0; x != bra_no; ++x) pool[t].pos[x] = pos[x];
+						return le;
+					}
+					/* They are identical: look at next field */
+				} else if (pool[t].pos[y].rm_so != -1 && pos[y].rm_so != -1) {
+					if (pool[t].pos[y].rm_so < pos[y].rm_so)
+						return le; /* Current one starts earlier */
+					else if (pool[t].pos[y].rm_so > pos[y].rm_so) {
+						/* New one starts earlier */
+						for (x = 0; x != bra_no; ++x) pool[t].pos[x] = pos[x];
+						return le;
+					}
+				} else {
+					/* Add if there are no identical others */
+					break;
+				}
+			}
+			if (y == bra_no)
+				return le; /* They are equal, leave the current one. */
+		}
+	}
+	/* Add it */
+	if (le - l == MAX_THREADS) {
+		printf("ran out of threads\n");
+		exit(-1);
+		return le;
+	}
+	pool[le].pc = pc;
+	d = pool[le].pos;
+	for (x = 0;x != bra_no; ++x)
+		d[x] = pos[x];
+	return le + 1;
+}
+
+int add_thread1(struct thread *pool, unsigned char *start, int l, int le, unsigned char *pc, Regmatch_t *pos, int bra_no)
+{
+	int x;
+	Regmatch_t *d;
+	int t;
+
+	for (t = l; t != le; ++t) {
+		if (pool[t].pc == pc) {
+			/* PCs are same, state is same... */
+			int y;
+			for (y = 0; y != bra_no; ++y) {
+				if (pool[t].pos[y].rm_so == pos[y].rm_so &&
+				    pool[t].pos[y].rm_eo == pos[y].rm_eo) {
+				    	/* Identical... move on */
+				} else break;
+			}
+			if (y == bra_no)
+				return le; /* They are equal, leave the current one. */
+		}
+	}
+	/* Add it */
+	if (le - l == MAX_THREADS) {
+		printf("ran out of threads\n");
+		exit(-1);
+		return le;
+	}
+	pool[le].pc = pc;
+	d = pool[le].pos;
+	for (x = 0;x != bra_no; ++x)
+		d[x] = pos[x];
+	return le + 1;
+}
+
+int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int eflags)
+{
+	struct thread pool[MAX_THREADS * 2];
+
+	int start_bol = pisbol(p);
+
+	int cl, cle, nl, nle;
+	int t;
+
+	int c, d;
+	int match = -1;
+
+	int bra_no = g->bra_no;
+
+	off_t byte;
+
+	if (nmatch < bra_no)
+		bra_no = nmatch;
+
+	/* First thread */
+	cl = 0;
+	cle = 1;
+	nl = MAX_THREADS;
+	nle = nl;
+
+	c = '^'; /* Not a word character */
+
+	pool[cl].pc = g->frag->start;
+	for (c = 0; c != bra_no; ++c) {
+		pool[cl].pos[c].rm_so = -1;
+		pool[cl].pos[c].rm_eo = -1;
+	}
+
+	/* Scan string */
+	do {
+		d = c;
+		byte = p->byte; c = pgetc(p);
+		/* Give character to all threads */
+		for (t = cl; t != cle; ++t) {
+			int i;
+			unsigned char *pc = pool[t].pc;
+			for (;;) {
+				int i;
+				i = *(int *)pc;
+				switch (i) {
+					case iCHAR: {
+						if (c == *(int *)(pc + sizeof(int))) {
+							nle = add_thread(pool, g->frag->start, nl, nle, pc + 2 * sizeof(int), pool[t].pos, bra_no);
+						}
+						break;
+					}
+					case iDOT: {
+						if (c)
+							/* . doesn't match end of string */
+							nle = add_thread(pool, g->frag->start, nl, nle, pc + sizeof(int), pool[t].pos, bra_no);
+						break;
+					}
+					case iBOL: {
+						if (start_bol || d == '\n') {
+							pc += sizeof(int);
+							continue;
+						}
+						break;
+					}
+					case iEOL: {
+						if (c == NO_MORE_DATA || c == '\n') {
+							pc += sizeof(int);
+							continue;
+						}
+						break;
+					}
+					case iBOW: {
+						if (joe_isalnum_(g->cmap, c) && !joe_isalnum_(g->cmap, d)) {
+							pc += sizeof(int);
+							continue;
+						}
+						break;
+					}
+					case iEOW: {
+						if (!joe_isalnum_(g->cmap, c) && joe_isalnum_(g->cmap, d)) {
+							pc += sizeof(int);
+							continue;
+						}
+						break;
+					}
+					case iBRA: {
+						int idx = *(int *)(pc + sizeof(int));
+						if (idx < bra_no)
+							pool[t].pos[idx].rm_so = byte;
+						pc += 2 * sizeof(int);
+						continue;
+					}
+					case iKET: {
+						int idx = *(int *)(pc + sizeof(int));
+						if (idx < bra_no)
+							pool[t].pos[idx].rm_eo = byte;
+						pc += 2 * sizeof(int);
+						continue;
+					}
+					case iFORK: {
+						cle = add_thread1(pool, g->frag->start, cl, cle, pc + *(int *)(pc + sizeof(int)) + sizeof(int), pool[t].pos, bra_no);
+						if (cle - cl == MAX_THREADS) {
+							match = -2;
+							break;
+						}
+						pc += 2 * sizeof(int);
+						continue;
+					}
+					case iJUMP: {
+						pc += *(int *)(pc + sizeof(int)) + sizeof(int);
+						continue;
+					}
+					case iCLASS: {
+						struct Cclass *cclass;
+						pc += sizeof(int);
+						pc += align_o((pc - (unsigned char *)0), sizeof(struct Cclass *));
+						cclass = *(struct Cclass **)pc;
+						if (cclass_lookup(cclass, c)) {
+							pc += sizeof(struct Cclass *);
+							pc += align_o((pc - (unsigned char *)0), sizeof(int));
+							nle = add_thread(pool, g->frag->start, nl, nle, pc, pool[t].pos, bra_no);
+						}
+						break;
+					}
+					case iEND: {
+						if (c != NO_MORE_DATA)
+							prgetc(p);
+						if (!bra_no) {
+							return 0;
+						} else if (match || better(pool[t].pos, matches, bra_no)) {
+							int x;
+							for (x = 0; x != bra_no; ++x) {
+								matches[x] = pool[t].pos[x];
+							}
+							match = 0;
+						}
+						break;
+					}
+				}
+				/* If we fall out of the switch, we break the for */
+				break;
+			}
+		}
+
+
+		/* New becomes current */
+		cl = nl;
+		cle = nle;
+		/* Too many threads? */
+		if (cle - cl == MAX_THREADS)
+			return -2;
+		/* Current becomes new */
+		if (nl == MAX_THREADS)
+			nl = 0;
+		else
+			nl = MAX_THREADS;
+		 nle = nl;
+		 start_bol = 0;
+	} while (c != NO_MORE_DATA && cl != cle);
+
+	for (c = bra_no; c < nmatch; ++c) {
+		matches[c].rm_so = -1;
+	}
+
+	return match;
 }

@@ -4,6 +4,22 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* New regular expression engine
+	* Old one was a recursive matcher, new one is compiled Thompson NFA matcher
+	* JOE now supports full regular expressions (but regex characters are escaped)
+		* It now supports alternative: X\|Y
+		* It now supports grouping and submatch addressing with parenthesis: a\(inside\)b
+		* You can specify an explicit number of matches: X\{3} for XXX
+		* Or a range of matches: X\{3,5} for XXX, XXXX  or XXXXX
+
+* Submatches within regular expressions can now be any size (up to the size of the disk!).  Before this,
+  they were limited to 16K.
+
+* Update character class database to the latest version (based on UnicodeData.txt)
+
+* Switch to new character class data structure for faster Unicode (uses
+  radix search instead of binary search).
+
 * Code clean up
 	* Switch to ptrdiff_t for memory offsets and off_t for file offsets (prior to this, int and long were used).  Now you can edit files larger than 4 GB on 32-bit systems.
 	* Give up trying force all strings to "unsigned char *" so that the code is less weird.
@@ -25,6 +41,9 @@
 		C, Cc, Cf, Cs, Co, Cn
 		See: ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values
 	* Use \p{Cherokee} to specify any character from a named Unicode block.
+	* \d for a digit, \D for not a digit
+	* \w for a word character, \W for not a word character
+	* \s for a space character, \S for not a space character
 
 
 * Fix bug where \\ was not parsed correctly within syntax file character lists unless it was at the end of the string.

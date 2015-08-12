@@ -246,14 +246,18 @@ void rset_show(struct Rset *r)
 
 void cclass_init(struct Cclass *m)
 {
-	m->size = 1;
+	m->size = 0;
 	m->len = 0;
-	m->array = (struct interval *)joe_malloc(SIZEOF(struct interval) * m->size);
+	m->intervals = 0;
 }
 
 void cclass_clr(struct Cclass *m)
 {
-	joe_free(m->array);
+	if (m->intervals)
+		joe_free(m->intervals);
+	m->size = 0;
+	m->len = 0;
+	m->intervals = 0;
 }
 
 /* Delete range from character class at position x
@@ -261,7 +265,7 @@ void cclass_clr(struct Cclass *m)
  */
 void cclass_del(struct Cclass *m, int x)
 {
-	mmove(m->array + x, m->array + x + 1, SIZEOF(struct interval) * (m->len - (x + 1)));
+	mmove(m->intervals + x, m->intervals + x + 1, SIZEOF(struct interval) * (m->len - (x + 1)));
 	--m->len;
 }
 
@@ -269,8 +273,13 @@ void cclass_del(struct Cclass *m, int x)
 void cclass_grow(struct Cclass *m)
 {
 	if (m->len == m->size) {
-		m->size *= 2;
-		m->array = (struct interval *)joe_realloc(m->array, SIZEOF(struct interval) * (m->size));
+		if (!m->size) {
+			m->size = 1;
+			m->intervals = (struct interval *)joe_malloc(SIZEOF(struct interval) * (m->size));
+		} else {
+			m->size *= 2;
+			m->intervals = (struct interval *)joe_realloc(m->intervals, SIZEOF(struct interval) * (m->size));
+		}
 	}
 }
 
@@ -280,13 +289,13 @@ void cclass_grow(struct Cclass *m)
 void cclass_ins(struct Cclass *m, int x, int first, int last)
 {
 	cclass_grow(m);
-	mmove(m->array + x + 1, m->array + x, SIZEOF(struct interval) * (m->len - x));
+	mmove(m->intervals + x + 1, m->intervals + x, SIZEOF(struct interval) * (m->len - x));
 	++m->len;
-	m->array[x].first = first;
-	m->array[x].last = last;
+	m->intervals[x].first = first;
+	m->intervals[x].last = last;
 }
 
-/* Add a single range [first,last] into class m.  The resulting m->array will
+/* Add a single range [first,last] into class m.  The resulting m->intervals will
  * be sorted and consist of non-overlapping, non-adjacent ranges.
  */
 
@@ -299,29 +308,29 @@ void cclass_add(struct Cclass *m, int first, int last)
 		return;
 
 	for (x = 0; x != m->len; ++x) {
-		if (first > m->array[x].last + 1) {
-			/* array[x] is below new range, skip it. */
-		} else if (m->array[x].first > last + 1) {
-			/* array[x] is fully above new range, so insert new one here */
+		if (first > m->intervals[x].last + 1) {
+			/* intervals[x] is below new range, skip it. */
+		} else if (m->intervals[x].first > last + 1) {
+			/* intervals[x] is fully above new range, so insert new one here */
 			break;
-		} else if (m->array[x].first <= first) {
-			if (m->array[x].last >= last) { /* && m->array[x].first <= first */
+		} else if (m->intervals[x].first <= first) {
+			if (m->intervals[x].last >= last) { /* && m->intervals[x].first <= first */
 				/* Existing covers new: we're done. */
 				return;
-			} else { /* m->array[x].last < last && m->array[x].first <= first */
+			} else { /* m->intervals[x].last < last && m->intervals[x].first <= first */
 				/* Enlarge new, delete existing */
-				first = m->array[x].first;
+				first = m->intervals[x].first;
 				cclass_del(m, x);
 				--x;
 			}
-		} else { /* m->array[x].first > first */
-			if (m->array[x].last <= last) { /* && m->array[x].first <= first */
+		} else { /* m->intervals[x].first > first */
+			if (m->intervals[x].last <= last) { /* && m->intervals[x].first <= first */
 				/* New fully covers existing, delete existing */
 				cclass_del(m, x);
 				--x;
-			} else { /* m->array[x].last > last && m->array[x].first > first */
+			} else { /* m->intervals[x].last > last && m->intervals[x].first > first */
 				/* Extend existing */
-				m->array[x].first = first;
+				m->intervals[x].first = first;
 				return;
 			}
 		}
@@ -331,7 +340,15 @@ void cclass_add(struct Cclass *m, int first, int last)
 
 /* Merge class n into class m */
 
-void cclass_union(struct Cclass *m, struct interval *array, int len)
+void cclass_union(struct Cclass *m, struct Cclass *n)
+{
+	int x;
+	if (n)
+		for (x = 0; x != n->len; ++x)
+			cclass_add(m, n->intervals[x].first, n->intervals[x].last);
+}
+
+void cclass_merge(struct Cclass *m, struct interval *array, int len)
 {
 	int x;
 	for (x = 0; x != len; ++x)
@@ -351,28 +368,28 @@ void cclass_sub(struct Cclass *m, int first, int last)
 		return;
 
 	for (x = 0; x != m->len; ++x) {
-		if (first > m->array[x].last) {
-			/* array[x] is below range, skip it. */
-		} else if (m->array[x].first > last) {
-			/* array[x] is fully above new range, we're done */
+		if (first > m->intervals[x].last) {
+			/* intervals[x] is below range, skip it. */
+		} else if (m->intervals[x].first > last) {
+			/* intervals[x] is fully above new range, we're done */
 			break;
-		} else if (first <= m->array[x].first) {
-			if (last >= m->array[x].last) { /* && first <= m->array[x].first */
+		} else if (first <= m->intervals[x].first) {
+			if (last >= m->intervals[x].last) { /* && first <= m->intervals[x].first */
 				/* Range fully covers entry, delete it */
 				cclass_del(m, x);
 				--x;
-			} else { /* last < m->array[x].last && first <= m->array[x].first */
+			} else { /* last < m->intervals[x].last && first <= m->intervals[x].first */
 				/* Range cuts off bottom of entry */
-				m->array[x].first = last + 1;
+				m->intervals[x].first = last + 1;
 			}
-		} else { /* first > m->array[x].first */
-			if (last >= m->array[x].last) { /* && first > m->array[x].first */
+		} else { /* first > m->intervals[x].first */
+			if (last >= m->intervals[x].last) { /* && first > m->intervals[x].first */
 				/* Range cuts off top of entry */
-				m->array[x].last = first - 1;
-			} else { /* last < m->array[x].last && first > m->array[x].first */
+				m->intervals[x].last = first - 1;
+			} else { /* last < m->intervals[x].last && first > m->intervals[x].first */
 				/* Range is in middle of entry, split it */
-				cclass_ins(m, x, m->array[x].first, first - 1);
-				m->array[x + 1].first = last + 1;
+				cclass_ins(m, x, m->intervals[x].first, first - 1);
+				m->intervals[x + 1].first = last + 1;
 				++x;
 			}
 			
@@ -382,11 +399,12 @@ void cclass_sub(struct Cclass *m, int first, int last)
 
 /* Remove any parts of m which also appear in n */
 
-void cclass_diff(struct Cclass *m, struct interval *array, int len)
+void cclass_diff(struct Cclass *m, struct Cclass *n)
 {
 	int x;
-	for (x = 0; x != len; ++x)
-		cclass_sub(m, array[x].first, array[x].last);
+	if (n)
+		for (x = 0; x != n->len; ++x)
+			cclass_sub(m, n->intervals[x].first, n->intervals[x].last);
 }
 
 /* Compute inverse of class m */
@@ -395,53 +413,72 @@ void cclass_diff(struct Cclass *m, struct interval *array, int len)
 
 void cclass_inv(struct Cclass *m)
 {
-	if (m->len && !m->array[0].first) {
+//	printf("\r\nBefore:\n");
+//	cclass_show(m);
+	if (m->len && !m->intervals[0].first) {
 		/* Starts at 0 */
 		int x;
-		int last = m->array[0].last;
+		int last = m->intervals[0].last;
 		for (x = 0; x != m->len - 1; ++x) {
-			m->array[x].first = last + 1;
-			m->array[x].last = m->array[x + 1].first - 1;
-			last = m->array[x + 1].last;
+			m->intervals[x].first = last + 1;
+			m->intervals[x].last = m->intervals[x + 1].first - 1;
+			last = m->intervals[x + 1].last;
 		}
 		if (last == UNICODE_LAST) {
 			--m->len; /* Delete last one */
 		} else {
-			m->array[x].first = last + 1;
-			m->array[x].last = UNICODE_LAST;
+			m->intervals[x].first = last + 1;
+			m->intervals[x].last = UNICODE_LAST;
 		}
 	} else {
 		/* Does not start at 0 */
 		int x;
 		int first = 0;
 		for (x = 0; x != m->len; ++x) {
-			int new_first = m->array[x].last;
-			m->array[x].last = m->array[x].first - 1;
-			m->array[x].first = first;
+			int new_first = m->intervals[x].last + 1;
+			m->intervals[x].last = m->intervals[x].first - 1;
+			m->intervals[x].first = first;
 			first = new_first;
 		}
 		if (first != UNICODE_LAST) {
 			cclass_grow(m);
-			m->array[x].first = first;
-			m->array[x].last = UNICODE_LAST;
+			m->intervals[x].first = first;
+			m->intervals[x].last = UNICODE_LAST;
 			++m->len;
 		}
 	}
+//	printf("\r\nAfter:\n");
+//	cclass_show(m);
+//	sleep(1);
 }
 
 int cclass_lookup_unopt(struct Cclass *m, int ch)
 {
-	return interval_test(m->array, m->len, ch) != -1;
+	return interval_test(m->intervals, m->len, ch) != -1;
 }
 
 void cclass_opt(struct Cclass *m)
 {
 	rset_init(m->rset);
-	rset_set(m->rset, m->array, m->size);
+	rset_set(m->rset, m->intervals, m->len);
 	rset_opt(m->rset);
 }
 
 int cclass_lookup(struct Cclass *m, int ch)
 {
 	return rset_lookup(m->rset, ch);
+}
+
+void cclass_show(struct Cclass *m)
+{
+	int x;
+	int first = 0;
+	for (x = 0; x != m->len; ++x) {
+		if (!first)
+			first = 1;
+		else
+			printf(" ");
+		printf("[%x..%x]", (unsigned)m->intervals[x].first, (unsigned)m->intervals[x].last);
+	}
+	printf("\n");
 }
