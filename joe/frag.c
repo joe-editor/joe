@@ -26,9 +26,8 @@ void clr_frag(Frag *f)
 
 /* Expand code block by at least 'size' words */
 
-void expand_frag(Frag *frag, int size)
+static void expand_frag(Frag *frag, int size)
 {
-	int org = frag->size;
 	if ((frag->size >> 1) > size)
 		// Grow by 50%
 		frag->size = frag->size + (frag->size >> 1);

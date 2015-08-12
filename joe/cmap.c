@@ -506,10 +506,10 @@ void rtree_opt(struct Rtree *r)
 	}
 }
 
-void rtree_set(struct Rtree *r, struct interval *array, int size, void *map)
+void rtree_set(struct Rtree *r, struct interval *array, ptrdiff_t len, void *map)
 {
-	int y;
-	for (y = 0; y != size; ++y) {
+	ptrdiff_t y;
+	for (y = 0; y != len; ++y) {
 		int x;
 		for (x = array[y].first; x <= array[y].last; ++x)
 			rtree_add(r, x, map);

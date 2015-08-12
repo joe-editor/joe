@@ -70,4 +70,4 @@ void *rtree_lookup_unopt(struct Rtree *r, int ch);
 void rtree_add(struct Rtree *r, int ch, void *map);
 void rtree_opt(struct Rtree *r);
 
-void rtree_set(struct Rtree *r, struct interval *array, int size, void *map);
+void rtree_set(struct Rtree *r, struct interval *array, ptrdiff_t len, void *map);

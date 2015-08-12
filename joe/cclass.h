@@ -19,7 +19,7 @@ void interval_sort(struct interval *array, ptrdiff_t size);
 
 /* Test if character is in a sorted interval array using binary search.
    Returns -1 if not found, or index to matching struct interval */
-int interval_test(struct interval *array, ptrdiff_t size, int ch);
+ptrdiff_t interval_test(struct interval *array, ptrdiff_t size, int ch);
 
 /* A character class implemented as a radix tree
    These structures are also used for character maps based
@@ -77,7 +77,7 @@ int rset_lookup(struct Rset *r, int ch);
 int rset_lookup_unopt(struct Rset *r, int ch);
 void rset_add(struct Rset *r, int ch);
 void rset_opt(struct Rset *r);
-void rset_set(struct Rset *r, struct interval *array, int size);
+void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size);
 void rset_show(struct Rset *r);
 
 /* A character class */

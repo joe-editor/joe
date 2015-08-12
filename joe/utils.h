@@ -167,7 +167,7 @@ int zhtoi(const char *s);
 ptrdiff_t parse_string(const char **p,char *buf,ptrdiff_t len);
 ptrdiff_t parse_Zstring(const char **p,int *buf,ptrdiff_t len);
 int parse_range(const char **p,int *first,int *second);
-int parse_class(const char **p, struct interval **array, int *size);
+int parse_class(const char **p, struct interval **array, ptrdiff_t *size);
 void emit_string(FILE *f,const char *s,ptrdiff_t len);
 
 void jsort(void *base, ptrdiff_t num, ptrdiff_t size, int (*compar)(const void *a, const void *b));

@@ -1,5 +1,5 @@
 struct unicat {
-	char *name;
+	const char *name;
 	int len;
 	struct interval *intervals;
 	struct unicat *next;

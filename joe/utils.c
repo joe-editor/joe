@@ -917,7 +917,7 @@ int parse_range(const char * *pp, int *first, int *second)
 	return 0;
 }
 
-int parse_class(const char * *pp, struct interval **array, int *size)
+int parse_class(const char * *pp, struct interval **array, ptrdiff_t *size)
 {
 	static struct interval simple;
 	const char *p= *pp;

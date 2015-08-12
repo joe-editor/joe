@@ -13,7 +13,7 @@
 
 static unsigned gather(unsigned val,unsigned sel)
 {
-	unsigned long mk, mp, mv, t;
+	unsigned mk, mp, mv, t;
 	int i;
 	val &= sel;
 	mk = ~sel << 1;

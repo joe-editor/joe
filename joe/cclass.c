@@ -30,7 +30,7 @@ void interval_sort(struct interval *array, ptrdiff_t num)
 /* Test if character ch is in one of the struct intervals in array using binary search.
  * Returns index to interval, or -1 if none found. */
 
-int interval_test(struct interval *array, ptrdiff_t size, int ch)
+ptrdiff_t interval_test(struct interval *array, ptrdiff_t size, int ch)
 {
 	if (size) {
 		ptrdiff_t min = 0;
@@ -121,7 +121,7 @@ void rset_clr(struct Rset *r)
 	joe_free(r->third.table.c);
 }
 
-int rset_alloc(struct Level *l, int levelno)
+static int rset_alloc(struct Level *l, int levelno)
 {
 	int x;
 	if (l->alloc == l->size) {
@@ -157,10 +157,8 @@ void rset_add(struct Rset *r, int ch)
 	int c = (SECONDMASK & (ch >> THIRDSHIFT));
 	int d = (LEAFMASK & (ch >> LEAFSHIFT));
 
-	int ia;
 	int ib;
 	int ic;
-	int id;
 
 	if (a >= TOPSIZE)
 		return;
@@ -196,9 +194,9 @@ void rset_opt(struct Rset *r)
 	}
 }
 
-void rset_set(struct Rset *r, struct interval *array, int size)
+void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size)
 {
-	int y;
+	ptrdiff_t y;
 	for (y = 0; y != size; ++y) {
 		int x;
 		for (x = array[y].first; x <= array[y].last; ++x)
@@ -263,14 +261,14 @@ void cclass_clr(struct Cclass *m)
 /* Delete range from character class at position x
  * x is in range 0 to (m->len - 1), inclusive.
  */
-void cclass_del(struct Cclass *m, int x)
+static void cclass_del(struct Cclass *m, int x)
 {
 	mmove(m->intervals + x, m->intervals + x + 1, SIZEOF(struct interval) * (m->len - (x + 1)));
 	--m->len;
 }
 
 /* We are about to insert: expand array if necessary */
-void cclass_grow(struct Cclass *m)
+static void cclass_grow(struct Cclass *m)
 {
 	if (m->len == m->size) {
 		if (!m->size) {
@@ -286,7 +284,7 @@ void cclass_grow(struct Cclass *m)
 /* Insert a range into a character class at position x
  * x is in range 0 to m->len inclusive.
  */
-void cclass_ins(struct Cclass *m, int x, int first, int last)
+static void cclass_ins(struct Cclass *m, int x, int first, int last)
 {
 	cclass_grow(m);
 	mmove(m->intervals + x + 1, m->intervals + x, SIZEOF(struct interval) * (m->len - x));

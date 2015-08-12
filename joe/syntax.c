@@ -860,7 +860,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 						state->delim = cmd;
 					} else {
 						struct interval *array;
-						int size;
+						ptrdiff_t size;
 						++p;
 						while(*p != '"' && !parse_class(&p, &array, &size)) {
 							rtree_set(&state->rtree, array, size, cmd);
