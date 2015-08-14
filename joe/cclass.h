@@ -21,7 +21,7 @@ void interval_sort(struct interval *array, ptrdiff_t size);
    Returns -1 if not found, or index to matching struct interval */
 ptrdiff_t interval_test(struct interval *array, ptrdiff_t size, int ch);
 
-/* An interval list item (for lists of interval to bind mappings) */
+/* An interval list item.  This is one implementation of character -> pointer maps. */
 
 struct interval_list {
 	struct interval_list *next; /* Next item in list */

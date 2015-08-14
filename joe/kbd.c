@@ -51,7 +51,7 @@ MACRO *dokey(KBD *kbd, int n)
 		rtree_opt(&kbd->curmap->rtree);
 		kbd->curmap->rtree_version = kbd->curmap->src_version;
 	}
-	bind = (KMAP *)rtree_lookup_unopt(&kbd->curmap->rtree, n);
+	bind = (KMAP *)rtree_lookup(&kbd->curmap->rtree, n);
 	if (!bind)
 		bind = kbd->curmap->dflt;
 	if (bind->what == 1) {	/* A prefix key was found */
