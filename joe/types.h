@@ -206,17 +206,19 @@ typedef int pid_t;
 
 /* These do not belong here. */
 
-#define KEY_MDOWN	0x200000
-#define KEY_MUP		0x200001
-#define KEY_MDRAG	0x200002
-#define KEY_M2DOWN	0x200003
-#define KEY_M2UP	0x200004
-#define KEY_M2DRAG	0x200005
-#define KEY_M3DOWN	0x200006
-#define KEY_M3UP	0x200007
-#define KEY_M3DRAG	0x200008
-#define KEY_MWUP	0x200009
-#define KEY_MWDOWN	0x20000A
+/* Put them in "Plane 16 Private Use" */
+
+#define KEY_MDOWN	0x100000
+#define KEY_MUP		0x100001
+#define KEY_MDRAG	0x100002
+#define KEY_M2DOWN	0x100003
+#define KEY_M2UP	0x100004
+#define KEY_M2DRAG	0x100005
+#define KEY_M3DOWN	0x100006
+#define KEY_M3UP	0x100007
+#define KEY_M3DRAG	0x100008
+#define KEY_MWUP	0x100009
+#define KEY_MWDOWN	0x10000A
 
 #define stdsiz		8192
 #define FITHEIGHT	4		/* Minimum text window height */
@@ -289,7 +291,6 @@ struct highlight_state {
 #include "cmd.h"
 #include "hash.h"
 #include "help.h"
-#include "i18n.h"
 #include "kbd.h"
 #include "lattr.h"
 #include "macro.h"

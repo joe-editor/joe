@@ -11,15 +11,20 @@ New regex engine:
 
 Improve syntax files to work with unicode.
 
-Auto generate the toupper / tolower from i18n.c  Eliminate i18n.c
-
 Can we find an updated version of wcwidth?
 
-Get rid of i18n file..
+Rtree gets very big before calling rtree_opt..
+  We need to optimize while we build.
+  We need the builder to smarter.
+
+Get rid of cmap, use rtree instead in kbd.c/kbd.h.
+[done]
 
 Digit values
 [wrote function, but not using it]
 
+Auto generate the toupper / tolower from i18n.c  Eliminate i18n.c
+[done]
 Accept character classes, not just UTF-8 in syntax files.
 [done]
 

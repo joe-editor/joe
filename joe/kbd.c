@@ -44,11 +44,16 @@ MACRO *dokey(KBD *kbd, int n)
 		kbd->x = 0;
 
 	/* Update cmap if src changed */
-	if (kbd->curmap->cmap_version != kbd->curmap->src_version) {
-		cmap_build(&kbd->curmap->cmap, kbd->curmap->src, kbd->curmap->dflt);
-		kbd->curmap->cmap_version = kbd->curmap->src_version;
+	if (kbd->curmap->rtree_version != kbd->curmap->src_version) {
+		rtree_clr(&kbd->curmap->rtree);
+		rtree_init(&kbd->curmap->rtree);
+		rtree_build(&kbd->curmap->rtree, kbd->curmap->src);
+		rtree_opt(&kbd->curmap->rtree);
+		kbd->curmap->rtree_version = kbd->curmap->src_version;
 	}
-	bind = (KMAP *)cmap_lookup(&kbd->curmap->cmap, n);
+	bind = (KMAP *)rtree_lookup_unopt(&kbd->curmap->rtree, n);
+	if (!bind)
+		bind = kbd->curmap->dflt;
 	if (bind->what == 1) {	/* A prefix key was found */
 		kbd->seq[kbd->x++] = n;
 		kbd->curmap = bind;
@@ -113,6 +118,7 @@ KMAP *mkkmap(void)
 {
 	KMAP *kmap = (KMAP *) joe_calloc(SIZEOF(KMAP), 1);
 	kmap->what = 1;
+	rtree_init(&kmap->rtree);
 	return kmap;
 }
 
@@ -132,7 +138,7 @@ void rmkmap(KMAP *kmap)
 	}
 	if (kmap->dflt && ((KMAP *)kmap->dflt)->what == 1)
 		rmkmap((KMAP *)kmap->dflt);
-	clr_cmap(&kmap->cmap);
+	rtree_clr(&kmap->rtree);
 	joe_free(kmap);
 }
 

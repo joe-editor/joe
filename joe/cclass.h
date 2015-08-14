@@ -1,5 +1,5 @@
 /*
- *	Character classes
+ *	Character classes and character maps
  *	Copyright
  *		(C) 2015 Joseph H. Allen
  *
@@ -21,9 +21,28 @@ void interval_sort(struct interval *array, ptrdiff_t size);
    Returns -1 if not found, or index to matching struct interval */
 ptrdiff_t interval_test(struct interval *array, ptrdiff_t size, int ch);
 
-/* A character class implemented as a radix tree
-   These structures are also used for character maps based
-   on radix trees: see cmap.h */
+/* An interval list item (for lists of interval to bind mappings) */
+
+struct interval_list {
+	struct interval_list *next; /* Next item in list */
+	struct interval interval; /* Range of characters */
+	void *map;
+};
+
+struct interval_list *mkinterval(struct interval_list *next, int first, int last, void *map);
+
+void rminterval(struct interval_list *item);
+
+/* Add a single interval to an interval list */
+struct interval_list *interval_add(struct interval_list *interval_list, int first, int last, void *map);
+
+/* Add set of intervals (a character class) to an interval list */
+struct interval_list *interval_set(struct interval_list *list, struct interval *array, int size, void *map);
+
+/* Look up single character in an interval list, return what it's mapped to */
+void *interval_lookup(struct interval_list *list, void *dflt, int ch);
+
+/* A character classes and maps implemented as a radix trees */
 
 #define LEAFSIZE 16
 #define LEAFMASK 0xF
@@ -46,11 +65,15 @@ struct First {
 };
 
 struct Mid {
-	short entry[32];
+	int entry[32];
 };
 
 struct Leaf {
 	void *entry[16];
+};
+
+struct Ileaf {
+	int entry[16];
 };
 
 struct Level {
@@ -60,8 +83,11 @@ struct Level {
 		struct Mid *b;
 		struct Mid *c;
 		struct Leaf *d;
+		struct Ileaf *e;
 	} table;
 };
+
+/* A radix tree bit-map for character classes */
 
 struct Rset {
 	int flag;
@@ -79,6 +105,39 @@ void rset_add(struct Rset *r, int ch, int che);
 void rset_opt(struct Rset *r);
 void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size);
 void rset_show(struct Rset *r);
+
+/* A radix tree map: (unicode character) -> (void *) or (unicode character) -> (int) */
+
+struct Rtree {
+	struct First top;
+	struct Level second;
+	struct Mid mid;
+	struct Level third;
+	struct Level leaf;
+};
+
+/* Functions for character -> pointer maps */
+
+void rtree_init(struct Rtree *r);
+void rtree_clr(struct Rtree *r);
+void *rtree_lookup(struct Rtree *r, int ch);
+void *rtree_lookup_unopt(struct Rtree *r, int ch);
+void rtree_add(struct Rtree *r, int ch, int che, void *map);
+void rtree_opt(struct Rtree *r);
+void rtree_set(struct Rtree *r, struct interval *array, ptrdiff_t len, void *map);
+void rtree_build(struct Rtree *r, struct interval_list *l);
+void rtree_show(struct Rtree *r);
+
+/* Functions for character -> int maps */
+
+void rmap_init(struct Rtree *r);
+void rmap_clr(struct Rtree *r);
+int rmap_lookup(struct Rtree *r, int ch, int dflt);
+int rmap_lookup_unopt(struct Rtree *r, int ch, int dflt);
+void rmap_add(struct Rtree *r, int ch, int che, int map, int dflt);
+void rmap_opt(struct Rtree *r);
+void rmap_set(struct Rtree *r, struct interval *array, ptrdiff_t len, int map, int dflt);
+void rmap_show(struct Rtree *r);
 
 /* A character class */
 

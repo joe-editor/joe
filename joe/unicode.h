@@ -5,17 +5,18 @@ struct unicat {
 	struct unicat *next;
 };
 
-extern struct unicat unicat[];
+/* Tables in unicat.c */
 
-struct casefold {
-	int first;
-	int last;
-	int a;
-	int b;
-	int c;
-};
-
-extern struct casefold fold_table[];
+extern struct unicat unicat[];	/* Catgories */
+extern struct interval toupper_table[];	/* Convert to uppercase */
+extern int toupper_cvt[];
+extern struct interval tolower_table[];	/* Convert to lowercase */
+extern int tolower_cvt[];
+extern struct interval totitle_table[];	/* Convert to titlecase */
+extern int totitle_cvt[];
+extern struct interval fold_table[]; /* Case folding table */
+#define REPLLEN 3
+extern int fold_repl[][REPLLEN];
 
 int *lowerize(int *d, ptrdiff_t len, const int *s);
 
@@ -62,3 +63,11 @@ int joe_iswblank(struct charmap *,int c);
 
 /* Value of any \p{Nd} digit */
 int digval(int ch);
+
+int joe_wcwidth(int wide,int c);
+/* Looking for wswidth? Take a look at scrn.c/txtwidth() */
+
+int joe_towupper(struct charmap *,int c);
+int joe_towlower(struct charmap *,int c);
+
+int unictrl(int c);
