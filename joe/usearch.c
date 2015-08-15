@@ -287,8 +287,8 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 	try_again:
 
 	x = 0;
-/* rethink for joe_regexec
-	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && ((pattern[x] >= 0 && pattern[x] < 128) || !p->b->o.charmap->type); ++x)
+/* rethink for joe_regexec */
+/*	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && ((pattern[x] >= 0 && pattern[x] < 128) || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
 			pattern[x] = TO_CHAR_OK(joe_tolower(p->b->o.charmap,pattern[x]));
 */
@@ -362,7 +362,8 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 	try_again:
 
 	x = 0;
-/* rethink for joe_regexec
+/* rethink for joe_regexec */
+/*
 	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && ((pattern[x] >= 0 && pattern[x] < 128) || !p->b->o.charmap->type); ++x)
 		if (srch->ignore)
 			pattern[x] = TO_CHAR_OK(joe_tolower(p->b->o.charmap, pattern[x]));
@@ -387,7 +388,7 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 				goto try_again;
 			} else {
 				srch->entire.rm_so = start->byte;
-				srch->entire.rm_so = end->byte;
+				srch->entire.rm_eo = end->byte;
 				pset(p, start);
 				prm(start);
 				prm(end);
