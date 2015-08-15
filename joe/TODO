@@ -1,4 +1,8 @@
 
+UTF-8 between 0x40000000 - 0x7FFFFFFF is not displayed correctly because of
+ANSI_BIT.  joe_wcwidth return 0 width for these, but it should be zero width
+only in ansi mode.
+
 long paths not working with cd command in shell windows?
 
 New regex engine:
@@ -13,6 +17,7 @@ New regex engine:
 Improve syntax files to work with unicode.
 
 Can we find an updated version of wcwidth?
+[done- but do more checking]
 
 Prebuilt radix trees for character classes to avoid startup overhead?  We
 could do this..

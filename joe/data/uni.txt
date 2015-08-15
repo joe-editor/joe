@@ -1,3 +1,24 @@
+Fields in UnicodeData.txt, see:
+
+ftp://ftp.unicode.org/Public/3.0-Update/UnicodeData-3.0.0.html
+
+ 1 code value
+ 2 character name
+ 3 general category
+ 4 canonical combining classes
+ 5 bidirectional category
+ 6 character decomposition mapping: indicates wide
+ 7 decimal digit value
+ 8 digit value
+ 9 numeric value
+ 10 mirrored
+ 11 unicode 1.0 name
+ 12 10646 comment field
+ 13 uppercase mapping
+ 14 lowercase mapping
+ 15 titlecase mapping
+
+
 iswcntrl hierarchy in unicode:
 
 cntrl: \p{C} (but maybe should include \p{Zl}, \p{Zp}
@@ -29,7 +50,7 @@ print: "any printable character including space" \p{L} \p{M} \p{S} \p{N} \p{P} \
 - Maybe \p{Pc} where we use _
 
 
-Unicode categoris
+Unicode categories:
 
 '-' means I see it in the UnicodeData.txt file
 
