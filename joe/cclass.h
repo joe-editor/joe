@@ -42,7 +42,11 @@ struct interval_list *interval_set(struct interval_list *list, struct interval *
 /* Look up single character in an interval list, return what it's mapped to */
 void *interval_lookup(struct interval_list *list, void *dflt, int ch);
 
-/* A character classes and maps implemented as a radix trees */
+/* Show an interval list */
+
+void interval_show(struct interval_list *list);
+
+/* A character classes and maps implemented as radix trees */
 
 #define LEAFSIZE 16
 #define LEAFMASK 0xF
@@ -70,7 +74,7 @@ struct Mid {
 
 struct Leaf {
 	void *entry[LEAFSIZE];
-	int refcount; /* No. references or freelist next pointer */
+	int refcount; /* No. references */
 };
 
 struct Ileaf {
@@ -81,8 +85,6 @@ struct Ileaf {
 struct Level {
 	int alloc; /* Allocation index */
 	int size; /* Malloc size */
-	int frlist; /* Free list, or -1 */
-	int dedupn; /* Index to most recent de-duplication attempt */
 	union {
 		struct Mid *b;
 		struct Mid *c;

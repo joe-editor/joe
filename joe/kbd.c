@@ -47,7 +47,9 @@ MACRO *dokey(KBD *kbd, int n)
 	if (kbd->curmap->rtree_version != kbd->curmap->src_version) {
 		rtree_clr(&kbd->curmap->rtree);
 		rtree_init(&kbd->curmap->rtree);
+		/* interval_show(kbd->curmap->src); */
 		rtree_build(&kbd->curmap->rtree, kbd->curmap->src);
+		/* rtree_show(&kbd->curmap->rtree); */
 		rtree_opt(&kbd->curmap->rtree);
 		/* rtree_show(&kbd->curmap->rtree); */
 		kbd->curmap->rtree_version = kbd->curmap->src_version;

@@ -8,16 +8,24 @@ New regex engine:
   add \c
   check char to int promotions
   add code to allow use of boyer-moore
+  add case ignore
 
 Improve syntax files to work with unicode.
 
 Can we find an updated version of wcwidth?
 
-Rtree gets very big before calling rtree_opt..
-  We need to optimize while we build.
-  We need the builder to be smarter / faster.
+Prebuilt radix trees for character classes to avoid startup overhead?  We
+could do this..
 
-Get rid of cmap, use rtree instead in kbd.c/kbd.h.
+Rtree gets very big before calling rtree_opt.. (we were exceeding 32K leaf
+nodes, overflowing short)
+  We need to optimize while we build...
+  [done- but implement for rmaps also?]
+
+valgrind run: look for leaks.
+
+Get rid of cmap, use rtree instead in kbd.c/kbd.h.  [cmap may have been
+better for this, but it does help debug rtrees...]
 [done]
 
 Digit values
