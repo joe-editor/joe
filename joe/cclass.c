@@ -175,12 +175,19 @@ void interval_show(struct interval_list *list)
 
 int rset_lookup(struct Rset *r, int ch)
 {
-	int a = (TOPMASK & (ch >> TOPSHIFT));
-	int b = (SECONDMASK & (ch >> SECONDSHIFT));
-	int c = (THIRDMASK & (ch >> THIRDSHIFT));
-	int d = (LEAFMASK & (ch >> LEAFSHIFT));
-	if (a >= TOPSIZE)
+	int a, b, c, d;
+
+	if (ch < 0)
+		ch += 256;
+
+	a = (ch >> TOPSHIFT);
+	b = (SECONDMASK & (ch >> SECONDSHIFT));
+	c = (THIRDMASK & (ch >> THIRDSHIFT));
+	d = (LEAFMASK & (ch >> LEAFSHIFT));
+
+	if (a < 0 || a >= TOPSIZE)
 		return 0;
+
 	if (a || b) { /* Full lookup for character >= 512 */
 		int idx = r->top.entry[a];
 		if (idx != -1) {
@@ -201,7 +208,7 @@ int rset_lookup(struct Rset *r, int ch)
 
 int rset_lookup_unopt(struct Rset *r, int ch)
 {
-	int a = (TOPMASK & (ch >> TOPSHIFT));
+	int a = (ch >> TOPSHIFT);
 	int b = (SECONDMASK & (ch >> SECONDSHIFT));
 	int c = (THIRDMASK & (ch >> THIRDSHIFT));
 	int d = (LEAFMASK & (ch >> LEAFSHIFT));
@@ -404,7 +411,7 @@ void rset_show(struct Rset *r)
 
 void *rtree_lookup(struct Rtree *r, int ch)
 {
-	int a = (TOPMASK & (ch >> TOPSHIFT));
+	int a = (ch >> TOPSHIFT);
 	int b = (SECONDMASK & (ch >> SECONDSHIFT));
 	int c = (THIRDMASK & (ch >> THIRDSHIFT));
 	int d = (LEAFMASK & (ch >> LEAFSHIFT));
@@ -430,7 +437,7 @@ void *rtree_lookup(struct Rtree *r, int ch)
 
 void *rtree_lookup_unopt(struct Rtree *r, int ch)
 {
-	int a = (TOPMASK & (ch >> TOPSHIFT));
+	int a = (ch >> TOPSHIFT);
 	int b = (SECONDMASK & (ch >> SECONDSHIFT));
 	int c = (THIRDMASK & (ch >> THIRDSHIFT));
 	int d = (LEAFMASK & (ch >> LEAFSHIFT));
@@ -798,7 +805,7 @@ void rtree_show(struct Rtree *r)
 
 int rmap_lookup(struct Rtree *r, int ch, int dflt)
 {
-	int a = (TOPMASK & (ch >> TOPSHIFT));
+	int a = (ch >> TOPSHIFT);
 	int b = (SECONDMASK & (ch >> SECONDSHIFT));
 	int c = (THIRDMASK & (ch >> THIRDSHIFT));
 	int d = (LEAFMASK & (ch >> LEAFSHIFT));
@@ -824,7 +831,7 @@ int rmap_lookup(struct Rtree *r, int ch, int dflt)
 
 int rmap_lookup_unopt(struct Rtree *r, int ch, int dflt)
 {
-	int a = (TOPMASK & (ch >> TOPSHIFT));
+	int a = (ch >> TOPSHIFT);
 	int b = (SECONDMASK & (ch >> SECONDSHIFT));
 	int c = (THIRDMASK & (ch >> THIRDSHIFT));
 	int d = (LEAFMASK & (ch >> LEAFSHIFT));

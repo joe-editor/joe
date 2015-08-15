@@ -20,7 +20,7 @@ could do this..
 Rtree gets very big before calling rtree_opt.. (we were exceeding 32K leaf
 nodes, overflowing short)
   We need to optimize while we build...
-  [done- but implement for rmaps also?]
+  [done]
 
 valgrind run: look for leaks.
 

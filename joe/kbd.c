@@ -57,7 +57,7 @@ MACRO *dokey(KBD *kbd, int n)
 	bind = (KMAP *)rtree_lookup(&kbd->curmap->rtree, n);
 	if (!bind)
 		bind = kbd->curmap->dflt;
-	if (bind->what == 1) {	/* A prefix key was found */
+	if (bind && bind->what == 1) {	/* A prefix key was found */
 		kbd->seq[kbd->x++] = n;
 		kbd->curmap = bind;
 		bind = 0;
