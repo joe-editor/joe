@@ -259,6 +259,10 @@ static int rset_alloc(struct Level *l, int levelno)
 			break;
 		}
 	}
+	if (l->alloc == 32768) {
+		fprintf(stderr,"rset_alloc overflow\r\n");
+		exit(-1);
+	}
 	return l->alloc++;
 }
 
@@ -446,14 +450,18 @@ void rtree_init(struct Rtree *r)
 
 	r->second.alloc = 0;
 	r->second.size = 1;
+	r->second.frlist = -1;
 	r->second.table.b = (struct Mid *)joe_malloc(r->second.size * SIZEOF(struct Mid));
 
 	r->third.alloc = 0;
 	r->third.size = 1;
+	r->third.frlist = -1;
 	r->third.table.c = (struct Mid *)joe_malloc(r->third.size * SIZEOF(struct Mid));
 
 	r->leaf.alloc = 0;
 	r->leaf.size = 1;
+	r->leaf.frlist = -1;
+	r->leaf.dedupn = -1;
 	r->leaf.table.d = (struct Leaf *)joe_malloc(r->leaf.size * SIZEOF(struct Leaf));
 }
 
@@ -464,40 +472,73 @@ void rtree_clr(struct Rtree *r)
 	joe_free(r->leaf.table.d);
 }
 
+#define FREEIND 0x1000000
+
 static int rtree_alloc(struct Level *l, int levelno)
 {
 	int x;
-	if (l->alloc == l->size) {
-		l->size *= 2;
-		switch (levelno) {
-			case 1: {
-				l->table.b = (struct Mid *)joe_realloc(l->table.b, l->size * SIZEOF(struct Mid));
-				break;
-			} case 2: {
-				l->table.c = (struct Mid *)joe_realloc(l->table.c, l->size * SIZEOF(struct Mid));
-				break;
-			} case 3: {
-				l->table.d = (struct Leaf *)joe_realloc(l->table.d, l->size * SIZEOF(struct Leaf));
-				break;
+	int id;
+	if (l->frlist != -1) {
+		id = l->frlist;
+		l->frlist = l->table.d[id].refcount;
+		if (l->frlist != -1)
+			l->frlist &= ~FREEIND;
+	} else {
+		if (l->alloc == l->size) {
+			l->size *= 2;
+			switch (levelno) {
+				case 1: {
+					l->table.b = (struct Mid *)joe_realloc(l->table.b, l->size * SIZEOF(struct Mid));
+					break;
+				} case 2: {
+					l->table.c = (struct Mid *)joe_realloc(l->table.c, l->size * SIZEOF(struct Mid));
+					break;
+				} case 3: {
+					l->table.d = (struct Leaf *)joe_realloc(l->table.d, l->size * SIZEOF(struct Leaf));
+					break;
+				}
 			}
 		}
+		id = l->alloc++;
 	}
 	switch (levelno) {
 		case 1: {
 			for (x = 0; x != SECONDSIZE; ++x)
-				l->table.b[l->alloc].entry[x] = -1;
+				l->table.b[id].entry[x] = -1;
 			break;
 		} case 2: {
 			for (x = 0; x != THIRDSIZE; ++x)
-				l->table.c[l->alloc].entry[x] = -1;
+				l->table.c[id].entry[x] = -1;
 			break;
 		} case 3: {
 			for (x = 0; x != LEAFSIZE; ++x)
-				l->table.d[l->alloc].entry[x] = NULL;
+				l->table.d[id].entry[x] = NULL;
+			l->table.d[id].refcount = 1;
 			break;
 		}
 	}
-	return l->alloc++;
+	if (id == 32768) {
+		fprintf(stderr,"rtree_alloc overflow\r\n");
+		exit(-1);
+	}
+	return id;
+}
+
+static void rtree_free(struct Level *l, int id)
+{
+	l->table.d[id].refcount = l->frlist | FREEIND;
+	l->frlist = id;
+}
+
+static int rtree_dedup(struct Level *l, int id)
+{
+	int x = l->dedupn;
+	if (x != -1 && x != id && !(l->table.d[x].refcount & FREEIND))
+		if (!memcmp(l->table.d[x].entry, l->table.d[id].entry, LEAFSIZE * SIZEOF(void *))) {
+			return x;
+		}
+	l->dedupn = id;
+	return -1;
 }
 
 void rtree_add(struct Rtree *r, int ch, int che, void *map)
@@ -536,7 +577,33 @@ void rtree_add(struct Rtree *r, int ch, int che, void *map)
 				}
 
 				while (ch <= che) {
-					r->leaf.table.d[id].entry[d] = map;
+					struct Leaf *l = r->leaf.table.d + id;
+					int dupid;
+					
+					/* Copy on write */
+					if (l->refcount != 1) {
+						struct Leaf *org = l;
+						r->third.table.c[ic].entry[c] = id = rtree_alloc(&r->leaf, 3);
+						l = r->leaf.table.d + id;
+						mcpy(l, org, SIZEOF(struct Leaf));
+						--org->refcount;
+						l->refcount = 1;
+					}
+
+					/* Write */
+					l->entry[d] = map;
+
+					/* Try to de-duplicate */
+					if (d == LEAFSIZE - 1) {
+						dupid = rtree_dedup(&r->leaf, id);
+						if (dupid != -1) {
+							rtree_free(&r->leaf, id);
+							l = r->leaf.table.d + dupid;
+							++l->refcount;
+							r->third.table.c[ic].entry[c] = dupid;
+						}
+					}
+
 					++ch;
 					if (++d == LEAFSIZE) {
 						d = 0;
@@ -597,22 +664,27 @@ void rtree_opt(struct Rtree *r)
 	rhsize = 1024;
 	rhtable = joe_calloc(SIZEOF(struct rhentry *), rhsize);
 	for (x = 0; x != r->leaf.alloc; ++x) {
-		struct rhentry *rh;
-		idx = ((rhsize - 1) & rhhash(r->leaf.table.d + x));
-		/* Already exists? */
-		for (rh = rhtable[idx]; rh; rh = rh->next)
-			if (!memcmp(rh->leaf, r->leaf.table.d + x, SIZEOF(struct Leaf)))
-				break;
-		if (rh) {
-			equiv[x] = rh->idx;
-			++dupcount;
+		if (!(r->leaf.table.d[x].refcount & FREEIND)) {
+			struct rhentry *rh;
+			idx = ((rhsize - 1) & rhhash(r->leaf.table.d + x));
+			/* Already exists? */
+			for (rh = rhtable[idx]; rh; rh = rh->next)
+				if (!memcmp(rh->leaf->entry, r->leaf.table.d[x].entry, LEAFSIZE * SIZEOF(void *)))
+					break;
+			if (rh) {
+				equiv[x] = rh->idx;
+				++dupcount;
+			} else {
+				equiv[x] = -1;
+				rh = (struct rhentry *)joe_malloc(SIZEOF(struct rhentry));
+				rh->next = rhtable[idx];
+				rh->idx = x;
+				rh->leaf = r->leaf.table.d + x;
+				rhtable[idx] = rh;
+			}
 		} else {
-			equiv[x] = -1;
-			rh = (struct rhentry *)joe_malloc(SIZEOF(struct rhentry));
-			rh->next = rhtable[idx];
-			rh->idx = x;
-			rh->leaf = r->leaf.table.d + x;
-			rhtable[idx] = rh;
+			equiv[x] = -2;
+			++dupcount;
 		}
 	}
 	/* Free hash table */
@@ -634,12 +706,14 @@ void rtree_opt(struct Rtree *r)
 	for (x = 0; x != r->leaf.alloc; ++x)
 		if (equiv[x] == -1) {
 			mcpy(l + idx, r->leaf.table.d + x, sizeof(struct Leaf));
+			l[idx].refcount = 1;
 			repl[x] = idx;
 			++idx;
 		}
 	for (x = 0; x != r->leaf.alloc; ++x)
-		if (equiv[x] != -1) {
+		if (equiv[x] != -1 && equiv[x] != -2) {
 			repl[x] = repl[equiv[x]];
+			++l[repl[equiv[x]]].refcount;
 		}
 
 	/* Install new table */
@@ -856,6 +930,10 @@ static int rmap_alloc(struct Level *l, int levelno, int dflt)
 				l->table.e[l->alloc].entry[x] = dflt;
 			break;
 		}
+	}
+	if (l->alloc == 32768) {
+		fprintf(stderr,"rmap_alloc overflow\r\n");
+		exit(-1);
 	}
 	return l->alloc++;
 }

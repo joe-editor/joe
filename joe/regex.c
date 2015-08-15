@@ -1164,6 +1164,7 @@ static void codegen(struct regcomp *g, int no, int *end)
 			case -'[': {
 				emiti(g->frag, iCLASS);
 				emitp(g->frag, g->nodes[no].cclass);
+				cclass_opt(g->nodes[no].cclass);
 				break;
 			}
 			default: {

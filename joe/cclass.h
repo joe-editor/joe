@@ -61,24 +61,28 @@ void *interval_lookup(struct interval_list *list, void *dflt, int ch);
 #define TOPSHIFT 14
 
 struct First {
-	short entry[68];
+	short entry[TOPSIZE];
 };
 
 struct Mid {
-	int entry[32];
+	short entry[SECONDSIZE]; /* THIRDSIZE too */
 };
 
 struct Leaf {
-	void *entry[16];
+	void *entry[LEAFSIZE];
+	int refcount; /* No. references or freelist next pointer */
 };
 
 struct Ileaf {
-	int entry[16];
+	int entry[LEAFSIZE];
+	int refcount;
 };
 
 struct Level {
-	int alloc;
-	int size;
+	int alloc; /* Allocation index */
+	int size; /* Malloc size */
+	int frlist; /* Free list, or -1 */
+	int dedupn; /* Index to most recent de-duplication attempt */
 	union {
 		struct Mid *b;
 		struct Mid *c;
@@ -90,7 +94,6 @@ struct Level {
 /* A radix tree bit-map for character classes */
 
 struct Rset {
-	int flag;
 	struct First top;
 	struct Level second;
 	struct Mid mid;

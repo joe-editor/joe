@@ -49,6 +49,7 @@ MACRO *dokey(KBD *kbd, int n)
 		rtree_init(&kbd->curmap->rtree);
 		rtree_build(&kbd->curmap->rtree, kbd->curmap->src);
 		rtree_opt(&kbd->curmap->rtree);
+		/* rtree_show(&kbd->curmap->rtree); */
 		kbd->curmap->rtree_version = kbd->curmap->src_version;
 	}
 	bind = (KMAP *)rtree_lookup(&kbd->curmap->rtree, n);

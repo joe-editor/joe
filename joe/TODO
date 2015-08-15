@@ -15,7 +15,7 @@ Can we find an updated version of wcwidth?
 
 Rtree gets very big before calling rtree_opt..
   We need to optimize while we build.
-  We need the builder to smarter.
+  We need the builder to be smarter / faster.
 
 Get rid of cmap, use rtree instead in kbd.c/kbd.h.
 [done]
