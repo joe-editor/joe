@@ -16,7 +16,7 @@
 * Submatches within regular expressions can now be any size (up to the size of the disk!).  Before this,
   they were limited to 16K.
 
-* Character class database has been updated to the latest version (based on UnicodeData.txt)
+* Character class database has been updated to the latest version (Unicode 8.0.0)
 
 * Switched to new character class data structure for faster Unicode (uses
   radix search instead of binary search).
