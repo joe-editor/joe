@@ -295,7 +295,7 @@ static void ansi_init(struct ansi_sm *sm)
 
 /* Update a single line */
 
-static int lgen(SCRN *t, ptrdiff_t y, int *screen, int *attr, ptrdiff_t x, ptrdiff_t w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
+static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff_t x, ptrdiff_t w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
         
       
             			/* Screen line address */
@@ -638,6 +638,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int *screen, int *attr, ptrdiff_t x, ptrdi
       eobl:			/* End of buffer line found.  Erase to end of screen line */
 	++p->line;
       eof:
+      	outatr_complete(t);
 	if (x != w)
 		done = eraeol(t, x, y, BG_COLOR(bg_text));
 	else
@@ -821,7 +822,7 @@ static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, off_t scr, off
 }
 #endif
 
-static void gennum(BW *w, int *screen, int *attr, SCRN *t, ptrdiff_t y, int *comp)
+static void gennum(BW *w, int (*screen)[COMPOSE], int *attr, SCRN *t, ptrdiff_t y, int *comp)
 {
 	char buf[12];
 	ptrdiff_t z;
@@ -845,11 +846,12 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, ptrdiff_t y, int *com
 			return;
 		comp[z] = buf[z];
 	}
+	outatr_complete(t);
 }
 
 void bwgenh(BW *w)
 {
-	int *screen;
+	int (*screen)[COMPOSE];
 	int *attr;
 	P *q = pdup(w->top, "bwgenh");
 	ptrdiff_t bot = w->h + w->y;
@@ -965,7 +967,7 @@ void bwgenh(BW *w)
 
 void bwgen(BW *w, int linums)
 {
-	int *screen;
+	int (*screen)[COMPOSE];
 	int *attr;
 	P *p = NULL;
 	P *q;

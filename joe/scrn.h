@@ -29,6 +29,11 @@ struct scrn {
 
 #else
 
+#define COMPOSE 4 /* Maximum number of characters per cell (one start plus some number of combining) */
+/* If there are more than (COMPOSE - 1) combining characters, JOE will emit them, but during a line update
+ * it keeps re-emitting them even if not necessary (because the screen buffer doesn't have enough
+ * to record them all, so it doesn't know if the cell is already correct during an udpate). */
+
 struct scrn {
 	CAP	*cap;		/* Termcap/Terminfo data */
 
@@ -131,7 +136,7 @@ struct scrn {
 	int	insdel;		/* Set to use insert/delete within line */
 
 	/* Current state of terminal */
-	int	*scrn;		/* Characters on screen */
+	int	(*scrn)[COMPOSE];		/* Characters on screen */
 	int	*attr;		/* Attributes on screen */
 	ptrdiff_t	x, y;		/* Current cursor position (-1 for unknown) */
 	ptrdiff_t	top, bot;	/* Current scrolling region */
@@ -289,7 +294,8 @@ extern unsigned atab[];
 #define FG_RED		(FG_NOT_DEFAULT|(1<<FG_SHIFT))
 #define FG_BLACK	(FG_NOT_DEFAULT|(0<<FG_SHIFT))
 
-void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,ptrdiff_t xx,ptrdiff_t yy,int c,int a);
+void outatr_complete(SCRN *t);
+void outatr(struct charmap *map,SCRN *t,int (*scrn)[COMPOSE],int *attrf,ptrdiff_t xx,ptrdiff_t yy,int c,int a);
 
 #endif
 
@@ -332,7 +338,7 @@ int clrins(SCRN *t);
 int meta_color(const char *s);
 
 /* Generate a field */
-void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,const char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt);
+void genfield(SCRN *t,int (*scrn)[COMPOSE],int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,const char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt);
 
 /* Column width of a string takes into account utf-8) */
 ptrdiff_t txtwidth(const char *s,ptrdiff_t len);

@@ -33,7 +33,7 @@ static void menudisp(W *w, int flg)
 	ptrdiff_t col;
 	int x;
 	int y;
-	int *s = m->t->t->scrn + m->x + m->y * m->t->t->co;
+	int (*s)[COMPOSE] = m->t->t->scrn + m->x + m->y * m->t->t->co;
 	int *a = m->t->t->attr + m->x + m->y * m->t->t->co;
 	ptrdiff_t cut = m->nitems % m->lines;
 
@@ -111,6 +111,7 @@ static void menudisp(W *w, int flg)
 				}
 			}
 		}
+		outatr_complete(m->t->t);
 		/* Clear to end of line */
 		if (col != m->w)
 			eraeol(m->t->t, m->x + col, m->y + y, BG_COLOR(bg_menu));

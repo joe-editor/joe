@@ -4,6 +4,9 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* JOE now displays Unicode combining characters properly
+	* Previously they kind of worked, but not really.
+
 * New regular expression engine
 	* Old one was a recursive matcher, new one is compiled Thompson NFA matcher
 	* JOE now supports full regular expressions (but regex characters are

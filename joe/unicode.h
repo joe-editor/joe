@@ -42,6 +42,7 @@ extern struct Cclass cclass_graph[1];
 extern struct Cclass cclass_print[1];
 extern struct Cclass cclass_word[1];
 extern struct Cclass cclass_notword[1];
+extern struct Cclass cclass_combining[1];
 
 void joe_iswinit();
 

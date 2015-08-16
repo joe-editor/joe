@@ -145,6 +145,9 @@ int joe_towupper(struct charmap *foo, int ch)
 /* 0-width characters */
 struct Cclass cclass_zero[1];
 
+/* Combining characters */
+struct Cclass cclass_combining[1];
+
 /* Double-width characters */
 struct Cclass cclass_double[1];
 
@@ -368,6 +371,12 @@ void joe_iswinit()
 	cclass_opt(cclass_zero);
 /*	cclass_show(cclass_zero);
 	exit(1); */
+
+/* Combining characters */
+	cclass_init(cclass_combining);
+	cclass_union(cclass_combining, unicode("Me"));
+	cclass_union(cclass_combining, unicode("Mn"));
+	cclass_opt(cclass_combining);
 
 /* Double width characters
  *

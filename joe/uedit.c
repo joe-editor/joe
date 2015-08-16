@@ -1922,11 +1922,13 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 			simple = 0;
 		if (simple && bw->parent->t->t->sary[bw->y + bw->cursor->line - bw->top->line])
 			simple = 0;
+		if (cclass_lookup(cclass_combining, k))
+			simple = 0;
 		if (simple && k != '\t' && k != '\n' && !curmacro) {
 			int atr;
 			SCRN *t = bw->parent->t->t;
 			ptrdiff_t y = bw->y + TO_DIFF_OK(bw->cursor->line - bw->top->line);
-			int *screen = t->scrn + y * t->co;
+			int (*screen)[COMPOSE] = t->scrn + y * t->co;
 			int *attr = t->attr + y * t->co;
 			x += bw->x;
 

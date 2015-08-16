@@ -116,6 +116,17 @@ int xlata[256] = {
 	INVERSE, INVERSE, INVERSE, INVERSE + UNDERLINE		/* 256 */
 };
 
+void mfill(int (*dest)[COMPOSE], int val, ptrdiff_t count)
+{
+	ptrdiff_t x;
+	while (count--) {
+		(*dest)[0] = val;
+		for (x = 1; x != COMPOSE; ++x)
+			(*dest)[x] = 0;
+		++dest;
+	}
+}
+
 /* For terminals with the "xn" capability, which includes all popular
  * graphical terminal emulators: When a character is printed in the last
  * (let's say 80th) column, the cursor enters a special state. If a letter is
@@ -237,54 +248,109 @@ int set_attr(SCRN *t, int c)
 
 /* Output character with attributes */
 
-void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,ptrdiff_t xx,ptrdiff_t yy,int c,int a)
+int outatr_state; /* 1 = we have a start character waiting to emit.  2 = we have combining chars we are ignoring */
+int (*outatr_scrn)[COMPOSE];
+int *outatr_attrf;
+int outatr_build[COMPOSE];
+ptrdiff_t outatr_xx;
+ptrdiff_t outatr_yy;
+ptrdiff_t outatr_ofst;
+int outatr_wid;
+int outatr_uni_ctrl;
+int outatr_a;
+
+/* Emit accumulated character (start character + compose characters) */
+
+void outatr_complete(SCRN *t)
+{
+	if (outatr_state == 1) {
+		ptrdiff_t x;
+		for (x = 0; x != COMPOSE; ++x)
+			if (outatr_scrn[0][x] != outatr_build[x])
+				break;
+		if (x != COMPOSE || *outatr_attrf != outatr_a) {
+			char buf[16];
+			for (x = 0; x != COMPOSE; ++x)
+				outatr_scrn[0][x] = outatr_build[x];
+			*outatr_attrf = outatr_a;
+			if (t->ins)
+				clrins(t);
+			if (t->x != outatr_xx || t->y != outatr_yy)
+				cpos(t, outatr_xx, outatr_yy);
+			if (t->attrib != outatr_a)
+				set_attr(t, outatr_a);
+			if (outatr_uni_ctrl) {
+				sprintf(buf, "<%X>", outatr_build[0]);
+				ttputs(buf);
+			} else {
+				for (x = 0; x != COMPOSE && outatr_build[x]; ++x) {
+					utf8_encode(buf, outatr_build[x]);
+					ttputs(buf);
+				}
+			}
+			t->x += outatr_wid;
+			while (outatr_wid > 1) {
+				(*++outatr_scrn)[0] = -1;
+				*++outatr_attrf = 0;
+				--outatr_wid;
+			}
+		}
+	}
+	outatr_state = 0;
+}
+
+void outatr(struct charmap *map,SCRN *t,int (*scrn)[COMPOSE],int *attrf,ptrdiff_t xx,ptrdiff_t yy,int c,int a)
 {
 	if (c < 0)
 		c += 256;
 	if(map->type)
 		if(locale_map->type) {
-			/* UTF-8 char to UTF-8 terminal */
-			int wid;
-			int uni_ctrl = 0;
-			char buf[16];
-
-			/* Deal with control characters */
-			if (c<32) {
-				c = c + '@';
-				a ^= UNDERLINE;
-			} else if (c==127) {
-				c = '?';
-				a ^= UNDERLINE;
-			} else if (unictrl(c)) {
-				a ^= UNDERLINE;
-				uni_ctrl = 1;
-			}
-
-			if(*scrn==c && *attrf==a)
-				return;
-
-			wid = joe_wcwidth(1,c);
-
-			*scrn = c;
-			*attrf = a;
-			if(t->ins)
-				clrins(t);
-			if(t->x != xx || t->y != yy)
-				cpos(t, xx, yy);
-			if(t->attrib != a)
-				set_attr(t, a);
-			if (uni_ctrl) {
-				sprintf(buf,"<%X>",c);
-				ttputs(buf);
+			if (cclass_lookup(cclass_combining, c)) { /* It's a combining character */
+				if (!outatr_state) /* No start character? */
+					outatr_state = 2; /* Ignore it... */
+				else if (outatr_state == 1) { /* We have a start character, add it */
+					if (outatr_ofst != COMPOSE)
+						outatr_build[outatr_ofst++] = c;
+					else { /* More combining chars than we buffer */
+						char buf[16];
+						outatr_scrn[0][0] = -1; /* Force outatr_complete to emit character */
+						outatr_complete(t);
+						utf8_encode(buf, c);
+						ttputs(buf);
+						outatr_state = 3;
+					}
+				} else if (outatr_state == 3) { /* We have alread emitted the start character, but we have more combining chars */
+					char buf[16];
+					utf8_encode(buf, c);
+					ttputs(buf);
+				}
 			} else {
-				utf8_encode(buf,c);
-				ttputs(buf);
-			}
-			t->x+=wid;
-			while (wid>1) {
-				*++scrn= -1;
-				*++attrf= 0;
-				--wid;
+				ptrdiff_t x;
+				if (outatr_state) /* We already have a start character? */
+					outatr_complete(t);
+				outatr_uni_ctrl = 0;
+				/* Deal with control characters */
+				if (c < 32) {
+					c = c + '@';
+					a ^= UNDERLINE;
+				} else if (c == 127) {
+					c = '?';
+					a ^= UNDERLINE;
+				} else if (unictrl(c)) {
+					a ^= UNDERLINE;
+					outatr_uni_ctrl = 1;
+				}
+				outatr_wid = joe_wcwidth(1, c);
+				outatr_state = 1;
+				outatr_scrn = scrn;
+				outatr_attrf = attrf;
+				outatr_xx = xx;
+				outatr_yy = yy;
+				outatr_ofst = 1;
+				outatr_a = a;
+				outatr_build[0] = c;
+				for (x = 1; x != COMPOSE; ++x)
+					outatr_build[x] = 0;
 			}
 		} else {
 			/* UTF-8 char to non-UTF-8 terminal */
@@ -303,10 +369,10 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,ptrdiff_t xx,ptrdif
 				c = xlatc[c];
 			}
 
-			if(*scrn==c && *attrf==a)
+			if((*scrn)[0] == c && *attrf == a)
 				return;
 
-			*scrn = c;
+			(*scrn)[0] = c;
 			*attrf = a;
 			if(t->ins)
 				clrins(t);
@@ -328,10 +394,10 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,ptrdiff_t xx,ptrdif
 				c = xlatc[c];
 			}
 
-			if (*scrn==c && *attrf==a)
+			if ((*scrn)[0] == c && *attrf == a)
 				return;
 
-			*scrn = c;
+			(*scrn)[0] = c;
 			*attrf = a;
 
 			if(t->ins)
@@ -358,11 +424,11 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,ptrdiff_t xx,ptrdif
 				c = '?';
 			utf8_encode(buf,c);
 
-			if (*scrn == c && *attrf == a)
+			if ((*scrn)[0] == c && *attrf == a)
 				return;
 
 			wid = joe_wcwidth(0,c);
-			*scrn = c;
+			(*scrn)[0] = c;
 			*attrf = a;
 			if(t->ins)
 				clrins(t);
@@ -373,7 +439,7 @@ void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,ptrdiff_t xx,ptrdif
 			ttputs(buf);
 			t->x+=wid;
 			while(wid>1) {
-				*++scrn= -1;
+				(*++scrn)[0] = -1;
 				*++attrf= 0;
 				--wid;
 			}
@@ -425,7 +491,7 @@ int clrins(SCRN *t)
 
 int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr)
 {
-	int *s, *ss, *a, *aa;
+	int (*s)[COMPOSE], (*ss)[COMPOSE], *a, *aa;
 	ptrdiff_t w = t->co - x;
 
 	if (w <= 0)
@@ -435,7 +501,7 @@ int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr)
 	ss = s + w;
 	aa = a + w;
 	do {
-		if (*--ss != ' ') {
+		if ((*--ss)[0] != ' ') {
 			++ss;
 			break;
 		} else if (*--aa != atr) {
@@ -449,7 +515,7 @@ int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr)
 		if(t->attrib != atr)
 			set_attr(t, atr); 
 		texec(t->cap, t->ce, 1, 0, 0, 0, 0);
-		msetI(s, ' ', w);
+		mfill(s, ' ', w);
 		msetI(a, atr, w);
 	/* TODO: move computation of ss & aa here */
 	} else if (s != ss) {
@@ -460,7 +526,7 @@ int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr)
 		if (t->attrib != atr)
 			set_attr(t, atr); 
 		while (s != ss) {
-			*s = ' ';
+			(*s)[0] = ' ';
 			*a = atr;
 			ttputc(' ');
 			++t->x;
@@ -867,7 +933,7 @@ int nresize(SCRN *t, ptrdiff_t w, ptrdiff_t h)
 		joe_free(t->ofst);
 	if (t->ary)
 		joe_free(t->ary);
-	t->scrn = (int *)joe_malloc(t->li * t->co * SIZEOF(int));
+	t->scrn = (int (*)[COMPOSE])joe_malloc(t->li * t->co * SIZEOF(int [COMPOSE]));
 	t->attr = (int *)joe_malloc(t->li * t->co * SIZEOF(int));
 	t->sary = (ptrdiff_t *)joe_calloc(t->li, SIZEOF(ptrdiff_t));
 	t->updtab = (int *)joe_malloc(t->li * SIZEOF(int));
@@ -1343,19 +1409,22 @@ int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y)
 	/* Move cursor quickly if we can */
 	if (y == t->y) {
 		if (x > t->x && x - t->x < 4 && !t->ins) {
-			int *cs = t->scrn + t->x + t->co * t->y;
+			int (*cs)[COMPOSE] = t->scrn + t->x + t->co * t->y;
 			int *as = t->attr + t->x + t->co * t->y;
 			do {
 				/* We used to space over unknown chars, but they now could be
 				   the right half of a UTF-8 two column character, so we can't.
 				   Also do not try to emit utf-8 sequences here. */
-				if(*cs<32 || *cs>=127)
+				if((*cs)[0]<32 || (*cs)[0]>=127)
+					break;
+				/* Also ignore if we would have to emit combining characters */
+				if ((*cs)[1])
 					break;
 
 				if (*as != t->attrib)
 					set_attr(t, *as);
 
-				ttputc(TO_CHAR_OK(*cs));
+				ttputc(TO_CHAR_OK((*cs)[0]));
 
 				++cs;
 				++as;
@@ -1366,6 +1435,7 @@ int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y)
 		if (x == t->x)
 			return 0;
 	}
+
 	if ((!t->ms && t->attrib & (INVERSE | UNDERLINE | BG_NOT_DEFAULT)) ||
 	    (t->ut && (t->attrib & BG_NOT_DEFAULT)))
 		set_attr(t, t->attrib & ~(INVERSE | UNDERLINE | BG_MASK));
@@ -1378,7 +1448,7 @@ int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y)
 	return 0;
 }
 
-static void doinschr(SCRN *t, ptrdiff_t x, ptrdiff_t y, int *s, int *as, ptrdiff_t n)
+static void doinschr(SCRN *t, ptrdiff_t x, ptrdiff_t y, int (*s)[COMPOSE], int *as, ptrdiff_t n)
 {
 	ptrdiff_t a;
 
@@ -1396,7 +1466,7 @@ static void doinschr(SCRN *t, ptrdiff_t x, ptrdiff_t y, int *s, int *as, ptrdiff
 				setins(t, x);
 			for (a = 0; a != n; ++a) {
 				texec(t->cap, t->ic, 1, x, 0, 0, 0);
-				outatri(t, x + a, y, s[a], as[a]);
+				outatri(t, x + a, y, s[a][0], as[a]);
 				texec(t->cap, t->ip, 1, x, 0, 0, 0);
 			}
 			if (!t->mi)
@@ -1404,12 +1474,12 @@ static void doinschr(SCRN *t, ptrdiff_t x, ptrdiff_t y, int *s, int *as, ptrdiff
 		} else {
 			texec(t->cap, t->IC, 1, n, 0, 0, 0);
 			for (a = 0; a != n; ++a)
-				outatri(t, x + a, y, s[a], as[a]);
+				outatri(t, x + a, y, s[a][0], as[a]);
 		}
 	}
-	mmove(t->scrn + x + t->co * y + n, t->scrn + x + t->co * y, (t->co - (x + n)) * SIZEOF(int));
+	mmove(t->scrn + x + t->co * y + n, t->scrn + x + t->co * y, (t->co - (x + n)) * SIZEOF(int [COMPOSE]));
 	mmove(t->attr + x + t->co * y + n, t->attr + x + t->co * y, (t->co - (x + n)) * SIZEOF(int));
-	mmove(t->scrn + x + t->co * y, s, n * SIZEOF(int));
+	mmove(t->scrn + x + t->co * y, s, n * SIZEOF(int [COMPOSE]));
 	mmove(t->attr + x + t->co * y, s, n * SIZEOF(int));
 }
 
@@ -1431,16 +1501,16 @@ static void dodelchr(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t n)
 			texec(t->cap, t->DC, 1, n, 0, 0, 0);
 		texec(t->cap, t->ed, 1, x, 0, 0, 0);	/* Exit delete mode */
 	}
-	mmove(t->scrn + t->co * y + x, t->scrn + t->co * y + x + n, (t->co - (x + n)) * SIZEOF(int));
+	mmove(t->scrn + t->co * y + x, t->scrn + t->co * y + x + n, (t->co - (x + n)) * SIZEOF(int [COMPOSE]));
 	mmove(t->attr + t->co * y + x, t->attr + t->co * y + x + n, (t->co - (x + n)) * SIZEOF(int));
-	msetI(t->scrn + t->co * y + t->co - n, ' ', n);
+	mfill(t->scrn + t->co * y + t->co - n, ' ', n);
 	msetI(t->attr + t->co * y + t->co - n, (t->attrib & FG_MASK), n);
 }
 
 /* Insert/Delete within line */
 /* FIXME: doesn't know about attr */
-
-void magic(SCRN *t, ptrdiff_t y, int *cs, int *ca,int *s, int *a, ptrdiff_t placex)
+#if 0
+void magic(SCRN *t, ptrdiff_t y, int (*cs)[COMPOSE], int *ca,int *s, int *a, ptrdiff_t placex)
 {
 	struct hentry *htab = t->htab;
 	ptrdiff_t *ofst = t->ofst;
@@ -1545,7 +1615,7 @@ void magic(SCRN *t, ptrdiff_t y, int *cs, int *ca,int *s, int *a, ptrdiff_t plac
 		}
 	}
 }
-
+#endif
 static void doupscrl(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt, int atr)
 {
 	ptrdiff_t a = amnt;
@@ -1603,15 +1673,15 @@ static void doupscrl(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt, int 
 	return;
 
       done:
-	mmove(t->scrn + top * t->co, t->scrn + (top + amnt) * t->co, (bot - top - amnt) * t->co * SIZEOF(int));
+	mmove(t->scrn + top * t->co, t->scrn + (top + amnt) * t->co, (bot - top - amnt) * t->co * SIZEOF(int [COMPOSE]));
 	mmove(t->attr + top * t->co, t->attr + (top + amnt) * t->co, (bot - top - amnt) * t->co * SIZEOF(int));
 
 	if (bot == t->li && t->db) {
-		msetI(t->scrn + (t->li - amnt) * t->co, -1, amnt * t->co);
+		mfill(t->scrn + (t->li - amnt) * t->co, -1, amnt * t->co);
 		msetI(t->attr + (t->li - amnt) * t->co, 0, amnt * t->co);
 		msetI(t->updtab + t->li - amnt, 1, amnt);
 	} else {
-		msetI(t->scrn + (bot - amnt) * t->co, ' ', amnt * t->co);
+		mfill(t->scrn + (bot - amnt) * t->co, ' ', amnt * t->co);
 		msetI(t->attr + (bot - amnt) * t->co, 0, amnt * t->co); 
 	}
 }
@@ -1672,15 +1742,15 @@ static void dodnscrl(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt, int 
 	msetI(t->updtab + top, 1, bot - top);
 	return;
       done:
-	mmove(t->scrn + (top + amnt) * t->co, t->scrn + top * t->co, (bot - top - amnt) * t->co * SIZEOF(int));
+	mmove(t->scrn + (top + amnt) * t->co, t->scrn + top * t->co, (bot - top - amnt) * t->co * SIZEOF(int [COMPOSE]));
 	mmove(t->attr + (top + amnt) * t->co, t->attr + top * t->co, (bot - top - amnt) * t->co * SIZEOF(int));
 
 	if (!top && t->da) {
-		msetI(t->scrn, -1, amnt * t->co);
+		mfill(t->scrn, -1, amnt * t->co);
 		msetI(t->attr, 0, amnt * t->co);
 		msetI(t->updtab, 1, amnt);
 	} else {
-		msetI(t->scrn + t->co * top, ' ', amnt * t->co);
+		mfill(t->scrn + t->co * top, ' ', amnt * t->co);
 		msetI(t->attr + t->co * top, 0, amnt * t->co); 
 	}
 }
@@ -1824,9 +1894,9 @@ void nscrlup(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt)
 void nredraw(SCRN *t)
 {
 	dostaupd = 1;
-	msetI(t->scrn, ' ', t->co * skiptop);
+	mfill(t->scrn, ' ', t->co * skiptop);
 	msetI(t->attr, BG_COLOR(bg_text), t->co * skiptop);  
-	msetI(t->scrn + skiptop * t->co, -1, (t->li - skiptop) * t->co);
+	mfill(t->scrn + skiptop * t->co, -1, (t->li - skiptop) * t->co);
 	msetI(t->attr + skiptop * t->co, BG_COLOR(bg_text), (t->li - skiptop) * t->co); 
 	msetD(t->sary, 0, t->li);
 	msetI(t->updtab + skiptop, -1, t->li - skiptop);
@@ -1845,12 +1915,12 @@ void nredraw(SCRN *t)
 			texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 			t->x = 0;
 			t->y = 0;
-			msetI(t->scrn, ' ', t->li * t->co);
+			mfill(t->scrn, ' ', t->li * t->co);
 			msetI(t->attr, BG_COLOR(bg_text), t->li * t->co); 
 		} else if (t->cd) {
 			cpos(t, 0, 0);
 			texec(t->cap, t->cd, 1, 0, 0, 0, 0);
-			msetI(t->scrn, ' ', t->li * t->co);
+			mfill(t->scrn, ' ', t->li * t->co);
 			msetI(t->attr, BG_COLOR(bg_text), t->li * t->co); 
 		}
 	}
@@ -2005,7 +2075,7 @@ int meta_color(const char *s)
  * 'fmt' is array of attributes, one for each byte.  OK if NULL.
  */
 
-void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,const char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt)
+void genfield(SCRN *t,int (*scrn)[COMPOSE],int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,const char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt)
 {
 	ptrdiff_t col;
 	struct utf8_sm sm;
@@ -2067,6 +2137,8 @@ void genfield(SCRN *t,int *scrn,int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst
 		++scrn;
 		++attr;
 	}
+	/* Complete any unfinished characters */
+	outatr_complete(t);
 	/* Erase to end of line */
 	if (flg)
 		eraeol(t, x, y, atr);
@@ -2126,7 +2198,7 @@ off_t txtwidth1(struct charmap *map,off_t tabwidth,const char *s,ptrdiff_t len)
 
 void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg)
 {
-	int *scrn = t->scrn + y * t->co + x;
+	int (*scrn)[COMPOSE] = t->scrn + y * t->co + x;
 	int *attr = t->attr + y * t->co + x;
 	ptrdiff_t col = 0;
 	int c;
@@ -2213,6 +2285,7 @@ void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, in
 					col += wid;
 			}
 		}
+	outatr_complete(t);
 	if (flg)
 		eraeol(t, x, y, atr);
 }

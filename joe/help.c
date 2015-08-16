@@ -252,6 +252,7 @@ void help_display(Screen *t)
 			}
 			atr = BG_COLOR(bg_help);
 			t->t->updtab[y] = 0;
+			outatr_complete(t->t);
 		}
 
 		while (*str && *str != '\n')

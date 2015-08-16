@@ -1,5 +1,6 @@
 Unicode:
   Support combining characters properly.  
+[done]
 
 UTF-8 between 0x40000000 - 0x7FFFFFFF is not displayed correctly because of
 ANSI_BIT.  joe_wcwidth return 0 width for these, but it should be zero width
@@ -21,9 +22,10 @@ New regex engine:
 
   add code to allow use of boyer-moore
 
-  add case ignore [done: maybe more work for byte character sets]
+  add case ignore [done: maybe more work for byte character sets, what about
+character classes?]
 
-  unicode normalization
+  unicode normalization, ugh.
 
   handle byte encoding correctly- we are only handling unicode
     - what happens if you search/replace across file with different
