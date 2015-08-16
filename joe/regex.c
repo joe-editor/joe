@@ -822,7 +822,7 @@ static int do_parse_conventional(struct regcomp *g, int prec)
 
 /* JOE syntax regex */
 
-static int do_parse(struct regcomp *g, int prec)
+static int do_parse(struct regcomp *g, int prec, int fold)
 {
 	int no = -1;
 
@@ -848,10 +848,10 @@ static int do_parse(struct regcomp *g, int prec)
 		} else if (g->l >= 2 && g->ptr[0] == '?' && g->ptr[1] == ':') {
 			/* Grouping, no sub-match addressing */
 			g->ptr += 2;
-			no = mk_node(g, -'(', -1, do_parse(g, 0));
+			no = mk_node(g, -'(', -1, do_parse(g, 0, fold));
 		} else {
 			/* Grouping with sub-match addressing */
-			no = mk_node(g, -'{', -1, do_parse(g, 0));
+			no = mk_node(g, -'{', -1, do_parse(g, 0, fold));
 		}
 		if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == ')') {
 			g->ptr += 2; g->l -= 2;
@@ -913,7 +913,23 @@ static int do_parse(struct regcomp *g, int prec)
 			no = mk_node(g, -'[', -1, -1);
 			cclass_union(g->nodes[no].cclass, cat);
 		} else {
-			no = mk_node(g, ch, -1, -1);
+			if (fold) {
+				int idx = rmap_lookup(rtree_fold, ch, 0);
+				if (idx < FOLDMAGIC)
+					no = mk_node(g, ch + idx, -1, -1);
+				else {
+					idx -= FOLDMAGIC;
+					no = mk_node(g, fold_repl[idx][0], -1, -1);
+					if (fold_repl[idx][1]) {
+						no = mk_node(g, -',', no, mk_node(g, fold_repl[idx][1], -1, -1));
+					}
+					if (fold_repl[idx][2]) {
+						no = mk_node(g, -',', no, mk_node(g, fold_repl[idx][2], -1, -1));
+					}
+				}
+			} else {
+				no = mk_node(g, ch, -1, -1);
+			}
 		}
 	}
 
@@ -994,14 +1010,14 @@ static int do_parse(struct regcomp *g, int prec)
 		} else if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '|') {
 			if (prec < 1) {
 				g->ptr += 2; g->l -= 2;
-				no = mk_node(g, -'|', no, do_parse(g, 1));
+				no = mk_node(g, -'|', no, do_parse(g, 1, fold));
 			} else {
 				break;
 			}
 		} else if (!g->l || (g->ptr[0] == '\\' && g->ptr[1] == ')')) {
 			break;
 		} else if (prec < 2) {
-			no = mk_node(g, -',', no, do_parse(g, 2));
+			no = mk_node(g, -',', no, do_parse(g, 2, fold));
 		} else
 			break;
 	}
@@ -1196,7 +1212,7 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 	/* Parse expression */
 	g->ptr = s;
 	g->l = len;
-	no = do_parse(g, 0);
+	no = do_parse(g, 0, cflags);
 
 	if (g->l && !g->err) {
 		g->err = "Extra junk at end of expression";
@@ -1439,6 +1455,8 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 
 	int start_bol = pisbol(p);
 
+	int repl1 = 0, repl2 = 0;
+
 	int cl, cle, nl, nle;
 	int t;
 
@@ -1469,7 +1487,30 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 	/* Scan string */
 	do {
 		d = c;
-		byte = p->byte; c = pgetc(p);
+		byte = p->byte;
+		if (eflags) { /* Case folding */
+			if (repl1) {
+				c = repl1;
+				repl1 = 0;
+			} else if (repl2) {
+				c = repl2;
+				repl2 = 0;
+			} else {
+				int idx;
+				c = pgetc(p);
+				idx = rmap_lookup(rtree_fold, c, 0);
+				if (idx < FOLDMAGIC) { /* Replace with single character */
+					c += idx;
+				} else { /* Replace with string */
+					idx -= FOLDMAGIC;
+					c = fold_repl[idx][0];
+					repl1 = fold_repl[idx][1];
+					repl2 = fold_repl[idx][2];
+				}
+			}
+		} else { /* No case folding */
+			c = pgetc(p);
+		}
 		/* Give character to all threads */
 		for (t = cl; t != cle; ++t) {
 			unsigned char *pc = pool[t].pc;

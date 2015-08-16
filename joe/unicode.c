@@ -13,8 +13,6 @@
 
 struct Rtree rtree_fold[1];
 
-#define FOLDMAGIC 0x4000000
-
 int *lowerize(int *d, ptrdiff_t len, const int *s)
 {
 	int *org = d;

@@ -1,3 +1,5 @@
+Unicode:
+  Support combining characters properly.  
 
 UTF-8 between 0x40000000 - 0x7FFFFFFF is not displayed correctly because of
 ANSI_BIT.  joe_wcwidth return 0 width for these, but it should be zero width
@@ -6,13 +8,27 @@ only in ansi mode.
 long paths not working with cd command in shell windows?
 
 New regex engine:
+
   syntax ok? update help if it is..
+
   switch to it for ftyperc?
+
   check performance and memory leaks
+
   add \c
+
   check char to int promotions
+
   add code to allow use of boyer-moore
-  add case ignore
+
+  add case ignore [done: maybe more work for byte character sets]
+
+  unicode normalization
+
+  handle byte encoding correctly- we are only handling unicode
+    - what happens if you search/replace across file with different
+      encodings? maybe recompile for each file?  Actually we are already
+      recompiling for this case.
 
 Improve syntax files to work with unicode.
 

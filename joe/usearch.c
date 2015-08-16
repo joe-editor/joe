@@ -1044,7 +1044,7 @@ static int fnext(BW *bw, SRCH *srch)
 		clrcomp(srch);
 	/* Compile pattern if we don't already have it */
 	if (!srch->comp) {
-		srch->comp = joe_regcomp(bw->b->o.charmap, srch->pattern, sLEN(srch->pattern), 0);
+		srch->comp = joe_regcomp(bw->b->o.charmap, srch->pattern, sLEN(srch->pattern), srch->ignore);
 		if (srch->comp->err) {
 			msgnw(bw->parent, joe_gettext(srch->comp->err));
 			return 4;
