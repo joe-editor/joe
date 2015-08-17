@@ -1792,7 +1792,6 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 	   	} else {
 	   		if (!no_decode) {
 		   		k = from_uni(locale_map, k);
-				printf("\n[%d]\n", k); fflush(stdout);
 			}
 	   		if (k != -1) {
 	   			char c = TO_CHAR_OK(k);
