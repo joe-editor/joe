@@ -548,6 +548,7 @@ int uformat(W *w, int k)
 	P *p, *q;
 	BW *bw;
 	WIND_BW(bw, w);
+	int flag;
 
 	p = pdup(bw->cursor, "uformat");
 	p_goto_bol(p);
@@ -640,10 +641,17 @@ int uformat(W *w, int k)
 
 	/* First line: preserve whitespace within this line
 	   (but still apply french spacing after periods) */
+	flag = 0;
 	while (!piseof(b)) {
 		c = brch(b);
 		if (joe_isblank(b->b->o.charmap,c) || c == '\n') {
 			int f = 0;
+
+			/* First space after end of word */
+			if (flag && piscol(p) > bw->o.rmargin)
+				wrapword(bw, p, indent, bw->o.french, 1, indents);
+
+			flag = 0;
 
 			/* Stop if we're at end of line */
 			if (c == '\n' || piseolblank(b))
@@ -686,19 +694,25 @@ int uformat(W *w, int k)
 
 			binsc(p, pgetc(b));
 			pgetc(p);
-			if (piscol(p) > bw->o.rmargin)
-				wrapword(bw, p, indent, bw->o.french, 1, indents);
+			flag = 1;
 		}
 	}
 
 	/* Remaining lines: collapse whitespace */
 
+	flag = 0;
 	while (!piseof(b)) {
 		c = brch(b);
 		if (joe_isblank(b->b->o.charmap,c) || c == '\n') {
 			int f = 0;
 			P *d;
 			int g;
+
+			/* First space at end of word, wrap it */
+			if (flag && piscol(p) > bw->o.rmargin)
+				wrapword(bw, p, indent, bw->o.french, 1, indents);
+
+			flag = 0;
 
 			/* Detect end of sentence */
 			d=pdup(b, "uformat");
@@ -745,10 +759,12 @@ int uformat(W *w, int k)
 
 			binsc(p, pgetc(b));
 			pgetc(p);
-			if (piscol(p) > bw->o.rmargin)
-				wrapword(bw, p, indent, bw->o.french, 1, indents);
+			flag = 1;
 		}
 	}
+
+	if (flag && piscol(p) > bw->o.rmargin)
+		wrapword(bw, p, indent, bw->o.french, 1, indents);
 
 	binsc(p, '\n');
 	prm(p);
