@@ -357,8 +357,6 @@ void joe_iswinit()
 	for (x = 0; width_table[x].first; ++x)
 		cclass_add(cclass_double, width_table[x].first, width_table[x].last);
 	cclass_opt(cclass_double);
-	cclass_show(cclass_double);
-	exit(1);
 }
 
 
