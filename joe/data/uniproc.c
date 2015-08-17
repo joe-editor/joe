@@ -709,6 +709,59 @@ int uniblocks(char *name)
     return 0;
 }
 
+/* Generate width table */
+
+int uniwidth(char *name)
+{
+    FILE *f;
+    char buf[1024];
+    int idx = 0;
+    int low = -2, high = -2;
+    /** Create table of block names **/
+    f = fopen(name, "r");
+    if (!f) {
+        fprintf(stderr,"Couldn't open %s\n", name);
+        return -1;
+    }
+    printf("\n/* Double-wide characters */\n");
+    printf("\n");
+    printf("struct interval width_table[] = {\n");
+    while (fgets(buf, sizeof(buf), f)) {
+        if (buf[0] >= '0' && buf[0] <= '9' ||
+            buf[0] >= 'A' && buf[0] <= 'F' ||
+            buf[0] >= 'a' && buf[0] <= 'f') {
+                unsigned l;
+                unsigned h;
+                int x, y, c;
+                struct cat *cat;
+                TOFIRST;
+                TOEND;
+                if (1 == sscanf(buf, "%x..%x", &l, &h))
+                    h = l;
+                TONEXT;
+                TOEND1;
+                if (buf[x] == 'W' || buf[x] == 'F') {
+                    if (l != high + 1) {
+                        if (low != -2) {
+                            printf("	{ 0x%x, 0x%x },\n", low, high);
+                        }
+                        low = l;
+                        high = h;
+                    } else {
+                        high = h;
+                    }
+                }
+        }
+    }
+    fclose(f);
+    if (low != -2) {
+        printf("	{ 0x%x, 0x%x },\n", low, high);
+    }
+    printf("	{ 0x0, 0x0 }\n");
+    printf("};\n");
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     int rtn;
@@ -724,6 +777,10 @@ int main(int argc, char *argv[])
     rtn = unifold_full("CaseFolding.txt");
     if (rtn)
         return rtn;
+    rtn = uniwidth("EastAsianWidth.txt");
+    if (rtn)
+        return rtn;
+
 /*
     rtn = unifold_simple("CaseFolding.txt");
     if (rtn)

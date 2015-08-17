@@ -166,7 +166,7 @@ void interval_show(struct interval_list *list)
 {
 	printf("Interval list at %p\n", list);
 	while (list) {
-		printf("%p show %x..%x -> %x\n", list, list->interval.first, list->interval.last, list->map);
+		printf("%p show %x..%x -> %p\n", list, list->interval.first, list->interval.last, list->map);
 		list = list -> next;
 	}
 }

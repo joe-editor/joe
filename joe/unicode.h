@@ -19,6 +19,7 @@ extern struct interval fold_table[]; /* Case folding table */
 #define FOLDMAGIC 0x4000000
 extern struct Rtree rtree_fold[1];
 extern int fold_repl[][REPLLEN];
+extern struct interval width_table[]; /* Double-wide characters */
 
 int *lowerize(int *d, ptrdiff_t len, const int *s);
 
