@@ -602,13 +602,14 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 					}
 				}
 
-				if(wid>=0) {
-					if (x+wid > w) {
+				if(wid >= 0) {
+					if (x + wid > w) {
 						/* If character hits right most column, don't display it */
 						while (x < w) {
 							outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', c1|atr);
 							x++;
 						}
+						goto eosl;
 					} else {
 						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, c1|atr);
 						x += wid;
@@ -618,7 +619,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 
 				if (ifhave)
 					goto bye;
-				if (x >= w)
+				if (x > w)
 					goto eosl;
 			}
 		} while (--amnt);
@@ -639,13 +640,14 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 	++p->line;
       eof:
       	outatr_complete(t);
-	if (x != w)
+	if (x < w)
 		done = eraeol(t, x, y, BG_COLOR(bg_text));
 	else
 		done = 0;
 
 /* Set p to bp/amnt */
       bye:
+      	outatr_complete(t);
 	if (bp - p->ptr <= p->hdr->hole)
 		p->ofst = bp - p->ptr;
 	else
@@ -654,6 +656,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 	return done;
 
       eosl:
+      	outatr_complete(t);
 	if (bp - p->ptr <= p->hdr->hole)
 		p->ofst = bp - p->ptr;
 	else
