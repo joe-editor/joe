@@ -283,7 +283,6 @@ struct highlight_state {
 /* Include files */
 
 #include "cclass.h"
-#include "cmap.h"
 #include "b.h"
 #include "blocks.h"
 #include "bw.h"
@@ -336,5 +335,4 @@ struct highlight_state {
 #include "state.h"
 #include "options.h"
 #include "selinux.h"
-#include "phash.h"
 #include "Zhash.h"
