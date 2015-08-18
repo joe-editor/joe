@@ -345,7 +345,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		} while(cmd->noeat);
 
 		/* Save character in buffer */
-		if (buf_idx<23 && buf_en)
+		if (buf_idx < (SAVED_SIZE - 1) && buf_en)
 			buf[buf_idx++] = c;
 		if (!buf_en)
 			++ofst;
@@ -668,7 +668,7 @@ static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *
 							struct high_cmd *kw_cmd=mkcmd();
 							kw_cmd->noeat=1;
 							kw_cmd->new_state = find_state(syntax,bf1);
-							if (!zcmp(bf, "&")) {
+							if (kwbuf[0] == '&' && !kwbuf[1]) {
 								cmd->delim = kw_cmd;
 							} else {
 								if(!cmd->keywords)
