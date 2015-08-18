@@ -104,6 +104,12 @@ int utf8_decode(struct utf8_sm *utf8_sm,char c)
 			utf8_sm->state = 0;
 			return -2;
 		}
+	} else if ((c&0x80)==0x00) {
+		/* 0 - 127 */
+		utf8_sm->buf[0] = c;
+		utf8_sm->ptr = 1;
+		utf8_sm->state = 0;
+		return c;
 	} else if ((c&0xE0)==0xC0) {
 		/* 192 - 223 */
 		utf8_sm->buf[0] = c;
@@ -134,12 +140,6 @@ int utf8_decode(struct utf8_sm *utf8_sm,char c)
 		utf8_sm->ptr = 1;
 		utf8_sm->state = 5;
 		utf8_sm->accu = (c&0x01);
-	} else if ((c&0x80)==0x00) {
-		/* 0 - 127 */
-		utf8_sm->buf[0] = c;
-		utf8_sm->ptr = 1;
-		utf8_sm->state = 0;
-		return c;
 	} else {
 		/* 128 - 191, 254, 255 */
 		utf8_sm->ptr = 0;

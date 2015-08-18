@@ -825,7 +825,9 @@ int pgetc(P *p)
                         return ansi_code(buf);
                 }
 
-		if ((c&0xE0)==0xC0) { /* Two bytes */
+                if ((c & 0x80) == 0x00) { /* One byte */
+			n = 0;
+		} else if ((c&0xE0)==0xC0) { /* Two bytes */
 			n = 1;
 			c &= 0x1F;
 		} else if ((c&0xF0)==0xE0) { /* Three bytes */
@@ -840,8 +842,6 @@ int pgetc(P *p)
 		} else if ((c&0xFE)==0xFC) { /* Six bytes */
 			n = 5;
 			c &= 0x01;
-		} else if ((c&0x80)==0x00) { /* One byte */
-			n = 0;
 		} else { /* 128-191, 254, 255: Not a valid UTF-8 start character */
 			n = 0;
 			c = 'X';
