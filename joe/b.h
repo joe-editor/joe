@@ -313,6 +313,6 @@ void breplace(B *b, B *n);
 
 char *dequote(const char *);
 
-#define ANSI_BIT 0x80000000
+#define ANSI_BIT (int)(0x80000000)
 int ansi_code(char *s);
 char *ansi_string(int code);

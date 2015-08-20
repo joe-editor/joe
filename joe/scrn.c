@@ -116,7 +116,7 @@ int xlata[256] = {
 	INVERSE, INVERSE, INVERSE, INVERSE + UNDERLINE		/* 256 */
 };
 
-void mfill(int (*dest)[COMPOSE], int val, ptrdiff_t count)
+static void mfill(int (*dest)[COMPOSE], int val, ptrdiff_t count)
 {
 	ptrdiff_t x;
 	while (count--) {

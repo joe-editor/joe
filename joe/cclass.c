@@ -12,8 +12,8 @@
 
 static int itest(const void *ia, const void *ib)
 {
-	struct interval *a = (struct interval *)ia;
-	struct interval *b = (struct interval *)ib;
+	const struct interval *a = (const struct interval *)ia;
+	const struct interval *b = (const struct interval *)ib;
 	if (a->first > b->first)
 		return 1;
 	else if (a->first < b->first)

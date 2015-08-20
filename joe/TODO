@@ -1,28 +1,50 @@
-long paths not working with cd command in shell windows?
-
 New regex engine:
 
-  syntax ok? update help if it is..
+      add \c
 
-  switch to it for ftyperc?
+      add code to allow use of boyer-moore
 
-  check performance and memory leaks
+      add case ignore [done: maybe more work for byte character sets, what about
+    character classes?]
 
-  add \c
+      unicode normalization, ugh.
 
-  check char to int promotions
+      handle byte encoding correctly- we are only handling unicode
+        - what happens if you search/replace across file with different
+          encodings? maybe recompile for each file?  Actually we are already
+          recompiling for this case.
 
-  add code to allow use of boyer-moore
+      syntax ok? update help if it is..
 
-  add case ignore [done: maybe more work for byte character sets, what about
-character classes?]
+      check performance and memory leaks
 
-  unicode normalization, ugh.
+      check char to int promotions
 
-  handle byte encoding correctly- we are only handling unicode
-    - what happens if you search/replace across file with different
-      encodings? maybe recompile for each file?  Actually we are already
-      recompiling for this case.
+Now that we have new regex engine:
+      switch to it for ftyperc?
+    - We need regexp for error parsing.
+        - we can do this now
+    Can we highlight backup files? files ending in .in?
+    Makefile.in and Makefile.am need to be the same as Makefile.
+      - Use new regex engine to help with this
+
+- hex edit mode
+    - force switch to overtype mode?
+   hex is screwed up.  utf-8 file encoding needs to be off for hex mode.
+   also crlf mode.
+ - Review this: other things should be disabled also
+
+Make joerc file so we load system and local customizations
+- rc file format needs revamping:  You can not put comments on lines with string
+  arguments.
+
+1218708  ? for unknown characters is not informative (at least highlight the ?)
+Show as hex <34>?
+
+1304794  X at end of line is changed to space when character above 128 in utf-8
+  - check this one
+
+long paths not working with cd command in shell windows?
 
 Improve syntax files to work with unicode.
 
@@ -34,38 +56,8 @@ could do this..
 Reformat long line is too slow
  [improved, but look into prgetc improvement also]
 
-UTF-8 between 0x40000000 - 0x7FFFFFFF is not displayed correctly because of
-ANSI_BIT.  joe_wcwidth return 0 width for these, but it should be zero width
-only in ansi mode.
- [done: we just changed ANSI_BIT to 0x80000000]
-
-Unicode:
-  Support combining characters properly.  
-[done]
-
-Can we find an updated version of wcwidth?
-[done- but do more checking]
-
-Rtree gets very big before calling rtree_opt.. (we were exceeding 32K leaf
-nodes, overflowing short)
-  We need to optimize while we build...
-  [done]
-
-Get rid of cmap, use rtree instead in kbd.c/kbd.h.  [cmap may have been
-better for this, but it does help debug rtrees...]
-[done]
-
 Digit values
 [wrote function, but not using it]
-
-Auto generate the toupper / tolower from i18n.c  Eliminate i18n.c
-[done]
-Accept character classes, not just UTF-8 in syntax files.
-[done]
-
-Improve speed of regex? Compile to perfect hash? At least sort the
-intervals?
-[done]
 
 Added some more convenient classes:
    see http://www.w3.org/TR/xml11/#NT-NameStartChar
@@ -89,10 +81,6 @@ Java:
   isJavaIdentifierPart: isJavaIdentifierStart \p{Mn} \p{Mc} \p{Nd} ignorable
   ignorable: 0x00-0x08, 0x0e-0x1b, 0x7f-0x9F
 
-
-[fixed]
-we parse strings, which does escape processing.
-  but then we call parse_class on the parse string which also does escape processing.
 
 cursor position history probably not working
 when buffers switch in windows.
@@ -130,14 +118,16 @@ cd command: should canonicalized version of path be stored in history?
 
 in ^KE: any nicer way to clear the current path other than Ctrl-Y?
 
-Improvements:
-
- Long bash lines not quite working correctly...
-
  Should ^K E pop the shell window?
     if current is scratch it should pop
     popedit will not be needed then..
 
+- better grep-find (trigger in ^KE)
+
+
+Improvements:
+
+ Long bash lines not quite working correctly...
 
  'parse' can't be used with commands with pipe symbol
 
@@ -181,102 +171,10 @@ over edit operations, like insert new line (para format).
 Hex mode probably doesn't mix correctly with vt
 
 - - - -
-build should report return value of make
-[done]
-
-grep and build should switch to the current directory first.
-   "scratch" needs to inherit current directory
-     hmm..
-     [done- also load "* Startup Log *" first to prevent inheriting- for
-example when we start shell windows]
-
-   "grep" and "build" need to change directory before running
-     [fixed]
-   parse already does the right thing
-
 maybe grep and build need to clear the block?
    they don't because they clear markb/markk in process of clearing scratch
    buffer
 
- parsed file names with spaces not working correctly
- parse file names with no line numbers?
- [fixed]
-
- add shell commands to other rc files
- [done]
-
- status command should use status line escape sequences
- [done]
-
- messages from shell windows sometimes do not show up.  The issue is that
-when we close a prompt window, we resize the shell window.  This causes bash
-to redraw the line.  This input counts as typing and causes the message to
-be erased (it just causes a screen update which notices the updtab flag
-set).. We need some other way (than setting updtab) to clear the message-
-maybe set updtab on next user input.
- [fixed- now we remove message only on user input, not shell input]
-
- security hole with "math"
- [fixed]
-
- parserr - it would be nice if parsing was limited to a block
- [done]
-
- parserr - no way to turn off highlighting line (but ESC space is OK).
- [fixed: added release command]
-
- 'parserr' leaving many copies of buffer?
- [fixed]
-
- message printed when we close last window and switch to orphan buffer
- [fixed- now we always do it, but can turn off with noexmsg]
-
- shell joe command doesn't work with absolute path if prefix is added.
- this doesn't work well with ^KE either (need to clear path manually)
-   emacs does some magic here.. if it detects // it ignores prefix
-     two parts:
-       it displays prefix with { }
-       when opening file, it starts with the /
- [fixed- now we do same as emacs]
-
- when we 'edit' in a shell window, it should pop before loading the new one.
-  otherwise we get a bunch of copies of the shell window I think
- [fixed]
-
- Esc sequences could be optimized out: delete one if it results in same
- attributes that already exist
- [done]
-
- check for n^2 algorithms
- [done]
-
-Pgetc() does not now always return a character... this breaks paragraph
-formatter and anything that expect binsc(pgetc) to work.
- [fixed: we assign a code for each ansi sequence]
-
- clean up macro execute for magic shell commands:
-   only execute shell_ ones...
-   only execute if window is on screen...
-   how do we allow "file"?  it should only be allowed in prompts, and not
-   allowed to be typed into the shell.
- [done]
-
- Need per-shell window current directory.
-  Logbuf?  Sometimes?
- [done: the buffer records the current directory]
-
- color on status line gets messed up when shell text is colored.. how can
-this even happen?
- [fixed] 
-
- cursor in wrong position when I abort a window and shell window gets pulled
-on.. need EFIXXCOL, but joe crashes when I enable it for abort command.
- abort a window and shell window replaces it:
-   cursor is wrong. we need EFFIXCOL on abort.. any others?
-  [fixed]
-
- 'joe' in a shell window should edit a file.
-[done]
 
 [done: buffer stack]
  Not sure about switching to orphan mode.. but how can we have F1.F4 without it?
@@ -311,18 +209,6 @@ better way to detect it's a shell window- filename compare, perhaps).
 Note: termcap emulation functions are gone from curses..
 	No, ncurses-devel was missing on ubuntu..
 
-Think more about keeping cursor in sync: from shell window, edit file, ^C,
-we're back in shell window but cursor is in the wrong place.
- [fixed- we were not keeping cursor up to date in orphan windows]
-
-nbuf/pbuf do not call resize, so swapping in a shell window is not properly resized.
- [seems to be fixed, but not sure where resize is getting called..]
-
-multiple windows open on one shell window is kind of broken (you get
-conflicting resize events from each of them).  There should be a concept
-of the master window.
- [fixed, we use the last one]
-
 Even then, a window should only be a master if the cursor matches the vt
 cursor.  This helps with the problem of closing a window and switching to
 another where cursor is far away.
@@ -330,17 +216,6 @@ another where cursor is far away.
   - using vtmaster to pick one to be the master...
      - how to switch it (for example if a window is closed)? maybe overall screen refresh has to watch for this?
 
-Need raw mode which works the old way.. (mostly for debugging joe..)
-  [done]
-
-Resize needs more testing.  Resize with 'man ls' not quite working.
-Weird things will happen with multiple window with synchronized cursors.
-   [fixed- was due to scrolling region not being resized]
-
-Resize not working when you kill other window?
- [seems to be ok]
-
-^K V should jump to vt cursor... (done)
 - - - -
 
 For JOE-3.6
@@ -364,13 +239,8 @@ For JOE-3.6
 
 	a common operation is clearing a shell buffer: make a key for this?
 
-	document ` in 'txt' (format test as status line)
-	additional formatting things in status line
-		`%n		filename
-		`%dd		day
-		`%dm		month
-		`%dY		year
-		`%Ename%	environment variable
+
+
 
 Immediate:
 
@@ -398,29 +268,9 @@ did shell window in joe-3.2 3.2 create a new window?
 
 =-=-=-=-=
 
-should force -Wall if compiler is gcc
-
-=-=-=-=-=
-
-- rc file format needs revamping:  You can not put comments on lines with string
-  arguments.
-
-=-=-=-=-=
-
 option for compile window size (or make mfit prompt for the size)
 
 multi-file search & replace: check for deleted 'B *'.
-
-
-=-=-=-=-=
-
-- We need regexp for error parsing.
-
-=-=-=-=-=
-
-- better grep-find (trigger in ^KE)
-
-- need current directory for grep-find.
 
 Compiling:
 ----------
@@ -446,15 +296,7 @@ gdb inteface?
 
 allow options after string and istring? -just note it for now.
 
-Makefile.in and Makefile.am need to be the same as Makefile.
-
-622978   use last column
-
-1218708  ? for unknown characters is not informative (at least highlight the ?)
-
 1218701  report character offset in ^K-<space> (not just byte offset).
-
-1304794  X at end of line is changed to space when character above 128 in utf-8
 
 1323285  joe does not repeatedly wrap searches (add an option for this?)
 
@@ -518,11 +360,6 @@ Mouse issues:
   right-click is cancel?
   double-click is yes?
 
-- i18n issues:
-
-   hex is screwed up.  utf-8 file encoding needs to be off for hex mode.
-   also crlf mode.
-
 - - - -
 
 Dangerous situations:
@@ -546,15 +383,6 @@ Dangerous situations:
 
 - - - - - - - -
 
-- update man page
-
-- - - - - - - -
-
-- hex edit mode
-    - force switch to overtype mode?
-
-- - - - - - - -
-
 - security hole with spell checker: abs path to checker needed.
 
 - - - - - - - -
@@ -574,10 +402,6 @@ Dangerous situations:
 
 - - - - - - - -
 
-- better editing in shell windows: use for calculator mode too?
-
-- - - - - - - -
-
 - highlight all words which match during search?
 
 - - - - - - - -
@@ -587,20 +411,6 @@ Dangerous situations:
 
 - - - - - - - -
 
-Make joerc file so we load system and local customizations.
-
-- - - - - - - -
-
-can we highlight backup files? files ending in .in?
-
-- - - - - - - -
-
-  define characters which make up words
-    There are some A-Zs in tomatch (should use i18n).
-
-- - - - - - - -
-
-- - - - - - - -
   exemac for first change: it should be run with cursor in window.
 
   -orphan will break -mnew, -mold macros (because macros are run without a
@@ -621,18 +431,14 @@ in general we should be able to abort long operations...
 
 Others:
 
+
 - completion list of internal commands brings up documentation
 
 - rectangular blocks: make this a local file option?
 
-- shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
-  shell window.
-
 - do not use ^[^[ for anything.  it prevents Alt-arrow
   from being useful.  It's usually bound to options, so at least
   make options pass unknown characters back to keysequence parser.
-
-- save all files without asking thing for quick compile
 
 options are screwed up: we copy window to buffer (to get buffer options
 to the buffer).  But if we have multiple windows, buffer options will have
@@ -641,12 +447,8 @@ stale data.
 we are missing many query and prompt window abort handlers, which cause
 small memory leaks.
 
-regex: character classes? a-z matches any letter?
-
 can't load terminfo- should switch to termcap or provide compiled
 ANSI terminfo built in.
-
-Perl compatible regex search.
 
 Improvements for programming
 ----------------------------
@@ -692,10 +494,6 @@ jmacs glitches:
 	    the fill prefix).
    
 
-Shell windows:
-
- Better environment settings for shell windows.
-
 Documentation:
 
  Include documentation for joe hackers.  I wrote a lot of this
@@ -709,8 +507,6 @@ UTF-8/Internationalization
 
 byte to byte conversions?
 UTF-8 decoder right at input instead of in qw and utype?
-
-UTF-8 syntax files?
 
 - right-left mode for Hebrew/Arabic?
 
@@ -733,7 +529,6 @@ Terminal handling:
 
  Emit ESC c to reset terminal on startup?
 
- Look into clearing right-most column.
 
 Major new display modes:
 
@@ -748,12 +543,6 @@ Major code improvements:
 Major new features:
 
  Folding
-
-
-Options
-
- Fix it so all options appear in ^T.  Maybe make hook function
- to handle major changes.
 
 Other requests:
 
@@ -1158,3 +947,210 @@ X ^J	return
 - F3	find next
 - F5	date/time
 
+===============================================
+Done:
+
+ Fix it so all options appear in ^T.  Maybe make hook function
+ to handle major changes.
+[done, we can assign mactos to ^T]
+
+ Look into clearing right-most column.
+[done, we now use it]
+
+Shell windows:
+ Better environment settings for shell windows.
+[done- we now have vt mode]
+
+Perl compatible regex search.
+[done!]
+
+regex: character classes? a-z matches any letter?
+[done!]
+
+- save all files without asking thing for quick compile
+[done! Use ESC c to save all]
+
+- shell window intercept should be smarter.  hit ^K ^H- the ^H is going to the
+  shell window.
+[done, we now have a context for this]
+
+  define characters which make up words
+    There are some A-Zs in tomatch (should use i18n).
+[done: fixed with i18n project]
+
+- better editing in shell windows: use for calculator mode too?
+[done, we have vt mode]
+
+- update man page
+[done, but keep it up to date]
+
+622978   use last column
+[done]
+
+- need current directory for grep-find.
+[done]
+
+should force -Wall if compiler is gcc
+[there is no way to do this]
+
+	document ` in 'txt' (format test as status line)
+	additional formatting things in status line
+		`%n		filename
+		`%dd		day
+		`%dm		month
+		`%dY		year
+		`%Ename%	environment variable
+[done]
+
+UTF-8 between 0x40000000 - 0x7FFFFFFF is not displayed correctly because of
+ANSI_BIT.  joe_wcwidth return 0 width for these, but it should be zero width
+only in ansi mode.
+ [done: we just changed ANSI_BIT to 0x80000000]
+
+Unicode:
+  Support combining characters properly.  
+[done]
+
+Can we find an updated version of wcwidth?
+[done- but do more checking]
+
+Rtree gets very big before calling rtree_opt.. (we were exceeding 32K leaf
+nodes, overflowing short)
+  We need to optimize while we build...
+  [done]
+
+Get rid of cmap, use rtree instead in kbd.c/kbd.h.  [cmap may have been
+better for this, but it does help debug rtrees...]
+[done]
+
+Auto generate the toupper / tolower from i18n.c  Eliminate i18n.c
+[done]
+Accept character classes, not just UTF-8 in syntax files.
+[done]
+
+Improve speed of regex? Compile to perfect hash? At least sort the
+intervals?
+[done]
+
+[fixed]
+we parse strings, which does escape processing.
+  but then we call parse_class on the parse string which also does escape processing.
+build should report return value of make
+[done]
+
+grep and build should switch to the current directory first.
+   "scratch" needs to inherit current directory
+     hmm..
+     [done- also load "* Startup Log *" first to prevent inheriting- for
+example when we start shell windows]
+
+   "grep" and "build" need to change directory before running
+     [fixed]
+   parse already does the right thing
+
+ parsed file names with spaces not working correctly
+ parse file names with no line numbers?
+ [fixed]
+
+ add shell commands to other rc files
+ [done]
+
+ status command should use status line escape sequences
+ [done]
+
+ messages from shell windows sometimes do not show up.  The issue is that
+when we close a prompt window, we resize the shell window.  This causes bash
+to redraw the line.  This input counts as typing and causes the message to
+be erased (it just causes a screen update which notices the updtab flag
+set).. We need some other way (than setting updtab) to clear the message-
+maybe set updtab on next user input.
+ [fixed- now we remove message only on user input, not shell input]
+
+ security hole with "math"
+ [fixed]
+
+ parserr - it would be nice if parsing was limited to a block
+ [done]
+
+ parserr - no way to turn off highlighting line (but ESC space is OK).
+ [fixed: added release command]
+
+ 'parserr' leaving many copies of buffer?
+ [fixed]
+
+ message printed when we close last window and switch to orphan buffer
+ [fixed- now we always do it, but can turn off with noexmsg]
+
+ shell joe command doesn't work with absolute path if prefix is added.
+ this doesn't work well with ^KE either (need to clear path manually)
+   emacs does some magic here.. if it detects // it ignores prefix
+     two parts:
+       it displays prefix with { }
+       when opening file, it starts with the /
+ [fixed- now we do same as emacs]
+
+ when we 'edit' in a shell window, it should pop before loading the new one.
+  otherwise we get a bunch of copies of the shell window I think
+ [fixed]
+
+ Esc sequences could be optimized out: delete one if it results in same
+ attributes that already exist
+ [done]
+
+ check for n^2 algorithms
+ [done]
+
+Pgetc() does not now always return a character... this breaks paragraph
+formatter and anything that expect binsc(pgetc) to work.
+ [fixed: we assign a code for each ansi sequence]
+
+ clean up macro execute for magic shell commands:
+   only execute shell_ ones...
+   only execute if window is on screen...
+   how do we allow "file"?  it should only be allowed in prompts, and not
+   allowed to be typed into the shell.
+ [done]
+
+ Need per-shell window current directory.
+  Logbuf?  Sometimes?
+ [done: the buffer records the current directory]
+
+ color on status line gets messed up when shell text is colored.. how can
+this even happen?
+ [fixed] 
+
+ cursor in wrong position when I abort a window and shell window gets pulled
+on.. need EFIXXCOL, but joe crashes when I enable it for abort command.
+ abort a window and shell window replaces it:
+   cursor is wrong. we need EFFIXCOL on abort.. any others?
+  [fixed]
+
+ 'joe' in a shell window should edit a file.
+[done]
+
+Think more about keeping cursor in sync: from shell window, edit file, ^C,
+we're back in shell window but cursor is in the wrong place.
+ [fixed- we were not keeping cursor up to date in orphan windows]
+
+nbuf/pbuf do not call resize, so swapping in a shell window is not properly resized.
+ [seems to be fixed, but not sure where resize is getting called..]
+
+multiple windows open on one shell window is kind of broken (you get
+conflicting resize events from each of them).  There should be a concept
+of the master window.
+ [fixed, we use the last one]
+
+Need raw mode which works the old way.. (mostly for debugging joe..)
+  [done]
+
+Resize needs more testing.  Resize with 'man ls' not quite working.
+Weird things will happen with multiple window with synchronized cursors.
+   [fixed- was due to scrolling region not being resized]
+
+Resize not working when you kill other window?
+ [seems to be ok]
+
+^K V should jump to vt cursor... (done)
+
+UTF-8 syntax files?
+[done]

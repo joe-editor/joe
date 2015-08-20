@@ -376,7 +376,7 @@ int digval(int ch)
 			}
 	}
 	if (digtable) {
-		int idx = interval_test(digtable->intervals, digtable->len, ch);
+		ptrdiff_t idx = interval_test(digtable->intervals, digtable->len, ch);
 		if (idx != -1) {
 			return ch - digtable->intervals[idx].first;
 		}
