@@ -1028,7 +1028,7 @@ static int byte_isalnum_(struct charmap *map,int c)
 
 static int byte_tolower(struct charmap *map,int c)
 {
-	if (c < 0)
+	if (c < 0 && c >= -128)
 		c += 256;
 	if (c<0 || c>255)
 		return c;
@@ -1038,7 +1038,7 @@ static int byte_tolower(struct charmap *map,int c)
 
 static int byte_toupper(struct charmap *map,int c)
 {
-	if (c < 0)
+	if (c < 0 && c >= -128)
 		c += 256;
 	if (c<0 || c>255)
 		return c;

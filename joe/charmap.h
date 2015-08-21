@@ -40,8 +40,8 @@ struct charmap {
 
 	int *to_map;			/* Convert byte to unicode */
 
-	char lower_map[256];	/* Convert to lower case */
-	char upper_map[256];
+	unsigned char lower_map[256];	/* Convert to lower case */
+	unsigned char upper_map[256];
 
 	struct pair from_map[256];	/* Convert from unicode to byte */
 

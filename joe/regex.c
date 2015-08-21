@@ -896,6 +896,10 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 				} else {
 					last = first;
 				}
+				if (fold) {
+					first = joe_tolower(g->cmap, first);
+					last = joe_tolower(g->cmap, last);
+				}
 				cclass_add(m, first, last);
 			}
 		}
@@ -914,18 +918,22 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 			cclass_union(g->nodes[no].cclass, cat);
 		} else {
 			if (fold) {
-				int idx = rmap_lookup(rtree_fold, ch, 0);
-				if (idx < FOLDMAGIC)
-					no = mk_node(g, ch + idx, -1, -1);
-				else {
-					idx -= FOLDMAGIC;
-					no = mk_node(g, fold_repl[idx][0], -1, -1);
-					if (fold_repl[idx][1]) {
-						no = mk_node(g, -',', no, mk_node(g, fold_repl[idx][1], -1, -1));
+				if (g->cmap->type) { /* Unicode folding... */
+					int idx = rmap_lookup(rtree_fold, ch, 0);
+					if (idx < FOLDMAGIC)
+						no = mk_node(g, ch + idx, -1, -1);
+					else {
+						idx -= FOLDMAGIC;
+						no = mk_node(g, fold_repl[idx][0], -1, -1);
+						if (fold_repl[idx][1]) {
+							no = mk_node(g, -',', no, mk_node(g, fold_repl[idx][1], -1, -1));
+						}
+						if (fold_repl[idx][2]) {
+							no = mk_node(g, -',', no, mk_node(g, fold_repl[idx][2], -1, -1));
+						}
 					}
-					if (fold_repl[idx][2]) {
-						no = mk_node(g, -',', no, mk_node(g, fold_repl[idx][2], -1, -1));
-					}
+				} else {
+					no = mk_node(g, joe_tolower(g->cmap, ch), -1, -1);
 				}
 			} else {
 				no = mk_node(g, ch, -1, -1);
@@ -1033,10 +1041,10 @@ static void unasm(Frag *f)
 	printf("--	----\n");
 	for (;;) {
 		ptrdiff_t i = pc;
-		switch(fetchi(f, &pc)) {
-			case iCHAR:
-				printf("%lld:	'%c'\n", (long long)i, fetchi(f, &pc));
-				break;
+		int c = fetchi(f, &pc);
+		if (c >= 0)
+			printf("%lld:	'%c'\n", (long long)i, c);
+		else switch(c) {
 			case iDOT:
 				printf("%lld:	.\n", (long long)i);
 				break;
@@ -1184,7 +1192,6 @@ static void codegen(struct regcomp *g, int no, int *end)
 				break;
 			}
 			default: {
-				emiti(g->frag, iCHAR);
 				emiti(g->frag, g->nodes[no].type);
 				break;
 			}
@@ -1489,24 +1496,28 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 		d = c;
 		byte = p->byte;
 		if (eflags) { /* Case folding */
-			if (repl1) {
-				c = repl1;
-				repl1 = 0;
-			} else if (repl2) {
-				c = repl2;
-				repl2 = 0;
-			} else {
-				int idx;
-				c = pgetc(p);
-				idx = rmap_lookup(rtree_fold, c, 0);
-				if (idx < FOLDMAGIC) { /* Replace with single character */
-					c += idx;
-				} else { /* Replace with string */
-					idx -= FOLDMAGIC;
-					c = fold_repl[idx][0];
-					repl1 = fold_repl[idx][1];
-					repl2 = fold_repl[idx][2];
+			if  (g->cmap->type) { /* Unicode folding */
+				if (repl1) {
+					c = repl1;
+					repl1 = 0;
+				} else if (repl2) {
+					c = repl2;
+					repl2 = 0;
+				} else {
+					int idx;
+					c = pgetc(p);
+					idx = rmap_lookup(rtree_fold, c, 0);
+					if (idx < FOLDMAGIC) { /* Replace with single character */
+						c += idx;
+					} else { /* Replace with string */
+						idx -= FOLDMAGIC;
+						c = fold_repl[idx][0];
+						repl1 = fold_repl[idx][1];
+						repl2 = fold_repl[idx][2];
+					}
 				}
+			} else {
+				c = joe_tolower(g->cmap, pgetc(p));
 			}
 		} else { /* No case folding */
 			c = pgetc(p);
@@ -1517,13 +1528,11 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 			for (;;) {
 				int i;
 				i = *(int *)pc;
-				switch (i) {
-					case iCHAR: {
-						if (c == *(int *)(pc + SIZEOF(int))) {
-							nle = add_thread(pool, g->frag->start, nl, nle, pc + 2 * SIZEOF(int), pool[t].pos, bra_no);
-						}
-						break;
+				if (i >= 0) { /* A single character */
+					if (c == i) {
+						nle = add_thread(pool, g->frag->start, nl, nle, pc + SIZEOF(int), pool[t].pos, bra_no);
 					}
+				} else switch (i) {
 					case iDOT: {
 						if (c != NO_MORE_DATA)
 							/* . doesn't match end of string */

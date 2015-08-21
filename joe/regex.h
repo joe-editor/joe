@@ -35,8 +35,8 @@ int pmatch(Regmatch_t *matches, int nmatch, const char *regex, ptrdiff_t len, P 
 /* Instructions */
 
 enum {
-	iCHAR,	/* Match a single specific character, the character follows */
-	iDOT,	/* Match any single character */
+	/* Code >= 0: Match a single specific character */
+	iDOT = -512,	/* Match any single character */
 	iBOL,	/* Match beginning of line */
 	iEOL,	/* Match end of line */
 	iBOW,	/* Match beginning of word */
