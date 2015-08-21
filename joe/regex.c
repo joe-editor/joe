@@ -186,7 +186,7 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 				if (utf8)
 					c = utf8_decode_fwrd(&s, (b ? &l : NULL));
 				else {
-					c = *s++;
+					c = *(const unsigned char *)s++;
 					--l;
 				}
 				break;
@@ -196,7 +196,7 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 		if (utf8) {
 			c = utf8_decode_fwrd(&s, (b ? &l : NULL));
 		} else {
-			c = *s++;
+			c = *(const unsigned char *)s++;
 			--l;
 		}
 	}
@@ -1028,52 +1028,52 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 
 static void unasm(Frag *f)
 {
-	int pc = 0;
+	ptrdiff_t pc = 0;
 	printf("PC	INSN\n");
 	printf("--	----\n");
 	for (;;) {
-		int i = pc;
+		ptrdiff_t i = pc;
 		switch(fetchi(f, &pc)) {
 			case iCHAR:
-				printf("%d:	'%c'\n", i, fetchi(f, &pc));
+				printf("%lld:	'%c'\n", (long long)i, fetchi(f, &pc));
 				break;
 			case iDOT:
-				printf("%d:	.\n", i);
+				printf("%lld:	.\n", (long long)i);
 				break;
 			case iBOL:
-				printf("%d:	^\n", i);
+				printf("%lld:	^\n", (long long)i);
 				break;
 			case iEOL:
-				printf("%d:	$\n", i);
+				printf("%lld:	$\n", (long long)i);
 				break;
 			case iBOW:
-				printf("%d:	<\n", i);
+				printf("%lld:	<\n", (long long)i);
 				break;
 			case iEOW:
-				printf("%d:	>\n", i);
+				printf("%lld:	>\n", (long long)i);
 				break;
 			case iBRA:
-				printf("%d:	bra %d\n", i, fetchi(f, &pc));
+				printf("%lld:	bra %d\n", (long long)i, fetchi(f, &pc));
 				break;
 			case iKET:
-				printf("%d:	ket %d\n", i, fetchi(f, &pc));
+				printf("%lld:	ket %d\n", (long long)i, fetchi(f, &pc));
 				break;
 			case iFORK: {
 				int arg = fetchi(f, &pc);
-				printf("%d:	fork %d\n", i, arg + (pc - (int)SIZEOF(int)));
+				printf("%lld:	fork %lld\n", (long long)i, (long long)(arg + (pc - SIZEOF(int))));
 				break;
 			} case iJUMP: {
 				int arg = fetchi(f, &pc);
-				printf("%d:	jump %d\n", i, arg + (pc - (int)SIZEOF(int)));
+				printf("%lld:	jump %lld\n", (long long)i, (long long)(arg + (pc - SIZEOF(int))));
 				break;
 			} case iCLASS: {
 				struct Cclass *r = fetchp(f, &pc);
-				printf("%d:	class ", i);
+				printf("%lld:	class ", (long long)i);
 				cclass_show(r);
 				break;
 			}
 			case iEND:
-				printf("%d:	end\n", i);
+				printf("%lld:	end\n", (long long)i);
 				return;
 		}
 	}
@@ -1099,7 +1099,7 @@ static void codegen(struct regcomp *g, int no, int *end)
 				continue;
 			}
 			case -'*': {
-				int targ, start;
+				ptrdiff_t targ, start;
 				emiti(g->frag, iFORK);
 				targ = emiti(g->frag, 0);
 				align_frag(g->frag, SIZEOF(int));
@@ -1111,7 +1111,7 @@ static void codegen(struct regcomp *g, int no, int *end)
 				break;
 			}
 			case -'+': {
-				int start;
+				ptrdiff_t start;
 				align_frag(g->frag, SIZEOF(int));
 				start = g->frag->len;
 				codegen(g, g->nodes[no].r, 0);
@@ -1120,7 +1120,7 @@ static void codegen(struct regcomp *g, int no, int *end)
 				break;
 			}
 			case -'?': {
-				int targ;
+				ptrdiff_t targ;
 				emiti(g->frag, iFORK);
 				targ = emiti(g->frag, 0);
 				codegen(g, g->nodes[no].r, 0);
@@ -1128,7 +1128,7 @@ static void codegen(struct regcomp *g, int no, int *end)
 				break;
 			}
 			case -'|': {
-				int alt;
+				ptrdiff_t alt;
 				int first;
 				int my_end = 0;
 				if (!end) {
@@ -1142,7 +1142,7 @@ static void codegen(struct regcomp *g, int no, int *end)
 				/* First */
 				codegen(g, g->nodes[no].l, 0);
 				emiti(g->frag, iJUMP);
-				*end = emiti(g->frag, *end);
+				*end = (int)emiti(g->frag, *end);
 				/* Rest */
 				fixup_branch(g->frag, alt);
 				codegen(g, g->nodes[no].r, end);

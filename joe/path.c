@@ -256,11 +256,11 @@ int rmatch(const char *a, const char *b)
 			if (*a == ']')
 				if (*b == *a++)
 					flag = 1;
-			while (*a && (c = *a++) != ']')
+			while (*a && (c = *(const unsigned char *)a++) != ']')
 				if ((c == '-') && (a[-2] != '[') && (*a)) {
-					if ((*b >= a[-2]) && (*b <= *a))
+					if ((*(const unsigned char *)b >= ((const unsigned char *)a)[-2]) && (*(const unsigned char *)b <= *(const unsigned char *)a))
 						flag = 1;
-				} else if (*b == c)
+				} else if (*(const unsigned char *)b == c)
 					flag = 1;
 			if ((!flag && !inv) || (flag && inv) || (!*b))
 				return 0;

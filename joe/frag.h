@@ -4,9 +4,9 @@ typedef struct frag Frag;
 
 struct frag {
 	unsigned char *start;
-	int len;
-	int size;
-	int align;
+	ptrdiff_t len;
+	ptrdiff_t size;
+	ptrdiff_t align;
 };
 
 /* Initialize a fragment: 'alignment' sets the naturual alignment of
@@ -14,7 +14,7 @@ struct frag {
  * fragment is filled to the next multiple of 'alignment'.
  */
 
-void iz_frag(Frag *, int alignmnet);
+void iz_frag(Frag *, ptrdiff_t alignmnet);
 
 void clr_frag(Frag *);
 
@@ -26,7 +26,7 @@ void clr_frag(Frag *);
 
 /* Align frag to next multiple of n */
 
-void align_frag(Frag *f, int n);
+void align_frag(Frag *f, ptrdiff_t n);
 
 /* Append data to a fragment: return byte offset to data.
  * These do two alignments: one before and one after the emit.  Before,
@@ -36,17 +36,17 @@ void align_frag(Frag *f, int n);
  */
  
 
-int emitb_noalign(Frag *f, char c);
-int emitb(Frag *f, char c);
-int emith(Frag *f, short n);
-int emiti(Frag *f, int n);
-int emitd(Frag *f, double d);
-int emitp(Frag *f, void *p);
-int emits(Frag *f, unsigned char *s, int len);
+ptrdiff_t emitb_noalign(Frag *f, char c);
+ptrdiff_t emitb(Frag *f, char c);
+ptrdiff_t emith(Frag *f, short n);
+ptrdiff_t emiti(Frag *f, int n);
+ptrdiff_t emitd(Frag *f, double d);
+ptrdiff_t emitp(Frag *f, void *p);
+ptrdiff_t emits(Frag *f, unsigned char *s, int len);
 
-int emit_branch(Frag *f, int target);
-void fixup_branch(Frag *f, int pos);
-void frag_link(Frag *f, int chain);
+ptrdiff_t emit_branch(Frag *f, ptrdiff_t target);
+void fixup_branch(Frag *f, ptrdiff_t pos);
+void frag_link(Frag *f, ptrdiff_t chain);
 
 /* Access data in a fragment */
 
@@ -58,7 +58,7 @@ void frag_link(Frag *f, int chain);
 
 /* Fetch an datum from a fragement and advance the "PC" */
 
-int fetchi(Frag *f, int *pc);
-short fetchh(Frag *f, int *pc);
-void *fetchp(Frag *f, int *pc);
+int fetchi(Frag *f, ptrdiff_t *pc);
+short fetchh(Frag *f, ptrdiff_t *pc);
+void *fetchp(Frag *f, ptrdiff_t *pc);
 void fin_code(Frag *f);

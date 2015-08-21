@@ -356,23 +356,23 @@ void rset_show(struct Rset *r)
 	int first = -2;
 	int last = -2;
 	int a;
-	int len = 0;
-	int total = 0;
+	ptrdiff_t len = 0;
+	ptrdiff_t total = 0;
 	printf("Rset at %p\n", r);
 
 	len = SIZEOF(struct Rset);
-	printf("Top level size = %d\n", len);
+	printf("Top level size = %lld\n", (long long)len);
 	total += len;
 
 	len = r->second.alloc * SIZEOF(struct Mid);
-	printf("Second level size = %d (%d entries)\n", len, r->second.alloc);
+	printf("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
 	total += len;
 
 	len = r->third.alloc * SIZEOF(struct Mid);
-	printf("Third level size = %d (%d entries)\n", len, r->third.alloc);
+	printf("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
 	total += len;
 
-	printf("Total size = %d bytes\n", total);
+	printf("Total size = %lld bytes\n", (long long)total);
 
 	for (a = 0; a != TOPSIZE; ++a) {
 		int ib = r->top.entry[a];
@@ -623,7 +623,7 @@ static ptrdiff_t rhhash(struct Leaf *l)
 
 void rtree_opt(struct Rtree *r)
 {
-	int idx;
+	ptrdiff_t idx;
 	int x;
 	int rhsize;
 	struct rhentry **rhtable;
@@ -741,27 +741,27 @@ void rtree_show(struct Rtree *r)
 	void *val = 0;
 	int a;
 
-	int len = 0;
-	int total = 0;
+	ptrdiff_t len = 0;
+	ptrdiff_t total = 0;
 	printf("Rtree at %p\n", r);
 
 	len = SIZEOF(struct Rtree);
-	printf("Top level size = %d\n", len);
+	printf("Top level size = %lld\n", (long long)len);
 	total += len;
 
 	len = r->second.alloc * SIZEOF(struct Mid);
-	printf("Second level size = %d (%d entries)\n", len, r->second.alloc);
+	printf("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
 	total += len;
 
 	len = r->third.alloc * SIZEOF(struct Mid);
-	printf("Third level size = %d (%d entries)\n", len, r->third.alloc);
+	printf("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
 	total += len;
 
 	len = r->leaf.alloc * SIZEOF(struct Leaf);
-	printf("Fourth level size = %d (%d entries)\n", len, r->leaf.alloc);
+	printf("Fourth level size = %lld (%d entries)\n", (long long)len, r->leaf.alloc);
 	total += len;
 
-	printf("Total size = %d bytes\n", total);
+	printf("Total size = %lld bytes\n", (long long)total);
 	
 	for (a = 0; a != TOPSIZE; ++a) {
 		int ib = r->top.entry[a];
@@ -1124,27 +1124,27 @@ void rmap_show(struct Rtree *r)
 	int val = 0;
 	int a;
 
-	int len = 0;
-	int total = 0;
+	ptrdiff_t len = 0;
+	ptrdiff_t total = 0;
 	printf("Rmap at %p\n", r);
 
 	len = SIZEOF(struct Rtree);
-	printf("Top level size = %d\n", len);
+	printf("Top level size = %lld\n", (long long)len);
 	total += len;
 
 	len = r->second.alloc * SIZEOF(struct Mid);
-	printf("Second level size = %d (%d entries)\n", len, r->second.alloc);
+	printf("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
 	total += len;
 
 	len = r->third.alloc * SIZEOF(struct Mid);
-	printf("Third level size = %d (%d entries)\n", len, r->third.alloc);
+	printf("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
 	total += len;
 
 	len = r->leaf.alloc * SIZEOF(struct Ileaf);
-	printf("Fourth level size = %d (%d entries)\n", len, r->leaf.alloc);
+	printf("Fourth level size = %lld (%d entries)\n", (long long)len, r->leaf.alloc);
 	total += len;
 
-	printf("Total size = %d bytes\n", total);
+	printf("Total size = %lld bytes\n", (long long)total);
 	
 	for (a = 0; a != TOPSIZE; ++a) {
 		int ib = r->top.entry[a];

@@ -4,7 +4,7 @@
 
 /* Initialize a fragment */
 
-void iz_frag(Frag *f, int alignment)
+void iz_frag(Frag *f, ptrdiff_t alignment)
 {
 	f->start = joe_malloc(f->size = 1024);
 	f->len = 0;
@@ -26,7 +26,7 @@ void clr_frag(Frag *f)
 
 /* Expand code block by at least 'size' words */
 
-static void expand_frag(Frag *frag, int size)
+static void expand_frag(Frag *frag, ptrdiff_t size)
 {
 	if ((frag->size >> 1) > size)
 		// Grow by 50%
@@ -40,31 +40,31 @@ static void expand_frag(Frag *frag, int size)
 
 /* Emit a byte: this does no alignment */
 
-int emitb_noalign(Frag *f, char c)
+ptrdiff_t emitb_noalign(Frag *f, char c)
 {
-	int start;
+	ptrdiff_t start;
 	if (f->len + SIZEOF(unsigned char) > f->size)
 		expand_frag(f, SIZEOF(unsigned char));
 	start = f->len;
-	f->start[f->len++] = c;
+	f->start[f->len++] = (unsigned char)c;
 	return start;
 }
 
 /* Align to some power of 2 */
 
-void align_frag(Frag *f,int alignment)
+void align_frag(Frag *f,ptrdiff_t alignment)
 {
-	int x;
-	int add = align_o(f->len, alignment);
+	ptrdiff_t x;
+	ptrdiff_t add = align_o(f->len, alignment);
 	for (x = 0; x != add; ++x)
 		emitb_noalign(f, '-');
 }
 
 /* Emit a byte and align */
 
-int emitb(Frag *f, char c)
+ptrdiff_t emitb(Frag *f, char c)
 {
-	int ofst = emitb_noalign(f, c);
+	ptrdiff_t ofst = emitb_noalign(f, c);
 	if (f->len & (f->align - 1))
 		align_frag(f, f->align);
 	return ofst;
@@ -72,9 +72,9 @@ int emitb(Frag *f, char c)
 
 /* Emit a short */
 
-int emith(Frag *f, short c)
+ptrdiff_t emith(Frag *f, short c)
 {
-	int start;
+	ptrdiff_t start;
 	if (f->len & (SIZEOF(short) - 1))
 		align_frag(f, SIZEOF(short));
 	if (f->len + SIZEOF(short) > f->size)
@@ -89,9 +89,9 @@ int emith(Frag *f, short c)
 
 /* Emit an integer */
 
-int emiti(Frag *f, int c)
+ptrdiff_t emiti(Frag *f, int c)
 {
-	int start;
+	ptrdiff_t start;
 	if (f->len & (SIZEOF(int) - 1))
 		align_frag(f, SIZEOF(int));
 	if (f->len + SIZEOF(int) > f->size)
@@ -106,9 +106,9 @@ int emiti(Frag *f, int c)
 
 /* Emit a double */
 
-int emitd(Frag *f, double d)
+ptrdiff_t emitd(Frag *f, double d)
 {
-	int start;
+	ptrdiff_t start;
 	if (f->len & (SIZEOF(double) - 1))
 		align_frag(f, SIZEOF(double));
 	if (f->len + SIZEOF(double) > f->size)
@@ -123,9 +123,9 @@ int emitd(Frag *f, double d)
 
 /* Emit a pointer */
 
-int emitp(Frag *f, void *p)
+ptrdiff_t emitp(Frag *f, void *p)
 {
-	int start;
+	ptrdiff_t start;
 	if (f->len & (SIZEOF(void *) - 1))
 		align_frag(f, SIZEOF(void *));
 	if (f->len + SIZEOF(void *) > f->size)
@@ -140,9 +140,9 @@ int emitp(Frag *f, void *p)
 
 /* Append a string to the code block */
 
-int emits(Frag *f, unsigned char *s, int len)
+ptrdiff_t emits(Frag *f, unsigned char *s, int len)
 {
-	int start;
+	ptrdiff_t start;
 
 	start = emiti(f, len);
 
@@ -162,36 +162,36 @@ int emits(Frag *f, unsigned char *s, int len)
 	return start;
 }
 
-int emit_branch(Frag *f, int target)
+ptrdiff_t emit_branch(Frag *f, ptrdiff_t target)
 {
-	int ofst = emiti(f, 0);
-	fragi(f, ofst) = target - ofst;
+	ptrdiff_t ofst = emiti(f, 0);
+	fragi(f, ofst) = (int)(target - ofst);
 	return ofst;
 }
 
-void fixup_branch(Frag *f, int pos)
+void fixup_branch(Frag *f, ptrdiff_t pos)
 {
 	align_frag(f, SIZEOF(int));
-	fragi(f, pos) = f->len - pos;
+	fragi(f, pos) = (int)(f->len - pos);
 }
 
 /* Modify each item in a linked-list to point to here */
 
-void frag_link(Frag *f, int chain)
+void frag_link(Frag *f, ptrdiff_t chain)
 {
-	int ket;
+	ptrdiff_t ket;
 	align_frag(f, SIZEOF(int));
 	ket = f->len;
 	while (chain) {
 		int next = fragi(f, chain);
-		fragi(f, chain) = ket - chain;
+		fragi(f, chain) = (int)(ket - chain);
 		chain = next;
 	}
 }
 
-short fetchh(Frag *f, int *pcp)
+short fetchh(Frag *f, ptrdiff_t *pcp)
 {
-	int pc = *pcp;
+	ptrdiff_t pc = *pcp;
 	short i;
 	pc += align_o(pc, SIZEOF(short));
 	i = fragh(f, pc);
@@ -202,9 +202,9 @@ short fetchh(Frag *f, int *pcp)
 	return i;
 }
 
-int fetchi(Frag *f, int *pcp)
+int fetchi(Frag *f, ptrdiff_t *pcp)
 {
-	int pc = *pcp;
+	ptrdiff_t pc = *pcp;
 	int i;
 	pc += align_o(pc, SIZEOF(int));
 	i = fragi(f, pc);
@@ -215,9 +215,9 @@ int fetchi(Frag *f, int *pcp)
 	return i;
 }
 
-void *fetchp(Frag *f, int *pcp)
+void *fetchp(Frag *f, ptrdiff_t *pcp)
 {
-	int pc = *pcp;
+	ptrdiff_t pc = *pcp;
 	void *p;
 	pc += align_o(pc, SIZEOF(void *));
 	p = fragp(f, pc);

@@ -892,10 +892,10 @@ int parse_range(const char * *pp, int *first, int *second)
 		else if(*p=='t')
   			a = '\t';
 		else
-			a = *p;
+			a = *(const unsigned char *)p;
 		++p;
 	} else
-		a = *p++;
+		a = *(const unsigned char *)p++;
 	if(*p=='-' && p[1]) {
 		++p;
 		if(*p=='\\' && p[1]) {
@@ -905,10 +905,10 @@ int parse_range(const char * *pp, int *first, int *second)
 			else if(*p=='t')
 				b = '\t';
 			else
-				b = *p;
+				b = *(const unsigned char *)p;
 			++p;
 		} else
-			b = *p++;
+			b = *(const unsigned char *)p++;
 	} else
 		b = a;
 	*first = a;
@@ -925,35 +925,6 @@ int parse_class(const char * *pp, struct interval **array, ptrdiff_t *size)
 	int a, b;
 	if(!*p)
 		return -1;
-
-/*
-	if(*p=='\\' && p[1]) {
-		++p;
-		if(*p=='n')
-			a = '\n';
-		else if(*p=='t')
-  			a = '\t';
-		else
-			a = *p;
-		++p;
-	} else
-		a = *p++;
-	if(*p=='-' && p[1]) {
-		++p;
-		if(*p=='\\' && p[1]) {
-			++p;
-			if(*p=='n')
-				b = '\n';
-			else if(*p=='t')
-				b = '\t';
-			else
-				b = *p;
-			++p;
-		} else
-			b = *p++;
-	} else
-		b = a;
-*/
 
 	a = escape(1, &p, NULL, &cat);
 

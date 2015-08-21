@@ -634,7 +634,7 @@ int fwrd_c(const char **s)
 	if (locale_map->type)
 		return utf8_decode_fwrd(s, NULL);
 	else {
-		int c = **s;
+		int c = *(const unsigned char *)*s;
 		*s = *s + 1;
 		return c;
 	}
