@@ -13,7 +13,7 @@ static ZHENTRY *freentry = NULL;
 
 #define hnext(accu, c) (((accu) << 4) + ((accu) >> 28) + (c))
 
-ptrdiff_t Zhash(const int *s)
+ptrdiff_t zhash(const int *s)
 {
 	ptrdiff_t accu = 0;
 
@@ -80,7 +80,7 @@ static void Zhtexpand(ZHASH *h)
 
 void *Zhtadd(ZHASH *ht, const int *name, void *val)
 {
-	ptrdiff_t hval = Zhash(name);
+	ptrdiff_t hval = zhash(name);
 	ptrdiff_t idx = hval & (ht->len - 1);
 	ZHENTRY *entry;
 	ptrdiff_t x;
@@ -110,7 +110,7 @@ void *Zhtfind(ZHASH *ht, const int *name)
 {
 	ZHENTRY *e;
 
-	for (e = ht->tab[Zhash(name) & (ht->len - 1)]; e; e = e->next) {
+	for (e = ht->tab[zhash(name) & (ht->len - 1)]; e; e = e->next) {
 		if (!Zcmp(e->name, name)) {
 			return e->val;
 		}

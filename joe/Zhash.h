@@ -20,7 +20,7 @@ struct Zhash {
 };
 
 /* Compute hash code for a string */
-ptrdiff_t Zhash(const int *s);
+ptrdiff_t zhash(const int *s);
 
 /* Create a hash table of specified size, which must be a power of 2 */
 ZHASH *Zhtmk(ptrdiff_t len);

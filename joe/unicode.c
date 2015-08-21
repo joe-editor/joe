@@ -54,7 +54,7 @@ struct Cclass *unicode(const char *cat)
 	struct Cclass *m;
 	if (!unicat_hash)
 		unicat_hash = htmk(256);
-	m = htfind(unicat_hash, cat);
+	m = (struct Cclass *)htfind(unicat_hash, cat);
 	if (!m) {
 		int x;
 		m = (struct Cclass *)joe_malloc(SIZEOF(struct Cclass));

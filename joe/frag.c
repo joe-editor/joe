@@ -6,14 +6,14 @@
 
 void iz_frag(Frag *f, ptrdiff_t alignment)
 {
-	f->start = joe_malloc(f->size = 1024);
+	f->start = (unsigned char *)joe_malloc(f->size = 1024);
 	f->len = 0;
 	f->align = alignment;
 }
 
 void fin_code(Frag *f)
 {
-	f->start = joe_realloc(f->start, f->len);
+	f->start = (unsigned char *)joe_realloc(f->start, f->len);
 	f->size = f->len;
 }
 

@@ -646,13 +646,13 @@ void rtree_opt(struct Rtree *r)
 
 	/* De-duplicate leaf nodes (it's not worth bothering with interior nodes) */
 
-	equiv = joe_malloc(SIZEOF(int) * r->leaf.alloc);
-	repl = joe_malloc(SIZEOF(short) * r->leaf.alloc);
+	equiv = (int *)joe_malloc(SIZEOF(int) * r->leaf.alloc);
+	repl = (short *)joe_malloc(SIZEOF(short) * r->leaf.alloc);
 
 	/* Create hash table index of all the leaf nodes */
 	dupcount = 0;
 	rhsize = 1024;
-	rhtable = joe_calloc(SIZEOF(struct rhentry *), rhsize);
+	rhtable = (struct rhentry **)joe_calloc(SIZEOF(struct rhentry *), rhsize);
 	for (x = 0; x != r->leaf.alloc; ++x) {
 		struct rhentry *rh;
 		idx = ((rhsize - 1) & rhhash(r->leaf.table.d + x));
@@ -684,7 +684,7 @@ void rtree_opt(struct Rtree *r)
 
 	/* Create new leaf table */
 	newalloc = r->leaf.alloc - dupcount;
-	l = joe_malloc(SIZEOF(struct Leaf) * newalloc);
+	l = (struct Leaf *)joe_malloc(SIZEOF(struct Leaf) * newalloc);
 
 	/* Copy entries */
 	idx = 0;
@@ -1048,13 +1048,13 @@ void rmap_opt(struct Rtree *r)
 
 	/* De-duplicate leaf nodes (it's not worth bothering with interior nodes) */
 
-	equiv = joe_malloc(SIZEOF(int) * r->leaf.alloc);
-	repl = joe_malloc(SIZEOF(short) * r->leaf.alloc);
+	equiv = (int *)joe_malloc(SIZEOF(int) * r->leaf.alloc);
+	repl = (short *)joe_malloc(SIZEOF(short) * r->leaf.alloc);
 
 	/* Create hash table index of all the leaf nodes */
 	dupcount = 0;
 	rhsize = 1024;
-	rhtable = joe_calloc(SIZEOF(struct rmapentry *), rhsize);
+	rhtable = (struct rmaphentry **)joe_calloc(SIZEOF(struct rmaphentry *), rhsize);
 	for (x = 0; x != r->leaf.alloc; ++x) {
 		struct rmaphentry *rh;
 		idx = ((rhsize - 1) & rmaphash(r->leaf.table.e + x));
@@ -1086,7 +1086,7 @@ void rmap_opt(struct Rtree *r)
 
 	/* Create new leaf table */
 	newalloc = r->leaf.alloc - dupcount;
-	l = joe_malloc(SIZEOF(struct Ileaf) * newalloc);
+	l = (struct Ileaf *)joe_malloc(SIZEOF(struct Ileaf) * newalloc);
 
 	/* Copy entries */
 	idx = 0;

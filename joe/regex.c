@@ -1067,7 +1067,7 @@ static void unasm(Frag *f)
 				printf("%lld:	jump %lld\n", (long long)i, (long long)(arg + (pc - SIZEOF(int))));
 				break;
 			} case iCLASS: {
-				struct Cclass *r = fetchp(f, &pc);
+				struct Cclass *r = (struct Cclass *)fetchp(f, &pc);
 				printf("%lld:	class ", (long long)i);
 				cclass_show(r);
 				break;
