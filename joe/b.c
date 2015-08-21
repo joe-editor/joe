@@ -681,6 +681,8 @@ off_t pisindent(P *p)
 int pispure(P *p,int c)
 {
 	P *q = pdup(p, "pispure");
+	if (c < 0)
+		c += 256;
 	p_goto_bol(q);
 	while (q->byte!=p->byte)
 		if (pgetc(q)!=c) {

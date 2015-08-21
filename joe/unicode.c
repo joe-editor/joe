@@ -129,16 +129,12 @@ struct Cclass cclass_notword[1];
 struct Rtree rtree_tolower[1];
 int joe_towlower(struct charmap *foo, int ch)
 {
-	if (ch < 0)
-		ch += 256;
 	return ch + rmap_lookup(rtree_tolower, ch, 0);
 }
 
 struct Rtree rtree_toupper[1];
 int joe_towupper(struct charmap *foo, int ch)
 {
-	if (ch < 0)
-		ch += 256;
 	return ch + rmap_lookup(rtree_toupper, ch, 0);
 }
 

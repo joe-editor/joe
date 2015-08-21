@@ -154,6 +154,8 @@ struct interval_list *interval_set(struct interval_list *interval_list, struct i
 
 void *interval_lookup(struct interval_list *list, void *dflt, int item)
 {
+	if (item < 0)
+		item += 256;
 	while (list) {
 		if (item >= list->interval.first && item <= list->interval.last)
 			return list->map;
@@ -208,11 +210,14 @@ int rset_lookup(struct Rset *r, int ch)
 
 int rset_lookup_unopt(struct Rset *r, int ch)
 {
-	int a = (ch >> TOPSHIFT);
-	int b = (SECONDMASK & (ch >> SECONDSHIFT));
-	int c = (THIRDMASK & (ch >> THIRDSHIFT));
-	int d = (LEAFMASK & (ch >> LEAFSHIFT));
+	int a, b, c, d;
 	int idx;
+	if (ch < 0)
+		ch += 256;
+	a = (ch >> TOPSHIFT);
+	b = (SECONDMASK & (ch >> SECONDSHIFT));
+	c = (THIRDMASK & (ch >> THIRDSHIFT));
+	d = (LEAFMASK & (ch >> LEAFSHIFT));
 	if (a >= TOPSIZE)
 		return 0;
 	idx = r->top.entry[a];
@@ -411,10 +416,13 @@ void rset_show(struct Rset *r)
 
 void *rtree_lookup(struct Rtree *r, int ch)
 {
-	int a = (ch >> TOPSHIFT);
-	int b = (SECONDMASK & (ch >> SECONDSHIFT));
-	int c = (THIRDMASK & (ch >> THIRDSHIFT));
-	int d = (LEAFMASK & (ch >> LEAFSHIFT));
+	int a, b, c, d;
+	if (ch < 0)
+		ch += 256;
+	a = (ch >> TOPSHIFT);
+	b = (SECONDMASK & (ch >> SECONDSHIFT));
+	c = (THIRDMASK & (ch >> THIRDSHIFT));
+	d = (LEAFMASK & (ch >> LEAFSHIFT));
 	if (a >= TOPSIZE)
 		return NULL;
 	if (a || b) { /* Full lookup for character >= 512 */
@@ -437,11 +445,14 @@ void *rtree_lookup(struct Rtree *r, int ch)
 
 void *rtree_lookup_unopt(struct Rtree *r, int ch)
 {
-	int a = (ch >> TOPSHIFT);
-	int b = (SECONDMASK & (ch >> SECONDSHIFT));
-	int c = (THIRDMASK & (ch >> THIRDSHIFT));
-	int d = (LEAFMASK & (ch >> LEAFSHIFT));
+	int a, b, c, d;
 	int idx;
+	if (ch < 0)
+		ch += 256;
+	a = (ch >> TOPSHIFT);
+	b = (SECONDMASK & (ch >> SECONDSHIFT));
+	c = (THIRDMASK & (ch >> THIRDSHIFT));
+	d = (LEAFMASK & (ch >> LEAFSHIFT));
 	if (a >= TOPSIZE)
 		return NULL;
 	idx = r->top.entry[a];
@@ -805,10 +816,13 @@ void rtree_show(struct Rtree *r)
 
 int rmap_lookup(struct Rtree *r, int ch, int dflt)
 {
-	int a = (ch >> TOPSHIFT);
-	int b = (SECONDMASK & (ch >> SECONDSHIFT));
-	int c = (THIRDMASK & (ch >> THIRDSHIFT));
-	int d = (LEAFMASK & (ch >> LEAFSHIFT));
+	int a, b, c, d;
+	if (ch < 0)
+		ch += 256;
+	a = (ch >> TOPSHIFT);
+	b = (SECONDMASK & (ch >> SECONDSHIFT));
+	c = (THIRDMASK & (ch >> THIRDSHIFT));
+	d = (LEAFMASK & (ch >> LEAFSHIFT));
 	if (a >= TOPSIZE)
 		return dflt;
 	if (a || b) { /* Full lookup for character >= 512 */
@@ -831,11 +845,14 @@ int rmap_lookup(struct Rtree *r, int ch, int dflt)
 
 int rmap_lookup_unopt(struct Rtree *r, int ch, int dflt)
 {
-	int a = (ch >> TOPSHIFT);
-	int b = (SECONDMASK & (ch >> SECONDSHIFT));
-	int c = (THIRDMASK & (ch >> THIRDSHIFT));
-	int d = (LEAFMASK & (ch >> LEAFSHIFT));
+	int a, b, c, d;
 	int idx;
+	if (ch < 0)
+		ch += 256;
+	a = (ch >> TOPSHIFT);
+	b = (SECONDMASK & (ch >> SECONDSHIFT));
+	c = (THIRDMASK & (ch >> THIRDSHIFT));
+	d = (LEAFMASK & (ch >> LEAFSHIFT));
 	if (a >= TOPSIZE)
 		return dflt;
 	idx = r->top.entry[a];
