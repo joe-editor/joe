@@ -925,8 +925,6 @@ void bwgenh(BW *w)
 				}
 				c = pgetb(q);
 				if (c != NO_MORE_DATA) {
-					if (c < 0)
-						c += 256;
 					sprintf(bf,"%2.2x",c);
 					txt[10+x*3] = bf[0];
 					txt[10+x*3+1] = bf[1];
@@ -950,8 +948,6 @@ void bwgenh(BW *w)
 				}
 				c = pgetb(q);
 				if (c != NO_MORE_DATA) {
-					if (c < 0)
-						c += 256;
 					sprintf(bf,"%2.2x",c);
 					txt[11+x*3] = bf[0];
 					txt[11+x*3+1] = bf[1];

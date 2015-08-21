@@ -48,8 +48,6 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	line->b->o.ansi = 0;
 
 	while ((c = pgetc(line)) != NO_MORE_DATA) {
-		if (c < 0)
-			c += 256;
 		if (attr == attr_end) {
 			if (!attr_buf) {
 				attr_size = 1024;
@@ -181,10 +179,6 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		struct high_cmd *cmd, *kw_cmd;
 		int iters = -8; /* +8 extra iterations before cycle detect. */
 		ptrdiff_t x;
-
-		/* Fix signed char promoted to int */
-		if (c < 0)
-			c += 256;
 
 		/* If it isn't already, convert character to unicode */
 		if (!charmap->type)

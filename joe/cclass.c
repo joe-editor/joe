@@ -252,7 +252,7 @@ void rset_clr(struct Rset *r)
 	joe_free(r->third.table.c);
 }
 
-static int rset_alloc(struct Level *l, int levelno)
+static short rset_alloc(struct Level *l, int levelno)
 {
 	int x;
 	if (l->alloc == l->size) {
@@ -282,7 +282,7 @@ static int rset_alloc(struct Level *l, int levelno)
 		fprintf(stderr,"rset_alloc overflow\r\n");
 		exit(-1);
 	}
-	return l->alloc++;
+	return (short)l->alloc++;
 }
 
 void rset_add(struct Rset *r, int ch, int che)
@@ -292,8 +292,8 @@ void rset_add(struct Rset *r, int ch, int che)
 	int c = (THIRDMASK & (ch >> THIRDSHIFT));
 	int d = (LEAFMASK & (ch >> LEAFSHIFT));
 
-	int ib;
-	int ic;
+	short ib;
+	short ic;
 
 	while (ch <= che) {
 
@@ -311,7 +311,7 @@ void rset_add(struct Rset *r, int ch, int che)
 				r->second.table.b[ib].entry[b] = ic = rset_alloc(&r->third, 2);
 			}
 			while (ch <= che) {
-				r->third.table.c[ic].entry[c] |= (1 << d);
+				r->third.table.c[ic].entry[c] |= (short)(1 << d);
 				++ch;
 				if (++d == LEAFSIZE) {
 					d = 0;
@@ -493,7 +493,7 @@ void rtree_clr(struct Rtree *r)
 	joe_free(r->leaf.table.d);
 }
 
-static int rtree_alloc(struct Level *l, int levelno)
+static short rtree_alloc(struct Level *l, int levelno)
 {
 	int x;
 	if (l->alloc == l->size) {
@@ -531,7 +531,7 @@ static int rtree_alloc(struct Level *l, int levelno)
 		fprintf(stderr,"rtree_alloc overflow\r\n");
 		exit(-1);
 	}
-	return l->alloc++;
+	return (short)l->alloc++;
 }
 
 void rtree_add(struct Rtree *r, int ch, int che, void *map)
@@ -541,9 +541,9 @@ void rtree_add(struct Rtree *r, int ch, int che, void *map)
 	int c = (THIRDMASK & (ch >> THIRDSHIFT));
 	int d = (LEAFMASK & (ch >> LEAFSHIFT));
 
-	int ib;
-	int ic;
-	int id;
+	short ib;
+	short ic;
+	short id;
 
 	/* printf("%p rtree_add %x..%x [%d %d %d %d] -> %p\n",r, ch, che, a, b, c, d, map); */
 
@@ -639,7 +639,7 @@ void rtree_opt(struct Rtree *r)
 	int rhsize;
 	struct rhentry **rhtable;
 	int *equiv;
-	int *repl;
+	short *repl;
 	int dupcount;
 	int newalloc;
 	struct Leaf *l;
@@ -647,7 +647,7 @@ void rtree_opt(struct Rtree *r)
 	/* De-duplicate leaf nodes (it's not worth bothering with interior nodes) */
 
 	equiv = joe_malloc(SIZEOF(int) * r->leaf.alloc);
-	repl = joe_malloc(SIZEOF(int) * r->leaf.alloc);
+	repl = joe_malloc(SIZEOF(short) * r->leaf.alloc);
 
 	/* Create hash table index of all the leaf nodes */
 	dupcount = 0;
@@ -692,7 +692,11 @@ void rtree_opt(struct Rtree *r)
 		if (equiv[x] == -1) {
 			mcpy(l + idx, r->leaf.table.d + x, sizeof(struct Leaf));
 			l[idx].refcount = 1;
-			repl[x] = idx;
+			if (idx > 32767) {
+				fprintf(stderr, "cclass too complex\r\n");
+				ttsig(-1);
+			}
+			repl[x] = (short)idx;
 			++idx;
 		}
 	for (x = 0; x != r->leaf.alloc; ++x)
@@ -893,7 +897,7 @@ void rmap_clr(struct Rtree *r)
 	joe_free(r->leaf.table.e);
 }
 
-static int rmap_alloc(struct Level *l, int levelno, int dflt)
+static short rmap_alloc(struct Level *l, int levelno, int dflt)
 {
 	int x;
 	if (l->alloc == l->size) {
@@ -929,9 +933,9 @@ static int rmap_alloc(struct Level *l, int levelno, int dflt)
 	}
 	if (l->alloc == 32768) {
 		fprintf(stderr,"rmap_alloc overflow\r\n");
-		exit(-1);
+		ttsig(-1);
 	}
-	return l->alloc++;
+	return (short)l->alloc++;
 }
 
 void rmap_add(struct Rtree *r, int ch, int che, int map, int dflt)
@@ -941,9 +945,9 @@ void rmap_add(struct Rtree *r, int ch, int che, int map, int dflt)
 	int c = (THIRDMASK & (ch >> THIRDSHIFT));
 	int d = (LEAFMASK & (ch >> LEAFSHIFT));
 
-	int ib;
-	int ic;
-	int id;
+	short ib;
+	short ic;
+	short id;
 
 	while (ch <= che) {
 
@@ -1032,12 +1036,12 @@ static ptrdiff_t rmaphash(struct Ileaf *l)
 
 void rmap_opt(struct Rtree *r)
 {
-	int idx;
+	ptrdiff_t idx;
 	int x;
 	int rhsize;
 	struct rmaphentry **rhtable;
 	int *equiv;
-	int *repl;
+	short *repl;
 	int dupcount;
 	int newalloc;
 	struct Ileaf *l;
@@ -1045,7 +1049,7 @@ void rmap_opt(struct Rtree *r)
 	/* De-duplicate leaf nodes (it's not worth bothering with interior nodes) */
 
 	equiv = joe_malloc(SIZEOF(int) * r->leaf.alloc);
-	repl = joe_malloc(SIZEOF(int) * r->leaf.alloc);
+	repl = joe_malloc(SIZEOF(short) * r->leaf.alloc);
 
 	/* Create hash table index of all the leaf nodes */
 	dupcount = 0;
@@ -1090,7 +1094,11 @@ void rmap_opt(struct Rtree *r)
 		if (equiv[x] == -1) {
 			mcpy(l + idx, r->leaf.table.e + x, sizeof(struct Ileaf));
 			l[idx].refcount = 1;
-			repl[x] = idx;
+			if (idx > 32767) {
+				fprintf(stderr, "Oops, cclass too complex\n");
+				ttsig(-1);
+			}
+			repl[x] = (short)idx;
 			++idx;
 		}
 	for (x = 0; x != r->leaf.alloc; ++x)
