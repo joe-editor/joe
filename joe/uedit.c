@@ -2431,12 +2431,12 @@ static int dotxt(W *w, char *s, void *object, int *notify)
 	   fill=' ';
 	   str=stagen(str,bw,&s[1],fill);
 	   if (str) {
-	     for(x=0;x!=sLEN(str);++x) utypebw(bw,str[x]);
+	     for(x=0;x!=sLEN(str);++x) utypebw(bw,((unsigned char *)str)[x]);
 	     vsrm(str);
 	     }
 	} else
 	for (x = 0; x != sLEN(s); ++x)
-		utypebw(bw, s[x]);
+		utypebw(bw, ((unsigned char *)s)[x]);
 	vsrm(s);
 	return 0;
 }

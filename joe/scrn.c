@@ -2084,7 +2084,7 @@ void genfield(SCRN *t,int (*scrn)[COMPOSE],int *attr,ptrdiff_t x,ptrdiff_t y,ptr
 	utf8_init(&sm);
 
 	for (col = 0;len != 0 && x < last_col; len--) {
-		int c = *s++;
+		int c = *(unsigned char *)s++;
 		ptrdiff_t wid = -1;
 		int my_atr = atr;
 		if (fmt) my_atr |= *fmt++;
@@ -2154,7 +2154,7 @@ ptrdiff_t txtwidth(const char *s,ptrdiff_t len)
 		utf8_init(&sm);
 
 		while(len--) {
-			int d = utf8_decode(&sm,*s++);
+			int d = utf8_decode(&sm,*(unsigned char *)s++);
 			if (d >= 0)
 				col += joe_wcwidth(1,d);
 		}
@@ -2172,7 +2172,7 @@ off_t txtwidth1(struct charmap *map,off_t tabwidth,const char *s,ptrdiff_t len)
 		utf8_init(&sm);
 
 		while(len--) {
-			int d = utf8_decode(&sm,*s++);
+			int d = utf8_decode(&sm,*(unsigned char *)s++);
 			if (d == '\t') {
 				++col;
 				col += tabwidth - (col % tabwidth);
@@ -2206,7 +2206,7 @@ void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, in
 
 	utf8_init(&sm);
 
-	while ((c = *s++) != '\0')
+	while ((c = *(unsigned char *)s++) != '\0')
 		if (c == '\\') {
 			switch (c = *s++) {
 			case 'u':
@@ -2300,7 +2300,7 @@ ptrdiff_t fmtlen(const char *s)
 
 	utf8_init(&sm);
 
-	while ((c= *s++)) {
+	while ((c= *(unsigned char  *)s++)) {
 		if (c == '\\') {
 			switch (*s++) {
 			case 'u':
@@ -2349,10 +2349,10 @@ ptrdiff_t fmtpos(const char *s, ptrdiff_t goal)
 
 	utf8_init(&sm);
 
-	while ((c= *s) && col<goal) {
+	while ((c = *(unsigned char *)s) && col<goal) {
 		s++;
 		if (c == '\\') {
-			switch (*s++) {
+			switch (*(unsigned char *)s++) {
 			case 'u':
 			case 'i':
 			case 'd':

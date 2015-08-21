@@ -597,7 +597,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 							++idx;
 						}
 					} else {
-						utf8_char = bc;
+						utf8_char = (unsigned char)bc;
 						wid = 1;
 					}
 				}

@@ -1,3 +1,11 @@
+macros.c: unescape seems broken
+path.c: rmatch.. should depend on locale (character class)
+look at texec..
+(continue looking after uedit.c)
+
+hmm.. we always convert to unicode on input, but do we convert to the 8-bit
+charset of the buffer? check this.
+
 New regex engine:
 
       add \c
