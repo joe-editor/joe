@@ -1,5 +1,9 @@
+help screen with 8-bit character showing
+
 macros.c: unescape seems broken
+
 path.c: rmatch.. should depend on locale (character class)
+
 look at texec..
 (continue looking after uedit.c)
 
@@ -28,7 +32,7 @@ New regex engine:
 
       check performance and memory leaks
 
-      check char to int promotions
+      check char to int promotions [done].
 
 Now that we have new regex engine:
       switch to it for ftyperc?

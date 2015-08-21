@@ -935,7 +935,7 @@ int parse_class(const char * *pp, struct interval **array, ptrdiff_t *size)
 		return 0;
 	}
 
-	if(*p == '-' && p[1]) {
+	if(*p == '-' && p[1] && p[1] != '"') {
 		++p;
 		b = escape(1, &p, NULL, NULL);
 	} else
