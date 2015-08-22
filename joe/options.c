@@ -146,7 +146,7 @@ int ucharset(W *w, int k)
 	if (!s || !*s)
 		return -1;
 	while (*s)
-		if (utypebw(bw,*(unsigned char *)s++))
+		if (utypebw(bw,*(const unsigned char *)s++))
 			return -1;
 	return 0;
 }
@@ -161,7 +161,7 @@ int ulanguage(W *w, int k)
 	if (!s || !*s)
 		return -1;
 	while (*s)
-		if (utypebw(bw,*(unsigned char *)s++))
+		if (utypebw(bw,*(const unsigned char *)s++))
 			return -1;
 	return 0;
 }

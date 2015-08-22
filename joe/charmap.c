@@ -1129,22 +1129,22 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 	/* Build case conversion tables */
 
 	for (x=0; x!=256; ++x) {
-		map->lower_map[x] = TO_CHAR_OK(x);
+		map->lower_map[x] = (unsigned char)x;
 		if (map->to_map[x] != -1) {
 			int y = joe_towlower(NULL,map->to_map[x]);
 			int z = from_uni(map,y);
 			if (z != -1)
-				map->lower_map[x] = TO_CHAR_OK(z);
+				map->lower_map[x] = (unsigned char)z;
 		}
 	}
 
 	for (x=0; x!=256; ++x) {
-		map->upper_map[x] = TO_CHAR_OK(x);
+		map->upper_map[x] = (unsigned char)x;
 		if (map->to_map[x] != -1) {
 			int y = joe_towupper(NULL,map->to_map[x]);
 			int z = from_uni(map,y);
 			if (z != -1)
-				map->upper_map[x] = TO_CHAR_OK(z);
+				map->upper_map[x] = (unsigned char)z;
 		}
 	}
 
