@@ -1192,6 +1192,8 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 	return map;
 }
 
+struct charmap *utf8_map;
+
 static void load_builtins(void)
 {
 	struct charmap *map;
@@ -1209,6 +1211,7 @@ static void load_builtins(void)
 	map->to_upper = joe_towupper;
 	map->next = charmaps;
 	charmaps = map;
+	utf8_map = map;
 
 	/* Load all built-in byte maps */
 	/*

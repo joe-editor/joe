@@ -166,9 +166,9 @@ void *interval_lookup(struct interval_list *list, void *dflt, int item)
 
 void interval_show(struct interval_list *list)
 {
-	printf("Interval list at %p\n", list);
+	logmessage_1("Interval list at %p\n", list);
 	while (list) {
-		printf("%p show %x..%x -> %p\n", list, list->interval.first, list->interval.last, list->map);
+		logmessage_4("%p show %x..%x -> %p\n", list, list->interval.first, list->interval.last, list->map);
 		list = list -> next;
 	}
 }
@@ -363,21 +363,21 @@ void rset_show(struct Rset *r)
 	int a;
 	ptrdiff_t len = 0;
 	ptrdiff_t total = 0;
-	printf("Rset at %p\n", r);
+	logmessage_1("Rset at %p\n", r);
 
 	len = SIZEOF(struct Rset);
-	printf("Top level size = %lld\n", (long long)len);
+	logmessage_1("Top level size = %lld\n", (long long)len);
 	total += len;
 
 	len = r->second.alloc * SIZEOF(struct Mid);
-	printf("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
+	logmessage_2("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
 	total += len;
 
 	len = r->third.alloc * SIZEOF(struct Mid);
-	printf("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
+	logmessage_2("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
 	total += len;
 
-	printf("Total size = %lld bytes\n", (long long)total);
+	logmessage_1("Total size = %lld bytes\n", (long long)total);
 
 	for (a = 0; a != TOPSIZE; ++a) {
 		int ib = r->top.entry[a];
@@ -396,7 +396,7 @@ void rset_show(struct Rset *r)
 								if (ch == last + 1) {
 									last = ch;
 								} else if (first != -2) {
-									printf("	{ 0x%4.4X, 0x%4.4X },\n", first, last);
+									logmessage_2("	{ 0x%4.4X, 0x%4.4X },\n", first, last);
 									first = last = ch;
 								} else {
 									first = last = ch;
@@ -409,7 +409,7 @@ void rset_show(struct Rset *r)
 		}
 	}
 	if (first != -2)
-		printf("	{ 0x%4.4X, 0x%4.4X },\n", first, last);
+		logmessage_2("	{ 0x%4.4X, 0x%4.4X },\n", first, last);
 }
 
 /* Radix tree maps */
@@ -758,25 +758,25 @@ void rtree_show(struct Rtree *r)
 
 	ptrdiff_t len = 0;
 	ptrdiff_t total = 0;
-	printf("Rtree at %p\n", r);
+	logmessage_1("Rtree at %p\n", r);
 
 	len = SIZEOF(struct Rtree);
-	printf("Top level size = %lld\n", (long long)len);
+	logmessage_1("Top level size = %lld\n", (long long)len);
 	total += len;
 
 	len = r->second.alloc * SIZEOF(struct Mid);
-	printf("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
+	logmessage_2("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
 	total += len;
 
 	len = r->third.alloc * SIZEOF(struct Mid);
-	printf("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
+	logmessage_2("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
 	total += len;
 
 	len = r->leaf.alloc * SIZEOF(struct Leaf);
-	printf("Fourth level size = %lld (%d entries)\n", (long long)len, r->leaf.alloc);
+	logmessage_2("Fourth level size = %lld (%d entries)\n", (long long)len, r->leaf.alloc);
 	total += len;
 
-	printf("Total size = %lld bytes\n", (long long)total);
+	logmessage_1("Total size = %lld bytes\n", (long long)total);
 	
 	for (a = 0; a != TOPSIZE; ++a) {
 		int ib = r->top.entry[a];
@@ -798,7 +798,7 @@ void rtree_show(struct Rtree *r)
 								if (ch == last + 1 && ie == val) {
 									last = ch;
 								} else if (first != -2) {
-									printf("%p show %x %x %p\n", r, first, last, val);
+									logmessage_4("%p show %x %x %p\n", r, first, last, val);
 									first = last = ch;
 									val = ie;
 								} else {
@@ -813,7 +813,7 @@ void rtree_show(struct Rtree *r)
 		}
 	}
 	if (first != -2)
-		printf("%p show %x %x %p\n", r, first, last, val);
+		logmessage_4("%p show %x %x %p\n", r, first, last, val);
 }
 
 /* Radix tree maps */
@@ -1151,25 +1151,25 @@ void rmap_show(struct Rtree *r)
 
 	ptrdiff_t len = 0;
 	ptrdiff_t total = 0;
-	printf("Rmap at %p\n", r);
+	logmessage_1("Rmap at %p\n", r);
 
 	len = SIZEOF(struct Rtree);
-	printf("Top level size = %lld\n", (long long)len);
+	logmessage_1("Top level size = %lld\n", (long long)len);
 	total += len;
 
 	len = r->second.alloc * SIZEOF(struct Mid);
-	printf("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
+	logmessage_2("Second level size = %lld (%d entries)\n", (long long)len, r->second.alloc);
 	total += len;
 
 	len = r->third.alloc * SIZEOF(struct Mid);
-	printf("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
+	logmessage_2("Third level size = %lld (%d entries)\n", (long long)len, r->third.alloc);
 	total += len;
 
 	len = r->leaf.alloc * SIZEOF(struct Ileaf);
-	printf("Fourth level size = %lld (%d entries)\n", (long long)len, r->leaf.alloc);
+	logmessage_2("Fourth level size = %lld (%d entries)\n", (long long)len, r->leaf.alloc);
 	total += len;
 
-	printf("Total size = %lld bytes\n", (long long)total);
+	logmessage_1("Total size = %lld bytes\n", (long long)total);
 	
 	for (a = 0; a != TOPSIZE; ++a) {
 		int ib = r->top.entry[a];
@@ -1189,7 +1189,7 @@ void rmap_show(struct Rtree *r)
 								if (ch == last + 1 && ie == val) {
 									last = ch;
 								} else if (first != -2) {
-									printf("%p show %x %x -> %d\n", r, first, last, val);
+									logmessage_4("%p show %x %x -> %d\n", r, first, last, val);
 									first = last = ch;
 									val = ie;
 								} else {
@@ -1204,7 +1204,7 @@ void rmap_show(struct Rtree *r)
 		}
 	}
 	if (first != -2)
-		printf("%p show %x %x -> %d\n", r, first, last, val);
+		logmessage_4("%p show %x %x -> %d\n", r, first, last, val);
 }
 
 /* Character classes */
@@ -1442,8 +1442,8 @@ void cclass_show(struct Cclass *m)
 		if (!first)
 			first = 1;
 		else
-			printf(" ");
-		printf("[%x..%x]", (unsigned)m->intervals[x].first, (unsigned)m->intervals[x].last);
+			logmessage_0(" ");
+		logmessage_2("[%x..%x]", (unsigned)m->intervals[x].first, (unsigned)m->intervals[x].last);
 	}
-	printf("\n");
+	logmessage_0("\n");
 }

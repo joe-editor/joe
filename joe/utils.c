@@ -593,12 +593,26 @@ int parse_ws(const char **pp,int cmt)
 int parse_ident(const char * *pp, char *buf, ptrdiff_t len)
 {
 	const char *p = *pp;
-	if (joe_isalpha_(locale_map,*p)) {
-		while(len > 1 && joe_isalnum_(locale_map,*p))
-			*buf++= *p++, --len;
-		*buf=0;
-		while(joe_isalnum_(locale_map,*p))
-			++p;
+	const char *q;
+	int c;
+	
+	q = p;
+	c = utf8_decode_fwrd(&q, NULL);
+	if (c >= 0 && joe_isalpha_(utf8_map, c)) {
+		do {
+			char bf[8];
+			ptrdiff_t enc = utf8_encode(bf, c);
+			ptrdiff_t x;
+			if (enc + 1 <= len) {
+				for (x = 0; x != enc; ++x) {
+					*buf++ = bf[x];
+					--len;
+				}
+				*buf = 0;
+			}
+			p = q;
+			c = utf8_decode_fwrd(&q, NULL);
+		} while (c >= 0 && joe_isalnum_(utf8_map, c));
 		*pp = p;
 		return 0;
 	} else
@@ -623,9 +637,13 @@ int parse_tows(const char * *pp, char *buf)
 int parse_kw(const char * *pp, const char *kw)
 {
 	const char *p = *pp;
+	const char *q;
+	int c;
 	while(*kw && *kw==*p)
 		++kw, ++p;
-	if(!*kw && !joe_isalnum_(locale_map,*p)) {
+	q = p;
+	c = utf8_decode_fwrd(&q, NULL);
+	if(!*kw && !(c >= 0 && joe_isalnum_(utf8_map, c))) {
 		*pp = p;
 		return 0;
 	} else

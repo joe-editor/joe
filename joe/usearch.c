@@ -711,7 +711,7 @@ static int set_pattern(W *w, char *s, void *obj, int *notify)
 		vsrm(s);
 		setpat(srch, vsdup(globalsrch->pattern));
 	}
-	if ((pbw = wmkpw(bw->parent, p, NULL, set_options, srchopt, pfabort, utypebw, srch, notify, bw->b->o.charmap, 0)) != NULL) {
+	if ((pbw = wmkpw(bw->parent, p, NULL, set_options, srchopt, pfabort, utypebw, srch, notify, locale_map, 0)) != NULL) {
 		char buf[10];
 
 		if (srch->ignore) {

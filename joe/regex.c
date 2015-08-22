@@ -615,16 +615,16 @@ static int mk_node(struct regcomp *r, int ty, int nl, int nr)
 static void ind(int x)
 {
 	while (x--)
-		printf("  ");
+		logmessage_0("  ");
 }
 
 static void show(struct regcomp *r, int no, int x)
 {
 	if (no != -1) {
 		if (r->nodes[no].type >= 0) {
-			ind(x); printf("'%c'\n", r->nodes[no].type);
+			ind(x); logmessage_1("'%c'\n", r->nodes[no].type);
 		} else {
-			ind(x); printf("%c\n", -r->nodes[no].type);
+			ind(x); logmessage_1("%c\n", -r->nodes[no].type);
 		}
 		if (r->nodes[no].type == -'[') {
 			ind(x + 1); cclass_show(r->nodes[no].cclass);
@@ -704,7 +704,7 @@ static int do_parse_conventional(struct regcomp *g, int prec)
 				if (cat)
 					cclass_union(m, cat);
 			} else {
-				if (g->l >= 2 &&  *g->ptr == '-') {
+				if (g->l >= 2 &&  g->ptr[0] == '-' && g->ptr[1] != ']') {
 					++g->ptr;
 					--g->l;
 					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
@@ -889,7 +889,7 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 				if (cat)
 					cclass_union(m, cat);
 			} else {
-				if (g->l >= 2 &&  *g->ptr == '-') {
+				if (g->l >= 2 &&  g->ptr[0] == '-' && g->ptr[1] != ']') {
 					++g->ptr;
 					--g->l;
 					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
@@ -1034,54 +1034,73 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 
 /* Disassembler */
 
+static const char *iname(int c)
+{
+	if (c >= 0) return "CHAR";
+	else switch(c) {
+		case iDOT: return "DOT";
+		case iBOL: return "BOL";
+		case iEOL: return "EOL";
+		case iBOW: return "BOW";
+		case iEOW: return "EOW";
+		case iBRA: return "BRA";
+		case iKET: return "KET";
+		case iFORK: return "FORK";
+		case iJUMP: return "JUMP";
+		case iCLASS: return "CLASS";
+		case iEND: return "END";
+		default: return "HUH?";
+	}
+}
+
 static void unasm(Frag *f)
 {
 	ptrdiff_t pc = 0;
-	printf("PC	INSN\n");
-	printf("--	----\n");
+	logmessage_0("PC	INSN\n");
+	logmessage_0("--	----\n");
 	for (;;) {
 		ptrdiff_t i = pc;
 		int c = fetchi(f, &pc);
 		if (c >= 0)
-			printf("%lld:	'%c'\n", (long long)i, c);
+			logmessage_2("%lld:	'%c'\n", (long long)i, c);
 		else switch(c) {
 			case iDOT:
-				printf("%lld:	.\n", (long long)i);
+				logmessage_1("%lld:	.\n", (long long)i);
 				break;
 			case iBOL:
-				printf("%lld:	^\n", (long long)i);
+				logmessage_1("%lld:	^\n", (long long)i);
 				break;
 			case iEOL:
-				printf("%lld:	$\n", (long long)i);
+				logmessage_1("%lld:	$\n", (long long)i);
 				break;
 			case iBOW:
-				printf("%lld:	<\n", (long long)i);
+				logmessage_1("%lld:	<\n", (long long)i);
 				break;
 			case iEOW:
-				printf("%lld:	>\n", (long long)i);
+				logmessage_1("%lld:	>\n", (long long)i);
 				break;
 			case iBRA:
-				printf("%lld:	bra %d\n", (long long)i, fetchi(f, &pc));
+				logmessage_2("%lld:	bra %d\n", (long long)i, fetchi(f, &pc));
 				break;
 			case iKET:
-				printf("%lld:	ket %d\n", (long long)i, fetchi(f, &pc));
+				logmessage_2("%lld:	ket %d\n", (long long)i, fetchi(f, &pc));
 				break;
 			case iFORK: {
 				int arg = fetchi(f, &pc);
-				printf("%lld:	fork %lld\n", (long long)i, (long long)(arg + (pc - SIZEOF(int))));
+				logmessage_2("%lld:	fork %lld\n", (long long)i, (long long)(arg + (pc - SIZEOF(int))));
 				break;
 			} case iJUMP: {
 				int arg = fetchi(f, &pc);
-				printf("%lld:	jump %lld\n", (long long)i, (long long)(arg + (pc - SIZEOF(int))));
+				logmessage_2("%lld:	jump %lld\n", (long long)i, (long long)(arg + (pc - SIZEOF(int))));
 				break;
 			} case iCLASS: {
 				struct Cclass *r = (struct Cclass *)fetchp(f, &pc);
-				printf("%lld:	class ", (long long)i);
+				logmessage_1("%lld:	class ", (long long)i);
 				cclass_show(r);
 				break;
 			}
 			case iEND:
-				printf("%lld:	end\n", (long long)i);
+				logmessage_1("%lld:	end\n", (long long)i);
 				return;
 		}
 	}
@@ -1202,6 +1221,8 @@ static void codegen(struct regcomp *g, int no, int *end)
 
 /* User level of parser: call it with a regex- it returns a program in a malloc block */
 
+/* #define DEBUG 1 */
+
 struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, int cflags)
 {
 	int no;
@@ -1227,7 +1248,7 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 
 	/* Print parse tree */
 #ifdef DEBUG
-	printf("Parse tree:\n");
+	logmessage_0("Parse tree:\n");
 	show(g, no, 0);
 #endif
 
@@ -1239,7 +1260,7 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 	emiti(g->frag, iFORK);
 	b = emit_branch(g->frag, 0);
 #ifdef DEBUG
-	printf("Total size = %d\n",g->frag->len);
+	logmessage_1("Total size = %d\n",g->frag->len);
 #endif
 	a = emiti(g->frag, iDOT);
 	emiti(g->frag, iFORK);
@@ -1275,10 +1296,11 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 
 	/* Unassemble code */
 #ifdef DEBUG
-	printf("NFA-program:\n");
+	logmessage_0("NFA-program:\n");
 	unasm(g->frag);
-	printf("Total size = %d\n",g->frag->len);
+	logmessage_1("Total size = %lld\n",(long long)g->frag->len);
 #endif
+
 	return g;
 }
 
@@ -1443,6 +1465,7 @@ static int add_thread1(struct thread *pool, unsigned char *start, int l, int le,
 				return le; /* They are equal, leave the current one. */
 		}
 	}
+
 	/* Add it */
 	if (le - l == MAX_THREADS) {
 		printf("ran out of threads\n");
@@ -1522,12 +1545,18 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 		} else { /* No case folding */
 			c = pgetc(p);
 		}
+#ifdef DEBUG
+		logmessage_2("'%c' (%lld)\n", c, (long long)byte);
+#endif
 		/* Give character to all threads */
 		for (t = cl; t != cle; ++t) {
 			unsigned char *pc = pool[t].pc;
 			for (;;) {
 				int i;
 				i = *(int *)pc;
+#ifdef DEBUG
+				logmessage_3("  Thread %d PC=%lld insn=%s\n", t - cl, (long long)(pc - g->frag->start), iname(i));
+#endif
 				if (i >= 0) { /* A single character */
 					if (c == i) {
 						nle = add_thread(pool, g->frag->start, nl, nle, pc + SIZEOF(int), pool[t].pos, bra_no);
@@ -1610,7 +1639,7 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 						if (c != NO_MORE_DATA)
 							prgetc(p);
 						if (!bra_no) {
-							return 0;
+							match = 0;
 						} else if (match || better(pool[t].pos, matches, bra_no)) {
 							int x;
 							for (x = 0; x != bra_no; ++x) {
@@ -1640,7 +1669,7 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 			nl = MAX_THREADS;
 		 nle = nl;
 		 start_bol = 0;
-	} while (c != NO_MORE_DATA && cl != cle);
+	} while (match && c != NO_MORE_DATA && cl != cle);
 
 	for (c = bra_no; c < nmatch; ++c) {
 		matches[c].rm_so = -1;

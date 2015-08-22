@@ -30,7 +30,7 @@ struct regmatch {
 int pmatch(Regmatch_t *matches, int nmatch, const char *regex, ptrdiff_t len, P *p, ptrdiff_t n, int icase);
 
 #define MAX_MATCHES 10
-#define MAX_THREADS 50
+#define MAX_THREADS 500
 
 /* Instructions */
 

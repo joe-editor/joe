@@ -1,7 +1,10 @@
 check all type-like functions- make sure they expect unicode!
 
 utils.c:parse_ident not using utf8?
+[done: now allows utf8 identifiers]
+
   - check all other users of joe_is...
+     - macro.c, options.c, rc.c, uerror.c
 
  parse_string not utf8?
 
