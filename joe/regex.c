@@ -1612,10 +1612,6 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 					}
 					case iFORK: {
 						cle = add_thread1(pool, g->frag->start, cl, cle, pc + *(int *)(pc + SIZEOF(int)) + SIZEOF(int), pool[t].pos, bra_no);
-						if (cle - cl == MAX_THREADS) {
-							match = -2;
-							break;
-						}
 						pc += 2 * SIZEOF(int);
 						continue;
 					}
@@ -1638,9 +1634,7 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 					case iEND: {
 						if (c != NO_MORE_DATA)
 							prgetc(p);
-						if (!bra_no) {
-							match = 0;
-						} else if (match || better(pool[t].pos, matches, bra_no)) {
+						if (match || better(pool[t].pos, matches, bra_no)) {
 							int x;
 							for (x = 0; x != bra_no; ++x) {
 								matches[x] = pool[t].pos[x];
