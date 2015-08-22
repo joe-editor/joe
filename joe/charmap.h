@@ -33,8 +33,6 @@ struct charmap {
 
 	int (*to_lower)(struct charmap *map,int c);
 	int (*to_upper)(struct charmap *map,int c);
-	int (*to_uni)(struct charmap *map,int c);
-	int (*from_uni)(struct charmap *map,int c);
 
 	/* Information for byte-oriented character sets */
 
@@ -66,8 +64,6 @@ int joe_isspace_eof(struct charmap *map,int c);
 
 #define joe_tolower(map,c) ((map)->to_lower((map),(c)))
 #define joe_toupper(map,c) ((map)->to_upper((map),(c)))
-#define joe_to_uni(map,c) ((map)->to_uni((map),(c)))
-#define joe_from_uni(map,c) ((map)->from_uni((map),(c)))
 
 /* Find (load if necessary) a character set */
 struct charmap *find_charmap(const char *name);
@@ -75,5 +71,24 @@ struct charmap *find_charmap(const char *name);
 /* Get available encodings */
 char **get_encodings(void);
 
+/* Convert from unicode to byte */
 int from_uni(struct charmap *cset, int c);
+int from_utf8(struct charmap *map,const char *s);
+
+/* Convert from byte to unicode */
 int to_uni(struct charmap *cset, int c);
+void to_utf8(struct charmap *map,char *s,int c);
+
+void joe_locale();
+extern struct charmap *locale_map;	/* Default bytemap of terminal */
+extern const char *locale_lang;	/* Locale language (like de_DE) */
+extern const char *locale_msgs;	/* Locale language for editor messages (like de_DE) */
+
+/* Guess map */
+struct charmap *guess_map(const char *buf, ptrdiff_t len);
+
+extern int guess_non_utf8;
+extern int guess_utf8;
+
+void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
+              const char *src,struct charmap *src_map);

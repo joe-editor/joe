@@ -42,21 +42,4 @@ int utf8_decode_fwrd(const char **p,ptrdiff_t *plen);
 
 void utf8_init(struct utf8_sm *utf8_sm);
 
-void joe_locale();
-void to_utf8(struct charmap *map,char *s,int c);
-int from_utf8(struct charmap *map,const char *s);
 
-int unictrl(int ucs);
-int mk_wcwidth(int wide,int c);
-
-extern struct charmap *locale_map;	/* Default bytemap of terminal */
-extern const char *locale_lang;	/* Locale language (like de_DE) */
-extern const char *locale_msgs;	/* Locale language for editor messages (like de_DE) */
-
-void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
-              const char *src,struct charmap *src_map);
-
-struct charmap *guess_map(const char *buf, ptrdiff_t len);
-
-extern int guess_non_utf8;
-extern int guess_utf8;

@@ -335,4 +335,3 @@ struct highlight_state {
 #include "state.h"
 #include "options.h"
 #include "selinux.h"
-#include "Zhash.h"

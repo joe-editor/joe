@@ -198,19 +198,10 @@ static int itype(W *w, int c, void *obj, int *notify)
 
 		in:
 
-		/* Convert to/from utf-8 */
-		if (locale_map->type && !bw->b->o.charmap->type) {
-			utf8_encode(buf,c);
-			c = from_utf8(bw->b->o.charmap,buf);
-		} else if(!locale_map->type && bw->b->o.charmap->type) {
-			to_utf8(locale_map,buf,c);
-			c = utf8_decode_string(buf);
-		}
-
 		if (bw->b->o.charmap->type) {
-			buf_len = utf8_encode(buf,c);
+			buf_len = utf8_encode(buf, c);
 		} else {
-			buf[0] = TO_CHAR_OK(c);
+			buf[0] = TO_CHAR_OK(from_uni(bw->b->o.charmap, c));
 			buf_len = 1;
 		}		
 

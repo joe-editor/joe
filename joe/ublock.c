@@ -1282,7 +1282,7 @@ char *blkget()
 					ptrdiff_t len = utf8_encode(bf, ch);
 					ptrdiff_t x;
 					for (x = 0; x != len; ++x)
-						*s++ = TO_CHAR_OK(bf[x]);
+						*s++ = bf[x];
 				} else
 					*s++ = TO_CHAR_OK(ch);
 			}

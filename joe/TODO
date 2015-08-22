@@ -1,3 +1,14 @@
+check all type-like functions- make sure they expect unicode!
+
+utils.c:parse_ident not using utf8?
+  - check all other users of joe_is...
+
+ parse_string not utf8?
+
+move getcodeset stuff from utf8.c -> charmap
+
+tomatch_xml: does not handle unicode names
+
 help screen with 8-bit character showing
 
 macros.c: unescape seems broken

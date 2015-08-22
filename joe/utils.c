@@ -12,22 +12,6 @@
 #include <sys/ioctl.h>
 #endif
 
-#if 0
-int joe_ispunct(int wide,struct charmap *map,int c)
-{
-	if (joe_isspace(c))
-		return 0;
-
-	if (c=='_')
-		return 1;
-
-	if (isalnum_(wide,map,c))
-		return 0;
-
-	return joe_isprint(wide,map,c);
-}
-#endif
-
 /*
  * return minimum/maximum of two numbers
  */
@@ -70,48 +54,6 @@ ptrdiff_t diff_min(ptrdiff_t a, ptrdiff_t b)
 {
 	return a < b ? a : b;
 }
-
-#if 0
-/* 
- * Characters which are considered as word characters 
- * 	_ is considered as word character because is often used 
- *	in the names of C/C++ functions
- */
-int isalnum_(int wide,struct charmap *map,int c)
-{
-	/* Fast... */
-	if (c>='0' && c<='9' ||
-	    c>='a' && c<='z' ||
-	    c>='A' && c<='Z' ||
-	    c=='_')
-	  return 1;
-	else if(c<128)
-	  return 0;
-
-	/* Slow... */
-	if (wide)
-		return joe_iswalpha(c);
-	else
-		return joe_iswalpha(to_uni(map,c));
-}
-
-int isalpha_(int wide,struct charmap *map,int c)
-{
-	/* Fast... */
-	if (c>='a' && c<='z' ||
-	    c>='A' && c<='Z' ||
-	    c=='_')
-	  return 1;
-	else if(c<128)
-	  return 0;
-
-	/* Slow... */
-	if (wide)
-		return joe_iswalpha(c);
-	else
-		return joe_iswalpha(to_uni(map,c));
-}
-#endif
 
 /* Versions of 'read' and 'write' which automatically retry when interrupted */
 ptrdiff_t joe_read(int fd, void *buf, ptrdiff_t size)

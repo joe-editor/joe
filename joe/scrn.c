@@ -466,16 +466,6 @@ static void setregn(SCRN *t, ptrdiff_t top, ptrdiff_t bot)
 	}
 }
 
-/* Enter insert mode */
-
-static void setins(SCRN *t, ptrdiff_t x)
-{
-	if (t->ins != 1 && t->im) {
-		t->ins = 1;
-		texec(t->cap, t->im, 1, x, 0, 0, 0);
-	}
-}
-
 /* Exit insert mode */
 
 int clrins(SCRN *t)
@@ -535,24 +525,6 @@ int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr)
 		}
 	}
 	return 0;
-}
-
-/* As above but useable in insert mode */
-/* The cursor position must already be correct */
-
-static void outatri(SCRN *t, ptrdiff_t x, ptrdiff_t y, int c, int a)
-{
-/*
-	if (c == -1)
-		c = ' ';
-	if (a != t->attrib)
-		set_attr(t, a);
-	if (t->haz && c == '~')
-		c = '\\';
-	utf8_putc(c);
-	t->x+=joe_wcwidth(1,c);
-*/
-	/* ++t->x; */
 }
 
 static void out(void *t, char c)
@@ -1448,6 +1420,39 @@ int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y)
 	return 0;
 }
 
+/* Insert/Delete within line */
+/* FIXME: doesn't know about attr */
+#if 0
+
+/* Enter insert mode */
+
+static void setins(SCRN *t, ptrdiff_t x)
+{
+	if (t->ins != 1 && t->im) {
+		t->ins = 1;
+		texec(t->cap, t->im, 1, x, 0, 0, 0);
+	}
+}
+
+/* As above but useable in insert mode */
+/* The cursor position must already be correct */
+
+static void outatri(SCRN *t, ptrdiff_t x, ptrdiff_t y, int c, int a)
+{
+/*
+	if (c == -1)
+		c = ' ';
+	if (a != t->attrib)
+		set_attr(t, a);
+	if (t->haz && c == '~')
+		c = '\\';
+	utf8_putc(c);
+	t->x+=joe_wcwidth(1,c);
+*/
+	/* ++t->x; */
+}
+
+
 static void doinschr(SCRN *t, ptrdiff_t x, ptrdiff_t y, int (*s)[COMPOSE], int *as, ptrdiff_t n)
 {
 	ptrdiff_t a;
@@ -1507,9 +1512,6 @@ static void dodelchr(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t n)
 	msetI(t->attr + t->co * y + t->co - n, (t->attrib & FG_MASK), n);
 }
 
-/* Insert/Delete within line */
-/* FIXME: doesn't know about attr */
-#if 0
 void magic(SCRN *t, ptrdiff_t y, int (*cs)[COMPOSE], int *ca,int *s, int *a, ptrdiff_t placex)
 {
 	struct hentry *htab = t->htab;
@@ -1616,6 +1618,7 @@ void magic(SCRN *t, ptrdiff_t y, int (*cs)[COMPOSE], int *ca,int *s, int *a, ptr
 	}
 }
 #endif
+
 static void doupscrl(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt, int atr)
 {
 	ptrdiff_t a = amnt;

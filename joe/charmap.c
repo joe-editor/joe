@@ -8,6 +8,31 @@
 
 #include "types.h"
 
+/* Under AmigaOS we have setlocale() but don't have langinfo.h and associated stuff,
+ * so we have to disable the whole piece of code
+ */
+#ifdef __amigaos
+#undef HAVE_SETLOCALE
+#endif
+
+/* Cygwin has CODESET, but it's crummy */
+#ifdef __CYGWIN__
+#undef HAVE_SETLOCALE
+#endif
+
+/* If it looks old, forget it */
+#ifndef CODESET
+#undef HAVE_SETLOCALE
+#endif
+
+#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
+#	include <locale.h>
+#       include <langinfo.h>
+#endif
+
+/* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
+   JOE uses a limited internal version instead */
+
 /* Convert from byte code to unicode.  Returns -1 for unknown. */
 
 int to_uni(struct charmap *cset, int c)
@@ -15,6 +40,16 @@ int to_uni(struct charmap *cset, int c)
 	if (c < 0)
 		c += 256;
 	return cset->to_map[c];
+}
+
+void to_utf8(struct charmap *map,char *s,int c)
+{
+	int d = to_uni(map,c);
+
+	if (d==-1)
+		utf8_encode(s,'?');
+	else
+		utf8_encode(s,d);
 }
 
 /* Convert from unicode to byte code.  Returns -1 for unknown. */
@@ -39,6 +74,16 @@ int from_uni(struct charmap *cset, int c)
 			return cset->from_map[z].last;
 	}
 	return -1;
+}
+
+int from_utf8(struct charmap *map,const char *s)
+{
+	int d = utf8_decode_string(s);
+	int c = from_uni(map,d);
+	if (c==-1)
+		return '?';
+	else
+		return c;
 }
 
 /* Builtin maps */
@@ -1053,11 +1098,6 @@ static void set_bit(char *map,int n)
 	map[n>>3] |= (char)(1<<(n&7));
 }
 
-static int rtn_arg(struct charmap *map,int c)
-{
-	return c;
-}
-
 static struct charmap *charmaps = NULL;	/* Loaded character sets */
 
 /* Process a byte-oriented character map and add it to database.
@@ -1078,8 +1118,6 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 	map->is_alnum_ = byte_isalnum_;
 	map->to_lower = byte_tolower;
 	map->to_upper = byte_toupper;
-	map->to_uni = to_uni;
-	map->from_uni = from_uni;
 	map->from_size = 0;
 	map->to_map = builtin->to_uni;
 	for (x=0; x!=256; ++x) {
@@ -1162,8 +1200,6 @@ static void load_builtins(void)
 	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
 	map->name = "utf-8";
 	map->type = 1;
-	map->to_uni = rtn_arg;
-	map->from_uni = rtn_arg;
 	map->is_punct = joe_iswpunct;
 	map->is_print = joe_iswprint;
 	map->is_space = joe_iswspace;
@@ -1417,73 +1453,6 @@ char **get_encodings()
 	return encodings;
 }
 
-#if 0
-
-/* Convert to uppercase via unicode.  Returns original
-   character if there was no conversion. */
-
-int joe_toupper(struct charmap *map,int c)
-{
-	int d;
-
-	/* This appears to always be true */
-	if (c>='a' && c<='z')
-		return c+'A'-'a';
-	else if (c<128)
-		return c;
-
-	/* Slow... */
-	d = to_uni(map,c);
-	if (d== -1)
-		return c;
-	d = joe_towupper(d);
-	if (d== -1)
-		return c;
-	d = from_uni(map,d);
-	if (d== -1)
-		return c;
-	else
-		return d;
-}
-
-/* Convert to uppercase via unicode.  Returns original
-   character if there was no conversion. */
-
-int joe_tolower(struct charmap *map,int c)
-{
-	int d;
-
-	/* This appears to always be true */
-	if (c>='A' && c<='Z')
-		return c+'a'-'A';
-	else if (c<128)
-		return c;
-
-	/* Slow... */
-	d = to_uni(map,c);
-	if (d== -1)
-		return c;
-	d = joe_towlower(d);
-	if (d== -1)
-		return c;
-	d = from_uni(map,d);
-	if (d== -1)
-		return c;
-	else
-		return d;
-}
-
-/* Broken: does not handle UTF-8 */
-
-char *lowerize(char *s)
-{
-	char *t;
-	for (t=s;*t;t++)
-		*t = joe_tolower(locale_map,*t);
-	return s;
-}
-#endif
-
 /* This is not correct... (EBCDIC for example) */
 
 int joe_isblank(struct charmap *map,int c)
@@ -1494,4 +1463,336 @@ int joe_isblank(struct charmap *map,int c)
 int joe_isspace_eof(struct charmap *map,int c)
 {
 	return (c==0) || joe_isspace(map,c);
+}
+
+/* For systems (BSD) with no nl_langinfo(CODESET) */
+
+/*
+ * This is a quick-and-dirty emulator of the nl_langinfo(CODESET)
+ * function defined in the Single Unix Specification for those systems
+ * (FreeBSD, etc.) that don't have one yet. It behaves as if it had
+ * been called after setlocale(LC_CTYPE, ""), that is it looks at
+ * the locale environment variables.
+ *
+ * http://www.opengroup.org/onlinepubs/7908799/xsh/langinfo.h.html
+ *
+ * Please extend it as needed and suggest improvements to the author.
+ * This emulator will hopefully become redundant soon as
+ * nl_langinfo(CODESET) becomes more widely implemented.
+ *
+ * Since the proposed Li18nux encoding name registry is still not mature,
+ * the output follows the MIME registry where possible:
+ *
+ *   http://www.iana.org/assignments/character-sets
+ *
+ * A possible autoconf test for the availability of nl_langinfo(CODESET)
+ * can be found in
+ *
+ *   http://www.cl.cam.ac.uk/~mgk25/unicode.html#activate
+ *
+ * Markus.Kuhn@cl.cam.ac.uk -- 2002-03-11
+ * Permission to use, copy, modify, and distribute this software
+ * for any purpose and without fee is hereby granted. The author
+ * disclaims all warranties with regard to this software.
+ *
+ * Latest version:
+ *
+ *   http://www.cl.cam.ac.uk/~mgk25/ucs/langinfo.c
+ */
+
+static const char *joe_getcodeset(char *l)
+{
+  static char buf[16];
+  char *p;
+  
+  if (l || ((l = getenv("LC_ALL"))   && *l) ||
+      ((l = getenv("LC_CTYPE")) && *l) ||
+      ((l = getenv("LANG"))     && *l)) {
+
+    /* check standardized locales */
+    if (!zcmp(l, "C") || !zcmp(l, "POSIX"))
+      return "ascii";
+
+    /* check for encoding name fragment */
+    if (zstr(l, "UTF") || zstr(l, "utf"))
+      return "UTF-8";
+
+    if ((p = zstr(l, "8859-"))) {
+      memcpy(buf, "ISO-8859-\0\0", 12);
+      p += 5;
+      if (*p >= '0' && *p <= '9') {
+	buf[9] = *p++;
+	if (*p >= '0' && *p <= '9') buf[10] = *p++;
+	return buf;
+      }
+    }
+
+    if (zstr(l, "KOI8-R")) return "KOI8-R";
+    if (zstr(l, "KOI8-U")) return "KOI8-U";
+    if (zstr(l, "620")) return "TIS-620";
+    if (zstr(l, "1251")) return "CP1251";
+    if (zstr(l, "2312")) return "GB2312";
+    if (zstr(l, "HKSCS")) return "Big5HKSCS";   /* no MIME charset */
+    if (zstr(l, "Big5") || zstr(l, "BIG5")) return "Big5";
+    if (zstr(l, "GBK")) return "GBK";           /* no MIME charset */
+    if (zstr(l, "18030")) return "GB18030";     /* no MIME charset */
+    if (zstr(l, "Shift_JIS") || zstr(l, "SJIS")) return "Shift_JIS";
+    /* check for conclusive modifier */
+    if (zstr(l, "euro")) return "ISO-8859-15";
+    /* check for language (and perhaps country) codes */
+    if (zstr(l, "zh_TW")) return "Big5";
+    if (zstr(l, "zh_HK")) return "Big5HKSCS";   /* no MIME charset */
+    if (zstr(l, "zh")) return "GB2312";
+    if (zstr(l, "ja")) return "EUC-JP";
+    if (zstr(l, "ko")) return "EUC-KR";
+    if (zstr(l, "ru")) return "KOI8-R";
+    if (zstr(l, "uk")) return "KOI8-U";
+    if (zstr(l, "pl") || zstr(l, "hr") ||
+	zstr(l, "hu") || zstr(l, "cs") ||
+	zstr(l, "sk") || zstr(l, "sl")) return "ISO-8859-2";
+    if (zstr(l, "eo") || zstr(l, "mt")) return "ISO-8859-3";
+    if (zstr(l, "el")) return "ISO-8859-7";
+    if (zstr(l, "he")) return "ISO-8859-8";
+    if (zstr(l, "tr")) return "ISO-8859-9";
+    if (zstr(l, "th")) return "TIS-620";      /* or ISO-8859-11 */
+    if (zstr(l, "lt")) return "ISO-8859-13";
+    if (zstr(l, "cy")) return "ISO-8859-14";
+    if (zstr(l, "ro")) return "ISO-8859-2";   /* or ISO-8859-16 */
+    if (zstr(l, "am") || zstr(l, "vi")) return "UTF-8";
+    /* Send me further rules if you like, but don't forget that we are
+     * *only* interested in locale naming conventions on platforms
+     * that do not already provide an nl_langinfo(CODESET) implementation. */
+    return "ISO-8859-1"; /* should perhaps be "UTF-8" instead */
+  }
+  return "ascii";
+}
+
+/* Initialize locale for JOE */
+
+const char *codeset;	/* Codeset of terminal */
+
+const char *non_utf8_codeset;
+			/* Codeset of local language non-UTF-8 */
+
+const char *locale_lang;
+			/* Our local language */
+
+const char *locale_msgs;
+			/* Language to use for editor messages */
+
+struct charmap *locale_map;
+			/* Character map of terminal, default map for new files */
+
+struct charmap *locale_map_non_utf8;
+			/* Old, non-utf8 version of locale */
+
+void joe_locale()
+{
+	const char *sc;
+	char *s, *t, *u;
+
+	sc=getenv("LC_ALL");
+	if (!sc || !*sc) {
+		sc=getenv("LC_MESSAGES");
+		if (!sc || !*sc) {
+			sc=getenv("LANG");
+		}
+	}
+
+	if (!sc)
+		sc = "C";
+	s=zdup(sc);
+
+	if ((t=zrchr(s,'.')))
+		*t = 0;
+
+	if (!zicmp(s, "C") || !zicmp(s, "POSIX"))
+		locale_msgs = "en_US"; /* Because aspell has no default */
+	else
+		locale_msgs = s;
+
+	sc=getenv("LC_ALL");
+	if (!sc || !*sc) {
+		sc=getenv("LC_CTYPE");
+		if (!sc || !*sc) {
+			sc=getenv("LANG");
+		}
+	}
+
+	if (!sc)
+		sc = "C";
+
+	s = zdup(sc);
+
+	u = zdup(s);
+
+	if ((t=zrchr(s,'.')))
+		*t = 0;
+
+	locale_lang = s;
+
+#ifdef HAVE_SETLOCALE
+	setlocale(LC_ALL,s);
+	non_utf8_codeset = zdup(nl_langinfo(CODESET));
+#else
+	non_utf8_codeset = joe_getcodeset(s);
+#endif
+
+
+	/* printf("joe_locale\n"); */
+#ifdef HAVE_SETLOCALE
+	/* printf("set_locale\n"); */
+	setlocale(LC_ALL,"");
+#ifdef ENABLE_NLS
+	/* Set up gettext() */
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	textdomain(PACKAGE);
+	/* printf("%s %s %s\n",PACKAGE,LOCALEDIR,joe_gettext("New File")); */
+#endif
+	codeset = zdup(nl_langinfo(CODESET));
+#else
+	codeset = joe_getcodeset(u);
+#endif
+
+	locale_map = find_charmap(codeset);
+	if (!locale_map)
+		locale_map = find_charmap("ascii");
+
+	locale_map_non_utf8 = find_charmap(non_utf8_codeset);
+	if (!locale_map_non_utf8)
+		locale_map_non_utf8 = find_charmap("ascii");
+
+	fdefault.charmap = locale_map;
+	pdefault.charmap = locale_map;
+
+/*
+	printf("Character set is %s\n",locale_map->name);
+
+	for(x=0;x!=128;++x)
+		printf("%x	space=%d blank=%d alpha=%d alnum=%d punct=%d print=%d\n",
+		       x,joe_isspace(locale_map,x), joe_isblank(locale_map,x), joe_isalpha_(locale_map,x),
+		       joe_isalnum_(locale_map,x), joe_ispunct(locale_map,x), joe_isprint(locale_map,x));
+*/
+
+	init_gettext(locale_msgs);
+}
+
+void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
+              const char *src, struct charmap *src_map)
+{
+	if (dest_map == src_map) {
+		zlcpy (dest, destsiz, src);
+		return;
+	}
+
+	if (src_map->type) {
+		/* src is UTF-8 */
+		if (dest_map->type) {
+			/* UTF-8 to UTF-8? */
+			zlcpy (dest, destsiz, src);
+		} else {
+			--destsiz;
+			/* UTF-8 to non-UTF-8 */
+			while (*src && destsiz) {
+				ptrdiff_t len = -1;
+				int c = utf8_decode_fwrd(&src, &len);
+				if (c >= 0) {
+					int d = from_uni(dest_map, c);
+					if (d >= 0)
+						*dest++ = TO_CHAR_OK(d);
+					else
+						*dest++ = '?';
+				} else
+					*dest++ = 'X';
+				--destsiz;
+			}
+			*dest = 0;
+		}
+	} else {
+		/* src is not UTF-8 */
+		if (!dest_map->type) {
+			/* Non UTF-8 to non-UTF-8 */
+			--destsiz;
+			while (*src && destsiz) {
+				int c = to_uni(src_map, *src++);
+				int d;
+				if (c >= 0) {
+					d = from_uni(dest_map, c);
+					if (d >= 0)
+						*dest++ = TO_CHAR_OK(d);
+					else
+						*dest++ = '?';
+				} else
+					*dest++ = '?';
+				--destsiz;
+			}
+			*dest = 0;
+		} else {
+			/* Non-UTF-8 to UTF-8 */
+			--destsiz;
+			while (*src && destsiz >= 6) {
+				int c = to_uni(src_map, *src++);
+				if (c >= 0) {
+					ptrdiff_t l = utf8_encode(dest, c);
+					destsiz -= l;
+					dest += l;
+				} else {
+					*dest++ = '?';
+					--destsiz;
+				}
+			}
+			*dest = 0;
+		}
+	}
+}
+
+/* Guess character set */
+
+int guess_non_utf8;
+int guess_utf8;
+
+struct charmap *guess_map(const char *buf, ptrdiff_t len)
+{
+	const char *p;
+	ptrdiff_t plen;
+	int c;
+	int flag;
+
+	/* No info? Use default */
+	if (!len || (!guess_non_utf8 && !guess_utf8))
+		return locale_map;
+
+	/* Does it look like UTF-8? */
+	p = buf;
+	plen = len;
+	c = 0;
+	flag = 0;
+	while (plen) {
+		/* Break if we could possibly run out of data in
+		   the middle of utf-8 sequence */
+		if (plen < 7)
+			break;
+		/* if (*p >= 128) (for unsigned char) */
+		if (*p < 0)
+			flag = 1;
+		c = utf8_decode_fwrd(&p, &plen);
+		if (c < 0)
+			break;
+	}
+
+	if (flag && c >= 0) {
+		/* There are characters above 128, and there are no utf-8 errors */
+		if (locale_map->type || !guess_utf8)
+			return locale_map;
+		else
+			return find_charmap("utf-8");
+	}
+
+	if (!flag || !guess_non_utf8) {
+		/* No characters above 128 */
+		return locale_map;
+	} else {
+		/* Choose non-utf8 version of locale */
+		return locale_map_non_utf8;
+	}
 }

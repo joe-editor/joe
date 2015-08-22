@@ -2460,7 +2460,7 @@ int uname_joe(W *w, int k)
 	if (!s || !*s)
 		return -1;
 	while (*s)
-		if (utypew(w,*s++))
+		if (utypew(w,*(const unsigned char *)s++))
 			return -1;
 	return 0;
 }
