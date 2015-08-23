@@ -1272,6 +1272,7 @@ search would begin, and the sample line would be changed to:
 
 Address: England, London, S. Holmes, 221b Baker St.
 
+<a name="escapes"></a>
 ## Escape sequences
 
 JOE understands the following escape sequences withing search and
@@ -2270,7 +2271,8 @@ There are three ways to specify <character-list\>s, either __\*__ for any
 character not otherwise specified, __&__ to match the character in the
 delimiter match buffer (opposite character like \( and \) automatically
 match) or a literal list of characters within quotes (ranges and escape
-sequences allowed).  When the next character matches any in the list, a jump
+sequences allowed: see [Escape Sequences](#escapes)).  When the next
+character matches any in the list, a jump
 to the target-state is taken and the character is eaten (we advance to the
 next character of the file to be colored).
 
