@@ -1124,6 +1124,18 @@ the file list.
 	   re <Enter>
 	   bar <Enter>
 
+* __x__
+
+JOE will use the stanrard syntax for regular expression if this option is
+given.  In the standard syntax, these characters have their special
+meanings directly, and do not have to be escaped with backslash: ., \*, \+, ?, 
+\{, \}, (, ), |, and \[.
+
+* __y__
+
+JOE will use the JOE syntax for regular expressions instead of the standard
+syntax.  This overrides the "-regex" option.
+
 You can hit __^L__ to repeat the previous search.
 
 You can hit __^K H__ at the search and replace options prompt to bring up a list
@@ -1146,10 +1158,10 @@ This finds one or more of the item to the left.  For example, if you give
 __AB\\\+C__ as the search text, JOE will try to find an A followed by one
 or more Bs, and then a C.
 
-* __\\\?__
+* __\\?__
 
 This indicates that the item to the left is optional.  For example, if you give
-__AB\\\?C__ as the search text, JOE will find AC or ABC.
+__AB\\?C__ as the search text, JOE will find AC or ABC.
 
 * __\\\{min,max\\\}__
 
@@ -1159,22 +1171,22 @@ match these strings: AXXB, AXXXB, AXXXXB, and AXXXXXB.  Min can be left out
 to indicate 0 occurrences.  Max (and the comma) can be left out to indicate
 any number of occurrences.
 
-* __\.__
+* __\\.__
 
-This finds exactly one character.  For example, if you give __A\.B__ as
+This finds exactly one character.  For example, if you give __A\\.B__ as
 the search text, JOE will find AXB, but not AB or AXXB.
 
 * __\c__
 
 This works like __\.__, but matches a balanced C-language expression. 
-For example, if you search for __malloc(\c)__, then JOE will find all
+For example, if you search for __malloc(\c\\\*)__, then JOE will find all
 function calls to __malloc__, even if there was a __)__ within the
 parenthesis.
 
-* __\\\|__
+* __\\|__
 
 This finds the item on the left or the item on the right.  For example, if
-you give __A\\\|B__ as the search text, JOE will try to find either an A or
+you give __A\\|B__ as the search text, JOE will try to find either an A or
 a B.
 
 * __\\( \\)__
@@ -1245,13 +1257,13 @@ city, then the person's name, and then the address, you could do this:
 
 Type __^K F__ to start the search, and type:
 
-__Address:\\\*,\\\*,\\\*,\\\*\$__
+__Address:\\(\\.\\\*\\),\\(\\.\\\*\\),\\(\\.\\\*\\),\\(\\.\\\*\\)\$__
 
 to match "Address:", the four comma-separated elements, and then the end of 
 the line.  When asked for options, you would type __r__ to replace the 
 string, and then type:
 
-__Address:\3,\2,\0,\1__
+__Address:\4,\3,\1,\2__
 
 To shuffle the information the way you want it. After hitting return, the 
 search would begin, and the sample line would be changed to:
