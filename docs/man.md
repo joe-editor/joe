@@ -373,6 +373,12 @@ Set number of lines to keep during Page Up and Page Down (use -1 for 1/2
 window size).
 <br>
 
+* regex
+Use standard regular expression syntax by default, instead of the JOE syntax
+(where specical characters have their meaning only when preceded with
+backslash).
+<br>
+
 * restore
 Set to have cursor positions restored to last positions of previously edited
 files.
@@ -1130,14 +1136,51 @@ text:
 
 * __\\\*__
 
-This finds zero or more characters.  For example, if you give __A\\\*B__ as
-the search text, JOE will try to find an A followed by any number of characters
-and then a B.
+This finds zero or more of the item to the left.  For example, if you give
+__AB\\\*C__ as the search text, JOE will try to find an A followed by any
+number of Bs, and then a C.
 
-* __\?__
+* __\\\+__
 
-This finds exactly one character.  For example, if you give __A\?B__ as
+This finds one or more of the item to the left.  For example, if you give
+__AB\\\+C__ as the search text, JOE will try to find an A followed by one
+or more Bs, and then a C.
+
+* __\\\?__
+
+This indicates that the item to the left is optional.  For example, if you give
+__AB\\\?C__ as the search text, JOE will find AC or ABC.
+
+* __\\\{min,max\\\}__
+
+This indicates that JOE should try to find a string with a specific number
+of occurrences of the item to the left.  For example, __AX\\\{2,5\\\}B__ will
+match these strings: AXXB, AXXXB, AXXXXB, and AXXXXXB.  Min can be left out
+to indicate 0 occurrences.  Max (and the comma) can be left out to indicate
+any number of occurrences.
+
+* __\.__
+
+This finds exactly one character.  For example, if you give __A\.B__ as
 the search text, JOE will find AXB, but not AB or AXXB.
+
+* __\c__
+
+This works like __\.__, but matches a balanced C-language expression. 
+For example, if you search for __malloc(\c)__, then JOE will find all
+function calls to __malloc__, even if there was a __)__ within the
+parenthesis.
+
+* __\\\|__
+
+This finds the item on the left or the item on the right.  For example, if
+you give __A\\\|B__ as the search text, JOE will try to find either an A or
+a B.
+
+* __\\( \\)__
+
+Use these to group characters together.  For example, if you search for
+__\\(foo\\)\\\+__, then JOE will find strings like "foo", and "foofoofoo".
 
 * __\^ \$__
 
@@ -1147,8 +1190,8 @@ __\^test\$__, then JOE with find __test__ on a line by itself.
 * __\< \\\>__
 
 These match the beginnings and endings of words.  For example, if you give
-__\<\\\*is\\\*\\\>__, then JOE will find whole words which have the
-sub-string __is__ within them.
+__\<is\\\>__, then JOE will find the word "is" but will not find the "is" in
+"this".
 
 * __\\\[...]__
 
@@ -1158,20 +1201,6 @@ both __This__ and __this__.  Ranges of characters can be entered within
 the brackets.  For example, __\\\[A-Z]__ finds any uppercase letter.  If
 the first character given in the brackets is __^__, then JOE tries to find
 any character not given in the the brackets.
-
-* __\c__
-
-This works like __\*__, but matches a balanced C-language expression. 
-For example, if you search for __malloc(\c)__, then JOE will find all
-function calls to __malloc__, even if there was a __)__ within the
-parenthesis.
-
-* __\\\+__
-
-This finds zero or more of the character which immediately follows the
-__\+__.  For example, if you give __\\\+\\\[ \]__, where the
-characters within the brackets are both __Space__ and __Tab__, then JOE will find
-whitespace.
 
 * __\\\\__
 
@@ -1191,11 +1220,10 @@ This gets replaced by the text which matched the search string.  For
 example, if the search string was __\<\\\*\\\>__, which matches words, and
 you give __"\\&"__, then JOE will put quote marks around words.
 
-* __\0 - \9__
+* __\1 - \9__
 
-These get replaced with the text which matched the Nth __\\\*__, __\?__,
-__\\\+__, __\c__, or __\\\[...]__ in the search string.  __\0__ refers
-to the first one.
+These get replaced with the text which matched the Nth grouping; the text
+within the Nth set of \\( \\).
 
 * __\\\\__
 

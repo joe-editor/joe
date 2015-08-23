@@ -92,7 +92,7 @@ static int dotagjump(BW *bw, int flag)
 	} else {
 		if (flag)
 			smode = 2;
-		return dopfnext(bw, mksrch(vsncpy(NULL, 0, sv(srch)), NULL, 0, 0, -1, 0, 0, 0), NULL);
+		return dopfnext(bw, mksrch(vsncpy(NULL, 0, sv(srch)), NULL, 0, 0, -1, 0, 0, 0, 0), NULL);
 	}
 }
               
@@ -140,7 +140,7 @@ static int dotagmenu(MENU *m, ptrdiff_t x, void *obj, int k)
 		return 0;
 	} else {
 		smode = 2;
-		return dopfnext(bw, mksrch(vsncpy(NULL, 0, sv(srch)), NULL, 0, 0, -1, 0, 0, 0), NULL);
+		return dopfnext(bw, mksrch(vsncpy(NULL, 0, sv(srch)), NULL, 0, 0, -1, 0, 0, 0, 0), NULL);
 	}
 }
 

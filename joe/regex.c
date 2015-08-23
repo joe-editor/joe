@@ -636,7 +636,7 @@ static void show(struct regcomp *r, int no, int x)
 
 /* Conventional syntax regex */
 
-static int do_parse_conventional(struct regcomp *g, int prec)
+static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 {
 	int no = -1;
 
@@ -660,10 +660,10 @@ static int do_parse_conventional(struct regcomp *g, int prec)
 		} else if (g->l >= 2 && g->ptr[0] == '?' && g->ptr[1] == ':') {
 			/* Grouping, no sub-match addressing */
 			g->ptr += 2;
-			no = mk_node(g, -'(', -1, do_parse_conventional(g, 0));
+			no = mk_node(g, -'(', -1, do_parse_conventional(g, 0, fold));
 		} else {
 			/* Grouping with sub-match addressing */
-			no = mk_node(g, -'{', -1, do_parse_conventional(g, 0));
+			no = mk_node(g, -'{', -1, do_parse_conventional(g, 0, fold));
 		}
 		if (g->l && *g->ptr == ')') {
 			++g->ptr; --g->l;
@@ -674,6 +674,9 @@ static int do_parse_conventional(struct regcomp *g, int prec)
 	} else if (g->l && (*g->ptr == '.' || *g->ptr == '^' || *g->ptr == '$')) {
 		no = mk_node(g, -*g->ptr++, -1, -1);
 		--g->l;
+	} else if (g->l >= 2 && g->ptr[0] == '\\' && (g->ptr[1] == 'c')) {
+		no = mk_node(g, -'e', -1, -1);
+		g->ptr += 2; g->l -= 2;
 	} else if (g->l >= 2 && g->ptr[0] == '\\' &&
 	           (g->ptr[1] == 'b' || g->ptr[1] == 'B' || g->ptr[1] == 'A' || g->ptr[1] == 'Z' || g->ptr[1] == 'z' ||
 	            g->ptr[1] == '>' || g->ptr[1] == '<')) {
@@ -711,6 +714,10 @@ static int do_parse_conventional(struct regcomp *g, int prec)
 				} else {
 					last = first;
 				}
+				if (fold) {
+					first = joe_tolower(g->cmap, first);
+					last = joe_tolower(g->cmap, last);
+				}
 				cclass_add(m, first, last);
 			}
 		}
@@ -726,7 +733,27 @@ static int do_parse_conventional(struct regcomp *g, int prec)
 			no = mk_node(g, -'[', -1, -1);
 			cclass_union(g->nodes[no].cclass, cat);
 		} else {
-			no = mk_node(g, ch, -1, -1);
+			if (fold) {
+				if (g->cmap->type) { /* Unicode folding... */
+					int idx = rmap_lookup(rtree_fold, ch, 0);
+					if (idx < FOLDMAGIC)
+						no = mk_node(g, ch + idx, -1, -1);
+					else {
+						idx -= FOLDMAGIC;
+						no = mk_node(g, fold_repl[idx][0], -1, -1);
+						if (fold_repl[idx][1]) {
+							no = mk_node(g, -',', no, mk_node(g, fold_repl[idx][1], -1, -1));
+						}
+						if (fold_repl[idx][2]) {
+							no = mk_node(g, -',', no, mk_node(g, fold_repl[idx][2], -1, -1));
+						}
+					}
+				} else {
+					no = mk_node(g, joe_tolower(g->cmap, ch), -1, -1);
+				}
+			} else {
+				no = mk_node(g, ch, -1, -1);
+			}
 		}
 	}
 
@@ -806,14 +833,14 @@ static int do_parse_conventional(struct regcomp *g, int prec)
 			if (prec < 1) {
 				++g->ptr;
 				--g->l;
-				no = mk_node(g,-'|', no, do_parse_conventional(g, 1));
+				no = mk_node(g,-'|', no, do_parse_conventional(g, 1, fold));
 			} else {
 				break;
 			}
 		} else if (!g->l || *g->ptr == ')') {
 			break;
 		} else if (prec < 2) {
-			no = mk_node(g, -',', no, do_parse_conventional(g, 2));
+			no = mk_node(g, -',', no, do_parse_conventional(g, 2, fold));
 		} else
 			break;
 	}
@@ -1232,9 +1259,9 @@ static void codegen(struct regcomp *g, int no, int *end)
 
 /* User level of parser: call it with a regex- it returns a program in a malloc block */
 
-#define DEBUG 1
+/* #define DEBUG 1 */
 
-struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, int cflags)
+struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, int cflags, int stdfmt)
 {
 	int no;
 	struct regcomp *g;
@@ -1251,7 +1278,10 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 	/* Parse expression */
 	g->ptr = s;
 	g->l = len;
-	no = do_parse(g, 0, cflags);
+	if (stdfmt)
+		no = do_parse_conventional(g, 0, cflags);
+	else
+		no = do_parse(g, 0, cflags);
 
 	if (g->l && !g->err) {
 		g->err = "Extra junk at end of expression";
@@ -1822,8 +1852,6 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 						break;
 					}
 					case iEND: {
-						if (c != NO_MORE_DATA)
-							prgetc(p);
 						if (match || better(pool[t].pos, matches, bra_no)) {
 							int x;
 							for (x = 0; x != bra_no; ++x) {
@@ -1854,6 +1882,9 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 		 nle = nl;
 		 start_bol = 0;
 	} while (match && c != NO_MORE_DATA && cl != cle);
+
+	if (!match && c != NO_MORE_DATA)
+		prgetc(p);
 
 	for (c = bra_no; c < nmatch; ++c) {
 		matches[c].rm_so = -1;

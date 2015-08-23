@@ -23,6 +23,7 @@ struct search {
 	char	*replacement;	/* Replacement string */
 	int	backwards;	/* Set if search should go backwards */
 	int	ignore;		/* Set if we should ignore case */
+	int	regex;		/* Set for standard regex syntax, clear for JOE syntax */
 	int	repeat;		/* Set with repeat count (or -1 for no repeat count) */
 	int	replace;	/* Set if this is search & replace */
 	int	rest;		/* Set to do remainder of search & replace w/o query */
@@ -43,7 +44,9 @@ struct search {
 	B	*current;	/* Current buffer */
 };
 
-SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all);
+extern int regex; /* Standard regex format by default */
+
+SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all, int regex);
 void rmsrch(SRCH *srch);
 
 void setpat(SRCH *srch, char *pattern);

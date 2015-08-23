@@ -209,6 +209,9 @@
 -search_prompting
 		Запрашивать образец для последующих поисков.
 
+ -regex		Search uses standard regular expression format (otherwise it uses
+		JOE format where all special characters have to be escaped).
+
  Строка определения строки состояния. -lmsg определяет часть, выровненную 
  влево, а -rmsg - вправо. Первый символ строки -rmsg - символ для заполнения 
  фона. В строках могут использоваться следующие управляющие последовательности:

@@ -429,7 +429,7 @@ static SRCH *setmark(SRCH *srch)
 	return srch;
 }
 
-SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all)
+SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all, int regex)
 {
 	SRCH *srch = (SRCH *) joe_malloc(SIZEOF(SRCH));
 	int x;
@@ -441,6 +441,7 @@ SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int re
 	srch->comp = 0;
 	srch->replacement = replacement;
 	srch->ignore = ignore;
+	srch->regex = regex;
 	srch->backwards = backwards;
 	srch->repeat = repeat;
 	srch->replace = replace;
@@ -626,6 +627,8 @@ const char *block_key = _("|restrict to highlighted block|kK");
 const char *noignore_key = _("|don't ignore case|sS");
 const char *wrap_key = _("|wrap|wW");
 const char *nowrap_key = _("|don't wrap|nN");
+const char *regex_key = _("|regex|xX");
+const char *noregex_key = _("|no regex|yY");
 
 /* Get next character from string and advance it, locale dependent */
 
@@ -670,6 +673,10 @@ static int set_options(W *w, char *s, void *obj, int *notify)
 			srch->allow_wrap = 0;
 		else if (yncheck(block_key, c))
 			srch->block_restrict = 1;
+		else if (yncheck(regex_key, c))
+			srch->regex = 1;
+		else if (yncheck(noregex_key, c))
+			srch->regex = 0;
 		else if (c >= '0' && c <= '9') {
 			if (srch->repeat == -1)
 				srch->repeat = 0;
@@ -765,6 +772,8 @@ static void unesc_genfmt(char *d, char *s, ptrdiff_t len,ptrdiff_t max)
 	*d = 0;
 }
 
+int regex = 0; /* Standard regex format by default */
+
 int dofirst(BW *bw, int back, int repl, char *hint)
 {
 	SRCH *srch;
@@ -787,7 +796,7 @@ int dofirst(BW *bw, int back, int repl, char *hint)
 			prgetc(bw->cursor);
 		return urtn(bw->parent, -1);
 	}
-	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0, 0);
+	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0, 0, regex);
 	srch->addr = bw->cursor->byte;
 	srch->wrap_p = pdup(bw->cursor, "dofirst");
 	srch->wrap_p->owner = &srch->wrap_p;
@@ -1044,7 +1053,7 @@ static int fnext(BW *bw, SRCH *srch)
 		clrcomp(srch);
 	/* Compile pattern if we don't already have it */
 	if (!srch->comp) {
-		srch->comp = joe_regcomp(bw->b->o.charmap, srch->pattern, sLEN(srch->pattern), srch->ignore);
+		srch->comp = joe_regcomp(bw->b->o.charmap, srch->pattern, sLEN(srch->pattern), srch->ignore, srch->regex);
 		if (srch->comp->err) {
 			msgnw(bw->parent, joe_gettext(srch->comp->err));
 			return 4;
@@ -1242,6 +1251,7 @@ void save_srch(FILE *f)
 		fprintf(f,"	ignore %d\n",globalsrch->ignore);
 		fprintf(f,"	replace %d\n",globalsrch->replace);
 		fprintf(f,"	block_restrict %d\n",globalsrch->block_restrict);
+		fprintf(f,"	regex %d\n",globalsrch->regex);
 	}
 	fprintf(f,"done\n");
 }
@@ -1254,6 +1264,7 @@ void load_srch(FILE *f)
 	char *replacement = 0;
 	int backwards = 0;
 	int ignore = 0;
+	int regex = 0;
 	int replace = 0;
 	int block_restrict = 0;
 	while(fgets(buf,sizeof(buf),f) && zcmp(buf,"done\n")) {
@@ -1279,6 +1290,9 @@ void load_srch(FILE *f)
 		} else if(!parse_kw(&p,"ignore")) {
 			parse_ws(&p,'#');
 			parse_int(&p,&ignore);
+		} else if(!parse_kw(&p,"regex")) {
+			parse_ws(&p,'#');
+			parse_int(&p,&ignore);
 		} else if(!parse_kw(&p,"replace")) {
 			parse_ws(&p,'#');
 			parse_int(&p,&replace);
@@ -1287,6 +1301,6 @@ void load_srch(FILE *f)
 			parse_int(&p,&block_restrict);
 		}
 	}
-	globalsrch = mksrch(pattern,replacement,ignore,backwards,-1,replace,0,0);
+	globalsrch = mksrch(pattern,replacement,ignore,backwards,-1,replace,0,0,regex);
 	globalsrch->block_restrict = block_restrict;
 }

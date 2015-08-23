@@ -79,7 +79,7 @@ struct regcomp {
 /* Compile an expression s/len into a struct regcomp
  * Check err for compile errors.
  */
-struct regcomp *joe_regcomp(struct charmap *charmap, const char *s, ptrdiff_t len, int icase);
+struct regcomp *joe_regcomp(struct charmap *charmap, const char *s, ptrdiff_t len, int icase, int stdfmt);
 
 void joe_regfree(struct regcomp *r);
 

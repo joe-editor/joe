@@ -22,13 +22,16 @@ charset of the buffer? check this.
 New regex engine:
 
       add \c
+      [done]
+
+      optional standard regex syntax?
 
       add code to allow use of boyer-moore
 
       add case ignore:
           done, however right now we do simple folding for classes and full
           folding outside of classes.  I think maybe better to do simple
-          folding for both.
+          folding for both?
 
       unicode normalization, ugh.  Maybe this should be optional.
 
