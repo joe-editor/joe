@@ -1381,11 +1381,11 @@ This matches any character in the named Unicode category or block.
 
 The block names can be found here: 
 
-[User manual](ftp://ftp.unicode.org/Public/8.0.0/ucd/Blocks.txt)
+[Unicode Blocks](ftp://ftp.unicode.org/Public/8.0.0/ucd/Blocks.txt).
 
 The category names can be found here:
 
-[Category names](ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values)
+[Category names](ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values).
 
 Note that a single letter matches all of the category names which start with
 that letter.  For example, \\p{N} (any number) include \\p{Nd} (decimal
