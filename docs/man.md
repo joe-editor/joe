@@ -1126,10 +1126,10 @@ the file list.
 
 * __x__
 
-JOE will use the stanrard syntax for regular expression if this option is
+JOE will use the stanrard syntax for regular expressions if this option is
 given.  In the standard syntax, these characters have their special
 meanings directly, and do not have to be escaped with backslash: ., \*, \+, ?, 
-\{, \}, (, ), |, and \[.
+\{, \}, (, ), |, ^, $ and \[.
 
 * __y__
 
@@ -1269,6 +1269,136 @@ To shuffle the information the way you want it. After hitting return, the
 search would begin, and the sample line would be changed to:
 
 Address: England, London, S. Holmes, 221b Baker St.
+
+## Escape sequences
+
+JOE understands the following escape sequences withing search and
+replacement strings:
+
+* \\x{10ffff}
+
+This matches a specific Unicode code point given in hexadecimal.
+
+* \\xFF
+
+This matches a specific character specificied in hexadecimal.
+
+* \\377
+
+This matches a specific character specified in octal.
+
+* \\p{Ll}
+
+This matches any character in the named Unicode category or block.  The
+Unicode categories include:
+
+	\\p{L} any kind of letter from any language.
+
+        \\p{Ll} any lowercase letter that has an uppercase variant.
+
+        \\p{Lu} any uppercase letter that has a lowercase variant.
+
+        \\p{Lt} a letter that appears at the start of a word when only the first letter of the word is capitalized.
+
+        \\p{Lm} a special character that is used like a letter.
+
+        \\p{Lo} a letter or ideograph that does not have lowercase and uppercase variants. 
+
+	\\p{M} a character intended to be combined with another character (e.g. accents, umlauts, enclosing boxes, etc.).
+
+        \\p{Mn} a character intended to be combined with another character without taking up extra space (e.g. accents, umlauts, etc.).
+
+        \\p{Mc} a character intended to be combined with another character that takes up extra space (vowel signs in many Eastern languages).
+
+        \\p{Me} a character that encloses the character is is combined with (circle, square, keycap, etc.). 
+
+	\\p{Z} any kind of whitespace or invisible separator.
+
+        \\p{Zs} a whitespace character that is invisible, but does take up space.
+
+        \\p{Zl} line separator character U+2028.
+
+        \\p{Zp} paragraph separator character U+2029. 
+
+	\\p{S} math symbols, currency signs, dingbats, box-drawing characters, etc.
+
+        \\p{Sm} any mathematical symbol.
+
+        \\p{Sc} any currency sign.
+
+        \\p{Sk} a combining character (mark) as a full character on its own.
+
+        \\p{So} various symbols that are not math symbols, currency signs, or combining characters. 
+
+	\\p{N} any kind of numeric character in any script.
+
+	\\p{Nd} a digit zero through nine in any script except ideographic scripts.
+
+        \\p{Nl} a number that looks like a letter, such as a Roman numeral.
+
+        \\p{No} a superscript or subscript digit, or a number that is not a digit 0–9 (excluding numbers from ideographic scripts). 
+
+	\\p{P} any kind of punctuation character.
+
+        \\p{Pd} any kind of hyphen or dash.
+
+        \\p{Ps} any kind of opening bracket.
+
+        \\p{Pe} any kind of closing bracket.
+
+        \\p{Pi} any kind of opening quote.
+
+        \\p{Pf} any kind of closing quote.
+
+        \\p{Pc} a punctuation character such as an underscore that connects words.
+
+        \\p{Po} any kind of punctuation character that is not a dash, bracket, quote or connector. 
+
+	\\p{C} invisible control characters and unused code points.
+
+        \\p{Cc} an ASCII 0x00–0x1F or Latin-1 0x80–0x9F control character.
+
+        \\p{Cf} invisible formatting indicator.
+
+        \\p{Co} any code point reserved for private use.
+
+        \\p{Cs} one half of a surrogate pair in UTF-16 encoding.
+
+        \\p{Cn} any code point to which no character has been assigned. 
+
+
+* \\d
+
+This matches any Unicode digit.
+
+* \\D
+
+This matches anything except for a Unicode digit.
+
+* \\w
+
+This matches any word character.
+
+* \\W
+
+This matches anything except for a word character.
+
+* \\s
+
+This matches any space character.
+
+* \\S
+
+This matches anything except for a spacing character.
+
+* \\t Tab
+* \\n Newline
+* \\r Carriage return
+* \\b Backspace
+* \\a Alert
+* \\f Formfeed
+* \\e Escape
+* \\\\ Backslash
 
 ## Incremental search
 
