@@ -1289,8 +1289,107 @@ This matches a specific character specified in octal.
 
 * \\p{Ll}
 
-This matches any character in the named Unicode category or block.  The
-Unicode categories include:
+This matches any character in the named Unicode category or block.
+
+The block names can be found here: 
+
+[User manual](tches any Unicode digit.
+
+* \\D
+
+This matches anything except for a Unicode digit.
+
+* \\w
+
+This matches any word character.
+
+* \\W
+
+This matches anything except for a word character.
+
+* \\s
+
+You have suspended the program.  Type 'fg' to return
+
+[1]+  Stopped                 joe ../docs/man.md
+laptop:~/old/joehg/joe-editor/joe$ ls ../docs
+hacking.md  help-system.html  history.md  man.md  man.md~  README.old
+laptop:~/old/joehg/joe-editor/joe$ more ../docs/history.md 
+<p>In 1988 WPI replaced the DEC-20 with an Encore Multimax which ran a
+version of UNIX called Umax.  Originally, the system lacked USENET, so a
+friend of mine, Larry Foard, wrote a local BBS system for it called bboard. 
+Bboard had a terrible line editor, so I wrote a screen editor called 'e' for
+writing BBS messages.  This is really the first version of JOE.  Other
+hackers wrote 's'- an instant messaging program, and 'superwho'- a program
+which drew a map show which terminal each student was logged in on.</p>
+
+<p><a href="http://en.wikipedia.org/wiki/Encore_Computer">Here</a> is some
+history of Encore.  The company's "Annex" terminal servers had longer history
+than its computers.</p>
+
+<p><a href="http://www.farviolet.com">Larry Foard</a> went on to write <a
+href="http://en.wikipedia.org/wiki/MUSH">TinyMush</a>.
+
+<p>Why not emacs or vi?  I couldn't stand emacs- it was always saying
+"garbage collecting...  done.", used awkward weird keys, formatted my source
+code the wrong way and basically just had an arrogant attitude.  It was
+especially frustrating that Ctrl-H was not backspace.  I was certainly too
+impatient to conform to it when I could just write my own editor.</p>
+
+<p>JOE might never have been had I understood how nice vi
+was at the time.  Luckily, the commands were not documented in the 'man'
+page and both it and the UNIX line editors 'ex' and 'ed' did not work like
+the line editors I was familiar with.  Specifically, I thought it was stupid
+that these editor did not allow you to position the cursor past the ends of
+lines (or files), forcing you to use the append command instead of the
+insert command for these cases.</p>
+
+<h3>e - 1988</h3>
+
+<p>I wrote 'e' before I knew about the gap buffer data structure, but the
+method I came up with was pretty close: the file is stored in a large array. 
+A small array (maybe 1K bytes) has a copy of a small part of the larger
+array.  Most edits occurred in the small array to keep the insert/delete cost
+low.  When an edit is requested outside of the range of what is in the small
+array, it is swapped into the large array and new part of large array
+(centered around the cursor) is copied into the small array.</p>
+laptop:~/old/joehg/joe-editor/joe$ ls ..
+acinclude.m4     config.guess*   configure.ac~  INSTALL        Makefile     NEWS.md~    runtests*   timer/
+aclocal.m4       config.log      COPYING        INSTALL.AMIGA  Makefile.am  NEWS~       setup.hint  xterm-patch
+autojoe*         config.status*  cygbuild*      INSTALL~       Makefile.in  po/         syntax/     xterm-readme
+autom4te.cache/  config.sub*     depcomp*       install-sh*    man/         rc/         t.c
+ChangeLog        configure*      docs/          joe/           missing*     README.md   t.c~
+charmaps/        configure.ac    htdocs/        joe.exe*       NEWS.md      README1.md  tests/
+laptop:~/old/joehg/joe-editor/joe$ mor e../^C
+laptop:~/old/joehg/joe-editor/joe$ more ../README.md
+# Joe's Own Editor
+
+    IW   ../docs/man.md (Modified)(md)                                        Row 1296 Col 15   6:43  Ctrl-K H for help
+This matches a specific Unicode code point given in hexadecimal.
+
+* \\xFF
+
+This matches a specific character specificied in hexadecimal.
+
+* \\377
+
+This matches a specific character specified in octal.
+
+* \\p{Ll}
+
+This matches any character in the named Unicode category or block.
+
+The block names can be found here: 
+
+[User manual](ftp://ftp.unicode.org/Public/8.0.0/ucd/Blocks.txt)
+
+The category names can be found here:
+
+[Category names](ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values)
+
+Note that a single letter matches all of the category names which start with
+that letter.  For example, \\p{N} (any number) include \\p{Nd} (decimal
+digit), \\p{Nl} (letter number) and \\p{No} (other number).
 
 * \\d
 
