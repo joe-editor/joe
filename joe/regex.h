@@ -37,6 +37,7 @@ int pmatch(Regmatch_t *matches, int nmatch, const char *regex, ptrdiff_t len, P 
 enum {
 	/* Code >= 0: Match a single specific character */
 	iDOT = -512,	/* Match any single character */
+	iEXPR,	/* Match any single character, but skip entire expressions */
 	iBOL,	/* Match beginning of line */
 	iEOL,	/* Match end of line */
 	iBOW,	/* Match beginning of word */
@@ -46,7 +47,7 @@ enum {
 	iFORK,	/* Alternate paths. */
 	iJUMP,	/* Jump, don't eat char. */
 	iCLASS,	/* Character class (address of struct range_map follows) */
-	iEND	/* End of expression. */
+	iEND,	/* End of expression. */
 };
 
 /* A comiled regular expression */
