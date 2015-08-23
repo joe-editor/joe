@@ -1293,11 +1293,11 @@ This matches a specific character specified in octal.
 
 This matches any character in the named Unicode category or block.
 
-The block names can be found here: 
+The block names, such as "Latin-1 Supplement" or "Arabic" can be found here: 
 
 [Unicode Blocks](ftp://ftp.unicode.org/Public/8.0.0/ucd/Blocks.txt)
 
-The category names can be found here:
+The category names such as "Ll" can be found here:
 
 [Unicode Categories](ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values)
 
