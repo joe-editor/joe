@@ -67,6 +67,10 @@ struct regcomp {
 	int len;			/* Number of allocated nodes */
 	int size;			/* Malloc size of nodes */
 	
+	char *prefix;			/* Leading prefix of search string */
+	ptrdiff_t prefix_len;
+	ptrdiff_t prefix_size;
+
 	/* Bracket number */
 	int bra_no;
 

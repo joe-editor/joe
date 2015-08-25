@@ -1269,7 +1269,7 @@ void cclass_add(struct Cclass *m, int first, int last)
 	int x;
 
 	/* If it's invalid, ignore */
-	if (last < first)
+	if (last < first || first < 0)
 		return;
 
 	for (x = 0; x != m->len; ++x) {
@@ -1446,4 +1446,56 @@ void cclass_show(struct Cclass *m)
 		logmessage_2("[%x..%x]", (unsigned)m->intervals[x].first, (unsigned)m->intervals[x].last);
 	}
 	logmessage_0("\n");
+}
+
+/* Here is a list of struct Cclasses which have been remapped to some local character set */
+
+struct Cclass_list {
+	struct Cclass_list *next;
+	struct Cclass *m;
+	struct charmap *map;
+	struct Cclass n[1];
+} *cclass_list;
+
+struct Cclass *cclass_remap(struct Cclass *m, struct charmap *map)
+{
+	if (!map)
+		return 0;
+	if (!map->type) {
+		struct Cclass_list *l;
+		ptrdiff_t x;
+		int low, high;
+		for (l = cclass_list; l; l = l->next) {
+			if (l->m == m && l->map == map)
+				return l->n;
+		}
+		l = (struct Cclass_list *)joe_malloc(SIZEOF(struct Cclass_list));
+		l->next = cclass_list;
+		cclass_list = l;
+		l->m = m;
+		l->map = map;
+		cclass_init(l->n);
+		low = -2;
+		high = -2;
+		for (x  = 0; x != m->len; ++x) {
+			int a;
+			for (a = m->intervals[x].first; a <= m->intervals[x].last; ++a) {
+				int b = from_uni(map, a);
+				if (b != -1) {
+					if (b == high + 1) {
+						high = b;
+					} else {
+						cclass_add(l->n, low, high);
+						low = high = b;
+					}
+				}
+			}
+		}
+		if (low != -2) {
+			cclass_add(l->n, low, high);
+		}
+		return l->n;
+	} else {
+		return m;
+	}
 }

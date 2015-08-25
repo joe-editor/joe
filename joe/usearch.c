@@ -293,7 +293,7 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 			pattern[x] = TO_CHAR_OK(joe_tolower(p->b->o.charmap,pattern[x]));
 */
 	wrapped:
-	while (srch->ignore ? pifind(start, pattern, x) : pfind(start, pattern, x)) {
+	while (srch->ignore ? pifind(start, srch->comp->prefix, srch->comp->prefix_len) : pfind(start, srch->comp->prefix, srch->comp->prefix_len)) {
 		pset(end, start);
 		/* pfwrd(end, x); */ /* Comment out for regexec */
 		if (srch->wrap_flag && start->byte>=srch->wrap_p->byte)
@@ -370,7 +370,7 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 */
 	wrapped:
 	while (pbkwd(start, 1L)
-	       && (srch->ignore ? prifind(start, pattern, x) : prfind(start, pattern, x))) {
+	       && (srch->ignore ? prifind(start, srch->comp->prefix, srch->comp->prefix_len) : prfind(start, srch->comp->prefix, srch->comp->prefix_len))) {
 		pset(end, start);
 		/* pfwrd(end, x); */ /* Comment out for joe_regexec */
 		if (srch->wrap_flag && start->byte<srch->wrap_p->byte)
@@ -440,6 +440,7 @@ SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int re
 	srch->pattern = pattern;
 	srch->comp = 0;
 	srch->replacement = replacement;
+	srch->replacement_l = 0;
 	srch->ignore = ignore;
 	srch->regex = regex;
 	srch->backwards = backwards;
@@ -472,6 +473,8 @@ void rmsrch(SRCH *srch)
 {
 	if (srch->comp)
 		joe_regfree(srch->comp);
+	if (srch->replacement_l)
+		vsrm(srch->replacement_l);
 	prm(markb);
 	prm(markk);
 	prm(srch->wrap_p);
@@ -520,8 +523,8 @@ static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len, B **entire, B *
 				}
 				s += 2;
 				len -= 2;
-			} else if (s[1] >= '0' && s[1] <= '9') {
-				nth = s[1] - '0';
+			} else if (s[1] >= '1' && s[1] <= '9') {
+				nth = s[1] - '1';
 				goto insertit;
 			} else if (s[1] == '&') {
 				if (*entire) {
@@ -692,7 +695,7 @@ static int set_options(W *w, char *s, void *obj, int *notify)
 			joe_snprintf_1(buf,SIZEOF(buf),joe_gettext(_("Replace with (^C to abort) [%s]: ")),bf1);
 		} else */
 			joe_snprintf_0(buf, SIZEOF(buf), joe_gettext(_("Replace with (^C to abort): ")));
-		if (wmkpw(bw->parent, buf, &replhist, set_replace, srchstr, pfabort, srch_cmplt, srch, notify, bw->b->o.charmap, 0))
+		if (wmkpw(bw->parent, buf, &replhist, set_replace, srchstr, pfabort, srch_cmplt, srch, notify, utf8_map, 0))
 			return 0;
 		else
 			return -1;
@@ -805,7 +808,7 @@ int dofirst(BW *bw, int back, int repl, char *hint)
 		joe_snprintf_1(buf,SIZEOF(buf),joe_gettext(_("Find (^C to abort) [%s]: ")),bf1);
 	} else
 		joe_snprintf_0(buf, SIZEOF(buf), joe_gettext(_("Find (^C to abort): ")));
-	if ((pbw=wmkpw(bw->parent, buf, &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap, 0))) {
+	if ((pbw=wmkpw(bw->parent, buf, &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, utf8_map, 0))) {
 		if (hint) {
 			binss(pbw->cursor, hint);
 			pset(pbw->cursor, pbw->b->eof);
@@ -1049,14 +1052,38 @@ static int fnext(BW *bw, SRCH *srch)
 	}
 	again:
 	/* Clear compiled version of pattern if character map changed (perhaps because we switched buffer) */
-	if (srch->comp && srch->comp->cmap != bw->b->o.charmap)
+	if (srch->comp && srch->comp->cmap != bw->b->o.charmap) {
 		clrcomp(srch);
+		if (srch->replacement_l) {
+			vsrm(srch->replacement_l);
+			srch->replacement_l = 0;
+		}
+	}
 	/* Compile pattern if we don't already have it */
 	if (!srch->comp) {
 		srch->comp = joe_regcomp(bw->b->o.charmap, srch->pattern, sLEN(srch->pattern), srch->ignore, srch->regex);
 		if (srch->comp->err) {
 			msgnw(bw->parent, joe_gettext(srch->comp->err));
 			return 4;
+		}
+	}
+	/* Remap replacement string */
+	if (srch->replacement && !srch->replacement_l) {
+		if (bw->b->o.charmap)
+			srch->replacement_l = vsdup(srch->replacement);
+		else {
+			const char *s = srch->replacement;
+			ptrdiff_t len = sLEN(srch->replacement);
+			int c;
+			srch->replacement_l = vsensure(NULL, 32);
+			while (len) {
+				c = utf8_decode_fwrd(&s, &len);
+				if (c >= 0) {
+					c = from_uni(bw->b->o.charmap, c);
+					if (c >= 0)
+						srch->replacement_l = vsadd(srch->replacement_l, c);
+				}
+			}
 		}
 	}
 	if (srch->backwards)

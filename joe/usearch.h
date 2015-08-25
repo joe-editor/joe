@@ -20,7 +20,8 @@ struct srchrec {
 struct search {
 	char	*pattern;	/* Search pattern */
 	struct regcomp *comp;	/* Compiled pattern */
-	char	*replacement;	/* Replacement string */
+	char	*replacement;	/* Replacement string: UTF-8 */
+	char	*replacement_l;	/* Replacement string: localized */
 	int	backwards;	/* Set if search should go backwards */
 	int	ignore;		/* Set if we should ignore case */
 	int	regex;		/* Set for standard regex syntax, clear for JOE syntax */

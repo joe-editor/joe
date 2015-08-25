@@ -187,3 +187,7 @@ void cclass_opt(struct Cclass *cclass);
 int cclass_lookup(struct Cclass *cclass, int ch);
 
 void cclass_show(struct Cclass *cclass);
+
+/* Remap a character class */
+
+struct Cclass *cclass_remap(struct Cclass *m, struct charmap *map);

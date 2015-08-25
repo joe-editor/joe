@@ -282,11 +282,11 @@ struct highlight_state {
 
 /* Include files */
 
+#include "charmap.h"
 #include "cclass.h"
 #include "b.h"
 #include "blocks.h"
 #include "bw.h"
-#include "charmap.h"
 #include "cmd.h"
 #include "hash.h"
 #include "help.h"

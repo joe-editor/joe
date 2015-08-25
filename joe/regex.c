@@ -17,6 +17,8 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 	int c = 0;
 	const char *s = *a;
 	ptrdiff_t l;
+	if (cat)
+		*cat = 0;
 
 	if (b)
 		l = *b;
@@ -701,22 +703,26 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 			struct Cclass *cat;
 			int first, last;
 
-			first = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+			first = escape(1, &g->ptr, &g->l, &cat);
 
 			if (first == -256) {
-				if (cat)
-					cclass_union(m, cat);
+				cclass_union(m, cclass_remap(cat, g->cmap));
 			} else {
+				first = from_uni(g->cmap, first);
 				if (g->l >= 2 &&  g->ptr[0] == '-' && g->ptr[1] != ']') {
 					++g->ptr;
 					--g->l;
 					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+					if (last != -256)
+						last = from_uni(g->cmap, last);
 				} else {
 					last = first;
 				}
 				if (fold) {
-					first = joe_tolower(g->cmap, first);
-					last = joe_tolower(g->cmap, last);
+					if (first >= 0)
+						first = joe_tolower(g->cmap, first);
+					if (last >= 0)
+						last = joe_tolower(g->cmap, last);
 				}
 				cclass_add(m, first, last);
 			}
@@ -731,8 +737,11 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 		int ch = escape(g->cmap->type, &g->ptr, &g->l, &cat);
 		if (ch == -256) {
 			no = mk_node(g, -'[', -1, -1);
+			if (cat)
+				cat = cclass_remap(cat, g->cmap);
 			cclass_union(g->nodes[no].cclass, cat);
 		} else {
+			ch = from_uni(g->cmap, ch);
 			if (fold) {
 				if (g->cmap->type) { /* Unicode folding... */
 					int idx = rmap_lookup(rtree_fold, ch, 0);
@@ -916,19 +925,23 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 			first = escape(g->cmap->type, &g->ptr, &g->l, &cat);
 
 			if (first == -256) {
-				if (cat)
-					cclass_union(m, cat);
+				cclass_union(m, cclass_remap(cat, g->cmap));
 			} else {
+				first = from_uni(g->cmap, first);
 				if (g->l >= 2 &&  g->ptr[0] == '-' && g->ptr[1] != ']') {
 					++g->ptr;
 					--g->l;
 					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+					if (last != -256)
+						last = from_uni(g->cmap, last);
 				} else {
 					last = first;
 				}
 				if (fold) {
-					first = joe_tolower(g->cmap, first);
-					last = joe_tolower(g->cmap, last);
+					if (first >= 0)
+						first = joe_tolower(g->cmap, first);
+					if (last >= 0)
+						last = joe_tolower(g->cmap, last);
 				}
 				cclass_add(m, first, last);
 			}
@@ -945,8 +958,9 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 		int ch = escape(g->cmap->type, &g->ptr, &g->l, &cat);
 		if (ch == -256) {
 			no = mk_node(g, -'[', -1, -1);
-			cclass_union(g->nodes[no].cclass, cat);
+			cclass_union(g->nodes[no].cclass, cclass_remap(cat, g->cmap));
 		} else {
+			ch = from_uni(g->cmap, ch);
 			if (fold) {
 				if (g->cmap->type) { /* Unicode folding... */
 					int idx = rmap_lookup(rtree_fold, ch, 0);
@@ -1140,6 +1154,31 @@ static void unasm(Frag *f)
 	}
 }
 
+/* Determine leading prefix of search string */
+
+static int extract(struct regcomp *g, int no)
+{
+	while (no != -1) {
+		if (g->nodes[no].type == -',') {
+			if (!extract(g, g->nodes[no].l)) {
+				no = g->nodes[no].r;
+				continue; /* This keeps recursion depth low */
+			} else {
+				return -1;
+			}
+		} else if (g->nodes[no].type >= 0 && g->nodes[no].type < 128) {
+			if (g->prefix_len + 1 == g->prefix_size) {
+				g->prefix_size *= 2;
+				g->prefix = (char *)joe_realloc(g->prefix, g->prefix_size);
+			}
+			g->prefix[g->prefix_len++] = TO_CHAR_OK(g->nodes[no].type);
+			return 0;
+		} else { /* Anything else, and we're done. */
+			return -1;
+		}
+	}
+}
+
 /* Convert parse-tree into code with infinite loops */
 
 static void codegen(struct regcomp *g, int no, int *end)
@@ -1259,7 +1298,9 @@ static void codegen(struct regcomp *g, int no, int *end)
 
 /* User level of parser: call it with a regex- it returns a program in a malloc block */
 
-/* #define DEBUG 1 */
+/* The source string must be UTF-8.  'cmap' specifies the character map of the buffer that will be searched. */
+
+#define DEBUG 1
 
 struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, int cflags, int stdfmt)
 {
@@ -1274,6 +1315,9 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 	iz_frag(g->frag, SIZEOF(int));
 	g->bra_no = 0;
 	g->err = 0;
+	g->prefix_len = 0;
+	g->prefix_size = 32;
+	g->prefix = (char *)joe_malloc(g->prefix_size);
 
 	/* Parse expression */
 	g->ptr = s;
@@ -1287,10 +1331,15 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 		g->err = "Extra junk at end of expression";
 	}
 
+	/* Extract leading prefix */
+	extract(g, no);
+	g->prefix[g->prefix_len] = 0;
+
 	/* Print parse tree */
 #ifdef DEBUG
 	logmessage_0("Parse tree:\n");
 	show(g, no, 0);
+	logmessage_1("Leading prefix '%s'\n", g->prefix);
 #endif
 
 	/* Convert tree into NFA in the form of byte code */
@@ -1350,6 +1399,7 @@ void joe_regfree(struct regcomp *g)
 	if (g->nodes)
 		joe_free(g->nodes);
 	clr_frag(g->frag);
+	joe_free(g->prefix);
 	joe_free(g);
 }
 
