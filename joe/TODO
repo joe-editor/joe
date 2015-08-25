@@ -30,22 +30,11 @@ New regex engine:
       add code to allow use of boyer-moore
       [done but allow it to use characters in range 128-255]
 
-
       handle byte encoding correctly- we are only handling unicode
         - what happens if you search/replace across file with different
           encodings? maybe recompile for each file?  Actually we are already
           recompiling for this case.
-          [Done: search and replacement strings are always entered as
-                 unicode.  We convert to byte code if necessary during
-		 reg_comp.  We allow unicode classes to be used even in byte
-		character sets by conversion.
-		However:
-                     What happens with byte replacements in the C/ASCII type? 
-Technically characters between 0x80 - 0xFF do not exist..  Maybe we should
-assume 8859 instead of C?  Character classes will be wrong if we do this...
-
-                     Completion in search and replace prompts needs to
-convert from file coding to UTF8.]
+          [Done: character classes are converted to byte code]
 
       add case ignore:
           done, however right now we do simple folding for classes and full

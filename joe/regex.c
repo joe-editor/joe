@@ -703,12 +703,11 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 			struct Cclass *cat;
 			int first, last;
 
-			first = escape(1, &g->ptr, &g->l, &cat);
+			first = escape(g->cmap->type, &g->ptr, &g->l, &cat);
 
 			if (first == -256) {
 				cclass_union(m, cclass_remap(cat, g->cmap));
 			} else {
-				first = from_uni(g->cmap, first);
 				if (g->l >= 2 &&  g->ptr[0] == '-' && g->ptr[1] != ']') {
 					++g->ptr;
 					--g->l;
@@ -741,7 +740,6 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 				cat = cclass_remap(cat, g->cmap);
 			cclass_union(g->nodes[no].cclass, cat);
 		} else {
-			ch = from_uni(g->cmap, ch);
 			if (fold) {
 				if (g->cmap->type) { /* Unicode folding... */
 					int idx = rmap_lookup(rtree_fold, ch, 0);
@@ -927,7 +925,6 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 			if (first == -256) {
 				cclass_union(m, cclass_remap(cat, g->cmap));
 			} else {
-				first = from_uni(g->cmap, first);
 				if (g->l >= 2 &&  g->ptr[0] == '-' && g->ptr[1] != ']') {
 					++g->ptr;
 					--g->l;
@@ -960,7 +957,6 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 			no = mk_node(g, -'[', -1, -1);
 			cclass_union(g->nodes[no].cclass, cclass_remap(cat, g->cmap));
 		} else {
-			ch = from_uni(g->cmap, ch);
 			if (fold) {
 				if (g->cmap->type) { /* Unicode folding... */
 					int idx = rmap_lookup(rtree_fold, ch, 0);
@@ -1298,9 +1294,7 @@ static void codegen(struct regcomp *g, int no, int *end)
 
 /* User level of parser: call it with a regex- it returns a program in a malloc block */
 
-/* The source string must be UTF-8.  'cmap' specifies the character map of the buffer that will be searched. */
-
-#define DEBUG 1
+/* #define DEBUG 1 */
 
 struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, int cflags, int stdfmt)
 {
