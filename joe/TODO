@@ -23,9 +23,11 @@ New regex engine:
       add case ignore:
           done, however right now we do simple folding for classes and full
           folding outside of classes.  I think maybe better to do simple
-          folding for both?
+          folding for both?  Any point of full folding without
+          normalization?
 
       unicode normalization, ugh.  Maybe this should be optional.
+      have an option 'n' for normalized search?
 
       check performance and memory leaks
 
@@ -69,6 +71,8 @@ Make joerc file so we load system and local customizations
 
 1218708  ? for unknown characters is not informative (at least highlight the ?)
 Show as hex <34>?
+   For byte coded unused character: display character as we do in C. [we do
+this already]
 
 1304794  X at end of line is changed to space when character above 128 in utf-8
   - check this one

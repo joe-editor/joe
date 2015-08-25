@@ -535,17 +535,26 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Search
-\i   Help Screen    \|turn off with ^X^H  prev. screen ^X,  next screen ^X.        \i
-\i \iSpecial search sequences:                                                    \|\i \i
-\i \i    \\^  \\$  matches beg./end of line      \\?     match any single char       \|\i \i
-\i \i    \\<  \\>  matches beg./end of word      \\*     match 0 or more chars       \|\i \i
-\i \i    \\c      matches balanced C expression \\\\     matches a \\                 \|\i \i
-\i \i    \\[..]   matches one of a set          \\n     matches a newline           \|\i \i
-\i \i    \\+      matches 0 or more of the character which follows the \\+          \|\i \i
-\i \iSpecial replace sequences:                                                   \|\i \i
-\i \i    \\&      replaced with text which matched search string                   \|\i \i
-\i \i    \\0 - 9  replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]    \|\i \i
-\i \i    \\\\      replaced with \\               \\n     replaced with newline       \|\i \i
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \iSearch sequences:                                                            \|\i \i
+\i \i    \\^  \\$  matches beg./end of line       \\.     match any single char      \|\i \i
+\i \i    \\<  \\>  matches beg./end of word       \\c     match char or expression   \|\i \i
+\i \i    \\(  \\)  grouping                       \\|     match left or right         \|\i \i
+\i \i    \\[a-z]  matches one of a set                                             \|\i \i
+\i \i    \\{1,3}  match 1 - 3 occurrences        \\?     match 0 or 1 occurrence     \|\i \i
+\i \i    \\+      match 1 or more occurrences    \\*     match 0 or more occurrences \|\i \i
+\i \iReplace sequences:                                                           \|\i \i
+\i \i    \\&      replaced with entire match     \\1 - 9 replaced with Nth group   \|\i \i
+}
+
+{Escape sequences
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \iEscape sequences:                                                            \|\i \i
+\i \i    \\x{10fff}  Unicode code point  \\t    tab       \\e   escape               \|\i \i
+\i \i    \\p{Ll}     Unicode category    \\n    newline   \\r   carriage return      \|\i \i
+\i \i    \\d / \\D    Digit / Not a digit \\b    backspace \\xFF hex character        \|\i \i
+\i \i    \\w / \\W    Word / Not a word   \\a    alert     \\377 octal character      \|\i \i
+\i \i    \\s / \\S    Space / Not a space \\f    formfeed  \\\\   backslash            \|\i \i
 }
 
 {SearchOptions
