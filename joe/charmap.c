@@ -1193,6 +1193,7 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 }
 
 struct charmap *utf8_map;
+struct charmap *ascii_map;
 
 static void load_builtins(void)
 {
@@ -1657,13 +1658,14 @@ void joe_locale()
 	codeset = joe_getcodeset(u);
 #endif
 
+	ascii_map = find_charmap("ascii");
 	locale_map = find_charmap(codeset);
 	if (!locale_map)
-		locale_map = find_charmap("ascii");
+		locale_map = ascii_map;
 
 	locale_map_non_utf8 = find_charmap(non_utf8_codeset);
 	if (!locale_map_non_utf8)
-		locale_map_non_utf8 = find_charmap("ascii");
+		locale_map_non_utf8 = ascii_map;
 
 	fdefault.charmap = locale_map;
 	pdefault.charmap = locale_map;
@@ -1788,7 +1790,7 @@ struct charmap *guess_map(const char *buf, ptrdiff_t len)
 		if (locale_map->type || !guess_utf8)
 			return locale_map;
 		else
-			return find_charmap("utf-8");
+			return utf8_map;
 	}
 
 	if (!flag || !guess_non_utf8) {

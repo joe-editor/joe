@@ -50,6 +50,7 @@ struct options {
 	OPTIONS	*next;
 	const char	*name_regex;
 	const char	*contents_regex;
+	struct regcomp	*r_contents_regex; /* Compiled version of context_regex */
 	int	overtype;
 	off_t	lmargin;
 	off_t	rmargin;

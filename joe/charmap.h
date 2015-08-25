@@ -82,6 +82,7 @@ void to_utf8(struct charmap *map,char *s,int c);
 void joe_locale();
 extern struct charmap *locale_map;	/* Character map of terminal */
 extern struct charmap *utf8_map;	/* UTF-8 character map */
+extern struct charmap *ascii_map;	/* Plain ASCII map */
 extern const char *locale_lang;	/* Locale language (like de_DE) */
 extern const char *locale_msgs;	/* Locale language for editor messages (like de_DE) */
 

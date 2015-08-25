@@ -53,6 +53,8 @@ New regex engine:
 
 Now that we have new regex engine:
       switch to it for ftyperc? [done]
+          - note we assume ascii map for this..  do we know the charmap of
+            the file at the point we do this?
 
     Can we highlight backup files? files ending in .in?
 
