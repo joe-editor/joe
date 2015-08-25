@@ -52,12 +52,12 @@ New regex engine:
       check char to int promotions [done].
 
 Now that we have new regex engine:
-      switch to it for ftyperc?
+      switch to it for ftyperc? [done]
+
+    Can we highlight backup files? files ending in .in?
+
     - We need regexp for error parsing.
         - we can do this now
-    Can we highlight backup files? files ending in .in?
-    Makefile.in and Makefile.am need to be the same as Makefile.
-      - Use new regex engine to help with this
 
 - hex edit mode
     - force switch to overtype mode?

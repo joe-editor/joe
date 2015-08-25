@@ -13,11 +13,11 @@
 -syntax diff
 
 *
-+*** 
++\*\*\* 
 -syntax diff
 
 *
-+\[1-9]\+\[0-9]\[cda]
++[1-9][0-9]*[cda]
 -syntax diff
 
 *.diff
@@ -35,11 +35,11 @@
 -syntax diff
 
 *
-+Index: \[A-Za-z]
++Index: [A-Za-z]
 -syntax diff
 
 *
-+? \[A-Za-z]
++\? [A-Za-z]
 -syntax diff
 
  Troff
@@ -156,7 +156,7 @@
 -text_delimiters do=end
 
 *
-+#!\+\[ 	]\+\[a-z/ ]ruby\>
++#![ 	]*[a-z/ ]*ruby\>
 -autoindent
 -pound_comment
 -syntax ruby
@@ -194,7 +194,7 @@
 
  Perl
 *
-+#!\+\[ 	]\+\[a-z/]\[/ ]perl\>
++#![ 	]*[a-z/]*[/ ]perl\>
 -autoindent
 -syntax perl
 -smarthome
@@ -328,7 +328,7 @@
 -autoindent
 
 *
-+#!\+\[ 	]\+\[a-z/]/rxx\>
++#![ 	]*[a-z/]*/rxx\>
 -syntax rexx
 -autoindent
 
@@ -509,7 +509,7 @@
 -syntax xml
 
 *
-+<\?xml
++<.xml
 -autoindent
 -syntax xml
 
@@ -596,7 +596,7 @@
 
  Python
 *
-+#!\+\[ 	]\+\[a-z/]\+\[ 	]python\+\[0-9]\>
++#![ 	]*[a-z/]*[ 	]*python[0-9]*\>
 -autoindent
 -syntax python
 -highlighter_context
@@ -618,7 +618,7 @@
 
  CSH
 *
-+#!\+\[ 	]\+\[a-z/]/csh\>
++#![ 	]*[a-z/]*/csh\>
 -autoindent
 -syntax csh
 -pound_comment
@@ -640,7 +640,7 @@
 
  TCSH
 *
-+#!\+\[ 	]\+\[a-z/]/tcsh\>
++#![ 	]*[a-z/]*/tcsh\>
 -autoindent
 -syntax csh
 -pound_comment
@@ -657,7 +657,7 @@
 
  Shell
 *
-+#!\+\[ 	]\+\[a-z/]/sh\>
++#![ 	]*[a-z/]*/sh\>
 -autoindent
 -syntax sh
 -highlighter_context
@@ -680,7 +680,7 @@
 
  BASH Shell
 *
-+#!\+\[ 	]\+\[a-z/]/bash\>
++#![ 	]*[a-z/]*/bash\>
 -autoindent
 -syntax sh
 -highlighter_context
@@ -733,7 +733,7 @@
 
  KSH
 *
-+#!\+\[ 	]\+\[a-z/]/ksh\>
++#![ 	]*[a-z/]*/ksh\>
 -autoindent
 -syntax sh
 -highlighter_context
@@ -824,7 +824,7 @@
 -syntax lua
 
 *
-+#!\+\[     ]\+\[a-z/ ]lua\>
++#![ 	]*[a-z/ ]*lua\>
 -autoindent
 -syntax lua
 

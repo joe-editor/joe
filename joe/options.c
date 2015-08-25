@@ -213,12 +213,16 @@ void setopt(B *b, const char *parsed_name)
 		if (rmatch(o->name_regex, parsed_name)) {
 			if(o->contents_regex) {
 				P *p = pdup(b->bof, "setopt");
-				if (0 == pmatch(NULL, 0, o->contents_regex, zlen(o->contents_regex), p, 0, 0)) {
+				struct regcomp *r = joe_regcomp(locale_map, o->contents_regex, zlen(o->contents_regex), 0, 1);
+				if (r && !joe_regexec(r, p, 0, 0, 0)) {
 					prm(p);
 					b->o = *o;
 					lazy_opts(b, &b->o);
+					joe_regfree(r);
 					goto done;
 				} else {
+					if (r)
+						joe_regfree(r);
 					prm(p);
 				}
 			} else {
