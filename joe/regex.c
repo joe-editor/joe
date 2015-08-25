@@ -1151,23 +1151,43 @@ static void unasm(Frag *f)
 }
 
 /* Determine leading prefix of search string */
+/* We can use boyer-moore on the prefix if:
+     Character set is byte coded.
+     Character set is UTF-8 coded, but no folding is requested.
+     Character set is UTF-8 coded, folding is requested, but character is below 128 */
 
-static int extract(struct regcomp *g, int no)
+static int extract(struct regcomp *g, int no, int fold)
 {
 	while (no != -1) {
 		if (g->nodes[no].type == -',') {
-			if (!extract(g, g->nodes[no].l)) {
+			if (!extract(g, g->nodes[no].l, fold)) {
 				no = g->nodes[no].r;
 				continue; /* This keeps recursion depth low */
 			} else {
 				return -1;
 			}
-		} else if (g->nodes[no].type >= 0 && g->nodes[no].type < 128) {
-			if (g->prefix_len + 1 == g->prefix_size) {
-				g->prefix_size *= 2;
-				g->prefix = (char *)joe_realloc(g->prefix, g->prefix_size);
+		} else if ((g->nodes[no].type >= 0) && (
+		            (g->nodes[no].type < 128 ||
+		            !g->cmap->type ||
+		            !fold))) {
+		        if (g->cmap->type) { /* UTF-8 */
+		        	char buf[8];
+		        	ptrdiff_t x;
+		        	utf8_encode(buf, g->nodes[no].type);
+		        	for (x = 0; buf[x]; ++x) {
+					if (g->prefix_len + 1 == g->prefix_size) {
+						g->prefix_size *= 2;
+						g->prefix = (char *)joe_realloc(g->prefix, g->prefix_size);
+					}
+					g->prefix[g->prefix_len++] = buf[x];
+		        	}
+		        } else { /* Bytes */
+				if (g->prefix_len + 1 == g->prefix_size) {
+					g->prefix_size *= 2;
+					g->prefix = (char *)joe_realloc(g->prefix, g->prefix_size);
+				}
+				g->prefix[g->prefix_len++] = TO_CHAR_OK(g->nodes[no].type);
 			}
-			g->prefix[g->prefix_len++] = TO_CHAR_OK(g->nodes[no].type);
 			return 0;
 		} else { /* Anything else, and we're done. */
 			return -1;
@@ -1296,7 +1316,7 @@ static void codegen(struct regcomp *g, int no, int *end)
 
 /* #define DEBUG 1 */
 
-struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, int cflags, int stdfmt)
+struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, int fold, int stdfmt)
 {
 	int no;
 	struct regcomp *g;
@@ -1317,16 +1337,16 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 	g->ptr = s;
 	g->l = len;
 	if (stdfmt)
-		no = do_parse_conventional(g, 0, cflags);
+		no = do_parse_conventional(g, 0, fold);
 	else
-		no = do_parse(g, 0, cflags);
+		no = do_parse(g, 0, fold);
 
 	if (g->l && !g->err) {
 		g->err = "Extra junk at end of expression";
 	}
 
 	/* Extract leading prefix */
-	extract(g, no);
+	extract(g, no, fold);
 	g->prefix[g->prefix_len] = 0;
 
 	/* Print parse tree */
@@ -1574,7 +1594,7 @@ static int add_thread1(struct thread *pool, unsigned char *start, int l, int le,
 	return le + 1;
 }
 
-int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int eflags)
+int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int fold)
 {
 	struct thread pool[MAX_THREADS * 2];
 
@@ -1614,7 +1634,7 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int ef
 	do {
 		d = c;
 		byte = p->byte;
-		if (eflags) { /* Case folding */
+		if (fold) { /* Case folding */
 			if  (g->cmap->type) { /* Unicode folding */
 				if (repl1) {
 					c = repl1;
