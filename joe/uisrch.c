@@ -70,6 +70,8 @@ static void iappend(BW *bw, struct isrch *isrch, char *s, ptrdiff_t len)
 	isrch->pattern = vsncpy(sv(isrch->pattern), s, len);
 	if (!qempty(IREC, link, &isrch->irecs)) {
 		pgoto(bw->cursor, isrch->irecs.link.prev->start);
+		if (globalsrch)
+			globalsrch->wrap_flag = isrch->irecs.link.prev->wrap_flag;
 	}
 	i->start = bw->cursor->byte;
 

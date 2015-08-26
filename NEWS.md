@@ -4,6 +4,9 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Fix bug where regular expressions were not working in incremental search
+  when wrap is enabled (which is the case in jmacs).
+
 * JOE now displays Unicode combining characters properly
 
 * New regular expression engine

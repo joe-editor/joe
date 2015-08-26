@@ -1,3 +1,6 @@
+"-wrap" is messing up isrch somehow
+[fixed]
+
 check all type-like functions- make sure they expect unicode!
 
   - check all other users of joe_is...
