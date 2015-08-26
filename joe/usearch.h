@@ -44,7 +44,7 @@ struct search {
 	B	*current;	/* Current buffer */
 };
 
-extern int regex; /* Standard regex format by default */
+extern int std_regex; /* Standard regex format by default */
 
 SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all, int regex);
 void rmsrch(SRCH *srch);

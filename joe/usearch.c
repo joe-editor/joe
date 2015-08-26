@@ -772,7 +772,7 @@ static void unesc_genfmt(char *d, char *s, ptrdiff_t len,ptrdiff_t max)
 	*d = 0;
 }
 
-int regex = 0; /* Standard regex format by default */
+int std_regex = 0; /* Standard regex format by default */
 
 int dofirst(BW *bw, int back, int repl, char *hint)
 {
@@ -796,7 +796,7 @@ int dofirst(BW *bw, int back, int repl, char *hint)
 			prgetc(bw->cursor);
 		return urtn(bw->parent, -1);
 	}
-	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0, 0, regex);
+	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0, 0, std_regex);
 	srch->addr = bw->cursor->byte;
 	srch->wrap_p = pdup(bw->cursor, "dofirst");
 	srch->wrap_p->owner = &srch->wrap_p;

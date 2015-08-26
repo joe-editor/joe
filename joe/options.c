@@ -272,7 +272,7 @@ struct glopts {
 	{"lmargin",	7, NULL, (char *) &fdefault.lmargin, _("Left margin (%d): "), 0, _("L Left margin "), 0, 0, 63 },
 	{"rmargin",	7, NULL, (char *) &fdefault.rmargin, _("Right margin (%d): "), 0, _("R Right margin "), 0, 7, 255 },
 	{"restore",	0, &restore_file_pos, NULL, _("Restore cursor position when files loaded"), _("Don't restore cursor when files loaded"), _("  Restore cursor "), 0, 0, 0 },
-	{"regex",	0, &regex, NULL, _("Standard regular expression format"), _("JOE regular expression format"), _("  Regex "), 0, 0, 0 },
+	{"regex",	0, &std_regex, NULL, _("Standard regular expression format"), _("JOE regular expression format"), _("  Regex "), 0, 0, 0 },
 	{"square",	0, &square, NULL, _("Rectangle mode"), _("Text-stream mode"), _("X Rectangle mode "), 0, 0, 0 },
 	{"icase",	0, &opt_icase, NULL, _("Search ignores case by default"), _("Case sensitive search by default"), _("  Case insensitivity "), 0, 0, 0 },
 	{"wrap",	0, &wrap, NULL, _("Search wraps"), _("Search doesn't wrap"), _("  Search wraps "), 0, 0, 0 },

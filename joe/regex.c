@@ -1193,6 +1193,7 @@ static int extract(struct regcomp *g, int no, int fold)
 			return -1;
 		}
 	}
+	return 0;
 }
 
 /* Convert parse-tree into code with infinite loops */
