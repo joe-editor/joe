@@ -547,13 +547,14 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				ta = p->b->o.tab - (x - ox + scr) % p->b->o.tab;
 				tach = ' ';
 			      dota:
-				do {
+			      	while (x < w && ta--) {
 					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, c1|atr);
-					if (ifhave)
-						goto bye;
-					if (++x == w)
-						goto eosl;
-				} while (--ta);
+					++x;
+				}
+				if (ifhave)
+					goto bye;
+				if (x > w)
+					goto eosl;
 			} else if (bc == '\n')
 				goto eobl;
 			else {
