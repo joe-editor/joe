@@ -358,6 +358,8 @@ int unedge(W *w, int k)
    The search goes forward if the delimiter matches any words of any group
    but the last of the set.  If the delimiter matches a word in the last
    group, the search goes backward to the first delimiter.
+
+   Delimiter sets lists are now UTF-8.
 */
 
 /* Return pointer to first matching set in delimiter set list.  Returns NULL
@@ -390,19 +392,17 @@ static const char *next_word(const char *word)
 	return word;
 }
 
-static int match_word(const char *word,const char *s)
+static int match_word(const char *word,const int *s)
 {
-	while (*word==*s && *s && *word) {
-		++word;
-		++s;
-	}
+	while (*s && *word && utf8_decode_fwrd(&word, NULL) == *s++);
+
 	if (!*s && (!*word || *word=='|' || *word=='=' || *word==':'))
 		return 1;
 	else
 		return 0;
 }
 
-static int is_in_group(const char *group,const char *s)
+static int is_in_group(const char *group,const int *s)
 {
 	while (*group && *group!='=' && *group!=':') {
 		if (match_word(group, s))
@@ -413,7 +413,7 @@ static int is_in_group(const char *group,const char *s)
 	return 0;
 }
 
-static int is_in_any_group(const char *group,const char *s)
+static int is_in_any_group(const char *group,const int *s)
 {
 	while (*group && *group!=':') {
 		if (match_word(group, s))
@@ -444,13 +444,14 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 	P *p = pdup(bw->cursor, "tomatch_char_or_word");
 	P *q = pdup(p, "tomatch_char_or_word");
 	const char *last_of_set = "";
-	char buf[MAX_WORD_SIZE+1];
+	int buf[MAX_WORD_SIZE+1];
 	int len;
 	int query_highlighter = bw->o.highlighter_context && bw->o.syntax && bw->db;
 	int initial_context = 0;
 	int col = 0;
 	int cnt = 0;	/* No. levels of delimiters we're in */
 	int d;
+	off_t sod = 0; /* Start of delimiter */
 
 	if (word_delimiter) {
 		if (backward) {
@@ -596,10 +597,11 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 					int x;
 					int flg=0;
 					P *r;
+					const char *t;
 					len=0;
 					while (joe_isalnum_(p->b->o.charmap, d)) {
 						if(len!=MAX_WORD_SIZE)
-							buf[len++] = TO_CHAR_OK(d);
+							buf[len++] = d;
 						d=prgetc(p);
 						--col;
 					}
@@ -620,14 +622,15 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 						}
 					}
 					prm(r);
-					if (d == set[0])
-						buf[len++] = TO_CHAR_OK(d);
+					t = set;
+					if (d == utf8_decode_fwrd(&t, NULL))
+						buf[len++] = d;
 					if(d!=NO_MORE_DATA)
 						pgetc(p);
 					++col;
 					buf[len]=0;
 					for(x=0;x!=len/2;++x) {
-						char e = buf[x];
+						int e = buf[x];
 						buf[x] = buf[len-x-1];
 						buf[len-x-1] = e;
 					}
@@ -651,7 +654,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 		}
 	} else {
 		/* Forward search */
-		while ((d = pgetc(p)) != NO_MORE_DATA) {
+		while ((sod = p->byte), ((d = pgetc(p)) != NO_MORE_DATA)) {
 			if (query_highlighter && d == '\n') {
 				parse(bw->o.syntax, q, lattr_get(bw->db, bw->o.syntax, q, q->line), bw->o.charmap);
 				col = 0;
@@ -696,16 +699,22 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 					d = pgetc(p);
 				} while (d != NO_MORE_DATA && d != '/');
 			} else if (word_delimiter) {
-				if (d == set[0]) {
+				const char *t = set;
+				int set0 = utf8_decode_fwrd(&t, NULL);
+				if (d == set0) {
 					/* ifdef hack */
-					while ((d = pgetc(p))!=NO_MORE_DATA) {
-						++col;
-						if (d!=' ' && d!='\t')
-							break;
+					if (!joe_isalnum_(p->b->o.charmap, d)) { /* If it's a # in #ifdef, allow spaces after it */
+						sod = p->byte;
+						while ((d = pgetc(p))!=NO_MORE_DATA) {
+							++col;
+							if (d!=' ' && d!='\t')
+								break;
+							sod = p->byte;
+						}
 					}
-					buf[0]=set[0];
+					buf[0] = set0;
 					len=1;
-					if (d >= 'a' && d <= 'z')
+					if (joe_isalnum_(p->b->o.charmap, d))
 						goto doit;
 					if (d!=NO_MORE_DATA) {
 						prgetc(p);
@@ -716,7 +725,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 					doit:
 					while (joe_isalnum_(p->b->o.charmap, d)) {
 						if(len!=MAX_WORD_SIZE)
-							buf[len++] = TO_CHAR_OK(d);
+							buf[len++] = d;
 						d=pgetc(p);
 						++col;
 					}
@@ -728,10 +737,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 						++cnt;
 					} else if (cnt==0) {
 						if (is_in_any_group(group,buf)) {
-							if (!((buf[0]>='a' && buf[0]<='z') || (buf[0]>='A' && buf[0]<='Z')))
-								pgoto(p,p->byte-len+1);
-							else
-								pgoto(p,p->byte-len);
+							pgoto(p, sod);
 							pset(bw->cursor,p);
 							prm(q);
 							prm(p);
@@ -739,7 +745,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 						}
 					} else if(is_in_group(last_of_set,buf)) {
 						/* VHDL hack */
-						if (bw->o.vhdl_comment && (!zcmp(buf,"end") || !zcmp(buf,"END")))
+						if (bw->o.vhdl_comment && (match_word("end", buf) || !match_word("END", buf)))
 							while((d=pgetc(p))!=NO_MORE_DATA) {
 								++col;
 								if (d==';' || d=='\n') {
@@ -796,13 +802,13 @@ static int xml_startend(P *p)
 	return 0;
 }
 
-static int tomatch_xml(BW *bw,char *word,int dir)
+static int tomatch_xml(BW *bw,int *word,int dir)
 {
 	if (dir== -1) {
 		/* Backward search */
 		P *p=pdup(bw->cursor, "tomatch_xml");
 		int c;
-		char buf[MAX_WORD_SIZE+1];
+		int buf[MAX_WORD_SIZE+1];
 		int len;
 		int cnt = 1;
 		p_goto_next(p);
@@ -813,18 +819,18 @@ static int tomatch_xml(BW *bw,char *word,int dir)
 				len=0;
 				while (joe_isalnum_(p->b->o.charmap, c) || c=='.' || c==':' || c == '-') {
 					if(len!=MAX_WORD_SIZE)
-						buf[len++] = TO_CHAR_OK(c);
+						buf[len++] = c;
 					c=prgetc(p);
 				}
 				if(c!=NO_MORE_DATA)
 					c = pgetc(p);
 				buf[len]=0;
 				for(x=0;x!=len/2;++x) {
-					char d = buf[x];
+					int d = buf[x];
 					buf[x] = buf[len-x-1];
 					buf[len-x-1] = d;
 				}
-				if (!zcmp(word,buf) && !xml_startend(p)) {
+				if (!Zcmp(word,buf) && !xml_startend(p)) {
 					if (c=='<') {
 						if (!--cnt) {
 							pset(bw->cursor,p);
@@ -844,14 +850,17 @@ static int tomatch_xml(BW *bw,char *word,int dir)
 		/* Forward search */
 		P *p=pdup(bw->cursor, "tomatch_xml");
 		int c;
-		char buf[MAX_WORD_SIZE+1];
+		int buf[MAX_WORD_SIZE+1];
 		int len;
 		int cnt = 1;
+		off_t sod = 0;
 		while ((c=pgetc(p)) != NO_MORE_DATA) {
 			if (c == '<') {
 				int e = 1;
+				sod = p->byte;
 				c = pgetc(p);
 				if (c=='/') {
+					sod = p->byte;
 					e = 0;
 					c = pgetc(p);
 				}
@@ -859,18 +868,18 @@ static int tomatch_xml(BW *bw,char *word,int dir)
 					len=0;
 					while (joe_isalnum_(p->b->o.charmap, c) || c==':' || c=='-' || c=='.') {
 						if(len!=MAX_WORD_SIZE)
-							buf[len++]=TO_CHAR_OK(c);
+							buf[len++]=c;
 						c=pgetc(p);
 					}
 					if (c!=NO_MORE_DATA)
 						prgetc(p);
 					buf[len]=0;
-					if (!zcmp(word,buf) && !xml_startend(p)) {
+					if (!Zcmp(word,buf) && !xml_startend(p)) {
 						if (e) {
 							++cnt;
 						}
 						else if (!--cnt) {
-							pgoto(p,p->byte-len);
+							pgoto(p, sod);
 							pset(bw->cursor,p);
 							prm(p);
 							return 0;
@@ -886,7 +895,7 @@ static int tomatch_xml(BW *bw,char *word,int dir)
 	}
 }
 
-static void get_xml_name(P *p,char *buf)
+static void get_xml_name(P *p,int *buf)
 {
 	int c;
 	int len=0;
@@ -894,14 +903,14 @@ static void get_xml_name(P *p,char *buf)
 	c=pgetc(p);
 	while (joe_isalnum_(p->b->o.charmap, c) || c==':' || c=='-' || c=='.') {
 		if(len!=MAX_WORD_SIZE)
-			buf[len++]=TO_CHAR_OK(c);
+			buf[len++]=c;
 		c=pgetc(p);
 	}
 	buf[len]=0;
 	prm(p);
 }
 
-static void get_delim_name(P *q,char *buf)
+static void get_delim_name(P *q,int *buf)
 {
 	int c;
 	int len=0;
@@ -912,13 +921,13 @@ static void get_delim_name(P *q,char *buf)
 	prm(p);
 	/* preprocessor directive hack */
 	if (c=='#' || c=='`')
-		buf[len++]=TO_CHAR_OK(c);
+		buf[len++]=c;
 
 	p=pdup(q, "get_delim_name");
 	c=pgetc(p);
 	while (joe_isalnum_(p->b->o.charmap, c)) {
 		if(len!=MAX_WORD_SIZE)
-			buf[len++]=TO_CHAR_OK(c);
+			buf[len++]=c;
 		c=pgetc(p);
 	}
 	buf[len]=0;
@@ -939,8 +948,9 @@ int utomatch(W *w, int k)
 	/* Check for word delimiters */
 	if (joe_isalnum_(bw->cursor->b->o.charmap, c)) {
 		P *p;
-		char buf[MAX_WORD_SIZE+1];
-		char buf1[MAX_WORD_SIZE+1];
+		int buf[MAX_WORD_SIZE+1];
+		char utf8_buf[MAX_WORD_SIZE * 6 + 1]; /* Possibly UTF-8 version of buf */
+		int buf1[MAX_WORD_SIZE+1];
 		const char *list = bw->b->o.text_delimiters;
 		const char *set;
 		const char *group;
@@ -977,7 +987,12 @@ int utomatch(W *w, int k)
 		}
 
 		/* We don't know the word, so start a search */
-		return dofirst(bw, 0, 0, buf);
+		if (bw->b->o.charmap->type) {
+			Ztoutf8(utf8_buf, SIZEOF(utf8_buf), buf);
+		} else {
+			Ztoz(utf8_buf, SIZEOF(utf8_buf), buf);
+		}
+		return dofirst(bw, 0, 0, utf8_buf);
 	}
 
 	switch (c) {

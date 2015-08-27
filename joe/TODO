@@ -1,7 +1,5 @@
-Ctrl-G logic bugs:
-  xml with utf-8 chars: does not jump to first char, we must be assuming
-chars are bytes
-  there is delimiter buffer but it's bytes, not chars
+umath use joe_isalpha_? problem is we eval a char buffer, not an editor
+buffer.
 
 check all type-like functions- make sure they expect unicode!
 
@@ -9,8 +7,6 @@ check all type-like functions- make sure they expect unicode!
      - macro.c, options.c, rc.c, uerror.c
 
  parse_string not utf8?
-
-tomatch_xml: does not handle unicode names
 
 help screen with 8-bit character showing
 
@@ -23,8 +19,6 @@ look at texec..
 
 hmm.. we always convert to unicode on input, but do we convert to the 8-bit
 charset of the buffer? check this.
-
-
 
 "-wrap" is messing up isrch somehow
 [fixed]
@@ -1205,5 +1199,14 @@ utils.c:parse_ident not using utf8?
 [done: now allows utf8 identifiers]
 
 move getcodeset stuff from utf8.c -> charmap
+[done]
+
+Ctrl-G logic bugs:
+  xml with utf-8 chars: does not jump to first char, we must be assuming
+chars are bytes
+  there is delimiter buffer but it's bytes, not chars
+[done]
+
+tomatch_xml: does not handle unicode names
 [done]
 

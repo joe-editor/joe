@@ -108,6 +108,8 @@ ptrdiff_t Zlen(const int *s);
 int Zcmp(const int *a, const int *b);
 int *Zlcpy(int *a, ptrdiff_t siz, const int *b);
 int *Zdup(const int *s);
+char *Ztoutf8(char *a, ptrdiff_t len, const int *b);
+char *Ztoz(char *a, ptrdiff_t len, const int *b);
  
 /*
  * Functions which return minimum/maximum of two numbers  

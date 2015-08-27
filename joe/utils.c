@@ -505,6 +505,49 @@ int *Zlcpy(int *a, ptrdiff_t len, const int *b)
 	return org;
 }
 
+/* Convert ints to chars */
+
+char *Ztoz(char *a, ptrdiff_t len, const int *b)
+{
+	char *org = a;
+	if (!len) {
+		fprintf(stderr, "Ztoz called with len == 0\n");
+		exit(1);
+	}
+	--len;
+	while (len && *b) {
+		*a++ = TO_CHAR_OK(*b++);
+		--len;
+	}
+	*a = 0;
+	return org;
+}
+
+/* Convert ints to utf8 */
+
+char *Ztoutf8(char *a, ptrdiff_t len, const int *b)
+{
+	char *org = a;
+	if (!len) {
+		fprintf(stderr, "Ztoz called with len == 0\n");
+		exit(1);
+	}
+	--len;
+	while (len && *b) {
+		char bf[8];
+		ptrdiff_t enc = utf8_encode(bf, *b++);
+		ptrdiff_t x;
+		if (enc < len) {
+			for (x = 0; x != enc; ++x) {
+				*a++ = bf[x];
+				--len;
+			}
+		}
+	}
+	*a = 0;
+	return org;
+}
+
 /* Length of an int string */
 
 ptrdiff_t Zlen(const int *s)
