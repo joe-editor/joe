@@ -209,11 +209,14 @@ void joe_iswinit()
 	cclass_union(cclass_alpha, unicode("M"));
 	cclass_opt(cclass_alpha);
 
-	/* Alphabetical + underscores */
+	/* Alphabetical + underscores (name start character) */
+	/* Java has: isJavaIdentifierStart: \p{Nl} \p{L} \p{Pc} \p{Sc} */
+	/* Used for XML */
 	cclass_init(cclass_alpha_);
 	cclass_union(cclass_alpha_, unicode("L"));
-	cclass_union(cclass_alpha_, unicode("M"));
 	cclass_union(cclass_alpha_, unicode("Pc"));
+	cclass_union(cclass_alpha_, unicode("Sc"));
+	cclass_union(cclass_alpha_, unicode("Nl"));
 	cclass_opt(cclass_alpha_);
 
 	/* Alphanumeric */
@@ -223,12 +226,18 @@ void joe_iswinit()
 	cclass_union(cclass_alnum, unicode("N"));
 	cclass_opt(cclass_alnum);
 
-	/* Alphanumeric + underscores */
+	/* Alphanumeric + underscores (name continuation character) */
+	/* Java has: isJavaIdentifierPart: isJavaIdentifierStart \p{Mn} \p{Mc} \p{Nd} ignorable */
+	/* Ignorable: 0x00-0x08, 0x0e-0x1b, 0x7f-0x9F */
+	/* Used for XML */
 	cclass_init(cclass_alnum_);
 	cclass_union(cclass_alnum_, unicode("L"));
-	cclass_union(cclass_alnum_, unicode("M"));
-	cclass_union(cclass_alnum_, unicode("N"));
 	cclass_union(cclass_alnum_, unicode("Pc"));
+	cclass_union(cclass_alpha_, unicode("Sc"));
+	cclass_union(cclass_alpha_, unicode("Nl"));
+	cclass_union(cclass_alnum_, unicode("Mn"));
+	cclass_union(cclass_alnum_, unicode("Mc"));
+	cclass_union(cclass_alnum_, unicode("Nd"));
 	cclass_opt(cclass_alnum_);
 
 	/* Digit */

@@ -592,12 +592,12 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 				} else if (d != NO_MORE_DATA)
 					pgetc(p);
 			} else if (word_delimiter) {
-				if ((d >= 'a' && d <= 'z') || (d>='A' && d<='Z') || (d>='0' && d<='9') || d=='_') {
+				if (joe_isalnum_(p->b->o.charmap, d)) {
 					int x;
 					int flg=0;
 					P *r;
 					len=0;
-					while ((d >= 'a' && d <= 'z') || (d>='A' && d<='Z') || d=='_' || (d>='0' && d<='9')) {
+					while (joe_isalnum_(p->b->o.charmap, d)) {
 						if(len!=MAX_WORD_SIZE)
 							buf[len++] = TO_CHAR_OK(d);
 						d=prgetc(p);
@@ -711,10 +711,10 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 						prgetc(p);
 						--col;
 					}
-				} else if ((d >= 'a' && d <= 'z') || (d>='A' && d<='Z') || d=='_') {
+				} else if (joe_isalpha_(p->b->o.charmap, d)) {
 					len=0;
 					doit:
-					while ((d >= 'a' && d <= 'z') || (d>='A' && d<='Z') || d=='_' || (d>='0' && d<='9')) {
+					while (joe_isalnum_(p->b->o.charmap, d)) {
 						if(len!=MAX_WORD_SIZE)
 							buf[len++] = TO_CHAR_OK(d);
 						d=pgetc(p);
@@ -808,11 +808,10 @@ static int tomatch_xml(BW *bw,char *word,int dir)
 		p_goto_next(p);
 		p_goto_prev(p);
 		while ((c=prgetc(p)) != NO_MORE_DATA) {
-			if ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || (c>='0' && c<='9') || c=='.' || c==':' || c=='-' || c=='_') {
+			if (joe_isalnum_(p->b->o.charmap, c) || c == '.' || c == ':' || c == '-') {
 				int x;
 				len=0;
-				while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || (c>='0' && c<='9') || c=='.' ||
-				       c == '-' || c == ':') {
+				while (joe_isalnum_(p->b->o.charmap, c) || c=='.' || c==':' || c == '-') {
 					if(len!=MAX_WORD_SIZE)
 						buf[len++] = TO_CHAR_OK(c);
 					c=prgetc(p);
@@ -856,10 +855,9 @@ static int tomatch_xml(BW *bw,char *word,int dir)
 					e = 0;
 					c = pgetc(p);
 				}
-				if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c=='_' || c==':' || c=='-' || c=='.') {
+				if (joe_isalpha_(p->b->o.charmap, c) || c==':' || c=='-' || c=='.') {
 					len=0;
-					while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || c==':' || c=='-' || c=='.' ||
-					       (c >= '0' && c <= '9')) {
+					while (joe_isalnum_(p->b->o.charmap, c) || c==':' || c=='-' || c=='.') {
 						if(len!=MAX_WORD_SIZE)
 							buf[len++]=TO_CHAR_OK(c);
 						c=pgetc(p);
@@ -894,8 +892,7 @@ static void get_xml_name(P *p,char *buf)
 	int len=0;
 	p=pdup(p, "get_xml_name");
 	c=pgetc(p);
-	while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || c==':' || c=='-' || c=='.' ||
-	       (c >= '0' && c <= '9')) {
+	while (joe_isalnum_(p->b->o.charmap, c) || c==':' || c=='-' || c=='.') {
 		if(len!=MAX_WORD_SIZE)
 			buf[len++]=TO_CHAR_OK(c);
 		c=pgetc(p);
@@ -919,7 +916,7 @@ static void get_delim_name(P *q,char *buf)
 
 	p=pdup(q, "get_delim_name");
 	c=pgetc(p);
-	while ((c >= 'a' && c <= 'z') || (c>='A' && c<='Z') || c=='_' || (c >= '0' && c <= '9')) {
+	while (joe_isalnum_(p->b->o.charmap, c)) {
 		if(len!=MAX_WORD_SIZE)
 			buf[len++]=TO_CHAR_OK(c);
 		c=pgetc(p);
@@ -940,7 +937,7 @@ int utomatch(W *w, int k)
 	c = brch(bw->cursor);
 
 	/* Check for word delimiters */
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') {
+	if (joe_isalnum_(bw->cursor->b->o.charmap, c)) {
 		P *p;
 		char buf[MAX_WORD_SIZE+1];
 		char buf1[MAX_WORD_SIZE+1];

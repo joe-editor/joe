@@ -858,11 +858,13 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 						++p;
 						while(*p != '"' && !parse_class(&p, &array, &size)) {
 							rtree_set(&state->rtree, array, size, cmd);
+							/* logmessage_3("Interval add: %x - %x to %p\n", array[0].first, array[0].last, cmd); */
 						}
 						if (*p != '"')
 							logerror_2(joe_gettext(_("%s %d: Bad string\n")),name,line);
 						else
 							++p;
+						/* rtree_show(&state->rtree); */
 					}
 					/* Create command */
 					parse_ws(&p,'#');
