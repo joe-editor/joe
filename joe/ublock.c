@@ -1284,10 +1284,10 @@ char *blkget()
 				ptrdiff_t len, x;
 				if (!q->b->o.charmap->type)
 					ch = to_uni(q->b->o.charmap, ch);
-				ptrdiff_t len = utf8_encode(bf, ch);
+				len = utf8_encode(bf, ch);
 				for (x = 0; x != len; ++x) {
 					if (buf_x == buf_size - 1) {
-						bus_size *= 2;
+						buf_size *= 2;
 						buf = (char *)joe_realloc(buf, buf_size);
 					}
 					buf[buf_x++] = bf[x];
@@ -1296,7 +1296,7 @@ char *blkget()
 			/* Add a new line if we went past right edge of column */
 			if (square && q->byte<markk->byte && piscol(q) >= right) {
 				if (buf_x == buf_size - 1) {
-					bus_size *= 2;
+					buf_size *= 2;
 					buf = (char *)joe_realloc(buf, buf_size);
 				}
 				buf[buf_x++] = '\n';
