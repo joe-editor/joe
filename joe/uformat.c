@@ -74,13 +74,15 @@ int ucenter(W *w, int k)
 
 static int cpara(BW *bw, int c)
 {
-	int x;
 	if (c == ' ' || c == '\t')
 		return 1;
-	if (bw->o.cpara)
-		for (x = 0; bw->o.cpara[x]; ++x)
-			if (bw->o.cpara[x] == c)
+	if (bw->o.cpara) {
+		const char *s = bw->o.cpara;
+		while (*s) {
+			if (utf8_decode_fwrd(&s, NULL) == c)
 				return 1;
+		}
+	}
 	return 0;
 #ifdef junk
 	if (c == ' ' || c == '\t' || c == '\\' ||
@@ -100,11 +102,14 @@ static int cpara(BW *bw, int c)
 
 static int cnotpara(BW *bw, int c)
 {
-	int x;
-	if (bw->o.cnotpara)
-		for (x = 0; bw->o.cnotpara[x]; ++x)
-			if (bw->o.cnotpara[x] == c)
+	const char *s;
+	if (bw->o.cnotpara) {
+		s = bw->o.cnotpara;
+		while (*s) {
+			if (c == utf8_decode_fwrd(&s, NULL))
 				return 1;
+		}
+	}
 	return 0;
 }
 

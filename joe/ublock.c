@@ -1258,14 +1258,17 @@ int blksum(double *sum, double *sumsq)
 		return -1;
 }
 
-/* Get a (possibly square) block into a buffer */
+/* Get a (possibly square) block into a buffer
+ * Block is converted to UTF-8
+ */
 
 char *blkget()
 {
 	if (markv(1)) {
 		P *q;
-		char *buf = (char *)joe_malloc(markk->byte-markb->byte+1); /* Risky... */
-		char *s = buf;
+		ptrdiff_t buf_size = markk->byte - markb->byte + 1; /* Risky... */
+		ptrdiff_t buf_x = 0;
+		char *buf = (char *)joe_malloc(buf_size);
 		off_t left = markb->xcol;
 		off_t right = markk->xcol;
 		q = pdup(markb, "blkget");
@@ -1277,21 +1280,30 @@ char *blkget()
 			/* Copy text into buffer */
 			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
 				int ch = pgetc(q);
-				if (q->b->o.charmap->type) {
-					char bf[8];
-					ptrdiff_t len = utf8_encode(bf, ch);
-					ptrdiff_t x;
-					for (x = 0; x != len; ++x)
-						*s++ = bf[x];
-				} else
-					*s++ = TO_CHAR_OK(ch);
+				char bf[8];
+				ptrdiff_t len, x;
+				if (!q->b->o.charmap->type)
+					ch = to_uni(q->b->o.charmap, ch);
+				ptrdiff_t len = utf8_encode(bf, ch);
+				for (x = 0; x != len; ++x) {
+					if (buf_x == buf_size - 1) {
+						bus_size *= 2;
+						buf = (char *)joe_realloc(buf, buf_size);
+					}
+					buf[buf_x++] = bf[x];
+				}
 			}
 			/* Add a new line if we went past right edge of column */
-			if (square && q->byte<markk->byte && piscol(q) >= right)
-				*s++ = '\n';
+			if (square && q->byte<markk->byte && piscol(q) >= right) {
+				if (buf_x == buf_size - 1) {
+					bus_size *= 2;
+					buf = (char *)joe_realloc(buf, buf_size);
+				}
+				buf[buf_x++] = '\n';
+			}
 		}
 		prm(q);
-		*s = 0;
+		buf[buf_x] = 0;
 		return buf;
 	} else
 		return 0;

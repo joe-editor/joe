@@ -1,21 +1,18 @@
-
-Do not use syntax files for Ctrl-G: too slow in reverse.
-
-"-wrap" is messing up isrch somehow
-[fixed]
+umath use joe_isalpha_? problem is we eval a char buffer, not an editor
+buffer.
+ [fixed - but should convert to utf-8 if you eval a non-utf-8 buffer]
 
 check all type-like functions- make sure they expect unicode!
 
   - check all other users of joe_is...
      - macro.c, options.c, rc.c, uerror.c
 
- parse_string not utf8?
-
-tomatch_xml: does not handle unicode names
+ parse_string not utf8? Should be OK: it's only used with emit_string.
 
 help screen with 8-bit character showing
 
 macros.c: unescape seems broken
+ [fixed - but it would be nice if the buffer sizes were not limited]
 
 path.c: rmatch.. should depend on locale (character class)
 
@@ -24,6 +21,9 @@ look at texec..
 
 hmm.. we always convert to unicode on input, but do we convert to the 8-bit
 charset of the buffer? check this.
+
+"-wrap" is messing up isrch somehow
+[fixed]
 
 New regex engine:
       add case ignore:
@@ -103,19 +103,22 @@ Digit values
 Added some more convenient classes:
    see http://www.w3.org/TR/xml11/#NT-NameStartChar
    see http://www.w3.org/TR/xmlschma11-2/#regexs
+
 	\d	Digit: same as \p{Nd}
 	\D	opposite
 	\s	space, tab, newline, return
 	\S	opposite
+	\w	word character: [\x{0}-\x{10ffff}]-[\p{P}\p{Z}\p{C}]
+	\W	opposite
+	\p{block-name}
+
 	\i	NameStartChar
 			: A-Z _ a-z C0-D6 D8-F6 F8-2FF 370-37D 37F-1FFF 200C-200D 2070-218F 2C00-2FEF 3001-D7FF F900-FDCF FDF0-FFFD 10000-EFFFF
 	\I	opposite
 	\c	NameChar
 			\i - . 0-9 B7 0300-036F 203F-2040
 	\C	opposite
-	\w	word character: [\x{0}-\x{10ffff}]-[\p{P}\p{Z}\p{C}]
-	\W	opposite
-	\p{block-name}
+
 
 Java:
   isJavaIdentifierStart: \p{Nl} \p{L} \p{Pc} \p{Sc}
@@ -141,9 +144,7 @@ jmacs vs. mg vs gnu-emacs:
 	c-x d: jmacs: nothing.  gnu: menu.
 	c-x c-r: jmacs: nothing.  gnu: load file in read-only mode.
 
-	esc m  back to indentation (math in joe)
-
-	Non-standard:
+	esc m  back to indentation (math in joe	Non-standard:
 
 	c-x g  is goto line in mg, is goto matching delimiter in jmacs, udf gnu
 	c-x p  previous window in mg  (prev error in jmacs), udf gnu
@@ -1200,5 +1201,14 @@ utils.c:parse_ident not using utf8?
 [done: now allows utf8 identifiers]
 
 move getcodeset stuff from utf8.c -> charmap
+[done]
+
+Ctrl-G logic bugs:
+  xml with utf-8 chars: does not jump to first char, we must be assuming
+chars are bytes
+  there is delimiter buffer but it's bytes, not chars
+[done]
+
+tomatch_xml: does not handle unicode names
 [done]
 

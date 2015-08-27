@@ -247,11 +247,11 @@ struct glopts {
 	const char *name;		/* Option name */
 	int type;		/*      0 for global option flag
 				   1 for global option int
-				   2 for global option string
+				   2 for global option string (in locale encoding)
 				   4 for local option flag
 				   5 for local option int
 				   14 for local option off_t
-				   6 for local option string
+				   6 for local option string (in utf8)
 				   7 for local option off_t+1, with range checking
 				 */
 	void *set;		/* Address of global option */
@@ -964,7 +964,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes,*(char **)((char *)&bw->o+glopts[y].ofst));
 			else
 				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes,"");
-			if(wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
+			if(wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
@@ -974,7 +974,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 			xx = (int *) joe_malloc(SIZEOF(int));
 
 			*xx = y;
-			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
+			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
@@ -1001,21 +1001,21 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 		      in:xx = (int *) joe_malloc(SIZEOF(int));
 
 			*xx = y;
-			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, locale_map, 0))
+			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
 
 		case 9:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
-			if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, locale_map, 0))
+			if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
 
 		case 13:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
-			if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, locale_map, 0))
+			if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
