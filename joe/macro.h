@@ -66,7 +66,7 @@ void chmac(void);
         -2 more input needed (macro ended with , )
      secure: if set, only allow commands which begin with "shell_"
 */
-MACRO *mparse(MACRO *m, char *buf, ptrdiff_t *sta, int secure);
+MACRO *mparse(MACRO *m, const char *buf, ptrdiff_t *sta, int secure);
 
 /* Convert macro to text.  Provide a buffer to write to in 's'. */
 char *mtext(char *s, MACRO *m);

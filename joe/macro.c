@@ -108,120 +108,63 @@ MACRO *macsta(MACRO *m, int a)
  * Also, secure_type will be used instead of type.
  */
 
-MACRO *mparse(MACRO *m, char *buf, ptrdiff_t *sta, int secure)
+MACRO *mparse(MACRO *m, const char *buf, ptrdiff_t *sta, int secure)
 {
-	char c;
-	int y, x = 0;
+	const char *org = buf;
+	int bf[256];
+	char bf1[256];
+	int x;
 
       macroloop:
 
 	/* Skip whitespace */
-	while (joe_isblank(locale_map,buf[x]))
-		++x;
+	parse_ws(&buf, 0);
 
 	/* If the buffer is only whitespace then treat as unknown command */
-	if (!buf[x]) {
+	if (!*buf) {
 		*sta = -1;
 		return NULL;
 	}
 
 	/* Do we have a string? */
-	if (buf[x] == '\"') {
-		++x;
-		while (buf[x] && buf[x] != '\"') {
-			if (buf[x] == '\\' && buf[x + 1]) {
-				++x;
-				switch (buf[x]) {
-				case 'n':
-					buf[x] = 10;
-					break;
-				case 'r':
-					buf[x] = 13;
-					break;
-				case 'b':
-					buf[x] = 8;
-					break;
-				case 'f':
-					buf[x] = 12;
-					break;
-				case 'a':
-					buf[x] = 7;
-					break;
-				case 't':
-					buf[x] = 9;
-					break;
-				case 'x':
-					c = 0;
-					if (buf[x + 1] >= '0' && buf[x + 1] <= '9')
-						c = (char)(c * 16 + buf[++x] - '0');
-					else if ((buf[x + 1] >= 'a' && buf[x + 1] <= 'f') || (buf[x + 1] >= 'A' && buf[x + 1] <= 'F'))
-						c = (char)(c * 16 + (buf[++x] & 0xF) + 9);
-					if (buf[x + 1] >= '0' && buf[x + 1] <= '9')
-						c = (char)(c * 16 + buf[++x] - '0');
-					else if ((buf[x + 1] >= 'a' && buf[x + 1] <= 'f') || (buf[x + 1] >= 'A' && buf[x + 1] <= 'F'))
-						c = (char)(c * 16 + (buf[++x] & 0xF) + 9);
-					buf[x] = c;
-					break;
-				case '0':
-				case '1':
-				case '2':
-				case '3':
-				case '4':
-				case '5':
-				case '6':
-				case '7':
-				case '8':
-				case '9':
-					c = (char)(buf[x] - '0');
-					if (buf[x + 1] >= '0' && buf[x + 1] <= '7')
-						c = (char)(c * 8 + buf[++x] - '0');
-					if (buf[x + 1] >= '0' && buf[x + 1] <= '7')
-						c = (char)(c * 8 + buf[++x] - '0');
-					buf[x] = c;
-					break;
-				}
-			}
+	if (parse_Zstring(&buf, bf, SIZEOF(bf)/SIZEOF(bf[0])) >= 0) {
+		for (x = 0; bf[x]; ++x) {
 			if (m) {
 				if (!m->steps) {
 					MACRO *macro = m;
-
+					
 					m = mkmacro(NO_MORE_DATA, 0, 0, NULL);
 					addmacro(m, macro);
 				}
 			} else
 				m = mkmacro(NO_MORE_DATA, 0, 0, NULL);
-			addmacro(m, mkmacro(buf[x], 0, 0, secure ? findcmd("secure_type") : findcmd("type")));
-			++x;
+			addmacro(m, mkmacro(bf[x], 0, 0, secure ? findcmd("secure_type") : findcmd("type")));
 		}
-		if (buf[x] == '\"')
-			++x;
-	}
-
-	/* Do we have a command? */
-	else {
-		for (y = x; buf[y] && buf[y]!='#' && buf[y] != '!' &&
-		            buf[y] != '~' && buf[y] !='-' && buf[y] != ',' &&
-		            buf[y] != ' ' && buf[y] != '\t' &&
-		            buf[y] != '\n' && buf[x] != '\r'; ++y) ;
-		if (y != x) {
+	} else { /* Do we have a command? */
+		x = 0;
+		while (*buf && *buf != '#' && *buf != '!' && *buf != '~' && *buf !='-' && *buf != ',' &&
+		       *buf != ' ' && *buf != '\t' && *buf != '\n' && *buf != '\r') {
+		       	if (x != SIZEOF(bf1) - 1)
+			       	bf1[x++] = *buf;
+		       	++buf;
+		}
+		bf1[x] = 0;
+		if (x) {
 			CMD *cmd;
 			int flg = 0;
 
-			c = buf[y];
-			buf[y] = 0;
-			if (!secure || !zncmp(buf + x, "shell_", 6))
-				cmd = findcmd(buf + x);
+			if (!secure || !zncmp(bf1, "shell_", 6))
+				cmd = findcmd(bf1);
 			else
 				cmd = 0;
-			buf[x = y] = c;
 
 			/* Parse flags */
-			while (buf[x]=='-' || buf[x]=='!' || buf[x]=='#' || buf[x]=='~') {
-				if (buf[x]=='-') flg |= 1;
-				if (buf[x]=='!') flg |= 2;
-				if (buf[x]=='#') flg |= 4;
-				if (buf[x]=='~') flg |= 8;
-				++x;
+			while (*buf == '-' || *buf == '!' || *buf == '#' || *buf == '~') {
+				if (*buf == '-') flg |= 1;
+				if (*buf == '!') flg |= 2;
+				if (*buf == '#') flg |= 4;
+				if (*buf == '~') flg |= 8;
+				++buf;
 			}
 
 			if (!cmd) {
@@ -244,22 +187,20 @@ MACRO *mparse(MACRO *m, char *buf, ptrdiff_t *sta, int secure)
 	}
 
 	/* Skip whitespace */
-	while (joe_isblank(locale_map,buf[x]))
-		++x;
+	parse_ws(&buf, 0);
 
 	/* Do we have a comma? */
-	if (buf[x] == ',') {
-		++x;
-		while (joe_isblank(locale_map,buf[x]))
-			++x;
-		if (buf[x] && buf[x] != '\r' && buf[x] != '\n')
+	if (*buf == ',') {
+		++buf;
+		parse_ws(&buf, 0);
+		if (*buf && *buf != '\r' && *buf != '\n')
 			goto macroloop;
 		*sta = -2;
 		return m;
 	}
 
 	/* Done */
-	*sta = x;
+	*sta = buf - org;
 	return m;
 }
 
@@ -276,14 +217,14 @@ char *unescape(char *ptr, int c)
 	} else if (c == '\'') {
 		*ptr++ = '\\';
 		*ptr++ = '\'';
-	} else if (c < 32 || c > 126) {
-		/* FIXME: what if c > 256 or c < 0 ? */
+	} else if (c < 32 || c == 127) {
 		*ptr++ = '\\';
 		*ptr++ = 'x';
 		*ptr++ = "0123456789ABCDEF"[15 & (c >> 4)];
 		*ptr++ = "0123456789ABCDEF"[15 & c];
-	} else
-		*ptr++ = TO_CHAR_OK(c);
+	} else {
+		ptr += utf8_encode(ptr, c);
+	}
 	return ptr;
 }
 

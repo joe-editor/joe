@@ -588,7 +588,7 @@ B *cmdhist = NULL;
 
 int uexecmd(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("Command: ")), &cmdhist, docmd, "cmd", NULL, cmdcmplt, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(w, joe_gettext(_("Command: ")), &cmdhist, docmd, "cmd", NULL, cmdcmplt, NULL, NULL, utf8_map, 0)) {
 		return 0;
 	} else {
 		return -1;

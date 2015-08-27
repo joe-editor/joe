@@ -51,9 +51,9 @@ static struct var *get(const char *str)
 	return v;
 }
 
-char *ptr;
+const char *ptr;
 struct var *dumb;
-static double eval(char *s, int secure);
+static double eval(const char *s, int secure);
 
 int recur=0;
 
@@ -63,41 +63,36 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 {
 	double x = 0.0, y, z;
 	struct var *v = NULL;
+	char ident[256];
+	char macr[256];
 
-	while (*ptr == ' ' || *ptr == '\t') {
-		++ptr;
-	}
-	if ((*ptr >= 'a' && *ptr <= 'z') || (*ptr >= 'A' && *ptr <= 'Z')
-	    || *ptr == '_') {
-		char *s = ptr, c;
+	parse_ws(&ptr, '#');
 
-		while ((*ptr >= 'a' && *ptr <= 'z')
-		       || (*ptr >= 'A' && *ptr <= 'Z')
-		       || *ptr == '_' || (*ptr >= '0' && *ptr <= '9')) {
-			++ptr;
-		}
-		c = *ptr;
-		*ptr = 0;
-		if (!secure && !zcmp(s,"joe")) {
-			*ptr = c;
+	if (!parse_ident(&ptr, ident, SIZEOF(ident))) {
+		if (!secure && !zcmp(ident ,"joe")) {
 			v = 0;
 			x = 0.0;
-			while (*ptr==' ' || *ptr=='\t')
-				++ptr;
+			parse_ws(&ptr, '#');
 			if (*ptr=='(') {
-				char *q = ++ptr;
+				ptrdiff_t idx;
 				MACRO *m;
 				ptrdiff_t sta;
-				while (*q && *q!=')')
-					++q;
-				if (*q!=')') {
+				idx = 0;
+				++ptr;
+				while (*ptr && *ptr != ')') {
+					if (idx != SIZEOF(macr) - 1)
+						macr[idx++] = *ptr;
+					++ptr;
+				}
+				macr[idx] = 0;
+				if (*ptr != ')') {
 					if (!merr)
 						merr = joe_gettext(_("Missing )"));
-				} else
-					*q++ = 0;
+				} else {
+					ptr++;
+				}
 				if (en) {
-					m = mparse(NULL,ptr,&sta,0);
-					ptr = q;
+					m = mparse(NULL,macr,&sta,0);
 					if (m) {
 						x = !exmacro(m, 1, NO_MORE_DATA);
 						rmmacro(m);
@@ -105,50 +100,47 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 						if (!merr)
 							merr = joe_gettext(_("Syntax error in macro"));
 					}
-				} else {
-					ptr = q;
 				}
 			} else {
 				if (!merr)
 					merr = joe_gettext(_("Missing ("));
 			}
-			c = *ptr;
 		} else if (!en) {
 			v = 0;
 			x = 0.0;
-		} else if (!zcmp(s,"hex")) {
+		} else if (!zcmp(ident, "hex")) {
 			mode_hex = 1;
 			mode_eng = 0;
 			v = get("ans");
 			x = v->val;
-		} else if (!zcmp(s,"dec")) {
+		} else if (!zcmp(ident, "dec")) {
 			mode_hex = 0;
 			mode_eng = 0;
 			v = get("ans");
 			x = v->val;
-		} else if (!zcmp(s,"eng")) {
+		} else if (!zcmp(ident, "eng")) {
 			mode_hex = 0;
 			mode_eng = 1;
 			v = get("ans");
 			x = v->val;
-		} else if (!zcmp(s,"ins")) {
+		} else if (!zcmp(ident, "ins")) {
 			mode_ins = 1;
 			v = get("ans");
 			x = v->val;
-		} else if (!zcmp(s,"sum")) {
+		} else if (!zcmp(ident, "sum")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
-		} else if (!zcmp(s,"cnt")) {
+		} else if (!zcmp(ident, "cnt")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 			x = cnt;
-		} else if (!zcmp(s,"avg")) {
+		} else if (!zcmp(ident, "avg")) {
 			double xsq;
 			int cnt = blksum(&x, &xsq);
 			if (!merr && cnt<=0)
@@ -156,7 +148,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 			v = 0;
 			if (cnt)
 				x /= (double)cnt;
-		} else if (!zcmp(s,"dev")) {
+		} else if (!zcmp(ident, "dev")) {
 			double xsq;
 			double avg;
 			int cnt = blksum(&x, &xsq);
@@ -167,8 +159,8 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 				avg = x / (double)cnt;
 				x = sqrt(xsq + (double)cnt*avg*avg - 2.0*avg*x);
 			}
-		} else if (!zcmp(s,"eval")) {
-			char *save = ptr;
+		} else if (!zcmp(ident, "eval")) {
+			const char *save = ptr;
 			char *e = blkget();
 			if (e) {
 				v = 0;
@@ -179,10 +171,9 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 				merr = joe_gettext(_("No block"));
 			}
 		} else {
-			v = get(s);
+			v = get(ident);
 			x = v->val;
 		}
-		*ptr = c;
 	} else if ((*ptr >= '0' && *ptr <= '9') || *ptr == '.') {
 		char *eptr;
 		x = strtod(ptr,&eptr);
@@ -340,7 +331,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 	return x;
 }
 
-static double eval(char *s, int secure)
+static double eval(const char *s, int secure)
 {
 	double result = 0.0;
 	struct var *v;
@@ -350,21 +341,17 @@ static double eval(char *s, int secure)
 		return 0.0;
 	}
 	ptr = s;
-	while (!merr && *ptr) {
+	while (!merr && *ptr && *ptr != '#') {
 		result = expr(0, 1, &dumb,secure);
 		v = get("ans");
 		v->val = result;
 		v->set = 1;
 		if (!merr) {
-			while (*ptr == ' ' || *ptr == '\t' || *ptr == '\r' || *ptr == '\n') {
-				++ptr;
-			}
+			parse_ws(&ptr, '#');
 			if (*ptr == ':') {
 				++ptr;
-				while (*ptr == ' ' || *ptr == '\t' || *ptr == '\r' || *ptr == '\n') {
-					++ptr;
-				}
-			} else if (*ptr) {
+				parse_ws(&ptr, '#');
+			} else if (*ptr && *ptr != '#') {
 				merr = joe_gettext(_("Extra junk after end of expr"));
 			}
 		}
@@ -888,7 +875,7 @@ B *mathhist = NULL;
 int umath(W *w, int k)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(w, "=", &mathhist, doumath, "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(w, "=", &mathhist, doumath, "Math", NULL, NULL, NULL, NULL, utf8_map, 0)) {
 		return 0;
 	} else {
 		return -1;
@@ -900,7 +887,7 @@ int umath(W *w, int k)
 int usmath(W *w, int k)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(w, "=", &mathhist, dosmath, "Math", NULL, NULL, NULL, NULL, locale_map, 0)) {
+	if (wmkpw(w, "=", &mathhist, dosmath, "Math", NULL, NULL, NULL, NULL, utf8_map, 0)) {
 		return 0;
 	} else {
 		return -1;
