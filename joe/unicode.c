@@ -87,12 +87,14 @@ struct Cclass cclass_alpha[1];
 int joe_iswalpha(struct charmap *foo, int ch) { return cclass_lookup(cclass_alpha, ch); }
 
 struct Cclass cclass_alpha_[1];
+struct Cclass cclass_notalpha_[1];
 int joe_iswalpha_(struct charmap *foo, int ch) { return cclass_lookup(cclass_alpha_, ch); }
 
 struct Cclass cclass_alnum[1];
 int joe_iswalnum(struct charmap *foo, int ch) { return cclass_lookup(cclass_alnum, ch); }
 
 struct Cclass cclass_alnum_[1];
+struct Cclass cclass_notalnum_[1];
 int joe_iswalnum_(struct charmap *foo, int ch) { return cclass_lookup(cclass_alnum_, ch); }
 
 struct Cclass cclass_digit[1];
@@ -211,13 +213,24 @@ void joe_iswinit()
 
 	/* Alphabetical + underscores (name start character) */
 	/* Java has: isJavaIdentifierStart: \p{Nl} \p{L} \p{Pc} \p{Sc} */
-	/* Used for XML */
+	/* Unicode has ID_Start: L + Nl + other_id_start - pattern_syntax - pattern_whitespace
+	     from DerivedCoreProperties.txt:
+	     see: http://unicode.org/reports/tr31/
+	     and: http://unicode.org/reports/tr31/tr31-1.html#Pattern_Syntax */
+
+	/* Used for XML and \i */
 	cclass_init(cclass_alpha_);
 	cclass_union(cclass_alpha_, unicode("L"));
 	cclass_union(cclass_alpha_, unicode("Pc"));
 	cclass_union(cclass_alpha_, unicode("Sc"));
 	cclass_union(cclass_alpha_, unicode("Nl"));
 	cclass_opt(cclass_alpha_);
+
+	/* \I */
+	cclass_init(cclass_notalpha_);
+	cclass_union(cclass_notalpha_, cclass_alpha_);
+	cclass_inv(cclass_notalpha_);
+	cclass_opt(cclass_notalpha_);
 
 	/* Alphanumeric */
 	cclass_init(cclass_alnum);
@@ -229,7 +242,9 @@ void joe_iswinit()
 	/* Alphanumeric + underscores (name continuation character) */
 	/* Java has: isJavaIdentifierPart: isJavaIdentifierStart \p{Mn} \p{Mc} \p{Nd} ignorable */
 	/* Ignorable: 0x00-0x08, 0x0e-0x1b, 0x7f-0x9F */
+	/* Unicode has ID_Continue: ID_Start + Mn + Mc + Nd + Pc + Other_ID_Continue - Pattern_syntax - Pattern_whitespace */
 	/* Used for XML */
+	/* \c */
 	cclass_init(cclass_alnum_);
 	cclass_union(cclass_alnum_, unicode("L"));
 	cclass_union(cclass_alnum_, unicode("Pc"));
@@ -238,7 +253,14 @@ void joe_iswinit()
 	cclass_union(cclass_alnum_, unicode("Mn"));
 	cclass_union(cclass_alnum_, unicode("Mc"));
 	cclass_union(cclass_alnum_, unicode("Nd"));
+	cclass_add(cclass_alnum_, 0x200c, 0x200d);
 	cclass_opt(cclass_alnum_);
+
+	/* \C */
+	cclass_init(cclass_notalnum_);
+	cclass_union(cclass_notalnum_, cclass_alnum_);
+	cclass_inv(cclass_notalnum_);
+	cclass_opt(cclass_notalnum_);
 
 	/* Digit */
 	cclass_init(cclass_digit);

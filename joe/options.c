@@ -216,7 +216,7 @@ void setopt(B *b, const char *parsed_name)
 			if(o->contents_regex) {
 				P *p = pdup(b->bof, "setopt");
 				if (!o->r_contents_regex)
-					o->r_contents_regex = joe_regcomp(ascii_map, o->contents_regex, zlen(o->contents_regex), 0, 1);
+					o->r_contents_regex = joe_regcomp(ascii_map, o->contents_regex, zlen(o->contents_regex), 0, 1, 0);
 				if (o->r_contents_regex && !joe_regexec(o->r_contents_regex, p, 0, 0, 0)) {
 					prm(p);
 					b->o = *o;

@@ -1138,6 +1138,11 @@ meanings directly, and do not have to be escaped with backslash: ., \*, \+, ?,
 JOE will use the JOE syntax for regular expressions instead of the standard
 syntax.  This overrides the "-regex" option.
 
+* __v__
+
+JOE will send debug information about the regular expression to the startup
+log.  The log can be viewed with the showlog command.
+
 You can hit __^L__ to repeat the previous search.
 
 You can hit __^K H__ at the search and replace options prompt to bring up a list
@@ -1178,10 +1183,10 @@ any number of occurrences.
 This finds exactly one character.  For example, if you give __A\\.B__ as
 the search text, JOE will find AXB, but not AB or AXXB.
 
-* __\c__
+* __\!__
 
 This works like __\.__, but matches a balanced C-language expression. 
-For example, if you search for __malloc(\c\\\*)__, then JOE will find all
+For example, if you search for __malloc(\!\\\*)__, then JOE will find all
 function calls to __malloc__, even if there was a __)__ within the
 parenthesis.
 
@@ -1329,6 +1334,22 @@ This matches any space character.
 * \\S
 
 This matches anything except for a spacing character.
+
+* \\i
+
+This matches an identifier start character.
+
+* \\I
+
+This matches anything except for an identifier start character.
+
+* \\c
+
+This matches an identifier continuation character.
+
+* \\C
+
+This matches anything except for an identifier continuation character.
 
 * \\t Tab
 * \\n Newline

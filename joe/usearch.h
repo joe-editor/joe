@@ -26,6 +26,7 @@ struct search {
 	int	regex;		/* Set for standard regex syntax, clear for JOE syntax */
 	int	repeat;		/* Set with repeat count (or -1 for no repeat count) */
 	int	replace;	/* Set if this is search & replace */
+	int	debug;		/* Set to have regex debug information sent to log buffer */
 	int	rest;		/* Set to do remainder of search & replace w/o query */
 	Regmatch_t pieces[NMATCHES];	/* Sub-matches we found */
 	Regmatch_t entire;	/* Entire matching string */

@@ -1,3 +1,36 @@
+
+from DerivedCoreProperties.txt:
+see: http://unicode.org/reports/tr31/
+and: http://unicode.org/reports/tr31/tr31-1.html#Pattern_Syntax
+
+ ID_Continue: \c
+    ID_Start + Mn + Mc + Nd + Pc + Other_ID_Continue
+    -Pattern_Syntax?
+    -Pattern_White_Space?
+    Allow 200c and 200d
+
+ ID_Start: \i
+    Lu + Ll + Lt + Lm + Lo + Nl
+    + Other_ID_Start
+    - Pattern_Syntax
+    - Pattern_White_Space
+      (some languages allow \p{Sk})
+
+ Other_ID_Start: (because they were recategorized, but kept for backwards compatibility)
+    2118, 212e, 309b, 309c
+
+ Other_ID_Continue:
+    1369, 00b7, 0387, 19da
+
+Pattern_white_space: [9-d] [20] [85] [a0] [2000-200a] [200e-200f] [2028]
+[2029] [202f] [205f] [3000]
+
+Pattern_syntax: [21-2f] [3a-40] [5b-60] [7b-7e] [a1-a7] [a9] [ab-ac] [ae]
+[b0-b1] [b6-b7] [bb] [bf] [d7] [f7] [2010-2027] [2030-205e] [2190-2bff]
+[3001-3003] [3008-3020] [3030] [fd3e-fd3f] [fe45-fe46]
+
+
+
 Fields in UnicodeData.txt, see:
 
 ftp://ftp.unicode.org/Public/3.0-Update/UnicodeData-3.0.0.html

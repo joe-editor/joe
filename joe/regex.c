@@ -29,7 +29,35 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 	if ((b ? l >= 2 : s[1]) && *s == '\\') { /* Backslash.. */
 		++s; --l;
 		switch (*s) {
-			case 'w': { /* Word */
+			case 'i': { /* Identifier start */
+				++s; --l;
+				c = -256;
+				
+				if (cat)
+					*cat = cclass_alpha_;
+				break;
+			} case 'I': { /* Not identifier start */
+				++s; --l;
+				c = -256;
+				
+				if (cat)
+					*cat = cclass_notalpha_;
+				break;
+			} case 'c': { /* Identifier continue */
+				++s; --l;
+				c = -256;
+				
+				if (cat)
+					*cat = cclass_alnum_;
+				break;
+			} case 'C': { /* Not identifier continue */
+				++s; --l;
+				c = -256;
+				
+				if (cat)
+					*cat = cclass_notalnum_;
+				break;
+			} case 'w': { /* Word */
 				++s; --l;
 				c = -256;
 				
@@ -71,6 +99,7 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 				if (cat)
 					*cat = cclass_notdigit;
 				break;
+#if 0
 			} case 'c': { /* Control */
 				c = 0;
 				++s; --l;
@@ -79,6 +108,7 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 					--l;
 				}
 				break;
+#endif
 			} case 'n': { /* Newline */
 				c = 10;
 				++s; --l;
@@ -677,7 +707,7 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 	} else if (g->l && (*g->ptr == '.' || *g->ptr == '^' || *g->ptr == '$')) {
 		no = mk_node(g, -*g->ptr++, -1, -1);
 		--g->l;
-	} else if (g->l >= 2 && g->ptr[0] == '\\' && (g->ptr[1] == 'c')) {
+	} else if (g->l >= 2 && g->ptr[0] == '\\' && (g->ptr[1] == '!')) {
 		no = mk_node(g, -'e', -1, -1);
 		g->ptr += 2; g->l -= 2;
 	} else if (g->l >= 2 && g->ptr[0] == '\\' &&
@@ -901,7 +931,7 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 	} else if (g->l >= 2 && g->ptr[0] == '\\' && (g->ptr[1] == '.')) {
 		no = mk_node(g, -'.', -1, -1);
 		g->ptr += 2; g->l -= 2;
-	} else if (g->l >= 2 && g->ptr[0] == '\\' && (g->ptr[1] == 'c')) {
+	} else if (g->l >= 2 && g->ptr[0] == '\\' && (g->ptr[1] == '!')) {
 		no = mk_node(g, -'e', -1, -1);
 		g->ptr += 2; g->l -= 2;
 	} else if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '[') {
@@ -1318,7 +1348,7 @@ static void codegen(struct regcomp *g, int no, int *end)
 
 /* #define DEBUG 1 */
 
-struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, int fold, int stdfmt)
+struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, int fold, int stdfmt, int debug)
 {
 	int no;
 	struct regcomp *g;
@@ -1352,11 +1382,11 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 	g->prefix[g->prefix_len] = 0;
 
 	/* Print parse tree */
-#ifdef DEBUG
-	logmessage_0("Parse tree:\n");
-	show(g, no, 0);
-	logmessage_1("Leading prefix '%s'\n", g->prefix);
-#endif
+	if (debug) {
+		logmessage_0("Parse tree:\n");
+		show(g, no, 0);
+		logmessage_1("Leading prefix '%s'\n", g->prefix);
+	}
 
 	/* Convert tree into NFA in the form of byte code */
 
@@ -1365,9 +1395,9 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 	/* .* */
 	emiti(g->frag, iFORK);
 	b = emit_branch(g->frag, 0);
-#ifdef DEBUG
-	logmessage_1("Total size = %d\n",g->frag->len);
-#endif
+	if (debug) {
+		logmessage_1("Total size = %d\n",g->frag->len);
+	}
 	a = emiti(g->frag, iDOT);
 	emiti(g->frag, iFORK);
 	emit_branch(g->frag, a);
@@ -1401,11 +1431,11 @@ struct regcomp *joe_regcomp(struct charmap *cmap, const char *s, ptrdiff_t len, 
 	/* joe_free(g->nodes); g->nodes = 0; */
 
 	/* Unassemble code */
-#ifdef DEBUG
-	logmessage_0("NFA-program:\n");
-	unasm(g->frag);
-	logmessage_1("Total size = %lld\n",(long long)g->frag->len);
-#endif
+	if (debug) {
+		logmessage_0("NFA-program:\n");
+		unasm(g->frag);
+		logmessage_1("Total size = %lld\n",(long long)g->frag->len);
+	}
 
 	return g;
 }

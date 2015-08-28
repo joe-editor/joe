@@ -420,6 +420,7 @@ SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int re
 	srch->replacement = replacement;
 	srch->ignore = ignore;
 	srch->regex = regex;
+	srch->debug = 0;
 	srch->backwards = backwards;
 	srch->repeat = repeat;
 	srch->replace = replace;
@@ -607,6 +608,7 @@ const char *wrap_key = _("|wrap|wW");
 const char *nowrap_key = _("|don't wrap|nN");
 const char *regex_key = _("|regex|xX");
 const char *noregex_key = _("|no regex|yY");
+const char *regex_debug_key = _("|regex_debug|v");
 
 static int set_options(W *w, char *s, void *obj, int *notify)
 {
@@ -640,6 +642,8 @@ static int set_options(W *w, char *s, void *obj, int *notify)
 			srch->block_restrict = 1;
 		else if (yncheck(regex_key, c))
 			srch->regex = 1;
+		else if (yncheck(regex_debug_key, c))
+			srch->debug = 1;
 		else if (yncheck(noregex_key, c))
 			srch->regex = 0;
 		else if (c >= '0' && c <= '9') {
@@ -1022,7 +1026,7 @@ static int fnext(BW *bw, SRCH *srch)
 	}
 	/* Compile pattern if we don't already have it */
 	if (!srch->comp) {
-		srch->comp = joe_regcomp(bw->b->o.charmap, srch->pattern, sLEN(srch->pattern), srch->ignore, srch->regex);
+		srch->comp = joe_regcomp(bw->b->o.charmap, srch->pattern, sLEN(srch->pattern), srch->ignore, srch->regex, srch->debug);
 		if (srch->comp->err) {
 			msgnw(bw->parent, joe_gettext(srch->comp->err));
 			return 4;
