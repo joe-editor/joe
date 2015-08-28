@@ -222,7 +222,7 @@ void joe_iswinit()
 	cclass_init(cclass_alpha_);
 	cclass_union(cclass_alpha_, unicode("L"));
 	cclass_union(cclass_alpha_, unicode("Pc"));
-	cclass_union(cclass_alpha_, unicode("Sc"));
+/*	cclass_union(cclass_alpha_, unicode("Sc")); */
 	cclass_union(cclass_alpha_, unicode("Nl"));
 	cclass_opt(cclass_alpha_);
 
@@ -248,7 +248,7 @@ void joe_iswinit()
 	cclass_init(cclass_alnum_);
 	cclass_union(cclass_alnum_, unicode("L"));
 	cclass_union(cclass_alnum_, unicode("Pc"));
-	cclass_union(cclass_alpha_, unicode("Sc"));
+/*	cclass_union(cclass_alpha_, unicode("Sc")); */
 	cclass_union(cclass_alpha_, unicode("Nl"));
 	cclass_union(cclass_alnum_, unicode("Mn"));
 	cclass_union(cclass_alnum_, unicode("Mc"));

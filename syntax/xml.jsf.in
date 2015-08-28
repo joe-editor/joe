@@ -68,7 +68,7 @@
 
 :entityref EntityRef
 	*		error		noeat recolor=-1
-	"-0-9.\x{b7}\x{300}-\x{36f}\x{203f}\x{2040}A-Za-z_:\x{c0}-\x{d6}\x{d8}-\x{f6}\x{f8}-\x{2ff}\x{370}-\x{37d}\x{37f}-\x{1fff}\x{200c}\x{200d}\x{2070}-\x{218f}\x{2c00}-\x{2fef}\x{3001}-\x{d7ff}\x{f900}-\x{fdcf}\x{fdf0}-\x{fffd}\x{10000}-\x{effff}"	entityref
+	"-.:\c"		entityref
 	"#"		entityref
 	";"		content
 
@@ -77,7 +77,7 @@
 :tag Tag
 	*		error		noeat recolor=-1
 	"/"		end_tag
-	"A-Za-z_:\x{c0}-\x{d6}\x{d8}-\x{f6}\x{f8}-\x{2ff}\x{370}-\x{37d}\x{37f}-\x{1fff}\x{200c}\x{200d}\x{2070}-\x{218f}\x{2c00}-\x{2fef}\x{3001}-\x{d7ff}\x{f900}-\x{fdcf}\x{fdf0}-\x{fffd}\x{10000}-\x{effff}"	start_or_empty_tag
+	":\i"		start_or_empty_tag
 	"?"		pi_start	recolor=-2
 	"!"		decl		recolor=-2 buffer
 
@@ -85,11 +85,11 @@
 
 :end_tag Tag
 	*		error		noeat recolor=-1
-	"A-Za-z_:\x{c0}-\x{d6}\x{d8}-\x{f6}\x{f8}-\x{2ff}\x{370}-\x{37d}\x{37f}-\x{1fff}\x{200c}\x{200d}\x{2070}-\x{218f}\x{2c00}-\x{2fef}\x{3001}-\x{d7ff}\x{f900}-\x{fdcf}\x{fdf0}-\x{fffd}\x{10000}-\x{effff}"	end_tag2
+	":\i"		end_tag2
 
 :end_tag2 Tag
 	*		error		noeat recolor=-1
-	"-0-9.\x{b7}\x{300}-\x{36f}\x{203f}\x{2040}A-Za-z_:\x{c0}-\x{d6}\x{d8}-\x{f6}\x{f8}-\x{2ff}\x{370}-\x{37d}\x{37f}-\x{1fff}\x{200c}\x{200d}\x{2070}-\x{218f}\x{2c00}-\x{2fef}\x{3001}-\x{d7ff}\x{f900}-\x{fdcf}\x{fdf0}-\x{fffd}\x{10000}-\x{effff}"	end_tag2
+	"-.:\c"		end_tag2
 	" \t\r\n"	end_tag2_sp	recolor=-1
 	">"		content
 
@@ -108,7 +108,7 @@
 
 :start_or_empty_tag Tag
 	*		error		noeat recolor=-1
-	"-0-9.\x{b7}\x{300}-\x{36f}\x{203f}\x{2040}A-Za-z_:\x{c0}-\x{d6}\x{d8}-\x{f6}\x{f8}-\x{2ff}\x{370}-\x{37d}\x{37f}-\x{1fff}\x{200c}\x{200d}\x{2070}-\x{218f}\x{2c00}-\x{2fef}\x{3001}-\x{d7ff}\x{f900}-\x{fdcf}\x{fdf0}-\x{fffd}\x{10000}-\x{effff}"	start_or_empty_tag
+	"-.:\c"		start_or_empty_tag
 	"/"		empty_tag
 	" \t\r\n"	start_or_empty_tag_sp	recolor=-1
 	">"		content
@@ -127,7 +127,7 @@
 :tag_space Attr
 	*		error		noeat recolor=-1
 	" \t\r\n"	tag_space_sp	recolor=-1
-	"A-Za-z_:\x{c0}-\x{d6}\x{d8}-\x{f6}\x{f8}-\x{2ff}\x{370}-\x{37d}\x{37f}-\x{1fff}\x{200c}\x{200d}\x{2070}-\x{218f}\x{2c00}-\x{2fef}\x{3001}-\x{d7ff}\x{f900}-\x{fdcf}\x{fdf0}-\x{fffd}\x{10000}-\x{effff}"	attr
+	":\i"		attr
 	"/"		empty_tag	recolor=-1
 	">"		close_tag	recolor=-1
 
@@ -138,7 +138,7 @@
 
 :attr Attr
 	*		error		noeat recolor=-1
-	"-0-9.\x{b7}\x{300}-\x{36f}\x{203f}\x{2040}A-Za-z_:\x{c0}-\x{d6}\x{d8}-\x{f6}\x{f8}-\x{2ff}\x{370}-\x{37d}\x{37f}-\x{1fff}\x{200c}\x{200d}\x{2070}-\x{218f}\x{2c00}-\x{2fef}\x{3001}-\x{d7ff}\x{f900}-\x{fdcf}\x{fdf0}-\x{fffd}\x{10000}-\x{effff}" attr
+	"-.:\c" 	attr
 	" \t\r\n"	attr_sp		recolor=-1
 	"="		string
 
@@ -183,13 +183,13 @@
 
 :achar EntityRef
 	*		error		noeat recolor=-1
-	"-0-9.\x{b7}\x{300}-\x{36f}\x{203f}\x{2040}A-Za-z_:\x{c0}-\x{d6}\x{d8}-\x{f6}\x{f8}-\x{2ff}\x{370}-\x{37d}\x{37f}-\x{1fff}\x{200c}\x{200d}\x{2070}-\x{218f}\x{2c00}-\x{2fef}\x{3001}-\x{d7ff}\x{f900}-\x{fdcf}\x{fdf0}-\x{fffd}\x{10000}-\x{effff}"	achar
+	"-.:\c"		achar
 	"#"		achar
 	";"		astring
 
 :bchar EntityRef
 	*		error		noeat recolor=-1
-	"-0-9.\x{b7}\x{300}-\x{36f}\x{203f}\x{2040}A-Za-z_:\x{c0}-\x{d6}\x{d8}-\x{f6}\x{f8}-\x{2ff}\x{370}-\x{37d}\x{37f}-\x{1fff}\x{200c}\x{200d}\x{2070}-\x{218f}\x{2c00}-\x{2fef}\x{3001}-\x{d7ff}\x{f900}-\x{fdcf}\x{fdf0}-\x{fffd}\x{10000}-\x{effff}"	bchar
+	"-.:\c"		bchar
 	"#"		bchar
 	";"		bstring
 
