@@ -1183,10 +1183,10 @@ any number of occurrences.
 This finds exactly one character.  For example, if you give __A\\.B__ as
 the search text, JOE will find AXB, but not AB or AXXB.
 
-* __\!__
+* __\\!__
 
 This works like __\.__, but matches a balanced C-language expression. 
-For example, if you search for __malloc(\!\\\*)__, then JOE will find all
+For example, if you search for __malloc(\\!\\\*)__, then JOE will find all
 function calls to __malloc__, even if there was a __)__ within the
 parenthesis.
 
