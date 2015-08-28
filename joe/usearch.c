@@ -630,19 +630,6 @@ const char *nowrap_key = _("|don't wrap|nN");
 const char *regex_key = _("|regex|xX");
 const char *noregex_key = _("|no regex|yY");
 
-/* Get next character from string and advance it, locale dependent */
-
-int fwrd_c(const char **s)
-{
-	if (locale_map->type)
-		return utf8_decode_fwrd(s, NULL);
-	else {
-		int c = *(const unsigned char *)*s;
-		*s = *s + 1;
-		return c;
-	}
-}
-
 static int set_options(W *w, char *s, void *obj, int *notify)
 {
 	SRCH *srch = (SRCH *)obj;
@@ -654,7 +641,7 @@ static int set_options(W *w, char *s, void *obj, int *notify)
 
 	t = s;
 	while (*t) {
-		int c = fwrd_c(&t);
+		int c = fwrd_c(locale_map, &t);
 		if (yncheck(all_key, c))
 			srch->all = 1;
 		else if (yncheck(list_key, c))
@@ -723,15 +710,15 @@ static int set_pattern(W *w, char *s, void *obj, int *notify)
 
 		if (srch->ignore) {
 			const char *t = joe_gettext(ignore_key);
-			binsc(pbw->cursor, fwrd_c(&t));
+			binsc(pbw->cursor, fwrd_c(locale_map, &t));
 		}
 		if (srch->replace) {
 			const char *t = joe_gettext(replace_key);
-			binsc(pbw->cursor, fwrd_c(&t));
+			binsc(pbw->cursor, fwrd_c(locale_map, &t));
 		}
 		if (srch->backwards) {
 			const char *t = joe_gettext(backwards_key);
-			binsc(pbw->cursor, fwrd_c(&t));
+			binsc(pbw->cursor, fwrd_c(locale_map, &t));
 		}
 		if (srch->repeat >= 0)
 			joe_snprintf_1(buf, SIZEOF(buf), "%d", srch->repeat), binss(pbw->cursor, buf);

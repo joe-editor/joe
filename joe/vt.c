@@ -658,7 +658,7 @@ MACRO *vt_data(VT *vt, char **indat, ptrdiff_t *insiz)
 							int ch = utf8_decode(&vt->utf8_sm, c);
 							if (ch >= 0) {
 								vt_type(vt, ch);
-							} else if (ch == -1) {
+							} else if (ch == UTF8_ACCEPTED) {
 								vt->state = vt_utf;
 							}
 						} else {
@@ -674,9 +674,9 @@ MACRO *vt_data(VT *vt, char **indat, ptrdiff_t *insiz)
 				if (ch >= 0) {
 					vt_type(vt, ch);
 					vt->state = vt_idle;
-				} else if (ch == -1) {
+				} else if (ch == UTF8_ACCEPTED) {
 					vt->state = vt_utf;
-				} else if (ch == -2 || ch == -3) {
+				} else {
 					vt->state = vt_idle;
 				}
 				break;

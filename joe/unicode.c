@@ -531,6 +531,26 @@ int joe_wcwidth(int wide,int ucs)
 	return 1;
 }
 
+/* Width of a string: was in qw.c.  Do we need both this and txtwidth?
+   This one does not account for tabs. */
+
+ptrdiff_t joe_wcswidth(struct charmap *map,const char *s, ptrdiff_t len)
+{
+	if (!map->type) {
+		return len;
+	} else {
+		int width = 0;
+		while (len) {
+			int c = utf8_decode_fwrd(&s, &len);
+			if (c >= 0) {
+				width += joe_wcwidth(1, c);
+			} else
+				++width;
+		}
+		return width;
+	}
+}
+
 /* Return true if c is a control character which should not be sent directly
  * to the terminal, but should instead be displayed like <2028>.  joe_wcwidth gives
  * the displayed width of these control characters.

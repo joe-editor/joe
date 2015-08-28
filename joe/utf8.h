@@ -27,10 +27,14 @@ struct utf8_sm {
 /* UTF-8 Decoder
  *
  * Returns 0 - 7FFFFFFF: decoded character
- *                   -1: character accepted, nothing decoded yet.
- *                   -2: incomplete sequence
- *                   -3: no sequence started, but character is between 128 - 191, 254 or 255
+ *   -1                -257: character accepted, nothing decoded yet.
+ *   -2                -258: incomplete sequence
+ *   -3                -259: no sequence started, but character is between 128 - 191, 254 or 255
  */
+
+#define UTF8_ACCEPTED -257
+#define UTF8_INCOMPLETE -258
+#define UTF8_BAD -259
 
 int utf8_decode(struct utf8_sm *utf8_sm,char c);
 
@@ -43,3 +47,6 @@ int utf8_decode_fwrd(const char **p,ptrdiff_t *plen);
 void utf8_init(struct utf8_sm *utf8_sm);
 
 
+/* Get next character from string and advance it, locale dependent */
+
+int fwrd_c(struct charmap *map, const char **s);

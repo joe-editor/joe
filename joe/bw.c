@@ -434,15 +434,15 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 							}
 						} else
 							wid = joe_wcwidth(1,c);
-					else if(c== -1) /* Character taken */
+					else if(c == UTF8_ACCEPTED) /* Character taken */
 						wid = -1;
-					else if(c== -2) { /* Incomplete sequence (FIXME: do something better here) */
+					else if(c == UTF8_INCOMPLETE) { /* Incomplete sequence (FIXME: do something better here) */
 						wid = 1;
 						ungetit = c;
 						++amnt;
 						--byte;
 					}
-					else if(c== -3) /* Control character 128-191, 254, 255 */
+					else if(c == UTF8_BAD) /* Control character 128-191, 254, 255 */
 						wid = 1;
 				} else {
 					if (ansi) {
@@ -575,15 +575,15 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 							}
 						} else
 							wid = joe_wcwidth(1,utf8_char);
-					} else if(utf8_char== -1) { /* Character taken */
+					} else if(utf8_char == UTF8_ACCEPTED) { /* Character taken */
 						wid = -1;
-					} else if(utf8_char== -2) { /* Incomplete sequence (FIXME: do something better here) */
+					} else if(utf8_char == UTF8_INCOMPLETE) { /* Incomplete sequence (FIXME: do something better here) */
 						ungetit = bc;
 						++amnt;
 						--byte;
 						utf8_char = 'X';
 						wid = 1;
-					} else if(utf8_char== -3) { /* Invalid UTF-8 start character 128-191, 254, 255 */
+					} else if(utf8_char == UTF8_BAD) { /* Invalid UTF-8 start character 128-191, 254, 255 */
 						/* Show as control character */
 						wid = 1;
 						utf8_char = 'X';

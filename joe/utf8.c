@@ -77,7 +77,7 @@ int utf8_decode(struct utf8_sm *utf8_sm,char c)
 				return utf8_sm->accu;
 		} else {
 			utf8_sm->state = 0;
-			return -2;
+			return UTF8_INCOMPLETE;
 		}
 	} else if ((c&0x80)==0x00) {
 		/* 0 - 127 */
@@ -119,9 +119,9 @@ int utf8_decode(struct utf8_sm *utf8_sm,char c)
 		/* 128 - 191, 254, 255 */
 		utf8_sm->ptr = 0;
 		utf8_sm->state = 0;
-		return -3;
+		return UTF8_BAD;
 	}
-	return -1;
+	return UTF8_ACCEPTED;
 }
 
 /* Initialize state machine */
@@ -132,24 +132,24 @@ void utf8_init(struct utf8_sm *utf8_sm)
 	utf8_sm->state = 0;
 }
 
-/* Decode an entire string */
+/* Decode first utf-8 sequence in a string */
 
 int utf8_decode_string(const char *s)
 {
 	struct utf8_sm sm;
-	ptrdiff_t x;
-	int c = -1;
+	int c;
 	utf8_init(&sm);
-	for(x=0;s[x];++x)
-		c = utf8_decode(&sm,s[x]);
+	do
+		c = utf8_decode(&sm, *s++);
+		while (c == UTF8_ACCEPTED);
 	return c;
 }
 
 /* Decode and advance
  *
  * Returns: 0 - 7FFFFFFF: decoded character
- *  -2: incomplete sequence
- *  -3: bad start of sequence found.
+ *  UTF8_INCOMPLETE: incomplete sequence
+ *  UTF8_BAD: bad start of sequence found.
  *
  * p/plen are always advanced in such a way that repeated called to utf8_decode_fwrd do not cause
  * infinite loops.
@@ -162,7 +162,7 @@ int utf8_decode_fwrd(const char **p,ptrdiff_t *plen)
 	struct utf8_sm sm;
 	const char *s = *p;
 	ptrdiff_t len;
-	int c = -2; /* Return this on no more input. */
+	int c = UTF8_INCOMPLETE; /* Return this on no more input. */
 	if (plen)
 		len = *plen;
 	else
@@ -177,10 +177,10 @@ int utf8_decode_fwrd(const char **p,ptrdiff_t *plen)
 			--len;
 			++s;
 			break;
-		} else if (c == -2) {
+		} else if (c == UTF8_INCOMPLETE) {
 			/* Bad sequence detected.  Caller should feed rest of string in again. */
 			break;
-		} else if (c == -3) {
+		} else if (c == UTF8_BAD) {
 			/* Bad start of UTF-8 sequence.  We need to eat this char to avoid infinite loops. */
 			--len;
 			++s;
@@ -198,4 +198,17 @@ int utf8_decode_fwrd(const char **p,ptrdiff_t *plen)
 	*p = s;
 
 	return c;
+}
+
+/* Get next character from string and advance it, locale dependent */
+
+int fwrd_c(struct charmap *map, const char **s)
+{
+	if (map->type)
+		return utf8_decode_fwrd(s, NULL);
+	else {
+		int c = *(const unsigned char *)*s;
+		*s = *s + 1;
+		return c;
+	}
 }

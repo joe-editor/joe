@@ -11,6 +11,7 @@
 
 /* Returns the character or -256 for a category (in which case *cat is filled in if it's not NULL) */
 /* Returns NUL if a/b is at end of string */
+/* Returns UTF8_BAD or UTF8_INCOMPLETE for bad UTF-8 sequences */
 
 int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 {

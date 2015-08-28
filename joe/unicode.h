@@ -70,6 +70,7 @@ int digval(int ch);
 
 int joe_wcwidth(int wide,int c);
 /* Looking for wswidth? Take a look at scrn.c/txtwidth() */
+ptrdiff_t joe_wcswidth(struct charmap *map, const char *s, ptrdiff_t len);
 
 int joe_towupper(struct charmap *,int c);
 int joe_towlower(struct charmap *,int c);

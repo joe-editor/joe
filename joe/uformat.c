@@ -674,7 +674,7 @@ int uformat(W *w, int k)
 			
 			if (f) {
 				/* Skip past the whitespace. */
-				while (joe_isblank(b->b->o.charmap, brch(b))) {
+				while (joe_isblank(b->b->o.charmap, brc(b))) {
 					if(b->byte == curoff) 
 						pset(bw->cursor, p);
 					pgetc(b);
@@ -707,7 +707,7 @@ int uformat(W *w, int k)
 
 	flag = 0;
 	while (!piseof(b)) {
-		c = brch(b);
+		c = brc(b);
 		if (joe_isblank(b->b->o.charmap,c) || c == '\n') {
 			int f = 0;
 			P *d;
@@ -730,7 +730,7 @@ int uformat(W *w, int k)
 			/* Skip past the whitespace.  Skip over indentations */
 		      loop:
 			
-			c = brch(b);
+			c = brc(b);
 			if (c == '\n') {
 				if (b->byte == curoff)
 					pset(bw->cursor, p);

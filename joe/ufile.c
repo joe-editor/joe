@@ -263,10 +263,9 @@ static void rmsavereq(struct savereq *req)
 	joe_free(req);
 }
 
-/* Check if character 'c' is in the set.
- * 'c' should be unicode if the locale is UTF-8, otherwise it's
- * an 8-bit character.  'set' should be of this format: "xxxx<>yyyy".  xxxx
- * is a list of 8-bit characters. yyyy is a list of UTF-8 characters.
+/* Check if character 'c' is in the set.  'c' should be unicode.
+ * gettext returns a string in the locale, so c is convert to the
+ * locale if necessary.
  */
 
 const char *yes_key = _("|yes|yY");
@@ -276,14 +275,15 @@ int yncheck(const char *key_set, int c)
 {
 	const char *set = joe_gettext(key_set);
 	if (locale_map->type) {
-		/* 'c' is unicode */
+		/* set is utf-8 */
 		while (*set) {
 			if (c == utf8_decode_fwrd(&set, NULL))
 				return 1;
 		}
 		return 0;
 	} else {
-		/* 'c' is 8-bit */
+		/* set is 8-bit */
+		c = from_uni(locale_map, c);
 		while (set[0]) {
 			if (set[0] == c)
 				return 1;
@@ -291,14 +291,6 @@ int yncheck(const char *key_set, int c)
 		}
 		return 0;
 	}
-}
-
-int ynchecks(const char *set, const char *s)
-{
-	if (locale_map->type)
-		return yncheck(set, utf8_decode_fwrd(&s, NULL));
-	else
-		return yncheck(set, s[0]);
 }
 
 static int saver(W *w, int c, void *object, int *notify)

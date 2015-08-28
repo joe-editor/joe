@@ -78,5 +78,3 @@ extern SRCH *globalsrch;
 
 extern const char *rest_key;
 extern const char *backup_key;
-
-int fwrd_c(const char **s);

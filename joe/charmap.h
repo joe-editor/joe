@@ -57,8 +57,9 @@ struct charmap {
 #define joe_isspace(map,c) ((map)->is_space((map),(c)))
 #define joe_isalpha_(map,c) ((map)->is_alpha_((map),(c)))
 #define joe_isalnum_(map,c) ((map)->is_alnum_((map),(c)))
-int joe_isblank(struct charmap *map,int c);
-int joe_isspace_eof(struct charmap *map,int c);
+
+int joe_isblank(struct charmap *map,int c); /* Space or Tab only */
+int joe_isspace_eos(struct charmap *map,int c); /* Space, Tab, CR, LF, FF or NUL */
 
 /* Conversion functions */
 

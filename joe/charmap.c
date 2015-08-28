@@ -1461,12 +1461,12 @@ char **get_encodings()
 
 int joe_isblank(struct charmap *map,int c)
 {
-	return c==32 || c==9;
+	return c == 32 || c == 9;
 }
 
-int joe_isspace_eof(struct charmap *map,int c)
+int joe_isspace_eos(struct charmap *map,int c)
 {
-	return (c==0) || joe_isspace(map,c);
+	return !c || c==32 || (c >= 9 && c <= 13);
 }
 
 /* For systems (BSD) with no nl_langinfo(CODESET) */

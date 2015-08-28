@@ -605,7 +605,7 @@ int pisbol(P *p)
 int pisbow(P *p)
 {
 	P *q = pdup(p, "pisbow");
-	int c = brc(p);
+	int c = brch(p);
 	int d = prgetc(q);
 
 	prm(q);
@@ -619,7 +619,7 @@ int pisbow(P *p)
 int piseow(P *p)
 {
 	P *q = pdup(p, "piseow");
-	int d = brc(q);
+	int d = brch(q);
 	int c = prgetc(q);
 
 	prm(q);
@@ -2982,7 +2982,7 @@ opnerr:
 	return berror;
 }
 
-/* Return byte at p */
+/* Return byte at p: (it's OK to use this on UTF-8 if we are just feeding the result into joe_isblank) */
 
 int brc(P *p)
 {

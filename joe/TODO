@@ -1,29 +1,22 @@
-umath use joe_isalpha_? problem is we eval a char buffer, not an editor
-buffer.
- [fixed - but should convert to utf-8 if you eval a non-utf-8 buffer]
+help screen with 8-bit character showing
 
 check all type-like functions- make sure they expect unicode!
+hmm.. we always convert to unicode on input, but do we convert to the 8-bit
+charset of the buffer? check this.
 
-  - check all other users of joe_is...
-     - macro.c, options.c, rc.c, uerror.c
+We could try go beyond tab and space.. but it's not so important...
+   - Need to parse utf8 in options.c and rc.c..
+   - Need to find all other places where we hand check for space and TAB
+   - Right now we can use brc on joe_isblank because the characters are all
+     one byte
 
  parse_string not utf8? Should be OK: it's only used with emit_string.
 
-help screen with 8-bit character showing
-
-macros.c: unescape seems broken
- [fixed - but it would be nice if the buffer sizes were not limited]
 
 path.c: rmatch.. should depend on locale (character class)
 
 look at texec..
 (continue looking after uedit.c)
-
-hmm.. we always convert to unicode on input, but do we convert to the 8-bit
-charset of the buffer? check this.
-
-"-wrap" is messing up isrch somehow
-[fixed]
 
 New regex engine:
       add case ignore:
@@ -1212,3 +1205,24 @@ chars are bytes
 tomatch_xml: does not handle unicode names
 [done]
 
+umath use joe_isalpha_? problem is we eval a char buffer, not an editor
+buffer.
+ [fixed]
+
+fwrd_c and utf8_decode_fwrd output is not directly compatible with joe_is
+functions.  But pgetc and brch output is.
+[done- now they return UTF8_XXX which is outside of negative character range]
+
+  - check all other users of joe_is...
+     - options.c, rc.c
+     - sometimes we use brc and brch for joe_isblank
+   [done]
+
+check yncheck..
+[modifed to convert to locale if necessary]
+
+macros.c: unescape seems broken
+ [fixed - but it would be nice if the buffer sizes were not limited]
+
+"-wrap" is messing up isrch somehow
+[fixed]

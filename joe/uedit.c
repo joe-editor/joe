@@ -251,7 +251,7 @@ int u_goto_next(W *w, int k)
 static P *pboi(P *p)
 {
 	p_goto_bol(p);
-	while (joe_isblank(p->b->o.charmap,brch(p)))
+	while (joe_isblank(p->b->o.charmap,brc(p)))
 		pgetc(p);
 	return p;
 }
@@ -269,7 +269,7 @@ static int pisedge(P *p)
 	pboi(q);
 	if (q->byte == p->byte)
 		goto left;
-	if (joe_isblank(p->b->o.charmap,(c = brch(p)))) {
+	if (joe_isblank(p->b->o.charmap,(c = brc(p)))) {
 		pset(q, p);
 		if (joe_isblank(p->b->o.charmap,prgetc(q)))
 			goto no;
@@ -597,7 +597,6 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 					int x;
 					int flg=0;
 					P *r;
-					const char *t;
 					len=0;
 					while (joe_isalnum_(p->b->o.charmap, d)) {
 						if(len!=MAX_WORD_SIZE)
@@ -622,8 +621,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 						}
 					}
 					prm(r);
-					t = set;
-					if (d == utf8_decode_fwrd(&t, NULL))
+					if (d == utf8_decode_string(set))
 						buf[len++] = d;
 					if(d!=NO_MORE_DATA)
 						pgetc(p);
@@ -699,8 +697,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 					d = pgetc(p);
 				} while (d != NO_MORE_DATA && d != '/');
 			} else if (word_delimiter) {
-				const char *t = set;
-				int set0 = utf8_decode_fwrd(&t, NULL);
+				int set0 = utf8_decode_string(set);
 				if (d == set0) {
 					/* ifdef hack */
 					if (!joe_isalnum_(p->b->o.charmap, d)) { /* If it's a # in #ifdef, allow spaces after it */

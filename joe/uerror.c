@@ -154,55 +154,58 @@ static int freeall(void)
 
 static void parseone(struct charmap *map,const char *s,char **rtn_name,off_t *rtn_line)
 {
-	int x, y, flg;
+	int flg;
+	int c;
 	char *name = NULL;
 	off_t line = -1;
+	const char *u, *v, *t;
 
-	y=0;
-	flg=0;
+	v = s;
+	flg = 0;
 
 	if (s[0] == 'J' && s[1] == 'O' && s[2] == 'E' && s[3] == ':')
 		goto bye;
 
 	do {
+		
 		/* Skip to first word */
-		for (x = y; s[x] && !(joe_isalnum_(map,s[x]) || s[x] == '.' || s[x] == '/'); ++x) ;
+		for (u = v; *u && !((t = u), (c = fwrd_c(map, &t)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/')); u = t) ;
 
 		/* Skip to end of first word */
-		for (y = x; joe_isalnum_(map,s[y]) || s[y] == '.' || s[y] == '/' || s[y]=='-'; ++y)
-			if (s[y] == '.')
+		for (v = u; (t = v), (c = fwrd_c(map, &t)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/' || c == '-'); v = t)
+			if (c == '.')
 				flg = 1;
-	} while (!flg && x!=y);
+	} while (!flg && u != v);
 
 	/* Save file name */
-	if (x != y)
-		name = vsncpy(NULL, 0, s + x, y - x);
+	if (u != v)
+		name = vsncpy(NULL, 0, u, v - u);
 
 	/* Skip to first number */
-	for (x = y; s[x] && (s[x] < '0' || s[x] > '9'); ++x) ;
+	for (u = v; *u && (*u < '0' || *u > '9'); ++u) ;
 
 	/* Skip to end of first number */
-	for (y = x; s[y] >= '0' && s[y] <= '9'; ++y) ;
+	for (v = u; *v >= '0' && *v <= '9'; ++v) ;
 
 	/* Save line number */
-	if (x != y) {
-		line = ztoo(s + x);
+	if (u != v) {
+		line = ztoo(u);
 	}
 	if (line != -1)
 		--line;
 
 	/* Look for ':' */
 	flg = 0;
-	while (s[y]) {
+	while (*v) {
 	/* Allow : anywhere on line: works for MIPS C compiler */
 /*
 	for (y = 0; s[y];)
 */
-		if (s[y]==':') {
+		if (*v == ':') {
 			flg = 1;
 			break;
 		}
-		++y;
+		++v;
 	}
 
 	bye:

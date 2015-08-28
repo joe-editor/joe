@@ -7,25 +7,6 @@
  */
 #include "types.h"
 
-/* Return width of a string */
-
-static ptrdiff_t joe_wcswidth(struct charmap *map,const char *s, ptrdiff_t len)
-{
-	if (!map->type) {
-		return len;
-	} else {
-		int width = 0;
-		while (len) {
-			int c = utf8_decode_fwrd(&s, &len);
-			if (c >= 0) {
-				width += joe_wcwidth(1, c);
-			} else
-				++width;
-		}
-		return width;
-	}
-}
-
 /* Calculate number of lines needed for a given prompt string and a given window width.
    Also this finds the nth line and returns the position of the substring which is
    that line. Set n to -1 if you just want the height. */

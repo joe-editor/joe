@@ -640,8 +640,7 @@ int parse_ident(const char * *pp, char *buf, ptrdiff_t len)
 	int c;
 	
 	q = p;
-	c = utf8_decode_fwrd(&q, NULL);
-	if (c >= 0 && joe_isalpha_(utf8_map, c)) {
+	if (joe_isalpha_(utf8_map, (c = utf8_decode_fwrd(&q, NULL)))) {
 		do {
 			char bf[8];
 			ptrdiff_t enc = utf8_encode(bf, c);
@@ -654,8 +653,7 @@ int parse_ident(const char * *pp, char *buf, ptrdiff_t len)
 				*buf = 0;
 			}
 			p = q;
-			c = utf8_decode_fwrd(&q, NULL);
-		} while (c >= 0 && joe_isalnum_(utf8_map, c));
+		} while (joe_isalnum_(utf8_map, (c = utf8_decode_fwrd(&q, NULL))));
 		*pp = p;
 		return 0;
 	} else
@@ -685,8 +683,7 @@ int parse_kw(const char * *pp, const char *kw)
 	while(*kw && *kw==*p)
 		++kw, ++p;
 	q = p;
-	c = utf8_decode_fwrd(&q, NULL);
-	if(!*kw && !(c >= 0 && joe_isalnum_(utf8_map, c))) {
+	if(!*kw && !(joe_isalnum_(utf8_map, utf8_decode_string(p)))) {
 		*pp = p;
 		return 0;
 	} else

@@ -172,7 +172,7 @@ int procrc(CAP *cap, char *name)
 				ptrdiff_t x, c;
 				char ch;
 
-				for (x = 1; !joe_isspace_eof(locale_map,buf[x]); ++x) ;
+				for (x = 1; !joe_isspace_eos(locale_map,buf[x]); ++x) ;
 				ch = buf[x];
 				buf[x] = 0;
 				if (x != 1)
@@ -180,7 +180,7 @@ int procrc(CAP *cap, char *name)
 						ptrdiff_t y;
 
 						for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
-						for (y = x; !joe_isspace_eof(locale_map,buf[y]); ++y) ;
+						for (y = x; !joe_isspace_eos(locale_map,buf[y]); ++y) ;
 						ch = buf[y];
 						buf[y] = 0;
 						zlcpy(buf1, SIZEOF(buf1), buf + x);
@@ -202,7 +202,7 @@ int procrc(CAP *cap, char *name)
 					} else if (!zcmp(buf + 1, "inherit")) {
 						if (context) {
 							for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
-							for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
+							for (c = x; !joe_isspace_eos(locale_map,buf[c]); ++c) ;
 							buf[c] = 0;
 							if (c != x)
 								kcpy(context, kmap_getcontext(buf + x));
@@ -216,7 +216,7 @@ int procrc(CAP *cap, char *name)
 						}
 					} else if (!zcmp(buf + 1, "include")) {
 						for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
-						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
+						for (c = x; !joe_isspace_eos(locale_map,buf[c]); ++c) ;
 						buf[c] = 0;
 						if (c != x) {
 							char bf[1024];
@@ -269,7 +269,7 @@ int procrc(CAP *cap, char *name)
 						}
 					} else if (!zcmp(buf + 1, "defmap")) {
 						for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
-						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
+						for (c = x; !joe_isspace_eos(locale_map,buf[c]); ++c) ;
 						buf[c] = 0;
 						if (c != x) {
 							context = kmap_getcontext(buf + x);
@@ -283,13 +283,13 @@ int procrc(CAP *cap, char *name)
 						char d;
 						ptrdiff_t y;
 						for (buf[x] = ch; joe_isblank(locale_map,buf[x]); ++x) ;
-						for (c = x; !joe_isspace_eof(locale_map,buf[c]); ++c) ;
+						for (c = x; !joe_isspace_eos(locale_map,buf[c]); ++c) ;
 						d = buf[c];
 						buf[c] = 0;
 						zlcpy(buf1, SIZEOF(buf1), buf + x);
 						buf[c] = d;
 						for (y = c; joe_isblank(locale_map, buf[y]); ++y);
-						if (!joe_isspace_eof(locale_map, buf[y]))
+						if (!joe_isspace_eos(locale_map, buf[y]))
 							m = multiparse(fd, &line, buf, &y, &err, name);
 						current_menu = create_menu(buf1, m);
 						context = 0;
