@@ -34,6 +34,9 @@
 
 * Key sequences in the joerc file are now UTF-8 coded Unicode.
 	* Also you can specify Unicode in hexadecimal like this: U+F123
+	* Note that even if you are using an 8-bit locale, keys are tranlated to UTF-8
+	  before keymap lookup.  This means you must use the Unicode code for
+	  your character in the joerc file, not the locale 8-bit character.
 
 * Character lists and strings in syntax files are now UTF-8 coded Unicode.  Character classes and unicode characters may also be specified in regular expressions.
 	* Use \x{f123} to specify a particular character.

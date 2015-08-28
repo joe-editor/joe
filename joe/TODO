@@ -1,5 +1,9 @@
 help screen with 8-bit character showing
 
+brpaste shows when I paste in a macro
+
+old joe is messing up state file of new joe
+
 check all type-like functions- make sure they expect unicode!
 hmm.. we always convert to unicode on input, but do we convert to the 8-bit
 charset of the buffer? check this.
@@ -12,6 +16,9 @@ We could try go beyond tab and space.. but it's not so important...
 
  parse_string not utf8? Should be OK: it's only used with emit_string.
 
+fixed buffer size is not good for some parse_ functions.. for example it
+limits the size of keyboard macros.  umtext is not good.. uses fixed buffer
+during print
 
 path.c: rmatch.. should depend on locale (character class)
 

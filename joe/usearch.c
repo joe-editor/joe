@@ -274,35 +274,24 @@ static int srch_cmplt(BW *bw, int k)
 
 static P *searchf(BW *bw,SRCH *srch, P *p)
 {
-	char *pattern;
 	P *start;
 	P *end;
-	int x;
 	int flag = 0;
 
-	pattern = srch->pattern;
 	start = pdup(p, "searchf");
 	end = pdup(p, "searchf");
 
 	try_again:
 
-	x = 0;
-/* rethink for joe_regexec */
-/*	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && ((pattern[x] >= 0 && pattern[x] < 128) || !p->b->o.charmap->type); ++x)
-		if (srch->ignore)
-			pattern[x] = TO_CHAR_OK(joe_tolower(p->b->o.charmap,pattern[x]));
-*/
 	wrapped:
 	while (srch->ignore ? pifind(start, srch->comp->prefix, srch->comp->prefix_len) : pfind(start, srch->comp->prefix, srch->comp->prefix_len)) {
 		pset(end, start);
 		/* pfwrd(end, x); */ /* Comment out for regexec */
 		if (srch->wrap_flag && start->byte>=srch->wrap_p->byte)
 			break;
-/*		if (!pmatch(srch->pieces, NMATCHES, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) { */
 		if (!joe_regexec(srch->comp, end, NMATCHES, srch->pieces, srch->ignore)) {
 			if (end->byte == srch->last_repl && !flag) {
 				/* Stuck on zero-width regex? */
-				pattern = srch->pattern;
 				pset(start, p);
 				if (pgetc(start) == NO_MORE_DATA)
 					break;
@@ -350,10 +339,8 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
 
 static P *searchb(BW *bw,SRCH *srch, P *p)
 {
-	char *pattern = srch->pattern;
 	P *start;
 	P *end;
-	int x;
 	int flag = 0;
 
 	start = pdup(p, "searchb");
@@ -361,13 +348,6 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 
 	try_again:
 
-	x = 0;
-/* rethink for joe_regexec */
-/*
-	for (x = 0; x != sLEN(pattern) && pattern[x] != '\\' && ((pattern[x] >= 0 && pattern[x] < 128) || !p->b->o.charmap->type); ++x)
-		if (srch->ignore)
-			pattern[x] = TO_CHAR_OK(joe_tolower(p->b->o.charmap, pattern[x]));
-*/
 	wrapped:
 	while (pbkwd(start, 1L)
 	       && (srch->ignore ? prifind(start, srch->comp->prefix, srch->comp->prefix_len) : prfind(start, srch->comp->prefix, srch->comp->prefix_len))) {
@@ -375,11 +355,9 @@ static P *searchb(BW *bw,SRCH *srch, P *p)
 		/* pfwrd(end, x); */ /* Comment out for joe_regexec */
 		if (srch->wrap_flag && start->byte<srch->wrap_p->byte)
 			break;
-/*		if (!pmatch(srch->pieces, NMATCHES, pattern + x, sLEN(pattern) - x, end, 0, srch->ignore)) { */
 		if (!joe_regexec(srch->comp, end, NMATCHES, srch->pieces, srch->ignore)) {
 			if (start->byte == srch->last_repl && !flag) {
 				/* Stuck? */
-				pattern = srch->pattern;
 				pset(start, p);
 				if (prgetc(start) == NO_MORE_DATA)
 					break;

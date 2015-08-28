@@ -678,11 +678,8 @@ int parse_tows(const char * *pp, char *buf)
 int parse_kw(const char * *pp, const char *kw)
 {
 	const char *p = *pp;
-	const char *q;
-	int c;
 	while(*kw && *kw==*p)
 		++kw, ++p;
-	q = p;
 	if(!*kw && !(joe_isalnum_(utf8_map, utf8_decode_string(p)))) {
 		*pp = p;
 		return 0;
