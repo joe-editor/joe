@@ -266,11 +266,11 @@ done
 :predef_ws Preproc
 	*		prebad		recolor=-1
 	" \t"		predef_ws
-	"a-zA-Z0-9_"	predef_ident	recolor=-1
+	"\c"		predef_ident	recolor=-1
 
 :predef_ident Define
 	*		idle		noeat
-	"a-zA-Z0-9_"	predef_ident
+	"\c"		predef_ident
 
 
 :preproc Preproc
@@ -299,7 +299,7 @@ done
 	"."		maybe_float
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
-	"a-zA-Z_"	ident		buffer
+	"\i"		ident		buffer
 	"\\"		outside_escape	recolor=-1
 	"{}"		brace		recolor=-1
 	",:;=()><[]*&|!~+\-%^"	control		recolor=-1
@@ -502,7 +502,7 @@ done
 # Non-Standard
 	"typeof"		cppkw
 done
-	"a-zA-Z0-9_"	ident
+	"\c"		ident
 
 :type Type
 	*	idle	noeat

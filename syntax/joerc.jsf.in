@@ -12,7 +12,7 @@
 	" 	"	comment
 	"-"		option
 	"\""		keybind_string recolor=-1
-	"a-zA-Z_"	keybind
+	"\i"		keybind
 
 :keybind Idle
 	*		keybind
@@ -52,7 +52,7 @@
 :option Idle
 	*		bad recolor=-1
 	"-"		option
-	"a-zA-Z_"	ident buffer
+	"\i"		ident buffer
 
 :ident Idle
 	*		comment noeat strings
@@ -84,7 +84,7 @@
 	"msold"			sopt
 	"text_delimiters"	sopt
 done
-	"a-zA-Z0-9_"	ident
+	"\c"	ident
 
 :sopt Idle
 	*		dosopt noeat
