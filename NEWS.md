@@ -117,6 +117,9 @@
 		* If no locale set, default to C / POSIX, not ISO-8859-1
 		* If locale is C / POSIX, set language to en_US (for aspell).
 
+	* Improve performance where JOE would seem to lock up if you tried
+	  to reformat a very long single word due to O(n^3) algorithm.
+
 * Minor enhancements
 	* Backspace now jumps back to parent menu in ^T submenus (and
 	  remembers the cursor position within the parent)
