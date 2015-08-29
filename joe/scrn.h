@@ -5,12 +5,10 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_SCRN_H
-#define _JOE_SCRN_H 1
 
 struct hentry {
-	int	next;
-	int	loc;
+	ptrdiff_t	next;
+	ptrdiff_t	loc;
 };
 
 /* Each terminal has one of these: terminal capability database */
@@ -18,32 +16,37 @@ struct hentry {
 #ifdef __MSDOS__
 
 struct scrn {
-	int	li;		/* Height of screen */
-	int	co;		/* Width of screen */
+	ptrdiff_t	li;		/* Height of screen */
+	ptrdiff_t	co;		/* Width of screen */
 	short	*scrn;		/* Buffer */
 	int	scroll;
 	int	insdel;
 	int	*updtab;	/* Lines which need to be updated */
 	HIGHLIGHT_STATE *syntax;
 	int	*compose;
-	int	*sary;
+	ptrdiff_t	*sary;
 };
 
 #else
 
+#define COMPOSE 4 /* Maximum number of characters per cell (one start plus some number of combining) */
+/* If there are more than (COMPOSE - 1) combining characters, JOE will emit them, but during a line update
+ * it keeps re-emitting them even if not necessary (because the screen buffer doesn't have enough
+ * to record them all, so it doesn't know if the cell is already correct during an udpate). */
+
 struct scrn {
 	CAP	*cap;		/* Termcap/Terminfo data */
 
-	int	li;		/* Screen height */
-	int	co;		/* Screen width */
+	ptrdiff_t	li;		/* Screen height */
+        ptrdiff_t	co;		/* Screen width */
 
-	unsigned char	*ti;		/* Initialization string */
-	unsigned char	*cl;		/* Home and clear screen... really an
+	const char	*ti;		/* Initialization string */
+	const char	*cl;		/* Home and clear screen... really an
 				   init. string */
-	unsigned char	*cd;		/* Clear to end of screen */
-	unsigned char	*te;		/* Restoration string */
-	unsigned char	*brp;		/* Bracketed paste mode */
-	unsigned char	*bre;		/* Stop bracketed paste */
+	const char	*cd;		/* Clear to end of screen */
+	const char	*te;		/* Restoration string */
+	const char	*brp;		/* Bracketed paste mode */
+	const char	*bre;		/* Stop bracketed paste */
 
 	int	haz;		/* Terminal can't print ~s */
 	int	os;		/* Terminal overstrikes */
@@ -52,78 +55,78 @@ struct scrn {
 	int	am;		/* Terminal has autowrap, but not magicwrap */
 	int	xn;		/* Terminal has magicwrap */
 
-	unsigned char	*so;		/* Enter standout (inverse) mode */
-	unsigned char	*se;		/* Exit standout mode */
+	const char	*so;		/* Enter standout (inverse) mode */
+	const char	*se;		/* Exit standout mode */
 
-	unsigned char	*us;		/* Enter underline mode */
-	unsigned char	*ue;		/* Exit underline mode */
-	unsigned char	*uc;		/* Single time underline character */
+	const char	*us;		/* Enter underline mode */
+	const char	*ue;		/* Exit underline mode */
+	const char	*uc;		/* Single time underline character */
 
 	int	ms;		/* Ok to move when in standout/underline mode */
 
-	unsigned char	*mb;		/* Enter blinking mode */
-	unsigned char	*md;		/* Enter bold mode */
-	unsigned char	*mh;		/* Enter dim mode */
-	unsigned char	*mr;		/* Enter inverse mode */
-	unsigned char	*me;		/* Exit above modes */
+	const char	*mb;		/* Enter blinking mode */
+	const char	*md;		/* Enter bold mode */
+	const char	*mh;		/* Enter dim mode */
+	const char	*mr;		/* Enter inverse mode */
+	const char	*me;		/* Exit above modes */
 
-	unsigned char	*ZH;		/* Enter italic mode */
-	unsigned char	*ZR;		/* Exit italic mode */
+	const char	*ZH;		/* Enter italic mode */
+	const char	*ZR;		/* Exit italic mode */
 
-	unsigned char	*Sb;		/* Set background color */
-	unsigned char	*Sf;		/* Set foregrond color */
+	const char	*Sb;		/* Set background color */
+	const char	*Sf;		/* Set foregrond color */
 	int	Co;			/* No. of colors */
 	int	ut;		/* Screen erases with background color */
 
 	int	da, db;		/* Extra lines exist above, below */
-	unsigned char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
-	unsigned char	*cs;		/* Set scrolling region */
+	const char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
+	const char	*cs;		/* Set scrolling region */
 	int	rr;		/* Set for scrolling region relative addressing */
-	unsigned char	*sf, *SF, *sr, *SR;	/* Scroll */
+	const char	*sf, *SF, *sr, *SR;	/* Scroll */
 
-	unsigned char	*dm, *dc, *DC, *ed;	/* Delete characters */
-	unsigned char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
+	const char	*dm, *dc, *DC, *ed;	/* Delete characters */
+	const char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
 	int	mi;		/* Set if ok to move while in insert mode */
 
-	unsigned char	*bs;		/* Move cursor left 1 */
-	int	cbs;
-	unsigned char	*lf;		/* Move cursor down 1 */
-	int	clf;
-	unsigned char	*up;		/* Move cursor up 1 */
-	int	cup;
-	unsigned char	*nd;		/* Move cursor right 1 */
+	const char	*bs;		/* Move cursor left 1 */
+	ptrdiff_t	cbs;
+	const char	*lf;		/* Move cursor down 1 */
+	ptrdiff_t	clf;
+	const char	*up;		/* Move cursor up 1 */
+	ptrdiff_t	cup;
+	const char	*nd;		/* Move cursor right 1 */
 
-	unsigned char	*ta;		/* Move cursor to next tab stop */
-	int	cta;
-	unsigned char	*bt;		/* Move cursor to previous tab stop */
-	int	cbt;
-	int	tw;		/* Tab width */
+	const char	*ta;		/* Move cursor to next tab stop */
+	ptrdiff_t	cta;
+	const char	*bt;		/* Move cursor to previous tab stop */
+	ptrdiff_t	cbt;
+	ptrdiff_t	tw;		/* Tab width */
 
-	unsigned char	*ho;		/* Home cursor to upper left */
-	int	cho;
-	unsigned char	*ll;		/* Home cursor to lower left */
-	int	cll;
-	unsigned char	*cr;		/* Move cursor to left edge */
-	int	ccr;
-	unsigned char	*RI;		/* Move cursor right n */
-	int	cRI;
-	unsigned char	*LE;		/* Move cursor left n */
-	int	cLE;
-	unsigned char	*UP;		/* Move cursor up n */
-	int	cUP;
-	unsigned char	*DO;		/* Move cursor down n */
-	int	cDO;
-	unsigned char	*ch;		/* Set cursor column */
-	int	cch;
-	unsigned char	*cv;		/* Set cursor row */
-	int	ccv;
-	unsigned char	*cV;		/* Goto beginning of specified line */
-	int	ccV;
-	unsigned char	*cm;		/* Set cursor row and column */
-	int	ccm;
+	const char	*ho;		/* Home cursor to upper left */
+	ptrdiff_t	cho;
+	const char	*ll;		/* Home cursor to lower left */
+	ptrdiff_t	cll;
+	const char	*cr;		/* Move cursor to left edge */
+	ptrdiff_t	ccr;
+	const char	*RI;		/* Move cursor right n */
+	ptrdiff_t	cRI;
+	const char	*LE;		/* Move cursor left n */
+        ptrdiff_t	cLE;
+	const char	*UP;		/* Move cursor up n */
+	ptrdiff_t	cUP;
+	const char	*DO;		/* Move cursor down n */
+	ptrdiff_t	cDO;
+	const char	*ch;		/* Set cursor column */
+	ptrdiff_t	cch;
+	const char	*cv;		/* Set cursor row */
+	ptrdiff_t	ccv;
+	const char	*cV;		/* Goto beginning of specified line */
+	ptrdiff_t	ccV;
+	const char	*cm;		/* Set cursor row and column */
+	ptrdiff_t	ccm;
 
-	unsigned char	*ce;		/* Clear to end of line */
-	int	cce;
+	const char	*ce;		/* Clear to end of line */
+	ptrdiff_t	cce;
 
 	int assume_256;		/* Assume terminal has 256 color mode, but use
 	                           regular mode for standard colors just in case */
@@ -133,19 +136,19 @@ struct scrn {
 	int	insdel;		/* Set to use insert/delete within line */
 
 	/* Current state of terminal */
-	int	*scrn;		/* Characters on screen */
+	int	(*scrn)[COMPOSE];		/* Characters on screen */
 	int	*attr;		/* Attributes on screen */
-	int	x, y;		/* Current cursor position (-1 for unknown) */
-	int	top, bot;	/* Current scrolling region */
+	ptrdiff_t	x, y;		/* Current cursor position (-1 for unknown) */
+	ptrdiff_t	top, bot;	/* Current scrolling region */
 	int	attrib;		/* Current character attributes */
 	int	ins;		/* Set if we're in insert mode */
 
 	int	*updtab;	/* Dirty lines table */
 	int	avattr;		/* Bits set for available attributes */
-	int	*sary;		/* Scroll buffer array */
+	ptrdiff_t	*sary;		/* Scroll buffer array */
 
 	int	*compose;	/* Line compose buffer */
-	int	*ofst;		/* stuff for magic */
+	ptrdiff_t	*ofst;		/* stuff for magic */
 	struct hentry	*htab;
 	struct hentry	*ary;
 };
@@ -166,7 +169,7 @@ SCRN *nopen(CAP *cap);
  * Change size of screen.  For example, call this when you find out that
  * the Xterm changed size.
  */
-int nresize(SCRN *t, int w, int h);
+int nresize(SCRN *t, ptrdiff_t w, ptrdiff_t h);
 
 /* void nredraw(SCRN *t);
  *
@@ -191,7 +194,7 @@ void nclose(SCRN *t);
  *
  * Set cursor position
  */
-int cpos(register SCRN *t, register int x, register int y);
+int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y);
 
 /* int attr(SCRN *t,int a);
  *
@@ -291,21 +294,16 @@ extern unsigned atab[];
 #define FG_RED		(FG_NOT_DEFAULT|(1<<FG_SHIFT))
 #define FG_BLACK	(FG_NOT_DEFAULT|(0<<FG_SHIFT))
 
-void outatr(struct charmap *map,SCRN *t,int *scrn,int *attrf,int xx,int yy,int c,int a);
+void outatr_complete(SCRN *t);
+void outatr(struct charmap *map,SCRN *t,int (*scrn)[COMPOSE],int *attrf,ptrdiff_t xx,ptrdiff_t yy,int c,int a);
 
 #endif
-
-/*
- * translate character and its attribute into something printable
- */
-void xlat(int *attr, unsigned char *c);
-void xlat_utf_ctrl(int *attr, unsigned char *c);
 
 /* int eraeol(SCRN *t,int x,int y);
  *
  * Erase from screen coordinate to end of line.
  */
-int eraeol(SCRN *t, int x, int y, int atr);
+int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr);
 
 /* void nscrlup(SCRN *t,int top,int bot,int amnt);
  *
@@ -313,7 +311,7 @@ int eraeol(SCRN *t, int x, int y, int atr);
  * indicate which lines to scroll.  'bot' is the last line to scroll + 1.
  * 'amnt' is distance in lines to scroll.
  */
-void nscrlup(SCRN *t, int top, int bot, int amnt);
+void nscrlup(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt);
 
 /* void nscrldn(SCRN *t,int top,int bot,int amnt);
  *
@@ -321,7 +319,7 @@ void nscrlup(SCRN *t, int top, int bot, int amnt);
  * indicate which lines to scroll.  'bot' is the last line to scroll + 1.
  * 'amnt' is distance in lines to scroll.
  */
-void nscrldn(SCRN *t, int top, int bot, int amnt);
+void nscrldn(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt);
 
 /* void nscroll(SCRN *t);
  *
@@ -333,35 +331,34 @@ void nscroll(SCRN *t, int atr);
  *
  * Figure out and execute line shifting
  */
-void magic(SCRN *t, int y, int *cs, int *ca, int *s, int *a,int placex);
+void magic(SCRN *t, ptrdiff_t y, int *cs, int *ca, int *s, int *a,ptrdiff_t placex);
 
 int clrins(SCRN *t);
 
-int meta_color(unsigned char *s);
+int meta_color(const char *s);
 
 /* Generate a field */
-void genfield(SCRN *t,int *scrn,int *attr,int x,int y,int ofst,unsigned char *s,int len,int atr,int width,int flg,int *fmt);
+void genfield(SCRN *t,int (*scrn)[COMPOSE],int *attr,ptrdiff_t x,ptrdiff_t y,ptrdiff_t ofst,const char *s,ptrdiff_t len,int atr,ptrdiff_t width,int flg,int *fmt);
 
 /* Column width of a string takes into account utf-8) */
-int txtwidth(unsigned char *s,int len);
+ptrdiff_t txtwidth(const char *s,ptrdiff_t len);
 
-int txtwidth1(struct charmap *map, int tabwidth, unsigned char *s, int len);
+off_t txtwidth1(struct charmap *map, off_t tabwidth, const char *s, ptrdiff_t len);
 
 /* Generate a field: formatted */
-void genfmt(SCRN *t, int x, int y, int ofst, unsigned char *s, int atr, int flg);
+void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg);
 
 /* Column width of formatted string */
-int fmtlen(unsigned char *s);
+ptrdiff_t fmtlen(const char *s);
 
 /* Offset within formatted string of particular column */
-int fmtpos(unsigned char *s, int goal);
+ptrdiff_t fmtpos(const char *s, ptrdiff_t goal);
 
 extern int bg_text;
-extern int columns;
+extern int env_lines;
+extern int env_columns;
 extern int notite;
 extern int nolinefeeds;
-extern int usetabs;
+extern int opt_usetabs;
 extern int assume_color;
 extern int assume_256color;
-
-#endif

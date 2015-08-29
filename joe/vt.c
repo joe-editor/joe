@@ -2,25 +2,25 @@
 
 #include "types.h"
 
-VT *mkvt(B *b, P *top, int height, int width)
+VT *mkvt(B *b, P *top, ptrdiff_t height, ptrdiff_t width)
 {
-	VT *vt = joe_malloc(sizeof(VT));
+	VT *vt = (VT *)joe_malloc(SIZEOF(VT));
 	vt->b = b;
-	vt->vtcur = pdup(b->eof, USTR "vt");
+	vt->vtcur = pdup(b->eof, "vt");
 	vt->state = vt_idle;
-	vt->top = pdup(top, USTR("mkvt"));
+	vt->top = pdup(top,("mkvt"));
 	vt->regn_top = 0;
 	vt->regn_bot = height;
 	vt->height = height;
 	vt->width = width;
 	vt->argc = 0;
-	vt->kbd = mkkbd(kmap_getcontext(USTR "vtshell"));
+	vt->kbd = mkkbd(kmap_getcontext("vtshell"));
 	vt->attr = 0;
 	utf8_init(&vt->utf8_sm);
 	return vt;
 }
 
-void vt_resize(VT *vt, P *top, int height, int width)
+void vt_resize(VT *vt, P *top, ptrdiff_t height, ptrdiff_t width)
 {
 	int flag = 0;
 	if (vt->regn_bot == vt->height)
@@ -48,12 +48,12 @@ void vtrm(VT *vt)
 	joe_free(vt);
 }
 
-void vt_beep(VT *bw)
+static void vt_beep(VT *bw)
 {
 	ttputc(7);
 }
 
-int pcurattr(P *p)
+static int pcurattr(P *p)
 {
 	int attr = 0;
 	int state = 0;
@@ -61,7 +61,7 @@ int pcurattr(P *p)
 	P *q;
 	if (p->valattr)
 		return p->attr;
-	q = pdup(p, USTR "pcurattr");
+	q = pdup(p, "pcurattr");
 	p_goto_bol(q);
 	while (q->byte != p->byte) {
 		int c = pgetb(q);
@@ -107,30 +107,30 @@ int pcurattr(P *p)
 	return attr;
 }
 
-void psetattr(P *p, int attr, int cur, int adv)
+static void psetattr(P *p, int attr, int cur, int adv)
 {
 	int e = ((AT_MASK|FG_NOT_DEFAULT|BG_NOT_DEFAULT)&cur & ~attr);
 	if (!adv)
-		p = pdup(p, USTR "psetattr");
+		p = pdup(p, "psetattr");
 	if (e) {
-		binss(p, USTR "\033[m"); pfwrd(p, 3);
+		binss(p, "\033[m"); pfwrd(p, 3);
 		cur = 0;
 	}
 	e = (attr & ~cur);
 	if (e & INVERSE) {
-		binss(p, USTR "\033[7m"); pfwrd(p, 4);
+		binss(p, "\033[7m"); pfwrd(p, 4);
 	}
 	if (e & BOLD) {
-		binss(p, USTR "\033[1m"); pfwrd(p, 4);
+		binss(p, "\033[1m"); pfwrd(p, 4);
 	}
 	if (e & UNDERLINE) {
-		binss(p, USTR "\033[4m"); pfwrd(p, 4);
+		binss(p, "\033[4m"); pfwrd(p, 4);
 	}
 	if ((cur & FG_MASK) != (attr & FG_MASK)) {
 		int color = ((attr & FG_VALUE) >> FG_SHIFT);
 		if (color >= 0 && color <= 7) {
-			unsigned char bf[10];
-			joe_snprintf_1(bf, sizeof(bf), "\033[%dm", color + 30);
+			char bf[10];
+			joe_snprintf_1(bf, SIZEOF(bf), "\033[%dm", color + 30);
 			binss(p, bf);
 			pfwrd(p, zlen(bf));
 		}
@@ -138,8 +138,8 @@ void psetattr(P *p, int attr, int cur, int adv)
 	if ((cur & BG_MASK) != (attr & BG_MASK)) {
 		int color = ((attr & BG_VALUE) >> BG_SHIFT);
 		if (color >= 0 && color <= 7) {
-			unsigned char bf[10];
-			joe_snprintf_1(bf, sizeof(bf), "\033[%dm", color + 40);
+			char bf[10];
+			joe_snprintf_1(bf, SIZEOF(bf), "\033[%dm", color + 40);
 			binss(p, bf);
 			pfwrd(p, zlen(bf));
 		}
@@ -152,9 +152,9 @@ void psetattr(P *p, int attr, int cur, int adv)
 	}
 }
 
-void vt_type(VT *bw, int c)
+static void vt_type(VT *bw, int c)
 {
-	int col;
+	off_t col;
 	int cur_attr, org_attr;
 
 	col = piscol(bw->vtcur);
@@ -179,9 +179,9 @@ void vt_type(VT *bw, int c)
 		pgetc(bw->vtcur);
 	} else {
 		P *q;
-		int col = piscol(bw->vtcur);
-		q = pdup(bw->vtcur, USTR "vt_type");
-		pcol(q, col + 1);
+		off_t tcol = piscol(bw->vtcur);
+		q = pdup(bw->vtcur, "vt_type");
+		pcol(q, tcol + 1);
 		org_attr = pcurattr(q);
 		bdel(bw->vtcur, q);
 		prm(q);
@@ -195,17 +195,16 @@ void vt_type(VT *bw, int c)
 	}
 }
 
-void vt_lf(VT *bw)
+static void vt_lf(VT *bw)
 {
-	int col;
-	col = piscol(bw->vtcur);
+	off_t col = piscol(bw->vtcur);
 	if (bw->vtcur->line == bw->top->line + bw->regn_bot - 1) {
 		if (bw->regn_top != 0) {
 			/* Delete top line */
-			P *p = pdup(bw->vtcur, USTR "vt_lf");
+			P *p = pdup(bw->vtcur, "vt_lf");
 			P *q;
 			pline(p, bw->top->line + bw->regn_top);
-			q = pdup(p, USTR "vt_lf");
+			q = pdup(p, "vt_lf");
 			pnextl(q);
 			bdel(p, q);
 			prm(q);
@@ -236,33 +235,33 @@ void vt_lf(VT *bw)
 		pline(bw->top, bw->vtcur->line - bw->height + 1);
 }
 
-void vt_insert_spaces(VT *bw, int n)
+static void vt_insert_spaces(VT *bw, ptrdiff_t n)
 {
 	while (n--)
 		binsc(bw->vtcur, ' ');
 }
 
-void vt_cr(VT *bw)
+static void vt_cr(VT *bw)
 {
 	p_goto_bol(bw->vtcur);
 }
 
-void vt_tab(VT *bw)
+static void vt_tab(VT *bw)
 {
 	if (piseol(bw->vtcur)) {
 		binsc(bw->vtcur, '\t');
 		pgetc(bw->vtcur);
 	} else {
-		int col = piscol(bw->vtcur);
+		off_t col = piscol(bw->vtcur);
 		col += bw->vtcur->b->o.tab - col % bw->vtcur->b->o.tab;
 		pcol(bw->vtcur, col);
 		pfill(bw->vtcur, col, ' ');
 	}
 }
 
-void vt_left(VT *bw, int n)
+static void vt_left(VT *bw, ptrdiff_t n)
 {
-	int col = piscol(bw->vtcur);
+	off_t col = piscol(bw->vtcur);
 	if (n > col)
 		col = 0;
 	else
@@ -271,9 +270,9 @@ void vt_left(VT *bw, int n)
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_right(VT *bw, int n)
+static void vt_right(VT *bw, ptrdiff_t n)
 {
-	int col = piscol(bw->vtcur);
+	off_t col = piscol(bw->vtcur);
 	col += n;
 	if (col >= bw->width)
 		col = bw->width - 1;
@@ -281,10 +280,10 @@ void vt_right(VT *bw, int n)
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_up(VT *bw, int n)
+static void vt_up(VT *bw, ptrdiff_t n)
 {
-	long line = bw->vtcur->line;
-	int col = piscol(bw->vtcur);
+	off_t line = bw->vtcur->line;
+	off_t col = piscol(bw->vtcur);
 	line -= n;
 	if (line < bw->top->line) {
 		line = bw->top->line;
@@ -294,20 +293,20 @@ void vt_up(VT *bw, int n)
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_reverse_lf(VT *bw)
+static void vt_reverse_lf(VT *bw)
 {
 	if (bw->vtcur->line >= bw->top->line) {
 		if (bw->vtcur->line != bw->top->line + bw->regn_top)
 			vt_up(bw, 1);
 		else {
-			int col;
+			off_t col;
 
 			/* Delete last line */
 			if (bw->vtcur->b->eof->line >= bw->top->line + bw->regn_bot - 1) {
-				P *q = pdup(bw->vtcur, USTR "vt_reverse_lf");
+				P *q = pdup(bw->vtcur, "vt_reverse_lf");
 				P *r;
 				pline(q, bw->top->line + bw->regn_bot - 1);
-				r = pdup(q, USTR "vt_reverse_lf1");
+				r = pdup(q, "vt_reverse_lf1");
 				pnextl(r);
 				bdel(q, r);
 				prm(r);
@@ -324,10 +323,10 @@ void vt_reverse_lf(VT *bw)
 	}
 }
 
-void vt_down(VT *bw, int n)
+static void vt_down(VT *bw, ptrdiff_t n)
 {
-	long line = bw->vtcur->line;
-	int col = piscol(bw->vtcur);
+	off_t line = bw->vtcur->line;
+	off_t col = piscol(bw->vtcur);
 	line += n;
 	if (line >= bw->top->line + bw->height)
 		line = bw->top->line + bw->height - 1;
@@ -341,16 +340,16 @@ void vt_down(VT *bw, int n)
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_col(VT *bw, int col)
+static void vt_col(VT *bw, ptrdiff_t col)
 {
 	pcol(bw->vtcur, col);
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_row(VT *bw, int row)
+static void vt_row(VT *bw, ptrdiff_t row)
 {
-	int col = piscol(bw->vtcur);
-	long line = bw->top->line + row;
+	off_t col = piscol(bw->vtcur);
+	off_t line = bw->top->line + row;
 	if (line >= bw->top->line + bw->height)
 		line = bw->top->line + bw->height - 1;
 	while (line > bw->b->eof->line) {
@@ -363,21 +362,21 @@ void vt_row(VT *bw, int row)
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_erase_eos(VT *bw)
+static void vt_erase_eos(VT *bw)
 {
-	P *p = pdup(bw->b->eof, USTR "vt_erase_line");
+	P *p = pdup(bw->b->eof, "vt_erase_line");
 	bdel(bw->vtcur, p);
 	prm(p);
 }
 
-void vt_erase_bos(VT *bw)
+static void vt_erase_bos(VT *bw)
 {
 }
 
-void vt_erase_screen(VT *bw)
+static void vt_erase_screen(VT *bw)
 {
-	long li = bw->vtcur->line;
-	int col = piscol(bw->vtcur);
+	off_t li = bw->vtcur->line;
+	off_t col = piscol(bw->vtcur);
 	pline(bw->vtcur, bw->top->line);
 	bdel(bw->vtcur, bw->b->eof);
 	while (bw->vtcur->line < li) {
@@ -388,10 +387,10 @@ void vt_erase_screen(VT *bw)
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_erase_line(VT *bw)
+static void vt_erase_line(VT *bw)
 {
-	P *p = pdup(bw->vtcur, USTR "vt_erase_line");
-	int col = piscol(bw->vtcur);
+	P *p = pdup(bw->vtcur, "vt_erase_line");
+	off_t col = piscol(bw->vtcur);
 	p_goto_bol(bw->vtcur);
 	pnextl(p);
 	if (bw->vtcur->byte == p->byte) {
@@ -404,13 +403,13 @@ void vt_erase_line(VT *bw)
 	pfill(bw->vtcur, col, ' ');
 }
 
-void vt_erase_bol(VT *bw)
+static void vt_erase_bol(VT *bw)
 {
 }
 
-void vt_erase_eol(VT *bw)
+static void vt_erase_eol(VT *bw)
 {
-	P *p = p_goto_eol(pdup(bw->vtcur, USTR "vt_erase_eol"));
+	P *p = p_goto_eol(pdup(bw->vtcur, "vt_erase_eol"));
 	if (bw->vtcur->byte == p->byte) {
 		/* Do nothing */
 	} else
@@ -418,16 +417,16 @@ void vt_erase_eol(VT *bw)
 	prm(p);
 }
 
-void vt_insert_lines(VT *bw, int n)
+static void vt_insert_lines(VT *bw, ptrdiff_t n)
 {
 	if (bw->vtcur->line < bw->top->line + bw->regn_bot)
 		while (n--) {
-			P *p = pdup(bw->vtcur, USTR "vt_insert_lines");
+			P *p = pdup(bw->vtcur, "vt_insert_lines");
 			p_goto_bol(p);
 			binsc(p, '\n');
 			pline(p, bw->top->line + bw->regn_bot);
 			if (p->line == bw->top->line + bw->regn_bot) {
-				P *q = pdup(p, USTR "vt_insert_lines");
+				P *q = pdup(p, "vt_insert_lines");
 				if (pnextl(q)) {
 					bdel(p, q);
 				}
@@ -437,12 +436,12 @@ void vt_insert_lines(VT *bw, int n)
 		}
 }
 
-void vt_delete_lines(VT *bw, int n)
+static void vt_delete_lines(VT *bw, ptrdiff_t n)
 {
 	if (bw->vtcur->line < bw->top->line + bw->regn_bot)
 		while (n--) {
-			int col = piscol(bw->vtcur);
-			P *a = pdup(bw->vtcur, USTR "vt_delete_lines");
+			off_t col = piscol(bw->vtcur);
+			P *a = pdup(bw->vtcur, "vt_delete_lines");
 			P *p;
 			P *q;
 			pline(a, bw->top->line + bw->regn_bot);
@@ -450,8 +449,8 @@ void vt_delete_lines(VT *bw, int n)
 				binsc(a, '\n');
 			}
 			prm(a);
-			p = pdup(bw->vtcur, USTR "vt_delete_lines");
-			q = pdup(p, USTR "vt_delete_lines");
+			p = pdup(bw->vtcur, "vt_delete_lines");
+			q = pdup(p, "vt_delete_lines");
 			p_goto_bol(p);
 			if (pnextl(q)) {
 				bdel(p, q);
@@ -462,10 +461,10 @@ void vt_delete_lines(VT *bw, int n)
 		}
 }
 
-void vt_delete_chars(VT *bw, int n)
+static void vt_delete_chars(VT *bw, ptrdiff_t n)
 {
 	while (n && !piseol(bw->vtcur)) {
-		P *q = pdup(bw->vtcur, USTR "vt_delete_chars");
+		P *q = pdup(bw->vtcur, "vt_delete_chars");
 		pgetc(q);
 		bdel(bw->vtcur, q);
 		prm(q);
@@ -473,19 +472,19 @@ void vt_delete_chars(VT *bw, int n)
 	}
 }
 
-void vt_scroll_up(VT *bw, int n)
+static void vt_scroll_up(VT *bw, ptrdiff_t n)
 {
 }
 
-void vt_scroll_down(VT *bw, int n)
+static void vt_scroll_down(VT *bw, ptrdiff_t n)
 {
 }
 
-void vt_erase_chars(VT *bw, int n)
+static void vt_erase_chars(VT *bw, ptrdiff_t n)
 {
 }
 
-void vt_set_region(VT *bw, int top, int bot)
+static void vt_set_region(VT *bw, ptrdiff_t top, ptrdiff_t bot)
 {
 	if (top < bw->height && bot < bw->height && top <= bot) {
 		bw->regn_top = top;
@@ -562,7 +561,7 @@ ESC [ ? 25 h  show cursor
 ESC [ ? 25 l  hide cursor
 */
 
-int vt_arg(VT *vt, int argn, int dflt)
+static ptrdiff_t vt_arg(VT *vt, ptrdiff_t argn, ptrdiff_t dflt)
 {
 	while (vt->argc <= argn) {
 		vt->argv[vt->argc++] = 0;
@@ -572,15 +571,15 @@ int vt_arg(VT *vt, int argn, int dflt)
 	return vt->argv[argn];
 }
 
-MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
+MACRO *vt_data(VT *vt, char **indat, ptrdiff_t *insiz)
 {
-	unsigned char *dat = *indat;
-	int siz = *insiz;
+	char *dat = *indat;
+	ptrdiff_t siz = *insiz;
 	while (siz--) {
-		unsigned char c = *dat++;
+		char c = *dat++;
 		switch (vt->state) {
 			case vt_idle: {
-				switch (c) {
+				switch ((unsigned char)c) {
 					case 5: { /* ENQ- Return terminal status */
 						break;
 					} case 7: { /* BEL- vt100, linux: Beep */
@@ -659,11 +658,11 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 							int ch = utf8_decode(&vt->utf8_sm, c);
 							if (ch >= 0) {
 								vt_type(vt, ch);
-							} else if (ch == -1) {
+							} else if (ch == UTF8_ACCEPTED) {
 								vt->state = vt_utf;
 							}
 						} else {
-							if (c >= 32 && c <= 255)
+							if (!(c >= 0 && c < 32))
 								vt_type(vt, c);
 						}
 						break;
@@ -675,9 +674,9 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 				if (ch >= 0) {
 					vt_type(vt, ch);
 					vt->state = vt_idle;
-				} else if (ch == -1) {
+				} else if (ch == UTF8_ACCEPTED) {
 					vt->state = vt_utf;
-				} else if (ch == -2 || ch == -3) {
+				} else {
 					vt->state = vt_idle;
 				}
 				break;
@@ -739,12 +738,12 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 			} case vt_cmd: {
 				if (c != '}') {
 				/* if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == ',' || c == '_') { */
-					if (vt->bufx < sizeof(vt->buf) - 1)
+					if (vt->bufx < SIZEOF(vt->buf) - 1)
 						vt->buf[vt->bufx++] = c;
 				} else {
 					if (c == '}') {
 						MACRO *m;
-						int rtn;
+						ptrdiff_t rtn;
 						vt->buf[vt->bufx] = 0;
 						/* printf("Got command '%s'\r\n", vt->buf); */
  						m = mparse(NULL, vt->buf, &rtn, 1);
@@ -760,7 +759,7 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 				}
 				break;
 			} case vt_args: {
-				if (vt->bufx < sizeof(vt->buf) - 1)
+				if (vt->bufx < SIZEOF(vt->buf) - 1)
 					vt->buf[vt->bufx++] = c;
 				if (c >= '0' && c <= '9') {
 					if (vt->argc < MAXARGS)
@@ -874,7 +873,7 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 									vt100 ansi.sys: default=understrike,bold,inverse off
 									ansi.sys: 30 - 37: foreground color
 									ansi.sys: 40 - 47: background color */
-							int x, y;
+							ptrdiff_t x, y;
 							/* for (x = 0; x != vt->bufx; ++x) {
 								binsc(vt->vtcur, vt->buf[x]);
 								pgetb(vt->vtcur);
@@ -897,13 +896,13 @@ MACRO *vt_data(VT *vt, unsigned char **indat, int *insiz)
 								else if (x == 27)
 									vt->attr &= ~INVERSE;
 								else if (x >= 30 && x <= 37)
-									vt->attr = (vt->attr & ~FG_MASK) | (FG_NOT_DEFAULT | (x - 30) << FG_SHIFT);
+									vt->attr = (vt->attr & ~FG_MASK) | (FG_NOT_DEFAULT | (int)(x - 30) << FG_SHIFT);
 								else if (x == 39)
 									vt->attr &= ~FG_MASK;
 								else if (x == 49)
 									vt->attr &= ~BG_MASK;
 								else if (x >= 40 && x <= 47)
-									vt->attr = (vt->attr & ~BG_MASK) | (BG_NOT_DEFAULT | (x - 40) << BG_SHIFT);
+									vt->attr = (vt->attr & ~BG_MASK) | (BG_NOT_DEFAULT | (int)(x - 40) << BG_SHIFT);
 							}
 							break;
 						} case 'n': { /* 6: send cursor position as ESC [ row ; col R */

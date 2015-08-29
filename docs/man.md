@@ -1,5 +1,7 @@
 # JOE - Joe's Own Editor
 
+Test
+
 [TOC]
 
 ## Syntax
@@ -371,6 +373,12 @@ access them).
 * pg nnn
 Set number of lines to keep during Page Up and Page Down (use -1 for 1/2
 window size).
+<br>
+
+* regex
+Use standard regular expression syntax by default, instead of the JOE syntax
+(where specical characters have their meaning only when preceded with
+backslash).
 <br>
 
 * restore
@@ -1118,6 +1126,23 @@ the file list.
 	   re <Enter>
 	   bar <Enter>
 
+* __x__
+
+JOE will use the stanrard syntax for regular expressions if this option is
+given.  In the standard syntax, these characters have their special
+meanings directly, and do not have to be escaped with backslash: ., \*, \+, ?, 
+\{, \}, (, ), |, ^, $ and \[.
+
+* __y__
+
+JOE will use the JOE syntax for regular expressions instead of the standard
+syntax.  This overrides the "-regex" option.
+
+* __v__
+
+JOE will send debug information about the regular expression to the startup
+log.  The log can be viewed with the showlog command.
+
 You can hit __^L__ to repeat the previous search.
 
 You can hit __^K H__ at the search and replace options prompt to bring up a list
@@ -1130,14 +1155,51 @@ text:
 
 * __\\\*__
 
-This finds zero or more characters.  For example, if you give __A\\\*B__ as
-the search text, JOE will try to find an A followed by any number of characters
-and then a B.
+This finds zero or more of the item to the left.  For example, if you give
+__AB\\\*C__ as the search text, JOE will try to find an A followed by any
+number of Bs, and then a C.
 
-* __\?__
+* __\\\+__
 
-This finds exactly one character.  For example, if you give __A\?B__ as
+This finds one or more of the item to the left.  For example, if you give
+__AB\\\+C__ as the search text, JOE will try to find an A followed by one
+or more Bs, and then a C.
+
+* __\\?__
+
+This indicates that the item to the left is optional.  For example, if you give
+__AB\\?C__ as the search text, JOE will find AC or ABC.
+
+* __\\\{min,max\\\}__
+
+This indicates that JOE should try to find a string with a specific number
+of occurrences of the item to the left.  For example, __AX\\\{2,5\\\}B__ will
+match these strings: AXXB, AXXXB, AXXXXB, and AXXXXXB.  Min can be left out
+to indicate 0 occurrences.  Max (and the comma) can be left out to indicate
+any number of occurrences.
+
+* __\\.__
+
+This finds exactly one character.  For example, if you give __A\\.B__ as
 the search text, JOE will find AXB, but not AB or AXXB.
+
+* __\\!__
+
+This works like __\.__, but matches a balanced C-language expression. 
+For example, if you search for __malloc(\\!\\\*)__, then JOE will find all
+function calls to __malloc__, even if there was a __)__ within the
+parenthesis.
+
+* __\\|__
+
+This finds the item on the left or the item on the right.  For example, if
+you give __A\\|B__ as the search text, JOE will try to find either an A or
+a B.
+
+* __\\( \\)__
+
+Use these to group characters together.  For example, if you search for
+__\\(foo\\)\\\+__, then JOE will find strings like "foo", and "foofoofoo".
 
 * __\^ \$__
 
@@ -1147,8 +1209,8 @@ __\^test\$__, then JOE with find __test__ on a line by itself.
 * __\< \\\>__
 
 These match the beginnings and endings of words.  For example, if you give
-__\<\\\*is\\\*\\\>__, then JOE will find whole words which have the
-sub-string __is__ within them.
+__\<is\\\>__, then JOE will find the word "is" but will not find the "is" in
+"this".
 
 * __\\\[...]__
 
@@ -1158,20 +1220,6 @@ both __This__ and __this__.  Ranges of characters can be entered within
 the brackets.  For example, __\\\[A-Z]__ finds any uppercase letter.  If
 the first character given in the brackets is __^__, then JOE tries to find
 any character not given in the the brackets.
-
-* __\c__
-
-This works like __\*__, but matches a balanced C-language expression. 
-For example, if you search for __malloc(\c)__, then JOE will find all
-function calls to __malloc__, even if there was a __)__ within the
-parenthesis.
-
-* __\\\+__
-
-This finds zero or more of the character which immediately follows the
-__\+__.  For example, if you give __\\\+\\\[ \]__, where the
-characters within the brackets are both __Space__ and __Tab__, then JOE will find
-whitespace.
 
 * __\\\\__
 
@@ -1191,11 +1239,10 @@ This gets replaced by the text which matched the search string.  For
 example, if the search string was __\<\\\*\\\>__, which matches words, and
 you give __"\\&"__, then JOE will put quote marks around words.
 
-* __\0 - \9__
+* __\1 - \9__
 
-These get replaced with the text which matched the Nth __\\\*__, __\?__,
-__\\\+__, __\c__, or __\\\[...]__ in the search string.  __\0__ refers
-to the first one.
+These get replaced with the text which matched the Nth grouping; the text
+within the Nth set of \\( \\).
 
 * __\\\\__
 
@@ -1217,18 +1264,101 @@ city, then the person's name, and then the address, you could do this:
 
 Type __^K F__ to start the search, and type:
 
-__Address:\\\*,\\\*,\\\*,\\\*\$__
+__Address:\\(\\.\\\*\\),\\(\\.\\\*\\),\\(\\.\\\*\\),\\(\\.\\\*\\)\$__
 
 to match "Address:", the four comma-separated elements, and then the end of 
 the line.  When asked for options, you would type __r__ to replace the 
 string, and then type:
 
-__Address:\3,\2,\0,\1__
+__Address:\4,\3,\1,\2__
 
 To shuffle the information the way you want it. After hitting return, the 
 search would begin, and the sample line would be changed to:
 
 Address: England, London, S. Holmes, 221b Baker St.
+
+<a name="escapes"></a>
+## Escape sequences
+
+JOE understands the following escape sequences withing search and
+replacement strings:
+
+* \\x{10ffff}
+
+This matches a specific Unicode code point given in hexadecimal.
+
+* \\xFF
+
+This matches a specific character specificied in hexadecimal.
+
+* \\377
+
+This matches a specific character specified in octal.
+
+* \\p{Ll}
+
+This matches any character in the named Unicode category or block.
+
+The block names, such as "Latin-1 Supplement" or "Arabic" can be found here: 
+
+[Unicode Blocks](ftp://ftp.unicode.org/Public/8.0.0/ucd/Blocks.txt)
+
+The category names such as "Ll" can be found here:
+
+[Unicode Categories](ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values)
+
+Note that a single letter matches all of the category names which start with
+that letter.  For example, \\p{N} (any number) include \\p{Nd} (decimal
+digit), \\p{Nl} (letter number) and \\p{No} (other number).
+
+* \\d
+
+This matches any Unicode digit.
+
+* \\D
+
+This matches anything except for a Unicode digit.
+
+* \\w
+
+This matches any word character.
+
+* \\W
+
+This matches anything except for a word character.
+
+* \\s
+
+This matches any space character.
+
+* \\S
+
+This matches anything except for a spacing character.
+
+* \\i
+
+This matches an identifier start character.
+
+* \\I
+
+This matches anything except for an identifier start character.
+
+* \\c
+
+This matches an identifier continuation character.
+
+* \\C
+
+This matches anything except for an identifier continuation character.
+
+* \\t Tab
+* \\n Newline
+* \\r Carriage return
+* \\b Backspace
+* \\a Alert
+* \\f Formfeed
+* \\e Escape
+* \\\\ Backslash
 
 ## Incremental search
 
@@ -2162,7 +2292,8 @@ There are three ways to specify <character-list\>s, either __\*__ for any
 character not otherwise specified, __&__ to match the character in the
 delimiter match buffer (opposite character like \( and \) automatically
 match) or a literal list of characters within quotes (ranges and escape
-sequences allowed).  When the next character matches any in the list, a jump
+sequences allowed: see [Escape Sequences](#escapes)).  When the next
+character matches any in the list, a jump
 to the target-state is taken and the character is eaten (we advance to the
 next character of the file to be colored).
 

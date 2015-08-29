@@ -138,41 +138,55 @@ static struct ltchars oltarg;
 
 /* Output buffer, index and size */
 
-unsigned char *obuf = NULL;
-int obufp = 0;
-int obufsiz;
+char *obuf = NULL;
+ptrdiff_t obufp = 0;
+ptrdiff_t obufsiz;
 
 /* The baud rate */
 
-unsigned baud;			/* Bits per second */
-unsigned long upc;		/* Microseconds per character */
+long tty_baud;			/* Bits per second */
+long upc;			/* Microseconds per character */
 
 /* TTY Speed code to baud-rate conversion table (this is dumb- is it really
  * too much to ask for them to just use an integer for the baud-rate?)
  */
 
-static int speeds[] = {
-	B50, 50, B75, 75, B110, 110, B134, 134, B150, 150, B200, 200, B300,
-	300, B600, 600,
-	B1200, 1200, B1800, 1800, B2400, 2400, B4800, 4800, B9600, 9600
+static speed_t speeds_in[] = {
+	B50, B75, B110, B134, B150, B200, B300, B600, B1200, B1800, B2400, B4800, B9600
 #ifdef EXTA
-	    , EXTA, 19200
+	, EXTA
 #endif
 #ifdef EXTB
-	    , EXTB, 38400
+	, EXTB
 #endif
 #ifdef B19200
-	    , B19200, 19200
+	, B19200
 #endif
 #ifdef B38400
-	    , B38400, 38400
+	, B38400
+#endif
+};
+
+static long speeds_out[] = {
+	50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400, 4800, 9600
+#ifdef EXTA
+	, 19200
+#endif
+#ifdef EXTB
+	, 38400
+#endif
+#ifdef B19200
+	, 19200
+#endif
+#ifdef B38400
+	, 38400
 #endif
 };
 
 /* Input buffer */
 
 int have = 0;			/* Set if we have pending input */
-unsigned char havec;	/* Character read in during pending input check */
+char havec;	/* Character read in during pending input check */
 int leave = 0;			/* When set, typeahead checking is disabled */
 
 /* TTY mode flag.  1 for open, 0 for closed */
@@ -194,9 +208,9 @@ static int acceptch = NO_MORE_DATA;	/* =-1 if we have last packet */
 
 struct packet {
 	MPX *who;
-	int size;
+	ptrdiff_t size;
 	int ch;
-	unsigned char data[1024];
+	char data[1024];
 } pack;
 
 MPX asyncs[NPROC];
@@ -282,7 +296,7 @@ void tickon(void)
 	val.it_interval.tv_sec = 0;
 	val.it_interval.tv_usec = 0;
 	if (auto_scroll) {
-		int tim = auto_trig_time - mnow();
+		long tim = auto_trig_time - mnow();
 		if (tim < 0)
 			tim = 1;
 		tim *= 1000;
@@ -306,7 +320,8 @@ void tickon(void)
 
 void ttopnn(void)
 {
-	int x, bbaud;
+	ptrdiff_t x;
+	speed_t bbaud;
 
 #ifdef HAVE_POSIX_TERMIOS
 	struct termios newterm;
@@ -322,7 +337,7 @@ void ttopnn(void)
 
 	if (!termin) {
 		if (idleout ? (!(termin = stdin) || !(termout = stdout)) : (!(termin = fopen("/dev/tty", "r")) || !(termout = fopen("/dev/tty", "w")))) {
-			fputs((char *)joe_gettext(_("Couldn\'t open /dev/tty\n")), stderr);
+			fputs(joe_gettext(_("Couldn\'t open /dev/tty\n")), stderr);
 			exit(1);
 		} else {
 #ifdef SIGWINCH
@@ -341,9 +356,9 @@ void ttopnn(void)
 	newterm = oldterm;
 	newterm.c_lflag = 0;
 	if (noxon)
-		newterm.c_iflag &= ~(ICRNL | IGNCR | INLCR | IXON | IXOFF);
+		newterm.c_iflag &= ~(unsigned)(ICRNL | IGNCR | INLCR | IXON | IXOFF);
 	else
-		newterm.c_iflag &= ~(ICRNL | IGNCR | INLCR);
+		newterm.c_iflag &= ~(unsigned)(ICRNL | IGNCR | INLCR);
 	newterm.c_oflag = 0;
 	newterm.c_cc[VMIN] = 1;
 	newterm.c_cc[VTIME] = 0;
@@ -392,16 +407,16 @@ void ttopnn(void)
 #endif
 #endif
 
-	baud = 9600;
+	tty_baud = 9600;
 	upc = 0;
-	for (x = 0; x != 30; x += 2)
-		if (bbaud == speeds[x]) {
-			baud = speeds[x + 1];
+	for (x = 0; x != sizeof(speeds_in)/sizeof(speed_t); ++x)
+		if (bbaud == speeds_in[x]) {
+			tty_baud = speeds_out[x];
 			break;
 		}
 	if (Baud)
-		baud = Baud;
-	upc = DIVIDEND / baud;
+		tty_baud = Baud;
+	upc = DIVIDEND / tty_baud;
 	if (obuf)
 		joe_free(obuf);
 	if (!(TIMES * upc))
@@ -413,7 +428,7 @@ void ttopnn(void)
 	}
 	if (!obufsiz)
 		obufsiz = 1;
-	obuf = (unsigned char *) joe_malloc(obufsiz);
+	obuf = (char *)joe_malloc(obufsiz);
 }
 
 /* Close terminal */
@@ -509,7 +524,7 @@ int ttcheck()
 {
 	/* Ack previous packet */
 	if (ackkbd != -1 && acceptch != NO_MORE_DATA && !have) {
-		unsigned char c = 0;
+		char c = 0;
 
 		if (pack.who && pack.who->func)
 			joe_write(pack.who->ackfd, &c, 1);
@@ -523,7 +538,7 @@ int ttcheck()
 	if (!have && !leave) {
 		if (ackkbd != -1) {
 			fcntl(mpxfd, F_SETFL, O_NDELAY);
-			if (read(mpxfd, &pack, sizeof(struct packet) - 1024) > 0) {
+			if (read(mpxfd, &pack, pack.data - (char *)&pack) > 0) {
 				fcntl(mpxfd, F_SETFL, 0);
 				joe_read(mpxfd, pack.data, pack.size);
 				have = 1;
@@ -551,10 +566,10 @@ int ttflsh(void)
 {
 	/* Flush output */
 	if (obufp) {
-		unsigned long usec = obufp * upc;	/* No. usecs this write should take */
-
+		long usec = obufp * upc;	/* No. usecs this write should take */
+ 
 #ifdef HAVE_SETITIMER
-		if (usec >= 50000 && baud < 9600) {
+		if (usec >= 50000 && tty_baud < 9600) {
 			struct itimerval a, b;
 
 			a.it_value.tv_sec = usec / 1000000;
@@ -578,7 +593,7 @@ int ttflsh(void)
 		joe_write(fileno(termout), obuf, obufp);
 
 #ifdef FIORDCHK
-		if (baud < 9600 && usec / 1000)
+		if (tty_baud < 9600 && usec / 1000)
 			nap(usec / 1000);
 #endif
 
@@ -596,15 +611,13 @@ int ttflsh(void)
 
 void mpxdied(MPX *m);
 
-long last_time;
+time_t last_time;
 
-extern MACRO *timer_play();
-
-int ttgetc(void)
+char ttgetc(void)
 {
         MACRO *m;
-	int stat;
-	long new_time;
+	ptrdiff_t stat;
+	time_t new_time;
 	int flg;
 
 
@@ -628,7 +641,7 @@ int ttgetc(void)
 	ttflsh();
 	m = timer_play();
 	if (m) {
-	        exemac(m);
+	        exemac(m, NO_MORE_DATA);
 	        edupd(1);
 	        ttflsh();
 	}
@@ -645,7 +658,7 @@ int ttgetc(void)
 	}
 	if (ackkbd != -1) {
 		if (!have) {	/* Wait for input */
-			stat = read(mpxfd, &pack, sizeof(struct packet) - 1024);
+			stat = read(mpxfd, &pack, pack.data - (char *)&pack);
 
 			if (pack.size && stat > 0) {
 				joe_read(mpxfd, pack.data, pack.size);
@@ -670,7 +683,7 @@ int ttgetc(void)
 		} else {
 			if (acceptch != NO_MORE_DATA) {
 				tickoff();
-				return acceptch;
+				return TO_CHAR_OK(acceptch);
 			}
 			else {
 				tickoff();
@@ -693,9 +706,31 @@ int ttgetc(void)
 	return havec;
 }
 
+/* Get character from input: convert whatever we get to Unicode */
+
+static struct utf8_sm main_utf8_sm;
+
+int ttgetch()
+{
+	if (locale_map->type) {
+		int utf8_char;
+		do {
+			char c = ttgetc();
+			utf8_char = utf8_decode(&main_utf8_sm, c);
+		} while (utf8_char < 0);
+		return utf8_char;
+	} else {
+		char c = ttgetc();
+		int utf8_char = to_uni(locale_map, c);
+		if (utf8_char == -1)
+			utf8_char = '?'; /* Maybe we should ignore it? */
+		return utf8_char;
+	}
+}
+
 /* Write string to output */
 
-void ttputs(unsigned char *s)
+void ttputs(const char *s)
 {
 	while (*s) {
 		obuf[obufp++] = *s++;
@@ -706,7 +741,7 @@ void ttputs(unsigned char *s)
 
 /* Get window size */
 
-void ttgtsz(int *x, int *y)
+void ttgtsz(ptrdiff_t *x, ptrdiff_t *y)
 {
 #ifdef TIOCGSIZE
 	struct ttysize getit;
@@ -736,7 +771,7 @@ void ttgtsz(int *x, int *y)
 
 /* Set window size */
 
-void ttstsz(int fd, int w, int h)
+void ttstsz(int fd, ptrdiff_t w, ptrdiff_t h)
 {
 #ifdef TIOCSSIZE
 	struct ttysize getit;
@@ -746,21 +781,21 @@ void ttstsz(int fd, int w, int h)
 #else
 #ifdef TIOCSWINSZ
 	struct winsize getit;
-	getit.ws_col = w;
-	getit.ws_row = h;
+	getit.ws_col = (unsigned short)w;
+	getit.ws_row = (unsigned short)h;
 	joe_ioctl(fd, TIOCSWINSZ, &getit);
 #endif
 #endif
 }
 
-int ttshell(unsigned char *cmd)
+int ttshell(char *cmd)
 {
 	int x, omode = ttymode;
 	int stat= -1;
-	unsigned char *s = (unsigned char *)getenv("SHELL");
+	const char *s = getenv("SHELL");
 
 	if (!s) {
-		s = USTR "/bin/sh";
+		s = "/bin/sh";
 		/* return; */
 	}
 	ttclsn();
@@ -777,10 +812,10 @@ int ttshell(unsigned char *cmd)
 	} else {
 		signrm();
 		if (cmd)
-			execl((char *)s, (char *)s, "-c", cmd, NULL);
+			execl(s, s, "-c", cmd, NULL);
 		else {
-			fputs((char *)joe_gettext(_("You are at the command shell.  Type 'exit' to return\n")), stderr);
-			execl((char *)s, (char *)s, NULL);
+			fputs(joe_gettext(_("You are at the command shell.  Type 'exit' to return\n")), stderr);
+			execl(s, s, NULL);
 		}
 		_exit(0);
 		return 0;
@@ -799,8 +834,8 @@ static int mpxresume(void)
 	if (!(kbdpid = fork())) {
 		close(fds[1]);
 		do {
-			unsigned char c;
-			int sta;
+			char c;
+			ptrdiff_t sta;
 
 			pack.who = 0;
 			sta = joe_read(fileno(termin), &c, 1);
@@ -809,7 +844,7 @@ static int mpxresume(void)
 			else
 				pack.ch = c;
 			pack.size = 0;
-			joe_write(mpxsfd, &pack, sizeof(struct packet) - 1024);
+			joe_write(mpxsfd, &pack, pack.data - (char *)&pack);
 		} while (joe_read(fds[0], &pack, 1) == 1);
 		_exit(0);
 	}
@@ -845,7 +880,7 @@ void ttsusp(void)
 	omode = ttymode;
 	mpxsusp();
 	ttclsn();
-	fputs((char *)joe_gettext(_("You have suspended the program.  Type 'fg' to return\n")), stderr);
+	fputs(joe_gettext(_("You have suspended the program.  Type 'fg' to return\n")), stderr);
 	kill(0, SIGTSTP);
 #ifdef junk
 	/* Hmmm... this should not have been necessary */
@@ -886,7 +921,7 @@ static void mpxend(void)
 	close(mpxfd);
 	close(mpxsfd);
 	if (have)
-		havec = pack.ch;
+		havec = (char)pack.ch;
 }
 
 /* Get a pty/tty pair.  Returns open pty in 'ptyfd' and returns tty name
@@ -907,9 +942,9 @@ static void mpxend(void)
 
 extern char *_getpty();
 
-static unsigned char *getpty(int *ptyfd, int *ttyfd)
+static char *getpty(int *ptyfd, int *ttyfd)
 {
-	return (unsigned char *)_getpty(ptyfd, O_RDWR, 0600, 0);
+	return _getpty(ptyfd, O_RDWR, 0600, 0);
 }
 
 #else
@@ -919,13 +954,13 @@ static unsigned char *getpty(int *ptyfd, int *ttyfd)
 
 extern char *ptsname();
 
-static unsigned char *getpty(int *ptyfd, int *ttyfd)
+static char *getpty(int *ptyfd, int *ttyfd)
 {
 	int fdm;
 	*ptyfd = fdm = open("/dev/ptmx", O_RDWR);
 	grantpt(fdm);
 	unlockpt(fdm);
-	return (unsigned char *)ptsname(fdm);
+	return ptsname(fdm);
 }
 
 #else
@@ -933,11 +968,11 @@ static unsigned char *getpty(int *ptyfd, int *ttyfd)
 
 /* BSD function, present in libc5 and glibc2 */
 
-static unsigned char *getpty(int *ptyfd, int *ttyfd)
+static char *getpty(int *ptyfd, int *ttyfd)
 {
-	static unsigned char name[32];
+	static char name[32];
 
-	if (openpty(ptyfd, ttyfd, (char *)name, NULL, NULL) == 0) {
+	if (openpty(ptyfd, ttyfd, name, NULL, NULL) == 0) {
         	return(name);
         } else {
         	return (NULL);
@@ -957,46 +992,46 @@ static unsigned char *getpty(int *ptyfd, int *ttyfd)
  * process and the process gets to be the session leader.
  */
 
-static unsigned char *getpty(int *ptyfd, int *ttyfd)
+static char *getpty(int *ptyfd, int *ttyfd)
 {
 	int x, fd;
-	unsigned char *orgpwd = pwd();
-	static unsigned char **ptys = NULL;
-	static unsigned char *ttydir;
-	static unsigned char *ptydir;
-	static unsigned char ttyname[32];
+	char *orgpwd = pwd();
+	static char **ptys = NULL;
+	static char *ttydir;
+	static char *ptydir;
+	static char ttyname[32];
 
 	if (!ptys) {
-		ttydir = USTR "/dev/pty/";
-		ptydir = USTR "/dev/ptym/";	/* HPUX systems */
-		if (chpwd(ptydir) || !(ptys = rexpnd(USTR "pty*")))
+		ttydir = "/dev/pty/";
+		ptydir = "/dev/ptym/";	/* HPUX systems */
+		if (chpwd(ptydir) || !(ptys = rexpnd("pty*")))
 			if (!ptys) {
-				ttydir = ptydir = USTR "/dev/";	/* Everyone else */
+				ttydir = ptydir = "/dev/";	/* Everyone else */
 				if (!chpwd(ptydir))
-					ptys = rexpnd(USTR "pty*");
+					ptys = rexpnd("pty*");
 			}
 	}
 	chpwd(orgpwd);
 
 	if (ptys)
 		for (fd = 0; ptys[fd]; ++fd) {
-			zlcpy(ttyname, sizeof(ttyname), ptydir);
-			zlcat(ttyname, sizeof(ttyname), ptys[fd]);
-			if ((*ptyfd = open((char *)ttyname, O_RDWR)) >= 0) {
+			zlcpy(ttyname, SIZEOF(ttyname), ptydir);
+			zlcat(ttyname, SIZEOF(ttyname), ptys[fd]);
+			if ((*ptyfd = open(ttyname, O_RDWR)) >= 0) {
 				ptys[fd][0] = 't';
-				zlcpy(ttyname, sizeof(ttyname), ttydir);
-				zlcat(ttyname, sizeof(ttyname), ptys[fd]);
+				zlcpy(ttyname, SIZEOF(ttyname), ttydir);
+				zlcat(ttyname, SIZEOF(ttyname), ptys[fd]);
 				ptys[fd][0] = 'p';
-				x = open((char *)ttyname, O_RDWR);
+				x = open(ttyname, O_RDWR);
 				if (x >= 0) {
 					close(x);
 					close(*ptyfd);
-					zlcpy(ttyname, sizeof(ttyname), ptydir);
-					zlcat(ttyname, sizeof(ttyname), ptys[fd]);
-					*ptyfd = open((char *)ttyname, O_RDWR);
+					zlcpy(ttyname, SIZEOF(ttyname), ptydir);
+					zlcat(ttyname, SIZEOF(ttyname), ptys[fd]);
+					*ptyfd = open(ttyname, O_RDWR);
 					ptys[fd][0] = 't';
-					zlcpy(ttyname, sizeof(ttyname), ttydir);
-					zlcat(ttyname, sizeof(ttyname), ptys[fd]);
+					zlcpy(ttyname, SIZEOF(ttyname), ttydir);
+					zlcat(ttyname, SIZEOF(ttyname), ptys[fd]);
 					ptys[fd][0] = 'p';
 					return ttyname;
 				} else
@@ -1028,13 +1063,13 @@ static RETSIGTYPE death(int unused)
 
 /* Build a new environment, but replace one variable */
 
-static unsigned char **newenv(unsigned char **old, unsigned char *s)
+static const char **newenv(const char * const *old, const char *s)
 {
-	unsigned char **new;
+	const char **newv;
 	int x, y, z;
 
 	for (x = 0; old[x]; ++x) ;
-	new = (unsigned char **) joe_malloc((x + 2) * sizeof(unsigned char *));
+	newv = (const char **) joe_malloc((x + 2) * SIZEOF(char *));
 
 	for (x = 0, y = 0; old[x]; ++x) {
 		for (z = 0; s[z] != '='; ++z)
@@ -1042,30 +1077,30 @@ static unsigned char **newenv(unsigned char **old, unsigned char *s)
 				break;
 		if (s[z] == '=') {
 			if (s[z + 1])
-				new[y++] = s;
+				newv[y++] = s;
 		} else
-			new[y++] = old[x];
+			newv[y++] = old[x];
 	}
 	if (x == y)
-		new[y++] = s;
-	new[y] = 0;
-	return new;
+		newv[y++] = s;
+	newv[y] = 0;
+	return newv;
 }
 
 /* Create a shell process */
 
 /* If out_only is set, leave program's stdin attached to JOE's stdin */
 
-MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/* ??? */), void *object, void (*die) (/* ??? */), void *dieobj, int out_only,
-           int w, int h)
+MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int out_only,
+           ptrdiff_t w, ptrdiff_t h)
 {
-	unsigned char buf[80];
+	char buf[80];
 	int fds[2];
 	int comm[2];
 	pid_t pid;
 	int x;
 	MPX *m = 0;
-	unsigned char *name;
+	char *name;
 	int ttyfd = -1;
 
 	/* Find free slot */
@@ -1157,11 +1192,11 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 
 			/* Open the TTY (if we didn't already get it from openpty() */
 			if (ttyfd == -1)
-				ttyfd = open((char *)name, O_RDWR);
+				ttyfd = open(name, O_RDWR);
 
 			if (ttyfd != -1) {
-				unsigned char **enva;
-				unsigned char **env;
+				const char **enva;
+				const char **env;
 
 				if (!out_only) {			/* Standard input */
 					dup2(ttyfd, 0);
@@ -1175,10 +1210,10 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 					close(x);/* Yes, this is quite a kludge... all in the name of portability */
 
 				if (w == -1)
-					enva = newenv(mainenv, USTR "TERM=");
+					enva = newenv(mainenv, "TERM=");
 				else
-					enva = newenv(mainenv, USTR "TERM=linux");
-				env = newenv(enva, USTR "JOE=1");
+					enva = newenv(mainenv, "TERM=linux");
+				env = newenv(enva, "JOE=1");
 
 
 				if (!out_only) {
@@ -1211,22 +1246,22 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 					         ttstsz(1, w, h);
 
 					/* Execute the shell */
-					execve((char *)cmd, (char **)args, (char **)env);
+					execve(cmd, args, (char * const *)env);
 
 					/* If shell didn't execute */
-					joe_snprintf_1(buf,sizeof(buf),joe_gettext(_("Couldn't execute shell '%s'\n")),cmd);
-					if (-1 == write(1,buf,zlen(buf)))
+					joe_snprintf_1(buf,SIZEOF(buf),joe_gettext(_("Couldn't execute shell '%s'\n")),cmd);
+					if (-1 == joe_write(1, buf, zlen(buf)))
 						sleep(2);
 					else
 						sleep(1);
 
 				} else {
-					unsigned char buf[1024];
-					int len;
+					char ibuf[1024];
+					ptrdiff_t len;
 					for (;;) {
-						len = read(0, buf, sizeof(buf));
+						len = read(0, ibuf, SIZEOF(ibuf));
 						if (len > 0) {
-							if (-1 == write(1, buf, len))
+							if (-1 == write(1, ibuf, (size_t)len))
 								break;
 						} else
 							break;
@@ -1240,7 +1275,7 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 		}
 
 		/* Tell JOE PID of shell */
-		joe_write(comm[1], &pid, sizeof(pid));
+		joe_write(comm[1], &pid, SIZEOF(pid));
 
 		/* sigpipe should be ignored here. */
 
@@ -1259,15 +1294,15 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 		pack.ch = 0;
 
 		/* Read data from process */
-		pack.size = joe_read(*ptyfd, pack.data, 1024);
+		pack.size = joe_read(*ptyfd, pack.data, SIZEOF(pack.data));
 
 		/* On SUNOS 5.8, the very first read from the pty returns 0 for some reason */
 		if (!pack.size)
-			pack.size = joe_read(*ptyfd, pack.data, 1024);
+			pack.size = joe_read(*ptyfd, pack.data, SIZEOF(pack.data));
 
 		if (pack.size > 0) {
 			/* Send data to JOE, wait for ack */
-			joe_write(mpxsfd, &pack, sizeof(struct packet) - 1024 + pack.size);
+			joe_write(mpxsfd, &pack, pack.data - (char *)&pack + pack.size);
 
 			joe_read(fds[0], &pack, 1);
 			goto loop;
@@ -1275,12 +1310,12 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (/
 			/* Shell died: return */
 			pack.ch = NO_MORE_DATA;
 			pack.size = 0;
-			joe_write(mpxsfd, &pack, sizeof(struct packet) - 1024);
+			joe_write(mpxsfd, &pack, pack.data - (char *)&pack);
 
 			_exit(0);
 		}
 	}
-	joe_read(comm[0], &m->pid, sizeof(m->pid));
+	joe_read(comm[0], &m->pid, SIZEOF(m->pid));
 
 	/* Close tty side of pty (if we used openpty) */
 	if (-1 != ttyfd)

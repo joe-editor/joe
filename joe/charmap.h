@@ -6,9 +6,6 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-#ifndef _Icharmap
-#define _Icharmap 1
-
 /* For sorted from_map entries */
 
 struct pair {
@@ -20,7 +17,7 @@ struct pair {
 
 struct charmap {
 	struct charmap *next;		/* Linked list of loaded character maps */
-	unsigned char *name;		/* Name of this one */
+	const char *name;		/* Name of this one */
 
 	int type;			/* 0=byte, 1=UTF-8 */
 
@@ -36,8 +33,6 @@ struct charmap {
 
 	int (*to_lower)(struct charmap *map,int c);
 	int (*to_upper)(struct charmap *map,int c);
-	int (*to_uni)(struct charmap *map,int c);
-	int (*from_uni)(struct charmap *map,int c);
 
 	/* Information for byte-oriented character sets */
 
@@ -48,11 +43,11 @@ struct charmap {
 
 	struct pair from_map[256];	/* Convert from unicode to byte */
 
-	int from_size;			/* No. paris in from_map */
+	ptrdiff_t from_size;			/* No. paris in from_map */
 
-	unsigned char print_map[32];	/* Bit map of printable characters */
-	unsigned char alpha__map[32];	/* Bit map of alphabetic characters and _ */
-	unsigned char alnum__map[32];	/* Bit map of alphanumeric characters and _ */
+	char print_map[32];	/* Bit map of printable characters */
+	char alpha__map[32];	/* Bit map of alphabetic characters and _ */
+	char alnum__map[32];	/* Bit map of alphanumeric characters and _ */
 };
 
 /* Predicates */
@@ -62,24 +57,41 @@ struct charmap {
 #define joe_isspace(map,c) ((map)->is_space((map),(c)))
 #define joe_isalpha_(map,c) ((map)->is_alpha_((map),(c)))
 #define joe_isalnum_(map,c) ((map)->is_alnum_((map),(c)))
-int joe_isblank(struct charmap *map,int c);
-int joe_isspace_eof(struct charmap *map,int c);
+
+int joe_isblank(struct charmap *map,int c); /* Space or Tab only */
+int joe_isspace_eos(struct charmap *map,int c); /* Space, Tab, CR, LF, FF or NUL */
 
 /* Conversion functions */
 
 #define joe_tolower(map,c) ((map)->to_lower((map),(c)))
 #define joe_toupper(map,c) ((map)->to_upper((map),(c)))
-#define joe_to_uni(map,c) ((map)->to_uni((map),(c)))
-#define joe_from_uni(map,c) ((map)->from_uni((map),(c)))
-unsigned char *lowerize(unsigned char *s);
 
 /* Find (load if necessary) a character set */
-struct charmap *find_charmap(unsigned char *name);
+struct charmap *find_charmap(const char *name);
 
 /* Get available encodings */
-unsigned char **get_encodings(void);
+char **get_encodings(void);
 
+/* Convert from unicode to byte */
 int from_uni(struct charmap *cset, int c);
-int to_uni(struct charmap *cset, int c);
+int from_utf8(struct charmap *map,const char *s);
 
-#endif
+/* Convert from byte to unicode */
+int to_uni(struct charmap *cset, int c);
+void to_utf8(struct charmap *map,char *s,int c);
+
+void joe_locale();
+extern struct charmap *locale_map;	/* Character map of terminal */
+extern struct charmap *utf8_map;	/* UTF-8 character map */
+extern struct charmap *ascii_map;	/* Plain ASCII map */
+extern const char *locale_lang;	/* Locale language (like de_DE) */
+extern const char *locale_msgs;	/* Locale language for editor messages (like de_DE) */
+
+/* Guess map */
+struct charmap *guess_map(const char *buf, ptrdiff_t len);
+
+extern int guess_non_utf8;
+extern int guess_utf8;
+
+void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
+              const char *src,struct charmap *src_map);

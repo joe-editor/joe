@@ -50,10 +50,10 @@
 	"$"		not_string	buffer
 .ifdef mason_block
 	"&%"		perl_maybe_done	buffer
-	"-a-zA-Z_@"	ident		buffer
+	"-@\i"		ident		buffer
 .else
 	"/"		regex		recolor=-1
-	"-a-zA-Z_@%&"	ident		buffer
+	"-\i@%&"	ident		buffer
 .endif
 
 :perl_maybe_done Idle
@@ -77,9 +77,9 @@
 	"<"		maybe_inc
 .ifdef mason_block
 	"&%"		perl_maybe_done buffer
-	"a-zA-Z_@"	maybe_string	buffer
+	"\i@"		maybe_string	buffer
 .else
-	"a-zA-Z_@%&"	maybe_string	buffer
+	"\i@%&"		maybe_string	buffer
 .endif
 
 :pod_start Idle
@@ -94,7 +94,7 @@
 	*		pod_block	noeat strings
 	"=cut"		rest
 done
-	"a-zA-Z0-9_"	pod_ident
+	"\c"		pod_ident
 
 :maybe_inc Idle
 	*		rest		noeat
@@ -113,7 +113,7 @@ done
 	*		rest		noeat
 	" 	"	maybe_inc1
 	"'\""		quoted_inc_start	save_c recolor=-1
-	"A-Za-z_"	inc		buffer noeat
+	"\i"		inc		buffer noeat
 
 :quoted_inc_start Var
 	*		quoted_inc	buffer
@@ -124,7 +124,7 @@ done
 
 :inc Var
 	*		skipline	save_s noeat
-	"A-Za-z0-9_"	inc
+	"\c"		inc
 
 # Should be treated as a normal line here...
 
@@ -156,7 +156,7 @@ done
 
 :not_string Idle
 	*		rest noeat
-	"A-Za-z_"	ident
+	"\i"	ident
 	"\"'`#"		rest
 
 :line_comment Comment
@@ -228,7 +228,7 @@ done
 
 :string_subst Escape
 	*		string	noeat recolor=-1
-	"a-zA-Z_0-9"	string_subst
+	"\c"		string_subst
 
 :string_escape Escape
 	*		string
@@ -278,7 +278,7 @@ done
 
 :char_escape	Escape
 	*		char		recolor=-2
-	"\\'"	char
+	"\\'"		char
 
 :backtick	Constant
 	*		backtick
@@ -288,7 +288,7 @@ done
 
 :backtick_subst Escape
 	*		backtick	noeat recolor=-1
-	"a-zA-Z_0-9"	backtick_subst
+	"\c"		backtick_subst
 
 :backtick_escape Escape
 	*		backtick
@@ -374,7 +374,7 @@ done
 	"__END__"	end_of_file_comment
 	"__DATA__"	end_of_file_comment
 done
-	"a-zA-Z0-9_"	ident
+	"\c"		ident
 
 :maybe_string Idle
 	*		rest		noeat strings
@@ -384,13 +384,13 @@ done
 	"qw"		match
 	"q"		match
 done
-	"a-zA-Z0-9_"	maybe_string
+	"\c"		maybe_string
 
 :type Type
-	*	rest	noeat
+	*		rest	noeat
 
 :kw Keyword
-	*	rest	noeat
+	*		rest	noeat
 
 :match Idle
 	*		inmatch		save_c recolor=-1

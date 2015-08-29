@@ -9,11 +9,11 @@
 #include "types.h"
 
 struct help {
-	unsigned char	*text;		/* help text with attributes */
-	unsigned int	lines;		/* number of lines */
+	char	*text;		/* help text with attributes */
+	int	lines;		/* number of lines */
 	struct help	*prev;		/* previous help screen */
 	struct help	*next;		/* nex help screen */
-	unsigned char	*name;		/* context name for context sensitive help */
+	char	*name;		/* context name for context sensitive help */
 };
 
 #define NOT_ENOUGH_MEMORY -11
@@ -28,17 +28,17 @@ struct help *help_ptr = NULL;		/* build pointer */
  * Returns new line number
  */
 
-int help_init(JFILE *fd,unsigned char *bf,int line)
+int help_init(JFILE *fd,char *bf,int line)
 {
-	unsigned char buf[1024];			/* input buffer */
+	char buf[1024];			/* input buffer */
 
 	struct help *tmp;
-	unsigned int bfl;				/* buffer length */
-	unsigned int hlpsiz, hlpbsz;			/* number of used/allocated bytes for tmp->text */
-	unsigned char *tempbuf;
+	ptrdiff_t bfl;				/* buffer length */
+	ptrdiff_t hlpsiz, hlpbsz;		/* number of used/allocated bytes for tmp->text */
+	char *tempbuf;
 
 	if (bf[0] == '{') {			/* start of help screen */
-		tmp = (struct help *) joe_malloc(sizeof(struct help));
+		tmp = (struct help *) joe_malloc(SIZEOF(struct help));
 
 		tmp->text = NULL;
 		tmp->lines = 0;
@@ -46,15 +46,15 @@ int help_init(JFILE *fd,unsigned char *bf,int line)
 		hlpbsz = 0;
 		tmp->name = vsncpy(NULL, 0, sz(bf + 1) - 1); /* -1 kill the \n */
 
-		while ((jfgets(buf, sizeof(buf), fd)) && (buf[0] != '}')) {
+		while ((jfgets(buf, SIZEOF(buf), fd)) && (buf[0] != '}')) {
 			++line;
 			bfl = zlen(buf);
 			if (hlpsiz + bfl > hlpbsz) {
 				if (tmp->text) {
-					tempbuf = (unsigned char *) joe_realloc(tmp->text, hlpbsz + bfl + 1024);
+					tempbuf = (char *)joe_realloc(tmp->text, hlpbsz + bfl + 1024);
 					tmp->text = tempbuf;
 				} else {
-					tmp->text = (unsigned char *) joe_malloc(bfl + 1024);
+					tmp->text = (char *)joe_malloc(bfl + 1024);
 					tmp->text[0] = 0;
 				}
 				hlpbsz += bfl + 1024;
@@ -74,7 +74,7 @@ int help_init(JFILE *fd,unsigned char *bf,int line)
 		if (buf[0] == '}') {		/* set new help screen as actual one */
 			++line;
 		} else {
-			logerror_1((char *)joe_gettext(_("\n%d: EOF before end of help text\n")), line);
+			logerror_1(joe_gettext(_("\n%d: EOF before end of help text\n")), line);
 		}
 	}
 	return line;
@@ -84,7 +84,7 @@ int help_init(JFILE *fd,unsigned char *bf,int line)
  * Find context help - find help entry with the same name
  */
 
-struct help *find_context_help(unsigned char *name)
+static struct help *find_context_help(const char *name)
 {
 	struct help *tmp = help_actual;
 
@@ -104,7 +104,7 @@ int help_is_utf8;
  */
 void help_display(Screen *t)
 {
-	unsigned char *str;
+	const char *str;
 	int y, x, c, z;
 	int atr = BG_COLOR(bg_help);
 
@@ -116,15 +116,15 @@ void help_display(Screen *t)
 
 	for (y = skiptop; y != t->wind; ++y) {
 		if (t->t->updtab[y]) {
-			unsigned char *start = str, *eol;
-			int width=0;
-			int nspans=0;
-			int spanwidth;
-			int spancount=0;
-			int spanextra;
-			int len;
+			const char *start = str, *eol;
+			ptrdiff_t width=0;
+			ptrdiff_t nspans=0;
+			ptrdiff_t spanwidth;
+			ptrdiff_t spancount=0;
+			ptrdiff_t spanextra;
+			ptrdiff_t len;
 
-			eol = zchr(str, '\n');
+			eol = zchr(str, '\n'); 
 
 			/* First pass: count no. springs \| and determine minimum width */
 			while(*str && *str!='\n') {
@@ -252,6 +252,7 @@ void help_display(Screen *t)
 			}
 			atr = BG_COLOR(bg_help);
 			t->t->updtab[y] = 0;
+			outatr_complete(t->t);
 		}
 
 		while (*str && *str != '\n')
@@ -295,9 +296,8 @@ static void help_off(Screen *t)
 /*
  * Show/hide current help screen
  */
-int u_help(BASE *base)
+int u_help(W *w, int k)
 {
-	W *w = base->parent;
 	struct help *new_help;
 
 	if (w->huh && (new_help = find_context_help(w->huh)) != NULL) {
@@ -318,10 +318,8 @@ int u_help(BASE *base)
 /*
  * Show next help screen (if it is possible)
  */
-int u_help_next(BASE *base)
+int u_help_next(W *w, int k)
 {
-	W *w = base->parent;
-
 	if (help_actual && help_actual->next) {		/* is there any next help screen? */
 		if (w->t->wind != skiptop) {
 			help_off(w->t);			/* if help screen was visible, then hide it */
@@ -336,10 +334,8 @@ int u_help_next(BASE *base)
 /*
  * Show previous help screen (if it is possible)
  */
-int u_help_prev(BASE *base)
+int u_help_prev(W *w, int k)
 {
-	W *w = base->parent;
-
 	if (help_actual && help_actual->prev) {		/* is there any previous help screen? */
 		if (w->t->wind != skiptop)
 			help_off(w->t);			/* if help screen was visible, then hide it */

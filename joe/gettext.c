@@ -12,9 +12,9 @@
 
 HASH *gettext_ht;
 
-unsigned char *ignore_prefix(unsigned char *set)
+static const char *ignore_prefix(const char *set)
 {
-	unsigned char *s = zrchr(set, '|');
+	const char *s = zrchr(set, '|');
 	if (s)
 		++s;
 	else
@@ -22,10 +22,10 @@ unsigned char *ignore_prefix(unsigned char *set)
 	return s;
 }
 
-unsigned char *my_gettext(unsigned char *s)
+const char *my_gettext(const char *s)
 {
 	if (gettext_ht) {
-		unsigned char *r = htfind(gettext_ht, s);
+		const char *r = (const char *)htfind(gettext_ht, s);
 		if (r)
 			s = r;
 	}
@@ -38,32 +38,32 @@ unsigned char *my_gettext(unsigned char *s)
 /* Load a .po file, convert entries to local character set and add them to
  * hash table */
 
-int load_po(FILE *f)
+static int load_po(FILE *f)
 {
-	unsigned char buf[1024];
-	unsigned char msgid[1024];
-	unsigned char msgstr[1024];
-	unsigned char bf[8192];
+	char buf[1024];
+	char msgid[1024];
+	char msgstr[1024];
+	char bf[8192];
 	struct charmap *po_map = locale_map;
 	int preload_flag = 0;
 	msgid[0] = 0;
 	msgstr[0] = 0;
-	while (preload_flag || fgets((char *)buf,sizeof(buf)-1,f)) {
-		unsigned char *p;
+	while (preload_flag || fgets(buf,SIZEOF(buf)-1,f)) {
+		const char *p;
 		preload_flag = 0;
 		p = buf;
 		parse_ws(&p, '#');
-		if (!parse_field(&p, USTR "msgid")) {
-			int ofst = 0;
-			int len;
+		if (!parse_field(&p, "msgid")) {
+			ptrdiff_t ofst = 0;
+			ptrdiff_t len;
 			msgid[0] = 0;
 			parse_ws(&p, '#');
-			while ((len = parse_string(&p, msgid + ofst, sizeof(msgid)-ofst)) >= 0) {
+			while ((len = parse_string(&p, msgid + ofst, SIZEOF(msgid)-ofst)) >= 0) {
 				preload_flag = 0;
 				ofst += len;
 				parse_ws(&p, '#');
 				if (!*p) {
-					if (fgets((char *)buf,sizeof(buf) - 1,f)) {
+					if (fgets(buf,SIZEOF(buf) - 1,f)) {
 						p = buf;
 						preload_flag = 1;
 						parse_ws(&p, '#');
@@ -72,17 +72,17 @@ int load_po(FILE *f)
 					}
 				}
 			}
-		} else if (!parse_field(&p, USTR "msgstr")) {
-			int ofst = 0;
-			int len;
+		} else if (!parse_field(&p, "msgstr")) {
+			ptrdiff_t ofst = 0;
+			ptrdiff_t len;
 			msgstr[0] = 0;
 			parse_ws(&p, '#');
-			while ((len = parse_string(&p, msgstr + ofst, sizeof(msgstr)-ofst)) >= 0) {
+			while ((len = parse_string(&p, msgstr + ofst, SIZEOF(msgstr)-ofst)) >= 0) {
 				preload_flag = 0;
 				ofst += len;
 				parse_ws(&p, '#');
 				if (!*p) {
-					if (fgets((char *)buf,sizeof(buf) - 1,f)) {
+					if (fgets(buf,SIZEOF(buf) - 1,f)) {
 						p = buf;
 						preload_flag = 1;
 						parse_ws(&p, '#');
@@ -93,19 +93,19 @@ int load_po(FILE *f)
 			}
 			if (msgid[0] && msgstr[0]) {
 				/* Convert to locale character map */
-				my_iconv(bf, sizeof(bf), locale_map,msgstr,po_map);
+				my_iconv(bf, SIZEOF(bf), locale_map,msgstr,po_map);
 				/* Add to hash table */
 				htadd(gettext_ht, zdup(msgid), zdup(bf));
 			} else if (!msgid[0] && msgstr[0]) {
-				unsigned char *p = (unsigned char *)strstr((char *)msgstr, "charset=");
-				if (p) {
+				char *tp = zstr(msgstr, "charset=");
+				if (tp) {
 					/* Copy character set name up to next delimiter */
 					int x;
-					p += sizeof("charset=") - 1;
-					while (*p == ' ' || *p == '\t') ++p;
-					for (x = 0; p[x] && p[x] !='\n' && p[x] != '\r' && p[x] != ' ' &&
-					            p[x] != '\t' && p[x] != ';' && p[x] != ','; ++x)
-					            msgid[x] = p[x];
+					tp += SIZEOF("charset=") - 1;
+					while (*tp == ' ' || *tp == '\t') ++tp;
+					for (x = 0; tp[x] && tp[x] !='\n' && tp[x] != '\r' && tp[x] != ' ' &&
+					            tp[x] != '\t' && tp[x] != ';' && tp[x] != ','; ++x)
+					            msgid[x] = tp[x];
 					msgid[x] = 0;
 					po_map = find_charmap(msgid);
 					if (!po_map)
@@ -121,19 +121,19 @@ int load_po(FILE *f)
 
 /* Initialize my_gettext().  Call after locale_map has been set. */
 
-void init_gettext(unsigned char *s)
+void init_gettext(const char *s)
 {
 	FILE *f;
-	unsigned char buf[1024];
-	joe_snprintf_2(buf, sizeof(buf), "%slang/%s.po",JOEDATA,s);
-	if ((f = fopen((char *)buf, "r"))) {
+	char buf[1024];
+	joe_snprintf_2(buf, SIZEOF(buf), "%slang/%s.po",JOEDATA,s);
+	if ((f = fopen(buf, "r"))) {
 		/* Try specific language, like en_GB */
 		gettext_ht = htmk(256);
 		load_po(f);
 	} else if (s[0] && s[1]) {
 		/* Try generic language, like en */
-		joe_snprintf_3(buf, sizeof(buf), "%slang/%c%c.po",JOEDATA,s[0],s[1]);
-		if ((f = fopen((char *)buf, "r"))) {
+		joe_snprintf_3(buf, SIZEOF(buf), "%slang/%c%c.po",JOEDATA,s[0],s[1]);
+		if ((f = fopen(buf, "r"))) {
 			gettext_ht = htmk(256);
 			load_po(f);
 		}

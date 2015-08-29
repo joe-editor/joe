@@ -209,6 +209,9 @@
 -search_prompting
 		Запрашивать образец для последующих поисков.
 
+ -regex		Search uses standard regular expression format (otherwise it uses
+		JOE format where all special characters have to be escaped).
+
  Строка определения строки состояния. -lmsg определяет часть, выровненную 
  влево, а -rmsg - вправо. Первый символ строки -rmsg - символ для заполнения 
  фона. В строках могут использоваться следующие управляющие последовательности:
@@ -587,31 +590,38 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Search
-\i   Окно ПОДСКАЗКИ - \|выключить по F1    пред.экран - ^P     след. экран ^N      \i
-\i \iСпециальные последовательности поиска:                                       \|\i \i
-\i \i    \b\\^  \\$\b  начало/конец строки          \b\\?\b     любой одиночный символ       \|\i \i
-\i \i    \b\\<  \\>\b  начало/конец слова           \b\\*\b     0 или более символов         \|\i \i
-\i \i    \b\\c\b     сбалансированное выражение C  \b\\\\\b     символ \\                     \|\i \i
-\i \i    \b\\[..]\b  один из элементов множества   \b\\n\b     перевод строки               \|\i \i
-\i \i    \b\\+\b     0 или более символов, следующих за \\+                             \|\i \i
-\i \iСпециальные последовательности замещения:                                    \|\i \i
-\i \i    \b\\&\b     замещать текстом, соответствующим строке поиска                   \|\i \i
-\i \i    \b\\0 - 9\b замещать текстом, соотв. n-ному  \b\\*\b, \b\\?\b, \b\\c\b, \b\\+\b, или \b\\[..]\b        \|\i \i
-\i \i    \b\\\\\b     замещать символом \\           \b\\n\b     замещать переводом строки    \|\i \i
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \iSearch sequences:                                                            \|\i \i
+\i \i    \\^  \\$  matches beg./end of line       \\.     match any single char      \|\i \i
+\i \i    \\<  \\>  matches beg./end of word       \\!     match char or expression   \|\i \i
+\i \i    \\(  \\)  grouping                       \\|     match left or right         \|\i \i
+\i \i    \\[a-z]  matches one of a set                                             \|\i \i
+\i \i    \\{1,3}  match 1 - 3 occurrences        \\?     match 0 or 1 occurrence     \|\i \i
+\i \i    \\+      match 1 or more occurrences    \\*     match 0 or more occurrences \|\i \i
+\i \iReplace sequences:                                                           \|\i \i
+\i \i    \\&      replaced with entire match     \\1 - 9 replaced with Nth group   \|\i \i
+}
+
+{Escape sequences
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \iEscape sequences: \\x{10fff}  Unicode code point   \\p{Ll}  Unicode category \|\i \i
+\i \i    \\i / \\I  Identifier start      \\t  tab          \\e  escape               \|\i \i
+\i \i    \\c / \\C  Identifier continue   \\n  newline      \\r  carriage return      \|\i \i
+\i \i    \\d / \\D  Digit / Not a digit   \\b  backspace  \\xFF  hex character        \|\i \i
+\i \i    \\w / \\W  Word / Not a word     \\a  alert      \\377  octal character      \|\i \i
+\i \i    \\s / \\S  Space / Not a space   \\f  formfeed     \\\\  backslash            \|\i \i
 }
 
 {SearchOptions
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \iSearch options:                                                              \|\i \i
-\i \i   r Replace                                                                 \|\i \i
-\i \i   k Restrict search to highlighted block, which can be rectangular          \|\i \i
-\i \i   b Search backward instead of forward                                      \|\i \i
-\i \i   i Ignore case                                                             \|\i \i
-\i \i   a Search across all loaded files                                          \|\i \i
-\i \i   e Search across all files in Grep or Compile error list                   \|\i \i
-\i \i   w Wrap to beginning of file for this search                               \|\i \i
-\i \i   n Do not wrap to beginning of file for this search                        \|\i \i
-\i \i   nnn Perform exaclty nnn replacements                                      \|\i \i
+\i \i     r Replace      k Restrict search to highlighted block                   \|\i \i
+\i \i     i Ignore case  b Search backwards instead of forwards                   \|\i \i
+\i \i                    a Search across all loaded files                         \|\i \i
+\i \i                    e Search across all files in Grep or Compile error list  \|\i \i
+\i \i w / n  Allow / prevent wrap to start of file                                \|\i \i
+\i \i x / y  Search text is standard format / JOE format regular expression       \|\i \i
+\i \i   nnn  Perform exactly nnn replacements                                     \|\i \i
 }
 
 {Math
@@ -729,7 +739,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  к началу следующей строки.
 
 :windows		Общие клавиши для всех окон
-type		^@ TO Ъ		Напечатать символ
+type		U+0 TO U+10FFFF
 abort		^C		Аварийное прерывание
 abort		^K Q
 abort		^K ^Q
@@ -1187,10 +1197,10 @@ defm2down	M2DOWN		Hits return key
 :inherit windows
 
 :querya			Single-key query window for quoting
-type		^@ TO  
+type		U+0 TO U+10FFFF
 
 :querysr		Search & replace query window
-type		^@ TO  
+type		U+0 TO U+10FFFF
 
 :shell			Input to shell windows
 :inherit main

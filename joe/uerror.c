@@ -13,11 +13,11 @@ typedef struct error ERROR;
 
 struct error {
 	LINK(ERROR) link;	/* Linked list of errors */
-	long line;		/* Target line number */
-	long org;		/* Original target line number */
-	unsigned char *file;	/* Target file name */
-	long src;		/* Error-file line number */
-	unsigned char *msg;	/* The message */
+	off_t line;		/* Target line number */
+	off_t org;		/* Original target line number */
+	char *file;		/* Target file name */
+	off_t src;		/* Error-file line number */
+	char *msg;	/* The message */
 } errors = { { &errors, &errors} };
 ERROR *errptr = &errors;	/* Current error row */
 
@@ -32,8 +32,8 @@ B *errbuf = NULL;		/* Buffer with error messages */
 B *beafter(B *b)
 {
 	struct error *e;
-	unsigned char *name = b->name;
-	if (!name) name = USTR "";
+	const char *name = b->name;
+	if (!name) name = "";
 	for (e = errors.link.next; e != &errors; e = e->link.next)
 		if (!zcmp(name, e->file))
 			break;
@@ -45,7 +45,7 @@ B *beafter(B *b)
 		e = e->link.next;
 	berror = 0;
 	if (e != &errors) {
-		B *b = bfind(e->file);
+		b = bfind(e->file);
 		/* bfind bumps refcount, so we have to unbump it */
 		if (b->count == 1)
 			b->orphan = 1; /* Oops */
@@ -58,7 +58,7 @@ B *beafter(B *b)
 
 /* Insert and delete notices */
 
-void inserr(unsigned char *name, long int where, long int n, int bol)
+void inserr(const char *name, off_t where, off_t n, int bol)
 {
 	ERROR *e;
 
@@ -77,7 +77,7 @@ void inserr(unsigned char *name, long int where, long int n, int bol)
 	}
 }
 
-void delerr(unsigned char *name, long int where, long int n)
+void delerr(const char *name, off_t where, off_t n)
 {
 	ERROR *e;
 
@@ -98,7 +98,7 @@ void delerr(unsigned char *name, long int where, long int n)
 
 /* Abort notice */
 
-void abrerr(unsigned char *name)
+void abrerr(const char *name)
 {
 	ERROR *e;
 
@@ -110,7 +110,7 @@ void abrerr(unsigned char *name)
 
 /* Save notice */
 
-void saverr(unsigned char *name)
+void saverr(const char *name)
 {
 	ERROR *e;
 
@@ -152,56 +152,60 @@ static int freeall(void)
 /* First word (allowing ., /, _ and -) with a . is the file name.  Next number
    is line number.  Then there should be a ':' */
 
-static void parseone(struct charmap *map,unsigned char *s,unsigned char **rtn_name,long *rtn_line)
+static void parseone(struct charmap *map,const char *s,char **rtn_name,off_t *rtn_line)
 {
-	int x, y, flg;
-	unsigned char *name = NULL;
-	long line = -1;
+	int flg;
+	int c;
+	char *name = NULL;
+	off_t line = -1;
+	const char *u, *v, *t;
 
-	y=0;
-	flg=0;
+	v = s;
+	flg = 0;
 
 	if (s[0] == 'J' && s[1] == 'O' && s[2] == 'E' && s[3] == ':')
 		goto bye;
 
 	do {
+		
 		/* Skip to first word */
-		for (x = y; s[x] && !(joe_isalnum_(map,s[x]) || s[x] == '.' || s[x] == '/'); ++x) ;
+		for (u = v; *u && !((t = u), (c = fwrd_c(map, &t)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/')); u = t) ;
 
 		/* Skip to end of first word */
-		for (y = x; joe_isalnum_(map,s[y]) || s[y] == '.' || s[y] == '/' || s[y]=='-'; ++y)
-			if (s[y] == '.')
+		for (v = u; (t = v), (c = fwrd_c(map, &t)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/' || c == '-'); v = t)
+			if (c == '.')
 				flg = 1;
-	} while (!flg && x!=y);
+	} while (!flg && u != v);
 
 	/* Save file name */
-	if (x != y)
-		name = vsncpy(NULL, 0, s + x, y - x);
+	if (u != v)
+		name = vsncpy(NULL, 0, u, v - u);
 
 	/* Skip to first number */
-	for (x = y; s[x] && (s[x] < '0' || s[x] > '9'); ++x) ;
+	for (u = v; *u && (*u < '0' || *u > '9'); ++u) ;
 
 	/* Skip to end of first number */
-	for (y = x; s[y] >= '0' && s[y] <= '9'; ++y) ;
+	for (v = u; *v >= '0' && *v <= '9'; ++v) ;
 
 	/* Save line number */
-	if (x != y)
-		sscanf((char *)(s + x), "%ld", &line);
+	if (u != v) {
+		line = ztoo(u);
+	}
 	if (line != -1)
 		--line;
 
 	/* Look for ':' */
 	flg = 0;
-	while (s[y]) {
+	while (*v) {
 	/* Allow : anywhere on line: works for MIPS C compiler */
 /*
 	for (y = 0; s[y];)
 */
-		if (s[y]==':') {
+		if (*v == ':') {
 			flg = 1;
 			break;
 		}
-		++y;
+		++v;
 	}
 
 	bye:
@@ -220,11 +224,11 @@ static void parseone(struct charmap *map,unsigned char *s,unsigned char **rtn_na
  * filename:line-number:*
  */
 
-void parseone_grep(struct charmap *map,unsigned char *s,unsigned char **rtn_name,long *rtn_line)
+void parseone_grep(struct charmap *map,const char *s,char **rtn_name,off_t *rtn_line)
 {
 	int y;
-	unsigned char *name = NULL;
-	long line = -1;
+	char *name = NULL;
+	off_t line = -1;
 
 	if (s[0] == 'J' && s[1] == 'O' && s[2] == 'E' && s[3] == ':')
 		goto bye;
@@ -254,19 +258,19 @@ void parseone_grep(struct charmap *map,unsigned char *s,unsigned char **rtn_name
 	*rtn_line = line;
 }
 
-static int parseit(struct charmap *map,unsigned char *s, long int row,
-  void (*parseone)(struct charmap *map, unsigned char *s, unsigned char **rtn_name, long *rtn_line), unsigned char *current_dir)
+static int parseit(struct charmap *map,const char *s, off_t row,
+  void (*parseline)(struct charmap *map, const char *s, char **rtn_name, off_t *rtn_line), char *current_dir)
 {
-	unsigned char *name = NULL;
-	long line = -1;
+	char *name = NULL;
+	off_t line = -1;
 	ERROR *err;
 
-	parseone(map,s,&name,&line);
+	parseline(map,s,&name,&line);
 
 	if (name) {
 		if (line != -1) {
 			/* We have an error */
-			err = (ERROR *) alitem(&errnodes, sizeof(ERROR));
+			err = (ERROR *) alitem(&errnodes, SIZEOF(ERROR));
 			err->file = name;
 			if (current_dir) {
 				err->file = vsncpy(NULL, 0, sv(current_dir));
@@ -290,14 +294,14 @@ static int parseit(struct charmap *map,unsigned char *s, long int row,
 
 /* Parse the error output contained in a buffer */
 
-void kill_ansi(unsigned char *s);
+void kill_ansi(char *s);
 
-static long parserr(B *b)
+static off_t parserr(B *b)
 {
 	if (markv(1)) {
-		P *p = pdup(markb, USTR "parserr1");
-		P *q = pdup(markb, USTR "parserr2");
-		long nerrs = 0;
+		P *p = pdup(markb, "parserr1");
+		P *q = pdup(markb, "parserr2");
+		off_t nerrs = 0;
 		errbuf = markb->b;
 
 		freeall();
@@ -305,7 +309,7 @@ static long parserr(B *b)
 		p_goto_bol(p);
 
 		do {
-			unsigned char *s;
+			char *s;
 
 			pset(q, p);
 			p_goto_eol(p);
@@ -321,14 +325,14 @@ static long parserr(B *b)
 		prm(q);
 		return nerrs;
 	} else {
-		P *p = pdup(b->bof, USTR "parserr3");
-		P *q = pdup(p, USTR "parserr4");
-		long nerrs = 0;
+		P *p = pdup(b->bof, "parserr3");
+		P *q = pdup(p, "parserr4");
+		off_t nerrs = 0;
 		errbuf = b;
 
 		freeall();
 		do {
-			unsigned char *s;
+			char *s;
 
 			pset(q, p);
 			p_goto_eol(p);
@@ -345,7 +349,7 @@ static long parserr(B *b)
 	}
 }
 
-BW *find_a_good_bw(B *b)
+static BW *find_a_good_bw(B *b)
 {
 	W *w;
 	BW *bw = 0;
@@ -373,75 +377,81 @@ BW *find_a_good_bw(B *b)
 int parserrb(B *b)
 {
 	BW *bw;
-	int n;
+	off_t n;
 	freeall();
 	bw = find_a_good_bw(b);
-	unmark(bw);
+	unmark(bw->parent, 0);
 	n = parserr(b);
 	if (n)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), (int)n);
 	else
-		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages found")));
+		joe_snprintf_0(msgbuf, SIZEOF(msgbuf), joe_gettext(_("No messages found")));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
 
-int urelease(BW *bw)
+int urelease(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	bw->b->parseone = 0;
 	if (qempty(ERROR, link, &errors) && !errbuf) {
-		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages")));
+		joe_snprintf_0(msgbuf, SIZEOF(msgbuf), joe_gettext(_("No messages")));
 	} else {
 		int count = freeall();
 		errbuf = NULL;
-		joe_snprintf_1(msgbuf, sizeof(msgbuf), joe_gettext(_("%d messages cleared")), count);
+		joe_snprintf_1(msgbuf, SIZEOF(msgbuf), joe_gettext(_("%d messages cleared")), count);
 	}
 	msgnw(bw->parent, msgbuf);
 	updall();
 	return 0;
 }
 
-int uparserr(BW *bw)
+int uparserr(W *w, int k)
 {
-	int n;
+	off_t n;
+	BW *bw;
+	WIND_BW(bw, w);
 	freeall();
 	bw->b->parseone = parseone;
 	n = parserr(bw->b);
 	if (n)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), (int)n);
 	else
-		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages found")));
+		joe_snprintf_0(msgbuf, SIZEOF(msgbuf), joe_gettext(_("No messages found")));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
 
-int ugparse(BW *bw)
+int ugparse(W *w, int k)
 {
-	int n;
+	off_t n;
+	BW *bw;
+	WIND_BW(bw, w);
 	freeall();
 	bw->b->parseone = parseone_grep;
 	n = parserr(bw->b);
 	if (n)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), n);
+		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("%d messages found")), (int)n);
 	else
-		joe_snprintf_0(msgbuf, sizeof(msgbuf), joe_gettext(_("No messages found")));
+		joe_snprintf_0(msgbuf, SIZEOF(msgbuf), joe_gettext(_("No messages found")));
 	msgnw(bw->parent, msgbuf);
 	return 0;
 }
 
-int jump_to_file_line(BW *bw,unsigned char *file,int line,unsigned char *msg)
+static int jump_to_file_line(BW *bw,char *file,off_t line,char *msg)
 {
 	int omid;
 	if (!bw->b->name || zcmp(file, bw->b->name)) {
-		if (doswitch(bw, vsdup(file), NULL, NULL))
+		if (doswitch(bw->parent, vsdup(file), NULL, NULL))
 			return -1;
 		bw = (BW *) maint->curwin->object;
 	}
-	omid = mid;
-	mid = 1;
+	omid = opt_mid;
+	opt_mid = 1;
 	pline(bw->cursor, line);
 	dofollows();
-	mid = omid;
+	opt_mid = omid;
 	bw->cursor->xcol = piscol(bw->cursor);
 	msgnw(bw->parent, msg);
 	return 0;
@@ -449,8 +459,10 @@ int jump_to_file_line(BW *bw,unsigned char *file,int line,unsigned char *msg)
 
 /* Show current message */
 
-int ucurrent_msg(BW *bw)
+int ucurrent_msg(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (errptr != &errors) {
 		msgnw(bw->parent, errptr->msg);
 		return 0;
@@ -462,7 +474,7 @@ int ucurrent_msg(BW *bw)
 
 /* Find line in error database: return pointer to message */
 
-ERROR *srcherr(BW *bw,unsigned char *file,long line)
+static ERROR *srcherr(BW *bw,char *file,off_t line)
 {
 	ERROR *p;
 	for (p = errors.link.next; p != &errors; p=p->link.next)
@@ -476,9 +488,9 @@ ERROR *srcherr(BW *bw,unsigned char *file,long line)
 
 /* Delete ansi formatting */
 
-void kill_ansi(unsigned char *s)
+void kill_ansi(char *s)
 {
-	unsigned char *d = s;
+	char *d = s;
 	while (*s)
 		if (*s == 27) {
 			while (*s && (*s == 27 || *s == '[' || (*s >= '0' && *s <= '9') || *s == ';'))
@@ -490,12 +502,16 @@ void kill_ansi(unsigned char *s)
 	*d = 0;
 }
 
-int ujump(BW *bw)
+int ujump(W *w, int k)
 {
+	BW *bw;
 	int rtn = -1;
-	P *p = pdup(bw->cursor, USTR "ujump");
-	P *q = pdup(p, USTR "ujump");
-	unsigned char *s;
+	P *p;
+	P *q;
+	char *s;
+	WIND_BW(bw, w);
+	p = pdup(bw->cursor, "ujump");
+	q = pdup(p, "ujump");
 	p_goto_bol(p);
 	p_goto_eol(q);
 	s = brvs(p, (int) (q->byte - p->byte));
@@ -503,10 +519,10 @@ int ujump(BW *bw)
 	prm(p);
 	prm(q);
 	if (s) {
-		unsigned char *name = NULL;
-		unsigned char *fullname = NULL;
-		unsigned char *curd = get_cd(bw->parent);
-		long line = -1;
+		char *name = NULL;
+		char *fullname = NULL;
+		char *curd = get_cd(bw->parent);
+		off_t line = -1;
 		if (bw->b->parseone)
 			bw->b->parseone(bw->b->o.charmap,s,&name,&line);
 		else
@@ -517,13 +533,13 @@ int ujump(BW *bw)
 		vsrm(name);
 		name = canonical(fullname);
 		if (name && line != -1) {
-			ERROR *p = srcherr(bw, name, line);
-			uprevw((BASE *)bw);
+			ERROR *er = srcherr(bw, name, line);
+			uprevw(bw->parent, 0);
 			/* Check that we made it to a tw */
-			if (p)
-				rtn = jump_to_file_line(maint->curwin->object,name,p->line,NULL /* p->msg */);
+			if (er)
+				rtn = jump_to_file_line((BW *)maint->curwin->object,name,er->line,NULL /* p->msg */);
 			else
-				rtn = jump_to_file_line(maint->curwin->object,name,line,NULL);
+				rtn = jump_to_file_line((BW *)maint->curwin->object,name,line,NULL);
 			vsrm(name);
 		}
 		vsrm(s);
@@ -531,8 +547,10 @@ int ujump(BW *bw)
 	return rtn;
 }
 
-int unxterr(BW *bw)
+int unxterr(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (errptr->link.next == &errors) {
 		msgnw(bw->parent, joe_gettext(_("No more errors")));
 		return -1;
@@ -542,8 +560,10 @@ int unxterr(BW *bw)
 	return jump_to_file_line(bw,errptr->file,errptr->line,NULL /* errptr->msg */);
 }
 
-int uprverr(BW *bw)
+int uprverr(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (errptr->link.prev == &errors) {
 		msgnw(bw->parent, joe_gettext(_("No more errors")));
 		return -1;

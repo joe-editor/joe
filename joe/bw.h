@@ -5,8 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_BW_H
-#define _JOE_BW_H 1
 
 /* A buffer window: there are several kinds, depending on what is in 'object' */
 
@@ -15,9 +13,9 @@ struct bw {
 	B	*b;
 	P	*top;
 	P	*cursor;
-	long	offset;
+	off_t	offset;
 	Screen	*t;
-	int	h, w, x, y;
+	ptrdiff_t	h, w, x, y;
 
 	OPTIONS	o;
 	void	*object;
@@ -29,35 +27,33 @@ struct bw {
 };
 
 extern int dspasis;	/* Display characters above 127 as-is */
-extern int mid;		/* Controls how window scrolls: when set, scroll window enough so that line with cursor becomes centered */
+extern int opt_mid;	/* Controls how window scrolls: when set, scroll window enough so that line with cursor becomes centered */
 
-void bwfllw(BW *w);
-void bwfllwt(BW *w);
-void bwfllwh(BW *w);
-void bwins(BW *w, long int l, long int n, int flg);
-void bwdel(BW *w, long int l, long int n, int flg);
+void bwfllw(W *w);
+void bwfllwt(W *w);
+void bwfllwh(W *w);
+void bwins(BW *w, off_t l, off_t n, int flg);
+void bwdel(BW *w, off_t l, off_t n, int flg);
 void bwgen(BW *w, int linums);
 void bwgenh(BW *w);
 BW *bwmk(W *window, B *b, int prompt);
-void bwmove(BW *w, int x, int y);
-void bwresz(BW *w, int wi, int he);
+void bwmove(BW *w, ptrdiff_t x, ptrdiff_t y);
+void bwresz(BW *w, ptrdiff_t wi, ptrdiff_t he);
 void bwrm(BW *w);
-int ustat(BW *bw);
-int ucrawll(BW *bw);
-int ucrawlr(BW *bw);
+int ustat(W *w, int k);
+int ucrawll(W *w, int k);
+int ucrawlr(W *w, int k);
 void orphit(BW *bw);
 
 extern int marking;	/* Anchored block marking mode */
 
 void save_file_pos(FILE *f);
 void load_file_pos(FILE *f);
-long get_file_pos(unsigned char *name);
-void set_file_pos(unsigned char *name, long pos);
+off_t get_file_pos(const char *name);
+void set_file_pos(const char *name, off_t pos);
 
 extern int restore_file_pos;
 
 void set_file_pos_all(Screen *t);
 
 BW *vtmaster(Screen *t, B *b);
-
-#endif

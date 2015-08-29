@@ -47,7 +47,7 @@
 	"'"		string_sq	recolor=-1
 	"\""		string_dq	recolor=-1
 	"\`"		string_bq	recolor=-1
-	"a-zA-Z_"	ident		buffer
+	"\i"		ident		buffer
 	"$"   php_var recolor=-1
 	"-" maybe_method
 	"{}"  brace recolor=-1
@@ -64,16 +64,16 @@
 :here_doc Idle
 	*		idle noeat
 	" 	"	here_doc
-	"A-Za-z_"	here_name buffer
+	"\i"		here_name buffer
 
 :here_name Idle
 	*		inhere_doc save_s
-	"A-Za-z_0-9"	here_name
+	"\c"		here_name
 
 :inhere_doc Constant
 	*		inhere_not_eol
 	"\n"		inhere_doc
-	"A-Za-z_"	inhere_name buffer
+	"\i"		inhere_name buffer
 
 :inhere_not_eol Constant
 	*		inhere_not_eol
@@ -84,24 +84,24 @@
 	";"		inhere_doc strings
 	"&"		idle
 done
-	"A-Za-z_0-9"	inhere_name
+	"\c"		inhere_name
 	
 :brace  Methods
   * idle  noeat
 	
 :php_var Var
   * idle noeat
-  "a-zA-Z_0-9-ÿ" php_var
+  "\c" php_var
 
 :var_indqstring Var
   *     string_dq recolor=-1
-  "a-zA-Z_" var_indqstring
+  "\i" var_indqstring
   "\""  string_dq noeat
 	"\\"		string_dq_esc	recolor=-1
 
 :var_inbqstring Var
   *     string_bq recolor=-1
-  "a-zA-Z_" var_inbqstring
+  "\i" var_inbqstring
   "\`"  string_sq noeat
 	"\\"		string_bq_esc	recolor=-1
 
@@ -114,14 +114,14 @@ done
 	"0-9"		first_digit	recolor=-1
 	"'"		string_sq	recolor=-1
 	"\""		string_dq	recolor=-1
-	"a-zA-Z_"	ident		buffer
+	"\i"	ident		buffer
 	"$"   php_var recolor=-1
 	"{}"  brace recolor=-1
   ">" method  recolor=-2
   
 :method Methods
   *   idle  recolor=-1
-  "a-zA-Z_" method  recolor=-1
+  "\i" method  recolor=-1
 
 :idle_qmark Idle
 	*		idle		noeat
@@ -279,7 +279,7 @@ done
 	"unset"		kw
 	"while"		kw
 done
-	"a-zA-Z0-9_"	ident
+	"\c"	ident
 
 :kw Keyword
 	*	idle	noeat

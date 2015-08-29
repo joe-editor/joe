@@ -5,20 +5,18 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_W_H
-#define _JOE_W_H 1
 
 struct watom {
-	unsigned char	*context;	/* Context name */
-	void	(*disp) ();	/* Display window */
-	void	(*follow) ();	/* Called to have window follow cursor */
-	int	(*abort) ();	/* Common user functions */
-	int	(*rtn) ();
-	int	(*type) ();
-	void	(*resize) ();	/* Called when window changed size */
-	void	(*move) ();	/* Called when window moved */
-	void	(*ins) ();	/* Called on line insertions */
-	void	(*del) ();	/* Called on line deletions */
+	const char *context;	/* Context name */
+	void	(*disp)(W *w, int flg);	/* Display window */
+	void	(*follow)(W *w);/* Called to have window follow cursor */
+	int	(*abort)(W *w);	/* Common user functions */
+	int	(*rtn)(W *w);
+	int	(*type)(W *w, int k);
+	void	(*resize)(W *w,ptrdiff_t width, ptrdiff_t height);	/* Called when window changed size */
+	void	(*move)(W *w, ptrdiff_t x, ptrdiff_t y);	/* Called when window moved */
+	void	(*ins)(W *w, B *b,off_t l,off_t n,int flg);	/* Called on line insertions */
+	void	(*del)(W *w, B *b,off_t l,off_t n,int flg);	/* Called on line deletions */
 	int	what;		/* Type of this thing */
 };
 
@@ -27,12 +25,12 @@ struct watom {
 struct screen {
 	SCRN	*t;		/* Screen data on this screen is output to */
 
-	int	wind;		/* Number of help lines on this screen */
+	ptrdiff_t	wind;		/* Number of help lines on this screen */
 
 	W	*topwin;	/* Top-most window showing on screen */
 	W	*curwin;	/* Window cursor is in */
 
-	int	w, h;		/* Width and height of this screen */
+	ptrdiff_t	w, h;		/* Width and height of this screen */
 };
 
 /* Buffer stack entry */
@@ -52,20 +50,20 @@ struct window {
 
 	Screen	*t;		/* Screen this thing is on */
 
-	int	x, y, w, h;	/* Position and size of window */
+	ptrdiff_t	x, y, w, h;	/* Position and size of window */
 				/* Currently, x = 0, w = width of screen. */
 				/* y == -1 if window is not on screen */
 
-	int	ny, nh;		/* Temporary values for wfit */
+	ptrdiff_t	ny, nh;		/* Temporary values for wfit */
 
-	int	reqh;		/* Requested new height or 0 for same */
+	ptrdiff_t	reqh;		/* Requested new height or 0 for same */
 				/* This is an argument for wfit */
 
-	int	fixed;		/* If this is zero, use 'hh'.  If not, this
+	ptrdiff_t	fixed;		/* If this is zero, use 'hh'.  If not, this
 				   is a fixed size window and this variable
 				   gives its height */
 
-	int	hh;		/* Height window would be on a screen with
+	ptrdiff_t	hh;		/* Height window would be on a screen with
 				   1000 lines.  When the screen size changes
 				   this is used to calculate the window's
 				   real height */
@@ -73,7 +71,7 @@ struct window {
 	W	*win;		/* Window this one operates on */
 	W	*main;		/* Main window of this family */
 	W	*orgwin;	/* Window where space from this window came */
-	int	curx, cury;	/* Cursor position within window */
+	ptrdiff_t	curx, cury;	/* Cursor position within window */
 	KBD	*kbd;		/* Keyboard handler for this window */
 	WATOM	*watom;		/* The type of this window */
 	void	*object;	/* Object which inherits this */
@@ -88,9 +86,9 @@ struct window {
 	} object;
 #endif
 
-	unsigned char	*msgt;		/* Message at top of window */
-	unsigned char	*msgb;		/* Message at bottom of window */
-	unsigned char	*huh;		/* Name of window for context sensitive hlp */
+	const char	*msgt;		/* Message at top of window */
+	const char	*msgb;		/* Message at bottom of window */
+	const char	*huh;		/* Name of window for context sensitive hlp */
 	int	*notify;	/* Address of kill notification flag */
 	struct bstack *bstack;	/* Pushed buffer stack */
 };
@@ -107,7 +105,7 @@ struct base {
 /* int getgrouph(W *);
  * Get height of a family of windows
  */
-int getgrouph(W *w);
+ptrdiff_t getgrouph(W *w);
 
 /* W *findtopw(W *);
  * Find first (top-most) window of a family
@@ -139,7 +137,7 @@ void wfit(Screen *t);
 /* W *watpos(Screen *t, int x, int y);
  * Return the window at the given location, or NULL if there is none
  */
-W *watpos(Screen *t, int x, int y);
+W *watpos(Screen *t, ptrdiff_t x, ptrdiff_t y);
 
 /*****************/
 /* Main routines */
@@ -181,7 +179,7 @@ void sresize(Screen *t);
  * Returns the new window or returns 0 if there was not enough space to
  * create the window and maintain family integrity.
  */
-W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, int height, unsigned char *huh, int *notify);
+W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t height, const char *huh, int *notify);
 
 /* int wabort(W *w);
  *
@@ -245,31 +243,29 @@ void updall(void);
  * msgnw displays message on bottom line of window
  * msgnwt displays message on top line of window
  */
-void msgnw(W *w, unsigned char *s);
-void msgnwt(W *w, unsigned char *s);
+void msgnw(W *w, const char *s);
+void msgnwt(W *w, const char *s);
 
 #define JOE_MSGBUFSIZE 300
-extern unsigned char msgbuf[JOE_MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
+extern char msgbuf[JOE_MSGBUFSIZE];	/* Message composition buffer for msgnw/msgnwt */
 
-void msgout(W *w);			/* Output msgnw/msgnwt messages */
-void msgclr();					/* Clear them */
+void msgout(W *w);		/* Output msgnw/msgnwt messages */
+void msgclr(W *w);			/* Clear them */
 
 /* Common user functions */
 
-int urtn(BASE *b, int k);		/* User hit return */
-int utype(BASE *b, int k);		/* User types a character */
-int uretyp(BASE *bw);			/* Refresh the screen */
-int ugroww(BASE *bw);			/* Grow current window */
-int uexpld(BASE *bw);			/* Explode current window or show all windows */
-int ushrnk(BASE *bw);			/* Shrink current window */
-int unextw(BASE *bw);			/* Goto next window */
-int uprevw(BASE *bw);			/* Goto previous window */
-int umwind(BW *bw);			/* Go to message window */
-int umfit(BW *bw);			/* Fit two windows on screen */
+int urtn(W *w, int k);		/* User hit return */
+int utype(W *w, int k);		/* User types a character */
+int uretyp(W *w, int k);	/* Refresh the screen */
+int ugroww(W *w, int k);	/* Grow current window */
+int uexpld(W *w, int k);	/* Explode current window or show all windows */
+int ushrnk(W *w, int k);	/* Shrink current window */
+int unextw(W *w, int k);	/* Goto next window */
+int uprevw(W *w, int k);	/* Goto previous window */
+int umwind(W *w, int k);	/* Go to message window */
+int umfit(W *w, int k);		/* Fit two windows on screen */
 
-void scrdel(B *b, long int l, long int n, int flg);
-void scrins(B *b, long int l, long int n, int flg);
+void scrdel(B *b, off_t l, off_t n, int flg);
+void scrins(B *b, off_t l, off_t n, int flg);
 
 extern int bg_msg; /* Background color for messages */
-
-#endif

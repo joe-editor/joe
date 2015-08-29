@@ -8,13 +8,13 @@
 #include "types.h"
 
 struct context *contexts; /* Global list of KMAPs */
-unsigned char **keymap_list; /* KMAP names array for completion */
+char **keymap_list; /* KMAP names array for completion */
 
 /* Create a KBD */
 
 KBD *mkkbd(KMAP *kmap)
 {
-	KBD *kbd = (KBD *) joe_malloc(sizeof(KBD));
+	KBD *kbd = (KBD *) joe_malloc(SIZEOF(KBD));
 
 	kbd->topmap = kmap;
 	kbd->curmap = kmap;
@@ -31,9 +31,9 @@ void rmkbd(KBD *k)
 
 /* Process next key for KBD */
 
-void *dokey(KBD *kbd, int n)
+MACRO *dokey(KBD *kbd, int n)
 {
-	void *bind = NULL;
+	KMAP *bind;
 
 	/* If we were passed a negative character */
 	if (n < 0)
@@ -43,23 +43,39 @@ void *dokey(KBD *kbd, int n)
 	if (kbd->curmap == kbd->topmap)
 		kbd->x = 0;
 
-	if (kbd->curmap->keys[n].k == 1) {	/* A prefix key was found */
+	/* Update cmap if src changed */
+	if (kbd->curmap->rtree_version != kbd->curmap->src_version) {
+		rtree_clr(&kbd->curmap->rtree);
+		rtree_init(&kbd->curmap->rtree);
+		/* interval_show(kbd->curmap->src); */
+		rtree_build(&kbd->curmap->rtree, kbd->curmap->src);
+		/* rtree_show(&kbd->curmap->rtree); */
+		rtree_opt(&kbd->curmap->rtree);
+		/* rtree_show(&kbd->curmap->rtree); */
+		kbd->curmap->rtree_version = kbd->curmap->src_version;
+	}
+	bind = (KMAP *)rtree_lookup(&kbd->curmap->rtree, n);
+	if (!bind)
+		bind = (KMAP *)kbd->curmap->dflt;
+	if (bind && bind->what == 1) {	/* A prefix key was found */
 		kbd->seq[kbd->x++] = n;
-		kbd->curmap = kbd->curmap->keys[n].value.submap;
-	} else {		/* A complete key sequence was entered or an unbound key was found */
-		bind = kbd->curmap->keys[n].value.bind;
-/*  kbd->seq[kbd->x++]=n; */
+		kbd->curmap = bind;
+		bind = 0;
+	} else {	/* A complete sequence was found */
 		kbd->x = 0;
 		kbd->curmap = kbd->topmap;
 	}
-	return bind;
+
+	return (MACRO *)bind;
 }
 
 /* Return key code for key name or -1 for syntax error */
 
-static int keyval(unsigned char *s)
+static int keyval(char *s)
 {
-	if (s[0] == '^' && s[1] && !s[2])
+	if (s[0] == 'U' && s[1] == '+') {
+		return zhtoi(s + 2);
+	} else if (s[0] == '^' && s[1] && !s[2])
 		switch (s[1])
 		{
 		case '?':
@@ -73,30 +89,39 @@ static int keyval(unsigned char *s)
 		 && (s[1] == 'P' || s[1] == 'p') && !s[2])
 		return ' ';
 	else if((s[0]=='M'||s[0]=='m') && s[1]) {
-		if(!zcmp(s,USTR "MDOWN")) return KEY_MDOWN;
-		else if(!zcmp(s,USTR "MWDOWN")) return KEY_MWDOWN;
-		else if(!zcmp(s,USTR "MWUP")) return KEY_MWUP;
-		else if(!zcmp(s,USTR "MUP")) return KEY_MUP;
-		else if(!zcmp(s,USTR "MDRAG")) return KEY_MDRAG;
-		else if(!zcmp(s,USTR "M2DOWN")) return KEY_M2DOWN;
-		else if(!zcmp(s,USTR "M2UP")) return KEY_M2UP;
-		else if(!zcmp(s,USTR "M2DRAG")) return KEY_M2DRAG;
-		else if(!zcmp(s,USTR "M3DOWN")) return KEY_M3DOWN;
-		else if(!zcmp(s,USTR "M3UP")) return KEY_M3UP;
-		else if(!zcmp(s,USTR "M3DRAG")) return KEY_M3DRAG;
+		if(!zcmp(s,"MDOWN")) return KEY_MDOWN;
+		else if(!zcmp(s,"MWDOWN")) return KEY_MWDOWN;
+		else if(!zcmp(s,"MWUP")) return KEY_MWUP;
+		else if(!zcmp(s,"MUP")) return KEY_MUP;
+		else if(!zcmp(s,"MDRAG")) return KEY_MDRAG;
+		else if(!zcmp(s,"M2DOWN")) return KEY_M2DOWN;
+		else if(!zcmp(s,"M2UP")) return KEY_M2UP;
+		else if(!zcmp(s,"M2DRAG")) return KEY_M2DRAG;
+		else if(!zcmp(s,"M3DOWN")) return KEY_M3DOWN;
+		else if(!zcmp(s,"M3UP")) return KEY_M3UP;
+		else if(!zcmp(s,"M3DRAG")) return KEY_M3DRAG;
 		else return s[0];
-	} else if (s[1] || !s[0])
+	} else {
+		int ch = utf8_decode_string(s);
+		if (ch < 0)
+			ch = -1;
+		return ch;
+	}
+/*
+	 if (s[1] || !s[0])
 		return -1;
 	else
-		return (unsigned char) s[0];
+		return ((unsigned char *)s)[0];
+*/
 }
 
 /* Create an empty keymap */
 
 KMAP *mkkmap(void)
 {
-	KMAP *kmap = (KMAP *) joe_calloc(sizeof(KMAP), 1);
-
+	KMAP *kmap = (KMAP *) joe_calloc(SIZEOF(KMAP), 1);
+	kmap->what = 1;
+	rtree_init(&kmap->rtree);
 	return kmap;
 }
 
@@ -104,21 +129,27 @@ KMAP *mkkmap(void)
 
 void rmkmap(KMAP *kmap)
 {
-	int x;
-
+	struct interval_list *l, *n;
 	if (!kmap)
 		return;
-	for (x = 0; x != KEYS; ++x)
-		if (kmap->keys[x].k == 1)
-			rmkmap(kmap->keys[x].value.submap);
+	for (l = kmap->src; l; l = n) {
+		n = l->next;
+		if (((KMAP *)l->map)->what == 1) {
+			rmkmap((KMAP *)l->map);
+		}
+		joe_free(l);
+	}
+	if (kmap->dflt && ((KMAP *)kmap->dflt)->what == 1)
+		rmkmap((KMAP *)kmap->dflt);
+	rtree_clr(&kmap->rtree);
 	joe_free(kmap);
 }
 
 /* Parse a range */
 
-static unsigned char *range(unsigned char *seq, int *vv, int *ww)
+static char *range(char *seq, int *vv, int *ww)
 {
-	unsigned char c;
+	char c;
 	int x, v, w;
 
 	for (x = 0; seq[x] && seq[x] != ' '; ++x) ;	/* Skip to a space */
@@ -154,13 +185,15 @@ static unsigned char *range(unsigned char *seq, int *vv, int *ww)
 
 /* Add a binding to a keymap */
 
-static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *err, unsigned char *capseq, int seql)
+static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, MACRO *bind, int *err, const char *capseq, ptrdiff_t seql)
 {
 	int v, w;
 
 	if (!seql && seq[0] == '.' && seq[1]) {
-		int x, c;
-		unsigned char *s;
+		int x;
+		char c;
+		const char *s;
+		char *iv;
 
 		for (x = 0; seq[x] && seq[x] != ' '; ++x) ;
 		c = seq[x];
@@ -169,61 +202,61 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 		if (!zcmp(seq + 1, "ku")) {
 			capseq = "\0H";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kd")) {
+		} else if (!zcmp(seq + 1, "kd")) {
 			capseq = "\0P";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kl")) {
+		} else if (!zcmp(seq + 1, "kl")) {
 			capseq = "\0K";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kr")) {
+		} else if (!zcmp(seq + 1, "kr")) {
 			capseq = "\0M";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kI")) {
+		} else if (!zcmp(seq + 1, "kI")) {
 			capseq = "\0R";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kD")) {
+		} else if (!zcmp(seq + 1, "kD")) {
 			capseq = "\0S";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kh")) {
+		} else if (!zcmp(seq + 1, "kh")) {
 			capseq = "\0G";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kH")) {
+		} else if (!zcmp(seq + 1, "kH")) {
 			capseq = "\0O";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kP")) {
+		} else if (!zcmp(seq + 1, "kP")) {
 			capseq = "\0I";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "kN")) {
+		} else if (!zcmp(seq + 1, "kN")) {
 			capseq = "\0Q";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k1")) {
+		} else if (!zcmp(seq + 1, "k1")) {
 			capseq = "\0;";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k2")) {
+		} else if (!zcmp(seq + 1, "k2")) {
 			capseq = "\0<";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k3")) {
+		} else if (!zcmp(seq + 1, "k3")) {
 			capseq = "\0=";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k4")) {
+		} else if (!zcmp(seq + 1, "k4")) {
 			capseq = "\0>";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k5")) {
+		} else if (!zcmp(seq + 1, "k5")) {
 			capseq = "\0?";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k6")) {
+		} else if (!zcmp(seq + 1, "k6")) {
 			capseq = "\0@";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k7")) {
+		} else if (!zcmp(seq + 1, "k7")) {
 			capseq = "\0A";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k8")) {
+		} else if (!zcmp(seq + 1, "k8")) {
 			capseq = "\0B";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k9")) {
+		} else if (!zcmp(seq + 1, "k9")) {
 			capseq = "\0C";
 			seql = 2;
-		} else if (!zcmp(seq + 1, USTR "k0")) {
+		} else if (!zcmp(seq + 1, "k0")) {
 			capseq = "\0D";
 			seql = 2;
 		}
@@ -234,10 +267,10 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 #else
 		s = jgetstr(cap, seq + 1);
 		seq[x] = c;
-		if (s && (s = tcompile(cap, s, 0, 0, 0, 0))
-		    && (sLEN(s) > 1 || (signed char)s[0] < 0)) {
-			capseq = s;
-			seql = sLEN(s);
+		if (s && (iv = tcompile(cap, s, 0, 0, 0, 0))
+		    && (sLEN(iv) > 1 || (signed char)iv[0] < 0)) {
+			capseq = iv;
+			seql = sLEN(iv);
 			for (seq += x; *seq == ' '; ++seq) ;
 		}
 #endif
@@ -248,7 +281,7 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 	}
 
 	if (seql) {
-		v = w = (unsigned char) *capseq++;
+		v = w = *capseq++;
 		--seql;
 	} else {
 		seq = range(seq, &v, &w);
@@ -262,30 +295,23 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind, int *e
 		kmap = mkkmap();	/* Create new keymap if 'kmap' was NULL */
 
 	/* Make bindings between v and w */
-	while (v <= w) {
+	if (v <= w) {
 		if (*seq || seql) {
-			if (kmap->keys[v].k == 0)
-				kmap->keys[v].value.submap = NULL;
-			kmap->keys[v].k = 1;
-			kmap->keys[v].value.submap = kbuild(cap, kmap->keys[v].value.submap, seq, bind, err, capseq, seql);
-			if (!kmap->keys[v].value.submap) {
-                        	/* Error during recursion. Prevent crash later. */
-                        	kmap->keys[v].k = 0;
-			}
+			KMAP *old = (KMAP *)interval_lookup(kmap->src, NULL, v);
+			if (!old || !old->what) {
+				kmap->src = interval_add(kmap->src, v, w, kbuild(cap, NULL, seq, bind, err, capseq, seql));
+				++kmap->src_version;
+			} else
+				kbuild(cap, old, seq, bind, err, capseq, seql);
 		} else {
-			if (kmap->keys[v].k == 1)
-				rmkmap(kmap->keys[v].value.submap);
-			kmap->keys[v].k = 0;
-			kmap->keys[v].value.bind =
-			    /* This bit of code sticks the key value in the macro */
-			    (v == w ? macstk(bind, v) : dupmacro(macstk(bind, v)));
+			kmap->src = interval_add(kmap->src, v, w, bind);
+			++kmap->src_version;
 		}
-		++v;
 	}
 	return kmap;
 }
 
-int kadd(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind)
+int kadd(CAP *cap, KMAP *kmap, char *seq, MACRO *bind)
 {
 	int err = 0;
 
@@ -295,26 +321,23 @@ int kadd(CAP *cap, KMAP *kmap, unsigned char *seq, void *bind)
 
 void kcpy(KMAP *dest, KMAP *src)
 {
-	int x;
-
-	for (x = 0; x != KEYS; ++x)
-		if (src->keys[x].k == 1) {
-			if (dest->keys[x].k != 1) {
-				dest->keys[x].k = 1;
-				dest->keys[x].value.submap = mkkmap();
-			}
-			kcpy(dest->keys[x].value.submap, src->keys[x].value.submap);
-		} else if (src->keys[x].k == 0 && src->keys[x].value.bind) {
-			if (dest->keys[x].k == 1)
-				rmkmap(dest->keys[x].value.submap);
-			dest->keys[x].value.bind = src->keys[x].value.bind;
-			dest->keys[x].k = 0;
+	struct interval_list *l;
+	for (l = src->src; l; l = l->next) {
+		if (((KMAP *)l->map)->what == 1) {
+			KMAP *k = mkkmap();
+			kcpy(k, (KMAP *)l->map);
+			dest->src = interval_add(dest->src, l->interval.first, l->interval.last, k);
+			++dest->src_version;
+		} else {
+			dest->src = interval_add(dest->src, l->interval.first, l->interval.last, l->map);
+			++dest->src_version;
 		}
+	}
 }
 
 /* Remove a binding from a keymap */
 
-int kdel(KMAP *kmap, unsigned char *seq)
+int kdel(KMAP *kmap, char *seq)
 {
 	int err = 1;
 	int v, w;
@@ -324,23 +347,20 @@ int kdel(KMAP *kmap, unsigned char *seq)
 		return -1;
 
 	/* Clear bindings between v and w */
-	while (v <= w) {
+	if (v <= w) {
 		if (*seq) {
-			if (kmap->keys[v].k == 1) {
-				int r = kdel(kmap->keys[v].value.submap, seq);
-
-				if (err != -1)
-					err = r;
+			KMAP *old = (KMAP *)interval_lookup(kmap->src, NULL, v);
+			if (old->what == 1) {
+				kdel(old, seq);
+			} else {
+				kmap->src = interval_add(kmap->src, v, w, NULL);
+				++kmap->src_version;
+				
 			}
 		} else {
-			if (kmap->keys[v].k == 1)
-				rmkmap(kmap->keys[v].value.submap);
-			kmap->keys[v].k = 0;
-			kmap->keys[v].value.bind = NULL;
-			if (err != -1)
-				err = 0;
+			kmap->src = interval_add(kmap->src, v, w, NULL);
+			++kmap->src_version;
 		}
-		++v;
 	}
 
 	return err;
@@ -350,14 +370,14 @@ int kdel(KMAP *kmap, unsigned char *seq)
  * is created.
  */
 
-KMAP *kmap_getcontext(unsigned char *name)
+KMAP *kmap_getcontext(const char *name)
 {
 	struct context *c;
 
 	for (c = contexts; c; c = c->next)
 		if (!zcmp(c->name, name))
 			return c->kmap;
-	c = (struct context *) joe_malloc(sizeof(struct context));
+	c = (struct context *) joe_malloc(SIZEOF(struct context));
 
 	c->next = contexts;
 	c->name = zdup(name);
@@ -369,7 +389,7 @@ KMAP *kmap_getcontext(unsigned char *name)
  * doesn't exist, instead of creating a new one.
  */
 
-KMAP *ngetcontext(unsigned char *name)
+KMAP *ngetcontext(const char *name)
 {
 	struct context *c;
 	for(c=contexts;c;c=c->next)
@@ -382,34 +402,30 @@ KMAP *ngetcontext(unsigned char *name)
 
 int kmap_empty(KMAP *k)
 {
-	int x;
-	for (x = 0; x != KEYS; ++x)
-		if  (k->keys[x].value.bind)
-			return 0;
-	return 1;
+	return k->src == NULL && k->dflt == NULL;
 }
 
 /* JM */
 
 B *keymaphist=0;
 
-int dokeymap(BW *bw,unsigned char *s,void *object,int *notify)
+static int dokeymap(W *w,char *s,void *object,int *notify)
 {
 	KMAP *k=ngetcontext(s);
 	vsrm(s);
 	if(notify) *notify=1;
 	if(!k) {
-		msgnw(bw->parent,joe_gettext(_("No such keymap")));
+		msgnw(w,joe_gettext(_("No such keymap")));
 		return -1;
 	}
-	rmkbd(bw->parent->kbd);
-	bw->parent->kbd=mkkbd(k);
+	rmkbd(w->kbd);
+	w->kbd=mkkbd(k);
 	return 0;
 }
 
-static unsigned char **get_keymap_list()
+static char **get_keymap_list()
 {
-	unsigned char **lst = 0;
+	char **lst = 0;
 	struct context *c;
 	for (c=contexts; c; c=c->next)
 		lst = vaadd(lst, vsncpy(NULL,0,sz(c->name)));
@@ -417,7 +433,7 @@ static unsigned char **get_keymap_list()
 	return lst;
 }
 
-static int keymap_cmplt(BW *bw)
+static int keymap_cmplt(BW *bw, int k)
 {
 	/* Reload every time: we should really check date of tags file...
 	  if (tag_word_list)
@@ -434,8 +450,8 @@ static int keymap_cmplt(BW *bw)
 	return simple_cmplt(bw,keymap_list);
 }
 
-int ukeymap(BASE *bw)
+int ukeymap(W *w, int k)
 {
-	if (wmkpw(bw->parent,joe_gettext(_("Change keymap: ")),&keymaphist,dokeymap,USTR "keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
+	if (wmkpw(w,joe_gettext(_("Change keymap: ")),&keymaphist,dokeymap,"keymap",NULL,keymap_cmplt,NULL,NULL,locale_map,0)) return 0;
 	else return -1;
 }

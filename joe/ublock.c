@@ -34,22 +34,22 @@ struct marksav {
 MARKSAV markfree = { {&markfree, &markfree} };
 int nstack = 0;
 
-int upsh(BW *bw)
+int upsh(W *w, int k)
 {
-	MARKSAV *m = alitem(&markfree, sizeof(MARKSAV));
+	MARKSAV *m = (MARKSAV *)alitem(&markfree, SIZEOF(MARKSAV));
 
 	m->markb = 0;
 	m->markk = 0;
 	if (markk)
-		pdupown(markk, &m->markk, USTR "upsh");
+		pdupown(markk, &m->markk, "upsh");
 	if (markb)
-		pdupown(markb, &m->markb, USTR "upsh");
+		pdupown(markb, &m->markb, "upsh");
 	enqueb(MARKSAV, link, &markstack, m);
 	++nstack;
 	return 0;
 }
 
-int upop(BW *bw)
+int upop(W *w, int k)
 {
 	MARKSAV *m = markstack.link.prev;
 
@@ -65,7 +65,7 @@ int upop(BW *bw)
 			markb->owner = &markb;
 		demote(MARKSAV, link, &markfree, m);
 		if (lightoff)
-			unmark(bw);
+			unmark(w, 0);
 		updall();
 		return 0;
 	} else
@@ -83,9 +83,9 @@ int markv(int r)
 	    (!square || (r == 2 ? markk->xcol >= markb->xcol : markk->xcol > markb->xcol))) {
 		return 1;
 	} else if(autoswap && r && markb && markk && markb->b == markk->b && markb->byte > markk->byte && (!square || markk->xcol < markb->xcol)) {
-		P *p = pdup(markb, USTR "markv");
-		prm(markb); markb=0; pdupown(markk, &markb, USTR "markv");
-		prm(markk); markk=0; pdupown(p, &markk, USTR "markv");
+		P *p = pdup(markb, "markv");
+		prm(markb); markb=0; pdupown(markk, &markb, "markv");
+		prm(markk); markk=0; pdupown(p, &markk, "markv");
 		prm(p);
 		return 1;
 	} else
@@ -94,7 +94,7 @@ int markv(int r)
 
 /* Rectangle-mode subroutines */
 
-/* B *pextrect(P *org,long height,long left,long right);
+/* B *pextrect(P *org,off_t height,off_t left,off_t right);
  * Copy a rectangle into a new buffer
  *
  * org points to top-left corner of rectangle.
@@ -102,12 +102,12 @@ int markv(int r)
  * right is rightmost column of rectangle + 1
  */
 
-B *pextrect(P *org, long int height, long int right)
+B *pextrect(P *org, off_t height, off_t right)
 {
-	P *p = pdup(org, USTR "pextrect");	/* Left part of text to extract */
-	P *q = pdup(p, USTR "pextrect");		/* After right part of text to extract */
+	P *p = pdup(org, "pextrect");	/* Left part of text to extract */
+	P *q = pdup(p, "pextrect");		/* After right part of text to extract */
 	B *tmp = bmk(NULL);	/* Buffer to extract to */
-	P *z = pdup(tmp->eof, USTR "pextrect");	/* Buffer pointer */
+	P *z = pdup(tmp->eof, "pextrect");	/* Buffer pointer */
 
 	while (height--) {
 		pcol(p, org->xcol);
@@ -125,14 +125,14 @@ B *pextrect(P *org, long int height, long int right)
 	return tmp;
 }
 
-/* void pdelrect(P *org,long height,long right);
+/* void pdelrect(P *org,off_t height,off_t right);
  * Delete a rectangle.
  */
 
-void pdelrect(P *org, long int height, long int right)
+void pdelrect(P *org, off_t height, off_t right)
 {
-	P *p = pdup(org, USTR "pdelrect");
-	P *q = pdup(p, USTR "pdelrect");
+	P *p = pdup(org, "pdelrect");
+	P *q = pdup(p, "pdelrect");
 
 	while (height--) {
 		pcol(p, org->xcol);
@@ -145,17 +145,17 @@ void pdelrect(P *org, long int height, long int right)
 	prm(q);
 }
 
-/* void pclrrect(P *org,long height,long right,int usetabs);
+/* void pclrrect(P *org,off_t height,off_t right,int usetabs);
  * Blank-out a rectangle.
  */
 
-void pclrrect(P *org, long int height, long int right, int usetabs)
+void pclrrect(P *org, off_t height, off_t right, int usetabs)
 {
-	P *p = pdup(org, USTR "pclrrect");
-	P *q = pdup(p, USTR "pclrrect");
+	P *p = pdup(org, "pclrrect");
+	P *q = pdup(p, "pclrrect");
 
 	while (height--) {
-		long pos;
+		off_t pos;
 
 		pcol(p, org->xcol);
 		pset(q, p);
@@ -169,13 +169,13 @@ void pclrrect(P *org, long int height, long int right, int usetabs)
 	prm(q);
 }
 
-/* int ptabrect(P *org,long height,long right)
+/* int ptabrect(P *org,off_t height,off_t right)
  * Check if there are any TABs in a rectangle
  */
 
-int ptabrect(P *org, long int height, long int right)
+int ptabrect(P *org, off_t height, off_t right)
 {
-	P *p = pdup(org, USTR "ptabrect");
+	P *p = pdup(org, "ptabrect");
 
 	while (height--) {
 		int c;
@@ -197,11 +197,11 @@ int ptabrect(P *org, long int height, long int right)
 
 /* Insert rectangle */
 
-void pinsrect(P *cur, B *tmp, long int width, int usetabs)
+void pinsrect(P *cur, B *tmp, off_t width, int usetabs)
 {
-	P *p = pdup(cur, USTR "pinsrect");	/* We insert at & move this pointer */
-	P *q = pdup(tmp->bof, USTR "pinsrect");	/* These are for scanning through 'tmp' */
-	P *r = pdup(q, USTR "pinsrect");
+	P *p = pdup(cur, "pinsrect");	/* We insert at & move this pointer */
+	P *q = pdup(tmp->bof, "pinsrect");	/* These are for scanning through 'tmp' */
+	P *r = pdup(q, "pinsrect");
 
 /*	if (width) */
 		while (pset(r, q), p_goto_eol(q), (q->line != tmp->eof->line || piscol(q))) {
@@ -230,26 +230,30 @@ void pinsrect(P *cur, B *tmp, long int width, int usetabs)
 
 /* Set beginning */
 
-int umarkb(BW *bw)
+int umarkb(W *w, int k)
 {
-	pdupown(bw->cursor, &markb, USTR "umarkb");
+	BW *bw;
+	WIND_BW(bw, w);
+	pdupown(bw->cursor, &markb, "umarkb");
 	markb->xcol = bw->cursor->xcol;
 	updall();
 	return 0;
 }
 
-int udrop(BW *bw)
+int udrop(W *w, int k)
 {
 	prm(markk);
 	if (marking && markb)
 		prm(markb);
 	else
-		umarkb(bw);
+		umarkb(w, 0);
 	return 0;
 }
 
-int ubegin_marking(BW *bw)
+int ubegin_marking(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (nowmarking) {
 		/* We're marking now... don't stop */
 		return 0;
@@ -271,11 +275,13 @@ int ubegin_marking(BW *bw)
 	prm(markk); markk=0;
 	updall();
 	nowmarking = 1;
-	return umarkb(bw);
+	return umarkb(bw->parent, 0);
 }
 
-int utoggle_marking(BW *bw)
+int utoggle_marking(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markv(0) && bw->cursor->b==markb->b && bw->cursor->byte>=markb->byte && bw->cursor->byte<=markk->byte) {
 		/* Just clear selection */
 		prm(markb); markb=0;
@@ -291,16 +297,16 @@ int utoggle_marking(BW *bw)
 		updall();
 		nowmarking = 1;
 		msgnw(bw->parent, joe_gettext(_("Selection started.")));
-		return umarkb(bw);
+		return umarkb(bw->parent, 0);
 	} else if (markb && markb->b==bw->cursor->b) {
 		nowmarking = 0;
 		if (bw->cursor->byte<markb->byte) {
-			pdupown(markb, &markk, USTR "utoggle_marking");
+			pdupown(markb, &markk, "utoggle_marking");
 			prm(markb); markb=0;
-			pdupown(bw->cursor, &markb, USTR "utoggle_marking");
+			pdupown(bw->cursor, &markb, "utoggle_marking");
 			markb->xcol = bw->cursor->xcol;
 		} else {
-			pdupown(bw->cursor, &markk, USTR "utoggle_marking");
+			pdupown(bw->cursor, &markk, "utoggle_marking");
 			markk->xcol = bw->cursor->xcol;
 		}
 		updall(); /* Because other windows could be changed */
@@ -308,22 +314,24 @@ int utoggle_marking(BW *bw)
 	} else {
 		nowmarking = 1;
 		msgnw(bw->parent, joe_gettext(_("Selection started.")));
-		return umarkb(bw);
+		return umarkb(bw->parent, 0);
 	}
 }
 
-int uselect(BW *bw)
+int uselect(W *w, int k)
 {
 	if (!markb)
-		umarkb(bw);
+		umarkb(w, 0);
 	return 0;
 }
 
 /* Set end */
 
-int umarkk(BW *bw)
+int umarkk(W *w, int k)
 {
-	pdupown(bw->cursor, &markk, USTR "umarkk");
+	BW *bw;
+	WIND_BW (bw, w);
+	pdupown(bw->cursor, &markk, "umarkk");
 	markk->xcol = bw->cursor->xcol;
 	updall();
 	return 0;
@@ -331,7 +339,7 @@ int umarkk(BW *bw)
 
 /* Unset marks */
 
-int unmark(BW *bw)
+int unmark(W *w, int k)
 {
 	prm(markb);
 	prm(markk);
@@ -342,19 +350,23 @@ int unmark(BW *bw)
 
 /* Mark line */
 
-int umarkl(BW *bw)
+int umarkl(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	p_goto_bol(bw->cursor);
-	umarkb(bw);
+	umarkb(w, 0);
 	pnextl(bw->cursor);
-	umarkk(bw);
-	utomarkb(bw);
+	umarkk(w, 0);
+	utomarkb(w, 0);
 	pcol(bw->cursor, bw->cursor->xcol);
 	return 0;
 }
 
-int utomarkb(BW *bw)
+int utomarkb(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markb && markb->b == bw->b) {
 		pset(bw->cursor, markb);
 		return 0;
@@ -362,8 +374,10 @@ int utomarkb(BW *bw)
 		return -1;
 }
 
-int utomarkk(BW *bw)
+int utomarkk(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markk && markk->b == bw->b) {
 		pset(bw->cursor, markk);
 		return 0;
@@ -371,12 +385,14 @@ int utomarkk(BW *bw)
 		return -1;
 }
 
-int uswap(BW *bw)
+int uswap(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markb && markb->b == bw->b) {
-		P *q = pdup(markb, USTR "uswap");
+		P *q = pdup(markb, "uswap");
 
-		umarkb(bw);
+		umarkb(w, 0);
 		pset(bw->cursor, q);
 		prm(q);
 		return 0;
@@ -384,8 +400,10 @@ int uswap(BW *bw)
 		return -1;
 }
 
-int utomarkbk(BW *bw)
+int utomarkbk(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markb && markb->b == bw->b && bw->cursor->byte != markb->byte) {
 		pset(bw->cursor, markb);
 		return 0;
@@ -398,12 +416,14 @@ int utomarkbk(BW *bw)
 
 /* Delete block */
 
-int ublkdel(BW *bw)
+int ublkdel(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markv(1)) {
 		if (square)
 			if (bw->o.overtype) {
-				long ocol = markk->xcol;
+				off_t ocol = markk->xcol;
 
 				pclrrect(markb, markk->line - markb->line + 1, markk->xcol, ptabrect(markb, markk->line - markb->line + 1, markk->xcol));
 				pcol(markk, ocol);
@@ -413,7 +433,7 @@ int ublkdel(BW *bw)
 		else
 			bdel(markb, markk);
 		if (lightoff)
-			unmark(bw);
+			unmark(bw->parent, 0);
 	} else {
 		msgnw(bw->parent, joe_gettext(_("No block")));
 		return -1;
@@ -423,14 +443,16 @@ int ublkdel(BW *bw)
 
 /* Special delete block function for PICO */
 
-int upicokill(BW *bw)
+int upicokill(W *w, int k)
 {
-	upsh(bw);
-	umarkk(bw);
+	BW *bw;
+	WIND_BW(bw, w);
+	upsh(w, 0);
+	umarkk(w, 0);
 	if (markv(1)) {
 		if (square)
 			if (bw->o.overtype) {
-				long ocol = markk->xcol;
+				off_t ocol = markk->xcol;
 
 				pclrrect(markb, markk->line - markb->line + 1, markk->xcol, ptabrect(markb, markk->line - markb->line + 1, markk->xcol));
 				pcol(markk, ocol);
@@ -440,28 +462,30 @@ int upicokill(BW *bw)
 		else
 			bdel(markb, markk);
 		if (lightoff)
-			unmark(bw);
+			unmark(w, 0);
 	} else
-		udelln(bw);
+		udelln(w, 0);
 	return 0;
 }
 
 /* Move highlighted block */
 
-int ublkmove(BW *bw)
+int ublkmove(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markv(1)) {
 		if (markb->b!=bw->b && !modify_logic(bw,markb->b))
 			return -1;
 		if (square) {
-			long height = markk->line - markb->line + 1;
-			long width = markk->xcol - markb->xcol;
+			off_t height = markk->line - markb->line + 1;
+			off_t width = markk->xcol - markb->xcol;
 			int usetabs = ptabrect(markb, height, markk->xcol);
-			long ocol = piscol(bw->cursor);
+			off_t ocol = piscol(bw->cursor);
 			B *tmp = pextrect(markb, height, markk->xcol);
 			int update_xcol = (bw->cursor->xcol >= markk->xcol && bw->cursor->line >= markb->line && bw->cursor->line <= markk->line);
 
-			ublkdel(bw);
+			ublkdel(w, 0);
 			/* now we can't use markb and markk until we set them again */
 			/* ublkdel() frees them */
 			if (bw->o.overtype) {
@@ -476,25 +500,25 @@ int ublkmove(BW *bw)
 			pinsrect(bw->cursor, tmp, width, usetabs);
 			brm(tmp);
 			if (lightoff)
-				unmark(bw);
+				unmark(bw->parent, 0);
 			else {
-				umarkb(bw);
-				umarkk(bw);
+				umarkb(bw->parent, 0);
+				umarkk(bw->parent, 0);
 				pline(markk, markk->line + height - 1);
 				pcol(markk, markb->xcol + width);
 				markk->xcol = markb->xcol + width;
 			}
 			return 0;
 		} else if (bw->cursor->b != markk->b || bw->cursor->byte > markk->byte || bw->cursor->byte < markb->byte) {
-			long size = markk->byte - markb->byte;
+			off_t size = markk->byte - markb->byte;
 
 			binsb(bw->cursor, bcpy(markb, markk));
 			bdel(markb, markk);
 			if (lightoff)
-				unmark(bw);
+				unmark(bw->parent, 0);
 			else {
-				umarkb(bw);
-				umarkk(bw);
+				umarkb(bw->parent, 0);
+				umarkk(bw->parent, 0);
 				pfwrd(markk, size);
 			}
 			updall();
@@ -507,12 +531,14 @@ int ublkmove(BW *bw)
 
 /* Duplicate highlighted block */
 
-int ublkcpy(BW *bw)
+int ublkcpy(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markv(1)) {
 		if (square) {
-			long height = markk->line - markb->line + 1;
-			long width = markk->xcol - markb->xcol;
+			off_t height = markk->line - markb->line + 1;
+			off_t width = markk->xcol - markb->xcol;
 			int usetabs = ptabrect(markb, height, markk->xcol);
 			B *tmp = pextrect(markb, height, markk->xcol);
 
@@ -521,22 +547,22 @@ int ublkcpy(BW *bw)
 			pinsrect(bw->cursor, tmp, width, usetabs);
 			brm(tmp);
 			if (lightoff)
-				unmark(bw);
+				unmark(bw->parent, 0);
 			else {
-				umarkb(bw);
-				umarkk(bw);
+				umarkb(bw->parent, 0);
+				umarkk(bw->parent, 0);
 				pline(markk, markk->line + height - 1);
 				pcol(markk, markb->xcol + width);
 				markk->xcol = markb->xcol + width;
 			}
 			return 0;
 		} else {
-			long size = markk->byte - markb->byte;
+			off_t size = markk->byte - markb->byte;
 			B *tmp = bcpy(markb, markk);
 
 			/* Simple overtype for hex mode */
 			if (bw->o.hex && bw->o.overtype) {
-				P *q = pdup(bw->cursor, USTR "ublkcpy");
+				P *q = pdup(bw->cursor, "ublkcpy");
 				if (q->byte + size >= q->b->eof->byte)
 					pset(q, q->b->eof);
 				else
@@ -547,10 +573,10 @@ int ublkcpy(BW *bw)
 
 			binsb(bw->cursor, tmp);
 			if (lightoff)
-				unmark(bw);
+				unmark(bw->parent, 0);
 			else {
-				umarkb(bw);
-				umarkk(bw);
+				umarkb(bw->parent, 0);
+				umarkk(bw->parent, 0);
 				pfwrd(markk, size);
 			}
 			updall();
@@ -565,7 +591,7 @@ int ublkcpy(BW *bw)
 /* Write highlighted block to a file */
 /* This is called by ublksave in ufile.c */
 
-/*int dowrite(BW *bw, unsigned char *s, void *object, int *notify)
+/*int dowrite(BW *bw, char *s, void *object, int *notify)
 {
 	if (notify)
 		*notify = 1;
@@ -601,7 +627,7 @@ int ublkcpy(BW *bw)
 		}
 	} else {
 		vsrm(s);
-		msgnw(bw->parent, USTR _(_("No block")));
+		msgnw(bw->parent, _(_("No block")));
 		return -1;
 	}
 }*/
@@ -611,13 +637,13 @@ int ublkcpy(BW *bw)
 void setindent(BW *bw)
 {
 	P *p, *q;
-	long indent;
+	off_t indent;
 
 	if (pisblank(bw->cursor))
 		return;
 
-	p = pdup(bw->cursor, USTR "setindent");
-	q = pdup(p, USTR "setindent");
+	p = pdup(bw->cursor, "setindent");
+	q = pdup(p, "setindent");
 	indent = pisindent(p);
 
 	do {
@@ -654,11 +680,11 @@ void setindent(BW *bw)
 /* Verifies that at least n indentation characters (for non-blank lines) match c */
 /* If n is 0 (for urindent), this fails if c is space but indentation begins with tab */
 
-int purity_check(int c, int n)
+static int purity_check(int c, off_t n)
 {
-	P *p = pdup(markb, USTR "purity_check");
+	P *p = pdup(markb, "purity_check");
 	while (p->byte < markk->byte) {
-		int x;
+		off_t x;
 		p_goto_bol(p);
 		if (!n && c==' ' && brc(p)=='\t') {
 			prm(p);
@@ -678,10 +704,10 @@ int purity_check(int c, int n)
 /* Left indent check */
 /* Verify that there is enough whitespace to do the left indent */
 
-int lindent_check(int c, int n)
+static int lindent_check(int c, off_t n)
 {
-	P *p = pdup(markb, USTR "lindent_check");
-	int indwid;
+	P *p = pdup(markb, "lindent_check");
+	off_t indwid;
 	if (c=='\t')
 		indwid = n * p->b->o.tab;
 	else
@@ -700,11 +726,13 @@ int lindent_check(int c, int n)
 
 /* Indent more */
 
-int urindent(BW *bw)
+int urindent(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (square) {
 		if (markb && markk && markb->b == markk->b && markb->byte <= markk->byte && markb->xcol <= markk->xcol) {
-			P *p = pdup(markb, USTR "urindent");
+			P *p = pdup(markb, "urindent");
 
 			do {
 				pcol(p, markb->xcol);
@@ -716,9 +744,9 @@ int urindent(BW *bw)
 		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
 			setindent(bw);
 		} else if ( 1 /* bw->o.purify */) {
-			P *p = pdup(markb, USTR "urindent");
-			P *q = pdup(markb, USTR "urindent");
-			int indwid;
+			P *p = pdup(markb, "urindent");
+			P *q = pdup(markb, "urindent");
+			off_t indwid;
 
 			if (bw->o.indentc=='\t')
 				indwid = bw->o.tab * bw->o.istep;
@@ -728,7 +756,7 @@ int urindent(BW *bw)
 			while (p->byte < markk->byte) {
 				p_goto_bol(p);
 				if (!piseol(p)) {
-					int col;
+					off_t col;
 					pset(q, p);
 					p_goto_indent(q, bw->o.indentc);
 					col = piscol(q);
@@ -740,7 +768,7 @@ int urindent(BW *bw)
 			prm(p);
 			prm(q);
 		} else if (purity_check(bw->o.indentc,0)) {
-			P *p = pdup(markb, USTR "urindent");
+			P *p = pdup(markb, "urindent");
 
 			while (p->byte < markk->byte) {
 				p_goto_bol(p);
@@ -763,12 +791,14 @@ int urindent(BW *bw)
 
 /* Indent less */
 
-int ulindent(BW *bw)
+int ulindent(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (square) {
 		if (markb && markk && markb->b == markk->b && markb->byte <= markk->byte && markb->xcol <= markk->xcol) {
-			P *p = pdup(markb, USTR "ulindent");
-			P *q = pdup(p, USTR "ulindent");
+			P *p = pdup(markb, "ulindent");
+			P *q = pdup(p, "ulindent");
 
 			do {
 				pcol(p, markb->xcol);
@@ -796,9 +826,9 @@ int ulindent(BW *bw)
 		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
 			setindent(bw);
 		} else if (1 /* bw->o.purify */ && lindent_check(bw->o.indentc,bw->o.istep)) {
-			P *p = pdup(markb, USTR "ulindent");
-			P *q = pdup(markb, USTR "ulindent");
-			int indwid;
+			P *p = pdup(markb, "ulindent");
+			P *q = pdup(markb, "ulindent");
+			off_t indwid;
 
 			if (bw->o.indentc=='\t')
 				indwid = bw->o.tab * bw->o.istep;
@@ -808,7 +838,7 @@ int ulindent(BW *bw)
 			while (p->byte < markk->byte) {
 				p_goto_bol(p);
 				if (!piseol(p)) {
-					int col;
+					off_t col;
 					pset(q, p);
 					p_goto_indent(q, bw->o.indentc);
 					col = piscol(q);
@@ -820,8 +850,8 @@ int ulindent(BW *bw)
 			prm(p);
 			prm(q);
 		} else if (purity_check(bw->o.indentc,bw->o.istep)) {
-			P *p = pdup(markb, USTR "ulindent");
-			P *q = pdup(p, USTR "ulindent");
+			P *p = pdup(markb, "ulindent");
+			P *q = pdup(p, "ulindent");
 
 			p_goto_bol(p);
 			while (p->byte < markk->byte) {
@@ -846,15 +876,17 @@ int ulindent(BW *bw)
 
 /* Insert a file */
 
-int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
+int doinsf(W *w, char *s, void *object, int *notify)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (notify)
 		*notify = 1;
 	if (square)
 		if (markv(2)) {
 			B *tmp;
-			long width = markk->xcol - markb->xcol;
-			long height;
+			off_t width = markk->xcol - markb->xcol;
+			off_t height;
 			int usetabs = ptabrect(markb,
 					       markk->line - markb->line + 1,
 					       markk->xcol);
@@ -870,11 +902,11 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 			else
 				height = tmp->eof->line;
 			if (bw->o.overtype) {
-				pclrrect(markb, long_max(markk->line - markb->line + 1, height), markk->xcol, usetabs);
+				pclrrect(markb, off_max(markk->line - markb->line + 1, height), markk->xcol, usetabs);
 				pdelrect(markb, height, width + markb->xcol);
 			}
 			pinsrect(markb, tmp, width, usetabs);
-			pdupown(markb, &markk, USTR "doinsf");
+			pdupown(markb, &markk, "doinsf");
 			markk->xcol = markb->xcol;
 			if (height) {
 				pline(markk, markk->line + height - 1);
@@ -907,11 +939,13 @@ int doinsf(BW *bw, unsigned char *s, void *object, int *notify)
 
 static int filtflg = 0;
 
-static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
+static int dofilt(W *w, char *s, void *object, int *notify)
 {
 	int fr[2];
 	int fw[2];
 	int flg = 0;
+	BW *bw;
+	WIND_BW(bw, w);
 
 	if (notify)
 		*notify = 1;
@@ -940,8 +974,9 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 	if (!vfork()) { /* For AMIGA only */
 #endif
 #ifdef HAVE_PUTENV
-		unsigned char		*fname, *name;
-		unsigned	len;
+		char *fname;
+		const char *name;
+		ptrdiff_t len;
 #endif
 		signrm();
 		close(0);
@@ -956,11 +991,11 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 		close(fr[0]);
 #ifdef HAVE_PUTENV
 		fname = vsncpy(NULL, 0, sc("JOE_FILENAME="));
-		name = bw->b->name ? bw->b->name : (unsigned char *)"Unnamed";
+		name = bw->b->name ? bw->b->name : "Unnamed";
 		if((len = slen(name)) >= 512)	/* limit filename length */
 			len = 512;
 		fname = vsncpy(sv(fname), name, len);
-		putenv((char *)fname);
+		putenv(fname);
 		vsrm(fname);
 #endif
 		execl("/bin/sh", "/bin/sh", "-c", s, NULL);
@@ -976,8 +1011,8 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 		close(fw[1]);
 		if (square) {
 			B *tmp;
-			long width = markk->xcol - markb->xcol;
-			long height;
+			off_t width = markk->xcol - markb->xcol;
+			off_t height;
 			int usetabs = ptabrect(markb,
 					       markk->line - markb->line + 1,
 					       markk->xcol);
@@ -989,11 +1024,11 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 				height = tmp->eof->line;
 			if (bw->o.overtype) {
 				pclrrect(markb, markk->line - markb->line + 1, markk->xcol, usetabs);
-				pdelrect(markb, long_max(height, markk->line - markb->line + 1), width + markb->xcol);
+				pdelrect(markb, off_max(height, markk->line - markb->line + 1), width + markb->xcol);
 			} else
 				pdelrect(markb, markk->line - markb->line + 1, markk->xcol);
 			pinsrect(markb, tmp, width, usetabs);
-			pdupown(markb, &markk, USTR "dofilt");
+			pdupown(markb, &markk, "dofilt");
 			markk->xcol = markb->xcol;
 			if (height) {
 				pline(markk, markk->line + height - 1);
@@ -1001,11 +1036,11 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 				markk->xcol = markb->xcol + width;
 			}
 			if (lightoff)
-				unmark(bw);
+				unmark(bw->parent, 0);
 			brm(tmp);
 			updall();
 		} else {
-			P *p = pdup(markk, USTR "dofilt");
+			P *p = pdup(markk, "dofilt");
 			if (!flg)
 				prgetc(p);
 			bdel(markb, p);
@@ -1017,7 +1052,7 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 			}
 			prm(p);
 			if (lightoff)
-				unmark(bw);
+				unmark(bw->parent, 0);
 		}
 		close(fr[0]);
 		wait(NULL);
@@ -1037,7 +1072,7 @@ static int dofilt(BW *bw, unsigned char *s, void *object, int *notify)
 	vsrm(s);
 	ttopnn();
 	if (filtflg)
-		unmark(bw);
+		unmark(bw->parent, 0);
 	bw->cursor->xcol = piscol(bw->cursor);
 	return 0;
 }
@@ -1046,9 +1081,9 @@ static B *filthist = NULL;
 
 static void markall(BW *bw)
 {
-	pdupown(bw->cursor->b->bof, &markb, USTR "markall");
+	pdupown(bw->cursor->b->bof, &markb, "markall");
 	markb->xcol = 0;
-	pdupown(bw->cursor->b->eof, &markk, USTR "markall");
+	pdupown(bw->cursor->b->eof, &markk, "markall");
 	markk->xcol = piscol(markk);
 	updall();
 }
@@ -1068,8 +1103,10 @@ static int checkmark(BW *bw)
 	}
 }
 
-int ufilt(BW *bw)
+int ufilt(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 #ifdef __MSDOS__
 	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
 	return -1;
@@ -1095,19 +1132,21 @@ int ufilt(BW *bw)
 
 /* Force region to lower case */
 
-int ulower(BW *bw)
+int ulower(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markv(1)) {
 		P *q;
 	        P *p;
 	        int c;
 		B *b = bcpy(markb,markk);
 		/* Leave one character in buffer to keep pointers set properly... */
-		q = pdup(markk, USTR "ulower");
+		q = pdup(markk, "ulower");
 		prgetc(q);
 		bdel(markb,q);
 		b->o.charmap = markb->b->o.charmap;
-		p=pdup(b->bof, USTR "ulower");
+		p=pdup(b->bof, "ulower");
 		while ((c=pgetc(p))!=NO_MORE_DATA) {
 			c = joe_tolower(b->o.charmap,c);
 			binsc(q,c);
@@ -1125,18 +1164,20 @@ int ulower(BW *bw)
 
 /* Force region to upper case */
 
-int uupper(BW *bw)
+int uupper(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markv(1)) {
 		P *q;
 	        P *p;
 	        int c;
 		B *b = bcpy(markb,markk);
-		q = pdup(markk, USTR "uupper");
+		q = pdup(markk, "uupper");
 		prgetc(q);
 		bdel(markb,q);
 		b->o.charmap = markb->b->o.charmap;
-		p=pdup(b->bof, USTR "uupper");
+		p=pdup(b->bof, "uupper");
 		while ((c=pgetc(p))!=NO_MORE_DATA) {
 			c = joe_toupper(b->o.charmap,c);
 			binsc(q,c);
@@ -1166,17 +1207,17 @@ int uupper(BW *bw)
 
 int blksum(double *sum, double *sumsq)
 {
-	unsigned char buf[80];
+	char buf[80];
 	if (markv(1)) {
-		P *q = pdup(markb, USTR "blksum");
+		P *q = pdup(markb, "blksum");
 		int x;
 		int c;
 		double accu = 0.0;
 		double accusq = 0.0;
 		double v;
 		int count = 0;
-		long left = markb->xcol;
-		long right = markk->xcol;
+		off_t left = markb->xcol;
+		off_t right = markk->xcol;
 		while (q->byte < markk->byte) {
 			/* Skip until we're within columns */
 			while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
@@ -1187,7 +1228,7 @@ int blksum(double *sum, double *sumsq)
 				c=pgetc(q);
 				if ((c >= '0' && c <= '9') || c == '.' || c == '-') {
 					/* Copy number into buffer */
-					buf[0]=c; x=1;
+					buf[0] = TO_CHAR_OK(c); x=1;
 					while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
 						c=pgetc(q);
 						if ((c >= '0' && c <= '9') || c == 'e' || c == 'E' ||
@@ -1195,13 +1236,13 @@ int blksum(double *sum, double *sumsq)
 						    c == '.' || c == '-' || c == '+' ||
 						    (c >= 'a' && c <= 'f') || (c >= 'A' && c<='F')) {
 							if(x != 79)
-								buf[x++]=c;
+								buf[x++]= TO_CHAR_OK(c);
 						} else
 							break;
 					}
 					/* Convert number to floating point, add it to total */
 					buf[x] = 0;
-					v = strtod((char *)buf,NULL);
+					v = strtod(buf,NULL);
 					++count;
 					accu += v;
 					accusq += v*v;
@@ -1217,17 +1258,20 @@ int blksum(double *sum, double *sumsq)
 		return -1;
 }
 
-/* Get a (possibly square) block into a buffer */
+/* Get a (possibly square) block into a buffer
+ * Block is converted to UTF-8
+ */
 
-unsigned char *blkget()
+char *blkget()
 {
 	if (markv(1)) {
 		P *q;
-		unsigned char *buf=joe_malloc(markk->byte-markb->byte+1);
-		unsigned char *s=buf;
-		long left = markb->xcol;
-		long right = markk->xcol;
-		q = pdup(markb, USTR "blkget");
+		ptrdiff_t buf_size = markk->byte - markb->byte + 1; /* Risky... */
+		ptrdiff_t buf_x = 0;
+		char *buf = (char *)joe_malloc(buf_size);
+		off_t left = markb->xcol;
+		off_t right = markk->xcol;
+		q = pdup(markb, "blkget");
 		while (q->byte < markk->byte) {
 			/* Skip until we're within columns */
 			while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
@@ -1235,14 +1279,31 @@ unsigned char *blkget()
 
 			/* Copy text into buffer */
 			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
-				*s++ = pgetc(q);
+				int ch = pgetc(q);
+				char bf[8];
+				ptrdiff_t len, x;
+				if (!q->b->o.charmap->type)
+					ch = to_uni(q->b->o.charmap, ch);
+				len = utf8_encode(bf, ch);
+				for (x = 0; x != len; ++x) {
+					if (buf_x == buf_size - 1) {
+						buf_size *= 2;
+						buf = (char *)joe_realloc(buf, buf_size);
+					}
+					buf[buf_x++] = bf[x];
+				}
 			}
 			/* Add a new line if we went past right edge of column */
-			if (square && q->byte<markk->byte && piscol(q) >= right)
-				*s++ = '\n';
+			if (square && q->byte<markk->byte && piscol(q) >= right) {
+				if (buf_x == buf_size - 1) {
+					buf_size *= 2;
+					buf = (char *)joe_realloc(buf, buf_size);
+				}
+				buf[buf_x++] = '\n';
+			}
 		}
 		prm(q);
-		*s = 0;
+		buf[buf_x] = 0;
 		return buf;
 	} else
 		return 0;

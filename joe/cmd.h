@@ -5,18 +5,16 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_CMD_H
-#define _JOE_CMD_H 1
 
 /* Command entry */
 
 struct cmd {
-	unsigned char	*name;		/* Command name */
+	const char *name;	/* Command name */
 	int	flag;		/* Execution flags */
-	int	(*func) ();	/* Function bound to name */
+	int	(*func) (W *w, int k);	/* Function bound to name */
 	MACRO	*m;		/* Macro bound to name */
 	int	arg;		/* 0= arg is meaningless, 1= ok */
-	unsigned char	*negarg;	/* Command to use if arg was negative */
+	const char *negarg;	/* Command to use if arg was negative */
 };
 
 extern CMD cmds[];		/* Built-in commands */
@@ -39,8 +37,8 @@ extern int joe_beep;		/* Enable beep on command error */
 /* CMD *findcmd(char *s);
  * Return command address for given name
  */
-CMD *findcmd(unsigned char *s);
-void addcmd(unsigned char *s, MACRO *m);
+CMD *findcmd(const char *s);
+void addcmd(const char *s, MACRO *m);
 
 /* Execute a command.  Returns return value of command */
 int execmd(CMD *cmd, int k);
@@ -51,9 +49,7 @@ extern B *cmdhist; /* Command history buffer */
 int try_lock(BW *bw,B *b);
 int modify_logic(BW *bw,B *b);
 
-int uexecmd(BW *bw);
+int uexecmd(W *w, int k);
 
 extern int nolocks; /* Disable file locking */
 extern int nomodcheck; /* Disable file modified check */
-
-#endif

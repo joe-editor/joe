@@ -9,11 +9,15 @@
 
 /* Center line cursor is on and move cursor to beginning of next line */
 
-int ucenter(BW *bw)
+int ucenter(W *w, int k)
 {
-	P *p = bw->cursor, *q;
-	long endcol, begcol, x;
+	BW *bw;
+	P *p, *q;
+	off_t endcol, begcol, x;
 	int c;
+
+	WIND_BW(bw, w);
+	p = bw->cursor;
 
 	p_goto_eol(p);
 	while (joe_isblank(bw->b->o.charmap, (c = prgetc(p))))
@@ -42,7 +46,7 @@ int ucenter(BW *bw)
 	if (endcol - begcol > bw->o.rmargin + bw->o.lmargin)
 		goto done;
 
-	q = pdup(p, USTR "ucenter");
+	q = pdup(p, "ucenter");
 	p_goto_bol(q);
 	bdel(q, p);
 	prm(q);
@@ -70,13 +74,15 @@ int ucenter(BW *bw)
 
 static int cpara(BW *bw, int c)
 {
-	int x;
 	if (c == ' ' || c == '\t')
 		return 1;
-	if (bw->o.cpara)
-		for (x = 0; bw->o.cpara[x]; ++x)
-			if (bw->o.cpara[x] == c)
+	if (bw->o.cpara) {
+		const char *s = bw->o.cpara;
+		while (*s) {
+			if (utf8_decode_fwrd(&s, NULL) == c)
 				return 1;
+		}
+	}
 	return 0;
 #ifdef junk
 	if (c == ' ' || c == '\t' || c == '\\' ||
@@ -96,11 +102,14 @@ static int cpara(BW *bw, int c)
 
 static int cnotpara(BW *bw, int c)
 {
-	int x;
-	if (bw->o.cnotpara)
-		for (x = 0; bw->o.cnotpara[x]; ++x)
-			if (bw->o.cnotpara[x] == c)
+	const char *s;
+	if (bw->o.cnotpara) {
+		s = bw->o.cnotpara;
+		while (*s) {
+			if (c == utf8_decode_fwrd(&s, NULL))
 				return 1;
+		}
+	}
 	return 0;
 }
 
@@ -115,7 +124,7 @@ static int pisnpara(BW *bw, P *p)
 	P *q;
 	int c;
 
-	q = pdup(p, USTR "pisnpara");
+	q = pdup(p, "pisnpara");
 	p_goto_bol(q);
 	while (cpara(bw, c = pgetc(q)))
 		/* do nothing */;
@@ -129,10 +138,10 @@ static int pisnpara(BW *bw, P *p)
 /* Determine amount of indentation on current line.  Set first
    to include '-' and '*' bullets. */
 
-static long nindent(BW *bw, P *p, int first)
+static off_t nindent(BW *bw, P *p, int first)
 {
-	P *q = pdup(p, USTR "nindent");
-	long col;
+	P *q = pdup(p, "nindent");
+	off_t col;
 	int c;
 
 	p_goto_bol(q);
@@ -151,10 +160,10 @@ static long nindent(BW *bw, P *p, int first)
 
 /* Get indentation prefix column */
 
-static long prefix(BW *bw, P *p,int up)
+static off_t prefix(BW *bw, P *p,int up)
 {
-	long len;
-	P *q = pdup(p, USTR "prefix");
+	off_t len;
+	P *q = pdup(p, "prefix");
 
 	p_goto_bol(q);
 	while (cpara(bw, brch(q)))
@@ -198,17 +207,17 @@ int within = 0;
 
 P *pbop(BW *bw, P *p)
 {
-	long indent;
-	long prelen;
+	off_t indent;
+	off_t prelen;
 	P *last;
 
 	p_goto_bol(p);
 	indent = nindent(bw, p, 0);
 	prelen = prefix(bw, p, 0);
-	last = pdup(p, USTR "pbop");
+	last = pdup(p, "pbop");
 	while (!pisbof(p) && (!within || !markb || p->byte > markb->byte)) {
-		long ind;
-		long len;
+		off_t ind;
+		off_t len;
 
 		pprevl(p);
 		p_goto_bol(p);
@@ -221,7 +230,7 @@ P *pbop(BW *bw, P *p)
 		if (ind > indent) {
 /*
 			int ok = 1;
-			P *q = pdup(p, USTR "pbop");
+			P *q = pdup(p, "pbop");
 			if (pprevl(q)) {
 				p_goto_bol(q);
 				if (nindent(bw, q, 0) == ind)
@@ -268,16 +277,16 @@ P *pbop(BW *bw, P *p)
 
 P *peop(BW *bw, P *p)
 {
-	long indent;
-	long prelen;
+	off_t indent;
+	off_t prelen;
 
 	if (!pnextl(p) || pisnpara(bw, p) || (within && markk && p->byte >= markk->byte))
 		return p;
 	indent = nindent(bw, p, 0);
 	prelen = prefix(bw, p, 0);
 	while (pnextl(p) && (!within || !markk || p->byte < markk->byte)) {
-		long ind = nindent(bw, p, 0);
-		long len = prefix(bw, p, 0);
+		off_t ind = nindent(bw, p, 0);
+		off_t len = prefix(bw, p, 0);
 
 		if (ind != indent || len != prelen || pisnpara(bw, p))
 			break;
@@ -287,9 +296,12 @@ P *peop(BW *bw, P *p)
 
 /* Motion commands */
 
-int ubop(BW *bw)
+int ubop(W *w, int k)
 {
-	P *q = pdup(bw->cursor, USTR "ubop");
+	BW *bw;
+	P *q;
+	WIND_BW(bw, w);
+	q = pdup(bw->cursor, "ubop");
 
       up:
 	while (pisnpara(bw, q) && !pisbof(q) && (!within || !markb || q->byte > markb->byte))
@@ -308,9 +320,12 @@ int ubop(BW *bw)
 	}
 }
 
-int ueop(BW *bw)
+int ueop(W *w, int k)
 {
-	P *q = pdup(bw->cursor, USTR "ueop");
+	P *q;
+	BW *bw;
+	WIND_BW(bw, w);
+	q = pdup(bw->cursor, "ueop");
 
       up:
 	while (pisnpara(bw, q) && !piseof(q))
@@ -334,54 +349,54 @@ int ueop(BW *bw)
  * after . ? or !
  */
 
-void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned char *indents)
+void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents)
 {
 	P *q;
 	P *r;
 	P *s;
 	int rmf = 0;
 	int c;
-	long to = p->byte;
+	off_t to = p->byte;
 	int my_indents = 0;
 	
 	/* autoindent when called by utype */
 	if (!indents) {
 		/* Get indentation prefix from beginning of line */
-		s = pdup(p, USTR "wrapword");
+		s = pdup(p, "wrapword");
 		p_goto_bol(s);
 		pbop(bw, s);
 		/* Record indentation of second line of paragraph, of first
 		 * line if there is only one line */
-		q = pdup(s, USTR "wrapword");
+		q = pdup(s, "wrapword");
 		pnextl(q);
 		if (q->line < p->line) {
 			/* Second line */
-			P *r = pdup(q, USTR "wrapword");
+			P *tr = pdup(q, "wrapword");
 
 			indent = nindent(bw, q, 0);
-			pcol(r, indent);
-			indents = brs(q, r->byte - q->byte);
-			prm(r);
+			pcol(tr, indent);
+			indents = brs(q, tr->byte - q->byte); /* Risky */
+			prm(tr);
 		} else {
 			/* First line */
-			P *r = pdup(s, USTR "uformat");
-			int x, y;
+			P *tr = pdup(s, "uformat");
+			ptrdiff_t x, y;
 
 			indent = nindent(bw, s, 1);
-			pcol(r, indent);
-			indents = brs(s, r->byte - s->byte);
-			prm(r);
+			pcol(tr, indent);
+			indents = brs(s, tr->byte - s->byte); /* Risky */
+			prm(tr);
 			if (!bw->o.autoindent) {
 				/* Don't indent second line of single-line paragraphs if autoindent is off */
-				int x = zlen(indents);
-				int orgx = x;
-				while (x && (indents[x - 1] == ' ' || indents[x - 1] == '\t'))
-					indents[--x] = 0;
-				if (x && orgx != x) {
-					indents[x++] = ' ';
-					indents[x] = 0;
+				ptrdiff_t tx = zlen(indents);
+				ptrdiff_t orgx = tx;
+				while (tx && (indents[tx - 1] == ' ' || indents[tx - 1] == '\t'))
+					indents[--tx] = 0;
+				if (tx && orgx != tx) {
+					indents[tx++] = ' ';
+					indents[tx] = 0;
 				}
-				indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, x);
+				indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, tx);
 			}
 			for (x = 0; indents[x] && (indents[x] == ' ' || indents[x] == '\t'); ++x);
 			y = zlen(indents);
@@ -401,7 +416,7 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 			if (!indents[x]) {
 				joe_free(indents);
 				indent = bw->o.lmargin;
-				indents = joe_malloc(indent+1);
+				indents = (char *)joe_malloc(indent+1); /* Risky */
 				for (x = 0; x != indent; ++x)
 					indents[x] = ' ';
 				indents[x] = 0;
@@ -444,7 +459,7 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 	if (!pisbol(p) && piscol(p) > indent) {
 		/* Move q to two (or one if 'french' is set) spaces after end of previous
 		   word */
-		q = pdup(p, USTR "wrapword");
+		q = pdup(p, "wrapword");
 		while (!pisbol(q))
 			if (!joe_isblank(p->b->o.charmap, (c = prgetc(q)))) {
 				pgetc(q);
@@ -472,11 +487,11 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 		/* When overtype is on, do not insert lines */
 		if (!no_over && p->b->o.overtype){
 			/* delete the next line break which is unnecessary */
-			r = pdup(p, USTR "wrapword");
+			r = pdup(p, "wrapword");
 			/* p_goto_eol(r); */
 			pgetc(r);
 			p_goto_eol(r);
-			s = pdup(r, USTR "wrapword");
+			s = pdup(r, "wrapword");
 			pgetc(r);
 			bdel(s,r);
 			binsc(r, ' ');
@@ -487,7 +502,7 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 			
 			/* Make a copy of the cursor and move the copied cursor to the end of the line */
 			prm(s);
-			s = pdup(r, USTR "wrapword");
+			s = pdup(r, "wrapword");
 			p_goto_eol(s);
 			
 			/* If s is located behind r then the line goes beyond the right margin and we need to call wordwrap() for that line. */
@@ -527,17 +542,20 @@ void wrapword(BW *bw, P *p, long int indent, int french, int no_over, unsigned c
 
 /* Reformat paragraph */
 
-int uformat(BW *bw)
+int uformat(W *w, int k)
 {
-	long indent;
-	unsigned char *indents;
+	off_t indent;
+	char *indents;
 	B *buf;
 	P *b;
-	long curoff;
+	off_t curoff;
 	int c;
 	P *p, *q;
+	BW *bw;
+	WIND_BW(bw, w);
+	int flag;
 
-	p = pdup(bw->cursor, USTR "uformat");
+	p = pdup(bw->cursor, "uformat");
 	p_goto_bol(p);
 
 	/* Do nothing if we're not on a paragraph line */
@@ -559,32 +577,32 @@ int uformat(BW *bw)
 
 	/* Record indentation of second line of paragraph, of first line if there
 	 * is only one line */
-	q = pdup(p, USTR "uformat");
+	q = pdup(p, "uformat");
 	pnextl(q);
 	if (q->line != bw->cursor->line) {
-		P *r = pdup(q, USTR "uformat");
+		P *r = pdup(q, "uformat");
 
 		indent = nindent(bw, q, 0);
 		pcol(r, indent);
-		indents = brs(q, r->byte - q->byte);
+		indents = brs(q, r->byte - q->byte); /* Risky */
 		prm(r);
 	} else {
-		P *r = pdup(p, USTR "uformat");
-		int x, y;
+		P *r = pdup(p, "uformat");
+		ptrdiff_t x, y;
 		indent = nindent(bw, p, 1); /* allowing * and - here */
 		pcol(r, indent);
-		indents = brs(p, r->byte - p->byte);
+		indents = brs(p, r->byte - p->byte); /* Risky */
 		prm(r);
 		if (!bw->o.autoindent) {
 			/* Don't indent second line of single-line paragraphs if autoindent is off */
-			int x = zlen(indents);
-			while (x && (indents[x - 1] == ' ' || indents[x - 1] == '\t'))
-				indents[--x] = 0;
-			if (x) {
-				indents[x++] = ' ';
-				indents[x] = 0;
+			ptrdiff_t tx = zlen(indents);
+			while (tx && (indents[tx - 1] == ' ' || indents[tx - 1] == '\t'))
+				indents[--tx] = 0;
+			if (tx) {
+				indents[tx++] = ' ';
+				indents[tx] = 0;
 			}
-			indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, x);
+			indent = txtwidth1(bw->o.charmap, bw->o.tab, indents, tx);
 		}
 		for (x = 0; indents[x] && (indents[x] == ' ' || indents[x] == '\t'); ++x);
 		y = zlen(indents);
@@ -607,7 +625,7 @@ int uformat(BW *bw)
 		if (!indents[x]) {
 			joe_free(indents);
 			indent = bw->o.lmargin;
-			indents = joe_malloc(indent+1);
+			indents = (char *)joe_malloc(indent+1); /* Risky, indent could be very large in theory */
 			for (x = 0; x != indent; ++x)
 				indents[x] = ' ';
 			indents[x] = 0;
@@ -624,14 +642,21 @@ int uformat(BW *bw)
 
 	/* text is in buffer.  insert it at cursor */
 
-	b = pdup(buf->bof, USTR "uformat");
+	b = pdup(buf->bof, "uformat");
 
 	/* First line: preserve whitespace within this line
 	   (but still apply french spacing after periods) */
+	flag = 0;
 	while (!piseof(b)) {
 		c = brch(b);
 		if (joe_isblank(b->b->o.charmap,c) || c == '\n') {
 			int f = 0;
+
+			/* First space after end of word */
+			if (flag && piscol(p) > bw->o.rmargin)
+				wrapword(bw, p, indent, bw->o.french, 1, indents);
+
+			flag = 0;
 
 			/* Stop if we're at end of line */
 			if (c == '\n' || piseolblank(b))
@@ -639,7 +664,7 @@ int uformat(BW *bw)
 
 			/* Set f if previous character was '.', '?' or '!' */
 			if (!pisbof(b)) {
-				P *d = pdup(b, USTR "uformat");
+				P *d = pdup(b, "uformat");
 				int g = prgetc(d);
 				if (g=='.' || g=='?' || g=='!') {
 					f = 1;
@@ -649,7 +674,7 @@ int uformat(BW *bw)
 			
 			if (f) {
 				/* Skip past the whitespace. */
-				while (joe_isblank(b->b->o.charmap, brch(b))) {
+				while (joe_isblank(b->b->o.charmap, brc(b))) {
 					if(b->byte == curoff) 
 						pset(bw->cursor, p);
 					pgetc(b);
@@ -674,22 +699,28 @@ int uformat(BW *bw)
 
 			binsc(p, pgetc(b));
 			pgetc(p);
-			if (piscol(p) > bw->o.rmargin)
-				wrapword(bw, p, indent, bw->o.french, 1, indents);
+			flag = 1;
 		}
 	}
 
 	/* Remaining lines: collapse whitespace */
 
+	flag = 0;
 	while (!piseof(b)) {
-		c = brch(b);
+		c = brc(b);
 		if (joe_isblank(b->b->o.charmap,c) || c == '\n') {
 			int f = 0;
 			P *d;
 			int g;
 
+			/* First space at end of word, wrap it */
+			if (flag && piscol(p) > bw->o.rmargin)
+				wrapword(bw, p, indent, bw->o.french, 1, indents);
+
+			flag = 0;
+
 			/* Detect end of sentence */
-			d=pdup(b, USTR "uformat");
+			d=pdup(b, "uformat");
 			g=prgetc(d);
 			if (g=='.' || g=='?' || g=='!') {
 				f = 1;
@@ -699,7 +730,7 @@ int uformat(BW *bw)
 			/* Skip past the whitespace.  Skip over indentations */
 		      loop:
 			
-			c = brch(b);
+			c = brc(b);
 			if (c == '\n') {
 				if (b->byte == curoff)
 					pset(bw->cursor, p);
@@ -733,10 +764,12 @@ int uformat(BW *bw)
 
 			binsc(p, pgetc(b));
 			pgetc(p);
-			if (piscol(p) > bw->o.rmargin)
-				wrapword(bw, p, indent, bw->o.french, 1, indents);
+			flag = 1;
 		}
 	}
+
+	if (flag && piscol(p) > bw->o.rmargin)
+		wrapword(bw, p, indent, bw->o.french, 1, indents);
 
 	binsc(p, '\n');
 	prm(p);
@@ -747,20 +780,22 @@ int uformat(BW *bw)
 
 /* Format entire block */
 
-int ufmtblk(BW *bw)
+int ufmtblk(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (markv(1) && bw->cursor->byte >= markb->byte && bw->cursor->byte <= markk->byte) {
 		markk->end = 1;
-		utomarkk(bw);
+		utomarkk(w, 0);
 		within = 1;
 		do {
-			ubop(bw), uformat(bw);
+			ubop(w, 0), uformat(w, 0);
 		} while (bw->cursor->byte > markb->byte);
 		within = 0;
 		markk->end = 0;
 		if (lightoff)
-			unmark(bw);
+			unmark(w, 0);
 		return 0;
 	} else
-		return uformat(bw);
+		return uformat(w, 0);
 }

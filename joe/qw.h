@@ -5,28 +5,24 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_QW_H
-#define _JOE_QW_H 1
 
 /* Single-key Query window */
 
 struct query {
 	W	*parent;	/* Window we're in */
-	int	(*func) ();	/* Func. which gets called when key is hit */
-	int	(*abrt) ();
+	int	(*func)(W *w, int k, void *object, int *notify);	/* Func. which gets called when key is hit */
+	int	(*abrt)(W *w, void *object);
 	void	*object;
-	unsigned char	*prompt;	/* Prompt string */
-	int	promptlen;	/* Width of prompt string */
-	int	org_w;
-	int	org_h;
+	char	*prompt;	/* Prompt string */
+	ptrdiff_t	promptlen;	/* Width of prompt string */
+	ptrdiff_t	org_w;
+	ptrdiff_t	org_h;
 };
 
 /* QW *mkqw(W *w, char *prompt, int (*func)(), int (*abrt)(), void *object);
  * Create a query window for the given window
  */
-/* FIXME: ??? ----> */
-QW *mkqw(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
-QW *mkqwna(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
-QW *mkqwnsr(W *w, unsigned char *prompt, int len, int (*func) (/* ??? */), int (*abrt) (/* ??? */), void *object, int *notify);
 
-#endif
+QW *mkqw(W *w, const char *prompt, ptrdiff_t len, int (*func)(W *w, int k, void *object, int *notify), int (*abrt)(W *w, void *object), void *object, int *notify);
+QW *mkqwna(W *w, const char *prompt, ptrdiff_t len, int (*func)(W *w, int k, void *object, int *notify), int (*abrt)(W *w, void *object), void *object, int *notify);
+QW *mkqwnsr(W *w, const char *prompt, ptrdiff_t len, int (*func)(W *w, int k, void *object, int *notify), int (*abrt)(W *w, void *object), void *object, int *notify);

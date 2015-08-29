@@ -33,7 +33,7 @@
 	"."		maybe_float
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
-	"a-zA-Z_"	ident		mark buffer
+	"\i\p{Sc}"	ident		mark buffer
 	"{}"		brace		recolor=-1
 	",:;=()><[]*&|!~+\-%^"	control	recolor=-1
 
@@ -246,7 +246,7 @@
 	"volatile"	kw
 	"while"		kw
 done
-	"a-zA-Z0-9_"	ident
+	"\c\p{Sc}"	ident
 
 :type Type
 	*		idle		noeat

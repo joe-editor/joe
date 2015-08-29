@@ -134,8 +134,12 @@
 	"\n"			idle
 	"/"			maybe_comment	recolor=-1
 	"."			prop_sep	recolor=-1
+.ifdef typescript
+	"\"'A-Za-z_0-9"		idle		noeat
+.else
 	"a-z"			infix_operator	buffer recolor=-1
 	"\"'A-Z_0-9"		bad_after_term	recolor=-1
+.endif
 	"{}"			brace		recolor=-1
 	"()"			paren		noeat recolor=-1
 	";"			semicolon	recolor=-1
@@ -496,7 +500,6 @@ done
 	"boolean"	type
 	"number"	type
 	"string"	type
-	"void"		type
 
 done
 	"$a-zA-Z0-9_"		ident

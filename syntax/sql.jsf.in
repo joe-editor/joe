@@ -35,7 +35,7 @@
 	"."		maybe_float
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
-	"a-zA-Z_@"	ident		buffer
+	"\i@"		ident		buffer
 	"{}"		brace		recolor=-1
 	",:;=()><[]*&|!~+%^"	control		recolor=-1
 
@@ -458,7 +458,7 @@
 	"explain"	kw
 	"enum"		kw
 done
-	"a-zA-Z0-9_"	ident
+	"\c"		ident
 
 :type Type
 	*	idle	noeat

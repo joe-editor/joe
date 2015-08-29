@@ -5,27 +5,25 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */ 
-#ifndef _JOE_TERMCAP_H
-#define _JOE_TERMCAP_H 1
  
 struct sortentry {
-	unsigned char	*name;
-	unsigned char	*value;
+	char	*name;
+	char	*value;
 };
 
 struct cap {
-	unsigned char	*tbuf;		/* Termcap entry loaded here */
+	char	*tbuf;		/* Termcap entry loaded here */
 
 	struct sortentry *sort;	/* Pointers to each capability stored in here */
-	int	sortlen;	/* Number of capabilities */
+	ptrdiff_t	sortlen;	/* Number of capabilities */
 
-	unsigned char	*abuf;		/* For terminfo compatible version */
-	unsigned char	*abufp;
+	char	*abuf;		/* For terminfo compatible version */
+	char	*abufp;
 
-	int	div;		/* tenths of MS per char */
-	int	baud;		/* Baud rate */
-	unsigned char	*pad;		/* Padding string or NULL to use NUL */
-	void	(*out) (unsigned char *, unsigned char);		/* Character output routine */
+	long	div;		/* tenths of MS per char */
+	long	baud;		/* Baud rate */
+	const char *pad;	/* Padding string or NULL to use NUL */
+	void	(*out) (void *, char);		/* Character output routine */
 	void	*outptr;	/* First arg passed to output routine.  Second
 				   arg is character to write */
 	int	dopadding;	/* Set if pad characters should be used */
@@ -68,36 +66,36 @@ struct cap {
  * done for self-refering 'tc=filename' links (so all of core will be
  * allocated if there are any).
  */
-CAP *my_getcap(unsigned char *name, unsigned int baud, void (*out) (unsigned char *, unsigned char), void *outptr);
+CAP *my_getcap(char *name, long baud, void (*out) (void *, char), void *outptr);
 
 /* CAP *setcap(CAP *cap,int baud,void (*out)(void *outptr,char c),void *outptr);
  *
  * Reset baud, out and outptr for a CAP
  */
-CAP *setcap(CAP *cap, unsigned int baud, void (*out) (unsigned char *, unsigned char), void *outptr);
+CAP *setcap(CAP *cap, long baud, void (*out) (void *, char), void *outptr);
 
-/* char *jgetstr(CAP *cap,char *name);
+/* const char *jgetstr(CAP *cap,const char *name);
  *
  * Get value of string capability or return NULL if it's not found.  A fast
  * binary search is used to find the capability.  The char * returned points into
  * the buffer used to load the termcap entry.  It should not be modified or
  * freed.
  */
-unsigned char *jgetstr(CAP *cap, unsigned char *name);
+const char *jgetstr(CAP *cap, const char *name);
 
 /* int getflag(CAP *cap,char *name);
  *
  * Return true if the named capability is found in 'cap'.  A fast binary
  * search is used to lookup the capability.
  */
-int getflag(CAP *cap, unsigned char *name);
+int getflag(CAP *cap, const char *name);
 
 /* int getnum(CAP *cap,char *name);
  *
  * Return value of numeric capability or return -1 if it's not found.  A fast
  * binary search is used to lookup the capability.
  */
-int getnum(CAP *cap, unsigned char *name);
+int getnum(CAP *cap, const char *name);
 
 /* void rmcap(CAP *cap);
  *
@@ -121,7 +119,7 @@ void rmcap(CAP *cap);
 
    'a0' - 'a1' are the arguments for the string
 */
-void texec(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3);
+void texec(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 
 /* int tcost(CAP *cap,char *str, int l, int a0, int a1, int a2, int a3);
    Return cost in number of characters which need to be sent
@@ -139,7 +137,7 @@ void texec(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3);
 
    'a0' - 'a3' are arguements passed to the string
 */
-int tcost(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3);
+ptrdiff_t tcost(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 
 /* char *tcompile(CAP *cap,char *str,int a0,int a1,int a2,int a3);
 
@@ -147,21 +145,19 @@ int tcost(CAP *cap, unsigned char *s, int l, int a0, int a1, int a2, int a3);
    string (see vs.h) containing the compiled string capability.
    Pad characters are not placed in the string.
 */
-unsigned char *tcompile(CAP *cap, unsigned char *s, int a0, int a1, int a2, int a3);
+char *tcompile(CAP *cap, const char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 
 /* Old termcap support */
 #ifdef junk
 int tgetent();
-unsigned char *tgetstr();
+char *tgetstr();
 int tgetflag();
 int tgetnum();
-unsigned char *tgoto();
+char *tgoto();
 void tputs();
 extern short ospeed;
-extern unsigned char PC, *UP, *BC;
+extern char PC, *UP, *BC;
 #endif
 
 extern int dopadding;
-extern unsigned char *joeterm;
-
-#endif
+extern char *joeterm;

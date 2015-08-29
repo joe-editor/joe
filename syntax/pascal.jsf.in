@@ -12,7 +12,7 @@
 
 :idle Idle
 	*		idle
-	"a-zA-Z"	ident		buffer
+	"\i"		ident		buffer
 	"("		maybe_comment
 	"/"		maybe_linecomment
 	"{"		comment		recolor=-1
@@ -211,7 +211,7 @@
 	"succ"		function
 	"trun"		function
 done
-	"a-zA-Z0-9_"	ident
+	"\c"		ident
 
 :kw Keyword
 	*	idle	noeat

@@ -21,11 +21,11 @@
 
 #ifdef HAVE_DIRENT_H
 #  include <dirent.h>
-#  define NAMLEN(dirent) strlen((dirent)->d_name)
+#  define NAMLEN(dirent) zlen((dirent)->d_name)
 #else
 #  ifdef HAVE_SYS_DIRENT_H
 #    include <sys/dirent.h>
-#    define NAMLEN(dirent) strlen((dirent)->d_name)
+#    define NAMLEN(dirent) zlen((dirent)->d_name)
 #  else
 #    define direct dirent
 #    define NAMLEN(dirent) (dirent)->d_namlen
@@ -74,7 +74,7 @@
 #endif
 
 /********************************************************************/
-unsigned char *joesep(unsigned char *path)
+char *joesep(char *path)
 {
 #ifdef __MSDOS__
 	int x;
@@ -86,9 +86,9 @@ unsigned char *joesep(unsigned char *path)
 	return path;
 }
 /********************************************************************/
-unsigned char *namprt(unsigned char *path)
+char *namprt(const char *path)
 {
-	unsigned char *z;
+	const char *z;
 
 	skip_drive_letter(path);
 	z = path + slen(path);
@@ -97,9 +97,9 @@ unsigned char *namprt(unsigned char *path)
 	return vsncpy(NULL, 0, sz(z));
 }
 /********************************************************************/
-unsigned char *namepart(unsigned char *tmp, size_t tmpsiz, unsigned char *path)
+char *namepart(char *tmp, ptrdiff_t tmpsiz, const char *path)
 {
-	unsigned char *z;
+	const char *z;
 
 	skip_drive_letter(path);
 	z = path + zlen(path);
@@ -108,10 +108,10 @@ unsigned char *namepart(unsigned char *tmp, size_t tmpsiz, unsigned char *path)
 	return zlcpy(tmp, tmpsiz, z);
 }
 /********************************************************************/
-unsigned char *dirprt(unsigned char *path)
+char *dirprt(const char *path)
 {
-	unsigned char *b = path;
-	unsigned char *z = path + slen(path);
+	const char *b = path;
+	const char *z = path + slen(path);
 
 	skip_drive_letter(b);
 	while ((z != b) && (z[-1] != '/'))
@@ -119,9 +119,9 @@ unsigned char *dirprt(unsigned char *path)
 	return vsncpy(NULL, 0, path, z - path);
 }
 /********************************************************************/
-unsigned char *begprt(unsigned char *path)
+char *begprt(const char *path)
 {
-	unsigned char *z = path + slen(path);
+	const char *z = path + slen(path);
 	int drv = 0;
 
 	do_if_drive_letter(path, drv = 2);
@@ -136,9 +136,9 @@ unsigned char *begprt(unsigned char *path)
 	}
 }
 /********************************************************************/
-unsigned char *endprt(unsigned char *path)
+char *endprt(const char *path)
 {
-	unsigned char *z = path + slen(path);
+	const char *z = path + slen(path);
 	int drv = 0;
 
 	do_if_drive_letter(path, drv = 2);
@@ -153,9 +153,9 @@ unsigned char *endprt(unsigned char *path)
 	}
 }
 /********************************************************************/
-int mkpath(unsigned char *path)
+int mkpath(char *path)
 {
-	unsigned char *s;
+	char *s;
 
 	if (path[0] == '/') {
 		if (chddir("/"))
@@ -165,15 +165,15 @@ int mkpath(unsigned char *path)
 	}
 
 	while (path[0]) {
-		int c;
+		char c;
 
 		for (s = path; (*s) && (*s != '/'); s++) ;
 		c = *s;
 		*s = 0;
-		if (chddir((char *)path)) {
-			if (mkdir((char *)path, 0777))
+		if (chddir(path)) {
+			if (mkdir(path, 0777))
 				return 1;
-			if (chddir((char *)path))
+			if (chddir(path))
 				return 1;
 		}
 		*s = c;
@@ -187,27 +187,27 @@ int mkpath(unsigned char *path)
 /********************************************************************/
 /* Create a temporary file */
 /********************************************************************/
-unsigned char *mktmp(unsigned char *where)
+char *mktmp(const char *where)
 {
 #ifndef HAVE_MKSTEMP
 	static unsigned seq = 0;
 #endif
-	unsigned char *name;
+	char *name;
 	int fd;
-	unsigned namesize;
+	ptrdiff_t namesize;
 
 	if (!where)
-		where = (unsigned char *)getenv("TEMP");
+		where = getenv("TEMP");
 	if (!where)
-		where = USTR _PATH_TMP;
+		where = _PATH_TMP;
 
 	namesize = zlen(where) + 16;
 	name = vsmk(namesize);	/* [G.Ghibo'] we need to use vsmk() and not malloc() as
 				   area returned by mktmp() is destroyed later with
 				   vsrm(); */
 #ifdef HAVE_MKSTEMP
-	joe_snprintf_1(name, namesize, "%s/joe.tmp.XXXXXX", where);
-	if((fd = mkstemp((char *)name)) == -1)
+	joe_snprintf_1(name, (size_t)namesize, "%s/joe.tmp.XXXXXX", where);
+	if((fd = mkstemp(name)) == -1)
 		return NULL;	/* FIXME: vflsh() and vflshf() */
 				/* expect mktmp() always succeed!!! */
 
@@ -232,7 +232,7 @@ unsigned char *mktmp(unsigned char *where)
 	return name;
 }
 /********************************************************************/
-int rmatch(unsigned char *a, unsigned char *b)
+int rmatch(const char *a, const char *b)
 {
 	int flag, inv, c;
 
@@ -256,11 +256,11 @@ int rmatch(unsigned char *a, unsigned char *b)
 			if (*a == ']')
 				if (*b == *a++)
 					flag = 1;
-			while (*a && (c = *a++) != ']')
+			while (*a && (c = *(const unsigned char *)a++) != ']')
 				if ((c == '-') && (a[-2] != '[') && (*a)) {
-					if ((*b >= a[-2]) && (*b <= *a))
+					if ((*(const unsigned char *)b >= ((const unsigned char *)a)[-2]) && (*(const unsigned char *)b <= *(const unsigned char *)a))
 						flag = 1;
-				} else if (*b == c)
+				} else if (*(const unsigned char *)b == c)
 					flag = 1;
 			if ((!flag && !inv) || (flag && inv) || (!*b))
 				return 0;
@@ -283,7 +283,7 @@ int rmatch(unsigned char *a, unsigned char *b)
 		}
 }
 /********************************************************************/
-int isreg(unsigned char *s)
+int isreg(const char *s)
 {
 	int x;
 
@@ -298,13 +298,13 @@ int isreg(unsigned char *s)
 #include <dir.h>
 
 struct direct {
-	unsigned char d_name[16];
+	char d_name[16];
 } direc;
 int dirstate = 0;
 struct ffblk ffblk;
-unsigned char *dirpath = NULL;
+char *dirpath = NULL;
 
-void *opendir(unsigned char *path)
+void *opendir(char *path)
 {
 	dirstate = 0;
 	return &direc;
@@ -327,49 +327,49 @@ struct direct *readdir()
 		dirstate = 1;
 	}
 
-	zlcpy(direc.d_name, sizeof(direc.d_name), ffblk.ff_name);
+	zlcpy(direc.d_name, SIZEOF(direc.d_name), ffblk.ff_name);
 	for (x = 0; direc.d_name[x]; ++x)
 		direc.d_name[x] = tolower(direc.d_name[x]);
 	return &direc;
 }
 #endif
 /********************************************************************/
-unsigned char **rexpnd(unsigned char *word)
+char **rexpnd(const char *word)
 {
-	void *dir;
-	unsigned char **lst = NULL;
+	DIR *dir;
+	char **lst = NULL;
 
 	struct dirent *de;
 	dir = opendir(".");
 	if (dir) {
 		while ((de = readdir(dir)) != NULL)
-			if (strcmp(".", de->d_name))
-				if (rmatch(word, (unsigned char *)de->d_name))
-					lst = vaadd(lst, vsncpy(NULL, 0, sz((unsigned char *)de->d_name)));
+			if (zcmp(".", de->d_name))
+				if (rmatch(word, de->d_name))
+					lst = vaadd(lst, vsncpy(NULL, 0, sz(de->d_name)));
 		closedir(dir);
 	}
 	return lst;
 }
 /********************************************************************/
-unsigned char **rexpnd_users(unsigned char *word)
+char **rexpnd_users(const char *word)
 {
-	unsigned char **lst = NULL;
+	char **lst = NULL;
 	struct passwd *pw;
 
 	while((pw=getpwent()))
-		if (rmatch(word+1, (unsigned char *)pw->pw_name)) {
-			unsigned char *t = vsncpy(NULL,0,sc("~"));
-			lst = vaadd(lst, vsncpy(sv(t),sz((unsigned char *)pw->pw_name)));
+		if (rmatch(word+1, pw->pw_name)) {
+			char *t = vsncpy(NULL,0,sc("~"));
+			lst = vaadd(lst, vsncpy(sv(t),sz(pw->pw_name)));
 			}
 	endpwent();
 
 	return lst;
 }
 /********************************************************************/
-int chpwd(unsigned char *path)
+int chpwd(const char *path)
 {
 #ifdef __MSDOS__
-	unsigned char buf[256];
+	char buf[256];
 	int x;
 
 	if (!path)
@@ -381,7 +381,7 @@ int chpwd(unsigned char *path)
 	}
 	if (!path[0])
 		return 0;
-	zlcpy(buf, sizeof(buf), path);
+	zlcpy(buf, SIZEOF(buf), path);
 	x = zlen(buf);
 	while (x > 1) {
 		--x;
@@ -394,20 +394,20 @@ int chpwd(unsigned char *path)
 #else
 	if ((!path) || (!path[0]))
 		return 0;
-	return chdir((char *)path);
+	return chdir(path);
 #endif
 }
 
 /* The pwd function */
-unsigned char *pwd(void)
+char *pwd(void)
 {
-	static unsigned char buf[PATH_MAX];
-	unsigned char	*ret;
+	static char buf[PATH_MAX];
+	char	*ret;
 
 #ifdef HAVE_GETCWD
-	ret = (unsigned char *)getcwd((char *)buf, PATH_MAX - 1);
+	ret = getcwd(buf, PATH_MAX - 1);
 #else
-	ret = (unsigned char *)getwd((char *)buf);
+	ret = getwd(buf);
 #endif
 	buf[PATH_MAX - 1] = '\0';
 
@@ -417,13 +417,13 @@ unsigned char *pwd(void)
 /* Simplify prefix by using ~ */
 /* Expects s to have trailing / */
 
-unsigned char *simplify_prefix(unsigned char *s)
+char *simplify_prefix(const char *s)
 {
-	unsigned char *t = (unsigned char *)getenv("HOME");
-	unsigned char *n;
+	const char *t = getenv("HOME");
+	char *n;
 
 #ifdef junk
-	unsigned char *org = pwd();
+	char *org = pwd();
 	/* Normalize home */
 	if (t && !chpwd(t)) {
 		t = pwd();
@@ -434,7 +434,7 @@ unsigned char *simplify_prefix(unsigned char *s)
 #endif
 
 	/* If current directory is prefixed with home directory, use ~... */
-	if (t && !strncmp((char *)s,(char *)t,zlen(t)) && (!s[zlen(t)] || s[zlen(t)]=='/')) {
+	if (t && !zncmp(s,t,zlen(t)) && (!s[zlen(t)] || s[zlen(t)]=='/')) {
 		n = vsncpy(NULL,0,sc("~/"));
 		/* If anything more than just the home directory, add it */
 		if (s[zlen(t)]) {

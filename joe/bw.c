@@ -11,13 +11,13 @@
 int dspasis = 0;
 int marking = 0;
 
-static P *getto(P *p, P *cur, P *top, long int line)
+static P *getto(P *p, P *cur, P *top, off_t line)
 {
 
 	if (p == NULL) {
 		P *best = cur;
-		long dist = MAXLONG;
-		long d;
+		off_t dist = MAXOFF;
+		off_t d;
 
 		d = (line >= cur->line ? line - cur->line : cur->line - line);
 		if (d < dist) {
@@ -29,7 +29,7 @@ static P *getto(P *p, P *cur, P *top, long int line)
 			dist = d;
 			best = top;
 		}
-		p = pdup(best, USTR "getto");
+		p = pdup(best, "getto");
 		p_goto_bol(p);
 	}
 	while (line > p->line)
@@ -45,12 +45,13 @@ static P *getto(P *p, P *cur, P *top, long int line)
 
 /* Scroll window to follow cursor */
 
-int mid = 0;
+int opt_mid = 0;
 
 /* For hex */
 
-void bwfllwh(BW *w)
+void bwfllwh(W *thew)
 {
+	BW *w = (BW *)thew->object;
 	/* Top must be a muliple of 16 bytes */
 	if (w->top->byte%16) {
 		pbkwd(w->top,w->top->byte%16);
@@ -58,8 +59,8 @@ void bwfllwh(BW *w)
 
 	/* Move backward */
 	if (w->cursor->byte < w->top->byte) {
-		long new_top = w->cursor->byte/16;
-		if (mid) {
+		off_t new_top = w->cursor->byte/16;
+		if (opt_mid) {
 			if (new_top >= w->h / 2)
 				new_top -= w->h / 2;
 			else
@@ -74,8 +75,8 @@ void bwfllwh(BW *w)
 
 	/* Move forward */
 	if (w->cursor->byte >= w->top->byte+(w->h*16)) {
-		long new_top;
-		if (mid) {
+		off_t new_top;
+		if (opt_mid) {
 			new_top = w->cursor->byte/16 - w->h / 2;
 		} else {
 			new_top = w->cursor->byte/16 - (w->h - 1);
@@ -100,8 +101,9 @@ void bwfllwh(BW *w)
 
 /* For text */
 
-void bwfllwt(BW *w)
+void bwfllwt(W *thew)
 {
+	BW *w = (BW *)thew->object;
 	P *newtop;
 
 	if (!pisbol(w->top)) {
@@ -109,9 +111,9 @@ void bwfllwt(BW *w)
 	}
 
 	if (w->cursor->line < w->top->line) {
-		newtop = pdup(w->cursor, USTR "bwfllwt");
+		newtop = pdup(w->cursor, "bwfllwt");
 		p_goto_bol(newtop);
-		if (mid) {
+		if (opt_mid) {
 			if (newtop->line >= w->h / 2)
 				pline(newtop, newtop->line - w->h / 2);
 			else
@@ -127,7 +129,7 @@ void bwfllwt(BW *w)
 	} else if (w->cursor->line >= w->top->line + w->h) {
 		/* newtop = pdup(w->top); */
 		/* getto() creates newtop */
-		if (mid)
+		if (opt_mid)
 			newtop = getto(NULL, w->cursor, w->top, w->cursor->line - w->h / 2);
 		else
 			newtop = getto(NULL, w->cursor, w->top, w->cursor->line - (w->h - 1));
@@ -142,7 +144,7 @@ void bwfllwt(BW *w)
 
 /* Adjust column */
 	if (w->cursor->xcol < w->offset) {
-		long target = w->cursor->xcol;
+		off_t target = w->cursor->xcol;
 		if (target < 5)
 			target = 0;
 		else {
@@ -160,9 +162,10 @@ void bwfllwt(BW *w)
 
 /* For either */
 
-void bwfllw(BW *w)
+void bwfllw(W *w)
 {
-	if (w->o.hex)
+	BW *bw = (BW *)w->object;
+	if (bw->o.hex)
 		bwfllwh(w);
 	else
 		bwfllwt(w);
@@ -172,7 +175,7 @@ void bwfllw(BW *w)
    If the state is not known, it is computed and the state for all
    of the remaining lines of the window are also recalculated. */
 
-HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
+static HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, off_t line)
 {
 	HIGHLIGHT_STATE state;
 
@@ -181,95 +184,14 @@ HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, int line)
 		return state;
 	}
 
-	return lattr_get(w->db, w->o.syntax, p, line);
-
-	/* Old way... */
-#ifdef junk
-
-	ln = line;
-
-	lattr_get(w->db, &ln, &state);
-
-	if (ln != line) {
-		tmp = pdup(p, USTR "get_highlight_state");
-		pline(tmp, ln);
-		while (tmp->line < line && !piseof(tmp)) {
-			state = parse(w->o.syntax, tmp, state);
-		}
-		if (tmp->line == line)
-			lattr_set(w->db, line, state);
-		prm(tmp);
-	}
-	return state;
-#endif
-
-#ifdef junk
-	P *tmp = 0;
-	HIGHLIGHT_STATE state;
-
-	/* Screen y position of requested line */
-	int y = line-w->top->line+w->y;
-
-	if(!w->o.highlight || !w->o.syntax) {
-		invalidate_state(&state);
-		return state;
-	}
-
-	/* If we know the state, just return it */
-	if (w->parent->t->t->syntab[y].state>=0)
-		return w->parent->t->t->syntab[y];
-
-	/* Scan upwards until we have a line with known state or
-	   we're on the first line */
-	while (y > w->y && w->parent->t->t->syntab[y].state < 0) --y;
-
-	/* If we don't have state for this line, calculate by going 100 lines back */
-	if (w->parent->t->t->syntab[y].state<0) {
-		/* We must be on the top line */
-		clear_state(&state);
-		tmp = pdup(w->top, USTR "get_highlight_state");
-		if(w->o.syntax->sync_lines >= 0 && tmp->line > w->o.syntax->sync_lines)
-			pline(tmp, tmp->line-w->o.syntax->sync_lines);
-		else
-			p_goto_bof(tmp);
-		while(tmp->line!=y-w->y+w->top->line)
-			state = parse(w->o.syntax,tmp,state);
-		w->parent->t->t->syntab[y] = state;
-		w->parent->t->t->updtab[y] = 1;
-		prm(tmp);
-	}
-
-	/* Color to end of screen */
-	tmp = pdup(w->top, USTR "get_highlight_state");
-	pline(tmp, y-w->y+w->top->line);
-	state = w->parent->t->t->syntab[y];
-	while(tmp->line!=w->top->line+w->h-1 && !piseof(tmp)) {
-		state = parse(w->o.syntax,tmp,state);
-		w->parent->t->t->syntab[++y] = state;
-		w->parent->t->t->updtab[y] = 1; /* This could be smarter: update only if we changed what was there before */
-		}
-	prm(tmp);
-	while(y<w->y+w->h-1) {
-		w->parent->t->t->syntab[++y] = state;
-		}
-
-	/* Line after window */
-	/* state = parse_c(state,syn,tmp); */
-
-	/* If we changed, fix other windows */
-	/* w->state = state; */
-
-	/* Return state of requested line */
-	y = line - w->top->line + w->y;
-	return w->parent->t->t->syntab[y];
-#endif
+	return lattr_get(w->db, w->o.syntax, p, line); /* FIXME: lattr database should be a in vfile */
 }
 
 /* Scroll a buffer window after an insert occured.  'flg' is set to 1 if
  * the first line was split
  */
 
-void bwins(BW *w, long int l, long int n, int flg)
+void bwins(BW *w, off_t l, off_t n, int flg)
 {
 	/* If highlighting is enabled... */
 	if (w->o.highlight && w->o.syntax) {
@@ -279,8 +201,8 @@ void bwins(BW *w, long int l, long int n, int flg)
 		if (l < w->top->line) {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
 		} else if ((l + 1) < w->top->line + w->h) {
-			int start = l + 1 - w->top->line;
-			int size = w->h - start;
+			ptrdiff_t start = TO_DIFF_OK(l + 1 - w->top->line);
+			ptrdiff_t size = w->h - start;
 			msetI(w->t->t->updtab + w->y + start, 1, size);
 		}
 	}
@@ -304,7 +226,7 @@ void bwins(BW *w, long int l, long int n, int flg)
 
 /* Scroll current windows after a delete */
 
-void bwdel(BW *w, long int l, long int n, int flg)
+void bwdel(BW *w, off_t l, off_t n, int flg)
 {
 	/* If highlighting is enabled... */
 	if (w->o.highlight && w->o.syntax) {
@@ -312,8 +234,8 @@ void bwdel(BW *w, long int l, long int n, int flg)
 		if (l < w->top->line) {
 			msetI(w->t->t->updtab + w->y, 1, w->h);
 		} else if ((l + 1) < w->top->line + w->h) {
-			int start = l + 1 - w->top->line;
-			int size = w->h - start;
+			ptrdiff_t start = TO_DIFF_OK(l + 1 - w->top->line);
+			ptrdiff_t size = w->h - start;
 			msetI(w->t->t->updtab + w->y + start, 1, size);
 		}
 	}
@@ -353,7 +275,7 @@ struct ansi_sm
 	int state;
 };
 
-int ansi_decode(struct ansi_sm *sm, int bc)
+static int ansi_decode(struct ansi_sm *sm, int bc)
 {
 	if (sm->state) {
 		if ((bc >= 'a' && bc <= 'z') || (bc >= 'A' && bc <= 'Z'))
@@ -366,14 +288,14 @@ int ansi_decode(struct ansi_sm *sm, int bc)
 		return bc;
 }
 
-void ansi_init(struct ansi_sm *sm)
+static void ansi_init(struct ansi_sm *sm)
 {
 	sm->state = 0;
 }
 
 /* Update a single line */
 
-static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long int scr, long int from, long int to,HIGHLIGHT_STATE st,BW *bw)
+static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff_t x, ptrdiff_t w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
         
       
             			/* Screen line address */
@@ -383,16 +305,17 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
               			/* Range for marked block */
 {
 	int ansi = bw->o.ansi;
-	int ox = x;
+	ptrdiff_t ox = x;
 	int tach;
 	int done = 1;
-	long col = 0;
-	long byte = p->byte;
-	unsigned char *bp;	/* Buffer pointer, 0 if not set */
-	int amnt;		/* Amount left in this segment of the buffer */
-	int c, ta, c1;
-	unsigned char bc;
-	int ungetit = -1;
+	off_t col = 0;
+	off_t byte = p->byte;
+	char *bp;	/* Buffer pointer, 0 if not set */
+	ptrdiff_t amnt;		/* Amount left in this segment of the buffer */
+	int c, c1;
+	off_t ta;
+	char bc;
+	int ungetit = NO_MORE_DATA;
 
 	struct utf8_sm utf8_sm;
 	struct ansi_sm ansi_sm;
@@ -406,9 +329,9 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	ansi_init(&ansi_sm);
 
 	if(st.state!=-1) {
-		tmp=pdup(p, USTR "lgen");
+		tmp=pdup(p, "lgen");
 		p_goto_bol(tmp);
-		parse(bw->o.syntax,tmp,st);
+		parse(bw->o.syntax,tmp,st,p->b->o.charmap);
 		syn = attr_buf;
 		prm(tmp);
 	}
@@ -427,11 +350,11 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
       lp:			/* Display next character */
 	if (amnt)
 		do {
-			if (ungetit== -1)
+			if (ungetit == NO_MORE_DATA)
 				bc = *bp++;
 			else {
-				bc = ungetit;
-				ungetit = -1;
+				bc = TO_CHAR_OK(ungetit);
+				ungetit = NO_MORE_DATA;
 			}
 			if(st.state!=-1) {
 				atr = syn[idx++] & ~CONTEXT_MASK;
@@ -467,7 +390,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 			}
 			if (square)
 				if (bc == '\t') {
-					long tcol = col + p->b->o.tab - col % p->b->o.tab;
+					off_t tcol = col + p->b->o.tab - col % p->b->o.tab;
 
 					if (tcol > from && tcol <= to)
 						c1 = INVERSE;
@@ -511,15 +434,15 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 							}
 						} else
 							wid = joe_wcwidth(1,c);
-					else if(c== -1) /* Character taken */
+					else if(c == UTF8_ACCEPTED) /* Character taken */
 						wid = -1;
-					else if(c== -2) { /* Incomplete sequence (FIXME: do something better here) */
+					else if(c == UTF8_INCOMPLETE) { /* Incomplete sequence (FIXME: do something better here) */
 						wid = 1;
 						ungetit = c;
 						++amnt;
 						--byte;
 					}
-					else if(c== -3) /* Control character 128-191, 254, 255 */
+					else if(c == UTF8_BAD) /* Control character 128-191, 254, 255 */
 						wid = 1;
 				} else {
 					if (ansi) {
@@ -565,11 +488,11 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
       loop:			/* Display next character */
 	if (amnt)
 		do {
-			if (ungetit== -1)
+			if (ungetit == NO_MORE_DATA)
 				bc = *bp++;
 			else {
-				bc = ungetit;
-				ungetit = -1;
+				bc = TO_CHAR_OK(ungetit);
+				ungetit = NO_MORE_DATA;
 			}
 			if(st.state!=-1) {
 				atr = syn[idx++] & ~CONTEXT_MASK;
@@ -605,7 +528,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 			}
 			if (square)
 				if (bc == '\t') {
-					long tcol = scr + x - ox + p->b->o.tab - (scr + x - ox) % p->b->o.tab;
+					off_t tcol = scr + x - ox + p->b->o.tab - (scr + x - ox) % p->b->o.tab;
 
 					if (tcol > from && tcol <= to)
 						c1 = INVERSE;
@@ -621,16 +544,17 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 				c1 = 0;
 			++byte;
 			if (bc == '\t') {
-				ta = p->b->o.tab - ((x - ox + scr) % p->b->o.tab);
+				ta = p->b->o.tab - (x - ox + scr) % p->b->o.tab;
 				tach = ' ';
 			      dota:
-				do {
+			      	while (x < w && ta--) {
 					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, c1|atr);
-					if (ifhave)
-						goto bye;
-					if (++x == w)
-						goto eosl;
-				} while (--ta);
+					++x;
+				}
+				if (ifhave)
+					goto bye;
+				if (x > w)
+					goto eosl;
 			} else if (bc == '\n')
 				goto eobl;
 			else {
@@ -651,15 +575,15 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 							}
 						} else
 							wid = joe_wcwidth(1,utf8_char);
-					} else if(utf8_char== -1) { /* Character taken */
+					} else if(utf8_char == UTF8_ACCEPTED) { /* Character taken */
 						wid = -1;
-					} else if(utf8_char== -2) { /* Incomplete sequence (FIXME: do something better here) */
+					} else if(utf8_char == UTF8_INCOMPLETE) { /* Incomplete sequence (FIXME: do something better here) */
 						ungetit = bc;
 						++amnt;
 						--byte;
 						utf8_char = 'X';
 						wid = 1;
-					} else if(utf8_char== -3) { /* Invalid UTF-8 start character 128-191, 254, 255 */
+					} else if(utf8_char == UTF8_BAD) { /* Invalid UTF-8 start character 128-191, 254, 255 */
 						/* Show as control character */
 						wid = 1;
 						utf8_char = 'X';
@@ -674,18 +598,19 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 							++idx;
 						}
 					} else {
-						utf8_char = bc;
+						utf8_char = (unsigned char)bc;
 						wid = 1;
 					}
 				}
 
-				if(wid>=0) {
-					if (x+wid > w) {
+				if(wid >= 0) {
+					if (x + wid > w) {
 						/* If character hits right most column, don't display it */
 						while (x < w) {
 							outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', c1|atr);
 							x++;
 						}
+						goto eosl;
 					} else {
 						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, c1|atr);
 						x += wid;
@@ -695,7 +620,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 
 				if (ifhave)
 					goto bye;
-				if (x >= w)
+				if (x > w)
 					goto eosl;
 			}
 		} while (--amnt);
@@ -715,13 +640,15 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
       eobl:			/* End of buffer line found.  Erase to end of screen line */
 	++p->line;
       eof:
-	if (x != w)
+      	outatr_complete(t);
+	if (x < w)
 		done = eraeol(t, x, y, BG_COLOR(bg_text));
 	else
 		done = 0;
 
 /* Set p to bp/amnt */
       bye:
+      	outatr_complete(t);
 	if (bp - p->ptr <= p->hdr->hole)
 		p->ofst = bp - p->ptr;
 	else
@@ -730,6 +657,7 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	return done;
 
       eosl:
+      	outatr_complete(t);
 	if (bp - p->ptr <= p->hdr->hole)
 		p->ofst = bp - p->ptr;
 	else
@@ -739,175 +667,20 @@ static int lgen(SCRN *t, int y, int *screen, int *attr, int x, int w, P *p, long
 	return 0;
 }
 
-/* Generate line into an array */
-#ifdef junk
-static int lgena(SCRN *t, int y, int *screen, int x, int w, P *p, long int scr, long int from, long int to)
-        
-      
-            			/* Screen line address */
-      				/* Window */
-     				/* Buffer pointer */
-         			/* Starting column to display */
-              			/* Range for marked block */
+static void gennum(BW *w, int (*screen)[COMPOSE], int *attr, SCRN *t, ptrdiff_t y, int *comp)
 {
-	int ox = x;
-	int done = 1;
-	long col = 0;
-	long byte = p->byte;
-	unsigned char *bp;	/* Buffer pointer, 0 if not set */
-	int amnt;		/* Amount left in this segment of the buffer */
-	int c, ta, c1;
-	unsigned char bc;
-
-/* Initialize bp and amnt from p */
-	if (p->ofst >= p->hdr->hole) {
-		bp = p->ptr + p->hdr->ehole + p->ofst - p->hdr->hole;
-		amnt = SEGSIZ - p->hdr->ehole - (p->ofst - p->hdr->hole);
-	} else {
-		bp = p->ptr + p->ofst;
-		amnt = p->hdr->hole - p->ofst;
-	}
-
-	if (col == scr)
-		goto loop;
-      lp:			/* Display next character */
-	if (amnt)
-		do {
-			bc = *bp++;
-			if (square)
-				if (bc == '\t') {
-					long tcol = col + p->b->o.tab - col % p->b->o.tab;
-
-					if (tcol > from && tcol <= to)
-						c1 = INVERSE;
-					else
-						c1 = 0;
-				} else if (col >= from && col < to)
-					c1 = INVERSE;
-				else
-					c1 = 0;
-			else if (byte >= from && byte < to)
-				c1 = INVERSE;
-			else
-				c1 = 0;
-			++byte;
-			if (bc == '\t') {
-				ta = p->b->o.tab - col % p->b->o.tab;
-				if (ta + col > scr) {
-					ta -= scr - col;
-					goto dota;
-				}
-				if ((col += ta) == scr) {
-					--amnt;
-					goto loop;
-				}
-			} else if (bc == '\n')
-				goto eobl;
-			else if (++col == scr) {
-				--amnt;
-				goto loop;
-			}
-		} while (--amnt);
-	if (bp == p->ptr + SEGSIZ) {
-		if (pnext(p)) {
-			bp = p->ptr;
-			amnt = p->hdr->hole;
-			goto lp;
-		}
-	} else {
-		bp = p->ptr + p->hdr->ehole;
-		amnt = SEGSIZ - p->hdr->ehole;
-		goto lp;
-	}
-	goto eobl;
-
-      loop:			/* Display next character */
-	if (amnt)
-		do {
-			bc = *bp++;
-			if (square)
-				if (bc == '\t') {
-					long tcol = scr + x - ox + p->b->o.tab - (scr + x - ox) % p->b->o.tab;
-
-					if (tcol > from && tcol <= to)
-						c1 = INVERSE;
-					else
-						c1 = 0;
-				} else if (scr + x - ox >= from && scr + x - ox < to)
-					c1 = INVERSE;
-				else
-					c1 = 0;
-			else if (byte >= from && byte < to)
-				c1 = INVERSE;
-			else
-				c1 = 0;
-			++byte;
-			if (bc == '\t') {
-				ta = p->b->o.tab - ((x - ox + scr) % p->b->o.tab);
-			      dota:
-				do {
-					screen[x] = ' ' + c1;
-					if (++x == w)
-						goto eosl;
-				} while (--ta);
-			} else if (bc == '\n')
-				goto eobl;
-			else {
-				/* xlat(&c, &bc);*/
-				c ^= c1;
-				screen[x] = c + bc;
-				if (++x == w)
-					goto eosl;
-			}
-		} while (--amnt);
-	if (bp == p->ptr + SEGSIZ) {
-		if (pnext(p)) {
-			bp = p->ptr;
-			amnt = p->hdr->hole;
-			goto loop;
-		}
-	} else {
-		bp = p->ptr + p->hdr->ehole;
-		amnt = SEGSIZ - p->hdr->ehole;
-		goto loop;
-	}
-	goto eof;
-      eobl:			/* End of buffer line found.  Erase to end of screen line */
-	++p->line;
-      eof:
-	while (x != w)
-		screen[x++] = ' ';
-	done = 0;
-
-/* Set p to bp/amnt */
-	if (bp - p->ptr <= p->hdr->hole)
-		p->ofst = bp - p->ptr;
-	else
-		p->ofst = bp - p->ptr - (p->hdr->ehole - p->hdr->hole);
-	p->byte = byte;
-	return done;
-
-      eosl:
-	if (bp - p->ptr <= p->hdr->hole)
-		p->ofst = bp - p->ptr;
-	else
-		p->ofst = bp - p->ptr - (p->hdr->ehole - p->hdr->hole);
-	p->byte = byte;
-	pnextl(p);
-	return 0;
-}
-#endif
-
-static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
-{
-	unsigned char buf[12];
-	int z;
-	int lin = w->top->line + y - w->y;
+	char buf[12];
+	ptrdiff_t z;
+	off_t lin = w->top->line + y - w->y;
 
 	if (lin <= w->b->eof->line)
-		joe_snprintf_1(buf, sizeof(buf), "%9ld ", w->top->line + y - w->y + 1);
+#ifdef HAVE_LONG_LONG
+		joe_snprintf_1(buf, SIZEOF(buf), "%9lld ", (long long)(w->top->line + y - w->y + 1));
+#else
+		joe_snprintf_1(buf, SIZEOF(buf), "%9ld ", (long)(w->top->line + y - w->y + 1));
+#endif
 	else {
-		int x;
+		ptrdiff_t x;
 		for (x = 0; x != LINCOLS; ++x)
 			buf[x] = ' ';
 		buf[x] = 0;
@@ -918,19 +691,20 @@ static void gennum(BW *w, int *screen, int *attr, SCRN *t, int y, int *comp)
 			return;
 		comp[z] = buf[z];
 	}
+	outatr_complete(t);
 }
 
 void bwgenh(BW *w)
 {
-	int *screen;
+	int (*screen)[COMPOSE];
 	int *attr;
-	P *q = pdup(w->top, USTR "bwgenh");
-	int bot = w->h + w->y;
-	int y;
+	P *q = pdup(w->top, "bwgenh");
+	ptrdiff_t bot = w->h + w->y;
+	ptrdiff_t y;
 	SCRN *t = w->t->t;
 	int flg = 0;
-	long from;
-	long to;
+	off_t from;
+	off_t to;
 	int dosquare = 0;
 
 	from = to = 0;
@@ -946,12 +720,12 @@ void bwgenh(BW *w)
 		}
 	else if (marking && w == (BW *)maint->curwin->object && markb && markb->b == w->b && w->cursor->byte != markb->byte && !from) {
 		if (square) {
-			from = long_min(w->cursor->xcol, markb->xcol);
-			to = long_max(w->cursor->xcol, markb->xcol);
+			from = off_min(w->cursor->xcol, markb->xcol);
+			to = off_max(w->cursor->xcol, markb->xcol);
 			dosquare = 1;
 		} else {
-			from = long_min(w->cursor->byte, markb->byte);
-			to = long_max(w->cursor->byte, markb->byte);
+			from = off_min(w->cursor->byte, markb->byte);
+			to = off_max(w->cursor->byte, markb->byte);
 		}
 	}
 
@@ -966,18 +740,18 @@ void bwgenh(BW *w)
 	y=w->y;
 	attr = t->attr + y*w->t->w;
 	for (screen = t->scrn + y * w->t->w; y != bot; ++y, (screen += w->t->w), (attr += w->t->w)) {
-		unsigned char txt[80];
+		char txt[80];
 		int fmt[80];
-		unsigned char bf[16];
+		char bf[16];
 		int x;
 		memset(txt,' ',76);
 		msetI(fmt,BG_COLOR(bg_text),76);
 		txt[76]=0;
 		if (!flg) {
 #if HAVE_LONG_LONG
-			sprintf((char *)bf,"%8llx ",(unsigned long long)q->byte);
+			sprintf(bf,"%8llx ",(unsigned long long)q->byte);
 #else
-			sprintf((char *)bf,"%8lx ",(unsigned long)q->byte);
+			sprintf(bf,"%8lx ",(unsigned long)q->byte);
 #endif
 			memcpy(txt,bf,9);
 			for (x=0; x!=8; ++x) {
@@ -992,12 +766,12 @@ void bwgenh(BW *w)
 					fmt[60+x] |= INVERSE;
 				}
 				c = pgetb(q);
-				if (c >= 0) {
-					sprintf((char *)bf,"%2.2x",c);
+				if (c != NO_MORE_DATA) {
+					sprintf(bf,"%2.2x",c);
 					txt[10+x*3] = bf[0];
 					txt[10+x*3+1] = bf[1];
 					if (c >= 0x20 && c <= 0x7E)
-						txt[60+x] = c;
+						txt[60+x] = TO_CHAR_OK(c);
 					else
 						txt[60+x] = '.';
 				} else
@@ -1015,34 +789,34 @@ void bwgenh(BW *w)
 					fmt[60+x] |= INVERSE;
 				}
 				c = pgetb(q);
-				if (c >= 0) {
-					sprintf((char *)bf,"%2.2x",c);
+				if (c != NO_MORE_DATA) {
+					sprintf(bf,"%2.2x",c);
 					txt[11+x*3] = bf[0];
 					txt[11+x*3+1] = bf[1];
 					if (c >= 0x20 && c <= 0x7E)
-						txt[60+x] = c;
+						txt[60+x] = TO_CHAR_OK(c);
 					else
 						txt[60+x] = '.';
 				} else
 					flg = 1;
 			}
 		}
-		genfield(t, screen, attr, 0, y, w->offset, txt, 76, 0, w->w, 1, fmt);
+		genfield(t, screen, attr, 0, y, TO_DIFF_OK(w->offset), txt, 76, 0, w->w, 1, fmt);
 	}
 	prm(q);
 }
 
 void bwgen(BW *w, int linums)
 {
-	int *screen;
+	int (*screen)[COMPOSE];
 	int *attr;
 	P *p = NULL;
 	P *q;
-	int bot = w->h + w->y;
-	int y;
+	ptrdiff_t bot = w->h + w->y;
+	ptrdiff_t y;
 	int dosquare = 0;
-	long from, to;
-	long fromline, toline;
+	off_t from, to;
+	off_t fromline, toline;
 	SCRN *t = w->t->t;
 
 	/* Set w.db to correct value */
@@ -1052,7 +826,7 @@ void bwgen(BW *w, int linums)
 	fromline = toline = from = to = 0;
 
 	if (w->b == errbuf && w->b->err) {
-		P *tmp = pdup(w->b->err, USTR "bwgen");
+		P *tmp = pdup(w->b->err, "bwgen");
 		p_goto_bol(tmp);
 		from = tmp->byte;
 		pnextl(tmp);
@@ -1071,23 +845,23 @@ void bwgen(BW *w, int linums)
 		}
 	else if (marking && w == (BW *)maint->curwin->object && markb && markb->b == w->b && w->cursor->byte != markb->byte && !from) {
 		if (square) {
-			from = long_min(w->cursor->xcol, markb->xcol);
-			to = long_max(w->cursor->xcol, markb->xcol);
-			fromline = long_min(w->cursor->line, markb->line);
-			toline = long_max(w->cursor->line, markb->line);
+			from = off_min(w->cursor->xcol, markb->xcol);
+			to = off_max(w->cursor->xcol, markb->xcol);
+			fromline = off_min(w->cursor->line, markb->line);
+			toline = off_max(w->cursor->line, markb->line);
 			dosquare = 1;
 		} else {
-			from = long_min(w->cursor->byte, markb->byte);
-			to = long_max(w->cursor->byte, markb->byte);
+			from = off_min(w->cursor->byte, markb->byte);
+			to = off_max(w->cursor->byte, markb->byte);
 		}
 	}
 
 	if (marking && w == (BW *)maint->curwin->object)
 		msetI(t->updtab + w->y, 1, w->h);
 
-	q = pdup(w->cursor, USTR "bwgen");
+	q = pdup(w->cursor, "bwgen");
 
-	y = w->cursor->line - w->top->line + w->y;
+	y = TO_DIFF_OK(w->cursor->line - w->top->line) + w->y;
 	attr = t->attr + y*w->t->w;
 	for (screen = t->scrn + y * w->t->w; y != bot; ++y, (screen += w->t->w), (attr += w->t->w)) {
 		if (ifhave && !linums)
@@ -1151,13 +925,13 @@ void bwgen(BW *w, int linums)
 		prm(p);
 }
 
-void bwmove(BW *w, int x, int y)
+void bwmove(BW *w, ptrdiff_t x, ptrdiff_t y)
 {
 	w->x = x;
 	w->y = y;
 }
 
-void bwresz(BW *w, int wi, int he)
+void bwresz(BW *w, ptrdiff_t wi, ptrdiff_t he)
 {
 	if (he > w->h && w->y != -1) {
 		msetI(w->t->t->updtab + w->y + w->h, 1, he - w->h);
@@ -1172,7 +946,7 @@ void bwresz(BW *w, int wi, int he)
 
 BW *bwmk(W *window, B *b, int prompt)
 {
-	BW *w = (BW *) joe_malloc(sizeof(BW));
+	BW *w = (BW *) joe_malloc(SIZEOF(BW));
 
 	w->parent = window;
 	w->b = b;
@@ -1191,8 +965,8 @@ BW *bwmk(W *window, B *b, int prompt)
 		b->oldcur = NULL;
 		w->cursor->owner = NULL;
 	} else {
-		w->top = pdup(b->bof, USTR "bwmk");
-		w->cursor = pdup(b->bof, USTR "bwmk");
+		w->top = pdup(b->bof, "bwmk");
+		w->cursor = pdup(b->bof, "bwmk");
 	}
 	w->t = window->t;
 	w->object = NULL;
@@ -1225,13 +999,13 @@ BW *bwmk(W *window, B *b, int prompt)
 
 static struct file_pos {
 	LINK(struct file_pos) link;
-	unsigned char *name;
-	long line;
+	char *name;
+	off_t line;
 } file_pos = { { &file_pos, &file_pos } };
 
 static int file_pos_count;
 
-struct file_pos *find_file_pos(unsigned char *name)
+static struct file_pos *find_file_pos(const char *name)
 {
 	struct file_pos *p;
 	for (p = file_pos.link.next; p != &file_pos; p = p->link.next)
@@ -1239,7 +1013,7 @@ struct file_pos *find_file_pos(unsigned char *name)
 			promote(struct file_pos,link,&file_pos,p);
 			return p;
 		}
-	p = (struct file_pos *)malloc(sizeof(struct file_pos));
+	p = (struct file_pos *)malloc(SIZEOF(struct file_pos));
 	p->name = zdup(name);
 	p->line = 0;
 	enquef(struct file_pos,link,&file_pos,p);
@@ -1252,7 +1026,7 @@ struct file_pos *find_file_pos(unsigned char *name)
 
 int restore_file_pos;
 
-long get_file_pos(unsigned char *name)
+off_t get_file_pos(const char *name)
 {
 	if (name && restore_file_pos) {
 		struct file_pos *p = find_file_pos(name);
@@ -1262,7 +1036,7 @@ long get_file_pos(unsigned char *name)
 	}
 }
 
-void set_file_pos(unsigned char *name, long pos)
+void set_file_pos(const char *name, off_t pos)
 {
 	if (name) {
 		struct file_pos *p = find_file_pos(name);
@@ -1274,7 +1048,11 @@ void save_file_pos(FILE *f)
 {
 	struct file_pos *p;
 	for (p = file_pos.link.prev; p != &file_pos; p = p->link.prev) {
-		fprintf(f,"	%ld ",p->line);
+#ifdef HAVE_LONG_LONG
+		fprintf(f,"	%lld ",(long long)p->line);
+#else
+		fprintf(f,"	%ld ",(long)p->line);
+#endif
 		emit_string(f,p->name,zlen(p->name));
 		fprintf(f,"\n");
 	}
@@ -1283,15 +1061,15 @@ void save_file_pos(FILE *f)
 
 void load_file_pos(FILE *f)
 {
-	unsigned char buf[1024];
-	while (fgets((char *)buf,sizeof(buf)-1,f) && zcmp(buf,USTR "done\n")) {
-		unsigned char *p = buf;
-		long pos;
-		unsigned char name[1024];
+	char buf[1024];
+	while (fgets(buf,SIZEOF(buf)-1,f) && zcmp(buf,"done\n")) {
+		const char *p = buf;
+		off_t pos;
+		char name[1024];
 		parse_ws(&p,'#');
-		if (!parse_long(&p, &pos)) {
+		if (!parse_off_t(&p, &pos)) {
 			parse_ws(&p, '#');
-			if (parse_string(&p, name, sizeof(name)) > 0) {
+			if (parse_string(&p, name, SIZEOF(name)) > 0) {
 				set_file_pos(name, pos);
 			}
 		}
@@ -1306,7 +1084,7 @@ void set_file_pos_all(Screen *t)
 	W *w = t->topwin;
 	do {
 		if (w->watom == &watomtw) {
-			BW *bw = w->object;
+			BW *bw = (BW *)w->object;
 			set_file_pos(bw->b->name, bw->cursor->line);
 		}
 		w = w->link.next;
@@ -1324,7 +1102,7 @@ BW *vtmaster(Screen *t, B *b)
 	BW *m = 0;
 	do {
 		if (w->watom == &watomtw) {
-			BW *bw = w->object;
+			BW *bw = (BW *)w->object;
 			if (bw && w->y != -1 && bw->b == b && (!b->vt || b->vt->vtcur->byte == bw->cursor->byte))
 				m = bw;
 		}
@@ -1346,51 +1124,35 @@ void bwrm(BW *w)
 	joe_free(w);
 }
 
-unsigned char *ustat_line;
+char *ustat_line;
 
-int ustat(BW *bw)
+int ustat(W *w, int k)
 {
-#if 0
-	static unsigned char buf[160];
-	unsigned char bf1[100];
-	unsigned char bf2[100];
-	int c = brch(bw->cursor);
-
-#if HAVE_LONG_LONG
-		joe_snprintf_1(bf1, sizeof(bf1), "%llu", (unsigned long long)bw->cursor->byte);
-		joe_snprintf_1(bf2, sizeof(bf2), "%llx", (unsigned long long)bw->cursor->byte);
-#else
-		joe_snprintf_1(bf1, sizeof(bf1), "%lu", (unsigned long)bw->cursor->byte);
-		joe_snprintf_1(bf2, sizeof(bf2), "%lx", (unsigned long)bw->cursor->byte);
-#endif
-
-	if (c == NO_MORE_DATA)
-		joe_snprintf_4(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s) **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2);
-	else
-		joe_snprintf_9(buf, sizeof(buf), joe_gettext(_("** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **")), bw->cursor->line + 1, piscol(bw->cursor) + 1, bf1, bf2, bw->b->o.charmap->name, c, c, c, joe_wcwidth(bw->o.charmap->type,c));
-	msgnw(bw->parent, buf);
-#endif
-
-	int c = brch(bw->cursor);
-	unsigned char *msg;
+	BW *bw;
+	int c;
+	const char *msg;
+	WIND_BW(bw, w);
+	c = brch(bw->cursor);
 
 	if (c == NO_MORE_DATA) {
 		if (bw->o.zmsg) msg = bw->o.zmsg;
-		else msg = USTR "** Line %r Col %c Offset %o(0x%O) **";
+		else msg = "** Line %r Col %c Offset %o(0x%O) **";
 	} else {
 		if (bw->o.smsg) msg = bw->o.smsg;
-		else msg = USTR "** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w **";
+		else msg = "** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w **";
 	}
 
-	ustat_line = stagen(ustat_line, bw, msg, zlen(msg) ? msg[zlen(msg) - 1] : ' ');
+	ustat_line = stagen(ustat_line, bw, msg, (char)(zlen(msg) ? msg[zlen(msg) - 1] : ' '));
 	msgnw(bw->parent, ustat_line);
 
 	return 0;
 }
 
-int ucrawlr(BW *bw)
+int ucrawlr(W *w, int k)
 {
-	int amnt = bw->w / 2;
+	BW *bw;
+	WIND_BW(bw, w);
+	ptrdiff_t amnt = bw->w / 2;
 
 	pcol(bw->cursor, bw->cursor->xcol + amnt);
 	bw->cursor->xcol += amnt;
@@ -1399,10 +1161,12 @@ int ucrawlr(BW *bw)
 	return 0;
 }
 
-int ucrawll(BW *bw)
+int ucrawll(W *w, int k)
 {
-	int amnt = bw->w / 2;
-	int curamnt = bw->w / 2;
+	BW *bw;
+	WIND_BW(bw, w);
+	off_t amnt = bw->w / 2;
+	off_t curamnt = bw->w / 2;
 
 	if (amnt > bw->offset) {
 		amnt = bw->offset;
@@ -1426,6 +1190,6 @@ void orphit(BW *bw)
 {
 	++bw->b->count; /* Assumes bwrm() is about to be called */
 	bw->b->orphan = 1;
-	pdupown(bw->cursor, &bw->b->oldcur, USTR "orphit");
-	pdupown(bw->top, &bw->b->oldtop, USTR "orphit");
+	pdupown(bw->cursor, &bw->b->oldcur, "orphit");
+	pdupown(bw->top, &bw->b->oldtop, "orphit");
 }
