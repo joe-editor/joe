@@ -2427,7 +2427,6 @@ int umsg(W *w, int k)
 
 static int dotxt(W *w, char *s, void *object, int *notify)
 {
-	int x;
 	char fill;
 	char *str;
 	BW *bw;
@@ -2435,18 +2434,29 @@ static int dotxt(W *w, char *s, void *object, int *notify)
 
 	if (notify)
 		*notify = 1;
-	if (s[0]=='`') {   
-	   str=vsmk(1024);
-	   fill=' ';
-	   str=stagen(str,bw,&s[1],fill);
-	   if (str) {
-	     for(x=0;x!=sLEN(str);++x) utypebw(bw,((unsigned char *)str)[x]);
-	     vsrm(str);
-	     }
-	} else
-	for (x = 0; x != sLEN(s); ++x)
-		utypebw(bw, ((unsigned char *)s)[x]);
-	vsrm(s);
+	if (s[0] == '`') {   
+		str = vsmk(1024);
+		fill = ' ';
+		str = stagen(str, bw, &s[1], fill);
+		vsrm(s);
+		s = str;
+	}
+	if (s) {
+	 	const char *t = s;
+		ptrdiff_t len = sLEN(s);
+		while (len) {
+			int c;
+			if (bw->b->o.charmap->type)
+				c = utf8_decode_fwrd(&t, &len);
+			else {
+				c = *(unsigned char *)t++;
+				--len;
+			}
+			if (c >= 0)
+				utypebw_raw(bw, c, 1);
+		}
+		vsrm(s);
+	}
 	return 0;
 }
 

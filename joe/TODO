@@ -1,5 +1,7 @@
 b_jonas wishlist:
 	math variable for each boolean mode
+	txt should insert literal tabs..
+	BTW, txt is broken.. assumes 8-bit
 
 replacement string:
 	allow more escape characters?
