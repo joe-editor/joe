@@ -120,6 +120,10 @@
 	* Improve performance where JOE would seem to lock up if you tried
 	  to reformat a very long single word due to O(n^3) algorithm.
 
+	* Prevent filt and blkdel from modifying read-only buffers.  This
+	  could happen if you run them from modifyable buffer but with block
+	  set in a read-only buffer.
+
 * Minor enhancements
 	* Backspace now jumps back to parent menu in ^T submenus (and
 	  remembers the cursor position within the parent)
@@ -127,6 +131,9 @@
 	* Macros after :def are now allowed to cross lines in the joerc file
 
 	* Make ^K ^SPACE same as ^K SPACE
+
+	* Quoted insert of TAB always inserts a TAB character, even when
+	  smart indent is enabled.
 
 * jmacs fixes:
 	* ^X b / ^X ^B were reversed

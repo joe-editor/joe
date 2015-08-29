@@ -1,3 +1,12 @@
+b_jonas wishlist:
+	math variable for each boolean mode
+
+replacement string:
+	allow more escape characters?
+
+	provide a way to convert to upper/lower or otherwise modify
+	selection
+
 help screen with 8-bit character set chart does not show properly
  - show it on 8-bit locales?
 
@@ -1240,3 +1249,5 @@ Reformat long line is too slow
 Improve syntax files to work with unicode.
 [done (but we can always do more..)]
 
+quote tab should insert a tab
+[done]
