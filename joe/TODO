@@ -1,8 +1,33 @@
-help screen with 8-bit character showing
+help screen with 8-bit character set does not show properly
+ - show it on 8-bit locales?
 
-only brpaste shows up in a macro when I paste: I rather have the text..
+only "brpaste" shows up in a macro when I paste: I rather have the text..
 
 old joe is messing up state file of new joe
+
+Add unicode normalization to search
+
+Regex in ftyperc is weird because character set of file is not yet know. 
+For now we assume ascii_map..
+
+ftyperc improvements:
+  Can we highlight backup files? files ending in .in?
+
+Allow user to provide a regex for error parsing
+
+Make joerc file so we load system and local customizations
+- rc file format needs revamping:  You can not put comments on lines with string
+  arguments.
+
+long paths not working with cd command in shell windows?
+
+1218708  ? for unknown characters is not informative (at least highlight the ?)
+Show as hex <34>?
+   For byte coded unused character: display character as we do in C. [we do
+this already]
+
+1304794  X at end of line is changed to space when character above 128 in utf-8
+  - check this one
 
 check all type-like functions- make sure they expect unicode!
 hmm.. we always convert to unicode on input, but do we convert to the 8-bit
@@ -25,77 +50,17 @@ path.c: rmatch.. should depend on locale (character class)
 look at texec..
 (continue looking after uedit.c)
 
-New regex engine:
-      add case ignore:
-          done, however right now we do simple folding for classes and full
-          folding outside of classes.  I think maybe better to do simple
-          folding for both?  Any point of full folding without
-          normalization?
-
-      unicode normalization, ugh.  Maybe this should be optional.
-      have an option 'n' for normalized search?
-
-      check performance and memory leaks
-
-      add \c
-      [done]
-
-      optional standard regex syntax?
-      [done]
-
-      add code to allow use of boyer-moore
-      [done: we even do it on utf-8 if we can (if there is no case folding)]
-
-      handle byte encoding correctly- we are only handling unicode
-        - what happens if you search/replace across file with different
-          encodings? maybe recompile for each file?  Actually we are already
-          recompiling for this case. [nope, we give an error if you try it]
-      [Done: character classes are converted to byte code]
-
-      syntax ok? update help if it is..
-      [done]
-
-      check char to int promotions [done].
-
-Now that we have new regex engine:
-      switch to it for ftyperc? [done]
-          - note we assume ascii map for this..  do we know the charmap of
-            the file at the point we do this?
-
-    Can we highlight backup files? files ending in .in?
-
-    - We need regexp for error parsing.
-        - we can do this now
-
 - hex edit mode
     - force switch to overtype mode?
    hex is screwed up.  utf-8 file encoding needs to be off for hex mode.
    also crlf mode.
  - Review this: other things should be disabled also
 
-Make joerc file so we load system and local customizations
-- rc file format needs revamping:  You can not put comments on lines with string
-  arguments.
-
-1218708  ? for unknown characters is not informative (at least highlight the ?)
-Show as hex <34>?
-   For byte coded unused character: display character as we do in C. [we do
-this already]
-
-1304794  X at end of line is changed to space when character above 128 in utf-8
-  - check this one
-
-long paths not working with cd command in shell windows?
-
-Improve syntax files to work with unicode.
 
 valgrind run: look for leaks.
 
 Prebuilt radix trees for character classes to avoid startup overhead?  We
 could do this..
-
-Reformat long line is too slow
- [improved, but look into prgetc improvement also]
 
 Digit values
 [wrote function, but not using it]
@@ -1233,3 +1198,46 @@ macros.c: unescape seems broken
 
 "-wrap" is messing up isrch somehow
 [fixed]
+
+
+New regex engine:
+      add case ignore:
+          done, however right now we do simple folding for classes and full
+          folding outside of classes.  I think maybe better to do simple
+          folding for both?  Any point of full folding without
+          normalization?
+
+      unicode normalization, ugh.  Maybe this should be optional.
+      have an option 'n' for normalized search?
+
+      check performance and memory leaks
+
+      add \c
+      [done]
+
+      optional standard regex syntax?
+      [done]
+
+      add code to allow use of boyer-moore
+      [done: we even do it on utf-8 if we can (if there is no case folding)]
+
+      handle byte encoding correctly- we are only handling unicode
+        - what happens if you search/replace across file with different
+          encodings? maybe recompile for each file?  Actually we are already
+          recompiling for this case. [nope, we give an error if you try it]
+      [Done: character classes are converted to byte code]
+
+      syntax ok? update help if it is..
+      [done]
+
+      check char to int promotions [done].
+
+Now that we have new regex engine:
+      switch to it for ftyperc? [done]
+
+Reformat long line is too slow
+ [improved, but look into prgetc improvement also]
+
+Improve syntax files to work with unicode.
+[done (but we can always do more..)]
+

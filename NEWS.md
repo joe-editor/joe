@@ -4,27 +4,51 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
-* Fix bug where regular expressions were not working in incremental search
-  when wrap is enabled (which is the case in jmacs).
-
-* JOE now displays Unicode combining characters properly
-
 * New regular expression engine
 	* Old one was a recursive matcher, new one is compiled Thompson NFA matcher
-	* JOE now supports full regular expressions (but regex characters are
-	  escaped), so:
+	* JOE now supports full regular expressions (but as before special characters are
+	  escaped by default), so:
 		* It now supports alternative: X\|Y
 		* It now supports grouping and submatch addressing with parenthesis: a\(inside\)b
 		* You can specify an explicit number of matches: X\{3} for XXX
 		* Or a range of matches: X\{3,5} for XXX, XXXX  or XXXXX
+		* \\! is a JOE extension: it's like \\., but matches whole balanced expressions
+	* JOE also supports the standard regular expression syntax where these characters are not escaped.
+		* Use the 'x' search & replace option for this, or use the '-regex' global option to make it the default.
+	* Standard syntax regular expressions are now used in the ftyperc
+          file (which is used to determine the syntax of the file by
+	  inspecting its contents)
+	* Submatches within regular expressions can now be any size (up to the size of the disk!).  Before this, they were limited to 16K.
 
-* Submatches within regular expressions can now be any size (up to the size of the disk!).  Before this,
-  they were limited to 16K.
-
-* Character class database has been updated to the latest version (Unicode 8.0.0)
-
-* Switched to new character class data structure for faster Unicode (uses
-  radix search instead of binary search).
+* Unicode improvements
+	* Character class database has been updated to the latest version (Unicode 8.0.0)
+	* Switched to new character class data structure for faster Unicode (uses radix search instead of binary search).
+	* Key sequences in the joerc file are now UTF-8 coded Unicode.
+	        * Also you can specify Unicode in hexadecimal like this: U+F123
+	        * Note that even if you are using an 8-bit locale, keys are tranlated to UTF-8
+	          before keymap lookup.  This means you must use the Unicode code for
+	          your character in the joerc file, not the 8-bit code for the character.
+	* Jump to matching delimiter (Ctrl-G) now supports Unicode for word delimiters (for example, within XML tags).
+	* Identifiers within JOE now allow Unicode.  For example, variables at the math prompt and JOE macros can use any letter.
+	* JOE now displays Unicode combining characters properly
+	* Syntax files are now UTF-8 coded and support Unicode syntax.
+	* Character lists in syntax files and search strings (regular expressions) now provide access to the Unicode category database and provide some other useful character classes:
+		* Use \x{f123} to specify a particular character.
+		* Use \p{Lu} to specify a Unicode character class: any one of
+			L, Lu, Ll, Lt, Lm, Lo
+			M, Mn, Mc, Me
+			N, Nd, Nl, No
+			P, Pc, Pd, Ps, Pe, Pi, Pf, Po
+			S, Sm, Sc, Sk, So
+			Z, Zs, Zl, Zp
+			C, Cc, Cf, Cs, Co, Cn
+			See: ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values
+		* Use \p{Cherokee} to specify any character from a named Unicode block.
+		* \d for a digit, \D for not a digit
+		* \w for a word character, \W for not a word character
+		* \s for a space character, \S for not a space character
+		* \i for identifier start character, \I for not identifier start character
+		* \c for identifier continuation character, \C for not identifier continuation character
 
 * Code clean up
 	* Switch to ptrdiff_t for memory offsets and off_t for file offsets (prior to this, int and long were used).  Now you can edit files larger than 4 GB on 32-bit systems.
@@ -32,59 +56,32 @@
 	* Clean up code so that we get a clean compile even with many more warnings enabled.  Going forward this helps find real bugs by highlighting new warnings.
 	* JOE can now be compiled by C++ compilers as well as C compilers.  This is useful because C++ compilers sometimes warn about issues that C compilers miss.
 
-* Key sequences in the joerc file are now UTF-8 coded Unicode.
-	* Also you can specify Unicode in hexadecimal like this: U+F123
-	* Note that even if you are using an 8-bit locale, keys are tranlated to UTF-8
-	  before keymap lookup.  This means you must use the Unicode code for
-	  your character in the joerc file, not the locale 8-bit character.
+* Bugs fixed
+	* Fix bug where \\ was not parsed correctly within syntax file character lists unless it was at the end of the string.
+	* Fix bug where position cursor history operations would mix pointers between different buffers if user had switched buffers in a window.
+	* Fix bug where lockup would happen if you try querysave when the only buffer left is the startup log.
+	* Default locale
+		* If no locale set, default to C / POSIX, not ISO-8859-1
+		* If locale is C / POSIX, set language to en_US (for aspell).
 
-* Character lists and strings in syntax files are now UTF-8 coded Unicode.  Character classes and unicode characters may also be specified in regular expressions.
-	* Use \x{f123} to specify a particular character.
-	* Use \p{Lu} to specify a Unicode character class: any one of
-		L, Lu, Ll, Lt, Lm, Lo
-		M, Mn, Mc, Me
-		N, Nd, Nl, No
-		P, Pc, Pd, Ps, Pe, Pi, Pf, Po
-		S, Sm, Sc, Sk, So
-		Z, Zs, Zl, Zp
-		C, Cc, Cf, Cs, Co, Cn
-		See: ftp://ftp.unicode.org/Public/5.1.0/ucd/UCD.html#General_Category_Values
-	* Use \p{Cherokee} to specify any character from a named Unicode block.
-	* \d for a digit, \D for not a digit
-	* \w for a word character, \W for not a word character
-	* \s for a space character, \S for not a space character
+* Minor enhancements
+	* Backspace now jumps back to parent menu in ^T submenus (and remembers the cursor position within the parent)
+	* Macros after :def are now allowed to cross lines in the joerc file
+	* Make ^K ^SPACE same as ^K SPACE
 
-
-* Fix bug where \\ was not parsed correctly within syntax file character lists unless it was at the end of the string.
-
-* Fix bug where position cursor history operations would mix
-  pointers between different buffers if user had switched buffers
-  in a window.
-
-* Backspace now jumps back to parent menu in ^T submenus.
-
-* Allow macros after :def to cross lines in the joerc file
-
-* Make ^K ^SPACE same as ^K SPACE
-
-* Fix lockup which would happen if you try querysave when the only buffer left is the startup log.
-
-* Minor jmacs fixes:
+* jmacs fixes:
 	* ^X b / ^X ^B were reversed
 	* ^X 0 printed an exit message for no reason
 	* ^X 0 now can pop shell windows
 	* M-^ deleted indentation but did not join with previous line
 	* Ignore case for letter commands: ^X i and ^X I are the same
+	* Fix bug where regular expressions were not working in incremental search when wrap is enabled (which is the case in jmacs).
 
 * ESC g (grep/find) and ESC c (compile) improvements
 	* Change to the current directory before running the command
 	* Show the current directory compile window
 	* Show the exit status in the compile window
 	* More consistent window setup
-
-* Default locale
-	* If no locale set, default to C / POSIX, not ISO-8859-1
-	* If locale is C / POSIX, set language to en_US (for aspell).
 
 ### JOE 3.8 Native Windows Version
 
