@@ -1,4 +1,5 @@
  File Type table.  This is :included by the joerc file.
+ Scripts can look like this '#!/usr/bin/python' or this '#!   /usr/bin/env  python3'
 
  No '.' in file name?  Assume it's a text file and we want wordwrap on.
 *
@@ -156,7 +157,7 @@
 -text_delimiters do=end
 
 *
-+#![ 	]*[a-z/ ]*ruby\>
++#![ 	]*[^\n]*ruby[0-9.]*\>
 -autoindent
 -pound_comment
 -syntax ruby
@@ -194,7 +195,7 @@
 
  Perl
 *
-+#![ 	]*[a-z/]*[/ ]perl\>
++#![ 	]*[^\n]*perl[0-9.]*\>
 -autoindent
 -syntax perl
 -smarthome
@@ -328,7 +329,7 @@
 -autoindent
 
 *
-+#![ 	]*[a-z/]*/rxx\>
++#![ 	]*[^\n]*rexx[0-9.]*\>
 -syntax rexx
 -autoindent
 
@@ -568,6 +569,18 @@
 -cpp_comment
 -cpara >#!;*/%
 
+ Javascript
+*
++#![ 	]*[^\n]*nodejs[0-9.]*\>
+-autoindent
+-syntax js
+-smarthome
+-smartbacks
+-purify
+-c_comment
+-cpp_comment
+-cpara >#!;*/%
+
  JSON
 *.json
 -autoindent
@@ -596,7 +609,7 @@
 
  Python
 *
-+#![ 	]*[a-z/]*[ 	]*python[0-9]*\>
++#![ 	]*[^\n]*python[0-9.]*\>
 -autoindent
 -syntax python
 -highlighter_context
@@ -618,7 +631,7 @@
 
  CSH
 *
-+#![ 	]*[a-z/]*/csh\>
++#![ 	]*[^\n 	]*/csh\>
 -autoindent
 -syntax csh
 -pound_comment
@@ -640,7 +653,7 @@
 
  TCSH
 *
-+#![ 	]*[a-z/]*/tcsh\>
++#![ 	]*[^\n 	]*/tcsh\>
 -autoindent
 -syntax csh
 -pound_comment
@@ -657,7 +670,7 @@
 
  Shell
 *
-+#![ 	]*[a-z/]*/sh\>
++#![ 	]*[^\n 	]*/sh\>
 -autoindent
 -syntax sh
 -highlighter_context
@@ -680,7 +693,7 @@
 
  BASH Shell
 *
-+#![ 	]*[a-z/]*/bash\>
++#![ 	]*[^\n 	]*/bash\>
 -autoindent
 -syntax sh
 -highlighter_context
@@ -733,7 +746,7 @@
 
  KSH
 *
-+#![ 	]*[a-z/]*/ksh\>
++#![ 	]*[^\n 	]*/ksh\>
 -autoindent
 -syntax sh
 -highlighter_context
@@ -824,7 +837,7 @@
 -syntax lua
 
 *
-+#![ 	]*[a-z/ ]*lua\>
++#![ 	]*[^\n]*lua[0-9.]*\>
 -autoindent
 -syntax lua
 
