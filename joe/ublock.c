@@ -421,6 +421,8 @@ int ublkdel(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (markv(1)) {
+		if (markb->b!=bw->b && !modify_logic(bw,markb->b))
+			return -1;
 		if (square)
 			if (bw->o.overtype) {
 				off_t ocol = markk->xcol;
@@ -957,6 +959,8 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 		return -1;
 	}
       ok:
+	if (markb->b!=bw->b && !modify_logic(bw,markb->b))
+		return -1;
 
 	if (-1 == pipe(fr)) {
 		msgnw(bw->parent, joe_gettext(_("Couldn't create pipe")));
