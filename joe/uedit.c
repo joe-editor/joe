@@ -2449,7 +2449,7 @@ static int dotxt(W *w, char *s, void *object, int *notify)
 			if (bw->b->o.charmap->type)
 				c = utf8_decode_fwrd(&t, &len);
 			else {
-				c = *(unsigned char *)t++;
+				c = *(const unsigned char *)t++;
 				--len;
 			}
 			if (c >= 0)

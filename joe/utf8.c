@@ -212,3 +212,110 @@ int fwrd_c(struct charmap *map, const char **s)
 		return c;
 	}
 }
+
+/* UTF-16 */
+
+/* Initialize state machine */
+
+void utf16_init(struct utf16_sm *sm)
+{
+	sm->state = 0;
+}
+
+int utf16_decode(struct utf16_sm *sm, unsigned short c)
+{
+	if (sm->state) {
+		if (c >= 0xDC00 && c <= 0xDFFF) {
+			int rtn = ((sm->state - 0xD800) << 10) + (c - 0xDC00) + 0x10000;
+			sm->state = 0;
+			return rtn;
+		} else if (c >= 0xD800 && c <= 0xDBFF) {
+			sm->state = c;
+			return UTF16_INCOMPLETE;
+		} else {
+			/* Sequence was incomplete, we should signal an error somehow.. */
+			return c;
+		}
+	} else {
+		if (c >= 0xD800 && c <= 0xDBFF) {
+			sm->state = c;
+			return UTF16_ACCEPTED;
+		} else if (c >= 0xDC00 && c <= 0xDFFF) {
+			return UTF16_BAD;
+		} else {
+			return c;
+		}
+	}
+}
+
+int utf16r_decode(struct utf16_sm *sm, unsigned short c)
+{
+	c = (unsigned short)((c >> 8) + (c << 8)); /* Reverse bytes */
+	if (sm->state) {
+		if (c >= 0xDC00 && c <= 0xDFFF) {
+			int rtn = ((sm->state - 0xD800) << 10) + (c - 0xDC00) + 0x10000;
+			sm->state = 0;
+			return rtn;
+		} else if (c >= 0xD800 && c <= 0xDBFF) {
+			sm->state = c;
+			return UTF16_INCOMPLETE;
+		} else {
+			/* Sequence was incomplete, we should signal an error somehow.. */
+			return c;
+		}
+	} else {
+		if (c >= 0xD800 && c <= 0xDBFF) {
+			sm->state = c;
+			return UTF16_ACCEPTED;
+		} else if (c >= 0xDC00 && c <= 0xDFFF) {
+			return UTF16_BAD;
+		} else {
+			return c;
+		}
+	}
+}
+
+/* UTF-16 encoder */
+
+ptrdiff_t utf16_encode(char *buf, int c)
+{
+	if ((c >= 0 && c < 0xD800) || (c >= 0xE000 && c < 0x10000)) {
+		unsigned short d = (unsigned short)c;
+		*(unsigned short *)buf = d;
+		return 2;
+	} else if (c >= 0x10000 && c < 0x110000) {
+		unsigned short d;
+		c -= 0x10000;
+		d = (unsigned short)(0xD800 + (c >> 10));
+		*(unsigned short *)buf = d;
+		d = (unsigned short)(0xDC00 + (c & 0x3FF));
+		*(unsigned short *)(buf + 2) = d;
+		return 4;
+	} else {
+		return UTF16_BAD;
+	}
+}
+
+/* UTF-16R encoder */
+
+ptrdiff_t utf16r_encode(char *buf, int c)
+{
+	if ((c >= 0 && c < 0xD800) || (c >= 0xE000 && c < 0x10000)) {
+		unsigned short d = (unsigned short)c;
+		d = (unsigned short)((d >> 8) + (d << 8));
+		*(unsigned short *)buf = d;
+		return 2;
+	} else if (c >= 0x10000 && c < 0x110000) {
+		unsigned short d;
+		c -= 0x10000;
+		d = (unsigned short)(0xD800 + (c >> 10));
+		d = (unsigned short)((d >> 8) + (d << 8));
+		*(unsigned short *)buf = d;
+		d = (unsigned short)(0xDC00 + (c & 0x3FF));
+		d = (unsigned short)((d >> 8) + (d << 8));
+		*(unsigned short *)(buf + 2) = d;
+		return 4;
+	} else {
+		return UTF16_BAD;
+	}
+}

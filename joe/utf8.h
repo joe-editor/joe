@@ -50,3 +50,38 @@ void utf8_init(struct utf8_sm *utf8_sm);
 /* Get next character from string and advance it, locale dependent */
 
 int fwrd_c(struct charmap *map, const char **s);
+
+/* UTF-16 encoder
+ *
+ * c is unicode character.
+ * buf is 4 byte buffer
+ *
+ * Returns length or UTF16_BAD for encode error.
+ * UTF16_BAD is returned if c is between 0xD800 - 0xDFFF, or > 0x10FFFF, or < 0.
+ */
+
+ptrdiff_t utf16_encode(char *buf, int c);
+ptrdiff_t utf16r_encode(char *buf, int c);
+
+struct utf16_sm {
+	int state;
+};
+
+/* UTF-16 Decoder
+ *
+ * Returns 0 - 10FFFF: decoded character
+ *    -257: character accepted, nothing decoded yet.
+ *    -258: incomplete sequence
+ *    -259: no sequence started, but character is between 0xDC00 - 0xDFFF
+ */
+
+#define UTF16_ACCEPTED -257
+#define UTF16_INCOMPLETE -258
+#define UTF16_BAD -259
+
+int utf16_decode(struct utf16_sm *sm, unsigned short c);
+int utf16r_decode(struct utf16_sm *sm, unsigned short c);
+
+/* Initialize state machine */
+
+void utf16_init(struct utf16_sm *sm);

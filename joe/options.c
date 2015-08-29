@@ -172,34 +172,41 @@ int ulanguage(W *w, int k)
 
 void lazy_opts(B *b, OPTIONS *o)
 {
-	o->syntax = load_syntax(o->syntax_name);
-	if (!o->map_name) {
-		/* Guess encoding if it's not explicitly given */
-		char buf[1024];
-		ptrdiff_t len = SIZEOF(buf);
-		if (b->eof->byte < len)
-			len = TO_DIFF_OK(b->eof->byte);
-		brmem(b->bof, buf, len);
-		o->charmap = guess_map(buf, len);
-		o->map_name = zdup(o->charmap->name);
+	struct charmap *orgmap = b->o.charmap;
+	b->o = *o;
+	b->o.syntax = load_syntax(b->o.syntax_name);
+	if (orgmap == utf16_map || orgmap == utf16r_map) { /* If we detected UTF-16 during load, keep it */
+		b->o.charmap = orgmap;
+		b->o.map_name = zdup(b->o.charmap->name);
 	} else {
-		o->charmap = find_charmap(o->map_name);
+		if (!b->o.map_name) {
+			/* Guess encoding if it's not explicitly given */
+			char buf[1024];
+			ptrdiff_t len = SIZEOF(buf);
+			if (b->eof->byte < len)
+				len = TO_DIFF_OK(b->eof->byte);
+			brmem(b->bof, buf, len);
+			b->o.charmap = guess_map(buf, len);
+			b->o.map_name = zdup(b->o.charmap->name);
+		} else {
+			b->o.charmap = find_charmap(b->o.map_name);
+		}
 	}
-	if (!o->charmap)
-		o->charmap = locale_map;
-	if (!o->language)
-		o->language = zdup(locale_msgs);
-	if (o->hex) {
+	if (!b->o.charmap)
+		b->o.charmap = locale_map;
+	if (!b->o.language)
+		b->o.language = zdup(locale_msgs);
+	if (b->o.hex) {
 		/* Hex not allowed with UTF-8 */
-		if (o->charmap->type) {
-			o->charmap = find_charmap("c");
-			o->hex |= HEX_RESTORE_UTF8;
+		if (b->o.charmap->type) {
+			b->o.charmap = find_charmap("c");
+			b->o.hex |= HEX_RESTORE_UTF8;
 		}
 		
 		/* Hex not allowed with CRLF */
-		if (o->crlf) {
-			o->crlf = 0;
-			o->hex |= HEX_RESTORE_CRLF;
+		if (b->o.crlf) {
+			b->o.crlf = 0;
+			b->o.hex |= HEX_RESTORE_CRLF;
 		}
 	}
 	
@@ -219,21 +226,18 @@ void setopt(B *b, const char *parsed_name)
 					o->r_contents_regex = joe_regcomp(ascii_map, o->contents_regex, zlen(o->contents_regex), 0, 1, 0);
 				if (o->r_contents_regex && !joe_regexec(o->r_contents_regex, p, 0, 0, 0)) {
 					prm(p);
-					b->o = *o;
-					lazy_opts(b, &b->o);
+					lazy_opts(b, o);
 					goto done;
 				} else {
 					prm(p);
 				}
 			} else {
-				b->o = *o;
-				lazy_opts(b, &b->o);
+				lazy_opts(b, o);
 				goto done;
 			}
 		}
 
-	b->o = fdefault;
-	lazy_opts(b, &b->o);
+	lazy_opts(b, &fdefault);
 
 	done:;
 }
@@ -293,6 +297,7 @@ struct glopts {
 	{"guess_indent",0, &guessindent, NULL, _("Automatically detect indentation"), _("Do not automatically detect indentation"), _("  Guess indent "), 0, 0, 0 },
 	{"guess_non_utf8",0, &guess_non_utf8, NULL, _("Automatically detect non-UTF-8 in UTF-8 locale"), _("Do not automatically detect non-UTF-8"), _("  Guess non-UTF-8 "), 0, 0, 0 },
 	{"guess_utf8",0, &guess_utf8, NULL, _("Automatically detect UTF-8 in non-UTF-8 locale"), _("Do not automatically detect UTF-8"), _("  Guess UTF-8 "), 0, 0, 0 },
+	{"guess_utf16",0, &guess_utf16, NULL, _("Automatically detect UTF-16"), _("Do not automatically detect UTF-16"), _("  Guess UTF-16 "), 0, 0, 0 },
 	{"transpose",0, &transpose, NULL, _("Menu is transposed"), _("Menus are not transposed"), _("  Transpose menus "), 0, 0, 0 },
 	{"crlf",	4, NULL, (char *) &fdefault.crlf, _("CR-LF is line terminator"), _("LF is line terminator"), _("Z CR-LF (MS-DOS) "), 0, 0, 0 },
 	{"linums",	4, NULL, (char *) &fdefault.linums, _("Line numbers enabled"), _("Line numbers disabled"), _("N Line numbers "), 0, 0, 0 },

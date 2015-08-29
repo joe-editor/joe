@@ -1193,6 +1193,8 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 }
 
 struct charmap *utf8_map;
+struct charmap *utf16_map;
+struct charmap *utf16r_map;
 struct charmap *ascii_map;
 
 static void load_builtins(void)
@@ -1213,6 +1215,36 @@ static void load_builtins(void)
 	map->next = charmaps;
 	charmaps = map;
 	utf8_map = map;
+
+	/* install UTF-16 map (ties into i18n module) */
+	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
+	map->name = "utf-16";
+	map->type = 1;
+	map->is_punct = joe_iswpunct;
+	map->is_print = joe_iswprint;
+	map->is_space = joe_iswspace;
+	map->is_alpha_ = joe_iswalpha_;
+	map->is_alnum_ = joe_iswalnum_;
+	map->to_lower = joe_towlower;
+	map->to_upper = joe_towupper;
+	map->next = charmaps;
+	charmaps = map;
+	utf16_map = map;
+
+	/* install UTF-16R map (ties into i18n module) */
+	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
+	map->name = "utf-16r";
+	map->type = 1;
+	map->is_punct = joe_iswpunct;
+	map->is_print = joe_iswprint;
+	map->is_space = joe_iswspace;
+	map->is_alpha_ = joe_iswalpha_;
+	map->is_alnum_ = joe_iswalnum_;
+	map->to_lower = joe_towlower;
+	map->to_upper = joe_towupper;
+	map->next = charmaps;
+	charmaps = map;
+	utf16r_map = map;
 
 	/* Load all built-in byte maps */
 	/*
@@ -1404,6 +1436,10 @@ char **get_encodings()
 	/* Builtin maps */
 
 	r = vsncpy(NULL,0,sc("utf-8"));	
+	encodings = vaadd(encodings, r);
+	r = vsncpy(NULL,0,sc("utf-16"));
+	encodings = vaadd(encodings, r);
+	r = vsncpy(NULL,0,sc("utf-16r"));
 	encodings = vaadd(encodings, r);
 
 	for (y=0; y!=SIZEOF(builtin_charmaps)/SIZEOF(struct builtin_charmap); ++y) {

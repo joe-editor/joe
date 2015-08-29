@@ -1021,7 +1021,7 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 					       markk->line - markb->line + 1,
 					       markk->xcol);
 
-			tmp = bread(fr[0], MAXLONG);
+			tmp = bread(fr[0], MAXOFF);
 			if (piscol(tmp->eof))
 				height = tmp->eof->line + 1;
 			else
@@ -1048,7 +1048,7 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 			if (!flg)
 				prgetc(p);
 			bdel(markb, p);
-			binsb(p, bread(fr[0], MAXLONG));
+			binsb(p, bread(fr[0], MAXOFF));
 			if (!flg) {
 				pset(p,markk);
 				prgetc(p);

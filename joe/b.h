@@ -317,3 +317,5 @@ char *dequote(const char *);
 #define ANSI_BIT (int)(0x80000000)
 int ansi_code(char *s);
 char *ansi_string(int code);
+
+extern int guess_utf16;

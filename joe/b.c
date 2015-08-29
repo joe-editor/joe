@@ -2258,18 +2258,169 @@ static ptrdiff_t bkread(int fi, char *buff, ptrdiff_t size)
 	return a;
 }
 
+/* Guess if file is utf16 encoded
+ *
+ * We assume UTF-16 if we can find a line in the range 3..120 with no control characters
+ * other than tab, carriable return and newline.
+ */
+
+static int detect_utf16(unsigned short *inbuf, ptrdiff_t amnt)
+{
+	ptrdiff_t x;
+	ptrdiff_t len = 0;
+	if (amnt > 300)
+		amnt = 300;
+	for (x = 0; x != amnt; ++x) {
+		unsigned short c = inbuf[x];
+		if (c == 0x000A)
+			if (len > 3 && len < 120)
+				return 1;
+			else
+				len = 0;
+		else if (c != 0x000D && c != 0x0009 && c < 0x0020)
+			return 0;
+		else
+			++len;
+	}
+	return 0;
+}
+
+static int detect_utf16r(unsigned short *inbuf, ptrdiff_t amnt)
+{
+	ptrdiff_t x;
+	ptrdiff_t len = 0;
+	if (amnt > 300)
+		amnt = 300;
+	for (x = 0; x != amnt; ++x) {
+		unsigned short c = inbuf[x];
+		c = (unsigned short)((c << 8) + (c >> 8)); /* Reverse bytes */
+		if (c == 0x000A)
+			if (len > 3 && len < 120)
+				return 1;
+			else
+				len = 0;
+		else if (c != 0x000D && c != 0x0009 && c < 0x0020)
+			return 0;
+		else
+			++len;
+	}
+	return 0;
+}
+
+int guess_utf16;
+
 /* Read up to 'max' bytes from a file into a buffer */
 /* Returns with 0 in error or -2 in error for read error */
 B *bread(int fi, off_t max)
 {
+	B *b;
 	H anchor, *l;
 	off_t lines = 0, total = 0;
 	ptrdiff_t amnt;
 	char *seg;
+	char inbuf[SEGSIZ];
+	int type = 0;
 
 	izque(H, link, &anchor);
 	berror = 0;
+	seg = vlock(vmem, (l = halloc())->seg);
+
+	if (guess_utf16) {
+		/* Read first segment here: detect UTF-16 */
+		amnt = bkread(fi, inbuf, max >= SEGSIZ ? SEGSIZ : (ptrdiff_t)max);
+		if (berror && !amnt) {
+			/* Read error or no data */
+			goto done;
+		} else if (detect_utf16((unsigned short *)inbuf, (amnt >> 1))) {
+			ptrdiff_t x;
+			ptrdiff_t y = 0;
+			utf16_sm sm;
+			char outbuf[SEGSIZ + 8];
+			/* It's UTF-16, recode to UTF-8 */
+			type = 2;
+			utf16_init(&sm);
+			while (!berror && amnt) {
+				for (x = 0; x + 1 < amnt; x += 2) {
+					int c = utf16_decode(&sm, *(unsigned short *)(inbuf + x));
+					if (c >= 0)
+						y += utf8_encode(outbuf + y, c);
+					if (y >= SEGSIZ) {
+						mcpy(seg, outbuf, SEGSIZ);
+						total += SEGSIZ;
+						l->hole = SEGSIZ;
+						lines += (l->nlines = mcnt(seg, '\n', SEGSIZ));
+						vchanged(seg);
+						vunlock(seg);
+						enqueb(H, link, &anchor, l);
+						seg = vlock(vmem, (l = halloc())->seg);
+						mmove(outbuf, outbuf + SEGSIZ, y - SEGSIZ);
+						y -= SEGSIZ;
+					}
+				}
+				max -= x;
+				amnt = bkread(fi, inbuf, max >= SEGSIZ ? SEGSIZ : (ptrdiff_t)max);
+			}
+			if (y) {
+				mcpy(seg, outbuf, y);
+				total += y;
+				l->hole = y;
+				lines += (l->nlines = mcnt(seg, '\n', y));
+				vchanged(seg);
+				vunlock(seg);
+				enqueb(H, link, &anchor, l);
+				seg = vlock(vmem, (l = halloc())->seg);
+			}
+			goto done;
+		} else if (detect_utf16r((unsigned short *)inbuf, (amnt >> 1))) {
+			ptrdiff_t x;
+			ptrdiff_t y = 0;
+			utf16_sm sm;
+			char outbuf[SEGSIZ + 8];
+			/* It's UTF-16, recode to UTF-8 */
+			type = 3;
+			utf16_init(&sm);
+			while (!berror && amnt) {
+				for (x = 0; x + 1 < amnt; x += 2) {
+					int c = utf16r_decode(&sm, *(unsigned short *)(inbuf + x));
+					if (c >= 0)
+						y += utf8_encode(outbuf + y, c);
+					if (y >= SEGSIZ) {
+						mcpy(seg, outbuf, SEGSIZ);
+						total += SEGSIZ;
+						l->hole = SEGSIZ;
+						lines += (l->nlines = mcnt(seg, '\n', SEGSIZ));
+						vchanged(seg);
+						vunlock(seg);
+						enqueb(H, link, &anchor, l);
+						seg = vlock(vmem, (l = halloc())->seg);
+						mmove(outbuf, outbuf + SEGSIZ, y - SEGSIZ);
+						y -= SEGSIZ;
+					}
+				}
+				max -= x;
+				amnt = bkread(fi, inbuf, max >= SEGSIZ ? SEGSIZ : (ptrdiff_t)max);
+			}
+			if (y) {
+				mcpy(seg, outbuf, y);
+				total += y;
+				l->hole = y;
+				lines += (l->nlines = mcnt(seg, '\n', y));
+				vchanged(seg);
+				vunlock(seg);
+				enqueb(H, link, &anchor, l);
+				seg = vlock(vmem, (l = halloc())->seg);
+			}
+			goto done;
+		} else {
+			/* Normal read */
+			mcpy(seg, inbuf, max >= SEGSIZ ? SEGSIZ : (ptrdiff_t)max);
+			goto rest;
+		}
+	}
+
+
 	while (seg = vlock(vmem, (l = halloc())->seg), !berror && (amnt = bkread(fi, seg, max >= SEGSIZ ? SEGSIZ : (ptrdiff_t) max))) {
+		rest:
 		total += amnt;
 		max -= amnt;
 		l->hole = amnt;
@@ -2278,13 +2429,20 @@ B *bread(int fi, off_t max)
 		vunlock(seg);
 		enqueb(H, link, &anchor, l);
 	}
+
+	done:
 	hfree(l);
 	vunlock(seg);
 	if (!total)
 		return bmk(NULL);
 	l = anchor.link.next;
 	deque(H, link, &anchor);
-	return bmkchn(l, NULL, total, lines);
+	b = bmkchn(l, NULL, total, lines);
+	if (type == 2)
+		b->o.charmap = utf16_map;
+	else if (type == 3)
+		b->o.charmap = utf16r_map;
+	return b;
 }
 
 /* Parse file name.
@@ -2301,7 +2459,7 @@ char *parsens(const char *s, off_t *skip, off_t *amnt)
 	ptrdiff_t x;
 
 	*skip = 0;
-	*amnt = MAXLONG;
+	*amnt = MAXOFF;
 	x = sLEN(n) - 1;
 	if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 		for (x = sLEN(n) - 1; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
@@ -2570,7 +2728,7 @@ opnerr:
 	b->name = joesep(zdup(s));
 
 	/* Set flags */
-	if (berror || s[0] == '!' || skip || amnt != MAXLONG) {
+	if (berror || s[0] == '!' || skip || amnt != MAXOFF) {
 		b->backup = 1;
 		b->changed = 0;
 	} else if (!zcmp(n, "-")) {
@@ -2841,6 +2999,41 @@ err:
 	return berror = -5;
 }
 
+/* Same as above, but convert from utf-8 to utf-16 or utf-16r */
+
+static int bsavefd_utf16(P *p, int fd, off_t size, int rev)
+{
+	P *np = pdup(p, "bsavefd");
+	char buf[SEGSIZ + 8];
+	ptrdiff_t e = np->byte + size;
+
+	ptrdiff_t y = 0;
+	int c;
+
+	while (np->byte < e && (c = pgetc(np)) != NO_MORE_DATA) {
+		ptrdiff_t n;
+		if (rev) {
+			n = utf16r_encode(buf + y, c);
+		} else {
+			n = utf16_encode(buf + y, c);
+		}
+		if (n >= 0)
+			y += n;
+		if (y >= SEGSIZ) {
+			if (joe_write(fd, buf, y) < 0)
+				goto err;
+			y = 0;
+		}
+	}
+	if (y && joe_write(fd, buf, y) < 0)
+		goto err;
+	prm(np);
+	return berror = 0;
+err:
+	prm(np);
+	return berror = -5;
+}
+
 /* Save 'size' bytes beginning at 'p' in file 's' */
 
 /* If flag is set, update original time of file if it makes
@@ -2879,7 +3072,7 @@ int bsave(P *p, const char *as, off_t size, int flag)
 		nescape(maint->t);
 		ttclsn();
 		f = stdout;
-	} else if (skip || amnt != MAXLONG)
+	} else if (skip || amnt != MAXOFF)
 		f = fopen(dequote(s), "r+");
 	else {
 		have_stat = !stat(dequote(s), &sbuf);
@@ -2939,9 +3132,14 @@ int bsave(P *p, const char *as, off_t size, int flag)
 		goto err;
 	}
 
-	bsavefd(p, fileno(f), size);
+	if (p->b->o.charmap == utf16_map)
+		bsavefd_utf16(p, fileno(f), size, 0);
+	else if (p->b->o.charmap == utf16r_map)
+		bsavefd_utf16(p, fileno(f), size, 1);
+	else
+		bsavefd(p, fileno(f), size);
 
-	if (!berror && force && size && !skip && amnt == MAXLONG) {
+	if (!berror && force && size && !skip && amnt == MAXOFF) {
 		P *q = pdup(p, "bsave");
 		char nl = '\n';
 

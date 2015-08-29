@@ -4,6 +4,18 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* UTF-16 support
+
+	* JOE can now edit UTF-16BE and UTF-16LE files.  It does this
+	  by converting them to UTF-8 during load and back to UTF-16 during
+	  save.
+
+	* Within JOE, native byte order is called UTF-16 and reversed order
+	  is called UTF-16R.
+
+	* If you change the encoding (with ^T E) between UTF-8, UTF-16 and UTF-16R,
+	  JOE will convert the file to the desired encoding on save.
+
 * New regular expression engine
 	* Old one was a recursive matcher, new one is compiled Thompson NFA matcher
 

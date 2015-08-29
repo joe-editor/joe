@@ -557,11 +557,12 @@ int main(int argc, char **real_argv, const char * const *envv)
 								backopt += 2;
 							else
 								backopt += 1;
-							lazy_opts(bw->b, &bw->o);
+							/* lazy_opts(bw->b, &bw->o); */
 						}
 					}
 				}
-				bw->b->o = bw->o;
+				/* bw->b->o = bw->o; */
+				lazy_opts(bw->b, &bw->o);
 				bw->b->rdonly = bw->o.readonly;
 				/* Put cursor in window, so macros work properly */
 				maint->curwin = bw->parent;

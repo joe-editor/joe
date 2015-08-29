@@ -146,6 +146,8 @@
 
  -guess_utf8	Allow guess of UTF-8 file encoding in non-UTF-8 locale.
 
+-guess_utf16	Allow guess of UTF-16 encoding
+
 -guess_crlf     Automatically detect MS-DOS files and set -crlf appropriately
 
 -guess_indent	Guess indent character (tab or space).
@@ -480,6 +482,7 @@ mode,"guess_crlf",rtn	% % Auto detect CR-LF %Zguess_crlf%
 mode,"guess_indent",rtn	% % Guess indent %Zguess_indent%
 mode,"guess_non_utf8",rtn	% % Guess non-UTF-8 %Zguess_non_utf8%
 mode,"guess_utf8",rtn	% % Guess UTF-8 %Zguess_utf8%
+mode,"guess_utf16",rtn	% % Guess UTF-16 %Zguess_utf16%
 mode,"force",rtn	% % Force last NL %Zforce%
 mode,"nobackup",rtn	% % No backup %Znobackup%
 
