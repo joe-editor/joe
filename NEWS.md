@@ -39,9 +39,9 @@
 
 	* Key sequences in the joerc file are now UTF-8 coded Unicode.
 
-	        * Also you can specify Unicode in hexadecimal like this: U+F123
+		* Also you can specify Unicode in hexadecimal like this: U+F123
 
-	        * Note that even if you are using an 8-bit locale, keys are
+		* Note that even if you are using an 8-bit locale, keys are
 	          tranlated to UTF-8 before keymap lookup.  This means you
 	          must use the Unicode code for your character in the joerc
 	          file, not the 8-bit code for the character.
@@ -97,9 +97,9 @@
 	  warnings enabled.  Going forward this helps find real bugs by
 	  highlighting new warnings.
 
-	* JOE can now be compiled by C++ compilers as well as C compilers. 
-	  This is useful because C++ compilers sometimes warn about issues
-	  that C compilers miss.
+	* Remove C usage which is illegal in C++ so that JOE can be compiled
+	  by C++ compilers as well as C compilers.  This is useful because
+	  C++ compilers sometimes warn about issues that C compilers miss.
 
 * Bugs fixed
 
