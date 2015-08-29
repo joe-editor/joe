@@ -143,11 +143,11 @@
 
 	* Change to the current directory before running the command
 
-	* Show the current directory compile window
+	* Show the current directory in the compile window
 
 	* Show the exit status in the compile window
 
-	* More consistent window setup
+	* Provide more consistent window setup during compile
 
 ### JOE 3.8 Native Windows Version
 

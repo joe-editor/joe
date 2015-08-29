@@ -1,11 +1,11 @@
-help screen with 8-bit character set does not show properly
+help screen with 8-bit character set chart does not show properly
  - show it on 8-bit locales?
 
 only "brpaste" shows up in a macro when I paste: I rather have the text..
 
 old joe is messing up state file of new joe
 
-Add unicode normalization to search
+Add unicode normalization option to search
 
 Regex in ftyperc is weird because character set of file is not yet know. 
 For now we assume ascii_map..
@@ -48,7 +48,6 @@ during print
 path.c: rmatch.. should depend on locale (character class)
 
 look at texec..
-(continue looking after uedit.c)
 
 - hex edit mode
     - force switch to overtype mode?
@@ -132,7 +131,7 @@ in ^KE: any nicer way to clear the current path other than Ctrl-Y?
 - better grep-find (trigger in ^KE)
 
 
-Improvements:
+vt Improvements:
 
  Long bash lines not quite working correctly...
 
