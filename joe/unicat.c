@@ -270,19 +270,13 @@ struct interval uniblocks[] = {
 };
 
 struct interval Co_table[] = {
-	{ 0xe000, 0xe000 },
-	{ 0xf8ff, 0xf8ff },
-	{ 0xf0000, 0xf0000 },
-	{ 0xffffd, 0xffffd },
-	{ 0x100000, 0x100000 },
-	{ 0x10fffd, 0x10fffd }
+	{ 0xe000, 0xf8ff },
+	{ 0xf0000, 0xffffd },
+	{ 0x100000, 0x10fffd }
 };
 
 struct interval Cs_table[] = {
-	{ 0xd800, 0xd800 },
-	{ 0xdb7f, 0xdb80 },
-	{ 0xdbff, 0xdc00 },
-	{ 0xdfff, 0xdfff }
+	{ 0xd800, 0xdfff }
 };
 
 struct interval Zp_table[] = {
@@ -1131,10 +1125,8 @@ struct interval Lo_table[] = {
 	{ 0x3131, 0x318e },
 	{ 0x31a0, 0x31ba },
 	{ 0x31f0, 0x31ff },
-	{ 0x3400, 0x3400 },
-	{ 0x4db5, 0x4db5 },
-	{ 0x4e00, 0x4e00 },
-	{ 0x9fd5, 0x9fd5 },
+	{ 0x3400, 0x4db5 },
+	{ 0x4e00, 0x9fd5 },
 	{ 0xa000, 0xa014 },
 	{ 0xa016, 0xa48c },
 	{ 0xa4d0, 0xa4f7 },
@@ -1182,8 +1174,7 @@ struct interval Lo_table[] = {
 	{ 0xab20, 0xab26 },
 	{ 0xab28, 0xab2e },
 	{ 0xabc0, 0xabe2 },
-	{ 0xac00, 0xac00 },
-	{ 0xd7a3, 0xd7a3 },
+	{ 0xac00, 0xd7a3 },
 	{ 0xd7b0, 0xd7c6 },
 	{ 0xd7cb, 0xd7fb },
 	{ 0xf900, 0xfa6d },
@@ -1347,14 +1338,10 @@ struct interval Lo_table[] = {
 	{ 0x1eea1, 0x1eea3 },
 	{ 0x1eea5, 0x1eea9 },
 	{ 0x1eeab, 0x1eebb },
-	{ 0x20000, 0x20000 },
-	{ 0x2a6d6, 0x2a6d6 },
-	{ 0x2a700, 0x2a700 },
-	{ 0x2b734, 0x2b734 },
-	{ 0x2b740, 0x2b740 },
-	{ 0x2b81d, 0x2b81d },
-	{ 0x2b820, 0x2b820 },
-	{ 0x2cea1, 0x2cea1 },
+	{ 0x20000, 0x2a6d6 },
+	{ 0x2a700, 0x2b734 },
+	{ 0x2b740, 0x2b81d },
+	{ 0x2b820, 0x2cea1 },
 	{ 0x2f800, 0x2fa1d }
 };
 
@@ -7238,8 +7225,8 @@ int totitle_cvt[] = {
 };
 
 struct unicat unicat[] = {
-	{ "Co", 6, Co_table, 0 },
-	{ "Cs", 4, Cs_table, 0 },
+	{ "Co", 3, Co_table, 0 },
+	{ "Cs", 1, Cs_table, 0 },
 	{ "Zp", 1, Zp_table, 0 },
 	{ "Zl", 1, Zl_table, 0 },
 	{ "Nl", 12, Nl_table, 0 },
@@ -7252,7 +7239,7 @@ struct unicat unicat[] = {
 	{ "No", 58, No_table, 0 },
 	{ "Cf", 17, Cf_table, 0 },
 	{ "Pi", 11, Pi_table, 0 },
-	{ "Lo", 440, Lo_table, 0 },
+	{ "Lo", 433, Lo_table, 0 },
 	{ "So", 170, So_table, 0 },
 	{ "Ll", 630, Ll_table, 0 },
 	{ "Pc", 6, Pc_table, 0 },

@@ -2334,7 +2334,7 @@ B *bread(int fi, off_t max)
 		} else if (detect_utf16((unsigned short *)inbuf, (amnt >> 1))) {
 			ptrdiff_t x;
 			ptrdiff_t y = 0;
-			utf16_sm sm;
+			struct utf16_sm sm;
 			char outbuf[SEGSIZ + 8];
 			/* It's UTF-16, recode to UTF-8 */
 			type = 2;
@@ -2374,7 +2374,7 @@ B *bread(int fi, off_t max)
 		} else if (detect_utf16r((unsigned short *)inbuf, (amnt >> 1))) {
 			ptrdiff_t x;
 			ptrdiff_t y = 0;
-			utf16_sm sm;
+			struct utf16_sm sm;
 			char outbuf[SEGSIZ + 8];
 			/* It's UTF-16, recode to UTF-8 */
 			type = 3;

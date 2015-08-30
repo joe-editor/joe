@@ -105,6 +105,19 @@
 -wordwrap
 -syntax mail
 
+ AVR assembly language
+*.avr
+-syntax avr
+-autoindent
+-wordwrap
+-tab 8
+
+*.inc
+-syntax avr
+-autoindent
+-wordwrap
+-tab 8
+
  Assembly language
 *.asm
 -wordwrap

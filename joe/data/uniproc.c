@@ -1,5 +1,14 @@
 /* Process UnicodeData.txt into category tables */
 
+/* UnicodeData.txt does not include every character!
+
+   Instead it gives a range like this:
+
+    3400;<CJK Ideograph Extension A, First>;Lo;0;L;;;;;N;;;;;
+    4DB5;<CJK Ideograph Extension A, Last>;Lo;0;L;;;;;N;;;;;
+*/
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -427,6 +436,16 @@ struct unidata *uniload(char *name)
         u->title_string = strdup(buf + x);
         if (1 != sscanf(u->title_string, "%x", &u->title))
             u->title = -1;
+        if (strstr(u->char_name, " Last>")) {
+            int n;
+            for (n = last->code + 1; n < u->code; ++n) {
+                struct unidata *v = (struct unidata *)malloc(sizeof(struct unidata));
+                *v = *u;
+                v->code = n;
+                last->next = v;
+                last = v;
+            }
+        }
         if (!first) {
             first = last = u;
         } else {
