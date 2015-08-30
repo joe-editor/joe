@@ -796,6 +796,7 @@ ctrl		^Q		Quote Ctrl chars
 
 paste			^[ ] 5 2 ;		Base64 paste (obsolete)
 brpaste			^[ [ 2 0 0 ~		Bracketed paste
+brpaste_done		^[ [ 2 0 1 ~		Bracketed paste done
 
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO

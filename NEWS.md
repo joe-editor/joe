@@ -136,6 +136,10 @@
 	  could happen if you run them from modifyable buffer but with block
 	  set in a read-only buffer.
 
+	* Fixed issue when recording paste in a macro.  If you tried to
+	  play the macro, the pasted text is not inserted and JOE is
+	  stuck waiting for the bracketed paste end string.
+
 * Minor enhancements
 	* Backspace now jumps back to parent menu in ^T submenus (and
 	  remembers the cursor position within the parent)

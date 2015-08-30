@@ -1,24 +1,22 @@
+it's annoying when search fails because charmap changed.
+  it would be better if we tried to convert it..
+  or at least ignore the problem for ASCII.
+
 b_jonas wishlist:
 	math variable for each boolean mode
-	txt should insert literal tabs..
-	BTW, txt is broken.. assumes 8-bit
 
 replacement string:
-	allow more escape characters?
-
 	provide a way to convert to upper/lower or otherwise modify
-	selection
+	selection: sed has \u \U \l \L \E
 
 help screen with 8-bit character set chart does not show properly
  - show it on 8-bit locales?
-
-only "brpaste" shows up in a macro when I paste: I rather have the text..
 
 old joe is messing up state file of new joe
 
 Add unicode normalization option to search
 
-Regex in ftyperc is weird because character set of file is not yet know. 
+Regex in ftyperc is weird because character set of file is not yet known. 
 For now we assume ascii_map..
 
 ftyperc improvements:
@@ -1253,3 +1251,9 @@ Improve syntax files to work with unicode.
 
 quote tab should insert a tab
 [done]
+	txt should insert literal tabs.. BTW, txt is broken.. assumes 8-bit
+	[done]
+
+only "brpaste" shows up in a macro when I paste: I rather have the text..
+[fixed]
+

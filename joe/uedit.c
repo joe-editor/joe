@@ -2571,41 +2571,33 @@ int upaste(W *w, int k)
 	return 0;
 }
 
+/* Bracketed paste */ 
+
+int saved_ww;
+int saved_ai;
+int saved_sp;
+
 int ubrpaste(W *w, int k)
 {
 	BW *bw;
-	const char *terminator = "\033[201~";
-	int c;
-	int tidx;
-	int saved_ww;
-	int saved_ai;
-	int saved_sp;
 
 	WIND_BW(bw, w);
 
-	tidx = 0;
 	saved_ww = bw->o.wordwrap;
 	saved_ai = bw->o.autoindent;
 	saved_sp = bw->o.spaces;
 	
 	bw->o.wordwrap = bw->o.autoindent = bw->o.spaces = 0;
 	
-	while (terminator[tidx] && -1 != (c = ttgetch())) {
-		if (c == terminator[tidx]) {
-			tidx++;
-		} else {
-			int i;
-			for (i = 0; i < tidx; i++)
-				utypebw(bw, terminator[i]);
-			tidx = 0;
-			
-			if (c == 13)
-				rtntw(bw->parent);
-			else
-				utypebw(bw, c);
-		}
-	}
-	
+	return 0;
+}
+
+int ubrpaste_done(W *w, int k)
+{
+	BW *bw;
+
+	WIND_BW(bw, w);
+
 	bw->o.wordwrap = saved_ww;
 	bw->o.autoindent = saved_ai;
 	bw->o.spaces = saved_sp;
