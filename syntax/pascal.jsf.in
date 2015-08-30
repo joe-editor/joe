@@ -41,15 +41,9 @@
 	"*"		maybe_end_comment
 	"}"		idle
 
-:comment Comment
-	*		comment
-	"*"		maybe_end_comment
-	"}"		idle
-
 :maybe_end_comment Comment
 	*		comment		noeat
 	")"		idle
-
 
 # String constant
 

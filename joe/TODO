@@ -1,10 +1,14 @@
+need shell-like tab completion in compile/grep prompt
+
 it's annoying when search fails because charmap changed.
   it would be better if we tried to convert it..
   or at least ignore the problem for ASCII.
 
+  also is previous search string in the correct charmap?
+  what about history?
+
 b_jonas wishlist:
 	math variable for each boolean mode
-
 
 help screen with 8-bit character set chart does not show properly
  - show it on 8-bit locales?
@@ -61,7 +65,6 @@ look at texec..
    also crlf mode.
  - Review this: other things should be disabled also
 
-
 valgrind run: look for leaks.
 
 Prebuilt radix trees for character classes to avoid startup overhead?  We
@@ -69,25 +72,6 @@ could do this..
 
 Digit values
 [wrote function, but not using it]
-
-Added some more convenient classes:
-   see http://www.w3.org/TR/xml11/#NT-NameStartChar
-   see http://www.w3.org/TR/xmlschma11-2/#regexs
-
-	\d	Digit: same as \p{Nd}
-	\D	opposite
-	\s	space, tab, newline, return
-	\S	opposite
-	\w	word character: [\x{0}-\x{10ffff}]-[\p{P}\p{Z}\p{C}]
-	\W	opposite
-	\p{block-name}
-
-	\i	NameStartChar
-			: A-Z _ a-z C0-D6 D8-F6 F8-2FF 370-37D 37F-1FFF 200C-200D 2070-218F 2C00-2FEF 3001-D7FF F900-FDCF FDF0-FFFD 10000-EFFFF
-	\I	opposite
-	\c	NameChar
-			\i - . 0-9 B7 0300-036F 203F-2040
-	\C	opposite
 
 
 Java:
@@ -1257,4 +1241,24 @@ only "brpaste" shows up in a macro when I paste: I rather have the text..
 replacement string:
 	provide a way to convert to upper/lower or otherwise modify
 	selection: sed has \u \U \l \L \E
+[done]
+
+Added some more convenient classes:
+   see http://www.w3.org/TR/xml11/#NT-NameStartChar
+   see http://www.w3.org/TR/xmlschma11-2/#regexs
+
+	\d	Digit: same as \p{Nd}
+	\D	opposite
+	\s	space, tab, newline, return
+	\S	opposite
+	\w	word character: [\x{0}-\x{10ffff}]-[\p{P}\p{Z}\p{C}]
+	\W	opposite
+	\p{block-name}
+
+	\i	NameStartChar
+			: A-Z _ a-z C0-D6 D8-F6 F8-2FF 370-37D 37F-1FFF 200C-200D 2070-218F 2C00-2FEF 3001-D7FF F900-FDCF FDF0-FFFD 10000-EFFFF
+	\I	opposite
+	\c	NameChar
+			\i - . 0-9 B7 0300-036F 203F-2040
+	\C	opposite
 [done]
