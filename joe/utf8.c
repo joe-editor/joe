@@ -202,13 +202,15 @@ int utf8_decode_fwrd(const char **p,ptrdiff_t *plen)
 
 /* Get next character from string and advance it, locale dependent */
 
-int fwrd_c(struct charmap *map, const char **s)
+int fwrd_c(struct charmap *map, const char **s, ptrdiff_t *len)
 {
 	if (map->type)
-		return utf8_decode_fwrd(s, NULL);
+		return utf8_decode_fwrd(s, len);
 	else {
 		int c = *(const unsigned char *)*s;
 		*s = *s + 1;
+		if (len)
+			*len = *len - 1;
 		return c;
 	}
 }

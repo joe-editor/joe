@@ -49,7 +49,7 @@ void utf8_init(struct utf8_sm *utf8_sm);
 
 /* Get next character from string and advance it, locale dependent */
 
-int fwrd_c(struct charmap *map, const char **s);
+int fwrd_c(struct charmap *map, const char **s, ptrdiff_t *len);
 
 /* UTF-16 encoder
  *

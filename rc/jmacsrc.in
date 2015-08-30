@@ -548,6 +548,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i    \\+      match 1 or more occurrences    \\*     match 0 or more occurrences \|\i \i
 \i \iReplace sequences:                                                           \|\i \i
 \i \i    \\&      replaced with entire match     \\1 - 9 replaced with Nth group   \|\i \i
+\i \i    \\u \\l   convert next to upper/lower    \\U \\L  case convert until \\E     \|\i \i
 }
 
 {Escape sequences

@@ -169,10 +169,10 @@ static void parseone(struct charmap *map,const char *s,char **rtn_name,off_t *rt
 	do {
 		
 		/* Skip to first word */
-		for (u = v; *u && !((t = u), (c = fwrd_c(map, &t)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/')); u = t) ;
+		for (u = v; *u && !((t = u), (c = fwrd_c(map, &t, NULL)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/')); u = t) ;
 
 		/* Skip to end of first word */
-		for (v = u; (t = v), (c = fwrd_c(map, &t)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/' || c == '-'); v = t)
+		for (v = u; (t = v), (c = fwrd_c(map, &t, NULL)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/' || c == '-'); v = t)
 			if (c == '.')
 				flg = 1;
 	} while (!flg && u != v);

@@ -480,41 +480,124 @@ static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len, B **entire, B *
 	ptrdiff_t x;
 	off_t starting = p->byte;
 	int nth;
+	int case_flag = 0;
+	B *b;
 
 	while (len) {
 		for (x = 0; x != len && s[x] != '\\'; ++x) ;
 		if (x) {
-			binsm(p, s, x);
-			pfwrd(p, x);
+			const char *t = s;
+			ptrdiff_t y = x;
+			switch (case_flag) {
+				case 1: {
+					case_flag = 0;
+				} case 2: {
+					while (y) {
+						int ch = fwrd_c(p->b->o.charmap, &t, &y);
+						ch = joe_tolower(p->b->o.charmap, ch);
+						binsc(p, ch);
+						pgetc(p);
+					}
+					break;
+				} case -1: {
+					case_flag = 0;
+				} case -2: {
+					while (y) {
+						int ch = fwrd_c(p->b->o.charmap, &t, &y);
+						ch = joe_toupper(p->b->o.charmap, ch);
+						binsc(p, ch);
+						pgetc(p);
+					}
+					break;
+				}
+			}
+			if (y) {
+				binsm(p, t, y);
+				pfwrd(p, y);
+			}
 			len -= x;
 			s += x;
 		} else if (len >= 2) {
-			if ((s[1] >= 'a' && s[1] <= 'z') || (s[1] >= 'A' && s[1] <= 'Z')) {
-				nth = (s[1] & 0x1f) - 1;
-				insertit:
-				if (pieces[nth]) {
-					off_t l = pieces[nth]->eof->byte;
-					binsb(p, bcpy(pieces[nth]->bof, pieces[nth]->eof));
-					pfwrd(p, l);
-				}
+			if (s[1] == 'l') {
+				case_flag = 1;
+				s += 2;
+				len -= 2;
+			} else if (s[1] == 'L') {
+				case_flag = 2;
+				s += 2;
+				len -= 2;
+			} else if (s[1] == 'u') {
+				case_flag = -1;
+				s += 2;
+				len -= 2;
+			} else if (s[1] == 'U') {
+				case_flag = -2;
+				s += 2;
+				len -= 2;
+			} else if (s[1] == 'E') {
+				case_flag = 0;
 				s += 2;
 				len -= 2;
 			} else if (s[1] >= '1' && s[1] <= '9') {
 				nth = s[1] - '1';
-				goto insertit;
-			} else if (s[1] == '&') {
-				if (*entire) {
-					off_t l = entire[0]->eof->byte;
-					binsb(p, bcpy(entire[0]->bof, entire[0]->eof));
-					pfwrd(p, l);
-				}
 				s += 2;
 				len -= 2;
+				if (pieces[nth]) {
+					b = bcpy(pieces[nth]->bof, pieces[nth]->eof);
+					goto insertit;
+				}
+			} else if (s[1] == '&') {
+				s += 2;
+				len -= 2;
+				if (*entire) {
+					b = bcpy(entire[0]->bof, entire[0]->eof);
+					insertit:
+					if (case_flag) {
+						P *q = pdup(b->bof, "insert");
+						while (!piseof(q)) {
+							int ch = pgetc(q);
+							switch (case_flag) {
+								case 1: {
+									case_flag = 0;
+								} case 2: {
+									ch = joe_tolower(p->b->o.charmap, ch);
+									break;
+								} case -1: {
+									case_flag = 0;
+								} case -2: {
+									ch = joe_toupper(p->b->o.charmap, ch);
+									break;
+								}
+							}
+							binsc(p, ch);
+							pgetc(p);
+						}
+						prm(q);
+						brm(b);
+					} else {
+						off_t l = b->eof->byte;
+						binsb(p, b);
+						pfwrd(p, l);
+					}
+				}
 			} else {
 				const char *a = s + x;
 				ptrdiff_t l = len - x;
 				int ch = escape(p->b->o.charmap->type, &a, &l, NULL);
 				if (ch != -256) {
+					switch (case_flag) {
+						case 1: {
+							case_flag = 0;
+						} case 2: {
+							ch = joe_tolower(p->b->o.charmap, ch);
+							break;
+						} case -1: {
+							case_flag = 0;
+						} case -2: {
+							ch = joe_toupper(p->b->o.charmap, ch);
+							break;
+						}
+					}
 					binsc(p, ch);
 					pgetc(p);
 				}
@@ -621,7 +704,7 @@ static int set_options(W *w, char *s, void *obj, int *notify)
 
 	t = s;
 	while (*t) {
-		int c = fwrd_c(locale_map, &t);
+		int c = fwrd_c(locale_map, &t, NULL);
 		if (yncheck(all_key, c))
 			srch->all = 1;
 		else if (yncheck(list_key, c))
@@ -692,15 +775,15 @@ static int set_pattern(W *w, char *s, void *obj, int *notify)
 
 		if (srch->ignore) {
 			const char *t = joe_gettext(ignore_key);
-			binsc(pbw->cursor, fwrd_c(locale_map, &t));
+			binsc(pbw->cursor, fwrd_c(locale_map, &t, NULL));
 		}
 		if (srch->replace) {
 			const char *t = joe_gettext(replace_key);
-			binsc(pbw->cursor, fwrd_c(locale_map, &t));
+			binsc(pbw->cursor, fwrd_c(locale_map, &t, NULL));
 		}
 		if (srch->backwards) {
 			const char *t = joe_gettext(backwards_key);
-			binsc(pbw->cursor, fwrd_c(locale_map, &t));
+			binsc(pbw->cursor, fwrd_c(locale_map, &t, NULL));
 		}
 		if (srch->repeat >= 0)
 			joe_snprintf_1(buf, SIZEOF(buf), "%d", srch->repeat), binss(pbw->cursor, buf);

@@ -5,9 +5,6 @@ it's annoying when search fails because charmap changed.
 b_jonas wishlist:
 	math variable for each boolean mode
 
-replacement string:
-	provide a way to convert to upper/lower or otherwise modify
-	selection: sed has \u \U \l \L \E
 
 help screen with 8-bit character set chart does not show properly
  - show it on 8-bit locales?
@@ -1257,3 +1254,7 @@ quote tab should insert a tab
 only "brpaste" shows up in a macro when I paste: I rather have the text..
 [fixed]
 
+replacement string:
+	provide a way to convert to upper/lower or otherwise modify
+	selection: sed has \u \U \l \L \E
+[done]

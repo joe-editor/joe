@@ -41,6 +41,9 @@
 	* Submatches within regular expressions can now be any size (up to
 	  the size of the disk!).  Before this, they were limited to 16K.
 
+	* Case conversion allowed in replacement string, as in sed:
+	  everything between \\U and \\E converted to uppercase. 
+
 * Unicode improvements
 
 	* Character class database has been updated to the latest version
