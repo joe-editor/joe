@@ -365,7 +365,7 @@ set up to save and restore the terminal screen contents when JOE starts and
 exits.
 <br>
 
-* notite
+* brpaste
 When JOE starts, send command to the terminal emulator that
 enables "bracketed paste mode" (but only if the terminal
 seems to have the ANSI command set).  In this mode, text
@@ -1246,7 +1246,8 @@ example, if __\\\[Tt]his__ is entered as the search string, then JOE finds
 both __This__ and __this__.  Ranges of characters can be entered within
 the brackets.  For example, __\\\[A-Z]__ finds any uppercase letter.  If
 the first character given in the brackets is __^__, then JOE tries to find
-any character not given in the the brackets.
+any character not given in the the brackets.  To include __-__ itself, include
+it as the last or first character (possibly after __^__).
 
 * __\\\\__
 
@@ -1270,6 +1271,15 @@ you give __"\\&"__, then JOE will put quote marks around words.
 
 These get replaced with the text which matched the Nth grouping; the text
 within the Nth set of \\( \\).
+
+* __\\l, \\u__
+
+Convert the next character of the repacement text to lowercase or uppercase.
+
+* __\\L, \\U__
+
+Convert all following replacement text to lowercase or uppercase.  Conversion
+stops when \\E is encountered.
 
 * __\\\\__
 
@@ -1340,43 +1350,54 @@ digit), \\p{Nl} (letter number) and \\p{No} (other number).
 
 * \\d
 
-This matches any Unicode digit.
+This matches any Unicode digit.  This is the same as \\p{Nd}.
 
 * \\D
 
-This matches anything except for a Unicode digit.
+This matches anything except for a Unicode digit.  This is the same as
+\\\[^\\p{Nd}].
 
 * \\w
 
-This matches any word character.
+This matches any word character.  This is the same as
+\\\[^\\p{C}\\p{P}\\p{Z}].
 
 * \\W
 
-This matches anything except for a word character.
+This matches anything except for a word character.  This is the same
+as \\\[\\p{C}\\p{P}\\p{Z}].
+ 
 
 * \\s
 
-This matches any space character.
+This matches any space character.  This is the same as
+\\\[\\t\\r\\f\\n\\p{Z}].
 
 * \\S
 
-This matches anything except for a spacing character.
+This matches anything except for a spacing character.  This is the
+same as \\\[^\\t\\r\\f\\n\\p{Z}].
+
 
 * \\i
 
-This matches an identifier start character.
+This matches an identifier start character.  This is the same as
+\\\[\\p{L}\\p{Pc}\\p{Nl}].
 
 * \\I
 
-This matches anything except for an identifier start character.
+This matches anything except for an identifier start character.  This is the
+same as \\\[^\\p{L}\\p{Pc}\\p{Nl}].
 
 * \\c
 
-This matches an identifier continuation character.
+This matches an identifier continuation character.  This is the same as
+\\\[\\i\\p{Mn}\\p{Mc}\\p{Nd}\\x{200c}\\x{200d}].
 
 * \\C
 
-This matches anything except for an identifier continuation character.
+This matches anything except for an identifier continuation character.  This
+is the same as \\\[^\\i\\p{Mn}\\p{Mc}\\p{Nd}\\x{200c}\\x{200d}].
 
 * \\t Tab
 * \\n Newline

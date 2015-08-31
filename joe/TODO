@@ -3,13 +3,11 @@ joe regex highlighter for search prompt?
 
 take ftyperc patch..
 
-
 need shell-like tab completion in compile/grep prompt
 
 it's annoying when search fails because charmap changed.
   it would be better if we tried to convert it..
   or at least ignore the problem for ASCII.
-
   also is previous search string in the correct charmap?
   what about history?
 
