@@ -1119,3 +1119,13 @@
 -syntax elixir
 -pound_comment
 -text_delimiters do=end
+
+ R
+*.r
+-autoindent
+-syntax elixir
+-pound_comment
+-smarthome
+-smartbacks
+-purify
+-single_quoted
