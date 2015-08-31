@@ -358,6 +358,7 @@ extern int bg_text;
 extern int env_lines;
 extern int env_columns;
 extern int notite;
+extern int brpaste;
 extern int nolinefeeds;
 extern int opt_usetabs;
 extern int assume_color;

@@ -154,6 +154,10 @@
 	* Quoted insert of TAB always inserts a TAB character, even when
 	  smart indent is enabled.
 
+	* Add options to control sending of bracketed paste mode command
+	  to terminal emulator (brpaste) and detection of paste by timing
+	  (pastehack).
+
 * jmacs fixes:
 	* ^X b / ^X ^B were reversed
 

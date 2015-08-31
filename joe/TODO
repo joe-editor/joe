@@ -1,5 +1,8 @@
 ceslide patch?
-joe regex highlighter.
+joe regex highlighter for search prompt?
+
+take ftyperc patch..
+
 
 need shell-like tab completion in compile/grep prompt
 
@@ -1265,3 +1268,6 @@ Added some more convenient classes:
 			\i - . 0-9 B7 0300-036F 203F-2040
 	\C	opposite
 [done]
+
+take brpaste disable patch
+[done- added brpaste mode]

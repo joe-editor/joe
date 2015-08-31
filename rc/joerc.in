@@ -185,6 +185,15 @@
 		mouse can be pasted into other application, and middle
 		button clicks paste into JOE).
 
+-brpaste	When JOE starts, send command to the terminal emulator that
+		enables "bracketed paste mode" (but only if the terminal
+		seems to have the ANSI command set).  In this mode, text
+		pasted into the window is bracketed with ESC [ 2 0 0 ~ and
+		ESC [ 2 0 1 ~.
+
+-pastehack	If keyboard input comes in as one block assume it's a mouse
+		paste and disable autoindent and wordwrap.
+
  -square	Rectangular block mode
 
  -text_color color

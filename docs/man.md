@@ -244,6 +244,12 @@ When set, enable guessing of UTF-8 files in
 non-UTF-8 locales.
 <br>
 
+* guess_utf16
+When set, enable guessing of UTF-16 files.  If a UTF-16BE or UTF-16LE file
+is detected, it is converted to UTF-8 during load, and converted back to
+UTF-16 during save.
+<br>
+
 * help
 When set, start off with the on-line help enabled.
 <br>
@@ -357,6 +363,19 @@ Disable selection menu for tags search with multiple results.
 Disable ti and te termcap sequences which are usually
 set up to save and restore the terminal screen contents when JOE starts and
 exits.
+<br>
+
+* notite
+When JOE starts, send command to the terminal emulator that
+enables "bracketed paste mode" (but only if the terminal
+seems to have the ANSI command set).  In this mode, text
+pasted into the window is bracketed with ESC \[ 2 0 0 ~ and
+ESC \[ 2 0 1 ~.
+<br>
+
+* pastehack
+If keyboard input comes in as one block assume it's a mouse
+paste and disable autoindent and wordwrap.
 <br>
 
 * noxon
@@ -937,15 +956,23 @@ directly to the terminal.
 
 ## Character sets and UTF-8
 
-JOE handles two classes of character sets: UTF-8 and byte coded (like
-ISO-8859-1).  It can not yet handle other major classes such as UTF-16 or
-GB2312. There are other restrictions: character sets must use LF (0x0A) or
-CR-LF (0x0D - 0x0A) as line terminators, space must be 0x20 and tab must be
-0x09. Basically, the files must be UNIX or MS-DOS compatible text files.
+JOE natively handles two classes of character sets: UTF-8 and byte coded
+(like ISO-8859-1).  For these character sets, the file is loaded as-is into
+memory, and is exactly preserved during save, even if it contains UTF-8
+coding errors.
+
+It can not yet natively handle other major classes such as UTF-16 or GB2312. 
+There are other restrictions: character sets must use LF (0x0A) or CR-LF
+(0x0D - 0x0A) as line terminators, space must be 0x20 and tab must be 0x09. 
+Basically, the files must be UNIX or MS-DOS compatible text files.
 
 This means EBCDIC will not work properly (but you would need to handle fixed
 record length lines anyway) and character sets which use CR terminated lines
 (MACs) will not yet work.
+
+JOE now supports UTF-16 (both big endian and little endian).  It supports
+UTF-16 by converting to UTF-8 during load, and converting back to UTF-16
+during save.
 
 The terminal and the file can have different encodings.  JOE will translate
 between the two.  Currently, one of the two must be UTF-8 for translation to
@@ -3339,8 +3366,13 @@ characters)</td></tr>
 <tr valign="top"><td>paste</td><td>Insert base64 encoded text (for XTerm --enable-base64
 option).</td></tr>
 
-<tr valign="top"><td>brpaste</td><td>Insert text until __Esc [ 2 0 1 ~__ has been received. 
-This is for bracketed paste support.</td></tr>
+<tr valign="top"><td>brpaste</td><td>Disable autoindent, wordwrap and
+spaces.  The idea is to bind this to __Esc [ 2 0 0 ~__ so that when the
+terminal emulator sends a mouse paste, the text is inserted as-is.</td></tr>
+
+<tr valign="top"><td>brpaste_done</td><td>Restore autoindent, wordwrap and
+spaces modes to their original values before brpaste.  The idea is to bind this
+to __Esc [ 2 0 1 ~__ so that these modes are restored after a mouse paste.</td></tr>
 
 </tbody>
 </table>

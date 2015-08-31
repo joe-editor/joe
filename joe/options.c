@@ -357,6 +357,8 @@ struct glopts {
 	{"columns",	1, &env_columns, NULL, 0, 0, 0, 0, 2, 1024 },
 	{"skiptop",	1, &skiptop, NULL, 0, 0, 0, 0, 0, 64 },
 	{"notite",	0, &notite, NULL, 0, 0, 0, 0, 0, 0 },
+	{"brpaste",	0, &brpaste, NULL, 0, 0, 0, 0, 0, 0 },
+	{"pastehack",	0, &pastehack, NULL, 0, 0, 0, 0, 0, 0 },
 	{"nolinefeeds",	0, &nolinefeeds, NULL, 0, 0, 0, 0, 0, 0 },
 	{"mouse",	0, &xmouse, NULL, 0, 0, 0, 0, 0, 0 },
 	{"usetabs",	0, &opt_usetabs, NULL, 0, 0, 0, 0, 0, 0 },

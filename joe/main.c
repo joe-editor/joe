@@ -16,6 +16,7 @@ int usexmouse=0;
 int xmouse=0;
 int nonotice;
 int noexmsg = 0;
+int pastehack;
 int help;
 
 Screen *maint;			/* Main edit screen */
@@ -123,6 +124,7 @@ int edloop(int flg)
 		int c;
 		int auto_off = 0;
 		int word_off = 0;
+		int spaces_off = 0;
 
 		if (exmsg && !flg) {
 			vsrm(exmsg);
@@ -162,16 +164,19 @@ int edloop(int flg)
 
 		/* leading part of backtick hack... */
 		/* should only do this if backtick is uquote, but you're not likely to get quick typeahead with ESC ' as uquote */
-		if (m && m->cmd && m->cmd->func == uquote && ttcheck()) {
+		if (pastehack && m && m->cmd && m->cmd->func == uquote && ttcheck()) {
 			m = type_backtick;
 		}
 
 		/* disable autoindent if it looks like a mouse paste... */
-		if (m && m->cmd && (m->cmd->func == utype || m->cmd->func == urtn) && (maint->curwin->watom->what & TYPETW) && (bw->o.autoindent || bw->o.wordwrap) && ttcheck()) {
+		if (pastehack && m && m->cmd && (m->cmd->func == utype || m->cmd->func == urtn) && (maint->curwin->watom->what & TYPETW) &&
+		    (bw->o.autoindent || bw->o.wordwrap || bw->o.spaces) && ttcheck()) {
 			auto_off = bw->o.autoindent;
 			bw->o.autoindent = 0;
 			word_off = bw->o.wordwrap;
 			bw->o.wordwrap = 0;
+			spaces_off = bw->o.spaces;
+			bw->o.spaces = 0;
 		}
 
 		if (maint->curwin->main && maint->curwin->main != maint->curwin) {
@@ -190,13 +195,13 @@ int edloop(int flg)
 
 		/* trailing part of backtick hack... */
 		/* for case where ` is very last character of pasted block */
-		while (!leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck() && havec == '`') {
+		while (pastehack && !leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck() && havec == '`') {
 			ttgetch();
 			ret = exemac(type_backtick, NO_MORE_DATA);
 		}
 
 		/* trailing part of disabled autoindent */
-		if (!leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck()) {
+		if (pastehack && !leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck()) {
 			if (ungot) {
 				c = ungotc;
 				ungot = 0;
@@ -205,14 +210,24 @@ int edloop(int flg)
 			goto more_no_auto;
 		}
 
-		if (auto_off) {
-			auto_off = 0;
-			bw->o.autoindent = 1;
-		}
+		/* Restore modes */
+		if (maint->curwin->watom->what & TYPETW) {
+			bw = (BW *)maint->curwin->object;
 
-		if (word_off) {
-			word_off = 0;
-			bw->o.wordwrap = 1;
+			if (auto_off) {
+				auto_off = 0;
+				bw->o.autoindent = 1;
+			}
+
+			if (word_off) {
+				word_off = 0;
+				bw->o.wordwrap = 1;
+			}
+
+			if (spaces_off) {
+				spaces_off = 0;
+				bw->o.spaces = 1;
+			}
 		}
 
 	}
