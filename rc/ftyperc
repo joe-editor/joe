@@ -1170,3 +1170,36 @@
 -smartbacks
 -purify
 -single_quoted
+
+ Clojure
+*.clj
+-autoindent
+-syntax clojure
+-semi_comment
+-smarthome
+-smartbacks
+-purify
+
+*.cljs
+-autoindent
+-syntax clojure
+-semi_comment
+-smarthome
+-smartbacks
+-purify
+
+*.cljc
+-autoindent
+-syntax clojure
+-semi_comment
+-smarthome
+-smartbacks
+-purify
+
+*.edn
+-autoindent
+-syntax clojure
+-semi_comment
+-smarthome
+-smartbacks
+-purify
