@@ -201,5 +201,6 @@ syntax/sh.jsf syntax/sieve.jsf syntax/skill.jsf syntax/sml.jsf
 syntax/spec.jsf syntax/sql.jsf syntax/tcl.jsf syntax/tex.jsf
 syntax/troff.jsf syntax/typescript.jsf syntax/verilog.jsf syntax/vhdl.jsf
 syntax/whitespace.jsf syntax/xml.jsf syntax/yaml.jsf syntax/filename.jsf
-syntax/avr.jsf syntax/r.jsf syntax/groovy.jsf syntax/clojure.jsf])
+syntax/avr.jsf syntax/r.jsf syntax/groovy.jsf syntax/clojure.jsf
+syntax/rust.jsf])
 AC_OUTPUT

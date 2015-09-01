@@ -1,0 +1,321 @@
+# JOE syntax highlight file for Rust
+
+=Idle
+=Comment	green
+=Shebang	yellow
+=Constant	cyan
+=Escape		bold cyan
+=Operator	bold
+=Keyword	bold
+=Bad		bold red
+=Var		yellow
+=Brace		magenta
+
+=ProcArg	#yellow
+=ClassMember	yellow #fg_310 # brown
+=GlobalVar	#yellow
+=ClassDecl	bold blue
+
+:pre_idle Idle
+	*		NULL		noeat call=.rust()
+
+.subr rust
+
+# #! allowed on first line
+
+:idle Idle
+	*		idle
+	"{}"		brace		recolor=-1
+	"0"		zero		recolor=-1
+	"1-9"		decimal		recolor=-1
+	"."		decimal_point	recolor=-1
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"/"		slash		recolor=-1
+	"\i"		ident		buffer
+	"b"		maybe_byte_string	buffer
+	"r"		maybe_raw_string	buffer
+
+:maybe_byte_string Idle
+	*		ident		noeat
+	"'"		char		recolor=-2
+	"\""		string		recolor=-2
+	"r"		maybe_byte_raw_string
+
+:maybe_raw_string Idle
+	*		ident		noeat
+	"#"		should_be_raw_string	recolor=-2
+
+:maybe_byte_raw_string Idle
+	*		ident		noeat
+	"#"		should_be_raw_string	recolor=-3
+
+:slash Constant
+	*		idle		noeat
+	"*"		comment			recolor=-2
+	"/"		line_comment	recolor=-2
+
+:brace Brace
+	*		idle		noeat
+
+:comment Comment
+	*		comment
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment
+	*		comment
+	"/"		idle
+	"*"		maybe_end_comment
+
+:line_comment Comment
+	*		line_comment
+	"\n"		idle
+
+# Numbers
+
+:bad_number Bad
+	*		idle	noeat
+	"0-9"		bad_number
+
+:zero Constant
+	*		idle	noeat
+	"b"		binary
+	"o"		octal
+	"x"		hex
+	"."		float
+	"eE"		epart
+	"0-9"		decimal	recolor=-1
+	"ui"		int_suffix
+	"f"		float_suffix
+
+:decimal_point Constant
+	*		idle	noeat	recolor=-2
+	"0-9"		float
+
+:octal Constant
+	*		idle	noeat
+	"0-7_"		octal
+	"89"		bad_number	recolor=-1
+	"ui"		int_suffix
+
+:binary Constant
+	*		idle	noeat
+	"01_"		binary
+	"2-9"		bad_number	recolor=-1
+	"ui"		int_suffix
+
+:hex Constant
+	*		idle	noeat
+	"0-9A-Fa-f_"	hex
+	"ui"		int_suffix
+
+:decimal Constant
+	*		idle	noeat
+	"0-9_"		decimal
+	"eE"		epart
+	"."		float
+	"ui"		int_suffix
+	"f"		float_suffix
+
+:float Constant
+	*		idle	noeat
+	"eE"		epart
+	"0-9_"		float
+	"ui"		int_suffix
+	"f"		float_suffix
+
+:epart Constant
+	*		idle	noeat
+	"0-9+\-"	enum
+
+:enum Constant
+	*		idle	noeat
+	"0-9_"		enum
+	"ui"		int_suffix
+	"f"		float_suffix
+
+:float_suffix Constant
+	*		bad_number	noeat	recolor=-1
+	"3"		float_suffix_1
+	"6"		float_suffix_2
+
+:float_suffix_1 Constant
+	*		bad_number	noeat	recolor=-1
+	"2"		idle
+
+:float_suffix_2 Constant
+	*		bad_number	noeat	recolor=-1
+	"4"		idle
+
+:int_suffix Constant
+	*		bad_number	noeat	recolor=-1
+	"3"		int_suffix_1
+	"6"		int_suffix_2
+	"s"		int_suffix_3
+
+:int_suffix_1 Constant
+	*		bad_number	noeat	recolor=-1
+	"2"		idle
+
+:int_suffix_2 Constant
+	*		bad_number	noeat	recolor=-1
+	"4"		idle
+
+:int_suffix_3 Constant
+	*		bad_number	noeat	recolor=-2
+	"i"		int_suffix_4
+
+:int_suffix_4 Constant
+	*		bad_number	noeat	recolor=-3
+	"z"		int_suffix_5
+
+:int_suffix_5 Constant
+	*		bad_number	noeat	recolor=-4
+	"e"		idle
+
+# strings like #"hello"#
+
+:should_be_raw_string Constant
+	*		idle	noeat
+	"\""		raw_string
+
+:raw_string Constant
+	*		raw_string
+	"\""		raw_string_maybe_done
+
+:raw_string_maybe_done Constant
+	*		raw_string	noeat
+	"#"		idle
+
+# strings like "hello"
+
+:string	Constant
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+
+:string_escape Escape
+	*		string
+	"x"		string_hex2
+	"u"		string_maybe_uni
+
+:string_maybe_uni Escape
+	*		string		noeat
+	"{"		string_uni
+
+:string_uni Escape
+	*		string_uni
+	"}"		string
+
+:string_hex2 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex1
+
+:string_hex1 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+# character constants like 'h'
+
+:char	Constant
+	*		char_done
+	"\\"		char_escape	recolor=-1
+
+:char_done Constant
+	*		idle		noeat recolor=-3
+	"\'"		idle
+
+:char_escape Escape
+	*		char_done	noeat
+	"x"		char_hex2
+	"u"		char_maybe_uni
+
+:char_maybe_uni Escape
+	*		char_done	noeat
+	"{"		char_uni
+
+:char_uni Escape
+	*		char_uni
+	"}"		char_done
+
+:char_hex2 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_hex1
+
+:char_hex1 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char
+
+# Identifiers
+
+:ident Idle
+	*		idle	noeat strings
+	"abstract"	kw
+	"alignof"	kw
+	"as"		operator
+	"become"	kw
+	"box"		kw
+	"break"		kw
+	"const"		kw
+	"continue"	kw
+	"crate"		kw
+	"do"		kw
+	"else"		kw
+	"enum"		kw
+	"extern"	kw
+	"false"		lit
+	"final"		kw
+	"fn"		kw
+	"for"		kw
+	"if"		kw
+	"impl"		kw
+	"in"		operator
+	"let"		kw
+	"loop"		kw
+	"macro"		kw
+	"match"		kw
+	"mod"		kw
+	"move"		kw
+	"mut"		kw
+	"offsetof"	kw
+	"override"	kw
+	"priv"		kw
+	"proc"		kw
+	"pub"		kw
+	"pure"		kw
+	"ref"		kw
+	"return"	kw
+	"Self"		kw
+	"self"		kw
+	"sizeof"	kw
+	"static"	kw
+	"struct"	kw
+	"super"		kw
+	"trait"		kw
+	"true"		lit
+	"type"		kw
+	"typeof"	kw
+	"unsafe"	kw
+	"unsized"	kw
+	"use"		kw
+	"virtual"	kw
+	"where"		kw
+	"while"		kw
+	"yield"		kw
+done
+	"\c"	ident
+
+:kw Keyword
+	*		idle		noeat
+
+:lit Constant
+	*		idle		noeat
+
+:operator Operator
+	*		idle		noeat
+
+:global_var GlobalVar
+	*		idle		noeat
+	"\c"		global_var
+
+.end

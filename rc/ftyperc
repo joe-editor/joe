@@ -1203,3 +1203,14 @@
 -smarthome
 -smartbacks
 -purify
+
+ Rust
+*.rs
+-autoindent
+-syntax rust
+-c_comment
+-cpp_comment
+-smarthome
+-smartbacks
+-purify
+-single_quoted
