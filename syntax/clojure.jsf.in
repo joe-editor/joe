@@ -1339,13 +1339,14 @@ done
 	*		idle		noeat
 
 # Look for #_x, treat as comment
+# For example #_(a b c) should be all commented out
 
 :pound Idle
 	*		idle		noeat
 	"_"		pound_eat	recolor=-2
 
 :pound_eat Comment
-	*		idle
+	*		idle		noeat
 
 :comment Comment
 	*		comment
