@@ -1123,8 +1123,49 @@
  R
 *.r
 -autoindent
--syntax elixir
+-syntax r
 -pound_comment
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+
+ Groovy
+*.gvy
+-autoindent
+-syntax groovy
+-c_comment
+-cpp_comment
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+
+*.groovy
+-autoindent
+-syntax groovy
+-c_comment
+-cpp_comment
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+
+*.gy
+-autoindent
+-syntax groovy
+-c_comment
+-cpp_comment
+-smarthome
+-smartbacks
+-purify
+-single_quoted
+
+*.gsh
+-autoindent
+-syntax groovy
+-c_comment
+-cpp_comment
 -smarthome
 -smartbacks
 -purify

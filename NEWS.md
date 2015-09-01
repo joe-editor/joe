@@ -4,6 +4,12 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* New syntax files for the following languages: 
+	* Groovy, R
+
+* New translations
+	* Chinese (zh_TW)
+
 * UTF-16 support
 
 	* JOE can now edit UTF-16BE and UTF-16LE files.  It does this
