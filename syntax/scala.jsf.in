@@ -1,0 +1,325 @@
+# JOE syntax highlight file for JAVA
+
+=Idle
+=Comment 	green
+=Constant 	cyan
+=Escape 	bold cyan
+=Type 		bold
+=Keyword 	bold
+=Operator	bold
+=Bad		bold red
+=Brace		magenta
+=Control	
+
+=Methods
+
+:begin Idle
+	*	begin	noeat call=.scala()
+
+.subr scala
+
+:idle Idle
+	*		idle
+	"\n"		idle
+	"/"		slash
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal		recolor=-1
+	"."		maybe_float
+	"\""		maybe_string	recolor=-1
+	"'"		char		recolor=-1
+	"\i\p{Sc}"	ident		mark buffer
+	"{}"		brace		recolor=-1
+	",:;=()><[]*&|!~+\-%^"	control	recolor=-1
+
+:maybe_done Control
+	*		idle		noeat
+	"/"		idle		noeat return recolor=-2
+
+:brace Brace
+	*		idle		noeat
+
+:control Control
+	*		idle		noeat
+
+:slash Idle
+	*		idle		noeat
+	"*"		comment		recolor=-2
+	"/"		line_comment	recolor=-2
+
+:comment Comment
+	*		comment
+	# might be TODO label
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment
+	*		comment		noeat
+	"/"		idle
+	"*"		maybe_end_comment
+
+:line_comment Comment
+	*		line_comment
+	# might be TODO label
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		idle
+
+:first_digit Constant
+	*		idle		noeat
+	"lLfF"		idle
+	"xX"		hex
+	"."		float
+	"eE"		epart
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+
+:bad_number Bad
+	*		idle		noeat
+	"0-9"		bad_number
+
+:octal Constant
+	*		idle		noeat
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+	"lL"		idle
+
+:hex Constant
+	*		idle		noeat
+	"0-9A-Fa-f"	hex
+	"lL"		idle
+
+:decimal Constant
+	*		idle		noeat
+	"0-9"		decimal
+	"lLfF"		idle
+	"eE"		epart
+	"."		float
+
+:maybe_float Constant
+	*		idle		recolor=-2 noeat
+	"\i\p{Sc}"	not_ident	recolor=-2
+	"0-9"		float		recolor=-2
+
+:not_ident Idle
+	*		idle		noeat
+	"\c\p{Sc}"	not_ident
+
+:float Constant
+	*		idle		noeat
+	"eE"		epart
+	"0-9"		float
+	"fFlL"		idle
+
+:epart Constant
+	*		idle		noeat
+	"0-9+\-"	enum
+
+:enum Constant
+	*		idle		noeat
+	"0-9"		enum
+	"fFlL"		idle
+
+:maybe_string Constant
+	*		string		noeat
+	"\""		maybe_string_1
+
+:maybe_string_1 Constant
+	*		idle		noeat
+	"\""		stringstring
+
+:string	Constant
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+	"%"		string_control	recolor=-1
+
+:string_escape Escape
+	*		string
+	"u"		string_uni1
+	"0-7"		string_octal2
+	"\n"		string		recolor=-2
+
+:string_uni1 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_uni2
+
+:string_uni2 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_uni3
+
+:string_uni3 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_uni4
+
+:string_uni4 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 Escape
+	*		string		noeat
+	"0-7"		string_octal3
+
+:string_octal3 Escape
+	*		string		noeat
+	"0-7"		string
+
+:string_control Escape
+	*		string_control
+	"\n"		idle
+	"\""		string		noeat
+ 	"diouxXeEfFgGaAcspn%SCM"	string
+
+:stringstring	Constant
+	*		stringstring
+	"\""		stringstring_1
+	"\\"		stringstring_escape	recolor=-1
+	"%"		stringstring_control	recolor=-1
+
+:stringstring_1 Constant
+	*		stringstring	noeat
+	"\""		stringstring_2
+
+:stringstring_2 Constant
+	*		stringstring	noeat
+	"\""		idle
+
+:stringstring_escape Escape
+	*		stringstring
+	"u"		stringstring_uni1
+	"0-7"		stringstring_octal2
+	"\n"		stringstring		recolor=-2
+
+:stringstring_uni1 Escape
+	*		stringstring		noeat
+	"0-9a-fA-F"	stringstring_uni2
+
+:stringstring_uni2 Escape
+	*		stringstring		noeat
+	"0-9a-fA-F"	stringstring_uni3
+
+:stringstring_uni3 Escape
+	*		stringstring		noeat
+	"0-9a-fA-F"	stringstring_uni4
+
+:stringstring_uni4 Escape
+	*		stringstring		noeat
+	"0-9a-fA-F"	stringstring
+
+:stringstring_octal2 Escape
+	*		stringstring		noeat
+	"0-7"		stringstring_octal3
+
+:stringstring_octal3 Escape
+	*		stringstring		noeat
+	"0-7"		stringstring
+
+:stringstring_control Escape
+	*		stringstring_control
+	"\n"		idle
+	"\""		stringstring	noeat
+	"diouxXeEfFgGaAcspn%SCM"	stringstring
+
+:char Constant
+	*		char_done
+	"'"		idle
+	"\\"		char_escape	recolor=-1
+
+:char_done Constant
+	*		idle		noeat recolor=-3
+	"\'"		idle
+
+:char_escape	Escape
+	*		char_done
+	"u"		char_uni1
+	"0-7"		char_octal2
+
+:char_uni1 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_uni2
+
+:char_uni2 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_uni3
+
+:char_uni3 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_uni4
+
+:char_uni4 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_done
+
+:char_octal2 Escape
+	*		char_done	noeat
+	"0-7"		char_octal3
+
+:char_octal3 Escape
+	*		char_done	noeat
+	"0-7"		char_done
+
+:ident Idle
+	*		ident_end	noeat markend strings
+	"abstract"	kw
+	"case"		kw
+	"catch"		kw
+	"class"		kw
+	"def"		kw
+	"do"		kw
+	"else"		kw
+	"false"		lit
+	"final"		kw
+	"finally"	kw
+	"for"		kw
+	"forSome"	kw
+	"if"		kw
+	"implicit"	kw
+	"import"	kw
+	"lazy"		kw
+	"match"		kw
+	"new"		operator
+	"null"		lit
+	"object"	kw
+	"override"	kw
+	"package"	kw
+	"private"	kw
+	"protected"	kw
+	"return"	kw
+	"sealed"	kw
+	"super"		kw
+	"this"		kw
+	"throw"		kw
+	"trait"		kw
+	"try"		kw
+	"true"		lit
+	"type"		kw
+	"val"		kw
+	"var"		kw
+	"while"		kw
+	"with"		kw
+	"yield"		kw
+done
+	"\c\p{Sc}"	ident
+
+:type Type
+	*		idle		noeat
+
+:kw Keyword
+	*		idle		noeat
+
+:bad_kw Bad
+	*		idle		noeat
+
+:lit Constant
+	*		idle		noeat
+
+:operator Operator
+	*		idle		noeat
+
+:ident_end Idle
+	*		idle		noeat
+	" "		ident_end
+	"("		method_end	noeat recolormark
+
+:method_end Methods
+	*		idle		noeat
+
+.end

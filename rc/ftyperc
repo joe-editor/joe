@@ -1224,3 +1224,14 @@
 -smartbacks
 -purify
 -single_quoted
+
+ Scala
+*.scala
+-autoindent
+-syntax scala
+-c_comment
+-cpp_comment
+-smarthome
+-smartbacks
+-purify
+-single_quoted
