@@ -1,3 +1,6 @@
+Update ruby based on what we learned for coffeescript: call=.ruby when we
+have subst.  Check them all for this.
+
 ceslide patch?
 joe regex highlighter for search prompt?
 

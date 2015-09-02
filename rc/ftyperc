@@ -1214,3 +1214,13 @@
 -smartbacks
 -purify
 -single_quoted
+
+ Coffeescript
+*.coffee
+-autoindent
+-syntax coffee
+-pound_comment
+-smarthome
+-smartbacks
+-purify
+-single_quoted
