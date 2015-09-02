@@ -1235,3 +1235,14 @@
 -smartbacks
 -purify
 -single_quoted
+
+ Swift
+*.swift
+-autoindent
+-syntax swift
+-c_comment
+-cpp_comment
+-smarthome
+-smartbacks
+-purify
+-single_quoted

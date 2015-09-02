@@ -1,0 +1,288 @@
+# JOE syntax highlight file for Switch
+
+# node = a.b.c /\s+/ seems to be allowed, foo
+# need to recognize ... and ..
+# include - as part of number?
+
+# after term: it's a regex if
+
+# suppress literals after .
+
+=Idle
+=Comment	green
+=Constant	cyan
+=Escape		bold cyan
+=Operator	bold
+=Keyword	bold
+=Bad		bold red
+=Rsvd
+
+:pre_idle Idle
+	*		NULL		noeat call=.swift()
+
+.subr swift
+
+:idle Idle
+	*		idle
+	"("		idle		call=.swift(paren)
+	"["		idle		call=.swift(brack)
+	"{"		idle		call=.swift(squiggly)
+.ifdef paren
+	")"		idle		return
+.else
+	")"		stray		recolor=-1
+.endif
+.ifdef brack
+	"]"		idle		return
+.else
+	"]"		stray		recolor=-1
+.endif
+.ifdef squiggly
+	"}"		idle		return
+.else
+	"}"		stray		recolor=-1
+.endif
+	"0"		zero		recolor=-1
+	"1-9"		decimal		recolor=-1
+	"."		decimal_point	recolor=-1
+	"\""		string		recolor=-1
+	"/"		slash		recolor=-1
+	"@$\i"		ident		buffer
+
+:stray Bad
+	*		idle
+
+# Comments
+
+:slash Comment
+	*		idle		noeat recolor=-2
+	"/"		line_comment
+	"*"		idle		call=.block_comment()
+
+:line_comment Comment
+	*		line_comment
+	"\n"		idle
+
+# Numbers
+
+:bad_number Bad
+	*		idle	noeat
+	"0-9"		bad_number
+
+:zero Constant
+	*		idle	noeat
+	"b"		binary
+	"o"		octal
+	"x"		hex
+	"."		maybe_float
+	"eE"		epart
+	"0-9_"		decimal	recolor=-1
+
+:decimal_point Constant
+	*		idle	noeat	recolor=-2
+	"."		decimal_point_1	recolor=-2
+	"\i"		not_ident	recolor=-2
+	"0-9_"		float
+
+:not_ident Idle
+	*		idle	noeat
+	"\c"		not_ident
+
+:decimal_point_1 Idle
+	*		idle		noeat
+	"."		idle
+
+:octal Constant
+	*		idle	noeat
+	"0-7_"		octal
+	"89"		bad_number	recolor=-1
+
+:binary Constant
+	*		idle	noeat
+	"01_"		binary
+	"2-9"		bad_number	recolor=-1
+
+:hex Constant
+	*		idle	noeat
+	"0-9A-Fa-f_"	hex
+	"."		hexfloat
+	"pP"		ppart
+
+:hexfloat Constant
+	*		idle	noeat
+	"0-9A-Fa-f_"	hexfloat
+	"pP"		ppart
+
+:ppart Constant
+	*		idle	noeat
+	"0-9+\-"	pnum
+
+:pnum Constant
+	*		idle	noeat
+	"0-9_"		pnum
+
+:decimal Constant
+	*		idle	noeat
+	"0-9_"		decimal
+	"eE"		epart
+	"."		maybe_float
+
+:maybe_float Constant
+	*		idle	noeat recolor=-2
+	"."		decimal_point_1	recolor=-2
+	"eE"		epart
+	"0-9_"		float
+
+:float Constant
+	*		idle	noeat
+	"eE"		epart
+	"0-9_"		float
+
+:epart Constant
+	*		idle	noeat
+	"0-9+\-"	enum
+
+:enum Constant
+	*		idle	noeat
+	"0-9_"		enum
+
+# Strings
+
+:string	Constant
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+
+:string_escape Escape
+	*		string
+	"("		string	call=.swift(paren)	recolor=-2
+	"u"		string_maybe_uni
+
+:string_maybe_uni Escape
+	*		string
+	"{"		string_uni
+
+:string_uni Escape
+	*		string_uni
+	"}"		string
+
+# Identifiers
+
+:ident Idle
+	*		idle	noeat strings
+	"class"			kw
+	"deinit"		kw
+	"enum"			kw
+	"extension"		kw
+	"func"			kw
+	"import"		kw
+	"init"			kw
+	"inout"			kw
+	"internal"		kw
+	"let"			kw
+	"operator"		kw
+	"private"		kw
+	"protocol"		kw
+	"public"		kw
+	"static"		kw
+	"struct"		kw
+	"subscript"		kw
+	"typealias"		kw
+	"var"			kw
+	"break"			kw
+	"case"			kw
+	"continue"		kw
+	"default"		kw
+	"defer"			kw
+	"do"			kw
+	"else"			kw
+	"fallthrough"		kw
+	"for"			kw
+	"guard"			kw
+	"if"			kw
+	"in"			kw
+	"repeat"		kw
+	"return"		kw
+	"switch"		kw
+	"where"			kw
+	"while"			kw
+	"as"			kw
+	"catch"			kw
+	"dynamicType"		kw
+	"false"			lit
+	"is"			kw
+	"nil"			lit
+	"rethrows"		kw
+	"super"			kw
+	"self"			kw
+	"Self"			kw
+	"throw"			kw
+	"throws"		kw
+	"true"			lit
+	"try"			kw
+	"__COLUMN__"		kw
+	"__FILE__"		kw
+	"__FUNCTION__"		kw
+	"__LINE__"		kw
+	"_"			kw
+	"associativity"		rsvd
+	"convenience"		rsvd
+	"dynamic"		rsvd
+	"didSet"		rsvd
+	"final"			rsvd
+	"get"			rsvd
+	"infix"			rsvd
+	"indirect"		rsvd
+	"lazy"			rsvd
+	"left"			rsvd
+	"mutating"		rsvd
+	"none"			rsvd
+	"nonmutating"		rsvd
+	"optional"		rsvd
+	"override"		rsvd
+	"postfix"		rsvd
+	"precedence"		rsvd
+	"prefix"		rsvd
+	"Protocol"		rsvd
+	"required"		rsvd
+	"right"			rsvd
+	"set"			rsvd
+	"Type"			rsvd
+	"unowned"		rsvd
+	"weak"			rsvd
+	"willSet"		rsvd
+done
+	"$\c"	ident
+
+:kw Keyword
+	*		idle			noeat
+
+:rsvd Rsvd
+	*		idle			noeat
+
+:lit Constant
+	*		idle		noeat
+
+:operator Operator
+	*		idle			noeat
+
+.end
+
+# Recursive block comments
+
+.subr block_comment
+
+:idle Comment
+	*		idle
+	"*"		maybe_done
+	"/"		maybe_recur
+
+:maybe_done Comment
+	*		idle	noeat
+	"/"		idle	return
+
+:maybe_recur Comment
+	*		idle	noeat
+	"*"		idle	call=.block_comment()
+
+.end
