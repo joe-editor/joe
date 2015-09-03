@@ -1,6 +1,10 @@
 Update ruby based on what we learned for coffeescript: call=.ruby when we
 have subst.  Check them all for this.
 
+Match []  {} () in all syntaxes?
+When we call, we do not seem to do recolor..  should we?  (see d.jsf: we
+have to add an extra state for coloring..)
+
 ceslide patch?
 joe regex highlighter for search prompt?
 

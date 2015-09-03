@@ -22,7 +22,8 @@
 	*		idle
 	"("		idle		call=.d(paren)
 	"["		idle		call=.d(brack)
-	"{"		brace		recolor=-1 call=.d(squiggly)
+	"{"		do_brace	recolor=-1 noeat
+#	"{"		brace		recolor=-1 call=.d(squiggly)
 .ifdef paren
 	")"		idle		return
 .else
@@ -52,15 +53,19 @@
 	"q"		maybe_qstring	recolor=-1 mark buffer
 	"`"		bstring		recolor=-1
 
+:do_brace Brace
+	*		idle		noeat
+	"{"		brace		call=.d(squiggly)
+
+:brace Brace
+	*		idle		noeat
+
 :stray Bad
 	*		idle		noeat
 
 :maybe_done Control
 	*		idle		noeat
 	"/"		idle		noeat return recolor=-2
-
-:brace Brace
-	*		idle		noeat
 
 :control Control
 	*		idle		noeat
