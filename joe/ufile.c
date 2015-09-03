@@ -510,7 +510,7 @@ int usave(W *w, int k)
 	BW *pbw;
 	WIND_BW(bw, w);
 	
-	pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist, dosave1, "Names", NULL, cmplt,
+	pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out,
 	            mksavereq(NULL,NULL,NULL, 1, 0), NULL, locale_map, bw->b->name ? 1 : 7);
 
 	if (pbw && bw->b->name) {
@@ -542,7 +542,7 @@ int ublksave(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (markb && markk && markb->b == markk->b && (markk->byte - markb->byte) > 0 && (!square || piscol(markk) > piscol(markb))) {
-		if (wmkpw(bw->parent, joe_gettext(_("Name of file to write (^C to abort): ")), &filehist, dosave1, "Names", NULL, cmplt, mksavereq(NULL, NULL, NULL, 0, 1), NULL, locale_map, 3)) {
+		if (wmkpw(bw->parent, joe_gettext(_("Name of file to write (^C to abort): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out, mksavereq(NULL, NULL, NULL, 0, 1), NULL, locale_map, 3)) {
 			return 0;
 		} else {
 			return -1;
@@ -712,7 +712,7 @@ static int dosetcd(W *w, char *s, void *obj, int *notify)
 		*notify = 1;
 	}
 	if (s[0])
-		set_current_dir(bw, s, 1);
+		set_current_dir(bw, s = dequotevs(s), 1);
 	joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Directory prefix set to %s")), s);
 	msgnw(bw->parent, msgbuf);
 	vsrm(s);
@@ -731,7 +731,7 @@ int okrepl(BW *bw)
 
 int uedit(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("Name of file to edit (^C to abort): ")), &filehist, doedit, "Names", NULL, cmplt, NULL, NULL, locale_map,7)) {
+	if (wmkpw(w, joe_gettext(_("Name of file to edit (^C to abort): ")), &filehist, doedit, "Names", NULL, cmplt_file_in, NULL, NULL, locale_map,7)) {
 		return 0;
 	} else {
 		return -1;
@@ -742,7 +742,7 @@ int usetcd(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	if (wmkpw(bw->parent, joe_gettext(_("Set current directory (^C to abort): ")), &filehist, dosetcd, "Names", NULL, cmplt, NULL, NULL, locale_map,7)) {
+	if (wmkpw(bw->parent, joe_gettext(_("Set current directory (^C to abort): ")), &filehist, dosetcd, "Names", NULL, cmplt_file, NULL, NULL, locale_map,7)) {
 		return 0;
 	} else {
 		return -1;
@@ -757,7 +757,7 @@ int doswitch(W *w, char *s, void *obj, int *notify)
 
 int uswitch(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("Name of buffer to edit (^C to abort): ")), &filehist, doswitch, "Names", NULL, cmplt, NULL, NULL, locale_map,1)) {
+	if (wmkpw(w, joe_gettext(_("Name of buffer to edit (^C to abort): ")), &filehist, doswitch, "Names", NULL, cmplt_file_in, NULL, NULL, locale_map,1)) {
 		return 0;
 	} else {
 		return -1;
@@ -891,9 +891,22 @@ static int doscratchpush(W *w, char *s, void *obj, int *notify)
 	return ret;
 }
 
+char **sbufs = NULL;	/* Array of command names */
+
+static int bufedcmplt(BW *bw, int k)
+{
+	if (sbufs) {
+		varm(sbufs);
+		sbufs = 0;
+	}
+	if (!sbufs)
+		sbufs = getbufs();
+	return simple_cmplt(bw,sbufs);
+}
+
 int uscratch(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, doscratch, "Names", NULL, cmplt, NULL, NULL, locale_map, 1)) {
+	if (wmkpw(w, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, doscratch, "Names", NULL, bufedcmplt, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;
@@ -902,7 +915,7 @@ int uscratch(W *w, int k)
 
 int uscratch_push(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, doscratchpush, "Names", NULL, cmplt, NULL, NULL, locale_map, 1)) {
+	if (wmkpw(w, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, doscratchpush, "Names", NULL, bufedcmplt, NULL, NULL, locale_map, 0)) {
 		return 0;
 	} else {
 		return -1;
@@ -1020,7 +1033,7 @@ int upbuf(W *w, int k)
 
 int uinsf(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("Name of file to insert (^C to abort): ")), &filehist, doinsf, "Names", NULL, cmplt, NULL, NULL, locale_map, 3)) {
+	if (wmkpw(w, joe_gettext(_("Name of file to insert (^C to abort): ")), &filehist, doinsf, "Names", NULL, cmplt_file_in, NULL, NULL, locale_map, 3)) {
 		return 0;
 	} else {
 		return -1;
@@ -1057,7 +1070,7 @@ int uexsve(W *w, int k)
 		return dosave1(bw->parent, vsncpy(NULL, 0, sz(bw->b->name)), mksavereq(exdone,NULL,NULL,0,0), NULL);
 	} else {
 		BW *pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist,
-		                dosave1, "Names", NULL, cmplt,
+		                dosave1, "Names", NULL, cmplt_file_out,
 		                mksavereq(exdone,NULL,NULL,1,0), NULL, locale_map, 1);
 
 		if (pbw && bw->b->name) {
@@ -1223,19 +1236,6 @@ int ubufed(W *w, int k)
 
 #endif
 
-char **sbufs = NULL;	/* Array of command names */
-
-static int bufedcmplt(BW *bw, int k)
-{
-	if (sbufs) {
-		varm(sbufs);
-		sbufs = 0;
-	}
-	if (!sbufs)
-		sbufs = getbufs();
-	return simple_cmplt(bw,sbufs);
-}
-
 static int dobufed(W *w, char *s, void *object, int *notify)
 {
 /* not understanding this...
@@ -1271,7 +1271,7 @@ static int doquerysave(W *w,int c,void *obj,int *notify)
 			return dosave1(bw->parent, vsncpy(NULL,0,sz(bw->b->name)), req, notify);
 		else {
 			BW *pbw;
-			pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist, dosave1, "Names", NULL, cmplt, req, notify, locale_map, 7);
+			pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out, req, notify, locale_map, 7);
 
 			if (pbw) {
 				return 0;

@@ -2202,6 +2202,38 @@ P *binsm(P *p, const char *blk, ptrdiff_t amnt)
 	return p;
 }
 
+/* Quoted insert */
+
+P *binsmq(P *p, const char *blk, ptrdiff_t amnt)
+{
+	P *q = pdup(p, "binsmq");
+	ptrdiff_t x, y;
+	for (y = 0; y != amnt; y = x) {
+		for (x = y; x != amnt; ++x) {
+			if (blk[x] == ' ' || blk[x] == '\t' || blk[x] == '\\')
+				break;
+		}
+		if (x != y) {
+			binsm(q, blk + y, x - y);
+			pfwrd(q, x - y);
+		}
+		if (x != amnt) {
+			if (blk[x] == ' ')
+				binsm(q, "\\ ", 2);
+			else if (blk[x] == '\t')
+				binsm(q, "\\\t", 2);
+			else
+				binsm(q, "\\\\", 2);
+			pfwrd(q, 2);
+			++x;
+		} else {
+			break;
+		}
+	}
+	prm(q);
+	return p;
+}
+
 /* insert byte 'c' at 'p' */
 P *binsbyte(P *p, char c)
 {
@@ -2634,7 +2666,7 @@ B *bload(const char *s)
 	if (n[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		fi = popen(dequote(n + 1), "r");
+		fi = popen(n + 1, "r");
 	} else
 #endif
 	if (!zcmp(n, "-")) {
@@ -3063,7 +3095,7 @@ int bsave(P *p, const char *as, off_t size, int flag)
 	if (s[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		f = popen(dequote(s + 1), "w");
+		f = popen(s + 1, "w");
 	} else
 #endif
 	if (s[0] == '>' && s[1] == '>')

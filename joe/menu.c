@@ -709,6 +709,8 @@ char *mcomplete(MENU *m)
 
 	if (!m->nitems)
 		return vstrunc(NULL, 0);
+	if (m->nitems == 1 && !zcmp(m->list[0], "../"))
+		return vstrunc(NULL, 0);
 	com = vsncpy(NULL, 0, sz(m->list[0]));
 	for (x = 1; x != m->nitems; ++x)
 		com = cull(com, m->list[x]);

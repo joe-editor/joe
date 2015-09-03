@@ -236,6 +236,9 @@ P *binsb(P *p, B *b);
 /* insert a block 'blk' of size 'amnt' into buffer at 'p' */
 P *binsm(P *p, const char *blk, ptrdiff_t amnt); 
 
+/* Quoted insert.. */
+P *binsmq(P *p, const char *blk, ptrdiff_t amnt); 
+
 /* insert character 'c' into buffer at 'p' */
 P *binsc(P *p, int c);
 

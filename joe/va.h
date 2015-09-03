@@ -230,6 +230,9 @@ aELEMENT *_vaset(aELEMENT *vary, ptrdiff_t pos, aELEMENT el);
  */
 aELEMENT *vasort(aELEMENT *ary, ptrdiff_t len);
 
+/* Eliminate duplicates from a sorted array */
+void vauniq(aELEMENT *ary);
+
 /* aELEMENT *vawords(aELEMENT *a, char *s, int len, char *sep, int seplen);
  * Generate list of strings out of words in 's' seperated with the characters
  * in 'sep'.  The characters in 'sep' must be sorted.

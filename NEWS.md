@@ -150,6 +150,13 @@
 	  stuck waiting for the bracketed paste end string.
 
 * Minor enhancements
+	* Tab completion now works for the command after '!' in file
+	  prompts.  Tab completion now works for the filename after '>>' in
+	  file write prompts.
+
+	* Tab completion now handles directory and files names with spaces
+	  in them.
+
 	* Backspace now jumps back to parent menu in ^T submenus (and
 	  remembers the cursor position within the parent)
 
@@ -179,6 +186,7 @@
 	  search when wrap is enabled (which is the case in jmacs).
 
 * ESC g (grep/find) and ESC c (compile) improvements
+	* Tab completion now works for the command and its arguments
 
 	* Change to the current directory before running the command
 

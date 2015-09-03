@@ -171,6 +171,37 @@ aELEMENT *vasort(aELEMENT *ary, ptrdiff_t len)
 	return ary;
 }
 
+void vadel(aELEMENT *ary, ptrdiff_t ofst, ptrdiff_t len)
+{
+	if (ary && ofst < aLen(ary)) {
+		ptrdiff_t x;
+		if (ofst + len > aLen(ary))
+			len = aLen(ary) - ofst;
+		for (x = ofst; x < ofst + len; ++x)
+			adel(ary[x]);
+		if (aLen(ary) - (ofst + len))
+			mmove(ary + ofst, ary + ofst + len, (aLen(ary) - (ofst + len)) * SIZEOF(aELEMENT));
+		aLen(ary) -= len;
+		ary[aLen(ary)] = 0;
+	}
+}
+
+void vauniq(aELEMENT *ary)
+{
+	if (ary) {
+		ptrdiff_t x;
+		ptrdiff_t len = aLen(ary);
+		for (x = 0; x < len - 1; ++x) {
+			ptrdiff_t y;
+			for (y = x + 1;y < len; ++y)
+				if (acmp(ary[x], ary[y]))
+					break;
+			vadel(ary, x + 1, y - (x + 1));
+			len -= y - (x + 1);
+		}
+	}
+}
+
 aELEMENT *vawords(aELEMENT *a, const char *s, ptrdiff_t len, const char *sep, ptrdiff_t seplen)
 {
 	ptrdiff_t x;
