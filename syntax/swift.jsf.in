@@ -1,12 +1,4 @@
-# JOE syntax highlight file for Switch
-
-# node = a.b.c /\s+/ seems to be allowed, foo
-# need to recognize ... and ..
-# include - as part of number?
-
-# after term: it's a regex if
-
-# suppress literals after .
+# JOE syntax highlight file for Swift
 
 =Idle
 =Comment	green

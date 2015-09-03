@@ -1246,3 +1246,14 @@
 -smartbacks
 -purify
 -single_quoted
+
+ D
+*.d
+-autoindent
+-syntax d
+-c_comment
+-cpp_comment
+-smarthome
+-smartbacks
+-purify
+-single_quoted

@@ -5,7 +5,7 @@
 ### JOE.next (not yet released changes in Mercurial)
 
 * New or improved syntax files for the following languages: 
-	* Groovy, R, Clojure, Rust, Coffeescript, Java, Scala, Swift
+	* Groovy, R, Clojure, Rust, Coffeescript, Java, Scala, Swift, D
 
 * New translations
 	* Chinese (zh_TW)

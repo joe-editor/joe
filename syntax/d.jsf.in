@@ -1,0 +1,532 @@
+# JOE syntax highlight file for D
+
+=Idle
+=Comment 	green
+=Constant 	cyan
+=Escape 	bold cyan
+=Type 		bold
+=Keyword 	bold
+=Operator	bold
+=Bad		bold red
+=Brace		magenta
+=Control	
+
+=Methods
+
+:begin Idle
+	*	begin	noeat call=.d()
+
+.subr d
+
+:idle Idle
+	*		idle
+	"("		idle		call=.d(paren)
+	"["		idle		call=.d(brack)
+	"{"		brace		recolor=-1 call=.d(squiggly)
+.ifdef paren
+	")"		idle		return
+.else
+	")"		stray		recolor=-1
+.endif
+.ifdef brack
+	"]"		idle		return
+.else
+	"]"		stray		recolor=-1
+.endif
+.ifdef squiggly
+	"}"		brace		recolor=-1 return
+.else
+	"}"		stray		recolor=-1
+.endif
+	"\n"		idle
+	"/"		slash
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal		recolor=-1
+	"."		maybe_float
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"\i"		ident		mark buffer
+	",:;=><*&|!~+\-%^"	control	recolor=-1
+	"r"		maybe_rstring	mark buffer
+	"x"		maybe_xstring	mark buffer
+	"q"		maybe_qstring	recolor=-1 mark buffer
+	"`"		bstring		recolor=-1
+
+:stray Bad
+	*		idle		noeat
+
+:maybe_done Control
+	*		idle		noeat
+	"/"		idle		noeat return recolor=-2
+
+:brace Brace
+	*		idle		noeat
+
+:control Control
+	*		idle		noeat
+
+:slash Idle
+	*		idle		noeat
+	"*"		comment		recolor=-2
+	"+"		idle		recolor=-2 call=.block_comment()
+	"/"		line_comment	recolor=-2
+
+:comment Comment
+	*		comment
+	# might be TODO label
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment
+	*		comment		noeat
+	"/"		idle
+	"*"		maybe_end_comment
+
+:line_comment Comment
+	*		line_comment
+	# might be TODO label
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		idle
+
+:int_postfix Constant
+	*		idle		noeat
+	"uU"		int_postfix_1
+	"L"		int_postfix_2
+
+:int_postfix_1 Constant
+	*		idle		noeat
+	"L"		idle
+
+:int_postfix_2 Constant
+	*		idle		noeat
+	"uU"		idle
+
+:float_postfix Constant
+	*		idle		noeat
+	"fF"		float_postfix_1
+	"L"		float_postfix_1
+	"i"		idle
+
+:float_postfix_1 Constant
+	*		idle		noeat
+	"i"		idle
+
+:first_digit Constant
+	*		int_postfix	noeat
+	"xX"		hex
+	"bB"		bin
+	"."		float
+	"eE"		epart
+	"0-9"		decimal
+
+:bad_number Bad
+	*		idle		noeat
+	"0-9"		bad_number
+
+:octal Constant
+	*		int_postfix	noeat
+	"0-7_"		octal
+	"89"		bad_number	recolor=-1
+
+:hex Constant
+	*		int_postfix	noeat
+	"0-9A-Fa-f_"	hex
+	"."		hexfloat
+	"pP"		ppart
+
+:hexfloat Constant
+	*		float_postfix	noeat
+	"0-9A-Fa-f_"	hexfloat
+	"pP"		ppart
+
+:ppart Constant
+	*		float_postfix	noeat
+	"0-9+\-"	pnum
+
+:pnum Constant
+	*		float_postfix	noeat
+	"0-9_"		pnum
+
+:decimal Constant
+	*		int_postfix	noeat
+	"0-9_"		decimal
+	"eE"		epart
+	"."		float
+
+:maybe_float Constant
+	*		idle		recolor=-2 noeat
+	"\i"		not_ident	recolor=-2
+	"0-9"		float		recolor=-2
+
+:not_ident Idle
+	*		idle		noeat
+	"\c"		not_ident
+
+:float Constant
+	*		float_postfix	noeat
+	"eE"		epart
+	"0-9_"		float
+
+:epart Constant
+	*		idle		noeat
+	"0-9+\-"	enum
+
+:enum Constant
+	*		float_postfix	noeat
+	"0-9_"		enum
+
+:maybe_qstring Brace
+	*		ident		recolor=-1 noeat
+	"{"		brace		call=.d(squiggly)
+	"\""		qdstring	recolor=-2
+
+:qdstring Constant
+	*		qstring		save_c
+	"\i"		qdelim		buffer
+
+:qdelim Constant
+	*		qdelim_bad	noeat save_s
+	"\c"		qdelim
+	"\n"		skipline	noeat save_s
+
+:qdelim_bad Bad
+	*		qdelim_bad
+	"\n"		skipline	noeat
+
+:skipline Constant
+	*		skipline
+	"\n"		next_line
+
+:todelim Constant
+	*		todelim
+	"\n"		next_line
+	"\""		next_line	strings
+	"&"		founddelim
+done
+
+:founddelim Constant
+	*		idle		noeat
+	"\""		bad_line
+
+:bad_line Bad
+	*		bad_line
+	"\n"		idle
+
+# eat \n so it's not in string.
+:next_line Constant
+	*		todelim		buffer
+	"\n"		next_line
+
+:qstring Constant
+	*		qstring
+	&		qstring_1
+
+:qstring_1 Constant
+	*		qstring		noeat
+	"\""		string_postfix
+
+:maybe_xstring Idle
+	*		ident		noeat
+	"\""		xstring		recolor=-2
+
+:xstring Constant
+	*		bad_xstring	recolor=-1
+	" \t\r\n\f0-9A-Fa-f"	xstring
+	"\""		string_postfix
+
+:bad_xstring Bad
+	*		xstring		noeat
+
+:maybe_rstring Idle
+	*		ident		noeat
+	"\""		rstring		recolor=-2
+
+:rstring Constant
+	*		rstring
+	"\""		string_postfix
+
+:bstring Constant
+	*		bstring
+	"`"		string_postfix
+
+:string	Constant
+	*		string
+	"\""		string_postfix
+	"\\"		string_escape	recolor=-1
+	"%"		string_control	recolor=-1
+
+:string_postfix Constant
+	*		idle	noeat
+	"cwd"		idle
+
+:string_escape Escape
+	*		string
+	"U"		string_hex8
+	"u"		string_hex4
+	"x"		string_hex2
+	"0-7"		string_octal2
+	"\n"		string		recolor=-2
+
+:string_hex8 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex7
+
+:string_hex7 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex6
+
+:string_hex6 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex5
+
+:string_hex5 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex4
+
+:string_hex4 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex3
+
+:string_hex3 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex2
+
+:string_hex2 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex1
+
+:string_hex1 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 Escape
+	*		string		noeat
+	"0-7"		string_octal1
+
+:string_octal1 Escape
+	*		string		noeat
+	"0-7"		string
+
+:string_control Escape
+	*		string_control
+	"\n"		idle
+	"\""		string		noeat
+ 	"diouxXeEfFgGaAcspn%SCM"	string
+
+:char Constant
+	*		char_done
+	"'"		idle
+	"\\"		char_escape	recolor=-1
+
+:char_done Constant
+	*		idle		noeat recolor=-3
+	"\'"		idle
+
+:char_escape	Escape
+	*		char_done
+	"U"		char_hex8
+	"u"		char_hex4
+	"x"		char_hex2
+	"0-7"		char_octal2
+
+:char_hex8 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_hex7
+
+:char_hex7 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_hex6
+
+:char_hex6 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_hex5
+
+:char_hex5 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_hex4
+
+:char_hex4 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_hex3
+
+:char_hex3 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_hex2
+
+:char_hex2 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_hex1
+
+:char_hex1 Escape
+	*		char_done	noeat
+	"0-9a-fA-F"	char_done
+
+:char_octal2 Escape
+	*		char_done	noeat
+	"0-7"		char_octal1
+
+:char_octal1 Escape
+	*		char_done	noeat
+	"0-7"		char_done
+
+:ident Idle
+	*		ident_end	noeat recolormark strings
+	"abstract"	kw
+	"alias"		kw
+	"align"		kw
+	"asm"		kw
+	"assert"	kw
+	"auto"		kw
+	"body"		kw
+	"bool"		kw
+	"break"		kw
+	"byte"		kw
+	"case"		kw
+	"cast"		kw
+	"catch"		kw
+	"cdouble"	kw
+	"cent"		kw
+	"cfloat"	kw
+	"char"		kw
+	"class"		kw
+	"const"		kw
+	"continue"	kw
+	"creal"		kw
+	"dchar"		kw
+	"debug"		kw
+	"default"	kw
+	"delegate"	kw
+	"delete"	kw
+	"deprecated"	kw
+	"do"		kw
+	"double"	kw
+	"else"		kw
+	"enum"		kw
+	"export"	kw
+	"extern"	kw
+	"false"		kw
+	"final"		kw
+	"finally"	kw
+	"float"		kw
+	"for"		kw
+	"foreach"	kw
+	"foreach_reverse"	kw
+	"function"	kw
+	"goto"		kw
+	"idouble"	kw
+	"if"		kw
+	"ifloat"	kw
+	"immutable"	kw
+	"import"	kw
+	"in"		kw
+	"inout"		kw
+	"int"		kw
+	"interface"	kw
+	"invariant"	kw
+	"ireal"		kw
+	"is"		kw
+	"lazy"		kw
+	"long"		kw
+	"macro"		kw
+	"mixin"		kw
+	"module"	kw
+	"new"		kw
+	"nothrow"	kw
+	"null"		kw
+	"out"		kw
+	"override"	kw
+	"package"	kw
+	"pragma"	kw
+	"private"	kw
+	"protected"	kw
+	"public"	kw
+	"pure"		kw
+	"real"		kw
+	"ref"		kw
+	"return"	kw
+	"scope"		kw
+	"shared"	kw
+	"short"		kw
+	"static"	kw
+	"struct"	kw
+	"super"		kw
+	"switch"	kw
+	"synchronized"	kw
+	"template"	kw
+	"this"		kw
+	"throw"		kw
+	"true"		kw
+	"try"		kw
+	"typedef"	kw
+	"typeid"	kw
+	"typeof"	kw
+	"ubyte"		kw
+	"ucent"		kw
+	"uint"		kw
+	"ulong"		kw
+	"union"		kw
+	"unittest"	kw
+	"ushort"	kw
+	"version"	kw
+	"void"		kw
+	"volatile"	kw
+	"wchar"		kw
+	"while"		kw
+	"with"		kw
+	"__FILE__"	kw
+	"__MODULE__"	kw
+	"__LINE__"	kw
+	"__FUNCTION__"	kw
+	"__PRETTY_FUNCTION__"	kw
+	"__gshared"	kw
+	"__traits"	kw
+	"__vector"	kw
+	"__parameters"	kw
+done
+	"\c"		ident
+
+:type Type
+	*		idle		noeat
+
+:kw Keyword
+	*		idle		noeat
+
+:bad_kw Bad
+	*		idle		noeat
+
+:lit Constant
+	*		idle		noeat
+
+:operator Operator
+	*		idle		noeat
+
+:ident_end Idle
+	*		idle		noeat
+	" "		ident_end
+	"("		method_end	noeat recolormark
+
+:method_end Methods
+	*		idle		noeat
+
+.end
+
+# Recursive block comments
+
+.subr block_comment
+
+:idle Comment
+	*		idle
+	# might be TODO label
+	"BFHNTX"	idle		noeat call=comment_todo.comment_todo()
+	"+"		maybe_done
+	"/"		maybe_recur
+
+:maybe_done Comment
+	*		idle	noeat
+	"/"		idle	return
+
+:maybe_recur Comment
+	*		idle	noeat
+	"+"		idle	call=.block_comment()
+
+.end
