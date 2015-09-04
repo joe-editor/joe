@@ -157,7 +157,7 @@
 	  prompts.  Tab completion now works for the filename after '>>' in
 	  file write prompts.
 
-	* Tab completion now handles directory and files names with spaces
+	* Tab completion now handles directory and file names with spaces
 	  in them.
 
 	* Backspace now jumps back to parent menu in ^T submenus (and
@@ -176,9 +176,9 @@
 
 	* Modified ftyperc file syntax to reduce redundancy
 
-	* Added file type setting option.  For example, with "joe -type c fred"
-	  JOE will assume fred is a C language file.  Use ^T F to change
-	  the file type from within JOE.
+	* Added file type (as defined in ftyperc) setting option.  For
+	  example, with "joe -type c fred" JOE will assume fred is a C
+	  language file.  Use ^T F to change the file type from within JOE.
 
 * jmacs fixes:
 	* ^X b / ^X ^B were reversed

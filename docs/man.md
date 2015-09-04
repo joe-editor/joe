@@ -198,6 +198,14 @@ not a symbolic links, JOE first deletes the file before
 writing it in order to break hard-links.
 <br>
 
+* brpaste
+When JOE starts, send command to the terminal emulator that
+enables "bracketed paste mode" (but only if the terminal
+seems to have the ANSI command set).  In this mode, text
+pasted into the window is bracketed with ESC \[ 2 0 0 ~ and
+ESC \[ 2 0 1 ~.
+<br>
+
 * columns nnn
 Set number of columns in terminal emulator (in case
 termcap entry is wrong).  This is only useful on old system which don't have
@@ -365,14 +373,6 @@ set up to save and restore the terminal screen contents when JOE starts and
 exits.
 <br>
 
-* brpaste
-When JOE starts, send command to the terminal emulator that
-enables "bracketed paste mode" (but only if the terminal
-seems to have the ANSI command set).  In this mode, text
-pasted into the window is bracketed with ESC \[ 2 0 0 ~ and
-ESC \[ 2 0 1 ~.
-<br>
-
 * pastehack
 If keyboard input comes in as one block assume it's a mouse
 paste and disable autoindent and wordwrap.
@@ -426,6 +426,10 @@ Enable rectangular block mode.
 * transpose
 Transpose rows with columns in all menus.
 <br>
+
+* type
+Select file type, overriding the automatically determined type.  The file
+types are defined in the __ftyperc__ file.
 
 * undo_keep nnn
 Sets number of undo records to keep (0 means infinite).
