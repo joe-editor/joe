@@ -5,7 +5,7 @@
 ### JOE.next (not yet released changes in Mercurial)
 
 * New or improved syntax files for the following languages: 
-	* Groovy, R, Clojure, Rust, Coffeescript, Java, Scala, Swift, D
+	* Groovy, R, Clojure, Rust, Coffeescript, Java, Scala, Swift, D, AVR
 
 * New translations
 	* Chinese (zh_TW)
@@ -149,6 +149,9 @@
 	  play the macro, the pasted text is not inserted and JOE is
 	  stuck waiting for the bracketed paste end string.
 
+	* Fixed issue where syntax could not be set on command line with
+	  -syntax.
+
 * Minor enhancements
 	* Tab completion now works for the command after '!' in file
 	  prompts.  Tab completion now works for the filename after '>>' in
@@ -170,6 +173,12 @@
 	* Add options to control sending of bracketed paste mode command
 	  to terminal emulator (brpaste) and detection of paste by timing
 	  (pastehack).
+
+	* Modified ftyperc file syntax to reduce redundancy
+
+	* Added file type setting option.  For example, with "joe -type c fred"
+	  JOE will assume fred is a C language file.  Use ^T F to change
+	  the file type from within JOE.
 
 * jmacs fixes:
 	* ^X b / ^X ^B were reversed

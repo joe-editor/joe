@@ -46,11 +46,17 @@ struct point {
 
 /* Options: both BWs and Bs have one of these */
 
+struct options_match {
+	struct options_match *next;
+	const char	*name_regex; /* File name regex */
+	const char	*contents_regex; /* File contents regex */
+	struct regcomp	*r_contents_regex; /* Compiled version of context_regex */
+};
+
 struct options {
 	OPTIONS	*next;
-	const char	*name_regex;
-	const char	*contents_regex;
-	struct regcomp	*r_contents_regex; /* Compiled version of context_regex */
+	const char *ftype; /* Name of this set of options */
+	struct options_match *match; /* List of matching criteria */
 	int	overtype;
 	off_t	lmargin;
 	off_t	rmargin;

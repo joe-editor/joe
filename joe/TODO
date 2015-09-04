@@ -1,3 +1,47 @@
+review options setting system:
+  why is encoding / syntax not a command, but a mode? (I think these probably should be commands)
+  why is ftype a command instead of a mode?
+  can we set encoding/syntax/ftype on command line: joe -ftype c fred
+
+  how it works now:
+     1. load file with bfind
+         A. this calls setopt to determine ftype type, then applies options from OPTIONS to B using lazy_opts
+             In particular, it looks up encoding and syntax based on names.
+     2. copy b->o to bw->o in bwmk
+     3. apply local options to bw->o
+             replace bw->o if ftype is given here?
+     4. use lazy_opts to propogate them back to bw->b->o
+
+  This is broken for setting the syntax on the command line: we look in bw->o for it, not bw->b->o.
+
+  Special processing for: readonly (we get it from b->rdonly, and stick it back after options)
+                          charmap (we delay lookup
+                          encoding (we delay lookup, also we try to learn it in lazyopt: should probably be in bload along with utf16 stuff)
+
+  bw->o options: hex, ansi, syntax, zmsg, smsg, mfirst, autoindent, wordwrap
+                 spaces, mnew, mold, linums, crlf?, overtype, rmsg, purify,
+                 indentc, tab, istep, indentc, indentfirst, smarthome,
+                 smartbacks, *comment, 
+  bw->b->o options:
+                 charmap, highlight?, text_delimiters, ansi?, syntax?
+
+  when we set any particular option using mode command:
+           we set it bw->o
+           we then copy bw->o to bw->b->o.
+             encoding / syntax also do this.
+
+
+filename quoting is messed up.. we can't edit files with \ in the name
+because of it
+   the buffer name should be in the clear, not quoted..
+   then we would not have to dequote on save
+   in particular, we need to handle ! differently...  probably it should be
+   an options flag.
+
+  so: on command line, no special meaning for !
+  at edit prompt: we remove the ! and convert it into a flag.. it probably
+  makes no sense to have this flag, or to even name the buffer
+
 Update ruby based on what we learned for coffeescript: call=.ruby when we
 have subst.  Check them all for this.
 
@@ -10,9 +54,6 @@ joe regex highlighter for search prompt?
 
 include xjoe script?
 
-take ftyperc patch..
-
-need shell-like tab completion in compile/grep prompt
 
 it's annoying when search fails because charmap changed.
   it would be better if we tried to convert it..
@@ -1278,3 +1319,9 @@ Added some more convenient classes:
 
 take brpaste disable patch
 [done- added brpaste mode]
+
+need shell-like tab completion in compile/grep prompt
+[done]
+
+take ftyperc patch..
+[done- created ftype command, rearranged ftyperc]

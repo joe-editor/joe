@@ -2351,6 +2351,7 @@ B *bread(int fi, off_t max)
 	ptrdiff_t amnt;
 	char *seg;
 	char inbuf[SEGSIZ];
+	char buf[1024];
 	int type = 0;
 
 	izque(H, link, &anchor);
@@ -2470,10 +2471,22 @@ B *bread(int fi, off_t max)
 	l = anchor.link.next;
 	deque(H, link, &anchor);
 	b = bmkchn(l, NULL, total, lines);
+
 	if (type == 2)
 		b->o.charmap = utf16_map;
 	else if (type == 3)
 		b->o.charmap = utf16r_map;
+	else {
+		/* Guess encoding for case of no-conversion load */
+		char buf[1024];
+		ptrdiff_t len = SIZEOF(buf);
+		if (b->eof->byte < len)
+			len = TO_DIFF_OK(b->eof->byte);
+		brmem(b->bof, buf, len);
+		b->o.charmap = guess_map(buf, len);
+		b->o.map_name = b->o.charmap->name;
+	}
+
 	return b;
 }
 
@@ -2809,7 +2822,7 @@ opnerr:
 		
 		p=pdup(b->eof, "bload");
 		/* Create histogram of indentation values */
-		for (y = 0; y != 50; ++y) {
+		for (y = 0; y != 250; ++y) {
 			found_space = 0;
 			found_tab = 0;
 			

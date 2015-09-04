@@ -1360,7 +1360,7 @@ struct charmap *find_charmap(const char *name)
 	FILE *f;
 	int y;
 
-	if (!name)
+	if (!name || !name[0])
 		return 0;
 
 	/* Install some initial character maps */
