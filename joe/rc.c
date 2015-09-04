@@ -85,7 +85,6 @@ static MACRO *multiparse(JFILE *fd, int *refline, char *buf, ptrdiff_t *ofst, in
 int procrc(CAP *cap, char *name)
 {
 	OPTIONS *o = &fdefault;	/* Current options */
-	struct options_match *match = 0;
 	KMAP *context = NULL;	/* Current context */
 	struct rc_menu *current_menu = NULL;
 	char buf[1024];	/* Input buffer */
@@ -134,7 +133,6 @@ int procrc(CAP *cap, char *name)
 				o->next = options_list;
 				options_list = o;
 				o->ftype = zdup(buf + 1);
-				match = 0;
 			}
 			break;
 		case '*':	/* Select file types for file-type dependant options */
@@ -149,12 +147,8 @@ int procrc(CAP *cap, char *name)
 					m->name_regex = zdup(buf);
 					m->contents_regex = 0;
 					m->r_contents_regex = 0;
-					if (match) {
-						match->next = m;
-						match = m;
-					} else {
-						o->match = match = m;
-					}
+					m->next = o->match;
+					o->match = m;
 				}
 			}
 			break;
@@ -164,15 +158,14 @@ int procrc(CAP *cap, char *name)
 
 				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != '\r'; ++x) ;
 				buf[x] = 0;
-				if (match) {
-					if (match->contents_regex) {
+				if (o && o->match) {
+					if (o->match->contents_regex) {
 						struct options_match *m = (struct options_match *)joe_malloc(SIZEOF(struct options_match));
-						*m = *match;
-						m->next = 0;
-						match->next = m;
-						match = m;
+						*m = *o->match;
+						m->next = o->match;
+						o->match = m;
 					}
-					match->contents_regex = zdup(buf+1);
+					o->match->contents_regex = zdup(buf+1);
 				}
 			}
 			break;
