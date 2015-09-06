@@ -1,3 +1,90 @@
+Projects:
+
+  Long paths not working with cd command in shell windows?  How about spaces
+  in shell window cd command?
+
+  Allow arguments after commands in ESC x, so we can say "cd foo".  During
+  macro parse, collect arguments and save them in an array.  Modify pw.c to
+  read arguments from this array.  If there are no more arguments, prompt
+  the user instead.  Issues: Completion at the ESC x prompt is complex... 
+  which character set should be used?  It depends on the command..
+
+  Unify ESC x and ESC m (commands and math).  Replace math with ivy as a
+  real extension language for JOE?  Make sure each option is visible from
+  within the script (like options.autoindent).
+
+  Make joerc file so we load system one and then apply local customizations
+  (instead of loading an entire local one).
+
+  Revamp rc file syntax: You can not put comments on lines with string
+  arguments.  Maybe rc file becomes an ivy language source file...
+
+  Fix the macro system so that it is properly event driven.  It means query
+  command does not recursively call edloop- instead it returns a contination
+  structure.  The pain with this is to fix all locations which called
+  a macro as a subroutine to generate a continuation (or use co-routines).
+
+  Improve completion some more: for example in the build command, complete
+  command after | or ;.  To do this well we need intelligent parsing.  (for
+  example, ignore ; in quotes).  Also complete quotes arguments like 'foo'
+
+  Fix filename quoting.  The problem is that the ! and , syntax was a mistake.
+  The current work-around is to allow user to quote these characters.  I think we
+  are de-quoteing too much or something because filenames with \ in them don't really
+  work.  Anyway, find some other syntax to specify that the program is a command, or
+  to load only a certain part of it.  'joe *' should always work, even if the files
+  in the current directory after '!', ',' or '\' in them.
+
+       the buffer name should be in the clear, not quoted..
+       then we would not have to dequote on save
+       in particular, we need to handle ! differently...  probably it should be
+       an options flag.
+
+       so: on command line, no special meaning for !
+       at edit prompt: we remove the ! and convert it into a flag.. it probably
+       makes no sense to have this flag, or to even name the buffer
+
+  In some of the newer synax files we check for balanced parenthesis (color extra
+  paren in red).  Implement this in all syntax files where it makes sense.
+
+  In syntaxes (Ruby, Perl) which allow interpolation (or substition)
+  recusively call the highlighter.  We did in the some of the newer ones.
+  
+  Provide a command to save an HTML version of the file, rendered as our syntax
+  highlight does.  VIM has this, and it would be easy to implement.
+
+  Document the rules for coloring in the call and return transition.  Make it
+  more convenient (I think recolor doesn't work during call, for example).
+
+  Create a regex highlighter for JOE's search and replace prompts.
+
+  Provide an xjoe script which runs joe in an xterm in the install.  This
+  way something exists for the "open this file with" prompts in windowing
+  systems.
+
+  In multi-file search and replace, we error if the character encoding
+  changes.  Do something better here: convert the search/repace string? 
+  Search/replace anyway even if the encoding is different?  Error only if we
+  are outside ascii range?  Record the encoding along with each history
+  line?  Ugh..
+
+  Add unicode normalization to search/replace.
+
+  Do something better with the 8-bit character table help screen.
+
+  Ftyperc improvements: automatically try to determine file type for .in and
+  backup~ files.
+
+  Allow user to specify a regex for parsing errors.
+
+  Fixed buffer size is not good for some parse_ functions..  for example it
+  limits the size of keyboard macros.  umtext is not good..  uses fixed
+  buffer during print.  Can we not use vs for all of this?
+
+  Prebuild radix trees for character classes to avoid startup overhead?  We
+  could do this..
+
+
 review options setting system:
   why is encoding / syntax not a command, but a mode? (I think these probably should be commands)
   why is ftype a command instead of a mode?
@@ -11,8 +98,6 @@ review options setting system:
      3. apply local options to bw->o
              replace bw->o if ftype is given here?
      4. use lazy_opts to propogate them back to bw->b->o
-
-  This is broken for setting the syntax on the command line: we look in bw->o for it, not bw->b->o.
 
   Special processing for: readonly (we get it from b->rdonly, and stick it back after options)
                           charmap (we delay lookup
@@ -30,60 +115,12 @@ review options setting system:
            we then copy bw->o to bw->b->o.
              encoding / syntax also do this.
 
-
-filename quoting is messed up.. we can't edit files with \ in the name
-because of it
-   the buffer name should be in the clear, not quoted..
-   then we would not have to dequote on save
-   in particular, we need to handle ! differently...  probably it should be
-   an options flag.
-
-  so: on command line, no special meaning for !
-  at edit prompt: we remove the ! and convert it into a flag.. it probably
-  makes no sense to have this flag, or to even name the buffer
-
-Update ruby based on what we learned for coffeescript: call=.ruby when we
-have subst.  Check them all for this.
-
-Match []  {} () in all syntaxes?
-When we call, we do not seem to do recolor..  should we?  (see d.jsf: we
-have to add an extra state for coloring..)
-
 ceslide patch?
-joe regex highlighter for search prompt?
-
-include xjoe script?
-
-
-it's annoying when search fails because charmap changed.
-  it would be better if we tried to convert it..
-  or at least ignore the problem for ASCII.
-  also is previous search string in the correct charmap?
-  what about history?
-
-b_jonas wishlist:
-	math variable for each boolean mode
-
-help screen with 8-bit character set chart does not show properly
- - show it on 8-bit locales?
 
 old joe is messing up state file of new joe
 
-Add unicode normalization option to search
-
 Regex in ftyperc is weird because character set of file is not yet known. 
 For now we assume ascii_map..
-
-ftyperc improvements:
-  Can we highlight backup files? files ending in .in?
-
-Allow user to provide a regex for error parsing
-
-Make joerc file so we load system and local customizations
-- rc file format needs revamping:  You can not put comments on lines with string
-  arguments.
-
-long paths not working with cd command in shell windows?
 
 1218708  ? for unknown characters is not informative (at least highlight the ?)
 Show as hex <34>?
@@ -105,10 +142,6 @@ We could try go beyond tab and space.. but it's not so important...
 
  parse_string not utf8? Should be OK: it's only used with emit_string.
 
-fixed buffer size is not good for some parse_ functions.. for example it
-limits the size of keyboard macros.  umtext is not good.. uses fixed buffer
-during print
-
 path.c: rmatch.. should depend on locale (character class)
 
 look at texec..
@@ -120,9 +153,6 @@ look at texec..
  - Review this: other things should be disabled also
 
 valgrind run: look for leaks.
-
-Prebuilt radix trees for character classes to avoid startup overhead?  We
-could do this..
 
 Digit values
 [wrote function, but not using it]
@@ -160,8 +190,6 @@ jmacs vs. mg vs gnu-emacs:
 	esc s search forwards   (suspend in jmacs, submenus in gnu)
 	esc r  search backwards  (move to center line in jmacs and gnu)
 
-Timing fix for bracketed paste should disable spaces.  We should have a mode
-to disable the timing fix.
 
 cd command: if you leave out the trailing / it ignores it
 cd command: should canonicalized version of path be stored in history?
@@ -172,7 +200,7 @@ in ^KE: any nicer way to clear the current path other than Ctrl-Y?
     if current is scratch it should pop
     popedit will not be needed then..
 
-- better grep-find (trigger in ^KE)
+- better grep-find (trigger in ^KE) to help find the file I want to load.
 
 
 vt Improvements:
@@ -1325,3 +1353,10 @@ need shell-like tab completion in compile/grep prompt
 
 take ftyperc patch..
 [done- created ftype command, rearranged ftyperc]
+
+  This is broken for setting the syntax on the command line: we look in bw->o for it, not bw->b->o.
+  [fixed]
+
+Timing fix for bracketed paste should disable spaces.  We should have a mode
+to disable the timing fix.
+[done]
