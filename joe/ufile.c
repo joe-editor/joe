@@ -714,10 +714,10 @@ static int dosetcd(W *w, char *s, void *obj, int *notify)
 	if (sLEN(s)) {
 		if (s[sLEN(s) - 1] != '/')
 			s = vsadd(s, '/');
-		set_current_dir(bw, s = dequotevs(s), 1);
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Directory prefix set to %s")), s);
-		msgnw(bw->parent, msgbuf);
 	}
+	set_current_dir(bw, s = dequotevs(s), 1);
+	joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Directory prefix set to %s")), s);
+	msgnw(bw->parent, msgbuf);
 	vsrm(s);
 	return 0;
 }
