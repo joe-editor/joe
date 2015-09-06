@@ -1,8 +1,5 @@
 Projects:
 
-  Long paths not working with cd command in shell windows?  How about spaces
-  in shell window cd command?
-
   Allow arguments after commands in ESC x, so we can say "cd foo".  During
   macro parse, collect arguments and save them in an array.  Modify pw.c to
   read arguments from this array.  If there are no more arguments, prompt
@@ -1360,3 +1357,7 @@ take ftyperc patch..
 Timing fix for bracketed paste should disable spaces.  We should have a mode
 to disable the timing fix.
 [done]
+
+  Long paths not working with cd command in shell windows?  How about spaces
+  in shell window cd command?
+  [fixed: but the problem is fixed length buffers: vt->buf, mparse->bf]

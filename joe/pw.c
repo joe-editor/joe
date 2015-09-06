@@ -295,7 +295,7 @@ BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, voi
 	/* Install current directory */
 	if ((file_prompt&4) && !nocurdir) {
 		char *curd = get_cd(w);
-		binsm (bw->cursor, sv(curd));
+		binsmq(bw->cursor, sv(curd));
 		p_goto_eof(bw->cursor);
 		bw->cursor->xcol = piscol(bw->cursor);
 	}
