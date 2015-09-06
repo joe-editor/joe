@@ -1,3 +1,25 @@
+# Utility programs:
+
+## Stringify
+
+This converts rc and .jsf files into a C file.  Use it to build the builtins.c file with:
+
+	./stringify ../../rc/joerc ../../rc/ftyperc ../../syntax/c.jsf >../builtins.c
+
+## Uniproc
+
+This generates JOE's unicode database file unicat.c from Blocks.txt CaseFolding.txt EastAsianWidth.txt UnicodeData.txt:
+
+	./uniproc Blocks-8-0-0.txt UnicodeData-8-0-0.txt CaseFolding-8-0-0.txt EastAsianWidth-8-0-0.txt >../unicat.c
+
+## Termidx
+
+This creates an index for a termcap file.
+
+	./termidx </etc/termcap >/etc/termcap.idx
+
+
+## Unicode notes...
 
 from DerivedCoreProperties.txt:
 see: http://unicode.org/reports/tr31/

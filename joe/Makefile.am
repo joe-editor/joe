@@ -1,5 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 
+SUBDIRS = util
+
 EXTRA_DIST = TODO
 
 sysconf_joedir = $(sysconfdir)/joe
@@ -13,8 +15,8 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	lattr.h gettext.h builtin.h vt.h mmenu.h state.h options.h selinux.h \
 	unicode.h cclass.h frag.h
 
-bin_PROGRAMS = joe termidx stringify
-INCLUDES = -DJOERC="\"$(sysconf_joedir)/\"" -DJOEDATA="\"$(data_joedir)/\""
+bin_PROGRAMS = joe
+AM_CPPFLAGS = -DJOERC="\"$(sysconf_joedir)/\"" -DJOEDATA="\"$(data_joedir)/\""
 
 # joe_LDADD = -lm
 

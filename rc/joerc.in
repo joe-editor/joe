@@ -272,10 +272,13 @@
 
  SECOND SECTION: File name dependant local option settings:
 
- Each line with '*' in the first column indicates the modes which should be
- set for files whose name matches the regular expression.  If more than one
- regular expression matches the file name, then the last matching one is
- chosen.
+ Name a file type definition section with:
+
+   [python]  (but put opening bracket in first column)
+
+ Each line with '*' in the first column provides a file name matching
+ regular expression (in shell glob format).  If more than one regular
+ expression matches the file name, then the last matching one is chosen.
 
  A file contents regular expression may also be specified on a separate line
  with '+regex'.  If this regular expresssion is given, then both the file name

@@ -784,19 +784,23 @@ int uniwidth(char *name)
 int main(int argc, char *argv[])
 {
     int rtn;
+    if (argc != 5) {
+        fprintf(stderr,"%s Blocks.txt UnicodeData.txt CaseFolding.txt EastAsianWidth.txt", argv[0]);
+        return -1;
+    }
     printf("/* Unicode facts */\n");
     printf("\n");
     printf("#include \"types.h\"\n");
-    rtn = uniblocks("Blocks.txt");
+    rtn = uniblocks(argv[1]);
     if (rtn)
         return rtn;
-    rtn = unicat("UnicodeData.txt");
+    rtn = unicat(argv[2]);
     if (rtn)
         return rtn;
-    rtn = unifold_full("CaseFolding.txt");
+    rtn = unifold_full(argv[3]);
     if (rtn)
         return rtn;
-    rtn = uniwidth("EastAsianWidth.txt");
+    rtn = uniwidth(argv[4]);
     if (rtn)
         return rtn;
 
