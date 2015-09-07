@@ -5,6 +5,9 @@ Hints:
 
 Projects:
 
+  Use c_comment, cpp_comment etc.  from Ctrl-G to tell regex \!  how to
+  parse (vs.  now, where it assumes C).
+
   Allow arguments after commands in ESC x, so we can say "cd foo".  During
   macro parse, collect arguments and save them in an array.  Modify pw.c to
   read arguments from this array.  If there are no more arguments, prompt
