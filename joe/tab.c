@@ -339,12 +339,12 @@ static int tababrt(W *w, ptrdiff_t cursor, void *object)
 
 static int p_goto_start_of_path(P *p, int flags)
 {
-	int rtn = (flags & (PATH_QUOTE));
+	int rtn = (flags & PATH_QUOTE);
 	off_t fin = p->byte;
 	off_t start;
 	P *q;
 	int c, d;
-	int maybe_cmd = 0;
+	int maybe_cmd = !!(flags & PATH_CMD);
 	p_goto_bol(p);
 	start = p->byte;
 
@@ -507,5 +507,5 @@ int cmplt_file_out(BW *bw, int k)
 /* Shell command prompt */
 int cmplt_command(BW *bw, int k)
 {
-	return cmplt(bw, k, PATH_QUOTE);
+	return cmplt(bw, k, PATH_QUOTE|PATH_CMD);
 }
