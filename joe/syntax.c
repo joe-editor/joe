@@ -213,8 +213,10 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			attr[-1] = h->color;
 
 			/* Get command for this character */
-			if (h->delim && c == h_state.saved_s[0] && h_state.saved_s[1] == 0)
+			if (h->delim && c == h_state.saved_s[0] && h_state.saved_s[2] == 0)
 				cmd = h->delim;
+			else if (h->same_delim && c == h_state.saved_s[1] && h_state.saved_s[2] == 0)
+				cmd = h->same_delim;
 			else {
 				cmd = (struct high_cmd *)rtree_lookup(&h->rtree, c);
 				if (!cmd)
@@ -296,7 +298,8 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Save character? */
 			if (cmd->save_c) {
-				h_state.saved_s[1] = 0;
+				h_state.saved_s[1] = c;
+				h_state.saved_s[2] = 0;
 				if (c=='<')
 					h_state.saved_s[0] = '>';
 				else if (c=='(')
@@ -381,6 +384,7 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 		rtree_init(&state->rtree);
 		state->dflt = &syntax->default_cmd;
 		state->delim = 0;
+		state->same_delim = 0;
 		htadd(syntax->ht_states, state->name, state);
 		++state_count;
 	}
@@ -845,13 +849,15 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 			c = parse_ws(&p,'#');
 
 			if (!c) {
-			} else if (c=='"' || c=='*' || c=='&') {
+			} else if (c=='"' || c=='*' || c=='&' || c =='%') {
 				if (state) {
 					struct high_cmd *cmd = mkcmd();
 					if(!parse_field(&p, "*")) {
 						state->dflt = cmd;
 					} else if(!parse_field(&p, "&")) {
 						state->delim = cmd;
+					} else if(!parse_field(&p, "%")) {
+						state->same_delim = cmd;
 					} else {
 						struct interval *array;
 						ptrdiff_t size;

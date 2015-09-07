@@ -1,3 +1,8 @@
+Hints:
+
+  If you "recolor=-1 return", the color is from the returned to state.
+  If you "recolor=-1 call=...', the color is from the first state of the called syntax.
+
 Projects:
 
   Allow arguments after commands in ESC x, so we can say "cd foo".  During
@@ -41,7 +46,7 @@ Projects:
        at edit prompt: we remove the ! and convert it into a flag.. it probably
        makes no sense to have this flag, or to even name the buffer
 
-  In some of the newer synax files we check for balanced parenthesis (color extra
+  In some of the newer syntax files we check for balanced parenthesis (color extra
   paren in red).  Implement this in all syntax files where it makes sense.
 
   In syntaxes (Ruby, Perl) which allow interpolation (or substition)

@@ -75,7 +75,7 @@
 	"."		conditional_first	mark recolor=-1
 	"="		color_definition_first
 	":"		state_first
-	"*&"		special_character	recolor=-1
+	"*&%"		special_character	recolor=-1
 .endif
 	"\""		string			recolor=-1
 .ifdef STRINGS

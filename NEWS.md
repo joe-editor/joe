@@ -5,7 +5,8 @@
 ### JOE.next (not yet released changes in Mercurial)
 
 * New or improved syntax files for the following languages: 
-	* Groovy, R, Clojure, Rust, Coffeescript, Java, Scala, Swift, D, AVR
+	* Groovy, R, Clojure, Rust, Coffeescript, Java, Scala, Swift, D,
+	  AVR, Ruby, Perl
 
 * New translations
 	* Chinese (zh_TW)
@@ -179,6 +180,12 @@
 	* Added file type (as defined in ftyperc) setting option.  For
 	  example, with "joe -type c fred" JOE will assume fred is a C
 	  language file.  Use ^T F to change the file type from within JOE.
+
+	* Highighter enhancement: when % is used in place of a character
+	  list, it matches the save_c delimiting character as-is (vs.  &
+	  which matches the opposite character).  For example, if save_c has
+	  {, then % matches { while & matches }.  This allows JOE to
+	  highlight q{hello { there } } in Perl.
 
 * jmacs fixes:
 	* ^X b / ^X ^B were reversed

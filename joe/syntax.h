@@ -22,6 +22,7 @@ struct high_state {
 	int color;			/* Color for this state */
 	struct Rtree rtree;		/* Character map (character ->struct high_cmd *) */
 	struct high_cmd *dflt;		/* Default for no match */
+	struct high_cmd *same_delim;	/* Same delimiter */
 	struct high_cmd *delim;		/* Matching delimiter */
 };
 
