@@ -1148,7 +1148,7 @@ static int add_thread(struct thread *pool, unsigned char *start, int l, int le, 
 	int t;
 
 	for (t = l; t != le; ++t) {
-		if (pool[t].pc == pc && pool[t].sp == sp && (!sp || !memcmp(pool[t].stack, stack, sp * sizeof(int)))) {
+		if (pool[t].pc == pc && pool[t].sp == sp && (!sp || !memcmp(pool[t].stack, stack, (size_t)(sp * SIZEOF(int))))) {
 			/* PCs are same, state is same... */
 			int y;
 			for (y = 0; y != bra_no; ++y) {
@@ -1212,7 +1212,7 @@ static int add_thread1(struct thread *pool, unsigned char *start, int l, int le,
 	int t;
 
 	for (t = l; t != le; ++t) {
-		if (pool[t].pc == pc && pool[t].sp == sp && (!sp || !memcmp(pool[t].stack, stack, sp * sizeof(int)))) {
+		if (pool[t].pc == pc && pool[t].sp == sp && (!sp || !memcmp(pool[t].stack, stack, (size_t)(sp * SIZEOF(int))))) {
 			/* PCs are same, state is same... */
 			int y;
 			for (y = 0; y != bra_no; ++y) {

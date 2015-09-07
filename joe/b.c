@@ -2351,7 +2351,6 @@ B *bread(int fi, off_t max)
 	ptrdiff_t amnt;
 	char *seg;
 	char inbuf[SEGSIZ];
-	char buf[1024];
 	int type = 0;
 
 	izque(H, link, &anchor);
