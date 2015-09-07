@@ -1,8 +1,3 @@
-Hints:
-
-  If you "recolor=-1 return", the color is from the returned to state.
-  If you "recolor=-1 call=...', the color is from the first state of the called syntax.
-
 Projects:
 
   Use c_comment, cpp_comment etc.  from Ctrl-G to tell regex \!  how to
@@ -51,9 +46,6 @@ Projects:
 
   In some of the newer syntax files we check for balanced parenthesis (color extra
   paren in red).  Implement this in all syntax files where it makes sense.
-
-  In syntaxes (Ruby, Perl) which allow interpolation (or substition)
-  recusively call the highlighter.  We did in the some of the newer ones.
   
   Provide a command to save an HTML version of the file, rendered as our syntax
   highlight does.  VIM has this, and it would be easy to implement.
@@ -1369,3 +1361,7 @@ to disable the timing fix.
   Long paths not working with cd command in shell windows?  How about spaces
   in shell window cd command?
   [fixed: but the problem is fixed length buffers: vt->buf, mparse->bf]
+
+In syntaxes (Ruby, Perl) which allow interpolation (or substition)
+recusively call the highlighter.  We did in the some of the newer ones.
+[done]
