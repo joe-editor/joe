@@ -189,7 +189,7 @@ int ufinish(W *w, int k)
 		pgetc(p);
 
 	if (bw->cursor->byte!=p->byte && bw->cursor->byte-p->byte<64) {
-		line = brvs(p, bw->cursor->byte-p->byte); /* CVT: Risky- we assume the match fits in memory */
+		line = brvs(p, bw->cursor->byte - p->byte); /* CVT: Risky- we assume the match fits in memory */
 
 		/* We have a word */
 

@@ -144,7 +144,7 @@ static int rtnpw(W *w)
 	p_goto_eol(bw->cursor);
 	byte = bw->cursor->byte;
 	p_goto_bol(bw->cursor);
-	s = brvs(bw->cursor, TO_DIFF_OK(byte - bw->cursor->byte));
+	s = brvs(bw->cursor, byte - bw->cursor->byte);
 
 	if (pw->file_prompt) {
 		s = canonical(s);
@@ -361,7 +361,7 @@ int simple_cmplt(BW *bw,char **list)
 	p_goto_bol(p);
 	q = pdup(bw->cursor, "simple_cmplt");
 	p_goto_eol(q);
-	line = brvs(p, (int) (q->byte - p->byte));	/* Assumes short lines :-) */
+	line = brvs(p, q->byte - p->byte);	/* FIXME: Assumes short lines :-) */
 	prm(p);
 	prm(q);
 

@@ -334,7 +334,7 @@ static off_t parserr(B *b)
 
 			pset(q, p);
 			p_goto_eol(p);
-			s = brvs(q, (int) (p->byte - q->byte));
+			s = brvs(q, p->byte - q->byte);
 			if (s) {
 				kill_ansi(s);
 				parsedir(s, &curdir);
@@ -360,7 +360,7 @@ static off_t parserr(B *b)
 
 			pset(q, p);
 			p_goto_eol(p);
-			s = brvs(q, (int) (p->byte - q->byte));
+			s = brvs(q, p->byte - q->byte);
 			if (s) {
 				kill_ansi(s);
 				parsedir(s, &curdir);
@@ -530,18 +530,36 @@ void kill_ansi(char *s)
 
 int ujump(W *w, int k)
 {
+	char *curdir = 0;
 	BW *bw;
 	int rtn = -1;
 	P *p;
 	P *q;
 	char *s;
 	WIND_BW(bw, w);
-	p = pdup(bw->cursor, "ujump");
+	p = pdup(bw->b->bof, "ujump");
 	q = pdup(p, "ujump");
+
+	/* Parse entire file just to get current directory */
+	while (p->line != bw->cursor->line) {
+		pset(q, p);
+		p_goto_eol(p);
+		s = brvs(q, p->byte - q->byte);
+		if (s) {
+			kill_ansi(s);
+			parsedir(s, &curdir);
+			vsrm(s);
+		}
+		if (NO_MORE_DATA == pgetc(p))
+			break;
+	}
+
+	/* Parse the line with the cursor, look for an error */
+	pset(p, bw->cursor);
+	pset(q, bw->cursor);
 	p_goto_bol(p);
 	p_goto_eol(q);
-	s = brvs(p, (int) (q->byte - p->byte));
-	kill_ansi(s);
+	s = brvs(p, q->byte - p->byte);
 	prm(p);
 	prm(q);
 	if (s) {
@@ -549,12 +567,16 @@ int ujump(W *w, int k)
 		char *fullname = NULL;
 		char *curd = get_cd(bw->parent);
 		off_t line = -1;
+		kill_ansi(s);
 		if (bw->b->parseone)
 			bw->b->parseone(bw->b->o.charmap,s,&name,&line);
 		else
 			parseone_grep(bw->b->o.charmap,s,&name,&line);
 		/* Prepend current directory.. */
-		fullname = vsncpy(NULL, 0, sv(curd));
+		if (curdir)
+			fullname = vsncpy(NULL, 0, sv(curdir));
+		else
+			fullname = vsncpy(NULL, 0, sv(curd));
 		fullname = vsncpy(sv(fullname), sv(name));
 		vsrm(name);
 		name = canonical(fullname);
@@ -570,6 +592,7 @@ int ujump(W *w, int k)
 		}
 		vsrm(s);
 	}
+	vsrm(curdir);
 	return rtn;
 }
 
