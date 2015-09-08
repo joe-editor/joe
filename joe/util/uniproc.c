@@ -22,7 +22,7 @@
 
 #define TONEXT \
     do { \
-        buf[y] = c; \
+        buf[y] = (char)c; \
         x = y; \
         if (buf[x] == ';') \
             ++x; \
@@ -63,7 +63,7 @@
 
 #define REPLLEN 3 /* Maximum number of replacement characters for case folding */
 
-int unifold_full(char *name)
+static int unifold_full(char *name)
 {
     int repl[1024][REPLLEN];
     FILE *f;
@@ -73,7 +73,7 @@ int unifold_full(char *name)
     int line = 0;
     int first = 0;
     int len = 0;
-    int x;
+    int z;
     f = fopen(name, "r");
     if (!f) {
         fprintf(stderr, "couldn't open %s\n", name);
@@ -162,7 +162,7 @@ int unifold_full(char *name)
                 /* Jump */
                 COMMA;
                 printf("	{ 0x%x, 0x%x }", in_low, in_high);
-                repl[len][0] = out_low;
+                repl[len][0] = (int)out_low;
                 repl[len][1] = 0;
                 repl[len][2] = 0;
                 ++len;
@@ -174,7 +174,7 @@ int unifold_full(char *name)
             if (in_low != 0) {
                 COMMA;
                 printf("	{ 0x%x, 0x%x }", in_low, in_high);
-                repl[len][0] = out_low;
+                repl[len][0] = (int)out_low;
                 repl[len][1] = 0;
                 repl[len][2] = 0;
                 ++len;
@@ -182,16 +182,16 @@ int unifold_full(char *name)
             }
             COMMA;
             printf("	{ 0x%x, 0x%x }", inval, inval );
-            repl[len][0] = outval[0];
-            repl[len][1] = outval[1];
-            repl[len][2] = outval[2];
+            repl[len][0] = (int)outval[0];
+            repl[len][1] = (int)outval[1];
+            repl[len][2] = (int)outval[2];
             ++len;
         }
     }
     if (in_low != 0) {
         COMMA;
         printf("	{ 0x%x, 0x%x }", in_low, in_high );
-        repl[len][0] = out_low;
+        repl[len][0] = (int)out_low;
         repl[len][1] = 0;
         repl[len][2] = 0;
         ++len;
@@ -201,9 +201,9 @@ int unifold_full(char *name)
     printf("\n};\n");
     first = 0;
     printf("\nint fold_repl[][REPLLEN] = {\n");
-    for (x = 0; x != len; ++x) {
+    for (z = 0; z != len; ++z) {
         COMMA;
-        printf("	{ 0x%x, 0x%x, 0x%x }", repl[x][0], repl[x][1], repl[x][2]);
+        printf("	{ 0x%x, 0x%x, 0x%x }", repl[z][0], repl[z][1], repl[z][2]);
     }
     printf("\n};\n");
     fclose(f);
@@ -212,7 +212,7 @@ int unifold_full(char *name)
 
 /* Generate simple case folding table */
 
-int unifold_simple(char *name)
+static int unifold_simple(char *name)
 {
     FILE *f;
     char buf[1024];
@@ -360,7 +360,7 @@ struct unidata {
     int title;
 };
 
-struct unidata *uniload(char *name)
+static struct unidata *uniload(char *name)
 {
     struct unidata *first, *last;
     char buf[1024];
@@ -466,12 +466,12 @@ struct cat {
     int idx;
 } *cats;
 
-struct cat *addcat(char *s)
+static struct cat *addcat(char *s)
 {
     struct cat *c;
     for (c = cats; c; c = c->next)
         if (!strcmp(c->name, s))
-            return c;
+            break;
     if (!c) {
         c = (struct cat *)malloc(sizeof(struct cat));
         c->next = cats;
@@ -479,12 +479,12 @@ struct cat *addcat(char *s)
         c->name = strdup(s);
         c->size = 0;
         c->idx = -1;
-        return c;
         /* printf("New categry %s\n", s); */
     }
+    return c;
 }
 
-int unicat(char *name)
+static int unicat(char *name)
 {
     struct unidata *u, *v;
     struct cat *cat;
@@ -686,7 +686,7 @@ int unicat(char *name)
 
 /* Generate block name table */
 
-int uniblocks(char *name)
+static int uniblocks(char *name)
 {
     FILE *f;
     char buf[1024];
@@ -702,12 +702,11 @@ int uniblocks(char *name)
     printf("\n");
     printf("struct interval uniblocks[] = {\n");
     while (fgets(buf, sizeof(buf), f)) {
-        if (buf[0] >= '0' && buf[0] <= '9' ||
-            buf[0] >= 'A' && buf[0] <= 'F' ||
-            buf[0] >= 'a' && buf[0] <= 'f') {
+        if ((buf[0] >= '0' && buf[0] <= '9') ||
+            (buf[0] >= 'A' && buf[0] <= 'F') ||
+            (buf[0] >= 'a' && buf[0] <= 'f')) {
                 unsigned low;
                 unsigned high;
-                char buf1[1024];
                 int x, y, c;
                 struct cat *cat;
                 TOFIRST;
@@ -730,11 +729,10 @@ int uniblocks(char *name)
 
 /* Generate width table */
 
-int uniwidth(char *name)
+static int uniwidth(char *name)
 {
     FILE *f;
     char buf[1024];
-    int idx = 0;
     int low = -2, high = -2;
     /** Create table of block names **/
     f = fopen(name, "r");
@@ -746,13 +744,12 @@ int uniwidth(char *name)
     printf("\n");
     printf("struct interval width_table[] = {\n");
     while (fgets(buf, sizeof(buf), f)) {
-        if (buf[0] >= '0' && buf[0] <= '9' ||
-            buf[0] >= 'A' && buf[0] <= 'F' ||
-            buf[0] >= 'a' && buf[0] <= 'f') {
+        if ((buf[0] >= '0' && buf[0] <= '9') ||
+            (buf[0] >= 'A' && buf[0] <= 'F') ||
+            (buf[0] >= 'a' && buf[0] <= 'f')) {
                 unsigned l;
                 unsigned h;
                 int x, y, c;
-                struct cat *cat;
                 TOFIRST;
                 TOEND;
                 if (1 == sscanf(buf, "%x..%x", &l, &h))
@@ -764,10 +761,10 @@ int uniwidth(char *name)
                         if (low != -2) {
                             printf("	{ 0x%x, 0x%x },\n", low, high);
                         }
-                        low = l;
-                        high = h;
+                        low = (int)l;
+                        high = (int)h;
                     } else {
-                        high = h;
+                        high = (int)h;
                     }
                 }
         }
