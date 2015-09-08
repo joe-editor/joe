@@ -145,6 +145,26 @@ static int freeall(void)
 	return count;
 }
 
+/* Parse "make[1]: Entering directory '/home/..../foo'" message. */
+
+static void parsedir(const char *s, char **rtn_dir)
+{
+	const char *u, *v;
+	u = zstr(s, "Entering directory `");
+	if (u) {
+		u += zlen("Entering directory `");
+		for (v = u; *v && *v != '\''; ++v);
+		if (*v == '\'') {
+			char *t = *rtn_dir;
+			t = vstrunc(t, 0);
+			t = vsncpy(sv(t), u, v - u);
+			if (sLEN(t) && t[sLEN(t)-1] != '/')
+				t = vsadd(t, '/');
+			*rtn_dir = t;
+		}
+	}
+}
+
 /* Parse error messages into database */
 
 /* From joe's joe 2.9 */
@@ -299,6 +319,7 @@ void kill_ansi(char *s);
 static off_t parserr(B *b)
 {
 	if (markv(1)) {
+		char *curdir = 0;
 		P *p = pdup(markb, "parserr1");
 		P *q = pdup(markb, "parserr2");
 		off_t nerrs = 0;
@@ -316,15 +337,18 @@ static off_t parserr(B *b)
 			s = brvs(q, (int) (p->byte - q->byte));
 			if (s) {
 				kill_ansi(s);
-				nerrs += parseit(q->b->o.charmap, s, q->line, (q->b->parseone ? q->b->parseone : parseone),q->b->current_dir);
+				parsedir(s, &curdir);
+				nerrs += parseit(q->b->o.charmap, s, q->line, (q->b->parseone ? q->b->parseone : parseone), (curdir ? curdir : q->b->current_dir));
 				vsrm(s);
 			}
 			pgetc(p);
 		} while (p->byte < markk->byte);
+		vsrm(curdir);
 		prm(p);
 		prm(q);
 		return nerrs;
 	} else {
+		char *curdir = 0;
 		P *p = pdup(b->bof, "parserr3");
 		P *q = pdup(p, "parserr4");
 		off_t nerrs = 0;
@@ -339,10 +363,12 @@ static off_t parserr(B *b)
 			s = brvs(q, (int) (p->byte - q->byte));
 			if (s) {
 				kill_ansi(s);
-				nerrs += parseit(q->b->o.charmap, s, q->line, (q->b->parseone ? q->b->parseone : parseone), q->b->current_dir);
+				parsedir(s, &curdir);
+				nerrs += parseit(q->b->o.charmap, s, q->line, (q->b->parseone ? q->b->parseone : parseone), (curdir ? curdir : q->b->current_dir));
 				vsrm(s);
 			}
 		} while (pgetc(p) != NO_MORE_DATA);
+		vsrm(curdir);
 		prm(p);
 		prm(q);
 		return nerrs;

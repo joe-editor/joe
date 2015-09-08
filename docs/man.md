@@ -2276,9 +2276,14 @@ file.  Also, you can use __Esc =__ and __Esc -__ to step through each line.
 ## Compile
 
 Hit __Esc C__ to save all modified files and then bring up the compile prompt. 
-Enter the command you want to use for the compiler (typically "make").  The
+Enter the command you want to use for the compiler (typically "make -w").  The
 compiler will run in a shell window.  When it's complete, the results are
 parsed.
+
+The '-w' flag should be given to "make" so that it prints messages whenever
+it changes directories.  The message are in this format:
+
+	make[1]: Entering directory `/home/jhallen/joe-editor-mercurial/joe'
 
 If there are any errors or warnings from the compiler you can hit
 __Esc Space__ on one of the lines to jump to the selected file.  Also,

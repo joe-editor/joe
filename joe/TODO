@@ -1,5 +1,9 @@
 Projects:
 
+  Jump to error line does not work unless the current directory is set
+  properly.. it would be better if it searched backwards for a directory
+  setting command and used that as the prefix for the filename.
+
   Use c_comment, cpp_comment etc.  from Ctrl-G to tell regex \!  how to
   parse (vs.  now, where it assumes C).
 

@@ -212,6 +212,9 @@
 
 	* Provide more consistent window setup during compile
 
+	* Parse "Entering directory `/home/xxxxxx'" messages to determine
+	  the directory containing the file with an error message.
+
 ### JOE 3.8 Native Windows Version
 
 [Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/joewin.msi/download)
