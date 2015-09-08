@@ -2,7 +2,7 @@
 
 [Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
 
-### JOE.next (not yet released changes in Mercurial)
+### JOE 4.1
 
 * New or improved syntax files for the following languages: 
 	* Groovy, R, Clojure, Rust, Coffeescript, Java, Scala, Swift, D,
@@ -154,9 +154,9 @@
 	  -syntax.
 
 * Minor enhancements
-	* Tab completion now works for the command after '!' in file
-	  prompts.  Tab completion now works for the filename after '>>' in
-	  file write prompts.
+	* Tab completion now works for the command and its file arguments
+	  after '!' in file prompts.  Tab completion now works for the
+	  filename after '>>' in file write prompts.
 
 	* Tab completion now handles directory and file names with spaces
 	  in them.
