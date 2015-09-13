@@ -1108,7 +1108,7 @@ can have windows which exist, but which are not on the screen.</p>
 <p>^K N and ^K P move the cursor to next or previous window.  If the next
 window is off the screen it is moved onto the screen, along with any
 operator windows are target it.</p>
-## MACROS
+## Macros
 <p>- add something here.
 </p>
 ## Screen update
@@ -1158,6 +1158,9 @@ state machine to be reused in cases where one language is embedded within
 another (PHP in HTML, for example), a macro system was added to the state
 machine loader.  Recursion is allowed in the macro calls, but is limited to
 a depth of 5.</p>
+
+<p>As of JOE 3.6, the macro instantiation was replaced with a real stack, so
+now there is no recursion depth limit.</p>
 
 ## Line attribute cache
 
