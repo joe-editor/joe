@@ -422,7 +422,7 @@ As of verison 4.1, JOE uses an enhanced version of [Thompson's NFA matching algo
 
 The code is in [regex.c](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/regex.c) and [regex.h](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/regex.h).
 
-The regular expression matcher is a subroutine or the the larger text search
+The regular expression matcher is a subroutine of the the larger text search
 algorithm in JOE.  For example, text search will use [Boyer-Moore](https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm)
 to find a leading prefix of the regular expression before running the
 regular expression matcher.  A leading prefix is leading text present in
@@ -437,7 +437,7 @@ The API for the regular expression library is simple:
 	 * Check regcomp->err for compile errors.
 	 */
 	struct regcomp *joe_regcomp(
-		struct charmap *charmap, /* The character map of the expression */
+		struct charmap *charmap, /* The character set of the expression */
 		const char *s, ptrdiff_t len, /* The regular expression */
 		int icase, /* Set to ignore case */
 		int stdfmt, /* Set for standard syntax expressions, vs. JOE syntax */
@@ -640,14 +640,16 @@ destination address.
 ### Matcher
 
 joe_regexec has the arbitrary number of threads simulator.  It has two banks
-of threads, A and B, and ping-pongs between them.  It feeds the next input
-character to all threads in bank A.  It executes as many instructions as
-possible for each thread, and stops when the thread finally accepts the
-character or rejects it.  If the thread accepts the character, it will be
-active for the next character, so it is moved to bank B.  Otherwise, the
-thread will die when we transition to bank B.  If a thread in bank A forks,
-the newly created thread is appended to bank A so that the current character
-is fed to it.
+of threads, A and B, and ping-pongs between them for each input character. 
+It feeds the next input character to all threads in bank A.  It executes as
+many instructions as possible for each thread, and stops when the thread
+finally accepts the character or rejects it.  If the thread accepts the
+character, it will be active for the next character, so it is moved to bank
+B.  Otherwise, the thread will die when we transition to bank B.  If a
+thread in bank A forks, the newly created thread is appended to bank A so
+that the current character is fed to it before switching.  Once all threads
+have been fed the character, we switch to bank B and feed in the next
+character.
 
 This scheme is simple and fast, but there are complications.  First has to
 do with sub-match addressing.  Without modification, the matcher will find
@@ -680,6 +682,17 @@ if that one character is the opening bracket of an expression, it matches
 the entire expression.  \\! will match all of "(1+(2+3))".  To support this,
 each thread needs a stack to record its progress in parsing the balanced
 expression.
+
+## Unicode database
+
+[unicode.c](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/unicode.c), [unicode.h](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/unicode.h) and [unicat.c](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/unicat.c) provide 
+JOE's database of Unicode facts.
+
+## Character sets
+
+[charmap.c](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/charmap.c) and [charmap.h](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/charmap.h) implement JOE's representation of character
+sets.
+
 
 ## Coroutines in JOE
 
