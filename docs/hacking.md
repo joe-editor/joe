@@ -200,8 +200,8 @@ There is one further optimization: we provide faster access to the first 512
 character codes (so that ASCII is fast).  To do this, the first of the
 second to last level tables is embedded in the struct Rtree.  If the code is
 below 512, then the upper 5 bits index this table to find the leaf table,
-and the lower 4 bits index to leaf table.  There is one local access and one
-indirection.
+and the lower 4 bits index to leaf table.  Thus, there is one local access
+and one indirect access for codes below 512.
 
 ### Rset
 
@@ -422,8 +422,9 @@ As of verison 4.1, JOE uses an enhanced version of [Thompson's NFA matching algo
 
 The code is in [regex.c](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/regex.c) and [regex.h](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/regex.h).
 
-It's important to realize that text search in JOE is more than just its regular expression matcher.  In
-particular, text search will use [Boyer-Moore](https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm) to find a leading prefix of the regular expression.  A leading prefix
+It's important to realize that there are more parts to text search in JOE than
+just its regular expression matcher.  In particular, text search will use
+[Boyer-Moore](https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm) to find a leading prefix of the regular expression.  A leading prefix
 is leading text present in all of the different possible text which can match
 the regular expression.  For example, in 'hello(foo|bar)', the leading text
 is 'hello', but it's empty in 'hello|there'.  One of the jobs of the regular
