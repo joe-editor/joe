@@ -422,13 +422,14 @@ As of verison 4.1, JOE uses an enhanced version of [Thompson's NFA matching algo
 
 The code is in [regex.c](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/regex.c) and [regex.h](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/regex.h).
 
-It's important to realize that there are more parts to text search in JOE than
-just its regular expression matcher.  In particular, text search will use
-[Boyer-Moore](https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm) to find a leading prefix of the regular expression.  A leading prefix
-is leading text present in all of the different possible text which can match
-the regular expression.  For example, in 'hello(foo|bar)', the leading text
-is 'hello', but it's empty in 'hello|there'.  One of the jobs of the regular
-expression code is to identify this leading text.
+The regular expression matcher is a subroutine or the the larger text search
+algorithm in JOE.  For example, text search will use [Boyer-Moore](https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_string_search_algorithm)
+to find a leading prefix of the regular expression before running the
+regular expression matcher.  A leading prefix is leading text present in
+all of the different possible text which can match the regular expression.
+For example, in 'hello(foo|bar)', the leading text is 'hello', but it's empty
+in 'hello|there'.  One of the jobs of the regular expression code is to
+identify this leading text.
 
 The API for the regular expression library is simple:
 
@@ -462,14 +463,15 @@ The API for the regular expression library is simple:
 		int fold /* Set to ignore case */
 	);
 
+
 Joe_regcomp converts the regular expression into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree)
 with an operator precedence parser and then generates a byte-code program
 representation of the regular expression's [NFA](https://en.wikipedia.org/wiki/Nondeterministic_finite_automaton).
 Joe_regexec simulates the byte-code program with an arbitrary number of threads machine. 
-It feeds characters from the buffer into each active thread until either one
-of the threads encounters the END instruction, or the end of the buffer is
-reached.  The buffer pointer __P__ is advanced to the first character not
-part of the matching text.
+It feeds characters from the buffer into each active thread until one
+of the threads encounters the END instruction, there are no more threads, or
+the end of the buffer is reached.  A side effect is the buffer pointer __P__
+is advanced to the first character not part of the matching text.
 
 If the 'v' flag is included in JOE's search and replace options prompt, the
 AST and program are sent to JOE's startup log so that they can be viewed
@@ -584,8 +586,9 @@ PC      INSN
 Total size = 28
 ~~~~~
 
-Note that this is showing the ASCII character map so that the character
-class is not too big.  Try it with the UTF-8 map at home.
+Note that this is showing the ASCII character encoding so that the character
+classes are not too big.  With the UTF-8 character encoding, the character
+classes will include the full Unicode definitions of \\i and \\c.
 
 ### Functions
 
