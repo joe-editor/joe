@@ -595,7 +595,7 @@ class is not too big.  Try it with the UTF-8 map at home.
 
 Escape reads one character from a string.  If the character is an escape
 sequence, it's parsed into either a single character or a character class.
-Escape is used in other parts of the editors: for example, it's used to
+Escape is used in other parts of the editor: for example, it's used to
 parse character lists of syntax highlighting files.
 
 	/* Conventional syntax regex */
@@ -647,14 +647,14 @@ is fed to it.
 
 This scheme is simple and fast, but there are complications.  First has to
 do with sub-match addressing.  Without modification, the matcher will find
-all possible solutions to expressions like 'x(a*)(a*)y'.  This means that
+all possible solutions to expressions like 'x(a\*)(a\*)y'.  This means that
 at the end of the match, there will be a thread for each of these
 solutions.  If the input is xaaaay, it will find x()(aaaa)y, x(a)(aaa)y,
 x(aa)(aa)y, x(aaa)(a)y, and x(aaaa)()y.
 
 But we don't want all solutions, we want just one solution, the one where
 the left-most submatch is longest: x(aaaa)()y.  To select the preferred
-solution, joe_exec has a helper function:
+solution, joe_regexec has a helper function:
 
 	static int add_thread(
 		struct thread *pool, /* Thread pool */
@@ -671,13 +671,13 @@ pool[le]).  Before it adds, it checks if there are other existing threads
 the one with the "best" submatch, the one with the longest to the left.
 
 The second complication is JOE's extension \\! (which used to be \\c in
-versions before 4.1).  \\! is like \\.: it matches one character.  However,
+versions before 4.1).  \\! is like '.': it matches one character.  However,
 if that one character is the opening bracket of an expression, it matches
 the entire expression.  \\! will match all of "(1+(2+3))".  To support this,
 each thread needs a stack to record its progress in parsing the balanced
 expression.
 
-<h3>Coroutines in JOE</h3>
+## Coroutines in JOE
 
 <p>JOE 3.6 now uses co-routines to help reduce the amount of event-driven
 code which has to be written.  All previous versions of JOE were entirely in
@@ -783,7 +783,8 @@ calls co_suspend() to do this).  The macro player is continued when the user
 finishes supplying the input (hits the return key at a prompt).  Several
 interactive macros can be running at once with this scheme.</p>
 
-<h3>Semi-Automatic Variables</h3>
+## Semi-Automatic Variables
+
 <p>JOE 3.6 uses "semi-automatic" variables for strings.  There is a global
 "object-stack", accessed through these functions:</p>
 
@@ -830,7 +831,7 @@ end of each loop iteration.</p>
 When a heap object is freed, only itself is freed- the stack is not
 modified.  Also when the stack is freed, heap objects are not touched.</p>
 
-<h3>Variable Strings</h3>
+## Variable Strings
 
 <p>JOE uses dynamic strings built on top of the global object stack
 functions. These strings automatically resize themselves to fit their
@@ -893,7 +894,7 @@ unsigned char *vscatz(unsigned char *s, unsigned char *z);
 }
 </pre>
 
-<h3>Variable arrays of variable strings</h3>
+## Variable arrays of variable strings
 
 <p>JOE also semi-automatic variable arrays of variable strings.  These
 functions are provided:</p>
@@ -919,7 +920,7 @@ marked as permanent, and any string later added to the array are also marked
 as permanent.</p>
 
 
-<h3>Edit Buffers</h3>
+## Edit Buffers
 <p>API:
 </p>
 <p>  Look at the comments in b.h for more information.
@@ -1050,7 +1051,7 @@ gap.  When page is modified, use copy-on-write to move the page into the
 swap file (change pointer in header).  This is not done now.  Instead the
 file is copied when loaded.
 </p>
-<h3>Windowing System</h3>
+## Windowing System
 <p>There is a tiny object-oriented windowing system built into JOE.  This is
 the class hierarchy:
 </p>
@@ -1107,13 +1108,13 @@ can have windows which exist, but which are not on the screen.</p>
 <p>^K N and ^K P move the cursor to next or previous window.  If the next
 window is off the screen it is moved onto the screen, along with any
 operator windows are target it.</p>
-<h3>MACROS</h3>
+## MACROS
 <p>- add something here.
 </p>
-<h3>Screen update</h3>
+## Screen update
 <p>- add something here.
 </p>
-<h3>Syntax Highlighter</h3>
+## Syntax Highlighter
 
 <p>There are two parts to the syntax highlighter: the parser (in syntax.c)
 and the line attribute database (in lattr.c).  The parser is simple enough:
@@ -1158,7 +1159,7 @@ another (PHP in HTML, for example), a macro system was added to the state
 machine loader.  Recursion is allowed in the macro calls, but is limited to
 a depth of 5.</p>
 
-<h3>Line attribute cache</h3>
+## Line attribute cache
 
 <p>The second part of the syntax highlighter is the line attribute cache.
 In the original implementation, the state of the first line of each window
@@ -1192,7 +1193,7 @@ correct.  Some changes will require a large amount of reparsing, but many
 will not.  In any case, the the highlighting on the screen is always
 correct.</p>
 
-<h3>Files</h3>
+## Files
 
 <table width="100%" cellspacing=20 border=0 cellpadding=0>
 <colgroup>
