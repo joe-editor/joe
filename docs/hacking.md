@@ -798,6 +798,88 @@ returns true if the character is not printable- if it's not in cclass_print.
 [charmap.c](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/charmap.c) and [charmap.h](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/joe/charmap.h) implement JOE's representation of character
 sets.
 
+Each character set is represented by a "struct charmap *".  A charmap
+provides information about a specific character set.  It provides these
+methods:
+
+	/* True if character is punctuation */
+	int joe_ispunct(struct charmap *map, int ch);
+
+	/* True if character is printable */
+	int joe_isprint(struct charmap *map, int ch);
+
+	/* True if character is a space */
+	int joe_isspace(struct charmap *map, int ch);
+
+	/* True if character is first of an identifier */
+	int joe_isalpha_(struct charmap *map, int ch);
+
+	/* True if character is rest of an identifier */
+	int joe_isalnum_(struct charmap *map, int ch);
+
+	/* True if character is blank: space or tab */
+	int joe_isblank(struct charmap *map, int ch);
+
+	/* True if character is blank tab CR LF FF or NUL */
+	int joe_isspace_eos(struct charmap *map, int ch);
+
+	/* Convert to lowercase */
+	int joe_tolower(struct charmap *map, int ch);
+
+	/* Convert to uppercase */
+	int joe_tolower(struct charmap *map, int ch);
+
+	/* Convert from character set to Unicode */
+	int to_uni(struct charmap *map, int ch);
+
+	/* Convert from Unicode to character set */
+	int from_uni(struct charmap *map, int ch);
+
+There are two types of character sets: Unicode and 8-bit.  If the character
+set is Unicode, then charmap->type will be true.
+
+Joe_locale intializes some global character maps:
+
+	extern struct charmap *locale_map;      /* Character map of terminal */
+	extern struct charmap *utf8_map;        /* UTF-8 character map */
+	extern struct charmap *utf16_map;       /* UTF-16 character map */
+	extern struct charmap *utf16r_map;      /* UTF-16 reversed  character map */
+	extern struct charmap *ascii_map;       /* Plain ASCII map */
+
+Find_charmap can be used to find a named character set:
+
+	/* Find (load if necessary) a character set */
+	struct charmap *find_charmap(const char *name);
+
+If the character set is not already built into JOE, find_charmap tries to
+load it from a file.  It looks in $HOME/.joe/charmaps and /usr/share/joe/charmaps.
+
+The following character sets are built into JOE:
+
+	ASCII, ISO-8859-1, ISO-8859-2, ISO-8859-3, ISO-8859-4,
+	ISO-8859-5, ISO-8859-6, ISO-8859-7, ISO-8859-8,
+	ISO-8859-9, ISO-8859-10, ISO-8859-11, ISO-8859-13,
+	ISO-8859-14, ISO-8859-15, ISO-8859-16, ISO-8859-1,
+	KOI-8, KOI8-R, KOI8-T, KOI8-U, CP1251, CP1256,
+	CP1255, ARMSCII-8, TIS-620, GEORGIAN-PS
+
+Guess_map tries to determine the character map based on the contents of a
+buffer:
+
+	struct charmap *guess_map(const char *buf, ptrdiff_t len);
+
+It selects the locale_map unless it detects valid UTF-8 sequences in the
+buffers.
+
+Finally, my_iconv is provided to convert from one character set to another:
+
+	void my_iconv(
+		char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
+		const char *src,struct charmap *src_map
+	);
+
+This is used in a few places in JOE, but most of JOE uses to_uni and
+from_uni to convert between character sets a character at a time.
 
 ## Coroutines in JOE
 
