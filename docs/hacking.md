@@ -27,7 +27,7 @@ An interval is a simple range of character codes in the following structure:
 If A-Z is be represented, then first is 65 and last is 90.  If just the
 number zero is to be represented, then first and last are both 48.
 
-An array of these represents a set.  If array is sorted, you can use a
+An array of these represents a set.  If the array is sorted, you can use a
 binary search to determine if a character belongs to a set.  Two functions
 supporting this are provided:
 
