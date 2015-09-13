@@ -1,7 +1,5 @@
 # JOE - Joe's Own Editor
 
-Test
-
 [TOC]
 
 ## Syntax

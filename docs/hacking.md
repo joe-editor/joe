@@ -1,3 +1,37 @@
+# JOE theory of operation
+
+Try it: ~
+Try it: !
+Try it: @
+Try it: #
+Try it: $
+Try it: %
+Try it: ^
+Try it: &
+Try it: \*
+Try it: (
+Try it: )
+Try it: -
+Try it: \_
+Try it: =
+Try it: +
+Try it: \[
+Try it: \{
+Try it: \]
+Try it: \}
+Try it: \\
+Try it: |
+Try it: ;
+Try it: :
+Try it: '
+Try it: "
+Try it: ,
+Try it: \<
+Try it: .
+Try it: \>
+Try it: /
+Try it: ?
+
 <h3>Coroutines in JOE</h3>
 
 <p>JOE 3.6 now uses co-routines to help reduce the amount of event-driven
