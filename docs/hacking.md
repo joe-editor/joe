@@ -1,36 +1,36 @@
 # JOE theory of operation
 
-Try it: ~
-Try it: !
-Try it: @
-Try it: #
-Try it: $
-Try it: %
-Try it: ^
-Try it: &
-Try it: \*
-Try it: (
-Try it: )
-Try it: -
-Try it: \_
-Try it: =
-Try it: +
-Try it: \[
-Try it: \{
-Try it: \]
-Try it: \}
-Try it: \\
-Try it: |
-Try it: ;
-Try it: :
-Try it: '
-Try it: "
-Try it: ,
-Try it: \<
-Try it: .
-Try it: \>
-Try it: /
-Try it: ?
+Try it: ~ ok
+Try it: ! ok
+Try it: @ ok
+Try it: # ok
+Try it: $ ok
+Try it: % ok
+Try it: ^ ok
+Try it: & ok
+Try it: \* ok
+Try it: ( ok
+Try it: ) ok
+Try it: - ok
+Try it: \_ ok
+Try it: = ok
+Try it: + ok
+Try it: \[ ok
+Try it: \{ ok
+Try it: \] ok
+Try it: \} ok
+Try it: \\ ok
+Try it: | ok
+Try it: ; ok
+Try it: : ok
+Try it: ' ok
+Try it: " ok
+Try it: , ok
+Try it: <
+Try it: . ok
+Try it: \> ok
+Try it: / ok
+Try it: ? ok
 
 <h3>Coroutines in JOE</h3>
 
