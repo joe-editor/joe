@@ -217,7 +217,7 @@ Here are the provided methods:
 	void rset_init(struct Rset *r);
 
 	/* Clear a struct Rset: anything malloced for it is freed, but the
-         * struct Rset itself is not freed (it could be embedded in another
+	 * struct Rset itself is not freed (it could be embedded in another
 	 * structure). */
 	void rset_clr(struct Rset *r);
 
@@ -232,7 +232,7 @@ Here are the provided methods:
 	void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size);
 
 	/* De-duplicate leaf tables and set up embedded table for quicker
-	   access for characters below 512 */
+	 * access for characters below 512 */
 	void rset_opt(struct Rset *r);
 
 	/* Test if a character is in a set: only use this after rset_opt has
@@ -245,7 +245,7 @@ Here are the provided methods:
 Rset_add originally accepted just a single character to add, not a range. 
 This turned out to be too inefficient: the editor was using a lot of CPU
 time during start-up just to build the standard character class tables. 
-Anyway, it has been modified to loop over the range for a fast inner loop
+Therefore, it has been modified to loop over the range for a fast inner loop
 and to lift function call overhead out of the original loop in rset_set.
 
 ### Rtree
@@ -259,7 +259,7 @@ Here are the provided methods:
 	void rtree_init(struct Rtree *r);
 
 	/* Clear a struct Rtree: anything malloced for it is freed, but the
-         * struct Rtree itself is not freed (it could be embedded in another
+	 * struct Rtree itself is not freed (it could be embedded in another
 	 * structure). */
 	void rtree_clr(struct Rtree *r);
 
@@ -278,7 +278,7 @@ Here are the provided methods:
 	void rtree_build(struct Rtree *r, struct interval_list *l);
 
 	/* De-duplicate leaf tables and set up embedded table for quicker
-	   access for characters below 512 */
+	 * access for characters below 512 */
 	void rtree_opt(struct Rtree *r);
 
 	/* Test if a character is in a tree: return pointer bound to it
@@ -394,7 +394,7 @@ The following methods are provided:
 	int cclass_lookup_unopt(struct Cclass *m, int ch);
 
 	/* Optimize a character class for fast lookup with cclass_lookup.
-         * Generates a radix tree version of the character class. */
+	 * Generates a radix tree version of the character class. */
 	void cclass_opt(struct Cclass *cclass);
 
 	/* Return true if character is in the class */
