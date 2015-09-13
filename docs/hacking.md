@@ -1,4 +1,4 @@
-# JOE theory of operation
+# JOE: Hacker's Guide
 
 [TOC]
 
