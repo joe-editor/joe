@@ -1,7 +1,5 @@
 # JOE - Joe's Own Editor
 
-Test
-
 [TOC]
 
 ## Syntax
@@ -1947,7 +1945,7 @@ Since __^K ;__ loads  the definition file into the current window, you
 probably want to split the window first with __^K O__, to have both the
 original file and the definition file loaded.
 
-## Calulator
+## Calculator
 
 JOE has a built-in calculator which can be invoked with __Esc M__.
 
