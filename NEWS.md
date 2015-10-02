@@ -2,6 +2,12 @@
 
 [Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
 
+### JOE.next (not yet released changes in Mercurial)
+
+* Bugs fixed
+
+	* Fix use after free bug which shows up in OpenBSD
+
 ### JOE 4.1
 
 * New or improved syntax files for the following languages: 

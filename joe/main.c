@@ -211,7 +211,7 @@ int edloop(int flg)
 		}
 
 		/* Restore modes */
-		if (maint->curwin->watom->what & TYPETW) {
+		if (!leave && maint->curwin->watom->what & TYPETW) {
 			bw = (BW *)maint->curwin->object;
 
 			if (auto_off) {
