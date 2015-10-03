@@ -4,6 +4,34 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Usability Enhancements
+
+	* The top Google help searches for JOE include:
+
+		* How do I save and exit?  The startup copyright notice
+		  has been replaced with basic help for beginners: ^C to
+		  abort, ^K X to save and exit, and ^K H for help.
+
+		* How do I dismiss the region highlighting?  The traditional
+		  way is to hit ^K B ^K K, but this is slightly non-obvious
+		  and has always been awkward.  Now Ctrl-C will do it.
+
+		* How do I close all files and exit?  Now Ctrl-KQ does this.
+
+	* Restyle the help screens:
+
+		* Make it more obvious that there is more than one screen:
+		  put the help for help inline with the text instead of in
+		  the (seemingly invisible) header.
+
+		* Mention Ctrl-Arrow region selection, status
+		  and goto matching delimiter commands on the first screen.
+
+	* Remove time and "Ctrl-K H for help" message from status bar. 
+	  Beginners often don't notice this help message, and it takes up
+	  valuable status bar space that power users want for the context
+	  display.
+
 * Bugs fixed
 
 	* Fix use after free bug which shows up in OpenBSD

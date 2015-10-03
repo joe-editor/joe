@@ -12,6 +12,7 @@
 #endif
 
 char *exmsg = NULL;		/* Message to display when exiting the editor */
+char *xmsg;			/* Message to display when starting the editor */
 int usexmouse=0;
 int xmouse=0;
 int nonotice;
@@ -630,9 +631,15 @@ int main(int argc, char **real_argv, const char * const *envv)
 		help_on(maint);
 	}
 	if (!nonotice) {
-		joe_snprintf_3(msgbuf,JOE_MSGBUFSIZE,joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
+		if (xmsg) {
+			char fill = ' ';
+			xmsg = stagen(NULL, (BW *)(lastw(maint)->object), xmsg, ' ');
+			msgnw(((BASE *)lastw(maint)->object)->parent, xmsg);
+		} else {
+			joe_snprintf_3(msgbuf,JOE_MSGBUFSIZE,joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
+			msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
+		}
 
-		msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
 	}
 
 	if (!idleout) {

@@ -394,7 +394,7 @@ window size).
 
 * regex
 Use standard regular expression syntax by default, instead of the JOE syntax
-(where specical characters have their meaning only when preceded with
+(where special characters have their meaning only when preceded with
 backslash).
 <br>
 
@@ -688,7 +688,7 @@ The following escape sequences can be used in these strings:
   %dm month
   %dY year
   %Ename%  value of environment variable
-  %Tname%  value of option (ON or OFF for boolean options)
+  %Tname%  value of option (ON or OFF for Boolean options)
 ~~~~~
 
 These formatting escape sequences may also be given:
@@ -909,7 +909,7 @@ __Esc L__ to check the highlighted block or the entire file if no block is
 highlighted.
 
 JOE passes the language and character encoding to the spell checker.  To
-change the langauge, hit __^T V__.  For example, use en_US for English.
+change the language, hit __^T V__.  For example, use en_US for English.
 
 ## Overtype mode
 
@@ -1157,7 +1157,7 @@ the file list.
 
 * __x__
 
-JOE will use the stanrard syntax for regular expressions if this option is
+JOE will use the standard syntax for regular expressions if this option is
 given.  In the standard syntax, these characters have their special
 meanings directly, and do not have to be escaped with backslash: ., \*, \+, ?, 
 \{, \}, (, ), |, ^, $ and \[.
@@ -1276,7 +1276,7 @@ within the Nth set of \\( \\).
 
 * __\\l, \\u__
 
-Convert the next character of the repacement text to lowercase or uppercase.
+Convert the next character of the replacement text to lowercase or uppercase.
 
 * __\\L, \\U__
 
@@ -1328,7 +1328,7 @@ This matches a specific Unicode code point given in hexadecimal.
 
 * \\xFF
 
-This matches a specific character specificied in hexadecimal.
+This matches a specific character specified in hexadecimal.
 
 * \\377
 
@@ -1417,7 +1417,7 @@ an incremental search backwards.  As you type the search string, the cursor
 will jump to the first text that matches the regular expression you have
 entered so far.
 
-Hit __Esc S__ or __Esc R__ again to find the next occurance of the text or
+Hit __Esc S__ or __Esc R__ again to find the next occurrence of the text or
 to switch the direction of the search.
 
 __^S__, __^\\__ and __^L__ have the same effect as __Esc S__. __^R__ has the same
@@ -1511,7 +1511,7 @@ will be converted to uppercase.
 ### How do I deselect a highlighted block?
 
 After you are finished with some block operations, you can just leave the
-highlighting on if you don't mind it (but don't accidently hit __^K Y__). 
+highlighting on if you don't mind it (but don't accidentally hit __^K Y__). 
 If it really bothers you, however, just hit __^K B ^K K__, to turn the
 highlighting off.
 
@@ -1650,7 +1650,7 @@ commands.
 
 ### Windowing system model
 
-JOE has an unsual model for its windowing system.  Basically you have a ring
+JOE has an unusual model for its windowing system.  Basically you have a ring
 of windows, but only a section of this ring may fit on the screen.  The windows
 not on the screen still exist, they are just scrolled off.  When you hit
 __^K N__ on the bottom window of the screen, it scrolls further windows from
@@ -1660,7 +1660,7 @@ view.
 Native JOE tries to keep each loaded buffer in a window, so users can find
 all of the buffers by scrolling through the windows.  The __explode__
 command (__^K I__) either expands all windows to the size of the screen so
-that only one window can fit on the screen, or shinks them all as much as
+that only one window can fit on the screen, or shrinks them all as much as
 possible to fit many on the screen.
 
 On the other hand, JOE supports "orphan" buffers- files loaded into the
@@ -1938,7 +1938,7 @@ select the one you want and JOE jumps to it.  If you hit __^K ;__ again before
 hitting any other keys, the same menu re-appears with the cursor left in the
 original location.
 
-You can hit __^K -__ to move the cusor back to the original location before the
+You can hit __^K -__ to move the cursor back to the original location before the
 tags search (often __^C__ will work as well).
 
 Since __^K ;__ loads  the definition file into the current window, you
@@ -2154,7 +2154,7 @@ Pop-up shell windows have a number of nice use cases:
 	you are in the right place, hit __^K E__ to load a file (or type "edit file"
 	from the shell).
 
-* Use it in conjuction with the error parser to find files
+* Use it in conjunction with the error parser to find files
 
 	Hit F1 and navigate to a directory.  Use grep or find (or both)
 	to generate a list of files):
@@ -2181,7 +2181,7 @@ Pop-up shell windows have a number of nice use cases:
 	Hit __Esc Space__ to have JOE edit the file and jump to the specified
 	line (also you can use __Esc -__ and __Esc =__ to step through the list).
 
-* Use it in conjuction with search and replace to edit many files
+* Use it in conjunction with search and replace to edit many files
 
 	Once JOE has a list of files (from above), use search and replace
 	with the 'e' option to visit all of them:

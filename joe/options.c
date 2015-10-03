@@ -608,7 +608,13 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 		/* Why no case 6, string option? */
 		/* Keymap, mold, mnew, etc. are not strings */
 		/* These options do not show up in ^T */
-		if (!zcmp(s, "lmsg")) {
+		if (!zcmp(s, "xmsg")) {
+			if (arg) {
+				xmsg = zdup(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, "lmsg")) {
 			if (arg) {
 				if (options)
 					options->lmsg = zdup(arg);

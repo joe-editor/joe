@@ -7,6 +7,7 @@
  */
 
 extern char *exmsg;	/* Exit message */
+extern char *xmsg;	/* Startup message */
 extern int help;		/* Set to start with help on */
 extern Screen *maint;		/* Primary screen */
 extern int usexmouse;		/* Use xterm mouse support? */
