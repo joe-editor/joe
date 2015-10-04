@@ -624,7 +624,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 
 {Escape sequences
  Escape sequences: \\x{10fff}  Unicode code point   \\p{Ll}  Unicode category \| 
-     \ / \\I  Identifier start      \\t  tab          \\e  escape               \| 
+     \\i / \\I  Identifier start      \\t  tab          \\e  escape               \| 
      \\c / \\C  Identifier continue   \\n  newline      \\r  carriage return      \| 
      \\d / \\D  Digit / Not a digit   \\b  backspace  \\xFF  hex character        \| 
      \\w / \\W  Word / Not a word     \\a  alert      \\377  octal character      \| 

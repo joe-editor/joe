@@ -1199,10 +1199,10 @@ or more Bs, and then a C.
 This indicates that the item to the left is optional.  For example, if you give
 __AB\\?C__ as the search text, JOE will find AC or ABC.
 
-* __\\\{min,max\\\}__
+* __\\\{min,max\}__
 
 This indicates that JOE should try to find a string with a specific number
-of occurrences of the item to the left.  For example, __AX\\\{2,5\\\}B__ will
+of occurrences of the item to the left.  For example, __AX\\\{2,5\}B__ will
 match these strings: AXXB, AXXXB, AXXXXB, and AXXXXXB.  Min can be left out
 to indicate 0 occurrences.  Max (and the comma) can be left out to indicate
 any number of occurrences.
