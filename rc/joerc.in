@@ -110,7 +110,7 @@
 
  -noexmsg	Disable exiting message ("File not changed so no update needed")
 
- -noxon		Attempt to turn off ^S/^Q processing
+-noxon		Attempt to turn off ^S/^Q processing
 
  -orphan	Put extra files given on command line in orphaned buffers
 		instead of in windows
@@ -570,44 +570,44 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  text.  Otherwise, the locale 8-bit character set is assumed.
 
 {Basic
- \|\uREGION\u        \|\uGO TO\u           \|\uGO TO\u           \|\uDELETE\u    \|\uEXIT\u        \|\uSEARCH\u   \| 
- \|\b^Arrow\b select \|\b^Z\b prev. word   \|\b^U/^V\b PgUp/PgDn \|\b^D\b char.  \|\b^KX\b save    \|\b^KF\b find \| 
- \|\b^KB\b begin     \|\b^X\b next word    \|\uMISC\u            \|\b^Y\b line   \|\b^C\b  abort   \|\b^L\b  next \| 
- \|\b^KK\b end       \|\b^KU\b top of file \|\b^KJ\b paragraph   \|\b^W\b >word  \|\b^KQ\b all     \|\uHELP\u     \| 
- \|\b^KC\b copy      \|\b^KV\b end of file \|\b^KA\b center line \|\b^O\b word<  \|\uFILE\u        \|\b^[.\b next \| 
- \|\b^KM\b move      \|\b^A\b beg. of line \|\b^K SPACE\b status \|\b^J\b >line  \|\b^KE\b edit    \|\b^[,\b prev \| 
- \|\b^KW\b file      \|\b^E\b end of line  \|\uSPELL\u           \|\b^[O\b line< \|\b^KR\b insert  \|\b^KH\b off  \| 
- \|\b^KY\b delete    \|\b^KL\b to line no. \|\b^[N\b word        \|\b^_\b undo   \|\b^KD\b save    \|\b^T\b  menu \| 
- \|\b^K/\b filter    \|\b^G\b  matching (  \|\b^[L\b file        \|\b^^\b redo   \|\b^K`\b revert  \|\b\b         \| 
+ \|\uREGION\u        \|\uGO TO\u           \|\uGO TO\u           \|\uDELETE\u    \|\uEXIT\u       \|\uSEARCH\u    \| 
+ \|\b^Arrow\b Select \|\b^Z\b Prev. word   \|\b^U/^V\b PgUp/PgDn \|\b^D\b Char.  \|\b^KX\b Save   \|\b^KF\b Find  \| 
+ \|\b^KB\b Begin     \|\b^X\b Next word    \|\uMISC\u            \|\b^Y\b Line   \|\b^C\b  Abort  \|\b^L\b  Next  \| 
+ \|\b^KK\b End       \|\b^KU\b Top of file \|\b^KJ\b Paragraph   \|\b^W\b >Word  \|\b^KQ\b All    \|\uHELP\u      \| 
+ \|\b^KC\b Copy      \|\b^KV\b End of file \|\b^KA\b Center line \|\b^O\b Word<  \|\uFILE\u       \|\bEsc .\b Next\| 
+ \|\b^KM\b Move      \|\b^A\b Beg. of line \|\b^K Space\b Status \|\b^J\b >Line  \|\b^KE\b Edit   \|\bEsc ,\b Prev\| 
+ \|\b^KW\b File      \|\b^E\b End of line  \|\uSPELL\u           \|\b^[O\b Line< \|\b^KR\b Insert \|\b^KH\b Off   \| 
+ \|\b^KY\b Delete    \|\b^KL\b To line no. \|\bEsc N\b Word      \|\b^_\b Undo   \|\b^KD\b Save   \|\b^T\b  Menu  \| 
+ \|\b^K/\b Filter    \|\b^G\b  Matching (  \|\bEsc L\b File      \|\b^^\b Redo   \|\b^K`\b Revert \|\b\b          \| 
 }
 
 {Advanced
  \|\uMACROS\u         \|\uSCROLL\u           \|\uWINDOW\u               \|\uGO TO\u      \|\uI-SEARCH\u     \| 
- \|\b^K[ 0-9\b Record \|\b^[W\b / \b^[Z\b Vert.  \|\b^KO\b open  \b^C\b  close  \|\b^[B\b to ^KB \|\b^[R\b Backwards\| 
- \|\b^K]\b     Stop   \|\b^K<\b / \b^K>\b Horz.  \|\b^KG\b grow  \b^KT\b shrink \|\b^[K\b to ^KK \|\b^[S\b Forwards \| 
- \|\b^[I\b     Text   \|\b^R\b  Recenter /   \|\b^KN\b next  \b^KP\b prev.  \|\b^N ^P\b line \|\uBOOKMARKS\u    \| 
- \|\b^K?\b     Pause  \|  retype screen  \|\b^KI\b show one / all   \|\b^F ^B\b char \|\b^[ 0-9\b Goto  \| 
- \|   for prompt  \|\uINSERT\u           \|\uSHELL\u                \|           \|\b^[^[\b   Set   \| 
- \|\b^K 0-9\b  Play   \|\b^]\b line \b^['\b Ctrl \|\bF1-F4\b term emulator  \|\uINDENT\u     \|\b^K-\b auto prev\| 
- \|\b^K\\\b     Repeat \|\b^@\b space \b^\\\b Meta \|\b^K'\b buffer           \|\b^K,\b less   \|\b^K=\b auto next\| 
- \|\b^[D\b     Dump   \|\b^[Y\b paste        \|\b^KZ\b suspnd \b^[!\b appnd \|\b^K.\b more   \|             \| 
+ \|\b^K[ 0-9\b Record \|\b^[W\b / \b^[Z\b Vert.  \|\b^KO\b Open  \b^C\b  Close  \|\b^[B\b to ^KB \|\b^R\b Backwards \| 
+ \|\b^K]\b     Stop   \|\b^K<\b / \b^K>\b Horz.  \|\b^KG\b Grow  \b^KT\b Shrink \|\b^[K\b to ^KK \|\b^S\b Forwards  \| 
+ \|\bEsc I\b   Text   \|\b^R\b  Refresh      \|\b^KN\b Next  \b^KP\b Prev.  \|\b^N ^P\b Line \|\uBOOKMARKS\u    \| 
+ \|\b^K?\b     Pause  \|                 \|\b^KI\b Show one / All   \|\b^F ^B\b Char \|\bEsc 0-9\b Goto \| 
+ \|   for prompt  \|\uINSERT\u           \|\uSHELL\u                \|           \|\bEsc Esc\b Set  \| 
+ \|\b^K 0-9\b  Play   \|\b^]\b Line  \b^Q\b Ctrl \|\bF1-F4\b Term emulator  \|\uINDENT\u     \|\b^K-\b Auto prev\| 
+ \|\b^K\\\b     Repeat \|\b^@\b Space \b^\\\b Meta \|\b^K'\b In buffer        \|\b^K,\b Less   \|\b^K=\b Auto next\| 
+ \|\bEsc D\b   Dump   \|\bEsc Y\b Paste      \|\b^KZ\b Suspnd \b^[!\b Appnd \|\b^K.\b More   \|             \| 
 }
 
 {Programs
  \|\uCOMMANDS\u            \|\uCOMPILING\u                  \|\uQUICK\u                       \| 
- \|\b^[X\b command prompt  \|\b^[C\b Compile & parse        \| \b^G\b  find word under cursor \| 
- \|\b^[=\b calculator      \|\b^[G\b Grep & parse           \| \b^K;\b tags file search       \| 
- \|\bshowlog\b startup log \|\b^[=\b To next error          \| \b^[ ENTER\b complete word     \| 
- \|\bupper\b   change case \|\b^[-\b To prev. error         \|\uBUFFER\u                      \| 
- \|\blower\b   change case \|\b^[ SPACE\b Jump to error     \|\b^[U\b next                    \| 
- \|\bcd\b      change dir  \|                           \|\b^[V\b prev                    \| 
- \|\bkeymap\b  change map  \|                           \|\b^[X bufed\b switch            \| 
+ \|\bEsc X\b Command prompt\|\bEsc C\b Save modified compile\|\b^G\b  Find word under cursor  \| 
+ \|\bEsc =\b Calculator    \|\bEsc G\b Grep                 \|\b^K;\b Tags file search        \| 
+ \|\bshowlog\b Startup log \|\bEsc =\b To next error        \|\bEsc Enter\b Complete word     \| 
+ \|\bupper\b   Change case \|\bEsc -\b To prev. error       \|\uBUFFER\u                      \| 
+ \|\blower\b   Change case \|\bEsc Space\b Jump to error    \|\bEsc U\b Next                  \| 
+ \|\bcd\b      Change dir  \|                           \|\bEsc V\b Previous              \| 
+ \|\bkeymap\b  Change map  \|                           \|\bEsc X bufed\b Switch          \| 
  \|                    \|                           \|                            \| 
 }
 
-  Missing: ESC ~ not mod
-           ESC e parse errors in buffer
-           ESC ^Y   yank pop
+  Missing: Esc ~ not mod
+           Esc e parse errors in buffer
+           Esc ^Y   yank pop
   
 {Search
  Search sequences:                                                            \| 
@@ -643,7 +643,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Math
-  \uMATH COMMANDS\u (ESC m for math) \uFUNCTIONS\u                                    \| 
+  \uMATH COMMANDS\u (Esc m for math) \uFUNCTIONS\u                                    \| 
       hex hex display mode       sin cos tab asin acos atan                   \| 
       dec decimal mode           sinh cosh tanh asinh acosh atanh             \| 
       ins type result into file  sqrt cbrt exp ln log                         \| 
@@ -799,7 +799,7 @@ prevw		^K p
 query		^K ?		Macro query insert
 record		^K [		Record a macro
  retype		^R		Refresh screen
-recenter	^R		Recenter and refresh screen
+ recenter	^R		Recenter and refresh screen
 rtn		^M		Return
 shell		^K Z		Shell escape
 shell		^K ^Z
@@ -960,6 +960,7 @@ mwind!,mfit,jump,bol		^[ SP
 isrch		^[ s		Forward incremental search
 isrch		^[ S		Forward incremental search
 isrch		^[ ^S		Forward incremental search
+isrch		^S
 notmod		^[ ~		Not modified
 mwind,mfit,prevw,nxterr		^[ =		To next error
 parserr		^[ e		Parse errors in current buffer
@@ -969,6 +970,7 @@ mwind,mfit,prevw,prverr		^[ -		To previous error
 rsrch		^[ r		Backward incremental search
 rsrch		^[ R		Backward incremental search
 rsrch		^[ ^R		Backward incremental search
+retype,rsrch	^R
 run		^[ !		Run a program in a window
 tomarkb		^[ b		Go to beginning of marked block
 tomarkb		^[ ^B		Go to beginning of marked block
