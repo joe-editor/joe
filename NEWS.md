@@ -17,6 +17,7 @@
 		  and has always been awkward.  Now Ctrl-C will do it.
 
 		* How do I close all files and exit?  Now Ctrl-KQ does this.
+		  Previously ^KQ was the same as ^C: abort a single file.
 
 	* Restyle the help screens:
 
@@ -31,6 +32,11 @@
 	  Beginners often don't notice this help message, and it takes up
 	  valuable status bar space that power users want for the context
 	  display.
+
+	* Enable -noxon by default (disable ^S/^Q flow control).  This
+	  allows us to bind ^Q to quote and ^S / ^R to incremental search.
+
+	* Document ESC X (command prompt) in the help screens.
 
 * Bugs fixed
 
