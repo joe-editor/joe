@@ -249,6 +249,9 @@ struct glopts {
 				   14 for local option off_t
 				   6 for local option string (in utf8)
 				   7 for local option off_t+1, with range checking
+				   9 for syntax (options->syntax_name)
+				   13 for byte encoding (options->map_name)
+				   15 for file type (options->ftype)
 				 */
 	void *set;		/* Address of global option */
 	const char *addr;		/* Local options structure member address */
@@ -811,12 +814,12 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 		}
 		break;
 	case 7:
-		v = (int)(calc(bw, s, 0) - 1.0);
+		vv = (off_t)(calc(bw, s, 0) - 1.0);
 		if (merr) {
 			msgnw(bw->parent, merr);
 			ret = -1;
-		} else if (v >= glopts[x].low && v <= glopts[x].high)
-			*(int *) ((char *) &bw->o + glopts[x].ofst) = v;
+		} else if (vv >= glopts[x].low && vv <= glopts[x].high)
+			*(off_t *) ((char *) &bw->o + glopts[x].ofst) = vv;
 		else {
 			msgnw(bw->parent, joe_gettext(_("Value out of range")));
 			ret = -1;
@@ -1134,6 +1137,8 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 	return 0;
 }
 
+/* Get option in printable format for %Zoption-name% */
+
 const char *get_status(BW *bw, char *s)
 {
 	static char buf[OPT_BUF_SIZE];
@@ -1147,13 +1152,36 @@ const char *get_status(BW *bw, char *s)
 			} case 1: {
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *(int *)glopts[y].set);
 				return buf;
+			} case 2: {
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *(char **)glopts[y].set ? *(char **)glopts[y].set : "");
+				return buf;
 			} case 4: {
 				return *(int *) ((char *) &bw->o + glopts[y].ofst) ? "ON" : "OFF";
 			} case 5: {
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *(int *) ((char *) &bw->o + glopts[y].ofst));
 				return buf;
+			} case 6: {
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *(char **)((char *) &bw->o + glopts[y].ofst) ? *(char **)((char *) &bw->o + glopts[y].ofst) : "");
+				return buf;
 			} case 7: {
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *(int *) ((char *) &bw->o + glopts[y].ofst) + 1);
+#ifdef HAVE_LONG_LONG
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%lld", (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst) + 1);
+#else
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%ld", (long)*(off_t *) ((char *) &bw->o + glopts[y].ofst) + 1);
+#endif
+				return buf;
+			} case 9: {
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", bw->o.syntax_name ? bw->o.syntax_name : "");
+				return buf;
+			} case 13: {
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", bw->o.map_name ? bw->o.map_name : "");
+				return buf;
+			} case 14: {
+#ifdef HAVE_LONG_LONG
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%lld", (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
+#else
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%ld", (long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
+#endif
 				return buf;
 			} case 15: {
 				return bw->o.ftype;

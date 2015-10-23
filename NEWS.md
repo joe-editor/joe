@@ -38,7 +38,16 @@
 
 	* Document ESC X (command prompt) in the help screens.
 
+* Minor enhancements
+	* Tags search now tries to find the tags file in parent directories
+	  if it does not exist in the current directory and if the TAGS
+	  environment variable was not set.
+
 * Bugs fixed
+
+	* Fix bug where indent step value was not shown on ^T menu
+
+	* Fix bug where setting margin doesn't work on big-endian systems
 
 	* Fix use after free bug which shows up in OpenBSD
 

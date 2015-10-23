@@ -254,7 +254,8 @@
   %dm month
   %dY year
   %Ename%  value of environment variable
-  %Tname%  value of option (ON or OFF for boolean options)
+  %Zname%  value of option (ON or OFF for boolean options)
+           (hit TAB at mode command prompt for full list)
 
  These formatting escape sequences may also be given:
  

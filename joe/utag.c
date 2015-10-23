@@ -173,7 +173,27 @@ static int dotag(W *w, char *s, void *obj, int *notify)
 		char *tagspath = getenv("TAGS");
 		if(tagspath) {
 			f = fopen(tagspath, "r");
-			prefix = dirprt(tagspath);
+		}
+		/* if no TAGS variable, try finding tags file in parent directories */
+		if (!f) {
+			tagspath = "../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../../tags";
+			f = fopen(tagspath, "r");
 		}
 		if(!f) {
 			msgnw(bw->parent, joe_gettext(_("Couldn't open tags file")));
@@ -181,6 +201,8 @@ static int dotag(W *w, char *s, void *obj, int *notify)
 			vsrm(t);
 			return -1;
 		}
+		if (f)
+			prefix = dirprt(tagspath);
 	}
 	clrtags();
 	while (fgets(buf, SIZEOF(buf), f)) {
@@ -382,6 +404,27 @@ static void get_tag_list()
 		char *tagspath = getenv("TAGS");
 		if(tagspath) {
 			f = fopen(tagspath, "r");    
+		}
+		/* if no TAGS variable, try finding tags file in parent directories */
+		if (!f) {
+			tagspath = "../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../../tags";
+			f = fopen(tagspath, "r");
 		}
 	}
 	if (f) {
