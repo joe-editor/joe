@@ -161,7 +161,7 @@ void help_display(Screen *t)
 						c = *(unsigned char *)str++;
 						--len;
 					}
-					width += joe_wcwidth(!!locale_map->type, c);
+					width += joe_wcwidth((help_is_utf8 ? 1 : !!locale_map->type), c);
 				}
 			}
 			str = start;
@@ -187,9 +187,9 @@ void help_display(Screen *t)
 						case '|':
 							++str;
 							for (z=0;z!=spanwidth;++z)
-								outatr(locale_map,t->t,t->t->scrn+x+y*t->w+z,t->t->attr+x+y*t->w+z,x+z,y,' ',atr);
+								outatr((help_is_utf8 ? utf8_map : locale_map),t->t,t->t->scrn+x+y*t->w+z,t->t->attr+x+y*t->w+z,x+z,y,' ',atr);
 							if (spancount++ >= spanextra) {
-								outatr(locale_map,t->t,t->t->scrn+x+y*t->w+z,t->t->attr+x+y*t->w+z,x+z,y,' ',atr);
+								outatr((help_is_utf8 ? utf8_map : locale_map),t->t,t->t->scrn+x+y*t->w+z,t->t->attr+x+y*t->w+z,x+z,y,' ',atr);
 								++z;
 							}
 							x += z-1;
@@ -243,11 +243,11 @@ void help_display(Screen *t)
 						--len;
 					}
 
-					outatr(locale_map,
+					outatr((help_is_utf8 ? utf8_map : locale_map),
 					       t->t, t->t->scrn + x + y * t->w, 
 				       	       t->t->attr + x + y * t->w, x, y,
 					       c, atr);
-					x += (joe_wcwidth(!!locale_map->type, c) - 1);
+					x += (joe_wcwidth((help_is_utf8 ? 1 : !!locale_map->type), c) - 1);
 				}
 			}
 			atr = BG_COLOR(bg_help);
