@@ -52,7 +52,7 @@
 	* Fix use after free bug which shows up in OpenBSD
 
 	* Fix issue where highest valued unicode character equivalent was
-	  not translating to its corresponding 8-bit charaacter.  Effect
+	  not translating to its corresponding 8-bit character.  Effect
 	  of this was that Delete key was not working in shell windows in
 	  ASCII character set.
 
