@@ -62,7 +62,7 @@ int from_uni(struct charmap *cset, int c)
 		c += 256;
 
 	x = 0;
-	y = cset->from_size-1;
+	y = cset->from_size;
 	z = -1;
 	while (z != (x + y) / 2) {
 		z = (x + y) / 2;
