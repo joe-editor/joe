@@ -1,5 +1,18 @@
 Projects:
 
+  Revamp help and status line system.  Merge status line and help renderers so
+  that status line escapes can be used in the help screens and so that
+  help screen formating can be used in status line (eliminating the need
+  for right and left status strings- use springs instead).  Also:
+
+      Enhance help command so that you can supply a topic name argument.
+
+      Provide help for each edit function (use edit function name as the
+      help context name).
+
+      Maybe provide a hierarchical help system: but this means turning help
+      screen into a kind of buffer...
+
   Use c_comment, cpp_comment etc.  from Ctrl-G to tell regex \!  how to
   parse (vs.  now, where it assumes C).
 
