@@ -1237,8 +1237,8 @@ int blksum(double *sum, double *sumsq)
 						c=pgetc(q);
 						if ((c >= '0' && c <= '9') || c == 'e' || c == 'E' ||
 						    c == 'p' || c == 'P' || c == 'x' || c == 'X' ||
-						    c == '.' || c == '-' || c == '+' ||
-						    (c >= 'a' && c <= 'f') || (c >= 'A' && c<='F')) {
+						    c == '.' || c == '-' || c == '+' || c == 'o' || c == 'O' ||
+						    (c >= 'a' && c <= 'f') || (c >= 'A' && c<='F') || (c == '_')) {
 							if(x != 79)
 								buf[x++]= TO_CHAR_OK(c);
 						} else
@@ -1246,7 +1246,7 @@ int blksum(double *sum, double *sumsq)
 					}
 					/* Convert number to floating point, add it to total */
 					buf[x] = 0;
-					v = strtod(buf,NULL);
+					v = joe_strtod(buf,NULL);
 					++count;
 					accu += v;
 					accusq += v*v;

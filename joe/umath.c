@@ -6,11 +6,11 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 #include "types.h"
+#include "EngNotation.h"
 
 const char *merr;
 
-int mode_hex;
-int mode_eng;
+int mode_display; /* 0 = decimal, 1 = engineering, 2 = hex, 3 = octal, 4 = binary */
 int mode_ins;
 
 double vzero = 0.0;
@@ -56,6 +56,89 @@ struct var *dumb;
 static double eval(const char *s, int secure);
 
 int recur=0;
+
+/* Convert number in string to double */
+
+double joe_strtod(const char *ptr, const char **at_eptr)
+{
+	char buf[128];
+#ifdef HAVE_LONG_LONG
+	unsigned long long n = 0;
+#else
+	unsigned long n = 0;
+#endif
+	double x = 0.0;
+	if (ptr[0] == '0' && (ptr[1] == 'b' || ptr[1] == 'B')) {
+		ptr += 2;
+		while ((*ptr >= '0' && *ptr <= '1') || *ptr == '_') {
+			if (*ptr >= '0' && *ptr <= '1') {
+				n <<= 1;
+				n += *ptr - '0';
+			}
+			++ptr;
+		}
+		x = n;
+	} else if (ptr[0] == '0' && (ptr[1] == 'o' || ptr[1] == 'O')) {
+		ptr += 2;
+		while ((*ptr >= '0' && *ptr <= '7') || *ptr == '_') {
+			if (*ptr >= '0' && *ptr <= '7') {
+				n <<= 3;
+				n += *ptr - '0';
+			}
+			++ptr;
+		}
+		x = n;
+	} else if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X')) {
+		ptr += 2;
+		while ((*ptr >= '0' && *ptr <= '9') ||
+			(*ptr >= 'a' && *ptr <= 'f') ||
+			(*ptr >= 'A' && *ptr <= 'F') || *ptr == '_') {
+			if (*ptr >= '0' && *ptr <= '9') {
+				n <<= 4;
+				n += *ptr - '0';
+			} else if (*ptr >= 'A' && *ptr <= 'F') {
+				n <<= 4;
+				n += *ptr - 'A' + 10;
+			} else if (*ptr >= 'a' && *ptr <= 'f') {
+				n <<= 4;
+				n += *ptr - 'a' + 10;
+			}
+			++ptr;
+		}
+		x = n;
+	} else {
+		int j = 0;
+		while ((*ptr >= '0' && *ptr <= '9') || *ptr == '_') {
+			if (*ptr >= '0' && *ptr <= '9')
+				buf[j++] = *ptr;
+			++ptr;
+		}
+		if (*ptr == '.') {
+			buf[j++] = *ptr++;
+			while ((*ptr >= '0' && *ptr <= '9') || *ptr == '_') {
+				if (*ptr >= '0' && *ptr <= '9')
+					buf[j++] = *ptr;
+				++ptr;
+			}
+		}
+		if (*ptr == 'e' || *ptr == 'E') {
+			buf[j++] = *ptr++;
+			if (*ptr == '-' || *ptr == '+') {
+				buf[j++] = *ptr++;
+			}
+			while ((*ptr >= '0' && *ptr <= '9') || *ptr == '_') {
+				if (*ptr >= '0' && *ptr <= '9')
+					buf[j++] = *ptr;
+				++ptr;
+			}
+		}
+		buf[j] = 0;
+		x = strtod(buf,NULL);
+	}
+	if (at_eptr)
+		*at_eptr = ptr;
+	return x;
+}
 
 /* en means enable evaluation */
 
@@ -109,18 +192,23 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 			v = 0;
 			x = 0.0;
 		} else if (!zcmp(ident, "hex")) {
-			mode_hex = 1;
-			mode_eng = 0;
+			mode_display = 2;
+			v = get("ans");
+			x = v->val;
+		} else if (!zcmp(ident, "oct")) {
+			mode_display = 3;
+			v = get("ans");
+			x = v->val;
+		} else if (!zcmp(ident, "bin")) {
+			mode_display = 4;
 			v = get("ans");
 			x = v->val;
 		} else if (!zcmp(ident, "dec")) {
-			mode_hex = 0;
-			mode_eng = 0;
+			mode_display = 0;
 			v = get("ans");
 			x = v->val;
 		} else if (!zcmp(ident, "eng")) {
-			mode_hex = 0;
-			mode_eng = 1;
+			mode_display = 1;
 			v = get("ans");
 			x = v->val;
 		} else if (!zcmp(ident, "ins")) {
@@ -175,8 +263,8 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 			x = v->val;
 		}
 	} else if ((*ptr >= '0' && *ptr <= '9') || *ptr == '.') {
-		char *eptr;
-		x = strtod(ptr,&eptr);
+		const char *eptr;
+		x = joe_strtod(ptr, &eptr);
 		ptr = eptr;
 	} else if (*ptr == '(') {
 		++ptr;
@@ -822,9 +910,62 @@ double calc(BW *bw, char *s, int secure)
 	return eval(s, secure);
 }
 
+static void insert_commas(char *dst, char *src)
+{
+	int leading; /* Number of leading digits */
+	int trailing;
+	int n;
+	char *s;
+	/* First pass: calculate number of leading and trailing digits */
+	s = src;
+	leading = 0;
+	trailing = 0;
+	if (*s == '-') ++s;
+	else if (*s == '+') ++s;
+	while (*s >= '0' && *s <= '9') {
+		++s;
+		++leading;
+	}
+	if (*s == '.') {
+		++s;
+		while (*s >= '0' && *s <= '9') {
+			++s;
+			++trailing;
+		}
+	}
+	/* Second pass: copy while inserting */
+	s = src;
+	n = 0;
+	if (*s == '-') {
+		*dst++ = *s++;
+	} else if (*s == '+') {
+		*dst++ = *s++;
+	}
+	while (*s >= '0' && *s <= '9') {
+		*dst++ = *s++;
+		--leading;
+		if (leading != 0 && (leading % 3 == 0))
+			*dst++ = '_';
+	}
+	if (*s == '.') {
+		*dst++ = *s++;
+		while (*s >= '0' && *s <= '9') {
+			*dst++ = *s++;
+			++n;
+			if (n != trailing && (n % 3 == 0))
+				*dst++ = '_';
+		}
+	}
+	while (*s) {
+		*dst++ = *s++;
+	}
+	*dst = 0;
+}
+
 /* Main user interface */
 static int domath(W *w, char *s, void *object, int *notify, int secure)
 {
+	char buf[128];
 	double result;
 	BW *bw;
 	WIND_BW(bw, w);
@@ -838,16 +979,108 @@ static int domath(W *w, char *s, void *object, int *notify, int secure)
 		return -1;
 	}
 	vsrm(s);
-	if (mode_hex)
+	switch (mode_display) {
+		case 0: { /* Normal */
+			joe_snprintf_1(buf, SIZEOF(buf), "%.16G", result);
+			insert_commas(msgbuf, buf);
+			break;
+		} case 1: { /* Engineering */
+			char *a = to_engineering_string(result, 6, 1);
+			insert_commas(msgbuf, a);
+			joe_free(a);
+			break;
+		} case 2: { /* Hex */
 #ifdef HAVE_LONG_LONG
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%llX", (long long)result);
+			unsigned long long n = result;
 #else
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%lX", (long)result);
+			unsigned long n = result;
 #endif
-	else if (mode_eng)
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
-	else
-		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "%.16G", result);
+			int ofst = 0;
+			int len = 0;
+			int cnt = 0;
+			msgbuf[ofst++] = '0';
+			msgbuf[ofst++] = 'x';
+			while (n) {
+				buf[len++] = "0123456789ABCDEF"[n & 15];
+				n >>= 4;
+			}
+			if (!len)
+				buf[len++] = '0';
+			cnt = len;
+			do {
+				if (len && cnt != len && (len & 3) == 0)
+					msgbuf[ofst++] = '_';
+				msgbuf[ofst++] = buf[len - 1];
+			} while (--len);
+			msgbuf[ofst] = 0;
+/*
+#ifdef HAVE_LONG_LONG
+			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%llX", (long long)result);
+#else
+			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%lX", (long)result);
+#endif
+*/
+			break;
+		} case 3: { /* Octal */
+#ifdef HAVE_LONG_LONG
+			unsigned long long n = result;
+#else
+			unsigned long n = result;
+#endif
+			int ofst = 0;
+			int len = 0;
+			int cnt = 0;
+			msgbuf[ofst++] = '0';
+			msgbuf[ofst++] = 'o';
+			while (n) {
+				buf[len++] = "01234567"[n & 7];
+				n >>= 3;
+			}
+			if (!len)
+				buf[len++] = '0';
+			cnt = len;
+			do {
+				if (len && cnt != len && (len & 3) == 0)
+					msgbuf[ofst++] = '_';
+				msgbuf[ofst++] = buf[len - 1];
+			} while (--len);
+			msgbuf[ofst] = 0;
+/*
+#ifdef HAVE_LONG_LONG
+			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0o%llo", (long long)result);
+#else
+			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0o%lo", (long)result);
+#endif
+*/
+			break;
+		} case 4: { /* Binary */
+#ifdef HAVE_LONG_LONG
+			unsigned long long n = result;
+#else
+			unsigned long n = result;
+#endif
+			int ofst = 0;
+			int len = 0;
+			int cnt = 0;
+			msgbuf[ofst++] = '0';
+			msgbuf[ofst++] = 'b';
+			while (n) {
+				buf[len++] = '0' + (n & 1);
+				n >>= 1;
+			}
+			if (!len)
+				buf[len++] = '0';
+			cnt = len;
+			do {
+				if (len && cnt != len && (len & 3) == 0)
+					msgbuf[ofst++] = '_';
+				msgbuf[ofst++] = buf[len - 1];
+			} while (--len);
+			msgbuf[ofst] = 0;
+			break;
+		}
+	}
+		
 	if (bw->parent->watom->what != TYPETW || mode_ins) {
 		binsm(bw->cursor, sz(msgbuf));
 		pfwrd(bw->cursor, zlen(msgbuf));

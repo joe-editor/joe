@@ -43,6 +43,17 @@
 	  if it does not exist in the current directory and if the TAGS
 	  environment variable was not set.
 
+	* Built-in calculator can now print and accept numbers in binary,
+	  octal and engineering formats:
+		dec	12_345
+		eng	12.345_0e3
+		bin	0b11_0000_0011_1001
+		oct	0o3_0071
+		hex	0x3039
+
+	* Built-in calculator now prints and accepts separating underscores
+	  for clarity.  For example,  4_294_967_296 instead of 4294967296.
+
 * Bugs fixed
 
 	* Fix bug where indent step value was not shown on ^T menu

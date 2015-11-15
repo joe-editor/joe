@@ -645,8 +645,8 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 
 {Math
   \uMATH COMMANDS\u (Esc m for math) \uFUNCTIONS\u                                    \| 
-      hex hex display mode       sin cos tab asin acos atan                   \| 
-      dec decimal mode           sinh cosh tanh asinh acosh atanh             \| 
+  hex oct bin display mode       sin cos tab asin acos atan                   \| 
+  eng dec engineering / normal   sinh cosh tanh asinh acosh atanh             \| 
       ins type result into file  sqrt cbrt exp ln log                         \| 
      eval evaluate block         int floor ceil abs erg ergc                  \| 
      0xff enter number in hex    joe(..macro..) - runs an editor macro        \| 
