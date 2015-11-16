@@ -490,6 +490,9 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 			case 'e':
 				stalin = vsncpy(sv(stalin), sz(bw->b->o.charmap->name));
 				break;
+			case 'b':
+				stalin = vsncpy(sv(stalin), sz(locale_map->name));
+				break;
 			case 'w':
 				if (!piseof(bw->cursor)) {
 					joe_snprintf_1(buf, SIZEOF(buf), "%d", joe_wcwidth(bw->o.charmap->type, brch(bw->cursor)));

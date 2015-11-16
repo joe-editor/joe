@@ -248,7 +248,8 @@
   %S  '*SHELL*' if there is a shell running in window
   %M  Macro recording message
   %y  Syntax
-  %e  Encoding
+  %e  Encoding of file
+  %b  Encoding of terminal
   %x  Context (first non-indented line going backwards)
   %dd day
   %dm month
@@ -270,7 +271,7 @@
 -rmsg  %S Row %4r Col %3c 
 -smsg ** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w ** 
 -zmsg ** Line %r Col %c Offset %o(0x%O) ** 
--xmsg \i JOE %v ** Use \bCtrl-K X\b to save/exit, \bCtrl-C\b to abort, or \bCtrl-K H\b for help **
+-xmsg \i Joe's Own Editor %v (%b) ** Type \bCtrl-K Q\b to exit or \bCtrl-K H\b for help **\i
 
  SECOND SECTION: File name dependant local option settings:
 
