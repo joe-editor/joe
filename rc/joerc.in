@@ -613,24 +613,24 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
   
 {Search
  Search sequences:                                                            \| 
-     \\^  \\$  matches beg./end of line       \\.     match any single char      \| 
-     \\<  \\>  matches beg./end of word       \\!     match char or expression   \| 
-     \\(  \\)  grouping                       \\|     match left or right         \| 
-     \\[a-z]  matches one of a set                                             \| 
-     \\{1,3}  match 1 - 3 occurrences        \\?     match 0 or 1 occurrence     \| 
-     \\+      match 1 or more occurrences    \\*     match 0 or more occurrences \| 
+     \b\\^  \\$\b  matches beg./end of line       \b\\.\b     match any single char      \| 
+     \b\\<  \\>\b  matches beg./end of word       \b\\!\b     match char or expression   \| 
+     \b\\(  \\)\b  grouping                       \b\\|\b     match left or right         \| 
+     \b\\[a-z]\b  matches one of a set                                             \| 
+     \b\\{1,3}\b  match 1 - 3 occurrences        \b\\?\b     match 0 or 1 occurrence     \| 
+     \b\\+\b      match 1 or more occurrences    \b\\*\b     match 0 or more occurrences \| 
  Replace sequences:                                                           \| 
-     \\&      replaced with entire match     \\1 - 9 replaced with Nth group   \| 
-     \\u \\l   convert next to upper/lower    \\U \\L  case convert until \\E     \| 
+     \b\\&\b      replaced with entire match     \b\\1\b - \b9\b replaced with Nth group   \| 
+     \b\\u \\l\b   convert next to upper/lower    \b\\U \\L\b  case convert until \b\\E\b     \| 
 }
 
 {Escape sequences
- Escape sequences: \\x{10fff}  Unicode code point   \\p{Ll}  Unicode category \| 
-     \\i / \\I  Identifier start      \\t  tab          \\e  escape               \| 
-     \\c / \\C  Identifier continue   \\n  newline      \\r  carriage return      \| 
-     \\d / \\D  Digit / Not a digit   \\b  backspace  \\xFF  hex character        \| 
-     \\w / \\W  Word / Not a word     \\a  alert      \\377  octal character      \| 
-     \\s / \\S  Space / Not a space   \\f  formfeed     \\\\  backslash            \| 
+ Escape sequences: \b\\x{10fff}\b  Unicode code point   \b\\p{Ll}\b  Unicode category \| 
+     \b\\i\b / \b\\I\b  Identifier start      \b\\t\b  tab          \b\\e\b  escape               \| 
+     \b\\c\b / \b\\C\b  Identifier continue   \b\\n\b  newline      \b\\r\b  carriage return      \| 
+     \b\\d\b / \b\\D\b  Digit / Not a digit   \b\\b\b  backspace  \b\\xFF\b  hex character        \| 
+     \b\\w\b / \b\\W\b  Word / Not a word     \b\\a\b  alert      \b\\377\b  octal character      \| 
+     \b\\s\b / \b\\S\b  Space / Not a space   \b\\f\b  formfeed     \b\\\\\b  backslash            \| 
 }
 
 {SearchOptions
@@ -646,16 +646,16 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 
 {Math
   \uMATH COMMANDS\u (Esc m for math) \uFUNCTIONS\u                                    \| 
-  hex oct bin display mode       sin cos tab asin acos atan                   \| 
-  eng dec engineering / normal   sinh cosh tanh asinh acosh atanh             \| 
-      ins type result into file  sqrt cbrt exp ln log                         \| 
-     eval evaluate block         int floor ceil abs erg ergc                  \| 
-     0xff enter number in hex    joe(..macro..) - runs an editor macro        \| 
-     3e-4 floating point decimal \uBLOCK\u                                        \| 
-     a=10 assign a variable      sum cnt  Sum, count                          \| 
-  2+3:ins multiple commands      avg dev  Average, std. deviation             \| 
-     e pi constants              \uOPERATORS\u                                    \| 
-      ans previous result        ! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\| 
+  \bhex oct bin\b display mode       \bsin cos tab asin acos atan\b                   \| 
+  \beng dec\b engineering / normal   \bsinh cosh tanh asinh acosh atanh\b             \| 
+      \bins\b type result into file  \bsqrt cbrt exp ln log\b                         \| 
+     \beval\b evaluate block         \bint floor ceil abs erg ergc\b                  \| 
+     \b0xff\b enter number in hex    \bjoe(..macro..)\b - runs an editor macro        \| 
+     \b3e-4\b floating point decimal \uBLOCK\u                                        \| 
+     \ba=10\b assign a variable      \bsum cnt\b  Sum, count                          \| 
+  2+3\b:\bins multiple commands      \bavg dev\b  Average, std. deviation             \| 
+     \be pi\b constants              \uOPERATORS\u                                    \| 
+      \bans\b previous result        \b! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\b\| 
 }
 
 {Names
@@ -663,10 +663,9 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
   Hit TAB at file name prompts to generate menu of file names                 \| 
   Or use up/down keys to access history of previously entered names           \| 
   Special file names:                                                         \| 
-       !command                 Pipe in/out of a shell command                \| 
-       >>filename               Append to a file                              \| 
-       -                        Read/Write to/from standard I/O               \| 
-       filename,START,SIZE      Read/Write a part of a file/device            \| 
+       \b!\bcommand                 Pipe in/out of a shell command                \| 
+       \b>>\bfilename               Append to a file                              \| 
+       filename\b,START,SIZE\b      Read/Write a part of a file/device            \| 
            Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \| 
 }
 
