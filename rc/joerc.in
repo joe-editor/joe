@@ -665,6 +665,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
   Special file names:                                                         \| 
        \b!\bcommand                 Pipe in/out of a shell command                \| 
        \b>>\bfilename               Append to a file                              \| 
+       \b-\b                        Read/Write to/from standard I/O               \|
        filename\b,START,SIZE\b      Read/Write a part of a file/device            \| 
            Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \| 
 }
