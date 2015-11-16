@@ -49,14 +49,14 @@
 #endif
 
 #define NUM_PREFIX 17
-static char *prefix[NUM_PREFIX] = {
+static const char *prefix[NUM_PREFIX] = {
   "y", "z", "a", "f",
   "p", "n", ENG_FORMAT_MICRO_GLYPH, "m",
   "",  "k", "M", "G",
   "T", "P", "E", "Z",
   "Y"
 };
-static char *reversePrefix[NUM_PREFIX] = {
+static const char *reversePrefix[NUM_PREFIX] = {
  "e-24", "e-21", "e-18", "e-15",
  "e-12", "e-9", "e-6", "e-3",
  "e0", "e3", "e6", "e9",
@@ -72,7 +72,7 @@ const int prefix_end   = PREFIX_START + 3 * ( NUM_PREFIX - 1 );
 static char *engineering_to_exponential(const char *val);
 
 
-char *to_engineering_string(double value, unsigned int digits, /* bool */ int exponential)
+char *to_engineering_string(char *buf, ptrdiff_t buf_size, double value, unsigned int digits, /* bool */ int exponential)
 {
 	/* bool */ int is_signed = signbit(value);
 	const char *sign = is_signed ? "-" : "";
@@ -84,19 +84,20 @@ char *to_engineering_string(double value, unsigned int digits, /* bool */ int ex
 		case FP_ZERO:
 		default:
 		{
-			char *s;
 			if(exponential) {
-				asprintf(&s, "%s%.*fe0", sign, digits-1, 0.0);
+				joe_snprintf_3(buf, (size_t)buf_size, "%s%.*fe0", sign, digits-1, 0.0);
 			} else {
-				asprintf(&s, "%s%.*f", sign, digits-1, 0.0);
+				joe_snprintf_3(buf, (size_t)buf_size, "%s%.*f", sign, digits-1, 0.0);
 			}
-			return s;
+			return buf;
 		}
 		case FP_INFINITE:
-			return strdup("INFINITE");
+			joe_snprintf_0(buf, buf_size, "INFINITE");
+			return buf;
 			break;
 		case FP_NAN:
-			return strdup("NaN");
+			joe_snprintf_0(buf, buf_size, "NaN");
+			return buf;
 			break;
 		}
 	}
@@ -122,7 +123,7 @@ char *to_engineering_string(double value, unsigned int digits, /* bool */ int ex
 		LOG("LTE: expof10=%ld\n", expof10);
 	}
 
-	value *= pow(10.0, -expof10);
+	value *= pow(10.0, (double)(-expof10));
 	LOG("value=%lf\n", value);
 
 	long lintgr, lfract;
@@ -183,8 +184,8 @@ char *to_engineering_string(double value, unsigned int digits, /* bool */ int ex
 			expof10 += 3;
 			digits += 3;
 
-			long fullVal = lrint(lintgr*fractMult) + lfract;
-			long fullMult = lrintf(1000.0 * fractMult);
+			long fullVal = lrint((double)lintgr*fractMult) + lfract;
+			long fullMult = lrint(1000.0 * fractMult);
 			LOG("fullVal=%ld fullMult=%ld\n", fullVal, fullMult);
 
 			lintgr = fullVal / fullMult;
@@ -196,21 +197,20 @@ char *to_engineering_string(double value, unsigned int digits, /* bool */ int ex
 	--digits;
 	const char *decimal_str = digits ? "." : "";
 	
-	char *result;
 	if(exponential || (expof10 < prefix_start) || (expof10 > prefix_end)) {
 		LOG("RESULT 1: digits=%d\n", digits);
-		asprintf(&result, "%s%ld%s%0.*lde%ld", sign, lintgr, decimal_str, digits, lfract, expof10);
+		joe_snprintf_6(buf, (size_t)buf_size, "%s%ld%s%0.*lde%ld", sign, lintgr, decimal_str, digits, lfract, expof10);
 	} else {
 		LOG("RESULT 2: digits=%d\n", digits);
 		const char *s = prefix[(expof10-prefix_start)/3];
-		asprintf(&result, "%s%ld%s%0.*ld%s%s", sign, lintgr, decimal_str, digits, lfract, *s ? " " : "", s);
+		joe_snprintf_7(buf, (size_t)buf_size, "%s%ld%s%0.*ld%s%s", sign, lintgr, decimal_str, digits, lfract, *s ? " " : "", s);
 	}
-	return result;
+	return buf;
 }
 
-char *to_engineering_string_unit(double value, unsigned int digits, /* bool */ int numeric, const char *unit)
+char *to_engineering_string_unit(char *buf, ptrdiff_t buf_size, double value, unsigned int digits, /* bool */ int numeric, const char *unit)
 {
-	char *ret = to_engineering_string(value, digits, numeric);
+	char *ret = to_engineering_string(buf, buf_size, value, digits, numeric);
 	
 	if(isdigit(ret[0])) {
 		size_t len = strlen(ret);
@@ -231,7 +231,7 @@ double from_engineering_string(const char *val)
 	return ret;
 }
 
-char *step_engineering_string(const char *val, unsigned int digits, /* bool */ int exponential, /* bool */ int positive)
+char *step_engineering_string(char *buf, ptrdiff_t buf_size, const char *val, unsigned int digits, /* bool */ int exponential, /* bool */ int positive)
 {
 	char *tstVal = engineering_to_exponential(val);
 	double value = strtod(tstVal, NULL);
@@ -244,10 +244,10 @@ char *step_engineering_string(const char *val, unsigned int digits, /* bool */ i
 	long expof10 = lrint( floor( log10(value) ) );
 	long power =  expof10 + 1 - (int)digits;
 	
-	double inc = pow(10, power) * (positive ? +1 : -1);
+	double inc = pow(10, (double)power) * (positive ? +1 : -1);
 	double ret = value + inc;
 	
-	char *str = to_engineering_string(ret, digits, exponential);
+	char *str = to_engineering_string(buf, buf_size, ret, digits, exponential);
 	return str;
 }
 
@@ -274,7 +274,7 @@ static char *engineering_to_exponential(const char *val)
 		int c = val[len-1];
 		if(!isdigit(c) && c != '.') {
 			int i = NUM_PREFIX;
-			int j;
+			size_t j;
 			/* bool */ int look = 0;
 			const char *strt = val + len;
 			
@@ -296,8 +296,8 @@ static char *engineering_to_exponential(const char *val)
 					LOG("COMPARE %.*s to %s\n", (int)plen, strt, p);
 					if(!strncmp(strt, p, plen)) {
 						// need 4+null for new string
-						size_t vallen = (strt - val) - 1;	// skip space
-						ret = (char *)joe_malloc(vallen + 4 + 1);	// 4 the e-xx
+						size_t vallen = (size_t)((strt - val) - 1);	// skip space
+						ret = (char *)joe_malloc((ptrdiff_t)(vallen + 4 + 1));	// 4 the e-xx
 						strncpy(ret, val, vallen);	// -1 removes the space
 						ret[vallen] = '\0';
 						strcat(ret, reversePrefix[i]);

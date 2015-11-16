@@ -158,7 +158,7 @@ void help_display(Screen *t)
 					if (help_is_utf8)
 						c = utf8_decode_fwrd(&str, &len);
 					else {
-						c = *(unsigned char *)str++;
+						c = *(const unsigned char *)str++;
 						--len;
 					}
 					width += joe_wcwidth((help_is_utf8 ? 1 : !!locale_map->type), c);
@@ -239,7 +239,7 @@ void help_display(Screen *t)
 					if (help_is_utf8)
 						c = utf8_decode_fwrd(&str, &len);
 					else {
-						c = *(unsigned char *)str++;
+						c = *(const unsigned char *)str++;
 						--len;
 					}
 

@@ -30,15 +30,15 @@
 enum { eng_prefixed=0, eng_exponential };
 
 // converts a double to the specified number of digits, in either SI or exponential notation. The return string must be free()'d
-char *to_engineering_string(double value, unsigned int digits, /* bool */int numeric);
+char *to_engineering_string(char *buf, ptrdiff_t buf_size, double value, unsigned int digits, /* bool */int numeric);
 
 // as above, but append the final string
-char *to_engineering_string_unit(double value, unsigned int digits, /* bool */int numeric, const char *unit);
+char *to_engineering_string_unit(char *buf, ptrdiff_t buf_size, double value, unsigned int digits, /* bool */int numeric, const char *unit);
 
 // converts the output of to_engineering_string() into a double
 double from_engineering_string(const char *val);
 
 // step a value by the smallest possible increment
-char *step_engineering_string(const char *val, unsigned int digits, /* bool */ int numeric, /* bool */ int positive);
+char *step_engineering_string(char *buf, ptrdiff_t buf_size, const char *val, unsigned int digits, /* bool */ int numeric, /* bool */ int positive);
 
 #endif

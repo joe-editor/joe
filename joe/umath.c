@@ -73,21 +73,21 @@ double joe_strtod(const char *ptr, const char **at_eptr)
 		while ((*ptr >= '0' && *ptr <= '1') || *ptr == '_') {
 			if (*ptr >= '0' && *ptr <= '1') {
 				n <<= 1;
-				n += *ptr - '0';
+				n += (unsigned)(*ptr - '0');
 			}
 			++ptr;
 		}
-		x = n;
+		x = (double)n;
 	} else if (ptr[0] == '0' && (ptr[1] == 'o' || ptr[1] == 'O')) {
 		ptr += 2;
 		while ((*ptr >= '0' && *ptr <= '7') || *ptr == '_') {
 			if (*ptr >= '0' && *ptr <= '7') {
 				n <<= 3;
-				n += *ptr - '0';
+				n += (unsigned)(*ptr - '0');
 			}
 			++ptr;
 		}
-		x = n;
+		x = (double)n;
 	} else if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X')) {
 		ptr += 2;
 		while ((*ptr >= '0' && *ptr <= '9') ||
@@ -95,17 +95,17 @@ double joe_strtod(const char *ptr, const char **at_eptr)
 			(*ptr >= 'A' && *ptr <= 'F') || *ptr == '_') {
 			if (*ptr >= '0' && *ptr <= '9') {
 				n <<= 4;
-				n += *ptr - '0';
+				n += (unsigned)(*ptr - '0');
 			} else if (*ptr >= 'A' && *ptr <= 'F') {
 				n <<= 4;
-				n += *ptr - 'A' + 10;
+				n += (unsigned)(*ptr - 'A' + 10);
 			} else if (*ptr >= 'a' && *ptr <= 'f') {
 				n <<= 4;
-				n += *ptr - 'a' + 10;
+				n += (unsigned)(*ptr - 'a' + 10);
 			}
 			++ptr;
 		}
-		x = n;
+		x = (double)n;
 	} else {
 		int j = 0;
 		while ((*ptr >= '0' && *ptr <= '9') || *ptr == '_') {
@@ -985,15 +985,14 @@ static int domath(W *w, char *s, void *object, int *notify, int secure)
 			insert_commas(msgbuf, buf);
 			break;
 		} case 1: { /* Engineering */
-			char *a = to_engineering_string(result, 6, 1);
-			insert_commas(msgbuf, a);
-			joe_free(a);
+			to_engineering_string(buf, SIZEOF(buf), result, 6, 1);
+			insert_commas(msgbuf, buf);
 			break;
 		} case 2: { /* Hex */
 #ifdef HAVE_LONG_LONG
-			unsigned long long n = result;
+			unsigned long long n = (unsigned long long)result;
 #else
-			unsigned long n = result;
+			unsigned long n = (unsigned long)result;
 #endif
 			int ofst = 0;
 			int len = 0;
@@ -1023,9 +1022,9 @@ static int domath(W *w, char *s, void *object, int *notify, int secure)
 			break;
 		} case 3: { /* Octal */
 #ifdef HAVE_LONG_LONG
-			unsigned long long n = result;
+			unsigned long long n = (unsigned long long)result;
 #else
-			unsigned long n = result;
+			unsigned long n = (unsigned long)result;
 #endif
 			int ofst = 0;
 			int len = 0;
@@ -1055,9 +1054,9 @@ static int domath(W *w, char *s, void *object, int *notify, int secure)
 			break;
 		} case 4: { /* Binary */
 #ifdef HAVE_LONG_LONG
-			unsigned long long n = result;
+			unsigned long long n = (unsigned long long)result;
 #else
-			unsigned long n = result;
+			unsigned long n = (unsigned long)result;
 #endif
 			int ofst = 0;
 			int len = 0;
@@ -1065,7 +1064,7 @@ static int domath(W *w, char *s, void *object, int *notify, int secure)
 			msgbuf[ofst++] = '0';
 			msgbuf[ofst++] = 'b';
 			while (n) {
-				buf[len++] = '0' + (n & 1);
+				buf[len++] = (char)('0' + (char)(n & 1));
 				n >>= 1;
 			}
 			if (!len)

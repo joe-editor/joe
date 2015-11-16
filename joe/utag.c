@@ -170,7 +170,7 @@ static int dotag(W *w, char *s, void *obj, int *notify)
 		/* if there's no tags file in the current dir, then query
 		   for the environment variable TAGS.
 		*/
-		char *tagspath = getenv("TAGS");
+		const char *tagspath = getenv("TAGS");
 		if(tagspath) {
 			f = fopen(tagspath, "r");
 		}
@@ -401,7 +401,7 @@ static void get_tag_list()
 		/* if there's no tags file in the current dir, then query
 		   for the environment variable TAGS.
 		*/
-		char *tagspath = getenv("TAGS");
+		const char *tagspath = getenv("TAGS");
 		if(tagspath) {
 			f = fopen(tagspath, "r");    
 		}

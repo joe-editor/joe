@@ -632,7 +632,6 @@ int main(int argc, char **real_argv, const char * const *envv)
 	}
 	if (!nonotice) {
 		if (xmsg) {
-			char fill = ' ';
 			xmsg = stagen(NULL, (BW *)(lastw(maint)->object), xmsg, ' ');
 			msgnw(((BASE *)lastw(maint)->object)->parent, xmsg);
 		} else {
