@@ -1012,7 +1012,7 @@ static char *eng(char *d, size_t d_len, const char *s)
 				++dp;
 			}
 		}
-		if (*s >= '1' && *s <= '9') {
+		if (*s >= '0' && *s <= '9') {
 			while (*s >= '0' && *s <= '9') {
 				a[a_len++] = *s++;
 				++dp;
