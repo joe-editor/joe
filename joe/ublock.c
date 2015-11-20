@@ -1198,16 +1198,7 @@ int uupper(W *w, int k)
 }
 
 /* Get sum, sum of squares, and return count of
- * a block of numbers.
- *
- * avg = sum/count
- *
- * stddev = sqrt(  (a-avg)^2 + (b-avg)^2 + (c-avg)^2 )
- *        = sqrt(  a^2-2*a*avg+avg^2  + b^2-2*b*avg+avg^2 + c^2-2*c*avg+avg^2 )
- *        = sqrt(  a^2+b^2+c^2 + 3*avg^2 - 2*avg*(a+b+c) )
- *        = sqrt(  sumsq + count*avg^2 - 2*avg*sum  )
- *
- */
+ * a block of numbers. */
 
 int blksum(double *sum, double *sumsq)
 {
@@ -1258,6 +1249,79 @@ int blksum(double *sum, double *sumsq)
 		*sum = accu;
 		*sumsq = accusq;
 		return count;
+	} else
+		return -1;
+}
+
+int blklr(double *xsum, double *xsumsq, double *ysum, double *ysumsq, double *xy)
+{
+	char buf[80];
+	if (markv(1)) {
+		P *q = pdup(markb, "blklr");
+		int x;
+		int c;
+		double accux = 0.0;
+		double accuxsq = 0.0;
+		double accuy = 0.0;
+		double accuysq = 0.0;
+		double accuxy = 0.0;
+		double prevx = 0.0;
+		double v;
+		int state = 0; /* 0 = x, 1 = y */
+		int count = 0;
+		off_t left = markb->xcol;
+		off_t right = markk->xcol;
+		while (q->byte < markk->byte) {
+			/* Skip until we're within columns */
+			while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
+				pgetc(q);
+
+			/* Skip to first number */
+			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
+				c=pgetc(q);
+				if ((c >= '0' && c <= '9') || c == '.' || c == '-') {
+					/* Copy number into buffer */
+					buf[0] = TO_CHAR_OK(c); x=1;
+					while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
+						c=pgetc(q);
+						if ((c >= '0' && c <= '9') || c == 'e' || c == 'E' ||
+						    c == 'p' || c == 'P' || c == 'x' || c == 'X' ||
+						    c == '.' || c == '-' || c == '+' || c == 'o' || c == 'O' ||
+						    (c >= 'a' && c <= 'f') || (c >= 'A' && c<='F') || (c == '_')) {
+							if(x != 79)
+								buf[x++]= TO_CHAR_OK(c);
+						} else
+							break;
+					}
+					/* Convert number to floating point, add it to total */
+					buf[x] = 0;
+					v = joe_strtod(buf,NULL);
+					if (!state) {
+						prevx = v;
+						accux += v;
+						accuxsq += v*v;
+						state = 1;
+					} else {
+						accuy += v;
+						accuysq += v*v;
+						accuxy += prevx*v;
+						state = 0;
+						++count;
+					}
+					break;
+				}
+			}
+		}
+		prm(q);
+		*xsum = accux;
+		*xsumsq = accuxsq;
+		*ysum = accuy;
+		*ysumsq = accuysq;
+		*xy = accuxy;
+		if (state)
+			return -1;
+		else
+			return count;
 	} else
 		return -1;
 }

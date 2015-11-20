@@ -654,7 +654,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
      \b3e-4\b floating point decimal \uBLOCK\u                                        \| 
      \ba=10\b assign a variable      \bsum cnt\b      Sum, count                      \| 
   2+3\b:\bins multiple commands      \bavg dev samp\b Mean, Pop./Sample std. deviation\| 
-     \be pi\b constants              \uOPERATORS\u                                    \| 
+     \be pi\b constants              \blr(x) rlr(y)\b Linear regression               \| 
       \bans\b previous result        \b! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\b\| 
 }
 

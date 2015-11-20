@@ -67,7 +67,7 @@ joe_parserr () {
 
 # Use JOE's calculator
 joe_math () {
-	echo -n '{'shell_math,'"'$1'"',shell_rtn!,shell_abort!,shell_typemath'}'
+	echo -n '{'shell_math,'"'$1'"',shell_rtn!,shell_typemath'}'
 	cat >/dev/null
 }
 

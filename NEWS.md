@@ -54,6 +54,19 @@
 	* Built-in calculator now prints and accepts separating underscores
 	  for clarity.  For example,  4_294_967_296 instead of 4294967296.
 
+	* Add population standard deviation:
+		* dev     full population standard deviation
+		* samp	  sample population standard deviation
+
+	* Add linear regression analysis.  Select a block of
+	  of sample x and y values, then:
+		* lr(x)   evaluate y for a particular value of x
+		* rlr(y)  evaluate x for a particular value of y
+	  As side effects, these function leave:
+		* A, B in y = A + B * x
+		* r = correlation coeffcient
+		* cov = covariance
+
 * Bugs fixed
 
 	* Fix bug where indent step value was not shown on ^T menu
@@ -66,6 +79,9 @@
 	  not translating to its corresponding 8-bit character.  Effect
 	  of this was that Delete key was not working in shell windows in
 	  ASCII character set.
+
+	* Standard deviation calculator function was not producing correct
+	  results.
 
 ### JOE 4.1
 
