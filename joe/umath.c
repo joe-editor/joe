@@ -683,7 +683,7 @@ static double m_lr(double n)
 	double cov;
 	double xavg;
 	double yavg;
-	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy);
+	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 0, 0);
 	if (!merr && cnt<=0) {
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
@@ -707,6 +707,120 @@ static double m_lr(double n)
 	return A + B * n;
 }
 
+static double m_Lr(double n)
+{
+	struct var *v;
+	double xsq;
+	double xsum;
+	double ysq;
+	double ysum;
+	double xy;
+	double A;
+	double B;
+	double r;
+	double cov;
+	double xavg;
+	double yavg;
+	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 1, 0);
+	if (!merr && cnt<=0) {
+		merr = joe_gettext(_("No numbers in block"));
+		return 0.0;
+	}
+	/* Linear regression coefficients: y = A + B * x */
+	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - B * xsum) / (double)cnt;
+	/* correlatio coefficient */
+	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
+	/* covariance */
+	xavg = xsum / (double)cnt;
+	yavg = ysum / (double)cnt;
+	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
+
+	/* Side effects */
+	v = get("A"); v->val = A; v->set = 1;
+	v = get("B"); v->val = B; v->set = 1;
+	v = get("r"); v->val = r; v->set = 1;
+	v = get("cov"); v->val = cov; v->set = 1;
+
+	return A + B * log(n);
+}
+
+static double m_lR(double n)
+{
+	struct var *v;
+	double xsq;
+	double xsum;
+	double ysq;
+	double ysum;
+	double xy;
+	double A;
+	double B;
+	double r;
+	double cov;
+	double xavg;
+	double yavg;
+	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 0, 1);
+	if (!merr && cnt<=0) {
+		merr = joe_gettext(_("No numbers in block"));
+		return 0.0;
+	}
+	/* Linear regression coefficients: y = A + B * x */
+	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - B * xsum) / (double)cnt;
+	/* correlatio coefficient */
+	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
+	/* covariance */
+	xavg = xsum / (double)cnt;
+	yavg = ysum / (double)cnt;
+	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
+
+	/* Side effects */
+	v = get("A"); v->val = A; v->set = 1;
+	v = get("B"); v->val = B; v->set = 1;
+	v = get("r"); v->val = r; v->set = 1;
+	v = get("cov"); v->val = cov; v->set = 1;
+
+	return exp(A + B * n);
+}
+
+static double m_LR(double n)
+{
+	struct var *v;
+	double xsq;
+	double xsum;
+	double ysq;
+	double ysum;
+	double xy;
+	double A;
+	double B;
+	double r;
+	double cov;
+	double xavg;
+	double yavg;
+	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 1, 1);
+	if (!merr && cnt<=0) {
+		merr = joe_gettext(_("No numbers in block"));
+		return 0.0;
+	}
+	/* Linear regression coefficients: y = A + B * x */
+	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - B * xsum) / (double)cnt;
+	/* correlatio coefficient */
+	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
+	/* covariance */
+	xavg = xsum / (double)cnt;
+	yavg = ysum / (double)cnt;
+	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
+
+	/* Side effects */
+	v = get("A"); v->val = A; v->set = 1;
+	v = get("B"); v->val = B; v->set = 1;
+	v = get("r"); v->val = r; v->set = 1;
+	v = get("cov"); v->val = cov; v->set = 1;
+
+	return exp(A + B * log(n));
+}
+
 static double m_rlr(double n)
 {
 	struct var *v;
@@ -721,7 +835,7 @@ static double m_rlr(double n)
 	double cov;
 	double xavg;
 	double yavg;
-	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy);
+	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 0, 0);
 	if (!merr && cnt<=0) {
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
@@ -743,6 +857,120 @@ static double m_rlr(double n)
 	v = get("cov"); v->val = cov; v->set = 1;
 
 	return (n - A) / B;
+}
+
+static double m_rLr(double n)
+{
+	struct var *v;
+	double xsq;
+	double xsum;
+	double ysq;
+	double ysum;
+	double xy;
+	double A;
+	double B;
+	double r;
+	double cov;
+	double xavg;
+	double yavg;
+	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 1, 0);
+	if (!merr && cnt<=0) {
+		merr = joe_gettext(_("No numbers in block"));
+		return 0.0;
+	}
+	/* Linear regression coefficients: y = A + B * x */
+	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - B * xsum) / (double)cnt;
+	/* correlatio coefficient */
+	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
+	/* covariance */
+	xavg = xsum / (double)cnt;
+	yavg = ysum / (double)cnt;
+	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
+
+	/* Side effects */
+	v = get("A"); v->val = A; v->set = 1;
+	v = get("B"); v->val = B; v->set = 1;
+	v = get("r"); v->val = r; v->set = 1;
+	v = get("cov"); v->val = cov; v->set = 1;
+
+	return exp((n - A) / B);
+}
+
+static double m_rlR(double n)
+{
+	struct var *v;
+	double xsq;
+	double xsum;
+	double ysq;
+	double ysum;
+	double xy;
+	double A;
+	double B;
+	double r;
+	double cov;
+	double xavg;
+	double yavg;
+	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 0, 1);
+	if (!merr && cnt<=0) {
+		merr = joe_gettext(_("No numbers in block"));
+		return 0.0;
+	}
+	/* Linear regression coefficients: y = A + B * x */
+	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - B * xsum) / (double)cnt;
+	/* correlatio coefficient */
+	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
+	/* covariance */
+	xavg = xsum / (double)cnt;
+	yavg = ysum / (double)cnt;
+	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
+
+	/* Side effects */
+	v = get("A"); v->val = A; v->set = 1;
+	v = get("B"); v->val = B; v->set = 1;
+	v = get("r"); v->val = r; v->set = 1;
+	v = get("cov"); v->val = cov; v->set = 1;
+
+	return (log(n) - A) / B;
+}
+
+static double m_rLR(double n)
+{
+	struct var *v;
+	double xsq;
+	double xsum;
+	double ysq;
+	double ysum;
+	double xy;
+	double A;
+	double B;
+	double r;
+	double cov;
+	double xavg;
+	double yavg;
+	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 1, 1);
+	if (!merr && cnt<=0) {
+		merr = joe_gettext(_("No numbers in block"));
+		return 0.0;
+	}
+	/* Linear regression coefficients: y = A + B * x */
+	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - B * xsum) / (double)cnt;
+	/* correlatio coefficient */
+	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
+	/* covariance */
+	xavg = xsum / (double)cnt;
+	yavg = ysum / (double)cnt;
+	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
+
+	/* Side effects */
+	v = get("A"); v->val = A; v->set = 1;
+	v = get("B"); v->val = B; v->set = 1;
+	v = get("r"); v->val = r; v->set = 1;
+	v = get("cov"); v->val = cov; v->set = 1;
+
+	return exp((log(n) - A) / B);
 }
 
 double calc(BW *bw, char *s, int secure)
@@ -946,6 +1174,12 @@ double calc(BW *bw, char *s, int secure)
 
 	v = get("lr"); v->func = m_lr;
 	v = get("rlr"); v->func = m_rlr;
+	v = get("Lr"); v->func = m_Lr;
+	v = get("rLr"); v->func = m_rLr;
+	v = get("lR"); v->func = m_lR;
+	v = get("rlR"); v->func = m_rlR;
+	v = get("LR"); v->func = m_LR;
+	v = get("rLR"); v->func = m_rLR;
 
 	v = get("top");
 	v->val = (double)(tbw->top->line + 1);

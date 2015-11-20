@@ -1253,7 +1253,7 @@ int blksum(double *sum, double *sumsq)
 		return -1;
 }
 
-int blklr(double *xsum, double *xsumsq, double *ysum, double *ysumsq, double *xy)
+int blklr(double *xsum, double *xsumsq, double *ysum, double *ysumsq, double *xy, int logx, int logy)
 {
 	char buf[80];
 	if (markv(1)) {
@@ -1297,11 +1297,15 @@ int blklr(double *xsum, double *xsumsq, double *ysum, double *ysumsq, double *xy
 					buf[x] = 0;
 					v = joe_strtod(buf,NULL);
 					if (!state) {
+						if (logx)
+							v = log(v);
 						prevx = v;
 						accux += v;
 						accuxsq += v*v;
 						state = 1;
 					} else {
+						if (logy)
+							v = log(v);
 						accuy += v;
 						accuysq += v*v;
 						accuxy += prevx*v;

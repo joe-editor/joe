@@ -1,4 +1,29 @@
+yes
 Projects:
+
+  Calculator:
+	Stay at math prompt for better calculator mode?  But I'm so used to
+	hitting ES
+
+	"math" in cygwin not working.
+
+	something like eng mode, but with a requested exponent.  Expand math
+	formatting options? For example if user want to make a table..
+
+	Degrees mode? Grad mode? (how to display?)
+	  degree/rad/grad entry mode?  90deg gives pi/2 in radians mode.
+
+	Decimal-Sexagesimal conversion (how to display?)
+
+	Rectangular/Polar conversion (how to show two number result?)
+
+	covariance, correlation coefficient?
+
+	permutations = n ! / (n - r)!
+	combinations = n ! / (r! * (n - r)!)
+
+	user defined functions, loops?
+
 
   Revamp help and status line system.  Merge status line and help renderers so
   that status line escapes can be used in the help screens and so that
