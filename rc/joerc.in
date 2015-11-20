@@ -652,8 +652,8 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
      \beval\b evaluate block         \bint floor ceil abs erg ergc\b                  \| 
      \b0xff\b enter number in hex    \bjoe(..macro..)\b - runs an editor macro        \| 
      \b3e-4\b floating point decimal \uBLOCK\u                                        \| 
-     \ba=10\b assign a variable      \bsum cnt\b  Sum, count                          \| 
-  2+3\b:\bins multiple commands      \bavg dev\b  Average, std. deviation             \| 
+     \ba=10\b assign a variable      \bsum cnt\b      Sum, count                      \| 
+  2+3\b:\bins multiple commands      \bavg dev samp\b Mean, Pop./Sample std. deviation\| 
      \be pi\b constants              \uOPERATORS\u                                    \| 
       \bans\b previous result        \b! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\b\| 
 }
@@ -867,7 +867,8 @@ aspellword	^[ n
 :def shell_gparse gparse
 :def shell_release release
 :def shell_math maths
-:def shell_typemath txt,math,"ins",rtn,rtn,txt,"",rtn
+:def shell_abort abort
+:def shell_typemath txt,maths,"ins",rtn,rtn,txt,"",rtn,txt,quote,"d",rtn
 :def shell_rtn rtn
 :def shell_edit edit
 :def shell_dellin dellin

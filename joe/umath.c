@@ -244,7 +244,18 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 			v = 0;
 			if (cnt) {
 				avg = x / (double)cnt;
-				x = sqrt(xsq + (double)cnt*avg*avg - 2.0*avg*x);
+				x = sqrt((xsq - x*x/(double)cnt)/(double)cnt);
+			}
+		} else if (!zcmp(ident, "samp")) {
+			double xsq;
+			double avg;
+			int cnt = blksum(&x, &xsq);
+			if (!merr && cnt<=0)
+				merr = joe_gettext(_("No numbers in block"));
+			v = 0;
+			if (cnt) {
+				avg = x / (double)cnt;
+				x = sqrt((xsq - x*x/(double)cnt)/(double)(cnt - 1));
 			}
 		} else if (!zcmp(ident, "eval")) {
 			const char *save = ptr;
@@ -1139,6 +1150,8 @@ static char *eng(char *d, size_t d_len, const char *s)
 	return d_org;
 }
 
+static int doumath(W *w, char *s, void *object, int *notify);
+
 /* Main user interface */
 static int domath(W *w, char *s, void *object, int *notify, int secure)
 {
@@ -1266,8 +1279,16 @@ static int domath(W *w, char *s, void *object, int *notify, int secure)
 	} else {
 		msgnw(bw->parent, msgbuf);
 	}
-	mode_ins = 0;
-	return 0;
+	if (mode_ins) { /* Exit if we are inserting */
+		mode_ins = 0;
+		return 0;
+	} else { /* Stay at math prompt */
+		if (wmkpw(w, "=", &mathhist, doumath, "Math", NULL, NULL, NULL, NULL, utf8_map, 0)) {
+			return 0;
+		} else {
+			return -1;
+		}
+	}
 }
 
 static int doumath(W *w, char *s, void *object, int *notify)
