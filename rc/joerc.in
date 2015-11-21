@@ -649,9 +649,9 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
   \bhex oct bin\b display mode       \bsin cos tab asin acos atan\b                   \| 
   \beng dec\b engineering / normal   \bsinh cosh tanh asinh acosh atanh\b             \| 
       \bins\b type result into file  \bsqrt cbrt exp ln log\b                         \| 
-     \beval\b evaluate block         \bint floor ceil abs erg ergc\b                  \| 
-     \b0xff\b enter number in hex    \bjoe(..macro..)\b - runs an editor macro        \| 
-     \b3e-4\b floating point decimal                                              \| 
+     \beval\b evaluate block         \bint floor ceil abs\b                           \| 
+     \b0xff\b enter number in hex    \berf erfc j0 j1 y0 y1\b                         \| 
+     \b3e-4\b floating point decimal \bjoe(..macro..)\b - runs an editor macro        \| 
      \ba=10\b assign a variable                                                   \| 
   2+3\b:\bins multiple commands                                                   \| 
      \be pi\b constants                                                           \| 

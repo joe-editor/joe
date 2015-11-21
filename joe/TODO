@@ -24,7 +24,6 @@ Projects:
 
 	user defined functions, loops?
 
-
   Revamp help and status line system.  Merge status line and help renderers so
   that status line escapes can be used in the help screens and so that
   help screen formating can be used in status line (eliminating the need

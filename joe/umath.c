@@ -666,6 +666,14 @@ static double m_y1(double n) { return y1(n); }
 #endif
 #endif
 
+#ifdef HAVE_HYPOT
+static double m_hypot(double n, double m) { return hypot(n, m); }
+#else
+#ifdef hypot
+static double m_hypot(double n, double m) { return hypot(n, m); }
+#endif
+#endif
+
 
 static double m_int(double n) { return (int)(n); }
 
