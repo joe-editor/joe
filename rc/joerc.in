@@ -598,7 +598,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 {Programs
  \|\uCOMMANDS\u            \|\uCOMPILING\u                  \|\uQUICK\u                       \| 
  \|\bEsc X\b Command prompt\|\bEsc C\b Save modified compile\|\b^G\b  Find word under cursor  \| 
- \|\bEsc =\b Calculator    \|\bEsc G\b Grep                 \|\b^K;\b Tags file search        \| 
+ \|\bEsc M\b Calculator    \|\bEsc G\b Grep                 \|\b^K;\b Tags file search        \| 
  \|\bshowlog\b Startup log \|\bEsc =\b To next error        \|\bEsc Enter\b Complete word     \| 
  \|\bupper\b   Change case \|\bEsc -\b To prev. error       \|\uBUFFER\u                      \| 
  \|\blower\b   Change case \|\bEsc Space\b Jump to error    \|\bEsc U\b Next                  \| 
