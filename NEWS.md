@@ -9,8 +9,8 @@
 	* The top Google help searches for JOE include:
 
 		* How do I save and exit?  The startup copyright notice
-		  has been replaced with basic help for beginners: ^C to
-		  abort, ^K X to save and exit, and ^K H for help.
+		  has been replaced with basic help for beginners: ^K Q
+		  to exit and ^K H for help.
 
 		* How do I dismiss the region highlighting?  The traditional
 		  way is to hit ^K B ^K K, but this is slightly non-obvious
