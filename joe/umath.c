@@ -707,8 +707,8 @@ static double m_lr(double n)
 	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
 
 	/* Side effects */
-	v = get("A"); v->val = A; v->set = 1;
-	v = get("B"); v->val = B; v->set = 1;
+	v = get("b"); v->val = A; v->set = 1;
+	v = get("m"); v->val = B; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
@@ -745,8 +745,8 @@ static double m_Lr(double n)
 	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
 
 	/* Side effects */
-	v = get("A"); v->val = A; v->set = 1;
-	v = get("B"); v->val = B; v->set = 1;
+	v = get("b"); v->val = A; v->set = 1;
+	v = get("m"); v->val = B; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
@@ -783,8 +783,8 @@ static double m_lR(double n)
 	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
 
 	/* Side effects */
-	v = get("A"); v->val = A; v->set = 1;
-	v = get("B"); v->val = B; v->set = 1;
+	v = get("b"); v->val = exp(A); v->set = 1;
+	v = get("m"); v->val = B; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
@@ -821,8 +821,8 @@ static double m_LR(double n)
 	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
 
 	/* Side effects */
-	v = get("A"); v->val = A; v->set = 1;
-	v = get("B"); v->val = B; v->set = 1;
+	v = get("b"); v->val = exp(A); v->set = 1;
+	v = get("m"); v->val = B; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
@@ -859,8 +859,8 @@ static double m_rlr(double n)
 	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
 
 	/* Side effects */
-	v = get("A"); v->val = A; v->set = 1;
-	v = get("B"); v->val = B; v->set = 1;
+	v = get("b"); v->val = A; v->set = 1;
+	v = get("m"); v->val = B; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
@@ -897,8 +897,8 @@ static double m_rLr(double n)
 	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
 
 	/* Side effects */
-	v = get("A"); v->val = A; v->set = 1;
-	v = get("B"); v->val = B; v->set = 1;
+	v = get("b"); v->val = A; v->set = 1;
+	v = get("m"); v->val = B; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
@@ -935,8 +935,8 @@ static double m_rlR(double n)
 	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
 
 	/* Side effects */
-	v = get("A"); v->val = A; v->set = 1;
-	v = get("B"); v->val = B; v->set = 1;
+	v = get("b"); v->val = exp(A); v->set = 1;
+	v = get("m"); v->val = B; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
@@ -973,8 +973,8 @@ static double m_rLR(double n)
 	cov = (xy - (double)cnt * xavg * yavg) / (double)(cnt - 1);
 
 	/* Side effects */
-	v = get("A"); v->val = A; v->set = 1;
-	v = get("B"); v->val = B; v->set = 1;
+	v = get("b"); v->val = exp(A); v->set = 1;
+	v = get("m"); v->val = B; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 

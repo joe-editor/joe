@@ -645,7 +645,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Math
-  \uMATH COMMANDS\u (Esc m for math) \uFUNCTIONS\u                                    \| 
+  \uMATH COMMANDS\u (Esc M for math) \uFUNCTIONS\u                                    \| 
   \bhex oct bin\b display mode       \bsin cos tab asin acos atan\b                   \| 
   \beng dec\b engineering / normal   \bsinh cosh tanh asinh acosh atanh\b             \| 
       \bins\b type result into file  \bsqrt cbrt exp ln log\b                         \| 
@@ -654,19 +654,20 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
      \b3e-4\b floating point decimal \bjoe(..macro..)\b - runs an editor macro        \| 
      \ba=10\b assign a variable                                                   \| 
   2+3\b:\bins multiple commands                                                   \| 
-     \be pi\b constants                                                           \| 
+     \be pi\b constants              \uOPERATORS\u                                    \| 
       \bans\b previous result        \b! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\b\| 
 }
 
 {Statistics 
-  \uMATH COMMANDS\u (Esc m for math)                                              \| 
-  Statistics on region of numbers  Linear regression on region with x y pairs \| 
-  \bsum\b  Sum                         \blr(x)\b  Estimate y given x                  \| 
+  \uMATH COMMANDS\u (Esc M for math)                                              \| 
+  Statistics on region of numbers  Linear regression on region of x y pairs   \| 
+  \bsum\b  Sum                         \blr(x)\b  Estimate y given x     y=m*x+b      \| 
   \bcnt\b  Count                       \brlr(y)\b Estimate x given y                  \| 
-  \bavg\b  Mean                        \bLr rLr\b Logarithmic regression              \| 
-    Standard deviation:            \blR rlR\b Exponential regression              \| 
-  \bdev\b  all data present            \bLR rLR\b Power regression                    \| 
-  \bsamp\b sample of data present                                                 \| 
+  \bavg\b  Mean                        \bLr rLr\b Logarithmic regression y=m*ln(x)+b  \| 
+    Standard deviation:            \blR rlR\b Exponential regression y=e^(m*x)+b  \| 
+  \bdev\b  all data present            \bLR rLR\b Power regression       y=b*x^m      \| 
+  \bsamp\b sample of data present      Side effects: \bb\b, \bm\b: regression coef.       \| 
+                                       \br\b: correlation coef., \bcov\b: covariance  \| 
 }
 
 {Names
