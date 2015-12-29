@@ -63,6 +63,10 @@
 			* rlr(y)  provide estimate of x given y
 			* Lr, lR, LR: log, exponential, power regression
 
+	* Make new regex engine (from JOE 4.1) more compatible with the
+	  classic engine.  \\y is now shorthand for \\(\\.\\*\\), so it does
+	  what \\* did in the old engine.
+
 * Bugs fixed
 
 	* Fix bug where indent step value was not shown on ^T menu

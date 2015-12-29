@@ -616,7 +616,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
      \b\\^  \\$\b  matches beg./end of line       \b\\.\b     match any single char      \| 
      \b\\<  \\>\b  matches beg./end of word       \b\\!\b     match char or expression   \| 
      \b\\(  \\)\b  grouping                       \b\\|\b     match left or right         \| 
-     \b\\[a-z]\b  matches one of a set                                             \| 
+     \b\\[a-z]\b  matches one of a set           \b\\y \\Y\b  short for (.*) / (!*)       \| 
      \b\\{1,3}\b  match 1 - 3 occurrences        \b\\?\b     match 0 or 1 occurrence     \| 
      \b\\+\b      match 1 or more occurrences    \b\\*\b     match 0 or more occurrences \| 
  Replace sequences:                                                           \| 
