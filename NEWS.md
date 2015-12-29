@@ -45,23 +45,23 @@
 
 	* Built-in calculator can now print and accept numbers in binary,
 	  octal and engineering formats:
-		dec	12_345
-		eng	12.345_0e3
-		bin	0b11_0000_0011_1001
-		oct	0o3_0071
-		hex	0x3039
+		__dec__	12_345
+		__eng__	12.345_0e3
+		__bin__	0b11_0000_0011_1001
+		__oct__	0o3_0071
+		__hex__	0x3039
 
 	* Built-in calculator now prints and accepts separating underscores
 	  for clarity.  For example,  4_294_967_296 instead of 4294967296.
 
-	* Enhance statistics functions:
-		* dev     standard deviation with full population
-		* samp	  standard deviation with sample of population
+	* Enhanced statistics functions:
+		* __dev__ computes standard deviation with full population
+		* __samp__ computes standard deviation with sample of population
 		* Linear regression analysis.  Select a region of of x
 		  and y values, then:
-			* lr(x)   provide estimate of y given x
-			* rlr(y)  provide estimate of x given y
-			* Lr, lR, LR: log, exponential, power regression
+			* __lr__(x)   provide estimate of y given x
+			* __rlr__(y)  provide estimate of x given y
+			* __Lr__, __lR__, __LR__: log, exponential, power regression
 
 	* Make new regex engine (from JOE 4.1) more compatible with the
 	  classic engine.  \\y is now shorthand for \\(\\.\\\*\\), so that it does
