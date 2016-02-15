@@ -85,6 +85,9 @@
 	* Standard deviation calculator function was not producing correct
 	  results.
 
+	* Allow koi8r and koi8-r for KOI8-R in joe_getcodeset (which is only
+	  used if there is no setlocale).
+
 ### JOE 4.1
 
 * New or improved syntax files for the following languages: 
