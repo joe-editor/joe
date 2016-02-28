@@ -33,6 +33,9 @@
 	  valuable status bar space that power users want for the context
 	  display.
 
+	* Add ^KH for help to search and replace prompts.  Many JOE users
+	  do not know about this context sensitive help.
+
 	* Enable -noxon by default (disable ^S/^Q flow control).  This
 	  allows us to bind ^Q to quote and ^S / ^R to incremental search.
 
