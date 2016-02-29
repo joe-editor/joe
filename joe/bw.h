@@ -28,6 +28,8 @@ struct bw {
 
 extern int dspasis;	/* Display characters above 127 as-is */
 extern int opt_mid;	/* Controls how window scrolls: when set, scroll window enough so that line with cursor becomes centered */
+extern int opt_left;
+extern int opt_right;
 
 void bwfllw(W *w);
 void bwfllwt(W *w);

@@ -72,6 +72,10 @@
 		* \\. no longer matches newline.
 		* \\\* matches shortest match, not longest match.
 
+	* Add -left and -right options to control the amount scrolling when
+	  the cursor moves past the left or right edge of the screen.  When
+	  the baud rate is low these are automatically set to a large amount.
+
 * Bugs fixed
 
 	* Fix bug where indent step value was not shown on ^T menu

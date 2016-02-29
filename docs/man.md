@@ -321,6 +321,16 @@ be scrolled so that the cursor is in the center.  This option is forced on
 slow terminals which don't have scrolling commands.
 <br>
 
+* left nn
+This sets the number of columns the screen scrolls to the left when cursor
+moves past the left edge.  If nn is -1, the screen scrolls 1/4 of the width.
+<br>
+
+* right nn
+This sets the number of columns the screen scrolls to the right when cursor
+moves past the right edge.  If nn is -1, the screen scrolls 1/4 of the width.
+<br>
+
 * mouse
 Enable xterm mouse support.
 <br>

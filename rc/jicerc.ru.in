@@ -59,6 +59,8 @@
 		в обычной 8-битной кодировке.
 
  -mid		При скроллинге выполнять центрирование курсора
+ -left nn	Amount to jump left when scrolling is necessary (-1 for 1/4 width)
+ -right nn	Amount to jump right when scrolling is necessary (-1 for 1/4 width)
 
  -marking	Подсвечивать текст между началом блока и курсором 
                 (используйте вместе с -lightoff)
@@ -530,6 +532,8 @@ mode,"backpath",rtn	% % Path to backup files %Zbackpath%
 :defmenu cursor menu,"more-options",rtn
 mode,"pg",rtn	% % No. PgUp/PgDn lines %Zpg%
 mode,"mid",rtn	C Center on scroll %Zmid%
+mode,"left",rtn	L Columns to scroll left %Zleft%
+mode,"right",rtn R Columns to scroll right %Zright%
 mode,"floatmouse",rtn	% % Click past end %Zfloatmouse%
 mode,"rtbutton",rtn	% % Right button %Zrtbutton%
 

@@ -43,9 +43,13 @@ static P *getto(P *p, P *cur, P *top, off_t line)
 	return p;
 }
 
-/* Scroll window to follow cursor */
-
+/* Recenter cursor on vertical scroll if true */
 int opt_mid = 0;
+
+/* Amount to horizontally scroll when cursor goes past edge */
+/* -1 means 1/4 width of screen */
+int opt_left = 8;
+int opt_right = 1;
 
 /* For hex */
 
@@ -144,18 +148,32 @@ void bwfllwt(W *thew)
 
 /* Adjust column */
 	if (w->cursor->xcol < w->offset) {
+		/* Need to scroll left */
 		off_t target = w->cursor->xcol;
-		if (target < 5)
-			target = 0;
-		else {
-			target -= 5;
-			target -= (target % 5);
+		if (opt_left <= 0 || opt_left > w->w/4) {
+			if (target < w->w/4)
+				target = 0;
+			else {
+				// target -= w->w/4;
+				target -= (target % (w->w/4));
+			}
+		} else {
+			if (target < opt_left)
+				target = 0;
+			else {
+				// target -= opt_left;
+				target -= (target % opt_left);
+			}
 		}
 		w->offset = target;
 		msetI(w->t->t->updtab + w->y, 1, w->h);
 	}
 	if (w->cursor->xcol >= w->offset + w->w) {
-		w->offset = w->cursor->xcol - (w->w - 1);
+		/* Need to scroll right */
+		if (opt_right <= 0 || opt_right > w->w/4)
+			w->offset = w->cursor->xcol - (w->w - w->w/4);
+		else
+			w->offset = w->cursor->xcol - (w->w - opt_right);
 		msetI(w->t->t->updtab + w->y, 1, w->h);
 	}
 }

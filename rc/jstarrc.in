@@ -53,6 +53,8 @@
  -help_is_utf8	Set if help text is in UTF-8 format.  Leave clear if it's a raw 8-bit format.
 
  -mid		Cursor is recentered when scrolling is necessary
+ -left nn	Amount to jump left when scrolling is necessary (-1 for 1/4 width)
+ -right nn	Amount to jump right when scrolling is necessary (-1 for 1/4 width)
  -marking	Text between ^KB and cursor is highlighted (use with -lightoff)
  -asis		Characters 128 - 255 shown as-is
  -force		Force final newline when files are saved
@@ -490,6 +492,8 @@ mode,"backpath",rtn	% % Path to backup files %Zbackpath%
 :defmenu cursor menu,"more-options",rtn
 mode,"pg",rtn	% % No. PgUp/PgDn lines %Zpg%
 mode,"mid",rtn	C Center on scroll %Zmid%
+mode,"left",rtn	L Columns to scroll left %Zleft%
+mode,"right",rtn R Columns to scroll right %Zright%
 mode,"floatmouse",rtn	% % Click past end %Zfloatmouse%
 mode,"rtbutton",rtn	% % Right button %Zrtbutton%
 

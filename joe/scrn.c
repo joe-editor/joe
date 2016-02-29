@@ -846,6 +846,12 @@ SCRN *nopen(CAP *cap)
 		t->insdel = 0;
 	}
 
+/* Adjust for low baud rates */
+	if (tty_baud < 38400) {
+		opt_left = -1;
+		opt_right = -1;
+	}
+
 /* Send out li linefeeds so that scroll-back history is not lost */
 	if (notite && !nolinefeeds) {
 		for (y = 1; y < li; ++y)
