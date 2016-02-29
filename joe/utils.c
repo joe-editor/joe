@@ -12,132 +12,6 @@
 #include <sys/ioctl.h>
 #endif
 
-#if 0
-int joe_ispunct(int wide,struct charmap *map,int c)
-{
-	if (joe_isspace(c))
-		return 0;
-
-	if (c=='_')
-		return 1;
-
-	if (isalnum_(wide,map,c))
-		return 0;
-
-	return joe_isprint(wide,map,c);
-}
-#endif
-
-int escape(int utf8,unsigned char **a, int *b)
-{
-	int c;
-	unsigned char *s = *a;
-	int l = *b;
-
-	if (*s == '\\' && l >= 2) {
-		++s; --l;
-		switch (*s) {
-		case 'n':
-			c = 10;
-			++s; --l;
-			break;
-		case 't':
-			c = 9;
-			++s; --l;
-			break;
-		case 'a':
-			c = 7;
-			++s; --l;
-			break;
-		case 'b':
-			c = 8;
-			++s; --l;
-			break;
-		case 'f':
-			c = 12;
-			++s; --l;
-			break;
-		case 'e':
-			c = 27;
-			++s; --l;
-			break;
-		case 'r':
-			c = 13;
-			++s; --l;
-			break;
-		case '8':
-			c = 8;
-			++s; --l;
-			break;
-		case '9':
-			c = 9;
-			++s; --l;
-			break;
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-			c = *s - '0';
-			++s; --l;
-			if (l > 0 && *s >= '0' && *s <= '7') {
-				c = c * 8 + s[1] - '0';
-				++s; --l;
-			}
-			if (l > 0 && *s >= '0' && *s <= '7') {
-				c = c * 8 + s[1] - '0';
-				++s; --l;
-			}
-			break;
-		case 'x':
-		case 'X':
-			c = 0;
-			++s; --l;
-			if (l > 0 && *s >= '0' && *s <= '9') {
-				c = c * 16 + *s - '0';
-				++s; --l;
-			} else if (l > 0 && *s >= 'A' && *s <= 'F') {
-				c = c * 16 + *s - 'A' + 10;
-				++s; --l;
-			} else if (l > 0 && *s >= 'a' && *s <= 'f') {
-				c = c * 16 + *s - 'a' + 10;
-				++s; --l;
-			}
-
-			if (l > 0 && *s >= '0' && *s <= '9') {
-				c = c * 16 + *s - '0';
-				++s; --l;
-			} else if (l > 0 && *s >= 'A' && *s <= 'F') {
-				c = c * 16 + *s - 'A' + 10;
-				++s; --l;
-			} else if (l > 0 && *s >= 'a' && *s <= 'f') {
-				c = c * 16 + *s - 'a' + 10;
-				++s; --l;
-			}
-			break;
-		default:
-			if (utf8)
-				c = utf8_decode_fwrd(&s, &l);
-			else {
-				c = *s++;
-				--l;
-			}
-			break;
-		}
-	} else if (utf8) {
-		c = utf8_decode_fwrd(&s,&l);
-	} else {
-		c = *s++;
-		--l;
-	}
-	*a = s;
-	*b = l;
-	return c;
-}
-
 /*
  * return minimum/maximum of two numbers
  */
@@ -161,70 +35,48 @@ signed long int long_min(signed long int a, signed long int b)
 	return a < b ? a : b;
 }
 
-#if 0
-/* 
- * Characters which are considered as word characters 
- * 	_ is considered as word character because is often used 
- *	in the names of C/C++ functions
- */
-int isalnum_(int wide,struct charmap *map,int c)
+off_t off_max(off_t a, off_t b)
 {
-	/* Fast... */
-	if (c>='0' && c<='9' ||
-	    c>='a' && c<='z' ||
-	    c>='A' && c<='Z' ||
-	    c=='_')
-	  return 1;
-	else if(c<128)
-	  return 0;
-
-	/* Slow... */
-	if (wide)
-		return joe_iswalpha(c);
-	else
-		return joe_iswalpha(to_uni(map,c));
+	return a > b ? a : b;
 }
 
-int isalpha_(int wide,struct charmap *map,int c)
+off_t off_min(off_t a, off_t b)
 {
-	/* Fast... */
-	if (c>='a' && c<='z' ||
-	    c>='A' && c<='Z' ||
-	    c=='_')
-	  return 1;
-	else if(c<128)
-	  return 0;
-
-	/* Slow... */
-	if (wide)
-		return joe_iswalpha(c);
-	else
-		return joe_iswalpha(to_uni(map,c));
+	return a < b ? a : b;
 }
-#endif
+
+ptrdiff_t diff_max(ptrdiff_t a, ptrdiff_t b)
+{
+	return a > b ? a : b;
+}
+
+ptrdiff_t diff_min(ptrdiff_t a, ptrdiff_t b)
+{
+	return a < b ? a : b;
+}
 
 /* Versions of 'read' and 'write' which automatically retry when interrupted */
-ssize_t joe_read(int fd, void *buf, size_t size)
+ptrdiff_t joe_read(int fd, void *buf, ptrdiff_t size)
 {
-	ssize_t rt;
+	ptrdiff_t rt;
 
 	do {
-		rt = read(fd, buf, size);
+		rt = read(fd, buf, (size_t)size);
 	} while (rt < 0 && errno == EINTR);
 	return rt;
 }
 
-ssize_t joe_write(int fd, void *buf, size_t size)
+ptrdiff_t joe_write(int fd, const void *buf, ptrdiff_t size)
 {
-	ssize_t rt;
+	ptrdiff_t rt;
 
 	do {
-		rt = write(fd, buf, size);
+		rt = write(fd, buf, (size_t)size);
 	} while (rt < 0 && errno == EINTR);
 	return rt;
 }
 
-int joe_ioctl(int fd, int req, void *ptr)
+int joe_ioctl(int fd, unsigned long req, void *ptr)
 {
 	int rt;
 	do {
@@ -254,7 +106,7 @@ void check_malloc()
 	struct mcheck *m;
 	int y = 0;
 	for(m=first;m;m=m->next) {
-		unsigned char *ptr = (unsigned char *)m+sizeof(struct mcheck);
+		char *ptr = (char *)m+SIZEOF(struct mcheck);
 		int x;
 		if(m->magic!=0x55AA55AA) {
 			printf("corrupt heap: head %x\n",ptr);
@@ -275,10 +127,10 @@ void check_malloc()
 	}
 }
 
-void *joe_malloc(size_t size)
+void *joe_malloc(int size)
 {
-	struct mcheck *m = (struct mcheck *)malloc(size+sizeof(struct mcheck)+16384);
-	unsigned char *ptr = (unsigned char *)m+sizeof(struct mcheck);
+	struct mcheck *m = (struct mcheck *)malloc(size+SIZEOF(struct mcheck)+16384);
+	char *ptr = (char *)m+SIZEOF(struct mcheck);
 	int x;
 	m->state = 0;
 	m->size = size;
@@ -302,22 +154,22 @@ void *joe_malloc(size_t size)
 	return ptr;
 }
 
-void *joe_calloc(size_t nmemb, size_t size)
+void *joe_calloc(int nmemb, int size)
 {
-	size_t sz = nmemb*size;
+	int sz = nmemb*size;
 	int x;
-	unsigned char *ptr;
+	char *ptr;
 	ptr = joe_malloc(sz);
 	for(x=0;x!=sz;++x)
 		ptr[x] = 0;
 	return ptr;
 }
 
-void *joe_realloc(void *ptr, size_t size)
+void *joe_realloc(void *ptr, int size)
 {
 	struct mcheck *n;
-	unsigned char *np;
-	struct mcheck *m = (struct mcheck *)((char *)ptr-sizeof(struct mcheck));
+	char *np;
+	struct mcheck *m = (struct mcheck *)((char *)ptr-SIZEOF(struct mcheck));
 
 	if(!size) {
 		printf("0 passed to realloc\n");
@@ -326,7 +178,7 @@ void *joe_realloc(void *ptr, size_t size)
 
 	np = joe_malloc(size);
 
-	n = (struct mcheck *)(np-sizeof(struct mcheck));
+	n = (struct mcheck *)(np-SIZEOF(struct mcheck));
 
 	if(m->size>size)
 		memcpy(np,ptr,size);
@@ -340,7 +192,7 @@ void *joe_realloc(void *ptr, size_t size)
 
 void joe_free(void *ptr)
 {
-	struct mcheck *m = (struct mcheck *)((char *)ptr-sizeof(struct mcheck));
+	struct mcheck *m = (struct mcheck *)((char *)ptr-SIZEOF(struct mcheck));
 	int x;
 	if (m->magic!=0x55AA55AA) {
 		printf("Free non-malloc block %x\n",ptr);
@@ -351,7 +203,7 @@ void joe_free(void *ptr)
 		*(int *)0=0x0;
 	}
 	for(x=0;x!=m->size;++x)
-		((unsigned char *)ptr)[x]=0x41;
+		((char *)ptr)[x]=0x41;
 	m->state = 1;
 	check_malloc();
 	/* printf("free=%x\n",ptr); */
@@ -359,25 +211,25 @@ void joe_free(void *ptr)
 
 #else
 
-void *joe_malloc(size_t size)
+void *joe_malloc(ptrdiff_t size)
 {
-	void *p = malloc(size);
+	void *p = malloc((size_t)size);
 	if (!p)
 		ttsig(-1);
 	return p;
 }
 
-void *joe_calloc(size_t nmemb,size_t size)
+void *joe_calloc(ptrdiff_t nmemb,ptrdiff_t size)
 {
-	void *p = calloc(nmemb, size);
+	void *p = calloc((size_t)nmemb, (size_t)size);
 	if (!p)
 		ttsig(-1);
 	return p;
 }
 
-void *joe_realloc(void *ptr,size_t size)
+void *joe_realloc(void *ptr,ptrdiff_t size)
 {
-	void *p = realloc(ptr, size);
+	void *p = realloc(ptr, (size_t)size);
 	if (!p)
 		ttsig(-1);
 	return p;
@@ -390,29 +242,19 @@ void joe_free(void *ptr)
 
 #endif
 
-size_t zlen(unsigned char *s)
-{
-	return strlen((char *)s);
-}
+/* Cast insensitive comparison: Only if you know for sure that the text is ASCII */
 
-int zcmp(unsigned char *a, unsigned char *b)
+int zicmp(const char *a, const char *b)
 {
-	return strcmp((char *)a, (char *)b);
-}
-
-/* Only if you know for sure that the text is ASCII */
-
-int zicmp(unsigned char *a, unsigned char *b)
-{
-	unsigned char ca;
-	unsigned char cb;
+	char ca;
+	char cb;
 	while (*a && *b) {
 		ca = *a;
 		cb = *b;
 		if (ca >= 'a' && ca <= 'z')
-			ca += 'A' - 'a';
+			ca = (char)(ca + ('A' - 'a'));
 		if (cb >= 'a' && cb <= 'z')
-			cb += 'A' - 'a';
+			cb = (char)(cb + ('A' - 'a'));
 		if (ca > cb)
 			return 1;
 		if (ca < cb)
@@ -429,7 +271,7 @@ int zicmp(unsigned char *a, unsigned char *b)
 
 /* Tags file string matcher */
 /* a can be something like: "class::subclass::member"
- * b can be:
+ * b can be any of these and will still match:
  *    member
  *    ::member
  *    subclass::member
@@ -437,52 +279,52 @@ int zicmp(unsigned char *a, unsigned char *b)
  *    class::subclass::member
  */
 
-int zmcmp(unsigned char *a, unsigned char *b)
+int zmcmp(const char *a, const char *b)
 {
-	int x = zlen(a);
+	ptrdiff_t x = zlen(a);
 	do {
 		if (a[x] == ':' && a[x + 1] == ':')
-			if ((b[0] == ':' && !zcmp(a + x, b)) || !zcmp(a + x + 2, b))
+			if ((b[0] == ':' && !strcmp(a + x, b)) || !strcmp(a + x + 2, b))
 				return 0;
 	} while (x--);
-	return zcmp(a, b);
+	return strcmp(a, b);
 }
 
-int zncmp(unsigned char *a, unsigned char *b, size_t len)
+int zncmp(const char *a, const char *b, ptrdiff_t len)
 {
-	return strncmp((char *)a, (char *)b, len);
+	return strncmp(a, b, (size_t)len);
 }
 
-unsigned char *zdup(unsigned char *bf)
-{
-	int size = zlen(bf);
-	unsigned char *p = (unsigned char *)joe_malloc(size+1);
-	memcpy(p,bf,size+1);
-	return p;
-}
 
 #if 0
-unsigned char *zcpy(unsigned char *a, unsigned char *b)
+char *zdup(const char *bf)
 {
-	strcpy((char *)a,(char *)b);
+	ptrdiff_t size = zlen(bf);
+	char *p = (char *)joe_malloc(size+1);
+	memcpy(p, bf, (size_t)(size + 1));
+	return p;
+}
+#endif
+
+#if 0
+char *zcpy(char *a, char *b)
+{
+	strcpy(a,b);
 	return a;
 }
 #endif
 
-unsigned char *zstr(unsigned char *a, unsigned char *b)
+char *zncpy(char *a, const char *b, ptrdiff_t len)
 {
-	return (unsigned char *)strstr((char *)a,(char *)b);
-}
-
-unsigned char *zncpy(unsigned char *a, unsigned char *b, size_t len)
-{
-	strncpy((char *)a,(char *)b,len);
+	strncpy(a,b,(size_t)len);
 	return a;
 }
 
-unsigned char *zlcpy(unsigned char *a, size_t len, unsigned char *b)
+/* Copy b into buffer a of length len.  A will always end up NUL terminated. */
+
+char *zlcpy(char *a, ptrdiff_t len, const char *b)
 {
-	unsigned char *org = a;
+	char *org = a;
 	if (!len) {
 		fprintf(stderr, "zlcpy called with len == 0\n");
 		exit(1);
@@ -496,24 +338,24 @@ unsigned char *zlcpy(unsigned char *a, size_t len, unsigned char *b)
 	return org;
 }
 
-unsigned char *mcpy(unsigned char *a, unsigned char *b, size_t len)
+void *mcpy(void *a, const void *b, ptrdiff_t len)
 {
 	if (len)
-		memcpy(a, b, len);
+		memcpy(a, b, (size_t)len);
 	return a;
 }
 
 #if 0
-unsigned char *zcat(unsigned char *a, unsigned char *b)
+char *zcat(char *a, char *b)
 {
-	strcat((char *)a,(char *)b);
+	strcat(a,b);
 	return a;
 }
 #endif
 
-unsigned char *zlcat(unsigned char *a, size_t siz, unsigned char *b)
+char *zlcat(char *a, ptrdiff_t siz, const char *b)
 {
-	unsigned char *org = a;
+	char *org = a;
 	while (*a && siz) {
 		++a;
 		--siz;
@@ -522,14 +364,215 @@ unsigned char *zlcat(unsigned char *a, size_t siz, unsigned char *b)
 	return org;
 }
 
-unsigned char *zchr(unsigned char *s, int c)
+/* Convert ASCII number to off_t */
+
+off_t zhtoo(const char *s)
 {
-	return (unsigned char *)strchr((char *)s,c);
+	off_t val = 0;
+	int flg = 0;
+	if (s) {
+		if (*s == '-') {
+			++s;
+			flg = 1;
+		} else if (*s == '+') {
+			++s;
+		}
+		while ((*s >= '0' && *s <= '9') || (*s >= 'a' && *s <= 'f') || (*s >= 'A' && *s <= 'F')) {
+			if (*s >= '0' && *s <= '9')
+				val = val * 16 + (off_t)(*s - '0');
+			else if (*s >= 'a' && *s <= 'f')
+				val = val * 16 + (off_t)(*s - 'a' + 10);
+			else if (*s >= 'A' && *s <= 'F')
+				val = val * 16 + (off_t)(*s - 'A' + 10);
+			++s;
+		}
+	}
+	if (flg)
+		return -val;
+	else
+		return val;
 }
 
-unsigned char *zrchr(unsigned char *s, int c)
+off_t ztoo(const char *s)
 {
-	return (unsigned char *)strrchr((char *)s,c);
+	off_t val = 0;
+	int flg = 0;
+	if (s) {
+		if (*s == '-') {
+			++s;
+			flg = 1;
+		} else if (*s == '+') {
+			++s;
+		}
+		if (s[0] == '0' && s[1] == 'x') {
+			s += 2;
+			while ((*s >= '0' && *s <= '9') || (*s >= 'a' && *s <= 'f') || (*s >= 'A' && *s <= 'F')) {
+				if (*s >= '0' && *s <= '9')
+					val = val * 16 + (off_t)(*s - '0');
+				else if (*s >= 'a' && *s <= 'f')
+					val = val * 16 + (off_t)(*s - 'a' + 10);
+				else if (*s >= 'A' && *s <= 'F')
+					val = val * 16 + (off_t)(*s - 'A' + 10);
+				++s;
+			}
+		} else if (s[0] == '0') {
+			while (*s >= '0' && *s <= '7') {
+				val = val * 8 + (off_t)(*s - '0');
+				++s;
+			}
+		} else {
+			while (*s >= '0' && *s <= '9') {
+				val = val * 10 + (off_t)(*s - '0');
+				++s;
+			}
+		}
+	}
+	if (flg)
+		return -val;
+	else
+		return val;
+}
+
+long ztol(const char *s)
+{
+	off_t val = ztoo(s);
+	return (long)val;
+}
+
+int ztoi(const char *s)
+{
+	off_t val = ztoo(s);
+	return (int)val;
+}
+
+ptrdiff_t ztodiff(const char *s)
+{
+	off_t val = ztoo(s);
+	return (ptrdiff_t)val;
+}
+
+long zhtol(const char *s)
+{
+	off_t val = zhtoo(s);
+	return (long)val;
+}
+
+int zhtoi(const char *s)
+{
+	off_t val = zhtoo(s);
+	return (int)val;
+}
+
+ptrdiff_t zhtodiff(const char *s)
+{
+	off_t val = zhtoo(s);
+	return (ptrdiff_t)val;
+}
+
+/* Compare zero-terminated strings of ints */
+
+int Zcmp(const int *a, const int *b)
+{
+	while (*a && *b && *a == *b) {
+		++a;
+		++b;
+	}
+	if (*a > *b)
+		return 1;
+	else if (*a < *b)
+		return -1;
+	else
+		return 0;
+}
+
+/* Copy b into buffer a of length len.  A will always end up NUL terminated. */
+
+int *Zlcpy(int *a, ptrdiff_t len, const int *b)
+{
+	int *org = a;
+	if (!len) {
+		fprintf(stderr, "Zlcpy called with len == 0\n");
+		exit(1);
+	}
+	--len;
+	while (len && *b) {
+		*a++ = *b++;
+		--len;
+	}
+	*a = 0;
+	return org;
+}
+
+/* Convert ints to chars */
+
+char *Ztoz(char *a, ptrdiff_t len, const int *b)
+{
+	char *org = a;
+	if (!len) {
+		fprintf(stderr, "Ztoz called with len == 0\n");
+		exit(1);
+	}
+	--len;
+	while (len && *b) {
+		*a++ = TO_CHAR_OK(*b++);
+		--len;
+	}
+	*a = 0;
+	return org;
+}
+
+/* Convert ints to utf8 */
+
+char *Ztoutf8(char *a, ptrdiff_t len, const int *b)
+{
+	char *org = a;
+	if (!len) {
+		fprintf(stderr, "Ztoz called with len == 0\n");
+		exit(1);
+	}
+	--len;
+	while (len && *b) {
+		char bf[8];
+		ptrdiff_t enc = utf8_encode(bf, *b++);
+		ptrdiff_t x;
+		if (enc < len) {
+			for (x = 0; x != enc; ++x) {
+				*a++ = bf[x];
+				--len;
+			}
+		}
+	}
+	*a = 0;
+	return org;
+}
+
+/* Length of an int string */
+
+ptrdiff_t Zlen(const int *s)
+{
+	ptrdiff_t len = 0; 
+	for (;;) {
+		if (!s[0]) return 0 + len;
+		if (!s[1]) return 1 + len;
+		if (!s[2]) return 2 + len;
+		if (!s[3]) return 3 + len;
+		if (!s[4]) return 4 + len;
+		if (!s[5]) return 5 + len;
+		if (!s[6]) return 6 + len;
+		if (!s[7]) return 7 + len;
+		s += 8;
+		len += 8;
+	}
+}
+
+/* Duplicate an int string */
+
+int *Zdup(const int *bf)
+{
+	ptrdiff_t size = (1 + Zlen(bf)) * SIZEOF(int);
+	int *p = (int *)joe_malloc(size);
+	memcpy(p, bf, (size_t)size);
+	return p;
 }
 
 #ifndef SIG_ERR
@@ -543,7 +586,7 @@ int joe_set_signal(int signum, sighandler_t handler)
 #ifdef HAVE_SIGACTION
 	struct sigaction sact;
 
-	mset(&sact, 0, sizeof(sact));
+	mset((char *)&sact, 0, SIZEOF(sact));
 	sact.sa_handler = handler;
 #ifdef SA_INTERRUPT
 	sact.sa_flags = SA_INTERRUPT;
@@ -552,7 +595,7 @@ int joe_set_signal(int signum, sighandler_t handler)
 #elif defined(HAVE_SIGVEC)
 	struct sigvec svec;
 
-	mset(&svec, 0, sizeof(svec));
+	mset(&svec, 0, SIZEOF(svec));
 	svec.sv_handler = handler;
 #ifdef HAVE_SV_INTERRUPT
 	svec.sv_flags = SV_INTERRUPT;
@@ -569,47 +612,51 @@ int joe_set_signal(int signum, sighandler_t handler)
 
 /* Helpful little parsing utilities */
 
-/* Skip whitespace and return first non-whitespace character */
+/* Skip whitespace and return first non-whitespace character or zero for end of line */
 
-int parse_ws(unsigned char **pp,int cmt)
+int parse_ws(const char **pp,int cmt)
 {
-	unsigned char *p = *pp;
+	const char *p = *pp;
 	while (*p==' ' || *p=='\t')
 		++p;
-	if (*p=='\r' || *p=='\n' || *p==cmt)
-		*p = 0;
+	if (*p == cmt || *p == '\n' || *p == '\r') {
+		while (*p)
+			++p;
+	}
 	*pp = p;
 	return *p;
 }
 
 /* Parse an identifier into a buffer.  Identifier is truncated to a maximum of len-1 chars. */
 
-int parse_ident(unsigned char **pp, unsigned char **buf)
+int parse_ident(const char * *pp, char **buf)
 {
-	unsigned char *p = *pp;
-	unsigned char *bf = *buf;
+	const char *p = *pp;
+	const char *q;
+	char *bf = *buf;
+	
 	bf = vstrunc(bf, 0);
-	if (joe_isalpha_(locale_map,*p)) {
-		while(joe_isalnum_(locale_map,*p)) {
-			bf = vsadd(bf, *p++);
-		}
-		while(joe_isalnum_(locale_map,*p))
-			++p;
-		*pp = p;
+	q = p;
+	
+	if (joe_isalpha_(utf8_map, utf8_decode_fwrd(&p, NULL))) {
+		do {
+			while (q < p)
+				bf = vsadd(bf, *q++);
+		} while (joe_isalnum_(utf8_map, utf8_decode_fwrd(&p, NULL)));
+		
+		*pp = q;
 		*buf = bf;
 		return 0;
-	} else {
-		*buf = bf;
+	} else
 		return -1;
-	}
 }
 
 /* Parse to next whitespace */
 
-int parse_tows(unsigned char **pp, unsigned char **bf)
+int parse_tows(const char **pp, char **bf)
 {
-	unsigned char *buf = *bf;
-	unsigned char *p = *pp;
+	const char *p = *pp;
+	char *buf = *bf;
 	buf = vstrunc(buf, 0);
 	while (*p && *p!=' ' && *p!='\t' && *p!='\n' && *p!='\r' && *p!='#')
 		buf = vsadd(buf, *p++);
@@ -621,12 +668,12 @@ int parse_tows(unsigned char **pp, unsigned char **bf)
 
 /* Parse over a specific keyword */
 
-int parse_kw(unsigned char **pp, unsigned char *kw)
+int parse_kw(const char * *pp, const char *kw)
 {
-	unsigned char *p = *pp;
+	const char *p = *pp;
 	while(*kw && *kw==*p)
 		++kw, ++p;
-	if(!*kw && !joe_isalnum_(locale_map,*p)) {
+	if(!*kw && !(joe_isalnum_(utf8_map, utf8_decode_string(p)))) {
 		*pp = p;
 		return 0;
 	} else
@@ -635,9 +682,9 @@ int parse_kw(unsigned char **pp, unsigned char *kw)
 
 /* Parse a field (same as parse_kw, but string must be terminated with whitespace) */
 
-int parse_field(unsigned char **pp, unsigned char *kw)
+int parse_field(const char **pp, const char *kw)
 {
-	unsigned char *p = *pp;
+	const char *p = *pp;
 	while(*kw && *kw==*p)
 		++kw, ++p;
 	if(!*kw && (!*p || *p==' ' || *p=='\t' || *p=='#' || *p=='\n' || *p=='\r')) {
@@ -649,9 +696,9 @@ int parse_field(unsigned char **pp, unsigned char *kw)
 
 /* Parse a specific character */
 
-int parse_char(unsigned char **pp, unsigned char c)
+int parse_char(const char **pp, char c)
 {
-	unsigned char *p = *pp;
+	const char *p = *pp;
 	if (*p == c) {
 		*pp = p+1;
 		return 0;
@@ -661,11 +708,26 @@ int parse_char(unsigned char **pp, unsigned char c)
 
 /* Parse an integer.  Returns 0 for success. */
 
-int parse_int(unsigned char **pp, int *buf)
+int parse_int(const char **pp, int *buf)
 {
-	unsigned char *p = *pp;
+	const char *p = *pp;
 	if ((*p>='0' && *p<='9') || *p=='-') {
-		*buf = atoi((char *)p);
+		*buf = ztoi(p);
+		if(*p=='-')
+			++p;
+		while(*p>='0' && *p<='9')
+			++p;
+		*pp = p;
+		return 0;
+	} else
+		return -1;
+}
+
+int parse_diff(const char **pp, ptrdiff_t *buf)
+{
+	const char *p = *pp;
+	if ((*p>='0' && *p<='9') || *p=='-') {
+		*buf = ztodiff(p);
 		if(*p=='-')
 			++p;
 		while(*p>='0' && *p<='9')
@@ -678,15 +740,23 @@ int parse_int(unsigned char **pp, int *buf)
 
 /* Parse a long */
 
-int parse_long(unsigned char **pp, long *buf)
+int parse_off_t(const char * *pp, off_t *buf)
 {
-	unsigned char *p = *pp;
+	const char *p = *pp;
+	off_t val = 0;
+	int flg = 0;
 	if ((*p>='0' && *p<='9') || *p=='-') {
-		*buf = atol((char *)p);
-		if(*p=='-')
+		if(*p=='-') {
 			++p;
-		while(*p>='0' && *p<='9')
+			flg = 1;
+		}
+		while(*p >= '0' && *p <= '9') {
+			val = val * 10 + (int)(*p - '0');
 			++p;
+		}
+		if (flg)
+			val = -val;
+		*buf = val;
 		*pp = p;
 		return 0;
 	} else
@@ -708,16 +778,16 @@ int parse_long(unsigned char **pp, long *buf)
  * -1 if there is no string or if the input ended before the terminating ".
  */
 
-int parse_string(unsigned char **pp, unsigned char **dst)
+ptrdiff_t parse_string(const char **pp, char **dst)
 {
-	unsigned char *start = vstrunc(*dst, 0);
-	unsigned char *p= *pp;
+	char *start = vstrunc(*dst, 0);
+	const char *p = *pp;
 	if(*p=='\"') {
 		++p;
 		while(*p && *p!='\"') {
-			int x = 50;
-			int c = escape(0, &p, &x);
-			start = vsadd(start, c);
+			ptrdiff_t x = 50;
+			int c = escape(0, &p, &x, NULL);
+			start = vsadd(start, TO_CHAR_OK(c));
 		}
 		if(*p == '\"') {
 			*pp = p + 1;
@@ -729,16 +799,38 @@ int parse_string(unsigned char **pp, unsigned char **dst)
 	return -1;
 }
 
+ptrdiff_t parse_Zstring(const char **pp, int *dst, ptrdiff_t len)
+{
+	int *start = dst;
+	const char *p = *pp;
+	
+	if(*p=='\"') {
+		++p;
+		while(len > 1 && *p && *p!='\"') {
+			int c = escape(1, &p, NULL, NULL);
+			*dst++ = c;
+			--len;
+		}
+		*dst = 0;
+		if(*p == '\"') {
+			*pp = p + 1;
+			return dst - start;
+		}
+	}
+	
+	return -1;
+}
+
 /* Emit a string with escape sequences */
 
 #ifdef junk
 
 /* Used originally for printing macros */
 
-void emit_string(FILE *f,unsigned char *s,int len)
+void emit_string(FILE *f,const char *s,ptrdiff_t len)
 {
-	unsigned char buf[8];
-	unsigned char *p, *q;
+	char buf[8];
+	char *p, *q;
 	fputc('\"',f);
 	while(len) {
 		p = unescape(buf,*s++);
@@ -752,7 +844,7 @@ void emit_string(FILE *f,unsigned char *s,int len)
 
 /* Emit a string */
 
-void emit_string(FILE *f,unsigned char *s,int len)
+void emit_string(FILE *f,const char *s,ptrdiff_t len)
 {
 	fputc('"',f);
 	while(len) {
@@ -774,9 +866,9 @@ void emit_string(FILE *f,unsigned char *s,int len)
 
 /* Parse a character range: a-z */
 
-int parse_range(unsigned char **pp, int *first, int *second)
+int parse_range(const char * *pp, int *first, int *second)
 {
-	unsigned char *p= *pp;
+	const char *p= *pp;
 	int a, b;
 	if(!*p)
 		return -1;
@@ -787,10 +879,10 @@ int parse_range(unsigned char **pp, int *first, int *second)
 		else if(*p=='t')
   			a = '\t';
 		else
-			a = *p;
+			a = *(const unsigned char *)p;
 		++p;
 	} else
-		a = *p++;
+		a = *(const unsigned char *)p++;
 	if(*p=='-' && p[1]) {
 		++p;
 		if(*p=='\\' && p[1]) {
@@ -800,14 +892,62 @@ int parse_range(unsigned char **pp, int *first, int *second)
 			else if(*p=='t')
 				b = '\t';
 			else
-				b = *p;
+				b = *(const unsigned char *)p;
 			++p;
 		} else
-			b = *p++;
+			b = *(const unsigned char *)p++;
 	} else
 		b = a;
 	*first = a;
 	*second = b;
 	*pp = p;
 	return 0;
+}
+
+int parse_class(const char * *pp, struct interval **array, ptrdiff_t *size)
+{
+	static struct interval simple;
+	const char *p= *pp;
+	struct Cclass *cat = NULL;
+	int a, b;
+	if(!*p)
+		return -1;
+
+	a = escape(1, &p, NULL, &cat);
+
+	if (a == -256 && cat) {
+		*array = cat->intervals;
+		*size = cat->len;
+		*pp = p;
+		return 0;
+	}
+
+	if(*p == '-' && p[1] && p[1] != '"') {
+		++p;
+		b = escape(1, &p, NULL, NULL);
+	} else
+		b = a;
+
+
+	if (b < a)
+		b = a;
+	simple.first = a;
+	simple.last = b;
+	*array = &simple;
+	*size = 1;
+	*pp = p;
+	return 0;
+}
+
+void jsort(void *base, ptrdiff_t num, ptrdiff_t size, int (*compar)(const void *a, const void *b))
+{
+	return qsort(base, (size_t)num, (size_t)size, compar);
+}
+
+off_t oabs(off_t a)
+{
+	if (a < 0)
+		return -a;
+	else
+		return a;
 }

@@ -5,8 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_QUEUE
-#define _JOE_QUEUE 1 
 
 extern void *ITEM;
 extern void *QUEUE;
@@ -145,10 +143,8 @@ struct stditem {
 
 /* Allocate an item */
 
-void *alitem(void *list, int itemsize);
+void *alitem(void *list, ptrdiff_t itemsize);
 
 /* Free an item */
 
 void frchn(void *list, void *ch);
-
-#endif

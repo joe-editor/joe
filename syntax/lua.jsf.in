@@ -14,7 +14,7 @@
 	"."		maybe_float
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
-	"a-zA-Z_"	ident		buffer
+	"\i"		ident		buffer
 	"-"		maybe_comment
 	"["		maybe_lua_string
 
@@ -310,7 +310,7 @@
 	"until"		kw
 	"while"		kw
 done
-	"a-zA-Z0-9_"	ident
+	"\c"		ident
 
 :kw Keyword
 	*	idle	noeat

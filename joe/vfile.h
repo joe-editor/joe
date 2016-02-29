@@ -5,8 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_VFILE_H
-#define _JOE_VFILE_H 1
 
 /* Page header */
 
@@ -16,7 +14,7 @@ struct vpage {
 	off_t	addr;		/* Address of this page */
 	int	count;		/* Reference count */
 	int	dirty;		/* Set if page changed */
-	unsigned char	*data;		/* The data in the page */
+	char	*data;		/* The data in the page */
 };
 
 /* File structure */
@@ -27,18 +25,18 @@ struct vfile {
 	off_t	alloc;		/* Number of bytes allocated to file */
 	int	fd;		/* Physical file */
 	int	writeable;	/* Set if we can write */
-	unsigned char	*name;		/* File name.  0 if unnamed */
+	char	*name;		/* File name.  0 if unnamed */
 	int	flags;		/* Set if this is only a temporary file */
 
 	/* For array I/O */
-	unsigned char	*vpage1;	/* Page address */
-	long	addr;		/* File address of above page */
+	char	*vpage1;	/* Page address */
+	off_t	addr;		/* File address of above page */
 
 	/* For stream I/O */
-	unsigned char	*bufp;		/* Buffer pointer */
-	unsigned char	*vpage;		/* Buffer pointer points in here */
-	int	left;		/* Space left in bufp */
-	int	lv;		/* Amount of append space at end of buffer */
+	char	*bufp;		/* Buffer pointer */
+	char	*vpage;		/* Buffer pointer points in here */
+	ptrdiff_t	left;		/* Space left in bufp */
+	ptrdiff_t	lv;		/* Amount of append space at end of buffer */
 };
 /* Additions:
  *
@@ -59,7 +57,7 @@ struct vfile {
  * get previously read data?
  */
 
-extern unsigned char *vbase;		/* Data first entry in vheader refers to */
+extern char *vbase;		/* Data first entry in vheader refers to */
 extern VPAGE **vheaders;	/* Array of headers */
 
 /* VFILE *vtmp(V);
@@ -145,13 +143,13 @@ void vflshf(VFILE *vfile);
  * ever might want to is to implement your own version of valloc()).
  */
 
-unsigned char *vlock(VFILE *vfile, off_t addr);
+char *vlock(VFILE *vfile, off_t addr);
 
 /* VPAGE *vheader(char *);
  * Return address of page header for given page
  */
 
-#define vheader(p) (vheaders[(physical((unsigned char *)(p))-physical(vbase))>>LPGSIZE])
+#define vheader(p) (vheaders[(physical((char *)(p))-physical(vbase))>>LPGSIZE])
 
 /* void vchanged(char *);
  *
@@ -207,10 +205,10 @@ int _vgetc();
 int _vrgetc();
 
 #define vrgetc(v) \
-        ( (v)->left!=PGSIZE ? ( ++(v)->left, (int)(unsigned)*(--(v)->bufp) ) : _vrgetc(v) )
+        ( (v)->left!=PGSIZE ? ( ++(v)->left, (int)(unsigned char)*(--(v)->bufp) ) : _vrgetc(v) )
 
 #define vgetc(v) \
-	( (v)->left>(v)->lv ? ( --(v)->left, (int)(unsigned)*((v)->bufp++) ) : _vgetc(v) )
+	( (v)->left>(v)->lv ? ( --(v)->left, (int)(unsigned char)*((v)->bufp++) ) : _vgetc(v) )
 
 /* int vputc(VFILE *,I);
  *
@@ -225,7 +223,7 @@ int _vputc();
 	   ( \
 	   --(v)->left, \
 	   vchanged((v)->vpage), \
- 	   (int)(unsigned)(*((v)->bufp++)=(c)) \
+ 	   (int)(unsigned char)(*((v)->bufp++)=(c)) \
 	   ) \
 	  : \
 	   _vputc((v),(c)) \
@@ -285,7 +283,7 @@ short vputw();
  * This requires that you use the 'vs.h' / 'vs.c' library.
  */
 
-unsigned char *vgets();
+char *vgets();
 
 /* void vputs(VFILE *v,char *s);
  *
@@ -379,4 +377,3 @@ short rw();
 short ww();
 
 #endif /* junk */
-#endif

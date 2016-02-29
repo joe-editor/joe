@@ -2,10 +2,10 @@
 
 #include "types.h"
 
-unsigned char *builtins[]=
+const char *builtins[]=
 {
-	USTR "joerc",
-		USTR "-notite         Don't send terminal initialization and termination strings:\n"
+	"joerc",
+		"-notite         Don't send terminal initialization and termination strings:\n"
 		"-assume_color	Assume terminal has ANSI color support even if termcap/terminfo entry\n"
 		"-assume_256color\n"
 		"-guess_non_utf8	Allow guess of non-UTF-8 file encoding in a UTF-8 locale.\n"
@@ -237,7 +237,7 @@ unsigned char *builtins[]=
 		"\\i \\i\\| 112 | pqrs tuvw  xyz{ |}~\x7f    \xf0\xf1\xf2\xf3 \xf4\xf5\xf6\xf7  \xf8\xf9\xfa\xfb \xfc\xfd\xfe\xff | 240 \\|\\i \\i\n"
 		"}\n"
 		":windows		Bindings common to all windows\n"
-		"type		^@ TO \xff		Type a character\n"
+		"type		U+0 TO U+10FFFF		Type a character\n"
 		"abort		^C		Abort window\n"
 		"abort		^K Q\n"
 		"abort		^K ^Q\n"
@@ -603,9 +603,9 @@ unsigned char *builtins[]=
 		":query			Single-key query window\n"
 		":inherit windows\n"
 		":querya			Single-key query window for quoting\n"
-		"type		^@ TO \xff\n"
+		"type		U+0 TO U+10FFFF\n"
 		":querysr		Search & replace query window\n"
-		"type		^@ TO \xff\n"
+		"type		U+0 TO U+10FFFF\n"
 		":shell			Input to shell windows\n"
 		":inherit main\n"
 		"\"\x03\"		^C		Abort\n"
@@ -632,8 +632,8 @@ unsigned char *builtins[]=
 		"\"\x08\"		^H		Backspace\n"
 		"\"\x0d\"		^M		Return\n"
 		"\"\x7f\"		^?		Backspace\n"
-,	USTR "ftyperc",
-		USTR "*\n"
+,	"ftyperc",
+		"*\n"
 		"-wordwrap\n"
 		"*.*\n"
 		"*\n"
@@ -1462,8 +1462,8 @@ unsigned char *builtins[]=
 		"-syntax elixir\n"
 		"-pound_comment\n"
 		"-text_delimiters do=end\n"
-,	USTR "c.jsf",
-		USTR "\n"
+,	"c.jsf",
+		"\n"
 		"\n"
 		"\n"
 		"\n"

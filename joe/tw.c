@@ -14,9 +14,10 @@ int bg_stalin;
 
 /* Move text window */
 
-static void movetw(BW *bw, int x, int y)
+static void movetw(W *w, ptrdiff_t x, ptrdiff_t y)
 {
-	TW *tw = (TW *) bw->object;
+	BW *bw = (BW *)w->object;
+	TW *tw = (TW *)bw->object;
 
 	if (y || !staen) {
 		if (!tw->staon) {	/* Scroll down and shrink */
@@ -35,8 +36,9 @@ static void movetw(BW *bw, int x, int y)
 
 /* Resize text window */
 
-static void resizetw(BW *bw, int wi, int he)
+static void resizetw(W *w, ptrdiff_t wi, ptrdiff_t he)
 {
+	BW *bw = (BW *)w->object;
 	if (bw->parent->ny || !staen)
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he - 1);
 	else
@@ -66,11 +68,11 @@ static void resizetw(BW *bw, int wi, int he)
  *
  */
 
-unsigned char *get_context(BW *bw)
+static char *get_context(BW *bw)
 {
-	P *p = pdup(bw->cursor, USTR "get_context");
-	unsigned char *buf = 0;
-	unsigned char *buf1;
+	P *p = pdup(bw->cursor, "get_context");
+	char *buf = 0;
+	char *buf1;
 	int i, spc;
 
 
@@ -80,7 +82,7 @@ unsigned char *get_context(BW *bw)
 		p_goto_bol(p);
 		if (!pisindent(p) && !pisblank(p)) {
 			/* next: */
-			buf = brlinevs(buf, p);
+			buf = brzs(buf, p);
 			/* Ignore comment and block structuring lines */
 			if (!(buf[0]=='{' ||
 			    (buf[0]=='/' && buf[1]=='*') ||
@@ -125,10 +127,10 @@ unsigned char *get_context(BW *bw)
 	return buf1;
 }
 
-unsigned char *duplicate_backslashes(unsigned char *s, int len)
+static char *duplicate_backslashes(char *s, ptrdiff_t len)
 {
-	unsigned char *m;
-	int x, count;
+	char *m;
+	ptrdiff_t x, count;
 	for (x = count = 0; x != len; ++x)
 		if (s[x] == '\\')
 			++count;
@@ -141,9 +143,9 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 	return m;
 }
 
-/* static */unsigned char *stagen(unsigned char *stalin, BW *bw, unsigned char *s, int fill)
+/* static */char *stagen(char *stalin, BW *bw, const char *s, char fill)
 {
-	unsigned char buf[80];
+	char buf[80];
 	int x;
 	int field;
 	W *w = bw->parent;
@@ -165,8 +167,8 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 			case 'x': /* Context (but only if autoindent is enabled) */
 				{
 					if ( bw->o.autoindent) {
-						unsigned char *s = get_context(bw);
-						unsigned char *t = my_iconv(NULL,locale_map,s,bw->o.charmap);
+						char *ts = get_context(bw);
+						char *t = my_iconv(NULL,locale_map,ts,bw->o.charmap);
 						stalin = vscat(stalin, sv(t));
 					}
 				}
@@ -175,21 +177,21 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 			case 'y':
 				{
 					if (bw->o.syntax) {
-						joe_snprintf_1(buf, sizeof(buf), "(%s)", bw->o.syntax->name);
+						joe_snprintf_1(buf, SIZEOF(buf), "(%s)", bw->o.syntax->name);
 						stalin = vsncpy(sv(stalin), sz(buf));
 					}
 				}
 				break;
 			case 't':
 				{
-					time_t n = time(NULL);
+					time_t curtime = time(NULL);
 					int l;
-					unsigned char *d = (unsigned char *)ctime(&n);
+					char *d = ctime(&curtime);
 
 					l = (d[11] - '0') * 10 + d[12] - '0';
 					if (l > 12)
 						l -= 12;
-					joe_snprintf_1(buf, sizeof(buf), "%2.2d", l);
+					joe_snprintf_1(buf, SIZEOF(buf), "%2.2d", l);
 					if (buf[0] == '0')
 						buf[0] = fill;
 					stalin = vsncpy(sv(stalin), buf, 2);
@@ -198,39 +200,39 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			    case 'd':
 				{
-				if (s[1]) switch (*++s) {
-					case 'd' : joe_snprintf_1(buf,sizeof(buf),"%02d",cas->tm_mday); break;
-					case 'm' : joe_snprintf_1(buf,sizeof(buf),"%02d",cas->tm_mon + 1); break;
-					case 'y' : joe_snprintf_1(buf,sizeof(buf),"%02d",cas->tm_year % 100); break;
-					case 'Y' : joe_snprintf_1(buf,sizeof(buf),"%04d",cas->tm_year + 1900); break;
-					case 'w' : joe_snprintf_1(buf,sizeof(buf),"%d",cas->tm_wday); break;
-					case 'D' : joe_snprintf_1(buf,sizeof(buf),"%03d",cas->tm_yday); break;
-					default : buf[0]='d'; buf[1]=*s; buf[2]=0;
+					if (s[1]) switch (*++s) {
+						case 'd' : joe_snprintf_1(buf, SIZEOF(buf), "%02d",cas->tm_mday); break;
+						case 'm' : joe_snprintf_1(buf, SIZEOF(buf), "%02d",cas->tm_mon + 1); break;
+						case 'y' : joe_snprintf_1(buf, SIZEOF(buf), "%02d",cas->tm_year % 100); break;
+						case 'Y' : joe_snprintf_1(buf, SIZEOF(buf), "%04d",cas->tm_year + 1900); break;
+						case 'w' : joe_snprintf_1(buf, SIZEOF(buf), "%d",cas->tm_wday); break;
+						case 'D' : joe_snprintf_1(buf, SIZEOF(buf), "%03d",cas->tm_yday); break;
+						default : buf[0]='d'; buf[1]=*s; buf[2]=0;
 					}
-				else { buf[0]='d'; buf[1]=0;}
-				stalin=vsncpy(sv(stalin),sz(buf));
+					else { buf[0]='d'; buf[1]=0;}
+						stalin=vsncpy(sv(stalin),sz(buf));
 				}
 				break;
 
 				case 'E':
 				{
-				int l;
-				unsigned char *ch;
-				buf[0]=0;
-				for(l=0;s[l+1] && s[l+1] != '%'; l++) buf[l]=s[l+1];
-				if (s[l+1]=='%' && buf[0]) {
-					buf[l]=0;
-					s+=l+1;
-					ch=(unsigned char *)getenv((char *)buf);
-					if (ch) stalin=vsncpy(sv(stalin),sz(ch));
+					int l;
+					char *ch;
+					buf[0]=0;
+					for(l=0;s[l+1] && s[l+1] != '%'; l++) buf[l]=s[l+1];
+					if (s[l+1]=='%' && buf[0]) {
+						buf[l]=0;
+						s+=l+1;
+						ch=getenv(buf);
+						if (ch) stalin=vsncpy(sv(stalin),sz(ch));
 					} 
 				}
 				break;
 
 			case 'Z':
 				{
+					const char *ch;
 					int l;
-					unsigned char *ch;
 					buf[0]=0;
 					for(l=0;s[l+1] && s[l+1] != '%'; l++) buf[l]=s[l+1];
 					if (s[l+1]=='%' && buf[0]) {
@@ -244,8 +246,8 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 
 			case 'u':
 				{
-					time_t n = time(NULL);
-					unsigned char *d = (unsigned char *)ctime(&n);
+					time_t curtime = time(NULL);
+					char *d = ctime(&curtime);
 
 					stalin = vsncpy(sv(stalin), d + 11, 5);
 				}
@@ -277,8 +279,8 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 			case 'n':
 				{
 				if (bw->b->name) {
-					unsigned char *tmp = simplify_prefix(bw->b->name);
-					unsigned char *tmp1 = duplicate_backslashes(sv(tmp));
+					char *tmp = simplify_prefix(bw->b->name);
+					char *tmp1 = duplicate_backslashes(sv(tmp));
 					stalin = vsncpy(sv(stalin), sv(tmp1));
 				} else {
 					stalin = vsncpy(sv(stalin), sz(joe_gettext(_("Unnamed"))));
@@ -301,9 +303,17 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'r':
 				if (field)
-					joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->cursor->line + 1);
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, SIZEOF(buf), "%-4lld", (long long)(bw->cursor->line + 1));
+#else
+					joe_snprintf_1(buf, SIZEOF(buf), "%-4ld", (long)(bw->cursor->line + 1));
+#endif
 				else
-					joe_snprintf_1(buf, sizeof(buf), "%ld", bw->cursor->line + 1);
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, SIZEOF(buf), "%lld", (long long)(bw->cursor->line + 1));
+#else
+					joe_snprintf_1(buf, SIZEOF(buf), "%ld", (long)(bw->cursor->line + 1));
+#endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -312,15 +322,15 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 			case 'o':
 				if (field)
 #ifdef HAVE_LONG_LONG
-					joe_snprintf_1(buf, sizeof(buf), "%-4lld", (long long)bw->cursor->byte);
+					joe_snprintf_1(buf, SIZEOF(buf), "%-4lld", (long long)bw->cursor->byte);
 #else
-					joe_snprintf_1(buf, sizeof(buf), "%-4ld", (long)bw->cursor->byte);
+					joe_snprintf_1(buf, SIZEOF(buf), "%-4ld", (long)bw->cursor->byte);
 #endif
 				else
 #ifdef HAVE_LONG_LONG
-					joe_snprintf_1(buf, sizeof(buf), "%lld", (long long)bw->cursor->byte);
+					joe_snprintf_1(buf, SIZEOF(buf), "%lld", (long long)bw->cursor->byte);
 #else
-					joe_snprintf_1(buf, sizeof(buf), "%ld", (long)bw->cursor->byte);
+					joe_snprintf_1(buf, SIZEOF(buf), "%ld", (long)bw->cursor->byte);
 #endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
@@ -330,15 +340,15 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 			case 'O':
 				if (field)
 #ifdef HAVE_LONG_LONG
-					joe_snprintf_1(buf, sizeof(buf), "%-4llX", (unsigned long long)bw->cursor->byte);
+					joe_snprintf_1(buf, SIZEOF(buf), "%-4llX", (unsigned long long)bw->cursor->byte);
 #else
-					joe_snprintf_1(buf, sizeof(buf), "%-4lX", (unsigned long)bw->cursor->byte);
+					joe_snprintf_1(buf, SIZEOF(buf), "%-4lX", (unsigned long)bw->cursor->byte);
 #endif
 				else
 #ifdef HAVE_LONG_LONG
-					joe_snprintf_1(buf, sizeof(buf), "%llX", (unsigned long long)bw->cursor->byte);
+					joe_snprintf_1(buf, SIZEOF(buf), "%llX", (unsigned long long)bw->cursor->byte);
 #else
-					joe_snprintf_1(buf, sizeof(buf), "%lX", (unsigned long)bw->cursor->byte);
+					joe_snprintf_1(buf, SIZEOF(buf), "%lX", (unsigned long)bw->cursor->byte);
 #endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
@@ -347,9 +357,9 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'a':
 				if (!piseof(bw->cursor))
-					joe_snprintf_1(buf, sizeof(buf), "%3d", brch(bw->cursor));
+					joe_snprintf_1(buf, SIZEOF(buf), "%3d", brch(bw->cursor));
 				else
-					joe_snprintf_0(buf, sizeof(buf), "   ");
+					joe_snprintf_0(buf, SIZEOF(buf), "   ");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -358,14 +368,14 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 			case 'A':
 				if (field)
 					if (!piseof(bw->cursor))
-						joe_snprintf_1(buf, sizeof(buf), "%2.2X", brch(bw->cursor));
+						joe_snprintf_1(buf, SIZEOF(buf), "%2.2X", brch(bw->cursor));
 					else
-						joe_snprintf_0(buf, sizeof(buf), "  ");
+						joe_snprintf_0(buf, SIZEOF(buf), "  ");
 				else
 					if (!piseof(bw->cursor))
-						joe_snprintf_1(buf, sizeof(buf), "%x", brch(bw->cursor));
+						joe_snprintf_1(buf, SIZEOF(buf), "%x", brch(bw->cursor));
 					else
-						joe_snprintf_0(buf, sizeof(buf), "");
+						joe_snprintf_0(buf, SIZEOF(buf), "");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -373,9 +383,17 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'c':
 				if (field)
-					joe_snprintf_1(buf, sizeof(buf), "%-3ld", piscol(bw->cursor) + 1);
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, SIZEOF(buf), "%-3lld", (long long)(piscol(bw->cursor) + 1));
+#else
+					joe_snprintf_1(buf, SIZEOF(buf), "%-3ld", (long)(piscol(bw->cursor) + 1));
+#endif
 				else
-					joe_snprintf_1(buf, sizeof(buf), "%ld", piscol(bw->cursor) + 1);
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, SIZEOF(buf), "%lld", (long long)(piscol(bw->cursor) + 1));
+#else
+					joe_snprintf_1(buf, SIZEOF(buf), "%ld", (long)(piscol(bw->cursor) + 1));
+#endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -384,18 +402,18 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 			case 'p':
 				if (bw->b->eof->byte >= 1024*1024)
 #ifdef HAVE_LONG_LONG
-					joe_snprintf_1(buf, sizeof(buf), "%3lld", ((long long)bw->cursor->byte >> 10) * 100 / ((long long)bw->b->eof->byte >> 10));
+					joe_snprintf_1(buf, SIZEOF(buf), "%3lld", ((long long)bw->cursor->byte >> 10) * 100 / ((long long)bw->b->eof->byte >> 10));
 #else
-					joe_snprintf_1(buf, sizeof(buf), "%3ld", ((long)bw->cursor->byte >> 10) * 100 / ((long)bw->b->eof->byte >> 10));
+					joe_snprintf_1(buf, SIZEOF(buf), "%3ld", ((long)bw->cursor->byte >> 10) * 100 / ((long)bw->b->eof->byte >> 10));
 #endif
 				else if (bw->b->eof->byte)
 #ifdef HAVE_LONG_LONG
-					joe_snprintf_1(buf, sizeof(buf), "%3lld", (long long)bw->cursor->byte * 100 / (long long)bw->b->eof->byte);
+					joe_snprintf_1(buf, SIZEOF(buf), "%3lld", (long long)bw->cursor->byte * 100 / (long long)bw->b->eof->byte);
 #else
-					joe_snprintf_1(buf, sizeof(buf), "%3ld", (long)bw->cursor->byte * 100 / (long)bw->b->eof->byte);
+					joe_snprintf_1(buf, SIZEOF(buf), "%3ld", (long)bw->cursor->byte * 100 / (long)bw->b->eof->byte);
 #endif
 				else
-					joe_snprintf_0(buf, sizeof(buf), "100");
+					joe_snprintf_0(buf, SIZEOF(buf), "100");
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -403,9 +421,17 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'l':
 				if (field)
-					joe_snprintf_1(buf, sizeof(buf), "%-4ld", bw->b->eof->line + 1);
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, SIZEOF(buf), "%-4lld", (long long)(bw->b->eof->line + 1));
+#else
+					joe_snprintf_1(buf, SIZEOF(buf), "%-4ld", (long)(bw->b->eof->line + 1));
+#endif
 				else
-					joe_snprintf_1(buf, sizeof(buf), "%ld", bw->b->eof->line + 1);
+#ifdef HAVE_LONG_LONG
+					joe_snprintf_1(buf, SIZEOF(buf), "%lld", (long long)(bw->b->eof->line + 1));
+#else
+					joe_snprintf_1(buf, SIZEOF(buf), "%ld", (long)(bw->b->eof->line + 1));
+#endif
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;
@@ -413,17 +439,17 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'k':
 				{
-					int i;
-					unsigned char *cpos = buf;
+					ptrdiff_t i;
+					char *cpos = buf;
 
 					buf[0] = 0;
 					if (w->kbd->x && w->kbd->seq[0])
 						for (i = 0; i != w->kbd->x; ++i) {
-							int c = w->kbd->seq[i] & 127;
+							char c = w->kbd->seq[i] & 127;
 
 							if (c < 32) {
 								cpos[0] = '^';
-								cpos[1] = c + '@';
+								cpos[1] = (char)(c + '@');
 								cpos += 2;
 							} else if (c == 127) {
 								cpos[0] = '^';
@@ -446,7 +472,7 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'M':
 				if (recmac) {
-					joe_snprintf_1(buf, sizeof(buf), joe_gettext(_("(Macro %d recording...)")), recmac->n);
+					joe_snprintf_1(buf, SIZEOF(buf), joe_gettext(_("(Macro %d recording...)")), recmac->n);
 					stalin = vsncpy(sv(stalin), sz(buf));
 				}
 				break;
@@ -455,7 +481,7 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 				break;
 			case 'w':
 				if (!piseof(bw->cursor)) {
-					joe_snprintf_1(buf, sizeof(buf), "%d", joe_wcwidth(bw->o.charmap->type, brch(bw->cursor)));
+					joe_snprintf_1(buf, SIZEOF(buf), "%d", joe_wcwidth(bw->o.charmap->type, brch(bw->cursor)));
 					stalin = vsncpy(sv(stalin), sz(buf));
 				}
 				break;
@@ -469,28 +495,28 @@ unsigned char *duplicate_backslashes(unsigned char *s, int len)
 	return stalin;
 }
 
-static void disptw(BW *bw, int flg)
+static void disptw(W *w, int flg)
 {
-	W *w = bw->parent;
-	TW *tw = (TW *) bw->object;
+	BW *bw = (BW *)w->object;
+	TW *tw = (TW *)bw->object;
 
 	if (bw->o.linums != bw->linums) {
 		bw->linums = bw->o.linums;
-		resizetw(bw, w->w, w->h);
-		movetw(bw, w->x, w->y);
-		bwfllw(bw);
+		resizetw(w, w->w, w->h);
+		movetw(w, w->x, w->y);
+		bwfllw(w);
 	}
 
 	if (bw->o.hex) {
-		w->cury = (bw->cursor->byte-bw->top->byte)/16 + bw->y - w->y;
-		w->curx = (bw->cursor->byte-bw->top->byte)%16 + 60 - bw->offset;
+		w->cury = TO_DIFF_OK((bw->cursor->byte-bw->top->byte)/16 + bw->y - w->y);
+		w->curx = TO_DIFF_OK((bw->cursor->byte-bw->top->byte)%16 + 60 - bw->offset);
 	} else {
-		w->cury = bw->cursor->line - bw->top->line + bw->y - w->y;
-		w->curx = bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0);
+		w->cury = TO_DIFF_OK(bw->cursor->line - bw->top->line + bw->y - w->y);
+		w->curx = TO_DIFF_OK(bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0));
 	}
 
 	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen)) {
-		int fill;
+		char fill;
 
 		tw->prevline = bw->cursor->line;
 		tw->changed = bw->b->changed;
@@ -502,7 +528,7 @@ static void disptw(BW *bw, int flg)
 		tw->stalin = stagen(tw->stalin, bw, bw->o.lmsg, fill);
 		tw->staright = stagen(tw->staright, bw, bw->o.rmsg, fill);
 		if (fmtlen(tw->staright) < w->w) {
-			int x = fmtpos(tw->stalin, w->w - fmtlen(tw->staright));
+			ptrdiff_t x = fmtpos(tw->stalin, w->w - fmtlen(tw->staright));
 
 			if (x > vslen(tw->stalin))
 				tw->stalin = vsfill(sv(tw->stalin), fill, x - vslen(tw->stalin));
@@ -523,7 +549,7 @@ static void disptw(BW *bw, int flg)
 
 /* Split current window */
 
-static void iztw(TW *tw, int y)
+static void iztw(TW *tw, ptrdiff_t y)
 {
 	tw->stalin = NULL;
 	tw->staright = NULL;
@@ -533,80 +559,84 @@ static void iztw(TW *tw, int y)
 	tw->prev_b = 0;
 }
 
-int usplitw(BW *bw)
+int usplitw(W *w, int k)
 {
-	W *w = bw->parent;
-	int newh = getgrouph(w);
-	W *new;
+	BW *bw;
+	ptrdiff_t newh = getgrouph(w);
+	W *neww;
 	TW *newtw;
 	BW *newbw;
+	WIND_BW(bw, w);
 
 	dostaupd = 1;
 	if (newh / 2 < FITHEIGHT)
 		return -1;
-	new = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL);
-	if (!new)
+	neww = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL);
+	if (!neww)
 		return -1;
-//	wfit(new->t);
-	new->object = (void *) (newbw = bwmk(new, bw->b, 0, NULL));
+//	wfit(neww->t);
+	neww->object = (void *) (newbw = bwmk(neww, bw->b, 0, NULL));
 	++bw->b->count;
 	newbw->offset = bw->offset;
-	newbw->object = (void *) (newtw = (TW *) joe_malloc(sizeof(TW)));
-	iztw(newtw, new->y);
+	newbw->object = (void *) (newtw = (TW *) joe_malloc(SIZEOF(TW)));
+	iztw(newtw, neww->y);
 	pset(newbw->top, bw->top);
 	pset(newbw->cursor, bw->cursor);
 	newbw->cursor->xcol = bw->cursor->xcol;
-	new->t->curwin = new;
-	wfit(new->t);
+	neww->t->curwin = neww;
+	wfit(neww->t);
 	return 0;
 }
 
-int uduptw(BW *bw)
+int uduptw(W *w, int k)
 {
-	W *w = bw->parent;
-	int newh = getgrouph(w);
-	W *new;
+	BW *bw;
+	ptrdiff_t newh = getgrouph(w);
+	W *neww;
 	TW *newtw;
 	BW *newbw;
+	WIND_BW(bw, w);
 
 	dostaupd = 1;
-	new = wcreate(w->t, w->watom, findbotw(w), NULL, NULL, newh, NULL);
-	if (!new)
+	neww = wcreate(w->t, w->watom, findbotw(w), NULL, NULL, newh, NULL);
+	if (!neww)
 		return -1;
 	if (demotegroup(w))
-		new->t->topwin = new;
-	new->object = (void *) (newbw = bwmk(new, bw->b, 0, NULL));
+		neww->t->topwin = neww;
+	neww->object = (void *) (newbw = bwmk(neww, bw->b, 0, NULL));
 	++bw->b->count;
 	newbw->offset = bw->offset;
-	newbw->object = (void *) (newtw = (TW *) joe_malloc(sizeof(TW)));
-	iztw(newtw, new->y);
+	newbw->object = (void *) (newtw = (TW *) joe_malloc(SIZEOF(TW)));
+	iztw(newtw, neww->y);
 	pset(newbw->top, bw->top);
 	pset(newbw->cursor, bw->cursor);
 	newbw->cursor->xcol = bw->cursor->xcol;
-	new->t->curwin = new;
+	neww->t->curwin = neww;
 	wfit(w->t);
 	return 0;
 }
 
-static void instw(BW *bw, B *b, long int l, long int n, int flg)
+static void instw(W *w, B *b, off_t l, off_t n, int flg)
 {
+	BW *bw = (BW *)w->object;
 	if (b == bw->b)
 		bwins(bw, l, n, flg);
 }
 
-static void deltw(BW *bw, B *b, long int l, long int n, int flg)
+static void deltw(W *w, B *b, off_t l, off_t n, int flg)
 {
+	BW *bw = (BW *)w->object;
 	if (b == bw->b)
 		bwdel(bw, l, n, flg);
 }
 
 WATOM watomtw = {
-	USTR "main",
+	"main",
 	disptw,
 	bwfllw,
 	NULL,
 	rtntw,
-	utypebw,
+	utypew,
 	resizetw,
 	movetw,
 	instw,
@@ -614,15 +644,17 @@ WATOM watomtw = {
 	TYPETW
 };
 
-int abortit(BW *bw)
+int abortit(W *w, int k)
 {
-	W *w;
+	BW *bw;
 	TW *tw;
 	B *b;
+	
+	WIND_BW(bw, w);
 	if (bw->parent->watom != &watomtw)
 		return wabort(bw->parent);
 	if (bw->b->pid && bw->b->count==1)
-		return ukillpid(bw);
+		return ukillpid(bw->parent, 0);
 	w = bw->parent;
 	tw = (TW *) bw->object;
 	/* If only one main window on the screen... */
@@ -649,7 +681,7 @@ int abortit(BW *bw)
 	return 0;
 }
 
-B *wpop(BW *bw)
+static B *wpop(BW *bw)
 {
 	B *b;
 	struct bstack *e = bw->parent->bstack;
@@ -665,12 +697,14 @@ B *wpop(BW *bw)
 }
 
 /* Pop, or do nothing if no window on stack */
-int upopabort(BW *bw)
+int upopabort(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (bw->parent->bstack) {
 		int rtn;
 		B *b = wpop(bw);
-		W *w = bw->parent;
+		w = bw->parent;
 		rtn = get_buffer_in_window(bw, b);
 		bw = (BW *)w->object;
 		bw->cursor->xcol = piscol(bw->cursor);
@@ -683,66 +717,75 @@ int upopabort(BW *bw)
 /* k is last character types which lead to uabort.  If k is -1, it means uabort
    was called internally, and not by the user: which means uabort will not send
    Ctrl-C to process */
-int uabort(BW *bw, int k)
+int uabort(W *w, int k)
 {
-	if (bw->parent->watom != &watomtw)
-		return wabort(bw->parent);
+	BW *bw;
+	
+	if (w->watom != &watomtw)
+		return wabort(w);
+	WIND_BW(bw, w);
 	if (bw->parent->bstack) {
 		int rtn;
 		B *b = wpop(bw);
-		W *w = bw->parent;
+		w = bw->parent;
 		rtn = get_buffer_in_window(bw, b);
 		bw = (BW *)w->object;
 		bw->cursor->xcol = piscol(bw->cursor);
 		return rtn;
 	}
 	if (bw->b->pid && bw->b->count==1)
-		return ukillpid(bw);
+		return ukillpid(bw->parent, 0);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch) {
-		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		int c = query(w, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
 		if (!yncheck(yes_key, c))
 			return -1;
 	}
 	if (bw->b->count == 1)
 		genexmsg(bw, 0, NULL);
-	return abortit(bw);
+	return abortit(w, NO_MORE_DATA);
 }
 
-int ucancel(BW *bw, int k)
+int ucancel(W *w, int k)
 {
-	if (bw->parent->watom != &watomtw) {
-		wabort(bw->parent);
+	if (w->watom != &watomtw) {
+		wabort(w);
 		return 0;
 	} else
-		return uabort(bw,k);
+		return uabort(w, k);
 }
 
 /* Same as above, but only calls genexmsg if nobody else has */
 
-int uabort1(BW *bw, int k)
+int uabort1(W *w, int k)
 {
-	if (bw->parent->watom != &watomtw)
-		return wabort(bw->parent);
+	BW *bw;
+	
+	if (w->watom != &watomtw)
+		return wabort(w);
+	
+	bw = (BW *)w->object;
 	if (bw->b->pid && bw->b->count==1)
-		return ukillpid(bw);
+		return ukillpid(bw->parent, 0);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch) {
-		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		int c = query(w, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
 		if (!yncheck(yes_key, c))
 			return -1;
 	}
 	if (!exmsg) genexmsg(bw, 0, NULL);
-	return abortit(bw);
+	return abortit(w, NO_MORE_DATA);
 }
 
 /* Abort buffer without prompting: just fail if this is last window on buffer */
 
-int uabortbuf(BW *bw)
+int uabortbuf(W *w, int k)
 {
-	W *w = bw->parent;
+	BW *bw;
 	B *b;
 
+	WIND_BW(bw, w);
+
 	if (bw->b->pid && bw->b->count==1)
-		return ukillpid(bw);
+		return ukillpid(w, 0);
 
 	if (okrepl(bw))
 		return -1;
@@ -759,29 +802,31 @@ int uabortbuf(BW *bw)
 
 	if (bw->b->count == 1)
 		genexmsg(bw, 0, NULL);
-	return abortit(bw);
+	return abortit(w, NO_MORE_DATA);
 }
 
 /* Kill current window (orphans buffer) */
 
-int utw0(BASE *b)
+int utw0(W *w, int k)
 {
-	BW *bw = b->parent->main->object;
+	BW *bw;
+	w = w->main;
+	bw = (BW *)w->object;
 
-	if (bw->parent->bstack)
-		return uabort(bw, -1);
-	if (countmain(b->parent->t) == 1)
+	if (w->bstack)
+		return uabort(w, -1);
+	if (countmain(w->t) == 1)
 		return -1;
 	if (bw->b->count == 1)
 		orphit(bw);
-	return uabort(bw, -1);
+	return uabort(w, -1);
 }
 
 /* Kill all other windows (orphans buffers) */
 
-int utw1(BASE *b)
+int utw1(W *w, int k)
 {
-	W *starting = b->parent;
+	W *starting = w;
 	W *mainw = starting->main;
 	Screen *t = mainw->t;
 	int yn;
@@ -793,8 +838,7 @@ int utw1(BASE *b)
 			wnext(t);
 		} while (t->curwin->main == mainw && t->curwin != starting);
 		if (t->curwin->main != mainw) {
-			BW *bw = t->curwin->main->object;
-			utw0((BASE *)bw);
+			utw0(t->curwin->main, 0);
 			yn = 1;
 			goto loop;
 		}
@@ -802,21 +846,21 @@ int utw1(BASE *b)
 	return 0;
 }
 
-void setline(B *b, long int line)
+void setline(B *b, off_t line)
 {
 	W *w = maint->curwin;
 
 	do {
 		if (w->watom->what == TYPETW) {
-			BW *bw = w->object;
+			BW *bw = (BW *)w->object;
 
 			if (bw->b == b) {
-				long oline = bw->top->line;
+				off_t oline = bw->top->line;
 
 				/* pline(bw->top, line); */
 				pline(bw->cursor, line);
 				if (!bw->b->err)
-					bw->b->err = pdup(bw->cursor, USTR "setline");
+					bw->b->err = pdup(bw->cursor, "setline");
 				pline(bw->b->err, line);
 				if (w->y >= 0 && bw->top->line > oline && bw->top->line - oline < bw->h)
 					nscrlup(w->t->t, bw->y, bw->y + bw->h, (int) (bw->top->line - oline));
@@ -830,7 +874,7 @@ void setline(B *b, long int line)
 	if (errbuf == b && b->oldcur) {
 		pline(b->oldcur, line);
 		if (!b->err)
-			b->err = pdup(b->oldcur, USTR ("setline1"));
+			b->err = pdup(b->oldcur, ("setline1"));
 		pline(b->err, line);
 	}
 }
@@ -846,7 +890,7 @@ BW *wmktw(Screen *t, B *b)
 	w = wcreate(t, &watomtw, NULL, NULL, NULL, t->h, NULL);
 	wfit(w->t);
 	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
-	bw->object = (void *) (tw = (TW *) joe_malloc(sizeof(TW)));
+	bw->object = (void *) (tw = (TW *) joe_malloc(SIZEOF(TW)));
 	iztw(tw, w->y);
 	return bw;
 }

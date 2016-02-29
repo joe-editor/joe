@@ -10,11 +10,11 @@
 
 static B *menuhist = NULL; /* Menu history */
 static struct rc_menu *menus; /* All menus */
-static unsigned char **smenus = NULL; /* Completion list */
+static char **smenus = NULL; /* Completion list */
 
 /* Find a menu */
 
-static struct rc_menu *find_menu(unsigned char *s)
+static struct rc_menu *find_menu(char *s)
 {
 	struct rc_menu *m;
 	for (m = menus; m; m = m->next)
@@ -25,12 +25,12 @@ static struct rc_menu *find_menu(unsigned char *s)
 
 /* Create a new menu, push it on menus list */
 
-struct rc_menu *create_menu(unsigned char *name, MACRO *bs)
+struct rc_menu *create_menu(char *name, MACRO *bs)
 {
 	struct rc_menu *menu = find_menu(name);
 	if (menu)
 		return menu;
-	menu = (struct rc_menu *)joe_malloc(sizeof(struct rc_menu));
+	menu = (struct rc_menu *)joe_malloc(SIZEOF(struct rc_menu));
 	menu->name = zdup(name);
 	menu->next = menus;
 	menus = menu;
@@ -43,16 +43,16 @@ struct rc_menu *create_menu(unsigned char *name, MACRO *bs)
 
 /* Add an entry to a menu */
 
-void add_menu_entry(struct rc_menu *menu, unsigned char *entry_name, MACRO *m)
+void add_menu_entry(struct rc_menu *menu, char *entry_name, MACRO *m)
 {
-	struct rc_menu_entry *e = (struct rc_menu_entry *)joe_malloc(sizeof(struct rc_menu_entry));
+	struct rc_menu_entry *e = (struct rc_menu_entry *)joe_malloc(SIZEOF(struct rc_menu_entry));
 	e->m = m;
 	e->name = zdup(entry_name);
 	++menu->size;
 	if (!menu->entries) {
-		menu->entries = (struct rc_menu_entry **)joe_malloc(menu->size * sizeof(struct rc_menu_entry *));
+		menu->entries = (struct rc_menu_entry **)joe_malloc(menu->size * SIZEOF(struct rc_menu_entry *));
 	} else {
-		menu->entries = (struct rc_menu_entry **)joe_realloc(menu->entries, menu->size * sizeof(struct rc_menu_entry *));
+		menu->entries = (struct rc_menu_entry **)joe_realloc(menu->entries, menu->size * SIZEOF(struct rc_menu_entry *));
 	}
 	menu->entries[menu->size - 1] = e;
 }
@@ -63,7 +63,7 @@ int menu_flg; /* Record of key used to select menu entry */
 
 int display_menu(BW *bw, struct rc_menu *menu)
 {
-	unsigned char **s = vamk(20);
+	char **s = vamk(20);
 	int x;
 	
 	for (x = 0; x != menu->size; ++x) {
@@ -77,20 +77,20 @@ int display_menu(BW *bw, struct rc_menu *menu)
 	} else if (x == 3) {
 		/* Backspace */
 		if (menu->backs)
-			return exmacro(menu->backs, 1);
+			return exmacro(menu->backs, 1, NO_MORE_DATA);
 		else
 			return 0;
 	}
 	
 	menu_flg = x;
-	return exmacro(menu->entries[menu->last_position]->m, 1);
+	return exmacro(menu->entries[menu->last_position]->m, 1, NO_MORE_DATA);
 }
 
 /* Build array of menu name from list of menus for completion */
 
-unsigned char **getmenus(void)
+static char **getmenus(void)
 {
-	unsigned char **s = vaensure(NULL, 20);
+	char **s = vaensure(NULL, 20);
 	struct rc_menu *m;
 	vaperm(s);
 
@@ -102,7 +102,7 @@ unsigned char **getmenus(void)
 
 /* When user hits tab */
 
-static int menucmplt(BW *bw)
+static int menucmplt(BW *bw, int k)
 {
 	if (!smenus)
 		smenus = getmenus();
@@ -111,17 +111,20 @@ static int menucmplt(BW *bw)
 
 /* Menu of macros command: prompt for a menu to bring up */
 
-int umenu(BW *bw)
+int umenu(W *w, int k)
 {
-	unsigned char *s = ask(bw->parent, joe_gettext(USTR _("Menu: ")), &menuhist, USTR "menu", menucmplt, locale_map, 0, 0, NULL);
+	char *s = ask(w, joe_gettext(_("Menu: ")), &menuhist, "menu", menucmplt, locale_map, 0, 0, NULL);
 	struct rc_menu *menu;
+	BW *bw;
+	
+	WIND_BW(bw, w);
 	
 	if (!s)
 		return -1;
 	
 	menu = find_menu(s);
 	if (!menu) {
-		msgnw(bw->parent, joe_gettext(_("No such menu")));
+		msgnw(w, joe_gettext(_("No such menu")));
 		return -1;
 	} else {
 		bw->b->o.readonly = bw->o.readonly = bw->b->rdonly;

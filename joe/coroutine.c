@@ -137,7 +137,7 @@ static struct stack *mkstack()
 #endif
 		return stack;
 	}
-	stack = (struct stack *)malloc(sizeof(struct stack));
+	stack = (struct stack *)malloc(SIZEOF(struct stack));
 	stack->caller = 0;
 	stack->chain = 0;
 #ifdef USE_UCONTEXT
@@ -466,7 +466,7 @@ int co_call(int (*func)(va_list args), ...)
 	va_start(ap, func);
 
 	if (!current_stack) {
-		current_stack = (struct stack *)malloc(sizeof(struct stack));
+		current_stack = (struct stack *)malloc(SIZEOF(struct stack));
 		current_stack->caller = 0;
 		current_stack->chain = 0;
 	}
@@ -507,7 +507,7 @@ int co_call(int (*func)(va_list args), ...)
 
 	if (!current_stack) {
 		/* Startup... record main stack */
-		current_stack = (struct stack *)malloc(sizeof(struct stack));
+		current_stack = (struct stack *)malloc(SIZEOF(struct stack));
 		current_stack->caller = 0;
 		current_stack->chain = 0;
 		if (!setjmp(rtn_create_stk))

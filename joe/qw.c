@@ -9,15 +9,15 @@
 
 /* Event handler: display query window */
 
-static void dispqw(QW *qw)
+static void dispqw(W *w, int flg)
 {
-	int y;
-	W *w = qw->parent;
+	QW *qw = (QW *)w->object;
+	ptrdiff_t y;
 
 	/* Generate prompt */
 	for (y = 0; y != w->h; ++y) {
-		unsigned char *s = qw->prompt;
-		int l = qw->promptlen;
+		const char *s = qw->prompt;
+		ptrdiff_t l = qw->promptlen;
 		break_height(locale_map, &s, &l, qw->org_w, y);
 		w->t->t->updtab[w->y + y] = 1;
 		genfield(w->t->t,
@@ -38,33 +38,25 @@ static void dispqw(QW *qw)
 
 /* Display query window: leave cursor in target window */
 
-static void dispqwn(QW *qw)
+static void dispqwn(W *w, int flg)
 {
-	W *w = qw->parent;
 	/* Set cursor position */
 	if (w->win->watom->follow && w->win->object)
-		w->win->watom->follow(w->win->object);
+		w->win->watom->follow(w->win);
 	if (w->win->watom->disp && w->win->object)
-		w->win->watom->disp(w->win->object, 1);
-	dispqw(qw);
+		w->win->watom->disp(w->win, 1);
+	dispqw(w, flg);
 	w->curx = w->win->curx;
 	w->cury = w->win->cury + w->win->y - w->y;
 }
 
 /* When user hits a key in a query window */
 
-struct utf8_sm qw_sm;
-
-static int utypeqw(QW *qw, int c)
+static int utypeqw(W *w, int c)
 {
+	QW *qw = (QW *)w->object;
 	struct query_result *r;
 	int flg = qw->flg;
-	W *w = qw->parent;
-	if (locale_map->type) {
-		c = utf8_decode(&qw_sm, c);
-		if (c < 0)
-			return 0;
-	}
 	r = qw->result;
 	obj_free(qw->prompt);
 	joe_free(qw);
@@ -78,10 +70,12 @@ static int utypeqw(QW *qw, int c)
 		return co_resume(&r->t, 0);
 }
 
-static int abortqw(QW *qw)
+static int abortqw(W *w)
 {
+	QW *qw = (QW *)w->object;
 	struct query_result *r = qw->result;
 	int flg = qw->flg;
+
 	obj_free(qw->prompt);
 	joe_free(qw);
 	r->answer = -1;
@@ -93,7 +87,7 @@ static int abortqw(QW *qw)
 }
 
 static WATOM watomqw = {
-	USTR "query",
+	"query",
 	dispqw,
 	NULL,
 	abortqw,
@@ -107,7 +101,7 @@ static WATOM watomqw = {
 };
 
 static WATOM watqwn = {
-	USTR "querya",
+	"querya",
 	dispqwn,
 	NULL,
 	abortqw,
@@ -121,7 +115,7 @@ static WATOM watqwn = {
 };
 
 static WATOM watqwsr = {
-	USTR "querysr",
+	"querysr",
 	dispqwn,
 	NULL,
 	abortqw,
@@ -135,18 +129,19 @@ static WATOM watqwsr = {
 };
 
 int query(W *w,				/* Prompt goes below this window */
-          unsigned char *prompt,	/* Prompt text */
+          const char *prompt,		/* Prompt text */
           int len,			/* Length of prompt text */
           int flg)			/* Options: 0 = normal, 1 = cursor left in original,
 						    2 = same as 1, but QW type code is different. */
 {
 	struct query_result t;
 	QW *qw;
-	WATOM *a = &watomqw;
 	W *n;
-	unsigned char *s = prompt;
-	int l = len;
-	int h = break_height(locale_map, &s, &l, w->w, -1);
+	WATOM *a = &watomqw;
+	ptrdiff_t l = len;
+	const char *s = prompt;
+	ptrdiff_t h = break_height(locale_map, &s, &l, w->w, -1);
+	
 	a = &watomqw;
 	if (flg & QW_STAY)
 		a = &watqwn;
@@ -157,7 +152,7 @@ int query(W *w,				/* Prompt goes below this window */
 		return -1;
 	}
 	wfit(n->t);
-	n->object = (void *) (qw = (QW *) joe_malloc(sizeof(QW)));
+	n->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = n;
 	qw->prompt = vsncpy(NULL, 0, prompt, len);
 	obj_perm(qw->prompt);

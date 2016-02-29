@@ -5,36 +5,63 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_HASH_H
-#define _JOE_HASH_H 1
 
 struct entry {
 	HENTRY *next;
-	unsigned char *name;
-	unsigned hash_val;
+	const char *name;
+	ptrdiff_t hash_val;
 	void *val;
 };
 
-struct hash {
-	unsigned len;
+struct Hash {
+	ptrdiff_t len;
 	HENTRY **tab;
-	unsigned nentries;
+	ptrdiff_t nentries;
 };
 
 /* Compute hash code for a string */
-unsigned long hash(unsigned char *s);
+ptrdiff_t hash(const char *s);
 
 /* Create a hash table of specified size, which must be a power of 2 */
-HASH *htmk(int len);
+HASH *htmk(ptrdiff_t len);
 
 /* Delete a hash table.  HENTRIES get freed, but name/vals don't. */
 void htrm(HASH *ht);
 
 /* Add an entry to a hash table.
   Note: 'name' is _not_ strdup()ed */
-void *htadd(HASH *ht, unsigned char *name, void *val);
+void *htadd(HASH *ht, const char *name, void *val);
 
 /* Look up an entry in a hash table, returns NULL if not found */
-void *htfind(HASH *ht, unsigned char *name);
+void *htfind(HASH *ht, const char *name);
 
-#endif
+/* Same as above, but for Z-strings: strings made up of integers instead of chars */
+
+struct Zentry {
+	ZHENTRY *next;
+	const int *name;
+	ptrdiff_t hash_val;
+	void *val;
+};
+
+struct Zhash {
+	ptrdiff_t len;
+	ZHENTRY **tab;
+	ptrdiff_t nentries;
+};
+
+/* Compute hash code for a string */
+ptrdiff_t zhash(const int *s);
+
+/* Create a hash table of specified size, which must be a power of 2 */
+ZHASH *Zhtmk(ptrdiff_t len);
+
+/* Delete a hash table.  HENTRIES get freed, but name/vals don't. */
+void Zhtrm(ZHASH *ht);
+
+/* Add an entry to a hash table.
+  Note: 'name' is _not_ strdup()ed */
+void *Zhtadd(ZHASH *ht, const int *name, void *val);
+
+/* Look up an entry in a hash table, returns NULL if not found */
+void *Zhtfind(ZHASH *ht, const int *name);

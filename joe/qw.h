@@ -5,8 +5,6 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_QW_H
-#define _JOE_QW_H 1
 
 /* Single-key Query window */
 
@@ -18,10 +16,10 @@ struct query_result {
 struct query {
 	W *parent;		/* Window we're in */
 	struct query_result *result;	/* Who gets the answer */
-	unsigned char *prompt;	/* Prompt string */
-	int promptlen;		/* Width of prompt string */
-	int org_w;
-	int org_h;
+	char	*prompt;	/* Prompt string */
+	ptrdiff_t	promptlen;	/* Width of prompt string */
+	ptrdiff_t	org_w;
+	ptrdiff_t	org_h;
 	int flg;
 };
 
@@ -43,6 +41,4 @@ struct query {
 /* Plus optionally this: */
 #define QW_NOMACRO 4	/* Do not take input from macro for this query */
 
-int query(W *w, unsigned char *prompt, int len, int flg);
-
-#endif
+int query(W *w, const char *prompt, int len, int flg);

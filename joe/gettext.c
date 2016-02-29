@@ -12,9 +12,9 @@
 
 HASH *gettext_ht;
 
-unsigned char *ignore_prefix(unsigned char *set)
+static const char *ignore_prefix(const char *set)
 {
-	unsigned char *s = zrchr(set, '|');
+	const char *s = zrchr(set, '|');
 	if (s)
 		++s;
 	else
@@ -22,10 +22,10 @@ unsigned char *ignore_prefix(unsigned char *set)
 	return s;
 }
 
-unsigned char *my_gettext(unsigned char *s)
+const char *my_gettext(const char *s)
 {
 	if (gettext_ht) {
-		unsigned char *r = htfind(gettext_ht, s);
+		const char *r = (const char *)htfind(gettext_ht, s);
 		if (r)
 			s = r;
 	}
@@ -35,24 +35,24 @@ unsigned char *my_gettext(unsigned char *s)
 		return s;
 }
 
-int load_po(FILE *f)
+static int load_po(FILE *f)
 {
-	unsigned char *buf = 0;
-	unsigned char *msgid = vsdupz(USTR "");
-	unsigned char *msgstr = vsdupz(USTR "");
+	char *buf = 0;
+	char *msgid = vsdupz("");
+	char *msgstr = vsdupz("");
 	struct charmap *po_map = locale_map;
 	int preload_flag = 0;
 
-	while (preload_flag || vsgets(isfree(&buf) ,f)) {
-		unsigned char *p;
+	while (preload_flag || vsgets(isfree(&buf), f)) {
+		const char *p;
 		preload_flag = 0;
 		p = buf;
 		parse_ws(&p, '#');
-		if (!parse_field(&p, USTR "msgid")) {
-			int ofst = 0;
-			int len;
-			unsigned char *bf = 0;
-			msgid = vscpyz(msgid, USTR "");
+		if (!parse_field(&p, "msgid")) {
+			ptrdiff_t ofst = 0;
+			ptrdiff_t len;
+			char *bf = 0;
+			msgid = vscpyz(msgid, "");
 			parse_ws(&p, '#');
 			while ((len = parse_string(&p, &bf)) >= 0) {
 				msgid = vscat(msgid, sv(bf));
@@ -69,11 +69,11 @@ int load_po(FILE *f)
 					}
 				}
 			}
-		} else if (!parse_field(&p, USTR "msgstr")) {
-			int ofst = 0;
-			int len;
-			unsigned char *bf = 0;
-			msgstr = vscpyz(msgstr, USTR "");
+		} else if (!parse_field(&p, "msgstr")) {
+			ptrdiff_t ofst = 0;
+			ptrdiff_t len;
+			char *bf = 0;
+			msgstr = vscpyz(msgstr, "");
 			parse_ws(&p, '#');
 			while ((len = parse_string(&p, &bf)) >= 0) {
 				msgstr = vscat(msgstr, sv(bf));
@@ -92,21 +92,21 @@ int load_po(FILE *f)
 			}
 			if (msgid[0] && msgstr[0]) {
 				/* Convert to locale character map */
-				unsigned char *bf = my_iconv(NULL,locale_map,msgstr,po_map);
+				char *bf = my_iconv(NULL,locale_map,msgstr,po_map);
 				/* Add to hash table */
 				htadd(gettext_ht, zdup(msgid), zdup(bf));
 			} else if (!msgid[0] && msgstr[0]) {
-				unsigned char *p = (unsigned char *)strstr((char *)msgstr, "charset=");
+				char *tp = zstr(msgstr, "charset=");
 				msgid = vscpyz(msgid, msgstr); /* Make sure msgid is long enough */
-				msgid = vscpyz(msgid, USTR ""); /* Truncate it */
-				if (p) {
+				msgid = vscpyz(msgid, ""); /* Truncate it */
+				if (tp) {
 					/* Copy character set name up to next delimiter */
 					int x;
-					p += sizeof("charset=") - 1;
-					while (*p == ' ' || *p == '\t') ++p;
-					for (x = 0; p[x] && p[x] !='\n' && p[x] != '\r' && p[x] != ' ' &&
-					            p[x] != '\t' && p[x] != ';' && p[x] != ','; ++x)
-					            msgid[x] = p[x];
+					tp += SIZEOF("charset=") - 1;
+					while (*tp == ' ' || *tp == '\t') ++tp;
+					for (x = 0; tp[x] && tp[x] !='\n' && tp[x] != '\r' && tp[x] != ' ' &&
+					            tp[x] != '\t' && tp[x] != ';' && tp[x] != ','; ++x)
+					            msgid[x] = tp[x];
 					msgid[x] = 0;
 					po_map = find_charmap(msgid);
 					if (!po_map)
@@ -123,18 +123,18 @@ int load_po(FILE *f)
 
 /* Initialize my_gettext().  Call after locale_map has been set. */
 
-void init_gettext(unsigned char *s)
+void init_gettext(const char *s)
 {
 	FILE *f;
-	unsigned char *buf = vsfmt(NULL,0, USTR "%slang/%s.po",JOEDATA,s);
-	if ((f = fopen((char *)buf, "r"))) {
+	char *buf = vsfmt(NULL,0, "%slang/%s.po",JOEDATA,s);
+	if ((f = fopen(buf, "r"))) {
 		/* Try specific language, like en_GB */
 		gettext_ht = htmk(256);
 		load_po(f);
 	} else if (s[0] && s[1]) {
 		/* Try generic language, like en */
-		unsigned char *bf = vsfmt(NULL,0,USTR "%slang/%c%c.po",JOEDATA,s[0],s[1]);
-		if ((f = fopen((char *)bf, "r"))) {
+		char *bf = vsfmt(NULL,0,"%slang/%c%c.po",JOEDATA,s[0],s[1]);
+		if ((f = fopen(bf, "r"))) {
 			gettext_ht = htmk(256);
 			load_po(f);
 		}

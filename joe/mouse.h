@@ -16,9 +16,6 @@ You should have received a copy of the GNU General Public License along with
 JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
 675 Mass Ave, Cambridge, MA 02139, USA.  */ 
 
-#ifndef _Imouse
-#define _Imouse 1
-
 /* maximum number of milliseconds that can elapse between
    double/triple clicks */
 #define MOUSE_MULTI_THRESH	300
@@ -32,29 +29,29 @@ void mouseopen();	/* initialize mouse */
 void mouseclose();	/* de-initialize mouse */
 
 /* mousedn(int x, int y) - handle a mouse-down event */
-void mousedn(int x, int y);
+void mousedn(ptrdiff_t x, ptrdiff_t y);
 
 /* mouseup(int x, int y) - handle a mouse-up event */
-void mouseup(int x, int y);
+void mouseup(ptrdiff_t x, ptrdiff_t y);
 
 /* mousedrag(int x, int y) - handle a mouse drag event */
-void mousedrag(int x, int y);
+void mousedrag(ptrdiff_t x, ptrdiff_t y);
 
 /* user command handlers */
-int uxtmouse(BW *);		/* handle an xterm mouse control sequence */
-int uextmouse(BW *);		/* handle an extended xterm mouse control sequence */
-int utomouse(BW *);		/* move the pointer to the mouse */
-int udefmdown(BW *);	/* default mouse click handlers */
-int udefmup(BW *);
-int udefmdrag(BW *);
-int udefm2down(BW *);
-int udefm2up(BW *);
-int udefm2drag(BW *);
-int udefm3down(BW *);
-int udefm3up(BW *);
-int udefm3drag(BW *);
+int uxtmouse(W *, int);		/* handle an xterm mouse control sequence */
+int uextmouse(W *, int);		/* handle an extended xterm mouse control sequence */
+int utomouse(W *, int);		/* move the pointer to the mouse */
+int udefmdown(W *, int);	/* default mouse click handlers */
+int udefmup(W *, int);
+int udefmdrag(W *, int);
+int udefm2down(W *, int);
+int udefm2up(W *, int);
+int udefm2drag(W *, int);
+int udefm3down(W *, int);
+int udefm3up(W *, int);
+int udefm3drag(W *, int);
 
-int mnow();
+long mnow();
 void reset_trig_time();
 
 /* options */
@@ -62,7 +59,5 @@ extern int floatmouse;	/* Allow mouse to set cursor past end of lines */
 extern int rtbutton; /* Use button 3 instead of button 1 */
 
 extern int auto_scroll; /* Set for autoscroll */
-extern int auto_trig_time; /* Time of next scroll */
+extern long auto_trig_time; /* Time of next scroll */
 extern int joexterm; /* Set if xterm can do base64 paste */
-
-#endif

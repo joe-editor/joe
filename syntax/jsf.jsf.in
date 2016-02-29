@@ -79,7 +79,7 @@
 .endif
 	"\""		string			recolor=-1
 .ifdef STRINGS
-	"A-Za-z_"	special_word		mark recolor=-1 buffer
+	"\i"		special_word		mark recolor=-1 buffer
 .endif
 	"#"		comment			recolor=-1
 
@@ -129,7 +129,7 @@
 	"subr"		subr_color
 	"end"		conditional_color
 	done
-	"A-Za-z0-9_"	conditional
+	"\c"		conditional
 
 # We encountered what looks like a conditional directive but is unrecognized as
 # such.
@@ -153,12 +153,12 @@
 :need_parameter Idle
 	*		bad			noeat
 	" \t"		need_parameter
-	"A-Za-z_"	parameter		recolor=-1
+	"\i"		parameter		recolor=-1
 
 # Now we highlight the remainder of the parameter.
 :parameter Parameter
 	*		comment_or_bad		noeat
-	"A-Za-z0-9_"	parameter
+	"\c"		parameter
 
 # The following three states are identical to the previous three except the
 # color.
@@ -168,11 +168,11 @@
 :need_subr Idle
 	*		bad			noeat
 	" \t"		need_subr
-	"A-Za-z_"	subr			recolor=-1
+	"\i"		subr			recolor=-1
 
 :subr Subr
 	*		comment_or_bad		noeat
-	"A-Za-z0-9_"	subr
+	"\c"		subr
 .endif
 
 
@@ -200,7 +200,7 @@
 :colors_ws Idle
 	*		color_bad		recolor=-1
 	" \t"		colors_ws
-	"A-Za-z_"	color			mark recolor=-1 buffer
+	"\i"		color			mark recolor=-1 buffer
 	"#\n"		comment			noeat
 
 # Here we recognize the attributes and standard color names.  None of the
@@ -249,7 +249,7 @@
 	"fg_"		color_number_first
 	"bg_"		color_number_first
 	done
-	"A-Za-z_"	color
+	"\c"		color
 
 # We encountered what looks like a standard color but is unrecognized as such.
 :color_unknown Idle
@@ -387,12 +387,12 @@
 # A state name must begin with an alpha character or an underscore.
 :state_first State
 	*		bad			noeat
-	"A-Za-z_"	state
+	"\i"		state
 
 # Subsequent characters in a state name must be alpha-numeric or underscores.
 :state State
 	*		bad			noeat
-	"A-Za-z0-9_"	state
+	"\c"		state
 	" \t"		need_state_color	recolor=-1
 
 # A state must have a color.
@@ -413,7 +413,7 @@
 :context_ws Idle
 	*		comment_or_bad		noeat
 	" \t"		context_ws
-	"A-Za-z_"	context			mark recolor=-1 buffer
+	"\i"		context			mark recolor=-1 buffer
 
 # Here we recognize the possible contexts.
 :context Idle
@@ -421,7 +421,7 @@
 	"comment"	context_color
 	"string"	context_color
 	done
-	"A-Za-z0-9_"	context
+	"\c"		context
 
 # We encountered what looks like a context but is unrecognized as such.
 :context_unknown Idle
@@ -477,12 +477,12 @@
 :need_next_state Idle
 	*		bad			noeat
 	" \t"		need_next_state
-	"A-Za-z_"	next_state		recolor=-1
+	"\i"		next_state		recolor=-1
 
 # Now we highlight the remainder of the next state.
 :next_state State
 	*		bad			noeat
-	"A-Za-z0-9_"	next_state
+	"\c"		next_state
 	" \t"		options_ws
 	"#\n"		comment			noeat
 
@@ -491,7 +491,7 @@
 :options_ws Idle
 	*		option_bad		recolor=-1
 	" \t"		options_ws
-	"A-Za-z_"	option			mark recolor=-1 buffer
+	"\i"		option			mark recolor=-1 buffer
 	"#\n"		comment			noeat
 
 # Here we recognize the possible options.  The strings and istrings options
@@ -532,7 +532,7 @@
 	"reset"		option_color
 	done
 .endif
-	"A-Za-z0-9_"	option
+	"\c"		option
 
 # We encountered what looks like an option but is unrecognized as such.
 :option_unknown Idle
@@ -629,7 +629,7 @@
 	*		options_ws		noeat
 .endif
 	" \t"		call_file_or_dot
-	"A-Za-z_"	call_file		mark recolor=-1
+	"\i"		call_file		mark recolor=-1
 	"."		call_dot		mark
 
 # Highlight the remainder of the file name.  The file name can be followed by a
@@ -642,7 +642,7 @@
 .else
 	*		options_ws		noeat
 .endif
-	"A-Za-z0-9_"	call_file
+	"\c"		call_file
 	"."		call_dot		mark recolor=-1
 	" \t("		call_open_paren		noeat
 
@@ -654,7 +654,7 @@
 	*		options_ws		noeat
 .endif
 	"("		call_dot_bad		recolormark noeat
-	"A-Za-z_"	call_subr		mark recolor=-1
+	"\i"		call_subr		mark recolor=-1
 
 # We have seen a dot followed by an open parenthesis.  A dot must be followed by
 # a subroutine name.  Highlight the dot as Bad.
@@ -669,7 +669,7 @@
 .else
 	*		options_ws		noeat
 .endif
-	"A-Za-z0-9_"	call_subr
+	"\c"		call_subr
 	" \t("		call_open_paren		noeat
 
 # Loop over whitespace until we find the open parenthesis.
@@ -690,19 +690,19 @@
 	*		call_parameter_bad	recolor=-1
 	" \t"		call_parameters_ws
 	"-"		call_parameter_undef
-	"A-Za-z_"	call_parameter		recolor=-1
+	"\i"		call_parameter		recolor=-1
 	")"		options_ws
 	"#\n"		bad			noeat
 
 # We saw a "-".  The next character should start the parameter being undefined.
 :call_parameter_undef Parameter
 	*		call_parameters_ws	noeat
-	"A-Za-z_"	call_parameter		recolor=-2
+	"\i"		call_parameter		recolor=-2
 
 # Highlight the remainder of the parameter.
 :call_parameter Parameter
 	*		call_parameters_ws	noeat
-	"A-Za-z0-9_"	call_parameter
+	"\c"		call_parameter
 
 # We saw something that is not a valid parameter name.  Continue to highlight it
 # as Bad until we see whitespace.
@@ -728,7 +728,7 @@
 	*		bad_line		recolormark noeat strings
 	"done"		done_color
 	done
-	"A-Za-z0-9_"	special_word
+	"\c"		special_word
 
 # Highlight the done keyword and return to highlighting things normally, since
 # the list of strings has been terminated.

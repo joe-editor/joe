@@ -55,7 +55,7 @@
 	"<"		maybe_inc
 	"$"		not_string	buffer
 	"%"		pstring
-	"a-zA-Z_"	ident		buffer
+	"\i"		ident		buffer
 
 	# higher level, ruby specific
 	":"		maybe_symbol
@@ -90,7 +90,7 @@
 	*		pod_block	noeat strings
 	"=end"		rest
 done
-	"a-zA-Z0-9_"	pod_ident
+	"\c"		pod_ident
 
 :maybe_inc Idle
 	*		after_term	noeat
@@ -100,12 +100,12 @@ done
 	*		after_term	noeat
 	"-"		allow_space
 	"'\""		quoted_inc_start	save_c recolor=-1
-	"A-Za-z_"	inc		buffer noeat
+	"\i"		inc		buffer noeat
 
 :allow_space Idle
 	*		after_term	noeat
 	"'\""		quoted_inc_start_allow	save_c recolor=-1
-	"A-Za-z_"	inc_allow	buffer noeat
+	"\i"		inc_allow	buffer noeat
 
 :quoted_inc_start Var
 	*		quoted_inc	buffer
@@ -123,11 +123,11 @@ done
 
 :inc Var
 	*		skipline	save_s noeat
-	"A-Za-z0-9_"	inc
+	"\c"		inc
 
 :inc_allow Var
 	*		skipline_allow	save_s noeat
-	"A-Za-z0-9_"	inc_allow
+	"\c"		inc_allow
 
 # Should be treated as a normal line here...
 
@@ -173,7 +173,7 @@ done
 
 :not_string Idle
 	*		rest		noeat
-	"a-zA-Z0-9_"	global_var	recolor=-2
+	"\c"		global_var	recolor=-2
 	"\"'`#/"	rest
 
 :brace Brace
@@ -318,7 +318,7 @@ done
 
 :backtick_subst Escape
 	*		backtick	noeat recolor=-1
-	"a-zA-Z_0-9"	backtick_subst
+	"\c"		backtick_subst
 
 :backtick_escape Escape
 	*		backtick
@@ -364,11 +364,11 @@ done
 	*		after_term	noeat
 	"0"		first_digit	recolor=-1
 	"1-9"		decimal		recolor=-1
-	"a-zA-Z_"	ident_no_kw1
+	"\i"		ident_no_kw1
 
 :ident_no_kw1 Idle
 	*		after_term	noeat
-	"a-zA-Z0-9_?!"	ident_no_kw1
+	"\c?!"		ident_no_kw1
 
 :ident Idle
 	*		after_term	noeat strings
@@ -433,7 +433,7 @@ done
 done
 	# allowing ?! is not nearly correct but fixes more than
 	# it destructs
-	"a-zA-Z0-9_?!"	ident
+	"\c?!"	ident
 
 :kw Keyword
 	*		rest		noeat
@@ -445,12 +445,12 @@ done
 :kw_class_space Idle
 	*		rest		noeat
 	# first char should be uppercase letter
-	"a-zA-Z_"	kw_class_decl	noeat
+	"\i"		kw_class_decl	noeat
 	" \t\n"		kw_class_space
 
 :kw_class_decl ClassDecl
 	*		rest		noeat
-	"a-zA-Z0-9_"	kw_class_decl
+	"\c"		kw_class_decl
 
 :pstring Idle
 	*		match		noeat
@@ -518,13 +518,13 @@ done
 	# prevent wrong Module::Member detection
 	":"		rest
 	# first char mustn't be 0-9
-	"a-zA-Z_"	symbol		recolor=-2
+	"\i"		symbol		recolor=-2
 	"\""		symbol_str	recolor=-2
 	"'"		symbol_str_sq	recolor=-2
 
 :symbol Symbol
 	*		rest		noeat
-	"a-zA-Z0-9_?!"	symbol
+	"\c?!"		symbol
 
 :symbol_str Symbol
 	*		symbol_str
@@ -546,26 +546,26 @@ done
 :proc_arg ProcArg
 	*		rest		noeat
 	","		proc_arg_sep 	noeat
-	"a-zA-Z_"	proc_arg
+	"\i"		proc_arg
 	
 :proc_arg_sep Idle
 	*		proc_arg
 	
 :class_member1 Idle
 	*		rest		noeat
-	"a-zA-Z_"	class_member	recolor=-2
+	"\i"		class_member	recolor=-2
 	"@"		class_member2
 
 :class_member2 ClassMember
 	*		rest		noeat
-	"a-zA-Z_"	class_member	recolor=-3
+	"\i"		class_member	recolor=-3
 
 :class_member ClassMember
 	*		rest		noeat
-	"a-zA-Z0-9_"	class_member
+	"\c"		class_member
 
 :global_var GlobalVar
 	*		rest		noeat
-	"a-zA-Z0-9_"	global_var
+	"\c"		global_var
 
 .end

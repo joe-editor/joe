@@ -7,13 +7,13 @@
  */
 #include "types.h"
 
-JFILE *jfopen(unsigned char *name, const char *mode)
+JFILE *jfopen(const char *name, const char *mode)
 {
 	if (name[0] == '*') {
 		int x;
 		for (x = 0; builtins[x]; x += 2) {
 			if (!zcmp(builtins[x], name + 1)) {
-				JFILE *j = (JFILE *)joe_malloc(sizeof(JFILE));
+				JFILE *j = (JFILE *)joe_malloc(SIZEOF(JFILE));
 				j->f = 0;
 				j->p = builtins[x + 1];
 				return j;
@@ -21,9 +21,9 @@ JFILE *jfopen(unsigned char *name, const char *mode)
 		}
 		return 0;
 	} else {
-		FILE *f = fopen((char *)name, (char *)mode);
+		FILE *f = fopen(name, mode);
 		if (f) {
-			JFILE *j = (JFILE *)joe_malloc(sizeof(JFILE));
+			JFILE *j = (JFILE *)joe_malloc(SIZEOF(JFILE));
 			j->f = f;
 			j->p = 0;
 			return j;
@@ -42,15 +42,15 @@ int jfclose(JFILE *f)
 	return rtn;
 }
 
-unsigned char *jfgets(unsigned char **buf,JFILE *f)
+char *jfgets(char **buf,JFILE *f)
 {
 	if (f->f)
 		return vsgets(buf, f->f);
 	else {
-		unsigned char *b = *buf;
+		char *b = *buf;
 		b = vstrunc(b, 0);
 		if (f->p[0]) {
-			int x;
+			ptrdiff_t x;
 			for (x = 0; f->p[x] && f->p[x] != '\n'; ++x)
 				b = vsadd(b, f->p[x]);
 			if (f->p[x] == '\n') {
@@ -66,18 +66,18 @@ unsigned char *jfgets(unsigned char **buf,JFILE *f)
 	}
 }
 
-unsigned char **jgetbuiltins(unsigned char *suffix)
+char **jgetbuiltins(const char *suffix)
 {
-	int x;
-	int sflen = 0;
-	unsigned char **result = NULL;
+	ptrdiff_t x;
+	ptrdiff_t sflen = 0;
+	char **result = NULL;
 	
 	if (suffix)
 		sflen = zlen(suffix);
 	
 	for (x = 0; builtins[x]; x += 2) {
-		unsigned char *name = builtins[x];
-		int nlen = zlen(name);
+		const char *name = builtins[x];
+		ptrdiff_t nlen = zlen(name);
 		
 		if (!suffix || (sflen <= nlen && !zcmp(suffix, &name[nlen - sflen]))) {
 			result = vaadd(result, vsncpy(NULL, 0, sz(name)));

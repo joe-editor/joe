@@ -89,7 +89,7 @@ done
 	"\""		string		recolor=-1
 	"@"		forcedliteral	recolor=-1
 	"'"		char		recolor=-1
-	"a-zA-Z_"	ident		buffer
+	"\i"		ident		buffer
 	"{}"		brace		recolor=-1
 	",:;=()><[]*&|!~+\-%^"	control	recolor=-1
 
@@ -105,7 +105,7 @@ done
 
 :forcedliteral Idle
 	*		idle		noeat
-	"a-zA-Z_"	ident		recolor=-2
+	"\i"		ident		recolor=-2
 	"\""		forcedstring	recolor=-2
 
 :forcedstring Constant
@@ -442,7 +442,7 @@ done
 	"false"		lit
 	"null"		lit
 done
-	"a-zA-Z0-9_"	ident
+	"\c"		ident
 
 :type Type
 	*	idle	noeat
