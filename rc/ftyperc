@@ -672,6 +672,7 @@
  PowerShell
 [powershell]
 *.ps1
+*.psm1
 -syntax powershell
 
  Git COMMIT_EDITMSG
@@ -687,6 +688,8 @@
 -syntax elixir
 -pound_comment
 -text_delimiters do=end
+-indentc 32
+-istep 2
 
  R
 [r]
