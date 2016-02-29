@@ -36,6 +36,9 @@
 	* Add ^KH for help to search and replace prompts.  Many JOE users
 	  do not know about this context sensitive help.
 
+	* Provide aborthint and helphint options so that the ^C and ^K H
+	  hints can be customized depending on the rc file.
+
 	* Enable -noxon by default (disable ^S/^Q flow control).  This
 	  allows us to bind ^Q to quote and ^S / ^R to incremental search.
 

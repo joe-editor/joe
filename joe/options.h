@@ -9,6 +9,9 @@
 extern OPTIONS pdefault;
 extern OPTIONS fdefault;
 
+extern const char *aborthint;
+extern const char *helphint;
+
 /* Set local options depending on file name and contents */
 void setopt(B *b, const char *name);
 

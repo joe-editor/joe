@@ -12,6 +12,9 @@
 #define HEX_RESTORE_CRLF	4
 #define OPT_BUF_SIZE 300
 
+const char *aborthint = "^C";
+const char *helphint = "^K H";
+
 OPTIONS *options_list = NULL; /* File name dependent list of options */
 
 /* Default options for prompt windows */
@@ -281,8 +284,8 @@ struct glopts {
 	{"search_prompting",	0, &pico, NULL, _("Search prompting on"), _("Search prompting off"), _("  Search prompting "), 0, 0, 0 },
 	{"menu_jump",	0, &menu_jump, NULL, _("Jump into menu is on"), _("Jump into menu is off"), _("  Jump into menu "), 0, 0, 0 },
 	{"autoswap",	0, &autoswap, NULL, _("Autoswap ^KB and ^KK"), _("Autoswap off "), _("  Autoswap mode "), 0, 0, 0 },
-	{"indentc",	5, NULL, (char *) &fdefault.indentc, _("Indent char %d (SPACE=32, TAB=9, ^C to abort): "), 0, _("  Indent char "), 0, 0, 255 },
-	{"istep",	14, NULL, (char *) &fdefault.istep, _("Indent step %lld (^C to abort): "), 0, _("  Indent step "), 0, 1, 64 },
+	{"indentc",	5, NULL, (char *) &fdefault.indentc, _("Indent char %d (SPACE=32, TAB=9, %{abort} to abort): "), 0, _("  Indent char "), 0, 0, 255 },
+	{"istep",	14, NULL, (char *) &fdefault.istep, _("Indent step %lld (%{abort} to abort): "), 0, _("  Indent step "), 0, 1, 64 },
 	{"french",	4, NULL, (char *) &fdefault.french, _("One space after periods for paragraph reformat"), _("Two spaces after periods for paragraph reformat"), _("  French spacing "), 0, 0, 0 },
 	{"flowed",	4, NULL, (char *) &fdefault.flowed, _("One space after paragraph line"), _("No spaces after paragraph lines"), _("  Flowed text "), 0, 0, 0 },
 	{"highlight",	4, NULL, (char *) &fdefault.highlight, _("Highlighting enabled"), _("Highlighting disabled"), _("H Highlighting "), 0, 0, 0 },
@@ -325,9 +328,9 @@ struct glopts {
 	{"purify",	4, NULL, (char *) &fdefault.purify, _("Indentation clean up enabled"), _("Indentation clean up disabled"), _("  Clean up indents "), 0, 0, 0 },
 	{"picture",	4, NULL, (char *) &fdefault.picture, _("Picture drawing mode enabled"), _("Picture drawing mode disabled"), _("P Picture mode "), 0, 0, 0 },
 	{"backpath",	2, &backpath, NULL, _("Backup files stored in (%s): "), 0, _("  Path to backup files "), 0, 0, 0 },
-	{"syntax",	9, NULL, NULL, _("Select syntax (^C to abort): "), 0, _("Y Syntax"), 0, 0, 0 },
-	{"encoding",13, NULL, NULL, _("Select file character set (^C to abort): "), 0, _("E Encoding "), 0, 0, 0 },
-	{"type",	15, NULL, NULL, _("Select file type (^C to abort): "), 0, _("F File type "), 0, 0, 0 },
+	{"syntax",	9, NULL, NULL, _("Select syntax (%{abort} to abort): "), 0, _("Y Syntax"), 0, 0, 0 },
+	{"encoding",13, NULL, NULL, _("Select file character set (%{abort} to abort): "), 0, _("E Encoding "), 0, 0, 0 },
+	{"type",	15, NULL, NULL, _("Select file type (%{abort} to abort): "), 0, _("F File type "), 0, 0, 0 },
 	{"highlighter_context",	4, NULL, (char *) &fdefault.highlighter_context, _("Highlighter context enabled"), _("Highlighter context disabled"), _("  ^G uses highlighter context "), 0, 0, 0 },
 	{"single_quoted",	4, NULL, (char *) &fdefault.single_quoted, _("Single quoting enabled"), _("Single quoting disabled"), _("  ^G ignores '... ' "), 0, 0, 0 },
 	{"no_double_quoted",4, NULL, (char *) &fdefault.no_double_quoted, _("Double quoting disabled"), _("Double quoting enabled"), _("  ^G ignores \"... \" "), 0, 0, 0 },
@@ -616,6 +619,18 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 		if (!zcmp(s, "xmsg")) {
 			if (arg) {
 				xmsg = zdup(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, "aborthint")) {
+			if (arg) {
+				aborthint = zdup(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, "helphint")) {
+			if (arg) {
+				helphint = zdup(arg);
 				ret = 2;
 			} else
 				ret = 1;

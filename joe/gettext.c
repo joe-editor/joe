@@ -22,6 +22,8 @@ static const char *ignore_prefix(const char *set)
 	return s;
 }
 
+HASH *subst_gettext;
+
 const char *my_gettext(const char *s)
 {
 	if (gettext_ht) {
@@ -30,9 +32,44 @@ const char *my_gettext(const char *s)
 			s = r;
 	}
 	if (s[0] == '|')
-		return ignore_prefix(s);
-	else
-		return s;
+		s = ignore_prefix(s);
+	if (zstr(s, "%{")) {
+		char buf[128];
+		char name[80];
+		int i, j;
+		/* Substitution */
+		i = 0;
+		while (*s)
+			if (s[0] == '%' && s[1] == '{') {
+				j = 0;
+				s += 2;
+				while (*s && *s != '}') {
+					name[j++] = *s++;
+				}
+				name[j] = 0;
+				if (*s == '}')
+					++s;
+				if (!strcmp(name, "abort")) {
+					strcpy(buf + i, aborthint);
+					i = strlen(buf);
+				} else if (!strcmp(name, "help")) {
+					strcpy(buf + i, helphint);
+					i = strlen(buf);
+				}
+			} else {
+				buf[i++] = *s++;
+			}
+		buf[i] = 0;
+		if (!subst_gettext) {
+			subst_gettext = htmk(256);
+		}
+		s = (const char *)htfind(subst_gettext, buf);
+		if (!s) {
+			s = zdup(buf);
+			htadd(subst_gettext, s, (void *)s);
+		}
+	}
+	return s;
 }
 
 /* Load a .po file, convert entries to local character set and add them to

@@ -439,7 +439,7 @@ int ukillpid(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (bw->b->pid) {
-		if (mkqw(bw->parent, sz(joe_gettext(_("Kill program (y,n,^C)?"))), pidabort, NULL, NULL, NULL)) {
+		if (mkqw(bw->parent, sz(joe_gettext(_("Kill program (y,n,%{abort})?"))), pidabort, NULL, NULL, NULL)) {
 			return 0;
 		} else {
 			return -1;

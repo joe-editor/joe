@@ -781,7 +781,7 @@ int uabort(W *w, int k)
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw->parent, 0);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
-		if (mkqw(w, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw, NULL, NULL, NULL))
+		if (mkqw(w, sz(joe_gettext(_("Lose changes to this file (y,n,%{abort})? "))), naborttw, NULL, NULL, NULL))
 			return 0;
 		else
 			return -1;
@@ -809,7 +809,7 @@ int uabort1(W *w, int k)
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw->parent, 0);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch)
-		if (mkqw(w, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), naborttw1, NULL, NULL, NULL))
+		if (mkqw(w, sz(joe_gettext(_("Lose changes to this file (y,n,%{abort})? "))), naborttw1, NULL, NULL, NULL))
 			return 0;
 		else
 			return -1;

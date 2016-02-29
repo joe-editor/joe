@@ -532,7 +532,7 @@ int urecord(W *w, int c)
 {
 	if (c >= '0' && c <= '9')
 		return dorecord(w, c, NULL, NULL);
-	else if (mkqw(w, sz(joe_gettext(_("Macro to record (0-9 or ^C to abort): "))), dorecord, NULL, NULL, NULL))
+	else if (mkqw(w, sz(joe_gettext(_("Macro to record (0-9 or %{abort} to abort): "))), dorecord, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -569,7 +569,7 @@ static int dotimer(W *w, int c, void *object, int *notify)
 		}
 		timer_macro = dupmacro(kbdmacro[c]);
 		timer_macro_delay = 0;
-		if (wmkpw(w, joe_gettext(_("Delay in seconds between macro invocation (^C to abort): ")), NULL, dotimer1, NULL, NULL, utypebw, NULL, NULL, utf8_map,0))
+		if (wmkpw(w, joe_gettext(_("Delay in seconds between macro invocation (%{abort} to abort): ")), NULL, dotimer1, NULL, NULL, utypebw, NULL, NULL, utf8_map,0))
 			return 0;
 		else
 			return -1;
@@ -585,7 +585,7 @@ int utimer(W *w, int k)
 		rmmacro(timer_macro);
 		timer_macro = 0;
 	}
-	if (mkqw(w, sz(joe_gettext(_("Macro to play (0-9 or ^C to abort): "))), dotimer, NULL, NULL, NULL))
+	if (mkqw(w, sz(joe_gettext(_("Macro to play (0-9 or %{abort} to abort): "))), dotimer, NULL, NULL, NULL))
 		return 0;
 	else
 		return -1;
@@ -718,7 +718,7 @@ static int doarg(W *w, char *s, void *object, int *notify)
 
 int uarg(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("No. times to repeat next command (^C to abort): ")), NULL, doarg, NULL, NULL, utypebw, NULL, NULL, utf8_map,0))
+	if (wmkpw(w, joe_gettext(_("No. times to repeat next command (%{abort} to abort): ")), NULL, doarg, NULL, NULL, utypebw, NULL, NULL, utf8_map,0))
 		return 0;
 	else
 		return -1;
@@ -751,7 +751,7 @@ int uif(W *w, int k)
 {
 	ifdepth++;
 	if (!ifflag) return 0;
-	if (wmkpw(w,joe_gettext(_("If (^C to abort): ")),NULL,doif,NULL,ifabrt,utypebw,NULL,NULL,utf8_map,0)) return 0;
+	if (wmkpw(w,joe_gettext(_("If (%{abort} to abort): ")),NULL,doif,NULL,ifabrt,utypebw,NULL,NULL,utf8_map,0)) return 0;
 	else return -1;
 }
 

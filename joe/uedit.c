@@ -1437,7 +1437,7 @@ int uline(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	if (wmkpw(bw->parent, joe_gettext(_("Go to line (^C to abort): ")), &linehist, doline, NULL, NULL, NULL, NULL, NULL, utf8_map, 0))
+	if (wmkpw(bw->parent, joe_gettext(_("Go to line (%{abort} to abort): ")), &linehist, doline, NULL, NULL, NULL, NULL, NULL, utf8_map, 0))
 		return 0;
 	else
 		return -1;
@@ -1478,7 +1478,7 @@ int ucol(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	if (wmkpw(bw->parent, joe_gettext(_("Go to column (^C to abort): ")), &colhist, docol, NULL, NULL, NULL, NULL, NULL, utf8_map, 0))
+	if (wmkpw(bw->parent, joe_gettext(_("Go to column (%{abort} to abort): ")), &colhist, docol, NULL, NULL, NULL, NULL, NULL, utf8_map, 0))
 		return 0;
 	else
 		return -1;
@@ -1519,7 +1519,7 @@ int ubyte(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	if (wmkpw(bw->parent, joe_gettext(_("Go to byte (^C to abort): ")), &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL, utf8_map, 0))
+	if (wmkpw(bw->parent, joe_gettext(_("Go to byte (%{abort} to abort): ")), &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL, utf8_map, 0))
 		return 0;
 	else
 		return -1;
@@ -2015,7 +2015,7 @@ static int doquote(W *w, int c, void *object, int *notify)
 				return 0;
 		} else if (c == 'x' || c == 'X') {
 			if (bw->b->o.charmap->type) {
-				if (!wmkpw(bw->parent, joe_gettext(_("Unicode (ISO-10646) character in hex (^C to abort): ")), &unicodehist, dounicode,
+				if (!wmkpw(bw->parent, joe_gettext(_("Unicode (ISO-10646) character in hex (%{abort} to abort): ")), &unicodehist, dounicode,
 				           NULL, NULL, NULL, NULL, NULL, locale_map, 0))
 					return 0;
 				else
@@ -2417,7 +2417,7 @@ static int domsg(W *w, char *s, void *object, int *notify)
 
 int umsg(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("Message (^C to abort): ")), NULL, domsg, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
+	if (wmkpw(w, joe_gettext(_("Message (%{abort} to abort): ")), NULL, domsg, NULL, NULL, NULL, NULL, NULL, locale_map, 0))
 		return 0;
 	else
 		return -1;
@@ -2464,7 +2464,7 @@ int utxt(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	if (wmkpw(w, joe_gettext(_("Insert (^C to abort): ")), NULL, dotxt, NULL, NULL, utypebw, NULL, NULL, bw->b->o.charmap, 0))
+	if (wmkpw(w, joe_gettext(_("Insert (%{abort} to abort): ")), NULL, dotxt, NULL, NULL, utypebw, NULL, NULL, bw->b->o.charmap, 0))
 		return 0;
 	else
 		return -1;

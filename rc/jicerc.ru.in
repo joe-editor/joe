@@ -266,6 +266,11 @@
 -rmsg  %S Стр %4r Поз %3c %t  Подсказка - по F1
 -smsg ** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w ** 
 -zmsg ** Line %r Col %c Offset %o(0x%O) ** 
+-xmsg \i Joe's Own Editor %v (%b) ** Type \bCtrl-K Q\b to exit or \bCtrl-K H\b for help **\i
+
+ Key sequence hints which are displayed in various prompts.
+-aborthint ^C
+-helphint ^K H
 
 
  ВТОРАЯ СЕКЦИЯ: Установка локальных опций в зависимости от имени файла:
@@ -759,9 +764,12 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 :windows		Общие клавиши для всех окон
 type		U+0 TO U+10FFFF
 abort		^C		Аварийное прерывание
-abort		^K Q
-abort		^K ^Q
-abort		^K q
+ abort		^K Q
+ abort		^K ^Q
+ abort		^K q
+querysave,query,killjoe	^K Q	Query to save files, then exit
+querysave,query,killjoe	^K ^Q
+querysave,query,killjoe	^K q
 arg		^K \		Повтор следующей команды 
 explode		^K I		Показывать все окна или только одно
 explode		^K ^I

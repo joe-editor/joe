@@ -742,9 +742,9 @@ static int set_options(W *w, char *s, void *obj, int *notify)
 			joe_snprintf_1(bf1,30,"%s",globalsrch->replacement);
 			if (zlen(globalsrch->replacement)>29)
 				zlcat(bf1, SIZEOF(bf1), "$");
-			joe_snprintf_1(buf,SIZEOF(buf),joe_gettext(_("Replace with (^C to abort) [%s]: ")),bf1);
+			joe_snprintf_1(buf,SIZEOF(buf),joe_gettext(_("Replace with (%{help} for help) [%s]: ")),bf1);
 		} else */
-			joe_snprintf_0(buf, SIZEOF(buf), joe_gettext(_("Replace with (^K H for help): ")));
+			joe_snprintf_0(buf, SIZEOF(buf), joe_gettext(_("Replace with (%{help} for help): ")));
 		if (wmkpw(bw->parent, buf, &replhist, set_replace, replstr, pfabort, srch_cmplt, srch, notify, bw->b->o.charmap, 0))
 			return 0;
 		else
@@ -761,9 +761,9 @@ static int set_pattern(W *w, char *s, void *obj, int *notify)
 	const char *p;
 	WIND_BW(bw, w);
 	if (opt_icase)
-		p = joe_gettext(_("case (S)ensitive (R)eplace (B)ackwards Bloc(K) (^K H for help): "));
+		p = joe_gettext(_("case (S)ensitive (R)eplace (B)ackwards Bloc(K) (%{help} for help): "));
 	else
-		p = joe_gettext(_("(I)gnore (R)eplace (B)ackwards Bloc(K) (^K H for help): "));
+		p = joe_gettext(_("(I)gnore (R)eplace (B)ackwards Bloc(K) (%{help} for help): "));
 
 	if (sLEN(s) || !globalsrch || !pico) {
 		setpat(srch, s);
@@ -855,9 +855,9 @@ int dofirst(BW *bw, int back, int repl, char *hint)
 	srch->wrap_p->owner = &srch->wrap_p;
 	if (pico && globalsrch && globalsrch->pattern) {
 		unesc_genfmt(bf1, sv(globalsrch->pattern), 30);
-		joe_snprintf_1(buf,SIZEOF(buf),joe_gettext(_("Find (^K H for help) [%s]: ")),bf1);
+		joe_snprintf_1(buf,SIZEOF(buf),joe_gettext(_("Find (%{help} for help) [%s]: ")),bf1);
 	} else
-		joe_snprintf_0(buf, SIZEOF(buf), joe_gettext(_("Find (^K H for help): ")));
+		joe_snprintf_0(buf, SIZEOF(buf), joe_gettext(_("Find (%{help} for help): ")));
 	if ((pbw=wmkpw(bw->parent, buf, &findhist, set_pattern, srchstr, pfabort, srch_cmplt, srch, NULL, bw->b->o.charmap, 0))) {
 		if (hint) {
 			binss(pbw->cursor, hint);
@@ -1030,7 +1030,7 @@ static int dopfrepl(W *w, int c, void *obj, int *notify)
 		nungetc(c);
 		return 0;
 	}
-	if (mkqwnsr(bw->parent, sz(joe_gettext(_("Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"))), dopfrepl, pfsave, srch, notify))
+	if (mkqwnsr(bw->parent, sz(joe_gettext(_("Replace (Y)es (N)o (R)est (B)ackup (%{abort} to abort)?"))), dopfrepl, pfsave, srch, notify))
 		return 0;
 	else
 		return pfsave(bw->parent, srch);

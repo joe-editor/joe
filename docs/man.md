@@ -626,6 +626,18 @@ JOE wraps the previous word when you type past the right margin.
 Define status command format when cursor is at end of file.
 <br>
 
+* xmsg __string__
+Define startup message (usually the copyright notice).
+<br>
+
+* aborthint __string__
+Give the key sequence to show in prompts for abort (usually ^C).
+<br>
+
+* helphint __string__
+Give the key sequence to show in prompts for help (usually ^K H).
+<br>
+
 ### Colors and attributes:
 
 Combine attributes and up to one foreground color and one background color

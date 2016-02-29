@@ -281,7 +281,7 @@ static int steal_lock(W *w,int c,void *object,int *notify)
 static int file_changed(W *w,int c,void *object,int *notify)
 {
 	B *b = (B *)object;
-	if (mkqw(w, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), file_changed, NULL, b, notify)) {
+	if (mkqw(w, sz(joe_gettext(_("Notice: File on disk changed! (hit %{abort} to continue)  "))), file_changed, NULL, b, notify)) {
 		b->gave_notice = 1;
 		return 0;
 	} else
