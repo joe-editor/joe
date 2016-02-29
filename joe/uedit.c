@@ -1829,7 +1829,7 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 		return 0;
 	}
 
-	if (k == '\t' && bw->o.overtype && !piseol(bw->cursor)) { /* TAB in overtype mode is supposed to be just cursor motion */
+	if (k == '\t' && bw->o.overtype && !piseol(bw->cursor) && !no_decode) { /* TAB in overtype mode is supposed to be just cursor motion */
 		off_t col = bw->cursor->xcol;		/* Current cursor column */
 		col = col + bw->o.tab - (col%bw->o.tab);/* Move to next tab stop */
 		pcol(bw->cursor,col);			/* Try to position cursor there */
@@ -1840,7 +1840,7 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 				pfill(bw->cursor,col,'\t');
 		}
 		bw->cursor->xcol = col;			/* Put cursor there even if we can't really go there */
-	} else if (k == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)>=piscol(bw->cursor)) {
+	} else if (k == '\t' && bw->o.smartbacks && bw->o.autoindent && pisindent(bw->cursor)>=piscol(bw->cursor) && !no_decode) {
 		P *p = pdup(bw->cursor, "utypebw_raw");
 		off_t n = find_indent(p);
 		if (n != -1 && pisindent(bw->cursor)==piscol(bw->cursor) && n > pisindent(bw->cursor)) {
@@ -1859,7 +1859,7 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 		}
 		bw->cursor->xcol = piscol(bw->cursor);
 		prm (p);
-	} else if (k == '\t' && bw->o.spaces) {
+	} else if (k == '\t' && bw->o.spaces && !no_decode) {
 		off_t n;
 
 		if (bw->o.picture)
@@ -2371,7 +2371,6 @@ int umsg(W *w, int k)
 
 int utxt(W *w, int k)
 {
-	int x;
 	char fill;
 	char *s;
 	BW *bw;
@@ -2387,13 +2386,22 @@ int utxt(W *w, int k)
 		char *str = vsmk(1024);
 		fill = ' ';
 		str = stagen(str, bw, &s[1], fill);
-		if (str) {
-			for (x = 0; x != vslen(str); ++x)
-				utypebw(bw, str[x]);
+		s = str;
+	}
+	if (s) {
+	 	const char *t = s;
+		ptrdiff_t len = vslen(s);
+		while (len) {
+			int c;
+			if (bw->b->o.charmap->type)
+				c = utf8_decode_fwrd(&t, &len);
+			else {
+				c = *(unsigned char *)t++;
+				--len;
+			}
+			if (c >= 0)
+				utypebw_raw(bw, c, 1);
 		}
-	} else {
-		for (x = 0; x != vslen(s); ++x)
-			utypebw(bw, s[x]);
 	}
 
 	return 0;
