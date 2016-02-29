@@ -41,7 +41,7 @@
 
 	* Document ESC X (command prompt) in the help screens.
 
-* Minor enhancements
+* Other Enhancements
 	* Tags search now tries to find the tags file in parent directories
 	  if it does not exist in the current directory and if the TAGS
 	  environment variable was not set.
@@ -60,7 +60,7 @@
 	* Enhanced statistics functions:
 		* __dev__ computes standard deviation with full population
 		* __samp__ computes standard deviation with sample of population
-		* Linear regression analysis.  Select a region of of x
+		* Linear regression analysis.  Select a region of x
 		  and y values, then:
 			* __lr__(x)   provide estimate of y given x
 			* __rlr__(y)  provide estimate of x given y
