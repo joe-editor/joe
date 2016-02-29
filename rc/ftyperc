@@ -788,3 +788,10 @@
 -smartbacks
 -purify
 -single_quoted
+
+ Docker
+[dockerfile]
+*Dockerfile
+-autoindent
+-syntax dockerfile
+-pound_comment
