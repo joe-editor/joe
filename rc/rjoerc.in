@@ -565,8 +565,8 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i\|\uMACROS\u         \|\uMISC\u            \|\uSCROLL\u  \|              \|\uGOTO\u       \|\uI-SEARCH\u     \|\i \i
 \i \i\|^K[ 0-9 Record \|^K SPACE status \|^[W Up    \|            \|^[B To ^KB \|^[R Backwards\|\i \i
 \i \i\|^K]     Stop   \|^K\\ Repeat      \|^[Z Down \|             \|^[K To ^KK \|^[S Forwards \|\i \i
-\i \i\|^K 0-9  Play   \|^[M Math        \|^K< Left  \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u    \|\i \i
-\i \i\|^K?     Query  \|^KA Center line \|^K> Right \|`  Ctrl-    \|^[Y yank   \|^[ 0-9 Goto  \|\i \i
+\i \i\|^K 0-9  Play   \|^[M Math        \|^[< Left  \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u    \|\i \i
+\i \i\|^K?     Query  \|^KA Center line \|^[> Right \|`  Ctrl-    \|^[Y yank   \|^[ 0-9 Goto  \|\i \i
 \i \i\|^[D     Dump   \|^[H Message     \|          \|^\\ Meta-    \|^[O line<  \|^[^[   Set   \|\i \i
 }
 
@@ -916,7 +916,9 @@ center		^K A		Center line
 center		^K ^A
 center		^K a
 crawll		^K <		Pan left
+crawll		^[ <		Pan left
 crawlr		^K >		Pan right
+crawlr		^[ >		Pan right
 delch		.kD		Delete character
 delch		^D
 deleol		^J		Delete to end of line

@@ -1030,7 +1030,9 @@ center		^K A		Центрировать строку
 center		^K ^A
 center		^K a
 crawll		^K <		Pan left
+crawll		^[ <		Pan left
 crawlr		^K >		Pan right
+crawlr		^[ >		Pan right
 delch		.kD		Удалить символ
 delch		^D
 deleol		^J		Удалить до конца строки
