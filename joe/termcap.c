@@ -706,7 +706,7 @@ static void cpl(void *ptr, char c)
 char *tcompile(CAP *cap, const char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3)
 {
 	void (*out) (void *, char) = cap->out;
-	long div = cap->div;
+	long mydiv = cap->div;
 
 	if (!s)
 		return NULL;
@@ -715,7 +715,7 @@ char *tcompile(CAP *cap, const char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2
 	ssp = vsmk(10);
 	texec(cap, s, 0, a0, a1, a2, a3);
 	cap->out = out;
-	cap->div = div;
+	cap->div = mydiv;
 	return ssp;
 }
 

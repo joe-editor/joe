@@ -476,18 +476,18 @@ int execmd(CMD *cmd, int k)
 
 void do_auto_scroll()
 {
-	static CMD *scrup = 0;
-	static CMD *scrdn = 0;
+	static CMD *myscrup = 0;
+	static CMD *myscrdn = 0;
 	static CMD *drag = 0;
-	if (!scrup) {
-		scrup = findcmd("upslide");
-		scrdn = findcmd("dnslide");
+	if (!myscrup) {
+		myscrup = findcmd("upslide");
+		myscrdn = findcmd("dnslide");
 		drag = findcmd("defmdrag");
 	}
 	if (auto_scroll > 0)
-		execmd(scrdn,0);
+		execmd(myscrdn,0);
 	else if (auto_scroll < 0)
-		execmd(scrup,0);
+		execmd(myscrup,0);
 
 	execmd(drag,0);
 		

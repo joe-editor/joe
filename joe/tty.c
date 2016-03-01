@@ -616,7 +616,7 @@ time_t last_time;
 char ttgetc(void)
 {
         MACRO *m;
-	ptrdiff_t stat;
+	ptrdiff_t mystat;
 	time_t new_time;
 	int flg;
 
@@ -658,11 +658,11 @@ char ttgetc(void)
 	}
 	if (ackkbd != -1) {
 		if (!have) {	/* Wait for input */
-			stat = read(mpxfd, &pack, pack.data - (char *)&pack);
+			mystat = read(mpxfd, &pack, pack.data - (char *)&pack);
 
-			if (pack.size && stat > 0) {
+			if (pack.size && mystat > 0) {
 				joe_read(mpxfd, pack.data, pack.size);
-			} else if (stat < 1) {
+			} else if (mystat < 1) {
 				if (winched || ticked)
 					goto loop;
 				else
@@ -791,7 +791,7 @@ void ttstsz(int fd, ptrdiff_t w, ptrdiff_t h)
 int ttshell(char *cmd)
 {
 	int x, omode = ttymode;
-	int stat= -1;
+	int mystat= -1;
 	const char *s = getenv("SHELL");
 
 	if (!s) {
@@ -805,10 +805,10 @@ int ttshell(char *cmd)
 	if ((x = vfork()) != 0) { /* For AMIGA only  */
 #endif
 		if (x != -1)
-			wait(&stat);
+			wait(&mystat);
 		if (omode)
 			ttopnn();
-		return stat;
+		return mystat;
 	} else {
 		signrm();
 		if (cmd)

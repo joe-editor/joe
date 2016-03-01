@@ -245,14 +245,14 @@ struct savereq {
 	const char *message; /* String for messages to be shown to the user */
 };
 
-static struct savereq *mksavereq(int (*callback)(BW *bw, struct savereq *req, int flg, int *notify), char *name, B *first,int rename, int block_save)
+static struct savereq *mksavereq(int (*callback)(BW *bw, struct savereq *req, int flg, int *notify), char *name, B *first,int myrename, int block_save)
 {
 	struct savereq *req = (struct savereq *) joe_malloc(SIZEOF(struct savereq));
 	req->callback = callback;
 	req->name = name;
 	req->first = first;
 	req->not_saved = 0;
-	req->rename = rename;
+	req->rename = myrename;
 	req->block_save = block_save;
 	return req;
 }

@@ -34,7 +34,7 @@ const char *my_gettext(const char *s)
 	if (zstr(s, "%{")) {
 		char buf[128];
 		char name[80];
-		int i, j;
+		ptrdiff_t i, j;
 		/* Substitution */
 		i = 0;
 		while (*s)

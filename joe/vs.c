@@ -240,7 +240,7 @@ ptrdiff_t vslast(sELEMENT *ary, ptrdiff_t len, sELEMENT el)
 
 #endif
 
-int vscmpn(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
+int vscmpn(sELEMENT *a, ptrdiff_t myalen, sELEMENT *b, ptrdiff_t blen)
 {
 	ptrdiff_t x, l;
 	int t;
@@ -251,16 +251,16 @@ int vscmpn(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
 		return -1;
 	if (!b)
 		return 1;
-	if (alen > blen)
+	if (myalen > blen)
 		l = sLen(a);
 	else
 		l = blen;
 	for (x = 0; x != l; ++x)
 		if ((t = scmp(a[x], b[x])) != 0)
 			return t;
-	if (alen > blen)
+	if (myalen > blen)
 		return 1;
-	if (alen < blen)
+	if (myalen < blen)
 		return -1;
 	return 0;
 }
@@ -270,7 +270,7 @@ int vscmp(sELEMENT *a, sELEMENT *b)
 	return vscmpn(sv(a), sv(b));
 }
 #ifdef junk
-int vsicmpn(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
+int vsicmpn(sELEMENT *a, ptrdiff_t myalen, sELEMENT *b, ptrdiff_t blen)
 {
 	ptrdiff_t x, l;
 	int t;
@@ -281,21 +281,21 @@ int vsicmpn(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
 		return -1;
 	if (!b)
 		return 1;
-	if (alen > blen)
+	if (myalen > blen)
 		l = sLen(a);
 	else
 		l = blen;
 	for (x = 0; x != l; ++x)
 		if (t = sicmp(a[x], b[x]))
 			return t;
-	if (alen > blen)
+	if (myalen > blen)
 		return 1;
-	if (alen < blen)
+	if (myalen < blen)
 		return -1;
 	return 0;
 }
 
-ptrdiff_t vss(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
+ptrdiff_t vss(sELEMENT *a, ptrdiff_t myalen, sELEMENT *b, ptrdiff_t blen)
 {
 	ptrdiff_t x;
 
@@ -303,11 +303,11 @@ ptrdiff_t vss(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
 		return 0;
 	if (!a || !b)
 		return ~0;
-	if (alen < blen)
+	if (myalen < blen)
 		return ~0;
 	if (!blen)
 		return 0;
-	for (x = 0; x != alen - blen; ++x)
+	for (x = 0; x != myalen - blen; ++x)
 		if (!vscmpn(a, blen, b, blen))
 			return x;
 	return ~0;
@@ -315,11 +315,11 @@ ptrdiff_t vss(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen)
 
 #endif
 
-ptrdiff_t vsscan(const sELEMENT *a, ptrdiff_t alen, const sELEMENT *b, ptrdiff_t blen)
+ptrdiff_t vsscan(const sELEMENT *a, ptrdiff_t myalen, const sELEMENT *b, ptrdiff_t blen)
 {
 	ptrdiff_t x;
 
-	for (x = 0; x != alen; ++x) {
+	for (x = 0; x != myalen; ++x) {
 		ptrdiff_t z = vsbsearch(b, blen, a[x]);
 
 		if (z < blen && !scmp(b[z], a[x]))
@@ -328,11 +328,11 @@ ptrdiff_t vsscan(const sELEMENT *a, ptrdiff_t alen, const sELEMENT *b, ptrdiff_t
 	return ~0;
 }
 
-ptrdiff_t vsspan(const sELEMENT *a, ptrdiff_t alen, const sELEMENT *b, ptrdiff_t blen)
+ptrdiff_t vsspan(const sELEMENT *a, ptrdiff_t myalen, const sELEMENT *b, ptrdiff_t blen)
 {
 	ptrdiff_t x;
 
-	for (x = 0; x != alen; ++x) {
+	for (x = 0; x != myalen; ++x) {
 		ptrdiff_t z = vsbsearch(b, blen, a[x]);
 
 		if (z == blen || scmp(b[z], a[x]))

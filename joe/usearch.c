@@ -961,11 +961,11 @@ static int doreplace(BW *bw, SRCH *srch)
 	return 0;
 }
 
-static void visit(SRCH *srch, BW *bw, int yn)
+static void visit(SRCH *srch, BW *bw, int myyn)
 {
 	SRCHREC *r = (SRCHREC *) alitem(&fsr, SIZEOF(SRCHREC));
 	r->addr = bw->cursor->byte;
-	r->yn = yn;
+	r->yn = myyn;
 	r->wrap_flag = srch->wrap_flag;
 	r->last_repl = srch->last_repl;
 	r->b = bw->b;

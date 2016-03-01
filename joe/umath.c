@@ -1301,7 +1301,7 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 	int a_len;
 	int sign;
 	int dp;
-	int exp;
+	int myexp;
 	int exp_sign;
 	int x;
 	int flg = 0;
@@ -1370,12 +1370,12 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 		} else {
 			exp_sign = 0;
 		}
-		exp = 0;
+		myexp = 0;
 		while  (*s >= '0' && *s <= '9') {
-			exp = exp * 10 + *s++ - '0';
+			myexp = myexp * 10 + *s++ - '0';
 		}
 	} else {
-		exp = 0;
+		myexp = 0;
 		exp_sign = 0;
 	}
 
@@ -1387,9 +1387,9 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 
 	/* Sign of exponent */
 	if (exp_sign)
-		exp = -exp;
+		myexp = -myexp;
 	/* Account of position of decimal point in exponent */
-	exp -= dp;
+	myexp -= dp;
 
 	a[a_len] = 0;
 
@@ -1397,18 +1397,18 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 	   we have 1 - 3 leading digits */
 
 	/* Don't assume modulus of negative number works consistently */
-	if (exp < 0) {
-		switch((-exp) % 3) {
+	if (myexp < 0) {
+		switch((-myexp) % 3) {
 			case 0: x = 0; break;
 			case 1: x = 2; break;
 			case 2: x = 1; break;
 		}
 	} else {
-		x = (exp % 3);
+		x = (myexp % 3);
 	}
 
 	/* Make exponent a multiple of 3 */
-	exp -= x;
+	myexp -= x;
 
 	/* Add zeros to mantissa to account for this */
 	while (x--) {
@@ -1424,7 +1424,7 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 	dp *= 3;
 
 	/* Adjust exponent for this */
-	exp += dp;
+	myexp += dp;
 
 	/* Now print */
 	if (sign && d_len) {
@@ -1460,8 +1460,8 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 	}
 
 	/* Exponent? */
-	if (exp) {
-		joe_snprintf_1(d, (size_t)(d_len + 1), "e%d", exp);
+	if (myexp) {
+		joe_snprintf_1(d, (size_t)(d_len + 1), "e%d", myexp);
 	} else {
 		*d = 0;
 	}

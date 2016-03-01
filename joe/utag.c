@@ -393,7 +393,7 @@ static void get_tag_list()
 	ptrdiff_t i,pos;
 	FILE *f;
 	HASH *ht; /* Used to prevent duplicates in list */
-	struct stat stat;
+	struct stat mystat;
 
 	/* first try to open the tags file in the current directory */
 	f = fopen("tags", "r");
@@ -428,12 +428,12 @@ static void get_tag_list()
 		}
 	}
 	if (f) {
-		if (!fstat(fileno(f), &stat)) {
-			if (last_update == stat.st_mtime) {
+		if (!fstat(fileno(f), &mystat)) {
+			if (last_update == mystat.st_mtime) {
 				fclose(f);
 				return;
 			} else {
-				last_update = stat.st_mtime;
+				last_update = mystat.st_mtime;
 			}
 		}
 		ht = htmk(256);

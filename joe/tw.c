@@ -143,7 +143,7 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 	return m;
 }
 
-/* static */char *stagen(char *stalin, BW *bw, const char *s, char fill)
+char *stagen(char *stalin, BW *bw, const char *s, char fill)
 {
 	char buf[80];
 	int x;
@@ -451,7 +451,7 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 			case 'k':
 				{
 					ptrdiff_t i;
-					char *cpos = buf;
+					char *mycpos = buf;
 
 					buf[0] = 0;
 					if (w->kbd->x && w->kbd->seq[0])
@@ -459,22 +459,22 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 							char c = w->kbd->seq[i] & 127;
 
 							if (c < 32) {
-								cpos[0] = '^';
-								cpos[1] = (char)(c + '@');
-								cpos += 2;
+								mycpos[0] = '^';
+								mycpos[1] = (char)(c + '@');
+								mycpos += 2;
 							} else if (c == 127) {
-								cpos[0] = '^';
-								cpos[1] = '?';
-								cpos += 2;
+								mycpos[0] = '^';
+								mycpos[1] = '?';
+								mycpos += 2;
 							} else {
-								cpos[0] = c;
-								cpos += 1;
+								mycpos[0] = c;
+								mycpos += 1;
 							}
 						}
-					*cpos++ = fill;
-					while (cpos - buf < 4)
-						*cpos++ = fill;
-					stalin = vsncpy(sv(stalin), buf, cpos - buf);
+					*mycpos++ = fill;
+					while (mycpos - buf < 4)
+						*mycpos++ = fill;
+					stalin = vsncpy(sv(stalin), buf, mycpos - buf);
 				}
 				break;
 			case 'S':
@@ -869,20 +869,20 @@ int utw1(W *w, int k)
 	W *starting = w;
 	W *mainw = starting->main;
 	Screen *t = mainw->t;
-	int yn;
+	int myyn;
 
 	do {
-		yn = 0;
+		myyn = 0;
 	      loop:
 		do {
 			wnext(t);
 		} while (t->curwin->main == mainw && t->curwin != starting);
 		if (t->curwin->main != mainw) {
 			utw0(t->curwin->main, 0);
-			yn = 1;
+			myyn = 1;
 			goto loop;
 		}
-	} while (yn);
+	} while (myyn);
 	return 0;
 }
 
