@@ -49,7 +49,7 @@ int opt_mid = 0;
 /* Amount to horizontally scroll when cursor goes past edge */
 /* -1 means 1/4 width of screen */
 int opt_left = 8;
-int opt_right = 1;
+int opt_right = 8;
 
 /* For hex */
 
@@ -150,30 +150,43 @@ void bwfllwt(W *thew)
 	if (w->cursor->xcol < w->offset) {
 		/* Need to scroll left */
 		off_t target = w->cursor->xcol;
-		if (opt_left <= 0 || opt_left > w->w/4) {
-			if (target < w->w/4)
-				target = 0;
-			else {
-				// target -= w->w/4;
-				target -= (target % (w->w/4));
-			}
+		ptrdiff_t amnt;
+
+		if (opt_left < 0) {
+			amnt = w->w / (-opt_left);
 		} else {
-			if (target < opt_left)
-				target = 0;
-			else {
-				// target -= opt_left;
-				target -= (target % opt_left);
-			}
+			amnt = opt_left - 1;
+		}
+
+		if (amnt >= w->w)
+			amnt = w->w - 1;
+
+		if (amnt < 0)
+			amnt = 0;
+
+		if (target < amnt) {
+			target = 0;
+		} else {
+			target -= amnt;
 		}
 		w->offset = target;
 		msetI(w->t->t->updtab + w->y, 1, w->h);
 	}
 	if (w->cursor->xcol >= w->offset + w->w) {
 		/* Need to scroll right */
-		if (opt_right <= 0 || opt_right > w->w/4)
-			w->offset = w->cursor->xcol - (w->w - w->w/4);
-		else
-			w->offset = w->cursor->xcol - (w->w - opt_right);
+		ptrdiff_t amnt;
+		if (opt_right < 0) {
+			amnt = w->w - w->w/(-opt_right);
+		} else {
+			amnt = w->w - opt_right;
+		}
+		if (amnt >= w->w)
+			amnt = w->w - 1;
+		if (amnt < 0)
+			amnt = 0;
+
+		w->offset = w->cursor->xcol - amnt;
+
 		msetI(w->t->t->updtab + w->y, 1, w->h);
 	}
 }
@@ -1171,7 +1184,18 @@ int ucrawlr(W *w, int k)
 	BW *bw;
 	ptrdiff_t amnt;
 	WIND_BW(bw, w);
-	amnt = bw->w / 2;
+
+	if (opt_right < 0)
+		amnt = bw->w / (-opt_right);
+	else
+		amnt = opt_right;
+
+	if (amnt > bw->w)
+		amnt = bw->w;
+	if (amnt <= 0)
+		amnt = 1;
+
+	/* amnt = bw->w / 2; */
 
 	pcol(bw->cursor, bw->cursor->xcol + amnt);
 	bw->cursor->xcol += amnt;
@@ -1184,24 +1208,43 @@ int ucrawll(W *w, int k)
 {
 	BW *bw;
 	off_t amnt;
-	off_t curamnt;
 	WIND_BW(bw, w);
-	amnt = bw->w / 2;
-	curamnt = bw->w / 2;
+	int rtn = -1;
+
+	if (opt_left < 0)
+		amnt = bw->w / (-opt_left);
+	else
+		amnt = opt_left;
+
+	if (amnt > bw->w)
+		amnt = bw->w;
+
+	if (amnt < 1)
+		amnt = 1;
+
+	if (amnt > bw->cursor->xcol) {
+		if (bw->cursor->xcol)
+			rtn = 0;
+		bw->cursor->xcol = 0;
+	} else {
+		bw->cursor->xcol -= amnt;
+		rtn = 0;
+	}
 
 	if (amnt > bw->offset) {
-		amnt = bw->offset;
-		curamnt = bw->offset;
+		if (bw->offset)
+			rtn = 0;
+		bw->offset = 0;
+	} else {
+		bw->offset -= amnt;
+		rtn = 0;
 	}
-	if (!bw->offset)
-		curamnt = bw->cursor->xcol;
-	if (!curamnt)
-		return -1;
-	pcol(bw->cursor, bw->cursor->xcol - curamnt);
-	bw->cursor->xcol -= curamnt;
-	bw->offset -= amnt;
+
+	if (rtn)
+		return rtn;
+	pcol(bw->cursor, bw->cursor->xcol);
 	updall();
-	return 0;
+	return rtn;
 }
 
 /* If we are about to call bwrm, and b->count is 1, and orphan mode

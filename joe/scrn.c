@@ -848,8 +848,8 @@ SCRN *nopen(CAP *cap)
 
 /* Adjust for low baud rates */
 	if (tty_baud < 38400) {
-		opt_left = -1;
-		opt_right = -1;
+		opt_left = -2;
+		opt_right = -2;
 	}
 
 /* Send out li linefeeds so that scroll-back history is not lost */
