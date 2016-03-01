@@ -1169,8 +1169,9 @@ int ustat(W *w, int k)
 int ucrawlr(W *w, int k)
 {
 	BW *bw;
+	ptrdiff_t amnt;
 	WIND_BW(bw, w);
-	ptrdiff_t amnt = bw->w / 2;
+	amnt = bw->w / 2;
 
 	pcol(bw->cursor, bw->cursor->xcol + amnt);
 	bw->cursor->xcol += amnt;
@@ -1182,9 +1183,11 @@ int ucrawlr(W *w, int k)
 int ucrawll(W *w, int k)
 {
 	BW *bw;
+	off_t amnt;
+	off_t curamnt;
 	WIND_BW(bw, w);
-	off_t amnt = bw->w / 2;
-	off_t curamnt = bw->w / 2;
+	amnt = bw->w / 2;
+	curamnt = bw->w / 2;
 
 	if (amnt > bw->offset) {
 		amnt = bw->offset;

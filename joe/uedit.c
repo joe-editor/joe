@@ -1408,8 +1408,9 @@ static B *linehist = NULL;	/* History of previously entered line numbers */
 static int doline(W *w, char *s, void *object, int *notify)
 {
 	BW *bw;
+	off_t num;
 	WIND_BW(bw, w);
-	off_t num = (off_t)calc(bw, s, 1);
+	num = (off_t)calc(bw, s, 1);
 
 	if (notify)
 		*notify = 1;

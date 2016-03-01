@@ -552,8 +552,8 @@ int uformat(W *w, int k)
 	int c;
 	P *p, *q;
 	BW *bw;
-	WIND_BW(bw, w);
 	int flag;
+	WIND_BW(bw, w);
 
 	p = pdup(bw->cursor, "uformat");
 	p_goto_bol(p);
