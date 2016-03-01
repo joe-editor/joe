@@ -3049,7 +3049,7 @@ static int bsavefd_utf16(P *p, int fd, off_t size, int rev)
 {
 	P *np = pdup(p, "bsavefd");
 	char buf[SEGSIZ + 8];
-	ptrdiff_t e = np->byte + size;
+	off_t e = np->byte + size;
 
 	ptrdiff_t y = 0;
 	int c;

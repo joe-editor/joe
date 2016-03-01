@@ -22,8 +22,6 @@ static const char *ignore_prefix(const char *set)
 	return s;
 }
 
-HASH *subst_gettext;
-
 const char *my_gettext(const char *s)
 {
 	if (gettext_ht) {
@@ -51,23 +49,16 @@ const char *my_gettext(const char *s)
 					++s;
 				if (!strcmp(name, "abort")) {
 					strcpy(buf + i, aborthint);
-					i = strlen(buf);
+					i = zlen(buf);
 				} else if (!strcmp(name, "help")) {
 					strcpy(buf + i, helphint);
-					i = strlen(buf);
+					i = zlen(buf);
 				}
 			} else {
 				buf[i++] = *s++;
 			}
 		buf[i] = 0;
-		if (!subst_gettext) {
-			subst_gettext = htmk(256);
-		}
-		s = (const char *)htfind(subst_gettext, buf);
-		if (!s) {
-			s = zdup(buf);
-			htadd(subst_gettext, s, (void *)s);
-		}
+		s = atom_add(buf);
 	}
 	return s;
 }

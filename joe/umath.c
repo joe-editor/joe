@@ -58,7 +58,7 @@ int recur=0;
 
 /* Convert number in string to double */
 
-double joe_strtod(const char *ptr, const char **at_eptr)
+double joe_strtod(const char *bptr, const char **at_eptr)
 {
 	char buf[128];
 #ifdef HAVE_LONG_LONG
@@ -67,75 +67,75 @@ double joe_strtod(const char *ptr, const char **at_eptr)
 	unsigned long n = 0;
 #endif
 	double x = 0.0;
-	if (ptr[0] == '0' && (ptr[1] == 'b' || ptr[1] == 'B')) {
-		ptr += 2;
-		while ((*ptr >= '0' && *ptr <= '1') || *ptr == '_') {
-			if (*ptr >= '0' && *ptr <= '1') {
+	if (bptr[0] == '0' && (bptr[1] == 'b' || bptr[1] == 'B')) {
+		bptr += 2;
+		while ((*bptr >= '0' && *bptr <= '1') || *bptr == '_') {
+			if (*bptr >= '0' && *bptr <= '1') {
 				n <<= 1;
-				n += (unsigned)(*ptr - '0');
+				n += (unsigned)(*bptr - '0');
 			}
-			++ptr;
+			++bptr;
 		}
 		x = (double)n;
-	} else if (ptr[0] == '0' && (ptr[1] == 'o' || ptr[1] == 'O')) {
-		ptr += 2;
-		while ((*ptr >= '0' && *ptr <= '7') || *ptr == '_') {
-			if (*ptr >= '0' && *ptr <= '7') {
+	} else if (bptr[0] == '0' && (bptr[1] == 'o' || bptr[1] == 'O')) {
+		bptr += 2;
+		while ((*bptr >= '0' && *bptr <= '7') || *bptr == '_') {
+			if (*bptr >= '0' && *bptr <= '7') {
 				n <<= 3;
-				n += (unsigned)(*ptr - '0');
+				n += (unsigned)(*bptr - '0');
 			}
-			++ptr;
+			++bptr;
 		}
 		x = (double)n;
-	} else if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X')) {
-		ptr += 2;
-		while ((*ptr >= '0' && *ptr <= '9') ||
-			(*ptr >= 'a' && *ptr <= 'f') ||
-			(*ptr >= 'A' && *ptr <= 'F') || *ptr == '_') {
-			if (*ptr >= '0' && *ptr <= '9') {
+	} else if (bptr[0] == '0' && (bptr[1] == 'x' || bptr[1] == 'X')) {
+		bptr += 2;
+		while ((*bptr >= '0' && *bptr <= '9') ||
+			(*bptr >= 'a' && *bptr <= 'f') ||
+			(*bptr >= 'A' && *bptr <= 'F') || *bptr == '_') {
+			if (*bptr >= '0' && *bptr <= '9') {
 				n <<= 4;
-				n += (unsigned)(*ptr - '0');
-			} else if (*ptr >= 'A' && *ptr <= 'F') {
+				n += (unsigned)(*bptr - '0');
+			} else if (*bptr >= 'A' && *bptr <= 'F') {
 				n <<= 4;
-				n += (unsigned)(*ptr - 'A' + 10);
-			} else if (*ptr >= 'a' && *ptr <= 'f') {
+				n += (unsigned)(*bptr - 'A' + 10);
+			} else if (*bptr >= 'a' && *bptr <= 'f') {
 				n <<= 4;
-				n += (unsigned)(*ptr - 'a' + 10);
+				n += (unsigned)(*bptr - 'a' + 10);
 			}
-			++ptr;
+			++bptr;
 		}
 		x = (double)n;
 	} else {
 		int j = 0;
-		while ((*ptr >= '0' && *ptr <= '9') || *ptr == '_') {
-			if (*ptr >= '0' && *ptr <= '9')
-				buf[j++] = *ptr;
-			++ptr;
+		while ((*bptr >= '0' && *bptr <= '9') || *bptr == '_') {
+			if (*bptr >= '0' && *bptr <= '9')
+				buf[j++] = *bptr;
+			++bptr;
 		}
-		if (*ptr == '.') {
-			buf[j++] = *ptr++;
-			while ((*ptr >= '0' && *ptr <= '9') || *ptr == '_') {
-				if (*ptr >= '0' && *ptr <= '9')
-					buf[j++] = *ptr;
-				++ptr;
+		if (*bptr == '.') {
+			buf[j++] = *bptr++;
+			while ((*bptr >= '0' && *bptr <= '9') || *bptr == '_') {
+				if (*bptr >= '0' && *bptr <= '9')
+					buf[j++] = *bptr;
+				++bptr;
 			}
 		}
-		if (*ptr == 'e' || *ptr == 'E') {
-			buf[j++] = *ptr++;
-			if (*ptr == '-' || *ptr == '+') {
-				buf[j++] = *ptr++;
+		if (*bptr == 'e' || *bptr == 'E') {
+			buf[j++] = *bptr++;
+			if (*bptr == '-' || *bptr == '+') {
+				buf[j++] = *bptr++;
 			}
-			while ((*ptr >= '0' && *ptr <= '9') || *ptr == '_') {
-				if (*ptr >= '0' && *ptr <= '9')
-					buf[j++] = *ptr;
-				++ptr;
+			while ((*bptr >= '0' && *bptr <= '9') || *bptr == '_') {
+				if (*bptr >= '0' && *bptr <= '9')
+					buf[j++] = *bptr;
+				++bptr;
 			}
 		}
 		buf[j] = 0;
 		x = strtod(buf,NULL);
 	}
 	if (at_eptr)
-		*at_eptr = ptr;
+		*at_eptr = bptr;
 	return x;
 }
 
@@ -686,7 +686,7 @@ static double m_lr(double n)
 	double ysum;
 	double xy;
 	double A;
-	double B;
+	double BB;
 	double r;
 	double cov;
 	double xavg;
@@ -696,9 +696,9 @@ static double m_lr(double n)
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
 	}
-	/* Linear regression coefficients: y = A + B * x */
-	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
-	A = (ysum - B * xsum) / (double)cnt;
+	/* Linear regression coefficients: y = A + BB * x */
+	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - BB * xsum) / (double)cnt;
 	/* correlatio coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
@@ -708,11 +708,11 @@ static double m_lr(double n)
 
 	/* Side effects */
 	v = get("b"); v->val = A; v->set = 1;
-	v = get("m"); v->val = B; v->set = 1;
+	v = get("m"); v->val = BB; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
-	return A + B * n;
+	return A + BB * n;
 }
 
 static double m_Lr(double n)
@@ -724,7 +724,7 @@ static double m_Lr(double n)
 	double ysum;
 	double xy;
 	double A;
-	double B;
+	double BB;
 	double r;
 	double cov;
 	double xavg;
@@ -734,9 +734,9 @@ static double m_Lr(double n)
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
 	}
-	/* Linear regression coefficients: y = A + B * x */
-	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
-	A = (ysum - B * xsum) / (double)cnt;
+	/* Linear regression coefficients: y = A + BB * x */
+	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - BB * xsum) / (double)cnt;
 	/* correlatio coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
@@ -746,11 +746,11 @@ static double m_Lr(double n)
 
 	/* Side effects */
 	v = get("b"); v->val = A; v->set = 1;
-	v = get("m"); v->val = B; v->set = 1;
+	v = get("m"); v->val = BB; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
-	return A + B * log(n);
+	return A + BB * log(n);
 }
 
 static double m_lR(double n)
@@ -762,7 +762,7 @@ static double m_lR(double n)
 	double ysum;
 	double xy;
 	double A;
-	double B;
+	double BB;
 	double r;
 	double cov;
 	double xavg;
@@ -772,9 +772,9 @@ static double m_lR(double n)
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
 	}
-	/* Linear regression coefficients: y = A + B * x */
-	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
-	A = (ysum - B * xsum) / (double)cnt;
+	/* Linear regression coefficients: y = A + BB * x */
+	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - BB * xsum) / (double)cnt;
 	/* correlatio coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
@@ -784,11 +784,11 @@ static double m_lR(double n)
 
 	/* Side effects */
 	v = get("b"); v->val = exp(A); v->set = 1;
-	v = get("m"); v->val = B; v->set = 1;
+	v = get("m"); v->val = BB; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
-	return exp(A + B * n);
+	return exp(A + BB * n);
 }
 
 static double m_LR(double n)
@@ -800,7 +800,7 @@ static double m_LR(double n)
 	double ysum;
 	double xy;
 	double A;
-	double B;
+	double BB;
 	double r;
 	double cov;
 	double xavg;
@@ -810,9 +810,9 @@ static double m_LR(double n)
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
 	}
-	/* Linear regression coefficients: y = A + B * x */
-	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
-	A = (ysum - B * xsum) / (double)cnt;
+	/* Linear regression coefficients: y = A + BB * x */
+	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - BB * xsum) / (double)cnt;
 	/* correlatio coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
@@ -822,11 +822,11 @@ static double m_LR(double n)
 
 	/* Side effects */
 	v = get("b"); v->val = exp(A); v->set = 1;
-	v = get("m"); v->val = B; v->set = 1;
+	v = get("m"); v->val = BB; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
-	return exp(A + B * log(n));
+	return exp(A + BB * log(n));
 }
 
 static double m_rlr(double n)
@@ -838,7 +838,7 @@ static double m_rlr(double n)
 	double ysum;
 	double xy;
 	double A;
-	double B;
+	double BB;
 	double r;
 	double cov;
 	double xavg;
@@ -848,9 +848,9 @@ static double m_rlr(double n)
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
 	}
-	/* Linear regression coefficients: y = A + B * x */
-	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
-	A = (ysum - B * xsum) / (double)cnt;
+	/* Linear regression coefficients: y = A + BB * x */
+	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - BB * xsum) / (double)cnt;
 	/* correlatio coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
@@ -860,11 +860,11 @@ static double m_rlr(double n)
 
 	/* Side effects */
 	v = get("b"); v->val = A; v->set = 1;
-	v = get("m"); v->val = B; v->set = 1;
+	v = get("m"); v->val = BB; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
-	return (n - A) / B;
+	return (n - A) / BB;
 }
 
 static double m_rLr(double n)
@@ -876,7 +876,7 @@ static double m_rLr(double n)
 	double ysum;
 	double xy;
 	double A;
-	double B;
+	double BB;
 	double r;
 	double cov;
 	double xavg;
@@ -886,9 +886,9 @@ static double m_rLr(double n)
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
 	}
-	/* Linear regression coefficients: y = A + B * x */
-	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
-	A = (ysum - B * xsum) / (double)cnt;
+	/* Linear regression coefficients: y = A + BB * x */
+	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - BB * xsum) / (double)cnt;
 	/* correlatio coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
@@ -898,11 +898,11 @@ static double m_rLr(double n)
 
 	/* Side effects */
 	v = get("b"); v->val = A; v->set = 1;
-	v = get("m"); v->val = B; v->set = 1;
+	v = get("m"); v->val = BB; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
-	return exp((n - A) / B);
+	return exp((n - A) / BB);
 }
 
 static double m_rlR(double n)
@@ -914,7 +914,7 @@ static double m_rlR(double n)
 	double ysum;
 	double xy;
 	double A;
-	double B;
+	double BB;
 	double r;
 	double cov;
 	double xavg;
@@ -924,9 +924,9 @@ static double m_rlR(double n)
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
 	}
-	/* Linear regression coefficients: y = A + B * x */
-	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
-	A = (ysum - B * xsum) / (double)cnt;
+	/* Linear regression coefficients: y = A + BB * x */
+	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - BB * xsum) / (double)cnt;
 	/* correlatio coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
@@ -936,11 +936,11 @@ static double m_rlR(double n)
 
 	/* Side effects */
 	v = get("b"); v->val = exp(A); v->set = 1;
-	v = get("m"); v->val = B; v->set = 1;
+	v = get("m"); v->val = BB; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
-	return (log(n) - A) / B;
+	return (log(n) - A) / BB;
 }
 
 static double m_rLR(double n)
@@ -952,7 +952,7 @@ static double m_rLR(double n)
 	double ysum;
 	double xy;
 	double A;
-	double B;
+	double BB;
 	double r;
 	double cov;
 	double xavg;
@@ -962,9 +962,9 @@ static double m_rLR(double n)
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
 	}
-	/* Linear regression coefficients: y = A + B * x */
-	B = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
-	A = (ysum - B * xsum) / (double)cnt;
+	/* Linear regression coefficients: y = A + BB * x */
+	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
+	A = (ysum - BB * xsum) / (double)cnt;
 	/* correlatio coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
@@ -974,11 +974,11 @@ static double m_rLR(double n)
 
 	/* Side effects */
 	v = get("b"); v->val = exp(A); v->set = 1;
-	v = get("m"); v->val = B; v->set = 1;
+	v = get("m"); v->val = BB; v->set = 1;
 	v = get("r"); v->val = r; v->set = 1;
 	v = get("cov"); v->val = cov; v->set = 1;
 
-	return exp((log(n) - A) / B);
+	return exp((log(n) - A) / BB);
 }
 
 double calc(BW *bw, char *s, int secure)
@@ -1293,7 +1293,7 @@ static void insert_commas(char *dst, char *src)
 
 /* Convert floating point ascii number into engineering format */
 
-static char *eng(char *d, size_t d_len, const char *s)
+static char *eng(char *d, ptrdiff_t d_len, const char *s)
 {
 	const char *s_org = s;
 	char *d_org = d;
@@ -1461,7 +1461,7 @@ static char *eng(char *d, size_t d_len, const char *s)
 
 	/* Exponent? */
 	if (exp) {
-		joe_snprintf_1(d, d_len + 1, "e%d", exp);
+		joe_snprintf_1(d, (size_t)(d_len + 1), "e%d", exp);
 	} else {
 		*d = 0;
 	}
