@@ -50,7 +50,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jice", "exe\jice.vcxproj", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jice", "exe\standalone\jice.vcxproj", "{6CE9B05D-685E-4875-A3F5-497BE3FE8D13}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winpty", "winpty\winpty.vcxproj", "{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "joewinpty", "winpty\winpty.vcxproj", "{D84B76FF-01E0-4BC0-9DB6-68C7EF198518}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -75,7 +75,16 @@
   </ItemDefinitionGroup>
 
   <!-- Copy exe to vt folder after building -->
+  <Target Name="BeforeBuild">
+    <Delete Files="$(VTOutDir)\joewinpty.exe" />
+  </Target>
   <Target Name="AfterBuild" DependsOnTargets="SignBinaries">
     <Copy SourceFiles="$(OutDir)\joewinpty.exe" DestinationFolder="$(VTOutDir)" />
+  </Target>
+  <Target Name="AfterClean">
+    <Delete Files="$(VTOutDir)\joewinpty.exe" />
+  </Target>
+  <Target Name="BeforeRebuild">
+    <Delete Files="$(VTOutDir)\joewinpty.exe" />
   </Target>
 </Project>
