@@ -81,7 +81,7 @@ static int CALLBACK AboutProc(HWND hwnd, UINT msg,
 		if (LOWORD(wParam) == IDWEBSITE) {
 			/* Load web browser */
 			ShellExecuteA(hwnd, "open",
-				"http://joe-editor.sourceforge.net/",
+				"http://sourceforge.net/p/joe-editor",
 				0, 0, SW_SHOWDEFAULT);
 		}
 		break;

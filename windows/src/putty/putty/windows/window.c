@@ -888,8 +888,8 @@ int PuttyWinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show)
 	    AppendMenu(m, MF_POPUP | MF_ENABLED, (UINT) schemes_menu, "Color Schemes"); 
 	    AppendMenu(m, MF_POPUP | MF_ENABLED, (UINT) cursor_menu, "Cursor Type");
 	    AppendMenu(m, MF_SEPARATOR, 0, 0);
-	    AppendMenu(m, MF_ENABLED, IDM_ABOUT, "About...");
 	    AppendMenu(m, MF_POPUP | MF_ENABLED, (UINT) help_menu, "Documentation");
+	    AppendMenu(m, MF_ENABLED, IDM_ABOUT, "About...");
 #endif
 	}
 
