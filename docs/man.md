@@ -323,12 +323,16 @@ slow terminals which don't have scrolling commands.
 
 * left nn
 This sets the number of columns the screen scrolls to the left when cursor
-moves past the left edge.  If nn is -1, the screen scrolls 1/4 of the width.
+moves past the left edge or when the crawll command is issued.  If nn is
+negative, then it's the fraction of the screen to scroll.  For example, -2
+means scroll 1/2 the screen.
 <br>
 
 * right nn
 This sets the number of columns the screen scrolls to the right when cursor
-moves past the right edge.  If nn is -1, the screen scrolls 1/4 of the width.
+moves past the right edge or when the crawlr command is issued.  If nn is
+negative, then it's the fraction of the screen to scroll.  For example, -3
+means scroll 1/3 the screen.
 <br>
 
 * mouse
