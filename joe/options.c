@@ -1062,6 +1062,9 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 						bw->o.crlf = 0;
 						bw->o.hex |= HEX_RESTORE_CRLF;
 					}
+					/* Try to put entire hex dump on screen in case where we were
+					   scrolled far to the right */
+					bw->offset = 0;
 				} else if (!bw->o.hex && oldval) {
 					if ((oldval & HEX_RESTORE_UTF8) && !zcmp(bw->b->o.charmap->name, "ascii")) {
 						/* Switch back into UTF-8 */
@@ -1072,6 +1075,8 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 						/* Turn CRLF back on */
 						bw->o.crlf = 1;
 					}
+					/* Update column in case we moved while in hex mode */
+					bw->cursor->xcol = piscol(bw->cursor);
 				}
 			}
 			break;

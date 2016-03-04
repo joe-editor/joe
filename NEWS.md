@@ -102,6 +102,14 @@
 	* Allow koi8r and koi8-r for KOI8-R in joe_getcodeset (which is only
 	  used if there is no setlocale).
 
+	* Guess_crlf forced UNIX line endings for new files even though
+	  crlf was set.  Now crlf is left alone if guess_crlf can not
+	  determine the line ending.
+
+	* If cursor was end of a long line and you switched to hex dump
+	  display mode, then hex dump was scrolled.  Now scroll offset is
+	  reset when you switch to hex display mode.
+
 ### JOE 4.1
 
 * New or improved syntax files for the following languages: 
