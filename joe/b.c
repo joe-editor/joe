@@ -2788,7 +2788,6 @@ opnerr:
 	/* If first line has CR-LF, assume MS-DOS file */
 	if (guesscrlf) {
 		p=pdup(b->bof, "bload");
-		b->o.crlf = 0;
 		for(x=0;x!=1024;++x) {
 			int c = pgetc(p);
 			if(c == '\r') {
