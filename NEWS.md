@@ -45,6 +45,7 @@
 	* Document ESC X (command prompt) in the help screens.
 
 * Other Enhancements
+
 	* Tags search now tries to find the tags file in parent directories
 	  if it does not exist in the current directory and if the TAGS
 	  environment variable was not set.
@@ -60,7 +61,7 @@
 	* Built-in calculator now prints and accepts separating underscores
 	  for clarity.  For example,  4_294_967_296 instead of 4294967296.
 
-	* Enhanced statistics functions:
+	* Enhanced calculator statistics functions:
 		* __dev__ computes standard deviation with full population
 		* __samp__ computes standard deviation with sample of population
 		* Linear regression analysis.  Select a region of x
@@ -77,19 +78,19 @@
 
 	* Add -left and -right options to control the amount scrolling when
 	  the cursor moves past the left or right edge of the screen.  When
-	  the baud rate is low these are automatically set to a large amount.
-	  Also, these now control the manual horizontal scrolling commands.
-	  When these are positive, they indicate number of columns.  When
-	  they are negative, they indicate fraction of screen width (-2 is
-	  1/2 the width).
+	  the baud rate is low these are automatically set to a large
+	  amount.  Also, these now control the manual horizontal scrolling
+	  commands.  When these are positive, they indicate number of
+	  columns.  When they are negative, they indicate a fraction of the
+	  screen width (-2 is 1/2 the width).
 
 * Bugs fixed
+
+	* Fix use after free bug which shows up as a crash in OpenBSD
 
 	* Fix bug where indent step value was not shown on ^T menu
 
 	* Fix bug where setting margin doesn't work on big-endian systems
-
-	* Fix use after free bug which shows up in OpenBSD
 
 	* Fix issue where highest valued unicode character equivalent was
 	  not translating to its corresponding 8-bit character.  Effect
@@ -106,7 +107,7 @@
 	  crlf was set.  Now crlf is left alone if guess_crlf can not
 	  determine the line ending.
 
-	* If cursor was end of a long line and you switched to hex dump
+	* If cursor was at end of a long line and you switched to hex dump
 	  display mode, then hex dump was scrolled.  Now scroll offset is
 	  reset when you switch to hex display mode.
 
