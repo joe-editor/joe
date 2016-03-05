@@ -196,6 +196,7 @@ Horizontal scrolling:
 
 Calculator:
 
+
 	matlab like full buffer for calculator
 
 	Stay at math prompt for better calculator mode?  But I'm so used to
@@ -1432,3 +1433,6 @@ jmacs fixes:
 		c-x 0  (delete window) prints exit message even when we are not abandoning the file - why? [fixed]
 
 		M-^: jmacs: deletes indentation, blank lines below.  gnu: deletes indentation, blank line above- pulls current line to end of previous [fixed]
+calculator:
+	assume entire file if no region selected [done]
+

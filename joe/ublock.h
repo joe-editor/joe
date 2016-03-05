@@ -43,8 +43,8 @@ int upop(W *w, int k);
 int ulower(W *w, int k);
 int uupper(W *w, int k);
 extern int nstack; /* No. block markers pushed on stack */
-int blksum(double *,double *);
-int blklr(double *,double *, double *, double *, double *, int, int);
-char *blkget();
+int blksum(BW *bw, double *,double *);
+int blklr(BW *bw, double *,double *, double *, double *, double *, int, int);
+char *blkget(BW *bw);
 extern int autoswap; /* Automatically swap markb and markk if need to make a valid block */
 extern int nowmarking; /* Now marking flag (so make block bigger) for Ctrl-arrow key block selection */

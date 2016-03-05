@@ -75,6 +75,9 @@
 			* __rlr__(y)  provide estimate of x given y
 			* __Lr__, __lR__, __LR__: log, exponential, power regression
 
+	* Calculator region functions now assume the entire buffer if no
+	  region is set.
+
 	* Tab completion now works at the calculator prompt (and in all
 	  prompts which allow numeric input, such as ^KL- go to line).
 

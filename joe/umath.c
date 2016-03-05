@@ -12,6 +12,8 @@ const char *merr;
 int mode_display; /* 0 = decimal, 1 = engineering, 2 = hex, 3 = octal, 4 = binary */
 int mode_ins;
 
+static BW *calc_bw;
+
 double vzero = 0.0;
 
 static RETSIGTYPE fperr(int unused)
@@ -216,20 +218,20 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 			x = v->val;
 		} else if (!zcmp(ident, "sum")) {
 			double xsq;
-			int cnt = blksum(&x, &xsq);
+			int cnt = blksum(calc_bw, &x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 		} else if (!zcmp(ident, "cnt")) {
 			double xsq;
-			int cnt = blksum(&x, &xsq);
+			int cnt = blksum(calc_bw, &x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
 			x = cnt;
 		} else if (!zcmp(ident, "avg")) {
 			double xsq;
-			int cnt = blksum(&x, &xsq);
+			int cnt = blksum(calc_bw, &x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
@@ -237,7 +239,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 				x /= (double)cnt;
 		} else if (!zcmp(ident, "dev")) {
 			double xsq;
-			int cnt = blksum(&x, &xsq);
+			int cnt = blksum(calc_bw, &x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
@@ -246,7 +248,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 			}
 		} else if (!zcmp(ident, "samp")) {
 			double xsq;
-			int cnt = blksum(&x, &xsq);
+			int cnt = blksum(calc_bw, &x, &xsq);
 			if (!merr && cnt<=0)
 				merr = joe_gettext(_("No numbers in block"));
 			v = 0;
@@ -255,7 +257,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 			}
 		} else if (!zcmp(ident, "eval")) {
 			const char *save = ptr;
-			char *e = blkget();
+			char *e = blkget(calc_bw);
 			if (e) {
 				v = 0;
 				x = eval(e,secure);
@@ -691,7 +693,7 @@ static double m_lr(double n)
 	double cov;
 	double xavg;
 	double yavg;
-	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 0, 0);
+	int cnt = blklr(calc_bw, &xsum, &xsq, &ysum, &ysq, &xy, 0, 0);
 	if (!merr && cnt<=0) {
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
@@ -729,7 +731,7 @@ static double m_Lr(double n)
 	double cov;
 	double xavg;
 	double yavg;
-	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 1, 0);
+	int cnt = blklr(calc_bw, &xsum, &xsq, &ysum, &ysq, &xy, 1, 0);
 	if (!merr && cnt<=0) {
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
@@ -767,7 +769,7 @@ static double m_lR(double n)
 	double cov;
 	double xavg;
 	double yavg;
-	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 0, 1);
+	int cnt = blklr(calc_bw, &xsum, &xsq, &ysum, &ysq, &xy, 0, 1);
 	if (!merr && cnt<=0) {
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
@@ -805,7 +807,7 @@ static double m_LR(double n)
 	double cov;
 	double xavg;
 	double yavg;
-	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 1, 1);
+	int cnt = blklr(calc_bw, &xsum, &xsq, &ysum, &ysq, &xy, 1, 1);
 	if (!merr && cnt<=0) {
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
@@ -843,7 +845,7 @@ static double m_rlr(double n)
 	double cov;
 	double xavg;
 	double yavg;
-	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 0, 0);
+	int cnt = blklr(calc_bw, &xsum, &xsq, &ysum, &ysq, &xy, 0, 0);
 	if (!merr && cnt<=0) {
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
@@ -881,7 +883,7 @@ static double m_rLr(double n)
 	double cov;
 	double xavg;
 	double yavg;
-	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 1, 0);
+	int cnt = blklr(calc_bw, &xsum, &xsq, &ysum, &ysq, &xy, 1, 0);
 	if (!merr && cnt<=0) {
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
@@ -919,7 +921,7 @@ static double m_rlR(double n)
 	double cov;
 	double xavg;
 	double yavg;
-	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 0, 1);
+	int cnt = blklr(calc_bw, &xsum, &xsq, &ysum, &ysq, &xy, 0, 1);
 	if (!merr && cnt<=0) {
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
@@ -957,7 +959,7 @@ static double m_rLR(double n)
 	double cov;
 	double xavg;
 	double yavg;
-	int cnt = blklr(&xsum, &xsq, &ysum, &ysq, &xy, 1, 1);
+	int cnt = blklr(calc_bw, &xsum, &xsq, &ysum, &ysq, &xy, 1, 1);
 	if (!merr && cnt<=0) {
 		merr = joe_gettext(_("No numbers in block"));
 		return 0.0;
@@ -1236,9 +1238,8 @@ static void setup_vars(BW *tbw)
 
 double calc(BW *bw, char *s, int secure)
 {
-	/* BW *tbw = bw->parent->main->object; */
-	BW *tbw = bw;
-	setup_vars(tbw);
+	calc_bw = bw;
+	setup_vars(calc_bw);
 	merr = 0;
 	return eval(s, secure);
 }
