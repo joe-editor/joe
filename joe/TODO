@@ -50,8 +50,23 @@ State file:
 Jmacs:
 	1323285  joe does not repeatedly wrap searches (add an option for this?)
 
+	JOE does not match emacs at how it handles wrap.  JOE wraps
+	once but will not allow going past starting point.  Emacs complains
+	when it gets to the end of the file, then wraps if the search is
+	repeated.  Nothing prevents you from wrapping over and over again.
+
+	(Search and replace never goes past the end of the file)
+	(Search and replace prompt is different also, but maybe
+	 not as important)
+
+	^S return with nothing: set mark, then non-incremental search prompt
+
+	^S return after some searches: set mark at original place, then exit
+	incremental search.
+
 	search and replace 'fred' to 'foo':
 	find 'Fred', gets 'Foo'.
+	(mg finds 'Fred', but inserts 'foo').
 
 	Rectangle mode for emacs yank system
 
@@ -62,9 +77,12 @@ Jmacs:
 
 	jmacs glitches:
 
-		history for incremental search
+		Esc ltarw, Esc rtarw traverse words in gnu
+		sadly this is difficult for jmacs because Esc Esc is
+		options.  Should find someting else for options (or
+		maybe detect pause after Esc Esc).
 
-		^S return supposed to be normal search
+		history for incremental search
 
 		^[ 0 ^K  delete line bkwd (arg set)
 
@@ -76,15 +94,7 @@ Jmacs:
 			(better off not setting this: JOE automatically sets
 			the fill prefix).
 
-	jmacs vs. mg vs gnu-emacs:
-
-		c-x b  jmacs: nbuf, gnu: offers prompt with next buffer [fixed, before in jmacs this was bufed]
-
-		c-x c-b	jmacs: bufed prompt.  gnu: menu. [fixed, before in jmacs this was nbuf]
-
-		c-x 0  (delete window) prints exit message even when we are not abandoning the file - why? [fixed]
-
-		M-^: jmacs: deletes indentation, blank lines below.  gnu: deletes indentation, blank line above- pulls current line to end of previous [fixed]
+	Compare jmacs and gnu with "mg":
 
 		c-x c-s	jmacs: saves file.  gnu: prompts before saving.
 
@@ -175,7 +185,7 @@ Locking:
 
 Horizontal scrolling:
 
-	We tried to keep offset at a multiple of scroll amount.. is
+	We used to keep offset at a multiple of scroll amount.. is
 	it needed?
 
 	When prompt window has to scroll it should also jump.  But this is
@@ -188,12 +198,12 @@ Calculator:
 
 	matlab like full buffer for calculator
 
-	user should be able to bring up a program and hit 'eval'.
-
 	Stay at math prompt for better calculator mode?  But I'm so used to
 	hitting ESC m
 
-	"math" command in cygwin not working.
+	user should be able to bring up a program and hit 'eval'.
+
+	"math" vt command in cygwin not working.
 
 	something like eng mode, but with a requested exponent.  Expand math
 	formatting options? For example if user want to make a table..
@@ -397,6 +407,8 @@ File names:
 	for and then 'joe file')
 
 Syntax highlighting:
+
+	blue is too dim with a black background.  bold blue is ok.
 
 	Garbage collect line attribute databases.
 
@@ -1411,3 +1423,12 @@ cd command: if you leave out the trailing / it ignores it [fixed]
 
 tab at math prompt should go through variables, functions.
 [done]
+
+jmacs fixes:
+		c-x b  jmacs: nbuf, gnu: offers prompt with next buffer [fixed, before in jmacs this was bufed]
+
+		c-x c-b	jmacs: bufed prompt.  gnu: menu. [fixed, before in jmacs this was nbuf]
+
+		c-x 0  (delete window) prints exit message even when we are not abandoning the file - why? [fixed]
+
+		M-^: jmacs: deletes indentation, blank lines below.  gnu: deletes indentation, blank line above- pulls current line to end of previous [fixed]

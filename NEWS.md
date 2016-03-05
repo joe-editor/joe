@@ -4,6 +4,10 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* New or improved syntax files for the following languages: 
+
+	* Dockerfile
+
 * Usability Enhancements
 
 	* The top Google help searches for JOE include:
@@ -16,8 +20,8 @@
 		  way is to hit ^K B ^K K, but this is slightly non-obvious
 		  and has always been awkward.  Now Ctrl-C will do it.
 
-		* How do I close all files and exit?  Now Ctrl-KQ does this.
-		  Previously ^KQ was the same as ^C: abort a single file.
+		* How do I close all files and exit?  Now Ctrl-K Q does this.
+		  Previously ^K Q was the same as ^C: abort a single file.
 
 	* Restyle the help screens:
 
@@ -37,7 +41,8 @@
 	  do not know about this context sensitive help.
 
 	* Provide aborthint and helphint options so that the ^C and ^K H
-	  hints can be customized depending on the rc file.
+	  hints can be customized depending on the rc file (so say ^G
+	  for abort in jmacs, for example).
 
 	* Enable -noxon by default (disable ^S/^Q flow control).  This
 	  allows us to bind ^Q to quote and ^S / ^R to incremental search.
