@@ -1111,6 +1111,10 @@ ltarw		.kl		Go left
 ltarw		^B
 ltarw		^[ O D
 ltarw		^[ [ D
+pbuf		^X .kl		Go left
+pbuf		^X ^B
+pbuf		^X ^[ O D
+pbuf		^X ^[ [ D
  ltarw          ^# D
  mode		^[ ^[		Change modes
 menu,"root",rtn	^[ ^[
@@ -1142,6 +1146,10 @@ rtarw		.kr		Go right
 rtarw		^F
 rtarw		^[ O C
 rtarw		^[ [ C
+nbuf		^X .kr
+nbuf		^X ^F
+nbuf		^X ^[ O C
+nbuf		^X ^[ [ C
  rtarw          ^# C
 run		^[ !
 save		^X ^W		Write file
