@@ -61,11 +61,17 @@ Jmacs:
 	(it isn't in emacs either)
 
 	jmacs glitches:
+
 		history for incremental search
+
 		^S return supposed to be normal search
+
 		^[ 0 ^K  delete line bkwd (arg set)
+
 		^[ @   set mark arg words away
+
 		^X ^P  mark page
+
 		^X .  set left margin (fill prefix)
 			(better off not setting this: JOE automatically sets
 			the fill prefix).

@@ -329,6 +329,37 @@ void cmplt_ins(BW *bw, char *line)
 	bw->cursor->xcol = piscol(bw->cursor);
 }
 
+void p_goto_bow(P *ptr)
+{
+	struct charmap *map = ptr->b->o.charmap;
+	int c;
+	while (joe_isalnum_(map, (c = prgetc(ptr))))
+		;
+	if (c != NO_MORE_DATA)
+		pgetc(ptr);
+}
+
+void p_goto_eow(P *ptr)
+{
+	struct charmap *map = ptr->b->o.charmap;
+	int rtn = -1;
+	while (joe_isalnum_(map, brch(ptr)))
+		pgetc(ptr);
+}
+
+void word_ins(BW *bw, char *line)
+{
+	P *p = pdup(bw->cursor, "cmplt_ins");
+
+	p_goto_bow(p);
+	p_goto_eow(bw->cursor);
+	bdel(p, bw->cursor);
+	binsm(bw->cursor, sv(line));
+	p_goto_eol(bw->cursor);
+	prm(p);
+	bw->cursor->xcol = piscol(bw->cursor);
+}
+
 int cmplt_abrt(W *w, ptrdiff_t x, void *object)
 {
 	char *line = (char *)object;
@@ -343,6 +374,16 @@ int cmplt_rtn(MENU *m, ptrdiff_t x, void *object, int k)
 {
 	char *line = (char *)object;
 	cmplt_ins((BW *)m->parent->win->object, m->list[x]);
+	vsrm(line);
+	m->object = NULL;
+	wabort(m->parent);
+	return 0;
+}
+
+int word_rtn(MENU *m, ptrdiff_t x, void *object, int k)
+{
+	char *line = (char *)object;
+	word_ins((BW *)m->parent->win->object, m->list[x]);
 	vsrm(line);
 	m->object = NULL;
 	wabort(m->parent);
@@ -405,6 +446,69 @@ int simple_cmplt(BW *bw,char **list)
 		m->object = com;
 		
 		cmplt_ins(bw, com);
+		wabort(m->parent);
+		smode = 2;
+		ttputc(7);
+		return 0;
+	}
+}
+
+int word_cmplt(BW *bw,char **list)
+{
+	MENU *m;
+	P *p, *q;
+	char *line;
+	char *line1;
+	char **lst;
+
+	p = pdup(bw->cursor, "word_cmplt");
+	p_goto_bow(p);
+	q = pdup(bw->cursor, "word_cmplt");
+	p_goto_eow(q);
+	line = brvs(p, q->byte - p->byte);	/* FIXME: Assumes short lines :-) */
+	prm(p);
+	prm(q);
+
+	line1 = vsncpy(NULL, 0, sv(line));
+	line1 = vsadd(line1, '*');
+	lst = regsub(list, aLEN(list), line1);
+	vsrm(line1);
+
+	if (!lst) {
+		ttputc(7);
+		vsrm(line);
+		return -1;
+	}
+
+	if (menu_above) {
+		if (bw->parent->link.prev->watom==&watommenu) {
+			wabort(bw->parent->link.prev);
+		}
+	} else {
+		if (bw->parent->link.next->watom==&watommenu) {
+			wabort(bw->parent->link.next);
+		}
+	}
+
+	m = mkmenu((menu_above ? bw->parent->link.prev : bw->parent), bw->parent, lst, word_rtn, cmplt_abrt, NULL, 0, line, NULL);
+	if (!m) {
+		varm(lst);
+		vsrm(line);
+		return -1;
+	}
+	if (aLEN(lst) == 1)
+		return word_rtn(m, 0, line, 0);
+	else if (smode || isreg(line)) {
+		if (!menu_jump)
+			bw->parent->t->curwin=bw->parent;
+		return 0;
+	} else {
+		char *com = mcomplete(m);
+
+		vsrm((char *)m->object);
+		m->object = com;
+		
+		word_ins(bw, com);
 		wabort(m->parent);
 		smode = 2;
 		ttputc(7);

@@ -46,6 +46,7 @@ int cmplt_abrt(W *w,ptrdiff_t x,void *obj);
 int cmplt_rtn(MENU *m,ptrdiff_t x,void *obj, int k);
 
 int simple_cmplt(BW *bw,char **list);
+int word_cmplt(BW *bw,char **list);
 
 void setup_history(B **history);
 void append_history(B *hist,char *s,ptrdiff_t len);

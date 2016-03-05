@@ -1655,7 +1655,7 @@ int math_cmplt(BW *bw, int k)
 		return 0;
 	}
 
-	return simple_cmplt(bw, math_word_list);
+	return word_cmplt(bw, math_word_list);
 }
 
 int umath(W *w, int k)
