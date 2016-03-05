@@ -150,6 +150,8 @@ int joe_set_signal(int signum, sighandler_t handler);
 
 /* Simple parsers */
 int parse_ws(const char * *p,int cmt);
+int parse_wsn(const char * *p,int cmt);
+int parse_wsl(const char * *p,int cmt);
 int parse_ident(const char **p,char *buf,ptrdiff_t len);
 int parse_kw(const char **p,const char *kw);
 int parse_tows(const char **p,char *buf);

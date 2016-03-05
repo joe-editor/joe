@@ -631,6 +631,40 @@ int parse_ws(const char **pp,int cmt)
 	return *p;
 }
 
+/* Parse whitespace, but leave pointer at line ending */
+
+int parse_wsn(const char **pp,int cmt)
+{
+	const char *p = *pp;
+	while (*p==' ' || *p=='\t')
+		++p;
+	if (*p == cmt) {
+		while (*p && *p != '\r' && *p != '\n')
+			++p;
+	}
+	*pp = p;
+	return *p;
+}
+
+/* Skip whitespace, including line endings */
+
+int parse_wsl(const char **pp,int cmt)
+{
+	const char *p = *pp;
+	for (;;) {
+		while (*p==' ' || *p=='\t' || *p == '\r' || *p == '\n')
+			++p;
+		if (*p == cmt) {
+			while (*p && *p != '\r' && *p != '\n')
+				++p;
+		} else {
+			break;
+		}
+	}
+	*pp = p;
+	return *p;
+}
+
 /* Parse an identifier into a buffer.  Identifier is truncated to a maximum of len-1 chars. */
 
 int parse_ident(const char * *pp, char *buf, ptrdiff_t len)

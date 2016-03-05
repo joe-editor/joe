@@ -150,13 +150,13 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 	char ident[256];
 	char macr[256];
 
-	parse_ws(&ptr, '#');
+	parse_wsl(&ptr, '#');
 
 	if (!parse_ident(&ptr, ident, SIZEOF(ident))) {
 		if (!secure && !zcmp(ident ,"joe")) {
 			v = 0;
 			x = 0.0;
-			parse_ws(&ptr, '#');
+			parse_wsl(&ptr, '#');
 			if (*ptr=='(') {
 				ptrdiff_t idx;
 				MACRO *m;
@@ -437,17 +437,22 @@ static double eval(const char *s, int secure)
 		return 0.0;
 	}
 	ptr = s;
-	while (!merr && *ptr && *ptr != '#') {
+	while (!merr && parse_wsl(&ptr, '#')) {
 		result = expr(0, 1, &dumb,secure);
 		v = get("ans");
 		v->val = result;
 		v->set = 1;
 		if (!merr) {
-			parse_ws(&ptr, '#');
-			if (*ptr == ':') {
-				++ptr;
-				parse_ws(&ptr, '#');
-			} else if (*ptr && *ptr != '#') {
+			parse_wsn(&ptr, '#');
+			if (*ptr == ':' || *ptr == '\r' || *ptr == '\n') {
+				if (*ptr == '\r') {
+					++ptr;
+					if (*ptr == '\n')
+						++ptr;
+				} else {
+					++ptr;
+				}
+			} else if (*ptr) {
 				merr = joe_gettext(_("Extra junk after end of expr"));
 			}
 		}
