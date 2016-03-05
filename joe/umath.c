@@ -981,13 +981,10 @@ static double m_rLR(double n)
 	return exp((log(n) - A) / BB);
 }
 
-double calc(BW *bw, char *s, int secure)
+static void setup_vars(BW *tbw)
 {
-	/* BW *tbw = bw->parent->main->object; */
-	BW *tbw = bw;
 	struct var *v;
-	int c = brch(bw->cursor);
-
+	int c = brch(tbw->cursor);
 	if (!vars) {
 #ifdef HAVE_SIN
 		v = get("sin"); v->func = m_sin;
@@ -1229,12 +1226,19 @@ double calc(BW *bw, char *s, int secure)
 	v->val = current_arg_set;
 	v->set = 1;
 	v = get("no_windows");
-	v->val = countmain(bw->parent->t);
+	v->val = countmain(tbw->parent->t);
 	v->set = 1;
 	merr = 0;
 	v = get("is_shell");
 	v->val = tbw->b->pid;
 	v->set = 1;
+}
+
+double calc(BW *bw, char *s, int secure)
+{
+	/* BW *tbw = bw->parent->main->object; */
+	BW *tbw = bw;
+	setup_vars(tbw);
 	merr = 0;
 	return eval(s, secure);
 }
@@ -1627,10 +1631,37 @@ static int dosmath(W *w, char *s, void *object, int *notify)
 
 B *mathhist = NULL;
 
+static char **math_word_list;
+
+static void get_math_list()
+{
+	struct var *v;
+	char *s;
+	varm(math_word_list);
+	math_word_list = 0;
+	for (v = vars; v; v = v->next) {
+		s = vsncpy(NULL, 0, sz(v->name));
+		math_word_list = vaadd(math_word_list, s);
+	}
+}
+
+int math_cmplt(BW *bw, int k)
+{
+	setup_vars(bw);
+	get_math_list();
+
+	if (!math_word_list) {
+		ttputc(7);
+		return 0;
+	}
+
+	return simple_cmplt(bw, math_word_list);
+}
+
 int umath(W *w, int k)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(w, "=", &mathhist, doumath, "Math", NULL, NULL, NULL, NULL, utf8_map, 0)) {
+	if (wmkpw(w, "=", &mathhist, doumath, "Math", NULL, math_cmplt, NULL, NULL, utf8_map, 0)) {
 		return 0;
 	} else {
 		return -1;
@@ -1642,7 +1673,7 @@ int umath(W *w, int k)
 int usmath(W *w, int k)
 {
 	joe_set_signal(SIGFPE, fperr);
-	if (wmkpw(w, "=", &mathhist, dosmath, "Math", NULL, NULL, NULL, NULL, utf8_map, 0)) {
+	if (wmkpw(w, "=", &mathhist, dosmath, "Math", NULL, math_cmplt, NULL, NULL, utf8_map, 0)) {
 		return 0;
 	} else {
 		return -1;

@@ -569,7 +569,7 @@ static int dotimer(W *w, int c, void *object, int *notify)
 		}
 		timer_macro = dupmacro(kbdmacro[c]);
 		timer_macro_delay = 0;
-		if (wmkpw(w, joe_gettext(_("Delay in seconds between macro invocation (%{abort} to abort): ")), NULL, dotimer1, NULL, NULL, utypebw, NULL, NULL, utf8_map,0))
+		if (wmkpw(w, joe_gettext(_("Delay in seconds between macro invocation (%{abort} to abort): ")), NULL, dotimer1, NULL, NULL, math_cmplt, NULL, NULL, utf8_map,0))
 			return 0;
 		else
 			return -1;
@@ -718,7 +718,7 @@ static int doarg(W *w, char *s, void *object, int *notify)
 
 int uarg(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("No. times to repeat next command (%{abort} to abort): ")), NULL, doarg, NULL, NULL, utypebw, NULL, NULL, utf8_map,0))
+	if (wmkpw(w, joe_gettext(_("No. times to repeat next command (%{abort} to abort): ")), NULL, doarg, NULL, NULL, math_cmplt, NULL, NULL, utf8_map,0))
 		return 0;
 	else
 		return -1;
@@ -751,7 +751,7 @@ int uif(W *w, int k)
 {
 	ifdepth++;
 	if (!ifflag) return 0;
-	if (wmkpw(w,joe_gettext(_("If (%{abort} to abort): ")),NULL,doif,NULL,ifabrt,utypebw,NULL,NULL,utf8_map,0)) return 0;
+	if (wmkpw(w,joe_gettext(_("If (%{abort} to abort): ")),NULL,doif,NULL,ifabrt,math_cmplt,NULL,NULL,utf8_map,0)) return 0;
 	else return -1;
 }
 
@@ -764,7 +764,7 @@ int uelsif(W *w, int k)
 		ifflag=iffail=0; /* don't let the next else/elsif get run */
 	} else if(ifdepth == iffail) {
 		ifflag=1;	/* so the script can type the condition :) */
-		if(wmkpw(w,joe_gettext(_("Else if: ")),NULL,doif,NULL,NULL,utypebw,NULL,NULL,locale_map,0)) return 0;
+		if(wmkpw(w,joe_gettext(_("Else if: ")),NULL,doif,NULL,NULL,math_cmplt,NULL,NULL,locale_map,0)) return 0;
 		else return -1;
 	}
 	return 0;

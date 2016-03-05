@@ -124,6 +124,8 @@ Search and replace:
 
 Possible new features:
 
+	Wrap long lines as in emacs/vim
+
 	(a user asked: can it periodically reload log file like tail -f)?
 	(just run tail -f in shell window)
 
@@ -181,8 +183,6 @@ Calculator:
 	matlab like full buffer for calculator
 
 	user should be able to bring up a program and hit 'eval'.
-
-	tab at math prompt should go through variables, functions.
 
 	Stay at math prompt for better calculator mode?  But I'm so used to
 	hitting ESC m
@@ -1402,3 +1402,6 @@ recusively call the highlighter.  We did in the some of the newer ones.
 	I had right = 1, and left = 10 before].
 
 cd command: if you leave out the trailing / it ignores it [fixed]
+
+tab at math prompt should go through variables, functions.
+[done]

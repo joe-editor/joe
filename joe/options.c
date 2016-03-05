@@ -1097,7 +1097,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 			xx = (int *) joe_malloc(SIZEOF(int));
 
 			*xx = y;
-			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, utf8_map, 0))
+			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, math_cmplt, xx, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
@@ -1124,7 +1124,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 		      in:xx = (int *) joe_malloc(SIZEOF(int));
 
 			*xx = y;
-			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, utf8_map, 0))
+			if (wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, math_cmplt, xx, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;

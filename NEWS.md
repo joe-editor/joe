@@ -70,6 +70,9 @@
 			* __rlr__(y)  provide estimate of x given y
 			* __Lr__, __lR__, __LR__: log, exponential, power regression
 
+	* Tab completion now works at the calculator prompt (and in all
+	  prompts which allow numeric input, such as ^KL- go to line).
+
 	* Make new regex engine (from JOE 4.1) more compatible with the
 	  classic engine.  \\y is now shorthand for \\(\\.\\\*\\), so that it does
 	  what \\\* did in the old engine.  Also:

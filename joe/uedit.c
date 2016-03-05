@@ -1438,7 +1438,7 @@ int uline(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	if (wmkpw(bw->parent, joe_gettext(_("Go to line (%{abort} to abort): ")), &linehist, doline, NULL, NULL, NULL, NULL, NULL, utf8_map, 0))
+	if (wmkpw(bw->parent, joe_gettext(_("Go to line (%{abort} to abort): ")), &linehist, doline, NULL, NULL, math_cmplt, NULL, NULL, utf8_map, 0))
 		return 0;
 	else
 		return -1;
@@ -1479,7 +1479,7 @@ int ucol(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	if (wmkpw(bw->parent, joe_gettext(_("Go to column (%{abort} to abort): ")), &colhist, docol, NULL, NULL, NULL, NULL, NULL, utf8_map, 0))
+	if (wmkpw(bw->parent, joe_gettext(_("Go to column (%{abort} to abort): ")), &colhist, docol, NULL, NULL, math_cmplt, NULL, NULL, utf8_map, 0))
 		return 0;
 	else
 		return -1;
@@ -1520,7 +1520,7 @@ int ubyte(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	if (wmkpw(bw->parent, joe_gettext(_("Go to byte (%{abort} to abort): ")), &bytehist, dobyte, NULL, NULL, NULL, NULL, NULL, utf8_map, 0))
+	if (wmkpw(bw->parent, joe_gettext(_("Go to byte (%{abort} to abort): ")), &bytehist, dobyte, NULL, NULL, math_cmplt, NULL, NULL, utf8_map, 0))
 		return 0;
 	else
 		return -1;
