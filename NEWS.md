@@ -4,7 +4,7 @@
 
 [Browse source](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree)
 
-[Download source distribution](http://prdownloads.sourceforge.net/joe-editor/joe-4.2.tar.gz?download)
+[Download source distribution](https://sourceforge.net/projects/joe-editor/files/)
 
 [Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
 
