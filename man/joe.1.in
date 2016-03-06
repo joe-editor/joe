@@ -58,7 +58,7 @@ Once you have typed \fB^K H\fR, the first help window appears at the top of the 
 You can customize the keyboard layout, the help screens and a number of behavior defaults by copying JOE\'s initialization file (usually \fB/etc/joe/joerc\fR) to \fB\.joerc\fR in your home directory and then by modifying it\. See the section \fIjoerc\fR below\.
 .
 .P
-To have JOE used as your default editor for e\-mail and News, you need to set the \fBEDITOR\fR and \fBVISUAL\fR environment variables in your shell initialization file (\fB\.cshrc\fR or \fB\.profile\fR) to refer to JOE (JOE usually resides as \fB/home/jhallen/bin/joe\fR)\.
+To have JOE used as your default editor for e\-mail and News, you need to set the \fBEDITOR\fR and \fBVISUAL\fR environment variables in your shell initialization file (\fB\.cshrc\fR or \fB\.profile\fR) to refer to JOE (JOE usually resides as \fB/usr/bin/joe\fR)\.
 .
 .P
 There are a number of other obscure invocation parameters which may have to be set, particularly if your terminal screen is not updating as you think it should\. See the section \fIEnvironment variables\fR below\.
@@ -695,6 +695,9 @@ type
 .br
 Select file type, overriding the automatically determined type\. The file types are defined in the \fBftyperc\fR file\.
 .
+.br
+
+.
 .IP "\(bu" 4
 undo_keep nnn
 .
@@ -1294,7 +1297,7 @@ filename,START,SIZE
 Use this to access a fixed section of a file or device\. \fBSTART\fR and \fBSIZE\fR may be entered in decimal (ex\.: 123) octal (ex\.: 0777) or hexadecimal (ex\.: 0xFF)\. For example, use \fBjoe /dev/fd0,508,2\fR to edit bytes 508 and 509 of the first floppy drive in Linux\.
 .
 .IP "\(bu" 4
-\fIblank\fR
+\-
 .
 .IP "" 0
 .
@@ -1387,10 +1390,13 @@ When the editor is in this mode, the characters you type in replace existing cha
 If you need to insert while you\'re in overtype mode, hit \fB^@\fR\. This inserts a single \fBSpace\fR into the text\.
 .
 .SS "Control and Meta characters"
-Each character is represented by a number\. For example, the number for \'A\' is 65 and the number for \'1\' is 49\. All of the characters which you normally see have numbers in the range of 32 \- 126 (this particular arbitrary assignment between characters and numbers is called the ASCII character set)\. The numbers outside of this range, from 0 to 255, aren\'t usually displayed, but sometimes have other special meanings\. The number 10, for example, is used for the line\-breaks\. You can enter these special, non\-displayed \fBcontrol characters\fR by first hitting \fBEsc \'\fR and then hitting a character in the range \fB@ A B C \.\.\. X Y Z [ ^ ] \e _\fR to get the number 0 \- 31, and ? to get 127\. For example, if you hit \fBEsc \' J\fR, you\'ll insert a line\-break character, or if you hit \fBEsc \' I\fR, you\'ll insert a \fBTab\fR character (which does the same thing the \fBTab\fR key does)\. A useful control character to enter is 12 (\fBEsc \' L\fR), which causes most printers to advance to the top of the page\. You\'ll notice that JOE displays this character as an underlined L\. You can enter the characters above 127, the \fBmeta characters\fR, by first hitting \fB^\e\fR\. This adds 128 to the next (possibly control) character entered\. JOE displays characters above 128 in inverse\-video\. Some foreign languages, which have more letters than English, use the meta characters for the rest of their alphabet\. You have to put the editor in \fBasis\fR mode to have these passed untranslated to the terminal\.
+Each character is represented by a number\. For example, the number for \'A\' is 65 and the number for \'1\' is 49\. All of the characters which you normally see have numbers in the range of 32 \- 126 (this particular arbitrary assignment between characters and numbers is called the ASCII character set)\. The numbers outside of this range, from 0 to 255, aren\'t usually displayed, but sometimes have other special meanings\. The number 10, for example, is used for the line\-breaks\. You can enter these special, non\-displayed \fBcontrol characters\fR by first hitting \fB^Q\fR and then hitting a character in the range \fB@ A B C \.\.\. X Y Z [ ^ ] \e _\fR to get the number 0 \- 31, and ? to get 127\. For example, if you hit \fB^Q J\fR, you\'ll insert a line\-break character, or if you hit \fB^Q I\fR, you\'ll insert a \fBTab\fR character (which does the same thing the \fBTab\fR key does)\. A useful control character to enter is 12 (\fB^Q L\fR), which causes most printers to advance to the top of the page\. You\'ll notice that JOE displays this character as an underlined L\. You can enter the characters above 127, the \fBmeta characters\fR, by first hitting \fB^\e\fR\. This adds 128 to the next (possibly control) character entered\. JOE displays characters above 128 in inverse\-video\. Some foreign languages, which have more letters than English, use the meta characters for the rest of their alphabet\. You have to put the editor in \fBasis\fR mode to have these passed untranslated to the terminal\.
 .
 .P
 \fBNote:\fR JOE now normally passes all 8\-bits to the terminal unless the locale is set to C or POSIX\. If the locale is C or POSIX, then the \fBasis\fR flag determines if \fBmeta characters\fR are shown in inverse video or passed directly to the terminal\.
+.
+.P
+\fBNote:\fR In older version of JOE, you had to use \fBEsc \'\fR to enter control characters\.
 .
 .SH "Character sets and UTF\-8"
 JOE natively handles two classes of character sets: UTF\-8 and byte coded (like ISO\-8859\-1)\. For these character sets, the file is loaded as\-is into memory, and is exactly preserved during save, even if it contains UTF\-8 coding errors\.
@@ -1452,7 +1458,7 @@ Check: /usr/share/i18n/charmaps for example character set files\. Only byte orie
 You can hit \fB^K Space\fR to see the current character set\.
 .
 .P
-You can hit \fBEsc \' x\fR to enter a Unicode character if the file coding is UTF\-8\.
+You can hit \fB^Q x\fR to enter a Unicode character if the file coding is UTF\-8\.
 .
 .SH "Prompts"
 Most prompts record a history of the responses you give them\. You can hit up and down arrow to step through these histories\.
@@ -1470,7 +1476,7 @@ You can hit \fBTab\fR in just about any prompt to request JOE to complete the wo
 If the menu is too large to fit in the window, you can hit Page Up and Page Down to scroll it (even if you have not jumped into it)\.
 .
 .P
-\fBTab\fR completion works in the search and replace prompts as well\. In this case, JOE tries to complete the word based on the contents of the buffer\. If you need search for the \fBTab\fR character itself, you can enter it with \fBEsc \' Tab\fR\.
+\fBTab\fR completion works in the search and replace prompts as well\. In this case, JOE tries to complete the word based on the contents of the buffer\. If you need search for the \fBTab\fR character itself, you can enter it with \fB^Q Tab\fR\.
 .
 .P
 Also, you can hit \fBEsc Enter\fR in a text window to request JOE to complete the word you are typing\. As with the search prompt, JOE tries to complete the word based on the contents of the buffer\. It will bring up a menu of possibilities if you hit \fBEsc Enter\fR twice\.
@@ -2181,7 +2187,7 @@ The classic way is to hit \fB^K B\fR at the beginning and \fB^K K\fR at the end\
 New way: hit Ctrl\-\fBRight Arrow\fR to start selecting rightward\. Each time you hit Ctrl\-\fBRight Arrow\fR, the block is extended one more to the right\. This uses a simple macro: "begin_marking,rtarw,toggle_marking"\.
 .
 .P
-Unfortunately, there is no standard way to get the keysequence given by the terminal emulator when you hit Ctrl\-\fBRight Arrow\fR\. Instead you have to determine this sequence yourself and enter it directly in the joerc file\. Some examples are given for Xterm and gnome\-terminal\. Hit \fBEsc \'\fR Ctrl\-\fBRight Arrow\fR within JOE to have the sequence shown on your screen\. Note that Putty uses \fBEsc Esc [ C\fR which will not appear with \fBEsc \' Right Arrow\fR (also \fBEsc Esc\fR is the set bookmark command, so you need to unbind it to do this in Putty)\.
+Unfortunately, there is no standard way to get the keysequence given by the terminal emulator when you hit Ctrl\-\fBRight Arrow\fR\. Instead you have to determine this sequence yourself and enter it directly in the joerc file\. Some examples are given for Xterm and gnome\-terminal\. Hit \fB^Q\fR Ctrl\-\fBRight Arrow\fR within JOE to have the sequence shown on your screen\. Note that Putty uses \fBEsc Esc [ C\fR which will not appear with \fB^Q Right Arrow\fR (also \fBEsc Esc\fR is the set bookmark command, so you need to unbind it to do this in Putty)\.
 .
 .P
 Also you can hit Ctrl\-\fBDelete\fR to cut and Ctrl\-\fBInsert\fR to paste if the sequence for these keys are known\.
@@ -2883,58 +2889,166 @@ Types TRUE into the buffer\.
 .SS "Operators:"
 .
 .IP "\(bu" 4
-!
+!x
+.
+.br
+Logical not of x\.
+.
+.br
+
 .
 .IP "\(bu" 4
-^
+x
+.
+.br
+Raise x to power of y\.
+.
+.br
+
 .
 .IP "\(bu" 4
-*
+a*b
+.
+.br
+Multiply\.
+.
+.br
+
 .
 .IP "\(bu" 4
-/
+a/b
+.
+.br
+Divide\.
+.
+.br
+
 .
 .IP "\(bu" 4
-%
+a%b
+.
+.br
+Modulus\.
+.
+.br
+
 .
 .IP "\(bu" 4
-+
+a+b
+.
+.br
+Add\.
+.
+.br
+
 .
 .IP "\(bu" 4
-\-
+a\-b
+.
+.br
+Subtract\.
+.
+.br
+
 .
 .IP "\(bu" 4
-<
+a<b
+.
+.br
+True if a is less than b\.
+.
+.br
+
 .
 .IP "\(bu" 4
-<=
+a<=b
+.
+.br
+True if a is less than or equal to b\.
+.
+.br
+
 .
 .IP "\(bu" 4
->
+a>b
+.
+.br
+True if a is greater than b\.
+.
+.br
+
 .
 .IP "\(bu" 4
->=
+a>=b
+.
+.br
+True if a is greater than or equal to b\.
+.
+.br
+
 .
 .IP "\(bu" 4
-==
+a==b
+.
+.br
+True if a equals b\.
+.
+.br
+
 .
 .IP "\(bu" 4
-!=
+a!=b
+.
+.br
+True if a does not equal b\.
+.
+.br
+
 .
 .IP "\(bu" 4
-&&
+a&&b
+.
+.br
+True if both a and b are true\.
+.
+.br
+
 .
 .IP "\(bu" 4
-||
+a||b
+.
+.br
+True if ether a or b are true\.
+.
+.br
+
 .
 .IP "\(bu" 4
-? :
+a?b:c
+.
+.br
+If a is true return b, otherwise return c\.
+.
+.br
+
 .
 .IP "\(bu" 4
-=
+a=b
+.
+.br
+Assign b to a\.
+.
+.br
+
 .
 .IP "\(bu" 4
-:
+a:b
+.
+.br
+Execute a, then execute b\.
+.
+.br
+
 .
 .IP "" 0
 .
@@ -2949,10 +3063,10 @@ is expression separator\.
 Hit \fB^K \'\fR to run a command shell in one of JOE\'s windows\. When the cursor is at the end of a shell window (use \fB^K V\fR if it\'s not), whatever you type is passed to the shell instead of the buffer\. Any output from the shell or from commands executed in the shell is appended to the shell window (the cursor will follow this output if it\'s at the end of the shell window)\. This command is useful for recording the results of shell commands\- for example the output of \fBmake\fR, the result of \fBgrep\fRping a set of files for a string, or directory listings from \fBFTP\fR sessions\. Besides typeable characters, the keys \fB^C\fR, \fBBackspace\fR, \fBDel\fR, \fBReturn\fR and \fB^D\fR are passed to the shell\. Type the shell \fBexit\fR command to stop recording shell output\. If you press \fB^C\fR in a shell window, when the cursor is not at the end of the window, the shell is \fBkill\fRed\.
 .
 .P
-If you use Bash, you can hit: \fBEsc \' Up Arrow\fR and \fBEsc \' Down Arrow\fR to scroll through Bash\'s history buffer\. Other keys work as well: try \fBEsc \' ^A\fR to go to beginning of line or \fBEsc \' ^E\fR to go to end of line\. Unfortunately JOE only emulates a dumb terminal, so you have to use a lot of imagination to do any editing beyond hitting backspace\.
+If you use Bash, you can hit: \fB^Q Up Arrow\fR and \fB^Q Down Arrow\fR to scroll through Bash\'s history buffer\. Other keys work as well: try \fB^Q ^A\fR to go to beginning of line or \fB^Q ^E\fR to go to end of line\. Unfortunately JOE only emulates a dumb terminal, so you have to use a lot of imagination to do any editing beyond hitting backspace\.
 .
 .P
-In general, any character quoted with \fBEsc \'\fR is sent to the shell\.
+In general, any character quoted with \fB^Q\fR is sent to the shell\.
 .
 .P
 Also sent to the shell: \fBTab\fR, \fBBackspace\fR, \fBEnter\fR, \fB^C\fR and \fB^D\fR\.
@@ -2982,7 +3096,7 @@ If you need to pass a key to the shell that JOE normally uses, quote it\. For ex
 .
 .nf
 
-Esc \' ^X ^C
+^Q ^X ^C
 .
 .fi
 .
@@ -3131,15 +3245,8 @@ Hit F1 and navigate to a directory\. Use grep or find (or both) to generate a li
 .
 .IP "" 0
 .
-.IP "" 4
-.
-.nf
-
+.P
 Or:
-.
-.fi
-.
-.IP "" 0
 .
 .IP "" 4
 .
@@ -3151,15 +3258,8 @@ Or:
 .
 .IP "" 0
 .
-.IP "" 4
-.
-.nf
-
+.P
 (Note that you can\'t say this:
-.
-.fi
-.
-.IP "" 0
 .
 .IP "" 4
 .
@@ -3171,20 +3271,11 @@ Or:
 .
 .IP "" 0
 .
-.IP "" 4
+.P
+\&\.\.\.the issue is that only the words to the left of the pipe symbol are passed as arguments to the parse command)\.
 .
-.nf
-
-\&\.\.\.the issue is that only the words to the left of the pipe symbol
-are passed as arguments to the parse command)\.
-
-Now use __^P__ to position the cursor on one of the lines of the list\.
-Hit __Esc Space__ to have JOE edit the file and jump to the specified
-line (also you can use __Esc \-__ and __Esc =__ to step through the list)\.
-.
-.fi
-.
-.IP "" 0
+.P
+Now use \fB^P\fR to position the cursor on one of the lines of the list\. Hit \fBEsc Space\fR to have JOE edit the file and jump to the specified line (also you can use \fBEsc \-\fR and \fBEsc =\fR to step through the list)\.
 .
 .IP "\(bu" 4
 Use it in conjunction with search and replace to edit many files
@@ -3210,10 +3301,10 @@ Once JOE has a list of files (from above), use search and replace with the \'e\'
 .IP "\(bu" 4
 Build your project
 .
-.IP
-Easily capture errors from a build with:
-.
 .IP "" 0
+.
+.P
+Easily capture errors from a build with:
 .
 .IP "" 4
 .
@@ -3225,15 +3316,8 @@ Easily capture errors from a build with:
 .
 .IP "" 0
 .
-.IP "" 4
-.
-.nf
-
-Hit __Esc =__ and __Esc \-__ to step through the errors\.
-.
-.fi
-.
-.IP "" 0
+.P
+Hit \fBEsc =\fR and \fBEsc \-\fR to step through the errors\.
 .
 .SS "How it works\.\."
 .
@@ -3766,7 +3850,7 @@ When it is working, the command: "joe \-assume_256color \-text_color bg_222" sho
 When this mode is selected (either put \-hex on the command line, or look for "Hex edit mode" after hitting \fB^T\fR), the buffer is displayed as a hex dump, but all of the editing commands operate the same way\. It is most useful to select overtype mode in conjunction with hex dump (hit \fB^T T\fR)\. Then typing will not insert\.
 .
 .IP "\(bu" 4
-To enter the hex byte 0xF8 type \fBEsc \' x F 8\fR
+To enter the hex byte 0xF8 type \fB^Q x F 8\fR
 .
 .IP "\(bu" 4
 You can use \fB^K C\fR to copy a block as usual\. If overtype mode is selected, the block will overwrite the destination data without changing the size of the file\. Otherwise it inserts\.
