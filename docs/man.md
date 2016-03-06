@@ -256,7 +256,7 @@ is detected, it is converted to UTF-8 during load, and converted back to
 UTF-16 during save.
 <br>
 
-* help
+* helpon
 When set, start off with the on-line help enabled.
 <br>
 
