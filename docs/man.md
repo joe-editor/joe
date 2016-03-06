@@ -2318,24 +2318,25 @@ Pop-up shell windows have a number of nice use cases:
 ~~~~
 		parse grep -n FIXME *.c
 ~~~~
-	Or:
+
+Or:
 
 ~~~~
 		markb; find . | xargs grep -n FIXME; markk; parse
 ~~~~
 
-	(Note that you can't say this:
+(Note that you can't say this:
 
 ~~~~
 		parse find . | xargs grep -n FIXME
 ~~~~
 
-	...the issue is that only the words to the left of the pipe symbol
-	are passed as arguments to the parse command).
+...the issue is that only the words to the left of the pipe symbol
+are passed as arguments to the parse command).
 
-	Now use __^P__ to position the cursor on one of the lines of the list. 
-	Hit __Esc Space__ to have JOE edit the file and jump to the specified
-	line (also you can use __Esc -__ and __Esc =__ to step through the list).
+Now use __^P__ to position the cursor on one of the lines of the list.  Hit
+__Esc Space__ to have JOE edit the file and jump to the specified line (also
+you can use __Esc -__ and __Esc =__ to step through the list).
 
 * Use it in conjunction with search and replace to edit many files
 
@@ -2351,13 +2352,13 @@ Pop-up shell windows have a number of nice use cases:
 
 * Build your project
 
-	Easily capture errors from a build with:
+Easily capture errors from a build with:
 
 ~~~~
 		parserr make
 ~~~~
 
-	Hit __Esc =__ and __Esc -__ to step through the errors.
+Hit __Esc =__ and __Esc -__ to step through the errors.
 
 
 ### How it works..
