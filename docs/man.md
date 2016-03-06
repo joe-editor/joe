@@ -958,12 +958,12 @@ arbitrary assignment between characters and numbers is called the ASCII
 character set).  The numbers outside of this range, from 0 to 255, aren't
 usually displayed, but sometimes have other special meanings.  The number
 10, for example, is used for the line-breaks.  You can enter these special,
-non-displayed __control characters__ by first hitting __Esc '__ and then
+non-displayed __control characters__ by first hitting __^Q__ and then
 hitting a character in the range __@ A B C ... X Y Z [ ^ ] \\ \___ to get
-the number 0 - 31, and ? to get 127.  For example, if you hit __Esc ' J__,
-you'll insert a line-break character, or if you hit __Esc ' I__, you'll insert
+the number 0 - 31, and ? to get 127.  For example, if you hit __^Q J__,
+you'll insert a line-break character, or if you hit __^Q I__, you'll insert
 a __Tab__ character (which does the same thing the __Tab__ key does).  A useful
-control character to enter is 12 (__Esc ' L__), which causes most printers to
+control character to enter is 12 (__^Q L__), which causes most printers to
 advance to the top of the page.  You'll notice that JOE displays this
 character as an underlined L.  You can enter the characters above 127, the
 __meta characters__, by first hitting __^\\__.  This adds 128
@@ -1031,7 +1031,7 @@ exactly like the example one in /usr/share/joe/charmaps.
 
 You can hit __^K Space__ to see the current character set.
 
-You can hit __Esc ' x__ to enter a Unicode character if the file coding is
+You can hit __^Q x__ to enter a Unicode character if the file coding is
 UTF-8.
 
 ## Prompts
@@ -1066,7 +1066,7 @@ Page Down to scroll it (even if you have not jumped into it).
 
 __Tab__ completion works in the search and replace prompts as well.  In this
 case, JOE tries to complete the word based on the contents of the buffer. 
-If you need search for the __Tab__ character itself, you can enter it with __Esc '
+If you need search for the __Tab__ character itself, you can enter it with __^Q
 Tab__.
 
 Also, you can hit __Esc Enter__ in a text window to request JOE to
@@ -1540,9 +1540,9 @@ This uses a simple macro: "begin_marking,rtarw,toggle_marking".
 Unfortunately, there is no standard way to get the keysequence given by the
 terminal emulator when you hit Ctrl-__Right Arrow__.  Instead you have to
 determine this sequence yourself and enter it directly in the joerc file. 
-Some examples are given for Xterm and gnome-terminal.  Hit __Esc '__
+Some examples are given for Xterm and gnome-terminal.  Hit __^Q__
 Ctrl-__Right Arrow__ within JOE to have the sequence shown on your screen. 
-Note that Putty uses __Esc Esc \[ C__ which will not appear with __Esc '
+Note that Putty uses __Esc Esc \[ C__ which will not appear with __^Q
 Right Arrow__ (also __Esc Esc__ is the set bookmark command, so you need to
 unbind it to do this in Putty).
 
@@ -2101,33 +2101,77 @@ Types TRUE into the buffer.
 
 ### Operators:
 	
-* !
+* !x<br>
+Logical not of x.
+<br>
 
-* ^ 
+* x^y<br>
+Raise x to power of y.
+<br>
 
-* *
-* /
-* % 
+* a*b<br>
+Multiply.
+<br>
 
-* +
-* -
+* a/b<br>
+Divide.
+<br>
 
-* &lt;
-* &lt;=
-* &gt;
-* &gt;=
-* ==
-* !=
+* a%b<br> 
+Modulus.
+<br>
 
-* &amp;&amp;
+* a+b<br>
+Add.
+<br>
 
-* ||
+* a-b<br>
+Subtract.
+<br>
 
-* ? :
+* a&lt;b<br>
+True if a is less than b.
+<br>
 
-* =
+* a&lt;=b<br>
+True if a is less than or equal to b.
+<br>
 
-* :
+* a&gt;b<br>
+True if a is greater than b.
+<br>
+
+* a&gt;=b<br>
+True if a is greater than or equal to b.
+<br>
+
+* a==b<br>
+True if a equals b.
+<br>
+
+* a!=b<br>
+True if a does not equal b.
+<br>
+
+* a&amp;&amp;b<br>
+True if both a and b are true.
+<br>
+
+* a||b<br>
+True if ether a or b are true.
+<br>
+
+* a?b:c<br>
+If a is true return b, otherwise return c.
+<br>
+
+* a=b<br>
+Assign b to a.
+<br>
+
+* a:b<br>
+Execute a, then execute b.
+<br>
 
 &amp;&amp;, || and ? : work as in C and sh as far as side effects: if the
 left side of &amp;&amp; is false, the right side is not evaluated.
@@ -2149,13 +2193,13 @@ __^D__ are passed to the shell.  Type the shell __exit__ command to stop recordi
 shell output.  If you press __^C__ in a shell window, when the cursor is
 not at the end of the window, the shell is __kill__ed.
 
-If you use Bash, you can hit: __Esc ' Up Arrow__ and __Esc ' Down Arrow__ to
+If you use Bash, you can hit: __^Q Up Arrow__ and __^Q Down Arrow__ to
 scroll through Bash's history buffer.  Other keys work as well: try
-__Esc ' ^A__ to go to beginning of line or __Esc ' ^E__ to go to end of line.
+__^Q ^A__ to go to beginning of line or __^Q ^E__ to go to end of line.
 Unfortunately JOE only emulates a dumb terminal, so you have to use a lot of
 imagination to do any editing beyond hitting backspace.
 
-In general, any character quoted with __Esc '__ is sent to the shell.
+In general, any character quoted with __^Q__ is sent to the shell.
 
 Also sent to the shell: __Tab__, __Backspace__, __Enter__, __^C__ and __^D__.
 
@@ -2186,7 +2230,7 @@ can type 'pop' at the command prompt.
 If you need to pass a key to the shell that JOE normally uses, quote it.  For
 example, if you invoke "emacs -nw" in the shell window, you can exit it with:
 
-	Esc ' ^X ^C
+	^Q ^X ^C
 
 To quickly position the cursor back to the point where data is entered into
 the shell, hit __^K V__.
@@ -2795,7 +2839,7 @@ but all of the editing commands operate the same way.  It is most useful to
 select overtype mode in conjunction with hex dump (hit __^T T__).  Then typing
 will not insert.
 
-- To enter the hex byte 0xF8 type __Esc ' x F 8__
+- To enter the hex byte 0xF8 type __^Q x F 8__
 
 - You can use __^K C__ to copy a block as usual.  If overtype mode is selected,
   the block will overwrite the destination data without changing the size of

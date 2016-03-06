@@ -515,7 +515,7 @@ int usave(W *w, int k)
 	BW *pbw;
 	WIND_BW(bw, w);
 	
-	pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (%{abort} to abort): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out,
+	pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (%{help} for help): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out,
 	            mksavereq(NULL,NULL,NULL, 1, 0), NULL, locale_map, bw->b->name ? 1 : 7);
 
 	if (pbw && bw->b->name) {
@@ -547,7 +547,7 @@ int ublksave(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (markb && markk && markb->b == markk->b && (markk->byte - markb->byte) > 0 && (!square || piscol(markk) > piscol(markb))) {
-		if (wmkpw(bw->parent, joe_gettext(_("Name of file to write (%{abort} to abort): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out, mksavereq(NULL, NULL, NULL, 0, 1), NULL, locale_map, 3)) {
+		if (wmkpw(bw->parent, joe_gettext(_("Name of file to write (%{help} for help): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out, mksavereq(NULL, NULL, NULL, 0, 1), NULL, locale_map, 3)) {
 			return 0;
 		} else {
 			return -1;
@@ -739,7 +739,7 @@ int okrepl(BW *bw)
 
 int uedit(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("Name of file to edit (%{abort} to abort): ")), &filehist, doedit, "Names", NULL, cmplt_file_in, NULL, NULL, locale_map,7)) {
+	if (wmkpw(w, joe_gettext(_("Name of file to edit (%{help} for help): ")), &filehist, doedit, "Names", NULL, cmplt_file_in, NULL, NULL, locale_map,7)) {
 		return 0;
 	} else {
 		return -1;
@@ -1041,7 +1041,7 @@ int upbuf(W *w, int k)
 
 int uinsf(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("Name of file to insert (%{abort} to abort): ")), &filehist, doinsf, "Names", NULL, cmplt_file_in, NULL, NULL, locale_map, 3)) {
+	if (wmkpw(w, joe_gettext(_("Name of file to insert (%{help} for help): ")), &filehist, doinsf, "Names", NULL, cmplt_file_in, NULL, NULL, locale_map, 3)) {
 		return 0;
 	} else {
 		return -1;
@@ -1077,7 +1077,7 @@ int uexsve(W *w, int k)
 		/* It changed, it's not a scratch buffer and it's named */
 		return dosave1(bw->parent, vsncpy(NULL, 0, sz(bw->b->name)), mksavereq(exdone,NULL,NULL,0,0), NULL);
 	} else {
-		BW *pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (%{abort} to abort): ")), &filehist,
+		BW *pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (%{help} for help): ")), &filehist,
 		                dosave1, "Names", NULL, cmplt_file_out,
 		                mksavereq(exdone,NULL,NULL,1,0), NULL, locale_map, 1);
 
@@ -1279,7 +1279,7 @@ static int doquerysave(W *w,int c,void *obj,int *notify)
 			return dosave1(bw->parent, vsncpy(NULL,0,sz(bw->b->name)), req, notify);
 		else {
 			BW *pbw;
-			pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (%{abort} to abort): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out, req, notify, locale_map, 7);
+			pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (%{help} for help): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out, req, notify, locale_map, 7);
 
 			if (pbw) {
 				return 0;
