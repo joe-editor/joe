@@ -18,7 +18,7 @@ int xmouse=0;
 int nonotice;
 int noexmsg = 0;
 int pastehack;
-int help;
+int helpon;
 
 Screen *maint;			/* Main edit screen */
 
@@ -489,7 +489,16 @@ int main(int argc, char **real_argv, const char * const *envv)
 		idleout = 0;
 
 	for (c = 1; argv[c]; ++c) {
-		if (argv[c][0] == '-') {
+		if (!strcmp(argv[c], "-help") || !strcmp(argv[c], "--help")) {
+			printf("Joe's Own Editor v%s\n\n", VERSION);
+			printf("Usage: %s [global-options] [ [local-options] filename ]...\n\n", argv[0]);
+			printf("Global options:\n");
+			cmd_help(0);
+			printf("\nLocal options:\n");
+			printf("    %-23s Start cursor on specified line\n", "+nnn");
+			cmd_help(1);
+			return 0;
+		} else if (argv[c][0] == '-') {
 			if (argv[c][1])
 				switch (glopt(argv[c] + 1, argv[c + 1], NULL, 1)) {
 				case 0:
@@ -627,7 +636,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 		wshowall(maint);
 	}
 
-	if (help) {
+	if (helpon) {
 		help_on(maint);
 	}
 	if (!nonotice) {

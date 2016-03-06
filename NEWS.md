@@ -49,6 +49,8 @@
 
 	* Document ESC X (command prompt) in the help screens.
 
+	* "joe --help" now prints all command line options.
+
 * Other Enhancements
 
 	* Tags search now tries to find the tags file in parent directories

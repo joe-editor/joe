@@ -125,7 +125,7 @@
 
  -columns nnn	Set no. screen columns
 
- -help		Start with help on
+ -helpon	Start with help on
 
  -skiptop nnn	Don't use top nnn lines of the screen
 

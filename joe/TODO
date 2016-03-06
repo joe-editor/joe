@@ -3,6 +3,8 @@ Documentation
 
 	Write more code documentation...
 
+	joe --help should print command line options
+
 Nits:
 
 	1413863  sigwinch breaks tcsetsw which messes up keyboard?  I

@@ -51,3 +51,5 @@ int ulanguage(W *w, int k);
 const char *get_status(BW *bw, char *s);
 
 extern OPTIONS *options_list;
+
+void cmd_help(int type);
