@@ -329,7 +329,7 @@ void cmplt_ins(BW *bw, char *line)
 	bw->cursor->xcol = piscol(bw->cursor);
 }
 
-void p_goto_bow(P *ptr)
+static void p_goto_bow(P *ptr)
 {
 	struct charmap *map = ptr->b->o.charmap;
 	int c;
@@ -339,15 +339,14 @@ void p_goto_bow(P *ptr)
 		pgetc(ptr);
 }
 
-void p_goto_eow(P *ptr)
+static void p_goto_eow(P *ptr)
 {
 	struct charmap *map = ptr->b->o.charmap;
-	int rtn = -1;
 	while (joe_isalnum_(map, brch(ptr)))
 		pgetc(ptr);
 }
 
-void word_ins(BW *bw, char *line)
+static void word_ins(BW *bw, char *line)
 {
 	P *p = pdup(bw->cursor, "cmplt_ins");
 
@@ -380,7 +379,7 @@ int cmplt_rtn(MENU *m, ptrdiff_t x, void *object, int k)
 	return 0;
 }
 
-int word_rtn(MENU *m, ptrdiff_t x, void *object, int k)
+static int word_rtn(MENU *m, ptrdiff_t x, void *object, int k)
 {
 	char *line = (char *)object;
 	word_ins((BW *)m->parent->win->object, m->list[x]);

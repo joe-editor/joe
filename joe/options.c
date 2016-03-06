@@ -378,7 +378,7 @@ void cmd_help(int type)
 	for (x = 0; glopts[x].name; ++x) {
 		char buf[80];
 		buf[0] = 0;
-		if (type == 0 && glopts[x].type < 3 || type == 1 && glopts[x].type >= 3) {
+		if ((type == 0 && glopts[x].type < 3) || (type == 1 && glopts[x].type >= 3)) {
 			if (glopts[x].type == 0 || glopts[x].type == 4)
 				joe_snprintf_1(buf, SIZEOF(buf), "-[-]%s", glopts[x].name);
 			else if (glopts[x].type == 1 || glopts[x].type == 5 || glopts[x].type == 14 || glopts[x].type == 7)
