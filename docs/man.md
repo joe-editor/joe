@@ -91,7 +91,7 @@ by modifying it.  See the section [joerc](#joerc) below.
 To have JOE used as your default editor for e-mail and News, you need to set
 the __EDITOR__ and __VISUAL__ environment variables in your shell
 initialization file (__.cshrc__ or __.profile__) to refer to JOE (JOE
-usually resides as __/home/jhallen/bin/joe__).
+usually resides as __/usr/bin/joe__).
 
 There are a number of other obscure invocation parameters which may have to
 be set, particularly if your terminal screen is not updating as you think it
@@ -442,6 +442,7 @@ Transpose rows with columns in all menus.
 * type<br>
 Select file type, overriding the automatically determined type.  The file
 types are defined in the __ftyperc__ file.
+<br>
 
 * undo_keep nnn<br>
 Sets number of undo records to keep (0 means infinite).
@@ -846,7 +847,7 @@ __SIZE__ may be entered in decimal (ex.: 123) octal (ex.: 0777) or
 hexadecimal (ex.: 0xFF).  For example, use __joe /dev/fd0,508,2__ to edit
 bytes 508 and 509 of the first floppy drive in Linux.
 
-* <blank>
+* -
 
 Use this to get input from the standard input or to write output to the
 standard output.  For example, you can put JOE in a pipe of commands:
@@ -977,6 +978,9 @@ __Note:__ JOE now normally passes all 8-bits to the terminal unless the
 locale is set to C or POSIX.  If the locale is C or POSIX, then the __asis__
 flag determines if __meta characters__ are shown in inverse video or passed
 directly to the terminal.
+
+__Note:__ In older version of JOE, you had to use __Esc '__ to enter control
+characters.
 
 ## Character sets and UTF-8
 
