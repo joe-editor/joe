@@ -124,15 +124,17 @@ Characters with codes above 127 will be sent to the terminal as-is, instead
 of as inverse of the corresponding character below 128.  If this does not
 work, check your terminal server.  This option has no effect if UTF-8
 encoding is used.
-
+<br>
 
 * assume_256color<br>
 Assume ANSI-like terminal emulator supports 256 colors even if termcap entry
 says it doesn't.
+<br>
 
 * assume_color<br>
 Assume ANSI-like terminal emulator supports color even if termcap entry says
 it doesn't.
+<br>
 
 * text_color __color__<br>
 Set color for text.
@@ -1984,87 +1986,114 @@ j1, y0, y1
 
 * e<br>
 Set to 'e'
+<br>
 
 * pi<br>
 Set to 'pi'
+<br>
 
 * top<br>
 Set to line number of top window line
+<br>
 
 * lines<br>
 Set to number of lines in file
+<br>
 
 * line<br>
 Set to current line number
+<br>
 
 * col<br>
 Set to current column number
+<br>
 
 * byte<br>
 Set to current byte number
+<br>
 
 * size<br>
 Set to buffer size
+<br>
 
 * height<br>
 Set to window height
+<br>
 
 * width<br>
 Set to window width
+<br>
 
 * char<br>
 Set to ASCII val of character under cursor
+<br>
 
 * markv<br>
 True if there is a valid block set (^KB ... ^KK)
+<br>
 
 * rdonly<br>
 True if file is read-only
+<br>
 
 * arg<br>
 Current repeat argument
+<br>
 
 * argset<br>
 True if a repeat argument was given
+<br>
 
 * is_shell<br>
 True if executed in an active shell window
+<br>
 
 * no_windows<br>
 No. buffer windows on the screen
+<br>
 
 * ans<br>
 Result of previous expression
+<br>
 
 
 ## Commands
 
 * hex<br>
 Hex display mode
+<br>
 
 * dec<br>
 Decimal display mode
+<br>
 
 * ins<br>
 Insert 'ans' into buffer
+<br>
 
 * sum<br>
 Sum of numbers in block
+<br>
 
 * cnt<br>
 Count numbers in block
+<br>
 
 * avg<br>
 Average value of numbers in block
+<br>
 
 * dev<br>
 Standard deviation of numbers in block
+<br>
 
 * eval<br>
 Evaluate math expressions in block (or whole file if no block set).
+<br>
 
 * joe(...)<br>
 Execute a JOE macro (argument in same format as joerc file macros).  Return value of JOE macro is returned (for macro success, return true (non-zero)).
+<br>
 
 
 For example:
@@ -2183,36 +2212,47 @@ have these commands so far:
 
 * clear        <br>
 erase shell window (delete buffer contents)
+<br>
 
 * joe file     <br>
 edit a file in JOE
+<br>
 
 * math 1+2     <br>
 evaluate equation using JOE's calculator
+<br>
 
 * cd xyz       <br>
 change directory, keep JOE up to date
+<br>
 
 * markb        <br>
 same as ^KB
+<br>
 
 * markk        <br>
 same as ^KK
+<br>
 
 * mark command <br>
 execute shell command, mark it's output
+<br>
 
 * parse command<br>
 execute shell command, parse it's output for file names and line numbers (for find or grep)
+<br>
 
 * parser comman<br>
 execute shell command, parse it's output for errors (for gcc)
+<br>
 
 * release      <br>
 release parsed errors
+<br>
 
 * pop          <br>
 dismiss shell window (same as ^K Q)
+<br>
 
 
 These work by emitting an escape sequence recognized by the terminal
@@ -2932,98 +2972,128 @@ These commands can be entered at the __Esc X__ prompt.
 
 * bknd<br>
 Run a shell in a window
+<br>
+
 * vtbknd<br>
 Run a shell in a terminal emulator window
+<br>
 
 * killproc<br>
 Kill program in current window
+<br>
 
 * run<br>
 Run a UNIX command in a window
+<br>
 
 * sys<br>
 Run a UNIX command and return to editor when done (I/O does not go through editor, but we get the command's return status).
-
 
 ### Blocks
 
 * blkcpy<br>
 Copy marked block to cursor
+<br>
 
 * blkdel<br>
 Delete marked block
+<br>
 
 * blkmove<br>
 Move marked block to cursor
+<br>
 
 * blksave<br>
 Save marked block into a file
+<br>
 
 * copy<br>
 Copy block to kill-ring
+<br>
 
 * drop<br>
 Set markb.  If it was already set, eliminate Ait.
+<br>
 
 * dropon<br>
 Set markb.  If it was already set, eliminate it.  Turn on marking mode.
+<br>
 
 * toggle_marking<br>
 If we're in a block: clear markb and markk. If marking is off: set markb and turn on marking.  If marking is on: set markk (swap if necessary with markb) and turn marking off.
+<br>
 
 * begin_marking<br>
 If we're on an edge of a block: set markb to other edge and turn on marking mode.  Otherwise set markb to cursor and turn on marking mode.
+<br>
 
 * select<br>
 Set markb.  If it was already set, do nothing.
+<br>
 
 * filt<br>
 Filter block or file through a UNIX command
+<br>
 
 * markb<br>
 Set beginning of block mark
+<br>
 
 * markk<br>
 Set end of block mark
+<br>
 
 * markl<br>
 Mark current line
+<br>
 
 * nmark<br>
 Eliminate markb and markk
+<br>
 
 * picokill<br>
 Delete line or block
+<br>
 
 * pop<br>
 Restore markb and markk values from stack
+<br>
 
 * psh<br>
 Push markb and markk values onto a stack
+<br>
 
 * swap<br>
 Switch cursor with markb
+<br>
 
 * tomarkb<br>
 Move cursor to markb
+<br>
 
 * tomarkbk<br>
 Move cursor to markb or markk
+<br>
 
 * tomarkk<br>
 Move cursor to markk
+<br>
 
 * yank<br>
 Insert top of kill ring
+<br>
 
 * yankpop<br>
 Scroll through kill ring
+<br>
 
 * yapp<br>
 Append next kill to top of kill ring
+<br>
 
 * upper<br>
 Convert everything in block to uppercase
+<br>
 
 * lower<br>
 Convert everything in block to lowercase
@@ -3033,27 +3103,35 @@ Convert everything in block to lowercase
 
 * bufed<br>
 Buffer menu
+<br>
 
 * edit<br>
 Load file into window: asks to reload if buffer exists
+<br>
 
 * switch<br>
 Load file into window: always uses buffer if it exists
+<br>
 
 * scratch<br>
 Push a scratch buffer into current window
+<br>
 
 * popabort<br>
 Abort and pop window from stack (do nothing if stack empty)
+<br>
 
 * nbuf<br>
 Load next buffer into current window
+<br>
 
 * pbuf<br>
 Load previous buffer into current window
+<br>
 
 * reload<br>
 Re-read file into buffer (revert)
+<br>
 
 * reloadall<br>
 Re-read all unmodified buffers
@@ -3063,388 +3141,482 @@ Re-read all unmodified buffers
 
 * bof<br>
 Move cursor to beginning of file
+<br>
 
 * bol<br>
 Move cursor to beginning of line (always)
+<br>
 
 * bop<br>
 Move to beginning of a paragraph
+<br>
 
 * bos<br>
 Move to beginning of screen
+<br>
 
 * bkwdc<br>
 Search backwards for a character
+<br>
 
 * byte<br>
 Move cursor to specific byte offset into the file.
+<br>
 
 * col<br>
 Move cursor to specific column number.
+<br>
 
 * dnarw<br>
 Move cursor down one line
+<br>
 
 * eof<br>
 Move cursor to end of file
+<br>
 
 * eol<br>
 Move cursor to end of line
+<br>
 
 * eop<br>
 Move cursor to end of paragraph
+<br>
 
 * fwrdc<br>
 Search forward for matching character
+<br>
 
 * gomark<br>
 Move cursor to a bookmark
+<br>
 
 * home<br>
 Move cursor to beginning of line
+<br>
 
 * line<br>
 Move cursor to specified line
+<br>
 
 * ltarw<br>
 Move cursor left
+<br>
 
 * nedge<br>
 Move cursor to next edge
+<br>
 
 * nextpos<br>
 Move cursor to next position in cursor position history
+<br>
 
 * nextword<br>
 Move cursor to end of next word
+<br>
 
 * pedge<br>
 Move cursor to previous edge
+<br>
 
 * prevpos<br>
 Move cursor to previous position in cursor position history
+<br>
 
 * prevword<br>
 Move cursor to beginning of previous word
+<br>
 
 * rtarw<br>
 Move cursor right
+<br>
 
 * setmark<br>
 Set a bookmark
+<br>
 
 * tomatch<br>
 Move cursor to matching delimiter
+<br>
 
 * tos<br>
 Move cursor to top of screen
+<br>
 
 * uparw<br>
 Move cursor up
-
 
 ### Deletion
 
 * backs<br>
 Backspace
+<br>
 
 * backw<br>
 Backspace a word
+<br>
 
 * delbol<br>
 Delete to beginning of line
+<br>
 
 * delch<br>
 Delete character under cursor
+<br>
 
 * deleol<br>
 Delete to end of line
+<br>
 
 * dellin<br>
 Delete entire line
+<br>
 
 * delw<br>
 Delete word to right
-
 
 ### Error parsing
 
 * nxterr<br>
 Goto next parsed error
+<br>
 
 * parserr<br>
 Parse errors in current file
+<br>
 
 * gparse<br>
 Parse grep list in current file
+<br>
 
 * jump<br>
 Parse current line and jump to it
+<br>
 
 * prverr<br>
 Go to previous parsed error
+<br>
 
 * showerr<br>
 Show current message
+<br>
 
 * grep<br>
 Execute grep command, parse when done
+<br>
 
 * build<br>
 Execute build command, parse when done
+<br>
 
 * release<br>
 Release error/grep records
-
 
 ### Exit
 
 * cancel<br>
 Like abort, but doesn't return failure: useful in macros to escape out of a prompt.
+<br>
 
 * abort<br>
 Abort current buffer/window.  Prompt if it is changed.
+<br>
 
 * abortbuf<br>
 Like above, but just fail if it would have to prompt because it's the last window on a modified buffer.
+<br>
 
 * ask<br>
 Prompt to save current file: user says yes return, user says no: run 'abort'.  Use in a macro: "ask,query,exsave"
+<br>
 
 * exsave<br>
 Save file and exit
+<br>
 
 * lose<br>
 EMACS kill buffer.  The buffer is deleted- any windows with it get a replacement scratch buffer.
+<br>
 
 * querysave<br>
 Prompt to save each modified buffer.  Use in a macro: "querysave,query,killjoe"
+<br>
 
 * killjoe<br>
 Exit JOE immediately without checking for modified buffers
-
 
 ### Files
 
 * cd<br>
 Set directory prefix
+<br>
 
 * save<br>
 Save file
+<br>
 
 * savenow<br>
 Save immediately, unless file name is not known
+<br>
 
 * insf<br>
 Insert a file
-
 
 ### Formatting
 
 * center<br>
 Center line
+<br>
 
 * fmtblk<br>
 Format all paragraphs in a block
+<br>
 
 * format<br>
 Format current paragraph
+<br>
 
 * lindent<br>
 Indent to the left
+<br>
 
 * rindent<br>
 Indent to the right
-
 
 ### Help
 
 * help<br>
 Turn help on or off
+<br>
 
 * hnext<br>
 Switch to next help screen
+<br>
 
 * hprev<br>
 Switch to previous help screen
-
 
 ### Inserting
 
 * ctrl<br>
 Type next key
+<br>
 
 * finish<br>
 Complete word in text window
+<br>
 
 * insc<br>
 Insert a space 
+<br>
 
 * open<br>
 Insert newline
+<br>
 
 * quote<br>
 Insert a control character
+<br>
 
 * quote8<br>
 Insert a meta character
+<br>
 
 * rtn<br>
 __Return__ / __Enter__ key
+<br>
 
 * type<br>
 Insert typed character
+<br>
 
 * secure_type<br>
 Insert typed character, but only allowed in prompt windows (not allowed in shell windows)
-
 
 ### Macros
 
 * macros<br>
 Insert keyboard macros into current file
+<br>
 
 * play<br>
 Execute a macro
+<br>
 
 * query<br>
 Suspend macro recording for user query
+<br>
 
 * record<br>
 Record a macro
+<br>
 
 * stop<br>
 Stop recording macro
-
 
 ### Menu
 
 * backsmenu<br>
 Undo in file completion menu
+<br>
 
 * bofmenu<br>
 Move to beginning of menu
+<br>
 
 * bolmenu<br>
 Move to beginning of line in a menu
+<br>
 
 * dnarwmenu<br>
 Move down one line in a menu
+<br>
 
 * eolmenu<br>
 Move cursor to end of line in a menu
+<br>
 
 * eofmenu<br>
 Move cursor to end of menu
+<br>
 
 * ltarwmenu<br>
 Move cursor left in a menu
+<br>
 
 * rtarwmenu<br>
 Move cursor right in menu
+<br>
 
 * uparwmenu<br>
 Move cursor up in menu
+<br>
 
 * dnslidemenu<br>
 Scroll menu down one line
+<br>
 
 * upslidemenu<br>
 Scroll menu up one line
+<br>
 
 * pgupmenu<br>
 Scroll menu up
+<br>
 
 * pgdnmenu<br>
 Scroll menu down
+<br>
 
 * tabmenu<br>
 Tab through menu
-
 
 ### Misc
 
 * beep<br>
 Beep
+<br>
 
 * execmd<br>
 Execute a JOE command
+<br>
 
 * debug_joe<br>
 Insert debug information into buffer
+<br>
 
 * math<br>
 Calculator
+<br>
 
 * maths<br>
 Secure Calculator (no way to run joe() macros)
+<br>
 
 * mode<br>
 Mode prompt
+<br>
 
 * menu<br>
 Menu prompt
+<br>
 
 * msg<br>
 Display a message
+<br>
 
 * notmod<br>
 Clear the modified flag
+<br>
 
 * retype<br>
 Refresh screen
+<br>
 
 * shell<br>
 Suspend process or execute a sub-shell
+<br>
 
 * stat<br>
 Display cursor position
+<br>
 
 * tag<br>
 Tags file search
+<br>
 
 * tagjump<br>
 Jump to next tags file search match (only if notagsmenu is set)
+<br>
 
 * timer<br>
 Execute a macro periodically
+<br>
 
 * txt<br>
 Insert text.  If first character is \`, then text is assumed to be a format string (that is, the string used to define the status line for the rmsg and lmsg options) and is formatted before the insertion.
+<br>
 
 * name<br>
 Insert current file name
+<br>
 
 * language<br>
 Insert current language
+<br>
 
 * charset<br>
 Insert current character set
+<br>
 
 * keymap<br>
 Switch to another keymap
-
 
 ### Prompts
 
 * complete<br>
 Complete a file-name in a prompt
+<br>
 
 * if<br>
 Only run following cmds if expr is true (non-zero)
+<br>
 
 * then<br>
 Same as rtn but only works in prompt windows
+<br>
 
 * elsif<br>
 Try a new condition
+<br>
 
 * else<br>
 Toggle truth flag
+<br>
 
 * endif<br>
 Start running cmds again
-
+<br>
 
 <p>Here is an example 'if' macro:</p>
 
@@ -3460,173 +3632,210 @@ return key for this prompt.</p>
 
 * char<br>
 ASCII value of character under cursor
+<br>
 
 * width<br>
 Width of screen
+<br>
 
 * height<br>
 Height of screen
+<br>
 
 * byte<br>
 byte number
+<br>
 
 * col<br>
 column number
+<br>
 
 * line<br>
 line number
+<br>
 
 * lines<br>
 no. lines in file
+<br>
 
 * top<br>
 line number of top line of window
-
-
 
 ### Repeat
 
 * arg<br>
 Prompt for repeat argument
+<br>
 
 * uarg<br>
 Universal argument
-
 
 ### Scrolling
 
 * crawll<br>
 Pan screen left
+<br>
 
 * crawlr<br>
 Pan screen right
+<br>
 
 * dnslide<br>
 Scroll screen down 1 line
+<br>
 
 * pgdn<br>
 Scroll screen down
+<br>
 
 * pgup<br>
 Scroll screen up
+<br>
 
 * upslide<br>
 Scroll up one line
-
 
 ### Search and replace
 
 * ffirst<br>
 Find text
+<br>
 
 * fnext<br>
 Repeat previous search
+<br>
 
 * isrch<br>
 Incremental search forward
+<br>
 
 * qrepl<br>
 Search and replace
+<br>
 
 * rfirst<br>
 Search backwards for text
+<br>
 
 * rsrch<br>
 Reverse incremental search
-
 
 ### Windows
 
 * explode<br>
 Display one window or display all windows
+<br>
 
 * dupw<br>
 Duplicate current window
+<br>
 
 * groww<br>
 Increase size of window
+<br>
 
 * nextw<br>
 Move cursor to next window
+<br>
 
 * prevw<br>
 Go to previous window
+<br>
 
 * shrinkw<br>
 Shrink window
+<br>
 
 * splitw<br>
 Split window into two
+<br>
 
 * tw0<br>
 Eliminate this window
+<br>
 
 * tw1<br>
 Show only one window
+<br>
 
 * mwind<br>
 Get error messages window on the screen and put cursor in it.
+<br>
 
 * showlog<br>
 Get startup log scratch buffer into window.
+<br>
 
 * mfit<br>
 Fit two windows on the screen: make current window 6 lines, and give rest of space to window above.  The window above is either the existing previous window, a newly created one if there wasn't one.
-
 
 ### Undo
 
 * redo<br>
 Re-execute the latest undone change
+<br>
 
 * undo<br>
 Undo last change
-
 
 ### Mouse
 
 * tomouse<br>
 Move the cursor to where the mouse was clicked/dragged
+<br>
 
 * defmdown<br>
 Default single-click handlers
+<br>
 
 * defmup<br>
 Default single-click release handlers
+<br>
 
 * defmdrag<br>
 (click to move cursor, drag to select characters)
+<br>
 
 * defm2down<br>
 Default double-click handlers
+<br>
 
 * defm2up<br>
 Default double-click release handlers
+<br>
 
 * defm2drag<br>
 (drag to select words)
+<br>
 
 * defm3down<br>
 Default triple-click handlers
+<br>
 
 * defm3up<br>
 Default triple-click release handlers
+<br>
 
 * defm3drag<br>
 (drag to select lines)
+<br>
 
 * xtmouse<br>
 Handle xterm mouse events
+<br>
 
 * extmouse<br>
 Handle extended xterm mouse events
+<br>
 
 * paste<br>
 Insert base64 encoded text (for XTerm --enable-base64 option).
+<br>
 
 * brpaste<br>
 Disable autoindent, wordwrap and spaces.  The idea is to bind this to __Esc [ 2 0 0 ~__ so that when the terminal emulator sends a mouse paste, the text is inserted as-is.
+<br>
 
 * brpaste_done<br>
 Restore autoindent, wordwrap and spaces modes to their original values before brpaste.  The idea is to bind this to __Esc [ 2 0 1 ~__ so that these modes are restored after a mouse paste.
-
+<br>
