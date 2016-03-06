@@ -1975,113 +1975,91 @@ original file and the definition file loaded.
 
 JOE has a built-in calculator which can be invoked with __Esc M__.
 
-<p><b>Math functions:</b></p>
+### Math functions
 
-<p>sin, cos, tan, exp, sqrt, cbrt, ln, log,
+sin, cos, tan, exp, sqrt, cbrt, ln, log,
 asin, acos, atan, sinh, cosh, tanh, asinh, acosh,
 atanh, int, floor, ceil, abs, erf, erfc, j0,
-j1, y0, y1</p>
+j1, y0, y1
 
-<p><b>Variables:</b></p>
+### Variables
 
-<table width="100%" cellspacing=20 border=0 cellpadding=0>
-<colgroup>
-<col width="125">
-<tbody>
-<tr valign="top"><td>e</td><td>Set to 'e'</td></tr>
+Name | Description
+-----|------------
+e | Set to 'e'
+pi | Set to 'pi'
+top | Set to line number of top window line
+lines | Set to number of lines in file
+line | Set to current line number
+col | Set to current column number
+byte | Set to current byte number
+size | Set to buffer size
+height | Set to window height
+width | Set to window width
+char | Set to ASCII val of character under cursor
+markv | True if there is a valid block set (^KB ... ^KK)
+rdonly | True if file is read-only
+arg | Current repeat argument
+argset | True if a repeat argument was given
+is_shell | True if executed in an active shell window
+no_windows | No. buffer windows on the screen
+ans | Result of previous expression
 
-<tr valign="top"><td>pi</td><td>Set to 'pi'</td></tr>
+### Commands
 
-<tr valign="top"><td>top</td><td>Set to line number of top window line</td></tr>
+Name | Description
+-----|------------
+hex | Hex display mode
+dec | Decimal display mode
+ins | Insert 'ans' into buffer
+sum | Sum of numbers in block
+cnt | Count numbers in block
+avg | Average value of numbers in block
+dev | Standard deviation of numbers in block
+eval | Evaluate math expressions in block (or whole file if no block set).
+joe(...) | Execute a JOE macro (argument in same format as joerc file macros).  Return value of JOE macro is returned (for macro success, return true (non-zero)).
 
-<tr valign="top"><td>lines</td><td>Set to number of lines in file</td></tr>
+For example:
 
-<tr valign="top"><td>line</td><td>Set to current line number</td></tr>
+    joe(sys,"[ 1 == 1 ]",rtn)
 
-<tr valign="top"><td>col</td><td>Set to current column number</td></tr>
+([ 1 == 1 ]) is a shell command.  "[" is a synonym for
+the "test" UNIX command.
 
-<tr valign="top"><td>byte</td><td>Set to current byte number</td></tr>
+Returns true.
 
-<tr valign="top"><td>size</td><td>Set to buffer size</td></tr>
-
-<tr valign="top"><td>height</td><td>Set to window height</td></tr>
-
-<tr valign="top"><td>width</td><td>Set to window width</td></tr>
-
-<tr valign="top"><td>char</td><td>Set to ASCII val of character under cursor	</td></tr>
-
-<tr valign="top"><td>markv</td><td>True if there is a valid block set (^KB ...
-^KK)</td></tr>
-
-<tr valign="top"><td>rdonly</td><td>True if file is read-only</td></tr>
-
-<tr valign="top"><td>arg</td><td>Current repeat argument</td></tr>
-
-<tr valign="top"><td>argset</td><td>True if a repeat argument was given</td></tr>
-
-<tr valign="top"><td>is_shell</td><td>True if executed in an active shell window</td></tr>
-
-<tr valign="top"><td>no_windows</td><td>No. buffer windows on the screen</td></tr>
-
-<tr valign="top"><td>ans</td><td>Result of previous expression</td></tr>
-</tbody>
-</table>
-
-<p><b>Commands:</b></p>
-
-<table width="100%" cellspacing=20 border=0 cellpadding=0>
-<colgroup>
-<col width="125">
-<tbody>
-<tr valign="top"><td>hex</td><td>Hex display mode</td></tr>
-
-<tr valign="top"><td>dec</td><td>Decimal display mode</td></tr>
-
-<tr valign="top"><td>ins</td><td>Insert 'ans' into buffer</td></tr>
-
-<tr valign="top"><td>sum</td><td>Sum of numbers in block</td></tr>
-
-<tr valign="top"><td>cnt</td><td>Count numbers in block</td></tr>
-
-<tr valign="top"><td>avg</td><td>Average value of numbers in block</td></tr>
-
-<tr valign="top"><td>dev</td><td>Standard deviation of numbers in block</td></tr>
-
-<tr valign="top"><td>eval</td><td>Evaluate math expressions in block (or whole file
-		if no block set).</td></tr>
-
-<tr valign="top"><td>joe(...)</td><td>Execute a JOE macro (argument in same format
-		as joerc file macros).  Return value of
-		JOE macro is returned (for macro success,
-		return true (non-zero)).</td></tr>
-</tbody>
-</table>
-
-<p>For example:</p>
-
-<p>joe(sys,"[ 1 == 1 ]",rtn)</p>
-
-<p>([ 1 == 1 ]) is a shell command.  "[" is a synonym for
-the "test" UNIX command.</p>
-
-<p>Returns true.</p>
-
-<p>Remember: argument for JOE macro command
+Remember: argument for JOE macro command
 "if" is a math expression.  So for example, the
-macro:</p>
+macro:
 
-<p>if,"joe(sys,\"[ 1 == 1 ]\",rtn)",then,"TRUE",endif</p>
+    if,"joe(sys,\"[ 1 == 1 ]\",rtn)",then,"TRUE",endif
 
-<p>Types TRUE into the buffer.</p>
+Types TRUE into the buffer.
 
-<p><b>Operators:</b></p>
+### Operators:
 	
-<p>^  * / %  + -  &lt; &lt;= &gt; &gt;= == !=  &amp;&amp;  ||  ? :  =  :</p>
+* ^ 
+* *
+* /
+* % 
+* +
+* -
+* &lt;
+* &lt;=
+* &gt;
+* &gt;=
+* ==
+* !=
+* &amp;&amp;
+* ||
+* ? :
+* =
+* :
 
-<p>&amp;&amp;, || and ? : work as in C and sh as far as side effects: if the
-left side of &amp;&amp; is false, the right side is not evaluated.</p>
+&amp;&amp;, || and ? : work as in C and sh as far as side effects: if the
+left side of &amp;&amp; is false, the right side is not evaluated.
 
-<p>: is expression separator</p>
+: is expression separator.
 
 ## Shell windows
 
@@ -2691,13 +2669,11 @@ the Xterm source code is compiled.  The termcap or terminfo entry must
 support how your Xterm is configured.  On my Slackware Linux distribution,
 you have to set the TERM environment variable to one of these:
 
-<ul>
-<li>xterm</li>
-<li>xterm-color</li>
-<li>xterm-16color</li>
-<li>xterm-88color</li>
-<li>xterm-256color</li>
-</ul>
+* xterm
+* xterm-color
+* xterm-16color
+* xterm-88color
+* xterm-256color
 
 If the termcap/terminfo entry is missing, you can add the "-assume_256color"
 option to the joerc file.  Note that this was broken for terminfo in
