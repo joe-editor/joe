@@ -289,6 +289,7 @@ static int parseit(struct charmap *map,const char *s, off_t row,
 
 	if (name) {
 		if (line != -1) {
+			char *t;
 			/* We have an error */
 			err = (ERROR *) alitem(&errnodes, SIZEOF(ERROR));
 			err->file = name;
@@ -303,7 +304,9 @@ static int parseit(struct charmap *map,const char *s, off_t row,
 			err->org = err->line = line;
 			err->src = row;
 			err->msg = vsncpy(NULL, 0, sc("\\i"));
-			err->msg = vsncpy(sv(err->msg), sv(s));
+			t = duplicate_backslashes(sv(s));
+			err->msg = vsncpy(sv(err->msg), sv(t));
+			vsrm(t);
 			enqueb(ERROR, link, &errors, err);
 			return 1;
 		} else

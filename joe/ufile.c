@@ -51,8 +51,13 @@ void genexmsg(BW *bw, int saved, char *name)
 		vsrm(exmsg);
 
 	exmsg = vsncpy(NULL,0,sz(msgbuf));
-	if (!noexmsg)
+	if (!noexmsg) {
+		/* duplicate backslashes in file names because msgnw interprets escape sequences */
+		char *s = duplicate_backslashes(sz(msgbuf));
+		zcpy(msgbuf, s);
+		vsrm(s);
 		msgnw(bw->parent, msgbuf);
+	}
 }
 
 /* For ^X ^C */

@@ -377,25 +377,16 @@ File names:
 	parsing.  (for example, ignore ; in quotes).  Also complete quotes
 	arguments like 'foo'
 
-	tab completion should escape file names for joe
+	Filename quoting: we have quoting in file names so that files with
+	magic characters (! , >) can be accessed.  This is fine at prompts,
+	but on command line is bad news: it means 'joe *' may not work
+	with all files.  Maybe have '-start 10 -size 10 foo' instead of
+	'foo,10,10' on the command line.
 
-	Fix filename quoting.  The problem is that the !  and , syntax was a
-	mistake.  The current work-around is to allow user to quote these
-	characters.  I think we are de-quoting too much or something because
-	filenames with \ in them don't really work.  Anyway, find some other
-	syntax to specify that the program is a command, or to load only a
-	certain part of it.  'joe *' should always work, even if the files
-	in the current directory after '!', ',' or '\' in them.
+	It may be nicer if the filename in the buffers is not quoted- instead
+	magic characters are converted to options.
 
 	cd command: should canonicalized version of path be stored in history?
-
-	the buffer name should be in the clear, not quoted..  then we would
-	not have to dequote on save in particular, we need to handle ! 
-	differently...  probably it should be an options flag.
-
-	so: on command line, no special meaning for !
-	at edit prompt: we remove the ! and convert it into a flag.. it probably
-	makes no sense to have this flag, or to even name the buffer
 
 	in ^KE: any nicer way to clear the current path other than Ctrl-Y?
 
@@ -1435,4 +1426,6 @@ jmacs fixes:
 		M-^: jmacs: deletes indentation, blank lines below.  gnu: deletes indentation, blank line above- pulls current line to end of previous [fixed]
 calculator:
 	assume entire file if no region selected [done]
+
+	tab completion should escape file names for joe [fixed]
 

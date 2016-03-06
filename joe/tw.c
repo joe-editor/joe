@@ -127,7 +127,7 @@ static char *get_context(BW *bw)
 	return buf1;
 }
 
-static char *duplicate_backslashes(char *s, ptrdiff_t len)
+char *duplicate_backslashes(const char *s, ptrdiff_t len)
 {
 	char *m;
 	ptrdiff_t x, count;

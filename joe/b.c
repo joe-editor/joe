@@ -2210,7 +2210,10 @@ P *binsmq(P *p, const char *blk, ptrdiff_t amnt)
 	ptrdiff_t x, y;
 	for (y = 0; y != amnt; y = x) {
 		for (x = y; x != amnt; ++x) {
-			if (blk[x] == ' ' || blk[x] == '\t' || blk[x] == '\\')
+			if ((x == 0 && blk[x] == '!') ||
+			    (x == 0 && blk[0] == '>' && blk[1] == '>') ||
+			    (x == 1 && blk[0] == '>' && blk[x] == '>') ||
+			    blk[x] == ' ' || blk[x] == '\t' || blk[x] == '\\' || blk[x] == ',')
 				break;
 		}
 		if (x != y) {
@@ -2222,6 +2225,12 @@ P *binsmq(P *p, const char *blk, ptrdiff_t amnt)
 				binsm(q, "\\ ", 2);
 			else if (blk[x] == '\t')
 				binsm(q, "\\\t", 2);
+			else if (blk[x] == ',')
+				binsm(q, "\\,", 2);
+			else if (blk[x] == '!')
+				binsm(q, "\\!", 2);
+			else if (blk[x] == '>')
+				binsm(q, "\\>", 2);
 			else
 				binsm(q, "\\\\", 2);
 			pfwrd(q, 2);

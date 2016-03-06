@@ -498,7 +498,10 @@ char *dequotevs(char *s)
 	char *d = vsensure(NULL, sLEN(s));
 	for (x = 0; x != sLEN(s); ++x)
 		if (s[x] == '\\') {
-			/* Just skip it */
+			if (x + 1 != sLEN(s)) {
+				++x;
+				d = vsadd(d, s[x]);
+			}
 		} else
 			d = vsadd(d, s[x]);
 	vsrm(s);
