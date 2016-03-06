@@ -642,7 +642,7 @@ Give the key sequence to show in prompts for abort (usually ^C).
 Give the key sequence to show in prompts for help (usually ^K H).
 <br>
 
-## Colors and attributes
+### Colors and attributes
 
 Combine attributes and up to one foreground color and one background color
 to create arguments for color options like text_color.  For example:
@@ -673,7 +673,7 @@ With a 256 color terminal emulator (export TERM=xterm-256color), these become av
 
 * fg_NN and bg_NN give shades of grey, where the intensity, NN, ranges from 0 - 23.
 
-## Status line definition strings
+### Status line definition strings
 
 -lmsg defines the left-justified string and -rmsg defines the
 right-justified string.  The first character of -rmsg is the background fill
@@ -684,49 +684,45 @@ is at the end of the file.  The last character of smsg or zmsg is the fill chara
 
 The following escape sequences can be used in these strings:
 
-~~~~~
-  %t  12 hour time
-  %u  24 hour time
-  %T  O for overtype mode, I for insert mode
-  %W  W if wordwrap is enabled
-  %I  A if autoindent is enabled
-  %X  Rectangle mode indicator
-  %n  File name
-  %m  '(Modified)' if file has been changed
-  %*  '*' if file has been changed
-  %R  Read-only indicator
-  %r  Row (line) number
-  %c  Column number
-  %o  Byte offset into file
-  %O  Byte offset into file in hex
-  %a  Ascii value of character under cursor
-  %A  Ascii value of character under cursor in hex
-  %w  Width of character under cursor
-  %p  Percent of file cursor is at
-  %l  No. lines in file
-  %k  Entered prefix keys
-  %S  '*SHELL*' if there is a shell running in window
-  %M  Macro recording message
-  %y  Syntax
-  %e  Encoding
-  %x  Context (first non-indented line going backwards)
-  %dd day
-  %dm month
-  %dY year
-  %Ename%  value of environment variable
-  %Tname%  value of option (ON or OFF for Boolean options)
-~~~~~
+    %t  12 hour time
+    %u  24 hour time
+    %T  O for overtype mode, I for insert mode
+    %W  W if wordwrap is enabled
+    %I  A if autoindent is enabled
+    %X  Rectangle mode indicator
+    %n  File name
+    %m  '(Modified)' if file has been changed
+    %*  '*' if file has been changed
+    %R  Read-only indicator
+    %r  Row (line) number
+    %c  Column number
+    %o  Byte offset into file
+    %O  Byte offset into file in hex
+    %a  Ascii value of character under cursor
+    %A  Ascii value of character under cursor in hex
+    %w  Width of character under cursor
+    %p  Percent of file cursor is at
+    %l  No. lines in file
+    %k  Entered prefix keys
+    %S  '*SHELL*' if there is a shell running in window
+    %M  Macro recording message
+    %y  Syntax
+    %e  Encoding
+    %x  Context (first non-indented line going backwards)
+    %dd day
+    %dm month
+    %dY year
+    %Ename%  value of environment variable
+    %Tname%  value of option (ON or OFF for Boolean options)
 
 These formatting escape sequences may also be given:
  
-~~~~~
-  \i  Inverse
-  \u  Underline
-  \b  Bold
-  \d  Dim
-  \f  Blink
-  \l  Italic
-~~~~~
+    \i  Inverse
+    \u  Underline
+    \b  Bold
+    \d  Dim
+    \f  Blink
+    \l  Italic
 <br>
 
 
@@ -788,7 +784,7 @@ both the __Shift__ and __Control__ keys down at the same time to get it.
 If you "undo" too much, you can "redo" the changes back into existence by
 hitting __^^__ (type this with just __^6__ on most keyboards).
 
-## Cursor position history
+### Cursor position history
 
 If you were editing in one place within the file, and you then temporarily 
 had to look or edit some other place within the file, you can get back to 
@@ -797,7 +793,7 @@ to the last place you made a change in the file.  You can step through a
 history of places with __^K -__ and __^K =__, in the same way you can 
 step through the history of changes with the "undo" and "redo" commands.
 
-## Save and exit
+### Save and exit
 
 When you are done editing the file, hit __^K X__ to exit the editor.  You
 will be prompted for a file name if you hadn't already named the file you
@@ -812,7 +808,7 @@ If you edit a file and save the changes, a backup copy of that file is
 created in the current directory, with a __~__ appended to the name, which 
 contains the original version of the file.
 
-## File operations
+### File operations
 
 
 You can hit __^K D__ to save the current file (possibly under a different
@@ -826,7 +822,7 @@ If you want to include another file in the file you're editing, use __^K
 R__ to insert it.
 
 <a name="filenames"></a>
-## Filenames
+### Filenames
 
 Wherever JOE expects you to enter a file name, whether on the command line
 or in prompts within the editor, you may also type:
@@ -857,7 +853,7 @@ standard output.  For example, you can put JOE in a pipe of commands:
 __quota -v | joe | mail root__, if you want to complain about your low
 quota.
 
-## Using JOE in a shell script
+### Using JOE in a shell script
 
 JOE used to use /dev/tty to access the terminal.  This caused a problem with
 idle-session killers (they would kill JOE because the real tty device was
@@ -875,7 +871,7 @@ JOE's stdin/stdout to /dev/tty:
 
 <br><br>
 
-## Word wrap and formatting
+### Word wrap and formatting
 
 If you type past the right edge of the screen in a C or PASCAL language 
 file, the screen will scroll to the right to follow the cursor.  If you type 
@@ -922,12 +918,12 @@ word wrapper:
 
 * When __overtype__ is enabled, the word wrapper will not insert lines.
 
-## Centering
+### Centering
 
 If you want to center a line within the margins, use the __^K A__
 command.
 
-## Spell checker
+### Spell checker
 
 Hit __Esc N__ to check the spelling of the word the cursor is on using the
 aspell program (or ispell program if you modify the joerc file).  Hit
@@ -937,7 +933,7 @@ highlighted.
 JOE passes the language and character encoding to the spell checker.  To
 change the language, hit __^T V__.  For example, use en_US for English.
 
-## Overtype mode
+### Overtype mode
 
 Sometimes it's tiresome to have to delete old text before or after you 
 insert new text.  This happens, for example, when you are changing a table 
@@ -953,7 +949,7 @@ insert-mode as soon as possible by typing __^T T__ again.
 If you need to insert while you're in overtype mode, hit __^@__.  This
 inserts a single __Space__ into the text.
 
-## Control and Meta characters
+### Control and Meta characters
 
 Each character is represented by a number.  For example, the number for 'A'
 is 65 and the number for '1' is 49.  All of the characters which you
@@ -1040,18 +1036,6 @@ UTF-8.
 
 ## Prompts
 
-If you hit __Tab__ at any file name prompt, JOE will attempt to complete
-the name you entered as much as possible.  If it couldn't complete the
-entire name, because there are more than one possible completions, JOE
-beeps.  If you hit __Tab__ again, JOE lists the completions.  You can use
-the arrow keys to move around this directory menu and press __Enter__ or __Space__
-to select an item.  If you press the first letter of one of the directory
-entries, it will be selected, or if more than one entry has the same first
-letter, the cursor will jump between those entries.  If you select a
-subdirectory or .., the directory name is appended to the prompt and the new
-directory is loaded into the menu.  You can hit Backspace to go back to the
-previous directory.
-
 Most prompts record a history of the responses you give them.  You can hit
 up and down arrow to step through these histories.
 
@@ -1064,7 +1048,7 @@ F__ command if you want.
 Since prompts are windows, you can also switch out of them with __^K P__
 and __^K N__.
 
-## Completion and selection menus
+### Completion and selection menus
 
 You can hit __Tab__ in just about any prompt to request JOE to complete the
 word you are typing.  If JOE beeps, there are either no completions or many. 
@@ -1203,7 +1187,7 @@ You can hit __^L__ to repeat the previous search.
 You can hit __^K H__ at the search and replace options prompt to bring up a list
 of all search and replace options.
 
-## Regular Expressions
+### Regular Expressions
 
 A number of special character sequences may be entered as search
 text:
@@ -1343,7 +1327,7 @@ search would begin, and the sample line would be changed to:
 Address: England, London, S. Holmes, 221b Baker St.
 
 <a name="escapes"></a>
-## Escape sequences
+### Escape sequences
 
 JOE understands the following escape sequences withing search and
 replacement strings:
@@ -1514,7 +1498,7 @@ __^G__ has a built-in parser to handle start/end tag matching for XML.
 
 <a name="blocks"></a>
 
-## Blocks
+## Regions
 
 If you want to move, copy, save or delete a specific section of text, you 
 can do it with highlighted blocks.  First, move the cursor to the start of 
@@ -1534,14 +1518,16 @@ sorted.  Another useful UNIX command for __^K /__, is __tr__.  If you
 type __^K / tr a-z A-Z__, then all of the letters in the highlighted block
 will be converted to uppercase.
 
-## How do I deselect a highlighted block?
+### How do I deselect a highlighted region?
 
-After you are finished with some block operations, you can just leave the
+After you are finished with some region operations, you can just leave the
 highlighting on if you don't mind it (but don't accidentally hit __^K Y__). 
 If it really bothers you, however, just hit __^K B ^K K__, to turn the
 highlighting off.
 
-## New ways of selecting blocks
+Beginning with JOE 4.2, you can hit __^C__ to cancel the region selection.
+
+### New ways of selecting regions
 
 The classic way is to hit __^K B__ at the beginning and __^K K__ at the
 end.  These set pointers called markb and markk.  Once these are set you
@@ -1674,7 +1660,7 @@ will be placed in a different window.
 You can change the height of the windows with the __^K G__ and __^K T__
 commands.
 
-## Windowing system model
+### Windowing system model
 
 JOE has an unusual model for its windowing system.  Basically you have a ring
 of windows, but only a section of this ring may fit on the screen.  The windows
@@ -1749,14 +1735,14 @@ on the next line, we can repeatedly use this macro without having to move
 the cursor ourselves, something you should always keep in mind when 
 recording a macro.
 
-## Keyboard macro subroutines
+### Keyboard macro subroutines
 
 If you find that the macro you are recording itself has a repeated set of
 key-strokes in it, you can record a macro within the macro, as long as you
 use a different macro number.  Also you can execute previously recorded
 macros from within new macros. 
 
-## Query suspend
+### Query suspend
 
 If your macro includes a prompt for user input, and you want the user to
 fill in the prompt every time the macro is executed, hit __^K ?__ at the
@@ -1768,7 +1754,7 @@ When the macro is executed, the macro player will pause at the point where
 __^K ?__ was entered to allow user input.  When the user completes the
 prompt, the player continues with the rest of the macro.
 
-## Repeat
+### Repeat
 
 You can use the repeat command, __^K \\__, to repeat a macro, or any other
 edit command or even a normal character, a specified number of times.  Hit
@@ -1794,7 +1780,7 @@ current buffer.  For example, the "\*\*" insert macro above looks like this:
 You could insert this into your .joerc file and change the key sequence (the
 __K 0__) to something more permanent.
 
-## Define your own
+### Define your own
 
 You can bind macros to key sequences or define your own named macros in the
 joerc file.  For example, this will define a macro called __foo__:
@@ -1806,7 +1792,7 @@ file.  __eof__ jumps to the end of the file.  __bol__ jumps to the beginning
 of a line.  Once a macro has been named this way it will show up in the
 completion list of the __Esc X__ command prompt.
 
-## Command prompt
+### Command prompt
 
 You can execute a macro directly by typing it into the command prompt.  Hit
 __Esc X__ to bring up the command prompt.  Hit __Tab__ at this prompt for a
@@ -1814,7 +1800,7 @@ completion list of all available commands.
 
 Here is a [complete list of commands](#list).
 
-## Macro don't stop modifier
+### Macro don't stop modifier
 
 Sometimes, you expect commands to sometimes fail, but want the rest of the
 commands in the list to be executed anyway.  To mark a command which is
@@ -1827,7 +1813,7 @@ If prevw fails, the macro is aborted as usual. Even if pgdn fails (already
 at end of buffer), nextw will be executed so that the cursor is returned to
 the original window.
 
-## Macro repeat argument modifiers
+### Macro repeat argument modifiers
 
 Repeat arguments can be specified with __^K \\__.  When a command is executed
 with a repeat argument, it is repeatedly executed the specified number of
@@ -1876,7 +1862,7 @@ If any command in the list is postfixed with ~ (if above), the macro is not
 repeated, even if there is an argument.  'arg' is still set to the given
 repeat count, however.
 
-## 'psh'/'query' interaction
+### 'psh'/'query' interaction
 
 The 'psh' command saves the __^K B__ and __^K K__ positions on a stack.  When the
 macro completes, (or when the 'pop' command is called) the positions are
@@ -1975,14 +1961,14 @@ original file and the definition file loaded.
 
 JOE has a built-in calculator which can be invoked with __Esc M__.
 
-## Math functions
+### Math functions
 
 sin, cos, tan, exp, sqrt, cbrt, ln, log,
 asin, acos, atan, sinh, cosh, tanh, asinh, acosh,
 atanh, int, floor, ceil, abs, erf, erfc, j0,
 j1, y0, y1
 
-## Variables
+### Variables
 
 * e<br>
 Set to 'e'
@@ -2057,7 +2043,7 @@ Result of previous expression
 <br>
 
 
-## Commands
+### Commands
 
 * hex<br>
 Hex display mode
@@ -2113,7 +2099,7 @@ macro:
 
 Types TRUE into the buffer.
 
-## Operators:
+### Operators:
 	
 * !
 
@@ -2260,7 +2246,7 @@ emulator: __Esc { joe_macro }__.  When this is received, the macro is executed.
 For security, only macros defined in the joerc file which begin with
 "shell_" can be executed this way.
 
-## Use cases
+### Use cases
 
 Pop-up shell windows have a number of nice use cases:
 
@@ -2326,7 +2312,7 @@ Pop-up shell windows have a number of nice use cases:
 	Hit __Esc =__ and __Esc -__ to step through the errors.
 
 
-## How it works..
+### How it works..
 
 * There is a new mode "ansi".  (__Esc X__ mode ansi).  When this mode is
 enabled, the screen updater hides escape sequences which are in the
@@ -2383,7 +2369,7 @@ Also, you can use __Esc Space__ ('jump' command) to parse the line the cursor is
 on and jump to the parsed filename and line number.  'jump' uses the
 grep/find parser unless 'parserr' had been previously issued in the buffer.
 
-## Grep-find
+### Grep-find
 
 Hit __Esc G__ to bring up the prompt.  Enter a command which results in file
 names with line numbers, for example: 'grep -n fred \*.c'.  This will list all
@@ -2393,7 +2379,7 @@ numbers.
 Now you can hit __Esc Space__ on one of the lines to jump to the selected
 file.  Also, you can use __Esc =__ and __Esc -__ to step through each line.
 
-## Compile
+### Compile
 
 Hit __Esc C__ to save all modified files and then bring up the compile prompt. 
 Enter the command you want to use for the compiler (typically "make -w").  The
@@ -2543,7 +2529,7 @@ and in shell you can say: <<EOS ....... EOS.  The idea is that you capture
 the first delimiter into the match buffer (the &lt; or first "EOS") and then
 match it to the second one with "&" in a string or character list.
 
-## Subroutines
+### Subroutines
 
 Highlighter state machines can now make subroutine calls.  This works by
 template instantiation: the called state machine is included in your
@@ -2627,7 +2613,7 @@ __/etc/joe/ftyperc__).  __ftyperc__ has the file type table which determines
 which local options (including syntax for the highlighter) are applied to
 each file type.
 
-## Initialization file loading sequence
+### Initialization file loading sequence
 
 If the path for an initialization file begins with '/' (you can specify this
 with the include directive), JOE only tries to load it from the absolute
@@ -2651,7 +2637,7 @@ print a warning in the startup log.  Previous versions of JOE would prompt
 the user for this case- the idea was that JOE may be unusable with an out of
 date initialization file.
 
-## joerc file sections
+### joerc file sections
 
 The __joerc__ file is broken up into a number of sections:
 
@@ -2688,7 +2674,7 @@ Key binding tables can inherit bindings from already defined tables.  This
 allows you to group common key bindings into a single table which is
 inherited by the others.
 
-## Mode command
+### Mode command
 
 Many options can be controlled with the __^T__ menu.  This menu is defined
 in the joerc file.  Each option in the __^T__ menu just executes a macro. 
@@ -2699,7 +2685,7 @@ directly with:
 
 Hit __Tab__ __Tab__ for a completion list of all options.
 
-## Menu command
+### Menu command
 
 This command calls up a named menu of macros which was defined in the
 __joerc__ file.
