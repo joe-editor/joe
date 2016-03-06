@@ -2,7 +2,15 @@
 
 [Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
 
+[Browse source](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree)
+
+[Download source distribution](http://prdownloads.sourceforge.net/joe-editor/joe-4.2.tar.gz?download)
+
+[Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
+
 ### JOE.next (not yet released changes in Mercurial)
+
+### JOE 4.2
 
 * New or improved syntax files for the following languages: 
 
