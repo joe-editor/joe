@@ -3,8 +3,6 @@ Documentation
 
 	Write more code documentation...
 
-	joe --help should print command line options
-
 Nits:
 
 	1413863  sigwinch breaks tcsetsw which messes up keyboard?  I
@@ -1431,3 +1429,4 @@ calculator:
 
 	tab completion should escape file names for joe [fixed]
 
+	joe --help should print command line options [done]
