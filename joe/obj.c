@@ -936,6 +936,42 @@ void vasort(char **ary, int len)
 	qsort(ary, len, SIZEOF(char *), (int (*)(const void *, const void *))_acmp);
 }
 
+void vadel(char **a, ptrdiff_t ofst, ptrdiff_t len)
+{
+	if (a && ofst < valen(a)) {
+		ptrdiff_t x;
+		
+		if (ofst + len > valen(a))
+			len = valen(a) - ofst;
+		if (obj_isperm(a)) {
+			for (x = ofst; x < ofst + len; ++x)
+				obj_free(a[x]);
+		}
+		if (valen(a) - (ofst + len))
+			mmove(a + ofst, a + ofst + len, (valen(a) - (ofst + len)) * SIZEOF(char*));
+		obj_len(a) -= len;
+		a[valen(a)] = 0;
+	}
+}
+
+void vauniq(char **a)
+{
+	if (a) {
+		ptrdiff_t x;
+		ptrdiff_t len = valen(a);
+		for (x = 0; x < len - 1; ++x) {
+			ptrdiff_t y;
+			for (y = x + 1; y < len; ++y) {
+				if (zcmp(a[x], a[y])) {
+					break;
+				}
+				vadel(a, x + 1, y - (x + 1));
+				len -= y - (x + 1);
+			}
+		}
+	}
+}
+
 char **vawords(char **a, char *s, int len, char *sep, int seplen)
 {
 	int x;

@@ -85,4 +85,4 @@ void copy_c(char **d, const char **s);
 
 /* Get next character from string and advance it, locale dependent */
 
-int fwrd_c(struct charmap *map, const char **s);
+int fwrd_c(struct charmap *map, const char **s, ptrdiff_t *len);

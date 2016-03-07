@@ -93,7 +93,11 @@ int isreg(const char *s);
  */
 char **rexpnd(const char *word);
 char **rexpnd_users(const char *word);
+char **rexpnd_cmd_cd(const char *word);
+char **rexpnd_cmd_path(const char *word);
 
 int chpwd(const char *path);
 char *pwd(void);
 char *simplify_prefix(const char *path);
+
+char *dequotevs(char *path);

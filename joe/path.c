@@ -349,6 +349,52 @@ char **rexpnd(const char *word)
 	}
 	return lst;
 }
+
+char **rexpnd_cmd_cd(const char *word)
+{
+	DIR *dir;
+	char **lst = NULL;
+
+	struct dirent *de;
+	dir = opendir(".");
+	if (dir) {
+		while ((de = readdir(dir)) != NULL)
+			if (zcmp(".", de->d_name))
+				if (rmatch(word, de->d_name) && !access(de->d_name, X_OK))
+					lst = vaadd(lst, vsncpy(NULL, 0, sz(de->d_name)));
+		closedir(dir);
+	}
+	return lst;
+}
+
+char **rexpnd_cmd_path(const char *word)
+{
+	char *raw_path = getenv("PATH");
+	char **lst = NULL;
+	struct dirent *de;
+	char **path;
+	ptrdiff_t x;
+	if (raw_path) {
+		path = vawords(NULL, sz(raw_path), sc(":"));
+		for (x = 0; path[x]; ++x) {
+			DIR *dir;
+			if (!chpwd(path[x])) {
+				dir = opendir(".");
+				if (dir) {
+					while ((de = readdir(dir)) != NULL) {
+						struct stat buf[1];
+						if (rmatch(word, de->d_name) && !stat(de->d_name, buf) && S_ISREG(buf->st_mode) && !access(de->d_name, X_OK))
+							lst = vaadd(lst, vsncpy(NULL, 0, sz(de->d_name)));
+					}
+					closedir(dir);
+				}
+			}
+		}
+		varm(path);
+	}
+	return lst;
+}
+
 /********************************************************************/
 char **rexpnd_users(const char *word)
 {
@@ -443,4 +489,16 @@ char *simplify_prefix(const char *s)
 		n = vsncpy(NULL,0,sz(s));
 	}
 	return n;
+}
+
+char *dequotevs(char *s)
+{
+	ptrdiff_t x;
+	char *d = vsensure(NULL, vslen(s));
+	for (x = 0; x != vslen(s); ++x)
+		if (s[x] == '\\') {
+			/* Just skip it */
+		} else
+			d = vsadd(d, s[x]);
+	return d;
 }

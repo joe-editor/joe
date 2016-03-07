@@ -173,6 +173,10 @@ char **vaadd(char **vary, char *s);
 
 void vasort(char **vary, int len);
 
+void vadel(char **a, ptrdiff_t ofst, ptrdiff_t len);
+
+void vauniq(char **a);
+
 char **vawords(char **vary, char *s, int len, char *sep, int seplen);
 
 #define sz(s) (s), zlen(s)

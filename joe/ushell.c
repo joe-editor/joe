@@ -306,7 +306,7 @@ int urun(W *w, int k)
 	WIND_BW(bw, w);
 	
 	s = ask(w, joe_gettext(_("Program to run: ")), &runhist, "Run",
-	        utypebw, locale_map, 0, 0, NULL);
+	        cmplt_command, locale_map, 0, 0, NULL);
 
 	if (s) {
 		char **a;
@@ -344,7 +344,7 @@ int ubuild(W *w, int k)
 		s = joe_gettext(_("Enter build command (for example, 'make'): "));
 	}
 	/* "file prompt" was set for this... */
-	s = ask(w, s, &buildhist, "Run", utypebw, locale_map, 0, prev, NULL);
+	s = ask(w, s, &buildhist, "Run", cmplt_command, locale_map, 0, prev, NULL);
 	if (s) {
 		char **a = vamk(10);
 		char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));
@@ -392,7 +392,7 @@ int ugrep(W *w, int k)
 		prompt = joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): "));
 	}
 	/* "file prompt" was set for this... */
-	s = ask(w, prompt, &grephist, "Run", utypebw, locale_map, 0, prev, NULL);
+	s = ask(w, prompt, &grephist, "Run", cmplt_command, locale_map, 0, prev, NULL);
 	if (s) {
 		char **a = vamk(10);
 		char *cmd = vsncpy(NULL, 0, sc("/bin/sh"));

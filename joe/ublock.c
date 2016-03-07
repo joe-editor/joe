@@ -883,7 +883,7 @@ int uinsf(W *w, int k)
 	WIND_BW(bw, w);
 	
 	s = ask(w, joe_gettext(_("Name of file to insert (^C to abort): ")), &filehist,
-	        "Names", cmplt, locale_map, 3, 0, NULL);
+	        "Names", cmplt_file_in, locale_map, 3, 0, NULL);
 	if (s) {
 		if (square)
 			if (markv(1)) {
@@ -1069,7 +1069,7 @@ int ufilt(W *w, int k)
 					       markk->line - markb->line + 1,
 					       markk->xcol);
 
-			tmp = bread(fr[0], MAXLONG);
+			tmp = bread(fr[0], MAXOFF);
 			if (piscol(tmp->eof))
 				height = tmp->eof->line + 1;
 			else
@@ -1096,7 +1096,7 @@ int ufilt(W *w, int k)
 			if (!flg)
 				prgetc(p);
 			bdel(markb, p);
-			binsb(p, bread(fr[0], MAXLONG));
+			binsb(p, bread(fr[0], MAXOFF));
 			if (!flg) {
 				pset(p,markk);
 				prgetc(p);

@@ -18,9 +18,8 @@ OPTIONS *options_list = NULL; /* File name dependent list of options */
 
 OPTIONS pdefault = {
 	NULL,		/* *next */
-	NULL,		/* *name_regex */
-	NULL,		/* *contents_regex */
-	NULL,		/* *r_contents_regex */
+	"prompt",	/* ftype */
+	NULL,		/* *match */
 	0,		/* overtype */
 	0,		/* lmargin */
 	76,		/* rmargin */
@@ -81,9 +80,8 @@ OPTIONS pdefault = {
 
 OPTIONS fdefault = {
 	NULL,		/* *next */
-	NULL,		/* *name_regex */
-	NULL,		/* *contents_regex */
-	NULL,		/* *r_contents_regex */
+	"default",	/* ftype */
+	NULL,		/* *match */
 	0,		/* overtype */
 	0,		/* lmargin */
 	76,		/* rmargin */
@@ -168,38 +166,35 @@ int ulanguage(W *w, int k)
 	return 0;
 }
 
-/* Update options */
+/* Update options
+ * This determines option values based on option names, for example it looks up the character map based on name */
 
 void lazy_opts(B *b, OPTIONS *o)
 {
+	struct charmap *orgmap = b->o.charmap; /* Remember guessed character map */
 	o->syntax = load_syntax(o->syntax_name);
-	if (!o->map_name) {
-		/* Guess encoding if it's not explicitly given */
-		char buf[1024];
-		ptrdiff_t len = SIZEOF(buf);
-		if (b->eof->byte < len)
-			len = TO_DIFF_OK(b->eof->byte);
-		brmem(b->bof, buf, len);
-		o->charmap = guess_map(buf, len);
-		o->map_name = zdup(o->charmap->name);
-	} else {
-		o->charmap = find_charmap(o->map_name);
+	b->o = *o;
+	if (!b->o.map_name || !(b->o.charmap = find_charmap(b->o.map_name))) {
+		/* Use the guessed one if it wasn't explicitly given */
+		b->o.charmap = orgmap;
+		if (orgmap)
+			b->o.map_name = orgmap->name;
 	}
-	if (!o->charmap)
-		o->charmap = locale_map;
-	if (!o->language)
-		o->language = zdup(locale_msgs);
-	if (o->hex) {
+	if (!b->o.charmap)
+		b->o.charmap = locale_map;
+	if (!b->o.language)
+		b->o.language = locale_msgs;
+	if (b->o.hex) {
 		/* Hex not allowed with UTF-8 */
-		if (o->charmap->type) {
-			o->charmap = find_charmap("c");
-			o->hex |= HEX_RESTORE_UTF8;
+		if (b->o.charmap->type) {
+			b->o.charmap = find_charmap("c");
+			b->o.hex |= HEX_RESTORE_UTF8;
 		}
 		
 		/* Hex not allowed with CRLF */
-		if (o->crlf) {
-			o->crlf = 0;
-			o->hex |= HEX_RESTORE_CRLF;
+		if (b->o.crlf) {
+			b->o.crlf = 0;
+			b->o.hex |= HEX_RESTORE_CRLF;
 		}
 	}
 }
@@ -209,30 +204,32 @@ void lazy_opts(B *b, OPTIONS *o)
 void setopt(B *b, const char *parsed_name)
 {
 	OPTIONS *o;
+	struct options_match *match;
 
-	for (o = options_list; o; o = o->next)
-		if (rmatch(o->name_regex, parsed_name)) {
-			if(o->contents_regex) {
-				P *p = pdup(b->bof, "setopt");
-				if (!o->r_contents_regex)
-					o->r_contents_regex = joe_regcomp(ascii_map, o->contents_regex, zlen(o->contents_regex), 0, 1, 0);
-				if (o->r_contents_regex && !joe_regexec(o->r_contents_regex, p, 0, 0, 0)) {
-					prm(p);
-					b->o = *o;
-					lazy_opts(b, &b->o);
-					goto done;
+	for (o = options_list; o; o = o->next) {
+		struct options_match *match;
+		for (match = o->match; match; match = match->next) {
+			if (rmatch(match->name_regex, parsed_name)) {
+				if(match->contents_regex) {
+					P *p = pdup(b->bof, "setopt");
+					if (!match->r_contents_regex)
+						match->r_contents_regex = joe_regcomp(ascii_map, match->contents_regex, zlen(match->contents_regex), 0, 1, 0);
+					if (match->r_contents_regex && !joe_regexec(match->r_contents_regex, p, 0, 0, 0)) {
+						prm(p);
+						lazy_opts(b, o);
+						goto done;
+					} else {
+						prm(p);
+					}
 				} else {
-					prm(p);
+					lazy_opts(b, o);
+					goto done;
 				}
-			} else {
-				b->o = *o;
-				lazy_opts(b, &b->o);
-				goto done;
 			}
 		}
+	}
 
-	b->o = fdefault;
-	lazy_opts(b, &b->o);
+	lazy_opts(b, &fdefault);
 
 	done:;
 }
@@ -292,6 +289,7 @@ struct glopts {
 	{"guess_indent",0, &guessindent, NULL, _("Automatically detect indentation"), _("Do not automatically detect indentation"), _("  Guess indent "), 0, 0, 0 },
 	{"guess_non_utf8",0, &guess_non_utf8, NULL, _("Automatically detect non-UTF-8 in UTF-8 locale"), _("Do not automatically detect non-UTF-8"), _("  Guess non-UTF-8 "), 0, 0, 0 },
 	{"guess_utf8",0, &guess_utf8, NULL, _("Automatically detect UTF-8 in non-UTF-8 locale"), _("Do not automatically detect UTF-8"), _("  Guess UTF-8 "), 0, 0, 0 },
+	{"guess_utf16",0, &guess_utf16, NULL, _("Automatically detect UTF-16"), _("Do not automatically detect UTF-16"), _("  Guess UTF-16 "), 0, 0, 0 },
 	{"transpose",0, &transpose, NULL, _("Menu is transposed"), _("Menus are not transposed"), _("  Transpose menus "), 0, 0, 0 },
 	{"crlf",	4, NULL, (char *) &fdefault.crlf, _("CR-LF is line terminator"), _("LF is line terminator"), _("Z CR-LF (MS-DOS) "), 0, 0, 0 },
 	{"linums",	4, NULL, (char *) &fdefault.linums, _("Line numbers enabled"), _("Line numbers disabled"), _("N Line numbers "), 0, 0, 0 },
@@ -324,6 +322,7 @@ struct glopts {
 	{"backpath",	2, &backpath, NULL, _("Backup files stored in (%s): "), 0, _("  Path to backup files "), 0, 0, 0 },
 	{"syntax",	9, NULL, NULL, _("Select syntax (^C to abort): "), 0, _("Y Syntax"), 0, 0, 0 },
 	{"encoding",13, NULL, NULL, _("Select file character set (^C to abort): "), 0, _("E Encoding "), 0, 0, 0 },
+	{"type",	15, NULL, NULL, _("Select file type (^C to abort): "), 0, _("F File type "), 0, 0, 0 },
 	{"highlighter_context",	4, NULL, (char *) &fdefault.highlighter_context, _("Highlighter context enabled"), _("Highlighter context disabled"), _("  ^G uses highlighter context "), 0, 0, 0 },
 	{"single_quoted",	4, NULL, (char *) &fdefault.single_quoted, _("Single quoting enabled"), _("Single quoting disabled"), _("  ^G ignores '... ' "), 0, 0, 0 },
 	{"no_double_quoted",4, NULL, (char *) &fdefault.no_double_quoted, _("Double quoting disabled"), _("Double quoting enabled"), _("  ^G ignores \"... \" "), 0, 0, 0 },
@@ -351,6 +350,8 @@ struct glopts {
 	{"columns",	1, &env_columns, NULL, 0, 0, 0, 0, 2, 1024 },
 	{"skiptop",	1, &skiptop, NULL, 0, 0, 0, 0, 0, 64 },
 	{"notite",	0, &notite, NULL, 0, 0, 0, 0, 0, 0 },
+	{"brpaste",	0, &brpaste, NULL, 0, 0, 0, 0, 0, 0 },
+	{"pastehack",	0, &pastehack, NULL, 0, 0, 0, 0, 0, 0 },
 	{"nolinefeeds",	0, &nolinefeeds, NULL, 0, 0, 0, 0, 0, 0 },
 	{"mouse",	0, &xmouse, NULL, 0, 0, 0, 0, 0, 0 },
 	{"usetabs",	0, &opt_usetabs, NULL, 0, 0, 0, 0, 0, 0 },
@@ -385,6 +386,42 @@ static void izopts(void)
 	}
 	isiz = 1;
 }
+
+/* Set file type option */
+
+static char **getftypes(void)
+{
+	OPTIONS *o;
+	char **s = vaensure(NULL, 20);
+	int x;
+
+	for (o = options_list; o; o = o->next)
+		s = vaadd(s, vsncpy(NULL, 0, sz(o->ftype)));
+	vasort(s, valen(s));
+	return s;
+}
+
+char **ftypes = NULL;	/* Array of file types */
+
+static int ftypecmplt(BW *bw, int k)
+{
+	if (!ftypes) {
+		ftypes = getftypes();
+		vaperm(ftypes);
+	}
+	return simple_cmplt(bw, ftypes);
+}
+
+OPTIONS *find_ftype(const char *s)
+{
+	OPTIONS *o;
+	for (o = options_list; o; o = o->next)
+		if (!zcmp(o->ftype, s))
+			break;
+	return o;
+}
+
+B *ftypehist = NULL;
 
 /* Set a global or local option:
  * 's' is option name
@@ -430,6 +467,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 		case 0: /* Global variable flag option */
 			if (set)
 				*(int *)opt->set = st;
+			ret = 1;
 			break;
 		case 1: /* Global variable integer option */
 			if (set && arg) {
@@ -437,6 +475,10 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 				if (val >= opt->low && val <= opt->high)
 					*(int *)opt->set = val;
 			}
+			if (arg)
+				ret = 2;
+			else
+				ret = 1;
 			break;
 		case 2: /* Global variable string option */
 			if (set) {
@@ -445,10 +487,15 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 				else
 					*(char **) opt->set = 0;
 			}
+			if (arg)
+				ret = 2;
+			else
+				ret = 1;
 			break;
 		case 4: /* Local option flag */
 			if (options)
 				*(int *) ((char *) options + opt->ofst) = st;
+			ret = 1;
 			break;
 		case 5: /* Local option integer */
 			if (arg) {
@@ -459,6 +506,10 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 							  options + opt->ofst) = val;
 				} 
 			}
+			if (arg)
+				ret = 2;
+			else
+				ret = 1;
 			break;
 		case 14: /* Local option off_t */
 			if (arg) {
@@ -469,6 +520,22 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 							  options + opt->ofst) = zz;
 				} 
 			}
+			if (arg)
+				ret = 2;
+			else
+				ret = 1;
+			break;
+		case 15: /* Set file type */
+			if (arg && options) {
+				OPTIONS *o = find_ftype(arg);
+				if (o) {
+					*options = *o;
+				}
+			}
+			if (arg)
+				ret = 2;
+			else
+				ret = 1;
 			break;
 		case 6: /* Local string option */
 			if (options) {
@@ -480,6 +547,10 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 							  options + opt->ofst) = 0;
 				}
 			}
+			if (arg)
+				ret = 2;
+			else
+				ret = 1;
 			break;
 		case 7: /* Local option numeric + 1, with range checking */
 			if (arg) {
@@ -491,6 +562,10 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 							  options + opt->ofst) = zz;
 				}
 			}
+			if (arg)
+				ret = 2;
+			else
+				ret = 1;
 			break;
 
 		case 9: /* Set syntax */
@@ -499,18 +574,21 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 			/* this was causing all syntax files to be loaded...
 			if (arg && options)
 				options->syntax = load_syntax(arg); */
+			if (arg)
+				ret = 2;
+			else
+				ret = 1;
 			break;
 
 		case 13: /* Set byte mode encoding */
 			if (arg && options)
 				options->map_name = zdup(arg);
+			if (arg)
+				ret = 2;
+			else
+				ret = 1;
 			break;
 		}
-		/* This is a stupid hack... */
-		if ((opt->type & 3) == 0 || !arg)
-			return 1;
-		else
-			return 2;
 	} else {
 		/* Why no case 6, string option? */
 		/* Keymap, mold, mnew, etc. are not strings */
@@ -946,6 +1024,23 @@ static int olddoopt(BW *bw, int y, int flg)
 				} else {
 					return -1;
 				}
+			} case 15: {
+				buf = vsfmt(buf, 0, joe_gettext(glopts[y].yes), "");
+				s = ask(bw->parent, buf, &ftypehist, NULL, ftypecmplt, utf8_map, 0, 0, NULL);
+				if (s) {
+					OPTIONS *o = find_ftype(s);
+					
+					if (!o) {
+						msgnw(bw->parent, joe_gettext(_("No such file type")));
+						return -1;
+					}
+					
+					lazy_opts(bw->b, o);
+					bw->o = bw->b->o;
+					return 0;
+				} else {
+					return -1;
+				}
 			}
 		}
 	}
@@ -972,6 +1067,8 @@ const char *get_status(BW *bw, char *s)
 				return vsfmt(NULL, 0, "%d", *(int *) ((char *) &bw->o + glopts[y].ofst));
 			} case 7: {
 				return vsfmt(NULL, 0, "%d", *(int *) ((char *) &bw->o + glopts[y].ofst) + 1);
+			} case 15: {
+				return bw->o.ftype;
 			} default: {
 				return "";
 			}

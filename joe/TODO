@@ -1,24 +1,77 @@
+review options setting system:
+  why is encoding / syntax not a command, but a mode? (I think these probably should be commands)
+  why is ftype a command instead of a mode?
+  can we set encoding/syntax/ftype on command line: joe -ftype c fred
+
+  how it works now:
+     1. load file with bfind
+         A. this calls setopt to determine ftype type, then applies options from OPTIONS to B using lazy_opts
+             In particular, it looks up encoding and syntax based on names.
+     2. copy b->o to bw->o in bwmk
+     3. apply local options to bw->o
+             replace bw->o if ftype is given here?
+     4. use lazy_opts to propogate them back to bw->b->o
+
+  This is broken for setting the syntax on the command line: we look in bw->o for it, not bw->b->o.
+
+  Special processing for: readonly (we get it from b->rdonly, and stick it back after options)
+                          charmap (we delay lookup
+                          encoding (we delay lookup, also we try to learn it in lazyopt: should probably be in bload along with utf16 stuff)
+
+  bw->o options: hex, ansi, syntax, zmsg, smsg, mfirst, autoindent, wordwrap
+                 spaces, mnew, mold, linums, crlf?, overtype, rmsg, purify,
+                 indentc, tab, istep, indentc, indentfirst, smarthome,
+                 smartbacks, *comment, 
+  bw->b->o options:
+                 charmap, highlight?, text_delimiters, ansi?, syntax?
+
+  when we set any particular option using mode command:
+           we set it bw->o
+           we then copy bw->o to bw->b->o.
+             encoding / syntax also do this.
+
+
+filename quoting is messed up.. we can't edit files with \ in the name
+because of it
+   the buffer name should be in the clear, not quoted..
+   then we would not have to dequote on save
+   in particular, we need to handle ! differently...  probably it should be
+   an options flag.
+
+  so: on command line, no special meaning for !
+  at edit prompt: we remove the ! and convert it into a flag.. it probably
+  makes no sense to have this flag, or to even name the buffer
+
+Update ruby based on what we learned for coffeescript: call=.ruby when we
+have subst.  Check them all for this.
+
+Match []  {} () in all syntaxes?
+When we call, we do not seem to do recolor..  should we?  (see d.jsf: we
+have to add an extra state for coloring..)
+
+ceslide patch?
+joe regex highlighter for search prompt?
+
+include xjoe script?
+
+
+it's annoying when search fails because charmap changed.
+  it would be better if we tried to convert it..
+  or at least ignore the problem for ASCII.
+  also is previous search string in the correct charmap?
+  what about history?
+
 b_jonas wishlist:
 	math variable for each boolean mode
-	txt should insert literal tabs..
-	BTW, txt is broken.. assumes 8-bit
-
-replacement string:
-	allow more escape characters?
-
-	provide a way to convert to upper/lower or otherwise modify
-	selection
 
 help screen with 8-bit character set chart does not show properly
  - show it on 8-bit locales?
-
-only "brpaste" shows up in a macro when I paste: I rather have the text..
 
 old joe is messing up state file of new joe
 
 Add unicode normalization option to search
 
-Regex in ftyperc is weird because character set of file is not yet know. 
+Regex in ftyperc is weird because character set of file is not yet known. 
 For now we assume ascii_map..
 
 ftyperc improvements:
@@ -66,7 +119,6 @@ look at texec..
    also crlf mode.
  - Review this: other things should be disabled also
 
-
 valgrind run: look for leaks.
 
 Prebuilt radix trees for character classes to avoid startup overhead?  We
@@ -74,25 +126,6 @@ could do this..
 
 Digit values
 [wrote function, but not using it]
-
-Added some more convenient classes:
-   see http://www.w3.org/TR/xml11/#NT-NameStartChar
-   see http://www.w3.org/TR/xmlschma11-2/#regexs
-
-	\d	Digit: same as \p{Nd}
-	\D	opposite
-	\s	space, tab, newline, return
-	\S	opposite
-	\w	word character: [\x{0}-\x{10ffff}]-[\p{P}\p{Z}\p{C}]
-	\W	opposite
-	\p{block-name}
-
-	\i	NameStartChar
-			: A-Z _ a-z C0-D6 D8-F6 F8-2FF 370-37D 37F-1FFF 200C-200D 2070-218F 2C00-2FEF 3001-D7FF F900-FDCF FDF0-FFFD 10000-EFFFF
-	\I	opposite
-	\c	NameChar
-			\i - . 0-9 B7 0300-036F 203F-2040
-	\C	opposite
 
 
 Java:
@@ -1253,3 +1286,42 @@ Improve syntax files to work with unicode.
 
 quote tab should insert a tab
 [done]
+	txt should insert literal tabs.. BTW, txt is broken.. assumes 8-bit
+	[done]
+
+only "brpaste" shows up in a macro when I paste: I rather have the text..
+[fixed]
+
+replacement string:
+	provide a way to convert to upper/lower or otherwise modify
+	selection: sed has \u \U \l \L \E
+[done]
+
+Added some more convenient classes:
+   see http://www.w3.org/TR/xml11/#NT-NameStartChar
+   see http://www.w3.org/TR/xmlschma11-2/#regexs
+
+	\d	Digit: same as \p{Nd}
+	\D	opposite
+	\s	space, tab, newline, return
+	\S	opposite
+	\w	word character: [\x{0}-\x{10ffff}]-[\p{P}\p{Z}\p{C}]
+	\W	opposite
+	\p{block-name}
+
+	\i	NameStartChar
+			: A-Z _ a-z C0-D6 D8-F6 F8-2FF 370-37D 37F-1FFF 200C-200D 2070-218F 2C00-2FEF 3001-D7FF F900-FDCF FDF0-FFFD 10000-EFFFF
+	\I	opposite
+	\c	NameChar
+			\i - . 0-9 B7 0300-036F 203F-2040
+	\C	opposite
+[done]
+
+take brpaste disable patch
+[done- added brpaste mode]
+
+need shell-like tab completion in compile/grep prompt
+[done]
+
+take ftyperc patch..
+[done- created ftype command, rearranged ftyperc]

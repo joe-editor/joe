@@ -198,6 +198,14 @@ not a symbolic links, JOE first deletes the file before
 writing it in order to break hard-links.
 <br>
 
+* brpaste
+When JOE starts, send command to the terminal emulator that
+enables "bracketed paste mode" (but only if the terminal
+seems to have the ANSI command set).  In this mode, text
+pasted into the window is bracketed with ESC \[ 2 0 0 ~ and
+ESC \[ 2 0 1 ~.
+<br>
+
 * columns nnn
 Set number of columns in terminal emulator (in case
 termcap entry is wrong).  This is only useful on old system which don't have
@@ -242,6 +250,12 @@ in UTF-8 locales.
 * guess_utf8
 When set, enable guessing of UTF-8 files in
 non-UTF-8 locales.
+<br>
+
+* guess_utf16
+When set, enable guessing of UTF-16 files.  If a UTF-16BE or UTF-16LE file
+is detected, it is converted to UTF-8 during load, and converted back to
+UTF-16 during save.
 <br>
 
 * help
@@ -359,6 +373,11 @@ set up to save and restore the terminal screen contents when JOE starts and
 exits.
 <br>
 
+* pastehack
+If keyboard input comes in as one block assume it's a mouse
+paste and disable autoindent and wordwrap.
+<br>
+
 * noxon
 Disable __^S__ and __^Q__ flow control, possibly allowing __^S__ and __^Q__ to be used as
 editor keys.
@@ -407,6 +426,10 @@ Enable rectangular block mode.
 * transpose
 Transpose rows with columns in all menus.
 <br>
+
+* type
+Select file type, overriding the automatically determined type.  The file
+types are defined in the __ftyperc__ file.
 
 * undo_keep nnn
 Sets number of undo records to keep (0 means infinite).
@@ -937,15 +960,23 @@ directly to the terminal.
 
 ## Character sets and UTF-8
 
-JOE handles two classes of character sets: UTF-8 and byte coded (like
-ISO-8859-1).  It can not yet handle other major classes such as UTF-16 or
-GB2312. There are other restrictions: character sets must use LF (0x0A) or
-CR-LF (0x0D - 0x0A) as line terminators, space must be 0x20 and tab must be
-0x09. Basically, the files must be UNIX or MS-DOS compatible text files.
+JOE natively handles two classes of character sets: UTF-8 and byte coded
+(like ISO-8859-1).  For these character sets, the file is loaded as-is into
+memory, and is exactly preserved during save, even if it contains UTF-8
+coding errors.
+
+It can not yet natively handle other major classes such as UTF-16 or GB2312. 
+There are other restrictions: character sets must use LF (0x0A) or CR-LF
+(0x0D - 0x0A) as line terminators, space must be 0x20 and tab must be 0x09. 
+Basically, the files must be UNIX or MS-DOS compatible text files.
 
 This means EBCDIC will not work properly (but you would need to handle fixed
 record length lines anyway) and character sets which use CR terminated lines
 (MACs) will not yet work.
+
+JOE now supports UTF-16 (both big endian and little endian).  It supports
+UTF-16 by converting to UTF-8 during load, and converting back to UTF-16
+during save.
 
 The terminal and the file can have different encodings.  JOE will translate
 between the two.  Currently, one of the two must be UTF-8 for translation to
@@ -1219,7 +1250,8 @@ example, if __\\\[Tt]his__ is entered as the search string, then JOE finds
 both __This__ and __this__.  Ranges of characters can be entered within
 the brackets.  For example, __\\\[A-Z]__ finds any uppercase letter.  If
 the first character given in the brackets is __^__, then JOE tries to find
-any character not given in the the brackets.
+any character not given in the the brackets.  To include __-__ itself, include
+it as the last or first character (possibly after __^__).
 
 * __\\\\__
 
@@ -1243,6 +1275,15 @@ you give __"\\&"__, then JOE will put quote marks around words.
 
 These get replaced with the text which matched the Nth grouping; the text
 within the Nth set of \\( \\).
+
+* __\\l, \\u__
+
+Convert the next character of the repacement text to lowercase or uppercase.
+
+* __\\L, \\U__
+
+Convert all following replacement text to lowercase or uppercase.  Conversion
+stops when \\E is encountered.
 
 * __\\\\__
 
@@ -1313,43 +1354,54 @@ digit), \\p{Nl} (letter number) and \\p{No} (other number).
 
 * \\d
 
-This matches any Unicode digit.
+This matches any Unicode digit.  This is the same as \\p{Nd}.
 
 * \\D
 
-This matches anything except for a Unicode digit.
+This matches anything except for a Unicode digit.  This is the same as
+\\\[^\\p{Nd}].
 
 * \\w
 
-This matches any word character.
+This matches any word character.  This is the same as
+\\\[^\\p{C}\\p{P}\\p{Z}].
 
 * \\W
 
-This matches anything except for a word character.
+This matches anything except for a word character.  This is the same
+as \\\[\\p{C}\\p{P}\\p{Z}].
+ 
 
 * \\s
 
-This matches any space character.
+This matches any space character.  This is the same as
+\\\[\\t\\r\\f\\n\\p{Z}].
 
 * \\S
 
-This matches anything except for a spacing character.
+This matches anything except for a spacing character.  This is the
+same as \\\[^\\t\\r\\f\\n\\p{Z}].
+
 
 * \\i
 
-This matches an identifier start character.
+This matches an identifier start character.  This is the same as
+\\\[\\p{L}\\p{Pc}\\p{Nl}].
 
 * \\I
 
-This matches anything except for an identifier start character.
+This matches anything except for an identifier start character.  This is the
+same as \\\[^\\p{L}\\p{Pc}\\p{Nl}].
 
 * \\c
 
-This matches an identifier continuation character.
+This matches an identifier continuation character.  This is the same as
+\\\[\\i\\p{Mn}\\p{Mc}\\p{Nd}\\x{200c}\\x{200d}].
 
 * \\C
 
-This matches anything except for an identifier continuation character.
+This matches anything except for an identifier continuation character.  This
+is the same as \\\[^\\i\\p{Mn}\\p{Mc}\\p{Nd}\\x{200c}\\x{200d}].
 
 * \\t Tab
 * \\n Newline
@@ -3339,8 +3391,13 @@ characters)</td></tr>
 <tr valign="top"><td>paste</td><td>Insert base64 encoded text (for XTerm --enable-base64
 option).</td></tr>
 
-<tr valign="top"><td>brpaste</td><td>Insert text until __Esc [ 2 0 1 ~__ has been received. 
-This is for bracketed paste support.</td></tr>
+<tr valign="top"><td>brpaste</td><td>Disable autoindent, wordwrap and
+spaces.  The idea is to bind this to __Esc [ 2 0 0 ~__ so that when the
+terminal emulator sends a mouse paste, the text is inserted as-is.</td></tr>
+
+<tr valign="top"><td>brpaste_done</td><td>Restore autoindent, wordwrap and
+spaces modes to their original values before brpaste.  The idea is to bind this
+to __Esc [ 2 0 1 ~__ so that these modes are restored after a mouse paste.</td></tr>
 
 </tbody>
 </table>
