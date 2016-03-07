@@ -189,7 +189,7 @@ int ufinish(W *w, int k)
 		pgetc(p);
 
 	if (bw->cursor->byte!=p->byte && bw->cursor->byte-p->byte<64) {
-		line = brvs(NULL, p, bw->cursor->byte-p->byte);
+		line = brvs(NULL, p, bw->cursor->byte - p->byte); /* CVT: Risky- we assume the match fits in memory */
 		obj_perm(line);
 
 		/* We have a word */
@@ -674,7 +674,7 @@ int dofirst(BW *bw, int back, int repl, char *hint)
 
 			t = s;
 			while (*t) {
-				int c = fwrd_c(locale_map, &t);
+				int c = fwrd_c(locale_map, &t, NULL);
 				if (yncheck(all_key, c))
 					srch->all = 1;
 				else if (yncheck(list_key, c))
