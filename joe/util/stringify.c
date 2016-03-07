@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     printf("\n");
     printf("#include \"types.h\"\n");
     printf("\n");
-    printf("char *builtins[]=\n");
+    printf("const char *builtins[]=\n");
     printf("{\n");
     for (x = 1; argv[x]; ++x) {
         int c;

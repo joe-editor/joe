@@ -4,8 +4,8 @@ alias joehelp 'echo "clear         - erase buffer"; \\
 echo "joe           - edit file"; \\
 echo "math 1+2      - calculator"; \\
 echo "pop           - dismiss shell"; \\
-echo "parse cmd     - grep parse command"; \\
-echo "parserr cmd   - compile parse command"; \\
+echo "parse         - grep parse the buffer"; \\
+echo "parserr       - compile parse the buffer"; \\
 echo "release       - drop parsed messages"; \\
 echo "markb         - mark beginning of region"; \\
 echo "markk         - mark end of region"; \\

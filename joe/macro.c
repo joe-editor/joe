@@ -111,8 +111,8 @@ MACRO *macsta(MACRO *m, int a)
 MACRO *mparse(MACRO *m, const char *buf, ptrdiff_t *sta, int secure)
 {
 	const char *org = buf;
-	int bf[256];
-	char bf1[256];
+	int bf[1024];
+	char bf1[1024];
 	int x;
 
       macroloop:

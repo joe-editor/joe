@@ -2341,13 +2341,14 @@ jump has the form:
         <character-list> <target-state-name> [<option>s]
 
 There are three ways to specify <character-list\>s, either __\*__ for any
-character not otherwise specified, __&__ to match the character in the
-delimiter match buffer (opposite character like \( and \) automatically
-match) or a literal list of characters within quotes (ranges and escape
-sequences allowed: see [Escape Sequences](#escapes)).  When the next
-character matches any in the list, a jump
-to the target-state is taken and the character is eaten (we advance to the
-next character of the file to be colored).
+character not otherwise specified, __%__ or __&__ to match the character in
+the delimiter match buffer (__%__ matches the saved character exactly, while
+__&__ matches the opposite character, for example \( will match \) when
+__&__ is used) or a literal list of characters within quotes (ranges and
+escape sequences allowed: see [Escape Sequences](#escapes)).  When the next
+character matches any in the list, a jump to the target-state is taken and
+the character is eaten (we advance to the next character of the file to be
+colored).
 
 The * transition should be the first transition specified in the state.
 
@@ -2437,12 +2438,19 @@ To call a subroutine, use the 'call' option:
 The subroutine called 'string' is called and the jump to 'fred' is
 ignored.  The 'dquote' option is passed to the subroutine.
 
+If you use recolor along with call, the color used is that of the first
+state of the subroutine.
+
 The subroutine itself returns to the caller like this:
 
         "\""    whatever    return
 
-If we're in a subroutine, the return is made.  Otherwise the jump
-to 'whatever' is made.
+If we're in a subroutine, it returns to the target state of the call ("fred"
+in the above example).  If we're not in a subroutine, it jumps to
+"whatever".
+
+If you use recolor along with return, the color used is from the returned
+state ("fred" in the example above).
 
 There are several ways of delimiting subroutines which show up in how it
 is called.  Here are the options:
@@ -2476,7 +2484,6 @@ directives.  For example:
     .endif
 
 .else if also available.  .ifdefs can be nested.
-
 
 <a name="joerc"></a>
 ## The joerc file

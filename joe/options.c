@@ -204,7 +204,6 @@ void lazy_opts(B *b, OPTIONS *o)
 void setopt(B *b, const char *parsed_name)
 {
 	OPTIONS *o;
-	struct options_match *match;
 
 	for (o = options_list; o; o = o->next) {
 		struct options_match *match;
@@ -393,7 +392,6 @@ static char **getftypes(void)
 {
 	OPTIONS *o;
 	char **s = vaensure(NULL, 20);
-	int x;
 
 	for (o = options_list; o; o = o->next)
 		s = vaadd(s, vsncpy(NULL, 0, sz(o->ftype)));
@@ -412,7 +410,7 @@ static int ftypecmplt(BW *bw, int k)
 	return simple_cmplt(bw, ftypes);
 }
 
-OPTIONS *find_ftype(const char *s)
+static OPTIONS *find_ftype(const char *s)
 {
 	OPTIONS *o;
 	for (o = options_list; o; o = o->next)

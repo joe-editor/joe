@@ -703,9 +703,10 @@ int usetcd(W *w, int k)
 	if (!s)
 		return -1;
 	
-	if (s[0])
-		set_current_dir(bw, s = dequotevs(s), 1);
+	if (vslen(s) && s[vslen(s) - 1] != '/')
+		s = vsadd(s, '/');
 	
+	set_current_dir(bw, s = dequotevs(s), 1);
 	msgnw(w, vsfmt(NULL, 0, joe_gettext(_("Directory prefix set to %s")), s));
 	return 0;
 }

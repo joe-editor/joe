@@ -182,8 +182,8 @@ AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 # Check for programs..
 AC_CHECK_PROG(SPELL,aspell,aspell,ispell)
 
-AC_CONFIG_FILES([Makefile joe/Makefile rc/Makefile man/Makefile man/ru/Makefile
-syntax/Makefile po/Makefile charmaps/klingon
+AC_CONFIG_FILES([Makefile joe/Makefile joe/util/Makefile rc/Makefile
+man/Makefile man/ru/Makefile syntax/Makefile po/Makefile charmaps/klingon
 syntax/4gl.jsf syntax/ada.jsf syntax/ant.jsf syntax/asm.jsf syntax/awk.jsf
 syntax/batch.jsf syntax/c.jsf syntax/cobol.jsf syntax/comment_todo.jsf
 syntax/conf.jsf syntax/csharp.jsf syntax/csh.jsf syntax/css.jsf
