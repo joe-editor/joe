@@ -82,7 +82,7 @@ def main(version, outfile_h, outfile_wxi, designation):
 
 #define JW_VERSION_STR """ + "\"" + '.'.join(vparts) + """\"
 #define JW_VERSION_DESC """ + "\"" + desc + """\"
-#define JW_COPYRIGHT \"""" + ("Copyright \\xa9 %d John J. Jordan, and others (see About...)" % (year)) + """\"
+#define JW_COPYRIGHT \"""" + ("Copyright \\xa9 2015-%d John J. Jordan, and others (see About...)" % (year)) + """\"
 
 #define JW_SHORTVERSION \"""" + version + """\"
 
