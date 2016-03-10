@@ -41,16 +41,13 @@
 #define unlink glue_unlink
 #define mkdir glue_mkdir
 
-/* TODO: long is 32 bits on 64 bit Windows and JOE does not use time_t or off_t (it uses longs to
-   store these internally).  time_t is 64 bits on both platforms, but off_t is 32 bits.  This needs
-   to be fixed but it is an extensive change that touches all platforms.  For now, we will just live
-   with 32-bit types for both values. */
+/* TODO: We now accept 64-bit time_t here, but off_t is still 32 bits on 64-bit Windows. */
 
 #define lstat glue_stat
-#define stat _stat32
-#define _stat32(x,y) glue_stat((x),(y))		/* simultaneously ugly and clever :-) */
-#define jwstatfunc _wstat32
-#define fstat _fstat32
+#define stat _stat64i32
+#define _stat64i32(x,y) glue_stat((x),(y))		/* simultaneously ugly and clever :-) */
+#define jwstatfunc _wstat
+#define fstat _fstat
 
 /* UTF-8 encoding = ~3x MAX_PATH */
 #define PATH_MAX (MAX_PATH*3)
