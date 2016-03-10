@@ -9,8 +9,9 @@
 
 /* Executed when shell process terminates */
 
-static void cdone(B *b)
+static void cdone(void *obj)
 {
+	B *b = (B *)obj;
 	b->pid = 0;
 	close(b->out);
 	b->out = -1;
@@ -20,8 +21,9 @@ static void cdone(B *b)
 	}
 }
 
-static void cdone_parse(B *b)
+static void cdone_parse(void *obj)
 {
+	B *b = (B *)obj;
 	b->pid = 0;
 	close(b->out);
 	b->out = -1;
@@ -130,8 +132,9 @@ void vt_scrdn()
 	 }
 }
 
-static void cdata(B *b, unsigned char *dat, int siz)
+static void cdata(void *obj, char *dat, ptrdiff_t siz)
 {
+	B *b = (B *)obj;
 	if (b->vt) { /* ANSI terminal emulator */
 		MACRO *m;
 		do {
@@ -144,17 +147,17 @@ static void cdata(B *b, unsigned char *dat, int siz)
 			if (m) {
 				/* only do this if cursor is on window */
 				if ((maint->curwin->watom->what & TYPETW) && ((BW *)maint->curwin->object)->b == b) {
-					exmacro(m, 1);
+					exmacro(m, 1, NO_MORE_DATA);
 					edupd(1);
 				}
 				rmmacro(m);
 			}
 		} while (m);
 	} else { /* Dumb terminal */
-		P *q = pdup(b->eof, USTR "cdata");
-		P *r = pdup(b->eof, USTR "cdata");
+		P *q = pdup(b->eof, "cdata");
+		P *r = pdup(b->eof, "cdata");
 		off_t byte = q->byte;
-		unsigned char bf[1024];
+		char bf[1024];
 		int x, y;
 		cready(b, byte);
 		for (x = y = 0; x != siz; ++x) {
@@ -184,7 +187,7 @@ static void cdata(B *b, unsigned char *dat, int siz)
 	}
 }
 
-int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build, int out_only, unsigned char *first_command, int vt)
+int cstart(BW *bw, const char *name, char **s, void *obj, int build, int out_only, const char *first_command, int vt)
 {
 #if defined(__MSDOS__)
 	varm(s);
@@ -192,7 +195,7 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build,
 	return -1;
 #else
 	MPX *m;
-	int shell_w = -1, shell_h = -1;
+	ptrdiff_t shell_w = -1, shell_h = -1;
 
 
 	if (bw->b->pid) {
@@ -212,7 +215,7 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build,
 		bw->b->vt = mkvt(bw->b, master->top, master->h, master->w);
 
 		bw->b->o.ansi = 1;
-		bw->b->o.syntax = load_syntax(USTR "ansi");
+		bw->b->o.syntax = load_syntax("ansi");
 
 		/* Turn on shell mode for each window */
 		ansiall(bw->b);
@@ -227,7 +230,7 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build,
 	} else {
 		bw->b->pid = m->pid;
 		if (first_command)
-			if (-1 == write(bw->b->out, first_command, zlen(first_command)))
+			if (-1 == write(bw->b->out, first_command, strlen(first_command)))
 				msgnw(bw->parent, joe_gettext(_("Write failed when writing first command to shell")));
 	}
 	return 0;
@@ -236,23 +239,23 @@ int cstart(BW *bw, unsigned char *name, unsigned char **s, void *obj, int build,
 
 static int dobknd(BW *bw, int vt)
 {
-	unsigned char **a;
-	unsigned char *s;
-        unsigned char *sh;
+	char **a;
+	char *s;
+	const char *sh;
 #ifndef JOEWIN
-	unsigned char start_sh[] = ". " JOERC "shell.sh\n";
-	unsigned char start_csh[] = "source " JOERC "shell.csh\n";
+	const char start_sh[] = ". " JOERC "shell.sh\n";
+	const char start_csh[] = "source " JOERC "shell.csh\n";
 #endif
 
         if (!modify_logic(bw,bw->b))
         	return -1;
 
-        sh=(unsigned char *)getenv("SHELL");
+        sh=getenv("SHELL");
 
-        if (file_exists(sh) && zcmp(sh,USTR "/bin/sh")) goto ok;
-        if (file_exists(sh=USTR "/bin/bash")) goto ok;
-        if (file_exists(sh=USTR "/usr/bin/bash")) goto ok;
-        if (file_exists(sh=USTR "/bin/sh")) goto ok;
+        if (file_exists(sh) && zcmp(sh,"/bin/sh")) goto ok;
+        if (file_exists(sh="/bin/bash")) goto ok;
+        if (file_exists(sh="/usr/bin/bash")) goto ok;
+        if (file_exists(sh="/bin/sh")) goto ok;
 
         msgnw(bw->parent, joe_gettext(_("\"SHELL\" environment variable not defined or exported")));
         return -1;
@@ -265,7 +268,7 @@ static int dobknd(BW *bw, int vt)
 #ifndef JOEWIN
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, 0, 0, (vt ? (zstr(sh, USTR "csh") ? start_csh : start_sh) : NULL), vt);
+	return cstart(bw, sh, a, NULL, 0, 0, (vt ? (zstr(sh, "csh") ? start_csh : start_sh) : NULL), vt);
 #else
 	if (vt) {
 		unsigned char *vtbat;
@@ -301,9 +304,11 @@ static int dobknd(BW *bw, int vt)
 
 /* Start ANSI shell */
 
-int uvtbknd(BW *bw)
+int uvtbknd(W *w, int  k)
 {
-	if (kmap_empty(kmap_getcontext(USTR "vtshell"))) {
+	BW *bw;
+	WIND_BW(bw, w);
+	if (kmap_empty(kmap_getcontext("vtshell"))) {
 		msgnw(bw->parent, joe_gettext(_(":vtshell keymap is missing")));
 		return -1;
 	}
@@ -312,8 +317,10 @@ int uvtbknd(BW *bw)
 
 /* Start dumb shell */
 
-int ubknd(BW *bw)
+int ubknd(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (kmap_empty(shell_kbd->topmap)) {
 		msgnw(bw->parent, joe_gettext(_(":shell keymap is missing")));
 		return -1;
@@ -323,10 +330,10 @@ int ubknd(BW *bw)
 
 /* Get the shell and command line argument to execute another program */
 
-static unsigned char **getshell()
+static char **getshell()
 {
-	unsigned char **a;
-	unsigned char *cmd;
+	char **a;
+	char *cmd;
 
 	a = vamk(10);
 	
@@ -336,7 +343,7 @@ static unsigned char **getshell()
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 #else
-	cmd = vsncpy(NULL, 0, sz(USTR getenv("SHELL")));
+	cmd = vsncpy(NULL, 0, sz(getenv("SHELL")));
 	a = vaadd(a, cmd);
 	cmd = vsncpy(NULL, 0, sc("/C"));
 	a = vaadd(a, cmd);
@@ -349,14 +356,17 @@ static unsigned char **getshell()
 
 B *runhist = NULL;
 
-int urun(BW *bw)
+int urun(W *w, int k)
 {
-	unsigned char *s = ask(bw->parent, joe_gettext(_("Program to run: ")), &runhist, USTR "Run",
-	                       utypebw, locale_map, 0, 0, NULL);
+	char *s;
+	BW *bw;
+	WIND_BW(bw, w);
+	
+	s = ask(w, joe_gettext(_("Program to run: ")), &runhist, "Run",
+	        utypebw, locale_map, 0, 0, NULL);
 
 	if (s) {
-		unsigned char **a;
-
+		char **a;
 		if (!modify_logic(bw,bw->b))
 			return -1;
 
@@ -370,10 +380,14 @@ int urun(BW *bw)
 
 B *buildhist = NULL;
 
-int ubuild(BW *bw)
+int ubuild(W *w, int k)
 {
-	unsigned char *s;
+	BW *bw;
+	const char *s;
 	int prev = 0;
+	
+	WIND_BW(bw, w);
+
 	if (buildhist) {
 		s = joe_gettext(_("Build command: "));
 		prev = 1;
@@ -381,12 +395,30 @@ int ubuild(BW *bw)
 		s = joe_gettext(_("Enter build command (for example, 'make'): "));
 	}
 	/* "file prompt" was set for this... */
-	s = ask(bw->parent, s, &buildhist, USTR "Run", utypebw, locale_map, 0, prev, NULL);
+	s = ask(w, s, &buildhist, "Run", utypebw, locale_map, 0, prev, NULL);
 	if (s) {
-		unsigned char **a;
+		char **a;
+		char *t = NULL;
+
+		bw->b->o.ansi = 1;
+		bw->b->o.syntax = load_syntax("ansi");
+		/* Turn on shell mode for each window */
+		ansiall(bw->b);
 
 		a = getshell();
-		a = vaadd(a, s);
+		a = vaadd(a, vsncpy(NULL, 0, sv(s)));
+#ifndef JOEWIN
+		if (bw->b->current_dir && bw->b->current_dir[0]) {
+			// Change directory before we run
+			t = vsncpy(sv(t), sc("cd '"));
+			t = vsncpy(sv(t), sv(bw->b->current_dir));
+			t = vsncpy(sv(t), sc("' && "));
+		}
+		t = vsncpy(sv(t), sc("echo \"\nJOE: cd `pwd`\n\" && if ("));
+		t = vsncpy(sv(t), sv(s));
+		t = vsncpy(sv(t), sc("); then echo \"\nJOE: [32mPASS[0m (exit status = $?)\n\"; else echo \"\nJOE: [31mFAIL[0m (exit status = $?)\n\"; fi"));
+		a = vaadd(a, t);
+#endif
 		return cstart(bw, a[0], a, NULL, 1, 0, NULL, 0);
 	} else {
 		return -1;
@@ -395,20 +427,24 @@ int ubuild(BW *bw)
 
 B *grephist = NULL;
 
-int ugrep(BW *bw)
+int ugrep(W *w, int k)
 {
-	unsigned char *s;
+	char *s;
+	const char *prompt;
 	int prev = 0;
+	BW *bw;
+	WIND_BW(bw, w);
+	
 	if (grephist) {
-		s = joe_gettext(_("Grep command: "));
+		prompt = joe_gettext(_("Grep command: "));
 		prev = 1;
 	} else {
-		s = joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): "));
+		prompt = joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): "));
 	}
 	/* "file prompt" was set for this... */
-	s = ask(bw->parent, s, &grephist, USTR "Run", utypebw, locale_map, 0, prev, NULL);
+	s = ask(w, prompt, &grephist, "Run", utypebw, locale_map, 0, prev, NULL);
 	if (s) {
-		unsigned char **a;
+		char **a;
 
 		a = getshell();
 		a = vaadd(a, s);
@@ -420,10 +456,12 @@ int ugrep(BW *bw)
 
 /* Kill program */
 
-int ukillpid(BW *bw)
+int ukillpid(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
 	if (bw->b->pid) {
-		int c = query(bw->parent, sz(joe_gettext(_("Kill program (y,n,^C)?"))), 0);
+		int c = query(w, sz(joe_gettext(_("Kill program (y,n,^C)?"))), 0);
 		if (bw->b->pid && (c == YES_CODE || yncheck(yes_key, c)))
 			killmpx(bw->b->pid, 1);
 		return -1;

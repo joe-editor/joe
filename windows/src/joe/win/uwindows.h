@@ -17,14 +17,9 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _JOE_UWINDOWS_H
-#define _JOE_UWINDOWS_H
-
-int uwincopy PARAMS((BW *bw));
-int uwinpaste PARAMS((BW *bw));
-int uwinblkcpy PARAMS((BW *bw));
-int uwincontext PARAMS((BW *bw));
-int uwinrawvt PARAMS((BW *bw));
-
-#endif
+int uwincopy (W *w, int k);
+int uwinpaste (W *w, int k);
+int uwinblkcpy (W *w, int k);
+int uwincontext (W *w, int k);
+int uwinrawvt (W *w, int k);
 

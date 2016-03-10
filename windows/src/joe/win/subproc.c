@@ -22,23 +22,23 @@
 
 int nmpx = 0;
 
-static void bakempx(MPX *m, unsigned char c, DWORD mode);
+static void bakempx(MPX *m, char c, DWORD mode);
 static void controlc(MPX *m);
 static DWORD WINAPI mpxreadthread(LPVOID arg);
-static unsigned char *mkwinszpipe(MPX *mpx);
+static char *mkwinszpipe(MPX *mpx);
 
 /* Environment variable helpers */
-static unsigned char **readenv();
-static unsigned char **jwsetenv(unsigned char **env, unsigned char *key, unsigned char *value);
-static wchar_t *jwbuildenv(unsigned char **env);
+static char **readenv();
+static char **jwsetenv(char **env, char *key, char *value);
+static wchar_t *jwbuildenv(char **env);
 
-MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (void*), void *dieobj, int out_only, int vt, int w, int h)
+MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int out_only, int vt, ptrdiff_t w, ptrdiff_t h)
 {
 	HANDLE prr, prw, pwr, pww;
 	SECURITY_ATTRIBUTES sa;
 	PROCESS_INFORMATION pinf;
 	STARTUPINFOW si;
-	unsigned char *allargs = 0, **env;
+	char *allargs = 0, **env;
 	wchar_t *wargs = NULL, *wcmd = NULL, *wenv = NULL;
 	MPX *m = NULL;
 	DWORD res;
@@ -70,15 +70,15 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (v
 	/* Setup arguments */
 	for (i = 0; i < valen(args); i++) {
 		if (i == 1)
-			allargs = vscatz(allargs, USTR " \"");
+			allargs = vscatz(allargs, " \"");
 		else if (i > 1)
-			allargs = vscatz(allargs, USTR "\" \"");
+			allargs = vscatz(allargs, "\" \"");
 
 		allargs = vscat(allargs, args[i], vslen(args[i]));
 	}
 
 	if (i > 1)
-		allargs = vscatz(allargs, USTR "\"");
+		allargs = vscatz(allargs, "\"");
 
 	i = utf8towcslen(allargs);
 	wargs = (wchar_t*)joe_malloc((i + 1) * sizeof(wchar_t));
@@ -116,21 +116,21 @@ MPX *mpxmk(int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (v
 
 	/* Setup environment */
 	env = readenv();
-	env = jwsetenv(env, USTR "JOEWIN", USTR "1");
-	env = jwsetenv(env, USTR "JOEDATA", JOEDATA);
-	env = jwsetenv(env, USTR "JOERC", JOERC);
-	env = jwsetenv(env, USTR "JOEHOME", USTR getenv("HOME"));
+	env = jwsetenv(env, "JOEWIN", "1");
+	env = jwsetenv(env, "JOEDATA", JOEDATA);
+	env = jwsetenv(env, "JOERC", JOERC);
+	env = jwsetenv(env, "JOEHOME", getenv("HOME"));
 
 	/* Create pipe for window size messages if vt */
 	if (vt) {
-		unsigned char *winszpipe = mkwinszpipe(m);
+		char *winszpipe = mkwinszpipe(m);
 		char buf[16];
 		ttstsz(m->ptyfd, w, h);
 		m->vt = 1;
 
-		env = jwsetenv(env, USTR "JOEWINSZPIPE", winszpipe);
-		env = jwsetenv(env, USTR "LINES", USTR itoa(h, buf, 10));
-		env = jwsetenv(env, USTR "COLUMNS", USTR itoa(w, buf, 10));
+		env = jwsetenv(env, "JOEWINSZPIPE", winszpipe);
+		env = jwsetenv(env, "LINES", itoa(h, buf, 10));
+		env = jwsetenv(env, "COLUMNS", itoa(w, buf, 10));
 	} else {
 		m->szqd = -1;
 		w = 80;
@@ -271,10 +271,10 @@ void killmpx(int pid, int sig)
 		/* TODO: Investigate assigning subprocess to a job and killing the job instead */
 
 		if (mpx->pid == pid) {
-			const int defalloc = 64;
+			const unsigned int defalloc = 64;
 			LPDWORD processes;
 			DWORD nprocesses, me;
-			int t;
+			unsigned int t;
 
 			/* Notify reader thread to get out */
 			jwSendComm0(mpx->ackfd, COMM_EXIT);
@@ -316,10 +316,10 @@ int writempx(int fd, void *data, size_t amt)
 	for (i = 0; i < NPROC; i++) {
 		if (asyncs[i].func && asyncs[i].ptyfd == fd) {
 			/* This is one of our shell windows, process as necessary. */
-			unsigned char *str = USTR data;
+			char *str = (char *)data;
 			MPX *mpx = &asyncs[i];
 			DWORD mode;
-			int t;
+			unsigned int t;
 
 			if (mpx->raw) {
 				/* Just write */
@@ -343,7 +343,7 @@ int writempx(int fd, void *data, size_t amt)
 
 /* Pre-process data before sending it off to a subprocess */
 
-static void bakempx(MPX *m, unsigned char c, DWORD mode)
+static void bakempx(MPX *m, char c, DWORD mode)
 {
 	int droplf = m->droplf;
 	m->droplf = (c == 13);
@@ -354,18 +354,18 @@ static void bakempx(MPX *m, unsigned char c, DWORD mode)
 			bsavefd(m->linebuf->bof, m->ptyfd, m->linebuf->eof->byte);
 			bdel(m->linebuf->bof, m->linebuf->eof);
 			joe_write(m->ptyfd, "\r\n", 2);
-			m->func(m->object, USTR "\r\n", 2);
+			m->func(m->object, "\r\n", 2);
 		} else if (c == 127 || c == 8) {
 			/* Backspace */
 			P *p;
 
-			p = pdup(m->linebuf->eof, USTR "bakempx");
+			p = pdup(m->linebuf->eof, "bakempx");
 			prgetc(p);
 			bdel(p, m->linebuf->eof);
 			prm(p);
 
 			if (m->vt) {
-				m->func(m->object, USTR "\10 \10", 3);
+				m->func(m->object, "\10 \10", 3);
 			} else {
 				m->func(m->object, &c, 1);
 			}
@@ -402,17 +402,17 @@ static void controlc(MPX *m)
 
 /* Environment variable helpers */
 
-static unsigned char **readenv()
+static char **readenv()
 {
 	wchar_t *envstrings;
 	wchar_t *p;
-	unsigned char **result;
+	char **result;
 
 	result = vamk(32);
 
 	envstrings = GetEnvironmentStringsW();
 	for (p = envstrings; *p; ) {
-		unsigned char *v;
+		char *v;
 		int varlen = wcslen(p);
 		int mblen;
 
@@ -432,7 +432,7 @@ static unsigned char **readenv()
 	return result;
 }
 
-static unsigned char **jwsetenv(unsigned char **env, unsigned char *key, unsigned char *value)
+static char **jwsetenv(char **env, char *key, char *value)
 {
 	int i;
 	int keylen = zlen(key);
@@ -447,7 +447,7 @@ static unsigned char **jwsetenv(unsigned char **env, unsigned char *key, unsigne
 	return vaadd(env, vsfmt(NULL, 0, "%s=%s", key, value));
 }
 
-static wchar_t *jwbuildenv(unsigned char **env)
+static wchar_t *jwbuildenv(char **env)
 {
 	wchar_t *result;
 	wchar_t *p;
@@ -514,10 +514,10 @@ struct winszserver
 	int	wake;
 };
 
-static unsigned char *mkwinszpipe(MPX *mpx)
+static char *mkwinszpipe(MPX *mpx)
 {
-	unsigned char *pipename;
-	unsigned char *fullpipename;
+	char *pipename;
+	char *fullpipename;
 	struct winszserver *srv;
 	static int counter = 0;
 
@@ -542,7 +542,7 @@ static unsigned char *mkwinszpipe(MPX *mpx)
 	mpx->hSizeQThread = CreateThread(NULL, 0, mpxsizethread, srv, 0, 0);
 
 	mpx->szqd = srv->qd;
-	return USTR pipename;
+	return pipename;
 }
 
 /* Serve window size changes on a named pipe */

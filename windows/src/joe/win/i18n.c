@@ -26,6 +26,8 @@
 #include <wchar.h>
 #include "types.h"
 
+#ifdef NO
+
 int joe_iswupper(struct charmap *foo, int c)
 {
 	return iswupper((wint_t)c);
@@ -105,6 +107,8 @@ int joe_towlower(struct charmap *foo, int c)
 {
 	return towlower((wint_t)c);
 }
+
+#endif
 
 int unictrl(int ucs)
 {

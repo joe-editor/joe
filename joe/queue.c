@@ -11,17 +11,17 @@ void *QUEUE;
 void *ITEM;
 void *LAST;
 
-void *alitem(void *list, int itemsize)
+void *alitem(void *list, ptrdiff_t itemsize)
 {
 	STDITEM	*freelist = (STDITEM *)list;
 
 	if (qempty(STDITEM, link, freelist)) {
 		STDITEM *i = (STDITEM *) joe_malloc(itemsize * 16);
-		STDITEM *z = (STDITEM *) ((unsigned char *) i + itemsize * 16);
+		STDITEM *z = (STDITEM *) ((char *) i + itemsize * 16);
 
 		while (i != z) {
 			enquef(STDITEM, link, freelist, i);
-			i = (STDITEM *) ((unsigned char *) i + itemsize);
+			i = (STDITEM *) ((char *) i + itemsize);
 		}
 	}
 	return (void *) deque_f(STDITEM, link, freelist->link.prev);

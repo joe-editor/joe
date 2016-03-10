@@ -19,7 +19,7 @@
 
 #include "types.h"
 
-JFILE *jfopen(unsigned char *filename, const char *mode)
+JFILE *jfopen(char *filename, const char *mode)
 {
 	wchar_t wfilename[MAX_PATH + 1];
 	wchar_t wmode[20];
@@ -33,12 +33,12 @@ JFILE *jfopen(unsigned char *filename, const char *mode)
 	return jwfopen(wfilename, wmode);
 }
 
-unsigned char *jfgets(unsigned char **buf, JFILE *f)
+char *jfgets(char **buf, JFILE *f)
 {
 	if (f->f) {
 		return vsgets(buf, f->f);
 	} else {
-		unsigned char *b = *buf;
+		char *b = *buf;
 		b = vstrunc(b, 0);
 		if (f->sz && *f->p) {
 			unsigned int i;
@@ -59,13 +59,13 @@ unsigned char *jfgets(unsigned char **buf, JFILE *f)
 	}
 }
 
-unsigned char **jgetbuiltins(unsigned char *suffix)
+char **jgetbuiltins(char *suffix)
 {
-	unsigned char tmp[1024];
+	char tmp[1024];
 	wchar_t wsuffix[80];
 	wchar_t *wsuffixp;
 	const wchar_t *ptr = NULL;
-	unsigned char **result;
+	char **result;
 
 	result = vamk(4);
 
@@ -93,7 +93,7 @@ unsigned char **jgetbuiltins(unsigned char *suffix)
 			tmp[i] = tolower(tmp[i]);
 		}
 
-		result = vaadd(result, vsdupz(USTR tmp));
+		result = vaadd(result, vsdupz(tmp));
 	}
 
 	return result;

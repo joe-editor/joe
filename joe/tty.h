@@ -5,16 +5,14 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_TTY_H
-#define _JOE_TTY_H 1
 
 struct mpx {
 	int	ackfd;		/* Packetizer response descriptor */
 	int	kpid;		/* Packetizer process id */
 	int	pid;		/* Client process id */
-	void	(*func) (void*, unsigned char*, int);	/* Function to call when read occures */
+	void	(*func)(void *object, char *data, ptrdiff_t len);	/* Function to call when read occures */
 	void	*object;	/* First arg to pass to function */
-	void	(*die) (void*);	/* Function: call when client dies or closes */
+	void	(*die)(void *object);	/* Function: call when client dies or closes */
 	void	*dieobj;
 
 #ifdef JOEWIN
@@ -68,10 +66,10 @@ struct mpx {
  *     baud) and 'TIMES'==3, the output buffer size is set to 333 characters.
  *     Each time this buffer is completely flushed, 1/3 of a second will go by.
  */
-void ttopen PARAMS((void));
-void ttopnn PARAMS((void));
-extern unsigned long upc; /* Microseconds per character */
-extern unsigned baud; /* Baud rate */
+void ttopen(void);
+void ttopnn(void);
+extern long upc; /* Microseconds per character */
+extern long tty_baud; /* Baud rate */
 
 #define TIMES 3
 #define DIVIDEND 10000000
@@ -86,8 +84,8 @@ extern unsigned baud; /* Baud rate */
  * (3) Call signrm().  There is also 'void ttyclsn(void)' which does not do
  *     the this step.
  */
-void ttclose PARAMS((void));
-void ttclsn PARAMS((void));
+void ttclose(void);
+void ttclsn(void);
 
 /* int ttgetc(void);  Flush the output and get the next character from the tty
  *
@@ -98,33 +96,33 @@ void ttclsn PARAMS((void));
  *
  * (3) Clear 'have'
  */
-int ttgetc PARAMS((void));
-
-int ttcheck PARAMS((void));
+char ttgetc(void);
+int ttgetch(void);
+int ttcheck(void);
 
 /* void ttputc(char c);  Write a character to the output buffer.  If it becomes
  * full, call ttflsh()
  */
-extern int obufp; /* Output buffer index */
-extern int obufsiz; /* Output buffer size */
-extern unsigned char *obuf; /* Output buffer */
+extern ptrdiff_t obufp; /* Output buffer index */
+extern ptrdiff_t obufsiz; /* Output buffer size */
+extern char *obuf; /* Output buffer */
 
 #define ttputc(c) { obuf[obufp++] = (c); if(obufp == obufsiz) ttflsh(); }
 
 /* void ttputs(char *s);  Write a string to the output buffer.  Any time the
  * output buffer gets full, call ttflsh()
  */
-void ttputs PARAMS((unsigned char *s));
+void ttputs(const char *s);
 
 /* int ttshell(char *s);  Run a shell command or if 's' is zero, run a
  * sub-shell
  */
-int ttshell PARAMS((unsigned char *cmd));
+int ttshell(char *cmd);
 
 /* void ttsusp(void);  Suspend the process, or if the UNIX can't do it, call
  * ttshell(NULL)
  */
-void ttsusp PARAMS((void));
+void ttsusp(void);
 
 /* int ttflsh(void);  Flush the output buffer and check for typeahead.
  *
@@ -154,10 +152,10 @@ void ttsusp PARAMS((void));
  *     ttflsh gets called.  'leave' should also be set before shell escapes and
  *     suspends.
  */
-int ttflsh PARAMS((void));
+int ttflsh(void);
 
 extern int have; /* Set if we have typeahead */
-extern unsigned char havec; /* typeahead character */
+extern char havec; /* typeahead character */
 extern int leave; /* Set if we're exiting (so don't check for typeahead) */
 
 #ifdef __MSDOS__
@@ -171,11 +169,11 @@ extern int leave; /* Set if we're exiting (so don't check for typeahead) */
  * It is called with 'n' set to the number of the caught signal or 0 if the
  * input closed.
  */
-void ttsig PARAMS((int sig));
+void ttsig(int sig);
 
 /* void ttgtsz(int *x,int *y);  Get size of screen from ttsize/winsize
  * structure */
-void ttgtsz PARAMS((int *x, int *y));
+void ttgtsz(ptrdiff_t *x, ptrdiff_t *y);
 
 /* You don't have to call these: ttopen/ttclose does it for you.  These
  * may be needed to make your own shell escape sequences.
@@ -186,11 +184,11 @@ void ttgtsz PARAMS((int *x, int *y));
  * and trap the software terminate and hangup signals (SIGTERM, SIGHUP) so
  * that 'ttsig' gets called.
  */
-void sigjoe PARAMS((void));
+void sigjoe(void);
 
 /* void signrm(void);  Set above signals back to their default values.
  */
-void signrm PARAMS((void));
+void signrm(void);
 
 /* MPX *mpxmk(int fd,int pid,
  *             void (*func)(),void *object,
@@ -204,32 +202,20 @@ void signrm PARAMS((void));
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk PARAMS((int *ptyfd, unsigned char *cmd, unsigned char **args, void (*func) (void*, unsigned char*, int), void *object, void (*die) (/* ??? */), void *dieobj, int out_only, int vt, int w, int h));
+MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int out_only, int vt, ptrdiff_t w, ptrdiff_t h);
 
-void killmpx PARAMS((int pid, int sig));
+void killmpx(int pid, int sig);
 
-int writempx PARAMS((int fd, void *data, size_t amt));
-
-/* int subshell(int *ptyfd);
- * Execute a subshell.  Returns 'pid' of shell or zero if there was a
- * problem.  Returns file descriptor for the connected pty in 'ptyfd'.
- */
-int subshell PARAMS(());
+int writempx(int fd, void *data, size_t amt);
 
 extern int noxon;			/* Set if ^S/^Q processing should be disabled */
 extern int Baud;			/* Baud rate from joerc, cmd line or environment */
 
-void tickoff PARAMS((void));
-void tickon PARAMS((void));
+void tickoff(void);
+void tickon(void);
 
-#ifdef JOEWIN
-extern time_t last_time;
-#else
-extern long last_time; /* Current time in seconds */
-#endif
+extern time_t last_time; /* Current time in seconds */
 extern int idleout; /* Clear to use /dev/tty for screen */
 
-void ttstsz(int fd, int w, int h); /* Set window size */
+void ttstsz(int fd, ptrdiff_t w, ptrdiff_t h); /* Set window size */
 extern int nodeadjoe; /* Flag to prevent creation of DEADJOE files */
-
-#endif

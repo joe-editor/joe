@@ -16,7 +16,7 @@
 #include "jwversion.h"
 #endif
 
-unsigned char *exmsg = NULL;		/* Message to display when exiting the editor */
+char *exmsg = NULL;		/* Message to display when exiting the editor */
 int usexmouse=0;
 int xmouse=0;
 int nonotice;
@@ -33,8 +33,8 @@ void dofollows(void)
 
 	do {
 		if (w->y != -1 && w->watom->follow && w->object)
-			w->watom->follow(w->object);
-		w = (W *) (w->link.next);
+			w->watom->follow(w);
+		w = (W *)(w->link.next);
 	} while (w != maint->curwin);
 }
 
@@ -45,8 +45,8 @@ volatile int dostaupd = 1;
 void edupd(int flg)
 {
 	W *w;
-	int wid, hei;
-	unsigned char *gc = vsmk(1);
+	ptrdiff_t wid, hei;
+	char *gc = vsmk(1);
 
 	/* dostaupd is set once a second to force status line update */
 	if (dostaupd) {
@@ -74,7 +74,7 @@ void edupd(int flg)
 	do {
 		if (w->y != -1) {
 			if (w->object && w->watom->disp)
-				w->watom->disp(w->object, flg);
+				w->watom->disp(w, flg);
 			msgout(w);
 		}
 		w = (W *) (w->link.next);
@@ -149,7 +149,7 @@ int edloop()
 			c = ungotc;
 			ungot = 0;
 		} else
-			c = ttgetc();
+			c = ttgetch();
 
 		/* Clear temporary messages */
 		w = maint->curwin;
@@ -194,25 +194,27 @@ int edloop()
 		}
 
 		if (maint->curwin->main && maint->curwin->main != maint->curwin) {
-			int x = maint->curwin->kbd->x;
+			ptrdiff_t x = maint->curwin->kbd->x;
 
 			maint->curwin->main->kbd->x = x;
 			if (x)
 				maint->curwin->main->kbd->seq[x - 1] = maint->curwin->kbd->seq[x - 1];
 		}
-		if (!m)
+		if (!m) {
 			m = timer_play();
+			c = NO_MORE_DATA;
+		}
 		/* Execute macro */
 		if (m) {
-			ret = co_call(exemac, m);
-			/* ret = exemac(m); */
+			ret = co_call(exemac, m, c);
+			/* ret = exemac(m, c); */
 		}
 
 		/* trailing part of backtick hack... */
 		/* for case where ` is very last character of pasted block */
 		while (!leave && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck() && havec == '`') {
-			ttgetc();
-			ret = co_call(exemac, type_backtick);
+			ttgetch();
+			ret = co_call(exemac, type_backtick, NO_MORE_DATA);
 		}
 
 		/* trailing part of disabled autoindent */
@@ -221,7 +223,7 @@ int edloop()
 				c = ungotc;
 				ungot = 0;
 			} else
-				c = ttgetc();
+				c = ttgetch();
 			goto more_no_auto;
 		}
 
@@ -245,16 +247,16 @@ extern void setbreak();
 extern int breakflg;
 #endif
 
-unsigned char **mainenv;
+const char * const *mainenv;
 
 B *startup_log = NULL;
 static int logerrors = 0;
 
-unsigned char i_msg[128];
+char i_msg[128];
 
-void internal_msg(unsigned char *s)
+void internal_msg(char *s)
 {
-	P *t = pdup(startup_log->eof, USTR "internal_msg");
+	P *t = pdup(startup_log->eof, "internal_msg");
 	binss(t, s);
 	prm(t);
 #if defined(JOEWIN) && defined(DEBUG)
@@ -268,20 +270,19 @@ void setlogerrs(void)
 }
 
 /* Opens new bw with startup log */
-int ushowlog(BW *bw)
+int ushowlog(W *w, int k)
 {
 	if (startup_log) {
 		B *copied;
 		BW *newbw;
 		void *object;
-		W *w;
 		
-		if (uduptw(bw)) {
+		if (uduptw(w, k)) {
 			return -1;
 		}
 		
 		copied = bcpy(startup_log->bof, startup_log->eof);
-		copied->name = zdup(USTR "* Startup Log *");
+		copied->name = zdup("* Startup Log *");
 		copied->internal = 1;
 		
 		newbw = (BW *) maint->curwin->object;
@@ -305,18 +306,18 @@ int ushowlog(BW *bw)
 /* Determine name editor was invoked as and process <name>rc file */
 
 CAP *cap;
-unsigned char **argv;
+char **argv;
 
 int joerc()
 {
 	struct stat sbuf;
 	int c;
+	char *s;
+	char *t;
 	time_t time_rc;
-	unsigned char *s;
-	unsigned char *t;
-	unsigned char *run;
+	char *run;
 #if defined(__MSDOS__) || defined(JOEWIN)
-	unsigned char *rundir;
+	char *rundir;
 #endif
 	
 	/* Figure out name editor was invoked under */
@@ -343,7 +344,7 @@ int joerc()
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		logerror_1((char *)joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+		logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
 	}
 
 	s = vsncpy(NULL, 0, sv(rundir));
@@ -353,7 +354,7 @@ int joerc()
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		logerror_1((char *)joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+		logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
 	}
 #else
 
@@ -369,7 +370,7 @@ int joerc()
 	t = vsncpy(sv(t), sv(run));
 	t = vsncpy(sv(t), sc("rc."));
 	t = vsncpy(sv(t), sz(locale_msgs));
-	if (!stat((char *)t,&sbuf))
+	if (!stat(t,&sbuf))
 		time_rc = sbuf.st_mtime;
 	else {
 		/* Try generic language: like joerc.de */
@@ -382,7 +383,7 @@ int joerc()
 			t = vsncpy(sv(t), sv(run));
 			t = vsncpy(sv(t), sc("rc."));
 			t = vsncpy(sv(t), locale_msgs, 2);
-			if (!stat((char *)t,&sbuf))
+			if (!stat(t,&sbuf))
 				time_rc = sbuf.st_mtime;
 			else
 				goto nope;
@@ -396,7 +397,7 @@ int joerc()
 #endif
 			t = vsncpy(sv(t), sv(run));
 			t = vsncpy(sv(t), sc("rc"));
-			if (!stat((char *)t,&sbuf))
+			if (!stat(t,&sbuf))
 				time_rc = sbuf.st_mtime;
 			else
 				time_rc = 0;
@@ -404,7 +405,7 @@ int joerc()
 	}
 
 	/* User's joerc file */
-	s = (unsigned char *)getenv("HOME");
+	s = getenv("HOME");
 	if (s) {
 		s = vsncpy(NULL, 0, sz(s));
 #ifndef JOEWIN
@@ -416,9 +417,9 @@ int joerc()
 		s = vsncpy(sv(s), sv(run));
 		s = vsncpy(sv(s), sc("rc"));
 
-		if (!stat((char *)s,&sbuf)) {
+		if (!stat(s,&sbuf)) {
 			if (sbuf.st_mtime < time_rc) {
-				logmessage_2((char *)joe_gettext(_("Warning: %s is newer than your %s.\n")),t,s);
+				logmessage_2(joe_gettext(_("Warning: %s is newer than your %s.\n")),t,s);
 			}
 		}
 
@@ -427,7 +428,7 @@ int joerc()
 			goto donerc;
 		}
 		if (c == 1) {
-			logerror_1((char *)joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+			logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
 		}
 	}
 
@@ -436,7 +437,7 @@ int joerc()
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		logerror_1((char *)joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+		logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
 	}
 
 	/* Try built-in joerc */
@@ -453,17 +454,17 @@ int joerc()
 	if (c == 0)
 		goto donerc;
 	if (c == 1) {
-		logerror_1((char *)joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+		logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
 	}
 #endif
 
-	logerror_1((char *)joe_gettext(_("Couldn't open '%s'\n")), s);
+	logerror_1(joe_gettext(_("Couldn't open '%s'\n")), s);
 	return 1;
 
 	donerc:
 
 	if (validate_rc()) {
-		logerror_0((char *)joe_gettext(_("rc file has no :main key binding section or no bindings.  Bye.\n")));
+		logerror_0(joe_gettext(_("rc file has no :main key binding section or no bindings.  Bye.\n")));
 		return 1;
 	}
 
@@ -474,16 +475,16 @@ int joerc()
 
 void process_env()
 {
-	unsigned char *s;
+	char *s;
 
-	if ((s = (unsigned char *)getenv("LINES")) != NULL)
-		sscanf((char *)s, "%d", &lines);
+	if ((s = getenv("LINES")) != NULL)
+		sscanf(s, "%d", &env_lines);
 
-	if ((s = (unsigned char *)getenv("COLUMNS")) != NULL)
-		sscanf((char *)s, "%d", &columns);
+	if ((s = getenv("COLUMNS")) != NULL)
+		sscanf(s, "%d", &env_columns);
 
-	if ((s = (unsigned char *)getenv("BAUD")) != NULL)
-		sscanf((char *)s, "%u", (unsigned *)&Baud);
+	if ((s = getenv("BAUD")) != NULL)
+		sscanf(s, "%u", (unsigned *)&Baud);
 
 	if (getenv("DOPADDING"))
 		dopadding = 1;
@@ -491,18 +492,18 @@ void process_env()
 	if (getenv("NOXON"))
 		noxon = 1;
 
-	if ((s = (unsigned char *)getenv("JOETERM")) != NULL)
+	if ((s = getenv("JOETERM")) != NULL)
 		joeterm = s;
 
 }
 
 void setup_mouse()
 {
-	unsigned char *s;
-
 #ifndef JOEWIN
+	char *s;
+
 	/* initialize mouse support */
-	if (xmouse && (s=(unsigned char *)getenv("TERM")) && strstr((char *)s,"xterm"))
+	if (xmouse && (s=(char *)getenv("TERM")) && strstr(s,"xterm"))
 		usexmouse=1;
 #else
 	usexmouse = xmouse;
@@ -518,7 +519,7 @@ void process_global_options()
 			if (argv[c][1])
 				switch (glopt(argv[c] + 1, argv[c + 1], NULL, 1)) {
 				case 0:
-					logerror_1((char *)joe_gettext(_("Unknown option '%s'\n")), argv[c]);
+					logerror_1(joe_gettext(_("Unknown option '%s'\n")), argv[c]);
 					break;
 				case 1:
 					break;
@@ -568,26 +569,26 @@ void process_args()
 				if (er)
 					msgnwt(bw->parent, joe_gettext(msgs[-er]));
 			} else {
-				long line;
+				off_t line;
 				b->orphan = 1;
-				b->oldcur = pdup(b->bof, USTR "main");
+				b->oldcur = pdup(b->bof, "main");
 				pline(b->oldcur, get_file_pos(b->name));
 				p_goto_bol(b->oldcur);
 				line = b->oldcur->line - (maint->h - 1) / 2;
 				if (line < 0)
 					line = 0;
-				b->oldtop = pdup(b->oldcur, USTR "main");
+				b->oldtop = pdup(b->oldcur, "main");
 				pline(b->oldtop, line);
 				p_goto_bol(b->oldtop);
 			}
 			if (bw) {
-				long lnum = 0;
+				off_t lnum = 0;
 
 				bw->o.readonly = bw->b->rdonly;
 				if (backopt) {
 					while (backopt != c) {
 						if (argv[backopt][0] == '+') {
-							sscanf((char *)(argv[backopt] + 1), "%ld", &lnum);
+							lnum = ztoo(argv[backopt] + 1);
 							++backopt;
 						} else {
 							if (glopt(argv[backopt] + 1, argv[backopt + 1], &bw->o, 0) == 2)
@@ -604,9 +605,9 @@ void process_args()
 				maint->curwin = bw->parent;
 				/* Execute macro */
 				if (er == -1 && bw->o.mnew)
-					exmacro(bw->o.mnew,1);
+					exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 				if (er == 0 && bw->o.mold)
-					exmacro(bw->o.mold,1);
+					exmacro(bw->o.mold, 1, NO_MORE_DATA);
 				/* Hmm... window might not exist any more... depends on what macro does... */
 				if (lnum > 0)
 					pline(bw->cursor, lnum - 1);
@@ -626,16 +627,16 @@ void process_args()
 		wshowall(maint);
 		/* Temporarily set 'mid' option so that cursor is centered
 		   in each window */
-		omid = mid;
-		mid = 1;
+		omid = opt_mid;
+		opt_mid = 1;
 		dofollows();
-		mid = omid;
+		opt_mid = omid;
 	} else {
 		/* Create empty window */
-		BW *bw = wmktw(maint, bfind(USTR ""));
+		BW *bw = wmktw(maint, bfind(""));
 
 		if (bw->o.mnew)
-			exmacro(bw->o.mnew,1);
+			exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 	}
 	/* Set window with cursor to first window on screen */
 	maint->curwin = maint->topwin;
@@ -665,16 +666,16 @@ void show_startup_log()
 
 void setup_pipein()
 {
-	if (!idleout && modify_logic(maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
+	if (!idleout && modify_logic((BW *)maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
 		/* Start shell going in first window */
 		/* This is silly- mpx should be able to just read from stdin */
 
-		unsigned char **a = vamk(3);
+		char **a = vamk(3);
 		a = vaadd(a, vsncpy(NULL, 0, sc("/bin/sh")));
 		a = vaadd(a, vsncpy(NULL, 0, sc("-c")));
 		a = vaadd(a, vsncpy(NULL, 0, sc("/bin/cat")));
 
-		cstart(maint->curwin->object, USTR "/bin/sh", a, NULL, 0, 1, NULL, 0);
+		cstart((BW *)maint->curwin->object, "/bin/sh", a, NULL, 0, 1, NULL, 0);
 	}
 }
 
@@ -682,23 +683,26 @@ void setup_pipein()
 
 SCRN *main_scrn;
 
-unsigned char *startup_gc;
+char *startup_gc;
 
 #ifdef JOEWIN
-int joe_main(int argc, char **real_argv, char **envv)
+int joe_main(int argc, char **real_argv, const char * const *envv)
 #else
-int main(int argc, char **real_argv, char **envv)
+int main(int argc, char **real_argv, const char * const *envv)
 #endif
 {
 	/* Save arguments */
-	argv = (unsigned char **)real_argv;
+	argv = real_argv;
 
 	/* Remember environment vector for sub-shells */
-	mainenv = (unsigned char **)envv;
+	mainenv = envv;
 
 	/* Garbage collect startup process */
 	startup_gc = vsmk(1);
 
+	/* Initialize Unicode database */
+	joe_iswinit();
+	
 	/* Set up locale (determines character set of terminal) */
 	joe_locale();
 	fdefault.charmap = locale_map;
@@ -708,15 +712,17 @@ int main(int argc, char **real_argv, char **envv)
 	vmem = vtmp();
 	
 	/* Create startup log buffer */
-	startup_log = bfind_scratch(USTR "* Startup Log *");
+	startup_log = bfind_scratch("* Startup Log *");
 	startup_log->internal = 1;
+	startup_log->current_dir = vsncpy(NULL, 0, NULL, 0);
+	obj_perm(startup_log->current_dir);
 
 	/* Copy some environment variables to global variables */
 	process_env();
 
 	/* Try to get termcap entry before we get too far */
 	if (!(cap = getcap(NULL, 9600, NULL, NULL))) {
-		fprintf(stderr, (char *)joe_gettext(_("Couldn't load termcap/terminfo entry\n")));
+		fprintf(stderr, joe_gettext(_("Couldn't load termcap/terminfo entry\n")));
 		goto exit_errors;
 	}
 
@@ -725,13 +731,13 @@ int main(int argc, char **real_argv, char **envv)
 		goto exit_errors;
 
 	{
-		unsigned char buf[10];
-		int x;
-		zlcpy(buf, sizeof(buf), USTR "\"`\"	`  ");
+		char buf[10];
+		ptrdiff_t x;
+		zlcpy(buf, SIZEOF(buf), "\"`\"	`  ");
 		type_backtick = mparse(0, buf, &x, 0);
 	}
 
-	shell_kbd = mkkbd(kmap_getcontext(USTR "shell"));
+	shell_kbd = mkkbd(kmap_getcontext("shell"));
 
 #ifndef JOEWIN
 	/* Is somebody piping something into JOE, or is stdin the tty? */
@@ -775,7 +781,7 @@ int main(int argc, char **real_argv, char **envv)
 #ifndef JOEWIN
 		  vsfmt(NULL, 0, joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)")));
 #else
-		  USTR("\\i" JW_VERSION_BANNER "\\i"));
+		  "\\i" JW_VERSION_BANNER "\\i");
 #endif
 	}
 

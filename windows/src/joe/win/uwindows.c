@@ -22,12 +22,15 @@
 
 /* Copy block contents to the Windows clipboard */
 
-int uwincopy(BW *bw)
+int uwincopy(W *w, int k)
 {
+	BW *bw;
 	int result = 1;
 
+	WIND_BW(bw, w);
+
 	if (markv(1)) {
-		unsigned char *vscopy, *vscopy8;
+		char *vscopy, *vscopy8;
 		struct charmap *map;
 		int len8, len16;
 
@@ -50,9 +53,9 @@ int uwincopy(BW *bw)
 			vscopy8 = vsmk(vlen);
 			for (i = 0; i < vlen; i++) {
 				int len, c;
-				UCHAR buf[16];
+				char buf[16];
 
-				c = map->to_uni(map, vscopy[i]);
+				c = to_uni(map, vscopy[i]);
 				if (c == -1)
 				{
 					vscopy8 = vsadd(vscopy8, '?');
@@ -60,9 +63,9 @@ int uwincopy(BW *bw)
 				else
 				{
 					if (convertlines && !crlast && c == 10) {
-						vscopy8 = vscat(vscopy8, USTR "\r\n", 2);
+						vscopy8 = vscat(vscopy8, "\r\n", 2);
 					} else {
-						len = utf8_encode(buf, joe_to_uni(map, vscopy[i]));
+						len = utf8_encode(buf, to_uni(map, vscopy[i]));
 						vscopy8 = vscat(vscopy8, buf, len);
 					}
 				}
@@ -130,14 +133,14 @@ int uwincopy(BW *bw)
 /* Gets UTF-8 string from the clipboard, if it's there.  Returns length (0 if no data, <0 if
    error) and allocates a string to store the data.  Caller must free this string. */
 
-static int getpastedata(unsigned char **result)
+static int getpastedata(char **result)
 {
 	int ret = -1;
 	*result = NULL;
 
 	if (OpenClipboard(0)) {
 		HANDLE cdata;
-		unsigned char *paste8;
+		char *paste8;
 
 		/* CF_OEMTEXT and CF_TEXT are coerced to UTF-16 automatically */
 		cdata = GetClipboardData(CF_UNICODETEXT);
@@ -148,7 +151,7 @@ static int getpastedata(unsigned char **result)
 			paste16 = (wchar_t*) GlobalLock(cdata);
 			len8 = wcstoutf8len(paste16);
 			if (len8 > 0) {
-				paste8 = USTR joe_malloc(len8);
+				paste8 = joe_malloc(len8);
 				if (!wcstoutf8((LPSTR) paste8, paste16, len8)) {
 					*result = paste8;
 					ret = len8 - 1;
@@ -171,16 +174,19 @@ static int getpastedata(unsigned char **result)
 
 /* Paste windows clipboard contents to cursor position */
 
-static int dowinpaste(BW *bw, int mark)
+static int dowinpaste(W *w, int mark)
 {
-	unsigned char *paste8;
+	char *paste8;
 	int presult;
+	BW *bw;
+
+	WIND_BW(bw, w);
 	
 	presult = getpastedata(&paste8);
 	if (presult < 0) {
-		msgnw(bw->parent, joe_gettext(_("Error pasting")));
+		msgnw(w, joe_gettext(_("Error pasting")));
 	} else if (presult == 0) {
-		msgnw(bw->parent, joe_gettext(_("Clipboard empty")));
+		msgnw(w, joe_gettext(_("Clipboard empty")));
 	} else {
 		struct charmap *map;
 		int crlf;
@@ -196,7 +202,7 @@ static int dowinpaste(BW *bw, int mark)
 
 			utf8_init(&m);
 
-			if (mark) umarkb(bw);
+			if (mark) umarkb(w, 0);
 
 			for (i = 0; i < presult; i++) {
 				int u;
@@ -205,11 +211,11 @@ static int dowinpaste(BW *bw, int mark)
 				if (u >= 0) {
 					int c;
 
-					c = joe_from_uni(map, u);
+					c = from_uni(map, u);
 					if (c == 13) {
 						crlast = 1;
 					} else if (c == 10 && crlast) {
-						binss(bw->cursor, crlf ? USTR "\r\n" : USTR "\n");
+						binss(bw->cursor, crlf ? "\r\n" : "\n");
 						pnextl(bw->cursor);
 						crlast = 0;
 					} else {
@@ -219,7 +225,7 @@ static int dowinpaste(BW *bw, int mark)
 						}
 
 						if (c < 0) {
-							c = joe_from_uni(map, '?');
+							c = from_uni(map, '?');
 						}
 
 						if (c >= 0) {
@@ -237,12 +243,12 @@ static int dowinpaste(BW *bw, int mark)
 				pfwrd(bw->cursor, 1);
 			}
 
-			if (mark) umarkk(bw);
+			if (mark) umarkk(w, 0);
 		} else {
 			/* UTF-8 */
 			int i = 0, last = 0, crlast = 0;
 
-			if (mark) umarkb(bw);
+			if (mark) umarkb(w, 0);
 
 			for (i = 0; i < presult; i++) {
 				int c = paste8[i];
@@ -252,7 +258,7 @@ static int dowinpaste(BW *bw, int mark)
 
 					binsm(bw->cursor, &paste8[last], amt);
 					pfwrd(bw->cursor, amt);
-					binss(bw->cursor, crlf ? USTR "\r\n" : USTR "\n");
+					binss(bw->cursor, crlf ? "\r\n" : "\n");
 					pnextl(bw->cursor);
 
 					last = i + 1;
@@ -264,7 +270,7 @@ static int dowinpaste(BW *bw, int mark)
 			binsm(bw->cursor, &paste8[last], presult - last);
 			pfwrd(bw->cursor, presult - last);
 
-			if (mark) umarkk(bw);
+			if (mark) umarkk(w, 0);
 		}
 
 		joe_free(paste8);
@@ -275,31 +281,31 @@ static int dowinpaste(BW *bw, int mark)
 	return 1;
 }
 
-int uwinpaste(BW *bw)
+int uwinpaste(W *w, int k)
 {
-	return dowinpaste(bw, 0);
+	return dowinpaste(w, 0);
 }
 
 /* Copy block if there's one selected, otherwise paste Windows clipboard contents */
 
-int uwinblkcpy(BW *bw)
+int uwinblkcpy(W *w, int k)
 {
 	if (markv(1)) {
 		/* If there's a block, copy it */
-		return ublkcpy(bw);
+		return ublkcpy(w, k);
 	} else {
 		/* If no block, paste from the clipboard */
 		int result;
 		
-		result = dowinpaste(bw, 1);
-		if (!result) utomarkb(bw);
+		result = dowinpaste(w, 1);
+		if (!result) utomarkb(w, 0);
 		return result;
 	}
 }
 
 /* Show the context menu */
 
-int uwincontext(BW *bw)
+int uwincontext(W *w, int k)
 {
 	int hasblock = markv(1);
 	jwSendComm1(JW_FROM_EDITOR, COMM_CONTEXTMENU, hasblock);
@@ -308,8 +314,11 @@ int uwincontext(BW *bw)
 
 /* Turn off echo in a shell window */
 
-int uwinrawvt(BW *bw)
+int uwinrawvt(W *w, int k)
 {
+	BW *bw;
+	WIND_BW(bw, w);
+
 	if (bw->b->vt) {
 		vtraw(bw->b->out);
 	}

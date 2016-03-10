@@ -20,14 +20,14 @@
 #include <direct.h>
 #include "types.h"
 
-void *opendir(unsigned char *path)
+void *opendir(const char *path)
 {
 	struct dirent *result;
 	wchar_t c;
 
 	result = (struct dirent *)malloc(sizeof(struct dirent));
 
-	if (utf8towcs(result->_startname, (char *)path, MAX_PATH))
+	if (utf8towcs(result->_startname, path, MAX_PATH))
 	{
 		assert(FALSE);
 		return NULL;

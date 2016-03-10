@@ -5,58 +5,56 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_MENU_H
-#define _JOE_MENU_H 1
 
 /* A menu window */
 
 struct menu {
 	W	*parent;	/* Window we're in */
-	unsigned char	**list;		/* List of items */
-	int	top;		/* First item on screen */
-	int	cursor;		/* Item cursor is on */
-	int	width;		/* Width of widest item, up to 'w' max */
-	int 	fitline;	/* Number of items we can fit on each line */
-	int	perline;	/* Number of items we place on each line */
-	int	lines;		/* Total no. of lines */
-	int	nitems;		/* No. items in list */
+	char	**list;		/* List of items */
+	ptrdiff_t	top;		/* First item on screen */
+	ptrdiff_t	cursor;		/* Item cursor is on */
+	ptrdiff_t	width;		/* Width of widest item, up to 'w' max */
+	ptrdiff_t	fitline;	/* Number of items we can fit on each line */
+	ptrdiff_t	perline;	/* Number of items we place on each line */
+	ptrdiff_t	lines;		/* Total no. of lines */
+	ptrdiff_t	nitems;		/* No. items in list */
 	Screen	*t;		/* Screen we're on */
-	int	h, w, x, y;
-	int	(*abrt) ();	/* Abort callback function */
-	int	(*func) ();	/* Return callback function */
-	int	(*backs) ();	/* Backspace callback function */
+	ptrdiff_t	h, w, x, y;
+	int (*abrt)(W *w, ptrdiff_t cursor, void *object); /* Abort callback function */
+	int (*func)(MENU *m, ptrdiff_t cursor, void *object, int k); /* Return callback function */
+	int (*backs)(MENU *m, ptrdiff_t cursor, void *object); /* Backspace callback function */
 	void	*object;
 };
 
 /* Create a menu */
-/* FIXME: ??? ---> */
-MENU *mkmenu PARAMS((W *loc, W *targ, unsigned char **s, int (*func) (/* ??? */), int (*abrt) (/* ??? */), int (*backs) (/* ??? */), int cursor, void *object));
+MENU *mkmenu(W *loc, W *targ, char **s, int (*func)(MENU *m, ptrdiff_t cursor, void *object, int k),
+             int (*abrt)(W *w, ptrdiff_t cursor, void *object),
+             int (*backs)(MENU *m, ptrdiff_t cursor, void *object),
+             ptrdiff_t cursor, void *object);
 
 /* Menu user functions */
 
-int umuparw PARAMS((MENU *m));
-int umdnarw PARAMS((MENU *m));
-int umpgup PARAMS((MENU *m));
-int umpgdn PARAMS((MENU *m));
-int umscrup PARAMS((MENU *m));
-int umscrdn PARAMS((MENU *m));
-int umltarw PARAMS((MENU *m));
-int umrtarw PARAMS((MENU *m));
-int umtab PARAMS((MENU *m));
-int umbof PARAMS((MENU *m));
-int umeof PARAMS((MENU *m));
-int umbol PARAMS((MENU *m));
-int umeol PARAMS((MENU *m));
-int umbacks PARAMS((MENU *m));
+int umuparw(W *w, int k);
+int umdnarw(W *w, int k);
+int umpgup(W *w, int k);
+int umpgdn(W *w, int k);
+int umscrup(W *w, int k);
+int umscrdn(W *w, int k);
+int umltarw(W *w, int k);
+int umrtarw(W *w, int k);
+int umtab(W *w, int k);
+int umbof(W *w, int k);
+int umeof(W *w, int k);
+int umbol(W *w, int k);
+int umeol(W *w, int k);
+int umbacks(W *w, int k);
 
-void ldmenu PARAMS((MENU *m, unsigned char **s, int cursor));
+void ldmenu(MENU *m, char **s, ptrdiff_t cursor);
 
-unsigned char *mcomplete PARAMS((MENU *m));
-unsigned char *find_longest PARAMS((unsigned char **lst));
+char *mcomplete(MENU *m);
+char *find_longest(char **lst);
 
-void menujump PARAMS((MENU *m, int x, int y));
-
-extern int lines; /* Number of menu lines */
+void menujump(MENU *m, ptrdiff_t x, ptrdiff_t y);
 
 extern WATOM watommenu; /* Menu WATOM */
 
@@ -64,6 +62,4 @@ extern int menu_above; /* Menu position: above or below */
 extern int bg_menu; /* Background color for menu */
 extern int transpose;
 
-int choose(W *w,W *targ,unsigned char **s,int *cursor);
-
-#endif
+int choose(W *w,W *targ,char **s,ptrdiff_t *cursor);

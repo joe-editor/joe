@@ -8,65 +8,101 @@
 #ifndef _JOE_MACRO_H
 #define _JOE_MACRO_H 1
 
+/* A macro or macro step */
+
 struct macro {
+	ptrdiff_t what;		/* 1 for kmap, 0 for macro */
 	int k; /* Keycode */
 	int flg; /* Flags: bit 0: this step wants the negative arg,
 	                   bit 1: ignore return value of this step, but use it as return value of macro */
 	CMD *cmd; /* Command address */
-	int n; /* Number of steps */
-	int size; /* Malloc size of steps */
+	ptrdiff_t n; /* Number of steps */
+	ptrdiff_t size; /* Malloc size of steps */
 	MACRO **steps; /* Block */
 };
 
+/* Macro being recorded */
+
 struct recmac {
-	struct recmac *next;
-	int	n;
-	MACRO	*m;
+	struct recmac *next;	/* Stack of macros: in case user records a macro from within a macro */
+	int	n;		/* Keyboard macro number */
+	MACRO	*m;		/* Macro being recorded */
 };
 
 extern struct recmac *recmac; /* Set when macro is recording: for status line */
 
 /* Macro construction functions */
-MACRO *mkmacro PARAMS((int k, int arg, int n, CMD *cmd));
-void addmacro PARAMS((MACRO *macro, MACRO *m));
-MACRO *dupmacro PARAMS((MACRO *mac));
-void rmmacro PARAMS((MACRO *macro));
-MACRO *macstk PARAMS((MACRO *m, int k));
-MACRO *macsta PARAMS((MACRO *m, int a));
 
-void chmac PARAMS((void));
+/* Create a macro
+ *  k is key to feed to command
+ *  flg has flag bits
+ *  n is number of steps (but it does not allocate space for them)
+ *  cmd is command for this step
+ */
+MACRO *mkmacro(int k, int flg, ptrdiff_t n, CMD *cmd);
 
-/* Text to macro / Macro to text */
-MACRO *mparse PARAMS((MACRO *m, unsigned char *buf, int *sta, int secure));
-unsigned char *mtext PARAMS((unsigned char *s, MACRO *m));
+/* Append step m to macro */
+void addmacro(MACRO *macro, MACRO *m);
+
+/* Recursively duplicate a macro */
+MACRO *dupmacro(MACRO *mac);
+
+/* Recursively delete a macro */
+void rmmacro(MACRO *macro);
+
+/* Set key part of macro step */
+MACRO *macstk(MACRO *m, int k);
+
+/* Set flag part of macro step */
+MACRO *macsta(MACRO *m, int a);
+
+/* Stuff Ctrl-C into previous step: used in nungetc() */
+void chmac(void);
+
+/* Parse a macro:
+     m is NULL: start a new macro
+     m is not NULL: append to existing macro
+     buf: is text to parse
+     sta: is filled with offset in buf where parsing stopped or
+        -1 for error (unknown command)
+        -2 more input needed (macro ended with , )
+     secure: if set, only allow commands which begin with "shell_"
+*/
+MACRO *mparse(MACRO *m, const char *buf, ptrdiff_t *sta, int secure);
+
+/* Convert macro to text.  Provide a buffer to write to in 's'. */
+char *mtext(char *s, MACRO *m);
 
 /* Execute a macro */
 extern MACRO *curmacro; /* Current macro being executed */
-int exemac PARAMS((va_list args));
-int exmacro PARAMS((MACRO *m, int u));
+int exemac(va_list args);
+int exmacro(MACRO *m, int u, int k);
 
 /* Keyboard macros user interface */
-int uplay PARAMS((BW *bw, int c));
-int ustop PARAMS((void));
-int urecord PARAMS((BW *bw, int c));
-int uquery PARAMS((BW *bw));
-int umacros PARAMS((BW *bw));
-int utimer PARAMS((BW *bw));
+int uplay(W *w, int c);		/* Play a keyboard macro */
+int ustop(W *w, int c);		/* Stop recording */
+int urecord(W *w, int c);	/* Start recording */
+int uquery(W *w, int c);	/* Suspend recording/playing for user input */
+int umacros(W *w, int c);	/* Convert keyboard macros to text and insert them */
+int utimer(W *w, int c);	/* Execute a macro periodically */
 
 /* Repeat prefix user command */
-int uarg PARAMS((BW *bw));
-int uuarg PARAMS((BW *bw, int c));
-int uif PARAMS((BW *bw));
-int uelsif PARAMS((BW *bw));
-int uelse PARAMS((BW *bw));
-int uendif PARAMS((BW *bw));
+int uarg(W *w, int k);		/* Prompt for repeat argument */
+int uuarg(W *w, int c);		/* Emacs way of setting repeat argument */
 
-unsigned char *unescape PARAMS((unsigned char *ptr,int c));
+int uif(W *w, int k);		/* Prompt for expression, execute following steps if true */
+int uelsif(W *w, int k);	/* Prompt for expression, execute following steps if true */
+int uelse(W *w, int k);		/* Execute following steps if last expression was false */
+int uendif(W *w, int k);	/* End of conditional */
 
-void load_macros PARAMS((FILE *f));
-void save_macros PARAMS((FILE *f));
+void load_macros(FILE *f);	/* Load keyboard macros from .joe_state file */
+void save_macros(FILE *f);	/* Save keyboard macros in .joe_state file */
 
 extern int current_arg; /* Current macro repeat argument */
 extern int current_arg_set; /* Set if repeat arg was given */
 
+/* Append escaped version of character c to string ptr
+   Used by mtext.
+*/
+char *unescape(char *ptr,int c);
 #endif

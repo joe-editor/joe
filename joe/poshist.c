@@ -22,17 +22,17 @@ int npos = 0;
 
 static void markpos(W *w, P *p)
 {
-	POS *new = alitem(&frpos, sizeof(POS));
+	POS *newpos = (POS *)alitem(&frpos, SIZEOF(POS));
 
-	new->p = NULL;
-	pdupown(p, &new->p, USTR "markpos");
-	poffline(new->p);
-	new->w = w;
-	enqueb(POS, link, &pos, new);
+	newpos->p = NULL;
+	pdupown(p, &newpos->p, "markpos");
+	poffline(newpos->p);
+	newpos->w = w;
+	enqueb(POS, link, &pos, newpos);
 	if (npos == 20) {
-		new = pos.link.next;
-		prm(new->p);
-		demote(POS, link, &frpos, new);
+		newpos = pos.link.next;
+		prm(newpos->p);
+		demote(POS, link, &frpos, newpos);
 	} else {
 		++npos;
 	}
@@ -48,7 +48,7 @@ void afterpos(void)
 
 void aftermove(W *w, P *p)
 {
-	if (pos.link.prev != &pos && pos.link.prev->w == w && pos.link.prev->p && labs(pos.link.prev->p->line - p->line) < 3) {
+	if (pos.link.prev != &pos && pos.link.prev->w == w && pos.link.prev->p && oabs(pos.link.prev->p->line - p->line) < 3) {
 		poffline(pset(pos.link.prev->p, p));
 	} else {
 		markpos(w, p);
@@ -66,9 +66,10 @@ void windie(W *w)
 	}
 }
 
-int unextpos(BW *bw)
+int unextpos(W *w, int k)
 {
-	W *w = bw->parent;
+	BW *bw;
+	WIND_BW(bw, w);
 
       lp:
 	if (curpos->link.next != &pos && curpos != &pos) {
@@ -76,6 +77,11 @@ int unextpos(BW *bw)
 		if (!curpos->p || !curpos->w) {
 			goto lp;
 		}
+		if (!(curpos->w->watom->what & (TYPETW|TYPEPW)))
+			goto lp;
+		bw = (BW *)curpos->w->object;
+		if (bw->b != curpos->p->b)
+			goto lp;
 		if (w->t->curwin == curpos->w && curpos->p->byte == ((BW *) w->t->curwin->object)->cursor->byte) {
 			goto lp;
 		}
@@ -96,9 +102,10 @@ int unextpos(BW *bw)
 	}
 }
 
-int uprevpos(BW *bw)
+int uprevpos(W *w, int k)
 {
-	W *w = bw->parent;
+	BW *bw;
+	WIND_BW(bw, w);
 
       lp:
 	if (curpos->link.prev != &pos) {
@@ -106,6 +113,11 @@ int uprevpos(BW *bw)
 		if (!curpos->p || !curpos->w) {
 			goto lp;
 		}
+		if (!(curpos->w->watom->what & (TYPETW|TYPEPW)))
+			goto lp;
+		bw = (BW *)curpos->w->object;
+		if (bw->b != curpos->p->b)
+			goto lp;
 		if (w->t->curwin == curpos->w && curpos->p->byte == ((BW *) w->t->curwin->object)->cursor->byte) {
 			goto lp;
 		}

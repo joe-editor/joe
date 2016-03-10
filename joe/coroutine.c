@@ -15,7 +15,7 @@ static struct stack *free_stacks;	/* Free stacks */
 
 static int rtval;
 
-static void call_it()
+static void call_it(void *arg)
 {
 	for (;;) {
 		Coroutine *t;
@@ -53,7 +53,7 @@ static struct stack *mkstack()
 		return stack;
 	}
 	
-	stack = (struct stack *)malloc(sizeof(struct stack));
+	stack = (struct stack *)malloc(SIZEOF(struct stack));
 	stack->caller = 0;
 	stack->chain = 0;
 	
@@ -246,7 +246,7 @@ int co_call(int (*func)(va_list args), ...)
 	va_start(ap, func);
 
 	if (!current_stack) {
-		current_stack = (struct stack *)malloc(sizeof(struct stack));
+		current_stack = (struct stack *)malloc(SIZEOF(struct stack));
 		current_stack->caller = 0;
 		current_stack->chain = 0;
 		coro_create(&current_stack->cothread, NULL, NULL, NULL, 0);

@@ -353,7 +353,7 @@ void loadschemeinfo(wchar_t *file, struct jwcolorlist **list)
 
 	fp = jwfopen(file, L"r");
 
-	while (jwfgets((unsigned char *)buffer, 160, fp)) {
+	while (jwfgets(buffer, 160, fp)) {
 		stripws(buffer);
 
 		if (!buffer[0]) { /* Empty line */ }
@@ -461,7 +461,7 @@ static struct jwcolors *doloadcolors(wchar_t *file)
 		return NULL;
 	}
 
-	while (jwfgets((unsigned char *)buffer, 160, fp))
+	while (jwfgets(buffer, 160, fp))
 	{
 		/* Strip comments, leading and trailing whitespace */
 		stripws(buffer);

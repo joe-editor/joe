@@ -27,8 +27,8 @@
 static HMODULE modules[8];
 static int nmodules = 0;
 
-static int iscompressed(const unsigned char* p);
-static int decompress(const unsigned char* p, int len, unsigned char **result, int *resultlen);
+static int iscompressed(const char* p);
+static int decompress(const char* p, int len, char **result, int *resultlen);
 
 void jwAddResourceHandle(HMODULE module)
 {
@@ -48,18 +48,18 @@ JFILE *jwfopen(wchar_t *name, wchar_t *mode)
 			HRSRC res = FindResource(modules[i], resname, RT_RCDATA);
 			if (res) {
 				HGLOBAL resptr = LoadResource(modules[i], res);
-				unsigned char *ptr = (unsigned char *)LockResource(resptr);
+				char *ptr = (char *)LockResource(resptr);
 				JFILE *j = (JFILE *)malloc(sizeof(JFILE));
 
 				j->f = 0;
 				j->sz = SizeofResource(modules[i], res);
 
 				/* Courtesy of miniz (wrappers below) */
-				if (iscompressed((unsigned char *)ptr)) {
-					unsigned char *newptr;
+				if (iscompressed(ptr)) {
+					char *newptr;
 					int newlen;
 
-					if (!decompress((unsigned char *)ptr, j->sz, &newptr, &newlen)) {
+					if (!decompress(ptr, j->sz, &newptr, &newlen)) {
 						/* Success */
 						j->dealloc = newptr;
 						j->p = newptr;
@@ -98,11 +98,11 @@ JFILE *jwfopen(wchar_t *name, wchar_t *mode)
 	}
 }
 
-unsigned char *jwfgets(unsigned char *buf, int size, JFILE *f)
+char *jwfgets(char *buf, int size, JFILE *f)
 {
 	int x;
 
-	if (f->f) return (unsigned char *)fgets((char*)buf, size, f->f);
+	if (f->f) return fgets(buf, size, f->f);
 	if (!f->sz) {
 		buf[0] = 0;
 		return NULL;
@@ -212,16 +212,16 @@ int jwfclose(JFILE *f)
 
 void *tinfl_decompress_mem_to_heap(const void *pSrc_buf, size_t src_buf_len, size_t *pOut_len, int flags);
 
-static int iscompressed(const unsigned char* p)
+static int iscompressed(const char* p)
 {
 	return p[0] == 5 && p[1] == 1;
 }
 
-static int decompress(const unsigned char* p, int len, unsigned char **result, int *resultlen)
+static int decompress(const char* p, int len, char **result, int *resultlen)
 {
 	size_t outsz;
 
-	*result = (unsigned char *)tinfl_decompress_mem_to_heap(&p[2], len, &outsz, 0);
+	*result = (char *)tinfl_decompress_mem_to_heap(&p[2], len, &outsz, 0);
 	*resultlen = outsz;
 
 	return 0;

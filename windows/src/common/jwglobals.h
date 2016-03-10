@@ -27,10 +27,10 @@
 #endif
 
 JOEWIN_GLOBAL int jw_argc;
-JOEWIN_GLOBAL unsigned char** jw_argv;
-JOEWIN_GLOBAL unsigned char* jw_joedata;
-JOEWIN_GLOBAL unsigned char* jw_joerc;
-JOEWIN_GLOBAL unsigned char* jw_home;
+JOEWIN_GLOBAL char** jw_argv;
+JOEWIN_GLOBAL char* jw_joedata;
+JOEWIN_GLOBAL char* jw_joerc;
+JOEWIN_GLOBAL char* jw_home;
 JOEWIN_GLOBAL wchar_t* jw_personality;
 
 JOEWIN_GLOBAL int jw_initialrows, jw_initialcols;

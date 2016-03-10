@@ -23,7 +23,7 @@
 const char* joedata_plus(const char* input)
 {
 	static char *buffer = NULL;
-	int sz = strlen(input) + strlen(jw_joedata);
+	size_t sz = strlen(input) + strlen(jw_joedata);
 
 	if (buffer) {
 		if (strlen(buffer) < sz) {

@@ -20,7 +20,7 @@
 	"#"		comment		recolor=-1
 	"0-9"		first_digit	recolor=-1
 	"'\""		string_quot_1	recolor=-1 save_c
-	"a-zA-Z_"	ident		noeat
+	"\i"		ident		noeat
 	"{}"		brace		recolor=-1
 	"@"		decorator	recolor=-1
 
@@ -121,7 +121,7 @@ done
 	"br"		string_raw_pre
 	"rb"		string_raw_pre
 done
-	"a-zA-Z0-9_"	ident1
+	"\c"		ident1
 
 :kw Keyword
 	*		idle		noeat
@@ -131,7 +131,7 @@ done
 
 :declkw Keyword
 	*		idle 		noeat recolor=-1
-	"a-zA-Z"	declkw
+	"\i"		declkw
 	" \t"		declname_1
 
 :declname_1 Declaration
@@ -140,11 +140,11 @@ done
 
 :declname Declaration
 	*		idle		noeat recolor=-1
-	"a-zA-Z0-9_"	declname
+	"\c"		declname
 
 :priv_member PrivateMember
 	*		idle		noeat
-	"a-zA-Z0-9_"	priv_member
+	"\c"		priv_member
 
 # Handle string prefixes up to the string itself.
 :string_pre Constant

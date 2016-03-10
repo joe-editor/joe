@@ -29,23 +29,23 @@ int Baud = 38400;		/* Baud rate from joerc, cmd line or environment */
 
 /* Output buffer, index and size */
 
-unsigned char *obuf = NULL;
+char *obuf = NULL;
 int obufp = 0;
 int obufsiz;
 
-unsigned char ibuf[UI_TO_EDITOR_IOSZ];
+char ibuf[UI_TO_EDITOR_IOSZ];
 int ibufp = 0;
 int ibufsiz = 0;
 
 /* The baud rate */
 
-unsigned baud;			/* Bits per second */
-unsigned long upc;		/* Microseconds per character */
+long tty_baud;			/* Bits per second */
+long upc;			/* Microseconds per character */
 
 /* Input buffer */
 
 int have = 0;			/* Set if we have pending input */
-unsigned char havec;		/* Character read in during pending input check */
+char havec;			/* Character read in during pending input check */
 int leave = 0;			/* When set, typeahead checking is disabled */
 
 /* TTY mode flag.  1 for open, 0 for closed */
@@ -97,8 +97,8 @@ void ttopnn(void)
 	// Note: High baud rate turns off scroll.  Normally, yeah this would be fine,
 	// but it doesn't work very well over remote desktop without it.  baud ought
 	// to be 9600 per the putty termcap, so keep it rather than assigning from Baud.
-	baud = 9600;
-	upc = DIVIDEND / baud;
+	tty_baud = 9600;
+	upc = DIVIDEND / tty_baud;
 	
 	// Setup output buffer
 	if (obuf)
@@ -111,7 +111,7 @@ void ttopnn(void)
 	// keep up, but that logic is just a touch obsolete.  Use 4k...
 
 	obufsiz = 4096;
-	obuf = (unsigned char *) joe_malloc(obufsiz);
+	obuf = (char *) joe_malloc(obufsiz);
 
 	winwidth = jw_initialcols;
 	winheight = jw_initialrows;
@@ -178,7 +178,7 @@ time_t last_time;
 int handlejwcontrol(struct CommMessage *m);
 extern MACRO *timer_play();
 
-int ttgetc(void)
+char ttgetc(void)
 {
 	MACRO *m;
 	time_t new_time;
@@ -288,7 +288,7 @@ int ttgetc(void)
 			if (m->msg == COMM_MPXDATA) {
 				jwSendComm0(mpx->ackfd, COMM_ACK);
 
-				mpx->func(mpx->object, USTR m->buffer->buffer, m->buffer->size);
+				mpx->func(mpx->object, m->buffer->buffer, m->buffer->size);
 				edupd(1);
 			} else if (m->msg == COMM_EXIT) {
 				mpxdied(mpx);
@@ -302,9 +302,31 @@ int ttgetc(void)
 	return havec;
 }
 
+/* Get character from input: convert whatever we get to Unicode */
+
+static struct utf8_sm main_utf8_sm;
+
+int ttgetch()
+{
+	if (locale_map->type) {
+		int utf8_char;
+		do {
+			char c = ttgetc();
+			utf8_char = utf8_decode(&main_utf8_sm, c);
+		} while (!leave && utf8_char < 0);
+		return leave ? -1 : utf8_char;
+	} else {
+		char c = ttgetc();
+		int utf8_char = to_uni(locale_map, c);
+		if (utf8_char == -1)
+			utf8_char = '?'; /* Maybe we should ignore it? */
+		return utf8_char;
+	}
+}
+
 /* Write string to output */
 
-void ttputs(unsigned char *s)
+void ttputs(const char *s)
 {
 	while (*s) {
 		obuf[obufp++] = *s++;
@@ -331,13 +353,13 @@ int handlejwcontrol(struct CommMessage *m)
 		}
 	} else if (m->msg == COMM_DROPFILES) {
 		struct CommMessage *n = m;
-		unsigned char **files = vamk(m->arg3);
+		char **files = vamk(m->arg3);
 		int x = m->arg1, y = m->arg2;
 		int qd = JW_TO_EDITOR;
 
 		/* We will be sent a packet with count=0 to denote no more files */
 		while (n && n->arg3 > 0) {
-			files = vaadd(files, vsdupz(USTR n->buffer->buffer));
+			files = vaadd(files, vsdupz(n->buffer->buffer));
 
 			if (n != m) {
 				jwReleaseComm(JW_TO_EDITOR, n);
@@ -365,7 +387,7 @@ int handlejwcontrol(struct CommMessage *m)
 
 		/* Redraw screen */
 		if (!retype) {
-			retype = findcmd(USTR "retype");
+			retype = findcmd("retype");
 		}
 
 		execmd(retype, 0);
@@ -392,7 +414,7 @@ int handlejwcontrol(struct CommMessage *m)
 
 		if (data) {
 			int sta;
-			MACRO *m = mparse(NULL, USTR data, &sta, 0);
+			MACRO *m = mparse(NULL, data, &sta, 0);
 			co_call(exemac, m);
 			rmmacro(m);
 			if (dealloc) free(dealloc);
@@ -400,7 +422,7 @@ int handlejwcontrol(struct CommMessage *m)
 		}
 	} else if (m->msg == COMM_EXIT) {
 		/* Shut down and exit */
-		CMD *c = findcmd(USTR "killjoe");
+		CMD *c = findcmd("killjoe");
 		execmd(c, 0);
 
 		/* Recycle this message first because we're about to... */
@@ -430,6 +452,7 @@ static LONG WINAPI SehHandler(LPEXCEPTION_POINTERS lpe)
 		return EXCEPTION_EXECUTE_HANDLER;
 	
 	ttsig(lpe->ExceptionRecord->ExceptionCode);
+	return 0; /* Not reached */
 }
 
 /* Set signals for JOE */

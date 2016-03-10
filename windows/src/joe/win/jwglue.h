@@ -63,7 +63,7 @@ struct dirent {
     HANDLE  find_handle;
 };
 
-void *opendir(unsigned char*);
+void *opendir(const char*);
 void closedir(void*);
 struct dirent *readdir(void*);
 
@@ -79,5 +79,9 @@ int glue_chdir(const char *path);
 int glue_fprintf(FILE *, const char *, ...);
 int glue_unlink(const char *path);
 int glue_mkdir(const char *path, int);
+
+/* Types that need definition */
+
+typedef int mode_t;
 
 #endif // _JOEWIN_GLUE_H

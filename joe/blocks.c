@@ -22,7 +22,7 @@
 /* Set 'sz' 'int's beginning at 'd' to the value 'c' */
 /* Returns address of block.  Does nothing if 'sz' equals zero */
 
-int *msetI(void *dest, int c, int sz)
+int *msetI(int *dest, int c, ptrdiff_t sz)
 {
 	int	*d = dest;
 	int	*orgd = dest;
@@ -68,10 +68,56 @@ int *msetI(void *dest, int c, int sz)
 	return orgd;
 }
 
+ptrdiff_t *msetD(ptrdiff_t *dest, ptrdiff_t c, ptrdiff_t sz)
+{
+	ptrdiff_t	*d = dest;
+	ptrdiff_t	*orgd = dest;
+
+	while (sz >= 16) {
+		d[0] = c;
+		d[1] = c;
+		d[2] = c;
+		d[3] = c;
+		d[4] = c;
+		d[5] = c;
+		d[6] = c;
+		d[7] = c;
+		d[8] = c;
+		d[9] = c;
+		d[10] = c;
+		d[11] = c;
+		d[12] = c;
+		d[13] = c;
+		d[14] = c;
+		d[15] = c;
+		d += 16;
+		sz -= 16;
+	}
+	switch (sz) {
+	case 15:	d[14] = c;
+	case 14:	d[13] = c;
+	case 13:	d[12] = c;
+	case 12:	d[11] = c;
+	case 11:	d[10] = c;
+	case 10:	d[9] = c;
+	case 9:		d[8] = c;
+	case 8:		d[7] = c;
+	case 7:		d[6] = c;
+	case 6:		d[5] = c;
+	case 5:		d[4] = c;
+	case 4:		d[3] = c;
+	case 3:		d[2] = c;
+	case 2:		d[1] = c;
+	case 1:		d[0] = c;
+	case 0:		/* do nothing */;
+	}
+	return orgd;
+}
+
 /* Set 'sz' 'int's beginning at 'd' to the value 'c' */
 /* Returns address of block.  Does nothing if 'sz' equals zero */
 
-void **msetP(void **d, void *c, int sz)
+void **msetP(void **d, void *c, ptrdiff_t sz)
 {
 	void	**orgd = d;
 
@@ -119,10 +165,10 @@ void **msetP(void **d, void *c, int sz)
 /* Set 'sz' 'char's beginning at 'd' to the value 'c' */
 /* Returns address of block.  Does nothing if 'sz' equals zero */
 
-unsigned char *mset(void *dest, unsigned char c, int sz)
+char *mset(char *dest, char c, ptrdiff_t sz)
 {
-	unsigned char	*d = dest;
-	unsigned char	*orgd = dest;
+	char	*d = dest;
+	char	*orgd = dest;
 
 	if (sz < 16) {
 		switch (sz) {
@@ -144,7 +190,7 @@ unsigned char *mset(void *dest, unsigned char c, int sz)
 		case 0:		/* do nothing */;
 		}
 	} else {
-		unsigned z = SIZEOF_INT - ((unsigned long)d & (SIZEOF_INT - 1));
+		ptrdiff_t z = SIZEOF_INT - ((ptrdiff_t)d & (SIZEOF_INT - 1));
 
 		if (z != SIZEOF_INT) {
 			switch (z) {
@@ -160,7 +206,7 @@ unsigned char *mset(void *dest, unsigned char c, int sz)
 			d += z;
 			sz -= z;
 		}
-		msetI(d,
+		msetI((int *)d,
 #if SIZEOF_INT >= 8
 		      (c << (BITS * 7)) + (c << (BITS * 6)) + (c << (BITS * 5)) + (c << (BITS * 4)) +
 #endif
@@ -189,10 +235,10 @@ unsigned char *mset(void *dest, unsigned char c, int sz)
 /* Copy a block of integers */
 /* Copy from highest address to lowest */
 
-static int *mbkwdI(void *dest, void *src, int sz)
+static int *mbkwdI(int *dest, const int *src, ptrdiff_t sz)
 {
 	int	*d = dest;
-	int	*s = src;
+	const int *s = src;
 
 	if (d == s)
 		return d;
@@ -244,10 +290,10 @@ static int *mbkwdI(void *dest, void *src, int sz)
 
 /* Copy a block of 'int's.  Copy from lowest address to highest */
 
-static int *mfwrdI(void *dest, void *src, int sz)
+static int *mfwrdI(int *dest, const int *src, ptrdiff_t sz)
 {
 	int	*d = dest;
-	int	*s = src;
+	const int *s = src;
 	int	*od = d;
 
 	if (s == d)
@@ -301,8 +347,10 @@ static int *mfwrdI(void *dest, void *src, int sz)
  * are copied before the ones at the lowest ('s') are.
  */
 
-static unsigned char *mbkwd(register unsigned char *d, register unsigned char *s, register int sz)
+static void *mbkwd(register void *orgd, register const void *orgs, register ptrdiff_t sz)
 {
+	char *d = (char *)orgd;
+	const char *s = (const char *)orgs;
 	if (s == d)
 		return d;
 	s += sz;
@@ -310,10 +358,10 @@ static unsigned char *mbkwd(register unsigned char *d, register unsigned char *s
 #ifdef ALIGNED
 	if (sz >= 16)
 #else
-	if (((unsigned long)s & (SIZEOF_INT - 1)) == ((unsigned long)d & (SIZEOF_INT - 1)) && sz >= 16)
+	if (((ptrdiff_t)s & (SIZEOF_INT - 1)) == ((ptrdiff_t)d & (SIZEOF_INT - 1)) && sz >= 16)
 #endif
 	{
-		unsigned z = ((unsigned long) s & (SIZEOF_INT - 1));
+		ptrdiff_t z = ((ptrdiff_t)s & (SIZEOF_INT - 1));
 
 		s -= z;
 		d -= z;
@@ -328,7 +376,7 @@ static unsigned char *mbkwd(register unsigned char *d, register unsigned char *s
 		case 0:		/* do nothing */;
 		}
 		sz -= z;
-		mbkwdI(d - (sz & ~(SIZEOF_INT - 1)), s - (sz & ~(SIZEOF_INT - 1)), sz >> SHFT);
+		mbkwdI((int *)(d - (sz & ~(SIZEOF_INT - 1))), (const int *)(s - (sz & ~(SIZEOF_INT - 1))), sz >> SHFT);
 		d -= sz;
 		s -= sz;
 		switch (sz & (SIZEOF_INT - 1)) {
@@ -392,19 +440,20 @@ static unsigned char *mbkwd(register unsigned char *d, register unsigned char *s
  * are copied before the ones at the highest ('s'+'sz'-1) are.
  */
 
-static unsigned char *mfwrd(register unsigned char *d, register unsigned char *s, register int sz)
+static void *mfwrd(register void *orgd, register const void *orgs, register ptrdiff_t sz)
 {
-	unsigned char *od = d;
+	char *d = (char *)orgd;
+	const char *s = (const char *)orgs;
 
 	if (d == s)
 		return d;
 #ifdef ALIGNED
 	if (sz >= 16)
 #else
-	if (((unsigned long)d & (SIZEOF_INT - 1)) == ((unsigned long)s & (SIZEOF_INT - 1)) && sz >= 16)
+	if (((ptrdiff_t)d & (SIZEOF_INT - 1)) == ((ptrdiff_t)s & (SIZEOF_INT - 1)) && sz >= 16)
 #endif
 	{
-		unsigned z = ((unsigned long)s & (SIZEOF_INT - 1));
+		ptrdiff_t z = ((ptrdiff_t)s & (SIZEOF_INT - 1));
 
 		if (z) {
 			s -= z;
@@ -437,7 +486,7 @@ static unsigned char *mfwrd(register unsigned char *d, register unsigned char *s
 			d += SIZEOF_INT;
 			sz -= SIZEOF_INT - z;
 		}
-		mfwrdI(d, s, sz >> SHFT);
+		mfwrdI((int *)d, (const int *)s, sz >> SHFT);
 		s += sz - (SIZEOF_INT - 1);
 		d += sz - (SIZEOF_INT - 1);
 		switch (sz & (SIZEOF_INT - 1)) {
@@ -507,10 +556,10 @@ static unsigned char *mfwrd(register unsigned char *d, register unsigned char *s
 		case 0:		/* do nothing */;
 		}
 	}
-	return od;
+	return orgd;
 }
 
-void *mmove(void *d, void *s, int sz)
+void *mmove(void *d, const void *s, ptrdiff_t sz)
 {
 	if (d > s)
 		mbkwd(d, s, sz);
@@ -521,9 +570,9 @@ void *mmove(void *d, void *s, int sz)
 
 /* Utility to count number of lines within a segment */
 
-int mcnt(register unsigned char *blk, register unsigned char c, int size)
+ptrdiff_t mcnt(register const char *blk, register char c, ptrdiff_t size)
 {
-	register int nlines = 0;
+	register ptrdiff_t nlines = 0;
 
 	while (size >= 16) {
 		if (blk[0] == c) ++nlines;
@@ -568,8 +617,7 @@ int mcnt(register unsigned char *blk, register unsigned char c, int size)
 
 #ifdef junk
 
-unsigned char *mchr(blk, c)
-register unsigned char *blk, c;
+char *mchr(register char *blk, char c)
 {
     loop:
 	if (blk[0] == c) return blk + 0;

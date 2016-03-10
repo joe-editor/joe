@@ -8,20 +8,60 @@
 
 #include "types.h"
 
-static int map_name_cmp(unsigned char *a,unsigned char *b);
+static int map_name_cmp(const char *a, const char *b);
+
+/* Under AmigaOS we have setlocale() but don't have langinfo.h and associated stuff,
+ * so we have to disable the whole piece of code
+ */
+#ifdef __amigaos
+#undef HAVE_SETLOCALE
+#endif
+
+/* Cygwin has CODESET, but it's crummy */
+#ifdef __CYGWIN__
+#undef HAVE_SETLOCALE
+#endif
+
+/* If it looks old, forget it */
+#ifndef CODESET
+#undef HAVE_SETLOCALE
+#endif
+
+#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
+#	include <locale.h>
+#       include <langinfo.h>
+#endif
+
+/* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
+   JOE uses a limited internal version instead */
 
 /* Convert from byte code to unicode.  Returns -1 for unknown. */
 
 int to_uni(struct charmap *cset, int c)
 {
+	if (c < 0)
+		c += 256;
 	return cset->to_map[c];
+}
+
+void to_utf8(struct charmap *map,char *s,int c)
+{
+	int d = to_uni(map,c);
+
+	if (d==-1)
+		utf8_encode(s,'?');
+	else
+		utf8_encode(s,d);
 }
 
 /* Convert from unicode to byte code.  Returns -1 for unknown. */
 
 int from_uni(struct charmap *cset, int c)
 {
-	int x, y, z;
+	ptrdiff_t x, y, z;
+
+	if (c < 0)
+		c += 256;
 
 	x = 0;
 	y = cset->from_size-1;
@@ -38,15 +78,25 @@ int from_uni(struct charmap *cset, int c)
 	return -1;
 }
 
+int from_utf8(struct charmap *map,const char *s)
+{
+	int d = utf8_decode_string(s);
+	int c = from_uni(map,d);
+	if (c==-1)
+		return '?';
+	else
+		return c;
+}
+
 /* Builtin maps */
 
 struct alias_table_s {
-	unsigned char *alias;
-	unsigned char *builtin;
+	const char *alias;
+	const char *builtin;
 };
 
 struct builtin_charmap {
-	unsigned char *name;
+	char *name;
 	int to_uni[256];
 };
 
@@ -55,48 +105,53 @@ struct builtin_charmap {
 /* Aliases */
 
 static struct alias_table_s alias_table[] = {
-	{ USTR "c", USTR "ascii" },
-	{ USTR "posix", USTR "ascii" },
-	{ USTR "8859-1", USTR "iso-8859-1" },
-	{ USTR "8859-2", USTR "iso-8859-2" },
-	{ USTR "8859-3", USTR "iso-8859-3" },
-	{ USTR "8859-4", USTR "iso-8859-4" },
-	{ USTR "8859-5", USTR "iso-8859-5" },
-	{ USTR "8859-6", USTR "iso-8859-6" },
-	{ USTR "8859-7", USTR "iso-8859-7" },
-	{ USTR "8859-8", USTR "iso-8859-8" },
-	{ USTR "8859-9", USTR "iso-8859-9" },
-	{ USTR "8859-10", USTR "iso-8859-10" },
-	{ USTR "8859-11", USTR "iso-8859-11" },
-	{ USTR "8859-13", USTR "iso-8859-13" },
-	{ USTR "8859-14", USTR "iso-8859-14" },
-	{ USTR "8859-15", USTR "iso-8859-15" },
-	{ USTR "8859-16", USTR "iso-8859-16" },
-	{ USTR "ansi", USTR "iso-8859-1" },
-	{ USTR "latin1", USTR "iso-8859-1" },
-	{ USTR "latin2", USTR "iso-8859-2" },
-	{ USTR "latin3", USTR "iso-8859-3" },
-	{ USTR "latin4", USTR "iso-8859-4" },
-	{ USTR "cyrillic", USTR "iso-8859-5" },
-	{ USTR "arabic", USTR "iso-8859-6" },
-	{ USTR "greek", USTR "iso-8859-7" },
-	{ USTR "hebrew", USTR "iso-8859-8" }, /* cp1255 on windows machines? */
-	{ USTR "latin5", USTR "iso-8859-9" },
-	{ USTR "turkish", USTR "iso-8859-9" },
-	{ USTR "latin6", USTR "iso-8859-10" },
-	{ USTR "nordic", USTR "iso-8859-10" },
-	{ USTR "thai", USTR "iso-8859-11" },
-	{ USTR "latin7", USTR "iso-8859-13" },
-	{ USTR "latin8", USTR "iso-8859-14" },
-	{ USTR "latin9", USTR "iso-8859-15" },
+	{ "c", "ascii" },
+	{ "posix", "ascii" },
+	{ "8859-1", "iso-8859-1" },
+	{ "8859-2", "iso-8859-2" },
+	{ "8859-3", "iso-8859-3" },
+	{ "8859-4", "iso-8859-4" },
+	{ "8859-5", "iso-8859-5" },
+	{ "8859-6", "iso-8859-6" },
+	{ "8859-7", "iso-8859-7" },
+	{ "8859-8", "iso-8859-8" },
+	{ "8859-9", "iso-8859-9" },
+	{ "8859-10", "iso-8859-10" },
+	{ "8859-11", "iso-8859-11" },
+	{ "8859-13", "iso-8859-13" },
+	{ "8859-14", "iso-8859-14" },
+	{ "8859-15", "iso-8859-15" },
+	{ "8859-16", "iso-8859-16" },
+	{ "ansi", "iso-8859-1" },
+	{ "latin1", "iso-8859-1" },
+	{ "latin2", "iso-8859-2" },
+	{ "latin3", "iso-8859-3" },
+	{ "latin4", "iso-8859-4" },
+	{ "cyrillic", "iso-8859-5" },
+	{ "arabic", "iso-8859-6" },
+	{ "greek", "iso-8859-7" },
+	{ "hebrew", "iso-8859-8" }, /* cp1255 on windows machines? */
+	{ "latin5", "iso-8859-9" },
+	{ "turkish", "iso-8859-9" },
+	{ "latin6", "iso-8859-10" },
+	{ "nordic", "iso-8859-10" },
+	{ "thai", "iso-8859-11" },
+	{ "latin7", "iso-8859-13" },
+	{ "latin8", "iso-8859-14" },
+	{ "latin9", "iso-8859-15" },
 	{ 0, 0 }
 };
 
 /* I took all the ISO-8859- ones, plus any ones referenced by a locale */
 
+struct builtin_charmap {
+	const char *name;
+	int to_uni[256];
+};
+
 static struct builtin_charmap builtin_charmaps[]=
 {
-	{ USTR "ascii", {
+	{ "ascii", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -129,7 +184,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	    -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
 	    -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
 	    -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1 } },
-	{ USTR "iso-8859-1", {
+	{ "iso-8859-1", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -162,7 +217,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x00e8, 0x00e9, 0x00ea, 0x00eb, 0x00ec, 0x00ed, 0x00ee, 0x00ef, 
 	0x00f0, 0x00f1, 0x00f2, 0x00f3, 0x00f4, 0x00f5, 0x00f6, 0x00f7, 
 	0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x00ff } },
-	{ USTR "iso-8859-2", {
+	{ "iso-8859-2", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -195,7 +250,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x010d, 0x00e9, 0x0119, 0x00eb, 0x011b, 0x00ed, 0x00ee, 0x010f, 
 	0x0111, 0x0144, 0x0148, 0x00f3, 0x00f4, 0x0151, 0x00f6, 0x00f7, 
 	0x0159, 0x016f, 0x00fa, 0x0171, 0x00fc, 0x00fd, 0x0163, 0x02d9 } },
-	{ USTR "iso-8859-3", {
+	{ "iso-8859-3", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -228,7 +283,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x00e8, 0x00e9, 0x00ea, 0x00eb, 0x00ec, 0x00ed, 0x00ee, 0x00ef, 
 	    -1, 0x00f1, 0x00f2, 0x00f3, 0x00f4, 0x0121, 0x00f6, 0x00f7, 
 	0x011d, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x016d, 0x015d, 0x02d9 } },
-	{ USTR "iso-8859-4", {
+	{ "iso-8859-4", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -261,7 +316,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x010d, 0x00e9, 0x0119, 0x00eb, 0x0117, 0x00ed, 0x00ee, 0x012b, 
 	0x0111, 0x0146, 0x014d, 0x0137, 0x00f4, 0x00f5, 0x00f6, 0x00f7, 
 	0x00f8, 0x0173, 0x00fa, 0x00fb, 0x00fc, 0x0169, 0x016b, 0x02d9 } },
-	{ USTR "iso-8859-5", {
+	{ "iso-8859-5", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -294,7 +349,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x0448, 0x0449, 0x044a, 0x044b, 0x044c, 0x044d, 0x044e, 0x044f, 
 	0x2116, 0x0451, 0x0452, 0x0453, 0x0454, 0x0455, 0x0456, 0x0457, 
 	0x0458, 0x0459, 0x045a, 0x045b, 0x045c, 0x00a7, 0x045e, 0x045f } },
-	{ USTR "iso-8859-6", {
+	{ "iso-8859-6", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -327,7 +382,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x0648, 0x0649, 0x064a, 0x064b, 0x064c, 0x064d, 0x064e, 0x064f, 
 	0x0650, 0x0651, 0x0652,     -1,     -1,     -1,     -1,     -1, 
 	    -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1 } },
-	{ USTR "iso-8859-7", {
+	{ "iso-8859-7", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -360,7 +415,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x03b8, 0x03b9, 0x03ba, 0x03bb, 0x03bc, 0x03bd, 0x03be, 0x03bf, 
 	0x03c0, 0x03c1, 0x03c2, 0x03c3, 0x03c4, 0x03c5, 0x03c6, 0x03c7, 
 	0x03c8, 0x03c9, 0x03ca, 0x03cb, 0x03cc, 0x03cd, 0x03ce,     -1 } },
-	{ USTR "iso-8859-8", {
+	{ "iso-8859-8", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -393,7 +448,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x05d8, 0x05d9, 0x05da, 0x05db, 0x05dc, 0x05dd, 0x05de, 0x05df, 
 	0x05e0, 0x05e1, 0x05e2, 0x05e3, 0x05e4, 0x05e5, 0x05e6, 0x05e7, 
 	0x05e8, 0x05e9, 0x05ea,     -1,     -1, 0x200e, 0x200f,     -1 } },
-	{ USTR "iso-8859-9", {
+	{ "iso-8859-9", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -426,7 +481,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x00e8, 0x00e9, 0x00ea, 0x00eb, 0x00ec, 0x00ed, 0x00ee, 0x00ef, 
 	0x011f, 0x00f1, 0x00f2, 0x00f3, 0x00f4, 0x00f5, 0x00f6, 0x00f7, 
 	0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x0131, 0x015f, 0x00ff } },
-	{ USTR "iso-8859-10", {
+	{ "iso-8859-10", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -459,7 +514,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x010d, 0x00e9, 0x0119, 0x00eb, 0x0117, 0x00ed, 0x00ee, 0x00ef, 
 	0x00f0, 0x0146, 0x014d, 0x00f3, 0x00f4, 0x00f5, 0x00f6, 0x0169, 
 	0x00f8, 0x0173, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x0138 } },
-	{ USTR "iso-8859-11", {
+	{ "iso-8859-11", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -492,7 +547,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x0e48, 0x0e49, 0x0e4a, 0x0e4b, 0x0e4c, 0x0e4d, 0x0e4e, 0x0e4f, 
 	0x0e50, 0x0e51, 0x0e52, 0x0e53, 0x0e54, 0x0e55, 0x0e56, 0x0e57, 
 	0x0e58, 0x0e59, 0x0e5a, 0x0e5b,     -1,     -1,     -1,     -1 } },
-	{ USTR "iso-8859-13", {
+	{ "iso-8859-13", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -525,7 +580,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x010d, 0x00e9, 0x017a, 0x0117, 0x0123, 0x0137, 0x012b, 0x013c, 
 	0x0161, 0x0144, 0x0146, 0x00f3, 0x014d, 0x00f5, 0x00f6, 0x00f7, 
 	0x0173, 0x0142, 0x015b, 0x016b, 0x00fc, 0x017c, 0x017e, 0x2019 } },
-	{ USTR "iso-8859-14", {
+	{ "iso-8859-14", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -558,7 +613,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x00e8, 0x00e9, 0x00ea, 0x00eb, 0x00ec, 0x00ed, 0x00ee, 0x00ef, 
 	0x0175, 0x00f1, 0x00f2, 0x00f3, 0x00f4, 0x00f5, 0x00f6, 0x1e6b, 
 	0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x0177, 0x00ff } },
-	{ USTR "iso-8859-15", {
+	{ "iso-8859-15", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -591,7 +646,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x00e8, 0x00e9, 0x00ea, 0x00eb, 0x00ec, 0x00ed, 0x00ee, 0x00ef, 
 	0x00f0, 0x00f1, 0x00f2, 0x00f3, 0x00f4, 0x00f5, 0x00f6, 0x00f7, 
 	0x00f8, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x00fd, 0x00fe, 0x00ff } },
-	{ USTR "iso-8859-16", {
+	{ "iso-8859-16", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -624,7 +679,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x00e8, 0x00e9, 0x00ea, 0x00eb, 0x00ec, 0x00ed, 0x00ee, 0x00ef, 
 	0x0111, 0x0144, 0x00f2, 0x00f3, 0x00f4, 0x0151, 0x00f6, 0x015b, 
 	0x0171, 0x00f9, 0x00fa, 0x00fb, 0x00fc, 0x0119, 0x021b, 0x00ff } },
-	{ USTR "koi-8", {
+	{ "koi-8", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -657,7 +712,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x0425, 0x0418, 0x0419, 0x041a, 0x041b, 0x041c, 0x041d, 0x041e, 
 	0x041f, 0x042f, 0x0420, 0x0421, 0x0422, 0x0423, 0x0416, 0x0412, 
 	0x042c, 0x042b, 0x0417, 0x0428, 0x042d, 0x0429, 0x0427,     -1 } },
-	{ USTR "koi8-r", {
+	{ "koi8-r", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -690,7 +745,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x0425, 0x0418, 0x0419, 0x041a, 0x041b, 0x041c, 0x041d, 0x041e, 
 	0x041f, 0x042f, 0x0420, 0x0421, 0x0422, 0x0423, 0x0416, 0x0412, 
 	0x042c, 0x042b, 0x0417, 0x0428, 0x042d, 0x0429, 0x0427, 0x042a } },
-	{ USTR "koi8-t", {
+	{ "koi8-t", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -723,7 +778,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x0425, 0x0418, 0x0419, 0x041a, 0x041b, 0x041c, 0x041d, 0x041e, 
 	0x041f, 0x042f, 0x0420, 0x0421, 0x0422, 0x0423, 0x0416, 0x0412, 
 	0x042c, 0x042b, 0x0417, 0x0428, 0x042d, 0x0429, 0x0427, 0x042a } },
-	{ USTR "koi8-u", {
+	{ "koi8-u", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -756,7 +811,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x0425, 0x0418, 0x0419, 0x041a, 0x041b, 0x041c, 0x041d, 0x041e, 
 	0x041f, 0x042f, 0x0420, 0x0421, 0x0422, 0x0423, 0x0416, 0x0412, 
 	0x042c, 0x042b, 0x0417, 0x0428, 0x042d, 0x0429, 0x0427, 0x042a } },
-	{ USTR "cp1251", {
+	{ "cp1251", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -789,7 +844,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x0438, 0x0439, 0x043a, 0x043b, 0x043c, 0x043d, 0x043e, 0x043f, 
 	0x0440, 0x0441, 0x0442, 0x0443, 0x0444, 0x0445, 0x0446, 0x0447, 
 	0x0448, 0x0449, 0x044a, 0x044b, 0x044c, 0x044d, 0x044e, 0x044f } },
-	{ USTR "cp1256", {
+	{ "cp1256", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -822,7 +877,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x00e8, 0x00e9, 0x00ea, 0x00eb, 0x0649, 0x064a, 0x00ee, 0x00ef, 
 	0x064b, 0x064c, 0x064d, 0x064e, 0x00f4, 0x064f, 0x0650, 0x00f7, 
 	0x0651, 0x00f9, 0x0652, 0x00fb, 0x00fc, 0x200e, 0x200f, 0x06d2 } },
-	{ USTR "cp1255", {
+	{ "cp1255", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -855,7 +910,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x05d8, 0x05d9, 0x05da, 0x05db, 0x05dc, 0x05dd, 0x05de, 0x05df, 
 	0x05e0, 0x05e1, 0x05e2, 0x05e3, 0x05e4, 0x05e5, 0x05e6, 0x05e7, 
 	0x05e8, 0x05e9, 0x05ea,     -1,     -1, 0x200e, 0x200f,     -1 } },
-	{ USTR "armscii-8", {
+	{ "armscii-8", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -888,7 +943,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x054c, 0x057c, 0x054d, 0x057d, 0x054e, 0x057e, 0x054f, 0x057f, 
 	0x0550, 0x0580, 0x0551, 0x0581, 0x0552, 0x0582, 0x0553, 0x0583, 
 	0x0554, 0x0584, 0x0555, 0x0585, 0x0556, 0x0586, 0x055a,     -1 } },
-	{ USTR "tis-620", {
+	{ "tis-620", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -921,7 +976,7 @@ static struct builtin_charmap builtin_charmaps[]=
 	0x0e48, 0x0e49, 0x0e4a, 0x0e4b, 0x0e4c, 0x0e4d, 0x0e4e, 0x0e4f, 
 	0x0e50, 0x0e51, 0x0e52, 0x0e53, 0x0e54, 0x0e55, 0x0e56, 0x0e57, 
 	0x0e58, 0x0e59, 0x0e5a, 0x0e5b,     -1,     -1,     -1,     -1 } },
-	{ USTR "georgian-ps", {
+	{ "georgian-ps", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 
 	0x0008, 0x0009, 0x000a, 0x000b, 0x000c, 0x000d, 0x000e, 0x000f, 
 	0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015, 0x0016, 0x0017, 
@@ -966,38 +1021,38 @@ struct windows_code_page
 {
     int              present;
     int              codepage;
-    unsigned char    *primaryname;
-    unsigned char    *aliases[4];
+    char             *primaryname;
+    char             *aliases[4];
 };
 
 /* See http://msdn.microsoft.com/en-us/library/dd317756(VS.85).aspx */
 static struct windows_code_page wincp[] = {
-    { 0, 437,   USTR "ibm437",         { USTR "dos-us", NULL } },
-    { 0, 874,   USTR "windows-874",    { USTR "thai", USTR "tis-620", NULL } },
-    { 0, 1250,  USTR "windows-1250",   { NULL } },
-    { 0, 1251,  USTR "windows-1251",   { USTR "windows-cyrillic", USTR "cp1251", NULL } },
-    { 0, 1252,  USTR "windows-1252",   { USTR "windows-latin1", NULL } },
-    { 0, 1253,  USTR "windows-1253",   { USTR "windows-greek", NULL } },
-    { 0, 1254,  USTR "windows-1254",   { USTR "windows-turkish", NULL } },
-    { 0, 1255,  USTR "windows-1255",   { USTR "windows-hebrew", USTR "cp1255", NULL } },
-    { 0, 1256,  USTR "windows-1256",   { USTR "windows-arabic", USTR "cp1256", NULL } },
-    { 0, 1257,  USTR "windows-1257",   { USTR "windows-baltic", NULL } },
-    { 0, 1258,  USTR "windows-1258",   { USTR "windows-vietnamese", NULL } },
-    { 0, 20127, USTR "ascii",          { USTR "c", USTR "posix", NULL } },
-    { 0, 20866, USTR "koi8-r",         { NULL } },
-    { 0, 21866, USTR "koi8-u",         { NULL } },
-    { 0, 28591, USTR "iso-8859-1",     { USTR "latin1", NULL } },
-    { 0, 28592, USTR "iso-8859-2",     { USTR "latin2", NULL } },
-    { 0, 28593, USTR "iso-8859-3",     { USTR "latin3", NULL } },
-    { 0, 28594, USTR "iso-8859-4",     { USTR "baltic", USTR "latin4", NULL } },
-    { 0, 28595, USTR "iso-8859-5",     { USTR "cyrillic", NULL } },
-    { 0, 28596, USTR "iso-8859-6",     { USTR "arabic", NULL } },
-    { 0, 28597, USTR "iso-8859-7",     { USTR "greek", NULL } },
-    { 0, 28598, USTR "iso-8859-8",     { USTR "hebrew", NULL } },
-    { 0, 28599, USTR "iso-8859-9",     { USTR "turkish", USTR "latin5", NULL } },
-    { 0, 28600, USTR "iso-8859-10",    { USTR "nordic", USTR "latin6", NULL } },
-    { 0, 28603, USTR "iso-8859-13",    { USTR "latin7", NULL } },
-    { 0, 28605, USTR "iso-8859-15",    { USTR "latin9", NULL } },
+    { 0, 437,   "ibm437",         { "dos-us", NULL } },
+    { 0, 874,   "windows-874",    { "thai", "tis-620", NULL } },
+    { 0, 1250,  "windows-1250",   { NULL } },
+    { 0, 1251,  "windows-1251",   { "windows-cyrillic", "cp1251", NULL } },
+    { 0, 1252,  "windows-1252",   { "windows-latin1", NULL } },
+    { 0, 1253,  "windows-1253",   { "windows-greek", NULL } },
+    { 0, 1254,  "windows-1254",   { "windows-turkish", NULL } },
+    { 0, 1255,  "windows-1255",   { "windows-hebrew", "cp1255", NULL } },
+    { 0, 1256,  "windows-1256",   { "windows-arabic", "cp1256", NULL } },
+    { 0, 1257,  "windows-1257",   { "windows-baltic", NULL } },
+    { 0, 1258,  "windows-1258",   { "windows-vietnamese", NULL } },
+    { 0, 20127, "ascii",          { "c", "posix", NULL } },
+    { 0, 20866, "koi8-r",         { NULL } },
+    { 0, 21866, "koi8-u",         { NULL } },
+    { 0, 28591, "iso-8859-1",     { "latin1", NULL } },
+    { 0, 28592, "iso-8859-2",     { "latin2", NULL } },
+    { 0, 28593, "iso-8859-3",     { "latin3", NULL } },
+    { 0, 28594, "iso-8859-4",     { "baltic", "latin4", NULL } },
+    { 0, 28595, "iso-8859-5",     { "cyrillic", NULL } },
+    { 0, 28596, "iso-8859-6",     { "arabic", NULL } },
+    { 0, 28597, "iso-8859-7",     { "greek", NULL } },
+    { 0, 28598, "iso-8859-8",     { "hebrew", NULL } },
+    { 0, 28599, "iso-8859-9",     { "turkish", "latin5", NULL } },
+    { 0, 28600, "iso-8859-10",    { "nordic", "latin6", NULL } },
+    { 0, 28603, "iso-8859-13",    { "latin7", NULL } },
+    { 0, 28605, "iso-8859-15",    { "latin9", NULL } },
     { 0, -1 },
 };
 
@@ -1054,12 +1109,12 @@ static void init_wincp()
 
 static void fix_wincp(int cp, struct builtin_charmap *map);
 
-static struct builtin_charmap *load_wincp(unsigned char *cpname)
+static struct builtin_charmap *load_wincp(const char *cpname)
 {
 	struct builtin_charmap *result;
 	int i;
 	int cp = -1;
-	unsigned char *name;
+	char *name;
 	
 	for (i = 0; wincp[i].codepage != -1; i++)
 	{
@@ -1081,11 +1136,11 @@ static struct builtin_charmap *load_wincp(unsigned char *cpname)
 	result->to_uni[0] = 0; /* special case */
 	for (i = 1; i < 256; i++)
 	{
-		unsigned char input[2];
+		char input[2];
 		wchar_t output[3];
 		int ret;
 		
-		input[0] = (unsigned char)i;
+		input[0] = i;
 		input[1] = 0;
 		
 		ret = MultiByteToWideChar(cp, MB_ERR_INVALID_CHARS, input, 1, output, 3);
@@ -1150,57 +1205,77 @@ static int pair_cmp(struct pair *a,struct pair *b)
 
 /* Predicate and conversion functions for byte-oriented charmaps */
 
-int byte_ispunct(struct charmap *map,int c)
+static int byte_ispunct(struct charmap *map,int c)
 {
-	int ofst = (c>>3);
-	int bitn = (1<<(c&7));
+	int ofst;
+	int bitn;
+	if (c < 0)
+		c += 256;
+	ofst = (c>>3);
+	bitn = (1<<(c&7));
 	if (c<0 || c>255)
 		return 0;
 	return (map->print_map[ofst]&bitn) != 0 && (map->alnum__map[ofst]&bitn) == 0; 
 }
 
-int byte_isprint(struct charmap *map,int c)
+static int byte_isprint(struct charmap *map,int c)
 {
-	int ofst = (c>>3);
-	int bitn = (1<<(c&7));
+	int ofst;
+	int bitn;
+	if (c < 0)
+		c += 256;
+	ofst = (c>>3);
+	bitn = (1<<(c&7));
 	if (c<0 || c>255)
 		return 0;
 	return (map->print_map[ofst]&bitn) != 0;
 }
 
-int byte_isspace(struct charmap *map,int c)
+static int byte_isspace(struct charmap *map,int c)
 {
 	return c==32 || (c >= 9 && c <= 13);
 }
 
-int byte_isalpha_(struct charmap *map,int c)
+static int byte_isalpha_(struct charmap *map,int c)
 {
-	int ofst = (c>>3);
-	int bitn = (1<<(c&7));
+	int ofst;
+	int bitn;
+	if (c < 0)
+		c += 256;
+	ofst = (c>>3);
+	bitn = (1<<(c&7));
 	if (c<0 || c>255)
 		return 0;
 	return (map->alpha__map[ofst]&bitn) != 0;
 }
 
-int byte_isalnum_(struct charmap *map,int c)
+static int byte_isalnum_(struct charmap *map,int c)
 {
-	int ofst = (c>>3);
-	int bitn = (1<<(c&7));
+	int ofst;
+	int bitn;
+	if (c < 0)
+		c += 256;
+	ofst = (c>>3);
+	bitn = (1<<(c&7));
 	if (c<0 || c>255)
 		return 0;
 	return (map->alnum__map[ofst]&bitn) != 0;
 }
 
-int byte_tolower(struct charmap *map,int c)
+static int byte_tolower(struct charmap *map,int c)
 {
+	if (c < 0 && c >= -128)
+		c += 256;
 	if (c<0 || c>255)
 		return c;
 	else
 		return map->lower_map[c];
 }
 
-int byte_toupper(struct charmap *map,int c)
+static int byte_toupper(struct charmap *map,int c)
 {
+	if (c < 0 && c >= -128)
+		c += 256;
 	if (c<0 || c>255)
 		return c;
 	else
@@ -1209,14 +1284,9 @@ int byte_toupper(struct charmap *map,int c)
 
 /* Load built-in character maps */
 
-static void set_bit(unsigned char *map,int n)
+static void set_bit(char *map,int n)
 {
-	map[n>>3] |= (1<<(n&7));
-}
-
-static int rtn_arg(struct charmap *map,int c)
-{
-	return c;
+	map[n>>3] |= (char)(1<<(n&7));
 }
 
 static struct charmap *charmaps = NULL;	/* Loaded character sets */
@@ -1229,7 +1299,7 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 {
 	int x;
 	struct charmap *map;
-	map = joe_malloc(sizeof(struct charmap));
+	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
 	map->name = zdup(builtin->name);
 	map->type = 0;
 	map->is_punct = byte_ispunct;
@@ -1239,8 +1309,6 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 	map->is_alnum_ = byte_isalnum_;
 	map->to_lower = byte_tolower;
 	map->to_upper = byte_toupper;
-	map->to_uni = to_uni;
-	map->from_uni = from_uni;
 	map->from_size = 0;
 	map->to_map = builtin->to_uni;
 	for (x=0; x!=256; ++x) {
@@ -1251,7 +1319,7 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 		}
 	}
 		
-	qsort(map->from_map,map->from_size,sizeof(struct pair), (int (*)(const void *, const void *))pair_cmp);
+	jsort(map->from_map,map->from_size,SIZEOF(struct pair), (int (*)(const void *, const void *))pair_cmp);
 
 	/* Fill in print, alpha and alnum bit maps */
 
@@ -1290,22 +1358,22 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 	/* Build case conversion tables */
 
 	for (x=0; x!=256; ++x) {
-		map->lower_map[x] = x;
+		map->lower_map[x] = (unsigned char)x;
 		if (map->to_map[x] != -1) {
 			int y = joe_towlower(NULL,map->to_map[x]);
 			int z = from_uni(map,y);
 			if (z != -1)
-				map->lower_map[x] = z;
+				map->lower_map[x] = (unsigned char)z;
 		}
 	}
 
 	for (x=0; x!=256; ++x) {
-		map->upper_map[x] = x;
+		map->upper_map[x] = (unsigned char)x;
 		if (map->to_map[x] != -1) {
 			int y = joe_towupper(NULL,map->to_map[x]);
 			int z = from_uni(map,y);
 			if (z != -1)
-				map->upper_map[x] = z;
+				map->upper_map[x] = (unsigned char)z;
 		}
 	}
 
@@ -1315,16 +1383,17 @@ static struct charmap *process_builtin(struct builtin_charmap *builtin)
 	return map;
 }
 
+struct charmap *utf8_map;
+struct charmap *ascii_map;
+
 static void load_builtins(void)
 {
 	struct charmap *map;
 
 	/* install UTF-8 map (ties into i18n module) */
-	map = joe_malloc(sizeof(struct charmap));
-	map->name = USTR "utf-8";
+	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
+	map->name = "utf-8";
 	map->type = 1;
-	map->to_uni = rtn_arg;
-	map->from_uni = rtn_arg;
 	map->is_punct = joe_iswpunct;
 	map->is_print = joe_iswprint;
 	map->is_space = joe_iswspace;
@@ -1334,6 +1403,7 @@ static void load_builtins(void)
 	map->to_upper = joe_towupper;
 	map->next = charmaps;
 	charmaps = map;
+	utf8_map = map;
 
 	/* Load all built-in byte maps */
 	/*
@@ -1349,11 +1419,11 @@ static void load_builtins(void)
 
 /* Parse character map file */
 
-struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
+static struct builtin_charmap *parse_charmap(const char *name,FILE *f)
 {
-	unsigned char *buf = 0;
-	unsigned char *bf1 = 0;
-	unsigned comment_char = '#';
+	char *buf = 0;
+	char *bf1 = 0;
+	int comment_char = '#';
 	int in_map = 0;
 	int x;
 
@@ -1362,7 +1432,7 @@ struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 	if (!f)
 		return 0;
 
-	b = joe_malloc(sizeof(struct builtin_charmap));
+	b = (struct builtin_charmap *)joe_malloc(SIZEOF(struct builtin_charmap));
 
 	b->name = zdup(name);
 
@@ -1371,27 +1441,27 @@ struct builtin_charmap *parse_charmap(unsigned char *name,FILE *f)
 
 	/* This is a _really_bad_ parser.  The file has to be perfect. */
 	while (vsgets(&buf,f)) {
-		unsigned char *p = buf;
+		const char *p = buf;
 		parse_ws(&p, comment_char);
 		parse_tows(&p, &bf1);
-		if (!zcmp(bf1,USTR "<comment_char>")) {
+		if (!zcmp(bf1,"<comment_char>")) {
 			parse_ws(&p, comment_char);
 			parse_tows(&p, &bf1);
-			comment_char = bf1[0];
-		} else if (!zcmp(bf1,USTR "<escape_char>")) {
+			comment_char = ((unsigned char *)bf1)[0];
+		} else if (!zcmp(bf1,"<escape_char>")) {
 			parse_ws(&p, comment_char);
 			parse_tows(&p, &bf1);
-		} else if (!zcmp(bf1,USTR "CHARMAP")) {
+		} else if (!zcmp(bf1,"CHARMAP")) {
 			in_map = 1;
-		} else if (!zcmp(bf1,USTR "END")) {
+		} else if (!zcmp(bf1,"END")) {
 			in_map = 0;
 		} else if (in_map && bf1[0]=='<' && bf1[1]=='U') {
 			int uni;
 			int byt;
-			sscanf((char *)bf1+2,"%x",(unsigned *)&uni);
+			uni = ztoi(bf1 + 2);
 			parse_ws(&p, comment_char);
 			parse_tows(&p, &bf1);
-			sscanf((char *)bf1+2,"%x",(unsigned *)&byt);
+			byt = ztoi(bf1 + 2);
 			b->to_uni[byt]=uni;
 		}
 	}
@@ -1427,7 +1497,7 @@ static int map_up(int c)
 		return c;
 }
 
-static int map_name_cmp(unsigned char *a,unsigned char *b)
+static int map_name_cmp(const char *a,const char *b)
 {
 	while (*a=='-') ++a;
 	while (*b=='-') ++b;
@@ -1445,10 +1515,10 @@ static int map_name_cmp(unsigned char *a,unsigned char *b)
 
 /* Find a character map */
 
-struct charmap *find_charmap(unsigned char *name)
+struct charmap *find_charmap(const char *name)
 {
-	unsigned char *buf = 0;
-	unsigned char *p;
+	char *buf = 0;
+	char *p;
 	struct charmap *m;
 	struct builtin_charmap *b;
 	FILE *f;
@@ -1474,21 +1544,21 @@ struct charmap *find_charmap(unsigned char *name)
 			return m;
 
 	/* Check ~/.joe/charmaps */
-	p = (unsigned char *)getenv("HOME");
+	p = getenv("HOME");
 	f = 0;
 	if (p) {
 #ifndef JOEWIN
-		buf = vsfmt(buf, 0, USTR "%s/.joe/charmaps/%s",p,name);
+		buf = vsfmt(buf, 0, "%s/.joe/charmaps/%s",p,name);
+		f = fopen(buf,"r");
 #else
-		buf = vsfmt(buf, 0, USTR "%s\\charmaps\\%s",p,name);
+		buf = vsfmt(buf, 0, "%s\\charmaps\\%s",p,name);
 #endif
-		f = fopen((char *)buf,"r");
 	}
 
 	/* Check JOERCcharmaps */
 	if (!f) {
-		buf = vsfmt(buf, 0, USTR "%scharmaps/%s",JOEDATA,name);
-		f = fopen((char *)buf,"r");
+		buf = vsfmt(buf, 0, "%scharmaps/%s",JOEDATA,name);
+		f = fopen(buf,"r");
 	}
 
 	/* Parse and install character map from file */
@@ -1497,7 +1567,7 @@ struct charmap *find_charmap(unsigned char *name)
 
 #ifndef JOEWIN
 	/* Check builtin sets */
-	for (y=0; y!=sizeof(builtin_charmaps)/sizeof(struct builtin_charmap); ++y)
+	for (y=0; y!=SIZEOF(builtin_charmaps)/SIZEOF(struct builtin_charmap); ++y)
 		if (!map_name_cmp(builtin_charmaps[y].name,name))
 			return process_builtin(builtin_charmaps + y);
 #else
@@ -1532,15 +1602,15 @@ main(int argc,char *argv[])
 
 /* Get names of available encodings (for tab completion of ^T E prompt) */
 
-unsigned char **get_encodings()
+char **get_encodings()
 {
 	int y, x;
-	unsigned char **encodings = 0;
-	unsigned char **t;
-	unsigned char *r;
-	unsigned char *oldpwd = pwd();
-	unsigned char *p;
-	unsigned char *buf = 0;
+	char **encodings = 0;
+	char **t;
+	char *r;
+	char *oldpwd = pwd();
+	char *p;
+	char *buf = 0;
 
 	/* Builtin maps */
 
@@ -1549,7 +1619,7 @@ unsigned char **get_encodings()
 	vaperm(encodings);
 
 #ifndef JOEWIN
-	for (y=0; y!=sizeof(builtin_charmaps)/sizeof(struct builtin_charmap); ++y) {
+	for (y=0; y!=SIZEOF(builtin_charmaps)/SIZEOF(struct builtin_charmap); ++y) {
 		r = vsncpy(NULL,0,sz(builtin_charmaps[y].name));
 		encodings = vaadd(encodings, r);
 	}
@@ -1573,16 +1643,17 @@ unsigned char **get_encodings()
 
 	/* External maps */
 
-	p = (unsigned char *)getenv("HOME");
+	p = getenv("HOME");
 	if (p) {
 #ifndef JOEWIN
-		buf = vsfmt(buf, 0, USTR "%s/.joe/charmaps",p);
+		buf = vsfmt(buf, 0, "%s/.joe/charmaps",p);
+		if (!chpwd(buf) && (t = rexpnd("*"))) {
 #else
-		buf = vsfmt(buf, 0, USTR "%s\\charmaps",p);
+		buf = vsfmt(buf, 0, "%s\\charmaps",p);
 #endif
-		if (!chpwd(buf) && (t = rexpnd(USTR "*"))) {
+		if (!chpwd(buf) && (t = rexpnd("*"))) {
 			for (x = 0; x != valen(t); ++x)
-				if (zcmp(t[x],USTR "..")) {
+				if (zcmp(t[x],"..")) {
 					for (y = 0; y != valen(encodings); ++y)
 						if (!zcmp(t[x],encodings[y]))
 							break;
@@ -1594,9 +1665,9 @@ unsigned char **get_encodings()
 		}
 	}
 
-	if (!chpwd(USTR (JOEDATA_PLUS("charmaps"))) && (t = rexpnd(USTR "*"))) {
+	if (!chpwd(JOEDATA_PLUS("charmaps")) && (t = rexpnd("*"))) {
 		for (x = 0; x != valen(t); ++x)
-			if (zcmp(t[x],USTR "..")) {
+			if (zcmp(t[x],"..")) {
 				for (y = 0; y != valen(encodings); ++y)
 					if (!zcmp(t[x],encodings[y]))
 						break;
@@ -1612,79 +1683,343 @@ unsigned char **get_encodings()
 	return encodings;
 }
 
-#if 0
-
-/* Convert to uppercase via unicode.  Returns original
-   character if there was no conversion. */
-
-int joe_toupper(struct charmap *map,int c)
-{
-	int d;
-
-	/* This appears to always be true */
-	if (c>='a' && c<='z')
-		return c+'A'-'a';
-	else if (c<128)
-		return c;
-
-	/* Slow... */
-	d = to_uni(map,c);
-	if (d== -1)
-		return c;
-	d = joe_towupper(d);
-	if (d== -1)
-		return c;
-	d = from_uni(map,d);
-	if (d== -1)
-		return c;
-	else
-		return d;
-}
-
-/* Convert to uppercase via unicode.  Returns original
-   character if there was no conversion. */
-
-int joe_tolower(struct charmap *map,int c)
-{
-	int d;
-
-	/* This appears to always be true */
-	if (c>='A' && c<='Z')
-		return c+'a'-'A';
-	else if (c<128)
-		return c;
-
-	/* Slow... */
-	d = to_uni(map,c);
-	if (d== -1)
-		return c;
-	d = joe_towlower(d);
-	if (d== -1)
-		return c;
-	d = from_uni(map,d);
-	if (d== -1)
-		return c;
-	else
-		return d;
-}
-#endif
-
 /* This is not correct... (EBCDIC for example) */
 
 int joe_isblank(struct charmap *map,int c)
 {
-	return c==32 || c==9;
+	return c == 32 || c == 9;
 }
 
-int joe_isspace_eof(struct charmap *map,int c)
+int joe_isspace_eos(struct charmap *map,int c)
 {
-	return (c==0) || joe_isspace(map,c);
+	return !c || c==32 || (c >= 9 && c <= 13);
 }
 
-unsigned char *lowerize(unsigned char *s)
+/* For systems (BSD) with no nl_langinfo(CODESET) */
+
+/*
+ * This is a quick-and-dirty emulator of the nl_langinfo(CODESET)
+ * function defined in the Single Unix Specification for those systems
+ * (FreeBSD, etc.) that don't have one yet. It behaves as if it had
+ * been called after setlocale(LC_CTYPE, ""), that is it looks at
+ * the locale environment variables.
+ *
+ * http://www.opengroup.org/onlinepubs/7908799/xsh/langinfo.h.html
+ *
+ * Please extend it as needed and suggest improvements to the author.
+ * This emulator will hopefully become redundant soon as
+ * nl_langinfo(CODESET) becomes more widely implemented.
+ *
+ * Since the proposed Li18nux encoding name registry is still not mature,
+ * the output follows the MIME registry where possible:
+ *
+ *   http://www.iana.org/assignments/character-sets
+ *
+ * A possible autoconf test for the availability of nl_langinfo(CODESET)
+ * can be found in
+ *
+ *   http://www.cl.cam.ac.uk/~mgk25/unicode.html#activate
+ *
+ * Markus.Kuhn@cl.cam.ac.uk -- 2002-03-11
+ * Permission to use, copy, modify, and distribute this software
+ * for any purpose and without fee is hereby granted. The author
+ * disclaims all warranties with regard to this software.
+ *
+ * Latest version:
+ *
+ *   http://www.cl.cam.ac.uk/~mgk25/ucs/langinfo.c
+ */
+
+static const char *joe_getcodeset(char *l)
 {
-	unsigned char *t;
-	for (t=s;*t;t++)
-		*t = joe_tolower(locale_map,*t);
-	return s;
+  static char buf[16];
+  char *p;
+  
+  if (l || ((l = getenv("LC_ALL"))   && *l) ||
+      ((l = getenv("LC_CTYPE")) && *l) ||
+      ((l = getenv("LANG"))     && *l)) {
+
+    /* check standardized locales */
+    if (!zcmp(l, "C") || !zcmp(l, "POSIX"))
+      return "ascii";
+
+    /* check for encoding name fragment */
+    if (zstr(l, "UTF") || zstr(l, "utf"))
+      return "UTF-8";
+
+    if ((p = zstr(l, "8859-"))) {
+      memcpy(buf, "ISO-8859-\0\0", 12);
+      p += 5;
+      if (*p >= '0' && *p <= '9') {
+	buf[9] = *p++;
+	if (*p >= '0' && *p <= '9') buf[10] = *p++;
+	return buf;
+      }
+    }
+
+    if (zstr(l, "KOI8-R")) return "KOI8-R";
+    if (zstr(l, "KOI8-U")) return "KOI8-U";
+    if (zstr(l, "620")) return "TIS-620";
+    if (zstr(l, "1251")) return "CP1251";
+    if (zstr(l, "2312")) return "GB2312";
+    if (zstr(l, "HKSCS")) return "Big5HKSCS";   /* no MIME charset */
+    if (zstr(l, "Big5") || zstr(l, "BIG5")) return "Big5";
+    if (zstr(l, "GBK")) return "GBK";           /* no MIME charset */
+    if (zstr(l, "18030")) return "GB18030";     /* no MIME charset */
+    if (zstr(l, "Shift_JIS") || zstr(l, "SJIS")) return "Shift_JIS";
+    /* check for conclusive modifier */
+    if (zstr(l, "euro")) return "ISO-8859-15";
+    /* check for language (and perhaps country) codes */
+    if (zstr(l, "zh_TW")) return "Big5";
+    if (zstr(l, "zh_HK")) return "Big5HKSCS";   /* no MIME charset */
+    if (zstr(l, "zh")) return "GB2312";
+    if (zstr(l, "ja")) return "EUC-JP";
+    if (zstr(l, "ko")) return "EUC-KR";
+    if (zstr(l, "ru")) return "KOI8-R";
+    if (zstr(l, "uk")) return "KOI8-U";
+    if (zstr(l, "pl") || zstr(l, "hr") ||
+	zstr(l, "hu") || zstr(l, "cs") ||
+	zstr(l, "sk") || zstr(l, "sl")) return "ISO-8859-2";
+    if (zstr(l, "eo") || zstr(l, "mt")) return "ISO-8859-3";
+    if (zstr(l, "el")) return "ISO-8859-7";
+    if (zstr(l, "he")) return "ISO-8859-8";
+    if (zstr(l, "tr")) return "ISO-8859-9";
+    if (zstr(l, "th")) return "TIS-620";      /* or ISO-8859-11 */
+    if (zstr(l, "lt")) return "ISO-8859-13";
+    if (zstr(l, "cy")) return "ISO-8859-14";
+    if (zstr(l, "ro")) return "ISO-8859-2";   /* or ISO-8859-16 */
+    if (zstr(l, "am") || zstr(l, "vi")) return "UTF-8";
+    /* Send me further rules if you like, but don't forget that we are
+     * *only* interested in locale naming conventions on platforms
+     * that do not already provide an nl_langinfo(CODESET) implementation. */
+    return "ISO-8859-1"; /* should perhaps be "UTF-8" instead */
+  }
+  return "ascii";
+}
+
+/* Initialize locale for JOE */
+
+const char *codeset;	/* Codeset of terminal */
+
+const char *non_utf8_codeset;
+			/* Codeset of local language non-UTF-8 */
+
+const char *locale_lang;
+			/* Our local language */
+
+const char *locale_msgs;
+			/* Language to use for editor messages */
+
+struct charmap *locale_map;
+			/* Character map of terminal, default map for new files */
+
+struct charmap *locale_map_non_utf8;
+			/* Old, non-utf8 version of locale */
+
+void joe_locale()
+{
+	const char *sc;
+	char *s, *t, *u;
+
+	sc=getenv("LC_ALL");
+	if (!sc || !*sc) {
+		sc=getenv("LC_MESSAGES");
+		if (!sc || !*sc) {
+			sc=getenv("LANG");
+		}
+	}
+
+	if (!sc)
+		sc = "C";
+	s=zdup(sc);
+
+	if ((t=zrchr(s,'.')))
+		*t = 0;
+
+	if (!zicmp(s, "C") || !zicmp(s, "POSIX"))
+		locale_msgs = "en_US"; /* Because aspell has no default */
+	else
+		locale_msgs = s;
+
+	sc=getenv("LC_ALL");
+	if (!sc || !*sc) {
+		sc=getenv("LC_CTYPE");
+		if (!sc || !*sc) {
+			sc=getenv("LANG");
+		}
+	}
+
+	if (!sc)
+		sc = "C";
+
+	s = zdup(sc);
+
+	u = zdup(s);
+
+	if ((t=zrchr(s,'.')))
+		*t = 0;
+
+	locale_lang = s;
+
+#ifdef HAVE_SETLOCALE
+	setlocale(LC_ALL,s);
+	non_utf8_codeset = zdup(nl_langinfo(CODESET));
+#else
+	non_utf8_codeset = joe_getcodeset(s);
+#endif
+
+
+	/* printf("joe_locale\n"); */
+#ifdef HAVE_SETLOCALE
+	/* printf("set_locale\n"); */
+	setlocale(LC_ALL,"");
+#ifdef ENABLE_NLS
+	/* Set up gettext() */
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	textdomain(PACKAGE);
+	/* printf("%s %s %s\n",PACKAGE,LOCALEDIR,joe_gettext("New File")); */
+#endif
+	codeset = zdup(nl_langinfo(CODESET));
+#else
+	codeset = joe_getcodeset(u);
+#endif
+
+	ascii_map = find_charmap("ascii");
+	locale_map = find_charmap(codeset);
+	if (!locale_map)
+		locale_map = ascii_map;
+
+	locale_map_non_utf8 = find_charmap(non_utf8_codeset);
+	if (!locale_map_non_utf8)
+		locale_map_non_utf8 = ascii_map;
+
+	fdefault.charmap = locale_map;
+	pdefault.charmap = locale_map;
+
+/*
+	printf("Character set is %s\n",locale_map->name);
+
+	for(x=0;x!=128;++x)
+		printf("%x	space=%d blank=%d alpha=%d alnum=%d punct=%d print=%d\n",
+		       x,joe_isspace(locale_map,x), joe_isblank(locale_map,x), joe_isalpha_(locale_map,x),
+		       joe_isalnum_(locale_map,x), joe_ispunct(locale_map,x), joe_isprint(locale_map,x));
+*/
+
+	init_gettext(locale_msgs);
+}
+
+char *my_iconv(char *dest, struct charmap *dest_map,
+              const char *src, struct charmap *src_map)
+{
+	if (dest_map == src_map) {
+	        return vscpyz(dest, src);
+	}
+
+	if (src_map->type) {
+		/* src is UTF-8 */
+		if (dest_map->type) {
+			/* UTF-8 to UTF-8? */
+			dest = vscpyz(dest, src);
+		} else {
+			/* UTF-8 to non-UTF-8 */
+			dest = vsensure(dest, zlen(src) / 2);
+			dest = vstrunc(dest, 0);
+			while (*src) {
+				ptrdiff_t len = -1;
+				int c = utf8_decode_fwrd(&src, &len);
+				if (c >= 0) {
+					int d = from_uni(dest_map, c);
+					if (d >= 0)
+					        dest = vsadd(dest, TO_CHAR_OK(d));
+					else
+					        dest = vsadd(dest, '?');
+				} else
+				        dest = vsadd(dest, 'X');
+			}
+		}
+	} else {
+		/* src is not UTF-8 */
+		if (!dest_map->type) {
+			/* Non UTF-8 to non-UTF-8 */
+			dest = vsensure(dest, zlen(src));
+			dest = vstrunc(dest, 0);
+			while (*src) {
+				int c = to_uni(src_map, *src++);
+				int d;
+				if (c >= 0) {
+					d = from_uni(dest_map, c);
+					if (d >= 0)
+						dest = vsadd(dest, TO_CHAR_OK(d));
+					else
+						dest = vsadd(dest, '?');
+				} else
+					dest = vsadd(dest, '?');
+			}
+		} else {
+			/* Non-UTF-8 to UTF-8 */
+			dest = vsensure(dest, zlen(src) * 3);
+			dest = vstrunc(dest, 0);
+			while (*src) {
+				int c = to_uni(src_map, *src++);
+				if (c >= 0) {
+					dest = vsensure(dest, vslen(dest) + 10);
+					obj_len(dest) += utf8_encode(dest + obj_len(dest), c);
+					dest[obj_len(dest)] = 0;
+				} else
+					dest = vsadd(dest, '?');
+			}
+		}
+	}
+	return dest;
+}
+
+/* Guess character set */
+
+int guess_non_utf8;
+int guess_utf8;
+
+struct charmap *guess_map(const char *buf, ptrdiff_t len)
+{
+	const char *p;
+	ptrdiff_t plen;
+	int c;
+	int flag;
+
+	/* No info? Use default */
+	if (!len || (!guess_non_utf8 && !guess_utf8))
+		return locale_map;
+
+	/* Does it look like UTF-8? */
+	p = buf;
+	plen = len;
+	c = 0;
+	flag = 0;
+	while (plen) {
+		/* Break if we could possibly run out of data in
+		   the middle of utf-8 sequence */
+		if (plen < 7)
+			break;
+		/* if (*p >= 128) (for unsigned char) */
+		if (*p < 0)
+			flag = 1;
+		c = utf8_decode_fwrd(&p, &plen);
+		if (c < 0)
+			break;
+	}
+
+	if (flag && c >= 0) {
+		/* There are characters above 128, and there are no utf-8 errors */
+		if (locale_map->type || !guess_utf8)
+			return locale_map;
+		else
+			return utf8_map;
+	}
+
+	if (!flag || !guess_non_utf8) {
+		/* No characters above 128 */
+		return locale_map;
+	} else {
+		/* Choose non-utf8 version of locale */
+		return locale_map_non_utf8;
+	}
 }

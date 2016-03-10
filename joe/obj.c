@@ -77,7 +77,7 @@ void *obj_realloc(void *ptr, int new_size)
 
 /* Free an object, and if it is on the stack, free all newer objects as well. */
 
-void obj_free(void *ptr)
+void obj_free(const void *ptr)
 {
 	if (ptr) {
 		Obj *nxt = obj_base(ptr);
@@ -95,7 +95,7 @@ void obj_free(void *ptr)
 
 /* Remove an object from the stack and put it on the heap. */
 
-void obj_perm(void *ptr)
+void obj_perm(const void *ptr)
 {
 	if (ptr) {
 		Obj *blk = obj_base(ptr);
@@ -118,7 +118,7 @@ void obj_temp(void *ptr)
 
 /* Return true if object is a heap object. */
 
-int obj_isperm(void *ptr)
+int obj_isperm(const void *ptr)
 {
 	if (ptr) {
 		Obj *blk = obj_base(ptr);
@@ -131,9 +131,9 @@ int obj_isperm(void *ptr)
 
 /* Create string, reserve 'len' bytes */
 
-unsigned char *vsmk(int len)
+char *vsmk(int len)
 {
-	unsigned char *n = (unsigned char *)obj_malloc(len + 1);
+	char *n = (char *)obj_malloc(len + 1);
 	n[0] = 0;
 	obj_len(n) = 0;
 	return n;
@@ -141,7 +141,7 @@ unsigned char *vsmk(int len)
 
 /* Get length of string */
 
-int vslen(unsigned char *vary)
+int vslen(const char *vary)
 {
 	if (vary)
 		return obj_len(vary);
@@ -152,17 +152,17 @@ int vslen(unsigned char *vary)
 /* Make sure there is enough space for a string of len bytes, but
    don't modify the string. */
 
-unsigned char *vsensure(unsigned char *vary, int len)
+char *vsensure(char *vary, int len)
 {
 	if (!vary) {
-		vary = (unsigned char *)obj_malloc(len + 1);
+		vary = (char *)obj_malloc(len + 1);
 		vary[0] = 0;
 		obj_len(vary) = 0;
 	} else {
 		++len; /* For terminator */
 		if (len > obj_size(vary)) {
 			len += (len >> 1);
-			vary = (unsigned char *)obj_realloc(vary, len);
+			vary = (char *)obj_realloc(vary, len);
 		}
 	}
 	return vary;
@@ -171,12 +171,12 @@ unsigned char *vsensure(unsigned char *vary, int len)
 /* Truncate or expand string to specified length.  The string is expanded
  * with spaces if necessary. */
 
-unsigned char *vstrunc(unsigned char *vary, int len)
+char *vstrunc(char *vary, int len)
 {
 	int olen;
 	if (!vary) {
 		olen = 0;
-		vary = (unsigned char *)obj_malloc(len + 1);
+		vary = (char *)obj_malloc(len + 1);
 		vary[0] = 0;
 		obj_len(vary) = 0;
 	} else {
@@ -193,19 +193,19 @@ unsigned char *vstrunc(unsigned char *vary, int len)
 
 /* Write spaces to an area of a string */
 
-unsigned char *vsfill(unsigned char *vary, int pos, int el, int len)
+char *vsfill(char *vary, int pos, int el, int len)
 {
 	int olen;
 	int x;
 	if (!vary) {
 		olen = 0;
-		vary = (unsigned char *)obj_malloc(pos + len + 1);
+		vary = (char *)obj_malloc(pos + len + 1);
 		vary[0] = 0;
 		obj_len(vary) = 0;
 	} else {
 		olen = obj_len(vary);
 		if (pos + len + 1 > obj_size(vary))
-			vary = (unsigned char *)obj_realloc(vary, pos + len + 1);
+			vary = (char *)obj_realloc(vary, pos + len + 1);
 	}
 	if (pos + len > olen) {
 		vary[pos + len] = 0;
@@ -223,18 +223,18 @@ unsigned char *vsfill(unsigned char *vary, int pos, int el, int len)
 
 /* Copy memory block to an area of a string */
 
-unsigned char *vsncpy(unsigned char *vary, int pos, unsigned char *array, int len)
+char *vsncpy(char *vary, int pos, const char *array, int len)
 {
 	int olen;
 	if (!vary) {
 		olen = 0;
-		vary = (unsigned char *)obj_malloc(pos + len + 1);
+		vary = (char *)obj_malloc(pos + len + 1);
 		vary[0] = 0;
 		obj_len(vary) = 0;
 	} else {
 		olen = obj_len(vary);
 		if (pos + len + 1 > obj_size(vary))
-			vary = (unsigned char *)obj_realloc(vary, pos + len + 1);
+			vary = (char *)obj_realloc(vary, pos + len + 1);
 	}
 	if (pos + len > olen) {
 		vary[pos + len] = 0;
@@ -246,19 +246,19 @@ unsigned char *vsncpy(unsigned char *vary, int pos, unsigned char *array, int le
 	return vary;
 }
 
-unsigned char *vsdup(unsigned char *vary)
+char *vsdup(const char *vary)
 {
 	return vsncpy(NULL, 0, vary, vslen(vary));
 }
 
-unsigned char *vsdupz(unsigned char *z)
+char *vsdupz(const char *z)
 {
 	return vsncpy(NULL, 0, z, zlen(z));
 }
 
 /* Overwrite a string from a block */
 
-unsigned char *vscpy(unsigned char *vary, unsigned char *s, int len)
+char *vscpy(char *vary, char *s, int len)
 {
 	vary = vstrunc(vary, 0);
 	return vsncpy(vary, 0, s, len);
@@ -266,7 +266,7 @@ unsigned char *vscpy(unsigned char *vary, unsigned char *s, int len)
 
 /* Overwrite a string from a zstring */
 
-unsigned char *vscpyz(unsigned char *vary, unsigned char *z)
+char *vscpyz(char *vary, const char *z)
 {
 	vary = vstrunc(vary, 0);
 	return vsncpy(vary, 0, z, zlen(z));
@@ -274,21 +274,21 @@ unsigned char *vscpyz(unsigned char *vary, unsigned char *z)
 
 /* Append a block to a string */
 
-unsigned char *vscat(unsigned char *vary, unsigned char *s, int len)
+char *vscat(char *vary, char *s, int len)
 {
 	return vsncpy(vary, vslen(vary), s, len);
 }
 
 /* Append a zstring to a string */
 
-unsigned char *vscatz(unsigned char *vary, unsigned char *z)
+char *vscatz(char *vary, const char *z)
 {
 	return vsncpy(vary, vslen(vary), z, zlen(z));
 }
 
 /* Append a single character to a string */
 
-unsigned char *_vsadd(unsigned char *vary, unsigned char c)
+char *_vsadd(char *vary, char c)
 {
 	if (vary && (obj_len(vary) + 1) < obj_size(vary)) {
 		vary[obj_len(vary)++] = c;
@@ -298,7 +298,7 @@ unsigned char *_vsadd(unsigned char *vary, unsigned char c)
 		return vsncpy(vary, vslen(vary), &c, 1);
 }
 
-unsigned char *_vsset(unsigned char *vary, int pos, unsigned char el)
+char *_vsset(char *vary, int pos, char el)
 {
 	if (!vary || pos + 1 > obj_size(vary))
 		vary = vsensure(vary, pos + 1);
@@ -319,9 +319,9 @@ unsigned char *_vsset(unsigned char *vary, int pos, unsigned char el)
 
 /* Get line of input */
 
-unsigned char *vsgets(unsigned char **sp, FILE *f)
+char *vsgets(char **sp, FILE *f)
 {
-	unsigned char *s = *sp;
+	char *s = *sp;
 	int s_size;
 	int i;
 	int c = 0;
@@ -361,14 +361,14 @@ unsigned char *vsgets(unsigned char **sp, FILE *f)
 
 #ifdef junk
 
-unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, ...)
+char *vsfmt(char *vary, int pos, const char *format, ...)
 {
-	unsigned char buf[10240];
+	char buf[10240];
 	va_list ap;
 
 	/* Traverse list to guess size */
 	va_start(ap, format);
-	vsnprintf((char *)buf, sizeof(buf), format, ap);
+	vsnprintf((char *)buf, SIZEOF(buf), format, ap);
 	va_end(ap);
 
 	/* Allocate buffer */
@@ -385,9 +385,9 @@ unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, 
 #define _left 64
 
 #if SIZEOF_LONG_LONG
-static int _cvt(unsigned char *ts,int base,int prec,int flag,unsigned long long n)
+static int _cvt(char *ts,int base,int prec,int flag,unsigned long long n)
 #else
-static int _cvt(unsigned char *ts,int base,int prec,int flag,unsigned long n)
+static int _cvt(char *ts,int base,int prec,int flag,unsigned long n)
 #endif
   {
   int x,y=0;
@@ -438,9 +438,9 @@ static int _cvt(unsigned char *ts,int base,int prec,int flag,unsigned long n)
   return y;
   }
 
-unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, ...)
+char *vsfmt(char *vary, int pos, const char *format, ...)
   {
-  unsigned char buf[128];
+  char buf[128];
   va_list ap;
 
   vary = vstrunc(vary, pos);
@@ -456,7 +456,7 @@ unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, 
 
       int width = 0;
       int prec = 0;
-      int arg_size = sizeof(int);
+      ptrdiff_t arg_size = SIZEOF(int);
 
       ++format;
 
@@ -512,28 +512,28 @@ unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, 
         case 'z': /* size_t */
         case 't': /* ptrdiff_t: this is wrong, but ptrdiff_t is not portably defined */
           {
-          arg_size = sizeof(size_t);
+          arg_size = SIZEOF(size_t);
           ++format;
           break;
           }
 #ifdef junk
         case 't': /* ptrdiff_t */
           {
-          arg_size = sizeof(ptrdiff_t);
+          arg_size = SIZEOF(ptrdiff_t);
           ++format;
           break;
           }
 #endif
         case 'l': /* long */
           {
-          arg_size = sizeof(long);
+          arg_size = SIZEOF(long);
           ++format;
           break;
           }
 
         case 'O': /* off_t */
           {
-          arg_size = sizeof(off_t);
+          arg_size = SIZEOF(off_t);
           ++format;
           break;
           }
@@ -544,16 +544,16 @@ unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, 
         {
         int base;
         int actual;
-        unsigned char c;
-        unsigned char *s;
+        char c;
+        char *s;
         
         case 's': /* String */
           {
           /* Get string */
-          s = va_arg(ap, unsigned char *);
+          s = va_arg(ap, char *);
 
           if (!s)
-            s = USTR "(null)";
+            s = "(null)";
 
           if (!prec)
             actual = zlen(s);
@@ -606,7 +606,7 @@ unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, 
 
         case 'p': /* Pointer */
           {
-          arg_size = sizeof(void *);
+          arg_size = SIZEOF(void *);
           base = 16;
           goto print_number;
           }
@@ -637,23 +637,23 @@ unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, 
           /* Read numeric argument */
           if (flags & _signed)
             {
-            if (arg_size == sizeof(int))
+            if (arg_size == SIZEOF(int))
               n = va_arg(ap, int);
-	    else if (arg_size == sizeof(long))
+	    else if (arg_size == SIZEOF(long))
 	      n = va_arg(ap, long);
 #if SIZEOF_LONG_LONG
-	    else if (arg_size == sizeof(long long))
+	    else if (arg_size == SIZEOF(long long))
 	      n = va_arg(ap, long long);
 #endif
 	    }
 	  else
 	    {
-            if (arg_size == sizeof(int))
+            if (arg_size == SIZEOF(int))
               n = va_arg(ap, unsigned int);
-	    else if (arg_size == sizeof(long))
+	    else if (arg_size == SIZEOF(long))
 	      n = va_arg(ap, unsigned long);
 #if SIZEOF_LONG_LONG
-	    else if (arg_size == sizeof(long long))
+	    else if (arg_size == SIZEOF(long long))
 	      n = va_arg(ap, unsigned long long);
 #endif
 	    }
@@ -709,7 +709,7 @@ unsigned char *vsfmt(unsigned char *vary, int pos, const unsigned char *format, 
   }
 
 
-int vsbsearch(unsigned char *ary, int len, unsigned char el)
+int vsbsearch(char *ary, int len, char el)
 {
 	int x, y, z;
 
@@ -730,7 +730,7 @@ int vsbsearch(unsigned char *ary, int len, unsigned char el)
 	return y;
 }
 
-int vsscan(unsigned char *a, int alen, unsigned char *b, int blen)
+int vsscan(char *a, int alen, char *b, int blen)
 {
 	int x;
 
@@ -743,7 +743,7 @@ int vsscan(unsigned char *a, int alen, unsigned char *b, int blen)
 	return ~0;
 }
 
-int vsspan(unsigned char *a, int alen, unsigned char *b, int blen)
+int vsspan(char *a, int alen, char *b, int blen)
 {
 	int x;
 
@@ -761,7 +761,7 @@ int vsspan(unsigned char *a, int alen, unsigned char *b, int blen)
 
 /* Return length, NULL allowed for vary */
 
-int valen(unsigned char **vary)
+int valen(char **vary)
 {
 	if (vary)
 		return obj_len(vary);
@@ -771,9 +771,9 @@ int valen(unsigned char **vary)
 
 /* Create array with enough space preallocated for len strings */
 
-unsigned char **vamk(int len)
+char **vamk(int len)
 {
-	unsigned char **n = obj_malloc((len + 1) * sizeof(unsigned char *));
+	char **n = obj_malloc((len + 1) * SIZEOF(char *));
 	obj_len(n) = 0;
 	n[0] = 0;
 	return n;
@@ -781,7 +781,7 @@ unsigned char **vamk(int len)
 
 /* Move array into heap */
 
-void vaperm(unsigned char **a)
+void vaperm(char **a)
 {
 	int x;
 	obj_perm(a);
@@ -791,7 +791,7 @@ void vaperm(unsigned char **a)
 
 /* Delete an array */
 
-void varm(unsigned char **vary)
+void varm(char **vary)
 {
 	if (vary) {
 		vazap(vary, 0, obj_len(vary));
@@ -801,20 +801,20 @@ void varm(unsigned char **vary)
 
 /* Make sure there is enough space for len strings */
 
-unsigned char **vaensure(unsigned char **vary, int len)
+char **vaensure(char **vary, int len)
 {
 	if (!vary)
 		vary = vamk(len);
-	else if ((len + 1) * sizeof(unsigned char *) > obj_size(vary)) {
+	else if ((len + 1) * SIZEOF(char *) > obj_size(vary)) {
 		len += (len >> 1);
-		vary = obj_realloc(vary, (len + 1) * sizeof(unsigned char *));
+		vary = obj_realloc(vary, (len + 1) * SIZEOF(char *));
 	}
 	return vary;
 }
 
 /* Delete strings */
 
-unsigned char **vazap(unsigned char **vary, int pos, int n)
+char **vazap(char **vary, int pos, int n)
 {
 	if (vary) {
 		int x;
@@ -837,7 +837,7 @@ unsigned char **vazap(unsigned char **vary, int pos, int n)
 	return vary;
 }
 
-unsigned char **vatrunc(unsigned char **vary, int len)
+char **vatrunc(char **vary, int len)
 {
 	if (!vary || len > obj_len(vary))
 		vary = vaensure(vary, len);
@@ -855,12 +855,12 @@ unsigned char **vatrunc(unsigned char **vary, int len)
 	return vary;
 }
 
-unsigned char **vafill(unsigned char **vary, int pos, unsigned char *el, int len)
+char **vafill(char **vary, int pos, char *el, int len)
 {
 	int olen = valen(vary), x;
 	int isperm;
 
-	if (!vary || (pos + len) * sizeof(unsigned char *) > obj_size(vary))
+	if (!vary || (pos + len) * SIZEOF(char *) > obj_size(vary))
 		vary = vaensure(vary, pos + len);
 	isperm = obj_isperm(vary);
 	if (pos + len > olen) {
@@ -884,12 +884,12 @@ unsigned char **vafill(unsigned char **vary, int pos, unsigned char *el, int len
 	return vary;
 }
 
-unsigned char **vandup(unsigned char **vary, int pos, unsigned char **array, int len)
+char **vandup(char **vary, int pos, char **array, int len)
 {
 	int isperm;
 	int olen = valen(vary), x;
 
-	if (!vary || (pos + len) * sizeof(unsigned char *) > obj_size(vary))
+	if (!vary || (pos + len) * SIZEOF(char *) > obj_size(vary))
 		vary = vaensure(vary, pos + len);
 	isperm = obj_isperm(vary);
 	if (pos + len > olen) {
@@ -909,12 +909,12 @@ unsigned char **vandup(unsigned char **vary, int pos, unsigned char **array, int
 	return vary;
 }
 
-unsigned char **vadup(unsigned char **vary)
+char **vadup(char **vary)
 {
 	return vandup(NULL, 0, vary, valen(vary));
 }
 
-unsigned char **vaadd(unsigned char **vary, unsigned char *s)
+char **vaadd(char **vary, char *s)
 {
 	vary = vaensure(vary, valen(vary) + 1);
 	if (obj_isperm(vary))
@@ -925,16 +925,16 @@ unsigned char **vaadd(unsigned char **vary, unsigned char *s)
 	return vary;
 }
 
-static int _acmp(unsigned char **a, unsigned char **b)
+static int _acmp(char **a, char **b)
 {
 	return zcmp(*a, *b);
 }
 
-void vasort(unsigned char **ary, int len)
+void vasort(char **ary, int len)
 {
 	if (!ary || !len)
 		return;
-	qsort(ary, len, sizeof(unsigned char *), (int (*)(const void *, const void *))_acmp);
+	qsort(ary, len, SIZEOF(char *), (int (*)(const void *, const void *))_acmp);
 }
 
 #ifdef JOEWIN
@@ -942,21 +942,21 @@ void vasort(unsigned char **ary, int len)
 /* TODO: Do this in cross-platform manner, windows and older systems have stricmp, newer
    ones have strcasecmp.  Only currently used in Windows, so I'll deal with it later. */
 
-static int _aicmp(unsigned char **a, unsigned char **b)
+static int _aicmp(char **a, char **b)
 {
 	return stricmp(*a, *b);
 }
 
-void vaisort(unsigned char **ary, int len)
+void vaisort(char **ary, int len)
 {
 	if (!ary || !len)
 		return;
-	qsort(ary, len, sizeof(unsigned char *), (int (*)(const void *, const void *))_aicmp);
+	qsort(ary, len, sizeof(char *), (int (*)(const void *, const void *))_aicmp);
 }
 
 #endif
 
-unsigned char **vawords(unsigned char **a, unsigned char *s, int len, unsigned char *sep, int seplen)
+char **vawords(char **a, char *s, int len, char *sep, int seplen)
 {
 	int x;
 
@@ -982,7 +982,7 @@ unsigned char **vawords(unsigned char **a, unsigned char *s, int len, unsigned c
 	return a;
 }
 
-unsigned char **isfree(unsigned char **s)
+char **isfree(char **s)
 {
 	obj_free(*s);
 	*s = 0;

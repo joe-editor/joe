@@ -201,8 +201,8 @@
 ################# keywords and identifiers ##########################
 :keyword_or_identifier Identifier
   *            identifier
-  "A-Z"        exported_identifier recolor=-1
-  "a-z_"       keyword_or_identifier2
+  "\p{Lu}\p{Lt}"        exported_identifier recolor=-1
+  "\p{Ll}\p{Lo}\p{Pc}\p{Nl}"       keyword_or_identifier2
 
 :exported_identifier  ExportedIdentifier
   *                         exported_identifier
@@ -214,7 +214,7 @@
 
 :keyword_or_identifier2 Identifier
   *                 identifier
-  "a-zA-Z_0-9"      keyword_or_identifier2
+  "\c"	            keyword_or_identifier2
   "\x01-/:-@[-^`{-\x7f"      main noeat hold strings
       "_"           keyword
       "break"       keyword

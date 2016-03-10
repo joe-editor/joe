@@ -44,10 +44,12 @@
     <ClInclude Include="$(JoeExternalSrcDir)\blocks.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\builtin.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\bw.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\cclass.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\charmap.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\cmd.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\config.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\coroutine.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\frag.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\gettext.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\hash.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\help.h" />
@@ -58,8 +60,10 @@
     <ClInclude Include="$(JoeExternalSrcDir)\macro.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\main.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\menu.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\mmenu.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\mouse.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\obj.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\options.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\path.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\poshist.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\pw.h" />
@@ -68,6 +72,7 @@
     <ClInclude Include="$(JoeExternalSrcDir)\rc.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\regex.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\scrn.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\state.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\syntax.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\tab.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\termcapj.h" />
@@ -102,9 +107,11 @@
     <ClCompile Include="$(JoeExternalSrcDir)\b.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\blocks.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\bw.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\cclass.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\charmap.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\cmd.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\coroutine.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\frag.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\gettext.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\hash.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\help.c" />
@@ -114,8 +121,10 @@
     <ClCompile Include="$(JoeExternalSrcDir)\macro.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\main.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\menu.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\mmenu.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\mouse.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\obj.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\options.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\path.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\poshist.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\pw.c" />
@@ -124,6 +133,7 @@
     <ClCompile Include="$(JoeExternalSrcDir)\rc.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\regex.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\scrn.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\state.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\syntax.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\tab.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\termcap.c" />
@@ -136,6 +146,8 @@
     <ClCompile Include="$(JoeExternalSrcDir)\uisrch.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\umath.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\undo.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\unicat.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\unicode.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\usearch.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\ushell.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\utag.c" />

@@ -35,7 +35,7 @@ const char* joedata_plus(const char* input);
 #define JOEDATA_PLUS(x) (JOEDATA x)
 #endif
 
-extern unsigned char* JOEDATA;
-extern unsigned char* JOERC;
+extern char* JOEDATA;
+extern char* JOERC;
 
 #endif //_JOEWIN_JOEDATA_H

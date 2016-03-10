@@ -5,20 +5,18 @@
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
-#ifndef _JOE_B_H
-#define _JOE_B_H 1
 
-/* A buffer is made up of a doubly-linked list of gap buffer.  These are the
- * buffer headers.  The buffers themselves can be swapped out.  A buffer with
- * point referring to it is guaranteed to be swapped in.
+/* A buffer is made up of a doubly-linked list of gap buffers.  Each gap buffer has a
+ * a header.  The buffers themselves can be swapped out.  A gap buffer with
+ * a pointer referring to it is guaranteed to be swapped in.
  */
 
 struct header {
 	LINK(H)	link;		/* Doubly-linked list of gap buffer headers */
-	long	seg;		/* Swap file offset to gap buffer */
-	int	hole;		/* Offset to gap */
-	int	ehole;		/* Offset to after gap */
-	int	nlines;		/* No. '\n's in this buffer */
+	off_t	seg;		/* Swap file offset to gap buffer */
+	ptrdiff_t	hole;		/* Offset to gap */
+	ptrdiff_t	ehole;		/* Offset to after gap */
+	ptrdiff_t	nlines;		/* No. '\n's in this buffer */
 };
 
 /* A pointer to some location within a buffer.  After an insert or delete,
@@ -29,43 +27,44 @@ struct point {
 	LINK(P)	link;		/* Doubly-linked list of pointers for a particular buffer */
 
 	B	*b;		/* Buffer */
-	int	ofst;		/* Gap buffer offset */
-	unsigned char	*ptr;	/* Gap buffer address */
+	ptrdiff_t	ofst;	/* Gap buffer offset */
+	char	*ptr;		/* Gap buffer address */
 	H	*hdr;		/* Gap buffer header */
 
 	off_t	byte;		/* Buffer byte offset */
-	long	line;		/* Line number */
-	long	col;		/* current column */
-	long	xcol;		/* cursor column (can be different from actual column) */
+	off_t	line;		/* Line number */
+	off_t	col;		/* current column */
+	off_t	xcol;		/* cursor column (can be different from actual column) */
 	int	valcol;		/* bool: is col valid? */
 	int	end;		/* set if this is end of file pointer */
 	int	attr;		/* current ansi attribute */
 	int	valattr;	/* set if attr is still valid */
 
 	P	**owner;	/* owner of this pointer.  owner gets cleared if pointer is deleted. */
-	unsigned char *tracker;	/* Name of function who pdup()ed me */
+	const char *tracker;	/* Name of function who pdup()ed me */
 };
 
 /* Options: both BWs and Bs have one of these */
 
 struct options {
 	OPTIONS	*next;
-	unsigned char	*name_regex;
-	unsigned char	*contents_regex;
+	const char	*name_regex;
+	const char	*contents_regex;
+	struct regcomp	*r_contents_regex; /* Compiled version of context_regex */
 	int	overtype;
-	int	lmargin;
-	int	rmargin;
+	off_t	lmargin;
+	off_t	rmargin;
 	int	autoindent;
 	int	wordwrap;
 	int	nobackup;
-	int	tab;
+	off_t	tab;
 	int	indentc;
-	int	istep;
-	unsigned char	*context;
-	unsigned char	*lmsg;
-	unsigned char	*rmsg;
-	unsigned char	*smsg;
-	unsigned char	*zmsg;
+	off_t	istep;
+	const char	*context;
+	const char	*lmsg;
+	const char	*rmsg;
+	const char	*smsg;
+	const char	*zmsg;
 	int	linums;
 	int	readonly;
 	int	french;
@@ -73,11 +72,11 @@ struct options {
 	int	spaces;
 	int	crlf;
 	int	highlight;	/* Set to enable highlighting */
-	unsigned char *syntax_name;	/* Name of syntax to use */
+	const char *syntax_name;	/* Name of syntax to use */
 	struct high_syntax *syntax;	/* Syntax for highlighting (load_syntax() from syntax_name happens in setopt()) */
-	unsigned char *map_name;	/* Name of character set */
+	const char *map_name;	/* Name of character set */
 	struct charmap *charmap;	/* Character set */
-	unsigned char *language;	/* Language of this buffer (for spell) */
+	const char *language;	/* Language of this buffer (for spell) */
 	int	smarthome;	/* Set for smart home key */
 	int	indentfirst;	/* Smart home goes to indentation point first */
 	int	smartbacks;	/* Set for smart backspace key */
@@ -94,9 +93,9 @@ struct options {
 	int	tex_comment;	/* Ignore text after % comments */
 	int	hex;		/* Hex edit mode */
 	int	ansi;		/* Hide ansi sequences mode */
-	unsigned char *text_delimiters;	/* Define word delimiters */
-	unsigned char *cpara;	/* Characters which can indent paragraphcs */
-	unsigned char *cnotpara;/* Characters which begin non-paragraph lines */
+	const char *text_delimiters;	/* Define word delimiters */
+	const char *cpara;	/* Characters which can indent paragraphcs */
+	const char *cnotpara;/* Characters which begin non-paragraph lines */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
 	MACRO	*msnew;		/* Macro to execute before saving new files */
@@ -110,24 +109,24 @@ struct buffer {
 	LINK(B)	link;		/* Doubly-linked list of all buffers */
 	P	*bof;		/* Beginning of file pointer */
 	P	*eof;		/* End of file pointer */
-	unsigned char	*name;	/* File name */
+	char *name;	/* File name */
 	int locked;		/* Set if we created a lock for this file */
 	int ignored_lock;	/* Set if we didn't create a lock and we don't care (locked set in this case) */
 	int didfirst;		/* Set after user attempted first change */
-	long    mod_time;	/* Last modification time for file */
-	long	check_time;	/* Last time we checked the file on disk */
+	time_t	mod_time;	/* Last modification time for file */
+	time_t	check_time;	/* Last time we checked the file on disk */
 	int	gave_notice;	/* Set if we already gave file changed notice for this file */
 	int	orphan;		/* Set if buffer is orphaned: refcount is bumped up by one in this case */
 	int	count;		/* Reference count.  Buffer is deleted if brm decrements count to 0 */
 	int	changed;
 	int	backup;
-	void	*undo;
+	UNDO	*undo;
 	P	*marks[11];	/* Bookmarks */
 	OPTIONS	o;		/* Options */
 	P	*oldcur;	/* Last cursor position before orphaning */
 	P	*oldtop;	/* Last top screen position before orphaning */
 	P	*err;		/* Last error line */
-	unsigned char *current_dir;
+	char *current_dir;
 	int shell_flag;		/* Set if last cursor position is same as vt cursor: if it is we keep it up to date */
 	int	rdonly;		/* Set for read-only */
 	int	internal;	/* Set for internal buffers */
@@ -137,8 +136,8 @@ struct buffer {
 	int	out;		/* fd to write to process */
 	VT	*vt;		/* video terminal emulator */
 	struct lattr_db *db;	/* Linked list of line attribute databases */
-	void (*parseone)(struct charmap *map,unsigned char *s,unsigned char **rtn_name,
-	                 long *rtn_line);
+	void (*parseone)(struct charmap *map,const char *s,char **rtn_name,
+	                 off_t *rtn_line);
 	                        /* Error parser for this buffer */
 #ifdef JOEWIN
 	int	pchanges;	/* Changes to this buffer that are pending to be sent to the frontend */
@@ -148,104 +147,103 @@ struct buffer {
 extern B bufs;
 
 extern int force;		/* Set to have final '\n' added to file */
-extern int tabwidth;		/* Default tab width */
 
 extern VFILE *vmem;		/* Virtual memory file used for buffer system */
 
-extern unsigned char *msgs[];	/* File access status messages */
+extern const char *msgs[];	/* File access status messages */
 
-B *bmk PARAMS((B *prop));
-void brm PARAMS((B *b));
+B *bmk(B *prop);
+void brm(B *b);
 void brmall();
 
-B *bfind PARAMS((unsigned char *s));
-B *bfind_scratch PARAMS((unsigned char *s));
-B *bcheck_loaded PARAMS((unsigned char *s));
-B *bfind_reload PARAMS((unsigned char *s));
+B *bfind(const char *s);
+B *bfind_scratch(const char *s);
+B *bcheck_loaded(const char *s);
+B *bfind_reload(const char *s);
 
-P *pdup PARAMS((P *p, unsigned char *tr));
-P *pdupown PARAMS((P *p, P **o, unsigned char *tr));
-P *poffline PARAMS((P *p));
-P *ponline PARAMS((P *p));
-B *bonline PARAMS((B *b));
-B *boffline PARAMS((B *b));
+P *pdup(P *p, const char *tr);
+P *pdupown(P *p, P **o, const char *tr);
+P *poffline(P *p);
+P *ponline(P *p);
+B *bonline(B *b);
+B *boffline(B *b);
 
-void prm PARAMS((P *p));
-P *pset PARAMS((P *n, P *p));
+void prm(P *p);
+P *pset(P *n, P *p);
 
-P *p_goto_bof PARAMS((P *p));		/* move cursor to begging of file */
-P *p_goto_eof PARAMS((P *p));		/* move cursor to end of file */
-P *p_goto_bol PARAMS((P *p));		/* move cursor to begging of line */
-P *p_goto_eol PARAMS((P *p));		/* move cursor to end of line */
+P *p_goto_bof(P *p);		/* move cursor to begging of file */
+P *p_goto_eof(P *p);		/* move cursor to end of file */
+P *p_goto_bol(P *p);		/* move cursor to begging of line */
+P *p_goto_eol(P *p);		/* move cursor to end of line */
 
-P *p_goto_indent PARAMS((P *p,int c));	/* move cursor to indentation point */
+P *p_goto_indent(P *p,int c);	/* move cursor to indentation point */
 
-int pisbof PARAMS((P *p));
-int piseof PARAMS((P *p));
-int piseol PARAMS((P *p));
-int pisbol PARAMS((P *p));
-int pisbow PARAMS((P *p));
-int piseow PARAMS((P *p));
+int pisbof(P *p);
+int piseof(P *p);
+int piseol(P *p);
+int pisbol(P *p);
+int pisbow(P *p);
+int piseow(P *p);
 
 #define piscol(p) ((p)->valcol ? (p)->col : (pfcol(p), (p)->col))
 
-int pisblank PARAMS((P *p));
-int piseolblank PARAMS((P *p));
+int pisblank(P *p);
+int piseolblank(P *p);
 
-long pisindent PARAMS((P *p));
-int pispure PARAMS((P *p,int c));
+off_t pisindent(P *p);
+int pispure(P *p,int c);
 
-int pnext PARAMS((P *p));
-int pprev PARAMS((P *p));
+int pnext(P *p);
+int pprev(P *p);
 
-int pgetb PARAMS((P *p));
-int prgetb PARAMS((P *p));
+int pgetb(P *p);
+int prgetb(P *p);
 
-int pgetc PARAMS((P *p));
-int prgetc PARAMS((P *p));
+int pgetc(P *p);
+int prgetc(P *p);
 
-P *pgoto PARAMS((P *p, long int loc));
-P *pfwrd PARAMS((P *p, long int n));
-P *pbkwd PARAMS((P *p, long int n));
+P *pgoto(P *p, off_t loc);
+P *pfwrd(P *p, off_t n);
+P *pbkwd(P *p, off_t n);
 
-P *pfcol PARAMS((P *p));
+P *pfcol(P *p);
 
-P *pnextl PARAMS((P *p));
-P *pprevl PARAMS((P *p));
+P *pnextl(P *p);
+P *pprevl(P *p);
 
-P *pline PARAMS((P *p, long int line));
+P *pline(P *p, off_t line);
 
-P *pcolwse PARAMS((P *p, long int goalcol));
-P *pcol PARAMS((P *p, long int goalcol));
-P *pcoli PARAMS((P *p, long int goalcol));
-void pbackws PARAMS((P *p));
-void pfill PARAMS((P *p, long int to, int usetabs));
+P *pcolwse(P *p, off_t goalcol);
+P *pcol(P *p, off_t goalcol);
+P *pcoli(P *p, off_t goalcol);
+void pbackws(P *p);
+void pfill(P *p, off_t to, int usetabs);
 
-P *pfind PARAMS((P *p, unsigned char *s, int len));
-P *pifind PARAMS((P *p, unsigned char *s, int len));
-P *prfind PARAMS((P *p, unsigned char *s, int len));
-P *prifind PARAMS((P *p, unsigned char *s, int len));
+P *pfind(P *p, const char *s, ptrdiff_t len);
+P *pifind(P *p, const char *s, ptrdiff_t len);
+P *prfind(P *p, const char *s, ptrdiff_t len);
+P *prifind(P *p, const char *s, ptrdiff_t len);
 
 /* copy text between 'from' and 'to' into new buffer */
-B *bcpy PARAMS((P *from, P *to));	
+B *bcpy(P *from, P *to);	
 
-void pcoalesce PARAMS((P *p));
+void pcoalesce(P *p);
 
-void bdel PARAMS((P *from, P *to));
+void bdel(P *from, P *to);
 
 /* insert buffer 'b' into another at 'p' */
-P *binsb PARAMS((P *p, B *b));
+P *binsb(P *p, B *b);
 /* insert a block 'blk' of size 'amnt' into buffer at 'p' */
-P *binsm PARAMS((P *p, unsigned char *blk, int amnt)); 
+P *binsm(P *p, const char *blk, ptrdiff_t amnt); 
 
 /* insert character 'c' into buffer at 'p' */
-P *binsc PARAMS((P *p, int c));
+P *binsc(P *p, int c);
 
 /* insert byte 'c' into buffer at at 'p' */
-P *binsbyte PARAMS((P *p, unsigned char c));
+P *binsbyte(P *p, char c);
 
 /* insert zero term. string 's' into buffer at 'p' */
-P *binss PARAMS((P *p, unsigned char *s));
+P *binss(P *p, const char *s);
 
 /* B *bload(char *s);
  * Load a file into a new buffer
@@ -256,53 +254,52 @@ P *binss PARAMS((P *p, unsigned char *s));
  * -3 for seek error
  * -4 for open error
  */
-B *bload PARAMS((unsigned char *s));
-B *bread PARAMS((int fi, long int max));
-B *bfind PARAMS((unsigned char *s));
-B *borphan PARAMS((void));
+B *bload(const char *s);
+B *bread(int fi, off_t max);
+B *borphan(void);
 
 /* Save 'size' bytes beginning at 'p' into file with name in 's' */
-int bsave PARAMS((P *p, unsigned char *s, off_t size,int flag));
-int bsavefd PARAMS((P *p, int fd, off_t size));
+int bsave(P *p, const char *s, off_t size,int flag);
+int bsavefd(P *p, int fd, off_t size);
 
-unsigned char *parsens PARAMS((unsigned char *s, off_t *skip, off_t *amnt));
-unsigned char *canonical PARAMS((unsigned char *s));
+char *parsens(const char *s, off_t *skip, off_t *amnt);
+char *canonical(char *s);
 
 /* Get byte at pointer or return NO_MORE_DATA if pointer is at end of buffer */
-int brc PARAMS((P *p));
+int brc(P *p);
 
 /* Get character at pointer or return NO_MORE_DATA if pointer is at end of buffer */
-int brch PARAMS((P *p));
+int brch(P *p);
 
 /* Copy 'size' bytes from a buffer beginning at p into block 'blk' */
-unsigned char *brmem PARAMS((P *p, unsigned char *blk, int size));
+char *brmem(P *p, char *blk, ptrdiff_t size);
 
 /* Copy 'size' bytes from a buffer beginning at p into a zero-terminated
  * C-string in an malloc block.
  */
-unsigned char *brs PARAMS((P *p, int size));
+char *brs(P *p, ptrdiff_t size);
 
 /* Copy 'size' bytes from a buffer beginning at p into a variable length string. */
-unsigned char *brvs PARAMS((unsigned char *s, P *p, int size));
+char *brvs(char *s, P *p, ptrdiff_t size);
 
 /* Copy line into variable length string buf. */
-unsigned char *brlinevs PARAMS((unsigned char *buf, P *p));
+char *brzs(char *buf, P *p);
 
-B *bnext PARAMS((void));
-B *bafter PARAMS((B *b));
-B *bprev PARAMS((void));
+B *bnext(void);
+B *bafter(B *b);
+B *bprev(void);
 
 extern int berror;	/* bload error status code (use msgs[-berror] to get message) */
 
-unsigned char **getbufs PARAMS((void));
+char **getbufs(void);
 
-int lock_it PARAMS((unsigned char *path,unsigned char *buf));
-void unlock_it PARAMS((unsigned char *path));
-int plain_file PARAMS((B *b));
-int check_mod PARAMS((B *b));
-int file_exists PARAMS((unsigned char *path));
+int lock_it(const char *path,char *buf);
+void unlock_it(const char *path);
+int plain_file(B *b);
+int check_mod(B *b);
+int file_exists(const char *path);
 
-int udebug_joe PARAMS((BW *bw));
+int udebug_joe(W *w, int k);
 
 extern int guesscrlf; /* Try to guess line ending when set */
 extern int guessindent; /* Try to guess indent character and step when set */
@@ -314,10 +311,8 @@ void set_file_pos_orphaned();
 
 void breplace(B *b, B *n);
 
-unsigned char *dequote(unsigned char *s);
+char *dequote(const char *);
 
-#define ANSI_BIT 0x40000000
-int ansi_code(unsigned char *s);
-unsigned char *ansi_string(int code);
-
-#endif
+#define ANSI_BIT (int)(0x80000000)
+int ansi_code(char *s);
+char *ansi_string(int code);
