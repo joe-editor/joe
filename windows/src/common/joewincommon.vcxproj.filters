@@ -27,9 +27,6 @@
     <ClCompile Include="bentries.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wcwidth.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="startup.c">
       <Filter>Source Files</Filter>
     </ClCompile>

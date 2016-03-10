@@ -53,7 +53,6 @@
     <ClInclude Include="$(JoeExternalSrcDir)\gettext.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\hash.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\help.h" />
-    <ClInclude Include="$(JoeExternalSrcDir)\i18n.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\kbd.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\lattr.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\libcoro.h" />
@@ -158,7 +157,6 @@
     <ClCompile Include="$(JoeExternalSrcDir)\w.c" />
     <ClCompile Include="$(JoeSrcDir)\builtin.c" />
     <ClCompile Include="$(JoeSrcDir)\bupdates.c" />
-    <ClCompile Include="$(JoeSrcDir)\i18n.c" />
     <ClCompile Include="$(JoeSrcDir)\joedata.c" />
     <ClCompile Include="$(JoeSrcDir)\env.c" />
     <ClCompile Include="$(JoeSrcDir)\fs.c" />

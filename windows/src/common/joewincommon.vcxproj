@@ -34,7 +34,6 @@
     <ClCompile Include="tinfl.c" />
     <ClCompile Include="utils.c" />
     <ClCompile Include="bentries.c" />
-    <ClCompile Include="wcwidth.c" />
     <ClCompile Include="startup.c" />
   </ItemGroup>
   <ItemGroup>

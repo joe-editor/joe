@@ -60,9 +60,6 @@
     <ClInclude Include="$(JoeExternalSrcDir)\help.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(JoeExternalSrcDir)\i18n.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="$(JoeExternalSrcDir)\kbd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -369,9 +366,6 @@
       <Filter>JoeWin Files</Filter>
     </ClCompile>
     <ClCompile Include="$(JoeSrcDir)\bupdates.c">
-      <Filter>JoeWin Files</Filter>
-    </ClCompile>
-    <ClCompile Include="$(JoeSrcDir)\i18n.c">
       <Filter>JoeWin Files</Filter>
     </ClCompile>
     <ClCompile Include="$(JoeSrcDir)\uwindows.c">
