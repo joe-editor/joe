@@ -12,6 +12,7 @@ int skiptop = 0;
 int env_lines = 0;
 int env_columns = 0;
 int notite = 0;
+int brpaste = 0;
 int nolinefeeds = 0;
 int opt_usetabs = 0;
 int assume_color = 0;
@@ -617,7 +618,7 @@ SCRN *nopen(CAP *cap)
 	
 	/* No termcap for bracketed paste.  ANSI-looking terminals will either support bracketed paste
 	   or this setting will cause no harm. */
-	if (ansiish) {
+	if (ansiish && brpaste) {
 #ifndef TERMINFO
 		t->brp = "\\E[?2004h";
 		t->bre = "\\E[?2004l";

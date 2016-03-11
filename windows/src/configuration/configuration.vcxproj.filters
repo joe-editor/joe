@@ -307,6 +307,9 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\asm.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\avr.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\awk.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
@@ -316,7 +319,13 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\c.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\clojure.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\cobol.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\coffee.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\comment_todo.jsf.in">
@@ -332,6 +341,9 @@
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\css.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\d.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\debian.jsf.in">
@@ -359,6 +371,9 @@
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\go.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\groovy.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\haml.jsf.in">
@@ -448,10 +463,19 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\python.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\r.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\rexx.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\ruby.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\rust.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\scala.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\sed.jsf.in">
@@ -473,6 +497,9 @@
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\sql.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\swift.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\tcl.jsf.in">

@@ -20,7 +20,7 @@
 #include <direct.h>
 #include "types.h"
 
-void *opendir(const char *path)
+DIR *opendir(const char *path)
 {
 	struct dirent *result;
 	wchar_t c;

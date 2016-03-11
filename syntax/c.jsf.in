@@ -32,7 +32,7 @@
 # jump has the form: <character-list> <target-state> [<option>s]
 
 # There are three ways to specify <character-list>s, either * for any
-# character not otherwise specified, & to match the character in the
+# character not otherwise specified, % or & to match the character in the
 # delimiter match buffer or a literal list of characters within quotes
 # (ranges and escape sequences allowed).  When the next character matches
 # any in the list, a jump to the target-state is taken and the character is

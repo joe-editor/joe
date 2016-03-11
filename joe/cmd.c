@@ -41,6 +41,7 @@ CMD cmds[] = {
 	{"bop", TYPETW + TYPEPW + EFIXXCOL, ubop, NULL, 1, "eop"},
 	{"bos", TYPETW + TYPEPW + EMOVE, ubos, NULL, 0, NULL},
 	{"brpaste", TYPETW + TYPEPW + EMOD + EFIXXCOL, ubrpaste, NULL, 0, NULL},
+	{"brpaste_done", TYPETW + TYPEPW + EMOD + EFIXXCOL, ubrpaste_done, NULL, 0, NULL},
 	{"bufed", TYPETW, ubufed, NULL, 0, NULL},
 	{"build", TYPETW + TYPEPW, ubuild, NULL, 0, NULL},
 	{"byte", TYPETW + TYPEPW, ubyte, NULL, 0, NULL},

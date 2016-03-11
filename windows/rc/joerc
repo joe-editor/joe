@@ -148,6 +148,8 @@
 
  -guess_utf8	Allow guess of UTF-8 file encoding in non-UTF-8 locale.
 
+-guess_utf16	Allow guess of UTF-16 encoding
+
 -guess_crlf     Automatically detect MS-DOS files and set -crlf appropriately
 
 -guess_indent	Guess indent character (tab or space).
@@ -177,9 +179,20 @@
 		position the cursor and left-click-drag will select blocks
 		For normal xterm cut and paste, hold the shift key down.
 
- -joexterm	Copy selected text after selection with mouse and paste with
-		the middle mouse button.  (Obviously) requires -mouse to be
-		enabled.
+ -joexterm	If you are using XTerm version 212 or higher, and if it was
+		configured with --enable-paste64, set this flag: it allows
+		mouse cut & paste to work properly (text selected with the
+		mouse can be pasted into other application, and middle
+		button clicks paste into JOE).
+
+-brpaste	When JOE starts, send command to the terminal emulator that
+		enables "bracketed paste mode" (but only if the terminal
+		seems to have the ANSI command set).  In this mode, text
+		pasted into the window is bracketed with ESC [ 2 0 0 ~ and
+		ESC [ 2 0 1 ~.
+
+-pastehack	If keyboard input comes in as one block assume it's a mouse
+		paste and disable autoindent and wordwrap.
 
  -square	Rectangular block mode
 
@@ -259,10 +272,13 @@
 
  SECOND SECTION: File name dependant local option settings:
 
- Each line with '*' in the first column indicates the modes which should be
- set for files whose name matches the regular expression.  If more than one
- regular expression matches the file name, then the last matching one is
- chosen.
+ Name a file type definition section with:
+
+   [python]  (but put opening bracket in first column)
+
+ Each line with '*' in the first column provides a file name matching
+ regular expression (in shell glob format).  If more than one regular
+ expression matches the file name, then the last matching one is chosen.
 
  A file contents regular expression may also be specified on a separate line
  with '+regex'.  If this regular expresssion is given, then both the file name
@@ -439,6 +455,7 @@ mode,"encoding",rtn	E Encoding
 mode,"asis",rtn	% % Meta chars as-is
 mode,"language",rtn	V Language
 mode,"picture",rtn	P picture %Zpicture%
+mode,"type",rtn		F File type [%Ztype%]
 menu,"more-options",rtn	  % % More options...
 
 :defmenu more-options menu,"root",rtn
@@ -498,6 +515,7 @@ mode,"guess_crlf",rtn	% % Auto detect CR-LF %Zguess_crlf%
 mode,"guess_indent",rtn	% % Guess indent %Zguess_indent%
 mode,"guess_non_utf8",rtn	% % Guess non-UTF-8 %Zguess_non_utf8%
 mode,"guess_utf8",rtn	% % Guess UTF-8 %Zguess_utf8%
+mode,"guess_utf16",rtn	% % Guess UTF-16 %Zguess_utf16%
 mode,"force",rtn	% % Force last NL %Zforce%
 mode,"nobackup",rtn	% % No backup %Znobackup%
 
@@ -604,6 +622,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i    \\+      match 1 or more occurrences    \\*     match 0 or more occurrences \|\i \i
 \i \iReplace sequences:                                                           \|\i \i
 \i \i    \\&      replaced with entire match     \\1 - 9 replaced with Nth group   \|\i \i
+\i \i    \\u \\l   convert next to upper/lower    \\U \\L  case convert until \\E     \|\i \i
 }
 
 {Escape sequences
@@ -875,6 +894,7 @@ aspellword	^[ n
 
 paste			^[ ] 5 2 ;		Base64 paste (obsolete)
 brpaste			^[ [ 2 0 0 ~		Bracketed paste
+brpaste_done		^[ [ 2 0 1 ~		Bracketed paste done
 
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO

@@ -162,7 +162,7 @@ static int rtnpw(W *w)
 	p_goto_eol(bw->cursor);
 	byte = bw->cursor->byte;
 	p_goto_bol(bw->cursor);
-	s = brvs(NULL, bw->cursor, TO_DIFF_OK(byte - bw->cursor->byte));
+	s = brvs(NULL, bw->cursor, byte - bw->cursor->byte);
 
 	if (pw->file_prompt) {
 		s = canonical(s);
@@ -310,7 +310,7 @@ BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, voi
 	/* Install current directory */
 	if ((file_prompt&4) && !nocurdir) {
 		char *curd = get_cd(w);
-		binsm (bw->cursor, sv(curd));
+		binsmq(bw->cursor, sv(curd));
 		p_goto_eof(bw->cursor);
 		bw->cursor->xcol = piscol(bw->cursor);
 	}
@@ -376,7 +376,7 @@ int simple_cmplt(BW *bw,char **list)
 	p_goto_bol(p);
 	q = pdup(bw->cursor, "simple_cmplt");
 	p_goto_eol(q);
-	line = brvs(NULL, p, (int) (q->byte - p->byte));	/* Assumes short lines :-) */
+	line = brvs(NULL, p, q->byte - p->byte);	/* FIXME: Assumes short lines :-) */
 	prm(p);
 	prm(q);
 

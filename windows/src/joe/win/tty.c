@@ -30,8 +30,8 @@ int Baud = 38400;		/* Baud rate from joerc, cmd line or environment */
 /* Output buffer, index and size */
 
 char *obuf = NULL;
-int obufp = 0;
-int obufsiz;
+ptrdiff_t obufp = 0;
+ptrdiff_t obufsiz;
 
 char ibuf[UI_TO_EDITOR_IOSZ];
 int ibufp = 0;

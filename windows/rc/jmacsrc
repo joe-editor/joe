@@ -124,6 +124,8 @@
 
  -guess_utf8	Allow guess of UTF-8 file encoding in non-UTF-8 locale.
 
+-guess_utf16	Allow guess of UTF-16 encoding
+
 -menu_above	Position menu/list above prompt when enabled.  Otherwise position
 		below prompt.
 
@@ -147,6 +149,15 @@
 
  -joexterm	If you are using Joe's modified Xterm, which makes -mouse
 		mode work better (cut & paste work transparently).
+
+-brpaste	When JOE starts, send command to the terminal emulator that
+		enables "bracketed paste mode" (but only if the terminal
+		seems to have the ANSI command set).  In this mode, text
+		pasted into the window is bracketed with ESC [ 2 0 0 ~ and
+		ESC [ 2 0 1 ~.
+
+-pastehack	If keyboard input comes in as one block assume it's a mouse
+		paste and disable autoindent and wordwrap.
 
  -square	Rectangular block mode
 
@@ -397,6 +408,7 @@ mode,"encoding",rtn	E Encoding
 mode,"asis",rtn	% % Meta chars as-is
 mode,"language",rtn	V Language
 mode,"picture",rtn	P picture %Zpicture%
+mode,"type",rtn		F File type [%Ztype%]
 menu,"more-options",rtn	  % % More options...
 
 :defmenu more-options menu,"root",rtn
@@ -456,6 +468,7 @@ mode,"guess_crlf",rtn	% % Auto detect CR-LF %Zguess_crlf%
 mode,"guess_indent",rtn	% % Guess indent %Zguess_indent%
 mode,"guess_non_utf8",rtn	% % Guess non-UTF-8 %Zguess_non_utf8%
 mode,"guess_utf8",rtn	% % Guess UTF-8 %Zguess_utf8%
+mode,"guess_utf16",rtn	% % Guess UTF-16 %Zguess_utf16%
 mode,"force",rtn	% % Force last NL %Zforce%
 mode,"nobackup",rtn	% % No backup %Znobackup%
 
@@ -547,6 +560,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i    \\+      match 1 or more occurrences    \\*     match 0 or more occurrences \|\i \i
 \i \iReplace sequences:                                                           \|\i \i
 \i \i    \\&      replaced with entire match     \\1 - 9 replaced with Nth group   \|\i \i
+\i \i    \\u \\l   convert next to upper/lower    \\U \\L  case convert until \\E     \|\i \i
 }
 
 {Escape sequences
@@ -803,6 +817,7 @@ ctrl		^Q		Quote Ctrl chars
 
 paste			^[ ] 5 2 ;		Base64 paste (obsolete)
 brpaste			^[ [ 2 0 0 ~		Bracketed paste
+brpaste_done		^[ [ 2 0 1 ~		Bracketed paste done
 
 insc			^[ [ 2 ~
 insc			^[ [ L			SCO

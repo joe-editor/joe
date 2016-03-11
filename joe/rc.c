@@ -120,17 +120,35 @@ int procrc(CAP *cap, char *name)
 			}
 			break;
 
-		case '*':	/* Select file types for file-type dependant options */
-			{ /* Space and tab introduce comments- which means we can't have them in the regex */
+		case '[':	/* Select file types for file-type dependant options */
+			{
 				int x;
 
-				o = (OPTIONS *) joe_malloc(SIZEOF(OPTIONS));
+				o = (OPTIONS *)joe_malloc(SIZEOF(OPTIONS));
 				*o = fdefault;
-				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != ' ' && buf[x] != '\t'; ++x) ;
+				o->match = 0;
+				for (x = 0; buf[x] && buf[x] != ']' && buf[x] != '\r' && buf[x] != '\n' && buf[x] != ' ' && buf[x] != '\t'; ++x) ;
 				buf[x] = 0;
 				o->next = options_list;
 				options_list = o;
-				o->name_regex = zdup(buf);
+				o->ftype = zdup(buf + 1);
+			}
+			break;
+		case '*':	/* Select file types for file-type dependant options */
+			{ /* Space and tab introduce comments- which means we can't have them in the regex */
+				if (o) {
+					struct options_match *m;
+					int x;
+					for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != ' ' && buf[x] != '\t'; ++x) ;
+					buf[x] = 0;
+					m = (struct options_match *)joe_malloc(SIZEOF(struct options_match));
+					m->next = 0;
+					m->name_regex = zdup(buf);
+					m->contents_regex = 0;
+					m->r_contents_regex = 0;
+					m->next = o->match;
+					o->match = m;
+				}
 			}
 			break;
 		case '+':	/* Set file contents match regex */
@@ -139,8 +157,15 @@ int procrc(CAP *cap, char *name)
 
 				for (x = 0; buf[x] && buf[x] != '\n' && buf[x] != '\r'; ++x) ;
 				buf[x] = 0;
-				if (o)
-					o->contents_regex = zdup(buf+1);
+				if (o && o->match) {
+					if (o->match->contents_regex) {
+						struct options_match *m = (struct options_match *)joe_malloc(SIZEOF(struct options_match));
+						*m = *o->match;
+						m->next = o->match;
+						o->match = m;
+					}
+					o->match->contents_regex = zdup(buf+1);
+				}
 			}
 			break;
 		case '-':	/* Set an option */

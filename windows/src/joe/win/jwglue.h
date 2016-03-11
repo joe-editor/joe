@@ -60,7 +60,9 @@ struct dirent {
     HANDLE  find_handle;
 };
 
-void *opendir(const char*);
+typedef struct dirent DIR;
+
+DIR *opendir(const char*);
 void closedir(void*);
 struct dirent *readdir(void*);
 

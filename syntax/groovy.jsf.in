@@ -1,0 +1,471 @@
+# JOE syntax highlight file for Groovy
+
+=Idle
+=Comment	green
+=Shebang	yellow
+=Constant	cyan
+=Escape		bold cyan
+=Operator	bold
+=Keyword	bold
+=Bad		bold red
+=Var		yellow
+=Brace		magenta
+
+=ProcArg	#yellow
+=ClassMember	yellow #fg_310 # brown
+=GlobalVar	#yellow
+=ClassDecl	bold blue
+
+:pre_idle Idle
+	*		NULL		noeat call=.groovy()
+
+.subr groovy
+
+# #! allowed on first line
+
+:reset Idle
+	*		idle		noeat
+	"#"		maybe_shebang
+
+:maybe_shebang Idle
+	*		idle		noeat
+	"!"		shebang		recolor=-2
+
+:shebang Shebang
+	*		shebang
+	"\n"		idle
+
+:idle Idle
+	*		idle
+	"{}"		brace		recolor=-1
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal		recolor=-1
+	"."		ident_no_kw
+	"\""		double_quote	recolor=-1
+	"'"		single_quote	recolor=-1
+	"/"		maybe_regex	recolor=-1
+	"$"		not_string	buffer
+	"\i"		ident		buffer
+
+# / / regex not allowed after terms
+
+:after_term Idle
+	*		idle		noeat
+	" \t)"		after_term
+	"/"		slash_after_term
+
+:slash_after_term Idle
+	*		idle		noeat
+	"/"		line_comment	recolor=-2
+	"*"		comment		recolor=-2
+
+:maybe_regex Constant
+	*		regex		noeat
+	"*"		comment			recolor=-2
+	"/"		line_comment	recolor=-2
+
+:regex Constant
+	*		regex
+	"\\"		regex_quote	recolor=-1
+	"/"		after_term
+	"$"		maybe_regex_subst	recolor=-1
+
+:maybe_regex_subst Constant
+	*		regex		noeat
+	"\i"		regex_subst1	recolor=-2
+	"{"		regex_subst	recolor=-2
+
+:regex_subst Escape
+	*		regex_subst
+	"}"		regex
+
+:regex_subst1 Escape
+	*		regex		noeat
+	".\c"		regex_subst1
+
+:regex_quote Escape
+	*		regex
+
+:not_string Idle
+	*		idle		noeat
+	"\c"		global_var	recolor=-2
+	"/"		dstring		recolor=-2
+
+:brace Brace
+	*		idle		noeat
+
+:comment Comment
+	*		comment
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment
+	*		comment
+	"/"		idle
+	"*"		maybe_end_comment
+
+:line_comment Comment
+	*		line_comment
+	"\n"		idle
+
+:end_of_file_comment Comment
+	*		end_of_file_comment
+
+:first_digit Constant
+	*		after_term	noeat
+	"x"		hex
+	"b"		binary
+	"."		float
+	"eE"		epart
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+	"gGlLiIdDfF"	after_term
+
+:bad_number Bad
+	*		after_term	noeat
+	"0-9"		bad_number
+
+:octal Constant
+	*		after_term	noeat
+	"0-7_"		octal
+	"89"		bad_number	recolor=-1
+
+:binary Constant
+	*		after_term	noeat
+	"01_"		binary
+	"2-9"		bad_number	recolor=-1
+
+:hex Constant
+	*		after_term	noeat
+	"0-9A-Fa-f_"	hex
+
+:decimal Constant
+	*		after_term	noeat
+	"0-9_"		decimal
+	"eE"		epart
+	"."		float
+	"gGlLiIdDfF"	after_term
+
+:float Constant
+	*		after_term	noeat
+	"eE"		epart
+	"0-9_"		float
+	"gGlLiIdDfF"	after_term
+
+:epart Constant
+	*		after_term	noeat
+	"0-9+\-"	enum
+
+:enum Constant
+	*		after_term	noeat
+	"0-9_"		enum
+	"gGlLiIdDfF"	after_term
+
+# Distinguish between " and """
+
+:double_quote Constant
+	*		string		noeat
+	"\""		double_quote_1
+
+:double_quote_1 Constant
+	*		after_term	noeat
+	"\""		tstring
+
+# strings like "hello"
+# interpolation allowed
+# line crossing not allowed
+
+:string	Constant
+	*		string
+	"\""		after_term
+	"\n"		after_term 
+	"\\"		string_escape	recolor=-1
+	"$"		maybe_string_subst	recolor=-1
+
+:maybe_string_subst Constant
+	*		string		noeat
+	"\i"		string_subst1	recolor=-2
+	"{"		string_subst	recolor=-2
+
+:string_subst Escape
+	*		string_subst
+	"}"		string
+
+:string_subst1 Escape
+	*		string		noeat
+	".\c"		string_subst1
+	
+:string_escape Escape
+	*		string
+	"x"		string_hex2
+	"u"		string_hex4
+	"0-7"		string_octal2
+	"\n"		string		recolor=-2
+
+:string_hex4 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex3
+
+:string_hex3 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex2
+
+:string_hex2 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_hex1
+
+:string_hex1 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 Escape
+	*		string		noeat
+	"0-7"		string_octal1
+
+:string_octal1 Escape
+	*		string		noeat
+	"0-7"		string
+
+# tstrings like "hello"
+# interpolation allowed
+# line crossing not allowed
+
+:tstring	Constant
+	*		tstring
+	"\""		tstring_maybe_done
+	"\\"		tstring_escape	recolor=-1
+	"$"		maybe_tstring_subst	recolor=-1
+
+:tstring_maybe_done	Constant
+	*		tstring		noeat
+	"\""		tstring_maybe_done_2
+
+:tstring_maybe_done_2	Constant
+	*		tstring		noeat
+	"\""		after_term
+
+:maybe_tstring_subst Constant
+	*		tstring		noeat
+	"\i"		tstring_subst1	recolor=-2
+	"{"		tstring_subst	recolor=-2
+
+:tstring_subst Escape
+	*		tstring_subst
+	"}"		tstring
+
+:tstring_subst1 Escape
+	*		tstring		noeat
+	".\c"		tstring_subst1
+	
+:tstring_escape Escape
+	*		tstring
+	"x"		tstring_hex2
+	"u"		tstring_hex4
+	"0-7"		tstring_octal2
+	"\n"		tstring		recolor=-2
+
+:tstring_hex4 Escape
+	*		tstring		noeat
+	"0-9a-fA-F"	tstring_hex3
+
+:tstring_hex3 Escape
+	*		tstring		noeat
+	"0-9a-fA-F"	tstring_hex2
+
+:tstring_hex2 Escape
+	*		tstring		noeat
+	"0-9a-fA-F"	tstring_hex1
+
+:tstring_hex1 Escape
+	*		tstring		noeat
+	"0-9a-fA-F"	tstring
+
+:tstring_octal2 Escape
+	*		tstring		noeat
+	"0-7"		tstring_octal1
+
+:tstring_octal1 Escape
+	*		tstring		noeat
+	"0-7"		tstring
+
+# strings like: $/sdfsdf/$
+# interpolation allowed
+	
+:dstring	Constant
+	*		dstring
+	"$"		dstring_esc	recolor=-1
+	"/"		dstring_maybe_done
+
+:dstring_maybe_done	Constant
+	*		dstring		noeat
+	"$"		after_term
+
+:dstring_esc	Escape
+	*		dstring
+	"/"		dstring_esc_slash
+
+:dstring_esc_slash	Escape
+	*		dstring		noeat recolor=-1
+	"$"		dstring
+
+:single_quote	Constant
+	*		char		noeat
+	"\'"		single_quote_1
+
+:single_quote_1	Constant
+	*		after_term	noeat
+	"\'"		tchar
+	
+# strings like 'hello'
+# no interpolation
+# no line crossing
+
+:char	Constant
+	*		char
+	"\n"		after_term
+	"\'"		after_term
+	"\\"		char_escape	recolor=-1
+
+:char_escape Escape
+	*		char
+	"x"		char_hex2
+	"u"		char_hex4
+	"0-7"		char_octal2
+	"\n"		char		recolor=-2
+
+:char_hex4 Escape
+	*		char		noeat
+	"0-9a-fA-F"	char_hex3
+
+:char_hex3 Escape
+	*		char		noeat
+	"0-9a-fA-F"	char_hex2
+
+:char_hex2 Escape
+	*		char		noeat
+	"0-9a-fA-F"	char_hex1
+
+:char_hex1 Escape
+	*		char		noeat
+	"0-9a-fA-F"	char
+
+:char_octal2 Escape
+	*		char		noeat
+	"0-7"		char_octal1
+
+:char_octal1 Escape
+	*		char		noeat
+	"0-7"		char
+
+# strings like 'hello'
+# no interpolation
+# no line crossing
+
+:tchar	Constant
+	*		tchar
+	"\'"		after_term
+	"\\"		tchar_escape	recolor=-1
+
+:tchar_maybe_done Constant
+	*		tchar		noeat
+	"\'"		tchar_maybe_done_2
+
+:tchar_maybe_done_2 Constant
+	*		tchar		noeat
+	"\'"		after_term
+
+:tchar_escape Escape
+	*		tchar
+	"x"		tchar_hex2
+	"u"		tchar_hex4
+	"0-7"		tchar_octal2
+	"\n"		tchar		recolor=-2
+
+:tchar_hex4 Escape
+	*		tchar		noeat
+	"0-9a-fA-F"	tchar_hex3
+
+:tchar_hex3 Escape
+	*		tchar		noeat
+	"0-9a-fA-F"	tchar_hex2
+
+:tchar_hex2 Escape
+	*		tchar		noeat
+	"0-9a-fA-F"	tchar_hex1
+
+:tchar_hex1 Escape
+	*		tchar		noeat
+	"0-9a-fA-F"	tchar
+
+:tchar_octal2 Escape
+	*		tchar		noeat
+	"0-7"		tchar_octal1
+
+:tchar_octal1 Escape
+	*		tchar		noeat
+	"0-7"		tchar
+
+:ident_no_kw Idle
+	*		after_term	noeat
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal		recolor=-1
+	"\i"		ident_no_kw1
+
+:ident_no_kw1 Idle
+	*		after_term	noeat
+	"\c"		ident_no_kw1
+
+:ident Idle
+	*		after_term	noeat strings
+	"as"		operator
+	"assert"	kw
+	"break"		kw
+	"case"		kw
+	"catch"		kw
+	"class"		kw
+	"const"		kw
+	"continue"	kw
+	"def"		kw
+	"default"	kw
+	"do"		kw
+	"else"		kw
+	"enum"		kw
+	"extends"	kw
+	"finally"	kw
+	"for"		kw
+	"goto"		kw
+	"if"		kw
+	"implements"	kw
+	"import"	kw
+	"in"		operator
+	"instanceof"	kw
+	"interface"	kw
+	"new"		operator
+	"package"	kw
+	"return"	kw
+	"super"		kw
+	"switch"	kw
+	"throw"		kw
+	"throws"	kw
+	"trait"		kw
+	"try"		kw
+	"while"		kw
+	"true"		lit
+	"false"		lit
+	"null"		lit
+done
+	"\c"	ident
+
+:kw Keyword
+	*		idle		noeat
+
+:lit Constant
+	*		idle		noeat
+
+:operator Operator
+	*		idle		noeat
+
+:global_var GlobalVar
+	*		idle		noeat
+	"\c"		global_var
+
+.end

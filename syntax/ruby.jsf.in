@@ -1,7 +1,6 @@
 # JOE syntax highlight file for Ruby
 
-# Oh No!  It's another perl!
-
+# Glitches:
 # <<EOF1, <<EOF2 is not working.  Only EOF1 is seen.  It should wait for the
 # EOF2.
 
@@ -38,13 +37,30 @@
 
 :rest Idle
 	*		rest
+	"("		after_term	call=.ruby(paren)
+	"["		after_term	call=.ruby(brack)
+	"{"		do_brace	recolor=-1 noeat
+.ifdef paren
+	")"		rest		return
+.else
+	")"		stray		recolor=-1
+.endif
+.ifdef brack
+	"]"		rest		return
+.else
+	"]"		stray		recolor=-1
+.endif
+.ifdef squiggly
+	"}"		brace		recolor=-1 return
+.else
+	"}"		stray		recolor=-1
+.endif
 	"#"		line_comment	recolor=-1
 .ifdef haml
 	"\n"		NULL		return
 .else
 	"\n"		idle
 .endif
-	"{}"		brace		recolor=-1
 	"0"		first_digit	recolor=-1
 	"1-9"		decimal		recolor=-1
 	"."		ident_no_kw
@@ -56,17 +72,34 @@
 	"$"		not_string	buffer
 	"%"		pstring
 	"\i"		ident		buffer
+	"?"		opr
 
 	# higher level, ruby specific
 	":"		maybe_symbol
 #	"|"		proc_arg
 	"@"		class_member1
 
+:opr Idle
+	*		rest		noeat
+	"/"		rest
+	"%"		rest
+
+:do_brace Brace
+	*		rest		noeat
+	"{"		brace		call=.ruby(squiggly)
+
+:brace Brace
+	*		after_term	noeat
+
+:stray Bad
+	*		rest
+
+
 # / / regex not allowed after terms
 
 :after_term Idle
 	*		rest		noeat
-	" \t)"		after_term
+	" \t"		after_term
 .ifdef erb
 	"/"		rest
 	"%"		after_term_erb_end
@@ -202,7 +235,7 @@ done
 	*		after_term	noeat
 	"x"		hex
 	"b"		binary
-	"."		float
+	"."		maybe_float
 	"eE"		epart
 	"0-7"		octal
 	"89"		bad_number	recolor=-1
@@ -229,7 +262,11 @@ done
 	*		after_term	noeat
 	"0-9_"		decimal
 	"eE"		epart
-	"."		float
+	"."		maybe_float
+
+:maybe_float Idle
+	*		after_term	noeat recolor=-2
+	"0-9"		float		noeat
 
 :float Constant
 	*		after_term	noeat
@@ -252,11 +289,10 @@ done
 
 :maybe_string_subst Constant
 	*		string		noeat
-	"{"		string_subst	recolor=-2
+	"{"		string_subst	recolor=-2 call=.ruby(squiggly)
 
-:string_subst Escape
-	*		string_subst
-	"}"		string
+:string_subst Idle
+	*		string		noeat
 	
 :string_escape Escape
 	*		string
@@ -362,8 +398,8 @@ done
 
 :ident_no_kw Idle
 	*		after_term	noeat
-	"0"		first_digit	recolor=-1
-	"1-9"		decimal		recolor=-1
+	"0"		first_digit	recolor=-2
+	"1-9"		decimal		recolor=-2
 	"\i"		ident_no_kw1
 
 :ident_no_kw1 Idle
@@ -374,14 +410,14 @@ done
 	*		after_term	noeat strings
 	"BEGIN"		kw
 	"END"		kw
-	"alias"		kw
+	"alias"		kw_after
 	"and"		kw
 	"begin"		kw
 	"break"		kw
 	"case"		kw
 	"catch"		kw
 	"class"		kw_class
-	"def"		kw
+	"def"		kw_after
 	"defined"	kw
 	"do"		kw
 	"else"		kw
@@ -408,7 +444,7 @@ done
 	"rescue"	kw
 	"retry"		kw
 	"return"	kw
-	"self"		kw
+	"self"		kw_after
 	"super"		kw
 	"then"		kw
 	"throw"		kw
@@ -437,6 +473,10 @@ done
 
 :kw Keyword
 	*		rest		noeat
+
+# Handle case of def /
+:kw_after Keyword
+	*		after_term	noeat
 
 :kw_class Keyword
 	*		rest		noeat
@@ -467,7 +507,16 @@ done
 :inmatch Constant
 	*		inmatch
 	&		after_term
+	%		inmatch		call=.inmatch_recur()
+	"#"		inmatch_maybe_subst
 	"\\"		inmatch_quote	recolor=-1
+
+:inmatch_maybe_subst Constant
+	*		inmatch		noeat
+	"{"		inmatch_subst	recolor=-2 call=.ruby(squiggly)
+
+:inmatch_subst Idle
+	*		inmatch		noeat
 
 :inmatch_quote Escape
 	*		inmatch
@@ -521,6 +570,7 @@ done
 	"\i"		symbol		recolor=-2
 	"\""		symbol_str	recolor=-2
 	"'"		symbol_str_sq	recolor=-2
+	"/"		rest
 
 :symbol Symbol
 	*		rest		noeat
@@ -533,11 +583,10 @@ done
 
 :symbol_maybe_str_subst Symbol
 	*		symbol_str
-	"{"		symbol_str_subst	recolor=-2
+	"{"		symbol_str_subst	recolor=-2 call=.ruby(squiggly)
 
-:symbol_str_subst SymbolEscape
-	*		symbol_str_subst
-	"}"		symbol_str
+:symbol_str_subst Idle
+	*		symbol_str		noeat
 
 :symbol_str_sq Symbol
 	*		symbol_str_sq
@@ -561,11 +610,32 @@ done
 	"\i"		class_member	recolor=-3
 
 :class_member ClassMember
-	*		rest		noeat
+	*		after_term	noeat
 	"\c"		class_member
 
 :global_var GlobalVar
-	*		rest		noeat
+	*		after_term	noeat
 	"\c"		global_var
+
+.end
+
+.subr inmatch_recur
+
+:inmatch Constant
+	*		inmatch
+	&		after_term	return
+	%		inmatch		call=.inmatch_recur()
+	"#"		inmatch_maybe_subst
+	"\\"		inmatch_quote	recolor=-1
+
+:inmatch_maybe_subst Constant
+	*		inmatch		noeat
+	"{"		inmatch_subst	recolor=-2 call=.ruby(squiggly)
+
+:inmatch_subst Idle
+	*		inmatch		noeat
+
+:inmatch_quote Escape
+	*		inmatch
 
 .end

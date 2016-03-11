@@ -199,6 +199,14 @@ not a symbolic links, JOE first deletes the file before
 writing it in order to break hard-links.
 <br>
 
+* brpaste<br>
+When JOE starts, send command to the terminal emulator that
+enables "bracketed paste mode" (but only if the terminal
+seems to have the ANSI command set).  In this mode, text
+pasted into the window is bracketed with ESC \[ 2 0 0 ~ and
+ESC \[ 2 0 1 ~.
+<br>
+
 * columns nnn<br>
 Set number of columns in terminal emulator (in case
 termcap entry is wrong).  This is only useful on old system which don't have
@@ -243,6 +251,12 @@ in UTF-8 locales.
 * guess\_utf8<br>
 When set, enable guessing of UTF-8 files in
 non-UTF-8 locales.
+<br>
+
+* guess_utf16<br>
+When set, enable guessing of UTF-16 files.  If a UTF-16BE or UTF-16LE file
+is detected, it is converted to UTF-8 during load, and converted back to
+UTF-16 during save.
 <br>
 
 * help<br>
@@ -360,6 +374,11 @@ set up to save and restore the terminal screen contents when JOE starts and
 exits.
 <br>
 
+* pastehack<br>
+If keyboard input comes in as one block assume it's a mouse
+paste and disable autoindent and wordwrap.
+<br>
+
 * noxon<br>
 Disable __^S__ and __^Q__ flow control, possibly allowing __^S__ and __^Q__ to be used as
 editor keys.
@@ -409,7 +428,11 @@ Enable rectangular block mode.
 Transpose rows with columns in all menus.
 <br>
 
-* undo\_keep nnn<br>
+* type<br>
+Select file type, overriding the automatically determined type.  The file
+types are defined in the __ftyperc__ file.
+
+* undo_keep nnn<br>
 Sets number of undo records to keep (0 means infinite).
 <br>
 
@@ -936,15 +959,23 @@ directly to the terminal.
 
 ## Character sets and UTF-8
 
-JOE handles two classes of character sets: UTF-8 and byte coded (like
-ISO-8859-1).  It can not yet handle other major classes such as UTF-16 or
-GB2312. There are other restrictions: character sets must use LF (0x0A) or
-CR-LF (0x0D - 0x0A) as line terminators, space must be 0x20 and tab must be
-0x09. Basically, the files must be UNIX or MS-DOS compatible text files.
+JOE natively handles two classes of character sets: UTF-8 and byte coded
+(like ISO-8859-1).  For these character sets, the file is loaded as-is into
+memory, and is exactly preserved during save, even if it contains UTF-8
+coding errors.
+
+It can not yet natively handle other major classes such as UTF-16 or GB2312. 
+There are other restrictions: character sets must use LF (0x0A) or CR-LF
+(0x0D - 0x0A) as line terminators, space must be 0x20 and tab must be 0x09. 
+Basically, the files must be UNIX or MS-DOS compatible text files.
 
 This means EBCDIC will not work properly (but you would need to handle fixed
 record length lines anyway) and character sets which use CR terminated lines
 (MACs) will not yet work.
+
+JOE now supports UTF-16 (both big endian and little endian).  It supports
+UTF-16 by converting to UTF-8 during load, and converting back to UTF-16
+during save.
 
 The terminal and the file can have different encodings.  JOE will translate
 between the two.  Currently, one of the two must be UTF-8 for translation to
@@ -1218,7 +1249,8 @@ example, if __\\\[Tt]his__ is entered as the search string, then JOE finds
 both __This__ and __this__.  Ranges of characters can be entered within
 the brackets.  For example, __\\\[A-Z]__ finds any uppercase letter.  If
 the first character given in the brackets is __^__, then JOE tries to find
-any character not given in the the brackets.
+any character not given in the the brackets.  To include __-__ itself, include
+it as the last or first character (possibly after __^__).
 
 * __\\\\__
 
@@ -1242,6 +1274,15 @@ you give __"\\&"__, then JOE will put quote marks around words.
 
 These get replaced with the text which matched the Nth grouping; the text
 within the Nth set of \\( \\).
+
+* __\\l, \\u__
+
+Convert the next character of the repacement text to lowercase or uppercase.
+
+* __\\L, \\U__
+
+Convert all following replacement text to lowercase or uppercase.  Conversion
+stops when \\E is encountered.
 
 * __\\\\__
 
@@ -1312,43 +1353,54 @@ digit), \\p{Nl} (letter number) and \\p{No} (other number).
 
 * \\d
 
-This matches any Unicode digit.
+This matches any Unicode digit.  This is the same as \\p{Nd}.
 
 * \\D
 
-This matches anything except for a Unicode digit.
+This matches anything except for a Unicode digit.  This is the same as
+\\\[^\\p{Nd}].
 
 * \\w
 
-This matches any word character.
+This matches any word character.  This is the same as
+\\\[^\\p{C}\\p{P}\\p{Z}].
 
 * \\W
 
-This matches anything except for a word character.
+This matches anything except for a word character.  This is the same
+as \\\[\\p{C}\\p{P}\\p{Z}].
+ 
 
 * \\s
 
-This matches any space character.
+This matches any space character.  This is the same as
+\\\[\\t\\r\\f\\n\\p{Z}].
 
 * \\S
 
-This matches anything except for a spacing character.
+This matches anything except for a spacing character.  This is the
+same as \\\[^\\t\\r\\f\\n\\p{Z}].
+
 
 * \\i
 
-This matches an identifier start character.
+This matches an identifier start character.  This is the same as
+\\\[\\p{L}\\p{Pc}\\p{Nl}].
 
 * \\I
 
-This matches anything except for an identifier start character.
+This matches anything except for an identifier start character.  This is the
+same as \\\[^\\p{L}\\p{Pc}\\p{Nl}].
 
 * \\c
 
-This matches an identifier continuation character.
+This matches an identifier continuation character.  This is the same as
+\\\[\\i\\p{Mn}\\p{Mc}\\p{Nd}\\x{200c}\\x{200d}].
 
 * \\C
 
-This matches anything except for an identifier continuation character.
+This matches anything except for an identifier continuation character.  This
+is the same as \\\[^\\i\\p{Mn}\\p{Mc}\\p{Nd}\\x{200c}\\x{200d}].
 
 * \\t Tab
 * \\n Newline
@@ -2214,9 +2266,14 @@ file.  Also, you can use __Esc =__ and __Esc -__ to step through each line.
 ## Compile
 
 Hit __Esc C__ to save all modified files and then bring up the compile prompt. 
-Enter the command you want to use for the compiler (typically "make").  The
+Enter the command you want to use for the compiler (typically "make -w").  The
 compiler will run in a shell window.  When it's complete, the results are
 parsed.
+
+The '-w' flag should be given to "make" so that it prints messages whenever
+it changes directories.  The message are in this format:
+
+	make[1]: Entering directory `/home/jhallen/joe-editor-mercurial/joe'
 
 If there are any errors or warnings from the compiler you can hit
 __Esc Space__ on one of the lines to jump to the selected file.  Also,
@@ -2279,13 +2336,14 @@ jump has the form:
         <character-list> <target-state-name> [<option>s]
 
 There are three ways to specify <character-list\>s, either __\*__ for any
-character not otherwise specified, __&__ to match the character in the
-delimiter match buffer (opposite character like \( and \) automatically
-match) or a literal list of characters within quotes (ranges and escape
-sequences allowed: see [Escape Sequences](#escapes)).  When the next
-character matches any in the list, a jump
-to the target-state is taken and the character is eaten (we advance to the
-next character of the file to be colored).
+character not otherwise specified, __%__ or __&__ to match the character in
+the delimiter match buffer (__%__ matches the saved character exactly, while
+__&__ matches the opposite character, for example \( will match \) when
+__&__ is used) or a literal list of characters within quotes (ranges and
+escape sequences allowed: see [Escape Sequences](#escapes)).  When the next
+character matches any in the list, a jump to the target-state is taken and
+the character is eaten (we advance to the next character of the file to be
+colored).
 
 The * transition should be the first transition specified in the state.
 
@@ -2375,12 +2433,19 @@ To call a subroutine, use the 'call' option:
 The subroutine called 'string' is called and the jump to 'fred' is
 ignored.  The 'dquote' option is passed to the subroutine.
 
+If you use recolor along with call, the color used is that of the first
+state of the subroutine.
+
 The subroutine itself returns to the caller like this:
 
         "\""    whatever    return
 
-If we're in a subroutine, the return is made.  Otherwise the jump
-to 'whatever' is made.
+If we're in a subroutine, it returns to the target state of the call ("fred"
+in the above example).  If we're not in a subroutine, it jumps to
+"whatever".
+
+If you use recolor along with return, the color used is from the returned
+state ("fred" in the example above).
 
 There are several ways of delimiting subroutines which show up in how it
 is called.  Here are the options:
@@ -2414,7 +2479,6 @@ directives.  For example:
     .endif
 
 .else if also available.  .ifdefs can be nested.
-
 
 <a name="joerc"></a>
 ## The joerc file
@@ -3329,8 +3393,13 @@ characters)</td></tr>
 <tr valign="top"><td>paste</td><td>Insert base64 encoded text (for XTerm --enable-base64
 option).</td></tr>
 
-<tr valign="top"><td>brpaste</td><td>Insert text until <strong>__Esc [ 2 0 1 ~__</strong> has been received. 
-This is for bracketed paste support.</td></tr>
+<tr valign="top"><td>brpaste</td><td>Disable autoindent, wordwrap and
+spaces.  The idea is to bind this to __Esc [ 2 0 0 ~__ so that when the
+terminal emulator sends a mouse paste, the text is inserted as-is.</td></tr>
+
+<tr valign="top"><td>brpaste_done</td><td>Restore autoindent, wordwrap and
+spaces modes to their original values before brpaste.  The idea is to bind this
+to __Esc [ 2 0 1 ~__ so that these modes are restored after a mouse paste.</td></tr>
 
 </tbody>
 </table>

@@ -39,7 +39,7 @@ flagsettings = [
     'nonotice', 'nosta', 'notite', 'noxon', 'orphan', 'overwrite', 'picture', 'pound_comment', 'purify', 'rdonly',
     'restore', 'rtbutton', 'search_prompting', 'semi_comment', 'single_quoted', 'smarthome', 'smartbacks', 'spaces',
     'square', 'tex_comment', 'transpose', 'usetabs', 'vhdl_comment', 'wordwrap', 'wrap',
-    'nodeadjoe', 'noexmsg', 'nolinefeeds', 'highlighter_context',
+    'nodeadjoe', 'noexmsg', 'nolinefeeds', 'highlighter_context', 'guess_utf16', 'brpaste', 'pastehack', 'regex'
 ]
 
 oneparamsettings = [
@@ -166,7 +166,7 @@ def squeezeline(line, state):
             # Divert here and handle key input section special.
             parts = line[i+1:].split()
             for p in parts:
-                if len(p) == 1 or p.startswith('^') or p.startswith('.k') or p.lower().startswith('.f') or p.startswith('.@') or p in specialkeys:
+                if len(p) == 1 or p.startswith('^') or p.startswith('.k') or p.lower().startswith('.f') or p.startswith('.@') or p.startswith('U+') or p in specialkeys:
                     result += ' ' + p
                 else:
                     break

@@ -421,6 +421,8 @@ int ublkdel(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (markv(1)) {
+		if (markb->b!=bw->b && !modify_logic(bw,markb->b))
+			return -1;
 		if (square)
 			if (bw->o.overtype) {
 				off_t ocol = markk->xcol;
@@ -881,7 +883,7 @@ int uinsf(W *w, int k)
 	WIND_BW(bw, w);
 	
 	s = ask(w, joe_gettext(_("Name of file to insert (^C to abort): ")), &filehist,
-	        "Names", cmplt, locale_map, 3, 0, NULL);
+	        "Names", cmplt_file_in, locale_map, 3, 0, NULL);
 	if (s) {
 		if (square)
 			if (markv(1)) {
@@ -980,7 +982,7 @@ static int filtread(W *w, BW *bw, int fr, int flg)
 					markk->line - markb->line + 1,
 					markk->xcol);
 
-		tmp = bread(fr, MAXLONG);
+		tmp = bread(fr, MAXOFF);
 		if (piscol(tmp->eof))
 			height = tmp->eof->line + 1;
 		else
@@ -1007,7 +1009,7 @@ static int filtread(W *w, BW *bw, int fr, int flg)
 		if (!flg)
 			prgetc(p);
 		bdel(markb, p);
-		binsb(p, bread(fr, MAXLONG));
+		binsb(p, bread(fr, MAXOFF));
 		if (!flg) {
 			pset(p,markk);
 			prgetc(p);
@@ -1240,13 +1242,21 @@ int ufilt(W *w, int k)
 
 	if (!s)
 		return -1;
+
 	if (markb && markk && !square && markb->b == bw->b && markk->b == bw->b && markb->byte == markk->byte) {
+		if (markb->b!=bw->b && !modify_logic(bw,markb->b))
+			return -1;
+
 		return dofilt(w, bw, s, 1 /* Empty block */);
 	}
+
 	if (!markv(1)) {
 		msgnw(bw->parent, joe_gettext(_("No block")));
 		return -1;
 	}
+
+	if (markb->b!=bw->b && !modify_logic(bw,markb->b))
+		return -1;
 
 	return dofilt(w, bw, s, 0);
 #endif

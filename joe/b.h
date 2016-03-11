@@ -46,11 +46,17 @@ struct point {
 
 /* Options: both BWs and Bs have one of these */
 
+struct options_match {
+	struct options_match *next;
+	const char	*name_regex; /* File name regex */
+	const char	*contents_regex; /* File contents regex */
+	struct regcomp	*r_contents_regex; /* Compiled version of context_regex */
+};
+
 struct options {
 	OPTIONS	*next;
-	const char	*name_regex;
-	const char	*contents_regex;
-	struct regcomp	*r_contents_regex; /* Compiled version of context_regex */
+	const char *ftype; /* Name of this set of options */
+	struct options_match *match; /* List of matching criteria */
 	int	overtype;
 	off_t	lmargin;
 	off_t	rmargin;
@@ -236,6 +242,9 @@ P *binsb(P *p, B *b);
 /* insert a block 'blk' of size 'amnt' into buffer at 'p' */
 P *binsm(P *p, const char *blk, ptrdiff_t amnt); 
 
+/* Quoted insert.. */
+P *binsmq(P *p, const char *blk, ptrdiff_t amnt); 
+
 /* insert character 'c' into buffer at 'p' */
 P *binsc(P *p, int c);
 
@@ -316,3 +325,5 @@ char *dequote(const char *);
 #define ANSI_BIT (int)(0x80000000)
 int ansi_code(char *s);
 char *ansi_string(int code);
+
+extern int guess_utf16;

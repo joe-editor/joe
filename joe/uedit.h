@@ -65,3 +65,4 @@ int uhome(W *w, int k);
 int uname_joe(W *w, int k);
 int upaste(W *w, int k);
 int ubrpaste(W *w, int k);
+int ubrpaste_done(W *w, int k);

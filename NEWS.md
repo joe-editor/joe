@@ -2,7 +2,26 @@
 
 [Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
 
-### JOE.next (not yet released changes in Mercurial)
+### JOE 4.1
+
+* New or improved syntax files for the following languages: 
+	* Groovy, R, Clojure, Rust, Coffeescript, Java, Scala, Swift, D,
+	  AVR, Ruby, Perl
+
+* New translations
+	* Chinese (zh_TW)
+
+* UTF-16 support
+
+	* JOE can now edit UTF-16BE and UTF-16LE files.  It does this
+	  by converting them to UTF-8 during load and back to UTF-16 during
+	  save.
+
+	* Within JOE, native byte order is called UTF-16 and reversed order
+	  is called UTF-16R.
+
+	* If you change the encoding (with ^T E) between UTF-8, UTF-16 and UTF-16R,
+	  JOE will convert the file to the desired encoding on save.
 
 * New regular expression engine
 	* Old one was a recursive matcher, new one is compiled Thompson NFA matcher
@@ -28,6 +47,9 @@
 
 	* Submatches within regular expressions can now be any size (up to
 	  the size of the disk!).  Before this, they were limited to 16K.
+
+	* Case conversion allowed in replacement string, as in sed:
+	  everything between \\U and \\E converted to uppercase. 
 
 * Unicode improvements
 
@@ -117,13 +139,53 @@
 		* If no locale set, default to C / POSIX, not ISO-8859-1
 		* If locale is C / POSIX, set language to en_US (for aspell).
 
+	* Improve performance where JOE would seem to lock up if you tried
+	  to reformat a very long single word due to O(n^3) algorithm.
+
+	* Prevent filt and blkdel from modifying read-only buffers.  This
+	  could happen if you run them from modifyable buffer but with block
+	  set in a read-only buffer.
+
+	* Fixed issue when recording paste in a macro.  If you tried to
+	  play the macro, the pasted text is not inserted and JOE is
+	  stuck waiting for the bracketed paste end string.
+
+	* Fixed issue where syntax could not be set on command line with
+	  -syntax.
+
 * Minor enhancements
+	* Tab completion now works for the command and its file arguments
+	  after '!' in file prompts.  Tab completion now works for the
+	  filename after '>>' in file write prompts.
+
+	* Tab completion now handles directory and file names with spaces
+	  in them.
+
 	* Backspace now jumps back to parent menu in ^T submenus (and
 	  remembers the cursor position within the parent)
 
 	* Macros after :def are now allowed to cross lines in the joerc file
 
 	* Make ^K ^SPACE same as ^K SPACE
+
+	* Quoted insert of TAB always inserts a TAB character, even when
+	  smart indent is enabled.
+
+	* Add options to control sending of bracketed paste mode command
+	  to terminal emulator (brpaste) and detection of paste by timing
+	  (pastehack).
+
+	* Modified ftyperc file syntax to reduce redundancy
+
+	* Added file type (as defined in ftyperc) setting option.  For
+	  example, with "joe -type c fred" JOE will assume fred is a C
+	  language file.  Use ^T F to change the file type from within JOE.
+
+	* Highighter enhancement: when % is used in place of a character
+	  list, it matches the save_c delimiting character as-is (vs.  &
+	  which matches the opposite character).  For example, if save_c has
+	  {, then % matches { while & matches }.  This allows JOE to
+	  highlight q{hello { there } } in Perl.
 
 * jmacs fixes:
 	* ^X b / ^X ^B were reversed
@@ -140,6 +202,7 @@
 	  search when wrap is enabled (which is the case in jmacs).
 
 * ESC g (grep/find) and ESC c (compile) improvements
+	* Tab completion now works for the command and its arguments
 
 	* Change to the current directory before running the command
 
@@ -148,6 +211,9 @@
 	* Show the exit status in the compile window
 
 	* Provide more consistent window setup during compile
+
+	* Parse "Entering directory `/home/xxxxxx'" messages to determine
+	  the directory containing the file with an error message.
 
 ### JOE 3.8 Native Windows Version
 

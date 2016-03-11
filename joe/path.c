@@ -344,10 +344,10 @@ struct direct *readdir()
 /********************************************************************/
 char **rexpnd(const char *word)
 {
-	struct dirent *dir;
+	DIR *dir;
 	char **lst = NULL;
 
-	struct dirent *de;
+	DIR *de;
 	dir = opendir(".");
 	if (dir) {
 		while ((de = readdir(dir)) != NULL)
@@ -358,6 +358,76 @@ char **rexpnd(const char *word)
 	}
 	return lst;
 }
+
+int isexec(const char *name)
+{
+#ifndef JOEWIN
+	return !access(name, X_OK);
+#else
+	struct stat buf[1];
+
+	/* No #defines for Windows, see https://msdn.microsoft.com/en-us/library/1w06ktdy.aspx */
+	if (!access(name, 4) && !stat(name, buf)) {
+		if (S_IFDIR & buf->st_mode) {
+			return 1;
+		}
+
+		return rmatch("*.exe", name, 1) || rmatch("*.cmd", name, 1) || rmatch("*.bat", name, 1);
+	}
+
+	return 0;
+#endif
+}
+
+char **rexpnd_cmd_cd(const char *word)
+{
+	DIR *dir;
+	char **lst = NULL;
+
+	struct dirent *de;
+	dir = opendir(".");
+	if (dir) {
+		while ((de = readdir(dir)) != NULL)
+			if (zcmp(".", de->d_name))
+				if (rmatch(word, de->d_name, 1) && isexec(de->d_name))
+					lst = vaadd(lst, vsncpy(NULL, 0, sz(de->d_name)));
+		closedir(dir);
+	}
+	return lst;
+}
+
+char **rexpnd_cmd_path(const char *word)
+{
+	char *raw_path = getenv("PATH");
+	char **lst = NULL;
+	DIR *de;
+	char **path;
+	ptrdiff_t x;
+	if (raw_path) {
+#ifndef JOEWIN
+		path = vawords(NULL, sz(raw_path), sc(":"));
+#else
+		path = vawords(NULL, sz(raw_path), sc(";"));
+#endif
+		for (x = 0; path[x]; ++x) {
+			DIR *dir;
+			if (!chpwd(path[x])) {
+				dir = opendir(".");
+				if (dir) {
+					while ((de = readdir(dir)) != NULL) {
+						struct stat buf[1];
+						if (rmatch(word, de->d_name, 1) && !stat(de->d_name, buf) && (S_IFREG & buf->st_mode) && isexec(de->d_name))
+							lst = vaadd(lst, vsncpy(NULL, 0, sz(de->d_name)));
+					}
+					closedir(dir);
+				}
+			}
+		}
+		varm(path);
+	}
+	return lst;
+}
+
 /********************************************************************/
 char **rexpnd_users(const char *word)
 {
@@ -459,4 +529,16 @@ char *simplify_prefix(const char *s)
 	}
 	return n;
 #endif
+}
+
+char *dequotevs(char *s)
+{
+	ptrdiff_t x;
+	char *d = vsensure(NULL, vslen(s));
+	for (x = 0; x != vslen(s); ++x)
+		if (s[x] == '\\') {
+			/* Just skip it */
+		} else
+			d = vsadd(d, s[x]);
+	return d;
 }

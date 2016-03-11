@@ -398,6 +398,7 @@ done
 
 :inmatch Constant
 	*		inmatch
+	%		inmatch		call=.inmatch()
 	&		rest
 	"\\"		inmatch_quote	recolor=-1
 
@@ -445,4 +446,16 @@ done
 :repl_quote Escape
 	*		repl
 
+.end
+
+.subr inmatch
+
+:inmatch Constant
+	*		inmatch
+	%		inmatch		call=.inmatch()
+	&		inmatch		return
+	"\\"		inmatch_quote	recolor=-1
+
+:inmatch_quote Escape
+	*		inmatch
 .end

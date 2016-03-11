@@ -1,0 +1,1485 @@
+# JOE syntax highlight file for Clojure
+
+=Idle
+=Comment 	green
+=Escape 	bold cyan
+=Constant	cyan
+=Bad		bold red
+=Keyword	bold
+
+:reset Idle
+	*		idle		noeat call=.clojure()
+
+.subr clojure
+
+:idle Idle
+	*		symbol		mark buffer
+	" \t\f\n\r"	idle
+	"("		idle		call=.clojure(paren)
+	"["		idle		call=.clojure(brack)
+	"{"		idle		call=.clojure(squiggly)
+.ifdef paren
+	")"		idle		return
+.else
+	")"		stray		recolor=-1
+.endif
+.ifdef brack
+	"]"		idle		return
+.else
+	"]"		stray		recolor=-1
+.endif
+.ifdef squiggly
+	"}"		idle		return
+.else
+	"}"		stray		recolor=-1
+.endif
+	";"		comment		recolor=-1
+	"1"		one		recolor=-1
+	"2"		two		recolor=-1
+	"8"		eight		recolor=-1
+	"0345679"	number		recolor=-1
+	"-"		negative	recolor=-1 mark buffer
+	"\""		string		recolor=-1
+	"#"		pound
+	"'`^@~"		quote
+	"\\"		backslash	recolor=-1
+	"."		maybe_float
+
+:stray Bad
+	*		idle		noeat
+
+:backslash Escape
+	*		back_single	buffer mark
+	"u"		back_uni4
+	"o"		back_oct3
+	
+
+:back_single Escape
+	*		back_word	recolor=-2
+	"]}),  \t\f\n\r;"	idle	noeat
+
+:back_word Bad
+	*		back_word
+	"]}),  \t\f\n\r;"	idle	noeat markend strings
+	"newline"	good_literal	recolormark
+	"space"		good_literal	recolormark
+	"tab"		good_literal	recolormark
+	"formfeed"	good_literal	recolormark
+	"backspace"	good_literal	recolormark
+	"return"	goot_literal	recolormark
+done
+
+:good_literal Escape
+	*		idle	noeat
+
+:back_oct3 Escape
+	*		bad		noeat
+	"0-7"		back_oct2
+
+:back_oct2 Escape
+	*		bad		noeat
+	"0-7"		back_oct1
+
+:back_oct1 Escape
+	*		bad		noeat
+	"0-7"		bad
+
+:back_uni4 Escape
+	*		bad		noeat
+	"0-9a-fA-F"	back_uni3
+
+:back_uni3 Escape
+	*		bad		noeat
+	"0-9a-fA-F"	back_uni2
+
+:back_uni2 Escape
+	*		bad		noeat
+	"0-9a-fA-F"	back_uni1
+
+:back_uni1 Escape
+	*		bad		noeat
+	"0-9a-fA-F"	bad
+
+:negative Idle
+	*		symbol		noeat
+	"1"		one		recolor=-2
+	"2"		two		recolor=-2
+	"8"		eight		recolor=-2
+	"0345679"	number		recolor=-2
+	"."		maybe_neg_float
+
+:symbol Idle
+	*		symbol
+	"]}), \t\n;"	ident_end	noeat markend strings
+# Symbols which are built-in values
+	"nil"		value
+	"true"		value
+	"false"		value
+	"."		common
+	"catch"		common
+	"clojure.core/fn"		common
+	"clojure.core/let"		common
+	"clojure.core/loop"		common
+	"def"		common
+	"do"		common
+	"finally"		common
+	"fn"		common
+	"if"		common
+	"let"		common
+	"loop"		common
+	"monitor-enter"		common
+	"monitor-exit"		common
+	"new"		common
+	"quote"		common
+	"recur"		common
+	"set!"		common
+	"throw"		common
+	"try"		common
+	"var"		common
+	"catch"		common
+	"finally"		common
+	"throw"		common
+	"try"		common
+	"case"		common
+	"clojure.core/case"		common
+	"clojure.core/cond"		common
+	"clojure.core/cond->"		common
+	"clojure.core/cond->>"		common
+	"clojure.core/condp"		common
+	"clojure.core/if-let"		common
+	"clojure.core/if-not"		common
+	"clojure.core/when"		common
+	"clojure.core/when-first"		common
+	"clojure.core/when-let"		common
+	"clojure.core/when-not"		common
+	"cond"		common
+	"cond->"		common
+	"cond->>"		common
+	"condp"		common
+	"if-let"		common
+	"if-not"		common
+	"when"		common
+	"when-first"		common
+	"when-let"		common
+	"when-not"		common
+	"clojure.core/doall"		common
+	"clojure.core/dorun"		common
+	"clojure.core/doseq"		common
+	"clojure.core/dotimes"		common
+	"clojure.core/while"		common
+	"doall"		common
+	"dorun"		common
+	"doseq"		common
+	"dotimes"		common
+	"while"		common
+	"clojure.core/definline"		common
+	"clojure.core/definterface"		common
+	"clojure.core/defmacro"		common
+	"clojure.core/defmethod"		common
+	"clojure.core/defmulti"		common
+	"clojure.core/defn"		common
+	"clojure.core/defn-"		common
+	"clojure.core/defonce"		common
+	"clojure.core/defprotocol"		common
+	"clojure.core/defrecord"		common
+	"clojure.core/defstruct"		common
+	"clojure.core/deftype"		common
+	"definline"		common
+	"definterface"		common
+	"defmacro"		common
+	"defmethod"		common
+	"defmulti"		common
+	"defn"		common
+	"defn-"		common
+	"defonce"		common
+	"defprotocol"		common
+	"defrecord"		common
+	"defstruct"		common
+	"deftype"		common
+	"->"		common
+	"->>"		common
+	".."		common
+	"amap"		common
+	"and"		common
+	"areduce"		common
+	"as->"		common
+	"assert"		common
+	"binding"		common
+	"bound-fn"		common
+	"clojure.core/->"		common
+	"clojure.core/->>"		common
+	"clojure.core/.."		common
+	"clojure.core/amap"		common
+	"clojure.core/and"		common
+	"clojure.core/areduce"		common
+	"clojure.core/as->"		common
+	"clojure.core/assert"		common
+	"clojure.core/binding"		common
+	"clojure.core/bound-fn"		common
+	"clojure.core/comment"		common
+	"clojure.core/declare"		common
+	"clojure.core/delay"		common
+	"clojure.core/dosync"		common
+	"clojure.core/doto"		common
+	"clojure.core/extend-protocol"		common
+	"clojure.core/extend-type"		common
+	"clojure.core/for"		common
+	"clojure.core/future"		common
+	"clojure.core/gen-class"		common
+	"clojure.core/gen-interface"		common
+	"clojure.core/import"		common
+	"clojure.core/io!"		common
+	"clojure.core/lazy-cat"		common
+	"clojure.core/lazy-seq"		common
+	"clojure.core/letfn"		common
+	"clojure.core/locking"		common
+	"clojure.core/memfn"		common
+	"clojure.core/ns"		common
+	"clojure.core/or"		common
+	"clojure.core/proxy"		common
+	"clojure.core/proxy-super"		common
+	"clojure.core/pvalues"		common
+	"clojure.core/refer-clojure"		common
+	"clojure.core/reify"		common
+	"clojure.core/some->"		common
+	"clojure.core/some->>"		common
+	"clojure.core/sync"		common
+	"clojure.core/time"		common
+	"clojure.core/with-bindings"		common
+	"clojure.core/with-in-str"		common
+	"clojure.core/with-loading-context"		common
+	"clojure.core/with-local-vars"		common
+	"clojure.core/with-open"		common
+	"clojure.core/with-out-str"		common
+	"clojure.core/with-precision"		common
+	"clojure.core/with-redefs"		common
+	"comment"		common
+	"declare"		common
+	"delay"		common
+	"dosync"		common
+	"doto"		common
+	"extend-protocol"		common
+	"extend-type"		common
+	"for"		common
+	"future"		common
+	"gen-class"		common
+	"gen-interface"		common
+	"import"		common
+	"io!"		common
+	"lazy-cat"		common
+	"lazy-seq"		common
+	"letfn"		common
+	"locking"		common
+	"memfn"		common
+	"ns"		common
+	"or"		common
+	"proxy"		common
+	"proxy-super"		common
+	"pvalues"		common
+	"refer-clojure"		common
+	"reify"		common
+	"some->"		common
+	"some->>"		common
+	"sync"		common
+	"time"		common
+	"with-bindings"		common
+	"with-in-str"		common
+	"with-loading-context"		common
+	"with-local-vars"		common
+	"with-open"		common
+	"with-out-str"		common
+	"with-precision"		common
+	"with-redefs"		common
+	"*"		common
+	"*'"		common
+	"+"		common
+	"+'"		common
+	"-"		common
+	"-'"		common
+	"->ArrayChunk"		common
+	"->Vec"		common
+	"->VecNode"		common
+	"->VecSeq"		common
+	"-cache-protocol-fn"		common
+	"-reset-methods"		common
+	"/"		common
+	"<"		common
+	"<="		common
+	"="		common
+	"=="		common
+	">"		common
+	">="		common
+	"accessor"		common
+	"aclone"		common
+	"add-classpath"		common
+	"add-watch"		common
+	"agent"		common
+	"agent-error"		common
+	"agent-errors"		common
+	"aget"		common
+	"alength"		common
+	"alias"		common
+	"all-ns"		common
+	"alter"		common
+	"alter-meta!"		common
+	"alter-var-root"		common
+	"ancestors"		common
+	"apply"		common
+	"array-map"		common
+	"aset"		common
+	"aset-boolean"		common
+	"aset-byte"		common
+	"aset-char"		common
+	"aset-double"		common
+	"aset-float"		common
+	"aset-int"		common
+	"aset-long"		common
+	"aset-short"		common
+	"assoc"		common
+	"assoc!"		common
+	"assoc-in"		common
+	"associative?"		common
+	"atom"		common
+	"await"		common
+	"await-for"		common
+	"await1"		common
+	"bases"		common
+	"bean"		common
+	"bigdec"		common
+	"bigint"		common
+	"biginteger"		common
+	"bit-and"		common
+	"bit-and-not"		common
+	"bit-clear"		common
+	"bit-flip"		common
+	"bit-not"		common
+	"bit-or"		common
+	"bit-set"		common
+	"bit-shift-left"		common
+	"bit-shift-right"		common
+	"bit-test"		common
+	"bit-xor"		common
+	"boolean"		common
+	"boolean-array"		common
+	"booleans"		common
+	"bound-fn*"		common
+	"bound?"		common
+	"butlast"		common
+	"byte"		common
+	"byte-array"		common
+	"bytes"		common
+	"cast"		common
+	"char"		common
+	"char-array"		common
+	"char?"		common
+	"chars"		common
+	"chunk"		common
+	"chunk-append"		common
+	"chunk-buffer"		common
+	"chunk-cons"		common
+	"chunk-first"		common
+	"chunk-next"		common
+	"chunk-rest"		common
+	"chunked-seq?"		common
+	"class"		common
+	"class?"		common
+	"clear-agent-errors"		common
+	"clojure-version"		common
+	"clojure.core/*"		common
+	"clojure.core/*'"		common
+	"clojure.core/+"		common
+	"clojure.core/+'"		common
+	"clojure.core/-"		common
+	"clojure.core/-'"		common
+	"clojure.core/->ArrayChunk"		common
+	"clojure.core/->Vec"		common
+	"clojure.core/->VecNode"		common
+	"clojure.core/->VecSeq"		common
+	"clojure.core/-cache-protocol-fn"		common
+	"clojure.core/-reset-methods"		common
+	"clojure.core//"		common
+	"clojure.core/<"		common
+	"clojure.core/<="		common
+	"clojure.core/="		common
+	"clojure.core/=="		common
+	"clojure.core/>"		common
+	"clojure.core/>="		common
+	"clojure.core/accessor"		common
+	"clojure.core/aclone"		common
+	"clojure.core/add-classpath"		common
+	"clojure.core/add-watch"		common
+	"clojure.core/agent"		common
+	"clojure.core/agent-error"		common
+	"clojure.core/agent-errors"		common
+	"clojure.core/aget"		common
+	"clojure.core/alength"		common
+	"clojure.core/alias"		common
+	"clojure.core/all-ns"		common
+	"clojure.core/alter"		common
+	"clojure.core/alter-meta!"		common
+	"clojure.core/alter-var-root"		common
+	"clojure.core/ancestors"		common
+	"clojure.core/apply"		common
+	"clojure.core/array-map"		common
+	"clojure.core/aset"		common
+	"clojure.core/aset-boolean"		common
+	"clojure.core/aset-byte"		common
+	"clojure.core/aset-char"		common
+	"clojure.core/aset-double"		common
+	"clojure.core/aset-float"		common
+	"clojure.core/aset-int"		common
+	"clojure.core/aset-long"		common
+	"clojure.core/aset-short"		common
+	"clojure.core/assoc"		common
+	"clojure.core/assoc!"		common
+	"clojure.core/assoc-in"		common
+	"clojure.core/associative?"		common
+	"clojure.core/atom"		common
+	"clojure.core/await"		common
+	"clojure.core/await-for"		common
+	"clojure.core/await1"		common
+	"clojure.core/bases"		common
+	"clojure.core/bean"		common
+	"clojure.core/bigdec"		common
+	"clojure.core/bigint"		common
+	"clojure.core/biginteger"		common
+	"clojure.core/bit-and"		common
+	"clojure.core/bit-and-not"		common
+	"clojure.core/bit-clear"		common
+	"clojure.core/bit-flip"		common
+	"clojure.core/bit-not"		common
+	"clojure.core/bit-or"		common
+	"clojure.core/bit-set"		common
+	"clojure.core/bit-shift-left"		common
+	"clojure.core/bit-shift-right"		common
+	"clojure.core/bit-test"		common
+	"clojure.core/bit-xor"		common
+	"clojure.core/boolean"		common
+	"clojure.core/boolean-array"		common
+	"clojure.core/booleans"		common
+	"clojure.core/bound-fn*"		common
+	"clojure.core/bound?"		common
+	"clojure.core/butlast"		common
+	"clojure.core/byte"		common
+	"clojure.core/byte-array"		common
+	"clojure.core/bytes"		common
+	"clojure.core/cast"		common
+	"clojure.core/char"		common
+	"clojure.core/char-array"		common
+	"clojure.core/char?"		common
+	"clojure.core/chars"		common
+	"clojure.core/chunk"		common
+	"clojure.core/chunk-append"		common
+	"clojure.core/chunk-buffer"		common
+	"clojure.core/chunk-cons"		common
+	"clojure.core/chunk-first"		common
+	"clojure.core/chunk-next"		common
+	"clojure.core/chunk-rest"		common
+	"clojure.core/chunked-seq?"		common
+	"clojure.core/class"		common
+	"clojure.core/class?"		common
+	"clojure.core/clear-agent-errors"		common
+	"clojure.core/clojure-version"		common
+	"clojure.core/coll?"		common
+	"clojure.core/commute"		common
+	"clojure.core/comp"		common
+	"clojure.core/comparator"		common
+	"clojure.core/compare"		common
+	"clojure.core/compare-and-set!"		common
+	"clojure.core/compile"		common
+	"clojure.core/complement"		common
+	"clojure.core/concat"		common
+	"clojure.core/conj"		common
+	"clojure.core/conj!"		common
+	"clojure.core/cons"		common
+	"clojure.core/constantly"		common
+	"clojure.core/construct-proxy"		common
+	"clojure.core/contains?"		common
+	"clojure.core/count"		common
+	"clojure.core/counted?"		common
+	"clojure.core/create-ns"		common
+	"clojure.core/create-struct"		common
+	"clojure.core/cycle"		common
+	"clojure.core/dec"		common
+	"clojure.core/dec'"		common
+	"clojure.core/decimal?"		common
+	"clojure.core/delay?"		common
+	"clojure.core/deliver"		common
+	"clojure.core/denominator"		common
+	"clojure.core/deref"		common
+	"clojure.core/derive"		common
+	"clojure.core/descendants"		common
+	"clojure.core/destructure"		common
+	"clojure.core/disj"		common
+	"clojure.core/disj!"		common
+	"clojure.core/dissoc"		common
+	"clojure.core/dissoc!"		common
+	"clojure.core/distinct"		common
+	"clojure.core/distinct?"		common
+	"clojure.core/double"		common
+	"clojure.core/double-array"		common
+	"clojure.core/doubles"		common
+	"clojure.core/drop"		common
+	"clojure.core/drop-last"		common
+	"clojure.core/drop-while"		common
+	"clojure.core/empty"		common
+	"clojure.core/empty?"		common
+	"clojure.core/ensure"		common
+	"clojure.core/enumeration-seq"		common
+	"clojure.core/error-handler"		common
+	"clojure.core/error-mode"		common
+	"clojure.core/eval"		common
+	"clojure.core/even?"		common
+	"clojure.core/every-pred"		common
+	"clojure.core/every?"		common
+	"clojure.core/ex-data"		common
+	"clojure.core/ex-info"		common
+	"clojure.core/extend"		common
+	"clojure.core/extenders"		common
+	"clojure.core/extends?"		common
+	"clojure.core/false?"		common
+	"clojure.core/ffirst"		common
+	"clojure.core/file-seq"		common
+	"clojure.core/filter"		common
+	"clojure.core/filterv"		common
+	"clojure.core/find"		common
+	"clojure.core/find-keyword"		common
+	"clojure.core/find-ns"		common
+	"clojure.core/find-protocol-impl"		common
+	"clojure.core/find-protocol-method"		common
+	"clojure.core/find-var"		common
+	"clojure.core/first"		common
+	"clojure.core/flatten"		common
+	"clojure.core/float"		common
+	"clojure.core/float-array"		common
+	"clojure.core/float?"		common
+	"clojure.core/floats"		common
+	"clojure.core/flush"		common
+	"clojure.core/fn?"		common
+	"clojure.core/fnext"		common
+	"clojure.core/fnil"		common
+	"clojure.core/force"		common
+	"clojure.core/format"		common
+	"clojure.core/frequencies"		common
+	"clojure.core/future-call"		common
+	"clojure.core/future-cancel"		common
+	"clojure.core/future-cancelled?"		common
+	"clojure.core/future-done?"		common
+	"clojure.core/future?"		common
+	"clojure.core/gensym"		common
+	"clojure.core/get"		common
+	"clojure.core/get-in"		common
+	"clojure.core/get-method"		common
+	"clojure.core/get-proxy-class"		common
+	"clojure.core/get-thread-bindings"		common
+	"clojure.core/get-validator"		common
+	"clojure.core/group-by"		common
+	"clojure.core/hash"		common
+	"clojure.core/hash-combine"		common
+	"clojure.core/hash-map"		common
+	"clojure.core/hash-set"		common
+	"clojure.core/identical?"		common
+	"clojure.core/identity"		common
+	"clojure.core/ifn?"		common
+	"clojure.core/in-ns"		common
+	"clojure.core/inc"		common
+	"clojure.core/inc'"		common
+	"clojure.core/init-proxy"		common
+	"clojure.core/instance?"		common
+	"clojure.core/int"		common
+	"clojure.core/int-array"		common
+	"clojure.core/integer?"		common
+	"clojure.core/interleave"		common
+	"clojure.core/intern"		common
+	"clojure.core/interpose"		common
+	"clojure.core/into"		common
+	"clojure.core/into-array"		common
+	"clojure.core/ints"		common
+	"clojure.core/isa?"		common
+	"clojure.core/iterate"		common
+	"clojure.core/iterator-seq"		common
+	"clojure.core/juxt"		common
+	"clojure.core/keep"		common
+	"clojure.core/keep-indexed"		common
+	"clojure.core/key"		common
+	"clojure.core/keys"		common
+	"clojure.core/keyword"		common
+	"clojure.core/keyword?"		common
+	"clojure.core/last"		common
+	"clojure.core/line-seq"		common
+	"clojure.core/list"		common
+	"clojure.core/list*"		common
+	"clojure.core/list?"		common
+	"clojure.core/load"		common
+	"clojure.core/load-file"		common
+	"clojure.core/load-reader"		common
+	"clojure.core/load-string"		common
+	"clojure.core/loaded-libs"		common
+	"clojure.core/long"		common
+	"clojure.core/long-array"		common
+	"clojure.core/longs"		common
+	"clojure.core/macroexpand"		common
+	"clojure.core/macroexpand-1"		common
+	"clojure.core/make-array"		common
+	"clojure.core/make-hierarchy"		common
+	"clojure.core/map"		common
+	"clojure.core/map-indexed"		common
+	"clojure.core/map?"		common
+	"clojure.core/mapcat"		common
+	"clojure.core/mapv"		common
+	"clojure.core/max"		common
+	"clojure.core/max-key"		common
+	"clojure.core/memoize"		common
+	"clojure.core/merge"		common
+	"clojure.core/merge-with"		common
+	"clojure.core/meta"		common
+	"clojure.core/method-sig"		common
+	"clojure.core/methods"		common
+	"clojure.core/min"		common
+	"clojure.core/min-key"		common
+	"clojure.core/mod"		common
+	"clojure.core/munge"		common
+	"clojure.core/name"		common
+	"clojure.core/namespace"		common
+	"clojure.core/namespace-munge"		common
+	"clojure.core/neg?"		common
+	"clojure.core/newline"		common
+	"clojure.core/next"		common
+	"clojure.core/nfirst"		common
+	"clojure.core/nil?"		common
+	"clojure.core/nnext"		common
+	"clojure.core/not"		common
+	"clojure.core/not-any?"		common
+	"clojure.core/not-empty"		common
+	"clojure.core/not-every?"		common
+	"clojure.core/not="		common
+	"clojure.core/ns-aliases"		common
+	"clojure.core/ns-imports"		common
+	"clojure.core/ns-interns"		common
+	"clojure.core/ns-map"		common
+	"clojure.core/ns-name"		common
+	"clojure.core/ns-publics"		common
+	"clojure.core/ns-refers"		common
+	"clojure.core/ns-resolve"		common
+	"clojure.core/ns-unalias"		common
+	"clojure.core/ns-unmap"		common
+	"clojure.core/nth"		common
+	"clojure.core/nthnext"		common
+	"clojure.core/nthrest"		common
+	"clojure.core/num"		common
+	"clojure.core/number?"		common
+	"clojure.core/numerator"		common
+	"clojure.core/object-array"		common
+	"clojure.core/odd?"		common
+	"clojure.core/parents"		common
+	"clojure.core/partial"		common
+	"clojure.core/partition"		common
+	"clojure.core/partition-all"		common
+	"clojure.core/partition-by"		common
+	"clojure.core/pcalls"		common
+	"clojure.core/peek"		common
+	"clojure.core/persistent!"		common
+	"clojure.core/pmap"		common
+	"clojure.core/pop"		common
+	"clojure.core/pop!"		common
+	"clojure.core/pop-thread-bindings"		common
+	"clojure.core/pos?"		common
+	"clojure.core/pr"		common
+	"clojure.core/pr-str"		common
+	"clojure.core/prefer-method"		common
+	"clojure.core/prefers"		common
+	"clojure.core/print"		common
+	"clojure.core/print-ctor"		common
+	"clojure.core/print-simple"		common
+	"clojure.core/print-str"		common
+	"clojure.core/printf"		common
+	"clojure.core/println"		common
+	"clojure.core/println-str"		common
+	"clojure.core/prn"		common
+	"clojure.core/prn-str"		common
+	"clojure.core/promise"		common
+	"clojure.core/proxy-call-with-super"		common
+	"clojure.core/proxy-mappings"		common
+	"clojure.core/proxy-name"		common
+	"clojure.core/push-thread-bindings"		common
+	"clojure.core/quot"		common
+	"clojure.core/rand"		common
+	"clojure.core/rand-int"		common
+	"clojure.core/rand-nth"		common
+	"clojure.core/range"		common
+	"clojure.core/ratio?"		common
+	"clojure.core/rational?"		common
+	"clojure.core/rationalize"		common
+	"clojure.core/re-find"		common
+	"clojure.core/re-groups"		common
+	"clojure.core/re-matcher"		common
+	"clojure.core/re-matches"		common
+	"clojure.core/re-pattern"		common
+	"clojure.core/re-seq"		common
+	"clojure.core/read"		common
+	"clojure.core/read-line"		common
+	"clojure.core/read-string"		common
+	"clojure.core/realized?"		common
+	"clojure.core/reduce"		common
+	"clojure.core/reduce-kv"		common
+	"clojure.core/reduced"		common
+	"clojure.core/reduced?"		common
+	"clojure.core/reductions"		common
+	"clojure.core/ref"		common
+	"clojure.core/ref-history-count"		common
+	"clojure.core/ref-max-history"		common
+	"clojure.core/ref-min-history"		common
+	"clojure.core/ref-set"		common
+	"clojure.core/refer"		common
+	"clojure.core/release-pending-sends"		common
+	"clojure.core/rem"		common
+	"clojure.core/remove"		common
+	"clojure.core/remove-all-methods"		common
+	"clojure.core/remove-method"		common
+	"clojure.core/remove-ns"		common
+	"clojure.core/remove-watch"		common
+	"clojure.core/repeat"		common
+	"clojure.core/repeatedly"		common
+	"clojure.core/replace"		common
+	"clojure.core/replicate"		common
+	"clojure.core/require"		common
+	"clojure.core/reset!"		common
+	"clojure.core/reset-meta!"		common
+	"clojure.core/resolve"		common
+	"clojure.core/rest"		common
+	"clojure.core/restart-agent"		common
+	"clojure.core/resultset-seq"		common
+	"clojure.core/reverse"		common
+	"clojure.core/reversible?"		common
+	"clojure.core/rseq"		common
+	"clojure.core/rsubseq"		common
+	"clojure.core/satisfies?"		common
+	"clojure.core/second"		common
+	"clojure.core/select-keys"		common
+	"clojure.core/send"		common
+	"clojure.core/send-off"		common
+	"clojure.core/send-via"		common
+	"clojure.core/seq"		common
+	"clojure.core/seq?"		common
+	"clojure.core/seque"		common
+	"clojure.core/sequence"		common
+	"clojure.core/sequential?"		common
+	"clojure.core/set"		common
+	"clojure.core/set-agent-send-executor!"		common
+	"clojure.core/set-agent-send-off-executor!"		common
+	"clojure.core/set-error-handler!"		common
+	"clojure.core/set-error-mode!"		common
+	"clojure.core/set-validator!"		common
+	"clojure.core/set?"		common
+	"clojure.core/short"		common
+	"clojure.core/short-array"		common
+	"clojure.core/shorts"		common
+	"clojure.core/shuffle"		common
+	"clojure.core/shutdown-agents"		common
+	"clojure.core/slurp"		common
+	"clojure.core/some"		common
+	"clojure.core/some-fn"		common
+	"clojure.core/sort"		common
+	"clojure.core/sort-by"		common
+	"clojure.core/sorted-map"		common
+	"clojure.core/sorted-map-by"		common
+	"clojure.core/sorted-set"		common
+	"clojure.core/sorted-set-by"		common
+	"clojure.core/sorted?"		common
+	"clojure.core/special-symbol?"		common
+	"clojure.core/spit"		common
+	"clojure.core/split-at"		common
+	"clojure.core/split-with"		common
+	"clojure.core/str"		common
+	"clojure.core/string?"		common
+	"clojure.core/struct"		common
+	"clojure.core/struct-map"		common
+	"clojure.core/subs"		common
+	"clojure.core/subseq"		common
+	"clojure.core/subvec"		common
+	"clojure.core/supers"		common
+	"clojure.core/swap!"		common
+	"clojure.core/symbol"		common
+	"clojure.core/symbol?"		common
+	"clojure.core/take"		common
+	"clojure.core/take-last"		common
+	"clojure.core/take-nth"		common
+	"clojure.core/take-while"		common
+	"clojure.core/test"		common
+	"clojure.core/the-ns"		common
+	"clojure.core/thread-bound?"		common
+	"clojure.core/to-array"		common
+	"clojure.core/to-array-2d"		common
+	"clojure.core/trampoline"		common
+	"clojure.core/transient"		common
+	"clojure.core/tree-seq"		common
+	"clojure.core/true?"		common
+	"clojure.core/type"		common
+	"clojure.core/unchecked-add"		common
+	"clojure.core/unchecked-add-int"		common
+	"clojure.core/unchecked-byte"		common
+	"clojure.core/unchecked-char"		common
+	"clojure.core/unchecked-dec"		common
+	"clojure.core/unchecked-dec-int"		common
+	"clojure.core/unchecked-divide-int"		common
+	"clojure.core/unchecked-double"		common
+	"clojure.core/unchecked-float"		common
+	"clojure.core/unchecked-inc"		common
+	"clojure.core/unchecked-inc-int"		common
+	"clojure.core/unchecked-int"		common
+	"clojure.core/unchecked-long"		common
+	"clojure.core/unchecked-multiply"		common
+	"clojure.core/unchecked-multiply-int"		common
+	"clojure.core/unchecked-negate"		common
+	"clojure.core/unchecked-negate-int"		common
+	"clojure.core/unchecked-remainder-int"		common
+	"clojure.core/unchecked-short"		common
+	"clojure.core/unchecked-subtract"		common
+	"clojure.core/unchecked-subtract-int"		common
+	"clojure.core/underive"		common
+	"clojure.core/update-in"		common
+	"clojure.core/update-proxy"		common
+	"clojure.core/use"		common
+	"clojure.core/val"		common
+	"clojure.core/vals"		common
+	"clojure.core/var-get"		common
+	"clojure.core/var-set"		common
+	"clojure.core/var?"		common
+	"clojure.core/vary-meta"		common
+	"clojure.core/vec"		common
+	"clojure.core/vector"		common
+	"clojure.core/vector-of"		common
+	"clojure.core/vector?"		common
+	"clojure.core/with-bindings*"		common
+	"clojure.core/with-meta"		common
+	"clojure.core/with-redefs-fn"		common
+	"clojure.core/xml-seq"		common
+	"clojure.core/zero?"		common
+	"clojure.core/zipmap"		common
+	"coll?"		common
+	"commute"		common
+	"comp"		common
+	"comparator"		common
+	"compare"		common
+	"compare-and-set!"		common
+	"compile"		common
+	"complement"		common
+	"concat"		common
+	"conj"		common
+	"conj!"		common
+	"cons"		common
+	"constantly"		common
+	"construct-proxy"		common
+	"contains?"		common
+	"count"		common
+	"counted?"		common
+	"create-ns"		common
+	"create-struct"		common
+	"cycle"		common
+	"dec"		common
+	"dec'"		common
+	"decimal?"		common
+	"delay?"		common
+	"deliver"		common
+	"denominator"		common
+	"deref"		common
+	"derive"		common
+	"descendants"		common
+	"destructure"		common
+	"disj"		common
+	"disj!"		common
+	"dissoc"		common
+	"dissoc!"		common
+	"distinct"		common
+	"distinct?"		common
+	"double"		common
+	"double-array"		common
+	"doubles"		common
+	"drop"		common
+	"drop-last"		common
+	"drop-while"		common
+	"empty"		common
+	"empty?"		common
+	"ensure"		common
+	"enumeration-seq"		common
+	"error-handler"		common
+	"error-mode"		common
+	"eval"		common
+	"even?"		common
+	"every-pred"		common
+	"every?"		common
+	"ex-data"		common
+	"ex-info"		common
+	"extend"		common
+	"extenders"		common
+	"extends?"		common
+	"false?"		common
+	"ffirst"		common
+	"file-seq"		common
+	"filter"		common
+	"filterv"		common
+	"find"		common
+	"find-keyword"		common
+	"find-ns"		common
+	"find-protocol-impl"		common
+	"find-protocol-method"		common
+	"find-var"		common
+	"first"		common
+	"flatten"		common
+	"float"		common
+	"float-array"		common
+	"float?"		common
+	"floats"		common
+	"flush"		common
+	"fn?"		common
+	"fnext"		common
+	"fnil"		common
+	"force"		common
+	"format"		common
+	"frequencies"		common
+	"future-call"		common
+	"future-cancel"		common
+	"future-cancelled?"		common
+	"future-done?"		common
+	"future?"		common
+	"gensym"		common
+	"get"		common
+	"get-in"		common
+	"get-method"		common
+	"get-proxy-class"		common
+	"get-thread-bindings"		common
+	"get-validator"		common
+	"group-by"		common
+	"hash"		common
+	"hash-combine"		common
+	"hash-map"		common
+	"hash-set"		common
+	"identical?"		common
+	"identity"		common
+	"ifn?"		common
+	"in-ns"		common
+	"inc"		common
+	"inc'"		common
+	"init-proxy"		common
+	"instance?"		common
+	"int"		common
+	"int-array"		common
+	"integer?"		common
+	"interleave"		common
+	"intern"		common
+	"interpose"		common
+	"into"		common
+	"into-array"		common
+	"ints"		common
+	"isa?"		common
+	"iterate"		common
+	"iterator-seq"		common
+	"juxt"		common
+	"keep"		common
+	"keep-indexed"		common
+	"key"		common
+	"keys"		common
+	"keyword"		common
+	"keyword?"		common
+	"last"		common
+	"line-seq"		common
+	"list"		common
+	"list*"		common
+	"list?"		common
+	"load"		common
+	"load-file"		common
+	"load-reader"		common
+	"load-string"		common
+	"loaded-libs"		common
+	"long"		common
+	"long-array"		common
+	"longs"		common
+	"macroexpand"		common
+	"macroexpand-1"		common
+	"make-array"		common
+	"make-hierarchy"		common
+	"map"		common
+	"map-indexed"		common
+	"map?"		common
+	"mapcat"		common
+	"mapv"		common
+	"max"		common
+	"max-key"		common
+	"memoize"		common
+	"merge"		common
+	"merge-with"		common
+	"meta"		common
+	"method-sig"		common
+	"methods"		common
+	"min"		common
+	"min-key"		common
+	"mod"		common
+	"munge"		common
+	"name"		common
+	"namespace"		common
+	"namespace-munge"		common
+	"neg?"		common
+	"newline"		common
+	"next"		common
+	"nfirst"		common
+	"nil?"		common
+	"nnext"		common
+	"not"		common
+	"not-any?"		common
+	"not-empty"		common
+	"not-every?"		common
+	"not="		common
+	"ns-aliases"		common
+	"ns-imports"		common
+	"ns-interns"		common
+	"ns-map"		common
+	"ns-name"		common
+	"ns-publics"		common
+	"ns-refers"		common
+	"ns-resolve"		common
+	"ns-unalias"		common
+	"ns-unmap"		common
+	"nth"		common
+	"nthnext"		common
+	"nthrest"		common
+	"num"		common
+	"number?"		common
+	"numerator"		common
+	"object-array"		common
+	"odd?"		common
+	"parents"		common
+	"partial"		common
+	"partition"		common
+	"partition-all"		common
+	"partition-by"		common
+	"pcalls"		common
+	"peek"		common
+	"persistent!"		common
+	"pmap"		common
+	"pop"		common
+	"pop!"		common
+	"pop-thread-bindings"		common
+	"pos?"		common
+	"pr"		common
+	"pr-str"		common
+	"prefer-method"		common
+	"prefers"		common
+	"print"		common
+	"print-ctor"		common
+	"print-simple"		common
+	"print-str"		common
+	"printf"		common
+	"println"		common
+	"println-str"		common
+	"prn"		common
+	"prn-str"		common
+	"promise"		common
+	"proxy-call-with-super"		common
+	"proxy-mappings"		common
+	"proxy-name"		common
+	"push-thread-bindings"		common
+	"quot"		common
+	"rand"		common
+	"rand-int"		common
+	"rand-nth"		common
+	"range"		common
+	"ratio?"		common
+	"rational?"		common
+	"rationalize"		common
+	"re-find"		common
+	"re-groups"		common
+	"re-matcher"		common
+	"re-matches"		common
+	"re-pattern"		common
+	"re-seq"		common
+	"read"		common
+	"read-line"		common
+	"read-string"		common
+	"realized?"		common
+	"reduce"		common
+	"reduce-kv"		common
+	"reduced"		common
+	"reduced?"		common
+	"reductions"		common
+	"ref"		common
+	"ref-history-count"		common
+	"ref-max-history"		common
+	"ref-min-history"		common
+	"ref-set"		common
+	"refer"		common
+	"release-pending-sends"		common
+	"rem"		common
+	"remove"		common
+	"remove-all-methods"		common
+	"remove-method"		common
+	"remove-ns"		common
+	"remove-watch"		common
+	"repeat"		common
+	"repeatedly"		common
+	"replace"		common
+	"replicate"		common
+	"require"		common
+	"reset!"		common
+	"reset-meta!"		common
+	"resolve"		common
+	"rest"		common
+	"restart-agent"		common
+	"resultset-seq"		common
+	"reverse"		common
+	"reversible?"		common
+	"rseq"		common
+	"rsubseq"		common
+	"satisfies?"		common
+	"second"		common
+	"select-keys"		common
+	"send"		common
+	"send-off"		common
+	"send-via"		common
+	"seq"		common
+	"seq?"		common
+	"seque"		common
+	"sequence"		common
+	"sequential?"		common
+	"set"		common
+	"set-agent-send-executor!"		common
+	"set-agent-send-off-executor!"		common
+	"set-error-handler!"		common
+	"set-error-mode!"		common
+	"set-validator!"		common
+	"set?"		common
+	"short"		common
+	"short-array"		common
+	"shorts"		common
+	"shuffle"		common
+	"shutdown-agents"		common
+	"slurp"		common
+	"some"		common
+	"some-fn"		common
+	"sort"		common
+	"sort-by"		common
+	"sorted-map"		common
+	"sorted-map-by"		common
+	"sorted-set"		common
+	"sorted-set-by"		common
+	"sorted?"		common
+	"special-symbol?"		common
+	"spit"		common
+	"split-at"		common
+	"split-with"		common
+	"str"		common
+	"string?"		common
+	"struct"		common
+	"struct-map"		common
+	"subs"		common
+	"subseq"		common
+	"subvec"		common
+	"supers"		common
+	"swap!"		common
+	"symbol"		common
+	"symbol?"		common
+	"take"		common
+	"take-last"		common
+	"take-nth"		common
+	"take-while"		common
+	"test"		common
+	"the-ns"		common
+	"thread-bound?"		common
+	"to-array"		common
+	"to-array-2d"		common
+	"trampoline"		common
+	"transient"		common
+	"tree-seq"		common
+	"true?"		common
+	"type"		common
+	"unchecked-add"		common
+	"unchecked-add-int"		common
+	"unchecked-byte"		common
+	"unchecked-char"		common
+	"unchecked-dec"		common
+	"unchecked-dec-int"		common
+	"unchecked-divide-int"		common
+	"unchecked-double"		common
+	"unchecked-float"		common
+	"unchecked-inc"		common
+	"unchecked-inc-int"		common
+	"unchecked-int"		common
+	"unchecked-long"		common
+	"unchecked-multiply"		common
+	"unchecked-multiply-int"		common
+	"unchecked-negate"		common
+	"unchecked-negate-int"		common
+	"unchecked-remainder-int"		common
+	"unchecked-short"		common
+	"unchecked-subtract"		common
+	"unchecked-subtract-int"		common
+	"underive"		common
+	"update-in"		common
+	"update-proxy"		common
+	"use"		common
+	"val"		common
+	"vals"		common
+	"var-get"		common
+	"var-set"		common
+	"var?"		common
+	"vary-meta"		common
+	"vec"		common
+	"vector"		common
+	"vector-of"		common
+	"vector?"		common
+	"with-bindings*"		common
+	"with-meta"		common
+	"with-redefs-fn"		common
+	"xml-seq"		common
+	"zero?"		common
+	"zipmap"		common
+	"*1"		common
+	"*2"		common
+	"*3"		common
+	"*agent*"		common
+	"*allow-unresolved-vars*"		common
+	"*assert*"		common
+	"*clojure-version*"		common
+	"*command-line-args*"		common
+	"*compile-files*"		common
+	"*compile-path*"		common
+	"*compiler-options*"		common
+	"*data-readers*"		common
+	"*default-data-reader-fn*"		common
+	"*e"		common
+	"*err*"		common
+	"*file*"		common
+	"*flush-on-newline*"		common
+	"*fn-loader*"		common
+	"*in*"		common
+	"*math-context*"		common
+	"*ns*"		common
+	"*out*"		common
+	"*print-dup*"		common
+	"*print-length*"		common
+	"*print-level*"		common
+	"*print-meta*"		common
+	"*print-readably*"		common
+	"*read-eval*"		common
+	"*source-path*"		common
+	"*unchecked-math*"		common
+	"*use-context-classloader*"		common
+	"*verbose-defrecords*"		common
+	"*warn-on-reflection*"		common
+	"EMPTY-NODE"		common
+	"char-escape-string"		common
+	"char-name-string"		common
+	"clojure.core/*1"		common
+	"clojure.core/*2"		common
+	"clojure.core/*3"		common
+	"clojure.core/*agent*"		common
+	"clojure.core/*allow-unresolved-vars*"		common
+	"clojure.core/*assert*"		common
+	"clojure.core/*clojure-version*"		common
+	"clojure.core/*command-line-args*"		common
+	"clojure.core/*compile-files*"		common
+	"clojure.core/*compile-path*"		common
+	"clojure.core/*compiler-options*"		common
+	"clojure.core/*data-readers*"		common
+	"clojure.core/*default-data-reader-fn*"		common
+	"clojure.core/*e"		common
+	"clojure.core/*err*"		common
+	"clojure.core/*file*"		common
+	"clojure.core/*flush-on-newline*"		common
+	"clojure.core/*fn-loader*"		common
+	"clojure.core/*in*"		common
+	"clojure.core/*math-context*"		common
+	"clojure.core/*ns*"		common
+	"clojure.core/*out*"		common
+	"clojure.core/*print-dup*"		common
+	"clojure.core/*print-length*"		common
+	"clojure.core/*print-level*"		common
+	"clojure.core/*print-meta*"		common
+	"clojure.core/*print-readably*"		common
+	"clojure.core/*read-eval*"		common
+	"clojure.core/*source-path*"		common
+	"clojure.core/*unchecked-math*"		common
+	"clojure.core/*use-context-classloader*"		common
+	"clojure.core/*verbose-defrecords*"		common
+	"clojure.core/*warn-on-reflection*"		common
+	"clojure.core/EMPTY-NODE"		common
+	"clojure.core/char-escape-string"		common
+	"clojure.core/char-name-string"		common
+	"clojure.core/default-data-readers"		common
+	"clojure.core/primitives-classnames"		common
+	"clojure.core/print-dup"		common
+	"clojure.core/print-method"		common
+	"clojure.core/unquote"		common
+	"clojure.core/unquote-splicing"		common
+	"default-data-readers"		common
+	"primitives-classnames"		common
+	"print-dup"		common
+	"print-method"		common
+	"unquote"		common
+	"unquote-splicing"		common
+done
+
+:value Constant
+	*		idle		noeat
+
+:common Keyword
+	*		idle		noeat
+
+:ident_end Idle
+	*		idle		noeat
+
+# Mark remainder of symbol as bad
+
+:bad Bad
+	*		bad
+	")]},  \t\f\n\r;"	idle		noeat
+
+# Skip quote..
+
+:quote Idle
+	*		idle		noeat
+
+# Look for #_x, treat as comment
+# For example #_(a b c) should be all commented out
+
+:pound Idle
+	*		idle		noeat
+	"_"		pound_eat	recolor=-2
+
+:pound_eat Comment
+	*		idle		noeat
+
+:comment Comment
+	*		comment
+	"\n"		idle
+
+# Check some specific common bases
+
+:two Constant
+	*		number		noeat
+	"r"		binary
+
+:eight Constant
+	*		number		noeat
+	"r"		octal
+
+:one Constant
+	*		number		noeat
+	"0"		ten
+	"6"		sixteen
+
+:ten Constant
+	*		number		noeat
+	"r"		decimal
+
+:sixteen Constant
+	*		number		noeat
+	"r"		hex
+
+:hex Constant
+	*		bad		noeat
+	"NM"		bad
+	"0-9a-fA-F"	hex
+
+:octal Constant
+	*		bad		noeat
+	"NM"		bad
+	"0-7"		octal
+
+:binary Constant
+	*		bad		noeat
+	"NM"		bad
+	"01"		binary
+
+:decimal Constant
+	*		bad		noeat
+	"NM"		bad
+	"0-9"		decimal
+
+# Number, no r yet...
+
+:number Constant
+	*		bad		noeat
+	"NM"		bad
+	"0-9"		number
+	"r"		integer
+	"."		float
+	"/"		ratio
+
+# we got the r
+
+:integer Constant
+	*		bad		noeat
+	"NM"		bad
+	"0-9"		integer
+
+# We have a decimal point only
+
+:maybe_neg_float Constant
+	*		symbol		recolor=-2 noeat
+	"0-9"		float		recolor=-2
+
+:maybe_float Constant
+	*		idle		recolor=-2 noeat
+	"0-9"		float		recolor=-2
+
+# We have number and decimal point
+
+:float Constant
+	*		bad		noeat
+	"M"		bad
+	"eE"		epart
+	"0-9"		float
+
+:epart Constant
+	*		bad		noeat
+	"0-9+\-"	enum
+
+:enum Constant
+	*		bad		noeat
+	"M"		bad
+	"0-9"		enum
+
+# Ratio
+
+:ratio Constant
+	*		bad		noeat
+	"0-9"		ratio
+
+# Strings
+
+:string	Constant
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+
+:string_escape Escape
+	*		string
+	"u"		string_uni4
+	"0-7"		string_octal2
+	"\n"		string		recolor=-2
+
+:string_uni4 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_uni3
+
+:string_uni3 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_uni2
+
+:string_uni2 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string_uni1
+
+:string_uni1 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 Escape
+	*		string		noeat
+	"0-7"		string_octal1
+
+:string_octal1 Escape
+	*		string		noeat
+	"0-7"		string
+
+.end
