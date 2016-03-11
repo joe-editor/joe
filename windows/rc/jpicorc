@@ -197,6 +197,9 @@
 -search_prompting
 		Search prompts with previous search request.
 
+ -regex		Search uses standard regular expression format (otherwise it uses
+		JOE format where all special characters have to be escaped).
+
  Status line definition strings.  -lmsg defines the left-justified string and
  -rmsg defines the right-justified string.  The first character of -rmsg is
  the background fill character.  The following escape sequences can be used
@@ -385,7 +388,9 @@
 
  SECOND and 1/2 SECTION: Option menu layout
 
-	:defmenu name	Defines a menu.
+	:defmenu name [macro]
+			Defines a menu.
+			The macro here is executed when the user hits backspace.
 
 	macro string comment
 			A menu entry.  Macro is any JOE macro- see "Macros:"
@@ -420,7 +425,7 @@ mode,"language",rtn	V Language
 mode,"picture",rtn	P picture %Zpicture%
 menu,"more-options",rtn	  % % More options...
 
-:defmenu more-options
+:defmenu more-options menu,"root",rtn
 menu,"^G",rtn	% % ^G options
 menu,"search",rtn	% % search options
 menu,"paragraph",rtn	% % paragraph options
@@ -431,7 +436,7 @@ menu,"cursor",rtn	% % cursor options
 menu,"marking",rtn	% % marking options
 menu,"tab",rtn	% % tab/indent options
 
-:defmenu indent
+:defmenu indent menu,"root",rtn
 mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 1, Indent character = 32",rtn	1 Space
 mode,"istep",rtn,"2",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 2, Indent character = 32",rtn	2 Spaces
 mode,"istep",rtn,"3",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 3, Indent character = 32",rtn	3 Spaces
@@ -441,13 +446,13 @@ mode,"istep",rtn,"8",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 8, Inden
 mode,"istep",rtn,"10",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 10, Indent character = 32",rtn	0 Ten
 mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"9",rtn,msg,"Indent step = 1, Indent character = 9",rtn	T Tab
 
-:defmenu menu
+:defmenu menu menu,"more-options",rtn
 mode,"menu_explorer",rtn	% % Menu explorer %Zmenu_explorer%
 mode,"menu_above",rtn	% % Menu position %Zmenu_above%
 mode,"menu_jump",rtn	% % Jump into menu %Zmenu_jump%
 mode,"transpose",rtn	% % Transpose menus %Ztranspose%
 
-:defmenu ^G
+:defmenu ^G menu,"more-options",rtn
 mode,"highlighter_context",rtn	% % ^G uses highlighter context %Zhighlighter_context%
 mode,"single_quoted",rtn	% % ^G ignores '...' %Zsingle_quoted%
 mode,"no_double_quoted",rtn	% % ^G no ignore "..." %Zno_double_quoted%
@@ -459,19 +464,19 @@ mode,"semi_comment",rtn	% % ^G ignores ;... %Zsemi_comment%
 mode,"tex_comment",rtn % % ^G ignores %%... %Ztex_comment%
 mode,"text_delimiters",rtn % % Text delimiters %Ztext_delimiters%
 
-:defmenu search
+:defmenu search menu,"more-options",rtn
 mode,"icase",rtn	% % Case insensitivity %Zicase%
 mode,"wrap",rtn	% % Search wraps %Zwrap%
 mode,"search_prompting",rtn	% % Search prompting %Zsearch_prompting%
 mode,"csmode",rtn	% % Continued search %Zcsmode%
 
-:defmenu paragraph
+:defmenu paragraph menu,"more-options",rtn
 mode,"french",rtn	% % French spacing %Zfrench%
 mode,"flowed",rtn	% % Flowed text %Zflowed%
 mode,"cpara",rtn	% % Paragraph indent chars %Zcpara%
 mode,"cnotpara",rtn	% % Not-paragraph chars %Zcnotpara%
 
-:defmenu file
+:defmenu file menu,"more-options",rtn
 mode,"restore",rtn	% % Restore cursor %Zrestore%
 mode,"guess_crlf",rtn	% % Auto detect CR-LF %Zguess_crlf%
 mode,"guess_indent",rtn	% % Guess indent %Zguess_indent%
@@ -480,7 +485,7 @@ mode,"guess_utf8",rtn	% % Guess UTF-8 %Zguess_utf8%
 mode,"force",rtn	% % Force last NL %Zforce%
 mode,"nobackup",rtn	% % No backup %Znobackup%
 
-:defmenu global
+:defmenu global menu,"more-options",rtn
 mode,"nolocks",rtn	% % Disable locks %Znolocks%
 mode,"nobackups",rtn	% % Disable backups %Znobackups%
 mode,"nodeadjoe",rtn	% % Disable DEADJOE %Znodeadjoe%
@@ -495,18 +500,18 @@ mode,"joe_state",rtn	% % Joe_state file %Zjoe_state%
 mode,"undo_keep",rtn	% % No. undo records %Zundo_keep%
 mode,"backpath",rtn	% % Path to backup files %Zbackpath%
 
-:defmenu cursor
+:defmenu cursor menu,"more-options",rtn
 mode,"pg",rtn	% % No. PgUp/PgDn lines %Zpg%
 mode,"mid",rtn	C Center on scroll %Zmid%
 mode,"floatmouse",rtn	% % Click past end %Zfloatmouse%
 mode,"rtbutton",rtn	% % Right button %Zrtbutton%
 
-:defmenu marking
+:defmenu marking menu,"more-options",rtn
 mode,"autoswap",rtn	% % Autoswap mode %Zautoswap%
 mode,"marking",rtn	% % Marking %Zmarking%
 mode,"lightoff",rtn	% % Auto unmask %Zlightoff%
 
-:defmenu tab
+:defmenu tab menu,"more-options",rtn
 mode,"smarthome",rtn	% % Smart home key %Zsmarthome%
 mode,"smartbacks",rtn	% % Smart backspace %Zsmartbacks%
 mode,"indentfirst",rtn	% % To indent first %Zindentfirst%
@@ -549,31 +554,38 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Search
-\i   Help Screen    \|turn off with ^G     prev. screen ^[,    next screen ^[.     \i
-\i \iSpecial search sequences:                                                    \|\i \i
-\i \i    \\^  \\$  matches beg./end of line      \\?     match any single char       \|\i \i
-\i \i    \\<  \\>  matches beg./end of word      \\*     match 0 or more chars       \|\i \i
-\i \i    \\c      matches balanced C expression \\\\     matches a \\                 \|\i \i
-\i \i    \\[..]   matches one of a set          \\n     matches a newline           \|\i \i
-\i \i    \\+      matches 0 or more of the character which follows the \\+          \|\i \i
-\i \iSpecial replace sequences:                                                   \|\i \i
-\i \i    \\&      replaced with text which matched search string                   \|\i \i
-\i \i    \\0 - 9  replaced with text which matched Nth \\*, \\?, \\c, \\+, or \\[..]    \|\i \i
-\i \i    \\\\      replaced with \\               \\n     replaced with newline       \|\i \i
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \iSearch sequences:                                                            \|\i \i
+\i \i    \\^  \\$  matches beg./end of line       \\.     match any single char      \|\i \i
+\i \i    \\<  \\>  matches beg./end of word       \\!     match char or expression   \|\i \i
+\i \i    \\(  \\)  grouping                       \\|     match left or right         \|\i \i
+\i \i    \\[a-z]  matches one of a set                                             \|\i \i
+\i \i    \\{1,3}  match 1 - 3 occurrences        \\?     match 0 or 1 occurrence     \|\i \i
+\i \i    \\+      match 1 or more occurrences    \\*     match 0 or more occurrences \|\i \i
+\i \iReplace sequences:                                                           \|\i \i
+\i \i    \\&      replaced with entire match     \\1 - 9 replaced with Nth group   \|\i \i
+}
+
+{Escape sequences
+\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i \iEscape sequences: \\x{10fff}  Unicode code point   \\p{Ll}  Unicode category \|\i \i
+\i \i    \\i / \\I  Identifier start      \\t  tab          \\e  escape               \|\i \i
+\i \i    \\c / \\C  Identifier continue   \\n  newline      \\r  carriage return      \|\i \i
+\i \i    \\d / \\D  Digit / Not a digit   \\b  backspace  \\xFF  hex character        \|\i \i
+\i \i    \\w / \\W  Word / Not a word     \\a  alert      \\377  octal character      \|\i \i
+\i \i    \\s / \\S  Space / Not a space   \\f  formfeed     \\\\  backslash            \|\i \i
 }
 
 {SearchOptions
 \i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
 \i \iSearch options:                                                              \|\i \i
-\i \i   r Replace                                                                 \|\i \i
-\i \i   k Restrict search to highlighted block, which can be rectangular          \|\i \i
-\i \i   b Search backward instead of forward                                      \|\i \i
-\i \i   i Ignore case                                                             \|\i \i
-\i \i   a Search across all loaded files                                          \|\i \i
-\i \i   e Search across all files in Grep or Compile error list                   \|\i \i
-\i \i   w Wrap to beginning of file for this search                               \|\i \i
-\i \i   n Do not wrap to beginning of file for this search                        \|\i \i
-\i \i   nnn Perform exaclty nnn replacements                                      \|\i \i
+\i \i     r Replace      k Restrict search to highlighted block                   \|\i \i
+\i \i     i Ignore case  b Search backwards instead of forwards                   \|\i \i
+\i \i                    a Search across all loaded files                         \|\i \i
+\i \i                    e Search across all files in Grep or Compile error list  \|\i \i
+\i \i w / n  Allow / prevent wrap to start of file                                \|\i \i
+\i \i x / y  Search text is standard format / JOE format regular expression       \|\i \i
+\i \i   nnn  Perform exactly nnn replacements                                     \|\i \i
 }
 
 {Math
@@ -691,7 +703,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  To define a command foo which will goto the beginning of the last line.
 
 :windows		Bindings common to all windows
-type		^@ TO ÿ		Type a character
+type		U+0 TO U+10FFFF
 abort		^C		Abort window
 arg		^[ \		Repeat next command
 explode		^[ I		Show all windows or show only one window
@@ -772,18 +784,19 @@ aspellfile	^[ ^T
 
  Grep
 
-:def grep_find mwind!,mfit!,scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
+:def grep_find scratch,"* Grep Log *",rtn,bof,markb,eof," ",markk,blkdel,grep
 
  Man page
 
 :def man scratch,"* Man Page *",rtn,bof,markb,eof," ",markk,blkdel," ",ltarw,run,"man -P cat -S 2:3 "
 
  Shell windows
+ We load the already existing Startup Log first so that Shell does not inherit the current directory.
 
-:def shell1 scratch,"* Shell 1 *",rtn,vtbknd!,eof
-:def shell2 scratch,"* Shell 2 *",rtn,vtbknd!,eof
-:def shell3 scratch,"* Shell 3 *",rtn,vtbknd!,eof
-:def shell4 scratch,"* Shell 4 *",rtn,vtbknd!,eof
+:def shell1 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 1 *",rtn,vtbknd!,eof
+:def shell2 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 2 *",rtn,vtbknd!,eof
+:def shell3 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 3 *",rtn,vtbknd!,eof
+:def shell4 scratch_push,"* Startup Log *",rtn,scratch_push,"* Shell 4 *",rtn,vtbknd!,eof
 
  Macros allowed in shell window commands
 :def shell_clear psh,bof,markb,eof,markk,blkdel
@@ -1051,10 +1064,10 @@ defm2down	M2DOWN		Hits return key
 :inherit windows
 
 :querya			Single-key query window for quoting
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :querysr		Search & replace query window
-type		^@ TO ÿ
+type		U+0 TO U+10FFFF
 
 :shell			Input to shell windows
 :inherit main
