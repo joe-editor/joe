@@ -81,16 +81,17 @@ static int get_entries(TAB *tab, ino_t prv)
 		chpwd(oldpwd);
 		return -1;
 	}
+#ifdef JOEWIN
+	vaisort(files, valen(files));
+#else
 	vasort(files, valen(files));
+#endif
 	if (only_cmds)
 		vauniq(files);
+	tab->len = valen(files);
 	varm(tab->files);
 	tab->files = files;
 	vaperm(tab->files);
-#ifdef JOEWIN
-	vaisort(files, tab->len);
-#else
-#endif
 	if (tab->type)
 		joe_free(tab->type);
 	tab->type = (char *)joe_malloc(tab->len);
@@ -125,9 +126,11 @@ static void insnam(BW *bw, char *path, char *nam, int dir, off_t ofst, int quote
 	p_goto_eol(bw->cursor);
 	bdel(p, bw->cursor);
 	if (vslen(path)) {
+#ifndef JOEWIN
 		if (quote)
 			binsmq(bw->cursor, sv(path));
 		else
+#endif
 			binsm(bw->cursor, sv(path));
 		p_goto_eol(bw->cursor);
 #ifndef JOEWIN
@@ -140,9 +143,11 @@ static void insnam(BW *bw, char *path, char *nam, int dir, off_t ofst, int quote
 			p_goto_eol(bw->cursor);
 		}
 	}
+#ifndef JOEWIN
 	if (quote)
 		binsmq(bw->cursor, sv(nam));
 	else
+#endif
 		binsm(bw->cursor, sv(nam));
 	p_goto_eol(bw->cursor);
 	if (dir) {
@@ -438,7 +443,9 @@ static int cmplt(BW *bw, int k, int flags_in)
 
 	cline = brvs(NULL, p, q->byte - p->byte); /* Risky */
 	if (flags & PATH_QUOTE) {
+#ifndef JOEWIN
 		cline = dequotevs(cline);
+#endif
 		tab->quote = 1;
 	}
 	if (flags & PATH_CMD)

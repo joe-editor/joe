@@ -359,26 +359,6 @@ char **rexpnd(const char *word)
 	return lst;
 }
 
-int isexec(const char *name)
-{
-#ifndef JOEWIN
-	return !access(name, X_OK);
-#else
-	struct stat buf[1];
-
-	/* No #defines for Windows, see https://msdn.microsoft.com/en-us/library/1w06ktdy.aspx */
-	if (!access(name, 4) && !stat(name, buf)) {
-		if (S_IFDIR & buf->st_mode) {
-			return 1;
-		}
-
-		return rmatch("*.exe", name, 1) || rmatch("*.cmd", name, 1) || rmatch("*.bat", name, 1);
-	}
-
-	return 0;
-#endif
-}
-
 char **rexpnd_cmd_cd(const char *word)
 {
 	DIR *dir;
@@ -389,7 +369,7 @@ char **rexpnd_cmd_cd(const char *word)
 	if (dir) {
 		while ((de = readdir(dir)) != NULL)
 			if (zcmp(".", de->d_name))
-				if (rmatch(word, de->d_name, 1) && isexec(de->d_name))
+				if (rmatch(word, de->d_name, 1) && !access(de->d_name, X_OK))
 					lst = vaadd(lst, vsncpy(NULL, 0, sz(de->d_name)));
 		closedir(dir);
 	}
@@ -416,7 +396,7 @@ char **rexpnd_cmd_path(const char *word)
 				if (dir) {
 					while ((de = readdir(dir)) != NULL) {
 						struct stat buf[1];
-						if (rmatch(word, de->d_name, 1) && !stat(de->d_name, buf) && (S_IFREG & buf->st_mode) && isexec(de->d_name))
+						if (rmatch(word, de->d_name, 1) && !stat(de->d_name, buf) && S_ISREG(buf->st_mode) && !access(de->d_name, X_OK))
 							lst = vaadd(lst, vsncpy(NULL, 0, sz(de->d_name)));
 					}
 					closedir(dir);

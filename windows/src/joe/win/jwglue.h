@@ -40,6 +40,17 @@
 #define chddir glue_chdir
 #define unlink glue_unlink
 #define mkdir glue_mkdir
+#define access glue_access
+
+/* Types flags */
+
+/* https://msdn.microsoft.com/en-us/library/1w06ktdy.aspx */
+#define R_OK	4
+#define W_OK	2
+#define X_OK	1
+
+#define S_ISREG(x)	(((x) & S_IFMT) == S_IFREG)
+#define S_ISDIR(x)	(((x) & S_IFMT) == S_IFDIR)
 
 /* TODO: We now accept 64-bit time_t here, but off_t is still 32 bits on 64-bit Windows. */
 
@@ -78,6 +89,7 @@ int glue_chdir(const char *path);
 int glue_fprintf(FILE *, const char *, ...);
 int glue_unlink(const char *path);
 int glue_mkdir(const char *path, int);
+int glue_access(const char *path, int);
 
 /* Types that need definition */
 

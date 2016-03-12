@@ -27,15 +27,13 @@ DIR *opendir(const char *path)
 
 	result = (struct dirent *)malloc(sizeof(struct dirent));
 
-	if (utf8towcs(result->_startname, path, MAX_PATH))
-	{
+	if (utf8towcs(result->_startname, path, MAX_PATH)) {
 		assert(FALSE);
 		return NULL;
 	}
 
 	c = result->_startname[wcslen(result->_startname) - 1];
-	if (c != L'/' && c != L'\\')
-	{
+	if (c != L'/' && c != L'\\') {
 		wcscat(result->_startname, L"\\");
 	}
 
@@ -48,10 +46,8 @@ DIR *opendir(const char *path)
 void closedir(void *handle)
 {
 	struct dirent* de = (struct dirent*)handle;
-	if (de)
-	{
-		if (de->find_handle != INVALID_HANDLE_VALUE)
-		{
+	if (de) {
+		if (de->find_handle != INVALID_HANDLE_VALUE) {
 			FindClose(de->find_handle);
 			de->find_handle = INVALID_HANDLE_VALUE;
 			strcpy(de->d_name, "");
@@ -65,28 +61,22 @@ void closedir(void *handle)
 struct dirent *readdir(void *handle)
 {
 	struct dirent* de = (struct dirent*)handle;
-	if (de)
-	{
+	if (de) {
 		WIN32_FIND_DATAW find_data;
 
-		if (de->find_handle == INVALID_HANDLE_VALUE)
-		{
+		if (de->find_handle == INVALID_HANDLE_VALUE) {
 			de->find_handle = FindFirstFileW(de->_startname, &find_data);
 			if (de->find_handle == INVALID_HANDLE_VALUE)
 			{
 				return NULL;
 			}
-		}
-		else
-		{
-			if (!FindNextFileW(de->find_handle, &find_data))
-			{
+		} else {
+			if (!FindNextFileW(de->find_handle, &find_data)) {
 				return NULL;
 			}
 		}
 
-		if (wcstoutf8(de->d_name, find_data.cFileName, PATH_MAX))
-		{
+		if (wcstoutf8(de->d_name, find_data.cFileName, PATH_MAX)) {
 			assert(FALSE);
 			return NULL;
 		}
@@ -107,8 +97,7 @@ int __cdecl glue_open(const char *filename, int oflag, ...)
 	pmode = va_arg(ap, int);
 	va_end(ap);
 
-	if (utf8towcs(wfilename, filename, MAX_PATH))
-	{
+	if (utf8towcs(wfilename, filename, MAX_PATH)) {
 		assert(FALSE);
 		return -1;
 	}
@@ -120,8 +109,7 @@ int glue_stat(const char *filename, struct stat *buffer)
 {
 	wchar_t wfilename[MAX_PATH + 1];
 
-	if (utf8towcs(wfilename, filename, MAX_PATH))
-	{
+	if (utf8towcs(wfilename, filename, MAX_PATH)) {
 		assert(FALSE);
 		return -1;
 	}
@@ -134,8 +122,7 @@ FILE *glue_fopen(const char *filename, const char *mode)
 	wchar_t wfilename[MAX_PATH + 1];
 	wchar_t wmode[20];
 
-	if (utf8towcs(wfilename, filename, MAX_PATH) || utf8towcs(wmode, mode, 20))
-	{
+	if (utf8towcs(wfilename, filename, MAX_PATH) || utf8towcs(wmode, mode, 20)) {
 		assert(FALSE);
 		return NULL;
 	}
@@ -148,8 +135,7 @@ int glue_creat(const char *filename, int pmode)
 {
 	wchar_t wfilename[MAX_PATH + 1];
 
-	if (utf8towcs(wfilename, filename, MAX_PATH))
-	{
+	if (utf8towcs(wfilename, filename, MAX_PATH)) {
 		assert(FALSE);
 		return -1;
 	}
@@ -161,13 +147,11 @@ char *glue_getcwd(char *output, size_t outsz)
 {
 	wchar_t wworkingdir[MAX_PATH + 1];
 
-	if (!_wgetcwd(wworkingdir, MAX_PATH))
-	{
+	if (!_wgetcwd(wworkingdir, MAX_PATH)) {
 		return NULL;
 	}
 
-	if (wcstoutf8(output, wworkingdir, outsz))
-	{
+	if (wcstoutf8(output, wworkingdir, outsz)) {
 		return NULL;
 	}
 
@@ -178,8 +162,7 @@ int glue_chdir(const char *path)
 {
 	wchar_t wpath[MAX_PATH + 1];
 
-	if (utf8towcs(wpath, path, MAX_PATH))
-	{
+	if (utf8towcs(wpath, path, MAX_PATH)) {
 		assert(FALSE);
 		return -1;
 	}
@@ -191,8 +174,7 @@ int glue_unlink(const char *path)
 {
 	wchar_t wpath[MAX_PATH + 1];
 
-	if (utf8towcs(wpath, path, MAX_PATH))
-	{
+	if (utf8towcs(wpath, path, MAX_PATH)) {
 		assert(FALSE);
 		return -1;
 	}
@@ -204,12 +186,54 @@ int glue_mkdir(const char *path, int mode)
 {
 	wchar_t wpath[MAX_PATH + 1];
 
-	if (utf8towcs(wpath, path, MAX_PATH))
-	{
+	if (utf8towcs(wpath, path, MAX_PATH)) {
 		assert(FALSE);
 		return -1;
 	}
 
 	/* No mode argument in windows, but the default should be reasonable. */
 	return _wmkdir(wpath);
+}
+
+int glue_access(const char *path, int mode)
+{
+	wchar_t wpath[MAX_PATH + 1];
+
+	if (utf8towcs(wpath, path, MAX_PATH)) {
+		assert(FALSE);
+		return -1;
+	}
+
+	if (mode & X_OK) {
+		const char *exts[] = { ".exe", ".cmd", ".bat", NULL };
+		struct stat buf[1];
+		int result, omodes;
+		int i;
+
+		omodes = (mode & ~X_OK) | R_OK;
+		result = _waccess(wpath, omodes);
+		if (result) {
+			return -1;
+		}
+
+		if (stat(path, buf)) {
+			return -1;
+		}
+
+		/* Directories are "executable" */
+		if (S_ISDIR(buf->st_mode)) {
+			return 0;
+		}
+
+		/* Check file extension */
+		for (i = 0; exts[i]; i++) {
+			if (!stricmp(exts[i], &path[max(0, strlen(path) - strlen(exts[i]))])) {
+				return 0;
+			}
+		}
+
+		return -1;
+	} else {
+		return _waccess(wpath, mode);
+	}
 }
