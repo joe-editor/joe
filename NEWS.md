@@ -14,6 +14,10 @@
 
 	* Negative numbers not being recognized in blocks
 
+	* PgUp/PgDn would try to scroll menu if the window above is a menu
+	  (it should do this only for completion menus associated with
+	  prompts)
+
 ### JOE 4.2
 
 * New or improved syntax files for the following languages: 

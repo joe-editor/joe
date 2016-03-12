@@ -1323,11 +1323,11 @@ int upgup(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (menu_above) {
-		if (w->link.prev->watom == &watommenu) {
+		if (w->link.prev->watom == &watommenu && w->link.prev->win == w) {
 			return umpgup(w->link.prev, 0);
 		}
 	} else {
-		if (w->link.next->watom == &watommenu) {
+		if (w->link.next->watom == &watommenu && w->link.next->win == w) {
 			return umpgup(w->link.next, 0);
 		}
 	}
@@ -1351,11 +1351,11 @@ int upgdn(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (menu_above) {
-		if (w->link.prev->watom == &watommenu) {
+		if (w->link.prev->watom == &watommenu && w->link.prev->win == w) {
 			return umpgdn(w->link.prev, 0);
 		}
 	} else {
-		if (w->link.next->watom == &watommenu) {
+		if (w->link.next->watom == &watommenu && w->link.next->win == w) {
 			return umpgdn(w->link.next, 0);
 		}
 	}
