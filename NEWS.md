@@ -10,6 +10,10 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Bugs fixed
+
+	* Negative numbers not being recognized in blocks
+
 ### JOE 4.2
 
 * New or improved syntax files for the following languages: 

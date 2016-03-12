@@ -62,6 +62,7 @@ int recur=0;
 
 double joe_strtod(const char *bptr, const char **at_eptr)
 {
+	int inv = 0;
 	char buf[128];
 #ifdef HAVE_LONG_LONG
 	unsigned long long n = 0;
@@ -69,6 +70,10 @@ double joe_strtod(const char *bptr, const char **at_eptr)
 	unsigned long n = 0;
 #endif
 	double x = 0.0;
+	if (bptr[0] == '-') {
+		inv = 1;
+		++bptr;
+	}
 	if (bptr[0] == '0' && (bptr[1] == 'b' || bptr[1] == 'B')) {
 		bptr += 2;
 		while ((*bptr >= '0' && *bptr <= '1') || *bptr == '_') {
@@ -136,6 +141,8 @@ double joe_strtod(const char *bptr, const char **at_eptr)
 		buf[j] = 0;
 		x = strtod(buf,NULL);
 	}
+	if (inv)
+		x = -x;
 	if (at_eptr)
 		*at_eptr = bptr;
 	return x;
