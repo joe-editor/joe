@@ -84,6 +84,7 @@ static int get_entries(TAB *tab, ino_t prv)
 	vasort(files, valen(files));
 	if (only_cmds)
 		vauniq(files);
+	tab->len = valen(files);
 	varm(tab->files);
 	tab->files = files;
 	vaperm(tab->files);
