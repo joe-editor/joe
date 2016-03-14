@@ -661,6 +661,30 @@ Keys
 	from being useful.  It's usually bound to options, so at least
 	make options pass unknown characters back to keysequence parser.
 
+--------
+MAC OS X
+--------
+Arrow: [D [C [A [B
+Shift-arrow: [1;2D [1;2C  (no shift up/dn arrow)
+Ctrl-arrow: (none)
+Command-arrow: (none)
+Option-arrow: b f [A [B
+F1: OP
+F2: OQ
+F3: OR
+F4: OS
+F5: [15~
+F6: [17~
+F7: [18~
+F8: [19~
+F9: [20~
+F10: [21~
+F11: (nope)
+F12: [24~
+Delete: 
+Shift-tab: [Z
+
+
 
 -------
 ssh 3.2
