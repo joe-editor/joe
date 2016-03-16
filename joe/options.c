@@ -39,7 +39,7 @@ OPTIONS pdefault = {
 	0,		/* french spacing */
 	0,		/* flowed text */
 	0,		/* spaces */
-#ifdef __MSDOS__
+#if defined(__MSDOS__) || defined(JOEWIN)
 	1,		/* crlf */
 #else
 	0,		/* crlf */
@@ -101,7 +101,7 @@ OPTIONS fdefault = {
 	0,		/* french spacing */
 	0,		/* flowed text */
 	0,		/* spaces */
-#ifdef __MSDOS__
+#if defined(__MSDOS__) || defined(JOEWIN)
 	1,		/* crlf */
 #else
 	0,		/* crlf */

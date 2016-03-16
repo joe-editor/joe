@@ -2868,21 +2868,23 @@ opnerr:
 
 	/* If first line has CR-LF, assume MS-DOS file */
 	if (guesscrlf) {
-		p=pdup(b->bof, "bload");
+		int crlf = b->o.crlf;
 		b->o.crlf = 0;
+		p=pdup(b->bof, "bload");
 		for(x=0;x!=1024;++x) {
 			int c = pgetc(p);
 			if(c == '\r') {
-				b->o.crlf = 1;
+				crlf = 1;
 				break;
 				}
 			if(c == '\n') {
-				b->o.crlf = 0;
+				crlf = 0;
 				break;
 				}
 			if(c == NO_MORE_DATA)
 				break;
 		}
+		b->o.crlf = crlf;
 		prm(p);
 
 		/* Hex mode should turn off crlf */
