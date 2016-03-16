@@ -107,7 +107,11 @@ char *dequotevs(char *path);
 #ifdef JOEWIN
 #define MATCHCANON(x) (tolower(x))
 #define ISDIRSEP(c) ((c)=='/'||(c)=='\\')
+#define DIRSEPC '\\'
+#define DIRSEPS "\\"
 #else
 #define MATCHCANON(x) (x)
 #define ISDIRSEP(c) ((c)=='/')
+#define DIRSEPC '/'
+#define DIRSEPS "/"
 #endif

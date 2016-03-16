@@ -34,6 +34,16 @@ struct tab {
 #define F_NORMAL	2
 #define F_EXEC		4
 
+/* Passed in flags, but also returned: */
+#define PATH_QUOTE 1 /* Enable quoting of spaces */
+/* Only returned: */
+#define PATH_CMD 2 /* Try to complete command, not file */
+/* Only passed: */
+#define PATH_EDIT 4 /* If first character is '!', treat it as start of a command */
+#define PATH_SAVE 8 /* If first characters are '>>', skip over them */
+
+static int p_goto_start_of_path(P *p, int flags);
+
 /* Read matching files from a directory
  *  Directory is given in tab.path
  *  Pattern is given in tab.pattern
@@ -121,41 +131,47 @@ static int get_entries(TAB *tab, ino_t prv)
 static void insnam(BW *bw, char *path, char *nam, int dir, off_t ofst, int quote)
 {
 	P *p = pdup(bw->cursor, "insnam");
+	char *fullpath = NULL;
 
 	pgoto(p, ofst);
 	p_goto_eol(bw->cursor);
 	bdel(p, bw->cursor);
+#ifndef JOEWIN
 	if (vslen(path)) {
-#ifndef JOEWIN
-		if (quote)
+		if (quote) {
 			binsmq(bw->cursor, sv(path));
-		else
-#endif
+		} else {
 			binsm(bw->cursor, sv(path));
+		}
 		p_goto_eol(bw->cursor);
-#ifndef JOEWIN
-		if (path[vslen(path) - 1] != '/') {
-			binsm(bw->cursor, sc("/"));
-#else
-		if (path[vslen(path) - 1] != '/' && path[vslen(path) - 1] != '\\') {
-			binsm(bw->cursor, sc("\\"));
-#endif
+		if (!ISDIRSEP(path[vslen(path) - 1])) {
+			binsm(bw->cursor, sc(DIRSEPS));
 			p_goto_eol(bw->cursor);
 		}
 	}
-#ifndef JOEWIN
-	if (quote)
+	if (quote) {
 		binsmq(bw->cursor, sv(nam));
-	else
-#endif
+	} else {
 		binsm(bw->cursor, sv(nam));
+	}
+#else
+	if (vslen(path)) {
+		fullpath = vsncpy(fullpath, 0, sv(path));
+		if (!ISDIRSEP(path[vslen(path) - 1]))
+			fullpath = vscatz(fullpath, DIRSEPS);
+	}
+	fullpath = vsncpy(sv(fullpath), sv(nam));
+	p_goto_start_of_path(p, PATH_QUOTE);
+	bdel(p, bw->cursor);
+	if (quote) {
+		binsmq(p, sv(fullpath));
+	} else {
+		binsm(p, sv(fullpath));
+	}
+#endif
 	p_goto_eol(bw->cursor);
 	if (dir) {
-#ifndef JOEWIN
-		binsm(bw->cursor, sc("/"));
-#else
-		binsm(bw->cursor, sc("\\"));
-#endif
+		binsm(bw->cursor, sc(DIRSEPS));
 		p_goto_eol(bw->cursor);
 	}
 	prm(p);
@@ -198,7 +214,7 @@ static char **treload(TAB *tab,MENU *m, BW *bw, int flg,int *defer)
 
 		tab->list = vaadd(tab->list, s);
 		if (tab->type[x] == F_DIR)
-			tab->list[x] = vsadd(tab->list[x], '/');
+			tab->list[x] = vsadd(tab->list[x], DIRSEPC);
 		else if (tab->type[x] == F_EXEC)
 			tab->list[x] = vsadd(tab->list[x], '*');
 	}
@@ -443,9 +459,7 @@ static int cmplt(BW *bw, int k, int flags_in)
 
 	cline = brvs(NULL, p, q->byte - p->byte); /* Risky */
 	if (flags & PATH_QUOTE) {
-#ifndef JOEWIN
 		cline = dequotevs(cline);
-#endif
 		tab->quote = 1;
 	}
 	if (flags & PATH_CMD)

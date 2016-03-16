@@ -446,7 +446,7 @@ int chpwd(const char *path)
 	x = zlen(buf);
 	while (x > 1) {
 		--x;
-		if ((buf[x] == '/') || (buf[x] == '\\'))
+		if (ISDIRSEP(buf[x]))
 			buf[x] = 0;
 		else
 			break;
@@ -511,6 +511,8 @@ char *simplify_prefix(const char *s)
 #endif
 }
 
+#ifndef JOEWIN
+
 char *dequotevs(char *s)
 {
 	ptrdiff_t x;
@@ -522,3 +524,19 @@ char *dequotevs(char *s)
 			d = vsadd(d, s[x]);
 	return d;
 }
+
+#else
+
+char *dequotevs(char *s)
+{
+	ptrdiff_t x;
+	char *d = vsensure(NULL, vslen(s));
+	for (x = 0; x != vslen(s); ++x)
+		if (s[x] == '"') {
+			/* Just skip it */
+		} else
+			d = vsadd(d, s[x]);
+	return d;
+}
+
+#endif

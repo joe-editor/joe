@@ -2233,6 +2233,8 @@ P *binsm(P *p, const char *blk, ptrdiff_t amnt)
 
 /* Quoted insert */
 
+#ifndef JOEWIN
+
 P *binsmq(P *p, const char *blk, ptrdiff_t amnt)
 {
 	P *q = pdup(p, "binsmq");
@@ -2262,6 +2264,44 @@ P *binsmq(P *p, const char *blk, ptrdiff_t amnt)
 	prm(q);
 	return p;
 }
+
+#else
+
+P *binsmq(P *p, const char *blk, ptrdiff_t amnt)
+{
+	P *q = pdup(p, "binsmq");
+	ptrdiff_t x;
+
+	for (x = 0; x != amnt; ++x) {
+		if (blk[x] == ' ' || blk[x] == '\t')
+			break;
+	}
+
+	if (x == amnt) {
+		binsm(q, blk, amnt);
+		pfwrd(q, amnt);
+	} else {
+		int endsep = ISDIRSEP(blk[amnt - 1]);
+
+		if (endsep) --amnt;
+		binsc(q, '"');
+		pfwrd(q, 1);
+		binsm(q, blk, amnt);
+		pfwrd(q, amnt);
+		binsc(q, '"');
+		pfwrd(q, 1);
+
+		if (endsep) {
+			binsc(q, DIRSEPC);
+			pfwrd(q, 1);
+		}
+	}
+
+	prm(q);
+	return p;
+}
+
+#endif
 
 /* insert byte 'c' at 'p' */
 P *binsbyte(P *p, char c)
@@ -2655,21 +2695,28 @@ static off_t pisindentg(P *p)
 char *dequote(const char *s)
 {
 	static char buf[1024];
-#ifdef JOEWIN
-	/* Backslashes should never mean 'escape' in Windows-land. */
-	zcpy(buf, s);
-	return buf;
-#else
         char *p = buf;
-        while (*s) {
-                if (*s =='\\')
-                        ++s;
-                if (*s)
-                        *p++ = *s++;
-        }
+
+	if (s) {
+#ifndef JOEWIN
+		while (*s) {
+			if (*s =='\\')
+				++s;
+			if (*s)
+				*p++ = *s++;
+		}
+#else
+		while (*s) {
+			while (*s == '\"')
+s++;
+			if (*s)
+				*p++ = *s++;
+		}
+#endif
+	}
+
         *p = 0;
         return buf;
-#endif
 }
 
 /* Load file into new buffer and return the new buffer */

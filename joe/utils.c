@@ -612,7 +612,7 @@ int filecmp(const char* s1, const char* s2)
 		{
 			/* Pass */
 		}
-		else if ((c1 == '\\' || c1 == '/') && (c2 == '\\' || c2 == '/'))
+		else if (ISDIRSEP(c1) && ISDIRSEP(c2))
 		{
 			/* Pass */
 		}

@@ -577,6 +577,9 @@ int usave(W *w, int k)
 	        locale_map, bw->b->name ? 1 : 7, 0, bw->b->name);
 	
 	if (s) {
+#ifdef JOEWIN
+		s = dequotevs(s);
+#endif
 		joesep(s);
 		return dosave1(w, s, mksavereq(NULL,NULL,NULL,1, 0));
 	} else {
@@ -604,6 +607,9 @@ int ublksave(W *w, int k)
 		char *s = ask(w, joe_gettext(_("Name of file to write (^C to abort): ")), &filehist, "Names", cmplt_file_out,
 			      locale_map, 3, 0, bw->b->name);
 		if (s) {
+#ifdef JOEWIN
+			s = dequotevs(s);
+#endif
 			return dosave1(w, s, mksavereq(NULL,NULL,NULL,0, 1));
 		} else {
 			return -1;
@@ -761,6 +767,9 @@ int uedit(W *w, int k)
 	if (s) {
 		B *b;
 
+#ifdef JOEWIN
+		s = dequotevs(s);
+#endif
 		b = bcheck_loaded(s);
 
 		if (b) {
@@ -789,8 +798,8 @@ int usetcd(W *w, int k)
 	if (!s)
 		return -1;
 	
-	if (vslen(s) && s[vslen(s) - 1] != '/')
-		s = vsadd(s, '/');
+	if (vslen(s) && !ISDIRSEP(s[vslen(s) - 1]))
+		s = vsadd(s, DIRSEPC);
 	
 	set_current_dir(bw, s = dequotevs(s), 1);
 	msgnw(w, vsfmt(NULL, 0, joe_gettext(_("Directory prefix set to %s")), s));
@@ -1115,6 +1124,9 @@ int uexsve(W *w, int k)
 		char *s = ask(w, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist,
 			      "Names", cmplt_file_out, locale_map, 1, 0, bw->b->name);
 		if (s) {
+#ifdef JOEWIN
+			s = dequotevs(s);
+#endif
 			return dosave1(w, s, mksavereq(NULL, NULL, NULL, 0, 0));
 		} else {
 			return -1;
@@ -1238,6 +1250,9 @@ static int doquerysave(W *w,int c,void *obj)
 			              &filehist, "Names", cmplt_file_out, locale_map, 7, 0, NULL);
 
 			if (s) {
+#ifdef JOEWIN
+				s = dequotevs(s);
+#endif
 				return dosave1(w, s, req);
 			} else {
 				joe_free(req);

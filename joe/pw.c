@@ -35,6 +35,9 @@ void set_current_dir(BW *bw, char *s,int simp)
 		if (simp) {
 			b->current_dir = simplify_prefix(b->current_dir);
 		}
+#ifdef JOEWIN
+		b->current_dir = dequotevs(b->current_dir);
+#endif
 	}
 	else
 		b->current_dir = 0;
@@ -166,6 +169,9 @@ static int rtnpw(W *w)
 
 	if (pw->file_prompt) {
 		s = canonical(s);
+#ifdef JOEWIN
+		s = dequotevs(s);
+#endif
 	}
 
 	/* Save text into history buffer */

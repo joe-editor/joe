@@ -885,6 +885,9 @@ int uinsf(W *w, int k)
 	s = ask(w, joe_gettext(_("Name of file to insert (^C to abort): ")), &filehist,
 	        "Names", cmplt_file_in, locale_map, 3, 0, NULL);
 	if (s) {
+#ifdef JOEWIN
+		s = dequotevs(s);
+#endif
 		if (square)
 			if (markv(1)) {
 				B *tmp;
