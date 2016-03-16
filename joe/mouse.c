@@ -82,7 +82,7 @@ ptrdiff_t mcoord(ptrdiff_t x)
 		return 0; /* This should not happen */
 }
 
-static int joe_mouse_event(BW *bw)
+static int joe_mouse_event()
 {
 	if ((Cb & 0x41) == 0x40) {
 		fake_key(KEY_MWUP);
@@ -145,9 +145,6 @@ static int joe_mouse_event(BW *bw)
 
 int uxtmouse(W *w, int k)
 {
-	BW *bw;
-	WIND_BW(bw, w);
-
 	Cb = ttgetch()-32;
 	if (Cb < 0)
 		return -1;
@@ -160,7 +157,7 @@ int uxtmouse(W *w, int k)
 
 	Cx = mcoord(Cx);
 	Cy = mcoord(Cy);
-	return joe_mouse_event(bw);
+	return joe_mouse_event();
 }
 
 /* Parse xterm extended 1006 mode mouse event parameters. */
@@ -168,8 +165,6 @@ int uxtmouse(W *w, int k)
 int uextmouse(W *w, int k)
 {
 	int c;
-	BW *bw;
-	WIND_BW(bw, w);
 	Cb = 0;
 	Cx = Cy = 0;
 	while ((c = ttgetch()) != ';') {
@@ -189,7 +184,7 @@ int uextmouse(W *w, int k)
 	}
 	if (c == 'm')
 		Cb |= 3;
-	return joe_mouse_event(bw);
+	return joe_mouse_event();
 }
 
 long mnow()
