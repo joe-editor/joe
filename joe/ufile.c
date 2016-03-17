@@ -1061,6 +1061,9 @@ int get_buffer_in_window(BW *bw, B *b)
 	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
 	wredraw(bw->parent);
 	bw->object = object;
+#ifdef JOEWIN
+	notify_selection();
+#endif
 	return 0;
 }
 

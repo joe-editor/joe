@@ -203,7 +203,13 @@ int jwInitJoe(int argc, wchar_t **argv)
 	{
 		setjoedata();
 		setjoehome();
-		setjoedir();
+
+		/* Change to user's home directory if started from program directory,
+		   but only if there are no arguments (otherwise relative paths get
+		   screwed up). */
+		if (argc == 1) {
+			setjoedir();
+		}
 
 		/* Set up builtin resource loader */
 		{
