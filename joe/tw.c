@@ -47,6 +47,34 @@ static void resizetw(W *w, ptrdiff_t wi, ptrdiff_t he)
 
 /* Get current context */
 
+/* Use context.jsf to determine context.  The advantage of this vs.  the old
+ * method is that the line attribute cache will help find context line
+ * quickly in large files.
+ */
+
+static struct high_syntax *context_syntax;
+
+static const int *get_context(BW *bw)
+{
+	P *p;
+	struct lattr_db *db;
+	HIGHLIGHT_STATE st;
+	clear_state(&st);
+	p = pdup(bw->cursor, "get_context");
+	p_goto_bol(p);
+	if (!context_syntax)
+		context_syntax = load_syntax("context");
+	if (context_syntax) {
+		db = find_lattr_db(bw->b, context_syntax);
+		if (db) {
+			st = lattr_get(db, context_syntax, p, p->line);
+			st = parse(context_syntax, p, st, p->b->o.charmap);
+		}
+	}
+	prm(p);
+	return st.saved_s;
+}
+
 /* Find first line (going backwards) which has 0 indentation level
  * and is not a comment, blank, or block structuring line.  This is
  * likely to be the line with the function name.
@@ -68,6 +96,7 @@ static void resizetw(W *w, ptrdiff_t wi, ptrdiff_t he)
  *
  */
 
+#if 0
 static char *get_context(BW *bw)
 {
 	P *p = pdup(bw->cursor, "get_context");
@@ -126,6 +155,7 @@ static char *get_context(BW *bw)
 
 	return buf1;
 }
+#endif
 
 char *duplicate_backslashes(const char *s, ptrdiff_t len)
 {
@@ -173,11 +203,13 @@ char *stagen(char *stalin, BW *bw, const char *s, char fill)
 			case 'x': /* Context (but only if autoindent is enabled) */
 				{
 					if ( bw->o.autoindent) {
-						char *ts = get_context(bw);
-						/* We need to translate between file's character set to
-						   locale */
-						my_iconv(stdbuf, SIZEOF(stdbuf), locale_map,ts,bw->o.charmap);
-						stalin = vsncpy(sv(stalin), sz(stdbuf));
+						const int *ts = get_context(bw);
+						if (ts) {
+							/* We need to translate between file's character set to
+							   locale */
+							my_iconv1(stdbuf, SIZEOF(stdbuf), locale_map,ts);
+							stalin = vsncpy(sv(stalin), sz(stdbuf));
+						}
 					}
 				}
 				break;

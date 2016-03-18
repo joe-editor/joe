@@ -97,3 +97,6 @@ extern int guess_utf8;
 
 void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
               const char *src,struct charmap *src_map);
+
+void my_iconv1(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
+              const int *src);

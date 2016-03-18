@@ -1791,6 +1791,28 @@ void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
 	}
 }
 
+void my_iconv1(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
+              const int *src)
+{
+	/* src is UTF-8 */
+	if (dest_map->type) {
+		/* Unicode to UTF-8? */
+		Ztoutf8(dest, destsiz, src);
+	} else {
+		--destsiz;
+		/* UTF-8 to non-UTF-8 */
+		while (*src && destsiz) {
+			int d = from_uni(dest_map, *src++);
+			if (d >= 0)
+				*dest++ = TO_CHAR_OK(d);
+			else
+				*dest++ = '?';
+			--destsiz;
+		}
+		*dest = 0;
+	}
+}
+
 /* Guess character set */
 
 int guess_non_utf8;

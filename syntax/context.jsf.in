@@ -1,0 +1,61 @@
+# Identify title lines for status line context display
+
+=Idle
+=Title 		cyan
+
+:idle Idle
+	*		title_line	buffer noeat recolor=-1
+	"b"		maybe_begin_1	buffer
+	"B"		maybe_BEGIN_1	buffer
+	"\n"		idle
+	"/"		maybe_comment	buffer
+	"-"		maybe_comment_1	buffer
+	";{} \t\f#"	comment
+
+:maybe_comment Idle
+	*		title_line	noeat recolor=-1
+	"/*"		comment
+
+:maybe_comment_1 Idle
+	*		title_line	noeat recolor=-1
+	"-"		comment
+
+:title_line Title
+	*		title_line
+	"\n"		idle		save_s
+
+:comment Idle
+	*		comment
+	"\n"		idle
+
+:maybe_begin_1 Idle
+	*		title_line	noeat recolor=-2
+	"e"		maybe_begin_2
+
+:maybe_begin_2 Idle
+	*		title_line	noeat recolor=-3
+	"g"		maybe_begin_3
+
+:maybe_begin_3 Idle
+	*		title_line	noeat recolor=-4
+	"i"		maybe_begin_4
+
+:maybe_begin_4 Idle
+	*		title_line	noeat recolor=-5
+	"n"		comment
+
+:maybe_BEGIN_1 Idle
+	*		title_line	noeat recolor=-2
+	"E"		maybe_BEGIN_2
+
+:maybe_BEGIN_2 Idle
+	*		title_line	noeat recolor=-3
+	"G"		maybe_BEGIN_3
+
+:maybe_BEGIN_3 Idle
+	*		title_line	noeat recolor=-4
+	"I"		maybe_BEGIN_4
+
+:maybe_BEGIN_4 Idle
+	*		title_line	noeat recolor=-5
+	"N"		comment
