@@ -272,7 +272,7 @@ typedef struct Phash PHASH;
 
 /* Structure which are passed by value */
 
-#define SAVED_SIZE 24
+#define SAVED_SIZE 80
 
 struct highlight_state {
 	struct high_frame *stack; /* Pointer to the current frame in the call stack */

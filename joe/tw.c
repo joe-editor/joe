@@ -56,6 +56,8 @@ static struct high_syntax *context_syntax;
 
 static const int *get_context(BW *bw)
 {
+	static int buf1[SAVED_SIZE];
+	const int *src;
 	P *p;
 	struct lattr_db *db;
 	HIGHLIGHT_STATE st;
@@ -72,7 +74,28 @@ static const int *get_context(BW *bw)
 		}
 	}
 	prm(p);
-	return st.saved_s;
+	src = st.saved_s;
+	buf1[0] = 0;
+	if (src) {
+		ptrdiff_t i, j, spc;
+		/* replace tabs to spaces and remove adjoining spaces */
+		for (i=0,j=0,spc=0; src[i]; i++) {
+			if (src[i]=='\t' || src[i]==' ') {
+				if (spc) continue;
+				spc = 1;
+			}
+			else spc = 0;
+			if (src[i]=='\t')
+				buf1[j++] = ' ';
+			else if (src[i]=='\\') {
+				buf1[j++] = '\\';
+				buf1[j++] = '\\';
+			} else
+				buf1[j++] = src[i];
+		}
+		buf1[j]= '\0';
+	}
+	return buf1;
 }
 
 /* Find first line (going backwards) which has 0 indentation level
