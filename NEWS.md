@@ -10,6 +10,11 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Enhancements
+
+	* Improve memory usage by shrinking buffer header size and
+	  highlighter state size.
+
 * Bugs fixed
 
 	* Negative numbers not being recognized in blocks
