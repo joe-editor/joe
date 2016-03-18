@@ -15,6 +15,13 @@
 	* Improve memory usage by shrinking buffer header size and
 	  highlighter state size.
 
+	* Improve efficiency of status line context display (which shows
+	  the first line of the function that the cursor is currently in). 
+	  This feature was making JOE very slow on extremly large files with
+	  auto indent enabled (typically json or xml data files).  Now
+	  the syntax highlighter computes the context display (using a new
+	  syntax named context.jsf).
+
 * Bugs fixed
 
 	* Negative numbers not being recognized in blocks
