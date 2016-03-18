@@ -276,9 +276,17 @@ typedef struct Phash PHASH;
 
 struct highlight_state {
 	struct high_frame *stack; /* Pointer to the current frame in the call stack */
+	const int *saved_s; /* Interned Z-string for saved delimiter */
 	ptrdiff_t state; /* Current state in the current subroutine */
-	int saved_s[SAVED_SIZE]; /* Buffer for saved delimiters */
 };
+
+/* It's a good idea to optimize the size of struct highlight_state since there are N of
+ * them per line (where N is number of active syntaxes enabled on the buffer- usually just
+ * one).
+ *
+ * 64-bit ptr: sizeof(struct highlight_state) == 24
+ * 32-bit ptr: sizeof(struct highlight_state) == 12
+ */
 
 /* Include files */
 

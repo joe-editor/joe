@@ -14,10 +14,19 @@
 struct header {
 	LINK(H)	link;		/* Doubly-linked list of gap buffer headers */
 	off_t	seg;		/* Swap file offset to gap buffer */
-	ptrdiff_t	hole;		/* Offset to gap */
-	ptrdiff_t	ehole;		/* Offset to after gap */
-	ptrdiff_t	nlines;		/* No. '\n's in this buffer */
+	short	hole;		/* Offset to gap */
+	short	ehole;		/* Offset to after gap */
+	short	nlines;		/* No. '\n's in this buffer */
+	short	extra;		/* Unused */
 };
+
+/* It's a good idea to optimize the size of struct header since there is a header
+ * for each page of loaded data.
+ *
+ * 32-bit ptr, 32-bit off: sizeof(H) == 20 bytes
+ * 32-bit ptr, 64-bit off: sizeof(H) == 24 bytes
+ * 64-bit ptr, 64-bit off: sizeof(H) == 32 bytes
+ */
 
 /* A pointer to some location within a buffer.  After an insert or delete,
  * all of the pointers following the insertion or deletion point are
@@ -27,7 +36,7 @@ struct point {
 	LINK(P)	link;		/* Doubly-linked list of pointers for a particular buffer */
 
 	B	*b;		/* Buffer */
-	ptrdiff_t	ofst;	/* Gap buffer offset */
+	short	ofst;		/* Gap buffer offset */
 	char	*ptr;		/* Gap buffer address */
 	H	*hdr;		/* Gap buffer header */
 

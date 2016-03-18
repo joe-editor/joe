@@ -48,17 +48,17 @@ const char *msgs[] = {
 };
 
 /* Get size of gap (amount of free space) */
-#define GGAPSZ(hdr) ((hdr)->ehole - (hdr)->hole)
+#define GGAPSZ(hdr) ((short)((hdr)->ehole - (hdr)->hole))
 
 /* Get number of characters in gap buffer */
-#define GSIZE(hdr) (SEGSIZ - GGAPSZ(hdr))
+#define GSIZE(hdr) ((short)(SEGSIZ - GGAPSZ(hdr)))
 
 /* Get char from buffer (with jumping around the gap) */
 #define GCHAR(p) ((p)->ofst >= (p)->hdr->hole ? ((unsigned char *)(p)->ptr)[(p)->ofst + GGAPSZ((p)->hdr)] \
 					      : ((unsigned char *)(p)->ptr)[(p)->ofst])
 
 /* Set position of gap */
-static void gstgap(H *hdr, char *ptr, ptrdiff_t ofst)
+static void gstgap(H *hdr, char *ptr, short ofst)
 {
 	if (ofst > hdr->hole) {
 		mmove(ptr + hdr->hole, ptr + hdr->ehole, ofst - hdr->hole);
@@ -67,22 +67,22 @@ static void gstgap(H *hdr, char *ptr, ptrdiff_t ofst)
 		mmove(ptr + hdr->ehole - (hdr->hole - ofst), ptr + ofst, hdr->hole - ofst);
 		vchanged(ptr);
 	}
-	hdr->ehole = ofst + hdr->ehole - hdr->hole;
+	hdr->ehole = (short)(ofst + hdr->ehole - hdr->hole);
 	hdr->hole = ofst;
 }
 
 /* Insert a block */
-static void ginsm(H *hdr, char *ptr, ptrdiff_t ofst, const char *blk, ptrdiff_t size)
+static void ginsm(H *hdr, char *ptr, short ofst, const char *blk, short size)
 {
 	if (ofst != hdr->hole)
 		gstgap(hdr, ptr, ofst);
 	mmove(ptr + hdr->hole, blk, size);
-	hdr->hole += size;
+	hdr->hole = (short)(hdr->hole + size);
 	vchanged(ptr);
 }
 
 /* Read block */
-static void grmem(H *hdr, char *ptr, ptrdiff_t ofst, char *blk, ptrdiff_t size)
+static void grmem(H *hdr, char *ptr, short ofst, char *blk, short size)
 {
 	if (ofst < hdr->hole)
 		if (size > hdr->hole - ofst) {
@@ -1377,7 +1377,8 @@ static void ffwrd(P *p, ptrdiff_t n)
 		if (!pnext(p))
 			return;
 	}
-	if ((p->ofst += n) == GSIZE(p->hdr))
+	p->ofst = (short)(p->ofst + n);
+	if (p->ofst == GSIZE(p->hdr))
 		pnext(p);
 }
 
@@ -1522,9 +1523,9 @@ static void fbkwd(P *p, ptrdiff_t n)
 		if (!pprev(p))
 			return;
 	}
-	if (p->ofst >= n)
-		p->ofst -= n;
-	else
+	if (p->ofst >= n) {
+		p->ofst = (short)(p->ofst - n);
+	} else
 		p->ofst = 0;
 }
 
@@ -1700,7 +1701,7 @@ B *bcpy(P *from, P *to)
 		ptr = vlock(vmem, l->seg);
 		if (q->ofst != q->hdr->hole)
 			gstgap(q->hdr, q->ptr, q->ofst);
-		l->nlines = mcnt(q->ptr + q->hdr->ehole, '\n', l->hole = to->ofst - q->ofst);
+		l->nlines = (short)mcnt(q->ptr + q->hdr->ehole, '\n', l->hole = (short)(to->ofst - q->ofst));
 		mmove(ptr, q->ptr + q->hdr->ehole, l->hole);
 		vchanged(ptr);
 		vunlock(ptr);
@@ -1710,7 +1711,7 @@ B *bcpy(P *from, P *to)
 		ptr = vlock(vmem, l->seg);
 		if (q->ofst != q->hdr->hole)
 			gstgap(q->hdr, q->ptr, q->ofst);
-		l->nlines = mcnt(q->ptr + q->hdr->ehole, '\n', l->hole = SEGSIZ - q->hdr->ehole);
+		l->nlines = (short)mcnt(q->ptr + q->hdr->ehole, '\n', l->hole = (short)(SEGSIZ - q->hdr->ehole));
 		mmove(ptr, q->ptr + q->hdr->ehole, l->hole);
 		vchanged(ptr);
 		vunlock(ptr);
@@ -1733,7 +1734,7 @@ B *bcpy(P *from, P *to)
 			ptr = vlock(vmem, l->seg);
 			if (to->ofst != to->hdr->hole)
 				gstgap(to->hdr, to->ptr, to->ofst);
-			l->nlines = mcnt(to->ptr, '\n', to->ofst);
+			l->nlines = (short)mcnt(to->ptr, '\n', to->ofst);
 			mmove(ptr, to->ptr, l->hole = to->ofst);
 			vchanged(ptr);
 			vunlock(ptr);
@@ -1754,13 +1755,13 @@ void pcoalesce(P *p)
 	if (p->hdr != p->b->eof->hdr && GSIZE(p->hdr) + GSIZE(p->hdr->link.next) <= SEGSIZ - SEGSIZ / 4) {
 		H *hdr = p->hdr->link.next;
 		char *ptr = vlock(vmem, hdr->seg);
-		ptrdiff_t osize = GSIZE(p->hdr);
-		ptrdiff_t size = GSIZE(hdr);
+		short osize = GSIZE(p->hdr);
+		short size = GSIZE(hdr);
 		P *q;
 
 		gstgap(hdr, ptr, size);
 		ginsm(p->hdr, p->ptr, GSIZE(p->hdr), ptr, size);
-		p->hdr->nlines += hdr->nlines;
+		p->hdr->nlines = (short)(p->hdr->nlines + hdr->nlines);
 		vunlock(ptr);
 		hfree(deque_f(H, link, hdr));
 		for (q = p->link.next; q != p; q = q->link.next)
@@ -1770,29 +1771,30 @@ void pcoalesce(P *p)
 					vunlock(q->ptr);
 					q->ptr = vlock(vmem, q->hdr->seg);
 				}
-				q->ofst += osize;
+				q->ofst = (short)(q->ofst + osize);
 			}
 	}
 	if (p->hdr != p->b->bof->hdr && GSIZE(p->hdr) + GSIZE(p->hdr->link.prev) <= SEGSIZ - SEGSIZ / 4) {
 		H *hdr = p->hdr->link.prev;
 		char *ptr = vlock(vmem, hdr->seg);
-		ptrdiff_t size = GSIZE(hdr);
+		short size = GSIZE(hdr);
 		P *q;
 
 		gstgap(hdr, ptr, size);
 		ginsm(p->hdr, p->ptr, 0, ptr, size);
-		p->hdr->nlines += hdr->nlines;
+		p->hdr->nlines = (short)(p->hdr->nlines + hdr->nlines);
 		vunlock(ptr);
 		hfree(deque_f(H, link, hdr));
-		p->ofst += size;
+		p->ofst = (short)(p->ofst + size);
 		for (q = p->link.next; q != p; q = q->link.next)
 			if (q->hdr == hdr) {
 				q->hdr = p->hdr;
 				if (q->ptr)
 					vunlock(q->ptr);
 				q->ptr = vlock(vmem, q->hdr->seg);
-			} else if (q->hdr == p->hdr)
-				q->ofst += size;
+			} else if (q->hdr == p->hdr) {
+				q->ofst = (short)(q->ofst + size);
+			}
 	}
 }
 
@@ -1841,14 +1843,14 @@ static B *bcut(P *from, P *to)
 		h = halloc();
 		ptr = vlock(vmem, h->seg);
 		mmove(ptr, from->ptr + from->hdr->ehole, (ptrdiff_t) amnt);
-		h->hole = TO_DIFF_OK(amnt);
-		h->nlines = TO_DIFF_OK(nlines);
+		h->hole = (short)(amnt);
+		h->nlines = (short)(nlines);
 		vchanged(ptr);
 		vunlock(ptr);
 
 		/* Delete */
-		from->hdr->ehole += TO_DIFF_OK(amnt);
-		from->hdr->nlines -= TO_DIFF_OK(nlines);
+		from->hdr->ehole = (short)(from->hdr->ehole + amnt);
+		from->hdr->nlines = (short)(from->hdr->nlines - nlines);
 
 		toamnt = TO_DIFF_OK(amnt);
 	} else {		/* Delete crosses segments */
@@ -1866,12 +1868,12 @@ static B *bcut(P *from, P *to)
 			ptr = vlock(vmem, i->seg);
 			mmove(ptr, to->ptr, to->hdr->hole);
 			i->hole = to->hdr->hole;
-			i->nlines = mcnt(to->ptr, '\n', to->hdr->hole);
+			i->nlines = (short)mcnt(to->ptr, '\n', to->hdr->hole);
 			vchanged(ptr);
 			vunlock(ptr);
 
 			/* Delete */
-			to->hdr->nlines -= i->nlines;
+			to->hdr->nlines = (short)(to->hdr->nlines - i->nlines);
 			to->hdr->hole = 0;
 		} else
 			i = 0;
@@ -1893,13 +1895,13 @@ static B *bcut(P *from, P *to)
 			h = halloc();
 			ptr = vlock(vmem, h->seg);
 			mmove(ptr, from->ptr + from->hdr->ehole, SEGSIZ - from->hdr->ehole);
-			h->hole = SEGSIZ - from->hdr->ehole;
-			h->nlines = mcnt(ptr, '\n', h->hole);
+			h->hole = (short)(SEGSIZ - from->hdr->ehole);
+			h->nlines = (short)mcnt(ptr, '\n', h->hole);
 			vchanged(ptr);
 			vunlock(ptr);
 
 			/* Delete */
-			from->hdr->nlines -= h->nlines;
+			from->hdr->nlines = (short)(from->hdr->nlines - h->nlines);
 			from->hdr->ehole = SEGSIZ;
 		}
 
@@ -1975,8 +1977,9 @@ static B *bcut(P *from, P *to)
 					poffline(pset(p, from));
 				}
 			} else {
-				if (p->hdr == to->hdr)
-					p->ofst -= toamnt;
+				if (p->hdr == to->hdr) {
+					p->ofst = (short)(p->ofst - toamnt);
+				}
 				p->byte -= amnt;
 				p->line -= nlines;
 			}
@@ -2019,9 +2022,9 @@ static void bsplit(P *p)
 		if (p->ofst != p->hdr->hole)
 			gstgap(p->hdr, p->ptr, p->ofst);
 		mmove(ptr, p->ptr + p->hdr->ehole, SEGSIZ - p->hdr->ehole);
-		hdr->hole = SEGSIZ - p->hdr->ehole;
-		hdr->nlines = mcnt(ptr, '\n', hdr->hole);
-		p->hdr->nlines -= hdr->nlines;
+		hdr->hole = (short)(SEGSIZ - p->hdr->ehole);
+		hdr->nlines = (short)mcnt(ptr, '\n', hdr->hole);
+		p->hdr->nlines = (short)(p->hdr->nlines - hdr->nlines);
 		vchanged(ptr);
 		p->hdr->ehole = SEGSIZ;
 
@@ -2037,7 +2040,7 @@ static void bsplit(P *p)
 					pp->ptr = ptr;
 					vupcount(ptr);
 				}
-				pp->ofst -= p->ofst;
+				pp->ofst = (short)(pp->ofst - p->ofst);
 			}
 
 		p->ptr = ptr;
@@ -2055,17 +2058,17 @@ static H *bldchn(const char *blk, ptrdiff_t size, off_t *nlines)
 	izque(H, link, &anchor);
 	do {
 		char *ptr;
-		ptrdiff_t amnt;
+		short amnt;
 
 		ptr = vlock(vmem, (l = halloc())->seg);
 		if (size > SEGSIZ)
 			amnt = SEGSIZ;
 		else
-			amnt = size;
+			amnt = (short)size;
 		mmove(ptr, blk, amnt);
 		l->hole = amnt;
 		l->ehole = SEGSIZ;
-		(*nlines) += (l->nlines = mcnt(ptr, '\n', amnt));
+		(*nlines) += (l->nlines = (short)mcnt(ptr, '\n', amnt));
 		vchanged(ptr);
 		vunlock(ptr);
 		enqueb(H, link, &anchor, l);
@@ -2143,8 +2146,9 @@ static void fixupins(P *p, off_t amnt, off_t nlines, H *hdr, ptrdiff_t hdramnt)
 		else if (pp->byte > p->byte || (pp->end && pp->byte == p->byte)) {
 			pp->byte += amnt;
 			pp->line += nlines;
-			if (pp->hdr == hdr)
-				pp->ofst += hdramnt;
+			if (pp->hdr == hdr) {
+				pp->ofst = (short)(pp->ofst + hdramnt);
+			}
 		}
 	if (p->b->undo)
 		undoins(p->b->undo, p, amnt);
@@ -2183,13 +2187,15 @@ P *binsm(P *p, const char *blk, ptrdiff_t amnt)
 	if (amnt <= GGAPSZ(q->hdr)) {
 		h = q->hdr;
 		hdramnt = amnt;
-		ginsm(q->hdr, q->ptr, q->ofst, blk, amnt);
-		q->hdr->nlines += (nlines = mcnt(blk, '\n', amnt));
+		ginsm(q->hdr, q->ptr, q->ofst, blk, (short)amnt);
+		nlines = mcnt(blk, '\n', amnt);
+		q->hdr->nlines = (short)(q->hdr->nlines + nlines);
 		nlines1 = nlines;
 	} else if (!q->ofst && q->hdr != q->b->bof->hdr && amnt <= GGAPSZ(q->hdr->link.prev)) {
 		pprev(q);
-		ginsm(q->hdr, q->ptr, q->ofst, blk, amnt);
-		q->hdr->nlines += (nlines = mcnt(blk, '\n', amnt));
+		ginsm(q->hdr, q->ptr, q->ofst, blk, (short)amnt);
+		nlines = mcnt(blk, '\n', amnt);
+		q->hdr->nlines = (short)(q->hdr->nlines + nlines);
 		nlines1 = nlines;
 	} else {
 		H *a = bldchn(blk, amnt, &nlines1);
@@ -2389,7 +2395,7 @@ B *bread(int fi, off_t max)
 						mcpy(seg, outbuf, SEGSIZ);
 						total += SEGSIZ;
 						l->hole = SEGSIZ;
-						lines += (l->nlines = mcnt(seg, '\n', SEGSIZ));
+						lines += (l->nlines = (short)mcnt(seg, '\n', SEGSIZ));
 						vchanged(seg);
 						vunlock(seg);
 						enqueb(H, link, &anchor, l);
@@ -2404,8 +2410,8 @@ B *bread(int fi, off_t max)
 			if (y) {
 				mcpy(seg, outbuf, y);
 				total += y;
-				l->hole = y;
-				lines += (l->nlines = mcnt(seg, '\n', y));
+				l->hole = (short)y;
+				lines += (l->nlines = (short)mcnt(seg, '\n', y));
 				vchanged(seg);
 				vunlock(seg);
 				enqueb(H, link, &anchor, l);
@@ -2429,7 +2435,7 @@ B *bread(int fi, off_t max)
 						mcpy(seg, outbuf, SEGSIZ);
 						total += SEGSIZ;
 						l->hole = SEGSIZ;
-						lines += (l->nlines = mcnt(seg, '\n', SEGSIZ));
+						lines += (l->nlines = (short)mcnt(seg, '\n', SEGSIZ));
 						vchanged(seg);
 						vunlock(seg);
 						enqueb(H, link, &anchor, l);
@@ -2444,8 +2450,8 @@ B *bread(int fi, off_t max)
 			if (y) {
 				mcpy(seg, outbuf, y);
 				total += y;
-				l->hole = y;
-				lines += (l->nlines = mcnt(seg, '\n', y));
+				l->hole = (short)y;
+				lines += (l->nlines = (short)mcnt(seg, '\n', y));
 				vchanged(seg);
 				vunlock(seg);
 				enqueb(H, link, &anchor, l);
@@ -2464,8 +2470,8 @@ B *bread(int fi, off_t max)
 		rest:
 		total += amnt;
 		max -= amnt;
-		l->hole = amnt;
-		lines += (l->nlines = mcnt(seg, '\n', amnt));
+		l->hole = (short)amnt;
+		lines += (l->nlines = (short)mcnt(seg, '\n', amnt));
 		vchanged(seg);
 		vunlock(seg);
 		enqueb(H, link, &anchor, l);
@@ -3266,13 +3272,13 @@ char *brmem(P *p, char *blk, ptrdiff_t size)
 
 	np = pdup(p, "brmem");
 	while (size > (amnt = GSIZE(np->hdr) - np->ofst)) {
-		grmem(np->hdr, np->ptr, np->ofst, bk, amnt);
+		grmem(np->hdr, np->ptr, np->ofst, bk, (short)amnt);
 		bk += amnt;
 		size -= amnt;
 		pnext(np);
 	}
 	if (size)
-		grmem(np->hdr, np->ptr, np->ofst, bk, size);
+		grmem(np->hdr, np->ptr, np->ofst, bk, (short)size);
 	prm(np);
 	return blk;
 }

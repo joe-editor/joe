@@ -681,18 +681,18 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
       bye:
       	outatr_complete(t);
 	if (bp - p->ptr <= p->hdr->hole)
-		p->ofst = bp - p->ptr;
+		p->ofst = (short)(bp - p->ptr);
 	else
-		p->ofst = bp - p->ptr - (p->hdr->ehole - p->hdr->hole);
+		p->ofst = (short)(bp - p->ptr - (p->hdr->ehole - p->hdr->hole));
 	p->byte = byte;
 	return done;
 
       eosl:
       	outatr_complete(t);
 	if (bp - p->ptr <= p->hdr->hole)
-		p->ofst = bp - p->ptr;
+		p->ofst = (short)(bp - p->ptr);
 	else
-		p->ofst = bp - p->ptr - (p->hdr->ehole - p->hdr->hole);
+		p->ofst = (short)(bp - p->ptr - (p->hdr->ehole - p->hdr->hole));
 	p->byte = byte;
 	pnextl(p);
 	return 0;
