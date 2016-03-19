@@ -69,8 +69,9 @@ static const int *get_context(BW *bw)
 	if (context_syntax) {
 		db = find_lattr_db(bw->b, context_syntax);
 		if (db) {
-			st = lattr_get(db, context_syntax, p, p->line);
-			st = parse(context_syntax, p, st, p->b->o.charmap);
+			st = lattr_get(db, context_syntax, p, p->line + 1);
+			/* Handles last line better */
+			/* st = parse(context_syntax, p, st, p->b->o.charmap); */
 		}
 	}
 	prm(p);
@@ -90,8 +91,9 @@ static const int *get_context(BW *bw)
 			else if (src[i]=='\\') {
 				buf1[j++] = '\\';
 				buf1[j++] = '\\';
-			} else
+			} else if (src[i] != '\r') {
 				buf1[j++] = src[i];
+			}
 		}
 		buf1[j]= '\0';
 	}

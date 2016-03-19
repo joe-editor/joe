@@ -10,7 +10,7 @@
 	"\n"		idle
 	"/"		maybe_comment	buffer
 	"-"		maybe_comment_1	buffer
-	";{} \t\f#"	comment
+	";{} \t\r\f#"	comment
 
 :maybe_comment Idle
 	*		title_line	noeat recolor=-1
