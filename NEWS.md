@@ -28,6 +28,9 @@
 	* Disable syntax highlighting and context display in very large
 	  files
 
+	* Force mode appropriate modes when we enter hex dump display:
+	  enable overtype, disable autoindent, wordwrap, ansi, picture.
+
 * Bugs fixed
 
 	* Negative numbers not being recognized in blocks

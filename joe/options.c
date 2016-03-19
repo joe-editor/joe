@@ -10,6 +10,11 @@
 
 #define HEX_RESTORE_UTF8	2
 #define HEX_RESTORE_CRLF	4
+#define HEX_RESTORE_INSERT	8
+#define HEX_RESTORE_WORDWRAP	16
+#define HEX_RESTORE_AUTOINDENT	32
+#define HEX_RESTORE_ANSI	64
+#define HEX_RESTORE_PICTURE	128
 #define OPT_BUF_SIZE 300
 
 const char *aborthint = "^C";
@@ -200,6 +205,31 @@ void lazy_opts(B *b, OPTIONS *o)
 		if (b->o.crlf) {
 			b->o.crlf = 0;
 			b->o.hex |= HEX_RESTORE_CRLF;
+		}
+
+		if (!b->o.overtype) {
+			b->o.overtype = 1;
+			b->o.hex |= HEX_RESTORE_INSERT;
+		}
+
+		if (b->o.wordwrap) {
+			b->o.wordwrap = 0;
+			b->o.hex |= HEX_RESTORE_WORDWRAP;
+		}
+
+		if (b->o.autoindent) {
+			b->o.autoindent = 0;
+			b->o.hex |= HEX_RESTORE_AUTOINDENT;
+		}
+
+		if (b->o.ansi) {
+			b->o.ansi = 0;
+			b->o.hex |= HEX_RESTORE_ANSI;
+		}
+
+		if (b->o.picture) {
+			b->o.picture = 0;
+			b->o.hex |= HEX_RESTORE_PICTURE;
 		}
 	}
 	
@@ -1111,6 +1141,31 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 						bw->o.crlf = 0;
 						bw->o.hex |= HEX_RESTORE_CRLF;
 					}
+
+					if (!bw->o.overtype) {
+						bw->o.overtype = 1;
+						bw->o.hex |= HEX_RESTORE_INSERT;
+					}
+
+					if (bw->o.wordwrap) {
+						bw->o.wordwrap = 0;
+						bw->o.hex |= HEX_RESTORE_WORDWRAP;
+					}
+
+					if (bw->o.autoindent) {
+						bw->o.autoindent = 0;
+						bw->o.hex |= HEX_RESTORE_AUTOINDENT;
+					}
+
+					if (bw->o.ansi) {
+						bw->o.ansi = 0;
+						bw->o.hex |= HEX_RESTORE_ANSI;
+					}
+
+					if (bw->o.picture) {
+						bw->o.picture = 0;
+						bw->o.hex |= HEX_RESTORE_PICTURE;
+					}
 					/* Try to put entire hex dump on screen in case where we were
 					   scrolled far to the right */
 					bw->offset = 0;
@@ -1123,6 +1178,22 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 					if (oldval & HEX_RESTORE_CRLF) {
 						/* Turn CRLF back on */
 						bw->o.crlf = 1;
+					}
+
+					if (oldval & HEX_RESTORE_INSERT) {
+						bw->o.overtype = 0;
+					}
+					if (oldval & HEX_RESTORE_WORDWRAP) {
+						bw->o.wordwrap = 1;
+					}
+					if (oldval & HEX_RESTORE_AUTOINDENT) {
+						bw->o.autoindent = 1;
+					}
+					if (oldval & HEX_RESTORE_ANSI) {
+						bw->o.ansi = 1;
+					}
+					if (oldval & HEX_RESTORE_PICTURE) {
+						bw->o.picture = 1;
 					}
 					/* Update column in case we moved while in hex mode */
 					bw->cursor->xcol = piscol(bw->cursor);
