@@ -23,7 +23,10 @@
 	  syntax named context.jsf).
 
 	* Add a mode 'title' to enable or disable the status line context
-	  display.
+	  display (previsouly autoindent mode was overloaded to do this).
+
+	* Disable syntax highlighting and context display in very large
+	  files
 
 * Bugs fixed
 

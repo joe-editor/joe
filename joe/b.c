@@ -2898,6 +2898,12 @@ opnerr:
 		prm(p);
 	}
 
+	/* Disable syntax highlighting and context display on very large files */
+	if (b->eof->line > 450000 || b->eof->byte > 16000000) {
+		b->o.title = 0;
+		b->o.highlight = 0;
+	}
+
 	/* Eliminate parsed name */
 	vsrm(n);
 
