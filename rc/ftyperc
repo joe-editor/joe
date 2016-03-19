@@ -85,6 +85,7 @@
 [mason]
 *.mas
 -autoindent
+-title
 -syntax mason
 -smarthome
 -smartbacks
@@ -93,6 +94,7 @@
 [sml]
 *.sml
 -autoindent
+-title
 -syntax sml
 -smarthome
 -smartbacks
@@ -104,6 +106,7 @@
  OCaml language interface
 *.mli
 -autoindent
+-title
 -syntax ocaml
 -smarthome
 -smartbacks
@@ -120,6 +123,7 @@
 *Guardfile
 *.rabl
 -autoindent
+-title
 -pound_comment
 -syntax ruby
 -text_delimiters do=end
@@ -132,6 +136,7 @@
 *.pm
 *.t
 -autoindent
+-title
 -syntax perl
 -smarthome
 -smartbacks
@@ -142,6 +147,7 @@
 [sql]
 *.sql
 -autoindent
+-title
 -syntax sql
 -smarthome
 -smartbacks
@@ -157,6 +163,7 @@
 [awk]
 *.awk
 -autoindent
+-title
 -syntax awk
 -smarthome
 -smartbacks
@@ -167,6 +174,7 @@
 [yacc]
 *.y
 -autoindent
+-title
 -syntax c
 -highlighter_context
 -smarthome
@@ -183,6 +191,7 @@
 *.l
 *.lex
 -autoindent
+-title
 -syntax c
 -highlighter_context
 -smarthome
@@ -200,6 +209,7 @@
 *.ads
 -syntax ada
 -autoindent
+-title
 -istep 2
 -smarthome
 -smartbacks
@@ -221,6 +231,7 @@
 +#![ 	]*[^\n]*rexx[0-9.]*\>
 -syntax rexx
 -autoindent
+-title
 
  SED script
 [sed]
@@ -247,6 +258,7 @@
 *.hh
 *.mm
 -autoindent
+-title
 -syntax c
 -highlighter_context
 -smarthome
@@ -330,6 +342,7 @@
 [java]
 *.java
 -autoindent
+-title
 -syntax java
 -smarthome
 -smartbacks
@@ -344,6 +357,7 @@
 *
 +#![ 	]*[^\n]*nodejs[0-9.]*\>
 -autoindent
+-title
 -syntax js
 -smarthome
 -smartbacks
@@ -364,6 +378,7 @@
 [typescript]
 *.ts
 -autoindent
+-title
 -syntax typescript
 -smarthome
 -smartbacks
@@ -376,6 +391,7 @@
 [php]
 *.php
 -autoindent
+-title
 -syntax php
 -smarthome
 -smartbacks
@@ -387,6 +403,7 @@
 +#![ 	]*[^\n]*python[0-9.]*\>
 *.py
 -autoindent
+-title
 -syntax python
 -highlighter_context
 -smarthome
@@ -406,6 +423,7 @@
 *.tcsh
 *.tcshrc
 -autoindent
+-title
 -syntax csh
 -pound_comment
 
@@ -421,6 +439,7 @@
 *.bash_login
 *.bash_logout
 -autoindent
+-title
 -syntax sh
 -highlighter_context
 -pound_comment
@@ -432,6 +451,7 @@
 *.lsp
 *.el
 -autoindent
+-title
 -syntax lisp
 -semi_comment
 
@@ -441,6 +461,7 @@
 +#![ 	]*[^\n 	]*/ksh\>
 *.ksh
 -autoindent
+-title
 -syntax sh
 -highlighter_context
 -pound_comment
@@ -451,19 +472,21 @@
 *.p
 *.pas
 -autoindent
+-title
 -syntax pascal
 -smarthome
 -smartbacks
 -purify
 -text_delimiters begin|BEGIN|record|RECORD|case|CASE=end|END:repeat|REPEAT=until|UNTIL
 
- Fortral
+ Fortran
 [fortran]
 *.f
 *.f90
 *.for
 *.FOR
 -autoindent
+-title
 -syntax fortran
 
  Cadence SKILL
@@ -472,6 +495,7 @@
 -semi_comment
 -syntax skill
 -autoindent
+-title
 -istep 3
 -indentc 32
 -smartbacks
@@ -484,18 +508,21 @@
 *
 +#![ 	]*[^\n]*lua[0-9.]*\>
 -autoindent
+-title
 -syntax lua
 
  TCL
 [tcl]
 *.tcl
 -autoindent
+-title
 -syntax tcl
 
  Go language
 [go]
 *.go
 -autoindent
+-title
 -syntax go
 -smarthome
 -smartbacks
@@ -509,6 +536,7 @@
 [c#]
 *.cs
 -autoindent
+-title
 -syntax csharp
 -smarthome
 -smartbacks
@@ -521,6 +549,7 @@
 *.jsf
 *.jsf.in
 -autoindent
+-title
 -syntax jsf
 -smarthome
 
@@ -529,6 +558,7 @@
 *.ac
 *.m4
 -autoindent
+-title
 -syntax m4
 
  Matlab file (clashes with objective-C)
@@ -647,12 +677,14 @@
 *.erlang
 -syntax erlang
 -autoindent
+-title
 
  Sieve (ManageSieve)
 [sieve]
 *.sieve
 -syntax sieve
 -autoindent
+-title
 
  Puppet
 [puppet]
@@ -660,6 +692,7 @@
 -syntax puppet
 -pound_comment
 -autoindent
+-title
 
  ip(6)tables
 [iptables]
@@ -685,6 +718,7 @@
 *.ex
 *.exs
 -autoindent
+-title
 -syntax elixir
 -pound_comment
 -text_delimiters do=end
@@ -695,6 +729,7 @@
 [r]
 *.r
 -autoindent
+-title
 -syntax r
 -pound_comment
 -smarthome
@@ -709,6 +744,7 @@
 *.gy
 *.gsh
 -autoindent
+-title
 -syntax groovy
 -c_comment
 -cpp_comment
@@ -724,6 +760,7 @@
 *.cljc
 *.edn
 -autoindent
+-title
 -syntax clojure
 -semi_comment
 -smarthome
@@ -734,6 +771,7 @@
 [rust]
 *.rs
 -autoindent
+-title
 -syntax rust
 -c_comment
 -cpp_comment
@@ -746,6 +784,7 @@
 [coffee]
 *.coffee
 -autoindent
+-title
 -syntax coffee
 -pound_comment
 -smarthome
@@ -757,6 +796,7 @@
 [scala]
 *.scala
 -autoindent
+-title
 -syntax scala
 -c_comment
 -cpp_comment
@@ -769,6 +809,7 @@
 [swift]
 *.swift
 -autoindent
+-title
 -syntax swift
 -c_comment
 -cpp_comment
@@ -781,6 +822,7 @@
 [d]
 *.d
 -autoindent
+-title
 -syntax d
 -c_comment
 -cpp_comment
@@ -793,5 +835,6 @@
 [dockerfile]
 *Dockerfile
 -autoindent
+-title
 -syntax dockerfile
 -pound_comment

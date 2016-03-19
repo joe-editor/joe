@@ -69,6 +69,7 @@ OPTIONS pdefault = {
 	0,		/* tex_comment */
 	0,		/* hex */
 	0,		/* hide ansi */
+	0,		/* status line context */
 	NULL,		/* text_delimiters */
 	NULL,		/* Characters which can indent paragraphs */
 	NULL,		/* Characters which begin non-paragraph lines */
@@ -131,6 +132,7 @@ OPTIONS fdefault = {
 	0,		/* tex_comment */
 	0,		/* hex */
 	0,		/* hide ansi */
+	0,		/* status line context */
 	NULL,		/* text_delimiters */
 	">;!#%/",	/* Characters which can indent paragraphs */
 	".",	/* Characters which begin non-paragraph lines */
@@ -268,6 +270,7 @@ struct glopts {
 	{"overwrite",4, NULL, (char *) &fdefault.overtype, _("Overtype mode"), _("Insert mode"), _("Overtype mode"), 0, 0, 0 },
 	{"hex",4, NULL, (char *) &fdefault.hex, _("Hex edit mode"), _("Text edit mode"), _("Hex edit display mode"), 0, 0, 0 },
 	{"ansi",4, NULL, (char *) &fdefault.ansi, _("Hide ANSI sequences"), _("Reveal ANSI sequences"), _("Hide ANSI mode"), 0, 0, 0 },
+	{"title",4, NULL, (char *) &fdefault.title, _("Status line context enabled"), _("Status line context disabled"), _("Status line context display mode"), 0, 0, 0 },
 	{"autoindent",	4, NULL, (char *) &fdefault.autoindent, _("Autoindent enabled"), _("Autoindent disabled"), _("Autoindent mode"), 0, 0, 0 },
 	{"wordwrap",	4, NULL, (char *) &fdefault.wordwrap, _("Wordwrap enabled"), _("Wordwrap disabled"), _("Word wrap mode"), 0, 0, 0 },
 	{"tab",	14, NULL, (char *) &fdefault.tab, _("Tab width (%lld): "), 0, _("Tab width"), 0, 1, 64 },

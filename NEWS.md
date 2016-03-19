@@ -22,6 +22,9 @@
 	  the syntax highlighter computes the context display (using a new
 	  syntax named context.jsf).
 
+	* Add a mode 'title' to enable or disable the status line context
+	  display.
+
 * Bugs fixed
 
 	* Negative numbers not being recognized in blocks

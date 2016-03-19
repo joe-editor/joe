@@ -227,7 +227,7 @@ char *stagen(char *stalin, BW *bw, const char *s, char fill)
 
 			case 'x': /* Context (but only if autoindent is enabled) */
 				{
-					if ( bw->o.autoindent) {
+					if (bw->o.title) {
 						const int *ts = get_context(bw);
 						if (ts) {
 							/* We need to translate between file's character set to

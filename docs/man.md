@@ -439,6 +439,12 @@ Enable rectangular block mode.
 Transpose rows with columns in all menus.
 <br>
 
+* title<br>
+Display context (titles) in status line.  When enabled this shows the first
+line of the function that the cursor is in on the status line.  The syntax
+file context.jsf identifies which lines are title lines.
+<br>
+
 * type<br>
 Select file type, overriding the automatically determined type.  The file
 types are defined in the __ftyperc__ file.

@@ -108,6 +108,7 @@ struct options {
 	int	tex_comment;	/* Ignore text after % comments */
 	int	hex;		/* Hex edit mode */
 	int	ansi;		/* Hide ansi sequences mode */
+	int	title;		/* Enable status line context display */
 	const char *text_delimiters;	/* Define word delimiters */
 	const char *cpara;	/* Characters which can indent paragraphcs */
 	const char *cnotpara;/* Characters which begin non-paragraph lines */
