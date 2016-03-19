@@ -530,7 +530,7 @@ Code quality:
 Hex edit mode:
 
 	Any modes should be forced in hex edit?
-		force switch to overtype mode?
+		force switch to overtype mode? [done]
 
 		utf-8 file encoding needs to be off for hex mode.
 		also crlf mode. [done]

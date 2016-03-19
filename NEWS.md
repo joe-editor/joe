@@ -39,6 +39,8 @@
 	  (it should do this only for completion menus associated with
 	  prompts)
 
+	* Use 'LC_ALL=C sed' to get JOE to compile in OS X.
+
 ### JOE 4.2
 
 * New or improved syntax files for the following languages: 
