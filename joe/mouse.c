@@ -34,7 +34,7 @@ static int selecting = 0;	/* Set if we did any selecting */
 
 static int Cb;
 static ptrdiff_t Cx, Cy;
-static int Lx, Ly;
+static ptrdiff_t Lx, Ly;
 static long last_msec=0;		/* time in ms when event occurred */
 static int clicks;
 static int Cbutton;
@@ -411,7 +411,7 @@ void mousedrag(ptrdiff_t x,ptrdiff_t y)
 	// SO, we make an exception in the case when the cursors is outside of the
 	// editor's bounds -- if you keep moving the mouse, it will keep selecting
 	// more characters.
-	int w, h;
+	ptrdiff_t w, h;
 
 	ttgtsz(&w, &h);
 

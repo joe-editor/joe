@@ -493,7 +493,7 @@ void vtraw(int fd)
 
 /* Window size change stuff */
 
-void ttstsz(int fd, int w, int h)
+void ttstsz(int fd, ptrdiff_t w, ptrdiff_t h)
 {
 	int i;
 

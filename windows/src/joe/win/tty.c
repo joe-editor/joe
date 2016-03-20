@@ -34,8 +34,8 @@ ptrdiff_t obufp = 0;
 ptrdiff_t obufsiz;
 
 char ibuf[UI_TO_EDITOR_IOSZ];
-int ibufp = 0;
-int ibufsiz = 0;
+ptrdiff_t ibufp = 0;
+ptrdiff_t ibufsiz = 0;
 
 /* The baud rate */
 
@@ -337,7 +337,7 @@ void ttputs(const char *s)
 
 /* Get window size */
 
-void ttgtsz(int *x, int *y)
+void ttgtsz(ptrdiff_t *x, ptrdiff_t *y)
 {
 	*x = winwidth;
 	*y = winheight;
@@ -413,7 +413,7 @@ int handlejwcontrol(struct CommMessage *m)
 		}
 
 		if (data) {
-			int sta;
+			ptrdiff_t sta;
 			MACRO *m = mparse(NULL, data, &sta, 0);
 			co_call(exemac, m);
 			rmmacro(m);
