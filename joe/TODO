@@ -297,20 +297,6 @@ Options / modes:
 	why is ftype a command instead of a mode?
 	can we set encoding/syntax/ftype on command line: joe -ftype c fred
 
-	how it works now:
-
-		1. load file with bfind
-
-			A.  this calls setopt to determine ftype type, then
-			    applies options from OPTIONS to B using lazy_opts
-	
-				In particular, it looks up encoding and syntax based on names.
-
-		2. copy b->o to bw->o in bwmk
-		3. apply local options to bw->o
-			replace bw->o if ftype is given here?
-		4. use lazy_opts to propogate them back to bw->b->o
-
 	Special processing for: readonly (we get it from b->rdonly, and
 	stick it back after options)
 
@@ -330,6 +316,43 @@ Options / modes:
 		we set it bw->o
 		we then copy bw->o to bw->b->o.
 		encoding / syntax also do this.
+
+	Options data flow:
+		rc file:
+			uses glopt to set options in new OPTIONS struct initialized from fdefault
+
+		bload:
+			calls setopt to find options based on name and context using regex
+				setopt calls lazy_opts to copy to b->o and set derived things
+
+		ftype command:
+			find options based on name using find_ftype
+				calls lazy_opts to set bw->b->o
+				copy bw->b->o back to bw->o
+
+		command line:
+			use bload (really bfind) to get file
+			create window: this copies b->o to bw->o
+			save b->rdonly in bw->o.readonly
+			use backopt to set command line options.  This uses glopt on bw->o
+			use lazy_opts to propogate options to b->o
+			copy b->o back to bw->o here
+			set b->rdonly from bw->o.readonly (allows command line to override rdonly).
+
+		mode command (for ^T):
+			sets option in bw using olddoopt
+				uses applyopt for toggles
+				copies bw->o to bw->b->o... why no lazy_opts?
+
+		lazy_opts:
+			The original purpose is so that we don't load every syntax file (when we build OPTIONs from ftyperc file):
+			only load ones we intend to use.
+
+			But this is a good place to put rules.
+
+			We should copy b->o back to bw->o after calling lazy_opts.  This happens when new windows are created-
+			mkbw gets the options from b.
+
 
 Macro / command execution:
 
