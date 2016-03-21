@@ -176,14 +176,17 @@ void mousedn(ptrdiff_t x, ptrdiff_t y, int middle)
 
 int udefmiddledown(W *w, int k)
 {
+	if (utomouse(w, 0)) /* Positions cursor */
+		return -1;
+	w = maint->curwin;
+	if (!(w->watom->what == TYPETW || w->watom->what == TYPEPW))
+		return -1;
 	if (joexterm) {
 		/* Request xterm to send selection text to JOE */
 		ttputs("\33]52;;?\33\\");
 	} else {
 		/* Copy region to cursor */
-		if (utomouse(w, 0)) /* Positions cursor */
-			return -1;
-		return ublkcpy(w, 0); /* Copy */
+		return ublkcpy(w, -2); /* Copy */
 	}
 }
 
