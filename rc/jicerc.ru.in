@@ -830,6 +830,8 @@ defm2drag	M2DRAG		Отметить последовательность слов
 defm3down	M3DOWN		Отметить строку в позиции мыши
 defm3up		M3UP
 defm3drag	M3DRAG		Отметить последовательность строк
+defmiddleup	MIDDLEUP
+defmiddledown	MIDDLEDOWN	Insert text
 
 xtmouse		^[ [ M		Начало обработки событий мыши в xterm
 extmouse	^[ [ <		Introduces an extended xterm mouse event (TODO: translate to Russian)

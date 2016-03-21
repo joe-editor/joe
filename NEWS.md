@@ -31,6 +31,10 @@
 	* Force mode appropriate modes when we enter hex dump display:
 	  enable overtype, disable autoindent, wordwrap, ansi, picture.
 
+	* Handle middle mouse button in "joe -mouse" mode (before it did
+	  nothing).  It's treated as paste (copy region to mouse) as
+	  expected.  (patch from Petr Olsak).
+
 * Bugs fixed
 
 	* Do not kill region highlighting during incremental search (patch

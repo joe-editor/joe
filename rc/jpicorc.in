@@ -770,6 +770,8 @@ defm2drag	M2DRAG		Select a region of words
 defm3down	M3DOWN		Select the line at the mouse location
 defm3up		M3UP
 defm3drag	M3DRAG		Select a region of lines
+defmiddleup	MIDDLEUP
+defmiddledown	MIDDLEDOWN	Insert text
 
 xtmouse		^[ [ M		Introduces an xterm mouse event
 extmouse	^[ [ <		Introduces an extended xterm mouse event

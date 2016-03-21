@@ -3826,47 +3826,65 @@ Move the cursor to where the mouse was clicked/dragged
 <br>
 
 * defmdown<br>
-Default single-click handlers
+Default single-click handler, usually bound to MDOWN.  Positions cursor to
+mouse and begins a region.
 <br>
 
 * defmup<br>
-Default single-click release handlers
+Default single-click release handler, usually bound to MUP.  Completes
+selection of a region.
 <br>
 
 * defmdrag<br>
-(click to move cursor, drag to select characters)
+Default single-click drag handler, usually bound to MDRAG.  Selects a region
+of text a character at a time.
 <br>
 
 * defm2down<br>
-Default double-click handlers
+Default double-click handler, usually bound to M2DOWN.
 <br>
 
 * defm2up<br>
-Default double-click release handlers
+Default double-click release handler, usually bound to M2UP.
 <br>
 
 * defm2drag<br>
-(drag to select words)
+Default double-click drag handler, usually bound to M2DRAG.  Selects a
+region of text a word at a time.
 <br>
 
 * defm3down<br>
-Default triple-click handlers
+Default triple-click handler, usually bound to M3DOWN.
 <br>
 
 * defm3up<br>
-Default triple-click release handlers
+Default triple-click release handler, usually bound to M3UP.
 <br>
 
 * defm3drag<br>
-(drag to select lines)
+Default double-click drag handler, usually bound to M3DRAG.  Selects a
+region of text a line at a time.
+<br>
+
+* defmiddledown<br>
+Default middle click handler, usually bound to MIDDLEDOWN.  This inserts
+text.
+<br>
+
+* defmiddleup<br>
+Default middle button release handler, usually bound to MIDDLEUP.
 <br>
 
 * xtmouse<br>
-Handle xterm mouse events
+Handle xterm mouse events, usually bound to Esc [ M.  It parses the rest of
+the sequence and generates fake "keys" that can be bound to macros in the
+joerc file.  It uses a timer to detect double-click and triple-click.  The
+keys are: MUP, MDOWN, MDRAG, M2UP, M2DOWN, M2DRAG, M3UP, M3DOWN, M3DRAG,
+MWUP and MWDOWN.
 <br>
 
 * extmouse<br>
-Handle extended xterm mouse events
+Handle extended xterm mouse events, usually bound to Esc [ \<.
 <br>
 
 * paste<br>

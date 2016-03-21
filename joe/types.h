@@ -219,6 +219,8 @@ typedef int pid_t;
 #define KEY_M3DRAG	0x100008
 #define KEY_MWUP	0x100009
 #define KEY_MWDOWN	0x10000A
+#define KEY_MIDDLEUP	0x10000B
+#define KEY_MIDDLEDOWN	0x10000C
 
 #define stdsiz		8192
 #define FITHEIGHT	4		/* Minimum text window height */

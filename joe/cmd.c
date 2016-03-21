@@ -64,6 +64,8 @@ CMD cmds[] = {
 	{"defm3down", TYPETW+TYPEPW, udefm3down, 0, 0, 0 },
 	{"defm3up", TYPETW+TYPEPW, udefm3up, 0, 0, 0 },
 	{"defm3drag", TYPETW+TYPEPW, udefm3drag, 0, 0, 0 },
+	{"defmiddledown", TYPETW+TYPEPW, udefmiddledown, 0, 0, 0 },
+	{"defmiddleup", TYPETW+TYPEPW, udefmiddleup, 0, 0, 0 },
 	{"delbol", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelbl, NULL, 1, "deleol"},
 	{"delch", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, udelch, NULL, 1, "backs"},
 	{"deleol", TYPETW + TYPEPW + EKILL + EMOD, udelel, NULL, 1, "delbol"}, 
