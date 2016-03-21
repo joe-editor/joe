@@ -33,6 +33,9 @@
 
 * Bugs fixed
 
+	* Do not kill region highlighting during incremental search (patch
+	  from Petr Olsak).
+
 	* Negative numbers not being recognized in blocks
 
 	* PgUp/PgDn would try to scroll menu if the window above is a menu
