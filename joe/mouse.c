@@ -62,7 +62,7 @@ static ptrdiff_t mcoord(ptrdiff_t x)
 		return 0; /* This should not happen */
 }
 
-static int mouse_event(BW *bw)
+static int mouse_event(W *w)
 {
 	if ((Cb & 0x41) == 0x40) {
 		fake_key(KEY_MWUP); /* Mouse wheel scroll up */
@@ -94,8 +94,6 @@ static int mouse_event(BW *bw)
 
 int uxtmouse(W *w, int k)
 {
-	BW *bw;
-	WIND_BW(bw, w);
 	Cb = ttgetch()-32;
 	if (Cb < 0)
 		return -1;
@@ -108,7 +106,7 @@ int uxtmouse(W *w, int k)
 
 	Cx = mcoord(Cx);
 	Cy = mcoord(Cy);
-	return mouse_event(bw);
+	return mouse_event(w);
 }
 
 /* Parse xterm extended 1006 mode mouse event parameters. */
@@ -116,8 +114,6 @@ int uxtmouse(W *w, int k)
 int uextmouse(W *w, int k)
 {
 	int c;
-	BW *bw;
-	WIND_BW(bw, w);
 	Cb = 0;
 	Cx = Cy = 0;
 	while ((c = ttgetch()) != ';') {
@@ -137,7 +133,7 @@ int uextmouse(W *w, int k)
 	}
 	if (c == 'm')
 		Cb |= 3;
-	return mouse_event(bw);
+	return mouse_event(w);
 }
 
 long mnow()
@@ -383,9 +379,9 @@ int utomouse(W *xx, int k)
 	if (!w)
 		return -1;
 	maint->curwin = w;
-	WIND_BW(bw, w);
 	drag_size = 0;
 	if (w->watom->what == TYPETW) {
+		WIND_BW(bw, w);
 		if (bw->o.hex) {
 			off_t goal_col = x - w->x + bw->offset - 60;
 			off_t goal_line;
@@ -435,7 +431,9 @@ int utomouse(W *xx, int k)
 			return 0;
 		}
 	} else if (w->watom->what == TYPEPW) {
-		PW *pw = (PW *)bw->object;
+		PW *pw;
+		WIND_BW(bw, w);
+		pw = (PW *)bw->object;
 		/* only one line in prompt windows */
 		pcol(bw->cursor,x - w->x + bw->offset - pw->promptlen + pw->promptofst);
 		bw->cursor->xcol = piscol(bw->cursor);
