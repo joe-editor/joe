@@ -286,6 +286,9 @@
     <ConfigFile Include="$(JoeConfDir)\joerc">
       <Filter>Conf files</Filter>
     </ConfigFile>
+    <ConfigFile Include="$(JoeConfDir)\joerc.zh_TW">
+      <Filter>Conf files</Filter>
+    </ConfigFile>
     <ConfigFile Include="$(JoeConfDir)\jpicorc">
       <Filter>Conf files</Filter>
     </ConfigFile>
