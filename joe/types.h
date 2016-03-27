@@ -48,6 +48,19 @@
 /* Other headers */
 #include <io.h>
 #include <assert.h>
+
+/* Make off_t match the pointer size */
+/* NOTES: off_t is always 32 bits in Windows :-(.  Fortunately virtually none of the
+   CRT functions really use it over int (minus some declarations of stat, but we keep
+   tight control over it) so it's technically cheating but should be OK. */
+#ifdef _M_X64
+#define _OFF_T_DEFINED 1
+typedef long long off_t;
+typedef long long _off_t;
+#undef SIZEOF_OFF_T
+#define SIZEOF_OFF_T 8
+#endif
+
 #endif
 
 #ifdef HAVE_SYS_TYPES_H

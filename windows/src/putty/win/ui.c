@@ -25,7 +25,7 @@
 #include "jwutils.h"
 #include "jwglobals.h"
 
-static int CALLBACK AboutProc(HWND, UINT, WPARAM, LPARAM);
+static INT_PTR CALLBACK AboutProc(HWND, UINT, WPARAM, LPARAM);
 
 void jwAboutBox(HWND hwnd)
 {
@@ -42,7 +42,7 @@ static char *getLicenseText()
 
 	fp = jwfopen(L"*license.txt", L"r");
 	if (fp && fp->p) {
-		result = (char *)malloc(fp->sz * 2); // Baseless assumption
+		result = (char *)malloc(fp->sz + 1);
 		strncpy(result, (char *)fp->p, fp->sz);
 		result[fp->sz] = 0;
 	}
@@ -52,11 +52,9 @@ static char *getLicenseText()
 	return result;
 }
 
-static int CALLBACK AboutProc(HWND hwnd, UINT msg,
+static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 			      WPARAM wParam, LPARAM lParam)
 {
-	char *str;
-
 	switch (msg) {
 	case WM_INITDIALOG:
 		/* Load license */
@@ -95,7 +93,7 @@ static int CALLBACK AboutProc(HWND hwnd, UINT msg,
 }
 
 /* Originally from windlg.c */
-static int CALLBACK NullDlgProc(HWND hwnd, UINT msg,
+static INT_PTR CALLBACK NullDlgProc(HWND hwnd, UINT msg,
 				WPARAM wParam, LPARAM lParam)
 {
     return 0;

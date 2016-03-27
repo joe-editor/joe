@@ -28,7 +28,7 @@ static HMODULE modules[8];
 static int nmodules = 0;
 
 static int iscompressed(const char* p);
-static int decompress(const char* p, int len, char **result, int *resultlen);
+static int decompress(const char* p, size_t len, char **result, size_t *resultlen);
 
 void jwAddResourceHandle(HMODULE module)
 {
@@ -57,7 +57,7 @@ JFILE *jwfopen(wchar_t *name, wchar_t *mode)
 				/* Courtesy of miniz (wrappers below) */
 				if (iscompressed(ptr)) {
 					char *newptr;
-					int newlen;
+					size_t newlen;
 
 					if (!decompress(ptr, j->sz, &newptr, &newlen)) {
 						/* Success */
@@ -98,11 +98,11 @@ JFILE *jwfopen(wchar_t *name, wchar_t *mode)
 	}
 }
 
-char *jwfgets(char *buf, int size, JFILE *f)
+char *jwfgets(char *buf, size_t size, JFILE *f)
 {
-	int x;
+	size_t x;
 
-	if (f->f) return fgets(buf, size, f->f);
+	if (f->f) return fgets(buf, (int)size, f->f);
 	if (!f->sz) {
 		buf[0] = 0;
 		return NULL;
@@ -150,7 +150,7 @@ const wchar_t *jwnextbuiltin(const wchar_t* prev, const wchar_t* suffix)
 {
 	static wchar_t *allbuiltins = NULL;
 	const wchar_t *next;
-	int slen;
+	size_t slen;
 
 	if (!allbuiltins) {
 		wchar_t tmp[4096];
@@ -185,7 +185,7 @@ const wchar_t *jwnextbuiltin(const wchar_t* prev, const wchar_t* suffix)
 		if (!suffix) {
 			return next;
 		} else {
-			int nlen = wcslen(next);
+			size_t nlen = wcslen(next);
 
 			if (slen <= nlen && !wcsicmp(suffix, &next[nlen - slen])) {
 				return next;
@@ -217,7 +217,7 @@ static int iscompressed(const char* p)
 	return p[0] == 5 && p[1] == 1;
 }
 
-static int decompress(const char* p, int len, char **result, int *resultlen)
+static int decompress(const char* p, size_t len, char **result, size_t *resultlen)
 {
 	size_t outsz;
 

@@ -141,11 +141,10 @@ void jwSaveSettings(Config *cfg)
 {
 	HKEY hkey;
 	DWORD tmp;
-	wchar_t fonttmp[64];
 
 	if (ERROR_SUCCESS == RegCreateKeyExW(HKEY_CURRENT_USER, getkeyname(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkey, NULL))
 	{
-		RegSetValueExW(hkey, L"ColorScheme", 0, REG_SZ, (LPBYTE)cfg->currentcolors->file, sizeof(wchar_t) * (wcslen(cfg->currentcolors->file) + 1));
+		RegSetValueExW(hkey, L"ColorScheme", 0, REG_SZ, (LPBYTE)cfg->currentcolors->file, sizeof(wchar_t) * ((DWORD)wcslen(cfg->currentcolors->file) + 1));
 		
 		tmp = cfg->font.height;
 		RegSetValueExW(hkey, L"FontSize", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
@@ -153,7 +152,7 @@ void jwSaveSettings(Config *cfg)
 		tmp = cfg->font.isbold;
 		RegSetValueExW(hkey, L"FontBold", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
 
-		RegSetValueExA(hkey, "FontName", 0, REG_SZ, (LPBYTE)cfg->font.name, sizeof(char) * (strlen(cfg->font.name) + 1));
+		RegSetValueExA(hkey, "FontName", 0, REG_SZ, (LPBYTE)cfg->font.name, sizeof(char) * ((DWORD)strlen(cfg->font.name) + 1));
 		
 		tmp = cfg->cursor_type;
 		RegSetValueExW(hkey, L"Cursor", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));

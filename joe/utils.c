@@ -61,7 +61,11 @@ ptrdiff_t joe_read(int fd, void *buf, ptrdiff_t size)
 	ptrdiff_t rt;
 
 	do {
+#ifndef JOEWIN
 		rt = read(fd, buf, (size_t)size);
+#else
+		rt = read(fd, buf, (unsigned int)size);
+#endif
 	} while (rt < 0 && errno == EINTR);
 	return rt;
 }
@@ -71,7 +75,11 @@ ptrdiff_t joe_write(int fd, const void *buf, ptrdiff_t size)
 	ptrdiff_t rt;
 
 	do {
+#ifndef JOEWIN
 		rt = write(fd, buf, (size_t)size);
+#else
+		rt = write(fd, buf, (unsigned int)size);
+#endif
 	} while (rt < 0 && errno == EINTR);
 	return rt;
 }
@@ -1022,7 +1030,7 @@ int parse_class(const char * *pp, struct interval **array, ptrdiff_t *size)
 
 void jsort(void *base, ptrdiff_t num, ptrdiff_t size, int (*compar)(const void *a, const void *b))
 {
-	return qsort(base, (size_t)num, (size_t)size, compar);
+	qsort(base, (size_t)num, (size_t)size, compar);
 }
 
 off_t oabs(off_t a)

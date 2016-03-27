@@ -465,7 +465,7 @@ char *ask(W *w,			/* Prompt goes below this window */
           const char *prompt,		/* Prompt text */
           B **history,			/* History buffer to use */
           char *huh,			/* Name of help screen for this prompt */
-          int (*tab)(),		/* Called when tab key is pressed */
+          int (*tab)(BW *, int),	/* Called when tab key is pressed */
           struct charmap *map,		/* Character map for prompt */
           int file_prompt,		/* Set for file-name tilde expansion */
           int retrieve_last,		/* Set for cursor to go on last line of history */

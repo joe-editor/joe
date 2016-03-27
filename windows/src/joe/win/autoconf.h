@@ -268,7 +268,9 @@
 #define SIZEOF_LONG_LONG 8
 
 /* The size of `off_t', as computed by sizeof. */
+#ifndef SIZEOF_OFF_T
 #define SIZEOF_OFF_T 4
+#endif
 
 /* The size of `short', as computed by sizeof. */
 #define SIZEOF_SHORT 2

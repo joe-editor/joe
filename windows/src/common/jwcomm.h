@@ -72,7 +72,7 @@
 
 struct CommBuffer
 {
-    int                 size;
+    size_t              size;
     struct CommBuffer   *next;
     char                buffer[0];
 };
@@ -96,12 +96,12 @@ HANDLE jwInitializeComm(void);
 void jwShutdownComm(void);
 struct CommMessage *jwWaitForComm(int *qds, int nqds, int timeout, int *outqueue);
 struct CommMessage *jwRecvComm(int qd);
-void jwSendComm(int qd, int msg, int arg1, int arg2, int arg3, int arg4, void *ptr, int sz, const char *data);
+void jwSendComm(int qd, int msg, int arg1, int arg2, int arg3, int arg4, void *ptr, size_t sz, const char *data);
 void jwReleaseComm(int qd, struct CommMessage *msg);
 
 int jwRendezvous(int readqd, int writeqd);
-void jwWriteIO(int qd, void *data, int size);
-int jwReadIO(struct CommMessage *m, void *data);
+void jwWriteIO(int qd, void *data, size_t size);
+size_t jwReadIO(struct CommMessage *m, void *data);
 
 #define jwSendComm0(side,op)			(jwSendComm((side),(op),0,0,0,0,0,0,0))
 #define jwSendComm0s(side,op,s)			(jwSendComm((side),(op),0,0,0,0,0,strlen(s)+1,(s)))

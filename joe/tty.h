@@ -206,7 +206,7 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 
 void killmpx(int pid, int sig);
 
-int writempx(int fd, void *data, size_t amt);
+ptrdiff_t writempx(int fd, void *data, ptrdiff_t amt);
 
 extern int noxon;			/* Set if ^S/^Q processing should be disabled */
 extern int Baud;			/* Baud rate from joerc, cmd line or environment */

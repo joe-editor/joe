@@ -76,7 +76,7 @@ struct CommQueue
 	struct CommBuffer	*freebuffers;
 	struct CommMessage	*freemsgs;
 	
-	int			buffersize;
+	size_t			buffersize;
 	
 	Q			*queue;
 	Q			*returnqueue;
@@ -560,7 +560,7 @@ struct CommMessage *jwRecvComm(int qd)
 	return queues ? DequeueCommMessage(queues[qd]) : NULL;
 }
 
-void jwSendComm(int qd, int msg, int arg1, int arg2, int arg3, int arg4, void *ptr, int sz, const char *data)
+void jwSendComm(int qd, int msg, int arg1, int arg2, int arg3, int arg4, void *ptr, size_t sz, const char *data)
 {
 	struct CommMessage *m;
 	struct CommQueue *q;
@@ -641,17 +641,17 @@ int jwRendezvous(int readqd, int writeqd)
 ////////////////////////////////////////   JoeWin IO   /////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-void jwWriteIO(int qd, const char *data, int size)
+void jwWriteIO(int qd, const char *data, size_t size)
 {
-	int i;
-	int maxdata = JW_PACKIOSZ + queues[qd]->buffersize;
+	size_t i;
+	size_t maxdata = JW_PACKIOSZ + queues[qd]->buffersize;
 
 	for (i = 0; i < size; i += maxdata)
 	{
 		int arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0;
-		int pktsz = min(size - i, maxdata);
-		int packsz = min(JW_PACKIOSZ, pktsz);
-		int bufsz = pktsz - packsz;
+		size_t pktsz = min(size - i, maxdata);
+		size_t packsz = min(JW_PACKIOSZ, pktsz);
+		size_t bufsz = pktsz - packsz;
 
 		switch (packsz)
 		{
@@ -675,7 +675,7 @@ void jwWriteIO(int qd, const char *data, int size)
 
 		if (!bufsz)
 		{
-			jwSendComm(qd, COMM_IO_1 + packsz - 1, arg1, arg2, arg3, arg4, NULL, 0, NULL);
+			jwSendComm(qd, COMM_IO_1 + (int)packsz - 1, arg1, arg2, arg3, arg4, NULL, 0, NULL);
 		}
 		else
 		{
@@ -684,7 +684,7 @@ void jwWriteIO(int qd, const char *data, int size)
 	}
 }
 
-int jwReadIO(struct CommMessage *m, char *output)
+size_t jwReadIO(struct CommMessage *m, char *output)
 {
 	int msg = m->msg;
 

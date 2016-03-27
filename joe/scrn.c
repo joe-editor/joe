@@ -2272,7 +2272,7 @@ void unesc_genfmt(char *d, char *s, int len, int max)
 
 #ifdef JOEWIN
 
-static void genfmti(SCRN *t, int x, int y, int ofst, const char *s, int atr, int flg, int iatr);
+static void genfmti(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg, int iatr);
 
 /* Generate text with formatting escape sequences */
 

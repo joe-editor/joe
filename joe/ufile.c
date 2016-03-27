@@ -30,33 +30,25 @@ static const char *escapename(const char *name)
 	const char *c;
 	int bcount = 0;
 
-	if (!name)
-	{
+	if (!name) {
 		return NULL;
 	}
 
-	for (c = name; *c; c++)
-	{
-		if (*c == '\\')
-		{
+	for (c = name; *c; c++) {
+		if (*c == '\\') {
 			bcount++;
 		}
 	}
 
-	if (bcount > 0)
-	{
+	if (bcount > 0) {
 		s = vsmk(strlen(name) + bcount + 1);
-		for (c = name; *c; c++)
-		{
+		for (c = name; *c; c++) {
 			s = vsadd(s, *c);
-			if (*c == '\\')
-			{
+			if (*c == '\\') {
 				s = vsadd(s, '\\');
 			}
 		}
-	}
-	else
-	{
+	} else {
 		return name;
 	}
 

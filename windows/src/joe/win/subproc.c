@@ -129,8 +129,8 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 		m->vt = 1;
 
 		env = jwsetenv(env, "JOEWINSZPIPE", winszpipe);
-		env = jwsetenv(env, "LINES", itoa(h, buf, 10));
-		env = jwsetenv(env, "COLUMNS", itoa(w, buf, 10));
+		env = jwsetenv(env, "LINES", itoa((int)h, buf, 10));
+		env = jwsetenv(env, "COLUMNS", itoa((int)w, buf, 10));
 	} else {
 		m->szqd = -1;
 		w = 80;
@@ -308,7 +308,7 @@ void killmpx(int pid, int sig)
 	}
 }
 
-int writempx(int fd, void *data, size_t amt)
+ptrdiff_t writempx(int fd, void *data, ptrdiff_t amt)
 {
 	int i;
 
@@ -319,7 +319,7 @@ int writempx(int fd, void *data, size_t amt)
 			char *str = (char *)data;
 			MPX *mpx = &asyncs[i];
 			DWORD mode;
-			unsigned int t;
+			ptrdiff_t t;
 
 			if (mpx->raw) {
 				/* Just write */
@@ -413,7 +413,7 @@ static char **readenv()
 	envstrings = GetEnvironmentStringsW();
 	for (p = envstrings; *p; ) {
 		char *v;
-		int varlen = wcslen(p);
+		size_t varlen = wcslen(p);
 		int mblen;
 
 		mblen = wcstoutf8len(p);
@@ -435,7 +435,7 @@ static char **readenv()
 static char **jwsetenv(char **env, char *key, char *value)
 {
 	int i;
-	int keylen = zlen(key);
+	size_t keylen = zlen(key);
 
 	for (i = 0; i < valen(env); i++) {
 		if (!strnicmp((char*)key, (char*)env[i], keylen) && env[i][keylen] == '=') {
@@ -499,7 +499,7 @@ void ttstsz(int fd, ptrdiff_t w, ptrdiff_t h)
 
 	for (i = 0; i < NPROC; i++) {
 		if (asyncs[i].func && asyncs[i].ptyfd == fd) {
-			jwSendComm2(asyncs[i].szqd, COMM_VTSIZE, w, h);
+			jwSendComm2(asyncs[i].szqd, COMM_VTSIZE, (int)w, (int)h);
 			return;
 		}
 	}
@@ -594,7 +594,7 @@ static DWORD WINAPI mpxsizethread(LPVOID arg)
 		if (!exit && rows != -1 && cols != -1) {
 			/* We've already got a size, send it to newly-connected client */
 			sprintf(buf, "%d %d\n", cols, rows);
-			WriteFile(srv->pipe, buf, strlen(buf), &amnt, NULL);
+			WriteFile(srv->pipe, buf, (DWORD)strlen(buf), &amnt, NULL);
 		}
 
 		if (exit) {
@@ -615,7 +615,7 @@ static DWORD WINAPI mpxsizethread(LPVOID arg)
 		if (msg->msg == COMM_VTSIZE) {
 			if (msg->arg1 != cols || msg->arg2 != rows) {
 				sprintf(buf, "%d %d\n", msg->arg1, msg->arg2);
-				WriteFile(srv->pipe, buf, strlen(buf), &amnt, NULL);
+				WriteFile(srv->pipe, buf, (DWORD)strlen(buf), &amnt, NULL);
 
 				cols = msg->arg1;
 				rows = msg->arg2;

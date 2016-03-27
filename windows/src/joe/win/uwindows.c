@@ -52,7 +52,8 @@ int uwincopy(W *w, int k)
 
 			vscopy8 = vsmk(vlen);
 			for (i = 0; i < vlen; i++) {
-				int len, c;
+				ptrdiff_t len;
+				int c;
 				char buf[16];
 
 				c = to_uni(map, vscopy[i]);

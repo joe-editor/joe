@@ -34,7 +34,7 @@ BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, voi
           int (*tab)(BW *bw, int k),
           void *object, struct charmap *map, int file_prompt);
 
-char *ask(W *w, const char *prompt, B **history, char *huh, int (*tab)(), struct charmap *map, int file_prompt, int retrieve_last, char *preload);
+char *ask(W *w, const char *prompt, B **history, char *huh, int (*tab)(BW *, int), struct charmap *map, int file_prompt, int retrieve_last, char *preload);
 
 int ucmplt(W *w, int k);
 

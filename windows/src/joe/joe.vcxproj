@@ -95,7 +95,6 @@
     <ClInclude Include="$(JoeExternalSrcDir)\vt.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\w.h" />
     <ClInclude Include="$(JoeSrcDir)\autoconf.h" />
-    <ClInclude Include="$(JoeSrcDir)\builtin.h" />
     <ClInclude Include="$(JoeSrcDir)\bupdates.h" />
     <ClInclude Include="$(JoeSrcDir)\joedata.h" />
     <ClInclude Include="$(JoeSrcDir)\jwglue.h" />

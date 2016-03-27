@@ -107,7 +107,7 @@ void apply_buffer_updates(struct buffer_entry **head, struct buffer_update *upda
 
 void send_buffer_update(struct buffer_update *bu)
 {
-	int fnamelen = wcslen(bu->entry.fname);
+	size_t fnamelen = wcslen(bu->entry.fname);
 
 	if (!fnamelen)
 	{

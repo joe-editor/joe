@@ -176,7 +176,7 @@ static void setjoedir()
 	wchar_t exepath[MAX_PATH], curpath[MAX_PATH];
 
 	if (GetModuleFileName(NULL, exepath, MAX_PATH - 1) && _wgetcwd(curpath, MAX_PATH - 1)) {
-		int curlen = wcslen(curpath);
+		size_t curlen = wcslen(curpath);
 		wchar_t *p;
 
 		p = wcsrchr(exepath, L'\\');

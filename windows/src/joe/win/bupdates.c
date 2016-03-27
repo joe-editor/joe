@@ -17,8 +17,8 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
-#include <wchar.h>
 #include "types.h"
+#include <wchar.h>
 #include "jwbentries.h"
 
 static int make_update(B *buffer, struct buffer_update *bu, int include_name);

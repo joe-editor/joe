@@ -63,7 +63,7 @@ char* glue_getenv(const char* env)
 			char langtmp[LOCALE_NAME_MAX_LENGTH];
 			
 			if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO639LANGNAME, langtmp, LOCALE_NAME_MAX_LENGTH)) {
-				int len = strlen(langtmp);
+				size_t len = strlen(langtmp);
 
 				langtmp[len++] = '_';
 				if (GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SISO3166CTRYNAME, &langtmp[len], LOCALE_NAME_MAX_LENGTH - len)) {

@@ -31,6 +31,9 @@
 #define getenv glue_getenv
 #define _exit jwexit
 #define exit jwexit
+#define lseek _lseeki64
+#define fseek _fseeki64
+#define fseeko _fseeki64
 
 #define open glue_open
 #define fopen glue_fopen
@@ -52,13 +55,20 @@
 #define S_ISREG(x)	(((x) & S_IFMT) == S_IFREG)
 #define S_ISDIR(x)	(((x) & S_IFMT) == S_IFDIR)
 
-/* TODO: We now accept 64-bit time_t here, but off_t is still 32 bits on 64-bit Windows. */
-
 #define lstat glue_stat
+#ifdef _M_X64
+// 64 bit will have 64 bit off_t
+#define stat _stat64
+#define _stat64(x,y) glue_stat((x),(y))		/* simultaneously ugly and clever :-) */
+#define jwstatfunc _wstat64
+#define fstat _fstat64
+#else
+// 32 bit will have 32 bit off_t
 #define stat _stat64i32
 #define _stat64i32(x,y) glue_stat((x),(y))		/* simultaneously ugly and clever :-) */
 #define jwstatfunc _wstat
 #define fstat _fstat
+#endif
 
 /* UTF-8 encoding = ~3x MAX_PATH */
 #define PATH_MAX (MAX_PATH*3)
