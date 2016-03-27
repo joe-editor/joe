@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   This file is part of Joe's Own Editor for Windows.
+   Copyright (c) 2014 John J. Jordan.
+ 
+   Joe's Own Editor for Windows is free software: you can redistribute it
+   and/or modify it under the terms of the GNU General Public License as
+   published by the Free Software Foundation, either version 2 of the
+   License, or (at your option) any later version.
+ 
+   Joe's Own Editor for Windows is distributed in the hope that it will
+   be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+ 
+   You should have received a copy of the GNU General Public License
+   along with Joe's Own Editor for Windows.  If not, see
+   <http://www.gnu.org/licenses/>.
+-->
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include properties.wxi ?>
+  
+  <Fragment>
+    <ComponentGroup Id="TranslationsComponentGroup" Directory="POFOLDER">
+      <Component Id="GermanPOComponent" Win64="$(var.Win64)">
+	<File Id="GermanPO" Name="de.po" DiskId="1" Source="$(var.PODir)\de.po" KeyPath="yes" />
+      </Component>
+      <Component Id="FrenchPOComponent" Win64="$(var.Win64)">
+	<File Id="FrenchPO" Name="fr.po" DiskId="1" Source="$(var.PODir)\fr.po" KeyPath="yes" />
+      </Component>
+      <Component Id="RussianPOComponent" Win64="$(var.Win64)">
+	<File Id="RussianPO" Name="ru.po" DiskId="1" Source="$(var.PODir)\ru.po" KeyPath="yes" />
+      </Component>
+      <Component Id="UkrainianPOComponent" Win64="$(var.Win64)">
+	<File Id="UkrainianPO" Name="uk.po" DiskId="1" Source="$(var.PODir)\uk.po" KeyPath="yes" />
+      </Component>
+      <Component Id="TrChinesePOComponent" Win64="$(var.Win64)">
+	<File Id="TrChinesePO" Name="zh.po" DiskId="1" Source="$(var.PODir)\zh.po" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+    <ComponentGroup Id="RegionalConfFilesComponentGroup" Directory="CONFIGFOLDER">
+      <Component Id="TrChineseRCComponent" Win64="$(var.Win64)">
+	<File Id="TrChineseRC" Name="joerc.zh_TW" DiskId="1" Source="$(var.ConfRootDir)\joerc.zh_TW" KeyPath="yes" />
+      </Component>      
+    </ComponentGroup>
+  </Fragment>
+</Wix>
