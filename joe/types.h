@@ -246,7 +246,7 @@ typedef int pid_t;
 #define SEGSIZ PGSIZE
 
 /* Max number of pages allowed in core */
-#define NPAGES 8192
+#define NPAGES 65536
 /* Max core memory used in bytes */
 #define ILIMIT (PGSIZE*NPAGES)
 /* Hash table size (should be double the max number of pages) */
