@@ -544,6 +544,9 @@
     <LanguageFile Include="$(JoeLangDir)\uk.po">
       <Filter>Translations</Filter>
     </LanguageFile>
+    <LanguageFile Include="$(JoeLangDir)\zh.po">
+      <Filter>Translations</Filter>
+    </LanguageFile>
     <VTFile Include="$(JoeRootConfDir)\shell.sh">
       <Filter>VT Scripts</Filter>
     </VTFile>
