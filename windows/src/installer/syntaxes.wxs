@@ -80,6 +80,9 @@
       <Component Id="diffJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="diffJSF" Name="diff.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\diff.jsf" KeyPath="yes" />
       </Component>
+      <Component Id="dockerfileJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+        <File Id="dockerfileJSF" Name="dockerfile.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\dockerfile.jsf" KeyPath="yes" />
+      </Component>
       <Component Id="elixirJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
 	<File Id="elixirJSF" Name="elixir.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\elixir.jsf" KeyPath="yes" />
       </Component>

@@ -355,6 +355,9 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\diff.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
+    <SyntaxFile Include="$(JoeSyntaxDir)\dockerfile.jsf.in">
+      <Filter>Syntax files</Filter>
+    </SyntaxFile>
     <SyntaxFile Include="$(JoeSyntaxDir)\elixir.jsf.in">
       <Filter>Syntax files</Filter>
     </SyntaxFile>

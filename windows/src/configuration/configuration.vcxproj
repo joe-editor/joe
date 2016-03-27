@@ -60,6 +60,7 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\d.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\debian.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\diff.jsf.in" />
+    <SyntaxFile Include="$(JoeSyntaxDir)\dockerfile.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\elixir.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\erb.jsf.in" />
     <SyntaxFile Include="$(JoeSyntaxDir)\erlang.jsf.in" />
