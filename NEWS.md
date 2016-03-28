@@ -2,6 +2,31 @@
 
 [Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
 
+### JOE for Windows 4.1
+
+* Includes all changes from mainline 4.1
+
+* Now includes html documentation, shortcut to documentation in context menu
+
+* Added pop-up terminal support
+	* Brought in Ryan Prichard's winpty for a better pop-up terminal experience
+	  (now with tab-completion, colors, doskey, and support for Powershell)
+	
+	* Can easily be configured to launch Cygwin shells
+
+* Fixes to keep the Window title in sync with the current file.
+
+* Better tab-completion behavior for Windows-style paths
+
+* Code cleanup
+
+* Added translations to installer
+
+* Improve color scheme support
+
+* Distribute standalone executables in addition to regular MSI installer
+
+
 ### JOE 4.1
 
 * New or improved syntax files for the following languages: 

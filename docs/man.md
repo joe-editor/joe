@@ -1238,9 +1238,8 @@ __\^test\$__, then JOE with find __test__ on a line by itself.
 
 * __\< \\\>__
 
-These match the beginnings and endings of words.  For example, if you give
-__\<is\\\>__, then JOE will find the word "is" but will not find the "is" in
-"this".
+These match the beginnings and endings of words.  For example, if you give `\<is\>`
+then JOE will find the word "is" but will not find the "is" in "this".
 
 * __\\\[...]__
 
@@ -2111,7 +2110,7 @@ If you need to pass a key to the shell that JOE normally uses, quote it.  For
 example, if you invoke "emacs -nw" in the shell window, you can exit it with:
 
 	Esc ' ^X ^C
-
+	
 To quickly position the cursor back to the point where data is entered into
 the shell, hit __^K V__.
 
