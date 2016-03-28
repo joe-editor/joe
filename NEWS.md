@@ -4,6 +4,8 @@
 
 ### JOE for Windows 4.1
 
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/4.1/joewin.msi/download)
+
 * Includes all changes from mainline 4.1
 
 * Now includes html documentation, shortcut to documentation in context menu
@@ -242,7 +244,7 @@
 
 ### JOE 3.8 Native Windows Version
 
-[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/joewin.msi/download)
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/3.8/joewin.msi/download)
 
 * Thanks to John J. Jordan we now have a native Windows version of JOE
 
