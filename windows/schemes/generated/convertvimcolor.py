@@ -29,6 +29,13 @@ tokenconvert = {
 	"diff.AddLine": ["diffadd"],
 	"diff.ChgLine": ["diffchange"],
 	"diff.Garbage": ["difftext"],
+
+	"xml.Tag": ["xmltag", "htmltag"],
+	"xml.Attr": ["xmlattrib", "htmlarg", "normal"],
+	"xml.Constant": ["htmlvalue", "htmlstring"],
+	"html.TagName": ["htmltag"],
+	"html.TagParam": ["htmlarg"],
+	"html.TagValue": ["htmlstring"],
 	
 #	"python.Keyword": ["keyword", "statement", "normal"],
 }

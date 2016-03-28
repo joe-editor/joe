@@ -41,6 +41,8 @@ def readFile(lines):
 						result[r[0].lower()] = r[1]
 					else:
 						backupColors[r[0].lower()] = r[1]
+				elif isinstance(r[1], ColorLink):
+					result[r[0].lower()] = r[1]
 	
 	# Sub in cterm colors if no GUI colors available
 	for k, v in backupColors.iteritems():
@@ -49,9 +51,8 @@ def readFile(lines):
 	
 	# Process links
 	for k in list(result.keys()):
-		if k in result:
-			resolveLink(result, k)
-	
+		resolveLink(result, k)
+
 	postProcess(result)
 	
 	return result
@@ -83,7 +84,7 @@ def resolveLink(dict, key):
 	v = dict[key]
 	if isinstance(v, ColorLink):
 		nk = v.link.lower()
-		res = nk in dict and resolveLink(dict, nk)
+		res = resolveLink(dict, nk) if nk in dict else None
 		if res:
 			dict[key] = res
 			return res
