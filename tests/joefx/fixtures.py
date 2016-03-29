@@ -82,29 +82,77 @@ class FixtureFile(object):
         shutil.copyfile(self.path, path)
     
     def merge(self, path):
-        os.unlink(path)
-        self.create(path)
+        if not compareFiles(self.path, path):
+            os.unlink(path)
+            self.create(path)
 
 class FixtureRawFile(object):
     def __init__(self, data):
-        self.data = data
+        self.data = data.encode('utf-8') if isinstance(data, str) else data
     
     def create(self, path):
-        with open(path, 'w') as f:
+        with open(path, 'wb') as f:
             f.write(self.data)
     
     def merge(self, path):
-        os.unlink(path)
-        self.create(path)
+        if not compareFileWithBytes(path, self.data):
+            os.unlink(path)
+            self.create(path)
 
 class FixtureFunction(object):
     def __init__(self, func):
         self.func = func
     
     def create(self, path):
-        with open(path, 'w') as f:
-            f.write(self.func())
+        self._writeFile(path, self._getData())
     
     def merge(self, path):
-        os.unlink(path)
-        self.create(path)
+        data = self._getData()
+        if not compareFileWithBytes(path, data):
+            os.unlink(path)
+            self._writeFile(path, data)
+    
+    def _getData(self):
+        data = self.func()
+        return data.encode('utf-8') if isinstance(data, str) else data
+    
+    def _writeFile(self, path, data):
+        with open(path, 'wb') as f:
+            f.write(data)
+
+# It's better to read a file than to write one, so if it hasn't changed then leave it alone.
+
+CMP_SIZE = 1024
+
+def compareFileWithBytes(path, b):
+    buf = bytearray(CMP_SIZE)
+    baseline = memoryview(b)
+    current = memoryview(buf)
+    pos = 0
+    with open(path, 'rb') as f:
+        while True:
+            cnt = f.readinto(buf)
+            if cnt < 1:
+                return pos == len(b)
+            if current[:cnt] != baseline[pos:pos + cnt]:
+                return False
+            pos += cnt
+
+def compareFiles(path1, path2):
+    if os.path.getsize(path1) != os.path.getsize(path2):
+        return False
+    
+    buf1, buf2 = bytearray(CMP_SIZE), bytearray(CMP_SIZE)
+    mv1, mv2 = memoryview(buf1), memoryview(buf2)
+    pos = 0
+    
+    with open(path1, 'rb') as f, open(path2, 'rb') as g:
+        while True:
+            cnt = f.readinto(buf1)
+            if g.readinto(buf2) != cnt:
+                return False
+            if cnt < 1:
+                return True
+            if mv1[:cnt] != mv2[:cnt]:
+                return False
+            pos += cnt

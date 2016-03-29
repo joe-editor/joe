@@ -5,6 +5,11 @@ import time
 
 from . import controller
 from . import fixtures
+from . import rcfile
+
+RCFILES = {}
+FIXTURESDIR = os.path.join(os.path.dirname(__file__), "../fixtures")
+RCDIR = os.path.join(os.path.dirname(__file__), "../../rc")
 
 class JoeTestBase(unittest.TestCase):
     """Base class for joe tests.  Provides shortcuts for common editor interactions."""
@@ -17,14 +22,16 @@ class JoeTestBase(unittest.TestCase):
         super().__init__(*a, **ka)
         self.joe = None
         
-        fixturesdir = os.path.join(os.path.dirname(__file__), "../fixtures")
-        self.workdir = fixtures.FixtureDir(controller.tmpfiles.workdir, fixturesdir)
-        self.homedir = fixtures.FixtureDir(controller.tmpfiles.homedir, fixturesdir)
+        self.workdir = fixtures.FixtureDir(controller.tmpfiles.workdir, FIXTURESDIR)
+        self.homedir = fixtures.FixtureDir(controller.tmpfiles.homedir, FIXTURESDIR)
         self.startup = controller.StartupArgs()
         self.timeout = 1 # Second
+        self.config = None
     
     def setUp(self):
         super().setUp()
+        if self.config is None:
+            self.loadConfig('joerc')
     
     def tearDown(self):
         if self.joe is not None:
@@ -33,17 +40,19 @@ class JoeTestBase(unittest.TestCase):
                 self.joe.kill()
             elif ex < 0:
                 self.assertTrue(False, "JOE exited with signal %d" % -ex)
+            
+            self.joe.flushin()
+            self.joe.close()
         
-        self.joe.flushin()
-        self.joe.close()
         super(JoeTestBase, self).tearDown()
     
     def run(self, result=None):
         if result:
             orig_err_fail = result.errors + result.failures
         super(JoeTestBase, self).run(result)
-        if result and result.errors + result.failures > orig_err_fail and self.joe is not None:
+        if result and len(result.errors + result.failures) > len(orig_err_fail) and self.joe is not None:
             print('\n----- screen at exit -----\n%s\n-----\n' % self.joe.screen)
+    
     
     #
     # JOE startup
@@ -56,6 +65,20 @@ class JoeTestBase(unittest.TestCase):
         self.joe = controller.startJoe("../joe/joe", self.startup)
         if waitbanner:
             self.assertTextAt("** Joe's Own Editor", x=0, y=self.joe.size.Y - 1)
+    
+    def loadConfig(self, cfgfile, asfile='.joerc'):
+        if cfgfile not in RCFILES:
+            for path in (FIXTURESDIR, RCDIR):
+                fname = os.path.join(path, cfgfile)
+                if os.path.exists(fname):
+                    RCFILES[cfgfile] = rcfile.parse(fname)
+                    break
+        
+        if cfgfile in RCFILES:
+            self.config = RCFILES[cfgfile].clone()
+            self.homedir.fixtureFunc(asfile, lambda: self.config.serialize())
+        else:
+            self.fail("Could not find config file: " + cfgfile)
     
     
     #
@@ -90,7 +113,9 @@ class JoeTestBase(unittest.TestCase):
     
     def assertFileContents(self, file, expected):
         """Asserts that file in workdir matches expected contents"""
-        with open(os.path.join(controller.tmpfiles.workdir, file), 'r') as f:
+        with open(os.path.join(controller.tmpfiles.workdir, file), 'rb') as f:
+            if isinstance(expected, str):
+                expected = expected.encode('utf-8')
             self.assertEqual(f.read(), expected)
     
     #
@@ -100,13 +125,6 @@ class JoeTestBase(unittest.TestCase):
     def write(self, text):
         """Write specified text to editor"""
         return self.joe.write(text)
-    
-    def writeSlow(self, text):
-        """Write specified text to editor with delay between keystrokes"""
-        for c in text:
-            self.joe.write(c)
-            time.sleep(0.001)
-            self.joe.flushin() # Short delay.
     
     def writectl(self, text):
         """Write control code to editor"""
@@ -183,7 +201,7 @@ class JoeTestBase(unittest.TestCase):
         self.cmd("save")
         self.assertTextAt("Name of file to save", x=0)
         if filename is not None:
-            self.writectl("^Y")
+            self.cmd("dellin")
             self.write(filename)
         self.rtn()
     

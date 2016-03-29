@@ -164,6 +164,13 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 				++s;
 			}
 			switch (*s) {
+			case 'v': /* Version of JOE */
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "%s", VERSION);
+					stalin = vsncpy(sv(stalin), sz(buf));
+				}
+				break;
+
 			case 'x': /* Context (but only if autoindent is enabled) */
 				{
 					if ( bw->o.autoindent) {
@@ -479,6 +486,9 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 			case 'e':
 				stalin = vsncpy(sv(stalin), sz(bw->b->o.charmap->name));
 				break;
+			case 'b':
+				stalin = vsncpy(sv(stalin), sz(locale_map->name));
+				break;
 			case 'w':
 				if (!piseof(bw->cursor)) {
 					joe_snprintf_1(buf, SIZEOF(buf), "%d", joe_wcwidth(bw->o.charmap->type, brch(bw->cursor)));
@@ -724,6 +734,12 @@ int uabort(W *w, int k)
 	if (w->watom != &watomtw)
 		return wabort(w);
 	WIND_BW(bw, w);
+	if (markv(0) && markb->b == bw->b) {
+		prm(markk);
+		markk = 0;
+		updall();
+		return 0;
+	}
 	if (bw->parent->bstack) {
 		int rtn;
 		B *b = wpop(bw);

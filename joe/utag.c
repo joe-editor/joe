@@ -223,15 +223,37 @@ int utag(W *w, int k)
 		/* if there's no tags file in the current dir, then query
 		   for the environment variable TAGS.
 		*/
-		char *tagspath = getenv("TAGS");
+		const char *tagspath = getenv("TAGS");
 		if(tagspath) {
 			f = fopen(tagspath, "r");
-			prefix = dirprt(tagspath);
+		}
+		/* if no TAGS variable, try finding tags file in parent directories */
+		if (!f) {
+			tagspath = "../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../../tags";
+			f = fopen(tagspath, "r");
 		}
 		if(!f) {
 			msgnw(bw->parent, joe_gettext(_("Couldn't open tags file")));
 			return -1;
 		}
+		if (f)
+			prefix = dirprt(tagspath);
 	}
 	clrtags();
 	buf = vsmk(128);
@@ -415,9 +437,30 @@ static void get_tag_list()
 		/* if there's no tags file in the current dir, then query
 		   for the environment variable TAGS.
 		*/
-		char *tagspath = getenv("TAGS");
+		const char *tagspath = getenv("TAGS");
 		if(tagspath) {
 			f = fopen(tagspath, "r");    
+		}
+		/* if no TAGS variable, try finding tags file in parent directories */
+		if (!f) {
+			tagspath = "../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../../tags";
+			f = fopen(tagspath, "r");
 		}
 	}
 	if (f) {

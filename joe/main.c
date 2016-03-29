@@ -12,6 +12,7 @@
 #endif
 
 char *exmsg = NULL;		/* Message to display when exiting the editor */
+char *xmsg;			/* Message to display when starting the editor */
 int usexmouse=0;
 int xmouse=0;
 int nonotice;
@@ -228,7 +229,7 @@ int edloop()
 		}
 
 		/* Restore modes */
-		if (maint->curwin->watom->what & TYPETW) {
+		if (!leave && maint->curwin->watom->what & TYPETW) {
 			bw = (BW *)maint->curwin->object;
 
 			if (auto_off) {
@@ -655,7 +656,6 @@ void setup_pipein()
 		cstart((BW *)maint->curwin->object, "/bin/sh", a, NULL, 0, 1, NULL, 0);
 	}
 }
-
 /* Scheduler wants us to get some work */
 
 SCRN *main_scrn;
@@ -750,8 +750,13 @@ int main(int argc, char **real_argv, const char * const *envv)
 
 	/* Display startup message unless disabled by global option */
 	if (!nonotice) {
-		msgnw(((BASE *)lastw(maint)->object)->parent,
-		  vsfmt(NULL, 0, joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)")));
+		if (xmsg) {
+			xmsg = stagen(NULL, (BW *)(lastw(maint)->object), xmsg, ' ');
+			msgnw(((BASE *)lastw(maint)->object)->parent, xmsg);
+		} else {
+			msgnw(((BASE *)lastw(maint)->object)->parent,
+			  vsfmt(NULL, 0, joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)")));
+		}
 	}
 
 	/* Setup reading in from stdin to first window if something was

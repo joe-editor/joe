@@ -248,6 +248,9 @@ struct glopts {
 				   14 for local option off_t
 				   6 for local option string (in utf8)
 				   7 for local option off_t+1, with range checking
+				   9 for syntax (options->syntax_name)
+				   13 for byte encoding (options->map_name)
+				   15 for file type (options->ftype)
 				 */
 	void *set;		/* Address of global option */
 	const char *addr;		/* Local options structure member address */
@@ -591,7 +594,13 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 		/* Why no case 6, string option? */
 		/* Keymap, mold, mnew, etc. are not strings */
 		/* These options do not show up in ^T */
-		if (!zcmp(s, "lmsg")) {
+		if (!zcmp(s, "xmsg")) {
+			if (arg) {
+				xmsg = zdup(arg);
+				ret = 2;
+			} else
+				ret = 1;
+		} else if (!zcmp(s, "lmsg")) {
 			if (arg) {
 				if (options)
 					options->lmsg = zdup(arg);
@@ -962,12 +971,12 @@ static int olddoopt(BW *bw, int y, int flg)
 				s = ask(bw->parent, buf, NULL, NULL, utypebw, utf8_map, 0, 0, NULL);
 
 				if (s) {
-					int v = (int)(calc(bw, s, 0) - 1.0);
+					off_t v = (off_t)(calc(bw, s, 0) - 1.0);
 					if (merr) {
 						msgnw(bw->parent, merr);
 						ret = -1;
 					} else if (v >= glopts[y].low && v <= glopts[y].high) {
-						*(int *) ((char *) &bw->o + glopts[y].ofst) = v;
+						*(off_t *) ((char *) &bw->o + glopts[y].ofst) = v;
 					} else {
 						msgnw(bw->parent, joe_gettext(_("Value out of range")));
 						ret = -1;
@@ -1048,6 +1057,8 @@ static int olddoopt(BW *bw, int y, int flg)
 	return ret;
 }
 
+/* Get option in printable format for %Zoption-name% */
+
 const char *get_status(BW *bw, char *s)
 {
 	int y = find_option(s);
@@ -1059,12 +1070,30 @@ const char *get_status(BW *bw, char *s)
 				return *(int *)glopts[y].set ? "ON" : "OFF";
 			} case 1: {
 				return vsfmt(NULL, 0, "%d", *(int *)glopts[y].set);
+			} case 2: {
+				return vsfmt(NULL, 0, "%s", *(char **)glopts[y].set ? *(char **)glopts[y].set : "");
 			} case 4: {
 				return *(int *) ((char *) &bw->o + glopts[y].ofst) ? "ON" : "OFF";
 			} case 5: {
 				return vsfmt(NULL, 0, "%d", *(int *) ((char *) &bw->o + glopts[y].ofst));
+			} case 6: {
+				return vsfmt(NULL, 0, "%s", *(char **)((char *) &bw->o + glopts[y].ofst) ? *(char **)((char *) &bw->o + glopts[y].ofst) : "");
 			} case 7: {
-				return vsfmt(NULL, 0, "%d", *(int *) ((char *) &bw->o + glopts[y].ofst) + 1);
+#ifdef HAVE_LONG_LONG
+				return vsfmt(NULL, 0, "%lld", (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst) + 1);
+#else
+				return vsfmt(NULL, 0, "%ld", (long)*(off_t *) ((char *) &bw->o + glopts[y].ofst) + 1);
+#endif
+			} case 9: {
+				return vsfmt(NULL, 0, "%s", bw->o.syntax_name ? bw->o.syntax_name : "");
+			} case 13: {
+				return vsfmt(NULL, 0, "%s", bw->o.map_name ? bw->o.map_name : "");
+			} case 14: {
+#ifdef HAVE_LONG_LONG
+				return vsfmt(NULL, 0, "%lld", (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
+#else
+				return vsfmt(NULL, 0, "%ld", (long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
+#endif
 			} case 15: {
 				return bw->o.ftype;
 			} default: {

@@ -2,6 +2,71 @@
 
 [Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
 
+### JOE.next (not yet released changes in Mercurial)
+
+* Usability Enhancements
+
+	* The top Google help searches for JOE include:
+
+		* How do I save and exit?  The startup copyright notice
+		  has been replaced with basic help for beginners: ^C to
+		  abort, ^K X to save and exit, and ^K H for help.
+
+		* How do I dismiss the region highlighting?  The traditional
+		  way is to hit ^K B ^K K, but this is slightly non-obvious
+		  and has always been awkward.  Now Ctrl-C will do it.
+
+		* How do I close all files and exit?  Now Ctrl-KQ does this.
+		  Previously ^KQ was the same as ^C: abort a single file.
+
+	* Restyle the help screens:
+
+		* Make it more obvious that there is more than one screen:
+		  put the help for help inline with the text instead of in
+		  the (seemingly invisible) header.
+
+		* Mention Ctrl-Arrow region selection, status
+		  and goto matching delimiter commands on the first screen.
+
+	* Remove time and "Ctrl-K H for help" message from status bar. 
+	  Beginners often don't notice this help message, and it takes up
+	  valuable status bar space that power users want for the context
+	  display.
+
+	* Enable -noxon by default (disable ^S/^Q flow control).  This
+	  allows us to bind ^Q to quote and ^S / ^R to incremental search.
+
+	* Document ESC X (command prompt) in the help screens.
+
+* Minor enhancements
+	* Tags search now tries to find the tags file in parent directories
+	  if it does not exist in the current directory and if the TAGS
+	  environment variable was not set.
+
+	* Built-in calculator can now print and accept numbers in binary,
+	  octal and engineering formats:
+		dec	12_345
+		eng	12.345_0e3
+		bin	0b11_0000_0011_1001
+		oct	0o3_0071
+		hex	0x3039
+
+	* Built-in calculator now prints and accepts separating underscores
+	  for clarity.  For example,  4_294_967_296 instead of 4294967296.
+
+* Bugs fixed
+
+	* Fix bug where indent step value was not shown on ^T menu
+
+	* Fix bug where setting margin doesn't work on big-endian systems
+
+	* Fix use after free bug which shows up in OpenBSD
+
+	* Fix issue where highest valued unicode character equivalent was
+	  not translating to its corresponding 8-bit character.  Effect
+	  of this was that Delete key was not working in shell windows in
+	  ASCII character set.
+
 ### JOE 4.1
 
 * New or improved syntax files for the following languages: 
