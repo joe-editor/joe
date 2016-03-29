@@ -598,7 +598,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 {Programs
  \|\uCOMMANDS\u            \|\uCOMPILING\u                  \|\uQUICK\u                       \| 
  \|\bEsc X\b Command prompt\|\bEsc C\b Save modified compile\|\b^G\b  Find word under cursor  \| 
- \|\bEsc =\b Calculator    \|\bEsc G\b Grep                 \|\b^K;\b Tags file search        \| 
+ \|\bEsc M\b Calculator    \|\bEsc G\b Grep                 \|\b^K;\b Tags file search        \| 
  \|\bshowlog\b Startup log \|\bEsc =\b To next error        \|\bEsc Enter\b Complete word     \| 
  \|\bupper\b   Change case \|\bEsc -\b To prev. error       \|\uBUFFER\u                      \| 
  \|\blower\b   Change case \|\bEsc Space\b Jump to error    \|\bEsc U\b Next                  \| 
@@ -616,12 +616,11 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
      \b\\^  \\$\b  matches beg./end of line       \b\\.\b     match any single char      \| 
      \b\\<  \\>\b  matches beg./end of word       \b\\!\b     match char or expression   \| 
      \b\\(  \\)\b  grouping                       \b\\|\b     match left or right         \| 
-     \b\\[a-z]\b  matches one of a set                                             \| 
+     \b\\[a-z]\b  matches one of a set           \b\\y \\Y\b  short for (.*) / (!*)       \| 
      \b\\{1,3}\b  match 1 - 3 occurrences        \b\\?\b     match 0 or 1 occurrence     \| 
      \b\\+\b      match 1 or more occurrences    \b\\*\b     match 0 or more occurrences \| 
- Replace sequences:                                                           \| 
-     \b\\&\b      replaced with entire match     \b\\1\b - \b9\b replaced with Nth group   \| 
-     \b\\u \\l\b   convert next to upper/lower    \b\\U \\L\b  case convert until \b\\E\b     \| 
+ \bESC .\b for list of escape sequences
+ \b^C\b    to abort     \b^K H\b dismiss help
 }
 
 {Escape sequences
@@ -633,6 +632,14 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
      \b\\s\b / \b\\S\b  Space / Not a space   \b\\f\b  formfeed     \b\\\\\b  backslash            \| 
 }
 
+{Replace
+ Replace sequences:                                                           \| 
+     \b\\&\b      replaced with entire match     \b\\1\b - \b9\b replaced with Nth group   \| 
+     \b\\u \\l\b   convert next to upper/lower    \b\\U \\L\b  case convert until \b\\E\b     \| 
+ \bESC ,\b for list of escape sequences
+ \b^C\b    to abort     \b^K H\b dismiss help
+}
+
 {SearchOptions
  Search options:                                                              \| 
       \br\b Replace      \bk\b Restrict search to highlighted block                   \| 
@@ -642,20 +649,33 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
   \bw\b / \bn\b  Allow / prevent wrap to start of file                                \| 
   \bx\b / \by\b  Search text is standard format / JOE format regular expression       \| 
     \bnnn\b  Perform exactly nnn replacements                                     \| 
+ \b^C\b    to abort     \b^K H\b dismiss help
 }
 
 {Math
-  \uMATH COMMANDS\u (Esc m for math) \uFUNCTIONS\u                                    \| 
+  \uMATH COMMANDS\u (Esc M for math) \uFUNCTIONS\u                                    \| 
   \bhex oct bin\b display mode       \bsin cos tab asin acos atan\b                   \| 
   \beng dec\b engineering / normal   \bsinh cosh tanh asinh acosh atanh\b             \| 
       \bins\b type result into file  \bsqrt cbrt exp ln log\b                         \| 
-     \beval\b evaluate block         \bint floor ceil abs erg ergc\b                  \| 
-     \b0xff\b enter number in hex    \bjoe(..macro..)\b - runs an editor macro        \| 
-     \b3e-4\b floating point decimal \uBLOCK\u                                        \| 
-     \ba=10\b assign a variable      \bsum cnt\b  Sum, count                          \| 
-  2+3\b:\bins multiple commands      \bavg dev\b  Average, std. deviation             \| 
+     \beval\b evaluate block         \bint floor ceil abs\b                           \| 
+     \b0xff\b enter number in hex    \berf erfc j0 j1 y0 y1\b                         \| 
+     \b3e-4\b floating point decimal \bjoe(..macro..)\b - runs an editor macro        \| 
+     \ba=10\b assign a variable                                                   \| 
+  2+3\b:\bins multiple commands                                                   \| 
      \be pi\b constants              \uOPERATORS\u                                    \| 
       \bans\b previous result        \b! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\b\| 
+}
+
+{Statistics 
+  \uMATH COMMANDS\u (Esc M for math)                                              \| 
+  Statistics on region of numbers  Linear regression on region of x y pairs   \| 
+  \bsum\b  Sum                         \blr(x)\b  Estimate y given x     y=m*x+b      \| 
+  \bcnt\b  Count                       \brlr(y)\b Estimate x given y                  \| 
+  \bavg\b  Mean                        \bLr rLr\b Logarithmic regression y=m*ln(x)+b  \| 
+    Standard deviation:            \blR rlR\b Exponential regression y=e^(m*x)+b  \| 
+  \bdev\b  all data present            \bLR rLR\b Power regression       y=b*x^m      \| 
+  \bsamp\b sample of data present      Side effects: \bb\b, \bm\b: regression coef.       \| 
+                                       \br\b: correlation coef., \bcov\b: covariance  \| 
 }
 
 {Names
@@ -867,7 +887,8 @@ aspellword	^[ n
 :def shell_gparse gparse
 :def shell_release release
 :def shell_math maths
-:def shell_typemath txt,math,"ins",rtn,rtn,txt,"",rtn
+:def shell_abort abort
+:def shell_typemath txt,maths,"ins",rtn,rtn,txt,"",rtn,txt,quote,"d",rtn
 :def shell_rtn rtn
 :def shell_edit edit
 :def shell_dellin dellin

@@ -9,8 +9,8 @@
 	* The top Google help searches for JOE include:
 
 		* How do I save and exit?  The startup copyright notice
-		  has been replaced with basic help for beginners: ^C to
-		  abort, ^K X to save and exit, and ^K H for help.
+		  has been replaced with basic help for beginners: ^K Q
+		  to exit and ^K H for help.
 
 		* How do I dismiss the region highlighting?  The traditional
 		  way is to hit ^K B ^K K, but this is slightly non-obvious
@@ -33,26 +33,44 @@
 	  valuable status bar space that power users want for the context
 	  display.
 
+	* Add ^KH for help to search and replace prompts.  Many JOE users
+	  do not know about this context sensitive help.
+
 	* Enable -noxon by default (disable ^S/^Q flow control).  This
 	  allows us to bind ^Q to quote and ^S / ^R to incremental search.
 
 	* Document ESC X (command prompt) in the help screens.
 
-* Minor enhancements
+* Other Enhancements
 	* Tags search now tries to find the tags file in parent directories
 	  if it does not exist in the current directory and if the TAGS
 	  environment variable was not set.
 
 	* Built-in calculator can now print and accept numbers in binary,
 	  octal and engineering formats:
-		dec	12_345
-		eng	12.345_0e3
-		bin	0b11_0000_0011_1001
-		oct	0o3_0071
-		hex	0x3039
+		__dec__	12_345
+		__eng__	12.345_0e3
+		__bin__	0b11_0000_0011_1001
+		__oct__	0o3_0071
+		__hex__	0x3039
 
 	* Built-in calculator now prints and accepts separating underscores
 	  for clarity.  For example,  4_294_967_296 instead of 4294967296.
+
+	* Enhanced statistics functions:
+		* __dev__ computes standard deviation with full population
+		* __samp__ computes standard deviation with sample of population
+		* Linear regression analysis.  Select a region of x
+		  and y values, then:
+			* __lr__(x)   provide estimate of y given x
+			* __rlr__(y)  provide estimate of x given y
+			* __Lr__, __lR__, __LR__: log, exponential, power regression
+
+	* Make new regex engine (from JOE 4.1) more compatible with the
+	  classic engine.  \\y is now shorthand for \\(\\.\\\*\\), so that it does
+	  what \\\* did in the old engine.  Also:
+		* \\. no longer matches newline.
+		* \\\* matches shortest match, not longest match.
 
 * Bugs fixed
 
@@ -66,6 +84,12 @@
 	  not translating to its corresponding 8-bit character.  Effect
 	  of this was that Delete key was not working in shell windows in
 	  ASCII character set.
+
+	* Standard deviation calculator function was not producing correct
+	  results.
+
+	* Allow koi8r and koi8-r for KOI8-R in joe_getcodeset (which is only
+	  used if there is no setlocale).
 
 ### JOE 4.1
 
