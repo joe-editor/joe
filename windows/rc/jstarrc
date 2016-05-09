@@ -635,6 +635,9 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 \i \i  user joerc file is here %LOCALAPPDATA%\\JoeEditor\\jstarrc \|\i \i
 \i \i  default syntax and i18n files are here (Program location)\\syntax \|\i \i
 \i \i  additional documentation can be found here (Program location)\\doc \|\i \i
+\i \i \|\i \i
+\i \i  Right-click in the editor window to display the context menu, \|\i \i
+\i \i  which has some settings and links to documentation. \|\i \i
 }
 
 {CharTable
