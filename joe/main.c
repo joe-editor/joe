@@ -310,6 +310,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 	int omid;
 	int backopt;
 	int c;
+	int filesonly;
 
 	joe_iswinit();
 	joe_locale();
@@ -499,6 +500,8 @@ int main(int argc, char **real_argv, const char * const *envv)
 			cmd_help(1);
 			return 0;
 		} else if (argv[c][0] == '-') {
+			if (argv[c][1] == '-' && !argv[c][2])
+				break;
 			if (argv[c][1])
 				switch (glopt(argv[c] + 1, argv[c + 1], NULL, 1)) {
 				case 0:
@@ -530,15 +533,19 @@ int main(int argc, char **real_argv, const char * const *envv)
 	 * local options afterwords */
 
 	/* orphan is not compatible with exemac()- macros need a window to exist */
-	for (c = 1, backopt = 0; argv[c]; ++c)
-		if (argv[c][0] == '+' && argv[c][1]>='0' && argv[c][1]<='9') {
+	for (c = 1, backopt = 0, filesonly = 0; argv[c]; ++c)
+		if (!filesonly && argv[c][0] == '+' && argv[c][1]>='0' && argv[c][1]<='9') {
 			if (!backopt)
 				backopt = c;
-		} else if (argv[c][0] == '-' && argv[c][1]) {
-			if (!backopt)
-				backopt = c;
-			if (glopt(argv[c] + 1, argv[c + 1], NULL, 0) == 2)
-				++c;
+		} else if (!filesonly && argv[c][0] == '-' && argv[c][1]) {
+			if (argv[c][1] == '-' && !argv[c][2])
+				filesonly = 1;
+			else {
+				if (!backopt)
+					backopt = c;
+				if (glopt(argv[c] + 1, argv[c + 1], NULL, 0) == 2)
+					++c;
+			}
 		} else {
 			B *b = bfind(argv[c]);
 			BW *bw = NULL;
