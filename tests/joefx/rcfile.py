@@ -23,12 +23,14 @@ FILE_OPTS = set([
     'rdonly', 'keymap', 'lmsg', 'rmsg', 'mfirst', 'mnew', 'mold', 'msnew', 'msold',
     'highlighter_context', 'single_quoted', 'no_double_quoted', 'c_comment', 'cpp_comment',
     'pound_comment', 'vhdl_comment', 'semi_comment', 'tex_comment', 'text_delimiters',
+    'title'
 ])
 
 OPTS_WITH_ARGS = set([
     # Global
     'undo_keep', 'backpath', 'lines', 'baud', 'columns', 'skiptop', 'text_color', 'status_color',
     'help_color', 'menu_color', 'prompt_color', 'msg_color', 'lmsg', 'rmsg', 'smsg', 'zmsg',
+    'xmsg', 'aborthint', 'helphint'
     # File
     'cpara', 'cnotpara', 'encoding', 'syntax', 'tab', 'indentc', 'istep', 'lmargin', 'rmargin',
     'keymap', 'mfirst', 'mnew', 'mold', 'msnew', 'msold', 'text_delimiters'
