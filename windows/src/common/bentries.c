@@ -37,6 +37,19 @@ static struct buffer_entry **find_matching_entry(struct buffer_entry **head, str
 	return p;
 }
 
+static void clear_selected(struct buffer_entry *head)
+{
+	/* Clear old selected flag */
+	struct buffer_entry *be;
+	for (be = head; be; be = be->next)
+	{
+		if (be->flags & JOE_BUFFER_SELECTED)
+		{
+			be->flags &= ~JOE_BUFFER_SELECTED;
+		}
+	}
+}
+
 void apply_buffer_updates(struct buffer_entry **head, struct buffer_update *update)
 {
 	struct buffer_entry **e = find_matching_entry(head, &update->entry);
@@ -49,6 +62,10 @@ void apply_buffer_updates(struct buffer_entry **head, struct buffer_update *upda
 		created->id = update->entry.id;
 		created->flags = update->entry.flags;
 		created->next = NULL;
+
+		if (created->flags & JOE_BUFFER_SELECTED) {
+			clear_selected(*head);
+		}
 
 		if (!m)
 		{
@@ -77,15 +94,7 @@ void apply_buffer_updates(struct buffer_entry **head, struct buffer_update *upda
 		/* Selected flag is special: Old selected buffer doesn't have to send an update, it is implied. */
 		if (update->entry.flags & JOE_BUFFER_SELECTED)
 		{
-			/* Clear old selected flag */
-			struct buffer_entry *be;
-			for (be = *head; be; be = be->next)
-			{
-				if (be->flags & JOE_BUFFER_SELECTED)
-				{
-					be->flags &= ~JOE_BUFFER_SELECTED;
-				}
-			}
+			clear_selected(*head);
 		}
 
 		if (!m)

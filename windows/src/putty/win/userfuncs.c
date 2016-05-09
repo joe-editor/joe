@@ -92,7 +92,7 @@ static void UpdateWindowTitle()
 	    continue;
 	}
 
-	if ((be->flags & JOE_IGNORE_BUFFERS) == JOE_BUFFER_MODIFIED) {
+	if ((be->flags & ~JOE_IGNORE_BUFFERS) == JOE_BUFFER_MODIFIED) {
 	    modified++;
 	}
 
