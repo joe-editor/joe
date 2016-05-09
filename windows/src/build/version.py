@@ -87,6 +87,7 @@ def main(version, outfile_h, outfile_wxi, designation):
 #define JW_SHORTVERSION \"""" + version + """\"
 
 #define JW_VERSION_BANNER \"""" + ("** Joe's Own Editor for Windows v%s ** Copyright \xc2\xa9 %d **" % (shortdesc, year)) + """\"
+#define VERSION \"""" + shortdesc + """\"
 
 #endif // __JWVERSION_H__
 """)

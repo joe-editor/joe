@@ -40,4 +40,6 @@ extern int bg_stalin;
 
 extern WATOM watomtw;
 
+char *duplicate_backslashes(const char *s, ptrdiff_t len);
+
 #endif

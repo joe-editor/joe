@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = man rc po syntax joe
 
-EXTRA_DIST = COPYING docs/hacking.md ChangeLog NEWS.md docs/README.old README.md INSTALL INSTALL.AMIGA \
+EXTRA_DIST = COPYING docs/hacking.md ChangeLog NEWS.md docs/README.old README.md INSTALL.md INSTALL.AMIGA \
 	docs/help-system.html charmaps/klingon.in \
 	cygbuild setup.hint autojoe docs/man.md
 

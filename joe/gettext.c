@@ -30,9 +30,37 @@ const char *my_gettext(const char *s)
 			s = r;
 	}
 	if (s[0] == '|')
-		return ignore_prefix(s);
-	else
-		return s;
+		s = ignore_prefix(s);
+	if (zstr(s, "%{")) {
+		char buf[128];
+		char name[80];
+		ptrdiff_t i, j;
+		/* Substitution */
+		i = 0;
+		while (*s)
+			if (s[0] == '%' && s[1] == '{') {
+				j = 0;
+				s += 2;
+				while (*s && *s != '}') {
+					name[j++] = *s++;
+				}
+				name[j] = 0;
+				if (*s == '}')
+					++s;
+				if (!strcmp(name, "abort")) {
+					strcpy(buf + i, aborthint);
+					i = zlen(buf);
+				} else if (!strcmp(name, "help")) {
+					strcpy(buf + i, helphint);
+					i = zlen(buf);
+				}
+			} else {
+				buf[i++] = *s++;
+			}
+		buf[i] = 0;
+		s = atom_add(buf);
+	}
+	return s;
 }
 
 static int load_po(JFILE *f)

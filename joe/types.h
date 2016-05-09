@@ -342,6 +342,7 @@ struct highlight_state {
 
 #ifdef JOEWIN
 #include "jwcolors.h"
+#include "jwversion.h"
 #endif
 
 #include "obj.h"

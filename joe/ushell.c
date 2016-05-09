@@ -461,7 +461,7 @@ int ukillpid(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (bw->b->pid) {
-		int c = query(w, sz(joe_gettext(_("Kill program (y,n,^C)?"))), 0);
+		int c = query(w, sz(joe_gettext(_("Kill program (y,n,%{abort})?"))), 0);
 		if (bw->b->pid && (c == YES_CODE || yncheck(yes_key, c)))
 			killmpx(bw->b->pid, 1);
 		return -1;

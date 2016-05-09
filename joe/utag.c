@@ -223,15 +223,37 @@ int utag(W *w, int k)
 		/* if there's no tags file in the current dir, then query
 		   for the environment variable TAGS.
 		*/
-		char *tagspath = getenv("TAGS");
+		const char *tagspath = getenv("TAGS");
 		if(tagspath) {
 			f = fopen(tagspath, "r");
-			prefix = dirprt(tagspath);
+		}
+		/* if no TAGS variable, try finding tags file in parent directories */
+		if (!f) {
+			tagspath = "../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../../tags";
+			f = fopen(tagspath, "r");
 		}
 		if(!f) {
 			msgnw(bw->parent, joe_gettext(_("Couldn't open tags file")));
 			return -1;
 		}
+		if (f)
+			prefix = dirprt(tagspath);
 	}
 	clrtags();
 	buf = vsmk(128);
@@ -407,7 +429,7 @@ static void get_tag_list()
 	ptrdiff_t i,pos;
 	FILE *f;
 	HASH *ht; /* Used to prevent duplicates in list */
-	struct stat stat;
+	struct stat mystat;
 
 	/* first try to open the tags file in the current directory */
 	f = fopen("tags", "r");
@@ -415,18 +437,39 @@ static void get_tag_list()
 		/* if there's no tags file in the current dir, then query
 		   for the environment variable TAGS.
 		*/
-		char *tagspath = getenv("TAGS");
+		const char *tagspath = getenv("TAGS");
 		if(tagspath) {
 			f = fopen(tagspath, "r");    
 		}
+		/* if no TAGS variable, try finding tags file in parent directories */
+		if (!f) {
+			tagspath = "../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../tags";
+			f = fopen(tagspath, "r");
+		}
+		if (!f) {
+			tagspath = "../../../../../tags";
+			f = fopen(tagspath, "r");
+		}
 	}
 	if (f) {
-		if (!fstat(fileno(f), &stat)) {
-			if (last_update == stat.st_mtime) {
+		if (!fstat(fileno(f), &mystat)) {
+			if (last_update == mystat.st_mtime) {
 				fclose(f);
 				return;
 			} else {
-				last_update = stat.st_mtime;
+				last_update = mystat.st_mtime;
 			}
 		}
 		buf = vsmk(128);

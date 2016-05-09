@@ -515,7 +515,7 @@ int urecord(W *w, int c)
 	int n;
 	struct recmac *r;
 	if (c < '0' || c > '9')
-		c = query(w, sz(joe_gettext(_("Macro to record (0-9 or ^C to abort): "))), 0);
+		c = query(w, sz(joe_gettext(_("Macro to record (0-9 or %{abort} to abort): "))), 0);
 	if (c > '9' || c < '0') {
 		nungetc(c);
 		return -1;
@@ -547,7 +547,7 @@ int utimer(W *w, int k)
 		timer_macro = 0;
 	}
 	
-	c = query(w, sz(joe_gettext(_("Macro to play (0-9 or ^C to abort): "))), 0);
+	c = query(w, sz(joe_gettext(_("Macro to play (0-9 or %{abort} to abort): "))), 0);
 	if (c < '0' || c > '9') {
 		return -1;
 	}
@@ -564,7 +564,7 @@ int utimer(W *w, int k)
 	timer_macro = dupmacro(kbdmacro[c]);
 	timer_macro_delay = 0;
 	
-	s = ask(w, joe_gettext(_("Delay in seconds between macro invocation (^C to abort): ")), NULL, NULL, utypebw, utf8_map, 0, 0, NULL);
+	s = ask(w, joe_gettext(_("Delay in seconds between macro invocation (%{abort} to abort): ")), NULL, NULL, math_cmplt, utf8_map, 0, 0, NULL);
 	if (s) {
 		long num = calc(bw, s, 0);
 		if (merr) {
@@ -680,8 +680,8 @@ int uarg(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	
-	s = ask(w, joe_gettext(_("No. times to repeat next command (^C to abort): ")),
-	        NULL, NULL, utypebw, locale_map, 0, 0, NULL);
+	s = ask(w, joe_gettext(_("No. times to repeat next command (%{abort} to abort): ")),
+	        NULL, NULL, math_cmplt, locale_map, 0, 0, NULL);
 	
 	if (s) {
 		int num;
@@ -704,7 +704,7 @@ int iftest(W *w, const char *prompt)
 	BW *bw;
 	WIND_BW(bw, w);
 	
-	s = ask(w, prompt, NULL, NULL, utypebw, utf8_map, 0, 0, NULL);
+	s = ask(w, prompt, NULL, NULL, math_cmplt, utf8_map, 0, 0, NULL);
 	
 	if (s) {
 		int num;
@@ -728,7 +728,7 @@ int uif(W *w, int k)
 {
 	ifdepth++;
 	if (!ifflag) return 0;
-	return iftest(w, joe_gettext(_("If (^C to abort): ")));
+	return iftest(w, joe_gettext(_("If (%{abort} to abort): ")));
 }
 
 int uelsif(W *w, int k)

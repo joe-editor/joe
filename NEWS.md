@@ -2,6 +2,136 @@
 
 [Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
 
+[Browse source](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree)
+
+[Download source distribution](https://sourceforge.net/projects/joe-editor/files/)
+
+[Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
+
+### JOE.next (not yet released changes in Mercurial)
+
+### JOE 4.2
+
+* New or improved syntax files for the following languages: 
+
+	* Dockerfile
+
+* Usability Enhancements
+
+	* The top Google help searches for JOE include:
+
+		* How do I save and exit?  The startup copyright notice
+		  has been replaced with basic help for beginners: ^K Q
+		  to exit and ^K H for help.
+
+		* How do I dismiss the region highlighting?  The traditional
+		  way is to hit ^K B ^K K, but this is slightly non-obvious
+		  and has always been awkward.  Now Ctrl-C will do it.
+
+		* How do I close all files and exit?  Now Ctrl-K Q does this.
+		  Previously ^K Q was the same as ^C: abort a single file.
+
+	* Restyle the help screens:
+
+		* Make it more obvious that there is more than one screen:
+		  put the help for help inline with the text instead of in
+		  the (seemingly invisible) header.
+
+		* Mention Ctrl-Arrow region selection, status
+		  and goto matching delimiter commands on the first screen.
+
+	* Remove time and "Ctrl-K H for help" message from status bar. 
+	  Beginners often don't notice this help message, and it takes up
+	  valuable status bar space that power users want for the context
+	  display.
+
+	* Add ^KH for help to search and replace prompts.  Many JOE users
+	  do not know about this context sensitive help.
+
+	* Provide aborthint and helphint options so that the ^C and ^K H
+	  hints can be customized depending on the rc file (so say ^G
+	  for abort in jmacs, for example).
+
+	* Enable -noxon by default (disable ^S/^Q flow control).  This
+	  allows us to bind ^Q to quote and ^S / ^R to incremental search.
+
+	* Document ESC X (command prompt) in the help screens.
+
+	* "joe --help" now prints all command line options.
+
+* Other Enhancements
+
+	* Tags search now tries to find the tags file in parent directories
+	  if it does not exist in the current directory and if the TAGS
+	  environment variable was not set.
+
+	* Built-in calculator can now print and accept numbers in binary,
+	  octal and engineering formats:
+		__dec__	12_345
+		__eng__	12.345_0e3
+		__bin__	0b11_0000_0011_1001
+		__oct__	0o3_0071
+		__hex__	0x3039
+
+	* Built-in calculator now prints and accepts separating underscores
+	  for clarity.  For example,  4_294_967_296 instead of 4294967296.
+
+	* Enhanced calculator statistics functions:
+		* __dev__ computes standard deviation with full population
+		* __samp__ computes standard deviation with sample of population
+		* Linear regression analysis.  Select a region of x
+		  and y values, then:
+			* __lr__(x)   provide estimate of y given x
+			* __rlr__(y)  provide estimate of x given y
+			* __Lr__, __lR__, __LR__: log, exponential, power regression
+
+	* Calculator region functions now assume the entire buffer if no
+	  region is set.
+
+	* Tab completion now works at the calculator prompt (and in all
+	  prompts which allow numeric input, such as ^KL- go to line).
+
+	* Make new regex engine (from JOE 4.1) more compatible with the
+	  classic engine.  \\y is now shorthand for \\(\\.\\\*\\), so that it does
+	  what \\\* did in the old engine.  Also:
+		* \\. no longer matches newline.
+		* \\\* matches shortest match, not longest match.
+
+	* Add -left and -right options to control the amount scrolling when
+	  the cursor moves past the left or right edge of the screen.  When
+	  the baud rate is low these are automatically set to a large
+	  amount.  Also, these now control the manual horizontal scrolling
+	  commands.  When these are positive, they indicate number of
+	  columns.  When they are negative, they indicate a fraction of the
+	  screen width (-2 is 1/2 the width).
+
+* Bugs fixed
+
+	* Fix use after free bug which shows up as a crash in OpenBSD
+
+	* Fix bug where indent step value was not shown on ^T menu
+
+	* Fix bug where setting margin doesn't work on big-endian systems
+
+	* Fix issue where highest valued unicode character equivalent was
+	  not translating to its corresponding 8-bit character.  Effect
+	  of this was that Delete key was not working in shell windows in
+	  ASCII character set.
+
+	* Standard deviation calculator function was not producing correct
+	  results.
+
+	* Allow koi8r and koi8-r for KOI8-R in joe_getcodeset (which is only
+	  used if there is no setlocale).
+
+	* Guess_crlf forced UNIX line endings for new files even though
+	  crlf was set.  Now crlf is left alone if guess_crlf can not
+	  determine the line ending.
+
+	* If cursor was at end of a long line and you switched to hex dump
+	  display mode, then hex dump was scrolled.  Now scroll offset is
+	  reset when you switch to hex display mode.
+
 ### JOE for Windows 4.1
 
 [Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/4.1/joewin.msi/download)
@@ -27,7 +157,6 @@
 * Improve color scheme support
 
 * Distribute standalone executables in addition to regular MSI installer
-
 
 ### JOE 4.1
 

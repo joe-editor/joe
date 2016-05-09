@@ -882,7 +882,7 @@ int uinsf(W *w, int k)
 	char *s;
 	WIND_BW(bw, w);
 	
-	s = ask(w, joe_gettext(_("Name of file to insert (^C to abort): ")), &filehist,
+	s = ask(w, joe_gettext(_("Name of file to insert (%{help} for help): ")), &filehist,
 	        "Names", cmplt_file_in, locale_map, 3, 0, NULL);
 	if (s) {
 #ifdef JOEWIN
@@ -1232,16 +1232,16 @@ int ufilt(W *w, int k)
 
 	switch (checkmark(bw)) {
 		case 0:
-			s = joe_gettext(_("Command to filter block through (^C to abort): "));
+			s = joe_gettext(_("Command to filter block through (%{abort} to abort): "));
 			break;
 		case 1:
-			s = joe_gettext(_("Command to filter file through (^C to abort): "));
+			s = joe_gettext(_("Command to filter file through (%{abort} to abort): "));
 			break;
 		default:
 			msgnw(bw->parent, joe_gettext(_("No block")));
 			return -1;
 	}
-	s = ask(bw->parent, s, &filthist, NULL, utypebw, locale_map, 0, 0, NULL);
+	s = ask(bw->parent, s, &filthist, NULL, cmplt_command, locale_map, 0, 0, NULL);
 
 	if (!s)
 		return -1;
@@ -1329,21 +1329,12 @@ int uupper(W *w, int k)
 }
 
 /* Get sum, sum of squares, and return count of
- * a block of numbers.
- *
- * avg = sum/count
- *
- * stddev = sqrt(  (a-avg)^2 + (b-avg)^2 + (c-avg)^2 )
- *        = sqrt(  a^2-2*a*avg+avg^2  + b^2-2*b*avg+avg^2 +c^2-2*c*avg+avg^2 )
- *        = sqrt(  a^2+b^2+c^2 + 3*avg^2 - 2*avg*(a+b+c) )
- *        = sqrt(  sumsq + count*avg^2 - 2*avg*sum  )
- *
- */
+ * a block of numbers. */
 
-int blksum(double *sum, double *sumsq)
+int blksum(BW *bw, double *sum, double *sumsq)
 {
 	char buf[80];
-	if (markv(1)) {
+	if (checkmark(bw) != 2) {
 		P *q = pdup(markb, "blksum");
 		int x;
 		int c;
@@ -1368,8 +1359,8 @@ int blksum(double *sum, double *sumsq)
 						c=pgetc(q);
 						if ((c >= '0' && c <= '9') || c == 'e' || c == 'E' ||
 						    c == 'p' || c == 'P' || c == 'x' || c == 'X' ||
-						    c == '.' || c == '-' || c == '+' ||
-						    (c >= 'a' && c <= 'f') || (c >= 'A' && c<='F')) {
+						    c == '.' || c == '-' || c == '+' || c == 'o' || c == 'O' ||
+						    (c >= 'a' && c <= 'f') || (c >= 'A' && c<='F') || (c == '_')) {
 							if(x != 79)
 								buf[x++]= TO_CHAR_OK(c);
 						} else
@@ -1377,7 +1368,7 @@ int blksum(double *sum, double *sumsq)
 					}
 					/* Convert number to floating point, add it to total */
 					buf[x] = 0;
-					v = strtod(buf,NULL);
+					v = joe_strtod(buf,NULL);
 					++count;
 					accu += v;
 					accusq += v*v;
@@ -1388,7 +1379,88 @@ int blksum(double *sum, double *sumsq)
 		prm(q);
 		*sum = accu;
 		*sumsq = accusq;
+		if (filtflg)
+			unmark(bw->parent, 0);
 		return count;
+	} else
+		return -1;
+}
+
+int blklr(BW *bw, double *xsum, double *xsumsq, double *ysum, double *ysumsq, double *xy, int logx, int logy)
+{
+	char buf[80];
+	if (checkmark(bw) != 2) {
+		P *q = pdup(markb, "blklr");
+		int x;
+		int c;
+		double accux = 0.0;
+		double accuxsq = 0.0;
+		double accuy = 0.0;
+		double accuysq = 0.0;
+		double accuxy = 0.0;
+		double prevx = 0.0;
+		double v;
+		int state = 0; /* 0 = x, 1 = y */
+		int count = 0;
+		off_t left = markb->xcol;
+		off_t right = markk->xcol;
+		while (q->byte < markk->byte) {
+			/* Skip until we're within columns */
+			while (q->byte < markk->byte && square && (piscol(q) < left || piscol(q) >= right))
+				pgetc(q);
+
+			/* Skip to first number */
+			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
+				c=pgetc(q);
+				if ((c >= '0' && c <= '9') || c == '.' || c == '-') {
+					/* Copy number into buffer */
+					buf[0] = TO_CHAR_OK(c); x=1;
+					while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
+						c=pgetc(q);
+						if ((c >= '0' && c <= '9') || c == 'e' || c == 'E' ||
+						    c == 'p' || c == 'P' || c == 'x' || c == 'X' ||
+						    c == '.' || c == '-' || c == '+' || c == 'o' || c == 'O' ||
+						    (c >= 'a' && c <= 'f') || (c >= 'A' && c<='F') || (c == '_')) {
+							if(x != 79)
+								buf[x++]= TO_CHAR_OK(c);
+						} else
+							break;
+					}
+					/* Convert number to floating point, add it to total */
+					buf[x] = 0;
+					v = joe_strtod(buf,NULL);
+					if (!state) {
+						if (logx)
+							v = log(v);
+						prevx = v;
+						accux += v;
+						accuxsq += v*v;
+						state = 1;
+					} else {
+						if (logy)
+							v = log(v);
+						accuy += v;
+						accuysq += v*v;
+						accuxy += prevx*v;
+						state = 0;
+						++count;
+					}
+					break;
+				}
+			}
+		}
+		prm(q);
+		*xsum = accux;
+		*xsumsq = accuxsq;
+		*ysum = accuy;
+		*ysumsq = accuysq;
+		*xy = accuxy;
+		if (filtflg)
+			unmark(bw->parent, 0);
+		if (state)
+			return -1;
+		else
+			return count;
 	} else
 		return -1;
 }
@@ -1397,9 +1469,9 @@ int blksum(double *sum, double *sumsq)
  * Block is converted to UTF-8
  */
 
-char *blkget()
+char *blkget(BW *bw)
 {
-	if (markv(1)) {
+	if (checkmark(bw) != 2) {
 		P *q;
 		ptrdiff_t buf_size = markk->byte - markb->byte + 1; /* Risky... */
 		ptrdiff_t buf_x = 0;
@@ -1439,6 +1511,8 @@ char *blkget()
 		}
 		prm(q);
 		buf[buf_x] = 0;
+		if (filtflg)
+			unmark(bw->parent, 0);
 		return buf;
 	} else
 		return 0;

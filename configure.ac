@@ -4,7 +4,7 @@
 AC_PREREQ(2.54)
 
 #### Here's the only place where to change version number ####
-AC_INIT(joe, 4.1)
+AC_INIT(joe, 4.2)
 AC_CONFIG_SRCDIR([joe/b.c])
 
 AC_CANONICAL_BUILD
@@ -158,6 +158,7 @@ AC_SEARCH_LIBS(j0, m, AC_DEFINE_UNQUOTED(HAVE_J0, 1, [If we have j0()]))
 AC_SEARCH_LIBS(j1, m, AC_DEFINE_UNQUOTED(HAVE_J1, 1, [If we have j1()]))
 AC_SEARCH_LIBS(y0, m, AC_DEFINE_UNQUOTED(HAVE_Y0, 1, [If we have y0()]))
 AC_SEARCH_LIBS(y1, m, AC_DEFINE_UNQUOTED(HAVE_Y1, 1, [If we have y1()]))
+AC_SEARCH_LIBS(hypot, m, AC_DEFINE_UNQUOTED(HAVE_HYPOT, 1, [If we have hypot()]))
 
 joe_REINSTALL_SIGHANDLERS
 
@@ -205,5 +206,5 @@ syntax/troff.jsf syntax/typescript.jsf syntax/verilog.jsf syntax/vhdl.jsf
 syntax/whitespace.jsf syntax/xml.jsf syntax/yaml.jsf syntax/filename.jsf
 syntax/avr.jsf syntax/r.jsf syntax/groovy.jsf syntax/clojure.jsf
 syntax/rust.jsf syntax/coffee.jsf syntax/scala.jsf syntax/swift.jsf
-syntax/d.jsf])
+syntax/d.jsf syntax/dockerfile.jsf])
 AC_OUTPUT

@@ -59,6 +59,8 @@
 		в обычной 8-битной кодировке.
 
  -mid		При скроллинге выполнять центрирование курсора
+ -left nn	Amount to jump left when scrolling is necessary (-1 for 1/4 width)
+ -right nn	Amount to jump right when scrolling is necessary (-1 for 1/4 width)
 
  -marking	Подсвечивать текст между началом блока и курсором 
                 (используйте вместе с -lightoff)
@@ -131,7 +133,7 @@
 
  -columns nnn	Установить кол-во колонок на экране
 
- -help		Включать экран подсказки при запуске
+ -helpon	Включать экран подсказки при запуске
 
  -skiptop nnn	Не использовать верхние nnn строк экрана
 
@@ -264,6 +266,11 @@
 -rmsg  %S Стр %4r Поз %3c %t  Подсказка - по F1
 -smsg ** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w ** 
 -zmsg ** Line %r Col %c Offset %o(0x%O) ** 
+-xmsg \i Joe's Own Editor %v (%b) ** Type \bCtrl-K Q\b to exit or \bCtrl-K H\b for help **\i
+
+ Key sequence hints which are displayed in various prompts.
+-aborthint ^C
+-helphint ^K H
 
 
  ВТОРАЯ СЕКЦИЯ: Установка локальных опций в зависимости от имени файла:
@@ -530,6 +537,8 @@ mode,"backpath",rtn	% % Path to backup files %Zbackpath%
 :defmenu cursor menu,"more-options",rtn
 mode,"pg",rtn	% % No. PgUp/PgDn lines %Zpg%
 mode,"mid",rtn	C Center on scroll %Zmid%
+mode,"left",rtn	L Columns to scroll left %Zleft%
+mode,"right",rtn R Columns to scroll right %Zright%
 mode,"floatmouse",rtn	% % Click past end %Zfloatmouse%
 mode,"rtbutton",rtn	% % Right button %Zrtbutton%
 
@@ -755,9 +764,12 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 :windows		Общие клавиши для всех окон
 type		U+0 TO U+10FFFF
 abort		^C		Аварийное прерывание
-abort		^K Q
-abort		^K ^Q
-abort		^K q
+ abort		^K Q
+ abort		^K ^Q
+ abort		^K q
+querysave,query,killjoe	^K Q	Query to save files, then exit
+querysave,query,killjoe	^K ^Q
+querysave,query,killjoe	^K q
 arg		^K \		Повтор следующей команды 
 explode		^K I		Показывать все окна или только одно
 explode		^K ^I
@@ -1026,7 +1038,9 @@ center		^K A		Центрировать строку
 center		^K ^A
 center		^K a
 crawll		^K <		Pan left
+crawll		^[ <		Pan left
 crawlr		^K >		Pan right
+crawlr		^[ >		Pan right
 delch		.kD		Удалить символ
 delch		^D
 deleol		^J		Удалить до конца строки

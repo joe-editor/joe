@@ -111,8 +111,8 @@ msgid "|ignore lock, continue with edit|iI"
 msgstr "|╕гнорування блокування, продовжу╓ться редактування|iIшШ"
 
 #: cmd.c:265
-msgid "Notice: File on disk changed! (hit ^C to continue)  "
-msgstr "Увага: Файл на диску зм╕нено! (натисн╕ть ^C для продовження) "
+msgid "Notice: File on disk changed! (hit %{abort} to continue)  "
+msgstr "Увага: Файл на диску зм╕нено! (натисн╕ть %{abort} для продовження) "
 
 #: cmd.c:325
 #, fuzzy
@@ -154,20 +154,20 @@ msgid "Change keymap: "
 msgstr "Зм╕на раскладки клав╕атури: "
 
 #: macro.c:662
-msgid "Macro to record (0-9 or ^C to abort): "
-msgstr "Номер макро (0-9 або ^C для в╕дм╕ни): "
+msgid "Macro to record (0-9 or %{abort} to abort): "
+msgstr "Номер макро (0-9 або %{abort} для в╕дм╕ни): "
 
 #: macro.c:764
 msgid "Play-"
 msgstr "Виконую-"
 
 #: macro.c:791
-msgid "No. times to repeat next command (^C to abort): "
-msgstr "Ск. раз╕в повторити команду (^C для в╕дм╕ни): "
+msgid "No. times to repeat next command (%{abort} to abort): "
+msgstr "Ск. раз╕в повторити команду (%{abort} для в╕дм╕ни): "
 
 #: macro.c:819
-msgid "If (^C to abort): "
-msgstr "If (^C для в╕дм╕ни): "
+msgid "If (%{abort} to abort): "
+msgstr "If (%{abort} для в╕дм╕ни): "
 
 #: macro.c:826
 msgid "Elsif without if"
@@ -437,8 +437,8 @@ msgstr "  Автообм╕н "
 
 #: rc.c:311
 #, c-format
-msgid "Indent char %d (SPACE=32, TAB=9, ^C to abort): "
-msgstr "Символ вир╕внювання %d (ПРОБ╤Л=32, TAB=9, ^C для в╕дм╕ни): "
+msgid "Indent char %d (SPACE=32, TAB=9, %{abort} to abort): "
+msgstr "Символ вир╕внювання %d (ПРОБ╤Л=32, TAB=9, %{abort} для в╕дм╕ни): "
 
 #: rc.c:311
 msgid "  Indent char "
@@ -446,8 +446,8 @@ msgstr "  Символ вир╕внювання "
 
 #: rc.c:312
 #, c-format
-msgid "Indent step %d (^C to abort): "
-msgstr "Шаг вир╕внювання %d (^C для в╕дм╕ни): "
+msgid "Indent step %d (%{abort} to abort): "
+msgstr "Шаг вир╕внювання %d (%{abort} для в╕дм╕ни): "
 
 #: rc.c:312
 msgid "  Indent step "
@@ -871,16 +871,16 @@ msgid "  Path to backup files "
 msgstr "  Шлях до резервних файл╕в "
 
 #: rc.c:347
-msgid "Select syntax (^C to abort): "
-msgstr "Вибер╕ть синтаксис (^C для в╕дм╕ни)"
+msgid "Select syntax (%{abort} to abort): "
+msgstr "Вибер╕ть синтаксис (%{abort} для в╕дм╕ни)"
 
 #: rc.c:347
 msgid "Y Syntax"
 msgstr "Y Синтаксис"
 
 #: rc.c:348
-msgid "Select file character set (^C to abort): "
-msgstr "Вкаж╕ть файл кодового набора (^C для в╕дм╕ни): "
+msgid "Select file character set (%{abort} to abort): "
+msgstr "Вкаж╕ть файл кодового набора (%{abort} для в╕дм╕ни): "
 
 #: rc.c:348
 #, fuzzy
@@ -1347,8 +1347,8 @@ msgid "(Macro %d recording...)"
 msgstr "(Запис макро %d...)"
 
 #: tw.c:558 tw.c:584 ufile.c:1010
-msgid "Lose changes to this file (y,n,^C)? "
-msgstr "В╕дм╕нити зм╕нення файла (y,n,^C)? "
+msgid "Lose changes to this file (y,n,%{abort})? "
+msgstr "В╕дм╕нити зм╕нення файла (y,n,%{abort})? "
 
 #: ublock.c:284
 msgid "Selection cleared."
@@ -1372,40 +1372,40 @@ msgid "Sorry, no sub-processes in DOS (yet)"
 msgstr "Вибачте, п╕дпроцесы в DOS не п╕дтримуються (поки що)"
 
 #: ublock.c:1072
-msgid "Command to filter block through (^C to abort): "
-msgstr "Команда для ф╕льтрац╕╖ блока (^C для в╕дм╕ни): "
+msgid "Command to filter block through (%{abort} to abort): "
+msgstr "Команда для ф╕льтрац╕╖ блока (%{abort} для в╕дм╕ни): "
 
 #: ublock.c:1077
-msgid "Command to filter file through (^C to abort): "
-msgstr "Команда для ф╕льтрац╕╖ файла (^C для в╕дм╕ни): "
+msgid "Command to filter file through (%{abort} to abort): "
+msgstr "Команда для ф╕льтрац╕╖ файла (%{abort} для в╕дм╕ни): "
 
 #: uedit.c:1388 utag.c:73
 msgid "Invalid line number"
 msgstr "Неприпустимий номер строки"
 
 #: uedit.c:1395
-msgid "Go to line (^C to abort): "
-msgstr "Номер строки (^C для в╕дм╕ни): "
+msgid "Go to line (%{abort} to abort): "
+msgstr "Номер строки (%{abort} для в╕дм╕ни): "
 
 #: uedit.c:1424
 msgid "Invalid column number"
 msgstr "Неприпустимий номер колонки"
 
 #: uedit.c:1431
-msgid "Go to column (^C to abort): "
-msgstr "Номер колонки (^C для в╕дм╕ни): "
+msgid "Go to column (%{abort} to abort): "
+msgstr "Номер колонки (%{abort} для в╕дм╕ни): "
 
 #: uedit.c:1460
 msgid "Invalid byte number"
 msgstr "Неприпустимий номер байта"
 
 #: uedit.c:1467
-msgid "Go to byte (^C to abort): "
-msgstr "Номер байта (^C для в╕дм╕ни): "
+msgid "Go to byte (%{abort} to abort): "
+msgstr "Номер байта (%{abort} для в╕дм╕ни): "
 
 #: uedit.c:1911
-msgid "Unicode (ISO-10646) character in hex (^C to abort): "
-msgstr "Символ Unicode (ISO-10646) в 16ричному вид╕ (^C для в╕дм╕ни): "
+msgid "Unicode (ISO-10646) character in hex (%{abort} to abort): "
+msgstr "Символ Unicode (ISO-10646) в 16ричному вид╕ (%{abort} для в╕дм╕ни): "
 
 #: uedit.c:2036
 msgid "Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"
@@ -1449,12 +1449,12 @@ msgstr "Назад до символа: "
 
 #: uedit.c:2290
 #, fuzzy
-msgid "Message (^C to abort): "
-msgstr "Пов╕домлення (^C для в╕дм╕ни): "
+msgid "Message (%{abort} to abort): "
+msgstr "Пов╕домлення (%{abort} для в╕дм╕ни): "
 
 #: uedit.c:2312
-msgid "Insert (^C to abort): "
-msgstr "Вставити (^C для в╕дм╕ни): "
+msgid "Insert (%{abort} to abort): "
+msgstr "Вставити (%{abort} для в╕дм╕ни): "
 
 #: uerror.c:330 uerror.c:344
 #, fuzzy, c-format
@@ -1506,8 +1506,8 @@ msgid "No modified files, so no updates needed."
 msgstr "Жоден файл не модиф╕кувався, зм╕нювати н╕чого."
 
 #: ufile.c:107
-msgid "System (^C to abort): "
-msgstr "Система (^C для в╕дм╕ни): "
+msgid "System (%{abort} to abort): "
+msgstr "Система (%{abort} для в╕дм╕ни): "
 
 #: ufile.c:273
 msgid "|yes|yY"
@@ -1522,8 +1522,8 @@ msgid "Couldn't make backup file... file not saved"
 msgstr "Не можу створити резервний файл... файл не збережений"
 
 #: ufile.c:321
-msgid "Could not make backup file.  Save anyway (y,n,^C)? "
-msgstr "Не могу створити резервный файл. Збер╕гати все р╕вно (y,n,^C)? "
+msgid "Could not make backup file.  Save anyway (y,n,%{abort})? "
+msgstr "Не могу створити резервный файл. Збер╕гати все р╕вно (y,n,%{abort})? "
 
 #: ufile.c:409 ufile.c:425
 #, c-format
@@ -1531,53 +1531,53 @@ msgid "Block written to file %s"
 msgstr "Блок записаний в файл %s"
 
 #: ufile.c:488
-msgid "File exists. Overwrite (y,n,^C)? "
-msgstr "Файл ╕сну╓. Перезаписувати (y,n,^C)? "
+msgid "File exists. Overwrite (y,n,%{abort})? "
+msgstr "Файл ╕сну╓. Перезаписувати (y,n,%{abort})? "
 
 #: ufile.c:495
-msgid "File on disk is newer. Overwrite (y,n,^C)? "
-msgstr "Файл на диску - нов╕щий. Перезаписувати (y,n,^C)? "
+msgid "File on disk is newer. Overwrite (y,n,%{abort})? "
+msgstr "Файл на диску - нов╕щий. Перезаписувати (y,n,%{abort})? "
 
 #: ufile.c:510 ufile.c:899 ufile.c:1103
-msgid "Name of file to save (^C to abort): "
-msgstr "╤м'я файла для збереження (^C для в╕дм╕ни): "
+msgid "Name of file to save (%{abort} to abort): "
+msgstr "╤м'я файла для збереження (%{abort} для в╕дм╕ни): "
 
 #: ufile.c:538
-msgid "Name of file to write (^C to abort): "
-msgstr "╤м'я файла для запису (^C для в╕дм╕ни): "
+msgid "Name of file to write (%{abort} to abort): "
+msgstr "╤м'я файла для запису (%{abort} для в╕дм╕ни): "
 
 #: ufile.c:654
-msgid "Load original file from disk (y,n,^C)? "
-msgstr "Загрузити ориг╕нальний файл з диска (y,n,^C)? "
+msgid "Load original file from disk (y,n,%{abort})? "
+msgstr "Загрузити ориг╕нальний файл з диска (y,n,%{abort})? "
 
 #: ufile.c:684
 msgid "Can't replace modified file"
 msgstr "Не можу зам╕нити модиф╕кований файл"
 
 #: ufile.c:693
-msgid "Name of file to edit (^C to abort): "
-msgstr "╤м'я файла для редактування (^C для в╕дм╕ни): "
+msgid "Name of file to edit (%{abort} to abort): "
+msgstr "╤м'я файла для редактування (%{abort} для в╕дм╕ни): "
 
 #: ufile.c:708 ufile.c:1085
-msgid "Name of buffer to edit (^C to abort): "
-msgstr "╤м'я буфера для редактування (^C для в╕дм╕ни): "
+msgid "Name of buffer to edit (%{abort} to abort): "
+msgstr "╤м'я буфера для редактування (%{abort} для в╕дм╕ни): "
 
 #: ufile.c:764
-msgid "Name of scratch buffer to edit (^C to abort): "
-msgstr "╤м'я буфера чернетки для редактування (^C для в╕дм╕ни): "
+msgid "Name of scratch buffer to edit (%{abort} to abort): "
+msgstr "╤м'я буфера чернетки для редактування (%{abort} для в╕дм╕ни): "
 
 #: ufile.c:865
-msgid "Name of file to insert (^C to abort): "
-msgstr "╤м'я файла для вставки (^C для в╕дм╕ни): "
+msgid "Name of file to insert (%{abort} to abort): "
+msgstr "╤м'я файла для вставки (%{abort} для в╕дм╕ни): "
 
 #: ufile.c:933
-msgid "Save changes to this file (y,n,^C)? "
-msgstr "Зберегти зм╕ни цього файла (y,n,^C)? "
+msgid "Save changes to this file (y,n,%{abort})? "
+msgstr "Зберегти зм╕ни цього файла (y,n,%{abort})? "
 
 #: ufile.c:1137
 #, c-format
-msgid "File %s has been modified.  Save it (y,n,^C)? "
-msgstr "Файл %s зм╕нено. Збер╕гти його (y,n,^C)? "
+msgid "File %s has been modified.  Save it (y,n,%{abort})? "
+msgstr "Файл %s зм╕нено. Збер╕гти його (y,n,%{abort})? "
 
 #: uisrch.c:267
 msgid "I-find: "
@@ -1670,27 +1670,27 @@ msgid "|don't wrap|nN"
 msgstr "|не цикл╕чний|nNтТ"
 
 #: usearch.c:618
-msgid "Replace with (^C to abort): "
-msgstr "Чим зам╕няти (^C для в╕дм╕ни): "
+msgid "Replace with (%{abort} to abort): "
+msgstr "Чим зам╕няти (%{abort} для в╕дм╕ни): "
 
 #: usearch.c:633
 #, fuzzy
-msgid "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "
-msgstr "(S)врах.рег╕стра (R)зам╕на (B)назад бло(K) (A)вс╕ файли NNN (^C - в╕дм╕на): "
+msgid "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (%{abort} to abort): "
+msgstr "(S)врах.рег╕стра (R)зам╕на (B)назад бло(K) (A)вс╕ файли NNN (%{abort} - в╕дм╕на): "
 
 #: usearch.c:635
 #, fuzzy
-msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "
-msgstr "(I)игн.рег. (R)зам╕на (B)назад бло(K) (A)вс╕ файли NNN (^C - в╕дм╕на): "
+msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (%{abort} to abort): "
+msgstr "(I)игн.рег. (R)зам╕на (B)назад бло(K) (A)вс╕ файли NNN (%{abort} - в╕дм╕на): "
 
 #: usearch.c:717
 #, c-format
-msgid "Find (^C to abort) [%s]: "
-msgstr "Що шукати (^C для в╕дм╕ни) [%s]: "
+msgid "Find (%{abort} to abort) [%s]: "
+msgstr "Що шукати (%{abort} для в╕дм╕ни) [%s]: "
 
 #: usearch.c:719
-msgid "Find (^C to abort): "
-msgstr "Що шукати (^C для в╕дм╕ни): "
+msgid "Find (%{abort} to abort): "
+msgstr "Що шукати (%{abort} для в╕дм╕ни): "
 
 #: usearch.c:813
 msgid "|rest of file|rR"
@@ -1701,8 +1701,8 @@ msgid "|backup|bB"
 msgstr "|резерв|bBиИ"
 
 #: usearch.c:845
-msgid "Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"
-msgstr "Зам╕няти (Y)так (N)н╕ (R)все (B)повернути (^C для в╕дм╕ни): "
+msgid "Replace (Y)es (N)o (R)est (B)ackup (%{abort} to abort)?"
+msgstr "Зам╕няти (Y)так (N)н╕ (R)все (B)повернути (%{abort} для в╕дм╕ни): "
 
 #: usearch.c:993
 msgid "Not found (search restricted to marked block)"
@@ -1745,8 +1745,8 @@ msgid "Enter grep command (for example, 'grep -n foo *.c'): "
 msgstr "Вкаж╕ть команду пошука (наприклад, 'grep -n foo *.c'): "
 
 #: ushell.c:250
-msgid "Kill program (y,n,^C)?"
-msgstr "Перервати програму (y,n,^C)?"
+msgid "Kill program (y,n,%{abort})?"
+msgstr "Перервати програму (y,n,%{abort})?"
 
 #: utag.c:26
 msgid "Couldn't open tags file"
@@ -1817,8 +1817,8 @@ msgstr "В╕дсутн╕й буфер пов╕домлення"
 #~ msgid ": missing after ?"
 #~ msgstr ": отсутствует после ?"
 
-#~ msgid "Replace with (^C to abort) [%s]: "
-#~ msgstr "Чем заменять (^C для отмены) [%s]: "
+#~ msgid "Replace with (%{abort} to abort) [%s]: "
+#~ msgstr "Чем заменять (%{abort} для отмены) [%s]: "
 
 #~ msgid "corrupt heap: head %x\n"
 #~ msgstr "испорченная куча: верхушка %x\n"

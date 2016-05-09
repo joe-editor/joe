@@ -14,9 +14,9 @@
 
 [Project page](http://www.sourceforge.net/projects/joe-editor)
 
-[Download source](http://prdownloads.sourceforge.net/joe-editor/joe-4.0.tar.gz?download)
+[Download source](https://sourceforge.net/projects/joe-editor/files/)
 
-[Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL)
+[Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
 
 [History](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/history.md)
 

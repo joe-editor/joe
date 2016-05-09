@@ -555,6 +555,7 @@ int uformat(W *w, int k)
 	P *p, *q;
 	BW *bw;
 	int flag;
+	WIND_BW(bw, w);
 	
 	WIND_BW(bw, w);
 

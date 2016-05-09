@@ -64,7 +64,7 @@ int from_uni(struct charmap *cset, int c)
 		c += 256;
 
 	x = 0;
-	y = cset->from_size-1;
+	y = cset->from_size;
 	z = -1;
 	while (z != (x + y) / 2) {
 		z = (x + y) / 2;
@@ -1793,8 +1793,12 @@ static const char *joe_getcodeset(char *l)
       }
     }
 
-    if (zstr(l, "KOI8-R")) return "KOI8-R";
-    if (zstr(l, "KOI8-U")) return "KOI8-U";
+    if (zstr(l, "KOI8-R") || zstr(l, "KOI8R") ||
+        zstr(l, "koi8-r") || zstr(l, "koi8r")) return "KOI8-R";
+
+    if (zstr(l, "KOI8-U") || zstr(l, "KOI8U") ||
+        zstr(l, "koi8-u") || zstr(l, "koi8u")) return "KOI8-U";
+
     if (zstr(l, "620")) return "TIS-620";
     if (zstr(l, "1251")) return "CP1251";
     if (zstr(l, "2312")) return "GB2312";

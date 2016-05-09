@@ -136,7 +136,7 @@ static char *get_context(BW *bw)
 	return buf1;
 }
 
-static char *duplicate_backslashes(char *s, ptrdiff_t len)
+char *duplicate_backslashes(const char *s, ptrdiff_t len)
 {
 	char *m;
 	ptrdiff_t x, count;
@@ -152,7 +152,7 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 	return m;
 }
 
-/* static */char *stagen(char *stalin, BW *bw, const char *s, char fill)
+char *stagen(char *stalin, BW *bw, const char *s, char fill)
 {
 	char buf[80];
 	int x;
@@ -173,6 +173,13 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 				++s;
 			}
 			switch (*s) {
+			case 'v': /* Version of JOE */
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "%s", VERSION);
+					stalin = vsncpy(sv(stalin), sz(buf));
+				}
+				break;
+
 			case 'x': /* Context (but only if autoindent is enabled) */
 				{
 					if ( bw->o.autoindent) {
@@ -449,7 +456,7 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 			case 'k':
 				{
 					ptrdiff_t i;
-					char *cpos = buf;
+					char *mycpos = buf;
 
 					buf[0] = 0;
 					if (w->kbd->x && w->kbd->seq[0])
@@ -457,22 +464,22 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 							char c = w->kbd->seq[i] & 127;
 
 							if (c < 32) {
-								cpos[0] = '^';
-								cpos[1] = (char)(c + '@');
-								cpos += 2;
+								mycpos[0] = '^';
+								mycpos[1] = (char)(c + '@');
+								mycpos += 2;
 							} else if (c == 127) {
-								cpos[0] = '^';
-								cpos[1] = '?';
-								cpos += 2;
+								mycpos[0] = '^';
+								mycpos[1] = '?';
+								mycpos += 2;
 							} else {
-								cpos[0] = c;
-								cpos += 1;
+								mycpos[0] = c;
+								mycpos += 1;
 							}
 						}
-					*cpos++ = fill;
-					while (cpos - buf < 4)
-						*cpos++ = fill;
-					stalin = vsncpy(sv(stalin), buf, cpos - buf);
+					*mycpos++ = fill;
+					while (mycpos - buf < 4)
+						*mycpos++ = fill;
+					stalin = vsncpy(sv(stalin), buf, mycpos - buf);
 				}
 				break;
 			case 'S':
@@ -487,6 +494,9 @@ static char *duplicate_backslashes(char *s, ptrdiff_t len)
 				break;
 			case 'e':
 				stalin = vsncpy(sv(stalin), sz(bw->b->o.charmap->name));
+				break;
+			case 'b':
+				stalin = vsncpy(sv(stalin), sz(locale_map->name));
 				break;
 			case 'w':
 				if (!piseof(bw->cursor)) {
@@ -740,6 +750,12 @@ int uabort(W *w, int k)
 	if (w->watom != &watomtw)
 		return wabort(w);
 	WIND_BW(bw, w);
+	if (markv(0) && markb->b == bw->b) {
+		prm(markk);
+		markk = 0;
+		updall();
+		return 0;
+	}
 	if (bw->parent->bstack) {
 		int rtn;
 		B *b = wpop(bw);
@@ -752,7 +768,7 @@ int uabort(W *w, int k)
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw->parent, 0);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch) {
-		int c = query(w, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		int c = query(w, sz(joe_gettext(_("Lose changes to this file (y,n,%{abort})? "))), 0);
 		if (!yncheck(yes_key, c))
 			return -1;
 	}
@@ -783,7 +799,7 @@ int uabort1(W *w, int k)
 	if (bw->b->pid && bw->b->count==1)
 		return ukillpid(bw->parent, 0);
 	if (bw->b->changed && bw->b->count == 1 && !bw->b->scratch) {
-		int c = query(w, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		int c = query(w, sz(joe_gettext(_("Lose changes to this file (y,n,%{abort})? "))), 0);
 		if (!yncheck(yes_key, c))
 			return -1;
 	}
@@ -845,20 +861,20 @@ int utw1(W *w, int k)
 	W *starting = w;
 	W *mainw = starting->main;
 	Screen *t = mainw->t;
-	int yn;
+	int myyn;
 
 	do {
-		yn = 0;
+		myyn = 0;
 	      loop:
 		do {
 			wnext(t);
 		} while (t->curwin->main == mainw && t->curwin != starting);
 		if (t->curwin->main != mainw) {
 			utw0(t->curwin->main, 0);
-			yn = 1;
+			myyn = 1;
 			goto loop;
 		}
-	} while (yn);
+	} while (myyn);
 	return 0;
 }
 

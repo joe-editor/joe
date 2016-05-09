@@ -33,7 +33,7 @@ def main(infname, outfname):
 flagsettings = [
     'asis', 'assume_256color', 'assume_color', 'autoindent', 'autoswap', 'beep', 'break_hardlinks', 'break_links',
     'c_comment', 'cpp_comment', 'crlf', 'csmode', 'dopadding', 'exask', 'floatmouse', 'flowed', 'force', 'french',
-    'guess_crlf', 'guess_indent', 'guess_non_utf8', 'guess_utf8', 'help', 'help_is_utf8', 'hex', 'highlight', 'icase',
+    'guess_crlf', 'guess_indent', 'guess_non_utf8', 'guess_utf8', 'helpon', 'help_is_utf8', 'hex', 'highlight', 'icase',
     'indentfirst', 'joe_state', 'joexterm', 'keepup', 'lightoff', 'linums', 'marking', 'menu_above', 'menu_explorer',
     'menu_jump', 'mid', 'mouse', 'no_double_quoted', 'nobackup', 'nobackups', 'nocurdir', 'nolocks', 'nomodcheck',
     'nonotice', 'nosta', 'notite', 'noxon', 'orphan', 'overwrite', 'picture', 'pound_comment', 'purify', 'rdonly',
@@ -45,12 +45,12 @@ flagsettings = [
 oneparamsettings = [
     'baud', 'columns', 'encoding', 'help_color', 'indentc', 'istep', 'keymap', 'lines', 'lmargin', 'menu_color',
     'msg_color', 'pg', 'prompt_color', 'rmargin', 'skiptop', 'status_color', 'syntax', 'tab', 'text_color',
-    'undo_keep'
+    'undo_keep', 'left', 'right'
 ]
 
 lineparamsettings = [
     'backpath', 'cpara', 'lmsg', 'mfirst', 'mnew', 'mold', 'msnew', 'msold', 'rmsg', 'text_delimiters',
-    'smsg', 'zmsg'
+    'smsg', 'zmsg', 'xmsg', 'aborthint', 'helphint'
 ]
 
 specialkeys = [

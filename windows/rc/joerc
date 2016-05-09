@@ -54,6 +54,8 @@
  -help_is_utf8	Set if help text is in UTF-8 format.  Leave clear if it's a raw 8-bit format.
 
  -mid		Cursor is recentered when scrolling is necessary
+ -left nn	Amount to jump left when scrolling is necessary (-1 for 1/4 width)
+ -right nn	Amount to jump right when scrolling is necessary (-1 for 1/4 width)
 
  -marking	Text between ^KB and cursor is highlighted (use with -lightoff)
 
@@ -123,7 +125,7 @@
 
  -columns nnn	Set no. screen columns
 
- -help		Start with help on
+ -helpon	Start with help on
 
  -skiptop nnn	Don't use top nnn lines of the screen
 
@@ -248,13 +250,15 @@
   %S  '*SHELL*' if there is a shell running in window
   %M  Macro recording message
   %y  Syntax
-  %e  Encoding
+  %e  Encoding of file
+  %b  Encoding of terminal
   %x  Context (first non-indented line going backwards)
   %dd day
   %dm month
   %dY year
   %Ename%  value of environment variable
-  %Tname%  value of option (ON or OFF for boolean options)
+  %Zname%  value of option (ON or OFF for boolean options)
+           (hit TAB at mode command prompt for full list)
 
  These formatting escape sequences may also be given:
  
@@ -265,10 +269,15 @@
   \f  Blink
   \l  Italic
 
--lmsg \i%k%T%W%I%X %n %m%y%R %M
--rmsg  %S Row %4r Col %3c %t  Ctrl-K H for help
+-lmsg \i%k%T%W%I%X %n %m%y%R %M %x
+-rmsg  %S Row %4r Col %3c 
 -smsg ** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w ** 
 -zmsg ** Line %r Col %c Offset %o(0x%O) ** 
+-xmsg \i Joe's Own Editor for Windows %v (%b) ** Type \bCtrl-K Q\b to exit or \bCtrl-K H\b for help **\i
+
+ Key sequence hints which are displayed in various prompts.
+-aborthint ^C
+-helphint ^K H
 
  SECOND SECTION: File name dependant local option settings:
 
@@ -537,6 +546,8 @@ mode,"backpath",rtn	% % Path to backup files %Zbackpath%
 :defmenu cursor menu,"more-options",rtn
 mode,"pg",rtn	% % No. PgUp/PgDn lines %Zpg%
 mode,"mid",rtn	C Center on scroll %Zmid%
+mode,"left",rtn	L Columns to scroll left %Zleft%
+mode,"right",rtn R Columns to scroll right %Zright%
 mode,"floatmouse",rtn	% % Click past end %Zfloatmouse%
 mode,"rtbutton",rtn	% % Right button %Zrtbutton%
 
@@ -571,24 +582,15 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
  text.  Otherwise, the locale 8-bit character set is assumed.
 
 {Basic
-\i   Help Screen    \|turn off with ^KH    more help with Alt-. (^[.)              \i
-\i \i\|\uCURSOR\u           \|\uGO TO\u            \|\uBLOCK\u      \|\uDELETE\u   \|\uMISC\u         \|\uEXIT\u      \|\i \i
-\i \i\|^B left ^F right \|^U  prev. screen \|^KB begin  \|^D char. \|^KJ reformat \|^KX save  \|\i \i
-\i \i\|^P up   ^N down  \|^V  next screen  \|^KK end    \|^Y line  \|^KA center   \|^C  abort \|\i \i
-\i \i\|^Z previous word \|^A  beg. of line \|^KM move   \|^W >word \|^T  options  \|^KZ shell \|\i \i
-\i \i\|^X next word     \|^E  end of line  \|^KC copy   \|^O word< \|^R  refresh  \|\uFILE\u      \|\i \i
-\i \i\|\uSEARCH\u           \|^KU top of file  \|^KW file   \|^J >line \|\uSPELL\u        \|^KE edit  \|\i \i
-\i \i\|^KF find text    \|^KV end of file  \|^KY delete \|^_ undo  \|^[N word     \|^KR insert\|\i \i
-\i \i\|^L  find next    \|^KL to line No.  \|^K/ filter \|^^ redo  \|^[L file     \|^KD save  \|\i \i
-}
-
-{Windows
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i\|^KO Split the window in half           \|F1 - F4 Pop-up shell window           \|\i \i
-\i \i\|^KG Make current window bigger         \|^KT Make current window smaller       \|\i \i
-\i \i\|^KN Go to the window below             \|^KP Go to the window above            \|\i \i
-\i \i\|^[V Switch to next buffer              \|^[U Switch to previous buffer         \|\i \i
-\i \i\|^C  Eliminate the current window       \|^KI Show all windows / Show one window\|\i \i
+ \|\uREGION\u        \|\uGO TO\u           \|\uGO TO\u           \|\uDELETE\u    \|\uEXIT\u       \|\uSEARCH\u    \| 
+ \|\b^Arrow\b Select \|\b^Z\b Prev. word   \|\b^U/^V\b PgUp/PgDn \|\b^D\b Char.  \|\b^KX\b Save   \|\b^KF\b Find  \| 
+ \|\b^KB\b Begin     \|\b^X\b Next word    \|\uMISC\u            \|\b^Y\b Line   \|\b^C\b  Abort  \|\b^L\b  Next  \| 
+ \|\b^KK\b End       \|\b^KU\b Top of file \|\b^KJ\b Paragraph   \|\b^W\b >Word  \|\b^KQ\b All    \|\uHELP\u      \| 
+ \|\b^KC\b Copy      \|\b^KV\b End of file \|\b^KA\b Center line \|\b^O\b Word<  \|\uFILE\u       \|\bEsc .\b Next\| 
+ \|\b^KM\b Move      \|\b^A\b Beg. of line \|\b^K Space\b Status \|\b^J\b >Line  \|\b^KE\b Edit   \|\bEsc ,\b Prev\| 
+ \|\b^KW\b File      \|\b^E\b End of line  \|\uSPELL\u           \|\b^[O\b Line< \|\b^KR\b Insert \|\b^KH\b Off   \| 
+ \|\b^KY\b Delete    \|\b^KL\b To line no. \|\bEsc N\b Word      \|\b^_\b Undo   \|\b^KD\b Save   \|\b^T\b  Menu  \| 
+ \|\b^K/\b Filter    \|\b^G\b  Matching (  \|\bEsc L\b File      \|\b^^\b Redo   \|\b^K`\b Revert \|\b\b          \| 
 }
 
 {Advanced
@@ -612,90 +614,123 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Search
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \iSearch sequences:                                                            \|\i \i
-\i \i    \\^  \\$  matches beg./end of line       \\.     match any single char      \|\i \i
-\i \i    \\<  \\>  matches beg./end of word       \\!     match char or expression   \|\i \i
-\i \i    \\(  \\)  grouping                       \\|     match left or right         \|\i \i
-\i \i    \\[a-z]  matches one of a set                                             \|\i \i
-\i \i    \\{1,3}  match 1 - 3 occurrences        \\?     match 0 or 1 occurrence     \|\i \i
-\i \i    \\+      match 1 or more occurrences    \\*     match 0 or more occurrences \|\i \i
-\i \iReplace sequences:                                                           \|\i \i
-\i \i    \\&      replaced with entire match     \\1 - 9 replaced with Nth group   \|\i \i
-\i \i    \\u \\l   convert next to upper/lower    \\U \\L  case convert until \\E     \|\i \i
+ Search sequences:                                                            \| 
+     \b\\^  \\$\b  matches beg./end of line       \b\\.\b     match any single char      \| 
+     \b\\<  \\>\b  matches beg./end of word       \b\\!\b     match char or expression   \| 
+     \b\\(  \\)\b  grouping                       \b\\|\b     match left or right         \| 
+     \b\\[a-z]\b  matches one of a set           \b\\y \\Y\b  short for (.*) / (!*)       \| 
+     \b\\{1,3}\b  match 1 - 3 occurrences        \b\\?\b     match 0 or 1 occurrence     \| 
+     \b\\+\b      match 1 or more occurrences    \b\\*\b     match 0 or more occurrences \| 
+                                                                               \|
+ \b^C\b    to abort                             \bEsc .\b  to list of escape sequences \|
 }
 
 {Escape sequences
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \iEscape sequences: \\x{10fff}  Unicode code point   \\p{Ll}  Unicode category \|\i \i
-\i \i    \\i / \\I  Identifier start      \\t  tab          \\e  escape               \|\i \i
-\i \i    \\c / \\C  Identifier continue   \\n  newline      \\r  carriage return      \|\i \i
-\i \i    \\d / \\D  Digit / Not a digit   \\b  backspace  \\xFF  hex character        \|\i \i
-\i \i    \\w / \\W  Word / Not a word     \\a  alert      \\377  octal character      \|\i \i
-\i \i    \\s / \\S  Space / Not a space   \\f  formfeed     \\\\  backslash            \|\i \i
+ Escape sequences: \| 
+    \b\\x{10fff}\b Unicode code point    \b\\p{Ll}\b  Unicode category \| 
+    \b\\i\b / \b\\I\b   Identifier start      \b\\t\b  tab          \b\\e\b  escape               \| 
+    \b\\c\b / \b\\C\b   Identifier continue   \b\\n\b  newline      \b\\r\b  carriage return      \| 
+    \b\\d\b / \b\\D\b   Digit / Not a digit   \b\\b\b  backspace  \b\\xFF\b  hex character        \| 
+    \b\\w\b / \b\\W\b   Word / Not a word     \b\\a\b  alert      \b\\377\b  octal character      \| 
+    \b\\s\b / \b\\S\b   Space / Not a space   \b\\f\b  formfeed     \b\\\\\b  backslash            \| 
+  \|
+  \|
+}
+
+{Replace
+ Replace sequences:                                                           \| 
+     \b\\&\b      replaced with entire match     \b\\1\b - \b9\b replaced with Nth group   \| 
+     \b\\u \\l\b   convert next to upper/lower    \b\\U \\L\b  case convert until \b\\E\b     \| 
+                                                                              \|
+                                                                              \|
+ \|
+ \|
+ \|
+ \b^C\b    to abort                             \bEsc ,\b to list of escape sequences \|
 }
 
 {SearchOptions
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \iSearch options:                                                              \|\i \i
-\i \i     r Replace      k Restrict search to highlighted block                   \|\i \i
-\i \i     i Ignore case  b Search backwards instead of forwards                   \|\i \i
-\i \i                    a Search across all loaded files                         \|\i \i
-\i \i                    e Search across all files in Grep or Compile error list  \|\i \i
-\i \i w / n  Allow / prevent wrap to start of file                                \|\i \i
-\i \i x / y  Search text is standard format / JOE format regular expression       \|\i \i
-\i \i   nnn  Perform exactly nnn replacements                                     \|\i \i
+ Search options:                                                              \| 
+      \br\b Replace      \bk\b Restrict search to highlighted block                   \| 
+      \bi\b Ignore case  \bb\b Search backwards instead of forwards                   \| 
+                     \ba\b Search across all loaded files                         \| 
+                     \be\b Search across all files in Grep or Compile error list  \| 
+  \bw\b / \bn\b  Allow / prevent wrap to start of file                                \| 
+  \bx\b / \by\b  Search text is standard format / JOE format regular expression       \| 
+    \bnnn\b  Perform exactly nnn replacements                                     \| 
+ \b^C\b    to abort
 }
 
 {Math
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i \uCOMMANDS\u (hit Alt-m for math)  \uFUNCTIONS\u                                    \|\i \i
-\i \i     hex hex display mode       sin cos tab asin acos atan                   \|\i \i
-\i \i     dec decimal mode           sinh cosh tanh asinh acosh atanh             \|\i \i
-\i \i     ins type result into file  sqrt cbrt exp ln log                         \|\i \i
-\i \i    eval evaluate block         int floor ceil abs erg ergc                  \|\i \i
-\i \i    0xff enter number in hex    joe(..macro..) - runs an editor macro        \|\i \i
-\i \i    3e-4 floating point decimal \uBLOCK\u                                        \|\i \i
-\i \i    a=10 assign a variable      sum cnt  Sum, count                          \|\i \i
-\i \i 2+3:ins multiple commands      avg dev  Average, std. deviation             \|\i \i
-\i \i    e pi constants              \uOPERATORS\u                                    \|\i \i
-\i \i     ans previous result        ! ^  * / %  + -  < <= > >= == !=  &&  ||  ? :\|\i \i
+  \uMATH COMMANDS\u                  \uCONSTANTS\u                                \| 
+  \bhex oct bin\b display mode       \b0xff\b hex entry                           \| 
+  \beng dec\b engineering / normal   \b0o77\b octal entry                         \| 
+      \bins\b type result into file  \b0b11\b binary entry                        \| 
+     \beval\b evaluate block         \b3e-4\b floating point entry                \| 
+  2+3\b:\bins multiple commands      \uVARIABLES\u                                \| 
+  \uOPERATORS\u                      \bans\b  Previous result                     \| 
+  \b! ^  * / %  + -\b                \ba=10\b Assign a variable                   \| 
+  \b< <= > >= == !=  &&  ||  ? :\b   \bEsc .\b for list of functions              \| 
+}
+
+{Functions
+  \uFUNCTIONS\u                      \uCONSTANTS\u                                \| 
+  \bsin cos tab asin acos atan\b     \be pi\b                                     \| 
+  \bsinh cosh tanh asinh acosh atanh\b                                        \| 
+  \bsqrt cbrt exp ln log\b                                                    \| 
+  \bint floor ceil abs\b                                                      \| 
+  \berf erfc j0 j1 y0 y1\b                                                    \| 
+  \bjoe(..macro..)\b - runs an editor macro                                   \| 
+                                                                              \| 
+                                 \bEsc .\b for statistics                     \| 
+}
+
+{Statistics 
+  \uMATH COMMANDS\u                                                               \| 
+  Statistics on region of numbers  Linear regression on region of x y pairs   \| 
+  \bsum\b  Sum                         \blr(x)\b  Estimate y given x     y=m*x+b      \| 
+  \bcnt\b  Count                       \brlr(y)\b Estimate x given y                  \| 
+  \bavg\b  Mean                        \bLr rLr\b Logarithmic regression y=m*ln(x)+b  \| 
+    Standard deviation:            \blR rlR\b Exponential regression y=e^(m*x)+b  \| 
+  \bdev\b  all data present            \bLR rLR\b Power regression       y=b*x^m      \| 
+  \bsamp\b sample of data present      Side effects: \bb\b, \bm\b: regression coef.       \| 
+                                       \br\b: correlation coef., \bcov\b: covariance  \| 
 }
 
 {Names
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i Hit TAB at file name prompts to generate menu of file names                 \|\i \i
-\i \i Or use up/down keys to access history of previously entered names           \|\i \i
-\i \i Special file names:                                                         \|\i \i
-\i \i      !command                 Pipe in/out of a shell command                \|\i \i
-\i \i      >>filename               Append to a file                              \|\i \i
-\i \i      -                        Read/Write to/from standard I/O               \|\i \i
-\i \i      filename,START,SIZE      Read/Write a part of a file/device            \|\i \i
-\i \i          Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \|\i \i
-}
-
-{Joe
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i Send bug reports to: http://sourceforge.net/projects/joe-editor \|\i \i
-\i \i \|\i \i
-\i \i  default joerc file is here (Program location)\\conf\\joerc \|\i \i
-\i \i  user joerc file is here %LOCALAPPDATA%\\JoeEditor\\joerc \|\i \i
-\i \i  default syntax and i18n files are here (Program location)\\syntax \|\i \i
-\i \i  additional documentation can be found here (Program location)\\doc \|\i \i
+  Hit TAB to complete names.  Use up / down arrow keys to traverse history.   \| 
+  Special file names:                                                         \| 
+       \b!\bcommand                 Pipe in/out of a shell command                \| 
+       \b>>\bfilename               Append to a file                              \| 
+       \b-\b                        Read/Write to/from standard I/O               \|
+       filename\b,START,SIZE\b      Read/Write a part of a file/device            \| 
+           Give START/SIZE in decimal (255), octal (0377) or hex (0xFF)       \| 
+       \b\\,\b                       Use backslash to quote special characters     \|
+ \b^C\b    to abort
 }
 
 {CharTable
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,                        \i
-\i \i\| Dec  \u 0123 4567  8901 2345    0123 4567  8901 2345 \u  Dec \|\i \i
-\i \i\|     |                                              |     \|\i \i
-\i \i\|   0 | \u@ABC\u \uDEFG\u  \uHIJK\u \uLMNO\u    \i\u@ABC\u\i \i\uDEFG\u\i  \i\uHIJK\u\i \i\uLMNO\u\i | 128 \|\i \i
-\i \i\|  16 | \uPQRS\u \uTUVW\u  \uXYZ[\u \u\\]^_\u    \i\uPQRS\u\i \i\uTUVW\u\i  \i\uXYZ[\u\i \i\u\\]^_\u\i | 144 \|\i \i
-\i \i\|  32 |  !"# $%&'  ()*+ ,-./     ¡¢£ ¤¥¦§  ¨©ª« ¬­®¯ | 160 \|\i \i
-\i \i\|  48 | 0123 4567  89:; <=>?    °±²³ ´µ¶·  ¸¹º» ¼½¾¿ | 176 \|\i \i
-\i \i\|  64 | @ABC DEFG  HIJK LMNO    ÀÁÂÃ ÄÅÆÇ  ÈÉÊË ÌÍÎÏ | 192 \|\i \i
-\i \i\|  80 | PQRS TUVW  XYZ[ \\]^_    ÐÑÒÓ ÔÕÖ×  ØÙÚÛ ÜÝÞß | 208 \|\i \i
-\i \i\|  96 | `abc defg  hijk lmno    àáâã äåæç  èéêë ìíîï | 224 \|\i \i
-\i \i\| 112 | pqrs tuvw  xyz{ |}~    ðñòó ôõö÷  øùúû üýþÿ | 240 \|\i \i
+ \| Dec  \u 0123 4567  8901 2345    0123 4567  8901 2345 \u  Dec \| 
+ \|   0 | \u@ABC\u \uDEFG\u  \uHIJK\u \uLMNO\u    \i\u@ABC\u\i \i\uDEFG\u\i  \i\uHIJK\u\i \i\uLMNO\u\i | 128 \| 
+ \|  16 | \uPQRS\u \uTUVW\u  \uXYZ[\u \u\\]^_\u    \i\uPQRS\u\i \i\uTUVW\u\i  \i\uXYZ[\u\i \i\u\\]^_\u\i | 144 \| 
+ \|  32 |  !"# $%&'  ()*+ ,-./     ¡¢£ ¤¥¦§  ¨©ª« ¬X®¯ | 160 \| 
+ \|  48 | 0123 4567  89:; <=>?    °±²³ ´µ¶·  ¸¹º» ¼½¾¿ | 176 \| 
+ \|  64 | @ABC DEFG  HIJK LMNO    ÀÁÂÃ ÄÅÆÇ  ÈÉÊË ÌÍÎÏ | 192 \| 
+ \|  80 | PQRS TUVW  XYZ[ \\]^_    ÐÑÒÓ ÔÕÖ×  ØÙÚÛ ÜÝÞß | 208 \| 
+ \|  96 | `abc defg  hijk lmno    àáâã äåæç  èéêë ìíîï | 224 \| 
+ \| 112 | pqrs tuvw  xyz{ |}~    ðñòó ôõö÷  øùúû üýþÿ | 240 \| 
+}
+
+{Joe
+  Send bug reports to: http://sourceforge.net/projects/joe-editor \| 
+  \| 
+   default joerc file is here @JOERC@/joerc \| 
+   default syntax and i18n files are here @JOEDATA@ \| 
+   additional documentation can be found here @JOEDOC@ \| 
+  \| 
+  \| 
+  \| 
+  \| 
 }
 
  FOURTH SECTION: Key bindings:
@@ -763,12 +798,18 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 
  To define a command foo which will goto the beginning of the last line.
 
+ Recenter
+:def recenter retype,arg,"top+height/2-line",rtn,upslide
+
 :windows		Bindings common to all windows
 type		U+0 TO U+10FFFF
 abort		^C		Abort window
-abort		^K Q
-abort		^K ^Q
-abort		^K q
+ abort		^K Q
+ abort		^K ^Q
+ abort		^K q
+querysave,query,killjoe	^K Q	Query to save files, then exit
+querysave,query,killjoe	^K ^Q
+querysave,query,killjoe	^K q
 arg		^K \		Repeat next command
 explode		^K I		Show all windows or show only one window
 explode		^K ^I
@@ -801,7 +842,8 @@ prevw		^K ^P
 prevw		^K p
 query		^K ?		Macro query insert
 record		^K [		Record a macro
-retype		^R		Refresh screen
+ retype		^R		Refresh screen
+ recenter	^R		Recenter and refresh screen
 rtn		^M		Return
 shell		^K Z		Shell escape
 shell		^K ^Z
@@ -871,7 +913,8 @@ aspellword	^[ n
 :def shell_gparse gparse
 :def shell_release release
 :def shell_math maths
-:def shell_typemath txt,math,"ins",rtn,rtn,txt,"\r",rtn
+:def shell_abort abort
+:def shell_typemath txt,maths,"ins",rtn,rtn,txt,"\r",rtn,txt,quote,"d",rtn
 :def shell_rtn rtn
 :def shell_edit edit
 :def shell_dellin dellin
@@ -967,6 +1010,7 @@ mwind!,mfit,jump,bol		^[ SP
 isrch		^[ s		Forward incremental search
 isrch		^[ S		Forward incremental search
 isrch		^[ ^S		Forward incremental search
+isrch		^S
 notmod		^[ ~		Not modified
 mwind,mfit,prevw,nxterr		^[ =		To next error
 parserr		^[ e		Parse errors in current buffer
@@ -976,6 +1020,7 @@ mwind,mfit,prevw,prverr		^[ -		To previous error
 rsrch		^[ r		Backward incremental search
 rsrch		^[ R		Backward incremental search
 rsrch		^[ ^R		Backward incremental search
+retype,rsrch	^R
 run		^[ !		Run a program in a window
 tomarkb		^[ b		Go to beginning of marked block
 tomarkb		^[ ^B		Go to beginning of marked block
@@ -1058,7 +1103,9 @@ center		^K A		Center line
 center		^K ^A
 center		^K a
 crawll		^K <		Pan left
+crawll		^[ <		Pan left
 crawlr		^K >		Pan right
+crawlr		^[ >		Pan right
 delch		.kD		Delete character
 delch		^D
 deleol		^J		Delete to end of line

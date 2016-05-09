@@ -235,15 +235,6 @@
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "joe"
 
-/* Define to the full name and version of this package. */
-#define PACKAGE_STRING "joe 3.7"
-
-/* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "joe"
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "3.7"
-
 /* Define to 1 if the C compiler supports function prototypes. */
 #define PROTOTYPES 1
 
@@ -304,9 +295,6 @@
 
 /* If we have newer terminfo/termcap capabilities */
 //#define TERMINFO 1
-
-/* Version number of package */
-#define VERSION "3.7+joewin0.1"
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 /* #undef _FILE_OFFSET_BITS */

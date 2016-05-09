@@ -7,7 +7,8 @@
  */
 
 extern char *exmsg;	/* Exit message */
-extern int help;		/* Set to start with help on */
+extern char *xmsg;	/* Startup message */
+extern int helpon;		/* Set to start with help on */
 extern Screen *maint;		/* Primary screen */
 extern int usexmouse;		/* Use xterm mouse support? */
 void nungetc(int c);

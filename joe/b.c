@@ -2241,7 +2241,10 @@ P *binsmq(P *p, const char *blk, ptrdiff_t amnt)
 	ptrdiff_t x, y;
 	for (y = 0; y != amnt; y = x) {
 		for (x = y; x != amnt; ++x) {
-			if (blk[x] == ' ' || blk[x] == '\t' || blk[x] == '\\')
+			if ((x == 0 && blk[x] == '!') ||
+			    (x == 0 && blk[0] == '>' && blk[1] == '>') ||
+			    (x == 1 && blk[0] == '>' && blk[x] == '>') ||
+			    blk[x] == ' ' || blk[x] == '\t' || blk[x] == '\\' || blk[x] == ',')
 				break;
 		}
 		if (x != y) {
@@ -2253,6 +2256,12 @@ P *binsmq(P *p, const char *blk, ptrdiff_t amnt)
 				binsm(q, "\\ ", 2);
 			else if (blk[x] == '\t')
 				binsm(q, "\\\t", 2);
+			else if (blk[x] == ',')
+				binsm(q, "\\,", 2);
+			else if (blk[x] == '!')
+				binsm(q, "\\!", 2);
+			else if (blk[x] == '>')
+				binsm(q, "\\>", 2);
 			else
 				binsm(q, "\\\\", 2);
 			pfwrd(q, 2);
@@ -2869,7 +2878,7 @@ opnerr:
 	/* If first line has CR-LF, assume MS-DOS file */
 	if (guesscrlf) {
 		int crlf = b->o.crlf;
-		b->o.crlf = 0;
+		b->o.crlf = 0; /* Prevernt CR-LF to LF conversion for this test */
 		p=pdup(b->bof, "bload");
 		for(x=0;x!=1024;++x) {
 			int c = pgetc(p);
@@ -3129,7 +3138,7 @@ static int bsavefd_utf16(P *p, int fd, off_t size, int rev)
 {
 	P *np = pdup(p, "bsavefd");
 	char buf[SEGSIZ + 8];
-	ptrdiff_t e = np->byte + size;
+	off_t e = np->byte + size;
 
 	ptrdiff_t y = 0;
 	int c;

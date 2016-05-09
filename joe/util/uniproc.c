@@ -757,7 +757,7 @@ static int uniwidth(char *name)
                 TONEXT;
                 TOEND1;
                 if (buf[x] == 'W' || buf[x] == 'F') {
-                    if (l != high + 1) {
+                    if ((int)l != high + 1) {
                         if (low != -2) {
                             printf("	{ 0x%x, 0x%x },\n", low, high);
                         }

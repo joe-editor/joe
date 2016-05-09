@@ -9,5 +9,7 @@ extern const char *merr; /* Math error message: set if calc returned an error */
 double calc(BW *bw, char *s,int secure);
 int umath(W *w, int k);
 int usmath(W *w, int k);
-
+double joe_strtod(const char *ptr, const char **at_eptr);
 extern B *mathhist;
+int math_cmplt(BW *bw, int k);
+

@@ -104,8 +104,8 @@ msgid "|ignore lock, continue with edit|iI"
 msgstr "|忽略鎖定，繼續編輯|iI"
 
 #: cmd.c:265
-msgid "Notice: File on disk changed! (hit ^C to continue)  "
-msgstr "通知：磁碟上的檔案已變更！(按下 ^C 以繼續)  "
+msgid "Notice: File on disk changed! (hit %{abort} to continue)  "
+msgstr "通知：磁碟上的檔案已變更！(按下 %{abort} 以繼續)  "
 
 #: cmd.c:325
 msgid "Modify other window first for macro"
@@ -143,20 +143,20 @@ msgid "Change keymap: "
 msgstr "變更按鍵對應："
 
 #: macro.c:662
-msgid "Macro to record (0-9 or ^C to abort): "
-msgstr "進行記錄的巨集 (0-9 或 ^C 以放棄)："
+msgid "Macro to record (0-9 or %{abort} to abort): "
+msgstr "進行記錄的巨集 (0-9 或 %{abort} 以放棄)："
 
 #: macro.c:764
 msgid "Play-"
 msgstr "Play-"
 
 #: macro.c:791
-msgid "No. times to repeat next command (^C to abort): "
-msgstr "重複下一個命令的次數 (^C 以放棄)："
+msgid "No. times to repeat next command (%{abort} to abort): "
+msgstr "重複下一個命令的次數 (%{abort} 以放棄)："
 
 #: macro.c:819
-msgid "If (^C to abort): "
-msgstr "If (^C 以放棄)："
+msgid "If (%{abort} to abort): "
+msgstr "If (%{abort} 以放棄)："
 
 #: macro.c:826
 msgid "Elsif without if"
@@ -416,8 +416,8 @@ msgstr "  自動切換模式 "
 
 #: rc.c:311
 #, c-format
-msgid "Indent char %d (SPACE=32, TAB=9, ^C to abort): "
-msgstr "縮排字元 %d (空格=32, 跳格=9, ^C 以放棄)："
+msgid "Indent char %d (SPACE=32, TAB=9, %{abort} to abort): "
+msgstr "縮排字元 %d (空格=32, 跳格=9, %{abort} 以放棄)："
 
 #: rc.c:311
 msgid "  Indent char "
@@ -425,8 +425,8 @@ msgstr "  縮排字元 "
 
 #: rc.c:312
 #, c-format
-msgid "Indent step %d (^C to abort): "
-msgstr "縮排步距 %d (^C 以放棄)："
+msgid "Indent step %d (%{abort} to abort): "
+msgstr "縮排步距 %d (%{abort} 以放棄)："
 
 #: rc.c:312
 msgid "  Indent step "
@@ -831,16 +831,16 @@ msgid "  Path to backup files "
 msgstr "  備份檔案所在路徑 "
 
 #: rc.c:347
-msgid "Select syntax (^C to abort): "
-msgstr "選取語法 (^C 以放棄)："
+msgid "Select syntax (%{abort} to abort): "
+msgstr "選取語法 (%{abort} 以放棄)："
 
 #: rc.c:347
 msgid "Y Syntax"
 msgstr "Y 語法"
 
 #: rc.c:348
-msgid "Select file character set (^C to abort): "
-msgstr "選取檔案字元集 (^C 以放棄)："
+msgid "Select file character set (%{abort} to abort): "
+msgstr "選取檔案字元集 (%{abort} 以放棄)："
 
 #: rc.c:348
 msgid "E Encoding "
@@ -1269,8 +1269,8 @@ msgid "(Macro %d recording...)"
 msgstr "(巨集 %d 記錄中…)"
 
 #: tw.c:558 tw.c:584 ufile.c:1010
-msgid "Lose changes to this file (y,n,^C)? "
-msgstr "放棄這個檔案的變更 (y,n,^C)？"
+msgid "Lose changes to this file (y,n,%{abort})? "
+msgstr "放棄這個檔案的變更 (y,n,%{abort})？"
 
 #: ublock.c:284
 msgid "Selection cleared."
@@ -1294,40 +1294,40 @@ msgid "Sorry, no sub-processes in DOS (yet)"
 msgstr "抱歉，在 DOS 中(尚)無子行程"
 
 #: ublock.c:1072
-msgid "Command to filter block through (^C to abort): "
-msgstr "用來篩選區塊的命令 (^C 以放棄)："
+msgid "Command to filter block through (%{abort} to abort): "
+msgstr "用來篩選區塊的命令 (%{abort} 以放棄)："
 
 #: ublock.c:1077
-msgid "Command to filter file through (^C to abort): "
-msgstr "用來篩選檔案的命令 (^C 以放棄)："
+msgid "Command to filter file through (%{abort} to abort): "
+msgstr "用來篩選檔案的命令 (%{abort} 以放棄)："
 
 #: uedit.c:1388 utag.c:73
 msgid "Invalid line number"
 msgstr "無效的列號"
 
 #: uedit.c:1395
-msgid "Go to line (^C to abort): "
-msgstr "前往指定列 (^C 以放棄)："
+msgid "Go to line (%{abort} to abort): "
+msgstr "前往指定列 (%{abort} 以放棄)："
 
 #: uedit.c:1424
 msgid "Invalid column number"
 msgstr "無效的行號"
 
 #: uedit.c:1431
-msgid "Go to column (^C to abort): "
-msgstr "前往指定行 (^C 以放棄)："
+msgid "Go to column (%{abort} to abort): "
+msgstr "前往指定行 (%{abort} 以放棄)："
 
 #: uedit.c:1460
 msgid "Invalid byte number"
 msgstr "無效的位元組數"
 
 #: uedit.c:1467
-msgid "Go to byte (^C to abort): "
-msgstr "前往指定位元組 (^C 以放棄)："
+msgid "Go to byte (%{abort} to abort): "
+msgstr "前往指定位元組 (%{abort} 以放棄)："
 
 #: uedit.c:1911
-msgid "Unicode (ISO-10646) character in hex (^C to abort): "
-msgstr "十六進位顯示的萬國碼 (ISO-10646) 字元 (^C 以放棄)："
+msgid "Unicode (ISO-10646) character in hex (%{abort} to abort): "
+msgstr "十六進位顯示的萬國碼 (ISO-10646) 字元 (%{abort} 以放棄)："
 
 #: uedit.c:2036
 msgid "Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"
@@ -1368,12 +1368,12 @@ msgid "Backward to char: "
 msgstr "後退到字元："
 
 #: uedit.c:2290
-msgid "Message (^C to abort): "
-msgstr "訊息 (^C 以放棄)："
+msgid "Message (%{abort} to abort): "
+msgstr "訊息 (%{abort} 以放棄)："
 
 #: uedit.c:2312
-msgid "Insert (^C to abort): "
-msgstr "插入 (^C 以放棄)："
+msgid "Insert (%{abort} to abort): "
+msgstr "插入 (%{abort} 以放棄)："
 
 #: uerror.c:330 uerror.c:344
 #, c-format
@@ -1424,8 +1424,8 @@ msgid "No modified files, so no updates needed."
 msgstr "沒有已修改檔案，因而無需更新。"
 
 #: ufile.c:107
-msgid "System (^C to abort): "
-msgstr "系統 (^C 以放棄)："
+msgid "System (%{abort} to abort): "
+msgstr "系統 (%{abort} 以放棄)："
 
 #: ufile.c:273
 msgid "|yes|yY"
@@ -1440,8 +1440,8 @@ msgid "Couldn't make backup file... file not saved"
 msgstr "無法製作備份檔案…檔案尚未儲存"
 
 #: ufile.c:321
-msgid "Could not make backup file.  Save anyway (y,n,^C)? "
-msgstr "無法製作備份檔案。依然要儲存 (y,n,^C)？"
+msgid "Could not make backup file.  Save anyway (y,n,%{abort})? "
+msgstr "無法製作備份檔案。依然要儲存 (y,n,%{abort})？"
 
 #: ufile.c:409 ufile.c:425
 #, c-format
@@ -1449,53 +1449,53 @@ msgid "Block written to file %s"
 msgstr "區塊寫入檔案 %s"
 
 #: ufile.c:488
-msgid "File exists. Overwrite (y,n,^C)? "
-msgstr "檔案已存在。是否要覆寫 (y,n,^C)？"
+msgid "File exists. Overwrite (y,n,%{abort})? "
+msgstr "檔案已存在。是否要覆寫 (y,n,%{abort})？"
 
 #: ufile.c:495
-msgid "File on disk is newer. Overwrite (y,n,^C)? "
-msgstr "磁碟上的檔案較新。是否要覆寫 (y,n,^C)？"
+msgid "File on disk is newer. Overwrite (y,n,%{abort})? "
+msgstr "磁碟上的檔案較新。是否要覆寫 (y,n,%{abort})？"
 
 #: ufile.c:510 ufile.c:899 ufile.c:1103
-msgid "Name of file to save (^C to abort): "
-msgstr "要儲存的檔案名稱 (^C 以放棄)："
+msgid "Name of file to save (%{abort} to abort): "
+msgstr "要儲存的檔案名稱 (%{abort} 以放棄)："
 
 #: ufile.c:538
-msgid "Name of file to write (^C to abort): "
-msgstr "要寫入的檔案名稱 (^C 以放棄)："
+msgid "Name of file to write (%{abort} to abort): "
+msgstr "要寫入的檔案名稱 (%{abort} 以放棄)："
 
 #: ufile.c:654
-msgid "Load original file from disk (y,n,^C)? "
-msgstr "從磁碟載入原來的檔案 (y,n,^C)？"
+msgid "Load original file from disk (y,n,%{abort})? "
+msgstr "從磁碟載入原來的檔案 (y,n,%{abort})？"
 
 #: ufile.c:684
 msgid "Can't replace modified file"
 msgstr "無法置換已修改的檔案"
 
 #: ufile.c:693
-msgid "Name of file to edit (^C to abort): "
-msgstr "要編輯的檔案名稱 (^C 以放棄)："
+msgid "Name of file to edit (%{abort} to abort): "
+msgstr "要編輯的檔案名稱 (%{abort} 以放棄)："
 
 #: ufile.c:708 ufile.c:1085
-msgid "Name of buffer to edit (^C to abort): "
-msgstr "要編輯的緩衝區名稱 (^C 以放棄)："
+msgid "Name of buffer to edit (%{abort} to abort): "
+msgstr "要編輯的緩衝區名稱 (%{abort} 以放棄)："
 
 #: ufile.c:764
-msgid "Name of scratch buffer to edit (^C to abort): "
-msgstr "要編輯的暫用緩衝區名稱 (^C 以放棄)："
+msgid "Name of scratch buffer to edit (%{abort} to abort): "
+msgstr "要編輯的暫用緩衝區名稱 (%{abort} 以放棄)："
 
 #: ufile.c:865
-msgid "Name of file to insert (^C to abort): "
-msgstr "要插入的檔案名稱 (^C 以放棄)："
+msgid "Name of file to insert (%{abort} to abort): "
+msgstr "要插入的檔案名稱 (%{abort} 以放棄)："
 
 #: ufile.c:933
-msgid "Save changes to this file (y,n,^C)? "
-msgstr "將變更儲存為這個檔案 (y,n,^C)？"
+msgid "Save changes to this file (y,n,%{abort})? "
+msgstr "將變更儲存為這個檔案 (y,n,%{abort})？"
 
 #: ufile.c:1137
 #, c-format
-msgid "File %s has been modified.  Save it (y,n,^C)? "
-msgstr "檔案 %s 已經修改。是否要儲存它 (y,n,^C)？"
+msgid "File %s has been modified.  Save it (y,n,%{abort})? "
+msgstr "檔案 %s 已經修改。是否要儲存它 (y,n,%{abort})？"
 
 #: uisrch.c:267
 msgid "I-find: "
@@ -1586,25 +1586,25 @@ msgid "|don't wrap|nN"
 msgstr "|不從頭|nN"
 
 #: usearch.c:618
-msgid "Replace with (^C to abort): "
-msgstr "置換成 (^C 以放棄)："
+msgid "Replace with (%{abort} to abort): "
+msgstr "置換成 (%{abort} 以放棄)："
 
 #: usearch.c:633
-msgid "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "
-msgstr "(S)符合大小寫 (R)置換 (B)向後 (K)區塊 (A)所有檔案 NNN (^C 以放棄)："
+msgid "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (%{abort} to abort): "
+msgstr "(S)符合大小寫 (R)置換 (B)向後 (K)區塊 (A)所有檔案 NNN (%{abort} 以放棄)："
 
 #: usearch.c:635
-msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "
-msgstr "(I)忽略 (R)置換 (B)向後 (K)區塊 (A)所有檔案 NNN (^C 以放棄)："
+msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (%{abort} to abort): "
+msgstr "(I)忽略 (R)置換 (B)向後 (K)區塊 (A)所有檔案 NNN (%{abort} 以放棄)："
 
 #: usearch.c:717
 #, c-format
-msgid "Find (^C to abort) [%s]: "
-msgstr "尋找 (^C 以放棄) [%s]："
+msgid "Find (%{abort} to abort) [%s]: "
+msgstr "尋找 (%{abort} 以放棄) [%s]："
 
 #: usearch.c:719
-msgid "Find (^C to abort): "
-msgstr "尋找 (^C 以放棄)："
+msgid "Find (%{abort} to abort): "
+msgstr "尋找 (%{abort} 以放棄)："
 
 #: usearch.c:813
 msgid "|rest of file|rR"
@@ -1615,8 +1615,8 @@ msgid "|backup|bB"
 msgstr "|備份|bB"
 
 #: usearch.c:845
-msgid "Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"
-msgstr "置換 (Y)是 (N)否 (R)餘下 (B)備份 (^C 以放棄)？"
+msgid "Replace (Y)es (N)o (R)est (B)ackup (%{abort} to abort)?"
+msgstr "置換 (Y)是 (N)否 (R)餘下 (B)備份 (%{abort} 以放棄)？"
 
 #: usearch.c:993
 msgid "Not found (search restricted to marked block)"
@@ -1659,8 +1659,8 @@ msgid "Enter grep command (for example, 'grep -n foo *.c'): "
 msgstr "輸入 grep 命令 (舉例來說：'grep -n foo *.c')："
 
 #: ushell.c:250
-msgid "Kill program (y,n,^C)?"
-msgstr "砍掉程式 (y,n,^C)？"
+msgid "Kill program (y,n,%{abort})?"
+msgstr "砍掉程式 (y,n,%{abort})？"
 
 #: utag.c:26
 msgid "Couldn't open tags file"
