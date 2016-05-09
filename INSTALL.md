@@ -1,49 +1,65 @@
-Joe's Own Editor Installation Instructions
+# Joe's Own Editor Installation Instructions
 
-=-=-=-=-=
-Mercurial
-=-=-=-=-=
+## Typical Installation
 
-	[Skip if you downloaded the source .tgz distribution file]
+	./configure --prefix=/usr --sysconfdir=/etc
 
-Developer checkout:
+		- executables in /usr/bin
+		- man pages in /usr/man
+		- configuration files in /etc/joe
+		- syntax files in /usr/share/joe
+
+	make
+
+	sudo make install
+
+You may have to delete or update user custom configuration files (otherwise
+new features will not work):
+
+	rm ~/.joerc
+	rm ~/.jmacsrc
+	rm ~/.rjoerc
+	rm ~/.jstarrc
+	rm ~/.jpicorc
+
+## Mercurial
+
+### Developer checkout
 
 	hg clone ssh://jhallen@hg.code.sf.net/p/joe-editor/mercurial joe-editor-mercurial
 
-Read-only checkout:
+### Read-only checkout
 
 	hg clone http://hg.code.sf.net/p/joe-editor/mercurial joe-editor-mercurial
 
-Update to the branch you want to build:
+### Update to the branch you want to build
 
 	hg update -C default	Not yet released main-line branch
 
 	hg update -C joe-3	Released branch for joe-3.x
 
-Run autotools to build configure scripts:
+### Run autotools to build configure scripts
 
 	./autojoe
 
 	(You might find that you need to install automake and autoconf
 	first).
 
-=-=-=-=-=-=-=-=-=-=-=-
-Installation procedure
-=-=-=-=-=-=-=-=-=-=-=-
+## Installation procedure
 
-  [To create a Cygwin binary distribution, use the 'cygbuild' script
-  instead of these instructions.]
+To create a Cygwin binary distribution, use the 'cygbuild' script
+instead of these instructions.
 
-  JOE uses the GNU Automake and Autoconf suites to build itself.
+JOE uses the GNU Automake and Autoconf suites to build itself.
 
-  Usually you want JOE to use the terminfo database. JOE needs
-  a termcap emulation library to do this.  In modern versions of
-  UNIX, this library is part of ncurses so you need the ncurses
-  library:
+Usually you want JOE to use the terminfo database. JOE needs
+a termcap emulation library to do this.  In modern versions of
+UNIX, this library is part of ncurses so you need the ncurses
+library:
 
 	apt-get install ncurses-dev
 
-  Run configure script, type one of these:
+Run configure script, type one of these:
 
     Normal installation:
 
@@ -72,25 +88,25 @@ Installation procedure
 		- configuration files in /usr/local/etc/joe
 		- syntax files in /usr/local/share/joe
 
-  [For Cygwin, I've found that you need to add
-  "--disable-curses --disable-termcap" to the above commands.]
+For Cygwin, I've found that you need to add
+  "--disable-curses --disable-termcap" to the above commands.
 
-  Build JOE, type:
+Build JOE, type:
 
 	make
 
-  Optionally strip JOE of debugging information:
+Optionally strip JOE of debugging information:
 
 	strip joe
 
-  Install JOE, type one of:
+Install JOE, type one of:
 
 	sudo make install	(system installation)
 
 	make install		(home directory)
 
-  Delete or update user custom configuration files (otherwise new features
-  will not work):
+Delete or update user custom configuration files (otherwise new features
+will not work):
 
 	rm ~/.joerc
 	rm ~/.jmacsrc
@@ -99,24 +115,22 @@ Installation procedure
 	rm ~/.jpicorc
 	rm -r ~/.joe
 
-  Try running JOE:
+Try running JOE:
 
 	joe
 
-  Note: please install xterm version 212 or higher, and use these
-  xterm 'configure' options:
+Note: please install xterm version 212 or higher, and use these
+xterm 'configure' options:
 
 	--enable-256-color
 
 	--enable-paste64
 
-  '--enable-paste64' allows you to use JOE's '-joexterm' option (see JOERC
-  file), which allows mouse left and middle button cut & paste to work with
-  properly with JOE.
+'--enable-paste64' allows you to use JOE's '-joexterm' option (see JOERC
+file), which allows mouse left and middle button cut & paste to work with
+properly with JOE.
 
-=-=-=-=-=-=-=-=-=-=-=-=-=-
-Common ./configure options
-=-=-=-=-=-=-=-=-=-=-=-=-=-
+## Common ./configure options
 
   To force JOE to use /etc/termcap file using its built-in termcap file parser
   (which is useful if you want to compile JOE so that it doesn't depend on any
@@ -141,68 +155,58 @@ Common ./configure options
   Note for MIPS/SGI: to get a 64-bit JOE, do this:
     CC=cc CFLAGS=-64 ./configure ...
 
-=-=-=-=-=-=-=-=-=
-Maximize warnings
-=-=-=-=-=-=-=-=-=
+## Maximize warnings
 
 Developers may want to try to maximize compiler warnings from gcc:
 
-=======
-  One way is to provide the CFLAGS enviroment variable to configure:
+One way is to provide the CFLAGS enviroment variable to configure:
 
-  CFLAGS='-g -Wall -Wconversion -Wunused -Wwrite-strings -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wundef -Wlogical-op -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wformat-nonliteral -Wformat-security -Wswitch-enum -Wshadow' ./configure ...
+	CFLAGS='-g -Wall -Wconversion -Wunused -Wwrite-strings -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wundef -Wlogical-op -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wformat-nonliteral -Wformat-security -Wswitch-enum -Wshadow' ./configure ...
 
-  Another is to edit CFLAGS in the joe/Makefile:
+Another is to edit CFLAGS in the joe/Makefile:
 
-  CFLAGS = -g -Wall -Wconversion -Wunused -Wwrite-strings \
-   -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wcast-qual \
-   -Wundef -Wlogical-op -Wmissing-declarations -Wformat \
-   -Wmissing-format-attribute -Wformat-nonliteral \
-   -Wswitch-enum -Wshadow
+	CFLAGS = -g -Wall -Wconversion -Wunused -Wwrite-strings \
+	  -Wstrict-overflow=4 -Wmissing-include-dirs -Winit-self -Wcast-qual \
+	  -Wundef -Wlogical-op -Wmissing-declarations -Wformat \
+	  -Wmissing-format-attribute -Wformat-nonliteral \
+	  -Wswitch-enum -Wshadow
 
 (Try adding -Wextra and -Wformat-security for even more warnings)
 
 It's a good idea to verify that JOE can be compiled with C++.  The C++
 front-end sometimes finds different problems than the C front-end.
 
-CC = g++
+	CC = g++
 
 It's a good idea to see what warnings occur when -m32 is added.  This
 can reveal some conversion warnings.
 
-
-=======
-
-=-=-=-=-=-=-=-=-=-=-=-=
-Verify the installation
-=-=-=-=-=-=-=-=-=-=-=-=
+## Verify the installation
 
 A number of features should be tested:
 
-Shell windows:
---------------
+### Shell windows:
 
 Please test the installation by trying the shell command: ^K '  A shell
 prompt should appear in the window and you should be able to type "ls".  If
 not, two things could be broken:
 
-   JOE could not open a pseudo terminal (pty), which is unfortunately one of
+JOE could not open a pseudo terminal (pty), which is unfortunately one of
 the two most incompatible parts of the UNIX API.  Take a look at tty.c-
 there are several methods for opening the pty: mess with the "#ifdefs" until
 you find a method which works (and send a bug report for your operating
 system).
 
-   The SHELL environment variable is not set or exported (Cygwin has this
+The SHELL environment variable is not set or exported (Cygwin has this
 problem).  Put:
 
 	export SHELL=/bin/bash
-    or  setenv SHELL /bin/bash
+	setenv SHELL /bin/bash
 
-   In you .profile or .cshrc file and send mail to the Cygwin mailing list
+In you .profile or .cshrc file and send mail to the Cygwin mailing list
 so that they fix this problem.
 
-Process groups:
----------------
+### Process groups:
 
 Once you have a shell window open, try to suspend JOE: ^K Z.  Then resume
 it: "fg".  The shell window should still be active.  If not, your operating
@@ -211,16 +215,14 @@ setprgp() system calls in tty.c (this is the other most incompatible part of
 the UNIX API).  Currently process groups appear to be broken in Cygwin (so
 if you suspend JOE, any shells get killed).
 
-Resize windows:
----------------
+### Resize windows
 
 Try resizing the terminal emulator window: JOE should resize itself to
 properly fit.  If this doesn't work, either ttgtsz() (in tty.c) is not
 reading the size properly, or the SIGWINCH signal is not being received
 by JOE (the handler is winchd() in tty.c).
 
-Baud rate:
-----------
+### Baud rate:
 
 JOE cares about the baud rate as reported by "stty":
 
@@ -246,8 +248,7 @@ as the default speed for terminal emulators.  If you are using a real serial
 link to a real terminal, you may want to adjust these thresholds: search for
 "9600" in tty.c.
 
-Padding:
---------
+### Padding
 
 Ideally either terminals can keep up with the baud rate or they backpressure
 the computer using hardware flow control (RTS and CTS pins on RS-232
@@ -265,9 +266,7 @@ variable or use the -dopadding option.
 
 You should just buy a modern terminal :-)
 
-=-=-=
-Usage
-=-=-=
+### Usage
 
 USAGE:	joe filename [filename ...]
 
@@ -326,7 +325,7 @@ variables.
 	The JOETERM environment variable can be set to override the TERM
 environment variable.
 
-** IMPORTANT **
+### IMPORTANT
 
 The baud rate must be correctly set or either typeahead will not interrupt 
 the screen update and scrolling wont be used or there will be annoying 
@@ -358,38 +357,36 @@ termcap file with the entries in it, particularly if you use ANSI/VT100ish
 terminals.  JOE understands some capabilities which are not usually supplied 
 in normal termcap (see below).
 
-                                 VARIATIONS
-                                 =-=-=-=-=-
+## VARIATIONS
+ 
+### Termcap/Terminfo
 
-Termcap/Terminfo
-=-=-=-=-=-=-=-=-
-
-	JOE prefers to use the termcap terminal capability database.  It
+JOE prefers to use the termcap terminal capability database.  It
 attempts to find this file in:
 
 	$HOME/.termcap		Personal .termcap in your home directory
 	/etc/joe/termcap	Joe's termcap file
 	/etc/termcap		Normal system termcap file
 
-	Joe copies its own termcap file to /usr/local/lib/termcap (or
+Joe copies its own termcap file to /usr/local/lib/termcap (or
 wherever the system-wide joerc file is going to go) when 'make install' is
 run.
 
-	Termcap is better than terminfo because it is a more open standard. 
+Termcap is better than terminfo because it is a more open standard. 
 Programs can directly access the termcap database and future versions of
 terminfo may require programs to use curses.  The only argument in
 terminfo's favor is that it is faster than termcap.  To fix this problem,
 JOE will use a termcap index file if it exists and if it is up to date.
 
-	This is the procedure to make the termcap index file:
+This is the procedure to make the termcap index file:
 
-		make termidx
-		./termidx </etc/termcap >/etc/termcap.idx
+	make termidx
+	./termidx </etc/termcap >/etc/termcap.idx
 
-	The /etc/termcap.idx is a text file which you can look at if you're
+The /etc/termcap.idx is a text file which you can look at if you're
 curious.
 
-	JOE supports the GNU extensions to the termcap language and also
+JOE supports the GNU extensions to the termcap language and also
 understands several new capabilities:
 
 		AL DL IC DC RI LE UP DO SF SR
@@ -411,8 +408,8 @@ understands several new capabilities:
 			beginning of the specified line.  Like 'ESC [ n H' in
 			ansi/vt100.
 
-BROKEN TERMINALS
-=-=-=-=-=-=-=-=-
+## BROKEN TERMINALS
+
 "Joe does not update the screen correctly in Procomm"
 "My Xenix console does not scroll correctly"
 

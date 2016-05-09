@@ -882,7 +882,7 @@ int uinsf(W *w, int k)
 	char *s;
 	WIND_BW(bw, w);
 	
-	s = ask(w, joe_gettext(_("Name of file to insert (^C to abort): ")), &filehist,
+	s = ask(w, joe_gettext(_("Name of file to insert (%{help} for help): ")), &filehist,
 	        "Names", cmplt_file_in, locale_map, 3, 0, NULL);
 	if (s) {
 		if (square)
@@ -986,10 +986,10 @@ int ufilt(W *w, int k)
 	
 	switch (checkmark(bw)) {
 		case 0:
-			s = joe_gettext(_("Command to filter block through (^C to abort): "));
+			s = joe_gettext(_("Command to filter block through (%{abort} to abort): "));
 			break;
 		case 1:
-			s = joe_gettext(_("Command to filter file through (^C to abort): "));
+			s = joe_gettext(_("Command to filter file through (%{abort} to abort): "));
 			break;
 		default:
 			msgnw(bw->parent, joe_gettext(_("No block")));
@@ -1195,10 +1195,10 @@ int uupper(W *w, int k)
 /* Get sum, sum of squares, and return count of
  * a block of numbers. */
 
-int blksum(double *sum, double *sumsq)
+int blksum(BW *bw, double *sum, double *sumsq)
 {
 	char buf[80];
-	if (markv(1)) {
+	if (checkmark(bw) != 2) {
 		P *q = pdup(markb, "blksum");
 		int x;
 		int c;
@@ -1243,15 +1243,17 @@ int blksum(double *sum, double *sumsq)
 		prm(q);
 		*sum = accu;
 		*sumsq = accusq;
+		if (filtflg)
+			unmark(bw->parent, 0);
 		return count;
 	} else
 		return -1;
 }
 
-int blklr(double *xsum, double *xsumsq, double *ysum, double *ysumsq, double *xy, int logx, int logy)
+int blklr(BW *bw, double *xsum, double *xsumsq, double *ysum, double *ysumsq, double *xy, int logx, int logy)
 {
 	char buf[80];
-	if (markv(1)) {
+	if (checkmark(bw) != 2) {
 		P *q = pdup(markb, "blklr");
 		int x;
 		int c;
@@ -1317,6 +1319,8 @@ int blklr(double *xsum, double *xsumsq, double *ysum, double *ysumsq, double *xy
 		*ysum = accuy;
 		*ysumsq = accuysq;
 		*xy = accuxy;
+		if (filtflg)
+			unmark(bw->parent, 0);
 		if (state)
 			return -1;
 		else
@@ -1329,9 +1333,9 @@ int blklr(double *xsum, double *xsumsq, double *ysum, double *ysumsq, double *xy
  * Block is converted to UTF-8
  */
 
-char *blkget()
+char *blkget(BW *bw)
 {
-	if (markv(1)) {
+	if (checkmark(bw) != 2) {
 		P *q;
 		ptrdiff_t buf_size = markk->byte - markb->byte + 1; /* Risky... */
 		ptrdiff_t buf_x = 0;
@@ -1371,6 +1375,8 @@ char *blkget()
 		}
 		prm(q);
 		buf[buf_x] = 0;
+		if (filtflg)
+			unmark(bw->parent, 0);
 		return buf;
 	} else
 		return 0;

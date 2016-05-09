@@ -107,8 +107,8 @@ msgid "|ignore lock, continue with edit|iI"
 msgstr "|Sperre ignorieren, mit Editieren fortfahren|iI"
 
 #: cmd.c:265
-msgid "Notice: File on disk changed! (hit ^C to continue)  "
-msgstr "Hinweis: Datei auf dem Datenträger geändert! (^C zum Fortfahren)  "
+msgid "Notice: File on disk changed! (hit %{abort} to continue)  "
+msgstr "Hinweis: Datei auf dem Datenträger geändert! (%{abort} zum Fortfahren)  "
 
 #: cmd.c:325
 msgid "Modify other window first for macro"
@@ -148,20 +148,20 @@ msgid "Change keymap: "
 msgstr "Keymap ändern: "
 
 #: macro.c:662
-msgid "Macro to record (0-9 or ^C to abort): "
-msgstr "Aufzunehmendes Makro (0-9 oder ^C zum Abbrechen): "
+msgid "Macro to record (0-9 or %{abort} to abort): "
+msgstr "Aufzunehmendes Makro (0-9 oder %{abort} zum Abbrechen): "
 
 #: macro.c:764
 msgid "Play-"
 msgstr ""
 
 #: macro.c:791
-msgid "No. times to repeat next command (^C to abort): "
-msgstr "Anzahl der Widerholungen für nächsten Befehl (^C zum Abbrechen): "
+msgid "No. times to repeat next command (%{abort} to abort): "
+msgstr "Anzahl der Widerholungen für nächsten Befehl (%{abort} zum Abbrechen): "
 
 #: macro.c:819
-msgid "If (^C to abort): "
-msgstr "If (^C zum Abbrechen): "
+msgid "If (%{abort} to abort): "
+msgstr "If (%{abort} zum Abbrechen): "
 
 #: macro.c:826
 msgid "Elsif without if"
@@ -421,8 +421,8 @@ msgstr "  Autoswap-Modus "
 
 #: rc.c:311
 #, c-format
-msgid "Indent char %d (SPACE=32, TAB=9, ^C to abort): "
-msgstr "Einrückungszeichen %d (SPACE=32, TAB=9, ^C zum Abbrechen): "
+msgid "Indent char %d (SPACE=32, TAB=9, %{abort} to abort): "
+msgstr "Einrückungszeichen %d (SPACE=32, TAB=9, %{abort} zum Abbrechen): "
 
 #: rc.c:311
 msgid "  Indent char "
@@ -430,8 +430,8 @@ msgstr "  Einrückungszeichen "
 
 #: rc.c:312
 #, c-format
-msgid "Indent step %d (^C to abort): "
-msgstr "Einrückungsschritt %d (^C zum Abbrechen): "
+msgid "Indent step %d (%{abort} to abort): "
+msgstr "Einrückungsschritt %d (%{abort} zum Abbrechen): "
 
 #: rc.c:312
 msgid "  Indent step "
@@ -836,16 +836,16 @@ msgid "  Path to backup files "
 msgstr "  Pfad zu Backupdateien "
 
 #: rc.c:347
-msgid "Select syntax (^C to abort): "
-msgstr "Syntax (^C zum Abbrechen): "
+msgid "Select syntax (%{abort} to abort): "
+msgstr "Syntax (%{abort} zum Abbrechen): "
 
 #: rc.c:347
 msgid "Y Syntax"
 msgstr "Y Syntax"
 
 #: rc.c:348
-msgid "Select file character set (^C to abort): "
-msgstr "Dateikodierung (^C zum Abbrechen): "
+msgid "Select file character set (%{abort} to abort): "
+msgstr "Dateikodierung (%{abort} zum Abbrechen): "
 
 #: rc.c:348
 msgid "E Encoding "
@@ -1299,8 +1299,8 @@ msgid "(Macro %d recording...)"
 msgstr "(Makro %d wird aufgenommen...)"
 
 #: tw.c:558 tw.c:584 ufile.c:1010
-msgid "Lose changes to this file (y,n,^C)? "
-msgstr "Änderungen an dieser Datei verwerfen (y,n,^C)? "
+msgid "Lose changes to this file (y,n,%{abort})? "
+msgstr "Änderungen an dieser Datei verwerfen (y,n,%{abort})? "
 
 #: ublock.c:284
 msgid "Selection cleared."
@@ -1324,40 +1324,40 @@ msgid "Sorry, no sub-processes in DOS (yet)"
 msgstr "Keine Subprozesse in DOS (bisher)"
 
 #: ublock.c:1072
-msgid "Command to filter block through (^C to abort): "
-msgstr "Filterbefehl für Block (^C to abort): "
+msgid "Command to filter block through (%{abort} to abort): "
+msgstr "Filterbefehl für Block (%{abort} to abort): "
 
 #: ublock.c:1077
-msgid "Command to filter file through (^C to abort): "
-msgstr "Filterbefehl für Datei (^C to abort): "
+msgid "Command to filter file through (%{abort} to abort): "
+msgstr "Filterbefehl für Datei (%{abort} to abort): "
 
 #: uedit.c:1388 utag.c:73
 msgid "Invalid line number"
 msgstr "Ungültige Zeilennummer"
 
 #: uedit.c:1395
-msgid "Go to line (^C to abort): "
-msgstr "Gehe zu Zeile (^C zum Abbrechen): "
+msgid "Go to line (%{abort} to abort): "
+msgstr "Gehe zu Zeile (%{abort} zum Abbrechen): "
 
 #: uedit.c:1424
 msgid "Invalid column number"
 msgstr "Ungültige Spaltennummer"
 
 #: uedit.c:1431
-msgid "Go to column (^C to abort): "
-msgstr "Gehe zu Spalte (^C zum Abbrechen): "
+msgid "Go to column (%{abort} to abort): "
+msgstr "Gehe zu Spalte (%{abort} zum Abbrechen): "
 
 #: uedit.c:1460
 msgid "Invalid byte number"
 msgstr "Ungültige Byteposition"
 
 #: uedit.c:1467
-msgid "Go to byte (^C to abort): "
-msgstr "Gehe zu Byte (^C zum Abbrechen): "
+msgid "Go to byte (%{abort} to abort): "
+msgstr "Gehe zu Byte (%{abort} zum Abbrechen): "
 
 #: uedit.c:1911
-msgid "Unicode (ISO-10646) character in hex (^C to abort): "
-msgstr "Unicode-Zeichen (ISO-10646) in Hex (^C zum Abbrechen): "
+msgid "Unicode (ISO-10646) character in hex (%{abort} to abort): "
+msgstr "Unicode-Zeichen (ISO-10646) in Hex (%{abort} zum Abbrechen): "
 
 #: uedit.c:2036
 msgid "Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"
@@ -1398,12 +1398,12 @@ msgid "Backward to char: "
 msgstr ""
 
 #: uedit.c:2290
-msgid "Message (^C to abort): "
-msgstr "Meldung (^C zum Abbrechen): "
+msgid "Message (%{abort} to abort): "
+msgstr "Meldung (%{abort} zum Abbrechen): "
 
 #: uedit.c:2312
-msgid "Insert (^C to abort): "
-msgstr "Einfügen (^C zum Abbrechen): "
+msgid "Insert (%{abort} to abort): "
+msgstr "Einfügen (%{abort} zum Abbrechen): "
 
 #: uerror.c:330 uerror.c:344
 #, c-format
@@ -1454,8 +1454,8 @@ msgid "No modified files, so no updates needed."
 msgstr "Keine geänderten Dateien, daher keine Aktualisierung notwendig."
 
 #: ufile.c:107
-msgid "System (^C to abort): "
-msgstr "System (^C zum Abbrechen): "
+msgid "System (%{abort} to abort): "
+msgstr "System (%{abort} zum Abbrechen): "
 
 #: ufile.c:273
 msgid "|yes|yY"
@@ -1470,8 +1470,8 @@ msgid "Couldn't make backup file... file not saved"
 msgstr "Konnte Backupdatei nicht erstellen... Datei nicht gespeichert"
 
 #: ufile.c:321
-msgid "Could not make backup file.  Save anyway (y,n,^C)? "
-msgstr "Konnte Backupdatei nicht erstellen. Trotzdem speichern (y,n,^C)? "
+msgid "Could not make backup file.  Save anyway (y,n,%{abort})? "
+msgstr "Konnte Backupdatei nicht erstellen. Trotzdem speichern (y,n,%{abort})? "
 
 #: ufile.c:409 ufile.c:425
 #, c-format
@@ -1479,53 +1479,53 @@ msgid "Block written to file %s"
 msgstr "Block nach Datei %s geschrieben"
 
 #: ufile.c:488
-msgid "File exists. Overwrite (y,n,^C)? "
-msgstr "Datei existiert. Überschreiben (y,n,^C)? "
+msgid "File exists. Overwrite (y,n,%{abort})? "
+msgstr "Datei existiert. Überschreiben (y,n,%{abort})? "
 
 #: ufile.c:495
-msgid "File on disk is newer. Overwrite (y,n,^C)? "
-msgstr "Datei auf Datenträger ist neuer. Überschreiben (y,n,^C)? "
+msgid "File on disk is newer. Overwrite (y,n,%{abort})? "
+msgstr "Datei auf Datenträger ist neuer. Überschreiben (y,n,%{abort})? "
 
 #: ufile.c:510 ufile.c:899 ufile.c:1103
-msgid "Name of file to save (^C to abort): "
-msgstr "Name der zu speichernden Datei (^C zum Abbrechen): "
+msgid "Name of file to save (%{abort} to abort): "
+msgstr "Name der zu speichernden Datei (%{abort} zum Abbrechen): "
 
 #: ufile.c:538
-msgid "Name of file to write (^C to abort): "
-msgstr "Name der zu schreibenden Datei (^C zum Abbrechen): "
+msgid "Name of file to write (%{abort} to abort): "
+msgstr "Name der zu schreibenden Datei (%{abort} zum Abbrechen): "
 
 #: ufile.c:654
-msgid "Load original file from disk (y,n,^C)? "
-msgstr "Originaldatei von Datenträger laden (y,n,^C)? "
+msgid "Load original file from disk (y,n,%{abort})? "
+msgstr "Originaldatei von Datenträger laden (y,n,%{abort})? "
 
 #: ufile.c:684
 msgid "Can't replace modified file"
 msgstr "Kann geänderte Datei nicht ersetzen"
 
 #: ufile.c:693
-msgid "Name of file to edit (^C to abort): "
-msgstr "Name der zu editierenden Datei (^C zum Abbrechen): "
+msgid "Name of file to edit (%{abort} to abort): "
+msgstr "Name der zu editierenden Datei (%{abort} zum Abbrechen): "
 
 #: ufile.c:708 ufile.c:1085
-msgid "Name of buffer to edit (^C to abort): "
-msgstr "Name des zu editierenden Puffers (^C zum Abbrechen): "
+msgid "Name of buffer to edit (%{abort} to abort): "
+msgstr "Name des zu editierenden Puffers (%{abort} zum Abbrechen): "
 
 #: ufile.c:764
-msgid "Name of scratch buffer to edit (^C to abort): "
-msgstr "Name des zu editierenden temp. Puffers (^C zum Abbrechen): "
+msgid "Name of scratch buffer to edit (%{abort} to abort): "
+msgstr "Name des zu editierenden temp. Puffers (%{abort} zum Abbrechen): "
 
 #: ufile.c:865
-msgid "Name of file to insert (^C to abort): "
-msgstr "Name der einzufügenden Dateien (^C zum Abbrechen): "
+msgid "Name of file to insert (%{abort} to abort): "
+msgstr "Name der einzufügenden Dateien (%{abort} zum Abbrechen): "
 
 #: ufile.c:933
-msgid "Save changes to this file (y,n,^C)? "
-msgstr "Änderungen an dieser Datei speichern (y,n,^C)? "
+msgid "Save changes to this file (y,n,%{abort})? "
+msgstr "Änderungen an dieser Datei speichern (y,n,%{abort})? "
 
 #: ufile.c:1137
 #, c-format
-msgid "File %s has been modified.  Save it (y,n,^C)? "
-msgstr "Datei %s wurde geändert. Speichern (y,n,^C)? "
+msgid "File %s has been modified.  Save it (y,n,%{abort})? "
+msgstr "Datei %s wurde geändert. Speichern (y,n,%{abort})? "
 
 #: uisrch.c:267
 msgid "I-find: "
@@ -1616,28 +1616,28 @@ msgid "|don't wrap|nN"
 msgstr "|nicht springen|nN"
 
 #: usearch.c:618
-msgid "Replace with (^C to abort): "
-msgstr "Ersetzen durch (^C zum Abbrechen): "
+msgid "Replace with (%{abort} to abort): "
+msgstr "Ersetzen durch (%{abort} zum Abbrechen): "
 
 #: usearch.c:633
 msgid ""
-"case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to "
+"case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (%{abort} to "
 "abort): "
 msgstr ""
-"case-(s)ensitiv e(R)setzen (B)rückwärts Bloc(K) (A)lle Dateien NNN (o.^C) "
+"case-(s)ensitiv e(R)setzen (B)rückwärts Bloc(K) (A)lle Dateien NNN (o.%{abort}) "
 
 #: usearch.c:635
-msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (^C to abort): "
-msgstr "(I)gn. e(R)setzen (B)rückwärts Bloc(K) (A)lle Dateien NNN (od.^C): "
+msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (%{abort} to abort): "
+msgstr "(I)gn. e(R)setzen (B)rückwärts Bloc(K) (A)lle Dateien NNN (od.%{abort}): "
 
 #: usearch.c:717
 #, c-format
-msgid "Find (^C to abort) [%s]: "
-msgstr "Suchen (^C zum Abbrechen) [%s]: "
+msgid "Find (%{abort} to abort) [%s]: "
+msgstr "Suchen (%{abort} zum Abbrechen) [%s]: "
 
 #: usearch.c:719
-msgid "Find (^C to abort): "
-msgstr "Suchen (^C zum Abbrechen): "
+msgid "Find (%{abort} to abort): "
+msgstr "Suchen (%{abort} zum Abbrechen): "
 
 #: usearch.c:813
 msgid "|rest of file|rR"
@@ -1648,8 +1648,8 @@ msgid "|backup|bB"
 msgstr "|Backup|bB"
 
 #: usearch.c:845
-msgid "Replace (Y)es (N)o (R)est (B)ackup (^C to abort)?"
-msgstr "Ersetzen (Y)Ja (N)ein (R)est (B)ackup (^C zum Abbrechen)?"
+msgid "Replace (Y)es (N)o (R)est (B)ackup (%{abort} to abort)?"
+msgstr "Ersetzen (Y)Ja (N)ein (R)est (B)ackup (%{abort} zum Abbrechen)?"
 
 #: usearch.c:993
 msgid "Not found (search restricted to marked block)"
@@ -1692,8 +1692,8 @@ msgid "Enter grep command (for example, 'grep -n foo *.c'): "
 msgstr "grep-Befehl eingeben (z.B. `grep -n foo *.c`): "
 
 #: ushell.c:250
-msgid "Kill program (y,n,^C)?"
-msgstr "Programm abbrechen (y,n,^C)?"
+msgid "Kill program (y,n,%{abort})?"
+msgstr "Programm abbrechen (y,n,%{abort})?"
 
 #: utag.c:26
 msgid "Couldn't open tags file"

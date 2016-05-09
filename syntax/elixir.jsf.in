@@ -41,6 +41,8 @@
 	"{}"		brace		recolor=-1
 	"|"		maybe_pipe
 	"\\"		maybe_opt
+	"-"		maybe_rarrow	recolor=-1
+	"<"		maybe_larrow	recolor=-1
 	"0-9"		decimal		recolor=-1
 	
 :line_comment Comment
@@ -99,12 +101,23 @@
 	*		docstr_dq
 	"\""		idle
 	
-	
-	
+
+
 :brace Brace
 	*		idle		noeat
 	
 :brack Brack
+	*		idle		noeat
+
+:maybe_larrow Idle
+	"-"		arrow		recolor=-2
+	*		idle		noeat
+
+:maybe_rarrow Idle
+	">"		arrow		recolor=-2
+	*		idle		noeat
+
+:arrow Keyword
 	*		idle		noeat
 	
 :maybe_pipe Idle
@@ -168,6 +181,7 @@
 	"cond"					kw
 	"true"					kw
 	"false"					kw
+	"fn"					kw
 	"Agent"					bif
 	"Application"				bif
 	"Atom"					bif

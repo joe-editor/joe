@@ -281,7 +281,7 @@ int modify_logic(BW *bw,B *b)
 	if (last_time > b->check_time + CHECK_INTERVAL) {
 		b->check_time = last_time;
 		if (!nomodcheck && !b->gave_notice && check_mod(b)) {
-			int c = query(bw->parent, sz(joe_gettext(_("Notice: File on disk changed! (hit ^C to continue)  "))), QW_NOMACRO); /* Should not take macro input */
+			int c = query(bw->parent, sz(joe_gettext(_("Notice: File on disk changed! (hit %{abort} to continue)  "))), QW_NOMACRO); /* Should not take macro input */
 			if (c != -1)
 				b->gave_notice = 1;
 			return 0;
@@ -451,18 +451,18 @@ int execmd(CMD *cmd, int k)
 
 void do_auto_scroll()
 {
-	static CMD *scrup = 0;
-	static CMD *scrdn = 0;
+	static CMD *myscrup = 0;
+	static CMD *myscrdn = 0;
 	static CMD *drag = 0;
-	if (!scrup) {
-		scrup = findcmd("upslide");
-		scrdn = findcmd("dnslide");
+	if (!myscrup) {
+		myscrup = findcmd("upslide");
+		myscrdn = findcmd("dnslide");
 		drag = findcmd("defmdrag");
 	}
 	if (auto_scroll > 0)
-		execmd(scrdn,0);
+		execmd(myscrdn,0);
 	else if (auto_scroll < 0)
-		execmd(scrup,0);
+		execmd(myscrup,0);
 
 	execmd(drag,0);
 		

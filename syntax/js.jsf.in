@@ -50,8 +50,9 @@
 	"0"			first_digit	recolor=-1
 	"1-9"			decimal		recolor=-1
 	"."			maybe_float
-	"\""			string		recolor=-1 save_c
-	"'"			string		recolor=-1 save_c
+	"\""			after_term	call=.string() recolor=-1 save_c
+	"'"			after_term	call=.string() recolor=-1 save_c
+	"`"			after_term	call=.string(template) recolor=-1
 	"A-Z"			type_match	mark buffer recolor=-1
 	"$a-z_"			ident		mark buffer recolor=-1
 	"{}"			brace		recolor=-1
@@ -298,6 +299,9 @@ done
 
 :maybe_float Number
 	*			prop_sep	noeat recolor=-2
+.ifdef typescript
+	"."			ellipsis	recolor=-2
+.endif
 	"0-9"			float		recolor=-2
 
 :prop_sep PropSep
@@ -316,51 +320,19 @@ done
 	*			after_term	noeat
 	"0-9"			enum
 
-:string		String
-	*			string_body	noeat mark
-
-:string_body	String
-	*			string
-	"\n"			string_bad
-	&			after_term
-	"\\"			string_escape	recolor=-1
-
-:string_bad Bad
-	*			string_bad
-	"\\"			string_bad_escape
-	&			after_term
-
-:string_bad_escape Bad
-	*			string_bad
-
-:string_escape StringEscape
-	*			string
-	"x"			string_hex1
-	"0-7"			string_octal2
-	"\n"			string_bad	noeat
-
-:string_hex1 StringEscape
-	*			string		noeat
-	"0-9a-fA-F"		string_hex2
-
-:string_hex2 StringEscape
-	*			string		noeat
-	"0-9a-fA-F"		string
-
-:string_octal2 StringEscape
-	*			string		noeat
-	"0-7"			string_octal3
-
-:string_octal3 StringEscape
-	*			string		noeat
-	"0-7"			string
-
 :infix_operator Bad
 	*			bad_op		noeat markend strings
 	"in"			operator
 	"instanceof"		operator
+	"of"			operator
 done
 	"a-zA-Z0-9_"		infix_operator
+
+.ifdef typescript
+:ellipsis Idle
+	*			bad_after_term	recolor=-3
+	"."			ident_only
+.endif
 
 :bad_op Bad
 	*			idle		noeat
@@ -433,6 +405,7 @@ done
 	"function"		kw
 	"if"			kw
 	"let"			kw
+	"of"			kw
 	"return"		kw
 	"switch"		kw
 	"throw"			kw
@@ -444,7 +417,6 @@ done
 	"false"			lit
 	"null"			lit
 	"true"			lit
-	"const"			global
 	"decodeURI"		global
 	"decodeURIComponent"	global
 	"encodeURI"		global
@@ -473,20 +445,28 @@ done
 	"require"		quasikw
 	"__filename"		quasikw
 	"__dirname"		quasikw
+	"const"			kw
 	# By convention...
 	"self"			quasikw
 
 	# Typescript-specific
+	"abstract"	kw
+	"as"		kw
+	"async"		kw
+	"await"		kw
 	"class"		kw
 	"constructor"	kw
 	"declare"	kw
 	"enum"		kw
 	"extends"	kw
 	"export"	kw
+	"from"		kw
 	"get"		kw
 	"implements"	kw
 	"import"	kw
+	"instanceof"	kw
 	"interface"	kw
+	"is"		kw
 	"module"	kw
 	"namespace"	kw
 	"private"	kw
@@ -495,6 +475,7 @@ done
 	"set"		kw
 	"static"	kw
 	"super"		kw
+	"typeof"	kw
 	
 	"any"		type
 	"boolean"	type
@@ -526,6 +507,7 @@ done
 	"function"		kw
 	"if"			kw
 	"let"			kw
+	"of"			kw
 	"return"		kw
 	"switch"		kw
 	"throw"			kw
@@ -537,7 +519,6 @@ done
 	"false"			lit
 	"null"			lit
 	"true"			lit
-	"const"			global
 	"decodeURI"		global
 	"decodeURIComponent"	global
 	"encodeURI"		global
@@ -566,6 +547,7 @@ done
 	"require"		quasikw
 	"__filename"		quasikw
 	"__dirname"		quasikw
+	"const"			kw
 	# By convention...
 	"self"			quasikw
 done
@@ -623,3 +605,100 @@ done
 	"."			prop_sep	recolor=-1
 
 .end
+
+.subr string
+
+:string		String
+	*			string_body	noeat mark
+
+:string_body	String
+	*			string
+	"\n"			string_bad
+.ifdef template
+	"$"			string_template
+	"`"			after_term	return		# save_c saves ` as ' (by-design)
+.else
+	&			after_term	return
+.endif
+	"\\"			string_escape	recolor=-1
+
+:string_bad Bad
+	*			string_bad
+	"\\"			string_bad_escape
+.ifdef template
+	"`"			after_term	return
+.else
+	&			after_term	return
+.endif
+
+:string_bad_escape Bad
+	*			string_bad
+
+:string_template StringEscape
+	*			string_bad
+	"{"			string_template_expr
+
+:string_template_expr Type
+	*			string_template_expr
+.ifdef template
+	"`"			string_body		noeat
+.else
+	&			string_body		noeat
+.endif
+	"}"			string_template_end	noeat
+
+:string_template_end StringEscape
+	*			string
+
+:string_escape StringEscape
+	*			string
+	"x"			string_hex1
+	"u"			string_uni1
+	"0-7"			string_octal2
+	"\n"			string_bad	noeat
+
+:string_hex1 StringEscape
+	*			string		noeat
+	"0-9a-fA-F"		string_hex2
+
+:string_hex2 StringEscape
+	*			string		noeat
+	"0-9a-fA-F"		string
+
+:string_uni1 StringEscape
+	*			string		noeat
+	"{"			string_uni_brackets
+	"0-9a-fA-F"		string_uni2
+
+:string_uni2 StringEscape
+	*			string		noeat
+	"0-9a-fA-F"		string_uni3
+
+:string_uni3 StringEscape
+	*			string		noeat
+	"0-9a-fA-F"		string_uni4
+
+:string_uni4 StringEscape
+	*			string		noeat
+	"0-9a-fA-F"		string
+
+:string_uni_brackets StringEscape
+	*			string_bad_escape	noeat
+.ifdef template
+	"`"			string			noeat
+.else
+	&			string			noeat
+.endif
+	"}"			string
+	"0-9a-fA-F"		string_uni_brackets
+
+:string_octal2 StringEscape
+	*			string		noeat
+	"0-7"			string_octal3
+
+:string_octal3 StringEscape
+	*			string		noeat
+	"0-7"			string
+
+.end
+

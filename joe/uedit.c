@@ -1413,13 +1413,13 @@ int uline(W *w, int k)
 	
 	WIND_BW(bw, w);
 	
-	s = ask(w, joe_gettext(_("Go to line (^C to abort): ")), &linehist,
+	s = ask(w, joe_gettext(_("Go to line (%{abort} to abort): ")), &linehist,
 	        NULL, NULL, utf8_map, 0, 0, NULL);
 
 	if (!s)
 		return -1;
 
-	num = calc(bw, s, 1);
+	num = (off_t)calc(bw, s, 1);
 
 	if (num >= 1 && !merr) {
 		int tmp = opt_mid;
@@ -1452,8 +1452,8 @@ int ucol(W *w, int k)
 	
 	WIND_BW(bw, w);
 
-	s = ask(w, joe_gettext(_("Go to column (^C to abort): ")), &colhist,
-	        NULL, NULL, utf8_map, 0, 0, NULL);
+	s = ask(w, joe_gettext(_("Go to column (%{abort} to abort): ")), &colhist,
+	        NULL, math_cmplt, utf8_map, 0, 0, NULL);
 
 	if (!s)
 		return -1;
@@ -1489,8 +1489,8 @@ int ubyte(W *w, int k)
 	
 	WIND_BW(bw, w);
 
-	s = ask(w, joe_gettext(_("Go to byte (^C to abort): ")), &bytehist,
-	        NULL, NULL, utf8_map, 0, 0, NULL);
+	s = ask(w, joe_gettext(_("Go to byte (%{abort} to abort): ")), &bytehist,
+	        NULL, math_cmplt, utf8_map, 0, 0, NULL);
 	
 	if (!s)
 		return -1;
@@ -2000,7 +2000,7 @@ int uquote(W *w, int k)
 				goto again;
 		} else if (c == 'x' || c == 'X') {
 			if (bw->b->o.charmap->type) {
-				char *s = ask(w, joe_gettext(_("Unicode (ISO-10646) character in hex (^C to abort): ")), &unicodehist, NULL, utypebw, locale_map, 0, 0, NULL);
+				char *s = ask(w, joe_gettext(_("Unicode (ISO-10646) character in hex (%{abort} to abort): ")), &unicodehist, NULL, utypebw, locale_map, 0, 0, NULL);
 				if (s) {
 					int num;
 					sscanf((char *)s,"%x",(unsigned *)&num);
@@ -2357,7 +2357,7 @@ int ubkwdc(W *w, int k)
 int umsg(W *w, int k)
 {
 	char *s;
-	s = ask(w, joe_gettext(_("Message (^C to abort): ")), NULL,
+	s = ask(w, joe_gettext(_("Message (%{abort} to abort): ")), NULL,
 	        NULL, NULL, locale_map, 0, 0, NULL);
 
 	if (!s)
@@ -2377,7 +2377,7 @@ int utxt(W *w, int k)
 	
 	WIND_BW(bw, w);
 
-	s = ask(w, joe_gettext(_("Insert (^C to abort): ")),
+	s = ask(w, joe_gettext(_("Insert (%{abort} to abort): ")),
 	        NULL, NULL, utypebw, bw->b->o.charmap, 0, 0, NULL);
 
 	if (!s) {

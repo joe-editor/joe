@@ -147,9 +147,9 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 				++s; --l;
 				c = 'X';
 				if ((!b || l > 0) && *s == '{') {
-					++s; --l;
 					char buf[80];
 					ptrdiff_t idx = 0;
+					++s; --l;
 					while ((!b || l > 0) && *s && *s != '}') {
 						if (idx != SIZEOF(buf) - 1)
 							buf[idx++] = *s;
@@ -334,9 +334,10 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 		no = mk_node(g, -*g->ptr++, -1, -1);
 		--g->l;
 	} else if (g->l && *g->ptr == '[') {
-		no = mk_node(g, -'[', -1, -1);
-		struct Cclass *m = g->nodes[no].cclass;
+		struct Cclass *m;
 		int inv = 0;
+		no = mk_node(g, -'[', -1, -1);
+		m = g->nodes[no].cclass;
 		++g->ptr; --g->l;
 		if (g->l && *g->ptr == '^') {
 			inv = 1;
@@ -557,9 +558,10 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 		no = mk_node(g, -'e', -1, -1);
 		g->ptr += 2; g->l -= 2;
 	} else if (g->l >= 2 && g->ptr[0] == '\\' && g->ptr[1] == '[') {
-		no = mk_node(g, -'[', -1, -1);
-		struct Cclass *m = g->nodes[no].cclass;
+		struct Cclass *m;
 		int inv = 0;
+		no = mk_node(g, -'[', -1, -1);
+		m = g->nodes[no].cclass;
 		g->ptr += 2; g->l -= 2;
 		if (g->l && *g->ptr == '^') {
 			inv = 1;

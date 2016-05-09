@@ -13,7 +13,7 @@ GLOBAL_OPTS = set([
     'joe_state', 'mouse', 'joexterm', 'brpaste', 'pastehack', 'square', 'text_color',
     'status_color', 'help_color', 'menu_color', 'prompt_color', 'msg_color', 'restore',
     'search_prompting', 'regex', 'lmsg', 'rmsg', 'smsg', 'zmsg', 'xmsg', 'highlight', 'istep',
-    'wordwrap', 'autoindent'
+    'wordwrap', 'autoindent', 'aborthint', 'helphint'
 ])
 
 FILE_OPTS = set([
@@ -255,7 +255,7 @@ class ParserState(object):
     def parseoption(self, opts):
         mode = not self.curline.startswith('--')
         parts = self.curline.split(None, 1)
-        optionName = parts[0][1:]
+        optionName = parts[0].lstrip('-')
         if len(parts) == 1 or optionName not in OPTS_WITH_ARGS:
             opts.setValue(optionName, mode)
         else:

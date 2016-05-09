@@ -59,6 +59,7 @@
 
 :maybeempty Brace
 	*			key		noeat
+	" \t\n"			maybeempty
 	"}"			end		recolor=-1
 
 :key Idle
@@ -105,6 +106,7 @@
 
 :maybeempty Bracket
 	*			value		noeat
+	" \t\n"			maybeempty
 	"]"			end		recolor=-1
 
 :value Idle

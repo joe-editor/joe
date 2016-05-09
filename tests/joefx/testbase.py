@@ -144,7 +144,7 @@ class JoeTestBase(unittest.TestCase):
     def find(self, findstr, params=''):
         """Initiates find with the specified options"""
         self.cmd("ffirst")
-        self.assertTextAt("Find (^C to abort)", x=0)
+        self.assertTextAt("Find (^", x=0)
         self.findrow = self.joe.cursor.Y
         self.write(findstr)
         self.rtn()

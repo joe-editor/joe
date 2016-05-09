@@ -4,7 +4,7 @@
 AC_PREREQ(2.54)
 
 #### Here's the only place where to change version number ####
-AC_INIT(joe, 4.1)
+AC_INIT(joe, 4.2)
 AC_CONFIG_SRCDIR([joe/b.c])
 
 AC_CANONICAL_BUILD
@@ -204,5 +204,5 @@ syntax/troff.jsf syntax/typescript.jsf syntax/verilog.jsf syntax/vhdl.jsf
 syntax/whitespace.jsf syntax/xml.jsf syntax/yaml.jsf syntax/filename.jsf
 syntax/avr.jsf syntax/r.jsf syntax/groovy.jsf syntax/clojure.jsf
 syntax/rust.jsf syntax/coffee.jsf syntax/scala.jsf syntax/swift.jsf
-syntax/d.jsf])
+syntax/d.jsf syntax/dockerfile.jsf])
 AC_OUTPUT

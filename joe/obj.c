@@ -729,11 +729,11 @@ int vsbsearch(char *ary, int len, char el)
 	return y;
 }
 
-int vsscan(char *a, int alen, char *b, int blen)
+int vsscan(char *a, int myalen, char *b, int blen)
 {
 	int x;
 
-	for (x = 0; x != alen; ++x) {
+	for (x = 0; x != myalen; ++x) {
 		int z = vsbsearch(b, blen, a[x]);
 
 		if (z < blen && b[z]==a[x])
@@ -742,11 +742,11 @@ int vsscan(char *a, int alen, char *b, int blen)
 	return ~0;
 }
 
-int vsspan(char *a, int alen, char *b, int blen)
+int vsspan(char *a, int myalen, char *b, int blen)
 {
 	int x;
 
-	for (x = 0; x != alen; ++x) {
+	for (x = 0; x != myalen; ++x) {
 		int z = vsbsearch(b, blen, a[x]);
 
 		if (z == blen || b[z] != a[x])

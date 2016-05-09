@@ -53,8 +53,10 @@ void genexmsg(BW *bw, int saved, char *name)
 
 	exmsg = m;
 	obj_perm(exmsg);
-	if (!noexmsg)
-		msgnw(bw->parent, m);
+	if (!noexmsg) {
+		/* duplicate backslashes in file names because msgnw interprets escape sequences */
+		msgnw(bw->parent, duplicate_backslashes(sv(m)));
+	}
 }
 
 /* For ^X ^C */
@@ -94,7 +96,7 @@ int usys(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	
-	char *s = ask(w, joe_gettext(_("System (^C to abort): ")), NULL, NULL, utypebw, bw->b->o.charmap, 1, 0, NULL);
+	char *s = ask(w, joe_gettext(_("System (%{abort} to abort): ")), NULL, NULL, utypebw, bw->b->o.charmap, 1, 0, NULL);
 	if (s) {
 		int rtn;
 		nescape(w->t->t);
@@ -242,14 +244,14 @@ struct savereq {
 	const char *message; /* String for messages to be shown to the user */
 };
 
-static struct savereq *mksavereq(int (*callback)(BW *bw, struct savereq *req, int flg), char *name, B *first,int rename, int block_save)
+static struct savereq *mksavereq(int (*callback)(BW *bw, struct savereq *req, int flg), char *name, B *first, int myrename, int block_save)
 {
 	struct savereq *req = (struct savereq *) joe_malloc(SIZEOF(struct savereq));
 	req->callback = callback;
 	req->name = name;
 	req->first = first;
 	req->not_saved = 0;
-	req->rename = rename;
+	req->rename = myrename;
 	req->block_save = block_save;
 	return req;
 }
@@ -308,7 +310,7 @@ static int saver(W *w, int c, void *object)
 		}
 	}
 	if (c != YES_CODE && !yncheck(yes_key, c)) {
-		c = query(bw->parent, sz(joe_gettext(_("Could not make backup file.  Save anyway (y,n,^C)? "))), 0);
+		c = query(bw->parent, sz(joe_gettext(_("Could not make backup file.  Save anyway (y,n,%{abort})? "))), 0);
 		if (c == -1) {
 			rmsavereq(req);
 			return -1;
@@ -471,14 +473,14 @@ static int dosave1(W *w, char *s, void *object)
 			f = open(dequote(s), O_RDONLY);
 			if (f != -1) {
 				close(f);
-				req->message = joe_gettext(_("File exists. Overwrite (y,n,^C)? "));
+				req->message = joe_gettext(_("File exists. Overwrite (y,n,%{abort})? "));
 				return dosave2(bw->parent, 0, req);
 			}
 		}
 		else {
 			/* We're saving a newer version of the same file */
 			if (check_mod(bw->b)) {
-				req->message = joe_gettext(_("File on disk is newer. Overwrite (y,n,^C)? "));
+				req->message = joe_gettext(_("File on disk is newer. Overwrite (y,n,%{abort})? "));
 				return dosave2(bw->parent, 0, req);
 			}
 		}
@@ -495,7 +497,7 @@ int usave(W *w, int k)
 	char *s;
 	
 	WIND_BW(bw, w);
-	s = ask(w, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist, "Names", cmplt_file_out,
+	s = ask(w, joe_gettext(_("Name of file to save (%{help} for help): ")), &filehist, "Names", cmplt_file_out,
 	        locale_map, bw->b->name ? 1 : 7, 0, bw->b->name);
 	
 	if (s) {
@@ -522,7 +524,7 @@ int ublksave(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (markb && markk && markb->b == markk->b && (markk->byte - markb->byte) > 0 && (!square || piscol(markk) > piscol(markb))) {
-		char *s = ask(w, joe_gettext(_("Name of file to write (^C to abort): ")), &filehist, "Names", cmplt_file_out,
+		char *s = ask(w, joe_gettext(_("Name of file to write (%{abort} to abort): ")), &filehist, "Names", cmplt_file_out,
 			      locale_map, 3, 0, bw->b->name);
 		if (s) {
 			return dosave1(w, s, mksavereq(NULL,NULL,NULL,0, 1));
@@ -650,7 +652,7 @@ static int doedit(W *w,int c,void *obj)
 		return ret;
 	} else {
 		/* FIXME: need abort handler to prevent leak */
-		c = query(bw->parent, sz(joe_gettext(_("Load original file from disk (y,n,^C)? "))), 0);
+		c = query(bw->parent, sz(joe_gettext(_("Load original file from disk (y,n,%{abort})? "))), 0);
 		if (c == -1)
 			return -1;
 		goto again;
@@ -671,7 +673,7 @@ int okrepl(BW *bw)
 
 int uedit(W *w, int k)
 {
-	char *s = ask(w, joe_gettext(_("Name of file to edit (^C to abort): ")), &filehist,
+	char *s = ask(w, joe_gettext(_("Name of file to edit (%{help} for help): ")), &filehist,
 	              "Names", cmplt_file_in, locale_map, 7, 0, NULL);
 	if (s) {
 		B *b;
@@ -699,7 +701,7 @@ int usetcd(W *w, int k)
 	WIND_BW(bw, w);
 	char *s;
 	
-	s = ask(w, joe_gettext(_("Set current directory (^C to abort): ")), &filehist, "Names", cmplt_file, locale_map, 7, 0, NULL);
+	s = ask(w, joe_gettext(_("Set current directory (%{abort} to abort): ")), &filehist, "Names", cmplt_file, locale_map, 7, 0, NULL);
 	if (!s)
 		return -1;
 	
@@ -720,7 +722,7 @@ int doswitch(W *w, char *s)
 
 int uswitch(W *w, int k)
 {
-	char *s = ask(w, joe_gettext(_("Name of buffer to edit (^C to abort): ")), &filehist,
+	char *s = ask(w, joe_gettext(_("Name of buffer to edit (%{abort} to abort): ")), &filehist,
 	              "Names", cmplt_file_in, locale_map, 1, 0, NULL);
 	if(s) {
 		return doswitch(w, s);
@@ -772,7 +774,7 @@ int uscratch(W *w, int k)
 	char *s;
 	WIND_BW(bw, w);
 
-	s = ask(w, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, "Names", bufedcmplt, locale_map, 0, 0, NULL);
+	s = ask(w, joe_gettext(_("Name of scratch buffer to edit (%{abort} to abort): ")), &filehist, "Names", bufedcmplt, locale_map, 0, 0, NULL);
 	if (!s)
 		return -1;
 
@@ -834,7 +836,7 @@ int uscratch_push(W *w, int k)
 	
 	current_dir = vsdup(bw->b->current_dir);
 
-	s = ask(w, joe_gettext(_("Name of scratch buffer to edit (^C to abort): ")), &filehist, "Names", bufedcmplt, locale_map, 0, 0, NULL);
+	s = ask(w, joe_gettext(_("Name of scratch buffer to edit (%{abort} to abort): ")), &filehist, "Names", bufedcmplt, locale_map, 0, 0, NULL);
 	if (!s)
 		return -1;
 
@@ -1019,7 +1021,7 @@ int uexsve(W *w, int k)
 		/* It changed, it's not a scratch buffer and it's named */
 		return dosave1(w, vsncpy(NULL, 0, sz(bw->b->name)), mksavereq(exdone,NULL,NULL,0,0));
 	} else {
-		char *s = ask(w, joe_gettext(_("Name of file to save (^C to abort): ")), &filehist,
+		char *s = ask(w, joe_gettext(_("Name of file to save (%{help} for help): ")), &filehist,
 			      "Names", cmplt_file_out, locale_map, 1, 0, bw->b->name);
 		if (s) {
 			return dosave1(w, s, mksavereq(NULL, NULL, NULL, 0, 0));
@@ -1039,7 +1041,7 @@ int uask(W *w, int k)
 	
 	if (bw->b->count == 1 && bw->b->changed && !bw->b->scratch) {
 		for (;;) {
-			int c = query(w, sz(joe_gettext(_("Save changes to this file (y,n,^C)? "))), 0);
+			int c = query(w, sz(joe_gettext(_("Save changes to this file (y,n,%{abort})? "))), 0);
 			/* what happens when ^C is hit? */
 			if (c == -1) {
 				return -1;
@@ -1071,7 +1073,7 @@ int ulose(W *w, int k)
 		return ukillpid(w, 0);
 	}
 	if (bw->b->changed && !bw->b->scratch) {
-		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,%{abort})? "))), 0);
 		if (c != YES_CODE && !yncheck(yes_key, c)) {
 			return -1;
 		}
@@ -1116,7 +1118,7 @@ B *bufhist = NULL;
 int ubufed(W *w, int k)
 {
 	char *s;
-	s = ask(w, joe_gettext(_("Name of buffer to edit (^C to abort): ")), &bufhist, "bufed", bufedcmplt, locale_map, 0, 0, NULL);
+	s = ask(w, joe_gettext(_("Name of buffer to edit (%{abort} to abort): ")), &bufhist, "bufed", bufedcmplt, locale_map, 0, 0, NULL);
 	if (s) {
 		return dorepl(w, s, NULL);
 	} else {
@@ -1138,7 +1140,7 @@ static int doquerysave(W *w,int c,void *obj)
 		if (bw->b->name && bw->b->name[0])
 			return dosave1(w, vsncpy(NULL,0,sz(bw->b->name)), req);
 		else {
-			char *s = ask(w, joe_gettext(_("Name of file to save (^C to abort): ")),
+			char *s = ask(w, joe_gettext(_("Name of file to save (%{help} for help): ")),
 			              &filehist, "Names", cmplt_file_out, locale_map, 7, 0, NULL);
 
 			if (s) {
@@ -1169,7 +1171,7 @@ static int doquerysave(W *w,int c,void *obj)
 
 		return doquerysave(bw->parent,0,req);
 	} else {
-		char *buf = vsfmt(buf, 0, joe_gettext(_("File %s has been modified.  Save it (y,n,^C)? ")),bw->b->name ? bw->b->name : "(Unnamed)");
+		char *buf = vsfmt(buf, 0, joe_gettext(_("File %s has been modified.  Save it (y,n,%{abort})? ")),bw->b->name ? bw->b->name : "(Unnamed)");
 		c = query(bw->parent, sv(buf), 0);
 		if (c == -1) {
 			rmsavereq(req);
@@ -1235,7 +1237,7 @@ int ureload(W *w, int k)
 		return -1;
 	}
 	if (bw->b->changed) {
-		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,^C)? "))), 0);
+		int c = query(bw->parent, sz(joe_gettext(_("Lose changes to this file (y,n,%{abort})? "))), 0);
 		if (c != YES_CODE && !yncheck(yes_key, c)) {
 			return -1;
 		}

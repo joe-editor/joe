@@ -35,6 +35,10 @@ void *htadd(HASH *ht, const char *name, void *val);
 /* Look up an entry in a hash table, returns NULL if not found */
 void *htfind(HASH *ht, const char *name);
 
+/* Interned string (atom) table */
+const char *atom_add(const char *name);
+const char *atom_noadd(const char *name);
+
 /* Same as above, but for Z-strings: strings made up of integers instead of chars */
 
 struct Zentry {

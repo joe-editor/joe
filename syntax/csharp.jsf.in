@@ -342,6 +342,7 @@ done
 	"internal"	kw
 	"is"		kw
 	"lock"		kw
+	"nameof"	kw
 	"namespace"	kw
 	"new"		operator
 	"operator"	kw
