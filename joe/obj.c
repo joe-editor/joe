@@ -527,6 +527,13 @@ char *vsfmt(char *vary, int pos, const char *format, ...)
           {
           arg_size = SIZEOF(long);
           ++format;
+          if (*format == 'l')
+            {
+#if SIZEOF_LONG_LONG
+            arg_size = SIZEOF(long long);
+#endif
+            ++format;
+            }
           break;
           }
 

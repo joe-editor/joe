@@ -1034,6 +1034,25 @@ static int olddoopt(BW *bw, int y, int flg)
 				} else {
 					return -1;
 				}
+			} case 14: {
+				buf = vsfmt(buf, 0, joe_gettext(glopts[y].yes), (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
+				s = ask(bw->parent, buf, NULL, NULL, math_cmplt, utf8_map, 0, 0, NULL);
+
+				if (s) {
+					off_t v = (off_t)(calc(bw, s, 0) - 1.0);
+					if (merr) {
+						msgnw(bw->parent, merr);
+						ret = -1;
+					} else if (v >= glopts[y].low && v <= glopts[y].high) {
+						*(off_t *) ((char *) &bw->o + glopts[y].ofst) = v;
+					} else {
+						msgnw(bw->parent, joe_gettext(_("Value out of range")));
+						ret = -1;
+					}
+					break;
+				} else {
+					return -1;
+				}
 			} case 7: { /* local option numeric+1, with range checking */
 				buf = vsfmt(buf, 0, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst) + 1);
 				s = ask(bw->parent, buf, NULL, NULL, math_cmplt, utf8_map, 0, 0, NULL);
