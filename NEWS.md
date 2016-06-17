@@ -48,6 +48,10 @@
 
 	* Use 'LC_ALL=C sed' to get JOE to compile in OS X.
 
+	* Forward direction delimiter matching where the delimiters do
+	  not begin with special characters (for example in Verilog
+	  "begin" / "end") was not working.
+
 ### JOE 4.2
 
 * New or improved syntax files for the following languages: 

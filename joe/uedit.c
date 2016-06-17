@@ -700,6 +700,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 				int set0 = utf8_decode_string(set);
 				if (d == set0) {
 					/* ifdef hack */
+					len = 0;
 					if (!joe_isalnum_(p->b->o.charmap, d)) { /* If it's a # in #ifdef, allow spaces after it */
 						sod = p->byte;
 						while ((d = pgetc(p))!=NO_MORE_DATA) {
@@ -708,9 +709,9 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 								break;
 							sod = p->byte;
 						}
+						buf[0] = set0;
+						len=1;
 					}
-					buf[0] = set0;
-					len=1;
 					if (joe_isalnum_(p->b->o.charmap, d))
 						goto doit;
 					if (d!=NO_MORE_DATA) {
@@ -726,9 +727,10 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 						d=pgetc(p);
 						++col;
 					}
-					if (d!=NO_MORE_DATA)
+					if (d!=NO_MORE_DATA) {
 						prgetc(p);
-					--col;
+						--col;
+					}
 					buf[len]=0;
 					if (is_in_group(set,buf)) {
 						++cnt;
