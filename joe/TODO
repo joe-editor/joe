@@ -1477,3 +1477,8 @@ calculator:
 	tab completion should escape file names for joe [fixed]
 
 	joe --help should print command line options [done]
+
+Performance:
+
+	getcontext causes huge cpu usage for very large functions
+	[fixed]

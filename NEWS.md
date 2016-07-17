@@ -52,6 +52,8 @@
 	  not begin with special characters (for example in Verilog
 	  "begin" / "end") was not working.
 
+	* Get mouse to work in menus: this broke in 4.1
+
 ### JOE 4.2
 
 * New or improved syntax files for the following languages: 
