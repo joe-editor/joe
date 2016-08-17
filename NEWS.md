@@ -40,7 +40,7 @@
 	* Do not kill region highlighting during incremental search (patch
 	  from Petr Olsak).
 
-	* Negative numbers not being recognized in blocks
+	* Negative numbers were not being recognized in blocks
 
 	* PgUp/PgDn would try to scroll menu if the window above is a menu
 	  (it should do this only for completion menus associated with
@@ -55,6 +55,8 @@
 	* Get mouse to work in menus: this broke in 4.1
 
 	* Character classes with ranges were not working for UTF-8 (as in \\[a-z])
+
+	* Apply spec highlighting to .spec files
 
 ### JOE 4.2
 

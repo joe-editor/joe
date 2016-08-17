@@ -838,3 +838,9 @@
 -title
 -syntax dockerfile
 -pound_comment
+
+ RPM Spec
+[spec]
+*.spec
+-autoindent
+-syntax spec
