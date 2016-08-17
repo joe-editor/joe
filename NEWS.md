@@ -58,6 +58,10 @@
 
 	* Apply spec highlighting to .spec files
 
+	* Fix very old segfaults which occur when trying to shink terminal
+	  while many windows are on the screen or while turning on help
+	  with a short terminal.  Fix similar bugs involving skiptop.
+
 ### JOE 4.2
 
 * New or improved syntax files for the following languages: 

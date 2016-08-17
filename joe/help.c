@@ -269,15 +269,15 @@ int help_on(Screen *t)
 {
 	if (help_actual) {
 		t->wind = help_actual->lines + skiptop;
-		if ((t->h - t->wind) < FITHEIGHT) {
-			t->wind = t->h - FITHEIGHT;
+		if ((t->h - t->wind) < FITMIN) {
+			t->wind = t->h - FITMIN;
 		}
-		if (t->wind < 0) {
+		if (t->wind <= skiptop) {
 			t->wind = skiptop;
 			return -1;
 		}
 		wfit(t);
-		msetI(t->t->updtab + skiptop, 1, t->wind);
+		msetI(t->t->updtab + skiptop, 1, t->wind - skiptop);
 		return 0;
 	} else {
 		return -1;

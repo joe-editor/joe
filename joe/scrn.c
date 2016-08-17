@@ -888,8 +888,8 @@ SCRN *nopen(CAP *cap)
 
 int nresize(SCRN *t, ptrdiff_t w, ptrdiff_t h)
 {
-	if (h < 4)
-		h = 4;
+	if (h < skiptop + FITMIN)
+		h = skiptop + FITMIN;
 	if (w < 8)
 		w = 8;
 	if (!t->xn)

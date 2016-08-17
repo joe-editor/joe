@@ -45,12 +45,20 @@ W *findtopw(W *w)
 
 static ptrdiff_t geth(W *w)
 {
-	if (w->reqh)
+	if (w->reqh) {
+		if (w->win && w->reqh < 1)
+			return 1;
+		if (!w->win && w->reqh < FITMIN)
+			return FITMIN;
 		return w->reqh;
-	else if (w->fixed)
+	} else if (w->fixed)
 		return w->fixed;
-	else
-		return (((long) w->t->h - w->t->wind) * w->hh) / 1000;
+	else {
+		ptrdiff_t h = (((long) w->t->h - w->t->wind) * w->hh) / 1000;
+		if (h < FITMIN)
+			h = FITMIN;
+		return h;
+	}
 }
 
 /* Set the height of a window */
@@ -80,6 +88,17 @@ ptrdiff_t getgrouph(W *w)
 	return h;
 }
 
+/* Minimum height of a specific window */
+
+static ptrdiff_t getminhthis(W *w)
+{
+	if (w->fixed)
+		return w->fixed;
+	if (w->win)
+		return 1;
+	return FITMIN;
+}
+
 /* Determine minimum height of a family */
 
 static ptrdiff_t getminh(W *w)
@@ -88,7 +107,9 @@ static ptrdiff_t getminh(W *w)
 	ptrdiff_t h;
 
 	x = findtopw(w);
-	for (w = x, h = (w->fixed ? w->fixed : 2); w->link.next != x && w->link.next->main == x->main; w = w->link.next, h += (w->fixed ? w->fixed : 2)) ;
+	for (w = x, h = getminhthis(w);
+	     w->link.next != x && w->link.next->main == x->main;
+	     w = w->link.next, h += getminhthis(w)) ;
 
 	return h;
 }
@@ -165,10 +186,10 @@ void sresize(Screen *t)
 
 	t->w = scrn->co;
 	t->h = scrn->li;
-	if (t->h - t->wind < FITHEIGHT)
-		t->wind = t->h - FITHEIGHT;
-	if (t->wind < 0)
-		t->wind = 0;
+	if (t->h - t->wind < FITMIN)
+		t->wind = t->h - FITMIN;
+	if (t->wind < skiptop)
+		t->wind = skiptop;
 	w = t->topwin;
 	do {
 		w->y = -1;
@@ -230,7 +251,7 @@ W *watpos(Screen *t,ptrdiff_t x,ptrdiff_t y)
 
 /* Fit as many windows on the screen as is possible beginning with the window
  * at topwin.  Give any extra space which couldn't be used to fit in another
- * window to the last text window on the screen.  This function guarentees
+ * window to the last text window on the screen.  This function guarantees
  * to fit on the window with the cursor in it (moves topwin to next group
  * of windows until window with cursor fits on screen).
  */
@@ -278,8 +299,8 @@ void wfit(Screen *t)
 				pw = w;
 				w->nh -= adj;	/* Adjust main window of the group */
 			}
-			if (!w->win && w->nh < 2)
-				while (w->nh < 2)
+			if (!w->win && w->nh < FITMIN)
+				while (w->nh < FITMIN && w->link.next->win)
 					w->nh += doabort(w->link.next, &ret);
 			if (w == t->curwin)
 				flg = 1;	/* Set if we got window with cursor */
@@ -508,9 +529,9 @@ void wshowall(Screen *t)
 			ptrdiff_t h = getminh(w);
 
 			if (h >= set)
-				seth(w, 2);
+				seth(w, FITMIN);
 			else
-				seth(w, set - (h - 2));
+				seth(w, set - (h - FITMIN));
 			w->orgwin = NULL;
 		}
 		w = w->link.next;
@@ -544,9 +565,9 @@ static void wspread(Screen *t)
 			ptrdiff_t h = getminh(w);
 
 			if (h >= n)
-				seth(w, 2);
+				seth(w, FITMIN);
 			else
-				seth(w, n - (h - 2));
+				seth(w, n - (h - FITMIN));
 			w->orgwin = NULL;
 		}
 		w = w->link.next;
@@ -562,7 +583,7 @@ void wshowone(W *w)
 
 	do {
 		if (!q->win) {
-			seth(q, w->t->h - w->t->wind - (getminh(q) - 2));
+			seth(q, w->t->h - w->t->wind - (getminh(q) - FITMIN));
 			q->orgwin = NULL;
 		}
 		q = q->link.next;
@@ -609,7 +630,7 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t 
 
 	/* Get space for window */
 	if (original) {
-		if (original->h - height <= 2) {
+		if (original->h - height <= FITMIN) {
 			/* Not enough space for window */
 			joe_free(neww);
 			return NULL;
