@@ -54,6 +54,8 @@
 
 	* Get mouse to work in menus: this broke in 4.1
 
+	* Character classes with ranges were not working for UTF-8 (as in \\[a-z])
+
 ### JOE 4.2
 
 * New or improved syntax files for the following languages: 

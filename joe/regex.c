@@ -366,8 +366,6 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 					++g->ptr;
 					--g->l;
 					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
-					if (last != -256)
-						last = from_uni(g->cmap, last);
 				} else {
 					last = first;
 				}
@@ -590,8 +588,6 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 					++g->ptr;
 					--g->l;
 					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
-					if (last != -256)
-						last = from_uni(g->cmap, last);
 				} else {
 					last = first;
 				}
