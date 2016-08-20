@@ -28,7 +28,7 @@
 	* Disable syntax highlighting and context display in very large
 	  files
 
-	* Force mode appropriate modes when we enter hex dump display:
+	* Force more appropriate modes when we enter hex dump display:
 	  enable overtype, disable autoindent, wordwrap, ansi, picture.
 
 	* Handle middle mouse button in "joe -mouse" mode (before it did
@@ -58,9 +58,11 @@
 
 	* Apply spec highlighting to .spec files
 
-	* Fix very old segfaults which occur when trying to shink terminal
-	  while many windows are on the screen or while turning on help
-	  with a short terminal.  Fix similar bugs involving skiptop.
+	* Gracefully handle short terminals: fix segfaults which occur when
+	  trying to shrink terminal while many windows are on the screen or
+	  while turning on help with a short terminal.  Fix similar bugs
+	  involving the skiptop option.  JOE now works even if the terminal
+	  height is only one line.
 
 ### JOE 4.2
 

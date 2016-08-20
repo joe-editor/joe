@@ -84,13 +84,15 @@ static void dispqwn(W *w, int flg)
 	QW *qw = (QW *)w->object;
 	ptrdiff_t y;
 
-	/* Set cursor position */
-	if (w->win->watom->follow && w->win->object)
-		w->win->watom->follow(w->win);
-	if (w->win->watom->disp && w->win->object)
-		w->win->watom->disp(w->win, 1);
-	w->curx = w->win->curx;
-	w->cury = w->win->cury + w->win->y - w->y;
+	if (w->win->h) {
+		/* Set cursor position */
+		if (w->win->watom->follow && w->win->object)
+			w->win->watom->follow(w->win);
+		if (w->win->watom->disp && w->win->object)
+			w->win->watom->disp(w->win, 1);
+		w->curx = w->win->curx;
+		w->cury = w->win->cury + w->win->y - w->y;
+	}
 
 	/* Generate prompt */
 	for (y = 0; y != w->h; ++y) {
@@ -109,6 +111,10 @@ static void dispqwn(W *w, int flg)
 		         BG_COLOR(bg_prompt),
 		         w->w - w->x,
 		         1,NULL);
+		if (!w->win->h) {
+			w->cury = y;
+			w->curx = w->x + joe_wcswidth(locale_map, s, l);
+		}
 	}
 }
 
@@ -207,6 +213,7 @@ QW *mkqw(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, void
 			*notify = 1;
 		return NULL;
 	}
+	w->t->curwin = neww;
 	wfit(neww->t);
 	neww->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = neww;
@@ -217,7 +224,6 @@ QW *mkqw(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, void
 	qw->func = func;
 	qw->abrt = abrt;
 	qw->object = object;
-	w->t->curwin = neww;
 	return qw;
 }
 
@@ -238,6 +244,7 @@ QW *mkqwna(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, vo
 			*notify = 1;
 		return NULL;
 	}
+	w->t->curwin = neww;
 	wfit(neww->t);
 	neww->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = neww;
@@ -248,7 +255,6 @@ QW *mkqwna(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, vo
 	qw->func = func;
 	qw->abrt = abrt;
 	qw->object = object;
-	w->t->curwin = neww;
 	return qw;
 }
 
@@ -269,6 +275,7 @@ QW *mkqwnsr(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, v
 			*notify = 1;
 		return NULL;
 	}
+	w->t->curwin = neww;
 	wfit(neww->t);
 	neww->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = neww;
@@ -279,6 +286,5 @@ QW *mkqwnsr(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, v
 	qw->func = func;
 	qw->abrt = abrt;
 	qw->object = object;
-	w->t->curwin = neww;
 	return qw;
 }

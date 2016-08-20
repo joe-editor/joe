@@ -981,7 +981,7 @@ BW *bwmk(W *window, B *b, int prompt)
 
 	w->parent = window;
 	w->b = b;
-	if (prompt || (!window->y && staen)) {
+	if (prompt || (!window->y && staen) || window->h < 2) {
 		w->y = window->y;
 		w->h = window->h;
 	} else {

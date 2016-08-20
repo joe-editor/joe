@@ -29,7 +29,7 @@ void dofollows(void)
 	W *w = maint->curwin;
 
 	do {
-		if (w->y != -1 && w->watom->follow && w->object)
+		if (w->y != -1 && w->h && w->watom->follow && w->object)
 			w->watom->follow(w);
 		w = (W *)(w->link.next);
 	} while (w != maint->curwin);

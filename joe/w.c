@@ -299,8 +299,12 @@ void wfit(Screen *t)
 				pw = w;
 				w->nh -= adj;	/* Adjust main window of the group */
 			}
-			if (!w->win && w->nh < FITMIN)
-				while (w->nh < FITMIN && w->link.next->win)
+			/* Delete child windows to make sure parent has space
+			 * 0 lines is acceptable unless cursor is in window, then we
+			 * must have 1 line
+			 */
+			if (!w->win && (w->nh < 0 || w == t->curwin && w->nh < 1))
+				while ((w->nh < 0 || w == t->curwin && w->nh < 1) && w->link.next->win)
 					w->nh += doabort(w->link.next, &ret);
 			if (w == t->curwin)
 				flg = 1;	/* Set if we got window with cursor */
@@ -630,7 +634,7 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t 
 
 	/* Get space for window */
 	if (original) {
-		if (original->h - height <= FITMIN) {
+		if (original->h - height < 0) {
 			/* Not enough space for window */
 			joe_free(neww);
 			return NULL;
@@ -758,13 +762,11 @@ void msgout(W *w)
 {
 	SCRN *t = w->t->t;
 
-	if (w->msgb) {
+	if (w->msgb && w->h) {
 		mdisp(t, w->y + w->h - 1, w->msgb);
-		// w->msgb = 0;
 	}
-	if (w->msgt) {
+	if (w->msgt && w->h) {
 		mdisp(t, w->y + ((w->h > 1 && (w->y || !staen)) ? 1 : 0), w->msgt);
-		// w->msgt = 0;
 	}
 }
 

@@ -663,6 +663,7 @@ MENU *mkmenu(W *w, W *targ, char **s, int (*func)(MENU *m, ptrdiff_t cursor, voi
 			*notify = 1;
 		return NULL;
 	}
+	w->t->curwin = neww;
 	wfit(neww->t);
 	neww->object = (void *) (m = (MENU *) joe_malloc(SIZEOF(MENU)));
 	m->parent = neww;
@@ -677,7 +678,6 @@ MENU *mkmenu(W *w, W *targ, char **s, int (*func)(MENU *m, ptrdiff_t cursor, voi
 	m->y = neww->y;
 	m->top = 0;
 	ldmenu(m, s, cursor);
-	w->t->curwin = neww;
 	return m;
 }
 

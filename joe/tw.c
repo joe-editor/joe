@@ -19,7 +19,7 @@ static void movetw(W *w, ptrdiff_t x, ptrdiff_t y)
 	BW *bw = (BW *)w->object;
 	TW *tw = (TW *)bw->object;
 
-	if (y || !staen) {
+	if ((y || !staen) && w->h > 1) {
 		if (!tw->staon) {	/* Scroll down and shrink */
 			nscrldn(bw->parent->t->t, y, bw->parent->nh + y, 1);
 		}
@@ -39,7 +39,7 @@ static void movetw(W *w, ptrdiff_t x, ptrdiff_t y)
 static void resizetw(W *w, ptrdiff_t wi, ptrdiff_t he)
 {
 	BW *bw = (BW *)w->object;
-	if (bw->parent->ny || !staen)
+	if ((bw->parent->ny || !staen) && he > 1)
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he - 1);
 	else
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he);
@@ -586,7 +586,7 @@ static void disptw(W *w, int flg)
 		w->curx = TO_DIFF_OK(bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0));
 	}
 
-	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen)) {
+	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen) && w->h > 1) {
 		char fill;
 
 		tw->prevline = bw->cursor->line;
