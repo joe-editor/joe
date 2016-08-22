@@ -581,7 +581,7 @@ int *Zdup(const int *bf)
 #define SIG_ERR ((sighandler_t) -1)
 #endif
 
-/* wrapper to hide signal interface differrencies */
+/* wrapper to hide signal interface differences */
 int joe_set_signal(int signum, sighandler_t handler)
 {
 	int retval;

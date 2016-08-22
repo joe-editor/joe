@@ -115,7 +115,7 @@ aELEMENT *vafill(aELEMENT *vary, ptrdiff_t pos, aELEMENT el, ptrdiff_t len);
 #ifdef junk
 /* aELEMENT *vancpy(aELEMENT *vary, int pos, aELEMENT *array, int len);
  * Copy 'len' elements from 'array' onto 'vary' beginning at position 'pos'.
- * 'array' can be a normal char array since the length is passed seperately.  The
+ * 'array' can be a normal char array since the length is passed separately.  The
  * elements are copied, not duplicated.  A new array is created if 'vary' is
  * 0.  This does not zap previous elements.
  */
@@ -124,7 +124,7 @@ aELEMENT *vancpy(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len);
 
 /* aELEMENT *vandup(aELEMENT *vary, int pos, aELEMENT *array, int len);
  * Duplicate 'len' elements from 'array' onto 'vary' beginning at position
- * 'pos'.  'array' can be a char array since its length is passed seperately.  A
+ * 'pos'.  'array' can be a char array since its length is passed separately.  A
  * new array is created if 'vary' is 0.
  */
 aELEMENT *vandup(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len);
@@ -237,7 +237,7 @@ void vauniq(aELEMENT *ary);
 void vadel(aELEMENT *ary, ptrdiff_t ofset, ptrdiff_t len);
 
 /* aELEMENT *vawords(aELEMENT *a, char *s, int len, char *sep, int seplen);
- * Generate list of strings out of words in 's' seperated with the characters
+ * Generate list of strings out of words in 's' separated with the characters
  * in 'sep'.  The characters in 'sep' must be sorted.
  */
 aELEMENT *vawords(aELEMENT *a, const char *s, ptrdiff_t len, const char *sep, ptrdiff_t seplen);

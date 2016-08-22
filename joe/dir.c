@@ -1,5 +1,5 @@
 /*
- *	Directory package for older UNIXs
+ *	Directory package for older Unices
  *	Copyright
  *		(C) 1992 Joseph H. Allen
  *

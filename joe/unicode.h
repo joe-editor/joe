@@ -7,7 +7,7 @@ struct unicat {
 
 /* Tables in unicat.c */
 
-extern struct unicat unicat[];	/* Catgories */
+extern struct unicat unicat[];	/* Categories */
 extern struct interval toupper_table[];	/* Convert to uppercase */
 extern int toupper_cvt[];
 extern struct interval tolower_table[];	/* Convert to lowercase */

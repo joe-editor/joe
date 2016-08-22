@@ -11,7 +11,7 @@
  * This is a dynamic string library which supports strings which automatically
  * resize themselves when needed.  The strings know their own size, so getting
  * the length of a string is a fast operation and storing zeroes in the
- * strings is permissable.
+ * strings is permissible.
  *
  * The strings are stored in malloc blocks and have the following format:
  *
@@ -207,7 +207,7 @@ sELEMENT *vsfill(sELEMENT *vary, ptrdiff_t pos, sELEMENT el, ptrdiff_t len);
 
 /* sELEMENT *vsncpy(sELEMENT *vary, int pos, sELEMENT *array, int len));
  * Copy 'len' elements from 'array' onto 'vary' beginning at position 'pos'.
- * 'array' can be a normal char array since the length is passed seperately.  The
+ * 'array' can be a normal char array since the length is passed separately.  The
  * elements are copied, not duplicated.  A new array is created if 'vary' is
  * 0.  This does not zap previous elements.
  */
@@ -215,7 +215,7 @@ sELEMENT *vsncpy(sELEMENT *vary, ptrdiff_t pos, const sELEMENT *array, ptrdiff_t
 
 /* sELEMENT *vsndup(sELEMENT *vary, int pos, sELEMENT *array, int len));
  * Duplicate 'len' elements from 'array' onto 'vary' beginning at position
- * 'pos'.  'array' can be a char array since its length is passed seperately.  A
+ * 'pos'.  'array' can be a char array since its length is passed separately.  A
  * new array is created if 'vary' is 0.
  */
 sELEMENT *vsndup(sELEMENT *vary, ptrdiff_t pos, sELEMENT *array, ptrdiff_t len);
@@ -360,7 +360,7 @@ ptrdiff_t vslast(sELEMENT *ary, ptrdiff_t len, sELEMENT element);
 
 /* int vss(sELEMENT *a, int alen, sELEMENT *b, int blen);
  * Do a substring search on 'a'.  Return offset from 'a' to first matching
- * occurance of 'b' in 'a' or return ~0 if none found.
+ * occurrence of 'b' in 'a' or return ~0 if none found.
  */
 ptrdiff_t vss(sELEMENT *a, ptrdiff_t alen, sELEMENT *b, ptrdiff_t blen);
 #endif
@@ -425,7 +425,7 @@ char *vsread();
 
 /* char *vwords(char *s, char **a, int len, char t);
  *
- * Generate a 't'-seperated word list from the words in the zero-terminated
+ * Generate a 't'-separated word list from the words in the zero-terminated
  * array of zero-terminated strings 'a'.  For example a simple 'echo.c':
  *
  * main(argc, argv)

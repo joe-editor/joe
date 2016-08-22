@@ -404,7 +404,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 		} else {
 			nope:
 			vsrm(t);
-			/* Try Joe's bad english */
+			/* Try Joe's bad English */
 			t = vsncpy(NULL, 0, sc(JOERC));
 			t = vsncpy(sv(t), sv(run));
 			t = vsncpy(sv(t), sc("rc"));

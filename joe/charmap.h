@@ -36,14 +36,14 @@ struct charmap {
 
 	/* Information for byte-oriented character sets */
 
-	int *to_map;			/* Convert byte to unicode */
+	int *to_map;			/* Convert byte to Unicode */
 
 	unsigned char lower_map[256];	/* Convert to lower case */
 	unsigned char upper_map[256];
 
-	struct pair from_map[256];	/* Convert from unicode to byte */
+	struct pair from_map[256];	/* Convert from Unicode to byte */
 
-	ptrdiff_t from_size;			/* No. paris in from_map */
+	ptrdiff_t from_size;			/* No. pairs in from_map */
 
 	char print_map[32];	/* Bit map of printable characters */
 	char alpha__map[32];	/* Bit map of alphabetic characters and _ */
@@ -72,11 +72,11 @@ struct charmap *find_charmap(const char *name);
 /* Get available encodings */
 char **get_encodings(void);
 
-/* Convert from unicode to byte */
+/* Convert from Unicode to byte */
 int from_uni(struct charmap *cset, int c);
 int from_utf8(struct charmap *map,const char *s);
 
-/* Convert from byte to unicode */
+/* Convert from byte to Unicode */
 int to_uni(struct charmap *cset, int c);
 void to_utf8(struct charmap *map,char *s,int c);
 

@@ -56,7 +56,7 @@ int opt_right = 8;
 void bwfllwh(W *thew)
 {
 	BW *w = (BW *)thew->object;
-	/* Top must be a muliple of 16 bytes */
+	/* Top must be a multiple of 16 bytes */
 	if (w->top->byte%16) {
 		pbkwd(w->top,w->top->byte%16);
 	}
@@ -218,7 +218,7 @@ static HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, off_t line)
 	return lattr_get(w->db, w->o.syntax, p, line); /* FIXME: lattr database should be a in vfile */
 }
 
-/* Scroll a buffer window after an insert occured.  'flg' is set to 1 if
+/* Scroll a buffer window after an insert occurred.  'flg' is set to 1 if
  * the first line was split
  */
 
@@ -459,7 +459,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 							c = ansi_decode(&ansi_sm, c);
 							if (c >= 0) /* Not ansi */
 								wid = joe_wcwidth(1, c);
-							else { /* Skip ansi character */
+							else { /* Skip ANSI character */
 								wid = 0;
 								++idx;
 							}
@@ -478,7 +478,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				} else {
 					if (ansi) {
 						c = ansi_decode(&ansi_sm, bc);
-						if (c>=0) /* Not ansi */
+						if (c>=0) /* Not ANSI */
 							wid = 1;
 						else {
 							wid = 0;
@@ -622,7 +622,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				} else { /* Regular */
 					if (ansi) {
 						utf8_char = ansi_decode(&ansi_sm, bc);
-						if (utf8_char >= 0) /* Not ansi */
+						if (utf8_char >= 0) /* Not ANSI */
 							wid = 1;
 						else {
 							wid = -1;

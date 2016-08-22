@@ -268,7 +268,7 @@ static void rmsavereq(struct savereq *req)
 	joe_free(req);
 }
 
-/* Check if character 'c' is in the set.  'c' should be unicode.
+/* Check if character 'c' is in the set.  'c' should be Unicode.
  * gettext returns a string in the locale, so c is convert to the
  * locale if necessary.
  */
@@ -607,7 +607,7 @@ static int doedit1(W *w,int c,void *obj, int *notify)
 		w = bw->parent;
 		bwrm(bw);
 		w->object = (void *) (bw = bwmk(w, b, 0));
-		/* Propogate current directory to newly loaded buffer */
+		/* Propagate current directory to newly loaded buffer */
 		if (!b->current_dir)
 			b->current_dir = current_dir;
 		else
@@ -801,7 +801,7 @@ static int doscratch(W *w, char *s, void *obj, int *notify)
 	}
 
 	b = bfind_scratch(s);
-	/* Propogate current directory to scratch buffer */
+	/* Propagate current directory to scratch buffer */
 	if (!b->current_dir)
 		b->current_dir = current_dir;
 	else
@@ -856,7 +856,7 @@ static int doscratchpush(W *w, char *s, void *obj, int *notify)
 	}
 
 	b = bfind_scratch(s);
-	/* Propogate current directory to scratch buffer */
+	/* Propagate current directory to scratch buffer */
 	if (!b->current_dir)
 		b->current_dir = current_dir;
 	else
@@ -961,7 +961,7 @@ static int dorepl(W *w, char *s, void *obj, int *notify)
 	}
 	bwrm(bw);
 	w->object = (void *) (bw = bwmk(w, b, 0));
-	/* Propogate current directory into new buffer */
+	/* Propagate current directory into new buffer */
 	if (!b->current_dir)
 		b->current_dir = current_dir;
 	else

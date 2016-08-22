@@ -1,7 +1,7 @@
 /*
  *	Fast block move/copy subroutines
  *
- *      These exist because memmove on older UNIXs was really slow.
+ *      These exist because memmove on older Unices was really slow.
  *
  *	Copyright
  *		(C) 1992 Joseph H. Allen
@@ -23,25 +23,25 @@ char *mset(char *dest, char c, ptrdiff_t sz);
 
 /* int *msetI(int *d,int c,int sz); Set 'sz' ints at 'd' to 'c'.
  * If 'sz'==0 nothing happens
- * Returns orininal value of 'd'
+ * Returns original value of 'd'
  */
 int *msetI(int *dest, int c, ptrdiff_t sz);
 
 /* int *msetI(int *d,int c,int sz); Set 'sz' ints at 'd' to 'c'.
  * If 'sz'==0 nothing happens
- * Returns orininal value of 'd'
+ * Returns original value of 'd'
  */
 ptrdiff_t *msetD(ptrdiff_t *dest, ptrdiff_t c, ptrdiff_t sz);
 
 /* void **msetP(void **d,void *c,int sz); Set 'sz' pointers at 'd' to 'c'.
  * If 'sz'==0 nothing happens
- * Returns orininal value of 'd'
+ * Returns original value of 'd'
  */
 void **msetP(void **dest, void *c, ptrdiff_t sz);
 
 /* int mcnt(char *blk,char c,ptrdiff_t size);
  *
- * Count the number of occurances a character appears in a block
+ * Count the number of occurrences a character appears in a block
  */
 ptrdiff_t mcnt(const char *blk, char c, ptrdiff_t size);
 

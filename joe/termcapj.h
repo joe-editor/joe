@@ -63,7 +63,7 @@ struct cap {
  * a 'tc=filename', then all of the files in the name list are searched.
  *
  * There is no limit on the size of the termcap entries.  No checking is
- * done for self-refering 'tc=filename' links (so all of core will be
+ * done for self-referring 'tc=filename' links (so all of core will be
  * allocated if there are any).
  */
 CAP *my_getcap(char *name, long baud, void (*out) (void *, char), void *outptr);
@@ -135,7 +135,7 @@ void texec(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptr
    the current cursor position and the end of the screen should be
    given here.
 
-   'a0' - 'a3' are arguements passed to the string
+   'a0' - 'a3' are arguments passed to the string
 */
 ptrdiff_t tcost(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2, ptrdiff_t a3);
 

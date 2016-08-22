@@ -269,7 +269,7 @@ static int srch_cmplt(BW *bw, int k)
      p is placed right after the found string
 
    Return 0 if we did not find the string:
-     p is left in its orignal spot
+     p is left in its original spot
 */
 
 static P *searchf(BW *bw,SRCH *srch, P *p)
@@ -334,7 +334,7 @@ static P *searchf(BW *bw,SRCH *srch, P *p)
      p is placed at the beginning of the string
 
    Return 0 if we did not find the string:
-     p is left in its orignal spot
+     p is left in its original spot
 */
 
 static P *searchb(BW *bw,SRCH *srch, P *p)

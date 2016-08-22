@@ -1,5 +1,5 @@
 /*
- *	Device independant TTY interface for JOE
+ *	Device independent TTY interface for JOE
  *	Copyright
  *		(C) 1992 Joseph H. Allen
  *
@@ -866,7 +866,7 @@ SCRN *nopen(CAP *cap)
 	if (t->brp)
 		texec(t->cap, t->brp, 1, 0, 0, 0, 0);
 
-/* Initialize variable screen size dependant vars */
+/* Initialize variable screen size dependent vars */
 	t->scrn = NULL;
 	t->attr = NULL;
 	t->sary = NULL;
@@ -1441,7 +1441,7 @@ static void setins(SCRN *t, ptrdiff_t x)
 	}
 }
 
-/* As above but useable in insert mode */
+/* As above but usable in insert mode */
 /* The cursor position must already be correct */
 
 static void outatri(SCRN *t, ptrdiff_t x, ptrdiff_t y, int c, int a)

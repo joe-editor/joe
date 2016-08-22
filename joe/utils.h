@@ -145,7 +145,7 @@ typedef RETSIGTYPE (*sighandler_t)(int);
 #define REINSTALL_SIGHANDLER(sig, handler) do {} while(0)
 #endif
 
-/* wrapper to hide signal interface differrencies */
+/* wrapper to hide signal interface differences */
 int joe_set_signal(int signum, sighandler_t handler);
 
 /* Simple parsers */

@@ -33,7 +33,7 @@
 /* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
    JOE uses a limited internal version instead */
 
-/* Convert from byte code to unicode.  Returns -1 for unknown. */
+/* Convert from byte code to Unicode.  Returns -1 for unknown. */
 
 int to_uni(struct charmap *cset, int c)
 {
@@ -52,7 +52,7 @@ void to_utf8(struct charmap *map,char *s,int c)
 		utf8_encode(s,d);
 }
 
-/* Convert from unicode to byte code.  Returns -1 for unknown. */
+/* Convert from Unicode to byte code.  Returns -1 for unknown. */
 
 int from_uni(struct charmap *cset, int c)
 {
@@ -1320,7 +1320,7 @@ static struct builtin_charmap *parse_charmap(const char *name,FILE *f)
 	return b;
 }
 
-/* Byte wide character map to unicode conversion */
+/* Byte wide character map to Unicode conversion */
 
 /* Compare character map names.  Ignores '-'s and terminates string on '.' */
 /* Chicken and egg problem here.. */

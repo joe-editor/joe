@@ -170,7 +170,7 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 						*cat = unicode(buf);
 				}
 				break;
-			} case 'x': case 'X': { /* Hex or unicode */
+			} case 'x': case 'X': { /* Hex or Unicode */
 				c = 0;
 				++s; --l;
 				if ((!b || l > 0) && *s == '{') {
@@ -808,7 +808,7 @@ static void unasm(Frag *f)
 }
 
 /* Determine leading prefix of search string */
-/* We can use boyer-moore on the prefix if:
+/* We can use Boyer-Moore on the prefix if:
      Character set is byte coded.
      Character set is UTF-8 coded, but no folding is requested.
      Character set is UTF-8 coded, folding is requested, but character is below 128 */

@@ -113,8 +113,8 @@ static int cnotpara(BW *bw, int c)
 	return 0;
 }
 
-/* Return true if line is definitly not a paragraph line.
- * Lines which arn't paragraph lines:
+/* Return true if line is definitely not a paragraph line.
+ * Lines which aren't paragraph lines:
  *  1) Blank lines
  *  2) Lines which begin with '.'
  */
@@ -200,7 +200,7 @@ static off_t prefix(BW *bw, P *p,int up)
  *  2) A line with a different indentation prefix
  *  3) A line with indentation greater than that of the line we started with
  *  4) A line with indentation less than that of the starting line, but with
- *     a blank line (or beginning of file) preceeding it.
+ *     a blank line (or beginning of file) preceding it.
  */
 
 int within = 0;

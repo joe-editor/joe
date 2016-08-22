@@ -43,7 +43,7 @@ struct vfile {
  * Should we remove size checking from rc()?  Would make it faster...
  *
  * Should be able to open more than one stream on a file so that vseek
- * doesn't have to get called so much when more than one user is involed
+ * doesn't have to get called so much when more than one user is involved
  *
  * Also should have dupopen call to make more streams for a file
  *
@@ -52,7 +52,7 @@ struct vfile {
  * Should have a version which will use memory mapped files, if they exist
  * in the os.
  *
- * Would be nice if we could transparantly open non-file streams and pipes.
+ * Would be nice if we could transparently open non-file streams and pipes.
  * Should there be an buffering option for that?  So we can seek on pipes to
  * get previously read data?
  */
@@ -102,7 +102,7 @@ void vclose(VFILE *vfile);
  * use.  This limit can be exceeded if all existing vpages are being referenced
  * and a new vpage is requested.
  *
- * When vlimit is called, the limit is immediatly enforced by elimiting
+ * When vlimit is called, the limit is immediately enforced by eliminating
  * non-referenced vpages.
  */
 
@@ -183,7 +183,7 @@ off_t my_valloc(VFILE *vfile, off_t size);
 
 #ifdef junk
 /******************************************************************************
- * The folloing functions implement stream I/O on top of the above software   *
+ * The following functions implement stream I/O on top of the above software   *
  * virtual memory system                                                      *
  ******************************************************************************/
 
@@ -266,7 +266,7 @@ long vputl();
 
 /* short vputw(VFILE *,short);
  *
- * Put long.  No alignement requirements.
+ * Put long.  No alignment requirements.
  * Returns value written.
  */
 

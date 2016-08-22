@@ -629,7 +629,7 @@ int piseow(P *p)
 		return 0;
 }
 
-/* is p on the blank line (ie. full of spaces/tabs)? */
+/* is p on the blank line (i.e. full of spaces/tabs)? */
 int pisblank(P *p)
 {
 	P *q = pdup(p, "pisblank");
@@ -1328,7 +1328,7 @@ P *pcoli(P *p, off_t goalcol)
 	return p;
 }
 
-/* fill space between curent column and 'to' column with tabs/spaces */
+/* fill space between current column and 'to' column with tabs/spaces */
 void pfill(P *p, off_t to, int usetabs)
 {
 	if (usetabs=='\t')
@@ -2308,7 +2308,7 @@ static ptrdiff_t bkread(int fi, char *buff, ptrdiff_t size)
 /* Guess if file is utf16 encoded
  *
  * We assume UTF-16 if we can find a line in the range 3..120 with no control characters
- * other than tab, carriable return and newline.
+ * other than tab, carriage return and newline.
  */
 
 static int detect_utf16(unsigned short *inbuf, ptrdiff_t amnt)
@@ -2803,7 +2803,7 @@ opnerr:
 	/* If first line has CR-LF, assume MS-DOS file */
 	if (guesscrlf) {
 		int crlf = b->o.crlf;
-		b->o.crlf = 0; /* Prevernt CR-LF to LF conversion for this test */
+		b->o.crlf = 0; /* Prevent CR-LF to LF conversion for this test */
 		p=pdup(b->bof, "bload");
 		for(x=0;x!=1024;++x) {
 			int c = pgetc(p);
@@ -3232,7 +3232,7 @@ err:
 	else
 		fflush(f);
 
-	/* Update orignal date of file */
+	/* Update original date of file */
 	/* If it's not named, it's about to be */
 	if (!berror && norm && flag && (!p->b->name || flag == 2 || !zcmp(s,p->b->name))) {
 		if (!stat(dequote(s),&sbuf))
@@ -3349,7 +3349,7 @@ RETSIGTYPE ttsig(int sig)
 		   systemcall, which leads to a possible denial-of-service attack
 		   by setting the file access mode to 600 for every file the
 		   user executing joe has permissions to.
-		   This can't be fixed w/o breacking the behavior of the orig. joe!
+		   This can't be fixed w/o breaking the behavior of the orig. joe!
 		 */
 		if ((tmpfd = open("DEADJOE", O_RDWR | O_APPEND)) < 0)
 			_exit(1);

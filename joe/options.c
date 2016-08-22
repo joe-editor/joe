@@ -1067,7 +1067,7 @@ static int doencoding(W *w, char *s, void *obj, int *notify)
 	return ret;
 }
 
-char **encodings = NULL; /* Array of available encodinges */
+char **encodings = NULL; /* Array of available encodings */
 
 static int encodingcmplt(BW *bw, int k)
 {

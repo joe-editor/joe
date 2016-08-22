@@ -46,7 +46,7 @@ struct point {
 	off_t	xcol;		/* cursor column (can be different from actual column) */
 	int	valcol;		/* bool: is col valid? */
 	int	end;		/* set if this is end of file pointer */
-	int	attr;		/* current ansi attribute */
+	int	attr;		/* current ANSI attribute */
 	int	valattr;	/* set if attr is still valid */
 
 	P	**owner;	/* owner of this pointer.  owner gets cleared if pointer is deleted. */
@@ -107,10 +107,10 @@ struct options {
 	int	semi_comment;	/* Ignore text after ; comments */
 	int	tex_comment;	/* Ignore text after % comments */
 	int	hex;		/* Hex edit mode */
-	int	ansi;		/* Hide ansi sequences mode */
+	int	ansi;		/* Hide ANSI sequences mode */
 	int	title;		/* Enable status line context display */
 	const char *text_delimiters;	/* Define word delimiters */
-	const char *cpara;	/* Characters which can indent paragraphcs */
+	const char *cpara;	/* Characters which can indent paragraphs */
 	const char *cnotpara;/* Characters which begin non-paragraph lines */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */
