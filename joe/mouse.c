@@ -180,6 +180,7 @@ int udefmiddledown(W *w, int k)
 	if (joexterm) {
 		/* Request xterm to send selection text to JOE */
 		ttputs("\33]52;;?\33\\");
+		return 0;
 	} else {
 		/* Copy region to cursor */
 		return ublkcpy(w, -2); /* Copy */

@@ -303,8 +303,8 @@ void wfit(Screen *t)
 			 * 0 lines is acceptable unless cursor is in window, then we
 			 * must have 1 line
 			 */
-			if (!w->win && (w->nh < 0 || w == t->curwin && w->nh < 1))
-				while ((w->nh < 0 || w == t->curwin && w->nh < 1) && w->link.next->win)
+			if (!w->win && (w->nh < 0 || (w == t->curwin && w->nh < 1)))
+				while ((w->nh < 0 || (w == t->curwin && w->nh < 1)) && w->link.next->win)
 					w->nh += doabort(w->link.next, &ret);
 			if (w == t->curwin)
 				flg = 1;	/* Set if we got window with cursor */
