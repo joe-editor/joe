@@ -18,7 +18,7 @@
 	* Improve performance of status line context display (which shows
 	  the first line of the function that the cursor is currently in). 
 	  This feature was making JOE very slow on extremely large files with
-	  auto indent enabled (typically json or xml data files).  Now
+	  auto indent enabled (typically JSON or XML data files).  Now
 	  the syntax highlighter computes the context display (using a new
 	  syntax named context.jsf).
 
