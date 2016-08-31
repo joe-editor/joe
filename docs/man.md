@@ -2649,7 +2649,7 @@ directives.  For example:
         "'"     idle    return
     .endif
 
-.else if also available.  .ifdefs can be nested.
+.else is also available.  .ifdefs can be nested.
 
 <a name="joerc"></a>
 
@@ -3862,7 +3862,7 @@ Default triple-click release handler, usually bound to M3UP.
 <br>
 
 * defm3drag<br>
-Default double-click drag handler, usually bound to M3DRAG.  Selects a
+Default triple-click drag handler, usually bound to M3DRAG.  Selects a
 region of text a line at a time.
 <br>
 
