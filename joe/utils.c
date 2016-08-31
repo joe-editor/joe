@@ -985,7 +985,7 @@ int parse_class(const char * *pp, struct interval **array, ptrdiff_t *size)
 
 void jsort(void *base, ptrdiff_t num, ptrdiff_t size, int (*compar)(const void *a, const void *b))
 {
-	return qsort(base, (size_t)num, (size_t)size, compar);
+	qsort(base, (size_t)num, (size_t)size, compar);
 }
 
 off_t oabs(off_t a)
