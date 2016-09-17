@@ -52,8 +52,11 @@ class JoeTestBase(unittest.TestCase):
             orig_err_fail = result.errors + result.failures
         super(JoeTestBase, self).run(result)
         if result and len(result.errors + result.failures) > len(orig_err_fail) and self.joe is not None:
-            print('\n----- screen at exit -----\n%s\n-----\n' % self.joe.screen)
+            print('\n----- screen at exit -----\n%s\n-----\n' % self.joe.prettyScreen())
     
+    def exitJoe(self):
+        self.cmd("killjoe")
+        self.assertExited()
     
     #
     # JOE startup
@@ -88,8 +91,8 @@ class JoeTestBase(unittest.TestCase):
     # Assertions
     #
     
-    def _posFromInput(self, x=None, y=None):
-        return controller.coord(x if x is not None else self.joe.cursor.X, y if y is not None else self.joe.cursor.Y)
+    def _posFromInput(self, x=None, y=None, dx=0, dy=0):
+        return controller.coord(dx + (x if x is not None else self.joe.cursor.X), dy + (y if y is not None else self.joe.cursor.Y))
     
     def assertCursor(self, x=None, y=None):
         """Asserts cursor is at the specified position"""
@@ -98,13 +101,13 @@ class JoeTestBase(unittest.TestCase):
         self.assertEqual(pos.X, self.joe.cursor.X, "Cursor X pos")
         self.assertEqual(pos.Y, self.joe.cursor.Y, "Cursor Y pos")
     
-    def assertTextAt(self, text, x=None, y=None):
+    def assertTextAt(self, text, x=None, y=None, dx=0, dy=0):
         """Asserts text at specified coordinate matches the input. If either coordinate is omitted, use the cursor's coordinate"""
         def check():
-            pos = self._posFromInput(x, y)
+            pos = self._posFromInput(x, y, dx, dy)
             return self.joe.checkText(pos.Y, pos.X, text)
         self.joe.expect(check)
-        pos = self._posFromInput(x, y)
+        pos = self._posFromInput(x, y, dx, dy)
         s = self.joe.readLine(pos.Y, pos.X, len(text))
         self.assertEqual(s, text, "Text at line=%d col=%d" % (pos.Y, pos.X))
     
@@ -212,8 +215,8 @@ class JoeTestBase(unittest.TestCase):
         """Selects a menu when the supplied function returns true for that menu's text"""
         # Need to detect when we're at the first entry
         while True:
-            self.assertTrue(self.joe.expect(lambda: len(self._readSelected(self.joe.cursor.X, self.joe.cursor.Y)) > 0))
             cursor = self.joe.cursor
+            self.joe.flushin()
             txt = self._readSelected(cursor.X, cursor.Y)
             if f(txt):
                 return True
@@ -223,7 +226,6 @@ class JoeTestBase(unittest.TestCase):
     
     def _readSelected(self, x, y):
         """Read all text in reverse around specified coordinate (cursor coordinates used in case one/both missing)"""
-        self.joe.flushin()
         start = end = x
         for i in range(max(0, x - 1), -1, -1):
             if self.joe.term.buffer[y][i].reverse:
@@ -237,3 +239,13 @@ class JoeTestBase(unittest.TestCase):
                 break
         result = self.joe.readLine(y, start, end - start)
         return result
+    
+    def assertSelectedText(self, f, x=None, y=None, dx=0, dy=0):
+        def check():
+            pos = self._posFromInput(x, y, dx, dy)
+            text = self._readSelected(pos.X, pos.Y)
+            return f(text)
+        self.assertTrue(self.joe.expect(check))
+    
+    def assertSelectedTextEquals(self, txt, **args):
+        self.assertSelectedText(lambda t: t == txt, **args)

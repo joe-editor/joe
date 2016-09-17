@@ -175,6 +175,46 @@ class JoeController(object):
         """Returns contents of screen as a string"""
         return '\n'.join([self.readLine(i, 0, self.term.columns) for i in range(self.term.lines)])
     
+    def prettyScreen(self):
+        """Returns stylized (ANSI-escaped) contents of screen"""
+        # Build translation tables real quick
+        fgcolors = {v: k for k, v in pyte.g.FG.items()}
+        bgcolors = {v: k for k, v in pyte.g.BG.items()}
+        modes_on = {v[1:]: k for k, v in pyte.g.TEXT.items() if v.startswith('+')}
+        modes_off = {v[1:]: k for k, v in pyte.g.TEXT.items() if v.startswith('-')}
+        
+        result = []
+        attrs = {'fg': 'default', 'bg': 'default', 'bold': False, 'italics': False, 'underscore': False, 'reverse': False, 'strikethrough': False}
+        for y in range(len(self.term.buffer)):
+            line = self.term.buffer[y]
+            for x in range(len(line)):
+                char = line[x]
+                codes = []
+                for key in list(attrs.keys()):
+                    newvalue = getattr(char, key)
+                    if attrs[key] != newvalue:
+                        if key in modes_on:
+                            codes.append(modes_on[key] if newvalue else modes_off[key])
+                        elif key == 'fg':
+                            codes.append(fgcolors[newvalue])
+                        elif key == 'bg':
+                            codes.append(bgcolors[newvalue])
+                        attrs[key] = newvalue
+                
+                # Override if on cursor location
+                if x == self.term.cursor.x and y == self.term.cursor.y:
+                    result.append("\033[0m\033[32;42;7;1m")
+                    attrs = {'fg': '-', 'bg': '-', 'bold': True, 'italics': False, 'underscore': False, 'reverse': True, 'strikethrough': False}
+                elif len(codes) > 0:
+                    result.append("\033[" + ";".join(map(str, codes)) + "m")
+                
+                result.append(char.data)
+            result.append("\n")
+        
+        # Reset modes before leaving.
+        result.append("\033[0;39;49m")
+        return ''.join(result)
+    
     @property
     def cursor(self):
         """Returns cursor position"""
