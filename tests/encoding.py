@@ -92,3 +92,17 @@ class EncodingTests(joefx.JoeTestBase):
         self.startJoe()
         
         self.assertTextAt("T@h@i@s@ @i@s@ @a@ @U@T@F@-@1@6@ @f@i@l@e@")
+    
+    def test_external_cp1253_charmap(self):
+        greek_text = "Δύο διαγωνισμοί πρόσληψης μόνιμου προσωπικού θα γίνουν προσεχώς,\nμέσω του ΑΣΕΠ, στα ΕΛΤΑ και στην ΕΥΔΑΠ. Πρόκειται για 810\nθέσεις με συμβάσεις αορίστου χρόνου. Οι διαγωνισμοί θα είναι\nδύο και θα ανακοινωθούν το επόμενο διάστημα. Ο "
+        self.homedir.dir('.joe').dir('charmaps').fixtureFile('my-cp1253', 'cp1253')
+        self.workdir.fixtureData('test', greek_text.encode('cp1253'))
+        self.startup.args = "test",
+        self.startJoe()
+        
+        self.encoding("my-cp1253")
+        
+        for i, line in enumerate(greek_text.split('\n')):
+            self.assertTextAt(line, x=0, y=1 + i)
+        
+        self.exitJoe()

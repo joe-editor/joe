@@ -1294,10 +1294,10 @@ static struct builtin_charmap *parse_charmap(const char *name,FILE *f)
 		} else if (in_map && bf1[0]=='<' && bf1[1]=='U') {
 			int uni;
 			int byt;
-			uni = ztoi(bf1 + 2);
+			uni = zhtoi(bf1 + 2);
 			parse_ws(&p, comment_char);
 			parse_tows(&p, bf1);
-			byt = ztoi(bf1 + 2);
+			byt = zhtoi(bf1 + 2);
 			b->to_uni[byt]=uni;
 		}
 	}
