@@ -95,17 +95,16 @@ class BacksTests(joefx.JoeTestBase):
         self.startJoe()
         
         # Get expected menu text
-        rootMenu = [m for m in self.config.menus if m.name == 'root'][0]
-        moreItem = [i for i in rootMenu.items if 'more-options' in i.macro][0]
-        moreMenu = [m for m in self.config.menus if m.name == 'more-options'][0]
+        rootMenu = self.config.getMenu('root')
+        moreItem = rootMenu.getItem(lambda item: 'more-options' in item.macro)
+        moreMenu = self.config.getMenu('more-options')
         
-        # TODO: we probably want a function that can test comparison for us...
         self.menu("root")
-        self.selectMenu(lambda x: x.strip() == moreItem.label.lstrip('% ').strip())
+        self.selectMenu(lambda x: joefx.compareMenuLabel(moreItem.label, x))
         self.rtn()
-        self.assertSelectedText(lambda x: x.strip() == moreMenu.items[0].label.lstrip("% ").strip())
+        self.assertSelectedText(lambda x: joefx.compareMenuLabel(moreMenu.items[0].label, x))
         self.writectl("{bs}")
-        self.selectMenu(lambda x: x.strip() == moreItem.label.lstrip('% ').strip())
+        self.selectMenu(lambda x: joefx.compareMenuLabel(moreItem.label, x))
 
 class BackwTests(joefx.JoeTestBase):
     def test_backw_words(self):
@@ -199,16 +198,58 @@ class BkwdcTests(joefx.JoeTestBase):
         self.assertCursor(x=6, y=1)
         self.exitJoe()
 
-#class BlkcpyTests(joefx.JoeTestBase):
-#    def test_blkcpy_1(self):
-#        self.startJoe()
-#        self.write("
+# blk* commands in blocks.py
 
-# TODO: blkdel
-# TODO: blkmove
-# TODO: blksave
-# TODO: bof
-# TODO: bofmenu
+class BofTests(joefx.JoeTestBase):
+    def test_bof_tw(self):
+        text = "\n".join(("line %d" % i) for i in range(30))
+        self.workdir.fixtureData("test", text)
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        self.cmd("dnarw,dnarw,dnarw,dnarw")
+        self.assertCursor(x=0, y=5)
+        self.cmd("bof")
+        self.assertCursor(x=0, y=1)
+        self.assertTextAt("line 0  ", x=0)
+        
+        self.cmd(",".join("dnarw" for i in range(30)))
+        self.assertCursor(x=0, y=-1)
+        self.assertTextAt("line 29")
+        
+        self.cmd("bof")
+        self.assertCursor(x=0, y=1)
+        self.assertTextAt("line 0  ", x=0)
+        self.exitJoe()
+    
+    def test_bof_pw(self):
+        self.startJoe()
+        
+        # Fill up find history buffer
+        self.find("first")
+        self.find("second")
+        self.find("third")
+        self.find("fourth")
+        self.find("fifth")
+        
+        self.cmd("ffirst,bof")
+        self.assertTextAt("first")
+        self.assertCursor(y=-1)
+        self.exitJoe()
+    
+    def test_bof_menu(self):
+        self.startJoe()
+        
+        rootMenu = self.config.getMenu('root')
+        self.menu("root")
+        self.assertSelectedText(lambda x: joefx.compareMenuLabel(rootMenu.items[0].label, x))
+        self.writectl("{down*3}")
+        self.assertSelectedText(lambda x: joefx.compareMenuLabel(rootMenu.items[3].label, x))
+        self.writectl("^KU")
+        self.assertSelectedText(lambda x: joefx.compareMenuLabel(rootMenu.items[0].label, x))
+        self.writectl("^C")
+        self.exitJoe()
+
 # TODO: bol
 # TODO: bolmenu
 # TODO: bop

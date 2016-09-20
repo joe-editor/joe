@@ -27,7 +27,7 @@ class BlockMoveTests(joefx.JoeTestBase):
         # Make sure no change
         self.cmd("abort")
         self.assertExited()
-    
+
 class BlockCopyTests(joefx.JoeTestBase):
     def test_blkcpy_1(self):
         self.startJoe()
@@ -38,6 +38,15 @@ class BlockCopyTests(joefx.JoeTestBase):
         self.assertSelectedTextEquals("hello")
         self.exitJoe()
     
+    def test_blkcpy_inside_block(self):
+        self.startJoe()
+        self.write("hello world")
+        self.cmd("bol,markb,nextword,markk,bol,rtarw,rtarw,blkcpy")
+        self.assertTextAt("hehellollo world", x=0)
+        self.assertCursor(x=2, y=1)
+        self.assertSelectedTextEquals("hello")
+        self.exitJoe()
+    
     def test_blkcpy_no_block(self):
         self.startJoe()
         self.cmd("blkcpy")
@@ -45,3 +54,30 @@ class BlockCopyTests(joefx.JoeTestBase):
         # Make sure no changes that hang up exit.
         self.cmd("abort")
         self.assertExited()
+
+class BlockDeleteTests(joefx.JoeTestBase):
+    def test_blkdel_1(self):
+        self.startJoe()
+        self.write("hello world")
+        self.cmd("bol,markb,nextword,markk,blkdel")
+        self.assertTextAt(" world", x=0)
+        self.assertCursor(x=0, y=1)
+        self.exitJoe()
+    
+    def test_blkdel_no_block(self):
+        self.startJoe()
+        self.write("hello world")
+        self.cmd("blkdel")
+        self.assertTextAt("No block", x=0, y=-1)
+        self.assertTextAt("hello world", x=0)
+        self.exitJoe()
+
+class BlockSaveTests(joefx.JoeTestBase):
+    def test_blocksave_1(self):
+        self.startJoe()
+        self.write("hello world")
+        self.cmd('bol,markb,nextword,markk,blksave,"outfile",rtn')
+        self.assertTextAt("Block written to", x=0, y=-1)
+        self.assertSelectedTextEquals("hello")
+        self.exitJoe()
+        self.assertFileContents("outfile", "hello")

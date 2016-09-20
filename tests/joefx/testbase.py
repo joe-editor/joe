@@ -92,7 +92,17 @@ class JoeTestBase(unittest.TestCase):
     #
     
     def _posFromInput(self, x=None, y=None, dx=0, dy=0):
-        return controller.coord(dx + (x if x is not None else self.joe.cursor.X), dy + (y if y is not None else self.joe.cursor.Y))
+        if y is None:
+            y = self.joe.cursor.Y
+        elif y < 0:
+            y += self.joe.size.Y
+        
+        if x is None:
+            x = self.joe.cursor.X
+        elif x < 0:
+            x += self.joe.size.X
+        
+        return controller.coord(dx + x, dy + y)
     
     def assertCursor(self, x=None, y=None):
         """Asserts cursor is at the specified position"""
@@ -123,6 +133,16 @@ class JoeTestBase(unittest.TestCase):
             if isinstance(expected, str):
                 expected = expected.encode('utf-8')
             self.assertEqual(f.read(), expected)
+    
+    def assertSelectedText(self, f, x=None, y=None, dx=0, dy=0):
+        def check():
+            pos = self._posFromInput(x, y, dx, dy)
+            text = self._readSelected(pos.X, pos.Y)
+            return f(text)
+        self.assertTrue(self.joe.expect(check))
+    
+    def assertSelectedTextEquals(self, txt, **args):
+        self.assertSelectedText(lambda t: t == txt, **args)
     
     #
     # Editor functional helpers
@@ -225,27 +245,21 @@ class JoeTestBase(unittest.TestCase):
                 self.assertTrue(False, "Could not find menu")
     
     def _readSelected(self, x, y):
+        return self._readTextWithProperty(x, y, lambda c: c.reverse)
+    
+    def _readTextWithProperty(self, x, y, predicate):
         """Read all text in reverse around specified coordinate (cursor coordinates used in case one/both missing)"""
         start = end = x
         for i in range(max(0, x - 1), -1, -1):
-            if self.joe.term.buffer[y][i].reverse:
+            if predicate(self.joe.term.buffer[y][i]):
                 start = i
             else:
                 break
         for i in range(x, self.joe.size.X):
-            if self.joe.term.buffer[y][i].reverse:
+            if predicate(self.joe.term.buffer[y][i]):
                 end = i + 1
             else:
                 break
         result = self.joe.readLine(y, start, end - start)
         return result
     
-    def assertSelectedText(self, f, x=None, y=None, dx=0, dy=0):
-        def check():
-            pos = self._posFromInput(x, y, dx, dy)
-            text = self._readSelected(pos.X, pos.Y)
-            return f(text)
-        self.assertTrue(self.joe.expect(check))
-    
-    def assertSelectedTextEquals(self, txt, **args):
-        self.assertSelectedText(lambda t: t == txt, **args)
