@@ -7,6 +7,7 @@ import re
 from . import controller
 from . import fixtures
 from . import rcfile
+from . import utils
 
 RCFILES = {}
 FIXTURESDIR = os.path.join(os.path.dirname(__file__), "../fixtures")
@@ -141,6 +142,9 @@ class JoeTestBase(unittest.TestCase):
             return f(text)
         self.assertTrue(self.joe.expect(check))
     
+    def assertSelectedMenuItem(self, label):
+        return self.assertSelectedText(lambda x: utils.compareMenuLabel(label, x))
+    
     def assertSelectedTextEquals(self, txt, **args):
         self.assertSelectedText(lambda t: t == txt, **args)
     
@@ -200,12 +204,6 @@ class JoeTestBase(unittest.TestCase):
         self.write(mode)
         self.rtn()
     
-    #def option(self, menu):
-    #    self.cmd("menu")
-    #    self.assertTextAt("Menu:", x=0)
-    #    self.writectl("root{enter}")
-    #    self.selectMenu(lambda x: menu in x)
-    
     def menu(self, menuname):
         """Brings up menuname menu"""
         self.cmd("menu")
@@ -231,14 +229,13 @@ class JoeTestBase(unittest.TestCase):
             self.write(filename)
         self.rtn()
     
-    def selectMenu(self, f):
-        """Selects a menu when the supplied function returns true for that menu's text"""
+    def selectMenu(self, label):
+        """Selects a menu that matches the label (as specified in joerc) for that menu's text"""
         # Need to detect when we're at the first entry
         while True:
             cursor = self.joe.cursor
             self.joe.flushin()
-            txt = self._readSelected(cursor.X, cursor.Y)
-            if f(txt):
+            if utils.compareMenuLabel(label, self._readSelected(cursor.X, cursor.Y)):
                 return True
             self.writectl("{right}")
             if not self.joe.expect(lambda: self.joe.cursor != cursor):

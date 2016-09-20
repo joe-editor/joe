@@ -100,11 +100,12 @@ class BacksTests(joefx.JoeTestBase):
         moreMenu = self.config.getMenu('more-options')
         
         self.menu("root")
-        self.selectMenu(lambda x: joefx.compareMenuLabel(moreItem.label, x))
+        self.selectMenu(moreItem.label)
         self.rtn()
-        self.assertSelectedText(lambda x: joefx.compareMenuLabel(moreMenu.items[0].label, x))
+        self.assertSelectedMenuItem(moreMenu.items[0].label)
         self.writectl("{bs}")
-        self.selectMenu(lambda x: joefx.compareMenuLabel(moreItem.label, x))
+        self.selectMenu(moreItem.label)
+        
 
 class BackwTests(joefx.JoeTestBase):
     def test_backw_words(self):
@@ -242,13 +243,70 @@ class BofTests(joefx.JoeTestBase):
         
         rootMenu = self.config.getMenu('root')
         self.menu("root")
-        self.assertSelectedText(lambda x: joefx.compareMenuLabel(rootMenu.items[0].label, x))
+        self.assertSelectedMenuItem(rootMenu.items[0].label)
         self.writectl("{down*3}")
-        self.assertSelectedText(lambda x: joefx.compareMenuLabel(rootMenu.items[3].label, x))
+        self.assertSelectedMenuItem(rootMenu.items[3].label)
         self.writectl("^KU")
-        self.assertSelectedText(lambda x: joefx.compareMenuLabel(rootMenu.items[0].label, x))
+        self.assertSelectedMenuItem(rootMenu.items[0].label)
         self.writectl("^C")
         self.exitJoe()
+
+class BolTests(joefx.JoeTestBase):
+    def test_bol_tw(self):
+        text = "\n".join(("line %d" % i) for i in range(5))
+        self.workdir.fixtureData("test", text)
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        for i in range(5):
+            self.writectl("{right*%d}" % i)
+            self.assertCursor(x=i, y=i+1)
+            self.cmd("bol")
+            self.assertCursor(x=0, y=i+1)
+            self.writectl("{down}")
+        self.exitJoe()
+    
+    def test_bol_pw(self):
+        self.startJoe()
+        
+        # Get cursor position at empty prompt
+        self.cmd("ffirst")
+        self.assertTextAt("Find", x=0)
+        pos = self.joe.cursor
+        
+        # Write text and wait for it to show back up
+        self.write("find text")
+        self.assertTextAt("find text", x=pos.X)
+        
+        # Test bol returns to earlier position
+        self.cmd("bol")
+        self.assertCursor(x=pos.X, y=pos.Y)
+        self.exitJoe()
+    
+    def test_bol_menu(self):
+        menu = joefx.rcfile.Menu()
+        menu.name = 'testmenu'
+        for i in range(15):
+            item = joefx.rcfile.MenuItem()
+            item.macro = 'rtn'
+            item.label = "Item %d" % i
+            menu.items.append(item)
+        self.config.menus.append(menu)
+        self.config.globalopts.transpose = False
+        self.startJoe()
+        
+        self.menu("testmenu")
+        for i in range(0, 9):
+            self.writectl("{right*%d}" % i)
+            self.assertSelectedMenuItem("Item %d" % i)
+            self.writectl("^A")
+            self.assertSelectedMenuItem("Item 0")
+        self.writectl("{down}")
+        for i in range(9, 15):
+            self.writectl("{right*%d}" % (i - 9))
+            self.assertSelectedMenuItem("Item %d" % i)
+            self.writectl("^A")
+            self.assertSelectedMenuItem("Item 9")
 
 # TODO: bol
 # TODO: bolmenu
