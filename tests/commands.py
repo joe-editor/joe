@@ -1,7 +1,6 @@
 
 import joefx
 import time
-import cProfile
 
 class AbortTests(joefx.JoeTestBase):
     def test_abort_to_exit(self):
@@ -308,12 +307,67 @@ class BolTests(joefx.JoeTestBase):
             self.writectl("^A")
             self.assertSelectedMenuItem("Item 9")
 
-# TODO: bol
-# TODO: bolmenu
-# TODO: bop
-# TODO: bos
-# TODO: brpaste
-# TODO: brpaste_done
+class BopTests(joefx.JoeTestBase):
+    def test_bop_paragraph(self):
+        self.workdir.fixtureFile("test", "bop_test")
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        answers = (1, 1, 1, 1, 1, 5, 5, 5, 8, 8, 10, 10, 12, 13)
+        for i, answer in enumerate(answers):
+            self.cmd('line,"%d",rtn,bop' % (i + 1))
+            self.assertCursor(y=answer)
+        self.exitJoe()
+    
+    def test_bop_paragraph_eol(self):
+        self.workdir.fixtureFile("test", "bop_test")
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        answers = (1, 1, 1, 1, 5, 5, 5, 8, 8, 8, 10, 12, 12, 13)
+        for i, answer in enumerate(answers):
+            self.cmd('line,"%d",rtn,eol,bop' % (i + 1))
+            self.assertCursor(y=answer)
+        self.exitJoe()
+
+class BosTests(joefx.JoeTestBase):
+    def test_bos_long(self):
+        self.workdir.fixtureData("test", "\n".join("line %d" % i for i in range(100)))
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        height = self.joe.size.Y
+        self.cmd("bos")
+        self.assertTextAt("line %d" % (height - 2), x=0)
+        self.cmd('line,"75",rtn,bos')
+        self.assertTextAt("line %d" % (75 + height // 2 - 2), x=0)
+        self.exitJoe()
+    
+    def test_bos_short(self):
+        self.workdir.fixtureData("test", "\n".join("line %d" % i for i in range(10)))
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        self.cmd("bos")
+        self.assertTextAt("line 9")
+        self.exitJoe()
+
+class BracketedPasteTests(joefx.JoeTestBase):
+    def test_brpaste_wordwrap_autoindent(self):
+        self.config.globalopts.brpaste = True
+        self.startup.args = ("-autoindent", "-wordwrap")
+        self.startJoe()
+        text = [
+            "    This is a very long line that should hit the wordwrap limit abcdefg abcdefg abcdefg abcdefg",
+            "  And this line would ordinarily be autoindented to the previous line abcdefg abcdefg abcdefg",
+            "And here's the last line"]
+        self.write("\033[200~")
+        self.write("\r".join(text))
+        self.write("\033[201~")
+        self.save("outfile")
+        self.exitJoe()
+        self.assertFileContents("outfile", "\n".join(text))
+
 # TODO: bufed
 # TODO: build
 # TODO: byte
