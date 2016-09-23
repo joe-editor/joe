@@ -128,7 +128,7 @@ Data is written to the editor through two methods on the base class:
 
 The test base class also contains methods that shorten some common editor
 interactions.  For example, `cmd` method invokes a command string.  This
-works by writing `^[X` to bring up the command prompt, waits for that prompt
+works by writing `^\[X` to bring up the command prompt, waits for that prompt
 to show up on the screen, and then writes the specified input and sends a
 carriage return.  There are other methods, such as `save`, `mode`, `menu`,
 `encoding`, `find`, `replace`, `selectMenu`, and those are worth a look in
@@ -191,7 +191,8 @@ test case is run, the `rc/joerc` file is read and parsed into a model.  The
 root of the model is available in the `config` field of the test base class
 and can be modified up to the point where `startJoe` is called.
 
-The tests' `self.config` is an instance of `joefx.rcfile.RCFile`, which has the following parts:
+The tests' `self.config` is an instance of `joefx.rcfile.RCFile`, which has
+the following parts:
 * `globalopts` is an instance of the `Options` class and contains the global
   options defined at the beginning of `joerc`.  They are specified as direct
   properties on the object, e.g.  `self.config.autoindent = False`.  Boolean
