@@ -56,7 +56,7 @@ static struct high_syntax *context_syntax;
 
 static const int *get_context(BW *bw)
 {
-	static int buf1[SAVED_SIZE];
+	static int buf1[SAVED_SIZE*2]; /* Double size because we replace \ with \\ */
 	const int *src;
 	P *p;
 	struct lattr_db *db;

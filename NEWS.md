@@ -16,6 +16,9 @@
 
 	* Build fixes for Solaris
 
+	* Fix segfault due to buffer overrun.  This happens if you a line
+	  with many backslashes appears in the status line context display.
+
 ### JOE 4.3
 
 * Enhancements
