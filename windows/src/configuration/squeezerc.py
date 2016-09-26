@@ -89,14 +89,14 @@ def squeeze(infname, inf, outf, first=None):
 def squeezeline(line, state):
     # Blank lines, or lines starting with whitespace are ignored.
     if len(line) == 0: return None
-    if line[0].isspace(): return None
+    if not state.inbrace and line[0].isspace(): return None
     
     if line[0] == '{':
         state.inbrace = True
     if state.inbrace:
         if line[0] == '}':
             state.inbrace = False
-        return line.strip()
+        return line.rstrip('\r\n')
     
     firstword = line.split()[0]
     

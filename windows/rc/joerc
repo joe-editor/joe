@@ -594,25 +594,33 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Advanced
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i\|\uMACROS\u         \|\uMISC\u            \|\uSCROLL\u    \|\uSHELL\u       \|\uGOTO\u       \|\uI-SEARCH\u     \|\i \i
-\i \i\|^K[ 0-9 Record \|^K SPACE status \|^[W Up    \|^K' Window  \|^[B To ^KB \|^[R Backwards\|\i \i
-\i \i\|^K]     Stop   \|^K\\ Repeat      \|^[Z Down  \|^[! Command \|^[K To ^KK \|^[S Forwards \|\i \i
-\i \i\|^K 0-9  Play   \|\uINSERT\u          \|^K< Left  \|\uQUOTE\u       \|\uDELETE\u     \|\uBOOKMARKS\u    \|\i \i
-\i \i\|^K?     Query  \|^] split line   \|^K> Right \|^[' Ctrl-   \|^[Y yank   \|^[ 0-9 Goto  \|\i \i
-\i \i\|^[D     Dump   \|^SPACE ins space\|          \|^\\ Meta-    \|^[O line<  \|^[^[   Set   \|\i \i
+ \|\uMACROS\u         \|\uSCROLL\u           \|\uWINDOW\u               \|\uGO TO\u      \|\uI-SEARCH\u     \| 
+ \|\b^K[ 0-9\b Record \|\bEsc W\b Up         \|\b^KO\b Open  \b^C\b  Close  \|\bEsc B\b / \bK\b  \|\b^R\b Backwards \| 
+ \|\b^K]\b     Stop   \|\bEsc Z\b Down       \|\b^KG\b Grow  \b^KT\b Shrink \|to \b^KB\b/\b^KK \b\|\b^S\b Forwards  \| 
+ \|\bEsc I\b   Text   \|\bEsc <\b Left       \|\b^KN\b Next  \b^KP\b Prev.  \|\b^P\b  Up     \|\uBOOKMARKS\u    \| 
+ \|\b^K?\b     Pause  \|\bEsc >\b Right      \|\b^KI\b Show one / All   \|\b^N\b  Down   \|\bEsc 0-9\b Goto \| 
+ \|   for prompt  \|\uINSERT\u           \|\uSHELL\u                \|\b^B\b  Left   \|\bEsc Esc\b Set  \| 
+ \|\b^K 0-9\b  Play   \|\b^]\b Line  \b^Q\b Ctrl \|\bF1-F4\b Term emulator  \|\b^F\b  Right  \|\b^K-\b Auto prev\| 
+ \|\b^K\\\b     Repeat \|\b^@\b Space \b^\\\b Meta \|\b^K'\b In buffer        \|           \|\b^K=\b Auto next\| 
+ \|\bEsc D\b   Dump   \|\bEsc Y\b Paste      \|\b^KZ\b Suspend  \bEsc !\b Append \|      \|             \| 
 }
 
 {Programs
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
-\i \i\|\uGOTO\u                 \|\uINDENT\u   \|\uCOMPILING\u          \uQUICK\u                       \|\i \i
-\i \i\|^G  Matching ( [ {   \|^K, less \|^[C Compile & parse ^G  find word under cursor \|\i \i
-\i \i\|^K- Previous place   \|^K. more \|^[G Grep & parse    ^[ENTER complete word      \|\i \i
-\i \i\|^K= Next place       \|\uFILE\u     \|^[= To next error   ^[Y paste deleted text     \|\i \i
-\i \i\|^K; Tags file search \|^K `     \|^[- To prev. error  ^[^Y cycle through deleted \|\i \i
-\i \i\|                     \| revert  \|^[ SP Jump to error                            \|\i \i
+ \|\uCOMMANDS\u            \|\uCOMPILING\u                  \|\uQUICK\u                       \| 
+ \|\bEsc X\b Command prompt\|\bEsc C\b Save modified compile\|\b^G\b  Find word under cursor  \| 
+ \|\bEsc M\b Calculator    \|\bEsc G\b Grep                 \|\b^K;\b Tags file search        \| 
+ \|\bshowlog\b Startup log \|\bEsc =\b To next error        \|\bEsc Enter\b Complete word     \| 
+ \|\bupper\b   Change case \|\bEsc -\b To prev. error       \|\uBUFFER\u                      \| 
+ \|\blower\b   Change case \|\bEsc Space\b Jump to error    \|\bEsc U\b Next                  \| 
+ \|\bcd\b      Change dir  \|\uINDENT\u                     \|\bEsc V\b Previous              \| 
+ \|\bkeymap\b  Change map  \|\b^K,\b Less                   \|\bEsc X bufed\b Switch          \| 
+ \|                    \|\b^K.\b More                   \|                            \| 
 }
 
+  Missing: Esc ~ not mod
+           Esc e parse errors in buffer
+           Esc ^Y   yank pop
+  
 {Search
  Search sequences:                                                            \| 
      \b\\^  \\$\b  matches beg./end of line       \b\\.\b     match any single char      \| 
@@ -724,14 +732,15 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 {Joe
   Send bug reports to: http://sourceforge.net/projects/joe-editor \| 
   \| 
-   default joerc file is here @JOERC@/joerc \| 
-   default syntax and i18n files are here @JOEDATA@ \| 
-   additional documentation can be found here @JOEDOC@ \| 
+  default joerc file is here (Program location)\\conf\\joerc \| 
+  user joerc file is here %LOCALAPPDATA%\\JoeEditor\\joerc \| 
+  default syntax and i18n files are here (Program location)\\syntax \| 
+  additional documentation can be found here (Program location)\\doc \|
   \| 
-  \| 
-  \| 
-  \| 
+  Right-click in the editor window to display the context menu, \|
+  which has some settings and links to documentation. \|
 }
+
 
  FOURTH SECTION: Key bindings:
 
