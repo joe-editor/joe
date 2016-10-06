@@ -458,6 +458,7 @@ mode,"linums",rtn	N Line numbers %Zlinums%
 mode,"beep",rtn	B Beep %Zbeep%
 mode,"rdonly",rtn	O Read only %Zrdonly%
 mode,"syntax",rtn	Y Syntax
+mode,"colors",rtn	S Color scheme
 mode,"encoding",rtn	E Encoding
 mode,"asis",rtn	% % Meta chars as-is
 mode,"language",rtn	V Language

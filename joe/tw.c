@@ -606,7 +606,7 @@ static void disptw(W *w, int flg)
 			tw->stalin = vsncpy(tw->stalin, fmtpos(tw->stalin, w->w - fmtlen(tw->staright)), sv(tw->staright));
 		}
 		tw->stalin = vstrunc(tw->stalin, fmtpos(tw->stalin, w->w));
-		genfmt(w->t->t, w->x, w->y, 0, tw->stalin, bg_stalin, 0);
+		genfmt(w->t->t, w->x, w->y, 0, tw->stalin, bg_stalin, 0, 0);
 		w->t->t->updtab[w->y] = 0;
 	}
 

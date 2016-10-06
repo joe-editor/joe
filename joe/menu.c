@@ -7,7 +7,7 @@
  */
 #include "types.h"
 
-int bg_menu;
+int bg_menu, bg_menui;
 
 int transpose;
 

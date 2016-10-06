@@ -11,6 +11,10 @@
 int dspasis = 0;
 int marking = 0;
 
+/* Selected text format */
+int selectatr = INVERSE;
+int selectmask = ~INVERSE;
+
 static P *getto(P *p, P *cur, P *top, off_t line)
 {
 
@@ -324,6 +328,8 @@ static void ansi_init(struct ansi_sm *sm)
 	sm->state = 0;
 }
 
+#define SELECT_IF(c)	{ if (c) { ca = selectatr; cm = selectmask; } else { ca = 0; cm = -1; } }
+
 /* Update a single line */
 
 static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff_t x, ptrdiff_t w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
@@ -343,7 +349,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 	off_t byte = p->byte;
 	char *bp;	/* Buffer pointer, 0 if not set */
 	ptrdiff_t amnt;		/* Amount left in this segment of the buffer */
-	int c, c1;
+	int c;
 	off_t ta;
 	char bc;
 	int ungetit = NO_MORE_DATA;
@@ -355,6 +361,8 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
         P *tmp;
         int idx=0;
         int atr = BG_COLOR(bg_text); 
+        int ca = 0;		/* Additional attributes for current character */
+        int cm = -1;		/* Attribute mask for current character */
 
 	utf8_init(&utf8_sm);
 	ansi_init(&ansi_sm);
@@ -423,18 +431,12 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				if (bc == '\t') {
 					off_t tcol = col + p->b->o.tab - col % p->b->o.tab;
 
-					if (tcol > from && tcol <= to)
-						c1 = INVERSE;
-					else
-						c1 = 0;
-				} else if (col >= from && col < to)
-					c1 = INVERSE;
-				else
-					c1 = 0;
-			else if (byte >= from && byte < to)
-				c1 = INVERSE;
+					SELECT_IF(tcol > from && tcol <= to);
+				} else {
+					SELECT_IF(col >= from && col < to);
+				}
 			else
-				c1 = 0;
+				SELECT_IF(byte >= from && byte < to);
 			++byte;
 			if (bc == '\t') {
 				ta = p->b->o.tab - col % p->b->o.tab;
@@ -557,29 +559,23 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				--byte;
 				++amnt;
 			}
-			if (square)
+			if (square) {
 				if (bc == '\t') {
 					off_t tcol = scr + x - ox + p->b->o.tab - (scr + x - ox) % p->b->o.tab;
-
-					if (tcol > from && tcol <= to)
-						c1 = INVERSE;
-					else
-						c1 = 0;
-				} else if (scr + x - ox >= from && scr + x - ox < to)
-					c1 = INVERSE;
-				else
-					c1 = 0;
-			else if (byte >= from && byte < to)
-				c1 = INVERSE;
-			else
-				c1 = 0;
+					SELECT_IF(tcol > from && tcol <= to);
+				} else {
+					SELECT_IF(scr + x - ox >= from && scr + x - ox < to);
+				}
+			} else {
+				SELECT_IF(byte >= from && byte < to);
+			}
 			++byte;
 			if (bc == '\t') {
 				ta = p->b->o.tab - (x - ox + scr) % p->b->o.tab;
 				tach = ' ';
 			      dota:
 			      	while (x < w && ta--) {
-					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, c1|atr);
+					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, (atr & cm) | ca);
 					++x;
 				}
 				if (ifhave)
@@ -638,12 +634,12 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 					if (x + wid > w) {
 						/* If character hits right most column, don't display it */
 						while (x < w) {
-							outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', c1|atr);
+							outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', (atr & cm) | ca);
 							x++;
 						}
 						goto eosl;
 					} else {
-						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, c1|atr);
+						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, (atr & cm) | ca);
 						x += wid;
 					}
 				} else

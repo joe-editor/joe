@@ -60,4 +60,5 @@ extern WATOM watommenu; /* Menu WATOM */
 
 extern int menu_above; /* Menu position: above or below */
 extern int bg_menu; /* Background color for menu */
+extern int bg_menui; /* Color for selected menu item */
 extern int transpose;

@@ -9,9 +9,9 @@
 
 static HENTRY *freentry = NULL;
 
-/* Compute hash value of string */
+/* Compute hash value of string (djb2) */
 
-#define hnext(accu, c) (((accu) << 4) + ((accu) >> 28) + (c))
+#define hnext(accu, c) ((((accu) << 5) + (accu)) ^ (c))
 
 ptrdiff_t hash(const char *s)
 {

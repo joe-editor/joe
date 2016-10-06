@@ -346,7 +346,7 @@ ptrdiff_t txtwidth(const char *s,ptrdiff_t len);
 off_t txtwidth1(struct charmap *map, off_t tabwidth, const char *s, ptrdiff_t len);
 
 /* Generate a field: formatted */
-void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg);
+void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int iatr, int flg);
 
 /* Column width of formatted string */
 ptrdiff_t fmtlen(const char *s);

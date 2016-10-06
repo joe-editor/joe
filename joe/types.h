@@ -272,6 +272,8 @@ typedef struct mpx MPX;
 typedef struct jfile JFILE;
 typedef struct vt_context VT;
 typedef struct Phash PHASH;
+typedef struct color_set COLORSET;
+typedef struct color_scheme SCHEME;
 
 /* Structure which are passed by value */
 
@@ -317,6 +319,7 @@ struct highlight_state {
 #include "frag.h"
 #include "regex.h"
 #include "scrn.h"
+#include "colors.h"
 #include "syntax.h"
 #include "tab.h"
 #include "termcapj.h"

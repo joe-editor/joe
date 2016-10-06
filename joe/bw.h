@@ -31,6 +31,9 @@ extern int opt_mid;	/* Controls how window scrolls: when set, scroll window enou
 extern int opt_left;
 extern int opt_right;
 
+extern int selectmask;	/* Attribute mask for selected text */
+extern int selectatr;	/* Attribute value for selected text */
+
 void bwfllw(W *w);
 void bwfllwt(W *w);
 void bwfllwh(W *w);
