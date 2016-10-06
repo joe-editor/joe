@@ -12,7 +12,7 @@ static struct color_builtin_specs color_builtins[] = {
 	{ "help", &bg_help, NULL, 0, 0 },
 	{ "status", &bg_stalin, NULL, 0, 0 },
 	{ "menu", &bg_menu, NULL, 0, 0 },
-	{ "menu_selection", &bg_menui, NULL, INVERSE, 0 },
+	{ "menusel", &bg_menusel, &bg_menumask, INVERSE, ~INVERSE },
 	{ "prompt", &bg_prompt, NULL, 0, 0 },
 	{ "message", &bg_msg, NULL, 0, 0 },
 	{ "cursor", &bg_cursor, NULL, 0, 0 },
@@ -149,7 +149,7 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 			
 			dest->type = COLORSPEC_TYPE_ATTR;
 			if (bg && (FG_MASK & color)) {
-				dest->atr |= ((color & BG_MASK) >> BG_SHIFT) << FG_SHIFT;
+				dest->atr |= ((color & FG_MASK) >> FG_SHIFT) << BG_SHIFT;
 				dest->atr |= BG_NOT_DEFAULT;
 			} else if (fg && (FG_MASK & color)) {
 				dest->atr |= color | FG_NOT_DEFAULT;
@@ -262,14 +262,14 @@ SCHEME *load_scheme(const char *name)
 						logerror_2(joe_gettext(_("%s: %d: Invalid .colors specification\n")), name, line);
 					}
 				} else {
-					logerror_3(joe_gettext(_("%s: %d: Unexpected directive %s")), name, line, bf);
+					logerror_3(joe_gettext(_("%s: %d: Unexpected directive %s\n")), name, line, bf);
 				}
 			} else {
-				logerror_2(joe_gettext(_("%s: %d: Syntax error")), name, line);
+				logerror_2(joe_gettext(_("%s: %d: Syntax error\n")), name, line);
 			}
 		} else if (!curset && parse_ws(&p, '#')) {
 			/* Check a set is selected */
-			logerror_2(joe_gettext(_("%s: %d: Unexpected declaration outside of color block")), name, line);
+			logerror_2(joe_gettext(_("%s: %d: Unexpected declaration outside of color block\n")), name, line);
 		} else if (!parse_char(&p, '-')) {
 			if (!parse_ident(&p, bf, SIZEOF(bf))) {
 				if (!zicmp(bf, "term")) {
@@ -279,10 +279,10 @@ SCHEME *load_scheme(const char *name)
 					parse_ws(&p, '#');
 					if (!parse_int(&p, &termcolor) && termcolor >= 0 && termcolor <= 15) {
 						if (parse_color_spec(&p, &curset->termcolors[termcolor])) {
-							logerror_2(joe_gettext(_("%s: %d: Invalid color spec")), name, line);
+							logerror_2(joe_gettext(_("%s: %d: Invalid color spec\n")), name, line);
 						}
 					} else {
-						logerror_2(joe_gettext(_("%s: %d: Invalid terminal color")), name, line);
+						logerror_2(joe_gettext(_("%s: %d: Invalid terminal color\n")), name, line);
 					}
 				} else {
 					/* -selection, -status, etc */
@@ -291,17 +291,19 @@ SCHEME *load_scheme(const char *name)
 					for (i = 0; color_builtins[i].name; i++) {
 						if (!zicmp(bf, color_builtins[i].name)) {
 							if (parse_color_spec(&p, &curset->builtins[i])) {
-								logerror_2(joe_gettext(_("%s: %d: Invalid color spec")), name, line);
+								logerror_2(joe_gettext(_("%s: %d: Invalid color spec\n")), name, line);
 							}
 							
-							continue;
+							break;
 						}
 					}
 					
-					logerror_3(joe_gettext(_("%s: %d: Unknown builtin color %s")), name, line, bf);
+					if (!color_builtins[i].name) {
+						logerror_3(joe_gettext(_("%s: %d: Unknown builtin color %s\n")), name, line, bf);
+					}
 				}
 			} else {
-				logerror_2(joe_gettext(_("%s: %d: Expected identifier")), name, line);
+				logerror_2(joe_gettext(_("%s: %d: Expected identifier\n")), name, line);
 			}
 		} else if (!parse_char(&p, '=')) {
 			/* =SyntaxColors */
@@ -314,11 +316,11 @@ SCHEME *load_scheme(const char *name)
 				if (!parse_color_def1(&p, cdef)) {
 					htadd(curset->syntax, cdef->name, cdef);
 				} else {
-					logerror_2(joe_gettext(_("%s: %d: Invalid color spec")), name, line);
+					logerror_2(joe_gettext(_("%s: %d: Invalid color spec\n")), name, line);
 					joe_free(cdef);
 				}
 			} else {
-				logerror_2(joe_gettext(_("%s: %d: Expected identifier")), name, line);
+				logerror_2(joe_gettext(_("%s: %d: Expected identifier\n")), name, line);
 			}
 		}
 	}
@@ -360,6 +362,21 @@ int apply_scheme(SCHEME *colors, int supported)
 				*color_builtins[i].mask = color_builtins[i].default_mask;
 		} else {
 			/* Take from scheme */
+			if (color_builtins[i].attribute)
+				*color_builtins[i].attribute = best->builtins[i].atr;
+			if (color_builtins[i].mask) {
+				int atr = best->builtins[i].atr;
+				int mask = -1;
+				
+				if (atr & FG_NOT_DEFAULT)
+					mask &= ~FG_MASK;
+				if (atr & BG_NOT_DEFAULT)
+					mask &= ~BG_MASK;
+				if (atr & AT_MASK)
+					mask &= ~AT_MASK;
+				
+				*color_builtins[i].mask = mask;
+			}
 		}
 	}
 	
