@@ -397,8 +397,10 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 			}
 			if(st.state!=-1) {
 				atr = syn[idx++] & ~CONTEXT_MASK;
-				if (!((atr & BG_VALUE) >> BG_SHIFT))
-					atr |= BG_COLOR(bg_text);
+				if (!(atr & BG_MASK))
+					atr |= bg_text & BG_MASK;
+				if (!(atr & FG_MASK))
+					atr |= bg_text & FG_MASK;
 			}
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
@@ -530,7 +532,9 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 			if(st.state!=-1) {
 				atr = syn[idx++] & ~CONTEXT_MASK;
 				if (!(atr & BG_MASK))
-					atr |= BG_COLOR(bg_text);
+					atr |= bg_text & BG_MASK;
+				if (!(atr & FG_MASK))
+					atr |= bg_text & FG_MASK;
 			}
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;

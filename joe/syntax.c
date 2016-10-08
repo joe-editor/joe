@@ -22,6 +22,7 @@ int stack_count = 0;
 static int state_count = 0; /* Max transitions possible without cycling */
 
 struct high_syntax *ansi_syntax;
+struct high_syntax *syntax_list;
 
 /* ANSI highlighter */
 
@@ -377,11 +378,12 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 	/* It doesn't exist, so create it */
 	if(!state) {
 		state=(struct high_state *)joe_malloc(SIZEOF(struct high_state));
-		state->name=zdup(name);
-		state->no=syntax->nstates;
-		state->color=FG_WHITE;
+		state->name = zdup(name);
+		state->no = syntax->nstates;
+		state->color = 0;
+		state->colorp = NULL;
 		/* Expand the state table if necessary */
-		if(syntax->nstates==syntax->szstates)
+		if (syntax->nstates==syntax->szstates)
 			syntax->states=(struct high_state **)joe_realloc(syntax->states,SIZEOF(struct high_state *)*(syntax->szstates*=2));
 		syntax->states[syntax->nstates++]=state;
 		rtree_init(&state->rtree);
@@ -437,14 +439,10 @@ static struct high_cmd *mkcmd()
 	return cmd;
 }
 
-/* Globally defined colors */
-
-struct high_color *global_colors;
-
-static struct high_color *find_color(struct high_color *colors,char *name,char *syn)
+static struct color_def *find_color(struct color_def *colors,char *name,char *syn)
 {
 	char bf[256];
-	struct high_color *color;
+	struct color_def *color;
 	joe_snprintf_2(bf, SIZEOF(bf), "%s.%s", syn, name);
 	for (color = colors; color; color = color->next)
 		if (!zcmp(color->name,bf)) break;
@@ -455,43 +453,31 @@ static struct high_color *find_color(struct high_color *colors,char *name,char *
 	return color;
 }
 
-void parse_color_def(struct high_color **color_list,const char *p,char *name,int line)
+void parse_syntax_color_def(struct color_def **color_list,const char *p,char *name,int line)
 {
 	char bf[256];
 	if(!parse_tows(&p, bf)) {
-		struct high_color *color, *gcolor;
+		struct color_def *color, *gcolor;
 
 		/* Find color */
 		color=find_color(*color_list,bf,name);
 
 		/* If it doesn't exist, create it */
 		if(!color) {
-			color = (struct high_color *)joe_malloc(SIZEOF(struct high_color));
-			color->name = zdup(bf);
-			color->color = 0;
+			color = (struct color_def *)joe_malloc(SIZEOF(struct color_def));
+			color->name = atom_add(bf);
 			color->next = *color_list;
 			*color_list = color;
 		} else {
 			logerror_2(joe_gettext(_("%s %d: Class already defined\n")),name,line);
 		}
 
-		/* Find it in global list */
-		if (color_list != &global_colors && (gcolor=find_color(global_colors,bf,name))) {
-			color->color = gcolor->color;
-		} else {
-			/* Parse color definition */
-			while(parse_ws(&p,'#'), !parse_ident(&p,bf,SIZEOF(bf))) {
-				color->color |= meta_color(bf);
-			}
-		}
+		parse_color_def(&p, color);
 	} else {
 		logerror_2(joe_gettext(_("%s %d: Missing class name\n")),name,line);
 	}
 }
 
-/* Load syntax file */
-
-struct high_syntax *syntax_list;
 
 /* Dump sytnax file */
 
@@ -810,7 +796,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 			/* Ignore this line because of ifdef */
 		} else if(!parse_char(&p, '=')) {
 			/* Parse color */
-			parse_color_def(&syntax->color,p,name,line);
+			parse_syntax_color_def(&syntax->color,p,name,line);
 		} else if ((syntax->subr && !this_one) || (!syntax->subr && inside_subr)) {
 			/* Ignore this line because it's not the code we want */
 		} else if(!parse_char(&p, ':')) {
@@ -823,16 +809,17 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 
 				parse_ws(&p,'#');
 				if(!parse_tows(&p,bf)) {
-					struct high_color *color;
+					struct color_def *color;
 					for(color=syntax->color;color;color=color->next)
 						if(!zcmp(color->name,bf))
 							break;
-					if(color)
-						state->color=color->color;
-					else {
-						state->color=0;
+					if(color) {
+						state->colorp = color;
+					} else {
 						logerror_2(joe_gettext(_("%s %d: Unknown class\n")),name,line);
 					}
+
+					state->color = 0;
 					while(parse_ws(&p, '#'), !parse_ident(&p, bf, SIZEOF(bf))) {
 						if(!zcmp(bf, "comment")) {
 							state->color |= CONTEXT_COMMENT;
@@ -951,6 +938,7 @@ struct high_syntax *load_syntax_subr(const char *name,char *subr,struct high_par
 
 	if (load_dfa(syntax)) {
 		/* dump_syntax(syntax); */
+		resolve_syntax_colors(curschemeset, syntax);
 		return syntax;
 	} else {
 		if(syntax_list == syntax)

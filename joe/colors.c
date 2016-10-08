@@ -1,22 +1,29 @@
 
 #include "types.h"
 
+#define COLORDEF_VISITED	1
+#define COLORDEF_VISITING	2
+
 const char *scheme_name = NULL;
+struct color_scheme *curscheme = NULL;
+struct color_set *curschemeset = NULL;
 
 static int bg_cursor;
 static SCHEME allcolors = { {&allcolors, &allcolors} };
 
+static void visit_colordef(COLORSET *, struct high_syntax *, struct color_def *);
+
 static struct color_builtin_specs color_builtins[] = {
-	{ "text", &bg_text, NULL, 0, 0 },
-	{ "selection", &selectatr, &selectmask, INVERSE, ~INVERSE },
-	{ "help", &bg_help, NULL, 0, 0 },
-	{ "status", &bg_stalin, NULL, 0, 0 },
-	{ "menu", &bg_menu, NULL, 0, 0 },
-	{ "menusel", &bg_menusel, &bg_menumask, INVERSE, ~INVERSE },
-	{ "prompt", &bg_prompt, NULL, 0, 0 },
-	{ "message", &bg_msg, NULL, 0, 0 },
-	{ "cursor", &bg_cursor, NULL, 0, 0 },
-	{ NULL, NULL, NULL, 0, 0 }
+	{ "text", &bg_text, NULL, 0, 0, 0 },	/* Must come first (because default_text) */
+	{ "selection", &selectatr, &selectmask, INVERSE, ~INVERSE, 0 },
+	{ "help", &bg_help, NULL, 0, 0, 1 },
+	{ "status", &bg_stalin, NULL, 0, 0, 1 },
+	{ "menu", &bg_menu, NULL, 0, 0, 1 },
+	{ "menusel", &bg_menusel, &bg_menumask, INVERSE, ~INVERSE, 0 },
+	{ "prompt", &bg_prompt, NULL, 0, 0, 1 },
+	{ "message", &bg_msg, NULL, 0, 0, 1 },
+	{ "cursor", &bg_cursor, NULL, 0, 0, 0 },
+	{ NULL, NULL, NULL, 0, 0, 0 }
 };
 
 
@@ -40,6 +47,7 @@ static COLORSET *colorset_alloc(void)
 	colorset = (COLORSET *) joe_calloc(1, SIZEOF(struct color_set));
 	colorset->syntax = htmk(64);
 	colorset->builtins = (struct color_spec *) joe_calloc(SIZEOF(color_builtins), SIZEOF(int));
+	colorset->alldefs = NULL;
 
 	/* Clear termcolors */
 	for (i = 0; i < 16; i++) {
@@ -60,6 +68,7 @@ static struct color_def *colordef_alloc(void)
 
 	cdef = (struct color_def *) joe_calloc(1, SIZEOF(struct color_def));
 	cdef->refs = NULL;
+	cdef->next = NULL;
 	cdef->spec.type = 0;
 
 	return cdef;
@@ -71,7 +80,7 @@ static int parse_scoped_ident(const char **p, char *dest, ptrdiff_t sz)
 		if (!parse_char(p, '.')) {
 			int n = zlen(dest);
 			dest[n++] = '.';
-			if (!parse_ident(p, dest, sz - n)) {
+			if (!parse_ident(p, &dest[n], sz - n)) {
 				return 0;
 			}
 		} else {
@@ -89,6 +98,10 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 	int color;
 
 	dest->type = COLORSPEC_TYPE_NONE;
+	dest->atr = 0;
+	dest->gui_fg = 0;
+	dest->gui_bg = 0;
+
 	for (;;) {
 		if (!parse_ws(p, '#')) {
 			return 0;
@@ -162,11 +175,14 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 	}
 }
 
-int parse_color_def1(const char **p, struct color_def *dest)
+int parse_color_def(const char **p, struct color_def *dest)
 {
 	char buf[COLORS_NAME_LENGTH];
 	struct color_ref **last = &dest->refs;
 
+	dest->spec.type = COLORSPEC_TYPE_NONE;
+	dest->visited = 0;
+	dest->refs = NULL;
 	*last = NULL;
 
 	for (;;) {
@@ -196,6 +212,7 @@ SCHEME *load_scheme(const char *name)
 {
 	SCHEME *colors;
 	COLORSET *curset;
+	struct color_def **lastdef;
 	const char *p;
 	char buf[1024];
 	char bf[256];
@@ -253,11 +270,13 @@ SCHEME *load_scheme(const char *name)
 						curset->colors = COLORSET_GUI;
 						curset->next = colors->sets;
 						colors->sets = curset;
+						lastdef = &curset->alldefs;
 					} else if (!parse_int(&p, &count)) {
 						curset = colorset_alloc();
 						curset->colors = count;
 						curset->next = colors->sets;
 						colors->sets = curset;
+						lastdef = &curset->alldefs;
 					} else {
 						logerror_2(joe_gettext(_("%s: %d: Invalid .colors specification\n")), name, line);
 					}
@@ -313,14 +332,46 @@ SCHEME *load_scheme(const char *name)
 				cdef = (struct color_def *) joe_calloc(1, SIZEOF(struct color_def));
 				cdef->name = atom_add(bf);
 				
-				if (!parse_color_def1(&p, cdef)) {
+				if (!parse_color_def(&p, cdef)) {
 					htadd(curset->syntax, cdef->name, cdef);
+					*lastdef = cdef;
+					lastdef = &cdef->next;
 				} else {
 					logerror_2(joe_gettext(_("%s: %d: Invalid color spec\n")), name, line);
 					joe_free(cdef);
 				}
 			} else {
 				logerror_2(joe_gettext(_("%s: %d: Expected identifier\n")), name, line);
+			}
+		}
+	}
+	
+	/* Resolve refs in each set */
+	for (curset = colors->sets; curset; curset = curset->next) {
+		struct color_def *cdef;
+		
+		/* Reset */
+		for (cdef = curset->alldefs; cdef; cdef = cdef->next) {
+			cdef->visited = 0;
+		}
+		
+		/* Visit */
+		for (cdef = curset->alldefs; cdef; cdef = cdef->next) {
+			struct color_ref *cref = cdef->refs;
+			
+			visit_colordef(curset, NULL, cdef);
+			
+			/* Remove references */
+			while (cref) {
+				struct color_ref *prev = cref;
+				cref = cref->next;
+				joe_free(prev);
+			}
+			
+			/* Lock in color */
+			if (cdef->spec.type == COLORSPEC_TYPE_NONE) {
+				cdef->spec.type = COLORSPEC_TYPE_ATTR;
+				cdef->spec.atr = 0;
 			}
 		}
 	}
@@ -335,6 +386,7 @@ char **get_colors(void)
 
 int apply_scheme(SCHEME *colors, int supported)
 {
+	struct high_syntax *stx;
 	struct color_set *best = NULL, *p;
 	int i;
 	
@@ -356,8 +408,12 @@ int apply_scheme(SCHEME *colors, int supported)
 	for (i = 0; color_builtins[i].name; i++) {
 		if (best->builtins[i].type == COLORSPEC_TYPE_NONE) {
 			/* Use default */
-			if (color_builtins[i].attribute)
-				*color_builtins[i].attribute = color_builtins[i].default_attr;
+			if (color_builtins[i].attribute) {
+				if (color_builtins[i].default_text)
+					*color_builtins[i].attribute = bg_text;
+				else
+					*color_builtins[i].attribute = color_builtins[i].default_attr;
+			}
 			if (color_builtins[i].mask)
 				*color_builtins[i].mask = color_builtins[i].default_mask;
 		} else {
@@ -380,11 +436,153 @@ int apply_scheme(SCHEME *colors, int supported)
 		}
 	}
 	
-	/* Resolve syntax colors */
-	
 	/* Apply colors to syntaxes and states */
+	for (stx = syntax_list; stx; stx = stx->next) {
+		resolve_syntax_colors(best, stx);
+	}
 	
-	/* Redraw */
+	curscheme = colors;
+	curschemeset = best;
+	scheme_name = curscheme->name;
 	
 	return 0;
 }
+
+static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct color_def *cdef)
+{
+	struct color_ref *cref;
+
+	if (cdef->visited == COLORDEF_VISITED)
+		return;
+	
+	if (cdef->visited == COLORDEF_VISITING) {
+		logerror_2(joe_gettext(_("%s: Recursive color definition found involving %s")), syntax, cdef->name);
+		return;
+	}
+	
+	if (cdef->spec.type != COLORSPEC_TYPE_NONE) {
+		cdef->visited = COLORDEF_VISITED;
+		return;
+	}
+	
+	cdef->visited = COLORDEF_VISITING;
+	
+	for (cref = cdef->refs; cref; cref = cref->next) {
+		struct color_def *rcdef = NULL;
+		if (syntax) {
+			for (rcdef = syntax->color; rcdef; rcdef = rcdef->next) {
+				if (!zcmp(rcdef->name, cdef->name)) {
+					break;
+				}
+			}
+		}
+		
+		if (!rcdef) {
+			rcdef = htfind(cset->syntax, cref->name);
+		}
+		
+		if (rcdef) {
+			/* Visit first and make sure it has a value */
+			visit_colordef(cset, syntax, rcdef);
+
+			if (rcdef->spec.type != COLORSPEC_TYPE_NONE) {
+				/* Found something */
+				cdef->visited = COLORDEF_VISITED;
+				memcpy(&cdef->spec, &rcdef->spec, SIZEOF(struct color_spec));
+				break;
+			}
+		}
+	}
+	
+	cdef->visited = COLORDEF_VISITED;
+}
+
+void resolve_syntax_colors(COLORSET *cset, struct high_syntax *syntax)
+{
+	int i;
+	struct color_def *scdef;
+	
+	/* Reset */
+	for (scdef = syntax->color; scdef; scdef = scdef->next) {
+		memset(&scdef->spec, 0, SIZEOF(struct color_spec));
+		scdef->spec.type = COLORSPEC_TYPE_NONE;
+	}
+	
+	if (cset) {
+		/* Search */
+		for (scdef = syntax->color; scdef; scdef = scdef->next) {
+			/* Is there a color by this one's name? */
+			struct color_def *cdef;
+			char buf[128];
+			
+			joe_snprintf_2(buf, SIZEOF(buf), "%s.%s", syntax->name, scdef->name);
+			cdef = htfind(cset->syntax, buf);
+			if (!cdef) {
+				cdef = htfind(cset->syntax, scdef->name);
+			}
+			
+			if (cdef) {
+				memcpy(&scdef->spec, &cdef->spec, SIZEOF(struct color_spec));
+				scdef->visited = COLORDEF_VISITED;
+			} else {
+				/* Search refs */
+				visit_colordef(cset, syntax, scdef);
+			}
+		}
+	}
+	
+	/* Propagate colors into the states */
+	for (i = 0; i < syntax->nstates; i++) {
+		struct high_state *st = syntax->states[i];
+		
+		if (st->colorp) {
+			st->color = st->colorp->spec.atr | (st->color & CONTEXT_MASK);
+		} else {
+			st->color &= CONTEXT_MASK;
+		}
+	}
+}
+
+void dump_colors(BW *bw)
+{
+	char buf[256];
+	SCHEME *colors;
+	
+	for (colors = allcolors.link.next; colors != &allcolors; colors = colors->link.next) {
+		COLORSET *cset;
+		
+		joe_snprintf_1(buf, SIZEOF(buf), "Color scheme [%s]\n", colors->name);
+		binss(bw->cursor, buf);
+		pnextl(bw->cursor);
+		
+		for (cset = colors->sets; cset; cset = cset->next) {
+			struct color_def *cdef;
+			
+			joe_snprintf_1(buf, SIZEOF(buf), "* Color set [%d]\n", cset->colors);
+			binss(bw->cursor, buf);
+			pnextl(bw->cursor);
+			
+			for (cdef = cset->alldefs; cdef; cdef = cdef->next) {
+				struct color_ref *cref;
+				
+				joe_snprintf_1(buf, SIZEOF(buf), "  * Color Definition [%s]\n", cdef->name);
+				binss(bw->cursor, buf);
+				pnextl(bw->cursor);
+				
+				for (cref = cdef->refs; cref; cref = cref->next) {
+					joe_snprintf_1(buf, SIZEOF(buf), "    * Color Reference [%s]\n", cref->name);
+					binss(bw->cursor, buf);
+					pnextl(bw->cursor);
+				}
+
+				joe_snprintf_3(buf, SIZEOF(buf), "    * Spec type=%d [%d/%d]\n", 
+					cdef->spec.type, 
+					(cdef->spec.atr & FG_MASK & ~FG_NOT_DEFAULT) >> FG_SHIFT, 
+					(cdef->spec.atr & BG_MASK & ~FG_NOT_DEFAULT) >> BG_SHIFT);
+				binss(bw->cursor, buf);
+				pnextl(bw->cursor);
+			}
+		}
+	}
+}
+

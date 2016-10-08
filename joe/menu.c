@@ -7,7 +7,9 @@
  */
 #include "types.h"
 
-int bg_menu, bg_menusel, bg_menumask;
+int bg_menu;
+int bg_menusel = INVERSE;
+int bg_menumask = ~INVERSE;
 
 int transpose;
 
