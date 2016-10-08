@@ -189,5 +189,6 @@ AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 AC_CHECK_PROG(SPELL,aspell,aspell,ispell)
 
 AC_CONFIG_FILES([Makefile joe/Makefile joe/util/Makefile rc/Makefile
-man/Makefile man/ru/Makefile syntax/Makefile po/Makefile charmaps/klingon])
+man/Makefile man/ru/Makefile syntax/Makefile po/Makefile colors/Makefile
+charmaps/klingon])
 AC_OUTPUT
