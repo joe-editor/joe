@@ -368,6 +368,8 @@ SCHEME *load_scheme(const char *name)
 				joe_free(prev);
 			}
 			
+			cdef->refs = NULL;
+			
 			/* Lock in color */
 			if (cdef->spec.type == COLORSPEC_TYPE_NONE) {
 				cdef->spec.type = COLORSPEC_TYPE_ATTR;
@@ -456,7 +458,7 @@ static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct co
 		return;
 	
 	if (cdef->visited == COLORDEF_VISITING) {
-		logerror_2(joe_gettext(_("%s: Recursive color definition found involving %s")), syntax, cdef->name);
+		logerror_2(joe_gettext(_("%s: Recursive color definition found involving %s\n")), syntax->name, cdef->name);
 		return;
 	}
 	
@@ -471,7 +473,7 @@ static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct co
 		struct color_def *rcdef = NULL;
 		if (syntax) {
 			for (rcdef = syntax->color; rcdef; rcdef = rcdef->next) {
-				if (!zcmp(rcdef->name, cdef->name)) {
+				if (!zcmp(rcdef->name, cref->name)) {
 					break;
 				}
 			}
@@ -487,7 +489,6 @@ static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct co
 
 			if (rcdef->spec.type != COLORSPEC_TYPE_NONE) {
 				/* Found something */
-				cdef->visited = COLORDEF_VISITED;
 				memcpy(&cdef->spec, &rcdef->spec, SIZEOF(struct color_spec));
 				break;
 			}
@@ -506,10 +507,11 @@ void resolve_syntax_colors(COLORSET *cset, struct high_syntax *syntax)
 	for (scdef = syntax->color; scdef; scdef = scdef->next) {
 		memset(&scdef->spec, 0, SIZEOF(struct color_spec));
 		scdef->spec.type = COLORSPEC_TYPE_NONE;
+		scdef->visited = 0;
 	}
 	
 	if (cset) {
-		/* Search */
+		/* Find colors from the scheme matching the syntax's class name. */
 		for (scdef = syntax->color; scdef; scdef = scdef->next) {
 			/* Is there a color by this one's name? */
 			struct color_def *cdef;
@@ -524,10 +526,12 @@ void resolve_syntax_colors(COLORSET *cset, struct high_syntax *syntax)
 			if (cdef) {
 				memcpy(&scdef->spec, &cdef->spec, SIZEOF(struct color_spec));
 				scdef->visited = COLORDEF_VISITED;
-			} else {
-				/* Search refs */
-				visit_colordef(cset, syntax, scdef);
 			}
+		}
+		
+		/* Follow refs */
+		for (scdef = syntax->color; scdef; scdef = scdef->next) {
+			visit_colordef(cset, syntax, scdef);
 		}
 	}
 	

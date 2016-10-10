@@ -17,14 +17,16 @@
 
 =Comment 244
 =Constant 229
-=Ident 182
+=DefinedIdent 182
 =Number 180
 =Preproc 150
 =Keyword 110
 =Type 146
-=Todo 0/184
+=TODO 0/184
 =Bad 15/1
 =Escape 174
+=IncSystem +Keyword
+=IncLocal +Constant
 
 =Ignore 238
 =diff.AddLine 150

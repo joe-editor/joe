@@ -2,7 +2,7 @@
 # by Christian Nicolai (http://mycrobase.de)
 
 =Comment 	green
-=CommentLabel	bold green
+=TODO		bold green
 
 .subr comment_todo
 # initial state
@@ -24,6 +24,6 @@ done
 :comment_todo_unknown Comment
 	*		NULL		noeat return
 
-:comment_todo CommentLabel
+:comment_todo TODO
 	*		NULL		noeat return
 .end

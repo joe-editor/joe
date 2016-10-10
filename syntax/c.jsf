@@ -200,18 +200,24 @@
 # fg_NN and bg_NN give shades of grey, where the intensity, NN, ranges from 0 - 23.
 
 =Idle
-=Bad		bold red
-=Preproc 	blue
-=Define		bold blue
-=Comment 	green
-=IncLocal	cyan
-=IncSystem	bold cyan
-=Constant 	cyan
-=Escape 	bold cyan
-=Type 		bold
-=Keyword 	bold
-=CppKeyword	bold
-=Brace		magenta
+=Ident
+=Bad
+=Preproc
+=Define		+DefinedIdent +Preproc
+=Comment
+=IncLocal	+Preproc +Constant
+=IncSystem	+Preproc +Keyword
+=Constant
+=Number		+Constant
+=String		+Constant
+=Character	+Constant
+=HexNumber	+Number
+=OctNumber	+Number
+=Escape
+=Type
+=Keyword
+=CppKeyword	+Keyword
+=Brace
 =Control
 
 :reset Idle
@@ -299,7 +305,7 @@ done
 	"."		maybe_float
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
-	"\i"		ident		buffer
+	"\i"		ident		recolor=-1 buffer
 	"\\"		outside_escape	recolor=-1
 	"{}"		brace		recolor=-1
 	",:;=()><[]*&|!~+\-%^"	control		recolor=-1
@@ -320,6 +326,7 @@ done
 
 :comment Comment comment
 	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 
 :maybe_end_comment Comment comment
@@ -329,45 +336,46 @@ done
 
 :line_comment Comment comment
 	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		reset
 
-:first_digit Constant
+:first_digit Number
 	*		idle	noeat
-	"xX"		hex
+	"xX"		hex		recolor=-2
 	"."		float
 	"eE"		epart
-	"0-7"		octal
+	"0-7"		octal		recolor=-2
 	"89"		bad_number	recolor=-1
 
 :bad_number Bad
 	*		idle	noeat
 	"0-9"		bad_number
 
-:octal Constant
+:octal OctNumber
 	*		idle	noeat
 	"0-7"		octal
 	"89"		bad_number	recolor=-1
 
-:hex Constant
+:hex HexNumber
 	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
-:decimal Constant
+:decimal Number
 	*		idle	noeat
 	"0-9"		decimal
 	"eE"		epart
 	"."		float
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
@@ -375,7 +383,7 @@ done
 	*		idle	noeat
 	"0-9"		enum
 
-:string	Constant string
+:string	String string
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
@@ -407,7 +415,7 @@ done
 	"\\"		string_escape	recolor=-1
 	"0-9.\-+ #hjILtz$"	string_control
 
-:char Constant string
+:char Character string
 	*		char
 	"\n"		reset
 	"'"		idle
@@ -432,7 +440,7 @@ done
 	*		char		noeat
 	"0-7"		char
 
-:ident Idle
+:ident Ident
 	*		idle		noeat strings
 	"int"		type
 	"float"		type
