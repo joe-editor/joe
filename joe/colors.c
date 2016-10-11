@@ -26,6 +26,13 @@ static struct color_builtin_specs color_builtins[] = {
 	{ NULL, NULL, NULL, 0, 0, 0 }
 };
 
+struct color_states {
+	struct color_states	*next;
+	char			*term;
+	char			*scheme;
+};
+
+static struct color_states *saved_scheme_configs = NULL;
 
 static SCHEME *scheme_alloc(void)
 {
@@ -386,11 +393,15 @@ char **get_colors(void)
 	return find_configs(NULL, "jcf", "colors", "colors");
 }
 
-int apply_scheme(SCHEME *colors, int supported)
+int apply_scheme(SCHEME *colors)
 {
 	struct high_syntax *stx;
 	struct color_set *best = NULL, *p;
 	int i;
+	int supported = maint->t->assume_256 ? 256 : maint->t->Co;
+	
+	if (!colors)
+		return 1;
 	
 	/* Find matching set */
 	for (p = colors->sets; p; p = p->next) {
@@ -590,3 +601,87 @@ void dump_colors(BW *bw)
 	}
 }
 
+void load_colors_state(FILE *fp)
+{
+	char buf[256];
+	char bf[256];
+	
+	while (fgets(buf, SIZEOF(buf)-1, fp) && zcmp(buf, "done\n")) {
+		const char *p = buf;
+		ptrdiff_t len;
+		char *term;
+		
+		parse_ws(&p, '#');
+		
+		/* Key */
+		term = NULL;
+		len = parse_string(&p, bf, SIZEOF(bf));
+		if (len <= 0) continue;
+		term = zdup(bf);
+		
+		parse_ws(&p, '#');
+		
+		/* Value */
+		len = parse_string(&p, bf, SIZEOF(bf));
+		if (len > 0) {
+			struct color_states *st = joe_malloc(SIZEOF(struct color_states));
+			st->term = term;
+			st->scheme = zdup(bf);
+			st->next = saved_scheme_configs;
+			saved_scheme_configs = st;
+		} else if (term) {
+			joe_free(term);
+		}
+	}
+}
+
+void save_colors_state(FILE *fp)
+{
+	struct color_states *st;
+	const char *myterm = getenv("TERM");
+	
+	for (st = saved_scheme_configs; st; st = st->next) {
+		if (zcmp(myterm, st->term)) {
+			fprintf(fp, "    ");
+			emit_string(fp, st->term, zlen(st->term));
+			fprintf(fp, " ");
+			emit_string(fp, st->scheme, zlen(st->scheme));
+			fprintf(fp, "\n");
+		}
+	}
+	
+	/* Save my scheme */
+	if (scheme_name) {
+		fprintf(fp, "    ");
+		emit_string(fp, myterm, zlen(myterm));
+		fprintf(fp, " ");
+		emit_string(fp, scheme_name, zlen(scheme_name));
+		fprintf(fp, "\n");
+	}
+	
+	fprintf(fp, "done\n");
+}
+
+int init_colors(void)
+{
+	const char *myterm = getenv("TERM");
+	struct color_states *st;
+	int supported = maint->t->assume_256 ? 256 : maint->t->Co;
+	
+	/* Is one specified by global option? */
+	if (scheme_name) {
+		if (!apply_scheme(load_scheme(scheme_name)))
+			return 0;
+	}
+	
+	/* Search by terminal type */
+	for (st = saved_scheme_configs; st; st = st->next) {
+		if (st->term && !zcmp(st->term, myterm)) {
+			if (!apply_scheme(load_scheme(st->scheme)))
+				return 0;
+		}
+	}
+	
+	/* Try default */
+	return apply_scheme(load_scheme("default"));
+}

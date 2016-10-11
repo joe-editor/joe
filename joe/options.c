@@ -973,9 +973,7 @@ static int docolors(W *w, char *s, void *obj, int *notify)
 
 	scheme = load_scheme(s);
 	if (scheme) {
-		SCRN *t = w->t->t;
-		int count = t->assume_256 ? 256 : t->Co;
-		if (apply_scheme(scheme, count))
+		if (apply_scheme(scheme))
 			msgnw(bw->parent, joe_gettext(_("Color scheme failed to apply")));
 	} else {
 		msgnw(bw->parent, joe_gettext(_("Color scheme file not found")));

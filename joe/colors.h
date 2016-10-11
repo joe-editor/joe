@@ -54,9 +54,12 @@ char **get_colors(void);
 SCHEME *load_scheme(const char *);
 int parse_color_spec(const char **, struct color_spec *);
 int parse_color_def(const char **, struct color_def *);
-int apply_scheme(SCHEME *, int);
+int apply_scheme(SCHEME *);
 void resolve_syntax_colors(COLORSET *, struct high_syntax *);
 void dump_colors(BW *);
+void load_colors_state(FILE *);
+void save_colors_state(FILE *);
+int init_colors(void);
 
 extern const char *scheme_name;
 extern struct color_scheme *curscheme;
