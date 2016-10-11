@@ -1,0 +1,42 @@
+
+.colors 256
+
+-text 223/235
+-selection /241
+-status 239/250 bold
+-menusel /239 bold
+
+=Comment 245 italic
+=TODO inverse bold italic
+=Bad 167 bold inverse
+
+=Keyword 167
+=DefinedIdent 66
+=Preproc 108
+=IncSystem 72
+=Constant 175
+=Type 214
+=String 250/237
+=Escape /237
+
+=diff.AddLine 235/142
+=diff.DelLine 235/124
+=Ignore 246
+
+# Terminal colors
+-term  0 235
+-term  1 124
+-term  2 106
+-term  3 172
+-term  4 66
+-term  5 132
+-term  6 72
+-term  7 246
+-term  8 245
+-term  9 167
+-term 10 142
+-term 11 214
+-term 12 109
+-term 13 175
+-term 14 108
+-term 15 223

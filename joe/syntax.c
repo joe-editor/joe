@@ -820,6 +820,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 					}
 
 					state->color = 0;
+					state->colorp = NULL;
 					while(parse_ws(&p, '#'), !parse_ident(&p, bf, SIZEOF(bf))) {
 						if(!zcmp(bf, "comment")) {
 							state->color |= CONTEXT_COMMENT;

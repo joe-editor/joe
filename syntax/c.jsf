@@ -210,7 +210,7 @@
 =Constant
 =Number		+Constant
 =String		+Constant
-=Character	+Constant
+=Character	+String +Constant
 =HexNumber	+Number
 =OctNumber	+Number
 =Escape
