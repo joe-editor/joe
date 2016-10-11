@@ -1,19 +1,25 @@
 # JOE syntax highlight file for Python
 
 =Idle
-=Comment 	green
-=Docstring	green
-=DocstringLabel	bold green
-=DocEscape	bold cyan
-=Constant 	cyan
-=Escape 	bold cyan
-=Keyword 	bold
-=Bad		bold red
-=Brace		magenta
+=Ident
+=Comment
+=Docstring	+Comment
+=DocstringLabel	+Docstring
+=DocEscape	+Docstring
+=Constant
+=String		+Constant
+=Number		+Constant
+=Boolean	+Constant
+=Escape		+StringEscape +Escape
+=Keyword
+=Bad
+=Brace
 
-=PrivateMember	yellow #fg_310 # brown
-=Decorator	red
-=Declaration	bold blue
+=DefinedIdent	+Ident
+=DefinedFunction +DefinedIdent
+=DefinedType	+DefinedIdent
+=SpecialIdent	+Ident
+=Decorator	+Preproc
 
 :idle Idle
 	*		idle
@@ -38,44 +44,44 @@
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
-:first_digit Constant
+:first_digit Number
 	*		idle		noeat
 	"xX"		hex
 	"."		float
 	"eE"		epart
 	"0-9"		first_number
 
-:hex Constant
+:hex Number
 	*		idle		noeat
 	"0-9A-Fa-f"	hex
 
-:first_number Constant
+:first_number Number
 	*		idle		noeat
 	"0-9"		first_number
 	"."		float
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle		recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle		noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle		noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle		noeat
 	"0-9"		enum
 
-:ident Idle
+:ident Ident
 	*		ident1		noeat buffer
 	"_"		priv_member	recolor=-1
 
-:ident1 Idle
+:ident1 Ident
 	*		idle		noeat strings
 	"and"		kw
 	"as"		kw
@@ -110,9 +116,9 @@
 	"yield"		kw
 	
 	# quasi-keywords
-	"False"		lit
+	"False"		bool
+	"True"		bool
 	"None"		lit
-	"True"		lit
 done
 	"'\""		idle 		noeat istrings
 	"u"		string_pre
@@ -129,46 +135,48 @@ done
 :lit Keyword
 	*		idle		noeat
 
+:bool Boolean
+	*		idle		noeat
+
 :declkw Keyword
 	*		idle 		noeat recolor=-1
 	"\i"		declkw
 	" \t"		declname_1
 
-:declname_1 Declaration
+:declname_1 DefinedIdent
 	*		declname
-	"_"		priv_member	recolor=-1
 
-:declname Declaration
+:declname DefinedIdent
 	*		idle		noeat recolor=-1
 	"\c"		declname
 
-:priv_member PrivateMember
+:priv_member SpecialIdent
 	*		idle		noeat
 	"\c"		priv_member
 
 # Handle string prefixes up to the string itself.
-:string_pre Constant
+:string_pre String
 	*		idle noeat
 	"'\""		string_quot_1 	save_c
 
-:string_raw_pre Constant
+:string_raw_pre String
 	*		idle noeat
 	"'\""		string_quot_raw_1 save_c
 
 # Differentiate between docstrings and regular strings, carrying with it raw state
-:string_quot_1 Constant
+:string_quot_1 String
 	*		idle call=.string() noeat
 	&		string_quot_2
 
-:string_quot_2 Constant
+:string_quot_2 String
 	*		idle noeat
 	&		idle call=.string(docstring) recolor=-3
 
-:string_quot_raw_1 Constant
+:string_quot_raw_1 String
 	*		idle call=.string(raw)
 	&		string_quot_raw_2
 
-:string_quot_raw_2 Constant
+:string_quot_raw_2 String
 	*		idle noeat
 	&		idle call=.string(docstring raw) recolor=-3
 
@@ -194,7 +202,7 @@ done
 
 .else			# Short strings
 
-:string Constant string
+:string String string
 	*		string
 	"\n"		string return
 .ifdef raw
@@ -205,7 +213,7 @@ done
 
 .endif
 
-:string_esc Constant
+:string_esc String
 	*		string_esc_done
 	"x"		string_hex2
 	"u"		string_hex4
@@ -214,7 +222,7 @@ done
 	"\n"		string_esc_done
 
 # Recolor whole escape sequence based on whether this is a docstring.
-:string_esc_done Constant
+:string_esc_done String
 	*		string_esc_really_done noeat markend recolormark
 
 .ifdef docstring

@@ -33,17 +33,19 @@
 #####################
 
 =Idle
-=Comment	green
-=Conditional	blue
-=Parameter	bold blue
-=Keyword	bold
-=Color		yellow
-=StandardColor	bold
-=State
-=Subr		magenta
-=Literal	cyan
-=Escape		bold cyan
-=Bad		bold red
+=Comment
+=Conditional	+Preproc
+=Parameter	+Ident
+=Keyword
+=Color		+Type
+=ColorRef
+=State		+Ident
+=Subr		+Ident
+=Constant
+=Number		+Constant
+=String		+Constant
+=Escape		+String
+=Bad
 
 
 
@@ -96,13 +98,13 @@
 # If we see a non-digit or a '0', then we have seen the entire sync lines
 # directive.  The only thing that may appear on the rest of the line is a
 # comment.  Otherwise there may be more digits in the number.
-:sync_lines_first Literal
+:sync_lines_first Number
 	*		comment_or_bad		noeat
 	"0"		comment_or_bad
 	"1-9"		sync_lines
 
 # Highlight the remainder of the number.
-:sync_lines Literal
+:sync_lines Number
 	*		comment_or_bad		noeat
 	"0-9"		sync_lines
 .endif
@@ -200,172 +202,12 @@
 :colors_ws Idle
 	*		color_bad		recolor=-1
 	" \t"		colors_ws
-	"\i"		color			mark recolor=-1 buffer
+	"+"		color_ref		recolor=-1
 	"#\n"		comment			noeat
 
-# Here we recognize the attributes and standard color names.  None of the
-# attributes or standard color names contain a digit except fg_NNN and bg_NNN,
-# which are handled specially below.
-:color Idle
-	*		color_unknown		noeat strings
-	"inverse"	color_color
-	"underline"	color_color
-	"bold"		color_color
-	"italic"	color_color
-	"blink"		color_color
-	"dim"		color_color
-	"white"		color_color
-	"cyan"		color_color
-	"magenta"	color_color
-	"blue"		color_color
-	"yellow"	color_color
-	"green"		color_color
-	"red"		color_color
-	"black"		color_color
-	"bg_white"	color_color
-	"bg_cyan"	color_color
-	"bg_magenta"	color_color
-	"bg_blue"	color_color
-	"bg_yellow"	color_color
-	"bg_green"	color_color
-	"bg_red"	color_color
-	"bg_black"	color_color
-	"WHITE"		color_color
-	"CYAN"		color_color
-	"MAGENTA"	color_color
-	"BLUE"		color_color
-	"YELLOW"	color_color
-	"GREEN"		color_color
-	"RED"		color_color
-	"BLACK"		color_color
-	"bg_WHITE"	color_color
-	"bg_CYAN"	color_color
-	"bg_MAGENTA"	color_color
-	"bg_BLUE"	color_color
-	"bg_YELLOW"	color_color
-	"bg_GREEN"	color_color
-	"bg_RED"	color_color
-	"bg_BLACK"	color_color
-	"fg_"		color_number_first
-	"bg_"		color_number_first
-	done
-	"\c"		color
-
-# We encountered what looks like a standard color but is unrecognized as such.
-:color_unknown Idle
-.ifdef CHECKING
-	*		color_bad		recolormark noeat
-.else
+:color_ref ColorRef
 	*		colors_ws		noeat
-.endif
-
-# Here we have seen either "fg_" or "bg_".  We now expect to find a number. The
-# number should either be a one to two digit number, representing greyscale
-# intensity, in the range 0-23, or a three digit number, where each digit is in
-# the range 0-5 and represents the intensity of red, green, and blue
-# respectively.
-:color_number_first Idle
-.ifdef CHECKING
-	*		color_bad		recolormark noeat
-.else
-	*		color_bad		noeat
-.endif
-	"0"		color_zero
-	"1"		color_one
-	"2"		color_two
-	"3-5"		color_number_second
-	"6-9"		color_end
-
-# The first digit is a zero, thus we either have a greyscale intensity of 0, in
-# which case we should not see any more digits, or we have the first RGB digit,
-# in which case we should see two more ditits in the range 0-5.
-:color_zero Idle
-.ifdef CHECKING
-	*		color_bad		recolormark noeat
-.else
-	*		color_bad		noeat
-.endif
-	"0-5"		color_rgb_third
-	" \t#\n"	color_color		recolormark noeat
-
-# The first digit is a one.  If we see whitespace or a comment, then we have a
-# greyscale intensity of 1.  If we see a digit 6-9, then we have a greyscale
-# intensity of 16-19.  If we see a digit 0-5, then we either have a greyscale
-# intensity of 10-15 or an RGB value.
-:color_one Idle
-.ifdef CHECKING
-	*		color_bad		recolormark noeat
-.else
-	*		color_bad		noeat
-.endif
-	"0-5"		color_number_third
-	"6-9"		color_end
-	" \t#\n"	color_color		recolormark noeat
-
-# The first digit is a two.  If we see whitespace or a comment, then we have a
-# greyscale intensity of 2.  If we see a digit 4-5, then we have the first two
-# digits of an RGB value.  If we see a digit 0-3, then we either have a
-# greyscale intensity of 20-23 or an RGB value.
-:color_two Idle
-.ifdef CHECKING
-	*		color_bad		recolormark noeat
-.else
-	*		color_bad		noeat
-.endif
-	"0-3"		color_number_third
-	"4-5"		color_rgb_third
-	" \t#\n"	color_color		recolormark noeat
-
-# We have seen one digit that could be either the greyscale intensity or the
-# first RGB digit.  If we see any more digits, they we must have an RGB value,
-# because otherwise the number would be outside the range 0-23.
-:color_number_second Idle
-.ifdef CHECKING
-	*		color_bad		recolormark noeat
-.else
-	*		color_bad		noeat
-.endif
-	"0-5"		color_rgb_third
-	" \t#\n"	color_color		recolormark noeat
-
-# We have seen two digits that could be either the greyscale intensity or the
-# first two RGB digits.  If we see any more digits, they we must have an RGB
-# value, because otherwise the number would be outside the range 0-23.
-:color_number_third Idle
-.ifdef CHECKING
-	*		color_bad		recolormark noeat
-.else
-	*		color_bad		noeat
-.endif
-	"0-5"		color_end
-	" \t#\n"	color_color		recolormark noeat
-
-# We have seen two digits, both 0-5, that either start with zero or are outside
-# the range 0-23.  Thus we expect a third 0-5 digit.
-:color_rgb_third Idle
-.ifdef CHECKING
-	*		color_bad		recolormark noeat
-.else
-	*		color_bad		noeat
-.endif
-	"0-5"		color_end
-
-# We have seen "fg_" or "bg_" followed by one to three digits.  Any more digits
-# would either be too many or make the number out of range.  We now expect to
-# see whitespace, a comment, or a newline.
-:color_end Idle
-.ifdef CHECKING
-	*		color_bad		recolormark noeat
-.else
-	*		color_bad		noeat
-.endif
-	" \t#\n"	color_color		recolormark noeat
-
-# This is a dummy state that simply provides the highlighting color for the
-# standard color or attribute and jumps to colors_ws without consuming any
-# characters.
-:color_color StandardColor
-	*		colors_ws		noeat
+	"\c"		color_ref
 
 # We have encountered something that is not recognized as a standard color or
 # attribute.  Continue to highlight characters as Bad until we see whitespace, a
@@ -459,7 +301,7 @@
 # We are in a string.  Continue until we see the close quote or a newline.
 # Highlight escaped characters within the string differently.  They start with a
 # '\'.
-:string Literal string
+:string String string
 	*		string
 	"\\"		escape			recolor=-1
 	"\""		need_next_state
@@ -589,7 +431,7 @@
 	"-"		recolor_amount_first	mark recolor=-1
 
 # The first digit of the argument to recolor must be non-zero.
-:recolor_amount_first Literal
+:recolor_amount_first Number
 .ifdef CHECKING
 	*		option_bad		recolormark noeat
 .else
@@ -599,7 +441,7 @@
 	"1-9"		recolor_amount
 
 # Keep highlighting digits until we see something else.
-:recolor_amount Literal
+:recolor_amount Number
 	*		option_bad		recolormark recolor=-1
 	"0-9"		recolor_amount
 	" \t#\n"	options_ws		noeat

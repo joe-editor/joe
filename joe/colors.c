@@ -642,7 +642,7 @@ void save_colors_state(FILE *fp)
 	
 	for (st = saved_scheme_configs; st; st = st->next) {
 		if (zcmp(myterm, st->term)) {
-			fprintf(fp, "    ");
+			fprintf(fp, "\t");
 			emit_string(fp, st->term, zlen(st->term));
 			fprintf(fp, " ");
 			emit_string(fp, st->scheme, zlen(st->scheme));
@@ -652,7 +652,7 @@ void save_colors_state(FILE *fp)
 	
 	/* Save my scheme */
 	if (scheme_name) {
-		fprintf(fp, "    ");
+		fprintf(fp, "\t");
 		emit_string(fp, myterm, zlen(myterm));
 		fprintf(fp, " ");
 		emit_string(fp, scheme_name, zlen(scheme_name));
