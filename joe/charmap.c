@@ -33,7 +33,7 @@
 /* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
    JOE uses a limited internal version instead */
 
-/* Convert from byte code to unicode.  Returns -1 for unknown. */
+/* Convert from byte code to Unicode.  Returns -1 for unknown. */
 
 int to_uni(struct charmap *cset, int c)
 {
@@ -52,7 +52,7 @@ void to_utf8(struct charmap *map,char *s,int c)
 		utf8_encode(s,d);
 }
 
-/* Convert from unicode to byte code.  Returns -1 for unknown. */
+/* Convert from Unicode to byte code.  Returns -1 for unknown. */
 
 int from_uni(struct charmap *cset, int c)
 {
@@ -1320,7 +1320,7 @@ static struct builtin_charmap *parse_charmap(const char *name,FILE *f)
 	return b;
 }
 
-/* Byte wide character map to unicode conversion */
+/* Byte wide character map to Unicode conversion */
 
 /* Compare character map names.  Ignores '-'s and terminates string on '.' */
 /* Chicken and egg problem here.. */
@@ -1783,6 +1783,27 @@ char *my_iconv(char *dest, struct charmap *dest_map,
 			}
 		}
 	}
+	return dest;
+}
+
+char *my_iconv1(char *dest, struct charmap *dest_map, const int *src)
+{
+	/* src is UTF-8 */
+	if (dest_map->type) {
+		/* Unicode to UTF-8? */
+		dest = Ztoutf8(dest, src);
+	} else {
+		/* UTF-8 to non-UTF-8 */
+		dest = vsensure(dest, Zlen(src));
+		while (*src) {
+			int d = from_uni(dest_map, *src++);
+			if (d >= 0)
+				dest = vsadd(dest, TO_CHAR_OK(d));
+			else
+				dest = vsadd(dest, '?');
+		}
+	}
+
 	return dest;
 }
 

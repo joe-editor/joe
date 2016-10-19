@@ -1,5 +1,5 @@
 /*
- *	Functions which make use of the unicode facts in unifacts.c
+ *	Functions which make use of the Unicode facts in unifacts.c
  *
  *	Copyright
  *		(C) 2015 Joseph H. Allen
@@ -45,7 +45,7 @@ int *lowerize(int *d, ptrdiff_t len, const int *s)
 	return org;
 }
 
-/* Get a character class containing all characters matching a particular unicode category or block */
+/* Get a character class containing all characters matching a particular Unicode category or block */
 
 HASH *unicat_hash;
 

@@ -9,7 +9,7 @@ struct frag {
 	ptrdiff_t align;
 };
 
-/* Initialize a fragment: 'alignment' sets the naturual alignment of
+/* Initialize a fragment: 'alignment' sets the natural alignment of
  * the fragment.  After any emit or fetch function is called, the
  * fragment is filled to the next multiple of 'alignment'.
  */
@@ -56,7 +56,7 @@ void frag_link(Frag *f, ptrdiff_t chain);
 #define fragd(f, ofst) (*(double *)((f)->start + (ofst)))
 #define fragp(f, ofst) (*(void **)((f)->start + (ofst)))
 
-/* Fetch an datum from a fragement and advance the "PC" */
+/* Fetch an datum from a fragment and advance the "PC" */
 
 int fetchi(Frag *f, ptrdiff_t *pc);
 short fetchh(Frag *f, ptrdiff_t *pc);

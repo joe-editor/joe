@@ -51,6 +51,38 @@ int main(int argc, char *argv[])
                 } else
                     printf("		\"");
                 instring = 1;
+                /* Take help text as-is even if lines start with spaces */
+                if (c == '{' && type == 0) {
+                    goto inner;
+                    while ((c = fgetc(f)) != -1) {
+                        if (first_string) {
+                            printf("		\"");
+                            first_string = 0;
+                        } else
+                            printf("		\"");
+                        instring = 1;
+                        if (c == '}')
+                            break;
+                        while ((c = fgetc(f)) != -1) {
+                            inner:
+                            if (c == '"')
+                                printf("\\\"");
+                            else if (c == '\\')
+                                printf("\\\\"); 
+                            else if (c == '\n')
+                                printf("\\n");
+                            else if ((c >= 32 && c <= 126) || c == '\t')
+                                putchar(c);
+                            else
+                                printf("\\x%2.2x", c);
+                            if (c == '\n') {
+                                printf("\"\n");
+                                instring = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             if (c == '"')
                 printf("\\\"");

@@ -10,7 +10,7 @@ struct mpx {
 	int	ackfd;		/* Packetizer response descriptor */
 	int	kpid;		/* Packetizer process id */
 	int	pid;		/* Client process id */
-	void	(*func)(void *object, char *data, ptrdiff_t len);	/* Function to call when read occures */
+	void	(*func)(void *object, char *data, ptrdiff_t len);	/* Function to call when read occurs */
 	void	*object;	/* First arg to pass to function */
 	void	(*die)(void *object);	/* Function: call when client dies or closes */
 	void	*dieobj;
@@ -44,7 +44,7 @@ struct mpx {
  *
  * (7) Create an output buffer of a size which depends on 'upc' and the
  *     constant 'TIMES'.  'TIMES' is the number of times per second JOE
- *     should check for typeahead.  Since we only check for typehead after
+ *     should check for typeahead.  Since we only check for typeahead after
  *     the output buffer is flushed, 'upc' and the size of the output buffer
  *     determine how often this occurs.  So for example if 'upc'==1000 (~9600
  *     baud) and 'TIMES'==3, the output buffer size is set to 333 characters.

@@ -14,10 +14,19 @@
 struct header {
 	LINK(H)	link;		/* Doubly-linked list of gap buffer headers */
 	off_t	seg;		/* Swap file offset to gap buffer */
-	ptrdiff_t	hole;		/* Offset to gap */
-	ptrdiff_t	ehole;		/* Offset to after gap */
-	ptrdiff_t	nlines;		/* No. '\n's in this buffer */
+	short	hole;		/* Offset to gap */
+	short	ehole;		/* Offset to after gap */
+	short	nlines;		/* No. '\n's in this buffer */
+	short	extra;		/* Unused */
 };
+
+/* It's a good idea to optimize the size of struct header since there is a header
+ * for each page of loaded data.
+ *
+ * 32-bit ptr, 32-bit off: sizeof(H) == 20 bytes
+ * 32-bit ptr, 64-bit off: sizeof(H) == 24 bytes
+ * 64-bit ptr, 64-bit off: sizeof(H) == 32 bytes
+ */
 
 /* A pointer to some location within a buffer.  After an insert or delete,
  * all of the pointers following the insertion or deletion point are
@@ -27,7 +36,7 @@ struct point {
 	LINK(P)	link;		/* Doubly-linked list of pointers for a particular buffer */
 
 	B	*b;		/* Buffer */
-	ptrdiff_t	ofst;	/* Gap buffer offset */
+	short	ofst;		/* Gap buffer offset */
 	char	*ptr;		/* Gap buffer address */
 	H	*hdr;		/* Gap buffer header */
 
@@ -37,7 +46,7 @@ struct point {
 	off_t	xcol;		/* cursor column (can be different from actual column) */
 	int	valcol;		/* bool: is col valid? */
 	int	end;		/* set if this is end of file pointer */
-	int	attr;		/* current ansi attribute */
+	int	attr;		/* current ANSI attribute */
 	int	valattr;	/* set if attr is still valid */
 
 	P	**owner;	/* owner of this pointer.  owner gets cleared if pointer is deleted. */
@@ -98,9 +107,10 @@ struct options {
 	int	semi_comment;	/* Ignore text after ; comments */
 	int	tex_comment;	/* Ignore text after % comments */
 	int	hex;		/* Hex edit mode */
-	int	ansi;		/* Hide ansi sequences mode */
+	int	ansi;		/* Hide ANSI sequences mode */
+	int	title;		/* Enable status line context display */
 	const char *text_delimiters;	/* Define word delimiters */
-	const char *cpara;	/* Characters which can indent paragraphcs */
+	const char *cpara;	/* Characters which can indent paragraphs */
 	const char *cnotpara;/* Characters which begin non-paragraph lines */
 	MACRO	*mnew;		/* Macro to execute for new files */
 	MACRO	*mold;		/* Macro to execute for existing files */

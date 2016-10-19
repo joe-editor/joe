@@ -6,1100 +6,1487 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: joe 3.7\n"
-"POT-Creation-Date: 2006-06-15 14:12-0400\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-08-21 21:49-0400\n"
 "PO-Revision-Date: 2009-02-15 20:22+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: b.c:31
+#: b.c:41
 msgid "No error"
 msgstr "沒有錯誤"
 
-#: b.c:32
+#: b.c:42
 msgid "New File"
 msgstr "新檔案"
 
-#: b.c:33
+#: b.c:43
 msgid "Error reading file"
 msgstr "讀取檔案時發生錯誤"
 
-#: b.c:34
+#: b.c:44
 msgid "Error seeking file"
 msgstr "尋找檔案時發生錯誤"
 
-#: b.c:35
+#: b.c:45
 msgid "Error opening file"
 msgstr "開啟檔案時發生錯誤"
 
-#: b.c:36
+#: b.c:46
 msgid "Error writing file"
 msgstr "寫入檔案時發生錯誤"
 
-#: b.c:37
+#: b.c:47
 msgid "File on disk is newer"
 msgstr "磁碟上的檔案比較新"
 
-#: b.c:2736
+#: b.c:3375
 #, c-format
-msgid "\n"
-"*** These modified files were found in JOE when it aborted on %s"
-msgstr "\n"
-"*** JOE 於 %s 被放棄時，正在處理這些已修改的檔案"
-
-#: b.c:2738
-#, c-format
-msgid "*** JOE was aborted by UNIX signal %d\n"
-msgstr "*** JOE 是由 UNIX 信號 %d 所放棄\n"
-
-#: b.c:2740
-msgid "*** JOE was aborted because the terminal closed\n"
-msgstr "*** JOE 是因為終端機關閉而被放棄\n"
-
-#: b.c:2745
-#, c-format
-msgid "\n"
+msgid ""
+"\n"
 "*** File '%s'\n"
-msgstr "\n"
+msgstr ""
+"\n"
 "*** 檔案「%s」\n"
 
-#: b.c:2747
-msgid "\n"
+#: b.c:3377
+msgid ""
+"\n"
 "*** File '(Unnamed)'\n"
-msgstr "\n"
+msgstr ""
+"\n"
 "*** 檔案「(未命名)」\n"
 
-#: bw.c:1274
-#, c-format
-msgid "** Line %ld  Col %ld  Offset %s(0x%s) **"
-msgstr "** 列 %ld  行 %ld  偏移 %s(0x%s) **"
-
-#: bw.c:1276
-#, c-format
-msgid "** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **"
-msgstr "** 列 %ld  行 %ld  偏移 %s(0x%s)  %s %d(0%o/0x%X) 寬度 %d **"
-
-#: cmd.c:211
+#: cmd.c:230
 msgid "Could not create lock. (I) edit anyway, (Q) cancel edit? "
 msgstr "無法建立鎖定。(I)依然編輯，(Q)取消編輯？"
 
-#: cmd.c:212
+#: cmd.c:231
 #, c-format
 msgid "Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? "
 msgstr "由 %s 鎖定。(S)竊取鎖定，(I)依然編輯，(Q)取消編輯？"
 
-#: cmd.c:214
+#: cmd.c:233
 msgid "|steal the lock|sS"
 msgstr "|竊取鎖定|sS"
 
-#: cmd.c:215
+#: cmd.c:234
 msgid "|cancel edit due to lock|qQ"
 msgstr "|因鎖定而取消編輯|qQ"
 
-#: cmd.c:216
+#: cmd.c:235
 msgid "|ignore lock, continue with edit|iI"
 msgstr "|忽略鎖定，繼續編輯|iI"
 
-#: cmd.c:265
+#: cmd.c:286
 msgid "Notice: File on disk changed! (hit %{abort} to continue)  "
 msgstr "通知：磁碟上的檔案已變更！(按下 %{abort} 以繼續)  "
 
-#: cmd.c:325
+#: cmd.c:346
 msgid "Modify other window first for macro"
 msgstr "先修改其他視窗巨集"
 
-#: cmd.c:333
+#: cmd.c:354
 msgid "Other buffer is read only"
 msgstr "其他緩衝區為唯讀"
 
-#: cmd.c:348 rc.c:340
+#: cmd.c:369 options.c:357
 msgid "Read only"
 msgstr "唯讀"
 
-#: cmd.c:542 cmd.c:552
+#: cmd.c:567 cmd.c:577
 msgid "No such command"
 msgstr "無此類命令"
 
-#: cmd.c:569
+#: cmd.c:594
 msgid "Command: "
 msgstr "命令："
 
 #: help.c:77
 #, c-format
-msgid "\n"
+msgid ""
+"\n"
 "%d: EOF before end of help text\n"
-msgstr "\n"
+msgstr ""
+"\n"
 "%d: 說明文字結束之前出現 EOF\n"
 
-#: kbd.c:352
+#: kbd.c:420
 msgid "No such keymap"
 msgstr "無此類按鍵對應"
 
-#: kbd.c:381
+#: kbd.c:457
 msgid "Change keymap: "
 msgstr "變更按鍵對應："
 
-#: macro.c:662
+#: macro.c:535
 msgid "Macro to record (0-9 or %{abort} to abort): "
 msgstr "進行記錄的巨集 (0-9 或 %{abort} 以放棄)："
 
-#: macro.c:764
+#: macro.c:572
+#, fuzzy
+msgid "Delay in seconds between macro invocation (%{abort} to abort): "
+msgstr "前往指定行 (%{abort} 以放棄)："
+
+#: macro.c:588
+#, fuzzy
+msgid "Macro to play (0-9 or %{abort} to abort): "
+msgstr "進行記錄的巨集 (0-9 或 %{abort} 以放棄)："
+
+#: macro.c:692
 msgid "Play-"
 msgstr "Play-"
 
-#: macro.c:791
+#: macro.c:721
 msgid "No. times to repeat next command (%{abort} to abort): "
 msgstr "重複下一個命令的次數 (%{abort} 以放棄)："
 
-#: macro.c:819
+#: macro.c:754
 msgid "If (%{abort} to abort): "
 msgstr "If (%{abort} 以放棄)："
 
-#: macro.c:826
+#: macro.c:761
 msgid "Elsif without if"
 msgstr "Elsif 卻無 if"
 
-#: macro.c:832
+#: macro.c:767
 msgid "Else if: "
 msgstr "Else if："
 
-#: macro.c:841
+#: macro.c:776
 msgid "Else without if"
 msgstr "Else 卻無 if"
 
-#: macro.c:852
+#: macro.c:787
 msgid "Endif without if"
 msgstr "Endif 卻無 if"
 
-#: macro.c:895
+#: macro.c:830
 #, c-format
 msgid "Repeat %s%d"
 msgstr "重複 %s%d"
 
-#: macro.c:908
+#: macro.c:843
 msgid "Repeat"
 msgstr "重複"
 
-#: main.c:207
+#: main.c:355
 msgid "Couldn't load termcap/terminfo entry\n"
 msgstr "無法載入 termcap/terminfo 項目\n"
 
-#: main.c:222 main.c:239
-#, c-format
-msgid "There were errors in '%s'.  Use it anyway?"
+#: main.c:368 main.c:379 main.c:438 main.c:448 main.c:465
+#, fuzzy, c-format
+msgid "There were errors in '%s'.  Falling back on default.\n"
 msgstr "「%s」中已發生錯誤。依然要使用它？"
 
-#: main.c:294
+#: main.c:428
 #, c-format
 msgid "Warning: %s is newer than your %s.\n"
 msgstr "警告：%s 比您的 %s 要新。\n"
 
-#: main.c:295
-#, c-format
-msgid "You should update or delete %s\n"
-msgstr "您應該更新或刪除 %s\n"
-
-#: main.c:296
-#, c-format
-msgid "Hit enter to continue with %s "
-msgstr "按下輸入鍵以繼續 %s "
-
-#: main.c:309 main.c:328 main.c:345
-#, c-format
-msgid "There were errors in '%s'.  Use it anyway (y,n)? "
-msgstr "「%s」中已發生錯誤。 依然要使用它 (y,n)？"
-
-#: main.c:353
+#: main.c:469
 #, c-format
 msgid "Couldn't open '%s'\n"
 msgstr "無法開啟「%s」\n"
 
-#: main.c:359
+#: main.c:476
 msgid "rc file has no :main key binding section or no bindings.  Bye.\n"
 msgstr "rc 檔案沒有 :main 按鍵連結區段或是沒有連結。再見。\n"
 
-#: main.c:372
+#: main.c:508
 #, c-format
 msgid "Unknown option '%s'\n"
 msgstr "不明的選項「%s」\n"
 
-#: main.c:508
-#, c-format
-msgid "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
+#: main.c:654
+#, fuzzy, c-format
+msgid "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i"
 msgstr "\\i** Joe 自用編輯器 v%s ** (%s) ** 著作權 %s 2006 **\\i"
 
-#: rc.c:295
+#: mmenu.c:155
+#, fuzzy
+msgid "No such menu"
+msgstr "無此類命令"
+
+#: mmenu.c:169
+msgid "Menu: "
+msgstr ""
+
+#: options.c:300
 msgid "Overtype mode"
 msgstr "覆寫模式"
 
-#: rc.c:295
+#: options.c:300
 msgid "Insert mode"
 msgstr "插入模式"
 
-#: rc.c:295
-msgid "T Overtype "
-msgstr "T 覆寫 "
-
-#: rc.c:296
+#: options.c:301
 msgid "Hex edit mode"
 msgstr "十六進位編輯模式"
 
-#: rc.c:296
+#: options.c:301
 msgid "Text edit mode"
 msgstr "文字編輯模式"
 
-#: rc.c:296
-msgid "  Hex edit mode "
-msgstr "  十六進位編輯模式 "
+#: options.c:301
+#, fuzzy
+msgid "Hex edit display mode"
+msgstr "十六進位編輯模式"
 
-#: rc.c:297
+#: options.c:302
+msgid "Hide ANSI sequences"
+msgstr ""
+
+#: options.c:302
+msgid "Reveal ANSI sequences"
+msgstr ""
+
+#: options.c:302
+msgid "Hide ANSI mode"
+msgstr ""
+
+#: options.c:303
+#, fuzzy
+msgid "Status line context enabled"
+msgstr "置頂狀態列已啟用"
+
+#: options.c:303
+#, fuzzy
+msgid "Status line context disabled"
+msgstr "置頂狀態列已停用"
+
+#: options.c:303
+#, fuzzy
+msgid "Status line context display mode"
+msgstr "經常更新狀態列"
+
+#: options.c:304
 msgid "Autoindent enabled"
 msgstr "自動縮排已啟用"
 
-#: rc.c:297
+#: options.c:304
 msgid "Autoindent disabled"
 msgstr "自動縮排已停用"
 
-#: rc.c:297
-msgid "I Autoindent "
+#: options.c:304
+#, fuzzy
+msgid "Autoindent mode"
 msgstr "I 自動縮排 "
 
-#: rc.c:298
+#: options.c:305
 msgid "Wordwrap enabled"
 msgstr "換列已啟用"
 
-#: rc.c:298
+#: options.c:305
 msgid "Wordwrap disabled"
 msgstr "換列已停用"
 
-#: rc.c:298
-msgid "W Word wrap "
+#: options.c:305
+#, fuzzy
+msgid "Word wrap mode"
 msgstr "W 字詞換列 "
 
-#: rc.c:299
-#, c-format
-msgid "Tab width (%d): "
+#: options.c:306
+#, fuzzy, c-format
+msgid "Tab width (%lld): "
 msgstr "定位點寬度 (%d)："
 
-#: rc.c:299
-msgid "D Tab width "
+#: options.c:306
+#, fuzzy
+msgid "Tab width"
 msgstr "D 定位點寬度 "
 
-#: rc.c:300
+#: options.c:307
 #, c-format
 msgid "Left margin (%d): "
 msgstr "左邊界 (%d)："
 
-#: rc.c:300
-msgid "L Left margin "
+#: options.c:307
+#, fuzzy
+msgid "Left margin "
 msgstr "L 左邊界 "
 
-#: rc.c:301
+#: options.c:308
 #, c-format
 msgid "Right margin (%d): "
 msgstr "右邊界 (%d)："
 
-#: rc.c:301
-msgid "R Right margin "
+#: options.c:308
+#, fuzzy
+msgid "Right margin "
 msgstr "R 右邊界 "
 
-#: rc.c:302
+#: options.c:309
 msgid "Restore cursor position when files loaded"
 msgstr "檔案載入時還原游標位置"
 
-#: rc.c:302
+#: options.c:309
 msgid "Don't restore cursor when files loaded"
 msgstr "檔案載入時不還原游標位置"
 
-#: rc.c:302
-msgid "  Restore cursor "
+#: options.c:309
+#, fuzzy
+msgid "Restore cursor mode"
 msgstr "  還原游標 "
 
-#: rc.c:303
+#: options.c:310
+msgid "Standard regular expression format"
+msgstr ""
+
+#: options.c:310
+msgid "JOE regular expression format"
+msgstr ""
+
+#: options.c:310
+msgid "Standard or JOE regular expression syntax"
+msgstr ""
+
+#: options.c:311
 msgid "Rectangle mode"
 msgstr "矩形模式"
 
-#: rc.c:303
+#: options.c:311
 msgid "Text-stream mode"
 msgstr "文字串流模式"
 
-#: rc.c:303
-msgid "X Rectangle mode "
-msgstr "X 矩形模式 "
+#: options.c:311
+#, fuzzy
+msgid "Rectangular region mode"
+msgstr "矩形模式"
 
-#: rc.c:304
+#: options.c:312
 msgid "Search ignores case by default"
 msgstr "搜尋預設忽略大小寫"
 
-#: rc.c:304
+#: options.c:312
 msgid "Case sensitive search by default"
 msgstr "搜尋預設符合大小寫"
 
-#: rc.c:304
-msgid "  Case insensitivity "
-msgstr "  忽略大小寫 "
+#: options.c:312
+#, fuzzy
+msgid "Case insensitive search mode "
+msgstr "搜尋預設符合大小寫"
 
-#: rc.c:305
+#: options.c:313
 msgid "Search wraps"
 msgstr "搜尋從頭"
 
-#: rc.c:305
+#: options.c:313
 msgid "Search doesn't wrap"
 msgstr "搜尋不從頭"
 
-#: rc.c:305
-msgid "  Search wraps "
-msgstr "  搜尋從頭 "
+#: options.c:313
+#, fuzzy
+msgid "Search wraps mode"
+msgstr "搜尋從頭"
 
-#: rc.c:306
+#: options.c:314
 msgid "Menu explorer mode"
 msgstr "選單總管模式"
 
-#: rc.c:306
+#: options.c:314
 msgid "Simple completion mode"
 msgstr "簡單完成模式"
 
-#: rc.c:306
-msgid "  Menu explorer "
-msgstr "  選單總管 "
-
-#: rc.c:307
+#: options.c:315
 msgid "Menu above prompt"
 msgstr "選單在提示之上"
 
-#: rc.c:307
+#: options.c:315
 msgid "Menu below prompt"
 msgstr "選單在提示之下"
 
-#: rc.c:307
-msgid "  Menu position "
-msgstr "  選單位置 "
+#: options.c:315
+#, fuzzy
+msgid "Menu above/below mode"
+msgstr "選單總管模式"
 
-#: rc.c:308
+#: options.c:316
+#, fuzzy
+msgid "Tags menu disabled"
+msgstr "# 註釋已停用"
+
+#: options.c:316
+#, fuzzy
+msgid "Tags menu enabled"
+msgstr "# 註釋已啟用"
+
+#: options.c:316
+msgid "Tags menu mode"
+msgstr ""
+
+#: options.c:317
 msgid "Search prompting on"
 msgstr "搜尋提示開啟"
 
-#: rc.c:308
+#: options.c:317
 msgid "Search prompting off"
 msgstr "搜尋提示關閉"
 
-#: rc.c:308
-msgid "  Search prompting "
-msgstr "  搜尋提示 "
+#: options.c:317
+#, fuzzy
+msgid "Search prompting mode"
+msgstr "搜尋提示開啟"
 
-#: rc.c:309
+#: options.c:318
 msgid "Jump into menu is on"
 msgstr "跳入選單開啟"
 
-#: rc.c:309
+#: options.c:318
 msgid "Jump into menu is off"
 msgstr "跳入選單關閉"
 
-#: rc.c:309
-msgid "  Jump into menu "
+#: options.c:318
+#, fuzzy
+msgid "Jump into menu mode"
 msgstr "  跳入選單 "
 
-#: rc.c:310
+#: options.c:319
 msgid "Autoswap ^KB and ^KK"
 msgstr "自動切換 ^KB 和 ^KK"
 
-#: rc.c:310
+#: options.c:319
 msgid "Autoswap off "
 msgstr "自動切換關閉 "
 
-#: rc.c:310
-msgid "  Autoswap mode "
+#: options.c:319
+#, fuzzy
+msgid "Autoswap mode "
 msgstr "  自動切換模式 "
 
-#: rc.c:311
-#, c-format
+#: options.c:320
 msgid "Indent char %d (SPACE=32, TAB=9, %{abort} to abort): "
 msgstr "縮排字元 %d (空格=32, 跳格=9, %{abort} 以放棄)："
 
-#: rc.c:311
-msgid "  Indent char "
+#: options.c:320
+#, fuzzy
+msgid "Indent char "
 msgstr "  縮排字元 "
 
-#: rc.c:312
-#, c-format
-msgid "Indent step %d (%{abort} to abort): "
+#: options.c:321
+#, fuzzy
+msgid "Indent step %lld (%{abort} to abort): "
 msgstr "縮排步距 %d (%{abort} 以放棄)："
 
-#: rc.c:312
-msgid "  Indent step "
+#: options.c:321
+#, fuzzy
+msgid "Indent step "
 msgstr "  縮排步距 "
 
-#: rc.c:313
+#: options.c:322
 msgid "One space after periods for paragraph reformat"
 msgstr "小數點之後一個空格用於重新格式化段落"
 
-#: rc.c:313
+#: options.c:322
 msgid "Two spaces after periods for paragraph reformat"
 msgstr "小數點之後兩個空格用於重新格式化段落"
 
-#: rc.c:313
-msgid "  French spacing "
+#: options.c:322
+#, fuzzy
+msgid "French spacing mode"
 msgstr "  法語間隔 "
 
-#: rc.c:314
+#: options.c:323
+#, fuzzy
+msgid "One space after paragraph line"
+msgstr "小數點之後一個空格用於重新格式化段落"
+
+#: options.c:323
+#, fuzzy
+msgid "No spaces after paragraph lines"
+msgstr "小數點之後兩個空格用於重新格式化段落"
+
+#: options.c:323
+#, fuzzy
+msgid "Flowed text mode"
+msgstr "十六進位編輯模式"
+
+#: options.c:324
 msgid "Highlighting enabled"
 msgstr "高亮度顯示已啟用"
 
-#: rc.c:314
+#: options.c:324
 msgid "Highlighting disabled"
 msgstr "高亮度顯示已停用"
 
-#: rc.c:314
-msgid "H Highlighting "
+#: options.c:324
+#, fuzzy
+msgid "Syntax highlighting mode"
 msgstr "H 高亮度顯示 "
 
-#: rc.c:315
+#: options.c:325
 msgid "Inserting spaces when tab key is hit"
 msgstr "按下跳格鍵時插入空格"
 
-#: rc.c:315
+#: options.c:325
 msgid "Inserting tabs when tab key is hit"
 msgstr "按下跳格鍵時插入跳格"
 
-#: rc.c:315
-msgid "  No tabs "
+#: options.c:325
+#, fuzzy
+msgid "No tabs mode"
 msgstr "  沒有跳格 "
 
-#: rc.c:316
+#: options.c:326
 msgid "Cursor will be recentered on scrolls"
 msgstr "游標於捲動時將重新置中"
 
-#: rc.c:316
+#: options.c:326
 msgid "Cursor will not be recentered on scroll"
 msgstr "游標於捲動時將不會重新置中"
 
-#: rc.c:316
-msgid "C Center on scroll "
+#: options.c:326
+#, fuzzy
+msgid "Center on scroll mode"
 msgstr "C 捲動時置中 "
 
-#: rc.c:317
+#: options.c:327
+#, fuzzy, c-format
+msgid "Columns to scroll left or -1 for 1/2 window (%d): "
+msgstr "上下頁時保留的列數或是 -1 表示 1/2 視窗 (%d)："
+
+#: options.c:327
+msgid "Left scroll amount"
+msgstr ""
+
+#: options.c:328
+#, fuzzy, c-format
+msgid "Columns to scroll right or -1 for 1/2 window (%d): "
+msgstr "上下頁時保留的列數或是 -1 表示 1/2 視窗 (%d)："
+
+#: options.c:328
+msgid "Right scroll amount"
+msgstr ""
+
+#: options.c:329
 msgid "Automatically detect MS-DOS files"
 msgstr "自動偵測 MS-DOS 檔案"
 
-#: rc.c:317
+#: options.c:329
 msgid "Do not automatically detect MS-DOS files"
 msgstr "不自動偵測 MS-DOS 檔案"
 
-#: rc.c:317
-msgid "  Auto detect CR-LF "
+#: options.c:329
+#, fuzzy
+msgid "Auto detect CR-LF mode"
 msgstr "  自動偵測 CR-LF "
 
-#: rc.c:318
+#: options.c:330
 msgid "Automatically detect indentation"
 msgstr "自動偵測縮排"
 
-#: rc.c:318
+#: options.c:330
 msgid "Do not automatically detect indentation"
 msgstr "不自動偵測縮排"
 
-#: rc.c:318
-msgid "  Guess indent "
+#: options.c:330
+#, fuzzy
+msgid "Guess indent mode"
 msgstr "  偵測縮排 "
 
-#: rc.c:319
+#: options.c:331
 msgid "Automatically detect non-UTF-8 in UTF-8 locale"
 msgstr "於 UTF-8 語區自動偵測非 UTF-8 檔案"
 
-#: rc.c:319
+#: options.c:331
 msgid "Do not automatically detect non-UTF-8"
 msgstr "不自動偵測非 UTF-8 檔案"
 
-#: rc.c:319
-msgid "  Guess non-UTF-8 "
+#: options.c:331
+#, fuzzy
+msgid "Guess non-UTF-8 mode"
 msgstr "  偵測非 UTF-8 "
 
-#: rc.c:320
+#: options.c:332
 msgid "Automatically detect UTF-8 in non-UTF-8 locale"
 msgstr "於非 UTF-8 語區自動偵測 UTF-8 檔案"
 
-#: rc.c:320
+#: options.c:332
 msgid "Do not automatically detect UTF-8"
 msgstr "不自動偵測 UTF-8 檔案"
 
-#: rc.c:320
-msgid "  Guess UTF-8 "
+#: options.c:332
+#, fuzzy
+msgid "Guess UTF-8 mode"
 msgstr "  偵測 UTF-8 "
 
-#: rc.c:321
+#: options.c:333
+#, fuzzy
+msgid "Automatically detect UTF-16"
+msgstr "不自動偵測 UTF-8 檔案"
+
+#: options.c:333
+#, fuzzy
+msgid "Do not automatically detect UTF-16"
+msgstr "不自動偵測 UTF-8 檔案"
+
+#: options.c:333
+#, fuzzy
+msgid "Guess UTF-16 mode"
+msgstr "  偵測 UTF-8 "
+
+#: options.c:334
 msgid "Menu is transposed"
 msgstr "選單已調換"
 
-#: rc.c:321
+#: options.c:334
 msgid "Menus are not transposed"
 msgstr "選單未調換"
 
-#: rc.c:321
-msgid "  Transpose menus "
+#: options.c:334
+#, fuzzy
+msgid "Transpose menus mode"
 msgstr "  調換選單 "
 
-#: rc.c:322
+#: options.c:335
 msgid "CR-LF is line terminator"
 msgstr "CR-LF 為列尾符號"
 
-#: rc.c:322
+#: options.c:335
 msgid "LF is line terminator"
 msgstr "LF 為列尾符號"
 
-#: rc.c:322
-msgid "Z CR-LF (MS-DOS) "
+#: options.c:335
+#, fuzzy
+msgid "CR-LF (MS-DOS) mode"
 msgstr "Z CR-LF (MS-DOS) "
 
-#: rc.c:323
+#: options.c:336
 msgid "Line numbers enabled"
 msgstr "列號已啟用"
 
-#: rc.c:323
+#: options.c:336
 msgid "Line numbers disabled"
 msgstr "列號已停用"
 
-#: rc.c:323
-msgid "N Line numbers "
+#: options.c:336
+#, fuzzy
+msgid "Line numbers mode"
 msgstr "N 列號 "
 
-#: rc.c:324
+#: options.c:337
 msgid "Anchored block marking on"
 msgstr "錨點區塊標記開啟"
 
-#: rc.c:324
+#: options.c:337
 msgid "Anchored block marking off"
 msgstr "錨點區塊標記關閉"
 
-#: rc.c:324
-msgid "  Marking "
-msgstr "  標記 "
+#: options.c:337
+#, fuzzy
+msgid "Region marking mode"
+msgstr "矩形模式"
 
-#: rc.c:325
+#: options.c:338
 msgid "Characters above 127 shown as-is"
 msgstr "127 以上的字元以原樣顯示"
 
-#: rc.c:325
+#: options.c:338
 msgid "Characters above 127 shown in inverse"
 msgstr "127 以上的字元以反白顯示"
 
-#: rc.c:325
-msgid "  Meta chars as-is "
+#: options.c:338
+#, fuzzy
+msgid "Display meta chars as-is mode"
 msgstr "  後設字元原樣顯示 "
 
-#: rc.c:326
+#: options.c:339
 msgid "Last line forced to have NL when file saved"
 msgstr "檔案儲存時強制最後一列加上列尾符號"
 
-#: rc.c:326
+#: options.c:339
 msgid "Last line not forced to have NL"
 msgstr "不強制最後一列加上列尾符號"
 
-#: rc.c:326
-msgid "  Force last NL "
+#: options.c:339
+#, fuzzy
+msgid "Force last NL mode"
 msgstr "  強制最後的列尾符號 "
 
-#: rc.c:327
+#: options.c:340
 msgid "~/.joe_state file will be updated"
 msgstr "~/.joe_state 檔案將被更新"
 
-#: rc.c:327
+#: options.c:340
 msgid "~/.joe_state file will not be updated"
 msgstr "~/.joe_state 檔案將不被更新"
 
-#: rc.c:327
-msgid "  Joe_state file "
+#: options.c:340
+#, fuzzy
+msgid "Joe_state file mode"
 msgstr "  Joe_state 檔案 "
 
-#: rc.c:328
+#: options.c:341
+#, fuzzy
+msgid "Nobackup enabled"
+msgstr "換列已啟用"
+
+#: options.c:341
+#, fuzzy
+msgid "Nobackup disabled"
+msgstr "換列已停用"
+
+#: options.c:341
+msgid "No backup mode"
+msgstr ""
+
+#: options.c:342
 msgid "Backup files will not be made"
 msgstr "將無法製作備份檔案"
 
-#: rc.c:328
+#: options.c:342
 msgid "Backup files will be made"
 msgstr "將會製作備份檔案"
 
-#: rc.c:328
-msgid "  Disable backups "
+#: options.c:342
+#, fuzzy
+msgid "Disable backups mode"
 msgstr "  停用備份 "
 
-#: rc.c:329
+#: options.c:343
+#, fuzzy
+msgid "DEADJOE files will not be made"
+msgstr "將無法製作備份檔案"
+
+#: options.c:343
+#, fuzzy
+msgid "DEADJOE files will be made"
+msgstr "將會製作備份檔案"
+
+#: options.c:343
+msgid "Disable DEADJOE mode"
+msgstr ""
+
+#: options.c:344
 msgid "Files will not be locked"
 msgstr "檔案將不被鎖定"
 
-#: rc.c:329
+#: options.c:344
 msgid "Files will be locked"
 msgstr "檔案將被鎖定"
 
-#: rc.c:329
-msgid "  Disable locks "
+#: options.c:344
+#, fuzzy
+msgid "Disable locks mode"
 msgstr "  停用鎖定 "
 
-#: rc.c:330
+#: options.c:345
 msgid "No file modification time check"
 msgstr "不檢查檔案修改時間"
 
-#: rc.c:330
+#: options.c:345
 msgid "File modification time checking enabled"
 msgstr "檢查檔案修改時間已啟用"
 
-#: rc.c:330
-msgid "  Disable mtime check "
+#: options.c:345
+#, fuzzy
+msgid "Disable mtime check mode"
 msgstr "  停用檔案修改時間檢查 "
 
-#: rc.c:331
+#: options.c:346
 msgid "No current dir"
 msgstr "沒有現行目錄"
 
-#: rc.c:331
+#: options.c:346
 msgid "Current dir enabled"
 msgstr "現行目錄已啟用"
 
-#: rc.c:331
-msgid "  Disable current dir "
+#: options.c:346
+#, fuzzy
+msgid "Disable current dir "
 msgstr "  停用現行目錄"
 
-#: rc.c:332
+#: options.c:347
 msgid "Hardlinks will be broken"
 msgstr "硬式連結將被中斷"
 
-#: rc.c:332
+#: options.c:347
 msgid "Hardlinks not broken"
 msgstr "硬式連結未被中斷"
 
-#: rc.c:332
-msgid "  Break hard links "
+#: options.c:347
+#, fuzzy
+msgid "Break hard links "
 msgstr "  中斷硬式連結 "
 
-#: rc.c:333
+#: options.c:348
+#, fuzzy
+msgid "Links will be broken"
+msgstr "硬式連結將被中斷"
+
+#: options.c:348
+#, fuzzy
+msgid "Links not broken"
+msgstr "硬式連結未被中斷"
+
+#: options.c:348
+#, fuzzy
+msgid "Break links "
+msgstr "  中斷硬式連結 "
+
+#: options.c:349
 msgid "Highlighting turned off after block operations"
 msgstr "區塊操作之後關閉高亮度顯示"
 
-#: rc.c:333
+#: options.c:349
 msgid "Highlighting not turned off after block operations"
 msgstr "區塊操作之後不關閉高亮度顯示"
 
-#: rc.c:333
-msgid "  Auto unmark "
+#: options.c:349
+#, fuzzy
+msgid "Auto unmark "
 msgstr "  自動取消標記 "
 
-#: rc.c:334
+#: options.c:350
 msgid "Prompt for filename in save & exit command"
 msgstr "儲存 & 離開命令會提示輸入檔名"
 
-#: rc.c:334
+#: options.c:350
 msgid "Don't prompt for filename in save & exit command"
 msgstr "儲存 & 離開命令不提示輸入檔名"
 
-#: rc.c:334
-msgid "  Exit ask "
+#: options.c:350
+#, fuzzy
+msgid "Exit ask "
 msgstr "  離開時詢問 "
 
-#: rc.c:335
+#: options.c:351
 msgid "Warning bell enabled"
 msgstr "警告響鈴已啟用"
 
-#: rc.c:335
+#: options.c:351
 msgid "Warning bell disabled"
 msgstr "警告響鈴已停用"
 
-#: rc.c:335
-msgid "B Beeps "
+#: options.c:351
+#, fuzzy
+msgid "Beeps "
 msgstr "B 鳴聲 "
 
-#: rc.c:336
+#: options.c:352
 msgid "Top-most status line disabled"
 msgstr "置頂狀態列已停用"
 
-#: rc.c:336
+#: options.c:352
 msgid "Top-most status line enabled"
 msgstr "置頂狀態列已啟用"
 
-#: rc.c:336
-msgid "  Disable status line "
+#: options.c:352
+#, fuzzy
+msgid "Disable status line "
 msgstr "  停用狀態列 "
 
-#: rc.c:337
+#: options.c:353
 msgid "Status line updated constantly"
 msgstr "經常更新狀態列"
 
-#: rc.c:337
+#: options.c:353
 msgid "Status line updated once/sec"
 msgstr "每秒更新一次狀態列"
 
-#: rc.c:337
-msgid "  Fast status line "
+#: options.c:353
+#, fuzzy
+msgid "Fast status line "
 msgstr "  快速狀態列 "
 
-#: rc.c:338
+#: options.c:354
 #, c-format
 msgid "Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): "
 msgstr "上下頁時保留的列數或是 -1 表示 1/2 視窗 (%d)："
 
-#: rc.c:338
-msgid "  No. PgUp/PgDn lines "
+#: options.c:354
+#, fuzzy
+msgid "No. PgUp/PgDn lines "
 msgstr "  上下頁保留列數 "
 
-#: rc.c:339
+#: options.c:355
+msgid "No. undo records to keep, or (0 for infinite): "
+msgstr ""
+
+#: options.c:355
+msgid "No. undo records "
+msgstr ""
+
+#: options.c:356
 msgid "Start search after a search repeats previous search"
 msgstr "開始搜尋之後的搜尋會重複前一個搜尋"
 
-#: rc.c:339
+#: options.c:356
 msgid "Start search always starts a new search"
 msgstr "開始搜尋會自動開始新的搜尋"
 
-#: rc.c:339
-msgid "  Continued search "
+#: options.c:356
+#, fuzzy
+msgid "Continued search "
 msgstr "  繼續的搜尋 "
 
-#: rc.c:340
+#: options.c:357
 msgid "Full editing"
 msgstr "完整編輯"
 
-#: rc.c:340
-msgid "O Read only "
-msgstr "O 唯讀 "
+#: options.c:357
+#, fuzzy
+msgid "Read only "
+msgstr "唯讀"
 
-#: rc.c:341
+#: options.c:358
 msgid "Smart home key enabled"
 msgstr "智慧 HOME 按鍵已啟用"
 
-#: rc.c:341
+#: options.c:358
 msgid "Smart home key disabled"
 msgstr "智慧 HOME 按鍵已停用"
 
-#: rc.c:341
-msgid "  Smart home key "
+#: options.c:358
+#, fuzzy
+msgid "Smart home key "
 msgstr "  智慧 HOME 按鍵 "
 
-#: rc.c:342
+#: options.c:359
 msgid "Smart home goes to indentation first"
 msgstr "智慧 HOME 按鍵先跳到縮排位置"
 
-#: rc.c:342
+#: options.c:359
 msgid "Smart home goes home first"
 msgstr "智慧 HOME 按鍵先跳到列首"
 
-#: rc.c:342
-msgid "  To indent first "
+#: options.c:359
+#, fuzzy
+msgid "To indent first "
 msgstr "  先到縮排位置 "
 
-#: rc.c:343
+#: options.c:360
 msgid "Smart backspace key enabled"
 msgstr "智慧退格鍵已啟用"
 
-#: rc.c:343
+#: options.c:360
 msgid "Smart backspace key disabled"
 msgstr "智慧退格鍵已停用"
 
-#: rc.c:343
-msgid "  Smart backspace "
+#: options.c:360
+#, fuzzy
+msgid "Smart backspace "
 msgstr "  智慧退格鍵 "
 
-#: rc.c:344
+#: options.c:361
 msgid "Indentation clean up enabled"
 msgstr "縮排清理已啟用"
 
-#: rc.c:344
+#: options.c:361
 msgid "Indentation clean up disabled"
 msgstr "縮排清理已停用"
 
-#: rc.c:344
-msgid "  Clean up indents "
+#: options.c:361
+#, fuzzy
+msgid "Clean up indents "
 msgstr "  清理縮排 "
 
-#: rc.c:345
+#: options.c:362
 msgid "Picture drawing mode enabled"
 msgstr "圖片繪製模式已啟用"
 
-#: rc.c:345
+#: options.c:362
 msgid "Picture drawing mode disabled"
 msgstr "圖片繪製模式已停用"
 
-#: rc.c:345
-msgid "P Picture mode "
+#: options.c:362
+#, fuzzy
+msgid "Picture mode "
 msgstr "P 圖片模式 "
 
-#: rc.c:346
+#: options.c:363
 #, c-format
 msgid "Backup files stored in (%s): "
 msgstr "備份檔案儲存於 (%s)："
 
-#: rc.c:346
-msgid "  Path to backup files "
+#: options.c:363
+#, fuzzy
+msgid "Path to backup files "
 msgstr "  備份檔案所在路徑 "
 
-#: rc.c:347
+#: options.c:364
 msgid "Select syntax (%{abort} to abort): "
 msgstr "選取語法 (%{abort} 以放棄)："
 
-#: rc.c:347
-msgid "Y Syntax"
+#: options.c:364
+#, fuzzy
+msgid "Syntax"
 msgstr "Y 語法"
 
-#: rc.c:348
+#: options.c:365
 msgid "Select file character set (%{abort} to abort): "
 msgstr "選取檔案字元集 (%{abort} 以放棄)："
 
-#: rc.c:348
-msgid "E Encoding "
+#: options.c:365
+#, fuzzy
+msgid "Encoding "
 msgstr "E 編碼 "
 
-#: rc.c:349
+#: options.c:366
+#, fuzzy
+msgid "Select file type (%{abort} to abort): "
+msgstr "選取檔案字元集 (%{abort} 以放棄)："
+
+#: options.c:366
+msgid "File type "
+msgstr ""
+
+#: options.c:367
+#, fuzzy
+msgid "Highlighter context enabled"
+msgstr "高亮度顯示已啟用"
+
+#: options.c:367
+#, fuzzy
+msgid "Highlighter context disabled"
+msgstr "高亮度顯示已停用"
+
+#: options.c:367
+msgid "^G uses highlighter context "
+msgstr ""
+
+#: options.c:368
 msgid "Single quoting enabled"
 msgstr "單一引言已啟用"
 
-#: rc.c:349
+#: options.c:368
 msgid "Single quoting disabled"
 msgstr "單一引言已停用"
 
-#: rc.c:349
-msgid "  ^G ignores '... ' "
+#: options.c:368
+#, fuzzy
+msgid "^G ignores '... ' "
 msgstr "  ^G 忽略「...」"
 
-#: rc.c:350
+#: options.c:369
+#, fuzzy
+msgid "Double quoting disabled"
+msgstr "單一引言已停用"
+
+#: options.c:369
+#, fuzzy
+msgid "Double quoting enabled"
+msgstr "單一引言已啟用"
+
+#: options.c:369
+#, fuzzy
+msgid "^G ignores \"... \" "
+msgstr "  ^G 忽略「...」"
+
+#: options.c:370
 msgid "/* comments enabled"
 msgstr "/* 註釋已啟用"
 
-#: rc.c:350
+#: options.c:370
 msgid "/* comments disabled"
 msgstr "/* 註釋已停用"
 
-#: rc.c:350
-msgid "  ^G ignores /*...*/ "
+#: options.c:370
+#, fuzzy
+msgid "^G ignores /*...*/ "
 msgstr "  ^G 忽略 /*...*/ "
 
-#: rc.c:351
+#: options.c:371
 msgid "// comments enabled"
 msgstr "// 註釋已啟用"
 
-#: rc.c:351
+#: options.c:371
 msgid "// comments disabled"
 msgstr "// 註釋已停用"
 
-#: rc.c:351
-msgid "  ^G ignores //... "
+#: options.c:371
+#, fuzzy
+msgid "^G ignores //... "
 msgstr "  ^G 忽略 //... "
 
-#: rc.c:352
+#: options.c:372
 msgid "# comments enabled"
 msgstr "# 註釋已啟用"
 
-#: rc.c:352
+#: options.c:372
 msgid "# comments disabled"
 msgstr "# 註釋已停用"
 
-#: rc.c:352
-msgid "  ^G ignores #... "
+#: options.c:372
+#, fuzzy
+msgid "^G ignores #... "
 msgstr "  ^G 忽略 #... "
 
-#: rc.c:353
+#: options.c:373
 msgid "-- comments enabled"
 msgstr "-- 註釋已啟用"
 
-#: rc.c:353
+#: options.c:373
 msgid "-- comments disabled"
 msgstr "-- 註釋已停用"
 
-#: rc.c:353
-msgid "  ^G ignores --... "
+#: options.c:373
+#, fuzzy
+msgid "^G ignores --... "
 msgstr "  ^G 忽略 --... "
 
-#: rc.c:354
+#: options.c:374
 msgid "; comments enabled"
 msgstr "；註釋已啟用"
 
-#: rc.c:354
+#: options.c:374
 msgid "; comments disabled"
 msgstr "；註釋停用"
 
-#: rc.c:354
-msgid "  ^G ignores ;... "
+#: options.c:374
+#, fuzzy
+msgid "^G ignores ;... "
 msgstr "  ^G 忽略 ;..."
 
-#: rc.c:355
+#: options.c:375
+#, fuzzy, c-format
+msgid "% comments enabled"
+msgstr "# 註釋已啟用"
+
+#: options.c:375
+#, fuzzy, c-format
+msgid "% comments disabled"
+msgstr "# 註釋已停用"
+
+#: options.c:375
+#, fuzzy
+msgid "^G ignores %... "
+msgstr "  ^G 忽略 #... "
+
+#: options.c:376
 #, c-format
 msgid "Text delimiters (%s): "
 msgstr "文字分隔符號 (%s)："
 
-#: rc.c:355
-msgid "  Text delimiters "
+#: options.c:376
+#, fuzzy
+msgid "Text delimiters "
 msgstr "  文字分隔符號 "
 
-#: rc.c:356
+#: options.c:377
 #, c-format
 msgid "Language (%s): "
 msgstr "語言 (%s)："
 
-#: rc.c:356
-msgid "V Language "
+#: options.c:377
+#, fuzzy
+msgid "Language "
 msgstr "V 語言 "
 
-#: rc.c:357
+#: options.c:378
 #, c-format
 msgid "Characters which can indent paragraphs (%s): "
 msgstr "可以縮排段落的字元 (%s)："
 
-#: rc.c:357
-msgid "  Paragraph indent chars "
+#: options.c:378
+#, fuzzy
+msgid "Paragraph indent chars "
 msgstr "  段落縮排字元 "
 
-#: rc.c:358
+#: options.c:379
+#, fuzzy, c-format
+msgid "Characters which begin non-paragraph lines (%s): "
+msgstr "可以縮排段落的字元 (%s)："
+
+#: options.c:379
+#, fuzzy
+msgid "Non-paragraph chars "
+msgstr "  段落縮排字元 "
+
+#: options.c:380
 msgid "Clicking can move the cursor past end of line"
 msgstr "按一下可以移動游標越過列尾"
 
-#: rc.c:358
+#: options.c:380
 msgid "Clicking past end of line moves cursor to the end"
 msgstr "按一下越過列尾會移動游標到結束"
 
-#: rc.c:358
-msgid "  Click past end "
+#: options.c:380
+#, fuzzy
+msgid "Click past end "
 msgstr "  按一下越過列尾 "
 
-#: rc.c:359
+#: options.c:381
 msgid "Mouse action is done with the right button"
 msgstr "以右鍵完成滑鼠動作"
 
-#: rc.c:359
+#: options.c:381
 msgid "Mouse action is done with the left button"
 msgstr "以左鍵完成滑鼠動作"
 
-#: rc.c:359
-msgid "  Right button "
+#: options.c:381
+#, fuzzy
+msgid "Right button "
 msgstr "  滑鼠右鍵 "
 
-#: rc.c:669 rc.c:688 rc.c:700
+#: options.c:382
+msgid "Suppress startup notice"
+msgstr ""
+
+#: options.c:383
+msgid "Suppress exit message"
+msgstr ""
+
+#: options.c:384
+msgid "Help is UTF-8"
+msgstr ""
+
+#: options.c:385
+msgid "Disable XON/XOFF"
+msgstr ""
+
+#: options.c:386
+msgid "Orphan extra files"
+msgstr ""
+
+#: options.c:387
+msgid "Start editor with help displayed"
+msgstr ""
+
+#: options.c:388
+msgid "Emit padding NULs"
+msgstr ""
+
+#: options.c:389
+msgid "No. screen lines (if no window size ioctl)"
+msgstr ""
+
+#: options.c:390
+msgid "Baud rate"
+msgstr ""
+
+#: options.c:391
+msgid "No. screen columns (if no window size ioctl)"
+msgstr ""
+
+#: options.c:392
+msgid "No. screen lines to skip"
+msgstr ""
+
+#: options.c:393
+msgid "Suppress tty init sequence"
+msgstr ""
+
+#: options.c:394
+msgid "Bracketed paste mode"
+msgstr ""
+
+#: options.c:395
+msgid "Paste quoting hack"
+msgstr ""
+
+#: options.c:396
+msgid "Suppress history preserving linefeeds"
+msgstr ""
+
+#: options.c:397
+msgid "Enable mouse"
+msgstr ""
+
+#: options.c:398
+msgid "Screen update uses tabs"
+msgstr ""
+
+#: options.c:399
+msgid "Assume terminal supports color"
+msgstr ""
+
+#: options.c:400
+msgid "Assume terminal supports 256 colors"
+msgstr ""
+
+#: options.c:401
+msgid "Assume xterm patched for JOE"
+msgstr ""
+
+#: options.c:515
+#, fuzzy
+msgid "No such file type"
+msgstr "無此類按鍵對應"
+
+#: options.c:877 options.c:896 options.c:908 options.c:920
 msgid "Value out of range"
 msgstr "值超出範圍"
 
-#: rc.c:724
+#: options.c:946
 msgid "Syntax definition file not found"
 msgstr "找不到語法定義檔案"
 
-#: rc.c:799
+#: options.c:1047
+msgid "UTF-8 encoding not allowed with hexadecimal windows"
+msgstr ""
+
+#: options.c:1055
 #, c-format
 msgid "%s encoding assumed for this file"
 msgstr "%s 編碼假設用於這個檔案"
 
-#: rc.c:802
+#: options.c:1058
 msgid "Character set not found"
 msgstr "找不到字元集"
 
-#: rc.c:1010
-#, c-format
-msgid "Processing '%s'..."
-msgstr "處理「%s」…"
+#: options.c:1368
+#, fuzzy
+msgid "No such option"
+msgstr "無此類命令"
 
-#: rc.c:1066
-#, c-format
-msgid "\n"
-"%s %d: Unknown option %s"
-msgstr "\n"
-"%s %d: 不明的選項 %s"
+#: options.c:1383
+msgid "Option: "
+msgstr ""
 
-#: rc.c:1099
-#, c-format
-msgid "\n"
-"%s %d: macro missing from :def"
-msgstr "\n"
-"%s %d: 巨集缺少自 :def"
+#: rc.c:16
+msgid "Missing or empty :main keymap\n"
+msgstr ""
 
-#: rc.c:1103
-#, c-format
-msgid "\n"
-"%s %d: command name missing from :def"
-msgstr "\n"
-"%s %d: 命令名稱缺少自 :def"
+#: rc.c:21
+msgid "Missing or empty :prompt keymap\n"
+msgstr ""
 
-#: rc.c:1114
-#, c-format
-msgid "\n"
-"%s %d: context name missing from :inherit"
-msgstr "\n"
-"%s %d: 上下文名稱缺少自 :inherit"
+#: rc.c:26
+msgid "Missing or empty :query keymap\n"
+msgstr ""
 
-#: rc.c:1118
-#, c-format
-msgid "\n"
-"%s %d: No context selected for :inherit"
-msgstr "\n"
-"%s %d: 無上下文選用於 :inherit"
+#: rc.c:31
+msgid "Missing or empty :querya keymap\n"
+msgstr ""
 
-#: rc.c:1146
-#, c-format
-msgid "\n"
-"%s %d: Couldn't open %s"
-msgstr "\n"
-"%s %d: 無法開啟 %s"
+#: rc.c:36
+msgid "Missing or empty :querysr keymap\n"
+msgstr ""
 
-#: rc.c:1154
-#, c-format
-msgid "\n"
-"%s %d: :include missing file name"
-msgstr "\n"
-"%s %d: :include 缺少檔案名稱"
+#: rc.c:41
+msgid "Missing or empty :shell keymap\n"
+msgstr ""
 
-#: rc.c:1167
-#, c-format
-msgid "\n"
-"%s %d: No context selected for :delete"
-msgstr "\n"
-"%s %d: 無上下文選用於 :delete"
+#: rc.c:45
+msgid "Missing or empty :vtshell keymap\n"
+msgstr ""
 
-#: rc.c:1174
-#, c-format
-msgid "\n"
-"%s %d: Invalid context name"
-msgstr "\n"
-"%s %d: 無效的上下文名稱"
-
-#: rc.c:1185
-#, c-format
-msgid "\n"
-"%s %d: No context selected for macro to key-sequence binding"
-msgstr "\n"
-"%s %d: 無上下文選用於巨集到按鍵序列連結"
-
-#: rc.c:1194
-#, c-format
-msgid "\n"
-"%s %d: Unknown command in macro"
-msgstr "\n"
+#: rc.c:64
+#, fuzzy, c-format
+msgid "%s %d: Unknown command in macro\n"
+msgstr ""
+"\n"
 "%s %d: 巨集中不明的命令"
 
-#: rc.c:1210
-#, c-format
-msgid "\n"
-"%s %d: Bad key sequence '%s'"
-msgstr "\n"
+#: rc.c:106
+#, fuzzy, c-format
+msgid "Processing '%s'...\n"
+msgstr "處理「%s」…"
+
+#: rc.c:186
+#, fuzzy, c-format
+msgid "%s %d: Unknown option %s\n"
+msgstr ""
+"\n"
+"%s %d: 不明的選項 %s"
+
+#: rc.c:221
+#, fuzzy, c-format
+msgid "%s %d: macro missing from :def\n"
+msgstr ""
+"\n"
+"%s %d: 巨集缺少自 :def"
+
+#: rc.c:225
+#, fuzzy, c-format
+msgid "%s %d: command name missing from :def\n"
+msgstr ""
+"\n"
+"%s %d: 命令名稱缺少自 :def"
+
+#: rc.c:236
+#, fuzzy, c-format
+msgid "%s %d: context name missing from :inherit\n"
+msgstr ""
+"\n"
+"%s %d: 上下文名稱缺少自 :inherit"
+
+#: rc.c:240
+#, fuzzy, c-format
+msgid "%s %d: No context selected for :inherit\n"
+msgstr ""
+"\n"
+"%s %d: 無上下文選用於 :inherit"
+
+#: rc.c:272
+#, fuzzy, c-format
+msgid "%s %d: Couldn't open %s\n"
+msgstr ""
+"\n"
+"%s %d: 無法開啟 %s"
+
+#: rc.c:280
+#, fuzzy, c-format
+msgid "%s %d: :include missing file name\n"
+msgstr ""
+"\n"
+"%s %d: :include 缺少檔案名稱"
+
+#: rc.c:293
+#, fuzzy, c-format
+msgid "%s %d: No context selected for :delete\n"
+msgstr ""
+"\n"
+"%s %d: 無上下文選用於 :delete"
+
+#: rc.c:304
+#, fuzzy, c-format
+msgid "%s %d: :defmap missing name\n"
+msgstr ""
+"\n"
+"%s %d: :include 缺少檔案名稱"
+
+#: rc.c:329
+#, fuzzy, c-format
+msgid "%s %d: Invalid context name\n"
+msgstr ""
+"\n"
+"%s %d: 無效的上下文名稱"
+
+#: rc.c:340
+#, fuzzy, c-format
+msgid "%s %d: No context selected for macro to key-sequence binding\n"
+msgstr ""
+"\n"
+"%s %d: 無上下文選用於巨集到按鍵序列連結"
+
+#: rc.c:361
+#, fuzzy, c-format
+msgid "%s %d: Bad key sequence '%s'\n"
+msgstr ""
+"\n"
 "%s %d: 不當的按鍵序列「%s」"
 
-#: rc.c:1221
-msgid "\n"
-"done\n"
-msgstr "\n"
-"完成\n"
+#: rc.c:372
+#, c-format
+msgid "Finished processing %s\n"
+msgstr ""
 
-#: rc.c:1223
-msgid "done\n"
-msgstr "完成\n"
-
-#: scrn.c:720
-msgid "Sorry, your terminal can't do absolute cursor positioning.\n"
+#: scrn.c:824
+msgid ""
+"Sorry, your terminal can't do absolute cursor positioning.\n"
 "It's broken\n"
-msgstr "抱歉，您的終端機不支援絕對游標定位。\n"
+msgstr ""
+"抱歉，您的終端機不支援絕對游標定位。\n"
 "程式已中斷\n"
 
-#: selinux.c:35 selinux.c:84 selinux.c:141
+#: selinux.c:35 selinux.c:83 selinux.c:138
 #, c-format
 msgid "Could not get security context for %s"
 msgstr "無法取得 %s 的安全狀態組合"
 
 #: selinux.c:41
-msgid "\n"
+msgid ""
+"\n"
 "Could not get security context for "
-msgstr "\n"
+msgstr ""
+"\n"
 "無法取得安全狀態組合用於 "
 
 #: selinux.c:51
@@ -1107,339 +1494,363 @@ msgstr "\n"
 msgid "Could not set security context for %s"
 msgstr "無法設定 %s 的安全狀態組合"
 
-#: selinux.c:91
+#: selinux.c:90
 #, c-format
 msgid "Could not set default security context for %s"
 msgstr "無法設定 %s 的預設安全狀態組合"
 
-#: selinux.c:113
+#: selinux.c:111
 msgid "Could not reset default security context"
 msgstr "無法重置預設安全狀態組合"
 
-#: selinux.c:146
+#: selinux.c:143
 #, c-format
 msgid "%s Security Context %s"
 msgstr "%s 安全狀態組合 %s"
 
-#: syntax.c:259
+#: syntax.c:475
 #, c-format
 msgid "%s %d: Class already defined\n"
 msgstr "%s %d: 類別已經定義\n"
 
-#: syntax.c:339
+#: syntax.c:488
+#, fuzzy, c-format
+msgid "%s %d: Missing class name\n"
+msgstr "%s %d: 缺少狀態名稱\n"
+
+#: syntax.c:574
+#, fuzzy, c-format
+msgid "%s %d: Missing parameter name\n"
+msgstr "%s %d: 缺少狀態名稱\n"
+
+#: syntax.c:590
 #, c-format
 msgid "%s %d: Missing )\n"
 msgstr "%s %d: 缺少 )\n"
 
-#: syntax.c:411
-#, c-format
-msgid "%s %d: missing parameter for ifdef\n"
-msgstr "%s %d: 缺少 ifdef 的參數\n"
-
-#: syntax.c:421
-#, c-format
-msgid "%s %d: else with no matching if\n"
-msgstr "%s %d: else 找不到匹配的 if\n"
-
-#: syntax.c:428
-#, c-format
-msgid "%s %d: endif with no matching if\n"
-msgstr "%s %d: endif 找不到匹配的 if\n"
-
-#: syntax.c:432 syntax.c:560
-#, c-format
-msgid "%s %d: Missing subroutine name\n"
-msgstr "%s %d: 缺少副常式名稱\n"
-
-#: syntax.c:447
-#, c-format
-msgid "%s %d: Unknown control statement\n"
-msgstr "%s %d: 不明的控制敘述\n"
-
-#: syntax.c:450
-#, c-format
-msgid "%s %d: Missing control statement name\n"
-msgstr "%s %d: 缺少控制敘述名稱\n"
-
-#: syntax.c:477
-#, c-format
-msgid "%s %d: Unknown class\n"
-msgstr "%s %d: 不明的類別\n"
-
-#: syntax.c:480
-#, c-format
-msgid "%s %d: Missing color for state definition\n"
-msgstr "%s %d: 缺少狀態定義的顏色\n"
-
-#: syntax.c:482 syntax.c:610
-#, c-format
-msgid "%s %d: Missing state name\n"
-msgstr "%s %d: 缺少狀態名稱\n"
-
-#: syntax.c:503
-#, c-format
-msgid "%s %d: Bad string\n"
-msgstr "%s %d: 不當的字串\n"
-
-#: syntax.c:543 syntax.c:545 syntax.c:554 syntax.c:568 syntax.c:604
-#: syntax.c:606
+#: syntax.c:625 syntax.c:627 syntax.c:636 syntax.c:647
 #, c-format
 msgid "%s %d: Missing value for option\n"
 msgstr "%s %d: 缺少選項值\n"
 
-#: syntax.c:608 syntax.c:624
+#: syntax.c:641 syntax.c:789
 #, c-format
-msgid "%s %d: Unknown option\n"
-msgstr "%s %d: 不明的選項\n"
+msgid "%s %d: Missing subroutine name\n"
+msgstr "%s %d: 缺少副常式名稱\n"
 
-#: syntax.c:612
+#: syntax.c:681 syntax.c:848
+#, c-format
+msgid "%s %d: Missing state name\n"
+msgstr "%s %d: 缺少狀態名稱\n"
+
+#: syntax.c:683
 #, c-format
 msgid "%s %d: Missing string\n"
 msgstr "%s %d: 缺少字串\n"
 
-#: syntax.c:633
+#: syntax.c:695
+#, c-format
+msgid "%s %d: Unknown option\n"
+msgstr "%s %d: 不明的選項\n"
+
+#: syntax.c:768
+#, c-format
+msgid "%s %d: missing parameter for ifdef\n"
+msgstr "%s %d: 缺少 ifdef 的參數\n"
+
+#: syntax.c:778
+#, c-format
+msgid "%s %d: else with no matching if\n"
+msgstr "%s %d: else 找不到匹配的 if\n"
+
+#: syntax.c:785
+#, c-format
+msgid "%s %d: endif with no matching if\n"
+msgstr "%s %d: endif 找不到匹配的 if\n"
+
+#: syntax.c:804
+#, c-format
+msgid "%s %d: Unknown control statement\n"
+msgstr "%s %d: 不明的控制敘述\n"
+
+#: syntax.c:807
+#, c-format
+msgid "%s %d: Missing control statement name\n"
+msgstr "%s %d: 缺少控制敘述名稱\n"
+
+#: syntax.c:834
+#, c-format
+msgid "%s %d: Unknown class\n"
+msgstr "%s %d: 不明的類別\n"
+
+#: syntax.c:842
+#, fuzzy, c-format
+msgid "%s %d: Unknown context\n"
+msgstr "%s %d: 不明的選項\n"
+
+#: syntax.c:846
+#, c-format
+msgid "%s %d: Missing color for state definition\n"
+msgstr "%s %d: 缺少狀態定義的顏色\n"
+
+#: syntax.c:873
+#, c-format
+msgid "%s %d: Bad string\n"
+msgstr "%s %d: 不當的字串\n"
+
+#: syntax.c:884
 #, c-format
 msgid "%s %d: Missing jump\n"
 msgstr "%s %d: 缺少跳躍命令\n"
 
-#: syntax.c:635
+#: syntax.c:886
 #, c-format
 msgid "%s %d: No state\n"
 msgstr "%s %d: 無狀態\n"
 
-#: syntax.c:637
+#: syntax.c:888
 #, c-format
 msgid "%s %d: Unknown character\n"
 msgstr "%s %d: 不明的字元\n"
 
-#: syntax.c:644
+#: syntax.c:895
 #, c-format
 msgid "%s %d: ifdef with no matching endif\n"
 msgstr "%s %d: ifdef 找不到匹配的 endif\n"
 
-#: tab.c:212 tab.c:271
+#: tab.c:234 tab.c:294
 msgid "Couldn't read directory "
 msgstr "無法讀取目錄 "
 
-#: termcap.c:219
+#: termcap.c:224
 msgid "Couldn't load termcap entry.  Using ansi default\n"
 msgstr "無法載入 termcap 項目。使用 ansi 預設值\n"
 
-#: termcap.c:240
-#, c-format
-msgid "%s is out of date\n"
+#: termcap.c:245
+#, fuzzy, c-format
+msgid "termcap: %s is out of date\n"
 msgstr "%s 已過期\n"
 
-#: tty.c:314
+#: tty.c:340
 msgid "Couldn't open /dev/tty\n"
 msgstr "無法開啟 /dev/tty\n"
 
-#: tty.c:731
+#: tty.c:817
 msgid "You are at the command shell.  Type 'exit' to return\n"
 msgstr "您正位於命令殼層。輸入「exit」以返回\n"
 
-#: tty.c:795
+#: tty.c:883
 msgid "You have suspended the program.  Type 'fg' to return\n"
 msgstr "您已將程式懸置。輸入「fg」以返回\n"
 
-#: tty.c:1146
+#: tty.c:1252
 #, c-format
 msgid "Couldn't execute shell '%s'\n"
 msgstr "無法執行命令殼層「%s」\n"
 
-#: tw.c:213
+#: tw.c:354
 msgid "Unnamed"
 msgstr "未命名"
 
-#: tw.c:219
+#: tw.c:360
 msgid "(Modified)"
 msgstr "(已修改)"
 
-#: tw.c:223
+#: tw.c:364
 msgid "(Read only)"
 msgstr "(唯讀)"
 
-#: tw.c:329
+#: tw.c:539
 msgid "*SHELL*"
 msgstr "*SHELL*"
 
-#: tw.c:333
+#: tw.c:543
 #, c-format
 msgid "(Macro %d recording...)"
 msgstr "(巨集 %d 記錄中…)"
 
-#: tw.c:558 tw.c:584 ufile.c:1010
+#: tw.c:841 tw.c:869 ufile.c:1196 ufile.c:1407
 msgid "Lose changes to this file (y,n,%{abort})? "
 msgstr "放棄這個檔案的變更 (y,n,%{abort})？"
 
-#: ublock.c:284
+#: ublock.c:291
 msgid "Selection cleared."
 msgstr "選擇區已清空。"
 
-#: ublock.c:292 ublock.c:309
+#: ublock.c:299 ublock.c:316
 msgid "Selection started."
 msgstr "選擇區已開始。"
 
-#: ublock.c:417 ublock.c:503 ublock.c:559 ublock.c:887 ublock.c:921
-#: ublock.c:1083 ufile.c:435 umath.c:177 undo.c:455
+#: ublock.c:440 ublock.c:530 ublock.c:590 ublock.c:924 ublock.c:960
+#: ublock.c:1133 ufile.c:435 umath.c:274 undo.c:480
 msgid "No block"
 msgstr "沒有區塊"
 
-#: ublock.c:756 ublock.c:839
+#: ublock.c:789 ublock.c:874
 msgid "Selected lines not properly indented"
 msgstr "所選列無法適當縮排"
 
-#: ublock.c:1067 ushell.c:86
+#: ublock.c:968 ublock.c:972
+#, fuzzy
+msgid "Couldn't create pipe"
+msgstr "無法讀取目錄 "
+
+#: ublock.c:1117 ushell.c:198
 msgid "Sorry, no sub-processes in DOS (yet)"
 msgstr "抱歉，在 DOS 中(尚)無子行程"
 
-#: ublock.c:1072
+#: ublock.c:1122
 msgid "Command to filter block through (%{abort} to abort): "
 msgstr "用來篩選區塊的命令 (%{abort} 以放棄)："
 
-#: ublock.c:1077
+#: ublock.c:1127
 msgid "Command to filter file through (%{abort} to abort): "
 msgstr "用來篩選檔案的命令 (%{abort} 以放棄)："
 
-#: uedit.c:1388 utag.c:73
+#: uedit.c:1434
 msgid "Invalid line number"
 msgstr "無效的列號"
 
-#: uedit.c:1395
+#: uedit.c:1443
 msgid "Go to line (%{abort} to abort): "
 msgstr "前往指定列 (%{abort} 以放棄)："
 
-#: uedit.c:1424
+#: uedit.c:1475
 msgid "Invalid column number"
 msgstr "無效的行號"
 
-#: uedit.c:1431
+#: uedit.c:1484
 msgid "Go to column (%{abort} to abort): "
 msgstr "前往指定行 (%{abort} 以放棄)："
 
-#: uedit.c:1460
+#: uedit.c:1516
 msgid "Invalid byte number"
 msgstr "無效的位元組數"
 
-#: uedit.c:1467
+#: uedit.c:1525
 msgid "Go to byte (%{abort} to abort): "
 msgstr "前往指定位元組 (%{abort} 以放棄)："
 
-#: uedit.c:1911
+#: uedit.c:2021
 msgid "Unicode (ISO-10646) character in hex (%{abort} to abort): "
 msgstr "十六進位顯示的萬國碼 (ISO-10646) 字元 (%{abort} 以放棄)："
 
-#: uedit.c:2036
+#: uedit.c:2148
 msgid "Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"
 msgstr "Ctrl- (0-9 用於十進位、ascii, x 用於十六進位或 o 用於八進位)"
 
-#: uedit.c:2099
+#: uedit.c:2222
 msgid "Quote"
 msgstr "引言"
 
-#: uedit.c:2166
+#: uedit.c:2295
 #, c-format
 msgid "Mark %d set"
 msgstr "標記 %d 設定"
 
-#: uedit.c:2180
+#: uedit.c:2309
 msgid "Set mark (0-9):"
 msgstr "設定標記 (0-9)："
 
-#: uedit.c:2198
+#: uedit.c:2329
 #, c-format
 msgid "Mark %d not set"
 msgstr "標記 %d 無法設定"
 
-#: uedit.c:2211
+#: uedit.c:2342
 msgid "Goto bookmark (0-9):"
 msgstr "前往書籤 (0-9)："
 
-#: uedit.c:2243 usearch.c:995 utag.c:107
+#: uedit.c:2376 usearch.c:1199 utag.c:62
 msgid "Not found"
 msgstr "找不到"
 
-#: uedit.c:2259
+#: uedit.c:2392
 msgid "Forward to char: "
 msgstr "前進到字元："
 
-#: uedit.c:2270
+#: uedit.c:2403
 msgid "Backward to char: "
 msgstr "後退到字元："
 
-#: uedit.c:2290
+#: uedit.c:2423
 msgid "Message (%{abort} to abort): "
 msgstr "訊息 (%{abort} 以放棄)："
 
-#: uedit.c:2312
+#: uedit.c:2470
 msgid "Insert (%{abort} to abort): "
 msgstr "插入 (%{abort} 以放棄)："
 
-#: uerror.c:330 uerror.c:344
+#: uerror.c:415 uerror.c:448 uerror.c:464
 #, c-format
 msgid "%d messages found"
 msgstr "找到 %d 則訊息"
 
-#: uerror.c:332 uerror.c:346
+#: uerror.c:417 uerror.c:450 uerror.c:466
 msgid "No messages found"
 msgstr "找不到訊息"
 
-#: uerror.c:377
+#: uerror.c:428 uerror.c:499
 msgid "No messages"
 msgstr "沒有訊息"
 
-#: uerror.c:432 uerror.c:443
+#: uerror.c:432
+#, fuzzy, c-format
+msgid "%d messages cleared"
+msgstr "找到 %d 則訊息"
+
+#: uerror.c:607 uerror.c:620
 msgid "No more errors"
 msgstr "沒有更多錯誤"
 
-#: ufile.c:39
+#: ufile.c:34
 msgid "(Unnamed)"
 msgstr "(未命名)"
 
-#: ufile.c:44 ufile.c:51
+#: ufile.c:39 ufile.c:46
 #, c-format
 msgid "File %s saved"
 msgstr "檔案 %s 已儲存"
 
-#: ufile.c:46 ufile.c:49
+#: ufile.c:41 ufile.c:44
 #, c-format
 msgid "File %s not saved"
 msgstr "檔案 %s 未儲存"
 
-#: ufile.c:53
+#: ufile.c:48
 #, c-format
 msgid "File %s not changed so no update needed"
 msgstr "檔案 %s 未變更因而無需更新"
 
-#: ufile.c:67
+#: ufile.c:68
 msgid "Some files have not been saved."
 msgstr "某些檔案尚未儲存。"
 
-#: ufile.c:69
+#: ufile.c:70
 msgid "All modified files have been saved."
 msgstr "所有修改過檔案已經儲存。"
 
-#: ufile.c:71
+#: ufile.c:72
 msgid "No modified files, so no updates needed."
 msgstr "沒有已修改檔案，因而無需更新。"
 
-#: ufile.c:107
+#: ufile.c:110
 msgid "System (%{abort} to abort): "
 msgstr "系統 (%{abort} 以放棄)："
 
-#: ufile.c:273
+#: ufile.c:276
 msgid "|yes|yY"
 msgstr "|是|yY"
 
-#: ufile.c:274
+#: ufile.c:277
 msgid "|no|nN"
 msgstr "|否|nN"
 
-#: ufile.c:309
+#: ufile.c:308
 msgid "Couldn't make backup file... file not saved"
 msgstr "無法製作備份檔案…檔案尚未儲存"
 
-#: ufile.c:321
+#: ufile.c:320
 msgid "Could not make backup file.  Save anyway (y,n,%{abort})? "
 msgstr "無法製作備份檔案。依然要儲存 (y,n,%{abort})？"
 
@@ -1448,237 +1859,307 @@ msgstr "無法製作備份檔案。依然要儲存 (y,n,%{abort})？"
 msgid "Block written to file %s"
 msgstr "區塊寫入檔案 %s"
 
-#: ufile.c:488
+#: ufile.c:494
 msgid "File exists. Overwrite (y,n,%{abort})? "
 msgstr "檔案已存在。是否要覆寫 (y,n,%{abort})？"
 
-#: ufile.c:495
+#: ufile.c:501
 msgid "File on disk is newer. Overwrite (y,n,%{abort})? "
 msgstr "磁碟上的檔案較新。是否要覆寫 (y,n,%{abort})？"
 
-#: ufile.c:510 ufile.c:899 ufile.c:1103
-msgid "Name of file to save (%{abort} to abort): "
+#: ufile.c:518 ufile.c:1080 ufile.c:1282
+#, fuzzy
+msgid "Name of file to save (%{help} for help): "
 msgstr "要儲存的檔案名稱 (%{abort} 以放棄)："
 
-#: ufile.c:538
-msgid "Name of file to write (%{abort} to abort): "
+#: ufile.c:550
+#, fuzzy
+msgid "Name of file to write (%{help} for help): "
 msgstr "要寫入的檔案名稱 (%{abort} 以放棄)："
 
-#: ufile.c:654
+#: ufile.c:685
 msgid "Load original file from disk (y,n,%{abort})? "
 msgstr "從磁碟載入原來的檔案 (y,n,%{abort})？"
 
-#: ufile.c:684
+#: ufile.c:724
+#, c-format
+msgid "Directory prefix set to %s"
+msgstr ""
+
+#: ufile.c:733
 msgid "Can't replace modified file"
 msgstr "無法置換已修改的檔案"
 
-#: ufile.c:693
-msgid "Name of file to edit (%{abort} to abort): "
+#: ufile.c:742
+#, fuzzy
+msgid "Name of file to edit (%{help} for help): "
 msgstr "要編輯的檔案名稱 (%{abort} 以放棄)："
 
-#: ufile.c:708 ufile.c:1085
+#: ufile.c:753
+#, fuzzy
+msgid "Set current directory (%{abort} to abort): "
+msgstr "置換成 (%{abort} 以放棄)："
+
+#: ufile.c:768 ufile.c:1262
 msgid "Name of buffer to edit (%{abort} to abort): "
 msgstr "要編輯的緩衝區名稱 (%{abort} 以放棄)："
 
-#: ufile.c:764
+#: ufile.c:917 ufile.c:926
 msgid "Name of scratch buffer to edit (%{abort} to abort): "
 msgstr "要編輯的暫用緩衝區名稱 (%{abort} 以放棄)："
 
-#: ufile.c:865
-msgid "Name of file to insert (%{abort} to abort): "
+#: ufile.c:1044
+#, fuzzy
+msgid "Name of file to insert (%{help} for help): "
 msgstr "要插入的檔案名稱 (%{abort} 以放棄)："
 
-#: ufile.c:933
+#: ufile.c:1116
 msgid "Save changes to this file (y,n,%{abort})? "
 msgstr "將變更儲存為這個檔案 (y,n,%{abort})？"
 
-#: ufile.c:1137
-#, c-format
+#: ufile.c:1317
 msgid "File %s has been modified.  Save it (y,n,%{abort})? "
 msgstr "檔案 %s 已經修改。是否要儲存它 (y,n,%{abort})？"
 
-#: uisrch.c:267
+#: ufile.c:1394
+#, fuzzy
+msgid "File reloaded"
+msgstr "檔案 %s 已儲存"
+
+#: ufile.c:1403
+msgid "Can only reload plain files"
+msgstr ""
+
+#: ufile.c:1437
+#, c-format
+msgid "%d files reloaded"
+msgstr ""
+
+#: uisrch.c:262
 msgid "I-find: "
 msgstr "I-find："
 
-#: umath.c:19
+#: umath.c:22
 msgid "Float point exception"
 msgstr "浮點數異常"
 
-#: umath.c:93 umath.c:195 umath.c:214
+#: umath.c:181 umath.c:291 umath.c:310
 msgid "Missing )"
 msgstr "缺少 )"
 
-#: umath.c:104
+#: umath.c:192
 msgid "Syntax error in macro"
 msgstr "巨集中發生語法錯誤"
 
-#: umath.c:111
+#: umath.c:197
 msgid "Missing ("
 msgstr "缺少 ("
 
-#: umath.c:140 umath.c:146 umath.c:153 umath.c:162
+#: umath.c:230 umath.c:236 umath.c:243 umath.c:251 umath.c:260 umath.c:710
+#: umath.c:748 umath.c:786 umath.c:824 umath.c:862 umath.c:900 umath.c:938
+#: umath.c:976
 msgid "No numbers in block"
 msgstr "區塊中沒有數字"
 
-#: umath.c:220
+#: umath.c:316
 msgid "Called object is not a function"
 msgstr "被呼叫的物件並非函數"
 
-#: umath.c:234
+#: umath.c:330
 msgid "Factorial can only take positive integers"
 msgstr "階乘只能接受正整數"
 
-#: umath.c:332
+#: umath.c:428
 msgid "Left side of = is not an l-value"
 msgstr "= 左側並非一個 l-value"
 
-#: umath.c:346
+#: umath.c:442
 msgid "Recursion depth exceeded"
 msgstr "遞迴深度超出"
 
-#: umath.c:366
+#: umath.c:463
 msgid "Extra junk after end of expr"
 msgstr "運算式尾端之後有其他不需要的東西"
 
-#: undo.c:438
+#: undo.c:463
 msgid "Modified flag cleared"
 msgstr "修改過的旗標已清空"
 
-#: usearch.c:281 usearch.c:350
+#: usearch.c:315 usearch.c:379
 msgid "Wrapped"
 msgstr "已從頭"
 
-#: usearch.c:553
+#: usearch.c:684
 msgid "|all files|aA"
 msgstr "|所有檔案|aA"
 
-#: usearch.c:554
+#: usearch.c:685
 msgid "|error list files|eE"
 msgstr "|錯誤清單檔案|eE"
 
-#: usearch.c:555
+#: usearch.c:686
 msgid "|search and replace|rR"
 msgstr "|搜尋並置換|rR"
 
-#: usearch.c:556
+#: usearch.c:687
 msgid "|backwards|bB"
 msgstr "|向後|bB"
 
-#: usearch.c:557
+#: usearch.c:688
 msgid "|ignore case|iI"
 msgstr "|忽略大小寫|iI"
 
-#: usearch.c:558
+#: usearch.c:689
 msgid "|restrict to highlighted block|kK"
 msgstr "|限制於高亮度區塊|kK"
 
-#: usearch.c:559
+#: usearch.c:690
 msgid "|don't ignore case|sS"
 msgstr "|不忽略大小寫|sS"
 
-#: usearch.c:560
+#: usearch.c:691
 msgid "|wrap|wW"
 msgstr "|從頭|wW"
 
-#: usearch.c:561
+#: usearch.c:692
 msgid "|don't wrap|nN"
 msgstr "|不從頭|nN"
 
-#: usearch.c:618
-msgid "Replace with (%{abort} to abort): "
+#: usearch.c:693
+msgid "|regex|xX"
+msgstr ""
+
+#: usearch.c:694
+msgid "|no regex|yY"
+msgstr ""
+
+#: usearch.c:695
+msgid "|regex_debug|v"
+msgstr ""
+
+#: usearch.c:747
+#, fuzzy
+msgid "Replace with (%{help} for help): "
 msgstr "置換成 (%{abort} 以放棄)："
 
-#: usearch.c:633
-msgid "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (%{abort} to abort): "
-msgstr "(S)符合大小寫 (R)置換 (B)向後 (K)區塊 (A)所有檔案 NNN (%{abort} 以放棄)："
+#: usearch.c:764
+#, fuzzy
+msgid "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (%{help} for help): "
+msgstr ""
+"(S)符合大小寫 (R)置換 (B)向後 (K)區塊 (A)所有檔案 NNN (%{abort} 以放棄)："
 
-#: usearch.c:635
-msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (%{abort} to abort): "
+#: usearch.c:766
+#, fuzzy
+msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (%{help} for help): "
 msgstr "(I)忽略 (R)置換 (B)向後 (K)區塊 (A)所有檔案 NNN (%{abort} 以放棄)："
 
-#: usearch.c:717
-#, c-format
-msgid "Find (%{abort} to abort) [%s]: "
+#: usearch.c:858
+#, fuzzy
+msgid "Find (%{help} for help) [%s]: "
 msgstr "尋找 (%{abort} 以放棄) [%s]："
 
-#: usearch.c:719
-msgid "Find (%{abort} to abort): "
-msgstr "尋找 (%{abort} 以放棄)："
+#: usearch.c:860
+msgid "Find (%{help} for help): "
+msgstr ""
 
-#: usearch.c:813
+#: usearch.c:997
 msgid "|rest of file|rR"
 msgstr "|檔案的餘下部份|rR"
 
-#: usearch.c:814
+#: usearch.c:998
 msgid "|backup|bB"
 msgstr "|備份|bB"
 
-#: usearch.c:845
+#: usearch.c:1033
 msgid "Replace (Y)es (N)o (R)est (B)ackup (%{abort} to abort)?"
 msgstr "置換 (Y)是 (N)否 (R)餘下 (B)備份 (%{abort} 以放棄)？"
 
-#: usearch.c:993
+#: usearch.c:1108
+msgid "Character set of buffer does not match character set of search string"
+msgstr ""
+
+#: usearch.c:1197
 msgid "Not found (search restricted to marked block)"
 msgstr "找不到 (搜尋限制於標記區塊)"
 
-#: usearch.c:1000
+#: usearch.c:1204
 msgid "Infinite loop aborted: your search repeatedly matched same place"
 msgstr "中斷無窮迴圈：您的搜尋重複吻合相同位置"
 
-#: ushell.c:95
+#: ushell.c:211
 msgid "Program already running in this window"
 msgstr "程式已經在這個視窗中執行"
 
-#: ushell.c:103
+#: ushell.c:235
 msgid "No ptys available"
 msgstr "無可用的 ptys"
 
-#: ushell.c:128
+#: ushell.c:241
+msgid "Write failed when writing first command to shell"
+msgstr ""
+
+#: ushell.c:265
 msgid "\"SHELL\" environment variable not defined or exported"
 msgstr "「命令殼層」環境變數尚未定義或匯出"
 
-#: ushell.c:164
+#: ushell.c:284
+msgid ":vtshell keymap is missing"
+msgstr ""
+
+#: ushell.c:297
+msgid ":shell keymap is missing"
+msgstr ""
+
+#: ushell.c:328
 msgid "Program to run: "
 msgstr "要執行的程式："
 
-#: ushell.c:188
+#: ushell.c:374
 msgid "Build command: "
 msgstr "組建命令："
 
-#: ushell.c:197
+#: ushell.c:383
 msgid "Enter build command (for example, 'make'): "
 msgstr "輸入組建命令 (舉例來說：'make')："
 
-#: ushell.c:212
+#: ushell.c:400
 msgid "Grep command: "
 msgstr "Grep 命令："
 
-#: ushell.c:221
+#: ushell.c:409
 msgid "Enter grep command (for example, 'grep -n foo *.c'): "
 msgstr "輸入 grep 命令 (舉例來說：'grep -n foo *.c')："
 
-#: ushell.c:250
+#: ushell.c:442
 msgid "Kill program (y,n,%{abort})?"
 msgstr "砍掉程式 (y,n,%{abort})？"
 
-#: utag.c:26
+#: utag.c:77
+msgid "Last match"
+msgstr ""
+
+#: utag.c:79
+msgid "There are more matches"
+msgstr ""
+
+#: utag.c:199
 msgid "Couldn't open tags file"
 msgstr "無法開啟標記檔案"
 
-#: utag.c:168
+#: utag.c:513
 msgid "Tag search: "
 msgstr "標記搜尋："
 
-#: vfile.c:174
+#: vfile.c:182
 msgid "vfile: out of memory\n"
 msgstr "vfile：記憶體不足\n"
 
-#: vfile.c:229
+#: vfile.c:243
 #, c-format
 msgid "Couldn't open file '%s'\n"
 msgstr "無法開啟檔案「%s」\n"
 
-#: w.c:822
-msgid "There is no message buffer"
+#: w.c:866
+#, fuzzy
+msgid "There are no messages"
 msgstr "沒有任何訊息緩衝區"

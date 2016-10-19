@@ -2,6 +2,7 @@
 import os
 import unittest
 import time
+import re
 
 from . import controller
 from . import fixtures
@@ -64,7 +65,9 @@ class JoeTestBase(unittest.TestCase):
         self.homedir.setup()
         self.joe = controller.startJoe("../joe/joe", self.startup)
         if waitbanner:
-            self.assertTextAt("** Joe's Own Editor", x=0, y=self.joe.size.Y - 1)
+            banner = self.config.globalopts.xmsg
+            banner = re.sub(r'\\.', '', banner[0:banner.index('%')])
+            self.assertTextAt(banner, x=0, y=self.joe.size.Y - 1)
     
     def loadConfig(self, cfgfile, asfile='.joerc'):
         if cfgfile not in RCFILES:

@@ -71,7 +71,7 @@ char *mktmp(const char *where);
  * Return true if string matches pattern
  *
  * Pattern is:
- *     *                 matches 0 or more charcters
+ *     *                 matches 0 or more characters
  *     ?                 matches any 1 character
  *     [...]             matches 1 character in set
  *     [^...]            matches 1 character not in set

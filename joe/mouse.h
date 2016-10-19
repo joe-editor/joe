@@ -28,8 +28,11 @@ void gpmclose();	/* close the connection. */
 void mouseopen();	/* initialize mouse */
 void mouseclose();	/* de-initialize mouse */
 
-/* mousedn(int x, int y) - handle a mouse-down event */
-void mousedn(ptrdiff_t x, ptrdiff_t y);
+/* mousedn(int x, int y, int middle) - handle a mouse-down event */
+void mousedn(ptrdiff_t x, ptrdiff_t y, int middle);
+
+/* mousednmiddle(BW *bw, int x, int y) - handle a mouse-middlebutton-down event */ 
+void mousednmiddle PARAMS((BW *bw, int x, int y));
 
 /* mouseup(int x, int y) - handle a mouse-up event */
 void mouseup(ptrdiff_t x, ptrdiff_t y);
@@ -39,7 +42,7 @@ void mousedrag(ptrdiff_t x, ptrdiff_t y);
 
 /* user command handlers */
 int uxtmouse(W *, int);		/* handle an xterm mouse control sequence */
-int uextmouse(W *, int);		/* handle an extended xterm mouse control sequence */
+int uextmouse(W *, int);	/* handle an extended xterm mouse control sequence */
 int utomouse(W *, int);		/* move the pointer to the mouse */
 int udefmdown(W *, int);	/* default mouse click handlers */
 int udefmup(W *, int);
@@ -50,6 +53,8 @@ int udefm2drag(W *, int);
 int udefm3down(W *, int);
 int udefm3up(W *, int);
 int udefm3drag(W *, int);
+int udefmiddledown(W *, int);
+int udefmiddleup(W *, int);
 
 long mnow();
 void reset_trig_time();

@@ -505,45 +505,25 @@ int *Zlcpy(int *a, ptrdiff_t len, const int *b)
 
 /* Convert ints to chars */
 
-char *Ztoz(char *a, ptrdiff_t len, const int *b)
+char *Ztoz(char *dest, const int *src)
 {
-	char *org = a;
-	if (!len) {
-		fprintf(stderr, "Ztoz called with len == 0\n");
-		exit(1);
-	}
-	--len;
-	while (len && *b) {
-		*a++ = TO_CHAR_OK(*b++);
-		--len;
-	}
-	*a = 0;
-	return org;
+	while (*src)
+		dest = vsadd(dest, TO_CHAR_OK(*src++));
+	return dest;
 }
 
 /* Convert ints to utf8 */
 
-char *Ztoutf8(char *a, ptrdiff_t len, const int *b)
+char *Ztoutf8(char *dest, const int *src)
 {
-	char *org = a;
-	if (!len) {
-		fprintf(stderr, "Ztoz called with len == 0\n");
-		exit(1);
-	}
-	--len;
-	while (len && *b) {
+	while (*src) {
 		char bf[8];
-		ptrdiff_t enc = utf8_encode(bf, *b++);
-		ptrdiff_t x;
-		if (enc < len) {
-			for (x = 0; x != enc; ++x) {
-				*a++ = bf[x];
-				--len;
-			}
-		}
+		ptrdiff_t enc = utf8_encode(bf, *src++);
+		dest = vsensure(dest, vslen(dest) + enc);
+		dest = vscat(dest, bf, enc);
 	}
-	*a = 0;
-	return org;
+
+	return dest;
 }
 
 /* Length of an int string */
@@ -579,7 +559,7 @@ int *Zdup(const int *bf)
 #define SIG_ERR ((sighandler_t) -1)
 #endif
 
-/* wrapper to hide signal interface differrencies */
+/* wrapper to hide signal interface differences */
 int joe_set_signal(int signum, sighandler_t handler)
 {
 	int retval;

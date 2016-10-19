@@ -62,32 +62,31 @@ static ptrdiff_t mcoord(ptrdiff_t x)
 		return 0; /* This should not happen */
 }
 
-static int mouse_event(BW *bw)
+static int mouse_event(W *w)
 {
 	if ((Cb & 0x41) == 0x40) {
-		fake_key(KEY_MWUP);
+		fake_key(KEY_MWUP); /* Mouse wheel scroll up */
 		return 0;
 	}
 
 	if ((Cb & 0x41) == 0x41) {
-		fake_key(KEY_MWDOWN);
+		fake_key(KEY_MWDOWN); /* Mouse wheel scroll down */
 		return 0;
 	}
 
-	if ((Cb & 3) == 3)
+	if ((Cb & 3) == 3) {
 		/* button released */
 		mouseup(Cx,Cy);
-	else if ((Cb & 3) == (rtbutton ? 2 : 0))	/* preferred button */
+	} else if ((Cb & 3) == (rtbutton ? 2 : 0)) { /* left (or right) to select */
 		if ((Cb & 32) == 0)
 			/* button pressed */
-			mousedn(Cx,Cy);
+			mousedn(Cx, Cy, 0);
 		else
 			/* drag */
 			mousedrag(Cx,Cy);
-	else if ((maint->curwin->watom->what & TYPETW ||
-	          maint->curwin->watom->what & TYPEPW) &&
-	          joexterm && (Cb & 3) == 1)		/* Paste */
-		ttputs("\33]52;;?\33\\");
+	} else if ((Cb & 3) == 1 && (Cb & 32) == 0) { /* middle button to paste */
+		mousedn(Cx, Cy, 1);
+	}
 	return 0;
 }
 
@@ -95,8 +94,6 @@ static int mouse_event(BW *bw)
 
 int uxtmouse(W *w, int k)
 {
-	BW *bw;
-	WIND_BW(bw, w);
 	Cb = ttgetch()-32;
 	if (Cb < 0)
 		return -1;
@@ -109,7 +106,7 @@ int uxtmouse(W *w, int k)
 
 	Cx = mcoord(Cx);
 	Cy = mcoord(Cy);
-	return mouse_event(bw);
+	return mouse_event(w);
 }
 
 /* Parse xterm extended 1006 mode mouse event parameters. */
@@ -117,8 +114,6 @@ int uxtmouse(W *w, int k)
 int uextmouse(W *w, int k)
 {
 	int c;
-	BW *bw;
-	WIND_BW(bw, w);
 	Cb = 0;
 	Cx = Cy = 0;
 	while ((c = ttgetch()) != ';') {
@@ -138,7 +133,7 @@ int uextmouse(W *w, int k)
 	}
 	if (c == 'm')
 		Cb |= 3;
-	return mouse_event(bw);
+	return mouse_event(w);
 }
 
 long mnow()
@@ -148,26 +143,53 @@ long mnow()
 	return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
-void mousedn(ptrdiff_t x,ptrdiff_t y)
+void mousedn(ptrdiff_t x, ptrdiff_t y, int middle)
 {
 	Cx = x, Cy = y;
-	if (last_msec == 0 || mnow() - last_msec > MOUSE_MULTI_THRESH) {
-		/* not a multiple click */
-		clicks=1;
-		fake_key(KEY_MDOWN);
-	} else if(clicks==1) {
-		/* double click */
-		clicks=2;
-		fake_key(KEY_M2DOWN);
-	} else if(clicks==2) {
-		/* triple click */
-		clicks=3;
-		fake_key(KEY_M3DOWN);
+	if (middle) {
+		clicks = 4;
+		fake_key(KEY_MIDDLEDOWN);
 	} else {
-		/* start over */
-		clicks=1;
-		fake_key(KEY_MDOWN);
+		if (last_msec == 0 || mnow() - last_msec > MOUSE_MULTI_THRESH) {
+			/* not a multiple click */
+			clicks=1;
+			fake_key(KEY_MDOWN);
+		} else if(clicks==1) {
+			/* double click */
+			clicks=2;
+			fake_key(KEY_M2DOWN);
+		} else if(clicks==2) {
+			/* triple click */
+			clicks=3;
+			fake_key(KEY_M3DOWN);
+		} else {
+			/* start over */
+			clicks=1;
+			fake_key(KEY_MDOWN);
+		}
 	}
+}
+
+int udefmiddledown(W *w, int k)
+{
+	if (utomouse(w, 0)) /* Positions cursor */
+		return -1;
+	w = maint->curwin;
+	if (!(w->watom->what == TYPETW || w->watom->what == TYPEPW))
+		return -1;
+	if (joexterm) {
+		/* Request xterm to send selection text to JOE */
+		ttputs("\33]52;;?\33\\");
+		return 0;
+	} else {
+		/* Copy region to cursor */
+		return ublkcpy(w, -2); /* Copy */
+	}
+}
+
+int udefmiddleup(W *xx, int k)
+{
+	return 0;
 }
 
 /* Return base64 code character given 6-bit number */
@@ -309,12 +331,7 @@ static void select_done(struct charmap *map)
 
 void mouseup(ptrdiff_t x,ptrdiff_t y)
 {
-	auto_scroll = 0;
 	Cx = x, Cy = y;
-	if (selecting) {
-		select_done(((BW *)maint->curwin->object)->b->o.charmap);
-		selecting = 0;
-	}
 	switch(clicks) {
 		case 1:
 			fake_key(KEY_MUP);
@@ -326,6 +343,10 @@ void mouseup(ptrdiff_t x,ptrdiff_t y)
   
 		case 3:
 			fake_key(KEY_M3UP);
+			break;
+
+		case 4:
+			fake_key(KEY_MIDDLEUP);
 			break;
 	}
 	last_msec = mnow();
@@ -359,9 +380,9 @@ int utomouse(W *xx, int k)
 	if (!w)
 		return -1;
 	maint->curwin = w;
-	WIND_BW(bw, w);
 	drag_size = 0;
 	if (w->watom->what == TYPETW) {
+		WIND_BW(bw, w);
 		if (bw->o.hex) {
 			off_t goal_col = x - w->x + bw->offset - 60;
 			off_t goal_line;
@@ -411,7 +432,9 @@ int utomouse(W *xx, int k)
 			return 0;
 		}
 	} else if (w->watom->what == TYPEPW) {
-		PW *pw = (PW *)bw->object;
+		PW *pw;
+		WIND_BW(bw, w);
+		pw = (PW *)bw->object;
 		/* only one line in prompt windows */
 		pcol(bw->cursor,x - w->x + bw->offset - pw->promptlen + pw->promptofst);
 		bw->cursor->xcol = piscol(bw->cursor);
@@ -518,6 +541,8 @@ static off_t anchorn;		/* near side of the anchored word */
 static int marked;		/* mark was set by defmdrag? */
 static int reversed;		/* mouse was dragged above the anchor? */
 
+/* Select text */
+
 int udefmdown(W *xx, int k)
 {
 	BW *bw;
@@ -616,8 +641,15 @@ int udefmdrag(W *xx, int k)
 
 int udefmup(W *w, int k)
 {
+	auto_scroll = 0;
+	if (selecting) {
+		select_done(((BW *)maint->curwin->object)->b->o.charmap);
+		selecting = 0;
+	}
 	return 0;
 }
+
+/* Select words */
 
 int udefm2down(W *xx, int k)
 {
@@ -668,8 +700,15 @@ int udefm2drag(W *xx, int k)
 
 int udefm2up(W *w, int k)
 {
+	auto_scroll = 0;
+	if (selecting) {
+		select_done(((BW *)maint->curwin->object)->b->o.charmap);
+		selecting = 0;
+	}
 	return 0;
 }
+
+/* Select lines */
 
 int udefm3down(W *xx, int k)
 {
@@ -714,6 +753,11 @@ int udefm3drag(W *xx, int k)
 
 int udefm3up(W *w, int k)
 {
+	auto_scroll = 0;
+	if (selecting) {
+		select_done(((BW *)maint->curwin->object)->b->o.charmap);
+		selecting = 0;
+	}
 	return 0;
 }
 

@@ -36,14 +36,12 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	int *attr_end = attr_buf + attr_size;
 	int c;
 
-	int state = h_state.saved_s[0];
-	int accu = h_state.saved_s[1];
-	int current_attr = (int)h_state.state;
+	int state = IDLE; /* h_state.saved_s[0]; */
+	int accu = 0; /* h_state.saved_s[1]; */
+	int current_attr = 0; /* (int)h_state.state; */ /* Do not let attributes cross lines - simplifies vt.c */
 	// int new_attr = *(int *)(h_state.saved_s + 8);
 
 	int ansi_mode = line->b->o.ansi;
-
-	current_attr = 0; /* Do not let attributes cross lines - simplifies vt.c */
 
 	line->b->o.ansi = 0;
 
@@ -125,11 +123,10 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 			break;
 	}
 	line->b->o.ansi = ansi_mode;
-	h_state.saved_s[0] = state;
+	/* h_state.saved_s[0] = state;
 	h_state.saved_s[1] = accu;
-	h_state.saved_s[2] = 0; /* Because we Zcmp(saved_s) */
+	h_state.saved_s[2] = 0; */ /* Because we Zcmp(saved_s) */
 	h_state.state = current_attr;
-//	*(int *)(h_state.saved_s + 8) = new_attr;
 	return h_state;
 }
 
@@ -213,9 +210,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			attr[-1] = h->color;
 
 			/* Get command for this character */
-			if (h->delim && c == h_state.saved_s[0] && h_state.saved_s[2] == 0)
+			if (h->delim && h_state.saved_s && c == h_state.saved_s[0] && h_state.saved_s[1] && h_state.saved_s[2] == 0)
 				cmd = h->delim;
-			else if (h->same_delim && c == h_state.saved_s[1] && h_state.saved_s[2] == 0)
+			else if (h->same_delim && h_state.saved_s && h_state.saved_s[0] && c == h_state.saved_s[1] && h_state.saved_s[2] == 0)
 				cmd = h->same_delim;
 			else {
 				cmd = (struct high_cmd *)rtree_lookup(&h->rtree, c);
@@ -227,13 +224,16 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			if (cmd->ignore) {
 				lowerize(lbuf, SIZEOF(lbuf)/SIZEOF(lbuf[0]), buf);
 				if (cmd->delim) {
-					lowerize(lsaved_s, SIZEOF(lsaved_s)/SIZEOF(lsaved_s[0]), h_state.saved_s);
+					if (h_state.saved_s)
+						lowerize(lsaved_s, SIZEOF(lsaved_s)/SIZEOF(lsaved_s[0]), h_state.saved_s);
+					else
+						lsaved_s[0] = 0;
 				}
 			}
 
 			/* Check for delimiter or keyword matches */
 			recolor_delimiter_or_keyword = 0;
-			if (cmd->delim && (cmd->ignore ? !Zcmp(lsaved_s,lbuf) : !Zcmp(h_state.saved_s,buf))) {
+			if (cmd->delim && (cmd->ignore ? !Zcmp(lsaved_s,lbuf) : (h_state.saved_s && !Zcmp(h_state.saved_s,buf)))) {
 				cmd = cmd->delim;
 				recolor_delimiter_or_keyword = 1;
 			} else if (cmd->keywords && (cmd->ignore ? (kw_cmd=(struct high_cmd *)Zhtfind(cmd->keywords,lbuf)) : (kw_cmd=(struct high_cmd *)Zhtfind(cmd->keywords,buf)))) {
@@ -293,25 +293,28 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 					attr[x] = h->color;
 
 			/* Save string? */
-			if (cmd->save_s)
-				Zlcpy(h_state.saved_s, SIZEOF(h_state.saved_s) / SIZEOF(h_state.saved_s[0]), buf);
+			if (cmd->save_s) {
+				h_state.saved_s = Zatom_add(buf);
+			}
 
 			/* Save character? */
 			if (cmd->save_c) {
-				h_state.saved_s[1] = c;
-				h_state.saved_s[2] = 0;
+				int bf[3];
+				bf[1] = c;
+				bf[2] = 0;
 				if (c=='<')
-					h_state.saved_s[0] = '>';
+					bf[0] = '>';
 				else if (c=='(')
-					h_state.saved_s[0] = ')';
+					bf[0] = ')';
 				else if (c=='[')
-					h_state.saved_s[0] = ']';
+					bf[0] = ']';
 				else if (c=='{')
-					h_state.saved_s[0] = '}';
+					bf[0] = '}';
 				else if (c=='`')
-					h_state.saved_s[0] = '\'';
+					bf[0] = '\'';
 				else
-					h_state.saved_s[0] = c;
+					bf[0] = c;
+				h_state.saved_s = Zatom_add(bf);
 			}
 
 			/* Start buffering? */

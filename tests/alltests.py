@@ -206,3 +206,11 @@ class FormatTests(joefx.JoeTestBase):
         self.cmd("abort")
         self.assertExited()
         self.assertFileContents("testout", "*all* work and no play makes jack a dull boy. all work and no play makes\njack a dull boy. all work and no play makes jack a dull boy. all work and no\nplay makes jack a dull boy.")
+
+class ArgumentTests(joefx.JoeTestBase):
+    def test_dash_dash(self):
+        self.workdir.fixtureData("-foo", "This is -foo")
+        self.startup.args = ('--', '-foo')
+        self.startJoe()
+        
+        self.assertTextAt("This is -foo")

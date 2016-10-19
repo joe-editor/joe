@@ -19,7 +19,7 @@ static void movetw(W *w, ptrdiff_t x, ptrdiff_t y)
 	BW *bw = (BW *)w->object;
 	TW *tw = (TW *)bw->object;
 
-	if (y || !staen) {
+	if ((y || !staen) && w->h > 1) {
 		if (!tw->staon) {	/* Scroll down and shrink */
 			nscrldn(bw->parent->t->t, y, bw->parent->nh + y, 1);
 		}
@@ -39,13 +39,66 @@ static void movetw(W *w, ptrdiff_t x, ptrdiff_t y)
 static void resizetw(W *w, ptrdiff_t wi, ptrdiff_t he)
 {
 	BW *bw = (BW *)w->object;
-	if (bw->parent->ny || !staen)
+	if ((bw->parent->ny || !staen) && he > 1)
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he - 1);
 	else
 		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he);
 }
 
 /* Get current context */
+
+/* Use context.jsf to determine context.  The advantage of this vs.  the old
+ * method is that the line attribute cache will help find context line
+ * quickly in large files.
+ */
+
+static struct high_syntax *context_syntax;
+
+static const int *get_context(BW *bw)
+{
+	static int buf1[SAVED_SIZE];
+	const int *src;
+	P *p;
+	struct lattr_db *db;
+	HIGHLIGHT_STATE st;
+	clear_state(&st);
+	p = pdup(bw->cursor, "get_context");
+	p_goto_bol(p);
+	if (!context_syntax)
+		context_syntax = load_syntax("context");
+	if (context_syntax) {
+		db = find_lattr_db(bw->b, context_syntax);
+		if (db) {
+			st = lattr_get(db, context_syntax, p, p->line + 1);
+			/* Handles last line better */
+			/* st = parse(context_syntax, p, st, p->b->o.charmap); */
+		}
+	}
+	prm(p);
+	src = st.saved_s;
+	buf1[0] = 0;
+	if (src) {
+		ptrdiff_t i, j, spc;
+		/* replace tabs to spaces and remove adjoining spaces */
+		for (i=0,j=0,spc=0; src[i]; i++) {
+			if (src[i]=='\t' || src[i]==' ') {
+				if (spc) continue;
+				spc = 1;
+			}
+			else spc = 0;
+			if (src[i]=='\t')
+				buf1[j++] = ' ';
+			else if (src[i]=='\\') {
+				buf1[j++] = '\\';
+				buf1[j++] = '\\';
+			} else if (src[i] != '\r') {
+				buf1[j++] = src[i];
+			}
+		}
+		buf1[j]= '\0';
+	}
+	return buf1;
+}
 
 /* Find first line (going backwards) which has 0 indentation level
  * and is not a comment, blank, or block structuring line.  This is
@@ -68,6 +121,7 @@ static void resizetw(W *w, ptrdiff_t wi, ptrdiff_t he)
  *
  */
 
+#if 0
 static char *get_context(BW *bw)
 {
 	P *p = pdup(bw->cursor, "get_context");
@@ -126,6 +180,7 @@ static char *get_context(BW *bw)
 
 	return buf1;
 }
+#endif
 
 char *duplicate_backslashes(const char *s, ptrdiff_t len)
 {
@@ -173,10 +228,14 @@ char *stagen(char *stalin, BW *bw, const char *s, char fill)
 
 			case 'x': /* Context (but only if autoindent is enabled) */
 				{
-					if ( bw->o.autoindent) {
-						char *ts = get_context(bw);
-						char *t = my_iconv(NULL,locale_map,ts,bw->o.charmap);
-						stalin = vscat(stalin, sv(t));
+					if (bw->o.title) {
+						const int *ts = get_context(bw);
+						if (ts) {
+							/* We need to translate between file's character set to
+							   locale */
+							char *t = my_iconv1(NULL, locale_map, ts);
+							stalin = vscat(stalin, sv(t));
+						}
 					}
 				}
 				break;
@@ -525,7 +584,7 @@ static void disptw(W *w, int flg)
 		w->curx = TO_DIFF_OK(bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0));
 	}
 
-	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen)) {
+	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen) && w->h > 1) {
 		char fill;
 
 		tw->prevline = bw->cursor->line;

@@ -262,7 +262,7 @@ static void rmsavereq(struct savereq *req)
 	joe_free(req);
 }
 
-/* Check if character 'c' is in the set.  'c' should be unicode.
+/* Check if character 'c' is in the set.  'c' should be Unicode.
  * gettext returns a string in the locale, so c is convert to the
  * locale if necessary.
  */
@@ -584,7 +584,7 @@ static int doedit(W *w,int c,void *obj)
 		w = bw->parent;
 		bwrm(bw);
 		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
-		/* Propogate current directory to newly loaded buffer */
+		/* Propagate current directory to newly loaded buffer */
 		if (!b->current_dir)
 			b->current_dir = current_dir;
 		obj_perm(b->current_dir);
@@ -781,7 +781,7 @@ int uscratch(W *w, int k)
 	current_dir = vsdup(bw->b->current_dir);
 
 	b = bfind_scratch(s);
-	/* Propogate current directory to scratch buffer */
+	/* Propagate current directory to scratch buffer */
 	if (!b->current_dir) {
 		b->current_dir = current_dir;
 		obj_perm(current_dir);
@@ -843,7 +843,7 @@ int uscratch_push(W *w, int k)
 	current_dir = vsdup(bw->b->current_dir);
 
 	b = bfind_scratch(s);
-	/* Propogate current directory to scratch buffer */
+	/* Propagate current directory to scratch buffer */
 	if (!b->current_dir) {
 		b->current_dir = current_dir;
 		obj_perm(current_dir);
@@ -917,7 +917,7 @@ static int dorepl(W *w, char *s, void *obj)
 	}
 	bwrm(bw);
 	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
-	/* Propogate current directory into new buffer */
+	/* Propagate current directory into new buffer */
 	if (!b->current_dir) {
 		b->current_dir = current_dir;
 		obj_perm(current_dir);

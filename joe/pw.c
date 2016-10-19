@@ -276,6 +276,7 @@ BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, voi
 	if (!neww) {
 		return NULL;
 	}
+	w->t->curwin = neww; /* Set curwin before calling wfit to prevent deletion */
 	neww->fixed = 0;
 	wfit(neww->t);
 	neww->object = (void *) (bw = bwmk(neww, bmk(NULL), 0, prompt));
@@ -314,7 +315,6 @@ BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, voi
 		p_goto_eof(bw->cursor);
 		bw->cursor->xcol = piscol(bw->cursor);
 	}
-	w->t->curwin = neww;
 	return bw;
 }
 
