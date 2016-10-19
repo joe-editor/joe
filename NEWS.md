@@ -8,6 +8,17 @@
 
 [Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
 
+### JOE.next (not yet released changes in Mercurial)
+
+* Enhancements
+
+* Bugs fixed
+
+	* Build fixes for Solaris
+
+	* Fix segfault due to buffer overrun.  This happens if you a line
+	  with many backslashes appears in the status line context display.
+
 ### JOE 4.3
 
 * Enhancements

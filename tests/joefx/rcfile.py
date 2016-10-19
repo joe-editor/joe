@@ -30,7 +30,7 @@ OPTS_WITH_ARGS = set([
     # Global
     'undo_keep', 'backpath', 'lines', 'baud', 'columns', 'skiptop', 'text_color', 'status_color',
     'help_color', 'menu_color', 'prompt_color', 'msg_color', 'lmsg', 'rmsg', 'smsg', 'zmsg',
-    'xmsg', 'aborthint', 'helphint'
+    'xmsg', 'aborthint', 'helphint',
     # File
     'cpara', 'cnotpara', 'encoding', 'syntax', 'tab', 'indentc', 'istep', 'lmargin', 'rmargin',
     'keymap', 'mfirst', 'mnew', 'mold', 'msnew', 'msold', 'text_delimiters'
@@ -48,7 +48,7 @@ class RCFile(object):
     def serialize(self):
         result = []
         result.extend(self.globalopts.serialize())
-        for section in (self.fileopts, self.help, self.menus, self.macros, self.bindings):
+        for section in (self.fileopts, self.menus, self.help, self.macros, self.bindings):
             for item in section:
                 result.extend(item.serialize())
         return b'\n'.join((item.encode('utf-8') if isinstance(item, str) else item) for item in result)
@@ -62,11 +62,18 @@ class RCFile(object):
         other.macros = [macro.clone() for macro in self.macros]
         other.bindings = [binding.clone() for binding in self.bindings]
         return other
+    
+    def getMenu(self, name):
+        for menu in self.menus:
+            if menu.name == name:
+                return menu
+        return None
 
 class Options(object):
     def __init__(self, properties):
         self._properties = properties
         self._values = {}
+        self._order = []
     
     def __getattr__(self, name):
         return self.getValue(name)
@@ -92,44 +99,70 @@ class Options(object):
             if (name in OPTS_WITH_ARGS) == isinstance(value, bool):
                 raise InvalidPropertyValue(name)
             self._values[name] = value
+            if name not in self._order:
+                self._order.append(name)
     
     def serialize(self):
         result = []
-        for k, v in self._values.items():
+        def apply(k, v):
             if v is True:
                 result.append('-' + k)
             elif v is False:
                 result.append('--' + k)
             elif v is not None:
                 result.append('-%s %s' % (k, v))
+        
+        for k in self._order:
+            v = self._values[k]
+            apply(k, v)
+        for k, v in self._values.items():
+            if k not in self._order:
+                apply(k, v)
+        
         return result
     
     def clone(self):
         other = Options(self._properties)
         other._values.update(self._values)
+        other._order = self._order[:]
         return other
 
 class FileOptions(object):
     def __init__(self):
         self.name = ''
-        self.extensions = []
-        self.patterns = []
+        self.rules = []
         self.options = Options(FILE_OPTS)
     
     def serialize(self):
         result = []
         result.append('[%s]' % self.name)
-        result.extend(self.extensions)
-        result.extend('+' + pat for pat in self.patterns)
+        for rule in self.rules:
+            result.extend(rule.serialize())
         result.extend(self.options.serialize())
         return result
     
     def clone(self):
         other = FileOptions()
         other.name = self.name
-        other.extensions = self.extensions[:]
-        other.patterns = self.patterns[:]
+        other.rules = [rule.clone() for rule in self.rules]
         other.options = self.options.clone()
+        return other
+
+class FileExtensionRule(object):
+    def __init__(self):
+        self.extension = ''
+        self.patterns = []
+    
+    def serialize(self):
+        result = []
+        result.append(self.extension)
+        result.extend('+' + pat for pat in self.patterns)
+        return result
+    
+    def clone(self):
+        other = FileExtensionRule()
+        other.extension = self.extension
+        other.patterns = self.patterns[:]
         return other
 
 class Menu(object):
@@ -149,6 +182,12 @@ class Menu(object):
         other.back = self.back
         other.items = [item.clone() for item in self.items]
         return other
+    
+    def getItem(self, predicate):
+        for item in self.items:
+            if predicate(item):
+                return item
+        return None
 
 class MenuItem(object):
     def __init__(self):
@@ -289,17 +328,25 @@ class ParserState(object):
         while self.curline.startswith('['):
             filetype = FileOptions()
             filetype.name = self.curline.strip().strip('[]')
+            rule = None
             
             while True:
                 line = self.nextnows()
                 if line.startswith('*'):
-                    filetype.extensions.append(line.strip())
+                    if rule is not None:
+                        filetype.rules.append(rule)
+                    rule = FileExtensionRule()
+                    rule.extension = line.strip()
                 elif line.startswith('+'):
-                    filetype.patterns.append(line[1:].strip())
+                    assert rule is not None
+                    rule.patterns.append(line[1:].strip())
                 elif line.startswith('-'):
                     self.parseoption(filetype.options)
                 else:
                     break
+            
+            if rule is not None:
+                filetype.rules.append(rule)
             
             self.rcfile.fileopts.append(filetype)
     
@@ -374,7 +421,7 @@ class ParserState(object):
         if k.startswith('^') and len(k) == 2: return True
         if k.startswith('.k') and len(k) == 3: return True
         if k in ('MDOWN', 'MDRAG', 'MUP', 'M2DOWN', 'M2DRAG', 'M2UP', 'M3DOWN', 'M3DRAG',
-                 'M3UP, MWDOWN', 'MWUP', 'SP', 'TO'):
+                 'M3UP', 'MWDOWN', 'MWUP', 'SP', 'TO'):
             return True
         return False
     
@@ -406,3 +453,13 @@ def parse(filename):
     result = RCFile()
     ParserState(result, readFile(filename)).begin()
     return result
+
+if __name__ == '__main__':
+    import sys
+    outfile = sys.argv[2] if len(sys.argv) >= 3 else "outrc"
+    infile = sys.argv[1] if len(sys.argv) >= 2 else "../rc/joerc"
+    print("Processing %s and writing %s..." % (infile, outfile))
+    rc = parse(infile)
+    with open(outfile, 'wb') as f:
+        f.write(rc.serialize())
+    sys.exit(0)

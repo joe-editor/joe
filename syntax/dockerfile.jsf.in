@@ -8,6 +8,7 @@
 =Escape 	magenta
 =Keyword 	bold
 =Var		bold cyan
+=Bad		bold red
 
 # Start of line is special
 :start Idle
@@ -52,6 +53,7 @@
 	"MAINTAINER"	string_command
 	"RUN"		list_command
 	"CMD"		list_command
+	"SHELL"		list_command
 	"LABEL"		label
 	"EXPOSE"	generic_command
 	"ENV"		generic_command
@@ -64,6 +66,7 @@
 	"ARG"		generic_command
 	"ONBUILD"	generic_command
 	"STOPSIGNAL"	generic_command
+	"HEALTHCHECK"	healthcheck_command
 done
 	"a-zA-Z"	command
 
@@ -103,8 +106,12 @@ done
 :array Idle
 	*		array
 	"[]"		bracket				noeat
-	"\"'"		array				recolor=-1 call=.string() save_c
+	"\""		array				recolor=-1 call=.string() save_c
+	"'"		array_bad			noeat
 	"\n"		start
+
+:array_bad Bad
+	*		array
 
 :comma Idle
 	*		array				noeat
@@ -127,6 +134,41 @@ done
 	*		label_value
 	"\""		label_value			recolor=-1 call=.string() save_c
 	"\n"		start
+
+# HEALTHCHECK
+:healthcheck_command Command
+       *               idle                            noeat
+       "a-zA-Z"        healthcheck_argument            buffer noeat
+       "\-"            healthcheck_option              recolor=-1
+       " \t"           healthcheck_command
+       "\\"            healthcheck_escape              recolor=-1
+
+:healthcheck_argument Idle
+       *               idle                            noeat istrings
+       "NONE"          healthcheck_none
+       "CMD"           list_command
+done
+       "a-zA-Z"        healthcheck_argument
+
+:healthcheck_option Ident
+       *               healthcheck_option
+       "\n"            start
+       "\\"            healthcheck_escape              recolor=-1
+       " \t"           healthcheck_command
+       "="             healthcheck_value
+
+:healthcheck_value Idle
+       *               healthcheck_value
+       "\n"            start
+       "\\"            healthcheck_escape
+       " \t"           healthcheck_command
+
+:healthcheck_escape Escape
+       "\r"            healthcheck_escape
+       *               healthcheck_command
+
+:healthcheck_none Command
+       *               idle                            noeat
 
 .subr variable
 

@@ -56,7 +56,7 @@ static struct high_syntax *context_syntax;
 
 static const int *get_context(BW *bw)
 {
-	static int buf1[SAVED_SIZE];
+	static int buf1[SAVED_SIZE*2]; /* Double size because we replace \ with \\ */
 	const int *src;
 	P *p;
 	struct lattr_db *db;
@@ -80,7 +80,7 @@ static const int *get_context(BW *bw)
 	if (src) {
 		ptrdiff_t i, j, spc;
 		/* replace tabs to spaces and remove adjoining spaces */
-		for (i=0,j=0,spc=0; src[i]; i++) {
+		for (i=0,j=0,spc=0; src[i] && j < SAVED_SIZE-1; i++) {
 			if (src[i]=='\t' || src[i]==' ') {
 				if (spc) continue;
 				spc = 1;
