@@ -225,7 +225,6 @@ typedef int pid_t;
 #define stdsiz		8192
 #define FITHEIGHT	4		/* Minimum height needed for new text windows */
 #define FITMIN		2		/* Minimum main window height */
-#define LINCOLS		10
 #define NPROC		8		/* Number of processes we keep track of */
 #define INC		16		/* Pages to allocate each time */
 

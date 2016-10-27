@@ -7,6 +7,9 @@
  */
 #include "types.h"
 
+/* Line number attr */
+int bg_linum = 0;
+
 /* Display modes */
 int dspasis = 0;
 int marking = 0;
@@ -700,27 +703,26 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 
 static void gennum(BW *w, int (*screen)[COMPOSE], int *attr, SCRN *t, ptrdiff_t y, int *comp)
 {
-	char buf[12];
-	ptrdiff_t z;
+	char buf[24];
+	ptrdiff_t z, x;
 	off_t lin = w->top->line + y - w->y;
 
 	if (lin <= w->b->eof->line)
 #ifdef HAVE_LONG_LONG
-		joe_snprintf_1(buf, SIZEOF(buf), "%9lld ", (long long)(w->top->line + y - w->y + 1));
+		joe_snprintf_1(buf, SIZEOF(buf), " %21lld ", (long long)(w->top->line + y - w->y + 1));
 #else
-		joe_snprintf_1(buf, SIZEOF(buf), "%9ld ", (long)(w->top->line + y - w->y + 1));
+		joe_snprintf_1(buf, SIZEOF(buf), " %21ld ", (long)(w->top->line + y - w->y + 1));
 #endif
 	else {
-		ptrdiff_t x;
-		for (x = 0; x != LINCOLS; ++x)
+		for (x = 0; x != SIZEOF(buf) - 1; ++x)
 			buf[x] = ' ';
 		buf[x] = 0;
 	}
-	for (z = 0; buf[z]; ++z) {
-		outatr(w->b->o.charmap, t, screen + z, attr + z, z, y, buf[z], BG_COLOR(bg_text)); 
+	for (z = SIZEOF(buf) - w->lincols - 1, x = 0; buf[z]; ++z, ++x) {
+		outatr(w->b->o.charmap, t, screen + x, attr + x, x, y, buf[z], BG_COLOR(bg_linum)); 
 		if (ifhave)
 			return;
-		comp[z] = buf[z];
+		comp[x] = buf[z];
 	}
 	outatr_complete(t);
 }
@@ -837,7 +839,7 @@ void bwgenh(BW *w)
 	prm(q);
 }
 
-void bwgen(BW *w, int linums)
+void bwgen(BW *w, int linums, int linchg)
 {
 	int (*screen)[COMPOSE];
 	int *attr;
@@ -899,7 +901,7 @@ void bwgen(BW *w, int linums)
 			break;
 		if (linums)
 			gennum(w, screen, attr, t, y, t->compose);
-		if (t->updtab[y]) {
+		if (linchg || t->updtab[y]) {
 			p = getto(p, w->cursor, w->top, w->top->line + y - w->y);
 /*			if (t->insdel && !w->x) {
 				pset(q, p);
@@ -929,7 +931,7 @@ void bwgen(BW *w, int linums)
 			break;
 		if (linums)
 			gennum(w, screen, attr, t, y, t->compose);
-		if (t->updtab[y]) {
+		if (linchg || t->updtab[y]) {
 			p = getto(p, w->cursor, w->top, w->top->line + y - w->y);
 /*			if (t->insdel && !w->x) {
 				pset(q, p);
@@ -1003,22 +1005,16 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->object = NULL;
 	w->offset = 0;
 	w->o = w->b->o;
-	if (w->o.linums) {
-		w->x = window->x + LINCOLS;
-		w->w = window->w - LINCOLS;
-	} else {
-		w->x = window->x;
-		w->w = window->w;
-	}
+	w->lincols = 0;
+	w->x = window->x;
+	w->w = window->w;
 	if (window == window->main) {
 		rmkbd(window->kbd);
 		window->kbd = mkkbd(kmap_getcontext(w->o.context));
 	}
 	w->top->xcol = 0;
 	w->cursor->xcol = 0;
-	w->linums = 0;
 	w->top_changed = 1;
-	w->linums = 0;
 	w->db = 0;
 	w->shell_flag = 0;
 	return w;
@@ -1256,4 +1252,31 @@ void orphit(BW *bw)
 	bw->b->orphan = 1;
 	pdupown(bw->cursor, &bw->b->oldcur, "orphit");
 	pdupown(bw->top, &bw->b->oldtop, "orphit");
+}
+
+/* Calculate the width of the line number gutter for the Window */
+
+int calclincols(BW *bw)
+{
+	int width = 0;
+	off_t lines = bw->b->eof->line + 1;
+	
+	if (!bw->o.linums) {
+		return 0;
+	}
+	
+	if (lines < 10) {
+		width = 1;
+	} else if (lines < 100) { 
+		width = 2;
+	} else if (lines < 1000) {
+		width = 3;
+	} else if (lines < 10000) {
+		width = 4;
+	} else {
+		off_t l;
+		for (l = 10000, width = 4; lines >= l; l *= 10, width++) {}
+	}
+
+	return width + 2;
 }

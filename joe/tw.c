@@ -23,13 +23,13 @@ static void movetw(W *w, ptrdiff_t x, ptrdiff_t y)
 		if (!tw->staon) {	/* Scroll down and shrink */
 			nscrldn(bw->parent->t->t, y, bw->parent->nh + y, 1);
 		}
-		bwmove(bw, x + (bw->o.linums ? LINCOLS : 0), y + 1);
+		bwmove(bw, x + bw->lincols, y + 1);
 		tw->staon = 1;
 	} else {
 		if (tw->staon) {	/* Scroll up and grow */
 			nscrlup(bw->parent->t->t, y, bw->parent->nh + y, 1);
 		}
-		bwmove(bw, x + (bw->o.linums ? LINCOLS : 0), y);
+		bwmove(bw, x + bw->lincols, y);
 		tw->staon = 0;
 	}
 }
@@ -40,9 +40,9 @@ static void resizetw(W *w, ptrdiff_t wi, ptrdiff_t he)
 {
 	BW *bw = (BW *)w->object;
 	if ((bw->parent->ny || !staen) && he > 1)
-		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he - 1);
+		bwresz(bw, wi - bw->lincols, he - 1);
 	else
-		bwresz(bw, wi - (bw->o.linums ? LINCOLS : 0), he);
+		bwresz(bw, wi - bw->lincols, he);
 }
 
 /* Get current context */
@@ -570,12 +570,15 @@ static void disptw(W *w, int flg)
 {
 	BW *bw = (BW *)w->object;
 	TW *tw = (TW *)bw->object;
+	int newcols = calclincols(bw);
+	int linchg = 0;
 
-	if (bw->o.linums != bw->linums) {
-		bw->linums = bw->o.linums;
+	if (bw->lincols != newcols) {
+		bw->lincols = newcols;
 		resizetw(w, w->w, w->h);
 		movetw(w, w->x, w->y);
 		bwfllw(w);
+		linchg = 1;
 	}
 
 	if (bw->o.hex) {
@@ -583,7 +586,7 @@ static void disptw(W *w, int flg)
 		w->curx = TO_DIFF_OK((bw->cursor->byte-bw->top->byte)%16 + 60 - bw->offset);
 	} else {
 		w->cury = TO_DIFF_OK(bw->cursor->line - bw->top->line + bw->y - w->y);
-		w->curx = TO_DIFF_OK(bw->cursor->xcol - bw->offset + (bw->o.linums ? LINCOLS : 0));
+		w->curx = TO_DIFF_OK(bw->cursor->xcol - bw->offset + newcols);
 	}
 
 	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen) && w->h > 1) {
@@ -614,7 +617,7 @@ static void disptw(W *w, int flg)
 		if (bw->o.hex)
 			bwgenh(bw);
 		else
-			bwgen(bw, bw->o.linums);
+			bwgen(bw, bw->o.linums, linchg);
 	}
 }
 

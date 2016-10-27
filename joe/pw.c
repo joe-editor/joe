@@ -85,7 +85,7 @@ static void disppw(W *w, int flg)
 	bwresz(bw, w->w - (pw->promptlen - pw->promptofst), 1);
 
 	/* Generate buffer */
-	bwgen(bw, 0);
+	bwgen(bw, 0, 0);
 }
 
 /* History functions */

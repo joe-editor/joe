@@ -15,6 +15,7 @@ static void visit_colordef(COLORSET *, struct high_syntax *, struct color_def *)
 
 static struct color_builtin_specs color_builtins[] = {
 	{ "text", &bg_text, NULL, 0, 0, 0 },	/* Must come first (because default_text) */
+	{ "linum", &bg_linum, NULL, 0, 0, 1 },
 	{ "selection", &selectatr, &selectmask, INVERSE, ~INVERSE, 0 },
 	{ "help", &bg_help, NULL, 0, 0, 1 },
 	{ "status", &bg_stalin, NULL, 0, 0, 1 },
