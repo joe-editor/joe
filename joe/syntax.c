@@ -36,6 +36,7 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	int *attr = attr_buf;
 	int *attr_end = attr_buf + attr_size;
 	int c;
+	int bold = 0; /* Save bold state for extended scheme colors */
 
 	int state = IDLE; /* h_state.saved_s[0]; */
 	int accu = 0; /* h_state.saved_s[1]; */
@@ -94,8 +95,10 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 				if (c == ';' || c == 'm') {
 					if (accu == 0) {
 						current_attr = 0;
+						bold = 0;
 					} else if (accu == 1) {
 						current_attr |= BOLD;
+						bold = 1;
 					} else if (accu == 4) {
 						current_attr |= UNDERLINE;
 					} else if (accu == 5) {
@@ -103,9 +106,22 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 					} else if (accu == 7) {
 						current_attr |= INVERSE;
 					} else if (accu >= 30 && accu <= 37) {
-						current_attr = ((current_attr & ~FG_MASK) | FG_NOT_DEFAULT | ((accu - 30) << FG_SHIFT));
+						if (bold && curschemeset && curschemeset->termcolors[accu - 22].type != COLORSPEC_TYPE_NONE) {
+							/* Remapped extended color */
+							current_attr = (current_attr & ~FG_MASK) | (curschemeset->termcolors[accu - 22].atr & FG_MASK & ~BOLD);
+						} else if (curschemeset && curschemeset->termcolors[accu - 30].type != COLORSPEC_TYPE_NONE) {
+							/* Remapped by scheme */
+							current_attr = (current_attr & ~FG_MASK) | (curschemeset->termcolors[accu - 30].atr & FG_MASK);
+						} else {
+							current_attr = (current_attr & ~FG_MASK) | FG_NOT_DEFAULT | ((accu - 30) << FG_SHIFT) | (-bold & BOLD);
+						}
 					} else if (accu >= 40 && accu <= 47) {
-						current_attr = ((current_attr & ~BG_MASK) | BG_NOT_DEFAULT | ((accu - 40) << BG_SHIFT));
+						if (curschemeset && curschemeset->termcolors[accu - 30].type != COLORSPEC_TYPE_NONE) {
+							/* Remapped by scheme */
+							current_attr = (current_attr & ~BG_MASK) | (((curschemeset->termcolors[accu - 40].atr & FG_MASK) >> FG_SHIFT) << BG_SHIFT);
+						} else {
+							current_attr = (current_attr & ~BG_MASK) | BG_NOT_DEFAULT | ((accu - 40) << BG_SHIFT);
+						}
 					}
 					if (c == ';') {
 						accu = 0;
@@ -813,14 +829,12 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 					for(color=syntax->color;color;color=color->next)
 						if(!zcmp(color->name,bf))
 							break;
-					if(color) {
-						state->colorp = color;
-					} else {
+					if(!color) {
 						logerror_2(joe_gettext(_("%s %d: Unknown class\n")),name,line);
 					}
 
 					state->color = 0;
-					state->colorp = NULL;
+					state->colorp = color;
 					while(parse_ws(&p, '#'), !parse_ident(&p, bf, SIZEOF(bf))) {
 						if(!zcmp(bf, "comment")) {
 							state->color |= CONTEXT_COMMENT;
