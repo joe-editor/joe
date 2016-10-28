@@ -50,7 +50,7 @@ enum {
 	iEND,	/* End of expression. */
 };
 
-/* A comiled regular expression */
+/* A compiled regular expression */
 
 struct node {
 	int type;			/* Character or type when negative */

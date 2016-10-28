@@ -15,7 +15,7 @@ struct undorec {
 	off_t	len;		/* Length of insert or delete */
 	int	del;		/* Set if this is a delete */
 	B	*big;		/* Set to buffer containing a large amount of deleted data */
-	char	*small;		/* Set to malloc block containg a small amount of deleted data */
+	char	*small;		/* Set to malloc block containing a small amount of deleted data */
 };
 
 struct undo {

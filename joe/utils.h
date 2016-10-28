@@ -51,8 +51,8 @@ ptrdiff_t Zlen(const int *s);
 int Zcmp(const int *a, const int *b);
 int *Zlcpy(int *a, ptrdiff_t siz, const int *b);
 int *Zdup(const int *s);
-char *Ztoutf8(char *a, ptrdiff_t len, const int *b);
-char *Ztoz(char *a, ptrdiff_t len, const int *b);
+char *Ztoutf8(char *dest, const int *src);
+char *Ztoz(char *dest, const int *src);
  
 int filecmp (const char *a, const char *b);
 int fullfilecmp (const char *a, const char *b);
@@ -91,7 +91,7 @@ typedef RETSIGTYPE (*sighandler_t)(int);
 #define REINSTALL_SIGHANDLER(sig, handler) do {} while(0)
 #endif
 
-/* wrapper to hide signal interface differrencies */
+/* wrapper to hide signal interface differences */
 int joe_set_signal(int signum, sighandler_t handler);
 
 /* Simple parsers */

@@ -64,12 +64,12 @@ CMD cmds[] = {
 	{"defm3down", TYPETW+TYPEPW, udefm3down, 0, 0, 0 },
 	{"defm3up", TYPETW+TYPEPW, udefm3up, 0, 0, 0 },
 	{"defm3drag", TYPETW+TYPEPW, udefm3drag, 0, 0, 0 },
+	{"defmiddledown", TYPETW+TYPEPW, udefmiddledown, 0, 0, 0 },
+	{"defmiddleup", TYPETW+TYPEPW, udefmiddleup, 0, 0, 0 },
+	{"defmiddledrag", TYPETW+TYPEPW, udefmiddledrag, 0, 0, 0 },
 	{"defmrdown", TYPETW+TYPEPW, udefmrdown, 0, 0, 0 },
 	{"defmrup", TYPETW+TYPEPW, udefmrup, 0, 0, 0 },
 	{"defmrdrag", TYPETW+TYPEPW, udefmrdrag, 0, 0, 0 },
-	{"defmmdown", TYPETW+TYPEPW, udefmmdown, 0, 0, 0 },
-	{"defmmup", TYPETW+TYPEPW, udefmmup, 0, 0, 0 },
-	{"defmmdrag", TYPETW+TYPEPW, udefmmdrag, 0, 0, 0 },
 	{"delbol", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelbl, NULL, 1, "deleol"},
 	{"delch", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, udelch, NULL, 1, "backs"},
 	{"deleol", TYPETW + TYPEPW + EKILL + EMOD, udelel, NULL, 1, "delbol"}, 
@@ -449,7 +449,7 @@ int execmd(CMD *cmd, int k)
 
       skip:
 
-	/* Make dislayed cursor column equal the actual cursor column
+	/* Make displayed cursor column equal the actual cursor column
 	 * for commands which arn't simple vertical movements */
 	if ((cmd->flag & EFIXXCOL) && (maint->curwin->watom->what & (TYPETW | TYPEPW)))
 		bw->cursor->xcol = piscol(bw->cursor);

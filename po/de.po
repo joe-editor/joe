@@ -6,62 +6,45 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: joe 3.5\n"
-"POT-Creation-Date: 2006-06-15 14:12-0400\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-08-21 21:49-0400\n"
 "PO-Revision-Date: 2007-01-03 13:58+0100\n"
 "Last-Translator: Jan Engelhardt <jengelh@gmx.de>\n"
 "Language-Team: German <de@li.org>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: \n"
 
-#: b.c:31
+#: b.c:41
 msgid "No error"
 msgstr "Kein Fehler"
 
-#: b.c:32
+#: b.c:42
 msgid "New File"
 msgstr "Neue Datei"
 
-#: b.c:33
+#: b.c:43
 msgid "Error reading file"
 msgstr "Fehler beim Lesen der Datei"
 
-#: b.c:34
+#: b.c:44
 msgid "Error seeking file"
 msgstr "Fehler beim Springen (Seek) in der Datei"
 
-#: b.c:35
+#: b.c:45
 msgid "Error opening file"
 msgstr "Fehler beim Öffnen der Datei"
 
-#: b.c:36
+#: b.c:46
 msgid "Error writing file"
 msgstr "Fehler beim Schreiben der Datei"
 
-#: b.c:37
+#: b.c:47
 msgid "File on disk is newer"
 msgstr "Datei auf dem Datenträger ist neuer"
 
-#: b.c:2736
-#, c-format
-msgid ""
-"\n"
-"*** These modified files were found in JOE when it aborted on %s"
-msgstr ""
-"\n"
-"*** Diese geänderten Dateien wurden nach Abbruch von %s in JOE gefunden"
-
-#: b.c:2738
-#, c-format
-msgid "*** JOE was aborted by UNIX signal %d\n"
-msgstr "*** JOE wurde durch UNIX-Signal %d abgebrochen\n"
-
-#: b.c:2740
-msgid "*** JOE was aborted because the terminal closed\n"
-msgstr "*** JOE wurde durch Schließen des Terminals abgebrochen\n"
-
-#: b.c:2745
+#: b.c:3375
 #, c-format
 msgid ""
 "\n"
@@ -70,7 +53,7 @@ msgstr ""
 "\n"
 "*** Datei '%s'\n"
 
-#: b.c:2747
+#: b.c:3377
 msgid ""
 "\n"
 "*** File '(Unnamed)'\n"
@@ -78,55 +61,50 @@ msgstr ""
 "\n"
 "*** Datei '(Unbenannt)'\n"
 
-#: bw.c:1274
-msgid "** Line %ld  Col %ld  Offset %s(0x%s) **"
-msgstr "** Zeile %ld  Spalte %ld  Offset %s(0x%s) **"
-
-#: bw.c:1276
-msgid "** Line %ld  Col %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Width %d **"
-msgstr "** Zeile %ld  Spalte %ld  Offset %s(0x%s)  %s %d(0%o/0x%X) Breite %d **"
-
-#: cmd.c:211
+#: cmd.c:230
 msgid "Could not create lock. (I) edit anyway, (Q) cancel edit? "
 msgstr "Konnte Lock nicht erstellen. (I)trotzem editieren, (Q)abbrechen? "
 
-#: cmd.c:212
+#: cmd.c:231
+#, c-format
 msgid "Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? "
-msgstr "Gesperrt durch %s. (S)perre stehlen, (I)trotzdem editieren, (Q)abbrechen? "
+msgstr ""
+"Gesperrt durch %s. (S)perre stehlen, (I)trotzdem editieren, (Q)abbrechen? "
 
-#: cmd.c:214
+#: cmd.c:233
 msgid "|steal the lock|sS"
 msgstr "|Sperre stehlen|sS"
 
-#: cmd.c:215
+#: cmd.c:234
 msgid "|cancel edit due to lock|qQ"
 msgstr "|Editieren wegen Sperre abbrechen|qQ"
 
-#: cmd.c:216
+#: cmd.c:235
 msgid "|ignore lock, continue with edit|iI"
 msgstr "|Sperre ignorieren, mit Editieren fortfahren|iI"
 
-#: cmd.c:265
+#: cmd.c:286
 msgid "Notice: File on disk changed! (hit %{abort} to continue)  "
-msgstr "Hinweis: Datei auf dem Datenträger geändert! (%{abort} zum Fortfahren)  "
+msgstr ""
+"Hinweis: Datei auf dem Datenträger geändert! (%{abort} zum Fortfahren)  "
 
-#: cmd.c:325
+#: cmd.c:346
 msgid "Modify other window first for macro"
 msgstr "Ändern Sie für das Makro zuerst das andere Fenster"
 
-#: cmd.c:333
+#: cmd.c:354
 msgid "Other buffer is read only"
 msgstr "Der andere Puffer ist schreibgeschützt"
 
-#: cmd.c:348 rc.c:340
+#: cmd.c:369 options.c:357
 msgid "Read only"
 msgstr "Schreibgeschützt"
 
-#: cmd.c:542 cmd.c:552
+#: cmd.c:567 cmd.c:577
 msgid "No such command"
 msgstr "Unbekannter Befehl"
 
-#: cmd.c:569
+#: cmd.c:594
 msgid "Command: "
 msgstr "Befehl: "
 
@@ -139,986 +117,1357 @@ msgstr ""
 "\n"
 "%d: EOF vor Ende des Hilfetextes\n"
 
-#: kbd.c:352
+#: kbd.c:420
 msgid "No such keymap"
 msgstr "Unbekannte Keymap"
 
-#: kbd.c:381
+#: kbd.c:457
 msgid "Change keymap: "
 msgstr "Keymap ändern: "
 
-#: macro.c:662
+#: macro.c:535
 msgid "Macro to record (0-9 or %{abort} to abort): "
 msgstr "Aufzunehmendes Makro (0-9 oder %{abort} zum Abbrechen): "
 
-#: macro.c:764
+#: macro.c:572
+#, fuzzy
+msgid "Delay in seconds between macro invocation (%{abort} to abort): "
+msgstr "Gehe zu Spalte (%{abort} zum Abbrechen): "
+
+#: macro.c:588
+#, fuzzy
+msgid "Macro to play (0-9 or %{abort} to abort): "
+msgstr "Aufzunehmendes Makro (0-9 oder %{abort} zum Abbrechen): "
+
+#: macro.c:692
 msgid "Play-"
 msgstr ""
 
-#: macro.c:791
+#: macro.c:721
 msgid "No. times to repeat next command (%{abort} to abort): "
-msgstr "Anzahl der Widerholungen für nächsten Befehl (%{abort} zum Abbrechen): "
+msgstr ""
+"Anzahl der Widerholungen für nächsten Befehl (%{abort} zum Abbrechen): "
 
-#: macro.c:819
+#: macro.c:754
 msgid "If (%{abort} to abort): "
 msgstr "If (%{abort} zum Abbrechen): "
 
-#: macro.c:826
+#: macro.c:761
 msgid "Elsif without if"
 msgstr "Elsif ohne if"
 
-#: macro.c:832
+#: macro.c:767
 msgid "Else if: "
 msgstr "Else if: "
 
-#: macro.c:841
+#: macro.c:776
 msgid "Else without if"
 msgstr "Else ohne if"
 
-#: macro.c:852
+#: macro.c:787
 msgid "Endif without if"
 msgstr "Endif ohne if"
 
-#: macro.c:895
+#: macro.c:830
 #, c-format
 msgid "Repeat %s%d"
 msgstr "Repeat %s%d"
 
-#: macro.c:908
+#: macro.c:843
 msgid "Repeat"
 msgstr "Repeat"
 
-#: main.c:207
+#: main.c:355
 msgid "Couldn't load termcap/terminfo entry\n"
 msgstr "Konnte termcap/terminfo-Eintrag nicht laden\n"
 
-#: main.c:222 main.c:239
-#, c-format
-msgid "There were errors in '%s'.  Use it anyway?"
+#: main.c:368 main.c:379 main.c:438 main.c:448 main.c:465
+#, fuzzy, c-format
+msgid "There were errors in '%s'.  Falling back on default.\n"
 msgstr "Fehler in '%s'. Trotzdem verwenden?"
 
-#: main.c:294
+#: main.c:428
 #, c-format
 msgid "Warning: %s is newer than your %s.\n"
 msgstr "Warnung: %s ist neuer als Ihr %s.\n"
 
-#: main.c:295
-#, c-format
-msgid "You should update or delete %s\n"
-msgstr "%s sollte aktualisiert oder gelöscht werden\n"
-
-#: main.c:296
-#, c-format
-msgid "Hit enter to continue with %s "
-msgstr "Drücken Sie ENTER um mit %s fortzufahren "
-
-#: main.c:309 main.c:328 main.c:345
-#, c-format
-msgid "There were errors in '%s'.  Use it anyway (y,n)? "
-msgstr "Fehler in '%s'. Trotzdem verwenden (y,n)? "
-
-#: main.c:353
+#: main.c:469
 #, c-format
 msgid "Couldn't open '%s'\n"
 msgstr "Konnte '%s' nicht öffnen\n"
 
-#: main.c:359
+#: main.c:476
 msgid "rc file has no :main key binding section or no bindings.  Bye.\n"
-msgstr "RC-Datei hat keine :main Tastenbelegungs-Sektion oder gar keine Belegungen.\n"
+msgstr ""
+"RC-Datei hat keine :main Tastenbelegungs-Sektion oder gar keine Belegungen.\n"
 
-#: main.c:372
+#: main.c:508
 #, c-format
 msgid "Unknown option '%s'\n"
 msgstr "Unbekannte Option '%s'\n"
 
-#: main.c:508
-#, c-format
-msgid "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
+#: main.c:654
+#, fuzzy, c-format
+msgid "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i"
 msgstr "\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2006 **\\i"
 
-#: rc.c:295
+#: mmenu.c:155
+#, fuzzy
+msgid "No such menu"
+msgstr "Unbekannter Befehl"
+
+#: mmenu.c:169
+msgid "Menu: "
+msgstr ""
+
+#: options.c:300
 msgid "Overtype mode"
 msgstr "Überschreib-Modus"
 
-#: rc.c:295
+#: options.c:300
 msgid "Insert mode"
 msgstr "Einfüge-Modus"
 
-#: rc.c:295
-msgid "T Overtype "
-msgstr "T Überschreiben "
-
-#: rc.c:296
+#: options.c:301
 msgid "Hex edit mode"
 msgstr "Hexedit-Modus"
 
-#: rc.c:296
+#: options.c:301
 msgid "Text edit mode"
 msgstr "Textedit-Modus"
 
-#: rc.c:296
-msgid "  Hex edit mode "
-msgstr "  Hexedit-Modus "
+#: options.c:301
+#, fuzzy
+msgid "Hex edit display mode"
+msgstr "Hexedit-Modus"
 
-#: rc.c:297
+#: options.c:302
+msgid "Hide ANSI sequences"
+msgstr ""
+
+#: options.c:302
+msgid "Reveal ANSI sequences"
+msgstr ""
+
+#: options.c:302
+msgid "Hide ANSI mode"
+msgstr ""
+
+#: options.c:303
+#, fuzzy
+msgid "Status line context enabled"
+msgstr "Statuszeile dauerhaft aktualisiert"
+
+#: options.c:303
+#, fuzzy
+msgid "Status line context disabled"
+msgstr "Automatische Einrückung deaktiviert"
+
+#: options.c:303
+#, fuzzy
+msgid "Status line context display mode"
+msgstr "Statuszeile dauerhaft aktualisiert"
+
+#: options.c:304
 msgid "Autoindent enabled"
 msgstr "Automatische Einrückung aktiviert"
 
-#: rc.c:297
+#: options.c:304
 msgid "Autoindent disabled"
 msgstr "Automatische Einrückung deaktiviert"
 
-#: rc.c:297
-msgid "I Autoindent "
+#: options.c:304
+#, fuzzy
+msgid "Autoindent mode"
 msgstr "I Einrückung "
 
-#: rc.c:298
+#: options.c:305
 msgid "Wordwrap enabled"
 msgstr "Zeilenumbruch aktiviert"
 
-#: rc.c:298
+#: options.c:305
 msgid "Wordwrap disabled"
 msgstr "Zeilenumbruch deaktiviert"
 
-#: rc.c:298
-msgid "W Word wrap "
+#: options.c:305
+#, fuzzy
+msgid "Word wrap mode"
 msgstr "W Zeilenumbruch "
 
-#: rc.c:299
-#, c-format
-msgid "Tab width (%d): "
+#: options.c:306
+#, fuzzy, c-format
+msgid "Tab width (%lld): "
 msgstr "Tabulator-Breite (%d): "
 
-#: rc.c:299
-msgid "D Tab width "
+#: options.c:306
+#, fuzzy
+msgid "Tab width"
 msgstr "D Tab-Breite "
 
-#: rc.c:300
+#: options.c:307
 #, c-format
 msgid "Left margin (%d): "
 msgstr "Linker Einzug (%d): "
 
-#: rc.c:300
-msgid "L Left margin "
+#: options.c:307
+#, fuzzy
+msgid "Left margin "
 msgstr "L Linker Einzug "
 
-#: rc.c:301
+#: options.c:308
 #, c-format
 msgid "Right margin (%d): "
 msgstr "Rechter Einzug (%d): "
 
-#: rc.c:301
-msgid "R Right margin "
+#: options.c:308
+#, fuzzy
+msgid "Right margin "
 msgstr "R Rechter Einzug"
 
-#: rc.c:302
+#: options.c:309
 msgid "Restore cursor position when files loaded"
 msgstr "Springe beim Öffnen von Dateien an die letzte Cursorposition"
 
-#: rc.c:302
+#: options.c:309
 msgid "Don't restore cursor when files loaded"
 msgstr "Springe beim Öffnen von Dateien NICHT an die letzte Cursorposition"
 
-#: rc.c:302
-msgid "  Restore cursor "
+#: options.c:309
+#, fuzzy
+msgid "Restore cursor mode"
 msgstr "  Springe zu Cursorpos. "
 
-#: rc.c:303
+#: options.c:310
+msgid "Standard regular expression format"
+msgstr ""
+
+#: options.c:310
+msgid "JOE regular expression format"
+msgstr ""
+
+#: options.c:310
+msgid "Standard or JOE regular expression syntax"
+msgstr ""
+
+#: options.c:311
 msgid "Rectangle mode"
 msgstr "Rechteck-Modus"
 
-#: rc.c:303
+#: options.c:311
 msgid "Text-stream mode"
 msgstr "Textstrom-Modus"
 
-#: rc.c:303
-msgid "X Rectangle mode "
-msgstr "X Rechteck-Modus "
+#: options.c:311
+#, fuzzy
+msgid "Rectangular region mode"
+msgstr "Rechteck-Modus"
 
-#: rc.c:304
+#: options.c:312
 msgid "Search ignores case by default"
 msgstr "Suche ignoriert standardmäßig Groß-/Kleinschreibung"
 
-#: rc.c:304
+#: options.c:312
 msgid "Case sensitive search by default"
 msgstr "Suche beachtet Groß-/Kleinschreibung"
 
-#: rc.c:304
-msgid "  Case insensitivity "
-msgstr "  Groß-/Kleinschr. beachten "
+#: options.c:312
+#, fuzzy
+msgid "Case insensitive search mode "
+msgstr "Suche beachtet Groß-/Kleinschreibung"
 
-#: rc.c:305
+#: options.c:313
 msgid "Search wraps"
 msgstr "Suche wird am Anfang fortgesetzt"
 
-#: rc.c:305
+#: options.c:313
 msgid "Search doesn't wrap"
 msgstr "Surche wird nicht am Anfang fortgesetzt"
 
-#: rc.c:305
-msgid "  Search wraps "
-msgstr "  Suche durch ganzes Dokument "
+#: options.c:313
+#, fuzzy
+msgid "Search wraps mode"
+msgstr "Suche wird am Anfang fortgesetzt"
 
-#: rc.c:306
+#: options.c:314
 msgid "Menu explorer mode"
 msgstr "Menü-Explorer-Modus"
 
-#: rc.c:306
+#: options.c:314
 msgid "Simple completion mode"
 msgstr "Einfache Vervollständigung"
 
-#: rc.c:306
-msgid "  Menu explorer "
-msgstr "  Menü-Explorer "
-
-#: rc.c:307
+#: options.c:315
 msgid "Menu above prompt"
 msgstr "Menü über Prompt"
 
-#: rc.c:307
+#: options.c:315
 msgid "Menu below prompt"
 msgstr "Menü unter Prompt"
 
-#: rc.c:307
-msgid "  Menu position "
-msgstr "  Menüposition "
+#: options.c:315
+#, fuzzy
+msgid "Menu above/below mode"
+msgstr "Menü-Explorer-Modus"
 
-#: rc.c:308
+#: options.c:316
+#, fuzzy
+msgid "Tags menu disabled"
+msgstr "# Kommentare deaktiviert"
+
+#: options.c:316
+#, fuzzy
+msgid "Tags menu enabled"
+msgstr "# Kommentare aktiviert"
+
+#: options.c:316
+msgid "Tags menu mode"
+msgstr ""
+
+#: options.c:317
 msgid "Search prompting on"
 msgstr ""
 
-#: rc.c:308
+#: options.c:317
 msgid "Search prompting off"
 msgstr ""
 
-#: rc.c:308
-msgid "  Search prompting "
-msgstr ""
+#: options.c:317
+#, fuzzy
+msgid "Search prompting mode"
+msgstr "Einfache Vervollständigung"
 
-#: rc.c:309
+#: options.c:318
 msgid "Jump into menu is on"
 msgstr ""
 
-#: rc.c:309
+#: options.c:318
 msgid "Jump into menu is off"
 msgstr ""
 
-#: rc.c:309
-msgid "  Jump into menu "
+#: options.c:318
+msgid "Jump into menu mode"
 msgstr ""
 
-#: rc.c:310
+#: options.c:319
 msgid "Autoswap ^KB and ^KK"
 msgstr "^KB und ^KK automatisch tauschen"
 
-#: rc.c:310
+#: options.c:319
 msgid "Autoswap off "
 msgstr "Automatisher Tausch von ^KB und ^KK deaktiviert "
 
-#: rc.c:310
-msgid "  Autoswap mode "
+#: options.c:319
+#, fuzzy
+msgid "Autoswap mode "
 msgstr "  Autoswap-Modus "
 
-#: rc.c:311
-#, c-format
+#: options.c:320
 msgid "Indent char %d (SPACE=32, TAB=9, %{abort} to abort): "
 msgstr "Einrückungszeichen %d (SPACE=32, TAB=9, %{abort} zum Abbrechen): "
 
-#: rc.c:311
-msgid "  Indent char "
+#: options.c:320
+#, fuzzy
+msgid "Indent char "
 msgstr "  Einrückungszeichen "
 
-#: rc.c:312
-#, c-format
-msgid "Indent step %d (%{abort} to abort): "
+#: options.c:321
+#, fuzzy
+msgid "Indent step %lld (%{abort} to abort): "
 msgstr "Einrückungsschritt %d (%{abort} zum Abbrechen): "
 
-#: rc.c:312
-msgid "  Indent step "
+#: options.c:321
+#, fuzzy
+msgid "Indent step "
 msgstr "  Einrückungsschritt "
 
-#: rc.c:313
+#: options.c:322
 msgid "One space after periods for paragraph reformat"
 msgstr ""
 
-#: rc.c:313
+#: options.c:322
 msgid "Two spaces after periods for paragraph reformat"
 msgstr ""
 
-#: rc.c:313
-msgid "  French spacing "
+#: options.c:322
+#, fuzzy
+msgid "French spacing mode"
+msgstr "Rechteck-Modus"
+
+#: options.c:323
+msgid "One space after paragraph line"
 msgstr ""
 
-#: rc.c:314
+#: options.c:323
+msgid "No spaces after paragraph lines"
+msgstr ""
+
+#: options.c:323
+#, fuzzy
+msgid "Flowed text mode"
+msgstr "Hexedit-Modus"
+
+#: options.c:324
 msgid "Highlighting enabled"
 msgstr "Highlighting aktiviert"
 
-#: rc.c:314
+#: options.c:324
 msgid "Highlighting disabled"
 msgstr "Highlighting deaktiviert"
 
-#: rc.c:314
-msgid "H Highlighting "
+#: options.c:324
+#, fuzzy
+msgid "Syntax highlighting mode"
 msgstr "H Highlighting "
 
-#: rc.c:315
+#: options.c:325
 msgid "Inserting spaces when tab key is hit"
 msgstr ""
 
-#: rc.c:315
+#: options.c:325
 msgid "Inserting tabs when tab key is hit"
 msgstr ""
 
-#: rc.c:315
-msgid "  No tabs "
+#: options.c:325
+#, fuzzy
+msgid "No tabs mode"
 msgstr "  Keine Tabs "
 
-#: rc.c:316
+#: options.c:326
 msgid "Cursor will be recentered on scrolls"
 msgstr ""
 
-#: rc.c:316
+#: options.c:326
 msgid "Cursor will not be recentered on scroll"
 msgstr ""
 
-#: rc.c:316
-msgid "C Center on scroll "
+#: options.c:326
+#, fuzzy
+msgid "Center on scroll mode"
 msgstr "Z Zentrieren beim Blättern "
 
-#: rc.c:317
+#: options.c:327
+#, c-format
+msgid "Columns to scroll left or -1 for 1/2 window (%d): "
+msgstr ""
+
+#: options.c:327
+msgid "Left scroll amount"
+msgstr ""
+
+#: options.c:328
+#, c-format
+msgid "Columns to scroll right or -1 for 1/2 window (%d): "
+msgstr ""
+
+#: options.c:328
+msgid "Right scroll amount"
+msgstr ""
+
+#: options.c:329
 msgid "Automatically detect MS-DOS files"
 msgstr "Automatische Erkennung von MS-DOS-Dateien"
 
-#: rc.c:317
+#: options.c:329
 msgid "Do not automatically detect MS-DOS files"
 msgstr "Keine automatische Erkennung von MS-DOS-Dateien"
 
-#: rc.c:317
-msgid "  Auto detect CR-LF "
+#: options.c:329
+#, fuzzy
+msgid "Auto detect CR-LF mode"
 msgstr "  CR-LF automatisch erkennen "
 
-#: rc.c:318
+#: options.c:330
 msgid "Automatically detect indentation"
 msgstr "Einrückung wird automatisch erkannt"
 
-#: rc.c:318
+#: options.c:330
 msgid "Do not automatically detect indentation"
 msgstr "Einrückung wird nicht automatisch erkannt"
 
-#: rc.c:318
-msgid "  Guess indent "
+#: options.c:330
+#, fuzzy
+msgid "Guess indent mode"
 msgstr "  Einrückung erkennen "
 
-#: rc.c:319
+#: options.c:331
 msgid "Automatically detect non-UTF-8 in UTF-8 locale"
 msgstr "Automatische Erkennung von nicht-UTF-8 in UTF-8-Umgebung"
 
-#: rc.c:319
+#: options.c:331
 msgid "Do not automatically detect non-UTF-8"
 msgstr "Keine Automatische Erkennung von nicht-UTF-8"
 
-#: rc.c:319
-msgid "  Guess non-UTF-8 "
+#: options.c:331
+#, fuzzy
+msgid "Guess non-UTF-8 mode"
 msgstr "  Rate nicht-UTF-8 "
 
-#: rc.c:320
+#: options.c:332
 msgid "Automatically detect UTF-8 in non-UTF-8 locale"
 msgstr "Automatische Erkennung von UTF-8 in nicht-UTF-8-Umgebung"
 
-#: rc.c:320
+#: options.c:332
 msgid "Do not automatically detect UTF-8"
 msgstr "Keine Automatische Erkennung von UTF-8"
 
-#: rc.c:320
-msgid "  Guess UTF-8 "
+#: options.c:332
+#, fuzzy
+msgid "Guess UTF-8 mode"
 msgstr "  Rate UTF-8 "
 
-#: rc.c:321
+#: options.c:333
+#, fuzzy
+msgid "Automatically detect UTF-16"
+msgstr "Keine Automatische Erkennung von UTF-8"
+
+#: options.c:333
+#, fuzzy
+msgid "Do not automatically detect UTF-16"
+msgstr "Keine Automatische Erkennung von UTF-8"
+
+#: options.c:333
+#, fuzzy
+msgid "Guess UTF-16 mode"
+msgstr "  Rate UTF-8 "
+
+#: options.c:334
 msgid "Menu is transposed"
 msgstr "Menüelemente werden umgeordnet"
 
-#: rc.c:321
+#: options.c:334
 msgid "Menus are not transposed"
 msgstr "Menüelemente werden nicht umgeordnet"
 
-#: rc.c:321
-msgid "  Transpose menus "
+#: options.c:334
+#, fuzzy
+msgid "Transpose menus mode"
 msgstr "  Menüs umordnen "
 
-#: rc.c:322
+#: options.c:335
 msgid "CR-LF is line terminator"
 msgstr "CR-LF ist Zeilenbegrenzer"
 
-#: rc.c:322
+#: options.c:335
 msgid "LF is line terminator"
 msgstr "LF ist Zeilenbegrenzer"
 
-#: rc.c:322
-msgid "Z CR-LF (MS-DOS) "
+#: options.c:335
+#, fuzzy
+msgid "CR-LF (MS-DOS) mode"
 msgstr "Z CR-LF (MS-DOS) "
 
-#: rc.c:323
+#: options.c:336
 msgid "Line numbers enabled"
 msgstr "Zeilennummern aktiviert"
 
-#: rc.c:323
+#: options.c:336
 msgid "Line numbers disabled"
 msgstr "Zeilennummern deaktiviert"
 
-#: rc.c:323
-msgid "N Line numbers "
+#: options.c:336
+#, fuzzy
+msgid "Line numbers mode"
 msgstr "N Zeilennummern "
 
-#: rc.c:324
+#: options.c:337
 msgid "Anchored block marking on"
 msgstr ""
 
-#: rc.c:324
+#: options.c:337
 msgid "Anchored block marking off"
 msgstr ""
 
-#: rc.c:324
-msgid "  Marking "
-msgstr ""
+#: options.c:337
+#, fuzzy
+msgid "Region marking mode"
+msgstr "Rechteck-Modus"
 
-#: rc.c:325
+#: options.c:338
 msgid "Characters above 127 shown as-is"
 msgstr "Zeichen über 127 so-wie-sie-sind anzeigen"
 
-#: rc.c:325
+#: options.c:338
 msgid "Characters above 127 shown in inverse"
 msgstr "Zeichen über 127 invertiert anzeigen"
 
-#: rc.c:325
-msgid "  Meta chars as-is "
+#: options.c:338
+msgid "Display meta chars as-is mode"
 msgstr ""
 
-#: rc.c:326
+#: options.c:339
 msgid "Last line forced to have NL when file saved"
 msgstr ""
 
-#: rc.c:326
+#: options.c:339
 msgid "Last line not forced to have NL"
 msgstr ""
 
-#: rc.c:326
-msgid "  Force last NL "
+#: options.c:339
+msgid "Force last NL mode"
 msgstr ""
 
-#: rc.c:327
+#: options.c:340
 msgid "~/.joe_state file will be updated"
 msgstr "Datei ~/.joe_state wird aktualisiert"
 
-#: rc.c:327
+#: options.c:340
 msgid "~/.joe_state file will not be updated"
 msgstr "Datei ~/.joe_state wird nicht aktualisiert"
 
-#: rc.c:327
-msgid "  Joe_state file "
+#: options.c:340
+#, fuzzy
+msgid "Joe_state file mode"
 msgstr "  joe_state-Datei "
 
-#: rc.c:328
+#: options.c:341
+#, fuzzy
+msgid "Nobackup enabled"
+msgstr "Zeilenumbruch aktiviert"
+
+#: options.c:341
+#, fuzzy
+msgid "Nobackup disabled"
+msgstr "Zeilenumbruch deaktiviert"
+
+#: options.c:341
+msgid "No backup mode"
+msgstr ""
+
+#: options.c:342
 msgid "Backup files will not be made"
 msgstr "Keine Erstellung von Backup-Dateien"
 
-#: rc.c:328
+#: options.c:342
 msgid "Backup files will be made"
 msgstr "Erstellung von Backup-Dateien"
 
-#: rc.c:328
-msgid "  Disable backups "
+#: options.c:342
+#, fuzzy
+msgid "Disable backups mode"
 msgstr "  Backups deaktivieren "
 
-#: rc.c:329
+#: options.c:343
+#, fuzzy
+msgid "DEADJOE files will not be made"
+msgstr "Keine Erstellung von Backup-Dateien"
+
+#: options.c:343
+#, fuzzy
+msgid "DEADJOE files will be made"
+msgstr "Erstellung von Backup-Dateien"
+
+#: options.c:343
+msgid "Disable DEADJOE mode"
+msgstr ""
+
+#: options.c:344
 msgid "Files will not be locked"
 msgstr "Dateien werden nicht gesperrt"
 
-#: rc.c:329
+#: options.c:344
 msgid "Files will be locked"
 msgstr "Dateien werden gesperrt"
 
-#: rc.c:329
-msgid "  Disable locks "
+#: options.c:344
+#, fuzzy
+msgid "Disable locks mode"
 msgstr "  Sperren deaktivieren "
 
-#: rc.c:330
+#: options.c:345
 msgid "No file modification time check"
 msgstr "Keine Prüfung der Änderungszeit von Dateien"
 
-#: rc.c:330
+#: options.c:345
 msgid "File modification time checking enabled"
 msgstr "Prüfung der Änderungszeit von Dateien"
 
-#: rc.c:330
-msgid "  Disable mtime check "
+#: options.c:345
+#, fuzzy
+msgid "Disable mtime check mode"
 msgstr "  Deaktiviere mtime-Prüfung "
 
-#: rc.c:331
+#: options.c:346
 msgid "No current dir"
 msgstr "Kein aktuelles Verzeichnis"
 
-#: rc.c:331
+#: options.c:346
 msgid "Current dir enabled"
 msgstr ""
 
-#: rc.c:331
-msgid "  Disable current dir "
-msgstr ""
+#: options.c:346
+#, fuzzy
+msgid "Disable current dir "
+msgstr "Kein aktuelles Verzeichnis"
 
-#: rc.c:332
+#: options.c:347
 msgid "Hardlinks will be broken"
 msgstr "Hardlinks werden gebrochen"
 
-#: rc.c:332
+#: options.c:347
 msgid "Hardlinks not broken"
 msgstr "Hardlinks werden nicht gebrochen"
 
-#: rc.c:332
-msgid "  Break hard links "
+#: options.c:347
+#, fuzzy
+msgid "Break hard links "
 msgstr "  Hardlinks brechen "
 
-#: rc.c:333
+#: options.c:348
+#, fuzzy
+msgid "Links will be broken"
+msgstr "Hardlinks werden gebrochen"
+
+#: options.c:348
+#, fuzzy
+msgid "Links not broken"
+msgstr "Hardlinks werden nicht gebrochen"
+
+#: options.c:348
+#, fuzzy
+msgid "Break links "
+msgstr "  Hardlinks brechen "
+
+#: options.c:349
 msgid "Highlighting turned off after block operations"
 msgstr "Blockmarkierung nach Operationen aufheben"
 
-#: rc.c:333
+#: options.c:349
 msgid "Highlighting not turned off after block operations"
 msgstr "Blockmarkierung wird nach Operationen nicht aufgehoben"
 
-#: rc.c:333
-msgid "  Auto unmark "
+#: options.c:349
+#, fuzzy
+msgid "Auto unmark "
 msgstr "  Markierung aufheben "
 
-#: rc.c:334
+#: options.c:350
 msgid "Prompt for filename in save & exit command"
 msgstr "Prompt für Dateiname bei Speichern+Beenden-Befehl"
 
-#: rc.c:334
+#: options.c:350
 msgid "Don't prompt for filename in save & exit command"
 msgstr "Kein Prompt für Dateiname bei Speichern+Beenden-Befehl"
 
-#: rc.c:334
-msgid "  Exit ask "
+#: options.c:350
+#, fuzzy
+msgid "Exit ask "
 msgstr "  Ende-Frage "
 
-#: rc.c:335
+#: options.c:351
 msgid "Warning bell enabled"
 msgstr ""
 
-#: rc.c:335
+#: options.c:351
 msgid "Warning bell disabled"
 msgstr ""
 
-#: rc.c:335
-msgid "B Beeps "
+#: options.c:351
+#, fuzzy
+msgid "Beeps "
 msgstr "B Beeps "
 
-#: rc.c:336
+#: options.c:352
 msgid "Top-most status line disabled"
 msgstr ""
 
-#: rc.c:336
+#: options.c:352
 msgid "Top-most status line enabled"
 msgstr ""
 
-#: rc.c:336
-msgid "  Disable status line "
-msgstr ""
+#: options.c:352
+#, fuzzy
+msgid "Disable status line "
+msgstr "  Schnelle Statuszeile "
 
-#: rc.c:337
+#: options.c:353
 msgid "Status line updated constantly"
 msgstr "Statuszeile dauerhaft aktualisiert"
 
-#: rc.c:337
+#: options.c:353
 msgid "Status line updated once/sec"
 msgstr "Statuszeile einmal pro Sekunde aktualisiert"
 
-#: rc.c:337
-msgid "  Fast status line "
+#: options.c:353
+#, fuzzy
+msgid "Fast status line "
 msgstr "  Schnelle Statuszeile "
 
-#: rc.c:338
+#: options.c:354
 #, c-format
 msgid "Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): "
 msgstr ""
 
-#: rc.c:338
-msgid "  No. PgUp/PgDn lines "
+#: options.c:354
+msgid "No. PgUp/PgDn lines "
 msgstr ""
 
-#: rc.c:339
+#: options.c:355
+msgid "No. undo records to keep, or (0 for infinite): "
+msgstr ""
+
+#: options.c:355
+msgid "No. undo records "
+msgstr ""
+
+#: options.c:356
 msgid "Start search after a search repeats previous search"
 msgstr ""
 
-#: rc.c:339
+#: options.c:356
 msgid "Start search always starts a new search"
 msgstr ""
 
-#: rc.c:339
-msgid "  Continued search "
+#: options.c:356
+msgid "Continued search "
 msgstr ""
 
-#: rc.c:340
+#: options.c:357
 msgid "Full editing"
 msgstr ""
 
-#: rc.c:340
-msgid "O Read only "
-msgstr "O Nur Lesen "
+#: options.c:357
+#, fuzzy
+msgid "Read only "
+msgstr "Schreibgeschützt"
 
-#: rc.c:341
+#: options.c:358
 msgid "Smart home key enabled"
 msgstr "Smarte Pos1-Taste aktiviert"
 
-#: rc.c:341
+#: options.c:358
 msgid "Smart home key disabled"
 msgstr "Smarte Pos1-Taste deaktiviert"
 
-#: rc.c:341
-msgid "  Smart home key "
+#: options.c:358
+#, fuzzy
+msgid "Smart home key "
 msgstr "  Smarte Pos1-Taste "
 
-#: rc.c:342
+#: options.c:359
 msgid "Smart home goes to indentation first"
 msgstr "Smart Pos1 geht zuerst zur Einrückung"
 
-#: rc.c:342
+#: options.c:359
 msgid "Smart home goes home first"
 msgstr "Smart Pos1 geht zuerst an den Anfang"
 
-#: rc.c:342
-msgid "  To indent first "
+#: options.c:359
+#, fuzzy
+msgid "To indent first "
 msgstr "  Pos1 z.Einrückung "
 
-#: rc.c:343
+#: options.c:360
 msgid "Smart backspace key enabled"
 msgstr "Smartes Backspace aktiviert"
 
-#: rc.c:343
+#: options.c:360
 msgid "Smart backspace key disabled"
 msgstr "Smartes Backspace deaktiviert"
 
-#: rc.c:343
-msgid "  Smart backspace "
+#: options.c:360
+#, fuzzy
+msgid "Smart backspace "
 msgstr "  Smartes Backspace "
 
-#: rc.c:344
+#: options.c:361
 msgid "Indentation clean up enabled"
 msgstr "Einrückungen werden automatisch gesäubert"
 
-#: rc.c:344
+#: options.c:361
 msgid "Indentation clean up disabled"
 msgstr "Einrückungen werden nicht automatisch gesäubert"
 
-#: rc.c:344
-msgid "  Clean up indents "
+#: options.c:361
+#, fuzzy
+msgid "Clean up indents "
 msgstr "  Einrückungen säubern "
 
-#: rc.c:345
+#: options.c:362
 msgid "Picture drawing mode enabled"
 msgstr "Bildzeichnermodus aktiviert"
 
-#: rc.c:345
+#: options.c:362
 msgid "Picture drawing mode disabled"
 msgstr "Bildzeichnermodus deaktiviert"
 
-#: rc.c:345
-msgid "P Picture mode "
+#: options.c:362
+#, fuzzy
+msgid "Picture mode "
 msgstr "P Bildmodus "
 
-#: rc.c:346
+#: options.c:363
 #, c-format
 msgid "Backup files stored in (%s): "
 msgstr "Backupdateien speichern in (%s): "
 
-#: rc.c:346
-msgid "  Path to backup files "
+#: options.c:363
+#, fuzzy
+msgid "Path to backup files "
 msgstr "  Pfad zu Backupdateien "
 
-#: rc.c:347
+#: options.c:364
 msgid "Select syntax (%{abort} to abort): "
 msgstr "Syntax (%{abort} zum Abbrechen): "
 
-#: rc.c:347
-msgid "Y Syntax"
+#: options.c:364
+#, fuzzy
+msgid "Syntax"
 msgstr "Y Syntax"
 
-#: rc.c:348
+#: options.c:365
 msgid "Select file character set (%{abort} to abort): "
 msgstr "Dateikodierung (%{abort} zum Abbrechen): "
 
-#: rc.c:348
-msgid "E Encoding "
+#: options.c:365
+#, fuzzy
+msgid "Encoding "
 msgstr "E Kodierung "
 
-#: rc.c:349
+#: options.c:366
+#, fuzzy
+msgid "Select file type (%{abort} to abort): "
+msgstr "Dateikodierung (%{abort} zum Abbrechen): "
+
+#: options.c:366
+msgid "File type "
+msgstr ""
+
+#: options.c:367
+#, fuzzy
+msgid "Highlighter context enabled"
+msgstr "Highlighting aktiviert"
+
+#: options.c:367
+#, fuzzy
+msgid "Highlighter context disabled"
+msgstr "Highlighting deaktiviert"
+
+#: options.c:367
+msgid "^G uses highlighter context "
+msgstr ""
+
+#: options.c:368
 msgid "Single quoting enabled"
 msgstr "Einfache Anführungszeichen aktiviert"
 
-#: rc.c:349
+#: options.c:368
 msgid "Single quoting disabled"
 msgstr "Einfache Anführungszeichen deaktiviert"
 
-#: rc.c:349
-msgid "  ^G ignores '... ' "
+#: options.c:368
+#, fuzzy
+msgid "^G ignores '... ' "
 msgstr "  ^G ignoriert '... ' "
 
-#: rc.c:350
+#: options.c:369
+#, fuzzy
+msgid "Double quoting disabled"
+msgstr "Einfache Anführungszeichen deaktiviert"
+
+#: options.c:369
+#, fuzzy
+msgid "Double quoting enabled"
+msgstr "Einfache Anführungszeichen aktiviert"
+
+#: options.c:369
+#, fuzzy
+msgid "^G ignores \"... \" "
+msgstr "  ^G ignoriert '... ' "
+
+#: options.c:370
 msgid "/* comments enabled"
 msgstr "/* */ Kommentare aktiviert"
 
-#: rc.c:350
+#: options.c:370
 msgid "/* comments disabled"
 msgstr "/* */ Kommentare deaktiviert"
 
-#: rc.c:350
-msgid "  ^G ignores /*...*/ "
+#: options.c:370
+#, fuzzy
+msgid "^G ignores /*...*/ "
 msgstr "  ^G ignoriert /*...*/ "
 
-#: rc.c:351
+#: options.c:371
 msgid "// comments enabled"
 msgstr "// Kommentare aktiviert"
 
-#: rc.c:351
+#: options.c:371
 msgid "// comments disabled"
 msgstr "// Kommentare deaktiviert"
 
-#: rc.c:351
-msgid "  ^G ignores //... "
+#: options.c:371
+#, fuzzy
+msgid "^G ignores //... "
 msgstr "  ^G ignoriert //... "
 
-#: rc.c:352
+#: options.c:372
 msgid "# comments enabled"
 msgstr "# Kommentare aktiviert"
 
-#: rc.c:352
+#: options.c:372
 msgid "# comments disabled"
 msgstr "# Kommentare deaktiviert"
 
-#: rc.c:352
-msgid "  ^G ignores #... "
+#: options.c:372
+#, fuzzy
+msgid "^G ignores #... "
 msgstr "  ^G ignoriert #... "
 
-#: rc.c:353
+#: options.c:373
 msgid "-- comments enabled"
 msgstr "-- Kommentare aktiviert"
 
-#: rc.c:353
+#: options.c:373
 msgid "-- comments disabled"
 msgstr "-- Kommmentare deaktiviert"
 
-#: rc.c:353
-msgid "  ^G ignores --... "
+#: options.c:373
+#, fuzzy
+msgid "^G ignores --... "
 msgstr "  ^G ignoriert --... "
 
-#: rc.c:354
+#: options.c:374
 msgid "; comments enabled"
 msgstr "; Kommentare aktiviert"
 
-#: rc.c:354
+#: options.c:374
 msgid "; comments disabled"
 msgstr "; Kommentare deaktiviert"
 
-#: rc.c:354
-msgid "  ^G ignores ;... "
+#: options.c:374
+#, fuzzy
+msgid "^G ignores ;... "
 msgstr "  ^G ignoriert ;... "
 
-#: rc.c:355
+#: options.c:375
+#, fuzzy, c-format
+msgid "% comments enabled"
+msgstr "# Kommentare aktiviert"
+
+#: options.c:375
+#, fuzzy, c-format
+msgid "% comments disabled"
+msgstr "# Kommentare deaktiviert"
+
+#: options.c:375
+#, fuzzy
+msgid "^G ignores %... "
+msgstr "  ^G ignoriert #... "
+
+#: options.c:376
+#, c-format
 msgid "Text delimiters (%s): "
 msgstr "Textbregrenzer (%s): "
 
-#: rc.c:355
-msgid "  Text delimiters "
+#: options.c:376
+#, fuzzy
+msgid "Text delimiters "
 msgstr "  Textbegrenzer "
 
-#: rc.c:356
+#: options.c:377
 #, c-format
 msgid "Language (%s): "
 msgstr "Sprache (%s): "
 
-#: rc.c:356
-msgid "V Language "
+#: options.c:377
+#, fuzzy
+msgid "Language "
 msgstr "V Sprache "
 
-#: rc.c:357
+#: options.c:378
 #, c-format
 msgid "Characters which can indent paragraphs (%s): "
 msgstr "Zeichen, die Absätze einrücken können (%s): "
 
-#: rc.c:357
-msgid "  Paragraph indent chars "
+#: options.c:378
+#, fuzzy
+msgid "Paragraph indent chars "
 msgstr "  Absatzeinrückungszeichen "
 
-#: rc.c:358
+#: options.c:379
+#, fuzzy, c-format
+msgid "Characters which begin non-paragraph lines (%s): "
+msgstr "Zeichen, die Absätze einrücken können (%s): "
+
+#: options.c:379
+#, fuzzy
+msgid "Non-paragraph chars "
+msgstr "  Absatzeinrückungszeichen "
+
+#: options.c:380
 msgid "Clicking can move the cursor past end of line"
 msgstr ""
 
-#: rc.c:358
+#: options.c:380
 msgid "Clicking past end of line moves cursor to the end"
 msgstr ""
 
-#: rc.c:358
-msgid "  Click past end "
+#: options.c:380
+msgid "Click past end "
 msgstr ""
 
-#: rc.c:359
+#: options.c:381
 msgid "Mouse action is done with the right button"
 msgstr "Mausaktion wird mit der rechten Taste durchgeführt"
 
-#: rc.c:359
+#: options.c:381
 msgid "Mouse action is done with the left button"
 msgstr "Mausaktion wird mit der linken Taste durchgeführt"
 
-#: rc.c:359
-msgid "  Right button "
+#: options.c:381
+#, fuzzy
+msgid "Right button "
 msgstr "  Rechte Maustaste "
 
-#: rc.c:669 rc.c:688 rc.c:700
+#: options.c:382
+msgid "Suppress startup notice"
+msgstr ""
+
+#: options.c:383
+msgid "Suppress exit message"
+msgstr ""
+
+#: options.c:384
+msgid "Help is UTF-8"
+msgstr ""
+
+#: options.c:385
+msgid "Disable XON/XOFF"
+msgstr ""
+
+#: options.c:386
+msgid "Orphan extra files"
+msgstr ""
+
+#: options.c:387
+msgid "Start editor with help displayed"
+msgstr ""
+
+#: options.c:388
+msgid "Emit padding NULs"
+msgstr ""
+
+#: options.c:389
+msgid "No. screen lines (if no window size ioctl)"
+msgstr ""
+
+#: options.c:390
+msgid "Baud rate"
+msgstr ""
+
+#: options.c:391
+msgid "No. screen columns (if no window size ioctl)"
+msgstr ""
+
+#: options.c:392
+msgid "No. screen lines to skip"
+msgstr ""
+
+#: options.c:393
+msgid "Suppress tty init sequence"
+msgstr ""
+
+#: options.c:394
+msgid "Bracketed paste mode"
+msgstr ""
+
+#: options.c:395
+msgid "Paste quoting hack"
+msgstr ""
+
+#: options.c:396
+msgid "Suppress history preserving linefeeds"
+msgstr ""
+
+#: options.c:397
+msgid "Enable mouse"
+msgstr ""
+
+#: options.c:398
+msgid "Screen update uses tabs"
+msgstr ""
+
+#: options.c:399
+msgid "Assume terminal supports color"
+msgstr ""
+
+#: options.c:400
+msgid "Assume terminal supports 256 colors"
+msgstr ""
+
+#: options.c:401
+msgid "Assume xterm patched for JOE"
+msgstr ""
+
+#: options.c:515
+#, fuzzy
+msgid "No such file type"
+msgstr "Unbekannte Keymap"
+
+#: options.c:877 options.c:896 options.c:908 options.c:920
 msgid "Value out of range"
 msgstr "Wert außerhalb des zulässigen Bereiches"
 
-#: rc.c:724
+#: options.c:946
 msgid "Syntax definition file not found"
 msgstr "Syntax-Definitionsdatei nicht gefunden"
 
-#: rc.c:799
+#: options.c:1047
+msgid "UTF-8 encoding not allowed with hexadecimal windows"
+msgstr ""
+
+#: options.c:1055
 #, c-format
 msgid "%s encoding assumed for this file"
 msgstr "Kodierung %s für diese Datei geraten"
 
-#: rc.c:802
+#: options.c:1058
 msgid "Character set not found"
 msgstr "Zeichenkodierung nicht gefunden"
 
-#: rc.c:1010
-#, c-format
-msgid "Processing '%s'..."
-msgstr "Bearbeite '%s'..."
+#: options.c:1368
+#, fuzzy
+msgid "No such option"
+msgstr "Unbekannter Befehl"
 
-#: rc.c:1066
-#, c-format
-msgid ""
-"\n"
-"%s %d: Unknown option %s"
-msgstr ""
-"\n"
-"%s %d: Unbekannte Option %s"
-
-#: rc.c:1099
-#, c-format
-msgid ""
-"\n"
-"%s %d: macro missing from :def"
-msgstr ""
-"\n"
-"%s %d: Makro fehlt in :def"
-
-#: rc.c:1103
-#, c-format
-msgid ""
-"\n"
-"%s %d: command name missing from :def"
-msgstr ""
-"\n"
-"%s %d: Befehlsname fehlt in :def"
-
-#: rc.c:1114
-#, c-format
-msgid ""
-"\n"
-"%s %d: context name missing from :inherit"
-msgstr ""
-"\n"
-"%s %d: Kontextname fehlt in :inherit"
-
-#: rc.c:1118
-#, c-format
-msgid ""
-"\n"
-"%s %d: No context selected for :inherit"
-msgstr ""
-"\n"
-"%s %d: Kein Kontext für :inherit ausgewählt"
-
-#: rc.c:1146
-#, c-format
-msgid ""
-"\n"
-"%s %d: Couldn't open %s"
-msgstr ""
-"\n"
-"%s %d: Konnte %s nicht öffnen"
-
-#: rc.c:1154
-#, c-format
-msgid ""
-"\n"
-"%s %d: :include missing file name"
-msgstr ""
-"\n"
-"%s %d: :include fehlt der Dateiname"
-
-#: rc.c:1167
-#, c-format
-msgid ""
-"\n"
-"%s %d: No context selected for :delete"
-msgstr ""
-"\n"
-"%s %d: Kein Kontext für :delete ausgewählt"
-
-#: rc.c:1174
-#, c-format
-msgid ""
-"\n"
-"%s %d: Invalid context name"
-msgstr ""
-"\n"
-"%s %d: Ungültiger Kontextname"
-
-#: rc.c:1185
-#, c-format
-msgid ""
-"\n"
-"%s %d: No context selected for macro to key-sequence binding"
+#: options.c:1383
+msgid "Option: "
 msgstr ""
 
-#: rc.c:1194
-#, c-format
-msgid ""
-"\n"
-"%s %d: Unknown command in macro"
+#: rc.c:16
+msgid "Missing or empty :main keymap\n"
+msgstr ""
+
+#: rc.c:21
+msgid "Missing or empty :prompt keymap\n"
+msgstr ""
+
+#: rc.c:26
+msgid "Missing or empty :query keymap\n"
+msgstr ""
+
+#: rc.c:31
+msgid "Missing or empty :querya keymap\n"
+msgstr ""
+
+#: rc.c:36
+msgid "Missing or empty :querysr keymap\n"
+msgstr ""
+
+#: rc.c:41
+msgid "Missing or empty :shell keymap\n"
+msgstr ""
+
+#: rc.c:45
+msgid "Missing or empty :vtshell keymap\n"
+msgstr ""
+
+#: rc.c:64
+#, fuzzy, c-format
+msgid "%s %d: Unknown command in macro\n"
 msgstr ""
 "\n"
 "%s %d: Unbekannter Befehl in Makro"
 
-#: rc.c:1210
+#: rc.c:106
+#, fuzzy, c-format
+msgid "Processing '%s'...\n"
+msgstr "Bearbeite '%s'..."
+
+#: rc.c:186
+#, fuzzy, c-format
+msgid "%s %d: Unknown option %s\n"
+msgstr ""
+"\n"
+"%s %d: Unbekannte Option %s"
+
+#: rc.c:221
+#, fuzzy, c-format
+msgid "%s %d: macro missing from :def\n"
+msgstr ""
+"\n"
+"%s %d: Makro fehlt in :def"
+
+#: rc.c:225
+#, fuzzy, c-format
+msgid "%s %d: command name missing from :def\n"
+msgstr ""
+"\n"
+"%s %d: Befehlsname fehlt in :def"
+
+#: rc.c:236
+#, fuzzy, c-format
+msgid "%s %d: context name missing from :inherit\n"
+msgstr ""
+"\n"
+"%s %d: Kontextname fehlt in :inherit"
+
+#: rc.c:240
+#, fuzzy, c-format
+msgid "%s %d: No context selected for :inherit\n"
+msgstr ""
+"\n"
+"%s %d: Kein Kontext für :inherit ausgewählt"
+
+#: rc.c:272
+#, fuzzy, c-format
+msgid "%s %d: Couldn't open %s\n"
+msgstr ""
+"\n"
+"%s %d: Konnte %s nicht öffnen"
+
+#: rc.c:280
+#, fuzzy, c-format
+msgid "%s %d: :include missing file name\n"
+msgstr ""
+"\n"
+"%s %d: :include fehlt der Dateiname"
+
+#: rc.c:293
+#, fuzzy, c-format
+msgid "%s %d: No context selected for :delete\n"
+msgstr ""
+"\n"
+"%s %d: Kein Kontext für :delete ausgewählt"
+
+#: rc.c:304
+#, fuzzy, c-format
+msgid "%s %d: :defmap missing name\n"
+msgstr ""
+"\n"
+"%s %d: :include fehlt der Dateiname"
+
+#: rc.c:329
+#, fuzzy, c-format
+msgid "%s %d: Invalid context name\n"
+msgstr ""
+"\n"
+"%s %d: Ungültiger Kontextname"
+
+#: rc.c:340
+#, fuzzy, c-format
+msgid "%s %d: No context selected for macro to key-sequence binding\n"
+msgstr ""
+"\n"
+"%s %d: Kein Kontext für :delete ausgewählt"
+
+#: rc.c:361
 #, c-format
-msgid ""
-"\n"
-"%s %d: Bad key sequence '%s'"
+msgid "%s %d: Bad key sequence '%s'\n"
 msgstr ""
 
-#: rc.c:1221
-msgid ""
-"\n"
-"done\n"
+#: rc.c:372
+#, c-format
+msgid "Finished processing %s\n"
 msgstr ""
-"\n"
-"fertig\n"
 
-#: rc.c:1223
-msgid "done\n"
-msgstr "fertig\n"
-
-#: scrn.c:720
+#: scrn.c:824
 msgid ""
 "Sorry, your terminal can't do absolute cursor positioning.\n"
 "It's broken\n"
-msgstr ""
-"Das Terminal kann keine absolute Cursorpositionierung vornehmen.\n"
+msgstr "Das Terminal kann keine absolute Cursorpositionierung vornehmen.\n"
 
-#: selinux.c:35 selinux.c:84 selinux.c:141
+#: selinux.c:35 selinux.c:83 selinux.c:138
 #, c-format
 msgid "Could not get security context for %s"
 msgstr "Konnte Sicherheitskontext für %s nicht holen"
@@ -1137,587 +1486,675 @@ msgstr ""
 msgid "Could not set security context for %s"
 msgstr "Konnte Sicherheitskontext für %s nicht setzen"
 
-#: selinux.c:91
+#: selinux.c:90
 #, c-format
 msgid "Could not set default security context for %s"
 msgstr "Konnte den Default-Sicherheitskontext für %s nicht setzen"
 
-#: selinux.c:113
+#: selinux.c:111
 msgid "Could not reset default security context"
 msgstr "Konnte den Default-Sicherheitskontext nicht zurücksetzen"
 
-#: selinux.c:146
+#: selinux.c:143
 #, c-format
 msgid "%s Security Context %s"
 msgstr "%s Sicherheitskontext %s"
 
-#: syntax.c:259
+#: syntax.c:475
 #, c-format
 msgid "%s %d: Class already defined\n"
 msgstr "%s %d: Klasse bereits definiert\n"
 
-#: syntax.c:339
+#: syntax.c:488
+#, fuzzy, c-format
+msgid "%s %d: Missing class name\n"
+msgstr "%s %d: Fehlender Zustandsname\n"
+
+#: syntax.c:574
+#, fuzzy, c-format
+msgid "%s %d: Missing parameter name\n"
+msgstr "%s %d: Fehlender Zustandsname\n"
+
+#: syntax.c:590
 #, c-format
 msgid "%s %d: Missing )\n"
 msgstr "%s %d: Fehlende )\n"
 
-#: syntax.c:411
-#, c-format
-msgid "%s %d: missing parameter for ifdef\n"
-msgstr "%s %d: fehlender Parameter für ifdef\n"
-
-#: syntax.c:421
-#, c-format
-msgid "%s %d: else with no matching if\n"
-msgstr "%s %d: else with no matching if\n"
-
-#: syntax.c:428
-#, c-format
-msgid "%s %d: endif with no matching if\n"
-msgstr "%s %d: endif ohne passendes if\n"
-
-#: syntax.c:432 syntax.c:560
-#, c-format
-msgid "%s %d: Missing subroutine name\n"
-msgstr "%s %d: Fehlender Subroutinen-Name\n"
-
-#: syntax.c:447
-#, c-format
-msgid "%s %d: Unknown control statement\n"
-msgstr "%s %d: Unbekannte Kontrollanweisung\n"
-
-#: syntax.c:450
-#, c-format
-msgid "%s %d: Missing control statement name\n"
-msgstr "%s %d: Felender Kontrollanweisunsname\n"
-
-#: syntax.c:477
-#, c-format
-msgid "%s %d: Unknown class\n"
-msgstr "%s %d: Unbekannte Klasse\n"
-
-#: syntax.c:480
-#, c-format
-msgid "%s %d: Missing color for state definition\n"
-msgstr "%s %d: Fehlende Farbe für Zustandsdefinition\n"
-
-#: syntax.c:482 syntax.c:610
-#, c-format
-msgid "%s %d: Missing state name\n"
-msgstr "%s %d: Fehlender Zustandsname\n"
-
-#: syntax.c:503
-#, c-format
-msgid "%s %d: Bad string\n"
-msgstr "%s %d: Inakzeptable Zeichenkette\n"
-
-#: syntax.c:543 syntax.c:545 syntax.c:554 syntax.c:568 syntax.c:604
-#: syntax.c:606
+#: syntax.c:625 syntax.c:627 syntax.c:636 syntax.c:647
 #, c-format
 msgid "%s %d: Missing value for option\n"
 msgstr "%s %d: Fehlender Wert für option\n"
 
-#: syntax.c:608 syntax.c:624
+#: syntax.c:641 syntax.c:789
 #, c-format
-msgid "%s %d: Unknown option\n"
-msgstr "%s %d: Unbekannte Option\n"
+msgid "%s %d: Missing subroutine name\n"
+msgstr "%s %d: Fehlender Subroutinen-Name\n"
 
-#: syntax.c:612
+#: syntax.c:681 syntax.c:848
+#, c-format
+msgid "%s %d: Missing state name\n"
+msgstr "%s %d: Fehlender Zustandsname\n"
+
+#: syntax.c:683
 #, c-format
 msgid "%s %d: Missing string\n"
 msgstr "%s %d: Fehlende Zeichenkette\n"
 
-#: syntax.c:633
+#: syntax.c:695
+#, c-format
+msgid "%s %d: Unknown option\n"
+msgstr "%s %d: Unbekannte Option\n"
+
+#: syntax.c:768
+#, c-format
+msgid "%s %d: missing parameter for ifdef\n"
+msgstr "%s %d: fehlender Parameter für ifdef\n"
+
+#: syntax.c:778
+#, c-format
+msgid "%s %d: else with no matching if\n"
+msgstr "%s %d: else with no matching if\n"
+
+#: syntax.c:785
+#, c-format
+msgid "%s %d: endif with no matching if\n"
+msgstr "%s %d: endif ohne passendes if\n"
+
+#: syntax.c:804
+#, c-format
+msgid "%s %d: Unknown control statement\n"
+msgstr "%s %d: Unbekannte Kontrollanweisung\n"
+
+#: syntax.c:807
+#, c-format
+msgid "%s %d: Missing control statement name\n"
+msgstr "%s %d: Felender Kontrollanweisunsname\n"
+
+#: syntax.c:834
+#, c-format
+msgid "%s %d: Unknown class\n"
+msgstr "%s %d: Unbekannte Klasse\n"
+
+#: syntax.c:842
+#, fuzzy, c-format
+msgid "%s %d: Unknown context\n"
+msgstr "%s %d: Unbekannte Option\n"
+
+#: syntax.c:846
+#, c-format
+msgid "%s %d: Missing color for state definition\n"
+msgstr "%s %d: Fehlende Farbe für Zustandsdefinition\n"
+
+#: syntax.c:873
+#, c-format
+msgid "%s %d: Bad string\n"
+msgstr "%s %d: Inakzeptable Zeichenkette\n"
+
+#: syntax.c:884
 #, c-format
 msgid "%s %d: Missing jump\n"
 msgstr "%s %d: Fehlender Sprung\n"
 
-#: syntax.c:635
+#: syntax.c:886
 #, c-format
 msgid "%s %d: No state\n"
 msgstr "%s %d: Kein Zustand\n"
 
-#: syntax.c:637
+#: syntax.c:888
 #, c-format
 msgid "%s %d: Unknown character\n"
 msgstr "%s %d: Unbekanntes Zeichen\n"
 
-#: syntax.c:644
+#: syntax.c:895
 #, c-format
 msgid "%s %d: ifdef with no matching endif\n"
 msgstr "%s %d: ifdef ohne passendes endif\n"
 
-#: tab.c:212 tab.c:271
+#: tab.c:234 tab.c:294
 msgid "Couldn't read directory "
 msgstr "Konnte Verzeichnis nicht lesen "
 
-#: termcap.c:219
+#: termcap.c:224
 msgid "Couldn't load termcap entry.  Using ansi default\n"
 msgstr "Konnte termcap-Eintrag nicht laden. Verwende ANSI-Default\n"
 
-#: termcap.c:240
-#, c-format
-msgid "%s is out of date\n"
+#: termcap.c:245
+#, fuzzy, c-format
+msgid "termcap: %s is out of date\n"
 msgstr "%s ist veraltet\n"
 
-#: tty.c:314
+#: tty.c:340
 msgid "Couldn't open /dev/tty\n"
 msgstr "Konnte /dev/tty nicht öffnen\n"
 
-#: tty.c:731
+#: tty.c:817
 msgid "You are at the command shell.  Type 'exit' to return\n"
 msgstr "Befehlszeilenmodus. 'exit' eingeben um zurückzukehren\n"
 
-#: tty.c:795
+#: tty.c:883
 msgid "You have suspended the program.  Type 'fg' to return\n"
 msgstr "Das Program wurde unterbrochen. 'fg' eingeben um zurückzukehren\n"
 
-#: tty.c:1146
+#: tty.c:1252
 #, c-format
 msgid "Couldn't execute shell '%s'\n"
 msgstr "Konnte Shell '%s' nicht ausführen\n"
 
-#: tw.c:213
+#: tw.c:354
 msgid "Unnamed"
 msgstr "Unbenannt"
 
-#: tw.c:219
+#: tw.c:360
 msgid "(Modified)"
 msgstr "(Geändert)"
 
-#: tw.c:223
+#: tw.c:364
 msgid "(Read only)"
 msgstr "(Schreibgeschützt)"
 
-#: tw.c:329
+#: tw.c:539
 msgid "*SHELL*"
 msgstr "*SHELL*"
 
-#: tw.c:333
+#: tw.c:543
 #, c-format
 msgid "(Macro %d recording...)"
 msgstr "(Makro %d wird aufgenommen...)"
 
-#: tw.c:558 tw.c:584 ufile.c:1010
+#: tw.c:841 tw.c:869 ufile.c:1196 ufile.c:1407
 msgid "Lose changes to this file (y,n,%{abort})? "
 msgstr "Änderungen an dieser Datei verwerfen (y,n,%{abort})? "
 
-#: ublock.c:284
+#: ublock.c:291
 msgid "Selection cleared."
 msgstr "Markierung aufgehoben."
 
-#: ublock.c:292 ublock.c:309
+#: ublock.c:299 ublock.c:316
 msgid "Selection started."
 msgstr "Markierung gestartet."
 
-#: ublock.c:417 ublock.c:503 ublock.c:559 ublock.c:887 ublock.c:921
-#: ublock.c:1083 ufile.c:435 umath.c:177 undo.c:455
+#: ublock.c:440 ublock.c:530 ublock.c:590 ublock.c:924 ublock.c:960
+#: ublock.c:1133 ufile.c:435 umath.c:274 undo.c:480
 msgid "No block"
 msgstr "Nichts markiert"
 
-#: ublock.c:756 ublock.c:839
+#: ublock.c:789 ublock.c:874
 msgid "Selected lines not properly indented"
 msgstr "Markierte Zeilen sind nicht korrekt eingerückt"
 
-#: ublock.c:1067 ushell.c:86
+#: ublock.c:968 ublock.c:972
+#, fuzzy
+msgid "Couldn't create pipe"
+msgstr "Konnte Verzeichnis nicht lesen "
+
+#: ublock.c:1117 ushell.c:198
 msgid "Sorry, no sub-processes in DOS (yet)"
 msgstr "Keine Subprozesse in DOS (bisher)"
 
-#: ublock.c:1072
+#: ublock.c:1122
 msgid "Command to filter block through (%{abort} to abort): "
 msgstr "Filterbefehl für Block (%{abort} to abort): "
 
-#: ublock.c:1077
+#: ublock.c:1127
 msgid "Command to filter file through (%{abort} to abort): "
 msgstr "Filterbefehl für Datei (%{abort} to abort): "
 
-#: uedit.c:1388 utag.c:73
+#: uedit.c:1434
 msgid "Invalid line number"
 msgstr "Ungültige Zeilennummer"
 
-#: uedit.c:1395
+#: uedit.c:1443
 msgid "Go to line (%{abort} to abort): "
 msgstr "Gehe zu Zeile (%{abort} zum Abbrechen): "
 
-#: uedit.c:1424
+#: uedit.c:1475
 msgid "Invalid column number"
 msgstr "Ungültige Spaltennummer"
 
-#: uedit.c:1431
+#: uedit.c:1484
 msgid "Go to column (%{abort} to abort): "
 msgstr "Gehe zu Spalte (%{abort} zum Abbrechen): "
 
-#: uedit.c:1460
+#: uedit.c:1516
 msgid "Invalid byte number"
 msgstr "Ungültige Byteposition"
 
-#: uedit.c:1467
+#: uedit.c:1525
 msgid "Go to byte (%{abort} to abort): "
 msgstr "Gehe zu Byte (%{abort} zum Abbrechen): "
 
-#: uedit.c:1911
+#: uedit.c:2021
 msgid "Unicode (ISO-10646) character in hex (%{abort} to abort): "
 msgstr "Unicode-Zeichen (ISO-10646) in Hex (%{abort} zum Abbrechen): "
 
-#: uedit.c:2036
+#: uedit.c:2148
 msgid "Ctrl- (or 0-9 for dec. ascii, x for hex, or o for octal)"
 msgstr "Strg- (oder 0-9 für dez. ASCII, x für hex, oder o für oktal)"
 
-#: uedit.c:2099
+#: uedit.c:2222
 msgid "Quote"
 msgstr "Quote"
 
-#: uedit.c:2166
+#: uedit.c:2295
 #, c-format
 msgid "Mark %d set"
 msgstr "Marker %d gesetzt"
 
-#: uedit.c:2180
+#: uedit.c:2309
 msgid "Set mark (0-9):"
 msgstr "Setze Marker (0-9):"
 
-#: uedit.c:2198
+#: uedit.c:2329
 #, c-format
 msgid "Mark %d not set"
 msgstr "Marker %d nicht gesetzt"
 
-#: uedit.c:2211
+#: uedit.c:2342
 msgid "Goto bookmark (0-9):"
 msgstr "Gehe zu Lesezeichen (0-9):"
 
-#: uedit.c:2243 usearch.c:995 utag.c:107
+#: uedit.c:2376 usearch.c:1199 utag.c:62
 msgid "Not found"
 msgstr "Nicht gefunden"
 
-#: uedit.c:2259
+#: uedit.c:2392
 msgid "Forward to char: "
 msgstr ""
 
-#: uedit.c:2270
+#: uedit.c:2403
 msgid "Backward to char: "
 msgstr ""
 
-#: uedit.c:2290
+#: uedit.c:2423
 msgid "Message (%{abort} to abort): "
 msgstr "Meldung (%{abort} zum Abbrechen): "
 
-#: uedit.c:2312
+#: uedit.c:2470
 msgid "Insert (%{abort} to abort): "
 msgstr "Einfügen (%{abort} zum Abbrechen): "
 
-#: uerror.c:330 uerror.c:344
+#: uerror.c:415 uerror.c:448 uerror.c:464
 #, c-format
 msgid "%d messages found"
 msgstr "%d Meldungen gefunden"
 
-#: uerror.c:332 uerror.c:346
+#: uerror.c:417 uerror.c:450 uerror.c:466
 msgid "No messages found"
 msgstr "Keine Meldungen gefunden"
 
-#: uerror.c:377
+#: uerror.c:428 uerror.c:499
 msgid "No messages"
 msgstr "Keine Meldungen"
 
-#: uerror.c:432 uerror.c:443
+#: uerror.c:432
+#, fuzzy, c-format
+msgid "%d messages cleared"
+msgstr "%d Meldungen gefunden"
+
+#: uerror.c:607 uerror.c:620
 msgid "No more errors"
 msgstr "Keine weiteren Fehler"
 
-#: ufile.c:39
+#: ufile.c:34
 msgid "(Unnamed)"
 msgstr "(Unbenannt)"
 
-#: ufile.c:44 ufile.c:51
+#: ufile.c:39 ufile.c:46
 #, c-format
 msgid "File %s saved"
 msgstr "Datei %s gespeichert"
 
-#: ufile.c:46 ufile.c:49
+#: ufile.c:41 ufile.c:44
 #, c-format
 msgid "File %s not saved"
 msgstr "Datei %s nicht saved"
 
-#: ufile.c:53
+#: ufile.c:48
 #, c-format
 msgid "File %s not changed so no update needed"
 msgstr "Datei %s nicht geändert, daher keine Aktualisierung notwendig"
 
-#: ufile.c:67
+#: ufile.c:68
 msgid "Some files have not been saved."
 msgstr "Einige Dateien wurden nicht gespeichert."
 
-#: ufile.c:69
+#: ufile.c:70
 msgid "All modified files have been saved."
 msgstr "Alle geänderten Dateien wurden gespeichert."
 
-#: ufile.c:71
+#: ufile.c:72
 msgid "No modified files, so no updates needed."
 msgstr "Keine geänderten Dateien, daher keine Aktualisierung notwendig."
 
-#: ufile.c:107
+#: ufile.c:110
 msgid "System (%{abort} to abort): "
 msgstr "System (%{abort} zum Abbrechen): "
 
-#: ufile.c:273
+#: ufile.c:276
 msgid "|yes|yY"
 msgstr "|Ja|yY"
 
-#: ufile.c:274
+#: ufile.c:277
 msgid "|no|nN"
 msgstr "|Nein|nN"
 
-#: ufile.c:309
+#: ufile.c:308
 msgid "Couldn't make backup file... file not saved"
 msgstr "Konnte Backupdatei nicht erstellen... Datei nicht gespeichert"
 
-#: ufile.c:321
+#: ufile.c:320
 msgid "Could not make backup file.  Save anyway (y,n,%{abort})? "
-msgstr "Konnte Backupdatei nicht erstellen. Trotzdem speichern (y,n,%{abort})? "
+msgstr ""
+"Konnte Backupdatei nicht erstellen. Trotzdem speichern (y,n,%{abort})? "
 
 #: ufile.c:409 ufile.c:425
 #, c-format
 msgid "Block written to file %s"
 msgstr "Block nach Datei %s geschrieben"
 
-#: ufile.c:488
+#: ufile.c:494
 msgid "File exists. Overwrite (y,n,%{abort})? "
 msgstr "Datei existiert. Überschreiben (y,n,%{abort})? "
 
-#: ufile.c:495
+#: ufile.c:501
 msgid "File on disk is newer. Overwrite (y,n,%{abort})? "
 msgstr "Datei auf Datenträger ist neuer. Überschreiben (y,n,%{abort})? "
 
-#: ufile.c:510 ufile.c:899 ufile.c:1103
-msgid "Name of file to save (%{abort} to abort): "
+#: ufile.c:518 ufile.c:1080 ufile.c:1282
+#, fuzzy
+msgid "Name of file to save (%{help} for help): "
 msgstr "Name der zu speichernden Datei (%{abort} zum Abbrechen): "
 
-#: ufile.c:538
-msgid "Name of file to write (%{abort} to abort): "
+#: ufile.c:550
+#, fuzzy
+msgid "Name of file to write (%{help} for help): "
 msgstr "Name der zu schreibenden Datei (%{abort} zum Abbrechen): "
 
-#: ufile.c:654
+#: ufile.c:685
 msgid "Load original file from disk (y,n,%{abort})? "
 msgstr "Originaldatei von Datenträger laden (y,n,%{abort})? "
 
-#: ufile.c:684
+#: ufile.c:724
+#, c-format
+msgid "Directory prefix set to %s"
+msgstr ""
+
+#: ufile.c:733
 msgid "Can't replace modified file"
 msgstr "Kann geänderte Datei nicht ersetzen"
 
-#: ufile.c:693
-msgid "Name of file to edit (%{abort} to abort): "
+#: ufile.c:742
+#, fuzzy
+msgid "Name of file to edit (%{help} for help): "
 msgstr "Name der zu editierenden Datei (%{abort} zum Abbrechen): "
 
-#: ufile.c:708 ufile.c:1085
+#: ufile.c:753
+#, fuzzy
+msgid "Set current directory (%{abort} to abort): "
+msgstr "Ersetzen durch (%{abort} zum Abbrechen): "
+
+#: ufile.c:768 ufile.c:1262
 msgid "Name of buffer to edit (%{abort} to abort): "
 msgstr "Name des zu editierenden Puffers (%{abort} zum Abbrechen): "
 
-#: ufile.c:764
+#: ufile.c:917 ufile.c:926
 msgid "Name of scratch buffer to edit (%{abort} to abort): "
 msgstr "Name des zu editierenden temp. Puffers (%{abort} zum Abbrechen): "
 
-#: ufile.c:865
-msgid "Name of file to insert (%{abort} to abort): "
+#: ufile.c:1044
+#, fuzzy
+msgid "Name of file to insert (%{help} for help): "
 msgstr "Name der einzufügenden Dateien (%{abort} zum Abbrechen): "
 
-#: ufile.c:933
+#: ufile.c:1116
 msgid "Save changes to this file (y,n,%{abort})? "
 msgstr "Änderungen an dieser Datei speichern (y,n,%{abort})? "
 
-#: ufile.c:1137
-#, c-format
+#: ufile.c:1317
 msgid "File %s has been modified.  Save it (y,n,%{abort})? "
 msgstr "Datei %s wurde geändert. Speichern (y,n,%{abort})? "
 
-#: uisrch.c:267
+#: ufile.c:1394
+#, fuzzy
+msgid "File reloaded"
+msgstr "Datei %s gespeichert"
+
+#: ufile.c:1403
+msgid "Can only reload plain files"
+msgstr ""
+
+#: ufile.c:1437
+#, c-format
+msgid "%d files reloaded"
+msgstr ""
+
+#: uisrch.c:262
 msgid "I-find: "
 msgstr "I-Suche: "
 
-#: umath.c:19
+#: umath.c:22
 msgid "Float point exception"
 msgstr "Gleitkomma-Ausnahme"
 
-#: umath.c:93 umath.c:195 umath.c:214
+#: umath.c:181 umath.c:291 umath.c:310
 msgid "Missing )"
 msgstr "Fehlende )"
 
-#: umath.c:104
+#: umath.c:192
 msgid "Syntax error in macro"
 msgstr "Syntaxfehler in Makro"
 
-#: umath.c:111
+#: umath.c:197
 msgid "Missing ("
 msgstr "Fehlende ("
 
-#: umath.c:140 umath.c:146 umath.c:153 umath.c:162
+#: umath.c:230 umath.c:236 umath.c:243 umath.c:251 umath.c:260 umath.c:710
+#: umath.c:748 umath.c:786 umath.c:824 umath.c:862 umath.c:900 umath.c:938
+#: umath.c:976
 msgid "No numbers in block"
 msgstr "Keine Nummern im Block"
 
-#: umath.c:220
+#: umath.c:316
 msgid "Called object is not a function"
 msgstr "Aufgerufenes Objekt ist keine Funktion"
 
-#: umath.c:234
+#: umath.c:330
 msgid "Factorial can only take positive integers"
 msgstr "Fakultät can nur von positive Ganzzahlen genommen werden"
 
-#: umath.c:332
+#: umath.c:428
 msgid "Left side of = is not an l-value"
 msgstr "Linke Seite von = ist keine Lvalue"
 
-#: umath.c:346
+#: umath.c:442
 msgid "Recursion depth exceeded"
 msgstr "Rekursionstiefe überschritten"
 
-#: umath.c:366
+#: umath.c:463
 msgid "Extra junk after end of expr"
 msgstr "Extrakrempel nach Ende des Ausdrucks"
 
-#: undo.c:438
+#: undo.c:463
 msgid "Modified flag cleared"
 msgstr "Geändert-Flag entfernt"
 
-#: usearch.c:281 usearch.c:350
+#: usearch.c:315 usearch.c:379
 msgid "Wrapped"
 msgstr "Gesprungen"
 
-#: usearch.c:553
+#: usearch.c:684
 msgid "|all files|aA"
 msgstr "|alle Dateien|aA"
 
-#: usearch.c:554
+#: usearch.c:685
 msgid "|error list files|eE"
 msgstr ""
 
-#: usearch.c:555
+#: usearch.c:686
 msgid "|search and replace|rR"
 msgstr "|Suchen und Ersetzen|rR"
 
-#: usearch.c:556
+#: usearch.c:687
 msgid "|backwards|bB"
 msgstr "|rückwärts|bB"
 
-#: usearch.c:557
+#: usearch.c:688
 msgid "|ignore case|iI"
 msgstr "|Groß-/Kleinschreibung ignorieren|iI"
 
-#: usearch.c:558
+#: usearch.c:689
 msgid "|restrict to highlighted block|kK"
 msgstr "|nur innerhalb Markierung|kK"
 
-#: usearch.c:559
+#: usearch.c:690
 msgid "|don't ignore case|sS"
 msgstr "|Groß-/Kleinschreibung beachten|sS"
 
-#: usearch.c:560
+#: usearch.c:691
 msgid "|wrap|wW"
 msgstr "|springen|wW"
 
-#: usearch.c:561
+#: usearch.c:692
 msgid "|don't wrap|nN"
 msgstr "|nicht springen|nN"
 
-#: usearch.c:618
-msgid "Replace with (%{abort} to abort): "
+#: usearch.c:693
+msgid "|regex|xX"
+msgstr ""
+
+#: usearch.c:694
+msgid "|no regex|yY"
+msgstr ""
+
+#: usearch.c:695
+msgid "|regex_debug|v"
+msgstr ""
+
+#: usearch.c:747
+#, fuzzy
+msgid "Replace with (%{help} for help): "
 msgstr "Ersetzen durch (%{abort} zum Abbrechen): "
 
-#: usearch.c:633
-msgid ""
-"case (S)ensitive (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (%{abort} to "
-"abort): "
+#: usearch.c:764
+#, fuzzy
+msgid "case (S)ensitive (R)eplace (B)ackwards Bloc(K) (%{help} for help): "
 msgstr ""
-"case-(s)ensitiv e(R)setzen (B)rückwärts Bloc(K) (A)lle Dateien NNN (o.%{abort}) "
+"case-(s)ensitiv e(R)setzen (B)rückwärts Bloc(K) (A)lle Dateien NNN (o."
+"%{abort}) "
 
-#: usearch.c:635
-msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (A)ll files NNN (%{abort} to abort): "
-msgstr "(I)gn. e(R)setzen (B)rückwärts Bloc(K) (A)lle Dateien NNN (od.%{abort}): "
+#: usearch.c:766
+#, fuzzy
+msgid "(I)gnore (R)eplace (B)ackwards Bloc(K) (%{help} for help): "
+msgstr ""
+"(I)gn. e(R)setzen (B)rückwärts Bloc(K) (A)lle Dateien NNN (od.%{abort}): "
 
-#: usearch.c:717
-#, c-format
-msgid "Find (%{abort} to abort) [%s]: "
+#: usearch.c:858
+#, fuzzy
+msgid "Find (%{help} for help) [%s]: "
 msgstr "Suchen (%{abort} zum Abbrechen) [%s]: "
 
-#: usearch.c:719
-msgid "Find (%{abort} to abort): "
-msgstr "Suchen (%{abort} zum Abbrechen): "
+#: usearch.c:860
+msgid "Find (%{help} for help): "
+msgstr ""
 
-#: usearch.c:813
+#: usearch.c:997
 msgid "|rest of file|rR"
 msgstr "|Rest der Datei|rR"
 
-#: usearch.c:814
+#: usearch.c:998
 msgid "|backup|bB"
 msgstr "|Backup|bB"
 
-#: usearch.c:845
+#: usearch.c:1033
 msgid "Replace (Y)es (N)o (R)est (B)ackup (%{abort} to abort)?"
 msgstr "Ersetzen (Y)Ja (N)ein (R)est (B)ackup (%{abort} zum Abbrechen)?"
 
-#: usearch.c:993
+#: usearch.c:1108
+msgid "Character set of buffer does not match character set of search string"
+msgstr ""
+
+#: usearch.c:1197
 msgid "Not found (search restricted to marked block)"
 msgstr "Nicht gefunden (Suche auf Markierung begrenzt)"
 
-#: usearch.c:1000
+#: usearch.c:1204
 msgid "Infinite loop aborted: your search repeatedly matched same place"
 msgstr "Unendliche Schleife abgebrochen: Suche traf gleiche Stelle mehrmals"
 
-#: ushell.c:95
+#: ushell.c:211
 msgid "Program already running in this window"
 msgstr "Programm läuft bereits im Fenster"
 
-#: ushell.c:103
+#: ushell.c:235
 msgid "No ptys available"
 msgstr "Keine pyts verfügbar"
 
-#: ushell.c:128
+#: ushell.c:241
+msgid "Write failed when writing first command to shell"
+msgstr ""
+
+#: ushell.c:265
 msgid "\"SHELL\" environment variable not defined or exported"
 msgstr "\"SHELL\" Umgebungsvariable nicht definiert oder exportiert"
 
-#: ushell.c:164
+#: ushell.c:284
+msgid ":vtshell keymap is missing"
+msgstr ""
+
+#: ushell.c:297
+msgid ":shell keymap is missing"
+msgstr ""
+
+#: ushell.c:328
 msgid "Program to run: "
 msgstr "Auszufürendes Programm: "
 
-#: ushell.c:188
+#: ushell.c:374
 msgid "Build command: "
 msgstr "Build-Befehl: "
 
-#: ushell.c:197
+#: ushell.c:383
 msgid "Enter build command (for example, 'make'): "
 msgstr "Buildbefehl eingeben (z.B. `make`): "
 
-#: ushell.c:212
+#: ushell.c:400
 msgid "Grep command: "
 msgstr "grep-Befehl: "
 
-#: ushell.c:221
+#: ushell.c:409
 msgid "Enter grep command (for example, 'grep -n foo *.c'): "
 msgstr "grep-Befehl eingeben (z.B. `grep -n foo *.c`): "
 
-#: ushell.c:250
+#: ushell.c:442
 msgid "Kill program (y,n,%{abort})?"
 msgstr "Programm abbrechen (y,n,%{abort})?"
 
-#: utag.c:26
+#: utag.c:77
+msgid "Last match"
+msgstr ""
+
+#: utag.c:79
+msgid "There are more matches"
+msgstr ""
+
+#: utag.c:199
 msgid "Couldn't open tags file"
 msgstr "Konnte Tags-Datei nicht öffnen"
 
-#: utag.c:168
+#: utag.c:513
 msgid "Tag search: "
 msgstr "Tag-Suche: "
 
-#: vfile.c:174
+#: vfile.c:182
 msgid "vfile: out of memory\n"
 msgstr ""
 
-#: vfile.c:229
+#: vfile.c:243
 #, c-format
 msgid "Couldn't open file '%s'\n"
 msgstr "Konnte '%s' nicht öffnen\n"
 
-#: w.c:822
-msgid "There is no message buffer"
+#: w.c:866
+#, fuzzy
+msgid "There are no messages"
 msgstr "Kein Nachrichtenpuffer vorhanden"
-
-#~ msgid "Delimiters (%s): "
-#~ msgstr "Begrenzer (%s): "
-
-#~ msgid "Delimiters: "
-#~ msgstr "Begrenzer: "

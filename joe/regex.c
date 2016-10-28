@@ -164,7 +164,7 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 						*cat = unicode(buf);
 				}
 				break;
-			} case 'x': case 'X': { /* Hex or unicode */
+			} case 'x': case 'X': { /* Hex or Unicode */
 				c = 0;
 				++s; --l;
 				if ((!b || l > 0) && *s == '{') {
@@ -360,8 +360,6 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 					++g->ptr;
 					--g->l;
 					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
-					if (last != -256)
-						last = from_uni(g->cmap, last);
 				} else {
 					last = first;
 				}
@@ -584,8 +582,6 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 					++g->ptr;
 					--g->l;
 					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
-					if (last != -256)
-						last = from_uni(g->cmap, last);
 				} else {
 					last = first;
 				}
@@ -806,7 +802,7 @@ static void unasm(Frag *f)
 }
 
 /* Determine leading prefix of search string */
-/* We can use boyer-moore on the prefix if:
+/* We can use Boyer-Moore on the prefix if:
      Character set is byte coded.
      Character set is UTF-8 coded, but no folding is requested.
      Character set is UTF-8 coded, folding is requested, but character is below 128 */

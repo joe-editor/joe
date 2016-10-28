@@ -77,7 +77,7 @@ MACRO *multiparse(JFILE *fd, int *refline, char **buf, ptrdiff_t *ofst, int *ref
 }
 
 /* Process rc file
- * Returns 0 if the rc file was succefully processed
+ * Returns 0 if the rc file was successfully processed
  *        -1 if the rc file couldn't be opened
  *         1 if there was a syntax error in the file
  */
@@ -120,7 +120,7 @@ int procrc(CAP *cap, char *name)
 			}
 			break;
 
-		case '[':	/* Select file types for file-type dependant options */
+		case '[':	/* Select file types for file-type dependent options */
 			{
 				int x;
 
@@ -134,7 +134,7 @@ int procrc(CAP *cap, char *name)
 				o->ftype = zdup(buf + 1);
 			}
 			break;
-		case '*':	/* Select file types for file-type dependant options */
+		case '*':	/* Select file types for file-type dependent options */
 			{ /* Space and tab introduce comments- which means we can't have them in the regex */
 				if (o) {
 					struct options_match *m;

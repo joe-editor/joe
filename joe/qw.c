@@ -40,14 +40,19 @@ static void dispqw(W *w, int flg)
 
 static void dispqwn(W *w, int flg)
 {
-	/* Set cursor position */
-	if (w->win->watom->follow && w->win->object)
-		w->win->watom->follow(w->win);
-	if (w->win->watom->disp && w->win->object)
-		w->win->watom->disp(w->win, 1);
-	dispqw(w, flg);
-	w->curx = w->win->curx;
-	w->cury = w->win->cury + w->win->y - w->y;
+	if (w->win->h) {
+		/* Set cursor position */
+		if (w->win->watom->follow && w->win->object)
+			w->win->watom->follow(w->win);
+		if (w->win->watom->disp && w->win->object)
+			w->win->watom->disp(w->win, 1);
+
+		dispqw(w, flg);
+		w->curx = w->win->curx;
+		w->cury = w->win->cury + w->win->y - w->y;
+	} else {
+		dispqw(w, flg);
+	}
 }
 
 /* When user hits a key in a query window */
@@ -151,6 +156,8 @@ int query(W *w,				/* Prompt goes below this window */
 	if (!n) {
 		return -1;
 	}
+
+	w->t->curwin = n;
 	wfit(n->t);
 	n->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = n;
@@ -161,7 +168,7 @@ int query(W *w,				/* Prompt goes below this window */
 	qw->org_h = h;
 	qw->result = &t;
 	qw->flg = flg;
-	w->t->curwin = n;
+
 	/* We get woken up when user hits a key */
 	t.answer = -1;
 	if (flg & QW_NOMACRO)

@@ -62,6 +62,9 @@
       <Component Id="confJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="confJSF" Name="conf.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\conf.jsf" KeyPath="yes" />
       </Component>
+      <Component Id="contextJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+	<File Id="contextJSF" Name="context.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\context.jsf" KeyPath="yes" />
+      </Component>
       <Component Id="cshJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="cshJSF" Name="csh.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\csh.jsf" KeyPath="yes" />
       </Component>

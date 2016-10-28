@@ -62,6 +62,7 @@ int recur=0;
 
 double joe_strtod(const char *bptr, const char **at_eptr)
 {
+	int inv = 0;
 	char buf[128];
 #ifdef HAVE_LONG_LONG
 	unsigned long long n = 0;
@@ -69,6 +70,10 @@ double joe_strtod(const char *bptr, const char **at_eptr)
 	unsigned long n = 0;
 #endif
 	double x = 0.0;
+	if (bptr[0] == '-') {
+		inv = 1;
+		++bptr;
+	}
 	if (bptr[0] == '0' && (bptr[1] == 'b' || bptr[1] == 'B')) {
 		bptr += 2;
 		while ((*bptr >= '0' && *bptr <= '1') || *bptr == '_') {
@@ -136,6 +141,8 @@ double joe_strtod(const char *bptr, const char **at_eptr)
 		buf[j] = 0;
 		x = strtod(buf,NULL);
 	}
+	if (inv)
+		x = -x;
 	if (at_eptr)
 		*at_eptr = bptr;
 	return x;
@@ -721,7 +728,7 @@ static double m_lr(double n)
 	/* Linear regression coefficients: y = A + BB * x */
 	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
 	A = (ysum - BB * xsum) / (double)cnt;
-	/* correlatio coefficient */
+	/* correlation coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
 	xavg = xsum / (double)cnt;
@@ -759,7 +766,7 @@ static double m_Lr(double n)
 	/* Linear regression coefficients: y = A + BB * x */
 	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
 	A = (ysum - BB * xsum) / (double)cnt;
-	/* correlatio coefficient */
+	/* correlation coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
 	xavg = xsum / (double)cnt;
@@ -797,7 +804,7 @@ static double m_lR(double n)
 	/* Linear regression coefficients: y = A + BB * x */
 	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
 	A = (ysum - BB * xsum) / (double)cnt;
-	/* correlatio coefficient */
+	/* correlation coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
 	xavg = xsum / (double)cnt;
@@ -835,7 +842,7 @@ static double m_LR(double n)
 	/* Linear regression coefficients: y = A + BB * x */
 	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
 	A = (ysum - BB * xsum) / (double)cnt;
-	/* correlatio coefficient */
+	/* correlation coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
 	xavg = xsum / (double)cnt;
@@ -873,7 +880,7 @@ static double m_rlr(double n)
 	/* Linear regression coefficients: y = A + BB * x */
 	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
 	A = (ysum - BB * xsum) / (double)cnt;
-	/* correlatio coefficient */
+	/* correlation coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
 	xavg = xsum / (double)cnt;
@@ -911,7 +918,7 @@ static double m_rLr(double n)
 	/* Linear regression coefficients: y = A + BB * x */
 	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
 	A = (ysum - BB * xsum) / (double)cnt;
-	/* correlatio coefficient */
+	/* correlation coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
 	xavg = xsum / (double)cnt;
@@ -949,7 +956,7 @@ static double m_rlR(double n)
 	/* Linear regression coefficients: y = A + BB * x */
 	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
 	A = (ysum - BB * xsum) / (double)cnt;
-	/* correlatio coefficient */
+	/* correlation coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
 	xavg = xsum / (double)cnt;
@@ -987,7 +994,7 @@ static double m_rLR(double n)
 	/* Linear regression coefficients: y = A + BB * x */
 	BB = ((double)cnt * xy - xsum * ysum) / ((double)cnt * xsq - xsum * xsum);
 	A = (ysum - BB * xsum) / (double)cnt;
-	/* correlatio coefficient */
+	/* correlation coefficient */
 	r = ((double)cnt * xy - xsum * ysum) / sqrt(m_fabs((double)cnt * xsq - xsum * xsum) * m_fabs((double)cnt * ysq - ysum * ysum));
 	/* covariance */
 	xavg = xsum / (double)cnt;
@@ -1410,7 +1417,7 @@ static char *eng(char *d, const char *s)
 	/* Account of position of decimal point in exponent */
 	myexp -= dp;
 
-	/* For engineering format, make expoenent a multiple of 3 such that
+	/* For engineering format, make exponent a multiple of 3 such that
 	   we have 1 - 3 leading digits */
 
 	/* Don't assume modulus of negative number works consistently */

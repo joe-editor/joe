@@ -574,12 +574,14 @@ int ublkcpy(W *w, int k)
 			}
 
 			binsb(bw->cursor, tmp);
-			if (lightoff)
-				unmark(bw->parent, 0);
-			else {
-				umarkb(bw->parent, 0);
-				umarkk(bw->parent, 0);
-				pfwrd(markk, size);
+			if (k != -2) { /* Mouse - leave selection where it is to more closely match X */
+				if (lightoff)
+					unmark(bw->parent, 0);
+				else {
+					umarkb(bw->parent, 0);
+					umarkk(bw->parent, 0);
+					pfwrd(markk, size);
+				}
 			}
 			updall();
 			return 0;

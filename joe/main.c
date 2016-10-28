@@ -33,7 +33,7 @@ void dofollows(void)
 	W *w = maint->curwin;
 
 	do {
-		if (w->y != -1 && w->watom->follow && w->object)
+		if (w->y != -1 && w->h && w->watom->follow && w->object)
 			w->watom->follow(w);
 		w = (W *)(w->link.next);
 	} while (w != maint->curwin);
@@ -404,7 +404,7 @@ int joerc()
 				goto nope;
 		} else {
 			nope:
-			/* Try Joe's bad english */
+			/* Try Joe's bad English */
 #ifdef JOEWIN
 			t = vsncpy(NULL, 0, sz(JOERC));
 #else
@@ -540,6 +540,8 @@ int process_global_options()
 			cmd_help(1);
 			return 1;
 		} else if (argv[c][0] == '-') {
+			if (argv[c][1] == '-' && !argv[c][2])
+				break;
 			if (argv[c][1])
 				switch (glopt(argv[c] + 1, argv[c + 1], NULL, 1)) {
 				case 0:
@@ -564,20 +566,25 @@ void process_args()
 	int backopt;
 	int omid;
 	int opened = 0;
+	int filesonly;
 
 	/* The business with backopt is to load the file first, then apply file
 	 * local options afterwords */
 
 	/* orphan is not compatible with exemac()- macros need a window to exist */
-	for (c = 1, backopt = 0; argv[c]; ++c)
-		if (argv[c][0] == '+' && argv[c][1]>='0' && argv[c][1]<='9') {
+	for (c = 1, backopt = 0, filesonly = 0; argv[c]; ++c)
+		if (!filesonly && argv[c][0] == '+' && argv[c][1]>='0' && argv[c][1]<='9') {
 			if (!backopt)
 				backopt = c;
-		} else if (argv[c][0] == '-' && argv[c][1]) {
-			if (!backopt)
-				backopt = c;
-			if (glopt(argv[c] + 1, argv[c + 1], NULL, 0) == 2)
-				++c;
+		} else if (!filesonly && argv[c][0] == '-' && argv[c][1]) {
+			if (argv[c][1] == '-' && !argv[c][2])
+				filesonly = 1;
+			else {
+				if (!backopt)
+					backopt = c;
+				if (glopt(argv[c] + 1, argv[c + 1], NULL, 0) == 2)
+					++c;
+			}
 		} else {
 			B *b = bfind(argv[c]);
 			BW *bw = NULL;
@@ -621,12 +628,12 @@ void process_args()
 								backopt += 2;
 							else
 								backopt += 1;
-							/* lazy_opts(bw->b, &bw->o); */
 						}
 					}
 				}
 				/* bw->b->o = bw->o; */
 				lazy_opts(bw->b, &bw->o);
+				bw->o = bw->b->o;
 				bw->b->rdonly = bw->o.readonly;
 				/* Put cursor in window, so macros work properly */
 				maint->curwin = bw->parent;

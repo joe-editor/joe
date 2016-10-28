@@ -99,7 +99,7 @@ static int joe_mouse_event()
 		if (Cbutton == 0)
 			mouseup(Cx,Cy);
 		else if (Cbutton == 1)
-			fake_key(KEY_MMUP);
+			fake_key(KEY_MIDDLEUP);
 		else if (Cbutton == 2)
 			fake_key(KEY_MRUP);
 
@@ -112,26 +112,14 @@ static int joe_mouse_event()
 		else
 			/* drag */
 			mousedrag(Cx,Cy);
-	} else if ((maint->curwin->watom->what & TYPETW ||
-	          maint->curwin->watom->what & TYPEPW) &&
-	          joexterm && (Cb & 3) == 1)		/* Paste */
-#ifndef JOEWIN
-		ttputs("\33]52;;?\33\\");
-#else
-	{
-		CMD *c = findcmd("winpaste");
-		if (c) execmd(c, 0);
-	}
-#endif
-	else if ((Cb & 3) == 1) {
+	} else if ((Cb & 3) == 1) {
 		/* Middle button */
 		Cbutton = 1;
 		if ((Cb & 32) == 0)
-			fake_key(KEY_MMDOWN);
+			fake_key(KEY_MIDDLEDOWN);
 		else
-			fake_key(KEY_MMDRAG);
-	}
-	else if ((Cb & 3) == 0 || (Cb & 3) == 2) {
+			fake_key(KEY_MIDDLEDRAG);
+	} else if ((Cb & 3) == 0 || (Cb & 3) == 2) {
 		/* Right button -- not caught in above case so opposite of "preferred" */
 		Cbutton = 2;
 		if ((Cb & 32) == 0)
@@ -374,12 +362,7 @@ static void select_done(struct charmap *map)
 
 void mouseup(ptrdiff_t x,ptrdiff_t y)
 {
-	auto_scroll = 0;
 	Cx = x, Cy = y;
-	if (selecting) {
-		select_done(((BW *)maint->curwin->object)->b->o.charmap);
-		selecting = 0;
-	}
 	switch(clicks) {
 		case 1:
 			fake_key(KEY_MUP);
@@ -719,6 +702,11 @@ int udefmdrag(W *xx, int k)
 
 int udefmup(W *w, int k)
 {
+	auto_scroll = 0;
+	if (selecting) {
+		select_done(((BW *)maint->curwin->object)->b->o.charmap);
+		selecting = 0;
+	}
 	return 0;
 }
 
@@ -771,6 +759,11 @@ int udefm2drag(W *xx, int k)
 
 int udefm2up(W *w, int k)
 {
+	auto_scroll = 0;
+	if (selecting) {
+		select_done(((BW *)maint->curwin->object)->b->o.charmap);
+		selecting = 0;
+	}
 	return 0;
 }
 
@@ -817,6 +810,11 @@ int udefm3drag(W *xx, int k)
 
 int udefm3up(W *w, int k)
 {
+	auto_scroll = 0;
+	if (selecting) {
+		select_done(((BW *)maint->curwin->object)->b->o.charmap);
+		selecting = 0;
+	}
 	return 0;
 }
 
@@ -835,17 +833,31 @@ int udefmrdrag(W *w, int k)
 	return 0;
 }
 
-int udefmmdown(W *w, int k)
+int udefmiddledown(W *w, int k)
+{
+	if (joexterm) {
+#ifndef JOEWIN
+		/* Request xterm to send selection text to JOE */
+		ttputs("\33]52;;?\33\\");
+#else
+		CMD *c = findcmd("winpaste");
+		if (c) execmd(c, 0);
+#endif
+		return 0;
+	} else {
+		/* Copy region to cursor */
+		if (utomouse(w, 0)) /* Positions cursor */
+			return -1;
+		return ublkcpy(w, 0); /* Copy */
+	}
+}
+
+int udefmiddleup(W *w, int k)
 {
 	return 0;
 }
 
-int udefmmup(W *w, int k)
-{
-	return 0;
-}
-
-int udefmmdrag(W *w, int k)
+int udefmiddledrag(W *w, int k)
 {
 	return 0;
 }

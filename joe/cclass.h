@@ -111,7 +111,7 @@ void rset_opt(struct Rset *r);
 void rset_set(struct Rset *r, struct interval *array, ptrdiff_t size);
 void rset_show(struct Rset *r);
 
-/* A radix tree map: (unicode character) -> (void *) or (unicode character) -> (int) */
+/* A radix tree map: (Unicode character) -> (void *) or (Unicode character) -> (int) */
 
 struct Rtree {
 	struct First top;

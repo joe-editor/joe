@@ -8,7 +8,7 @@
 
 /* UTF-8 Encoder
  *
- * c is unicode character.
+ * c is Unicode character.
  * buf is 7 byte buffer- utf-8 coded character is written to this followed by a 0 termination.
  * returns length (not including terminator).
  */
@@ -50,7 +50,7 @@ void utf8_init(struct utf8_sm *utf8_sm);
 
 /* UTF-16 encoder
  *
- * c is unicode character.
+ * c is Unicode character.
  * buf is 4 byte buffer
  *
  * Returns length or UTF16_BAD for encode error.

@@ -54,6 +54,8 @@
 -help_is_utf8	Set if help text is in UTF-8 format.  Leave clear if it's a raw 8-bit format.
 
  -mid		Cursor is recentered when scrolling is necessary
+ -left nn	Amount to jump left when scrolling is necessary (-1 for 1/4 width)
+ -right nn	Amount to jump right when scrolling is necessary (-1 for 1/4 width)
 
  -marking	Text between ^KB and cursor is highlighted (use with -lightoff)
 
@@ -123,7 +125,7 @@
 
  -columns nnn	Set no. screen columns
 
- -help		Start with help on
+ -helpon	Start with help on
 
  -skiptop nnn	Don't use top nnn lines of the screen
 
@@ -269,6 +271,11 @@
 -rmsg  %S 列 %4r 行 %3c %t  Ctrl-K H 使用說明
 -smsg ** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w ** 
 -zmsg ** Line %r Col %c Offset %o(0x%O) ** 
+-xmsg \i Joe's Own Editor %v (%b) ** Type \bCtrl-K Q\b to exit or \bCtrl-K H\b for help **\i
+
+ Key sequence hints which are displayed in various prompts.
+-aborthint ^C
+-helphint ^K H
 
  SECOND SECTION: File name dependant local option settings:
 
@@ -453,6 +460,7 @@ mode,"asis",rtn	% % Meta chars as-is
 mode,"language",rtn	V Language
 mode,"picture",rtn	P picture %Zpicture%
 mode,"type",rtn		F File type [%Ztype%]
+mode,"title",rtn	C Context %Ztitle%
 menu,"more-options",rtn	  % % More options...
 
 :defmenu more-options menu,"root",rtn
@@ -534,6 +542,8 @@ mode,"backpath",rtn	% % Path to backup files %Zbackpath%
 :defmenu cursor menu,"more-options",rtn
 mode,"pg",rtn	% % No. PgUp/PgDn lines %Zpg%
 mode,"mid",rtn	C Center on scroll %Zmid%
+mode,"left",rtn	L Columns to scroll left %Zleft%
+mode,"right",rtn R Columns to scroll right %Zright%
 mode,"floatmouse",rtn	% % Click past end %Zfloatmouse%
 mode,"rtbutton",rtn	% % Right button %Zrtbutton%
 
@@ -812,10 +822,10 @@ defm2drag	M2DRAG		Select a region of words
 defm3down	M3DOWN		Select the line at the mouse location
 defm3up		M3UP
 defm3drag	M3DRAG		Select a region of lines
-defmmup		MMUP		No-op
 defmrdown	MRDOWN		No-op
-defmmdrag	MMDRAG		No-op
 defmrdrag	MRDRAG		No-op
+defmiddleup	MIDDLEUP
+defmiddledown	MIDDLEDOWN	Insert text
 
 xtmouse		^[ [ M		Introduces an xterm mouse event
 extmouse	^[ [ <		Introduces an extended xterm mouse event

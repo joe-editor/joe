@@ -36,7 +36,7 @@
 	<File Id="UkrainianPO" Name="uk.po" DiskId="1" Source="$(var.PODir)\uk.po" KeyPath="yes" />
       </Component>
       <Component Id="TrChinesePOComponent" Win64="$(var.Win64)">
-	<File Id="TrChinesePO" Name="zh.po" DiskId="1" Source="$(var.PODir)\zh.po" KeyPath="yes" />
+	<File Id="TrChinesePO" Name="zh_TW.po" DiskId="1" Source="$(var.PODir)\zh_TW.po" KeyPath="yes" />
       </Component>
     </ComponentGroup>
     <ComponentGroup Id="RegionalConfFilesComponentGroup" Directory="CONFIGFOLDER">

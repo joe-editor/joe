@@ -39,7 +39,8 @@ flagsettings = [
     'nonotice', 'nosta', 'notite', 'noxon', 'orphan', 'overwrite', 'picture', 'pound_comment', 'purify', 'rdonly',
     'restore', 'rtbutton', 'search_prompting', 'semi_comment', 'single_quoted', 'smarthome', 'smartbacks', 'spaces',
     'square', 'tex_comment', 'transpose', 'usetabs', 'vhdl_comment', 'wordwrap', 'wrap',
-    'nodeadjoe', 'noexmsg', 'nolinefeeds', 'highlighter_context', 'guess_utf16', 'brpaste', 'pastehack', 'regex'
+    'nodeadjoe', 'noexmsg', 'nolinefeeds', 'highlighter_context', 'guess_utf16', 'brpaste', 'pastehack', 'regex',
+    'title'
 ]
 
 oneparamsettings = [
@@ -55,7 +56,7 @@ lineparamsettings = [
 
 specialkeys = [
     'SP', 'TO', 'MDOWN', 'MUP', 'MDRAG', 'M2DOWN', 'M2UP', 'M2DRAG', 'M3DOWN', 'M3UP', 'M3DRAG', 'MWDOWN', 'MWUP',
-    'MRUP', 'MRDOWN', 'MRDRAG', 'MMUP', 'MMDOWN', 'MMDRAG'
+    'MRUP', 'MRDOWN', 'MRDRAG', 'MIDDLEUP', 'MIDDLEDOWN', 'MIDDLEDRAG'
 ]
 
 class SqueezeState(object):

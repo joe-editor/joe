@@ -53,12 +53,12 @@ void lattr_check(struct lattr_db *db, ptrdiff_t size);
   /* Make sure we have enough space for insert.  If not, expand buffer. */
 
 void lattr_ins(struct lattr_db *db,ptrdiff_t line,ptrdiff_t size);
-  /* An insert occured, beginning on specified line.  'size' lines were inserted.
+  /* An insert occurred, beginning on specified line.  'size' lines were inserted.
      Adjust invalid window to cover inserted area.
   */
 
 void lattr_del(struct lattr_db *db,ptrdiff_t line,ptrdiff_t size);
-  /* A deletion occured, beginning on specified line.  'size' lines were deleted.
+  /* A deletion occurred, beginning on specified line.  'size' lines were deleted.
      Adjust invalid window to cover deleted area.
   */
 

@@ -442,6 +442,7 @@ mode,"asis",rtn	% % Meta chars as-is
 mode,"language",rtn	V Language
 mode,"picture",rtn	P picture %Zpicture%
 mode,"type",rtn		F File type [%Ztype%]
+mode,"title",rtn	C Context %Ztitle%
 menu,"more-options",rtn	  % % More options...
 
 :defmenu more-options menu,"root",rtn
@@ -775,9 +776,10 @@ defm2drag	M2DRAG		Select a region of words
 defm3down	M3DOWN		Select the line at the mouse location
 defm3up		M3UP
 defm3drag	M3DRAG		Select a region of lines
-defmmup		MMUP		No-op
+defmiddleup	MIDDLEUP
+defmiddledown	MIDDLEDOWN	Insert text
+defmiddledrag	MIDDLEDRAG
 defmrdown	MRDOWN		No-op
-defmmdrag	MMDRAG		No-op
 defmrdrag	MRDRAG		No-op
 winpaste	MMDOWN		Paste on middle-click
 wincontext	MRUP		Show context menu on right-click
