@@ -1,17 +1,37 @@
+/*
+ *	Color scheme handler
+ *	Copyright
+ *		(C) 2016
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 
 #include "types.h"
 
+/* Visited flags */
 #define COLORDEF_VISITED	1
 #define COLORDEF_VISITING	2
 
+/* Current scheme globals */
 const char *scheme_name = NULL;
 struct color_scheme *curscheme = NULL;
 struct color_set *curschemeset = NULL;
 
+/* Cursor color (not used yet) */
 static int bg_cursor;
+
+/* Loaded color schemes */
 static SCHEME allcolors = { {&allcolors, &allcolors} };
 
-static void visit_colordef(COLORSET *, struct high_syntax *, struct color_def *);
+/* Color builtins (formerly options) */
+struct color_builtin_specs {
+	const char		*name;
+	int			*attribute;
+	int			*mask;
+	int			default_attr;
+	int			default_mask;
+	int			*default_ptr;
+};
 
 static struct color_builtin_specs color_builtins[] = {
 	{ "text", &bg_text, NULL, 0, 0, 0 },	/* Must come first (because default_text) */
@@ -29,6 +49,7 @@ static struct color_builtin_specs color_builtins[] = {
 	{ NULL, NULL, NULL, 0, 0, NULL }
 };
 
+/* Terminal -> color scheme mapping from joe_state file */
 struct color_states {
 	struct color_states	*next;
 	char			*term;
@@ -37,18 +58,23 @@ struct color_states {
 
 static struct color_states *saved_scheme_configs = NULL;
 
+/* Prototypes */
+static void visit_colordef(COLORSET *, struct high_syntax *, struct color_def *);
+
+/* Allocate a scheme object */
 static SCHEME *scheme_alloc(void)
 {
 	SCHEME *colors;
 
 	colors = (SCHEME *) joe_calloc(1, SIZEOF(struct color_scheme));
 	colors->sets = NULL;
-	zcpy(colors->name, "");
+	colors->name = NULL;
 
 	enquef(SCHEME, link, &allcolors, colors);
 	return colors;
 }
 
+/* Allocate a color set */
 static COLORSET *colorset_alloc(void)
 {
 	COLORSET *colorset;
@@ -72,6 +98,7 @@ static COLORSET *colorset_alloc(void)
 	return colorset;
 }
 
+/* Allocate a color definition */
 static struct color_def *colordef_alloc(void)
 {
 	struct color_def *cdef;
@@ -84,6 +111,7 @@ static struct color_def *colordef_alloc(void)
 	return cdef;
 }
 
+/* Like parseident but allows for a '.' in the middle */
 static int parse_scoped_ident(const char **p, char *dest, ptrdiff_t sz)
 {
 	if (!parse_ident(p, dest, sz)) {
@@ -101,6 +129,7 @@ static int parse_scoped_ident(const char **p, char *dest, ptrdiff_t sz)
 	return 1;
 }
 
+/* Parse the color part (spec) of a color def */
 int parse_color_spec(const char **p, struct color_spec *dest)
 {
 	char buf[128];
@@ -185,9 +214,10 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 	}
 }
 
+/* Parse a color definition for a syntax or builtin color */
 int parse_color_def(const char **p, struct color_def *dest)
 {
-	char buf[COLORS_NAME_LENGTH];
+	char buf[256];
 	struct color_ref **last = &dest->refs;
 
 	dest->spec.type = COLORSPEC_TYPE_NONE;
@@ -218,6 +248,7 @@ int parse_color_def(const char **p, struct color_def *dest)
 	}
 }
 
+/* Load or find a color scheme by name */
 SCHEME *load_scheme(const char *name)
 {
 	SCHEME *colors;
@@ -258,7 +289,7 @@ SCHEME *load_scheme(const char *name)
 	
 	/* Create */
 	colors = scheme_alloc();
-	zncpy(colors->name, name, COLORS_NAME_LENGTH);
+	colors->name = zdup(name);
 	curset = 0;
 	line = 0;
 	
@@ -391,11 +422,13 @@ SCHEME *load_scheme(const char *name)
 	return colors;
 }
 
+/* Create a list of all available schemes */
 char **get_colors(void)
 {
 	return find_configs(NULL, "jcf", "colors", "colors");
 }
 
+/* Apply the specified scheme */
 int apply_scheme(SCHEME *colors)
 {
 	struct high_syntax *stx;
@@ -464,6 +497,7 @@ int apply_scheme(SCHEME *colors)
 	return 0;
 }
 
+/* Resolves a color_def into an attribute, resolves color_def's of any attribute referenced from that def */
 static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct color_def *cdef)
 {
 	struct color_ref *cref;
@@ -512,6 +546,7 @@ static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct co
 	cdef->visited = COLORDEF_VISITED;
 }
 
+/* Applies the specified color scheme set to the specified syntax */
 void resolve_syntax_colors(COLORSET *cset, struct high_syntax *syntax)
 {
 	int i;
@@ -561,6 +596,7 @@ void resolve_syntax_colors(COLORSET *cset, struct high_syntax *syntax)
 	}
 }
 
+/* Debug output */
 void dump_colors(BW *bw)
 {
 	char buf[256];
@@ -604,6 +640,7 @@ void dump_colors(BW *bw)
 	}
 }
 
+/* Load from joe_state */
 void load_colors_state(FILE *fp)
 {
 	char buf[256];
@@ -638,6 +675,7 @@ void load_colors_state(FILE *fp)
 	}
 }
 
+/* Save to joe_state */
 void save_colors_state(FILE *fp)
 {
 	struct color_states *st;
@@ -665,6 +703,7 @@ void save_colors_state(FILE *fp)
 	fprintf(fp, "done\n");
 }
 
+/* Initialize color scheme system: load from joe_state or default */
 int init_colors(void)
 {
 	const char *myterm = getenv("TERM");

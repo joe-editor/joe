@@ -1,20 +1,17 @@
-
-#define COLORS_NAME_LENGTH	80
+/*
+ *	Color scheme handler
+ *	Copyright
+ *		(C) 2016
+ *
+ *	This file is part of JOE (Joe's Own Editor)
+ */
 
 #define COLORSPEC_TYPE_NONE	0
 #define COLORSPEC_TYPE_ATTR	1
 #define COLORSPEC_TYPE_GUI	2
 #define COLORSET_GUI		-1
 
-struct color_builtin_specs {
-	const char		*name;
-	int			*attribute;
-	int			*mask;
-	int			default_attr;
-	int			default_mask;
-	int			*default_ptr;
-};
-
+/* Color specification (either an attribute, or RGB colors */
 struct color_spec {
 	int			type;
 	int			atr;
@@ -22,11 +19,13 @@ struct color_spec {
 	int			gui_bg;
 };
 
+/* Linked list of references to other colors by name */
 struct color_ref {
 	const char		*name;
 	struct color_ref	*next;
 };
 
+/* Syntax color definition */
 struct color_def {
 	const char		*name;
 	struct color_ref	*refs;
@@ -35,6 +34,7 @@ struct color_def {
 	int			visited;
 };
 
+/* Section of a color scheme (by supported terminal colors) */
 struct color_set {
 	COLORSET		*next;
 	int			colors;
@@ -44,9 +44,10 @@ struct color_set {
 	struct color_spec	termcolors[16];
 };
 
+/* Color scheme object (collection of sections) */
 struct color_scheme {
 	LINK(SCHEME)		link;
-	char			name[COLORS_NAME_LENGTH];
+	const char		*name;
 	struct color_set	*sets;
 };
 
