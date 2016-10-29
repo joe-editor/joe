@@ -7,8 +7,11 @@
  */
 #include "types.h"
 
-/* Line number attr */
+/* Attributes for line numbers, and current line */
 int bg_linum = 0;
+int bg_curlinum = 0;
+int bg_curlin = 0;
+int curlinmask = -1;
 
 /* Display modes */
 int dspasis = 0;
@@ -196,6 +199,18 @@ void bwfllwt(W *thew)
 
 		msetI(w->t->t->updtab + w->y, 1, w->h);
 	}
+	
+	if (w->o.hiline) {
+		if (w->curlin != w->cursor->line) {
+			/* Update old and new cursor lines */
+			if (w->curlin >= w->top->line && w->curlin < (w->top->line + w->h))
+				w->t->t->updtab[w->y + w->curlin - w->top->line] = 1;
+			w->curlin = w->cursor->line;
+			w->t->t->updtab[w->y + w->curlin - w->top->line] = 1;
+		}
+	} else {
+		w->curlin = w->cursor->line;
+	}
 }
 
 /* For either */
@@ -363,7 +378,8 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
         int *syn = 0;
         P *tmp;
         int idx=0;
-        int atr = BG_COLOR(bg_text); 
+        int defatr = (bw->o.hiline && bw->cursor->line == y - bw->y + bw->top->line) ? (bg_text & curlinmask) | bg_curlin : bg_text;
+        int atr = BG_COLOR(defatr);
         int ca = 0;		/* Additional attributes for current character */
         int cm = -1;		/* Attribute mask for current character */
 
@@ -401,9 +417,9 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 			if(st.state!=-1) {
 				atr = syn[idx++] & ~CONTEXT_MASK;
 				if (!(atr & BG_MASK))
-					atr |= bg_text & BG_MASK;
+					atr |= defatr & BG_MASK;
 				if (!(atr & FG_MASK))
-					atr |= bg_text & FG_MASK;
+					atr |= defatr & FG_MASK;
 			}
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
@@ -535,9 +551,9 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 			if(st.state!=-1) {
 				atr = syn[idx++] & ~CONTEXT_MASK;
 				if (!(atr & BG_MASK))
-					atr |= bg_text & BG_MASK;
+					atr |= defatr & BG_MASK;
 				if (!(atr & FG_MASK))
-					atr |= bg_text & FG_MASK;
+					atr |= defatr & FG_MASK;
 			}
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
@@ -676,7 +692,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
       eof:
       	outatr_complete(t);
 	if (x < w)
-		done = eraeol(t, x, y, BG_COLOR(bg_text));
+		done = eraeol(t, x, y, BG_COLOR(defatr));
 	else
 		done = 0;
 
@@ -719,7 +735,8 @@ static void gennum(BW *w, int (*screen)[COMPOSE], int *attr, SCRN *t, ptrdiff_t 
 		buf[x] = 0;
 	}
 	for (z = SIZEOF(buf) - w->lincols - 1, x = 0; buf[z]; ++z, ++x) {
-		outatr(w->b->o.charmap, t, screen + x, attr + x, x, y, buf[z], BG_COLOR(bg_linum)); 
+		int atr = (w->o.hiline && lin == w->cursor->line) ? bg_curlinum : bg_linum;
+		outatr(w->b->o.charmap, t, screen + x, attr + x, x, y, buf[z], BG_COLOR(atr));
 		if (ifhave)
 			return;
 		comp[x] = buf[z];
@@ -1006,6 +1023,7 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->offset = 0;
 	w->o = w->b->o;
 	w->lincols = 0;
+	w->curlin = 0;
 	w->x = window->x;
 	w->w = window->w;
 	if (window == window->main) {

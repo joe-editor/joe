@@ -15,16 +15,18 @@ static void visit_colordef(COLORSET *, struct high_syntax *, struct color_def *)
 
 static struct color_builtin_specs color_builtins[] = {
 	{ "text", &bg_text, NULL, 0, 0, 0 },	/* Must come first (because default_text) */
-	{ "linum", &bg_linum, NULL, 0, 0, 1 },
-	{ "selection", &selectatr, &selectmask, INVERSE, ~INVERSE, 0 },
-	{ "help", &bg_help, NULL, 0, 0, 1 },
-	{ "status", &bg_stalin, NULL, 0, 0, 1 },
-	{ "menu", &bg_menu, NULL, 0, 0, 1 },
-	{ "menusel", &bg_menusel, &bg_menumask, INVERSE, ~INVERSE, 0 },
-	{ "prompt", &bg_prompt, NULL, 0, 0, 1 },
-	{ "message", &bg_msg, NULL, 0, 0, 1 },
-	{ "cursor", &bg_cursor, NULL, 0, 0, 0 },
-	{ NULL, NULL, NULL, 0, 0, 0 }
+	{ "linum", &bg_linum, NULL, 0, 0, &bg_text },
+	{ "curlin", &bg_curlin, &curlinmask, 0, -1, &bg_text },
+	{ "curlinum", &bg_curlinum, NULL, 0, 0, &bg_linum },
+	{ "selection", &selectatr, &selectmask, INVERSE, ~INVERSE, NULL },
+	{ "help", &bg_help, NULL, 0, 0, &bg_text },
+	{ "status", &bg_stalin, NULL, 0, 0, &bg_text },
+	{ "menu", &bg_menu, NULL, 0, 0, &bg_text },
+	{ "menusel", &bg_menusel, &bg_menumask, INVERSE, ~INVERSE, NULL },
+	{ "prompt", &bg_prompt, NULL, 0, 0, &bg_text },
+	{ "message", &bg_msg, NULL, 0, 0, &bg_text },
+	{ "cursor", &bg_cursor, NULL, 0, 0, NULL },
+	{ NULL, NULL, NULL, 0, 0, NULL }
 };
 
 struct color_states {
@@ -423,8 +425,8 @@ int apply_scheme(SCHEME *colors)
 		if (best->builtins[i].type == COLORSPEC_TYPE_NONE) {
 			/* Use default */
 			if (color_builtins[i].attribute) {
-				if (color_builtins[i].default_text)
-					*color_builtins[i].attribute = bg_text;
+				if (color_builtins[i].default_ptr)
+					*color_builtins[i].attribute = *color_builtins[i].default_ptr;
 				else
 					*color_builtins[i].attribute = color_builtins[i].default_attr;
 			}

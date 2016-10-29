@@ -20,7 +20,8 @@ struct bw {
 	OPTIONS	o;
 	void	*object;
 
-	int	lincols;
+	int	lincols;	/* Line number column width */
+	int	curlin;		/* Cursor line (highlighted) */
 	int	top_changed;	/* Top changed */
 	struct lattr_db *db;	/* line attribute database */
 	int	shell_flag;	/* Cursor should follow shell cursor in this window */
@@ -34,6 +35,9 @@ extern int opt_right;
 extern int selectmask;	/* Attribute mask for selected text */
 extern int selectatr;	/* Attribute value for selected text */
 extern int bg_linum;	/* Attribute value for line numbers */
+extern int bg_curlinum; /* Attribute value for the line number of the current line */
+extern int bg_curlin;	/* Attribute value for the current line */
+extern int curlinmask;	/* Mask for the current line */
 
 void bwfllw(W *w);
 void bwfllwt(W *w);

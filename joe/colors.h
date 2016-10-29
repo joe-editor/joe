@@ -12,7 +12,7 @@ struct color_builtin_specs {
 	int			*mask;
 	int			default_attr;
 	int			default_mask;
-	int			default_text;
+	int			*default_ptr;
 };
 
 struct color_spec {

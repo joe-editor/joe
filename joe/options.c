@@ -43,6 +43,7 @@ OPTIONS pdefault = {
 	NULL,		/* *smsg */
 	NULL,		/* *zmsg */
 	0,		/* line numbers */
+	0,		/* highlight current line */
 	0,		/* read only */
 	0,		/* french spacing */
 	0,		/* flowed text */
@@ -106,6 +107,7 @@ OPTIONS fdefault = {
 	NULL,		/* *smsg */
 	NULL,		/* *zmsg */
 	0,		/* line numbers */
+	0,		/* higlight current line */
 	0,		/* read only */
 	0,		/* french spacing */
 	0,		/* flowed text */
@@ -336,6 +338,7 @@ struct glopts {
 	{"transpose",0, &transpose, NULL, _("Menu is transposed"), _("Menus are not transposed"), _("Transpose menus mode"), 0, 0, 0 },
 	{"crlf",	4, NULL, (char *) &fdefault.crlf, _("CR-LF is line terminator"), _("LF is line terminator"), _("CR-LF (MS-DOS) mode"), 0, 0, 0 },
 	{"linums",	4, NULL, (char *) &fdefault.linums, _("Line numbers enabled"), _("Line numbers disabled"), _("Line numbers mode"), 0, 0, 0 },
+	{"hiline",	4, NULL, (char *) &fdefault.hiline, _("Highlighting cursor line"), _("Not highlighting cursor line"), _("Highlight cursor line"), 0, 0, 0 },
 	{"marking",	0, &marking, NULL, _("Anchored block marking on"), _("Anchored block marking off"), _("Region marking mode"), 0, 0, 0 },
 	{"asis",	0, &dspasis, NULL, _("Characters above 127 shown as-is"), _("Characters above 127 shown in inverse"), _("Display meta chars as-is mode"), 0, 0, 0 },
 	{"force",	0, &force, NULL, _("Last line forced to have NL when file saved"), _("Last line not forced to have NL"), _("Force last NL mode"), 0, 0, 0 },

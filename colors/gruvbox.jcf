@@ -6,6 +6,8 @@
 -status 239/250 bold
 -menusel /239 bold
 -linum 243/237
+-curlinum 172/237
+-curlin /237
 
 =Comment 245 italic
 =TODO inverse bold italic
