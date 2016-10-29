@@ -8,7 +8,7 @@
 
 -text 252/234
 -cursor 214
--status 239/15 bold
+-status 15/239 bold
 #-menu 250/0
 -menusel 255/243
 -selection 255/96

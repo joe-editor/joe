@@ -28,25 +28,26 @@ struct color_builtin_specs {
 	const char		*name;
 	int			*attribute;
 	int			*mask;
+	int			invert;
 	int			default_attr;
 	int			default_mask;
 	int			*default_ptr;
 };
 
 static struct color_builtin_specs color_builtins[] = {
-	{ "text", &bg_text, NULL, 0, 0, 0 },	/* Must come first (because default_text) */
-	{ "linum", &bg_linum, NULL, 0, 0, &bg_text },
-	{ "curlin", &bg_curlin, &curlinmask, 0, -1, &bg_text },
-	{ "curlinum", &bg_curlinum, NULL, 0, 0, &bg_linum },
-	{ "selection", &selectatr, &selectmask, INVERSE, ~INVERSE, NULL },
-	{ "help", &bg_help, NULL, 0, 0, &bg_text },
-	{ "status", &bg_stalin, NULL, 0, 0, &bg_text },
-	{ "menu", &bg_menu, NULL, 0, 0, &bg_text },
-	{ "menusel", &bg_menusel, &bg_menumask, INVERSE, ~INVERSE, NULL },
-	{ "prompt", &bg_prompt, NULL, 0, 0, &bg_text },
-	{ "message", &bg_msg, NULL, 0, 0, &bg_text },
-	{ "cursor", &bg_cursor, NULL, 0, 0, NULL },
-	{ NULL, NULL, NULL, 0, 0, NULL }
+	{ "text", &bg_text, NULL, 0, 0, 0, 0 },	/* Must come first (because default_text) */
+	{ "linum", &bg_linum, NULL, 0, 0, 0, &bg_text },
+	{ "curlin", &bg_curlin, &curlinmask, 0, 0, -1, &bg_text },
+	{ "curlinum", &bg_curlinum, NULL, 0, 0, 0, &bg_linum },
+	{ "selection", &selectatr, &selectmask, 0, INVERSE, ~INVERSE, NULL },
+	{ "help", &bg_help, NULL, 0, 0, 0, &bg_text },
+	{ "status", &bg_stalin, NULL, 1, 0, 0, &bg_text },
+	{ "menu", &bg_menu, NULL, 0, 0, 0, &bg_text },
+	{ "menusel", &bg_menusel, &bg_menumask, 0, INVERSE, ~INVERSE, NULL },
+	{ "prompt", &bg_prompt, NULL, 0, 0, 0, &bg_text },
+	{ "message", &bg_msg, NULL, 0, 0, 0, &bg_text },
+	{ "cursor", &bg_cursor, NULL, 0, 0, 0, NULL },
+	{ NULL, NULL, NULL, 0, 0, 0, NULL }
 };
 
 /* Terminal -> color scheme mapping from joe_state file */
@@ -467,10 +468,16 @@ int apply_scheme(SCHEME *colors)
 				*color_builtins[i].mask = color_builtins[i].default_mask;
 		} else {
 			/* Take from scheme */
-			if (color_builtins[i].attribute)
-				*color_builtins[i].attribute = best->builtins[i].atr;
+			int atr = best->builtins[i].atr;
+
+			if (color_builtins[i].invert)
+				atr = (atr & ~(FG_MASK | BG_MASK)) | (((atr & FG_MASK) >> FG_SHIFT) << BG_SHIFT) | (((atr & BG_MASK) >> BG_SHIFT) << FG_SHIFT);
+
+			if (color_builtins[i].attribute) {
+				*color_builtins[i].attribute = atr;
+			}
+
 			if (color_builtins[i].mask) {
-				int atr = best->builtins[i].atr;
 				int mask = -1;
 				
 				if (atr & FG_NOT_DEFAULT)

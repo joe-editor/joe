@@ -3,7 +3,7 @@
 
 -text 223/235
 -selection /241
--status 239/250 bold
+-status 250/239 bold
 -menusel /239 bold
 -linum 243/237
 -curlinum 172/237
