@@ -221,7 +221,7 @@ void mpxdied(MPX *m)
 static DWORD WINAPI mpxreadthread(LPVOID arg)
 {
 	char buf[MPX_BUFSZ];
-	int credits = 2;
+	int credits = 4; /* Max mpx data queue length */
 	MPX *m = (MPX*)arg;
 	DWORD amount;
 	struct CommMessage *msg;
@@ -234,31 +234,36 @@ static DWORD WINAPI mpxreadthread(LPVOID arg)
 	hReadPipe = m->hReadPipe;
 
 	for (;;) {
-		while (!credits) {
-			msg = jwWaitForComm(&ackqd, 1, INFINITE, NULL);
+		/* Only block here if we're out of credits */
+		msg = credits > 0 ? jwRecvComm(ackqd) : jwWaitForComm(&ackqd, 1, INFINITE, NULL);
+		if (msg) {
 			if (msg->msg == COMM_ACK) {
 				credits++;
 			} else if (msg->msg == COMM_EXIT) {
-				CloseHandle(hReadPipe);
-				jwSendComm0p(dataqd, COMM_EXIT, m);
-				return 0;
+				jwReleaseComm(ackqd, msg);
+				break;
 			} else {
 				assert(0);
 			}
 
 			jwReleaseComm(ackqd, msg);
+			continue; /* Flush ack queue before blocking for read */
 		}
 
-		if (!ReadFile(hReadPipe, (LPVOID)buf, MPX_BUFSZ, &amount, NULL)) {
-			/* Shut it down */
-			CloseHandle(hReadPipe);
-			jwSendComm0p(dataqd, COMM_EXIT, m);
-			return 0;
-		}
+		if (credits > 0) {
+			if (!ReadFile(hReadPipe, (LPVOID)buf, MPX_BUFSZ, &amount, NULL)) {
+				break;
+			}
 
-		jwSendComm0pd(dataqd, COMM_MPXDATA, m, buf, amount);
-		--credits;
+			jwSendComm0pd(dataqd, COMM_MPXDATA, m, buf, amount);
+			--credits;
+		}
 	}
+
+	/* Done */
+	CloseHandle(hReadPipe);
+	jwSendComm0p(dataqd, COMM_EXIT, m);
+	return 0;
 }
 
 void killmpx(int pid, int sig)
