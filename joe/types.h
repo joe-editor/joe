@@ -270,14 +270,15 @@ typedef int pid_t;
 #define KEY_M3DRAG	0x100008
 #define KEY_MWUP	0x100009
 #define KEY_MWDOWN	0x10000A
-#define KEY_MRDOWN	267
-#define KEY_MRUP	268
-#define KEY_MRDRAG	269
-#define KEY_MMDOWN	270
-#define KEY_MMUP	271
-#define KEY_MMDRAG	272
+#define KEY_MIDDLEUP	0x10000B
+#define KEY_MIDDLEDOWN	0x10000C
+#define KEY_MIDDLEDRAG	0x10000D
+#define KEY_MRDOWN	0x10000E
+#define KEY_MRUP	0x10000F
+#define KEY_MRDRAG	0x100010
 
-#define FITHEIGHT	4		/* Minimum text window height */
+#define FITHEIGHT	4		/* Minimum height needed for new text windows */
+#define FITMIN		2		/* Minimum main window height */
 #define LINCOLS		10
 #define NPROC		8		/* Number of processes we keep track of */
 #define INC		16		/* Pages to allocate each time */
@@ -330,13 +331,21 @@ typedef struct coroutine Coroutine;
 
 /* Structure which are passed by value */
 
-#define SAVED_SIZE 24
+#define SAVED_SIZE 80
 
 struct highlight_state {
 	struct high_frame *stack; /* Pointer to the current frame in the call stack */
+	const int *saved_s; /* Interned Z-string for saved delimiter */
 	ptrdiff_t state; /* Current state in the current subroutine */
-	int saved_s[SAVED_SIZE]; /* Buffer for saved delimiters */
 };
+
+/* It's a good idea to optimize the size of struct highlight_state since there are N of
+ * them per line (where N is number of active syntaxes enabled on the buffer- usually just
+ * one).
+ *
+ * 64-bit ptr: sizeof(struct highlight_state) == 24
+ * 32-bit ptr: sizeof(struct highlight_state) == 12
+ */
 
 /* Include files */
 

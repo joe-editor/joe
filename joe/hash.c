@@ -248,3 +248,28 @@ void *Zhtfind(ZHASH *ht, const int *name)
 	}
 	return NULL;
 }
+
+/* Interned Z-strings / aka Zatoms */
+
+ZHASH *Zatom_table;
+
+const int *Zatom_add(const int *name)
+{
+	int *s;
+	if (!Zatom_table)
+		Zatom_table = Zhtmk(256);
+	s = (int *)Zhtfind(Zatom_table, name);
+	if (!s) {
+		s = Zdup(name);
+		Zhtadd(Zatom_table, s, s);
+	}
+	return s;
+}
+
+const int *Zatom_noadd(const int *name)
+{
+	if (!Zatom_table)
+		Zatom_table = Zhtmk(256);
+	return (int *)Zhtfind(Zatom_table, name);
+}
+

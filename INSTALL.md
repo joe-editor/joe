@@ -13,6 +13,15 @@
 
 	sudo make install
 
+For OS X, use:
+
+	sudo LC_ALL=C make install
+
+(This fixes an issue where sed on OS X is unhappy with binary files and will
+be fixed in the next release of JOE.  If you tried 'make' without the
+LC_ALL=C, you may have to delete the source distribution directory and start
+over).
+
 You may have to delete or update user custom configuration files (otherwise
 new features will not work):
 

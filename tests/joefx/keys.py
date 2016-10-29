@@ -69,9 +69,7 @@ def toctl(s):
             else:
                 count = 1
             
-            for n in range(count):
-                result += getNamedKey(keyname, ctrl, shift)
-            
+            result += (count * getNamedKey(keyname, ctrl, shift))
             ctrl = shift = False
             i = t + 1
             continue

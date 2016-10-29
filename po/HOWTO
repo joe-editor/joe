@@ -1,3 +1,12 @@
+When JOE is released:
+
+	Create a new joe.pot file with
+		xgettext -k_ *.c *.h
+		mv messages.po ../po/joe.pot
+
+	Merge into each existing .po file with
+		msgmerge -U de.po joe.pot
+
 To create a translation for JOE:
 
 - Create a new .po file and edit in your translations.  You can

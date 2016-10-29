@@ -79,7 +79,7 @@ struct window {
 	union {			/* FIXME: instead of void *object we should */
 		BW	*bw;	/* use this union to get strict type checking */
 		PW	*pw;	/* from C compiler (need to check and change */
-		QW	*qw;	/* all of the occurrencies of ->object) */
+		QW	*qw;	/* all of the occurrences of ->object) */
 		TW	*tw;
 		MENU	*menu;
 		BASE	*base;

@@ -69,3 +69,7 @@ void *Zhtadd(ZHASH *ht, const int *name, void *val);
 
 /* Look up an entry in a hash table, returns NULL if not found */
 void *Zhtfind(ZHASH *ht, const int *name);
+
+/* Interned string (atom) table */
+const int *Zatom_add(const int *name);
+const int *Zatom_noadd(const int *name);

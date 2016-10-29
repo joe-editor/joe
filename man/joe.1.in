@@ -6,9 +6,6 @@
 .SH "NAME"
 \fBJOE\fR \- Joe\'s Own Editor
 .
-.P
-[TOC]
-.
 .SH "Syntax"
 \fBjoe [global\-options] [ [local\-options] filename ]\.\.\.\fR
 .
@@ -685,6 +682,14 @@ transpose
 .
 .br
 Transpose rows with columns in all menus\.
+.
+.br
+
+.IP "\(bu" 4
+title
+.
+.br
+Display context (titles) in status line.  When enabled this shows the first line of the function that the cursor is in on the status line\.  The syntax file context.jsf identifies which lines are title lines\.
 .
 .br
 
@@ -3662,7 +3667,7 @@ Option flags can be passed to subroutines which control preprocessor\-like direc
 .IP "" 0
 .
 .P
-\&\.else if also available\. \.ifdefs can be nested\.
+\&\.else is also available\. \.ifdefs can be nested\.
 .
 .P
  \fI\fR
@@ -5855,7 +5860,7 @@ Move the cursor to where the mouse was clicked/dragged
 defmdown
 .
 .br
-Default single\-click handlers
+Default single\-click handler, usually bound to MDOWN\.  Positions cursor to mouse and begins a region\.
 .
 .br
 
@@ -5864,7 +5869,7 @@ Default single\-click handlers
 defmup
 .
 .br
-Default single\-click release handlers
+Default single\-click release handler, usually bound to MUP\.  Completes selection of a region\.
 .
 .br
 
@@ -5873,7 +5878,7 @@ Default single\-click release handlers
 defmdrag
 .
 .br
-(click to move cursor, drag to select characters)
+Default single\-click drag handler, usually bound to MDRAG\.  Selects a region of text a character at a time\.
 .
 .br
 
@@ -5882,7 +5887,7 @@ defmdrag
 defm2down
 .
 .br
-Default double\-click handlers
+Default double\-click handler, usually bound to M2DOWN\.
 .
 .br
 
@@ -5891,7 +5896,7 @@ Default double\-click handlers
 defm2up
 .
 .br
-Default double\-click release handlers
+Default double\-click release handler, usually bound to M2UP\.
 .
 .br
 
@@ -5900,7 +5905,7 @@ Default double\-click release handlers
 defm2drag
 .
 .br
-(drag to select words)
+Default double\-click drag handler, usually bound to M2DRAG\.  Selects a region of text a word at a time\.
 .
 .br
 
@@ -5909,7 +5914,7 @@ defm2drag
 defm3down
 .
 .br
-Default triple\-click handlers
+Default triple\-click handler, usually bound to M3DOWN\.
 .
 .br
 
@@ -5918,7 +5923,7 @@ Default triple\-click handlers
 defm3up
 .
 .br
-Default triple\-click release handlers
+Default triple\-click release handler, usually bound to M3UP\.
 .
 .br
 
@@ -5927,7 +5932,23 @@ Default triple\-click release handlers
 defm3drag
 .
 .br
-(drag to select lines)
+Default triple\-click drag handler, usually bound to M3DRAG\.  Selects a region of text a line at a time\.
+.
+.br
+
+.IP "\(bu" 4
+defmiddledown
+.
+.br
+Default middle click handler, usually bound to MIDDLEDOWN.  This inserts text\.
+.
+.br
+
+.IP "\(bu" 4
+defmiddleup
+.
+.br
+Default middle click release handler, usually bound to MIDDLEUP\.
 .
 .br
 
@@ -5936,7 +5957,7 @@ defm3drag
 xtmouse
 .
 .br
-Handle xterm mouse events
+Handle xterm mouse events, usually bound to Esc [ M\.  It parses the rest of the sequence and generates fake "keys" that can be bound to macros in the joerc file\.  It uses a timer to detect double-click and triple-click\.  The keys are: MUP, MDOWN, MDRAG, M2UP, M2DOWN, M2DRAG, M3UP, M3DOWN, M3DRAG, MWUP and MWDOWN\.
 .
 .br
 
@@ -5945,7 +5966,7 @@ Handle xterm mouse events
 extmouse
 .
 .br
-Handle extended xterm mouse events
+Handle extended xterm mouse events, usually bound to Esc [ <.
 .
 .br
 

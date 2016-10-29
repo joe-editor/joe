@@ -10,6 +10,71 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Enhancements
+
+* Bugs fixed
+
+	* Build fixes for Solaris
+
+	* Fix segfault due to buffer overrun.  This happens if you a line
+	  with many backslashes appears in the status line context display.
+
+### JOE 4.3
+
+* Enhancements
+
+	* Improve memory usage by shrinking buffer header size and
+	  highlighter state size.
+
+	* Improve performance of status line context display (which shows
+	  the first line of the function that the cursor is currently in). 
+	  This feature was making JOE very slow on extremely large files with
+	  auto indent enabled (typically JSON or XML data files).  Now
+	  the syntax highlighter computes the context display (using a new
+	  syntax named context.jsf).
+
+	* Add a mode 'title' to enable or disable the status line context
+	  display (previously autoindent mode was overloaded to do this).
+
+	* Disable syntax highlighting and context display in very large
+	  files
+
+	* Force more appropriate modes when we enter hex dump display:
+	  enable overtype, disable autoindent, wordwrap, ansi, picture.
+
+	* Handle middle mouse button in "joe -mouse" mode (before it did
+	  nothing).  It's treated as paste (copy region to mouse) as
+	  expected.  (patch from Petr Olsak).
+
+* Bugs fixed
+
+	* Do not kill region highlighting during incremental search (patch
+	  from Petr Olsak).
+
+	* Negative numbers were not being recognized in blocks
+
+	* PgUp/PgDn would try to scroll menu if the window above is a menu
+	  (it should do this only for completion menus associated with
+	  prompts)
+
+	* Use 'LC_ALL=C sed' to get JOE to compile in OS X.
+
+	* Forward direction delimiter matching where the delimiters do
+	  not begin with special characters (for example in Verilog
+	  "begin" / "end") was not working.
+
+	* Get mouse to work in menus: this broke in 4.1
+
+	* Character classes with ranges were not working for UTF-8 (as in \\[a-z])
+
+	* Apply spec highlighting to .spec files
+
+	* Gracefully handle short terminals: fix segfaults which occur when
+	  trying to shrink terminal while many windows are on the screen or
+	  while turning on help with a short terminal.  Fix similar bugs
+	  involving the skiptop option.  JOE now works even if the terminal
+	  height is only one line.
+
 ### JOE 4.2
 
 * New or improved syntax files for the following languages: 
@@ -113,7 +178,7 @@
 
 	* Fix bug where setting margin doesn't work on big-endian systems
 
-	* Fix issue where highest valued unicode character equivalent was
+	* Fix issue where highest valued Unicode character equivalent was
 	  not translating to its corresponding 8-bit character.  Effect
 	  of this was that Delete key was not working in shell windows in
 	  ASCII character set.
@@ -220,7 +285,7 @@
 		* Also you can specify Unicode in hexadecimal like this: U+F123
 
 		* Note that even if you are using an 8-bit locale, keys are
-	          tranlated to UTF-8 before keymap lookup.  This means you
+	          translated to UTF-8 before keymap lookup.  This means you
 	          must use the Unicode code for your character in the joerc
 	          file, not the 8-bit code for the character.
 
@@ -337,7 +402,7 @@
 	  example, with "joe -type c fred" JOE will assume fred is a C
 	  language file.  Use ^T F to change the file type from within JOE.
 
-	* Highighter enhancement: when % is used in place of a character
+	* Highlighter enhancement: when % is used in place of a character
 	  list, it matches the save_c delimiting character as-is (vs.  &
 	  which matches the opposite character).  For example, if save_c has
 	  {, then % matches { while & matches }.  This allows JOE to
@@ -395,7 +460,7 @@
 
 * At file prompts you can begin a new anchored path without having to delete
   the old one.  It means that ~jhallen/foo//etc/passwd is translated to /etc/passwd.
-  Prompt windows are now highighted to indicate which parts of the path are
+  Prompt windows are now highlighted to indicate which parts of the path are
   being dropped.  There is a syntax file for this: filename.jsf
 
 * The error parser now ignores ANSI sequences (some versions of grep
@@ -501,7 +566,7 @@
 
 - Convert double to long long (if we have it) when printing hexadecimal.
 
-- Fix bug where undo was acting strangly in shell windows.
+- Fix bug where undo was acting strangely in shell windows.
 
 - Fix crash when hitting -----------.. wordwrap bug.
 
@@ -522,7 +587,7 @@
 
 ### JOE 3.7
 
-- backspace/DEL means 'n' in replace prompt for better emacs
+- backspace/DEL means 'n' in replace prompt for better Emacs
   compatibility
 
 - Menus are now made up of macros instead of options.
@@ -551,11 +616,11 @@
 
 - Allow backslashes in file names
 
-- Fix %A to print unicode
+- Fix %A to print Unicode
 
 - Charles Tabony's (vectorshifts's) highlighter stack patch
 
-- ! is relace all in replace prompt
+- ! is replace all in replace prompt
 
 - Turn off UTF-8 when we enter hex mode
 
@@ -621,7 +686,7 @@
 - Paragraph format of single line paragraph is indented only if autoindent
   is enabled. (jqh)
 
-- Guessindent no longer overrides istep if indendation is space.
+- Guessindent no longer overrides istep if indentation is space.
 
 - Fix low limit of lmargin
 
@@ -630,7 +695,7 @@
 
 - .js is Javascript
 
-- Fix ^G in perl mode when you hit it on second brace in:
+- Fix ^G in Perl mode when you hit it on second brace in:
 
 	{\'
 	\'}
@@ -695,7 +760,7 @@
 - Macros can be typed at the ESC X prompt (before it used to accept only
   commands).
 
-- Built-in joerc file allows joe to run even if /etc/joe directory is
+- Built-in joerc file allows JOE to run even if /etc/joe directory is
   missing.
 
 - Support for 'long long' allows editing parts of files larger than 4GB. 
@@ -912,7 +977,7 @@
 
 - Fix UTF-8 codes between 0x10000 - 0x1FFFF
 
-- Now prints <XXXX> for unicode control characters
+- Now prints <XXXX> for Unicode control characters
 
 - Improved smart home, indent, etc.
 
@@ -942,14 +1007,14 @@
 
 - ^K E asks if you want to load original version of the file
 
-- jmacs bugs fixes: upperase word, transpose words, ^X ^C is
-  more emacs-like., ^X k and ^X ^V more like emacs.
+- jmacs bugs fixes: uppercase word, transpose words, ^X ^C is
+  more Emacs-like., ^X k and ^X ^V more like Emacs.
 
 - Much improved compile system ^[ c
 
 - Much improved jpico
 
-- aspell support.
+- Aspell support.
 
 ### JOE 3.0 (23 APR 2004)
 
@@ -980,11 +1045,11 @@
 ### Overview of changes in JOE 2.9.8-pre1 (14 Dec 2001)
 
 - BUGFIX: don't exchange start and end point of the block in some cases
-- defaulting to turn off -asis (locales take care of this; if joe doesn't
+- defaulting to turn off -asis (locales take care of this; if JOE doesn't
   print characters with 8th bit set properly, check if you have properly
   installed and set locales or simply turn on -asis option in joerc)
-- fix to make joe compilable on *BSD
-- fix to make joe compilable on systems without siginterrupt()
+- fix to make JOE compilable on *BSD
+- fix to make JOE compilable on systems without siginterrupt()
 - added "support" for End key
 - code cleanup: warnings removal (some still remaining, working on it)
 
@@ -998,7 +1063,7 @@
 
 - BUGFIX: wordwrap bug fixed (again and I'm sure forever)
 - BUGFIX: don't change window when setting mark in multiwindow mode
-- BUGFIX: use automake-1.5 to make joe compile on irix-6.5 with non-GNU make
+- BUGFIX: use automake-1.5 to make JOE compile on irix-6.5 with non-GNU make
 - continuing code clean up: this code adds strict prototypes which raises
   a lot of warnings (they seem harmless) - we're working on their removal
 
@@ -1126,14 +1191,14 @@
    no block is set, but it didn't group the deletes right in the yank
    buffer)
 - Filter block would leave the marks set
-- Fixed ^@ in joe mode
+- Fixed ^@ in JOE mode
 - Fixed help screen glitches in wordstar mode
-- If joe can't make a backup file it now prompts for you to save anyway
+- If JOE can't make a backup file it now prompts for you to save anyway
 - Eliminated IDLEOUT compile option.  Now is the user gives - on the
-  command line, joe uses /dev/tty.
+  command line, JOE uses /dev/tty.
 - Added %o %O %a %A %X and %R status line messages
 - Starts out in read only mode if loaded file can not be written to
-- If joe can't find the termcap/terminfo entry, it instead uses the default
+- If JOE can't find the termcap/terminfo entry, it instead uses the default
 - termcap routines are now included even if you use terminfo.  If your
   terminal can't be found in the terminfo database, it will look in
   the termcap database too.
@@ -1157,12 +1222,12 @@
 - Added file hooks
 - Added function to insert current keyboard macro into current file
 - Added range checks to numeric option settings
-- Restricted joe rc file added
+- Restricted joerc file added
 - Added ':def' feature for rc files
 
 ### Overview of Changes in JOE 2.2
 
-- First attempt at MS-DOS version of joe
+- First attempt at MS-DOS version of JOE
    - Direct screen write
    - Modifications for dos file/drive names
    - Use TEMP variable to figure out where to store temporary file
@@ -1173,7 +1238,7 @@
 - Scalable window height was not working fully
 - Spaces in file-names gave a problem with backup file creation
 - TILDE option is not available in all versions of BSD
-- Allow : as seperate for termcap filename list
+- Allow : as separate for termcap filename list
 - Next error / Prev. error was not tracking right
 - tabs not displayed right in nxterr/prverr messages
 - Block moves where the cursor was to the right of the block was broken

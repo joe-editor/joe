@@ -1,5 +1,5 @@
 /*
- *	UNIX Tty and Process interface
+ *	UNIX TTY and Process interface
  *	Copyright
  *		(C) 1992 Joseph H. Allen
  *
@@ -895,7 +895,7 @@ void ttsusp(void)
    select() because joe needs to work on versions of UNIX which predate
    these calls.  Instead, when there is multiple async sources, we use
    helper processes which packetize data from the sources.  A header on each
-   packet indicates the source.  There is no guarentee that packets getting
+   packet indicates the source.  There is no guarantee that packets getting
    written to the same pipe don't get interleaved, but you can reasonable
    rely on it with small packets. */
 
@@ -1129,7 +1129,7 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 	m->die = die;
 	m->dieobj = dieobj;
 
-	/* Acknowledgement pipe */
+	/* Acknowledgment pipe */
 	if (-1 == pipe(fds))
 		return NULL;
 	m->ackfd = fds[1];
@@ -1146,7 +1146,7 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 	if (!(m->kpid = fork())) {
 		/* This process copies data from shell to joe */
 		/* After each packet it sends to joe it waits for
-		   an acknowledgement from joe so that it can not get
+		   an acknowledgment from joe so that it can not get
 		   too far ahead with buffering */
 
 		/* Close joe side of pipes */
@@ -1165,7 +1165,7 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 			/* Close pty (we only need tty) */
 			close(*ptyfd);
 
-			/* All of this stuff is for disassociating ourself from
+			/* All of this stuff is for disassociating our self from
 			   controlling tty (session leader) and starting a new
 			   session.  This is the most non-portable part of UNIX- second
 			   only to pty/tty pair creation. */

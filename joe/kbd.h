@@ -40,7 +40,7 @@ void rmkmap(KMAP *kmap);
  * Returns 0 for success
  *        -1 for for invalid key sequence
  *
- * A valid key sequence is one or more keys seperated with spaces.  A key
+ * A valid key sequence is one or more keys separated with spaces.  A key
  * is a single character or one of the following strings:
  *
  *    ^?	                   127 (DEL)
@@ -57,7 +57,7 @@ void rmkmap(KMAP *kmap);
  * a range-fill of the form: <KEY> TO <KEY>
  *
  * So for example, if the sequence: ^K A TO Z
- * is speicified, then the key sequences
+ * is specified, then the key sequences
  * ^K A, ^K B, ^K C, ... ^K Z are all bound.
  */
 int kadd(CAP *cap, KMAP *kmap, char *seq, MACRO *bind);

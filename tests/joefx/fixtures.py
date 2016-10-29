@@ -1,5 +1,6 @@
 
 import os
+import shutil
 
 # Helper types for managing the files in JOE's environment.
 # The idea is that you should set up these objects for how you want the
@@ -19,7 +20,7 @@ class FixtureDir(object):
     
     def dir(self, name):
         """Gets a fixture subdirectory underneath this one with the specified name"""
-        if name not in self.files:
+        if name in self.files:
             f = self.files[name]
             assert isinstance(f, FixtureDir)
             return f

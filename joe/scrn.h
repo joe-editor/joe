@@ -1,5 +1,5 @@
 /*
- *	Device independant tty interface for JOE
+ *	Device independent tty interface for JOE
  *	Copyright
  *		(C) 1992 Joseph H. Allen
  *
@@ -32,7 +32,7 @@ struct scrn {
 #define COMPOSE 4 /* Maximum number of characters per cell (one start plus some number of combining) */
 /* If there are more than (COMPOSE - 1) combining characters, JOE will emit them, but during a line update
  * it keeps re-emitting them even if not necessary (because the screen buffer doesn't have enough
- * to record them all, so it doesn't know if the cell is already correct during an udpate). */
+ * to record them all, so it doesn't know if the cell is already correct during an update). */
 
 struct scrn {
 	CAP	*cap;		/* Termcap/Terminfo data */
@@ -74,7 +74,7 @@ struct scrn {
 	const char	*ZR;		/* Exit italic mode */
 
 	const char	*Sb;		/* Set background color */
-	const char	*Sf;		/* Set foregrond color */
+	const char	*Sf;		/* Set foreground color */
 	int	Co;			/* No. of colors */
 	int	ut;		/* Screen erases with background color */
 
@@ -159,7 +159,7 @@ extern int skiptop;
 
 /* SCRN *nopen(void);
  *
- * Open the screen (sets TTY mode so that screen may be used immediatly after
+ * Open the screen (sets TTY mode so that screen may be used immediately after
  * the 'nopen').
  */
 SCRN *nopen(CAP *cap);
@@ -207,7 +207,7 @@ void utf8_putc(int c);
 
 /* void outatr(SCRN *t,int *scrn,int *attr,int x,int y,int c,int a);
  *
- * Output a character at the given screen cooridinate.  The cursor position
+ * Output a character at the given screen coordinate.  The cursor position
  * after this function is executed is indeterminate.
  */
 

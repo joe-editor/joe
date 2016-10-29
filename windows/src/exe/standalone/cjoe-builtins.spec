@@ -1,5 +1,5 @@
 joerc.zh_TW => joerc
-zh.po [compress]
+zh_TW.po [compress]
 ftyperc
 license.txt [compress]
 
