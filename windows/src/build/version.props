@@ -4,7 +4,7 @@
     <JoeWinVersion>4.3</JoeWinVersion>
     <JoeWinVersionDesignation></JoeWinVersionDesignation>
     
-    <JoeWinProduct32Guid>f4d1cc71-e14f-49ca-95a9-b1c25cd87481</JoeWinProduct32Guid>
-    <JoeWinProduct64Guid>9491b419-77e2-4c12-91ec-0ec685c73c0b</JoeWinProduct64Guid>
+    <JoeWinProduct32Guid>5030e6dc-d0c9-4438-bf9a-0cbdc4881e1e</JoeWinProduct32Guid>
+    <JoeWinProduct64Guid>06eebb0e-cea1-487b-a46e-cfca1014bbdd</JoeWinProduct64Guid>
   </PropertyGroup>
 </Project>
