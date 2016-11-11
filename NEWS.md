@@ -8,16 +8,23 @@
 
 [Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
 
-### JOE.next (not yet released changes in Mercurial)
 
-* Enhancements
+### JOE for Windows 4.3
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/4.3/joewin.msi/download)
 
 * Bugs fixed
 
-	* Build fixes for Solaris
+	* Fixed a missed merge that prevented some options menu items from
+	  being changed (tab width, tab char, etc).
 
-	* Fix segfault due to buffer overrun.  This happens if you a line
-	  with many backslashes appears in the status line context display.
+	* Fixed bugs updating the title bar.
+
+	* Minor memory leak/performance fix in subprocess communication.
+
+	* (from newer version) Fix segfault due to buffer overrun.  This
+	  happens if you a line with many backslashes appears in the status
+	  line context display.
 
 ### JOE 4.3
 
