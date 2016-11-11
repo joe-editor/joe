@@ -19,6 +19,23 @@
 	* Fix segfault due to buffer overrun.  This happens if you a line
 	  with many backslashes appears in the status line context display.
 
+### JOE for Windows 4.3
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/4.3/joewin.msi/download)
+
+* Bugs fixed
+
+	* Fixed a missed merge that prevented some options menu items from
+	  being changed (tab width, tab char, etc).
+
+	* Fixed bugs updating the title bar.
+
+	* Minor memory leak/performance fix in subprocess communication.
+
+	* (from newer version) Fix segfault due to buffer overrun.  This
+	  happens if you a line with many backslashes appears in the status
+	  line context display.
+
 ### JOE 4.3
 
 * Enhancements
