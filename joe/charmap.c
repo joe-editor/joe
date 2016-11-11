@@ -144,11 +144,6 @@ static struct alias_table_s alias_table[] = {
 
 /* I took all the ISO-8859- ones, plus any ones referenced by a locale */
 
-struct builtin_charmap {
-	const char *name;
-	int to_uni[256];
-};
-
 static struct builtin_charmap builtin_charmaps[]=
 {
 	{ "ascii", {
@@ -1683,7 +1678,6 @@ char **get_encodings()
 	if (p) {
 #ifndef JOEWIN
 		buf = vsfmt(buf, 0, "%s/.joe/charmaps",p);
-		if (!chpwd(buf) && (t = rexpnd("*"))) {
 #else
 		buf = vsfmt(buf, 0, "%s\\charmaps",p);
 #endif

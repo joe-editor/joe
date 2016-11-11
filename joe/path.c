@@ -347,7 +347,7 @@ char **rexpnd(const char *word)
 	DIR *dir;
 	char **lst = NULL;
 
-	DIR *de;
+	struct dirent *de;
 	dir = opendir(".");
 	if (dir) {
 		while ((de = readdir(dir)) != NULL)
@@ -380,7 +380,7 @@ char **rexpnd_cmd_path(const char *word)
 {
 	char *raw_path = getenv("PATH");
 	char **lst = NULL;
-	DIR *de;
+	struct dirent *de;
 	char **path;
 	ptrdiff_t x;
 	if (raw_path) {

@@ -1086,8 +1086,17 @@ static const char **newenv(const char * const *old, const char *s)
 
 /* If out_only is set, leave program's stdin attached to JOE's stdin */
 
-MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int out_only,
-           ptrdiff_t w, ptrdiff_t h)
+MPX *mpxmk(int *ptyfd,
+	   const char *cmd,
+	   char **args,
+	   void (*func)(void *object, char *data, ptrdiff_t len),
+	   void *object,
+	   void (*die) (void *object),
+	   void *dieobj,
+	   int out_only,
+	   int vt,
+	   ptrdiff_t w,
+	   ptrdiff_t h)
 {
 	char buf[80];
 	int fds[2];
@@ -1343,7 +1352,7 @@ void killmpx(int pid, int sig)
         kill(pid, sig);
 }
 
-int writempx(int fd, void *data, size_t amt)
+ptrdiff_t writempx(int fd, void *data, ptrdiff_t amt)
 {
         return joe_write(fd, data, amt);
 }
