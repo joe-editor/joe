@@ -6,6 +6,8 @@ command -v python3 >/dev/null 2>&1 || { echo >&2 "Tests require python3, which w
 TESTDIR=`dirname $0`/tests
 TESTENV="$TESTDIR/testenv"
 
+echo Setting up test execution environment...
+
 # Check for virtual environment
 if [ ! -d "$TESTENV" ]; then
     command -v virtualenv >/dev/null 2>&1
@@ -25,8 +27,10 @@ if [ ! -d "$TESTENV" ]; then
     fi
 fi
 
+# Make sure requirements are up-to-date
 "$TESTENV/bin/pip" install -r "$TESTDIR/requirements.txt"
 
-# Check for virtualenv script
+# Run tests
+echo Running tests...
 cd $TESTDIR
 testenv/bin/python -m unittest $* tests.py
