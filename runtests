@@ -1,6 +1,32 @@
 #!/bin/sh
 
+# Check for python3
 command -v python3 >/dev/null 2>&1 || { echo >&2 "Tests require python3, which was not detected.  Aborting."; exit 1; }
 
-cd `dirname $0`/tests
-python3 -m unittest $* tests.py
+TESTDIR=`dirname $0`/tests
+TESTENV="$TESTDIR/testenv"
+
+# Check for virtual environment
+if [ ! -d "$TESTENV" ]; then
+    command -v virtualenv >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        # Just use virtualenv.
+        virtualenv -p `which python3` "$TESTENV" || exit 1
+    else
+        # Check for specific version
+        python3 -c "import sys; sys.exit(0 if sys.version_info >= (3, 3, 0) else 1)"
+        if [ $? -eq 0 ]; then
+            # If at least 3.3, we can simply use venv module.
+            python3 -m venv "$TESTENV" || exit 1
+        else
+            echo Please install virtualenv to run tests
+            exit 1
+        fi
+    fi
+fi
+
+"$TESTENV/bin/pip" install -r "$TESTDIR/requirements.txt"
+
+# Check for virtualenv script
+cd $TESTDIR
+testenv/bin/python -m unittest $* tests.py
