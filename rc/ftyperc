@@ -707,6 +707,9 @@
 *.ps1
 *.psm1
 -syntax powershell
+-autoindent
+-smarthome
+-smartbacks
 
  Git COMMIT_EDITMSG
 [git-commit]
@@ -718,10 +721,12 @@
 *.ex
 *.exs
 -autoindent
+-smarthome
+-smartbacks
 -title
 -syntax elixir
 -pound_comment
--text_delimiters do=end
+-text_delimiters do=else=end
 -indentc 32
 -istep 2
 
