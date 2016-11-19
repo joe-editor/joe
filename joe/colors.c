@@ -62,19 +62,6 @@ static struct color_states *saved_scheme_configs = NULL;
 /* Prototypes */
 static void visit_colordef(COLORSET *, struct high_syntax *, struct color_def *);
 
-/* Allocate a scheme object */
-static SCHEME *scheme_alloc(void)
-{
-	SCHEME *colors;
-
-	colors = (SCHEME *) joe_calloc(1, SIZEOF(struct color_scheme));
-	colors->sets = NULL;
-	colors->name = NULL;
-
-	enquef(SCHEME, link, &allcolors, colors);
-	return colors;
-}
-
 /* Allocate a color set */
 static COLORSET *colorset_alloc(void)
 {
@@ -97,19 +84,6 @@ static COLORSET *colorset_alloc(void)
 	}
 
 	return colorset;
-}
-
-/* Allocate a color definition */
-static struct color_def *colordef_alloc(void)
-{
-	struct color_def *cdef;
-
-	cdef = (struct color_def *) joe_calloc(1, SIZEOF(struct color_def));
-	cdef->refs = NULL;
-	cdef->next = NULL;
-	cdef->spec.type = 0;
-
-	return cdef;
 }
 
 /* Like parseident but allows for a '.' in the middle */
@@ -289,8 +263,10 @@ SCHEME *load_scheme(const char *name)
 	}
 	
 	/* Create */
-	colors = scheme_alloc();
+	colors = (SCHEME *) joe_malloc(SIZEOF(struct color_scheme));
+	colors->sets = NULL;
 	colors->name = zdup(name);
+	enquef(SCHEME, link, &allcolors, colors);
 	curset = 0;
 	line = 0;
 	
