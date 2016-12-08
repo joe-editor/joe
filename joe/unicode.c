@@ -321,6 +321,7 @@ void joe_iswinit()
 	cclass_union(cclass_print, unicode("N"));
 	cclass_union(cclass_print, unicode("P"));
 	cclass_union(cclass_print, unicode("Zs"));
+	cclass_union(cclass_print, unicode("Co"));
 	cclass_opt(cclass_print);
 
 	/* Graphical characters (no spaces) */

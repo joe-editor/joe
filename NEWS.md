@@ -21,6 +21,8 @@
 
 	* Improve php highlighter: allow numbers in substitution variable names
 
+	* Unicode tweak: treat private use characters (Co) as printable
+
 ### JOE for Windows 4.3
 
 [Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/4.3/joewin.msi/download)
