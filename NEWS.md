@@ -16,8 +16,10 @@
 
 	* Build fixes for Solaris
 
-	* Fix segfault due to buffer overrun.  This happens if you a line
+	* Fix segfault due to buffer overrun.  This happens if a line
 	  with many backslashes appears in the status line context display.
+
+	* Improve php highlighter: allow numbers in substitution variable names
 
 ### JOE for Windows 4.3
 
