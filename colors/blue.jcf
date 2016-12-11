@@ -1,0 +1,15 @@
+
+.colors 16
+
+-text /blue
+-status white/black
+-selection YELLOW/magenta
+-menusel YELLOW/MAGENTA
+
+=Idle
+=Ident WHITE
+=Type YELLOW bold
+=Const cyan
+=Keyword YELLOW bold
+=Comment green
+
