@@ -1,0 +1,23 @@
+
+.colors 16
+
+-text white/back
+-status black/white
+-selection black/white
+-menusel black/white
+
+=Idle
+=Bad            bold red
+=Preproc        blue
+=Define         bold blue
+=Comment        green
+=IncLocal       cyan
+=IncSystem      bold cyan
+=Constant       cyan
+=Escape         bold cyan
+=Type           bold
+=Keyword        bold
+=CppKeyword     bold
+=Brace          magenta
+=Control
+=Ident		WHITE
