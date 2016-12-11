@@ -2206,13 +2206,19 @@ off_t txtwidth1(struct charmap *map,off_t tabwidth,const char *s,ptrdiff_t len)
 
 /* Generate text with formatting escape sequences */
 
-void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg)
+void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int iatr, int flg)
 {
 	int (*scrn)[COMPOSE] = t->scrn + y * t->co + x;
 	int *attr = t->attr + y * t->co + x;
 	ptrdiff_t col = 0;
 	int c;
 	struct utf8_sm sm;
+	int inverted = !!(atr & INVERSE);
+	int origcolor = atr & ~(FG_MASK | BG_MASK);
+
+	if (iatr && inverted) {
+		atr = iatr | (atr & ~(FG_MASK | BG_MASK | INVERSE));
+	}
 
 	utf8_init(&sm);
 
@@ -2225,7 +2231,12 @@ void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, in
 				break;
 			case 'i':
 			case 'I':
-				atr ^= INVERSE;
+				if (iatr) {
+					inverted = !inverted;
+					atr = (inverted ? iatr : origcolor) | (atr & ~(FG_MASK | BG_MASK));
+				} else {
+					atr ^= INVERSE;
+				}
 				break;
 			case 'b':
 			case 'B':

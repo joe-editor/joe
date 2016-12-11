@@ -643,6 +643,8 @@ int main(int argc, char **real_argv, const char * const *envv)
 		wshowall(maint);
 	}
 
+	init_colors();
+
 	if (helpon) {
 		help_on(maint);
 	}

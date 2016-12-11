@@ -43,6 +43,7 @@ OPTIONS pdefault = {
 	NULL,		/* *smsg */
 	NULL,		/* *zmsg */
 	0,		/* line numbers */
+	0,		/* highlight current line */
 	0,		/* read only */
 	0,		/* french spacing */
 	0,		/* flowed text */
@@ -106,6 +107,7 @@ OPTIONS fdefault = {
 	NULL,		/* *smsg */
 	NULL,		/* *zmsg */
 	0,		/* line numbers */
+	0,		/* higlight current line */
 	0,		/* read only */
 	0,		/* french spacing */
 	0,		/* flowed text */
@@ -233,6 +235,7 @@ void lazy_opts(B *b, OPTIONS *o)
 		}
 	}
 	
+	
 }
 
 /* Set local options depending on file name and contents */
@@ -287,6 +290,7 @@ struct glopts {
 				   9 for syntax (options->syntax_name)
 				   13 for byte encoding (options->map_name)
 				   15 for file type (options->ftype)
+				   17 for color scheme
 				 */
 	void *set;		/* Address of global option */
 	const char *addr;		/* Local options structure member address */
@@ -334,6 +338,7 @@ struct glopts {
 	{"transpose",0, &transpose, NULL, _("Menu is transposed"), _("Menus are not transposed"), _("Transpose menus mode"), 0, 0, 0 },
 	{"crlf",	4, NULL, (char *) &fdefault.crlf, _("CR-LF is line terminator"), _("LF is line terminator"), _("CR-LF (MS-DOS) mode"), 0, 0, 0 },
 	{"linums",	4, NULL, (char *) &fdefault.linums, _("Line numbers enabled"), _("Line numbers disabled"), _("Line numbers mode"), 0, 0, 0 },
+	{"hiline",	4, NULL, (char *) &fdefault.hiline, _("Highlighting cursor line"), _("Not highlighting cursor line"), _("Highlight cursor line"), 0, 0, 0 },
 	{"marking",	0, &marking, NULL, _("Anchored block marking on"), _("Anchored block marking off"), _("Region marking mode"), 0, 0, 0 },
 	{"asis",	0, &dspasis, NULL, _("Characters above 127 shown as-is"), _("Characters above 127 shown in inverse"), _("Display meta chars as-is mode"), 0, 0, 0 },
 	{"force",	0, &force, NULL, _("Last line forced to have NL when file saved"), _("Last line not forced to have NL"), _("Force last NL mode"), 0, 0, 0 },
@@ -362,6 +367,7 @@ struct glopts {
 	{"picture",	4, NULL, (char *) &fdefault.picture, _("Picture drawing mode enabled"), _("Picture drawing mode disabled"), _("Picture mode "), 0, 0, 0 },
 	{"backpath",	2, &backpath, NULL, _("Backup files stored in (%s): "), 0, _("Path to backup files "), 0, 0, 0 },
 	{"syntax",	9, NULL, NULL, _("Select syntax (%{abort} to abort): "), 0, _("Syntax"), 0, 0, 0 },
+	{"colors",	17, NULL, NULL, _("Select color scheme (%{abort} to abort): "), 0, _("Scheme "), 0, 0, 0 },
 	{"encoding",13, NULL, NULL, _("Select file character set (%{abort} to abort): "), 0, _("Encoding "), 0, 0, 0 },
 	{"type",	15, NULL, NULL, _("Select file type (%{abort} to abort): "), 0, _("File type "), 0, 0, 0 },
 	{"highlighter_context",	4, NULL, (char *) &fdefault.highlighter_context, _("Highlighter context enabled"), _("Highlighter context disabled"), _("^G uses highlighter context "), 0, 0, 0 },
@@ -416,7 +422,7 @@ void cmd_help(int type)
 				joe_snprintf_1(buf, SIZEOF(buf), "-[-]%s", glopts[x].name);
 			else if (glopts[x].type == 1 || glopts[x].type == 5 || glopts[x].type == 14 || glopts[x].type == 7)
 				joe_snprintf_1(buf, SIZEOF(buf), "-%s nnn", glopts[x].name);
-			else if (glopts[x].type == 2 || glopts[x].type == 6 || glopts[x].type == 9 || glopts[x].type == 13 || glopts[x].type == 15)
+			else if (glopts[x].type == 2 || glopts[x].type == 6 || glopts[x].type == 9 || glopts[x].type == 13 || glopts[x].type == 15 || glopts[x].type == 17)
 				joe_snprintf_1(buf, SIZEOF(buf), "-%s sss", glopts[x].name);
 			if (glopts[x].menu)
 				printf("    %-23s %s\n", buf, glopts[x].menu);
@@ -690,6 +696,14 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 			else
 				ret = 1;
 			break;
+
+		case 17: /* Set color scheme */
+			if (arg) {
+				scheme_name = zdup(arg);
+				ret = 2;
+			} else
+				ret = 1;
+			break;
 		}
 	} else {
 		/* Why no case 6, string option? */
@@ -953,73 +967,129 @@ static int dosyntax(W *w, char *s, void *obj, int *notify)
 	return ret;
 }
 
+static int docolors(W *w, char *s, void *obj, int *notify)
+{
+	BW *bw;
+	SCHEME *scheme;
+
+	WIND_BW(bw, w);
+
+	scheme = load_scheme(s);
+	if (scheme) {
+		if (apply_scheme(scheme))
+			msgnw(bw->parent, joe_gettext(_("Color scheme failed to apply")));
+	} else {
+		msgnw(bw->parent, joe_gettext(_("Color scheme file not found")));
+	}
+
+	vsrm(s);
+	updall();
+	if (notify)
+		*notify = 1;
+
+	return 0;
+}
+
+char **find_configs(char **ary, const char *extension, const char *datadir, const char *homedir)
+{
+	char wildcard[32];
+	char buf[2048];
+	char *oldpwd = pwd();
+	char **t = NULL;
+	char *p;
+	int x, y;
+
+	if (extension) {
+		joe_snprintf_1(wildcard, SIZEOF(wildcard), "*.%s", extension);
+	} else {
+		zcpy(wildcard, "*");
+	}
+
+	if (datadir) {
+		joe_snprintf_2(buf, SIZEOF(buf), "%s%s", JOEDATA, datadir);
+
+		/* Load first from global (NOTE: Order here does not matter.) */
+		if (!chpwd(buf) && (t = rexpnd(wildcard))) {
+			for (x = 0; x < aLEN(t); ++x) {
+				*zrchr(t[x], '.') = 0;
+				for (y = 0; y < aLEN(ary); ++y)
+					if (!zcmp(t[x], ary[y]))
+						break;
+				if (y == aLEN(ary))
+					ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
+			}
+
+			varm(t);
+		}
+	}
+
+	if (homedir) {
+		/* Load from home directory. */
+		p = getenv("HOME");
+		if (p) {
+			joe_snprintf_2(buf, SIZEOF(buf), "%s/.joe/%s", p, homedir);
+
+			if (!chpwd(buf) && (t = rexpnd(wildcard))) {
+				for (x = 0; x < aLEN(t); ++x) {
+					*zrchr(t[x],'.') = 0;
+					for (y = 0; y < aLEN(ary); ++y)
+						if (!zcmp(t[x],ary[y]))
+							break;
+					if (y == aLEN(ary))
+						ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
+				}
+
+				varm(t);
+			}
+		}
+	}
+
+	/* Load from builtins. */
+	if (extension) {
+		joe_snprintf_1(wildcard, SIZEOF(wildcard), ".%s", extension);
+		t = jgetbuiltins(wildcard);
+
+		for (x = 0; x < aLEN(t); ++x) {
+			*zrchr(t[x], '.') = 0;
+			for (y = 0; y < aLEN(ary); ++y)
+				if (!zcmp(t[x], ary[y]))
+					break;
+			if (y == aLEN(ary)) {
+				ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
+			}
+		}
+	}
+
+	varm(t);
+	chpwd(oldpwd);
+
+	if (aLEN(ary)) {
+		vasort(av(ary));
+	}
+
+	return ary;
+}
+
 char **syntaxes = NULL; /* Array of available syntaxes */
 
 static int syntaxcmplt(BW *bw, int k)
 {
 	if (!syntaxes) {
-		char *oldpwd = pwd();
-		char **t;
-		char **syntmp = NULL;
-		char *p;
-		int x, y;
-		
-		/* Load first from global (NOTE: Order here does not matter.) */
-		if (!chpwd((JOEDATA "syntax")) && (t = rexpnd("*.jsf"))) {
-			for (x = 0; x != aLEN(t); ++x) {
-				char *r = vsncpy(NULL,0,t[x],zrchr((t[x]),'.')-t[x]);
-				syntmp = vaadd(syntmp,r);
-			}
-			
-			varm(t);
-		}
-		
-		/* Load from home directory. */
-		p = getenv("HOME");
-		if (p) {
-			char buf[1024];
-			joe_snprintf_1(buf,SIZEOF(buf),"%s/.joe/syntax",p);
-			
-			if (!chpwd(buf) && (t = rexpnd("*.jsf"))) {
-				for (x = 0; x != aLEN(t); ++x)
-					*zrchr(t[x],'.') = 0;
-				for (x = 0; x != aLEN(t); ++x) {
-					for (y = 0; y != aLEN(syntmp); ++y)
-						if (!zcmp(t[x],syntmp[y]))
-							break;
-					if (y == aLEN(syntmp)) {
-						char *r = vsncpy(NULL,0,sv(t[x]));
-						syntmp = vaadd(syntmp,r);
-					}
-				}
-				varm(t);
-			}
-		}
-		
-		/* Load from builtins. */
-		t = jgetbuiltins(".jsf");
-		for (x = 0; x != aLEN(t); ++x) {
-			*zrchr(t[x], '.') = 0;
-			for (y = 0; y != aLEN(syntmp); ++y)
-				if (!zcmp(t[x], syntmp[y]))
-					break;
-			if (y == aLEN(syntmp)) {
-				char *r = vsncpy(NULL, 0, sv(t[x]));
-				syntmp = vaadd(syntmp, r);
-			}
-		}
-		
-		varm(t);
-		
-		if (aLEN(syntmp)) {
-			vasort(av(syntmp));
-			syntaxes = syntmp;
-		}
-
-		chpwd(oldpwd);
+		syntaxes = find_configs(NULL, "jsf", "syntax", "syntax");
 	}
 	
 	return simple_cmplt(bw,syntaxes);
+}
+
+char **colorfiles = NULL; /* Array of available color schemes */
+
+static int colorscmplt(BW *bw, int k)
+{
+	if (!colorfiles) {
+		colorfiles = find_configs(NULL, "jcf", "colors", "colors");
+	}
+	
+	return simple_cmplt(bw, colorfiles);
 }
 
 static int check_for_hex(BW *bw)
@@ -1269,6 +1339,13 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				return 0;
 			else
 				return -1;
+		
+		case 17:
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
+			if (wmkpw(bw->parent, buf, NULL, docolors, NULL, NULL, colorscmplt, NULL, notify, utf8_map, 0))
+				return 0;
+			else
+				return -1;
 		}
 	}
 	if (notify)
@@ -1327,6 +1404,9 @@ const char *get_status(BW *bw, char *s)
 				return buf;
 			} case 15: {
 				return bw->o.ftype;
+			} case 17: {
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", scheme_name ? scheme_name : "");
+				return buf;
 			} default: {
 				return "";
 			}

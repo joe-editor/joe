@@ -6,20 +6,14 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-/* Color definition */
-
-struct high_color {
-	struct high_color *next;
-	const char *name;		/* Symbolic name of color */
-	int color;			/* Color value */
-};
-
 /* State */
 
 struct high_state {
 	ptrdiff_t no;			/* State number */
-	const char *name;			/* Highlight state name */
+	const char *name;		/* Highlight state name */
 	int color;			/* Color for this state */
+	struct color_def *colorp;	/* Mapped color definition */
+	
 	struct Rtree rtree;		/* Character map (character ->struct high_cmd *) */
 	struct high_cmd *dflt;		/* Default for no match */
 	struct high_cmd *same_delim;	/* Same delimiter */
@@ -75,7 +69,7 @@ struct high_syntax {
 	HASH *ht_states;		/* Hash table of states */
 	ptrdiff_t nstates;		/* No. states */
 	ptrdiff_t szstates;		/* Malloc size of states array */
-	struct high_color *color;	/* Linked list of color definitions */
+	struct color_def *color;	/* Linked list of color definitions */
 	struct high_cmd default_cmd;	/* Default transition for new states */
 	struct high_frame *stack_base;  /* Root of run-time call tree */
 };
@@ -86,15 +80,14 @@ struct high_syntax *load_syntax(const char *name);
 
 /* Parse a lines.  Returns new state. */
 
-extern int *attr_buf;
 HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state,struct charmap *charmap);
+extern int *attr_buf;
 
 #define clear_state(s) (((s)->saved_s = 0), ((s)->state = 0), ((s)->stack = 0))
 #define invalidate_state(s) (((s)->state = -1), ((s)->saved_s = 0), ((s)->stack = 0))
 #define move_state(to,from) (*(to)= *(from))
 #define eq_state(x,y) ((x)->state == (y)->state && (x)->stack == (y)->stack && (x)->saved_s == (y)->saved_s)
 
-extern struct high_color *global_colors;
-void parse_color_def(struct high_color **color_list,const char *p,char *name,int line);
+extern struct high_syntax *syntax_list;
 
 void dump_syntax(BW *bw);

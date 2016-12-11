@@ -8,6 +8,8 @@
 #include "types.h"
 
 int bg_menu;
+int bg_menusel = INVERSE;
+int bg_menumask = ~INVERSE;
 
 int transpose;
 
@@ -48,7 +50,7 @@ static void menudisp(W *w, int flg)
 					ptrdiff_t ndx = x * m->lines + y + m->top;
 			
 					if (ndx == m->cursor && m->t->curwin == m->parent)
-						atr = INVERSE|BG_COLOR(bg_menu);
+						atr = BG_COLOR(bg_menu & bg_menumask) | bg_menusel;
 					else
 						atr = BG_COLOR(bg_menu);
 

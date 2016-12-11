@@ -78,14 +78,14 @@ static void disppw(W *w, int flg)
 
 	/* Generate prompt */
 	w->t->t->updtab[w->y] = 1;
-	genfmt(w->t->t, w->x, w->y, pw->promptofst, pw->prompt, BG_COLOR(bg_prompt), 0);
+	genfmt(w->t->t, w->x, w->y, pw->promptofst, pw->prompt, BG_COLOR(bg_prompt), 0, 0);
 
 	/* Position and size buffer */
 	bwmove(bw, w->x + pw->promptlen - pw->promptofst, w->y);
 	bwresz(bw, w->w - (pw->promptlen - pw->promptofst), 1);
 
 	/* Generate buffer */
-	bwgen(bw, 0);
+	bwgen(bw, 0, 0);
 }
 
 /* History functions */

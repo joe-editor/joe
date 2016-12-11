@@ -553,6 +553,11 @@
 -syntax jsf
 -smarthome
 
+ Joe Colorscheme file
+[jcf]
+*.jcf
+-syntax jcf
+
  M4 / Autoconfig file
 [m4]
 *.ac
