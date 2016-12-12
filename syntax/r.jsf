@@ -1,0 +1,168 @@
+# JOE syntax highlight file for R
+
+=Idle
+=Bad		bold red
+=Preproc 	blue
+=Define		bold blue
+=Comment 	green
+=IncLocal	cyan
+=IncSystem	bold cyan
+=Constant 	cyan
+=Escape 	bold cyan
+=Type 		bold
+=Keyword 	bold
+=CppKeyword	bold
+=Brace		magenta
+=Control
+
+:idle Idle
+	*		idle
+	"#"		line_comment	recolor=-1
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal	recolor=-1
+	"."		maybe_float	buffer
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"\p{L}\p{Nl}"	ident		buffer
+	"\\"		outside_escape	recolor=-1
+	"{}"		brace		recolor=-1
+	"/,:;=()><[]*&|!~+\-%^"	control		recolor=-1
+
+:outside_escape	Escape
+	*	idle
+
+:brace Brace
+	*	idle	noeat
+
+:control Control
+	*	idle	noeat
+
+:line_comment Comment comment
+	*		line_comment
+	"\n"		idle
+
+:first_digit Constant
+	*		idle	noeat
+	"xX"		hex
+	"."		float
+	"eE"		epart
+	"0-9"		decimal
+	"L"		idle
+
+:hex Constant
+	*		idle	noeat
+	"0-9A-Fa-f"	hex
+
+:decimal Constant
+	*		idle	noeat
+	"0-9"		decimal
+	"eE"		epart
+	"."		float
+	"L"		idle
+
+:maybe_float Constant
+	*		idle	recolor=-2	noeat
+	"\i."		ident	recolor=-2
+	"0-9"		float		recolor=-2
+
+:float Constant
+	*		idle	noeat
+	"eE"		epart
+	"0-9"		float
+	"L"		idle
+
+:epart Constant
+	*		idle	noeat
+	"0-9+\-"	enum
+
+:enum Constant
+	*		idle	noeat
+	"0-9"		enum
+	"L"		idle
+
+:string	Constant string
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+	"%"		string_control	recolor=-1
+
+:string_escape Escape string
+	*		string
+	"x"		string_hex
+	"0-7"		string_octal2
+	"\n"		string		recolor=-2
+
+# \x will consume all successive hex digits (ANSI C).
+:string_hex Escape string
+	*		string		noeat
+	"0-9a-fA-F"	string_hex
+
+:string_octal2 Escape string
+	*		string		noeat
+	"0-7"		string_octal3
+
+:string_octal3 Escape string
+	*		string		noeat
+	"0-7"		string
+
+:string_control Escape string
+	*		string
+	"\""		string noeat
+	"\n"		idle
+	"\\"		string_escape	recolor=-1
+	"0-9.\-+ #hjILtz$"	string_control
+
+:char Constant string
+	*		char
+	"\n"		idle
+	"'"		idle
+	"\\"		char_escape	recolor=-1
+
+:char_escape	Escape string
+	*		char
+	"x"		char_hex
+	"0-7"		char_octal2
+	"\n"		char		recolor=-2
+
+# \x will consume all successive hex digits (ANSI C).
+:char_hex Escape string
+	*		char		noeat
+	"0-9a-fA-F"	char_hex
+
+:char_octal2 Escape string
+	*		char		noeat
+	"0-7"		char_octal3
+
+:char_octal3 Escape string
+	*		char		noeat
+	"0-7"		char
+
+:ident Idle
+	*		idle		noeat strings
+	"TRUE"		val
+	"FALSE"		val
+	"NULL"		val
+	"Inf"		val
+	"NaN"		val
+	"NA"		val
+	"NA_integer_"	val
+	"NA_real_"	val
+	"NA_complex_"	val
+	"NA_character_"	val
+	"if"		kw
+	"else"		kw
+	"repeat"	kw
+	"while"		kw
+	"function"	kw
+	"for"		kw
+	"in"		kw
+	"next"		kw
+	"break"		kw
+done
+	"\c."		ident
+
+:val Constant
+	*	idle	noeat
+
+:kw Keyword
+	*	idle	noeat
