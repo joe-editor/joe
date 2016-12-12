@@ -1,8 +1,8 @@
 # JOE syntax highlight file for highlighting TODO: FIXME: XXX: etc
 # by Christian Nicolai (http://mycrobase.de)
 
-=Comment 	green
-=TODO		bold green
+=Comment 	
+=TODO		+Comment
 
 .subr comment_todo
 # initial state
