@@ -23,6 +23,9 @@
 
 	* Unicode tweak: treat private use characters (Co) as printable
 
+	* Dockerfile highlighter: Add Docker new commands from 1.12,
+	  mark bad strings in arrays
+
 ### JOE for Windows 4.3
 
 [Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/4.3/joewin.msi/download)
