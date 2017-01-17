@@ -26,6 +26,8 @@
 	* Dockerfile highlighter: Add Docker new commands from 1.12,
 	  mark bad strings in arrays
 
+	* Fix jmacs: ^X ^F and ^X ^B were not working
+
 ### JOE for Windows 4.3
 
 [Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/4.3/joewin.msi/download)
