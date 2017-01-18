@@ -50,6 +50,8 @@ extern int std_regex; /* Standard regex format by default */
 SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all, int regex);
 void rmsrch(SRCH *srch);
 
+void setpat(SRCH *srch, char *pattern);
+
 int dopfnext(BW *w, SRCH *srch);
 
 int pffirst(W *w, int k);

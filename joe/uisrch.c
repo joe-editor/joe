@@ -86,9 +86,8 @@ static void iappend(BW *bw, struct isrch *isrch, char *s, ptrdiff_t len)
 
 	i->wrap_flag = srch->wrap_flag;
 
-	/* TODO: setpat? */
 	obj_free(srch->pattern);
-	srch->pattern = vsncpy(NULL, 0, sv(isrch->pattern));
+	setpat(srch, vsncpy(NULL, 0, sv(isrch->pattern)));
 	obj_perm(srch->pattern);
 	srch->backwards = isrch->dir;
 
