@@ -1115,7 +1115,6 @@ ltarw		^B
 ltarw		^[ O D
 ltarw		^[ [ D
 pbuf		^X .kl		Go left
-pbuf		^X ^B
 pbuf		^X ^[ O D
 pbuf		^X ^[ [ D
  ltarw          ^# D
@@ -1125,6 +1124,9 @@ nbuf		^X b		Next buffer in current window (but it should prompt)
 nbuf		^X B		Next buffer in current window (but it should prompt)
 nbuf		^X x		(uemacs)
 nbuf		^X X		(uemacs)
+nbuf		^X .kr
+nbuf		^X ^[ O C
+nbuf		^X ^[ [ C
  nextpos		^K =		Goto next position in position history
 nextword	^[ f		Goto next word
 nextword	^[ F		Goto next word
@@ -1149,10 +1151,6 @@ rtarw		.kr		Go right
 rtarw		^F
 rtarw		^[ O C
 rtarw		^[ [ C
-nbuf		^X .kr
-nbuf		^X ^F
-nbuf		^X ^[ O C
-nbuf		^X ^[ [ C
  rtarw          ^# C
 run		^[ !
 save		^X ^W		Write file

@@ -25,3 +25,4 @@ missing$
 
 __pycache__$
 \.pyc$
+tests/testenv$

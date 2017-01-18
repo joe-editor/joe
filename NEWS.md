@@ -16,8 +16,34 @@
 
 	* Build fixes for Solaris
 
-	* Fix segfault due to buffer overrun.  This happens if you a line
+	* Fix segfault due to buffer overrun.  This happens if a line
 	  with many backslashes appears in the status line context display.
+
+	* Improve php highlighter: allow numbers in substitution variable names
+
+	* Unicode tweak: treat private use characters (Co) as printable
+
+	* Dockerfile highlighter: Add Docker new commands from 1.12,
+	  mark bad strings in arrays
+
+	* Fix jmacs: ^X ^F and ^X ^B were not working
+
+### JOE for Windows 4.3
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/4.3/joewin.msi/download)
+
+* Bugs fixed
+
+	* Fixed a missed merge that prevented some options menu items from
+	  being changed (tab width, tab char, etc).
+
+	* Fixed bugs updating the title bar.
+
+	* Minor memory leak/performance fix in subprocess communication.
+
+	* (from newer version) Fix segfault due to buffer overrun.  This
+	  happens if you a line with many backslashes appears in the status
+	  line context display.
 
 ### JOE 4.3
 
