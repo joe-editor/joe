@@ -428,7 +428,6 @@ class BracketedPasteTests(joefx.JoeTestBase):
 # TODO: grep
 # TODO: groww
 # TODO: if
-# TODO: isrch
 # TODO: jump
 # TODO: killjoe
 # TODO: killproc
@@ -499,7 +498,6 @@ class BracketedPasteTests(joefx.JoeTestBase):
 # TODO: rfirst
 # TODO: rindent
 # TODO: run
-# TODO: rsrch
 # TODO: rtarw
 # TODO: rtarwmenu
 # TODO: rtn
