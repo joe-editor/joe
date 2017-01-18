@@ -49,9 +49,9 @@ class FindTests(joefx.JoeTestBase):
         self.write("n")
         self.assertCursor(x=0, y=5)
 
-
 class ISearchTests(joefx.JoeTestBase):
     def test_isearch_fwd(self):
+        """Tests incremental search going forward"""
         N = 10
         tstdata = '\n'.join(''.join(chr(ord('a') + t) for t in range(i)) for i in range(1, N + 1))
         self.workdir.fixtureData("test", tstdata)
@@ -66,6 +66,7 @@ class ISearchTests(joefx.JoeTestBase):
             self.write(ch)
             sstr += ch
             self.assertTextAt("I-find: " + sstr, x=0, y=-1)
+            self.assertBlank(y=-1, x=8 + len(sstr))
             self.assertCursor(x=i + 1, y=i + 1)
         
         # Now backspace out
@@ -73,12 +74,14 @@ class ISearchTests(joefx.JoeTestBase):
             sstr = sstr[:-1]
             self.writectl("{bs}")
             self.assertTextAt("I-find: " + sstr, x=0, y=-1)
+            self.assertBlank(y=-1, x=8 + len(sstr))
             self.assertCursor(x=i + 1, y=i + 1)
         
         self.writectl("^C")
         self.exitJoe()
     
     def test_isearch_bkwd(self):
+        """Tests reverse incremental search"""
         N = 10
         tstdata = '\n'.join(''.join(chr(ord('a') + t) for t in range(i)) for i in range(N + 1, 0, -1))
         self.workdir.fixtureData("test", tstdata)
@@ -94,6 +97,7 @@ class ISearchTests(joefx.JoeTestBase):
             sstr += ch
             self.write(ch)
             self.assertTextAt("I-find: " + sstr, x=0, y=-1)
+            self.assertBlank(y=-1, x=8 + len(sstr))
             self.assertCursor(x=0, y=N - i + 1)
         
         # Now backspace out
@@ -101,12 +105,14 @@ class ISearchTests(joefx.JoeTestBase):
             sstr = sstr[:-1]
             self.writectl("{bs}")
             self.assertTextAt("I-find: " + sstr, x=0, y=-1)
+            self.assertBlank(y=-1, x=8 + len(sstr))
             self.assertCursor(x=0, y=N - i + 1)
         
         self.writectl("^C")
         self.exitJoe()
     
     def test_isearch_resume(self):
+        """Tests canceling and resuming incremental search"""
         N = 10
         X = 5
         tstdata = '\n'.join(''.join(chr(ord('a') + t) for t in range(i)) for i in range(1, N + 1))
@@ -122,14 +128,15 @@ class ISearchTests(joefx.JoeTestBase):
             self.write(ch)
             sstr += ch
             self.assertTextAt("I-find: " + sstr, x=0, y=-1)
+            self.assertBlank(y=-1, x=8 + len(sstr))
             self.assertCursor(x=i + 1, y=i + 1)
         
         # Cancel
         self.writectl("^C")
+        self.assertBlank(y=-1, x=0)
         
-        # Can't invoke command because it will not resume, need to use shortcut
-        # TODO: Lookup shortcut
-        self.writectl("^[s")
+        # Can't invoke command because it may not resume, need to use shortcut
+        self.write(self.findCmd("isrch", fail=True))
         
         # This re-invocation should find the next one.
         self.assertCursor(x=X, y=X + 1)
@@ -140,6 +147,7 @@ class ISearchTests(joefx.JoeTestBase):
             self.write(ch)
             sstr += ch
             self.assertTextAt("I-find: " + sstr, x=0, y=-1)
+            self.assertBlank(y=-1, x=8 + len(sstr))
             self.assertCursor(x=i + 1, y=i + 1)
         
         self.writectl("^C")

@@ -8,6 +8,7 @@ from . import controller
 from . import fixtures
 from . import rcfile
 from . import utils
+from . import keys
 
 RCFILES = {}
 FIXTURESDIR = os.path.join(os.path.dirname(__file__), "../fixtures")
@@ -148,6 +149,13 @@ class JoeTestBase(unittest.TestCase):
     def assertSelectedTextEquals(self, txt, **args):
         self.assertSelectedText(lambda t: t == txt, **args)
     
+    def assertBlank(self, x=None, y=None, dx=0, dy=0, length=None):
+        def check():
+            pos = self._posFromInput(x, y, dx, dy)
+            reallen = length or (self.joe.size.X - pos.X)
+            return self.joe.readLine(pos.Y, pos.X, reallen).strip() == ''
+        self.assertTrue(self.joe.expect(check))
+    
     #
     # Editor functional helpers
     #
@@ -190,9 +198,21 @@ class JoeTestBase(unittest.TestCase):
             cursor = self.joe.cursor
             self.write(response)
     
-    def cmd(self, s):
+    def cmd(self, s, scope='main'):
         """Executes a command or macro"""
-        self.writectl("^[X")
+        if ',' not in s:
+            k = self.findCmd(s, scope)
+            if k is not None:
+                self.write(k)
+                return
+        
+        execmdk = self.findCmd("execmd", scope)
+        if execmdk is not None:
+            self.write(execmdk)
+        else:
+            # Just default to meta-x
+            self.writectl("^[X")
+        
         self.assertTextAt("Command:", x=0)
         self.write(s)
         self.rtn()
@@ -260,3 +280,22 @@ class JoeTestBase(unittest.TestCase):
         result = self.joe.readLine(y, start, end - start)
         return result
     
+    def findCmd(self, cmd, scope="main", fail=False):
+        """Finds keybinding from configuration for 'cmd' in the specified kbd scope"""
+        while scope is not None:
+            bindings = self.config.getKeyBindings(scope)
+            if bindings is None: break
+            for b in bindings.bindings:
+                if b.macro == cmd:
+                    k = keys.fromRcFile(b.keys)
+                    # Avoid things like mouse bindings or stuff we can't
+                    # reproduce
+                    if k is not None:
+                        return k
+            
+            scope = bindings.inherits
+        
+        if fail:
+            self.fail("Couldn't find keybindings for command %s" % cmd)
+        
+        return None

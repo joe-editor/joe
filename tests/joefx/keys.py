@@ -27,6 +27,31 @@ KEYS = {
     'esc':	[b'\x1b'],
     'home':	[b'\x1b[OH'],
     'end':	[b'\x1b[OF'],
+    'insert':	[],	# TODO
+}
+
+RC_KEYS = {
+    ".ku":	"{up}",
+    ".kd":	"{down}",
+    ".kl":	"{left}",
+    ".kr":	"{right}",
+    ".kh":	"{home}",
+    ".kH":	"{end}",
+    ".kI":	"{insert}",
+    ".kD":	"{del}",
+    ".kP":	"{pgup}",
+    ".kN":	"{pgdown}",
+    ".k1":	"{f1}",
+    ".k2":	"{f2}",
+    ".k3":	"{f3}",
+    ".k4":	"{f4}",
+    ".k5":	"{f5}",
+    ".k6":	"{f6}",
+    ".k7":	"{f7}",
+    ".k8":	"{f8}",
+    ".k9":	"{f9}",
+    ".k0":	"{f10}",
+    ".k;":	"{f10}",
 }
 
 def getNamedKey(keyname, ctrl, shift):
@@ -44,8 +69,15 @@ def getNamedKey(keyname, ctrl, shift):
 
 def getKey(char, ctrl, shift):
     if ctrl:
+        if char == '#':
+            ch = 0x9b
+        elif char == '?':
+            ch = 0x7f
+        else:
+            ch = ord(char) & 0x1f
+        
         b = bytearray(1)
-        b[0] = ord(char) & 0x1b
+        b[0] = ch
         return bytes(b)
     return char.encode('utf-8')
 
@@ -84,4 +116,21 @@ def toctl(s):
         
         i += 1
     
+    return result
+
+def fromRcFile(keys):
+    result = b''
+    for k in keys:
+        if k[0] == '^':
+            result += toctl(k)
+        elif k.startswith("U+"):
+            result += chr(int(k[2:], 16)).encode('utf-8')
+        elif len(k) > 1:
+            if k in RC_KEYS:
+                result += toctl(RC_KEYS[k])
+            else:
+                # Unknown/unreproducible key
+                return None
+        else:
+            result += k.encode('utf-8')
     return result

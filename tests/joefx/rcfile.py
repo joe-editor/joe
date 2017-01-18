@@ -68,6 +68,12 @@ class RCFile(object):
             if menu.name == name:
                 return menu
         return None
+    
+    def getKeyBindings(self, scope):
+        for kbc in self.bindings:
+            if kbc.name == scope:
+                return kbc
+        return None
 
 class Options(object):
     def __init__(self, properties):
