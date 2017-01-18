@@ -1,4 +1,7 @@
 
+# Gruvbox is a VIM scheme written by Pavel Pertsev
+# and can be found in its original version at https://github.com/morhetz/gruvbox
+
 .colors 256
 
 -text 223/235

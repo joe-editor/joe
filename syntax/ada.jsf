@@ -3,11 +3,14 @@
 # Define colors
 
 =Idle
-=Comment green
-=Constant cyan
-=Escape bold cyan
-=Keyword bold
-=Operator bold
+=Comment
+=Constant
+=Character +Constant
+=Number +Constant
+=String +Constant
+=Escape
+=Keyword
+=Operator +Keyword
 
 :idle Idle
 	*		idle
@@ -40,7 +43,7 @@
 	*		idle
 	"'"		char2		recolor=-3
 
-:char2 Constant
+:char2 Character
 	*		idle		noeat
 
 # Strings
@@ -57,7 +60,7 @@
 	*		ident		noeat
 	"\""		string		recolor=-2
 
-:string	Constant
+:string	String
 	*		string
 	"\n"		idle
 	"\""		idle
@@ -69,7 +72,7 @@
 
 # Integer constants
 
-:first_digit Constant
+:first_digit Number
 	*		idle		noeat
 	"."		float
 	"_"		first_digit
@@ -77,20 +80,20 @@
 
 # Floating point
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart	Constant
+:epart	Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum	Constant
+:enum	Number
 	*		idle	noeat
 	"0-9"		enum
 
