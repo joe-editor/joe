@@ -25,6 +25,7 @@ missing$
 
 __pycache__$
 \.pyc$
+tests/testenv$
 
 windows/bin
 windows/src/bin

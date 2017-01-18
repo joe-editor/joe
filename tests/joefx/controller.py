@@ -13,6 +13,7 @@ import termios
 import time
 
 import pyte
+import pyte.graphics
 from . import exceptions
 from . import keys
 
@@ -178,10 +179,10 @@ class JoeController(object):
     def prettyScreen(self):
         """Returns stylized (ANSI-escaped) contents of screen"""
         # Build translation tables real quick
-        fgcolors = {v: k for k, v in pyte.g.FG.items()}
-        bgcolors = {v: k for k, v in pyte.g.BG.items()}
-        modes_on = {v[1:]: k for k, v in pyte.g.TEXT.items() if v.startswith('+')}
-        modes_off = {v[1:]: k for k, v in pyte.g.TEXT.items() if v.startswith('-')}
+        fgcolors = {v: k for k, v in pyte.graphics.FG.items()}
+        bgcolors = {v: k for k, v in pyte.graphics.BG.items()}
+        modes_on = {v[1:]: k for k, v in pyte.graphics.TEXT.items() if v.startswith('+')}
+        modes_off = {v[1:]: k for k, v in pyte.graphics.TEXT.items() if v.startswith('-')}
         
         result = []
         attrs = {'fg': 'default', 'bg': 'default', 'bold': False, 'italics': False, 'underscore': False, 'reverse': False, 'strikethrough': False}
