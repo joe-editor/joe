@@ -10,8 +10,6 @@
 
 ### JOE 4.4
 
-* Enhancements
-
 * Bugs fixed
 
 	* Build fixes for Solaris
@@ -31,8 +29,6 @@
 	* Fix loading external charmaps
 
 * Windows version
-
-[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/4.4/joewin.msi/download)
 
 	* Fix crashing bug when using incremental search
 
