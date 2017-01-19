@@ -8,7 +8,7 @@
 
 [Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
 
-### JOE.next (not yet released changes in Mercurial)
+### JOE 4.4
 
 * Enhancements
 
@@ -27,6 +27,14 @@
 	  mark bad strings in arrays
 
 	* Fix jmacs: ^X ^F and ^X ^B were not working
+
+	* Fix loading external charmaps
+
+* Windows version
+
+[Download](http://sourceforge.net/projects/joe-editor/files/JOE%20for%20Windows/4.4/joewin.msi/download)
+
+	* Fix crashing bug when using incremental search
 
 ### JOE for Windows 4.3
 
