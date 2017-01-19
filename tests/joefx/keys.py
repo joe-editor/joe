@@ -28,7 +28,6 @@ KEYS = {
     'esc':	[b'\x1b'],
     'home':	[b'\x1b[OH'],
     'end':	[b'\x1b[OF'],
-    'insert':	[],	# TODO
 }
 
 RC_KEYS = {
