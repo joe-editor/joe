@@ -10,14 +10,18 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+### JOE 4.4
+
 * Enhancements
 
 * Bugs fixed
 
-	* Build fixes for Solaris
-
 	* Fix segfault due to buffer overrun.  This happens if a line
 	  with many backslashes appears in the status line context display.
+
+	* Fix jmacs: ^X ^F and ^X ^B were not working
+
+	* Build fixes for Solaris
 
 	* Improve php highlighter: allow numbers in substitution variable names
 
@@ -26,9 +30,11 @@
 	* Dockerfile highlighter: Add Docker new commands from 1.12,
 	  mark bad strings in arrays
 
-	* Fix jmacs: ^X ^F and ^X ^B were not working
-
 	* Fix loading external charmaps
+
+* Windows version
+
+	* Fix crashing bug when using incremental search
 
 ### JOE for Windows 4.3
 
