@@ -44,9 +44,11 @@ class AbortTests(joefx.JoeTestBase):
     def test_abort_kills_process(self):
         self.startJoe()
         self.cmd("bknd")
-        time.sleep(0.1) # TODO: Weird timing issues with subprocesses...
+        # Wait for a shell prompt to appear
+        self.waitForNotEmpty(y=1)
+        self.assertTrue(self.joe.expect(lambda: self.joe.cursor.X > 0))
         self.cmd("bol")
-        self.assertCursor(y=1, x=0)
+        self.assertCursor(x=0)
         
         self.cmd("abort")
         self.assertTextAt("Kill program", x=0)
@@ -180,7 +182,8 @@ class BkndTests(joefx.JoeTestBase):
     def test_bknd_shell(self):
         self.startJoe()
         self.cmd("bknd")
-        time.sleep(0.1)
+        # Wait for shell prompt to appear
+        self.waitForNotEmpty(y=1)
         self.write("echo hello world\r")
         self.assertTextAt("hello world", x=0, dy=-1)
         self.cmd("uparw,abort")
@@ -245,9 +248,9 @@ class BofTests(joefx.JoeTestBase):
         self.assertSelectedMenuItem(rootMenu.items[0].label)
         self.writectl("{down*3}")
         self.assertSelectedMenuItem(rootMenu.items[3].label)
-        self.writectl("^KU")
+        self.cmd("bofmenu", "menu")
         self.assertSelectedMenuItem(rootMenu.items[0].label)
-        self.writectl("^C")
+        self.cmd("abort", "menu")
         self.exitJoe()
 
 class BolTests(joefx.JoeTestBase):
@@ -298,13 +301,13 @@ class BolTests(joefx.JoeTestBase):
         for i in range(0, 9):
             self.writectl("{right*%d}" % i)
             self.assertSelectedMenuItem("Item %d" % i)
-            self.writectl("^A")
+            self.cmd("bolmenu", "menu")
             self.assertSelectedMenuItem("Item 0")
         self.writectl("{down}")
         for i in range(9, 15):
             self.writectl("{right*%d}" % (i - 9))
             self.assertSelectedMenuItem("Item %d" % i)
-            self.writectl("^A")
+            self.cmd("bolmenu", "menu")
             self.assertSelectedMenuItem("Item 9")
 
 class BopTests(joefx.JoeTestBase):
@@ -355,6 +358,7 @@ class BosTests(joefx.JoeTestBase):
 class BracketedPasteTests(joefx.JoeTestBase):
     def test_brpaste_wordwrap_autoindent(self):
         self.config.globalopts.brpaste = True
+        self.config.globalopts.pastehack = False
         self.startup.args = ("-autoindent", "-wordwrap")
         self.startJoe()
         text = [
