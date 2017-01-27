@@ -170,13 +170,16 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 			}
 			
 			dest->type = COLORSPEC_TYPE_ATTR;
-			if (fg) {
+			if (fg && !fg_read) {
 				dest->atr |= (color << FG_SHIFT) | FG_NOT_DEFAULT;
 				dest->mask |= FG_MASK;
-			}
-			if (bg) {
+				fg_read = 1;
+			} else if (bg && !bg_read) {
 				dest->atr |= (color << BG_SHIFT) | BG_NOT_DEFAULT;
 				dest->mask |= BG_MASK;
+				bg_read = 1;
+			} else {
+				return 1;
 			}
 		} else if (!parse_ident(p, buf, SIZEOF(buf))) {
 			if (!zcmp(buf, "default")) {
