@@ -25,17 +25,17 @@ static SCHEME allcolors = { {&allcolors, &allcolors} };
 
 /* Color builtins (formerly options) */
 struct color_builtin_specs {
-	const char		*name;
-	int			*attribute;
-	int			*mask;
-	int			invert;
-	int			default_attr;
-	int			default_mask;
-	int			*default_ptr;
+	const char		*name;		/* Name in config */
+	int			*attribute;	/* Destination of attribute */
+	int			*mask;		/* Destination of attribute mask */
+	int			invert;		/* Whether to invert input in config file (e.g. status) */
+	int			default_attr;	/* Default attribute value */
+	int			default_mask;	/* Default attribute mask */
+	int			*default_ptr;	/* Pointer to default attribute, e.g. to use bg_text */
 };
 
 static struct color_builtin_specs color_builtins[] = {
-	{ "text", &bg_text, NULL, 0, 0, 0, 0 },	/* Must come first (because default_text) */
+	{ "text", &bg_text, NULL, 0, 0, 0, 0 },	/* Must come first, so others can use as default */
 	{ "linum", &bg_linum, NULL, 0, 0, 0, &bg_text },
 	{ "curlin", &bg_curlin, &curlinmask, 0, 0, -1, &bg_text },
 	{ "curlinum", &bg_curlinum, NULL, 0, 0, 0, &bg_linum },
@@ -61,6 +61,11 @@ static struct color_states *saved_scheme_configs = NULL;
 
 /* Prototypes */
 static void visit_colordef(COLORSET *, struct high_syntax *, struct color_def *);
+
+#define SWAP_COLOR(c)	(((c) & ~(FG_MASK | BG_MASK)) | \
+                         ((((c) & BG_MASK) >> BG_SHIFT) << FG_SHIFT) | \
+                         ((((c) & FG_MASK) >> FG_SHIFT) << BG_SHIFT))
+
 
 /* Allocate a color set */
 static COLORSET *colorset_alloc(void)
@@ -108,7 +113,8 @@ static int parse_scoped_ident(const char **p, char *dest, ptrdiff_t sz)
 int parse_color_spec(const char **p, struct color_spec *dest)
 {
 	char buf[128];
-	int fg = 1, bg = 0;
+	int fg = 1, bg = 0;		/* Next expected */
+	int fg_read = 0, bg_read = 0;	/* Whether it's been specified */
 	int color;
 
 	dest->type = COLORSPEC_TYPE_NONE;
@@ -147,10 +153,14 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 			buf[i] = 0;
 			color = zhtoi(buf);
 			
-			if (fg) {
+			if (fg && !fg_read) {
 				dest->gui_fg = color;
-			} else {
+				dest->mask |= FG_MASK;
+				fg_read = 1;
+			} else if (bg && !bg_read) {
 				dest->gui_bg = color;
+				dest->mask |= BG_MASK;
+				bg_read = 1;
 			}
 		} else if (!parse_int(p, &color)) {
 			/* Color number */
@@ -160,9 +170,29 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 			}
 			
 			dest->type = COLORSPEC_TYPE_ATTR;
-			if (fg) dest->atr |= (color << FG_SHIFT) | FG_NOT_DEFAULT;
-			if (bg) dest->atr |= (color << BG_SHIFT) | BG_NOT_DEFAULT;
+			if (fg) {
+				dest->atr |= (color << FG_SHIFT) | FG_NOT_DEFAULT;
+				dest->mask |= FG_MASK;
+			}
+			if (bg) {
+				dest->atr |= (color << BG_SHIFT) | BG_NOT_DEFAULT;
+				dest->mask |= BG_MASK;
+			}
 		} else if (!parse_ident(p, buf, SIZEOF(buf))) {
+			if (!zcmp(buf, "default")) {
+				if (fg && !fg_read) {
+					dest->mask |= FG_MASK;
+					fg_read = 1;
+				} else if (bg && !bg_read) {
+					dest->mask |= BG_MASK;
+					bg_read = 1;
+				} else {
+					return 1;
+				}
+				
+				continue;
+			}
+			
 			/* Color or attribute */
 			if (dest->type != COLORSPEC_TYPE_NONE && dest->type != COLORSPEC_TYPE_ATTR) {
 				/* Can't mix GUI and term */
@@ -175,13 +205,30 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 			}
 			
 			dest->type = COLORSPEC_TYPE_ATTR;
-			if (bg && (FG_MASK & color)) {
-				dest->atr |= ((color & FG_MASK) >> FG_SHIFT) << BG_SHIFT;
-				dest->atr |= BG_NOT_DEFAULT;
-			} else if (fg && (FG_MASK & color)) {
+			if (bg && !bg_read && (FG_MASK & color)) {
+				dest->atr |= BG_NOT_DEFAULT | SWAP_COLOR(FG_MASK & color);
+				dest->mask |= BG_MASK;
+				bg_read = 1;
+			} else if (fg && !fg_read && (FG_MASK & color)) {
 				dest->atr |= color | FG_NOT_DEFAULT;
+				dest->mask |= FG_MASK;
+				fg_read = 1;
 			} else {
-				dest->atr |= color;
+				/* Attribute or bg_xyz */
+				if (!fg_read && (FG_MASK & color)) {
+					dest->atr |= color;
+					dest->mask |= FG_MASK;
+					fg_read = 1;
+				} else if (!bg_read && (BG_MASK & color)) {
+					dest->atr |= color;
+					dest->mask |= BG_MASK;
+					bg_read = 1;
+				} else if (AT_MASK & color) {
+					dest->atr |= color;
+					dest->mask |= AT_MASK;
+				} else {
+					return 1;
+				}
 			}
 		} else {
 			return 1;
@@ -364,6 +411,8 @@ SCHEME *load_scheme(const char *name)
 		}
 	}
 	
+	jfclose(f);
+	
 	/* Resolve refs in each set */
 	for (curset = colors->sets; curset; curset = curset->next) {
 		struct color_def *cdef;
@@ -445,25 +494,19 @@ int apply_scheme(SCHEME *colors)
 		} else {
 			/* Take from scheme */
 			int atr = best->builtins[i].atr;
+			int mask = best->builtins[i].mask;
 
-			if (color_builtins[i].invert)
-				atr = (atr & ~(FG_MASK | BG_MASK)) | (((atr & FG_MASK) >> FG_SHIFT) << BG_SHIFT) | (((atr & BG_MASK) >> BG_SHIFT) << FG_SHIFT);
+			if (color_builtins[i].invert) {
+				atr = SWAP_COLOR(atr);
+				mask = SWAP_COLOR(mask);
+			}
 
 			if (color_builtins[i].attribute) {
 				*color_builtins[i].attribute = atr;
 			}
 
 			if (color_builtins[i].mask) {
-				int mask = -1;
-				
-				if (atr & FG_NOT_DEFAULT)
-					mask &= ~FG_MASK;
-				if (atr & BG_NOT_DEFAULT)
-					mask &= ~BG_MASK;
-				if (atr & AT_MASK)
-					mask &= ~AT_MASK;
-				
-				*color_builtins[i].mask = mask;
+				*color_builtins[i].mask = ~mask;
 			}
 		}
 	}

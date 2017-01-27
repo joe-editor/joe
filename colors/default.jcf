@@ -1,10 +1,10 @@
 
 .colors 16
 
--text white/back
--status black/white
--selection black/white
--menusel black/white
+-text
+-status
+-selection default/default inverse
+-menusel default/default inverse
 
 =Idle
 =Bad            bold red
@@ -20,4 +20,4 @@
 =CppKeyword     bold
 =Brace          magenta
 =Control
-=Ident		WHITE
+=Ident		

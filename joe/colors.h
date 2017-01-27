@@ -15,6 +15,7 @@
 struct color_spec {
 	int			type;
 	int			atr;
+	int			mask;
 	int			gui_fg;
 	int			gui_bg;
 };
