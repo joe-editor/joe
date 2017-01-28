@@ -65,16 +65,14 @@ class ISearchTests(joefx.JoeTestBase):
             ch = chr(ord('a') + i)
             self.write(ch)
             sstr += ch
-            self.assertTextAt("I-find: " + sstr, x=0, y=-1)
-            self.assertBlank(y=-1, x=8 + len(sstr))
+            self.assertTextAt("I-find: " + sstr, x=0, y=-1, to_eol=True)
             self.assertCursor(x=i + 1, y=i + 1)
         
         # Now backspace out
         for i in range(N - 2, -1, -1):
             sstr = sstr[:-1]
             self.writectl("{bs}")
-            self.assertTextAt("I-find: " + sstr, x=0, y=-1)
-            self.assertBlank(y=-1, x=8 + len(sstr))
+            self.assertTextAt("I-find: " + sstr, x=0, y=-1, to_eol=True)
             self.assertCursor(x=i + 1, y=i + 1)
         
         self.writectl("^C")
@@ -96,16 +94,14 @@ class ISearchTests(joefx.JoeTestBase):
             ch = chr(ord('a') + i)
             sstr += ch
             self.write(ch)
-            self.assertTextAt("I-find: " + sstr, x=0, y=-1)
-            self.assertBlank(y=-1, x=8 + len(sstr))
+            self.assertTextAt("I-find: " + sstr, x=0, y=-1, to_eol=True)
             self.assertCursor(x=0, y=N - i + 1)
         
         # Now backspace out
         for i in range(N - 2, -1, -1):
             sstr = sstr[:-1]
             self.writectl("{bs}")
-            self.assertTextAt("I-find: " + sstr, x=0, y=-1)
-            self.assertBlank(y=-1, x=8 + len(sstr))
+            self.assertTextAt("I-find: " + sstr, x=0, y=-1, to_eol=True)
             self.assertCursor(x=0, y=N - i + 1)
         
         self.writectl("^C")
@@ -127,13 +123,12 @@ class ISearchTests(joefx.JoeTestBase):
             ch = chr(ord('a') + i)
             self.write(ch)
             sstr += ch
-            self.assertTextAt("I-find: " + sstr, x=0, y=-1)
-            self.assertBlank(y=-1, x=8 + len(sstr))
+            self.assertTextAt("I-find: " + sstr, x=0, y=-1, to_eol=True)
             self.assertCursor(x=i + 1, y=i + 1)
         
         # Cancel
         self.writectl("^C")
-        self.assertBlank(y=-1, x=0)
+        self.assertTextAt("", y=-1, x=0, to_eol=True)
         
         # Can't invoke command because it may not resume, need to use shortcut
         self.write(self.findCmd("isrch", fail=True))
@@ -146,8 +141,7 @@ class ISearchTests(joefx.JoeTestBase):
             ch = chr(ord('a') + i)
             self.write(ch)
             sstr += ch
-            self.assertTextAt("I-find: " + sstr, x=0, y=-1)
-            self.assertBlank(y=-1, x=8 + len(sstr))
+            self.assertTextAt("I-find: " + sstr, x=0, y=-1, to_eol=True)
             self.assertCursor(x=i + 1, y=i + 1)
         
         self.writectl("^C")
