@@ -119,6 +119,7 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 
 	dest->type = COLORSPEC_TYPE_NONE;
 	dest->atr = 0;
+	dest->mask = 0;
 	dest->gui_fg = 0;
 	dest->gui_bg = 0;
 
@@ -484,30 +485,37 @@ int apply_scheme(SCHEME *colors)
 	
 	/* Apply builtins */
 	for (i = 0; color_builtins[i].name; i++) {
+		int defatr;
+		
+		/* Get default attribute */
+		if (color_builtins[i].default_ptr)
+			defatr = *color_builtins[i].default_ptr;
+		else
+			defatr = color_builtins[i].default_attr;
+		
 		if (best->builtins[i].type == COLORSPEC_TYPE_NONE) {
 			/* Use default */
-			if (color_builtins[i].attribute) {
-				if (color_builtins[i].default_ptr)
-					*color_builtins[i].attribute = *color_builtins[i].default_ptr;
-				else
-					*color_builtins[i].attribute = color_builtins[i].default_attr;
-			}
+			if (color_builtins[i].attribute)
+				*color_builtins[i].attribute = defatr;
 			if (color_builtins[i].mask)
 				*color_builtins[i].mask = color_builtins[i].default_mask;
 		} else {
 			/* Take from scheme */
 			int atr = best->builtins[i].atr;
 			int mask = best->builtins[i].mask;
-
+			
 			if (color_builtins[i].invert) {
 				atr = SWAP_COLOR(atr);
 				mask = SWAP_COLOR(mask);
 			}
-
+			
+			/* Allow scheme to omit, e.g., background color */
+			atr = (mask & atr) | (~mask & ~AT_MASK & defatr);
+			
 			if (color_builtins[i].attribute) {
 				*color_builtins[i].attribute = atr;
 			}
-
+			
 			if (color_builtins[i].mask) {
 				*color_builtins[i].mask = ~mask;
 			}
