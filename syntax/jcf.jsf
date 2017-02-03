@@ -15,6 +15,7 @@
 	*		idle
 	"#"		comment		recolor=-1
 	"0-9"		number		recolor=-1
+	"$"		hex_color	recolor=-1
 	"*"		asterisk	recolor=-1
 	"="		color_def	recolor=-1
 	"+"		color_ref	recolor=-1
@@ -30,6 +31,10 @@
 :number Number
 	*		idle		noeat
 	"0-9"		number
+
+:hex_color Number
+	*		idle		noeat
+	"0-9a-fA-F"	hex_color
 
 :asterisk Operator
 	*		idle		noeat
