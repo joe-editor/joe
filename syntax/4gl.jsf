@@ -2,24 +2,22 @@
 # by Gediminas http://proc.w3.lt
 # Version 1.04
 
-# bold inverse blink dim underline italic
-# white cyan magenta blue yellow green red black
-# bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
-
 =Idle
-=Comment	green
-=Constant	cyan
-=Type		magenta
+=Comment
+=Constant
+=String		+Constant
+=Number		+Constant
+=Type
+
 # conditional operators, blocks
-=Condition	bold
-# buffer repositioning
-=KeyDB		bold green
-# create, delete record
-=CreateDel	bold yellow
+=Keyword
+=Conditional	+Keyword
+=Operator	+Keyword
+
 # preprocessor include, definition, reference
-=Include	yellow
-=Preproc	yellow
-=PreRef
+=Preproc
+=Include	+Preproc
+=PreRef		+Ident
 
 :idle Idle
 	*		idle
@@ -106,46 +104,46 @@ done
 
 # String constants, copied from pascal.jsf with " added
 
-:string Constant
+:string String
 	*		string
 	"\n"		idle
 	"'"		maybe_end_string
 
-:maybe_end_string Constant
+:maybe_end_string String
 	*		idle		recolor=-1 noeat
 	"'"		string
 
-:string2 Constant
+:string2 String
 	*		string2
 	"\n"		idle
 	"\""		maybe_end_string2
 
-:maybe_end_string2 Constant
+:maybe_end_string2 String
 	*		idle		recolor=-1 noeat
 	"\""		string2
 
 # Numeric constant, same as pascal.jsf
 
-:number Constant
+:number Number
 	*		idle		noeat
 	"0-9"		number
 	"eE"		epart
 	"."		dot
 
-:dot Constant
+:dot Number
 	*		idle	noeat
 	"0-9"		float
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle	noeat
 	"0-9"		enum
 
@@ -153,7 +151,10 @@ done
 	*		idle noeat
 
 # Keywords
-# Available jumps: operator type kw kwdb credel func
+# Available jumps: cond type oper kw
+
+# TODO: This needs to be vastly expanded, it seems like every other
+# token in this language is a keyword.
 
 :ident Idle
 	*		idle		noeat istrings
@@ -162,20 +163,20 @@ done
 	"cha"		type
 	"char"		type
 	"character"	type
-	"create"	credel
+	"create"	reserved
 	"dat"		type
 	"date"		type
 	"dec"		type
 	"decimal"	type
-	"defined"	predir
-	"delete"	credel
-	"do"		cond
+	"defined"	oper
+	"delete"	reserved
+	"do"		reserved
 	"else"		cond
 	"end"		cond
-	"find"		kwdb
-	"for"		kwdb
+	"find"		reserved
+	"for"		reserved
 	"function"	cond
-	"get"		kwdb
+	"get"		reserved
 	"handle"	type
 	"if"		cond
 	"int"		type
@@ -192,7 +193,7 @@ done
 	"raw"		type
 	"rec"		type
 	"repeat"	cond
-	"reposition" kwdb
+	"reposition"	reserved
 	"return"	cond
 	"rowid"		type
 	"run"		cond
@@ -202,15 +203,14 @@ done
 done
 	"-a-zA-Z0-9_"	ident
 
-:cond Condition
-	*	idle	noeat
-
-:kwdb KeyDB
+:cond Conditional
 	*	idle	noeat
 
 :type Type
 	*	idle	noeat
 
-:credel CreateDel
+:oper Operator
 	*	idle	noeat
-	
+
+:reserved Keyword
+	*	idle	noeat

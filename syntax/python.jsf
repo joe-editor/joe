@@ -5,13 +5,18 @@
 =Comment
 =Docstring	+Comment
 =DocstringLabel	+Docstring
-=DocEscape	+Docstring
+=DocEscape	+Escape +Docstring
 =Constant
 =String		+Constant
 =Number		+Constant
 =Boolean	+Constant
-=Escape		+StringEscape +Escape
+=StringEscape	+Escape
 =Keyword
+=Statement	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=StorageClass	+Type +Keyword
+=Operator	+Keyword
 =Bad
 =Brace
 
@@ -19,7 +24,7 @@
 =DefinedFunction +DefinedIdent
 =DefinedType	+DefinedIdent
 =SpecialIdent	+Ident
-=Decorator	+Preproc
+=Decorator	+Define +Preproc
 
 :idle Idle
 	*		idle
@@ -83,42 +88,115 @@
 
 :ident1 Ident
 	*		idle		noeat strings
-	"and"		kw
-	"as"		kw
-	"assert"	kw
-	"break"		kw
-	"class"		declkw
-	"continue"	kw
-	"def"		declkw
-	"del"		kw
-	"elif"		kw
-	"else"		kw
-	"except"	kw
-	"exec"		kw
-	"finally"	kw
-	"for"		kw
-	"from"		kw
-	"global"	kw
-	"if"		kw
-	"import"	kw
-	"in"		kw
-	"is"		kw
+	"and"		oper
+	"as"		stmt
+	"assert"	stmt
+	"break"		loop
+	"class"		classstmt
+	"continue"	loop
+	"def"		defstmt
+	"del"		stmt
+	"elif"		cond
+	"else"		cond
+	"except"	stmt
+	"finally"	stmt
+	"for"		loop
+	"from"		stmt
+	"global"	stmt
+	"if"		cond
+	"import"	stmt
+	"in"		oper
+	"is"		oper
 	"lambda"	kw
-	"not"		kw
-	"or"		kw
-	"pass"		kw
-	"print"		kw
-	"raise"		kw
-	"return"	kw
-	"try"		kw
-	"while"		kw
-	"with"		kw
-	"yield"		kw
+	"not"		oper
+	"or"		oper
+	"pass"		stmt
+	"raise"		stmt
+	"return"	stmt
+	"try"		stmt
+	"while"		loop
+	"with"		stmt
+	"yield"		stmt
 	
 	# quasi-keywords
 	"False"		bool
 	"True"		bool
-	"None"		lit
+	"None"		kw
+	
+	# builtins
+	"abs"		builtin
+	"all"		builtin
+	"any"		builtin
+	"ascii"		builtin
+	"bin"		builtin
+	"bool"		builtin
+	"bytearray"	builtin
+	"bytes"		builtin
+	"callable"	builtin
+	"chr"		builtin
+	"classmethod"	builtin
+	"compile"	builtin
+	"complex"	builtin
+	"copyright"	builtin
+	"credits"	builtin
+	"delattr"	builtin
+	"dict"		builtin
+	"dir"		builtin
+	"divmod"	builtin
+	"enumerate"	builtin
+	"eval"		builtin
+	"exec"		builtin
+	"exit"		builtin
+	"filter"	builtin
+	"float"		builtin
+	"format"	builtin
+	"frozenset"	builtin
+	"getattr"	builtin
+	"globals"	builtin
+	"hasattr"	builtin
+	"hash"		builtin
+	"help"		builtin
+	"hex"		builtin
+	"id"		builtin
+	"input"		builtin
+	"int"		builtin
+	"isinstance"	builtin
+	"issubclass"	builtin
+	"iter"		builtin
+	"len"		builtin
+	"license"	builtin
+	"list"		builtin
+	"locals"	builtin
+	"map"		builtin
+	"max"		builtin
+	"memoryview"	builtin
+	"min"		builtin
+	"next"		builtin
+	"object"	builtin
+	"oct"		builtin
+	"open"		builtin
+	"ord"		builtin
+	"pow"		builtin
+	"print"		builtin
+	"property"	builtin
+	"quit"		builtin
+	"range"		builtin
+	"repr"		builtin
+	"reversed"	builtin
+	"round"		builtin
+	"set"		builtin
+	"setattr"	builtin
+	"slice"		builtin
+	"sorted"	builtin
+	"staticmethod"	builtin
+	"str"		builtin
+	"sum"		builtin
+	"super"		builtin
+	"tuple"		builtin
+	"type"		builtin
+	"vars"		builtin
+	"zip"		builtin
+	
 done
 	"'\""		idle 		noeat istrings
 	"u"		string_pre
@@ -132,23 +210,47 @@ done
 :kw Keyword
 	*		idle		noeat
 
-:lit Keyword
+:cond Conditional
+	*		idle		noeat
+
+:oper Operator
 	*		idle		noeat
 
 :bool Boolean
 	*		idle		noeat
 
-:declkw Keyword
+:loop Loop
+	*		idle		noeat
+
+:stmt Statement
+	*		idle		noeat
+
+:builtin DefinedFunction
+	*		idle		noeat
+
+:classstmt Statement
 	*		idle 		noeat recolor=-1
-	"\i"		declkw
-	" \t"		declname_1
+	"\i"		classstmt
+	" \t"		classname_1
 
-:declname_1 DefinedIdent
-	*		declname
+:classname_1 DefinedType
+	*		classname
 
-:declname DefinedIdent
+:classname DefinedType
 	*		idle		noeat recolor=-1
-	"\c"		declname
+	"\c"		classname
+
+:defstmt Statement
+	*		idle		noeat recolor=-1
+	"\i"		defstmt
+	" \t"		defname_1
+
+:defname_1 DefinedFunction
+	*		defname
+
+:defname DefinedFunction
+	*		idle		noeat recolor=-1
+	"\c"		defname
 
 :priv_member SpecialIdent
 	*		idle		noeat
@@ -229,47 +331,47 @@ done
 :string_esc_really_done DocEscape
 	*		string 		noeat
 .else
-:string_esc_really_done Escape
+:string_esc_really_done StringEscape
 	*		string 		noeat
 .endif
 
-:string_hex1 Escape
+:string_hex1 StringEscape
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_esc_done
 
-:string_hex2 Escape
+:string_hex2 StringEscape
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex1
 
-:string_hex3 Escape
+:string_hex3 StringEscape
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex4 Escape
+:string_hex4 StringEscape
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex3
 
-:string_hex5 Escape
+:string_hex5 StringEscape
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex4
 
-:string_hex6 Escape
+:string_hex6 StringEscape
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex5
 
-:string_hex7 Escape
+:string_hex7 StringEscape
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex6
 
-:string_hex8 Escape
+:string_hex8 StringEscape
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex7
 
-:string_octal1 Escape
+:string_octal1 StringEscape
 	*		string_esc_done	noeat
 	"0-7"		string_esc_done
 
-:string_octal2 Escape
+:string_octal2 StringEscape
 	*		string_esc_done	noeat
 	"0-7"		string_octal1
 

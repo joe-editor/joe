@@ -14,17 +14,19 @@
 # languages allow '000009', which looks like a bad octal constant in C/UNIX.
 
 =Idle
-=Bad		bold red
-=Preproc 	blue
-=Define		bold blue
-=Comment 	green
-=IncLocal	cyan
-=IncSystem	bold cyan
-=Constant 	cyan
-=Escape 	bold cyan
-=Type 		bold
-=Keyword 	bold
-=CppKeyword	bold
+=Bad
+=Preproc
+=Define
+=Comment
+=IncLocal	+String +Preproc
+=IncSystem	+Preproc
+=Constant
+=Number		+Constant
+=String		+Constant
+=Character	+String
+=CharacterEscape +Escape +Character
+=StringEscape	+Escape +String
+=Type
 =Brace
 =Control
 
@@ -142,7 +144,7 @@ done
 	*		line_comment
 	"\n"		reset
 
-:first_digit Constant
+:first_digit Number
 	*		idle	noeat
 	"xX"		hex
 	"."		float
@@ -154,96 +156,96 @@ done
 	*		idle	noeat
 	"0-9"		bad_number
 
-:octal Constant
+:octal Number
 	*		idle	noeat
 	"0-7"		octal
 	"89"		bad_number	recolor=-1
 
-:hex Constant
+:hex Number
 	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
-:decimal Constant
+:decimal Number
 	*		idle	noeat
 	"0-9"		decimal
 	"eE"		epart
 	"."		float
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle	noeat
 	"0-9"		enum
 
-:string	Constant
+:string	String
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"x"		string_hex1
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_hex1 Escape
+:string_hex1 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex2 Escape
+:string_hex2 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 Escape
+:string_octal2 StringEscape
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 Escape
+:string_octal3 StringEscape
 	*		string		noeat
 	"0-7"		string
 
-:string_control Escape
+:string_control StringEscape
 	*		string_control
 	"\n"		reset
 	"diouxXeEfFgGaAcspn%SC"	string
 
-:char Constant
+:char CharacterEscape
 	*		char
 	"\n"		reset
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
-:char_escape	Escape
+:char_escape CharacterEscape
 	*		char
 	"x"		char_hex1
 	"0-7"		char_octal2
 	"\n"		char		recolor=-2
 
-:char_hex1 Escape
+:char_hex1 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_hex2
 
-:char_hex2 Escape
+:char_hex2 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char
 
-:char_octal2 Escape
+:char_octal2 CharacterEscape
 	*		char		noeat
 	"0-7"		char_octal3
 
-:char_octal3 Escape
+:char_octal3 CharacterEscape
 	*		char		noeat
 	"0-7"		char
 

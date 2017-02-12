@@ -183,38 +183,44 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 				return 1;
 			}
 		} else if (!parse_ident(p, buf, SIZEOF(buf))) {
+			int dflt = 0;
+			
 			if (!zcmp(buf, "default")) {
-				if (fg && !fg_read) {
-					dest->mask |= FG_MASK;
-					fg_read = 1;
-				} else if (bg && !bg_read) {
-					dest->mask |= BG_MASK;
-					bg_read = 1;
-				} else {
+				dflt = 1;
+				color = 0;
+			} else if (!(color = meta_color(buf))) {
+				return 1;
+			}
+			
+			/* If we got color data, then make sure the spec is the right type. */
+			if ((color & (FG_MASK | BG_MASK)) != 0) {
+				if (dest->type != COLORSPEC_TYPE_NONE && dest->type != COLORSPEC_TYPE_ATTR) {
+					/* Can't mix GUI and term */
 					return 1;
 				}
-				
-				continue;
 			}
 			
-			/* Color or attribute */
-			if (dest->type != COLORSPEC_TYPE_NONE && dest->type != COLORSPEC_TYPE_ATTR) {
-				/* Can't mix GUI and term */
-				return 1;
+			if (dest->type == COLORSPEC_TYPE_NONE) {
+				/* If no color has been specified yet, we'll just assume TERM */
+				dest->type = COLORSPEC_TYPE_ATTR;
 			}
 			
-			color = meta_color(buf);
-			if (!color) {
-				return 1;
-			}
-			
-			dest->type = COLORSPEC_TYPE_ATTR;
 			if (bg && !bg_read && (FG_MASK & color)) {
+				/* translate "foreground" color to background */
 				dest->atr |= BG_NOT_DEFAULT | SWAP_COLOR(FG_MASK & color);
 				dest->mask |= BG_MASK;
 				bg_read = 1;
 			} else if (fg && !fg_read && (FG_MASK & color)) {
+				/* foreground color */
 				dest->atr |= color | FG_NOT_DEFAULT;
+				dest->mask |= FG_MASK;
+				fg_read = 1;
+			} else if (bg && !bg_read && dflt) {
+				/* default background */
+				dest->mask |= BG_MASK;
+				bg_read = 1;
+			} else if (fg && !fg_read && dflt) {
+				/* default foreground */
 				dest->mask |= FG_MASK;
 				fg_read = 1;
 			} else {
@@ -504,13 +510,13 @@ int apply_scheme(SCHEME *colors)
 			int atr = best->builtins[i].atr;
 			int mask = best->builtins[i].mask;
 			
+			/* Allow scheme to omit, e.g., background color */
+			atr = (mask & atr) | (~mask & ~AT_MASK & defatr);
+			
 			if (color_builtins[i].invert) {
 				atr = SWAP_COLOR(atr);
 				mask = SWAP_COLOR(mask);
 			}
-			
-			/* Allow scheme to omit, e.g., background color */
-			atr = (mask & atr) | (~mask & ~AT_MASK & defatr);
 			
 			if (color_builtins[i].attribute) {
 				*color_builtins[i].attribute = atr;

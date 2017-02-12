@@ -1,5 +1,9 @@
 # JOE syntax highlight file for diff/patch files
 #
+# 2017-02-03 :
+#
+# Rework color definitions for color schemes
+#
 # 2007-05-11 :
 #
 # This file is just udiff.jsf, ndiff.jsf and cdiff.jsf merged together
@@ -10,20 +14,21 @@
 # completely. If you want that, you need to edit ftyperc accordingly.
 #
 #   Dirk Schenkewitz <Dirk.Schenkewitz (AT) gmx.de>
-#
-
 
 # Color definitions
 =Idle
-=Garbage	dim white
-=DiffCmd	blue
-=FileOld	bold red
-=FileNew	bold green
-=HunkHead	bold blue
-=HunkMid	bold blue
-=DelLine	red
-=AddLine	green
-=ChgLine	magenta
+=Garbage	+Comment
+=DiffCmd	+Statement
+=File		+Type
+=FileOld	+File
+=FileNew	+File
+=Hunk		+File
+=HunkHead	+Hunk
+=HunkMid	+Hunk
+# Inheritances here are admittedly bizarre
+=DelLine	+Escape
+=AddLine	+DefinedIdent
+=ChgLine	+Preproc
 =CtxLine
 
 

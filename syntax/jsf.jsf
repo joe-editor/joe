@@ -34,7 +34,7 @@
 
 =Idle
 =Comment
-=Conditional	+Preproc
+=Conditional	+Precond +Preproc
 =Parameter	+Ident
 =Keyword
 =Color		+Type
@@ -44,7 +44,7 @@
 =Constant
 =Number		+Constant
 =String		+Constant
-=Escape		+String
+=StringEscape	+Escape +String
 =Bad
 
 
@@ -312,7 +312,7 @@
 .endif
 
 # Highlight an escaped character within a string.
-:escape Escape string
+:escape StringEscape string
 	*		string
 
 # Loop over whitespace until we see the first character of the next state.

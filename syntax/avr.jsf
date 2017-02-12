@@ -1,15 +1,15 @@
 # JOE syntax highlight file for AVR assembly language
 
 =Idle
-=Preproc	cyan		# basic color for directives
-=Inc		blue		# "include" - color
-=Def		magenta		# same for "def" and "equ"
-=Definit	cyan		# text after ".def" or ".equ"
-=Macro		red			# color of word "macro"
-=Path		cyan			# color for include-path
-=Com		yellow		# command
-=Comment	green		# comment-color
-=Label		red			# label
+=Preproc			# basic color for directives
+=Include	+Preproc	# "include" - color
+=Define		+Preproc	# same for "def" and "equ"
+=DefinedIdent	+Define +Ident	# text after ".def" or ".equ"
+=Macro		+Define		# color of word "macro"
+=Path		+String		# color for include-path
+=Com		+Keyword	# command
+=Comment			# comment-color
+=Label		+DefinedIdent	# label
 
 
 :idle Idle
@@ -36,19 +36,19 @@ done
 	"a-zA-Z"	preident
 	";"			comment		recolor=-1
 
-:preinc Inc
+:preinc Include
 	*			preinc
 	" \t"		path
 	"\n"		idle
 	";"			comment		recolor=-1
 
-:predef Def
+:predef Define
 	*			predef
 	" \t"		definition
 	"\n"		idle
 	";"			comment		recolor=-1
 
-:definition Definit
+:definition DefinedIdent
 	*			definition
 	"\n"		idle
 	";"			comment		recolor=-1

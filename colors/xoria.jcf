@@ -27,6 +27,7 @@
 =TODO 0/184
 =Bad 15/1
 =Escape 174
+=StringEscape 174
 =IncSystem +Keyword
 =IncLocal +Constant
 

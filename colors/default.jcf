@@ -1,10 +1,10 @@
 
 .colors 16
 
--text
--status
--selection default/default inverse
--menusel default/default inverse
+-selection 	default/default inverse
+-menusel 	default/default inverse
+-linum		BLACK
+-curlinum	default
 
 =Idle
 =Bad            bold red
@@ -17,7 +17,15 @@
 =Escape         bold cyan
 =Type           bold
 =Keyword        bold
-=CppKeyword     bold
 =Brace          magenta
 =Control
-=Ident		
+=Ident
+
+=diff.DelLine	red
+=diff.AddLine	green
+=diff.ChgLine	magenta
+=diff.Garbage	dim white
+=diff.FileOld	bold red
+=diff.FileNew	bold green
+=diff.Hunk	bold blue
+

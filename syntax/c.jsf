@@ -163,60 +163,34 @@
 #          if nothing is specified, the default is -50
 -
 
-# Define colors and attributes.  Give a list of attributes, one
-# background color and one foreground color (default is used if
-# color is left out).
-#
-# Attributes:
-#   bold inverse blink dim underline italic
-#
-# Standard colors:
-#
-# Foreground:
-#   white cyan magenta blue yellow green red black
-#
-# Background:
-#   bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
-#
-# For 16 color and 256 color xterms: "export TERM=xterm-16color", these
-# brighter than normal colors are available:
-#
-# Note that you need an xterm which was compiled to support 16 or 256 colors
-# and a matching termcap/terminfo entry for it.
-#
-# Foreground:
-#   WHITE CYAN MAGENTA BLUE YELLOW GREEN RED BLACK
-#
-# Background:
-#   bg_WHITE bg_CYAN bg_MAGENTA bg_BLUE bg_YELLOW bg_GREEN bg_RED bg_BLACK
-#
-# For 256 color xterm: "export TERM=xterm-256color", these become available:
-#
-# Note that you need an xterm which was compiled to support 256 colors and a
-# matching termcap/terminfo entry for it.
-#
-# fg_RGB and bg_RGB, where R, G, and B range from 0 - 5.  So: fg_500 is bright red.
-#
-# fg_NN and bg_NN give shades of grey, where the intensity, NN, ranges from 0 - 23.
-
 =Idle
 =Ident
 =Bad
+
 =Preproc
+=Precond	+Preproc
 =Define		+DefinedIdent +Preproc
-=Comment
-=IncLocal	+Preproc +Constant
+=IncLocal	+String +Preproc
 =IncSystem	+Preproc +Keyword
+
+=Comment
 =Constant
 =Number		+Constant
 =String		+Constant
-=Character	+String +Constant
-=HexNumber	+Number
-=OctNumber	+Number
+=StringEscape	+Escape +String
+=Character	+String
+=CharacterEscape +StringEscape +Character
 =Escape
-=Type
+
 =Keyword
 =CppKeyword	+Keyword
+=Statement	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=Label		+DefinedIdent
+=Type
+=StorageClass	+Type +Keyword
+=Structure	+Type +Keyword
 =Brace
 =Control
 
@@ -237,14 +211,23 @@
 	*		preproc		noeat strings
 	"define"	predef
 	"include"	preinc
+	"if"		precond
+	"ifdef"		precond
+	"ifndef"	precond
+	"else"		precond
+	"elif"		precond
+	"endif"		precond
 done
 	"a-z"		preident
+
+:precond Precond
+	*		preproc		noeat
 
 :preinc Preproc
 	*		preinc
 	" \t"		preinc_ws
 	"\n"		reset
-	
+
 :preinc_ws Preproc
 	*		prebad		recolor=-1
 	" \t"		preinc_ws
@@ -278,7 +261,6 @@ done
 	*		idle		noeat
 	"\c"		predef_ident
 
-
 :preproc Preproc
 	*		preproc
 	"\n"		reset
@@ -301,14 +283,14 @@ done
 	"\n"		reset
 	"/"		slash
 	"0"		first_digit	recolor=-1
-	"1-9"		decimal	recolor=-1
+	"1-9"		decimal		recolor=-1
 	"."		maybe_float
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
 	"\i"		ident		recolor=-1 buffer
 	"\\"		outside_escape	recolor=-1
 	"{}"		brace		recolor=-1
-	",:;=()><[]*&|!~+\-%^"	control		recolor=-1
+	",:;=()><[]*&|!~+\-%^"	control	recolor=-1
 
 :outside_escape	Escape
 	*	idle
@@ -351,12 +333,12 @@ done
 	*		idle	noeat
 	"0-9"		bad_number
 
-:octal OctNumber
+:octal Number
 	*		idle	noeat
 	"0-7"		octal
 	"89"		bad_number	recolor=-1
 
-:hex HexNumber
+:hex Number
 	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
@@ -379,7 +361,7 @@ done
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle	noeat
 	"0-9"		enum
 
@@ -389,26 +371,26 @@ done
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_escape Escape string
+:string_escape StringEscape string
 	*		string
 	"x"		string_hex
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
 # \x will consume all successive hex digits (ANSI C).
-:string_hex Escape string
+:string_hex StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex
 
-:string_octal2 Escape string
+:string_octal2 StringEscape string
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 Escape string
+:string_octal3 StringEscape string
 	*		string		noeat
 	"0-7"		string
 
-:string_control Escape string
+:string_control StringEscape string
 	*		string
 	"\""		string noeat
 	"\n"		reset
@@ -421,22 +403,22 @@ done
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
-:char_escape	Escape string
+:char_escape CharacterEscape string
 	*		char
 	"x"		char_hex
 	"0-7"		char_octal2
 	"\n"		char		recolor=-2
 
 # \x will consume all successive hex digits (ANSI C).
-:char_hex Escape string
+:char_hex CharacterEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex
 
-:char_octal2 Escape string
+:char_octal2 CharacterEscape string
 	*		char		noeat
 	"0-7"		char_octal3
 
-:char_octal3 Escape string
+:char_octal3 CharacterEscape string
 	*		char		noeat
 	"0-7"		char
 
@@ -451,36 +433,36 @@ done
 	"signed"	type
 	"unsigned"	type
 	"void"		type
-	"static"	type
-	"register"	type
-	"extern"	type
+	"static"	storage
+	"register"	storage
+	"extern"	storage
 	"inline"	type
-	"auto"		type
-	"const"		type
-	"volatile"	type
-	"if"		kw
-	"else"		kw
-	"while"		kw
-	"for"		kw
-	"break"		kw
-	"continue"	kw
-	"do"		kw
-	"case"		kw
-	"default"	kw
-	"switch"	kw
-	"goto"		kw
-	"struct"	kw
-	"enum"		kw
-	"return"	kw
+	"auto"		storage
+	"const"		storage
+	"volatile"	storage
+	"if"		cond
+	"else"		cond
+	"while"		loop
+	"for"		loop
+	"break"		stmt
+	"continue"	stmt
+	"do"		loop
+	"case"		label
+	"default"	label
+	"switch"	cond
+	"goto"		stmt
+	"struct"	struct
+	"enum"		struct
+	"return"	stmt
 	"sizeof"	kw
-	"typedef"	kw
-	"union"		kw
+	"typedef"	struct
+	"union"		struct
 	"asm"		kw
 # C++ keywords
 	#"asm"			cppkw (listed above as a C keyword)
 	"bool"			cppkw
 	"catch"			cppkw
-	"class"			cppkw
+	"class"			struct
 	"const_cast"		cppkw
 	"delete"		cppkw
 	"dynamic_cast"		cppkw
@@ -519,4 +501,22 @@ done
 	*	idle	noeat
 
 :cppkw CppKeyword
+	*	idle	noeat
+
+:label Label
+	*	idle	noeat
+
+:loop Loop
+	*	idle	noeat
+
+:stmt Statement
+	*	idle	noeat
+
+:storage StorageClass
+	*	idle	noeat
+
+:cond Conditional
+	*	idle	noeat
+
+:struct Structure
 	*	idle	noeat

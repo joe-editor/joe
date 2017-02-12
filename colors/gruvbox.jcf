@@ -16,14 +16,29 @@
 =TODO inverse bold italic
 =Bad 167 bold inverse
 
-=Keyword 167
 =DefinedIdent 66
+=DefinedFunction 142
+=Builtin 142
+
 =Preproc 108
 =IncSystem 72
-=Constant 175
+
+=Keyword 167
+=Operator
+=Escape 208
+=Label +Keyword
+=Loop 167
+=Condition +Keyword
+=Statement +Keyword
 =Type 214
+=StorageClass 208
+=Structure 108
+
+=Constant 175
 =String 250/237
-=Escape /237
+=StringEscape /237
+=Character +Constant
+=CharacterEscape +Escape
 
 =diff.AddLine 235/142
 =diff.DelLine 235/124
