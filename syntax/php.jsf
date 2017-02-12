@@ -94,16 +94,28 @@ done
   "\c" php_var
 
 :var_indqstring Var
-  *     string_dq recolor=-1
-  "\i" var_indqstring
-  "\""  string_dq noeat
-	"\\"		string_dq_esc	recolor=-1
+	*	string_dq	recolor=-1
+	"\i"	var_indqstringr
+	"\""	string_dq	noeat
+	"\\"	string_dq_esc	recolor=-1
+
+:var_indqstringr Var
+	*	string_dq	recolor=-1
+	"\c"	var_indqstringr
+	"\""	string_dq	noeat
+	"\\"	string_dq_esc	recolor=-1
 
 :var_inbqstring Var
-  *     string_bq recolor=-1
-  "\i" var_inbqstring
-  "\`"  string_sq noeat
-	"\\"		string_bq_esc	recolor=-1
+	*	string_bq	recolor=-1
+	"\i"	var_inbqstringr
+	"\`"	string_bq	noeat
+	"\\"	string_bq_esc	recolor=-1
+
+:var_inbqstringr Var
+	*	string_bq	recolor=-1
+	"\c"	var_inbqstringr
+	"\`"	string_bq	noeat
+	"\\"	string_bq_esc	recolor=-1
 
 :maybe_method Methods
 	*		idle  recolor=-1
