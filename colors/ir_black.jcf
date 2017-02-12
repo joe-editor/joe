@@ -1,0 +1,114 @@
+
+# Based on ir_black vim scheme
+# More at: http://blog.infinitered.com/entries/show/8
+
+.colors 256
+
+-text 255/16
+-status 252/234 italic
+-selection /17
+-linum 237
+-cursor 16/231
+
+-term 0 239
+-term 1 203
+-term 2 155
+-term 3 229
+-term 4 153
+-term 5 207
+-term 6 146
+-term 7 255
+-term 8 244
+-term 9 217
+-term 10 193
+-term 11 230
+-term 12 230
+-term 13 219
+-term 14 189
+-term 15 231
+
+=Idle
+=Keyword 153
+=Operator 231
+=Type 229
+
+=Boolean +Constant
+=Character +Constant
+=Comment 244
+=Conditional 67
+=Constant 151
+=Define +Preproc
+=DefinedFunction 223
+=DefinedIdent 146
+=Escape 173
+=Float +Number
+=IncSystem +Preproc
+=Label +Statement
+=Loop +Statement
+=Macro +Preproc
+=Number 207
+=Precond +Preproc
+=Preproc 153
+=Statement 67
+=StorageClass +Type
+=String 155
+=StringEscape +Escape
+=Structure +Type
+=TODO 246
+
+
+.colors *
+
+-text $f6f3e8/$000000
+-status $CCCCCC/$202020 italic
+-selection /$262D51
+-linum $3D3D3D
+-cursor $000000/$ffffff
+
+-term 0 #4E4E4E
+-term 1 #FF6C60
+-term 2 #A8FF60
+-term 3 #FFFFB6
+-term 4 #96CBFE
+-term 5 #FF73FD
+-term 6 #C6C5FE
+-term 7 #EEEEEE
+-term 8 #7C7C7C
+-term 9 #FFB6B0
+-term 10 #CEFFAB
+-term 11 #FFFFCB
+-term 12 #FFFFCB
+-term 13 #FF9CFE
+-term 14 #DFDFFE
+-term 15 #FFFFFF
+
+=Idle
+=Keyword $96CBFE
+=Operator $ffffff
+=Type $FFFFB6
+
+=Boolean +Constant
+=Character +Constant
+=Comment $7C7C7C
+=Conditional $6699CC
+=Constant $99CC99
+=Define +Preproc
+=DefinedFunction $FFD2A7
+=DefinedIdent $C6C5FE
+=Escape $E18964
+=Float +Number
+=IncSystem +Preproc
+=Label +Statement
+=Loop +Statement
+=Macro +Preproc
+=Number $FF73FD
+=Precond +Preproc
+=Preproc $96CBFE
+=Statement $6699CC
+=StorageClass +Type
+=String $A8FF60
+=StringEscape +Escape
+=Structure +Type
+=TODO $8f8f8f
+
+

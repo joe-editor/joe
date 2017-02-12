@@ -1,0 +1,85 @@
+
+# Based on Wombat vim scheme by Lars H. Nielsen <dengmao@gmail.com>
+
+.colors 256
+
+-text 255/235
+-status /238 italic
+-selection /238
+-linum 244/16
+-cursor 235/242
+
+-term 0 235
+-term 1 203
+-term 2 113
+-term 3 149
+-term 4 238
+-term 5 244
+-term 6 153
+-term 7 255
+-term 8 248
+-term 9 203
+-term 10 113
+-term 11 149
+-term 12 244
+-term 13 246
+-term 14 153
+-term 15 194
+
+=Idle
+=Keyword 153
+=Type 149
+
+=Comment 246 italic
+=Constant 203
+=DefinedFunction 149
+=DefinedIdent 149
+=Escape 194
+=Number 203
+=Preproc 203
+=Statement 153
+=String 113 italic
+=TODO 246 italic
+
+
+.colors *
+
+-text $f6f3e8/$242424
+-status /$444444 italic
+-selection /$444444
+-linum $857b6f/$000000
+-cursor $242424/$656565
+
+-term 0 $242424
+-term 1 $E5786D
+-term 2 $95E454
+-term 3 $CAE682
+-term 4 $384048
+-term 5 $A0A8B0
+-term 6 $8AC6F2
+-term 7 $F6F3E8
+-term 8 $E7F6DA
+-term 9 $E5786D
+-term 10 $95E454
+-term 11 $CAE682
+-term 12 $384048
+-term 13 $A0A8B0
+-term 14 $8AC6F2
+-term 15 $E7F6DA
+
+=Idle
+=Keyword $8ac6f2
+=Type $cae682
+
+=Comment $99968b italic
+=Constant $e5786d
+=DefinedFunction $cae682
+=DefinedIdent $cae682
+=Escape $e7f6da
+=Number $e5786d
+=Preproc $e5786d
+=Statement $8ac6f2
+=String $95e454 italic
+=TODO $8f8f8f italic
+
+

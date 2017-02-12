@@ -1,0 +1,125 @@
+
+# Based on Zenburn vim scheme by Jani Nurminen <slinky@iki.fi>
+
+.colors 256
+
+-text 253/237
+-status 236/186
+-selection 236/79
+-linum 145/235
+-curlin /238
+-menusel 187/235 bold
+-cursor 232/109 bold
+
+-term 0 237
+-term 1 167
+-term 2 115
+-term 3 186
+-term 4 238
+-term 5 139
+-term 6 116
+-term 7 253
+-term 8 255
+-term 9 167
+-term 10 115
+-term 11 228
+-term 12 103
+-term 13 139
+-term 14 116
+-term 15 231
+
+=Idle
+=Keyword 223 bold
+=Operator 230
+=Type 187 bold
+
+=Bad 167/235
+=Boolean 181
+=Character 181 bold
+=Comment 108 italic
+=Conditional 223 bold
+=Constant 181 bold
+=Define 180 bold
+=DefinedFunction 186
+=DefinedIdent 223
+=Escape 251
+=Float 250
+=IncSystem 180 bold
+=Label 223 underline
+=Loop 223 bold
+=Macro 180 bold
+=Number 116
+=Precond 180 bold
+=Preproc 180 bold
+=Statement 187
+=StorageClass 144 bold
+=String 174
+=StringEscape 181 bold
+=Structure 229 bold
+=TODO /237
+
+=diff.AddLine 66 bold
+=diff.ChgLine /236 bold
+=diff.DelLine 236/238
+
+.colors *
+
+-text $dcdccc/$3f3f3f
+-status $313633/$ccdc90
+-selection $233323/$71d3b4
+-linum $9fafaf/$262626
+-curlin /$434443
+-menusel $d0d0a0/$242424 bold
+-cursor $000d18/$8faf9f bold
+
+-term 0 $3F3F3F
+-term 1 $E37170
+-term 2 $9CCC9C
+-term 3 $EFEF8F
+-term 4 $000D18
+-term 5 $BC8CBC
+-term 6 $8CD0D3
+-term 7 $DCDCCC
+-term 8 $EFEFEF
+-term 9 $E37170
+-term 10 $CCDC90
+-term 11 $FFFF87
+-term 12 $8C8CBC
+-term 13 $BC8CBC
+-term 14 $8CD0D3
+-term 15 $FFFFFF
+
+=Idle
+=Keyword $f0dfaf bold
+=Operator $f0efd0
+=Type $dfdfbf bold
+
+=Bad $e37170/$332323
+=Boolean $dca3a3
+=Character $dca3a3 bold
+=Comment $7f9f7f italic
+=Conditional $f0dfaf bold
+=Constant $dca3a3 bold
+=Define $ffcfaf bold
+=DefinedFunction $efef8f
+=DefinedIdent $efdcbc
+=Escape $cfbfaf
+=Float $c0bed1
+=IncSystem $dfaf8f bold
+=Label $dfcfaf underline
+=Loop $ffd7a7 bold
+=Macro $ffcfaf bold
+=Number $8cd0d3
+=Precond $dfaf8f bold
+=Preproc $ffcfaf bold
+=Statement /$3a3a3a
+=StorageClass $c3bf9f bold
+=String $cc9393
+=StringEscape $dca3a3 bold
+=Structure $efefaf bold
+=TODO /$3a3a3a
+
+=diff.AddLine /$3a3a3a
+=diff.ChgLine /$333333
+=diff.DelLine /$444444
+
