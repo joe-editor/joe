@@ -65,22 +65,22 @@
 -linum $3D3D3D
 -cursor $000000/$ffffff
 
--term 0 #4E4E4E
--term 1 #FF6C60
--term 2 #A8FF60
--term 3 #FFFFB6
--term 4 #96CBFE
--term 5 #FF73FD
--term 6 #C6C5FE
--term 7 #EEEEEE
--term 8 #7C7C7C
--term 9 #FFB6B0
--term 10 #CEFFAB
--term 11 #FFFFCB
--term 12 #FFFFCB
--term 13 #FF9CFE
--term 14 #DFDFFE
--term 15 #FFFFFF
+-term 0 $4E4E4E
+-term 1 $FF6C60
+-term 2 $A8FF60
+-term 3 $FFFFB6
+-term 4 $96CBFE
+-term 5 $FF73FD
+-term 6 $C6C5FE
+-term 7 $EEEEEE
+-term 8 $7C7C7C
+-term 9 $FFB6B0
+-term 10 $CEFFAB
+-term 11 $FFFFCB
+-term 12 $FFFFCB
+-term 13 $FF9CFE
+-term 14 $DFDFFE
+-term 15 $FFFFFF
 
 =Idle
 =Keyword $96CBFE

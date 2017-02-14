@@ -9,7 +9,16 @@
 =Idle
 =Ident WHITE
 =Type YELLOW bold
-=Const cyan
+=Constant cyan
+=Escape CYAN
 =Keyword YELLOW bold
 =Comment green
+=Preproc magenta
+=Bad RED
 
+=diff.DelLine	red
+=diff.AddLine	GREEN
+=diff.ChgLine	magenta
+=diff.FileOld	cyan
+=diff.FileNew	CYAN
+=diff.Hunk	WHITE

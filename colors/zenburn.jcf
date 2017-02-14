@@ -6,7 +6,7 @@
 -text 253/237
 -status 236/186
 -selection 236/79
--linum 145/235
+-linum /238
 -curlin /238
 -menusel 187/235 bold
 -cursor 232/109 bold
@@ -65,9 +65,9 @@
 .colors *
 
 -text $dcdccc/$3f3f3f
--status $313633/$ccdc90
+-status /$afaf87
 -selection $233323/$71d3b4
--linum $9fafaf/$262626
+-linum /$444444
 -curlin /$434443
 -menusel $d0d0a0/$242424 bold
 -cursor $000d18/$8faf9f bold
@@ -82,7 +82,7 @@
 -term 7 $DCDCCC
 -term 8 $EFEFEF
 -term 9 $E37170
--term 10 $CCDC90
+-term 10 $9ECE9E
 -term 11 $FFFF87
 -term 12 $8C8CBC
 -term 13 $BC8CBC
@@ -121,5 +121,5 @@
 
 =diff.AddLine /$3a3a3a
 =diff.ChgLine /$333333
-=diff.DelLine /$444444
+=diff.DelLine $333333/$464646
 
