@@ -60,7 +60,13 @@ struct color_states {
 static struct color_states *saved_scheme_configs = NULL;
 
 /* Prototypes */
-static void visit_colordef(COLORSET *, struct high_syntax *, struct color_def *);
+static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct color_def *cdef);
+static int build_palette(COLORSET *cset, int startidx);
+static void get_palette(int *palette, struct color_spec *spec, int startidx, int idx);
+static int findpal(int *palette, int startidx, int endidx, int color);
+static int add_palette(int *palette, struct color_spec *spec, int *idx, int startidx, int size);
+static int sort_palette(int *palette, int start, int end);
+static int palcmp(const void *a, const void *b);
 
 #define SWAP_COLOR(c)	(((c) & ~(FG_MASK | BG_MASK)) | \
                          ((((c) & BG_MASK) >> BG_SHIFT) << FG_SHIFT) | \
@@ -453,9 +459,167 @@ SCHEME *load_scheme(const char *name)
 				cdef->spec.atr = 0;
 			}
 		}
+		
+		/* If this is GUI, then make the palette */
+		if (curset->colors == COLORSET_GUI) {
+			build_palette(curset, 1);
+		} else {
+			curset->palette = NULL;
+		}
 	}
 	
 	return colors;
+}
+
+/* Build palette for GUI colors */
+static int build_palette(COLORSET *cset, int startidx)
+{
+	const int SIZE = 256;
+	struct color_def *cdef;
+	int *palette = joe_malloc(SIZEOF(int) * SIZE);
+	int i, t;
+	
+	/* Clear start */
+	for (i = 0; i < startidx; i++) {
+		palette[i] = -1;
+	}
+	
+	/* Start adding from color defs */
+	i = startidx;
+	for (cdef = cset->alldefs; cdef; cdef = cdef->next) {
+		if (add_palette(palette, &cdef->spec, &i, startidx, SIZE)) {
+			/* If palette fills up, give up */
+			joe_free(palette);
+			return 1;
+		}
+	}
+	
+	/* Add things from builtins */
+	for (t = 0; color_builtins[t].name; t++) {
+		if (add_palette(palette, &cset->builtins[t], &i, startidx, SIZE)) {
+			joe_free(palette);
+			return 1;
+		}
+	}
+	
+	/* Add things from term colors */
+	for (t = 0; t < 16; t++) {
+		if (add_palette(palette, &cset->termcolors[t], &i, startidx, SIZE)) {
+			joe_free(palette);
+			return 1;
+		}
+	}
+	
+	i = sort_palette(palette, startidx, i);
+	
+	/* Map back from the palette into attrs */
+	for (cdef = cset->alldefs; cdef; cdef = cdef->next)
+		get_palette(palette, &cdef->spec, startidx, i);
+	
+	for (t = 0; color_builtins[t].name; t++)
+		get_palette(palette, &cset->builtins[t], startidx, i);
+	
+	for (t = 0; t < 16; t++)
+		get_palette(palette, &cset->termcolors[t], startidx, i);
+	
+	/* Clear end */
+	for (t = i; t < SIZE; t++)
+		palette[t] = -1;
+	
+	cset->palette = palette;
+	return 0;
+}
+
+/* Add GUI colors from color_spec into palette */
+static int add_palette(int *palette, struct color_spec *spec, int *idx, int startidx, int size)
+{
+	if (spec->type == COLORSPEC_TYPE_GUI) {
+		int i = *idx;
+		
+		/* This just keeps adding colors to the palette without checking if they're
+		   already there.  When it fills up, we sort and deduplicate, which resizes
+		   it down, and then we keep filling it.  This still winds up being faster
+		   than insertion sort without needing heavier data structures. */
+		if (spec->mask & FG_MASK)
+			palette[i++] = spec->gui_fg;
+		if (i == size) {
+			i = sort_palette(&palette[startidx], startidx, i);
+			if (i >= size)
+				return 1;
+		}
+		
+		if (spec->mask & BG_MASK)
+			palette[i++] = spec->gui_bg;
+		if (i == size) {
+			i = sort_palette(&palette[startidx], startidx, i);
+			if (i >= size)
+				return 1;
+		}
+		
+		*idx = i;
+	}
+	
+	return 0;
+}
+
+/* Sort and de-duplicate palette entries */
+static int sort_palette(int *palette, int start, int end)
+{
+	int i, t;
+	
+	/* Sort */
+	jsort(&palette[start], end - start, SIZEOF(int), palcmp);
+	
+	/* Find first duplicate */
+	for (i = start + 1; i < end && palette[i - 1] != palette[i]; i++) { }
+	
+	/* Deduplicate */
+	for (t = i - 1; i < end; i++) {
+		for (; i < end && palette[t] == palette[i]; i++) { }
+		if (i < end) {
+			palette[++t] = palette[i];
+		}
+	}
+	
+	return t + 1;
+}
+
+static int palcmp(const void *a, const void *b)
+{
+	return (*((int*)a) < *((int*)b)) ? -1 : 1;
+}
+
+/* Map GUI colors from color_spec into palette indices */
+static void get_palette(int *palette, struct color_spec *spec, int startidx, int endidx)
+{
+	if (spec->type == COLORSPEC_TYPE_GUI) {
+		if (spec->mask & FG_MASK)
+			spec->atr = (spec->atr & ~FG_MASK) | (findpal(palette, startidx, endidx, spec->gui_fg) << FG_SHIFT) | FG_GUI | FG_NOT_DEFAULT;
+		if (spec->mask & BG_MASK)
+			spec->atr = (spec->atr & ~BG_MASK) | (findpal(palette, startidx, endidx, spec->gui_bg) << BG_SHIFT) | BG_GUI | BG_NOT_DEFAULT;
+		
+		spec->type = COLORSPEC_TYPE_ATTR;
+	}
+}
+
+/* Find from palette */
+static int findpal(int *palette, int startidx, int endidx, int color)
+{
+	int start = startidx;
+	int end = endidx - 1;
+	
+	while (start <= end) {
+		int mid = (start + end) / 2;
+		if (palette[mid] < color) {
+			start = mid + 1;
+		} else if (palette[mid] > color) {
+			end = mid - 1;
+		} else {
+			return mid;
+		}
+	}
+	
+	return -1;
 }
 
 /* Create a list of all available schemes */
@@ -470,15 +634,13 @@ int apply_scheme(SCHEME *colors)
 	struct high_syntax *stx;
 	struct color_set *best = NULL, *p;
 	int i;
-	int supported = maint->t->assume_256 ? 256 : maint->t->Co;
+	int supported = maint->t->truecolor ? 0x1000000 : (maint->t->assume_256 ? 256 : maint->t->Co);
 	
 	if (!colors)
 		return 1;
 	
 	/* Find matching set */
 	for (p = colors->sets; p; p = p->next) {
-		/* GUI set would need different rules but isn't implemented yet
-		   and currently wouldn't match. */
 		if (p->colors <= supported && (!best || best->colors < p->colors)) {
 			best = p;
 		}
@@ -536,6 +698,9 @@ int apply_scheme(SCHEME *colors)
 	curscheme = colors;
 	curschemeset = best;
 	scheme_name = curscheme->name;
+	
+	/* Apply palette */
+	setextpal(maint->t, best->palette);
 	
 	return 0;
 }
@@ -658,6 +823,31 @@ void dump_colors(BW *bw)
 			joe_snprintf_1(buf, SIZEOF(buf), "* Color set [%d]\n", cset->colors);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
+			
+			if (cset->palette) {
+				int i;
+				
+				binss(bw->cursor, "  * Palette: ");
+				p_goto_eol(bw->cursor);
+				
+				/* Skip -1's */
+				for (i = 0; i < 256 && cset->palette[i] == -1; i++) { }
+				
+				/* Report start index */
+				joe_snprintf_1(buf, SIZEOF(buf), "[start %d] ", i);
+				binss(bw->cursor, buf);
+				p_goto_eol(bw->cursor);
+				
+				/* Write out palette */
+				for (; i < 256 && cset->palette[i] != -1; i++) {
+					joe_snprintf_1(buf, SIZEOF(buf), "%06x ", cset->palette[i]);
+					binss(bw->cursor, buf);
+					p_goto_eol(bw->cursor);
+				}
+				
+				binss(bw->cursor, "\n");
+				pnextl(bw->cursor);
+			}
 			
 			for (cdef = cset->alldefs; cdef; cdef = cdef->next) {
 				struct color_ref *cref;

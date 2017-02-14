@@ -9,7 +9,7 @@
 #define COLORSPEC_TYPE_NONE	0
 #define COLORSPEC_TYPE_ATTR	1
 #define COLORSPEC_TYPE_GUI	2
-#define COLORSET_GUI		-1
+#define COLORSET_GUI		0x1000000
 
 /* Color specification (either an attribute, or RGB colors */
 struct color_spec {
@@ -40,6 +40,7 @@ struct color_set {
 	COLORSET		*next;
 	int			colors;
 	HASH			*syntax;
+	int			*palette;
 	struct color_def	*alldefs;
 	struct color_spec	*builtins;
 	struct color_spec	termcolors[16];
