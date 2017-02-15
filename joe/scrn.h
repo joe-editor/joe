@@ -250,7 +250,7 @@ extern unsigned atab[];
 #define BG_SHIFT	11
 #define BG_VALUE	(255<<BG_SHIFT)
 #define BG_NOT_DEFAULT	(256<<BG_SHIFT)
-#define BG_GUI		(512<<BG_SHIFT)
+#define BG_TRUECOLOR	(512<<BG_SHIFT)
 #define BG_MASK		(1023<<BG_SHIFT)
 
 #define BG_DEFAULT	(0<<BG_SHIFT)
@@ -278,7 +278,7 @@ extern unsigned atab[];
 #define FG_SHIFT	21
 #define FG_VALUE	(255<<FG_SHIFT)
 #define FG_NOT_DEFAULT	(256<<FG_SHIFT)
-#define FG_GUI		(512<<FG_SHIFT)
+#define FG_TRUECOLOR	(512<<FG_SHIFT)
 #define FG_MASK		(1023<<FG_SHIFT)
 
 #define FG_DEFAULT	(0<<FG_SHIFT)

@@ -797,6 +797,11 @@ void bwgenh(BW *w)
 		memset(txt,' ',76);
 		msetI(fmt,BG_COLOR(bg_text),76);
 		txt[76]=0;
+		if ((q->byte & ~15) == (w->cursor->byte & ~15)) {
+			msetI(fmt,BG_COLOR(bg_curlinum),9);
+		} else {
+			msetI(fmt,BG_COLOR(bg_linum),9);
+		}
 		if (!flg) {
 #if HAVE_LONG_LONG
 			sprintf(bf,"%8llx ",(unsigned long long)q->byte);
@@ -807,8 +812,8 @@ void bwgenh(BW *w)
 			for (x=0; x!=8; ++x) {
 				int c;
 				if (q->byte==w->cursor->byte && !flg) {
-					fmt[10+x*3] |= INVERSE;
-					fmt[10+x*3+1] |= INVERSE;
+					fmt[10+x*3] = BG_COLOR(bg_cursor);
+					fmt[10+x*3+1] = BG_COLOR(bg_cursor);
 				}
 				if (q->byte>=from && q->byte<to && !flg) {
 					fmt[10+x*3] |= UNDERLINE;
@@ -830,8 +835,8 @@ void bwgenh(BW *w)
 			for (x=8; x!=16; ++x) {
 				int c;
 				if (q->byte==w->cursor->byte && !flg) {
-					fmt[11+x*3] |= INVERSE;
-					fmt[11+x*3+1] |= INVERSE;
+					fmt[11+x*3] = BG_COLOR(bg_cursor);
+					fmt[11+x*3+1] = BG_COLOR(bg_cursor);
 				}
 				if (q->byte>=from && q->byte<to && !flg) {
 					fmt[11+x*3] |= UNDERLINE;
@@ -851,7 +856,7 @@ void bwgenh(BW *w)
 					flg = 1;
 			}
 		}
-		genfield(t, screen, attr, 0, y, TO_DIFF_OK(w->offset), txt, 76, 0, w->w, 1, fmt);
+		genfield(t, screen, attr, 0, y, TO_DIFF_OK(w->offset), txt, 76, BG_COLOR(bg_text), w->w, 1, fmt);
 	}
 	prm(q);
 }

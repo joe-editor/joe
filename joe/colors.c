@@ -18,7 +18,7 @@ struct color_scheme *curscheme = NULL;
 struct color_set *curschemeset = NULL;
 
 /* Cursor color (not used yet) */
-static int bg_cursor;
+int bg_cursor;
 
 /* Loaded color schemes */
 static SCHEME allcolors = { {&allcolors, &allcolors} };
@@ -46,7 +46,7 @@ static struct color_builtin_specs color_builtins[] = {
 	{ "menusel", &bg_menusel, &bg_menumask, 0, INVERSE, ~INVERSE, NULL },
 	{ "prompt", &bg_prompt, NULL, 0, 0, 0, &bg_text },
 	{ "message", &bg_msg, NULL, 0, 0, 0, &bg_text },
-	{ "cursor", &bg_cursor, NULL, 0, 0, 0, NULL },
+	{ "cursor", &bg_cursor, NULL, 0, INVERSE, ~INVERSE, NULL },
 	{ NULL, NULL, NULL, 0, 0, 0, NULL }
 };
 
@@ -594,9 +594,9 @@ static void get_palette(int *palette, struct color_spec *spec, int startidx, int
 {
 	if (spec->type == COLORSPEC_TYPE_GUI) {
 		if (spec->mask & FG_MASK)
-			spec->atr = (spec->atr & ~FG_MASK) | (findpal(palette, startidx, endidx, spec->gui_fg) << FG_SHIFT) | FG_GUI | FG_NOT_DEFAULT;
+			spec->atr = (spec->atr & ~FG_MASK) | (findpal(palette, startidx, endidx, spec->gui_fg) << FG_SHIFT) | FG_TRUECOLOR | FG_NOT_DEFAULT;
 		if (spec->mask & BG_MASK)
-			spec->atr = (spec->atr & ~BG_MASK) | (findpal(palette, startidx, endidx, spec->gui_bg) << BG_SHIFT) | BG_GUI | BG_NOT_DEFAULT;
+			spec->atr = (spec->atr & ~BG_MASK) | (findpal(palette, startidx, endidx, spec->gui_bg) << BG_SHIFT) | BG_TRUECOLOR | BG_NOT_DEFAULT;
 		
 		spec->type = COLORSPEC_TYPE_ATTR;
 	}

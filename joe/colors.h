@@ -67,3 +67,4 @@ int init_colors(void);
 extern const char *scheme_name;
 extern struct color_scheme *curscheme;
 extern struct color_set *curschemeset;
+extern int bg_cursor;

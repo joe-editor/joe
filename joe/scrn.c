@@ -213,7 +213,7 @@ int set_attr(SCRN *t, int c)
 	if ((t->attrib & FG_MASK) != (c & FG_MASK)) {
 		if (t->Sf) {
 			int color = ((c & FG_VALUE) >> FG_SHIFT);
-			if (c & FG_GUI) {
+			if (c & FG_TRUECOLOR) {
 				if (t->truecolor && t->palette && t->palette[color] >= 0) {
 					char bf[32];
 					int rgb = t->palette[color];
@@ -236,7 +236,7 @@ int set_attr(SCRN *t, int c)
 	if ((t->attrib & BG_MASK) != (c & BG_MASK)) {
 		if (t->Sb) {
 			int color = ((c & BG_VALUE) >> BG_SHIFT);
-			if (c & BG_GUI) {
+			if (c & BG_TRUECOLOR) {
 				if (t->truecolor && t->palette && t->palette[color] >= 0) {
 					char bf[32];
 					int rgb = t->palette[color];
@@ -2123,7 +2123,14 @@ void genfield(SCRN *t,int (*scrn)[COMPOSE],int *attr,ptrdiff_t x,ptrdiff_t y,ptr
 		int c = *(const unsigned char *)s++;
 		ptrdiff_t wid = -1;
 		int my_atr = atr;
-		if (fmt) my_atr |= *fmt++;
+		if (fmt) {
+			int fmtatr = *fmt++;
+			if (fmtatr & FG_MASK)
+				my_atr = (my_atr & ~FG_MASK) | (fmtatr & FG_MASK);
+			if (fmtatr & BG_MASK)
+				my_atr = (my_atr & ~BG_MASK) | (fmtatr & BG_MASK);
+			my_atr |= fmtatr & AT_MASK;
+		}
 		if (locale_map->type) {
 			/* UTF-8 mode: decode character and determine its width */
 			c = utf8_decode(&sm,TO_CHAR_OK(c));
