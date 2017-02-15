@@ -797,7 +797,7 @@ void bwgenh(BW *w)
 		memset(txt,' ',76);
 		msetI(fmt,BG_COLOR(bg_text),76);
 		txt[76]=0;
-		if ((q->byte & ~15) == (w->cursor->byte & ~15)) {
+		if (w->o.hiline && (q->byte & ~15) == (w->cursor->byte & ~15)) {
 			msetI(fmt,BG_COLOR(bg_curlinum),9);
 		} else {
 			msetI(fmt,BG_COLOR(bg_linum),9);
