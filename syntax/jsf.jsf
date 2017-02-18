@@ -598,6 +598,7 @@
 # Continue to highlight the comment until the end of the line.
 :comment Comment comment
 	*		comment
+	"BFHNTX"	comment			noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
 

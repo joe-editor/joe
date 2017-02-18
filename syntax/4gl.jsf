@@ -8,6 +8,7 @@
 =String		+Constant
 =Number		+Constant
 =Type
+=Ident
 
 # conditional operators, blocks
 =Keyword
@@ -39,6 +40,7 @@
 	*		comment
 	"/"		slash2
 	"*"		maybe_end_comment
+	"BFHNTX"        comment         noeat call=comment_todo.comment_todo()
 :maybe_end_comment Comment
 	*		comment
 	"/"		idle
@@ -50,6 +52,7 @@
 :comment2 Comment
 	*		comment2
 	"*"		maybe_end_comment2
+	"BFHNTX"        comment2         noeat call=comment_todo.comment_todo()
 :maybe_end_comment2 Comment
 	*		comment2
 	"/"		comment
@@ -156,7 +159,7 @@ done
 # TODO: This needs to be vastly expanded, it seems like every other
 # token in this language is a keyword.
 
-:ident Idle
+:ident Ident
 	*		idle		noeat istrings
 	"assign"	cond
 	"case"		cond

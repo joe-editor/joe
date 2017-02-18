@@ -1,11 +1,17 @@
 # JOE syntax highlight file for Clojure
 
 =Idle
-=Comment 	green
-=Escape 	bold cyan
-=Constant	cyan
-=Bad		bold red
-=Keyword	bold
+=Comment
+=Escape
+=StringEscape	+Escape
+=Constant
+=String		+Constant
+=Number		+Constant
+=Boolean	+Constant
+=Keyword
+=Statement	+Keyword
+=Conditional	+Statement
+=Bad
 
 :reset Idle
 	*		idle		noeat call=.clojure()
@@ -113,8 +119,8 @@ done
 	"]}), \t\n;"	ident_end	noeat markend strings
 # Symbols which are built-in values
 	"nil"		value
-	"true"		value
-	"false"		value
+	"true"		bool
+	"false"		bool
 	"."		common
 	"catch"		common
 	"clojure.core/fn"		common
@@ -124,7 +130,7 @@ done
 	"do"		common
 	"finally"		common
 	"fn"		common
-	"if"		common
+	"if"		cond
 	"let"		common
 	"loop"		common
 	"monitor-enter"		common
@@ -139,7 +145,6 @@ done
 	"catch"		common
 	"finally"		common
 	"throw"		common
-	"try"		common
 	"case"		common
 	"clojure.core/case"		common
 	"clojure.core/cond"		common
@@ -152,12 +157,12 @@ done
 	"clojure.core/when-first"		common
 	"clojure.core/when-let"		common
 	"clojure.core/when-not"		common
-	"cond"		common
-	"cond->"		common
-	"cond->>"		common
-	"condp"		common
-	"if-let"		common
-	"if-not"		common
+	"cond"		cond
+	"cond->"		cond
+	"cond->>"		cond
+	"condp"		cond
+	"if-let"		cond
+	"if-not"		cond
 	"when"		common
 	"when-first"		common
 	"when-let"		common
@@ -1321,7 +1326,13 @@ done
 :value Constant
 	*		idle		noeat
 
+:bool Boolean
+	*		idle		noeat
+
 :common Keyword
+	*		idle		noeat
+
+:cond Conditional
 	*		idle		noeat
 
 :ident_end Idle
@@ -1350,54 +1361,55 @@ done
 
 :comment Comment
 	*		comment
+	"BFHNTX"        comment		noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
 # Check some specific common bases
 
-:two Constant
+:two Number
 	*		number		noeat
 	"r"		binary
 
-:eight Constant
+:eight Number
 	*		number		noeat
 	"r"		octal
 
-:one Constant
+:one Number
 	*		number		noeat
 	"0"		ten
 	"6"		sixteen
 
-:ten Constant
+:ten Number
 	*		number		noeat
 	"r"		decimal
 
-:sixteen Constant
+:sixteen Number
 	*		number		noeat
 	"r"		hex
 
-:hex Constant
+:hex Number
 	*		bad		noeat
 	"NM"		bad
 	"0-9a-fA-F"	hex
 
-:octal Constant
+:octal Number
 	*		bad		noeat
 	"NM"		bad
 	"0-7"		octal
 
-:binary Constant
+:binary Number
 	*		bad		noeat
 	"NM"		bad
 	"01"		binary
 
-:decimal Constant
+:decimal Number
 	*		bad		noeat
 	"NM"		bad
 	"0-9"		decimal
 
 # Number, no r yet...
 
-:number Constant
+:number Number
 	*		bad		noeat
 	"NM"		bad
 	"0-9"		number
@@ -1407,78 +1419,78 @@ done
 
 # we got the r
 
-:integer Constant
+:integer Number
 	*		bad		noeat
 	"NM"		bad
 	"0-9"		integer
 
 # We have a decimal point only
 
-:maybe_neg_float Constant
+:maybe_neg_float Number
 	*		symbol		recolor=-2 noeat
 	"0-9"		float		recolor=-2
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle		recolor=-2 noeat
 	"0-9"		float		recolor=-2
 
 # We have number and decimal point
 
-:float Constant
+:float Number
 	*		bad		noeat
 	"M"		bad
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		bad		noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		bad		noeat
 	"M"		bad
 	"0-9"		enum
 
 # Ratio
 
-:ratio Constant
+:ratio Number
 	*		bad		noeat
 	"0-9"		ratio
 
 # Strings
 
-:string	Constant
+:string	String
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"u"		string_uni4
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_uni4 Escape
+:string_uni4 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_uni3
 
-:string_uni3 Escape
+:string_uni3 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_uni2
 
-:string_uni2 Escape
+:string_uni2 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_uni1
 
-:string_uni1 Escape
+:string_uni1 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 Escape
+:string_octal2 StringEscape
 	*		string		noeat
 	"0-7"		string_octal1
 
-:string_octal1 Escape
+:string_octal1 StringEscape
 	*		string		noeat
 	"0-7"		string
 

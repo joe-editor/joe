@@ -4,6 +4,7 @@
 -
 
 =Idle
+=Ident
 =Bad
 =Preproc
 =Define		+Preproc
@@ -40,6 +41,7 @@
 
 :reset_line_comment Comment
 	*		reset_line_comment
+	"BFHNTX"        line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		reset
 
 :idle Idle
@@ -63,6 +65,7 @@
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"        line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		reset
 
 :first_digit Number
@@ -171,7 +174,7 @@
 	*		char		noeat
 	"0-7"		char
 
-:ident Idle
+:ident Ident
 	*			idle	noeat istrings
 	"if"			kw
 	"else"			kw

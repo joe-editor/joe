@@ -1,16 +1,27 @@
 # JOE syntax highlight file for COBOL
 
 =Idle
-=Bad		bold red
-=Preproc 	blue
-=Define		bold blue
-=Comment 	green
-=IncLocal	cyan
-=IncSystem	bold cyan
-=Constant 	cyan
-=Escape 	bold cyan
-=Type 		bold
-=Keyword 	bold
+=Bad
+=Preproc
+=Define		+Preproc
+=Comment
+=IncLocal	+String +Preproc
+=IncSystem	+Preproc
+=Constant
+=String		+Constant
+=Number		+Constant
+=Boolean	+Constant
+=Character	+String
+=Escape
+=StringEscape	+Escape
+=CharacterEscape +StringEscape
+=Type
+=Keyword
+=Operator	+Keyword
+=Statement	+Keyword
+=Conditional	+Statement
+=Loop		+Statement
+=Ident
 
 :reset Idle
 	*		idle		noeat
@@ -19,6 +30,7 @@
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"        line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		reset
 
 # All following states are for when we're not in a preprocessor line
@@ -33,7 +45,7 @@
 	"'"		char		recolor=-1
 	"a-zA-Z_"	ident		buffer
 
-:first_digit Constant
+:first_digit Number
 	*		idle	noeat
 	"xX"		hex
 	"."		float
@@ -45,100 +57,100 @@
 	*		idle	noeat
 	"0-9"		bad_number
 
-:octal Constant
+:octal Number
 	*		idle	noeat
 	"0-7"		octal
 	"89"		bad_number	recolor=-1
 
-:hex Constant
+:hex Number
 	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
-:decimal Constant
+:decimal Number
 	*		idle	noeat
 	"0-9"		decimal
 	"eE"		epart
 	"."		float
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle	noeat
 	"0-9"		enum
 
-:string	Constant
+:string	String
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"x"		string_hex1
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_hex1 Escape
+:string_hex1 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex2 Escape
+:string_hex2 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 Escape
+:string_octal2 StringEscape
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 Escape
+:string_octal3 StringEscape
 	*		string		noeat
 	"0-7"		string
 
-:string_control Escape
+:string_control StringEscape
 	*		string_control
 	"\n"		reset
 	"diouxXeEfFgGaAcspn%SC"	string
 
-:char Constant
+:char Character
 	*		char
 	"\n"		reset
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
-:char_escape	Escape
+:char_escape CharacterEscape
 	*		char
 	"x"		char_hex1
 	"0-7"		char_octal2
 	"\n"		char		recolor=-2
 
-:char_hex1 Escape
+:char_hex1 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_hex2
 
-:char_hex2 Escape
+:char_hex2 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char
 
-:char_octal2 Escape
+:char_octal2 CharacterEscape
 	*		char		noeat
 	"0-7"		char_octal3
 
-:char_octal3 Escape
+:char_octal3 CharacterEscape
 	*		char		noeat
 	"0-7"		char
 
-:ident Idle
+:ident Ident
 	*		idle		noeat istrings
 	"accept"	kw
 	"access"	kw
@@ -157,7 +169,7 @@
 	"also"	kw
 	"alter"	kw
 	"alternate"	kw
-	"and"	kw
+	"and"	oper
 	"any"	kw
 	"apply"	kw
 	"are"	kw
@@ -169,11 +181,11 @@
 	"at"	kw
 	"author"	kw
 	"automatic"	kw
-	"b-and"	kw
-	"b-exor"	kw
-	"b-less"	kw
-	"b-not"	kw
-	"b-or"	kw
+	"b-and"	oper
+	"b-exor"	oper
+	"b-less"	oper
+	"b-not"	oper
+	"b-or"	oper
 	"basis"	kw
 	"before"	kw
 	"beginning"	kw
@@ -298,7 +310,7 @@
 	"egcs"	kw
 	"egi"	kw
 	"eject"	kw
-	"else"	kw
+	"else"	cond
 	"emi"	kw
 	"empty"	kw
 	"enable"	kw
@@ -311,7 +323,7 @@
 	"end-divide"	kw
 	"end-enable"	kw
 	"end-evaluate"	kw
-	"end-if"	kw
+	"end-if"	cond
 	"end-invoke"	kw
 	"end-multiply"	kw
 	"end-of-page"	kw
@@ -333,7 +345,7 @@
 	"entry"	kw
 	"environment"	kw
 	"eop"	kw
-	"equal"	kw
+	"equal"	oper
 	"equals"	kw
 	"erase"	kw
 	"error"	kw
@@ -347,7 +359,7 @@
 	"exit"	kw
 	"extend"	kw
 	"external"	kw
-	"false"	const
+	"false"	bool
 	"fd"	kw
 	"fetch"	kw
 	"file"	kw
@@ -370,7 +382,7 @@
 	"global"	kw
 	"go"	kw
 	"goback"	kw
-	"greater"	kw
+	"greater"	oper
 	"group"	kw
 	"heading"	kw
 	"high-value"	const
@@ -379,8 +391,8 @@
 	"i-o-control"	kw
 	"id"	kw
 	"identification"	kw
-	"if"	kw
-	"in"	kw
+	"if"	cond
+	"in"	oper
 	"index"	kw
 	"index-1"	kw
 	"index-2"	kw
@@ -405,7 +417,7 @@
 	"into"	kw
 	"invalid"	kw
 	"invoke"	kw
-	"is"	kw
+	"is"	oper
 	"just"	kw
 	"justified"	kw
 	"kanji"	kw
@@ -417,7 +429,7 @@
 	"leading"	kw
 	"left"	kw
 	"length"	kw
-	"less"	kw
+	"less"	oper
 	"limit"	kw
 	"limits"	kw
 	"linage"	kw
@@ -450,7 +462,7 @@
 	"next"	kw
 	"no"	kw
 	"normal"	kw
-	"not"	kw
+	"not"	oper
 	"null"	const
 	"nulls"	const
 	"number"	kw
@@ -466,7 +478,7 @@
 	"only"	kw
 	"open"	kw
 	"optional"	kw
-	"or"	kw
+	"or"	oper
 	"order"	kw
 	"organization"	kw
 	"other"	kw
@@ -620,25 +632,25 @@
 	"terminate"	kw
 	"test"	kw
 	"text"	kw
-	"than"	kw
+	"than"	oper
 	"then"	kw
 	"through"	kw
-	"thru"	kw
+	"thru"	loop
 	"time"	kw
 	"timeout"	kw
-	"times"	kw
+	"times"	loop
 	"title"	kw
-	"to"	kw
+	"to"	oper
 	"top"	kw
 	"trace"	kw
 	"trailing"	kw
 	"transceive"	kw
-	"true"	const
+	"true"	bool
 	"type"	kw
 	"unequal"	kw
 	"unit"	kw
 	"unstring"	kw
-	"until"	kw
+	"until"	loop
 	"up"	kw
 	"update"	kw
 	"upon"	kw
@@ -650,7 +662,7 @@
 	"validate"	kw
 	"value"	kw
 	"values"	kw
-	"varying"	kw
+	"varying"	loop
 	"wait"	kw
 	"when"	kw
 	"when-compiled"	kw
@@ -669,5 +681,17 @@ done
 :kw Keyword
 	*	idle	noeat
 
+:oper Operator
+	*	idle	noeat
+
+:loop Loop
+	*	idle	noeat
+
+:cond Conditional
+	*	idle	noeat
+
 :const Constant
+	*	idle	noeat
+
+:bool Boolean
 	*	idle	noeat

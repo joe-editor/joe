@@ -1,6 +1,7 @@
 # JOE syntax highlight file for AVR assembly language
 
 =Idle
+=Ident
 =Preproc			# basic color for directives
 =Include	+Preproc	# "include" - color
 =Define		+Preproc	# same for "def" and "equ"
@@ -65,9 +66,10 @@ done
 
 :comment Comment
 	*			comment
-	"\n"		idle
+	"BFHNTX"        	comment         noeat call=comment_todo.comment_todo()
+	"\n"			idle
 
-:ident Idle
+:ident Ident
 	*				idle noeat istrings
 	"and"		com
 	"andi"		com

@@ -2,61 +2,37 @@
 # (c) 2012 Matthias S. Benkmann
 # License: http://creativecommons.org/licenses/by/3.0/deed.en_US
 
-# Small modifications by jjjordan to better suit white backgrounds and 16-color
-# consoles.  (Original colors commented out below)
-
-# Standard colors:
-#
-# Foreground:
-#   white cyan magenta blue yellow green red black
-#
-# Background:
-#   bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
-#
-#
-# For 16 color and 256 color xterms: "export TERM=xterm-16color", the following
-# brighter than normal colors are available ( Note that you need an xterm which 
-# was compiled to support 16 or 256 colors and a matching termcap/terminfo entry 
-# for it.)
-#
-# Foreground:
-#   WHITE CYAN MAGENTA BLUE YELLOW GREEN RED BLACK
-#
-# Background:
-#   bg_WHITE bg_CYAN bg_MAGENTA bg_BLUE bg_YELLOW bg_GREEN bg_RED bg_BLACK
-#
-#
-# For 256 color xterm: "export TERM=xterm-256color", the following become available
-# ( Note that you need an xterm which was compiled to support 256 colors and a
-# matching termcap/terminfo entry for it. )
-#
-# fg_RGB and bg_RGB, where R, G, and B range from 0 - 5.  So: fg_500 is bright red.
-#
-# fg_NN and bg_NN give shades of grey, where the intensity, NN, ranges from 0 - 23.
-
 
 =Idle
-=Error          red bold
-=Comment        green #bold green
-=SingleQuoted   cyan
-=DoubleQuoted   cyan
-=BackQuoted     cyan
-=Escape         bold cyan
-=Operator       bold cyan
-=Parentheses    #bold yellow
-=Brackets       yellow
-=Brace          magenta #bold magenta
-=Semicolon      #bold yellow
-=Period         bold
-=PeriodDecimal  red
-=Number         red
-=Constant       red
-=Comma          #bold yellow
-=Identifier     #fg_333
-=ExportedIdentifier #fg_444
-=Keyword        bold
-=Type           bold
-=BuiltinFunction bold
+=Bad
+=Comment
+=Constant
+=Boolean	+Constant
+=String		+Constant
+=Character	+String
+=BackQuoted	+String
+=StringEscape	+Escape
+=Number		+Constant
+=Ident
+=DefinedIdent	+Ident
+=Keyword
+=Operator	+Keyword
+=Statement	+Keyword
+=Conditional	+Statement
+=Loop		+Statement
+=Label		+DefinedIdent
+=Structure	+Type +Keyword
+=Type
+=BuiltinFunction +DefinedFunction
+
+=Control
+=Brackets	+Control
+=Brace		+Control
+=Semicolon	+Control
+=Comma		+Control
+=Period		+Control
+=PeriodDecimal	+Period +Number
+
 
 ##################### main #########################
 :main Idle
@@ -79,7 +55,7 @@
   "#$@~"        error         noeat
 
 #################### error ##########################
-:error Error
+:error Bad
   *             error
   "\n"          main
   "/"           maybe_comment_err  recolor=-1
@@ -97,10 +73,12 @@
 
 :line_comment Comment
   *             line_comment
+  "BFHNTX"      line_comment  noeat call=comment_todo.comment_todo()
   "\n"          main
 
 :block_comment Comment  
   *            block_comment
+  "BFHNTX"     block_comment  noeat call=comment_todo.comment_todo()
   "*"          maybe_end_block_comment
   
 :maybe_end_block_comment Comment
@@ -108,13 +86,13 @@
   "/"          main
 
 ################ strings ############################
-:single_quoted SingleQuoted
+:single_quoted Character
   *            single_quoted
   "'"          main
   "\\"         single_quoted call=.escape() recolor=-1
   "\n"         error
 
-:double_quoted DoubleQuoted
+:double_quoted String
   *            double_quoted
   "\""         main
   "\\"         double_quoted call=.escape() recolor=-1
@@ -128,7 +106,7 @@
 :operator Operator
   *            main
 
-:parentheses Parentheses
+:parentheses Control
   *            main
 
 :brackets Brackets
@@ -199,52 +177,50 @@
   "eE"         integer
   
 ################# keywords and identifiers ##########################
-:keyword_or_identifier Identifier
+:keyword_or_identifier Ident
   *            identifier
   "\p{Lu}\p{Lt}"        exported_identifier recolor=-1
   "\p{Ll}\p{Lo}\p{Pc}\p{Nl}"       keyword_or_identifier2
 
-:exported_identifier  ExportedIdentifier
+:exported_identifier  DefinedIdent
   *                         exported_identifier
   "\x01-/:-@[-^`{-\x7f"      main noeat
 
-:identifier Identifier
+:identifier Ident
   *                         identifier
   "\x01-/:-@[-^`{-\x7f"     main noeat
 
-:keyword_or_identifier2 Identifier
+:keyword_or_identifier2 Ident
   *                 identifier
   "\c"	            keyword_or_identifier2
   "\x01-/:-@[-^`{-\x7f"      main noeat hold strings
       "_"           keyword
-      "break"       keyword
-      "default"     keyword
+      "break"       stmt
+      "default"     label
       "func"        keyword
-      "interface"   keyword
-      "select"      keyword
-      "case"        keyword
-      "defer"       keyword
+      "interface"   struct
+      "select"      cond
+      "case"        label
+      "defer"       stmt
       "go"          keyword
-      "map"         keyword
-      "struct"      keyword
-      "chan"        keyword
-      "else"        keyword
-      "goto"        keyword
-      "package"     keyword
-      "switch"      keyword
-      "const"       keyword
+      "struct"      struct
+      "else"        cond
+      "goto"        stmt
+      "package"     stmt
+      "switch"      cond
+      "const"       stmt
       "fallthrough" keyword
-      "if"          keyword
-      "range"       keyword
-      "type"        keyword
-      "continue"    keyword
-      "for"         keyword
-      "import"      keyword
-      "return"      keyword
-      "var"         keyword
+      "if"          cond
+      "range"       loop
+      "type"        struct
+      "continue"    stmt
+      "for"         loop
+      "import"      stmt
+      "return"      stmt
+      "var"         stmt
       
-      "true"        constant
-      "false"       constant
+      "true"        boolean
+      "false"       boolean
       "nil"         constant
       "iota"        constant
       
@@ -268,6 +244,8 @@
       "bool"        type
       "string"      type
       "error"       type
+      "map"         type
+      "chan"        type
       
       "delete"      builtin
       "make"        builtin
@@ -297,13 +275,28 @@
   
 :builtin BuiltinFunction
   *            main  noeat
-  
-  
 
+:stmt Statement
+  *            main  noeat
+
+:label Label
+  *            main  noeat
+
+:struct Structure
+  *            main  noeat
+
+:cond Conditional
+  *            main  noeat
+
+:loop Loop
+  *            main  noeat
+
+:boolean Boolean
+  *            main  noeat
 
 ########################## .subr escape START ######################################
 .subr escape
-:esc Escape
+:esc StringEscape
   *              esc_err    noeat
   "abfnrtv'\"" whatever return
     # For some reason joe doesn't interpret \\ properly if merged with the
@@ -314,51 +307,51 @@
   "U"            hex8
   "0-3"          oct2
 
-:hex8 Escape
+:hex8 StringEscape
   *              esc_err noeat
   "a-fA-F0-9"    hex7
 
-:hex7 Escape
+:hex7 StringEscape
   *              esc_err    noeat
   "a-fA-F0-9"    hex6
 
-:hex6 Escape
+:hex6 StringEscape
   *              esc_err noeat
   "a-fA-F0-9"    hex5
 
-:hex5 Escape
+:hex5 StringEscape
   *              esc_err    noeat
   "a-fA-F0-9"    hex4
 
-:hex4 Escape
+:hex4 StringEscape
   *              esc_err noeat
   "a-fA-F0-9"    hex3
 
-:hex3 Escape
+:hex3 StringEscape
   *              esc_err    noeat
   "a-fA-F0-9"    hex2
 
-:hex2 Escape
+:hex2 StringEscape
   *              esc_err noeat
   "a-fA-F0-9"    hex1
 
-:hex1 Escape
+:hex1 StringEscape
   *              esc_err    noeat
   "a-fA-F0-9"    whatever return
 
-:oct2 Escape
+:oct2 StringEscape
   *              esc_err noeat
   "0-7"          oct1
 
-:oct1 Escape
+:oct1 StringEscape
   *              esc_err noeat
   "0-7"          whatever return
 
-:esc_err Error
+:esc_err Bad
   *              esc_err return
   "\n"           esc_err_newline noeat recolor=-2
 
-:esc_err_newline Error
+:esc_err_newline Bad
   *              esc_err return noeat
   
 

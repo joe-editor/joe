@@ -1,12 +1,16 @@
 # JOE syntax highlight file for Windows batch scripts
 
 =Idle
-=Comment	green
-=Command	bold
-=Statement	bold cyan
-=Brace		magenta
-=Variable	blue
-=Label		bold blue
+=Comment
+=Command	+Type
+=Statement	+Keyword
+=Brace
+=Variable	+Escape
+=StringVariable	+StringEscape
+=Label
+=Conditional	+Statement
+=Loop		+Statement
+=String		+Constant
 
 :reset Idle
 	*		linebegin	noeat
@@ -35,9 +39,9 @@
 	"endlocal"	stmt
 	"erase"		stmt
 	"exit"		stmt
-	"for"		stmt
-	"goto"		stmt
-	"if"		stmt
+	"for"		cond
+	"goto"		loop
+	"if"		cond
 	"move"		stmt
 	"pause"		stmt
 	"popd"		stmt
@@ -70,7 +74,14 @@ done
 
 :comment Comment
 	*		comment
+	"BFHNTX"        comment		noeat call=comment_todo.comment_todo()
 	"\r\n"		reset
+
+:loop Loop
+	*		args		noeat
+
+:cond Conditional
+	*		args		noeat
 
 :stmt Statement
 	*		args		noeat
@@ -78,10 +89,11 @@ done
 :echostmt Statement
 	*		echoargs	noeat
 
-:echoargs Idle
+:echoargs String
 	*		echoargs
-	"%"		echoargs	call=.variable() recolor=-1
+	"%"		echoargs	call=.strvariable() recolor=-1
 	"&"		and		recolor=-1
+	">|"		reset		recolor=-1
 	"\r\n"		reset
 
 :command Command
@@ -101,31 +113,32 @@ done
 	"("		lparen		recolor=-1
 	")"		rparen		recolor=-1
 	"\r\n"		reset
-	"\""		qargs			
+	"\""		qargs		recolor=-1
 	"&"		and		recolor=-1
 
 # Double-quoted args
-:qargs Idle
+:qargs String
 	*		qargs
 	"\""		args
-	"%"		qargs		call=.variable() recolor=-1
+	"%"		qargs		call=.strvariable() recolor=-1
 	"\r\n"		reset
 
 # Single-quoted args
-:sqargs Idle
+:sqargs String
 	*		sqargs
 	"'"		args
-	"%"		sqargs		call=.variable() recolor=-1
+	"%"		sqargs		call=.strvariable() recolor=-1
 	"\r\n"		reset
 
 # Back-quoted (`) args, found in some for-loops
-:bqargs Idle
+:bqargs String
 	*		bqargs
 	"`"		args
-	"%"		bqargs		call=.variable() recolor=-1
+	"%"		bqargs		call=.strvariable() recolor=-1
 	"\r\n"		reset
 
 :and Idle
+	"&"		and
 	*		reset		noeat
 
 :lparen Brace
@@ -148,6 +161,25 @@ done
 	"A-Za-z0-9_"	shortvar
 
 :varbody Variable
+	*		varbody
+	"%"		args		return
+
+.end
+
+.subr strvariable
+
+:variable StringVariable
+	*		args		noeat return
+	"%~"		shortvar
+	"\*"		noeat		return
+	"0-9"		variable	return
+	"A-Za-z_"	varbody
+
+:shortvar StringVariable
+	*		args		noeat return
+	"A-Za-z0-9_"	shortvar
+
+:varbody StringVariable
 	*		varbody
 	"%"		args		return
 

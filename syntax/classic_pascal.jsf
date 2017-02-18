@@ -1,12 +1,19 @@
 # PASCAL highlighter for JOE
 
 =Idle
-=Comment green
-=Constant cyan
-=Type bold
-=Keyword bold
-=Operator bold
-=Function bold
+=Ident
+=Comment
+=Constant
+=String		+Constant
+=Number		+Constant
+=Type
+=Keyword
+=Statement	+Keyword
+=Operator	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=DefinedFunction +DefinedIdent
+=Builtin	+DefinedFunction
 
 :idle Idle
 	*		idle
@@ -24,6 +31,7 @@
 
 :comment Comment
 	*		comment
+	"BFHNTX"        comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 	"}"		idle
 
@@ -34,60 +42,60 @@
 
 # String constant
 
-:string Constant
+:string String
 	*		string
 	"\n"		idle
 	"'"		maybe_end_string
 
-:maybe_end_string Constant
+:maybe_end_string String
 	*		idle		recolor=-1 noeat
 	"'"		string
 
 # Numeric constant
 
-:number Constant
+:number Number
 	*		idle		noeat
 	"0-9"		number
 	"eE"		epart
 	"."		dot
 
-:dot Constant
+:dot Number
 	*		idle	noeat
 	"0-9"		float
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle	noeat
 	"0-9"		enum
 
 
 # Keywords
 
-:ident Idle
+:ident Ident
 	*		idle		noeat istrings
 	"and"		operator
 	"array"		type
 	"begin"		kw
-	"case"		kw
+	"case"		cond
 	"const"		kw
 	"div"		operator
 	"do"		kw
 	"downto"	kw
-	"else"		kw
+	"else"		cond
 	"end"		kw
 	"file"		kw
-	"for"		kw
+	"for"		loop
 	"function"	kw
-	"goto"		kw
-	"if"		kw
+	"goto"		loop
+	"if"		cond
 	"in"		kw
 	"label"		kw
 	"mod"		operator
@@ -99,14 +107,14 @@
 	"procedure"	kw
 	"program"	kw
 	"record"	kw
-	"repeat"	kw
+	"repeat"	loop
 	"set"		kw
 	"then"		kw
 	"to"		kw
 	"type"		kw
-	"until"		kw
+	"until"		loop
 	"var"		kw
-	"while"		kw
+	"while"		loop
 	"with"		kw
 	"integer"	type
 	"boolean"	type
@@ -145,11 +153,17 @@ done
 :type Type
 	*	idle	noeat
 
+:loop Loop
+	*	idle	noeat
+
+:cond Conditional
+	*	idle	noeat
+
 :operator Operator
 	*	idle	noeat
 
 :word_constant Constant
 	*	idle	noeat
 
-:function Function
+:function Builtin
 	*	idle	noeat

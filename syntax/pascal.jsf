@@ -2,13 +2,20 @@
 # With support for Delphi and FPC by Michael Van Canneyt
 
 =Idle
-=Comment green
-=Constant cyan
-=Type bold
-=Keyword bold
-=Operator bold
-=Function bold
-=Bad bold red
+=Comment
+=Constant
+=String		+Constant
+=Number		+Constant
+=Type
+=Keyword
+=Statement	+Keyword
+=Operator	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=DefinedFunction +DefinedIdent
+=Builtin	+DefinedFunction
+=Structure	+Type
+=Bad
 
 :idle Idle
 	*		idle
@@ -34,10 +41,12 @@
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		reset
 
 :comment Comment
 	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 	"}"		idle
 
@@ -47,12 +56,12 @@
 
 # String constant
 
-:string Constant
+:string String
 	*		string
 	"\n"		idle
 	"'"		maybe_end_string
 
-:maybe_end_string Constant
+:maybe_end_string String
 	*		idle		recolor=-1 noeat
 	"'"		string
 
@@ -73,41 +82,41 @@
 :bad Bad
 	*		idle		noeat
 
-:hex_number	Constant
+:hex_number	Number
 	*		idle		noeat
 	"0-9"		hex_number
 	"a-fA-F"	hex_number
 
-:bin_number	Constant
+:bin_number	Number
 	*		idle		noeat
 	"01"		bin_number
 	"2-9"		bad		recolor=-1
 
-:oct_number	Constant
+:oct_number	Number
 	*		idle		noeat
 	"0-7"		oct_number
 	"89"		bad		recolor=-1
 
-:number Constant
+:number Number
 	*		idle		noeat
 	"0-9"		number
 	"eE"		epart
 	"."		dot
 
-:dot Constant
+:dot Number
 	*		idle	noeat
 	"0-9"		float
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle	noeat
 	"0-9"		enum
 
@@ -119,18 +128,18 @@
 	"and"		operator
 	"array"		type
 	"begin"		kw
-	"case"		kw
+	"case"		cond
 	"const"		kw
 	"div"		operator
 	"do"		kw
 	"downto"	kw
-	"else"		kw
+	"else"		cond
 	"end"		kw
 	"file"		kw
-	"for"		kw
+	"for"		loop
 	"function"	kw
-	"goto"		kw
-	"if"		kw
+	"goto"		loop
+	"if"		cond
 	"in"		kw
 	"label"		kw
 	"mod"		operator
@@ -142,13 +151,13 @@
 	"procedure"	kw
 	"program"	kw
 	"record"	kw
-	"repeat"	kw
+	"repeat"	loop
 	"set"		kw
 	"then"		kw
 	"type"		kw
-	"until"		kw
+	"until"		loop
 	"var"		kw
-	"while"		kw
+	"while"		loop
 	"with"		kw
 # Delphi keywords
 	"to"		kw
@@ -159,7 +168,7 @@
 	"cdecl"		kw
 	"stdcall"	kw
 	"register"	kw
-	"interface"	kw
+	"interface"	struct
 	"library"	kw
 	"constructor"	kw
 	"destructor"	kw
@@ -171,7 +180,7 @@
 	"protected"	kw
 	"initialization"	kw
 	"finalization"	kw
-	"class"		kw
+	"class"		struct
 	"object"	kw
 	"resourcestring"	kw
 	"property"	kw
@@ -213,11 +222,20 @@ done
 :type Type
 	*	idle	noeat
 
+:loop Loop
+	*	idle	noeat
+
+:cond Conditional
+	*	idle	noeat
+
+:struct Structure
+	*	idle	noeat
+
 :operator Operator
 	*	idle	noeat
 
 :word_constant Constant
 	*	idle	noeat
 
-:function Function
+:function Builtin
 	*	idle	noeat
