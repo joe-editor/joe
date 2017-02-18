@@ -983,7 +983,7 @@ static int docolors(W *w, char *s, void *obj, int *notify)
 	}
 
 	vsrm(s);
-	updall();
+	nredraw(maint->t);
 	if (notify)
 		*notify = 1;
 
