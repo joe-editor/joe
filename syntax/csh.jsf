@@ -6,11 +6,17 @@
 # Colors
 
 =Idle
-=Comment 	green
-=Constant 	cyan
-=Escape 	bold cyan
-=Keyword 	bold
-=Var		magenta
+=Ident
+=Comment
+=String		+Constant
+=Escape
+=StringEscape	+Escape
+=Keyword
+=Variable	+DefinedIdent
+=StringVariable	+StringEscape
+=Label		+DefinedIdent
+=Loop		+Statement +Keyword
+=Conditional	+Statement +Keyword
 
 # Syntax
 
@@ -31,109 +37,109 @@
 :escape Escape
 	*		idle
 
-:subst Var
+:subst Variable
 	*		idle
 	"{"		subst_brack
 	"a-zA-Z_"	subst_name
 	"0-9*@?\-$_!"	idle
 
-:subst_name Var
+:subst_name Variable
 	*		idle		noeat recolor=-1
 	"a-zA-Z0-9_"	subst_name
 
-:subst_brack Var
+:subst_brack Variable
 	*		subst_brack
 	"}"		idle
 
 # Simplest case: no quoting allowed
-:string_sq Constant
+:string_sq String
 	*		string_sq
 	"\'"		idle
 
 
 # double-quote: quoting, backqoutes and substitution allowed
-:string_dq Constant
+:string_dq String
 	*		string_dq
 	"$"		string_dq_subst	recolor=-1
 	"\""		idle
 	"\\"		string_dq_esc	recolor=-1
 	"`"		string_dq_bq	recolor=-1
 
-:string_dq_subst Var
+:string_dq_subst StringEscape
 	*		string_dq	noeat recolor=-2
 	"$0-9!_\-?*@"	string_dq
 	"a-zA-Z_"	string_dq_subst_name
 	"{"		string_dq_subst_brack
 
-:string_dq_subst_name Var
+:string_dq_subst_name StringVariable
 	*		string_dq	recolor=-1 noeat
 	"a-zA-Z0-9_"	string_dq_subst_name
 
-:string_dq_subst_brack Var
+:string_dq_subst_brack StringEscape
 	*		string_dq_subst_brack
 	"}"		string_dq
 
-:string_dq_esc Escape
+:string_dq_esc StringEscape
 	*		string_dq	recolor=-2
 	"$`\"\\"	string_dq
 	"\n"		string_dq	recolor=-2
 
-:string_dq_bq Constant
+:string_dq_bq String
 	*		string_dq_bq
 	"$"		string_dq_bq_subst	recolor=-1
 	"\`"		string_dq
 	"\\"		string_dq_bq_esc	recolor=-1
 
-:string_dq_bq_subst Var
+:string_dq_bq_subst StringEscape
 	*		string_dq_bq	noeat recolor=-2
 	"$0-9!_\-?*@"	string_dq_bq
 	"a-zA-Z_"	string_dq_bq_subst_name
 	"{"		string_dq_bq_subst_brack
 
-:string_dq_bq_subst_name Var
+:string_dq_bq_subst_name StringVariable
 	*		string_dq_bq	recolor=-1 noeat
 	"a-zA-Z0-9_"	string_dq_bq_subst_name
 
-:string_dq_bq_subst_brack Var
+:string_dq_bq_subst_brack StringEscape
 	*		string_dq_bq_subst_brack
 	"}"		string_dq_bq
 
-:string_dq_bq_esc Escape
+:string_dq_bq_esc StringEscape
 	*		string_dq_bq	recolor=-2
 	"$`\"\\"	string_dq_bq
 	"\n"		string_dq_bq	recolor=-2
 
 
 # backquote
-:string_bq Constant
+:string_bq String
 	*		string_bq
 	"$"		string_bq_subst	recolor=-1
 	"\`"		idle
 	"\\"		string_bq_esc	recolor=-1
 
 # escape in backquote
-:string_bq_esc Escape
+:string_bq_esc StringEscape
 	*		string_bq	recolor=-2
 	"$`\"\\"	string_bq
 	"\n"		string_bq	recolor=-2
 
 # Substitution in a backquote
-:string_bq_subst Var
+:string_bq_subst StringEscape
 	*		string_bq	noeat recolor=-2
 	"$0-9!_\-?*@"	string_bq
 	"a-zA-Z_"	string_bq_subst_name
 	"{"		string_bq_subst_brack
 
-:string_bq_subst_name Var
+:string_bq_subst_name StringVariable
 	*		string_bq	recolor=-1 noeat
 	"a-zA-Z0-9_"	string_bq_subst_name
 
-:string_bq_subst_brack Var
+:string_bq_subst_brack StringEscape
 	*		string_bq_subst_brack
 	"}"		string_bq
 
 
-:ident Idle
+:ident Ident
 	*		idle		noeat strings
 	"!"		kw
 	"{"		kw
@@ -144,29 +150,29 @@
 	"alloc"		kw
 	"bg"		kw
 	"bindkey"	kw
-	"break"		kw
+	"break"		loop
 	"breaksw"	kw
 	"builtins"	kw
 	"bye"		kw
-	"case"		kw
+	"case"		label
 	"cd"		kw
 	"chdir"		kw
 	"complete"	kw
-	"continue"	kw
-	"default"	kw
+	"continue"	loop
+	"default"	label
 	"dirs"		kw
 	"echo"		kw
 	"echotc"	kw
-	"else"		kw
+	"else"		cond
 	"end"		kw
-	"endif"		kw
+	"endif"		cond
 	"endsw"		kw
 	"eval"		kw
 	"exec"		kw
 	"exit"		kw
 	"fg"		kw
 	"filetest"	kw
-	"foreach"	kw
+	"foreach"	loop
 	"getspath"	kw
 	"getxvers"	kw
 	"glob"		kw
@@ -174,7 +180,7 @@
 	"hashstat"	kw
 	"history"	kw
 	"hup"		kw
-	"if"		kw
+	"if"		cond
 	"inlib"		kw
 	"jobs"		kw
 	"kill"		kw
@@ -207,8 +213,8 @@
 	"source"	kw
 	"stop"		kw
 	"suspend"	kw
-	"switch"	kw
-	"case"		kw
+	"switch"	cond
+	"case"		label
 	"telltc"	kw
 	"time"		kw
 	"umask"		kw
@@ -225,9 +231,18 @@
 	"watchdog"	kw
 	"where"		kw
 	"which"		kw
-	"while"		kw
+	"while"		loop
 done
 	"a-zA-Z0-9\-"	ident
 
 :kw Keyword
+	*	idle	noeat
+
+:cond Conditional
+	*	idle	noeat
+
+:loop Loop
+	*	idle	noeat
+
+:label Label
 	*	idle	noeat

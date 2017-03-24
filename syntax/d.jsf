@@ -1,15 +1,26 @@
 # JOE syntax highlight file for D
 
 =Idle
-=Comment 	green
-=Constant 	cyan
-=Escape 	bold cyan
-=Type 		bold
-=Keyword 	bold
-=Operator	bold
-=Bad		bold red
-=Brace		magenta
-=Control	
+=Ident
+=Comment
+=Constant
+=String		+Constant
+=Number		+Constant
+=Boolean	+Constant
+=Character	+String
+=Escape
+=StringEscape	+Escape
+=CharacterEscape +StringEscape
+=Type
+=Keyword
+=Operator	+Keyword
+=Statement	+Keyword
+=Conditional	+Statement
+=Loop		+Statement
+=Label		+DefinedIdent
+=Bad
+=Brace
+=Control
 
 =Methods
 
@@ -93,30 +104,30 @@
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
-:int_postfix Constant
+:int_postfix Number
 	*		idle		noeat
 	"uU"		int_postfix_1
 	"L"		int_postfix_2
 
-:int_postfix_1 Constant
+:int_postfix_1 Number
 	*		idle		noeat
 	"L"		idle
 
-:int_postfix_2 Constant
+:int_postfix_2 Number
 	*		idle		noeat
 	"uU"		idle
 
-:float_postfix Constant
+:float_postfix Number
 	*		idle		noeat
 	"fF"		float_postfix_1
 	"L"		float_postfix_1
 	"i"		idle
 
-:float_postfix_1 Constant
+:float_postfix_1 Number
 	*		idle		noeat
 	"i"		idle
 
-:first_digit Constant
+:first_digit Number
 	*		int_postfix	noeat
 	"xX"		hex
 	"bB"		bin
@@ -128,37 +139,37 @@
 	*		idle		noeat
 	"0-9"		bad_number
 
-:octal Constant
+:octal Number
 	*		int_postfix	noeat
 	"0-7_"		octal
 	"89"		bad_number	recolor=-1
 
-:hex Constant
+:hex Number
 	*		int_postfix	noeat
 	"0-9A-Fa-f_"	hex
 	"."		hexfloat
 	"pP"		ppart
 
-:hexfloat Constant
+:hexfloat Number
 	*		float_postfix	noeat
 	"0-9A-Fa-f_"	hexfloat
 	"pP"		ppart
 
-:ppart Constant
+:ppart Number
 	*		float_postfix	noeat
 	"0-9+\-"	pnum
 
-:pnum Constant
+:pnum Number
 	*		float_postfix	noeat
 	"0-9_"		pnum
 
-:decimal Constant
+:decimal Number
 	*		int_postfix	noeat
 	"0-9_"		decimal
 	"eE"		epart
 	"."		float
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle		recolor=-2 noeat
 	"\i"		not_ident	recolor=-2
 	"0-9"		float		recolor=-2
@@ -167,16 +178,16 @@
 	*		idle		noeat
 	"\c"		not_ident
 
-:float Constant
+:float Number
 	*		float_postfix	noeat
 	"eE"		epart
 	"0-9_"		float
 
-:epart Constant
+:epart Number
 	*		idle		noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		float_postfix	noeat
 	"0-9_"		enum
 
@@ -185,11 +196,11 @@
 	"{"		brace		call=.d(squiggly)
 	"\""		qdstring	recolor=-2
 
-:qdstring Constant
+:qdstring String
 	*		qstring		save_c
 	"\i"		qdelim		buffer
 
-:qdelim Constant
+:qdelim String
 	*		qdelim_bad	noeat save_s
 	"\c"		qdelim
 	"\n"		skipline	noeat save_s
@@ -198,18 +209,18 @@
 	*		qdelim_bad
 	"\n"		skipline	noeat
 
-:skipline Constant
+:skipline String
 	*		skipline
 	"\n"		next_line
 
-:todelim Constant
+:todelim String
 	*		todelim
 	"\n"		next_line
 	"\""		next_line	strings
 	"&"		founddelim
 done
 
-:founddelim Constant
+:founddelim String
 	*		idle		noeat
 	"\""		bad_line
 
@@ -218,15 +229,15 @@ done
 	"\n"		idle
 
 # eat \n so it's not in string.
-:next_line Constant
+:next_line String
 	*		todelim		buffer
 	"\n"		next_line
 
-:qstring Constant
+:qstring String
 	*		qstring
 	&		qstring_1
 
-:qstring_1 Constant
+:qstring_1 String
 	*		qstring		noeat
 	"\""		string_postfix
 
@@ -234,7 +245,7 @@ done
 	*		ident		noeat
 	"\""		xstring		recolor=-2
 
-:xstring Constant
+:xstring String
 	*		bad_xstring	recolor=-1
 	" \t\r\n\f0-9A-Fa-f"	xstring
 	"\""		string_postfix
@@ -246,25 +257,25 @@ done
 	*		ident		noeat
 	"\""		rstring		recolor=-2
 
-:rstring Constant
+:rstring String
 	*		rstring
 	"\""		string_postfix
 
-:bstring Constant
+:bstring String
 	*		bstring
 	"`"		string_postfix
 
-:string	Constant
+:string	String
 	*		string
 	"\""		string_postfix
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_postfix Constant
+:string_postfix String
 	*		idle	noeat
 	"cwd"		idle
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"U"		string_hex8
 	"u"		string_hex4
@@ -272,109 +283,109 @@ done
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_hex8 Escape
+:string_hex8 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex7
 
-:string_hex7 Escape
+:string_hex7 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex6
 
-:string_hex6 Escape
+:string_hex6 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex5
 
-:string_hex5 Escape
+:string_hex5 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex4
 
-:string_hex4 Escape
+:string_hex4 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex3
 
-:string_hex3 Escape
+:string_hex3 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex2 Escape
+:string_hex2 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex1
 
-:string_hex1 Escape
+:string_hex1 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 Escape
+:string_octal2 StringEscape
 	*		string		noeat
 	"0-7"		string_octal1
 
-:string_octal1 Escape
+:string_octal1 StringEscape
 	*		string		noeat
 	"0-7"		string
 
-:string_control Escape
+:string_control StringEscape
 	*		string_control
 	"\n"		idle
 	"\""		string		noeat
  	"diouxXeEfFgGaAcspn%SCM"	string
 
-:char Constant
+:char Character
 	*		char_done
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
-:char_done Constant
+:char_done Character
 	*		idle		noeat recolor=-3
 	"\'"		idle
 
-:char_escape	Escape
+:char_escape CharacterEscape
 	*		char_done
 	"U"		char_hex8
 	"u"		char_hex4
 	"x"		char_hex2
 	"0-7"		char_octal2
 
-:char_hex8 Escape
+:char_hex8 CharacterEscape
 	*		char_done	noeat
 	"0-9a-fA-F"	char_hex7
 
-:char_hex7 Escape
+:char_hex7 CharacterEscape
 	*		char_done	noeat
 	"0-9a-fA-F"	char_hex6
 
-:char_hex6 Escape
+:char_hex6 CharacterEscape
 	*		char_done	noeat
 	"0-9a-fA-F"	char_hex5
 
-:char_hex5 Escape
+:char_hex5 CharacterEscape
 	*		char_done	noeat
 	"0-9a-fA-F"	char_hex4
 
-:char_hex4 Escape
+:char_hex4 CharacterEscape
 	*		char_done	noeat
 	"0-9a-fA-F"	char_hex3
 
-:char_hex3 Escape
+:char_hex3 CharacterEscape
 	*		char_done	noeat
 	"0-9a-fA-F"	char_hex2
 
-:char_hex2 Escape
+:char_hex2 CharacterEscape
 	*		char_done	noeat
 	"0-9a-fA-F"	char_hex1
 
-:char_hex1 Escape
+:char_hex1 CharacterEscape
 	*		char_done	noeat
 	"0-9a-fA-F"	char_done
 
-:char_octal2 Escape
+:char_octal2 CharacterEscape
 	*		char_done	noeat
 	"0-7"		char_octal1
 
-:char_octal1 Escape
+:char_octal1 CharacterEscape
 	*		char_done	noeat
 	"0-7"		char_done
 
-:ident Idle
+:ident Ident
 	*		ident_end	noeat recolormark strings
 	"abstract"	kw
 	"alias"		kw
@@ -499,7 +510,19 @@ done
 :bad_kw Bad
 	*		idle		noeat
 
+:bool Boolean
+	*		idle		noeat
+
 :lit Constant
+	*		idle		noeat
+
+:loop Loop
+	*		idle		noeat
+
+:cond Conditional
+	*		idle		noeat
+
+:stmt Statement
 	*		idle		noeat
 
 :operator Operator

@@ -200,7 +200,7 @@
 
 :first Idle
 	*		idle		noeat
-	"#"		pre		recolor=-1
+	"#"		pre		mark
 
 :pre Preproc
 	*		preproc		noeat
@@ -208,15 +208,15 @@
 	"a-z"		preident	recolor=-1 buffer
 
 :preident Preproc
-	*		preproc		noeat strings
-	"define"	predef
-	"include"	preinc
-	"if"		precond
-	"ifdef"		precond
-	"ifndef"	precond
-	"else"		precond
-	"elif"		precond
-	"endif"		precond
+	*		preproc		noeat markend recolormark strings
+	"define"	predef		markend recolormark
+	"include"	preinc		markend recolormark
+	"if"		precond		markend recolormark
+	"ifdef"		precond		markend recolormark
+	"ifndef"	precond		markend recolormark
+	"else"		precond		markend recolormark
+	"elif"		precond		markend recolormark
+	"endif"		precond		markend recolormark
 done
 	"a-z"		preident
 

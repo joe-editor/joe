@@ -1,7 +1,7 @@
 # Identify title lines for status line context display
 
 =Idle
-=Title 		cyan
+=Title +Keyword +Constant +Type +Comment # Doesn't matter, just make it visible
 
 :idle Idle
 	*		title_line	buffer noeat recolor=-1

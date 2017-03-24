@@ -2,16 +2,33 @@
 # Based on Java highlighter
 
 =Idle
-=Preproc 	yellow
-=Comment 	green
-=DocComment	bold blue
-=Constant 	cyan
-=Escape 	bold cyan
-=Type 		bold blue
-=Keyword 	blue
-=Operator	blue
-=Bad		bold red
-=Brace		magenta
+=Ident
+=Preproc
+=Precondit	+Preproc
+=Define		+Preproc
+=DefinedIdent	+Ident
+=Comment
+=DocComment	+Comment
+=Constant
+=String		+Constant
+=Character	+Constant +String
+=Number		+Constant
+=Boolean	+Constant
+=Escape
+=StringEscape	+Escape
+=CharacterEscape +Escape
+=Type
+=Structure	+Keyword
+=StorageClass	+Type +Keyword
+=Modifier	+StorageClass
+=Keyword
+=Operator	+Keyword
+=Statement	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=Label		+DefinedIdent
+=Bad
+=Brace
 =Control
 
 :begin Idle
@@ -25,7 +42,7 @@
 
 :first Idle
 	*		idle		noeat
-	"#"		pre		recolor=-1
+	"#"		pre		mark
 
 :pre Preproc
 	*		pre		noeat
@@ -34,18 +51,18 @@
 	"\n"		reset
 
 :preident Preproc
-	*		preunknown	strings
-	"if"		prebody
-	"else"		prebody
-	"elif"		prebody
-	"endif"		prebody
-	"region"	preregion
-	"endregion"	preregion
-	"define"	predefine
-	"undef"		predefine
-	"warning"	preregion
-	"error"		preregion
-	"line"		prebody
+	*		preunknown	markend recolormark strings
+	"if"		precondit	markend recolormark
+	"else"		precondit	markend recolormark
+	"elif"		precondit	markend recolormark
+	"endif"		precondit	markend recolormark
+	"region"	preregion	markend recolormark
+	"endregion"	preregion	markend recolormark
+	"define"	predefine	markend recolormark
+	"undef"		predefine	markend recolormark
+	"warning"	preregion	markend recolormark
+	"error"		preregion	markend recolormark
+	"line"		prebody		markend recolormark
 done
 	"a-z"		preident
 
@@ -53,20 +70,24 @@ done
 	*		prebody
 	"\n"		reset
 
+:precondit Precondit
+	*		precondit
+	"\n"		reset
+
 :preregion Preproc
 	*		preregion_text
 	"\n"		reset
 
-:preregion_text Constant
+:preregion_text Comment
 	*		preregion_text
 	"\n"		reset
 
-:predefine Preproc
+:predefine Define
 	*		predefine_text	noeat
 	" \t"		predefine
 	"\n"		reset
 
-:predefine_text Constant
+:predefine_text DefinedIdent
 	*		predefine_text
 	" \t"		predefine_value
 	"\n"		reset
@@ -103,16 +124,16 @@ done
 :control Control
 	*	idle	noeat
 
-:forcedliteral Idle
+:forcedliteral Ident
 	*		idle		noeat
 	"\i"		ident		recolor=-2
 	"\""		forcedstring	recolor=-2
 
-:forcedstring Constant
+:forcedstring String
 	*		forcedstring
 	"\""		forcedstringquot
 
-:forcedstringquot Constant
+:forcedstringquot String
 	*		idle			noeat
 	"\""		forcedstring			# @"This -> "" <- is a literal quote"
 
@@ -123,6 +144,7 @@ done
 
 :comment Comment
 	*		comment
+	"BFHNTX"	comment			noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 
 :maybe_end_comment Comment
@@ -136,13 +158,15 @@ done
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"	line_comment		noeat call=comment_todo.comment_todo()
 	"\n"		reset
 
 :doc_comment DocComment
 	*		doc_comment
+	"BFHNTX"	doc_comment		noeat call=comment_todo.comment_todo()
 	"\n"		reset
 
-:first_digit Constant
+:first_digit Number
 	*		idle	noeat
 	"xX"		hex
 	"."		float
@@ -154,46 +178,46 @@ done
 	*		idle	noeat
 	"0-9"		bad_number
 
-:octal Constant
+:octal Number
 	*		idle	noeat
 	"0-7"		octal
 	"89"		bad_number	recolor=-1
 
-:hex Constant
+:hex Number
 	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
-:decimal Constant
+:decimal Number
 	*		idle	noeat
 	"0-9"		decimal
 	"eE"		epart
 	"."		float
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle	noeat
 	"0-9"		enum
 
-:string	Constant
+:string	String
 	*		string
 	"\""		idle
 	"\\"		string_escape		recolor=-1
 	"{"		maybe_string_control	recolor=-1
 	"}"		maybe_control_end	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"xu"		string_hex_4  # Yes, \x has up to 4 numbers in C#
 	"U"		string_hex_8
@@ -203,174 +227,174 @@ done
 # Eight all-purpose (hex/unicode short/unicode long) states for hexadecimal
 # escape sequences
 
-:string_hex_8 Escape
+:string_hex_8 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_7
 
-:string_hex_7 Escape
+:string_hex_7 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_6
 
-:string_hex_6 Escape
+:string_hex_6 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_5
 
-:string_hex_5 Escape
+:string_hex_5 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_4
 
-:string_hex_4 Escape
+:string_hex_4 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_3
 
-:string_hex_3 Escape
+:string_hex_3 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_2
 
-:string_hex_2 Escape
+:string_hex_2 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_1
 
-:string_hex_1 Escape
+:string_hex_1 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 Escape
+:string_octal2 StringEscape
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 Escape
+:string_octal3 StringEscape
 	*		string		noeat
 	"0-7"		string
 
-:maybe_string_control Escape
+:maybe_string_control StringEscape
 	*		string 		noeat recolor=-2
 	"0-9"		string_control
 	"{"		string
 
-:string_control Escape
+:string_control StringEscape
 	*		string_control
 	"\""		string		noeat
 	"}"		string
 
-:maybe_control_end Escape
+:maybe_control_end StringEscape
 	*		string		noeat recolor=-2
 	"}"		string
 
-:char Constant
+:char Character
 	*		char
 	"\n"		reset
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
-:char_escape	Escape
+:char_escape CharacterEscape
 	*		char
 	"xu"		char_hex4
 	"U"		char_hex8
 	"0-7"		char_octal2
 	"\n"		char		recolor=-2
 
-:char_hex8 Escape
+:char_hex8 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_hex7
 
-:char_hex7 Escape
+:char_hex7 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_hex6
 
-:char_hex6 Escape
+:char_hex6 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_hex5
 
-:char_hex5 Escape
+:char_hex5 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_hex4
 
-:char_hex4 Escape
+:char_hex4 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_hex3
 
-:char_hex3 Escape
+:char_hex3 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_hex2
 
-:char_hex2 Escape
+:char_hex2 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_hex1
 
-:char_hex1 Escape
+:char_hex1 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char
 
-:char_octal2 Escape
+:char_octal2 CharacterEscape
 	*		char		noeat
 	"0-7"		char_octal3
 
-:char_octal3 Escape
+:char_octal3 CharacterEscape
 	*		char		noeat
 	"0-7"		char
 
-:ident Idle		# http://msdn.microsoft.com/en-us/library/x53a06bb.aspx
+:ident Ident		# http://msdn.microsoft.com/en-us/library/x53a06bb.aspx
 	*		idle		noeat strings
-	"abstract"	kw
+	"abstract"	modifier
 	"as"		operator
 	"base"		kw
-	"break"		kw
-	"case"		kw
-	"catch"		kw
+	"break"		loop
+	"case"		label
+	"catch"		stmt
 	"checked"	operator
-	"class"		kw
-	"const"		kw
-	"continue"	kw
-	"default"	kw
+	"class"		struct
+	"const"		storage
+	"continue"	loop
+	"default"	label
 	"delegate"	kw
-	"do"		kw
-	"else"		kw
-	"enum"		kw
+	"do"		loop
+	"else"		cond
+	"enum"		struct
 	"event"		kw
 	"explicit"	kw
-	"extern"	kw
-	"finally"	kw
+	"extern"	modifier
+	"finally"	stmt
 	"fixed"		kw
-	"for"		kw
-	"foreach"	kw
-	"goto"		kw
-	"if"		kw
+	"for"		loop
+	"foreach"	loop
+	"goto"		loop
+	"if"		cond
 	"implicit"	kw
 	"in"		operator
-	"interface"	kw
-	"internal"	kw
-	"is"		kw
-	"lock"		kw
+	"interface"	struct
+	"internal"	modifier
+	"is"		operator
+	"lock"		stmt
 	"nameof"	kw
-	"namespace"	kw
+	"namespace"	struct
 	"new"		operator
 	"operator"	kw
-	"out"		kw
-	"override"	kw
+	"out"		storage
+	"override"	storage
 	"params"	kw
-	"private"	kw
-	"protected"	kw
-	"public"	kw
-	"readonly"	kw
-	"ref"		kw
-	"return"	kw
-	"sealed"	kw
+	"private"	modifier
+	"protected"	modifier
+	"public"	modifier
+	"readonly"	modifier
+	"ref"		storage
+	"return"	stmt
+	"sealed"	modifier
 	"sizeof"	operator
-	"stackalloc"	kw
-	"static"	kw
-	"struct"	kw
-	"switch"	kw
+	"stackalloc"	storage
+	"static"	modifier
+	"struct"	struct
+	"switch"	cond
 	"this"		kw
-	"throw"		kw
-	"try"		kw
+	"throw"		stmt
+	"try"		stmt
 	"typeof"	operator
 	"unchecked"	operator
 	"unsafe"	kw
-	"using"		kw
-	"virtual"	kw
-	"volatile"	kw
-	"while"		kw
+	"using"		stmt
+	"virtual"	modifier
+	"volatile"	modifier
+	"while"		loop
 	
 	# Types
 	
@@ -393,6 +417,7 @@ done
 	"Int32"		type
 	"int64"		type
 	"Int64"		type
+	"IntPtr"	type
 	"long"		type
 	"object"	type
 	"Object"	type
@@ -439,8 +464,8 @@ done
 	
 	# Literals
 	
-	"true"		lit
-	"false"		lit
+	"true"		bool
+	"false"		bool
 	"null"		lit
 done
 	"\c"		ident
@@ -449,6 +474,27 @@ done
 	*	idle	noeat
 
 :kw Keyword
+	*	idle	noeat
+
+:stmt Statement
+	*	idle	noeat
+
+:cond Conditional
+	*	idle	noeat
+
+:loop Loop
+	*	idle	noeat
+
+:struct Structure
+	*	idle	noeat
+
+:storage StorageClass
+	*	idle	noeat
+
+:modifier Modifier
+	*	idle	noeat
+
+:bool Boolean
 	*	idle	noeat
 
 :lit Constant

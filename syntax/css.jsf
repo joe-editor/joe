@@ -4,19 +4,19 @@
 # Define colors
 
 =Idle
-=Comment 	green
-=Constant	cyan
-=Escape		bold cyan
-=Keyword	bold
-=Bad		bold red
+=Comment
+=Constant
+=Escape
+=Keyword
+=Bad
 
-=Class		yellow
-=Id		red
-=Tag		magenta
-=HTML
+=Class		+Type
+=Id		+String +DefinedIdent
+=Tag
+=HTML		# TODO: Get back to this when going over html, xml, php, ant, etc
 
 # from html.jsf to support <?php?>
-=TagEdge        green
+=TagEdge
 
 :begin Idle
 	*		begin		noeat call=.css()

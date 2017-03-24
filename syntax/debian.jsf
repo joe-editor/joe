@@ -2,15 +2,15 @@
 # by Christian Nicolai (http://mycrobase.de)
 
 =Idle
-=Comment	green
-=Keyword	bold
-=Bad		bold red
+=Comment
+=Keyword
+=Bad
 
-=URL		cyan
+=URL		+Constant
 
-=SpacyURL	bold cyan
-=Distribution	red
-=Component	magenta
+=SpacyURL	+String +Constant
+=Distribution	+Preproc
+=Component	+DefinedIdent
 
 :line_start Idle
 	*		line_rest	noeat

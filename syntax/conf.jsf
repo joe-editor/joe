@@ -1,10 +1,11 @@
 # JOE syntax highlight file for typical UNIX configuration files
 
 =Idle
-=Comment 	green
-=String 	cyan
-=Escape 	bold red
-=Backtick	blue
+=Comment
+=String		+Constant
+=Escape
+=StringEscape	+Escape
+=Backtick	+Character +Constant +String
 
 :idle Idle
 	*		idle
@@ -28,7 +29,7 @@
 	"\`"		backtick_in_str	recolor=-1
 	"\\"		string_escape	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"\n"		string		recolor=-2
 
@@ -47,7 +48,7 @@
 	"'"		idle
 	"\\"		single_escape	recolor=-1
 
-:single_escape Escape
+:single_escape StringEscape
 	*		single
 	"\n"		single		recolor=-2
 
@@ -69,7 +70,7 @@
 	"\""		backtick
 	"\\"		string_escape_b	recolor=-1
 
-:string_escape_b Escape
+:string_escape_b StringEscape
 	*		string_in_bt
 	"\n"		string_in_bt	recolor=-2
 
@@ -79,7 +80,7 @@
 	"'"		backtick
 	"\\"		single_escape_b	recolor=-1
 
-:single_escape_b Escape
+:single_escape_b StringEscape
 	*		single_in_bt
 	"\n"		single_in_bt	recolor=-2
 
