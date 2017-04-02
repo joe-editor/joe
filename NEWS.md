@@ -10,6 +10,12 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Bugs fixed
+
+	* Fix exsave: (^K ^X) should close file when a block is present in
+	  the window, and the file is unmodified (regression from ^C change
+	  in 4.2).
+
 ### JOE 4.4
 
 * Enhancements
