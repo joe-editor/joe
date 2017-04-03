@@ -12,26 +12,35 @@
 # - distinct docstrings and module attributes
 
 =Idle
-=Comment	green
-=Keyword	bold
-=Bif		#fg_501
-=String		cyan
-=Extrapolation  cyan bold
-=Atom		red
-=Attribute	#fg_505
-=ModAttr	yellow #fg_141
-=Brace		magenta #fg_440
-=Brack		magenta #fg_311
-=Int		cyan
-=Def		
-=ModDef		blue bold
-=Underscore	blue #fg_310 #brown
+=Ident
+=Comment
+=Keyword
+=Statement	+Keyword
+=Conditional	+Statement
+=Type
+=DefinedIdent	+Ident
+=DefinedType	+DefinedIdent
+=DefinedFunction +DefinedIdent
+=Operator	+Keyword
+=Constant
+=Boolean	+Constant
+=Number		+Constant
+=String		+Constant
+=StringEscape	+Escape
+=StringVariable +StringEscape
+=Atom		+Constant +DefinedIdent
+=Attribute	+Define +Preproc
+=Brace		+Escape
+=Bracket	+Brace
+=Underscore	+Keyword
+=ModAttr	+Atom		# key in %{key: value}
 
 
 :idle Idle
 	*		idle
 	"#"		line_comment	noeat
-	"a-zA-Z"	ident		noeat
+	"A-Z"		type		recolor=-1
+	"a-z"		ident		noeat
 	"_"		underscore	recolor=-1
 	"'"		single_quoted	recolor=-1
 	"\""		double_quoted	recolor=-1
@@ -47,6 +56,7 @@
 	
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 	
 :single_quoted String
@@ -62,7 +72,7 @@
 	*		double_quoted   noeat
 	"{"		extrapolation	recolor=-2
 	
-:extrapolation Extrapolation
+:extrapolation StringVariable
 	*		extrapolation
 	"}"		double_quoted
 	"\""		double_quoted	noeat
@@ -106,7 +116,7 @@
 :brace Brace
 	*		idle		noeat
 	
-:brack Brack
+:brack Bracket
 	*		idle		noeat
 
 :maybe_larrow Idle
@@ -117,14 +127,14 @@
 	">"		arrow		recolor=-2
 	*		idle		noeat
 
-:arrow Keyword
+:arrow Operator
 	*		idle		noeat
 	
 :maybe_pipe Idle
 	*		idle
 	">"		pipe		recolor=-2
 	
-:pipe Keyword
+:pipe Operator
 	*		idle		noeat
 	
 :maybe_opt Idle
@@ -134,12 +144,12 @@
 :opt Keyword
 	*		idle		noeat
 	
-:decimal Int
+:decimal Number
 	*		idle		noeat
 	"0-9_"		decimal
 	"."		float
 	
-:float Int
+:float Number
 	*		idle		noeat
 	"0-9"		float
 	
@@ -151,13 +161,17 @@
 	"a-zA-Z0-9?_"	underscore
 	
 	
-:ident Idle
+:type Type
+	"a-zA-Z0-9_"	type
+	*		idle		noeat
+	
+:ident Ident
 	*		ident1		noeat buffer mark
 	
-:ident1 Idle
+:ident1 Ident
 	*		idle		noeat strings
-	"def"					start_def
-	"defp"					start_def
+	"def"					start_func_def
+	"defp"					start_func_def
 	"defmodule" 				start_mod_def
 	"defprotocol"				start_def
 	"defmacro"				start_def
@@ -172,81 +186,17 @@
 	"test"					start_def
 	"use"					start_mod_def
 	"alias"					start_mod_def
-	"end"					kw
+	"end"					stmt
 	"do"					kw
-	"if"					kw
-	"else"					kw
-	"unless"				kw
-	"case"					kw
-	"cond"					kw
-	"true"					kw
-	"false"					kw
+	"for"					loop
+	"if"					cond
+	"else"					cond
+	"unless"				cond
+	"case"					cond
+	"cond"					cond
+	"true"					bool
+	"false"					bool
 	"fn"					kw
-	"Agent"					bif
-	"Application"				bif
-	"Atom"					bif
-	"Base"					bif
-	"Behaviour"				bif
-	"Bitwise"				bif
-	"Builtin"				bif
-	"Code"					bif
-	"Dict"					bif
-	"EEx"					bif
-	"Elixir"				bif
-	"Enum"					bif
-	"ExUnit"				bif
-	"Exception"				bif
-	"File"					bif
-	"File.Stat"				bif
-	"File.Stream"				bif
-	"Float"					bif
-	"Function"				bif
-	"GenEvent"				bif
-	"GenServer"				bif
-	"GenTCP"				bif
-	"HashDict"				bif
-	"HashSet"				bif
-	"IO"					bif
-	"IO.ANSI"				bif
-	"IO.Stream"				bif
-	"Inspect.Algebra"			bif
-	"Inspect.Opts"				bif
-	"Integer"				bif
-	"Kernel"				bif
-	"Kernel.ParallelCompiler"		bif
-	"Kernel.ParallelRequire"		bif
-	"Kernel.SpecialForms"			bif
-	"Kernel.Typespec" 			bif
-	"Keyword"				bif
-	"List"					bif
-	"Macro"					bif
-	"Macro.Env"				bif
-	"Map"					bif
-	"Math"					bif
-	"Module"				bif
-	"Node"					bif
-	"OptionParser"				bif
-	"OrdDict"				bif
-	"Path"					bif
-	"Port"					bif
-	"Process"				bif
-	"Protocol"				bif
-	"Range"					bif
-	"Record"				bif
-	"Regex"					bif
-	"Set"					bif
-	"Stream"				bif
-	"String"				bif
-	"StringIO"				bif
-	"Supervisor"				bif
-	"Supervisor.Spec"			bif
-	"System"				bif
-	"Task"					bif
-	"Task.Supervisor"			bif
-	"Tuple"					bif
-	"URI"					bif
-	"UnboundMethod"				bif
-	"Version"				bif
 done
 	"a-zA-Z_0-9"	ident1
 	":"		attr		noeat recolormark
@@ -256,21 +206,34 @@ done
 	
 :kw Keyword
 	*		idle		noeat
-	
-:bif Bif
+
+:stmt Statement
 	*		idle		noeat
-	
-:start_def Keyword
+
+:cond Conditional
+	*		idle		noeat
+
+:bool Boolean
+	*		idle		noeat
+
+:start_def Statement
 	*		def
 	
-:def Def
+:start_mod_def Statement
+	*		moddef
+
+:start_func_def Statement
+	*		funcdef
+	
+:def DefinedIdent
 	*		def
-	" ("		idle		recolor=-1	
+	" ("		idle		noeat
+
+:funcdef DefinedFunction
+	*		funcdef
+	" ("		idle		noeat
 	
-:start_mod_def Keyword
+:moddef DefinedType
 	*		moddef
-	
-:moddef ModDef
-	*		moddef
-	" "		idle		recolor=-1
+	" "		idle		noeat
 	"\n"		idle

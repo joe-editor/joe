@@ -1,13 +1,15 @@
 # Barebones Dockerfile syntax for JOE.  Doesn't handle more sophisticated sh syntax.
 
 =Idle
-=Command	bold
-=Comment 	green
-=Constant 	cyan
-=Ident		cyan
-=Escape 	magenta
-=Keyword 	bold
-=Var		bold cyan
+=Command	+Statement +Keyword
+=Comment
+=Constant
+=String		+Constant
+=Ident
+=Escape
+=Brace
+=StringEscape	+Escape
+=Variable	+DefinedIdent
 
 # Start of line is special
 :start Idle
@@ -20,6 +22,7 @@
 # Comments between commands
 :comment Comment
 	*		comment
+	"BFHNTX"	comment				noeat call=comment_todo.comment_todo()
 	"\n"		start
 
 # Comments in the middle of a command
@@ -75,7 +78,7 @@ done
 :string_command Command
 	*		string_command_data
 
-:string_command_data Ident
+:string_command_data Constant
 	*		string_command_data
 	"$"		string_command_data		recolor=-1 call=.variable()
 	"\n"		start
@@ -84,7 +87,7 @@ done
 :from Command
 	*		from_image			noeat
 
-:from_image Ident
+:from_image Constant
 	*		from_image
 	":@"		from_tag			noeat
 	"\n"		start
@@ -109,7 +112,7 @@ done
 :comma Idle
 	*		array				noeat
 
-:bracket Escape
+:bracket Brace
 	"]"		idle
 	"["		array
 
@@ -118,28 +121,28 @@ done
 	*		label_key
 	"\n"		start
 
-:label_key Ident
+:label_key Variable
 	*		label_key
 	"="		label_value			noeat
 	"\n"		start
 
-:label_value Idle
+:label_value Constant
 	*		label_value
 	"\""		label_value			recolor=-1 call=.string() save_c
 	"\n"		start
 
 .subr variable
 
-:variable Var
+:variable Variable
 	*		variable			recolor=-2 return noeat
 	"A-Za-z_"	variable_name
 	"{"		variable_long
 
-:variable_name Var
+:variable_name Variable
 	*		variable_name			return noeat
 	"A-Za-z0-9_"	variable_name
 
-:variable_long Var
+:variable_long Variable
 	*		variable_long
 	&		variable			return noeat
 	"\n"		variable			return noeat
@@ -155,14 +158,14 @@ done
 
 .subr string
 
-:string Constant
+:string String
 	*		string
 	&		string				return
 	"\n"		string				return noeat
 	"\\"		string_escape			recolor=-1
 	"$"		string				recolor=-1 call=.variable()
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 
 .end
