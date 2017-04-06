@@ -1,7 +1,7 @@
 # Filename highlighter
 
 =Idle
-=Notused	green
+=Notused	+Comment
 
 :idle Idle
 	*	filename	noeat mark

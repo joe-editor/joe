@@ -6,14 +6,22 @@
 #  needs more intrinsics.
 
 =Idle
-=Comment 	green
-=Constant 	cyan
-=Type 		red
-=Keyword 	bold 
-=Intrinsic	magenta
-=Preproc        blue
-=Operator	magenta
-=Bad		bold red
+=Ident
+=Comment
+=Constant
+=Number		+Constant
+=Boolean	+Constant
+=String		+Constant
+=Type
+=Keyword
+=Operator	+Keyword
+=Statement	+Keyword
+=Builtin	+DefinedFunction
+=Loop		+Statement
+=Conditional	+Statement
+=Label		+Statement
+=Preproc
+=Bad
 
 # First character of line...
 
@@ -40,13 +48,13 @@
 	"'"		string		recolor=-1
 	"a-zA-Z_"	ident		buffer
 
-:first_number Constant
+:first_number Number
 	*		idle	noeat
 	"0-9"		first_number
 	"."		second_start
 	"eEdD"		epart
 
-:have_dot Constant
+:have_dot Number
 	*		idle	recolor=-2	noeat
 	"0-9"		second_number		recolor=-2
 	" \ta-zA-Z"	operator1	noeat recolor=-2
@@ -76,8 +84,8 @@
 	"lgt"		op
 	"lge"		op
 	"not"		op
-	"false"		const
-	"true"		const
+	"false"		bool
+	"true"		bool
 done
 
 # Eat the right .
@@ -90,21 +98,21 @@ done
 	*	idle
 	" \t"	op
 
-:const Constant
+:bool Boolean
 	*	idle
 	"."	op noeat
 	" \t"	const
 
 # For distrinuishing between 4.e1 and 4.eq.
 
-:second_start Constant
+:second_start Number
 	*	idle	noeat
 	"a-zA-Z"	operator1	noeat recolor=-2
 	"dD"	epart
 	"eE"	epart1
 	"0-9"	second_number
 
-:epart1 Constant
+:epart1 Number
 	*		idle	noeat
 	"q"		epart2
 	"0-9+\-"	enum
@@ -113,29 +121,29 @@ done
 	*		idle	noeat
 	". \t"		op	noeat recolor=-4
 
-:second_number Constant
+:second_number Number
 	*		idle	noeat
 	"eEdD"		epart
 	"0-9"		second_number
 
-:epart Constant
+:epart Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle	noeat
 	"0-9"		enum
 
-:string	Constant
+:string	String
 	*		string
 	"\n"		reset
 	"'"		maybe_end_string
 
-:maybe_end_string Constant
+:maybe_end_string String
 	*		idle	noeat
 	"'"		string
 
-:ident Idle
+:ident Ident
 	*		idle		noeat istrings
 	"allocate"	kw
 	"allocatable"	kw
@@ -145,48 +153,47 @@ done
 	"block"		kw
 	"blockdata"	kw
 	"call"		kw
-	"case"		kw
+	"case"		label
 	"character"	type
 	"close"		kw
 	"common"	kw
 	"complex"	type
 	"contains"	kw
-	"continue"	kw
+	"continue"	loop
 	"cycle"		kw
 	"data"		kw
 	"deallocate"	kw
-	"default"	kw
+	"default"	label
 	"dimension"	type
-	"do"		kw
+	"do"		loop
 	"double"	type
 	"doubleprecision"	type
 	"elemental"	kw
-	"else"		kw
-	"elseif"	kw
-	"elsewhere"	kw
+	"else"		cond
+	"elseif"	cond
+	"elsewhere"	cond
 	"end"		kw
 	"endblock"	kw
 	"endblockdata"	kw
-	"enddo"		kw
+	"enddo"		loop
 	"endfile"	kw
-	"endforall"	kw
-	"endif"		kw
+	"endforall"	loop
+	"endif"		cond
 	"endinterface"	kw
 	"endmodule"	kw
-	"endselect"	kw
+	"endselect"	cond
 	"endtype"	kw
 	"endwhere"	kw
 	"entry"		kw
 	"equivalence"	kw
 	"exit"		kw
 	"external"	kw
-	"forall"	kw
+	"forall"	loop
 	"format"	kw
 	"function"	kw
-	"go"		kw
-	"goto"		kw
-	"if"		kw
-	"implicit"	kw
+	"go"		loop
+	"goto"		loop
+	"if"		cond
 	"implicit"	kw
 	"in"		kw
 	"inout"		kw
@@ -224,19 +231,19 @@ done
 	"return"	kw
 	"rewind"	kw
 	"save"		kw
-	"select"	kw
-	"selectcase"	kw
+	"select"	cond
+	"selectcase"	cond
 	"sequence"	kw
 	"stat"		kw
 	"stop"		kw
 	"subroutine"	kw
 	"target"	kw
-	"then"		kw
-	"to"		kw
+	"then"		cond
+	"to"		loop
 	"type"		kw
 	"use"		kw
 	"where"		kw
-	"while"		kw
+	"while"		loop
 	"write"		kw
 done
 	"("		idle	noeat istrings
@@ -249,53 +256,52 @@ done
 	"block"		kw
 	"blockdata"	kw
 	"call"		kw
-	"case"		kw
-	"character"	kw
+	"case"		label
+	"character"	type
 	"close"		kw
 	"common"	kw
-	"complex"	kw
+	"complex"	type
 	"contains"	kw
-	"continue"	kw
+	"continue"	loop
 	"cycle"		kw
 	"data"		kw
 	"deallocate"	kw
-	"default"	kw
+	"default"	label
 	"dimension"	type
-	"do"		kw
+	"do"		loop
 	"double"	type
 	"doubleprecision"	type
 	"elemental"	kw
-	"else"		kw
-	"elseif"	kw
-	"elsewhere"	kw
+	"else"		cond
+	"elseif"	cond
+	"elsewhere"	cond
 	"end"		kw
 	"endblock"	kw
 	"endblockdata"	kw
-	"enddo"		kw
+	"enddo"		loop
 	"endfile"	kw
-	"endforall"	kw
-	"endif"		kw
+	"endforall"	loop
+	"endif"		cond
 	"endinterface"	kw
 	"endmodule"	kw
-	"endselect"	kw
+	"endselect"	cond
 	"endtype"	kw
 	"endwhere"	kw
 	"entry"		kw
 	"equivalence"	kw
 	"exit"		kw
 	"external"	kw
-	"forall"	kw
+	"forall"	loop
 	"format"	kw
 	"function"	kw
-	"go"		kw
-	"goto"		kw
-	"if"		kw
-	"implicit"	kw
+	"go"		loop
+	"goto"		loop
+	"if"		cond
 	"implicit"	kw
 	"in"		kw
 	"inout"		kw
 	"inquire"	kw
-	"integer"	kw
+	"integer"	type
 	"intent"	kw
 	"interface"	kw
 	"intrinsic"	kw
@@ -328,19 +334,19 @@ done
 	"return"	kw
 	"rewind"	kw
 	"save"		kw
-	"select"	kw
-	"selectcase"	kw
+	"select"	cond
+	"selectcase"	cond
 	"sequence"	kw
 	"stat"		kw
 	"stop"		kw
 	"subroutine"	kw
 	"target"	kw
-	"then"		kw
-	"to"		kw
+	"then"		cond
+	"to"		loop
 	"type"		kw
 	"use"		kw
 	"where"		kw
-	"while"		kw
+	"while"		loop
 	"write"		kw
 # Here are instrinsics
 	"abs"		intrinsic
@@ -381,7 +387,7 @@ done
 	"epsilon"		intrinsic
 	"exp"		intrinsic
 	"exponent"		intrinsic
-	"false"		intrinsic
+	"false"		bool
 	"floor"		intrinsic
 	"float"		intrinsic
 	"fraction"		intrinsic
@@ -478,47 +484,47 @@ done
 	"block"		kw
 	"blockdata"	kw
 	"call"		kw
-	"case"		kw
+	"case"		label
 	"character"	type
 	"close"		kw
 	"common"	kw
 	"complex"	type
 	"contains"	kw
-	"continue"	kw
+	"continue"	loop
 	"cycle"		kw
 	"data"		kw
 	"deallocate"	kw
-	"default"	kw
+	"default"	label
 	"dimension"	type
-	"do"		kw
+	"do"		loop
 	"double"	type
 	"doubleprecision"	type
 	"elemental"	kw
-	"else"		kw
-	"elseif"	kw
-	"elsewhere"	kw
+	"else"		cond
+	"elseif"	cond
+	"elsewhere"	cond
 	"end"		kw
 	"endblock"	kw
 	"endblockdata"	kw
-	"enddo"		kw
+	"enddo"		loop
 	"endfile"	kw
-	"endforall"	kw
-	"endif"		kw
+	"endforall"	loop
+	"endif"		cond
 	"endinterface"	kw
 	"endmodule"	kw
-	"endselect"	kw
+	"endselect"	cond
 	"endtype"	kw
 	"endwhere"	kw
 	"entry"		kw
 	"equivalence"	kw
 	"exit"		kw
 	"external"	kw
-	"forall"	kw
+	"forall"	loop
 	"format"	kw
 	"function"	kw
-	"go"		kw
-	"goto"		kw
-	"if"		kw
+	"go"		loop
+	"goto"		loop
+	"if"		cond
 	"implicit"	kw
 	"in"		kw
 	"inout"		kw
@@ -556,19 +562,19 @@ done
 	"return"	kw
 	"rewind"	kw
 	"save"		kw
-	"select"	kw
-	"selectcase"	kw
+	"select"	cond
+	"selectcase"	cond
 	"sequence"	kw
 	"stat"		kw
 	"stop"		kw
 	"subroutine"	kw
 	"target"	kw
-	"then"		kw
-	"to"		kw
+	"then"		cond
+	"to"		loop
 	"type"		kw
 	"use"		kw
 	"where"		kw
-	"while"		kw
+	"while"		loop
 	"write"		kw
 done
 	"("		idle	noeat istrings
@@ -581,47 +587,47 @@ done
 	"block"		kw
 	"blockdata"	kw
 	"call"		kw
-	"case"		kw
+	"case"		label
 	"character"	type
 	"close"		kw
 	"common"	kw
 	"complex"	type
 	"contains"	kw
-	"continue"	kw
+	"continue"	loop
 	"cycle"		kw
 	"data"		kw
 	"deallocate"	kw
-	"default"	kw
+	"default"	label
 	"dimension"	type
-	"do"		kw
+	"do"		loop
 	"double"	type
 	"doubleprecision"	type
 	"elemental"	kw
-	"else"		kw
-	"elseif"	kw
-	"elsewhere"	kw
+	"else"		cond
+	"elseif"	cond
+	"elsewhere"	cond
 	"end"		kw
 	"endblock"	kw
 	"endblockdata"	kw
-	"enddo"		kw
+	"enddo"		loop
 	"endfile"	kw
-	"endforall"	kw
-	"endif"		kw
+	"endforall"	loop
+	"endif"		cond
 	"endinterface"	kw
 	"endmodule"	kw
-	"endselect"	kw
+	"endselect"	cond
 	"endtype"	kw
 	"endwhere"	kw
 	"entry"		kw
 	"equivalence"	kw
 	"exit"		kw
 	"external"	kw
-	"forall"	kw
+	"forall"	loop
 	"format"	kw
 	"function"	kw
-	"go"		kw
-	"goto"		kw
-	"if"		kw
+	"go"		loop
+	"goto"		loop
+	"if"		cond
 	"implicit"	kw
 	"in"		kw
 	"inout"		kw
@@ -659,19 +665,19 @@ done
 	"return"	kw
 	"rewind"	kw
 	"save"		kw
-	"select"	kw
-	"selectcase"	kw
+	"select"	cond
+	"selectcase"	cond
 	"sequence"	kw
 	"stat"		kw
 	"stop"		kw
 	"subroutine"	kw
 	"target"	kw
-	"then"		kw
-	"to"		kw
+	"then"		cond
+	"to"		loop
 	"type"		kw
 	"use"		kw
 	"where"		kw
-	"while"		kw
+	"while"		loop
 	"write"		kw
 # Here are instrinsics
 	"abs"		intrinsic
@@ -789,19 +795,27 @@ done
 	"transfer"		intrinsic
 	"transpose"		intrinsic
 	"trim"		intrinsic
-	"true"		intrinsic
+	"true"		bool
 	"ubound"		intrinsic
 	"unpack"		intrinsic
 	"verify"		intrinsic
 done
 	" \t"	ws_ident
 
-
-:intrinsic Intrinsic
+:intrinsic Builtin
 	*	idle	noeat
 
 :kw Keyword
 	*	idle	noeat
 
 :type Type
+	*	idle	noeat
+
+:label Label
+	*	idle	noeat
+
+:cond Conditional
+	*	idle	noeat
+
+:loop Loop
 	*	idle	noeat

@@ -8,25 +8,30 @@
 
 
 =Idle
-=Comment	green
-=String		cyan #fg_110
-=String_mod	cyan bold #fg_200 bold
-=String_esc	cyan bold #fg_000 bold
-=Int		cyan #fg_033
-=Record		blue #fg_530
-=Recatt		
-=Fun		
-=Module		#fg_101
-=Keyword	bold
-=Guard		#fg_200
-=Bif		#fg_501
-=Type		bold #fg_141
-=Brace		magenta #fg_440
-=Brack		magenta #fg_311
-=Macro		#fg_330
-=Variable	yellow #fg_310
-=Attribute	red #fg_505
-=Char		cyan #fg_330 bold
+=Ident
+=Comment
+=Constant
+=String		+Constant
+=String_mod	+StringEscape
+=String_esc	+StringEscape
+=Number		+Constant
+=Keyword
+=Operator	+Keyword
+=Type
+=Module		+Type
+=Brace		+Control
+=Bracket	+Control
+=Character	+String +Constant
+=CharacterEscape +StringEscape +Character
+=Attribute	+Preproc
+=Variable	#+DefinedIdent +Ident ??
+=Record		+Include +Preproc
+=Macro		+Define
+=Guard		+Conditional +Statement +Bif
+=Bif		+DefinedFunction
+=Fun		+Ident
+=Recatt
+
 
 :idle Idle
 	*		idle
@@ -62,16 +67,17 @@ done
 :macro Macro
 	*		idle		noeat
 
-:char Char
+:char Character
 	*		idle
 	"\\"		charesc
 
-:charesc Char
+:charesc Character
 	*		idle
 
 :line_comment Comment
 	*		line_comment
 	"@"		is_edoc		noeat buffer 
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
 :is_edoc Comment
@@ -156,33 +162,33 @@ done
 :string_modifier String_mod
 	*		string
 # END STRINGS
-:decimal Int
+:decimal Number
 	*		idle		noeat
 	"0-9"		decimal
 	"."		float
 	"#"		base
 
-:float Int
+:float Number
 	*		idle		noeat
 	"0-9"		float
 	"Ee"		eintval
 
-:base Int
+:base Number
 	*		idle		noeat
 	"0-9A-Fa-f"	base
 
-:eintval Int
+:eintval Number
 	*		eint		noeat
 	"-"		eint
 
-:eint Int
+:eint Number
 	*		idle		noeat
 	"0-9"		eint
 
 :brace Brace
 	*		idle		noeat
 
-:brack Brack
+:brack Bracket
 	*		idle		noeat
 
 :maybe_attribute Idle
@@ -263,7 +269,7 @@ done
 # This implementation is sort of funky.
 # Most of the cases it's correct but some highlighting may be wrong.
 # Should be looked over...
-:atom Idle
+:atom Ident
 	*		no_atom		noeat strings
 	"after"		kw
 	"and"		kw

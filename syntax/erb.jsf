@@ -2,11 +2,10 @@
 # by Christian Nicolai (http://mycrobase.de)
 
 =Idle
-=Keyword	bold
-=Bad		bold red
-=Brace		magenta
-
-=ERB		yellow
+=Keyword
+=Bad
+=Brace
+=ERB		+Escape
 
 :content Idle
 	*		content

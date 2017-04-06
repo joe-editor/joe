@@ -2,11 +2,7 @@
 # by Christian Nicolai (http://mycrobase.de)
 
 =Idle
-=Tag		green
-=Escape		bold
-=Bad		bold red
-
-=Ignore		green
+=Ignore		+Comment
 
 :line_start Idle
 	*		idle		noeat
