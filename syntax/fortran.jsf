@@ -37,6 +37,7 @@
 	
 :comment Comment
 	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"\n"		reset
 
 :idle Idle
