@@ -1070,6 +1070,12 @@ int uexsve(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (!bw->b->changed || bw->b->scratch) {
+		if (markv(0) && markb->b == bw->b) {
+			/* uabort will just remove the block, we want to close the window */
+			prm(markk);
+			markk = 0;
+		}
+		
 		/* It didn't change or it's just a scratch buffer: don't save */
 		uabort(bw->parent, -1);
 		return 0;

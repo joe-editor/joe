@@ -310,6 +310,7 @@ class BolTests(joefx.JoeTestBase):
             self.cmd("bolmenu", "menu")
             self.assertSelectedMenuItem("Item 9")
 
+<<<<<<< local
 class BopTests(joefx.JoeTestBase):
     def test_bop_paragraph(self):
         self.workdir.fixtureFile("test", "bop_test")
@@ -372,6 +373,66 @@ class BracketedPasteTests(joefx.JoeTestBase):
         self.exitJoe()
         self.assertFileContents("outfile", "\n".join(text))
 
+||||||| base
+# TODO: bol
+# TODO: bolmenu
+# TODO: bop
+# TODO: bos
+# TODO: brpaste
+# TODO: brpaste_done
+=======
+class ExsaveTests(joefx.JoeTestBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.text = "\n".join("line %d" % i for i in range(10))
+    
+    def setUp(self):
+        super().setUp()
+        self.workdir.fixtureData("test", self.text)
+        self.startup.args = ("test",)
+    
+    def test_exsave_nomodify(self):
+        self.startJoe()
+        self.cmd("exsave")
+        self.assertExited()
+    
+    def test_exsave_modified(self):
+        self.startJoe()
+        
+        self.cmd("eof")
+        self.write(" - more text")
+        self.cmd("exsave")
+        
+        self.assertExited()
+        self.assertFileContents("test", self.text + " - more text")
+    
+    def test_exsave_block(self):
+        self.startJoe()
+        
+        self.cmd("bof,markb")
+        self.cmd("eof,markk")
+        self.cmd("exsave")
+        
+        self.assertExited()
+    
+    def test_exsave_modified_block(self):
+        self.startJoe()
+        
+        self.cmd("eof")
+        self.write(" - more text")
+        self.cmd("markk,bof,markb")
+        self.cmd("exsave")
+        
+        self.assertExited()
+        self.assertFileContents("test", self.text + " - more text")
+
+# TODO: bol
+# TODO: bolmenu
+# TODO: bop
+# TODO: bos
+# TODO: brpaste
+# TODO: brpaste_done
+>>>>>>> other
 # TODO: bufed
 # TODO: build
 # TODO: byte
