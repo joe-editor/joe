@@ -8,6 +8,7 @@ from . import controller
 from . import fixtures
 from . import rcfile
 from . import utils
+from . import keys
 
 RCFILES = {}
 FIXTURESDIR = os.path.join(os.path.dirname(__file__), "../fixtures")
@@ -112,15 +113,23 @@ class JoeTestBase(unittest.TestCase):
         self.assertEqual(pos.X, self.joe.cursor.X, "Cursor X pos")
         self.assertEqual(pos.Y, self.joe.cursor.Y, "Cursor Y pos")
     
-    def assertTextAt(self, text, x=None, y=None, dx=0, dy=0):
+    def assertTextAt(self, text, x=None, y=None, dx=0, dy=0, to_eol=False):
         """Asserts text at specified coordinate matches the input. If either coordinate is omitted, use the cursor's coordinate"""
         def check():
             pos = self._posFromInput(x, y, dx, dy)
-            return self.joe.checkText(pos.Y, pos.X, text)
-        self.joe.expect(check)
-        pos = self._posFromInput(x, y, dx, dy)
-        s = self.joe.readLine(pos.Y, pos.X, len(text))
-        self.assertEqual(s, text, "Text at line=%d col=%d" % (pos.Y, pos.X))
+            result = self.joe.checkText(pos.Y, pos.X, text)
+            if to_eol and result:
+                st = pos.X + len(text)
+                result = self.joe.readLine(pos.Y, st, self.joe.size.X - st).strip() == ''
+            return result
+        
+        if not self.joe.expect(check):
+            pos = self._posFromInput(x, y, dx, dy)
+            s = self.joe.readLine(pos.Y, pos.X, len(text))
+            self.assertEqual(s, text, "Text at line=%d col=%d" % (pos.Y, pos.X))
+            if to_eol:
+                st = pos.X + len(text)
+                self.assertEqual(self.joe.readLine(pos.Y, st, self.joe.size.X - st), '', "End of line %d" % pos.Y)
     
     def assertExited(self):
         """Asserts that the editor has exited"""
@@ -190,9 +199,21 @@ class JoeTestBase(unittest.TestCase):
             cursor = self.joe.cursor
             self.write(response)
     
-    def cmd(self, s):
+    def cmd(self, s, scope='main'):
         """Executes a command or macro"""
-        self.writectl("^[X")
+        if ',' not in s:
+            k = self.findCmd(s, scope)
+            if k is not None:
+                self.write(k)
+                return
+        
+        execmdk = self.findCmd("execmd", scope)
+        if execmdk is not None:
+            self.write(execmdk)
+        else:
+            # Just default to meta-x
+            self.writectl("^[X")
+        
         self.assertTextAt("Command:", x=0)
         self.write(s)
         self.rtn()
@@ -260,3 +281,28 @@ class JoeTestBase(unittest.TestCase):
         result = self.joe.readLine(y, start, end - start)
         return result
     
+    def findCmd(self, cmd, scope="main", fail=False):
+        """Finds keybinding from configuration for 'cmd' in the specified kbd scope"""
+        while scope is not None:
+            bindings = self.config.getKeyBindings(scope)
+            if bindings is None: break
+            for b in bindings.bindings:
+                if b.macro == cmd:
+                    k = keys.fromRcFile(b.keys)
+                    # Avoid things like mouse bindings or stuff we can't
+                    # reproduce
+                    if k is not None:
+                        return k
+            
+            scope = bindings.inherits
+        
+        if fail:
+            self.fail("Couldn't find keybindings for command %s" % cmd)
+        
+        return None
+
+    def waitForNotEmpty(self, y, x=0, length=None):
+        """Waits for any text to exist at the specified screen position"""
+        if length is None:
+            length = self.joe.size.X - x
+        return self.joe.expect(lambda: len(self.joe.readLine(line=y, col=x, length=length).strip()) > 0)
