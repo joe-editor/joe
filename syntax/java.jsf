@@ -3,17 +3,31 @@
 # Needs: improve escape parsing
 
 =Idle
-=Comment 	green
-=Constant 	cyan
-=Escape 	bold cyan
-=Type 		bold
-=Keyword 	bold
-=Operator	bold
-=Bad		bold red
-=Brace		magenta
-=Control	
+=Ident
+=Comment
+=Constant
+=Number		+Constant
+=Boolean	+Constant
+=String		+Constant
+=Character	+String
+=Escape
+=StringEscape	+Escape +String
+=CharacterEscape +StringEscape
+=Type
+=Keyword
+=Operator	+Keyword
+=Bad
+=Brace
+=Control
+=Statement	+Keyword
+=Conditional	+Statement
+=Loop		+Statement
+=Structure	+Type +Keyword
+=StorageClass	+Type +Keyword
+=Include	+Preproc
+=Label		+DefinedIdent
 
-=Methods
+=Methods	+DefinedFunction +DefinedIdent +Ident
 
 :begin Idle
 	*	begin	noeat call=.java()
@@ -54,7 +68,6 @@
 
 :comment Comment
 	*		comment
-	# might be TODO label
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 
@@ -65,11 +78,10 @@
 
 :line_comment Comment
 	*		line_comment
-	# might be TODO label
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
-:first_digit Constant
+:first_digit Number
 	*		idle		noeat
 	"xX"		hex
 	"."		float
@@ -81,170 +93,171 @@
 	*		idle		noeat
 	"0-9"		bad_number
 
-:octal Constant
+:octal Number
 	*		idle		noeat
 	"0-7"		octal
 	"89"		bad_number	recolor=-1
 
-:hex Constant
+:hex Number
 	*		idle		noeat
 	"0-9A-Fa-f"	hex
 
-:decimal Constant
+:decimal Number
 	*		idle		noeat
 	"0-9"		decimal
 	"eE"		epart
 	"."		float
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle		recolor=-2 noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle		noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle		noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle		noeat
 	"0-9"		enum
 
-:string	Constant
+:string	String
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"u"		string_uni1
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_uni1 Escape
+:string_uni1 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_uni2
 
-:string_uni2 Escape
+:string_uni2 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_uni3
 
-:string_uni3 Escape
+:string_uni3 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_uni4
 
-:string_uni4 Escape
+:string_uni4 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 Escape
+:string_octal2 StringEscape
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 Escape
+:string_octal3 StringEscape
 	*		string		noeat
 	"0-7"		string
 
-:string_control Escape
+:string_control StringEscape
 	*		string_control
 	"\n"		reset
 	"diouxXeEfFgGaAcspn%SC"	string
 
-:char Constant
+:char Character
 	*		char
 	"\n"		reset
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
-:char_escape	Escape
+:char_escape CharacterEscape
 	*		char
 	"u"		char_uni1
 	"0-7"		char_octal2
 	"\n"		char		recolor=-2
 
-:char_uni1 Escape
+:char_uni1 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_uni2
 
-:char_uni2 Escape
+:char_uni2 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_uni3
 
-:char_uni3 Escape
+:char_uni3 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char_uni4
 
-:char_uni4 Escape
+:char_uni4 CharacterEscape
 	*		char		noeat
 	"0-9a-fA-F"	char
 
-:char_octal2 Escape
+:char_octal2 CharacterEscape
 	*		char		noeat
 	"0-7"		char_octal3
 
-:char_octal3 Escape
+:char_octal3 CharacterEscape
 	*		char		noeat
 	"0-7"		char
 
-:ident Idle
+:ident Ident
 	*		ident_end	noeat markend strings
-	"abstract"	kw
-	"assert"	kw
+	"abstract"	storage
+	"assert"	stmt
 	"boolean"	type
-	"break"		kw
+	"break"		loop
 	"byte"		type
-	"case"		kw
+	"case"		label
 	"catch"		kw
 	"char"		type
-	"class"		kw
+	"class"		struct
 	"const"		bad_kw
-	"continue"	kw
-	"default"	kw
-	"do"		kw
+	"continue"	loop
+	"default"	label
+	"do"		loop
 	"double"	type
-	"else"		kw
-	"enum"		kw
-	"extends"	kw
-	"false"		lit
-	"final"		kw
+	"else"		cond
+	"enum"		storage
+	"extends"	storage
+	"false"		bool
+	"final"		storage
 	"finally"	kw
 	"float"		type
-	"for"		kw
+	"for"		loop
 	"goto"		bad_kw
-	"if"		kw
-	"implements"	kw
-	"import"	kw
+	"if"		cond
+	"implements"	storage
+	"import"	include
 	"instanceof"	operator
 	"int"		type
-	"interface"	kw
+	"interface"	struct
 	"long"		type
-	"native"	kw
+	"native"	include
 	"new"		operator
 	"null"		lit
-	"package"	kw
-	"private"	kw
-	"protected"	kw
-	"public"	kw
-	"return"	kw
+	"package"	include
+	"private"	storage
+	"protected"	storage
+	"public"	storage
+	"return"	stmt
+	"serializable"	storage
 	"short"		type
-	"static"	kw
-	"strictfp"	kw
+	"static"	storage
+	"strictfp"	storage
 	"super"		kw
-	"switch"	kw
-	"synchronized"	kw
+	"switch"	cond
+	"synchronized"	storage
 	"this"		kw
-	"throw"		kw
-	"throws"	kw
-	"transient"	kw
-	"true"		lit
+	"throw"		stmt
+	"throws"	storage
+	"transient"	storage
+	"true"		bool
 	"try"		kw
 	"void"		kw
-	"volatile"	kw
-	"while"		kw
+	"volatile"	storage
+	"while"		loop
 done
 	"\c\p{Sc}"	ident
 
@@ -257,13 +270,37 @@ done
 :bad_kw Bad
 	*		idle		noeat
 
+:bool Boolean
+	*		idle		noeat
+
 :lit Constant
 	*		idle		noeat
 
 :operator Operator
 	*		idle		noeat
 
-:ident_end Idle
+:loop Loop
+	*		idle		noeat
+
+:cond Conditional
+	*		idle		noeat
+
+:storage StorageClass
+	*		idle		noeat
+
+:struct Structure
+	*		idle		noeat
+
+:include Include
+	*		idle		noeat
+
+:stmt Statement
+	*		idle		noeat
+
+:label Label
+	*		idle		noeat
+
+:ident_end Ident
 	*		idle		noeat
 	" "		ident_end
 	"("		method_end	noeat recolormark

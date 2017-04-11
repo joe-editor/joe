@@ -2,14 +2,15 @@
 # by Christian Nicolai (http://mycrobase.de)
 
 =Idle
-=Comment	green
-=Constant	cyan
-=Escape		bold cyan
-=Bad		bold red
+=Comment
+=Escape
+=Bad
+=Value		# Maybe should be +Constant but it's too colorful.
 
-=Key
-=Separator	bold
-=Section	bold magenta
+=Attr		+Type
+=Key		+Attr
+=Separator	+Attr
+=Section	+Preproc
 
 :line_start Idle
 	*		key		noeat
@@ -21,6 +22,7 @@
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		line_start
 
 :section Section
@@ -59,7 +61,7 @@
 	*		value		noeat
 	" \t\r"		value_pre
 
-:value Constant
+:value Value
 	*		value
 	"\\"		value_esc
 	"\n"		line_start

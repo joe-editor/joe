@@ -2,15 +2,15 @@
 # by Christian Nicolai (http://mycrobase.de)
 
 =Idle
-=Comment	green
-=Constant	cyan
-=Escape		bold cyan
-=Bad		bold red
+=Comment
+=Constant
+=Escape
+=Bad
 
-=Table		bold
-=Policy		bold blue
-=Option		yellow
-=Module		blue
+=Table		+Preproc
+=Policy		+Keyword
+=Option		+Type
+=Module		+DefinedIdent
 
 :line_start Idle
 	*		rest		noeat

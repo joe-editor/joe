@@ -1,30 +1,30 @@
 # JOE syntax highlight file for Haskell
 
-# Define colors
-#
-# bold inverse blink dim underline italic
-# white cyan magenta blue yellow green red black
-# bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
-
-# not too colorfull to not distract user
 =Idle
-=Special bold
-=ConId bold yellow
-=ModId
-=VarId
-=VarSym
-=ReservedId bold
-=Comment green
-=Pragma bold green
-=Error bg_red black
-=FloatNumber bold cyan
-=DecNumber bold cyan
-=HexNumber cyan
-=OctNumber cyan
-=CharLit cyan
-=StringLit cyan
-=StringGap bg_cyan black
-=EscapedChar bold cyan
+=Comment
+=Keyword
+=Statement	+Keyword
+=Conditional	+Statement +Keyword
+=Structure	+Type +Keyword
+=Bad
+=Constant
+=Number		+Constant
+=FloatNumber	+Number
+=DecNumber	+Number
+=HexNumber	+Number
+=OctNumber	+Number
+=String		+Constant
+=StringEscape	+Escape +String
+=Character	+String
+=CharacterEscape +StringEscape
+
+=StringGap
+=Special	+Escape
+=ModId		+Type
+=VarId		+Ident
+=ConId		+Ident
+=VarSym		+Operator
+=Pragma 	+Preproc
 
 :reset Idle
 	*		reset		
@@ -54,6 +54,7 @@
 
 :ncomment Comment
 	*		ncomment
+	"BFHNTX"	ncomment	noeat call=comment_todo.comment_todo()
 	"-"		ncommentmaybeend
 	"{"		ncommentmaybenest
 
@@ -80,11 +81,11 @@
 	*		pragma		noeat
 	"}"		reset
 	
-:pragmamaybebadend Error
+:pragmamaybebadend Bad
 	*		pragma		noeat
 	"}"		errorstate	recolor=-2
 	
-:errorstate Error
+:errorstate Bad
 	*		reset
 
 :conormodid ConId
@@ -103,51 +104,59 @@
 
 :varid VarId
 	*		reset		noeat strings
-	"case"		reservedid
-	"class"		reservedid
-	"data"		reservedid
-	"default"	reservedid
-	"deriving"	reservedid
-	"do"		reservedid
-	"else"		reservedid
-	"if"		reservedid
-	"import"	reservedid
-	"infix"		reservedid
-	"infixl"	reservedid
-	"infixr"	reservedid
-	"instance"	reservedid
-	"let"		reservedid
-	"module"	reservedid
-	"newtype"	reservedid
-	"of"		reservedid
-	"then"		reservedid
-	"type"		reservedid
-	"where"		reservedid
-	"_"		reservedid
+	"case"		stmt
+	"class"		struct
+	"data"		struct
+	"default"	struct
+	"deriving"	struct
+	"do"		stmt
+	"else"		cond
+	"if"		cond
+	"import"	kw
+	"infix"		struct
+	"infixl"	struct
+	"infixr"	struct
+	"instance"	struct
+	"let"		stmt
+	"module"	struct
+	"newtype"	kw
+	"of"		stmt
+	"then"		cond
+	"type"		kw
+	"where"		struct
+	"_"		kw
 done
 	"a-zA-Z0-9_'"	varid
 
-:reservedid ReservedId
+:kw Keyword
 	*		reset		noeat
 
+:cond Conditional
+	*		reset		noeat
+
+:struct Structure
+	*		reset		noeat
+
+:stmt Statement
+	*		reset		noeat
 
 :consym ConId
 	*		reset		noeat strings
-	":"		reservedid
-	"::"		reservedid
+	":"		kw
+	"::"		kw
 done
 	"-!#$%&*+./<=>?@\\^|~:" consym
 
 :varsym VarSym
 	*		reset		noeat strings
-	".."		reservedid
-	"="		reservedid
-	"\\"		reservedid
-	"|"		reservedid
-	"<-"		reservedid
-	"->"		reservedid
-	"@"		reservedid
-	"~"		reservedid
+	".."		kw
+	"="		kw
+	"\\"		kw
+	"|"		kw
+	"<-"		kw
+	"->"		kw
+	"@"		kw
+	"~"		kw
 done
 	"-!#$%&*+./<=>?@\\^|~:" varsym
 
@@ -162,6 +171,7 @@ done
 	
 :linecomment Comment
 	*		linecomment
+	"BFHNTX"	linecomment	noeat call=comment_todo.comment_todo()
 	"\n"		reset
 
 :integerstart DecNumber
@@ -232,17 +242,17 @@ done
 :unrollfloat VarId
 	*		varsym		noeat recolor=-2
 
-:charlit CharLit
+:charlit Character
 	*		charlitend
 	"\n"		errorstate	noeat recolor=-2
 	"\'"		errorstate	noeat recolor=-2
 	"\\"		escape_charlit	mark recolor=-1
 
-:charlitend CharLit
+:charlitend Character
 	*		charliterror	noeat
 	"\'"		reset
 
-:escape_charlit EscapedChar
+:escape_charlit CharacterEscape
 	*		charliterror	recolor=-2
 	"0-9"		escdecchar
 	"o"		escoctcharstart
@@ -251,31 +261,31 @@ done
 	"A-Z"		escasciichar	buffer
 	"^"		escasciictrlchar
 
-:escoctcharstart EscapedChar
+:escoctcharstart CharacterEscape
 	*		charliterror	recolor=-3 noeat
 	"0-7"		escoctchar
 
-:escoctchar EscapedChar
+:escoctchar CharacterEscape
 	*		charlitend	noeat
 	"0-7"		escoctchar
 
-:escdecchar EscapedChar
+:escdecchar CharacterEscape
 	*		charlitend	noeat
 	"0-9"		escdecchar
 
-:eschexcharstart EscapedChar
+:eschexcharstart CharacterEscape
 	*		charliterror	recolor=-3 noeat
 	"0-9a-fA-F"	eschexchar
 
-:eschexchar EscapedChar
+:eschexchar CharacterEscape
 	*		charlitend	noeat
 	"0-9a-fA-F"	eschexchar
 
-:escascnotfoundchar EscapedChar
+:escascnotfoundchar CharacterEscape
 	*		charliterror	recolormark noeat
 	"A-Z"		escasciichar
 
-:escasciichar EscapedChar
+:escasciichar CharacterEscape
 	*		charliterror	recolormark
 	"A-Z'"		escascnotfoundchar noeat	strings
 	"NUL"		asciidonechar
@@ -313,31 +323,31 @@ done
 	"DEL"		asciidonechar
 done
 
-:asciiSOchar EscapedChar
+:asciiSOchar CharacterEscape
 	*		charliterror	recolormark
 	"'"		charlitend	noeat
 	"H"		charlitend
 
-:escasciictrlchar EscapedChar
+:escasciictrlchar CharacterEscape
 	*		charliterror	noeat recolor=-3
 	"A-Z@[\\]^_"	charlitend
 
-:asciidonechar EscapedChar
+:asciidonechar CharacterEscape
 	*		charlitend noeat
 
-:charliterror Error
+:charliterror Bad
 	*		charliterror
 	"\'"		charlitend	noeat
 
 # now for string literals
 
-:strlit StringLit
+:strlit String
 	*		strlit
 	"\""		reset
 	"\n"		errorstate	noeat recolor=-2
 	"\\"		escape_strlit	mark recolor=-1
 
-:escape_strlit EscapedChar
+:escape_strlit StringEscape
 	*		strliterror	recolor=-2
 	"0-9"		escdecstr
 	"o"		escoctstrstart
@@ -347,31 +357,31 @@ done
 	"^"		escasciictrlstr
 	" \t\n\r\v"	stringgap	recolor=-2
 
-:escoctstrstart EscapedChar
+:escoctstrstart StringEscape
 	*		strliterror	recolor=-3 noeat
 	"0-7"		escoctstr
 
-:escoctstr EscapedChar
+:escoctstr StringEscape
 	*		strlit	noeat
 	"0-7"		escoctstr
 
-:escdecstr EscapedChar
+:escdecstr StringEscape
 	*		strlit	noeat
 	"0-9"		escdecstr
 
-:eschexstrstart EscapedChar
+:eschexstrstart StringEscape
 	*		strliterror	recolor=-3 noeat
 	"0-9a-fA-F"	eschexstr
 
-:eschexstr EscapedChar
+:eschexstr StringEscape
 	*		strlit		noeat
 	"0-9a-fA-F"	eschexstr
 
-:escascnotfoundstr EscapedChar
+:escascnotfoundstr StringEscape
 	*		strliterror	recolormark noeat
 	"A-Z"		escasciistr
 
-:escasciistr EscapedChar
+:escasciistr StringEscape
 	*		strliterror	noeat recolormark
 	"A-Z\""		escascnotfoundstr noeat	strings
 	"NUL"		asciidonestr
@@ -409,15 +419,15 @@ done
 	"DEL"		asciidonestr
 done
 
-:asciiSOstr EscapedChar
+:asciiSOstr StringEscape
 	*		strlit		noeat
 	"H"		strlit
 
-:escasciictrlstr EscapedChar
+:escasciictrlstr StringEscape
 	*		strliterror	noeat recolor=-3
 	"A-Z@[\\]^_"	strlit
 
-:asciidonestr EscapedChar
+:asciidonestr StringEscape
 	*		strlit		noeat
 
 :stringgap StringGap
@@ -425,11 +435,11 @@ done
 	"\\"		strlit
 	" \n\r\t\v"	stringgap
 
-:strgaperror Error
+:strgaperror Bad
 	*		strgaperror
 	"\\"		strlit		
 	"\""		reset
 
-:strliterror Error
+:strliterror Bad
 	*		strlit		noeat
 

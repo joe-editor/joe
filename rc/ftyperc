@@ -854,3 +854,12 @@
 *.spec
 -autoindent
 -syntax spec
+
+ Haskell
+[haskell]
+*.hs
+-autoindent
+-smarthome
+-smartbacks
+-syntax haskell
+-vhdl_comment

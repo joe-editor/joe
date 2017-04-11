@@ -1,10 +1,12 @@
 # JOE syntax highlight file for typical UNIX configuration files
 
 =Idle
-=Comment 	green
-=String 	cyan
-=Escape 	bold cyan
-=Bad		bold red
+=Comment
+=Constant
+=Number		+Constant
+=String		+Constant
+=Escape
+=Bad
 
 :idle Idle
 	*		not_comment
@@ -69,6 +71,11 @@
 	"msg_color"		sopt
 	"lmsg"			sopt
 	"rmsg"			sopt
+	"smsg"			sopt
+	"zmsg"			sopt
+	"xmsg"			sopt
+	"aborthint"		sopt
+	"helphint"		sopt
 	"cpara"			sopt
 	"encoding"		sopt
 	"syntax"		sopt
@@ -87,7 +94,7 @@ done
 	"\c"	ident
 
 :sopt Idle
-	*		dosopt noeat
+	*		dosopt # Do eat the space
 
 :dosopt String
 	*		dosopt
@@ -95,10 +102,10 @@ done
 
 :nopt Idle
 	*		bad recolor=-1
-	" 	"	nopt
+	" \t"		nopt
 	"0-9"		nopt1 recolor=-1
 
-:nopt1 String
+:nopt1 Number
 	*		comment noeat
 	"0-9"		nopt1
 
