@@ -1,4 +1,5 @@
 # Improved XML highlighter by: Brian Candler <B.Candler@pobox.com>
+# Incorporated some Ant logic from Christian Nicolai (http://mycrobase.de)
 
 =Idle
 =Bad
@@ -19,6 +20,7 @@
 =PIEnd		+Preproc +Tag
 =CdataEdge	+Statement
 =CdataBody	+String
+=Keyword
 
 # http://www.w3.org/TR/2004/REC-xml-20040204/
 #
@@ -29,6 +31,11 @@
 #
 # Actually the standard tells you which characters to use, see:
 #  http://www.w3.org/TR/xml11/#NT-NameStartChar
+
+:init Idle
+	*		idle noeat call=.xml()
+
+.subr xml
 
 :content Idle
 	*		content
@@ -62,7 +69,7 @@
 :tag Tag
 	*		error		noeat recolor=-1
 	"/"		end_tag		recolor=-2 mark
-	":\i"		start_or_empty_tag recolor=-1 mark
+	":\i"		start_or_empty_tag recolor=-1 mark buffer
 	"?"		pi_start	recolor=-2
 	"!"		decl		recolor=-2 buffer
 
@@ -92,15 +99,27 @@
 # Matched: <tag
 
 :start_or_empty_tag TagName
-	*		error		noeat recolor=-1
+.ifdef ant
+	*		decide_tag_type noeat strings
+	"target"	kw
+done
+.else
+	*		decide_tag_type noeat
+.endif
 	":"		tag_namespace	markend recolormark recolor=-1
 	"-.\c"		start_or_empty_tag
+
+:kw Keyword
+	*		decide_tag_type noeat
+
+:decide_tag_type TagName
+	*		error		noeat recolor=-1
 	"/"		empty_tag	mark
-	" \t\r\n"	start_or_empty_tag_sp	markend recolor=-1
+	" \t\r\n"	start_or_empty_tag_sp	markend buffer recolor=-1
 	">"		close_tag	noeat
 
 :tag_namespace Namespace
-	*		start_or_empty_tag noeat
+	*		start_or_empty_tag noeat buffer
 
 :start_or_empty_tag_sp Idle
 	*		tag_space	noeat
@@ -161,6 +180,9 @@
 	"<"		error		noeat recolor=-1
 	"&"		achar		recolor=-1
 	"\""		endstring
+.ifdef ant
+	"$"		astring		call=ant.antvar() recolor=-1
+.endif
 
 #	">"		error		noeat recolor=-1
 
@@ -170,6 +192,9 @@
 	"<"		error		noeat recolor=-1
 	"&"		bchar		recolor=-1
 	"'"		endstring
+.ifdef ant
+	"$"		bstring		call=ant.maybe_antvar()
+.endif
 
 #	">"		error		noeat recolor=-1
 
@@ -283,3 +308,5 @@ done
 
 :cdata_end CdataEdge
 	*		content		noeat recolor=-1
+
+.end
