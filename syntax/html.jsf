@@ -32,7 +32,7 @@
 =TagEnd		+Tag
 =TagScript	+TagName
 =Attr		+Type
-=TagDelim
+=TagDelim	+Attr
 =Constant
 =Comment
 =CommentEdge	+Comment

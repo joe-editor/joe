@@ -2,17 +2,19 @@
 # by Christian Nicolai (http://mycrobase.de)
 
 =Idle
-=Comment	green
-=Constant	cyan
-=Escape		bold cyan
-=Bad		bold red
-=Brace		magenta
+=Comment
+=Constant
+=Escape
+=Bad
+=Brace
 
-=Tag		blue
-=Class		yellow
-=Id		green
-=Doctype	bold magenta
-=Filter		blue
+=TagName	+Keyword
+=TagEnd		+Keyword
+=Id		+DefinedIdent
+
+=Class		+Type
+=Doctype	+Preproc
+=Filter		+Operator +Keyword
 
 :line_start Idle
 	*		idle		noeat
@@ -56,7 +58,7 @@
 	*		doctype3
 	"\n"		line_start
 
-:tag Tag
+:tag TagName
 	*		idle		noeat
 	"a-zA-Z0-9_-"	tag
 	".#{(/"		after_tag	noeat
@@ -85,7 +87,7 @@
 	*		attrB
 	")"		after_tag
 
-:tag_close Tag
+:tag_close TagEnd
 	*		idle		noeat
 
 :html_comment Comment
