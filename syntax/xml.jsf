@@ -1,39 +1,24 @@
 # Improved XML highlighter by: Brian Candler <B.Candler@pobox.com>
 
-# Define no. sync lines
-# You can say:
-# -200     means 200 lines
-# -        means always start parsing from beginning of file when we lose sync
-#          if nothing is specified, the default is -50
-
--
-
-# Define colors
-#
-# bold inverse blink dim underline italic
-# white cyan magenta blue yellow green red black
-# bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
-
-# The underlines are here right now just because I want to distinguish which
-# bits have been coloured (say) CdataStart, CdataBody, CdataEnd. And that's
-# because I think it may be useful to make that distinction for some people.
-
 =Idle
-=Error		red bold
-=Tag		blue
-=Attr		cyan
-=Constant	blue bold
-=EntityRef	magenta
-=Decl		cyan
-=CommentStart	green
-=CommentBody	green
-=CommentEnd	green
-=PIStart	magenta bold
-=PIBody		magenta
-=PIEnd		magenta bold
-=CdataStart	blue bold
-=CdataBody	bold
-=CdataEnd	blue bold
+=Bad
+=Tag		+DefinedFunction +DefinedIdent
+=TagName	+Tag
+=TagEnd		+Tag
+=Attr		+Type
+=Constant
+=String		+Constant
+=Entity		+Escape
+=StringEntity	+StringEscape +Entity
+=Namespace	+Comment
+=Decl		+Preproc +Tag
+=Comment
+=CommentEdge	+Comment
+=PIStart	+Preproc +Tag
+=PIBody		+Comment
+=PIEnd		+Preproc +Tag
+=CdataEdge	+Statement
+=CdataBody	+String
 
 # http://www.w3.org/TR/2004/REC-xml-20040204/
 #
@@ -57,16 +42,16 @@
 # In several contexts a space is an error, and since a coloured space is
 # not visible, we colour the next non-space character as well.
 
-:error Error
+:error Bad
 	*		error_visible	noeat recolor=-1
 	" \t\r\n"	error
 
-:error_visible Error
+:error_visible Bad
 	*		content
 
 # Matched: &
 
-:entityref EntityRef
+:entityref Entity
 	*		error		noeat recolor=-1
 	"-.:\c"		entityref
 	"#"		entityref
@@ -76,42 +61,46 @@
 
 :tag Tag
 	*		error		noeat recolor=-1
-	"/"		end_tag
-	":\i"		start_or_empty_tag
+	"/"		end_tag		recolor=-2 mark
+	":\i"		start_or_empty_tag recolor=-1 mark
 	"?"		pi_start	recolor=-2
 	"!"		decl		recolor=-2 buffer
 
 # Matched: </
 
-:end_tag Tag
+:end_tag TagEnd
 	*		error		noeat recolor=-1
-	":\i"		end_tag2
+	":\i"		end_tag2	recolor=-1
 
-:end_tag2 Tag
+:end_tag2 TagEnd
 	*		error		noeat recolor=-1
 	"-.:\c"		end_tag2
 	" \t\r\n"	end_tag2_sp	recolor=-1
-	">"		content
+	">"		close_tag_end	noeat
 
-:end_tag2_sp Idle
+:end_tag2_sp TagEnd
 	*		end_tag3	noeat
 
-:end_tag3 Tag
+:end_tag3 TagEnd
 	*		error		noeat recolor=-1
 	" \t\r\n"	end_tag3_sp	recolor=-1
-	">"		content
+	">"		close_tag_end	noeat
 
-:end_tag3_sp Idle
+:end_tag3_sp TagEnd
 	*		end_tag_3	noeat
 
 # Matched: <tag
 
-:start_or_empty_tag Tag
+:start_or_empty_tag TagName
 	*		error		noeat recolor=-1
-	"-.:\c"		start_or_empty_tag
-	"/"		empty_tag
-	" \t\r\n"	start_or_empty_tag_sp	recolor=-1
-	">"		content
+	":"		tag_namespace	markend recolormark recolor=-1
+	"-.\c"		start_or_empty_tag
+	"/"		empty_tag	mark
+	" \t\r\n"	start_or_empty_tag_sp	markend recolor=-1
+	">"		close_tag	noeat
+
+:tag_namespace Namespace
+	*		start_or_empty_tag noeat
 
 :start_or_empty_tag_sp Idle
 	*		tag_space	noeat
@@ -120,27 +109,31 @@
 
 :empty_tag Tag
 	*		error		noeat recolor=-1
-	">"		content
+	">"		close_tag	noeat
 
 # Matched: <tag SPACE
 
 :tag_space Attr
 	*		error		noeat recolor=-1
 	" \t\r\n"	tag_space_sp	recolor=-1
-	":\i"		attr
+	":\i"		attr		mark
 	"/"		empty_tag	recolor=-1
-	">"		close_tag	recolor=-1
+	">"		close_tag	noeat
 
 :tag_space_sp Idle
-	*		tag_space	noeat
+	*		tag_space	mark noeat
 
 # Matched: <tag attr
 
 :attr Attr
 	*		error		noeat recolor=-1
-	"-.:\c" 	attr
+	":"		attr_namespace	markend recolormark recolor=-1
+	"-.\c" 		attr
 	" \t\r\n"	attr_sp		recolor=-1
 	"="		string
+
+:attr_namespace Namespace
+	*		attr		noeat
 
 :attr_sp Idle
 	*		attr_before	noeat
@@ -163,7 +156,7 @@
 
 # Matched: <tag attr="
 
-:astring Constant
+:astring String
 	*		astring
 	"<"		error		noeat recolor=-1
 	"&"		achar		recolor=-1
@@ -172,7 +165,7 @@
 #	">"		error		noeat recolor=-1
 
 
-:bstring Constant
+:bstring String
 	*		bstring
 	"<"		error		noeat recolor=-1
 	"&"		bchar		recolor=-1
@@ -181,13 +174,13 @@
 #	">"		error		noeat recolor=-1
 
 
-:achar EntityRef
+:achar StringEntity
 	*		error		noeat recolor=-1
 	"-.:\c"		achar
 	"#"		achar
 	";"		astring
 
-:bchar EntityRef
+:bchar Entity
 	*		error		noeat recolor=-1
 	"-.:\c"		bchar
 	"#"		bchar
@@ -199,12 +192,15 @@
 	*		error		noeat recolor=-1
 	" \t\r\n"	tag_space_sp
 	"/"		empty_tag	recolor=-1
-	">"		close_tag	recolor=-1
+	">"		close_tag	noeat
 
 # This state is just to recolor the final ">" at the end of <tag attr="val">
 
 :close_tag Tag
-	*		content		noeat
+	*		content
+
+:close_tag_end TagEnd
+	*		content
 
 # Matched: <?
 
@@ -240,35 +236,36 @@ done
 
 # Matched: <!--
 
-:comment_start CommentStart
+:comment_start CommentEdge
 	*		comment		noeat
 
-:comment CommentBody
+:comment Comment
 	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"-"		comment2
 
-:comment2 CommentBody
+:comment2 Comment
 	*		comment
 	"-"		comment3
 
-:comment3 CommentBody
+:comment3 Comment
 	*		comment_error	noeat recolor=-3
 	">"		comment_end	recolor=-3
 
-:comment_end CommentEnd
+:comment_end CommentEdge
 	*		content		noeat recolor=-1
 
 # For compatibility, the string "--" (double-hyphen) MUST NOT occur within
 # comments. [http://www.w3.org/TR/REC-xml/ section 2.5]
 
-:comment_error Error
+:comment_error Bad
 	*		comment
 	"-"		comment_error
 	">"		comment_end	recolor=-3
 
 # Matched: <![CDATA[
 
-:cdata_start CdataStart
+:cdata_start CdataEdge
 	*		cdata		noeat
 
 :cdata CdataBody
@@ -284,5 +281,5 @@ done
 	"]"		cdata3
 	">"		cdata_end	recolor=-3
 
-:cdata_end CdataEnd
+:cdata_end CdataEdge
 	*		content		noeat recolor=-1

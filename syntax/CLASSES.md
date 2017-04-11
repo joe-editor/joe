@@ -256,3 +256,42 @@ operators.
 ```
 * Specific to C: a C++ keyword
 
+```
+=Tag +DefinedFunction +DefinedIdent
+```
+* Tag edge (< and >) in XML and HTML
+
+```
+=TagName +Tag
+```
+* Tag name
+
+```
+=TagEnd +Tag
+```
+* End tag (the whole thing)
+
+```
+=Attr +Type
+```
+* Attribute name in XML/HTML tag
+
+```
+=Entity		+Escape
+```
+* XML and HTML entities
+
+```
+=StringEntity	+StringEscape +Entity
+```
+* Entites found inside of attribute values, which are Strings
+
+```
+=Namespace	+Comment
+```
+* XML namespace prefixes
+
+More in XML and HTML:
+* `PIStart`, `PIBody`, `PIEnd`
+* `CdataEdge`, `CdataBody`
+* `Decl`

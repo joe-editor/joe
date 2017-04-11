@@ -26,25 +26,30 @@
 #
 
 # Colours
-=Background
-=Text
-=TagEdge	green
-=TagName	green #cyan
-=TagParam	#green
-=TagDelim	#bold green
-=TagValue	cyan
-=TagEntity	bold blue
-=SGMLtag	magenta
-=XML_pi		yellow
-=Entity		bold blue
-=Mystery	bold yellow bg_red inverse
+=Idle
+=Tag		+DefinedFunction +DefinedIdent
+=TagName	+Tag
+=TagEnd		+Tag
+=TagScript	+TagName
+=Attr		+Type
+=TagDelim
+=Constant
+=Comment
+=CommentEdge	+Comment
+=Entity		+Escape
+=Bad
+=SGMLTag	+Statement +Keyword
+
+=PIStart	+Preproc +Tag
+=PIBody		+Comment
+=PIEnd		+Preproc +Tag
 
 # Call HTML highlighter subroutine
 
-:first Background
+:first Idle
 	*	call_failed	noeat call=.html()
 
-:call_failed Mystery
+:call_failed Bad
 	*	call_failed
 
 #
@@ -53,25 +58,25 @@
 
 .subr html
 
-:reset Background
+:reset Idle
 	*	idle noeat
 .ifdef mason
 	"%"	reset call=perl.perl(mason_line)
 .endif
 
 # Rules
-:idle Background
+:idle Idle
 	*	idle
 	"\n"	reset
 	"<"	tag_begin recolor=-1
 	"&"	idle call=.entity() recolor=-1
-:mistake_idle Mystery
+:mistake_idle Bad
 	*	idle noeat
 
 # Tags
-:tag_begin TagEdge
+:tag_begin Tag
 	*			tag_name_first buffer noeat recolor=-1
-	"/"			tag_name_first buffer
+	"/"			end_tag recolor=-2
 .ifdef mason
 	"&"			rtn_php call=perl.perl(mason_block)
 .endif
@@ -86,16 +91,21 @@
 .endif
 
 # this state allows php and perl to recolor the ?> %> or &> properly.
-:rtn_php TagEdge
+:rtn_php Tag
 	*			idle noeat
 
-:maybe_erb_eq TagEdge
+:maybe_erb_eq Tag
 	*			rtn_php noeat call=ruby.ruby(erb)
 	"="			rtn_php call=ruby.ruby(erb)
 
-:tag_name_first Mystery
+:tag_name_first Bad
 	*			tag_idle noeat
 	"-A-Za-z0-9._:"		tag_name recolor=-1
+
+:end_tag TagEnd
+	"-A-Za-z0-9._: \t"	end_tag
+	">"			idle
+	*			mistake_idle
 
 :tag_name TagName
 	*			tag_idle noeat strings
@@ -104,7 +114,7 @@
 done
 	"-A-Za-z0-9._:"		tag_name
 
-:tag_idle Background
+:tag_idle Idle
 	*			mistake_tag recolor=-1
 	"<"			tag_maybe_php recolor=-1
 	" \t\n"		tag_idle
@@ -112,17 +122,17 @@ done
 	">"			tag_end noeat recolor=-1
 	"-A-Za-z0-9._:"		tag_param noeat recolor=-1
 
-:tag_maybe_php Mystery
+:tag_maybe_php Bad
 	*			tag_idle
 	"?"			tag_call_php recolor=-2
 
-:tag_call_php TagEdge
+:tag_call_php Tag
 	*			rtn_php_tag noeat call=php.php()
 
-:rtn_php_tag TagEdge
+:rtn_php_tag Tag
 	*			tag_idle noeat
 
-:tag_param TagParam
+:tag_param Attr
 	*			tag_idle noeat recolor=-1
 	"-A-Za-z0-9._:"		tag_param
 	"="			tag_delim recolor=-1
@@ -133,29 +143,29 @@ done
 	"'"			tag_idle call=.tag_value_quoted(squote) recolor=-1
 	"-A-Za-z0-9._:"		tag_value noeat recolor=-1
 
-:tag_value TagValue
+:tag_value Constant
 	*			tag_idle noeat recolor=-1
 	"-A-Za-z0-9._:"		tag_value
 
-:tag_end TagEdge
+:tag_end Tag
 	*	idle
 
-:mistake_tag Mystery
+:mistake_tag Bad
 	*	tag_idle noeat
 
-# We're about to entry a script...
+# We're about to enter a script...
 
-:stag_enter_idle TagName
+:stag_enter_idle TagScript
 	*	stag_idle noeat
 
-:stag_idle Background
+:stag_idle Idle
 	*			smistake_tag recolor=-1
 	" \t\n"		stag_idle
 	"/"			stag_end recolor=-1 
 	">"			stag_end noeat recolor=-1
 	"-A-Za-z0-9._:"		stag_param noeat recolor=-1
 
-:stag_param TagParam
+:stag_param Attr
 	*			stag_idle noeat recolor=-1
 	"-A-Za-z0-9._:"		stag_param
 	"="			stag_delim recolor=-1
@@ -166,21 +176,21 @@ done
 	"'"			stag_idle call=.tag_value_quoted(squote) recolor=-1
 	"-A-Za-z0-9._:"		stag_value noeat recolor=-1
 
-:stag_value TagValue
+:stag_value Constant
 	*			stag_idle noeat recolor=-1
 	"-A-Za-z0-9._:"		stag_value
 
-:stag_end TagEdge
+:stag_end Tag
 .ifdef php
 	*	tag_begin	call=js.js(php)
 .else
 	*	tag_begin	call=js.js(html)
 .endif
 
-:stag_done TagEdge
+:stag_done Tag
 	*	tag_name_first	buffer noeat
 
-:smistake_tag Mystery
+:smistake_tag Bad
 	*	stag_idle noeat
 
 # We're about to entry a script...
@@ -188,14 +198,14 @@ done
 :ytag_enter_idle TagName
 	*	ytag_idle noeat
 
-:ytag_idle Background
+:ytag_idle Idle
 	*			ymistake_tag recolor=-1
 	" \t\n"		ytag_idle
 	"/"			ytag_end recolor=-1 
 	">"			ytag_end noeat recolor=-1
 	"-A-Za-z0-9._:"		ytag_param noeat recolor=-1
 
-:ytag_param TagParam
+:ytag_param Attr
 	*			ytag_idle noeat recolor=-1
 	"-A-Za-z0-9._:"		ytag_param
 	"="			ytag_delim recolor=-1
@@ -206,49 +216,52 @@ done
 	"'"			ytag_idle call=.tag_value_quoted(squote) recolor=-1
 	"-A-Za-z0-9._:"		ytag_value noeat recolor=-1
 
-:ytag_value TagValue
+:ytag_value Constant
 	*			ytag_idle noeat recolor=-1
 	"-A-Za-z0-9._:"		ytag_value
 
-:ytag_end TagEdge
+:ytag_end Tag
 .ifdef php
 	*	tag_begin	call=css.css(php)
 .else
 	*	tag_begin	call=css.css()
 .endif
 
-:ytag_done TagEdge
+:ytag_done Tag
 	*	tag_name_first	buffer noeat
 
-:ymistake_tag Mystery
+:ymistake_tag Bad
 	*	ytag_idle noeat
 
 # SGML and comments
-:sgml_tag SGMLtag
+:sgml_tag SGMLTag
 	*	sgml_tag
 	"-"	sgml_tag_maybe_comment
-	">"	sgml_end noeat recolor=-1
-:sgml_tag_maybe_comment SGMLtag
+	">"	idle
+:sgml_tag_maybe_comment SGMLTag
 	*	sgml_tag
-	"-"	sgml_tag_comment
-:sgml_tag_comment SGMLtag
+	"-"	sgml_tag_comment recolor=-4
+:sgml_tag_comment Comment
 	*	sgml_tag_comment
 	"-"	sgml_tag_maybe_comment_end
-:sgml_tag_maybe_comment_end SGMLtag
+	"BFHNTX" sgml_tag_comment noeat call=comment_todo.comment_todo()
+:sgml_tag_maybe_comment_end Comment
 	*	sgml_tag_comment
-	"-"	sgml_tag
-:sgml_end SGMLtag
-	*	idle
+	"-"	sgml_tag_end_comment
+:sgml_tag_end_comment Comment
+	">"	idle
 
 # XML processing info
-:xml_pi XML_pi
+:xml_pi PIStart
+	*	xml_pi_body noeat
+:xml_pi_body PIBody
 	*	xml_pi
 	"?"	xml_pi_maybe_end
-:xml_pi_maybe_end XML_pi
+:xml_pi_maybe_end PIBody
 	*	xml_pi
 	"?"	xml_pi_maybe_end
-	">"	xml_pi_end noeat recolor=-1
-:xml_pi_end XML_pi
+	">"	xml_pi_end noeat recolor=-2
+:xml_pi_end PIEnd
 	*	idle
 
 .end
@@ -259,7 +272,7 @@ done
 
 .subr tag_value_quoted
 
-:tag_value_quoted TagValue
+:tag_value_quoted Constant
 	*			tag_value_quoted
 .ifdef dquote
 	"\""	tag_value_quoted return
@@ -269,20 +282,20 @@ done
 .endif
 	"<"	tag_value_maybe_php
 
-:tag_value_maybe_php TagValue
+:tag_value_maybe_php Constant
 	*	tag_value_quoted	noeat
 	"?"	tag_value_call_php recolor=-2
 
-:tag_value_call_php TagEdge
+:tag_value_call_php Tag
 	*	tag_value_rtn_php	noeat call=php.php()
 
-:tag_value_rtn_php TagEdge
+:tag_value_rtn_php Tag
 	*	tag_value_quoted	noeat
 
 # Too many non-html things can be in quotes to do this...
 #	"&"	tag_value_quoted call=.entity() recolor=-1
 
-:mistake_tag_value Mystery
+:mistake_tag_value Bad
 	*	tag_value_quoted noeat
 
 .end
@@ -312,7 +325,7 @@ done
 :entity_end Entity
 	*	entity	return
 
-:entity_name Mystery
+:entity_name Bad
 	*	mistake_idle noeat recolor=-1 strings
 	"AElig"	entity_ok
 	"Aacgr"	entity_ok
@@ -1339,7 +1352,7 @@ done
 	*	mistake_entity noeat recolor=-1
 	";"	entity_end noeat recolor=-1
 
-:mistake_entity Mystery
+:mistake_entity Bad
 	*	idle noeat
 
 .end
