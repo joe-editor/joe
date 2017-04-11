@@ -1,7 +1,6 @@
 
 import joefx
 import time
-import cProfile
 
 class AbortTests(joefx.JoeTestBase):
     def test_abort_to_exit(self):
@@ -45,9 +44,11 @@ class AbortTests(joefx.JoeTestBase):
     def test_abort_kills_process(self):
         self.startJoe()
         self.cmd("bknd")
-        time.sleep(0.1) # TODO: Weird timing issues with subprocesses...
+        # Wait for a shell prompt to appear
+        self.waitForNotEmpty(y=1)
+        self.assertTrue(self.joe.expect(lambda: self.joe.cursor.X > 0))
         self.cmd("bol")
-        self.assertCursor(y=1, x=0)
+        self.assertCursor(x=0)
         
         self.cmd("abort")
         self.assertTextAt("Kill program", x=0)
@@ -181,7 +182,8 @@ class BkndTests(joefx.JoeTestBase):
     def test_bknd_shell(self):
         self.startJoe()
         self.cmd("bknd")
-        time.sleep(0.1)
+        # Wait for shell prompt to appear
+        self.waitForNotEmpty(y=1)
         self.write("echo hello world\r")
         self.assertTextAt("hello world", x=0, dy=-1)
         self.cmd("uparw,abort")
@@ -246,9 +248,9 @@ class BofTests(joefx.JoeTestBase):
         self.assertSelectedMenuItem(rootMenu.items[0].label)
         self.writectl("{down*3}")
         self.assertSelectedMenuItem(rootMenu.items[3].label)
-        self.writectl("^KU")
+        self.cmd("bofmenu", "menu")
         self.assertSelectedMenuItem(rootMenu.items[0].label)
-        self.writectl("^C")
+        self.cmd("abort", "menu")
         self.exitJoe()
 
 class BolTests(joefx.JoeTestBase):
@@ -299,21 +301,77 @@ class BolTests(joefx.JoeTestBase):
         for i in range(0, 9):
             self.writectl("{right*%d}" % i)
             self.assertSelectedMenuItem("Item %d" % i)
-            self.writectl("^A")
+            self.cmd("bolmenu", "menu")
             self.assertSelectedMenuItem("Item 0")
         self.writectl("{down}")
         for i in range(9, 15):
             self.writectl("{right*%d}" % (i - 9))
             self.assertSelectedMenuItem("Item %d" % i)
-            self.writectl("^A")
+            self.cmd("bolmenu", "menu")
             self.assertSelectedMenuItem("Item 9")
 
-# TODO: bol
-# TODO: bolmenu
-# TODO: bop
-# TODO: bos
-# TODO: brpaste
-# TODO: brpaste_done
+class BopTests(joefx.JoeTestBase):
+    def test_bop_paragraph(self):
+        self.workdir.fixtureFile("test", "bop_test")
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        answers = (1, 1, 1, 1, 1, 5, 5, 5, 8, 8, 10, 10, 12, 13)
+        for i, answer in enumerate(answers):
+            self.cmd('line,"%d",rtn,bop' % (i + 1))
+            self.assertCursor(y=answer)
+        self.exitJoe()
+    
+    def test_bop_paragraph_eol(self):
+        self.workdir.fixtureFile("test", "bop_test")
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        answers = (1, 1, 1, 1, 5, 5, 5, 8, 8, 8, 10, 12, 12, 13)
+        for i, answer in enumerate(answers):
+            self.cmd('line,"%d",rtn,eol,bop' % (i + 1))
+            self.assertCursor(y=answer)
+        self.exitJoe()
+
+class BosTests(joefx.JoeTestBase):
+    def test_bos_long(self):
+        self.workdir.fixtureData("test", "\n".join("line %d" % i for i in range(100)))
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        height = self.joe.size.Y
+        self.cmd("bos")
+        self.assertTextAt("line %d" % (height - 2), x=0)
+        self.cmd('line,"75",rtn,bos')
+        self.assertTextAt("line %d" % (75 + height // 2 - 2), x=0)
+        self.exitJoe()
+    
+    def test_bos_short(self):
+        self.workdir.fixtureData("test", "\n".join("line %d" % i for i in range(10)))
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        self.cmd("bos")
+        self.assertTextAt("line 9")
+        self.exitJoe()
+
+class BracketedPasteTests(joefx.JoeTestBase):
+    def test_brpaste_wordwrap_autoindent(self):
+        self.config.globalopts.brpaste = True
+        self.config.globalopts.pastehack = False
+        self.startup.args = ("-autoindent", "-wordwrap")
+        self.startJoe()
+        text = [
+            "    This is a very long line that should hit the wordwrap limit abcdefg abcdefg abcdefg abcdefg",
+            "  And this line would ordinarily be autoindented to the previous line abcdefg abcdefg abcdefg",
+            "And here's the last line"]
+        self.write("\033[200~")
+        self.write("\r".join(text))
+        self.write("\033[201~")
+        self.save("outfile")
+        self.exitJoe()
+        self.assertFileContents("outfile", "\n".join(text))
+
 # TODO: bufed
 # TODO: build
 # TODO: byte
@@ -360,7 +418,52 @@ class BolTests(joefx.JoeTestBase):
 # TODO: eop
 # TODO: execmd
 # TODO: explode
-# TODO: exsave
+
+class ExsaveTests(joefx.JoeTestBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.text = "\n".join("line %d" % i for i in range(10))
+    
+    def setUp(self):
+        super().setUp()
+        self.workdir.fixtureData("test", self.text)
+        self.startup.args = ("test",)
+    
+    def test_exsave_nomodify(self):
+        self.startJoe()
+        self.cmd("exsave")
+        self.assertExited()
+    
+    def test_exsave_modified(self):
+        self.startJoe()
+        
+        self.cmd("eof")
+        self.write(" - more text")
+        self.cmd("exsave")
+        
+        self.assertExited()
+        self.assertFileContents("test", self.text + " - more text")
+    
+    def test_exsave_block(self):
+        self.startJoe()
+        
+        self.cmd("bof,markb")
+        self.cmd("eof,markk")
+        self.cmd("exsave")
+        
+        self.assertExited()
+    
+    def test_exsave_modified_block(self):
+        self.startJoe()
+        
+        self.cmd("eof")
+        self.write(" - more text")
+        self.cmd("markk,bof,markb")
+        self.cmd("exsave")
+        
+        self.assertExited()
+        self.assertFileContents("test", self.text + " - more text")
+
 # TODO: extmouse
 # TODO: ffirst
 # TODO: filt
@@ -374,7 +477,6 @@ class BolTests(joefx.JoeTestBase):
 # TODO: grep
 # TODO: groww
 # TODO: if
-# TODO: isrch
 # TODO: jump
 # TODO: killjoe
 # TODO: killproc
@@ -445,7 +547,6 @@ class BolTests(joefx.JoeTestBase):
 # TODO: rfirst
 # TODO: rindent
 # TODO: run
-# TODO: rsrch
 # TODO: rtarw
 # TODO: rtarwmenu
 # TODO: rtn
