@@ -29,6 +29,9 @@
 	* Fix regex assertions: they were not working because the character
 	  before the search position was not being loaded.
 
+	* For jmacs: ^Q^J now again inserts \n in the string replace prompt. 
+	  This broke beginning with JOE 4.0.
+
 ### JOE 4.4
 
 * Enhancements
