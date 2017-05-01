@@ -16,6 +16,9 @@
 	  the window, and the file is unmodified (regression from ^C change
 	  in 4.2).
 
+	* Fix regex assertions: they were not working because the character
+	  before the search position was not being loaded.
+
 ### JOE 4.4
 
 * Enhancements
