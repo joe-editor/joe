@@ -10,6 +10,16 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Enhancements
+
+	* Now pass character which invoked a macro to each macro step and
+	  call.  If a macro step happens to be the 'type' command, the
+	  character which invoked the macro will be typed in.  For example,
+	  this macro will type three 'X's.  Before this change you got three
+	  NULs.
+
+		type,type,type   X
+
 * Bugs fixed
 
 	* Fix exsave: (^K ^X) should close file when a block is present in
