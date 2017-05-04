@@ -231,6 +231,11 @@ but not `+`, `*`, `-`, `/`, etc.  Those are typically handled by `Control`.
 * Other symbolic characters that have meaning in the language, generally
 operators.
 
+```
+=Builtin +DefinedFunction
+```
+* Builtin or primitive functions, e.g. `len`.
+
 
 ### Misc/special
 

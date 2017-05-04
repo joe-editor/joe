@@ -25,6 +25,7 @@
 =DefinedType	+DefinedIdent
 =SpecialIdent	+Ident
 =Decorator	+Define +Preproc
+=Builtin	+DefinedFunction
 
 :idle Idle
 	*		idle
@@ -225,7 +226,7 @@ done
 :stmt Statement
 	*		idle		noeat
 
-:builtin DefinedFunction
+:builtin Builtin
 	*		idle		noeat
 
 :classstmt Statement

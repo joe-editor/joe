@@ -23,7 +23,7 @@
 =Label		+DefinedIdent
 =Structure	+Type +Keyword
 =Type
-=BuiltinFunction +DefinedFunction
+=Builtin	+DefinedFunction
 
 =Control
 =Brackets	+Control
@@ -273,7 +273,7 @@
 :type Type
   *            main  noeat
   
-:builtin BuiltinFunction
+:builtin Builtin
   *            main  noeat
 
 :stmt Statement
