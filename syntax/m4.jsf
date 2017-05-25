@@ -1,11 +1,12 @@
 # m4
 
 =Idle
-=Comment	green
-=Constant	cyan
-=Var		magenta
-=Brace		bold magenta
-=Kw		bold
+=Ident
+=Comment
+=Constant
+=Variable	+Escape
+=Brace
+=Keyword
 
 :start Idle
 	*		start noeat call=.m4()
@@ -38,7 +39,7 @@
 .ifdef quote
 :ident Constant
 .else
-:ident Idle
+:ident Ident
 .endif
 	*		maybe_macro noeat strings
 	"builtin"	maybe_kw
@@ -95,7 +96,7 @@ done
 	*		idle noeat
 	"("		kw recolormark noeat
 
-:kw Kw
+:kw Keyword
 	*		idle noeat
 	"("		macro noeat
 
@@ -103,7 +104,7 @@ done
 	*		comment
 	"\n"		idle
 
-:macro Var
+:macro Variable
 	*		idle noeat
 	"("		brace recolor=-1
 
