@@ -28,7 +28,7 @@
 =Escape 208
 =Label +Keyword
 =Loop 167
-=Conditional +Statement
+=Condition +Keyword
 =Statement +Keyword
 =Type 214
 =StorageClass 208

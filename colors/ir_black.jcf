@@ -55,7 +55,14 @@
 =StringEscape +Escape
 =Structure +Type
 =TODO 246
+=Tag +Escape
 
+=html.Tag +Keyword
+=html.TagEnd +DefinedIdent
+=html.TagName +Conditional
+=xml.Tag +Keyword
+=xml.TagEnd +DefinedIdent
+=xml.TagName +Conditional
 
 .colors *
 
@@ -110,5 +117,12 @@
 =StringEscape +Escape
 =Structure +Type
 =TODO $8f8f8f
+=Tag +Escape
 
+=html.Tag +Keyword
+=html.TagEnd +DefinedIdent
+=html.TagName +Conditional
+=xml.Tag +Keyword
+=xml.TagEnd +DefinedIdent
+=xml.TagName +Conditional
 

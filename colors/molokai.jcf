@@ -9,6 +9,7 @@
 -selection /237
 -linum 250/235
 -curlin /236
+-menu 81/16
 -menusel /244
 -cursor 16/231
 
@@ -57,6 +58,7 @@
 =StringEscape 197 bold
 =Structure 81
 =TODO 231 bold
+=Tag 197 italic
 
 =diff.AddLine /236
 =diff.ChgLine 244/238
@@ -69,6 +71,7 @@
 -selection /$403D3D
 -linum $BCBCBC/$232526
 -curlin /$293739
+-menu $66D9EF/$000000
 -menusel /$808080
 -cursor $000000/$F8F8F0
 
@@ -117,6 +120,7 @@
 =StringEscape $F92672 bold
 =Structure $66D9EF
 =TODO $FFFFFF bold
+=Tag $F92672 italic
 
 =diff.AddLine /$13354A
 =diff.ChgLine $89807D/$4C4745

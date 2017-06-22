@@ -8,12 +8,13 @@
 -selection 236/79
 -linum /238
 -curlin /238
+-menu 247/236
 -menusel 187/235 bold
 -cursor 232/109 bold
 
 -term 0 237
 -term 1 167
--term 2 115
+-term 2 79
 -term 3 186
 -term 4 238
 -term 5 139
@@ -21,7 +22,7 @@
 -term 7 253
 -term 8 255
 -term 9 167
--term 10 115
+-term 10 151
 -term 11 228
 -term 12 103
 -term 13 139
@@ -57,6 +58,7 @@
 =StringEscape 181 bold
 =Structure 229 bold
 =TODO /237
+=Tag 174 bold
 
 =diff.AddLine 66 bold
 =diff.ChgLine /236 bold
@@ -69,6 +71,7 @@
 -selection $233323/$71d3b4
 -linum /$444444
 -curlin /$434443
+-menu $9f9f9f/$2c2e2e
 -menusel $d0d0a0/$242424 bold
 -cursor $000d18/$8faf9f bold
 
@@ -118,8 +121,9 @@
 =StringEscape $dca3a3 bold
 =Structure $efefaf bold
 =TODO /$3a3a3a
+=Tag $e89393 bold
 
 =diff.AddLine /$3a3a3a
 =diff.ChgLine /$333333
-=diff.DelLine $333333/$464646
+=diff.DelLine /$444444
 
