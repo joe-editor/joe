@@ -40,6 +40,10 @@
 =Character +Constant
 =CharacterEscape +Escape
 
+=Tag 109
+=TagName 108 bold
+=TagEnd +Tag
+
 =diff.AddLine 235/142
 =diff.DelLine 235/124
 =Ignore 246

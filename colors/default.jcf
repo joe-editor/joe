@@ -20,6 +20,9 @@
 =Brace          magenta
 =Control
 =Ident
+=Tag		bold blue
+=TagName	+Tag
+=TODO		default/default inverse
 
 =diff.DelLine	red
 =diff.AddLine	green
