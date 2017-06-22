@@ -1,11 +1,11 @@
 # JOE syntax highlight file for REXX
 
 =Idle
-=Bad		bold red
-=Comment 	green
-=Constant 	cyan
-=Escape 	bold cyan
-=Keyword 	bold
+=Bad
+=Comment
+=Constant
+=String		+Constant
+=Keyword
 
 :idle Idle
 	*			idle
@@ -51,11 +51,11 @@ done
 :kw Keyword
 	*		idle noeat
 
-:squote Constant
+:squote String
 	*	squote
 	"'"	idle
 
-:dquote Constant
+:dquote String
 	*	dquote
 	"\""	idle
 
@@ -71,6 +71,7 @@ done
 
 :comment Comment
 	*	comment
+	"BFHNTX" comment noeat call=comment_todo.comment_todo()
 	"*"	maybe_done
 	"/"	comment call=.maybe_comment()
 

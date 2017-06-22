@@ -20,23 +20,38 @@
 #	2.3.6	100%
 
 =Idle
-=Comment 		green
-=Constant 		cyan
-=ConstEscape 		bold cyan
-=Keyword 		bold
-=Var 			magenta
-=VarEscape		bold magenta
+=Ident
+=Comment
+=Constant
+=Number		+Constant
+=Boolean	+Constant
+=String		+Constant
+=StringEscape	+Escape
+=StringVariable	+StringEscape
+=Keyword
+=Type
+=Operator	+Keyword
+=Statement	+Keyword
+=Structure	+Statement
+=Conditional	+Statement
+=Loop		+Statement
+=Variable	+DefinedIdent
+=VariableEscape +Escape
+
+=ParamKey	+Attr +Operator
 
 :idle Idle
 	*		idle
 	"#"		comment			recolor=-1
-	"$"		var			recolor=-1
+	"$"		var			recolor=-1 mark
 	"@"		var_array		recolor=-1
 	"<"		idle1
+	"["		typespec
 	"\""		string_dq		recolor=-1
 	"'"		string_sq		recolor=-1
 	"@"		idle2
-	"a-zA-Z_-"	ident			buffer
+	"a-zA-Z_"	ident			buffer
+	"-"		param			recolor=-1
 
 :idle1 Idle
 	*		idle			noeat
@@ -49,211 +64,256 @@
 
 :comment Comment
 	*		comment
+	"BFHNTX"	comment			noeat call=comment_todo.comment_todo()
 	"\r\n"		idle
 
-:var_array Var
+:var_array Variable
 	*		idle			noeat
-	"$?^"		idle
+	"$?^"		idle			mark
 	"a-zA-Z_"	var_name
 
-:var Var
+:var Variable
 	*		idle			noeat
 	"{"		var_brack
 	"$?^"		idle
-	"a-zA-Z_"	var_name
+	"a-zA-Z_"	var_name		buffer
 
-:var_name Var
-	*		idle			noeat recolor=-1
+:var_name Variable
+	*		idle			noeat recolor=-1 istrings
+	"true"		bool			recolormark markend
+	"false"		bool			recolormark markend
+	"null"		kw			recolormark markend
+done
 	"a-zA-Z0-9_:?"	var_name
 
-:var_brack Var
+:bool Boolean
+	*		idle
+
+:var_brack Variable
 	*		var_brack
 	"`"		var_escape		recolor=-1
 	"}"		idle
 
-:var_escape VarEscape
+:var_escape VariableEscape
 	*		var_brack
 
 :delim_comment Comment
 	*		delim_comment
+	"BFHNTX"	delim_comment		noeat call=comment_todo.comment_todo()
 	"#"		delim_comment1
 
 :delim_comment1 Comment
 	*		delim_comment		noeat
 	">"		idle
 
-:kw Keyword
-	*		idle			noeat
-
-:string_dq Constant
+:string_dq String
 	*		string_dq
 	"\"\n"		idle
 	"$"		string_dq_subst		recolor=-1
 	"`"		string_dq_esc		recolor=-1
 
-:string_dq_subst Var
+:string_dq_subst StringVariable
 	*		string_dq		noeat recolor=-2
 	"a-zA-Z_"	string_dq_subst_name
 	"{"		string_dq_subst_brack
 	"("		string_dq_subst_parens
 	"`"		string_dq_subst_escape 	recolor=-1
 
-:string_dq_subst_name Var
+:string_dq_subst_name StringVariable
 	*		string_dq		recolor=-1 noeat
 	"a-zA-Z0-9_:"	string_dq_subst_name
 	"`"		string_dq_subst_escape 	recolor=-1
 
-:string_dq_subst_escape VarEscape
+:string_dq_subst_escape VariableEscape
 	*		string_dq_subst_name
 
-:string_dq_subst_brack Var
+:string_dq_subst_brack Variable
 	*		string_dq_subst_brack
 	"}"		string_dq
 
-:string_dq_subst_parens Var
+:string_dq_subst_parens Variable
 	*		string_dq_sustr_parens
 	")"		string_dq
 
-:string_sq Constant
+:string_sq String
 	*		string_sq
 	"\'\n"		idle
 
-:string_dq_esc ConstEscape
+:string_dq_esc StringEscape
 	*		string_dq
 
-:string_sq_esc ConstEscape
+:string_sq_esc StringEscape
 	*		string_sq
 
-:herestr_dq Constant
+:herestr_dq String
 	*		herestr_dq
 	"\""		herestr_dq1
 	"$"		herestr_dq_subst	recolor=-1
 
-:herestr_dq1 Constant
+:herestr_dq1 String
 	*		herestr_dq		noeat
 	"@"		idle
 
-:herestr_dq_subst Var
+:herestr_dq_subst Variable
 	*		herestr_dq		noeat recolor=-2
 	"a-zA-Z_"	herestr_dq_subst_name
 	"("		herestr_dq_subst_parens
 	"`"		herestr_dq_subst_escape recolor=-1
 
-:herestr_dq_subst_name Var
+:herestr_dq_subst_name Variable
 	*		herestr_dq		recolor=-1 noeat
 	"a-zA-Z0-9_:"	herestr_dq_subst_name
 	"`"		herestr_dq_subst_escape	recolor=-1
 
-:herestr_dq_subst_escape VarEscape
+:herestr_dq_subst_escape VariableEscape
 	*		herestr_dq_subst_name
 
-:herestr_dq_subst_parens Var
+:herestr_dq_subst_parens Variable
 	*		herestr_dq_subst_parens
 	")"		herestr_dq
 
-:herestr_sq Constant
+:herestr_sq String
 	*		herestr_sq
 	"\'"		herestr_sq1
 
-:herestr_sq1 Constant
+:herestr_sq1 String
 	*		herestr_sq		noeat
 	"@"		idle
 
-:ident Idle
+:typespec Type
+	"\i.:"		typespec
+	"]"		idle			noeat
+	*		idle
+
+:param ParamKey
+	*		after_param		noeat istrings
+	"-and"		oper
+	"-band"		oper
+	"-bnot"		oper
+	"-bor"		oper
+	"-bxor"		oper
+	"-not"		oper
+	"-or"		oper
+	"-xor"		oper
+	"-f"		oper
+	"-as"		oper
+	"-ccontains"	oper
+	"-ceq"		oper
+	"-cge"		oper
+	"-cgt"		oper
+	"-cle"		oper
+	"-clike"	oper
+	"-clt"		oper
+	"-cmatch"	oper
+	"-cne"		oper
+	"-cnotcontains"	oper
+	"-cnotlike"	oper
+	"-cnotmatch"	oper
+	"-contains"	oper
+	"-creplace"	oper
+	"-csplit"	oper
+	"-eq"		oper
+	"-ge"		oper
+	"-gt"		oper
+	"-icontains"	oper
+	"-ieq"		oper
+	"-ige"		oper
+	"-igt"		oper
+	"-ile"		oper
+	"-ilike"	oper
+	"-ilt"		oper
+	"-imatch"	oper
+	"-in"		oper
+	"-ine"		oper
+	"-inotcontains"	oper
+	"-inotlike"	oper
+	"-inotmatch"	oper
+	"-ireplace"	oper
+	"-is"		oper
+	"-isnot"	oper
+	"-isplit"	oper
+	"-join"		oper
+	"-le"		oper
+	"-like"		oper
+	"-lt"		oper
+	"-match"	oper
+	"-ne"		oper
+	"-notcontains"	oper
+	"-notin"	oper
+	"-notlike"	oper
+	"-notmatch"	oper
+	"-replace"	oper
+	"-shl"		oper
+	"-shr"		oper
+	"-split"	oper
+done
+	"a-zA-Z_"	param
+
+:after_param Ident
+	*		herestr_noq		noeat
+	" \t"		after_param
+
+# Unquoted strings (after -parameter key)
+:herestr_noq String
+	*		idle			noeat
+	" \t\r\n"	idle			recolor=-1
+	"\i"		herestr_noq
+
+# After an operator, we do not assume what follows is an unquoted string.
+:oper Operator
+	*		idle			noeat
+
+:ident Ident
 	*		idle			noeat istrings
-	"-and"		kw
-	"-band"		kw
-	"-bnot"		kw
-	"-bor"		kw
-	"-bxor"		kw
-	"-not"		kw
-	"-or"		kw
-	"-xor"		kw
-	"-f"		kw
-	"-as"		kw
-	"-ccontains"	kw
-	"-ceq"		kw
-	"-cge"		kw
-	"-cgt"		kw
-	"-cle"		kw
-	"-clike"	kw
-	"-clt"		kw
-	"-cmatch"	kw
-	"-cne"		kw
-	"-cnotcontains"	kw
-	"-cnotlike"	kw
-	"-cnotmatch"	kw
-	"-contains"	kw
-	"-creplace"	kw
-	"-csplit"	kw
-	"-eq"		kw
-	"-ge"		kw
-	"-gt"		kw
-	"-icontains"	kw
-	"-ieq"		kw
-	"-ige"		kw
-	"-igt"		kw
-	"-ile"		kw
-	"-ilike"	kw
-	"-ilt"		kw
-	"-imatch"	kw
-	"-in"		kw
-	"-ine"		kw
-	"-inotcontains"	kw
-	"-inotlike"	kw
-	"-inotmatch"	kw
-	"-ireplace"	kw
-	"-is"		kw
-	"-isnot"	kw
-	"-isplit"	kw
-	"-join"		kw
-	"-le"		kw
-	"-like"		kw
-	"-lt"		kw
-	"-match"	kw
-	"-ne"		kw
-	"-notcontains"	kw
-	"-notin"	kw
-	"-notlike"	kw
-	"-notmatch"	kw
-	"-replace"	kw
-	"-shl"		kw
-	"-shr"		kw
-	"-split"	kw
 	"begin"		kw
-	"break"		kw
+	"break"		loop
 	"catch"		kw
-	"class"		kw
-	"continue"	kw
+	"class"		struct
+	"continue"	loop
 	"data"		kw
 	"define"	kw
-	"do"		kw
-	"dynamicparam"	kw
-	"else"		kw
-	"elseif"	kw
+	"do"		loop
+	"dynamicparam"	struct
+	"else"		cond
+	"elseif"	cond
 	"end"		kw
-	"exit"		kw
+	"exit"		stmt
 	"filter"	kw
 	"finally"	kw
-	"for"		kw
-	"foreach"	kw
+	"for"		loop
+	"foreach"	loop
 	"from"		kw
-	"function"	kw
-	"if"		kw
+	"function"	struct
+	"if"		cond
 	"in"		kw
 	"inlinescript"	kw
 	"parallel"	kw
-	"param"		kw
+	"param"		struct
 	"process"	kw
-	"return"	kw
-	"switch"	kw
+	"return"	stmt
+	"switch"	cond
 	"throw"		kw
 	"trap"		kw
 	"try"		kw
-	"until"		kw
+	"until"		loop
 	"using"		kw
 	"var"		kw
-	"while"		kw
+	"while"		loop
 	"workflow"	kw
 done
-	"a-zA-Z_"	ident
+	"a-zA-Z_\-"	ident
+
+:kw Keyword
+	*		idle			noeat
+
+:loop Loop
+	*		idle			noeat
+
+:cond Conditional
+	*		idle			noeat
+
+:stmt Statement
+	*		idle			noeat
+
+:struct Structure
+	*		idle			noeat

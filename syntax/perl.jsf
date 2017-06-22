@@ -3,16 +3,24 @@
 # Define colors
 
 =Idle
-=Preproc blue
-=Comment green
-=POD green
-=Constant cyan
-=Escape bold cyan
-=Type bold
-=Keyword bold
-=Bad bold red
-=Var yellow
-
+=Ident
+=Comment
+=Pod		+Preproc
+=Variable	+DefinedIdent # TODO: Make this work.
+=Constant
+=Number		+Constant
+=String		+Constant
+=StringEscape	+Escape
+=StringVariable	+StringEscape
+=Regex		+String
+=RegexEscape	+StringEscape
+=Type
+=Keyword
+=Statement	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=Structure	+Statement
+=Bad
 
 :begin Idle
 	*		begin noeat call=.perl()
@@ -47,13 +55,13 @@
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
 	"<"		maybe_inc
-	"$"		not_string	buffer
+	"$"		not_string	buffer recolor=-1
 .ifdef mason_block
 	"&%"		perl_maybe_done	buffer
-	"-@\i"		ident		buffer
+	"-@\i"		ident		buffer recolor=-1
 .else
 	"/"		regex		recolor=-1
-	"-\i@%&"	ident		buffer
+	"-\i@%&"	ident		buffer recolor=-1
 .endif
 
 :perl_maybe_done Idle
@@ -73,10 +81,10 @@
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
 	"`"		backtick	recolor=-1
-	"$"		not_string	buffer
+	"$"		not_string	buffer recolor=-1
 	"<"		maybe_inc
 .ifdef mason_block
-	"&%"		perl_maybe_done buffer
+	"&%"		perl_maybe_done buffer recolor=-1
 	"\i@"		maybe_string	buffer
 .else
 	"\i@%&"		maybe_string	buffer
@@ -86,11 +94,11 @@
 	*		pod_start
 	"\n"		pod_block
 
-:pod_block POD
+:pod_block Pod
 	*		pod_block
 	"="		pod_ident	buffer
 
-:pod_ident POD
+:pod_ident Pod
 	*		pod_block	noeat strings
 	"=cut"		rest
 done
@@ -115,14 +123,14 @@ done
 	"'\""		quoted_inc_start	save_c recolor=-1
 	"\i"		inc		buffer noeat
 
-:quoted_inc_start Var
+:quoted_inc_start Variable
 	*		quoted_inc	buffer
 
-:quoted_inc Var
+:quoted_inc Variable
 	*		quoted_inc
 	&		skipline	save_s
 
-:inc Var
+:inc Variable
 	*		skipline	save_s noeat
 	"\c"		inc
 
@@ -132,45 +140,48 @@ done
 	*		skipline
 	"\n"		next_line
 
-:todelim Constant
+:todelim String
 	*		todelim
 	"\n"		next_line	strings
 	"&"		founddelim
 done
 
 # eat \n so it's not in string.
-:next_line Constant
+:next_line String
 	*		todelim		buffer
 	"\n"		next_line
 
-:founddelim Var
+:founddelim Variable
 	*		idle		noeat
 
-:regex Constant
+:regex Regex
 	*		regex
 	"\\"		regex_quote	recolor=-1
 	"/"		rest
 
-:regex_quote Escape
+:regex_quote RegexEscape
 	*		regex
 
 :not_string Idle
 	*		rest noeat
-	"\i"	ident
+	"\i"		ident
 	"\"'`#"		rest
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		rest
 
 :line_comment_i Comment
 	*		line_comment_i
+	"BFHNTX"	line_comment_i	noeat call=comment_todo.comment_todo()
 	"\n"		idle noeat
 
 :end_of_file_comment Comment
+	"BFHNTX"	end_of_file_comment	noeat call=comment_todo.comment_todo()
 	*		end_of_file_comment
 
-:first_digit Constant
+:first_digit Number
 	*		rest	noeat
 	"x"		hex
 	"b"		binary
@@ -183,54 +194,54 @@ done
 	*		rest	noeat
 	"0-9"		bad_number
 
-:octal Constant
+:octal Number
 	*		rest	noeat
 	"0-7_"		octal
 	"89"		bad_number	recolor=-1
 
-:binary Constant
+:binary Number
 	*		rest	noeat
 	"01_"		binary
 	"2-9"		bad_number	recolor=-1
 
-:hex Constant
+:hex Number
 	*		rest	noeat
 	"0-9A-Fa-f_"	hex
 
-:decimal Constant
+:decimal Number
 	*		rest	noeat
 	"0-9_"		decimal
 	"eE"		epart
 	"."		float
 
-:maybe_float Constant
+:maybe_float Number
 	*		rest	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		rest	noeat
 	"eE"		epart
 	"0-9_"		float
 
-:epart Constant
+:epart Number
 	*		rest	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		rest	noeat
 	"0-9_"		enum
 
-:string	Constant
+:string	String
 	*		string
 	"\""		rest
 	"\\"		string_escape	recolor=-1
 	"$@"		string_subst	recolor=-1
 
-:string_subst Escape
+:string_subst StringVariable
 	*		string	noeat recolor=-1
 	"\c"		string_subst
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"x"		string_hex1
 	"c"		string_ctrl
@@ -238,59 +249,59 @@ done
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_named Escape
+:string_named StringEscape
 	*		string
 	"{"		string_named_rest
 
-:string_named_rest Escape
+:string_named_rest StringEscape
 	*		string_named_rest
 	"}"		string
 
-:string_ctrl Escape
+:string_ctrl StringEscape
 	*		string
 
-:string_hex1 Escape
+:string_hex1 StringEscape
 	*		string		noeat
 	"{"		string_unicode
 	"0-9a-fA-F"	string_hex2
 
-:string_unicode Escape
+:string_unicode StringEscape
 	*		string_unicode
 	"}"		string
 
-:string_hex2 Escape
+:string_hex2 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 Escape
+:string_octal2 StringEscape
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 Escape
+:string_octal3 StringEscape
 	*		string		noeat
 	"0-7"		string
 
-:char Constant
+:char String
 	*		char
 	"\n"		idle noeat
 	"'"		rest
 	"\\"		char_escape	recolor=-1
 
-:char_escape	Escape
+:char_escape	StringEscape
 	*		char		recolor=-2
 	"\\'"		char
 
-:backtick	Constant
+:backtick	String
 	*		backtick
 	"`"		rest
 	"\\"		backtick_escape	recolor=-1
 	"$@"		backtick_subst recolor=-1
 
-:backtick_subst Escape
+:backtick_subst StringVariable
 	*		backtick	noeat recolor=-1
 	"\c"		backtick_subst
 
-:backtick_escape Escape
+:backtick_escape StringEscape
 	*		backtick
 	"x"		backtick_hex1
 	"c"		backtick_ctrl
@@ -298,69 +309,72 @@ done
 	"0-7"		backtick_octal2
 	"\n"		backtick		recolor=-2
 
-:backtick_named Escape
+:backtick_named StringEscape
 	*		backtick
 	"{"		backtick_named_rest
 
-:backtick_named_rest Escape
+:backtick_named_rest StringEscape
 	*		backtick_named_rest
 	"}"		backtick
 
-:backtick_ctrl Escape
+:backtick_ctrl StringEscape
 	*		backtick
 
-:backtick_hex1 Escape
+:backtick_hex1 StringEscape
 	*		backtick		noeat
 	"{"		backtick_unicode
 	"0-9a-fA-F"	backtick_hex2
 
-:backtick_unicode Escape
+:backtick_unicode StringEscape
 	*		backtick_unicode
 	"}"		backtick
 
-:backtick_hex2 Escape
+:backtick_hex2 StringEscape
 	*		backtick		noeat
 	"0-9a-fA-F"	backtick
 
-:backtick_octal2 Escape
+:backtick_octal2 StringEscape
 	*		backtick		noeat
 	"0-7"		backtick_octal3
 
-:backtick_octal3 Escape
+:backtick_octal3 StringEscape
 	*		backtick		noeat
 	"0-7"		backtick
 
-:ident	Idle
+# TODO: Tease out the variable logic from this so that we can highlight
+# variables separate from other identifiers.
+
+:ident Ident
 	*		rest		noeat strings
 	"BEGIN"		kw
 	"END"		kw
-	"if"		kw
-	"unless"	kw
-	"while"		kw
-	"until"		kw
-	"foreach"	kw
-	"sub"		kw
+	"if"		cond
+	"unless"	cond
+	"while"		loop
+	"until"		loop
+	"foreach"	loop
+	"sub"		struct
 	"my"		kw
-	"do"		kw
-	"if"		kw
-	"else"		kw
-	"elsif"		kw
-	"for"		kw
-	"continue"	kw
-	"last"		kw
-	"print"		kw
+	"do"		loop
+	"if"		cond
+	"else"		cond
+	"elsif"		cond
+	"for"		loop
+	"continue"	loop
+	"last"		loop
+	"print"		stmt
 	"reset"		kw
-	"die"		kw
-	"goto"		kw
-	"require"	kw
+	"die"		stmt
+	"goto"		stmt
+	"require"	stmt
 	"use"		kw
 	"eval"		kw
 	"redo"		kw
-	"next"		kw
-	"warn"		kw
-	"return"	kw
-	"printf"	kw
-	"close"		kw
+	"next"		loop
+	"warn"		stmt
+	"return"	stmt
+	"printf"	stmt
+	"close"		stmt
 	"package"	kw
 	"m"		match
 	"qr"		match
@@ -392,17 +406,29 @@ done
 :kw Keyword
 	*		rest	noeat
 
+:cond Conditional
+	*		rest	noeat
+
+:loop Loop
+	*		rest	noeat
+
+:struct Structure
+	*		rest	noeat
+
+:stmt Statement
+	*		rest	noeat
+
 :match Idle
 	*		inmatch		save_c recolor=-1
 	" 	"	match
 
-:inmatch Constant
+:inmatch Regex
 	*		inmatch
 	%		inmatch		call=.inmatch()
 	&		rest
 	"\\"		inmatch_quote	recolor=-1
 
-:inmatch_quote Escape
+:inmatch_quote RegexEscape
 	*		inmatch
 
 :subst Idle
@@ -410,52 +436,52 @@ done
 	"<([{`"		delim_insubst	save_c recolor=-1
 	" 	"	subst
 
-:insubst Constant
+:insubst Regex
 	*		insubst
 	&		inrepl
 	"\\"		insubst_quote	recolor=-1
 
-:insubst_quote Escape
+:insubst_quote RegexEscape
 	*		insubst
 
-:inrepl Constant
+:inrepl Regex
 	*		inrepl
 	&		rest
 	"\\"		inrepl_quote
 
-:inrepl_quote Escape
+:inrepl_quote RegexEscape
 	*		inrepl
 
-:delim_insubst Constant
+:delim_insubst Regex
 	*		delim_insubst
 	&		delim_repl
 	"\\"		delim_quote
 
-:delim_quote Escape
+:delim_quote RegexEscape
 	*		delim_insubst
 
-:delim_repl Constant
+:delim_repl Regex
 	*		repl		save_c recolor=-1
 	" 	"	delim_repl
 
-:repl Constant
+:repl Regex
 	*		repl
 	&		rest
 	"\\"		repl_quote
 
-:repl_quote Escape
+:repl_quote RegexEscape
 	*		repl
 
 .end
 
 .subr inmatch
 
-:inmatch Constant
+:inmatch Regex
 	*		inmatch
 	%		inmatch		call=.inmatch()
 	&		inmatch		return
 	"\\"		inmatch_quote	recolor=-1
 
-:inmatch_quote Escape
+:inmatch_quote RegexEscape
 	*		inmatch
 .end

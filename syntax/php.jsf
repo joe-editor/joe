@@ -5,31 +5,35 @@
 #  * heredoc support (as good as possible)
 #  * highlight function and class names?
 
-# Define no. sync lines
-# You can say:
-# -200     means 200 lines
-# -        means always start parsing from beginning of file when we lose sync
-#          if nothing is specified, the default is -50
-
--
-
 # Define colors
 
 =Idle
-=Comment 	green
-=Constant 	cyan
-=Constant_sq 	blue
-=Escape 	bold cyan
-=Keyword 	bold
-=Var  red
-=Methods  bold
+=Comment
+=Constant
+=Number		+Constant
+=String		+Constant
+=StringEscape	+Escape
+=Character	+Constant
+=CharacterEscape +Escape
+=Boolean	+Constant
+=Escape
+=Keyword
+=Variable	+DefinedIdent
+=Builtin	+DefinedFunc
+=Operator	+Keyword
+=Statement	+Keyword
+=Conditional	+Statement
+=Loop		+Statement
+=Structure	+Statement
+=Label		+DefinedIdent
+=StorageClass	+Type +Keyword
 
 # Call HTML highlighter.  It will call the PHP highlighter subroutine in this file.
 
 :begin Idle
 	*	call_failed	noeat call=html.html(php)
 
-:call_failed Var
+:call_failed Variable
 	*	call_failed
 
 # PHP highlighter.
@@ -86,38 +90,38 @@
 done
 	"\c"		inhere_name
 	
-:brace  Methods
+:brace Builtin
   * idle  noeat
 	
-:php_var Var
+:php_var Variable
   * idle noeat
   "\c" php_var
 
-:var_indqstring Var
+:var_indqstring Variable
 	*	string_dq	recolor=-1
 	"\i"	var_indqstringr
 	"\""	string_dq	noeat
 	"\\"	string_dq_esc	recolor=-1
 
-:var_indqstringr Var
+:var_indqstringr Variable
 	*	string_dq	recolor=-1
 	"\c"	var_indqstringr
 	"\""	string_dq	noeat
 	"\\"	string_dq_esc	recolor=-1
 
-:var_inbqstring Var
+:var_inbqstring Variable
 	*	string_bq	recolor=-1
 	"\i"	var_inbqstringr
 	"\`"	string_bq	noeat
 	"\\"	string_bq_esc	recolor=-1
 
-:var_inbqstringr Var
+:var_inbqstringr Variable
 	*	string_bq	recolor=-1
 	"\c"	var_inbqstringr
 	"\`"	string_bq	noeat
 	"\\"	string_bq_esc	recolor=-1
 
-:maybe_method Methods
+:maybe_method Builtin
 	*		idle  recolor=-1
 	"?"		idle_qmark 
 	"%"		idle_hash
@@ -131,9 +135,9 @@ done
 	"{}"  brace recolor=-1
   ">" method  recolor=-2
   
-:method Methods
-  *   idle  recolor=-1
-  "\i" method  recolor=-1
+:method Builtin
+	*	idle	recolor=-1
+	"\i\c"	method	recolor=-1
 
 :idle_qmark Idle
 	*		idle		noeat
@@ -145,6 +149,7 @@ done
 
 :sh_comment Comment
 	*		sh_comment
+	"BFHNTX"	sh_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
 :slash Idle
@@ -155,6 +160,7 @@ done
 :comment Comment
 	*		comment
 	"*"		maybe_end_comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 
 :maybe_end_comment Comment
 	*		comment
@@ -164,142 +170,170 @@ done
 :line_comment Comment
 	*		line_comment
 	"\n"		idle
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 
-
-:string_sq Constant_sq
+:string_sq Character
 	*		string_sq
 	"\'"		idle
 	"\\"		string_sq_esc	recolor=-1
 
-:string_sq_esc Escape
+:string_sq_esc CharacterEscape
 	*		string_sq
 	"\n"		string_sq	recolor=-2
 
-:string_dq Constant
+:string_dq String
 	*		string_dq
 	"$"     var_indqstring recolor=-1
 	"\""		idle
 	"\\"		string_dq_esc	recolor=-1
 
-:string_dq_esc Escape
+:string_dq_esc StringEscape
 	*		string_dq
 	"\n"		string_dq	recolor=-2
 	
-:string_bq Constant
+:string_bq String
 	*		string_bq
 	"$"     var_inbqstring recolor=-1
 	"\`"		idle
 	"\\"		string_bq_esc	recolor=-1
 
-:string_bq_esc Escape
+:string_bq_esc StringEscape
 	*		string_bq
 	"\n"		string_bq	recolor=-2
 	
-:first_digit Constant
+:first_digit Number
 	*		idle	noeat
 	"xX"		hex
 	"."		float
 	"0"		octal
 	"1-9"		first_number
 
-:octal Constant
+:octal Number
 	*		idle	noeat
 	"0-7"		octal
 
-:hex Constant
+:hex Number
 	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
-:first_number Constant
+:first_number Number
 	*		idle	noeat
 	"0-9"		first_number
 	"."		float
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle	noeat
 	"0-9"		enum
 
 :ident Idle
 	*		idle		noeat strings
-	"addslashes" meth
-	"array"		meth
-	"array_keys"  meth
-	"count" meth
-	"date"  meth
-	"chr" meth
-	"empty"		meth
-	"end"	meth
-	"header" meth
-	"highlight_file"  meth
-	"htmlspecialchars"  meth
-	"isset"		meth
-	"shuffle"  meth
-	"strip_tags"  meth
-	"strlen"  meth
-	"strpos"  meth
-	"strrpos" meth
-	"substr"  meth
-	"trim"    meth
-	"and"		kw
-	"as"		kw
-	"break"		kw
-	"case"    kw
-	"class"		kw
-	"continue"	kw
-	"declare"	kw
+	"addslashes" 	builtin
+	"array"		builtin
+	"array_keys"	builtin
+	"count"		builtin
+	"date"		builtin
+	"chr"		builtin
+	"empty"		builtin
+	"end"		builtin
+	"header"	builtin
+	"highlight_file"	builtin
+	"htmlspecialchars"	builtin
+	"isset"		builtin
+	"shuffle"	builtin
+	"strip_tags"	builtin
+	"strlen"	builtin
+	"strpos"	builtin
+	"strrpos"	builtin
+	"substr"	builtin
+	"trim"		builtin
+	"TRUE"		bool
+	"FALSE"		bool
+	"true"		bool
+	"false"		bool
+	"and"		oper
+	"as"		oper
+	"break"		loop
+	"case"		label
+	"class"		struct
+	"continue"	loop
+	"declare"	struct
 	"default"	kw
 	"die"		kw
-	"do"		kw
-	"echo"		kw
-	"else"		kw
-	"elseif"	kw
+	"do"		loop
+	"echo"		stmt
+	"else"		cond
+	"elseif"	cond
 	"eval"		kw
 	"exception"	kw
 	"exit"		kw
-	"extends"	kw
-	"for"		kw
-	"foreach"	kw
-	"function"	kw
+	"extends"	struct
+	"for"		loop
+	"foreach"	loop
+	"function"	struct
 	"global"	kw
-	"if"		kw
-	"include"	kw
-	"include_once"	kw
+	"if"		cond
+	"include"	stmt
+	"include_once"	stmt
 	"list"		kw
 	"new"		kw
-	"or"		kw
-	"print"		kw
-	"private" kw
-	"public"  kw
-	"require"	kw
-	"require_once"	kw
-	"return"	kw
-	"static"	kw
-	"switch"	kw
-	"unset"		kw
-	"while"		kw
+	"or"		oper
+	"print"		stmt
+	"private"	storage
+	"public"	storage
+	"require"	stmt
+	"require_once"	stmt
+	"return"	stmt
+	"static"	storage
+	"switch"	cond
+	"unset"		stmt
+	"while"		loop
 done
 	"\c"	ident
 
 :kw Keyword
 	*	idle	noeat
 
-:meth Methods
+:builtin Builtin
   * idle  noeat
 
-:var  Var
+:bool Boolean
+  * idle  noeat
+
+:var Variable
   * mark  noeat
+
+:oper Operator
+  * idle  noeat
+
+:loop Loop
+  * idle  noeat
+
+:cond Conditional
+  * idle  noeat
+
+:stmt Statement
+  * idle  noeat
+
+:label Label
+  * idle  noeat
+
+:struct Structure
+  * idle  noeat
+
+:storage StorageClass
+  * idle  noeat
 
 .end

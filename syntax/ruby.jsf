@@ -5,22 +5,39 @@
 # EOF2.
 
 =Idle
-=Comment	green
-=POD		green
-=Constant	cyan
-=Escape		bold cyan
-=Type		bold
-=Keyword	bold
-=Bad		bold red
-=Var		yellow
-=Brace		magenta
+=Comment
+=Constant
+=Number		+Constant
+=String		+Constant
+=StringEscape	+Escape
+=StringVariable	+StringEscape
+=Regex		+String
+=RegexEscape	+StringEscape
+=Boolean	+Constant
+=Escape
+=Type
+=Keyword
+=Statement	+Keyword
+=Operator	+Keyword
+=Conditional	+Statement
+=Loop		+Statement
+=Label		+DefinedIdent
+=StorageClass	+Type +Keyword
+=Structure	+Statement
 
-=Symbol		red
-=SymbolEscape	bold red
-=ProcArg	#yellow
-=ClassMember	yellow #fg_310 # brown
-=GlobalVar	#yellow
-=ClassDecl	bold blue
+=Bad
+=Brace
+
+=Symbol		+Constant +DefinedIdent
+=SymbolEscape	+Escape
+=ProcArg	+DefinedIdent
+=GlobalVar	+Builtin # TODO: No good class for this.
+
+=DefinedType	+DefinedIdent +Ident
+=DefinedFunction +DefinedIdent +Ident
+=ClassMember	+Variable +DefinedIdent
+
+=POD		+Preproc
 
 # Detect pod
 
@@ -140,25 +157,25 @@ done
 	"'\""		quoted_inc_start_allow	save_c recolor=-1
 	"\i"		inc_allow	buffer noeat
 
-:quoted_inc_start Var
+:quoted_inc_start StringVariable
 	*		quoted_inc	buffer
 
-:quoted_inc_start_allow Var
+:quoted_inc_start_allow StringVariable
 	*		quoted_inc_allow	buffer
 
-:quoted_inc Var
+:quoted_inc StringVariable
 	*		quoted_inc
 	&		skipline	save_s
 
-:quoted_inc_allow Var
+:quoted_inc_allow StringVariable
 	*		quoted_inc_allow
 	&		skipline_allow	save_s
 
-:inc Var
+:inc StringVariable
 	*		skipline	save_s noeat
 	"\c"		inc
 
-:inc_allow Var
+:inc_allow StringVariable
 	*		skipline_allow	save_s noeat
 	"\c"		inc_allow
 
@@ -172,36 +189,36 @@ done
 	*		skipline_allow
 	"\n"		next_line_allow
 
-:todelim Constant
+:todelim String
 	*		todelim
 	"\n"		next_line	strings
 	"&"		founddelim
 done
 
-:todelim_allow Constant
+:todelim_allow String
 	*		todelim_allow
 	"\n"		next_line_allow	strings
 	"&"		founddelim
 done
 
 # eat \n so it's not in string.
-:next_line Constant
+:next_line String
 	*		todelim		buffer
 	"\n"		next_line
 
-:next_line_allow Constant
+:next_line_allow String
 	*		todelim_allow	buffer
 	" \t\n"		next_line_allow
 
-:founddelim Var
+:founddelim StringEscape
 	*		idle		noeat
 
-:regex Constant
+:regex Regex
 	*		regex
 	"\\"		regex_quote	recolor=-1
 	"/"		after_term
 
-:regex_quote Escape
+:regex_quote RegexEscape
 	*		regex
 
 :not_string Idle
@@ -217,7 +234,6 @@ done
 .ifdef erb
 	"%"		line_comment_maybe_erb_end
 .endif
-	# might be TODO label
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 .ifdef haml
 	"\n"		NULL		return
@@ -231,7 +247,7 @@ done
 :end_of_file_comment Comment
 	*		end_of_file_comment
 
-:first_digit Constant
+:first_digit Number
 	*		after_term	noeat
 	"x"		hex
 	"b"		binary
@@ -244,21 +260,21 @@ done
 	*		after_term	noeat
 	"0-9"		bad_number
 
-:octal Constant
+:octal Number
 	*		after_term	noeat
 	"0-7_"		octal
 	"89"		bad_number	recolor=-1
 
-:binary Constant
+:binary Number
 	*		after_term	noeat
 	"01_"		binary
 	"2-9"		bad_number	recolor=-1
 
-:hex Constant
+:hex Number
 	*		after_term	noeat
 	"0-9A-Fa-f_"	hex
 
-:decimal Constant
+:decimal Number
 	*		after_term	noeat
 	"0-9_"		decimal
 	"eE"		epart
@@ -268,30 +284,33 @@ done
 	*		after_term	noeat recolor=-2
 	"0-9"		float		noeat
 
-:float Constant
+:float Number
 	*		after_term	noeat
 	"eE"		epart
 	"0-9_"		float
 
-:epart Constant
+:epart Number
 	*		after_term	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		after_term	noeat
 	"0-9_"		enum
 
-:string	Constant
+:string	String
 	*		string
 	"\""		after_term
 	"\\"		string_escape	recolor=-1
 	"#"		maybe_string_subst	recolor=-1
 
-:maybe_string_subst Constant
+:maybe_string_subst String
 	*		string		noeat
-	"{"		string_subst	recolor=-2 call=.ruby(squiggly)
+	"{"		string_subst_begin	recolor=-2
 
-:string_subst Idle
+:string_subst_begin StringEscape
+	*		string_subst	noeat call=.ruby(squiggly)
+
+:string_subst StringEscape
 	*		string		noeat
 	
 :string_escape Escape
@@ -336,7 +355,7 @@ done
 
 # Only \\ and \' allowed in single quoted strings
 
-:char Constant
+:char String
 	*		char
 	"\n"		reset
 	"'"		after_term
@@ -346,7 +365,7 @@ done
 	*		char		recolor=-2
 	"\\'"	char
 
-:backtick	Constant
+:backtick	String
 	*		backtick
 	"`"		after_term
 	"\\"		backtick_escape	recolor=-1
@@ -411,50 +430,50 @@ done
 	"BEGIN"		kw
 	"END"		kw
 	"alias"		kw_after
-	"and"		kw
+	"and"		oper
 	"begin"		kw
-	"break"		kw
-	"case"		kw
-	"catch"		kw
+	"break"		loop
+	"case"		label
+	"catch"		stmt
 	"class"		kw_class
-	"def"		kw_after
+	"def"		kw_def
 	"defined"	kw
-	"do"		kw
-	"else"		kw
-	"elsif"		kw
+	"do"		loop
+	"else"		cond
+	"elsif"		cond
 	"end"		kw
 	"ensure"	kw
 	"fail"		kw
-	"false"		kw
-	"for"		kw
-	"if"		kw
-	"in"		kw
+	"false"		bool
+	"for"		loop
+	"if"		cond
+	"in"		oper
 	"lambda"	kw
-	"module"	kw
+	"module"	kw_class
 	"next"		kw
-	"nil"		kw
-	"not"		kw
-	"or"		kw
-	"private"	kw
+	"nil"		const
+	"not"		oper
+	"or"		oper
+	"private"	storage
 	"proc"		kw
-	"protected"	kw
-	"public"	kw
-	"raise"		kw
+	"protected"	storage
+	"public"	storage
+	"raise"		stmt
 	"redo"		kw
 	"rescue"	kw
-	"retry"		kw
-	"return"	kw
+	"retry"		stmt
+	"return"	stmt
 	"self"		kw_after
 	"super"		kw
-	"then"		kw
-	"throw"		kw
-	"true"		kw
-	"undef"		kw
-	"unless"	kw
-	"until"		kw
-	"when"		kw
-	"while"		kw
-	"yield"		kw
+	"then"		cond
+	"throw"		stmt
+	"true"		bool
+	"undef"		stmt
+	"unless"	cond
+	"until"		loop
+	"when"		loop
+	"while"		loop
+	"yield"		stmt
 	# quasi-keywords (Module or Kernel methods)
 	"require"	kw
 	"autoload"	kw
@@ -471,14 +490,57 @@ done
 	# it destructs
 	"\c?!"	ident
 
+:bool Boolean
+	*		rest		noeat
+
+:loop Loop
+	*		rest		noeat
+
+:cond Conditional
+	*		rest		noeat
+
+:oper Operator
+	*		rest		noeat
+
 :kw Keyword
+	*		rest		noeat
+
+:label Label
+	*		rest		noeat
+
+:const Constant
+	*		rest		noeat
+
+:storage StorageClass
+	*		rest		noeat
+
+:struct Structure
+	*		rest		noeat
+
+:const Constant
+	*		rest		noeat
+
+:stmt Statement
 	*		rest		noeat
 
 # Handle case of def /
 :kw_after Keyword
 	*		after_term	noeat
 
-:kw_class Keyword
+:kw_def Structure
+	*		after_term	noeat
+	" \t\n"		kw_def_space
+
+:kw_def_space Idle
+	*		rest		noeat
+	"\i"		kw_func_decl	noeat
+	" \t\n"		kw_def_space
+
+:kw_func_decl DefinedFunction
+	*		rest		noeat
+	"\c!?"		kw_func_decl
+
+:kw_class Structure
 	*		rest		noeat
 	" \t\n"		kw_class_space
 
@@ -488,9 +550,9 @@ done
 	"\i"		kw_class_decl	noeat
 	" \t\n"		kw_class_space
 
-:kw_class_decl ClassDecl
+:kw_class_decl DefinedType
 	*		rest		noeat
-	"\c"		kw_class_decl
+	"\c!?"		kw_class_decl
 
 :pstring Idle
 	*		match		noeat
@@ -504,21 +566,21 @@ done
 	*		inmatch		save_c recolor=-1
 	" \t"		match
 
-:inmatch Constant
+:inmatch Regex
 	*		inmatch
 	&		after_term
 	%		inmatch		call=.inmatch_recur()
 	"#"		inmatch_maybe_subst
 	"\\"		inmatch_quote	recolor=-1
 
-:inmatch_maybe_subst Constant
+:inmatch_maybe_subst Regex
 	*		inmatch		noeat
 	"{"		inmatch_subst	recolor=-2 call=.ruby(squiggly)
 
 :inmatch_subst Idle
 	*		inmatch		noeat
 
-:inmatch_quote Escape
+:inmatch_quote RegexEscape
 	*		inmatch
 
 :subst Idle
@@ -526,40 +588,40 @@ done
 	"<([{`"		delim_insubst	save_c recolor=-1
 	" \t"		subst
 
-:insubst Constant
+:insubst Regex
 	*		insubst
 	&		inrepl
 	"\\"		insubst_quote	recolor=-1
 
-:insubst_quote Escape
+:insubst_quote RegexEscape
 	*		insubst
 
-:inrepl Constant
+:inrepl Regex
 	*		inrepl
 	&		after_term
 	"\\"		inrepl_quote
 
-:inrepl_quote Escape
+:inrepl_quote RegexEscape
 	*		inrepl
 
-:delim_insubst Constant
+:delim_insubst Regex
 	*		delim_insubst
 	&		delim_repl
 	"\\"		delim_quote
 
-:delim_quote Escape
+:delim_quote RegexEscape
 	*		delim_insubst
 
-:delim_repl Constant
+:delim_repl Regex
 	*		repl		save_c recolor=-1
 	" \t"		delim_repl
 
-:repl Constant
+:repl Regex
 	*		repl
 	&		after_term
 	"\\"		repl_quote
 
-:repl_quote Escape
+:repl_quote RegexEscape
 	*		repl
 
 :maybe_symbol Idle

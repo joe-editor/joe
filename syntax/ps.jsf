@@ -1,16 +1,15 @@
 # JOE syntax highlight file for Postscript
 
 =Idle
-=Bad		bold red
-=Preproc 	blue
-=Define		bold blue
-=Comment 	green
-=IncLocal	cyan
-=IncSystem	bold cyan
-=Constant 	cyan
-=Escape 	bold cyan
-=Type 		bold
-=Keyword 	bold
+=Ident
+=Bad
+=Comment
+=Constant
+=Boolean	+Constant
+=String		+Constant
+=StringEscape	+Escape
+=Number		+Constant
+=Keyword
 
 :idle Idle
 	*		idle
@@ -23,9 +22,10 @@
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
-:first_digit Constant
+:first_digit Number
 	*		idle	noeat
 	"xX"		hex
 	"."		float
@@ -37,72 +37,72 @@
 	*		idle	noeat
 	"0-9"		bad_number
 
-:octal Constant
+:octal Number
 	*		idle	noeat
 	"0-7"		octal
 	"89"		bad_number	recolor=-1
 
-:hex Constant
+:hex Number
 	*		idle	noeat
 	"0-9A-Fa-f"	hex
 
-:decimal Constant
+:decimal Number
 	*		idle	noeat
 	"0-9"		decimal
 	"eE"		epart
 	"."		float
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle	noeat
 	"0-9"		enum
 
-:string	Constant
+:string	String
 	*		string
 	&		idle
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"x"		string_hex1
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_hex1 Escape
+:string_hex1 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex2 Escape
+:string_hex2 StringEscape
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 Escape
+:string_octal2 StringEscape
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 Escape
+:string_octal3 StringEscape
 	*		string		noeat
 	"0-7"		string
 
-:string_control Escape
+:string_control StringEscape
 	*		string_control
 	"\n"		idle
 	"diouxXeEfFgGaAcspn%SC"	string
 
-:ident Idle
+:ident Ident
 	*		idle		noeat istrings
 	"exch"		kw
 	"pop"		kw
@@ -188,8 +188,8 @@
 	"not"		kw
 	"or"		kw
 	"xor"		kw
-	"true"		const
-	"false"		const
+	"true"		bool
+	"false"		bool
 	"bitshift"		kw
 	"exec"		kw
 	"if"		kw
@@ -376,5 +376,5 @@ done
 :kw Keyword
 	*	idle	noeat
 
-:const Constant
+:bool Boolean
 	*	idle	noeat
