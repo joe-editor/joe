@@ -164,20 +164,6 @@
 	*		bad_number	noeat	recolor=-4
 	"e"		idle
 
-# strings like #"hello"#
-
-:should_be_raw_string String
-	*		idle	noeat
-	"\""		raw_string
-
-:raw_string String
-	*		raw_string
-	"\""		raw_string_maybe_done
-
-:raw_string_maybe_done String
-	*		raw_string	noeat
-	"#"		idle
-
 # strings like "hello"
 
 :string	String
