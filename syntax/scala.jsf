@@ -273,7 +273,7 @@
 :ident Ident
 	*		ident_end	noeat markend strings
 	"abstract"	storage
-	"case"		kw
+	"case"		struct
 	"catch"		kw
 	"class"		struct
 	"def"		struct
@@ -285,13 +285,13 @@
 	"for"		loop
 	"forSome"	loop
 	"if"		cond
-	"implicit"	kw # TODO: ?
+	"implicit"	storage
 	"import"	stmt
-	"lazy"		kw # TODO: ?
-	"match"		kw # TODO: ?
+	"lazy"		storage
+	"match"		cond
 	"new"		operator
 	"null"		lit
-	"object"	type
+	"object"	storage
 	"override"	storage
 	"package"	storage
 	"private"	storage
@@ -301,15 +301,15 @@
 	"super"		kw
 	"this"		kw
 	"throw"		stmt
-	"trait"		kw # TODO: ?
+	"trait"		kw
 	"try"		stmt
 	"true"		bool
 	"type"		kw
-	"val"		kw # TODO: ?
-	"var"		kw # TODO: ?
+	"val"		kw
+	"var"		kw
 	"while"		loop
-	"with"		kw # TODO: ?
-	"yield"		stmt # TODO: Check
+	"with"		kw
+	"yield"		loop
 done
 	"\c\p{Sc}"	ident
 
