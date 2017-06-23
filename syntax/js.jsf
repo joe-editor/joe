@@ -8,9 +8,9 @@
 =Constant
 =String		+Constant
 =StringEscape	+Escape
-=Regexp		+String
-=RegexpEscape	+Escape
-=RegexpOptions
+=Regex		+String
+=RegexEscape	+StringEscape
+=RegexOptions
 =Number		+Constant
 =Type
 =CustomType	+DefinedType +DefinedIdent
@@ -208,24 +208,24 @@ done
 	"BFHNTX"		line_comment	noeat call=comment_todo.comment_todo()
 	"\n"			idle
 
-:regex Regexp
+:regex Regex
 	*			regex
 	"\\"			regex_quote	recolor=-1
 	"["			regex_charclass
 	"/"			regex_mod
 	"\n"			regex_bad
 
-:regex_quote RegexpEscape
+:regex_quote RegexEscape
 	*			regex
 	"\n"			regex_bad
 
-:regex_charclass Regexp
+:regex_charclass Regex
 	*			regex_charclass
 	"\\"			regex_cc_quote	recolor=-1
 	"\n"			regex_bad_cc
 	"]"			regex
 
-:regex_cc_quote RegexpEscape
+:regex_cc_quote RegexEscape
 	*			regex_charclass
 	"\n"			regex_bad_cc
 
@@ -246,7 +246,7 @@ done
 :regex_bad_quote_cc Bad
 	*			regex_bad_cc
 
-:regex_mod RegexpOptions
+:regex_mod RegexOptions
 	*			after_term	noeat
 	"igm"			regex_mod
 

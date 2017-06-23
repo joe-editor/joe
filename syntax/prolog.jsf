@@ -2,15 +2,18 @@
 # by Christian Nicolai (http://mycrobase.de)
 
 =Idle
-=Comment	green
-=Constant	cyan
-=Escape		bold cyan
-=Keyword	bold
-=Bad		bold red
+=Ident
+=Comment
+=String		+Constant
+=Number		+Constant
+=Escape
+=StringEscape	+Escape
+=Keyword
+=Bad
 
-=Brace		#magenta
-=Variable	#yellow
-=Predicate	red
+=Brace
+=Variable
+=Predicate	+DefinedFunction +DefinedIdent
 
 :idle Idle
 	*		idle
@@ -31,6 +34,7 @@
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
 :maybe_comment Idle
@@ -40,65 +44,66 @@
 :comment Comment
 	*		comment
 	"*"		maybe_end_comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 
 :maybe_end_comment Comment
-	*		comment
+	*		comment		noeat
 	"/"		idle
 	"*"		maybe_end_comment
 
 :brace Brace
 	*		idle		noeat
 
-:string_sq_1 Constant
+:string_sq_1 String
 	*		string_sq	noeat
 
-:string_sq Constant
+:string_sq String
 	*		string_sq
 	"\'"		idle
 	"\\"		string_sq_esc	recolor=-1
 
-:string_sq_esc Escape
+:string_sq_esc StringEscape
 	*		string_sq
 	"\n"		string_sq	recolor=-2
 
-:string_dq_1 Constant
+:string_dq_1 String
 	*		string_dq	noeat
 
-:string_dq Constant
+:string_dq String
 	*		string_dq
 	"\""		idle
 	"\\"		string_dq_esc	recolor=-1
 
-:string_dq_esc Escape
+:string_dq_esc StringEscape
 	*		string_dq
 	"\n"		string_dq	recolor=-2
 
-:first_digit Constant
+:first_digit Number
 	*		idle		noeat
 	# no float support
 #	"."		float
 	"0-9"		first_number
 
-:first_number Constant
+:first_number Number
 	*		idle		noeat
 	"0-9"		first_number
 	"."		float
 
-:float Constant
+:float Number
 	*		idle		noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart Constant
+:epart Number
 	*		idle		noeat
 	"0-9+\-"	enum
 
-:enum Constant
+:enum Number
 	*		idle		noeat
 	"0-9"		enum
 
 # list of keywords includes some predicates...
-:atom Idle
+:atom Ident
 	*		atom_end	noeat markend strings
 	"append"	kw
 	"atom"		kw

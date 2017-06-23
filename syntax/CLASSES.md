@@ -149,6 +149,11 @@ characters in strings.
 * A literal regular expression
 
 ```
+=RegexEscape +StringEscape
+```
+* An escape sequence in a regular expression
+
+```
 =Variable +Escape
 ```
 * A variable in languages that prefix it, e.g. `$foo` or `%bar%`
@@ -170,6 +175,11 @@ characters in strings.
 
 ```
 =StringVariable +StringEscape
+```
+* A variable interpolated in a string
+
+```
+=RegexVariable +StringEscape
 ```
 * A variable interpolated in a string
 
