@@ -292,6 +292,11 @@ operators.
 * Entites found inside of attribute values, which are Strings
 
 ```
+=Title
+```
+* Titles found, e.g. mail subjects or markdown headers
+
+```
 =Namespace	+Comment
 ```
 * XML namespace prefixes

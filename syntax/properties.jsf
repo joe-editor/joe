@@ -2,14 +2,16 @@
 # by Christian Nicolai (http://mycrobase.de)
 
 =Idle
-=Comment	green
-=Constant	cyan
-=Escape		bold cyan
-=Bad		bold red
+=Comment
+=Constant
+=String		+Constant
+=StringEscape	+Escape
+=Escape
+=Bad
 
-=Key		
-=KeyEscape	bold
-=Separator	bold
+=Key		+Attr +Type
+=KeyEscape	+Escape
+=Separator	+Control
 
 :line_start Idle
 	*		key		noeat
@@ -20,6 +22,7 @@
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		line_start
 
 :missing_key Bad
@@ -52,33 +55,33 @@
 	*		value		noeat
 	" \t\r"		value_pre
 
-:value Constant
+:value String
 	*		value
 	"\\"		value_esc	recolor=-1
 	"\n"		line_start
 
-:value_esc Escape
+:value_esc StringEscape
 	*		value_error	recolor=-2
 	"u"		value_unicode_hex1
 	"\n"		value_cont
 
-:value_unicode_hex1 Escape
+:value_unicode_hex1 StringEscape
 	*		value_error	recolor=-3
 	"A-Fa-f0-9"	value_unicode_hex2
 
-:value_unicode_hex2 Escape
+:value_unicode_hex2 StringEscape
 	*		value_error	recolor=-4
 	"A-Fa-f0-9"	value_unicode_hex3
 
-:value_unicode_hex3 Escape
+:value_unicode_hex3 StringEscape
 	*		value_error	recolor=-5
 	"A-Fa-f0-9"	value_unicode_hex4
 
-:value_unicode_hex4 Escape
+:value_unicode_hex4 StringEscape
 	*		value_error	recolor=-6
 	"A-Fa-f0-9"	value
 
-:value_cont Constant
+:value_cont String
 	*		value
 	" \t\r"		value_cont # leading spaces
 

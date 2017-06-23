@@ -9,18 +9,19 @@
 -
 
 =Idle
-=Head	bold
-=HdTo	red bg_white
-=HdFrom	bold red
-=HdSbj	bold magenta
-=HdDate	bold
-=HdRRT	black bg_white
-=HdGrp	bold white bg_red
-=HdFuT	bold red bg_yellow
-=HdBad	bold red
-=Quot1	green bg_white
-=Quot2	bold blue bg_white
-=Sign	bold magenta
+=Head	+Statement +Keyword
+=Email	+Escape +Head
+=HdTo	+Email
+=HdFrom +Email
+=HdSbj	+Title +String +Constant +Head
+=HdDate	+Number +Constant +Head
+=HdRRT	+Email
+=HdGrp	+Email
+=HdFuT	+Email
+=HdBad	+Bad
+=Quot1	+Comment
+=Quot2	+DefinedIdent
+=Sign	+Preproc
 
 # Start in headers. We know we're out at the first blank line.
 

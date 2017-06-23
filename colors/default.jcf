@@ -3,7 +3,7 @@
 
 -selection 	default/default inverse
 -menusel 	default/default inverse
--linum		BLACK
+-linum		default dim
 -curlinum	default
 
 =Idle
@@ -23,6 +23,7 @@
 =Tag		bold blue
 =TagName	+Tag
 =TODO		default/default inverse
+=Title		bold
 
 =diff.DelLine	red
 =diff.AddLine	green

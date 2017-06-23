@@ -56,6 +56,7 @@
 =Structure +Type
 =TODO 246
 =Tag +Escape
+=Title  bold
 
 =html.Tag +Keyword
 =html.TagEnd +DefinedIdent
@@ -118,6 +119,7 @@
 =Structure +Type
 =TODO $8f8f8f
 =Tag +Escape
+=Title  bold
 
 =html.Tag +Keyword
 =html.TagEnd +DefinedIdent

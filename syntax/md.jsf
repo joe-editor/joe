@@ -6,18 +6,18 @@
 # bold parsing is not that perfect since this works: **bold__
 
 =Idle
-=Tag		green
-=Escape		bold
-=Bad		bold red
+=Tag		+DefinedFunction +DefinedIdent
+=Escape
+=Bad
 
-=Bold		bold
-=Headline	bold yellow
-=Quote		green
-=Code		green
-=List		yellow
-=LinkDesc	green
-=Link		blue
-=Rule		inverse
+=Bold		+Keyword
+=Headline	+Title +Preproc +Statement
+=Quote		+Comment
+=Code		+String +Constant
+=List		+TagName +Tag
+=LinkDesc	+Title +String
+=Link		+Number +Constant
+=Rule		+Preproc
 
 :line_start Idle
 	*		idle		noeat

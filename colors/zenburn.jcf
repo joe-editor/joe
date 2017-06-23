@@ -59,6 +59,7 @@
 =Structure 229 bold
 =TODO /237
 =Tag 174 bold
+=Title /237
 
 =diff.AddLine 66 bold
 =diff.ChgLine /236 bold
@@ -122,6 +123,7 @@
 =Structure $efefaf bold
 =TODO /$3a3a3a
 =Tag $e89393 bold
+=Title /$3a3a3a
 
 =diff.AddLine /$3a3a3a
 =diff.ChgLine /$333333
