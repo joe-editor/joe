@@ -263,15 +263,16 @@ class JoeTestBase(unittest.TestCase):
         self.cmd("bofmenu", scope="menu")
         menu = self.config.getMenu(menuname)
         self.joe.expect(lambda: utils.compareMenuLabel(menu.items[0].label, self._readSelected(self.joe.cursor.X, self.joe.cursor.Y)))
+        menutop = self.joe.cursor
         
         # Move right until we find the item.
         while True:
-            cursor = self.joe.cursor
             self.joe.flushin()
-            if utils.compareMenuLabel(label, self._readSelected(cursor.X, cursor.Y)):
+            seltext = self._readSelected(self.joe.cursor.X, self.joe.cursor.Y)
+            if utils.compareMenuLabel(label, seltext):
                 return True
             self.writectl("{right}")
-            if not self.joe.expect(lambda: self.joe.cursor != cursor):
+            if not self.joe.expect(lambda: self.joe.cursor.Y >= menutop.Y and seltext != self._readSelected(self.joe.cursor.X, self.joe.cursor.Y)):
                 self.assertTrue(False, "Could not find menu")
     
     def _readSelected(self, x, y):
