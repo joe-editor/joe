@@ -3,14 +3,18 @@
 # Written by Joachim Fenkes <skill dot jsf at dojoe dot net> in 2005
 
 =Idle
-=Comment 	green
-=String 	cyan
-=Escape 	bold cyan
-=Bracket	bold
-=Symbol		bold blue
-=Keyword	bold
-=Number		bold magenta
-=Bad		bold red
+=Ident
+=Comment
+=Constant
+=String 	+Constant
+=StringEscape	+Escape +String
+=Brace
+=Symbol		+Atom +Constant +DefinedIdent
+=Keyword
+=Conditional	+Statement +Keyword
+=Loop		+Statement +Keyword
+=Number		+Constant
+=Bad
 
 :idle Idle
 	*		idle
@@ -19,32 +23,32 @@
 	"/"		slash
 	"()[]{}"	bracket		recolor=-1
 	"'"		maybe_symbol	recolor=-1
-	"a-zA-Z_"	maybe_keyword	buffer
+	"a-zA-Z_"	maybe_keyword	buffer recolor=-1
 	"0-9"		number		recolor=-1
 
-:maybe_keyword Idle
+:maybe_keyword Ident
 	*		idle		noeat	strings
 	"list"		keyword
 	"procedure"	keyword
-	"while"		keyword
-	"foreach"	keyword
-	"if"		keyword
-	"for"		keyword
-	"when"		keyword
-	"unless"	keyword
-	"cond"		keyword
+	"while"		loop
+	"foreach"	loop
+	"if"		cond
+	"for"		loop
+	"when"		cond
+	"unless"	cond
+	"cond"		cond
 	"defun"		keyword
 	"let"		keyword
 	"prog"		keyword
-	"else"		keyword
-	"then"		keyword
-	"case"		keyword
-	"caseq"		keyword
-	"nil"		keyword
+	"else"		cond
+	"then"		cond
+	"case"		cond
+	"caseq"		cond
+	"nil"		const
 	"t"		keyword
 done
 	"0-9a-zA-Z_"	maybe_keyword
-	
+
 :number Number
 	*		idle		noeat
 	"0-9."		number
@@ -56,14 +60,16 @@ done
 
 :comment Comment
 	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
 :mcomment Comment
 	*		mcomment
+	"BFHNTX"	mcomment	noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_mcomment
 	
 :maybe_end_mcomment Comment
-	*		mcomment
+	*		mcomment	noeat
 	"*"		maybe_end_mcomment
 	"/"		idle
 
@@ -72,11 +78,11 @@ done
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"\n"		string		recolor=-2
 
-:bracket Bracket
+:bracket Brace
 	*		idle		noeat
 
 :maybe_symbol Idle
@@ -89,4 +95,13 @@ done
 	")"		bracket		recolor=-1
 
 :keyword Keyword
+	*		idle		noeat
+
+:cond Conditional
+	*		idle		noeat
+
+:loop Loop
+	*		idle		noeat
+
+:const Constant
 	*		idle		noeat

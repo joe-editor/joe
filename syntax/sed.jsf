@@ -8,12 +8,15 @@
 -
 
 =Idle
-=Comment 	green
-=String 	cyan
-=Escape 	bold cyan
-=Bad		red
-=Keyword	bold
-=Delimiter	magenta
+=Comment
+=String		+Constant
+=StringEscape	+Escape
+=Regex		+String
+=RegexEscape	+StringEscape
+=Bad
+=Keyword
+=Delimiter	#+Operator +Type
+=Label		+DefinedIdent
 
 # Zero address commands: # : }
 # Zero or one address: = a i q r
@@ -21,7 +24,7 @@
 
 :idle Idle
 	*		cmd		noeat
-	" 	"	idle
+	" \t"		idle
 	"\n"		idle
 	"0-9"		first_addr	recolor=-1
 	"$"		first_eof	recolor=-1
@@ -33,7 +36,7 @@
 :first_regex_c Delimiter
 	*		first_regex	noeat
 
-:first_regex String
+:first_regex Regex
 	*		first_regex
 	"\\"		first_regex_quote	recolor=-1
 	"/"		first_regex_e		recolor=-1
@@ -41,7 +44,7 @@
 :first_regex_e Delimiter
 	*		first_addr_done		noeat
 
-:first_regex_quote Escape
+:first_regex_quote RegexEscape
 	*		first_regex
 
 :first_addr String
@@ -61,7 +64,7 @@
 :second_eof String
 	*		cmd		noeat
 
-:second_regex String
+:second_regex Regex
 	*		second_regex
 	"/"		cmd
 
@@ -75,18 +78,19 @@
 
 :cmd Delimiter
 	*		the_cmd		noeat
-	" 	"	cmd
+	" \t"		cmd
 	"!"		the_cmd
 
 :the_cmd Idle
 	*		bad		noeat
-	" 	"	the_cmd
+	" \t"		the_cmd
 	";"		next		noeat
 	"#"		comment		recolor=-1
 	"sy"		accepts		recolor=-1
 	"{"		accepto		recolor=-1
 	"aic"		accept		recolor=-1
-	"=:}rqbtdDhHgGxlnNpPw"	acceptc	recolor=-1
+	"=}rqbtdDhHgGxlnNpPw"	acceptc	recolor=-1
+	":"		label		recolor=-1
 
 :accepto Keyword
 	*		idle		noeat
@@ -100,6 +104,10 @@
 :accepts Keyword
 	*		subst		noeat
 
+:label Label
+	*		idle		noeat
+	"a-zA-Z0-9"	label
+
 :subst Delimiter
 	*		subst_rest	save_c
 
@@ -108,7 +116,7 @@
 	&		subst_rest_2_c		recolor=-1
 	"\\"		subst_rest_quote	recolor=-1
 
-:subst_rest_quote Escape
+:subst_rest_quote StringEscape
 	*		subst_rest
 
 :subst_rest_2_c Delimiter
@@ -122,7 +130,7 @@
 :next_c Delimiter
 	*		nextallow	noeat
 
-:subst_rest_2_quote Escape
+:subst_rest_2_quote StringEscape
 	*		subst_rest_2
 
 :nextallow Idle

@@ -2,14 +2,21 @@
 # by Christian Nicolai (http://mycrobase.de)
 
 =Idle
-=Comment	green
-=Constant	cyan
-=Escape		bold cyan
-=Keyword	bold
-=Bad		bold red
-=Brace		magenta
+=Ident
+=Comment
+=Constant
+=String		+Constant
+=Number		+Constant
+=Boolean	+Constant
+=Escape
+=StringEscape	+Escape +String
+=Keyword
+=Statement	+Keyword
+=Conditional	+Statement +Keyword
+=Bad
+=Brace
 
-=TaggedArgument	red
+=TaggedArgument	+Operator +Keyword
 
 :idle Idle
 	*		idle
@@ -26,6 +33,7 @@
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
 :maybe_comment Idle
@@ -34,26 +42,27 @@
 
 :comment Comment
 	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 
 :maybe_end_comment Comment
 	*		comment		noeat
 	"/"		idle
 
-:decimal Constant
+:decimal Number
 	*		idle		noeat
 	"0-9"		decimal
 	"KMG"		decimal_suffix
 
-:decimal_suffix Constant
+:decimal_suffix Number
 	*		idle		noeat
 
-:string Constant
+:string String
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string_bad_escape	recolor=-1
 	"\\"		string
 	"\""		string
@@ -69,12 +78,12 @@
 	*		idle		noeat
 	"a-zA-Z0-9_"	tagged_arg
 
-:ident Idle
+:ident Ident
 	*		idle		noeat strings
 	# control"
-	"else"		kw
-	"elsif"		kw
-	"if"		kw
+	"else"		cond
+	"elsif"		cond
+	"if"		cond
 	"require"	kw
 	"stop"		kw
 	# commands
@@ -88,18 +97,24 @@
 	"anyof"		test
 	"envelope"	test
 	"exists"	test
-	"false"		test
+	"false"		bool
 	"header"	test
 	"not"		test
 	"size"		test
-	"true"		test
+	"true"		bool
 done
 	"a-zA-Z0-9_"	ident
 
 :kw Keyword
 	*		idle		noeat
 
-:cmd Idle
+:cmd Statement
+	*		idle		noeat
+
+:cond Conditional
+	*		idle		noeat
+
+:bool Boolean
 	*		idle		noeat
 
 :test Idle
