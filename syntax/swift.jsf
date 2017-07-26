@@ -1,13 +1,25 @@
 # JOE syntax highlight file for Swift
 
 =Idle
-=Comment	green
-=Constant	cyan
-=Escape		bold cyan
-=Operator	bold
-=Keyword	bold
-=Bad		bold red
-=Rsvd
+=Comment
+=Preproc
+=Precond	+Preproc
+=Constant
+=String		+Constant
+=Number		+Constant
+=Boolean	+Constant
+=StringEscape	+Escape +String
+=Operator
+=Keyword
+=Statement	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=Type
+=StorageClass	+Type +Keyword
+=Modifier	+StorageClass
+=Label		+DefinedIdent
+=Builtin	+DefinedFunction
+=Bad
 
 :pre_idle Idle
 	*		NULL		noeat call=.swift()
@@ -40,9 +52,27 @@
 	"\""		string		recolor=-1
 	"/"		slash		recolor=-1
 	"@$\i"		ident		buffer
+	"#"		pre		mark
 
 :stray Bad
 	*		idle
+
+:pre Preproc
+	*		idle		noeat
+	" \t"		pre
+	"a-z"		preident	recolor=-1 buffer
+
+:preident Preproc
+	*		idle		markend recolormark noeat strings
+	"if"		precond		markend recolormark
+	"elseif"	precond		markend recolormark
+	"else"		precond		markend recolormark
+	"endif"		precond		markend recolormark
+done
+	"a-z"		preident
+
+:precond Precond
+	*		idle		noeat
 
 # Comments
 
@@ -54,6 +84,7 @@
 :line_comment Comment
 	*		line_comment
 	"\n"		idle
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 
 # Numbers
 
@@ -145,118 +176,160 @@
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"("		string	call=.swift(paren)	recolor=-2
 	"u"		string_maybe_uni
 
-:string_maybe_uni Escape
+:string_maybe_uni StringEscape
 	*		string
 	"{"		string_uni
 
-:string_uni Escape
+:string_uni StringEscape
 	*		string_uni
 	"}"		string
 
 # Identifiers
 
 :ident Idle
-	*		idle	noeat strings
-	"class"			kw
+	*			idle	noeat strings
+	"class"			storage
 	"deinit"		kw
-	"enum"			kw
-	"extension"		kw
-	"func"			kw
-	"import"		kw
+	"enum"			storage
+	"extension"		storage
+	"func"			storage
+	"import"		stmt
 	"init"			kw
-	"inout"			kw
-	"internal"		kw
+	"inout"			storage
+	"internal"		modifier
 	"let"			kw
 	"operator"		kw
-	"private"		kw
-	"protocol"		kw
-	"public"		kw
-	"static"		kw
-	"struct"		kw
+	"private"		modifier
+	"protocol"		storage
+	"public"		modifier
+	"static"		modifier
+	"struct"		storage
 	"subscript"		kw
-	"typealias"		kw
+	"typealias"		storage
 	"var"			kw
-	"break"			kw
-	"case"			kw
-	"continue"		kw
-	"default"		kw
-	"defer"			kw
-	"do"			kw
-	"else"			kw
-	"fallthrough"		kw
-	"for"			kw
+	"break"			stmt
+	"case"			label
+	"continue"		loop
+	"default"		label
+	"defer"			stmt
+	"do"			stmt
+	"else"			cond
+	"fallthrough"		stmt
+	"for"			loop
 	"guard"			kw
-	"if"			kw
+	"if"			cond
 	"in"			kw
-	"repeat"		kw
-	"return"		kw
-	"switch"		kw
+	"repeat"		loop
+	"return"		stmt
+	"switch"		cond
 	"where"			kw
-	"while"			kw
+	"while"			loop
 	"as"			kw
-	"catch"			kw
+	"catch"			stmt
 	"dynamicType"		kw
-	"false"			lit
+	"false"			bool
 	"is"			kw
 	"nil"			lit
-	"rethrows"		kw
+	"rethrows"		modifier
 	"super"			kw
 	"self"			kw
-	"Self"			kw
-	"throw"			kw
-	"throws"		kw
-	"true"			lit
+	"Self"			type
+	"throw"			stmt
+	"throws"		modifier
+	"true"			bool
 	"try"			kw
 	"__COLUMN__"		kw
 	"__FILE__"		kw
 	"__FUNCTION__"		kw
 	"__LINE__"		kw
 	"_"			kw
-	"associativity"		rsvd
-	"convenience"		rsvd
-	"dynamic"		rsvd
-	"didSet"		rsvd
-	"final"			rsvd
-	"get"			rsvd
-	"infix"			rsvd
-	"indirect"		rsvd
-	"lazy"			rsvd
-	"left"			rsvd
-	"mutating"		rsvd
-	"none"			rsvd
-	"nonmutating"		rsvd
-	"optional"		rsvd
-	"override"		rsvd
-	"postfix"		rsvd
-	"precedence"		rsvd
-	"prefix"		rsvd
-	"Protocol"		rsvd
-	"required"		rsvd
-	"right"			rsvd
-	"set"			rsvd
-	"Type"			rsvd
-	"unowned"		rsvd
-	"weak"			rsvd
-	"willSet"		rsvd
+	"associativity"		kw
+	"convenience"		kw
+	"dynamic"		kw
+	"didSet"		kw
+	"final"			storage
+	"get"			kw
+	"infix"			kw
+	"indirect"		kw
+	"lazy"			storage
+	"left"			kw
+	"mutating"		storage
+	"none"			kw
+	"nonmutating"		storage
+	"open"			storage
+	"optional"		kw
+	"override"		storage
+	"postfix"		kw
+	"precedence"		kw
+	"prefix"		kw
+	"Protocol"		builtin
+	"required"		kw
+	"right"			kw
+	"set"			kw
+	"Type"			builtin
+	"unowned"		kw
+	"weak"			kw
+	"willSet"		kw
+	
+	"String"		type
+	"Int"			type
+	"Int8"			type
+	"Int16"			type
+	"Int32"			type
+	"Int64"			type
+	"UInt"			type
+	"UInt8"			type
+	"UInt16"		type
+	"UInt32"		type
+	"UInt64"		type
+	"Float"			type
+	"Double"		type
+	"Bool"			type
+	"Character"		type
+	"Optional"		type
 done
-	"$\c"	ident
+	"$\c"			ident
 
 :kw Keyword
-	*		idle			noeat
+	*		idle		noeat
 
-:rsvd Rsvd
-	*		idle			noeat
+:bool Boolean
+	*		idle		noeat
 
 :lit Constant
 	*		idle		noeat
 
-:operator Operator
-	*		idle			noeat
+:oper Operator
+	*		idle		noeat
+
+:storage StorageClass
+	*		idle		noeat
+
+:modifier Modifier
+	*		idle		noeat
+
+:label Label
+	*		idle		noeat
+
+:loop Loop
+	*		idle		noeat
+
+:cond Conditional
+	*		idle		noeat
+
+:stmt Statement
+	*		idle		noeat
+
+:builtin Builtin
+	*		idle		noeat
+
+:type Type
+	*		idle		noeat
 
 .end
 
@@ -268,6 +341,7 @@ done
 	*		idle
 	"*"		maybe_done
 	"/"		maybe_recur
+	"BFHNTX"	idle	noeat call=comment_todo.comment_todo()
 
 :maybe_done Comment
 	*		idle	noeat

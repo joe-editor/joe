@@ -1,21 +1,19 @@
 # JOE syntax highlight file for RPM spec files
 # from Suse, joe-3.5-20.src.rpm
 
-# some text sections are _very_ long (e.g. %changelog)
--4000
-
 =Idle
-=Colon        blue
-=Macro         bold blue
-=CtrlMacro	bold cyan
-=Comment        green
-=Variable       cyan
-=Text		dim white
-=Section	red
-=Shell		magenta
-=Shell2		bold magenta
-=ShellCmd	yellow
-=ShellRedir	bold yellow
+=Colon		+Control
+=Macro		+Define +Preproc
+=CtrlMacro	+Precond +Conditional +Statement +Keyword
+=Comment
+=Variable	+Escape
+=Text		+Constant
+=Section	+Label +DefinedIdent
+=Shell		+Statement +Keyword
+=Shell2		+Keyword
+=ShellCmd	+Type
+=ShellRedir	+Operator
+=DefinedIdent	+Ident
 
 :idle	Idle
 	*	idle
@@ -119,7 +117,7 @@ done
 	" \t"	define
 	"\n"	idle noeat
 	
-:defineident Variable
+:defineident DefinedIdent
 	*	defineident
 	" \t\n"	idle noeat
 
@@ -143,7 +141,6 @@ done
 	"%"	textsection3
 
 :comment Comment
-	*	comment
-	"\n"	idle noeat
-
- 	  	 
+	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
+	"\n"		idle noeat

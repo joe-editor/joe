@@ -63,30 +63,27 @@
 # sometimes have to make dummy states with '* next-state noeat' just to get
 # a color specification.
 
-# Define no. sync lines
-# You can say:
-# -200     means 200 lines
-# -        means always start parsing from beginning of file when we lose sync
-#          if nothing is specified, the default is -50
+=Idle
+=Ident
+=Bad
+=Comment
+=Constant
+=String		+Constant
+=Number		+Constant
+=Boolean	+Constant
+=StringEscape	+Escape +String
+=Type
+=Keyword
+=Operator	+Keyword
+=Control
+=Conditional	+Statement +Keyword
+=Loop		+Statement +Keyword
+=StorageClass	+Keyword
+=DefinedIdent	+Ident
+=DefinedFunction +DefinedIdent
+=DefinedType	+Type +DefinedIdent
 
-# Define colors
-#
-# bold inverse blink dim underline italic
-# white cyan magenta blue yellow green red black
-# bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
-
-=Expr
-=Bad		bg_red
-=Comment 	green
-=Literal 	cyan
-=Escape 	bold cyan
-=Type 		blue
-=Keyword 	bold
-=Operator	bold black
-=Control	green
-=Id
-
-:expr Expr
+:expr Idle
 	*		expr
 	".,[{})];"	control		recolor=-1 # . or ... both control
 	"("		bracket		recolor=-1
@@ -140,7 +137,7 @@ done
 	"0"		zero		recolor=-2
 	"1-9"		decimal		recolor=-2
 
-:zero Literal
+:zero Number
 	*		expr		noeat
 	"0-9"		decimal
 	"w"		word		buffer
@@ -149,24 +146,24 @@ done
 	"E"		epart		buffer
 	"."		float1
 
-:word Literal
+:word Number
 	*		id		noeat recolor=-2
 	"0-9"		decimal
 	"x"		hexword
 
-:hexword Literal
+:hexword Number
 	*		id		noeat recolor=-3
 	"0-9a-fA-F"	hex
 
-:hex1 Literal
+:hex1 Number
 	*		id		noeat recolor=-2
 	"0-9a-fA-F"	hex
 
-:hex Literal
+:hex Number
 	*		expr		noeat
 	"0-9a-fA-F"	hex
 
-:decimal Literal
+:decimal Number
 	*		expr		noeat
 	"0-9"		decimal
 	"."		float1
@@ -174,32 +171,32 @@ done
 	"E"		epart		buffer
 
 # trailing digits required in SML (unlike OCaml)
-:float1 Literal
+:float1 Number
 	*		bad		noeat
 	"0-9"		float
 
-:float Literal
+:float Number
 	*		expr		noeat
 	"0-9"		float
 	"e"		epart		buffer
 	"E"		epart		buffer
 
-:epart Literal
+:epart Number
 	*		id		noeat recolor=-2
 	"0-9"		enum
 	"~"		epart		# bug: 3e~~3
 
-:enum Literal
+:enum Number
 	*		expr		noeat
 	"0-9"		enum
 
-:string	Literal
+:string	String
 	*		string
 	"\""		expr
 	"\n"		bad
 	"\\"		string_escape	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		bad		noeat
 	"abfnrtv\"\\"	string
 	"^"		string_carret
@@ -207,62 +204,63 @@ done
 	"0-9"		string_decimal2
 	"\n\r\f\t "	string_eatws
 
-:string_carret Escape
+:string_carret StringEscape
 	*		bad		noeat
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ\\^_" string
 
-:string_eatws Escape
+:string_eatws StringEscape
 	*		bad 		noeat
 	"\n\r\f\t "	string_eatws
 	"\\"		string
 
-:string_hex1 Escape
+:string_hex1 StringEscape
 	*		bad		noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex2 Escape
+:string_hex2 StringEscape
 	*		bad		noeat
 	"0-9a-fA-F"	string_hex3
 
-:string_hex3 Escape
+:string_hex3 StringEscape
 	*		bad		noeat
 	"0-9a-fA-F"	string_hex4
 
-:string_hex4 Escape
+:string_hex4 StringEscape
 	*		bad		noeat
 	"0-9a-fA-F"	string
 
-:string_decimal2 Escape
+:string_decimal2 StringEscape
 	*		bad		noeat
 	"0-9"		string_decimal3
 
-:string_decimal3 Escape
+:string_decimal3 StringEscape
 	*		bad		noeat
 	"0-9"		string
 
-:id Id
+:id Ident
 	*		expr		noeat strings
 	"_"		kw
 	"ann"		kw
 	"and"		kw
 	"as"		kw
-	"case"		kw
-	"do"		kw
-	"else"		kw
-	"end"		kw
+	"case"		cond
+	"do"		loop
+	"else"		cond
+	"end"		cond
 	"exception"	kw
+	"false"		bool
 	"fn"		kw
 	"fun"		kw
 	"functor"	kw
 	"handle"	kw
-	"if"		kw
+	"if"		cond
 	"in"		kw
 	"include"	kw
 	"infix"		kw
 	"infixr"	kw
 	"let"		kw
 	"local"		kw
-	"nil"		kw
+	"nil"		const
 	"nonfix"	kw
 	"of"		kw
 	"op"		kw
@@ -275,9 +273,10 @@ done
 	"struct"	kw
 	"structure"	kw
 	"then"		kw
-	"val"		kw
+	"true"		bool
+	"val"		val
 	"where"		kw
-	"while"		kw
+	"while"		loop
 	"with"		kw
 	"abstype"	kwtype
 	"datatype"	kwtype
@@ -295,15 +294,37 @@ done
 
 :kw Keyword
 	*		expr		noeat
-	"a-zA-Z0-9_'"	kw
 
 :operatorkw Operator
 	*		expr		noeat
 
-:kwtype Keyword
+:kwtype StorageClass
 	*		kwtype1		noeat
 
-:kwtype1 Type
+:const Constant
+	*		expr		noeat
+
+:cond Conditional
+	*		expr		noeat
+
+:loop Loop
+	*		expr		noeat
+
+:bool Boolean
+	*		expr		noeat
+
+:val Keyword
+	*		val_preident	noeat
+
+:val_preident Idle
+	*		val_ident	noeat
+	" \t"		val_preident
+
+:val_ident DefinedIdent
+	*		expr		noeat
+	"a-zA-Z0-9_'" val_ident
+
+:kwtype1 DefinedType
 	*		expr		noeat
 	"="		typeval		recolor=-1
 	"a-zA-Z0-9_'., :|*>\t\-" kwtype1
@@ -352,13 +373,14 @@ done
 	*		comment1
 	"("		nestcomment1
 	"*"		endcomment1
+	"BFHNTX"	comment1	noeat call=comment_todo.comment_todo()
 
 :nestcomment1 Comment
-	*		comment1
+	*		comment1	noeat
 	"*"		comment2
 
 :endcomment1 Comment
-	*		comment1
+	*		comment1	noeat
 	")"		expr
 	"*"		endcomment1
 
@@ -366,13 +388,14 @@ done
 	*		comment2
 	"("		nestcomment2
 	"*"		endcomment2
+	"BFHNTX"	comment2	noeat call=comment_todo.comment_todo()
 
 :nestcomment2 Comment
-	*		comment2
+	*		comment2	noeat
 	"*"		comment3
 
 :endcomment2 Comment
-	*		comment2
+	*		comment2	noeat
 	")"		comment1
 	"*"		endcomment2
 
@@ -380,12 +403,13 @@ done
 	*		comment3
 	"("		nestcomment3
 	"*"		endcomment3
+	"BFHNTX"	comment3	noeat call=comment_todo.comment_todo()
 
 :nestcomment3 Comment
-	*		comment3
+	*		comment3	noeat
 	"*"		expr				# too deep nesting
 
 :endcomment3 Comment
-	*		comment3
+	*		comment3	noeat
 	")"		comment2
 	"*"		endcomment3
