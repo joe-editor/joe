@@ -25,6 +25,7 @@
 
 #ifdef JOEWIN
 #include "joedata.h"
+#define _USE_MATH_DEFINES
 #endif
 
 /* Common header files */

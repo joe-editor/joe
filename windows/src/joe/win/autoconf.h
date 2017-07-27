@@ -336,3 +336,42 @@
 
 /* libcoro: Use fibers for coroutines (grr).  It's broken on x64 otherwise. */
 #define CORO_FIBER 1
+
+/* Math functions */
+
+/* Widely available */
+#define HAVE_SIN 1
+#define HAVE_SINH 1
+#define HAVE_COS 1
+#define HAVE_COSH 1
+#define HAVE_TAN 1
+#define HAVE_TANH 1
+#define HAVE_SQRT 1
+#define HAVE_LOG 1
+#define HAVE_LOG10 1
+#define HAVE_EXP 1
+#define HAVE_FABS 1
+#define HAVE_FLOOR 1
+#define HAVE_CEIL 1
+#define HAVE_HYPOT 1
+#define HAVE_ACOS 1
+#define HAVE_ASIN 1
+#define HAVE_ATAN 1
+
+#if _MSC_VER >= 1400
+/* Available starting with VS2005 */
+#define HAVE_J0 1
+#define HAVE_J1 1
+#define HAVE_Y0 1
+#define HAVE_Y1 1
+#endif
+
+#if _MSC_VER >= 1800
+/* Available starting with VS2013 */
+#define HAVE_ASINH 1
+#define HAVE_ACOSH 1
+#define HAVE_ATANH 1
+#define HAVE_CBRT 1
+#define HAVE_ERF 1
+#define HAVE_ERFC 1
+#endif

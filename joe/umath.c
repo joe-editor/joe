@@ -7,6 +7,14 @@
  */
 #include "types.h"
 
+#ifdef _MSC_VER
+/* Use ISO C++ conformant versions of Bessel functions */
+#define j0 _j0
+#define j1 _j1
+#define y0 _y0
+#define y1 _y1
+#endif
+
 const char *merr;
 
 int mode_display; /* 0 = decimal, 1 = engineering, 2 = hex, 3 = octal, 4 = binary */
