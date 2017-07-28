@@ -6,7 +6,9 @@ KEYS = {
     'up':	[b'\x1b[A',	b'\x1b[1;5A',	b'\x1b[1;2A',	b'\x1b[1;6A'],
     'down':	[b'\x1b[B',	b'\x1b[1;5B',	b'\x1b[1;2B',	b'\x1b[1;6B'],
     'pgup':	[b'\x1b[5~',	b'\x1b[5;5~',	b'\x1b[5;2~',	b'\x1b[5;6~'],
-    'pgdown':	[b'\x1b[6~',	b'\x1b[6;5~',	b'\x1b[6;2~',	b'\x1b[6,6~'],
+    'pgdown':	[b'\x1b[6~',	b'\x1b[6;5~',	b'\x1b[6;2~',	b'\x1b[6;6~'],
+    'insert':	[b'\x1b[2~',	b'\x1b[2;5~',	b'\x1b[2;2~',	b'\x1b[2;6~'],
+    'del':	[b'\x1b[3~',	b'\x1b[3;5~',	b'\x1b[3;2~',	b'\x1b[3;6~'],
     'f1':	[b'\x1b[OP',	b'\x1bO1;5P',	b'\x1bO1;2P',	b'\x1bO1;6P'],
     'f2':	[b'\x1b[OQ',	b'\x1bO1;5Q',	b'\x1bO1;2Q',	b'\x1bO1;6Q'],
     'f3':	[b'\x1b[OR',	b'\x1bO1;5R',	b'\x1bO1;2R',	b'\x1bO1;6R'],
@@ -19,7 +21,6 @@ KEYS = {
     'f10':	[b'\x1b[[21~',	b'\x1b[21;5~',	b'\x1b[21;2~',	b'\x1b[21;6~'],
     'f11':	[b'\x1b[[23~',	b'\x1b[23;5~',	b'\x1b[23;2~',	b'\x1b[23;6~'],
     'f12':	[b'\x1b[[24~',	b'\x1b[24;5~',	b'\x1b[24;2~',	b'\x1b[24;6~'],
-    'del':	[b'\x1b[3~',	b'\x1b[3;5~',	b'\x1b[3;2~',	b'\x1b[3;6~'],
     'space':	[b' ',		b'\x00',	None,		b'\x00'],
     'tab':	[b'\x09',	None,		b'\x1b[Z',	b'\x1b[Z'],
     'enter':	[b'\r'],
@@ -27,6 +28,30 @@ KEYS = {
     'esc':	[b'\x1b'],
     'home':	[b'\x1b[OH'],
     'end':	[b'\x1b[OF'],
+}
+
+RC_KEYS = {
+    ".ku":	"{up}",
+    ".kd":	"{down}",
+    ".kl":	"{left}",
+    ".kr":	"{right}",
+    ".kh":	"{home}",
+    ".kH":	"{end}",
+    ".kI":	"{insert}",
+    ".kD":	"{del}",
+    ".kP":	"{pgup}",
+    ".kN":	"{pgdown}",
+    ".k1":	"{f1}",
+    ".k2":	"{f2}",
+    ".k3":	"{f3}",
+    ".k4":	"{f4}",
+    ".k5":	"{f5}",
+    ".k6":	"{f6}",
+    ".k7":	"{f7}",
+    ".k8":	"{f8}",
+    ".k9":	"{f9}",
+    ".k0":	"{f10}",
+    ".k;":	"{f10}",
 }
 
 def getNamedKey(keyname, ctrl, shift):
@@ -44,8 +69,15 @@ def getNamedKey(keyname, ctrl, shift):
 
 def getKey(char, ctrl, shift):
     if ctrl:
+        if char == '#':
+            ch = 0x9b
+        elif char == '?':
+            ch = 0x7f
+        else:
+            ch = ord(char) & 0x1f
+        
         b = bytearray(1)
-        b[0] = ord(char) & 0x1b
+        b[0] = ch
         return bytes(b)
     return char.encode('utf-8')
 
@@ -84,4 +116,21 @@ def toctl(s):
         
         i += 1
     
+    return result
+
+def fromRcFile(keys):
+    result = b''
+    for k in keys:
+        if k[0] == '^':
+            result += toctl(k)
+        elif k.startswith("U+"):
+            result += chr(int(k[2:], 16)).encode('utf-8')
+        elif len(k) > 1:
+            if k in RC_KEYS:
+                result += toctl(RC_KEYS[k])
+            else:
+                # Unknown/unreproducible key
+                return None
+        else:
+            result += k.encode('utf-8')
     return result

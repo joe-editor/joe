@@ -2175,7 +2175,7 @@ int uctrl(W *w, int k)
 		return -1;
 	org = bw->o.overtype;
 	bw->o.overtype = 0;
-	if (bw->parent->huh == srchstr && c == '\n') {
+	if ((bw->parent->huh == srchstr || bw->parent->huh == replstr) && c == '\n') {
 		utypebw(bw, '\\');
 		utypebw(bw, 'n');
 	} else

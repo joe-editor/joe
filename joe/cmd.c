@@ -371,8 +371,7 @@ int execmd(CMD *cmd, int k)
 #endif
 
 	if (cmd->m) {
-		ret = exmacro(cmd->m, 0, NO_MORE_DATA);
-		return ret;
+		return exmacro(cmd->m, 0, NO_MORE_DATA);
 	}
 
 	/* We don't execute if we have to fix the column position first

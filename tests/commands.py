@@ -1,7 +1,6 @@
 
 import joefx
 import time
-import cProfile
 
 class AbortTests(joefx.JoeTestBase):
     def test_abort_to_exit(self):
@@ -45,9 +44,11 @@ class AbortTests(joefx.JoeTestBase):
     def test_abort_kills_process(self):
         self.startJoe()
         self.cmd("bknd")
-        time.sleep(0.1) # TODO: Weird timing issues with subprocesses...
+        # Wait for a shell prompt to appear
+        self.waitForNotEmpty(y=1)
+        self.assertTrue(self.joe.expect(lambda: self.joe.cursor.X > 0))
         self.cmd("bol")
-        self.assertCursor(y=1, x=0)
+        self.assertCursor(x=0)
         
         self.cmd("abort")
         self.assertTextAt("Kill program", x=0)
@@ -181,7 +182,8 @@ class BkndTests(joefx.JoeTestBase):
     def test_bknd_shell(self):
         self.startJoe()
         self.cmd("bknd")
-        time.sleep(0.1)
+        # Wait for shell prompt to appear
+        self.waitForNotEmpty(y=1)
         self.write("echo hello world\r")
         self.assertTextAt("hello world", x=0, dy=-1)
         self.cmd("uparw,abort")
@@ -246,9 +248,9 @@ class BofTests(joefx.JoeTestBase):
         self.assertSelectedMenuItem(rootMenu.items[0].label)
         self.writectl("{down*3}")
         self.assertSelectedMenuItem(rootMenu.items[3].label)
-        self.writectl("^KU")
+        self.cmd("bofmenu", "menu")
         self.assertSelectedMenuItem(rootMenu.items[0].label)
-        self.writectl("^C")
+        self.cmd("abort", "menu")
         self.exitJoe()
 
 class BolTests(joefx.JoeTestBase):
@@ -299,21 +301,77 @@ class BolTests(joefx.JoeTestBase):
         for i in range(0, 9):
             self.writectl("{right*%d}" % i)
             self.assertSelectedMenuItem("Item %d" % i)
-            self.writectl("^A")
+            self.cmd("bolmenu", "menu")
             self.assertSelectedMenuItem("Item 0")
         self.writectl("{down}")
         for i in range(9, 15):
             self.writectl("{right*%d}" % (i - 9))
             self.assertSelectedMenuItem("Item %d" % i)
-            self.writectl("^A")
+            self.cmd("bolmenu", "menu")
             self.assertSelectedMenuItem("Item 9")
 
-# TODO: bol
-# TODO: bolmenu
-# TODO: bop
-# TODO: bos
-# TODO: brpaste
-# TODO: brpaste_done
+class BopTests(joefx.JoeTestBase):
+    def test_bop_paragraph(self):
+        self.workdir.fixtureFile("test", "bop_test")
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        answers = (1, 1, 1, 1, 1, 5, 5, 5, 8, 8, 10, 10, 12, 13)
+        for i, answer in enumerate(answers):
+            self.cmd('line,"%d",rtn,bop' % (i + 1))
+            self.assertCursor(y=answer)
+        self.exitJoe()
+    
+    def test_bop_paragraph_eol(self):
+        self.workdir.fixtureFile("test", "bop_test")
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        answers = (1, 1, 1, 1, 5, 5, 5, 8, 8, 8, 10, 12, 12, 13)
+        for i, answer in enumerate(answers):
+            self.cmd('line,"%d",rtn,eol,bop' % (i + 1))
+            self.assertCursor(y=answer)
+        self.exitJoe()
+
+class BosTests(joefx.JoeTestBase):
+    def test_bos_long(self):
+        self.workdir.fixtureData("test", "\n".join("line %d" % i for i in range(100)))
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        height = self.joe.size.Y
+        self.cmd("bos")
+        self.assertTextAt("line %d" % (height - 2), x=0)
+        self.cmd('line,"75",rtn,bos')
+        self.assertTextAt("line %d" % (75 + height // 2 - 2), x=0)
+        self.exitJoe()
+    
+    def test_bos_short(self):
+        self.workdir.fixtureData("test", "\n".join("line %d" % i for i in range(10)))
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        self.cmd("bos")
+        self.assertTextAt("line 9")
+        self.exitJoe()
+
+class BracketedPasteTests(joefx.JoeTestBase):
+    def test_brpaste_wordwrap_autoindent(self):
+        self.config.globalopts.brpaste = True
+        self.config.globalopts.pastehack = False
+        self.startup.args = ("-autoindent", "-wordwrap")
+        self.startJoe()
+        text = [
+            "    This is a very long line that should hit the wordwrap limit abcdefg abcdefg abcdefg abcdefg",
+            "  And this line would ordinarily be autoindented to the previous line abcdefg abcdefg abcdefg",
+            "And here's the last line"]
+        self.write("\033[200~")
+        self.write("\r".join(text))
+        self.write("\033[201~")
+        self.save("outfile")
+        self.exitJoe()
+        self.assertFileContents("outfile", "\n".join(text))
+
 # TODO: bufed
 # TODO: build
 # TODO: byte
@@ -360,7 +418,52 @@ class BolTests(joefx.JoeTestBase):
 # TODO: eop
 # TODO: execmd
 # TODO: explode
-# TODO: exsave
+
+class ExsaveTests(joefx.JoeTestBase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.text = "\n".join("line %d" % i for i in range(10))
+    
+    def setUp(self):
+        super().setUp()
+        self.workdir.fixtureData("test", self.text)
+        self.startup.args = ("test",)
+    
+    def test_exsave_nomodify(self):
+        self.startJoe()
+        self.cmd("exsave")
+        self.assertExited()
+    
+    def test_exsave_modified(self):
+        self.startJoe()
+        
+        self.cmd("eof")
+        self.write(" - more text")
+        self.cmd("exsave")
+        
+        self.assertExited()
+        self.assertFileContents("test", self.text + " - more text")
+    
+    def test_exsave_block(self):
+        self.startJoe()
+        
+        self.cmd("bof,markb")
+        self.cmd("eof,markk")
+        self.cmd("exsave")
+        
+        self.assertExited()
+    
+    def test_exsave_modified_block(self):
+        self.startJoe()
+        
+        self.cmd("eof")
+        self.write(" - more text")
+        self.cmd("markk,bof,markb")
+        self.cmd("exsave")
+        
+        self.assertExited()
+        self.assertFileContents("test", self.text + " - more text")
+
 # TODO: extmouse
 # TODO: ffirst
 # TODO: filt
@@ -374,7 +477,6 @@ class BolTests(joefx.JoeTestBase):
 # TODO: grep
 # TODO: groww
 # TODO: if
-# TODO: isrch
 # TODO: jump
 # TODO: killjoe
 # TODO: killproc
@@ -397,7 +499,139 @@ class BolTests(joefx.JoeTestBase):
 # TODO: markb
 # TODO: markk
 # TODO: markl
-# TODO: math
+
+class MathTests(joefx.JoeTestBase):
+    def math(self, expr):
+        self.cmd("math")
+        self.assertTextAt("=", x=0)
+        mathpos = self.joe.cursor
+        
+        self.write(expr)
+        self.rtn()
+        self.joe.expect(lambda: self.joe.cursor.Y != mathpos.Y)
+        return self.joe.readLine(mathpos.Y, 0, self.joe.size.X).strip()
+    
+    def assertMath(self, expr, result):
+        self.assertEqual(self.math(expr), result, expr)
+    
+    def test_simple(self):
+        self.startJoe()
+        self.assertMath("56", "56")
+        self.assertMath("2+2", "4")
+        self.assertMath("1-3", "-2")
+        self.assertMath("2**8", "256")
+        self.assertMath("1/4", "0.25")
+        self.assertMath("16*3", "48")
+        self.assertMath("1+4*5", "21")
+        self.assertMath("(1+4)*5", "25")
+        self.assertMath("1+4*-5", "-19")
+        self.assertMath("0.25*8", "2")
+        self.assertMath("28%5", "3")
+        self.assertMath("ans", "3")
+        
+        self.assertMath("1>2", "0")
+        self.assertMath("5.0==5", "1")
+        self.assertMath("5.0!=5", "0")
+        self.assertMath("23<=31", "1")
+        self.assertMath("28>35", "0")
+        self.assertMath("1+4<2*4", "1")
+        self.assertMath("28>=7*4", "1")
+        self.assertMath("29>=7*4", "1")
+        self.assertMath("2*4>2**4", "0")
+        
+        self.assertMath("2*4<9||#@junk@#", "1")
+        self.assertMath("1||1", "1")
+        self.assertMath("2||5", "1")
+        self.assertMath("2&&4", "1")
+        self.assertMath("0&&1||1&&1", "1")
+        self.assertMath("!5", "0")
+        self.assertMath("!0", "1")
+        self.assertMath("!0*2", "2")
+        
+        self.assertMath("0x8000", "32_768")
+        self.assertMath("0o127", "87")
+        self.assertMath("0b1000110", "70")
+        self.assertMath("1e5", "100_000")
+        self.assertMath("1e-2", "0.01")
+        self.assertMath("-0x7f", "-127")
+    
+    def test_errors(self):
+        self.startJoe()
+        unbalanced = "Missing )"
+        extra_junk = "Extra junk after end of expr"
+        self.assertMath("(2+2", unbalanced)
+        self.assertMath("2+2)", extra_junk)
+        self.assertMath("((2+2)+3+(4*5)", unbalanced)
+        self.assertMath("0o888", extra_junk)
+        self.assertMath("0xhello", extra_junk)
+        self.assertMath("1e999999", "INF")
+    
+    def test_constants(self):
+        self.startup.lines = 25
+        self.startup.columns = 80
+        self.startJoe()
+        self.assertEqual(self.math("pi")[0:9], "3.141_592", "pi")
+        self.assertEqual(self.math("e")[0:9], "2.718_281", "e")
+
+        self.assertMath("height", "24")
+        #self.assertMath("width", "80") -- depends on last col
+        self.assertMath("no_windows", "1")
+        
+        self.assertMath("size", "0")
+        self.assertMath("line", "1")
+        self.assertMath("col", "1")
+        self.assertMath("byte", "1")
+        self.assertMath("char", "-1")
+        
+        self.write("Hello world!\r")
+        self.assertMath("line", "2")
+        self.writectl("{up}{right*4}")
+        
+        self.assertMath("size", "13")
+        self.assertMath("line", "1")
+        self.assertMath("col", "5")
+        self.assertMath("byte", "5")
+        self.assertMath("char", "111")
+        
+        self.cmd("splitw")
+        self.assertMath("no_windows", "2")
+        
+        self.assertMath("rdonly", "0")
+        self.mode("rdonly")
+        self.assertMath("rdonly", "1")
+    
+    def test_functions(self):
+        self.startJoe()
+        # Don't test all of them -- just a couple likely to be supported
+        self.assertMath("cos(0)", "1")
+        self.assertMath("log(1000)", "3")
+        self.assertEqual(self.math("ln(2)")[0:9], "0.693_147", "ln(2)")
+        self.assertMath("ln(e)", "1")
+    
+    def test_formatting(self):
+        self.startJoe()
+        self.assertMath("56000", "56_000")
+        self.assertMath("hex", "0xDAC0")
+        self.assertMath("eng", "56e3")
+        self.assertMath("bin", "0b1101_1010_1100_0000")
+        self.assertMath("oct", "0o15_5300")
+    
+    def test_context(self):
+        self.startup.lines = 25
+        self.startup.columns = 80
+        self.workdir.fixtureData("test", "5 15 25 8 12")
+        self.startup.args = "test",
+        self.startJoe()
+        
+        self.cmd("bol,markb,eol,markv")
+        self.assertMath("sum", "65")
+        self.assertMath("avg", "13")
+        self.assertMath("cnt", "5")
+        self.assertEqual(self.math("dev")[0:9], "6.899_275")
+    
+    # TODO: There's a *lot* more that could be done here...
+
+
 # TODO: maths
 # TODO: menu
 # TODO: mode
@@ -445,7 +679,6 @@ class BolTests(joefx.JoeTestBase):
 # TODO: rfirst
 # TODO: rindent
 # TODO: run
-# TODO: rsrch
 # TODO: rtarw
 # TODO: rtarwmenu
 # TODO: rtn
