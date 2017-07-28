@@ -10,11 +10,27 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+* Enhancements
+
+	* Now pass character which invoked a macro to each macro step and
+	  call.  If a macro step happens to be the 'type' command, the
+	  character which invoked the macro will be typed in.  For example,
+	  this macro will type three 'X's.  Before this change you got three
+	  NULs.
+
+		type,type,type   X
+
 * Bugs fixed
 
 	* Fix exsave: (^K ^X) should close file when a block is present in
 	  the window, and the file is unmodified (regression from ^C change
 	  in 4.2).
+
+	* Fix regex assertions: they were not working because the character
+	  before the search position was not being loaded.
+
+	* For jmacs: ^Q^J now again inserts \n in the string replace prompt. 
+	  This broke beginning with JOE 4.0.
 
 ### JOE 4.4
 

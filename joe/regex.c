@@ -1288,6 +1288,11 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int fo
 		pool[cl].pos[c].rm_eo = -1;
 	}
 
+	/* We need the previous character: consider the case where regex begins with < */
+	c = prgetc(p);
+	if (c != NO_MORE_DATA)
+		pgetc(p);
+
 	/* Scan string */
 	do {
 		d = c;

@@ -399,7 +399,7 @@ int execmd(CMD *cmd, int k)
 #endif
 
 	if (cmd->m)
-		return exmacro(cmd->m, 0, NO_MORE_DATA);
+		return exmacro(cmd->m, 0, k);
 
 	/* We don't execute if we have to fix the column position first
 	 * (i.e., left arrow when cursor is in middle of nowhere) */
