@@ -499,7 +499,139 @@ class ExsaveTests(joefx.JoeTestBase):
 # TODO: markb
 # TODO: markk
 # TODO: markl
-# TODO: math
+
+class MathTests(joefx.JoeTestBase):
+    def math(self, expr):
+        self.cmd("math")
+        self.assertTextAt("=", x=0)
+        mathpos = self.joe.cursor
+        
+        self.write(expr)
+        self.rtn()
+        self.joe.expect(lambda: self.joe.cursor.Y != mathpos.Y)
+        return self.joe.readLine(mathpos.Y, 0, self.joe.size.X).strip()
+    
+    def assertMath(self, expr, result):
+        self.assertEqual(self.math(expr), result, expr)
+    
+    def test_simple(self):
+        self.startJoe()
+        self.assertMath("56", "56")
+        self.assertMath("2+2", "4")
+        self.assertMath("1-3", "-2")
+        self.assertMath("2**8", "256")
+        self.assertMath("1/4", "0.25")
+        self.assertMath("16*3", "48")
+        self.assertMath("1+4*5", "21")
+        self.assertMath("(1+4)*5", "25")
+        self.assertMath("1+4*-5", "-19")
+        self.assertMath("0.25*8", "2")
+        self.assertMath("28%5", "3")
+        self.assertMath("ans", "3")
+        
+        self.assertMath("1>2", "0")
+        self.assertMath("5.0==5", "1")
+        self.assertMath("5.0!=5", "0")
+        self.assertMath("23<=31", "1")
+        self.assertMath("28>35", "0")
+        self.assertMath("1+4<2*4", "1")
+        self.assertMath("28>=7*4", "1")
+        self.assertMath("29>=7*4", "1")
+        self.assertMath("2*4>2**4", "0")
+        
+        self.assertMath("2*4<9||#@junk@#", "1")
+        self.assertMath("1||1", "1")
+        self.assertMath("2||5", "1")
+        self.assertMath("2&&4", "1")
+        self.assertMath("0&&1||1&&1", "1")
+        self.assertMath("!5", "0")
+        self.assertMath("!0", "1")
+        self.assertMath("!0*2", "2")
+        
+        self.assertMath("0x8000", "32_768")
+        self.assertMath("0o127", "87")
+        self.assertMath("0b1000110", "70")
+        self.assertMath("1e5", "100_000")
+        self.assertMath("1e-2", "0.01")
+        self.assertMath("-0x7f", "-127")
+    
+    def test_errors(self):
+        self.startJoe()
+        unbalanced = "Missing )"
+        extra_junk = "Extra junk after end of expr"
+        self.assertMath("(2+2", unbalanced)
+        self.assertMath("2+2)", extra_junk)
+        self.assertMath("((2+2)+3+(4*5)", unbalanced)
+        self.assertMath("0o888", extra_junk)
+        self.assertMath("0xhello", extra_junk)
+        self.assertMath("1e999999", "INF")
+    
+    def test_constants(self):
+        self.startup.lines = 25
+        self.startup.columns = 80
+        self.startJoe()
+        self.assertEqual(self.math("pi")[0:9], "3.141_592", "pi")
+        self.assertEqual(self.math("e")[0:9], "2.718_281", "e")
+
+        self.assertMath("height", "24")
+        #self.assertMath("width", "80") -- depends on last col
+        self.assertMath("no_windows", "1")
+        
+        self.assertMath("size", "0")
+        self.assertMath("line", "1")
+        self.assertMath("col", "1")
+        self.assertMath("byte", "1")
+        self.assertMath("char", "-1")
+        
+        self.write("Hello world!\r")
+        self.assertMath("line", "2")
+        self.writectl("{up}{right*4}")
+        
+        self.assertMath("size", "13")
+        self.assertMath("line", "1")
+        self.assertMath("col", "5")
+        self.assertMath("byte", "5")
+        self.assertMath("char", "111")
+        
+        self.cmd("splitw")
+        self.assertMath("no_windows", "2")
+        
+        self.assertMath("rdonly", "0")
+        self.mode("rdonly")
+        self.assertMath("rdonly", "1")
+    
+    def test_functions(self):
+        self.startJoe()
+        # Don't test all of them -- just a couple likely to be supported
+        self.assertMath("cos(0)", "1")
+        self.assertMath("log(1000)", "3")
+        self.assertEqual(self.math("ln(2)")[0:9], "0.693_147", "ln(2)")
+        self.assertMath("ln(e)", "1")
+    
+    def test_formatting(self):
+        self.startJoe()
+        self.assertMath("56000", "56_000")
+        self.assertMath("hex", "0xDAC0")
+        self.assertMath("eng", "56e3")
+        self.assertMath("bin", "0b1101_1010_1100_0000")
+        self.assertMath("oct", "0o15_5300")
+    
+    def test_context(self):
+        self.startup.lines = 25
+        self.startup.columns = 80
+        self.workdir.fixtureData("test", "5 15 25 8 12")
+        self.startup.args = "test",
+        self.startJoe()
+        
+        self.cmd("bol,markb,eol,markv")
+        self.assertMath("sum", "65")
+        self.assertMath("avg", "13")
+        self.assertMath("cnt", "5")
+        self.assertEqual(self.math("dev")[0:9], "6.899_275")
+    
+    # TODO: There's a *lot* more that could be done here...
+
+
 # TODO: maths
 # TODO: menu
 # TODO: mode
