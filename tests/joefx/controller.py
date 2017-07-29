@@ -286,7 +286,7 @@ def startJoe(joeexe, args=None):
     env['COLUMNS'] = str(args.columns)
     env['TERM'] = 'ansi'
     env['LANG'] = 'en_US.UTF-8'
-    env['SHELL'] = os.environ['SHELL']
+    env['SHELL'] = os.getenv('SHELL', '/bin/sh')
     
     env.update(args.env)
     

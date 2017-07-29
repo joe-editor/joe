@@ -10,12 +10,38 @@
 
 ### JOE 4.4
 
+	* Now pass character which invoked a macro to each macro step and
+	  call.  If a macro step happens to be the 'type' command, the
+	  character which invoked the macro will be typed in.  For example,
+	  this macro will type three 'X's.  Before this change you got three
+	  NULs.
+
+		type,type,type   X
+
 * Bugs fixed
 
-	* Build fixes for Solaris
+	* Fix exsave: (^K ^X) should close file when a block is present in
+	  the window, and the file is unmodified (regression from ^C change
+	  in 4.2).
+
+	* Fix regex assertions: they were not working because the character
+	  before the search position was not being loaded.
+
+	* For jmacs: ^Q^J now again inserts \n in the string replace prompt. 
+	  This broke beginning with JOE 4.0.
+
+### JOE 4.4
+
+* Enhancements
+
+* Bugs fixed
 
 	* Fix segfault due to buffer overrun.  This happens if a line
 	  with many backslashes appears in the status line context display.
+
+	* Fix jmacs: ^X ^F and ^X ^B were not working
+
+	* Build fixes for Solaris
 
 	* Improve php highlighter: allow numbers in substitution variable names
 
@@ -23,8 +49,6 @@
 
 	* Dockerfile highlighter: Add Docker new commands from 1.12,
 	  mark bad strings in arrays
-
-	* Fix jmacs: ^X ^F and ^X ^B were not working
 
 	* Fix loading external charmaps
 

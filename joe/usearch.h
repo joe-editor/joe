@@ -75,6 +75,7 @@ extern int opt_icase;
 extern int wrap;
 extern int pico;
 extern char srchstr[];
+extern char replstr[];
 extern SRCH *globalsrch;
 
 extern const char *rest_key;
