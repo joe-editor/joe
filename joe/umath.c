@@ -1380,8 +1380,10 @@ static char *eng(char *d, const char *s)
 		}
 	}
 	/* Trim trailing zeros */
-	for (len = vslen(a); len > 0 && a[len - 1] == 0; )
+	for (len = vslen(a); len > 0 && a[len - 1] == '0'; ) {
 		--len;
+		--dp;
+	}
 	vstrunc(a, len);
 
 	/* Exponent? */
@@ -1463,11 +1465,11 @@ static char *eng(char *d, const char *s)
 	/* Any more digits? */
 	if (dp) {
 		d = vsadd(d, '.');
-		for (x = vslen(a) - dp; x != vslen(a); ++x) {
+		for (x = vslen(a) - dp; x != vslen(a); ++x)
 			d = vsadd(d, a[x]);
-		}
+
 		/* Trim trailing zeros */
-		for (len = vslen(d); d > 0 && d[len - 1] == '0'; )
+		for (len = vslen(d); len > 0 && d[len - 1] == '0'; )
 			--len;
 		d = vstrunc(d, len);
 	}
