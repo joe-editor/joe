@@ -1324,7 +1324,7 @@ type		U+0 TO U+10FFFF
 :inherit main
 ""		^C		Abort
 ""		^D		Eof
-"	"	^I		Tab
+"\t"		^I		Tab
 ""		^H		Backspace
 "\r"		^M		Return
 ""		^?		Backspace
@@ -1343,7 +1343,7 @@ type		U+0 TO U+10FFFF
 ""		^C		Abort
 ""		^D		Eof
 ""		^E		EOL for bash
-"	"	^I		Tab
+"\t"		^I		Tab
 ""		^H		Backspace
 "\r"		^M		Return
 ""		^?		Backspace

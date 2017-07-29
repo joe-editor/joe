@@ -1212,16 +1212,15 @@ static void setup_vars(BW *tbw)
 #endif
 #endif
 		v = get("int"); v->func = m_int;
+		v = get("lr"); v->func = m_lr;
+		v = get("rlr"); v->func = m_rlr;
+		v = get("Lr"); v->func = m_Lr;
+		v = get("rLr"); v->func = m_rLr;
+		v = get("lR"); v->func = m_lR;
+		v = get("rlR"); v->func = m_rlR;
+		v = get("LR"); v->func = m_LR;
+		v = get("rLR"); v->func = m_rLR;
 	}
-
-	v = get("lr"); v->func = m_lr;
-	v = get("rlr"); v->func = m_rlr;
-	v = get("Lr"); v->func = m_Lr;
-	v = get("rLr"); v->func = m_rLr;
-	v = get("lR"); v->func = m_lR;
-	v = get("rlR"); v->func = m_rlR;
-	v = get("LR"); v->func = m_LR;
-	v = get("rLR"); v->func = m_rLR;
 
 	v = get("top");
 	v->val = (double)(tbw->top->line + 1);
@@ -1389,8 +1388,10 @@ static char *eng(char *d, const char *s)
 		}
 	}
 	/* Trim trailing zeros */
-	for (len = vslen(a); len > 0 && a[len - 1] == 0; )
+	for (len = vslen(a); len > 0 && a[len - 1] == '0'; ) {
 		--len;
+		--dp;
+	}
 	vstrunc(a, len);
 
 	/* Exponent? */
@@ -1472,11 +1473,11 @@ static char *eng(char *d, const char *s)
 	/* Any more digits? */
 	if (dp) {
 		d = vsadd(d, '.');
-		for (x = vslen(a) - dp; x != vslen(a); ++x) {
+		for (x = vslen(a) - dp; x != vslen(a); ++x)
 			d = vsadd(d, a[x]);
-		}
+
 		/* Trim trailing zeros */
-		for (len = vslen(d); d > 0 && d[len - 1] == '0'; )
+		for (len = vslen(d); len > 0 && d[len - 1] == '0'; )
 			--len;
 		d = vstrunc(d, len);
 	}
