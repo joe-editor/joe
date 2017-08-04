@@ -36,7 +36,6 @@
 	";[{\n"		reset
 	"\\"		quote		recolor=-1
 	"\""		string		recolor=-1
-	"$"
 
 :quote Escape
 	*		args
