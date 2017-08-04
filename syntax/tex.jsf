@@ -1,12 +1,12 @@
 # joe [La]TeX syntax highlighting
 
 =Idle
-=Comment 	green
-=Keyword 	bold
-=Mathmode 	cyan
-=Brace		magenta
-=Parameter	bold blue
-=Bad		bold red
+=Comment
+=Keyword
+=Mathmode 	+Constant
+=Brace
+=Parameter	+Type
+=Bad
 
 :idle Idle
 	*		idle
