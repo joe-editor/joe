@@ -342,6 +342,9 @@ done
 done
 	"a-zA-Z0-9_"	ident
 
+:kw Keyword
+	*	idle	noeat
+
 :stmt Keyword
 	*	idle	noeat
 
