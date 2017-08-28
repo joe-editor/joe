@@ -725,20 +725,31 @@ static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct co
 	
 	cdef->visited = COLORDEF_VISITING;
 	
+	/* Visit refs from this color */
 	for (cref = cdef->refs; cref; cref = cref->next) {
 		struct color_def *rcdef = NULL;
 		if (syntax) {
+			/* Check syntax for matches */
 			for (rcdef = syntax->color; rcdef; rcdef = rcdef->next) {
 				if (!zcmp(rcdef->name, cref->name)) {
 					break;
 				}
 			}
+
+			if (!rcdef) {
+				/* Check scheme for <syntax>.<color> */
+				char buf[128];
+
+				joe_snprintf_2(buf, SIZEOF(buf), "%s.%s", syntax->name, cref->name);
+				rcdef = htfind(cset->syntax, buf);
+			}
 		}
-		
+
 		if (!rcdef) {
+			/* Check scheme for <color> */
 			rcdef = htfind(cset->syntax, cref->name);
 		}
-		
+
 		if (rcdef) {
 			/* Visit first and make sure it has a value */
 			visit_colordef(cset, syntax, rcdef);
@@ -941,7 +952,6 @@ int init_colors(void)
 {
 	const char *myterm = getenv("TERM");
 	struct color_states *st;
-	int supported = maint->t->assume_256 ? 256 : maint->t->Co;
 	
 	/* Is one specified by global option? */
 	if (scheme_name) {
