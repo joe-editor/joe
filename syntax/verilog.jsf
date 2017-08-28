@@ -3,12 +3,17 @@
 # Define colors
 
 =Idle
-=Preproc bold blue
-=Comment green
-=Constant cyan
-=Escape bold cyan
-=Type bold
-=Keyword bold
+=Ident
+=Preproc
+=Precond	+Preproc
+=Comment
+=Constant
+=Number		+Constant
+=String		+Constant
+=Escape
+=StringEscape	+Escape +String
+=Type
+=Keyword
 
 # Skip whitespace at start of line
 :reset Idle
@@ -23,11 +28,11 @@
 	*		idle		noeat
 	"a-zA-Z_"	preident	recolor=-1 buffer
 
-:preident Idle
+:preident Preproc
 	*		idle		noeat strings
-	"ifdef"		preproc
-	"else"		preproc
-	"endif"		preproc
+	"ifdef"		precond
+	"else"		precond
+	"endif"		precond
 	"timescale"	preproc
 	"define"	preproc
 	"include"	preproc
@@ -56,6 +61,9 @@ done
 :preproc Preproc
 	*		idle		noeat
 
+:precond Precond
+	*		idle		noeat
+
 # All following states are for when we're not in a preprocessor line
 
 :idle Idle
@@ -75,6 +83,7 @@ done
 
 :comment Comment
 	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 
 :maybe_end_comment Comment
@@ -84,79 +93,80 @@ done
 
 :line_comment Comment
 	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		reset
 
 # Integer constants
 
-:first_digit Constant
+:first_digit Number
 	*		idle	noeat
 	"'"		sized_number
 	"."		float
 	"0-9"		first_digit
 
-:sized_number Constant
+:sized_number Number
 	*		idle	noeat
 	"hH"		hex_number
 	"oO"		octal_number
 	"bB"		binary_number
 	"dD"		decimal_number
 
-:hex_number Constant
+:hex_number Number
 	*		idle	noeat
 	"0-9A-Fa-f_xz"	hex_number
 
-:binary_number Constant
+:binary_number Number
 	*		idle	noeat
 	"01_xz"		binary_number
 
-:octal_number Constant
+:octal_number Number
 	*		idle	noeat
 	"0-7_xz"	octal_number
 
-:decimal_number Constant
+:decimal_number Number
 	*		idle	noeat
 	"0-9_"		decimal_number
 
 # Floating point
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart	Constant
+:epart	Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum	Constant
+:enum	Number
 	*		idle	noeat
 	"0-9"		enum
 
 # Strings
 
-:string	Constant
+:string	String
 	*		string
 	"\n"		reset
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape
 	*		string
 	"\n"		string		recolor=-2
 
-:string_control Escape
+:string_control StringEscape
 	*		string_control
 	"\n"		reset
 	"efghdobcvstmEFGHDOBCVSTM%"	string
 
 # Identifiers
 
-:ident	Idle
+:ident	Ident
 	*		idle		noeat strings
 	"always"	kw
 	"assign"	kw

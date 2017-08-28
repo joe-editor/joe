@@ -3,11 +3,17 @@
 # Define colors
 
 =Idle
-=Comment green
-=Constant cyan
-=Escape bold cyan
-=Keyword bold
-=Operator bold
+=Ident
+=Comment
+=Constant
+=Number		+Constant
+=String		+Constant
+=Character	+String
+=Escape
+=StringEscape	+Escape +String
+=CharacterEscape +StringEscape
+=Keyword
+=Operator	+Keyword
 
 # All following states are for when we're not in a preprocessor line
 
@@ -30,12 +36,13 @@
 
 :comment Comment
 	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
 
 # Character constant
 
-:char Constant
+:char Character
 	*		char
 	"'"		idle
 
@@ -53,19 +60,19 @@
 	*		ident		noeat
 	"\""		string		recolor=-2
 
-:string	Constant
+:string	String string
 	*		string
 	"\n"		idle
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape Escape
+:string_escape StringEscape string
 	*		string
 	"\n"		string		recolor=-2
 
 # Integer constants
 
-:first_digit Constant
+:first_digit Number
 	*		idle		noeat
 	"."		float
 	"_"		first_digit
@@ -73,26 +80,26 @@
 
 # Floating point
 
-:maybe_float Constant
+:maybe_float Number
 	*		idle	recolor=-2	noeat
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		idle	noeat
 	"eE"		epart
 	"0-9"		float
 
-:epart	Constant
+:epart	Number
 	*		idle	noeat
 	"0-9+\-"	enum
 
-:enum	Constant
+:enum	Number
 	*		idle	noeat
 	"0-9"		enum
 
 # Identifiers
 
-:ident	Idle
+:ident	Ident
 	*		quote		noeat istrings
 	"abs"		operator
 	"access"	kw
