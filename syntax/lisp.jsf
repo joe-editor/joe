@@ -12,15 +12,15 @@
 	";"		comment		recolor=-1
 	"\""		string		recolor=-1
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"\n"		idle
 
-:string String
+:string String string
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"\n"		string		recolor=-2

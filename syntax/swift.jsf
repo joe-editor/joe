@@ -76,12 +76,12 @@ done
 
 # Comments
 
-:slash Comment
+:slash Comment comment
 	*		idle		noeat recolor=-2
 	"/"		line_comment
 	"*"		idle		call=.block_comment()
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"\n"		idle
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
@@ -171,21 +171,21 @@ done
 
 # Strings
 
-:string	Constant
+:string	String string
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"("		string	call=.swift(paren)	recolor=-2
 	"u"		string_maybe_uni
 
-:string_maybe_uni StringEscape
+:string_maybe_uni StringEscape string
 	*		string
 	"{"		string_uni
 
-:string_uni StringEscape
+:string_uni StringEscape string
 	*		string_uni
 	"}"		string
 
@@ -337,17 +337,17 @@ done
 
 .subr block_comment
 
-:idle Comment
+:idle Comment comment
 	*		idle
 	"*"		maybe_done
 	"/"		maybe_recur
 	"BFHNTX"	idle	noeat call=comment_todo.comment_todo()
 
-:maybe_done Comment
+:maybe_done Comment comment
 	*		idle	noeat
 	"/"		idle	return
 
-:maybe_recur Comment
+:maybe_recur Comment comment
 	*		idle	noeat
 	"*"		idle	call=.block_comment()
 

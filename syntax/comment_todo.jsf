@@ -6,11 +6,11 @@
 
 .subr comment_todo
 # initial state
-:comment_todo_init Comment
+:comment_todo_init Comment comment
 	*		comment_todo_guess	buffer
 
 # highlight common TODO labels
-:comment_todo_guess Comment
+:comment_todo_guess Comment comment
 	*		comment_todo_unknown	noeat strings
 	"BUG"		comment_todo
 	"FIXME"		comment_todo
@@ -21,9 +21,9 @@
 done
 	"A-Z"		comment_todo_guess
 
-:comment_todo_unknown Comment
+:comment_todo_unknown Comment comment
 	*		NULL		noeat return
 
-:comment_todo TODO
+:comment_todo TODO comment
 	*		NULL		noeat return
 .end

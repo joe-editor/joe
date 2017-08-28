@@ -31,7 +31,7 @@
 :brace Brace
 	*		idle		noeat
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
@@ -40,12 +40,12 @@
 	*		idle		noeat
 	"*"		comment		recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment		noeat
 	"/"		idle
 
@@ -57,12 +57,12 @@
 :decimal_suffix Number
 	*		idle		noeat
 
-:string String
+:string String string
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string_bad_escape	recolor=-1
 	"\\"		string
 	"\""		string

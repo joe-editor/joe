@@ -71,34 +71,34 @@
   "/"           line_comment  recolor=-2
   "*"           block_comment recolor=-2
 
-:line_comment Comment
+:line_comment Comment comment
   *             line_comment
   "BFHNTX"      line_comment  noeat call=comment_todo.comment_todo()
   "\n"          main
 
-:block_comment Comment  
+:block_comment Comment comment  
   *            block_comment
   "BFHNTX"     block_comment  noeat call=comment_todo.comment_todo()
   "*"          maybe_end_block_comment
   
-:maybe_end_block_comment Comment
+:maybe_end_block_comment Comment comment
   *            block_comment noeat
   "/"          main
 
 ################ strings ############################
-:single_quoted Character
+:single_quoted Character string
   *            single_quoted
   "'"          main
   "\\"         single_quoted call=.escape() recolor=-1
   "\n"         error
 
-:double_quoted String
+:double_quoted String string
   *            double_quoted
   "\""         main
   "\\"         double_quoted call=.escape() recolor=-1
   "\n"         error
 
-:back_quoted BackQuoted
+:back_quoted BackQuoted string
   *            back_quoted
   "`"          main
 
@@ -296,7 +296,7 @@
 
 ########################## .subr escape START ######################################
 .subr escape
-:esc StringEscape
+:esc StringEscape string
   *              esc_err    noeat
   "abfnrtv'\"" whatever return
     # For some reason joe doesn't interpret \\ properly if merged with the
@@ -307,43 +307,43 @@
   "U"            hex8
   "0-3"          oct2
 
-:hex8 StringEscape
+:hex8 StringEscape string
   *              esc_err noeat
   "a-fA-F0-9"    hex7
 
-:hex7 StringEscape
+:hex7 StringEscape string
   *              esc_err    noeat
   "a-fA-F0-9"    hex6
 
-:hex6 StringEscape
+:hex6 StringEscape string
   *              esc_err noeat
   "a-fA-F0-9"    hex5
 
-:hex5 StringEscape
+:hex5 StringEscape string
   *              esc_err    noeat
   "a-fA-F0-9"    hex4
 
-:hex4 StringEscape
+:hex4 StringEscape string
   *              esc_err noeat
   "a-fA-F0-9"    hex3
 
-:hex3 StringEscape
+:hex3 StringEscape string
   *              esc_err    noeat
   "a-fA-F0-9"    hex2
 
-:hex2 StringEscape
+:hex2 StringEscape string
   *              esc_err noeat
   "a-fA-F0-9"    hex1
 
-:hex1 StringEscape
+:hex1 StringEscape string
   *              esc_err    noeat
   "a-fA-F0-9"    whatever return
 
-:oct2 StringEscape
+:oct2 StringEscape string
   *              esc_err noeat
   "0-7"          oct1
 
-:oct1 StringEscape
+:oct1 StringEscape string
   *              esc_err noeat
   "0-7"          whatever return
 

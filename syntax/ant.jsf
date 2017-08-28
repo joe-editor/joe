@@ -13,18 +13,18 @@
 
 .subr maybe_antvar
 # initial state
-:maybe_antvar String
+:maybe_antvar String string
 	*		NULL		return
 	"{"		antvar		recolor=-2
 
-:antvar StringEscape
+:antvar StringEscape string
 	*		antvar
 	"}"		NULL		return
 .end
 
 .subr antvar
 
-:antvar StringEscape
+:antvar StringEscape string
 	*		antvar
 	"}"		NULL		return
 .end

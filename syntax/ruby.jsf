@@ -157,25 +157,25 @@ done
 	"'\""		quoted_inc_start_allow	save_c recolor=-1
 	"\i"		inc_allow	buffer noeat
 
-:quoted_inc_start StringVariable
+:quoted_inc_start StringVariable string
 	*		quoted_inc	buffer
 
-:quoted_inc_start_allow StringVariable
+:quoted_inc_start_allow StringVariable string
 	*		quoted_inc_allow	buffer
 
-:quoted_inc StringVariable
+:quoted_inc StringVariable string
 	*		quoted_inc
 	&		skipline	save_s
 
-:quoted_inc_allow StringVariable
+:quoted_inc_allow StringVariable string
 	*		quoted_inc_allow
 	&		skipline_allow	save_s
 
-:inc StringVariable
+:inc StringVariable string
 	*		skipline	save_s noeat
 	"\c"		inc
 
-:inc_allow StringVariable
+:inc_allow StringVariable string
 	*		skipline_allow	save_s noeat
 	"\c"		inc_allow
 
@@ -189,36 +189,36 @@ done
 	*		skipline_allow
 	"\n"		next_line_allow
 
-:todelim String
+:todelim String string
 	*		todelim
 	"\n"		next_line	strings
 	"&"		founddelim
 done
 
-:todelim_allow String
+:todelim_allow String string
 	*		todelim_allow
 	"\n"		next_line_allow	strings
 	"&"		founddelim
 done
 
 # eat \n so it's not in string.
-:next_line String
+:next_line String string
 	*		todelim		buffer
 	"\n"		next_line
 
-:next_line_allow String
+:next_line_allow String string
 	*		todelim_allow	buffer
 	" \t\n"		next_line_allow
 
-:founddelim StringEscape
+:founddelim StringEscape string
 	*		idle		noeat
 
-:regex Regex
+:regex Regex string
 	*		regex
 	"\\"		regex_quote	recolor=-1
 	"/"		after_term
 
-:regex_quote RegexEscape
+:regex_quote RegexEscape string
 	*		regex
 
 :not_string Idle
@@ -229,7 +229,7 @@ done
 :brace Brace
 	*		rest		noeat
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 .ifdef erb
 	"%"		line_comment_maybe_erb_end
@@ -241,10 +241,10 @@ done
 	"\n"		idle
 .endif
 
-:line_comment_maybe_erb_end Comment
+:line_comment_maybe_erb_end Comment comment
 	">"		NULL		recolor=-2 return
 
-:end_of_file_comment Comment
+:end_of_file_comment Comment comment
 	*		end_of_file_comment
 
 :first_digit Number
@@ -297,20 +297,20 @@ done
 	*		after_term	noeat
 	"0-9_"		enum
 
-:string	String
+:string	String string
 	*		string
 	"\""		after_term
 	"\\"		string_escape	recolor=-1
 	"#"		maybe_string_subst	recolor=-1
 
-:maybe_string_subst String
+:maybe_string_subst String string
 	*		string		noeat
 	"{"		string_subst_begin	recolor=-2
 
-:string_subst_begin StringEscape
+:string_subst_begin StringEscape string
 	*		string_subst	noeat call=.ruby(squiggly)
 
-:string_subst StringEscape
+:string_subst StringEscape string
 	*		string		noeat
 	
 :string_escape Escape
@@ -355,7 +355,7 @@ done
 
 # Only \\ and \' allowed in single quoted strings
 
-:char String
+:char String string
 	*		char
 	"\n"		reset
 	"'"		after_term
@@ -365,7 +365,7 @@ done
 	*		char		recolor=-2
 	"\\'"	char
 
-:backtick	String
+:backtick	String string
 	*		backtick
 	"`"		after_term
 	"\\"		backtick_escape	recolor=-1
@@ -566,21 +566,21 @@ done
 	*		inmatch		save_c recolor=-1
 	" \t"		match
 
-:inmatch Regex
+:inmatch Regex string
 	*		inmatch
 	&		after_term
 	%		inmatch		call=.inmatch_recur()
 	"#"		inmatch_maybe_subst
 	"\\"		inmatch_quote	recolor=-1
 
-:inmatch_maybe_subst Regex
+:inmatch_maybe_subst Regex string
 	*		inmatch		noeat
 	"{"		inmatch_subst	recolor=-2 call=.ruby(squiggly)
 
 :inmatch_subst Idle
 	*		inmatch		noeat
 
-:inmatch_quote RegexEscape
+:inmatch_quote RegexEscape string
 	*		inmatch
 
 :subst Idle
@@ -588,40 +588,40 @@ done
 	"<([{`"		delim_insubst	save_c recolor=-1
 	" \t"		subst
 
-:insubst Regex
+:insubst Regex string
 	*		insubst
 	&		inrepl
 	"\\"		insubst_quote	recolor=-1
 
-:insubst_quote RegexEscape
+:insubst_quote RegexEscape string
 	*		insubst
 
-:inrepl Regex
+:inrepl Regex string
 	*		inrepl
 	&		after_term
 	"\\"		inrepl_quote
 
-:inrepl_quote RegexEscape
+:inrepl_quote RegexEscape string
 	*		inrepl
-
-:delim_insubst Regex
+ 
+:delim_insubst Regex string
 	*		delim_insubst
 	&		delim_repl
 	"\\"		delim_quote
 
-:delim_quote RegexEscape
+:delim_quote RegexEscape string
 	*		delim_insubst
 
-:delim_repl Regex
+:delim_repl Regex string
 	*		repl		save_c recolor=-1
 	" \t"		delim_repl
 
-:repl Regex
+:repl Regex string
 	*		repl
 	&		after_term
 	"\\"		repl_quote
 
-:repl_quote RegexEscape
+:repl_quote RegexEscape string
 	*		repl
 
 :maybe_symbol Idle

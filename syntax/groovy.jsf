@@ -67,31 +67,31 @@
 	"/"		line_comment	recolor=-2
 	"*"		comment		recolor=-2
 
-:maybe_regex Regex
+:maybe_regex Regex string
 	*		regex		noeat
 	"*"		comment			recolor=-2
 	"/"		line_comment	recolor=-2
 
-:regex Regex
+:regex Regex string
 	*		regex
 	"\\"		regex_quote	recolor=-1
 	"/"		after_term
 	"$"		maybe_regex_subst	recolor=-1
 
-:maybe_regex_subst Regex
+:maybe_regex_subst Regex string
 	*		regex		noeat
 	"\i"		regex_subst1	recolor=-2
 	"{"		regex_subst	recolor=-2
 
-:regex_subst RegexEscape
+:regex_subst RegexEscape string
 	*		regex_subst
 	"}"		regex
 
-:regex_subst1 RegexEscape
+:regex_subst1 RegexEscape string
 	*		regex		noeat
 	".\c"		regex_subst1
 
-:regex_quote RegexEscape
+:regex_quote RegexEscape string
 	*		regex
 
 :not_string Idle
@@ -102,22 +102,22 @@
 :brace Brace
 	*		idle		noeat
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment
 	"/"		idle
 	"*"		maybe_end_comment
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
-:end_of_file_comment Comment
+:end_of_file_comment Comment comment
 	*		end_of_file_comment
 
 :first_digit Number
@@ -172,11 +172,11 @@
 
 # Distinguish between " and """
 
-:double_quote String
+:double_quote String string
 	*		string		noeat
 	"\""		double_quote_1
 
-:double_quote_1 String
+:double_quote_1 String string
 	*		after_term	noeat
 	"\""		tstring
 
@@ -184,54 +184,54 @@
 # interpolation allowed
 # line crossing not allowed
 
-:string	String
+:string	String string
 	*		string
 	"\""		after_term
 	"\n"		after_term 
 	"\\"		string_escape	recolor=-1
 	"$"		maybe_string_subst	recolor=-1
 
-:maybe_string_subst String
+:maybe_string_subst String string
 	*		string		noeat
 	"\i"		string_subst1	recolor=-2
 	"{"		string_subst	recolor=-2
 
-:string_subst StringEscape
+:string_subst StringEscape string
 	*		string_subst
 	"}"		string
 
-:string_subst1 StringEscape
+:string_subst1 StringEscape string
 	*		string		noeat
 	".\c"		string_subst1
 	
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"x"		string_hex2
 	"u"		string_hex4
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_hex4 StringEscape
+:string_hex4 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex3
 
-:string_hex3 StringEscape
+:string_hex3 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex2 StringEscape
+:string_hex2 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex1
 
-:string_hex1 StringEscape
+:string_hex1 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 StringEscape
+:string_octal2 StringEscape string
 	*		string		noeat
 	"0-7"		string_octal1
 
-:string_octal1 StringEscape
+:string_octal1 StringEscape string
 	*		string		noeat
 	"0-7"		string
 
@@ -239,89 +239,89 @@
 # interpolation allowed
 # line crossing not allowed
 
-:tstring	String
+:tstring	String string
 	*		tstring
 	"\""		tstring_maybe_done
 	"\\"		tstring_escape	recolor=-1
 	"$"		maybe_tstring_subst	recolor=-1
 
-:tstring_maybe_done	String
+:tstring_maybe_done	String string
 	*		tstring		noeat
 	"\""		tstring_maybe_done_2
 
-:tstring_maybe_done_2	String
+:tstring_maybe_done_2	String string
 	*		tstring		noeat
 	"\""		after_term
 
-:maybe_tstring_subst String
+:maybe_tstring_subst String string
 	*		tstring		noeat
 	"\i"		tstring_subst1	recolor=-2
 	"{"		tstring_subst	recolor=-2
 
-:tstring_subst StringEscape
+:tstring_subst StringEscape string
 	*		tstring_subst
 	"}"		tstring
 
-:tstring_subst1 StringEscape
+:tstring_subst1 StringEscape string
 	*		tstring		noeat
 	".\c"		tstring_subst1
 	
-:tstring_escape StringEscape
+:tstring_escape StringEscape string
 	*		tstring
 	"x"		tstring_hex2
 	"u"		tstring_hex4
 	"0-7"		tstring_octal2
 	"\n"		tstring		recolor=-2
 
-:tstring_hex4 StringEscape
+:tstring_hex4 StringEscape string
 	*		tstring		noeat
 	"0-9a-fA-F"	tstring_hex3
 
-:tstring_hex3 StringEscape
+:tstring_hex3 StringEscape string
 	*		tstring		noeat
 	"0-9a-fA-F"	tstring_hex2
 
-:tstring_hex2 StringEscape
+:tstring_hex2 StringEscape string
 	*		tstring		noeat
 	"0-9a-fA-F"	tstring_hex1
 
-:tstring_hex1 StringEscape
+:tstring_hex1 StringEscape string
 	*		tstring		noeat
 	"0-9a-fA-F"	tstring
 
-:tstring_octal2 StringEscape
+:tstring_octal2 StringEscape string
 	*		tstring		noeat
 	"0-7"		tstring_octal1
 
-:tstring_octal1 StringEscape
+:tstring_octal1 StringEscape string
 	*		tstring		noeat
 	"0-7"		tstring
 
 # strings like: $/sdfsdf/$
 # interpolation allowed
 	
-:dstring	String
+:dstring	String string
 	*		dstring
 	"$"		dstring_esc	recolor=-1
 	"/"		dstring_maybe_done
 
-:dstring_maybe_done	String
+:dstring_maybe_done	String string
 	*		dstring		noeat
 	"$"		after_term
 
-:dstring_esc	StringEscape
+:dstring_esc	StringEscape string
 	*		dstring
 	"/"		dstring_esc_slash
 
-:dstring_esc_slash	StringEscape
+:dstring_esc_slash	StringEscape string
 	*		dstring		noeat recolor=-1
 	"$"		dstring
 
-:single_quote	String
+:single_quote	String string
 	*		char		noeat recolor=-1
 	"\'"		single_quote_1
 
-:single_quote_1	String
+:single_quote_1	String string
 	*		after_term	noeat
 	"\'"		tchar
 	
@@ -329,40 +329,40 @@
 # no interpolation
 # no line crossing
 
-:char	String
+:char	String string
 	*		char
 	"\n"		after_term
 	"\'"		after_term
 	"\\"		char_escape	recolor=-1
 
-:char_escape StringEscape
+:char_escape StringEscape string
 	*		char
 	"x"		char_hex2
 	"u"		char_hex4
 	"0-7"		char_octal2
 	"\n"		char		recolor=-2
 
-:char_hex4 StringEscape
+:char_hex4 StringEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex3
 
-:char_hex3 StringEscape
+:char_hex3 StringEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex2
 
-:char_hex2 StringEscape
+:char_hex2 StringEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex1
 
-:char_hex1 StringEscape
+:char_hex1 StringEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char
 
-:char_octal2 StringEscape
+:char_octal2 StringEscape string
 	*		char		noeat
 	"0-7"		char_octal1
 
-:char_octal1 StringEscape
+:char_octal1 StringEscape string
 	*		char		noeat
 	"0-7"		char
 
@@ -370,47 +370,47 @@
 # no interpolation
 # no line crossing
 
-:tchar	String
+:tchar	String string
 	*		tchar
 	"\'"		after_term
 	"\\"		tchar_escape	recolor=-1
 
-:tchar_maybe_done String
+:tchar_maybe_done String string
 	*		tchar		noeat
 	"\'"		tchar_maybe_done_2
 
-:tchar_maybe_done_2 String
+:tchar_maybe_done_2 String string
 	*		tchar		noeat
 	"\'"		after_term
 
-:tchar_escape StringEscape
+:tchar_escape StringEscape string
 	*		tchar
 	"x"		tchar_hex2
 	"u"		tchar_hex4
 	"0-7"		tchar_octal2
 	"\n"		tchar		recolor=-2
 
-:tchar_hex4 StringEscape
+:tchar_hex4 StringEscape string
 	*		tchar		noeat
 	"0-9a-fA-F"	tchar_hex3
 
-:tchar_hex3 StringEscape
+:tchar_hex3 StringEscape string
 	*		tchar		noeat
 	"0-9a-fA-F"	tchar_hex2
 
-:tchar_hex2 StringEscape
+:tchar_hex2 StringEscape string
 	*		tchar		noeat
 	"0-9a-fA-F"	tchar_hex1
 
-:tchar_hex1 StringEscape
+:tchar_hex1 StringEscape string
 	*		tchar		noeat
 	"0-9a-fA-F"	tchar
 
-:tchar_octal2 StringEscape
+:tchar_octal2 StringEscape string
 	*		tchar		noeat
 	"0-7"		tchar_octal1
 
-:tchar_octal1 StringEscape
+:tchar_octal1 StringEscape string
 	*		tchar		noeat
 	"0-7"		tchar
 

@@ -24,7 +24,7 @@
 	"-"		builtin		recolor=-1
 	"a-zA-Z"	attribute	recolor=-1
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"\n"		idle
 

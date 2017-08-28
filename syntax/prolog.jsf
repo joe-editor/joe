@@ -32,7 +32,7 @@
 	"_"		_variable
 	"[]"		brace		recolor=-1
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
@@ -41,12 +41,12 @@
 	*		idle		noeat
 	"*"		comment		recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"*"		maybe_end_comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment		noeat
 	"/"		idle
 	"*"		maybe_end_comment
@@ -54,27 +54,27 @@
 :brace Brace
 	*		idle		noeat
 
-:string_sq_1 String
+:string_sq_1 String string
 	*		string_sq	noeat
 
-:string_sq String
+:string_sq String string
 	*		string_sq
 	"\'"		idle
 	"\\"		string_sq_esc	recolor=-1
 
-:string_sq_esc StringEscape
+:string_sq_esc StringEscape string
 	*		string_sq
 	"\n"		string_sq	recolor=-2
 
-:string_dq_1 String
+:string_dq_1 String string
 	*		string_dq	noeat
 
-:string_dq String
+:string_dq String string
 	*		string_dq
 	"\""		idle
 	"\\"		string_dq_esc	recolor=-1
 
-:string_dq_esc StringEscape
+:string_dq_esc StringEscape string
 	*		string_dq
 	"\n"		string_dq	recolor=-2
 

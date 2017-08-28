@@ -61,7 +61,7 @@
 :bad_tab BadTab
 	*		line_start	noeat
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"\n"		line_start
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
@@ -73,27 +73,27 @@
 	*		directive
 	"\n"		line_start
 
-:string_sq_1 String
+:string_sq_1 String string
 	*		string_sq	noeat
 
-:string_sq String
+:string_sq String string
 	*		string_sq
 	"\'"		idle
 	"\\"		string_sq_esc	recolor=-1
 
-:string_sq_esc StringEscape
+:string_sq_esc StringEscape string
 	*		string_sq
 	"\n"		string_sq	recolor=-2
 
-:string_dq_1 String
+:string_dq_1 String string
 	*		string_dq	noeat
 
-:string_dq String
+:string_dq String string
 	*		string_dq
 	"\""		idle
 	"\\"		string_dq_esc	recolor=-1
 
-:string_dq_esc StringEscape
+:string_dq_esc StringEscape string
 	*		string_dq
 	"\n"		string_dq	recolor=-2
 
@@ -108,11 +108,11 @@
 :block BlockDelim
 	*		idle		noeat
 
-:maybe_block_end1 String
+:maybe_block_end1 String string
 	*		idle		noeat
 	"."		maybe_block_end2
 
-:maybe_block_end2 String
+:maybe_block_end2 String string
 	*		idle		noeat
 	"."		block_end	recolor=-3
 

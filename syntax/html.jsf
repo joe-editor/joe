@@ -241,14 +241,14 @@ done
 :sgml_tag_maybe_comment SGMLTag
 	*	sgml_tag
 	"-"	sgml_tag_comment recolor=-4
-:sgml_tag_comment Comment
+:sgml_tag_comment Comment comment
 	*	sgml_tag_comment
 	"-"	sgml_tag_maybe_comment_end
 	"BFHNTX" sgml_tag_comment noeat call=comment_todo.comment_todo()
-:sgml_tag_maybe_comment_end Comment
+:sgml_tag_maybe_comment_end Comment comment
 	*	sgml_tag_comment
 	"-"	sgml_tag_end_comment
-:sgml_tag_end_comment Comment
+:sgml_tag_end_comment Comment comment
 	">"	idle
 
 # XML processing info

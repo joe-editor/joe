@@ -140,7 +140,7 @@ done
 	*	expr noeat recolor=-2
 	"%"	textsection3
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"\n"		idle noeat

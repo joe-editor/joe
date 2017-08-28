@@ -60,18 +60,18 @@
 	"*"		comment		recolor=-2
 	"/"		line_comment	recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	# might be TODO label
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment		noeat
 	"/"		idle
 	"*"		maybe_end_comment
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	# might be TODO label
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
@@ -132,141 +132,141 @@
 	"0-9"		enum
 	"fFlL"		idle
 
-:maybe_string String
+:maybe_string String string
 	*		string		noeat
 	"\""		maybe_string_1
 
-:maybe_string_1 String
+:maybe_string_1 String string
 	*		idle		noeat
 	"\""		stringstring
 
-:string	String
+:string	String string
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"u"		string_uni1
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_uni1 StringEscape
+:string_uni1 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_uni2
 
-:string_uni2 StringEscape
+:string_uni2 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_uni3
 
-:string_uni3 StringEscape
+:string_uni3 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_uni4
 
-:string_uni4 StringEscape
+:string_uni4 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 StringEscape
+:string_octal2 StringEscape string
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 StringEscape
+:string_octal3 StringEscape string
 	*		string		noeat
 	"0-7"		string
 
-:string_control StringEscape
+:string_control StringEscape string
 	*		string_control
 	"\n"		idle
 	"\""		string		noeat
  	"diouxXeEfFgGaAcspn%SCM"	string
 
-:stringstring	String
+:stringstring	String string
 	*		stringstring
 	"\""		stringstring_1
 	"\\"		stringstring_escape	recolor=-1
 	"%"		stringstring_control	recolor=-1
 
-:stringstring_1 String
+:stringstring_1 String string
 	*		stringstring	noeat
 	"\""		stringstring_2
 
-:stringstring_2 String
+:stringstring_2 String string
 	*		stringstring	noeat
 	"\""		idle
 
-:stringstring_escape StringEscape
+:stringstring_escape StringEscape string
 	*		stringstring
 	"u"		stringstring_uni1
 	"0-7"		stringstring_octal2
 	"\n"		stringstring		recolor=-2
 
-:stringstring_uni1 StringEscape
+:stringstring_uni1 StringEscape string
 	*		stringstring		noeat
 	"0-9a-fA-F"	stringstring_uni2
 
-:stringstring_uni2 StringEscape
+:stringstring_uni2 StringEscape string
 	*		stringstring		noeat
 	"0-9a-fA-F"	stringstring_uni3
 
-:stringstring_uni3 StringEscape
+:stringstring_uni3 StringEscape string
 	*		stringstring		noeat
 	"0-9a-fA-F"	stringstring_uni4
 
-:stringstring_uni4 StringEscape
+:stringstring_uni4 StringEscape string
 	*		stringstring		noeat
 	"0-9a-fA-F"	stringstring
 
-:stringstring_octal2 StringEscape
+:stringstring_octal2 StringEscape string
 	*		stringstring		noeat
 	"0-7"		stringstring_octal3
 
-:stringstring_octal3 StringEscape
+:stringstring_octal3 StringEscape string
 	*		stringstring		noeat
 	"0-7"		stringstring
 
-:stringstring_control StringEscape
+:stringstring_control StringEscape string
 	*		stringstring_control
 	"\n"		idle
 	"\""		stringstring	noeat
 	"diouxXeEfFgGaAcspn%SCM"	stringstring
 
-:char Character
+:char Character string
 	*		char_done
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
-:char_done Character
+:char_done Character string
 	*		idle		noeat recolor=-3
 	"\'"		idle
 
-:char_escape	CharacterEscape
+:char_escape	CharacterEscape string
 	*		char_done
 	"u"		char_uni1
 	"0-7"		char_octal2
 
-:char_uni1 CharacterEscape
+:char_uni1 CharacterEscape string
 	*		char_done	noeat
 	"0-9a-fA-F"	char_uni2
 
-:char_uni2 CharacterEscape
+:char_uni2 CharacterEscape string
 	*		char_done	noeat
 	"0-9a-fA-F"	char_uni3
 
-:char_uni3 CharacterEscape
+:char_uni3 CharacterEscape string
 	*		char_done	noeat
 	"0-9a-fA-F"	char_uni4
 
-:char_uni4 CharacterEscape
+:char_uni4 CharacterEscape string
 	*		char_done	noeat
 	"0-9a-fA-F"	char_done
 
-:char_octal2 CharacterEscape
+:char_octal2 CharacterEscape string
 	*		char_done	noeat
 	"0-7"		char_octal3
 
-:char_octal3 CharacterEscape
+:char_octal3 CharacterEscape string
 	*		char_done	noeat
 	"0-7"		char_done
 

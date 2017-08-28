@@ -90,7 +90,7 @@
 :tag_close TagEnd
 	*		idle		noeat
 
-:html_comment Comment
+:html_comment Comment comment
 	*		html_comment
 	"\n"		line_start
 

@@ -258,28 +258,28 @@ done
 	"\c"		priv_member
 
 # Handle string prefixes up to the string itself.
-:string_pre String
+:string_pre String string
 	*		idle noeat
 	"'\""		string_quot_1 	save_c
 
-:string_raw_pre String
+:string_raw_pre String string
 	*		idle noeat
 	"'\""		string_quot_raw_1 save_c
 
 # Differentiate between docstrings and regular strings, carrying with it raw state
-:string_quot_1 String
+:string_quot_1 String string
 	*		idle call=.string() noeat
 	&		string_quot_2
 
-:string_quot_2 String
+:string_quot_2 String string
 	*		idle noeat
 	&		idle call=.string(docstring) recolor=-3
 
-:string_quot_raw_1 String
+:string_quot_raw_1 String string
 	*		idle call=.string(raw)
 	&		string_quot_raw_2
 
-:string_quot_raw_2 String
+:string_quot_raw_2 String string
 	*		idle noeat
 	&		idle call=.string(docstring raw) recolor=-3
 
@@ -295,11 +295,11 @@ done
 .endif
 	&		doc_end_1
 
-:doc_end_1 Docstring
+:doc_end_1 Docstring string
 	*		string noeat
 	&		doc_end_2
 
-:doc_end_2 Docstring
+:doc_end_2 Docstring string
 	*		string noeat
 	&		string return
 
@@ -316,7 +316,7 @@ done
 
 .endif
 
-:string_esc String
+:string_esc String string
 	*		string_esc_done
 	"x"		string_hex2
 	"u"		string_hex4
@@ -325,54 +325,54 @@ done
 	"\n"		string_esc_done
 
 # Recolor whole escape sequence based on whether this is a docstring.
-:string_esc_done String
+:string_esc_done String string
 	*		string_esc_really_done noeat markend recolormark
 
 .ifdef docstring
 :string_esc_really_done DocEscape
 	*		string 		noeat
 .else
-:string_esc_really_done StringEscape
+:string_esc_really_done StringEscape string
 	*		string 		noeat
 .endif
 
-:string_hex1 StringEscape
+:string_hex1 StringEscape string
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_esc_done
 
-:string_hex2 StringEscape
+:string_hex2 StringEscape string
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex1
 
-:string_hex3 StringEscape
+:string_hex3 StringEscape string
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex4 StringEscape
+:string_hex4 StringEscape string
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex3
 
-:string_hex5 StringEscape
+:string_hex5 StringEscape string
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex4
 
-:string_hex6 StringEscape
+:string_hex6 StringEscape string
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex5
 
-:string_hex7 StringEscape
+:string_hex7 StringEscape string
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex6
 
-:string_hex8 StringEscape
+:string_hex8 StringEscape string
 	*		string_esc_done	noeat
 	"0-9a-fA-F"	string_hex7
 
-:string_octal1 StringEscape
+:string_octal1 StringEscape string
 	*		string_esc_done	noeat
 	"0-7"		string_esc_done
 
-:string_octal2 StringEscape
+:string_octal2 StringEscape string
 	*		string_esc_done	noeat
 	"0-7"		string_octal1
 
@@ -380,11 +380,11 @@ done
 
 .subr comment_todo_docstr
 # initial state
-:comment_todo_init Docstring
+:comment_todo_init Docstring string
 	*		comment_todo_guess	buffer
 
 # highlight common TODO labels
-:comment_todo_guess Docstring
+:comment_todo_guess Docstring string
 	*		comment_todo_unknown	noeat strings
 	"BUG"		comment_todo
 	"FIXME"		comment_todo
@@ -395,9 +395,9 @@ done
 done
 	"A-Z"		comment_todo_guess
 
-:comment_todo_unknown Docstring
+:comment_todo_unknown Docstring string
 	*		NULL		noeat return
 
-:comment_todo DocstringLabel
+:comment_todo DocstringLabel string
 	*		NULL		noeat return
 .end

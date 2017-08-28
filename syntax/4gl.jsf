@@ -36,12 +36,12 @@
 :slash Idle
 	*		idle		noeat
 	"*"		comment		recolor=-2
-:comment Comment
+:comment Comment comment
 	*		comment
 	"/"		slash2
 	"*"		maybe_end_comment
 	"BFHNTX"        comment         noeat call=comment_todo.comment_todo()
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment
 	"/"		idle
 	"*"		maybe_end_comment
@@ -49,11 +49,11 @@
 :slash2 Idle
 	*		comment		noeat
 	"*"		comment2	recolor=-2
-:comment2 Comment
+:comment2 Comment comment
 	*		comment2
 	"*"		maybe_end_comment2
 	"BFHNTX"        comment2         noeat call=comment_todo.comment_todo()
-:maybe_end_comment2 Comment
+:maybe_end_comment2 Comment comment
 	*		comment2
 	"/"		comment
 	"*"		maybe_end_comment2
@@ -107,21 +107,21 @@ done
 
 # String constants, copied from pascal.jsf with " added
 
-:string String
+:string String string
 	*		string
 	"\n"		idle
 	"'"		maybe_end_string
 
-:maybe_end_string String
+:maybe_end_string String string
 	*		idle		recolor=-1 noeat
 	"'"		string
 
-:string2 String
+:string2 String string
 	*		string2
 	"\n"		idle
 	"\""		maybe_end_string2
 
-:maybe_end_string2 String
+:maybe_end_string2 String string
 	*		idle		recolor=-1 noeat
 	"\""		string2
 

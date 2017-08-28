@@ -28,7 +28,7 @@
 	" 	"	keybind_after_comma
 	"\n"		keybind_after_comma
 
-:keybind_string String
+:keybind_string String string
 	*		keybind_string
 	"\\"		keybind_escape recolor=-1
 	"\""		keybind
@@ -96,7 +96,7 @@ done
 :sopt Idle
 	*		dosopt # Do eat the space
 
-:dosopt String
+:dosopt String string
 	*		dosopt
 	"\n"		idle
 
@@ -113,7 +113,7 @@ done
 	*		bad
 	"\n"		idle
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"\n"		idle
 

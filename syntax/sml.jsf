@@ -190,13 +190,13 @@ done
 	*		expr		noeat
 	"0-9"		enum
 
-:string	String
+:string	String string
 	*		string
 	"\""		expr
 	"\n"		bad
 	"\\"		string_escape	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		bad		noeat
 	"abfnrtv\"\\"	string
 	"^"		string_carret
@@ -204,36 +204,36 @@ done
 	"0-9"		string_decimal2
 	"\n\r\f\t "	string_eatws
 
-:string_carret StringEscape
+:string_carret StringEscape string
 	*		bad		noeat
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZ\\^_" string
 
-:string_eatws StringEscape
+:string_eatws StringEscape string
 	*		bad 		noeat
 	"\n\r\f\t "	string_eatws
 	"\\"		string
 
-:string_hex1 StringEscape
+:string_hex1 StringEscape string
 	*		bad		noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex2 StringEscape
+:string_hex2 StringEscape string
 	*		bad		noeat
 	"0-9a-fA-F"	string_hex3
 
-:string_hex3 StringEscape
+:string_hex3 StringEscape string
 	*		bad		noeat
 	"0-9a-fA-F"	string_hex4
 
-:string_hex4 StringEscape
+:string_hex4 StringEscape string
 	*		bad		noeat
 	"0-9a-fA-F"	string
 
-:string_decimal2 StringEscape
+:string_decimal2 StringEscape string
 	*		bad		noeat
 	"0-9"		string_decimal3
 
-:string_decimal3 StringEscape
+:string_decimal3 StringEscape string
 	*		bad		noeat
 	"0-9"		string
 
@@ -369,47 +369,47 @@ done
 	"a-zA-Z0-9_'., :|*>\t\n\-" type4
 	"({"		expr 				# too deep nesting
 
-:comment1 Comment
+:comment1 Comment comment
 	*		comment1
 	"("		nestcomment1
 	"*"		endcomment1
 	"BFHNTX"	comment1	noeat call=comment_todo.comment_todo()
 
-:nestcomment1 Comment
+:nestcomment1 Comment comment
 	*		comment1	noeat
 	"*"		comment2
 
-:endcomment1 Comment
+:endcomment1 Comment comment
 	*		comment1	noeat
 	")"		expr
 	"*"		endcomment1
 
-:comment2 Comment
+:comment2 Comment comment
 	*		comment2
 	"("		nestcomment2
 	"*"		endcomment2
 	"BFHNTX"	comment2	noeat call=comment_todo.comment_todo()
 
-:nestcomment2 Comment
+:nestcomment2 Comment comment
 	*		comment2	noeat
 	"*"		comment3
 
-:endcomment2 Comment
+:endcomment2 Comment comment
 	*		comment2	noeat
 	")"		comment1
 	"*"		endcomment2
 
-:comment3 Comment
+:comment3 Comment comment
 	*		comment3
 	"("		nestcomment3
 	"*"		endcomment3
 	"BFHNTX"	comment3	noeat call=comment_todo.comment_todo()
 
-:nestcomment3 Comment
+:nestcomment3 Comment comment
 	*		comment3	noeat
 	"*"		expr				# too deep nesting
 
-:endcomment3 Comment
+:endcomment3 Comment comment
 	*		comment3	noeat
 	")"		comment2
 	"*"		endcomment3

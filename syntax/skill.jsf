@@ -58,27 +58,27 @@ done
 	"/"		slash
 	"*"		mcomment	recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
-:mcomment Comment
+:mcomment Comment comment
 	*		mcomment
 	"BFHNTX"	mcomment	noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_mcomment
 	
-:maybe_end_mcomment Comment
+:maybe_end_mcomment Comment comment
 	*		mcomment	noeat
 	"*"		maybe_end_mcomment
 	"/"		idle
 
-:string String
+:string String string
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"\n"		string		recolor=-2
 

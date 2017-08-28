@@ -20,7 +20,7 @@
 	"#"		comment		recolor=-1
 	" \t}"		reset
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"\n"		reset
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
@@ -40,57 +40,57 @@
 :quote Escape
 	*		args
 
-:string String
+:string String string
 	*		string
 	"\\"		escape		recolor=-1
 	"\""		args
 	"$"		subst		recolor=-1
 
-:escape StringEscape
+:escape StringEscape string
 	*		string
 	"0-7"		octal2
 	"x"		hex1
 	"u"		unicode1
 
-:octal2 StringEscape
+:octal2 StringEscape string
 	*		string		noeat
 	"0-7"		octal3
 
-:octal3 StringEscape
+:octal3 StringEscape string
 	*		string		noeat
 	"0-7"		string
 
-:unicode1 StringEscape
+:unicode1 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	unicode2
 
-:unicode2 StringEscape
+:unicode2 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	hex1
 
-:hex1 StringEscape
+:hex1 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	hex2
 
-:hex2 StringEscape
+:hex2 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:subst SubstEscape
+:subst SubstEscape string
 	*		string		noeat recolor=-2
 	"a-zA-Z0-9_:"	substrest	recolor=-1
 	"{"		substbrack	recolor=-1
 
-:substrest Subst
+:substrest Subst string
 	*		string		noeat
 	"a-zA-Z0-9_:"	substrest
 	"("		index
 
-:substbrack Subst
+:substbrack Subst string
 	*		substbrack
 	"}"		string
 
-:index Subst
+:index Subst string
 	*		index
 	")"		string
 

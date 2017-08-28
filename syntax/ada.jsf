@@ -29,7 +29,7 @@
 	*		idle		noeat
 	"-"		comment		recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"        comment         noeat call=comment_todo.comment_todo()
 	"\n"		idle
@@ -61,13 +61,13 @@
 	*		ident		noeat
 	"\""		string		recolor=-2
 
-:string	String
+:string	String string
 	*		string
 	"\n"		idle
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"\n"		string		recolor=-2
 

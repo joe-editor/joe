@@ -140,14 +140,14 @@ done
 	*		skipline
 	"\n"		next_line
 
-:todelim String
+:todelim String string
 	*		todelim
 	"\n"		next_line	strings
 	"&"		founddelim
 done
 
 # eat \n so it's not in string.
-:next_line String
+:next_line String string
 	*		todelim		buffer
 	"\n"		next_line
 
@@ -167,17 +167,17 @@ done
 	"\i"		ident
 	"\"'`#"		rest
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		rest
 
-:line_comment_i Comment
+:line_comment_i Comment comment
 	*		line_comment_i
 	"BFHNTX"	line_comment_i	noeat call=comment_todo.comment_todo()
 	"\n"		idle noeat
 
-:end_of_file_comment Comment
+:end_of_file_comment Comment comment
 	"BFHNTX"	end_of_file_comment	noeat call=comment_todo.comment_todo()
 	*		end_of_file_comment
 
@@ -231,17 +231,17 @@ done
 	*		rest	noeat
 	"0-9_"		enum
 
-:string	String
+:string	String string
 	*		string
 	"\""		rest
 	"\\"		string_escape	recolor=-1
 	"$@"		string_subst	recolor=-1
 
-:string_subst StringVariable
+:string_subst StringVariable string
 	*		string	noeat recolor=-1
 	"\c"		string_subst
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"x"		string_hex1
 	"c"		string_ctrl
@@ -249,59 +249,59 @@ done
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_named StringEscape
+:string_named StringEscape string
 	*		string
 	"{"		string_named_rest
 
-:string_named_rest StringEscape
+:string_named_rest StringEscape string
 	*		string_named_rest
 	"}"		string
 
-:string_ctrl StringEscape
+:string_ctrl StringEscape string
 	*		string
 
-:string_hex1 StringEscape
+:string_hex1 StringEscape string
 	*		string		noeat
 	"{"		string_unicode
 	"0-9a-fA-F"	string_hex2
 
-:string_unicode StringEscape
+:string_unicode StringEscape string
 	*		string_unicode
 	"}"		string
 
-:string_hex2 StringEscape
+:string_hex2 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 StringEscape
+:string_octal2 StringEscape string
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 StringEscape
+:string_octal3 StringEscape string
 	*		string		noeat
 	"0-7"		string
 
-:char String
+:char String string
 	*		char
 	"\n"		idle noeat
 	"'"		rest
 	"\\"		char_escape	recolor=-1
 
-:char_escape	StringEscape
+:char_escape	StringEscape string
 	*		char		recolor=-2
 	"\\'"		char
 
-:backtick	String
+:backtick	String string
 	*		backtick
 	"`"		rest
 	"\\"		backtick_escape	recolor=-1
 	"$@"		backtick_subst recolor=-1
 
-:backtick_subst StringVariable
+:backtick_subst StringVariable string
 	*		backtick	noeat recolor=-1
 	"\c"		backtick_subst
 
-:backtick_escape StringEscape
+:backtick_escape StringEscape string
 	*		backtick
 	"x"		backtick_hex1
 	"c"		backtick_ctrl
@@ -309,35 +309,35 @@ done
 	"0-7"		backtick_octal2
 	"\n"		backtick		recolor=-2
 
-:backtick_named StringEscape
+:backtick_named StringEscape string
 	*		backtick
 	"{"		backtick_named_rest
 
-:backtick_named_rest StringEscape
+:backtick_named_rest StringEscape string
 	*		backtick_named_rest
 	"}"		backtick
 
-:backtick_ctrl StringEscape
+:backtick_ctrl StringEscape string
 	*		backtick
 
-:backtick_hex1 StringEscape
+:backtick_hex1 StringEscape string
 	*		backtick		noeat
 	"{"		backtick_unicode
 	"0-9a-fA-F"	backtick_hex2
 
-:backtick_unicode StringEscape
+:backtick_unicode StringEscape string
 	*		backtick_unicode
 	"}"		backtick
 
-:backtick_hex2 StringEscape
+:backtick_hex2 StringEscape string
 	*		backtick		noeat
 	"0-9a-fA-F"	backtick
 
-:backtick_octal2 StringEscape
+:backtick_octal2 StringEscape string
 	*		backtick		noeat
 	"0-7"		backtick_octal3
 
-:backtick_octal3 StringEscape
+:backtick_octal3 StringEscape string
 	*		backtick		noeat
 	"0-7"		backtick
 

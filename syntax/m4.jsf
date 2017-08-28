@@ -29,7 +29,7 @@
 	")"		endbrace recolor=-1
 .endif
 
-:quote Constant
+:quote Constant string
 	*		quote
 	"]"		idle
 
@@ -37,7 +37,7 @@
 	*		idle noeat return
 
 .ifdef quote
-:ident Constant
+:ident Constant string
 .else
 :ident Ident
 .endif
@@ -100,7 +100,7 @@ done
 	*		idle noeat
 	"("		macro noeat
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"\n"		idle
 
@@ -114,7 +114,7 @@ done
 .end
 
 .subr quote
-:idle Constant
+:idle Constant string
 	*	idle
 	"]"	idle return
 	"["	idle call=.quote()

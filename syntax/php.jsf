@@ -147,7 +147,7 @@ done
 	*		idle	noeat
 	">"		idle recolor=-2 return
 
-:sh_comment Comment
+:sh_comment Comment comment
 	*		sh_comment
 	"BFHNTX"	sh_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
@@ -157,47 +157,47 @@ done
 	"*"		comment		recolor=-2
 	"/"		line_comment	recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"*"		maybe_end_comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment
 	"/"		idle
 	"*"		maybe_end_comment
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"\n"		idle
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 
-:string_sq Character
+:string_sq Character string
 	*		string_sq
 	"\'"		idle
 	"\\"		string_sq_esc	recolor=-1
 
-:string_sq_esc CharacterEscape
+:string_sq_esc CharacterEscape string
 	*		string_sq
 	"\n"		string_sq	recolor=-2
 
-:string_dq String
+:string_dq String string
 	*		string_dq
 	"$"     var_indqstring recolor=-1
 	"\""		idle
 	"\\"		string_dq_esc	recolor=-1
 
-:string_dq_esc StringEscape
+:string_dq_esc StringEscape string
 	*		string_dq
 	"\n"		string_dq	recolor=-2
 	
-:string_bq String
+:string_bq String string
 	*		string_bq
 	"$"     var_inbqstring recolor=-1
 	"\`"		idle
 	"\\"		string_bq_esc	recolor=-1
 
-:string_bq_esc StringEscape
+:string_bq_esc StringEscape string
 	*		string_bq
 	"\n"		string_bq	recolor=-2
 	

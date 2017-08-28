@@ -35,7 +35,7 @@
 	*		pre				
 	"\n"		reset			
 	
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"\n"		reset
@@ -135,12 +135,12 @@ done
 	*		idle	noeat
 	"0-9"		enum
 
-:string	String
+:string	String string
 	*		string
 	"\n"		reset
 	"'"		maybe_end_string
 
-:maybe_end_string String
+:maybe_end_string String string
 	*		idle	noeat
 	"'"		string
 

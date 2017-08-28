@@ -33,17 +33,17 @@
 	"A-Z"		type		recolor=-1
 	"a-z"		ident		buffer
 	
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment		noeat
 	"/"		idle
 	"*"		maybe_end_comment
@@ -74,29 +74,29 @@
 	*		idle		noeat
 	"0-9_"		decimal
 
-:char String
+:char String string
 	*		char
 	"'"		idle
 
-:string String
+:string String string
 	*		string
 	"\""		idle
 	"$"		maybe_string_subst	recolor=-1
 
-:maybe_string_subst String
+:maybe_string_subst String string
 	*		string		noeat
 	"{"		string_subst	recolor=-2
 
-:string_subst StringVariable
+:string_subst StringVariable string
 	*		string_subst
 	"}"		string
 
-:regex Regex
+:regex Regex string
 	*		regex
 	"\\"		regex_quote	recolor=-1
 	"/"		idle
 
-:regex_quote RegexEscape
+:regex_quote RegexEscape string
 	*		regex
 
 :variable Variable

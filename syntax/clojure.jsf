@@ -1356,10 +1356,10 @@ done
 	*		idle		noeat
 	"_"		pound_eat	recolor=-2
 
-:pound_eat Comment
+:pound_eat Comment comment
 	*		idle		noeat
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"        comment		noeat call=comment_todo.comment_todo()
 	"\n"		idle
@@ -1459,38 +1459,38 @@ done
 
 # Strings
 
-:string	String
+:string	String string
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"u"		string_uni4
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_uni4 StringEscape
+:string_uni4 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_uni3
 
-:string_uni3 StringEscape
+:string_uni3 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_uni2
 
-:string_uni2 StringEscape
+:string_uni2 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_uni1
 
-:string_uni1 StringEscape
+:string_uni1 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 StringEscape
+:string_octal2 StringEscape string
 	*		string		noeat
 	"0-7"		string_octal1
 
-:string_octal1 StringEscape
+:string_octal1 StringEscape string
 	*		string		noeat
 	"0-7"		string
 

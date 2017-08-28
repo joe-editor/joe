@@ -29,25 +29,25 @@
 	*		idle		noeat
 	"*"		comment		recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"        comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 	"}"		idle
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment		noeat
 	")"		idle
 
 
 # String constant
 
-:string String
+:string String string
 	*		string
 	"\n"		idle
 	"'"		maybe_end_string
 
-:maybe_end_string String
+:maybe_end_string String string
 	*		idle		recolor=-1 noeat
 	"'"		string
 

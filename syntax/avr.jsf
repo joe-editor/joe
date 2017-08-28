@@ -64,7 +64,7 @@ done
 	"\n"		idle
 	";"			comment		recolor=-1
 
-:comment Comment
+:comment Comment comment
 	*			comment
 	"BFHNTX"        	comment         noeat call=comment_todo.comment_todo()
 	"\n"			idle

@@ -175,7 +175,7 @@ done
 
 # Matched: <tag attr="
 
-:astring String
+:astring String string
 	*		astring
 	"<"		error		noeat recolor=-1
 	"&"		achar		recolor=-1
@@ -187,7 +187,7 @@ done
 #	">"		error		noeat recolor=-1
 
 
-:bstring String
+:bstring String string
 	*		bstring
 	"<"		error		noeat recolor=-1
 	"&"		bchar		recolor=-1
@@ -199,7 +199,7 @@ done
 #	">"		error		noeat recolor=-1
 
 
-:achar StringEntity
+:achar StringEntity string
 	*		error		noeat recolor=-1
 	"-.:\c"		achar
 	"#"		achar
@@ -264,16 +264,16 @@ done
 :comment_start CommentEdge
 	*		comment		noeat
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"-"		comment2
 
-:comment2 Comment
+:comment2 Comment comment
 	*		comment
 	"-"		comment3
 
-:comment3 Comment
+:comment3 Comment comment
 	*		comment_error	noeat recolor=-3
 	">"		comment_end	recolor=-3
 

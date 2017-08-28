@@ -129,11 +129,11 @@ done
 	"\i"		ident		recolor=-2
 	"\""		forcedstring	recolor=-2
 
-:forcedstring String
+:forcedstring String string
 	*		forcedstring
 	"\""		forcedstringquot
 
-:forcedstringquot String
+:forcedstringquot String string
 	*		idle			noeat
 	"\""		forcedstring			# @"This -> "" <- is a literal quote"
 
@@ -210,14 +210,14 @@ done
 	*		idle	noeat
 	"0-9"		enum
 
-:string	String
+:string	String string
 	*		string
 	"\""		idle
 	"\\"		string_escape		recolor=-1
 	"{"		maybe_string_control	recolor=-1
 	"}"		maybe_control_end	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"xu"		string_hex_4  # Yes, \x has up to 4 numbers in C#
 	"U"		string_hex_8
@@ -227,110 +227,110 @@ done
 # Eight all-purpose (hex/unicode short/unicode long) states for hexadecimal
 # escape sequences
 
-:string_hex_8 StringEscape
+:string_hex_8 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_7
 
-:string_hex_7 StringEscape
+:string_hex_7 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_6
 
-:string_hex_6 StringEscape
+:string_hex_6 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_5
 
-:string_hex_5 StringEscape
+:string_hex_5 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_4
 
-:string_hex_4 StringEscape
+:string_hex_4 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_3
 
-:string_hex_3 StringEscape
+:string_hex_3 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_2
 
-:string_hex_2 StringEscape
+:string_hex_2 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex_1
 
-:string_hex_1 StringEscape
+:string_hex_1 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 StringEscape
+:string_octal2 StringEscape string
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 StringEscape
+:string_octal3 StringEscape string
 	*		string		noeat
 	"0-7"		string
 
-:maybe_string_control StringEscape
+:maybe_string_control StringEscape string
 	*		string 		noeat recolor=-2
 	"0-9"		string_control
 	"{"		string
 
-:string_control StringEscape
+:string_control StringEscape string
 	*		string_control
 	"\""		string		noeat
 	"}"		string
 
-:maybe_control_end StringEscape
+:maybe_control_end StringEscape string
 	*		string		noeat recolor=-2
 	"}"		string
 
-:char Character
+:char Character string
 	*		char
 	"\n"		reset
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
-:char_escape CharacterEscape
+:char_escape CharacterEscape string
 	*		char
 	"xu"		char_hex4
 	"U"		char_hex8
 	"0-7"		char_octal2
 	"\n"		char		recolor=-2
 
-:char_hex8 CharacterEscape
+:char_hex8 CharacterEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex7
 
-:char_hex7 CharacterEscape
+:char_hex7 CharacterEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex6
 
-:char_hex6 CharacterEscape
+:char_hex6 CharacterEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex5
 
-:char_hex5 CharacterEscape
+:char_hex5 CharacterEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex4
 
-:char_hex4 CharacterEscape
+:char_hex4 CharacterEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex3
 
-:char_hex3 CharacterEscape
+:char_hex3 CharacterEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex2
 
-:char_hex2 CharacterEscape
+:char_hex2 CharacterEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char_hex1
 
-:char_hex1 CharacterEscape
+:char_hex1 CharacterEscape string
 	*		char		noeat
 	"0-9a-fA-F"	char
 
-:char_octal2 CharacterEscape
+:char_octal2 CharacterEscape string
 	*		char		noeat
 	"0-7"		char_octal3
 
-:char_octal3 CharacterEscape
+:char_octal3 CharacterEscape string
 	*		char		noeat
 	"0-7"		char
 

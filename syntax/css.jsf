@@ -6,6 +6,7 @@
 =Idle
 =Comment
 =Constant
+=Number		+Constant
 =Escape
 =Keyword
 =Bad
@@ -54,11 +55,11 @@
 	*		reset		noeat
 	"*"		comment		recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"*"		maybe_end_comment
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment
 	"/"		reset
 	"*"		maybe_end_comment
@@ -113,11 +114,11 @@
 	*		style_block	recolor=-1
 	"*"		style_comment	recolor=-2
 
-:style_comment Comment
+:style_comment Comment comment
 	*		style_comment
 	"*"		maybe_end_style_comment
   
-:maybe_end_style_comment Comment
+:maybe_end_style_comment Comment comment
 	*		comment
 	"/"		style_block
 	"*"		maybe_end_style_comment
@@ -142,22 +143,22 @@
 	*		style_value	noeat
 	"0-9a-fA-F"	color
 
-:decimal Constant
+:decimal Number
 	*		style_value	noeat
 	"0-9"		decimal
 	"."		float
 	"a-zA-Z%"	decimal_unit
 
-:maybe_float Constant
+:maybe_float Number
 	*		style_value	noeat recolor=-2
 	"0-9"		float		recolor=-2
 
-:float Constant
+:float Number
 	*		style_value	noeat
 	"0-9"		float
 	"a-zA-Z%"	decimal_unit
 
-:decimal_unit Constant
+:decimal_unit Number
 	*		style_value	noeat
 	"a-zA-Z"	decimal_unit
 

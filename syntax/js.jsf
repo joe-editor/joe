@@ -38,7 +38,7 @@
 	*			begin		noeat call=.js()
 	"#"			shebang		recolor=-1
 
-:shebang Comment
+:shebang Comment comment
 	*			shebang
 	"\n"			begin
 
@@ -191,18 +191,18 @@ done
 	"/"			line_comment	recolor=-2
 	"="			assign		recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*			comment
 	# might be TODO label
 	"BFHNTX"		comment		noeat call=comment_todo.comment_todo()
 	"*"			maybe_end_comment
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*			comment		noeat
 	"/"			idle
 	"*"			maybe_end_comment
 
-:line_comment Comment
+:line_comment Comment comment
 	*			line_comment
 	# might be TODO label
 	"BFHNTX"		line_comment	noeat call=comment_todo.comment_todo()
@@ -608,10 +608,10 @@ done
 
 .subr string
 
-:string		String
+:string		String string
 	*			string_body	noeat mark
 
-:string_body	String
+:string_body	String string
 	*			string
 	"\n"			string_bad
 .ifdef template
@@ -634,7 +634,7 @@ done
 :string_bad_escape Bad
 	*			string_bad
 
-:string_template StringEscape
+:string_template StringEscape string
 	*			string_bad
 	"{"			string_template_expr
 
@@ -647,42 +647,42 @@ done
 .endif
 	"}"			string_template_end	noeat
 
-:string_template_end StringEscape
+:string_template_end StringEscape string
 	*			string
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*			string
 	"x"			string_hex1
 	"u"			string_uni1
 	"0-7"			string_octal2
 	"\n"			string_bad	noeat
 
-:string_hex1 StringEscape
+:string_hex1 StringEscape string
 	*			string		noeat
 	"0-9a-fA-F"		string_hex2
 
-:string_hex2 StringEscape
+:string_hex2 StringEscape string
 	*			string		noeat
 	"0-9a-fA-F"		string
 
-:string_uni1 StringEscape
+:string_uni1 StringEscape string
 	*			string		noeat
 	"{"			string_uni_brackets
 	"0-9a-fA-F"		string_uni2
 
-:string_uni2 StringEscape
+:string_uni2 StringEscape string
 	*			string		noeat
 	"0-9a-fA-F"		string_uni3
 
-:string_uni3 StringEscape
+:string_uni3 StringEscape string
 	*			string		noeat
 	"0-9a-fA-F"		string_uni4
 
-:string_uni4 StringEscape
+:string_uni4 StringEscape string
 	*			string		noeat
 	"0-9a-fA-F"		string
 
-:string_uni_brackets StringEscape
+:string_uni_brackets StringEscape string
 	*			string_bad_escape	noeat
 .ifdef template
 	"`"			string			noeat
@@ -692,11 +692,11 @@ done
 	"}"			string
 	"0-9a-fA-F"		string_uni_brackets
 
-:string_octal2 StringEscape
+:string_octal2 StringEscape string
 	*			string		noeat
 	"0-7"			string_octal3
 
-:string_octal3 StringEscape
+:string_octal3 StringEscape string
 	*			string		noeat
 	"0-7"			string
 

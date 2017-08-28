@@ -72,7 +72,7 @@ done
 	*		label
 	"\r\n"		reset
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"        comment		noeat call=comment_todo.comment_todo()
 	"\r\n"		reset
@@ -89,7 +89,7 @@ done
 :echostmt Statement
 	*		echoargs	noeat
 
-:echoargs String
+:echoargs String string
 	*		echoargs
 	"%"		echoargs	call=.strvariable() recolor=-1
 	"&"		and		recolor=-1
@@ -117,21 +117,21 @@ done
 	"&"		and		recolor=-1
 
 # Double-quoted args
-:qargs String
+:qargs String string
 	*		qargs
 	"\""		args
 	"%"		qargs		call=.strvariable() recolor=-1
 	"\r\n"		reset
 
 # Single-quoted args
-:sqargs String
+:sqargs String string
 	*		sqargs
 	"'"		args
 	"%"		sqargs		call=.strvariable() recolor=-1
 	"\r\n"		reset
 
 # Back-quoted (`) args, found in some for-loops
-:bqargs String
+:bqargs String string
 	*		bqargs
 	"`"		args
 	"%"		bqargs		call=.strvariable() recolor=-1
@@ -168,18 +168,18 @@ done
 
 .subr strvariable
 
-:variable StringVariable
+:variable StringVariable string
 	*		args		noeat return
 	"%~"		shortvar
 	"\*"		noeat		return
 	"0-9"		variable	return
 	"A-Za-z_"	varbody
 
-:shortvar StringVariable
+:shortvar StringVariable string
 	*		args		noeat return
 	"A-Za-z0-9_"	shortvar
 
-:varbody StringVariable
+:varbody StringVariable string
 	*		varbody
 	"%"		args		return
 

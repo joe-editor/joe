@@ -39,7 +39,7 @@
 :regex_skip Idle
 	*		regex
 
-:reset_line_comment Comment
+:reset_line_comment Comment comment
 	*		reset_line_comment
 	"BFHNTX"        line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		reset
@@ -63,7 +63,7 @@
 :control Control
 	*	idle	noeat
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"BFHNTX"        line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		reset
@@ -112,35 +112,35 @@
 	*		idle	noeat
 	"0-9"		enum
 
-:string	String
+:string	String string
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"x"		string_hex1
 	"0-7"		string_octal2
 	"\n"		string		recolor=-2
 
-:string_hex1 StringEscape
+:string_hex1 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex2 StringEscape
+:string_hex2 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 StringEscape
+:string_octal2 StringEscape string
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 StringEscape
+:string_octal3 StringEscape string
 	*		string		noeat
 	"0-7"		string
 
-:string_control StringEscape
+:string_control StringEscape string
 	*		string
 	"\""		string noeat
 	"\n"		reset

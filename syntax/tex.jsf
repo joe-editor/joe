@@ -16,7 +16,7 @@
 	"{[]}"		brace		recolor=-1
 	"#"		parameter	recolor=-1
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	# might be TODO label
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()

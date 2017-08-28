@@ -48,16 +48,16 @@
 :brace Brace
 	*		idle		noeat
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_comment
 
-:maybe_end_comment Comment
+:maybe_end_comment Comment comment
 	*		comment		noeat
 	"/"		idle
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
@@ -166,60 +166,60 @@
 
 # strings like "hello"
 
-:string	String
+:string	String string
 	*		string
 	"\""		idle
 	"\\"		string_escape	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"x"		string_hex2
 	"u"		string_maybe_uni
 
-:string_maybe_uni StringEscape
+:string_maybe_uni StringEscape string
 	*		string		noeat
 	"{"		string_uni
 
-:string_uni StringEscape
+:string_uni StringEscape string
 	*		string_uni
 	"}"		string
 
-:string_hex2 StringEscape
+:string_hex2 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex1
 
-:string_hex1 StringEscape
+:string_hex1 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string
 
 # character constants like 'h'
 
-:char	Character
+:char	Character string
 	*		char_done
 	"\\"		char_escape	recolor=-1
 
-:char_done Character
+:char_done Character string
 	*		idle		noeat recolor=-3
 	"\'"		idle
 
-:char_escape CharacterEscape
+:char_escape CharacterEscape string
 	*		char_done	noeat
 	"x"		char_hex2
 	"u"		char_maybe_uni
 
-:char_maybe_uni CharacterEscape
+:char_maybe_uni CharacterEscape string
 	*		char_done	noeat
 	"{"		char_uni
 
-:char_uni CharacterEscape
+:char_uni CharacterEscape string
 	*		char_uni
 	"}"		char_done
 
-:char_hex2 CharacterEscape
+:char_hex2 CharacterEscape string
 	*		char_done	noeat
 	"0-9a-fA-F"	char_hex1
 
-:char_hex1 CharacterEscape
+:char_hex1 CharacterEscape string
 	*		char_done	noeat
 	"0-9a-fA-F"	char
 
@@ -231,68 +231,68 @@
 	"\""		raw_string_0	recolor=-2
 	"#"		raw_string_pre_1 recolor=-2
 
-:raw_string_pre_1 String
+:raw_string_pre_1 String string
 	*		raw_string_bad	recolor=-3
 	"\""		raw_string_1
 	"#"		raw_string_pre_2
 
-:raw_string_pre_2 String
+:raw_string_pre_2 String string
 	*		raw_string_bad	recolor=-4
 	"\""		raw_string_2
 	"#"		raw_string_pre_3
 
-:raw_string_pre_3 String
+:raw_string_pre_3 String string
 	*		raw_string_bad	recolor=-5
 	"\""		raw_string_3
 	"#"		raw_string_pre_4
 
-:raw_string_pre_4 String
+:raw_string_pre_4 String string
 	*		raw_string_bad	recolor=-6
 	"#\""		raw_string_4	# More than 4? too bad.
 
-:raw_string_0 String
+:raw_string_0 String string
 	*		raw_string_0
 	"\""		idle
 
-:raw_string_1 String
+:raw_string_1 String string
 	*		raw_string_1
 	"\""		raw_string_end_1
 
-:raw_string_2 String
+:raw_string_2 String string
 	*		raw_string_2
 	"\""		raw_string_end_2 buffer
 
-:raw_string_3 String
+:raw_string_3 String string
 	*		raw_string_3
 	"\""		raw_string_end_3 buffer
 
-:raw_string_4 String
+:raw_string_4 String string
 	*		raw_string_4
 	"\""		raw_string_end_4 buffer
 
-:raw_string_end_1 String
+:raw_string_end_1 String string
 	*		raw_string_1	noeat
 	"#"		idle
 
-:raw_string_end_2 String
+:raw_string_end_2 String string
 	*		raw_string_2	noeat strings
 	"\"##"		raw_string_end
 done
 	"#"		raw_string_end_2
 
-:raw_string_end_3 String
+:raw_string_end_3 String string
 	*		raw_string_3	noeat strings
 	"\"###"		raw_string_end
 done
 	"#"		raw_string_end_3
 
-:raw_string_end_4 String
+:raw_string_end_4 String string
 	*		raw_string_4	noeat strings
 	"\"####"	raw_string_end
 done
 	"#"		raw_string_end_4
 
-:raw_string_end String
+:raw_string_end String string
 	*		idle		noeat
 
 :raw_string_bad Bad

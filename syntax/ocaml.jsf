@@ -170,64 +170,64 @@
 	*		expr		noeat
 	"0-9_"		enum
 
-:string	String
+:string	String string
 	*		string
 	"\""		expr
 	"\\"		string_escape	recolor=-1
 	"%"		string_control	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"x"		string_hex1
 	"0-7"		string_octal2
 
-:string_hex1 StringEscape
+:string_hex1 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string_hex2
 
-:string_hex2 StringEscape
+:string_hex2 StringEscape string
 	*		string		noeat
 	"0-9a-fA-F"	string
 
-:string_octal2 StringEscape
+:string_octal2 StringEscape string
 	*		string		noeat
 	"0-7"		string_octal3
 
-:string_octal3 StringEscape
+:string_octal3 StringEscape string
 	*		string		noeat
 	"0-7"		string
 
-:string_control StringEscape
+:string_control StringEscape string
 	*		string_control
 	"\""		string		noeat
 	"diouxXeEfFgGaAcspn%SC"	string
 
-:char Character
+:char Character string
 	*		charend
 	"\\"		char_escape	recolor=-1
 
-:charend Character
+:charend Character string
 	*		bad		noeat
 	"\'"		expr
 
-:char_escape CharacterEscape
+:char_escape CharacterEscape string
 	*		charend
 	"x"		char_hex1
 	"0-7"		char_octal2
 
-:char_hex1 CharacterEscape
+:char_hex1 CharacterEscape string
 	*		bad		noeat
 	"0-9a-fA-F"	char_hex2
 
-:char_hex2 CharacterEscape
+:char_hex2 CharacterEscape string
 	*		charend		noeat
 	"0-9a-fA-F"	charend
 
-:char_octal2 CharacterEscape
+:char_octal2 CharacterEscape string
 	*		charend		noeat
 	"0-7"		char_octal3
 
-:char_octal3 CharacterEscape
+:char_octal3 CharacterEscape string
 	*		charend		noeat
 	"0-7"		charend
 
@@ -384,22 +384,22 @@ done
 	"("		expr 				# too deep nesting
 	")"		type2
 
-:comment Comment
+:comment Comment comment
 	*		expr 		call=.comment()
 
 .subr comment
 
-:comment_body Comment
+:comment_body Comment comment
 	*		comment_body
 	"("		nest_comment
 	"*"		end_comment
 	"BFHNTX"	comment_body	noeat call=comment_todo.comment_todo()
 
-:end_comment Comment
+:end_comment Comment comment
 	*		comment_body	noeat
 	")"		end_comment	return
 
-:nest_comment Comment
+:nest_comment Comment comment
 	*		comment_body
 	"*"		comment_body	call=.comment()
 

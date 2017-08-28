@@ -67,20 +67,20 @@ done
 :macro Macro
 	*		idle		noeat
 
-:char Character
+:char Character string
 	*		idle
 	"\\"		charesc
 
-:charesc Character
+:charesc Character string
 	*		idle
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"@"		is_edoc		noeat buffer 
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
-:is_edoc Comment
+:is_edoc Comment comment
 	*		line_comment	noeat strings
 	"@clear"	edoc
 	"@docfile"	edoc
@@ -133,33 +133,33 @@ done
 	"#"		record
 
 # STRINGS
-:string String
+:string String string
 	*		string
 	"\\"		string_escape	recolor=-1
 	"~"		string_		mark
 	"\""		idle
 
-:string_escape String_esc
+:string_escape String_esc string
 	*		string
 
-:string_ String
+:string_ String string
 	*		string_mod	noeat
 	"0-9"		string_f
 	"t"		string_mod
-:string_f String
+:string_f String string
 	*		string_mod	noeat          
 	"0-9*"		string_f
 	"."		string_p
 
-:string_p String
+:string_p String string
 	*		string_mod	noeat
 	"0-9*"		string_p
 
-:string_mod String
+:string_mod String string
 	*		string
 	"cfegswpWPBX#bx+ni"	string_modifier recolormark noeat
 
-:string_modifier String_mod
+:string_modifier String_mod string
 	*		string
 # END STRINGS
 :decimal Number

@@ -21,7 +21,7 @@
 	*		line_rest
 	"\n"		line_start
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"\n"		line_start
 

@@ -20,7 +20,7 @@
 	"#!"		line_comment	recolor=-1
 	"=:"		missing_key	recolor=-1
 
-:line_comment Comment
+:line_comment Comment comment
 	*		line_comment
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		line_start
@@ -55,33 +55,33 @@
 	*		value		noeat
 	" \t\r"		value_pre
 
-:value String
+:value String string
 	*		value
 	"\\"		value_esc	recolor=-1
 	"\n"		line_start
 
-:value_esc StringEscape
+:value_esc StringEscape string
 	*		value_error	recolor=-2
 	"u"		value_unicode_hex1
 	"\n"		value_cont
 
-:value_unicode_hex1 StringEscape
+:value_unicode_hex1 StringEscape string
 	*		value_error	recolor=-3
 	"A-Fa-f0-9"	value_unicode_hex2
 
-:value_unicode_hex2 StringEscape
+:value_unicode_hex2 StringEscape string
 	*		value_error	recolor=-4
 	"A-Fa-f0-9"	value_unicode_hex3
 
-:value_unicode_hex3 StringEscape
+:value_unicode_hex3 StringEscape string
 	*		value_error	recolor=-5
 	"A-Fa-f0-9"	value_unicode_hex4
 
-:value_unicode_hex4 StringEscape
+:value_unicode_hex4 StringEscape string
 	*		value_error	recolor=-6
 	"A-Fa-f0-9"	value
 
-:value_cont String
+:value_cont String string
 	*		value
 	" \t\r"		value_cont # leading spaces
 

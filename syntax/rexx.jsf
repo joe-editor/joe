@@ -51,11 +51,11 @@ done
 :kw Keyword
 	*		idle noeat
 
-:squote String
+:squote String string
 	*	squote
 	"'"	idle
 
-:dquote String
+:dquote String string
 	*	dquote
 	"\""	idle
 
@@ -69,13 +69,13 @@ done
 	*		maybe_comment return noeat
 	"*"		comment recolor=-2
 
-:comment Comment
+:comment Comment comment
 	*	comment
 	"BFHNTX" comment noeat call=comment_todo.comment_todo()
 	"*"	maybe_done
 	"/"	comment call=.maybe_comment()
 
-:maybe_done Comment
+:maybe_done Comment comment
 	*	comment noeat
 	"/"	comment	return
 

@@ -131,11 +131,11 @@
 
 .subr string
 
-:string String
+:string String string
 	*			stringBAD	noeat
 	"\""			body
 
-:body String
+:body String string
 	*			body
 	"\""			end
 	"\\"			escape		recolor=-1
@@ -143,7 +143,7 @@
 :stringBAD ERROR
 	*			end
 
-:escape StringEscape
+:escape StringEscape string
 	*			escapeBAD	recolor=-2 noeat
 	"\"/bfnrt\\"		body
 	"u"			unicode1
@@ -151,19 +151,19 @@
 :escapeBAD Bad
 	*			body
 
-:unicode1 StringEscape
+:unicode1 StringEscape string
 	*			unicodeBAD	recolor=-3 noeat
 	"0-9a-fA-F"		unicode2
 
-:unicode2 StringEscape
+:unicode2 StringEscape string
 	*			unicodeBAD	recolor=-4 noeat
 	"0-9a-fA-F"		unicode3
 
-:unicode3 StringEscape
+:unicode3 StringEscape string
 	*			unicodeBAD	recolor=-5 noeat
 	"0-9a-fA-F"		unicode4
 
-:unicode4 StringEscape
+:unicode4 StringEscape string
 	*			unicodeBAD	recolor=-6 noeat
 	"0-9a-fA-F"		body
 

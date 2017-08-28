@@ -20,13 +20,13 @@
 	"\n"		start
 
 # Comments between commands
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"	comment				noeat call=comment_todo.comment_todo()
 	"\n"		start
 
 # Comments in the middle of a command
-:comment_idle Comment
+:comment_idle Comment comment
 	*		comment_idle
 	"\n"		idle
 
@@ -158,14 +158,14 @@ done
 
 .subr string
 
-:string String
+:string String string
 	*		string
 	&		string				return
 	"\n"		string				return noeat
 	"\\"		string_escape			recolor=-1
 	"$"		string				recolor=-1 call=.variable()
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 
 .end

@@ -18,18 +18,18 @@
 :escape Escape
 	*		idle
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"\n"		idle
 
 
-:string String
+:string String string
 	*		string
 	"\""		idle
 	"\`"		backtick_in_str	recolor=-1
 	"\\"		string_escape	recolor=-1
 
-:string_escape StringEscape
+:string_escape StringEscape string
 	*		string
 	"\n"		string		recolor=-2
 
@@ -43,12 +43,12 @@
 	"\n"		backtick_in_str	recolor=-2
 
 
-:single String
+:single String string
 	*		single
 	"'"		idle
 	"\\"		single_escape	recolor=-1
 
-:single_escape StringEscape
+:single_escape StringEscape string
 	*		single
 	"\n"		single		recolor=-2
 
@@ -65,22 +65,22 @@
 	"\n"		backtick	recolor=-2
 
 
-:string_in_bt String
+:string_in_bt String string
 	*		string_in_bt
 	"\""		backtick
 	"\\"		string_escape_b	recolor=-1
 
-:string_escape_b StringEscape
+:string_escape_b StringEscape string
 	*		string_in_bt
 	"\n"		string_in_bt	recolor=-2
 
 
-:single_in_bt String
+:single_in_bt String string
 	*		single_in_bt
 	"'"		backtick
 	"\\"		single_escape_b	recolor=-1
 
-:single_escape_b StringEscape
+:single_escape_b StringEscape string
 	*		single_in_bt
 	"\n"		single_in_bt	recolor=-2
 

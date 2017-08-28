@@ -25,7 +25,7 @@
 	*		command
 	"\n"		idle
 
-:comment Comment
+:comment Comment comment
 	*		comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
 	"\n"		idle
@@ -46,7 +46,7 @@
 	"\'"		stringdone	recolormark recolor=-1
 	"\n"		idle
 
-:stringdone String
+:stringdone String string
 	*		idle		recolor=-1
 
 :first_digit Number
