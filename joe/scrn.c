@@ -682,14 +682,8 @@ SCRN *nopen(CAP *cap)
 	}
 
 	{
-		/* TODO: What is the correct way to do this?
-		   I'm leaving it turned off for the moment. */
-#if 0
 		char *s = getenv("COLORTERM");
 		t->truecolor = s && (!zicmp(s, "truecolor") || !zicmp(s, "24bit"));
-#else
-		t->truecolor = 0;
-#endif
 		t->palette = NULL;
 	}
 
