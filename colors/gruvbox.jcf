@@ -16,7 +16,7 @@
 =TODO inverse bold italic
 =Bad 167 bold inverse
 
-=DefinedIdent 66
+=DefinedIdent 172
 =DefinedFunction 142
 =Builtin 142
 
@@ -39,11 +39,14 @@
 =StringEscape /237
 =Character +Constant
 =CharacterEscape +Escape
+=Variable 172
+=StringVariable 172/237
 
 =Tag 109
 =TagName 108 bold
 =TagEnd +Tag
 
+=c.Define 66
 =diff.AddLine 235/142
 =diff.DelLine 235/124
 =Ignore 246
