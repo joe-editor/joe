@@ -1113,7 +1113,7 @@ static int olddoopt(BW *bw, int y, int flg)
 				s = ask(bw->parent, buf, NULL, NULL, math_cmplt, utf8_map, 0, 0, NULL);
 
 				if (s) {
-					off_t v = (off_t)(calc(bw, s, 0) - 1.0);
+					off_t v = (off_t)(calc(bw, s, 0));
 					if (merr) {
 						msgnw(bw->parent, merr);
 						ret = -1;
