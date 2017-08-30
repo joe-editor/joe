@@ -4,7 +4,7 @@
 -selection 	default/default inverse
 -menusel 	default/default inverse
 -linum		default dim
--curlinum	default
+-curlinum	default bold
 
 =Idle
 =Bad            bold red

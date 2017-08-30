@@ -1,4 +1,6 @@
 
+# High-contrast version of zenburn
+# 
 # Nothing too fancy, just some alien fruit salad to keep you in the zone.
 # This syntax file was designed to be used with dark environments and 
 # low light situations. Of course, if it works during a daybright office, go
@@ -17,17 +19,17 @@
 
 .colors 256
 
--text 253/237
+-text 253/234
 -status 236/186
 -selection 236/79
--linum 145/235
--curlin /238
--curlinum 187/235
--menu 247/236
--menusel 187/235 bold
+-linum 145/233
+-curlin /233 bold
+-curlinum 187/233
+-menu 251/235
+-menusel 186/237 bold
 -cursor 232/109 bold
 
--term 0 237
+-term 0 234
 -term 1 167
 -term 2 115
 -term 3 186
@@ -82,17 +84,17 @@
 
 .colors *
 
--text $dcdccc/$3f3f3f
+-text $dcdccc/$1f1f1f
 -status $313633/$ccdc90
 -selection $233323/$71d3b4
--linum $9fafaf/$262626
--curlin /$434443
--curlinum $d2d39b/$262626
--menu $9f9f9f/$2c2e2e
--menusel $d0d0a0/$242424 bold
+-linum $9fafaf/$161616
+-curlin /$121212 bold
+-curlinum $f2f3bb/$161616
+-menu $ccccbc/$242424
+-menusel $ccdc90/$353a37 bold
 -cursor $000d18/$8faf9f bold
 
--term 0 $3F3F3F
+-term 0 $1F1F1F
 -term 1 $E37170
 -term 2 $9CCC9C
 -term 3 $EFEF8F
