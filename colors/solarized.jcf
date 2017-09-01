@@ -24,7 +24,7 @@
 -linum		[base01]/[base02]
 -menu		[base0]/[base02]
 -menusel	[base01]/[base2]
--curlin		[base01]/[base02]
+-curlin		/[base02]
 -curlinum	[base0]
 -message	[blue]
 
