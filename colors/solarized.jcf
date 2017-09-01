@@ -1,0 +1,143 @@
+.colors *
+
+# Palette
+.set base03	$002b36
+.set base02	$073642
+.set base01	$586e75
+.set base00	$657b83
+.set base0	$839496
+.set base1	$93a1a1
+.set base2	$eee8d5
+.set base3	$fdf6e3
+.set yellow	$b58900
+.set orange	$cb4b16
+.set red	$dc322f
+.set magenta	$d33682
+.set violet	$6c71c4
+.set blue	$268bd2
+.set cyan	$2aa198
+.set green	$859900
+
+-text		[base0]/[base03]
+-status		[base1]/[base02]
+-selection	[base03]/[base01]
+-linum		[base01]/[base02]
+-menu		[base0]/[base02]
+-menusel	[base01]/[base2]
+-curlin		[base01]/[base02]
+-curlinum	[base0]
+-message	[blue]
+
+=Comment	[base01] italic
+=Constant	[cyan]
+=DefinedIdent	[blue]
+=Keyword	[green]
+=Statement	[green]
+=Preproc	[orange]
+=Precond	[orange]
+=Type		[yellow]
+=Structure	+Type
+=StorageClass	+Type
+=Escape		[red]
+=Bad		[red] bold
+=TODO		[magenta] bold
+=Title		[orange] bold
+
+=Tag		[base01]
+=TagName	[blue] bold
+=TagEnd		+Tag
+
+=diff.AddLine	[green]/[base02] bold
+=diff.ChgLine	[yellow]/[base02] bold
+=diff.DelLine	[red]/[base02] bold
+=diff.Garbage	[blue]/[base02] bold
+
+# Terminal colors
+-term 0		[base02]
+-term 1		[red]
+-term 2		[green]
+-term 3		[yellow]
+-term 4		[blue]
+-term 5		[magenta]
+-term 6		[cyan]
+-term 7		[base0]
+-term 8		[base03]
+-term 9		[red]
+-term 10	[base01]
+-term 11	[base00]
+-term 12	[base0]
+-term 13	[violet]
+-term 14	[base1]
+-term 15	[base3]
+
+.colors 256
+
+# 256-color palette
+.set base03	234
+.set base02	235
+.set base01	240
+.set base00	241
+.set base0	244
+.set base1	245
+.set base2	254
+.set base3	230
+.set yellow	136
+.set orange	166
+.set red	160
+.set magenta	125
+.set violet	61
+.set blue	33
+.set cyan	37
+.set green	64
+
+-text		[base0]/[base03]
+-status		[base1]/[base02]
+-selection	[base03]/[base01]
+-linum		[base01]/[base02]
+-menu		[base0]/[base02]
+-menusel	[base01]/[base2]
+-curlin		/[base02]
+-curlinum	[base0]
+-message	[blue]
+
+=Comment	[base01] italic
+=Constant	[cyan]
+=DefinedIdent	[blue]
+=Keyword	[green]
+=Statement	[green]
+=Preproc	[orange]
+=Precond	[orange]
+=Type		[yellow]
+=Structure	+Type
+=StorageClass	+Type
+=Escape		[red]
+=Bad		[red] bold
+=TODO		[magenta] bold
+=Title		[orange] bold
+
+=Tag		[base01]
+=TagName	[blue] bold
+=TagEnd		+Tag
+
+=diff.AddLine	[green]/[base02] bold
+=diff.ChgLine	[yellow]/[base02] bold
+=diff.DelLine	[red]/[base02] bold
+=diff.Garbage	[blue]/[base02] bold
+
+# Terminal colors
+-term 0		[base02]
+-term 1		[red]
+-term 2		[green]
+-term 3		[yellow]
+-term 4		[blue]
+-term 5		[magenta]
+-term 6		[cyan]
+-term 7		[base0]
+-term 8		[base03]
+-term 9		[red]
+-term 10	[base01]
+-term 11	[base00]
+-term 12	[base0]
+-term 13	[violet]
+-term 14	[base1]
+-term 15	[base3]
