@@ -22,6 +22,16 @@
 .set cyan	$2aa198
 .set green	$859900
 
+# Uncommenting these lines changes this scheme to a light background
+#.set base3	$002b36
+#.set base2	$073642
+#.set base1	$586e75
+#.set base0	$657b83
+#.set base00	$839496
+#.set base01	$93a1a1
+#.set base02	$eee8d5
+#.set base03	$fdf6e3
+
 -text		[base0]/[base03]
 -status		[base1]/[base02]
 -selection	[base03]/[base01]
@@ -93,6 +103,16 @@
 .set blue	33
 .set cyan	37
 .set green	64
+
+# Uncommenting these lines changes this scheme to a light background
+#.set base3	234
+#.set base2	235
+#.set base1	240
+#.set base0	241
+#.set base00	244
+#.set base01	245
+#.set base02	254
+#.set base03	230
 
 -text		[base0]/[base03]
 -status		[base1]/[base02]
