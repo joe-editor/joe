@@ -57,6 +57,12 @@ struct color_states {
 	char			*scheme;
 };
 
+struct color_macro {
+	struct color_macro	*next;
+	char			*name;
+	char			*value;
+};
+
 static struct color_states *saved_scheme_configs = NULL;
 
 /* Prototypes */
@@ -67,6 +73,7 @@ static int findpal(int *palette, int startidx, int endidx, int color);
 static int add_palette(int *palette, struct color_spec *spec, int *idx, int startidx, int size);
 static int sort_palette(int *palette, int start, int end);
 static int palcmp(const void *a, const void *b);
+static char *preprocess_line(char *p, char *buf, struct color_macro *macros);
 
 #define SWAP_COLOR(c)	(((c) & ~(FG_MASK | BG_MASK)) | \
                          ((((c) & BG_MASK) >> BG_SHIFT) << FG_SHIFT) | \
@@ -292,11 +299,13 @@ SCHEME *load_scheme(const char *name)
 	SCHEME *colors;
 	COLORSET *curset;
 	struct color_def **lastdef;
+	struct color_macro *macros = NULL;
 	const char *p;
 	char buf[1024];
 	char bf[256];
+	char *b = NULL;
 	JFILE *f;
-	int line;
+	int line, i;
 	
 	/* Find existing */
 	for (colors = allcolors.link.next; colors != &allcolors; colors = colors->link.next) {
@@ -335,11 +344,15 @@ SCHEME *load_scheme(const char *name)
 	
 	while (jfgets(buf, SIZEOF(buf), f)) {
 		++line;
-		p = buf;
+		
+		/* Replace [macros] with their values */
+		b = preprocess_line(b, buf, macros);
+		
+		p = b;
 		parse_ws(&p, '#');
 		
 		if (!parse_char(&p, '.')) {
-			/* .colors */
+			/* .colors, .set */
 			if (!parse_ident(&p, bf, SIZEOF(bf))) {
 				if (!zcmp(bf, "colors")) {
 					int count = -1;
@@ -360,6 +373,30 @@ SCHEME *load_scheme(const char *name)
 						lastdef = &curset->alldefs;
 					} else {
 						logerror_2(joe_gettext(_("%s: %d: Invalid .colors specification\n")), name, line);
+					}
+				} else if (!zcmp(bf, "set")) {
+					parse_ws(&p, '#');
+					if (!parse_ident(&p, bf, SIZEOF(bf))) {
+						struct color_macro *newmacro;
+						const char *q;
+						parse_ws(&p, '#');
+						
+						/* q = start */
+						q = p;
+						while (*p && *p != '#' && *p != '\n' && *p != '\r') {
+							p++;
+						}
+						
+						/* p = end */
+						
+						/* Add macro */
+						newmacro = joe_malloc(SIZEOF(struct color_macro));
+						newmacro->next = macros;
+						newmacro->name = zdup(bf);
+						newmacro->value = vsncpy(NULL, 0, q, p - q);
+						macros = newmacro;
+					} else {
+						logerror_2(joe_gettext(_("%s: %d: Invalid .set directive\n")), name, line);
 					}
 				} else {
 					logerror_3(joe_gettext(_("%s: %d: Unexpected directive %s\n")), name, line, bf);
@@ -386,8 +423,6 @@ SCHEME *load_scheme(const char *name)
 					}
 				} else {
 					/* -selection, -status, etc */
-					int i;
-					
 					for (i = 0; color_builtins[i].name; i++) {
 						if (!zicmp(bf, color_builtins[i].name)) {
 							if (parse_color_spec(&p, &curset->builtins[i])) {
@@ -427,7 +462,17 @@ SCHEME *load_scheme(const char *name)
 		}
 	}
 	
+	vsrm(b);
 	jfclose(f);
+	
+	/* Clean up macros */
+	while (macros) {
+		struct color_macro *next = macros->next;
+		joe_free(macros->name);
+		vsrm(macros->value);
+		joe_free(macros);
+		macros = next;
+	}
 	
 	/* Resolve refs in each set */
 	for (curset = colors->sets; curset; curset = curset->next) {
@@ -469,6 +514,47 @@ SCHEME *load_scheme(const char *name)
 	}
 	
 	return colors;
+}
+
+/* bf is a pointer to a stack-allocated buffer, p is a dynamic string */
+static char *preprocess_line(char *p, char *bf, struct color_macro *macros)
+{
+	ptrdiff_t i;
+	
+	p = vstrunc(p, 0);
+	p = vsensure(p, zlen(bf));
+	
+	for (i = 0; bf[i] && bf[i] != '#'; i++) {
+		if (bf[i] == '[') {
+			/* Found start, find end */
+			ptrdiff_t t;
+			
+			for (t = i + 1; bf[t] && bf[t] != '#' && bf[t] != ']'; t++) {}
+			
+			if (bf[t] == ']') {
+				struct color_macro *m = macros;
+				
+				/* Lookup */
+				bf[t] = 0;
+				for (; m; m = m->next) {
+					if (!zcmp(m->name, &bf[i + 1])) {
+						break;
+					}
+				}
+				
+				bf[t] = ']';
+				
+				if (m) {
+					p = vsncpy(sv(p), sz(m->value));
+					i = t;
+				}
+			}
+		} else {
+			p = vsadd(p, bf[i]);
+		}
+	}
+	
+	return p;
 }
 
 /* Build palette for GUI colors */

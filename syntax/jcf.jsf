@@ -2,14 +2,17 @@
 
 =Idle
 =Comment
+=Preproc
+=Define		+DefinedIdent
 =ColorSection	+Preproc
 =BuiltinSpec	+Keyword
 =ColorAttr	+Keyword
-=ColorDef	+DefinedIdent
+=ColorDef	+Type
 =ColorRef	+Type
 =Constant
 =Number		+Constant
 =Operator
+=Macro		+Variable +Escape
 
 :idle Idle
 	*		idle
@@ -19,9 +22,10 @@
 	"*"		asterisk	recolor=-1
 	"="		color_def	recolor=-1
 	"+"		color_ref	recolor=-1
-	"."		color_section	recolor=-1
+	"."		pre		recolor=-1 buffer
 	"/"		slash		recolor=-1
 	"-"		builtin		recolor=-1
+	"["		macro_ref	recolor=-1
 	"a-zA-Z"	attribute	recolor=-1
 
 :comment Comment comment
@@ -50,9 +54,28 @@
 	*		idle		noeat
 	"\c."		color_ref
 
+:pre Preproc
+	*		idle		noeat strings
+	".colors"	color_section
+	".set"		macro_def
+done
+	"\c"		pre
+
 :color_section ColorSection
 	*		idle		noeat
-	"\c"		color_section
+
+:macro_def Preproc
+	*		idle
+	" \t"		macro_def
+	"\i"		macro_name	noeat
+
+:macro_name Define
+	*		idle
+	"\i\c"		macro_name
+
+:macro_ref Macro
+	*		macro_ref
+	"\n]"		idle
 
 :builtin BuiltinSpec
 	*		idle		noeat
