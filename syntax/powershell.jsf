@@ -180,10 +180,20 @@ done
 	*		herestr_sq		noeat
 	"@"		idle
 
+:typespec_start Idle
+	*		idle			noeat
+	"\s"		typespec_start
+	"\i.:"		typespec		noeat
+
 :typespec Type
-	"\i.:"		typespec
-	"]"		idle			noeat
-	*		idle
+	*		idle			noeat
+	"\i.:\s"	typespec
+	"["		typespec_brack
+
+:typespec_brack Type
+	*		typespec		noeat
+	"\s"		typespec_brack
+	"]"		typespec
 
 :param ParamKey
 	*		after_param		noeat istrings
