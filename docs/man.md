@@ -136,30 +136,6 @@ Assume ANSI-like terminal emulator supports color even if termcap entry says
 it doesn't.
 <br>
 
-* text_color __color__<br>
-Set color for text.
-<br>
-
-* status_color __color__<br>
-Set color for status bar.
-<br>
-
-* help_color __color__<br>
-Set color for help.
-<br>
-
-* menu_color __color__<br>
-Set color for menus.
-<br>
-
-* prompt_color __color__<br>
-Set color for prompts.
-<br>
-
-* msg_color __color__<br>
-Set color for messages.
-<br>
-
 * autoswap<br>
 Automatically swap __^K B__ with __^K K__ if necessary to
 mark a legal block during block copy/move commands.
@@ -202,6 +178,10 @@ enables "bracketed paste mode" (but only if the terminal
 seems to have the ANSI command set).  In this mode, text
 pasted into the window is bracketed with ESC \[ 2 0 0 ~ and
 ESC \[ 2 0 1 ~.
+<br>
+
+* colors __scheme__<br>
+Sets the color scheme.
 <br>
 
 * columns nnn<br>
@@ -263,6 +243,11 @@ When set, start off with the on-line help enabled.
 * help_is_utf8<br>
 When set, the help text in the joerc file is
 assumed to be UTF-8.
+<br>
+
+* hiline<br>
+When set, the current line is highlighted. The current color scheme must
+support this.
 <br>
 
 * icase<br>
@@ -2652,6 +2637,106 @@ directives.  For example:
 .else is also available.  .ifdefs can be nested.
 
 <a name="joerc"></a>
+
+### Color schemes
+
+Color *classes* are specified at the top of each syntax file, and referenced
+from each state.  Previously, colors would be specified alongside each class
+in the syntax file, but now they are picked up from color schemes.  A color
+scheme will define colors for classes that applies to all syntaxes.  If a
+class isn't defined in a color scheme, it can inherit from other classes
+with `+`.  For example, this is typical:
+
+    =Constant
+    =String +Constant
+    =Number +Constant
+
+If `String` is not specified in the color scheme, then strings will be
+colored as other `Constant`s, assuming it is specified.  More than one class
+can be specified in this manner, and JOE will pick the first one that is
+defined.
+
+With this mechanism, schemes can define a minimal set of colors that apply
+to a wide variety of language syntaxes.  This assumes that syntaxes follow a
+particular convention, which is laid out in __syntax/CLASSES.md__.
+
+### Color scheme files
+
+Color scheme files are divided into sections based on the number of colors
+available to the terminal to support e.g. 256-color terminals vs 88-color
+terminals vs terminals with [24-bit color support](https://gist.github.com/XVilka/8346728).
+Each section starts with the `.colors` directive:
+
+    .colors 256
+    # 256-color terminal section
+    .colors *
+    # Truecolor terminal section
+
+The above scheme would fail to load on a 16-color terminal.  JOE will check
+if the `COLORTERM` environment variable is set to `24bit` or `gui` to
+determine if a terminal supports 24 bit color, due to the fact that terminfo
+currently lacks this support.  In Windows, JOE automatically supports 24 bit
+color.
+
+Environment colors are specified as such:
+
+    -text \<fg\>/\<bg\> \<attributes\>
+
+Where `\<fg\>` and `\<bg\>` are both optional, and can be any of:
+
+* Color names: white, cyan, magenta, blue, yellow, green, red, or black, WHITE,
+CYAN, MAGENTA, BLUE, YELLOW, GREEN, RED or BLACK (where upper-case colors
+are the high intensity versions from 16 color terminals).
+
+* `default` for the terminal's default foreground or background color.
+
+* Color numbers: 0-255 xterm colors
+
+* RGB specifications in the standard `$RRGGBB` form (only in the 24-bit
+section).
+
+Attributes can be `bold`, `inverse`, `blink`, `dim`, `underline`, and
+`italic`.
+
+A number of environment colors can be changed:
+
+* `-text` specifies the default environment text.
+* `-status` specifies the status line's color.
+* `-selection` specifies the color used for selection.
+* `-help` specifies the help text background color.
+* `-menu` specifies the inactive menu item color.
+* `-menusel` specifies the active menu item color.
+* `-prompt` specifies prompt color.
+* `-message` specifies message color.
+* `-linum` specifies the color in the line number gutter.
+* `-curlin` specifies the current line color (if `hiline` is on).
+* `-curlinum` specifies the current line number color (if `hiline` is on).
+
+These do not all need to be specified.  `-text` defaults to the terminal's
+default foreground/background colors.  Each other will pick up the value of
+`-text` (plus `inverse` in a few cases) if it is not specified.
+
+When using pop-up terminals, JOE will remap colors 0-15 based on colors
+found in the scheme specified by `-term \<n\> __color spec__`.
+
+The rest of the file is color classes that map into syntax colors.  Color
+classes can be set by either:
+
+    =ClassName __color spec__
+    =syntaxname.ClassName __color spec__
+
+In the second case, the color will only apply to the specified syntax.
+
+Lastly, macros can be defined in color scheme files to simplify their
+maintenance.  For example:
+
+    .set dark_blue 66
+    # ...
+    =Define [dark_blue]
+
+References to `dark_blue` must be in brackets, and their values will be
+substituted by a simple string replacement before parsing the line (which
+means macros can contain any text, not just color values).
 
 ## The joerc file
 
