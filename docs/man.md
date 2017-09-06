@@ -2640,25 +2640,26 @@ directives.  For example:
 
 ### Color schemes
 
-Color *classes* are specified at the top of each syntax file, and referenced
+Color *classes* are declared at the top of each syntax file, and referenced
 from each state.  Previously, colors would be specified alongside each class
-in the syntax file, but now they are picked up from color schemes.  A color
-scheme will define colors for classes that applies to all syntaxes.  If a
-class isn't defined in a color scheme, it can inherit from other classes
-with `+`.  For example, this is typical:
+in the syntax files, but they are now globally specified by color schemes. 
+The syntax files will pull in all colors relevant to their languages by
+declaring them, optionally referencing other classes in case a class isn't
+specified by a color scheme.  For example, this is typical:
 
     =Constant
     =String +Constant
     =Number +Constant
 
-If `String` is not specified in the color scheme, then strings will be
-colored as other `Constant`s, assuming it is specified.  More than one class
-can be specified in this manner, and JOE will pick the first one that is
-defined.
+Both the `String` and `Number` classes can be defined by the color scheme. 
+If they aren't, each will fall back to `Constant`, which is logically a
+superset of strings and numbers.  More than one class can be referenced in a
+class declaration; JOE will pick the first one that is defined.
 
-With this mechanism, schemes can define a minimal set of colors that apply
-to a wide variety of language syntaxes.  This assumes that syntaxes follow a
-particular convention, which is laid out in __syntax/CLASSES.md__.
+In this manner schemes can define a broad and generic set of color classes
+and syntax files can filter those into the color classes applicable to their
+languages.  This assumes that syntaxes and color schemes follow a particular
+convention, which is laid out in __syntax/CLASSES.md__.
 
 ### Color scheme files
 
@@ -2673,16 +2674,16 @@ Each section starts with the `.colors` directive:
     # Truecolor terminal section
 
 The above scheme would fail to load on a 16-color terminal.  JOE will check
-if the `COLORTERM` environment variable is set to `24bit` or `gui` to
+if the `COLORTERM` environment variable is set to `24bit` or `truecolor` to
 determine if a terminal supports 24 bit color, due to the fact that terminfo
 currently lacks this support.  In Windows, JOE automatically supports 24 bit
 color.
 
 Environment colors are specified as such:
 
-    -text \<fg\>/\<bg\> \<attributes\>
+    -text <fg>/<bg> <attributes>
 
-Where `\<fg\>` and `\<bg\>` are both optional, and can be any of:
+Where `<fg>` and `<bg>` are both optional, and can be any of:
 
 * Color names: white, cyan, magenta, blue, yellow, green, red, or black, WHITE,
 CYAN, MAGENTA, BLUE, YELLOW, GREEN, RED or BLACK (where upper-case colors
@@ -2717,13 +2718,13 @@ default foreground/background colors.  Each other will pick up the value of
 `-text` (plus `inverse` in a few cases) if it is not specified.
 
 When using pop-up terminals, JOE will remap colors 0-15 based on colors
-found in the scheme specified by `-term \<n\> __color spec__`.
+found in the scheme specified by `-term <n> __color spec__`.
 
 The rest of the file is color classes that map into syntax colors.  Color
 classes can be set by either:
 
-    =ClassName __color spec__
-    =syntaxname.ClassName __color spec__
+    =ClassName <color spec>
+    =syntaxname.ClassName <color spec>
 
 In the second case, the color will only apply to the specified syntax.
 
@@ -2992,6 +2993,11 @@ Here is a complete list of the environment variables:
 * BAUD<br>
 Tell JOE the baud rate of the terminal (overrides value reported by stty).
 <br>
+
+* COLORTERM<br>
+If set to `truecolor` or `24bit`, [24-bit color support](https://gist.github.com/XVilka/8346728)
+will be assumed and JOE will be able to load those sections from color
+schemes.
 
 * COLUMNS<br>
 Set number of columns in terminal emulator (in case
@@ -3961,7 +3967,7 @@ Default middle button release handler, usually bound to MIDDLEUP.
 <br>
 
 * xtmouse<br>
-Handle xterm mouse events, usually bound to Esc [ M.  It parses the rest of
+Handle xterm mouse events, usually bound to Esc \[ M.  It parses the rest of
 the sequence and generates fake "keys" that can be bound to macros in the
 joerc file.  It uses a timer to detect double-click and triple-click.  The
 keys are: MUP, MDOWN, MDRAG, M2UP, M2DOWN, M2DRAG, M3UP, M3DOWN, M3DRAG,
@@ -3969,7 +3975,7 @@ MWUP and MWDOWN.
 <br>
 
 * extmouse<br>
-Handle extended xterm mouse events, usually bound to Esc [ \<.
+Handle extended xterm mouse events, usually bound to Esc \[ \<.
 <br>
 
 * paste<br>

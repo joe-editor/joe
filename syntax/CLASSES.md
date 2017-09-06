@@ -1,9 +1,60 @@
 
-# Common syntax classes
+# Colors in JOE
 
-*TODO*: I need to expand this, but for now I just want to document the
-common syntax classes...
+Colors are no longer specified by syntax files, but are instead pulled from
+color schemes.  This requires syntax and color scheme files to share a
+common convention so that colors can neatly propagate into syntax
+highlighting as intended.  All of the builtin syntax files and schemes
+follow the convention that is described here.
 
+To review, the color classes in syntax files must either match a class found
+in the color scheme, or reference one.  For example:
+
+    =Constant
+    =String +Constant
+
+`String` will be the first of these to apply:
+
+* `<syntax name>.String` as defined in the color scheme
+* `String` as defined in the color scheme
+* `<syntax name>.Constant` as defined in the color scheme
+* `Constant` as defined in the color scheme
+* The default text color
+
+Multiple "fallback" classes can be referenced in a class definition; JOE
+will take the first that exists.  This example is fairly straightforward, as
+the constant class can be thought of as a superset of strings.  In this
+manner, a hierarchy of language elements emerges.
+
+Generally, a color scheme should be able to get good mileage by defining a
+very minimal set of classes: `Constant`, `Comment`, `Keyword`, `Type`, and
+`Preproc` will produce a satisfactory result for most languages.
+
+Naturally, there are outliers.  `diff` and `xml` are both very common and
+don't fit neatly into the hierarchy that works for most other languages. 
+This is worked around by making new classes specific to each's respective
+syntaxes and falling back to color classes that are likely to be distinct. 
+In these specific cases, fallback color classes were chosen based on which
+classes were inherited from in vim for those elements.  (Though in practice,
+the existing schemes specify classes for xml and diff specifically).
+
+In general, it's OK for each syntax file to define classes that are not on
+this list as the designer sees fit, as long as they can be mapped to
+something sensible from the list.  The intended design is that the syntax
+files proffer up as many of the language elements as feasible, the color
+scheme provides a palette, and the class definitions map between the two.
+
+## Overview of color classes
+
+What follows are the most common classes used among the existing syntaxes:
+what entities in languages they describe, what other classes they can
+inherit their colors from.  New syntaxes should use these class definitions
+verbatim unless there's a good reason to inherit from something else
+(exceptions abound in the built-in syntaxes).
+
+While it's best to study the built-in syntaxes, this list should serve as a
+reasonable summary and reference, especially where the intent is otherwise
+unclear.
 
 ### General classes
 
