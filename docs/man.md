@@ -2998,6 +2998,7 @@ Tell JOE the baud rate of the terminal (overrides value reported by stty).
 If set to `truecolor` or `24bit`, [24-bit color support](https://gist.github.com/XVilka/8346728)
 will be assumed and JOE will be able to load those sections from color
 schemes.
+<br>
 
 * COLUMNS<br>
 Set number of columns in terminal emulator (in case
