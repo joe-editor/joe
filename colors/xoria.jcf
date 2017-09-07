@@ -8,14 +8,15 @@
 
 -text 252/234
 -cursor 214
--status 15/239 bold
-#-menu 250/0
+-status 231/239 bold
+-menu 16/250
 -menusel 255/243
 -selection 255/96
 -prompt 149/234
 -message 149/234
 -linum 247/233
 -curlin /237
+-cursor 16/214
 
 =Comment 244
 =Constant 229
@@ -24,10 +25,9 @@
 =Preproc 150
 =Keyword 110
 =Type 146
-=TODO 0/184
-=Bad 15/1
+=TODO 16/184
+=Bad 231/160
 =Escape 174
-=StringEscape 174
 =IncSystem +Keyword
 =IncLocal +Constant
 
@@ -40,3 +40,21 @@
 =TagName +Keyword
 =Key +Ident
 =Value +Constant
+=Title 225
+
+-term 0 234
+-term 1 160
+-term 2 77
+-term 3 184
+-term 4 98
+-term 5 98
+-term 6 151
+-term 7 252
+-term 8 254
+-term 9 160
+-term 10 77
+-term 11 184
+-term 12 98
+-term 13 98
+-term 14 151
+-term 15 231

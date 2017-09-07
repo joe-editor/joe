@@ -255,7 +255,7 @@ characters in strings.
 ```
 =Conditional +Statement
 ```
-* A statement keyword that definese a conditional.
+* A statement keyword that defines a conditional.
 
 ```
 =Operator +Keyword

@@ -41,6 +41,9 @@
 	* The gutter containing line numbers has a dynamic size based on the
 	  length of the file, rather than a fixed size of 10.
 
+	* Updated all language syntax files to use comment_todo and
+	  string/comment contexts where appropriate.
+
 * Bugs fixed
 
 	* Fix exsave: (^K ^X) should close file when a block is present in

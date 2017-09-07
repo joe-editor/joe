@@ -489,6 +489,12 @@ void parse_syntax_color_def(struct color_def **color_list,const char *p,char *na
 		}
 
 		parse_color_def(&p, color);
+
+		/* Older syntaxes had colors specified with color classes.  For backwards
+		   compatibility, we'll try to map those into the scheme via the term_colors.
+		   We preserve the parsed color_spec here because the scheme/syntax color
+		   resolution procedure will overwrite color->spec. */
+		memcpy(&color->orig, &color->spec, SIZEOF(struct color_spec));
 	} else {
 		logerror_2(joe_gettext(_("%s %d: Missing class name\n")),name,line);
 	}

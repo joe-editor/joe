@@ -886,6 +886,33 @@ void resolve_syntax_colors(COLORSET *cset, struct high_syntax *syntax)
 		/* Follow refs */
 		for (scdef = syntax->color; scdef; scdef = scdef->next) {
 			visit_colordef(cset, syntax, scdef);
+
+			/* Backwards compatibility: map colors from older syntaxes into the scheme
+			   via termcolors. */
+			if (scdef->spec.type == COLORSPEC_TYPE_NONE && !scdef->refs && scdef->orig.type == COLORSPEC_TYPE_ATTR) {
+				int a = scdef->orig.atr;
+				int c = (a & FG_VALUE) >> FG_SHIFT;
+
+				if (a & FG_NOT_DEFAULT && c < 16 && cset->termcolors[c].atr & FG_NOT_DEFAULT) {
+					/* Map scheme color to foreground */
+					a = (a & ~FG_MASK) | (cset->termcolors[c].atr & FG_MASK);
+				} else {
+					/* Not allowed */
+					a = a & ~FG_MASK;
+				}
+
+				c = (a & BG_VALUE) >> BG_SHIFT;
+				if (a & BG_NOT_DEFAULT && c < 16 && cset->termcolors[c].atr & FG_NOT_DEFAULT) {
+					/* Map scheme color to background */
+					a = (a & ~BG_MASK) | (((cset->termcolors[c].atr & FG_MASK) >> FG_SHIFT) << BG_SHIFT);
+				} else {
+					/* Not allowed */
+					a = a & ~BG_MASK;
+				}
+
+				scdef->spec.atr = a;
+				scdef->spec.type = COLORSPEC_TYPE_ATTR;
+			}
 		}
 	}
 	

@@ -33,3 +33,21 @@
 =diff.FileNew	bold green
 =diff.Hunk	bold blue
 
+# For backwards compatibility with older syntaxes that specify colors,
+# the scheme must specify termcolors.  Yes this is a bit of a kludge.
+-term  0 0
+-term  1 1
+-term  2 2
+-term  3 3
+-term  4 4
+-term  5 5
+-term  6 6
+-term  7 7
+-term  8 8
+-term  9 9
+-term 10 10
+-term 11 11
+-term 12 12
+-term 13 13
+-term 14 14
+-term 15 15

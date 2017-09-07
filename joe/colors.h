@@ -32,6 +32,7 @@ struct color_def {
 	struct color_ref	*refs;
 	struct color_def	*next;
 	struct color_spec	spec;
+	struct color_spec	orig;
 	int			visited;
 };
 
