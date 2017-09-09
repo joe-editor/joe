@@ -116,7 +116,7 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 							current_attr = (current_attr & ~FG_MASK) | FG_NOT_DEFAULT | ((accu - 30) << FG_SHIFT) | (-bold & BOLD);
 						}
 					} else if (accu >= 40 && accu <= 47) {
-						if (curschemeset && curschemeset->termcolors[accu - 30].type != COLORSPEC_TYPE_NONE) {
+						if (curschemeset && curschemeset->termcolors[accu - 40].type != COLORSPEC_TYPE_NONE) {
 							/* Remapped by scheme */
 							current_attr = (current_attr & ~BG_MASK) | (((curschemeset->termcolors[accu - 40].atr & FG_MASK) >> FG_SHIFT) << BG_SHIFT);
 						} else {
