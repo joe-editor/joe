@@ -151,21 +151,20 @@ int parse_color_spec(const char **p, struct color_spec *dest)
 			fg = 0;
 			bg = 1;
 		} else if (!parse_char(p, '$')) {
-			int i;
-			
 			/* GUI color */
 			if (dest->type != COLORSPEC_TYPE_NONE && dest->type != COLORSPEC_TYPE_GUI) {
 				/* Can't mix GUI and term */
 				return 1;
 			}
 			
+			buf = vstrunc(buf, 0);
+			
 			dest->type = COLORSPEC_TYPE_GUI;
-			i = 0;
 			while (**p && ((**p >= 'a' && **p <= 'f') || (**p >= '0' && **p <= '9') || (**p >= 'A' && **p <= 'F'))) {
-				buf[i++] = *((*p)++);
+				buf = vsadd(buf, **p);
+				(*p)++;
 			}
 			
-			buf[i] = 0;
 			color = zhtoi(buf);
 			
 			if (fg && !fg_read) {
