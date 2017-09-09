@@ -1189,16 +1189,15 @@ static void setup_vars(BW *tbw)
 #endif
 #endif
 		v = get("int"); v->func = m_int;
+		v = get("lr"); v->func = m_lr;
+		v = get("rlr"); v->func = m_rlr;
+		v = get("Lr"); v->func = m_Lr;
+		v = get("rLr"); v->func = m_rLr;
+		v = get("lR"); v->func = m_lR;
+		v = get("rlR"); v->func = m_rlR;
+		v = get("LR"); v->func = m_LR;
+		v = get("rLR"); v->func = m_rLR;
 	}
-
-	v = get("lr"); v->func = m_lr;
-	v = get("rlr"); v->func = m_rlr;
-	v = get("Lr"); v->func = m_Lr;
-	v = get("rLr"); v->func = m_rLr;
-	v = get("lR"); v->func = m_lR;
-	v = get("rlR"); v->func = m_rlR;
-	v = get("LR"); v->func = m_LR;
-	v = get("rLR"); v->func = m_rLR;
 
 	v = get("top");
 	v->val = (double)(tbw->top->line + 1);

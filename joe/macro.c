@@ -368,7 +368,7 @@ static int exsimple(MACRO *m, int myarg, int u, int k)
 			umclear();
 		/* Repeat... */
 		while (myarg-- && !leave && !ret)
-			ret = execmd(cmd, k != NO_MORE_DATA ? k : m->k);
+			ret = execmd(cmd, m->k != NO_MORE_DATA ? m->k : k);
 		if (leave)
 			return ret;
 		if (flg && u)
@@ -462,9 +462,9 @@ int exmacro(MACRO *m, int u, int k)
 
 				/* This is the key step of the macro... */
 				if (d->flg&2)
-					main_ret = exmacro(d, 0, NO_MORE_DATA);
+					main_ret = exmacro(d, 0, k);
 				else
-					ret = exmacro(d, 0, NO_MORE_DATA);
+					ret = exmacro(d, 0, k);
 
 				if(d->steps) ifdepth=oid, ifflag=oifl, iffail=oifa;
 				current_arg = tmp_arg;
@@ -621,7 +621,7 @@ static int doplay(W *w, int c, void *object, int *notify)
 		if (playmode[c] || !kbdmacro[c])
 			return -1;
 		playmode[c] = 1;
-		ret = exmacro(kbdmacro[c], 0, NO_MORE_DATA);
+		ret = exmacro(kbdmacro[c], 0, c);
 		playmode[c] = 0;
 		return ret;
 	} else {

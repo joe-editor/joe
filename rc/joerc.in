@@ -878,7 +878,7 @@ aspellword	^[ n
 :def shell_release release
 :def shell_math maths
 :def shell_abort abort
-:def shell_typemath txt,maths,"ins",rtn,rtn,txt,"",rtn,txt,quote,"d",rtn
+:def shell_typemath txt,maths,"ins",rtn,rtn,txt,"\r",rtn,txt,quote,"d",rtn
 :def shell_rtn rtn
 :def shell_edit edit
 :def shell_dellin dellin
@@ -1283,9 +1283,9 @@ type		U+0 TO U+10FFFF
 :inherit main
 ""		^C		Abort
 ""		^D		Eof
-"	"	^I		Tab
+"\t"		^I		Tab
 ""		^H		Backspace
-""		^M		Return
+"\r"		^M		Return
 ""		^?		Backspace
 
 :vtshell		Input to ANSI shell windows
@@ -1302,7 +1302,7 @@ type		U+0 TO U+10FFFF
 ""		^C		Abort
 ""		^D		Eof
 ""		^E		EOL for bash
-"	"	^I		Tab
+"\t"		^I		Tab
 ""		^H		Backspace
-""		^M		Return
+"\r"		^M		Return
 ""		^?		Backspace

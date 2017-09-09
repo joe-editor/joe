@@ -48,6 +48,38 @@ class FindTests(joefx.JoeTestBase):
         self.assertCursor(y=4)
         self.write("n")
         self.assertCursor(x=0, y=5)
+    
+    def test_find_with_escapes(self):
+        """Tests escape sequences in find input"""
+        self.workdir.fixtureData("test", "first\nsecond\nthird\n")
+        self.startup.args = "test",
+        self.startJoe()
+        
+        self.replace(r"\n", "-")
+        self.answerReplace("r")
+        
+        self.save()
+        self.exitJoe()
+        self.assertFileContents("test", "first-second-third-")
+    
+    def test_replace_with_escapes(self):
+        """Test replacing text with escape sequences"""
+        self.workdir.fixtureData("test", "first-second-third\nfirst+second+third\nfirst=second=third\n")
+        self.startup.args = ("test",)
+        self.startJoe()
+        
+        self.replace("-", r"\n")
+        self.answerReplace("r")
+        
+        self.replace("+", r"\t")
+        self.answerReplace("yy")
+        
+        self.replace("=", r"\x7f")
+        self.answerReplace("yy")
+        
+        self.save()
+        self.exitJoe()
+        self.assertFileContents("test", "first\nsecond\nthird\nfirst\tsecond\tthird\nfirst\x7fsecond\x7fthird\n")
 
 class ISearchTests(joefx.JoeTestBase):
     def test_isearch_fwd(self):

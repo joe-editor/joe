@@ -191,7 +191,8 @@ class JoeTestBase(unittest.TestCase):
         self.writectl(params + "{enter}")
     
     def answerReplace(self, responses):
-        """Sends keystrokes as respones to ignore/replace prompt"""
+        """Sends keystrokes as respones to ignore/replace prompt -- may not work if cursor
+        doesn't move between matches"""
         self.joe.flushin()
         cursor = None
         for response in responses:
