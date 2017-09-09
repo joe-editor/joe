@@ -1,0 +1,487 @@
+# JOE syntax highlight file for Perl
+
+# Define colors
+
+=Idle
+=Ident
+=Comment
+=Pod		+Preproc
+=Variable	+DefinedIdent # TODO: Make this work.
+=Constant
+=Number		+Constant
+=String		+Constant
+=StringEscape	+Escape
+=StringVariable	+StringEscape
+=Regex		+String
+=RegexEscape	+StringEscape
+=Type
+=Keyword
+=Statement	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=Structure	+Statement
+=Bad
+
+:begin Idle
+	*		begin noeat call=.perl()
+
+#
+# Perl as a subroutine for Mason
+#
+
+.subr perl
+
+# Detect pod
+
+:idle Idle
+	*		idle1		noeat
+.ifdef mason_line
+	"\n"		idle return
+.else
+	"\n"		idle
+.endif
+	"="		pod_start
+
+# allow keywords
+
+:idle1 Idle
+	*		idle1
+	"#"		line_comment_i	recolor=-1
+	"\n"		idle noeat
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal	recolor=-1
+	"."		maybe_float
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"`"		backtick	recolor=-1
+	"<"		maybe_inc
+	"$"		not_string	buffer recolor=-1
+.ifdef mason_block
+	"&%"		perl_maybe_done	buffer
+	"-@\i"		ident		buffer recolor=-1
+.else
+	"/"		regex		recolor=-1
+	"-\i@%&"	ident		buffer recolor=-1
+.endif
+
+:perl_maybe_done Idle
+	*		ident noeat
+	">"		idle1	recolor=-2 return
+
+# prevent keywords
+
+:rest Idle
+	*		rest
+	"({;~"		idle1
+	"#"		line_comment	recolor=-1
+	"\n"		idle noeat
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal	recolor=-1
+	"."		maybe_float
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"`"		backtick	recolor=-1
+	"$"		not_string	buffer recolor=-1
+	"<"		maybe_inc
+.ifdef mason_block
+	"&%"		perl_maybe_done buffer recolor=-1
+	"\i@"		maybe_string	buffer
+.else
+	"\i@%&"		maybe_string	buffer
+.endif
+
+:pod_start Idle
+	*		pod_start
+	"\n"		pod_block
+
+:pod_block Pod
+	*		pod_block
+	"="		pod_ident	buffer
+
+:pod_ident Pod
+	*		pod_block	noeat strings
+	"=cut"		rest
+done
+	"\c"		pod_ident
+
+:maybe_inc Idle
+	*		rest		noeat
+.ifdef mason_block
+	"/"		perl_maybe_done_2
+.endif
+	"<"		maybe_inc1
+
+:perl_maybe_done_2 Idle
+	*		perl_idle	noeat
+	"a-z"		perl_maybe_done_2
+	">"		idle
+
+
+:maybe_inc1 Idle
+	*		rest		noeat
+	" 	"	maybe_inc1
+	"'\""		quoted_inc_start	save_c recolor=-1
+	"\i"		inc		buffer noeat
+
+:quoted_inc_start Variable
+	*		quoted_inc	buffer
+
+:quoted_inc Variable
+	*		quoted_inc
+	&		skipline	save_s
+
+:inc Variable
+	*		skipline	save_s noeat
+	"\c"		inc
+
+# Should be treated as a normal line here...
+
+:skipline Idle
+	*		skipline
+	"\n"		next_line
+
+:todelim String string
+	*		todelim
+	"\n"		next_line	strings
+	"&"		founddelim
+done
+
+# eat \n so it's not in string.
+:next_line String string
+	*		todelim		buffer
+	"\n"		next_line
+
+:founddelim Variable
+	*		idle		noeat
+
+:regex Regex
+	*		regex
+	"\\"		regex_quote	recolor=-1
+	"/"		rest
+
+:regex_quote RegexEscape
+	*		regex
+
+:not_string Idle
+	*		rest noeat
+	"\i"		ident
+	"\"'`#"		rest
+
+:line_comment Comment comment
+	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		rest
+
+:line_comment_i Comment comment
+	*		line_comment_i
+	"BFHNTX"	line_comment_i	noeat call=comment_todo.comment_todo()
+	"\n"		idle noeat
+
+:end_of_file_comment Comment comment
+	"BFHNTX"	end_of_file_comment	noeat call=comment_todo.comment_todo()
+	*		end_of_file_comment
+
+:first_digit Number
+	*		rest	noeat
+	"x"		hex
+	"b"		binary
+	"."		float
+	"eE"		epart
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+
+:bad_number Bad
+	*		rest	noeat
+	"0-9"		bad_number
+
+:octal Number
+	*		rest	noeat
+	"0-7_"		octal
+	"89"		bad_number	recolor=-1
+
+:binary Number
+	*		rest	noeat
+	"01_"		binary
+	"2-9"		bad_number	recolor=-1
+
+:hex Number
+	*		rest	noeat
+	"0-9A-Fa-f_"	hex
+
+:decimal Number
+	*		rest	noeat
+	"0-9_"		decimal
+	"eE"		epart
+	"."		float
+
+:maybe_float Number
+	*		rest	recolor=-2	noeat
+	"0-9"		float		recolor=-2
+
+:float Number
+	*		rest	noeat
+	"eE"		epart
+	"0-9_"		float
+
+:epart Number
+	*		rest	noeat
+	"0-9+\-"	enum
+
+:enum Number
+	*		rest	noeat
+	"0-9_"		enum
+
+:string	String string
+	*		string
+	"\""		rest
+	"\\"		string_escape	recolor=-1
+	"$@"		string_subst	recolor=-1
+
+:string_subst StringVariable string
+	*		string	noeat recolor=-1
+	"\c"		string_subst
+
+:string_escape StringEscape string
+	*		string
+	"x"		string_hex1
+	"c"		string_ctrl
+	"N"		string_named
+	"0-7"		string_octal2
+	"\n"		string		recolor=-2
+
+:string_named StringEscape string
+	*		string
+	"{"		string_named_rest
+
+:string_named_rest StringEscape string
+	*		string_named_rest
+	"}"		string
+
+:string_ctrl StringEscape string
+	*		string
+
+:string_hex1 StringEscape string
+	*		string		noeat
+	"{"		string_unicode
+	"0-9a-fA-F"	string_hex2
+
+:string_unicode StringEscape string
+	*		string_unicode
+	"}"		string
+
+:string_hex2 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 StringEscape string
+	*		string		noeat
+	"0-7"		string_octal3
+
+:string_octal3 StringEscape string
+	*		string		noeat
+	"0-7"		string
+
+:char String string
+	*		char
+	"\n"		idle noeat
+	"'"		rest
+	"\\"		char_escape	recolor=-1
+
+:char_escape	StringEscape string
+	*		char		recolor=-2
+	"\\'"		char
+
+:backtick	String string
+	*		backtick
+	"`"		rest
+	"\\"		backtick_escape	recolor=-1
+	"$@"		backtick_subst recolor=-1
+
+:backtick_subst StringVariable string
+	*		backtick	noeat recolor=-1
+	"\c"		backtick_subst
+
+:backtick_escape StringEscape string
+	*		backtick
+	"x"		backtick_hex1
+	"c"		backtick_ctrl
+	"N"		backtick_named
+	"0-7"		backtick_octal2
+	"\n"		backtick		recolor=-2
+
+:backtick_named StringEscape string
+	*		backtick
+	"{"		backtick_named_rest
+
+:backtick_named_rest StringEscape string
+	*		backtick_named_rest
+	"}"		backtick
+
+:backtick_ctrl StringEscape string
+	*		backtick
+
+:backtick_hex1 StringEscape string
+	*		backtick		noeat
+	"{"		backtick_unicode
+	"0-9a-fA-F"	backtick_hex2
+
+:backtick_unicode StringEscape string
+	*		backtick_unicode
+	"}"		backtick
+
+:backtick_hex2 StringEscape string
+	*		backtick		noeat
+	"0-9a-fA-F"	backtick
+
+:backtick_octal2 StringEscape string
+	*		backtick		noeat
+	"0-7"		backtick_octal3
+
+:backtick_octal3 StringEscape string
+	*		backtick		noeat
+	"0-7"		backtick
+
+# TODO: Tease out the variable logic from this so that we can highlight
+# variables separate from other identifiers.
+
+:ident Ident
+	*		rest		noeat strings
+	"BEGIN"		kw
+	"END"		kw
+	"if"		cond
+	"unless"	cond
+	"while"		loop
+	"until"		loop
+	"foreach"	loop
+	"sub"		struct
+	"my"		kw
+	"do"		loop
+	"if"		cond
+	"else"		cond
+	"elsif"		cond
+	"for"		loop
+	"continue"	loop
+	"last"		loop
+	"print"		stmt
+	"reset"		kw
+	"die"		stmt
+	"goto"		stmt
+	"require"	stmt
+	"use"		kw
+	"eval"		kw
+	"redo"		kw
+	"next"		loop
+	"warn"		stmt
+	"return"	stmt
+	"printf"	stmt
+	"close"		stmt
+	"package"	kw
+	"m"		match
+	"qr"		match
+	"qq"		match
+	"qx"		match
+	"qw"		match
+	"q"		match
+	"s"		subst
+	"tr"		subst
+	"y"		subst
+	"__END__"	end_of_file_comment
+	"__DATA__"	end_of_file_comment
+done
+	"\c"		ident
+
+:maybe_string Idle
+	*		rest		noeat strings
+	"qr"		match
+	"qq"		match
+	"qx"		match
+	"qw"		match
+	"q"		match
+done
+	"\c"		maybe_string
+
+:type Type
+	*		rest	noeat
+
+:kw Keyword
+	*		rest	noeat
+
+:cond Conditional
+	*		rest	noeat
+
+:loop Loop
+	*		rest	noeat
+
+:struct Structure
+	*		rest	noeat
+
+:stmt Statement
+	*		rest	noeat
+
+:match Idle
+	*		inmatch		save_c recolor=-1
+	" 	"	match
+
+:inmatch Regex
+	*		inmatch
+	%		inmatch		call=.inmatch()
+	&		rest
+	"\\"		inmatch_quote	recolor=-1
+
+:inmatch_quote RegexEscape
+	*		inmatch
+
+:subst Idle
+	*		insubst		save_c recolor=-1
+	"<([{`"		delim_insubst	save_c recolor=-1
+	" 	"	subst
+
+:insubst Regex
+	*		insubst
+	&		inrepl
+	"\\"		insubst_quote	recolor=-1
+
+:insubst_quote RegexEscape
+	*		insubst
+
+:inrepl Regex
+	*		inrepl
+	&		rest
+	"\\"		inrepl_quote
+
+:inrepl_quote RegexEscape
+	*		inrepl
+
+:delim_insubst Regex
+	*		delim_insubst
+	&		delim_repl
+	"\\"		delim_quote
+
+:delim_quote RegexEscape
+	*		delim_insubst
+
+:delim_repl Regex
+	*		repl		save_c recolor=-1
+	" 	"	delim_repl
+
+:repl Regex
+	*		repl
+	&		rest
+	"\\"		repl_quote
+
+:repl_quote RegexEscape
+	*		repl
+
+.end
+
+.subr inmatch
+
+:inmatch Regex
+	*		inmatch
+	%		inmatch		call=.inmatch()
+	&		inmatch		return
+	"\\"		inmatch_quote	recolor=-1
+
+:inmatch_quote RegexEscape
+	*		inmatch
+.end

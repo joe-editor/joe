@@ -1,0 +1,26 @@
+# JOE syntax highlight file for LISP
+
+# Needs lots of work...
+
+=Idle
+=Comment
+=String		+Constant
+=StringEscape	+Escape
+
+:idle Idle
+	*		idle
+	";"		comment		recolor=-1
+	"\""		string		recolor=-1
+
+:comment Comment comment
+	*		comment
+	"\n"		idle
+
+:string String string
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+
+:string_escape StringEscape string
+	*		string
+	"\n"		string		recolor=-2

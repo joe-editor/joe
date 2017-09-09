@@ -136,30 +136,6 @@ Assume ANSI-like terminal emulator supports color even if termcap entry says
 it doesn't.
 <br>
 
-* text_color __color__<br>
-Set color for text.
-<br>
-
-* status_color __color__<br>
-Set color for status bar.
-<br>
-
-* help_color __color__<br>
-Set color for help.
-<br>
-
-* menu_color __color__<br>
-Set color for menus.
-<br>
-
-* prompt_color __color__<br>
-Set color for prompts.
-<br>
-
-* msg_color __color__<br>
-Set color for messages.
-<br>
-
 * autoswap<br>
 Automatically swap __^K B__ with __^K K__ if necessary to
 mark a legal block during block copy/move commands.
@@ -202,6 +178,10 @@ enables "bracketed paste mode" (but only if the terminal
 seems to have the ANSI command set).  In this mode, text
 pasted into the window is bracketed with ESC \[ 2 0 0 ~ and
 ESC \[ 2 0 1 ~.
+<br>
+
+* colors __scheme__<br>
+Sets the color scheme.
 <br>
 
 * columns nnn<br>
@@ -263,6 +243,11 @@ When set, start off with the on-line help enabled.
 * help_is_utf8<br>
 When set, the help text in the joerc file is
 assumed to be UTF-8.
+<br>
+
+* hiline<br>
+When set, the current line is highlighted. The current color scheme must
+support this.
 <br>
 
 * icase<br>
@@ -2653,6 +2638,107 @@ directives.  For example:
 
 <a name="joerc"></a>
 
+### Color schemes
+
+Color *classes* are declared at the top of each syntax file, and referenced
+from each state.  Previously, colors would be specified alongside each class
+in the syntax files, but they are now globally specified by color schemes. 
+The syntax files will pull in all colors relevant to their languages by
+declaring them, optionally referencing other classes in case a class isn't
+specified by a color scheme.  For example, this is typical:
+
+    =Constant
+    =String +Constant
+    =Number +Constant
+
+Both the `String` and `Number` classes can be defined by the color scheme. 
+If they aren't, each will fall back to `Constant`, which is logically a
+superset of strings and numbers.  More than one class can be referenced in a
+class declaration; JOE will pick the first one that is defined.
+
+In this manner schemes can define a broad and generic set of color classes
+and syntax files can filter those into the color classes applicable to their
+languages.  This assumes that syntaxes and color schemes follow a particular
+convention, which is laid out in __syntax/CLASSES.md__.
+
+### Color scheme files
+
+Color scheme files are divided into sections based on the number of colors
+available to the terminal to support e.g. 256-color terminals vs 88-color
+terminals vs terminals with [24-bit color support](https://gist.github.com/XVilka/8346728).
+Each section starts with the `.colors` directive:
+
+    .colors 256
+    # 256-color terminal section
+    .colors *
+    # Truecolor terminal section
+
+The above scheme would fail to load on a 16-color terminal.  JOE will check
+if the `COLORTERM` environment variable is set to `24bit` or `truecolor` to
+determine if a terminal supports 24 bit color, due to the fact that terminfo
+currently lacks this support.  In Windows, JOE automatically supports 24 bit
+color.
+
+Environment colors are specified as such:
+
+    -text <fg>/<bg> <attributes>
+
+Where `<fg>` and `<bg>` are both optional, and can be any of:
+
+* Color names: white, cyan, magenta, blue, yellow, green, red, or black, WHITE,
+CYAN, MAGENTA, BLUE, YELLOW, GREEN, RED or BLACK (where upper-case colors
+are the high intensity versions from 16 color terminals).
+
+* `default` for the terminal's default foreground or background color.
+
+* Color numbers: 0-255 xterm colors
+
+* RGB specifications in the standard `$RRGGBB` form (only in the 24-bit
+section).
+
+Attributes can be `bold`, `inverse`, `blink`, `dim`, `underline`, and
+`italic`.
+
+A number of environment colors can be changed:
+
+* `-text` specifies the default environment text.
+* `-status` specifies the status line's color.
+* `-selection` specifies the color used for selection.
+* `-help` specifies the help text background color.
+* `-menu` specifies the inactive menu item color.
+* `-menusel` specifies the active menu item color.
+* `-prompt` specifies prompt color.
+* `-message` specifies message color.
+* `-linum` specifies the color in the line number gutter.
+* `-curlin` specifies the current line color (if `hiline` is on).
+* `-curlinum` specifies the current line number color (if `hiline` is on).
+
+These do not all need to be specified.  `-text` defaults to the terminal's
+default foreground/background colors.  Each other will pick up the value of
+`-text` (plus `inverse` in a few cases) if it is not specified.
+
+When using pop-up terminals, JOE will remap colors 0-15 based on colors
+found in the scheme specified by `-term <n> __color spec__`.
+
+The rest of the file is color classes that map into syntax colors.  Color
+classes can be set by either:
+
+    =ClassName <color spec>
+    =syntaxname.ClassName <color spec>
+
+In the second case, the color will only apply to the specified syntax.
+
+Lastly, macros can be defined in color scheme files to simplify their
+maintenance.  For example:
+
+    .set dark_blue 66
+    # ...
+    =Define [dark_blue]
+
+References to `dark_blue` must be in brackets, and their values will be
+substituted by a simple string replacement before parsing the line (which
+means macros can contain any text, not just color values).
+
 ## The joerc file
 
 __^T__ options, the help screens and the key-sequence to editor command
@@ -2906,6 +2992,12 @@ Here is a complete list of the environment variables:
 
 * BAUD<br>
 Tell JOE the baud rate of the terminal (overrides value reported by stty).
+<br>
+
+* COLORTERM<br>
+If set to `truecolor` or `24bit`, [24-bit color support](https://gist.github.com/XVilka/8346728)
+will be assumed and JOE will be able to load those sections from color
+schemes.
 <br>
 
 * COLUMNS<br>
@@ -3876,7 +3968,7 @@ Default middle button release handler, usually bound to MIDDLEUP.
 <br>
 
 * xtmouse<br>
-Handle xterm mouse events, usually bound to Esc [ M.  It parses the rest of
+Handle xterm mouse events, usually bound to Esc \[ M.  It parses the rest of
 the sequence and generates fake "keys" that can be bound to macros in the
 joerc file.  It uses a timer to detect double-click and triple-click.  The
 keys are: MUP, MDOWN, MDRAG, M2UP, M2DOWN, M2DRAG, M3UP, M3DOWN, M3DRAG,
@@ -3884,7 +3976,7 @@ MWUP and MWDOWN.
 <br>
 
 * extmouse<br>
-Handle extended xterm mouse events, usually bound to Esc [ \<.
+Handle extended xterm mouse events, usually bound to Esc \[ \<.
 <br>
 
 * paste<br>

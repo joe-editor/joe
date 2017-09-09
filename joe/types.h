@@ -225,7 +225,6 @@ typedef int pid_t;
 #define stdsiz		8192
 #define FITHEIGHT	4		/* Minimum height needed for new text windows */
 #define FITMIN		2		/* Minimum main window height */
-#define LINCOLS		10
 #define NPROC		8		/* Number of processes we keep track of */
 #define INC		16		/* Pages to allocate each time */
 
@@ -272,6 +271,8 @@ typedef struct mpx MPX;
 typedef struct jfile JFILE;
 typedef struct vt_context VT;
 typedef struct Phash PHASH;
+typedef struct color_set COLORSET;
+typedef struct color_scheme SCHEME;
 
 /* Structure which are passed by value */
 
@@ -317,6 +318,7 @@ struct highlight_state {
 #include "frag.h"
 #include "regex.h"
 #include "scrn.h"
+#include "colors.h"
 #include "syntax.h"
 #include "tab.h"
 #include "termcapj.h"

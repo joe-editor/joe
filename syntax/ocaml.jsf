@@ -1,0 +1,406 @@
+# JOE syntax highlight file for OCaml
+
+=Idle
+=Bad
+=Comment
+=Constant
+=Number		+Constant
+=String		+Constant
+=StringEscape	+Escape
+=Character	+String
+=CharacterEscape +StringEscape
+=Boolean	+Constant
+=Keyword
+=Type
+=Operator	+Keyword
+=Control
+=Brace
+=LowId		+Ident
+=CapId		+DefinedIdent
+=Builtin	+DefinedFunction +DefinedIdent
+=Structure	+Keyword
+=StorageClass	+Type +Keyword
+=Statement	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+
+# Bugs:
+# = in some contexts is a control, not an operator (let, etc)
+# "type" keyword introduces a type = type
+
+:expr Idle
+	*		expr
+	"#.,)];"	control		recolor=-1
+	"!?"		prefixop	recolor=-1
+	"=<>@^&+*/$%"	infixop		recolor=-1
+	"\-"		minus		recolor=-1
+	"~"		tilde		recolor=-1
+	"["		brace		recolor=-1
+	"|"		pipe		recolor=-1
+	":"		colon		recolor=-1
+	"("		bracket		recolor=-1
+	"0"		zero		recolor=-1
+	"1-9"		decimal		recolor=-1
+	"\""		string		recolor=-1
+	"\'"		char		recolor=-1
+	"a-z_"		lowid		buffer recolor=-1
+	"A-Z`"		capid		buffer recolor=-1
+
+:bad Bad
+	*		expr
+
+:control Control
+	*		expr		noeat
+
+:prefixop Operator
+	*		operator	noeat
+
+:infixop Operator
+	*		operator	noeat
+
+:operator Operator
+	*		expr 		noeat
+	"!?~=<>@^|&+*/$%.:\-"	operator
+
+:minus Operator
+	*		operator	noeat
+	"0"		zero		recolor=-2
+	"1-9"		decimal		recolor=-2
+
+:tilde Operator
+	*		prefixop	noeat
+	"a-z"		opparam		noeat
+
+:opparam LowId
+	*		expr		noeat
+	"a-zA-Z0-9_'"	opparam
+	":"		control
+
+:brace Control
+	*		expr		noeat
+	"|"		expr
+
+:pipe Operator
+	*		infixop		noeat
+	"]"		pipeclose	recolor=-2
+
+:pipeclose Control
+	*		expr		noeat	
+
+:colon Operator
+	*		type1		noeat
+	"="		assign		recolor=-2
+
+:assign Operator
+	*		expr		noeat
+
+:bracket Control
+	*		expr		noeat
+	"*"		comment		recolor=-2
+
+:zero Number
+	*		expr		noeat
+	"0-9_"		decimal
+	"b"		binaryl		buffer
+	"B"		binaryh		buffer
+	"o"		octall		buffer
+	"O"		octalh		buffer
+	"x"		hexl		buffer
+	"X"		hexh		buffer
+	"e"		epartl		buffer
+	"E"		eparth		buffer
+	"."		float
+
+:decimal Number
+	*		expr		noeat
+	"0-9_"		decimal
+	"."		float
+	"e"		epartl		buffer
+	"E"		eparth		buffer
+
+:binaryl Number
+	*		lowid		noeat recolor=-2
+	"01"		binary
+:binaryh Number
+	*		capid		noeat recolor=-2
+	"01"		binary
+:binary Number
+	*		expr		noeat
+	"01_"		binary
+
+:octall Number
+	*		lowid		noeat recolor=-2
+	"0-7"		octal
+:octalh Number
+	*		capid		noeat recolor=-2
+	"0-7"		octal
+:octal Number
+	*		expr		noeat
+	"0-7_"		octal
+
+:hexl Number
+	*		lowid		noeat recolor=-2
+	"0-9a-fA-F"	hex
+:hexh Number
+	*		capid		noeat recolor=-2
+	"0-9a-fA-F"	hex
+:hex Number
+	*		expr		noeat
+	"0-9a-fA-F_"	hex
+
+:float Number
+	*		expr		noeat
+	"0-9_"		float
+	"e"		epartl		buffer
+	"E"		eparth		buffer
+
+:epartl Number
+	*		lowid		noeat recolor=-2
+	"0-9"		enum
+	"+\-"		enum1
+:eparth Number
+	*		capid		noeat recolor=-2
+	"0-9"		enum
+	"+\-"		enum1
+
+:enum1 Number
+	*		bad		noeat
+	"0-9_"		enum
+:enum Number
+	*		expr		noeat
+	"0-9_"		enum
+
+:string	String string
+	*		string
+	"\""		expr
+	"\\"		string_escape	recolor=-1
+	"%"		string_control	recolor=-1
+
+:string_escape StringEscape string
+	*		string
+	"x"		string_hex1
+	"0-7"		string_octal2
+
+:string_hex1 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string_hex2
+
+:string_hex2 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 StringEscape string
+	*		string		noeat
+	"0-7"		string_octal3
+
+:string_octal3 StringEscape string
+	*		string		noeat
+	"0-7"		string
+
+:string_control StringEscape string
+	*		string_control
+	"\""		string		noeat
+	"diouxXeEfFgGaAcspn%SC"	string
+
+:char Character string
+	*		charend
+	"\\"		char_escape	recolor=-1
+
+:charend Character string
+	*		bad		noeat
+	"\'"		expr
+
+:char_escape CharacterEscape string
+	*		charend
+	"x"		char_hex1
+	"0-7"		char_octal2
+
+:char_hex1 CharacterEscape string
+	*		bad		noeat
+	"0-9a-fA-F"	char_hex2
+
+:char_hex2 CharacterEscape string
+	*		charend		noeat
+	"0-9a-fA-F"	charend
+
+:char_octal2 CharacterEscape string
+	*		charend		noeat
+	"0-7"		char_octal3
+
+:char_octal3 CharacterEscape string
+	*		charend		noeat
+	"0-7"		charend
+
+:lowid LowId
+	*		expr		noeat strings
+	"_"		kw
+	"and"		kw
+	"as"		kw
+	"assert"	kw
+	"begin"		kw
+	"class"		kw
+	"constraint"	kw
+	"do"		kw
+	"done"		kw
+	"downto"	kw
+	"else"		kw
+	"end"		kw
+	"exception"	kw	
+	"external"	kw
+	"false"		bool
+	"for"		loop
+	"fun"		kw
+	"function"	struct
+	"functor"	struct
+	"if"		cond
+	"in"		kw
+	"include"	kw
+	"inherit"	kw
+	"initializer"	kw
+	"lazy"		storage
+	"let"		kw
+	"match"		kw
+	"method"	struct
+	"module"	struct
+	"mutable"	storage
+	"object"	kw
+	"of"		kw
+	"open"		kw
+	"private"	storage
+	"raise"		kw # technically not, but ...
+	"rec"		kw
+	"sig"		kw
+	"struct"	kw
+	"then"		cond
+	"to"		kw
+	"true"		bool
+	"try"		kw
+	"type"		kw
+	"val"		kw
+	"virtual"	storage
+	"when"		loop
+	"while"		loop
+	"with"		kw
+	"asr"		operatorkw
+	"land"		operatorkw
+	"lor"		operatorkw
+	"lsl"		operatorkw
+	"lsr"		operatorkw
+	"lxor"		operatorkw
+	"mod"		operatorkw
+	"new"		operatorkw
+	"or"		operatorkw
+done
+	"a-zA-Z0-9_'"	lowid
+
+:kw Keyword
+	*		expr		noeat
+
+:operatorkw Operator
+	*		expr		noeat
+
+:bool Boolean
+	*		expr		noeat
+
+:loop Loop
+	*		expr		noeat
+
+:struct Structure
+	*		expr		noeat
+
+:storage StorageClass
+	*		expr		noeat
+
+:cond Conditional
+	*		expr		noeat
+
+:capid CapId
+	*		expr		noeat strings
+	"Arg"		stdlib
+	"Array"		stdlib
+	"ArrayLabels"	stdlib
+	"Buffer"	stdlib
+	"Callback"	stdlib
+	"Char"		stdlib
+	"Complex"	stdlib
+	"Digest"	stdlib
+	"Filename"	stdlib
+	"Format"	stdlib
+	"Gc"		stdlib
+	"Genlex"	stdlib
+	"Hashtbl"	stdlib
+	"Int32"		stdlib
+	"Int64"		stdlib
+	"Lazy"		stdlib
+	"Lexing"	stdlib
+	"List"		stdlib
+	"ListLabels"	stdlib
+	"Map"		stdlib
+	"Marshal"	stdlib
+	"MoreLabels"	stdlib
+	"Nativeint"	stdlib
+	"Oo"		stdlib
+	"Parsing"	stdlib
+	"Printexc"	stdlib
+	"Printf"	stdlib
+	"Queue"		stdlib
+	"Random"	stdlib
+	"Scanf"		stdlib
+	"Set"		stdlib
+	"Sort"		stdlib
+	"Stack"		stdlib
+	"StdLabels"	stdlib
+	"Stream"	stdlib
+	"String"	stdlib
+	"StringLabels"	stdlib
+	"Sys"		stdlib
+	"Weak"		stdlib
+done
+	"a-zA-Z0-9_'"	capid
+
+:stdlib Builtin
+	*		expr		noeat
+
+:type1	Type
+	*		expr		noeat
+	"a-z *>'\t\-"	type1
+	"("		type2
+
+:type2	Type
+	*		expr		noeat
+	"a-z *>'\t\-"	type2
+	"("		type3
+	")"		type1
+
+:type3	Type
+	*		expr		noeat
+	"a-z *>'\t\-"	type3
+	"("		type4
+	")"		type2
+
+:type4	Type
+	*		expr		noeat
+	"a-z *>'\t\-"	type4
+	"("		expr 				# too deep nesting
+	")"		type2
+
+:comment Comment comment
+	*		expr 		call=.comment()
+
+.subr comment
+
+:comment_body Comment comment
+	*		comment_body
+	"("		nest_comment
+	"*"		end_comment
+	"BFHNTX"	comment_body	noeat call=comment_todo.comment_todo()
+
+:end_comment Comment comment
+	*		comment_body	noeat
+	")"		end_comment	return
+
+:nest_comment Comment comment
+	*		comment_body
+	"*"		comment_body	call=.comment()
+
+.end

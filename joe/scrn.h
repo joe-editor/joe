@@ -128,9 +128,12 @@ struct scrn {
 	const char	*ce;		/* Clear to end of line */
 	ptrdiff_t	cce;
 
-	int assume_256;		/* Assume terminal has 256 color mode, but use
+	int 	assume_256;	/* Assume terminal has 256 color mode, but use
 	                           regular mode for standard colors just in case */
 
+	int	truecolor;	/* Terminal supports true color */
+	int	*palette;	/* Truecolor RGB palette */
+	
 	/* Basic abilities */
 	int	scroll;		/* Set to use scrolling */
 	int	insdel;		/* Set to use insert/delete within line */
@@ -236,18 +239,19 @@ extern unsigned atab[];
 #define CONTEXT_STRING	2
 #define CONTEXT_MASK	(CONTEXT_COMMENT+CONTEXT_STRING)
 
-#define ITALIC		 128
-#define INVERSE		 256
-#define UNDERLINE	 512
-#define BOLD		1024
-#define BLINK		2048
-#define DIM		4096
+#define ITALIC		  32
+#define INVERSE		  64
+#define UNDERLINE	 128
+#define BOLD		 256
+#define BLINK		 512
+#define DIM		1024
 #define AT_MASK		(INVERSE+UNDERLINE+BOLD+BLINK+DIM+ITALIC)
 
-#define BG_SHIFT	13
+#define BG_SHIFT	11
 #define BG_VALUE	(255<<BG_SHIFT)
 #define BG_NOT_DEFAULT	(256<<BG_SHIFT)
-#define BG_MASK		(511<<BG_SHIFT)
+#define BG_TRUECOLOR	(512<<BG_SHIFT)
+#define BG_MASK		(1023<<BG_SHIFT)
 
 #define BG_DEFAULT	(0<<BG_SHIFT)
 
@@ -271,10 +275,11 @@ extern unsigned atab[];
 #define BG_BCYAN	(BG_NOT_DEFAULT|(14<<BG_SHIFT))
 #define BG_BWHITE	(BG_NOT_DEFAULT|(15<<BG_SHIFT))
 
-#define FG_SHIFT	22
+#define FG_SHIFT	21
 #define FG_VALUE	(255<<FG_SHIFT)
 #define FG_NOT_DEFAULT	(256<<FG_SHIFT)
-#define FG_MASK		(511<<FG_SHIFT)
+#define FG_TRUECOLOR	(512<<FG_SHIFT)
+#define FG_MASK		(1023<<FG_SHIFT)
 
 #define FG_DEFAULT	(0<<FG_SHIFT)
 #define FG_BWHITE	(FG_NOT_DEFAULT|(15<<FG_SHIFT))
@@ -346,13 +351,16 @@ ptrdiff_t txtwidth(const char *s,ptrdiff_t len);
 off_t txtwidth1(struct charmap *map, off_t tabwidth, const char *s, ptrdiff_t len);
 
 /* Generate a field: formatted */
-void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg);
+void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int iatr, int flg);
 
 /* Column width of formatted string */
 ptrdiff_t fmtlen(const char *s);
 
 /* Offset within formatted string of particular column */
 ptrdiff_t fmtpos(const char *s, ptrdiff_t goal);
+
+/* Set extended colors palette */
+void setextpal(SCRN *t, int *palette);
 
 extern int bg_text;
 extern int env_lines;

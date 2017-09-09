@@ -12,6 +12,38 @@
 
 * Enhancements
 
+	* New color scheme feature, which can be accessed with ^T S or
+	  by setting the **-colors** option.
+
+	* [24-bit color support](https://gist.github.com/XVilka/8346728)
+	  can be enabled by setting the `COLORTERM` environment variable to
+	  `truecolor` or `24bit`.
+
+	* Several schemes included in-the-box:
+
+		* gruvbox by Pavel Pertsev
+
+		* ir_black by Todd Werth
+
+		* molokai by Tomas Restrepo
+
+		* solarized by Ethan Schoonover
+
+		* wombat by Lars H. Nielsen
+
+		* xoria by Dmitriy Y. Zotikov
+
+		* zenburn by Jani Nurminen
+
+	* The current line can be highlighted by pressing ^T U or by
+	  enabling the **-hiline** option.
+
+	* The gutter containing line numbers has a dynamic size based on the
+	  length of the file, rather than a fixed size of 10.
+
+	* Updated all language syntax files to use comment_todo and
+	  string/comment contexts where appropriate.
+
 	* Now pass character which invoked a macro to each macro step and
 	  call.  If a macro step happens to be the 'type' command, the
 	  character which invoked the macro will be typed in.  For example,
