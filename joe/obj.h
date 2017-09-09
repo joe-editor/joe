@@ -114,7 +114,7 @@ char *vscpyz(char *s, const char *z);
 
 /* Concatenate an array of characters to a string. */
 
-char *vscat(char *s, char *array, int len);
+char *vscat(char *s, const char *array, int len);
 char *vscatz(char *s, const char *z);
 
 char *vsdup(const char *s);

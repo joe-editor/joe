@@ -1,0 +1,354 @@
+# JOE syntax highlight file for Swift
+
+=Idle
+=Comment
+=Preproc
+=Precond	+Preproc
+=Constant
+=String		+Constant
+=Number		+Constant
+=Boolean	+Constant
+=StringEscape	+Escape +String
+=Operator
+=Keyword
+=Statement	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=Type
+=StorageClass	+Type +Keyword
+=Modifier	+StorageClass
+=Label		+DefinedIdent
+=Builtin	+DefinedFunction
+=Bad
+
+:pre_idle Idle
+	*		NULL		noeat call=.swift()
+
+.subr swift
+
+:idle Idle
+	*		idle
+	"("		idle		call=.swift(paren)
+	"["		idle		call=.swift(brack)
+	"{"		idle		call=.swift(squiggly)
+.ifdef paren
+	")"		idle		return
+.else
+	")"		stray		recolor=-1
+.endif
+.ifdef brack
+	"]"		idle		return
+.else
+	"]"		stray		recolor=-1
+.endif
+.ifdef squiggly
+	"}"		idle		return
+.else
+	"}"		stray		recolor=-1
+.endif
+	"0"		zero		recolor=-1
+	"1-9"		decimal		recolor=-1
+	"."		decimal_point	recolor=-1
+	"\""		string		recolor=-1
+	"/"		slash		recolor=-1
+	"@$\i"		ident		buffer
+	"#"		pre		mark
+
+:stray Bad
+	*		idle
+
+:pre Preproc
+	*		idle		noeat
+	" \t"		pre
+	"a-z"		preident	recolor=-1 buffer
+
+:preident Preproc
+	*		idle		markend recolormark noeat strings
+	"if"		precond		markend recolormark
+	"elseif"	precond		markend recolormark
+	"else"		precond		markend recolormark
+	"endif"		precond		markend recolormark
+done
+	"a-z"		preident
+
+:precond Precond
+	*		idle		noeat
+
+# Comments
+
+:slash Comment comment
+	*		idle		noeat recolor=-2
+	"/"		line_comment
+	"*"		idle		call=.block_comment()
+
+:line_comment Comment comment
+	*		line_comment
+	"\n"		idle
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+
+# Numbers
+
+:bad_number Bad
+	*		idle	noeat
+	"0-9"		bad_number
+
+:zero Constant
+	*		idle	noeat
+	"b"		binary
+	"o"		octal
+	"x"		hex
+	"."		maybe_float
+	"eE"		epart
+	"0-9_"		decimal	recolor=-1
+
+:decimal_point Constant
+	*		idle	noeat	recolor=-2
+	"."		decimal_point_1	recolor=-2
+	"\i"		not_ident	recolor=-2
+	"0-9_"		float
+
+:not_ident Idle
+	*		idle	noeat
+	"\c"		not_ident
+
+:decimal_point_1 Idle
+	*		idle		noeat
+	"."		idle
+
+:octal Constant
+	*		idle	noeat
+	"0-7_"		octal
+	"89"		bad_number	recolor=-1
+
+:binary Constant
+	*		idle	noeat
+	"01_"		binary
+	"2-9"		bad_number	recolor=-1
+
+:hex Constant
+	*		idle	noeat
+	"0-9A-Fa-f_"	hex
+	"."		hexfloat
+	"pP"		ppart
+
+:hexfloat Constant
+	*		idle	noeat
+	"0-9A-Fa-f_"	hexfloat
+	"pP"		ppart
+
+:ppart Constant
+	*		idle	noeat
+	"0-9+\-"	pnum
+
+:pnum Constant
+	*		idle	noeat
+	"0-9_"		pnum
+
+:decimal Constant
+	*		idle	noeat
+	"0-9_"		decimal
+	"eE"		epart
+	"."		maybe_float
+
+:maybe_float Constant
+	*		idle	noeat recolor=-2
+	"."		decimal_point_1	recolor=-2
+	"eE"		epart
+	"0-9_"		float
+
+:float Constant
+	*		idle	noeat
+	"eE"		epart
+	"0-9_"		float
+
+:epart Constant
+	*		idle	noeat
+	"0-9+\-"	enum
+
+:enum Constant
+	*		idle	noeat
+	"0-9_"		enum
+
+# Strings
+
+:string	String string
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+
+:string_escape StringEscape string
+	*		string
+	"("		string	call=.swift(paren)	recolor=-2
+	"u"		string_maybe_uni
+
+:string_maybe_uni StringEscape string
+	*		string
+	"{"		string_uni
+
+:string_uni StringEscape string
+	*		string_uni
+	"}"		string
+
+# Identifiers
+
+:ident Idle
+	*			idle	noeat strings
+	"class"			storage
+	"deinit"		kw
+	"enum"			storage
+	"extension"		storage
+	"func"			storage
+	"import"		stmt
+	"init"			kw
+	"inout"			storage
+	"internal"		modifier
+	"let"			kw
+	"operator"		kw
+	"private"		modifier
+	"protocol"		storage
+	"public"		modifier
+	"static"		modifier
+	"struct"		storage
+	"subscript"		kw
+	"typealias"		storage
+	"var"			kw
+	"break"			stmt
+	"case"			label
+	"continue"		loop
+	"default"		label
+	"defer"			stmt
+	"do"			stmt
+	"else"			cond
+	"fallthrough"		stmt
+	"for"			loop
+	"guard"			kw
+	"if"			cond
+	"in"			kw
+	"repeat"		loop
+	"return"		stmt
+	"switch"		cond
+	"where"			kw
+	"while"			loop
+	"as"			kw
+	"catch"			stmt
+	"dynamicType"		kw
+	"false"			bool
+	"is"			kw
+	"nil"			lit
+	"rethrows"		modifier
+	"super"			kw
+	"self"			kw
+	"Self"			type
+	"throw"			stmt
+	"throws"		modifier
+	"true"			bool
+	"try"			kw
+	"__COLUMN__"		kw
+	"__FILE__"		kw
+	"__FUNCTION__"		kw
+	"__LINE__"		kw
+	"_"			kw
+	"associativity"		kw
+	"convenience"		kw
+	"dynamic"		kw
+	"didSet"		kw
+	"final"			storage
+	"get"			kw
+	"infix"			kw
+	"indirect"		kw
+	"lazy"			storage
+	"left"			kw
+	"mutating"		storage
+	"none"			kw
+	"nonmutating"		storage
+	"open"			storage
+	"optional"		kw
+	"override"		storage
+	"postfix"		kw
+	"precedence"		kw
+	"prefix"		kw
+	"Protocol"		builtin
+	"required"		kw
+	"right"			kw
+	"set"			kw
+	"Type"			builtin
+	"unowned"		kw
+	"weak"			kw
+	"willSet"		kw
+	
+	"String"		type
+	"Int"			type
+	"Int8"			type
+	"Int16"			type
+	"Int32"			type
+	"Int64"			type
+	"UInt"			type
+	"UInt8"			type
+	"UInt16"		type
+	"UInt32"		type
+	"UInt64"		type
+	"Float"			type
+	"Double"		type
+	"Bool"			type
+	"Character"		type
+	"Optional"		type
+done
+	"$\c"			ident
+
+:kw Keyword
+	*		idle		noeat
+
+:bool Boolean
+	*		idle		noeat
+
+:lit Constant
+	*		idle		noeat
+
+:oper Operator
+	*		idle		noeat
+
+:storage StorageClass
+	*		idle		noeat
+
+:modifier Modifier
+	*		idle		noeat
+
+:label Label
+	*		idle		noeat
+
+:loop Loop
+	*		idle		noeat
+
+:cond Conditional
+	*		idle		noeat
+
+:stmt Statement
+	*		idle		noeat
+
+:builtin Builtin
+	*		idle		noeat
+
+:type Type
+	*		idle		noeat
+
+.end
+
+# Recursive block comments
+
+.subr block_comment
+
+:idle Comment comment
+	*		idle
+	"*"		maybe_done
+	"/"		maybe_recur
+	"BFHNTX"	idle	noeat call=comment_todo.comment_todo()
+
+:maybe_done Comment comment
+	*		idle	noeat
+	"/"		idle	return
+
+:maybe_recur Comment comment
+	*		idle	noeat
+	"*"		idle	call=.block_comment()
+
+.end

@@ -1,0 +1,103 @@
+
+# Gruvbox is a VIM scheme written by Pavel Pertsev
+# and can be found in its original version at https://github.com/morhetz/gruvbox
+
+.colors 256
+
+# Palette
+.set bg			235
+.set dark_red		124
+.set dark_green		106
+.set dark_yellow	172
+.set dark_blue		66
+.set dark_purple	132
+.set dark_aqua		72
+.set dark_gray		246
+.set light_gray		245
+.set light_red		167
+.set light_green	142
+.set light_yellow	214
+.set light_blue		109
+.set light_purple	175
+.set light_aqua		108
+.set fg			223
+
+.set bg0_h		234
+.set bg0		235
+.set bg1		237
+.set bg2		239
+.set bg3		241
+.set bg4		243
+.set dark_orange	166
+.set bg0_s		236
+.set fg4		246
+.set fg3		248
+.set fg2		250
+.set fg1		223
+.set fg0		229
+.set light_orange	208
+
+-text			[fg]/[bg]
+-selection		/[bg3]
+-status			[fg2]/[bg2] bold
+-menusel		/[bg2] bold
+-linum			[bg4]/[bg1]
+-curlinum		[dark_yellow]/[bg1]
+-curlin			/[bg1]
+
+=Comment		[light_gray] italic
+=TODO			inverse bold italic
+=Bad			[light_red] bold inverse
+
+=DefinedIdent		[light_blue]
+=DefinedFunction	[light_green]
+=Builtin		[light_green]
+
+=Preproc		[light_aqua]
+=IncSystem		[dark_aqua]
+
+=Keyword		[light_red]
+=Operator
+=Escape			[light_orange]
+=Label			+Keyword
+=Loop			[light_red]
+=Conditional		+Keyword
+=Statement		+Keyword
+=Type			[light_yellow]
+=StorageClass		[light_orange]
+=Structure		[light_aqua]
+
+=Constant		[light_purple]
+=String			[fg2]/[bg1]
+=StringEscape		/[bg1]
+=Character		+Constant
+=CharacterEscape	+Escape
+=Variable		[light_blue]
+=StringVariable		[light_blue]/[bg1]
+
+=Tag			[light_blue]
+=TagName		[light_aqua] bold
+=TagEnd			+Tag
+
+=Define			[dark_blue]
+=diff.AddLine		[bg0]/[light_green]
+=diff.DelLine		[bg0]/[dark_red]
+=Ignore			[dark_gray]
+
+# Terminal colors
+-term  0 [bg0]
+-term  1 [dark_red]
+-term  2 [dark_green]
+-term  3 [dark_yellow]
+-term  4 [dark_blue]
+-term  5 [dark_purple]
+-term  6 [dark_aqua]
+-term  7 [dark_gray]
+-term  8 [light_gray]
+-term  9 [light_red]
+-term 10 [light_green]
+-term 11 [light_yellow]
+-term 12 [light_blue]
+-term 13 [light_purple]
+-term 14 [light_aqua]
+-term 15 [fg]

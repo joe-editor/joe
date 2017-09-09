@@ -1,0 +1,349 @@
+# JOE syntax highlight file for LUA
+
+=Idle
+=Ident
+=Bad
+=Comment
+=Constant
+=Number		+Constant
+=Boolean	+Constant
+=String		+Constant
+=Character	+String +Constant
+=Escape
+=StringEscape	+Escape
+=CharacterEscape +StringEscape
+=Keyword
+=Operator	+Keyword
+=Statement	+Keyword
+=Conditional	+Statement
+=Loop		+Statement
+
+:idle Idle
+	*		idle
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal	recolor=-1
+	"."		maybe_float
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"\i"		ident		buffer
+	"-"		maybe_comment
+	"["		maybe_lua_string
+
+:maybe_lua_string Idle
+	*		idle noeat
+	"["		lua_string_0 recolor=-2
+	"="		maybe_lua_1
+
+:maybe_lua_1 Idle
+	*		idle noeat
+	"["		lua_string_1 recolor=-3
+	"="		maybe_lua_2
+
+:maybe_lua_2 Idle
+	*		idle noeat
+	"["		lua_string_2 recolor=-4
+	"="		maybe_lua_3
+
+:maybe_lua_3 Idle
+	*		idle noeat
+	"["		lua_string_3 recolor=-5
+
+:lua_string_0 String string
+	*		lua_string_0
+	"]"		lua_string_0_maybe_done
+
+:lua_string_0_maybe_done String string
+	*		lua_string_0 noeat
+	"]"		idle
+
+:lua_string_1 String string
+	*		lua_string_1
+	"]"		lua_string_1_maybe_donea
+
+:lua_string_1_maybe_donea	String string
+	*		lua_string_1 noeat
+	"="		lua_string_1_maybe_done
+
+:lua_string_1_maybe_done String string
+	*		lua_string_1 noeat
+	"]"		idle
+
+:lua_string_2 String string
+	*		lua_string_2
+	"]"		lua_string_2_maybe_donea
+
+:lua_string_2_maybe_donea	String string
+	*		lua_string_2 noeat
+	"="		lua_string_2_maybe_doneb
+
+:lua_string_2_maybe_doneb	String string
+	*		lua_string_2 noeat
+	"="		lua_string_2_maybe_done
+
+:lua_string_2_maybe_done String string
+	*		lua_string_2 noeat
+	"]"		idle
+
+:lua_string_3 String string
+	*		lua_string_3
+	"]"		lua_string_3_maybe_donea
+
+:lua_string_3_maybe_donea	String string
+	*		lua_string_3 noeat
+	"="		lua_string_3_maybe_doneb
+
+:lua_string_3_maybe_doneb	String string
+	*		lua_string_3 noeat
+	"="		lua_string_3_maybe_donec
+
+:lua_string_3_maybe_donec	String string
+	*		lua_string_3 noeat
+	"="		lua_string_3_maybe_done
+
+:lua_string_3_maybe_done String string
+	*		lua_string_3 noeat
+	"]"		idle
+
+:maybe_comment Idle
+	*		idle noeat
+	"-"		maybe_long_comment recolor=-2
+
+:maybe_long_comment Comment comment
+	*		line_comment noeat
+	"["		maybe_long_comment_0
+
+:maybe_long_comment_0 Comment comment
+	*		line_comment noeat
+	"="		maybe_long_comment_1
+	"["		long_comment_0
+
+:maybe_long_comment_1 Comment comment
+	*		line_comment noeat
+	"="		maybe_long_comment_2
+	"["		long_comment_1
+
+:maybe_long_comment_2 Comment comment
+	*		line_comment noeat
+	"="		maybe_long_comment_3
+	"["		long_comment_2
+
+:maybe_long_comment_3 Comment comment
+	*		line_comment noeat
+	"["		long_comment_3
+
+:long_comment_0 Comment comment
+	*		long_comment_0
+	"BFHNTX"	long_comment_0	noeat call=comment_todo.comment_todo()
+	"]"		maybe_done_comment_0
+
+:maybe_done_comment_0 Comment comment
+	*		long_comment_0 noeat
+	"]"		idle
+
+:long_comment_1 Comment comment
+	*		long_comment_1
+	"BFHNTX"	long_comment_1	noeat call=comment_todo.comment_todo()
+	"]"		maybe_done_comment_1a
+
+:maybe_done_comment_1a Comment comment
+	*		long_comment_1 noeat
+	"="		maybe_done_comment_1
+
+:maybe_done_comment_1 Comment comment
+	*		long_comment_1 noeat
+	"]"		idle
+
+:long_comment_2 Comment comment
+	*		long_comment_2
+	"BFHNTX"	long_comment_2	noeat call=comment_todo.comment_todo()
+	"]"		maybe_done_comment_2a
+
+:maybe_done_comment_2a Comment comment
+	*		long_comment_2 noeat
+	"="		maybe_done_comment_2b
+
+:maybe_done_comment_2b Comment comment
+	*		long_comment_2 noeat
+	"="		maybe_done_comment_2
+
+:maybe_done_comment_2 Comment comment
+	*		long_comment_2 noeat
+	"]"		idle
+
+:long_comment_3 Comment comment
+	*		long_comment_3
+	"]"		maybe_done_comment_3a
+
+:maybe_done_comment_3a Comment comment
+	*		long_comment_3 noeat
+	"="		maybe_done_comment_3b
+
+:maybe_done_comment_3b Comment comment
+	*		long_comment_3 noeat
+	"="		maybe_done_comment_3c
+
+:maybe_done_comment_3c Comment comment
+	*		long_comment_3 noeat
+	"="		maybe_done_comment_3
+
+:maybe_done_comment_3 Comment comment
+	*		long_comment_2 noeat
+	"]"		idle
+
+:line_comment Comment comment
+	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		idle
+
+:first_digit Number
+	*		idle	noeat
+	"xX"		hex
+	"."		float
+	"eE"		epart
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+
+:bad_number Bad
+	*		idle	noeat
+	"0-9"		bad_number
+
+:octal Number
+	*		idle	noeat
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+
+:hex Number
+	*		idle	noeat
+	"0-9A-Fa-f"	hex
+
+:decimal Number
+	*		idle	noeat
+	"0-9"		decimal
+	"eE"		epart
+	"."		float
+
+:maybe_float Number
+	*		idle	recolor=-2	noeat
+	"0-9"		float		recolor=-2
+
+:float Number
+	*		idle	noeat
+	"eE"		epart
+	"0-9"		float
+
+:epart Number
+	*		idle	noeat
+	"0-9+\-"	enum
+
+:enum Number
+	*		idle	noeat
+	"0-9"		enum
+
+:string	String string
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+	"%"		string_control	recolor=-1
+
+:string_escape StringEscape string
+	*		string
+	"x"		string_hex1
+	"0-7"		string_octal2
+	"\n"		string		recolor=-2
+
+:string_hex1 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string_hex2
+
+:string_hex2 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 StringEscape string
+	*		string		noeat
+	"0-7"		string_octal3
+
+:string_octal3 StringEscape string
+	*		string		noeat
+	"0-7"		string
+
+:string_control StringEscape string
+	*		string
+	"\""		string noeat
+	"\n"		reset
+	"0-9.\-+ #hjILtz$"	string_control
+
+:char Character string
+	*		char
+	"\n"		reset
+	"'"		idle
+	"\\"		char_escape	recolor=-1
+
+:char_escape	CharacterEscape string
+	*		char
+	"x"		char_hex1
+	"0-7"		char_octal2
+	"\n"		char		recolor=-2
+
+:char_hex1 CharacterEscape string
+	*		char		noeat
+	"0-9a-fA-F"	char_hex2
+
+:char_hex2 CharacterEscape string
+	*		char		noeat
+	"0-9a-fA-F"	char
+
+:char_octal2 CharacterEscape string
+	*		char		noeat
+	"0-7"		char_octal3
+
+:char_octal3 CharacterEscape string
+	*		char		noeat
+	"0-7"		char
+
+:ident Ident
+	*		idle		noeat strings
+	"and"		kw
+	"end"		kw
+	"in"		oper
+	"repeat"	loop
+	"break"		loop
+	"false"		bool
+	"local"		kw
+	"return"	stmt
+	"do"		loop
+	"for"		loop
+	"nil"		const
+	"then"		cond
+	"else"		cond
+	"function"	kw
+	"not"		oper
+	"true"		bool
+	"elseif"	cond
+	"if"		cond
+	"or"		oper
+	"until"		loop
+	"while"		loop
+done
+	"\c"		ident
+
+:kw Keyword
+	*	idle	noeat
+
+:oper Operator
+	*	idle	noeat
+
+:stmt Statement
+	*	idle	noeat
+
+:cond Conditional
+	*	idle	noeat
+
+:loop Loop
+	*	idle	noeat
+
+:bool Boolean
+	*	idle	noeat
+
+:const Constant
+	*	idle	noeat

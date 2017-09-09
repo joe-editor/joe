@@ -9,13 +9,14 @@
 
 static HENTRY *freentry = NULL;
 
-/* Compute hash value of string */
+/* Compute hash value of string (djb2) */
 
-#define hnext(accu, c) (((accu) << 4) + ((accu) >> 28) + (c))
+#define hnext(accu, c) ((((accu) << 5) + (accu)) ^ (c))
+#define hinit 5381
 
 ptrdiff_t hash(const char *s)
 {
-	ptrdiff_t accu = 0;
+	ptrdiff_t accu = hinit;
 
 	while (*s) {
 		accu = hnext(accu, *s++);
@@ -146,7 +147,7 @@ static ZHENTRY *zfreentry = NULL;
 
 ptrdiff_t zhash(const int *s)
 {
-	ptrdiff_t accu = 0;
+	ptrdiff_t accu = hinit;
 
 	while (*s) {
 		accu = hnext(accu, *s++);

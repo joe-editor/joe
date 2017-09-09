@@ -1,0 +1,329 @@
+# PowerShell syntax highlighting for Joe's Own Editor
+# Oskar Liljeblad <oskar@osk.mine.nu>, 2014-02-11
+#
+# PowerShell is the poor man's[1] replacement for a real shell such as Bash.
+# [1] Someone who has to use Windows for whatever reason.
+#
+# Reference: http://www.microsoft.com/en-us/download/details.aspx?id=36389
+# Status:
+# 	1	100%
+#	2.1	100%
+#  	2.2.1	100% except signature support
+#	2.2.2	100%
+#	2.2.3	100% except requires support
+#	2.2.4	100%
+#	2.3.1	100%
+#	2.3.2	100% except automatic variables
+#	2.3.3	100% no coloring
+#	2.3.4	100% no coloring
+#	2.3.5	100% no coloring
+#	2.3.6	100%
+
+=Idle
+=Ident
+=Comment
+=Constant
+=Number		+Constant
+=Boolean	+Constant
+=String		+Constant
+=StringEscape	+Escape
+=StringVariable	+StringEscape
+=Keyword
+=Type
+=Operator	+Keyword
+=Statement	+Keyword
+=Structure	+Statement
+=Conditional	+Statement
+=Loop		+Statement
+=Variable	+DefinedIdent
+=VariableEscape +Escape
+
+=ParamKey	+Attr +Operator
+
+:idle Idle
+	*		idle
+	"#"		comment			recolor=-1
+	"$"		var			recolor=-1 mark
+	"@"		var_array		recolor=-1
+	"<"		idle1
+	"["		typespec
+	"\""		string_dq		recolor=-1
+	"'"		string_sq		recolor=-1
+	"@"		idle2
+	"a-zA-Z_"	ident			buffer
+	"-"		param			recolor=-1
+
+:idle1 Idle
+	*		idle			noeat
+	"#"		delim_comment		recolor=-2
+
+:idle2 Idle
+	*		idle			noeat
+	"\""		herestr_dq		recolor=-2
+	"'"		herestr_sq		recolor=-2
+
+:comment Comment comment
+	*		comment
+	"BFHNTX"	comment			noeat call=comment_todo.comment_todo()
+	"\r\n"		idle
+
+:var_array Variable
+	*		idle			noeat
+	"$?^"		idle			mark
+	"a-zA-Z_"	var_name
+
+:var Variable
+	*		idle			noeat
+	"{"		var_brack
+	"$?^"		idle
+	"a-zA-Z_"	var_name		buffer
+
+:var_name Variable
+	*		idle			noeat recolor=-1 istrings
+	"true"		bool			recolormark markend
+	"false"		bool			recolormark markend
+	"null"		kw			recolormark markend
+done
+	"a-zA-Z0-9_:?"	var_name
+
+:bool Boolean
+	*		idle
+
+:var_brack Variable
+	*		var_brack
+	"`"		var_escape		recolor=-1
+	"}"		idle
+
+:var_escape VariableEscape
+	*		var_brack
+
+:delim_comment Comment comment
+	*		delim_comment
+	"BFHNTX"	delim_comment		noeat call=comment_todo.comment_todo()
+	"#"		delim_comment1
+
+:delim_comment1 Comment comment
+	*		delim_comment		noeat
+	">"		idle
+
+:string_dq String string
+	*		string_dq
+	"\"\n"		idle
+	"$"		string_dq_subst		recolor=-1
+	"`"		string_dq_esc		recolor=-1
+
+:string_dq_subst StringVariable string
+	*		string_dq		noeat recolor=-2
+	"a-zA-Z_"	string_dq_subst_name
+	"{"		string_dq_subst_brack
+	"("		string_dq_subst_parens
+	"`"		string_dq_subst_escape 	recolor=-1
+
+:string_dq_subst_name StringVariable string
+	*		string_dq		recolor=-1 noeat
+	"a-zA-Z0-9_:"	string_dq_subst_name
+	"`"		string_dq_subst_escape 	recolor=-1
+
+:string_dq_subst_escape VariableEscape string
+	*		string_dq_subst_name
+
+:string_dq_subst_brack Variable string
+	*		string_dq_subst_brack
+	"}"		string_dq
+
+:string_dq_subst_parens Variable string
+	*		string_dq_sustr_parens
+	")"		string_dq
+
+:string_sq String string
+	*		string_sq
+	"\'\n"		idle
+
+:string_dq_esc StringEscape string
+	*		string_dq
+
+:string_sq_esc StringEscape string
+	*		string_sq
+
+:herestr_dq String string
+	*		herestr_dq
+	"\""		herestr_dq1
+	"$"		herestr_dq_subst	recolor=-1
+
+:herestr_dq1 String string
+	*		herestr_dq		noeat
+	"@"		idle
+
+:herestr_dq_subst Variable string
+	*		herestr_dq		noeat recolor=-2
+	"a-zA-Z_"	herestr_dq_subst_name
+	"("		herestr_dq_subst_parens
+	"`"		herestr_dq_subst_escape recolor=-1
+
+:herestr_dq_subst_name Variable string
+	*		herestr_dq		recolor=-1 noeat
+	"a-zA-Z0-9_:"	herestr_dq_subst_name
+	"`"		herestr_dq_subst_escape	recolor=-1
+
+:herestr_dq_subst_escape VariableEscape string
+	*		herestr_dq_subst_name
+
+:herestr_dq_subst_parens Variable string
+	*		herestr_dq_subst_parens
+	")"		herestr_dq
+
+:herestr_sq String string
+	*		herestr_sq
+	"\'"		herestr_sq1
+
+:herestr_sq1 String string
+	*		herestr_sq		noeat
+	"@"		idle
+
+:typespec_start Idle
+	*		idle			noeat
+	"\s"		typespec_start
+	"\i.:"		typespec		noeat
+
+:typespec Type
+	*		idle			noeat
+	"\i.:\s"	typespec
+	"["		typespec_brack
+
+:typespec_brack Type
+	*		typespec		noeat
+	"\s"		typespec_brack
+	"]"		typespec
+
+:param ParamKey
+	*		after_param		noeat istrings
+	"-and"		oper
+	"-band"		oper
+	"-bnot"		oper
+	"-bor"		oper
+	"-bxor"		oper
+	"-not"		oper
+	"-or"		oper
+	"-xor"		oper
+	"-f"		oper
+	"-as"		oper
+	"-ccontains"	oper
+	"-ceq"		oper
+	"-cge"		oper
+	"-cgt"		oper
+	"-cle"		oper
+	"-clike"	oper
+	"-clt"		oper
+	"-cmatch"	oper
+	"-cne"		oper
+	"-cnotcontains"	oper
+	"-cnotlike"	oper
+	"-cnotmatch"	oper
+	"-contains"	oper
+	"-creplace"	oper
+	"-csplit"	oper
+	"-eq"		oper
+	"-ge"		oper
+	"-gt"		oper
+	"-icontains"	oper
+	"-ieq"		oper
+	"-ige"		oper
+	"-igt"		oper
+	"-ile"		oper
+	"-ilike"	oper
+	"-ilt"		oper
+	"-imatch"	oper
+	"-in"		oper
+	"-ine"		oper
+	"-inotcontains"	oper
+	"-inotlike"	oper
+	"-inotmatch"	oper
+	"-ireplace"	oper
+	"-is"		oper
+	"-isnot"	oper
+	"-isplit"	oper
+	"-join"		oper
+	"-le"		oper
+	"-like"		oper
+	"-lt"		oper
+	"-match"	oper
+	"-ne"		oper
+	"-notcontains"	oper
+	"-notin"	oper
+	"-notlike"	oper
+	"-notmatch"	oper
+	"-replace"	oper
+	"-shl"		oper
+	"-shr"		oper
+	"-split"	oper
+done
+	"a-zA-Z_"	param
+
+:after_param Ident
+	*		herestr_noq		noeat
+	" \t"		after_param
+
+# Unquoted strings (after -parameter key)
+:herestr_noq String string
+	*		idle			noeat
+	" \t\r\n"	idle			recolor=-1
+	"\i"		herestr_noq
+
+# After an operator, we do not assume what follows is an unquoted string.
+:oper Operator
+	*		idle			noeat
+
+:ident Ident
+	*		idle			noeat istrings
+	"begin"		kw
+	"break"		loop
+	"catch"		kw
+	"class"		struct
+	"continue"	loop
+	"data"		kw
+	"define"	kw
+	"do"		loop
+	"dynamicparam"	struct
+	"else"		cond
+	"elseif"	cond
+	"end"		kw
+	"exit"		stmt
+	"filter"	kw
+	"finally"	kw
+	"for"		loop
+	"foreach"	loop
+	"from"		kw
+	"function"	struct
+	"if"		cond
+	"in"		kw
+	"inlinescript"	kw
+	"parallel"	kw
+	"param"		struct
+	"process"	kw
+	"return"	stmt
+	"switch"	cond
+	"throw"		kw
+	"trap"		kw
+	"try"		kw
+	"until"		loop
+	"using"		kw
+	"var"		kw
+	"while"		loop
+	"workflow"	kw
+done
+	"a-zA-Z_\-"	ident
+
+:kw Keyword
+	*		idle			noeat
+
+:loop Loop
+	*		idle			noeat
+
+:cond Conditional
+	*		idle			noeat
+
+:stmt Statement
+	*		idle			noeat
+
+:struct Structure
+	*		idle			noeat

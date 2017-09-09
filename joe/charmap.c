@@ -1456,40 +1456,7 @@ char **get_encodings()
 	}
 
 	/* External maps */
-
-	p = getenv("HOME");
-	if (p) {
-		buf = vsfmt(buf, 0, "%s/.joe/charmaps",p);
-		if (!chpwd(buf) && (t = rexpnd("*"))) {
-			for (x = 0; x != valen(t); ++x)
-				if (zcmp(t[x],"..")) {
-					for (y = 0; y != valen(encodings); ++y)
-						if (!zcmp(t[x],encodings[y]))
-							break;
-					if (y == valen(encodings)) {
-						r = vsncpy(NULL,0,sv(t[x]));
-						encodings = vaadd(encodings,r);
-					}
-				}
-		}
-	}
-
-	if (!chpwd((JOEDATA "charmaps")) && (t = rexpnd("*"))) {
-		for (x = 0; x != valen(t); ++x)
-			if (zcmp(t[x],"..")) {
-				for (y = 0; y != valen(encodings); ++y)
-					if (!zcmp(t[x],encodings[y]))
-						break;
-				if (y == valen(encodings)) {
-					r = vsncpy(NULL,0,sv(t[x]));
-					encodings = vaadd(encodings,r);
-				}
-			}
-	}
-
-	chpwd(oldpwd);
-
-	return encodings;
+	return find_configs(encodings, NULL, "charmaps", "charmaps");
 }
 
 /* This is not correct... (EBCDIC for example) */

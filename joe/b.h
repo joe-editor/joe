@@ -81,6 +81,7 @@ struct options {
 	const char	*smsg;
 	const char	*zmsg;
 	int	linums;
+	int	hiline;
 	int	readonly;
 	int	french;
 	int	flowed;

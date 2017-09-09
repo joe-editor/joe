@@ -1,0 +1,239 @@
+# JOE syntax highlight file for Elixir
+
+# Written by Andrey Lisin (at gmail.com)
+
+# TODO
+# - test attributes and docstrings highlighting
+# - maybe highlight arithmetical operations
+# - comprehensions highlighting
+
+# Changes
+# - fix atom with underscore highlighting
+# - distinct docstrings and module attributes
+
+=Idle
+=Ident
+=Comment
+=Keyword
+=Statement	+Keyword
+=Conditional	+Statement
+=Type
+=DefinedIdent	+Ident
+=DefinedType	+DefinedIdent
+=DefinedFunction +DefinedIdent
+=Operator	+Keyword
+=Constant
+=Boolean	+Constant
+=Number		+Constant
+=String		+Constant
+=StringEscape	+Escape
+=StringVariable +StringEscape
+=Atom		+Constant +DefinedIdent
+=Attribute	+Define +Preproc
+=Brace		+Escape
+=Bracket	+Brace
+=Underscore	+Keyword
+=ModAttr	+Atom		# key in %{key: value}
+
+
+:idle Idle
+	*		idle
+	"#"		line_comment	noeat
+	"A-Z"		type		recolor=-1
+	"a-z"		ident		noeat
+	"_"		underscore	recolor=-1
+	"'"		single_quoted	recolor=-1
+	"\""		double_quoted	recolor=-1
+	":"		atom		recolor=-1
+	"@"		modattr		recolor=-1
+	"[]"            brack           recolor=-1
+	"{}"		brace		recolor=-1
+	"|"		maybe_pipe
+	"\\"		maybe_opt
+	"-"		maybe_rarrow	recolor=-1
+	"<"		maybe_larrow	recolor=-1
+	"0-9"		decimal		recolor=-1
+	
+:line_comment Comment comment
+	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		idle
+	
+:single_quoted String string
+	*		single_quoted
+	"'"		idle
+	
+:double_quoted String string
+	*		double_quoted
+	"#"		maybe_extrapolation
+	"\""		idle
+	
+:maybe_extrapolation String string
+	*		double_quoted   noeat
+	"{"		extrapolation	recolor=-2
+	
+:extrapolation StringVariable string
+	*		extrapolation
+	"}"		double_quoted
+	"\""		double_quoted	noeat
+	
+:atom Atom
+	*		idle		noeat
+	"a-zA-Z0-9_"	atom
+	
+:modattr ModAttr
+	*		idle
+	"a-zA-Z0-9_"	modattr
+	" "		maybe_edoc
+	
+:maybe_edoc Idle
+	*		idle
+	" "		maybe_edoc
+	"\""		string_dq_1 	recolor=-1
+	
+:string_dq_1 String string
+	*		double_quoted	recolor=-1
+	"\""		string_dq_2
+	
+:string_dq_2 Comment comment
+	*		idle
+	"\""		docstr_dq	recolor=-3
+	
+:docstr_dq Comment comment
+	*		docstr_dq
+	"\""		docstr_dq_1
+	
+:docstr_dq_1 Comment comment
+	*		docstr_dq
+	"\""		docstr_dq_2
+	
+:docstr_dq_2 Comment comment
+	*		docstr_dq
+	"\""		idle
+	
+
+
+:brace Brace
+	*		idle		noeat
+	
+:brack Bracket
+	*		idle		noeat
+
+:maybe_larrow Idle
+	"-"		arrow		recolor=-2
+	*		idle		noeat
+
+:maybe_rarrow Idle
+	">"		arrow		recolor=-2
+	*		idle		noeat
+
+:arrow Operator
+	*		idle		noeat
+	
+:maybe_pipe Idle
+	*		idle
+	">"		pipe		recolor=-2
+	
+:pipe Operator
+	*		idle		noeat
+	
+:maybe_opt Idle
+	*		idle
+	"\\"		opt		recolor=-2
+	
+:opt Keyword
+	*		idle		noeat
+	
+:decimal Number
+	*		idle		noeat
+	"0-9_"		decimal
+	"."		float
+	
+:float Number
+	*		idle		noeat
+	"0-9"		float
+	
+	
+
+	
+:underscore Underscore
+	*		idle		noeat
+	"a-zA-Z0-9?_"	underscore
+	
+	
+:type Type
+	"a-zA-Z0-9_"	type
+	*		idle		noeat
+	
+:ident Ident
+	*		ident1		noeat buffer mark
+	
+:ident1 Ident
+	*		idle		noeat strings
+	"def"					start_func_def
+	"defp"					start_func_def
+	"defmodule" 				start_mod_def
+	"defprotocol"				start_def
+	"defmacro"				start_def
+	"defmacrop" 				start_def
+	"defdelegate"				start_def
+	"defexception" 				start_def
+	"defstruct" 				start_def
+	"defimpl"				start_def
+	"defcallback"				start_def
+	"import"				start_mod_def
+	"require"				start_mod_def
+	"test"					start_def
+	"use"					start_mod_def
+	"alias"					start_mod_def
+	"end"					stmt
+	"do"					kw
+	"for"					loop
+	"if"					cond
+	"else"					cond
+	"unless"				cond
+	"case"					cond
+	"cond"					cond
+	"true"					bool
+	"false"					bool
+	"fn"					kw
+done
+	"a-zA-Z_0-9"	ident1
+	":"		attr		noeat recolormark
+	
+:attr Attribute
+	*		idle
+	
+:kw Keyword
+	*		idle		noeat
+
+:stmt Statement
+	*		idle		noeat
+
+:cond Conditional
+	*		idle		noeat
+
+:bool Boolean
+	*		idle		noeat
+
+:start_def Statement
+	*		def
+	
+:start_mod_def Statement
+	*		moddef
+
+:start_func_def Statement
+	*		funcdef
+	
+:def DefinedIdent
+	*		def
+	" ("		idle		noeat
+
+:funcdef DefinedFunction
+	*		funcdef
+	" ("		idle		noeat
+	
+:moddef DefinedType
+	*		moddef
+	" "		idle		noeat
+	"\n"		idle

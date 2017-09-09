@@ -764,6 +764,9 @@ int main(int argc, char **real_argv, const char * const *envv)
 	/* Show startup log if there were any messages */
 	show_startup_log();
 
+	/* Initialize color scheme */
+	init_colors();
+
 	/* Turn on help if requested by global option */
 	if (helpon) {
 		help_on(maint);

@@ -1,0 +1,169 @@
+# PASCAL highlighter for JOE
+
+=Idle
+=Ident
+=Comment
+=Constant
+=String		+Constant
+=Number		+Constant
+=Type
+=Keyword
+=Statement	+Keyword
+=Operator	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=DefinedFunction +DefinedIdent
+=Builtin	+DefinedFunction
+
+:idle Idle
+	*		idle
+	"a-zA-Z"	ident		buffer
+	"("		maybe_comment
+	"{"		comment		recolor=-1
+	"'"		string		recolor=-1
+	"0-9"		number		recolor=-1 
+
+# Comments
+
+:maybe_comment Idle
+	*		idle		noeat
+	"*"		comment		recolor=-2
+
+:comment Comment comment
+	*		comment
+	"BFHNTX"        comment		noeat call=comment_todo.comment_todo()
+	"*"		maybe_end_comment
+	"}"		idle
+
+:maybe_end_comment Comment comment
+	*		comment		noeat
+	")"		idle
+
+
+# String constant
+
+:string String string
+	*		string
+	"\n"		idle
+	"'"		maybe_end_string
+
+:maybe_end_string String string
+	*		idle		recolor=-1 noeat
+	"'"		string
+
+# Numeric constant
+
+:number Number
+	*		idle		noeat
+	"0-9"		number
+	"eE"		epart
+	"."		dot
+
+:dot Number
+	*		idle	noeat
+	"0-9"		float
+
+:float Number
+	*		idle	noeat
+	"eE"		epart
+	"0-9"		float
+
+:epart Number
+	*		idle	noeat
+	"0-9+\-"	enum
+
+:enum Number
+	*		idle	noeat
+	"0-9"		enum
+
+
+# Keywords
+
+:ident Ident
+	*		idle		noeat istrings
+	"and"		operator
+	"array"		type
+	"begin"		kw
+	"case"		cond
+	"const"		kw
+	"div"		operator
+	"do"		kw
+	"downto"	kw
+	"else"		cond
+	"end"		kw
+	"file"		kw
+	"for"		loop
+	"function"	kw
+	"goto"		loop
+	"if"		cond
+	"in"		kw
+	"label"		kw
+	"mod"		operator
+	"nil"		word_constant
+	"not"		operator
+	"of"		kw
+	"or"		operator
+	"packed"	kw
+	"procedure"	kw
+	"program"	kw
+	"record"	kw
+	"repeat"	loop
+	"set"		kw
+	"then"		kw
+	"to"		kw
+	"type"		kw
+	"until"		loop
+	"var"		kw
+	"while"		loop
+	"with"		kw
+	"integer"	type
+	"boolean"	type
+	"real"		type
+	"char"		type
+	"string"	type
+	"text"		type
+	"abs"		function
+	"atan"		function
+	"arctan"	function
+	"concat"	function
+	"cos"		function
+	"eof"		function
+	"eoln"		function
+	"exp"		function
+	"insert"	function
+	"length"	function
+	"ln"		function
+	"log"		function
+	"odd"		function
+	"ord"		function
+	"page"		function
+	"pred"		function
+	"round"		function
+	"sin"		function
+	"sqr"		function
+	"sqrt"		function
+	"succ"		function
+	"trun"		function
+done
+	"a-zA-Z0-9_"	ident
+
+:kw Keyword
+	*	idle	noeat
+
+:type Type
+	*	idle	noeat
+
+:loop Loop
+	*	idle	noeat
+
+:cond Conditional
+	*	idle	noeat
+
+:operator Operator
+	*	idle	noeat
+
+:word_constant Constant
+	*	idle	noeat
+
+:function Builtin
+	*	idle	noeat

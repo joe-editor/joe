@@ -66,7 +66,7 @@ void load_hist(FILE *f,B **bp)
 
 /* Save state */
 
-#define STATE_ID "# JOE state file v1.0\n"
+#define STATE_ID "# JOE state file v1.0"
 
 void save_state()
 {
@@ -80,7 +80,7 @@ void save_state()
 	if (!home)
 		return;
 	
-	path = vsfmt(NULL,0,"%s/.joe_state",path);
+	path = vsfmt(NULL,0,"%s/.joe_state",home);
 	old_mask = umask(0066);
 	f = fopen(path, "w");
 	umask(old_mask);
@@ -103,6 +103,7 @@ void save_state()
 	fprintf(f,"math\n"); save_hist(f,mathhist);
 	fprintf(f,"yank\n"); save_yank(f);
 	fprintf(f,"file_pos\n"); save_file_pos(f);
+	fprintf(f,"colors\n"); save_colors_state(f);
 	fclose(f);
 }
 
@@ -151,6 +152,8 @@ void load_state()
 				load_yank(f);
 			else if(!zcmp(buf, "file_pos"))
 				load_file_pos(f);
+			else if (!zcmp(buf,"colors"))
+				load_colors_state(f);
 			else { /* Unknown... skip until next done */
 				while(vsgets(&buf,f) && zcmp(buf,"done"));
 			}

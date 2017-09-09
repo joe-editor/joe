@@ -15,38 +15,6 @@
  on the command line.  Also the NOXON, LINES, COLUMNS, DOPADDING and BAUD
  options can be specified in environment variables):
 
- Override colors of lexical classes specified in syntax files:
- Put each color override you want in the first column.
-
- Valid colors:
-   bold inverse blink dim underline italic
-   white cyan magenta blue yellow green red black
-   bg_white bg_cyan bg_magenta bg_blue bg_yellow bg_green bg_red bg_black
-
- Override all instances of class Idle:
-   =Idle red
-
- Override Idle only for c syntax file:
-   =c.Idle red
-
- The following list is from c.jsf.  Look at other syntax files for more classes.
-
- =Idle
- =Bad        bold red
- =Preproc    blue
- =Define     bold blue
- =IncLocal   cyan
- =IncSystem  bold cyan
- =Constant   cyan
- =Escape     bold cyan
- =Type       bold
- =Keyword    bold
- =CppKeyword bold
- =Brace      magenta
- =Control
-
- Put each option you want set in the first column:
-
  -option	Sets the option
  --option	Clears the option
 
@@ -164,21 +132,8 @@
 
  -square	Rectangular block mode
 
- -text_color color
-		Set color for text.
- -status_color color
-		Set color for status bar.
- -help_color color
-		Set color for help.
- -menu_color color
-		Set color for menus.
- -prompt_color color
-		Set color for prompts.
- -msg_color color
-		Set color for messages.
-
-		For example: -text_color bg_blue+white
-		Sets the background color to blue and foreground color to white.
+ -colors scheme
+		Set the default color scheme
 
 -restore	Restore previous cursor position when files are opened
 
@@ -321,6 +276,8 @@
 
 	-linums			Enable line numbers on each line
 
+	-hiline			Highlight current line
+
 	-rdonly			File is read-only
 
 	-keymap name
@@ -408,9 +365,11 @@ menu,"indent",rtn	= Indent select
 mode,"highlight",rtn	H Highlighting %Zhighlight%
 mode,"crlf",rtn	Z CR-LF/MS-DOS %Zcrlf%
 mode,"linums",rtn	N Line numbers %Zlinums%
+mode,"hiline",rtn	U Highlight line %Zhiline%
 mode,"beep",rtn	B Beep %Zbeep%
 mode,"rdonly",rtn	O Read only %Zrdonly%
 mode,"syntax",rtn	Y Syntax
+mode,"colors",rtn	S Color scheme
 mode,"encoding",rtn	E Encoding
 mode,"asis",rtn	% % Meta chars as-is
 mode,"language",rtn	V Language
