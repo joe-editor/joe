@@ -1,0 +1,149 @@
+
+# High-contrast version of zenburn
+# 
+# Nothing too fancy, just some alien fruit salad to keep you in the zone.
+# This syntax file was designed to be used with dark environments and 
+# low light situations. Of course, if it works during a daybright office, go
+# ahead :)
+# 
+# Owes heavily to other Vim color files! With special mentions
+# to "BlackDust", "Camo" and "Desert".
+# 
+# Credits [from VIM]:
+#  - Jani Nurminen - original Zenburn
+#  - Steve Hall & Cream posse - higher-contrast Visual selection
+#  - Kurt Maier - 256 color console coloring, low and high contrast toggle,
+#                 bug fixing
+#  - Charlie - spotted too bright StatusLine in non-high contrast mode
+#  - Pablo Castellazzi - CursorLine fix for 256 color mode
+
+.colors 256
+
+-text 253/234
+-status 236/186
+-selection 236/79
+-linum 145/233
+-curlin /233 bold
+-curlinum 187/233
+-menu 251/235
+-menusel 186/237 bold
+-cursor 232/109 bold
+
+-term 0 234
+-term 1 167
+-term 2 115
+-term 3 186
+-term 4 238
+-term 5 139
+-term 6 116
+-term 7 253
+-term 8 188
+-term 9 167
+-term 10 115
+-term 11 228
+-term 12 103
+-term 13 139
+-term 14 116
+-term 15 231
+
+=Idle
+=Keyword 223 bold
+=Operator 230
+=Type 187 bold
+
+=Bad 167/237 bold
+=Boolean 181
+=Character 181 bold
+=Comment 108 italic
+=Conditional 223 bold
+=Constant 181 bold
+=Define 180 bold
+=DefinedFunction 186
+=DefinedIdent 223
+=Escape 251
+=Float 250
+=IncSystem 180 bold
+=Label 223 underline
+=Loop 223 bold
+=Macro 180 bold
+=Number 116
+=Precond 180 bold
+=Preproc 180 bold
+=Statement 187
+=StorageClass 144 bold
+=String 174
+=StringEscape 181 bold
+=Structure 229 bold
+=TODO 188 bold
+=Tag 174 bold
+=Title 255 bold
+
+=diff.AddLine 66 bold
+=diff.ChgLine /236 bold
+=diff.DelLine 236/238
+
+.colors *
+
+-text $dcdccc/$1f1f1f
+-status $313633/$ccdc90
+-selection $233323/$71d3b4
+-linum $9fafaf/$161616
+-curlin /$121212 bold
+-curlinum $f2f3bb/$161616
+-menu $ccccbc/$242424
+-menusel $ccdc90/$353a37 bold
+-cursor $000d18/$8faf9f bold
+
+-term 0 $1F1F1F
+-term 1 $E37170
+-term 2 $9CCC9C
+-term 3 $EFEF8F
+-term 4 $000D18
+-term 5 $BC8CBC
+-term 6 $8CD0D3
+-term 7 $DCDCCC
+-term 8 $DFDFDF
+-term 9 $E37170
+-term 10 $CCDC90
+-term 11 $F8F893
+-term 12 $8C8CBC
+-term 13 $BC8CBC
+-term 14 $8CD0D3
+-term 15 $FFFFFF
+
+=Idle
+=Keyword $f0dfaf bold
+=Operator $f0efd0
+=Type $dfdfbf bold
+
+=Bad $e37170/$3d3535 bold
+=Boolean $dca3a3
+=Character $dca3a3 bold
+=Comment $7f9f7f italic
+=Conditional $f0dfaf bold
+=Constant $dca3a3 bold
+=Define $ffcfaf bold
+=DefinedFunction $efef8f
+=DefinedIdent $efdcbc
+=Escape $cfbfaf
+=Float $c0bed1
+=IncSystem $dfaf8f bold
+=Label $dfcfaf underline
+=Loop $ffd7a7 bold
+=Macro $ffcfaf bold
+=Number $8cd0d3
+=Precond $dfaf8f bold
+=Preproc $ffcfaf bold
+=Statement $e3ceab
+=StorageClass $c3bf9f bold
+=String $cc9393
+=StringEscape $dca3a3 bold
+=Structure $efefaf bold
+=TODO $dfdfdf bold
+=Tag $e89393 bold
+=Title $efefef bold
+
+=diff.AddLine $709080/$313c36 bold
+=diff.ChgLine /$333333
+=diff.DelLine $333333/$464646
+

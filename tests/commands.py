@@ -104,9 +104,8 @@ class BacksTests(joefx.JoeTestBase):
         self.selectMenu(moreItem.label)
         self.rtn()
         self.assertSelectedMenuItem(moreMenu.items[0].label)
-        self.writectl("{bs}")
-        self.selectMenu(moreItem.label)
-        
+        self.cmd("backsmenu", scope="menu")
+        self.assertSelectedMenuItem(moreItem.label)
 
 class BackwTests(joefx.JoeTestBase):
     def test_backw_words(self):

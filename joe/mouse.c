@@ -463,7 +463,7 @@ int utomouse(W *xx, int k)
 			pgoto(bw->cursor, goal_byte);
 			return 0;
 		} else {
-			off_t goal_col = x - w->x + bw->offset - (bw->o.linums ? LINCOLS : 0);
+			off_t goal_col = x - w->x + bw->offset - bw->lincols;
 			off_t goal_line;
 			if (goal_col < 0)
 				goal_col = 0;
@@ -550,7 +550,7 @@ static int tomousestay()
 			tmspos = bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		} else {
-			off_t goal_col = x - w->x + bw->offset - (bw->o.linums ? LINCOLS : 0);
+			off_t goal_col = x - w->x + bw->offset - bw->lincols;
 			off_t goal_line;
 			if (goal_col < 0)
 				goal_col = 0;

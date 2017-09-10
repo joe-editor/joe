@@ -274,7 +274,7 @@ char *vscpyz(char *vary, const char *z)
 
 /* Append a block to a string */
 
-char *vscat(char *vary, char *s, int len)
+char *vscat(char *vary, const char *s, int len)
 {
 	return vsncpy(vary, vslen(vary), s, len);
 }

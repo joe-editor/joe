@@ -108,6 +108,7 @@ void save_state()
 	fprintf(f,"math\n"); save_hist(f,mathhist);
 	fprintf(f,"yank\n"); save_yank(f);
 	fprintf(f,"file_pos\n"); save_file_pos(f);
+	fprintf(f,"colors\n"); save_colors_state(f);
 	fclose(f);
 }
 
@@ -161,6 +162,8 @@ void load_state()
 				load_yank(f);
 			else if(!zcmp(buf, "file_pos"))
 				load_file_pos(f);
+			else if (!zcmp(buf,"colors"))
+				load_colors_state(f);
 			else { /* Unknown... skip until next done */
 				while(vsgets(&buf,f) && zcmp(buf,"done"));
 			}

@@ -202,6 +202,7 @@ int udebug_joe(W *w, int k)
 	}
 #endif
 	dump_syntax(bw);
+	dump_colors(bw);
 	return 0;
 }
 

@@ -60,7 +60,7 @@ static void disppw(W *w, int flg)
 	for (i = 0; i != w->w; ++i)
 		bf[i] = '-';
 	bf[i] = 0;
-	genfmt(w->t->t, w->x, w->y, 0, bf, bg_stalin, 0);
+	genfmt(w->t->t, w->x, w->y, 0, bf, bg_stalin, 0, 0);
 	joe_free(bf);
 
 	/* Scroll buffer and position prompt */
@@ -107,7 +107,7 @@ static void disppw(W *w, int flg)
 	bwresz(bw, w->w, w->h - 1);
 
 	/* Generate buffer */
-	bwgen(bw, 0);
+	bwgen(bw, 0, 0);
 }
 
 /* History functions */

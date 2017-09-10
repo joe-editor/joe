@@ -6,7 +6,6 @@ DEADJOE$
 Makefile(\.in)?$
 core$
 joe-.*\.tar.gz$
-syntax/.*\.jsf$
 \#$
 charmaps/klingon$
 rc/.*rc$

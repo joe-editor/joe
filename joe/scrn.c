@@ -213,9 +213,16 @@ int set_attr(SCRN *t, int c)
 	if ((t->attrib & FG_MASK) != (c & FG_MASK)) {
 		if (t->Sf) {
 			int color = ((c & FG_VALUE) >> FG_SHIFT);
-			if (t->assume_256 && color >= t->Co) {
+			if (c & FG_TRUECOLOR) {
+				if (t->truecolor && t->palette && t->palette[color] >= 0) {
+					char bf[32];
+					int rgb = t->palette[color];
+					joe_snprintf_3(bf, SIZEOF(bf), "\033[38;2;%d;%d;%dm", (rgb >> 16) & 0xff, (rgb >> 8) & 0xff, rgb & 0xff);
+					ttputs(bf);
+				}
+			} else if (t->assume_256 && color >= t->Co) {
 				char bf[32];
-				joe_snprintf_1(bf,SIZEOF(bf),"\033[38;5;%dm",color);
+				joe_snprintf_1(bf, SIZEOF(bf), "\033[38;5;%dm", color);
 				ttputs(bf);
 			} else {
 				if (t->Co & (t->Co - 1))
@@ -229,7 +236,14 @@ int set_attr(SCRN *t, int c)
 	if ((t->attrib & BG_MASK) != (c & BG_MASK)) {
 		if (t->Sb) {
 			int color = ((c & BG_VALUE) >> BG_SHIFT);
-			if (t->assume_256 && color >= t->Co) {
+			if (c & BG_TRUECOLOR) {
+				if (t->truecolor && t->palette && t->palette[color] >= 0) {
+					char bf[32];
+					int rgb = t->palette[color];
+					joe_snprintf_3(bf, SIZEOF(bf), "\033[48;2;%d;%d;%dm", (rgb >> 16) & 0xff, (rgb >> 8) & 0xff, rgb & 0xff);
+					ttputs(bf);
+				}
+			} else if (t->assume_256 && color >= t->Co) {
 				char bf[32];
 				joe_snprintf_1(bf,SIZEOF(bf),"\033[48;5;%dm",color);
 				ttputs(bf);
@@ -665,6 +679,12 @@ SCRN *nopen(CAP *cap)
 #endif
 #endif
 		}
+	}
+
+	{
+		char *s = getenv("COLORTERM");
+		t->truecolor = s && (!zicmp(s, "truecolor") || !zicmp(s, "24bit"));
+		t->palette = NULL;
 	}
 
 	t->so = NULL;
@@ -2144,7 +2164,14 @@ void genfield(SCRN *t,int (*scrn)[COMPOSE],int *attr,ptrdiff_t x,ptrdiff_t y,ptr
 		int c = *(const unsigned char *)s++;
 		ptrdiff_t wid = -1;
 		int my_atr = atr;
-		if (fmt) my_atr |= *fmt++;
+		if (fmt) {
+			int fmtatr = *fmt++;
+			if (fmtatr & FG_MASK)
+				my_atr = (my_atr & ~FG_MASK) | (fmtatr & FG_MASK);
+			if (fmtatr & BG_MASK)
+				my_atr = (my_atr & ~BG_MASK) | (fmtatr & BG_MASK);
+			my_atr |= fmtatr & AT_MASK;
+		}
 		if (locale_map->type) {
 			/* UTF-8 mode: decode character and determine its width */
 			c = utf8_decode(&sm,TO_CHAR_OK(c));
@@ -2275,40 +2302,21 @@ void unesc_genfmt(char *d, char *s, int len, int max)
 	*d = 0;
 }
 
-
-#ifdef JOEWIN
-
-static void genfmti(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg, int iatr);
-
 /* Generate text with formatting escape sequences */
 
-void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg)
-{
-	genfmti(t, x, y, ofst, s, atr, flg, 0);
-}
-
-/* Generate text with formatting escape sequences and custom inverse colors */
-
-static void genfmti(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg, int iatr)
-#else
-/* Generate text with formatting escape sequences */
-
-void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int flg)
-#endif
+void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, int atr, int iatr, int flg)
 {
 	int (*scrn)[COMPOSE] = t->scrn + y * t->co + x;
 	int *attr = t->attr + y * t->co + x;
 	ptrdiff_t col = 0;
 	int c;
 	struct utf8_sm sm;
-#ifdef JOEWIN
 	int inverted = !!(atr & INVERSE);
 	int origcolor = atr & ~(FG_MASK | BG_MASK);
 
 	if (iatr && inverted) {
 		atr = iatr | (atr & ~(FG_MASK | BG_MASK | INVERSE));
 	}
-#endif
 
 	utf8_init(&sm);
 
@@ -2321,17 +2329,12 @@ void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, in
 				break;
 			case 'i':
 			case 'I':
-#ifdef JOEWIN
 				if (iatr) {
 					inverted = !inverted;
-					atr = (inverted ? iatr : origcolor)
-					    | (atr & ~(FG_MASK | BG_MASK));
+					atr = (inverted ? iatr : origcolor) | (atr & ~(FG_MASK | BG_MASK));
 				} else {
 					atr ^= INVERSE;
 				}
-#else
-				atr ^= INVERSE;
-#endif
 				break;
 			case 'b':
 			case 'B':
@@ -2501,4 +2504,10 @@ ptrdiff_t fmtpos(const char *s, ptrdiff_t goal)
 	}
 
 	return s - org + goal - col;
+}
+
+/* Set extended colors palette */
+void setextpal(SCRN *t, int *palette)
+{
+	t->palette = palette;
 }

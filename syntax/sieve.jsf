@@ -1,0 +1,121 @@
+# JOE syntax highlight file for Sieve
+# by Christian Nicolai (http://mycrobase.de)
+
+=Idle
+=Ident
+=Comment
+=Constant
+=String		+Constant
+=Number		+Constant
+=Boolean	+Constant
+=Escape
+=StringEscape	+Escape +String
+=Keyword
+=Statement	+Keyword
+=Conditional	+Statement +Keyword
+=Bad
+=Brace
+
+=TaggedArgument	+Operator +Keyword
+
+:idle Idle
+	*		idle
+	"#"		line_comment	recolor=-1
+	"/"		maybe_comment
+	"1-9"		decimal		recolor=-1
+	"\""		string		recolor=-1
+	"[]{}"		brace		recolor=-1
+	":"		maybe_tagged_arg
+	"a-zA-Z_"	ident		buffer
+
+:brace Brace
+	*		idle		noeat
+
+:line_comment Comment comment
+	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		idle
+
+:maybe_comment Idle
+	*		idle		noeat
+	"*"		comment		recolor=-2
+
+:comment Comment comment
+	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment comment
+	*		comment		noeat
+	"/"		idle
+
+:decimal Number
+	*		idle		noeat
+	"0-9"		decimal
+	"KMG"		decimal_suffix
+
+:decimal_suffix Number
+	*		idle		noeat
+
+:string String string
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+
+:string_escape StringEscape string
+	*		string_bad_escape	recolor=-1
+	"\\"		string
+	"\""		string
+
+:string_bad_escape Bad
+	*		string		noeat
+
+:maybe_tagged_arg Idle
+	*		idle		noeat
+	"a-zA-Z_"	tagged_arg	recolor=-2
+
+:tagged_arg TaggedArgument
+	*		idle		noeat
+	"a-zA-Z0-9_"	tagged_arg
+
+:ident Ident
+	*		idle		noeat strings
+	# control"
+	"else"		cond
+	"elsif"		cond
+	"if"		cond
+	"require"	kw
+	"stop"		kw
+	# commands
+	"discard"	cmd
+	"fileinto"	cmd
+	"keep"		cmd
+	"redirect"	cmd
+	# tests
+	"address"	test
+	"allof"		test
+	"anyof"		test
+	"envelope"	test
+	"exists"	test
+	"false"		bool
+	"header"	test
+	"not"		test
+	"size"		test
+	"true"		bool
+done
+	"a-zA-Z0-9_"	ident
+
+:kw Keyword
+	*		idle		noeat
+
+:cmd Statement
+	*		idle		noeat
+
+:cond Conditional
+	*		idle		noeat
+
+:bool Boolean
+	*		idle		noeat
+
+:test Idle
+	*		idle		noeat
