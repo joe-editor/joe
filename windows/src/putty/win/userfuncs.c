@@ -17,6 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  */
 
+#include <assert.h>
 #include "putty.h"
 
 #include "jwuserfuncs.h"
@@ -65,6 +66,43 @@ void jwUIProcessPacket(void *data, struct CommMessage* m)
 
 	    break;
 	}
+
+	case COMM_COLORSCHEMES: {
+	    
+	    int i = 0;
+	    int qd = JW_TO_UI;
+	    char **schemes = (char **)safemalloc(sizeof(char *), m->arg1 + 2);
+	    int remaining = m->arg1;
+
+	    schemes[i++] = strdup(m->buffer->buffer);
+
+	    /* arg1 == number of schemes left to send.  They will all come together without interruption. */
+	    remaining = m->arg1;
+	    while (remaining > 0) {
+		struct CommMessage *sc = jwWaitForComm(&qd, 1, INFINITE, NULL);
+		assert(sc);
+		assert(sc->msg == COMM_COLORSCHEMES);
+
+		schemes[i++] = strdup(sc->buffer->buffer);
+		remaining = sc->arg1;
+		jwReleaseComm(JW_TO_UI, sc);
+	    }
+
+	    schemes[i] = NULL;
+
+	    jwSetSchemes(schemes);
+
+	    /* Clear array */
+	    for (i = 0; schemes[i]; i++)
+		free(schemes[i]);
+	    free(schemes);
+
+	    break;
+	}
+
+	case COMM_ACTIVESCHEME:
+	    jwSetActiveScheme(m->buffer->buffer);
+	    break;
     }
 }
 

@@ -58,7 +58,6 @@
 #else
 #define IDM_COLSCHEME 0x0160
 #define IDM_FONT      0x0170
-#define IDM_RSTSCHEME 0x0210
 #define IDM_CURSVERT  0x0220
 #define IDM_CURSHORZ  0x0230
 #define IDM_CURSBLOK  0x0240
@@ -117,8 +116,6 @@ static void another_font(int);
 static void deinit_fonts(void);
 static void set_input_locale(HKL);
 #ifdef JOEWIN
-static void update_schemes_menu(void);
-static void update_schemes_check(void);
 static void update_cursor_check(void);
 static void update_font_menu(void);
 #else
@@ -840,8 +837,7 @@ int PuttyWinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show)
 	update_savedsess_menu();
 #else
 	schemes_menu = CreateMenu();
-	update_schemes_menu();
-	update_schemes_check();
+	/* ...done out of bound */
 	
 	cursor_menu = CreateMenu();
 	AppendMenu(cursor_menu, MF_ENABLED, IDM_CURSVERT, "Vertical");
@@ -946,6 +942,9 @@ int PuttyWinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show)
 	    /* Error, probably premature exit. */
 	    return 1;
     }
+
+    /* Ask for color schemes to populate the menu */
+    jwSendComm0(JW_TO_EDITOR, COMM_COLORSCHEMES);
 #endif
 
     while (1) {
@@ -1061,40 +1060,50 @@ char *do_select(SOCKET skt, int startup)
 
 #ifdef JOEWIN
 
-static void update_schemes_menu(void)
+void jwSetSchemes(char **schemes)
 {
-#if 0
-    struct jwcolorlist *colorlist = cfg.colorlist;
+    int n;
 
     while (DeleteMenu(schemes_menu, 0, MF_BYPOSITION)) ;
-    for (; colorlist && (colorlist->idx + 1) <= IDM_SCHEMES_MAX; colorlist = colorlist->next)
-    {
-	AppendMenu(schemes_menu, MF_ENABLED, IDM_SCHEMES_MIN + colorlist->idx * MENU_SCHEMES_STEP, colorlist->name);
+    for (n = IDM_SCHEMES_MIN; *schemes && n <= IDM_SCHEMES_MAX; schemes++, n += MENU_SCHEMES_STEP) {
+	AppendMenu(schemes_menu, MF_ENABLED, n, *schemes);
     }
-
-    AppendMenu(schemes_menu, MF_SEPARATOR, 0, 0);
-    AppendMenu(schemes_menu, MF_ENABLED, IDM_RSTSCHEME, "Reload schemes");
-#endif
 }
 
-static void update_schemes_check(void)
+void jwSetActiveScheme(char *scheme)
 {
-#if 0
-    struct jwcolorlist *colorlist = cfg.colorlist;
+    int n;
+    char buf[256];
 
-    for (; colorlist && (colorlist->idx + 1) <= IDM_SCHEMES_MAX; colorlist = colorlist->next)
-    {
-	DWORD id = IDM_SCHEMES_MIN + colorlist->idx * MENU_SCHEMES_STEP;
-	if (cfg.currentcolors->idx == colorlist->idx)
-	{
-	    CheckMenuItem(schemes_menu, id, MF_CHECKED);
-	}
-	else
-	{
-	    CheckMenuItem(schemes_menu, id, MF_UNCHECKED);
+    for (n = IDM_SCHEMES_MIN; n <= IDM_SCHEMES_MAX; n += MENU_SCHEMES_STEP) {
+	MENUITEMINFOA item;
+
+	ZeroMemory(&item, sizeof(item));
+	item.dwTypeData = 0;
+	item.fMask = MIIM_TYPE;
+	item.cbSize = sizeof(item);
+
+	if (GetMenuItemInfoA(schemes_menu, n, FALSE, &item)) {
+	    if (item.cch < sizeof(buf)) {
+		item.cch++;
+		item.dwTypeData = buf;
+		item.fMask |= MIIM_STATE;
+
+		if (GetMenuItemInfoA(schemes_menu, n, FALSE, &item)) {
+		    if (!strcmp(scheme, (LPSTR)item.dwTypeData)) {
+			CheckMenuItem(schemes_menu, n, MF_CHECKED);
+		    } else if (item.fState == MF_CHECKED) {
+			CheckMenuItem(schemes_menu, n, MF_UNCHECKED);
+		    }
+		}
+	    } else {
+		assert(FALSE);
+	    }
+	} else {
+	    /* Failed to get item information */
+	    break;
 	}
     }
-#endif
 }
 
 static void update_cursor_check(void)
@@ -2654,75 +2663,23 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 #else
 	  case IDM_COLSCHEME:
             {
-#if 0
-		unsigned int schemeno = ((lParam - IDM_SCHEMES_MIN) / MENU_SCHEMES_STEP);
-		struct jwcolorlist *clist = cfg.colorlist;
+		MENUITEMINFOA item;
+		char scheme[128];
+		char buf[256];
 
-		while (clist && clist->idx != schemeno)
-		{
-		    clist = clist->next;
+		ZeroMemory(&item, sizeof(item));
+		item.dwTypeData = (LPSTR)&scheme;
+		item.cch = sizeof(scheme);
+		item.cbSize = sizeof(item);
+		item.fMask = MIIM_STRING;
+
+		if (GetMenuItemInfoA(schemes_menu, lParam, FALSE, &item)) {
+		    sprintf(buf, "mode,\"colors\",rtn,\"%s\",rtn", scheme);
+		    jwSendComm0s(JW_TO_EDITOR, COMM_EXEC, buf);
 		}
-
-		if (clist)
-		{
-		    struct jwcolors *colors = loadcolorscheme(clist);
-		    if (colors)
-		    {
-			/* Update configuration */
-			cfg.currentcolors = clist;
-
-			/* Schedule window repaint */
-			InvalidateRect(hwnd, NULL, TRUE);
-
-			/* Reset palette */
-			sfree(logpal);
-			if (pal)
-			    DeleteObject(pal);
-			logpal = NULL;
-			pal = NULL;
-			cfgtopalette();
-			init_palette();
-
-			/* Notify JOE */
-			jwUpdateJoeColor();
-
-			/* Update checkbox */
-			update_schemes_check();
-
-			/* Update saved settings */
-			jwSaveSettings(&cfg);
-		    }
-		}
-#endif
 	    }
 	    break;
 
-	  case IDM_RSTSCHEME:
-  	    {
-#if 0
-		jwReloadColors(&cfg, cfg.currentcolors->file);
-		update_schemes_menu();
-
-		/* Reset palette */
-		sfree(logpal);
-		if (pal)
-			DeleteObject(pal);
-		logpal = NULL;
-		pal = NULL;
-		cfgtopalette();
-		init_palette();
-
-		/* Schedule window repaint */
-		InvalidateRect(hwnd, NULL, TRUE);
-
-		/* Notify JOE */
-		jwUpdateJoeColor();
-
-		/* Update checkbox */
-		update_schemes_check();
-#endif
-	    }
-	    break;
 	  case IDM_CURSVERT:
 	    if ((wParam & ~0xF) == IDM_CURSVERT) { cfg.cursor_type = 2; }
 	  case IDM_CURSHORZ:

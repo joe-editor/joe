@@ -376,8 +376,6 @@ int handlejwcontrol(struct CommMessage *m)
 		char **colors = get_colors();
 		int i, n;
 
-		jwReleaseComm(JW_TO_EDITOR, m);
-
 		/* Same as above, but the other way around. */
 		for (n = valen(colors) - 1, i = 0; n >= 0; n--, i++) {
 			jwSendComm1s(JW_FROM_EDITOR, COMM_COLORSCHEMES, n, colors[i]);

@@ -23,5 +23,7 @@
 void jwAboutBox(HWND);
 void defuse_showwindow(void);
 void jwHelp(HWND hwnd, wchar_t *helpfile);
+void jwSetActiveScheme(char *scheme);
+void jwSetSchemes(char **schemes);
 
 #endif
