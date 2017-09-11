@@ -36,7 +36,7 @@
 #define COMM_WINRESIZE		1
 #define COMM_EXIT		2
 #define COMM_DROPFILES		3
-#define COMM_COLORSCHEME	4
+#define COMM_COLORSCHEMES	4
 #define COMM_UPDATEBUFFER	5
 #define COMM_DONEBUFFERUPDATE	6
 #define COMM_RENDEZVOUS		7
@@ -45,6 +45,8 @@
 #define COMM_ACK		10
 #define COMM_MPXDATA		11
 #define COMM_VTSIZE		12
+#define COMM_SETPALETTE		13
+#define COMM_ACTIVESCHEME	14
 
 #define COMM_IO_1		0x80
 #define COMM_IO_2		0x81
@@ -109,8 +111,10 @@ size_t jwReadIO(struct CommMessage *m, void *data);
 #define jwSendComm0d(side,op,d,s)		(jwSendComm((side),(op),0,0,0,0,0,(s),(d)))
 #define jwSendComm0pd(side,op,p,d,s)		(jwSendComm((side),(op),0,0,0,0,(p),(s),(d)))
 #define jwSendComm1(side,op,a1)			(jwSendComm((side),(op),(a1),0,0,0,0,0,0))
+#define jwSendComm1s(side,op,a1,s)		(jwSendComm((side),(op),(a1),0,0,0,0,strlen(s) + 1,(s)))
 #define jwSendComm2(side,op,a1,a2)		(jwSendComm((side),(op),(a1),(a2),0,0,0,0,0))
 #define jwSendComm3s(side,op,a1,a2,a3,s)	(jwSendComm((side),(op),(a1),(a2),(a3),0,0,strlen(s) + 1,(s)))
 #define jwSendComm3(side,op,a1,a2,a3)		(jwSendComm((side),(op),(a1),(a2),(a3),0,0,0,0))
+#define jwSendComm4p(side,op,a1,a2,a3,a4,p)	(jwSendComm((side),(op),(a1),(a2),(a3),(a4),(p),0,0))
 
 #endif // _JOEWIN_JWCOMM_H

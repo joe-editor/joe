@@ -504,7 +504,12 @@ SCHEME *load_scheme(const char *name)
 		
 		/* If this is GUI, then make the palette */
 		if (curset->colors == COLORSET_GUI) {
+#ifndef JOEWIN
 			build_palette(curset, 1);
+#else
+			/* Windows remaps xterm256 so start at 16 */
+			build_palette(curset, 16);
+#endif
 		} else {
 			curset->palette = NULL;
 		}
@@ -676,11 +681,18 @@ static int palcmp(const void *a, const void *b)
 static void get_palette(int *palette, struct color_spec *spec, int startidx, int endidx)
 {
 	if (spec->type == COLORSPEC_TYPE_GUI) {
+#ifndef JOEWIN
 		if (spec->mask & FG_MASK)
 			spec->atr = (spec->atr & ~FG_MASK) | (findpal(palette, startidx, endidx, spec->gui_fg) << FG_SHIFT) | FG_TRUECOLOR | FG_NOT_DEFAULT;
 		if (spec->mask & BG_MASK)
 			spec->atr = (spec->atr & ~BG_MASK) | (findpal(palette, startidx, endidx, spec->gui_bg) << BG_SHIFT) | BG_TRUECOLOR | BG_NOT_DEFAULT;
-		
+#else
+		/* Windows remaps xterm colors */
+		if (spec->mask & FG_MASK)
+			spec->atr = (spec->atr & ~FG_MASK) | (findpal(palette, startidx, endidx, spec->gui_fg) << FG_SHIFT) | FG_NOT_DEFAULT;
+		if (spec->mask & BG_MASK)
+			spec->atr = (spec->atr & ~BG_MASK) | (findpal(palette, startidx, endidx, spec->gui_bg) << BG_SHIFT) | BG_NOT_DEFAULT;
+#endif
 		spec->type = COLORSPEC_TYPE_ATTR;
 	}
 }
@@ -705,19 +717,18 @@ static int findpal(int *palette, int startidx, int endidx, int color)
 	return -1;
 }
 
-/* Create a list of all available schemes */
-char **get_colors(void)
-{
-	return find_configs(NULL, "jcf", "colors", "colors");
-}
-
 /* Apply the specified scheme */
 int apply_scheme(SCHEME *colors)
 {
 	struct high_syntax *stx;
 	struct color_set *best = NULL, *p;
 	int i;
-	int supported = maint->t->truecolor ? 0x1000000 : (maint->t->assume_256 ? 256 : maint->t->Co);
+#ifndef JOEWIN
+	int supported = maint->t->truecolor ? COLORSET_GUI : (maint->t->assume_256 ? 256 : maint->t->Co);
+#else
+	int supported = COLORSET_GUI;
+	int first = curschemeset == NULL;
+#endif
 	
 	if (!colors)
 		return 1;
@@ -783,9 +794,23 @@ int apply_scheme(SCHEME *colors)
 	scheme_name = curscheme->name;
 	
 	/* Apply palette */
+#ifndef JOEWIN
 	setextpal(maint->t, best->palette);
+#else
+	if (!first) {
+		/* Don't send during initialization (prior to rendezvous). */
+		jwSendPalette();
+	}
+#endif
 	
 	return 0;
+}
+
+void jwSendPalette(void)
+{
+	if (curschemeset) {
+		jwSendComm4p(JW_FROM_EDITOR, COMM_SETPALETTE, (bg_text & FG_VALUE) >> FG_SHIFT, (bg_text & BG_VALUE) >> BG_SHIFT, (bg_cursor & FG_VALUE) >> FG_SHIFT, (bg_cursor & BG_VALUE) >> BG_SHIFT, curschemeset->palette);
+	}
 }
 
 /* Resolves a color_def into an attribute, resolves color_def's of any attribute referenced from that def */

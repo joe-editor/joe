@@ -418,4 +418,5 @@ struct highlight_state {
 #include "uwindows.h"
 #include "jwutils.h"
 #include "subproc.h"
+#include "jwcomm.h"
 #endif

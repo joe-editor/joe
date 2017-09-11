@@ -29,20 +29,42 @@ static struct buffer_entry *buffers = NULL;
 
 static void UpdateWindowTitle();
 
+/* External */
+void jwLoadPalette(int *, int, int, int, int);
 
 void jwUIProcessPacket(void *data, struct CommMessage* m)
 {
-    if (m->msg == COMM_EXIT) {
-	jwShutdownBackend(data, m->arg1);
-    } else if (m->msg == COMM_UPDATEBUFFER) {
-	struct buffer_update bu;
+    switch (m->msg) {
+	case COMM_EXIT:
+	    jwShutdownBackend(data, m->arg1);
+	    break;
 
-	unmarshal_buffer_update(m, &bu);
-	apply_buffer_updates(&buffers, &bu);
-    } else if (m->msg == COMM_DONEBUFFERUPDATE) {
-	UpdateWindowTitle();
-    } else if (m->msg == COMM_CONTEXTMENU) {
-	jwContextMenu(m->arg1);
+	case COMM_UPDATEBUFFER: {
+	    struct buffer_update bu;
+	    unmarshal_buffer_update(m, &bu);
+	    apply_buffer_updates(&buffers, &bu);
+
+	    break;
+	}
+
+	case COMM_DONEBUFFERUPDATE:
+	    UpdateWindowTitle();
+	    break;
+
+	case COMM_CONTEXTMENU:
+	    jwContextMenu(m->arg1);
+	    break;
+
+	case COMM_SETPALETTE: {
+	    int *pal = (int *)m->ptr;
+	    if (pal) {
+		jwLoadPalette(pal, pal[m->arg1], pal[m->arg2], pal[m->arg3], pal[m->arg4]);
+	    } else {
+		jwLoadPalette(NULL, 0, 0, 0, 0);
+	    }
+
+	    break;
+	}
     }
 }
 

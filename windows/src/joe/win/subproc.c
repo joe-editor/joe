@@ -18,7 +18,6 @@
  */
 
 #include "types.h"
-#include "jwcomm.h"
 
 int nmpx = 0;
 

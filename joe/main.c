@@ -11,10 +11,6 @@
 #include <gpm.h>
 #endif
 
-#ifdef JOEWIN
-#include "jwcomm.h"
-#endif
-
 char *exmsg = NULL;		/* Message to display when exiting the editor */
 char *xmsg;			/* Message to display when starting the editor */
 int usexmouse=0;
@@ -839,6 +835,9 @@ int main(int argc, char **real_argv, const char * const *envv)
 #ifdef JOEWIN
 	/* Rendezvous.  Wait until the UI end is ready before we get going. */
 	jwRendezvous(JW_TO_EDITOR, JW_TO_UI);
+
+	/* Send palette. */
+	jwSendPalette();
 #endif
 
 	/* Run the editor */

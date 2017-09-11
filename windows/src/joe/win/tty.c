@@ -18,7 +18,6 @@
  */
 
 #include "types.h"
-#include "jwcomm.h"
 
 int idleout = 1;
 
@@ -372,22 +371,20 @@ int handlejwcontrol(struct CommMessage *m)
 
 		varm(files);
 		edupd(1);
-	} else if (m->msg == COMM_COLORSCHEME) {
-#if 0
-		static CMD *retype = NULL;
-		struct jwcolors *colors = (struct jwcolors *)m->ptr;
-		W *w = maint->topwin;
+	} else if (m->msg == COMM_COLORSCHEMES) {
+		/* Gets the list of color schemes */
+		char **colors = get_colors();
+		int i, n;
 
-		applyscheme(colors);
+		jwReleaseComm(JW_TO_EDITOR, m);
 
-		/* Redraw screen */
-		if (!retype) {
-			retype = findcmd("retype");
+		/* Same as above, but the other way around. */
+		for (n = valen(colors) - 1, i = 0; n >= 0; n--, i++) {
+			jwSendComm1s(JW_FROM_EDITOR, COMM_COLORSCHEMES, n, colors[i]);
 		}
 
-		execmd(retype, 0);
-		edupd(1);
-#endif
+		/* Notify about the current color scheme */
+		jwSendComm0s(JW_FROM_EDITOR, COMM_ACTIVESCHEME, scheme_name);
 	} else if (m->msg == COMM_EXEC) {
 		/* Called with either a buffer attached or a pointer to a const string */
 

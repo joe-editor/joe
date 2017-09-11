@@ -937,11 +937,16 @@ char **colorfiles = NULL; /* Array of available color schemes */
 
 static int colorscmplt(BW *bw, int k)
 {
+	return simple_cmplt(bw, get_colors());
+}
+
+char **get_colors(void)
+{
 	if (!colorfiles) {
 		colorfiles = find_configs(NULL, "jcf", "colors", "colors");
 	}
-	
-	return simple_cmplt(bw, colorfiles);
+
+	return colorfiles;
 }
 
 static int check_for_hex(BW *bw)
@@ -1264,6 +1269,7 @@ static int olddoopt(BW *bw, int y, int flg)
 					return -1;
 				}
 			} case 17: {
+				/* Color scheme */
 				buf = vsfmt(buf, 0, joe_gettext(glopts[y].yes), "");
 				s = ask(bw->parent, buf, NULL, NULL, colorscmplt, utf8_map, 0, 0, NULL);
 				if (s) {
@@ -1275,6 +1281,10 @@ static int olddoopt(BW *bw, int y, int flg)
 							return -1;
 						} else {
 							nredraw(maint->t);
+#ifdef JOEWIN
+							/* Notify UI */
+							jwSendComm0s(JW_FROM_EDITOR, COMM_ACTIVESCHEME, scheme_name);
+#endif
 							return 0;
 						}
 					} else {

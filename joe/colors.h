@@ -65,6 +65,10 @@ void load_colors_state(FILE *);
 void save_colors_state(FILE *);
 int init_colors(void);
 
+#ifdef JOEWIN
+void jwSendPalette(void);
+#endif
+
 extern const char *scheme_name;
 extern struct color_scheme *curscheme;
 extern struct color_set *curschemeset;

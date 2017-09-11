@@ -1383,6 +1383,56 @@ static void enact_pending_netevent(void)
     reentering = 0;
 }
 
+#ifdef JOEWIN
+
+#define JW_LOAD_COLOR(n,v) { \
+    int rgb = (v), idx = (n); \
+    defpal[idx].rgbtRed = (rgb >> 16) & 0xff; \
+    defpal[idx].rgbtGreen = (rgb >> 8) & 0xff; \
+    defpal[idx].rgbtBlue = rgb & 0xff; \
+}
+
+void jwLoadPalette(int *palette, int fg, int bg, int cfg, int cbg)
+{
+    int i;
+
+    InvalidateRect(hwnd, NULL, TRUE);
+    sfree(logpal);
+    if (pal)
+	DeleteObject(pal);
+    logpal = NULL;
+    pal = NULL;
+    cfgtopalette();
+
+    if (palette) {
+	for (i = 0; i < 256; i++) {
+	    if (palette[i] >= 0)
+		JW_LOAD_COLOR(i, palette[i])
+	}
+
+	if (fg >= 0) {
+	    JW_LOAD_COLOR(256, fg);
+	    JW_LOAD_COLOR(257, fg);
+	    boldcolors[257] = 1;
+	}
+
+	if (bg >= 0) {
+	    JW_LOAD_COLOR(258, bg);
+	    JW_LOAD_COLOR(259, bg);
+	    boldcolors[259] = 1;
+	}
+
+	if (cfg >= 0)
+	    JW_LOAD_COLOR(260, cfg);
+	if (cbg >= 0)
+	    JW_LOAD_COLOR(261, cbg);
+    }
+
+    init_palette();
+}
+
+#endif
+
 /*
  * Copy the colour palette from the configuration data into defpal.
  * This is non-trivial because the colour indices are different.
@@ -1438,14 +1488,8 @@ static void cfgtopalette(void)
     };
 
     for (i = 0; default_colors[i].n >= 0; i++) {
-	int idx = default_colors[i].n;
-	int rgb = default_colors[i].rgb;
-
-	defpal[idx].rgbtRed = (rgb >> 16) & 0xff;
-	defpal[idx].rgbtGreen = (rgb >> 8) & 0xff;
-	defpal[idx].rgbtBlue = rgb & 0xff;
-
-	boldcolors[idx] = default_colors[i].bold;
+	JW_LOAD_COLOR(default_colors[i].n, default_colors[i].rgb);
+	boldcolors[default_colors[i].n] = default_colors[i].bold;
     }
 #endif
 
@@ -1462,29 +1506,6 @@ static void cfgtopalette(void)
 		defpal[i+16].rgbtBlue = shade;
 	}
     }
-
-#if JUNK
-    struct jwcolors *curcolors = cfg.currentcolors->colors;
-
-    for (i = 0; i < NALLCOLOURS; i++)
-    {
-	/* Fill everything with black, first. */
-	defpal[i].rgbtRed = defpal[i].rgbtBlue = defpal[i].rgbtGreen = 0;
-	boldcolors[i] = 0;
-    }
-
-    for (i = 0; i < curcolors->ncolors; i++)
-    {
-	int w = curcolors->colors[i].paletteidx;
-	int c = curcolors->colors[i].color;
-
-	defpal[w].rgbtRed = JWC_RED(c);
-	defpal[w].rgbtGreen = JWC_GREEN(c);
-	defpal[w].rgbtBlue = JWC_BLUE(c);
-
-	boldcolors[w] = c & COLOR_FLAG_BOLD;
-    }
-#endif
 
     /* Override with system colours if appropriate */
     if (cfg.system_colour)

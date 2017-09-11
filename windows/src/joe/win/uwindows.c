@@ -18,7 +18,6 @@
  */
 
 #include "types.h"
-#include "jwcomm.h"
 
 /* Copy block contents to the Windows clipboard */
 
