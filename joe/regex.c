@@ -1318,7 +1318,7 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int fo
 		} else { /* No case folding */
 			c = pgetc(p);
 		}
-#ifdef DEBUG
+#ifdef DEBUG_REGEX
 		logmessage_2("'%c' (%lld)\n", c, (long long)byte);
 #endif
 		/* Give character to all threads */
@@ -1327,7 +1327,7 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int fo
 			for (;;) {
 				int i;
 				i = *(int *)pc;
-#ifdef DEBUG
+#ifdef DEBUG_REGEX
 				logmessage_3("  Thread %d PC=%lld insn=%s\n", t - cl, (long long)(pc - g->frag->start), iname(i));
 #endif
 				if (i >= 0) { /* A single character */
@@ -1356,7 +1356,7 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int fo
 										case '/': psh = '/'; break;
 									}
 									if (psh) { /* Stay */
-#ifdef DEBUG
+#ifdef DEBUG_REGEX
 										logmessage_1("     Push %c\n", c);
 #endif
 										pool[t].stack[pool[t].sp++] = psh;
@@ -1376,13 +1376,13 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int fo
 										case '/': psh = '/'; break;
 									}
 									if (psh) { /* Stay */
-#ifdef DEBUG
+#ifdef DEBUG_REGEX
 										logmessage_1("     Push %c\n", c);
 #endif
 										pool[t].stack[pool[t].sp++] = psh;
 										nle = add_thread(pool, g->frag->start, nl, nle, pc, pool[t].pos, bra_no, pool[t].stack, pool[t].sp);
 									} else if (c == ')') {
-#ifdef DEBUG
+#ifdef DEBUG_REGEX
 										logmessage_0("     Pop )\n");
 #endif
 										if (pool[t].sp == 1)
