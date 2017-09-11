@@ -115,14 +115,6 @@ void ttopnn(void)
 
 	winwidth = jw_initialcols;
 	winheight = jw_initialrows;
-
-	if (jw_initialcolorscheme)
-	{
-#if 0
-		applyscheme(jw_initialcolorscheme);
-		jw_initialcolorscheme = NULL;
-#endif
-	}
 }
 
 /* Close terminal */

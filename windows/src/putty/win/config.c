@@ -22,7 +22,6 @@
 
 #include "putty.h"
 #include "jwconfig.h"
-#include "jwcolors.h"
 #include "jwutils.h"
 #include "jwglobals.h"
 
@@ -40,7 +39,6 @@ static wchar_t *getkeyname()
 
 void jwLoadConfig(Config *cfg)
 {
-	wchar_t cscheme[MAX_PATH];
 	HKEY hkey;
 
 	/* Basics -- not overridable via registry settings */
@@ -63,10 +61,6 @@ void jwLoadConfig(Config *cfg)
 	strcpy(cfg->wintitle, "Joe's Own Editor");
 	cfg->font_quality = FQ_CLEARTYPE;
 
-	cfg->colorlist = NULL;
-	cfg->currentcolors = NULL;
-	cfg->externalcolors = NULL;
-
 	/* Defaults */
 
 	cfg->cursor_type = 0;
@@ -77,7 +71,6 @@ void jwLoadConfig(Config *cfg)
 	strcpy(cfg->font.name, "Consolas");
 	cfg->font.isbold = 0;
 	cfg->font.height = 10;
-	wcscpy(cscheme, L"");
 
 	/* Load from registry... */
 
@@ -86,12 +79,6 @@ void jwLoadConfig(Config *cfg)
 		DWORD sz = MAX_PATH;
 		DWORD type;
 		DWORD val;
-
-		sz = MAX_PATH;
-		if (ERROR_SUCCESS != RegQueryValueExW(hkey, L"ColorScheme", NULL, &type, (LPBYTE)cscheme, &sz) && type == REG_SZ)
-		{
-			wcscpy(cscheme, L"");
-		}
 
 		sz = sizeof(DWORD);
 		if (ERROR_SUCCESS == RegQueryValueExW(hkey, L"Rows", NULL, &type, (LPBYTE)&val, &sz) && type == REG_DWORD)
@@ -129,12 +116,9 @@ void jwLoadConfig(Config *cfg)
 		RegCloseKey(hkey);
 	}
 
-	jwReloadColors(cfg, cscheme);
-
 	/* Cheat: preset the window x and y coordinates so that JOE doesn't get a resize and kill the copyright banner */
 	jw_initialcols = cfg->width;
 	jw_initialrows = cfg->height;
-	jw_initialcolorscheme = dupcolorscheme(cfg->currentcolors->colors);
 }
 
 void jwSaveSettings(Config *cfg)
@@ -144,8 +128,6 @@ void jwSaveSettings(Config *cfg)
 
 	if (ERROR_SUCCESS == RegCreateKeyExW(HKEY_CURRENT_USER, getkeyname(), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkey, NULL))
 	{
-		RegSetValueExW(hkey, L"ColorScheme", 0, REG_SZ, (LPBYTE)cfg->currentcolors->file, sizeof(wchar_t) * ((DWORD)wcslen(cfg->currentcolors->file) + 1));
-		
 		tmp = cfg->font.height;
 		RegSetValueExW(hkey, L"FontSize", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
 
@@ -158,78 +140,6 @@ void jwSaveSettings(Config *cfg)
 		RegSetValueExW(hkey, L"Cursor", 0, REG_DWORD, (LPBYTE)&tmp, sizeof(DWORD));
 
 		RegCloseKey(hkey);
-	}
-}
-
-void jwReloadColors(Config *cfg, wchar_t *currentfile)
-{
-	wchar_t curcolors[MAX_PATH];
-	struct jwcolorlist *clist;
-	struct jwcolors *col = NULL;
-
-	if (currentfile)
-	{
-		wcscpy(curcolors, currentfile);
-
-		/* Don't fix path for builtins */
-		if (*currentfile != L'*')
-		{
-			fixpath(curcolors, MAX_PATH);
-		}
-	}
-	else
-	{
-		wcscpy(curcolors, L"");
-	}
-
-	cfg->currentcolors = NULL;
-	if (cfg->colorlist)
-	{
-		freecolorlist(cfg->colorlist);
-	}
-	if (cfg->externalcolors)
-	{
-		freecolorlist(cfg->externalcolors);
-		cfg->externalcolors = NULL;
-	}
-
-	cfg->colorlist = loadcolorschemes();
-	
-	for (clist = cfg->colorlist; clist; clist = clist->next)
-	{
-		if (!wcsicmp(curcolors, clist->file))
-		{
-			cfg->currentcolors = clist;
-			break;
-		}
-	}
-
-	if (!cfg->currentcolors)
-	{
-		cfg->externalcolors = loadexternalscheme(curcolors);
-		cfg->currentcolors = cfg->externalcolors;
-	}
-
-	if (cfg->currentcolors)
-	{
-		col = loadcolorscheme(cfg->currentcolors);
-	}
-
-	if (!col)
-	{
-		/* The head of cfg->colorlist ought to be the default colors */
-
-		for (clist = cfg->colorlist; clist; clist = clist->next)
-		{
-			col = loadcolorscheme(clist);
-			if (col)
-			{
-				cfg->currentcolors = clist;
-				break;
-			}
-		}
-
-		assert(col);
 	}
 }
 

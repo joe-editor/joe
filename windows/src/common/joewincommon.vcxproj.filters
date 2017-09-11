@@ -30,9 +30,6 @@
     <ClCompile Include="startup.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="colors.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="builtin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -45,9 +42,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jwglobals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="jwcolors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="jwutils.h">

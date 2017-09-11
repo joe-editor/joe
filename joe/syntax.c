@@ -8,11 +8,6 @@
 
 #include "types.h"
 
-#ifdef JOEWIN
-#include "jwcolors.h"
-struct jwcolors *currentscheme = NULL;
-#endif
-
 /* Parse one line.  Returns new state.
    'syntax' is the loaded syntax definition for this buffer.
    'line' is advanced to start of next line.

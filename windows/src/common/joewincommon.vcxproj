@@ -30,7 +30,6 @@
     <ClCompile Include="builtin.c" />
     <ClCompile Include="comm.c" />
     <ClCompile Include="globals.c" />
-    <ClCompile Include="colors.c" />
     <ClCompile Include="tinfl.c" />
     <ClCompile Include="utils.c" />
     <ClCompile Include="bentries.c" />
@@ -38,7 +37,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="jwbuiltin.h" />
-    <ClInclude Include="jwcolors.h" />
     <ClInclude Include="jwcomm.h" />
     <ClInclude Include="jwglobals.h" />
     <ClInclude Include="jwres.h" />

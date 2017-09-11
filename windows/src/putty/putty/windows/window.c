@@ -1063,6 +1063,7 @@ char *do_select(SOCKET skt, int startup)
 
 static void update_schemes_menu(void)
 {
+#if 0
     struct jwcolorlist *colorlist = cfg.colorlist;
 
     while (DeleteMenu(schemes_menu, 0, MF_BYPOSITION)) ;
@@ -1073,10 +1074,12 @@ static void update_schemes_menu(void)
 
     AppendMenu(schemes_menu, MF_SEPARATOR, 0, 0);
     AppendMenu(schemes_menu, MF_ENABLED, IDM_RSTSCHEME, "Reload schemes");
+#endif
 }
 
 static void update_schemes_check(void)
 {
+#if 0
     struct jwcolorlist *colorlist = cfg.colorlist;
 
     for (; colorlist && (colorlist->idx + 1) <= IDM_SCHEMES_MAX; colorlist = colorlist->next)
@@ -1091,6 +1094,7 @@ static void update_schemes_check(void)
 	    CheckMenuItem(schemes_menu, id, MF_UNCHECKED);
 	}
     }
+#endif
 }
 
 static void update_cursor_check(void)
@@ -1140,11 +1144,6 @@ void jwContextMenu(int hasblock)
 		TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RIGHTBUTTON,
 		cursorpos.x, cursorpos.y,
 		0, hwnd, NULL);
-}
-
-void jwUpdateJoeColor(void)
-{
-    jwSendJoeColor(cfg.currentcolors->colors);
 }
 
 #else
@@ -2634,6 +2633,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 #else
 	  case IDM_COLSCHEME:
             {
+#if 0
 		unsigned int schemeno = ((lParam - IDM_SCHEMES_MIN) / MENU_SCHEMES_STEP);
 		struct jwcolorlist *clist = cfg.colorlist;
 
@@ -2672,11 +2672,13 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 			jwSaveSettings(&cfg);
 		    }
 		}
+#endif
 	    }
 	    break;
 
 	  case IDM_RSTSCHEME:
   	    {
+#if 0
 		jwReloadColors(&cfg, cfg.currentcolors->file);
 		update_schemes_menu();
 
@@ -2697,6 +2699,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT message,
 
 		/* Update checkbox */
 		update_schemes_check();
+#endif
 	    }
 	    break;
 	  case IDM_CURSVERT:

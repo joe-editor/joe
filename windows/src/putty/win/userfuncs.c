@@ -23,7 +23,6 @@
 #include "jwcomm.h"
 #include "jwglobals.h"
 #include "jwutils.h"
-#include "jwcolors.h"
 #include "jwbentries.h"
 
 static struct buffer_entry *buffers = NULL;
@@ -62,12 +61,6 @@ void jwSendFiles(HDROP hdrop, int x, int y)
     }
 
     jwSendComm3(JW_FROM_UI, COMM_DROPFILES, x, y, 0);
-}
-
-void jwSendJoeColor(void *colorp)
-{
-    struct jwcolors *colors = dupcolorscheme((struct jwcolors*)colorp);
-    jwSendComm0p(JW_FROM_UI, COMM_COLORSCHEME, colors);
 }
 
 static void UpdateWindowTitle()

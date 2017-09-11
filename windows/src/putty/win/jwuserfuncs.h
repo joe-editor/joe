@@ -26,8 +26,6 @@
 
 void jwUIProcessPacket(void *handle, struct CommMessage* m);
 void jwSendFiles(HDROP, int x, int y);
-void jwUpdateJoeColor(void);
-void jwSendJoeColor(void *color);
 void jwContextMenu(int hasblock);
 
 int jwCanExit();

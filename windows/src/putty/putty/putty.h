@@ -30,9 +30,6 @@ typedef struct terminal_tag Terminal;
 #include "puttyps.h"
 #include "network.h"
 #include "misc.h"
-#ifdef JOEWIN
-#include "jwcolors.h"
-#endif
 
 /*
  * Fingerprints of the PGP master keys that can be used to establish a trust
@@ -578,10 +575,6 @@ struct config_tag {
     int bold_colour;
 #ifndef JOEWIN
     unsigned char colours[22][3];
-#else
-    struct jwcolorlist *colorlist;
-    struct jwcolorlist *currentcolors;
-    struct jwcolorlist *externalcolors;
 #endif
     /* Selection options */
     int mouse_is_xterm;
