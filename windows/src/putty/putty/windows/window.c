@@ -1405,6 +1405,51 @@ static void cfgtopalette(void)
 	defpal[w].rgbtGreen = cfg.colours[i][1];
 	defpal[w].rgbtBlue = cfg.colours[i][2];
     }
+#else
+    static struct {
+	int n;
+	int rgb;
+	int bold;
+    } default_colors[] = {
+	{ 256, 0x000000, 0 },	// Default foreground
+	{ 257, 0x000000, 1 },	// Default foreground bold
+	{ 258, 0xffffff, 0 },	// Default background
+	{ 259, 0xbbbbbb, 0 },	// Default background bold
+	{ 260, 0xffffff, 0 },	// Default cursor text
+	{ 261, 0x0080f0, 0 },	// Default cursor color
+
+	{ 0,   0x000000, 0 },	// Black
+	{ 8,   0x000000, 1 },	// Bold black
+	{ 1,   0xbb0000, 0 },	// Red
+	{ 9,   0xff3030, 0 },	// Bold red
+	{ 2,   0x00884c, 0 },	// Green
+	{ 10,  0x437d25, 0 },	// Bold green
+	{ 3,   0xb07800, 0 },	// Yellow
+	{ 11,  0xe0e040, 0 },	// Bold yellow
+	{ 4,   0x0033cc, 0 },	// Blue
+	{ 12,  0x5555ff, 0 },	// Bold blue
+	{ 5,   0xbb00bb, 0 },	// Magenta
+	{ 13,  0xb64f90, 0 },	// Bold magenta
+	{ 6,   0x0090a0, 0 },	// Cyan
+	{ 14,  0x00b7cc, 0 },	// Bold cyan
+	{ 7,   0x6b6b6b, 0 },	// White
+	{ 15,  0xffffff, 0 },	// Bold white
+
+	{ -1, 0, 0 },		// Terminator
+    };
+
+    for (i = 0; default_colors[i].n >= 0; i++) {
+	int idx = default_colors[i].n;
+	int rgb = default_colors[i].rgb;
+
+	defpal[idx].rgbtRed = (rgb >> 16) & 0xff;
+	defpal[idx].rgbtGreen = (rgb >> 8) & 0xff;
+	defpal[idx].rgbtBlue = rgb & 0xff;
+
+	boldcolors[idx] = default_colors[i].bold;
+    }
+#endif
+
     for (i = 0; i < NEXTCOLOURS; i++) {
 	if (i < 216) {
 	    int r = i / 36, g = (i / 6) % 6, b = i % 6;
@@ -1418,7 +1463,8 @@ static void cfgtopalette(void)
 		defpal[i+16].rgbtBlue = shade;
 	}
     }
-#else
+
+#if JUNK
     struct jwcolors *curcolors = cfg.currentcolors->colors;
 
     for (i = 0; i < NALLCOLOURS; i++)

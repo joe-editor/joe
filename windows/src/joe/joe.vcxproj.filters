@@ -42,6 +42,9 @@
     <ClInclude Include="$(JoeExternalSrcDir)\cmd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="$(JoeExternalSrcDir)\colors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="$(JoeExternalSrcDir)\config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -219,6 +222,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(JoeExternalSrcDir)\cmd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(JoeExternalSrcDir)\colors.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(JoeExternalSrcDir)\coroutine.c">

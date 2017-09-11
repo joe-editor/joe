@@ -35,13 +35,11 @@
 	<PuttySrcDir>$(JoeWinRoot)\putty\win</PuttySrcDir>
 	<JoeConfDir>$(JoeWinRoot)\..\rc</JoeConfDir>
 	<JoeSyntaxDir>$(JoeRoot)\syntax</JoeSyntaxDir>
-	<SchemesDir>$(JoeWinRoot)\..\schemes</SchemesDir>
-	<SchemeGenDir>$(SchemesDir)\generated</SchemeGenDir>
-	<VimSchemeDir>$(SchemesDir)\generated\vimschemes</VimSchemeDir>
 	<JoeDocsDir>$(JoeWinRoot)\..\docs</JoeDocsDir>
 	<JoeLangDir>$(JoeRoot)\po</JoeLangDir>
 	<JoeRootConfDir>$(JoeRoot)\rc</JoeRootConfDir>
 	<JoeRootDocsDir>$(JoeRoot)\docs</JoeRootDocsDir>
+	<JoeColorsDir>$(JoeRoot)\colors</JoeColorsDir>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -56,7 +54,7 @@
     <IntermediateOutputPath>$(IntDir)</IntermediateOutputPath>
     
     <VersionDir>$(OutputRootDir)\Intermediate\version</VersionDir>
-    <SchemesOutDir>$(OutputRootDir)\schemes</SchemesOutDir>
+    <ColorsOutDir>$(OutputRootDir)\colors</ColorsOutDir>
     <SyntaxOutDir>$(OutputRootDir)\syntax</SyntaxOutDir>
     <ConfOutDir>$(OutputRootDir)\conf</ConfOutDir>
     <VTOutDir>$(OutputRootDir)\vt</VTOutDir>

@@ -101,7 +101,7 @@
         <Directory Id="INSTALLFOLDER" Name="JoeEditor">
           <Directory Id="SYNTAXFOLDER" Name="syntax" />
           <Directory Id="CONFIGFOLDER" Name="conf" />
-          <Directory Id="COLORFOLDER" Name="schemes" />
+          <Directory Id="COLORFOLDER" Name="colors" />
           <Directory Id="DOCFOLDER" Name="doc" />
           <Directory Id="VTFOLDER" Name="vt" />
 	  <Directory Id="POFOLDER" Name="po" />

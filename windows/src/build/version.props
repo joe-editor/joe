@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <JoeWinVersion>4.4</JoeWinVersion>
+    <JoeWinVersion>4.5</JoeWinVersion>
     <JoeWinVersionDesignation></JoeWinVersionDesignation>
     
-    <JoeWinProduct32Guid>107ef701-4b2a-4ce3-bd7c-4e36b4f81318</JoeWinProduct32Guid>
-    <JoeWinProduct64Guid>c27b0a5f-e14f-43b9-b844-0433c824b6d3</JoeWinProduct64Guid>
+    <JoeWinProduct32Guid>88ca1f58-5db1-438f-a668-85f4e696092a</JoeWinProduct32Guid>
+    <JoeWinProduct64Guid>2d018e89-7daf-436a-9480-b733b1990eeb</JoeWinProduct64Guid>
   </PropertyGroup>
 </Project>

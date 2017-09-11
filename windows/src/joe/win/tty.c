@@ -118,8 +118,10 @@ void ttopnn(void)
 
 	if (jw_initialcolorscheme)
 	{
+#if 0
 		applyscheme(jw_initialcolorscheme);
 		jw_initialcolorscheme = NULL;
+#endif
 	}
 }
 
@@ -379,6 +381,7 @@ int handlejwcontrol(struct CommMessage *m)
 		varm(files);
 		edupd(1);
 	} else if (m->msg == COMM_COLORSCHEME) {
+#if 0
 		static CMD *retype = NULL;
 		struct jwcolors *colors = (struct jwcolors *)m->ptr;
 		W *w = maint->topwin;
@@ -392,6 +395,7 @@ int handlejwcontrol(struct CommMessage *m)
 
 		execmd(retype, 0);
 		edupd(1);
+#endif
 	} else if (m->msg == COMM_EXEC) {
 		/* Called with either a buffer attached or a pointer to a const string */
 

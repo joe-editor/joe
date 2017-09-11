@@ -30,7 +30,7 @@
       ;JoeRootDir=$(JoeRoot);
       ;DocRootDir=$(DocOutDir);
       ;WindowsDocDir=$(JoeDocsDir);
-      ;SchemesRootDir=$(SchemesOutDir);
+      ;ColorsRootDir=$(ColorsOutDir);
       ;SyntaxRootDir=$(SyntaxOutDir);
       ;ConfRootDir=$(ConfOutDir);
       ;VersionDir=$(VersionDir);

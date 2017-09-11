@@ -21,9 +21,6 @@ struct high_state {
 	struct high_cmd *dflt;		/* Default for no match */
 	struct high_cmd *same_delim;	/* Same delimiter */
 	struct high_cmd *delim;		/* Matching delimiter */
-#ifdef JOEWIN
-	struct high_color *colorp;
-#endif
 };
 
 /* Parameter list */

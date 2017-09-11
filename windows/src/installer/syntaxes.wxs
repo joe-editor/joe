@@ -134,6 +134,9 @@
       <Component Id="javascriptJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
 	<File Id="javascriptJSF" Name="js.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\js.jsf" KeyPath="yes" />
       </Component>
+      <Component Id="jcfJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
+	<File Id="jcfJSF" Name="jcf.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\jcf.jsf" KeyPath="yes" />
+      </Component>
       <Component Id="joercJSFComponent" Guid="*" Directory="SYNTAXFOLDER" Win64="$(var.Win64)">
         <File Id="joercJSF" Name="joerc.jsf" DiskId="1" Source="$(var.SyntaxRootDir)\joerc.jsf" KeyPath="yes" />
       </Component>

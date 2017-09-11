@@ -47,6 +47,7 @@
     <ClInclude Include="$(JoeExternalSrcDir)\cclass.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\charmap.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\cmd.h" />
+    <ClInclude Include="$(JoeExternalSrcDir)\colors.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\config.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\coroutine.h" />
     <ClInclude Include="$(JoeExternalSrcDir)\frag.h" />
@@ -108,6 +109,7 @@
     <ClCompile Include="$(JoeExternalSrcDir)\cclass.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\charmap.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\cmd.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\colors.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\coroutine.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\frag.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\gettext.c" />

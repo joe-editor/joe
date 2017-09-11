@@ -878,7 +878,11 @@ char **find_configs(char **ary, const char *extension, const char *datadir, cons
 		/* Load from home directory. */
 		p = getenv("HOME");
 		if (p) {
+#ifndef JOEWIN
 			buf = vsfmt(buf, 0, "%s/.joe/%s", p, homedir);
+#else
+			buf = vsfmt(buf, 0, "%s\\%s", p, homedir);
+#endif
 
 			if (!chpwd(buf) && (t = rexpnd(wildcard))) {
 				for (x = 0; x < valen(t); ++x) {
