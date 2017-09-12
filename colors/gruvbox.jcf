@@ -129,7 +129,7 @@
 .set bg2		$504945
 .set bg3		$665c54
 .set bg4		$7c6f64
-.set dark_orange	$d65d8e
+.set dark_orange	$d65d0e
 .set bg0_s		$32302f
 .set fg4		$a89984
 .set fg3		$bdae93
