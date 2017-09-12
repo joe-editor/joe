@@ -64,6 +64,14 @@
 	* For jmacs: ^Q^J now again inserts \n in the string replace prompt. 
 	  This broke beginning with JOE 4.0.
 
+* Windows version
+
+	* Fix inability to set indent step to 1 from menu.
+
+	* Add support for math functions, fix engineering display.
+
+	* Fix backslash escapes in find/replace.
+
 ### JOE 4.4
 
 * Enhancements
