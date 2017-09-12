@@ -122,6 +122,7 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\whitespace.jsf" />
     <SyntaxFile Include="$(JoeSyntaxDir)\xml.jsf" />
     <SyntaxFile Include="$(JoeSyntaxDir)\yaml.jsf" />
+    <ColorSchemeFile Include="$(JoeColorsDir)\blue.jcf" />
     <ColorSchemeFile Include="$(JoeColorsDir)\default.jcf" />
     <ColorSchemeFile Include="$(JoeColorsDir)\gruvbox.jcf" />
     <ColorSchemeFile Include="$(JoeColorsDir)\ir_black.jcf" />
@@ -131,7 +132,14 @@
     <ColorSchemeFile Include="$(JoeColorsDir)\xoria.jcf" />
     <ColorSchemeFile Include="$(JoeColorsDir)\zenburn.jcf" />
     <ColorSchemeFile Include="$(JoeColorsDir)\zenburn-hc.jcf" />
-    <ColorSchemeFile Include="$(JoeColorsDir)\blue.jcf" />
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\darkblue2.jcf" />
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\desert.jcf" />
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\dusk.jcf" />
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\eclipse.jcf" />
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\lucario.jcf" />
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\lucius.jcf" />
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\oceandeep.jcf" />
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\pyte.jcf" />
     <LanguageFile Include="$(JoeLangDir)\de.po" />
     <LanguageFile Include="$(JoeLangDir)\fr.po" />
     <LanguageFile Include="$(JoeLangDir)\ru.po" />

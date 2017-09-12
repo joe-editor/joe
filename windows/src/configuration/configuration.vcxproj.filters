@@ -323,6 +323,12 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\yaml.jsf">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
+    <ColorSchemeFile Include="$(JoeColorsDir)\blue.jcf">
+      <Filter>Color schemes</Filter>
+    </ColorSchemeFile>
+    <ColorSchemeFile Include="$(JoeColorsDir)\darkblue2.jcf">
+      <Filter>Color schemes</Filter>
+    </ColorSchemeFile>
     <ColorSchemeFile Include="$(JoeColorsDir)\default.jcf">
       <Filter>Color schemes</Filter>
     </ColorSchemeFile>
@@ -350,7 +356,25 @@
     <ColorSchemeFile Include="$(JoeColorsDir)\zenburn-hc.jcf">
       <Filter>Color schemes</Filter>
     </ColorSchemeFile>
-    <ColorSchemeFile Include="$(JoeColorsDir)\blue.jcf">
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\desert.jcf">
+      <Filter>Color schemes</Filter>
+    </ColorSchemeFile>
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\dusk.jcf">
+      <Filter>Color schemes</Filter>
+    </ColorSchemeFile>
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\eclipse.jcf">
+      <Filter>Color schemes</Filter>
+    </ColorSchemeFile>
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\lucario.jcf">
+      <Filter>Color schemes</Filter>
+    </ColorSchemeFile>
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\lucius.jcf">
+      <Filter>Color schemes</Filter>
+    </ColorSchemeFile>
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\oceandeep.jcf">
+      <Filter>Color schemes</Filter>
+    </ColorSchemeFile>
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\pyte.jcf">
       <Filter>Color schemes</Filter>
     </ColorSchemeFile>
     <LanguageFile Include="$(JoeLangDir)\de.po">

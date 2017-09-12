@@ -1,0 +1,61 @@
+
+# Based on lucario vim scheme by Raphael Amorim
+# https://github.com/raphamorim/lucario
+
+.colors *
+
+-text $f8f8f2/$2b3e50
+-status /$66747f bold
+-selection /$19242f
+-linum $929ba1
+-curlin /$405160
+-menu /$19242f
+-menusel /$66747f
+-cursor $2b3e50/$f8f8f2
+
+-term 0 $2B3E50
+-term 1 $8C0C10
+-term 2 $72C05D
+-term 3 $E6DB74
+-term 4 $0000FF
+-term 5 $66747F
+-term 6 $61BBC8
+-term 7 $F8F8F2
+-term 8 $FFFFFF
+-term 9 $FF6541
+-term 10 $72C05D
+-term 11 $FFFF00
+-term 12 $66747F
+-term 13 $CA94FF
+-term 14 $00FFFF
+-term 15 $FFFFFF
+
+=Idle
+=Keyword $ff6541
+=Operator $ff6541
+
+=Boolean $ca94ff
+=Character $ca94ff
+=Comment $5c98cd
+=Conditional $ff6541
+=Define $ff6541
+=DefinedFunction $72c05d
+=DefinedIdent $66d9ef italic
+=Escape $ffffff
+=Float $ca94ff
+=Label $e6db74
+=Number $ca94ff
+=Preproc $ff6541
+=Statement $ff6541
+=StorageClass $66d9ef italic
+=String $e6db74
+=TODO $5c98cd bold
+=Tag $ff6541
+=Title $ffffff bold
+
+=diff.AddLine $ffffff/$478815 bold
+=diff.ChgLine $ffffff/$26446c
+=diff.DelLine $8c0c10
+=python.Builtin $66d9ef italic
+=python.Statement $66d9ef italic
+

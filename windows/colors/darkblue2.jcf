@@ -1,0 +1,55 @@
+
+# Based on darkblue2 vim scheme by Datila Carvalho <datila@hotmail.com>
+
+.colors *
+
+-text $fff8dc/$233b5a
+-status $36648b/$d3d3d3
+-selection $4682b4/$fff8dc
+-linum $b0c4de/$132b4a bold
+-cursor $233b5a/$ffff00
+
+-term 0 $233B5A
+-term 1 $FF0000
+-term 2 $98FB98
+-term 3 $EEDD82
+-term 4 $27408B
+-term 5 $7F7F7F
+-term 6 $00FFFF
+-term 7 $FFF8DC
+-term 8 $D9D9D9
+-term 9 $FF0000
+-term 10 $98FB98
+-term 11 $FFFF00
+-term 12 $36648B
+-term 13 $7F7F7F
+-term 14 $00FFFF
+-term 15 $FFFFFF
+
+=Idle
+=Operator $00ffff
+=Type $98fb98 bold
+
+=Bad $ffffff/$ff0000 bold
+=Boolean $ffec8b bold
+=Character $7fffd4
+=Comment $66cdaa italic
+=Conditional $00ffff bold
+=Constant $ffec8b bold
+=Define $b0c4de
+=DefinedFunction $87cefa
+=DefinedIdent $98fb98 bold
+=Float $ffec8b bold
+=IncSystem $b0c4de bold
+=Label $00ffff
+=Loop $00ffff bold
+=Macro $b0c4de
+=Number $ffec8b bold
+=Precond $b0c4de
+=Preproc $b0c4de
+=Statement $00ffff bold
+=StorageClass $ffec8b bold
+=String $7fffd4
+=Structure $ffec8b bold
+
+

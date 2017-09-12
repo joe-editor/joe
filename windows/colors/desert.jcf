@@ -1,0 +1,87 @@
+
+# Based on desert vim scheme by Hans Fugal <hans@fugal.net>
+
+.colors 256
+
+-text 231/236
+-status 16/144
+-selection 186/64
+-linum 100
+-cursor 67/186
+
+-term 0 236
+-term 1 88
+-term 2 149
+-term 3 184
+-term 4 18
+-term 5 90
+-term 6 117
+-term 7 231
+-term 8 250
+-term 9 202
+-term 10 120
+-term 11 184
+-term 12 67
+-term 13 90
+-term 14 117
+-term 15 250
+
+=Idle
+=Type 143
+
+=Bad 250/88
+=Comment 117
+=Constant 217
+=DefinedIdent 120
+=Escape 223
+=Preproc 167
+=Statement 186
+=TODO 202/184
+=Title 167
+
+=diff.AddLine /18
+=diff.ChgLine /90
+=diff.DelLine 18/30
+
+.colors *
+
+-text $ffffff/$333333
+-status $000000/$c2bfa5
+-selection $f0e68c/$6b8e23
+-linum $808000
+-cursor $708090/$f0e68c
+
+-term 0 $333333
+-term 1 $800000
+-term 2 $9ACD32
+-term 3 $EEEE00
+-term 4 $000080
+-term 5 $800080
+-term 6 $87CEEB
+-term 7 $FFFFFF
+-term 8 $C0C0C0
+-term 9 $FF4500
+-term 10 $00FF7F
+-term 11 $EEEE00
+-term 12 $708090
+-term 13 $708090
+-term 14 $ADD8E6
+-term 15 $C0C0C0
+
+=Idle
+=Type $bdb76b
+
+=Bad $c0c0c0/$800000
+=Comment $87ceeb
+=Constant $ffa0a0
+=DefinedIdent $98fb98
+=Escape $ffdead
+=Preproc $cd5c5c
+=Statement $f0e68c
+=TODO $ff4500/$eeee00
+=Title $cd5c5c
+
+=diff.AddLine /$000080
+=diff.ChgLine /$800080
+=diff.DelLine $000080/$008080
+

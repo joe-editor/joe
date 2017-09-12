@@ -1,2 +1,6 @@
 license.txt [compress]
 ftyperc [compress]
+context.jsf [compress]
+filename.jsf [compress]
+comment_todo.jsf [compress]
+default.jcf [compress]

@@ -1,0 +1,101 @@
+
+.colors 256
+
+-text 238/255
+-status 231/245 bold italic
+-linum 231/252
+-cursor 16/249
+
+-term 0 238
+-term 1 196
+-term 2 107
+-term 3 107
+-term 4 18
+-term 5 53
+-term 6 152
+-term 7 254
+-term 8 245
+-term 9 196
+-term 10 107
+-term 11 223
+-term 12 25
+-term 13 245
+-term 14 152
+-term 15 231
+
+=Idle
+=Operator 28
+=Type 214 italic
+
+=Bad 196/231 bold underline
+=Comment 145 italic
+=Conditional 28 bold
+=Constant 137
+=Define 25 bold
+=DefinedFunction 18 italic
+=DefinedIdent 53 italic
+=Escape 110 italic
+=Float 107
+=Loop 107 bold
+=Number 72
+=Preproc 25
+=Statement 22 bold
+=String 25
+=Structure 22 italic
+=TODO 145 bold italic underline
+=Title 234 bold
+
+=diff.AddLine /152 bold italic
+=diff.ChgLine /188 bold italic
+=diff.DelLine /223 bold italic
+
+.colors *
+
+-text $404850/$f0f0f0
+-status $ffffff/$8090a0 bold italic
+-linum $ffffff/$c0d0e0
+-cursor $000000/$b0b4b8
+
+-term 0 $404850
+-term 1 $FF0000
+-term 2 $7FBF58
+-term 3 $7FBF58
+-term 4 $06287E
+-term 5 $5B3674
+-term 6 $C0E0D0
+-term 7 $E8E8E8
+-term 8 $8090A0
+-term 9 $FF0000
+-term 10 $7FBF58
+-term 11 $F0E0B0
+-term 12 $4070A0
+-term 13 $8090A0
+-term 14 $C0E0D0
+-term 15 $FFFFFF
+
+=Idle
+=Operator $408010
+=Type $e5a00d italic
+
+=Bad $ff0000/$ffffff bold underline
+=Comment $a0b0c0 italic
+=Conditional $4c8f2f bold
+=Constant $a07040
+=Define $1060a0 bold
+=DefinedFunction $06287e italic
+=DefinedIdent $5b3674 italic
+=Escape $70a0d0 italic
+=Float $70a040
+=Loop $7fbf58 bold
+=Number $40a070
+=Preproc $1060a0
+=Statement $007020 bold
+=String $4070a0
+=Structure $007020 italic
+=TODO $a0b0c0 bold italic underline
+=Title $202020 bold
+
+=diff.AddLine /$c0e0d0 bold italic
+=diff.ChgLine /$e0e0e0 bold italic
+=diff.DelLine /$f0e0b0 bold italic
+

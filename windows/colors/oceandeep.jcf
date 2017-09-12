@@ -1,0 +1,60 @@
+
+# Based on oceandeep vim scheme by Tom Regner <tom@goochesa.de>
+
+.colors *
+
+-text $e0eee0/$103040
+-status $000000/$e0e0e0 bold
+-selection $ffffff/$2e8b57
+-linum $8db6cd/$0f0f0f bold
+-curlin /$003853
+-cursor $ffffff/$96cdcd
+
+-term 0 $103040
+-term 1 $B22222
+-term 2 $7FFF00
+-term 3 $7FFF00
+-term 4 $305060
+-term 5 $E066FF
+-term 6 $00CDCD
+-term 7 $E0EEE0
+-term 8 $E0E0E0
+-term 9 $FF3030
+-term 10 $7FFF00
+-term 11 $7FFF00
+-term 12 $607B8B
+-term 13 $E066FF
+-term 14 $00FFFF
+-term 15 $FFFFFF
+
+=Idle
+=Keyword $90ee90 bold
+=Operator $7fff00
+=Type $add8e6
+
+=Bad $ffffe0/$b22222
+=Boolean $00ffff bold
+=Comment $507080
+=Conditional $90ee90
+=Constant $00cdcd
+=Define $bcd2ee
+=DefinedFunction $9bcd9b
+=DefinedIdent $8db6cd
+=Escape $66cdaa bold
+=IncSystem $a2b5cd
+=Loop $4eee94
+=Macro $8db6cd
+=Number $00ffff
+=Precond $a4d3ee
+=Preproc $87ceff
+=Statement $90ee90
+=StorageClass $add8e6
+=String $00e5ee
+=Structure $add8e6
+=TODO $00ffff/$507080
+=Title $e066ff bold
+
+=diff.AddLine /$008b8b
+=diff.ChgLine /$008b00
+=diff.DelLine /$000000
+

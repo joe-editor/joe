@@ -36,6 +36,7 @@
 	<JoeConfDir>$(JoeWinRoot)\..\rc</JoeConfDir>
 	<JoeSyntaxDir>$(JoeRoot)\syntax</JoeSyntaxDir>
 	<JoeDocsDir>$(JoeWinRoot)\..\docs</JoeDocsDir>
+	<JoeWinColorsDir>$(JoeWinRoot)\..\colors</JoeWinColorsDir>
 	<JoeLangDir>$(JoeRoot)\po</JoeLangDir>
 	<JoeRootConfDir>$(JoeRoot)\rc</JoeRootConfDir>
 	<JoeRootDocsDir>$(JoeRoot)\docs</JoeRootDocsDir>

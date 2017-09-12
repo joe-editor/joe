@@ -1,0 +1,47 @@
+
+# Based on dusk vim scheme by Ajit Thakkar <ajit@unb.ca>
+
+.colors *
+
+-text $fffff0/$1f3048
+-status $00008b/$bebebe
+-selection $607b8b/$fffff0
+-linum $cdb7b5
+-cursor $000000/$00ff00
+
+-term 0 $1F3048
+-term 1 $CD4F39
+-term 2 $32CD32
+-term 3 $EEEE00
+-term 4 $0000FF
+-term 5 $7A8B8B
+-term 6 $00FFFF
+-term 7 $FFFFF0
+-term 8 $FFFFFF
+-term 9 $FF0000
+-term 10 $00FF00
+-term 11 $FFFF00
+-term 12 $607B8B
+-term 13 $7A8B8B
+-term 14 $00FFFF
+-term 15 $FFFFFF
+
+=Idle
+=Operator $7fff00
+=Type $ffdead
+
+=Bad $ff0000/$faf0e6
+=Comment $708090
+=Constant $cdb7b5
+=DefinedIdent $ffebcd
+=Escape $daa520
+=Preproc $ffa0a0
+=Statement $f0e68c
+=String $9ac0cd
+=TODO $1e90ff
+=Title $eeee00
+
+=diff.AddLine $0000ff/$e0ffff
+=diff.ChgLine $ffffff/$7a8b8b
+=diff.DelLine $add8e6/$e0ffff
+
