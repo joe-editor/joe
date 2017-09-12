@@ -24,9 +24,6 @@
   <Fragment>
     <!-- Default colors, always installed (keep this small) -->
     <ComponentGroup Id="StandardColorsComponentGroup">
-      <Component Id="blueJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
-        <File Id="blueJCF" Name="blue.jcf" DiskId="1" Source="$(var.ColorsRootDir)\blue.jcf" KeyPath="yes" />
-      </Component>
       <Component Id="defaultJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
         <File Id="defaultJCF" Name="default.jcf" DiskId="1" Source="$(var.ColorsRootDir)\default.jcf" KeyPath="yes" />
       </Component>
@@ -51,12 +48,36 @@
       <Component Id="zenburnJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
         <File Id="zenburnJCF" Name="zenburn.jcf" DiskId="1" Source="$(var.ColorsRootDir)\zenburn.jcf" KeyPath="yes" />
       </Component>
+      <Component Id="zenburnHCJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+	<File Id="zenburnHCJCF" Name="zenburn-hc.jcf" DiskId="1" Source="$(var.ColorsRootDir)\zenburn-hc.jcf" KeyPath="yes" />
+      </Component>
     </ComponentGroup>
-    
+
     <!-- Extra colors, installed only if user confirms -->
     <ComponentGroup Id="ExtendedColorsComponentGroup">
-      <Component Id="zenburnHCJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
-        <File Id="zenburnHCJCF" Name="zenburn-hc.jcf" DiskId="1" Source="$(var.ColorsRootDir)\zenburn-hc.jcf" KeyPath="yes" />
+      <Component Id="darkblue2JCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+	<File Id="darkblue2JCF" Name="darkblue2.jcf" DiskId="1" Source="$(var.ColorsRootDir)\darkblue2.jcf" KeyPath="yes" />
+      </Component>
+      <Component Id="desertJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+	<File Id="desertJCF" Name="desert.jcf" DiskId="1" Source="$(var.ColorsRootDir)\desert.jcf" KeyPath="yes" />
+      </Component>
+      <Component Id="duskJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+	<File Id="duskJCF" Name="dusk.jcf" DiskId="1" Source="$(var.ColorsRootDir)\dusk.jcf" KeyPath="yes" />
+      </Component>
+      <Component Id="eclipseJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+	<File Id="eclipseJCF" Name="eclipse.jcf" DiskId="1" Source="$(var.ColorsRootDir)\eclipse.jcf" KeyPath="yes" />
+      </Component>
+      <Component Id="lucarioJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+	<File Id="lucarioJCF" Name="lucario.jcf" DiskId="1" Source="$(var.ColorsRootDir)\lucario.jcf" KeyPath="yes" />
+      </Component>
+      <Component Id="luciusJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+	<File Id="luciusJCF" Name="lucius.jcf" DiskId="1" Source="$(var.ColorsRootDir)\lucius.jcf" KeyPath="yes" />
+      </Component>
+      <Component Id="oceandeepJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+	<File Id="oceandeepJCF" Name="oceandeep.jcf" DiskId="1" Source="$(var.ColorsRootDir)\oceandeep.jcf" KeyPath="yes" />
+      </Component>
+      <Component Id="pyteJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+	<File Id="pyteJCF" Name="pyte.jcf" DiskId="1" Source="$(var.ColorsRootDir)\pyte.jcf" KeyPath="yes" />
       </Component>
     </ComponentGroup>
   </Fragment>
