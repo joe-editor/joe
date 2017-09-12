@@ -37,6 +37,7 @@
 #include "jwuserfuncs.h"
 #include "jwres.h"
 #include "jwui.h"
+#include "jwglobals.h"
 #endif
 
 /* From MSDN: In the WM_SYSCOMMAND message, the four low-order bits of
@@ -227,10 +228,6 @@ static COLORREF colours[NALLCOLOURS];
 static HPALETTE pal;
 static LPLOGPALETTE logpal;
 static RGBTRIPLE defpal[NALLCOLOURS];
-
-#ifdef JOEWIN
-static int boldcolors[NALLCOLOURS];
-#endif
 
 static HBITMAP caretbm;
 
@@ -920,6 +917,20 @@ int PuttyWinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show)
      */
     set_input_locale(GetKeyboardLayout(0));
 
+#ifdef JOEWIN
+    /* Accept messages */
+    if (jwRendezvous(JW_TO_UI, JW_TO_EDITOR)) {
+	    /* Error, probably premature exit. */
+	    return 1;
+    }
+
+    /* Ask for color schemes to populate the menu */
+    jwSendComm0(JW_TO_EDITOR, COMM_COLORSCHEMES);
+
+    /* Apply the *correct* palette */
+    jwLoadPalette(jw_initialpalette, jw_initialfg, jw_initialbg, jw_initialcurfg, jw_initialcurbg);
+#endif
+
     /*
      * Finally show the window!
      */
@@ -935,17 +946,6 @@ int PuttyWinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show)
 
     term_set_focus(term, GetForegroundWindow() == hwnd);
     UpdateWindow(hwnd);
-
-#ifdef JOEWIN
-    /* Accept messages */
-    if (jwRendezvous(JW_TO_UI, JW_TO_EDITOR)) {
-	    /* Error, probably premature exit. */
-	    return 1;
-    }
-
-    /* Ask for color schemes to populate the menu */
-    jwSendComm0(JW_TO_EDITOR, COMM_COLORSCHEMES);
-#endif
 
     while (1) {
 #ifndef JOEWIN
@@ -1414,27 +1414,27 @@ void jwLoadPalette(int *palette, int fg, int bg, int cfg, int cbg)
     cfgtopalette();
 
     if (palette) {
-	for (i = 0; i < 256; i++) {
+	for (i = 0; i < 256; i++)
 	    if (palette[i] >= 0)
 		JW_LOAD_COLOR(i, palette[i])
-	}
 
-	if (fg >= 0) {
-	    JW_LOAD_COLOR(256, fg);
-	    JW_LOAD_COLOR(257, fg);
-	    boldcolors[257] = 1;
-	}
-
-	if (bg >= 0) {
-	    JW_LOAD_COLOR(258, bg);
-	    JW_LOAD_COLOR(259, bg);
-	    boldcolors[259] = 1;
-	}
-
+	if (fg >= 0 && palette[fg] >= 0)
+	    defpal[256] = defpal[257] = defpal[fg];
+	if (bg >= 0 && palette[bg] >= 0)
+	    defpal[258] = defpal[259] = defpal[bg];
+	if (cfg >= 0 && palette[cfg] >= 0)
+	    defpal[260] = defpal[cfg];
+	if (cbg >= 0 && palette[cbg] >= 0)
+	    defpal[261] = defpal[cbg];
+    } else {
+	if (fg >= 0)
+	    defpal[256] = defpal[257] = defpal[fg];
+	if (bg >= 0)
+	    defpal[258] = defpal[259] = defpal[bg];
 	if (cfg >= 0)
-	    JW_LOAD_COLOR(260, cfg);
+	    defpal[260] = defpal[cfg];
 	if (cbg >= 0)
-	    JW_LOAD_COLOR(261, cbg);
+	    defpal[261] = defpal[cbg];
     }
 
     init_palette();
@@ -1467,38 +1467,36 @@ static void cfgtopalette(void)
     static struct {
 	int n;
 	int rgb;
-	int bold;
     } default_colors[] = {
-	{ 256, 0x000000, 0 },	// Default foreground
-	{ 257, 0x000000, 1 },	// Default foreground bold
-	{ 258, 0xffffff, 0 },	// Default background
-	{ 259, 0xbbbbbb, 0 },	// Default background bold
-	{ 260, 0xffffff, 0 },	// Default cursor text
-	{ 261, 0x0080f0, 0 },	// Default cursor color
+	{ 256, 0x000000 },	// Default foreground
+	{ 257, 0x000000 },	// Default foreground bold
+	{ 258, 0xffffff },	// Default background
+	{ 259, 0xbbbbbb },	// Default background bold
+	{ 260, 0xffffff },	// Default cursor text
+	{ 261, 0x0080f0 },	// Default cursor color
 
-	{ 0,   0x000000, 0 },	// Black
-	{ 8,   0x000000, 1 },	// Bold black
-	{ 1,   0xbb0000, 0 },	// Red
-	{ 9,   0xff3030, 0 },	// Bold red
-	{ 2,   0x00884c, 0 },	// Green
-	{ 10,  0x437d25, 0 },	// Bold green
-	{ 3,   0xb07800, 0 },	// Yellow
-	{ 11,  0xe0e040, 0 },	// Bold yellow
-	{ 4,   0x0033cc, 0 },	// Blue
-	{ 12,  0x5555ff, 0 },	// Bold blue
-	{ 5,   0xbb00bb, 0 },	// Magenta
-	{ 13,  0xb64f90, 0 },	// Bold magenta
-	{ 6,   0x0090a0, 0 },	// Cyan
-	{ 14,  0x00b7cc, 0 },	// Bold cyan
-	{ 7,   0x6b6b6b, 0 },	// White
-	{ 15,  0xffffff, 0 },	// Bold white
+	{ 0,   0x000000 },	// Black
+	{ 8,   0x000000 },	// Bold black
+	{ 1,   0xbb0000 },	// Red
+	{ 9,   0xff3030 },	// Bold red
+	{ 2,   0x00884c },	// Green
+	{ 10,  0x437d25 },	// Bold green
+	{ 3,   0xb07800 },	// Yellow
+	{ 11,  0xe0e040 },	// Bold yellow
+	{ 4,   0x0033cc },	// Blue
+	{ 12,  0x5555ff },	// Bold blue
+	{ 5,   0xbb00bb },	// Magenta
+	{ 13,  0xb64f90 },	// Bold magenta
+	{ 6,   0x0090a0 },	// Cyan
+	{ 14,  0x00b7cc },	// Bold cyan
+	{ 7,   0x6b6b6b },	// White
+	{ 15,  0xffffff },	// Bold white
 
-	{ -1, 0, 0 },		// Terminator
+	{ -1, 0 },		// Terminator
     };
 
     for (i = 0; default_colors[i].n >= 0; i++) {
 	JW_LOAD_COLOR(default_colors[i].n, default_colors[i].rgb);
-	boldcolors[default_colors[i].n] = default_colors[i].bold;
     }
 #endif
 
@@ -3812,10 +3810,8 @@ void do_text_internal(Context ctx, int x, int y, wchar_t *text, int len,
     if (und_mode == UND_FONT && (attr & ATTR_UNDER))
 	nfont |= FONT_UNDERLINE;
 #ifdef JOEWIN
-    if (((attr & ATTR_BOLD) && ((nfg < 16 && boldcolors[nfg | 8]) || (nfg >= 256 && boldcolors[nfg | 1]))) || boldcolors[nfg])
-    {
+    if (nfg == 257 || nfg == 259 || (attr & ATTR_BOLD))
 	nfont |= FONT_BOLD;
-    }
 #endif
     another_font(nfont);
     if (!fonts[nfont]) {

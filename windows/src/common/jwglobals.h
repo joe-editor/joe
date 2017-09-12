@@ -27,16 +27,20 @@
 #endif
 
 JOEWIN_GLOBAL int jw_argc;
-JOEWIN_GLOBAL char** jw_argv;
-JOEWIN_GLOBAL char* jw_joedata;
-JOEWIN_GLOBAL char* jw_joerc;
-JOEWIN_GLOBAL char* jw_home;
-JOEWIN_GLOBAL wchar_t* jw_personality;
+JOEWIN_GLOBAL char **jw_argv;
+JOEWIN_GLOBAL char *jw_joedata;
+JOEWIN_GLOBAL char *jw_joerc;
+JOEWIN_GLOBAL char *jw_home;
+JOEWIN_GLOBAL wchar_t *jw_personality;
 
 JOEWIN_GLOBAL int jw_initialrows, jw_initialcols;
+JOEWIN_GLOBAL int *jw_initialpalette;
+JOEWIN_GLOBAL int jw_initialfg, jw_initialbg, jw_initialcurfg, jw_initialcurbg;
+JOEWIN_GLOBAL int jw_sendOK;
 
-int jwInitJoe(int, wchar_t**);
-HANDLE jwStartJoe(unsigned long*);
+int jwInitJoe(int, wchar_t **);
+HANDLE jwStartJoe(unsigned long *);
+void jwInitializeGlobals(void);
 
 void jwexit(int);
 

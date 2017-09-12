@@ -30,8 +30,6 @@ static struct buffer_entry *buffers = NULL;
 
 static void UpdateWindowTitle();
 
-/* External */
-void jwLoadPalette(int *, int, int, int, int);
 
 void jwUIProcessPacket(void *data, struct CommMessage* m)
 {
@@ -56,16 +54,9 @@ void jwUIProcessPacket(void *data, struct CommMessage* m)
 	    jwContextMenu(m->arg1);
 	    break;
 
-	case COMM_SETPALETTE: {
-	    int *pal = (int *)m->ptr;
-	    if (pal) {
-		jwLoadPalette(pal, pal[m->arg1], pal[m->arg2], pal[m->arg3], pal[m->arg4]);
-	    } else {
-		jwLoadPalette(NULL, 0, 0, 0, 0);
-	    }
-
+	case COMM_SETPALETTE:
+	    jwLoadPalette((int *)m->ptr, m->arg1, m->arg2, m->arg3, m->arg4);
 	    break;
-	}
 
 	case COMM_COLORSCHEMES: {
 	    

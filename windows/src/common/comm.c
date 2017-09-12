@@ -38,6 +38,7 @@
 #include <stdio.h>
 
 #include "jwcomm.h"
+#include "jwglobals.h"
 
 
 /************************* Thread-safe queue */
@@ -631,8 +632,10 @@ int jwRendezvous(int readqd, int writeqd)
 
 		jwReleaseComm(readqd, m);
 
-		if (msg == COMM_RENDEZVOUS)
+		if (msg == COMM_RENDEZVOUS) {
+			jw_sendOK = 1;
 			return 0;
+		}
 	}
 }
 

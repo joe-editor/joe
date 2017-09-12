@@ -31,5 +31,6 @@ void jwContextMenu(int hasblock);
 int jwCanExit();
 void jwUIExit();
 void jwShutdownBackend(void *dataptr, int exitcode);
+void jwLoadPalette(int *, int, int, int, int);
 
 #endif

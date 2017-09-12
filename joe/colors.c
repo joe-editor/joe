@@ -727,7 +727,6 @@ int apply_scheme(SCHEME *colors)
 	int supported = maint->t->truecolor ? COLORSET_GUI : (maint->t->assume_256 ? 256 : maint->t->Co);
 #else
 	int supported = COLORSET_GUI;
-	int first = curschemeset == NULL;
 #endif
 	
 	if (!colors)
@@ -797,10 +796,7 @@ int apply_scheme(SCHEME *colors)
 #ifndef JOEWIN
 	setextpal(maint->t, best->palette);
 #else
-	if (!first) {
-		/* Don't send during initialization (prior to rendezvous). */
-		jwSendPalette();
-	}
+	jwSendPalette();
 #endif
 	
 	return 0;
@@ -808,8 +804,25 @@ int apply_scheme(SCHEME *colors)
 
 void jwSendPalette(void)
 {
+	int fg = (bg_text & FG_NOT_DEFAULT) ? (bg_text & FG_VALUE) >> FG_SHIFT : -1;
+	int bg = (bg_text & BG_NOT_DEFAULT) ? (bg_text & BG_VALUE) >> BG_SHIFT : -1;
+	int cfg = (bg_cursor & FG_NOT_DEFAULT) ? (bg_cursor & FG_VALUE) >> FG_SHIFT : -1;
+	int cbg = (bg_cursor & BG_NOT_DEFAULT) ? (bg_cursor & BG_VALUE) >> BG_SHIFT : -1;
+
+#ifdef JOEWIN
+	/* During initialization, we cannot send a message.  Sneak it around the back. */
+	if (!jw_sendOK) {
+		jw_initialpalette = curschemeset->palette;
+		jw_initialfg = fg;
+		jw_initialbg = bg;
+		jw_initialcurfg = cfg;
+		jw_initialcurbg = cbg;
+		return;
+	}
+#endif
+
 	if (curschemeset) {
-		jwSendComm4p(JW_FROM_EDITOR, COMM_SETPALETTE, (bg_text & FG_VALUE) >> FG_SHIFT, (bg_text & BG_VALUE) >> BG_SHIFT, (bg_cursor & FG_VALUE) >> FG_SHIFT, (bg_cursor & BG_VALUE) >> BG_SHIFT, curschemeset->palette);
+		jwSendComm4p(JW_FROM_EDITOR, COMM_SETPALETTE, fg, bg, cfg, cbg, curschemeset->palette);
 	}
 }
 

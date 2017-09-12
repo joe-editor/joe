@@ -221,6 +221,9 @@ int jwInitJoe(int argc, wchar_t **argv)
 				jwAddResourceHandle(current);
 			}
 		}
+
+		/* Random initialization */
+		jwInitializeGlobals();
 	}
 
 	return result;
