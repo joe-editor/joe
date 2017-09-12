@@ -44,21 +44,6 @@
     <DocFile Include="markdown.css">
       <Filter>Docs</Filter>
     </DocFile>
-    <ColorFile Include="$(SchemesDir)\putty-black.joecolor">
-      <Filter>Native color files</Filter>
-    </ColorFile>
-    <ColorFile Include="$(SchemesDir)\putty-white.joecolor">
-      <Filter>Native color files</Filter>
-    </ColorFile>
-    <ColorFile Include="$(SchemesDir)\solarized.joecolor">
-      <Filter>Native color files</Filter>
-    </ColorFile>
-    <ColorFile Include="$(SchemesDir)\solarized-light.joecolor">
-      <Filter>Native color files</Filter>
-    </ColorFile>
-    <ColorFile Include="$(SchemesDir)\xterm.joecolor">
-      <Filter>Native color files</Filter>
-    </ColorFile>
     <ConfigFile Include="$(JoeConfDir)\ftyperc">
       <Filter>Conf files</Filter>
     </ConfigFile>
@@ -323,12 +308,6 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\yaml.jsf">
       <Filter>Syntax files</Filter>
     </SyntaxFile>
-    <ColorSchemeFile Include="$(JoeColorsDir)\blue.jcf">
-      <Filter>Color schemes</Filter>
-    </ColorSchemeFile>
-    <ColorSchemeFile Include="$(JoeColorsDir)\darkblue2.jcf">
-      <Filter>Color schemes</Filter>
-    </ColorSchemeFile>
     <ColorSchemeFile Include="$(JoeColorsDir)\default.jcf">
       <Filter>Color schemes</Filter>
     </ColorSchemeFile>
@@ -354,6 +333,9 @@
       <Filter>Color schemes</Filter>
     </ColorSchemeFile>
     <ColorSchemeFile Include="$(JoeColorsDir)\zenburn-hc.jcf">
+      <Filter>Color schemes</Filter>
+    </ColorSchemeFile>
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\darkblue2.jcf">
       <Filter>Color schemes</Filter>
     </ColorSchemeFile>
     <ColorSchemeFile Include="$(JoeWinColorsDir)\desert.jcf">

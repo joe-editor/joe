@@ -122,7 +122,6 @@
     <SyntaxFile Include="$(JoeSyntaxDir)\whitespace.jsf" />
     <SyntaxFile Include="$(JoeSyntaxDir)\xml.jsf" />
     <SyntaxFile Include="$(JoeSyntaxDir)\yaml.jsf" />
-    <ColorSchemeFile Include="$(JoeColorsDir)\blue.jcf" />
     <ColorSchemeFile Include="$(JoeColorsDir)\default.jcf" />
     <ColorSchemeFile Include="$(JoeColorsDir)\gruvbox.jcf" />
     <ColorSchemeFile Include="$(JoeColorsDir)\ir_black.jcf" />
