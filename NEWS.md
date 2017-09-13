@@ -64,6 +64,11 @@
 	* For jmacs: ^Q^J now again inserts \n in the string replace prompt. 
 	  This broke beginning with JOE 4.0.
 
+	* Don't try to open files for write to check access of a file.  This
+	  ensures better behavior with unionfs mounts.
+
+	* Fix stray blocks being created after find/replace.
+
 * Windows version
 
 	* Fix inability to set indent step to 1 from menu.
