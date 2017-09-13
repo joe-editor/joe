@@ -452,14 +452,17 @@ void rmsrch(SRCH *srch)
 	if (srch->comp)
 		joe_regfree(srch->comp);
 	prm(srch->wrap_p);
+	if (srch->markb || srch->markk) {
+		/* If there's nothing saved, then leave the mark alone.  Otherwise, we must restore both. */
+		prm(markb);
+		prm(markk);
+	}
 	if (srch->markb) {
-                prm(markb);
 		markb = srch->markb;
 		markb->owner = &markb;
 		markb->xcol = piscol(markb);
 	}
 	if (srch->markk) {
-		prm(markk);
 		markk = srch->markk;
 		markk->owner = &markk;
 		markk->xcol = piscol(markk);
@@ -642,14 +645,17 @@ static int pfsave(W *w, void *obj)
 		srch->repeat = -1;
 		srch->flg = 0;
 
+		if (srch->markb || srch->markk) {
+			/* If there's nothing saved, then leave the mark alone.  Otherwise, we must restore both. */
+			prm(markb);
+			prm(markk);
+		}
 		if (srch->markb) {
-		        prm(markb);
 			markb = srch->markb;
 			markb->owner = &markb;
 			markb->xcol = piscol(markb);
 		}
 		if (srch->markk) {
-		        prm(markk);
 			markk = srch->markk;
 			markk->owner = &markk;
 			markk->xcol = piscol(markk);
