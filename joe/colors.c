@@ -802,6 +802,8 @@ int apply_scheme(SCHEME *colors)
 	return 0;
 }
 
+#ifdef JOEWIN
+
 void jwSendPalette(void)
 {
 	int fg = (bg_text & FG_NOT_DEFAULT) ? (bg_text & FG_VALUE) >> FG_SHIFT : -1;
@@ -809,7 +811,6 @@ void jwSendPalette(void)
 	int cfg = (bg_cursor & FG_NOT_DEFAULT) ? (bg_cursor & FG_VALUE) >> FG_SHIFT : -1;
 	int cbg = (bg_cursor & BG_NOT_DEFAULT) ? (bg_cursor & BG_VALUE) >> BG_SHIFT : -1;
 
-#ifdef JOEWIN
 	/* During initialization, we cannot send a message.  Sneak it around the back. */
 	if (!jw_sendOK) {
 		jw_initialpalette = curschemeset->palette;
@@ -819,12 +820,13 @@ void jwSendPalette(void)
 		jw_initialcurbg = cbg;
 		return;
 	}
-#endif
 
 	if (curschemeset) {
 		jwSendComm4p(JW_FROM_EDITOR, COMM_SETPALETTE, fg, bg, cfg, cbg, curschemeset->palette);
 	}
 }
+
+#endif
 
 /* Resolves a color_def into an attribute, resolves color_def's of any attribute referenced from that def */
 static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct color_def *cdef)
