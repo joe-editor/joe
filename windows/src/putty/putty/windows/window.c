@@ -199,17 +199,17 @@ struct agent_callback {
 #define FONT_BOLD 1
 #define FONT_UNDERLINE 2
 #define FONT_BOLDUND 3
-#define FONT_WIDE	0x04
-#define FONT_HIGH	0x08
-#define FONT_NARROW	0x10
+#define FONT_ITALIC 4
+#define FONT_WIDE	0x08
+#define FONT_HIGH	0x10
+#define FONT_NARROW	0x20
+#define FONT_OEM 	0x40
+#define FONT_OEMBOLD 	0x41
+#define FONT_OEMUND 	0x42
+#define FONT_OEMBOLDUND 0x43
 
-#define FONT_OEM 	0x20
-#define FONT_OEMBOLD 	0x21
-#define FONT_OEMUND 	0x22
-#define FONT_OEMBOLDUND 0x23
-
-#define FONT_MAXNO 	0x2F
-#define FONT_SHIFT	5
+#define FONT_MAXNO 	0x4F
+#define FONT_SHIFT	6
 static HFONT fonts[FONT_MAXNO];
 static LOGFONT lfont;
 static int fontflag[FONT_MAXNO];
@@ -1913,7 +1913,7 @@ static void another_font(int fontno)
 {
     int basefont;
     int fw_dontcare, fw_bold;
-    int c, u, w, x;
+    int c, u, w, x, t;
     char *s;
 
     if (fontno < 0 || fontno >= FONT_MAXNO || fontflag[fontno])
@@ -1936,6 +1936,7 @@ static void another_font(int fontno)
     u = FALSE;
     s = cfg.font.name;
     x = font_width;
+    t = FALSE;
 
     if (fontno & FONT_WIDE)
 	x *= 2;
@@ -1947,10 +1948,12 @@ static void another_font(int fontno)
 	w = fw_bold;
     if (fontno & FONT_UNDERLINE)
 	u = TRUE;
+    if (fontno & FONT_ITALIC)
+	t = TRUE;
 
     fonts[fontno] =
 	CreateFont(font_height * (1 + !!(fontno & FONT_HIGH)), x, 0, 0, w,
-		   FALSE, u, FALSE, c, OUT_DEFAULT_PRECIS,
+		   t, u, FALSE, c, OUT_DEFAULT_PRECIS,
 		   CLIP_DEFAULT_PRECIS, FONT_QUALITY(cfg.font_quality),
 		   FIXED_PITCH | FF_DONTCARE, s);
 
@@ -3812,6 +3815,8 @@ void do_text_internal(Context ctx, int x, int y, wchar_t *text, int len,
 #ifdef JOEWIN
     if (nfg == 257 || nfg == 259 || (attr & ATTR_BOLD))
 	nfont |= FONT_BOLD;
+    if (attr & ATTR_ITALIC)
+	nfont |= FONT_ITALIC;
 #endif
     another_font(nfont);
     if (!fonts[nfont]) {

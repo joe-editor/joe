@@ -83,6 +83,7 @@ char defentry[] = "\
 :r2=\\E[?3l\\E[4l\\E>\\E[=L:rc=\\E8:sc=\\E7:se=\\E[27m:sf=^J:\
 :so=\\E[7m:sr=\\EM:st=\\EH:ta=^I:u7=\\E[6n:u9=\\E[c:ue=\\E[24m:\
 :up=\\E[A:us=\\E[4m:vb=\\E[?5h\\E[?5l:ve=\\E[?25h:vi=\\E[?25l:\
+:ZH=\\E[3m:\
 ";
 
 #else
