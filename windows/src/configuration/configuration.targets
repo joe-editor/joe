@@ -5,12 +5,13 @@
   <Target Name="Rebuild" DependsOnTargets="BeforeRebuild; Clean; Build" AfterTargets="AfterRebuild" />
   
   <!-- Config File Targets -->
-  <Target Name="CopyConfigFiles" Inputs="@(ConfigFile)" Outputs="@(ConfigFile->'$(ConfOutDir)\%(Filename)%(Extension)')">
+  <Target Name="CopyConfigFiles" Inputs="@(ConfigFile)" Outputs="@(ConfigFile->'$(ConfOutDir)\%(Filename)%(Extension)');@(ConfigFile->'$(IntDir)\%(Filename)%(Extension)');@(ConfigFile->'$(IntDir)\%(Filename)%(Extension).dfl')">
     <MakeDir Directories="$(ConfOutDir)" Condition="!Exists('$(ConfOutDir)')" />
     <Copy SourceFiles="@(ConfigFile)" DestinationFolder="$(ConfOutDir)" />
     <!-- Output minified files -->
     <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
     <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(ConfigFile)) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezerc.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+    <JWDeflateFiles InputFiles="@(ConfigFile->'$(IntDir)\%(FileName)%(Extension)')" OutputDirectory="$(IntDir)" />
   </Target>
   <Target Name="CleanConfigFiles">
     <RemoveDir Directories="$(ConfOutDir)" />
@@ -18,12 +19,13 @@
   </Target>
 
   <!-- Syntax File Targets -->
-  <Target Name="CopySyntaxFiles" Inputs="@(SyntaxFile)" Outputs="@(SyntaxFile->'$(SyntaxOutDir)\%(Filename)%(Extension)')">
+  <Target Name="CopySyntaxFiles" Inputs="@(SyntaxFile)" Outputs="@(SyntaxFile->'$(SyntaxOutDir)\%(Filename)%(Extension)');@(SyntaxFile->'$(IntDir)\%(Filename)%(Extension)');@(SyntaxFile->'$(IntDir)\%(Filename)%(Extension).dfl')">
     <MakeDir Directories="$(SyntaxOutDir)" Condition="!Exists('$(SyntaxOutDir)')" />
     <CopyConvertLF SourceFiles="@(SyntaxFile)" DestinationFiles="@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)%(Extension)')" />
     <!-- Output minified files -->
     <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
     <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)%(Extension)')) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezejsf.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+    <JWDeflateFiles InputFiles="@(SyntaxFile->'$(IntDir)\%(FileName)%(Extension)')" OutputDirectory="$(IntDir)" />
   </Target>
   <Target Name="CleanSyntaxFiles">
     <RemoveDir Directories="$(SyntaxOutDir)" />
@@ -31,13 +33,13 @@
   </Target>
 
   <!-- Color File Targets -->
-  <Target Name="CopyColorFiles" Inputs="@(ColorSchemeFile)" Outputs="@(ColorSchemeFile->'$(ColorsOutDir)\%(Filename).jcf')">
+  <Target Name="CopyColorFiles" Inputs="@(ColorSchemeFile)" Outputs="@(ColorSchemeFile->'$(ColorsOutDir)\%(Filename)%(Extension)');@(ColorSchemeFile->'$(IntDir)\%(Filename)%(Extension)');@(ColorSchemeFile->'$(IntDir)\%(Filename)%(Extension).dfl')">
     <MakeDir Directories="$(ColorsOutDir)" Condition="!Exists('$(ColorsOutDir)')" />
     <CopyConvertLF SourceFiles="@(ColorSchemeFile)" DestinationFolder="$(ColorsOutDir)" />
     <!-- Output minified files -->
     <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
     <CopyConvertLF SourceFiles="@(ColorSchemeFile)" DestinationFolder="$(IntDir)" />
-    <!--<Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(ColorGenFile->'$(SchemesOutDir)\%(Filename).joecolor')) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezecolors.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />-->
+    <JWDeflateFiles InputFiles="@(ColorSchemeFile->'$(IntDir)\%(FileName)%(Extension)')" OutputDirectory="$(IntDir)" />
   </Target>
   <Target Name="CleanColorFiles">
     <RemoveDir Directories="$(SchemesOutDir)" />
@@ -45,10 +47,11 @@
   </Target>
 
   <!-- Doc File Targets -->
-  <Target Name="CopyDocFiles" Inputs="@(DocFile)" Outputs="@(DocFile->'$(DocOutDir)\%(Filename)%(Extension)')">
+  <Target Name="CopyDocFiles" Inputs="@(DocFile)" Outputs="@(DocFile->'$(DocOutDir)\%(Filename)%(Extension)');@(DocFile->'$(IntDir)\%(Filename)%(Extension)');@(DocFile->'$(IntDir)\%(Filename)%(Extension).dfl')">
     <MakeDir Directories="$(DocOutDir)" />
     <CopyConvertLF SourceFiles="@(DocFile)" DestinationFolder="$(DocOutDir)" />
     <CopyConvertLF SourceFiles="@(DocFile)" DestinationFolder="$(IntDir)" />
+    <JWDeflateFiles InputFiles="@(DocFile->'$(IntDir)\%(FileName)%(Extension)')" OutputDirectory="$(IntDir)" />
   </Target>
   <Target Name="CleanDocFiles">
     <RemoveDir Directories="$(DocOutDir)" />
@@ -58,10 +61,11 @@
   </Target>
 
   <!-- Language File Targets -->
-  <Target Name="CopyLanguageFiles" Inputs="@(LanguageFile)" Outputs="@(LanguageFile->'$(OutDir)\po\%(Filename)%(Extension)')">
+  <Target Name="CopyLanguageFiles" Inputs="@(LanguageFile)" Outputs="@(LanguageFile->'$(OutDir)\po\%(Filename)%(Extension)');@(LanguageFile->'$(IntDir)\%(Filename)%(Extension)');@(LanguageFile->'$(IntDir)\%(Filename)%(Extension).dfl')">
     <MakeDir Directories="$(OutDir)\po" />
     <CopyConvertLF SourceFiles="@(LanguageFile)" DestinationFolder="$(OutDir)\po" />
     <Exec Condition="'$(_Python)' != '' and Exists('$(_Python)')" Command="FOR %%f IN (@(LanguageFile)) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezepo.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+    <JWDeflateFiles InputFiles="@(LanguageFile->'$(IntDir)\%(FileName)%(Extension)')" OutputDirectory="$(IntDir)" />
   </Target>
   <Target Name="CleanLanguageFiles">
     <RemoveDir Directories="$(OutDir)\po" />

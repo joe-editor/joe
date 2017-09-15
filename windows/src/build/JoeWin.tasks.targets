@@ -146,46 +146,7 @@ using (var outs = new StreamWriter(File.Open(this.OutputFile, FileMode.Create, F
             
             if (options != null && options.Contains("compress"))
             {
-                string zname = actualFile + ".dfl";
-                if (!File.Exists(zname) || File.GetLastWriteTime(zname) < File.GetLastWriteTime(actualFile))
-                {
-                    // Creation must be atomic (these run in parallel!)
-                    string lockname = zname + ".lock";
-                    Stream lockStream = null;
-                    try
-                    {
-                        lockStream = File.Open(lockname, FileMode.CreateNew /* atomic */, FileAccess.Write);
-                        
-                        using (var zstream = File.Open(zname, FileMode.Create, FileAccess.Write))
-                        {
-                            // Write short header
-                            byte[] hdr = { 5, 1 };
-                            zstream.Write(hdr, 0, 2);
-                            
-                            using (var dstream = new DeflateStream(zstream, CompressionLevel.Optimal))
-                            {
-                                using (var istream = File.Open(actualFile, FileMode.Open, FileAccess.Read))
-                                {
-                                    istream.CopyTo(dstream, 8192);
-                                }
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        /* Pass */
-                    }
-                    finally
-                    {
-                        if (lockStream != null)
-                        {
-                            lockStream.Dispose();
-                            File.Delete(lockname);
-                        }
-                    }
-                }
-                
-                actualFile = zname;
+                actualFile += ".dfl";
             }
             
             outs.WriteLine(string.Format("F:*{0} RCDATA \"{1}\"", dstfile, actualFile.Replace(@"\", @"\\")));
@@ -197,4 +158,46 @@ using (var outs = new StreamWriter(File.Open(this.OutputFile, FileMode.Create, F
       </Code>
     </Task>
   </UsingTask>
+
+  <UsingTask TaskName="JWDeflateFiles" TaskFactory="CodeTaskFactory" AssemblyFile="$(_CodeTaskFactoryAssembly)">
+    <ParameterGroup>
+      <InputFiles ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="True" />
+      <OutputDirectory ParameterType="System.String" Required="True" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Compression" />
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.Linq" />
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
+
+foreach (var file in this.InputFiles)
+{
+    var infile = file.GetMetadata("FullPath");
+    var outfile = Path.Combine(this.OutputDirectory, Path.GetFileName(infile)) + ".dfl";
+    
+    using (var zstream = File.Open(outfile, FileMode.Create, FileAccess.Write))
+    {
+        /* Header */
+        byte[] hdr = { 5, 1 };
+        zstream.Write(hdr, 0, 2);
+        
+        using (var dstream = new DeflateStream(zstream, CompressionLevel.Optimal))
+        {
+            using (var istream = File.Open(infile, FileMode.Open, FileAccess.Read))
+            {
+                istream.CopyTo(dstream, 8192);
+            }
+        }
+    }
+}
+
+]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+
 </Project>
