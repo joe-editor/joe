@@ -64,10 +64,10 @@
 	* For jmacs: ^Q^J now again inserts \n in the string replace prompt. 
 	  This broke beginning with JOE 4.0.
 
-	* Don't try to open files for write to check access of a file.  This
-	  ensures better behavior with unionfs mounts.
+	* Don't try to open files for writing to check file access.  This
+	  behaves better on unionfs mounts.
 
-	* Fix stray blocks being created after find/replace.
+	* Fix stray blocks created after find/replace.
 
 * Windows version
 
@@ -76,6 +76,8 @@
 	* Add support for math functions, fix engineering display.
 
 	* Fix backslash escapes in find/replace.
+
+	* Support italicized text.
 
 ### JOE 4.4
 
