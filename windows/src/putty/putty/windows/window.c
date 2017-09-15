@@ -220,6 +220,7 @@ static enum {
     UND_LINE, UND_FONT
 } und_mode;
 static int descent;
+static int use_italics;
 
 #define NCFGCOLOURS 22
 #define NEXTCOLOURS 240
@@ -1771,18 +1772,18 @@ static void init_fonts(int pick_width, int pick_height)
     }
     font_width = pick_width;
 
-#define f(i,c,w,u) \
-    fonts[i] = CreateFont (font_height, font_width, 0, 0, w, FALSE, u, FALSE, \
+#define f(i,c,w,u,t) \
+    fonts[i] = CreateFont (font_height, font_width, 0, 0, w, t, u, FALSE, \
 			   c, OUT_DEFAULT_PRECIS, \
 		           CLIP_DEFAULT_PRECIS, FONT_QUALITY(cfg.font_quality), \
 			   FIXED_PITCH | FF_DONTCARE, cfg.font.name)
 
-    f(FONT_NORMAL, cfg.font.charset, fw_dontcare, FALSE);
+    f(FONT_NORMAL, cfg.font.charset, fw_dontcare, FALSE, FALSE);
 #ifdef JOEWIN
     /* Move this line up for nice bold Consolas... Thanks StackOverflow! */
     /* http://stackoverflow.com/questions/2520610/detecting-cleartype-optimized-fonts */
     if (bold_mode == BOLD_FONT) {
-	f(FONT_BOLD, cfg.font.charset, fw_bold, FALSE);
+	f(FONT_BOLD, cfg.font.charset, fw_bold, FALSE, FALSE);
     }
 #endif
     SelectObject(hdc, fonts[FONT_NORMAL]);
@@ -1819,7 +1820,56 @@ static void init_fonts(int pick_width, int pick_height)
 	ucsdata.dbcs_screenfont = (cpinfo.MaxCharSize > 1);
     }
 
-    f(FONT_UNDERLINE, cfg.font.charset, fw_dontcare, TRUE);
+    /* Check out italics vs. regular */
+    f(FONT_ITALIC, cfg.font.charset, fw_dontcare, FALSE, TRUE);
+    {
+	LPOUTLINETEXTMETRICA regularOtm, italicOtm;
+
+	use_italics = 0;
+
+	i = GetOutlineTextMetricsA(hdc, 0, NULL);
+	if (i > 0) {
+	    regularOtm = safemalloc(1, i);
+	    regularOtm->otmSize = sizeof(OUTLINETEXTMETRICA);
+	    if (GetOutlineTextMetricsA(hdc, i, regularOtm)) {
+		/* Now get the italic version */
+		SelectObject(hdc, fonts[FONT_ITALIC]);
+		i = GetOutlineTextMetricsA(hdc, 0, NULL);
+		if (i > 0) {
+		    italicOtm = safemalloc(1, i);
+		    italicOtm->otmSize = sizeof(OUTLINETEXTMETRICA);
+		    if (GetOutlineTextMetricsA(hdc, i, italicOtm)) {
+			/* Compare... */
+			char *regStyle = (char*)regularOtm + (int)regularOtm->otmpStyleName;
+			char *itaStyle = (char*)italicOtm + (int)italicOtm->otmpStyleName;
+
+			/* Weed out "italic" fonts that...
+			   - Do not specify an italic slant (probably just the regular font)
+			   - Have the same style as the regular font.  Then it *is* just the regular
+			     font with a linear transformation.
+			   - Report the style name of "Oblique".
+			   
+			   My experience is these a) don't look very good b) tend to overhang the
+			   next character and get cut off during paints... which doesn't look very good. */
+			if (strcmp(regStyle, itaStyle) && stricmp(itaStyle, "Oblique") && italicOtm->otmItalicAngle != 0) {
+			    use_italics = 1;
+			}
+		    }
+
+		    safefree(italicOtm);
+		}
+	    }
+
+	    safefree(regularOtm);
+	}
+
+	if (!use_italics) {
+	    DeleteObject(fonts[FONT_ITALIC]);
+	    fonts[FONT_ITALIC] = NULL;
+	}
+    }
+
+    f(FONT_UNDERLINE, cfg.font.charset, fw_dontcare, TRUE, FALSE);
 
     /*
      * Some fonts, e.g. 9-pt Courier, draw their underlines
@@ -1948,7 +1998,7 @@ static void another_font(int fontno)
 	w = fw_bold;
     if (fontno & FONT_UNDERLINE)
 	u = TRUE;
-    if (fontno & FONT_ITALIC)
+    if ((fontno & FONT_ITALIC) && use_italics)
 	t = TRUE;
 
     fonts[fontno] =
