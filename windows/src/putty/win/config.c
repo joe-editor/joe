@@ -65,8 +65,8 @@ void jwLoadConfig(Config *cfg)
 
 	cfg->cursor_type = 0;
 
-	cfg->height = 45;
-	cfg->width = 100;
+	cfg->height = 40;
+	cfg->width = 120;
 
 	strcpy(cfg->font.name, "Consolas");
 	cfg->font.isbold = 0;
