@@ -1,0 +1,94 @@
+
+# Based on moria vim scheme by Georg Dahn
+# https://vim.sourceforge.io/scripts/script.php?script_id=1464
+
+.colors 256
+
+-text 16/255
+-status /110 bold
+-selection /251
+-linum 25
+-curlin /253
+-menu /68
+-menusel /226
+-cursor 255/88
+
+-term 0 16
+-term 1 124
+-term 2 157
+-term 3 226
+-term 4 20
+-term 5 90
+-term 6 51
+-term 7 253
+-term 8 247
+-term 9 196
+-term 10 157
+-term 11 226
+-term 12 26
+-term 13 146
+-term 14 51
+-term 15 231
+
+=Idle
+=Type 124 bold
+
+=Bad 196
+=Comment 94
+=Constant 28
+=DefinedIdent 23
+=Escape 124
+=Preproc 90
+=Statement 25 bold
+=TODO /226
+=Title  bold
+
+=diff.AddLine 231/28
+=diff.ChgLine 231/18
+=diff.DelLine 231/88
+
+.colors *
+
+-text $000000/$f0f0f0
+-status /$8fa5d1 bold
+-selection /$c4c4c4
+-linum $375288
+-curlin /$d8d8d8
+-menu /$708bc5
+-menusel /$ffff00
+-cursor $f0f0f0/$883400
+
+-term 0 $000000
+-term 1 $EE2C2C
+-term 2 $A0F0A0
+-term 3 $FFFF00
+-term 4 $0000F0
+-term 5 $800090
+-term 6 $00FFFF
+-term 7 $D8D8D8
+-term 8 $A0A0A0
+-term 9 $EE2C2C
+-term 10 $A0F0A0
+-term 11 $FFFF00
+-term 12 $4A6DB5
+-term 13 $800090
+-term 14 $00FFFF
+-term 15 $FFFFFF
+
+=Idle
+=Type $912f11 bold
+
+=Bad $ee2c2c
+=Comment $786000
+=Constant $077807
+=DefinedIdent $007080
+=Escape $912f11
+=Preproc $800090
+=Statement $1f3f81 bold
+=TODO /$ffff00
+=Title  bold
+
+=diff.AddLine $ffffff/$008b00
+=diff.ChgLine $ffffff/$00008b
+=diff.DelLine $ffffff/$8b0000
+

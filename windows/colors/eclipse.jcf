@@ -1,4 +1,7 @@
 
+# Based on eclipse vim theme by Juan Frias <juandfrias at gmail dot com>
+# http://www.axisym3.net/jdany/vim-the-editor/#eclipse
+
 .colors 256
 
 -text 16/231

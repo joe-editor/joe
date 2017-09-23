@@ -1,4 +1,6 @@
 
+# Based on the pyte vim color scheme by Henning Hasemann <info@leetless.de>
+
 .colors 256
 
 -text 238/255
