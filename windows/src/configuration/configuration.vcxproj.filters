@@ -353,6 +353,9 @@
     <ColorSchemeFile Include="$(JoeWinColorsDir)\lucius.jcf">
       <Filter>Color schemes</Filter>
     </ColorSchemeFile>
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\moria-light.jcf">
+      <Filter>Color schemes</Filter>
+    </ColorSchemeFile>
     <ColorSchemeFile Include="$(JoeWinColorsDir)\oceandeep.jcf">
       <Filter>Color schemes</Filter>
     </ColorSchemeFile>

@@ -137,6 +137,7 @@
     <ColorSchemeFile Include="$(JoeWinColorsDir)\eclipse.jcf" />
     <ColorSchemeFile Include="$(JoeWinColorsDir)\lucario.jcf" />
     <ColorSchemeFile Include="$(JoeWinColorsDir)\lucius.jcf" />
+    <ColorSchemeFile Include="$(JoeWinColorsDir)\moria-light.jcf" />
     <ColorSchemeFile Include="$(JoeWinColorsDir)\oceandeep.jcf" />
     <ColorSchemeFile Include="$(JoeWinColorsDir)\pyte.jcf" />
     <LanguageFile Include="$(JoeLangDir)\de.po" />

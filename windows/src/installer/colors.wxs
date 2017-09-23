@@ -73,6 +73,9 @@
       <Component Id="luciusJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
 	<File Id="luciusJCF" Name="lucius.jcf" DiskId="1" Source="$(var.ColorsRootDir)\lucius.jcf" KeyPath="yes" />
       </Component>
+      <Component Id="morialightJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
+	<File Id="morialightJCF" Name="moria-light.jcf" DiskId="1" Source="$(var.ColorsRootDir)\moria-light.jcf" KeyPath="yes" />
+      </Component>
       <Component Id="oceandeepJCFComponent" Guid="*" Directory="COLORFOLDER" Win64="$(var.Win64)">
 	<File Id="oceandeepJCF" Name="oceandeep.jcf" DiskId="1" Source="$(var.ColorsRootDir)\oceandeep.jcf" KeyPath="yes" />
       </Component>
