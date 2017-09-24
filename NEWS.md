@@ -15,10 +15,6 @@
 	* New color scheme feature, which can be accessed with ^T S or
 	  by setting the **-colors** option.
 
-![before](before.gif)
-
-![after](after.gif)
-
 	* [24-bit color support](https://gist.github.com/XVilka/8346728)
 	  can be enabled by setting the `COLORTERM` environment variable to
 	  `truecolor` or `24bit`.
