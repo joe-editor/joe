@@ -15,9 +15,9 @@
 	* New color scheme feature, which can be accessed with ^T S or
 	  by setting the **-colors** option.
 
-![before](htdocs/before.gif)
+![before](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/htdocs/before.gif)
 
-![after](htdocs/after.gif)
+![after](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/htdocs/after.gif)
 
 	* [24-bit color support](https://gist.github.com/XVilka/8346728)
 	  can be enabled by setting the `COLORTERM` environment variable to
