@@ -15,7 +15,13 @@
 	* New color scheme feature, which can be accessed with ^T S or
 	  by setting the **-colors** option.
 
-![Before](http://joe-editor.sourceforge.net/before.gif) ![After](http://joe-editor.sourceforge.net/after.gif)
+Before:
+
+![Before](http://joe-editor.sourceforge.net/before.gif)
+
+After:
+
+![After](http://joe-editor.sourceforge.net/after.gif)
 
 	* [24-bit color support](https://gist.github.com/XVilka/8346728)
 	  can be enabled by setting the `COLORTERM` environment variable to
