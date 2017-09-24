@@ -453,14 +453,21 @@ void rmsrch(SRCH *srch)
 	if (srch->comp)
 		joe_regfree(srch->comp);
 	prm(srch->wrap_p);
+	if (srch->markb || srch->markk) {
+		/* We don't want isearch to clear an existing block, which it will do if
+		   both srch->markb and srch->markk are null.  On the other hand, finishing
+		   a find/replace should absolutely restore the old state, even if only one
+		   of the two was set.  If we prm inside the if's below, then we get a half-
+		   way state with a weird, unexpected block. */
+		prm(markb);
+		prm(markk);
+	}
 	if (srch->markb) {
-                prm(markb);
 		markb = srch->markb;
 		markb->owner = &markb;
 		markb->xcol = piscol(markb);
 	}
 	if (srch->markk) {
-		prm(markk);
 		markk = srch->markk;
 		markk->owner = &markk;
 		markk->xcol = piscol(markk);
@@ -635,14 +642,21 @@ static int pfsave(W *w, void *obj)
 		srch->repeat = -1;
 		srch->flg = 0;
 
+		if (srch->markb || srch->markk) {
+			/* We don't want isearch to clear an existing block, which it will do if
+			   both srch->markb and srch->markk are null.  On the other hand, finishing
+			   a find/replace should absolutely restore the old state, even if only one
+			   of the two was set.  If we prm inside the if's below, then we get a half-
+			   way state with a weird, unexpected block. */
+			prm(markb);
+			prm(markk);
+		}
 		if (srch->markb) {
-		        prm(markb);
 			markb = srch->markb;
 			markb->owner = &markb;
 			markb->xcol = piscol(markb);
 		}
 		if (srch->markk) {
-		        prm(markk);
 			markk = srch->markk;
 			markk->owner = &markk;
 			markk->xcol = piscol(markk);

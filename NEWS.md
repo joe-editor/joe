@@ -8,7 +8,15 @@
 
 [Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
 
-### JOE.next (not yet released changes in Mercurial)
+### JOE 4.5
+
+Before:
+
+![Before](http://joe-editor.sourceforge.net/before.gif)
+
+After:
+
+![After](http://joe-editor.sourceforge.net/after.gif)
 
 * Enhancements
 
@@ -38,6 +46,7 @@
 	* The current line can be highlighted by pressing ^T U or by
 	  enabling the **-hiline** option.
 
+
 	* The gutter containing line numbers has a dynamic size based on the
 	  length of the file, rather than a fixed size of 10.
 
@@ -64,6 +73,11 @@
 	* For jmacs: ^Q^J now again inserts \n in the string replace prompt. 
 	  This broke beginning with JOE 4.0.
 
+	* Don't try to open files for writing to check file access.  This
+	  behaves better on unionfs mounts.
+
+	* Fix stray blocks created after find/replace.
+
 * Windows version
 
 	* Fix inability to set indent step to 1 from menu.
@@ -71,6 +85,8 @@
 	* Add support for math functions, fix engineering display.
 
 	* Fix backslash escapes in find/replace.
+
+	* Support italicized text.
 
 ### JOE 4.4
 
