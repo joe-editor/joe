@@ -10,11 +10,6 @@
 
 ### JOE 4.5
 
-* Enhancements
-
-	* New color scheme feature, which can be accessed with ^T S or
-	  by setting the **-colors** option.
-
 Before:
 
 ![Before](http://joe-editor.sourceforge.net/before.gif)
@@ -22,6 +17,11 @@ Before:
 After:
 
 ![After](http://joe-editor.sourceforge.net/after.gif)
+
+* Enhancements
+
+	* New color scheme feature, which can be accessed with ^T S or
+	  by setting the **-colors** option.
 
 	* [24-bit color support](https://gist.github.com/XVilka/8346728)
 	  can be enabled by setting the `COLORTERM` environment variable to
