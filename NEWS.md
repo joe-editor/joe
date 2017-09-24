@@ -10,6 +10,8 @@
 
 ### JOE.next (not yet released changes in Mercurial)
 
+### JOE 4.5
+
 * Enhancements
 
 	* New color scheme feature, which can be accessed with ^T S or
