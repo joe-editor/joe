@@ -15,6 +15,10 @@
 	* New color scheme feature, which can be accessed with ^T S or
 	  by setting the **-colors** option.
 
+![before](htdocs/before.png)
+
+![after](htdocs/after.png)
+
 	* [24-bit color support](https://gist.github.com/XVilka/8346728)
 	  can be enabled by setting the `COLORTERM` environment variable to
 	  `truecolor` or `24bit`.
@@ -37,6 +41,7 @@
 
 	* The current line can be highlighted by pressing ^T U or by
 	  enabling the **-hiline** option.
+
 
 	* The gutter containing line numbers has a dynamic size based on the
 	  length of the file, rather than a fixed size of 10.
