@@ -8,8 +8,6 @@
 
 [Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
 
-### JOE.next (not yet released changes in Mercurial)
-
 ### JOE 4.5
 
 * Enhancements
