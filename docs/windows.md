@@ -6,7 +6,7 @@ does not need a large, external compatibility layer.  It is compiled with
 the standard Microsoft compiler and has no external dependencies.  Changes
 were made to better integrate JOE into a Windows environment, such as a
 more Windows-friendly file layout and mouse support.  Other additions include
-drag-and-drop, clipboard integration and color schemes.
+drag-and-drop and clipboard integration.
 
 ## Clipboard integration
 
@@ -118,7 +118,7 @@ JOE for Windows uses a different (but similar) file layout than JOE for
 UNIXen.  Most files important to the editor are found at the install
 location of the joe.exe file, usually `C:\Program Files (x86)\JoeEditor`. 
 \*rc files are stored in the `conf\` subdirectory, \*.jsf files in `syntax\` and
-color schemes in `schemes\`.
+color schemes in `colors\`.
 
 You can override any of these files or settings by sticking a copy in your
 "home" directory.  This directory is found in `%LOCALAPPDATA%\JoeEditor`
@@ -129,7 +129,7 @@ usually `C:\Users\You\AppData\Local\JoeEditor`).
 
 * Place any \*.jsf files in the `syntax\` subdirectory
 
-* Place any \*.joecolor (color scheme) files in the `schemes\` subdirectory
+* Place any \*.jcf (color scheme) files in the `colors\` subdirectory
 
 ## Full screen
 

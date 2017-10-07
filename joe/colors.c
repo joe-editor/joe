@@ -317,7 +317,11 @@ SCHEME *load_scheme(const char *name)
 	/* Find file */
 	p = getenv("HOME");
 	if (p) {
+#ifndef JOEWIN
 		buf = vsfmt(buf, 0, "%s/.joe/colors/%s.jcf", p, name);
+#else
+		buf = vsfmt(buf, 0, "%s\\colors\\%s.jcf", p, name);
+#endif
 		f = jfopen(buf, "r");
 	}
 	
