@@ -200,7 +200,7 @@ static HANDLE hSecurityToken = NULL;
 int glue_access(const char *path, int mode)
 {
 	wchar_t wpath[MAX_PATH + 1];
-	BOOL res;
+	BOOL result = FALSE;
 
 	if (utf8towcs(wpath, path, MAX_PATH)) {
 		assert(FALSE);
@@ -218,7 +218,7 @@ int glue_access(const char *path, int mode)
 			}
 		}
 
-		if (exts[i]) {
+		if (!exts[i]) {
 			/* Not one of those extensions -- stat and check for directory */
 			struct stat buf[1];
 			if (stat(path, buf)) {
@@ -248,6 +248,7 @@ int glue_access(const char *path, int mode)
 
 	if (hSecurityToken) {
 		DWORD length;
+		BOOL res;
 
 		res = GetFileSecurityW(wpath, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, NULL, 0, &length);
 		if (!res && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
@@ -265,12 +266,12 @@ int glue_access(const char *path, int mode)
 
 				accessRights = (mode & R_OK ? GENERIC_READ : 0) | (mode & W_OK ? GENERIC_WRITE : 0) | (mode & X_OK ? GENERIC_EXECUTE : 0);
 				MapGenericMask(&accessRights, &mapping);
-				AccessCheck(security, hSecurityToken, accessRights, &mapping, &privileges, &privLength, &grantedAccesses, &res);
+				AccessCheck(security, hSecurityToken, accessRights, &mapping, &privileges, &privLength, &grantedAccesses, &result);
 			}
 
 			joe_free(security);
 		}
 	}
 
-	return -!res;
+	return -!result;
 }
