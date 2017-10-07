@@ -195,45 +195,82 @@ int glue_mkdir(const char *path, int mode)
 	return _wmkdir(wpath);
 }
 
+static HANDLE hSecurityToken = NULL;
+
 int glue_access(const char *path, int mode)
 {
 	wchar_t wpath[MAX_PATH + 1];
+	BOOL res;
 
 	if (utf8towcs(wpath, path, MAX_PATH)) {
 		assert(FALSE);
 		return -1;
 	}
 
+	/* Handle X_OK kindof special: It must either be a directory or some form of executable file */
 	if (mode & X_OK) {
 		const char *exts[] = { ".exe", ".cmd", ".bat", NULL };
-		struct stat buf[1];
-		int result, omodes;
 		int i;
 
-		omodes = (mode & ~X_OK) | R_OK;
-		result = _waccess(wpath, omodes);
-		if (result) {
-			return -1;
-		}
-
-		if (stat(path, buf)) {
-			return -1;
-		}
-
-		/* Directories are "executable" */
-		if (S_ISDIR(buf->st_mode)) {
-			return 0;
-		}
-
-		/* Check file extension */
-		for (i = 0; exts[i]; i++) {
+		for (i = 0; exts[i]; ++i) {
 			if (!stricmp(exts[i], &path[max(0, strlen(path) - strlen(exts[i]))])) {
-				return 0;
+				break;
 			}
 		}
 
-		return -1;
-	} else {
-		return _waccess(wpath, mode);
+		if (exts[i]) {
+			/* Not one of those extensions -- stat and check for directory */
+			struct stat buf[1];
+			if (stat(path, buf)) {
+				return -1;
+			}
+
+			if (!S_ISDIR(buf->st_mode)) {
+				return -1;
+			}
+		}
+
+		/* It's OK so far, now onto checking access... */
 	}
+
+	/* This is a pain.  Many thanks to: http://blog.aaronballman.com/2011/08/how-to-check-access-rights/ */
+	if (!hSecurityToken) {
+		HANDLE hToken;
+		if (OpenProcessToken(GetCurrentProcess(), TOKEN_IMPERSONATE | TOKEN_QUERY | TOKEN_DUPLICATE | STANDARD_RIGHTS_READ, &hToken)) {
+			HANDLE hImpersonatedToken;
+			if (DuplicateToken(hToken, SecurityImpersonation, &hImpersonatedToken)) {
+				hSecurityToken = hImpersonatedToken;
+			}
+
+			CloseHandle(hToken);
+		}
+	}
+
+	if (hSecurityToken) {
+		DWORD length;
+
+		res = GetFileSecurityW(wpath, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, NULL, 0, &length);
+		if (!res && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+			PSECURITY_DESCRIPTOR security = joe_malloc(length);
+
+			if (GetFileSecurityW(wpath, OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION, security, length, &length)) {
+				GENERIC_MAPPING mapping = { 0xffffffff };
+				PRIVILEGE_SET privileges = { 0 };
+				DWORD grantedAccesses = 0, privLength = sizeof(privileges), accessRights = 0;
+
+				mapping.GenericRead = FILE_GENERIC_READ;
+				mapping.GenericWrite = FILE_GENERIC_WRITE;
+				mapping.GenericExecute = FILE_GENERIC_EXECUTE;
+				mapping.GenericAll = FILE_ALL_ACCESS;
+
+				accessRights = (mode & R_OK ? GENERIC_READ : 0) | (mode & W_OK ? GENERIC_WRITE : 0) | (mode & X_OK ? GENERIC_EXECUTE : 0);
+				MapGenericMask(&accessRights, &mapping);
+				AccessCheck(security, hSecurityToken, accessRights, &mapping, &privileges, &privLength, &grantedAccesses, &res);
+			}
+
+			joe_free(security);
+		}
+	}
+
+	return -!res;
 }
