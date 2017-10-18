@@ -288,9 +288,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 					/* Not in a subroutine, so ignore the return */
 					h = cmd->new_state;
 			} else if (cmd->reset) {
-				/* Reset the state and call stack */
 				h = syntax->states[0];
-				stack = syntax->stack_base;
 			} else {
 				/* Normal edge */
 				h = cmd->new_state;
