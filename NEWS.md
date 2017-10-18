@@ -8,6 +8,13 @@
 
 [Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
 
+### JOE.next
+
+* Bugs fixed
+
+	* Fix obscure crash bug from syntax highlighter: 'reset' command
+	  (used for default state) was incorrectly messing with stack.
+
 ### JOE 4.5
 
 Before:
