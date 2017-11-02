@@ -15,6 +15,9 @@
 	* Fix obscure crash bug from syntax highlighter: 'reset' command
 	  (used for default state) was incorrectly messing with stack.
 
+	* -highlighter_context was missing from many file types, which
+	  negated some improvements from the previous version.
+
 ### JOE 4.5
 
 Before:
@@ -52,7 +55,6 @@ After:
 
 	* The current line can be highlighted by pressing ^T U or by
 	  enabling the **-hiline** option.
-
 
 	* The gutter containing line numbers has a dynamic size based on the
 	  length of the file, rather than a fixed size of 10.
