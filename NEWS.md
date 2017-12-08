@@ -10,6 +10,11 @@
 
 ### JOE.next
 
+* Enhancements
+
+	* Upgrade to Unicode 10.0.0.  Add configure environment variable
+	  that allows you select Unicode 8.0.0, 9.0.0 or 10.0.0.
+
 * Bugs fixed
 
 	* Fix obscure crash bug from syntax highlighter: 'reset' command

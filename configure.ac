@@ -50,6 +50,14 @@ if test "$termcap" = "yes"; then
 	search_libs="$search_libs termcap"
 fi
 
+# Select Unicode version
+AC_ARG_VAR(UNICODE_VERSION,
+[  Select Unicode version: 8.0.0, 9.0.0 or 10.0.0  Default is 9.0.0 ])
+
+if test "$UNICODE_VERSION" = ""; then
+	UNICODE_VERSION=9.0.0
+fi
+
 AC_SEARCH_LIBS(openpty, util, AC_DEFINE_UNQUOTED(HAVE_OPENPTY, 1, [If we have BSD function openpty()]))
 AC_SEARCH_LIBS(login_tty, util, AC_DEFINE_UNQUOTED(HAVE_LOGIN_TTY, 1, [If we have BSD function login_tty()]))
 AC_SEARCH_LIBS(tgetflag, $search_libs, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we have newer terminfo/termcap capabilities]))
