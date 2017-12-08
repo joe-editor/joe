@@ -23,6 +23,9 @@
 	* -highlighter_context was missing from many file types, which
 	  negated some improvements from the previous version.
 
+	* fixed signed char overflow with old style mouse events in large
+	  windows
+
 ### JOE 4.5
 
 Before:
