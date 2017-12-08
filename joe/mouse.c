@@ -94,13 +94,13 @@ static int mouse_event(W *w)
 
 int uxtmouse(W *w, int k)
 {
-	Cb = ttgetch()-32;
+	Cb = (unsigned char)ttgetc() - 32;
 	if (Cb < 0)
 		return -1;
-	Cx = ttgetch();
+	Cx = (unsigned char)ttgetc();
 	if (Cx < 32)
 		return -1;
-	Cy = ttgetch();
+	Cy = (unsigned char)ttgetc();
 	if (Cy < 32)
 		return -1;
 
