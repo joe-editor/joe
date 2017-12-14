@@ -598,17 +598,17 @@ int main(int argc, char **real_argv, const char * const *envv)
 				bw->b->rdonly = bw->o.readonly;
 				/* Put cursor in window, so macros work properly */
 				maint->curwin = bw->parent;
-				/* Execute macro */
-				if (er == -1 && bw->o.mnew)
-					exmacro(bw->o.mnew, 1, NO_MORE_DATA);
-				if (er == 0 && bw->o.mold)
-					exmacro(bw->o.mold, 1, NO_MORE_DATA);
 				/* Hmm... window might not exist any more... depends on what macro does... */
 				if (lnum > 0)
 					pline(bw->cursor, lnum - 1);
 				else
 					pline(bw->cursor, get_file_pos(bw->b->name));
 				p_goto_bol(bw->cursor);
+				/* Execute macro */
+				if (er == -1 && bw->o.mnew)
+					exmacro(bw->o.mnew, 1, NO_MORE_DATA);
+				if (er == 0 && bw->o.mold)
+					exmacro(bw->o.mold, 1, NO_MORE_DATA);
 				/* Go back to first window so windows are in same order as command line  */
 				if (opened)
 					wnext(maint);
