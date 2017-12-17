@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = man rc po syntax joe colors
+SUBDIRS = man rc po syntax joe colors desktop
 
 EXTRA_DIST = COPYING docs/hacking.md ChangeLog NEWS.md docs/README.old README.md INSTALL.md INSTALL.AMIGA \
 	docs/help-system.html charmaps/klingon.in \

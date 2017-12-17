@@ -198,5 +198,5 @@ AC_CHECK_PROG(SPELL,aspell,aspell,ispell)
 
 AC_CONFIG_FILES([Makefile joe/Makefile joe/util/Makefile rc/Makefile
 man/Makefile man/ru/Makefile syntax/Makefile po/Makefile colors/Makefile
-charmaps/klingon])
+charmaps/klingon desktop/Makefile])
 AC_OUTPUT
