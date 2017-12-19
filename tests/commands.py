@@ -298,17 +298,17 @@ class BolTests(joefx.JoeTestBase):
         self.startJoe()
         
         self.menu("testmenu")
-        for i in range(0, 9):
+        for i in range(0, 10):
             self.writectl("{right*%d}" % i)
             self.assertSelectedMenuItem("Item %d" % i)
             self.cmd("bolmenu", "menu")
             self.assertSelectedMenuItem("Item 0")
         self.writectl("{down}")
-        for i in range(9, 15):
-            self.writectl("{right*%d}" % (i - 9))
+        for i in range(10, 15):
+            self.writectl("{right*%d}" % (i - 10))
             self.assertSelectedMenuItem("Item %d" % i)
             self.cmd("bolmenu", "menu")
-            self.assertSelectedMenuItem("Item 9")
+            self.assertSelectedMenuItem("Item 10")
 
 class BopTests(joefx.JoeTestBase):
     def test_bop_paragraph(self):

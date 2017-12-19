@@ -38,11 +38,11 @@ class JoeTestBase(unittest.TestCase):
     
     def tearDown(self):
         if self.joe is not None:
-            ex = self.joe.getExitCode()
-            if ex is None:
+            ex = self.joe.getExitStatus()
+            if not ex.dead:
                 self.joe.kill()
-            elif ex < 0:
-                self.assertTrue(False, "JOE exited with signal %d" % -ex)
+            elif ex.killed:
+                self.assertTrue(False, "JOE exited with signal %d" % ex.signal)
             
             self.joe.flushin()
             self.joe.close()
@@ -133,9 +133,12 @@ class JoeTestBase(unittest.TestCase):
     
     def assertExited(self):
         """Asserts that the editor has exited"""
-        result = self.joe.wait()
-        self.assertIsNot(result, None, "Process was expected to have exited")
-        self.assertEqual(result, 0, "Process exited with non-zero code")
+        self.assertTrue(self.joe.readUntilExited(), "Proceess was expected to have exited")
+        
+        result = self.joe.getExitStatus()
+        self.assertTrue(result.dead, "Process was expected to have exited")
+        self.assertTrue(result.exited, "Process was expected to have exited normally")
+        self.assertEqual(result.status, 0, "Process exited with non-zero code")
     
     def assertFileContents(self, file, expected):
         """Asserts that file in workdir matches expected contents"""

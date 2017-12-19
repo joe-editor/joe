@@ -8,6 +8,7 @@ import pty
 import select
 import shutil
 import signal
+import sys
 import tempfile
 import termios
 import time
@@ -18,6 +19,7 @@ from . import exceptions
 from . import keys
 
 coord = collections.namedtuple('coord', ['X', 'Y'])
+exitStatus = collections.namedtuple('exitStatus', ['dead', 'exited', 'status', 'killed', 'signal'])
 
 class JoeController(object):
     """Controller class for JOE program.  Manages child process and sends/receives interaction.  Nothing specific to JOE here, really"""
@@ -96,41 +98,6 @@ class JoeController(object):
         self.stream.feed(result)
         return len(result)
     
-    def checkProcess(self):
-        """Checks whether the process is still running"""
-        if self.exited is not None:
-            return True
-        
-        result = os.waitpid(self.pid, os.WNOHANG)
-        if result == (0, 0):
-            return True
-        else:
-            self.exited = result
-            return False
-    
-    def getExitCode(self):
-        """Get exit code of program, if it has exited"""
-        if self.exited is not None:
-            result = self.exited
-        else:
-            result = os.waitpid(self.pid, os.WNOHANG)
-        
-        if result != (0, 0):
-            self.exited = result
-            return result[1] >> 8
-        else:
-            return None
-    
-    def kill(self, code=9):
-        """Kills the child process with the specified signal"""
-        os.kill(self.pid, code)
-    
-    def close(self):
-        """Waits for process to exit and close down open handles"""
-        self.wait()
-        os.close(self.fd)
-        self.fd = None
-    
     def readLine(self, line, col, length):
         """Reads the text found at the specified screen location"""
         def getChar(y, x):
@@ -145,11 +112,39 @@ class JoeController(object):
         
         return self.readLine(line, col, len(text)) == text
     
+    def checkProcess(self):
+        """Checks whether the process is still running"""
+        if self.exited is not None:
+            return False
+        
+        result = os.waitpid(self.pid, os.WNOHANG)
+        if result[0] != self.pid:
+            return True
+        else:
+            self.exited = result
+            return False
+    
+    def getExitStatus(self):
+        """Get exit status of program, if it has exited"""
+        self.checkProcess()
+        return self.exitStatus
+    
+    def kill(self, code=9):
+        """Kills the child process with the specified signal"""
+        os.kill(self.pid, code)
+    
+    def close(self):
+        """Closes open handles and waits for the process to exit"""
+        if self.fd is not None:
+            os.close(self.fd)
+            self.fd = None
+        return self.wait()
+    
     def wait(self):
         """Waits for child process to exit or timeout to expire"""
         
         if self.exited is not None:
-            return self.exited[1] >> 8
+            return self.exitStatus
         
         def ontimeout(signum, frame):
             raise exceptions.TimeoutException()
@@ -159,10 +154,35 @@ class JoeController(object):
         try:
             result = os.waitpid(self.pid, 0)
         except exceptions.TimeoutException:
-            return None
+            return self.exitStatus
+        
         signal.alarm(0)
         self.exited = result
-        return result[1] >> 8
+        return self.exitStatus
+    
+    def readUntilExited(self):
+        """Pulls in data from terminal while waiting for the process to exit"""
+        self.flushin()
+        if self.exited is not None:
+            return True
+        
+        try:
+            return self.expect(lambda: not self.checkProcess())
+        except exceptions.ProcessExitedException:
+            # This just means the stream closed, not that the process is done.
+            return self.wait()
+        finally:
+            self.flushin()
+    
+    @property
+    def exitStatus(self):
+        if self.exited is not None:
+            r = self.exited[1]
+            if os.WIFEXITED(r):
+                return exitStatus(dead=True, exited=True, status=os.WEXITSTATUS(r), killed=False, signal=None)
+            elif os.WIFSIGNALED(r):
+                return exitStatus(dead=True, exited=False, status=None, killed=True, signal=os.WTERMSIG(r))
+        return exitStatus(dead=False, exited=False, status=None, killed=False, signal=None)
     
     def resize(self, width, height):
         """Resizes terminal"""
@@ -284,7 +304,7 @@ def startJoe(joeexe, args=None):
     env['HOME'] = tmpfiles.homedir
     env['LINES'] = str(args.lines)
     env['COLUMNS'] = str(args.columns)
-    env['TERM'] = 'ansi'
+    env['TERM'] = 'xterm'
     env['LANG'] = 'en_US.UTF-8'
     env['SHELL'] = os.getenv('SHELL', '/bin/sh')
     
