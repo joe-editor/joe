@@ -146,9 +146,10 @@ static int rtnpw(W *w)
 	p_goto_bol(bw->cursor);
 	s = brvs(bw->cursor, byte - bw->cursor->byte);
 
-	if (pw->file_prompt) {
-		s = canonical(s);
-	}
+	if (pw->file_prompt & PWFLAG_FILENAME)
+		s = canonical(s, 0); /* Tilde expansion and // restart */
+	else if (pw->file_prompt & PWFLAG_COMMAND)
+		s = canonical(s, CANFLAG_NORESTART); /* Tilde expansion only */
 
 	/* Save text into history buffer */
 	if (pw->hist) {
@@ -160,7 +161,7 @@ static int rtnpw(W *w)
 	}
 
 	/* Do ~ expansion and set new current directory */
-	if (pw->file_prompt&2) {
+	if (pw->file_prompt & PWFLAG_UPDATE_CD) {
 		set_current_dir(bw, s,1);
 	}
 
@@ -276,7 +277,7 @@ BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, voi
 	pw->promptofst = 0;
 	pw->pfunc = func;
 	pw->file_prompt = file_prompt;
-	if (pw->file_prompt) {
+	if (pw->file_prompt & PWFLAG_FILENAME) {
 		bw->b->o.syntax = load_syntax("filename");
 		bw->b->o.highlight = 1;
 		bw->o.syntax = bw->b->o.syntax;
@@ -294,7 +295,7 @@ BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, voi
 		pw->hist = NULL;
 	}
 	/* Install current directory */
-	if ((file_prompt&4) && !nocurdir) {
+	if ((file_prompt & PWFLAG_SEED_CD) && !nocurdir) {
 		char *curd = get_cd(w);
 		binsmq(bw->cursor, sv(curd));
 		p_goto_eof(bw->cursor);

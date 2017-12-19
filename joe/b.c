@@ -2547,20 +2547,21 @@ char *parsens(const char *s, off_t *skip, off_t *amnt)
 
 /* Canonicalize file name: do ~ expansion */
 
-char *canonical(char *n)
+char *canonical(char *n, int flags)
 {
 	ptrdiff_t y = 0;
 #ifndef __MSDOS__
 	ptrdiff_t x;
 	char *s;
-	for (y = zlen(n); ; --y)
-		if (y <= 2) {
-			y = 0;
-			break;
-		} else if (n[y-2] == '/' && (n[y-1] == '/' || n[y-1] == '~')) {
-			y -= 1;
-			break;
-		}
+	if (!(flags & CANFLAG_NORESTART))
+		for (y = zlen(n); ; --y)
+			if (y <= 2) {
+				y = 0;
+				break;
+			} else if (n[y-2] == '/' && (n[y-1] == '/' || n[y-1] == '~')) {
+				y -= 1;
+				break;
+			}
 	
 	if (n[y] == '~') {
 		for (x = y + 1; n[x] && n[x] != '/'; ++x) ;

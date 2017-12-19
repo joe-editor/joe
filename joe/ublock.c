@@ -1119,12 +1119,12 @@ int ufilt(W *w, int k)
 #else
 	switch (checkmark(bw)) {
 	case 0:
-		if (wmkpw(bw->parent, joe_gettext(_("Command to filter block through (%{abort} to abort): ")), &filthist, dofilt, NULL, NULL, cmplt_command, NULL, NULL, locale_map, 1))
+		if (wmkpw(bw->parent, joe_gettext(_("Command to filter block through (%{abort} to abort): ")), &filthist, dofilt, NULL, NULL, cmplt_command, NULL, NULL, locale_map, PWFLAG_COMMAND))
 			return 0;
 		else
 			return -1;
 	case 1:
-		if (wmkpw(bw->parent, joe_gettext(_("Command to filter file through (%{abort} to abort): ")), &filthist, dofilt, NULL, NULL, cmplt_command, NULL, NULL, locale_map, 1))
+		if (wmkpw(bw->parent, joe_gettext(_("Command to filter file through (%{abort} to abort): ")), &filthist, dofilt, NULL, NULL, cmplt_command, NULL, NULL, locale_map, PWFLAG_COMMAND))
 			return 0;
 		else
 			return -1;

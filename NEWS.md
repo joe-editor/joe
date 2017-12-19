@@ -15,16 +15,28 @@
 	* Upgrade to Unicode 10.0.0.  Add configure environment variable
 	  that allows you select Unicode 8.0.0, 9.0.0 or 10.0.0.
 
+	* Install Gnome .desktop files for JOE.  This allows you to use JOE
+	  in GUI "Open With" mouse actions.
+
 * Bugs fixed
 
-	* Fix obscure crash bug from syntax highlighter: 'reset' command
-	  (used for default state) was incorrectly messing with stack.
+	*  Fix bug where JOE would sometimes crash when editing shell
+	  scripts.  It was an obscure crash bug in the syntax highlighter:
+	  'reset' command (used for default state) was incorrectly messing
+	  with stack.
 
 	* -highlighter_context was missing from many file types, which
 	  negated some improvements from the previous version.
 
-	* fixed signed char overflow with old style mouse events in large
+	* Fixed signed char overflow with old style mouse events in large
 	  windows
+
+	* Fix bug where path restart (//) was being applied to block filter
+	  command prompt.  Strange things would happen if you had adjacent
+	  slashes.
+
+	* Allow ~ expansion but suppress path restart (//) in compiler error
+	  parser.
 
 ### JOE 4.5
 

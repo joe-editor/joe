@@ -325,7 +325,7 @@ B *runhist = NULL;
 
 int urun(W *w, int k)
 {
-	if (wmkpw(w, joe_gettext(_("Program to run: ")), &runhist, dorun, "Run", NULL, cmplt_command, NULL, NULL, locale_map, 1)) {
+	if (wmkpw(w, joe_gettext(_("Program to run: ")), &runhist, dorun, "Run", NULL, cmplt_command, NULL, NULL, locale_map, PWFLAG_COMMAND)) {
 		return 0;
 	} else {
 		return -1;
@@ -371,7 +371,7 @@ int ubuild(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	if (buildhist) {
-		if ((bw=wmkpw(bw->parent, joe_gettext(_("Build command: ")), &buildhist, dobuild, "Run", NULL, cmplt_command, NULL, NULL, locale_map, 1))) {
+		if ((bw=wmkpw(bw->parent, joe_gettext(_("Build command: ")), &buildhist, dobuild, "Run", NULL, cmplt_command, NULL, NULL, locale_map, PWFLAG_COMMAND))) {
 			uuparw(bw->parent, 0);
 			u_goto_eol(bw->parent, 0);
 			bw->cursor->xcol = piscol(bw->cursor);
@@ -380,7 +380,7 @@ int ubuild(W *w, int k)
 		return -1;
 		}
 	} else {
-		if (wmkpw(bw->parent, joe_gettext(_("Enter build command (for example, 'make'): ")), &buildhist, dobuild, "Run", NULL, cmplt_command, NULL, NULL, locale_map, 1)) {
+		if (wmkpw(bw->parent, joe_gettext(_("Enter build command (for example, 'make'): ")), &buildhist, dobuild, "Run", NULL, cmplt_command, NULL, NULL, locale_map, PWFLAG_COMMAND)) {
 			return 0;
 		} else {
 		return -1;
@@ -397,7 +397,7 @@ int ugrep(W *w, int k)
 	/* Set parser to grep */
 	bw->b->parseone = parseone_grep;
 	if (grephist) {
-		if ((bw=wmkpw(bw->parent, joe_gettext(_("Grep command: ")), &grephist, dobuild, "Run", NULL, cmplt_command, NULL, NULL, locale_map, 1))) {
+		if ((bw=wmkpw(bw->parent, joe_gettext(_("Grep command: ")), &grephist, dobuild, "Run", NULL, cmplt_command, NULL, NULL, locale_map, PWFLAG_COMMAND))) {
 			uuparw(bw->parent, 0);
 			u_goto_eol(bw->parent, 0);
 			bw->cursor->xcol = piscol(bw->cursor);
@@ -406,7 +406,7 @@ int ugrep(W *w, int k)
 		return -1;
 		}
 	} else {
-		if (wmkpw(bw->parent, joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): ")), &grephist, dobuild, "Run", NULL, cmplt_command, NULL, NULL, locale_map, 1)) {
+		if (wmkpw(bw->parent, joe_gettext(_("Enter grep command (for example, 'grep -n foo *.c'): ")), &grephist, dobuild, "Run", NULL, cmplt_command, NULL, NULL, locale_map, PWFLAG_COMMAND)) {
 			return 0;
 		} else {
 		return -1;
