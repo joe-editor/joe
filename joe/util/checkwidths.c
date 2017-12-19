@@ -132,6 +132,17 @@ int main()
 
     attr.c_cflag |= (CREAD);
 
+    attr.c_lflag &= ~(
+#ifdef XCASE /* not POSIX */
+                      XCASE |
+#endif
+                      ECHONL |
+                      ECHOCTL |
+#ifdef ECHOPRT /* not in cygwin */
+                      ECHOPRT |
+#endif
+                      ECHOK |
+                      NOFLSH);
 #ifdef XCASE /* not POSIX */
     attr.c_lflag &= ~(XCASE | ECHONL | ECHOCTL | ECHOPRT | ECHOK | NOFLSH);
 #else
