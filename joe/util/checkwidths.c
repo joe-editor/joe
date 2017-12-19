@@ -123,9 +123,21 @@ int main()
     /* Set up terminal */
     /* Force modes we always want */
     attr.c_iflag |= (IGNBRK | IGNPAR);
+
+#ifdef IUCLC /* not POSIX */
     attr.c_iflag &= ~(BRKINT | PARMRK | INPCK | ISTRIP | INLCR | IGNCR | IUCLC | IXANY);
+#else
+    attr.c_iflag &= ~(BRKINT | PARMRK | INPCK | ISTRIP | INLCR | IGNCR | IXANY);
+#endif
+
     attr.c_cflag |= (CREAD);
+
+#ifdef XCASE /* not POSIX */
     attr.c_lflag &= ~(XCASE | ECHONL | ECHOCTL | ECHOPRT | ECHOK | NOFLSH);
+#else
+    attr.c_lflag &= ~(ECHONL | ECHOCTL | ECHOPRT | ECHOK | NOFLSH);
+#endif
+
     attr.c_lflag |= (ECHOE | ECHOKE);
 
     /* Modes we usually want */
