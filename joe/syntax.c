@@ -105,6 +105,10 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 						current_attr |= BLINK;
 					} else if (accu == 7) {
 						current_attr |= INVERSE;
+					} else if (accu == 9) {
+						current_attr |= CROSSED_OUT;
+					} else if (accu == 21) {
+						current_attr |= DOUBLE_UNDERLINE;
 					} else if (accu >= 30 && accu <= 37) {
 						if (bold && curschemeset && curschemeset->termcolors[accu - 22].type != COLORSPEC_TYPE_NONE) {
 							/* Remapped extended color */

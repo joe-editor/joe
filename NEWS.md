@@ -18,6 +18,10 @@
 	* Install Gnome .desktop files for JOE.  This allows you to use JOE
 	  in GUI "Open With" mouse actions.
 
+	* Support strikeout and double-underline attributes for the few terminal
+	  emulators that support them.  Use "stricken" and "dunderline" in
+	  the syntax files, or \s and \z in help screens and status line.
+
 * Bugs fixed
 
 	*  Fix bug where JOE would sometimes crash when editing shell

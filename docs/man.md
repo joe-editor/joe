@@ -640,7 +640,7 @@ Combine attributes and up to one foreground color and one background color
 to create arguments for color options like text_color.  For example:
 bold+bg_green+blue
 
-* Attributes: bold, inverse, blink, dim, underline, and italic
+* Attributes: bold, inverse, blink, dim, underline, italic, stricken (strike out) and dunderline (double-underline)
 
 * Foreground colors: white, cyan, magenta, blue, yellow, green, red, or black
 
@@ -715,6 +715,8 @@ These formatting escape sequences may also be given:
     \d  Dim
     \f  Blink
     \l  Italic
+    \s  Strikeout
+    \z  Double underline
 <br>
 
 
@@ -2696,8 +2698,8 @@ are the high intensity versions from 16 color terminals).
 * RGB specifications in the standard `$RRGGBB` form (only in the 24-bit
 section).
 
-Attributes can be `bold`, `inverse`, `blink`, `dim`, `underline`, and
-`italic`.
+Attributes can be `bold`, `inverse`, `blink`, `dim`, `underline`, `italic`,
+`stricken` and `dunderline`.
 
 A number of environment colors can be changed:
 

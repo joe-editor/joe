@@ -197,6 +197,15 @@ int set_attr(SCRN *t, int c)
 	if (e & UNDERLINE)
 		if (t->us)
 			texec(t->cap, t->us, 1, 0, 0, 0, 0);
+
+	if (e & DOUBLE_UNDERLINE)
+		if (t->dunderline)
+			texec(t->cap, t->dunderline, 1, 0, 0, 0, 0);
+
+	if (e & CROSSED_OUT)
+		if (t->stricken)
+			texec(t->cap, t->stricken, 1, 0, 0, 0, 0);
+
 	if (e & BLINK)
 		if (t->mb)
 			texec(t->cap, t->mb, 1, 0, 0, 0, 0);
@@ -610,6 +619,8 @@ SCRN *nopen(CAP *cap)
 	t->md = NULL;
 	t->mh = NULL;
 	t->mr = NULL;
+	t->stricken = NULL;
+	t->dunderline = NULL;
 	t->avattr = 0;
 	if (!(t->me = jgetstr(t->cap,"me")))
 		goto oops;
@@ -629,6 +640,15 @@ SCRN *nopen(CAP *cap)
 #else
 	ansiish = t->md && t->md[0] == '\033' && t->md[1] == '[';
 #endif
+
+	/* Cheating here: there is no capability for stricken and double-underline, so we just assume it has it if terminal looks ansi */
+	if (ansiish) {
+		t->stricken = "\033[9m";
+	}
+
+	if (ansiish) {
+		t->dunderline = "\033[21m";
+	}
 	
 	/* No termcap for bracketed paste.  ANSI-looking terminals will either support bracketed paste
 	   or this setting will cause no harm. */
@@ -2280,6 +2300,14 @@ void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, in
 			case 'f':
 			case 'F':
 				atr ^= BLINK;
+				break;
+			case 's':
+			case 'S':
+				atr ^= CROSSED_OUT;
+				break;
+			case 'z':
+			case 'Z':
+				atr ^= DOUBLE_UNDERLINE;
 				break;
 			case 0:
 				--s;
