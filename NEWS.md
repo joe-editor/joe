@@ -25,7 +25,7 @@
 * Bugs fixed
 
 	*  Fix bug where JOE would sometimes crash when editing shell
-	  scripts.  It was an obscure crash bug in the syntax highlighter:
+	  scripts.  This was due to an obscure bug in the syntax highlighter:
 	  'reset' command (used for default state) was incorrectly messing
 	  with stack.
 
