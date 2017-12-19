@@ -143,11 +143,6 @@ int main()
 #endif
                       ECHOK |
                       NOFLSH);
-#ifdef XCASE /* not POSIX */
-    attr.c_lflag &= ~(XCASE | ECHONL | ECHOCTL | ECHOPRT | ECHOK | NOFLSH);
-#else
-    attr.c_lflag &= ~(ECHONL | ECHOCTL | ECHOPRT | ECHOK | NOFLSH);
-#endif
 
     attr.c_lflag |= (ECHOE | ECHOKE);
 
