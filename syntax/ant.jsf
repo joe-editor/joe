@@ -1,0 +1,30 @@
+# JOE syntax highlight file for Ant's build scripts
+# by Christian Nicolai (http://mycrobase.de)
+# Refactored to XML by John J. Jordan
+
+# http://ant.apache.org/
+
+=Idle
+=String		+Constant
+=StringEscape	+Escape +String
+
+:init Idle
+	*		idle		noeat call=xml.xml(ant)
+
+.subr maybe_antvar
+# initial state
+:maybe_antvar String string
+	*		NULL		return
+	"{"		antvar		recolor=-2
+
+:antvar StringEscape string
+	*		antvar
+	"}"		NULL		return
+.end
+
+.subr antvar
+
+:antvar StringEscape string
+	*		antvar
+	"}"		NULL		return
+.end

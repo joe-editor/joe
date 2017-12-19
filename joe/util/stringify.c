@@ -10,6 +10,12 @@ int main(int argc, char *argv[])
     int first_file = 1;
     printf("/* Built-in files */\n");
     printf("\n");
+    printf("/* Generated with: stringify");
+    for (x = 1; argv[x]; ++x) {
+        printf(" %s", argv[x]);
+    }
+    printf(" */\n");
+    printf("\n");
     printf("#include \"types.h\"\n");
     printf("\n");
     printf("const char *builtins[]=\n");

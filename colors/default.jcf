@@ -1,0 +1,53 @@
+
+.colors 16
+
+-selection 	default/default inverse
+-menusel 	default/default inverse
+-linum		default dim
+-curlinum	default bold
+
+=Idle
+=Bad            bold red
+=Preproc        blue
+=Define         bold blue
+=Comment        green
+=IncLocal       cyan
+=IncSystem      bold cyan
+=Constant       cyan
+=Escape         bold cyan
+=Type           bold
+=Keyword        bold
+=Brace          magenta
+=Control
+=Ident
+=Tag		bold blue
+=TagName	+Tag
+=TODO		default/default inverse
+=Title		bold
+
+=diff.DelLine	red
+=diff.AddLine	green
+=diff.ChgLine	magenta
+=diff.Garbage	dim white
+=diff.FileOld	bold red
+=diff.FileNew	bold green
+=diff.Hunk	bold blue
+
+# For backwards compatibility with older syntaxes that specify colors,
+# the scheme must specify termcolors.  Yes this is a bit of a kludge.
+-term  0 0
+-term  1 1
+-term  2 2
+-term  3 3
+-term  4 4
+-term  5 5
+-term  6 6
+-term  7 7
+-term  8 8
+-term  9 9
+-term 10 10
+-term 11 11
+-term 12 12
+-term 13 13
+-term 14 14
+-term 15 15

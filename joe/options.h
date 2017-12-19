@@ -53,3 +53,5 @@ const char *get_status(BW *bw, char *s);
 extern OPTIONS *options_list;
 
 void cmd_help(int type);
+
+char **find_configs(char **, const char *, const char *, const char *);

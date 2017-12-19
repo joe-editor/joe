@@ -94,13 +94,13 @@ static int mouse_event(W *w)
 
 int uxtmouse(W *w, int k)
 {
-	Cb = ttgetch()-32;
+	Cb = (unsigned char)ttgetc() - 32;
 	if (Cb < 0)
 		return -1;
-	Cx = ttgetch();
+	Cx = (unsigned char)ttgetc();
 	if (Cx < 32)
 		return -1;
-	Cy = ttgetch();
+	Cy = (unsigned char)ttgetc();
 	if (Cy < 32)
 		return -1;
 
@@ -408,7 +408,7 @@ int utomouse(W *xx, int k)
 			pgoto(bw->cursor, goal_byte);
 			return 0;
 		} else {
-			off_t goal_col = x - w->x + bw->offset - (bw->o.linums ? LINCOLS : 0);
+			off_t goal_col = x - w->x + bw->offset - bw->lincols;
 			off_t goal_line;
 			if (goal_col < 0)
 				goal_col = 0;
@@ -497,7 +497,7 @@ static int tomousestay()
 			tmspos = bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		} else {
-			off_t goal_col = x - w->x + bw->offset - (bw->o.linums ? LINCOLS : 0);
+			off_t goal_col = x - w->x + bw->offset - bw->lincols;
 			off_t goal_line;
 			if (goal_col < 0)
 				goal_col = 0;

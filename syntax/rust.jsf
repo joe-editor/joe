@@ -1,0 +1,402 @@
+# JOE syntax highlight file for Rust
+
+=Idle
+=Ident
+=Comment
+=Constant
+=Number		+Constant
+=Boolean	+Constant
+=String		+Constant
+=StringEscape	+Escape
+=Character	+Constant
+=CharacterEscape +Escape
+
+=Keyword
+=Operator	+Keyword
+=Statement	+Keyword
+=Conditional	+Statement
+=Loop		+Statement
+=StorageClass	+Type +Keyword
+=Structure	+Statement
+
+=Bad
+=Brace
+
+:pre_idle Idle
+	*		NULL		noeat call=.rust()
+
+.subr rust
+
+# #! allowed on first line
+
+:idle Idle
+	*		idle
+	"{}"		brace		recolor=-1
+	"0"		zero		recolor=-1
+	"1-9"		decimal		recolor=-1
+	"."		decimal_point	recolor=-1
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"/"		slash		recolor=-1
+	"\i"		ident		buffer
+
+:slash Idle
+	*		idle		noeat
+	"*"		comment		recolor=-2
+	"/"		line_comment	recolor=-2
+
+:brace Brace
+	*		idle		noeat
+
+:comment Comment comment
+	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment comment
+	*		comment		noeat
+	"/"		idle
+
+:line_comment Comment comment
+	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		idle
+
+# Numbers
+
+:bad_number Bad
+	*		idle	noeat
+	"0-9"		bad_number
+
+:zero Number
+	*		idle	noeat
+	"b"		binary
+	"o"		octal
+	"x"		hex
+	"."		float
+	"eE"		epart
+	"0-9"		decimal	recolor=-1
+	"ui"		int_suffix
+	"f"		float_suffix
+
+:decimal_point Number
+	*		idle	noeat	recolor=-2
+	"0-9"		float
+
+:octal Number
+	*		idle	noeat
+	"0-7_"		octal
+	"89"		bad_number	recolor=-1
+	"ui"		int_suffix
+
+:binary Number
+	*		idle	noeat
+	"01_"		binary
+	"2-9"		bad_number	recolor=-1
+	"ui"		int_suffix
+
+:hex Number
+	*		idle	noeat
+	"0-9A-Fa-f_"	hex
+	"ui"		int_suffix
+
+:decimal Number
+	*		idle	noeat
+	"0-9_"		decimal
+	"eE"		epart
+	"."		float
+	"ui"		int_suffix
+	"f"		float_suffix
+
+:float Number
+	*		idle	noeat
+	"eE"		epart
+	"0-9_"		float
+	"ui"		int_suffix
+	"f"		float_suffix
+
+:epart Number
+	*		idle	noeat
+	"0-9+\-"	enum
+
+:enum Number
+	*		idle	noeat
+	"0-9_"		enum
+	"ui"		int_suffix
+	"f"		float_suffix
+
+:float_suffix Number
+	*		bad_number	noeat	recolor=-1
+	"3"		float_suffix_1
+	"6"		float_suffix_2
+
+:float_suffix_1 Number
+	*		bad_number	noeat	recolor=-1
+	"2"		idle
+
+:float_suffix_2 Number
+	*		bad_number	noeat	recolor=-1
+	"4"		idle
+
+:int_suffix Number
+	*		bad_number	noeat	recolor=-1
+	"3"		int_suffix_1
+	"6"		int_suffix_2
+	"s"		int_suffix_3
+
+:int_suffix_1 Number
+	*		bad_number	noeat	recolor=-1
+	"2"		idle
+
+:int_suffix_2 Number
+	*		bad_number	noeat	recolor=-1
+	"4"		idle
+
+:int_suffix_3 Number
+	*		bad_number	noeat	recolor=-2
+	"i"		int_suffix_4
+
+:int_suffix_4 Number
+	*		bad_number	noeat	recolor=-3
+	"z"		int_suffix_5
+
+:int_suffix_5 Number
+	*		bad_number	noeat	recolor=-4
+	"e"		idle
+
+# strings like "hello"
+
+:string	String string
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+
+:string_escape StringEscape string
+	*		string
+	"x"		string_hex2
+	"u"		string_maybe_uni
+
+:string_maybe_uni StringEscape string
+	*		string		noeat
+	"{"		string_uni
+
+:string_uni StringEscape string
+	*		string_uni
+	"}"		string
+
+:string_hex2 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string_hex1
+
+:string_hex1 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+# character constants like 'h'
+
+:char	Character string
+	*		char_done
+	"\\"		char_escape	recolor=-1
+
+:char_done Character string
+	*		idle		noeat recolor=-3
+	"\'"		idle
+
+:char_escape CharacterEscape string
+	*		char_done	noeat
+	"x"		char_hex2
+	"u"		char_maybe_uni
+
+:char_maybe_uni CharacterEscape string
+	*		char_done	noeat
+	"{"		char_uni
+
+:char_uni CharacterEscape string
+	*		char_uni
+	"}"		char_done
+
+:char_hex2 CharacterEscape string
+	*		char_done	noeat
+	"0-9a-fA-F"	char_hex1
+
+:char_hex1 CharacterEscape string
+	*		char_done	noeat
+	"0-9a-fA-F"	char
+
+# Raw strings like r"hello" or r##"hello, "world""##
+# The number of #'s is technically unbounded, but we'll limit to 4.
+
+:raw_string_pre Ident
+	*		ident		noeat
+	"\""		raw_string_0	recolor=-2
+	"#"		raw_string_pre_1 recolor=-2
+
+:raw_string_pre_1 String string
+	*		raw_string_bad	recolor=-3
+	"\""		raw_string_1
+	"#"		raw_string_pre_2
+
+:raw_string_pre_2 String string
+	*		raw_string_bad	recolor=-4
+	"\""		raw_string_2
+	"#"		raw_string_pre_3
+
+:raw_string_pre_3 String string
+	*		raw_string_bad	recolor=-5
+	"\""		raw_string_3
+	"#"		raw_string_pre_4
+
+:raw_string_pre_4 String string
+	*		raw_string_bad	recolor=-6
+	"#\""		raw_string_4	# More than 4? too bad.
+
+:raw_string_0 String string
+	*		raw_string_0
+	"\""		idle
+
+:raw_string_1 String string
+	*		raw_string_1
+	"\""		raw_string_end_1
+
+:raw_string_2 String string
+	*		raw_string_2
+	"\""		raw_string_end_2 buffer
+
+:raw_string_3 String string
+	*		raw_string_3
+	"\""		raw_string_end_3 buffer
+
+:raw_string_4 String string
+	*		raw_string_4
+	"\""		raw_string_end_4 buffer
+
+:raw_string_end_1 String string
+	*		raw_string_1	noeat
+	"#"		idle
+
+:raw_string_end_2 String string
+	*		raw_string_2	noeat strings
+	"\"##"		raw_string_end
+done
+	"#"		raw_string_end_2
+
+:raw_string_end_3 String string
+	*		raw_string_3	noeat strings
+	"\"###"		raw_string_end
+done
+	"#"		raw_string_end_3
+
+:raw_string_end_4 String string
+	*		raw_string_4	noeat strings
+	"\"####"	raw_string_end
+done
+	"#"		raw_string_end_4
+
+:raw_string_end String string
+	*		idle		noeat
+
+:raw_string_bad Bad
+	*		idle		noeat
+
+# Byte string literals b"foo bar"
+
+:byte_string_pre Ident
+	*		ident		noeat recolor=-1
+	"\""		string		recolor=-2
+
+# Raw byte string literals br"hello world" and br###"Hello, "world""###
+
+:raw_byte_string_pre Ident
+	*		ident		noeat
+	"\""		raw_string_0	recolor=-3
+	"#"		raw_string_pre_1 recolor=-3
+
+# Identifiers
+
+:ident Ident
+	*		idle	noeat strings
+	"abstract"	storage
+	"alignof"	kw
+	"as"		operator
+	"become"	kw
+	"box"		kw
+	"break"		loop
+	"const"		storage
+	"continue"	loop
+	"crate"		kw
+	"do"		loop
+	"else"		cond
+	"enum"		struct
+	"extern"	storage
+	"false"		bool
+	"final"		storage
+	"fn"		struct
+	"for"		loop
+	"if"		cond
+	"impl"		kw
+	"in"		operator
+	"let"		kw
+	"loop"		loop
+	"macro"		kw
+	"match"		kw
+	"mod"		kw # operator?
+	"move"		kw
+	"mut"		kw
+	"offsetof"	kw
+	"override"	storage
+	"priv"		storage
+	"proc"		kw
+	"pub"		storage
+	"pure"		storage
+	"ref"		kw
+	"return"	stmt
+	"Self"		kw
+	"self"		kw
+	"sizeof"	kw # operator?
+	"static"	storage
+	"struct"	struct
+	"super"		kw
+	"trait"		kw
+	"true"		bool
+	"type"		kw
+	"typeof"	kw # operator?
+	"unsafe"	storage
+	"unsized"	kw # storage?
+	"use"		kw
+	"virtual"	storage
+	"where"		kw
+	"while"		loop
+	"yield"		stmt
+	
+	# String/byte prefixes
+	"r"		raw_string_pre
+	"b"		byte_string_pre
+	"br"		raw_byte_string_pre
+done
+	"\c"	ident
+
+:kw Keyword
+	*		idle		noeat
+
+:lit Constant
+	*		idle		noeat
+
+:bool Boolean
+	*		idle		noeat
+
+:operator Operator
+	*		idle		noeat
+
+:storage StorageClass
+	*		idle		noeat
+
+:cond Conditional
+	*		idle		noeat
+
+:loop Loop
+	*		idle		noeat
+
+:struct Structure
+	*		idle		noeat
+
+.end

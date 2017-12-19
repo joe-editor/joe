@@ -189,6 +189,7 @@ int udebug_joe(W *w, int k)
 		}
 	}
 	dump_syntax(bw);
+	dump_colors(bw);
 	return 0;
 }
 
@@ -2714,11 +2715,8 @@ B *bload(const char *s)
 		b = bmk(NULL);
 		goto empty;
 	} else {
-		fi = fopen(dequote(n), "r+");
-		if (!fi)
+		if (access(dequote(n), W_OK))
 			nowrite = 1;
-		else
-			fclose(fi);
 		fi = fopen(dequote(n), "r");
 		if (!fi)
 			nowrite = 0;

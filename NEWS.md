@@ -8,9 +8,67 @@
 
 [Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
 
-### JOE.next (not yet released changes in Mercurial)
+### JOE.next
 
 * Enhancements
+
+	* Upgrade to Unicode 10.0.0.  Add configure environment variable
+	  that allows you select Unicode 8.0.0, 9.0.0 or 10.0.0.
+
+* Bugs fixed
+
+	* Fix obscure crash bug from syntax highlighter: 'reset' command
+	  (used for default state) was incorrectly messing with stack.
+
+	* -highlighter_context was missing from many file types, which
+	  negated some improvements from the previous version.
+
+	* fixed signed char overflow with old style mouse events in large
+	  windows
+
+### JOE 4.5
+
+Before:
+
+![Before](http://joe-editor.sourceforge.net/before.gif)
+
+After:
+
+![After](http://joe-editor.sourceforge.net/after.gif)
+
+* Enhancements
+
+	* New color scheme feature, which can be accessed with ^T S or
+	  by setting the **-colors** option.
+
+	* [24-bit color support](https://gist.github.com/XVilka/8346728)
+	  can be enabled by setting the `COLORTERM` environment variable to
+	  `truecolor` or `24bit`.
+
+	* Several schemes included in-the-box:
+
+		* gruvbox by Pavel Pertsev
+
+		* ir_black by Todd Werth
+
+		* molokai by Tomas Restrepo
+
+		* solarized by Ethan Schoonover
+
+		* wombat by Lars H. Nielsen
+
+		* xoria by Dmitriy Y. Zotikov
+
+		* zenburn by Jani Nurminen
+
+	* The current line can be highlighted by pressing ^T U or by
+	  enabling the **-hiline** option.
+
+	* The gutter containing line numbers has a dynamic size based on the
+	  length of the file, rather than a fixed size of 10.
+
+	* Updated all language syntax files to use comment_todo and
+	  string/comment contexts where appropriate.
 
 	* Now pass character which invoked a macro to each macro step and
 	  call.  If a macro step happens to be the 'type' command, the
@@ -31,6 +89,21 @@
 
 	* For jmacs: ^Q^J now again inserts \n in the string replace prompt. 
 	  This broke beginning with JOE 4.0.
+
+	* Don't try to open files for writing to check file access.  This
+	  behaves better on unionfs mounts.
+
+	* Fix stray blocks created after find/replace.
+
+* Windows version
+
+	* Fix inability to set indent step to 1 from menu.
+
+	* Add support for math functions, fix engineering display.
+
+	* Fix backslash escapes in find/replace.
+
+	* Support italicized text.
 
 ### JOE 4.4
 

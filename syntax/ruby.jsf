@@ -1,0 +1,703 @@
+# JOE syntax highlight file for Ruby
+
+# Glitches:
+# <<EOF1, <<EOF2 is not working.  Only EOF1 is seen.  It should wait for the
+# EOF2.
+
+=Idle
+=Comment
+=Constant
+=Number		+Constant
+=String		+Constant
+=StringEscape	+Escape
+=StringVariable	+StringEscape
+=Regex		+String
+=RegexEscape	+StringEscape
+=Boolean	+Constant
+=Escape
+=Type
+=Keyword
+=Statement	+Keyword
+=Operator	+Keyword
+=Conditional	+Statement
+=Loop		+Statement
+=Label		+DefinedIdent
+=StorageClass	+Type +Keyword
+=Structure	+Statement
+
+=Bad
+=Brace
+
+=Symbol		+Constant +DefinedIdent
+=SymbolEscape	+Escape
+=ProcArg	+DefinedIdent
+=GlobalVar	+Builtin # TODO: No good class for this.
+
+=DefinedType	+DefinedIdent +Ident
+=DefinedFunction +DefinedIdent +Ident
+=ClassMember	+Variable +DefinedIdent
+
+=POD		+Preproc
+
+# Detect pod
+
+:pre_idle Idle
+	*		NULL		noeat call=.ruby()
+
+.subr ruby
+
+:idle Idle
+	*		rest		noeat
+	"="		pod_start
+
+# Rest of line
+
+:rest Idle
+	*		rest
+	"("		after_term	call=.ruby(paren)
+	"["		after_term	call=.ruby(brack)
+	"{"		do_brace	recolor=-1 noeat
+.ifdef paren
+	")"		rest		return
+.else
+	")"		stray		recolor=-1
+.endif
+.ifdef brack
+	"]"		rest		return
+.else
+	"]"		stray		recolor=-1
+.endif
+.ifdef squiggly
+	"}"		brace		recolor=-1 return
+.else
+	"}"		stray		recolor=-1
+.endif
+	"#"		line_comment	recolor=-1
+.ifdef haml
+	"\n"		NULL		return
+.else
+	"\n"		idle
+.endif
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal		recolor=-1
+	"."		ident_no_kw
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"`"		backtick	recolor=-1
+	"/"		regex		recolor=-1
+	"<"		maybe_inc
+	"$"		not_string	buffer
+	"%"		pstring
+	"\i"		ident		buffer
+	"?"		opr
+
+	# higher level, ruby specific
+	":"		maybe_symbol
+#	"|"		proc_arg
+	"@"		class_member1
+
+:opr Idle
+	*		rest		noeat
+	"/"		rest
+	"%"		rest
+
+:do_brace Brace
+	*		rest		noeat
+	"{"		brace		call=.ruby(squiggly)
+
+:brace Brace
+	*		after_term	noeat
+
+:stray Bad
+	*		rest
+
+
+# / / regex not allowed after terms
+
+:after_term Idle
+	*		rest		noeat
+	" \t"		after_term
+.ifdef erb
+	"/"		rest
+	"%"		after_term_erb_end
+.else
+	"/%"		rest
+.endif
+
+:after_term_erb_end Idle
+	*		rest		noeat
+	">"		NULL		recolor=-2 return
+
+:pod_start Idle
+	*		pod_start
+	"\n"		pod_block
+
+:pod_block POD
+	*		pod_block
+	"="		pod_ident	buffer
+
+:pod_ident POD
+	*		pod_block	noeat strings
+	"=end"		rest
+done
+	"\c"		pod_ident
+
+:maybe_inc Idle
+	*		after_term	noeat
+	"<"		maybe_inc1
+
+:maybe_inc1 Idle
+	*		after_term	noeat
+	"-"		allow_space
+	"'\""		quoted_inc_start	save_c recolor=-1
+	"\i"		inc		buffer noeat
+
+:allow_space Idle
+	*		after_term	noeat
+	"'\""		quoted_inc_start_allow	save_c recolor=-1
+	"\i"		inc_allow	buffer noeat
+
+:quoted_inc_start StringVariable string
+	*		quoted_inc	buffer
+
+:quoted_inc_start_allow StringVariable string
+	*		quoted_inc_allow	buffer
+
+:quoted_inc StringVariable string
+	*		quoted_inc
+	&		skipline	save_s
+
+:quoted_inc_allow StringVariable string
+	*		quoted_inc_allow
+	&		skipline_allow	save_s
+
+:inc StringVariable string
+	*		skipline	save_s noeat
+	"\c"		inc
+
+:inc_allow StringVariable string
+	*		skipline_allow	save_s noeat
+	"\c"		inc_allow
+
+# Should be treated as a normal line here...
+
+:skipline Idle
+	*		skipline
+	"\n"		next_line
+
+:skipline_allow Idle
+	*		skipline_allow
+	"\n"		next_line_allow
+
+:todelim String string
+	*		todelim
+	"\n"		next_line	strings
+	"&"		founddelim
+done
+
+:todelim_allow String string
+	*		todelim_allow
+	"\n"		next_line_allow	strings
+	"&"		founddelim
+done
+
+# eat \n so it's not in string.
+:next_line String string
+	*		todelim		buffer
+	"\n"		next_line
+
+:next_line_allow String string
+	*		todelim_allow	buffer
+	" \t\n"		next_line_allow
+
+:founddelim StringEscape string
+	*		idle		noeat
+
+:regex Regex string
+	*		regex
+	"\\"		regex_quote	recolor=-1
+	"/"		after_term
+
+:regex_quote RegexEscape string
+	*		regex
+
+:not_string Idle
+	*		rest		noeat
+	"\c"		global_var	recolor=-2
+	"\"'`#/"	rest
+
+:brace Brace
+	*		rest		noeat
+
+:line_comment Comment comment
+	*		line_comment
+.ifdef erb
+	"%"		line_comment_maybe_erb_end
+.endif
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+.ifdef haml
+	"\n"		NULL		return
+.else
+	"\n"		idle
+.endif
+
+:line_comment_maybe_erb_end Comment comment
+	">"		NULL		recolor=-2 return
+
+:end_of_file_comment Comment comment
+	*		end_of_file_comment
+
+:first_digit Number
+	*		after_term	noeat
+	"x"		hex
+	"b"		binary
+	"."		maybe_float
+	"eE"		epart
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+
+:bad_number Bad
+	*		after_term	noeat
+	"0-9"		bad_number
+
+:octal Number
+	*		after_term	noeat
+	"0-7_"		octal
+	"89"		bad_number	recolor=-1
+
+:binary Number
+	*		after_term	noeat
+	"01_"		binary
+	"2-9"		bad_number	recolor=-1
+
+:hex Number
+	*		after_term	noeat
+	"0-9A-Fa-f_"	hex
+
+:decimal Number
+	*		after_term	noeat
+	"0-9_"		decimal
+	"eE"		epart
+	"."		maybe_float
+
+:maybe_float Idle
+	*		after_term	noeat recolor=-2
+	"0-9"		float		noeat
+
+:float Number
+	*		after_term	noeat
+	"eE"		epart
+	"0-9_"		float
+
+:epart Number
+	*		after_term	noeat
+	"0-9+\-"	enum
+
+:enum Number
+	*		after_term	noeat
+	"0-9_"		enum
+
+:string	String string
+	*		string
+	"\""		after_term
+	"\\"		string_escape	recolor=-1
+	"#"		maybe_string_subst	recolor=-1
+
+:maybe_string_subst String string
+	*		string		noeat
+	"{"		string_subst_begin	recolor=-2
+
+:string_subst_begin StringEscape string
+	*		string_subst	noeat call=.ruby(squiggly)
+
+:string_subst StringEscape string
+	*		string		noeat
+	
+:string_escape Escape
+	*		string
+	"x"		string_hex1
+	"c"		string_ctrl
+	"N"		string_named
+	"0-7"		string_octal2
+	"\n"		string		recolor=-2
+
+:string_named Escape
+	*		string
+	"{"		string_named_rest
+
+:string_named_rest Escape
+	*		string_named_rest
+	"}"		string
+
+:string_ctrl Escape
+	*		string
+
+:string_hex1 Escape
+	*		string		noeat
+	"{"		string_unicode
+	"0-9a-fA-F"	string_hex2
+
+:string_unicode Escape
+	*		string_unicode
+	"}"		string
+
+:string_hex2 Escape
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 Escape
+	*		string		noeat
+	"0-7"		string_octal3
+
+:string_octal3 Escape
+	*		string		noeat
+	"0-7"		string
+
+# Only \\ and \' allowed in single quoted strings
+
+:char String string
+	*		char
+	"\n"		reset
+	"'"		after_term
+	"\\"		char_escape	recolor=-1
+
+:char_escape	Escape
+	*		char		recolor=-2
+	"\\'"	char
+
+:backtick	String string
+	*		backtick
+	"`"		after_term
+	"\\"		backtick_escape	recolor=-1
+	"$@"		backtick_subst	recolor=-1
+
+:backtick_subst Escape
+	*		backtick	noeat recolor=-1
+	"\c"		backtick_subst
+
+:backtick_escape Escape
+	*		backtick
+	"x"		backtick_hex1
+	"c"		backtick_ctrl
+	"N"		backtick_named
+	"0-7"		backtick_octal2
+	"\n"		backtick	recolor=-2
+
+:backtick_named Escape
+	*		backtick
+	"{"		backtick_named_rest
+
+:backtick_named_rest Escape
+	*		backtick_named_rest
+	"}"		backtick
+
+:backtick_ctrl Escape
+	*		backtick
+
+:backtick_hex1 Escape
+	*		backtick	noeat
+	"{"		backtick_unicode
+	"0-9a-fA-F"	backtick_hex2
+
+:backtick_unicode Escape
+	*		backtick_unicode
+	"}"		backtick
+
+:backtick_hex2 Escape
+	*		backtick	noeat
+	"0-9a-fA-F"	backtick
+
+:backtick_octal2 Escape
+	*		backtick	noeat
+	"0-7"		backtick_octal3
+
+:backtick_octal3 Escape
+	*		backtick	noeat
+	"0-7"		backtick
+
+:ident_no_kw Idle
+	*		after_term	noeat
+	"0"		first_digit	recolor=-2
+	"1-9"		decimal		recolor=-2
+	"\i"		ident_no_kw1
+
+:ident_no_kw1 Idle
+	*		after_term	noeat
+	"\c?!"		ident_no_kw1
+
+:ident Idle
+	*		after_term	noeat strings
+	"BEGIN"		kw
+	"END"		kw
+	"alias"		kw_after
+	"and"		oper
+	"begin"		kw
+	"break"		loop
+	"case"		label
+	"catch"		stmt
+	"class"		kw_class
+	"def"		kw_def
+	"defined"	kw
+	"do"		loop
+	"else"		cond
+	"elsif"		cond
+	"end"		kw
+	"ensure"	kw
+	"fail"		kw
+	"false"		bool
+	"for"		loop
+	"if"		cond
+	"in"		oper
+	"lambda"	kw
+	"module"	kw_class
+	"next"		kw
+	"nil"		const
+	"not"		oper
+	"or"		oper
+	"private"	storage
+	"proc"		kw
+	"protected"	storage
+	"public"	storage
+	"raise"		stmt
+	"redo"		kw
+	"rescue"	kw
+	"retry"		stmt
+	"return"	stmt
+	"self"		kw_after
+	"super"		kw
+	"then"		cond
+	"throw"		stmt
+	"true"		bool
+	"undef"		stmt
+	"unless"	cond
+	"until"		loop
+	"when"		loop
+	"while"		loop
+	"yield"		stmt
+	# quasi-keywords (Module or Kernel methods)
+	"require"	kw
+	"autoload"	kw
+	"extend"	kw
+	"include"	kw
+	"puts"		kw
+	"exit"		kw
+	"attr_accessor"	kw
+	"attr_reader"	kw
+	"attr_writer"	kw
+	"module_function"	kw
+done
+	# allowing ?! is not nearly correct but fixes more than
+	# it destructs
+	"\c?!"	ident
+
+:bool Boolean
+	*		rest		noeat
+
+:loop Loop
+	*		rest		noeat
+
+:cond Conditional
+	*		rest		noeat
+
+:oper Operator
+	*		rest		noeat
+
+:kw Keyword
+	*		rest		noeat
+
+:label Label
+	*		rest		noeat
+
+:const Constant
+	*		rest		noeat
+
+:storage StorageClass
+	*		rest		noeat
+
+:struct Structure
+	*		rest		noeat
+
+:const Constant
+	*		rest		noeat
+
+:stmt Statement
+	*		rest		noeat
+
+# Handle case of def /
+:kw_after Keyword
+	*		after_term	noeat
+
+:kw_def Structure
+	*		after_term	noeat
+	" \t\n"		kw_def_space
+
+:kw_def_space Idle
+	*		rest		noeat
+	"\i"		kw_func_decl	noeat
+	" \t\n"		kw_def_space
+
+:kw_func_decl DefinedFunction
+	*		rest		noeat
+	"\c!?"		kw_func_decl
+
+:kw_class Structure
+	*		rest		noeat
+	" \t\n"		kw_class_space
+
+:kw_class_space Idle
+	*		rest		noeat
+	# first char should be uppercase letter
+	"\i"		kw_class_decl	noeat
+	" \t\n"		kw_class_space
+
+:kw_class_decl DefinedType
+	*		rest		noeat
+	"\c!?"		kw_class_decl
+
+:pstring Idle
+	*		match		noeat
+	" \t"		after_term	noeat
+	"xrsqQwW"	match
+.ifdef erb
+	">"		NULL		recolor=-2 return
+.endif
+
+:match Idle
+	*		inmatch		save_c recolor=-1
+	" \t"		match
+
+:inmatch Regex string
+	*		inmatch
+	&		after_term
+	%		inmatch		call=.inmatch_recur()
+	"#"		inmatch_maybe_subst
+	"\\"		inmatch_quote	recolor=-1
+
+:inmatch_maybe_subst Regex string
+	*		inmatch		noeat
+	"{"		inmatch_subst	recolor=-2 call=.ruby(squiggly)
+
+:inmatch_subst Idle
+	*		inmatch		noeat
+
+:inmatch_quote RegexEscape string
+	*		inmatch
+
+:subst Idle
+	*		insubst		save_c recolor=-1
+	"<([{`"		delim_insubst	save_c recolor=-1
+	" \t"		subst
+
+:insubst Regex string
+	*		insubst
+	&		inrepl
+	"\\"		insubst_quote	recolor=-1
+
+:insubst_quote RegexEscape string
+	*		insubst
+
+:inrepl Regex string
+	*		inrepl
+	&		after_term
+	"\\"		inrepl_quote
+
+:inrepl_quote RegexEscape string
+	*		inrepl
+ 
+:delim_insubst Regex string
+	*		delim_insubst
+	&		delim_repl
+	"\\"		delim_quote
+
+:delim_quote RegexEscape string
+	*		delim_insubst
+
+:delim_repl Regex string
+	*		repl		save_c recolor=-1
+	" \t"		delim_repl
+
+:repl Regex string
+	*		repl
+	&		after_term
+	"\\"		repl_quote
+
+:repl_quote RegexEscape string
+	*		repl
+
+:maybe_symbol Idle
+	*		rest		noeat
+	# prevent wrong Module::Member detection
+	":"		rest
+	# first char mustn't be 0-9
+	"\i"		symbol		recolor=-2
+	"\""		symbol_str	recolor=-2
+	"'"		symbol_str_sq	recolor=-2
+	"/"		rest
+
+:symbol Symbol
+	*		rest		noeat
+	"\c?!"		symbol
+
+:symbol_str Symbol
+	*		symbol_str
+	"\""		after_term
+	"#"		symbol_maybe_str_subst	recolor=-1
+
+:symbol_maybe_str_subst Symbol
+	*		symbol_str
+	"{"		symbol_str_subst	recolor=-2 call=.ruby(squiggly)
+
+:symbol_str_subst Idle
+	*		symbol_str		noeat
+
+:symbol_str_sq Symbol
+	*		symbol_str_sq
+	"'"		after_term
+
+:proc_arg ProcArg
+	*		rest		noeat
+	","		proc_arg_sep 	noeat
+	"\i"		proc_arg
+	
+:proc_arg_sep Idle
+	*		proc_arg
+	
+:class_member1 Idle
+	*		rest		noeat
+	"\i"		class_member	recolor=-2
+	"@"		class_member2
+
+:class_member2 ClassMember
+	*		rest		noeat
+	"\i"		class_member	recolor=-3
+
+:class_member ClassMember
+	*		after_term	noeat
+	"\c"		class_member
+
+:global_var GlobalVar
+	*		after_term	noeat
+	"\c"		global_var
+
+.end
+
+.subr inmatch_recur
+
+:inmatch Constant
+	*		inmatch
+	&		after_term	return
+	%		inmatch		call=.inmatch_recur()
+	"#"		inmatch_maybe_subst
+	"\\"		inmatch_quote	recolor=-1
+
+:inmatch_maybe_subst Constant
+	*		inmatch		noeat
+	"{"		inmatch_subst	recolor=-2 call=.ruby(squiggly)
+
+:inmatch_subst Idle
+	*		inmatch		noeat
+
+:inmatch_quote Escape
+	*		inmatch
+
+.end

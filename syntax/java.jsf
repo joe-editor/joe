@@ -1,0 +1,311 @@
+# JOE syntax highlight file for JAVA
+
+# Needs: improve escape parsing
+
+=Idle
+=Ident
+=Comment
+=Constant
+=Number		+Constant
+=Boolean	+Constant
+=String		+Constant
+=Character	+String
+=Escape
+=StringEscape	+Escape +String
+=CharacterEscape +StringEscape
+=Type
+=Keyword
+=Operator	+Keyword
+=Bad
+=Brace
+=Control
+=Statement	+Keyword
+=Conditional	+Statement
+=Loop		+Statement
+=Structure	+Type +Keyword
+=StorageClass	+Type +Keyword
+=Include	+Preproc
+=Label		+DefinedIdent
+
+=Methods	+DefinedFunction +DefinedIdent +Ident
+
+:begin Idle
+	*	begin	noeat call=.java()
+
+#
+# Java as a subroute- for use as java script in html
+#
+
+.subr java
+
+:idle Idle
+	*		idle
+	"\n"		idle
+	"/"		slash
+	"0"		first_digit	recolor=-1
+	"1-9"		decimal		recolor=-1
+	"."		maybe_float
+	"\""		string		recolor=-1
+	"'"		char		recolor=-1
+	"\i\p{Sc}"	ident		mark buffer
+	"{}"		brace		recolor=-1
+	",:;=()><[]*&|!~+\-%^"	control	recolor=-1
+
+:maybe_done Control
+	*		idle		noeat
+	"/"		idle		noeat return recolor=-2
+
+:brace Brace
+	*		idle		noeat
+
+:control Control
+	*		idle		noeat
+
+:slash Idle
+	*		idle		noeat
+	"*"		comment		recolor=-2
+	"/"		line_comment	recolor=-2
+
+:comment Comment comment
+	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment comment
+	*		comment		noeat
+	"/"		idle
+	"*"		maybe_end_comment
+
+:line_comment Comment comment
+	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		idle
+
+:first_digit Number
+	*		idle		noeat
+	"xX"		hex
+	"."		float
+	"eE"		epart
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+
+:bad_number Bad
+	*		idle		noeat
+	"0-9"		bad_number
+
+:octal Number
+	*		idle		noeat
+	"0-7"		octal
+	"89"		bad_number	recolor=-1
+
+:hex Number
+	*		idle		noeat
+	"0-9A-Fa-f"	hex
+
+:decimal Number
+	*		idle		noeat
+	"0-9"		decimal
+	"eE"		epart
+	"."		float
+
+:maybe_float Number
+	*		idle		recolor=-2 noeat
+	"0-9"		float		recolor=-2
+
+:float Number
+	*		idle		noeat
+	"eE"		epart
+	"0-9"		float
+
+:epart Number
+	*		idle		noeat
+	"0-9+\-"	enum
+
+:enum Number
+	*		idle		noeat
+	"0-9"		enum
+
+:string	String string
+	*		string
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+	"%"		string_control	recolor=-1
+
+:string_escape StringEscape string
+	*		string
+	"u"		string_uni1
+	"0-7"		string_octal2
+	"\n"		string		recolor=-2
+
+:string_uni1 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string_uni2
+
+:string_uni2 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string_uni3
+
+:string_uni3 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string_uni4
+
+:string_uni4 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+:string_octal2 StringEscape string
+	*		string		noeat
+	"0-7"		string_octal3
+
+:string_octal3 StringEscape string
+	*		string		noeat
+	"0-7"		string
+
+:string_control StringEscape string
+	*		string_control
+	"\n"		reset
+	"diouxXeEfFgGaAcspn%SC"	string
+
+:char Character string
+	*		char
+	"\n"		reset
+	"'"		idle
+	"\\"		char_escape	recolor=-1
+
+:char_escape CharacterEscape string
+	*		char
+	"u"		char_uni1
+	"0-7"		char_octal2
+	"\n"		char		recolor=-2
+
+:char_uni1 CharacterEscape string
+	*		char		noeat
+	"0-9a-fA-F"	char_uni2
+
+:char_uni2 CharacterEscape string
+	*		char		noeat
+	"0-9a-fA-F"	char_uni3
+
+:char_uni3 CharacterEscape string
+	*		char		noeat
+	"0-9a-fA-F"	char_uni4
+
+:char_uni4 CharacterEscape string
+	*		char		noeat
+	"0-9a-fA-F"	char
+
+:char_octal2 CharacterEscape string
+	*		char		noeat
+	"0-7"		char_octal3
+
+:char_octal3 CharacterEscape string
+	*		char		noeat
+	"0-7"		char
+
+:ident Ident
+	*		ident_end	noeat markend strings
+	"abstract"	storage
+	"assert"	stmt
+	"boolean"	type
+	"break"		loop
+	"byte"		type
+	"case"		label
+	"catch"		kw
+	"char"		type
+	"class"		struct
+	"const"		bad_kw
+	"continue"	loop
+	"default"	label
+	"do"		loop
+	"double"	type
+	"else"		cond
+	"enum"		storage
+	"extends"	storage
+	"false"		bool
+	"final"		storage
+	"finally"	kw
+	"float"		type
+	"for"		loop
+	"goto"		bad_kw
+	"if"		cond
+	"implements"	storage
+	"import"	include
+	"instanceof"	operator
+	"int"		type
+	"interface"	struct
+	"long"		type
+	"native"	include
+	"new"		operator
+	"null"		lit
+	"package"	include
+	"private"	storage
+	"protected"	storage
+	"public"	storage
+	"return"	stmt
+	"serializable"	storage
+	"short"		type
+	"static"	storage
+	"strictfp"	storage
+	"super"		kw
+	"switch"	cond
+	"synchronized"	storage
+	"this"		kw
+	"throw"		stmt
+	"throws"	storage
+	"transient"	storage
+	"true"		bool
+	"try"		kw
+	"void"		kw
+	"volatile"	storage
+	"while"		loop
+done
+	"\c\p{Sc}"	ident
+
+:type Type
+	*		idle		noeat
+
+:kw Keyword
+	*		idle		noeat
+
+:bad_kw Bad
+	*		idle		noeat
+
+:bool Boolean
+	*		idle		noeat
+
+:lit Constant
+	*		idle		noeat
+
+:operator Operator
+	*		idle		noeat
+
+:loop Loop
+	*		idle		noeat
+
+:cond Conditional
+	*		idle		noeat
+
+:storage StorageClass
+	*		idle		noeat
+
+:struct Structure
+	*		idle		noeat
+
+:include Include
+	*		idle		noeat
+
+:stmt Statement
+	*		idle		noeat
+
+:label Label
+	*		idle		noeat
+
+:ident_end Ident
+	*		idle		noeat
+	" "		ident_end
+	"("		method_end	noeat recolormark
+
+:method_end Methods
+	*		idle		noeat
+
+.end

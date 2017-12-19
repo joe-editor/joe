@@ -1,0 +1,580 @@
+# JOE syntax highlight file for Coffeescript
+
+# node = a.b.c /\s+/ seems to be allowed, foo
+# need to recognize ... and ..
+# include - as part of number?
+
+# after term: it's a regex if
+
+# suppress literals after .
+
+=Idle
+=Comment
+=Constant
+=Number		+Constant
+=Boolean	+Constant
+=String		+Constant
+=Regex		+String
+=Escape
+=StringEscape	+Escape
+=StringVariable	+StringEscape
+=RegexEscape	+StringEscape
+=RegexVariable	+RegexEscape
+=Keyword
+=Structure	+Keyword
+=Operator	+Keyword
+=Statement	+Keyword
+=Loop		+Statement
+=Conditional	+Statement
+=Label		+DefinedIdent
+=Ident
+=Bad
+
+:pre_idle Idle
+	*		NULL		noeat call=.coffee()
+
+.subr coffee
+
+:idle Idle
+	*		idle
+	"("		idle		call=.coffee(paren)
+	"["		idle		call=.coffee(brack)
+	"{"		idle		call=.coffee(squiggly)
+.ifdef paren
+	")"		idle		return
+.else
+	")"		stray		recolor=-1
+.endif
+.ifdef brack
+	"]"		idle		return
+.else
+	"]"		stray		recolor=-1
+.endif
+.ifdef squiggly_str
+	"}"		string_end_subst noeat
+.else
+.ifdef squiggly_regex
+	"}"		regex_end_subst	noeat
+.else
+.ifdef squiggly
+	"}"		idle		return
+.else
+	"}"		stray		recolor=-1
+.endif
+.endif
+.endif
+
+	"#"		comment		recolor=-1
+	"0"		zero		recolor=-1
+	"1-9"		decimal		recolor=-1
+	"."		decimal_point	recolor=-1
+	"\""		maybe_string	recolor=-1
+	"'"		maybe_char	recolor=-1
+	"/"		slash		recolor=-1
+	"@$\i"		ident		buffer
+
+:stray Bad
+	*		idle
+
+:after_term Idle
+	*		idle		noeat
+	" \t"		after_term_1
+	"/"		slash_after_term_0
+
+# "foo/x" is division?
+# "foo/ x" is division.
+
+:slash_after_term_0 Idle
+	*		idle		noeat
+
+:after_term_1 Idle
+	*		idle		noeat
+	" \t"		after_term_1
+	"/"		slash_after_term_1
+
+# "foo / x"  is division
+# "foo /x"   is regex
+
+:slash_after_term_1 Idle
+	*		sregex		noeat recolor=-2
+	"/"		slashslash
+	" =	"	idle		noeat
+
+:comment Comment comment
+	*		line_comment	noeat
+	"#"		maybe_block_comment
+
+:maybe_block_comment Comment comment
+	*		line_comment	noeat
+	"#"		maybe_block_comment_1
+
+# This is weird... #### is a line comment, but ### is a block comment
+
+:maybe_block_comment_1 Comment comment
+	*		block_comment	noeat
+	"#"		line_comment
+
+:line_comment Comment comment
+	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		idle
+
+:block_comment Comment comment
+	*		block_comment
+	"BFHNTX"	block_comment	noeat call=comment_todo.comment_todo()
+	"#"		block_comment_1
+
+:block_comment_1 Comment comment
+	*		block_comment	noeat
+	"#"		block_comment_2
+
+:block_comment_2 Comment comment
+	*		block_comment	noeat
+	"#"		idle
+
+# Check for regex
+
+:slash Constant
+	*		sregex		noeat recolor=-2
+	"/"		slashslash
+
+:slashslash Constant
+	*		after_term		noeat
+	"/"		regex		recolor=-3
+
+# Regex like this ///foo///
+
+:regex Regex
+	*		regex
+	"\\"		regex_escape	recolor=-1
+	"#"		regex_maybe_subst	recolor=-1
+	"/"		regexslash
+
+:regex_maybe_subst RegexVariable
+	*		regex	noeat recolor=-1
+	"{"		regex		call=.coffee(squiggly_regex)
+
+:regex_end_subst RegexVariable
+	*		idle	return
+
+:regexslash Regex
+	*		regex		noeat
+	"/"		regexslashslash
+
+:regexslashslash Regex
+	*		regex		noeat
+	"/"		after_term
+
+:regex_escape RegexEscape
+	*		regex
+	"x"		regex_hex2
+	"u"		regex_hex4
+
+:regex_uni RegexEscape
+	*		regex_uni
+	"}"		regex
+
+:regex_hex4 RegexEscape
+	*		regex		noeat
+	"{"		regex_uni
+	"0-9a-fA-F"	regex_hex3
+
+:regex_hex3 RegexEscape
+	*		regex		noeat
+	"0-9a-fA-F"	regex_hex2
+
+:regex_hex2 RegexEscape
+	*		regex		noeat
+	"0-9a-fA-F"	regex_hex1
+
+:regex_hex1 RegexEscape
+	*		regex		noeat
+	"0-9a-fA-F"	regex
+
+# Regex like this: /foo/
+
+:sregex Regex
+	*		sregex
+	"\\"		sregex_escape	recolor=-1
+	"#"		sregex_maybe_subst recolor=-1
+	"/"		after_term
+
+:sregex_maybe_subst RegexVariable
+	*		sregex	noeat recolor=-1
+	"{"		sregex	call=.coffee(squiggly_regex)
+
+:sregex_escape RegexEscape
+	*		sregex
+	"x"		sregex_hex2
+	"u"		sregex_hex4
+
+:sregex_uni RegexEscape
+	*		sregex_uni
+	"}"		sregex
+
+:sregex_hex4 RegexEscape
+	*		sregex		noeat
+	"{"		sregex_uni
+	"0-9a-fA-F"	sregex_hex3
+
+:sregex_hex3 RegexEscape
+	*		sregex		noeat
+	"0-9a-fA-F"	sregex_hex2
+
+:sregex_hex2 RegexEscape
+	*		sregex		noeat
+	"0-9a-fA-F"	sregex_hex1
+
+:sregex_hex1 RegexEscape
+	*		sregex		noeat
+	"0-9a-fA-F"	sregex
+
+# Numbers
+
+:bad_number Bad
+	*		after_term	noeat
+	"0-9"		bad_number
+
+:zero Number
+	*		after_term	noeat
+	"b"		binary
+	"o"		octal
+	"x"		hex
+	"."		maybe_float
+	"eE"		epart
+	"0-9"		decimal	recolor=-1
+
+:decimal_point Number
+	*		after_term	noeat	recolor=-2
+	"."		decimal_point_1	recolor=-2
+	"\i"		not_ident	recolor=-2
+	"0-9"		float
+
+:not_ident Idle
+	*		after_term	noeat
+	"\c"		not_ident
+
+:decimal_point_1 Number
+	*		idle		noeat
+	"."		idle
+
+:octal Number
+	*		after_term	noeat
+	"0-7_"		octal
+	"89"		bad_number	recolor=-1
+
+:binary Number
+	*		after_term	noeat
+	"01_"		binary
+	"2-9"		bad_number	recolor=-1
+
+:hex Number
+	*		after_term	noeat
+	"0-9A-Fa-f_"	hex
+
+:decimal Number
+	*		after_term	noeat
+	"0-9_"		decimal
+	"eE"		epart
+	"."		maybe_float
+
+:maybe_float Number
+	*		after_term	noeat recolor=-2
+	"."		decimal_point_1	recolor=-2
+	"eE"		epart
+	"0-9_"		float
+
+:float Number
+	*		after_term	noeat
+	"eE"		epart
+	"0-9_"		float
+
+:epart Number
+	*		after_term	noeat
+	"0-9+\-"	enum
+
+:enum Number
+	*		after_term	noeat
+	"0-9_"		enum
+
+# strings like "hello"
+
+:maybe_string String string
+	*		string		noeat
+	"\""		maybe_string_1
+
+:maybe_string_1 String string
+	*		after_term	noeat
+	"\""		stringstring
+
+:string	String string
+	*		string
+	"\""		after_term
+	"#"		string_maybe_subst recolor=-1
+	"\\"		string_escape	recolor=-1
+
+:string_maybe_subst StringVariable string
+	*		string	noeat recolor=-1
+	"{"		string	call=.coffee(squiggly_str)
+
+:string_end_subst StringVariable string
+	*		idle	return
+
+:string_escape StringEscape string
+	*		string
+	"x"		string_hex2
+	"u"		string_hex4
+
+:string_uni StringEscape string
+	*		string_uni
+	"}"		string
+
+:string_hex4 StringEscape string
+	*		string		noeat
+	"{"		string_uni
+	"0-9a-fA-F"	string_hex3
+
+:string_hex3 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string_hex2
+
+:string_hex2 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string_hex1
+
+:string_hex1 StringEscape string
+	*		string		noeat
+	"0-9a-fA-F"	string
+
+# Strings like """ foo """
+
+:stringstring	String string
+	*		stringstring
+	"\""		stringstring_1
+	"#"		stringstring_maybe_subst recolor=-1
+	"\\"		stringstring_escape	recolor=-1
+
+:stringstring_1	String string
+	*		stringstring	noeat
+	"\""		stringstring_2
+
+:stringstring_2 String string
+	*		stringstring	noeat
+	"\""		after_term
+
+:stringstring_maybe_subst StringVariable string
+	*		stringstring	noeat recolor=-1
+	"{"		stringstring	call=.coffee(squiggly_str)
+
+:stringstring_escape StringEscape string
+	*		stringstring
+	"x"		stringstring_hex2
+	"u"		stringstring_hex4
+
+:stringstring_uni StringEscape string
+	*		stringstring_uni
+	"}"		stringstring
+
+:stringstring_hex4 StringEscape string
+	*		stringstring		noeat
+	"{"		stringstring_uni
+	"0-9a-fA-F"	stringstring_hex3
+
+:stringstring_hex3 StringEscape string
+	*		stringstring		noeat
+	"0-9a-fA-F"	stringstring_hex2
+
+:stringstring_hex2 StringEscape string
+	*		stringstring		noeat
+	"0-9a-fA-F"	stringstring_hex1
+
+:stringstring_hex1 StringEscape string
+	*		stringstring		noeat
+	"0-9a-fA-F"	stringstring
+
+# string constants like 'h'
+
+:maybe_char	String string
+	*		char	noeat
+	"'"	maybe_char_1
+
+:maybe_char_1	String string
+	*	after_term	noeat
+	"'"	charchar
+
+:char	String string
+	*		char
+	"'"		after_term
+	"\\"		char_escape	recolor=-1
+
+:char_escape StringEscape string
+	*		char		noeat
+	"x"		char_hex2
+	"u"		char_hex4
+
+:char_uni StringEscape string
+	*		char_uni
+	"}"		char_done
+
+:char_hex4 StringEscape string
+	*		char		noeat
+	"{"		char_uni
+	"0-9a-fA-F"	char_hex3
+
+:char_hex3 StringEscape string
+	*		char		noeat
+	"0-9a-fA-F"	char_hex2
+
+:char_hex2 StringEscape string
+	*		char		noeat
+	"0-9a-fA-F"	char_hex1
+
+:char_hex1 StringEscape string
+	*		char		noeat
+	"0-9a-fA-F"	char
+
+# strings like this '''foo'''
+
+:charchar String string
+	*		charchar
+	"'"		charchar_1
+	"\\"		charchar_escape	recolor=-1
+
+:charchar_1 String string
+	*		charchar		noeat
+	"'"		charchar_2
+
+:charchar_2 String string
+	*		charchar		noeat
+	"'"		after_term
+
+:charchar_escape StringEscape string
+	*		charchar		noeat
+	"x"		charchar_hex2
+	"u"		charchar_hex4
+
+:charchar_uni StringEscape string
+	*		charchar_uni
+	"}"		charchar_done
+
+:charchar_hex4 StringEscape string
+	*		charchar		noeat
+	"{"		charchar_uni
+	"0-9a-fA-F"	charchar_hex3
+
+:charchar_hex3 StringEscape string
+	*		charchar		noeat
+	"0-9a-fA-F"	charchar_hex2
+
+:charchar_hex2 StringEscape string
+	*		charchar		noeat
+	"0-9a-fA-F"	charchar_hex1
+
+:charchar_hex1 StringEscape string
+	*		charchar		noeat
+	"0-9a-fA-F"	charchar
+
+
+# Identifiers
+
+:ident Ident
+	*		after_term	noeat strings
+	"and"		operator
+	"break"		loop
+	"by"		kw
+	"catch"		kw
+	"class"		struct
+	"continue"	loop
+	"delete"	kw
+	"debugger"	stmt
+	"do"		loop
+	"else"		cond
+	"extends"	kw
+	"false"		bool
+	"finally"	kw
+	"for"		loop
+	"if"		cond
+	"in"		operator
+	"instanceof"	kw
+	"is"		operator
+	"isnt"		operator
+	"loop"		loop
+	"new"		kw
+	"no"		bool
+	"not"		operator
+	"null"		lit
+	"off"		bool
+	"of"		operator
+	"on"		bool
+	"or"		operator
+	"return"	stmt
+	"super"		kw
+	"switch"	cond
+	"then"		kw
+	"this"		lit
+	"throw"		stmt
+	"true"		bool
+	"try"		kw
+	"typeof"	kw
+	"undefined"	lit
+	"unless"	cond
+	"until"		loop
+	"when"		kw
+	"while"		loop
+	"yes"		lit
+	"yield"		stmt
+	"case"		label
+	"default"	label
+	"function"	forbid
+	"var"		forbid
+	"void"		forbid
+	"with"		forbid
+	"const"		forbid
+	"let"		forbid
+	"enum"		forbid
+	"export"	forbid
+	"import"	forbid
+	"native"	forbid
+	"implements"	forbid
+	"interface"	forbid
+	"package"	forbid
+	"private"	forbid
+	"protected"	forbid
+	"public"	forbid
+	"static"	forbid
+	"arguments"	forbid
+	"eval"		forbid
+done
+	"$\c"	ident
+
+:kw Keyword
+	*		idle			noeat
+
+:forbid Keyword
+	*		idle			noeat
+
+:lit Constant
+	*		after_term		noeat
+
+:bool Boolean
+	*		after_term		noeat
+
+:stmt Statement
+	*		idle			noeat
+
+:loop Loop
+	*		idle			noeat
+
+:cond Conditional
+	*		idle			noeat
+
+:struct Structure
+	*		idle			noeat
+
+:operator Operator
+	*		idle			noeat
+
+:label Label
+	*		idle			noeat
+
+.end

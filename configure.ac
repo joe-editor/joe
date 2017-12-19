@@ -4,7 +4,7 @@
 AC_PREREQ(2.54)
 
 #### Here's the only place where to change version number ####
-AC_INIT(joe, 4.4)
+AC_INIT(joe, 4.5)
 AC_CONFIG_SRCDIR([joe/b.c])
 
 AC_CANONICAL_BUILD
@@ -48,6 +48,14 @@ AC_ARG_ENABLE(termcap,
 
 if test "$termcap" = "yes"; then
 	search_libs="$search_libs termcap"
+fi
+
+# Select Unicode version
+AC_ARG_VAR(UNICODE_VERSION,
+[  Select Unicode version: 8.0.0, 9.0.0 or 10.0.0  Default is 9.0.0 ])
+
+if test "$UNICODE_VERSION" = ""; then
+	UNICODE_VERSION=9.0.0
 fi
 
 AC_SEARCH_LIBS(openpty, util, AC_DEFINE_UNQUOTED(HAVE_OPENPTY, 1, [If we have BSD function openpty()]))
@@ -189,25 +197,6 @@ AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 AC_CHECK_PROG(SPELL,aspell,aspell,ispell)
 
 AC_CONFIG_FILES([Makefile joe/Makefile joe/util/Makefile rc/Makefile
-man/Makefile man/ru/Makefile syntax/Makefile po/Makefile charmaps/klingon
-syntax/4gl.jsf syntax/ada.jsf syntax/ant.jsf syntax/asm.jsf syntax/awk.jsf
-syntax/batch.jsf syntax/c.jsf syntax/cobol.jsf syntax/comment_todo.jsf
-syntax/conf.jsf syntax/csharp.jsf syntax/csh.jsf syntax/css.jsf
-syntax/debian.jsf syntax/diff.jsf syntax/elixir.jsf syntax/erb.jsf
-syntax/erlang.jsf syntax/fortran.jsf syntax/git-commit.jsf syntax/go.jsf
-syntax/haml.jsf syntax/haskell.jsf syntax/html.jsf syntax/htmlerb.jsf
-syntax/ini.jsf syntax/iptables.jsf syntax/java.jsf syntax/joerc.jsf
-syntax/js.jsf syntax/jsf_check.jsf syntax/jsf.jsf syntax/json.jsf
-syntax/lisp.jsf syntax/lua.jsf syntax/m4.jsf syntax/mail.jsf
-syntax/mason.jsf syntax/matlab.jsf syntax/md.jsf syntax/ocaml.jsf
-syntax/pascal.jsf syntax/perl.jsf syntax/php.jsf syntax/powershell.jsf
-syntax/prolog.jsf syntax/properties.jsf syntax/ps.jsf syntax/puppet.jsf
-syntax/python.jsf syntax/rexx.jsf syntax/ruby.jsf syntax/sed.jsf
-syntax/sh.jsf syntax/sieve.jsf syntax/skill.jsf syntax/sml.jsf
-syntax/spec.jsf syntax/sql.jsf syntax/tcl.jsf syntax/tex.jsf
-syntax/troff.jsf syntax/typescript.jsf syntax/verilog.jsf syntax/vhdl.jsf
-syntax/whitespace.jsf syntax/xml.jsf syntax/yaml.jsf syntax/filename.jsf
-syntax/avr.jsf syntax/r.jsf syntax/groovy.jsf syntax/clojure.jsf
-syntax/rust.jsf syntax/coffee.jsf syntax/scala.jsf syntax/swift.jsf
-syntax/d.jsf syntax/dockerfile.jsf syntax/context.jsf])
+man/Makefile man/ru/Makefile syntax/Makefile po/Makefile colors/Makefile
+charmaps/klingon desktop/Makefile])
 AC_OUTPUT

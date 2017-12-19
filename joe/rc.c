@@ -115,12 +115,6 @@ int procrc(CAP *cap, char *name)
 		case 0:
 			break;	/* Skip comment lines */
 
-		case '=':	/* Define a global color */
-			{ /* # introduces comment */
-			parse_color_def(&global_colors,buf+1,name,line);
-			}
-			break;
-
 		case '[':	/* Select file types for file-type dependent options */
 			{
 				int x;

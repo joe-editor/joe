@@ -7,9 +7,19 @@
  */
 #include "types.h"
 
+/* Attributes for line numbers, and current line */
+int bg_linum = 0;
+int bg_curlinum = 0;
+int bg_curlin = 0;
+int curlinmask = -1;
+
 /* Display modes */
 int dspasis = 0;
 int marking = 0;
+
+/* Selected text format */
+int selectatr = INVERSE;
+int selectmask = ~INVERSE;
 
 static P *getto(P *p, P *cur, P *top, off_t line)
 {
@@ -189,6 +199,18 @@ void bwfllwt(W *thew)
 
 		msetI(w->t->t->updtab + w->y, 1, w->h);
 	}
+	
+	if (w->o.hiline) {
+		if (w->curlin != w->cursor->line) {
+			/* Update old and new cursor lines */
+			if (w->curlin >= w->top->line && w->curlin < (w->top->line + w->h))
+				w->t->t->updtab[w->y + w->curlin - w->top->line] = 1;
+			w->curlin = w->cursor->line;
+			w->t->t->updtab[w->y + w->curlin - w->top->line] = 1;
+		}
+	} else {
+		w->curlin = w->cursor->line;
+	}
 }
 
 /* For either */
@@ -324,6 +346,8 @@ static void ansi_init(struct ansi_sm *sm)
 	sm->state = 0;
 }
 
+#define SELECT_IF(c)	{ if (c) { ca = selectatr; cm = selectmask; } else { ca = 0; cm = -1; } }
+
 /* Update a single line */
 
 static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff_t x, ptrdiff_t w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
@@ -343,7 +367,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 	off_t byte = p->byte;
 	char *bp;	/* Buffer pointer, 0 if not set */
 	ptrdiff_t amnt;		/* Amount left in this segment of the buffer */
-	int c, c1;
+	int c;
 	off_t ta;
 	char bc;
 	int ungetit = NO_MORE_DATA;
@@ -354,7 +378,10 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
         int *syn = 0;
         P *tmp;
         int idx=0;
-        int atr = BG_COLOR(bg_text); 
+        int defatr = (bw->o.hiline && bw->cursor->line == y - bw->y + bw->top->line) ? (bg_text & curlinmask) | bg_curlin : bg_text;
+        int atr = BG_COLOR(defatr);
+        int ca = 0;		/* Additional attributes for current character */
+        int cm = -1;		/* Attribute mask for current character */
 
 	utf8_init(&utf8_sm);
 	ansi_init(&ansi_sm);
@@ -389,8 +416,10 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 			}
 			if(st.state!=-1) {
 				atr = syn[idx++] & ~CONTEXT_MASK;
-				if (!((atr & BG_VALUE) >> BG_SHIFT))
-					atr |= BG_COLOR(bg_text);
+				if (!(atr & BG_MASK))
+					atr |= defatr & BG_MASK;
+				if (!(atr & FG_MASK))
+					atr |= defatr & FG_MASK;
 			}
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
@@ -423,18 +452,12 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				if (bc == '\t') {
 					off_t tcol = col + p->b->o.tab - col % p->b->o.tab;
 
-					if (tcol > from && tcol <= to)
-						c1 = INVERSE;
-					else
-						c1 = 0;
-				} else if (col >= from && col < to)
-					c1 = INVERSE;
-				else
-					c1 = 0;
-			else if (byte >= from && byte < to)
-				c1 = INVERSE;
+					SELECT_IF(tcol > from && tcol <= to);
+				} else {
+					SELECT_IF(col >= from && col < to);
+				}
 			else
-				c1 = 0;
+				SELECT_IF(byte >= from && byte < to);
 			++byte;
 			if (bc == '\t') {
 				ta = p->b->o.tab - col % p->b->o.tab;
@@ -528,7 +551,9 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 			if(st.state!=-1) {
 				atr = syn[idx++] & ~CONTEXT_MASK;
 				if (!(atr & BG_MASK))
-					atr |= BG_COLOR(bg_text);
+					atr |= defatr & BG_MASK;
+				if (!(atr & FG_MASK))
+					atr |= defatr & FG_MASK;
 			}
 			if (p->b->o.crlf && bc == '\r') {
 				++byte;
@@ -557,29 +582,23 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				--byte;
 				++amnt;
 			}
-			if (square)
+			if (square) {
 				if (bc == '\t') {
 					off_t tcol = scr + x - ox + p->b->o.tab - (scr + x - ox) % p->b->o.tab;
-
-					if (tcol > from && tcol <= to)
-						c1 = INVERSE;
-					else
-						c1 = 0;
-				} else if (scr + x - ox >= from && scr + x - ox < to)
-					c1 = INVERSE;
-				else
-					c1 = 0;
-			else if (byte >= from && byte < to)
-				c1 = INVERSE;
-			else
-				c1 = 0;
+					SELECT_IF(tcol > from && tcol <= to);
+				} else {
+					SELECT_IF(scr + x - ox >= from && scr + x - ox < to);
+				}
+			} else {
+				SELECT_IF(byte >= from && byte < to);
+			}
 			++byte;
 			if (bc == '\t') {
 				ta = p->b->o.tab - (x - ox + scr) % p->b->o.tab;
 				tach = ' ';
 			      dota:
 			      	while (x < w && ta--) {
-					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, c1|atr);
+					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, (atr & cm) | ca);
 					++x;
 				}
 				if (ifhave)
@@ -638,12 +657,12 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 					if (x + wid > w) {
 						/* If character hits right most column, don't display it */
 						while (x < w) {
-							outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', c1|atr);
+							outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', (atr & cm) | ca);
 							x++;
 						}
 						goto eosl;
 					} else {
-						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, c1|atr);
+						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, (atr & cm) | ca);
 						x += wid;
 					}
 				} else
@@ -673,7 +692,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
       eof:
       	outatr_complete(t);
 	if (x < w)
-		done = eraeol(t, x, y, BG_COLOR(bg_text));
+		done = eraeol(t, x, y, BG_COLOR(defatr));
 	else
 		done = 0;
 
@@ -700,27 +719,27 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 
 static void gennum(BW *w, int (*screen)[COMPOSE], int *attr, SCRN *t, ptrdiff_t y, int *comp)
 {
-	char buf[12];
-	ptrdiff_t z;
+	char buf[24];
+	ptrdiff_t z, x;
 	off_t lin = w->top->line + y - w->y;
 
 	if (lin <= w->b->eof->line)
 #ifdef HAVE_LONG_LONG
-		joe_snprintf_1(buf, SIZEOF(buf), "%9lld ", (long long)(w->top->line + y - w->y + 1));
+		joe_snprintf_1(buf, SIZEOF(buf), " %21lld ", (long long)(w->top->line + y - w->y + 1));
 #else
-		joe_snprintf_1(buf, SIZEOF(buf), "%9ld ", (long)(w->top->line + y - w->y + 1));
+		joe_snprintf_1(buf, SIZEOF(buf), " %21ld ", (long)(w->top->line + y - w->y + 1));
 #endif
 	else {
-		ptrdiff_t x;
-		for (x = 0; x != LINCOLS; ++x)
+		for (x = 0; x != SIZEOF(buf) - 1; ++x)
 			buf[x] = ' ';
 		buf[x] = 0;
 	}
-	for (z = 0; buf[z]; ++z) {
-		outatr(w->b->o.charmap, t, screen + z, attr + z, z, y, buf[z], BG_COLOR(bg_text)); 
+	for (z = SIZEOF(buf) - w->lincols - 1, x = 0; buf[z]; ++z, ++x) {
+		int atr = (w->o.hiline && lin == w->cursor->line) ? bg_curlinum : bg_linum;
+		outatr(w->b->o.charmap, t, screen + x, attr + x, x, y, buf[z], BG_COLOR(atr));
 		if (ifhave)
 			return;
-		comp[z] = buf[z];
+		comp[x] = buf[z];
 	}
 	outatr_complete(t);
 }
@@ -778,6 +797,11 @@ void bwgenh(BW *w)
 		memset(txt,' ',76);
 		msetI(fmt,BG_COLOR(bg_text),76);
 		txt[76]=0;
+		if (w->o.hiline && (q->byte & ~15) == (w->cursor->byte & ~15)) {
+			msetI(fmt,BG_COLOR(bg_curlinum),9);
+		} else {
+			msetI(fmt,BG_COLOR(bg_linum),9);
+		}
 		if (!flg) {
 #if HAVE_LONG_LONG
 			sprintf(bf,"%8llx ",(unsigned long long)q->byte);
@@ -788,8 +812,8 @@ void bwgenh(BW *w)
 			for (x=0; x!=8; ++x) {
 				int c;
 				if (q->byte==w->cursor->byte && !flg) {
-					fmt[10+x*3] |= INVERSE;
-					fmt[10+x*3+1] |= INVERSE;
+					fmt[10+x*3] = BG_COLOR(bg_cursor);
+					fmt[10+x*3+1] = BG_COLOR(bg_cursor);
 				}
 				if (q->byte>=from && q->byte<to && !flg) {
 					fmt[10+x*3] |= UNDERLINE;
@@ -811,8 +835,8 @@ void bwgenh(BW *w)
 			for (x=8; x!=16; ++x) {
 				int c;
 				if (q->byte==w->cursor->byte && !flg) {
-					fmt[11+x*3] |= INVERSE;
-					fmt[11+x*3+1] |= INVERSE;
+					fmt[11+x*3] = BG_COLOR(bg_cursor);
+					fmt[11+x*3+1] = BG_COLOR(bg_cursor);
 				}
 				if (q->byte>=from && q->byte<to && !flg) {
 					fmt[11+x*3] |= UNDERLINE;
@@ -832,12 +856,12 @@ void bwgenh(BW *w)
 					flg = 1;
 			}
 		}
-		genfield(t, screen, attr, 0, y, TO_DIFF_OK(w->offset), txt, 76, 0, w->w, 1, fmt);
+		genfield(t, screen, attr, 0, y, TO_DIFF_OK(w->offset), txt, 76, BG_COLOR(bg_text), w->w, 1, fmt);
 	}
 	prm(q);
 }
 
-void bwgen(BW *w, int linums)
+void bwgen(BW *w, int linums, int linchg)
 {
 	int (*screen)[COMPOSE];
 	int *attr;
@@ -899,7 +923,7 @@ void bwgen(BW *w, int linums)
 			break;
 		if (linums)
 			gennum(w, screen, attr, t, y, t->compose);
-		if (t->updtab[y]) {
+		if (linchg || t->updtab[y]) {
 			p = getto(p, w->cursor, w->top, w->top->line + y - w->y);
 /*			if (t->insdel && !w->x) {
 				pset(q, p);
@@ -929,7 +953,7 @@ void bwgen(BW *w, int linums)
 			break;
 		if (linums)
 			gennum(w, screen, attr, t, y, t->compose);
-		if (t->updtab[y]) {
+		if (linchg || t->updtab[y]) {
 			p = getto(p, w->cursor, w->top, w->top->line + y - w->y);
 /*			if (t->insdel && !w->x) {
 				pset(q, p);
@@ -1003,22 +1027,17 @@ BW *bwmk(W *window, B *b, int prompt)
 	w->object = NULL;
 	w->offset = 0;
 	w->o = w->b->o;
-	if (w->o.linums) {
-		w->x = window->x + LINCOLS;
-		w->w = window->w - LINCOLS;
-	} else {
-		w->x = window->x;
-		w->w = window->w;
-	}
+	w->lincols = 0;
+	w->curlin = 0;
+	w->x = window->x;
+	w->w = window->w;
 	if (window == window->main) {
 		rmkbd(window->kbd);
 		window->kbd = mkkbd(kmap_getcontext(w->o.context));
 	}
 	w->top->xcol = 0;
 	w->cursor->xcol = 0;
-	w->linums = 0;
 	w->top_changed = 1;
-	w->linums = 0;
 	w->db = 0;
 	w->shell_flag = 0;
 	return w;
@@ -1256,4 +1275,31 @@ void orphit(BW *bw)
 	bw->b->orphan = 1;
 	pdupown(bw->cursor, &bw->b->oldcur, "orphit");
 	pdupown(bw->top, &bw->b->oldtop, "orphit");
+}
+
+/* Calculate the width of the line number gutter for the Window */
+
+int calclincols(BW *bw)
+{
+	int width = 0;
+	off_t lines = bw->b->eof->line + 1;
+	
+	if (!bw->o.linums) {
+		return 0;
+	}
+	
+	if (lines < 10) {
+		width = 1;
+	} else if (lines < 100) { 
+		width = 2;
+	} else if (lines < 1000) {
+		width = 3;
+	} else if (lines < 10000) {
+		width = 4;
+	} else {
+		off_t l;
+		for (l = 10000, width = 4; lines >= l; l *= 10, width++) {}
+	}
+
+	return width + 2;
 }

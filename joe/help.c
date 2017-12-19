@@ -197,6 +197,8 @@ void help_display(Screen *t)
 						case 'i':
 						case 'I':
 							atr ^= INVERSE;
+							/* Take status line colors for inverse */
+							atr = (atr & ~(BG_MASK | FG_MASK)) | ((atr & INVERSE ? bg_stalin : bg_menu) & (BG_MASK | FG_MASK));
 							++str;
 							--x;
 							continue;
