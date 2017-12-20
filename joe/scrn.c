@@ -1992,6 +1992,10 @@ static int meta_color_single(const char *s)
 		return DIM;
 	else if(!zcmp(s,"italic"))
 		return ITALIC;
+	else if(!zcmp(s,"dunderline"))
+		return DOUBLE_UNDERLINE;
+	else if(!zcmp(s,"stricken"))
+		return CROSSED_OUT;
 
 	/* ISO colors */
 	else if(!zcmp(s,"white"))
