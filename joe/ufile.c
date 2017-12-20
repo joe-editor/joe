@@ -107,7 +107,7 @@ int usys(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	if (wmkpw(w, joe_gettext(_("System (%{abort} to abort): ")), NULL, dosys, NULL, NULL, NULL, NULL, NULL, bw->b->o.charmap, PWFLAG_FILENAME))
+	if (wmkpw(w, joe_gettext(_("System (%{abort} to abort): ")), NULL, dosys, NULL, NULL, NULL, NULL, NULL, bw->b->o.charmap, PWFLAG_COMMAND))
 		return 0;
 	else
 		return -1;
