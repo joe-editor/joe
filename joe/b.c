@@ -2695,7 +2695,12 @@ B *bload(const char *s)
 	if (n[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
+		/* This will break if the default behavior for pipes is not enabled
+		   for the processed forked by popen
+		   !sh -c 'while :; do echo y; done' | head -n 10 */
+		joe_set_signal(SIGPIPE, SIG_DFL);
 		fi = popen(n + 1, "r");
+		joe_set_signal(SIGPIPE, SIG_IGN);
 	} else
 #endif
 	if (!zcmp(n, "-")) {
@@ -3129,7 +3134,9 @@ int bsave(P *p, const char *as, off_t size, int flag)
 	if (s[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
+		joe_set_signal(SIGPIPE, SIG_DFL);
 		f = popen(s + 1, "w");
+		joe_set_signal(SIGPIPE, SIG_IGN);
 	} else
 #endif
 	if (s[0] == '>' && s[1] == '>')

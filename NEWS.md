@@ -24,7 +24,7 @@
 
 * Bugs fixed
 
-	*  Fix bug where JOE would sometimes crash when editing shell
+	* Fix bug where JOE would sometimes crash when editing shell
 	  scripts.  This was due to an obscure bug in the syntax highlighter:
 	  'reset' command (used for default state) was incorrectly messing
 	  with stack.
@@ -37,10 +37,35 @@
 
 	* Fix bug where path restart (//) was being applied to block filter
 	  command prompt.  Strange things would happen if you had adjacent
-	  slashes.
+	  slashes in command arguments.
 
 	* Allow ~ expansion but suppress path restart (//) in compiler error
-	  parser.
+	  parsing.
+
+	* Restore default handling of SIGPIPE for shell commands.  This
+	  fixes an issue where SIGPIPE doesn't terminate a process as
+	  expected, for example by the head -n 10 in: ^K R !sh -c 'while :;
+	  do echo y; done' | head -n 10.  This issue only occurred in
+	  read/write to !, JOE already did the right thing for shell windows
+	  and the filter region through shell command.
+
+	* Improve screen update algorithm so that spaces at the ends of
+	  lines are always emitted.  This allows them to be preserved when
+	  cutting text with the mouse from a terminal emulator window.
+
+	* Improve efficiency of screen update algorithm: JOE had been
+	  resetting attributes such as background color before performing
+	  cursor motions (probably as work around for bugs in old terminal
+	  emulators).  This made screen update slow when there were many
+	  attributes, as with syntax highlighting and color schemes.  It was
+	  also repeatedly emitting ESC [ K.
+
+	* Switch JOE to issue scrolling commands, even at high baud rates
+	  (before this, JOE issued scrolling commands only at 19200 and
+	  below because it used to be that simple screen refresh was faster
+	  than scrolling in terminal emulators.  But this is no longer true
+	  with complex screens involving color schemes, unicode and
+	  highlighting).
 
 ### JOE 4.5
 
