@@ -42,8 +42,8 @@
 	* Allow ~ expansion but suppress path restart (//) in compiler error
 	  parsing.
 
-	* Restore default handling of SIGPIPE for shell commands.  This
-	  fixes an issue where SIGPIPE doesn't terminate a process as
+	* Restore default handling of SIGPIPE and SIGINT for shell commands. 
+	  This fixes an issue where SIGPIPE doesn't terminate a process as
 	  expected, for example by the head -n 10 in: ^K R !sh -c 'while :;
 	  do echo y; done' | head -n 10.  This issue only occurred in
 	  read/write to !, JOE already did the right thing for shell windows
