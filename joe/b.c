@@ -11,6 +11,10 @@
 #include <pwd.h>
 #endif
 
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
+
 #ifndef S_ISLNK
 #ifdef S_IFLNK
 #define S_ISLNK(n) (((n) & (S_IFMT)) == (S_IFLNK))
