@@ -2557,7 +2557,7 @@ char *canonical(char *n, int flags)
 #ifndef __MSDOS__
 	ptrdiff_t x;
 	char *s;
-	if (!(flags & CANFLAG_NORESTART))
+	if (!(flags & CANFLAG_NORESTART)) {
 		for (y = zlen(n); ; --y)
 			if (y <= 2) {
 				y = 0;
@@ -2566,7 +2566,7 @@ char *canonical(char *n, int flags)
 				y -= 1;
 				break;
 			}
-	
+	}
 	if (n[y] == '~') {
 		for (x = y + 1; n[x] && n[x] != '/'; ++x) ;
 		if (n[x] == '/') {

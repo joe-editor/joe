@@ -475,7 +475,7 @@ void parse_syntax_color_def(struct color_def **color_list,const char *p,char *na
 {
 	char bf[256];
 	if(!parse_tows(&p, bf)) {
-		struct color_def *color, *gcolor;
+		struct color_def *color;
 
 		/* Find color */
 		color=find_color(*color_list,bf,name);
