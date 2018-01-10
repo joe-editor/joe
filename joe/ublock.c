@@ -997,7 +997,7 @@ int ufilt(W *w, int k)
 			msgnw(bw->parent, joe_gettext(_("No block")));
 			return -1;
 	}
-	s = ask(w, s, &filthist, NULL, cmplt_command, locale_map, 0, 0, NULL);
+	s = ask(w, s, &filthist, NULL, cmplt_command, locale_map, PWFLAG_COMMAND, 0, NULL);
 
 	if (!s)
 		return -1;

@@ -352,8 +352,10 @@ done
 	*	idle	noeat
 
 :loop Loop
+	*	idle	noeat
 
 :cond Conditional
+	*	idle	noeat
 
 :bang Keyword
 	*	idle	noeat

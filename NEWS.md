@@ -8,6 +8,65 @@
 
 [Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
 
+### JOE.next
+
+* Enhancements
+
+	* Upgrade to Unicode 10.0.0.  Add configure environment variable
+	  that allows you select Unicode 8.0.0, 9.0.0 or 10.0.0.
+
+	* Install Gnome .desktop files for JOE.  This allows you to use JOE
+	  in GUI "Open With" mouse actions.
+
+	* Support strikeout and double-underline attributes for the few terminal
+	  emulators that support them.  Use "stricken" and "dunderline" in
+	  the syntax files, or \s and \z in help screens and status line.
+
+* Bugs fixed
+
+	* Fix bug where JOE would sometimes crash when editing shell
+	  scripts.  This was due to an obscure bug in the syntax highlighter:
+	  'reset' command (used for default state) was incorrectly messing
+	  with stack.
+
+	* -highlighter_context was missing from many file types, which
+	  negated some improvements from the previous version.
+
+	* Fixed signed char overflow with old style mouse events in large
+	  windows
+
+	* Fix bug where path restart (//) was being applied to block filter
+	  command prompt.  Strange things would happen if you had adjacent
+	  slashes in command arguments.
+
+	* Allow ~ expansion but suppress path restart (//) in compiler error
+	  parsing.
+
+	* Restore default handling of SIGPIPE and SIGINT for shell commands. 
+	  This fixes an issue where SIGPIPE doesn't terminate a process as
+	  expected, for example by the head -n 10 in: ^K R !sh -c 'while :;
+	  do echo y; done' | head -n 10.  This issue only occurred in
+	  read/write to !, JOE already did the right thing for shell windows
+	  and the filter region through shell command.
+
+	* Improve screen update algorithm so that spaces at the ends of
+	  lines are always emitted.  This allows them to be preserved when
+	  cutting text with the mouse from a terminal emulator window.
+
+	* Improve efficiency of screen update algorithm: JOE had been
+	  resetting attributes such as background color before performing
+	  cursor motions (probably as work around for bugs in old terminal
+	  emulators).  This made screen update slow when there were many
+	  attributes, as with syntax highlighting and color schemes.  It was
+	  also repeatedly emitting ESC [ K.
+
+	* Switch JOE to issue scrolling commands, even at high baud rates
+	  (before this, JOE issued scrolling commands only at 19200 and
+	  below because it used to be that simple screen refresh was faster
+	  than scrolling in terminal emulators.  But this is no longer true
+	  with complex screens involving color schemes, unicode and
+	  highlighting).
+
 ### JOE 4.5
 
 Before:
@@ -45,7 +104,6 @@ After:
 
 	* The current line can be highlighted by pressing ^T U or by
 	  enabling the **-hiline** option.
-
 
 	* The gutter containing line numbers has a dynamic size based on the
 	  length of the file, rather than a fixed size of 10.

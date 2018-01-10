@@ -78,6 +78,7 @@
 *.asm
 *.s
 *.S
+-highlighter_context
 -wordwrap
 -syntax asm
 
@@ -89,6 +90,7 @@
 -syntax mason
 -smarthome
 -smartbacks
+-highlighter_context
 
  SML
 [sml]
@@ -99,6 +101,7 @@
 -smarthome
 -smartbacks
 -istep 2
+-highlighter_context
 
  OCaml
 [ocaml]
@@ -111,6 +114,7 @@
 -smarthome
 -smartbacks
 -istep 2
+-highlighter_context
 
  Ruby
 [ruby]
@@ -127,6 +131,7 @@
 -pound_comment
 -syntax ruby
 -text_delimiters do=end
+-highlighter_context
 
  Perl
 [perl]
@@ -142,6 +147,7 @@
 -smartbacks
 -pound_comment
 -single_quoted
+-highlighter_context
 
  SQL
 [sql]
@@ -158,6 +164,7 @@
 -cpp_comment
 -text_delimiters BEGIN|Begin|begin=END|End|end
 -cpara >#!;*/%
+-highlighter_context
 
  AWK
 [awk]
@@ -169,6 +176,7 @@
 -smartbacks
 -purify
 -pound_comment
+-highlighter_context
 
  YACC
 [yacc]
@@ -216,12 +224,14 @@
 -purify
 -vhdl_comment
 -text_delimiters declare|Declare|DECLARE|exception|Exception|EXCEPTION|if|If|IF|loop|Loop|LOOP|case|Case|CASE|package|Package|PACKAGE|procedure|Procedure|PROCEDURE|record|Record|RECORD|function|Function|FUNCTION=end|End|END
+-highlighter_context
 
  COBOL
 [cobol]
 *.cbl
 *.cob
 -syntax cobol
+-highlighter_context
 
  REXX
 [rexx]
@@ -232,17 +242,20 @@
 -syntax rexx
 -autoindent
 -title
+-highlighter_context
 
  SED script
 [sed]
 *.sed
 -syntax sed
+-highlighter_context
 
  Postscript
 [postscript]
 *.ps
 *.eps
 -syntax ps
+-highlighter_context
 
  C language
 [c]
@@ -285,6 +298,7 @@
 -cpp_comment
 -text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
 -cpara >#!;*/%
+-highlighter_context
 
  VHDL
 [vhdl]
@@ -298,6 +312,7 @@
 -vhdl_comment
 -text_delimiters entity|ENTITY|if|IF|component|COMPONENT|loop|LOOP|configuration|CONFIGURATION|units|UNITS|record|RECORD|case|CASE|function|FUNCTION|package|PACKAGE|architecture|ARCHITECTURE|block|BLOCK|process|PROCESS|generate|GENERATE=end|END
 -cpara >#!;*-/%
+-highlighter_context
 
  XML
 [xml]
@@ -312,6 +327,7 @@
 *build.xml
 -autoindent
 -syntax xml
+-highlighter_context
 
  Apple plists
 [plist]
@@ -350,6 +366,7 @@
 -cpp_comment
 -purify
 -cpara >#!;*/%
+-highlighter_context
 
  Javascript
 [javascript]
@@ -365,6 +382,7 @@
 -c_comment
 -cpp_comment
 -cpara >#!;*/%
+-highlighter_context
 
  JSON
 [json]
@@ -373,6 +391,7 @@
 -syntax json
 -smarthome
 -smartbacks
+-highlighter_context
 
  Typescript
 [typescript]
@@ -386,6 +405,7 @@
 -c_comment
 -cpp_comment
 -cpara >#!;*/%
+-highlighter_context
 
  Hypertext preprocessor file
 [php]
@@ -396,6 +416,7 @@
 -smarthome
 -smartbacks
 -purify
+-highlighter_context
 
  Python
 [python]
@@ -426,6 +447,7 @@
 -title
 -syntax csh
 -pound_comment
+-highlighter_context
 
  Shell
 [sh]
@@ -454,6 +476,7 @@
 -title
 -syntax lisp
 -semi_comment
+-highlighter_context
 
  Korn shell
 [ksh]
@@ -466,6 +489,7 @@
 -highlighter_context
 -pound_comment
 -text_delimiters do=done:if=elif=else=fi:case=esac
+-highlighter_context
 
  PASCAL
 [pascal]
@@ -478,6 +502,7 @@
 -smartbacks
 -purify
 -text_delimiters begin|BEGIN|record|RECORD|case|CASE=end|END:repeat|REPEAT=until|UNTIL
+-highlighter_context
 
  Fortran
 [fortran]
@@ -488,6 +513,7 @@
 -autoindent
 -title
 -syntax fortran
+-highlighter_context
 
  Cadence SKILL
 [skill]
@@ -501,6 +527,7 @@
 -smartbacks
 -smarthome
 -indentfirst
+-highlighter_context
 
  Lua
 [lua]
@@ -510,6 +537,7 @@
 -autoindent
 -title
 -syntax lua
+-highlighter_context
 
  TCL
 [tcl]
@@ -517,6 +545,7 @@
 -autoindent
 -title
 -syntax tcl
+-highlighter_context
 
  Go language
 [go]
@@ -531,6 +560,7 @@
 -c_comment
 -text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
 -cpara >#!;*/%
+-highlighter_context
 
  CSharp
 [c#]
@@ -543,6 +573,7 @@
 -purify
 -cpara >#!;*/%
 -text_delimiters #region=#endregion:#if=#elif=#else=#endif
+-highlighter_context
 
  Joe Syntax File
 [jsf]
@@ -552,6 +583,7 @@
 -title
 -syntax jsf
 -smarthome
+-highlighter_context
 
  Joe Colorscheme file
 [jcf]
@@ -565,12 +597,14 @@
 -autoindent
 -title
 -syntax m4
+-highlighter_context
 
  Matlab file (clashes with objective-C)
 [matlab]
 *.m
 -wordwrap
 -syntax matlab
+-highlighter_context
 
  UNIX configuration file
 [conf]
@@ -587,6 +621,7 @@
 -autoindent
 -syntax conf
 -pound_comment
+-highlighter_context
 
  Windows batch files
 [bat]
@@ -594,6 +629,7 @@
 *.cmd
 -autoindent
 -syntax batch
+-highlighter_context
 
  JOERC file
 [joerc]
@@ -609,6 +645,7 @@
 *rjoerc.in
 *jpicorc.in
 -syntax joerc
+-highlighter_context
 
  Markdown
 [markdown]
@@ -625,6 +662,7 @@
 -smartbacks
 -pound_comment
 -syntax yaml
+-highlighter_context
 
  Debian apt
 [debian]
@@ -640,6 +678,7 @@
 -encoding iso-8859-1
 -pound_comment
 -syntax properties
+-highlighter_context
 
  INI Files
 [ini]
@@ -651,16 +690,19 @@
 -syntax ini
 -pound_comment
 -semi_comment
+-highlighter_context
 
  plain ERB
 [erb]
 *.erb
 -syntax erb
+-highlighter_context
 
  ERB within HTML
 [erb_html]
 *.html.erb
 -syntax htmlerb
+-highlighter_context
 
  Haml
 [haml]
@@ -671,6 +713,7 @@
 -autoindent
 -smarthome
 -smartbacks
+-highlighter_context
 
  Erlang
 [erlang]
@@ -683,6 +726,7 @@
 -syntax erlang
 -autoindent
 -title
+-highlighter_context
 
  Sieve (ManageSieve)
 [sieve]
@@ -690,6 +734,7 @@
 -syntax sieve
 -autoindent
 -title
+-highlighter_context
 
  Puppet
 [puppet]
@@ -698,6 +743,7 @@
 -pound_comment
 -autoindent
 -title
+-highlighter_context
 
  ip(6)tables
 [iptables]
@@ -715,6 +761,7 @@
 -autoindent
 -smarthome
 -smartbacks
+-highlighter_context
 
  Git COMMIT_EDITMSG
 [git-commit]
@@ -734,6 +781,7 @@
 -text_delimiters do=else=end
 -indentc 32
 -istep 2
+-highlighter_context
 
  R
 [r]
@@ -746,6 +794,7 @@
 -smartbacks
 -purify
 -single_quoted
+-highlighter_context
 
  Groovy
 [groovy]
@@ -762,6 +811,7 @@
 -smartbacks
 -purify
 -single_quoted
+-highlighter_context
 
  Clojure
 [clojure]
@@ -776,6 +826,7 @@
 -smarthome
 -smartbacks
 -purify
+-highlighter_context
 
  Rust
 [rust]
@@ -789,6 +840,7 @@
 -smartbacks
 -purify
 -single_quoted
+-highlighter_context
 
  Coffeescript
 [coffee]
@@ -801,6 +853,7 @@
 -smartbacks
 -purify
 -single_quoted
+-highlighter_context
 
  Scala
 [scala]
@@ -814,6 +867,7 @@
 -smartbacks
 -purify
 -single_quoted
+-highlighter_context
 
  Swift
 [swift]
@@ -827,6 +881,7 @@
 -smartbacks
 -purify
 -single_quoted
+-highlighter_context
 
  D
 [d]
@@ -840,6 +895,7 @@
 -smartbacks
 -purify
 -single_quoted
+-highlighter_context
 
  Docker
 [dockerfile]
@@ -848,6 +904,7 @@
 -title
 -syntax dockerfile
 -pound_comment
+-highlighter_context
 
  RPM Spec
 [spec]
@@ -863,3 +920,4 @@
 -smartbacks
 -syntax haskell
 -vhdl_comment
+-highlighter_context

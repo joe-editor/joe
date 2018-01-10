@@ -127,6 +127,10 @@ void help_display(Screen *t)
 						case 'B':
 						case 'f':
 						case 'F':
+						case 's':
+						case 'S':
+						case 'z':
+						case 'Z':
 							++str;
 							break;
 						case '|':
@@ -215,6 +219,18 @@ void help_display(Screen *t)
 						case 'f':
 						case 'F':
 							atr ^= BLINK;
+							++str;
+							--x;
+							continue;
+						case 'z':
+						case 'Z':
+							atr ^= DOUBLE_UNDERLINE;
+							++str;
+							--x;
+							continue;
+						case 's':
+						case 'S':
+							atr ^= CROSSED_OUT;
 							++str;
 							--x;
 							continue;

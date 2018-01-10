@@ -197,6 +197,15 @@ int set_attr(SCRN *t, int c)
 	if (e & UNDERLINE)
 		if (t->us)
 			texec(t->cap, t->us, 1, 0, 0, 0, 0);
+
+	if (e & DOUBLE_UNDERLINE)
+		if (t->dunderline)
+			texec(t->cap, t->dunderline, 1, 0, 0, 0, 0);
+
+	if (e & CROSSED_OUT)
+		if (t->stricken)
+			texec(t->cap, t->stricken, 1, 0, 0, 0, 0);
+
 	if (e & BLINK)
 		if (t->mb)
 			texec(t->cap, t->mb, 1, 0, 0, 0, 0);
@@ -494,6 +503,12 @@ int clrins(SCRN *t)
 
 /* Erase from given screen coordinate to end of line */
 
+/* Now we store a '\n' mark in the screen buffer.  The idea is to emit ESC [
+ * K at the \n and remember that we did it.  This way spaces at the end of
+ * the line are recorded in the terminal emulator so that they are preserved
+ * with cut/paste operations.
+ */
+
 int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr)
 {
 	int (*s)[COMPOSE], (*ss)[COMPOSE], *a, *aa;
@@ -506,7 +521,8 @@ int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr)
 	ss = s + w;
 	aa = a + w;
 	do {
-		if ((*--ss)[0] != ' ') {
+		--ss;
+		if ((*ss)[0] != (ss == s ? '\n' : ' ')) {
 			++ss;
 			break;
 		} else if (*--aa != atr) {
@@ -515,28 +531,36 @@ int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr)
 			break;
 		}
 	} while (ss != s);
-	if (t->ce) {
-		cpos(t, x, y);
-		if(t->attrib != atr)
-			set_attr(t, atr); 
-		texec(t->cap, t->ce, 1, 0, 0, 0, 0);
-		mfill(s, ' ', w);
-		msetI(a, atr, w);
-	/* TODO: move computation of ss & aa here */
-	} else if (s != ss) {
-		if (t->ins)
-			clrins(t);
-		if (t->x != x || t->y != y)
+	if (s != ss) {
+		if (t->ce) {
 			cpos(t, x, y);
-		if (t->attrib != atr)
-			set_attr(t, atr); 
-		while (s != ss) {
-			(*s)[0] = ' ';
+			if(t->attrib != atr)
+				set_attr(t, atr); 
+			texec(t->cap, t->ce, 1, 0, 0, 0, 0);
+			mfill(s, ' ', w);
+			msetI(a, atr, w);
+			(*s)[0] = '\n';
+		} else {
+			if (t->ins)
+				clrins(t);
+			if (t->x != x || t->y != y)
+				cpos(t, x, y);
+			if (t->attrib != atr)
+				set_attr(t, atr);
+			(*s)[0] = '\n';
 			*a = atr;
 			ttputc(' ');
 			++t->x;
 			++s;
 			++a;
+			while (s != ss) {
+				(*s)[0] = ' ';
+				*a = atr;
+				ttputc(' ');
+				++t->x;
+				++s;
+				++a;
+			}
 		}
 	}
 	return 0;
@@ -610,6 +634,8 @@ SCRN *nopen(CAP *cap)
 	t->md = NULL;
 	t->mh = NULL;
 	t->mr = NULL;
+	t->stricken = NULL;
+	t->dunderline = NULL;
 	t->avattr = 0;
 	if (!(t->me = jgetstr(t->cap,"me")))
 		goto oops;
@@ -629,6 +655,15 @@ SCRN *nopen(CAP *cap)
 #else
 	ansiish = t->md && t->md[0] == '\033' && t->md[1] == '[';
 #endif
+
+	/* Cheating here: there is no capability for stricken and double-underline, so we just assume it has it if terminal looks ansi */
+	if (ansiish) {
+		t->stricken = "\033[9m";
+	}
+
+	if (ansiish) {
+		t->dunderline = "\033[21m";
+	}
 	
 	/* No termcap for bracketed paste.  ANSI-looking terminals will either support bracketed paste
 	   or this setting will cause no harm. */
@@ -862,7 +897,7 @@ SCRN *nopen(CAP *cap)
 
 /* Adjust for high baud rates */
 	if (tty_baud >= 38400) {
-		t->scroll = 0;
+		/* t->scroll = 0; */ /* With all the output from syntax highlighting, it's now better to scroll in terminal emulators */
 		t->insdel = 0;
 	}
 
@@ -1435,8 +1470,11 @@ int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y)
 			return 0;
 	}
 
-	if ((!t->ms && t->attrib & (INVERSE | UNDERLINE | BG_NOT_DEFAULT)) ||
-	    (t->ut && (t->attrib & BG_NOT_DEFAULT)))
+	/* We used to reset background if t->ut was set before a cursor motion.  This
+	   should not be necessary and makes screen update slower, especially with syntax
+	   highlighting and/or color scheme. */
+	if ((!t->ms && t->attrib & (INVERSE | UNDERLINE | BG_NOT_DEFAULT)) /* ||
+	    (t->ut && (t->attrib & BG_NOT_DEFAULT)) */)
 		set_attr(t, t->attrib & ~(INVERSE | UNDERLINE | BG_MASK));
 
 	/* Should be in cposs */
@@ -1941,6 +1979,7 @@ void nredraw(SCRN *t)
 	setregn(t, 0, t->li);
 
 	if (!skiptop) {
+#if 0 // Leave screen contents invalid.  This way line update emits explicit spaces.
 		if (t->cl) {
 			texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 			t->x = 0;
@@ -1953,6 +1992,7 @@ void nredraw(SCRN *t)
 			mfill(t->scrn, ' ', t->li * t->co);
 			msetI(t->attr, BG_COLOR(bg_text), t->li * t->co); 
 		}
+#endif
 	}
 }
 
@@ -1972,6 +2012,10 @@ static int meta_color_single(const char *s)
 		return DIM;
 	else if(!zcmp(s,"italic"))
 		return ITALIC;
+	else if(!zcmp(s,"dunderline"))
+		return DOUBLE_UNDERLINE;
+	else if(!zcmp(s,"stricken"))
+		return CROSSED_OUT;
 
 	/* ISO colors */
 	else if(!zcmp(s,"white"))
@@ -2349,6 +2393,14 @@ void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, in
 			case 'f':
 			case 'F':
 				atr ^= BLINK;
+				break;
+			case 's':
+			case 'S':
+				atr ^= CROSSED_OUT;
+				break;
+			case 'z':
+			case 'Z':
+				atr ^= DOUBLE_UNDERLINE;
 				break;
 			case 0:
 				--s;

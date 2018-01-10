@@ -26,7 +26,7 @@ joe_SOURCES = b.c blocks.c bw.c cmd.c coroutine.c hash.c help.c kbd.c macro.c ma
 	undo.c usearch.c ushell.c utag.c vfile.c w.c utils.c syntax.c \
 	utf8.c selinux.c charmap.c mouse.c lattr.c gettext.c builtin.c \
 	builtins.c vt.c mmenu.c state.c options.c unicode.c \
-	unicat.c cclass.c frag.c colors.c
+	cclass.c frag.c colors.c unicat-@UNICODE_VERSION@.c
 
 termidx_SOURCES = termidx.c
 
