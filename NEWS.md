@@ -10,6 +10,8 @@
 
 ### JOE.next
 
+### JOE 4.6
+
 * Enhancements
 
 	* Upgrade to Unicode 10.0.0.  Add configure environment variable
