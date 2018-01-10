@@ -146,7 +146,7 @@
     <ClCompile Include="$(JoeExternalSrcDir)\uisrch.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\umath.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\undo.c" />
-    <ClCompile Include="$(JoeExternalSrcDir)\unicat.c" />
+    <ClCompile Include="$(JoeExternalSrcDir)\unicat-10.0.0.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\unicode.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\usearch.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\ushell.c" />

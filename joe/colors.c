@@ -304,7 +304,7 @@ SCHEME *load_scheme(const char *name)
 	char *buf = vsmk(256);
 	char *bf = vsmk(64);
 	char *b = NULL;
-	JFILE *f;
+	JFILE *f = NULL;
 	int line, i;
 	
 	/* Find existing */

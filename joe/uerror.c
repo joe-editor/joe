@@ -189,10 +189,10 @@ static void parseone(struct charmap *map,const char *s,char **rtn_name,off_t *rt
 	do {
 		
 		/* Skip to first word */
-		for (u = v; *u && !((t = u), (c = fwrd_c(map, &t, NULL)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/')); u = t) ;
+		for (u = v; *u && !((t = u), (c = fwrd_c(map, &t, NULL)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/' || c == '~')); u = t) ;
 
 		/* Skip to end of first word */
-		for (v = u; (t = v), (c = fwrd_c(map, &t, NULL)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/' || c == '-'); v = t)
+		for (v = u; (t = v), (c = fwrd_c(map, &t, NULL)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/' || c == '-' || c == '~'); v = t)
 			if (c == '.')
 				flg = 1;
 	} while (!flg && u != v);
@@ -296,7 +296,7 @@ static int parseit(struct charmap *map,const char *s, off_t row,
 			if (current_dir) {
 				err->file = vsncpy(NULL, 0, sv(current_dir));
 				err->file = vsncpy(sv(err->file), sv(name));
-				err->file = canonical(err->file);
+				err->file = canonical(err->file, CANFLAG_NORESTART);
 			} else {
 				err->file = name;
 			}
@@ -577,7 +577,7 @@ int ujump(W *w, int k)
 		else
 			fullname = vsncpy(NULL, 0, sv(curd));
 		fullname = vsncpy(sv(fullname), sv(name));
-		name = canonical(fullname);
+		name = canonical(fullname, CANFLAG_NORESTART);
 		if (name && line != -1) {
 			ERROR *er = srcherr(bw, name, line);
 			uprevw(bw->parent, 0);

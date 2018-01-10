@@ -335,7 +335,7 @@
     <ClCompile Include="$(JoeExternalSrcDir)\undo.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(JoeExternalSrcDir)\unicat.c">
+    <ClCompile Include="$(JoeExternalSrcDir)\unicat-10.0.0.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="$(JoeExternalSrcDir)\unicode.c">

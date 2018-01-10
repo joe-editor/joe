@@ -28,6 +28,7 @@ struct pw {
  *   bit 0: ~ expansion
  *   bit 1: update directory
  *   bit 2: seed with directory
+ *   bit 3: it's a shell command, not just a file name
  */
 BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, void *object),
           const char *huh, int (*abrt)(W *w, void *object),
@@ -35,6 +36,11 @@ BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, voi
           void *object, struct charmap *map, int file_prompt);
 
 char *ask(W *w, const char *prompt, B **history, char *huh, int (*tab)(BW *, int), struct charmap *map, int file_prompt, int retrieve_last, char *preload);
+
+#define PWFLAG_FILENAME 1 /* Prompt is for a filename, so perform ~ expansion and // restart */
+#define PWFLAG_UPDATE_CD 2 /* Update current directory when prompt complete */
+#define PWFLAG_SEED_CD 4 /* Seed prompt with current directory */
+#define PWFLAG_COMMAND 8 /* Prompt is for a shell command */
 
 int ucmplt(W *w, int k);
 
