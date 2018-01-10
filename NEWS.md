@@ -67,6 +67,14 @@
 	  with complex screens involving color schemes, unicode and
 	  highlighting).
 
+* Windows version
+
+	* Fix file access checks.  Inaccessible files due to ACL's weren't
+	  correctly detected.  This was a regression in 4.5.
+
+	* Check the correct (Windows) path in the home directory for color
+	  schemes.  This was not re-implemented properly in 4.5.
+
 ### JOE 4.5
 
 Before:
