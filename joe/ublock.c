@@ -885,7 +885,7 @@ int uinsf(W *w, int k)
 	WIND_BW(bw, w);
 	
 	s = ask(w, joe_gettext(_("Name of file to insert (%{help} for help): ")), &filehist,
-	        "Names", cmplt_file_in, locale_map, 3, 0, NULL);
+	        "Names", cmplt_file_in, locale_map, (PWFLAG_FILENAME | PWFLAG_UPDATE_CD), 0, NULL);
 	if (s) {
 		if (square)
 			if (markv(1)) {
