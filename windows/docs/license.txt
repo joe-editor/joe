@@ -5,12 +5,12 @@ Both have been modified heavily and linked together by John J. Jordan to
 form this software.  Their work makes this possible, and the licensing terms
 for each constituent codebase can be found here.
 
-JOE is copyright 1992-2015 Joseph H. Allen.  It was released under the
+JOE is copyright 1992-2018 Joseph H. Allen.  It was released under the
 GPLv2 and may be redistributed under any later version.
 
 PuTTY is copyright 1997-2010 Simon Tatham.
 
-JOE for Windows is copyright 2015-2016 John J. Jordan.  It is released under
+JOE for Windows is copyright 2015-2018 John J. Jordan.  It is released under
 the GPL v2 and may be redistributed under any later version.
 
 Portions are copyright Marc Alexander Lehmann for libcoro, which is utilized
