@@ -79,7 +79,7 @@ static INT_PTR CALLBACK AboutProc(HWND hwnd, UINT msg,
 		if (LOWORD(wParam) == IDWEBSITE) {
 			/* Load web browser */
 			ShellExecuteA(hwnd, "open",
-				"http://sourceforge.net/p/joe-editor",
+				"https://joe-editor.sourceforge.io/",
 				0, 0, SW_SHOWDEFAULT);
 		}
 		break;
@@ -116,6 +116,9 @@ void defuse_showwindow(void)
     }
 }
 
+#define UNI2(x) L ## x
+#define UNI(x) UNI2(x)
+
 void jwHelp(HWND hwnd, wchar_t *helpfile)
 {
     wchar_t path[MAX_PATH];
@@ -132,8 +135,8 @@ void jwHelp(HWND hwnd, wchar_t *helpfile)
     }
 
     /* Try web site */
-    wcscpy(path, L"https://sourceforge.net/p/joe-editor/mercurial/ci/windows/tree/docs/");
+    wcscpy(path, L"https://joe-editor.sourceforge.io/" UNI(JW_SHORTVERSION) L"/");
     wcscat(path, helpfile);
-    wcscat(path, L".md");
+    wcscat(path, L".html");
     ShellExecuteW(hwnd, L"open", path, 0, 0, SW_SHOWDEFAULT);
 }
