@@ -9,8 +9,8 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\18.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">18.0</VisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\17.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">17.0</VisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\16.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">16.0</VisualStudioVersion>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\15.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">15.0</VisualStudioVersion>
     <!-- The above don't yet exist ... these are real: -->
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\15.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">15.0</VisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\14.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">14.0</VisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\13.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">13.0</VisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\12.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">12.0</VisualStudioVersion>
@@ -19,7 +19,16 @@
 
     <!-- Pick toolset to use based on VS version (to enable XP targetting) -->
     <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(VisualStudioVersion)' == '10.0'">v100</PlatformToolset>
-    <PlatformToolset Condition="'$(PlatformToolset)' == ''">v$([System.String]::Copy('$(VisualStudioVersion)').Replace('.', ''))_xp</PlatformToolset>
+    
+    <!-- Only target XP on 32-bit builds -->
+    <_ToolsetSuffix Condition="'$(Platform)' == 'Win32'">_xp</_ToolsetSuffix>
+    
+    <!-- VS 2017 uses a different toolset version -->
+    <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(VisualStudioVersion)' == '15.0'">v141$(_ToolsetSuffix)</PlatformToolset>
+    
+    <!-- Handles VS 2012, 2013, 2015 -->
+    <PlatformToolset Condition="'$(PlatformToolset)' == ''">v$([System.String]::Copy('$(VisualStudioVersion)').Replace('.', ''))$(_ToolsetSuffix)</PlatformToolset>
+    
     <!-- build might work with 2008, but it's really old now, just use something recent. -->
   </PropertyGroup>
 
