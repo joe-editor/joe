@@ -14,8 +14,6 @@ Nits:
 
 	- security hole with spell checker: abs path to checker needed.
 
-	1211243  long $HOME causes joe to crash
-
 	Make joerc merge program and run it on joerc.ru
 
 	joe should open tty earlier in startup sequence because ^Y
@@ -25,13 +23,7 @@ Nits:
 
 	^C breaks in Cygwin when piping into joe
 
-	empty syntax file crashes?
-
-	startup log should pop up whenever syntax files are loaded.
-	[we now have showlog]
-
 	grep ... | joe     missing lots sometime
-
 
 State file:
 
@@ -186,7 +178,7 @@ Locking:
 Horizontal scrolling:
 
 	We used to keep offset at a multiple of scroll amount.. is
-	it needed?
+	it needed?  Someone is asking for this now.
 
 	When prompt window has to scroll it should also jump.  But this is
 	only one line, so not as important.
@@ -384,10 +376,6 @@ Mouse:
 	right-click is cancel?
 	double-click is yes?
 
-Performance:
-
-	getcontext causes huge cpu usage for very large functions
-
 File names:
 
 	we should store location of menu. menu_above could change while menu is
@@ -442,12 +430,6 @@ Syntax highlighting:
 	for example).
 
 	Create a regex highlighter for JOE's search and replace prompts.
-
-GUI:
-
-	Provide an xjoe script which runs joe in an xterm in the install. 
-	This way something exists for the "open this file with" prompts in
-	windowing systems.
 
 Unicode:
 
@@ -534,6 +516,8 @@ Code quality:
 	Fixed buffer size is not good for some parse_ functions..  for
 	example it limits the size of keyboard macros.  umtext is not good.. 
 	uses fixed buffer during print.  Can we not use vs for all of this?
+
+	In general get rid of fixed length buffers, for example when used with snprintf.
 
 	we are missing many query and prompt window abort handlers, which cause
 	small memory leaks.
@@ -1482,3 +1466,26 @@ Performance:
 
 	getcontext causes huge cpu usage for very large functions
 	[fixed]
+
+GUI:
+
+	Provide an xjoe script which runs joe in an xterm in the install. 
+	This way something exists for the "open this file with" prompts in
+	windowing systems.
+	[fixed, we now include .desktop files]
+
+
+	1211243  long $HOME causes joe to crash
+	[fixed, but we should eliminate more fixed length buffers]
+
+	empty syntax file crashes?
+	[fixed, we detect this now]
+
+	startup log should pop up whenever syntax files are loaded.
+	[we now have showlog]
+
+Performance:
+
+	getcontext causes huge cpu usage for very large functions
+	[this is now fixed]
+
