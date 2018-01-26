@@ -383,6 +383,161 @@ static int exsimple(MACRO *m, int myarg, int u, int k)
 int current_arg = 1;
 int current_arg_set = 0;
 
+Macro_rest *macro_rest; /* Rest of macro to execute */
+int macret; /* Macro return value (save if macro_rest is switched) */
+
+/* Execute next macro step */
+/* Returns 1 if macret is valid */
+
+int macro_next()
+{
+	Macro_rest *r = macro_rest;
+
+	if (r->state == 0) { /* First time we've seen this continuation */
+		/* Record original argument state */
+		r->o_arg_set = argset;
+		r->o_arg = arg;
+
+		/* Take argument */
+		if (argset) {
+			r->larg = arg;
+			arg = 0;
+			argset = 0;
+		} else {
+			r->larg = 1;
+		}
+		
+		/* Is it a C function? */
+		if (!r->m->steps) {
+			macro_rest = r->next;
+			macret = exsimple(r->m, r->larg, r->u, r->k);
+			free(r);
+			return 1;
+		}
+
+		/* Must be a real macro then... */
+		if (r->larg < 0) {
+			r->larg = -r->larg;
+			r->negarg = 1;
+		}
+
+		/* Skipping? */
+		if (!ifflag) {
+			macret = 0;
+			macro_rest = r->next;
+			free(r);
+			return 1;
+		}
+
+		if (r->u)
+			umclear();
+
+		r->ret = 0;
+		r->main_ret = 0;
+
+		r->state = 1;
+	} else if (r->state == 1) { /* Repeat loop */
+		if (r->larg && !leave && !r->ret) {
+			r->tmpmac = curmacro;
+			r->tmpptr = macroptr;
+			r->x = 0;
+			r->stk = nstack;
+
+			r->state = 2;
+		} else {
+			macret = r->ret | r->main_ret;
+			if (!leave) {
+				if (r->u)
+					umclear();
+				if (r->u)
+					undomark();
+			}
+			macro_rest = r->next;
+			free(r);
+			return 1;
+		}
+	} else if (r->state == 2) { /* Steps of the macro */
+		if (r->x == r->m->n || leave || r->ret) { /* No more steps */
+			curmacro = r->tmpmac;
+			macroptr = r->tmpptr;
+
+			/* Pop ^KB ^KK stack */
+			while (nstack > r->stk)
+				upop(NULL, 0);
+			--r->larg;
+			r->state = 1;
+		} else { /* Next step */
+			MACRO *d = r->m->steps[r->x++];
+			curmacro = r->m;
+			macroptr = r->x;
+			r->tmp_arg = current_arg;
+			r->tmp_set = current_arg_set;
+			current_arg = r->o_arg;
+			current_arg_set = r->o_arg_set;
+
+			if(d->steps) {
+				r->oid = ifdepth;
+				r->oifl = ifflag;
+				r->oifa = iffail;
+				ifdepth = 0;
+				iffail = 0;
+			}
+
+			/* If this step wants to know about negative args... */
+			if (d->flg & 4) {
+				argset = r->o_arg_set;
+				arg = r->o_arg;
+				r->larg = 1;
+			} else if ((d->flg & 1) && r->negarg) {
+				if (argset) {
+					arg = -arg;
+				} else {
+					argset = 1;
+					arg = -1;
+				}
+			}
+			if (d->flg & 8) {
+				r->larg = 1;
+			}
+
+			macro_push(d, 0, r->k);
+			r->state = 3;
+		}
+	} else if (r->state == 3) { /* After sub-step is complete */
+		r->ret = macret;
+		if (r->m->steps[r->x - 1]->steps) {
+			ifdepth = r->oid;
+			ifflag = r->oifl;
+			iffail = r->oifa;
+		}
+		if (r->m->steps[r->x - 1]->flg & 2) {
+			r->main_ret = r->ret;
+		}
+		current_arg = r->tmp_arg;
+		current_arg_set = r->tmp_set;
+
+		/* Continue with next step */
+		r->state = 2;
+	}
+
+	return 0;
+}
+
+/* Push a macro to execute when we return to top level */
+
+void macro_push(MACRO *m, int u, int k)
+{
+	Macro_rest *r = calloc(1, sizeof(Macro_rest));
+
+	r->m = m;
+	r->k = k;
+	r->u = u;
+	r->larg = 1;
+
+	r->next = macro_rest;
+	macro_rest = r;
+}
+
 int exmacro(MACRO *m, int u, int k)
 {
 	int larg;
@@ -475,7 +630,6 @@ int exmacro(MACRO *m, int u, int k)
 			curmacro = tmpmac;
 			macroptr = tmpptr;
 
-			/* Pop ^KB ^KK stack */
 			while (nstack > stk)
 				upop(NULL, 0);
 		--larg;
@@ -500,7 +654,13 @@ int exemac(MACRO *m, int k)
 {
 	record(m, k);
 	ifflag=1; ifdepth=iffail=0;
-	return exmacro(m, 1, k);
+
+	macro_push(m, 1, k);
+
+	while (macro_rest)
+		macro_next();
+
+	return macret;
 }
 
 /* Keyboard macro user routines */

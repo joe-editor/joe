@@ -657,7 +657,6 @@ int usplitw(W *w, int k)
 	pset(newbw->top, bw->top);
 	pset(newbw->cursor, bw->cursor);
 	newbw->cursor->xcol = bw->cursor->xcol;
-	neww->t->curwin = neww;
 	wfit(neww->t);
 	return 0;
 }
@@ -685,7 +684,6 @@ int uduptw(W *w, int k)
 	pset(newbw->top, bw->top);
 	pset(newbw->cursor, bw->cursor);
 	newbw->cursor->xcol = bw->cursor->xcol;
-	neww->t->curwin = neww;
 	wfit(w->t);
 	return 0;
 }

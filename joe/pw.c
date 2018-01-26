@@ -264,7 +264,6 @@ BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, voi
 		}
 		return NULL;
 	}
-	w->t->curwin = neww; /* Set curwin before calling wfit to prevent deletion */
 	wfit(neww->t);
 	neww->object = (void *) (bw = bwmk(neww, bmk(NULL), 1));
 	bw->b->o.charmap = map;

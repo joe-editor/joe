@@ -235,11 +235,13 @@ typedef int pid_t;
 
 /* Typedefs */
 
+typedef int Wid;
 typedef struct header H;
 typedef struct buffer B;
 typedef struct point P;
 typedef struct options OPTIONS;
 typedef struct macro MACRO;
+typedef struct macro_rest Macro_rest;
 typedef struct cmd CMD;
 typedef struct entry HENTRY;
 typedef struct Zentry ZHENTRY;

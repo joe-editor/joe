@@ -48,6 +48,10 @@ struct window {
 	LINK(W)	link;		/* Linked list of windows in order they
 				   appear on the screen */
 
+	Wid id;			/* ID for this window. */
+				/* It's unique for the lifetime of the editor process, even after the window is deleted */
+				/* It's never equal to 0 */
+
 	Screen	*t;		/* Screen this thing is on */
 
 	ptrdiff_t	x, y, w, h;	/* Position and size of window */
@@ -180,6 +184,9 @@ void sresize(Screen *t);
  * create the window and maintain family integrity.
  */
 W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t height, const char *huh, int *notify);
+
+/* Find window by id.  Return NULL if it no longer exists */
+W *findwid(Wid id);
 
 /* int wabort(W *w);
  *

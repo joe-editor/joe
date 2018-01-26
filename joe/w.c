@@ -23,6 +23,25 @@ int countmain(Screen *t)
 	return nmain;
 }
 
+/* Find window by ID */
+
+W *findwid(Wid id)
+{
+	W *q;
+
+	if (!maint->curwin)
+		return NULL;
+
+	q = maint->curwin;
+	do {
+		if (q->id == id)
+			return q;
+		q = q->link.next;
+	} while (q != maint->curwin);
+
+	return NULL;
+}
+
 /* Redraw a window */
 
 void wredraw(W *w)
@@ -277,6 +296,11 @@ void wfit(Screen *t)
 	pw = NULL;
 
 	w = t->topwin;
+
+	/* Don't crash if there are no windows */
+	if (!w)
+		return;
+
 	do {
 		w->ny = -1;
 		w->nh = geth(w);
@@ -597,6 +621,8 @@ void wshowone(W *w)
 
 /* Create a window */
 
+static Wid next_wid = 0;
+
 W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t height, const char *huh, int *notify)
 {
 	W *neww;
@@ -606,6 +632,7 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t 
 
 	/* Create the window */
 	neww = (W *) joe_malloc(SIZEOF(W));
+	neww->id = ++next_wid;
 	neww->notify = notify;
 	neww->t = t;
 	neww->w = t->w;
@@ -623,11 +650,12 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t 
 	neww->msgt = NULL;
 	neww->bstack = 0;
 	/* Set window's target and family */
-/* was:	if (neww->win = target) {	which may be mistyped == */
-	if ((neww->win = target) != NULL) {	/* A subwindow */
+	if (target) {	/* A subwindow */
+		neww->win = target;
 		neww->main = target->main;
 		neww->fixed = height;
-	} else {		/* A parent window */
+	} else {	/* A parent window */
+		neww->win = 0;
 		neww->main = neww;
 		neww->fixed = 0;
 	}
@@ -648,17 +676,21 @@ W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t 
 	else
 		neww->kbd = NULL;
 
-	/* Put window on the screen */
-	if (where)
+	/* If not specified, put it after last window on screen */
+	if (!where && t->curwin)
+		where = findbotw(t->curwin);
+
+	if (where) {
+		/* After (below) 'where' */
 		enquef(W, link, where, neww);
-	else {
-		if (t->topwin)
-			enqueb(W, link, t->topwin, neww);
-		else {
-			izque(W, link, neww);
-			t->curwin = t->topwin = neww;
-		}
+	} else {
+		/* This must be the first window */
+		izque(W, link, neww);
+		t->topwin = neww;
 	}
+
+	/* New window always gets cursor */
+	t->curwin = neww;
 
 	return neww;
 }
@@ -696,6 +728,8 @@ static ptrdiff_t doabort(W *w, int *ret)
 	if (qempty(W, link, w)) {
 		leave = 1;
 		amnt = 0;
+		w->t->topwin = NULL;
+		w->t->curwin = NULL;
 	}
 	deque(W, link, w);
 	if (w->watom->abort && w->object) {
@@ -762,7 +796,7 @@ void msgout(W *w)
 {
 	SCRN *t = w->t->t;
 
-	if (w->msgb && w->h) {
+	if (w->msgb && w->h /* && w->cury != w->h - 1 <-- prevents messages if cursor is on line of message */) {
 		mdisp(t, w->y + w->h - 1, w->msgb);
 	}
 	if (w->msgt && w->h) {

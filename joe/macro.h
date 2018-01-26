@@ -6,6 +6,41 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
+/* The rest of the current macro to execute */
+
+struct macro_rest {
+	Macro_rest *next; // What to do when this is complete
+	int state; // Execution state
+
+	MACRO *m; // Macro to execute
+	int k; // Key to be passed to macro
+	int u; // Clear if this macro should be merged with previous one as a single undo record
+
+	int larg; // Taken argument
+
+	int negarg; // If argument was negative
+
+	int x; // Next step to execute
+
+	int o_arg_set; // Record of original argument
+	int o_arg;
+
+	int oid; // Record of conditional exection state
+	int oifl;
+	int oifa;
+
+	int tmp_arg;
+	int tmp_set;
+
+	int main_ret; /* Status of key step of macro */
+	int ret; /* Most recent substep status */
+
+	MACRO *tmpmac;
+	int tmpptr;
+
+	int stk;
+};
+
 /* A macro or macro step */
 
 struct macro {
@@ -112,3 +147,5 @@ void save_macros(FILE *f);	/* Save keyboard macros in .joe_state file */
    Used by mtext.
 */
 char *unescape(char *ptr,int c);
+
+void macro_push(MACRO *m, int u, int k);

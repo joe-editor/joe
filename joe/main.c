@@ -306,11 +306,11 @@ int main(int argc, char **real_argv, const char * const *envv)
 	char *rundir;
 #endif
 	SCRN *n;
-	int opened = 0;
 	int omid;
 	int backopt;
 	int c;
 	int filesonly;
+	Wid firstwin = 0;
 
 	joe_iswinit();
 	joe_locale();
@@ -527,6 +527,12 @@ int main(int argc, char **real_argv, const char * const *envv)
 
 	load_state();
 
+	init_colors();
+
+	if (helpon) {
+		help_on(maint);
+	}
+
 	/* It would be better if this ran uedit() to load files */
 
 	/* The business with backopt is to load the file first, then apply file
@@ -557,8 +563,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 			setup_history(&filehist);
 			append_history(filehist,sz(argv[c]));
 
-			/* wmktw inserts the window before maint->curwin */
-			if (!orphan || !opened) {
+			if (!orphan || !maint->topwin) {
 				bw = wmktw(maint, b);
 				if (er)
 					msgnwt(bw->parent, joe_gettext(msgs[-er]));
@@ -609,71 +614,74 @@ int main(int argc, char **real_argv, const char * const *envv)
 					exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 				if (er == 0 && bw->o.mold)
 					exmacro(bw->o.mold, 1, NO_MORE_DATA);
-				/* Go back to first window so windows are in same order as command line  */
-				if (opened)
-					wnext(maint);
-				
+				// Remember first window we ended up in
+				if (!firstwin && maint->curwin) {
+					firstwin = maint->curwin->id;
+				}
 			}
-			opened = 1;
 			backopt = 0;
 		}
 
-	
-
-	if (opened) {
-		wshowall(maint);
-		omid = opt_mid;
-		opt_mid = 1;
-		dofollows();
-		opt_mid = omid;
-	} else {
-		BW *bw = wmktw(maint, bfind(""));
-
-		if (bw->o.mnew)
-			exmacro(bw->o.mnew, 1, NO_MORE_DATA);
-	}
-	maint->curwin = maint->topwin;
-
-	if (logerrors) {
-		B *copied = bcpy(startup_log->bof, startup_log->eof);
-		BW *bw = wmktw(maint, copied);
-		copied->name = zdup(startup_log->name);
-		copied->internal = 1;
-		maint->curwin = bw->parent;
-		wshowall(maint);
-	}
-
-	init_colors();
-
-	if (helpon) {
-		help_on(maint);
-	}
-	if (!nonotice) {
-		if (xmsg) {
-			xmsg = stagen(NULL, (BW *)(lastw(maint)->object), joe_gettext(xmsg), ' ');
-			msgnw(((BASE *)lastw(maint)->object)->parent, xmsg);
+	if (!leave) {
+		if (maint->topwin) {
+			W *firstw = findwid(firstwin);
+			if (firstw) {
+				/* Put cursor in window we ended up in after first window was opened */
+				maint->curwin = firstw;
+				maint->topwin = findtopw(firstw);
+			}
+			wshowall(maint);
+			omid = opt_mid;
+			opt_mid = 1;
+			dofollows();
+			opt_mid = omid;
 		} else {
-			joe_snprintf_3(msgbuf,JOE_MSGBUFSIZE,joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
-			msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
+			BW *bw = wmktw(maint, bfind(""));
+
+			if (bw->o.mnew)
+				exmacro(bw->o.mnew, 1, NO_MORE_DATA);
 		}
+		if (!leave) {
+			W *lastwin;
 
-	}
+			if (logerrors) {
+				B *copied = bcpy(startup_log->bof, startup_log->eof);
+				BW *bw = wmktw(maint, copied);
+				copied->name = zdup(startup_log->name);
+				copied->internal = 1;
+				maint->curwin = bw->parent;
+				wshowall(maint);
+			}
 
-	if (!idleout) {
-		if (!isatty(fileno(stdin)) && modify_logic((BW *)maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
-			/* Start shell going in first window */
-			char **a;
-			char *cmd;
+			lastwin = lastw(maint);
+			if (!nonotice) {
+				if (xmsg) {
+					xmsg = stagen(NULL, (BW *)(lastw(maint)->object), joe_gettext(xmsg), ' ');
+					msgnw(((BASE *)lastwin->object)->parent, xmsg);
+				} else {
+					joe_snprintf_3(msgbuf,JOE_MSGBUFSIZE,joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
+					msgnw(((BASE *)lastwin->object)->parent, msgbuf);
+				}
 
-			a = vamk(10);
-			cmd = vsncpy(NULL, 0, sc("/bin/sh"));
-			a = vaadd(a, cmd);
-			cmd = vsncpy(NULL, 0, sc("-c"));
-			a = vaadd(a, cmd);
-			cmd = vsncpy(NULL, 0, sc("/bin/cat"));
-			a = vaadd(a, cmd);
-			
-			cstart ((BW *)maint->curwin->object, "/bin/sh", a, NULL, NULL, 0, 1, NULL, 0);
+			}
+
+			if (!idleout) {
+				if (!isatty(fileno(stdin)) && modify_logic((BW *)maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
+					/* Start shell going in first window */
+					char **a;
+					char *cmd;
+
+					a = vamk(10);
+					cmd = vsncpy(NULL, 0, sc("/bin/sh"));
+					a = vaadd(a, cmd);
+					cmd = vsncpy(NULL, 0, sc("-c"));
+					a = vaadd(a, cmd);
+					cmd = vsncpy(NULL, 0, sc("/bin/cat"));
+					a = vaadd(a, cmd);
+					
+					cstart ((BW *)maint->curwin->object, "/bin/sh", a, NULL, NULL, 0, 1, NULL, 0);
+				}
+			}
 		}
 	}
 

@@ -213,7 +213,6 @@ QW *mkqw(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, void
 			*notify = 1;
 		return NULL;
 	}
-	w->t->curwin = neww;
 	wfit(neww->t);
 	neww->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = neww;
@@ -244,7 +243,6 @@ QW *mkqwna(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, vo
 			*notify = 1;
 		return NULL;
 	}
-	w->t->curwin = neww;
 	wfit(neww->t);
 	neww->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = neww;
@@ -275,7 +273,6 @@ QW *mkqwnsr(W *w, const char *prompt, ptrdiff_t len, int (*func) (W *w, int k, v
 			*notify = 1;
 		return NULL;
 	}
-	w->t->curwin = neww;
 	wfit(neww->t);
 	neww->object = (void *) (qw = (QW *) joe_malloc(SIZEOF(QW)));
 	qw->parent = neww;
