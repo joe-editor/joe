@@ -40,8 +40,8 @@
 
     <Icon Id="joewinicon.exe" SourceFile="$(var.SrcRootDir)\exe\joewin.ico" />
     <Property Id="ARPPRODUCTICON" Value="joewinicon.exe" />
-    <Property Id="ARPURLINFOABOUT" Value="http://joe-editor.sourceforge.net/" />
-    <Property Id="ARPHELPLINK" Value="https://sourceforge.net/p/joe-editor/" />
+    <Property Id="ARPURLINFOABOUT" Value="https://joe-editor.sourceforge.io/" />
+    <Property Id="ARPHELPLINK" Value="https://joe-editor.sourceforge.io/$(var.JoeWinVersion)/man.html" />
     <WixVariable Id="WixUILicenseRtf" Value="$(var.WindowsDocDir)\COPYING.rtf" />
 
     <Feature Id="CompleteFeature" Title="JOE for Windows" Description="The complete JOE for Windows" Display="expand" Level="1" ConfigurableDirectory="INSTALLFOLDER" Absent="disallow" AllowAdvertise="no" InstallDefault="local">
