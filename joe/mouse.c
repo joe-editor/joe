@@ -133,6 +133,7 @@ static int joe_mouse_event()
 
 int uxtmouse(W *w, int k)
 {
+#ifndef JOEWIN
 	Cb = (unsigned char)ttgetc() - 32;
 	if (Cb < 0)
 		return -1;
@@ -142,6 +143,18 @@ int uxtmouse(W *w, int k)
 	Cy = (unsigned char)ttgetc();
 	if (Cy < 32)
 		return -1;
+#else
+	// TODO: Nonstandard hack - need to move to ext mouse (1006) when PuTTY code is upgraded
+	Cb = ttgetch() - 32;
+	if (Cb < 0)
+		return -1;
+	Cx = ttgetch();
+	if (Cx < 32)
+		return -1;
+	Cy = ttgetch();
+	if (Cy < 32)
+		return -1;
+#endif
 
 	Cx = mcoord(Cx);
 	Cy = mcoord(Cy);
