@@ -55,7 +55,7 @@ static int get_entries(TAB *tab, ino_t prv)
 	int only_cmds = 0;
 
 	tmp = vsncpy(NULL,0,sv(tab->path));
-	tmp = canonical(tmp);
+	tmp = canonical(tmp, 0);
 
 	if (chpwd(tmp)) {
 		vsrm(tmp);

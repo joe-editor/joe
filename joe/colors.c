@@ -109,7 +109,7 @@ static int parse_scoped_ident(const char **p, char *dest, ptrdiff_t sz)
 {
 	if (!parse_ident(p, dest, sz)) {
 		if (!parse_char(p, '.')) {
-			int n = zlen(dest);
+			ptrdiff_t n = zlen(dest);
 			dest[n++] = '.';
 			if (!parse_ident(p, &dest[n], sz - n)) {
 				return 0;
@@ -304,7 +304,7 @@ SCHEME *load_scheme(const char *name)
 	char buf[1024];
 	char bf[256];
 	char *b = NULL;
-	JFILE *f;
+	JFILE *f = NULL;
 	int line, i;
 	
 	/* Find existing */

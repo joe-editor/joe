@@ -283,7 +283,9 @@ int bsave(P *p, const char *s, off_t size,int flag);
 int bsavefd(P *p, int fd, off_t size);
 
 char *parsens(const char *s, off_t *skip, off_t *amnt);
-char *canonical(char *s);
+
+char *canonical(char *s, int flags);
+#define CANFLAG_NORESTART 1 /* Support path restart feature */
 
 /* Get byte at pointer or return NO_MORE_DATA if pointer is at end of buffer */
 int brc(P *p);

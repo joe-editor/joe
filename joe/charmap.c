@@ -1425,13 +1425,9 @@ main(int argc,char *argv[])
 
 char **get_encodings()
 {
-	int y, x;
+	int y;
 	char **encodings = 0;
-	char **t;
 	char *r;
-	char *oldpwd = pwd();
-	char *p;
-	char buf[1024];
 
 	/* Builtin maps */
 

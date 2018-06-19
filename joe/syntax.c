@@ -105,6 +105,10 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 						current_attr |= BLINK;
 					} else if (accu == 7) {
 						current_attr |= INVERSE;
+					} else if (accu == 9) {
+						current_attr |= CROSSED_OUT;
+					} else if (accu == 21) {
+						current_attr |= DOUBLE_UNDERLINE;
 					} else if (accu >= 30 && accu <= 37) {
 						if (bold && curschemeset && curschemeset->termcolors[accu - 22].type != COLORSPEC_TYPE_NONE) {
 							/* Remapped extended color */
@@ -471,7 +475,7 @@ void parse_syntax_color_def(struct color_def **color_list,const char *p,char *na
 {
 	char bf[256];
 	if(!parse_tows(&p, bf)) {
-		struct color_def *color, *gcolor;
+		struct color_def *color;
 
 		/* Find color */
 		color=find_color(*color_list,bf,name);

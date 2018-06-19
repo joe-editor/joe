@@ -11,6 +11,10 @@
 #include <pwd.h>
 #endif
 
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
+#endif
+
 #ifndef S_ISLNK
 #ifdef S_IFLNK
 #define S_ISLNK(n) (((n) & (S_IFMT)) == (S_IFLNK))
@@ -2547,21 +2551,22 @@ char *parsens(const char *s, off_t *skip, off_t *amnt)
 
 /* Canonicalize file name: do ~ expansion */
 
-char *canonical(char *n)
+char *canonical(char *n, int flags)
 {
 	ptrdiff_t y = 0;
 #ifndef __MSDOS__
 	ptrdiff_t x;
 	char *s;
-	for (y = zlen(n); ; --y)
-		if (y <= 2) {
-			y = 0;
-			break;
-		} else if (n[y-2] == '/' && (n[y-1] == '/' || n[y-1] == '~')) {
-			y -= 1;
-			break;
-		}
-	
+	if (!(flags & CANFLAG_NORESTART)) {
+		for (y = zlen(n); ; --y)
+			if (y <= 2) {
+				y = 0;
+				break;
+			} else if (n[y-2] == '/' && (n[y-1] == '/' || n[y-1] == '~')) {
+				y -= 1;
+				break;
+			}
+	}
 	if (n[y] == '~') {
 		for (x = y + 1; n[x] && n[x] != '/'; ++x) ;
 		if (n[x] == '/') {
@@ -2658,6 +2663,47 @@ char *dequote(const char *s)
         return buf;
 }
 
+/* Version of popen() that restores normal signal handling after the fork() */
+
+FILE *joe_popen(const char *s, int write_mode)
+{
+	int fds[2]; /* [0] is read, [1] is write */
+
+	if (-1 == pipe(fds))
+		return 0;
+
+#ifdef HAVE_FORK
+	if (!fork())
+#else
+	if (!vfork())
+#endif
+	{
+		signrm(); /* Restore default signal handling */
+		if (write_mode) {
+			if (-1 == dup2(fds[0], 0)) _exit(1);
+		} else {
+			if (-1 == dup2(fds[1], 1)) _exit(1);
+		}
+		close(fds[0]);
+		close(fds[1]);
+		execl("/bin/sh", "/bin/sh", "-c", s, NULL);
+		_exit(0);
+	}
+	if (write_mode) {
+		close(fds[0]);
+		return fdopen(fds[1], "w");
+	} else {
+		close(fds[1]);
+		return fdopen(fds[0], "r");
+	}
+}
+
+void joe_pclose(FILE *f)
+{
+	fclose(f);
+	wait(NULL);
+}
+
 /* Load file into new buffer and return the new buffer */
 /* Returns with error set to 0 for success,
  * -1 for new file (file doesn't exist)
@@ -2694,7 +2740,7 @@ B *bload(const char *s)
 	if (n[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		fi = popen(n + 1, "r");
+		fi = joe_popen(n + 1, 0);
 	} else
 #endif
 	if (!zcmp(n, "-")) {
@@ -2769,7 +2815,7 @@ B *bload(const char *s)
 err:
 #ifndef __MSDOS__
 	if (s[0] == '!')
-		pclose(fi);
+		joe_pclose(fi);
 	else
 #endif
 	if (zcmp(n, "-"))
@@ -3128,7 +3174,7 @@ int bsave(P *p, const char *as, off_t size, int flag)
 	if (s[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		f = popen(s + 1, "w");
+		f = joe_popen(s + 1, 1);
 	} else
 #endif
 	if (s[0] == '>' && s[1] == '>')
@@ -3222,7 +3268,7 @@ int bsave(P *p, const char *as, off_t size, int flag)
 err:
 #ifndef __MSDOS__
 	if (s[0] == '!')
-		pclose(f);
+		joe_pclose(f);
 	else
 #endif
 	if (zcmp(s, "-"))

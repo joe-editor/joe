@@ -21,7 +21,7 @@ struct bw {
 	void	*object;
 
 	int	lincols;	/* Line number column width */
-	int	curlin;		/* Cursor line (highlighted) */
+	off_t	curlin;		/* Cursor line (highlighted) */
 	int	top_changed;	/* Top changed */
 	struct lattr_db *db;	/* line attribute database */
 	int	shell_flag;	/* Cursor should follow shell cursor in this window */

@@ -68,6 +68,8 @@ struct scrn {
 	const char	*md;		/* Enter bold mode */
 	const char	*mh;		/* Enter dim mode */
 	const char	*mr;		/* Enter inverse mode */
+	const char      *stricken;      /* Enter strikeout mode */
+	const char      *dunderline;    /* Enter double-underline mode */
 	const char	*me;		/* Exit above modes */
 
 	const char	*ZH;		/* Enter italic mode */
@@ -224,6 +226,7 @@ void utf8_putc(int c);
 #define BLINK 8
 #define DIM 16
 #define ITALIC 32
+
 extern unsigned atab[];
 
 #define outatr(t,scrn,attr,x,y,c,a) do { \
@@ -239,13 +242,15 @@ extern unsigned atab[];
 #define CONTEXT_STRING	2
 #define CONTEXT_MASK	(CONTEXT_COMMENT+CONTEXT_STRING)
 
+#define DOUBLE_UNDERLINE   8
+#define CROSSED_OUT       16
 #define ITALIC		  32
 #define INVERSE		  64
 #define UNDERLINE	 128
 #define BOLD		 256
 #define BLINK		 512
 #define DIM		1024
-#define AT_MASK		(INVERSE+UNDERLINE+BOLD+BLINK+DIM+ITALIC)
+#define AT_MASK		(INVERSE+UNDERLINE+BOLD+BLINK+DIM+ITALIC+DOUBLE_UNDERLINE+CROSSED_OUT)
 
 #define BG_SHIFT	11
 #define BG_VALUE	(255<<BG_SHIFT)
