@@ -95,6 +95,7 @@ def main(version, outfile_h, outfile_wxi, designation):
     writefile(outfile_wxi, """<?xml version="1.0" encoding="utf-8"?>
 <Include>
   <?define JoeWinVersion = \"""" + '.'.join(vparts) + """\" ?>
+  <?define JoeWinShortVersion = \"""" + version + """\" ?>
   <?define JoeWinDescVersion = \"""" + shortdesc + """\" ?>
 </Include>
 """)
