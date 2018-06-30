@@ -4,7 +4,7 @@ PUBLIC coro_transfer
 
 coro_transfer proc
 	mov rax, rsp
-	sub rsp, 168			; one dummy qword to improve alignment
+	sub rsp, 176			; two extra qwords for safe realignment
 	sub rax, 160			; movaps will AV if unaligned
 	and rax, -16			; align RAX
 	movaps [rax], xmm6
@@ -41,10 +41,10 @@ coro_transfer proc
 	pop rbp
 	pop rdi
 	pop rsi
-	add rsp, 168
+	add rsp, 176
 	mov rax, rsp
-	sub rax, 160
-	and rax, -16
+	sub rax, 160			; movaps will AV if unaligned
+	and rax, -16			; align RAX
 	movaps xmm6, [rax]
 	movaps xmm7, [rax+16]
 	movaps xmm8, [rax+32]

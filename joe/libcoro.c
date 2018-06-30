@@ -106,14 +106,16 @@ trampoline (int sig)
 
 # if CORO_ASM
 
-#if __amd_64 || _M_AMD64
+#if __amd64 || _M_AMD64
 #if _WIN32
-#define NUM_SAVED 29
+#define NUM_SAVED 30
 #else
 #define NUM_SAVED 6
 #endif
 #elif __i386 || _M_IX86
 #define NUM_SAVED 4
+#else
+#error Unrecognized architecture
 #endif
 
 #ifndef _MSC_VER
@@ -132,7 +134,7 @@ trampoline (int sig)
 
          #if _WIN32 || __CYGWIN__
            "\tmovq %rsp, %rax\n"
-           "\tsubq $168, %rsp\n" /* one dummy qword to improve alignment */
+           "\tsubq $176, %rsp\n" /* two dummy qwords for safe realignment */
 	   "\tsubq $160, %rax\n" /* align RAX to 16 bytes */
 	   "\tandq $-16, %rax\n"
            "\tmovaps %xmm6, (%rax)\n"
@@ -173,7 +175,7 @@ trampoline (int sig)
            "\tpopq %rbp\n"
            "\tpopq %rdi\n"
            "\tpopq %rsi\n"
-	   "\taddq $168, %rsp\n"
+	   "\taddq $176, %rsp\n"
 	   "\tmovq %rsp, %rax\n"
 	   "\tsubq $160, %rax\n"
 	   "\tandq $-16, %rax\n"

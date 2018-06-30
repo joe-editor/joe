@@ -11,10 +11,6 @@
       <AdditionalIncludeDirectories>$(VersionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
 
-    <MASM>
-      <UseSafeExceptionHandlers>true</UseSafeExceptionHandlers>
-    </MASM>
-
     <Link>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <SubSystem>Windows</SubSystem>

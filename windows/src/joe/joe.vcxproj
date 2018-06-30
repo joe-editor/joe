@@ -119,7 +119,9 @@
     <ClCompile Include="$(JoeExternalSrcDir)\lattr.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\libcoro.c" />
     <MASM Condition="'$(Platform)' == 'x64'" Include="$(JoeExternalSrcDir)\libcoro_amd64.asm" />
-    <MASM Condition="'$(Platform)' == 'Win32'" Include="$(JoeExternalSrcDir)\libcoro_x86.asm" />
+    <MASM Condition="'$(Platform)' == 'Win32'" Include="$(JoeExternalSrcDir)\libcoro_x86.asm">
+      <UseSafeExceptionHandlers>true</UseSafeExceptionHandlers>
+    </MASM>
     <ClCompile Include="$(JoeExternalSrcDir)\macro.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\main.c" />
     <ClCompile Include="$(JoeExternalSrcDir)\menu.c" />
