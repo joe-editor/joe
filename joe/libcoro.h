@@ -361,9 +361,9 @@ struct coro_context
 
 # define coro_destroy(ctx) (void *)(ctx)
 
-# if _WIN32 || __CYGWIN__
+# if _WIN32
 #  define CORO_WIN_TIB 1
-#endif
+# endif
 
 #ifdef _MSC_VER
 #if _M_IX86

@@ -107,7 +107,7 @@ trampoline (int sig)
 # if CORO_ASM
 
 #if __amd64 || _M_AMD64
-#if _WIN32
+#if _WIN32 || __CYGWIN__
 #define NUM_SAVED 30
 #else
 #define NUM_SAVED 6
@@ -121,7 +121,7 @@ trampoline (int sig)
 #ifndef _MSC_VER
   asm (
        "\t.text\n"
-       #if _WIN32 || __CYGWIN__
+       #if _WIN32
        "\t.globl _coro_transfer\n"
        "_coro_transfer:\n"
        #else
