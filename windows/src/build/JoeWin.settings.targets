@@ -84,6 +84,7 @@
     <_Python Condition="'$(_PythonPath)'!=''">$(_PythonPath)\python.exe</_Python>
   </PropertyGroup>
 
+  <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Import Project="version.props" />

@@ -106,10 +106,17 @@ trampoline (int sig)
 
 # if CORO_ASM
 
-  #if _WIN32 || __CYGWIN__
-    #define CORO_WIN_TIB 1
-  #endif
+#if __amd_64 || _M_AMD64
+#if _WIN32
+#define NUM_SAVED 29
+#else
+#define NUM_SAVED 6
+#endif
+#elif __i386 || _M_IX86
+#define NUM_SAVED 4
+#endif
 
+#ifndef _MSC_VER
   asm (
        "\t.text\n"
        #if _WIN32 || __CYGWIN__
@@ -119,23 +126,25 @@ trampoline (int sig)
        "\t.globl coro_transfer\n"
        "coro_transfer:\n"
        #endif
-       /* windows, of course, gives a shit on the amd64 ABI and uses different registers */
+       /* windows, of course, takes a shit on the amd64 ABI and uses different registers */
        /* http://blogs.msdn.com/freik/archive/2005/03/17/398200.aspx */
-       #if __amd64
+       #if __amd64 || _M_AMD64
 
          #if _WIN32 || __CYGWIN__
-           #define NUM_SAVED 29
-           "\tsubq $168, %rsp\t" /* one dummy qword to improve alignment */
-           "\tmovaps %xmm6, (%rsp)\n"
-           "\tmovaps %xmm7, 16(%rsp)\n"
-           "\tmovaps %xmm8, 32(%rsp)\n"
-           "\tmovaps %xmm9, 48(%rsp)\n"
-           "\tmovaps %xmm10, 64(%rsp)\n"
-           "\tmovaps %xmm11, 80(%rsp)\n"
-           "\tmovaps %xmm12, 96(%rsp)\n"
-           "\tmovaps %xmm13, 112(%rsp)\n"
-           "\tmovaps %xmm14, 128(%rsp)\n"
-           "\tmovaps %xmm15, 144(%rsp)\n"
+           "\tmovq %rsp, %rax\n"
+           "\tsubq $168, %rsp\n" /* one dummy qword to improve alignment */
+	   "\tsubq $160, %rax\n" /* align RAX to 16 bytes */
+	   "\tandq $-16, %rax\n"
+           "\tmovaps %xmm6, (%rax)\n"
+           "\tmovaps %xmm7, 16(%rax)\n"
+           "\tmovaps %xmm8, 32(%rax)\n"
+           "\tmovaps %xmm9, 48(%rax)\n"
+           "\tmovaps %xmm10, 64(%rax)\n"
+           "\tmovaps %xmm11, 80(%rax)\n"
+           "\tmovaps %xmm12, 96(%rax)\n"
+           "\tmovaps %xmm13, 112(%rax)\n"
+           "\tmovaps %xmm14, 128(%rax)\n"
+           "\tmovaps %xmm15, 144(%rax)\n"
            "\tpushq %rsi\n"
            "\tpushq %rdi\n"
            "\tpushq %rbp\n"
@@ -145,16 +154,16 @@ trampoline (int sig)
            "\tpushq %r14\n"
            "\tpushq %r15\n"
            #if CORO_WIN_TIB
-             "\tpushq %fs:0x0\n"
-             "\tpushq %fs:0x8\n"
-             "\tpushq %fs:0xc\n"
+             "\tpushq %gs:0x0\n"
+             "\tpushq %gs:0x8\n"
+             "\tpushq %gs:0x10\n"
            #endif
            "\tmovq %rsp, (%rcx)\n"
            "\tmovq (%rdx), %rsp\n"
            #if CORO_WIN_TIB
-             "\tpopq %fs:0xc\n"
-             "\tpopq %fs:0x8\n"
-             "\tpopq %fs:0x0\n"
+             "\tpopq %gs:0x10\n"
+             "\tpopq %gs:0x8\n"
+             "\tpopq %gs:0x0\n"
            #endif
            "\tpopq %r15\n"
            "\tpopq %r14\n"
@@ -164,19 +173,21 @@ trampoline (int sig)
            "\tpopq %rbp\n"
            "\tpopq %rdi\n"
            "\tpopq %rsi\n"
-           "\tmovaps (%rsp), %xmm6\n"
-           "\tmovaps 16(%rsp), %xmm7\n"
-           "\tmovaps 32(%rsp), %xmm8\n"
-           "\tmovaps 48(%rsp), %xmm9\n"
-           "\tmovaps 64(%rsp), %xmm10\n"
-           "\tmovaps 80(%rsp), %xmm11\n"
-           "\tmovaps 96(%rsp), %xmm12\n"
-           "\tmovaps 112(%rsp), %xmm13\n"
-           "\tmovaps 128(%rsp), %xmm14\n"
-           "\tmovaps 144(%rsp), %xmm15\n"
-           "\taddq $168, %rsp\n"
+	   "\taddq $168, %rsp\n"
+	   "\tmovq %rsp, %rax\n"
+	   "\tsubq $160, %rax\n"
+	   "\tandq $-16, %rax\n"
+           "\tmovaps (%rax), %xmm6\n"
+           "\tmovaps 16(%rax), %xmm7\n"
+           "\tmovaps 32(%rax), %xmm8\n"
+           "\tmovaps 48(%rax), %xmm9\n"
+           "\tmovaps 64(%rax), %xmm10\n"
+           "\tmovaps 80(%rax), %xmm11\n"
+           "\tmovaps 96(%rax), %xmm12\n"
+           "\tmovaps 112(%rax), %xmm13\n"
+           "\tmovaps 128(%rax), %xmm14\n"
+           "\tmovaps 144(%rax), %xmm15\n"
          #else
-           #define NUM_SAVED 6
            "\tpushq %rbp\n"
            "\tpushq %rbx\n"
            "\tpushq %r12\n"
@@ -195,16 +206,13 @@ trampoline (int sig)
          "\tpopq %rcx\n"
          "\tjmpq *%rcx\n"
 
-       #elif __i386
+       #elif __i386 || _M_IX86
 
-         #define NUM_SAVED 4
          "\tpushl %ebp\n"
          "\tpushl %ebx\n"
          "\tpushl %esi\n"
          "\tpushl %edi\n"
          #if CORO_WIN_TIB
-           #undef NUM_SAVED
-           #define NUM_SAVED 7
            "\tpushl %fs:0\n"
            "\tpushl %fs:4\n"
            "\tpushl %fs:8\n"
@@ -227,7 +235,7 @@ trampoline (int sig)
          #error unsupported architecture
        #endif
   );
-
+#endif
 # endif
 
 void

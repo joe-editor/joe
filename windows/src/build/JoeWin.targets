@@ -11,6 +11,10 @@
       <AdditionalIncludeDirectories>$(VersionDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
 
+    <MASM>
+      <UseSafeExceptionHandlers>true</UseSafeExceptionHandlers>
+    </MASM>
+
     <Link>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <SubSystem>Windows</SubSystem>
@@ -97,6 +101,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   <Import Project="JoeWin.tasks.targets" />
 
   <Target Name="BeforeResourceCompile" Inputs="@(ResourceSpec)" Outputs="$(IntDir)\builtins.rc">

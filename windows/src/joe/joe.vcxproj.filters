@@ -251,6 +251,12 @@
     <ClCompile Include="$(JoeExternalSrcDir)\libcoro.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <MASM Include="$(JoeExternalSrcDir)\libcoro_amd64.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="$(JoeExternalSrcDir)\libcoro_x86.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
     <ClCompile Include="$(JoeExternalSrcDir)\macro.c">
       <Filter>Source Files</Filter>
     </ClCompile>

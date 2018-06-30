@@ -359,10 +359,24 @@ struct coro_context
   void **sp; /* must be at offset 0 */
 };
 
+# define coro_destroy(ctx) (void *)(ctx)
+
+# if _WIN32 || __CYGWIN__
+#  define CORO_WIN_TIB 1
+#endif
+
+#ifdef _MSC_VER
+#if _M_IX86
+__declspec(noinline) void __fastcall coro_transfer(coro_context *prev, coro_context *next);
+#elif _M_AMD64
+__declspec(noinline) void coro_transfer(coro_context *prev, coro_context *next);
+#else
+#error Unsupported Windows architecture
+#endif
+# else
 void __attribute__ ((__noinline__, __regparm__(2)))
 coro_transfer (coro_context *prev, coro_context *next);
-
-# define coro_destroy(ctx) (void *)(ctx)
+# endif
 
 #elif CORO_PTHREAD
 

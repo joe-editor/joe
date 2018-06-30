@@ -334,8 +334,12 @@
 /* Define as `fork' if `vfork' does not work. */
 /* #undef vfork */
 
-/* libcoro: Use fibers for coroutines (grr).  It's broken on x64 otherwise. */
-#define CORO_FIBER 1
+/* libcoro: Use assembly language implementations if on standard architecture */
+#if defined(_M_AMD64) || defined(_M_IX86)
+#define CORO_ASM 1
+#else
+#define CORO_LOSER 1
+#endif
 
 /* Math functions */
 
