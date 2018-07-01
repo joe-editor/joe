@@ -321,7 +321,8 @@ trampoline (int sig)
 #error Unrecognized architecture
 #endif
 
-# endif
+#endif
+#endif
 
 void
 coro_create (coro_context *ctx, coro_func coro, void *arg, void *sptr, size_t ssize)
@@ -653,7 +654,7 @@ coro_destroy (coro_context *ctx)
   DeleteFiber (ctx->fiber);
 }
 
-#else
+#elif !CORO_UCONTEXT
   #error unsupported backend
 #endif
 
@@ -802,5 +803,4 @@ coro_stack_free (struct coro_stack *stack)
 #endif
 }
 
-#endif
 #endif
