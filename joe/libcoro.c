@@ -444,7 +444,7 @@ coro_create (coro_context *ctx, coro_func coro, void *arg, void *sptr, size_t ss
 
 # elif CORO_ASM
 
-  #if __i386__ || __x86_64__
+  #if __i386__ || __x86_64__ || _M_IX86 || _M_AMD64
     ctx->sp = (void **)(ssize + (char *)sptr);
     *--ctx->sp = (void *)abort; /* needed for alignment only */
     *--ctx->sp = (void *)coro_init;
@@ -462,7 +462,7 @@ coro_create (coro_context *ctx, coro_func coro, void *arg, void *sptr, size_t ss
   ctx->sp -= NUM_SAVED;
   memset (ctx->sp, 0, sizeof (*ctx->sp) * NUM_SAVED);
 
-  #if __i386__ || __x86_64__
+  #if __i386__ || __x86_64__ || _M_IX86 || _M_AMD64
     /* done already */
   #elif CORO_ARM
     ctx->sp[0] = coro; /* r4 */
@@ -729,6 +729,9 @@ coro_destroy (coro_context *ctx)
 int
 coro_stack_alloc (struct coro_stack *stack, unsigned int size)
 {
+  size_t ssze;
+  void *base;
+
   if (!size)
     size = 256 * 1024;
 
@@ -742,8 +745,7 @@ coro_stack_alloc (struct coro_stack *stack, unsigned int size)
 
 #else
 
-  size_t ssze = stack->ssze + CORO_GUARDPAGES * PAGESIZE;
-  void *base;
+  ssze = stack->ssze + CORO_GUARDPAGES * PAGESIZE;
 
   #if CORO_MMAP
     /* mmap supposedly does allocate-on-write for us */

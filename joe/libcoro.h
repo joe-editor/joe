@@ -374,7 +374,7 @@ struct coro_context
   void **sp; /* must be at offset 0 */
 };
 
-#if __i386__ || __x86_64__
+#if __i386__ || __x86_64__ || _M_IX86 || _M_AMD64
 #ifndef _MSC_VER
 void __attribute__ ((__noinline__, __regparm__(2)))
 #else
