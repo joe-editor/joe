@@ -25,6 +25,7 @@
  * This coroutine library is very much stripped down. You should either
  * build your own process abstraction using it or - better - just use GNU
  * Portable Threads, http://www.gnu.org/software/pth/.
+ *
  */
 
 /*
@@ -63,6 +64,14 @@
  * 2012-12-05 experimental fiber backend (allocates stack twice).
  * 2012-12-07 API version 3 - add coro_stack_alloc/coro_stack_free.
  * 2012-12-21 valgrind stack registering was broken.
+ * 2015-12-05 experimental asm be for arm7, based on a patch by Nick Zavaritsky.
+ *            use __name__ for predefined symbols, as in libecb.
+ *            enable guard pages on arm, aarch64 and mips.
+ * 2016-08-27 try to disable _FORTIFY_SOURCE with CORO_SJLJ, as it
+ *            breaks setjmp/longjmp. Also disable CORO_ASM for asm by default,
+ *            as it was reported to crash.
+ * 2016-11-18 disable cfi_undefined again - backtraces might be worse, but
+ *            compile compatibility is improved.
  */
 
 #ifndef CORO_H
@@ -124,8 +133,8 @@ extern "C" {
  * -DCORO_ASM
  *
  *    Hand coded assembly, known to work only on a few architectures/ABI:
- *    GCC + x86/IA32 and amd64/x86_64 + GNU/Linux and a few BSDs. Fastest choice,
- *    if it works.
+ *    GCC + arm7/x86/IA32/amd64/x86_64 + GNU/Linux and a few BSDs. Fastest
+ *    choice, if it works.
  *
  * -DCORO_PTHREAD
  *
@@ -283,18 +292,18 @@ void coro_stack_free (struct coro_stack *stack);
     && !defined CORO_SJLJ    && !defined CORO_LINUX \
     && !defined CORO_IRIX    && !defined CORO_ASM \
     && !defined CORO_PTHREAD && !defined CORO_FIBER
-# if defined WINDOWS && (defined __i386 || (__x86_64 || defined _M_IX86 || defined _M_AMD64))
+# if defined WINDOWS && (defined __i386__ || (__x86_64__ || defined _M_IX86 || defined _M_AMD64))
 #  define CORO_ASM 1
 # elif defined WINDOWS || defined _WIN32
 #  define CORO_LOSER 1 /* you don't win with windoze */
-# elif __linux && (__i386 || (__x86_64 && !__ILP32))
+# elif (__linux || __CYGWIN__) && (__i386__ || (__x86_64__ && !__ILP32__)) /*|| (__arm__ && __ARM_ARCH == 7)), not working */
 #  define CORO_ASM 1
 # elif defined HAVE_UCONTEXT_H
 #  define CORO_UCONTEXT 1
 # elif defined HAVE_SETJMP_H && defined HAVE_SIGALTSTACK
 #  define CORO_SJLJ 1
 # else
-error unknown or unsupported architecture
+#error unknown or unsupported architecture
 # endif
 #endif
 
@@ -316,6 +325,12 @@ struct coro_context
 
 # if defined(CORO_LINUX) && !defined(_GNU_SOURCE)
 #  define _GNU_SOURCE /* for glibc */
+# endif
+
+/* try to disable well-meant but buggy checks in some libcs */
+# ifdef _FORTIFY_SOURCE
+#  undef _FORTIFY_SOURCE
+#  undef __USE_FORTIFY_LEVEL /* helps some more when too much has been included already */
 # endif
 
 # if !CORO_LOSER
@@ -359,24 +374,21 @@ struct coro_context
   void **sp; /* must be at offset 0 */
 };
 
-# define coro_destroy(ctx) (void *)(ctx)
-
-# if _WIN32 || __CYGWIN__
-#  define CORO_WIN_TIB 1
-#endif
-
-#ifdef _MSC_VER
-#if _M_IX86
-__declspec(noinline) void __fastcall coro_transfer(coro_context *prev, coro_context *next);
-#elif _M_AMD64
-__declspec(noinline) void coro_transfer(coro_context *prev, coro_context *next);
-#else
-#error Unsupported Windows architecture
-#endif
-# else
+#if __i386__ || __x86_64__
+#ifndef _MSC_VER
 void __attribute__ ((__noinline__, __regparm__(2)))
+#else
+__declspec(noinline) void
+#if _M_IX86
+__fastcall
+#endif
+#endif
+#else
+void __attribute__ ((__noinline__))
+#endif
 coro_transfer (coro_context *prev, coro_context *next);
-# endif
+
+# define coro_destroy(ctx) (void *)(ctx)
 
 #elif CORO_PTHREAD
 
