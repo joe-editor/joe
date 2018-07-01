@@ -654,7 +654,7 @@ coro_destroy (coro_context *ctx)
   DeleteFiber (ctx->fiber);
 }
 
-#elif !CORO_UCONTEXT
+#else
   #error unsupported backend
 #endif
 
