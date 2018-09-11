@@ -726,6 +726,12 @@
 -hash_comment
 -syntax debian
 
+ debian_changelog
+[debian_changelog]
+*debian/changelog
+*debian/changelog.dch
+-syntax debian_changelog
+
  Java's .properties
 [java_properties]
 *.properties
