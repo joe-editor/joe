@@ -152,6 +152,7 @@ struct buffer {
 	pid_t	pid;		/* Process id */
 	int	out;		/* fd to write to process */
 	VT	*vt;		/* video terminal emulator */
+	int     raw;            /* just append data from shell, don't interpret it */
 	struct lattr_db *db;	/* Linked list of line attribute databases */
 	void (*parseone)(struct charmap *map,const char *s,char **rtn_name,
 	                 off_t *rtn_line);

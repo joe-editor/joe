@@ -153,6 +153,19 @@ static void cdata(void *obj, char *dat, ptrdiff_t siz)
 				rmmacro(m);
 			}
 		} while (m);
+	} else if (b->raw) { /* Just append the data as-is */
+		P *q = pdup(b->eof, "cdata");
+		off_t byte = q->byte;
+		char bf[1024];
+		int x, y;
+		cready(b, byte);
+
+		if (siz) {
+			binsm(q, dat, siz);
+		}
+		prm(q);
+		cfollow(b, NULL, b->eof->byte);
+		undomark();
 	} else { /* Dumb terminal */
 		P *q = pdup(b->eof, "cdata");
 		P *r = pdup(b->eof, "cdata");
@@ -188,7 +201,7 @@ static void cdata(void *obj, char *dat, ptrdiff_t siz)
 	}
 }
 
-int cstart(BW *bw, const char *name, char **s, void *obj, int *notify, int build, int out_only, const char *first_command, int vt)
+int cstart(BW *bw, const char *name, char **s, void *obj, int *notify, int build, int out_only, const char *first_command, int shell_type)
 {
 #ifdef __MSDOS__
 	if (notify) {
@@ -206,7 +219,7 @@ int cstart(BW *bw, const char *name, char **s, void *obj, int *notify, int build
 		*notify = 1;
 	}
 	if (bw->b->pid) {
-		if (!vt) { /* Don't complain if shell already running.. makes F-key switching nicer */
+		if (!(shell_type == SHELL_TYPE_VT)) { /* Don't complain if shell already running.. makes F-key switching nicer */
 			/* Keep old behavior for dumb terminal */
 			msgnw(bw->parent, joe_gettext(_("Program already running in this window")));
 		}
@@ -214,7 +227,7 @@ int cstart(BW *bw, const char *name, char **s, void *obj, int *notify, int build
 		return -1;
 	}
 
-	if (vt) {
+	if (shell_type == SHELL_TYPE_VT) {
 		BW *master = vtmaster(bw->parent->t, bw->b); /* In case of multiple BWs on one B, pick one to be the master */
 		if (!master) master = bw; /* Should never happen */
 		shell_w = master->w;
@@ -227,6 +240,10 @@ int cstart(BW *bw, const char *name, char **s, void *obj, int *notify, int build
 		/* Turn on shell mode for each window */
 		ansiall(bw->b);
 	}
+	if (shell_type == SHELL_TYPE_RAW)
+		bw->b->raw = 1;
+	else
+		bw->b->raw = 0;
 
 	/* p_goto_eof(bw->cursor); */
 
@@ -244,7 +261,7 @@ int cstart(BW *bw, const char *name, char **s, void *obj, int *notify, int build
 #endif
 }
 
-static int dobknd(BW *bw, int vt)
+static int dobknd(BW *bw, int shell_type)
 {
 	char **a;
 	char *s;
@@ -271,7 +288,7 @@ static int dobknd(BW *bw, int vt)
 	a = vaadd(a, s);
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, NULL, 0, 0, (vt ? (zstr(sh, "csh") ? start_csh : start_sh) : NULL), vt);
+	return cstart(bw, sh, a, NULL, NULL, 0, 0, (shell_type == SHELL_TYPE_VT ? (zstr(sh, "csh") ? start_csh : start_sh) : NULL), shell_type);
 }
 
 /* Start ANSI shell */
@@ -318,7 +335,7 @@ static int dorun(W *w, char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, "/bin/sh", a, NULL, notify, 0, 0, NULL, 0);
+	return cstart(bw, "/bin/sh", a, NULL, notify, 0, 0, NULL, SHELL_TYPE_DUMB);
 }
 
 B *runhist = NULL;
@@ -361,7 +378,7 @@ static int dobuild(W *w, char *s, void *object, int *notify)
 	vsrm(s);
 	s = t;
 	a = vaadd(a, s);
-	return cstart(bw, "/bin/sh", a, NULL, notify, 1, 0, NULL, 0);
+	return cstart(bw, "/bin/sh", a, NULL, notify, 1, 0, NULL, SHELL_TYPE_DUMB);
 }
 
 B *buildhist = NULL;

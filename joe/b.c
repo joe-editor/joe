@@ -283,6 +283,7 @@ static B *bmkchn(H *chn, B *prop, off_t amnt, off_t nlines)
 	b->pid = 0;
 	b->out = -1;
 	b->vt = 0;
+	b->raw = 0;
 	b->db = 0;
 	b->parseone = 0;
 	enquef(B, link, &bufs, b);
