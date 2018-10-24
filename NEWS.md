@@ -15,6 +15,8 @@
 	* Fix bug where JOE would interpret data piped into it.  For
 	  example, in: "echo -e 'a\0b' | joe" the NUL was missing.
 
+	* Fix bug where 'New File' was displayed in "echo hi | joe -"
+
 ### JOE 4.6
 
 * Enhancements

@@ -2725,6 +2725,8 @@ B *bload(const char *s)
 	time_t mod_time = 0;
 	struct stat sbuf;
 
+	berror = 0;
+
 	if (!s || !s[0]) {
 		berror = -1;
 		b = bmk(NULL);
