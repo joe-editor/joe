@@ -12,10 +12,13 @@
 
 * Bugs fixed
 
-	* Make piping into JOE binary clean.  For
-	  example, in: "echo -e 'a\0b' | joe" the NUL was missing.
+	* Fix a number of bugs involved with piping data into JOE:
 
-	* Fix bug where 'New File' was displayed in "echo hi | joe -"
+		* Make piping into JOE binary clean.  For example, in: "echo -e 'a\0b' | joe" the NUL was missing.
+
+		* Fix bug where 'New File' was displayed in "echo hi | joe -"
+
+		* Fix bug where closing the copying process didn't cause the other end of the pipe feeding stdin from seeing SIGPIPE.
 
 ### JOE 4.6
 
