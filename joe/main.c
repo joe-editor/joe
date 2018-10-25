@@ -156,7 +156,7 @@ int edloop(int flg)
 
 		/* Use special kbd if we're handing data to a shell window */
 		bw = (BW *)maint->curwin->object;
-		if (shell_kbd && (maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseof(bw->cursor))
+		if (shell_kbd && (maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && !bw->b->raw && piseof(bw->cursor))
 			m = dokey(shell_kbd, c);
 		else if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)
 			m = dokey(bw->b->vt->kbd, c);
@@ -661,19 +661,8 @@ int main(int argc, char **real_argv, const char * const *envv)
 
 	if (!idleout) {
 		if (!isatty(fileno(stdin)) && modify_logic((BW *)maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
-			/* Start shell going in first window */
-			char **a;
-			char *cmd;
-
-			a = vamk(10);
-			cmd = vsncpy(NULL, 0, sc("/bin/sh"));
-			a = vaadd(a, cmd);
-			cmd = vsncpy(NULL, 0, sc("-c"));
-			a = vaadd(a, cmd);
-			cmd = vsncpy(NULL, 0, sc("/bin/cat"));
-			a = vaadd(a, cmd);
-			
-			cstart ((BW *)maint->curwin->object, "/bin/sh", a, NULL, NULL, 0, 1, NULL, SHELL_TYPE_RAW);
+			/* Read stdin into window asynchronously */
+			cstart ((BW *)maint->curwin->object, NULL, NULL, NULL, NULL, 0, 1, NULL, SHELL_TYPE_RAW);
 		}
 	}
 

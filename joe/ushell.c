@@ -247,7 +247,7 @@ int cstart(BW *bw, const char *name, char **s, void *obj, int *notify, int build
 
 	/* p_goto_eof(bw->cursor); */
 
-	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only, shell_w, shell_h))) {
+	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only, shell_w, shell_h, (shell_type == SHELL_TYPE_RAW)))) {
 		varm(s);
 		msgnw(bw->parent, joe_gettext(_("No ptys available")));
 		return -1;
@@ -335,7 +335,7 @@ static int dorun(W *w, char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	a = vaadd(a, s);
-	return cstart(bw, "/bin/sh", a, NULL, notify, 0, 0, NULL, SHELL_TYPE_DUMB);
+	return cstart(bw, "/bin/sh", a, NULL, notify, 0, 0, NULL, SHELL_TYPE_RAW);
 }
 
 B *runhist = NULL;

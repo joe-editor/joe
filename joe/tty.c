@@ -1089,10 +1089,11 @@ static const char **newenv(const char * const *old, const char *s)
 
 /* Create a shell process */
 
-/* If out_only is set, leave program's stdin attached to JOE's stdin */
+/* If copy_in is set: don't start a program, instead copy JOE's stdin to JOE */
+/* If use_pipe is set: connect stdout of program to JOE using a pipe instead of pty/tty pair */
 
-MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int out_only,
-           ptrdiff_t w, ptrdiff_t h)
+MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int copy_in,
+           ptrdiff_t w, ptrdiff_t h, int use_pipe)
 {
 	char buf[80];
 	int fds[2];
@@ -1113,8 +1114,16 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 		return NULL;
 
 	/* Get pty/tty pair */
-	if (!(name = getpty(ptyfd, &ttyfd)))
-		return NULL;
+	if (use_pipe) {
+		int p[2];
+		if (pipe(p))
+			return NULL;
+		*ptyfd = p[0];
+		ttyfd = p[1];
+	} else {
+		if (!(name = getpty(ptyfd, &ttyfd)))
+			return NULL;
+	}
 
 	/* Fixes cygwin console bug: if you fork() with inverse video he assumes you want
 	 * ESC [ 0 m to keep it in inverse video from then on. */
@@ -1198,7 +1207,7 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 				const char **enva;
 				const char **env;
 
-				if (!out_only) {			/* Standard input */
+				if (!copy_in) {			/* Standard input */
 					dup2(ttyfd, 0);
 				}
 				dup2(ttyfd, 1);
@@ -1216,7 +1225,7 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 				env = newenv(enva, "JOE=1");
 
 
-				if (!out_only) {
+				if (!copy_in) {
 #ifdef HAVE_LOGIN_TTY
 					login_tty(1);
 
@@ -1229,21 +1238,23 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 
 #endif
 
+					if (!use_pipe) {
+						/* We could probably have a special TTY set-up for JOE, but for now
+						 * we'll just use the TTY setup for the TTY was was run on */
 #ifdef HAVE_POSIX_TERMIOS
-					tcsetattr(1, TCSADRAIN, &oldterm);
+						tcsetattr(1, TCSADRAIN, &oldterm);
 #else
 #ifdef HAVE_SYSV_TERMIO
-					joe_ioctl(1, TCSETAW, &oldterm);
+						joe_ioctl(1, TCSETAW, &oldterm);
 #else
-					joe_ioctl(1, TIOCSETN, &oarg);
-					joe_ioctl(1, TIOCSETC, &otarg);
-					joe_ioctl(1, TIOCSLTC, &oltarg);
+						joe_ioctl(1, TIOCSETN, &oarg);
+						joe_ioctl(1, TIOCSETC, &otarg);
+						joe_ioctl(1, TIOCSLTC, &oltarg);
 #endif
 #endif
-					/* We could probably have a special TTY set-up for JOE, but for now
-					 * we'll just use the TTY setup for the TTY was was run on */
-					 if (w != -1)
-					         ttstsz(1, w, h);
+						if (w != -1)
+							ttstsz(1, w, h);
+					}
 
 					/* Execute the shell */
 					execve(cmd, args, (char * const *)env);
@@ -1256,6 +1267,8 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 						sleep(1);
 
 				} else {
+					/* Copy from JOE's orignal standard input to JOE.  This is used
+					   when JOE is used in a pipeline */
 					char ibuf[1024];
 					ptrdiff_t len;
 					for (;;) {
