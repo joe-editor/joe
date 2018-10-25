@@ -20,6 +20,8 @@
 
 		* Fix bug where closing the copying process didn't cause the other end of the pipe feeding stdin from seeing SIGPIPE.
 
+		* Fix bug where window resize will cause copying process to stop (needed to retry on EINTR).
+
 ### JOE 4.6
 
 * Enhancements
