@@ -1215,7 +1215,7 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 				/* (yes, stdin, stdout, and stderr must all be open for reading and
 				 * writing.  On some systems the shell assumes this */
 
-				for (x = 2; x != 32; ++x)
+				for (x = 3; x != 32; ++x)
 					close(x);/* Yes, this is quite a kludge... all in the name of portability */
 
 				if (w == -1)
