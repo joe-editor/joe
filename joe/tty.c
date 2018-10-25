@@ -1272,12 +1272,13 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 					char ibuf[1024];
 					ptrdiff_t len;
 					for (;;) {
-						len = read(0, ibuf, SIZEOF(ibuf));
+						len = joe_read(0, ibuf, SIZEOF(ibuf));
 						if (len > 0) {
-							if (-1 == write(1, ibuf, (size_t)len))
+							if (-1 == joe_write(1, ibuf, (size_t)len))
 								break;
-						} else
+						} else {
 							break;
+						}
 					}
 				}
 
