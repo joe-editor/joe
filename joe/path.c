@@ -242,6 +242,23 @@ char *mktmp(const char *where)
 	return name;
 }
 /********************************************************************/
+/* Change dir */
+/********************************************************************/
+int chddir(const char *path)
+{
+	char *s = path;
+	if(path[0] == '~'){
+		if (chdir(getenv("HOME")) != 0){
+			return -1;
+		}
+		else{
+			s+=2;	
+		}
+	}
+	return chdir(s);
+}
+
+/********************************************************************/
 int rmatch(const char *a, const char *b)
 {
 	int flag, inv, c;

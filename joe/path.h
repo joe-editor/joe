@@ -64,8 +64,11 @@ int mkpath(char *path);
 */
 char *mktmp(const char *where);
 
-/* Change drive and directory */
-#define chddir chdir
+/* Change drive and directory 
+ * chdir doesn't seem to correctly handle changing to ~
+   so chddir handles the ~, then calls chdir
+ */
+int chddir(const char* path); 
 
 /* int rmatch(char *pattern,char *string);
  * Return true if string matches pattern
