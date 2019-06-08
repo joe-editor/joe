@@ -674,12 +674,9 @@ int main(int argc, char **real_argv, const char * const *envv)
 	/* Prompt user to create backup directory if it does not exist. */
 	char *oldpwd = pwd();
 	const char *backpath = get_status(NULL, "backpath");
-	printf("%s", backpath);
+	
 	if (chddir(backpath) != 0){
-		if (mkqw(((BASE*)lastw(maint)->object)->parent, sz(joe_gettext(_("Backup directory does not exist. Create the directory (y,n,%{abort})? "))), createbackpathdir, NULL, (void*)backpath, NULL)) {
-			printf("COOL\n");
-		} else {
-			printf("FAILED\n");
+		if (!mkqw(((BASE*)lastw(maint)->object)->parent, sz(joe_gettext(_("Backup directory does not exist. Create the directory (y,n)? "))), createbackpathdir, NULL, (void*)backpath, NULL)){
 			return -1;
 		}
 	}
