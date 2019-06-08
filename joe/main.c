@@ -675,7 +675,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 	char *oldpwd = pwd();
 	const char *backpath = get_status(NULL, "backpath");
 	
-	if (chddir(backpath) != 0){
+	if (zcmp(backpath, "") != 0 && chddir(backpath) != 0){
 		if (!mkqw(((BASE*)lastw(maint)->object)->parent, sz(joe_gettext(_("Backup directory does not exist. Create the directory (y,n)? "))), createbackpathdir, NULL, (void*)backpath, NULL)){
 			return -1;
 		}
