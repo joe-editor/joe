@@ -156,11 +156,20 @@ char *endprt(const char *path)
 int mkpath(char *path)
 {
 	char *s;
-
+	
+	char *oldpwd = pwd(); /* Store pwd so we can return to it after path is made */
+	
 	if (path[0] == '/') {
 		if (chddir("/"))
 			return 1;
 		s = path;
+		goto in;
+	}else if (path[0] == '~') {
+		if (chddir(getenv("HOME")))
+			return 1;
+		s = path;
+		while (*s == '~')
+			++s;
 		goto in;
 	}
 
@@ -182,6 +191,7 @@ int mkpath(char *path)
 			++s;
 		path = s;
 	}
+	chddir(oldpwd);
 	return 0;
 }
 /********************************************************************/
