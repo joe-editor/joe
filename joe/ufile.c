@@ -40,7 +40,7 @@ void genexmsg(BW *bw, int saved, char *name)
 		} else {
 			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("File %s not saved")), name);
 		}
-	} else if (bw->b->changed && bw->b->count == 1) {
+	} else if (bw->b->changed /* && bw->b->count == 1 */) {
 		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("File %s not saved")), s);
 	} else if (saved) {
 		joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("File %s saved")), s);
@@ -1118,7 +1118,7 @@ static int nask(W *w, int c, void *object, int *notify)
 		genexmsg(bw, 0, NULL);
 		abortit(bw->parent, 0);
 		return -1;
-	} else if (bw->b->count == 1 && bw->b->changed && !bw->b->scratch) {
+	} else if (/* bw->b->count == 1 && */ bw->b->changed && !bw->b->scratch) {
 		if (mkqw(bw->parent, sz(joe_gettext(_("Save changes to this file (y,n,%{abort})? "))), nask, NULL, object, notify)) {
 			return 0;
 		} else {
