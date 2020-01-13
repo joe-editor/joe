@@ -22,6 +22,8 @@
 
 		* Fix bug where window resize will cause copying process to stop (needed to retry on EINTR).
 
+	* Revert ^K Q behavior (by popular demand!), modify ^K X to query before saving
+
 ### JOE 4.6
 
 * Enhancements
