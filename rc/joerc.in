@@ -228,7 +228,7 @@
 -rmsg  %S Row %4r Col %3c 
 -smsg ** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w ** 
 -zmsg ** Line %r Col %c Offset %o(0x%O) ** 
--xmsg \i Joe's Own Editor %v (%b) ** Type \bCtrl-K X\b to exit or \bCtrl-K H\b for help **\i
+-xmsg \i Joe's Own Editor %v (%b) ** Type \bCtrl-K H\b for help **\i
 
  Key sequence hints which are displayed in various prompts.
 -aborthint ^C
@@ -1091,9 +1091,9 @@ eof		^K v
 eol		.kH		Go to end of line
 eol		.@7
 eol		^E
-ask,query,exsave		^K X		Save and exit
-ask,query,exsave		^K ^X
-ask,query,exsave		^K x
+exsave		^K X		Save and exit (prepend with ask,query, if you want it to ask before saving)
+exsave		^K ^X
+exsave		^K x
 ffirst		^K F		Find first
 ffirst		^K ^F
 ffirst		^K f
