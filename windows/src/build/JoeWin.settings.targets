@@ -8,8 +8,8 @@
     <!-- Pick latest present VS version if not supplied -->
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\18.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">18.0</VisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\17.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">17.0</VisualStudioVersion>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\16.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">16.0</VisualStudioVersion>
     <!-- The above don't yet exist ... these are real: -->
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\16.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">16.0</VisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\15.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">15.0</VisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\14.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">14.0</VisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\13.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">13.0</VisualStudioVersion>
@@ -17,19 +17,21 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == '' and '$([MSBuild]::GetRegistryValueFromView(`HKCU\Software\Microsoft\VisualStudio\11.0`, `VisualStudioLocation`, `dne`, RegistryView.Registry32))' != 'dne'">11.0</VisualStudioVersion>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
 
-    <!-- Pick toolset to use based on VS version (to enable XP targetting) -->
-    <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(VisualStudioVersion)' == '10.0'">v100</PlatformToolset>
-    
     <!-- Only target XP on 32-bit builds -->
     <_ToolsetSuffix Condition="'$(Platform)' == 'Win32'">_xp</_ToolsetSuffix>
-    
-    <!-- VS 2017 uses a different toolset version -->
+
+    <!-- VS 2010 -->
+    <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(VisualStudioVersion)' == '10.0'">v100</PlatformToolset>
+
+    <!-- VS 2017 -->
     <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(VisualStudioVersion)' == '15.0'">v141$(_ToolsetSuffix)</PlatformToolset>
-    
-    <!-- Handles VS 2012, 2013, 2015 -->
+
+    <!-- VS 2019 -->
+    <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(VisualStudioVersion)' == '16.0' and '$(Platform)' == 'Win32'">v141_xp</PlatformToolset>
+    <PlatformToolset Condition="'$(PlatformToolset)' == '' and '$(VisualStudioVersion)' == '16.0' and '$(Platform)' == 'x64'">v142</PlatformToolset>
+
+    <!-- VS 2012, 2013, 2015 -->
     <PlatformToolset Condition="'$(PlatformToolset)' == ''">v$([System.String]::Copy('$(VisualStudioVersion)').Replace('.', ''))$(_ToolsetSuffix)</PlatformToolset>
-    
-    <!-- build might work with 2008, but it's really old now, just use something recent. -->
   </PropertyGroup>
 
   <PropertyGroup>
@@ -84,8 +86,8 @@
     <_Python Condition="'$(_PythonPath)'!=''">$(_PythonPath)\python.exe</_Python>
   </PropertyGroup>
 
-  <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />
   <Import Project="version.props" />
 </Project>

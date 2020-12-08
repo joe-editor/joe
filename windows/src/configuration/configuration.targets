@@ -15,7 +15,7 @@
   </Target>
   <Target Name="CleanConfigFiles">
     <RemoveDir Directories="$(ConfOutDir)" />
-    <RemoveDir Directories="$(IntDir)" />
+    <Delete Files="@(ConfigFile->'$(IntDir)\%(Filename)%(Extension)');@(ConfigFile->'$(IntDir)\%(Filename)%(Extension).dfl')" />
   </Target>
 
   <!-- Syntax File Targets -->
@@ -29,7 +29,7 @@
   </Target>
   <Target Name="CleanSyntaxFiles">
     <RemoveDir Directories="$(SyntaxOutDir)" />
-    <RemoveDir Directories="$(IntDir)" />
+    <Delete Files="@(SyntaxFile->'$(IntDir)\%(Filename)%(Extension)');@(SyntaxFile->'$(IntDir)\%(Filename)%(Extension).dfl')" />
   </Target>
 
   <!-- Color File Targets -->
@@ -43,7 +43,7 @@
   </Target>
   <Target Name="CleanColorFiles">
     <RemoveDir Directories="$(SchemesOutDir)" />
-    <RemoveDir Directories="$(IntDir)" />
+    <Delete Files="@(ColorSchemeFile->'$(IntDir)\%(Filename)%(Extension)');@(ColorSchemeFile->'$(IntDir)\%(Filename)%(Extension).dfl')" />
   </Target>
 
   <!-- Doc File Targets -->
@@ -55,6 +55,7 @@
   </Target>
   <Target Name="CleanDocFiles">
     <RemoveDir Directories="$(DocOutDir)" />
+    <Delete Files="@(DocFile->'$(IntDir)\%(Filename)%(Extension)');@(DocFile->'$(IntDir)\%(Filename)%(Extension).dfl')" />
   </Target>
   <Target Name="TranslateMarkdown" Inputs="@(MDDocFile)" Outputs="@(MDDocFile->'$(DocOutDir)\%(Filename).html')">
     <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(MDDocFile)) DO $(_Python) mdtohtml.py &quot;%%f&quot; &quot;$(DocOutDir)\%%~nf.html&quot;" />
@@ -69,6 +70,7 @@
   </Target>
   <Target Name="CleanLanguageFiles">
     <RemoveDir Directories="$(OutDir)\po" />
+    <Delete Files="@(LanguageFile->'$(IntDir)\%(Filename)%(Extension)');@(LanguageFile->'$(IntDir)\%(Filename)%(Extension).dfl')" />
   </Target>
   
   <!-- VT Files -->
