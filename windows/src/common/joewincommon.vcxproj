@@ -51,12 +51,15 @@
   <PropertyGroup>
     <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
-  <!-- Generate jwversion.h -->
-  <ItemDefinitionGroup>
-    <CustomBuildStep>
-      <Command>$(_Python) ..\build\version.py $(JoeWinVersion) "$(VersionDir)\jwversion.h" "$(VersionDir)\jwversion.wxi" "$(JoeWinVersionDesignation)"</Command>
-      <Outputs>$(VersionDir)\DoesntExist.txt</Outputs>
-    </CustomBuildStep>
-  </ItemDefinitionGroup>
+
   <Import Project="..\build\JoeWin.targets" />
+
+  <!-- Generate jwversion.h -->
+  <Target Name="BuildGenerateSources">
+    <MakeDir Directories="$(VersionDir)" />
+    <JWVersion OutputDirectory="$(VersionDir)" VersionNumber="$(JoeWinVersion)" VersionDesignation="$(JoeWinVersionDesignation)" />
+  </Target>
+  <Target Name="CleanGenerateSources" BeforeTargets="CoreClean">
+    <RemoveDir Directories="$(VersionDir)" />
+  </Target>
 </Project>

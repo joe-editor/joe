@@ -77,15 +77,6 @@
     <FrontendDependencies>comctl32.lib;imm32.lib;winmm.lib;$(OutputRootDir)\Intermediate\joewincommon\resources.res</FrontendDependencies>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!-- Find Python 2.7/6/5 -->
-    <_PyRegPrefix>HKEY_LOCAL_MACHINE\SOFTWARE\Python\PythonCore</_PyRegPrefix>
-    <_PythonPath>$([MSBuild]::GetRegistryValueFromView('$(_PyRegPrefix)\2.7\InstallPath', '', null, RegistryView.Registry64, RegistryView.Registry32))</_PythonPath>
-    <_PythonPath Condition="'$(_PythonPath)'==''">$([MSBuild]::GetRegistryValueFromView('$(_PyRegPrefix)\2.6\InstallPath', '', null, RegistryView.Registry64, RegistryView.Registry32))</_PythonPath>
-    <_PythonPath Condition="'$(_PythonPath)'==''">$([MSBuild]::GetRegistryValueFromView('$(_PyRegPrefix)\2.5\InstallPath', '', null, RegistryView.Registry64, RegistryView.Registry32))</_PythonPath>
-    <_Python Condition="'$(_PythonPath)'!=''">$(_PythonPath)\python.exe</_Python>
-  </PropertyGroup>
-
   <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Import Condition="'$(OutputType)' != 'Package'" Project="$(VCTargetsPath)\BuildCustomizations\masm.props" />

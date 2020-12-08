@@ -10,7 +10,7 @@
     <Copy SourceFiles="@(ConfigFile)" DestinationFolder="$(ConfOutDir)" />
     <!-- Output minified files -->
     <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
-    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(ConfigFile)) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezerc.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+    <SqueezeRC SourceFiles="@(ConfigFile)" DestinationFolder="$(IntDir)" />
     <JWDeflateFiles InputFiles="@(ConfigFile->'$(IntDir)\%(FileName)%(Extension)')" OutputDirectory="$(IntDir)" />
   </Target>
   <Target Name="CleanConfigFiles">
@@ -24,7 +24,7 @@
     <CopyConvertLF SourceFiles="@(SyntaxFile)" DestinationFiles="@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)%(Extension)')" />
     <!-- Output minified files -->
     <MakeDir Directories="$(IntDir)" Condition="!Exists('$(IntDir)')" />
-    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(SyntaxFile->'$(SyntaxOutDir)\%(FileName)%(Extension)')) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezejsf.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+    <SqueezeJSF SourceFiles="@(SyntaxFile)" DestinationFolder="$(IntDir)" />
     <JWDeflateFiles InputFiles="@(SyntaxFile->'$(IntDir)\%(FileName)%(Extension)')" OutputDirectory="$(IntDir)" />
   </Target>
   <Target Name="CleanSyntaxFiles">
@@ -58,14 +58,14 @@
     <Delete Files="@(DocFile->'$(IntDir)\%(Filename)%(Extension)');@(DocFile->'$(IntDir)\%(Filename)%(Extension).dfl')" />
   </Target>
   <Target Name="TranslateMarkdown" Inputs="@(MDDocFile)" Outputs="@(MDDocFile->'$(DocOutDir)\%(Filename).html')">
-    <Exec Condition="'$(_Python)'!='' and Exists('$(_Python)')" Command="FOR %%f IN (@(MDDocFile)) DO $(_Python) mdtohtml.py &quot;%%f&quot; &quot;$(DocOutDir)\%%~nf.html&quot;" />
+    <Markdown SourceFiles="@(MDDocFile)" DestinationFiles="@(MDDocFile->'$(DocOutDir)\%(Filename).html')" />
   </Target>
 
   <!-- Language File Targets -->
   <Target Name="CopyLanguageFiles" Inputs="@(LanguageFile)" Outputs="@(LanguageFile->'$(OutDir)\po\%(Filename)%(Extension)');@(LanguageFile->'$(IntDir)\%(Filename)%(Extension)');@(LanguageFile->'$(IntDir)\%(Filename)%(Extension).dfl')">
     <MakeDir Directories="$(OutDir)\po" />
     <CopyConvertLF SourceFiles="@(LanguageFile)" DestinationFolder="$(OutDir)\po" />
-    <Exec Condition="'$(_Python)' != '' and Exists('$(_Python)')" Command="FOR %%f IN (@(LanguageFile)) DO (echo Minifying %%~nf%%~xf &amp; $(_Python) squeezepo.py &quot;%%f&quot; &quot;$(IntDir)\%%~nf%%~xf&quot;)" />
+    <SqueezePO SourceFiles="@(LanguageFile)" DestinationFolder="$(IntDir)" />
     <JWDeflateFiles InputFiles="@(LanguageFile->'$(IntDir)\%(FileName)%(Extension)')" OutputDirectory="$(IntDir)" />
   </Target>
   <Target Name="CleanLanguageFiles">
