@@ -29,7 +29,10 @@ tests/testenv$
 windows/bin
 windows/src/bin
 windows/tools/sync/repos
+windows/src/.vs
+windows/src/packages
 \.log$
 \.suo$
 \.sdf$
 \.opensdf$
+windows/.*proj.user$
