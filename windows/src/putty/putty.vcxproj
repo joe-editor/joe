@@ -90,5 +90,8 @@
     <ClInclude Include="$(PuttySrcDir)\jwconfig.h" />
     <ClInclude Include="$(PuttySrcDir)\jwui.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
+  </ItemGroup>
   <Import Project="..\build\JoeWin.targets" />
 </Project>

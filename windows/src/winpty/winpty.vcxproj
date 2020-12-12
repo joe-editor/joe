@@ -56,6 +56,9 @@
     <ClInclude Include="include\winpty.h" />
     <ClInclude Include="include\DebugClient.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
+  </ItemGroup>
   <Import Project="..\build\JoeWin.targets" />
   <ItemDefinitionGroup>
     <ClCompile>
@@ -73,7 +76,6 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
     </ClCompile>
   </ItemDefinitionGroup>
-
   <!-- Copy exe to vt folder after building -->
   <Target Name="BeforeBuild">
     <Delete Files="$(VTOutDir)\joewinpty.exe" />
