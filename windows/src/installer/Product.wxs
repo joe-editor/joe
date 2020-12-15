@@ -36,7 +36,8 @@
     <MediaTemplate EmbedCab="yes"/>
     
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER"/>
-    <UIRef Id="WixUI_Mondo" />
+    <Property Id="INSTALLLEVEL" Value="2" />
+    <UIRef Id="WixUI_FeatureTree" />
 
     <Icon Id="joewinicon.exe" SourceFile="$(var.SrcRootDir)\exe\joewin.ico" />
     <Property Id="ARPPRODUCTICON" Value="joewinicon.exe" />
@@ -54,33 +55,65 @@
         <ComponentRef Id="FTypeRCComponent" />
         <ComponentGroupRef Id="SyntaxComponentGroup" />
         <ComponentGroupRef Id="StandardColorsComponentGroup" />
-	<ComponentRef Id="PathEnvComponent" />
         <ComponentGroupRef Id="DocumentsComponentGroup" />
 	<ComponentGroupRef Id="VTComponentGroup" />
       </Feature>
 
-      <Feature Id="JoeFeature" Title="JOE editor" Description="Standard JOE editor personality" Level="1" AllowAdvertise="no" InstallDefault="local">
+      <!-- Note: I only expand this one to show the user what's under each, doing so for each takes up too much vertical space -->
+      <Feature Id="JoeFeature" Title="JOE editor" Description="Standard JOE editor" Level="1" AllowAdvertise="no" InstallDefault="local" Display="expand">
         <ComponentRef Id="JoePersonality" />
         <ComponentRef Id="JoeRCComponent" />
         <ComponentRef Id="JoePersonalityShortcut" />
+	<ComponentGroupRef Id="joeRegistrationComponentGroup" />
+
+	<Feature Id="JoeOpenWithFeature" Title="Add to &quot;Open With&quot; menu for supported files" Level="1" AllowAdvertise="no" InstallDefault="local">
+	  <ComponentGroupRef Id="joeOpenWithComponentGroup"/>
+	</Feature>
+	<Feature Id="JoeEditWithFeature" Title="&quot;Edit with joe&quot; shell context menu for all files" Level="1001" AllowAdvertise="no" InstallDefault="local">
+	  <ComponentGroupRef Id="joeEditMenuComponentGroup"/>
+	</Feature>
       </Feature>
 
-      <Feature Id="JStarFeature" Title="JSTAR editor" Description="JOE's WordStar emulation personality" Level="2" AllowAdvertise="no" InstallDefault="local">
+      <Feature Id="JStarFeature" Title="JSTAR editor" Description="JOE's WordStar emulation personality" Level="5" AllowAdvertise="no" InstallDefault="local">
         <ComponentRef Id="JStarPersonality" />
         <ComponentRef Id="JStarRCComponent" />
         <ComponentRef Id="JStarPersonalityShortcut" />
+	<ComponentGroupRef Id="jstarRegistrationComponentGroup" />
+
+	<Feature Id="JStarOpenWithFeature" Title="Add to &quot;Open With&quot; menu for supported files" Level="5" AllowAdvertise="no" InstallDefault="local">
+	  <ComponentGroupRef Id="jstarOpenWithComponentGroup"/>
+	</Feature>
+	<Feature Id="JStarEditWithFeature" Title="&quot;Edit with jstar&quot; shell context menu for all files" Level="1001" AllowAdvertise="no" InstallDefault="local">
+	  <ComponentGroupRef Id="jstarEditMenuComponentGroup"/>
+	</Feature>
       </Feature>
 
-      <Feature Id="JMacsFeature" Title="JMACS editor" Description="JOE's Emacs emulation personality" Level="2" AllowAdvertise="no" InstallDefault="local">
+      <Feature Id="JMacsFeature" Title="JMACS editor" Description="JOE's Emacs emulation personality" Level="5" AllowAdvertise="no" InstallDefault="local">
         <ComponentRef Id="JMacsPersonality" />
         <ComponentRef Id="JMacsRCComponent" />
         <ComponentRef Id="JMacsPersonalityShortcut" />
+	<ComponentGroupRef Id="jmacsRegistrationComponentGroup" />
+
+	<Feature Id="JMacsOpenWithFeature" Title="Add to &quot;Open With&quot; menu for supported files" Level="5" AllowAdvertise="no" InstallDefault="local">
+	  <ComponentGroupRef Id="jmacsOpenWithComponentGroup"/>
+	</Feature>
+	<Feature Id="JMacsEditWithFeature" Title="&quot;Edit with jmacs&quot; shell context menu for all files" Level="1001" AllowAdvertise="no" InstallDefault="local">
+	  <ComponentGroupRef Id="jmacsEditMenuComponentGroup"/>
+	</Feature>
       </Feature>
       
-      <Feature Id="JPicoFeature" Title="JPICO editor" Description="JOE's Pico emulation personality" Level="2" AllowAdvertise="no" InstallDefault="local">
+      <Feature Id="JPicoFeature" Title="JPICO editor" Description="JOE's Pico emulation personality" Level="5" AllowAdvertise="no" InstallDefault="local">
         <ComponentRef Id="JPicoPersonality" />
         <ComponentRef Id="JPicoPersonalityShortcut" />
         <ComponentRef Id="JPicoRCComponent" />
+	<ComponentGroupRef Id="jpicoRegistrationComponentGroup" />
+
+	<Feature Id="JPicoOpenWithFeature" Title="Add to &quot;Open With&quot; menu for supported files" Level="5" AllowAdvertise="no" InstallDefault="local">
+	  <ComponentGroupRef Id="jpicoOpenWithComponentGroup"/>
+	</Feature>
+	<Feature Id="JPicoEditWithFeature" Title="&quot;Edit with jpico&quot; shell context menu for all files" Level="1001" AllowAdvertise="no" InstallDefault="local">
+	  <ComponentGroupRef Id="jpicoEditMenuComponentGroup"/>
+	</Feature>
       </Feature>
       
       <Feature Id="TranslationsFeature" Title="Translations" Description="Install translation files for German, Traditional Chinese, Russian, Ukrainian, and French" Level="3" AllowAdvertise="no" InstallDefault="local">
@@ -88,55 +121,13 @@
 	<ComponentGroupRef Id="RegionalConfFilesComponentGroup" />
       </Feature>
 
-      <Feature Id="ExtendedColorsFeature" Title="Extra color schemes" Description="Install all available color schemes.  Standard install also contains schemes, but not this many." Level="8" AllowAdvertise="no" InstallDefault="local">
+      <Feature Id="ExtendedColorsFeature" Title="Extra color schemes" Description="Install all available color schemes, beyond what is available in the base distribution." Level="2" AllowAdvertise="no" InstallDefault="local">
         <ComponentGroupRef Id="ExtendedColorsComponentGroup" />
       </Feature>
 
+      <Feature Id="AddToPathFeature" Title="Add to PATH" Description="Adds the installation folder to your PATH environment variable" Level="2" AllowAdvertise="no" InstallDefault="local">
+	<ComponentGroupRef Id="AddToPathComponentGroup" />
+      </Feature>
     </Feature>
   </Product>
-
-  <Fragment>
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="$(var.PlatformProgramFilesFolder)">
-        <Directory Id="INSTALLFOLDER" Name="JoeEditor">
-          <Directory Id="SYNTAXFOLDER" Name="syntax" />
-          <Directory Id="CONFIGFOLDER" Name="conf" />
-          <Directory Id="COLORFOLDER" Name="colors" />
-          <Directory Id="DOCFOLDER" Name="doc" />
-          <Directory Id="VTFOLDER" Name="vt" />
-	  <Directory Id="POFOLDER" Name="po" />
-        </Directory>
-      </Directory>
-
-      <Directory Id="ProgramMenuFolder" Name="Programs">
-	<Directory Id="StartMenuShortcuts" Name="Joe's Own Editor$(var.BitSuffix)">
-	  <Directory Id="DocShortcutsDir" Name="Documentation" />
-	</Directory>
-      </Directory>
-    </Directory>
-  </Fragment>
-
-  <Fragment>
-    <Component Id="StartMenuShortcutsDirComponent" Guid="*" Directory="StartMenuShortcuts" Win64="$(var.Win64)">
-      <RemoveFolder Id="StartMenuShortcuts" On="uninstall" />
-      <RegistryKey Root="HKCU" Key="Software\JoeEditor" ForceDeleteOnUninstall="yes" ForceCreateOnInstall="yes">
-        <RegistryValue Type="string" Name="InstallDir" Value="[INSTALLFOLDER]" />
-      </RegistryKey>
-    </Component>
-    <Component Id="DocShortcutsComponent" Guid="*" Directory="DocShortcutsDir" Win64="$(var.Win64)">
-      <RemoveFolder Id="DocShortcutsDir" On="uninstall" />
-      <RegistryValue Root="HKCU" Key="Software\JoeEditor" Name="docshortcuts" Type="integer" Value="1" KeyPath="yes" />
-    </Component>
-  </Fragment>
-
-  <Fragment>
-    <Component Id="PathEnvComponent" Guid="*" Directory="INSTALLFOLDER" Win64="$(var.Win64)">
-      <Environment Action="set" Id="SetPathToInstallFolder"
-		   Name="PATH" System="yes" Value="[INSTALLFOLDER]" Permanent="no" Part="last" />
-      
-      <RegistryKey Root="HKLM" Key="Software\JoeEditor" ForceDeleteOnUninstall="yes" ForceCreateOnInstall="yes">
-	<RegistryValue Type="string" Name="EnvPath" Value="1" />
-      </RegistryKey>
-    </Component>
-  </Fragment>
 </Wix>

@@ -45,9 +45,11 @@
   <ItemGroup>
     <Compile Include="binaries.wxs" />
     <Compile Include="colors.wxs" />
+    <Compile Include="dirs.wxs" />
     <Compile Include="docs.wxs" />
     <Compile Include="product.wxs" />
     <Compile Include="rcfiles.wxs" />
+    <Compile Include="shellext.wxs" />
     <Compile Include="syntaxes.wxs" />
     <Compile Include="translations.wxs" />
     <Compile Include="vt.wxs" />
@@ -117,6 +119,7 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".editorconfig" />
     <Content Include="packages.config" />
     <Content Include="properties.wxi" />
   </ItemGroup>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?include properties.wxi ?>
+
+  <?define EXTENSIONS_1 = "in;txt;diff;patch;1;tex;sty;avr;inc;asm;s;mas;sml;ml;mli;rb;rabl;pl;pm;t;sql;awk;y;l;lex;adb;ads;cbl;cob;rex;sed;ps;eps" ?>
+  <?define EXTENSIONS_2 = "c;cpp;cc;c++;h;hpp;h++;hh;mm;v;vh;vhd;xml;xsd;jnlp;resx;plist;htm;html;css;java;js;json;ts;php;py;csh;tcsh;sh;bash;bashrc" ?>
+  <?define EXTENSIONS_3 = "lisp;lsp;el;ksh;p;pas;f;f90;for;il;lua;tcl;go;cs;proj;filters;targets;props;vsct;dgml;jsf;ac;m4;m;am;rc;bat;cmd" ?>
+  <?define EXTENSIONS_4 = "md;yml;yaml;list;properties;ini;inf;gitconfig;erb;haml;erl;eterm;src;hrl;erlang;sieve;pp;ps1;psm1;ex;exs;r;gvy;groovy;gy" ?>
+  <?define EXTENSIONS_5 = "gsh;clj;cljs;edn;rs;coffee;scala;swift;d;spec" ?>
+  <?define EXTENSIONS = "$(var.EXTENSIONS_1);$(var.EXTENSIONS_2);$(var.EXTENSIONS_3);$(var.EXTENSIONS_4);$(var.EXTENSIONS_5)" ?>
+  
+  <?define EDITORS = "joe;jpico;jstar;jmacs" ?>
+
+  <Fragment>
+    <?foreach EDITOR in $(var.EDITORS) ?>
+
+    <ComponentGroup Id="$(var.EDITOR)RegistrationComponentGroup">
+      <Component Id="$(var.EDITOR)MachineRegistrationComponent" Guid="*" Win64="$(var.Win64)" Directory="INSTALLFOLDER">
+	<!-- PerMachine -->
+	<Condition>
+	  <![CDATA[ALLUSERS="1" OR (ALLUSERS="2" AND MSIINSTALLPERUSER="")]]>
+	</Condition>
+
+	<RegistryKey Root="HKLM" Key="SOFTWARE">
+	  <RegistryKey Key="Microsoft\Windows\CurrentVersion\App Paths\$(var.EDITOR).exe">
+	    <RegistryValue Type="string" Value="[INSTALLFOLDER]$(var.EDITOR).exe" />
+	    <RegistryValue Name="Path" Type="string" Value="[INSTALLFOLDER]" />
+	  </RegistryKey>
+
+	  <RegistryKey Key="Classes\Applications\$(var.EDITOR).exe">
+	    <RegistryValue Key="shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]$(var.EDITOR).exe&quot; &quot;%1&quot;" />
+	    <RegistryValue Key="shell\edit\command" Type="string" Value="&quot;[INSTALLFOLDER]$(var.EDITOR).exe&quot; &quot;%1&quot;" />
+	    <RegistryValue Name="FriendlyAppName" Type="string" Value="$(var.EDITOR) [\[]Joe's Own Editor[\]]" />
+	  </RegistryKey>
+
+	  <RegistryKey Key="JoeEditor\$(var.EDITOR)\Capabilities">
+	    <?if $(var.EDITOR) = "joe" ?>
+	    <RegistryValue Name="ApplicationDescription" Type="string" Value="Joe's Own Editor" />
+	    <?else?>
+	    <RegistryValue Name="ApplicationDescription" Type="string" Value="Joe's Own Editor $(var.EDITOR) personality" />
+	    <?endif?>
+	    <RegistryValue Name="DefaultIcon" Type="string" Value="[INSTALLFOLDER]$(var.EDITOR).exe,200" />
+	    <RegistryValue Key="shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]$(var.EDITOR).exe&quot; &quot;%1&quot;" />
+	    <RegistryValue Key="shell\edit\command" Type="string" Value="&quot;[INSTALLFOLDER]$(var.EDITOR).exe&quot; &quot;%1&quot;" />
+	  </RegistryKey>
+	  <RegistryValue Key="RegisteredApplications" Name="$(var.EDITOR)" Type="string" Value="SOFTWARE\JoeEditor\$(var.EDITOR)\Capabilities" />
+	</RegistryKey>
+      </Component>
+
+      <Component Id="$(var.EDITOR)UserRegistrationComponent" Guid="*" Win64="$(var.Win64)" Directory="INSTALLFOLDER">
+	<!-- PerUser -->
+	<Condition>
+	  <![CDATA[ALLUSERS="" OR (ALLUSERS="2" AND MSIINSTALLPERUSER="1")]]>
+	</Condition>
+
+	<!-- Identical to above except for the root -->
+	<RegistryKey Root="HKCU" Key="SOFTWARE">
+	  <RegistryKey Key="Microsoft\Windows\CurrentVersion\App Paths\$(var.EDITOR).exe">
+	    <RegistryValue Type="string" Value="[INSTALLFOLDER]$(var.EDITOR).exe" />
+	    <RegistryValue Name="Path" Type="string" Value="[INSTALLFOLDER]" />
+	  </RegistryKey>
+
+	  <RegistryKey Key="Classes\Applications\$(var.EDITOR).exe">
+	    <RegistryValue Key="shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]$(var.EDITOR).exe&quot; &quot;%1&quot;" />
+	    <RegistryValue Key="shell\edit\command" Type="string" Value="&quot;[INSTALLFOLDER]$(var.EDITOR).exe&quot; &quot;%1&quot;" />
+	    <RegistryValue Name="FriendlyAppName" Type="string" Value="$(var.EDITOR) [\[]Joe's Own Editor[\]]" />
+	  </RegistryKey>
+
+	  <RegistryKey Key="JoeEditor\$(var.EDITOR)\Capabilities">
+	    <?if $(var.EDITOR) = "joe" ?>
+	    <RegistryValue Name="ApplicationDescription" Type="string" Value="Joe's Own Editor" />
+	    <?else?>
+	    <RegistryValue Name="ApplicationDescription" Type="string" Value="Joe's Own Editor $(var.EDITOR) personality" />
+	    <?endif?>
+	    <RegistryValue Name="DefaultIcon" Type="string" Value="[INSTALLFOLDER]$(var.EDITOR).exe,200" />
+	    <RegistryValue Key="shell\open\command" Type="string" Value="&quot;[INSTALLFOLDER]$(var.EDITOR).exe&quot; &quot;%1&quot;" />
+	    <RegistryValue Key="shell\edit\command" Type="string" Value="&quot;[INSTALLFOLDER]$(var.EDITOR).exe&quot; &quot;%1&quot;" />
+	  </RegistryKey>
+	  <RegistryValue Key="RegisteredApplications" Name="$(var.EDITOR)" Type="string" Value="SOFTWARE\JoeEditor\$(var.EDITOR)\Capabilities" />
+	</RegistryKey>
+      </Component>
+    </ComponentGroup>
+
+    <!-- "Open With" associations for extensions handled by syntaxes -->
+    <ComponentGroup Id="$(var.EDITOR)OpenWithComponentGroup">
+      <Component Id="$(var.EDITOR)OpenWithMachineComponent" Guid="*" Win64="$(var.Win64)" Directory="INSTALLFOLDER">
+	<!-- PerMachine -->
+	<Condition>
+	  <![CDATA[ALLUSERS="1" OR (ALLUSERS="2" AND MSIINSTALLPERUSER="")]]>
+	</Condition>
+
+	<RegistryKey Root="HKLM" Key="SOFTWARE\Classes">
+	  <?foreach EXT in $(var.EXTENSIONS) ?>
+	  <RegistryValue Key=".$(var.EXT)\OpenWithList\$(var.EDITOR).exe" Type="string" Value="" />
+	  <?endforeach?>
+	</RegistryKey>
+      </Component>
+
+      <Component Id="$(var.EDITOR)OpenWithUserComponent" Guid="*" Win64="$(var.Win64)" Directory="INSTALLFOLDER">
+	<!-- PerUser -->
+	<Condition>
+	  <![CDATA[ALLUSERS="" OR (ALLUSERS="2" AND MSIINSTALLPERUSER="1")]]>
+	</Condition>
+
+	<RegistryKey Root="HKCU" Key="SOFTWARE\Classes">
+	  <?foreach EXT in $(var.EXTENSIONS) ?>
+	  <RegistryValue Key=".$(var.EXT)\OpenWithList\$(var.EDITOR).exe" Type="string" Value="" />
+	  <?endforeach?>
+	</RegistryKey>
+      </Component>
+    </ComponentGroup>
+
+    <!-- "Edit with" shell menu -->
+    <ComponentGroup Id="$(var.EDITOR)EditMenuComponentGroup">
+      <Component Id="$(var.EDITOR)EditMenuMachineComponent" Guid="*" Win64="$(var.Win64)" Directory="INSTALLFOLDER">
+	<!-- PerMachine -->
+	<Condition>
+	  <![CDATA[ALLUSERS="1" OR (ALLUSERS="2" AND MSIINSTALLPERUSER="")]]>
+	</Condition>
+	<RegistryKey Root="HKLM" Key="SOFTWARE\Classes\*">
+	  <RegistryKey Key="shell\edit.$(var.EDITOR)">
+	    <RegistryValue Type="string" Value="Edit with $(var.EDITOR)" />
+	    <RegistryValue Key="command" Type="string" Value="&quot;[APPLICATIONFOLDER]$(var.EDITOR).exe&quot; &quot;%1&quot;" />
+	    <RegistryValue Key="position" Type="string" Value="bottom" /> <!-- works? -->
+	  </RegistryKey>
+	</RegistryKey>
+      </Component>
+      <Component Id="$(var.EDITOR)EditMenuUserComponent" Guid="*" Win64="$(var.Win64)" Directory="INSTALLFOLDER">
+	<!-- PerUser -->
+	<Condition>
+	  <![CDATA[ALLUSERS="" OR (ALLUSERS="2" AND MSIINSTALLPERUSER="1")]]>
+	</Condition>
+
+	<RegistryKey Root="HKCU" Key="SOFTWARE\Classes\*">
+	  <RegistryKey Key="shell\edit.$(var.EDITOR)">
+	    <RegistryValue Type="string" Value="Edit with $(var.EDITOR)" />
+	    <RegistryValue Key="command" Type="string" Value="&quot;[APPLICATIONFOLDER]$(var.EDITOR).exe&quot; &quot;%1&quot;" />
+	    <RegistryValue Key="position" Type="string" Value="bottom" /> <!-- works? -->
+	  </RegistryKey>
+	</RegistryKey>
+      </Component>
+    </ComponentGroup>
+    
+    <?endforeach ?>
+  </Fragment>
+</Wix>
