@@ -52,7 +52,7 @@ void rmsrch(SRCH *srch);
 
 void setpat(SRCH *srch, char *pattern);
 
-int dopfnext(BW *w, SRCH *srch);
+int dopfnext(BW *bw, SRCH *srch);
 
 int pffirst(W *w, int k);
 int pfnext(W *w, int k);

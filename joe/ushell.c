@@ -153,6 +153,19 @@ static void cdata(void *obj, char *dat, ptrdiff_t siz)
 				rmmacro(m);
 			}
 		} while (m);
+	} else if (b->raw) { /* Just append the data as-is */
+		P *q = pdup(b->eof, "cdata");
+		off_t byte = q->byte;
+		char bf[1024];
+		int x, y;
+		cready(b, byte);
+
+		if (siz) {
+			binsm(q, dat, siz);
+		}
+		prm(q);
+		cfollow(b, NULL, b->eof->byte);
+		undomark();
 	} else { /* Dumb terminal */
 		P *q = pdup(b->eof, "cdata");
 		P *r = pdup(b->eof, "cdata");
@@ -187,7 +200,7 @@ static void cdata(void *obj, char *dat, ptrdiff_t siz)
 	}
 }
 
-int cstart(BW *bw, const char *name, char **s, void *obj, int build, int out_only, const char *first_command, int vt)
+int cstart(BW *bw, const char *name, char **s, void *obj, int build, int out_only, const char *first_command, int shell_type)
 {
 #if defined(__MSDOS__)
 	varm(s);
@@ -199,7 +212,7 @@ int cstart(BW *bw, const char *name, char **s, void *obj, int build, int out_onl
 
 
 	if (bw->b->pid) {
-		if (!vt) { /* Don't complain if shell already running.. makes F-key switching nicer */
+		if (!(shell_type == SHELL_TYPE_VT)) { /* Don't complain if shell already running.. makes F-key switching nicer */
 			/* Keep old behavior for dumb terminal */
 			msgnw(bw->parent, joe_gettext(_("Program already running in this window")));
 		}
@@ -207,7 +220,7 @@ int cstart(BW *bw, const char *name, char **s, void *obj, int build, int out_onl
 		return -1;
 	}
 
-	if (vt) {
+	if (shell_type == SHELL_TYPE_VT) {
 		BW *master = vtmaster(bw->parent->t, bw->b); /* In case of multiple BWs on one B, pick one to be the master */
 		if (!master) master = bw; /* Should never happen */
 		shell_w = master->w;
@@ -220,10 +233,14 @@ int cstart(BW *bw, const char *name, char **s, void *obj, int build, int out_onl
 		/* Turn on shell mode for each window */
 		ansiall(bw->b);
 	}
+	if (shell_type == SHELL_TYPE_RAW)
+		bw->b->raw = 1;
+	else
+		bw->b->raw = 0;
 
 	/* p_goto_eof(bw->cursor); */
 
-	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only, vt, shell_w, shell_h))) {
+	if (!(m = mpxmk(&bw->b->out, name, s, cdata, bw->b, build ? cdone_parse : cdone, bw->b, out_only, shell_w, shell_h, (shell_type == SHELL_TYPE_RAW)))) {
 		varm(s);
 		msgnw(bw->parent, joe_gettext(_("No ptys available")));
 		return -1;
@@ -237,7 +254,7 @@ int cstart(BW *bw, const char *name, char **s, void *obj, int build, int out_onl
 #endif
 }
 
-static int dobknd(BW *bw, int vt)
+static int dobknd(BW *bw, int shell_type)
 {
 	char **a;
 	char *s;
@@ -268,9 +285,9 @@ static int dobknd(BW *bw, int vt)
 #ifndef JOEWIN
 	s = vsncpy(NULL, 0, sc("-i"));
 	a = vaadd(a, s);
-	return cstart(bw, sh, a, NULL, 0, 0, (vt ? (zstr(sh, "csh") ? start_csh : start_sh) : NULL), vt);
+	return cstart(bw, sh, a, NULL, 0, 0, (shell_type == SHELL_TYPE_VT ? (zstr(sh, "csh") ? start_csh : start_sh) : NULL), shell_type);
 #else
-	if (vt) {
+	if (shell_type == SHELL_TYPE_VT) {
 		unsigned char *vtbat;
 		struct stat stbuf;
 
@@ -298,7 +315,7 @@ static int dobknd(BW *bw, int vt)
 		s = vsncpy(NULL, 0, sc("/Q"));
 		a = vaadd(a, s);
 	}
-	return cstart(bw, sh, a, NULL, 0, 0, NULL, vt);
+	return cstart(bw, sh, a, NULL, 0, 0, NULL, shell_type);
 #endif
 }
 
@@ -372,7 +389,7 @@ int urun(W *w, int k)
 
 		a = getshell();
 		a = vaadd(a, s);
-		return cstart(bw, a[0], a, NULL, 0, 0, NULL, 0);
+		return cstart(bw, a[0], a, NULL, 0, 0, NULL, SHELL_TYPE_RAW);
 	} else {
 		return -1;
 	}
@@ -419,7 +436,7 @@ int ubuild(W *w, int k)
 		t = vsncpy(sv(t), sc("); then echo \"\nJOE: [32mPASS[0m (exit status = $?)\n\"; else echo \"\nJOE: [31mFAIL[0m (exit status = $?)\n\"; fi"));
 		a = vaadd(a, t);
 #endif
-		return cstart(bw, a[0], a, NULL, 1, 0, NULL, 0);
+		return cstart(bw, a[0], a, NULL, 1, 0, NULL, SHELL_TYPE_DUMB);
 	} else {
 		return -1;
 	}

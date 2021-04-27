@@ -202,10 +202,11 @@ void signrm(void);
  *   Function to call when process dies in 'die'
  *   The first arg passed to func and die is object and dieobj
  */
-MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int out_only, int vt, ptrdiff_t w, ptrdiff_t h);
+/* If copy_in is set: don't start a program, instead copy JOE's stdin to JOE */
+/* If use_pipe is set: connect stdout of program to JOE using a pipe instead of pty/tty pair */
+MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int copy_in, ptrdiff_t w, ptrdiff_t h, int use_pipe);
 
 void killmpx(int pid, int sig);
-
 ptrdiff_t writempx(int fd, void *data, ptrdiff_t amt);
 
 extern int noxon;			/* Set if ^S/^Q processing should be disabled */

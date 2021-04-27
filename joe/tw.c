@@ -656,7 +656,7 @@ int usplitw(W *w, int k)
 	if (!neww)
 		return -1;
 //	wfit(neww->t);
-	neww->object = (void *) (newbw = bwmk(neww, bw->b, 0, NULL));
+	neww->object = (void *) (newbw = bwmk(neww, bw->b, 0));
 	++bw->b->count;
 	newbw->offset = bw->offset;
 	newbw->object = (void *) (newtw = (TW *) joe_malloc(SIZEOF(TW)));
@@ -684,7 +684,7 @@ int uduptw(W *w, int k)
 		return -1;
 	if (demotegroup(w))
 		neww->t->topwin = neww;
-	neww->object = (void *) (newbw = bwmk(neww, bw->b, 0, NULL));
+	neww->object = (void *) (newbw = bwmk(neww, bw->b, 0));
 	++bw->b->count;
 	newbw->offset = bw->offset;
 	newbw->object = (void *) (newtw = (TW *) joe_malloc(SIZEOF(TW)));
@@ -747,7 +747,7 @@ int abortit(W *w, int k)
 			   any prompt windows? */
 
 			bwrm(bw);
-			w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+			w->object = (void *) (bw = bwmk(w, b, 0));
 			wredraw(bw->parent);
 			bw->object = object;
 			bw = (BW *)w->object;
@@ -888,7 +888,7 @@ int uabortbuf(W *w, int k)
 		void *object = bw->object;
 
 		bwrm(bw);
-		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+		w->object = (void *) (bw = bwmk(w, b, 0));
 		wredraw(bw->parent);
 		bw->object = object;
 		return 0;
@@ -983,7 +983,7 @@ BW *wmktw(Screen *t, B *b)
 
 	w = wcreate(t, &watomtw, NULL, NULL, NULL, t->h, NULL);
 	wfit(w->t);
-	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+	w->object = (void *) (bw = bwmk(w, b, 0));
 	bw->object = (void *) (tw = (TW *) joe_malloc(SIZEOF(TW)));
 	iztw(tw, w->y);
 #ifdef JOEWIN

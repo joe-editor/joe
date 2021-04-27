@@ -31,7 +31,7 @@ static char **readenv();
 static char **jwsetenv(char **env, char *key, char *value);
 static wchar_t *jwbuildenv(char **env);
 
-MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int out_only, int vt, ptrdiff_t w, ptrdiff_t h)
+MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int copy_in, int vt, ptrdiff_t w, ptrdiff_t h, int use_pipe)
 {
 	HANDLE prr, prw, pwr, pww;
 	SECURITY_ATTRIBUTES sa;

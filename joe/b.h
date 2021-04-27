@@ -152,6 +152,7 @@ struct buffer {
 	pid_t	pid;		/* Process id */
 	int	out;		/* fd to write to process */
 	VT	*vt;		/* video terminal emulator */
+	int     raw;            /* just append data from shell, don't interpret it */
 	struct lattr_db *db;	/* Linked list of line attribute databases */
 	void (*parseone)(struct charmap *map,const char *s,char **rtn_name,
 	                 off_t *rtn_line);
@@ -282,7 +283,7 @@ B *borphan(void);
 int bsave(P *p, const char *s, off_t size,int flag);
 int bsavefd(P *p, int fd, off_t size);
 
-char *parsens(const char *s, off_t *skip, off_t *amnt);
+char *parsens(const char *s, off_t *skip, off_t *amnt, int *mode);
 
 char *canonical(char *s, int flags);
 #define CANFLAG_NORESTART 1 /* Support path restart feature */

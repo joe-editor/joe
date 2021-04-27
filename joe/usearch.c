@@ -20,6 +20,8 @@ SRCH *globalsrch = NULL;	/* Most recent completed search data */
 
 SRCHREC fsr = { {&fsr, &fsr} };
 
+static int dopfrepl(BW *bw, SRCH *srch);
+
 /* Clear compiled version of pattern */
 
 static void clrcomp(SRCH *srch)
@@ -823,7 +825,7 @@ int dofirst(BW *bw, int back, int repl, char *hint)
 						srch->replacement = s;
 						obj_perm((void*)s);
 					}
-					return dopfnext(bw, setmark(srch));
+					return dopfrepl(bw, setmark(srch));
 				} else
 					return -1;
 			} else
@@ -965,44 +967,57 @@ static void goback(SRCH *srch, BW *bw)
 const char *rest_key = _("|rest of file|rR");
 const char *backup_key = _("|backup|bB");
 
-static int dopfrepl(W *w, int c, void *obj)
+static int dopfrepl(BW *bw, SRCH *srch)
 {
-	BW *bw;
-	SRCH *srch = (SRCH *)obj;
-	WIND_BW(bw, w);
+	W *w;
+	int c;
 	
-	again:
-	srch->addr = bw->cursor->byte;
-	/* for jamcs backspace means no */
-	if (c == 8 || c == 127 || c == NO_CODE || yncheck(no_key, c))
-		return dopfnext(bw, srch);
-	else if (c == YES_CODE || yncheck(yes_key, c) || c == ' ') {
-		srch->recs.link.prev->yn = 1;
-		if (doreplace(bw, srch)) {
+	for (;;) {
+		w = bw->parent;
+		if (dopfnext(bw, srch)) {
+			return -1;
+		}
+
+		if (!srch->flg) {
+			/* We've passed the last replacement (search is reset), do not iterate again. */
+			return 0;
+		}
+
+		bw = (BW *)w->object;
+
+		c = query(bw->parent, sz(joe_gettext(_("Replace (Y)es (N)o (R)est (B)ackup (%{abort} to abort)?"))), QW_SR);
+		if (c == -1)
+			return pfsave(bw->parent, srch);
+
+		srch->addr = bw->cursor->byte;
+		/* for jmacs backspace means no */
+		if (c == 8 || c == 127 || c == NO_CODE || yncheck(no_key, c)) {
+			/* skip */
+		}
+		else if (c == YES_CODE || yncheck(yes_key, c) || c == ' ') {
+			srch->recs.link.prev->yn = 1;
+			if (doreplace(bw, srch)) {
+				pfsave(bw->parent, srch);
+				return -1;
+			}
+		}
+		else if (yncheck(rest_key, c) || c == '!') {
+			if (doreplace(bw, srch))
+				return -1;
+			srch->rest = 1;
+		}
+		else if (/* c == 8 || c == 127 || */ yncheck(backup_key, c)) {
+			W* tw = bw->parent;
+			goback(srch, bw);
+			goback(srch, (BW*)tw->object);
+			bw = (BW*)tw->object;
+		}
+		else {
 			pfsave(bw->parent, srch);
-			return -1;
-		} else
-			return dopfnext(bw, srch);
-	} else if (yncheck(rest_key, c) || c == '!') {
-		if (doreplace(bw, srch))
-			return -1;
-		srch->rest = 1;
-		return dopfnext(bw, srch);
-	} else if (/* c == 8 || c == 127 || */ yncheck(backup_key, c)) {
- 		W *tw = bw->parent;
-		goback(srch, bw);
-		goback(srch, (BW *)tw->object);
-		return dopfnext((BW *)tw->object, srch);
-	} else if (c != -1) {
-		pfsave(bw->parent, srch);
-		nungetc(c);
-		return 0;
+			nungetc(c);
+			return 0;
+		}
 	}
-	c = query(bw->parent, sz(joe_gettext(_("Replace (Y)es (N)o (R)est (B)ackup (%{abort} to abort)?"))), QW_SR);
-	if (c != -1)
-		goto again;
-	else
-		return pfsave(bw->parent, srch);
 }
 
 /* Test if found text is within region
@@ -1156,7 +1171,7 @@ int dopfnext(BW *bw, SRCH *srch)
 		visit(srch, bw, 0);
 again:	w = bw->parent;
 	fnr = fnext(bw, srch);
-	bw  = (BW *)w->object;
+	bw = (BW *)w->object;
 	switch (fnr) {
 	case 0:
 		break;
@@ -1220,9 +1235,6 @@ bye:		if (!srch->flg && !srch->rest) {
 				markb->xcol = piscol(markb);
 			}
 			srch->flg = 1;
-			/* This call should not be here... */
-			if (dopfrepl(bw->parent, -1, srch))
-				ret = -1;
 			srch = 0;
 		}
 		break;
@@ -1254,7 +1266,11 @@ int pfnext(W *w, int k)
 			srch->wrap_p->owner = &srch->wrap_p;
 			srch->wrap_flag = 0;
 		}
-		return dopfnext(bw, setmark(srch));
+
+		if (!srch->replace)
+			return dopfnext(bw, setmark(srch));
+		else
+			return dopfrepl(bw, setmark(srch));
 	}
 }
 

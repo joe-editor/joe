@@ -170,7 +170,7 @@ int edloop()
 		/* Give key to current keyboard handler: it returns a macro to execute when
 		   a full sequence is decoded. Use special kbd if we're handing data to a shell window */
 		bw = (BW *)maint->curwin->object;
-		if (shell_kbd && (maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && piseof(bw->cursor))
+		if (shell_kbd && (maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && !bw->b->raw && piseof(bw->cursor))
 			m = dokey(shell_kbd, c);
 		else if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)
 			m = dokey(bw->b->vt->kbd, c);
@@ -300,7 +300,7 @@ int ushowlog(W *w, int k)
 		object = newbw->object;
 		w = newbw->parent;
 		bwrm(newbw);
-		w->object = (void *) (newbw = bwmk(w, copied, 0, NULL));
+		w->object = (void *) (newbw = bwmk(w, copied, 0));
 		wredraw(newbw->parent);
 		newbw->object = object;
 		
@@ -696,16 +696,12 @@ void show_startup_log()
 
 void setup_pipein()
 {
-	if (!idleout && modify_logic((BW *)maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
-		/* Start shell going in first window */
-		/* This is silly- mpx should be able to just read from stdin */
-
-		char **a = vamk(3);
-		a = vaadd(a, vsncpy(NULL, 0, sc("/bin/sh")));
-		a = vaadd(a, vsncpy(NULL, 0, sc("-c")));
-		a = vaadd(a, vsncpy(NULL, 0, sc("/bin/cat")));
-
-		cstart((BW *)maint->curwin->object, "/bin/sh", a, NULL, 0, 1, NULL, 0);
+	if (!idleout && !isatty(fileno(stdin)) && modify_logic((BW *)maint->curwin->object, ((BW *)maint->curwin->object)->b)) {
+		/* Read stdin into window asynchronously */
+		cstart ((BW *)maint->curwin->object, NULL, NULL, NULL, 0, 1, NULL, SHELL_TYPE_RAW);
+		/* Close stdin, so that if user kills the copying the program feeding stdin sees a SIGPIPE */
+		/* It won't if there are any extra file descriptors open */
+		fclose(stdin);
 	}
 }
 /* Scheduler wants us to get some work */

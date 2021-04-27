@@ -864,13 +864,14 @@ char **find_configs(char **ary, const char *extension, const char *datadir, cons
 		/* Load first from global (NOTE: Order here does not matter.) */
 		if (!chpwd(buf) && (t = rexpnd(wildcard))) {
 			for (x = 0; x < valen(t); ++x) {
-				*zrchr(t[x], '.') = 0;
+				if (extension) *zrchr(t[x], '.') = 0;
 				for (y = 0; y < valen(ary); ++y)
 					if (!zcmp(t[x], ary[y]))
 						break;
 				if (y == valen(ary))
 					ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
 			}
+			t = NULL;
 		}
 	}
 
@@ -886,13 +887,14 @@ char **find_configs(char **ary, const char *extension, const char *datadir, cons
 
 			if (!chpwd(buf) && (t = rexpnd(wildcard))) {
 				for (x = 0; x < valen(t); ++x) {
-					*zrchr(t[x],'.') = 0;
+					if (extension) *zrchr(t[x],'.') = 0;
 					for (y = 0; y < valen(ary); ++y)
 						if (!zcmp(t[x],ary[y]))
 							break;
 					if (y == valen(ary))
 						ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
 				}
+				t = NULL;
 			}
 		}
 	}
@@ -904,7 +906,7 @@ char **find_configs(char **ary, const char *extension, const char *datadir, cons
 		t = jgetbuiltins(wildcard);
 
 		for (x = 0; x < valen(t); ++x) {
-			*zrchr(t[x], '.') = 0;
+			if (extension) *zrchr(t[x], '.') = 0;
 			for (y = 0; y < valen(ary); ++y)
 				if (!zcmp(t[x], ary[y]))
 					break;
@@ -912,6 +914,9 @@ char **find_configs(char **ary, const char *extension, const char *datadir, cons
 				ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
 			}
 		}
+		
+		varm(t);
+		t = NULL;
 	}
 
 	if (valen(ary)) {
