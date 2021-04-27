@@ -551,6 +551,9 @@
 [go]
 *.go
 -autoindent
+-indentc 9
+-istep 1
+ -tab 4
 -title
 -syntax go
 -smarthome

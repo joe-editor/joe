@@ -41,7 +41,7 @@ void genexmsg(BW *bw, int saved, char *name)
 		} else {
 			m = vsfmt(NULL, 0, joe_gettext(_("File %s not saved")), name);
 		}
-	} else if (bw->b->changed && bw->b->count == 1) {
+	} else if (bw->b->changed /* && bw->b->count == 1 */) {
 		m = vsfmt(NULL, 0, joe_gettext(_("File %s not saved")), s);
 	} else if (saved) {
 		m = vsfmt(NULL, 0, joe_gettext(_("File %s saved")), s);
@@ -1045,7 +1045,7 @@ int uask(W *w, int k)
 	BW *bw;
 	WIND_BW(bw, w);
 	
-	if (bw->b->count == 1 && bw->b->changed && !bw->b->scratch) {
+	if (/* bw->b->count == 1 && */ bw->b->changed && !bw->b->scratch) {
 		for (;;) {
 			int c = query(w, sz(joe_gettext(_("Save changes to this file (y,n,%{abort})? "))), 0);
 			/* what happens when ^C is hit? */
