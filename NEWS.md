@@ -10,6 +10,10 @@
 
 ### JOE.next
 
+* Enhancements
+
+	* Consider 'Tc' terminfo flag when determining whether a terminal supports 24-bit color.
+
 * Bugs fixed
 
 	* Fix a number of bugs involved with piping data into JOE:
@@ -23,6 +27,16 @@
 		* Fix bug where window resize will cause copying process to stop (needed to retry on EINTR).
 
 	* Revert ^K Q behavior (by popular demand!)
+
+* Windows version
+
+	* Fix prompt window horizontal scrolling, remove separator.
+
+	* Fix find/replace first highlight and internal operation (unbounded stack growth).
+
+	* Install shell extensions (Open With registration, "Edit with ..." menu).
+
+	* Numerous build and installer improvements.
 
 ### JOE 4.6
 
