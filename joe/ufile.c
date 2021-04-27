@@ -583,7 +583,7 @@ static int doedit(W *w,int c,void *obj)
 		object = bw->object;
 		w = bw->parent;
 		bwrm(bw);
-		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+		w->object = (void *) (bw = bwmk(w, b, 0));
 		/* Propagate current directory to newly loaded buffer */
 		if (!b->current_dir)
 			b->current_dir = current_dir;
@@ -634,7 +634,7 @@ static int doedit(W *w,int c,void *obj)
 		object = bw->object;
 		w = bw->parent;
 		bwrm(bw);
-		w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+		w->object = (void *) (bw = bwmk(w, b, 0));
 		wredraw(bw->parent);
 		bw->object = object;
 		if (er == -1 && bw->o.mnew) {
@@ -811,7 +811,7 @@ int uscratch(W *w, int k)
 	object = bw->object;
 	w = bw->parent;
 	bwrm(bw);
-	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+	w->object = (void *) (bw = bwmk(w, b, 0));
 	wredraw(bw->parent);
 	bw->object = object;
 
@@ -876,7 +876,7 @@ int uscratch_push(W *w, int k)
 	object = bw->object;
 	w = bw->parent;
 	bwrm(bw);
-	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+	w->object = (void *) (bw = bwmk(w, b, 0));
 	wredraw(bw->parent);
 	bw->object = object;
 	
@@ -916,7 +916,7 @@ static int dorepl(W *w, char *s, void *obj)
 		orphit(bw);
 	}
 	bwrm(bw);
-	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+	w->object = (void *) (bw = bwmk(w, b, 0));
 	/* Propagate current directory into new buffer */
 	if (!b->current_dir) {
 		b->current_dir = current_dir;
@@ -958,7 +958,7 @@ int get_buffer_in_window(BW *bw, B *b)
 		orphit(bw);
 	}
 	bwrm(bw);
-	w->object = (void *) (bw = bwmk(w, b, 0, NULL));
+	w->object = (void *) (bw = bwmk(w, b, 0));
 	wredraw(bw->parent);
 	bw->object = object;
 	return 0;
@@ -1099,14 +1099,14 @@ int ulose(W *w, int k)
 					   any prompt windows? */
 
 					bwrm(tbw);
-					w->object = (void *) (tbw = bwmk(w, new_b, 0, NULL));
+					w->object = (void *) (tbw = bwmk(w, new_b, 0));
 					wredraw(w);
 					tbw->object = obj;
 				} else {
 					BW *tbw = (BW *)w->object;
 					void *obj = tbw->object;
 					bwrm(tbw);
-					w->object = (void *) (tbw = bwmk(w, bfind(""), 0, NULL));
+					w->object = (void *) (tbw = bwmk(w, bfind(""), 0));
 					wredraw(w);
 					tbw->object = obj;
 					if (tbw->o.mnew)

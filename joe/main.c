@@ -297,7 +297,7 @@ int ushowlog(W *w, int k)
 		object = newbw->object;
 		w = newbw->parent;
 		bwrm(newbw);
-		w->object = (void *) (newbw = bwmk(w, copied, 0, NULL));
+		w->object = (void *) (newbw = bwmk(w, copied, 0));
 		wredraw(newbw->parent);
 		newbw->object = object;
 		
