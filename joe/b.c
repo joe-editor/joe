@@ -2630,6 +2630,8 @@ char *parsens(const char *s, off_t *skip, off_t *amnt, int *mode)
 	n = vsncpy(NULL, 0, sz(s));
 
 #if 0
+	x = obj_len(n) - 1;
+
 	/* Old way */
 	if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 		for (x = obj_len(n) - 1; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
