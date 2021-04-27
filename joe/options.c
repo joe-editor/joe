@@ -849,7 +849,11 @@ char **find_configs(char **ary, const char *extension, const char *datadir, cons
 	char *oldpwd = pwd();
 	char **t = NULL;
 	char *p;
-	int x, y;
+	int i;
+
+	if (!ary)
+		ary = vamk(0);
+	vaperm(ary);
 
 	if (extension) {
 		wildcard = vsfmt(wildcard, 0, "*.%s", extension);
@@ -863,13 +867,9 @@ char **find_configs(char **ary, const char *extension, const char *datadir, cons
 
 		/* Load first from global (NOTE: Order here does not matter.) */
 		if (!chpwd(buf) && (t = rexpnd(wildcard))) {
-			for (x = 0; x < valen(t); ++x) {
-				if (extension) *zrchr(t[x], '.') = 0;
-				for (y = 0; y < valen(ary); ++y)
-					if (!zcmp(t[x], ary[y]))
-						break;
-				if (y == valen(ary))
-					ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
+			for (i = 0; i < valen(t); ++i) {
+				if (extension) *zrchr(t[i], '.') = 0;
+				ary = vaadd(ary, vsncpy(NULL, 0, sv(t[i])));
 			}
 			t = NULL;
 		}
@@ -882,13 +882,9 @@ char **find_configs(char **ary, const char *extension, const char *datadir, cons
 			buf = vsfmt(buf, 0, "%s/.joe/%s", p, homedir);
 
 			if (!chpwd(buf) && (t = rexpnd(wildcard))) {
-				for (x = 0; x < valen(t); ++x) {
-					if (extension) *zrchr(t[x],'.') = 0;
-					for (y = 0; y < valen(ary); ++y)
-						if (!zcmp(t[x],ary[y]))
-							break;
-					if (y == valen(ary))
-						ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
+				for (i = 0; i < valen(t); ++i) {
+					if (extension) *zrchr(t[i],'.') = 0;
+					ary = vaadd(ary, vsncpy(NULL, 0, sv(t[i])));
 				}
 				t = NULL;
 			}
@@ -901,24 +897,17 @@ char **find_configs(char **ary, const char *extension, const char *datadir, cons
 		wildcard = vscat(wildcard, sz(extension));
 		t = jgetbuiltins(wildcard);
 
-		for (x = 0; x < valen(t); ++x) {
-			if (extension) *zrchr(t[x], '.') = 0;
-			for (y = 0; y < valen(ary); ++y)
-				if (!zcmp(t[x], ary[y]))
-					break;
-			if (y == valen(ary)) {
-				ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
-			}
+		for (i = 0; i < valen(t); ++i) {
+			if (extension) *zrchr(t[i], '.') = 0;
+			ary = vaadd(ary, vsncpy(NULL, 0, sv(t[i])));
 		}
 		
 		varm(t);
 		t = NULL;
 	}
 
-	if (valen(ary)) {
-		vaperm(ary);
-		vasort(av(ary));
-	}
+	vasort(av(ary));
+	vauniq(ary);
 
 	chpwd(oldpwd);
 	return ary;
