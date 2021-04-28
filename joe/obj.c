@@ -961,21 +961,26 @@ void vadel(char **a, ptrdiff_t ofst, ptrdiff_t len)
 	}
 }
 
-void vauniq(char **a)
+void vauniq(char** a)
 {
 	if (a) {
-		ptrdiff_t x;
-		ptrdiff_t len = valen(a);
-		for (x = 0; x < len - 1; ++x) {
-			ptrdiff_t y;
-			for (y = x + 1; y < len; ++y) {
-				if (zcmp(a[x], a[y])) {
-					break;
-				}
-				vadel(a, x + 1, y - (x + 1));
-				len -= y - (x + 1);
-			}
+		ptrdiff_t x, y, len = valen(a);
+
+		/* Scan for successive identical elements */
+		for (x = 0, y = 1; y < len && zcmp(a[x], a[y]); ++x, ++y) {}
+
+		/* Start moving and deleting items */
+		for (; y < len; ++y) {
+			if (zcmp(a[x], a[y]))
+				a[++x] = a[y];
+			else if (obj_isperm(a))
+				obj_free(a[y]);
+
+			a[y] = 0;
 		}
+
+		a[++x] = 0;
+		obj_len(a) = x;
 	}
 }
 
