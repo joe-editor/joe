@@ -191,7 +191,7 @@ Convenient character classes:
 	cclass_notword:		\W	opposite
 */
 
-void joe_iswinit()
+void joe_iswinit(void)
 {
 	int x;
 

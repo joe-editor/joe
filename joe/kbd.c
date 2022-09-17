@@ -425,7 +425,7 @@ static int dokeymap(W *w,char *s,void *object,int *notify)
 	return 0;
 }
 
-static char **get_keymap_list()
+static char **get_keymap_list(void)
 {
 	char **lst = 0;
 	struct context *c;

@@ -172,7 +172,7 @@ extern const char *msgs[];	/* File access status messages */
 
 B *bmk(B *prop);
 void brm(B *b);
-void brmall();
+void brmall(void);
 
 B *bfind(const char *s);
 B *bfind_scratch(const char *s);
@@ -331,7 +331,7 @@ extern int break_links; /* Break hard links on write */
 extern int break_symlinks; /* Break symbolic links on write */
 extern int nodeadjoe; /* Prevent creation of DEADJOE files */
 
-void set_file_pos_orphaned();
+void set_file_pos_orphaned(void);
 
 void breplace(B *b, B *n);
 

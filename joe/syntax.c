@@ -450,7 +450,7 @@ static void iz_cmd(struct high_cmd *cmd)
 	cmd->call = 0;
 }
 
-static struct high_cmd *mkcmd()
+static struct high_cmd *mkcmd(void)
 {
 	struct high_cmd *cmd = (struct high_cmd *)joe_malloc(SIZEOF(struct high_cmd));
 	iz_cmd(cmd);

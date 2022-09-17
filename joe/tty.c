@@ -520,7 +520,7 @@ static void pauseit(void)
 
 /* Check for type-ahead */
 
-int ttcheck()
+int ttcheck(void)
 {
 	/* Ack previous packet */
 	if (ackkbd != -1 && acceptch != NO_MORE_DATA && !have) {
@@ -710,7 +710,7 @@ char ttgetc(void)
 
 static struct utf8_sm main_utf8_sm;
 
-int ttgetch()
+int ttgetch(void)
 {
 	if (locale_map->type) {
 		int utf8_char;

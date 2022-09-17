@@ -80,7 +80,7 @@ int from_utf8(struct charmap *map,const char *s);
 int to_uni(struct charmap *cset, int c);
 void to_utf8(struct charmap *map,char *s,int c);
 
-void joe_locale();
+void joe_locale(void);
 extern struct charmap *locale_map;	/* Character map of terminal */
 extern struct charmap *utf8_map;	/* UTF-8 character map */
 extern struct charmap *utf16_map;	/* UTF-16 character map */

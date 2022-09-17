@@ -476,7 +476,7 @@ int execmd(CMD *cmd, int k)
 	return ret;
 }
 
-void do_auto_scroll()
+void do_auto_scroll(void)
 {
 	static CMD *myscrup = 0;
 	static CMD *myscrdn = 0;

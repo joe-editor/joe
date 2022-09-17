@@ -114,7 +114,7 @@ static void cfollow(B *b, VT *vt, off_t byte)
 	}
 }
 
-void vt_scrdn()
+void vt_scrdn(void)
 {
 	W *w;
 	 if ((w = maint->topwin) != NULL) {

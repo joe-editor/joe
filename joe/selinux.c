@@ -98,7 +98,7 @@ int match_default_security_context(const char *from_file)
 }
 
 
-int reset_default_security_context()
+int reset_default_security_context(void)
 {
 #ifdef WITH_SELINUX
 	if (selinux_enabled == -1)

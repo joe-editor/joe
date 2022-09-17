@@ -1423,7 +1423,7 @@ main(int argc,char *argv[])
 
 /* Get names of available encodings (for tab completion of ^T E prompt) */
 
-char **get_encodings()
+char **get_encodings(void)
 {
 	int y;
 	char **encodings = 0;
@@ -1591,7 +1591,7 @@ struct charmap *locale_map;
 struct charmap *locale_map_non_utf8;
 			/* Old, non-utf8 version of locale */
 
-void joe_locale()
+void joe_locale(void)
 {
 	const char *sc;
 	char *s, *t, *u;
