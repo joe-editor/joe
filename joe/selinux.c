@@ -6,6 +6,7 @@
 
 #ifdef WITH_SELINUX
 #include <selinux/selinux.h>
+#include <error.h>
 static int selinux_enabled = -1;
 #endif
 
@@ -108,7 +109,7 @@ int reset_default_security_context(void)
 		return 0;
 
 	if (setfscreatecon(0) < 0) {
-		error(0, errno, joe_gettext(_("Could not reset default security context")));
+		error(0, errno, "%s", joe_gettext(_("Could not reset default security context")));
 		return 1;
 	}
 #endif
