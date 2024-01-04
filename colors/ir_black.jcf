@@ -72,6 +72,7 @@
 -selection /$262D51
 -linum $3D3D3D
 -cursor $000000/$ffffff
+-visiblews $808080
 
 -term 0 $4E4E4E
 -term 1 $FF6C60

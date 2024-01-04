@@ -42,6 +42,7 @@
 -curlinum	[base0]
 -message	[blue]
 -cursor		[base03]/[base0]
+-visiblews	[base02]
 
 =Comment	[base01] italic
 =Constant	[cyan]

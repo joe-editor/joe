@@ -54,6 +54,7 @@ OPTIONS pdefault = {
 	0,		/* crlf */
 #endif
 	0,		/* Highlight */
+	0,		/* Visible whitespace */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
@@ -118,6 +119,7 @@ OPTIONS fdefault = {
 	0,		/* crlf */
 #endif
 	0,		/* Highlight */
+	0,		/* Visible whitespace */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
@@ -404,7 +406,8 @@ struct glopts {
 	{"usetabs",	0, &opt_usetabs, NULL, 0, 0, _("Screen update uses tabs"), 0, 0, 0 },
 	{"assume_color", 0, &assume_color, NULL, 0, 0, _("Assume terminal supports color"), 0, 0, 0 },
 	{"assume_256color", 0, &assume_256color, NULL, 0, 0, _("Assume terminal supports 256 colors"), 0, 0, 0 },
-	{"joexterm", 0, &joexterm, NULL, 0, 0, _("Assume xterm patched for JOE"), 0, 0, 0 },
+	{"joexterm",	0, &joexterm, NULL, 0, 0, _("Assume xterm patched for JOE"), 0, 0, 0 },
+	{"visiblews",	4, NULL, (char *) &fdefault.visiblews, _("Visible whitespace enabled"), _("Visible whitespace disabled"), _("Visible whitespace"), 0, 0, 0 },
 	{ NULL,		0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0 }
 };
 

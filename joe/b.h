@@ -88,6 +88,7 @@ struct options {
 	int	spaces;
 	int	crlf;
 	int	highlight;	/* Set to enable highlighting */
+	int	visiblews;	/* Visible whitespace */
 	const char *syntax_name;	/* Name of syntax to use */
 	struct high_syntax *syntax;	/* Syntax for highlighting (load_syntax() from syntax_name happens in setopt()) */
 	const char *map_name;	/* Name of character set */
