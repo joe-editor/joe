@@ -1,24 +1,24 @@
 # Joe's Own Editor
 
-[User manual](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md) 
+[User manual](docs/man.md) 
 
-[Release Notes](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/NEWS.md)
+[Release Notes](NEWS.md)
 
-[List of Commands](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md#list)
+[List of Commands](docs/man.md#list)
 
-[List of Options](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/man.md#options)
+[List of Options](docs/man.md#options)
 
-[JOE for Windows tips](https://sourceforge.net/p/joe-editor/mercurial/ci/windows/tree/docs/windows.md)
+[JOE for Windows tips](https://github.com/joe-editor/joe/blob/windows/docs/windows.md)
 
-[Hacking](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/hacking.md)
+[Hacking](docs/hacking.md)
 
-[Project page](http://www.sourceforge.net/projects/joe-editor)
+[Sourceforge project page](https://www.sourceforge.net/projects/joe-editor)
 
 [Download source](https://sourceforge.net/projects/joe-editor/files/)
 
-[Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
+[Build instructions](INSTALL.md)
 
-[History](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/docs/history.md)
+[History](docs/history.md)
 
 <p></p>
 
@@ -59,14 +59,15 @@ if you want.  Also you can customize the editor by copying the system
 "joerc" file to your home directory.</p>
 
 <p>Here is a basic screen shot of JOE running in a Cygwin console:</p>
-![screen capture](http://joe-editor.sourceforge.net/capture.gif)
+
+![screen capture](htdocs/capture.gif)
 
 <p>Here is a screen shot showing several windows- the first has some example
 double-wide characters, the second is the same buffer as the first, but in
 hex-dump view mode, the third is a shell window and the fourth shows a
 selected rectangular block of numbers and their sum:</p>
 
-![elaborate screen capture](http://joe-editor.sourceforge.net/elaborate.gif)
+![elaborate screen capture](htdocs/elaborate.gif)
 
 ### JOE has the following features:
 
