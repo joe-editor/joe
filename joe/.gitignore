@@ -1,0 +1,8 @@
+.deps
+autoconf.h
+autoconf.h.in
+
+# Binaries
+stringify
+termidx
+joe

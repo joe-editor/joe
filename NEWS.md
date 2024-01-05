@@ -1,12 +1,12 @@
 ## Release Notes
 
-[Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
+[Back to README file](README.md)
 
-[Browse source](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree)
+[Browse source](https://github.com/joe-editor/joe)
 
 [Download source distribution](https://sourceforge.net/projects/joe-editor/files/)
 
-[Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
+[Build instructions](INSTALL.md)
 
 ### JOE.next
 
@@ -109,11 +109,11 @@
 
 Before:
 
-![Before](http://joe-editor.sourceforge.net/before.gif)
+![Before](htdocs/before.gif)
 
 After:
 
-![After](http://joe-editor.sourceforge.net/after.gif)
+![After](htdocs/after.gif)
 
 * Enhancements
 
