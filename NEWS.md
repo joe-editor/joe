@@ -1,14 +1,42 @@
 ## Release Notes
 
-[Back to README file](http://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/README.md)
+[Back to README file](README.md)
 
-[Browse source](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree)
+[Browse source](https://github.com/joe-editor/joe)
 
 [Download source distribution](https://sourceforge.net/projects/joe-editor/files/)
 
-[Build instructions](https://sourceforge.net/p/joe-editor/mercurial/ci/default/tree/INSTALL.md)
+[Build instructions](INSTALL.md)
 
 ### JOE.next
+
+* Enhancements
+
+	* Consider 'Tc' terminfo flag when determining whether a terminal supports 24-bit color.
+
+* Bugs fixed
+
+	* Fix a number of bugs involved with piping data into JOE:
+
+		* Make piping into JOE binary clean.  For example, in: "echo -e 'a\0b' | joe" the NUL was missing.
+
+		* Fix bug where 'New File' was displayed in "echo hi | joe -"
+
+		* Fix bug where closing the copying process didn't cause the other end of the pipe feeding stdin from seeing SIGPIPE.
+
+		* Fix bug where window resize will cause copying process to stop (needed to retry on EINTR).
+
+	* Revert ^K Q behavior (by popular demand!)
+
+* Windows version
+
+	* Fix prompt window horizontal scrolling, remove separator.
+
+	* Fix find/replace first highlight and internal operation (unbounded stack growth).
+
+	* Install shell extensions (Open With registration, "Edit with ..." menu).
+
+	* Numerous build and installer improvements.
 
 ### JOE 4.6
 
@@ -81,11 +109,11 @@
 
 Before:
 
-![Before](http://joe-editor.sourceforge.net/before.gif)
+![Before](htdocs/before.gif)
 
 After:
 
-![After](http://joe-editor.sourceforge.net/after.gif)
+![After](htdocs/after.gif)
 
 * Enhancements
 
