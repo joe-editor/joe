@@ -19,3 +19,18 @@ const CCre = /(([a-zA-Z\-]+)\s*(=\s*(("([^"\\]|\\.)*")|([^"\s]+))?))*/;
         self.exitJoe()
         self.assertExited()
 
+    def test_paste_linum_garbage(self):
+        """Regression test for invalid screen output with line numbers"""
+        self.config.globalopts.brpaste = True
+        self.startJoe()
+        self.mode("linums")
+        self.writectl("{enter*6}")
+        self.cmd("bof")
+        self.write("\033[200~Hello\rWorld\r!\033[201~")
+
+        # Wait for it to write
+        self.assertTextAt("!", dx=-1)
+        
+        # Next two lines should be blank
+        self.assertTextAt("      ", dx=-1, dy=1)
+        self.assertTextAt("      ", dx=-1, dy=2)

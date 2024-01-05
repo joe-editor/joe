@@ -27,4 +27,4 @@ rc/jicerc.ru
 
 __pycache__
 *.pyc
-tests/testenv$
+tests/testenv
