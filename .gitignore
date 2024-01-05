@@ -28,14 +28,3 @@ rc/jicerc.ru
 __pycache__
 *.pyc
 tests/testenv$
-
-/windows/bin
-/windows/src/bin
-/windows/tools/sync/repos
-/windows/src/.vs
-/windows/src/packages
-/windows/**/*proj.user
-*.log
-*.suo
-*.sdf
-*.opensdf

@@ -1,0 +1,11 @@
+/bin
+/src/bin
+/tools/sync/repos
+/src/.vs
+/src/packages
+
+*.proj.user
+*.log
+*.suo
+*.sdf
+*.opensdf
