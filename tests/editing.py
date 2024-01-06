@@ -37,6 +37,24 @@ const CCre = /(([a-zA-Z\-]+)\s*(=\s*(("([^"\\]|\\.)*")|([^"\s]+))?))*/;
         for y in range(4, 25):
             self.assertTextAt("      ", dx=-1, y=y)
 
+    def test_paste_linum_garbage_2(self):
+        """Regression test for invalid screen output with line numbers"""
+        self.config.globalopts.brpaste = True
+        self.startJoe()
+        self.mode("linums")
+        self.writectl("{enter*5}")
+        self.cmd("bof")
+
+        for i in range(4):
+            self.write("\033[200~1\r2\r3\r4\r5\r\033[201~")
+            for j in range(1, 6):
+                for k in range(i + 1):
+                    self.assertTextAt("{}".format(j), y=(k * 5 + j))
+            for j in range(5 * i + 6, 25):
+                if j < i + 5:
+                    self.assertTextAt("{:2d}".format(j), dx=-3, y=j)
+                self.assertTextAt("   ", dx=-1, y=j)
+
     def test_linums_shift(self):
         """Ensure that line numbers shift when a new column is added"""
         self.config.globalopts.brpaste = True

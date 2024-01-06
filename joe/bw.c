@@ -734,8 +734,8 @@ static void gennum(BW *w, int (*screen)[COMPOSE], int *attr, SCRN *t, ptrdiff_t 
 			buf[x] = ' ';
 		buf[x] = 0;
 	}
+	int atr = (w->o.hiline && lin == w->cursor->line) ? bg_curlinum : bg_linum;
 	for (z = SIZEOF(buf) - w->lincols - 1, x = 0; buf[z]; ++z, ++x) {
-		int atr = (w->o.hiline && lin == w->cursor->line) ? bg_curlinum : bg_linum;
 		outatr(w->b->o.charmap, t, screen + x, attr + x, x, y, buf[z], BG_COLOR(atr));
 		comp[x] = buf[z];
 	}
@@ -917,7 +917,7 @@ void bwgen(BW *w, int linums, int linchg)
 	y = TO_DIFF_OK(w->cursor->line - w->top->line) + w->y;
 	attr = t->attr + y*w->t->w;
 	for (screen = t->scrn + y * w->t->w; y != bot; ++y, (screen += w->t->w), (attr += w->t->w)) {
-		if (ifhave && !linchg)
+		if (ifhave)
 			break;
 		if (linums)
 			gennum(w, screen, attr, t, y, t->compose);
@@ -947,7 +947,7 @@ void bwgen(BW *w, int linums, int linchg)
 	y = w->y;
 	attr = t->attr + w->y * w->t->w;
 	for (screen = t->scrn + w->y * w->t->w; y != w->y + w->cursor->line - w->top->line; ++y, (screen += w->t->w), (attr += w->t->w)) {
-		if (ifhave && !linchg)
+		if (ifhave)
 			break;
 		if (linums)
 			gennum(w, screen, attr, t, y, t->compose);
