@@ -2591,6 +2591,7 @@ int ubrpaste(W *w, int k)
 	saved_sp = bw->o.spaces;
 	
 	bw->o.wordwrap = bw->o.autoindent = bw->o.spaces = 0;
+	bw->pasting = 1;
 	
 	return 0;
 }
@@ -2604,6 +2605,7 @@ int ubrpaste_done(W *w, int k)
 	bw->o.wordwrap = saved_ww;
 	bw->o.autoindent = saved_ai;
 	bw->o.spaces = saved_sp;
+	bw->pasting = 0;
 	
 	return 0;
 }
