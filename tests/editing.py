@@ -30,7 +30,9 @@ const CCre = /(([a-zA-Z\-]+)\s*(=\s*(("([^"\\]|\\.)*")|([^"\s]+))?))*/;
 
         # Wait for it to write
         self.assertTextAt("!", dx=-1)
+        self.assertTextAt("Hello", dx=-1, y=1)
+        self.assertTextAt("World", dx=-1, y=2)
         
-        # Next two lines should be blank
-        self.assertTextAt("      ", dx=-1, dy=1)
-        self.assertTextAt("      ", dx=-1, dy=2)
+        # All remaining lines should be blank
+        for y in range(4, 25):
+            self.assertTextAt("      ", dx=-1, y=y)
