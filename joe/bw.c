@@ -917,7 +917,7 @@ void bwgen(BW *w, int linums, int linchg)
 	y = TO_DIFF_OK(w->cursor->line - w->top->line) + w->y;
 	attr = t->attr + y*w->t->w;
 	for (screen = t->scrn + y * w->t->w; y != bot; ++y, (screen += w->t->w), (attr += w->t->w)) {
-		if (ifhave)
+		if (ifhave && !linchg)
 			break;
 		if (linums)
 			gennum(w, screen, attr, t, y, t->compose);
@@ -947,7 +947,7 @@ void bwgen(BW *w, int linums, int linchg)
 	y = w->y;
 	attr = t->attr + w->y * w->t->w;
 	for (screen = t->scrn + w->y * w->t->w; y != w->y + w->cursor->line - w->top->line; ++y, (screen += w->t->w), (attr += w->t->w)) {
-		if (ifhave)
+		if (ifhave && !linchg)
 			break;
 		if (linums)
 			gennum(w, screen, attr, t, y, t->compose);
