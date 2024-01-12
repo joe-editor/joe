@@ -454,14 +454,22 @@
 *
 +#![ 	]*[^\n 	]*/sh\>
 +#![ 	]*[^\n 	]*/bash\>
++#![ 	]*[^\n  ]*/zsh\>
 +#![ 	]*/usr/bin/env[         ][      ]*sh\>
 +#![ 	]*/usr/bin/env[         ][      ]*bash\>
++#![ 	]*/usr/bin/env[         ][      ]*zsh\>
 *.sh
 *profile
 *.bash
 *.bashrc
 *.bash_login
 *.bash_logout
+*.zsh
+*.zshenv
+*.zprofile
+*.zshrc
+*.zlogin
+*.zlogout
 -autoindent
 -title
 -syntax sh
