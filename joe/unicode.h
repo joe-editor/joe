@@ -47,7 +47,7 @@ extern struct Cclass cclass_word[1];
 extern struct Cclass cclass_notword[1];
 extern struct Cclass cclass_combining[1];
 
-void joe_iswinit();
+void joe_iswinit(void);
 
 int joe_iswupper(struct charmap *,int c);
 int joe_iswlower(struct charmap *,int c);

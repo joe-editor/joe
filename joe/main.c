@@ -95,7 +95,7 @@ time_t cur_time;
 time_t timer_macro_delay;
 MACRO *timer_macro;
 
-MACRO *timer_play()
+MACRO *timer_play(void)
 {
 	cur_time = time(NULL);
 	if (timer_macro && timer_macro_delay && cur_time >= last_timer_time + timer_macro_delay) {

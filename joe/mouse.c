@@ -136,7 +136,7 @@ int uextmouse(W *w, int k)
 	return mouse_event(w);
 }
 
-long mnow()
+long mnow(void)
 {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
@@ -245,7 +245,7 @@ static void ttputs64(char *pp, ptrdiff_t length)
         }
 }
 
-static void ttputs64_flush()
+static void ttputs64_flush(void)
 {
     char x;
     switch (base64_count) {
@@ -449,7 +449,7 @@ int utomouse(W *xx, int k)
  * position that utomouse would use into tmspos. */
 static off_t tmspos;
 
-static int tomousestay()
+static int tomousestay(void)
 {
 	BW *bw;
 	ptrdiff_t x = Cx - 1,y = Cy - 1;
@@ -556,7 +556,7 @@ int udefmdown(W *xx, int k)
 	return 0;
 }
 
-void reset_trig_time()
+void reset_trig_time(void)
 {
 	if (!auto_rate)
 		auto_rate = 1;
@@ -761,7 +761,7 @@ int udefm3up(W *w, int k)
 	return 0;
 }
 
-void mouseopen()
+void mouseopen(void)
 {
 #ifdef MOUSE_XTERM
 	if (usexmouse) {
@@ -774,7 +774,7 @@ void mouseopen()
 #endif
 }
 
-void mouseclose()
+void mouseclose(void)
 {
 #ifdef MOUSE_XTERM
 	if (usexmouse) {

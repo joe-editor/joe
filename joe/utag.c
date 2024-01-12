@@ -33,7 +33,7 @@ static void freetag(TAG *n)
 	enquef(TAG, link, &tagnodes, n);
 }
 
-static void clrtags()
+static void clrtags(void)
 {
 	while (!qempty(TAG, link, &tags)) {
 		freetag(deque_f(TAG, link, tags.link.next));
@@ -386,7 +386,7 @@ static int dotag(W *w, char *s, void *obj, int *notify)
 static char **tag_word_list;
 static time_t last_update;
 
-static void get_tag_list()
+static void get_tag_list(void)
 {
 	char buf[512];
 	char tag[512];

@@ -14,4 +14,4 @@
 int procrc(CAP *cap, char *name);
 
 /* Validate rc file: return -1 if it's bad (call this after rc file has been loaded) */
-int validate_rc();
+int validate_rc(void);

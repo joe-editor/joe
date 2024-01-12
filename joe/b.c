@@ -23,8 +23,6 @@
 #endif
 #endif
 
-extern int errno;
-
 #ifdef WITH_SELINUX
 #include <selinux/selinux.h>
 static int selinux_enabled = -1;
@@ -147,7 +145,7 @@ static void pfree(P *p)
 B bufs = { {&bufs, &bufs} };
 static B frebufs = { {&frebufs, &frebufs} };
 
-void set_file_pos_orphaned()
+void set_file_pos_orphaned(void)
 {
 	B *b;
 	for (b = bufs.link.next; b != &bufs; b = b->link.next)
@@ -325,7 +323,7 @@ void brm(B *b)
 	}
 }
 
-void brmall()
+void brmall(void)
 {
 	while (!qempty(B, link, &bufs))
 		brm(bufs.link.next);

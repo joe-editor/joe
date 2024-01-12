@@ -21,12 +21,12 @@ JOE; see the file COPYING.  If not, write to the Free Software Foundation,
 #define MOUSE_MULTI_THRESH	300
 
 #ifdef MOUSE_GPM
-int gpmopen();		/* initialize the connection. returns 0 on failure. */
-void gpmclose();	/* close the connection. */
+int gpmopen(void);		/* initialize the connection. returns 0 on failure. */
+void gpmclose(void);	/* close the connection. */
 #endif
 
-void mouseopen();	/* initialize mouse */
-void mouseclose();	/* de-initialize mouse */
+void mouseopen(void);	/* initialize mouse */
+void mouseclose(void);	/* de-initialize mouse */
 
 /* mousedn(int x, int y, int middle) - handle a mouse-down event */
 void mousedn(ptrdiff_t x, ptrdiff_t y, int middle);
@@ -56,8 +56,8 @@ int udefm3drag(W *, int);
 int udefmiddledown(W *, int);
 int udefmiddleup(W *, int);
 
-long mnow();
-void reset_trig_time();
+long mnow(void);
+void reset_trig_time(void);
 
 /* options */
 extern int floatmouse;	/* Allow mouse to set cursor past end of lines */

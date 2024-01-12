@@ -1645,7 +1645,7 @@ B *mathhist = NULL;
 
 static char **math_word_list;
 
-static void get_math_list()
+static void get_math_list(void)
 {
 	struct var *v;
 	char *s;

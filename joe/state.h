@@ -12,8 +12,8 @@ extern int joe_state;
 
 /* Load state from file */
 
-void load_state();
+void load_state(void);
 
 /* Save state to file */
 
-void save_state();
+void save_state(void);
