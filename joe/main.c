@@ -149,7 +149,7 @@ int edloop(int flg)
 			w = (W *) (w->link.next);
 		} while (w != maint->curwin);
 
-		if (!ahead && c == 10)
+		if (c == 10 && (!ahead || ((BW *)maint->curwin->object)->pasting))
 			c = 13;
 
 		more_no_auto:
