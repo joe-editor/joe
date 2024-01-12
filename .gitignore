@@ -10,21 +10,16 @@ core
 joe-*.tar.gz
 *#
 charmaps/klingon
-rc/*rc
-rc/jicerc.ru
 
 /config.guess
 /config.status
 /config.sub
 /config.log
 /autom4te.cache
+/compile
 
 /aclocal.m4
 /configure
 /depcomp
 /install-sh
 /missing
-
-__pycache__
-*.pyc
-tests/testenv

@@ -1,0 +1,4 @@
+*rc*
+!*.in
+!ftyperc
+Makefile.in
