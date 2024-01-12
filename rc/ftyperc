@@ -454,6 +454,8 @@
 *
 +#![ 	]*[^\n 	]*/sh\>
 +#![ 	]*[^\n 	]*/bash\>
++#![ 	]*/usr/bin/env[         ][      ]*sh\>
++#![ 	]*/usr/bin/env[         ][      ]*bash\>
 *.sh
 *profile
 *.bash
