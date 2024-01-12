@@ -1,8 +1,7 @@
 .deps
 autoconf.h
 autoconf.h.in
+stamp-h1
 
 # Binaries
-stringify
-termidx
 joe

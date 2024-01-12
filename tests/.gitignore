@@ -1,0 +1,3 @@
+testenv
+__pycache__
+*.pyc
