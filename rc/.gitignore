@@ -1,3 +1,4 @@
-*rc
-*rc.zh*
-*rc.ru*
+*rc*
+!*.in
+!ftyperc
+Makefile.in
