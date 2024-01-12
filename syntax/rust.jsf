@@ -227,7 +227,7 @@
 # The number of #'s is technically unbounded, but we'll limit to 4.
 
 :raw_string_pre Ident
-	*		ident		noeat
+	*		idle		noeat
 	"\""		raw_string_0	recolor=-2
 	"#"		raw_string_pre_1 recolor=-2
 
@@ -301,13 +301,13 @@ done
 # Byte string literals b"foo bar"
 
 :byte_string_pre Ident
-	*		ident		noeat recolor=-1
+	*		idle		noeat recolor=-1
 	"\""		string		recolor=-2
 
 # Raw byte string literals br"hello world" and br###"Hello, "world""###
 
 :raw_byte_string_pre Ident
-	*		ident		noeat
+	*		idle		noeat
 	"\""		raw_string_0	recolor=-3
 	"#"		raw_string_pre_1 recolor=-3
 
