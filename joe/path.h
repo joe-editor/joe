@@ -66,7 +66,7 @@ char *mktmp(const char *where);
 
 /* Change drive and directory 
  * chdir doesn't seem to correctly handle changing to ~
-   so chddir handles the ~, then calls chdir
+ * so chddir handles the ~, then calls chdir
  */
 int chddir(const char* path); 
 

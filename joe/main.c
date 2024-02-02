@@ -295,9 +295,9 @@ int ushowlog(W *w, int k)
 
 int createbackpathdir(W *w, int c, void *object, int *notify)
 {
-	if (c == YES_CODE || yncheck(yes_key, c)){
+	if (c == YES_CODE || yncheck(yes_key, c)) {
 		char *bp = object;
-		if (mkpath(bp) == 0){
+		if (mkpath(bp) == 0) {
 			return 0;
 		} else {
 			_exit(-1);
@@ -671,15 +671,17 @@ int main(int argc, char **real_argv, const char * const *envv)
 		}
 
 	}
+
 	/* Prompt user to create backup directory if it does not exist. */
 	char *oldpwd = pwd();
 	const char *backpath = get_status(NULL, "backpath");
 	
-	if (zcmp(backpath, "") != 0 && chddir(backpath) != 0){
-		if (!mkqw(((BASE*)lastw(maint)->object)->parent, sz(joe_gettext(_("Backup directory does not exist. Create the directory (y,n)? "))), createbackpathdir, NULL, (void*)backpath, NULL)){
+	if (zcmp(backpath, "") != 0 && chddir(backpath) != 0) {
+		if (!mkqw(((BASE*)lastw(maint)->object)->parent, sz(joe_gettext(_("Backup directory does not exist. Create the directory (y,n)? "))), createbackpathdir, NULL, (void*)backpath, NULL)) {
 			return -1;
 		}
 	}
+	
 	chpwd(oldpwd);
 
 	if (!idleout) {
@@ -691,7 +693,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 			fclose(stdin);
 		}
 	}
-	
+
 	edloop(0);
 
 	save_state();
