@@ -247,16 +247,13 @@ char *mktmp(const char *where)
 /********************************************************************/
 int chddir(const char *path)
 {
-	char *s = path;
-	if (path[0] == '~') {
-		if (chdir(getenv("HOME")) != 0) {
-			return -1;
-		} else {
-			s += 2;
-		}
-	}
+	char *s = vsndup(NULL, 0, sz(path));
+	int res;
 
-	return chdir(s);
+	s = canonical(s, CANFLAG_NORESTART);
+	res = chdir(s);
+	vsrm(s);
+	return res;
 }
 
 /********************************************************************/
