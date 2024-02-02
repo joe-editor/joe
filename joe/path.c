@@ -247,11 +247,8 @@ char *mktmp(const char *where)
 /********************************************************************/
 int chddir(const char *path)
 {
-	char *s = vsndup(NULL, 0, sz(path));
-	int res;
-
-	s = canonical(s, CANFLAG_NORESTART);
-	res = chdir(s);
+	char *s = canonical(vsndup(NULL, 0, sz(path)), CANFLAG_NORESTART);
+	int res = chdir(s);
 	vsrm(s);
 	return res;
 }
