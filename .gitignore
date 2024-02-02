@@ -1,0 +1,25 @@
+*~
+*.orig
+*.rej
+*.o
+DEADJOE
+# Makefile(\.in)?$
+Makefile
+Makefile.in
+core
+joe-*.tar.gz
+*#
+charmaps/klingon
+
+/config.guess
+/config.status
+/config.sub
+/config.log
+/autom4te.cache
+/compile
+
+/aclocal.m4
+/configure
+/depcomp
+/install-sh
+/missing

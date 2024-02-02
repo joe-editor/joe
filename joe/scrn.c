@@ -629,6 +629,7 @@ SCRN *nopen(CAP *cap)
 	t->Co = getnum(t->cap,"Co");
 	if (t->Co == -1)
 		t->Co = 8;
+	t->Tc = getflag(t->cap,"Tc");
 
 	t->mb = NULL;
 	t->md = NULL;
@@ -718,7 +719,7 @@ SCRN *nopen(CAP *cap)
 
 	{
 		char *s = getenv("COLORTERM");
-		t->truecolor = s && (!zicmp(s, "truecolor") || !zicmp(s, "24bit"));
+		t->truecolor = t->Tc || (s && (!zicmp(s, "truecolor") || !zicmp(s, "24bit")));
 		t->palette = NULL;
 	}
 

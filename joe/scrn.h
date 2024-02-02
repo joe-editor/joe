@@ -78,6 +78,7 @@ struct scrn {
 	const char	*Sb;		/* Set background color */
 	const char	*Sf;		/* Set foreground color */
 	int	Co;			/* No. of colors */
+	int	Tc;			/* Truecolor (non-standard, tmux-supported) */
 	int	ut;		/* Screen erases with background color */
 
 	int	da, db;		/* Extra lines exist above, below */
