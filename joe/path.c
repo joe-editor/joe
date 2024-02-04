@@ -157,18 +157,12 @@ int mkpath(char *path)
 {
 	char *s;
 	char *oldpwd = pwd(); /* Store pwd so we can return to it after path is made */
-	
+	char *start = path;
+
 	if (path[0] == '/') {
 		if (chddir("/"))
 			return 1;
 		s = path;
-		goto in;
-	} else if (path[0] == '~') {
-		if (chddir(getenv("HOME")))
-			return 1;
-		s = path;
-		while (*s == '~')
-			++s;
 		goto in;
 	}
 
@@ -179,11 +173,14 @@ int mkpath(char *path)
 		c = *s;
 		*s = 0;
 		if (chddir(path)) {
-			if (mkdir(path, 0777))
+			/* Create and change directory unless this segment is a home directory */
+			if ((start == path && start[0] == '~') || mkdir(path, 0777) || chddir(path)) {
+				*s = c;
+				chddir(oldpwd);
 				return 1;
-			if (chddir(path))
-				return 1;
+			}
 		}
+
 		*s = c;
 	      in:
 		while (*s == '/')
@@ -194,6 +191,7 @@ int mkpath(char *path)
 	chddir(oldpwd);
 	return 0;
 }
+
 /********************************************************************/
 /* Create a temporary file */
 /********************************************************************/
