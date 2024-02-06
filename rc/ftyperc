@@ -924,3 +924,10 @@
 -syntax haskell
 -vhdl_comment
 -highlighter_context
+
+ Crontabs
+[crontab]
+*crontab
+--break_hardlinks
+--break_links
+
