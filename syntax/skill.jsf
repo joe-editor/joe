@@ -52,7 +52,7 @@ done
 :number Number
 	*		idle		noeat
 	"0-9."		number
-	
+
 :slash Idle
 	*		idle
 	"/"		slash
@@ -67,7 +67,7 @@ done
 	*		mcomment
 	"BFHNTX"	mcomment	noeat call=comment_todo.comment_todo()
 	"*"		maybe_end_mcomment
-	
+
 :maybe_end_mcomment Comment comment
 	*		mcomment	noeat
 	"*"		maybe_end_mcomment

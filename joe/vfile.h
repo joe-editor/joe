@@ -109,7 +109,7 @@ void vclose(VFILE *vfile);
 void vlimit();
 #endif
 
-/* void vflsh(void); 
+/* void vflsh(void);
  *
  * Write all changed pages to the disk
  */
@@ -305,7 +305,7 @@ void vread();
 
 void vwrite();
 
-/*************************************************************************** 
+/***************************************************************************
  * The following functions implement array I/O on top of the above virtual *
  * memory system (cheap memory mapped files)                               *
  ***************************************************************************/

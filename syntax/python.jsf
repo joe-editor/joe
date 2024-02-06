@@ -118,12 +118,12 @@
 	"while"		loop
 	"with"		stmt
 	"yield"		stmt
-	
+
 	# quasi-keywords
 	"False"		bool
 	"True"		bool
 	"None"		kw
-	
+
 	# builtins
 	"abs"		builtin
 	"all"		builtin
@@ -197,7 +197,7 @@
 	"type"		builtin
 	"vars"		builtin
 	"zip"		builtin
-	
+
 done
 	"'\""		idle 		noeat istrings
 	"u"		string_pre

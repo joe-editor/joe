@@ -1,4 +1,4 @@
-/* 
+/*
  *	Text editing windows
  *	Copyright
  *		(C) 1992 Joseph H. Allen
@@ -106,7 +106,7 @@ static const int *get_context(BW *bw)
  *
  * There are actually two possibilities:
  *
- * We want the first line- 
+ * We want the first line-
  *
  * int
  * foo(int x,int y) {
@@ -172,7 +172,7 @@ static char *get_context(BW *bw)
 			    	*/
 			    	break;
 			}
-			
+
 		}
 	} while (!buf1[0] && pprevl(p));
 
@@ -291,7 +291,7 @@ char *stagen(char *stalin, BW *bw, const char *s, char fill)
 						s+=l+1;
 						ch=getenv(buf);
 						if (ch) stalin=vsncpy(sv(stalin),sz(ch));
-					} 
+					}
 				}
 				break;
 
@@ -306,7 +306,7 @@ char *stagen(char *stalin, BW *bw, const char *s, char fill)
 						s+=l+1;
 						ch=get_status(bw, buf);
 						if (ch) stalin=vsncpy(sv(stalin),sz(ch));
-					} 
+					}
 				}
 				break;
 

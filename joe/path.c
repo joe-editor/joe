@@ -1,4 +1,4 @@
-/* 
+/*
  *	Directory and path functions
  *	Copyright
  *		(C) 1992 Joseph H. Allen

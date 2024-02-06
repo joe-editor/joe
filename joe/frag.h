@@ -34,7 +34,7 @@ void align_frag(Frag *f, ptrdiff_t n);
  * the emitted data.  After the emit, it fills the fragment until its
  * size is a multiple of the natural alignment specified in iz_frag.
  */
- 
+
 
 ptrdiff_t emitb_noalign(Frag *f, char c);
 ptrdiff_t emitb(Frag *f, char c);

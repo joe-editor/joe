@@ -117,7 +117,7 @@
 :style_comment Comment comment
 	*		style_comment
 	"*"		maybe_end_style_comment
-  
+
 :maybe_end_style_comment Comment comment
 	*		comment
 	"/"		style_block
