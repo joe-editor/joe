@@ -7,7 +7,7 @@
  */
 #include "types.h"
 
-int undo_keep = 100; /* Number of undo records to keep */
+int undo_keep = 1000; /* Number of undo records to keep */
 
 #define SMALL 1024
 
