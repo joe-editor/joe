@@ -218,7 +218,7 @@ sELEMENT *vsncpy(sELEMENT *vary, ptrdiff_t pos, const sELEMENT *array, ptrdiff_t
  * 'pos'.  'array' can be a char array since its length is passed separately.  A
  * new array is created if 'vary' is 0.
  */
-sELEMENT *vsndup(sELEMENT *vary, ptrdiff_t pos, sELEMENT *array, ptrdiff_t len);
+sELEMENT *vsndup(sELEMENT *vary, ptrdiff_t pos, const sELEMENT *array, ptrdiff_t len);
 
 /* sELEMENT *vsdup(sELEMENT *vary));
  * Duplicate array.  This is just a functionalized version of:
