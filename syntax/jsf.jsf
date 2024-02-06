@@ -351,6 +351,10 @@
 	"buffer"	option_color
 	"save_c"	option_color
 	"save_s"	option_color
+	"push_c"	option_color
+	"push_s"	option_color
+	"pop_c"		option_color
+	"pop_s"		option_color
 	"hold"		option_color
 	"call"		call_color
 	"return"	option_color
@@ -366,6 +370,10 @@
 	"buffer"	option_color
 	"save_c"	option_color
 	"save_s"	option_color
+	"push_c"	option_color
+	"push_s"	option_color
+	"pop_c"		option_color
+	"pop_s"		option_color
 	"strings"	strings_color
 	"istrings"	strings_color
 	"hold"		option_color

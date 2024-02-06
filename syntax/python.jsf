@@ -27,14 +27,46 @@
 =Decorator	+Define +Preproc
 =Builtin	+DefinedFunction
 
+=FstringBrace	+Brace
+
 :idle Idle
 	*		idle
 	"#"		comment		recolor=-1
 	"0-9"		first_digit	recolor=-1
-	"'\""		string_quot_1	recolor=-1 save_c
 	"\i"		ident		noeat
+	"'\""		string_quot_1	recolor=-1 push_c
+.ifdef fstring
+.ifdef docstring
+	&		doc_end_quot_1	recolor=-1 push_c
+.else
+	&		idle		noeat return
+.endif
+	":"		idle		noeat return
+	"{"		fstring_brace	recolor=-1
+	"}"		idle		noeat return
+.else
 	"{}"		brace		recolor=-1
+.endif
 	"@"		decorator	recolor=-1
+
+.ifdef fstring
+:fstring_brace FstringBrace
+	*		return_from_expr	noeat call=python()
+
+:return_from_expr FstringBrace
+	*		return_from_expr	noeat return
+	"}"		idle
+
+.ifdef docstring
+:doc_end_quot_1 String string
+	*		string_quot_1	noeat
+	&		doc_end_quot_2	pop_c
+
+:doc_end_quot_2 String string
+	*		idle		noeat
+	&		idle		noeat return
+.endif
+.endif
 
 :brace Brace
 	*		idle		noeat
@@ -205,6 +237,9 @@ done
 	"r"		string_raw_pre
 	"br"		string_raw_pre
 	"rb"		string_raw_pre
+	"f"		string_fstring_pre
+	"fr"		string_raw_fstring_pre
+	"rf"		string_raw_fstring_pre
 done
 	"\c"		ident1
 
@@ -260,15 +295,23 @@ done
 # Handle string prefixes up to the string itself.
 :string_pre String string
 	*		idle noeat
-	"'\""		string_quot_1 	save_c
+	"'\""		string_quot_1 	push_c
 
 :string_raw_pre String string
 	*		idle noeat
-	"'\""		string_quot_raw_1 save_c
+	"'\""		string_quot_raw_1 push_c
+
+:string_fstring_pre String string
+	*		idle noeat
+	"'\""		string_quot_fstring_1 	push_c
+
+:string_raw_fstring_pre String string
+	*		idle noeat
+	"'\""		string_quot_raw_fstring_1 push_c
 
 # Differentiate between docstrings and regular strings, carrying with it raw state
 :string_quot_1 String string
-	*		idle call=.string() noeat
+	*		idle call=.string(-docstring) noeat
 	&		string_quot_2
 
 :string_quot_2 String string
@@ -276,12 +319,28 @@ done
 	&		idle call=.string(docstring) recolor=-3
 
 :string_quot_raw_1 String string
-	*		idle call=.string(raw)
+	*		idle call=.string(-docstring raw)
 	&		string_quot_raw_2
 
 :string_quot_raw_2 String string
 	*		idle noeat
 	&		idle call=.string(docstring raw) recolor=-3
+
+:string_quot_fstring_1 String string
+	*		idle call=.string(-docstring fstring) noeat
+	&		string_quot_fstring_2
+
+:string_quot_fstring_2 String string
+	*		idle noeat
+	&		idle call=.string(docstring fstring) recolor=-3
+
+:string_quot_raw_fstring_1 String string
+	*		idle call=.string(-docstring raw fstring)
+	&		string_quot_raw_fstring_2
+
+:string_quot_raw_fstring_2 String string
+	*		idle noeat
+	&		idle call=.string(docstring raw fstring) recolor=-3
 
 .subr string
 
@@ -293,6 +352,10 @@ done
 .else
 	"\\"		string_esc	mark
 .endif
+.ifdef fstring
+	"{"		fstring_maybe_expr	recolor=-1
+	"}"		fstring_esc_or_bad	recolor=-1 mark
+.endif
 	&		doc_end_1
 
 :doc_end_1 Docstring string
@@ -301,18 +364,22 @@ done
 
 :doc_end_2 Docstring string
 	*		string noeat
-	&		string return
+	&		string return pop_c
 
 .else			# Short strings
 
 :string String string
 	*		string
-	"\n"		string return
+	"\n"		string return pop_c
 .ifdef raw
 .else
 	"\\"		string_esc mark
 .endif
-	&		string return
+.ifdef fstring
+	"{"		fstring_maybe_expr	recolor=-1
+	"}"		fstring_esc_or_bad	recolor=-1 mark
+.endif
+	&		string return pop_c
 
 .endif
 
@@ -323,10 +390,64 @@ done
 	"U"		string_hex8
 	"0-7"		string_octal2
 	"\n"		string_esc_done
+.ifdef fstring
+	"{"		fstring_esc_maybe_expr	recolor=-1
+.endif
+
+.ifdef fstring
+:fstring_esc_maybe_expr FstringBrace
+	*		fstring_maybe_expr	noeat
+	"{"		string_esc_really_done	recolor=-2
+
+:fstring_maybe_expr FstringBrace
+	*		fstring_maybe_end	noeat call=python()
+	"{"		string_esc_really_done	recolor=-2
+
+:fstring_maybe_end FstringBrace
+	*		string			noeat
+.ifdef docstring
+	&		doc_end_2		noeat recolor=-3
+.endif
+	"}"		string
+	":"		fstring_format
+
+:fstring_format Constant
+	*		fstring_format
+	"{"		fstring_format_fstring	recolor=-1
+	"}"		fstring_maybe_end	noeat
+
+:fstring_format_fstring FstringBrace
+	*		fstring_format_fstring_maybe_end	noeat call=python()
+
+:fstring_format_fstring_maybe_end FstringBrace
+	*		string			noeat
+.ifdef docstring
+	&		doc_end_2		noeat recolor=-3
+.endif
+	"}"		fstring_format
+	":"		fstring_format_fstring_format
+
+:fstring_format_fstring_format Constant
+	*		fstring_format_fstring_format
+	"{"		fstring_esc_or_bad			recolor=-1 # Too deep
+	"}"		fstring_format_fstring_format_end	recolor=-1
+
+:fstring_format_fstring_format_end FstringBrace
+	*		fstring_format		noeat
+.endif
 
 # Recolor whole escape sequence based on whether this is a docstring.
 :string_esc_done String string
 	*		string_esc_really_done noeat markend recolormark
+
+.ifdef fstring
+:fstring_esc_or_bad Bad string
+	*		string			noeat
+	"}"		fstring_esc
+
+:fstring_esc String string
+	*		string_esc_really_done	noeat markend recolormark
+.endif
 
 .ifdef docstring
 :string_esc_really_done DocEscape

@@ -280,6 +280,7 @@ typedef struct color_scheme SCHEME;
 
 struct highlight_state {
 	struct high_frame *stack; /* Pointer to the current frame in the call stack */
+	struct high_delim_frame *delim_stack; /* Pointer to the previously pushed delimiter buffer */
 	const int *saved_s; /* Interned Z-string for saved delimiter */
 	ptrdiff_t state; /* Current state in the current subroutine */
 };
