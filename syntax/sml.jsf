@@ -130,7 +130,7 @@ done
 	*		expr		noeat
 	"!%&$+/:<=>?@~`^|#*\-" operator	recolor=-2
 	"\""		string		recolor=-2
-	
+
 :tilde Operator
 	*		expr		noeat
 	"!%&$+/:<=>?@~`^|#*\-" operator

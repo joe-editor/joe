@@ -28,7 +28,7 @@
 	"a-zA-Z"	ident		buffer
 	"'"		string		recolor=-1
 	"\""		string2		recolor=-1
-	"0-9"		number		recolor=-1 
+	"0-9"		number		recolor=-1
 	"?"		question	recolor=-1
 
 # Comments - 2 levels of nesting allowed

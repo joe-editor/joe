@@ -552,7 +552,7 @@ char *Ztoutf8(char *a, ptrdiff_t len, const int *b)
 
 ptrdiff_t Zlen(const int *s)
 {
-	ptrdiff_t len = 0; 
+	ptrdiff_t len = 0;
 	for (;;) {
 		if (!s[0]) return 0 + len;
 		if (!s[1]) return 1 + len;
@@ -672,7 +672,7 @@ int parse_ident(const char * *pp, char *buf, ptrdiff_t len)
 	const char *p = *pp;
 	const char *q;
 	int c;
-	
+
 	q = p;
 	if (joe_isalpha_(utf8_map, (c = utf8_decode_fwrd(&q, NULL)))) {
 		do {

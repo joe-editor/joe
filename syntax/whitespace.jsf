@@ -1,7 +1,7 @@
 # JOE syntax highlight file for Whitespace
 # by Christian Nicolai (http://mycrobase.de)
 
-=Idle		
+=Idle
 =Space		inverse red
 =Tab		inverse green
 

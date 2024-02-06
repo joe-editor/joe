@@ -172,7 +172,7 @@ extern const char *msgs[];	/* File access status messages */
 
 B *bmk(B *prop);
 void brm(B *b);
-void brmall();
+void brmall(void);
 
 B *bfind(const char *s);
 B *bfind_scratch(const char *s);
@@ -243,7 +243,7 @@ P *prfind(P *p, const char *s, ptrdiff_t len);
 P *prifind(P *p, const char *s, ptrdiff_t len);
 
 /* copy text between 'from' and 'to' into new buffer */
-B *bcpy(P *from, P *to);	
+B *bcpy(P *from, P *to);
 
 void pcoalesce(P *p);
 
@@ -252,10 +252,10 @@ void bdel(P *from, P *to);
 /* insert buffer 'b' into another at 'p' */
 P *binsb(P *p, B *b);
 /* insert a block 'blk' of size 'amnt' into buffer at 'p' */
-P *binsm(P *p, const char *blk, ptrdiff_t amnt); 
+P *binsm(P *p, const char *blk, ptrdiff_t amnt);
 
 /* Quoted insert.. */
-P *binsmq(P *p, const char *blk, ptrdiff_t amnt); 
+P *binsmq(P *p, const char *blk, ptrdiff_t amnt);
 
 /* insert character 'c' into buffer at 'p' */
 P *binsc(P *p, int c);
@@ -331,7 +331,7 @@ extern int break_links; /* Break hard links on write */
 extern int break_symlinks; /* Break symbolic links on write */
 extern int nodeadjoe; /* Prevent creation of DEADJOE files */
 
-void set_file_pos_orphaned();
+void set_file_pos_orphaned(void);
 
 void breplace(B *b, B *n);
 

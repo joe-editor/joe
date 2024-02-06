@@ -23,7 +23,7 @@ int bg_help;	/* Background color for help */
 struct help *help_actual = NULL;	/* actual help screen */
 struct help *help_ptr = NULL;		/* build pointer */
 
-/* 
+/*
  * Process help file
  * Returns new line number
  */
@@ -124,7 +124,7 @@ void help_display(Screen *t)
 			ptrdiff_t spanextra;
 			ptrdiff_t len;
 
-			eol = zchr(str, '\n'); 
+			eol = zchr(str, '\n');
 
 			/* First pass: count no. springs \| and determine minimum width */
 			while(*str && *str!='\n') {
@@ -248,7 +248,7 @@ void help_display(Screen *t)
 							++str;
 							--x;
 							continue;
-						case 0:	
+						case 0:
 							--x;
 							continue;
 						}
@@ -262,7 +262,7 @@ void help_display(Screen *t)
 					}
 
 					outatr((help_is_utf8 ? utf8_map : locale_map),
-					       t->t, t->t->scrn + x + y * t->w, 
+					       t->t, t->t->scrn + x + y * t->w,
 				       	       t->t->attr + x + y * t->w, x, y,
 					       c, atr);
 					x += (joe_wcwidth((help_is_utf8 ? 1 : !!locale_map->type), c) - 1);
@@ -281,7 +281,7 @@ void help_display(Screen *t)
 }
 
 /*
- * Show help screen 
+ * Show help screen
  */
 int help_on(Screen *t)
 {

@@ -395,9 +395,9 @@ done
 	"virtual"	modifier
 	"volatile"	modifier
 	"while"		loop
-	
+
 	# Types
-	
+
 	"bool"		type
 	"Boolean"	type
 	"byte"		type
@@ -432,12 +432,12 @@ done
 	"ulong"		type
 	"ushort"	type
 	"void"		type
-	
-	
+
+
 	# These are "contextual" keywords.  Should try to do a better and
 	# and find the context (most are LINQ), but it may not be possible
 	# in all cases:
-	
+
 	"add"		kw
 	"alias"		kw
 	"ascending"	kw
@@ -461,9 +461,9 @@ done
 	"var"		type
 	"where"		kw
 	"yield"		kw
-	
+
 	# Literals
-	
+
 	"true"		bool
 	"false"		bool
 	"null"		lit

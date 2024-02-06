@@ -96,7 +96,7 @@
  */
 
 /* Functions and global variable you have to define.  Replace these with
- * macros or defines here if they are not to be actual functions 
+ * macros or defines here if they are not to be actual functions
  */
 
 /* An element with name 'a' */
@@ -414,7 +414,7 @@ ptrdiff_t vsspan(const sELEMENT *a, ptrdiff_t alen, const sELEMENT *b, ptrdiff_t
 /***************/
 #ifdef junk
 /* char *vsread(char *d, int p, int (*getC)(void *ptr), void *ptr);
- * Replace 'd' with next line read from read-character function 'getC'.  If 
+ * Replace 'd' with next line read from read-character function 'getC'.  If
  * 'd' is 0, a new string is allocated.  If there is no more input, the string
  * is freed and 0 is returned.  The \n is deleted from the entered line.
  *

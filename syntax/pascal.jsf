@@ -27,7 +27,7 @@
 	"$"		maybe_hex_number
 	"%"		maybe_bin_number
 	"&"		maybe_oct_number
-	"0-9"		number		recolor=-1 
+	"0-9"		number		recolor=-1
 
 # Comments
 

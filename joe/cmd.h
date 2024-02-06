@@ -42,7 +42,7 @@ void addcmd(const char *s, MACRO *m);
 
 /* Execute a command.  Returns return value of command */
 int execmd(CMD *cmd, int k);
-void do_auto_scroll();
+void do_auto_scroll(void);
 
 extern B *cmdhist; /* Command history buffer */
 
