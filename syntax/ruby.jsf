@@ -312,7 +312,7 @@ done
 
 :string_subst StringEscape string
 	*		string		noeat
-	
+
 :string_escape Escape
 	*		string
 	"x"		string_hex1
@@ -603,7 +603,7 @@ done
 
 :inrepl_quote RegexEscape string
 	*		inrepl
- 
+
 :delim_insubst Regex string
 	*		delim_insubst
 	&		delim_repl
@@ -658,10 +658,10 @@ done
 	*		rest		noeat
 	","		proc_arg_sep 	noeat
 	"\i"		proc_arg
-	
+
 :proc_arg_sep Idle
 	*		proc_arg
-	
+
 :class_member1 Idle
 	*		rest		noeat
 	"\i"		class_member	recolor=-2

@@ -31,10 +31,10 @@
 	"cC*"		comment		recolor=-1
 	"#"		pre		recolor=-1
 
-:pre	Preproc					
-	*		pre				
-	"\n"		reset			
-	
+:pre	Preproc
+	*		pre
+	"\n"		reset
+
 :comment Comment comment
 	*		comment
 	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()

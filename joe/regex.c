@@ -32,70 +32,70 @@ int escape(int utf8, const char **a, ptrdiff_t *b, struct Cclass **cat)
 			case 'i': { /* Identifier start */
 				++s; --l;
 				c = -256;
-				
+
 				if (cat)
 					*cat = cclass_alpha_;
 				break;
 			} case 'I': { /* Not identifier start */
 				++s; --l;
 				c = -256;
-				
+
 				if (cat)
 					*cat = cclass_notalpha_;
 				break;
 			} case 'c': { /* Identifier continue */
 				++s; --l;
 				c = -256;
-				
+
 				if (cat)
 					*cat = cclass_alnum_;
 				break;
 			} case 'C': { /* Not identifier continue */
 				++s; --l;
 				c = -256;
-				
+
 				if (cat)
 					*cat = cclass_notalnum_;
 				break;
 			} case 'w': { /* Word */
 				++s; --l;
 				c = -256;
-				
+
 				if (cat)
 					*cat = cclass_word;
 				break;
 			} case 'W': { /* Not a word */
 				++s; --l;
 				c = -256;
-				
+
 				if (cat)
 					*cat = cclass_notword;
 				break;
 			} case 's': { /* Space */
 				++s; --l;
 				c = -256;
-				
+
 				if (cat)
 					*cat = cclass_space;
 				break;
 			} case 'S': { /* Not a space */
 				++s; --l;
 				c = -256;
-				
+
 				if (cat)
 					*cat = cclass_notspace;
 				break;
 			} case 'd': { /* Digit */
 				++s; --l;
 				c = -256;
-				
+
 				if (cat)
 					*cat = cclass_digit;
 				break;
 			} case 'D': { /* Not a digit */
 				++s; --l;
 				c = -256;
-				
+
 				if (cat)
 					*cat = cclass_notdigit;
 				break;
@@ -1118,7 +1118,7 @@ int rmatch(const unsigned char *pattern, const unsigned char *s, ...)
 			*results[x] = q;
 		}
 	}
-	
+
 	return match;
 }
 #endif

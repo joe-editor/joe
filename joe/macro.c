@@ -132,7 +132,7 @@ MACRO *mparse(MACRO *m, const char *buf, ptrdiff_t *sta, int secure)
 			if (m) {
 				if (!m->steps) {
 					MACRO *macro = m;
-					
+
 					m = mkmacro(NO_MORE_DATA, 0, 0, NULL);
 					addmacro(m, macro);
 				}

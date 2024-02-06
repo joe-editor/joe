@@ -7,7 +7,7 @@
  */
 
 /* Functions and global variable you have to define.  Replace these with
- * macros or defines here if they are not to be actual functions 
+ * macros or defines here if they are not to be actual functions
  */
 
 typedef char *aELEMENT;

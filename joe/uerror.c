@@ -187,7 +187,7 @@ static void parseone(struct charmap *map,const char *s,char **rtn_name,off_t *rt
 		goto bye;
 
 	do {
-		
+
 		/* Skip to first word */
 		for (u = v; *u && !((t = u), (c = fwrd_c(map, &t, NULL)), ((c >= 0 && joe_isalnum_(map, c)) || c == '.' || c == '/' || c == '~')); u = t) ;
 

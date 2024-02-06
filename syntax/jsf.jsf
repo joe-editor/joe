@@ -14,8 +14,8 @@
 # nearly everything is an error until you finish typing it.
 #
 # In order to not annoy people by default, but keep the option of strictly
-# checking syntax, I predicated the stricter checking on the CHECKING parameter. 
-# By default, things that are incomplete are generally not marked as errors. 
+# checking syntax, I predicated the stricter checking on the CHECKING parameter.
+# By default, things that are incomplete are generally not marked as errors.
 # Only things that appear to be actual mistakes are highlighted as Bad.  To
 # enable the stricter checking, one can highlight the file with the jsf_check
 # syntax.  jsf_check.jsf simply calls the entire jsf.jsf file with CHECKING
@@ -393,7 +393,7 @@
 # The strings and istrings options cannot be used between "[i]strings" and
 # "done".
 .else
-# The strings and istrings options are followed by a list of transitions. 
+# The strings and istrings options are followed by a list of transitions.
 # Rather than duplicate all of the states that highlight transitions, we call
 # this entire file as a subroutine and use the STRINGS parameter to disable
 # everything else and enable the done keyword.  We return to the comment_or_bad

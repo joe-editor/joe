@@ -58,7 +58,7 @@
 	*		back_single	buffer mark
 	"u"		back_uni4
 	"o"		back_oct3
-	
+
 
 :back_single Escape
 	*		back_word	recolor=-2

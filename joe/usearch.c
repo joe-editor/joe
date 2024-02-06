@@ -99,7 +99,7 @@ static char **get_word_list(B *b,off_t ignore)
 		for (t = h->tab[idx];t;t=t->next)
 			list = vaadd(list, (char *)t->val);
 	if (list)
-		vasort(list,sLEN(list));	
+		vasort(list,sLEN(list));
 
 	htrm(h);
 
@@ -681,7 +681,7 @@ static int set_replace(W *w, char *s, void *obj, int *notify)
 	SRCH *srch = (SRCH *)obj;
 	BW *bw;
 	WIND_BW(bw, w);
-	
+
 	if (sLEN(s) || !globalsrch || !pico)
 		srch->replacement = s;
 	else {
@@ -749,7 +749,7 @@ static int set_options(W *w, char *s, void *obj, int *notify)
 				srch->repeat = 0;
 			srch->repeat = srch->repeat * 10 + c - '0';
 		}
-	}	
+	}
 	vsrm(s);
 	if (srch->replace) {
 		/* if (pico && globalsrch && globalsrch->replacement) {

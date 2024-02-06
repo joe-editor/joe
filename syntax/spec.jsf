@@ -116,7 +116,7 @@ done
 	*	defineident noeat recolor=-1
 	" \t"	define
 	"\n"	idle noeat
-	
+
 :defineident DefinedIdent
 	*	defineident
 	" \t\n"	idle noeat

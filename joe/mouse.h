@@ -3,35 +3,35 @@
 
 This file is part of JOE (Joe's Own Editor)
 
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
+JOE is free software; you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation; either version 1, or (at your option) any later version.
 
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
+JOE is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details.
 
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */ 
+You should have received a copy of the GNU General Public License along with
+JOE; see the file COPYING.  If not, write to the Free Software Foundation,
+675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 /* maximum number of milliseconds that can elapse between
    double/triple clicks */
 #define MOUSE_MULTI_THRESH	300
 
 #ifdef MOUSE_GPM
-int gpmopen();		/* initialize the connection. returns 0 on failure. */
-void gpmclose();	/* close the connection. */
+int gpmopen(void);		/* initialize the connection. returns 0 on failure. */
+void gpmclose(void);	/* close the connection. */
 #endif
 
-void mouseopen();	/* initialize mouse */
-void mouseclose();	/* de-initialize mouse */
+void mouseopen(void);	/* initialize mouse */
+void mouseclose(void);	/* de-initialize mouse */
 
 /* mousedn(int x, int y, int middle) - handle a mouse-down event */
 void mousedn(ptrdiff_t x, ptrdiff_t y, int middle);
 
-/* mousednmiddle(BW *bw, int x, int y) - handle a mouse-middlebutton-down event */ 
+/* mousednmiddle(BW *bw, int x, int y) - handle a mouse-middlebutton-down event */
 void mousednmiddle PARAMS((BW *bw, int x, int y));
 
 /* mouseup(int x, int y) - handle a mouse-up event */
@@ -56,8 +56,8 @@ int udefm3drag(W *, int);
 int udefmiddledown(W *, int);
 int udefmiddleup(W *, int);
 
-long mnow();
-void reset_trig_time();
+long mnow(void);
+void reset_trig_time(void);
 
 /* options */
 extern int floatmouse;	/* Allow mouse to set cursor past end of lines */
