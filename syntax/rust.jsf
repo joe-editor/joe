@@ -367,7 +367,7 @@ done
 	"where"		kw
 	"while"		loop
 	"yield"		stmt
-	
+
 	# String/byte prefixes
 	"r"		raw_string_pre
 	"b"		byte_string_pre

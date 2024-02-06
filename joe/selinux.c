@@ -135,7 +135,7 @@ int output_security_context(const char *from_file)
 		 */
 		if (errno == EOPNOTSUPP)
 			return 0;
-		
+
 		error(0, errno,joe_gettext(_("Could not get security context for %s")),
 		      from_file);
 		return 1;

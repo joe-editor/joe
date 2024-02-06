@@ -4,17 +4,17 @@
 //
 // Copyright (C) 2005-2009 by Jukka Korpela
 // Copyright (C) 2009-2013 by David Hoerl
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,7 +38,7 @@
 #endif
 
 
-/* 
+/*
  * Smallest power of ten for which there is a prefix defined.
  * If the set of prefixes will be extended, change this constant
  * and update the table "prefix".
@@ -76,7 +76,7 @@ char *to_engineering_string(char *buf, ptrdiff_t buf_size, double value, unsigne
 {
 	/* bool */ int is_signed = signbit(value);
 	const char *sign = is_signed ? "-" : "";
-	
+
 	int classify = fpclassify(value);
 	if(classify != FP_NORMAL) {
 		switch(classify) {
@@ -129,11 +129,11 @@ char *to_engineering_string(char *buf, ptrdiff_t buf_size, double value, unsigne
 	long lintgr, lfract;
 	{
 		double intgr, fract;
-		
+
 		fract = modf(value, &intgr);
 		lintgr = lrint(intgr);
 		LOG("compute: %ld . %lf\n", lintgr, fract);
-	
+
 		if(lintgr >= 1000) {
 			digits -= 3;				// fractional digits
 		} else
@@ -152,7 +152,7 @@ char *to_engineering_string(char *buf, ptrdiff_t buf_size, double value, unsigne
 			//assert(!"Impossible to get < 1 unless the fractional part is 1!");
 			digits += 1;				// fractional digits
 		}
-		
+
 		// how much to multiple the fraction to get it to round the one-off value
 		double fractMult = pow(10.0, (int)digits - 1);
 		long lfractMult = lrint(fractMult);
@@ -196,7 +196,7 @@ char *to_engineering_string(char *buf, ptrdiff_t buf_size, double value, unsigne
 
 	--digits;
 	const char *decimal_str = digits ? "." : "";
-	
+
 	if(exponential || (expof10 < prefix_start) || (expof10 > prefix_end)) {
 		LOG("RESULT 1: digits=%d\n", digits);
 		joe_snprintf_6(buf, (size_t)buf_size, "%s%ld%s%0.*lde%ld", sign, lintgr, decimal_str, digits, lfract, expof10);
@@ -211,7 +211,7 @@ char *to_engineering_string(char *buf, ptrdiff_t buf_size, double value, unsigne
 char *to_engineering_string_unit(char *buf, ptrdiff_t buf_size, double value, unsigned int digits, /* bool */ int numeric, const char *unit)
 {
 	char *ret = to_engineering_string(buf, buf_size, value, digits, numeric);
-	
+
 	if(isdigit(ret[0])) {
 		size_t len = strlen(ret);
 		if(numeric) ++len;
@@ -243,10 +243,10 @@ char *step_engineering_string(char *buf, ptrdiff_t buf_size, const char *val, un
 	// correctly round to desired precision
 	long expof10 = lrint( floor( log10(value) ) );
 	long power =  expof10 + 1 - (int)digits;
-	
+
 	double inc = pow(10, (double)power) * (positive ? +1 : -1);
 	double ret = value + inc;
-	
+
 	char *str = to_engineering_string(buf, buf_size, ret, digits, exponential);
 	return str;
 }
@@ -277,7 +277,7 @@ static char *engineering_to_exponential(const char *val)
 			size_t j;
 			/* bool */ int look = 0;
 			const char *strt = val + len;
-			
+
 			for(j=0; j<len; ++j) {
 				--strt;
 				if(*strt == ' ') {

@@ -48,7 +48,7 @@ CMD cmds[] = {
 	{"cancel", TYPETW + TYPEPW + TYPEMENU + TYPEQW, ucancel, NULL, 0, NULL},
 	{"cd", TYPETW, usetcd, NULL, 0, NULL},
 	{"center", TYPETW + TYPEPW + EFIXXCOL + EMOD, ucenter, NULL, 1, NULL},
-	{"charset", TYPETW + TYPEPW, ucharset, NULL, 0, NULL}, 
+	{"charset", TYPETW + TYPEPW, ucharset, NULL, 0, NULL},
 	{"ctrl", TYPETW + TYPEPW + EMOD, uctrl, NULL, 0, NULL},
 	{"col", TYPETW + TYPEPW, ucol, NULL, 0, NULL},
 	{"complete", TYPEPW + EMINOR + EMOD, ucmplt, NULL, 0, NULL},
@@ -68,11 +68,11 @@ CMD cmds[] = {
 	{"defmiddleup", TYPETW+TYPEPW, udefmiddleup, 0, 0, 0 },
 	{"delbol", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelbl, NULL, 1, "deleol"},
 	{"delch", TYPETW + TYPEPW + ECHKXCOL + EFIXXCOL + EMINOR + EKILL + EMOD, udelch, NULL, 1, "backs"},
-	{"deleol", TYPETW + TYPEPW + EKILL + EMOD, udelel, NULL, 1, "delbol"}, 
-	{"dellin", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelln, NULL, 1, NULL}, 
+	{"deleol", TYPETW + TYPEPW + EKILL + EMOD, udelel, NULL, 1, "delbol"},
+	{"dellin", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, udelln, NULL, 1, NULL},
 	{"delw", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL + EKILL + EMOD, u_word_delete, NULL, 1, "backw"},
 	{"dnarw", TYPETW + TYPEPW + EMOVE, udnarw, NULL, 1, "uparw"},
-	{"dnarwmenu", TYPEMENU, umdnarw, NULL, 1, "uparwmenu"}, 
+	{"dnarwmenu", TYPEMENU, umdnarw, NULL, 1, "uparwmenu"},
 	{"dnslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, udnslide, NULL, 1, "upslide"},
 	{"dnslidemenu", TYPEMENU, umscrdn, NULL, 1, "upslidemenu"},
 	{"drop", TYPETW + TYPEPW, udrop, NULL, 0, NULL},
@@ -112,11 +112,11 @@ CMD cmds[] = {
 	{"hprev", TYPETW + TYPEPW + TYPEQW, u_help_prev, NULL, 0, NULL},
 	{"insc", TYPETW + TYPEPW + EFIXXCOL + EMOD, uinsc, NULL, 1, "delch"},
 	{"keymap", TYPETW, ukeymap, 0, 0, 0 },    /* JM */
-	{"insf", TYPETW + TYPEPW + EMOD, uinsf, NULL, 0, NULL}, 
-	{"language", TYPETW + TYPEPW, ulanguage, NULL, 0, NULL}, 
+	{"insf", TYPETW + TYPEPW + EMOD, uinsf, NULL, 0, NULL},
+	{"language", TYPETW + TYPEPW, ulanguage, NULL, 0, NULL},
 	{"lindent", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, ulindent, NULL, 1, "rindent"},
 	{"line", TYPETW + TYPEPW, uline, NULL, 0, NULL},
-	{"lose", TYPETW + TYPEPW, ulose, NULL, 0, NULL}, 
+	{"lose", TYPETW + TYPEPW, ulose, NULL, 0, NULL},
 	{"lower", TYPETW + TYPEPW + EMOD + EBLOCK, ulower, NULL, 0, NULL},
 	{"ltarw", TYPETW + TYPEPW /* + EFIXXCOL + ECHKXCOL */, u_goto_left, NULL, 1, "rtarw"},
 	{"ltarwmenu", TYPEMENU, umltarw, NULL, 1, "rtarwmenu"},
@@ -132,10 +132,10 @@ CMD cmds[] = {
 	{"msg", TYPETW + TYPEPW + TYPEQW + TYPEMENU, umsg, NULL, 0, NULL},
 	{"mfit", TYPETW, umfit, NULL, 0, NULL},
 	{"mwind", TYPETW, umwind, NULL, 0, NULL},
-	{"name", TYPETW + TYPEPW, uname_joe, NULL, 0, NULL}, 
+	{"name", TYPETW + TYPEPW, uname_joe, NULL, 0, NULL},
 	{"nbuf", TYPETW + EFIXXCOL, unbuf, NULL, 1, "pbuf"},
-	{"nedge", TYPETW + TYPEPW + EFIXXCOL, unedge, NULL, 1, "pedge"}, 
-	{"nextpos", TYPETW + TYPEPW + EFIXXCOL + EMID + EPOS, unextpos, NULL, 1, "prevpos"}, 
+	{"nedge", TYPETW + TYPEPW + EFIXXCOL, unedge, NULL, 1, "pedge"},
+	{"nextpos", TYPETW + TYPEPW + EFIXXCOL + EMID + EPOS, unextpos, NULL, 1, "prevpos"},
 	{"nextw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, unextw, NULL, 1, "prevw"},
 	{"nextword", TYPETW + TYPEPW + EFIXXCOL, u_goto_next, NULL, 1, "prevword"},
 	{"nmark", TYPETW + TYPEPW, unmark, NULL, 0, NULL},
@@ -145,15 +145,15 @@ CMD cmds[] = {
 	{"parserr", TYPETW, uparserr, NULL, 0, NULL},
 	{"paste", TYPETW + TYPEPW + EMOD, upaste, NULL, 0, NULL },
 	{"pbuf", TYPETW + EFIXXCOL, upbuf, NULL, 1, "nbuf"},
-	{"pedge", TYPETW + TYPEPW + EFIXXCOL, upedge, NULL, 1, "nedge"}, 
+	{"pedge", TYPETW + TYPEPW + EFIXXCOL, upedge, NULL, 1, "nedge"},
 	{"pgdn", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgdn, NULL, 1, "pgup"},
-	{"pgdnmenu", TYPEMENU, umpgdn, NULL, 1, "pgupmenu"}, 
+	{"pgdnmenu", TYPEMENU, umpgdn, NULL, 1, "pgupmenu"},
 	{"pgup", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, upgup, NULL, 1, "pgdn"},
-	{"pgupmenu", TYPEMENU, umpgup, NULL, 1, "pgdnmenu"}, 
+	{"pgupmenu", TYPEMENU, umpgup, NULL, 1, "pgdnmenu"},
 	{"picokill", TYPETW + TYPEPW + EFIXXCOL + EKILL + EMOD, upicokill, NULL, 1, NULL},
-	{"play", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uplay, NULL, 1, NULL},	/* EFIXX? */ 
-	{"prevpos", TYPETW + TYPEPW + EPOS + EMID + EFIXXCOL, uprevpos, NULL, 1, "nextpos"}, 
-	{"prevw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uprevw, NULL, 1, "nextw"}, 
+	{"play", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uplay, NULL, 1, NULL},	/* EFIXX? */
+	{"prevpos", TYPETW + TYPEPW + EPOS + EMID + EFIXXCOL, uprevpos, NULL, 1, "nextpos"},
+	{"prevw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uprevw, NULL, 1, "nextw"},
 	{"prevword", TYPETW + TYPEPW + EFIXXCOL + ECHKXCOL, u_goto_prev, NULL, 1, "nextword"},
 	{"prverr", TYPETW, uprverr, NULL, 1, "nxterr"},
 	{"psh", TYPETW + TYPEPW + TYPEMENU + TYPEQW, upsh, NULL, 0, NULL},
@@ -170,7 +170,7 @@ CMD cmds[] = {
 	{"reload", TYPETW, ureload, NULL, 0, NULL },
 	{"reloadall", TYPETW, ureload_all, NULL, 0, NULL },
 	{"retype", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uretyp, NULL, 0, NULL},
-	{"rfirst", TYPETW + TYPEPW, prfirst, NULL, 0, NULL}, 
+	{"rfirst", TYPETW + TYPEPW, prfirst, NULL, 0, NULL},
 	{"rindent", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, urindent, NULL, 1, "lindent"},
 	{"run", TYPETW + TYPEPW, urun, NULL, 0, NULL},
 	{"rsrch", TYPETW + TYPEPW, ursrch, NULL, 0, NULL},
@@ -208,11 +208,11 @@ CMD cmds[] = {
 	{"tos", TYPETW + TYPEPW + EMOVE, utos, NULL, 0, NULL},
 	{"tw0", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw0, NULL, 0, NULL},
 	{"tw1", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw1, NULL, 0, NULL},
-	{"txt", TYPETW + TYPEPW, utxt, NULL, 0, NULL}, 
+	{"txt", TYPETW + TYPEPW, utxt, NULL, 0, NULL},
 	{"type", TYPETW + TYPEPW + TYPEQW + TYPEMENU + EMINOR + EMOD, utype, NULL, 1, "backs"},
 	{"undo", TYPETW + TYPEPW + EFIXXCOL, uundo, NULL, 1, "redo"},
 	{"uparw", TYPETW + TYPEPW + EMOVE, uuparw, NULL, 1, "dnarw"},
-	{"uparwmenu", TYPEMENU, umuparw, NULL, 1, "dnarwmenu"}, 
+	{"uparwmenu", TYPEMENU, umuparw, NULL, 1, "dnarwmenu"},
 	{"upper", TYPETW + TYPEPW + EMOD + EBLOCK, uupper, NULL, 0, NULL},
 	{"upslide", TYPETW + TYPEPW + TYPEMENU + TYPEQW + EMOVE, uupslide, NULL, 1, "dnslide"},
 	{"upslidemenu", TYPEMENU, umscrup, NULL, 1, "dnslidemenu"},
@@ -492,7 +492,7 @@ void do_auto_scroll(void)
 		execmd(myscrup,0);
 
 	execmd(drag,0);
-		
+
 	reset_trig_time();
 }
 
@@ -560,7 +560,7 @@ static int docmd(W *w, char *s, void *object, int *notify)
 	MACRO *mac;
 	int ret = -1;
 	ptrdiff_t sta = -1;
-	
+
 
 	mac = mparse(NULL, s, &sta,0);
 	if (sta < 0) {

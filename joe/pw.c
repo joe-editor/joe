@@ -26,7 +26,7 @@ void set_current_dir(BW *bw, char *s,int simp)
 	B *b;
 	bw = (BW *)w->object;
 	b = bw->b;
-	
+
 	if (s[0]=='!' || (s[0]=='>' && s[1]=='>'))
 		return;
 	vsrm(b->current_dir);
@@ -444,7 +444,7 @@ int simple_cmplt(BW *bw,char **list)
 
 		vsrm((char *)m->object);
 		m->object = com;
-		
+
 		cmplt_ins(bw, com);
 		wabort(m->parent);
 		smode = 2;
@@ -507,7 +507,7 @@ int word_cmplt(BW *bw,char **list)
 
 		vsrm((char *)m->object);
 		m->object = com;
-		
+
 		word_ins(bw, com);
 		wabort(m->parent);
 		smode = 2;

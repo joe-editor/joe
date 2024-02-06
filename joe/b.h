@@ -243,7 +243,7 @@ P *prfind(P *p, const char *s, ptrdiff_t len);
 P *prifind(P *p, const char *s, ptrdiff_t len);
 
 /* copy text between 'from' and 'to' into new buffer */
-B *bcpy(P *from, P *to);	
+B *bcpy(P *from, P *to);
 
 void pcoalesce(P *p);
 
@@ -252,10 +252,10 @@ void bdel(P *from, P *to);
 /* insert buffer 'b' into another at 'p' */
 P *binsb(P *p, B *b);
 /* insert a block 'blk' of size 'amnt' into buffer at 'p' */
-P *binsm(P *p, const char *blk, ptrdiff_t amnt); 
+P *binsm(P *p, const char *blk, ptrdiff_t amnt);
 
 /* Quoted insert.. */
-P *binsmq(P *p, const char *blk, ptrdiff_t amnt); 
+P *binsmq(P *p, const char *blk, ptrdiff_t amnt);
 
 /* insert character 'c' into buffer at 'p' */
 P *binsc(P *p, int c);

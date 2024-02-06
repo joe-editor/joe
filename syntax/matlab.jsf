@@ -54,7 +54,7 @@
 	"."		float
 	"eE"		epart
 	"0-9"		first_digit
-	
+
 :float Number
 	*		idle		noeat
 	"eE"		epart

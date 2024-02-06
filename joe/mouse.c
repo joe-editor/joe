@@ -3,18 +3,18 @@
 
 This file is part of JOE (Joe's Own Editor)
 
-JOE is free software; you can redistribute it and/or modify it under the 
-terms of the GNU General Public License as published by the Free Software 
-Foundation; either version 1, or (at your option) any later version.  
+JOE is free software; you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation; either version 1, or (at your option) any later version.
 
-JOE is distributed in the hope that it will be useful, but WITHOUT ANY 
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
-details.  
+JOE is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details.
 
-You should have received a copy of the GNU General Public License along with 
-JOE; see the file COPYING.  If not, write to the Free Software Foundation, 
-675 Mass Ave, Cambridge, MA 02139, USA.  */ 
+You should have received a copy of the GNU General Public License along with
+JOE; see the file COPYING.  If not, write to the Free Software Foundation,
+675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #include "types.h"
 
@@ -336,11 +336,11 @@ void mouseup(ptrdiff_t x,ptrdiff_t y)
 		case 1:
 			fake_key(KEY_MUP);
 			break;
-  
+
 		case 2:
 			fake_key(KEY_M2UP);
 			break;
-  
+
 		case 3:
 			fake_key(KEY_M3UP);
 			break;
@@ -359,11 +359,11 @@ void mousedrag(ptrdiff_t x,ptrdiff_t y)
 		case 1:
 			fake_key(KEY_MDRAG);
 			break;
-  
+
 		case 2:
 			fake_key(KEY_M2DRAG);
 			break;
-  
+
 		case 3:
 			fake_key(KEY_M3DRAG);
 			break;

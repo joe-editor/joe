@@ -1,4 +1,4 @@
-/* 
+/*
  *	tags file symbol lookup
  *	Copyright
  *		(C) 1992 Joseph H. Allen

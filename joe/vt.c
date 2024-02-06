@@ -98,7 +98,7 @@ static int pcurattr(P *p)
 					state = 0;
 				}
 				break;
-				
+
 		}
 	}
 	prm(q);

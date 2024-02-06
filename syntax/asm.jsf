@@ -55,7 +55,7 @@ done
 	*		preinc
 	" \t"		preinc_ws
 	"\n"		reset
-	
+
 :preinc_ws Preproc
 	*		prebad		recolor=-1
 	" \t"		preinc_ws
@@ -65,12 +65,12 @@ done
 :preinc_local IncLocal
 	*		preinc_local
 	"\"\n"		reset
-	
+
 :preinc_system IncSystem
 	*		preinc_system
 	">\n"		reset
 
-:prebad	Bad	
+:prebad	Bad
 	*		prebad
 	"\n"		reset
 
@@ -79,7 +79,7 @@ done
 	*		predef
 	" \t"		predef_ws
 	"\n"		reset
-	
+
 :predef_ws Preproc
 	*		prebad		recolor=-1
 	" \t"		predef_ws
@@ -95,12 +95,12 @@ done
 	"\n"		reset
 	"\\"		preproc_cont
 	"/"		preproc_slash
-	
+
 :preproc_slash Preproc
 	*		preproc		noeat
 	"*"		comment		recolor=-2
 	"/"		line_comment	recolor=-2
-	
+
 :preproc_cont Preproc
 	*		preproc_cont
 	"\n"		preproc

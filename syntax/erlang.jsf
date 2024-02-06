@@ -59,7 +59,7 @@ done
 :pipe Idle
 	*		idle		noeat
 	"|"		kw		recolormark
-	
+
 :is_macro Idle
 	*		macro		recolormark noeat
 	"a-zA-Z0-9_@"	is_macro
@@ -76,7 +76,7 @@ done
 
 :line_comment Comment comment
 	*		line_comment
-	"@"		is_edoc		noeat buffer 
+	"@"		is_edoc		noeat buffer
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
 	"\n"		idle
 
@@ -147,7 +147,7 @@ done
 	"0-9"		string_f
 	"t"		string_mod
 :string_f String string
-	*		string_mod	noeat          
+	*		string_mod	noeat
 	"0-9*"		string_f
 	"."		string_p
 
@@ -502,5 +502,5 @@ done
 	"unregister"	bif
 	"whereis"	bif
 	"yield"		bif
-done 
+done
 	"a-zA-Z0-9_@"	atom
