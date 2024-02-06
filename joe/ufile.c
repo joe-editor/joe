@@ -333,6 +333,14 @@ static int saver(W *w, int c, void *object, int *notify)
 	if (bw->b->er == 0 && bw->o.msold) {
 		exmacro(bw->o.msold, 1, NO_MORE_DATA);
 	}
+	if (bw->b->o.purify) {
+		static CMD *trimlines = NULL;
+		if (!trimlines) {
+			trimlines = findcmd("trimlines");
+		}
+
+		execmd(trimlines, NO_MORE_DATA);
+	}
 	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte, req->rename ? 2 : 1)) != 0) {
 		msgnw(bw->parent, joe_gettext(msgs[-fl]));
 		if (req->callback) {
