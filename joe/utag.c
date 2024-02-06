@@ -33,7 +33,7 @@ static void freetag(TAG *n)
 	enquef(TAG, link, &tagnodes, n);
 }
 
-static void clrtags()
+static void clrtags(void)
 {
 	while (!qempty(TAG, link, &tags)) {
 		freetag(deque_f(TAG, link, tags.link.next));
@@ -95,7 +95,7 @@ static int dotagjump(BW *bw, int flag)
 		return dopfnext(bw, mksrch(vsncpy(NULL, 0, sv(srch)), NULL, 0, 0, -1, 0, 0, 0, 0), NULL);
 	}
 }
-              
+
 int utagjump(W *w, int k)
 {
 	BW *bw;
@@ -286,7 +286,7 @@ static int dotag(W *w, char *s, void *obj, int *notify)
 								buf1[z++] = '^';
 								++y;
 							}
-							
+
 							while (buf[y] && buf[y] != '\n' && !(buf[y] == ch && y == x)) {
 								if (buf[y] == '$' && buf[y+1] == ch) {
 									++y;
@@ -386,7 +386,7 @@ static int dotag(W *w, char *s, void *obj, int *notify)
 static char **tag_word_list;
 static time_t last_update;
 
-static void get_tag_list()
+static void get_tag_list(void)
 {
 	char buf[512];
 	char tag[512];
@@ -403,7 +403,7 @@ static void get_tag_list()
 		*/
 		const char *tagspath = getenv("TAGS");
 		if(tagspath) {
-			f = fopen(tagspath, "r");    
+			f = fopen(tagspath, "r");
 		}
 		/* if no TAGS variable, try finding tags file in parent directories */
 		if (!f) {

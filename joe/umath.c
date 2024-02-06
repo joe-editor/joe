@@ -412,7 +412,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 				x = y;
 			else
 				x = z;
-			v = 0;  
+			v = 0;
 		} else if (!merr) {
 			merr = ": missing after ?";
 		}
@@ -1606,7 +1606,7 @@ static int domath(W *w, char *s, void *object, int *notify, int secure)
 			break;
 		}
 	}
-		
+
 	if (bw->parent->watom->what != TYPETW || mode_ins) {
 		binsm(bw->cursor, sz(msgbuf));
 		pfwrd(bw->cursor, zlen(msgbuf));
@@ -1645,7 +1645,7 @@ B *mathhist = NULL;
 
 static char **math_word_list;
 
-static void get_math_list()
+static void get_math_list(void)
 {
 	struct var *v;
 	char *s;

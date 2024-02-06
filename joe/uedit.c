@@ -11,7 +11,7 @@
 /* Global options */
 int pgamnt = -1;		/* No. of PgUp/PgDn lines to keep */
 
-/* 
+/*
  * Move cursor to beginning of line
  */
 int u_goto_bol(W *w, int k)
@@ -43,7 +43,7 @@ int uhome(W *w, int k)
 	p = pdup(bw->cursor, "uhome");
 
 	if (bw->o.indentfirst) {
-		if ((bw->o.smarthome) && (piscol(p) > pisindent(p))) { 
+		if ((bw->o.smarthome) && (piscol(p) > pisindent(p))) {
 			p_goto_bol(p);
 			while (joe_isblank(p->b->o.charmap,brc(p)))
 				pgetc(p);
@@ -174,7 +174,7 @@ int u_goto_right(W *w, int k)
 }
 
 /*
- * Move cursor to beginning of previous word or if there isn't 
+ * Move cursor to beginning of previous word or if there isn't
  * previous word then go to beginning of the file
  *
  * WORD is a sequence non-white-space characters
@@ -211,7 +211,7 @@ int u_goto_prev(W *w, int k)
 }
 
 /*
- * Move cursor to end of next word or if there isn't 
+ * Move cursor to end of next word or if there isn't
  * next word then go to end of the file
  *
  * WORD is a sequence non-white-space characters
@@ -329,7 +329,7 @@ int unedge(W *w, int k)
  * module endmodule
  *
  * function endfunction
- * 
+ *
  * <word </word
  *
  * if elif else fi
@@ -982,7 +982,7 @@ int utomatch(W *w, int k)
 					}
 				}
 			}
-				
+
 		}
 
 		/* We don't know the word, so start a search */
@@ -1586,7 +1586,7 @@ int ubacks(W *w, int k)
 		   is a multiple of indentation width, we're not at beginning of line,
 		   'smarthome' option is enabled, and indentation is purely made out of
 		   indent characters (or purify indents is enabled). */
-		
+
 		/* Ignore purify for backspace */
 		if (col == indent && (col%indwid)==0 && col!=0 && bw->o.smartbacks && bw->o.autoindent) {
 			P *p;
@@ -1624,7 +1624,7 @@ int ubacks(W *w, int k)
 		return -1;
 }
 
-/* 
+/*
  * Delete sequence of characters (alphabetic, numeric) or (white-space)
  *	if cursor is on the white-space it will delete all white-spaces
  *		until alphanumeric character
@@ -1908,7 +1908,7 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 				k = from_uni(map, k);
 			}
 		}
-		
+
 		binsc(bw->cursor, k);
 
 		/* We need x position before we move cursor */
@@ -2276,7 +2276,7 @@ int uopen(W *w, int k)
 		}
 		prm(p); prm(q);
 	}
-	
+
 	return 0;
 }
 
@@ -2437,7 +2437,7 @@ static int dotxt(W *w, char *s, void *object, int *notify)
 
 	if (notify)
 		*notify = 1;
-	if (s[0] == '`') {   
+	if (s[0] == '`') {
 		str = vsmk(1024);
 		fill = ' ';
 		str = stagen(str, bw, &s[1], fill);
@@ -2574,7 +2574,7 @@ int upaste(W *w, int k)
 	return 0;
 }
 
-/* Bracketed paste */ 
+/* Bracketed paste */
 
 int saved_ww;
 int saved_ai;
@@ -2589,9 +2589,9 @@ int ubrpaste(W *w, int k)
 	saved_ww = bw->o.wordwrap;
 	saved_ai = bw->o.autoindent;
 	saved_sp = bw->o.spaces;
-	
+
 	bw->o.wordwrap = bw->o.autoindent = bw->o.spaces = 0;
-	
+
 	return 0;
 }
 
@@ -2604,6 +2604,6 @@ int ubrpaste_done(W *w, int k)
 	bw->o.wordwrap = saved_ww;
 	bw->o.autoindent = saved_ai;
 	bw->o.spaces = saved_sp;
-	
+
 	return 0;
 }

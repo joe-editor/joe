@@ -1,7 +1,7 @@
 /*
  *	*rc file parser
  *	Copyright
- *		(C) 1992 Joseph H. Allen; 
+ *		(C) 1992 Joseph H. Allen;
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
@@ -14,4 +14,4 @@
 int procrc(CAP *cap, char *name);
 
 /* Validate rc file: return -1 if it's bad (call this after rc file has been loaded) */
-int validate_rc();
+int validate_rc(void);

@@ -275,7 +275,7 @@ done
 	"unowned"		kw
 	"weak"			kw
 	"willSet"		kw
-	
+
 	"String"		type
 	"Int"			type
 	"Int8"			type

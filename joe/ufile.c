@@ -206,7 +206,7 @@ static int backup(BW *bw)
 
 		/* Create backup file name */
 		const char *simple_backup_suffix = getenv("SIMPLE_BACKUP_SUFFIX");
-		
+
 		if (simple_backup_suffix == NULL) {
 			simple_backup_suffix = "~";
 		}
@@ -218,7 +218,7 @@ static int backup(BW *bw)
 		} else {
 			joe_snprintf_2(name, SIZEOF(name), "%s%s", dequote(bw->b->name), simple_backup_suffix);
 		}
-		
+
 		/* Attempt to delete backup file first */
 		unlink(name);
 
@@ -407,7 +407,7 @@ static int dosave(BW *bw, struct savereq *req, int *notify)
 				B *tmp = pextrect(markb,
 						  markk->line - markb->line + 1,
 						  markk->xcol);
-						  
+
 				if ((fl = bsave(tmp->bof, req->name, tmp->eof->byte, 0)) != 0) {
 					msgnw(bw->parent, joe_gettext(msgs[-fl]));
 					ret = -1;
@@ -522,7 +522,7 @@ int usave(W *w, int k)
 	BW *bw;
 	BW *pbw;
 	WIND_BW(bw, w);
-	
+
 	pbw = wmkpw(bw->parent, joe_gettext(_("Name of file to save (%{help} for help): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out,
 	            mksavereq(NULL,NULL,NULL, 1, 0), NULL, locale_map, bw->b->name ? PWFLAG_FILENAME : (PWFLAG_FILENAME | PWFLAG_SEED_CD | PWFLAG_UPDATE_CD));
 
@@ -635,7 +635,7 @@ static int doedit1(W *w,int c,void *obj, int *notify)
 		opt_mid = 1;
 		dofollows();
 		opt_mid = omid;
-		
+
 		return ret;
 	} else if (c == NO_CODE || yncheck(no_key, c)) {
 		/* Edit already loaded buffer */
@@ -1083,7 +1083,7 @@ int uexsve(W *w, int k)
 			prm(markk);
 			markk = 0;
 		}
-		
+
 		/* It didn't change or it's just a scratch buffer: don't save */
 		uabort(bw->parent, -1);
 		return 0;

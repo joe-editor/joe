@@ -358,7 +358,7 @@ void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents
 	int c;
 	off_t to = p->byte;
 	int my_indents = 0;
-	
+
 	/* autoindent when called by utype */
 	if (!indents) {
 		/* Get indentation prefix from beginning of line */
@@ -483,7 +483,7 @@ void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents
 
 		/* Move word to beginning of next line */
 		binsc(p, '\n');
-		
+
 		/* When overtype is on, do not insert lines */
 		if (!no_over && p->b->o.overtype){
 			/* delete the next line break which is unnecessary */
@@ -495,26 +495,26 @@ void wrapword(BW *bw, P *p, off_t indent, int french, int no_over, char *indents
 			pgetc(r);
 			bdel(s,r);
 			binsc(r, ' ');
-			
+
 			/* Now we got to take care that all subsequent lines are not longer than the right margin */
 			/* Move cursor to right margin */
 			pfwrd(r, r->b->o.rmargin - r->col);
-			
+
 			/* Make a copy of the cursor and move the copied cursor to the end of the line */
 			prm(s);
 			s = pdup(r, "wrapword");
 			p_goto_eol(s);
-			
+
 			/* If s is located behind r then the line goes beyond the right margin and we need to call wordwrap() for that line. */
 /*
 			if (r->byte < s->byte){
 				wrapword(bw, r, indent, french, 1, indents);
 			}
-*/			
+*/
 			prm(r);
 			prm(s);
 		}
-		
+
 		++to;
 		if (p->b->o.crlf)
 			++to;
@@ -633,7 +633,7 @@ int uformat(W *w, int k)
 	}
 
 	/* Cut paragraph into new buffer */
-	
+
 	/* New buffer needs to inherit UTF-8 and CR-LF options */
 	buf = bcpy(p, bw->cursor);
 	buf->o.crlf = p->b->o.crlf;
@@ -671,11 +671,11 @@ int uformat(W *w, int k)
 				}
 				prm(d);
 			}
-			
+
 			if (f) {
 				/* Skip past the whitespace. */
 				while (joe_isblank(b->b->o.charmap, brc(b))) {
-					if(b->byte == curoff) 
+					if(b->byte == curoff)
 						pset(bw->cursor, p);
 					pgetc(b);
 				}
@@ -726,10 +726,10 @@ int uformat(W *w, int k)
 				f = 1;
 			}
 			prm(d);
-			
+
 			/* Skip past the whitespace.  Skip over indentations */
 		      loop:
-			
+
 			c = brc(b);
 			if (c == '\n') {
 				if (b->byte == curoff)

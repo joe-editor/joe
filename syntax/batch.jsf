@@ -22,7 +22,7 @@
 	"@"		linebegin
 	"%"		args		call=.variable() recolor=-1
 	"\""		qargs		recolor=-1
-	"'"		sqargs		recolor=-1		# These two encountered in 
+	"'"		sqargs		recolor=-1		# These two encountered in
 	"`"		bqargs		recolor=-1		# certain varieties of for-loops
 
 :stmtorcommand Command

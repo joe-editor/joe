@@ -8,7 +8,7 @@
 #
 #  * "#" and "+" are lited as mistakes in unquoted tag values,
 #    although there exist (broken) programs that generate them.
-# 
+#
 #  * Recognizes html-entities and lites mistakes in them.
 #
 #  * SGML comments are parsed in the SGML way. This means there
@@ -118,7 +118,7 @@ done
 	*			mistake_tag recolor=-1
 	"<"			tag_maybe_php recolor=-1
 	" \t\n"		tag_idle
-	"/"			tag_end recolor=-1 
+	"/"			tag_end recolor=-1
 	">"			tag_end noeat recolor=-1
 	"-A-Za-z0-9._:"		tag_param noeat recolor=-1
 
@@ -161,7 +161,7 @@ done
 :stag_idle Idle
 	*			smistake_tag recolor=-1
 	" \t\n"		stag_idle
-	"/"			stag_end recolor=-1 
+	"/"			stag_end recolor=-1
 	">"			stag_end noeat recolor=-1
 	"-A-Za-z0-9._:"		stag_param noeat recolor=-1
 
@@ -201,7 +201,7 @@ done
 :ytag_idle Idle
 	*			ymistake_tag recolor=-1
 	" \t\n"		ytag_idle
-	"/"			ytag_end recolor=-1 
+	"/"			ytag_end recolor=-1
 	">"			ytag_end noeat recolor=-1
 	"-A-Za-z0-9._:"		ytag_param noeat recolor=-1
 
