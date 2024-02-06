@@ -104,3 +104,8 @@ char *pwd(void);
 char *simplify_prefix(const char *path);
 
 char *dequotevs(char *path);
+
+/* Canonicalize file name: do ~ expansion */
+char *canonical(char *s, int flags);
+
+#define CANFLAG_NORESTART 1 /* Support path restart feature */

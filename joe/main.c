@@ -296,14 +296,14 @@ int ushowlog(W *w, int k)
 int createbackpathdir(W *w, int c, void *object, int *notify)
 {
 	if (c == YES_CODE || yncheck(yes_key, c)) {
-		char *bp = object;
-		if (mkpath(bp) == 0) {
-			return 0;
-		} else {
+		if (mkpath((char *)object)) {
 			_exit(-1);
-			return -1;
 		}
+
+		return 0;
 	}
+
+	return -1;
 }
 
 int main(int argc, char **real_argv, const char * const *envv)
