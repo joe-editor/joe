@@ -99,10 +99,10 @@
 	"&"		idle
 done
 	"\c"		inhere_name
-	
+
 :brace Builtin
   * idle  noeat
-	
+
 :php_var Variable
   * idle noeat
   "\c" php_var
@@ -133,7 +133,7 @@ done
 
 :maybe_method Builtin
 	*		idle  recolor=-1
-	"?"		idle_qmark 
+	"?"		idle_qmark
 	"%"		idle_hash
 	"#"		sh_comment	recolor=-1
 	"/"		slash
@@ -144,7 +144,7 @@ done
 	"$"   php_var recolor=-1
 	"{}"  brace recolor=-1
   ">" method  recolor=-2
-  
+
 :method Builtin
 	*	idle	recolor=-1
 	"\i\c"	method	recolor=-1
@@ -200,7 +200,7 @@ done
 :string_dq_esc StringEscape string
 	*		string_dq
 	"\n"		string_dq	recolor=-2
-	
+
 :string_bq String string
 	*		string_bq
 	"$"     var_inbqstring recolor=-1
@@ -210,7 +210,7 @@ done
 :string_bq_esc StringEscape string
 	*		string_bq
 	"\n"		string_bq	recolor=-2
-	
+
 :first_digit Number
 	*		idle	noeat
 	"xX"		hex

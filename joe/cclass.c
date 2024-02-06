@@ -571,7 +571,7 @@ void rtree_add(struct Rtree *r, int ch, int che, void *map)
 
 				while (ch <= che) {
 					struct Leaf *l = r->leaf.table.d + id;
-					
+
 					/* Copy on write */
 					if (l->refcount != 1) {
 						struct Leaf *org = l;
@@ -629,7 +629,7 @@ static ptrdiff_t rhhash(struct Leaf *l)
 	for (x = 0; x != LEAFSIZE; ++x)
 		hval = (hval << 4) + (hval >> 28) + (ptrdiff_t)l->entry[x];
 	return hval;
-		
+
 }
 
 void rtree_opt(struct Rtree *r)
@@ -777,7 +777,7 @@ void rtree_show(struct Rtree *r)
 	total += len;
 
 	logmessage_1("Total size = %lld bytes\n", (long long)total);
-	
+
 	for (a = 0; a != TOPSIZE; ++a) {
 		int ib = r->top.entry[a];
 		if (ib != -1) {
@@ -1031,7 +1031,7 @@ static ptrdiff_t rmaphash(struct Ileaf *l)
 	for (x = 0; x != LEAFSIZE; ++x)
 		hval = (hval << 4) + (hval >> 28) + l->entry[x];
 	return hval;
-		
+
 }
 
 void rmap_opt(struct Rtree *r)
@@ -1170,7 +1170,7 @@ void rmap_show(struct Rtree *r)
 	total += len;
 
 	logmessage_1("Total size = %lld bytes\n", (long long)total);
-	
+
 	for (a = 0; a != TOPSIZE; ++a) {
 		int ib = r->top.entry[a];
 		if (ib != -1) {
@@ -1357,7 +1357,7 @@ void cclass_sub(struct Cclass *m, int first, int last)
 				m->intervals[x + 1].first = last + 1;
 				++x;
 			}
-			
+
 		}
 	}
 }

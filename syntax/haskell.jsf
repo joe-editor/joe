@@ -27,7 +27,7 @@
 =Pragma 	+Preproc
 
 :reset Idle
-	*		reset		
+	*		reset
 	"a-z_"		varid		buffer recolor=-1
 	"A-Z"		conormodid	mark recolor=-1
 	":"		consym		buffer recolor=-1
@@ -38,14 +38,14 @@
 	"0-9"		integerstart	mark noeat
 	"\'"		charlit		recolor=-1
 	"\""		strlit		recolor=-1
-	
+
 :special Special
 	*		reset		noeat
-	
+
 :specialorncomment Special
 	*		reset		noeat
 	"-"		ncommentstart	recolor=-2
-	
+
 :ncommentstart Comment comment
 	*		reset		noeat call=.comment()
 	"#"		pragma		recolor=-3
@@ -76,15 +76,15 @@
 :pragmamaybeend1 Pragma
 	*		pragma		noeat
 	"-"		pragmamaybeend2
-	
+
 :pragmamaybeend2 Pragma
 	*		pragma		noeat
 	"}"		reset
-	
+
 :pragmamaybebadend Bad
 	*		pragma		noeat
 	"}"		errorstate	recolor=-2
-	
+
 :errorstate Bad
 	*		reset
 
@@ -92,13 +92,13 @@
 	*		reset		noeat
 	"."		probablymodid	recolor=-1
 	"a-zA-Z0-9'_"	conormodid
-	
+
 # give it color varid to color the dot in case it is *not* a modid in the
 # right color
 :probablymodid VarSym
 	*		ismodid		noeat recolormark recolor=-1
 	" \t\r\n\v\f"	reset
-	
+
 :ismodid ModId
 	*		reset		noeat
 
@@ -163,12 +163,12 @@ done
 :dashorvarsym VarSym
 	*		varsym		noeat
 	"-"		dashdash	hold
-	
+
 :dashdash VarSym
 	*		linecomment	recolormark noeat
 	"!#$%&*+./<=>?@\\^|~:" varsym
 	"-" 		dashdash
-	
+
 :linecomment Comment comment
 	*		linecomment
 	"BFHNTX"	linecomment	noeat call=comment_todo.comment_todo()
@@ -183,7 +183,7 @@ done
 	"."		floatmaybemant
 	"e"		floatexponentstart
 	"0-9"		decnum
-	
+
 :intdispatch DecNumber
 	*		decnum		noeat
 	"oO"		octstart
@@ -437,7 +437,7 @@ done
 
 :strgaperror Bad
 	*		strgaperror
-	"\\"		strlit		
+	"\\"		strlit
 	"\""		reset
 
 :strliterror Bad

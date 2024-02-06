@@ -48,7 +48,7 @@
   "[]"          brackets      noeat
   "{}"          curlies       noeat
   ";"           semicolon     noeat
-  ","           comma         noeat  
+  ","           comma         noeat
   "."           period
   "0"           number0       recolor=-1
   "1-9"         float         recolor=-1
@@ -76,11 +76,11 @@
   "BFHNTX"      line_comment  noeat call=comment_todo.comment_todo()
   "\n"          main
 
-:block_comment Comment comment  
+:block_comment Comment comment
   *            block_comment
   "BFHNTX"     block_comment  noeat call=comment_todo.comment_todo()
   "*"          maybe_end_block_comment
-  
+
 :maybe_end_block_comment Comment comment
   *            block_comment noeat
   "/"          main
@@ -127,7 +127,7 @@
   *            period_other    noeat recolor=-2
   "0-9"        period_decimal  noeat recolor=-2
 
-:period_other Period  
+:period_other Period
   *            main noeat
 
 :period_decimal PeriodDecimal
@@ -162,7 +162,7 @@
   "xX"         hex
   "."          period_decimal recolor=-1
     # 099i is a valid imaginary number, 099.0 is a valid float,
-    # but 099 is an invalid octal. 
+    # but 099 is an invalid octal.
     #We don't check for this and simply lump both cases together.
   "0-9"        float
 
@@ -175,7 +175,7 @@
   "0-9"        float
   "."          period_decimal recolor=-1
   "eE"         integer
-  
+
 ################# keywords and identifiers ##########################
 :keyword_or_identifier Ident
   *            identifier
@@ -218,12 +218,12 @@
       "import"      stmt
       "return"      stmt
       "var"         stmt
-      
+
       "true"        boolean
       "false"       boolean
       "nil"         constant
       "iota"        constant
-      
+
       "byte"        type
       "rune"        type
       "int"         type
@@ -246,7 +246,7 @@
       "error"       type
       "map"         type
       "chan"        type
-      
+
       "delete"      builtin
       "make"        builtin
       "len"         builtin
@@ -272,7 +272,7 @@
 
 :type Type
   *            main  noeat
-  
+
 :builtin Builtin
   *            main  noeat
 
@@ -353,7 +353,7 @@
 
 :esc_err_newline Bad
   *              esc_err return noeat
-  
+
 
 .end
 ########################## .subr escape END ######################################

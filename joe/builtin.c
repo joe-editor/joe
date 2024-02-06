@@ -67,18 +67,18 @@ char **jgetbuiltins(const char *suffix)
 	ptrdiff_t x;
 	ptrdiff_t sflen = 0;
 	char **result = NULL;
-	
+
 	if (suffix)
 		sflen = zlen(suffix);
-	
+
 	for (x = 0; builtins[x]; x += 2) {
 		const char *name = builtins[x];
 		ptrdiff_t nlen = zlen(name);
-		
+
 		if (!suffix || (sflen <= nlen && !zcmp(suffix, &name[nlen - sflen]))) {
 			result = vaadd(result, vsncpy(NULL, 0, sz(name)));
 		}
 	}
-	
+
 	return result;
 }

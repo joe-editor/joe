@@ -79,7 +79,7 @@ static void load_hist(FILE *f,B **bp)
 
 #define STATE_ID "# JOE state file v1.0\n"
 
-void save_state()
+void save_state(void)
 {
 	char *home = getenv("HOME");
 	mode_t old_mask;
@@ -117,7 +117,7 @@ void save_state()
 
 /* Load state */
 
-void load_state()
+void load_state(void)
 {
 	char *home = getenv("HOME");
 	char buf[1024];

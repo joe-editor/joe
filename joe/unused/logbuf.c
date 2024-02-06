@@ -18,7 +18,7 @@ void u_log_setup(BW *bw)
 int u_log_uparw(BW *bw)
 {
 	u_log_setup(bw);
-	
+
 }
 
 /* Get next history line */
