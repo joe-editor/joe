@@ -519,7 +519,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Search
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i   Help Screen    \|turn off with ^X^H  prev. screen ^X,  next screen ^X.        \i
 \i \iSearch sequences:                                                            \|\i \i
 \i \i    \\^  \\$  matches beg./end of line       \\.     match any single char      \|\i \i
 \i \i    \\<  \\>  matches beg./end of word       \\!     match char or expression   \|\i \i
@@ -533,7 +533,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Escape sequences
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i   Help Screen    \|turn off with ^X^H  prev. screen ^X,  next screen ^X.        \i
 \i \iEscape sequences: \\x{10fff}  Unicode code point   \\p{Ll}  Unicode category \|\i \i
 \i \i    \\i / \\I  Identifier start      \\t  tab          \\e  escape               \|\i \i
 \i \i    \\c / \\C  Identifier continue   \\n  newline      \\r  carriage return      \|\i \i
@@ -543,7 +543,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {SearchOptions
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i   Help Screen    \|turn off with ^X^H  prev. screen ^X,  next screen ^X.        \i
 \i \iSearch options:                                                              \|\i \i
 \i \i     r Replace      k Restrict search to highlighted block                   \|\i \i
 \i \i     i Ignore case  b Search backwards instead of forwards                   \|\i \i
