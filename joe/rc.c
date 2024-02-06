@@ -243,6 +243,10 @@ int procrc(CAP *cap, char *name)
 							int rtn = -1;
 							bf[0] = 0;
 							if (p && buf[x] != '/') {
+							joe_snprintf_2(bf,SIZEOF(bf),"%s/.config/joe/%s",p,buf + x);
+							rtn = procrc(cap, bf);
+							}
+							if (rtn == -1 && buf[x] != '/') {
 								joe_snprintf_2(bf,SIZEOF(bf),"%s/.joe/%s",p,buf + x);
 								rtn = procrc(cap, bf);
 							}
@@ -367,3 +371,137 @@ int procrc(CAP *cap, char *name)
 
 	return err;		/* 0 for success, 1 for syntax error */
 }
+
+/* Check to see if a joe resource file exists. If it does, return its path.
+   If not, return NULL. */
+static char *try_get_joerc_file_path(const char *env_var, const char *rest_path, const char *file) {
+    char *var_path = env_var ? getenv(env_var) : "";
+    char *result;
+    const char *real_file = file ? file : "";
+    size_t result_len;
+    struct stat sb;
+    
+    if (!var_path || !rest_path)
+        return NULL;
+
+    result_len = zlen(var_path) + zlen(rest_path) + zlen(real_file) + 1;
+    result = (char*)joe_malloc(result_len);
+    joe_snprintf_3(result, result_len, "%s%s%s", var_path, rest_path, real_file);
+    
+    if (stat(result, &sb)) {
+        joe_free(result);
+        return NULL;
+    }
+
+    return result;
+}
+
+/* Get a file path in the JOERC directory. If file is NULL get the directory 
+   itself. First checks $XDG_CONFIG_HOME/joe, then ~/.config/joe, and 
+   finally ~/.joe. If no user JOERC dir exists, it check JOEDATA.
+   Returns NULL on failure. 
+   Returns a dynamically allocated string (path to the file) on success.
+*/
+char *get_joerc_file_path(const char *file) {
+    char *result = try_get_joerc_file_path("XDG_CONF_HOME", "/joe/", file);
+    if (!result)
+        result = try_get_joerc_file_path("HOME", "/.config/joe/", file);
+    if (!result)
+        result = try_get_joerc_file_path("HOME", "/.joe/", file);
+    if (!result)
+        result = try_get_joerc_file_path(NULL, JOEDATA, file);
+
+    return result;
+}
+
+/* Get joe's main resource file. 
+   Run is argv[0].
+   Returns a dynmaically allocated path to the joerc. 
+   Returns NULL on error.
+*/
+char *get_joerc_path(const char *run) {
+    if (!run)
+        return NULL;
+    
+    size_t runrc_len = zlen(run) + sizeof("rc") + 2; /* 2 for NUL and possible prefix dot. */
+    char *runrc = (char*)joe_malloc(runrc_len);
+
+    joe_snprintf_2(runrc, runrc_len, "%s%s", run, "rc");
+    
+    char *result = try_get_joerc_file_path("XDG_CONF_HOME", "/joe/", runrc);
+    if (!result)
+        result = try_get_joerc_file_path("HOME", "/.config/joe/", runrc);
+    if (!result) {
+        joe_snprintf_2(runrc, runrc_len, ".%s%s", run, "rc");
+        result = try_get_joerc_file_path("HOME", "/", runrc);
+    }
+
+    joe_free(runrc);
+    return result;
+}
+
+/* Load a cache file. */
+static FILE *load_cache_file(const char *env_prefix, const char *res_dir_path, const char *file_name, const char *mode) {
+    char *cachedir = getenv(env_prefix);
+    FILE *result;
+    mode_t old_mask;
+    size_t i;
+    size_t mode_len;
+    char *full_path = NULL;
+    size_t full_path_len;
+    
+    if (!cachedir || !mode)
+        return NULL;
+
+    full_path_len = zlen(cachedir) + zlen(res_dir_path) + zlen(file_name) + 1;
+    full_path = (char*)joe_malloc(full_path_len);
+    joe_snprintf_3(full_path, full_path_len, "%s%s%s", cachedir, res_dir_path, file_name);
+
+    /* Determine fopen options, if we write we umask. */
+    mode_len = zlen(mode);
+    for(i = 0; i < mode_len; i++) {
+        if(mode[i] == 'w' || mode[i] == '+' || mode[i] == 'a') {
+            old_mask = umask(0066);
+            result = fopen(full_path, "w");
+            umask(old_mask);
+            joe_free(full_path);
+            return result;
+        }
+    }
+    
+    result = fopen(full_path, "r");
+    joe_free(full_path);
+    return result;
+}
+
+/* Get cache file of name NAME. Starts by checking XDG_CACHE_HOME, if no 
+   dedicated cache dir is found, it will place the file into the joerc
+   directory. If there is no JOERC directory, it will place the file
+   as a dotfile in the user's home. 
+   Returns a valid FILE* on success, returns NULL on error.
+*/
+FILE *get_cache_file(const char *name, const char *mode) {
+    if (!name)
+        return NULL;
+
+    char *dotfile_name;
+    size_t dotfile_len;
+
+    FILE *result = load_cache_file("XDG_CACHE_HOME", "/joe/", name, mode);
+    if (!result)
+        result = load_cache_file("HOME", "/.cache/joe/", name, mode);
+    if (!result)
+        result = load_cache_file("XDG_CONF_HOME", "/joe/", name, mode);
+    if (!result)
+        result = load_cache_file("HOME", "/.config/joe/", name, mode);
+    if (!result) {
+        dotfile_len = zlen(name) + 2;
+        dotfile_name = (char*)joe_malloc(dotfile_len);
+        joe_snprintf_1(dotfile_name, dotfile_len, ".%s", name);
+        result = load_cache_file("HOME", "/", dotfile_name, mode);
+        joe_free(dotfile_name);
+    }
+
+    return result;
+}
+

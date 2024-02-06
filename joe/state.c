@@ -8,7 +8,7 @@
 
 #include "types.h"
 
-/* Set to enable use of ~/.joe_state file */
+/* Set to enable use of joe_state file */
 int joe_state;
 
 /* Save a history buffer */
@@ -81,19 +81,15 @@ static void load_hist(FILE *f,B **bp)
 
 void save_state()
 {
-	char *home = getenv("HOME");
-	mode_t old_mask;
 	FILE *f;
+	char *joe_state_path;
 	if (!joe_state)
 		return;
-	if (!home)
-		return;
-	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
-	old_mask = umask(0066);
-	f = fopen(stdbuf,"w");
-	umask(old_mask);
-	if(!f)
-		return;
+
+	f = get_cache_file("joe_state", "w");
+
+	if (!f)
+	   return;
 
 	/* Write ID */
 	fprintf(f,"%s",STATE_ID);
@@ -119,15 +115,11 @@ void save_state()
 
 void load_state()
 {
-	char *home = getenv("HOME");
 	char buf[1024];
 	FILE *f;
 	if (!joe_state)
 		return;
-	if (!home)
-		return;
-	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
-	f = fopen(stdbuf,"r");
+	f = get_cache_file("joe_state", "r");
 	if(!f)
 		return;
 

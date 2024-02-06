@@ -415,14 +415,9 @@ int main(int argc, char **real_argv, const char * const *envv)
 		}
 	}
 
-	/* User's joerc file */
-	s = getenv("HOME");
+	/* Find the user's JOERC file. */
+	s = get_joerc_path(run);
 	if (s) {
-		s = vsncpy(NULL, 0, sz(s));
-		s = vsncpy(sv(s), sc("/."));
-		s = vsncpy(sv(s), sv(run));
-		s = vsncpy(sv(s), sc("rc"));
-
 		if (!stat(s,&sbuf)) {
 			if (sbuf.st_mtime < time_rc) {
 				logmessage_2(joe_gettext(_("Warning: %s is newer than your %s.\n")),t,s);
@@ -432,6 +427,8 @@ int main(int argc, char **real_argv, const char * const *envv)
 		c = procrc(cap, s);
 		if (c == 0) {
 			vsrm(t);
+			joe_free(s);
+			s = NULL;
 			goto donerc;
 		}
 		if (c == 1) {
@@ -439,7 +436,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 		}
 	}
 
-	vsrm(s);
+	joe_free(s);
 	s = t;
 	c = procrc(cap, s);
 	if (c == 0)
