@@ -187,7 +187,7 @@
 :string	String string
 	*		string
 	"\""		after_term
-	"\n"		after_term 
+	"\n"		after_term
 	"\\"		string_escape	recolor=-1
 	"$"		maybe_string_subst	recolor=-1
 
@@ -203,7 +203,7 @@
 :string_subst1 StringEscape string
 	*		string		noeat
 	".\c"		string_subst1
-	
+
 :string_escape StringEscape string
 	*		string
 	"x"		string_hex2
@@ -265,7 +265,7 @@
 :tstring_subst1 StringEscape string
 	*		tstring		noeat
 	".\c"		tstring_subst1
-	
+
 :tstring_escape StringEscape string
 	*		tstring
 	"x"		tstring_hex2
@@ -299,7 +299,7 @@
 
 # strings like: $/sdfsdf/$
 # interpolation allowed
-	
+
 :dstring	String string
 	*		dstring
 	"$"		dstring_esc	recolor=-1
@@ -324,7 +324,7 @@
 :single_quote_1	String string
 	*		after_term	noeat
 	"\'"		tchar
-	
+
 # strings like 'hello'
 # no interpolation
 # no line crossing

@@ -369,7 +369,7 @@ void breplace(B *b, B *n)
 		joe_free(b->name);
 
 	reset_all_lattr_db(b->db);
-	
+
 	/* Take new name */
 	b->name = zdup(n->name);
 
@@ -1007,35 +1007,35 @@ int prgetc(P *p)
 	int c, left = 6;
 	off_t startbyte, startcol;
 	int val = 0;
-	
+
 	if (!p->b->o.charmap->type || pisbol(p))
 		return prgetb(p);
-	
+
 	/* Save p for later column calculation */
 	val = p->valcol;
 	startbyte = p->byte;
 	startcol = p->col;
-	
+
 	/* Read to start of utf-8 sequence */
 	do {
 		c = prgetb(p);
 	} while (left-- > 0 && (c & 0xC0) == 0x80 && c != NO_MORE_DATA);
-	
+
 	if (c == NO_MORE_DATA)
 		return c;
-	
+
 	/* Get full character */
 	q = pdup(p, "prgetc");
 	c = pgetc(q);
-	
+
 	/* Keep column valid */
 	if (val && c != '\n' && c != '\t' && q->byte == startbyte) {
 		p->valcol = 1;
 		p->col = startcol - joe_wcwidth(1, c);
 	}
-	
+
 	prm(q);
-	
+
 	return c;
 }
 
@@ -2792,7 +2792,7 @@ B *bload(const char *s)
 		struct stat y;
 		fi = stdin;
 		/* Make sure stdin is not tty */
-		if (fstat(fileno(fi), &y)) 
+		if (fstat(fileno(fi), &y))
 			goto no_stat;
 		if (y.st_mode & S_IFCHR) {
 			no_stat:
@@ -2922,13 +2922,13 @@ opnerr:
 		int maxi;
 		int space_lines = 0;
 		int tab_lines = 0;
-		
+
 		p=pdup(b->eof, "bload");
 		/* Create histogram of indentation values */
 		for (y = 0; y != 250; ++y) {
 			found_space = 0;
 			found_tab = 0;
-			
+
 			p_goto_bol(p);
 			if ((i = pisindentg(p))) {
 				for (ix = 0; ix != nhist; ++ix)
@@ -2941,16 +2941,16 @@ opnerr:
 				} else if (ix != nhist) {
 					++hist[ix];
 				}
-				
+
 				/* Count characters used for indent */
 				if (found_tab) tab_lines++;
 				else if (found_space) space_lines++;
 			}
-			
+
 			if (prgetc(p) == NO_MORE_DATA)
 				break;
 		}
-		
+
 		if (tab_lines > space_lines) {
 			/* If more lines were indented with tabs than spaces, pick tabs. */
 			b->o.indentc = '\t';
@@ -2972,11 +2972,11 @@ opnerr:
 					hist[maxi] = 0;
 				}
 			}
-			
+
 			/* If guessed value is large, scale it down some */
 			while (!(guessed_step & 1) && guessed_step > 8)
 				guessed_step >>= 1;
-			
+
 			b->o.indentc = ' ';
 			if (guessed_step)
 				b->o.istep = guessed_step;
@@ -3248,7 +3248,7 @@ int bsave(P *p, const char *as, off_t size, int flag)
 				security_context_t se;
 				if (selinux_enabled == -1)
 					selinux_enabled = (is_selinux_enabled() > 0);
-				
+
 				if (selinux_enabled) {
 					if (getfilecon(s, &se) < 0) {
 						berror = -4;
@@ -3421,9 +3421,9 @@ RETSIGTYPE ttsig(int sig)
 	/* Do not allow double-fault */
 	if (ttsig_handled)
 		_exit(1);
-        
+
         ttsig_handled = 1;
-        
+
         if (nodeadjoe)
                 goto skipfile;
 

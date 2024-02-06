@@ -24,7 +24,7 @@
 	"a-zA-Z"	preident	buffer
 	"\n"		idle
 	";"			comment recolor=-1
-	
+
 :preident Preproc
 	*			preproc		noeat istrings
 	"include"	preinc
@@ -55,7 +55,7 @@ done
 	";"			comment		recolor=-1
 
 :premacro Macro
-	*			premacro 
+	*			premacro
 	" \t\n"		idle
 	";"			comment 	recolor=-1
 

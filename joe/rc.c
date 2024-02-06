@@ -1,7 +1,7 @@
 /*
  *	*rc file parser
  *	Copyright
- *		(C) 1992 Joseph H. Allen; 
+ *		(C) 1992 Joseph H. Allen;
  *
  *	This file is part of JOE (Joe's Own Editor)
  */
@@ -73,7 +73,7 @@ static MACRO *multiparse(JFILE *fd, int *refline, char *buf, ptrdiff_t *ofst, in
 	*referr = err;
 	*refline = line;
 	*ofst = x;
-	return m; 
+	return m;
 }
 
 /* Process rc file

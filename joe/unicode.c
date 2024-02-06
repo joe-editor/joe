@@ -166,7 +166,7 @@ struct Cclass cclass_double[1];
           For "whitespace", you probably want Zs, tab, newline, carriage return and form-feed
           For "identifier start", you probably want letters, Pc and maybe Sc
           For "identifier rest", you probably want letters, digits, Pc and maybe Sc
-   
+
 Convenient character classes:
 
    see http://www.w3.org/TR/xml11/#NT-NameStartChar
@@ -551,7 +551,7 @@ int joe_wcwidth(int wide,int ucs)
 	/* Some characters are double-width */
 	if (cclass_lookup(cclass_double, ucs))
 		return 2;
-	
+
 	return 1;
 }
 

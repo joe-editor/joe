@@ -476,7 +476,7 @@ done
 	"static"	kw
 	"super"		kw
 	"typeof"	kw
-	
+
 	"any"		type
 	"boolean"	type
 	"number"	type

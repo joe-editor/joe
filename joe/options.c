@@ -202,7 +202,7 @@ void lazy_opts(B *b, OPTIONS *o)
 			b->o.charmap = find_charmap("c");
 			b->o.hex |= HEX_RESTORE_UTF8;
 		}
-		
+
 		/* Hex not allowed with CRLF */
 		if (b->o.crlf) {
 			b->o.crlf = 0;
@@ -234,8 +234,8 @@ void lazy_opts(B *b, OPTIONS *o)
 			b->o.hex |= HEX_RESTORE_PICTURE;
 		}
 	}
-	
-	
+
+
 }
 
 /* Set local options depending on file name and contents */
@@ -612,7 +612,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 					if (val >= opt->low && val <= opt->high)
 						*(int *) ((char *)
 							  options + opt->ofst) = val;
-				} 
+				}
 			}
 			if (arg)
 				ret = 2;
@@ -626,7 +626,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 					if (zz >= opt->low && zz <= opt->high)
 						*(off_t *) ((char *)
 							  options + opt->ofst) = zz;
-				} 
+				}
 			}
 			if (arg)
 				ret = 2;
@@ -1060,7 +1060,7 @@ char **find_configs(char **ary, const char *extension, const char *datadir, cons
 				ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
 			}
 		}
-		
+
 		varm(t);
 		t = NULL;
 	}
@@ -1082,7 +1082,7 @@ static int syntaxcmplt(BW *bw, int k)
 	if (!syntaxes) {
 		syntaxes = find_configs(NULL, "jsf", "syntax", "syntax");
 	}
-	
+
 	return simple_cmplt(bw,syntaxes);
 }
 
@@ -1093,7 +1093,7 @@ static int colorscmplt(BW *bw, int k)
 	if (!colorfiles) {
 		colorfiles = find_configs(NULL, "jcf", "colors", "colors");
 	}
-	
+
 	return simple_cmplt(bw, colorfiles);
 }
 
@@ -1165,7 +1165,7 @@ static int find_option(char *s)
 static int applyopt(BW *bw, void *optp, int y, int flg)
 {
 	int oldval, newval;
-	
+
 	oldval = *(int *)optp;
 	if (flg == 0) {
 		/* Return pressed: toggle */
@@ -1180,7 +1180,7 @@ static int applyopt(BW *bw, void *optp, int y, int flg)
 
 	*(int *)optp = newval;
 	msgnw(bw->parent, newval ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
-	
+
 	return oldval;
 }
 
@@ -1196,11 +1196,11 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 			break;
 		case 4:
 			oldval = applyopt(bw, (char *) &bw->o + glopts[y].ofst, y, flg);
-			
+
 			/* Propagate readonly bit to B */
 			if (glopts[y].ofst == (char *) &fdefault.readonly - (char *) &fdefault)
 				bw->b->rdonly = bw->o.readonly;
-			
+
 			/* Kill UTF-8 and CRLF modes if we switch to hex display */
 			if (glopts[y].ofst == (char *) &fdefault.hex - (char *) &fdefault) {
 				if (bw->o.hex && !oldval) {
@@ -1210,7 +1210,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 						doencoding(bw->parent, vsncpy(NULL, 0, sc("C")), NULL, NULL);
 						bw->o.hex |= HEX_RESTORE_UTF8;
 					}
-					
+
 					if (bw->o.crlf) {
 						/* Switch out of CRLF mode */
 						bw->o.crlf = 0;
@@ -1249,7 +1249,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 						/* Switch back into UTF-8 */
 						doencoding(bw->parent, vsncpy(NULL, 0, sc("UTF-8")), NULL, NULL);
 					}
-					
+
 					if (oldval & HEX_RESTORE_CRLF) {
 						/* Turn CRLF back on */
 						bw->o.crlf = 1;
@@ -1344,7 +1344,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				return 0;
 			else
 				return -1;
-		
+
 		case 17:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
 			if (wmkpw(bw->parent, buf, NULL, docolors, NULL, NULL, colorscmplt, NULL, notify, utf8_map, 0))

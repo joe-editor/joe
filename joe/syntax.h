@@ -13,7 +13,7 @@ struct high_state {
 	const char *name;		/* Highlight state name */
 	int color;			/* Color for this state */
 	struct color_def *colorp;	/* Mapped color definition */
-	
+
 	struct Rtree rtree;		/* Character map (character ->struct high_cmd *) */
 	struct high_cmd *dflt;		/* Default for no match */
 	struct high_cmd *same_delim;	/* Same delimiter */

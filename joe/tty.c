@@ -567,7 +567,7 @@ int ttflsh(void)
 	/* Flush output */
 	if (obufp) {
 		long usec = obufp * upc;	/* No. usecs this write should take */
- 
+
 #ifdef HAVE_SETITIMER
 		if (usec >= 50000 && tty_baud < 9600) {
 			struct itimerval a, b;

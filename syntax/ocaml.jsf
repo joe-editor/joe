@@ -85,7 +85,7 @@
 	"]"		pipeclose	recolor=-2
 
 :pipeclose Control
-	*		expr		noeat	
+	*		expr		noeat
 
 :colon Operator
 	*		type1		noeat
@@ -245,7 +245,7 @@
 	"downto"	kw
 	"else"		kw
 	"end"		kw
-	"exception"	kw	
+	"exception"	kw
 	"external"	kw
 	"false"		bool
 	"for"		loop

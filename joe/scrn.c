@@ -57,7 +57,7 @@ char xlatc[256] = {
 	112, 113, 114, 115, 116, 117, 118, 119,			/* 248 */
 	120, 121, 122, 123, 124, 125, 126,  63			/* 256 */
 };
-/* ... and here their attributes */ 
+/* ... and here their attributes */
 int xlata[256] = {
 	UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,		/*   4 */
 	UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,		/*   8 */
@@ -535,7 +535,7 @@ int eraeol(SCRN *t, ptrdiff_t x, ptrdiff_t y, int atr)
 		if (t->ce) {
 			cpos(t, x, y);
 			if(t->attrib != atr)
-				set_attr(t, atr); 
+				set_attr(t, atr);
 			texec(t->cap, t->ce, 1, 0, 0, 0, 0);
 			mfill(s, ' ', w);
 			msetI(a, atr, w);
@@ -665,7 +665,7 @@ SCRN *nopen(CAP *cap)
 	if (ansiish) {
 		t->dunderline = "\033[21m";
 	}
-	
+
 	/* No termcap for bracketed paste.  ANSI-looking terminals will either support bracketed paste
 	   or this setting will cause no harm. */
 	if (ansiish && brpaste) {
@@ -1751,7 +1751,7 @@ static void doupscrl(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt, int 
 		msetI(t->updtab + t->li - amnt, 1, amnt);
 	} else {
 		mfill(t->scrn + (bot - amnt) * t->co, ' ', amnt * t->co);
-		msetI(t->attr + (bot - amnt) * t->co, 0, amnt * t->co); 
+		msetI(t->attr + (bot - amnt) * t->co, 0, amnt * t->co);
 	}
 }
 
@@ -1761,7 +1761,7 @@ static void dodnscrl(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt, int 
 
 	if (!amnt)
 		return;
-	set_attr(t, atr); 
+	set_attr(t, atr);
 	if (top == 0 && bot == t->li && (t->sr || t->SR)) {
 		setregn(t, 0, t->li);
 		cpos(t, 0, 0);
@@ -1820,7 +1820,7 @@ static void dodnscrl(SCRN *t, ptrdiff_t top, ptrdiff_t bot, ptrdiff_t amnt, int 
 		msetI(t->updtab, 1, amnt);
 	} else {
 		mfill(t->scrn + t->co * top, ' ', amnt * t->co);
-		msetI(t->attr + t->co * top, 0, amnt * t->co); 
+		msetI(t->attr + t->co * top, 0, amnt * t->co);
 	}
 }
 
@@ -1858,7 +1858,7 @@ void nscroll(SCRN *t,int atr)
 
 void npartial(SCRN *t)
 {
-	set_attr(t, BG_COLOR(bg_text)); 
+	set_attr(t, BG_COLOR(bg_text));
 	clrins(t);
 	setregn(t, 0, t->li);
 }
@@ -1964,9 +1964,9 @@ void nredraw(SCRN *t)
 {
 	dostaupd = 1;
 	mfill(t->scrn, ' ', t->co * skiptop);
-	msetI(t->attr, BG_COLOR(bg_text), t->co * skiptop);  
+	msetI(t->attr, BG_COLOR(bg_text), t->co * skiptop);
 	mfill(t->scrn + skiptop * t->co, -1, (t->li - skiptop) * t->co);
-	msetI(t->attr + skiptop * t->co, BG_COLOR(bg_text), (t->li - skiptop) * t->co); 
+	msetI(t->attr + skiptop * t->co, BG_COLOR(bg_text), (t->li - skiptop) * t->co);
 	msetD(t->sary, 0, t->li);
 	msetI(t->updtab + skiptop, -1, t->li - skiptop);
 	t->x = -1;
@@ -1975,7 +1975,7 @@ void nredraw(SCRN *t)
 	t->bot = 0;
 	t->attrib = -1;
 	t->ins = -1;
-	set_attr(t, BG_COLOR(bg_text)); 
+	set_attr(t, BG_COLOR(bg_text));
 	clrins(t);
 	setregn(t, 0, t->li);
 
@@ -1986,12 +1986,12 @@ void nredraw(SCRN *t)
 			t->x = 0;
 			t->y = 0;
 			mfill(t->scrn, ' ', t->li * t->co);
-			msetI(t->attr, BG_COLOR(bg_text), t->li * t->co); 
+			msetI(t->attr, BG_COLOR(bg_text), t->li * t->co);
 		} else if (t->cd) {
 			cpos(t, 0, 0);
 			texec(t->cap, t->cd, 1, 0, 0, 0, 0);
 			mfill(t->scrn, ' ', t->li * t->co);
-			msetI(t->attr, BG_COLOR(bg_text), t->li * t->co); 
+			msetI(t->attr, BG_COLOR(bg_text), t->li * t->co);
 		}
 #endif
 	}

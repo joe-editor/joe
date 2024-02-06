@@ -357,7 +357,7 @@ int kdel(KMAP *kmap, char *seq)
 			} else {
 				kmap->src = interval_add(kmap->src, v, w, NULL);
 				++kmap->src_version;
-				
+
 			}
 		} else {
 			kmap->src = interval_add(kmap->src, v, w, NULL);
