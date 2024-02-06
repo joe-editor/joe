@@ -1,6 +1,6 @@
 /*
  *	Various utilities
- *	
+ *
  *	Copyright
  *		(C) 1992 Joseph H. Allen
  *		(C) 2001 Marek 'Marx' Grac
@@ -58,7 +58,7 @@ void *replenish(void **list,ptrdiff_t size);
 } while(0)
 
 /* JOE's version of zero-terminated string (z-string) functions.
-   In older versions of JOE we had these because the library versions were slow. 
+   In older versions of JOE we had these because the library versions were slow.
    In older versions of JOE we had these because we globally used "unsigned char *" strings.
    Now we have them for ptrdiff_t lengths (instead of size_t), to avoid mixed signed / unsigned warnings. */
 
@@ -99,7 +99,7 @@ char *zncpy(char *a, const char *b, ptrdiff_t len);
 /* Like strncpy, but string always ends up zero-terminated */
 char *zlcpy(char *a, ptrdiff_t siz, const char *b);
 
-/* Like strncat, but result is always zero-terminated */ 
+/* Like strncat, but result is always zero-terminated */
 char *zlcat(char *a, ptrdiff_t siz, const char *b);
 
 /* Functions which support zero-terminated strings of ints */
@@ -110,9 +110,9 @@ int *Zlcpy(int *a, ptrdiff_t siz, const int *b);
 int *Zdup(const int *s);
 char *Ztoutf8(char *a, ptrdiff_t len, const int *b);
 char *Ztoz(char *a, ptrdiff_t len, const int *b);
- 
+
 /*
- * Functions which return minimum/maximum of two numbers  
+ * Functions which return minimum/maximum of two numbers
  */
 unsigned int uns_min(unsigned int a, unsigned int b);
 signed int int_min(signed int a, int signed b);

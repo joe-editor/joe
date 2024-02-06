@@ -21,7 +21,7 @@
 	"("		maybe_comment
 	"{"		comment		recolor=-1
 	"'"		string		recolor=-1
-	"0-9"		number		recolor=-1 
+	"0-9"		number		recolor=-1
 
 # Comments
 

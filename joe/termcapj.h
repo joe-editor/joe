@@ -4,8 +4,8 @@
  *		(C) 1992 Joseph H. Allen
  *
  *	This file is part of JOE (Joe's Own Editor)
- */ 
- 
+ */
+
 struct sortentry {
 	char	*name;
 	char	*value;
@@ -109,9 +109,9 @@ void rmcap(CAP *cap);
 
    'cap' is the CAP returned by getcap which contains the baud rate and output
    function.
-   
+
    'str' is the string to execute.  If 'str'==NULL, nothing happens.
-   
+
    'l' is the number of lines affected by this string.  For example, if you
    use the clear to end of screen capability, the number of lines between
    the current cursor position and the end of the screen should be
@@ -127,9 +127,9 @@ void texec(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptr
 
    'cap' is the CAP returned by getcap which contains the baud rate and output
    functions.
-   
+
    'str' is the string to execute.  If 'str'==NULL, tcost return 10000.
-   
+
    'l' is the number of lines affected by this string.  Ex: if you
    use the clear to end of screen capability, the number of lines between
    the current cursor position and the end of the screen should be

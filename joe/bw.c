@@ -199,7 +199,7 @@ void bwfllwt(W *thew)
 
 		msetI(w->t->t->updtab + w->y, 1, w->h);
 	}
-	
+
 	if (w->o.hiline) {
 		if (w->curlin != w->cursor->line) {
 			/* Update old and new cursor lines */
@@ -351,8 +351,8 @@ static void ansi_init(struct ansi_sm *sm)
 /* Update a single line */
 
 static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff_t x, ptrdiff_t w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
-        
-      
+
+
             			/* Screen line address */
       				/* Window */
      				/* Buffer pointer */
@@ -1281,14 +1281,14 @@ int calclincols(BW *bw)
 {
 	int width = 0;
 	off_t lines = bw->b->eof->line + 1;
-	
+
 	if (!bw->o.linums) {
 		return 0;
 	}
-	
+
 	if (lines < 10) {
 		width = 1;
-	} else if (lines < 100) { 
+	} else if (lines < 100) {
 		width = 2;
 	} else if (lines < 1000) {
 		width = 3;

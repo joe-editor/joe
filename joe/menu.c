@@ -48,7 +48,7 @@ static void menudisp(W *w, int flg)
 				for (x = 0; x < ((y + m->top) >= cut ? m->perline - 1 : m->perline) ; ++x) {
 					int atr;
 					ptrdiff_t ndx = x * m->lines + y + m->top;
-			
+
 					if (ndx == m->cursor && m->t->curwin == m->parent)
 						atr = BG_COLOR(bg_menu & bg_menumask) | bg_menusel;
 					else
@@ -82,7 +82,7 @@ static void menudisp(W *w, int flg)
 			for (x = 0; x != m->perline && y * m->perline + x + m->top < m->nitems; ++x) {
 				int atr;
 				ptrdiff_t ndx = x + y * m->perline + m->top;
-		
+
 				if (ndx == m->cursor && m->t->curwin==m->parent)
 					atr = INVERSE|BG_COLOR(bg_menu);
 				else
@@ -651,7 +651,7 @@ MENU *mkmenu(W *w, W *targ, char **s, int (*func)(MENU *m, ptrdiff_t cursor, voi
 	ptrdiff_t h = (w->main->h*40) / 100; /* 40% of window size */
 	if (!h)
 		h = 1;
-	
+
 	if (s) {
 		lines = mlines(s, w->t->w);
 		if (lines < h)
