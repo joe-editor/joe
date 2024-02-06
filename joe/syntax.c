@@ -169,7 +169,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	int mark2;	/* offset to mark end from current pos */
 	int mark_en;	/* set if marking */
 	int recolor_delimiter_or_keyword;
-	
+
 	/* Nothing should reference 'h' above here. */
 	if (h_state.state < 0) {
 		/* Indicates a previous error -- highlighting disabled */
@@ -226,7 +226,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				invalidate_state(&h_state);
 				return h_state;
 			}
-			
+
 			/* Color with current state */
 			attr[-1] = h->color;
 
@@ -450,7 +450,7 @@ static void iz_cmd(struct high_cmd *cmd)
 	cmd->call = 0;
 }
 
-static struct high_cmd *mkcmd()
+static struct high_cmd *mkcmd(void)
 {
 	struct high_cmd *cmd = (struct high_cmd *)joe_malloc(SIZEOF(struct high_cmd));
 	iz_cmd(cmd);

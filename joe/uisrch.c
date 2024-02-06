@@ -205,7 +205,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 		} else {
 			buf[0] = TO_CHAR_OK(from_uni(bw->b->o.charmap, c));
 			buf_len = 1;
-		}		
+		}
 
 		isrch->quote = 0;
 		iappend(bw, isrch, buf, buf_len);

@@ -95,7 +95,7 @@ time_t cur_time;
 time_t timer_macro_delay;
 MACRO *timer_macro;
 
-MACRO *timer_play()
+MACRO *timer_play(void)
 {
 	cur_time = time(NULL);
 	if (timer_macro && timer_macro_delay && cur_time >= last_timer_time + timer_macro_delay) {
@@ -270,15 +270,15 @@ int ushowlog(W *w, int k)
 		B *copied;
 		BW *newbw;
 		void *object;
-		
+
 		if (uduptw(w, k)) {
 			return -1;
 		}
-		
+
 		copied = bcpy(startup_log->bof, startup_log->eof);
 		copied->name = zdup("* Startup Log *");
 		copied->internal = 1;
-		
+
 		newbw = (BW *) maint->curwin->object;
 		object = newbw->object;
 		w = newbw->parent;
@@ -286,10 +286,10 @@ int ushowlog(W *w, int k)
 		w->object = (void *) (newbw = bwmk(w, copied, 0));
 		wredraw(newbw->parent);
 		newbw->object = object;
-		
+
 		return 0;
 	}
-	
+
 	return 1;
 }
 
@@ -316,7 +316,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 	joe_locale();
 
 	mainenv = envv;
-	
+
 	vmem = vtmp();
 	startup_log = bfind_scratch("* Startup Log *");
 	startup_log->internal = 1;
@@ -381,7 +381,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 #else
 
 	/* Name of system joerc file.  Try to find one with matching language... */
-	
+
 	/* Try full language: like joerc.de_DE */
 	t = vsncpy(NULL, 0, sc(JOERC));
 	t = vsncpy(sv(t), sv(run));
@@ -609,13 +609,13 @@ int main(int argc, char **real_argv, const char * const *envv)
 				/* Go back to first window so windows are in same order as command line  */
 				if (opened)
 					wnext(maint);
-				
+
 			}
 			opened = 1;
 			backopt = 0;
 		}
 
-	
+
 
 	if (opened) {
 		wshowall(maint);
@@ -693,6 +693,6 @@ exit_errors:
 	/* Write out error log to console if we are exiting with errors. */
 	if (startup_log && startup_log->eof->byte)
 		bsavefd(startup_log->bof, 2, startup_log->eof->byte);
-	
+
 	return 1;
 }

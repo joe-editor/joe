@@ -79,7 +79,7 @@ static void load_hist(FILE *f,B **bp)
 
 #define STATE_ID "# JOE state file v1.0\n"
 
-void save_state()
+void save_state(void)
 {
 	FILE *f;
 	char *joe_state_path;
@@ -113,7 +113,7 @@ void save_state()
 
 /* Load state */
 
-void load_state()
+void load_state(void)
 {
 	char buf[1024];
 	FILE *f;

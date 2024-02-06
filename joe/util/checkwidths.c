@@ -87,7 +87,7 @@ int full_read(unsigned char *p, int total, int timeout)
 
 int get_line(char *buf, int timeout)
 {
-    char c;
+    unsigned char c;
     for (;;) {
         int x;
         for (x = 0; x != timeout; ++x)
@@ -104,7 +104,7 @@ int get_line(char *buf, int timeout)
     
 }
 
-int main()
+int main(int argc, char **argv)
 {
     struct termios org_attr;
     struct termios attr;

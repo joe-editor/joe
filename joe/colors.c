@@ -319,7 +319,8 @@ SCHEME *load_scheme(const char *name)
 	b = get_joerc_file_path(buf);
 
 	if (b)
-	f = jfopen(b, "r");
+		f = jfopen(b, "r");
+
 	if (!f) {
 		joe_snprintf_1(buf, SIZEOF(buf), "*%s.jcf", name);
 		f = jfopen(buf, "r");

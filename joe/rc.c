@@ -9,7 +9,7 @@
 
 /* Validate joerc file */
 
-int validate_rc()
+int validate_rc(void)
 {
 	KMAP *k;
 	if (!(k = ngetcontext("main")) || kmap_empty(k)) {

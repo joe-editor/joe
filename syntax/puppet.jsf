@@ -32,7 +32,7 @@
 	"$"		variable	recolor=-1
 	"A-Z"		type		recolor=-1
 	"a-z"		ident		buffer
-	
+
 :line_comment Comment comment
 	*		line_comment
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()

@@ -136,7 +136,7 @@ struct scrn {
 
 	int	truecolor;	/* Terminal supports true color */
 	int	*palette;	/* Truecolor RGB palette */
-	
+
 	/* Basic abilities */
 	int	scroll;		/* Set to use scrolling */
 	int	insdel;		/* Set to use insert/delete within line */

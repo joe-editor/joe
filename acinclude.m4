@@ -9,7 +9,7 @@ AC_DEFUN([joe_ISBLANK],
 int main() {
   int a = 0;
   isblank(a++);
-  exit(a != 1);
+  return a != 1;
 }
 			],
 			[joe_cv_isblank=yes],
@@ -34,7 +34,7 @@ AC_DEFUN([joe_SETPGRP],
 #endif
 int main() {
 	/* exit succesfully if setpgrp() takes two args (*BSD systems) */
-	exit(setpgrp(0, 0) != 0);
+	return setpgrp(0, 0) != 0;
 }],
 			[joe_cv_setpgrp_void=no],
 			[joe_cv_setpgrp_void=yes],
@@ -95,7 +95,7 @@ int main() {
 	kill((int)getpid(), SIGINT);
 	kill((int)getpid(), SIGINT);
 	/* exit succesfully if don't have to reinstall sighandler when invoked */
-	exit(nsigint != 2);
+	return nsigint != 2;
 }],
 			[joe_cv_reinstall_sighandlers=no],
 			[joe_cv_reinstall_sighandlers=yes],
