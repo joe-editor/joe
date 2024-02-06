@@ -206,6 +206,7 @@ CMD cmds[] = {
 	{"tomatch", TYPETW + TYPEPW + EFIXXCOL, utomatch, NULL, 0, NULL},
 	{"tomouse", TYPETW+TYPEPW+TYPEQW+TYPEMENU, utomouse, 0, 0, 0 },
 	{"tos", TYPETW + TYPEPW + EMOVE, utos, NULL, 0, NULL},
+	{"trimlines", TYPETW, utrimlines, NULL, 0, NULL},
 	{"tw0", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw0, NULL, 0, NULL},
 	{"tw1", TYPETW + TYPEPW + TYPEQW + TYPEMENU, utw1, NULL, 0, NULL},
 	{"txt", TYPETW + TYPEPW, utxt, NULL, 0, NULL}, 
