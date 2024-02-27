@@ -573,7 +573,7 @@ static void disptw(W *w, int flg)
 	int newcols = calclincols(bw);
 	int linchg = 0;
 
-	if (bw->lincols != newcols) {
+	if (bw->lincols != newcols && !ifhave) {
 		bw->lincols = newcols;
 		resizetw(w, w->w, w->h);
 		movetw(w, w->x, w->y);
@@ -586,7 +586,7 @@ static void disptw(W *w, int flg)
 		w->curx = TO_DIFF_OK((bw->cursor->byte-bw->top->byte)%16 + 60 - bw->offset);
 	} else {
 		w->cury = TO_DIFF_OK(bw->cursor->line - bw->top->line + bw->y - w->y);
-		w->curx = TO_DIFF_OK(bw->cursor->xcol - bw->offset + newcols);
+		w->curx = TO_DIFF_OK(bw->cursor->xcol - bw->offset + bw->lincols);
 	}
 
 	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen) && w->h > 1) {
