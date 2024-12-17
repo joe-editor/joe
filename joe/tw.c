@@ -589,7 +589,7 @@ static void disptw(W *w, int flg)
 		w->curx = TO_DIFF_OK(bw->cursor->xcol - bw->offset + bw->lincols);
 	}
 
-	if ((staupd || keepup || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen) && w->h > 1) {
+	if ((staupd || (keepup && !ifhave) || bw->cursor->line != tw->prevline || bw->b->changed != tw->changed || bw->b != tw->prev_b) && (w->y || !staen) && w->h > 1) {
 		char fill;
 
 		tw->prevline = bw->cursor->line;
