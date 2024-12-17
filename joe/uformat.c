@@ -799,3 +799,43 @@ int ufmtblk(W *w, int k)
 	} else
 		return uformat(w, 0);
 }
+
+/* Clean up indentation: Remove indentation from blank lines */
+
+int utrimlines(W *w, int k)
+{
+	P *p, *q;
+	BW *bw;
+	struct charmap *map;
+	int c;
+
+	WIND_BW(bw, w);
+
+	p = pdup(bw->b->bof, "utrimlines");
+	map = bw->b->o.charmap;
+
+	while (!piseof(p)) {
+		p->valcol = 0; /* Avoid some extra work */
+		p_goto_eol(p);
+		q = pdup(p, "utrimlines");
+
+		do {
+			c = prgetc(q);
+		} while (joe_isblank(map, c));
+
+		/* We read a non-blank unless we bumped the bof */
+		if (c != NO_MORE_DATA) {
+			pgetc(q);
+		}
+
+		if (q->byte < p->byte) {
+			bdel(q, p);
+		}
+
+		prm(q);
+		pgetc(p);
+	}
+
+	prm(p);
+	return 0;
+}
