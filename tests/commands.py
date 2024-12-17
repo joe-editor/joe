@@ -371,6 +371,18 @@ class BracketedPasteTests(joefx.JoeTestBase):
         self.exitJoe()
         self.assertFileContents("outfile", "\n".join(text))
 
+    def test_brpaste_lf_doesnt_delete(self):
+        self.config.globalopts.brpaste = True
+        self.config.globalopts.pastehack = False
+        self.workdir.fixtureData("test", "\n\n=")
+        self.startup.args = ("test",)
+        self.startJoe()
+
+        self.write("\033[200~a\nb\nc\nd\ne\nf\ng\n\033[201~")
+        self.save("outfile")
+        self.exitJoe()
+        self.assertFileContents("outfile", "a\nb\nc\nd\ne\nf\ng\n\n\n=")
+
 # TODO: bufed
 # TODO: build
 # TODO: byte
