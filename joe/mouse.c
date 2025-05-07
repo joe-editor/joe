@@ -1,5 +1,5 @@
 /* GPM/xterm mouse functions
-   Copyright (C) 1999 Jesse McGrew
+   Copyright (C) 1999 Tara McGrew
 
 This file is part of JOE (Joe's Own Editor)
 
