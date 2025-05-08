@@ -1379,18 +1379,14 @@ struct charmap *find_charmap(const char *name)
 		if (!map_name_cmp(m->name,name))
 			return m;
 
-	/* Check ~/.joe/charmaps */
-	p = getenv("HOME");
-	f = 0;
+	/* Check for user charmap files. */
+	joe_snprintf_1(buf, SIZEOF(buf), "/charmaps/%s", name);
+	p = get_joerc_file_path(buf);
+	f = NULL;
 	if (p) {
-		joe_snprintf_2(buf,SIZEOF(buf),"%s/.joe/charmaps/%s",p,name);
-		f = fopen(buf,"r");
-	}
-
-	/* Check JOERCcharmaps */
-	if (!f) {
-		joe_snprintf_2(buf,SIZEOF(buf),"%scharmaps/%s",JOEDATA,name);
-		f = fopen(buf,"r");
+		f = fopen(p,"r");
+		joe_free(p);
+		p = NULL;
 	}
 
 	/* Parse and install character map from file */
