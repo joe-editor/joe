@@ -19,6 +19,7 @@ int *attr_buf = 0;
 int attr_size = 0;
 
 int stack_count = 0;
+int delim_stack_count = 0;
 static int state_count = 0; /* Max transitions possible without cycling */
 
 struct high_syntax *ansi_syntax;
@@ -154,6 +155,7 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state,struct charmap *charmap)
 {
 	struct high_frame *stack;
+	struct high_delim_frame *delim_stack;
 	struct high_state *h;
 			/* Current state */
 	int buf[SAVED_SIZE];		/* Name buffer (trunc after 23 characters) */
@@ -180,6 +182,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		return ansi_parse(line, h_state);
 
 	stack = h_state.stack;
+	delim_stack = h_state.delim_stack;
 	h = (stack ? stack->syntax : syntax)->states[h_state.state];
 	buf_idx = 0;
 	attr = attr_buf;
@@ -311,13 +314,33 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				for(x= -mark1;x<-mark2;++x)
 					attr[x] = h->color;
 
+			/* Push string or character? */
+			if (cmd->push_s || cmd->push_c) {
+				struct high_delim_frame **frame_ptr = delim_stack ? &delim_stack->child : &syntax->delim_stack_base;
+				/* Search for an existing stack frame for this push */
+				while (*frame_ptr && (*frame_ptr)->saved_s && h_state.saved_s && Zcmp((*frame_ptr)->saved_s, h_state.saved_s))
+					frame_ptr = &(*frame_ptr)->sibling;
+				if (*frame_ptr)
+					delim_stack = *frame_ptr;
+				else {
+					struct high_delim_frame *frame = (struct high_delim_frame *)joe_malloc(SIZEOF(struct high_delim_frame));
+					frame->parent = delim_stack;
+					frame->child = 0;
+					frame->sibling = 0;
+					frame->saved_s = h_state.saved_s;
+					*frame_ptr = frame;
+					delim_stack = frame;
+					++delim_stack_count;
+				}
+			}
+
 			/* Save string? */
-			if (cmd->save_s) {
+			if (cmd->save_s || cmd->push_s) {
 				h_state.saved_s = Zatom_add(buf);
 			}
 
 			/* Save character? */
-			if (cmd->save_c) {
+			if (cmd->save_c || cmd->push_c) {
 				int bf[3];
 				bf[1] = c;
 				bf[2] = 0;
@@ -334,6 +357,16 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				else
 					bf[0] = c;
 				h_state.saved_s = Zatom_add(bf);
+			}
+
+			if (cmd->pop_c || cmd->pop_s) {
+				/* Pop delimiter buffer */
+				if (delim_stack) {
+					h_state.saved_s = delim_stack->saved_s;
+					delim_stack = delim_stack->parent;
+				} else {
+					/* No delimiter buffers pushed, so ignore the pop */
+				}
 			}
 
 			/* Start buffering? */
@@ -380,6 +413,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	}
 	/* Return new state */
 	h_state.stack = stack;
+	h_state.delim_stack = delim_stack;
 	h_state.state = h->no;
 	return h_state;
 }
@@ -438,6 +472,10 @@ static void iz_cmd(struct high_cmd *cmd)
 	cmd->stop_buffering = 0;
 	cmd->save_c = 0;
 	cmd->save_s = 0;
+	cmd->push_c = 0;
+	cmd->push_s = 0;
+	cmd->pop_c = 0;
+	cmd->pop_s = 0;
 	cmd->new_state = 0;
 	cmd->keywords = 0;
 	cmd->delim = 0;
@@ -510,7 +548,10 @@ void dump_syntax(BW *bw)
 	struct high_syntax *syntax;
 	struct high_param *params;
 	char buf[1024];
-	joe_snprintf_1(buf, SIZEOF(buf), "Allocated %d stack frames\n", stack_count);
+	joe_snprintf_1(buf, SIZEOF(buf), "Allocated %d state stack frames\n", stack_count);
+	binss(bw->cursor, buf);
+	pnextl(bw->cursor);
+	joe_snprintf_1(buf, SIZEOF(buf), "Allocated %d delimiter buffer stack frames\n", delim_stack_count);
 	binss(bw->cursor, buf);
 	pnextl(bw->cursor);
 	for (syntax = syntax_list; syntax; syntax = syntax->next) {
@@ -627,6 +668,14 @@ static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *
 			cmd->save_c = 1;
 		} else if(!zcmp(bf,"save_s")) {
 			cmd->save_s = 1;
+		} else if(!zcmp(bf,"push_c")) {
+			cmd->push_c = 1;
+		} else if(!zcmp(bf,"push_s")) {
+			cmd->push_s = 1;
+		} else if(!zcmp(bf,"pop_c")) {
+			cmd->pop_c = 1;
+		} else if(!zcmp(bf,"pop_s")) {
+			cmd->pop_s = 1;
 		} else if(!zcmp(bf,"recolor")) {
 			parse_ws(&p,'#');
 			if(!parse_char(&p,'=')) {
@@ -957,6 +1006,7 @@ struct high_syntax *load_syntax_subr(const char *name,char *subr,struct high_par
 	iz_cmd(&syntax->default_cmd);
 	syntax->default_cmd.reset = 1;
 	syntax->stack_base = 0;
+	syntax->delim_stack_base = 0;
 	syntax_list = syntax;
 
 	if (load_dfa(syntax)) {

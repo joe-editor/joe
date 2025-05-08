@@ -69,6 +69,17 @@
 #
 #   save_s      Copy string buffer to delimiter match buffer.
 #
+#   push_c	Push the delimiter match buffer onto the delimiter stack and
+#		save character in delimiter match buffer.
+#
+#   push_s	Push the delimiter match buffer onto the delimiter stack and
+#		copy string buffer to delimiter match buffer.
+#
+#   pop_c	Pop the delimiter stack into the delimiter match buffer.
+#
+#   pop_s	Pop the delimiter stack into the delimiter match buffer.
+#		(functionally identical to pop_c)
+#
 #   strings	A list of strings follows.  If the buffer matches any of the
 #		given strings, a jump to the target-state in the string list
 #		is taken instead of the normal jump.
