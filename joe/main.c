@@ -645,6 +645,9 @@ int main(int argc, char **real_argv, const char * const *envv)
 
 	init_colors();
 
+	/* Find characters for visible whitespace in locale */
+	init_visiblews();
+
 	if (helpon) {
 		help_on(maint);
 	}

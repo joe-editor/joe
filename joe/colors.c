@@ -47,6 +47,7 @@ static struct color_builtin_specs color_builtins[] = {
 	{ "prompt", &bg_prompt, NULL, 0, 0, 0, &bg_text },
 	{ "message", &bg_msg, NULL, 0, 0, 0, &bg_text },
 	{ "cursor", &bg_cursor, NULL, 0, INVERSE, ~INVERSE, NULL },
+	{ "visiblews", &vwsatr, &vwsmask, 0, DIM, ~(DIM | FG_MASK), &bg_text },
 	{ NULL, NULL, NULL, 0, 0, 0, NULL }
 };
 

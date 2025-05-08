@@ -5,6 +5,7 @@
 -menusel 	default/default inverse
 -linum		default dim
 -curlinum	default bold
+-visiblews	8 dim
 
 =Idle
 =Bad            bold red

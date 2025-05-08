@@ -26,6 +26,7 @@
 -menu 247/236
 -menusel 187/235 bold
 -cursor 232/109 bold
+-visiblews 151
 
 -term 0 237
 -term 1 167
@@ -91,6 +92,7 @@
 -menu $9f9f9f/$2c2e2e
 -menusel $d0d0a0/$242424 bold
 -cursor $000d18/$8faf9f bold
+-visiblews $9ece9e
 
 -term 0 $3F3F3F
 -term 1 $E37170
