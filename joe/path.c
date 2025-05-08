@@ -156,6 +156,8 @@ char *endprt(const char *path)
 int mkpath(char *path)
 {
 	char *s;
+	char *oldpwd = pwd(); /* Store pwd so we can return to it after path is made */
+	char *start = path;
 
 	if (path[0] == '/') {
 		if (chddir("/"))
@@ -171,19 +173,25 @@ int mkpath(char *path)
 		c = *s;
 		*s = 0;
 		if (chddir(path)) {
-			if (mkdir(path, 0777))
+			/* Create and change directory unless this segment is a home directory */
+			if ((start == path && start[0] == '~') || mkdir(path, 0777) || chddir(path)) {
+				*s = c;
+				chddir(oldpwd);
 				return 1;
-			if (chddir(path))
-				return 1;
+			}
 		}
+
 		*s = c;
 	      in:
 		while (*s == '/')
 			++s;
 		path = s;
 	}
+
+	chddir(oldpwd);
 	return 0;
 }
+
 /********************************************************************/
 /* Create a temporary file */
 /********************************************************************/
@@ -231,6 +239,18 @@ char *mktmp(const char *where)
 #endif
 	return name;
 }
+
+/********************************************************************/
+/* Change dir */
+/********************************************************************/
+int chddir(const char *path)
+{
+	char *s = canonical(vsndup(NULL, 0, sz(path)), CANFLAG_NORESTART);
+	int res = chdir(s);
+	vsrm(s);
+	return res;
+}
+
 /********************************************************************/
 int rmatch(const char *a, const char *b)
 {
@@ -506,4 +526,61 @@ char *dequotevs(char *s)
 			d = vsadd(d, s[x]);
 	vsrm(s);
 	return d;
+}
+
+/* Canonicalize file name: do ~ expansion */
+
+char *canonical(char *n, int flags)
+{
+	ptrdiff_t y = 0;
+#ifndef __MSDOS__
+	ptrdiff_t x;
+	char *s;
+	if (!(flags & CANFLAG_NORESTART)) {
+		for (y = zlen(n); ; --y)
+			if (y <= 2) {
+				y = 0;
+				break;
+			} else if (n[y-2] == '/' && (n[y-1] == '/' || n[y-1] == '~')) {
+				y -= 1;
+				break;
+			}
+	}
+	if (n[y] == '~') {
+		for (x = y + 1; n[x] && n[x] != '/'; ++x) ;
+		if (n[x] == '/') {
+			if (x == y + 1) {
+				char *z;
+
+				s = getenv("HOME");
+				z = vsncpy(NULL, 0, sz(s));
+				z = vsncpy(z, sLEN(z), sz(n + x));
+				vsrm(n);
+				n = z;
+				y = 0;
+			} else {
+				struct passwd *passwd;
+
+				n[x] = 0;
+				passwd = getpwnam((n + y + 1));
+				n[x] = '/';
+				if (passwd) {
+					char *z = vsncpy(NULL, 0,
+							 sz((passwd->pw_dir)));
+
+					z = vsncpy(z, sLEN(z), sz(n + x));
+					vsrm(n);
+					n = z;
+					y = 0;
+				}
+			}
+		}
+	}
+#endif
+	if (y) {
+		char *z = vsncpy(NULL, 0, n + y, zlen(n + y));
+		vsrm(n);
+		return z;
+	} else
+		return n;
 }

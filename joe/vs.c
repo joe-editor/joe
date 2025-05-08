@@ -102,7 +102,7 @@ sELEMENT *vsncpy(sELEMENT *vary, ptrdiff_t pos, const sELEMENT *array, ptrdiff_t
 	return vary;
 }
 
-sELEMENT *vsndup(sELEMENT *vary, ptrdiff_t pos, sELEMENT *array, ptrdiff_t len)
+sELEMENT *vsndup(sELEMENT *vary, ptrdiff_t pos, const sELEMENT *array, ptrdiff_t len)
 {
 	ptrdiff_t olen = sLEN(vary), x;
 
