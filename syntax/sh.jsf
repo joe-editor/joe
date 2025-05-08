@@ -23,6 +23,7 @@
 =Statement	+Keyword
 =Loop		+Statement
 =Conditional	+Statement
+=Brace
 
 # Syntax
 
@@ -36,8 +37,17 @@
 	"'"		string_sq	recolor=-1
 	"\""		string_dq	recolor=-1
 	"<"		maybe_inc
+	"{}[]"		brace		recolor=-1
+	"-"		option		recolor=-1
 	"0-9"		maybe_base	recolor=-1
-	"a-zA-Z{}![_"	ident		buffer
+	"a-zA-Z!_/"	ident		buffer mark
+
+:brace Brace
+	*		idle		noeat
+
+:option Keyword
+	*		idle		noeat
+	"-\c"		option
 
 :subst_char Variable
 	*		idle	noeat
@@ -249,10 +259,6 @@ done
 :ident Ident
 	*		idle		noeat strings
 	"!"		bang
-	"{"		kw
-	"}"		kw
-	"["		kw
-	"]"		kw
 # primary keywords
 	"case"		cond
 	"do"		loop
@@ -340,7 +346,8 @@ done
 	"pushd"		stmt
 	"shopt"		stmt
 done
-	"a-zA-Z0-9_"	ident
+	"-a-zA-Z0-9_"	ident
+	"/"		path recolormark
 
 :kw Keyword
 	*	idle	noeat
@@ -361,3 +368,11 @@ done
 	*	idle	noeat
 	"#"	idle
 	"!"	bang
+
+:path Ident
+	*	path
+	"\\"	path_esc
+	"\s"	idle	noeat
+
+:path_esc Ident
+	*	path
