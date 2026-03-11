@@ -300,7 +300,7 @@
 -purify
 -c_comment
 -cpp_comment
--text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
+-text_delimiters `ifdef|`ifndef=`elsif=`else=`endif:`begin_keywords=`end_keywords:`celldefine=`endcelldefine:`unconnected_drive=`nounconnected_drive:begin=end:case|casex|casez=endcase:config=endconfig:function=endfunction:generate=endgenerate:module=endmodule:primitive=endprimitive:specify=endspecify:table=endtable:task=endtask
 -cpara >#!;*/%
 -highlighter_context
 
@@ -317,7 +317,7 @@
 -purify
 -c_comment
 -cpp_comment
--text_delimiters `ifdef|`ifndef=`else=`endif:begin=end:case|casex|casez=endcase:function=endfunction:module=endmodule:task=endtask:attribute=endattribute:primitive=endprimitive:table=endtable
+-text_delimiters `ifdef|`ifndef=`elsif=`else=`endif:`begin_keywords=`end_keywords:`celldefine=`endcelldefine:`unconnected_drive=`nounconnected_drive:begin=end:case|casex|casez=endcase:config=endconfig:function=endfunction:generate=endgenerate:module=endmodule:primitive=endprimitive:specify=endspecify:table=endtable:task=endtask:checker=endchecker:class=endclass:clocking=endclocking:group=endgroup:interface=endinterface:package=endpackage:program=endprogram:property=endproperty:sequence|randsequence=endsequence
 -cpara >#!;*/%
 -highlighter_context
 

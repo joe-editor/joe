@@ -30,32 +30,25 @@
 
 :preident Preproc
 	*			idle		noeat strings
+	"begin_keywords"	preproc		markend recolormark
+	"celldefine"		preproc		markend recolormark
+	"default_nettype"	preproc		markend recolormark
+	"define"		preproc		markend recolormark
+	"else"			precond		markend recolormark
+	"elsif"			precond		markend recolormark
+	"end_keywords"		preconf		markend recolormark
+	"endcelldefine"		preproc		markend recolormark
+	"endif"			precond		markend recolormark
 	"ifdef"			precond		markend recolormark
 	"ifndef"		precond		markend recolormark
-	"else"			precond		markend recolormark
-	"endif"			precond		markend recolormark
-	"timescale"		preproc		markend recolormark
-	"define"		preproc		markend recolormark
 	"include"		preproc		markend recolormark
-	"resetall"		preproc		markend recolormark
-	"signed"		preproc		markend recolormark
-	"unsigned"		preproc		markend recolormark
-	"celldefine"		preproc		markend recolormark
-	"endcelldefine"		preproc		markend recolormark
-	"default_nettype"	preproc		markend recolormark
-	"unconnected_drive"	preproc		markend recolormark
+	"line"			preproc		markend recolormark
 	"nounconnected_drive"	preproc		markend recolormark
-	"protect"		preproc		markend recolormark
-	"endprotect"		preproc		markend recolormark
-	"protected"		preproc		markend recolormark
-	"endprotected"		preproc		markend recolormark
-	"expand_vectornets"	preproc		markend recolormark
-	"noexpand_vectornets"	preproc		markend recolormark
-	"autoexpand_vectornets"	preproc		markend recolormark
-	"remove_gatename"	preproc		markend recolormark
-	"noremove_gatename"	preproc		markend recolormark
-	"remove_netname"	preproc		markend recolormark
-	"noremove_netname"	preproc		markend recolormark
+	"pragma"		preproc		markend recolormark
+	"resetall"		preproc		markend recolormark
+	"timescale"		preproc		markend recolormark
+	"unconnected_drive"	preproc		markend recolormark
+	"undef"			preproc		markend recolormark
 done
 	"a-zA-Z0-9_"	preident
 
