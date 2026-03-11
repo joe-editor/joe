@@ -3408,7 +3408,7 @@ char *brzs(P *p, char *buf, ptrdiff_t size)
 
 static int ttsig_handled = 0;
 
-RETSIGTYPE ttsig(int sig)
+void ttsig(int sig)
 {
         FILE *ttsig_f = 0;
 	time_t tim = time(NULL);

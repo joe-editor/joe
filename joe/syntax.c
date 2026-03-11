@@ -459,7 +459,7 @@ static struct high_cmd *mkcmd(void)
 
 static struct color_def *find_color(struct color_def *colors,char *name,char *syn)
 {
-	char bf[256];
+	char bf[264];
 	struct color_def *color;
 	joe_snprintf_2(bf, SIZEOF(bf), "%s.%s", syn, name);
 	for (color = colors; color; color = color->next)

@@ -28,10 +28,6 @@ joe_SOURCES = b.c blocks.c bw.c cmd.c hash.c help.c kbd.c macro.c main.c menu.c 
 	builtins.c vt.c mmenu.c state.c options.c unicode.c \
 	cclass.c frag.c colors.c unicat-@UNICODE_VERSION@.c
 
-termidx_SOURCES = termidx.c
-
-stringify_SOURCES = stringify.c
-
 distclean-local:
 	rm -f *~
 

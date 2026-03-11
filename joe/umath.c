@@ -16,7 +16,7 @@ static BW *calc_bw;
 
 double vzero = 0.0;
 
-static RETSIGTYPE fperr(int unused)
+static void fperr(int unused)
 {
 	if (!merr) {
 		merr = joe_gettext(_("Float point exception"));
