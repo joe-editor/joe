@@ -217,6 +217,9 @@
 	"else"		precond		markend recolormark
 	"elif"		precond		markend recolormark
 	"endif"		precond		markend recolormark
+	"undef"		predef		markend recolormark
+	"elifdef"	precond		markend recolormark # C++23
+	"elifndef"	precond		markend recolormark # C++23
 done
 	"a-z"		preident
 
