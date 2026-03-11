@@ -270,6 +270,10 @@
 *.h++
 *.hh
 *.mm
+ Objective-C language
+*.m
+ Other C-like languages
+*.glsl
 -autoindent
 -title
 -syntax c
@@ -317,6 +321,7 @@
  XML
 [xml]
 *.xml
+*.xsl
 *.xsd
 *
 +<.xml
@@ -325,9 +330,20 @@
 *.resx
  Ant's build.xml
 *build.xml
+ SGML
+*.sgml
 -autoindent
 -syntax xml
 -highlighter_context
+
+ SVG
+*.svg
+-syntax xml
+
+ Docbook
+*.docbook
+-autoindent
+-syntax xml
 
  Apple plists
 [plist]
@@ -348,6 +364,7 @@
  CSS
 [css]
 *.css
+*.scss
 -wordwrap
 -autoindent
 -smarthome
@@ -625,6 +642,10 @@
 -syntax conf
 -pound_comment
 -highlighter_context
+
+*.cfg
+-syntax conf
+-pound_comment
 
  Windows batch files
 [bat]
