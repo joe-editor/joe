@@ -45,6 +45,7 @@
 -curlinum		[dark_yellow]/[bg1]
 -curlin			/[bg1]
 -cursor			[bg]/[fg]
+-visiblews		[bg2]
 
 =Comment		[light_gray] italic
 =TODO			inverse bold italic
@@ -146,6 +147,7 @@
 -curlinum		[dark_yellow]/[bg1]
 -curlin			/[bg1]
 -cursor			[bg]/[fg]
+-visiblews		[bg2]
 
 =Comment		[light_gray] italic
 =TODO			inverse bold italic

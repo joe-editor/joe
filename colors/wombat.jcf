@@ -8,6 +8,7 @@
 -selection /238
 -linum 244/16
 -cursor 235/242
+-visiblews 239
 
 -term 0 235
 -term 1 203
@@ -50,6 +51,7 @@
 -selection /$444444
 -linum $857b6f/$000000
 -cursor $242424/$656565
+-visiblews $808080
 
 -term 0 $242424
 -term 1 $E5786D

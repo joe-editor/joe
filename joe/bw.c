@@ -21,6 +21,15 @@ int marking = 0;
 int selectatr = INVERSE;
 int selectmask = ~INVERSE;
 
+/* Visible whitespace text format */
+int vwsatr = DIM;
+int vwsmask = ~(DIM | FG_MASK);
+
+/* Characters used for visible whitespace */
+static int vspace = 0;
+static int vtab = 0;
+static int vrtn = 0;
+
 static P *getto(P *p, P *cur, P *top, off_t line)
 {
 
@@ -573,6 +582,11 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 					}
 				}
 				if (*bp == '\n') {
+					if (bw->o.visiblews && x < w) {
+						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+						++x;
+					}
+
 					++bp;
 					++byte;
 					++amnt;
@@ -596,6 +610,11 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 			if (bc == '\t') {
 				ta = p->b->o.tab - (x - ox + scr) % p->b->o.tab;
 				tach = ' ';
+				if (ta > 0 && x < w && bw->o.visiblews) {
+					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vtab, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+					++x;
+					--ta;
+				}
 			      dota:
 			      	while (x < w && ta--) {
 					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, (atr & cm) | ca);
@@ -605,9 +624,16 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 					goto bye;
 				if (x > w)
 					goto eosl;
-			} else if (bc == '\n')
+			} else if (bc == '\n') {
+				if (bw->o.visiblews && x < w) {
+					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+					++x;
+				}
 				goto eobl;
-			else {
+			} else if (bc == ' ' && bw->o.visiblews && x < w) {
+				outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vspace, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+				++x;
+			} else {
 				int wid = -1;
 				int utf8_char;
 				if (p->b->o.charmap->type) { /* UTF-8 */
@@ -1301,4 +1327,49 @@ int calclincols(BW *bw)
 	}
 
 	return width + 2;
+}
+
+/* Determine characters to use for visible whitespace */
+
+void init_visiblews(void)
+{
+	int spaces[] = { 0xb7, 0x2291, '.', 0 };
+	int tabs[] = { 0x2192, 0x203a, 0xbb, 0x25ba, '>', 0 };
+	int rtns[] = { 0x21b5, 0x21b2, '$', 0 };
+	int i;
+
+	vspace = vtab = vrtn = 0;
+
+	/* If we're Unicode, just take the best */
+	if (locale_map->type) {
+		vspace = spaces[0];
+		vtab = tabs[0];
+		vrtn = rtns[0];
+		return;
+	}
+
+	/* Otherwise, we need to find bytes matching the desired code points */
+	for (i = 0; spaces[i]; i++) {
+		/* Check for unicode character in locale so we can display it */
+		if (from_uni(locale_map, spaces[i]) > 0) {
+			vspace = spaces[i];
+			break;
+		}
+	}
+
+	for (i = 0; tabs[i]; i++) {
+		/* Same */
+		if (from_uni(locale_map, tabs[i]) > 0) {
+			vtab = tabs[i];
+			break;
+		}
+	}
+
+	for (i = 0; rtns[i]; i++) {
+		/* Same */
+		if (from_uni(locale_map, rtns[i]) > 0) {
+			vrtn = rtns[i];
+			break;
+		}
+	}
 }
