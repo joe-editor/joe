@@ -1538,7 +1538,7 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 
 	/* Exponent? */
 	if (myexp) {
-		joe_snprintf_1(d, (size_t)(d_len + 1), "e%d", myexp);
+		joe_snprintf_1(d, (size_t)(d_len + 1), "e%+d", myexp);
 	} else {
 		*d = 0;
 	}
@@ -1555,11 +1555,11 @@ static void format_result(char *out, double result, int base, int commas)
 	char buf1[128];
 	switch (base) {
 		case 0: { /* Normal */
-			joe_snprintf_1(buf, SIZEOF(buf), "%.16G", result);
+			joe_snprintf_1(buf, SIZEOF(buf), "%.16g", result);
 			insert_commas(out, buf, commas);
 			break;
 		} case 1: { /* Engineering */
-			joe_snprintf_1(buf1, SIZEOF(buf1), "%.16G", result);
+			joe_snprintf_1(buf1, SIZEOF(buf1), "%.16g", result);
 			eng(buf, sizeof(buf), buf1);
 			insert_commas(out, buf, commas);
 			break;
