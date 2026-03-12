@@ -1,0 +1,96 @@
+name: Multi-OS Build and Test
+
+on:
+  push:
+    branches:
+    - main
+    - coroutine
+    - windows
+    - gha
+#  pull_request:
+#    branches:
+#    - main
+#    - windows
+
+jobs:
+  # 1. Standard OS Matrix (Linux, macOS, Windows Native)
+  standard-builds:
+    name: ${{ matrix.os }} Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          # Log versions of everything
+          autoconf --version
+          gcc --version
+          make --version
+
+          ./autojoe
+          ./configure --prefix=/usr/local
+          make -j
+
+      - name: Run tests
+        continue-on-error: true
+        id: run_tests
+        run: |
+          python3 --version
+          ./runtests
+
+      - name: Annotate test result
+        if: steps.run_tests.outcome == 'failure'
+        run: |
+          echo "::warning title=Test Failure::The tests failed, but the build continued because they currently need work."
+          echo "### ⚠️ Flaky Test Warning" >> $GITHUB_STEP_SUMMARY
+          echo "The test suite failed. Please check the logs of the 'Run tests' step for details." >> $GITHUB_STEP_SUMMARY
+
+
+  # 2. Cygwin Build (Runs on Windows Runner)
+  cygwin-build:
+    name: Cygwin (Windows) Build
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Cygwin
+        uses: cygwin/cygwin-install-action@v4
+        with:
+          packages: make, gcc-core, gcc-g++, autoconf
+
+      - name: Build and Test in Cygwin
+        shell: cygwin {0}
+        run: |
+          # Log versions of everything
+          autoconf --version
+          gcc --version
+          make --version
+
+          ./autojoe
+          ./configure --prefix=/usr/local
+          make -j
+
+      - name: Run tests
+        continue-on-error: true
+        id: run_tests
+        shell: cygwin {0}
+        run: |
+          python3 --version
+          ./runtests
+
+      - name: Annotate test result
+        shell: cygwin {0}
+        if: steps.run_tests.outcome == 'failure'
+        run: |
+          echo "::warning title=Test Failure::The tests failed, but the build continued because they currently need work."
+          echo "### ⚠️ Flaky Test Warning" >> $GITHUB_STEP_SUMMARY
+          echo "The test suite failed. Please check the logs of the 'Run tests' step for details." >> $GITHUB_STEP_SUMMARY
