@@ -128,6 +128,7 @@ static struct {
 	{ "latin7", "iso-8859-13" },
 	{ "latin8", "iso-8859-14" },
 	{ "latin9", "iso-8859-15" },
+	{ "latin10", "iso-8859-16" },
 	{ 0, 0 }
 };
 
