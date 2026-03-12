@@ -28,6 +28,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install autotools
+        if: runner.os == 'macOS'
+        run: brew update && brew install autoconf automake libtool
+
       - name: Build
         run: |
           # Log versions of everything
