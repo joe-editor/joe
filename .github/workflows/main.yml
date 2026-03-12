@@ -11,6 +11,19 @@ on:
 #    branches:
 #    - main
 #    - windows
+#    paths-ignore:
+#    - "docs/**"
+#    - "htdocs/**"
+#    - "syntax/**"
+#    - "joe/util/**"
+#    - "*.md"
+#    - "*.txt"
+#    - ".gitignore"
+
+# One at a time.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   # 1. Standard OS Matrix (Linux, macOS, Windows Native)
