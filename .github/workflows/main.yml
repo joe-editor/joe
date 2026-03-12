@@ -6,6 +6,7 @@ on:
     - main
     - coroutine
     - windows
+    - jjjordan/gha-cygwin
   pull_request:
     branches:
     - main
@@ -27,7 +28,7 @@ concurrency:
 
 jobs:
   # 1. Standard OS Matrix (Linux, macOS)
-  standard-builds:
+  posix-builds:
     name: ${{ matrix.os }} Build
     runs-on: ${{ matrix.os }}
     strategy:
@@ -65,6 +66,70 @@ jobs:
         if: runner.os == 'linux'
         continue-on-error: true
         id: run_tests
+        run: |
+          ./runtests
+
+      - name: Annotate test result
+        if: steps.run_tests.outcome == 'failure'
+        run: |
+          echo "::warning title=Test Failure::The tests failed, but the build continued because they currently need work."
+          echo "### ⚠️ Flaky Test Warning" >> $GITHUB_STEP_SUMMARY
+          echo "The test suite failed. Please check the logs of the 'Run tests' step for details." >> $GITHUB_STEP_SUMMARY
+
+
+  # 2. Cygwin Build
+  cygwin-build:
+    name: Cygwin (Windows) Build
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: C:\cygwin\bin\bash.exe --noprofile --norc -o igncr -eo pipefail '{0}'
+    steps:
+      - name: Configure git
+        run: git config --global core.autocrlf input
+        shell: cmd "{0}"
+
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Install Cygwin
+        uses: cygwin/cygwin-install-action@006ad0b0946ca6d0a3ea2d4437677fa767392401 # v4
+        with:
+          packages: make, gcc-core, binutils, autoconf, automake, libtool, python3, python3-pip
+
+      - name: Get tool versions
+        run: |
+          # Log versions of everything
+          autoconf --version
+          gcc --version
+          make --version
+          python3 --version
+
+      - name: Build in Cygwin
+        env:
+          # Keep other scripts from failing.
+          SHELLOPTS: igncr
+        run: |
+          # Build
+          ./autojoe
+          ./configure --prefix=/usr/local
+          make -j
+
+      - name: Upload Config Log on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cygwin-config-log
+          path: config.log
+
+      - name: Run tests
+        # Only run the tests on Linux for now.
+        #if: runner.os == 'linux'
+        continue-on-error: true
+        id: run_tests
+        env:
+          # Keep other scripts from failing.
+          SHELLOPTS: igncr
         run: |
           ./runtests
 
