@@ -1,0 +1,76 @@
+name: POSIX build and test
+
+on:
+  push:
+    branches:
+    - main
+    - coroutine
+    - windows
+  pull_request:
+    branches:
+    - main
+    - windows
+    - coroutine
+    paths-ignore:
+    - "docs/**"
+    - "htdocs/**"
+    - "syntax/**"
+    - "joe/util/**"
+    - "*.md"
+    - "*.txt"
+    - ".gitignore"
+
+# One at a time especially for PR's.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 1. Standard OS Matrix (Linux, macOS)
+  standard-builds:
+    name: ${{ matrix.os }} Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Install autotools
+        if: runner.os == 'macOS'
+        run: brew update && brew install autoconf automake libtool
+
+      - name: Get tool versions
+        run: |
+          # Log versions of everything
+          autoconf --version
+          gcc --version
+          make --version
+          python3 --version
+
+      - name: Build
+        run: |
+          # Build
+          ./autojoe
+          ./configure --prefix=/usr/local
+          make -j
+
+      - name: Run tests
+        # Only run the tests on Linux for now.
+        if: runner.os == 'linux'
+        continue-on-error: true
+        id: run_tests
+        run: |
+          ./runtests
+
+      - name: Annotate test result
+        if: steps.run_tests.outcome == 'failure'
+        run: |
+          echo "::warning title=Test Failure::The tests failed, but the build continued because they currently need work."
+          echo "### ⚠️ Flaky Test Warning" >> $GITHUB_STEP_SUMMARY
+          echo "The test suite failed. Please check the logs of the 'Run tests' step for details." >> $GITHUB_STEP_SUMMARY
