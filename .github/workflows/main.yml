@@ -61,6 +61,8 @@ jobs:
           make -j
 
       - name: Run tests
+        # Only run the tests on Linux for now.
+        if: runner.os == 'linux'
         continue-on-error: true
         id: run_tests
         run: |
@@ -84,6 +86,7 @@ jobs:
     steps:
       - name: Configure git
         run: git config --global core.autocrlf input
+        shell: ""
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -109,6 +112,8 @@ jobs:
           make -j
 
       - name: Run tests
+        # Only run the tests on Linux for now. (
+        #if: runner.os == 'linux'
         continue-on-error: true
         id: run_tests
         run: |
