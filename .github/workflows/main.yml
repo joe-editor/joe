@@ -6,19 +6,19 @@ on:
     - main
     - coroutine
     - windows
-    - gha
-#  pull_request:
-#    branches:
-#    - main
-#    - windows
-#    paths-ignore:
-#    - "docs/**"
-#    - "htdocs/**"
-#    - "syntax/**"
-#    - "joe/util/**"
-#    - "*.md"
-#    - "*.txt"
-#    - ".gitignore"
+  pull_request:
+    branches:
+    - main
+    - windows
+    - coroutine
+    paths-ignore:
+    - "docs/**"
+    - "htdocs/**"
+    - "syntax/**"
+    - "joe/util/**"
+    - "*.md"
+    - "*.txt"
+    - ".gitignore"
 
 # One at a time especially for PR's.
 concurrency:
