@@ -4,7 +4,7 @@
 AC_PREREQ([2.64])
 
 #### Here's the only place where to change version number ####
-AC_INIT([joe],[4.6])
+AC_INIT([joe],[4.7])
 AC_CONFIG_SRCDIR([joe/b.c])
 
 AC_CANONICAL_BUILD
@@ -76,6 +76,7 @@ else
 	fi
 fi
 AC_HEADER_TIOCGWINSZ
+AC_CHECK_HEADERS([util.h])
 AC_CHECK_HEADERS([errno.h fcntl.h locale.h sgtty.h stdlib.h string.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
 AC_CHECK_HEADERS([sys/dirent.h time.h pwd.h paths.h pty.h libutil.h])

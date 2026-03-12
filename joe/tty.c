@@ -7,6 +7,11 @@
  */
 #include "types.h"
 
+/* For MAC OS */
+#ifdef HAVE_UTIL_H
+#include <util.h>
+#endif
+
 /* Needed for TIOCGWINSZ detection below */
 #ifdef GWINSZ_IN_SYS_IOCTL
 #ifdef HAVE_SYS_IOCTL_H
