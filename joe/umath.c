@@ -7,10 +7,33 @@
  */
 #include "types.h"
 
+/* Find out what the decimal point of the current locale is */
+
+static char get_lcl_dp(void)
+{
+	static char lcl_dp;
+	if (lcl_dp == 0) {
+		char buf[32], *c = buf;
+		(void)joe_snprintf_1(buf, sizeof(buf), "%f", 0.5);
+		while (*c >= '0' && *c <= '9') ++c;
+		lcl_dp = *c;
+	}
+	return lcl_dp;
+}
+
+/* Not sure if this is correct for all locales.. */
+
+static char get_lcl_comma(void)
+{
+	char lcl_dp = get_lcl_dp();
+	return lcl_dp == ',' ? '.' : ',';
+}
+
 const char *merr;
 
 int mode_display; /* 0 = decimal, 1 = engineering, 2 = hex, 3 = octal, 4 = binary */
-int mode_ins;
+int mode_ins; /* Set if ins or insf appeared in command */
+int mode_commas; /* Set if insf was used, so include underscores */
 
 static BW *calc_bw;
 
@@ -139,7 +162,22 @@ double joe_strtod(const char *bptr, const char **at_eptr)
 			}
 		}
 		buf[j] = 0;
-		x = strtod(buf,NULL);
+		/* x = strtod(buf,NULL); */
+		{
+			/* Horrible hack to to force '.' to be decimal point
+			   even in locales that use ',' */
+			char lcl_dp = get_lcl_dp();
+			int i;
+			/* Replace first '.' with lcl_cp, so strtod()
+			 * will find expected decimal point char. */
+			for (i = 0; buf[i]; ++i) {
+				if (buf[i] == '.') {
+					buf[i] = lcl_dp;
+					break;
+				}
+			}
+			x = strtod(buf,NULL);
+		}
 	}
 	if (inv)
 		x = -x;
@@ -221,6 +259,11 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 			x = v->val;
 		} else if (!zcmp(ident, "ins")) {
 			mode_ins = 1;
+			v = get("ans");
+			x = v->val;
+		} else if (!zcmp(ident, "insf")) {
+			mode_ins = 1;
+			mode_commas = 1;
 			v = get("ans");
 			x = v->val;
 		} else if (!zcmp(ident, "sum")) {
@@ -1255,12 +1298,28 @@ double calc(BW *bw, char *s, int secure)
 	return eval(s, secure);
 }
 
-static void insert_commas(char *dst, char *src)
+static void insert_commas(char *dst, char *src, int commas)
 {
+	char dp_char = get_lcl_dp();
+	char comma_char = get_lcl_comma();
 	int leading; /* Number of leading digits */
 	int trailing;
 	int n;
 	char *s;
+	if (!commas)
+	{
+		/* Machine readable */
+		while (*src)
+		{
+			if (*src == dp_char)
+				*dst = '.';
+			else
+				*dst = *src;
+			++dst; ++src;
+		}
+		*dst = 0;
+		return;
+	}
 	/* First pass: calculate number of leading and trailing digits */
 	s = src;
 	leading = 0;
@@ -1271,7 +1330,7 @@ static void insert_commas(char *dst, char *src)
 		++s;
 		++leading;
 	}
-	if (*s == '.') {
+	if (*s == dp_char) {
 		++s;
 		while (*s >= '0' && *s <= '9') {
 			++s;
@@ -1290,15 +1349,15 @@ static void insert_commas(char *dst, char *src)
 		*dst++ = *s++;
 		--leading;
 		if (leading != 0 && (leading % 3 == 0))
-			*dst++ = '_';
+			*dst++ = comma_char;
 	}
-	if (*s == '.') {
+	if (*s == dp_char) {
 		*dst++ = *s++;
 		while (*s >= '0' && *s <= '9') {
 			*dst++ = *s++;
 			++n;
 			if (n != trailing && (n % 3 == 0))
-				*dst++ = '_';
+				*dst++ = comma_char;
 		}
 	}
 	while (*s) {
@@ -1308,9 +1367,11 @@ static void insert_commas(char *dst, char *src)
 }
 
 /* Convert floating point ascii number into engineering format */
+/* Input to this is from printf, so decimal point depends on locale */
 
 static char *eng(char *d, ptrdiff_t d_len, const char *s)
 {
+	char dp_char = get_lcl_dp();
 	const char *s_org = s;
 	char *d_org = d;
 	char a[128];
@@ -1348,7 +1409,7 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 	}
 	/* Decimal point? */
 	dp = 0;
-	if (*s == '.') {
+	if (*s == dp_char) {
 		flg = 1;
 		++s;
 		/* If we don't have any digits yet, trim leading zeros */
@@ -1459,7 +1520,7 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 	/* Any more digits? */
 	if (dp) {
 		if (d_len) {
-			*d++ = '.';
+			*d++ = dp_char;
 			--d_len;
 		}
 		for (x = a_len - dp; x != a_len; ++x) {
@@ -1487,11 +1548,117 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 
 static int doumath(W *w, char *s, void *object, int *notify);
 
+static void format_result(char *out, double result, int base, int commas)
+{
+	char comma_char = get_lcl_comma();
+	char buf[128];
+	char buf1[128];
+	switch (base) {
+		case 0: { /* Normal */
+			joe_snprintf_1(buf, SIZEOF(buf), "%.16G", result);
+			insert_commas(out, buf, commas);
+			break;
+		} case 1: { /* Engineering */
+			joe_snprintf_1(buf1, SIZEOF(buf1), "%.16G", result);
+			eng(buf, sizeof(buf), buf1);
+			insert_commas(out, buf, commas);
+			break;
+		} case 2: { /* Hex */
+#ifdef HAVE_LONG_LONG
+			unsigned long long n = (unsigned long long)result;
+#else
+			unsigned long n = (unsigned long)result;
+#endif
+			int ofst = 0;
+			int len = 0;
+			int cnt = 0;
+			out[ofst++] = '0';
+			out[ofst++] = 'x';
+			while (n) {
+				buf[len++] = "0123456789ABCDEF"[n & 15];
+				n >>= 4;
+			}
+			if (!len)
+				buf[len++] = '0';
+			cnt = len;
+			do {
+				if (commas && len && cnt != len && (len & 3) == 0)
+					out[ofst++] = comma_char;
+				out[ofst++] = buf[len - 1];
+			} while (--len);
+			out[ofst] = 0;
+/*
+#ifdef HAVE_LONG_LONG
+			joe_snprintf_1(out, JOE_MSGBUFSIZE, "0x%llX", (long long)result);
+#else
+			joe_snprintf_1(out, JOE_MSGBUFSIZE, "0x%lX", (long)result);
+#endif
+*/
+			break;
+		} case 3: { /* Octal */
+#ifdef HAVE_LONG_LONG
+			unsigned long long n = (unsigned long long)result;
+#else
+			unsigned long n = (unsigned long)result;
+#endif
+			int ofst = 0;
+			int len = 0;
+			int cnt = 0;
+			out[ofst++] = '0';
+			out[ofst++] = 'o';
+			while (n) {
+				buf[len++] = "01234567"[n & 7];
+				n >>= 3;
+			}
+			if (!len)
+				buf[len++] = '0';
+			cnt = len;
+			do {
+				if (commas && len && cnt != len && (len & 3) == 0)
+					out[ofst++] = comma_char;
+				out[ofst++] = buf[len - 1];
+			} while (--len);
+			out[ofst] = 0;
+/*
+#ifdef HAVE_LONG_LONG
+			joe_snprintf_1(out, JOE_MSGBUFSIZE, "0o%llo", (long long)result);
+#else
+			joe_snprintf_1(out, JOE_MSGBUFSIZE, "0o%lo", (long)result);
+#endif
+*/
+			break;
+		} case 4: { /* Binary */
+#ifdef HAVE_LONG_LONG
+			unsigned long long n = (unsigned long long)result;
+#else
+			unsigned long n = (unsigned long)result;
+#endif
+			int ofst = 0;
+			int len = 0;
+			int cnt = 0;
+			out[ofst++] = '0';
+			out[ofst++] = 'b';
+			while (n) {
+				buf[len++] = (char)('0' + (char)(n & 1));
+				n >>= 1;
+			}
+			if (!len)
+				buf[len++] = '0';
+			cnt = len;
+			do {
+				if (commas && len && cnt != len && (len & 3) == 0)
+					out[ofst++] = comma_char;
+				out[ofst++] = buf[len - 1];
+			} while (--len);
+			out[ofst] = 0;
+			break;
+		}
+	}
+}
+
 /* Main user interface */
 static int domath(W *w, char *s, void *object, int *notify, int secure)
 {
-	char buf[128];
-	char buf1[128];
 	double result;
 	BW *bw;
 	WIND_BW(bw, w);
@@ -1505,117 +1672,22 @@ static int domath(W *w, char *s, void *object, int *notify, int secure)
 		return -1;
 	}
 	vsrm(s);
-	switch (mode_display) {
-		case 0: { /* Normal */
-			joe_snprintf_1(buf, SIZEOF(buf), "%.16G", result);
-			insert_commas(msgbuf, buf);
-			break;
-		} case 1: { /* Engineering */
-			joe_snprintf_1(buf1, SIZEOF(buf1), "%.16G", result);
-			eng(buf, sizeof(buf), buf1);
-			insert_commas(msgbuf, buf);
-			break;
-		} case 2: { /* Hex */
-#ifdef HAVE_LONG_LONG
-			unsigned long long n = (unsigned long long)result;
-#else
-			unsigned long n = (unsigned long)result;
-#endif
-			int ofst = 0;
-			int len = 0;
-			int cnt = 0;
-			msgbuf[ofst++] = '0';
-			msgbuf[ofst++] = 'x';
-			while (n) {
-				buf[len++] = "0123456789ABCDEF"[n & 15];
-				n >>= 4;
-			}
-			if (!len)
-				buf[len++] = '0';
-			cnt = len;
-			do {
-				if (len && cnt != len && (len & 3) == 0)
-					msgbuf[ofst++] = '_';
-				msgbuf[ofst++] = buf[len - 1];
-			} while (--len);
-			msgbuf[ofst] = 0;
-/*
-#ifdef HAVE_LONG_LONG
-			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%llX", (long long)result);
-#else
-			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0x%lX", (long)result);
-#endif
-*/
-			break;
-		} case 3: { /* Octal */
-#ifdef HAVE_LONG_LONG
-			unsigned long long n = (unsigned long long)result;
-#else
-			unsigned long n = (unsigned long)result;
-#endif
-			int ofst = 0;
-			int len = 0;
-			int cnt = 0;
-			msgbuf[ofst++] = '0';
-			msgbuf[ofst++] = 'o';
-			while (n) {
-				buf[len++] = "01234567"[n & 7];
-				n >>= 3;
-			}
-			if (!len)
-				buf[len++] = '0';
-			cnt = len;
-			do {
-				if (len && cnt != len && (len & 3) == 0)
-					msgbuf[ofst++] = '_';
-				msgbuf[ofst++] = buf[len - 1];
-			} while (--len);
-			msgbuf[ofst] = 0;
-/*
-#ifdef HAVE_LONG_LONG
-			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0o%llo", (long long)result);
-#else
-			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, "0o%lo", (long)result);
-#endif
-*/
-			break;
-		} case 4: { /* Binary */
-#ifdef HAVE_LONG_LONG
-			unsigned long long n = (unsigned long long)result;
-#else
-			unsigned long n = (unsigned long)result;
-#endif
-			int ofst = 0;
-			int len = 0;
-			int cnt = 0;
-			msgbuf[ofst++] = '0';
-			msgbuf[ofst++] = 'b';
-			while (n) {
-				buf[len++] = (char)('0' + (char)(n & 1));
-				n >>= 1;
-			}
-			if (!len)
-				buf[len++] = '0';
-			cnt = len;
-			do {
-				if (len && cnt != len && (len & 3) == 0)
-					msgbuf[ofst++] = '_';
-				msgbuf[ofst++] = buf[len - 1];
-			} while (--len);
-			msgbuf[ofst] = 0;
-			break;
-		}
-	}
+
 
 	if (bw->parent->watom->what != TYPETW || mode_ins) {
+		/* Format result for insertion: no commas */
+		format_result(msgbuf, result, mode_display, mode_commas);
 		binsm(bw->cursor, sz(msgbuf));
 		pfwrd(bw->cursor, zlen(msgbuf));
 		bw->cursor->xcol = piscol(bw->cursor);
 	} else {
+		/* Format result for status line display */
+		format_result(msgbuf, result, mode_display, 1);
 		msgnw(bw->parent, msgbuf);
 	}
 	if (mode_ins) { /* Exit if we are inserting */
 		mode_ins = 0;
+		mode_commas = 0;
 		return 0;
 	} else {
 		return 0;
