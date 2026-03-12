@@ -112,7 +112,7 @@ jobs:
         run: |
           # Build
           ./autojoe
-          ./configure --prefix=/usr/local
+          bash -x ./configure --prefix=/usr/local
           make -j
 
       - name: Upload Config Log on Failure
