@@ -511,7 +511,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 			    && (attr_buf[col] & CONTEXT_MASK) != initial_context) {
 				/* Ignore */
 			} else if (!query_highlighter
-			           && (bw->o.cpp_comment || bw->o.pound_comment ||
+			           && (bw->o.cpp_comment || bw->o.hash_comment ||
 			               bw->o.semi_comment || bw->o.tex_comment || bw->o.vhdl_comment) && d == '\n') {
 				int cc;
 				pset(q, p);
@@ -520,7 +520,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 					if (cc == '\\') {
 						if (pgetc(q) == '\n')
 							break;
-					} else if (bw->o.pound_comment && cc == '$' && brch(q)=='#') {
+					} else if (bw->o.hash_comment && cc == '$' && brch(q)=='#') {
 						pgetc(q);
 					} else if(!bw->o.no_double_quoted && cc=='"') {
 						while ((cc = pgetc(q)) != '\n')
@@ -546,7 +546,7 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 							pset(p,q);
 							break;
 						}
-					} else if (bw->o.pound_comment && cc == '#') {
+					} else if (bw->o.hash_comment && cc == '#') {
 						pset(p,q);
 						break;
 					} else if (bw->o.semi_comment && cc == ';') {
@@ -676,10 +676,10 @@ static int tomatch_char_or_word(BW *bw,int word_delimiter,int c,int f,const char
 				while((d = pgetc(p)) != NO_MORE_DATA)
 					if (d == '\'') break;
 					else if (d == '\\') pgetc(p);
-			} else if (!query_highlighter && d == '$' && brch(p)=='#' && bw->o.pound_comment) {
+			} else if (!query_highlighter && d == '$' && brch(p)=='#' && bw->o.hash_comment) {
 				pgetc(p);
 			} else if (!query_highlighter
-			           && ((bw->o.pound_comment && d == '#') ||
+			           && ((bw->o.hash_comment && d == '#') ||
 				       (bw->o.semi_comment && d == ';') ||
 				       (bw->o.tex_comment && d == '%') ||
 				       (bw->o.vhdl_comment && d == '-' && brch(p) == '-') ||

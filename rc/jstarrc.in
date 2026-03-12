@@ -312,7 +312,7 @@
 
 	-cpp_comment		Text after // should be ignored
 
-	-pound_comment		Text after # should be ignored
+	-hash_comment		Text after # should be ignored
 
 	-vhdl_comment		Text after -- should be ignored
 
@@ -411,7 +411,7 @@ mode,"single_quoted",rtn	% % ^G ignores '...' %Zsingle_quoted%
 mode,"no_double_quoted",rtn	% % ^G no ignore "..." %Zno_double_quoted%
 mode,"c_comment",rtn	% % ^G ignores /*...*/ %Zc_comment%
 mode,"cpp_comment",rtn	% % ^G ignores //... %Zcpp_comment%
-mode,"pound_comment",rtn	% % ^G ignores #... %Zpound_comment%
+mode,"hash_comment",rtn	% % ^G ignores #... %Zhash_comment%
 mode,"vhdl_comment",rtn	% % ^G ignores --... %Zvhdl_comment%
 mode,"semi_comment",rtn	% % ^G ignores ;... %Zsemi_comment%
 mode,"tex_comment",rtn % % ^G ignores %%... %Ztex_comment%
