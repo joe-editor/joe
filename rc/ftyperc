@@ -280,7 +280,7 @@
 -single_quoted
 -c_comment
 -cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-text_delimiters #if|#ifdef|#ifndef=#elif=#elifdef=#elifndef=#else=#endif
 -cpara >#!;*/%
 
  Verilog
