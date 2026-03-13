@@ -30,7 +30,7 @@ void interval_sort(struct interval *array, ptrdiff_t num)
 /* Test if character ch is in one of the struct intervals in array using binary search.
  * Returns index to interval, or -1 if none found. */
 
-ptrdiff_t interval_test(struct interval *array, ptrdiff_t size, int ch)
+ptrdiff_t interval_test(const struct interval *array, ptrdiff_t size, int ch)
 {
 	if (size) {
 		ptrdiff_t min = 0;
@@ -1313,7 +1313,7 @@ void cclass_union(struct Cclass *m, struct Cclass *n)
 			cclass_add(m, n->intervals[x].first, n->intervals[x].last);
 }
 
-void cclass_merge(struct Cclass *m, struct interval *array, int len)
+void cclass_merge(struct Cclass *m, const struct interval *array, int len)
 {
 	int x;
 	for (x = 0; x != len; ++x)

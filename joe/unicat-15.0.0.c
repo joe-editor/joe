@@ -4,7 +4,7 @@
 
 /* Unicode blocks */
 
-struct interval uniblocks[] = {
+const struct interval uniblocks[] = {
 	{ 0x0, 0x7f } /* Basic Latin */,
 	{ 0x80, 0xff } /* Latin-1 Supplement */,
 	{ 0x100, 0x17f } /* Latin Extended-A */,
@@ -334,25 +334,25 @@ struct interval uniblocks[] = {
 	{ 0x100000, 0x10ffff } /* Supplementary Private Use Area-B */
 };
 
-struct interval Co_table[] = {
+const struct interval Co_table[] = {
 	{ 0xe000, 0xf8ff },
 	{ 0xf0000, 0xffffd },
 	{ 0x100000, 0x10fffd }
 };
 
-struct interval Cs_table[] = {
+const struct interval Cs_table[] = {
 	{ 0xd800, 0xdfff }
 };
 
-struct interval Zp_table[] = {
+const struct interval Zp_table[] = {
 	{ 0x2029, 0x2029 }
 };
 
-struct interval Zl_table[] = {
+const struct interval Zl_table[] = {
 	{ 0x2028, 0x2028 }
 };
 
-struct interval Nl_table[] = {
+const struct interval Nl_table[] = {
 	{ 0x16ee, 0x16f0 },
 	{ 0x2160, 0x2182 },
 	{ 0x2185, 0x2188 },
@@ -367,7 +367,7 @@ struct interval Nl_table[] = {
 	{ 0x12400, 0x1246e }
 };
 
-struct interval Mc_table[] = {
+const struct interval Mc_table[] = {
 	{ 0x903, 0x903 },
 	{ 0x93b, 0x93b },
 	{ 0x93e, 0x940 },
@@ -552,7 +552,7 @@ struct interval Mc_table[] = {
 	{ 0x1d16d, 0x1d172 }
 };
 
-struct interval Me_table[] = {
+const struct interval Me_table[] = {
 	{ 0x488, 0x489 },
 	{ 0x1abe, 0x1abe },
 	{ 0x20dd, 0x20e0 },
@@ -560,7 +560,7 @@ struct interval Me_table[] = {
 	{ 0xa670, 0xa672 }
 };
 
-struct interval Mn_table[] = {
+const struct interval Mn_table[] = {
 	{ 0x300, 0x36f },
 	{ 0x483, 0x487 },
 	{ 0x591, 0x5bd },
@@ -909,7 +909,7 @@ struct interval Mn_table[] = {
 	{ 0xe0100, 0xe01ef }
 };
 
-struct interval Lm_table[] = {
+const struct interval Lm_table[] = {
 	{ 0x2b0, 0x2c1 },
 	{ 0x2c6, 0x2d1 },
 	{ 0x2e0, 0x2e4 },
@@ -983,7 +983,7 @@ struct interval Lm_table[] = {
 	{ 0x1e94b, 0x1e94b }
 };
 
-struct interval Lt_table[] = {
+const struct interval Lt_table[] = {
 	{ 0x1c5, 0x1c5 },
 	{ 0x1c8, 0x1c8 },
 	{ 0x1cb, 0x1cb },
@@ -996,7 +996,7 @@ struct interval Lt_table[] = {
 	{ 0x1ffc, 0x1ffc }
 };
 
-struct interval Pf_table[] = {
+const struct interval Pf_table[] = {
 	{ 0xbb, 0xbb },
 	{ 0x2019, 0x2019 },
 	{ 0x201d, 0x201d },
@@ -1009,7 +1009,7 @@ struct interval Pf_table[] = {
 	{ 0x2e21, 0x2e21 }
 };
 
-struct interval No_table[] = {
+const struct interval No_table[] = {
 	{ 0xb2, 0xb3 },
 	{ 0xb9, 0xb9 },
 	{ 0xbc, 0xbe },
@@ -1084,7 +1084,7 @@ struct interval No_table[] = {
 	{ 0x1f100, 0x1f10c }
 };
 
-struct interval Cf_table[] = {
+const struct interval Cf_table[] = {
 	{ 0xad, 0xad },
 	{ 0x600, 0x605 },
 	{ 0x61c, 0x61c },
@@ -1108,7 +1108,7 @@ struct interval Cf_table[] = {
 	{ 0xe0020, 0xe007f }
 };
 
-struct interval Pi_table[] = {
+const struct interval Pi_table[] = {
 	{ 0xab, 0xab },
 	{ 0x2018, 0x2018 },
 	{ 0x201b, 0x201c },
@@ -1122,7 +1122,7 @@ struct interval Pi_table[] = {
 	{ 0x2e20, 0x2e20 }
 };
 
-struct interval Lo_table[] = {
+const struct interval Lo_table[] = {
 	{ 0xaa, 0xaa },
 	{ 0xba, 0xba },
 	{ 0x1bb, 0x1bb },
@@ -1635,7 +1635,7 @@ struct interval Lo_table[] = {
 	{ 0x31350, 0x323af }
 };
 
-struct interval So_table[] = {
+const struct interval So_table[] = {
 	{ 0xa6, 0xa6 },
 	{ 0xa9, 0xa9 },
 	{ 0xae, 0xae },
@@ -1822,7 +1822,7 @@ struct interval So_table[] = {
 	{ 0x1fb94, 0x1fbca }
 };
 
-struct interval Ll_table[] = {
+const struct interval Ll_table[] = {
 	{ 0x61, 0x7a },
 	{ 0xb5, 0xb5 },
 	{ 0xdf, 0xf6 },
@@ -2483,7 +2483,7 @@ struct interval Ll_table[] = {
 	{ 0x1e922, 0x1e943 }
 };
 
-struct interval Pc_table[] = {
+const struct interval Pc_table[] = {
 	{ 0x5f, 0x5f },
 	{ 0x203f, 0x2040 },
 	{ 0x2054, 0x2054 },
@@ -2492,7 +2492,7 @@ struct interval Pc_table[] = {
 	{ 0xff3f, 0xff3f }
 };
 
-struct interval Sk_table[] = {
+const struct interval Sk_table[] = {
 	{ 0x5e, 0x5e },
 	{ 0x60, 0x60 },
 	{ 0xa8, 0xa8 },
@@ -2526,7 +2526,7 @@ struct interval Sk_table[] = {
 	{ 0x1f3fb, 0x1f3ff }
 };
 
-struct interval Lu_table[] = {
+const struct interval Lu_table[] = {
 	{ 0x41, 0x5a },
 	{ 0xc0, 0xd6 },
 	{ 0xd8, 0xde },
@@ -3175,7 +3175,7 @@ struct interval Lu_table[] = {
 	{ 0x1e900, 0x1e921 }
 };
 
-struct interval Nd_table[] = {
+const struct interval Nd_table[] = {
 	{ 0x30, 0x39 },
 	{ 0x660, 0x669 },
 	{ 0x6f0, 0x6f9 },
@@ -3246,7 +3246,7 @@ struct interval Nd_table[] = {
 	{ 0x1fbf0, 0x1fbf9 }
 };
 
-struct interval Pd_table[] = {
+const struct interval Pd_table[] = {
 	{ 0x2d, 0x2d },
 	{ 0x58a, 0x58a },
 	{ 0x5be, 0x5be },
@@ -3268,7 +3268,7 @@ struct interval Pd_table[] = {
 	{ 0x10ead, 0x10ead }
 };
 
-struct interval Sm_table[] = {
+const struct interval Sm_table[] = {
 	{ 0x2b, 0x2b },
 	{ 0x3c, 0x3e },
 	{ 0x7c, 0x7c },
@@ -3335,7 +3335,7 @@ struct interval Sm_table[] = {
 	{ 0x1eef0, 0x1eef1 }
 };
 
-struct interval Pe_table[] = {
+const struct interval Pe_table[] = {
 	{ 0x29, 0x29 },
 	{ 0x5d, 0x5d },
 	{ 0x7d, 0x7d },
@@ -3414,7 +3414,7 @@ struct interval Pe_table[] = {
 	{ 0xff63, 0xff63 }
 };
 
-struct interval Ps_table[] = {
+const struct interval Ps_table[] = {
 	{ 0x28, 0x28 },
 	{ 0x5b, 0x5b },
 	{ 0x7b, 0x7b },
@@ -3496,7 +3496,7 @@ struct interval Ps_table[] = {
 	{ 0xff62, 0xff62 }
 };
 
-struct interval Sc_table[] = {
+const struct interval Sc_table[] = {
 	{ 0x24, 0x24 },
 	{ 0xa2, 0xa5 },
 	{ 0x58f, 0x58f },
@@ -3520,7 +3520,7 @@ struct interval Sc_table[] = {
 	{ 0x1ecb0, 0x1ecb0 }
 };
 
-struct interval Po_table[] = {
+const struct interval Po_table[] = {
 	{ 0x21, 0x23 },
 	{ 0x25, 0x27 },
 	{ 0x2a, 0x2a },
@@ -3710,7 +3710,7 @@ struct interval Po_table[] = {
 	{ 0x1e95e, 0x1e95f }
 };
 
-struct interval Zs_table[] = {
+const struct interval Zs_table[] = {
 	{ 0x20, 0x20 },
 	{ 0xa0, 0xa0 },
 	{ 0x1680, 0x1680 },
@@ -3720,12 +3720,12 @@ struct interval Zs_table[] = {
 	{ 0x3000, 0x3000 }
 };
 
-struct interval Cc_table[] = {
+const struct interval Cc_table[] = {
 	{ 0x0, 0x1f },
 	{ 0x7f, 0x9f }
 };
 
-struct interval toupper_table[] = {
+const struct interval toupper_table[] = {
 	{ 0x61, 0x7a }, /* 0x41 */
 	{ 0xb5, 0xb5 }, /* 0x39c */
 	{ 0xe0, 0xf6 }, /* 0xc0 */
@@ -4412,7 +4412,7 @@ struct interval toupper_table[] = {
 	{ 0x1e922, 0x1e943 }, /* 0x1e900 */
 	{ 0x0, 0x0 }
 };
-int toupper_cvt[] = {
+const int toupper_cvt[] = {
 	0x41, /* 0x61..0x7a */
 	0x39c, /* 0xb5..0xb5 */
 	0xc0, /* 0xe0..0xf6 */
@@ -5100,7 +5100,7 @@ int toupper_cvt[] = {
 	0x0
 };
 
-struct interval tolower_table[] = {
+const struct interval tolower_table[] = {
 	{ 0x41, 0x5a }, /* 0x61 */
 	{ 0xc0, 0xd6 }, /* 0xe0 */
 	{ 0xd8, 0xde }, /* 0xf8 */
@@ -5771,7 +5771,7 @@ struct interval tolower_table[] = {
 	{ 0x1e900, 0x1e921 }, /* 0x1e922 */
 	{ 0x0, 0x0 }
 };
-int tolower_cvt[] = {
+const int tolower_cvt[] = {
 	0x61, /* 0x41..0x5a */
 	0xe0, /* 0xc0..0xd6 */
 	0xf8, /* 0xd8..0xde */
@@ -6443,7 +6443,7 @@ int tolower_cvt[] = {
 	0x0
 };
 
-struct interval totitle_table[] = {
+const struct interval totitle_table[] = {
 	{ 0x61, 0x7a }, /* 0x41 */
 	{ 0xb5, 0xb5 }, /* 0x39c */
 	{ 0xe0, 0xf6 }, /* 0xc0 */
@@ -7128,7 +7128,7 @@ struct interval totitle_table[] = {
 	{ 0x1e922, 0x1e943 }, /* 0x1e900 */
 	{ 0x0, 0x0 }
 };
-int totitle_cvt[] = {
+const int totitle_cvt[] = {
 	0x41, /* 0x61..0x7a */
 	0x39c, /* 0xb5..0xb5 */
 	0xc0, /* 0xe0..0xf6 */
@@ -7814,367 +7814,367 @@ int totitle_cvt[] = {
 	0x0
 };
 
-struct unicat unicat[] = {
-	{ "Co", 3, Co_table, 0 },
-	{ "Cs", 1, Cs_table, 0 },
-	{ "Zp", 1, Zp_table, 0 },
-	{ "Zl", 1, Zl_table, 0 },
-	{ "Nl", 12, Nl_table, 0 },
-	{ "Mc", 182, Mc_table, 0 },
-	{ "Me", 5, Me_table, 0 },
-	{ "Mn", 346, Mn_table, 0 },
-	{ "Lm", 71, Lm_table, 0 },
-	{ "Lt", 10, Lt_table, 0 },
-	{ "Pf", 10, Pf_table, 0 },
-	{ "No", 72, No_table, 0 },
-	{ "Cf", 21, Cf_table, 0 },
-	{ "Pi", 11, Pi_table, 0 },
-	{ "Lo", 510, Lo_table, 0 },
-	{ "So", 184, So_table, 0 },
-	{ "Ll", 658, Ll_table, 0 },
-	{ "Pc", 6, Pc_table, 0 },
-	{ "Sk", 31, Sk_table, 0 },
-	{ "Lu", 646, Lu_table, 0 },
-	{ "Nd", 68, Nd_table, 0 },
-	{ "Pd", 19, Pd_table, 0 },
-	{ "Sm", 64, Sm_table, 0 },
-	{ "Pe", 76, Pe_table, 0 },
-	{ "Ps", 79, Ps_table, 0 },
-	{ "Sc", 21, Sc_table, 0 },
-	{ "Po", 187, Po_table, 0 },
-	{ "Zs", 7, Zs_table, 0 },
-	{ "Cc", 2, Cc_table, 0 },
-	{ "Supplementary Private Use Area-B", 1, uniblocks + 326, 0 },
-	{ "Supplementary Private Use Area-A", 1, uniblocks + 325, 0 },
-	{ "Variation Selectors Supplement", 1, uniblocks + 324, 0 },
-	{ "Tags", 1, uniblocks + 323, 0 },
-	{ "CJK Unified Ideographs Extension H", 1, uniblocks + 322, 0 },
-	{ "CJK Unified Ideographs Extension G", 1, uniblocks + 321, 0 },
-	{ "CJK Compatibility Ideographs Supplement", 1, uniblocks + 320, 0 },
-	{ "CJK Unified Ideographs Extension F", 1, uniblocks + 319, 0 },
-	{ "CJK Unified Ideographs Extension E", 1, uniblocks + 318, 0 },
-	{ "CJK Unified Ideographs Extension D", 1, uniblocks + 317, 0 },
-	{ "CJK Unified Ideographs Extension C", 1, uniblocks + 316, 0 },
-	{ "CJK Unified Ideographs Extension B", 1, uniblocks + 315, 0 },
-	{ "Symbols for Legacy Computing", 1, uniblocks + 314, 0 },
-	{ "Symbols and Pictographs Extended-A", 1, uniblocks + 313, 0 },
-	{ "Chess Symbols", 1, uniblocks + 312, 0 },
-	{ "Supplemental Symbols and Pictographs", 1, uniblocks + 311, 0 },
-	{ "Supplemental Arrows-C", 1, uniblocks + 310, 0 },
-	{ "Geometric Shapes Extended", 1, uniblocks + 309, 0 },
-	{ "Alchemical Symbols", 1, uniblocks + 308, 0 },
-	{ "Transport and Map Symbols", 1, uniblocks + 307, 0 },
-	{ "Ornamental Dingbats", 1, uniblocks + 306, 0 },
-	{ "Emoticons", 1, uniblocks + 305, 0 },
-	{ "Miscellaneous Symbols and Pictographs", 1, uniblocks + 304, 0 },
-	{ "Enclosed Ideographic Supplement", 1, uniblocks + 303, 0 },
-	{ "Enclosed Alphanumeric Supplement", 1, uniblocks + 302, 0 },
-	{ "Playing Cards", 1, uniblocks + 301, 0 },
-	{ "Domino Tiles", 1, uniblocks + 300, 0 },
-	{ "Mahjong Tiles", 1, uniblocks + 299, 0 },
-	{ "Arabic Mathematical Alphabetic Symbols", 1, uniblocks + 298, 0 },
-	{ "Ottoman Siyaq Numbers", 1, uniblocks + 297, 0 },
-	{ "Indic Siyaq Numbers", 1, uniblocks + 296, 0 },
-	{ "Adlam", 1, uniblocks + 295, 0 },
-	{ "Mende Kikakui", 1, uniblocks + 294, 0 },
-	{ "Ethiopic Extended-B", 1, uniblocks + 293, 0 },
-	{ "Nag Mundari", 1, uniblocks + 292, 0 },
-	{ "Wancho", 1, uniblocks + 291, 0 },
-	{ "Toto", 1, uniblocks + 290, 0 },
-	{ "Nyiakeng Puachue Hmong", 1, uniblocks + 289, 0 },
-	{ "Cyrillic Extended-D", 1, uniblocks + 288, 0 },
-	{ "Glagolitic Supplement", 1, uniblocks + 287, 0 },
-	{ "Latin Extended-G", 1, uniblocks + 286, 0 },
-	{ "Sutton SignWriting", 1, uniblocks + 285, 0 },
-	{ "Mathematical Alphanumeric Symbols", 1, uniblocks + 284, 0 },
-	{ "Counting Rod Numerals", 1, uniblocks + 283, 0 },
-	{ "Tai Xuan Jing Symbols", 1, uniblocks + 282, 0 },
-	{ "Mayan Numerals", 1, uniblocks + 281, 0 },
-	{ "Kaktovik Numerals", 1, uniblocks + 280, 0 },
-	{ "Ancient Greek Musical Notation", 1, uniblocks + 279, 0 },
-	{ "Musical Symbols", 1, uniblocks + 278, 0 },
-	{ "Byzantine Musical Symbols", 1, uniblocks + 277, 0 },
-	{ "Znamenny Musical Notation", 1, uniblocks + 276, 0 },
-	{ "Shorthand Format Controls", 1, uniblocks + 275, 0 },
-	{ "Duployan", 1, uniblocks + 274, 0 },
-	{ "Nushu", 1, uniblocks + 273, 0 },
-	{ "Small Kana Extension", 1, uniblocks + 272, 0 },
-	{ "Kana Extended-A", 1, uniblocks + 271, 0 },
-	{ "Kana Supplement", 1, uniblocks + 270, 0 },
-	{ "Kana Extended-B", 1, uniblocks + 269, 0 },
-	{ "Tangut Supplement", 1, uniblocks + 268, 0 },
-	{ "Khitan Small Script", 1, uniblocks + 267, 0 },
-	{ "Tangut Components", 1, uniblocks + 266, 0 },
-	{ "Tangut", 1, uniblocks + 265, 0 },
-	{ "Ideographic Symbols and Punctuation", 1, uniblocks + 264, 0 },
-	{ "Miao", 1, uniblocks + 263, 0 },
-	{ "Medefaidrin", 1, uniblocks + 262, 0 },
-	{ "Pahawh Hmong", 1, uniblocks + 261, 0 },
-	{ "Bassa Vah", 1, uniblocks + 260, 0 },
-	{ "Tangsa", 1, uniblocks + 259, 0 },
-	{ "Mro", 1, uniblocks + 258, 0 },
-	{ "Bamum Supplement", 1, uniblocks + 257, 0 },
-	{ "Anatolian Hieroglyphs", 1, uniblocks + 256, 0 },
-	{ "Egyptian Hieroglyph Format Controls", 1, uniblocks + 255, 0 },
-	{ "Egyptian Hieroglyphs", 1, uniblocks + 254, 0 },
-	{ "Cypro-Minoan", 1, uniblocks + 253, 0 },
-	{ "Early Dynastic Cuneiform", 1, uniblocks + 252, 0 },
-	{ "Cuneiform Numbers and Punctuation", 1, uniblocks + 251, 0 },
-	{ "Cuneiform", 1, uniblocks + 250, 0 },
-	{ "Tamil Supplement", 1, uniblocks + 249, 0 },
-	{ "Lisu Supplement", 1, uniblocks + 248, 0 },
-	{ "Kawi", 1, uniblocks + 247, 0 },
-	{ "Makasar", 1, uniblocks + 246, 0 },
-	{ "Gunjala Gondi", 1, uniblocks + 245, 0 },
-	{ "Masaram Gondi", 1, uniblocks + 244, 0 },
-	{ "Marchen", 1, uniblocks + 243, 0 },
-	{ "Bhaiksuki", 1, uniblocks + 242, 0 },
-	{ "Devanagari Extended-A", 1, uniblocks + 241, 0 },
-	{ "Pau Cin Hau", 1, uniblocks + 240, 0 },
-	{ "Unified Canadian Aboriginal Syllabics Extended-A", 1, uniblocks + 239, 0 },
-	{ "Soyombo", 1, uniblocks + 238, 0 },
-	{ "Zanabazar Square", 1, uniblocks + 237, 0 },
-	{ "Nandinagari", 1, uniblocks + 236, 0 },
-	{ "Dives Akuru", 1, uniblocks + 235, 0 },
-	{ "Warang Citi", 1, uniblocks + 234, 0 },
-	{ "Dogra", 1, uniblocks + 233, 0 },
-	{ "Ahom", 1, uniblocks + 232, 0 },
-	{ "Takri", 1, uniblocks + 231, 0 },
-	{ "Mongolian Supplement", 1, uniblocks + 230, 0 },
-	{ "Modi", 1, uniblocks + 229, 0 },
-	{ "Siddham", 1, uniblocks + 228, 0 },
-	{ "Tirhuta", 1, uniblocks + 227, 0 },
-	{ "Newa", 1, uniblocks + 226, 0 },
-	{ "Grantha", 1, uniblocks + 225, 0 },
-	{ "Khudawadi", 1, uniblocks + 224, 0 },
-	{ "Multani", 1, uniblocks + 223, 0 },
-	{ "Khojki", 1, uniblocks + 222, 0 },
-	{ "Sinhala Archaic Numbers", 1, uniblocks + 221, 0 },
-	{ "Sharada", 1, uniblocks + 220, 0 },
-	{ "Mahajani", 1, uniblocks + 219, 0 },
-	{ "Chakma", 1, uniblocks + 218, 0 },
-	{ "Sora Sompeng", 1, uniblocks + 217, 0 },
-	{ "Kaithi", 1, uniblocks + 216, 0 },
-	{ "Brahmi", 1, uniblocks + 215, 0 },
-	{ "Elymaic", 1, uniblocks + 214, 0 },
-	{ "Chorasmian", 1, uniblocks + 213, 0 },
-	{ "Old Uyghur", 1, uniblocks + 212, 0 },
-	{ "Sogdian", 1, uniblocks + 211, 0 },
-	{ "Old Sogdian", 1, uniblocks + 210, 0 },
-	{ "Arabic Extended-C", 1, uniblocks + 209, 0 },
-	{ "Yezidi", 1, uniblocks + 208, 0 },
-	{ "Rumi Numeral Symbols", 1, uniblocks + 207, 0 },
-	{ "Hanifi Rohingya", 1, uniblocks + 206, 0 },
-	{ "Old Hungarian", 1, uniblocks + 205, 0 },
-	{ "Old Turkic", 1, uniblocks + 204, 0 },
-	{ "Psalter Pahlavi", 1, uniblocks + 203, 0 },
-	{ "Inscriptional Pahlavi", 1, uniblocks + 202, 0 },
-	{ "Inscriptional Parthian", 1, uniblocks + 201, 0 },
-	{ "Avestan", 1, uniblocks + 200, 0 },
-	{ "Manichaean", 1, uniblocks + 199, 0 },
-	{ "Old North Arabian", 1, uniblocks + 198, 0 },
-	{ "Old South Arabian", 1, uniblocks + 197, 0 },
-	{ "Kharoshthi", 1, uniblocks + 196, 0 },
-	{ "Meroitic Cursive", 1, uniblocks + 195, 0 },
-	{ "Meroitic Hieroglyphs", 1, uniblocks + 194, 0 },
-	{ "Lydian", 1, uniblocks + 193, 0 },
-	{ "Phoenician", 1, uniblocks + 192, 0 },
-	{ "Hatran", 1, uniblocks + 191, 0 },
-	{ "Nabataean", 1, uniblocks + 190, 0 },
-	{ "Palmyrene", 1, uniblocks + 189, 0 },
-	{ "Imperial Aramaic", 1, uniblocks + 188, 0 },
-	{ "Cypriot Syllabary", 1, uniblocks + 187, 0 },
-	{ "Latin Extended-F", 1, uniblocks + 186, 0 },
-	{ "Linear A", 1, uniblocks + 185, 0 },
-	{ "Vithkuqi", 1, uniblocks + 184, 0 },
-	{ "Caucasian Albanian", 1, uniblocks + 183, 0 },
-	{ "Elbasan", 1, uniblocks + 182, 0 },
-	{ "Osage", 1, uniblocks + 181, 0 },
-	{ "Osmanya", 1, uniblocks + 180, 0 },
-	{ "Shavian", 1, uniblocks + 179, 0 },
-	{ "Deseret", 1, uniblocks + 178, 0 },
-	{ "Old Persian", 1, uniblocks + 177, 0 },
-	{ "Ugaritic", 1, uniblocks + 176, 0 },
-	{ "Old Permic", 1, uniblocks + 175, 0 },
-	{ "Gothic", 1, uniblocks + 174, 0 },
-	{ "Old Italic", 1, uniblocks + 173, 0 },
-	{ "Coptic Epact Numbers", 1, uniblocks + 172, 0 },
-	{ "Carian", 1, uniblocks + 171, 0 },
-	{ "Lycian", 1, uniblocks + 170, 0 },
-	{ "Phaistos Disc", 1, uniblocks + 169, 0 },
-	{ "Ancient Symbols", 1, uniblocks + 168, 0 },
-	{ "Ancient Greek Numbers", 1, uniblocks + 167, 0 },
-	{ "Aegean Numbers", 1, uniblocks + 166, 0 },
-	{ "Linear B Ideograms", 1, uniblocks + 165, 0 },
-	{ "Linear B Syllabary", 1, uniblocks + 164, 0 },
-	{ "Specials", 1, uniblocks + 163, 0 },
-	{ "Halfwidth and Fullwidth Forms", 1, uniblocks + 162, 0 },
-	{ "Arabic Presentation Forms-B", 1, uniblocks + 161, 0 },
-	{ "Small Form Variants", 1, uniblocks + 160, 0 },
-	{ "CJK Compatibility Forms", 1, uniblocks + 159, 0 },
-	{ "Combining Half Marks", 1, uniblocks + 158, 0 },
-	{ "Vertical Forms", 1, uniblocks + 157, 0 },
-	{ "Variation Selectors", 1, uniblocks + 156, 0 },
-	{ "Arabic Presentation Forms-A", 1, uniblocks + 155, 0 },
-	{ "Alphabetic Presentation Forms", 1, uniblocks + 154, 0 },
-	{ "CJK Compatibility Ideographs", 1, uniblocks + 153, 0 },
-	{ "Private Use Area", 1, uniblocks + 152, 0 },
-	{ "Low Surrogates", 1, uniblocks + 151, 0 },
-	{ "High Private Use Surrogates", 1, uniblocks + 150, 0 },
-	{ "High Surrogates", 1, uniblocks + 149, 0 },
-	{ "Hangul Jamo Extended-B", 1, uniblocks + 148, 0 },
-	{ "Hangul Syllables", 1, uniblocks + 147, 0 },
-	{ "Meetei Mayek", 1, uniblocks + 146, 0 },
-	{ "Cherokee Supplement", 1, uniblocks + 145, 0 },
-	{ "Latin Extended-E", 1, uniblocks + 144, 0 },
-	{ "Ethiopic Extended-A", 1, uniblocks + 143, 0 },
-	{ "Meetei Mayek Extensions", 1, uniblocks + 142, 0 },
-	{ "Tai Viet", 1, uniblocks + 141, 0 },
-	{ "Myanmar Extended-A", 1, uniblocks + 140, 0 },
-	{ "Cham", 1, uniblocks + 139, 0 },
-	{ "Myanmar Extended-B", 1, uniblocks + 138, 0 },
-	{ "Javanese", 1, uniblocks + 137, 0 },
-	{ "Hangul Jamo Extended-A", 1, uniblocks + 136, 0 },
-	{ "Rejang", 1, uniblocks + 135, 0 },
-	{ "Kayah Li", 1, uniblocks + 134, 0 },
-	{ "Devanagari Extended", 1, uniblocks + 133, 0 },
-	{ "Saurashtra", 1, uniblocks + 132, 0 },
-	{ "Phags-pa", 1, uniblocks + 131, 0 },
-	{ "Common Indic Number Forms", 1, uniblocks + 130, 0 },
-	{ "Syloti Nagri", 1, uniblocks + 129, 0 },
-	{ "Latin Extended-D", 1, uniblocks + 128, 0 },
-	{ "Modifier Tone Letters", 1, uniblocks + 127, 0 },
-	{ "Bamum", 1, uniblocks + 126, 0 },
-	{ "Cyrillic Extended-B", 1, uniblocks + 125, 0 },
-	{ "Vai", 1, uniblocks + 124, 0 },
-	{ "Lisu", 1, uniblocks + 123, 0 },
-	{ "Yi Radicals", 1, uniblocks + 122, 0 },
-	{ "Yi Syllables", 1, uniblocks + 121, 0 },
-	{ "CJK Unified Ideographs", 1, uniblocks + 120, 0 },
-	{ "Yijing Hexagram Symbols", 1, uniblocks + 119, 0 },
-	{ "CJK Unified Ideographs Extension A", 1, uniblocks + 118, 0 },
-	{ "CJK Compatibility", 1, uniblocks + 117, 0 },
-	{ "Enclosed CJK Letters and Months", 1, uniblocks + 116, 0 },
-	{ "Katakana Phonetic Extensions", 1, uniblocks + 115, 0 },
-	{ "CJK Strokes", 1, uniblocks + 114, 0 },
-	{ "Bopomofo Extended", 1, uniblocks + 113, 0 },
-	{ "Kanbun", 1, uniblocks + 112, 0 },
-	{ "Hangul Compatibility Jamo", 1, uniblocks + 111, 0 },
-	{ "Bopomofo", 1, uniblocks + 110, 0 },
-	{ "Katakana", 1, uniblocks + 109, 0 },
-	{ "Hiragana", 1, uniblocks + 108, 0 },
-	{ "CJK Symbols and Punctuation", 1, uniblocks + 107, 0 },
-	{ "Ideographic Description Characters", 1, uniblocks + 106, 0 },
-	{ "Kangxi Radicals", 1, uniblocks + 105, 0 },
-	{ "CJK Radicals Supplement", 1, uniblocks + 104, 0 },
-	{ "Supplemental Punctuation", 1, uniblocks + 103, 0 },
-	{ "Cyrillic Extended-A", 1, uniblocks + 102, 0 },
-	{ "Ethiopic Extended", 1, uniblocks + 101, 0 },
-	{ "Tifinagh", 1, uniblocks + 100, 0 },
-	{ "Georgian Supplement", 1, uniblocks + 99, 0 },
-	{ "Coptic", 1, uniblocks + 98, 0 },
-	{ "Latin Extended-C", 1, uniblocks + 97, 0 },
-	{ "Glagolitic", 1, uniblocks + 96, 0 },
-	{ "Miscellaneous Symbols and Arrows", 1, uniblocks + 95, 0 },
-	{ "Supplemental Mathematical Operators", 1, uniblocks + 94, 0 },
-	{ "Miscellaneous Mathematical Symbols-B", 1, uniblocks + 93, 0 },
-	{ "Supplemental Arrows-B", 1, uniblocks + 92, 0 },
-	{ "Braille Patterns", 1, uniblocks + 91, 0 },
-	{ "Supplemental Arrows-A", 1, uniblocks + 90, 0 },
-	{ "Miscellaneous Mathematical Symbols-A", 1, uniblocks + 89, 0 },
-	{ "Dingbats", 1, uniblocks + 88, 0 },
-	{ "Miscellaneous Symbols", 1, uniblocks + 87, 0 },
-	{ "Geometric Shapes", 1, uniblocks + 86, 0 },
-	{ "Block Elements", 1, uniblocks + 85, 0 },
-	{ "Box Drawing", 1, uniblocks + 84, 0 },
-	{ "Enclosed Alphanumerics", 1, uniblocks + 83, 0 },
-	{ "Optical Character Recognition", 1, uniblocks + 82, 0 },
-	{ "Control Pictures", 1, uniblocks + 81, 0 },
-	{ "Miscellaneous Technical", 1, uniblocks + 80, 0 },
-	{ "Mathematical Operators", 1, uniblocks + 79, 0 },
-	{ "Arrows", 1, uniblocks + 78, 0 },
-	{ "Number Forms", 1, uniblocks + 77, 0 },
-	{ "Letterlike Symbols", 1, uniblocks + 76, 0 },
-	{ "Combining Diacritical Marks for Symbols", 1, uniblocks + 75, 0 },
-	{ "Currency Symbols", 1, uniblocks + 74, 0 },
-	{ "Superscripts and Subscripts", 1, uniblocks + 73, 0 },
-	{ "General Punctuation", 1, uniblocks + 72, 0 },
-	{ "Greek Extended", 1, uniblocks + 71, 0 },
-	{ "Latin Extended Additional", 1, uniblocks + 70, 0 },
-	{ "Combining Diacritical Marks Supplement", 1, uniblocks + 69, 0 },
-	{ "Phonetic Extensions Supplement", 1, uniblocks + 68, 0 },
-	{ "Phonetic Extensions", 1, uniblocks + 67, 0 },
-	{ "Vedic Extensions", 1, uniblocks + 66, 0 },
-	{ "Sundanese Supplement", 1, uniblocks + 65, 0 },
-	{ "Georgian Extended", 1, uniblocks + 64, 0 },
-	{ "Cyrillic Extended-C", 1, uniblocks + 63, 0 },
-	{ "Ol Chiki", 1, uniblocks + 62, 0 },
-	{ "Lepcha", 1, uniblocks + 61, 0 },
-	{ "Batak", 1, uniblocks + 60, 0 },
-	{ "Sundanese", 1, uniblocks + 59, 0 },
-	{ "Balinese", 1, uniblocks + 58, 0 },
-	{ "Combining Diacritical Marks Extended", 1, uniblocks + 57, 0 },
-	{ "Tai Tham", 1, uniblocks + 56, 0 },
-	{ "Buginese", 1, uniblocks + 55, 0 },
-	{ "Khmer Symbols", 1, uniblocks + 54, 0 },
-	{ "New Tai Lue", 1, uniblocks + 53, 0 },
-	{ "Tai Le", 1, uniblocks + 52, 0 },
-	{ "Limbu", 1, uniblocks + 51, 0 },
-	{ "Unified Canadian Aboriginal Syllabics Extended", 1, uniblocks + 50, 0 },
-	{ "Mongolian", 1, uniblocks + 49, 0 },
-	{ "Khmer", 1, uniblocks + 48, 0 },
-	{ "Tagbanwa", 1, uniblocks + 47, 0 },
-	{ "Buhid", 1, uniblocks + 46, 0 },
-	{ "Hanunoo", 1, uniblocks + 45, 0 },
-	{ "Tagalog", 1, uniblocks + 44, 0 },
-	{ "Runic", 1, uniblocks + 43, 0 },
-	{ "Ogham", 1, uniblocks + 42, 0 },
-	{ "Unified Canadian Aboriginal Syllabics", 1, uniblocks + 41, 0 },
-	{ "Cherokee", 1, uniblocks + 40, 0 },
-	{ "Ethiopic Supplement", 1, uniblocks + 39, 0 },
-	{ "Ethiopic", 1, uniblocks + 38, 0 },
-	{ "Hangul Jamo", 1, uniblocks + 37, 0 },
-	{ "Georgian", 1, uniblocks + 36, 0 },
-	{ "Myanmar", 1, uniblocks + 35, 0 },
-	{ "Tibetan", 1, uniblocks + 34, 0 },
-	{ "Lao", 1, uniblocks + 33, 0 },
-	{ "Thai", 1, uniblocks + 32, 0 },
-	{ "Sinhala", 1, uniblocks + 31, 0 },
-	{ "Malayalam", 1, uniblocks + 30, 0 },
-	{ "Kannada", 1, uniblocks + 29, 0 },
-	{ "Telugu", 1, uniblocks + 28, 0 },
-	{ "Tamil", 1, uniblocks + 27, 0 },
-	{ "Oriya", 1, uniblocks + 26, 0 },
-	{ "Gujarati", 1, uniblocks + 25, 0 },
-	{ "Gurmukhi", 1, uniblocks + 24, 0 },
-	{ "Bengali", 1, uniblocks + 23, 0 },
-	{ "Devanagari", 1, uniblocks + 22, 0 },
-	{ "Arabic Extended-A", 1, uniblocks + 21, 0 },
-	{ "Arabic Extended-B", 1, uniblocks + 20, 0 },
-	{ "Syriac Supplement", 1, uniblocks + 19, 0 },
-	{ "Mandaic", 1, uniblocks + 18, 0 },
-	{ "Samaritan", 1, uniblocks + 17, 0 },
-	{ "NKo", 1, uniblocks + 16, 0 },
-	{ "Thaana", 1, uniblocks + 15, 0 },
-	{ "Arabic Supplement", 1, uniblocks + 14, 0 },
-	{ "Syriac", 1, uniblocks + 13, 0 },
-	{ "Arabic", 1, uniblocks + 12, 0 },
-	{ "Hebrew", 1, uniblocks + 11, 0 },
-	{ "Armenian", 1, uniblocks + 10, 0 },
-	{ "Cyrillic Supplement", 1, uniblocks + 9, 0 },
-	{ "Cyrillic", 1, uniblocks + 8, 0 },
-	{ "Greek and Coptic", 1, uniblocks + 7, 0 },
-	{ "Combining Diacritical Marks", 1, uniblocks + 6, 0 },
-	{ "Spacing Modifier Letters", 1, uniblocks + 5, 0 },
-	{ "IPA Extensions", 1, uniblocks + 4, 0 },
-	{ "Latin Extended-B", 1, uniblocks + 3, 0 },
-	{ "Latin Extended-A", 1, uniblocks + 2, 0 },
-	{ "Latin-1 Supplement", 1, uniblocks + 1, 0 },
-	{ "Basic Latin", 1, uniblocks + 0, 0 },
-	{ 0, 0, 0, 0 }
+const struct unicat unicat[] = {
+	{ "Co", 3, Co_table },
+	{ "Cs", 1, Cs_table },
+	{ "Zp", 1, Zp_table },
+	{ "Zl", 1, Zl_table },
+	{ "Nl", 12, Nl_table },
+	{ "Mc", 182, Mc_table },
+	{ "Me", 5, Me_table },
+	{ "Mn", 346, Mn_table },
+	{ "Lm", 71, Lm_table },
+	{ "Lt", 10, Lt_table },
+	{ "Pf", 10, Pf_table },
+	{ "No", 72, No_table },
+	{ "Cf", 21, Cf_table },
+	{ "Pi", 11, Pi_table },
+	{ "Lo", 510, Lo_table },
+	{ "So", 184, So_table },
+	{ "Ll", 658, Ll_table },
+	{ "Pc", 6, Pc_table },
+	{ "Sk", 31, Sk_table },
+	{ "Lu", 646, Lu_table },
+	{ "Nd", 68, Nd_table },
+	{ "Pd", 19, Pd_table },
+	{ "Sm", 64, Sm_table },
+	{ "Pe", 76, Pe_table },
+	{ "Ps", 79, Ps_table },
+	{ "Sc", 21, Sc_table },
+	{ "Po", 187, Po_table },
+	{ "Zs", 7, Zs_table },
+	{ "Cc", 2, Cc_table },
+	{ "Supplementary Private Use Area-B", 1, uniblocks + 326 },
+	{ "Supplementary Private Use Area-A", 1, uniblocks + 325 },
+	{ "Variation Selectors Supplement", 1, uniblocks + 324 },
+	{ "Tags", 1, uniblocks + 323 },
+	{ "CJK Unified Ideographs Extension H", 1, uniblocks + 322 },
+	{ "CJK Unified Ideographs Extension G", 1, uniblocks + 321 },
+	{ "CJK Compatibility Ideographs Supplement", 1, uniblocks + 320 },
+	{ "CJK Unified Ideographs Extension F", 1, uniblocks + 319 },
+	{ "CJK Unified Ideographs Extension E", 1, uniblocks + 318 },
+	{ "CJK Unified Ideographs Extension D", 1, uniblocks + 317 },
+	{ "CJK Unified Ideographs Extension C", 1, uniblocks + 316 },
+	{ "CJK Unified Ideographs Extension B", 1, uniblocks + 315 },
+	{ "Symbols for Legacy Computing", 1, uniblocks + 314 },
+	{ "Symbols and Pictographs Extended-A", 1, uniblocks + 313 },
+	{ "Chess Symbols", 1, uniblocks + 312 },
+	{ "Supplemental Symbols and Pictographs", 1, uniblocks + 311 },
+	{ "Supplemental Arrows-C", 1, uniblocks + 310 },
+	{ "Geometric Shapes Extended", 1, uniblocks + 309 },
+	{ "Alchemical Symbols", 1, uniblocks + 308 },
+	{ "Transport and Map Symbols", 1, uniblocks + 307 },
+	{ "Ornamental Dingbats", 1, uniblocks + 306 },
+	{ "Emoticons", 1, uniblocks + 305 },
+	{ "Miscellaneous Symbols and Pictographs", 1, uniblocks + 304 },
+	{ "Enclosed Ideographic Supplement", 1, uniblocks + 303 },
+	{ "Enclosed Alphanumeric Supplement", 1, uniblocks + 302 },
+	{ "Playing Cards", 1, uniblocks + 301 },
+	{ "Domino Tiles", 1, uniblocks + 300 },
+	{ "Mahjong Tiles", 1, uniblocks + 299 },
+	{ "Arabic Mathematical Alphabetic Symbols", 1, uniblocks + 298 },
+	{ "Ottoman Siyaq Numbers", 1, uniblocks + 297 },
+	{ "Indic Siyaq Numbers", 1, uniblocks + 296 },
+	{ "Adlam", 1, uniblocks + 295 },
+	{ "Mende Kikakui", 1, uniblocks + 294 },
+	{ "Ethiopic Extended-B", 1, uniblocks + 293 },
+	{ "Nag Mundari", 1, uniblocks + 292 },
+	{ "Wancho", 1, uniblocks + 291 },
+	{ "Toto", 1, uniblocks + 290 },
+	{ "Nyiakeng Puachue Hmong", 1, uniblocks + 289 },
+	{ "Cyrillic Extended-D", 1, uniblocks + 288 },
+	{ "Glagolitic Supplement", 1, uniblocks + 287 },
+	{ "Latin Extended-G", 1, uniblocks + 286 },
+	{ "Sutton SignWriting", 1, uniblocks + 285 },
+	{ "Mathematical Alphanumeric Symbols", 1, uniblocks + 284 },
+	{ "Counting Rod Numerals", 1, uniblocks + 283 },
+	{ "Tai Xuan Jing Symbols", 1, uniblocks + 282 },
+	{ "Mayan Numerals", 1, uniblocks + 281 },
+	{ "Kaktovik Numerals", 1, uniblocks + 280 },
+	{ "Ancient Greek Musical Notation", 1, uniblocks + 279 },
+	{ "Musical Symbols", 1, uniblocks + 278 },
+	{ "Byzantine Musical Symbols", 1, uniblocks + 277 },
+	{ "Znamenny Musical Notation", 1, uniblocks + 276 },
+	{ "Shorthand Format Controls", 1, uniblocks + 275 },
+	{ "Duployan", 1, uniblocks + 274 },
+	{ "Nushu", 1, uniblocks + 273 },
+	{ "Small Kana Extension", 1, uniblocks + 272 },
+	{ "Kana Extended-A", 1, uniblocks + 271 },
+	{ "Kana Supplement", 1, uniblocks + 270 },
+	{ "Kana Extended-B", 1, uniblocks + 269 },
+	{ "Tangut Supplement", 1, uniblocks + 268 },
+	{ "Khitan Small Script", 1, uniblocks + 267 },
+	{ "Tangut Components", 1, uniblocks + 266 },
+	{ "Tangut", 1, uniblocks + 265 },
+	{ "Ideographic Symbols and Punctuation", 1, uniblocks + 264 },
+	{ "Miao", 1, uniblocks + 263 },
+	{ "Medefaidrin", 1, uniblocks + 262 },
+	{ "Pahawh Hmong", 1, uniblocks + 261 },
+	{ "Bassa Vah", 1, uniblocks + 260 },
+	{ "Tangsa", 1, uniblocks + 259 },
+	{ "Mro", 1, uniblocks + 258 },
+	{ "Bamum Supplement", 1, uniblocks + 257 },
+	{ "Anatolian Hieroglyphs", 1, uniblocks + 256 },
+	{ "Egyptian Hieroglyph Format Controls", 1, uniblocks + 255 },
+	{ "Egyptian Hieroglyphs", 1, uniblocks + 254 },
+	{ "Cypro-Minoan", 1, uniblocks + 253 },
+	{ "Early Dynastic Cuneiform", 1, uniblocks + 252 },
+	{ "Cuneiform Numbers and Punctuation", 1, uniblocks + 251 },
+	{ "Cuneiform", 1, uniblocks + 250 },
+	{ "Tamil Supplement", 1, uniblocks + 249 },
+	{ "Lisu Supplement", 1, uniblocks + 248 },
+	{ "Kawi", 1, uniblocks + 247 },
+	{ "Makasar", 1, uniblocks + 246 },
+	{ "Gunjala Gondi", 1, uniblocks + 245 },
+	{ "Masaram Gondi", 1, uniblocks + 244 },
+	{ "Marchen", 1, uniblocks + 243 },
+	{ "Bhaiksuki", 1, uniblocks + 242 },
+	{ "Devanagari Extended-A", 1, uniblocks + 241 },
+	{ "Pau Cin Hau", 1, uniblocks + 240 },
+	{ "Unified Canadian Aboriginal Syllabics Extended-A", 1, uniblocks + 239 },
+	{ "Soyombo", 1, uniblocks + 238 },
+	{ "Zanabazar Square", 1, uniblocks + 237 },
+	{ "Nandinagari", 1, uniblocks + 236 },
+	{ "Dives Akuru", 1, uniblocks + 235 },
+	{ "Warang Citi", 1, uniblocks + 234 },
+	{ "Dogra", 1, uniblocks + 233 },
+	{ "Ahom", 1, uniblocks + 232 },
+	{ "Takri", 1, uniblocks + 231 },
+	{ "Mongolian Supplement", 1, uniblocks + 230 },
+	{ "Modi", 1, uniblocks + 229 },
+	{ "Siddham", 1, uniblocks + 228 },
+	{ "Tirhuta", 1, uniblocks + 227 },
+	{ "Newa", 1, uniblocks + 226 },
+	{ "Grantha", 1, uniblocks + 225 },
+	{ "Khudawadi", 1, uniblocks + 224 },
+	{ "Multani", 1, uniblocks + 223 },
+	{ "Khojki", 1, uniblocks + 222 },
+	{ "Sinhala Archaic Numbers", 1, uniblocks + 221 },
+	{ "Sharada", 1, uniblocks + 220 },
+	{ "Mahajani", 1, uniblocks + 219 },
+	{ "Chakma", 1, uniblocks + 218 },
+	{ "Sora Sompeng", 1, uniblocks + 217 },
+	{ "Kaithi", 1, uniblocks + 216 },
+	{ "Brahmi", 1, uniblocks + 215 },
+	{ "Elymaic", 1, uniblocks + 214 },
+	{ "Chorasmian", 1, uniblocks + 213 },
+	{ "Old Uyghur", 1, uniblocks + 212 },
+	{ "Sogdian", 1, uniblocks + 211 },
+	{ "Old Sogdian", 1, uniblocks + 210 },
+	{ "Arabic Extended-C", 1, uniblocks + 209 },
+	{ "Yezidi", 1, uniblocks + 208 },
+	{ "Rumi Numeral Symbols", 1, uniblocks + 207 },
+	{ "Hanifi Rohingya", 1, uniblocks + 206 },
+	{ "Old Hungarian", 1, uniblocks + 205 },
+	{ "Old Turkic", 1, uniblocks + 204 },
+	{ "Psalter Pahlavi", 1, uniblocks + 203 },
+	{ "Inscriptional Pahlavi", 1, uniblocks + 202 },
+	{ "Inscriptional Parthian", 1, uniblocks + 201 },
+	{ "Avestan", 1, uniblocks + 200 },
+	{ "Manichaean", 1, uniblocks + 199 },
+	{ "Old North Arabian", 1, uniblocks + 198 },
+	{ "Old South Arabian", 1, uniblocks + 197 },
+	{ "Kharoshthi", 1, uniblocks + 196 },
+	{ "Meroitic Cursive", 1, uniblocks + 195 },
+	{ "Meroitic Hieroglyphs", 1, uniblocks + 194 },
+	{ "Lydian", 1, uniblocks + 193 },
+	{ "Phoenician", 1, uniblocks + 192 },
+	{ "Hatran", 1, uniblocks + 191 },
+	{ "Nabataean", 1, uniblocks + 190 },
+	{ "Palmyrene", 1, uniblocks + 189 },
+	{ "Imperial Aramaic", 1, uniblocks + 188 },
+	{ "Cypriot Syllabary", 1, uniblocks + 187 },
+	{ "Latin Extended-F", 1, uniblocks + 186 },
+	{ "Linear A", 1, uniblocks + 185 },
+	{ "Vithkuqi", 1, uniblocks + 184 },
+	{ "Caucasian Albanian", 1, uniblocks + 183 },
+	{ "Elbasan", 1, uniblocks + 182 },
+	{ "Osage", 1, uniblocks + 181 },
+	{ "Osmanya", 1, uniblocks + 180 },
+	{ "Shavian", 1, uniblocks + 179 },
+	{ "Deseret", 1, uniblocks + 178 },
+	{ "Old Persian", 1, uniblocks + 177 },
+	{ "Ugaritic", 1, uniblocks + 176 },
+	{ "Old Permic", 1, uniblocks + 175 },
+	{ "Gothic", 1, uniblocks + 174 },
+	{ "Old Italic", 1, uniblocks + 173 },
+	{ "Coptic Epact Numbers", 1, uniblocks + 172 },
+	{ "Carian", 1, uniblocks + 171 },
+	{ "Lycian", 1, uniblocks + 170 },
+	{ "Phaistos Disc", 1, uniblocks + 169 },
+	{ "Ancient Symbols", 1, uniblocks + 168 },
+	{ "Ancient Greek Numbers", 1, uniblocks + 167 },
+	{ "Aegean Numbers", 1, uniblocks + 166 },
+	{ "Linear B Ideograms", 1, uniblocks + 165 },
+	{ "Linear B Syllabary", 1, uniblocks + 164 },
+	{ "Specials", 1, uniblocks + 163 },
+	{ "Halfwidth and Fullwidth Forms", 1, uniblocks + 162 },
+	{ "Arabic Presentation Forms-B", 1, uniblocks + 161 },
+	{ "Small Form Variants", 1, uniblocks + 160 },
+	{ "CJK Compatibility Forms", 1, uniblocks + 159 },
+	{ "Combining Half Marks", 1, uniblocks + 158 },
+	{ "Vertical Forms", 1, uniblocks + 157 },
+	{ "Variation Selectors", 1, uniblocks + 156 },
+	{ "Arabic Presentation Forms-A", 1, uniblocks + 155 },
+	{ "Alphabetic Presentation Forms", 1, uniblocks + 154 },
+	{ "CJK Compatibility Ideographs", 1, uniblocks + 153 },
+	{ "Private Use Area", 1, uniblocks + 152 },
+	{ "Low Surrogates", 1, uniblocks + 151 },
+	{ "High Private Use Surrogates", 1, uniblocks + 150 },
+	{ "High Surrogates", 1, uniblocks + 149 },
+	{ "Hangul Jamo Extended-B", 1, uniblocks + 148 },
+	{ "Hangul Syllables", 1, uniblocks + 147 },
+	{ "Meetei Mayek", 1, uniblocks + 146 },
+	{ "Cherokee Supplement", 1, uniblocks + 145 },
+	{ "Latin Extended-E", 1, uniblocks + 144 },
+	{ "Ethiopic Extended-A", 1, uniblocks + 143 },
+	{ "Meetei Mayek Extensions", 1, uniblocks + 142 },
+	{ "Tai Viet", 1, uniblocks + 141 },
+	{ "Myanmar Extended-A", 1, uniblocks + 140 },
+	{ "Cham", 1, uniblocks + 139 },
+	{ "Myanmar Extended-B", 1, uniblocks + 138 },
+	{ "Javanese", 1, uniblocks + 137 },
+	{ "Hangul Jamo Extended-A", 1, uniblocks + 136 },
+	{ "Rejang", 1, uniblocks + 135 },
+	{ "Kayah Li", 1, uniblocks + 134 },
+	{ "Devanagari Extended", 1, uniblocks + 133 },
+	{ "Saurashtra", 1, uniblocks + 132 },
+	{ "Phags-pa", 1, uniblocks + 131 },
+	{ "Common Indic Number Forms", 1, uniblocks + 130 },
+	{ "Syloti Nagri", 1, uniblocks + 129 },
+	{ "Latin Extended-D", 1, uniblocks + 128 },
+	{ "Modifier Tone Letters", 1, uniblocks + 127 },
+	{ "Bamum", 1, uniblocks + 126 },
+	{ "Cyrillic Extended-B", 1, uniblocks + 125 },
+	{ "Vai", 1, uniblocks + 124 },
+	{ "Lisu", 1, uniblocks + 123 },
+	{ "Yi Radicals", 1, uniblocks + 122 },
+	{ "Yi Syllables", 1, uniblocks + 121 },
+	{ "CJK Unified Ideographs", 1, uniblocks + 120 },
+	{ "Yijing Hexagram Symbols", 1, uniblocks + 119 },
+	{ "CJK Unified Ideographs Extension A", 1, uniblocks + 118 },
+	{ "CJK Compatibility", 1, uniblocks + 117 },
+	{ "Enclosed CJK Letters and Months", 1, uniblocks + 116 },
+	{ "Katakana Phonetic Extensions", 1, uniblocks + 115 },
+	{ "CJK Strokes", 1, uniblocks + 114 },
+	{ "Bopomofo Extended", 1, uniblocks + 113 },
+	{ "Kanbun", 1, uniblocks + 112 },
+	{ "Hangul Compatibility Jamo", 1, uniblocks + 111 },
+	{ "Bopomofo", 1, uniblocks + 110 },
+	{ "Katakana", 1, uniblocks + 109 },
+	{ "Hiragana", 1, uniblocks + 108 },
+	{ "CJK Symbols and Punctuation", 1, uniblocks + 107 },
+	{ "Ideographic Description Characters", 1, uniblocks + 106 },
+	{ "Kangxi Radicals", 1, uniblocks + 105 },
+	{ "CJK Radicals Supplement", 1, uniblocks + 104 },
+	{ "Supplemental Punctuation", 1, uniblocks + 103 },
+	{ "Cyrillic Extended-A", 1, uniblocks + 102 },
+	{ "Ethiopic Extended", 1, uniblocks + 101 },
+	{ "Tifinagh", 1, uniblocks + 100 },
+	{ "Georgian Supplement", 1, uniblocks + 99 },
+	{ "Coptic", 1, uniblocks + 98 },
+	{ "Latin Extended-C", 1, uniblocks + 97 },
+	{ "Glagolitic", 1, uniblocks + 96 },
+	{ "Miscellaneous Symbols and Arrows", 1, uniblocks + 95 },
+	{ "Supplemental Mathematical Operators", 1, uniblocks + 94 },
+	{ "Miscellaneous Mathematical Symbols-B", 1, uniblocks + 93 },
+	{ "Supplemental Arrows-B", 1, uniblocks + 92 },
+	{ "Braille Patterns", 1, uniblocks + 91 },
+	{ "Supplemental Arrows-A", 1, uniblocks + 90 },
+	{ "Miscellaneous Mathematical Symbols-A", 1, uniblocks + 89 },
+	{ "Dingbats", 1, uniblocks + 88 },
+	{ "Miscellaneous Symbols", 1, uniblocks + 87 },
+	{ "Geometric Shapes", 1, uniblocks + 86 },
+	{ "Block Elements", 1, uniblocks + 85 },
+	{ "Box Drawing", 1, uniblocks + 84 },
+	{ "Enclosed Alphanumerics", 1, uniblocks + 83 },
+	{ "Optical Character Recognition", 1, uniblocks + 82 },
+	{ "Control Pictures", 1, uniblocks + 81 },
+	{ "Miscellaneous Technical", 1, uniblocks + 80 },
+	{ "Mathematical Operators", 1, uniblocks + 79 },
+	{ "Arrows", 1, uniblocks + 78 },
+	{ "Number Forms", 1, uniblocks + 77 },
+	{ "Letterlike Symbols", 1, uniblocks + 76 },
+	{ "Combining Diacritical Marks for Symbols", 1, uniblocks + 75 },
+	{ "Currency Symbols", 1, uniblocks + 74 },
+	{ "Superscripts and Subscripts", 1, uniblocks + 73 },
+	{ "General Punctuation", 1, uniblocks + 72 },
+	{ "Greek Extended", 1, uniblocks + 71 },
+	{ "Latin Extended Additional", 1, uniblocks + 70 },
+	{ "Combining Diacritical Marks Supplement", 1, uniblocks + 69 },
+	{ "Phonetic Extensions Supplement", 1, uniblocks + 68 },
+	{ "Phonetic Extensions", 1, uniblocks + 67 },
+	{ "Vedic Extensions", 1, uniblocks + 66 },
+	{ "Sundanese Supplement", 1, uniblocks + 65 },
+	{ "Georgian Extended", 1, uniblocks + 64 },
+	{ "Cyrillic Extended-C", 1, uniblocks + 63 },
+	{ "Ol Chiki", 1, uniblocks + 62 },
+	{ "Lepcha", 1, uniblocks + 61 },
+	{ "Batak", 1, uniblocks + 60 },
+	{ "Sundanese", 1, uniblocks + 59 },
+	{ "Balinese", 1, uniblocks + 58 },
+	{ "Combining Diacritical Marks Extended", 1, uniblocks + 57 },
+	{ "Tai Tham", 1, uniblocks + 56 },
+	{ "Buginese", 1, uniblocks + 55 },
+	{ "Khmer Symbols", 1, uniblocks + 54 },
+	{ "New Tai Lue", 1, uniblocks + 53 },
+	{ "Tai Le", 1, uniblocks + 52 },
+	{ "Limbu", 1, uniblocks + 51 },
+	{ "Unified Canadian Aboriginal Syllabics Extended", 1, uniblocks + 50 },
+	{ "Mongolian", 1, uniblocks + 49 },
+	{ "Khmer", 1, uniblocks + 48 },
+	{ "Tagbanwa", 1, uniblocks + 47 },
+	{ "Buhid", 1, uniblocks + 46 },
+	{ "Hanunoo", 1, uniblocks + 45 },
+	{ "Tagalog", 1, uniblocks + 44 },
+	{ "Runic", 1, uniblocks + 43 },
+	{ "Ogham", 1, uniblocks + 42 },
+	{ "Unified Canadian Aboriginal Syllabics", 1, uniblocks + 41 },
+	{ "Cherokee", 1, uniblocks + 40 },
+	{ "Ethiopic Supplement", 1, uniblocks + 39 },
+	{ "Ethiopic", 1, uniblocks + 38 },
+	{ "Hangul Jamo", 1, uniblocks + 37 },
+	{ "Georgian", 1, uniblocks + 36 },
+	{ "Myanmar", 1, uniblocks + 35 },
+	{ "Tibetan", 1, uniblocks + 34 },
+	{ "Lao", 1, uniblocks + 33 },
+	{ "Thai", 1, uniblocks + 32 },
+	{ "Sinhala", 1, uniblocks + 31 },
+	{ "Malayalam", 1, uniblocks + 30 },
+	{ "Kannada", 1, uniblocks + 29 },
+	{ "Telugu", 1, uniblocks + 28 },
+	{ "Tamil", 1, uniblocks + 27 },
+	{ "Oriya", 1, uniblocks + 26 },
+	{ "Gujarati", 1, uniblocks + 25 },
+	{ "Gurmukhi", 1, uniblocks + 24 },
+	{ "Bengali", 1, uniblocks + 23 },
+	{ "Devanagari", 1, uniblocks + 22 },
+	{ "Arabic Extended-A", 1, uniblocks + 21 },
+	{ "Arabic Extended-B", 1, uniblocks + 20 },
+	{ "Syriac Supplement", 1, uniblocks + 19 },
+	{ "Mandaic", 1, uniblocks + 18 },
+	{ "Samaritan", 1, uniblocks + 17 },
+	{ "NKo", 1, uniblocks + 16 },
+	{ "Thaana", 1, uniblocks + 15 },
+	{ "Arabic Supplement", 1, uniblocks + 14 },
+	{ "Syriac", 1, uniblocks + 13 },
+	{ "Arabic", 1, uniblocks + 12 },
+	{ "Hebrew", 1, uniblocks + 11 },
+	{ "Armenian", 1, uniblocks + 10 },
+	{ "Cyrillic Supplement", 1, uniblocks + 9 },
+	{ "Cyrillic", 1, uniblocks + 8 },
+	{ "Greek and Coptic", 1, uniblocks + 7 },
+	{ "Combining Diacritical Marks", 1, uniblocks + 6 },
+	{ "Spacing Modifier Letters", 1, uniblocks + 5 },
+	{ "IPA Extensions", 1, uniblocks + 4 },
+	{ "Latin Extended-B", 1, uniblocks + 3 },
+	{ "Latin Extended-A", 1, uniblocks + 2 },
+	{ "Latin-1 Supplement", 1, uniblocks + 1 },
+	{ "Basic Latin", 1, uniblocks + 0 },
+	{ 0, 0, 0 }
 };
 
-struct interval fold_table[] = {
+const struct interval fold_table[] = {
 	{ 0x41, 0x5a },
 	{ 0xb5, 0xb5 },
 	{ 0xc0, 0xd6 },
@@ -8963,7 +8963,7 @@ struct interval fold_table[] = {
 	{ 0x0, 0x0 }
 };
 
-int fold_repl[][REPLLEN] = {
+const int fold_repl[][REPLLEN] = {
 	{ 0x61, 0x0, 0x0 },
 	{ 0x3bc, 0x0, 0x0 },
 	{ 0xe0, 0x0, 0x0 },
@@ -9753,7 +9753,7 @@ int fold_repl[][REPLLEN] = {
 
 /* Double-wide characters */
 
-struct interval width_table[] = {
+const struct interval width_table[] = {
 	{ 0x1100, 0x115f },
 	{ 0x231a, 0x231b },
 	{ 0x2329, 0x232a },
