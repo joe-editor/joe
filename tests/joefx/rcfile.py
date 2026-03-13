@@ -23,7 +23,7 @@ FILE_OPTS = set([
     'rdonly', 'keymap', 'lmsg', 'rmsg', 'mfirst', 'mnew', 'mold', 'msnew', 'msold',
     'highlighter_context', 'single_quoted', 'no_double_quoted', 'c_comment', 'cpp_comment',
     'pound_comment', 'vhdl_comment', 'semi_comment', 'tex_comment', 'text_delimiters',
-    'title'
+    'title', 'hash_comment'
 ])
 
 OPTS_WITH_ARGS = set([
@@ -44,7 +44,7 @@ class RCFile(object):
         self.menus = []
         self.macros = []
         self.bindings = []
-    
+
     def serialize(self):
         result = []
         result.extend(self.globalopts.serialize())
@@ -52,7 +52,7 @@ class RCFile(object):
             for item in section:
                 result.extend(item.serialize())
         return b'\n'.join((item.encode('utf-8') if isinstance(item, str) else item) for item in result)
-    
+
     def clone(self):
         other = RCFile()
         other.globalopts = self.globalopts.clone()
@@ -62,13 +62,13 @@ class RCFile(object):
         other.macros = [macro.clone() for macro in self.macros]
         other.bindings = [binding.clone() for binding in self.bindings]
         return other
-    
+
     def getMenu(self, name):
         for menu in self.menus:
             if menu.name == name:
                 return menu
         return None
-    
+
     def getKeyBindings(self, scope):
         for kbc in self.bindings:
             if kbc.name == scope:
@@ -80,16 +80,16 @@ class Options(object):
         self._properties = properties
         self._values = {}
         self._order = []
-    
+
     def __getattr__(self, name):
         return self.getValue(name)
-    
+
     def __setattr__(self, name, value):
         if name.startswith('_'):
             object.__setattr__(self, name, value)
         else:
             self.setValue(name, value)
-    
+
     def getValue(self, name):
         if name not in self._properties:
             raise InvalidProperty(name)
@@ -97,7 +97,7 @@ class Options(object):
             return None
         else:
             return self._values[name]
-    
+
     def setValue(self, name, value):
         if name not in self._properties:
             raise InvalidProperty(name)
@@ -107,7 +107,7 @@ class Options(object):
             self._values[name] = value
             if name not in self._order:
                 self._order.append(name)
-    
+
     def serialize(self):
         result = []
         def apply(k, v):
@@ -117,16 +117,16 @@ class Options(object):
                 result.append('--' + k)
             elif v is not None:
                 result.append('-%s %s' % (k, v))
-        
+
         for k in self._order:
             v = self._values[k]
             apply(k, v)
         for k, v in self._values.items():
             if k not in self._order:
                 apply(k, v)
-        
+
         return result
-    
+
     def clone(self):
         other = Options(self._properties)
         other._values.update(self._values)
@@ -138,7 +138,7 @@ class FileOptions(object):
         self.name = ''
         self.rules = []
         self.options = Options(FILE_OPTS)
-    
+
     def serialize(self):
         result = []
         result.append('[%s]' % self.name)
@@ -146,7 +146,7 @@ class FileOptions(object):
             result.extend(rule.serialize())
         result.extend(self.options.serialize())
         return result
-    
+
     def clone(self):
         other = FileOptions()
         other.name = self.name
@@ -158,13 +158,13 @@ class FileExtensionRule(object):
     def __init__(self):
         self.extension = ''
         self.patterns = []
-    
+
     def serialize(self):
         result = []
         result.append(self.extension)
         result.extend('+' + pat for pat in self.patterns)
         return result
-    
+
     def clone(self):
         other = FileExtensionRule()
         other.extension = self.extension
@@ -176,7 +176,7 @@ class Menu(object):
         self.name = ''
         self.back = ''
         self.items = []
-    
+
     def serialize(self):
         result = [':defmenu %s %s' % (self.name, self.back)]
         result.extend(item.serialize() for item in self.items)
@@ -188,7 +188,7 @@ class Menu(object):
         other.back = self.back
         other.items = [item.clone() for item in self.items]
         return other
-    
+
     def getItem(self, predicate):
         for item in self.items:
             if predicate(item):
@@ -199,10 +199,10 @@ class MenuItem(object):
     def __init__(self):
         self.macro = ''
         self.label = ''
-    
+
     def serialize(self):
         return '%s\t%s' % (self.macro, self.label)
-    
+
     def clone(self):
         other = MenuItem()
         other.macro = self.macro
@@ -213,10 +213,10 @@ class HelpScreen(object):
     def __init__(self):
         self.name = ''
         self.content = []
-    
+
     def serialize(self):
         return ['{' + self.name] + self.content + ['}']
-    
+
     def clone(self):
         other = HelpScreen()
         other.name = self.name
@@ -228,18 +228,18 @@ class KeyBindingCollection(object):
         self.name = ''
         self.inherits = None
         self.bindings = []
-    
+
     def serialize(self):
         if not self.name:
             # Uninitialized
             return []
-        
+
         result = [':' + self.name]
         if self.inherits is not None:
             result.append(':inherit ' + self.inherits)
         result.extend([f.serialize() for f in self.bindings])
         return result
-    
+
     def clone(self):
         other = KeyBindingCollection()
         other.name = self.name
@@ -251,10 +251,10 @@ class Binding(object):
     def __init__(self):
         self.macro = None
         self.keys = []
-    
+
     def serialize(self):
         return self.macro + ' ' + ' '.join(self.keys)
-    
+
     def clone(self):
         other = Binding()
         other.macro = self.macro
@@ -265,10 +265,10 @@ class MacroDefinition(object):
     def __init__(self):
         self.name = None
         self.macro = None
-    
+
     def serialize(self):
         return [':def %s %s' % (self.name, self.macro)]
-    
+
     def clone(self):
         other = MacroDefinition()
         other.name = self.name
@@ -280,7 +280,7 @@ class ParserState(object):
         self.rcfile = rcfile
         self.file = filegen
         self.curline = None
-    
+
     def begin(self):
         try:
             self.parseglobal()
@@ -290,7 +290,7 @@ class ParserState(object):
             self.parsebindings()
         except StopIteration:
             pass
-    
+
     def parseglobal(self):
         while True:
             line = self.nextnows()
@@ -298,7 +298,7 @@ class ParserState(object):
                 self.parseoption(self.rcfile.globalopts)
             else:
                 break
-    
+
     def parseoption(self, opts):
         mode = not self.curline.startswith('--')
         parts = self.curline.split(None, 1)
@@ -307,7 +307,7 @@ class ParserState(object):
             opts.setValue(optionName, mode)
         else:
             opts.setValue(optionName, self.curline[len(parts[0]) + 1:].rstrip('\r\n'))
-    
+
     def parsemacro(self, line):
         i = 0
         q = False
@@ -325,17 +325,17 @@ class ParserState(object):
                 q = True
             elif c.isspace():
                 return line[:i], line[i:].lstrip()
-            
+
             i += 1
-        
+
         return line, ''
-    
+
     def parsefileopts(self):
         while self.curline.startswith('['):
             filetype = FileOptions()
             filetype.name = self.curline.strip().strip('[]')
             rule = None
-            
+
             while True:
                 line = self.nextnows()
                 if line.startswith('*'):
@@ -350,12 +350,12 @@ class ParserState(object):
                     self.parseoption(filetype.options)
                 else:
                     break
-            
+
             if rule is not None:
                 filetype.rules.append(rule)
-            
+
             self.rcfile.fileopts.append(filetype)
-    
+
     def parsemenus(self):
         while self.curline.startswith(':defmenu'):
             menu = Menu()
@@ -363,30 +363,30 @@ class ParserState(object):
             menu.name = parts[1]
             if len(parts) == 3:
                 menu.back = parts[2]
-            
+
             while True:
                 line = self.nextnows()
                 if line.startswith(':') or line.startswith('{'):
                     break
-                
+
                 macro, rest = self.parsemacro(line)
                 item = MenuItem()
                 item.macro = macro
                 item.label = rest.strip()
                 menu.items.append(item)
-            
+
             self.rcfile.menus.append(menu)
-    
+
     def parsehelp(self):
         while self.curline.startswith('{'):
             screen = HelpScreen()
             screen.name = self.curline[1:].strip()
             while not self.nextbytes().startswith(b'}'):
                 screen.content.append(self.curline.rstrip(b'\r\n'))
-            
+
             self.rcfile.help.append(screen)
             self.nextnows()
-    
+
     def parsebindings(self):
         currentSection = None
         while True:
@@ -408,7 +408,7 @@ class ParserState(object):
                 # Binding
                 binding = Binding()
                 binding.macro, keystr = self.parsemacro(self.curline)
-                
+
                 # Split out keys
                 keys = keystr.split()
                 for k in keys:
@@ -416,11 +416,11 @@ class ParserState(object):
                         binding.keys.append(k)
                     else:
                         break
-                
+
                 currentSection.bindings.append(binding)
-            
+
             self.nextnows()
-    
+
     def iskey(self, k):
         if len(k) == 1: return True
         if k.startswith('U+'): return True
@@ -430,15 +430,15 @@ class ParserState(object):
                  'M3UP', 'MWDOWN', 'MWUP', 'SP', 'TO'):
             return True
         return False
-    
+
     def nextbytes(self):
         self.curline = next(self.file)
         return self.curline
-    
+
     def next(self):
         self.curline = next(self.file).decode('utf-8').strip('\r\n')
         return self.curline
-    
+
     def nextnows(self):
         while True:
             line = self.next()
