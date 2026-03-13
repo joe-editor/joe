@@ -500,6 +500,7 @@ done
 	"consteval"		cppkw
 	"constexpr"		cppkw
 	"constinit"		cppkw
+	"contract_assert"	cppkw
 	"decltype"		cppkw
 	"delete"		cppkw
 	"dynamic_cast"		cppkw
@@ -514,6 +515,8 @@ done
 	"nullptr"		constant
 	"operator"		cppkw
 	"override"		cppkw
+	"post"			cppkw
+	"pre"			cppkw
 	"private"		cppkw
 	"protected"		cppkw
 	"public"		cppkw
