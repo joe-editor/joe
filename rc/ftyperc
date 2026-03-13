@@ -18,6 +18,8 @@
 [diff]
 *
 +\? [A-Za-z]
++diff -
++commit [a-z0-9]{40} \(
 +Index: [A-Za-z]
 +Only in
 +Nur in
