@@ -424,6 +424,7 @@ done
 
 :ident Ident
 	*		idle		noeat strings
+	# C keywords: Fundamental types
 	"int"		type
 	"float"		type
 	"long"		type
@@ -433,11 +434,28 @@ done
 	"signed"	type
 	"unsigned"	type
 	"void"		type
+	# Derived but still high frequency types
+	"bool"		type
+	"int8_t"	type
+	"uint8_t"	type
+	"int16_t"	type
+	"uint16_t"	type
+	"int32_t"	type
+	"uint32_t"	type
+	"int64_t"	type
+	"uint64_t"	type
+	"size_t"	type
+	"ssize_t"	type
+
+	"NULL"		constant
+	"false"		constant
+	"true"		constant
+
+	#"auto"		storage (use in C practically nonexistent; listed below as a C++ keyword)
 	"static"	storage
 	"register"	storage
 	"extern"	storage
-	"inline"	type
-	"auto"		storage
+	"inline"	storage
 	"const"		storage
 	"volatile"	storage
 	"if"		cond
@@ -458,32 +476,50 @@ done
 	"typedef"	struct
 	"union"		struct
 	"asm"		kw
+	"alignas"	kw
+	"alignof"	kw
+	"static_assert"	kw
+	"thread_local"	storage
 # C++ keywords
 	#"asm"			cppkw (listed above as a C keyword)
-	"bool"			cppkw
-	"catch"			cppkw
+	"auto"			type
+	"catch"			cond
+	"char8_t"		type
+	"char16_t"		type
+	"char32_t"		type
 	"class"			struct
+	"co_await"		cppkw
+	"co_return"		cppkw
+	"co_yield"		cppkw
+	"concept"		cppkw
 	"const_cast"		cppkw
+	"consteval"		cppkw
+	"constexpr"		cppkw
+	"constinit"		cppkw
+	"decltype"		cppkw
 	"delete"		cppkw
 	"dynamic_cast"		cppkw
 	"explicit"		cppkw
-	"false"			cppkw
+	"final"			cppkw
 	"friend"		cppkw
 	#"inline"		cppkw (listed above as a C keyword)
 	"mutable"		cppkw
 	"namespace"		cppkw
 	"new"			cppkw
+	"noexcept"		cppkw
+	"nullptr"		constant
 	"operator"		cppkw
+	"override"		cppkw
 	"private"		cppkw
 	"protected"		cppkw
 	"public"		cppkw
 	"reinterpret_cast"	cppkw
+	"requires"		cppkw
 	"static_cast"		cppkw
 	"template"		cppkw
-	"this"			cppkw
-	"throw"			cppkw
-	"true"			cppkw
-	"try"			cppkw
+	"this"			constant # the value may not be constant, but the idea is
+	"throw"			stmt
+	"try"			cond
 	"typeid"		cppkw
 	"typename"		cppkw
 	"using"			cppkw
@@ -495,6 +531,9 @@ done
 	"\c"		ident
 
 :type Type
+	*	idle	noeat
+
+:constant Constant
 	*	idle	noeat
 
 :kw Keyword
