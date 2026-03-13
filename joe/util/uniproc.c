@@ -24,6 +24,8 @@
     do { \
         buf[y] = (char)c; \
         x = y; \
+        while (buf[x] == ' ' || buf[x] == '\t') \
+            ++x; \
         if (buf[x] == ';') \
             ++x; \
         while (buf[x] == ' ' || buf[x] == '\t') \
@@ -91,7 +93,7 @@ static int unifold_full(char *name)
         char flag;
         unsigned outval[8];
         int outval_ptr;
-        char *endp; 
+        char *endp;
 
         ++line;
 
@@ -237,7 +239,7 @@ static int unifold_simple(char *name)
         char flag;
         unsigned outval[8];
         int outval_ptr;
-        char *endp; 
+        char *endp;
 
         ++line;
 
