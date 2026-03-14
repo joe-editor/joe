@@ -12,7 +12,13 @@
 
 * Enhancements
 
+	* Upgrade to Unicode 17.0.0.  Add configure environment variable
+	  that allows you to select Unicode 8.0.0, 9.0.0, 10.0.0, 13.0.0,
+	  15.0.0, 15.1.0, 16.0.0 or 17.0.0
+
 	* Consider 'Tc' terminfo flag when determining whether a terminal supports 24-bit color.
+
+	* Improve Verilog and SystemVerilog syntax
 
 * Bugs fixed
 
@@ -27,6 +33,10 @@
 		* Fix bug where window resize will cause copying process to stop (needed to retry on EINTR).
 
 	* Revert ^K Q behavior (by popular demand!)
+
+	* Improve localized decimal point handling in calculator
+
+	* Fix not "not changed" undo record bug after saving file
 
 * Windows version
 

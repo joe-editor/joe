@@ -52,10 +52,10 @@ fi
 
 # Select Unicode version
 AC_ARG_VAR(UNICODE_VERSION,
-[  Select Unicode version: 8.0.0, 9.0.0 or 10.0.0  Default is 9.0.0 ])
+[  Select Unicode version: 8.0.0, 9.0.0, 10.0.0, 15.0.0, 15.1.0, 16.0.0 or 17.0.0  Default is 17.0.0 ])
 
 if test "$UNICODE_VERSION" = ""; then
-	UNICODE_VERSION=9.0.0
+	UNICODE_VERSION=17.0.0
 fi
 
 AC_SEARCH_LIBS(openpty, util, AC_DEFINE_UNQUOTED(HAVE_OPENPTY, 1, [If we have BSD function openpty()]))

@@ -69,7 +69,7 @@ OPTIONS pdefault = {
 	0,		/* no_double_quoted */
 	0,		/* c_comment */
 	0,		/* cpp_comment */
-	0,		/* pound_comment */
+	0,		/* hash_comment */
 	0,		/* vhdl_comment */
 	0,		/* semi_comment */
 	0,		/* tex_comment */
@@ -133,7 +133,7 @@ OPTIONS fdefault = {
 	0,		/* no_double_quoted */
 	0,		/* c_comment */
 	0,		/* cpp_comment */
-	0,		/* pound_comment */
+	0,		/* hash_comment */
 	0,		/* vhdl_comment */
 	0,		/* semi_comment */
 	0,		/* tex_comment */
@@ -375,7 +375,8 @@ struct glopts {
 	{"no_double_quoted",4, NULL, (char *) &fdefault.no_double_quoted, _("Double quoting disabled"), _("Double quoting enabled"), _("^G ignores \"... \" "), 0, 0, 0 },
 	{"c_comment",	4, NULL, (char *) &fdefault.c_comment, _("/* comments enabled"), _("/* comments disabled"), _("^G ignores /*...*/ "), 0, 0, 0 },
 	{"cpp_comment",	4, NULL, (char *) &fdefault.cpp_comment, _("// comments enabled"), _("// comments disabled"), _("^G ignores //... "), 0, 0, 0 },
-	{"pound_comment",	4, NULL, (char *) &fdefault.pound_comment, _("# comments enabled"), _("# comments disabled"), _("^G ignores #... "), 0, 0, 0 },
+	{"pound_comment",	4, NULL, (char *) &fdefault.hash_comment, _("# comments enabled"), _("# comments disabled"), _("^G ignores #... "), 0, 0, 0 },
+	{"hash_comment",	4, NULL, (char *) &fdefault.hash_comment, _("# comments enabled"), _("# comments disabled"), _("^G ignores #... "), 0, 0, 0 },
 	{"vhdl_comment",	4, NULL, (char *) &fdefault.vhdl_comment, _("-- comments enabled"), _("-- comments disabled"), _("^G ignores --... "), 0, 0, 0 },
 	{"semi_comment",	4, NULL, (char *) &fdefault.semi_comment, _("; comments enabled"), _("; comments disabled"), _("^G ignores ;... "), 0, 0, 0 },
 	{"tex_comment",	4, NULL, (char *) &fdefault.tex_comment, _("% comments enabled"), _("% comments disabled"), _("^G ignores %... "), 0, 0, 0 },

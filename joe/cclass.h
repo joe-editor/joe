@@ -19,7 +19,7 @@ void interval_sort(struct interval *array, ptrdiff_t size);
 
 /* Test if character is in a sorted interval array using binary search.
    Returns -1 if not found, or index to matching struct interval */
-ptrdiff_t interval_test(struct interval *array, ptrdiff_t size, int ch);
+ptrdiff_t interval_test(const struct interval *array, ptrdiff_t size, int ch);
 
 /* An interval list item.  This is one implementation of character -> pointer maps. */
 
@@ -167,7 +167,7 @@ void cclass_sub(struct Cclass *cclass, int first, int last);
 
 /* Merge one character class into another */
 void cclass_union(struct Cclass *cclass, struct Cclass *n);
-void cclass_merge(struct Cclass *cclass, struct interval *intervals, int len);
+void cclass_merge(struct Cclass *cclass, const struct interval *intervals, int len);
 
 /* Subtract one character class from another */
 void cclass_diff(struct Cclass *cclass, struct Cclass *n);

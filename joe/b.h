@@ -103,7 +103,7 @@ struct options {
 	int	no_double_quoted;	/* Don't ignore " " for ^G */
 	int	c_comment;	/* Ignore text in C comments */
 	int	cpp_comment;	/* Ignore text after // comments */
-	int	pound_comment;	/* Ignore text after # comments */
+	int	hash_comment;	/* Ignore text after # comments */
 	int	vhdl_comment;	/* Ignore text after -- comments */
 	int	semi_comment;	/* Ignore text after ; comments */
 	int	tex_comment;	/* Ignore text after % comments */
@@ -283,7 +283,7 @@ B *borphan(void);
 int bsave(P *p, const char *s, off_t size,int flag);
 int bsavefd(P *p, int fd, off_t size);
 
-char *parsens(const char *s, off_t *skip, off_t *amnt, int *mode);
+char *parsens(const char *s, off_t *skip, off_t *amnt);
 
 char *canonical(char *s, int flags);
 #define CANFLAG_NORESTART 1 /* Support path restart feature */
