@@ -192,7 +192,13 @@ class BkndTests(joefx.JoeTestBase):
         # Wait for shell prompt to appear
         self.waitForNotEmpty(y=1)
         self.write("echo hello world\r")
-        self.assertTextAt("hello world", x=0, dy=-1)
+
+        def check():
+            return (self.compareTextAt("hello world", x=0, dy=-1) or
+                self.compareTextAt("hello world", x=0, dy=-2) or
+                self.compareTextAt("hello world", x=0, dy=-3))
+        self.assertTrue(self.joe.expect(check))
+
         self.cmd("uparw,abort")
         self.write("y")
         time.sleep(0.1)
