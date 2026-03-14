@@ -83,7 +83,7 @@ jobs:
     runs-on: windows-latest
     defaults:
       run:
-        shell: C:\cygwin\bin\bash.exe --login -o igncr -eo pipefail '{0}'
+        shell: C:\cygwin\bin\bash.exe --login -o igncr '{0}'
     steps:
       - name: Configure git
         run: git config --global core.autocrlf input
@@ -124,7 +124,6 @@ jobs:
           name: cygwin-config-log
           path: |
             config.log
-            configure
 
       - name: Run tests
         # Only run the tests on Linux for now.
