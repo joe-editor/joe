@@ -20,6 +20,12 @@
 
 	* Improve Verilog and SystemVerilog syntax
 
+	* `-purify` now cleans excess whitespace instead of no-opping
+
+	* Improve shell script recognition (contributed by Darren Salt)
+
+	* `-keepup` produces fewer updates during mouse input and similar
+
 * Bugs fixed
 
 	* Fix destructive multi-line bracketed paste: pasting multi-line input was destructive to pre-existing text
@@ -40,19 +46,11 @@
 
 	* Revert ^K Q behavior (by popular demand!)
 
-	* `-purify` now cleans excess whitespace instead of no-opping
-
 	* Improve localized decimal point handling in calculator
 
 	* Fix not "not changed" undo record bug after saving file
 
-	* Improve shell script recognition (contributed by Darren Salt)
-
-	* `-keepup` produces fewer updates during mouse input and similar
-
 	* Fix jmacs help keybindings (contributed by Peter Salvi)
-
-	* Consider `Tc` terminfo for truecolor terminal detection
 
 * Windows version
 
