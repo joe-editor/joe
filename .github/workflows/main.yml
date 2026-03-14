@@ -114,9 +114,8 @@ jobs:
         run: |
           # Build
           ./autojoe
-          set +o pipefail
-          ./configure --prefix=/usr/local
-          make -j
+          set +eo pipefail
+          ./configure --prefix=/usr/local && make -j
 
       - name: Run tests
         # Only run the tests on Linux for now.
