@@ -56,7 +56,7 @@ class JoeController(object):
                 return False
 
             res = self._readData()
-            if res < 0 or not self.checkProcess():
+            if res <= 0 and not self.checkProcess():
                 raise exceptions.ProcessExitedException
 
             if func():
