@@ -22,6 +22,12 @@
 
 * Bugs fixed
 
+	* Fix destructive multi-line bracketed paste: pasting multi-line input was destructive to pre-existing text
+
+	* Fix screen corruption when pasting with line-numbers activated
+
+	* Fix macOS build and C99 correctness
+
 	* Fix a number of bugs involved with piping data into JOE:
 
 		* Make piping into JOE binary clean.  For example, in: "echo -e 'a\0b' | joe" the NUL was missing.
@@ -34,9 +40,19 @@
 
 	* Revert ^K Q behavior (by popular demand!)
 
+	* `-purify` now cleans excess whitespace instead of no-opping
+
 	* Improve localized decimal point handling in calculator
 
 	* Fix not "not changed" undo record bug after saving file
+
+	* Improve shell script recognition (contributed by Darren Salt)
+
+	* `-keepup` produces fewer updates during mouse input and similar
+
+	* Fix jmacs help keybindings (contributed by Peter Salvi)
+
+	* Consider `Tc` terminfo for truecolor terminal detection
 
 * Windows version
 
