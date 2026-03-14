@@ -1,4 +1,3 @@
-
 import joefx
 import time
 
@@ -662,6 +661,7 @@ class MathTests(joefx.JoeTestBase):
         self.assertMath("cnt", "5")
         self.assertEqual(self.math("dev")[0:9], "6.899,275")
 
+    @joefx.skip_on_cygwin
     def test_math_locale(self):
         import locale
 
