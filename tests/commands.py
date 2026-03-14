@@ -179,7 +179,13 @@ class BeginMarkingTests(joefx.JoeTestBase):
 
 class BkndTests(joefx.JoeTestBase):
     def test_bknd_shell(self):
+        self.startup.env["LC_ALL"] = "C"
+        self.startup.env["PAGER"] = "cat"
+        self.startup.env["SHELL"] = "/bin/sh"
+        self.startup.env["INPUTRC"] = "/dev/null"
+        self.startup.env["PS1"] = "> "
         self.startJoe()
+
         self.cmd("bknd")
         # Wait for shell prompt to appear
         self.waitForNotEmpty(y=1)
