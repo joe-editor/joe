@@ -2,6 +2,7 @@
 import array
 import atexit
 import collections
+import errno
 import fcntl
 import os
 import pty
