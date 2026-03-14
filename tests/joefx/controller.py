@@ -153,7 +153,8 @@ class JoeController(object):
             if self.expect(lambda: not self.checkProcess()):
                 return self.exited[1] >> 8
         except exceptions.ProcessExitedException:
-            return self.exited[1] >> 8
+            if self.exited is not None:
+                return self.exited[1] >> 8
 
         return None
 
