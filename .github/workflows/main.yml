@@ -130,7 +130,11 @@ jobs:
           SHELLOPTS: igncr
           CYGWIN_NOWINPATH: 1
           CHERE_INVOKING: 1
-        run: ./runtests
+        run: |
+          # 
+          python3 -m venv --copies tests/testenv && \
+          ./venv/bin/pip install -r tests/requirements.txt && \
+          ./runtests
 
       - name: Annotate test result
         if: steps.run_tests.outcome == 'failure'
