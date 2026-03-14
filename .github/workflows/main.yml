@@ -61,16 +61,6 @@ jobs:
           make -j
 
       - name: Run tests
-        # Only run the tests on Linux for now.
-        if: runner.os == 'linux'
-        continue-on-error: true
         id: run_tests
         run: |
           ./runtests
-
-      - name: Annotate test result
-        if: steps.run_tests.outcome == 'failure'
-        run: |
-          echo "::warning title=Test Failure::The tests failed, but the build continued because they currently need work."
-          echo "### ⚠️ Flaky Test Warning" >> $GITHUB_STEP_SUMMARY
-          echo "The test suite failed. Please check the logs of the 'Run tests' step for details." >> $GITHUB_STEP_SUMMARY
