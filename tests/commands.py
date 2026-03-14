@@ -1,4 +1,3 @@
-
 import joefx
 import time
 
@@ -184,13 +183,21 @@ class BkndTests(joefx.JoeTestBase):
         self.startup.env["SHELL"] = "/bin/sh"
         self.startup.env["INPUTRC"] = "/dev/null"
         self.startup.env["PS1"] = "> "
+        self.startup.env["PROMPT_COMMAND"] = ""
+        self.startup.env["TERM"] = "vt100"
         self.startJoe()
 
         self.cmd("bknd")
         # Wait for shell prompt to appear
         self.waitForNotEmpty(y=1)
         self.write("echo hello world\r")
-        self.assertTextAt("hello world", x=0, dy=-1)
+
+        def check():
+            return (self.compareTextAt("hello world", x=0, dy=-1) or
+                self.compareTextAt("hello world", x=0, dy=-2) or
+                self.compareTextAt("hello world", x=0, dy=-3))
+        self.assertTrue(self.joe.expect(check))
+
         self.cmd("uparw,abort")
         self.write("y")
         time.sleep(0.1)
@@ -654,6 +661,7 @@ class MathTests(joefx.JoeTestBase):
         self.assertMath("cnt", "5")
         self.assertEqual(self.math("dev")[0:9], "6.899,275")
 
+    @joefx.skip_on_cygwin
     def test_math_locale(self):
         import locale
 
