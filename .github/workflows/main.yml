@@ -113,8 +113,9 @@ jobs:
           CHERE_INVOKING: 1
         run: |
           # Build
-          ./autojoe
-          ./configure --prefix=/usr/local
+          set +eo pipefail
+          ./autojoe && \
+          ./configure --prefix=/usr/local && \
           make -j
 
       - name: Run tests
