@@ -1,16 +1,11 @@
 name: POSIX build and test
 
 on:
-  push:
+  push: &filters
     branches:
     - main
     - coroutine
     - windows
-  pull_request:
-    branches:
-    - main
-    - windows
-    - coroutine
     paths-ignore:
     - "docs/**"
     - "htdocs/**"
@@ -19,6 +14,7 @@ on:
     - "*.md"
     - "*.txt"
     - ".gitignore"
+  pull_request: *filters
 
 # One at a time especially for PR's.
 concurrency:
