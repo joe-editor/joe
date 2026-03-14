@@ -37,7 +37,7 @@
 	"\""		string_dq	recolor=-1
 	"<"		maybe_inc
 	"0-9"		maybe_base	recolor=-1
-	"a-zA-Z{}![_"	ident		buffer
+	"a-zA-Z{}![_"	ident		buffer recolor=-1
 
 :subst_char Variable
 	*		idle	noeat
