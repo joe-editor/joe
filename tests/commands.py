@@ -469,8 +469,11 @@ class ExsaveTests(joefx.JoeTestBase):
 
         self.cmd("eof")
         self.write(" - more text")
+        self.joe.flushin()
         self.cmd("markk,bof,markb")
+        self.joe.flushin()
         self.cmd("exsave")
+        self.joe.flushin()
 
         self.assertExited()
         self.assertFileContents("test", self.text + " - more text")
@@ -648,24 +651,24 @@ class MathTests(joefx.JoeTestBase):
     def test_math_locale(self):
         import locale
 
-        installed = False
+        installed_locale = None
         for loc in ('de_DE', 'fr_FR'):
             try:
                 old_loc = locale.setlocale(locale.LC_NUMERIC, loc)
-                installed = True
+                installed_locale = loc
                 locale.setlocale(locale.LC_NUMERIC, old_loc)
                 break
             except locale.Error:
                 pass
 
-        if not installed:
+        if installed_locale is None:
             self.skipTest("Cannot find a pre-determined EU locale on the system")
 
-        self.startup.env["LC_NUMERIC"] = "de_DE"
+        self.startup.env["LC_NUMERIC"] = installed_locale
         self.startJoe()
 
         self.assertMath("32768", "32.768")
-        self.assertMath("3.2768", "3,2.768")
+        self.assertMath("3.2768", "3,276.8")
 
     # TODO: There's a *lot* more that could be done here...
 
