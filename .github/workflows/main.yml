@@ -98,7 +98,7 @@ jobs:
           packages: >-
             make, gcc-core, gcc-g++, binutils,
             autoconf, automake, libtool,
-            python3, python3-pip, python3-venv, python3-devel
+            python3, python3-pip, python3-virtualenv, python3-tox, python3-wheel
 
       - name: Get tool versions
         run: |
@@ -131,9 +131,12 @@ jobs:
           CYGWIN_NOWINPATH: 1
           CHERE_INVOKING: 1
         run: |
-          # 
-          python3 -m venv --copies tests/testenv && \
-          ./venv/bin/pip install -r tests/requirements.txt && \
+          # Manual environment creation.
+          #python3 -m venv --no-pip --copies tests/testenv && \
+          #source testenv/bin/activate && \
+          #curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
+          #python3 get-pip.py && \
+          #pip install -r tests/requirements.txt && \
           ./runtests
 
       - name: Annotate test result
