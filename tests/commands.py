@@ -184,6 +184,7 @@ class BkndTests(joefx.JoeTestBase):
         self.startup.env["SHELL"] = "/bin/sh"
         self.startup.env["INPUTRC"] = "/dev/null"
         self.startup.env["PS1"] = "> "
+        self.startup.env["PROMPT_COMMAND"] = ""
         self.startJoe()
 
         self.cmd("bknd")
