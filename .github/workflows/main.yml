@@ -6,7 +6,6 @@ on:
     - main
     - coroutine
     - windows
-    - jjjordan/gha-cygwin
   pull_request:
     branches:
     - main
