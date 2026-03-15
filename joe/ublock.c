@@ -680,7 +680,7 @@ void setindent(BW *bw)
 	updall();
 }
 
-/* Purity check */
+/* Purity check entire block */
 /* Verifies that at least n indentation characters (for non-blank lines) match c */
 /* If n is 0 (for urindent), this fails if c is space but indentation begins with tab */
 
@@ -705,25 +705,63 @@ static int purity_check(int c, off_t n)
 	return 1;
 }
 
+/* Purity check single line */
+/* Verifies that at least n indentation characters match c */
+
+static int is_pure(P *p, int c, off_t n)
+{
+	int x;
+	for (x=0; x!=n; ++x) {
+		if (pgetc(p)!=c) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
 /* Left indent check */
-/* Verify that there is enough whitespace to do the left indent */
+/* Verify that there is enough whitespace to do the left shift */
 
 static int lindent_check(int c, off_t n)
 {
 	P *p = pdup(markb, "lindent_check");
+	P *q = pdup(markb, "lindent_check");
 	off_t indwid;
 	if (c=='\t')
 		indwid = n * p->b->o.tab;
 	else
 		indwid = n;
-	while (p->byte < markk->byte) {
-		p_goto_bol(p);
-		if (!piseol(p) && pisindent(p)<indwid) {
-			prm(p);
-			return 0;
+	if (c == ' ' || c == '\t') {
+		/* Normal whitespace, measure indentation */
+		/* Ignore blank lines */
+		while (p->byte < markk->byte) {
+			p_goto_bol(p);
+			if (!piseol(p) && pisindent(p)<indwid) {
+				prm(q);
+				prm(p);
+				return 0;
+			}
+			pnextl(p);
 		}
-		pnextl(p);
+	} else {
+		/* Some other indentation character, require prefix to have that character */
+		/* Ignore blank lines */
+		while (p->byte < markk->byte) {
+			off_t x;
+			p_goto_bol(p);
+			if (!piseol(p)) {
+				pset(q, p);
+				for (x = 0; x < indwid && pgetc(q) == c; ++x);
+				if (x < indwid) {
+					prm(q);
+					prm(p);
+					return 0;
+				}
+			}
+			pnextl(p);
+		}
 	}
+	prm(q);
 	prm(p);
 	return 1;
 }
@@ -747,6 +785,43 @@ int urindent(W *w, int k)
 	} else {
 		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
 			setindent(bw);
+		} else {
+			P *p = pdup(markb, "urindent");
+			P *q = pdup(markb, "urindent");
+			off_t indwid;
+
+			if (bw->o.indentc=='\t')
+				indwid = bw->o.tab * bw->o.istep;
+			else
+				indwid = bw->o.istep;
+
+			while (p->byte < markk->byte) {
+				p_goto_bol(p);
+				if (!piseol(p)) {
+					off_t col;
+					if (bw->o.indentc == ' ' && brc(p) == '\t') {
+						/* Don't insert spaces before tabs */
+						/* Rewrite the whitespace instead */
+						pset(q, p);
+						p_goto_indent(q, bw->o.indentc);
+						col = piscol(q);
+						bdel(p,q);
+						pfill(p,col+indwid,bw->o.indentc);
+					} else {
+						/* Simple insert */
+						while (piscol(p) < bw->o.istep) {
+							binsc(p, bw->o.indentc);
+							pgetc(p);
+						}
+					}
+				}
+				pnextl(p);
+			}
+			prm(p);
+			prm(q);
+		}
+
+#if 0
 		} else if ( 1 /* bw->o.purify */) {
 			P *p = pdup(markb, "urindent");
 			P *q = pdup(markb, "urindent");
@@ -769,8 +844,6 @@ int urindent(W *w, int k)
 				}
 				pnextl(p);
 			}
-			prm(p);
-			prm(q);
 		} else if (purity_check(bw->o.indentc,0)) {
 			P *p = pdup(markb, "urindent");
 
@@ -789,6 +862,7 @@ int urindent(W *w, int k)
 			msgnw(bw->parent,joe_gettext(_("Selected lines not properly indented")));
 			return 1;
 		}
+#endif
 	}
 	return 0;
 }
@@ -829,6 +903,42 @@ int ulindent(W *w, int k)
 	} else {
 		if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
 			setindent(bw);
+		} else if (lindent_check(bw->o.indentc,bw->o.istep)) {
+			/* All lines have enough whitespace for the left-shift */
+			P *p = pdup(markb, "ulindent");
+			P *q = pdup(markb, "ulindent");
+			off_t indwid;
+
+			if (bw->o.indentc=='\t')
+				indwid = bw->o.tab * bw->o.istep;
+			else
+				indwid = bw->o.istep;
+
+			while (p->byte < markk->byte) {
+				p_goto_bol(p);
+				if (!piseol(p)) {
+					pset(q, p);
+					if (is_pure(q,bw->o.indentc,bw->o.istep)) {
+						/* Simple deletion */
+						pset(q, p);
+						while (piscol(q) < bw->o.istep)
+							pgetc(q);
+						bdel(p, q);
+					} else {
+						/* Rewrite whitespace */
+						off_t col;
+						pset(q, p);
+						p_goto_indent(q, bw->o.indentc);
+						col = piscol(q);
+						bdel(p,q);
+						pfill(p,col-indwid,bw->o.indentc);
+					}
+				}
+				pnextl(p);
+			}
+			prm(p);
+			prm(q);
+#if 0
 		} else if (1 /* bw->o.purify */ && lindent_check(bw->o.indentc,bw->o.istep)) {
 			P *p = pdup(markb, "ulindent");
 			P *q = pdup(markb, "ulindent");
@@ -869,6 +979,7 @@ int ulindent(W *w, int k)
 			}
 			prm(p);
 			prm(q);
+#endif
 		} else {
 			/* Purity failure */
 			msgnw(bw->parent,joe_gettext(_("Selected lines not properly indented")));
