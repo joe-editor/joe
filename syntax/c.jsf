@@ -210,42 +210,72 @@
 :preident Preproc
 	*		preproc		noeat markend recolormark strings
 	"define"	predef		markend recolormark
-	"include"	preinc		markend recolormark
+	"include"	preinc_end	markend recolormark call=.inc_file()
+	"embed"		preembed_params	markend recolormark call=.inc_file()
 	"if"		precond		markend recolormark
 	"ifdef"		precond		markend recolormark
 	"ifndef"	precond		markend recolormark
 	"else"		precond		markend recolormark
 	"elif"		precond		markend recolormark
 	"endif"		precond		markend recolormark
+	"undef"		predef		markend recolormark
+	"elifdef"	precond		markend recolormark # C++23
+	"elifndef"	precond		markend recolormark # C++23
 done
 	"a-z"		preident
 
 :precond Precond
 	*		preproc		noeat
 
+.subr inc_file
 :preinc Preproc
 	*		preinc
 	" \t"		preinc_ws
-	"\n"		reset
+	"\n"		NULL		noeat return
 
 :preinc_ws Preproc
-	*		prebad		recolor=-1
+	*		preinc_trail	noeat recolor=-1
+	"\c"		preinc_ident	recolor=-1 # e.g. #embed __FILE__
 	" \t"		preinc_ws
 	"\""		preinc_local	recolor=-1
 	"<"		preinc_system	recolor=-1
+	"\n"		NULL		noeat return
 
 :preinc_local IncLocal string
 	*		preinc_local
-	"\"\n"		reset
+	"\""		preinc_trail
+	"\n"		NULL		noeat return
 
 :preinc_system IncSystem string
 	*		preinc_system
-	">\n"		reset
+	">"		preinc_trail
+	"\n"		NULL		noeat return
+
+:preinc_ident	Idle
+	*		preinc_trail	noeat
+	"\c"		preinc_ident
+
+:preinc_trail	Idle
+	*		NULL		noeat return
+	" \t"		preinc_trail
+	"\n"		NULL		noeat return
+.end
+
+:preinc_end	Bad
+	*		preinc_end
+	"\\"		preinc_end_cont
+	"/"		preinc_end	call=.slash()
+	"\n"		NULL		noeat return
+
+:preinc_end_cont Bad
+	*		preinc_end
+
+:preembed_params	Idle
+	*		idle	noeat
 
 :prebad	Bad
 	*		prebad
 	"\n"		reset
-
 
 :predef Preproc
 	*		predef
@@ -265,12 +295,7 @@ done
 	*		preproc
 	"\n"		reset
 	"\\"		preproc_cont
-	"/"		preproc_slash
-
-:preproc_slash Preproc
-	*		preproc		noeat
-	"*"		comment		recolor=-2
-	"/"		line_comment	recolor=-2
+	"/"		preproc		call=.slash()
 
 :preproc_cont Preproc
 	*		preproc_cont
@@ -281,7 +306,7 @@ done
 :idle Idle
 	*		idle
 	"\n"		reset
-	"/"		slash
+	"/"		idle		call=.slash()
 	"0"		first_digit	recolor=-1
 	"1-9"		decimal		recolor=-1
 	"."		maybe_float
@@ -301,8 +326,9 @@ done
 :control Control
 	*	idle	noeat
 
-:slash Idle
-	*		idle		noeat recolor=-2	# Not sure about this
+.subr slash
+:slash Comment comment
+	*		NULL		noeat recolor=-2 return	# Not sure about this
 	"*"		comment		recolor=-2
 	"/"		line_comment	recolor=-2
 
@@ -313,13 +339,14 @@ done
 
 :maybe_end_comment Comment comment
 	*		comment
-	"/"		idle
+	"/"		NULL		return
 	"*"		maybe_end_comment
 
 :line_comment Comment comment
 	*		line_comment
 	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
-	"\n"		reset
+	"\n"		NULL		noeat return
+.end
 
 :first_digit Number
 	*		idle	noeat
@@ -424,6 +451,7 @@ done
 
 :ident Ident
 	*		idle		noeat strings
+	# C keywords: Fundamental types
 	"int"		type
 	"float"		type
 	"long"		type
@@ -433,13 +461,31 @@ done
 	"signed"	type
 	"unsigned"	type
 	"void"		type
+	# Derived but still high frequency types
+	"bool"		type
+	"int8_t"	type
+	"uint8_t"	type
+	"int16_t"	type
+	"uint16_t"	type
+	"int32_t"	type
+	"uint32_t"	type
+	"int64_t"	type
+	"uint64_t"	type
+	"size_t"	type
+	"ssize_t"	type
+
+	"NULL"		constant
+	"false"		constant
+	"true"		constant
+
+	#"auto"		storage (use in C practically nonexistent; listed below as a C++ keyword)
 	"static"	storage
 	"register"	storage
 	"extern"	storage
-	"inline"	type
-	"auto"		storage
+	"inline"	storage
 	"const"		storage
 	"volatile"	storage
+	"restrict"	storage
 	"if"		cond
 	"else"		cond
 	"while"		loop
@@ -458,32 +504,53 @@ done
 	"typedef"	struct
 	"union"		struct
 	"asm"		kw
+	"alignas"	kw
+	"alignof"	kw
+	"static_assert"	kw
+	"thread_local"	storage
 # C++ keywords
 	#"asm"			cppkw (listed above as a C keyword)
-	"bool"			cppkw
-	"catch"			cppkw
+	"auto"			type
+	"catch"			cond
+	"char8_t"		type
+	"char16_t"		type
+	"char32_t"		type
 	"class"			struct
+	"co_await"		cppkw
+	"co_return"		cppkw
+	"co_yield"		cppkw
+	"concept"		cppkw
 	"const_cast"		cppkw
+	"consteval"		cppkw
+	"constexpr"		cppkw
+	"constinit"		cppkw
+	"contract_assert"	cppkw
+	"decltype"		cppkw
 	"delete"		cppkw
 	"dynamic_cast"		cppkw
 	"explicit"		cppkw
-	"false"			cppkw
+	"final"			cppkw
 	"friend"		cppkw
 	#"inline"		cppkw (listed above as a C keyword)
 	"mutable"		cppkw
 	"namespace"		cppkw
 	"new"			cppkw
+	"noexcept"		cppkw
+	"nullptr"		constant
 	"operator"		cppkw
+	"override"		cppkw
+	"post"			cppkw
+	"pre"			cppkw
 	"private"		cppkw
 	"protected"		cppkw
 	"public"		cppkw
 	"reinterpret_cast"	cppkw
+	"requires"		cppkw
 	"static_cast"		cppkw
 	"template"		cppkw
-	"this"			cppkw
-	"throw"			cppkw
-	"true"			cppkw
-	"try"			cppkw
+	"this"			constant # the value may not be constant, but the idea is
+	"throw"			stmt
+	"try"			cond
 	"typeid"		cppkw
 	"typename"		cppkw
 	"using"			cppkw
@@ -495,6 +562,9 @@ done
 	"\c"		ident
 
 :type Type
+	*	idle	noeat
+
+:constant Constant
 	*	idle	noeat
 
 :kw Keyword
