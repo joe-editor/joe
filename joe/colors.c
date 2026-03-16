@@ -34,7 +34,7 @@ struct color_builtin_specs {
 	int			*default_ptr;	/* Pointer to default attribute, e.g. to use bg_text */
 };
 
-static struct color_builtin_specs color_builtins[] = {
+static const struct color_builtin_specs color_builtins[] = {
 	{ "text", &bg_text, NULL, 0, 0, 0, 0 },	/* Must come first, so others can use as default */
 	{ "linum", &bg_linum, NULL, 0, 0, 0, &bg_text },
 	{ "curlin", &bg_curlin, &curlinmask, 0, 0, -1, &bg_text },

@@ -169,7 +169,7 @@ extern int force;		/* Set to have final '\n' added to file */
 
 extern VFILE *vmem;		/* Virtual memory file used for buffer system */
 
-extern const char *msgs[];	/* File access status messages */
+extern const char *const msgs[];	/* File access status messages */
 
 B *bmk(B *prop);
 void brm(B *b);

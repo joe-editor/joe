@@ -17,7 +17,7 @@ struct cmd {
 	const char *negarg;	/* Command to use if arg was negative */
 };
 
-extern CMD cmds[];		/* Built-in commands */
+extern const CMD cmds[];	/* Built-in commands */
 extern int joe_beep;		/* Enable beep on command error */
 
 /* Command execution flags */

@@ -156,7 +156,7 @@ long upc;			/* Microseconds per character */
  * too much to ask for them to just use an integer for the baud-rate?)
  */
 
-static speed_t speeds_in[] = {
+static const speed_t speeds_in[] = {
 	B50, B75, B110, B134, B150, B200, B300, B600, B1200, B1800, B2400, B4800, B9600
 #ifdef EXTA
 	, EXTA
@@ -172,7 +172,7 @@ static speed_t speeds_in[] = {
 #endif
 };
 
-static long speeds_out[] = {
+static const long speeds_out[] = {
 	50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400, 4800, 9600
 #ifdef EXTA
 	, 19200

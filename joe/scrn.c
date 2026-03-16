@@ -20,7 +20,7 @@ int assume_256color = 0;
 
 /* How to display characters (especially the control ones) */
 /* here are characters ... */
-char xlatc[256] = {
+static const char xlatc[256] = {
 	 64,  65,  66,  67,  68,  69,  70,  71,			/*   8 */
 	 72,  73,  74,  75,  76,  77,  78,  79,			/*  16 */
 	 80,  81,  82,  83,  84,  85,  86,  87,			/*  24 */
@@ -58,7 +58,7 @@ char xlatc[256] = {
 	120, 121, 122, 123, 124, 125, 126,  63			/* 256 */
 };
 /* ... and here their attributes */
-int xlata[256] = {
+static const int xlata[256] = {
 	UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,		/*   4 */
 	UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,		/*   8 */
 	UNDERLINE, UNDERLINE, UNDERLINE, UNDERLINE,		/*  12 */
