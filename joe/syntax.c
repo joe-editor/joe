@@ -296,6 +296,11 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			} else {
 				/* Normal edge */
 				h = cmd->new_state;
+				/* Guard against missing jump targets */
+				if (!h) {
+					invalidate_state(&h_state);
+					return h_state;
+				}
 			}
 
 			/* Recolor if necessary */
