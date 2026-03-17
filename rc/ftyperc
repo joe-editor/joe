@@ -193,7 +193,7 @@
 -single_quoted
 -c_comment
 -cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-text_delimiters #if|#ifdef|#ifndef=#elif*=#else=#endif
 -cpara >#!;*/%
 
  Lex
@@ -210,7 +210,7 @@
 -single_quoted
 -c_comment
 -cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-text_delimiters #if|#ifdef|#ifndef=#elif*=#else=#endif
 -cpara >#!;*/%
 
  Ada
@@ -286,7 +286,7 @@
 -single_quoted
 -c_comment
 -cpp_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#elifdef=#elifndef=#else=#endif
+-text_delimiters #if|#ifdef|#ifndef=#elif|#elifdef|#elifndef*=#else=#endif
 -cpara >#!;*/%
 
  Verilog
@@ -302,7 +302,7 @@
 -purify
 -c_comment
 -cpp_comment
--text_delimiters `ifdef|`ifndef=`elsif=`else=`endif:`begin_keywords=`end_keywords:`celldefine=`endcelldefine:`unconnected_drive=`nounconnected_drive:begin=end:case|casex|casez=endcase:config=endconfig:function=endfunction:generate=endgenerate:module=endmodule:primitive=endprimitive:specify=endspecify:table=endtable:task=endtask
+-text_delimiters `ifdef|`ifndef=`elsif*=`else=`endif:`begin_keywords=`end_keywords:`celldefine=`endcelldefine:`unconnected_drive=`nounconnected_drive:begin=end:case|casex|casez=endcase:config=endconfig:function=endfunction:generate=endgenerate:module=endmodule:primitive=endprimitive:specify=endspecify:table=endtable:task=endtask
 -cpara >#!;*/%
 -highlighter_context
 
@@ -319,7 +319,7 @@
 -purify
 -c_comment
 -cpp_comment
--text_delimiters `ifdef|`ifndef=`elsif=`else=`endif:`begin_keywords=`end_keywords:`celldefine=`endcelldefine:`unconnected_drive=`nounconnected_drive:begin=end:case|casex|casez=endcase:config=endconfig:function=endfunction:generate=endgenerate:module=endmodule:primitive=endprimitive:specify=endspecify:table=endtable:task=endtask:checker=endchecker:class=endclass:clocking=endclocking:group=endgroup:interface=endinterface:package=endpackage:program=endprogram:property=endproperty:sequence|randsequence=endsequence
+-text_delimiters `ifdef|`ifndef=`elsif*=`else=`endif:`begin_keywords=`end_keywords:`celldefine=`endcelldefine:`unconnected_drive=`nounconnected_drive:begin=end:case|casex|casez=endcase:config=endconfig:function=endfunction:generate=endgenerate:module=endmodule:primitive=endprimitive:specify=endspecify:table=endtable:task=endtask:checker=endchecker:class=endclass:clocking=endclocking:group=endgroup:interface=endinterface:package=endpackage:program=endprogram:property=endproperty:sequence|randsequence=endsequence
 -cpara >#!;*/%
 -highlighter_context
 
@@ -511,7 +511,7 @@
 -syntax sh
 -highlighter_context
 -hash_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
+-text_delimiters do=done:if=elif*=else=fi:case=esac
 
  Lisp
 [lisp]
@@ -534,7 +534,7 @@
 -syntax sh
 -highlighter_context
 -hash_comment
--text_delimiters do=done:if=elif=else=fi:case=esac
+-text_delimiters do=done:if=elif*=else=fi:case=esac
 -highlighter_context
 
  PASCAL
@@ -607,7 +607,7 @@
 -purify
 -single_quoted
 -c_comment
--text_delimiters #if|#ifdef|#ifndef=#elif=#else=#endif
+-text_delimiters #if|#ifdef|#ifndef=#elif*=#else=#endif
 -cpara >#!;*/%
 -highlighter_context
 
@@ -621,7 +621,7 @@
 -smartbacks
 -purify
 -cpara >#!;*/%
--text_delimiters #region=#endregion:#if=#elif=#else=#endif
+-text_delimiters #region=#endregion:#if=#elif*=#else=#endif
 -highlighter_context
 
  Joe Syntax File

@@ -383,6 +383,19 @@ static const char *next_group(const char *group)
 	return group;
 }
 
+/* True if group ends with '*' for repeat */
+
+static int repeated_group(const char *group)
+{
+	int repeated = 0;
+	while (*group && *group!='=' && *group!=':') {
+		if (*group == '*')
+			repeated = 1;
+		++group;
+	}
+	return repeated;
+}
+
 static const char *next_word(const char *word)
 {
 	while (*word && *word!='|' && *word!='=' && *word!=':')
@@ -396,7 +409,7 @@ static int match_word(const char *word,const int *s)
 {
 	while (*s && *word && utf8_decode_fwrd(&word, NULL) == *s++);
 
-	if (!*s && (!*word || *word=='|' || *word=='=' || *word==':'))
+	if (!*s && (!*word || *word=='|' || *word=='=' || *word==':' || *word=='*'))
 		return 1;
 	else
 		return 0;
@@ -978,7 +991,10 @@ int utomatch(W *w, int k)
 			for (group = set; *group && *group!='=' && *group!=':'; group=next_group(group)) {
 				for (word = group; *word && *word!='|' && *word!='=' && *word!=':'; word=next_word(word)) {
 					if (match_word(word, buf)) {
-						return tomatch_word(bw, set, next_group(word));
+						if (repeated_group(word))
+							return tomatch_word(bw, set, group);
+						else
+							return tomatch_word(bw, set, next_group(word));
 					}
 				}
 			}

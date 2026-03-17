@@ -12,13 +12,19 @@
 
 * Enhancements
 
+	* Visible whitespace mode: option to subtly display tabs, spaces and
+	  newlines
+
+	* Improve indent shift: preserve original whitespace
+
 	* Upgrade to Unicode 17.0.0.  Add configure environment variable
 	  that allows you to select Unicode 8.0.0, 9.0.0, 10.0.0, 13.0.0,
 	  15.0.0, 15.1.0, 16.0.0 or 17.0.0
 
-	* Consider 'Tc' terminfo flag when determining whether a terminal supports 24-bit color.
+	* Consider 'Tc' terminfo flag when determining whether a terminal supports 24-bit color
 
-	* Improve Verilog and SystemVerilog syntax
+	* Improved highlighters for: Verilog, SystemVerilog, C, C++, PHP,
+	  Markdown
 
 	* `-purify` now cleans excess whitespace instead of no-opping
 
