@@ -23,7 +23,7 @@
 =Statement	+Keyword
 =Loop		+Statement
 =Conditional	+Statement
-=Brace
+=Brace		+Control
 
 # Syntax
 
