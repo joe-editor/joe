@@ -12,6 +12,7 @@
 -menu 81/16
 -menusel /244
 -cursor 16/231
+-visiblews 245 #81?
 
 -term 0 234
 -term 1 196
@@ -75,6 +76,7 @@
 -menu $66D9EF/$000000
 -menusel /$808080
 -cursor $000000/$F8F8F0
+-visiblews $888a85 #66d9ef?
 
 -term 0 $1B1D1E
 -term 1 $EF5939
