@@ -1,25 +1,24 @@
 struct unicat {
 	const char *name;
 	int len;
-	struct interval *intervals;
-	struct unicat *next;
+	const struct interval *intervals;
 };
 
 /* Tables in unicat.c */
 
-extern struct unicat unicat[];	/* Categories */
-extern struct interval toupper_table[];	/* Convert to uppercase */
-extern int toupper_cvt[];
-extern struct interval tolower_table[];	/* Convert to lowercase */
-extern int tolower_cvt[];
-extern struct interval totitle_table[];	/* Convert to titlecase */
-extern int totitle_cvt[];
-extern struct interval fold_table[]; /* Case folding table */
+extern const struct unicat unicat[];	/* Categories */
+extern const struct interval toupper_table[];	/* Convert to uppercase */
+extern const int toupper_cvt[];
+extern const struct interval tolower_table[];	/* Convert to lowercase */
+extern const int tolower_cvt[];
+extern const struct interval totitle_table[];	/* Convert to titlecase */
+extern const int totitle_cvt[];
+extern const struct interval fold_table[]; /* Case folding table */
 #define REPLLEN 3
 #define FOLDMAGIC 0x4000000
 extern struct Rtree rtree_fold[1];
-extern int fold_repl[][REPLLEN];
-extern struct interval width_table[]; /* Double-wide characters */
+extern const int fold_repl[][REPLLEN];
+extern const struct interval width_table[]; /* Double-wide characters */
 
 int *lowerize(int *d, ptrdiff_t len, const int *s);
 

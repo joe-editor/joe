@@ -136,7 +136,7 @@ void *joe_realloc(void *ptr, ptrdiff_t size);
 void joe_free(void *ptr);
 
 #ifndef HAVE_SIGHANDLER_T
-typedef RETSIGTYPE (*sighandler_t)(int);
+typedef void (*sighandler_t)(int);
 #endif
 
 #ifdef NEED_TO_REINSTALL_SIGNAL

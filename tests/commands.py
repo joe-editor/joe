@@ -1,4 +1,3 @@
-
 import joefx
 import time
 
@@ -7,22 +6,22 @@ class AbortTests(joefx.JoeTestBase):
         self.startJoe()
         self.cmd("abort")
         self.assertExited()
-    
+
     def test_abort_closes_buffer(self):
         self.startJoe()
-        
+
         # Write text, split the window
         self.cmd("splitw")
         self.assertCursor(x=0, y=13)
-        
+
         # Abort
         self.cmd("abort")
         self.assertCursor(x=0, y=1)
-        
+
         # Abort to exit
         self.cmd("abort")
         self.assertExited()
-    
+
     def test_abort_closes_prompt(self):
         self.startJoe()
         self.cmd("edit")
@@ -32,7 +31,7 @@ class AbortTests(joefx.JoeTestBase):
         self.assertTextAt("          ", x=0, y=y)
         self.cmd("abort")
         self.assertExited()
-    
+
     def test_abort_prompts_on_change(self):
         self.startJoe()
         self.write("Hello world")
@@ -40,7 +39,7 @@ class AbortTests(joefx.JoeTestBase):
         self.assertTextAt("Lose changes to this", x=0)
         self.write("y")
         self.assertExited()
-    
+
     def test_abort_kills_process(self):
         self.startJoe()
         self.cmd("bknd")
@@ -49,12 +48,12 @@ class AbortTests(joefx.JoeTestBase):
         self.assertTrue(self.joe.expect(lambda: self.joe.cursor.X > 0))
         self.cmd("bol")
         self.assertCursor(x=0)
-        
+
         self.cmd("abort")
         self.assertTextAt("Kill program", x=0)
         self.write("y")
         time.sleep(0.1) # Same
-        
+
         self.cmd("abort")
         self.assertTextAt("Lose changes", x=0)
         self.write("y")
@@ -70,7 +69,7 @@ class ArgTests(joefx.JoeTestBase):
         self.write("5\r")
         self.write("f")
         self.assertTextAt("fffff", x=0)
-    
+
     def test_uarg(self):
         self.startJoe()
         self.cmd("uarg")
@@ -91,15 +90,15 @@ class BacksTests(joefx.JoeTestBase):
         self.cmd("backs")
         self.assertTextAt("first linesecond line", x=0)
         self.assertTextAt("second line")
-    
+
     def test_backs_in_menu(self):
         self.startJoe()
-        
+
         # Get expected menu text
         rootMenu = self.config.getMenu('root')
         moreItem = rootMenu.getItem(lambda item: 'more-options' in item.macro)
         moreMenu = self.config.getMenu('more-options')
-        
+
         self.menu("root")
         self.selectMenu(moreItem.label)
         self.rtn()
@@ -116,24 +115,24 @@ class BackwTests(joefx.JoeTestBase):
             ("another", 2, "other"),
             ("whitespace           ", -1, "whitespace")
         ]
-        
+
         self.workdir.fixtureData("test", "\n".join(t[0] for t in tests))
         self.startup.args = ("test",)
         self.startJoe()
         self.cmd("bof")
         self.assertCursor(x=0, y=1)
-        
+
         for line, start, result in tests:
             if start < 0:
                 self.cmd("eol")
             else:
                 self.writectl("{right*%d}" % start)
             self.cmd("backw,dnarw,bol")
-        
+
         self.save()
         self.exitJoe()
         self.assertFileContents("test", "\n".join(t[2] for t in tests))
-    
+
     def test_backw_newlines(self):
         self.workdir.fixtureData("test", "foo\n\n\n  \n\n\nbar")
         self.startup.args = ("test",)
@@ -156,7 +155,7 @@ class BeginMarkingTests(joefx.JoeTestBase):
             self.cmd("rtarw,ltarw,begin_marking,rtarw,toggle_marking")
         self.assertSelectedText(lambda s: s == 'hello', dx=-1)
         self.exitJoe()
-    
+
     def test_begin_marking_left(self):
         self.startJoe()
         self.write("hello world")
@@ -165,7 +164,7 @@ class BeginMarkingTests(joefx.JoeTestBase):
             self.cmd("ltarw,rtarw,begin_marking,ltarw,toggle_marking")
         self.assertSelectedText(lambda s: s == 'world', dx=1)
         self.exitJoe()
-    
+
     def test_begin_marking_back_forth(self):
         self.startJoe()
         self.write("hello world")
@@ -179,12 +178,26 @@ class BeginMarkingTests(joefx.JoeTestBase):
 
 class BkndTests(joefx.JoeTestBase):
     def test_bknd_shell(self):
+        self.startup.env["LC_ALL"] = "C"
+        self.startup.env["PAGER"] = "cat"
+        self.startup.env["SHELL"] = "/bin/sh"
+        self.startup.env["INPUTRC"] = "/dev/null"
+        self.startup.env["PS1"] = "> "
+        self.startup.env["PROMPT_COMMAND"] = ""
+        self.startup.env["TERM"] = "vt100"
         self.startJoe()
+
         self.cmd("bknd")
         # Wait for shell prompt to appear
         self.waitForNotEmpty(y=1)
         self.write("echo hello world\r")
-        self.assertTextAt("hello world", x=0, dy=-1)
+
+        def check():
+            return (self.compareTextAt("hello world", x=0, dy=-1) or
+                self.compareTextAt("hello world", x=0, dy=-2) or
+                self.compareTextAt("hello world", x=0, dy=-3))
+        self.assertTrue(self.joe.expect(check))
+
         self.cmd("uparw,abort")
         self.write("y")
         time.sleep(0.1)
@@ -208,40 +221,40 @@ class BofTests(joefx.JoeTestBase):
         self.workdir.fixtureData("test", text)
         self.startup.args = ("test",)
         self.startJoe()
-        
+
         self.cmd("dnarw,dnarw,dnarw,dnarw")
         self.assertCursor(x=0, y=5)
         self.cmd("bof")
         self.assertCursor(x=0, y=1)
         self.assertTextAt("line 0  ", x=0)
-        
+
         self.cmd(",".join("dnarw" for i in range(30)))
         self.assertCursor(x=0, y=-1)
         self.assertTextAt("line 29")
-        
+
         self.cmd("bof")
         self.assertCursor(x=0, y=1)
         self.assertTextAt("line 0  ", x=0)
         self.exitJoe()
-    
+
     def test_bof_pw(self):
         self.startJoe()
-        
+
         # Fill up find history buffer
         self.find("first")
         self.find("second")
         self.find("third")
         self.find("fourth")
         self.find("fifth")
-        
+
         self.cmd("ffirst,bof")
         self.assertTextAt("first")
         self.assertCursor(y=-1)
         self.exitJoe()
-    
+
     def test_bof_menu(self):
         self.startJoe()
-        
+
         rootMenu = self.config.getMenu('root')
         self.menu("root")
         self.assertSelectedMenuItem(rootMenu.items[0].label)
@@ -258,7 +271,7 @@ class BolTests(joefx.JoeTestBase):
         self.workdir.fixtureData("test", text)
         self.startup.args = ("test",)
         self.startJoe()
-        
+
         for i in range(5):
             self.writectl("{right*%d}" % i)
             self.assertCursor(x=i, y=i+1)
@@ -266,24 +279,24 @@ class BolTests(joefx.JoeTestBase):
             self.assertCursor(x=0, y=i+1)
             self.writectl("{down}")
         self.exitJoe()
-    
+
     def test_bol_pw(self):
         self.startJoe()
-        
+
         # Get cursor position at empty prompt
         self.cmd("ffirst")
         self.assertTextAt("Find", x=0)
         pos = self.joe.cursor
-        
+
         # Write text and wait for it to show back up
         self.write("find text")
         self.assertTextAt("find text", x=pos.X)
-        
+
         # Test bol returns to earlier position
         self.cmd("bol")
         self.assertCursor(x=pos.X, y=pos.Y)
         self.exitJoe()
-    
+
     def test_bol_menu(self):
         menu = joefx.rcfile.Menu()
         menu.name = 'testmenu'
@@ -295,7 +308,7 @@ class BolTests(joefx.JoeTestBase):
         self.config.menus.append(menu)
         self.config.globalopts.transpose = False
         self.startJoe()
-        
+
         self.menu("testmenu")
         for i in range(0, 9):
             self.writectl("{right*%d}" % i)
@@ -314,18 +327,18 @@ class BopTests(joefx.JoeTestBase):
         self.workdir.fixtureFile("test", "bop_test")
         self.startup.args = ("test",)
         self.startJoe()
-        
+
         answers = (1, 1, 1, 1, 1, 5, 5, 5, 8, 8, 10, 10, 12, 13)
         for i, answer in enumerate(answers):
             self.cmd('line,"%d",rtn,bop' % (i + 1))
             self.assertCursor(y=answer)
         self.exitJoe()
-    
+
     def test_bop_paragraph_eol(self):
         self.workdir.fixtureFile("test", "bop_test")
         self.startup.args = ("test",)
         self.startJoe()
-        
+
         answers = (1, 1, 1, 1, 5, 5, 5, 8, 8, 8, 10, 12, 12, 13)
         for i, answer in enumerate(answers):
             self.cmd('line,"%d",rtn,eol,bop' % (i + 1))
@@ -337,19 +350,19 @@ class BosTests(joefx.JoeTestBase):
         self.workdir.fixtureData("test", "\n".join("line %d" % i for i in range(100)))
         self.startup.args = ("test",)
         self.startJoe()
-        
+
         height = self.joe.size.Y
         self.cmd("bos")
         self.assertTextAt("line %d" % (height - 2), x=0)
         self.cmd('line,"75",rtn,bos')
         self.assertTextAt("line %d" % (75 + height // 2 - 2), x=0)
         self.exitJoe()
-    
+
     def test_bos_short(self):
         self.workdir.fixtureData("test", "\n".join("line %d" % i for i in range(10)))
         self.startup.args = ("test",)
         self.startJoe()
-        
+
         self.cmd("bos")
         self.assertTextAt("line 9")
         self.exitJoe()
@@ -370,6 +383,18 @@ class BracketedPasteTests(joefx.JoeTestBase):
         self.save("outfile")
         self.exitJoe()
         self.assertFileContents("outfile", "\n".join(text))
+
+    def test_brpaste_lf_doesnt_delete(self):
+        self.config.globalopts.brpaste = True
+        self.config.globalopts.pastehack = False
+        self.workdir.fixtureData("test", "\n\n=")
+        self.startup.args = ("test",)
+        self.startJoe()
+
+        self.write("\033[200~a\nb\nc\nd\ne\nf\ng\n\033[201~")
+        self.save("outfile")
+        self.exitJoe()
+        self.assertFileContents("outfile", "a\nb\nc\nd\ne\nf\ng\n\n\n=")
 
 # TODO: bufed
 # TODO: build
@@ -422,44 +447,47 @@ class ExsaveTests(joefx.JoeTestBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.text = "\n".join("line %d" % i for i in range(10))
-    
+
     def setUp(self):
         super().setUp()
         self.workdir.fixtureData("test", self.text)
         self.startup.args = ("test",)
-    
+
     def test_exsave_nomodify(self):
         self.startJoe()
         self.cmd("exsave")
         self.assertExited()
-    
+
     def test_exsave_modified(self):
         self.startJoe()
-        
+
         self.cmd("eof")
         self.write(" - more text")
         self.cmd("exsave")
-        
+
         self.assertExited()
         self.assertFileContents("test", self.text + " - more text")
-    
+
     def test_exsave_block(self):
         self.startJoe()
-        
+
         self.cmd("bof,markb")
         self.cmd("eof,markk")
         self.cmd("exsave")
-        
+
         self.assertExited()
-    
+
     def test_exsave_modified_block(self):
         self.startJoe()
-        
+
         self.cmd("eof")
         self.write(" - more text")
+        self.joe.flushin()
         self.cmd("markk,bof,markb")
+        self.joe.flushin()
         self.cmd("exsave")
-        
+        self.joe.flushin()
+
         self.assertExited()
         self.assertFileContents("test", self.text + " - more text")
 
@@ -504,16 +532,17 @@ class MathTests(joefx.JoeTestBase):
         self.cmd("math")
         self.assertTextAt("=", x=0)
         mathpos = self.joe.cursor
-        
+
         self.write(expr)
         self.rtn()
         self.joe.expect(lambda: self.joe.cursor.Y != mathpos.Y)
         return self.joe.readLine(mathpos.Y, 0, self.joe.size.X).strip()
-    
+
     def assertMath(self, expr, result):
         self.assertEqual(self.math(expr), result, expr)
-    
+
     def test_simple(self):
+        self.startup.env["LC_NUMERIC"] = "C"
         self.startJoe()
         self.assertMath("56", "56")
         self.assertMath("2+2", "4")
@@ -527,7 +556,7 @@ class MathTests(joefx.JoeTestBase):
         self.assertMath("0.25*8", "2")
         self.assertMath("28%5", "3")
         self.assertMath("ans", "3")
-        
+
         self.assertMath("1>2", "0")
         self.assertMath("5.0==5", "1")
         self.assertMath("5.0!=5", "0")
@@ -537,7 +566,7 @@ class MathTests(joefx.JoeTestBase):
         self.assertMath("28>=7*4", "1")
         self.assertMath("29>=7*4", "1")
         self.assertMath("2*4>2**4", "0")
-        
+
         self.assertMath("2*4<9||#@junk@#", "1")
         self.assertMath("1||1", "1")
         self.assertMath("2||5", "1")
@@ -546,14 +575,14 @@ class MathTests(joefx.JoeTestBase):
         self.assertMath("!5", "0")
         self.assertMath("!0", "1")
         self.assertMath("!0*2", "2")
-        
-        self.assertMath("0x8000", "32_768")
+
+        self.assertMath("0x8000", "32,768")
         self.assertMath("0o127", "87")
         self.assertMath("0b1000110", "70")
-        self.assertMath("1e5", "100_000")
+        self.assertMath("1e5", "100,000")
         self.assertMath("1e-2", "0.01")
         self.assertMath("-0x7f", "-127")
-    
+
     def test_errors(self):
         self.startJoe()
         unbalanced = "Missing )"
@@ -563,71 +592,98 @@ class MathTests(joefx.JoeTestBase):
         self.assertMath("((2+2)+3+(4*5)", unbalanced)
         self.assertMath("0o888", extra_junk)
         self.assertMath("0xhello", extra_junk)
-        self.assertMath("1e999999", "INF")
-    
+        self.assertMath("1e999999", "inf")
+
     def test_constants(self):
         self.startup.lines = 25
         self.startup.columns = 80
+        self.startup.env["LC_NUMERIC"] = "C"
         self.startJoe()
-        self.assertEqual(self.math("pi")[0:9], "3.141_592", "pi")
-        self.assertEqual(self.math("e")[0:9], "2.718_281", "e")
+        self.assertEqual(self.math("pi")[0:9], "3.141,592", "pi")
+        self.assertEqual(self.math("e")[0:9], "2.718,281", "e")
 
         self.assertMath("height", "24")
         #self.assertMath("width", "80") -- depends on last col
         self.assertMath("no_windows", "1")
-        
+
         self.assertMath("size", "0")
         self.assertMath("line", "1")
         self.assertMath("col", "1")
         self.assertMath("byte", "1")
         self.assertMath("char", "-1")
-        
+
         self.write("Hello world!\r")
         self.assertMath("line", "2")
         self.writectl("{up}{right*4}")
-        
+
         self.assertMath("size", "13")
         self.assertMath("line", "1")
         self.assertMath("col", "5")
         self.assertMath("byte", "5")
         self.assertMath("char", "111")
-        
+
         self.cmd("splitw")
         self.assertMath("no_windows", "2")
-        
+
         self.assertMath("rdonly", "0")
         self.mode("rdonly")
         self.assertMath("rdonly", "1")
-    
+
     def test_functions(self):
+        self.startup.env["LC_NUMERIC"] = "C"
         self.startJoe()
         # Don't test all of them -- just a couple likely to be supported
         self.assertMath("cos(0)", "1")
         self.assertMath("log(1000)", "3")
-        self.assertEqual(self.math("ln(2)")[0:9], "0.693_147", "ln(2)")
+        self.assertEqual(self.math("ln(2)")[0:9], "0.693,147", "ln(2)")
         self.assertMath("ln(e)", "1")
-    
+
     def test_formatting(self):
+        self.startup.env["LC_NUMERIC"] = "C"
         self.startJoe()
-        self.assertMath("56000", "56_000")
+        self.assertMath("56000", "56,000")
         self.assertMath("hex", "0xDAC0")
-        self.assertMath("eng", "56e3")
-        self.assertMath("bin", "0b1101_1010_1100_0000")
-        self.assertMath("oct", "0o15_5300")
-    
+        self.assertMath("eng", "56e+3")
+        self.assertMath("bin", "0b1101,1010,1100,0000")
+        self.assertMath("oct", "0o15,5300")
+
     def test_context(self):
         self.startup.lines = 25
         self.startup.columns = 80
         self.workdir.fixtureData("test", "5 15 25 8 12")
         self.startup.args = "test",
+        self.startup.env["LC_NUMERIC"] = "C"
         self.startJoe()
-        
+
         self.cmd("bol,markb,eol,markv")
         self.assertMath("sum", "65")
         self.assertMath("avg", "13")
         self.assertMath("cnt", "5")
-        self.assertEqual(self.math("dev")[0:9], "6.899_275")
-    
+        self.assertEqual(self.math("dev")[0:9], "6.899,275")
+
+    @joefx.skip_on_cygwin()
+    def test_math_locale(self):
+        import locale
+
+        installed_locale = None
+        for loc in ('de_DE', 'fr_FR'):
+            try:
+                old_loc = locale.setlocale(locale.LC_NUMERIC, loc)
+                installed_locale = loc
+                locale.setlocale(locale.LC_NUMERIC, old_loc)
+                break
+            except locale.Error:
+                pass
+
+        if installed_locale is None:
+            self.skipTest("Cannot find a pre-determined EU locale on the system")
+
+        self.startup.env["LC_NUMERIC"] = installed_locale
+        self.startJoe()
+
+        self.assertMath("32768", "32.768")
+        self.assertMath("3.2768", "3,276.8")
+
     # TODO: There's a *lot* more that could be done here...
 
 

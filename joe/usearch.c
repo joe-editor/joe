@@ -786,7 +786,7 @@ static int set_pattern(W *w, char *s, void *obj, int *notify)
 		setpat(srch, vsdup(globalsrch->pattern));
 	}
 	if ((pbw = wmkpw(bw->parent, p, NULL, set_options, srchopt, pfabort, utypebw, srch, notify, locale_map, 0)) != NULL) {
-		char buf[10];
+		char buf[16];
 
 		if (srch->ignore) {
 			const char *t = joe_gettext(ignore_key);

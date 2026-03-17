@@ -12,9 +12,27 @@
 
 * Enhancements
 
+	* Upgrade to Unicode 17.0.0.  Add configure environment variable
+	  that allows you to select Unicode 8.0.0, 9.0.0, 10.0.0, 13.0.0,
+	  15.0.0, 15.1.0, 16.0.0 or 17.0.0
+
 	* Consider 'Tc' terminfo flag when determining whether a terminal supports 24-bit color.
 
+	* Improve Verilog and SystemVerilog syntax
+
+	* `-purify` now cleans excess whitespace instead of no-opping
+
+	* Improve shell script recognition (contributed by Darren Salt)
+
+	* `-keepup` produces fewer updates during mouse input and similar
+
 * Bugs fixed
+
+	* Fix destructive multi-line bracketed paste: pasting multi-line input was destructive to pre-existing text
+
+	* Fix screen corruption when pasting with line-numbers activated
+
+	* Fix macOS build and C99 correctness
 
 	* Fix a number of bugs involved with piping data into JOE:
 
@@ -27,6 +45,12 @@
 		* Fix bug where window resize will cause copying process to stop (needed to retry on EINTR).
 
 	* Revert ^K Q behavior (by popular demand!)
+
+	* Improve localized decimal point handling in calculator
+
+	* Fix not "not changed" undo record bug after saving file
+
+	* Fix jmacs help keybindings (contributed by Peter Salvi)
 
 * Windows version
 

@@ -4,14 +4,14 @@ dnl ------------------
 AC_DEFUN([joe_ISBLANK],
 	[AC_CACHE_CHECK([whether isblank() works correctly with side effect expressions],
 		[joe_cv_isblank],
-		[AC_TRY_RUN([
+		[AC_RUN_IFELSE([AC_LANG_SOURCE([
 #include <ctype.h>
 int main() {
   int a = 0;
   isblank(a++);
   return a != 1;
 }
-			],
+			])],
 			[joe_cv_isblank=yes],
 			[joe_cv_isblank=no],
 			[joe_cv_isblank=no])
@@ -28,14 +28,14 @@ dnl ------------------
 AC_DEFUN([joe_SETPGRP],
 	[AC_CACHE_CHECK([whether setpgrp() takes no arguments],
 		[joe_cv_setpgrp_void],
-		[AC_TRY_RUN([
+		[AC_RUN_IFELSE([AC_LANG_SOURCE([
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 int main() {
 	/* exit succesfully if setpgrp() takes two args (*BSD systems) */
 	return setpgrp(0, 0) != 0;
-}],
+}])],
 			[joe_cv_setpgrp_void=no],
 			[joe_cv_setpgrp_void=yes],
 			[joe_cv_setpgrp_void=yes])
@@ -51,7 +51,7 @@ dnl ------------------
 AC_DEFUN([joe_REINSTALL_SIGHANDLERS],
 	[AC_CACHE_CHECK([whether sighandlers must be reinstalled],
 		[joe_cv_reinstall_sighandlers],
-		[AC_TRY_RUN([
+		[AC_RUN_IFELSE([AC_LANG_SOURCE([
 #if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -96,7 +96,7 @@ int main() {
 	kill((int)getpid(), SIGINT);
 	/* exit succesfully if don't have to reinstall sighandler when invoked */
 	return nsigint != 2;
-}],
+}])],
 			[joe_cv_reinstall_sighandlers=no],
 			[joe_cv_reinstall_sighandlers=yes],
 			[joe_cv_reinstall_sighandlers=yes])

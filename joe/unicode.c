@@ -392,7 +392,7 @@ void joe_iswinit(void)
 /* Digit value of any \p{Nd} digit */
 /* Note that intervals in Nd table are not merged! */
 
-static struct unicat *digtable = 0;
+static const struct unicat *digtable = 0;
 
 int digval(int ch)
 {

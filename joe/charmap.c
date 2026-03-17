@@ -20,14 +20,14 @@
 #undef HAVE_SETLOCALE
 #endif
 
-/* If it looks old, forget it */
-#ifndef CODESET
-#undef HAVE_SETLOCALE
-#endif
-
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 #	include <locale.h>
 #       include <langinfo.h>
+#endif
+
+/* If we didn't find a CODESET in locale.h/langinfo.h, forget about setlocale */
+#ifndef CODESET
+#undef HAVE_SETLOCALE
 #endif
 
 /* nl_langinfo(CODESET) is broken on many systems.  If HAVE_SETLOCALE is undefined,
@@ -128,6 +128,7 @@ static struct {
 	{ "latin7", "iso-8859-13" },
 	{ "latin8", "iso-8859-14" },
 	{ "latin9", "iso-8859-15" },
+	{ "latin10", "iso-8859-16" },
 	{ 0, 0 }
 };
 

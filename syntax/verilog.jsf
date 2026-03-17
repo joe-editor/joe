@@ -22,39 +22,33 @@
 
 :first Idle
 	*		idle		noeat
-	"`"		pre		recolor=-1
+	"`"		pre		mark
 
 :pre Preproc
 	*		idle		noeat
 	"a-zA-Z_"	preident	recolor=-1 buffer
 
 :preident Preproc
-	*		idle		noeat strings
-	"ifdef"		precond
-	"else"		precond
-	"endif"		precond
-	"timescale"	preproc
-	"define"	preproc
-	"include"	preproc
-	"resetall"	preproc
-	"signed"	preproc
-	"unsigned"	preproc
-	"celldefine"	preproc
-	"endcelldefine"	preproc
-	"default_nettype"	preproc
-	"unconnected_drive"	preproc
-	"nounconnected_drive"	preproc
-	"protect"	preproc
-	"endprotect"	preproc
-	"protected"	preproc
-	"endprotected"	preproc
-	"expand_vectornets"	preproc
-	"noexpand_vectornets"	preproc
-	"autoexpand_vectornets"	preproc
-	"remove_gatename"	preproc
-	"noremove_gatename"	preproc
-	"remove_netname"	preproc
-	"noremove_netname"	preproc
+	*			idle		noeat strings
+	"begin_keywords"	preproc		markend recolormark
+	"celldefine"		preproc		markend recolormark
+	"default_nettype"	preproc		markend recolormark
+	"define"		preproc		markend recolormark
+	"else"			precond		markend recolormark
+	"elsif"			precond		markend recolormark
+	"end_keywords"		preconf		markend recolormark
+	"endcelldefine"		preproc		markend recolormark
+	"endif"			precond		markend recolormark
+	"ifdef"			precond		markend recolormark
+	"ifndef"		precond		markend recolormark
+	"include"		preproc		markend recolormark
+	"line"			preproc		markend recolormark
+	"nounconnected_drive"	preproc		markend recolormark
+	"pragma"		preproc		markend recolormark
+	"resetall"		preproc		markend recolormark
+	"timescale"		preproc		markend recolormark
+	"unconnected_drive"	preproc		markend recolormark
+	"undef"			preproc		markend recolormark
 done
 	"a-zA-Z0-9_"	preident
 
@@ -102,10 +96,12 @@ done
 	*		idle	noeat
 	"'"		sized_number
 	"."		float
-	"0-9"		first_digit
+	"eE"		epart
+	"0-9_"		first_digit
 
 :sized_number Number
 	*		idle	noeat
+	"01zZxX"	idle
 	"hH"		hex_number
 	"oO"		octal_number
 	"bB"		binary_number
@@ -113,15 +109,15 @@ done
 
 :hex_number Number
 	*		idle	noeat
-	"0-9A-Fa-f_xz"	hex_number
+	"0-9A-Fa-f_xzXZ"	hex_number
 
 :binary_number Number
 	*		idle	noeat
-	"01_xz"		binary_number
+	"01_xzXZ"	binary_number
 
 :octal_number Number
 	*		idle	noeat
-	"0-7_xz"	octal_number
+	"0-7_xzXZ"	octal_number
 
 :decimal_number Number
 	*		idle	noeat
@@ -136,7 +132,7 @@ done
 :float Number
 	*		idle	noeat
 	"eE"		epart
-	"0-9"		float
+	"0-9_"		float
 
 :epart	Number
 	*		idle	noeat
@@ -144,7 +140,7 @@ done
 
 :enum	Number
 	*		idle	noeat
-	"0-9"		enum
+	"0-9_"		enum
 
 # Strings
 
@@ -169,68 +165,70 @@ done
 :ident	Ident
 	*		idle		noeat strings
 	"always"	kw
-	"assign"	kw
-	"begin"		kw
-	"case"		kw
-	"casex"		kw
-	"casez"		kw
-	"default"	kw
-	"defparam"	kw
-	"else"		kw
-	"end"		kw
-	"endcase"	kw
-	"endfunction"	kw
-	"endmodule"	kw
-	"endtask"	kw
-	"for"		kw
-	"function"	kw
-	"if"		kw
-	"module"	kw
-	"parameter"	kw
-	"repeat"	kw
-	"task"		kw
-	"while"		kw
-	"forever"	kw
-	"initial"	kw
-	"integer"	type
-	"inout"		type
-	"input"		type
-	"output"	type
-	"reg"		type
-	"real"		type
-	"wire"		type
-	"wor"		type
-	"wand"		type
 	"and"		kw
-	"attribute"	kw
+	"assign"	kw
+	"automatic"	kw
+	"begin"		kw
 	"buf"		kw
 	"bufif0"	kw
 	"bufif1"	kw
+	"case"		kw
+	"casex"		kw
+	"casez"		kw
+	"cell"		kw
 	"cmos"		kw
+	"config"	kw
 	"deassign"	kw
+	"default"	kw
+	"defparam"	kw
+	"design"	kw
 	"disable"	kw
 	"edge"		kw
-	"endattribute"	kw
+	"else"		kw
+	"end"		kw
+	"endcase"	kw
+	"endconfig"	kw
+	"endfunction"	kw
+	"endgenerate"	kw
+	"endmodule"	kw
 	"endprimitive"	kw
 	"endspecify"	kw
 	"endtable"	kw
+	"endtask"	kw
 	"event"		kw
+	"for"		kw
 	"force"		kw
+	"forever"	kw
 	"fork"		kw
+	"function"	kw
+	"generate"	kw
+	"genvar"	kw
 	"highz0"	kw
 	"highz1"	kw
+	"if"		kw
+	"ifnone"	kw
+	"incdir"	kw
+	"include"	kw
+	"initial"	kw
+	"instance"	kw
 	"join"		kw
-	"large"		kw
+	"larger"	kw
+	"liblist"	kw
+	"library"	kw
+	"localparam"	kw
 	"macromodule"	kw
 	"medium"	kw
+	"module"	kw
 	"nand"		kw
 	"negedge"	kw
 	"nmos"		kw
 	"nor"		kw
+	"noshow-cancelled"	kw
 	"not"		kw
 	"notif0"	kw
 	"notif1"	kw
 	"or"		kw
+	"parameter"	kw
 	"pmos"		kw
 	"posedge"	kw
 	"primitive"	kw
@@ -238,42 +236,56 @@ done
 	"pull1"		kw
 	"pulldown"	kw
 	"pullup"	kw
+	"pulsestyle_ondetect"	kw
+	"pulsestyle_onevent"	kw
 	"rcmos"		kw
 	"realtime"	kw
 	"release"	kw
+	"repeat"	kw
 	"rnmos"		kw
 	"rpmos"		kw
 	"rtran"		kw
 	"rtranif0"	kw
 	"rtranif1"	kw
 	"scalared"	kw
+	"show-cancelled"	kw
 	"signed"	kw
 	"small"		kw
 	"specify"	kw
-	"specparam"	kw
-	"strength"	kw
+	"specpa"	kw
 	"strong0"	kw
 	"strong1"	kw
-	"supply0"	kw
-	"supply1"	kw
 	"table"		kw
-	"time"		kw
+	"task"		kw
 	"tran"		kw
 	"tranif0"	kw
 	"tranif1"	kw
-	"tri"		kw
-	"tri0"		kw
-	"tri1"		kw
-	"triand"	kw
-	"trior"		kw
-	"trireg"	kw
-	"unsigned"	kw
+	"use"		kw
 	"vectored"	kw
 	"wait"		kw
 	"weak0"		kw
 	"weak1"		kw
+	"while"		kw
 	"xnor"		kw
 	"xor"		kw
+	"inout"		type
+	"input"		type
+	"integer"	type
+	"output"	type
+	"real"		type
+	"reg"		type
+	"supply0"	type
+	"supply1"	type
+	"time"		type
+	"tri"		type
+	"tri0"		type
+	"tri1"		type
+	"triand"	type
+	"trior"		type
+	"trireg"	type
+	"wand"		type
+	"wire"		type
+	"wor"		type
 done
 	"a-zA-Z0-9_"	ident
 

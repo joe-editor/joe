@@ -2510,56 +2510,19 @@ B *bread(int fi, off_t max)
 
 /* Parse file name.
  *
- * Old:
  * Removes ',xxx,yyy' from end of name and puts their value into skip and amnt
  * Replaces ~user/ with directory of given user
  * Replaces ~/ with $HOME
  *
- * New:
- *
- * mode:
- *  0 = normal
- *  1 = pipe to/from program
- *  2 = stdin / stdout
- *  3 = append
- *
  * Returns new variable length string.
  */
-char *parsens(const char *s, off_t *skip, off_t *amnt, int *mode)
+char *parsens(const char *s, off_t *skip, off_t *amnt)
 {
-	char *n;
+	char *n = vsncpy(NULL, 0, sz(s));
 	ptrdiff_t x;
 
 	*skip = 0;
 	*amnt = MAXOFF;
-	*mode = 0;
-
-	for (;;) {
-		if (!parse_field(&s, "-append")) {
-			parse_ws(&s, ' ');
-			*mode = 3;
-		} else if (!parse_field(&s, "-start") && parse_ws(&s, ' ') && !parse_off_t(&s, skip)) {
-			parse_ws(&s, ' ');
-		} else if (!parse_field(&s, "-size") && parse_ws(&s, ' ') && !parse_off_t(&s, amnt)) {
-			parse_ws(&s, ' ');
-		} else if (s[0] == '-' && !s[1]) {
-			++s;
-			*mode = 2;
-		} else if (!parse_field(&s, "--")) { /* Stop interpreting */
-			if (s[0] == ' ')
-				++s;
-			break;
-		} else if (!parse_field(&s, "-popen")) {
-			parse_ws(&s, ' ');
-			*mode = 1;
-		} else
-			break;
-	}
-
-	n = vsncpy(NULL, 0, sz(s));
-
-#if 0
-	/* Old way */
 	x = sLEN(n) - 1;
 	if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 		for (x = sLEN(n) - 1; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
@@ -2579,8 +2542,6 @@ char *parsens(const char *s, off_t *skip, off_t *amnt, int *mode)
 			}
 		}
 	}
-#endif
-
 	/* Don't do this here: do it in prompt buffer instead, so we're just like
 	   the shell doing it on the command line. */
 	/* n = canonical(n); */
@@ -2755,7 +2716,6 @@ B *bload(const char *s)
 	FILE *fi = 0;
 	B *b = 0;
 	off_t skip, amnt;
-	int mode;
 	char *n;
 	int nowrite = 0;
 	P *p;
@@ -2774,17 +2734,17 @@ B *bload(const char *s)
 		return b;
 	}
 
-	n = parsens(s, &skip, &amnt, &mode);
+	n = parsens(s, &skip, &amnt);
 
 	/* Open file or stream */
 #ifndef __MSDOS__
-	if (mode == 1) { /* popen */
+	if (n[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		fi = joe_popen(n, 0);
+		fi = joe_popen(n + 1, 0);
 	} else
 #endif
-	if (mode == 2) { /* Read from stdin */
+	if (!zcmp(n, "-")) {
 #ifdef junk
 		FILE *f;
 		struct stat y;
@@ -2801,10 +2761,10 @@ B *bload(const char *s)
 		/* Now we always just create an empty buffer for "-" */
 		b = bmk(NULL);
 		goto empty;
-	} else { /* Regular file */
-		if (access(n, W_OK))
+	} else {
+		if (access(dequote(n), W_OK))
 			nowrite = 1;
-		fi = fopen(n, "r");
+		fi = fopen(dequote(n), "r");
 		if (!fi)
 			nowrite = 0;
 		if (fi) {
@@ -2855,15 +2815,15 @@ B *bload(const char *s)
 	/* Close stream */
 err:
 #ifndef __MSDOS__
-	if (mode == 1) /* popen */
+	if (s[0] == '!')
 		joe_pclose(fi);
 	else
 #endif
-	if (mode != 2) /* stdin */
+	if (zcmp(n, "-"))
 		fclose(fi);
 
 opnerr:
-	if (mode == 1) { /* popen */
+	if (s[0] == '!') {
 		ttopnn();
 		nreturn(maint->t);
 	}
@@ -2872,10 +2832,10 @@ opnerr:
 	b->name = joesep(zdup(s));
 
 	/* Set flags */
-	if (berror || mode == 1 || skip || amnt != MAXOFF) { /* popen */
+	if (berror || s[0] == '!' || skip || amnt != MAXOFF) {
 		b->backup = 1;
 		b->changed = 0;
-	} else if (mode == 2) { /* stdin */
+	} else if (!zcmp(n, "-")) {
 		b->backup = 1;
 		b->changed = 1;
 	} else {
@@ -3205,30 +3165,29 @@ int bsave(P *p, const char *as, off_t size, int flag)
 	int have_stat = 0;
 	FILE *f;
 	off_t skip, amnt;
-	int mode;
 	int norm = 0;
-	char *s = parsens(as, &skip, &amnt, &mode);
+	char *s = parsens(as, &skip, &amnt);
 
 	if (amnt < size)
 		size = amnt;
 
 #ifndef __MSDOS__
-	if (mode == 1) { /* Shell */
+	if (s[0] == '!') {
 		nescape(maint->t);
 		ttclsn();
-		f = joe_popen(s, 1);
+		f = joe_popen(s + 1, 1);
 	} else
 #endif
-	if (mode == 3) /* Append */
-		f = fopen(s, "a");
-	else if (mode == 2) { /* stdout */
+	if (s[0] == '>' && s[1] == '>')
+		f = fopen(dequote(s + 2), "a");
+	else if (!zcmp(s, "-")) {
 		nescape(maint->t);
 		ttclsn();
 		f = stdout;
-	} else if (skip || amnt != MAXOFF) /* Partial write */
-		f = fopen(s, "r+");
-	else { /* Full write */
-		have_stat = !stat(s, &sbuf);
+	} else if (skip || amnt != MAXOFF)
+		f = fopen(dequote(s), "r+");
+	else {
+		have_stat = !stat(dequote(s), &sbuf);
 		if (!have_stat)
 			sbuf.st_mode = 0666;
 		/* Normal file save */
@@ -3236,7 +3195,7 @@ int bsave(P *p, const char *as, off_t size, int flag)
 			struct stat lsbuf;
 
 			/* Try to copy permissions */
-			if (!lstat(s,&lsbuf)) {
+			if (!lstat(dequote(s),&lsbuf)) {
 				int g;
 				if (!break_symlinks && S_ISLNK(lsbuf.st_mode)) {
 					goto nobreak;
@@ -3248,28 +3207,28 @@ int bsave(P *p, const char *as, off_t size, int flag)
 					selinux_enabled = (is_selinux_enabled() > 0);
 
 				if (selinux_enabled) {
-					if (getfilecon(s, &se) < 0) {
+					if (getfilecon(dequote(s), &se) < 0) {
 						berror = -4;
 						goto opnerr;
 					}
 				}
 #endif
-				unlink(s);
-				g = creat(s, sbuf.st_mode & ~(unsigned)(S_ISUID | S_ISGID));
+				unlink(dequote(s));
+				g = creat(dequote(s), sbuf.st_mode & ~(unsigned)(S_ISUID | S_ISGID));
 #ifdef WITH_SELINUX
 				if (selinux_enabled) {
-					setfilecon(s, &se);
+					setfilecon(dequote(s), &se);
 					freecon(se);
 				}
 #endif
 				close(g);
 				nobreak:;
 			} else {
-				unlink(s);
+				unlink(dequote(s));
 			}
 		}
 
-		f = fopen(s, "w");
+		f = fopen(dequote(s), "w");
 		norm = 1;
 	}
 	joesep(s);
@@ -3309,24 +3268,24 @@ int bsave(P *p, const char *as, off_t size, int flag)
 
 err:
 #ifndef __MSDOS__
-	if (mode == 1) /* popen */
+	if (s[0] == '!')
 		joe_pclose(f);
 	else
 #endif
-	if (mode == 2) /* stdout */
-		fflush(f);
-	else
+	if (zcmp(s, "-"))
 		fclose(f);
+	else
+		fflush(f);
 
 	/* Update original date of file */
 	/* If it's not named, it's about to be */
 	if (!berror && norm && flag && (!p->b->name || flag == 2 || !zcmp(s,p->b->name))) {
-		if (!stat(s, &sbuf))
+		if (!stat(dequote(s),&sbuf))
 			p->b->mod_time = sbuf.st_mtime;
 	}
 
 opnerr:
-	if (mode == 1 || mode == 2) {
+	if (s[0] == '!' || !zcmp(s,"-")) {
 		ttopnn();
 		nreturn(maint->t);
 	}
@@ -3408,7 +3367,7 @@ char *brzs(P *p, char *buf, ptrdiff_t size)
 
 static int ttsig_handled = 0;
 
-RETSIGTYPE ttsig(int sig)
+void ttsig(int sig)
 {
         FILE *ttsig_f = 0;
 	time_t tim = time(NULL);

@@ -190,7 +190,7 @@
   \l  Italic
 
 -lmsg \i%k%T%W%I%X %* [%n] %y %M
--rmsg  %S Row %4r Col %3c %t  ^X^H for help
+-rmsg  %S Row %4r Col %3c  ^X^H for help
 -smsg ** Line %r Col %c Offset %o(0x%O) %e %a(0x%A) Width %w ** 
 -zmsg ** Line %r Col %c Offset %o(0x%O) ** 
 -xmsg \i Joe's Own Editor %v (%b) ** Type \b^X ^C\b to exit or \b^X ^H\b for help **\i
@@ -313,7 +313,7 @@
 
 	-cpp_comment		Text after // should be ignored
 
-	-pound_comment		Text after # should be ignored
+	-hash_comment		Text after # should be ignored
 
 	-vhdl_comment		Text after -- should be ignored
 
@@ -363,6 +363,7 @@ mode,"indentc",rtn	% % Indent char %Zindentc%
 mode,"istep",rtn	% % Indent step %Zistep%
 menu,"indent",rtn	= Indent select
 mode,"highlight",rtn	H Highlighting %Zhighlight%
+mode,"visiblews",rtn	% % Show whitespace %Zvisiblews%
 mode,"crlf",rtn	Z CR-LF/MS-DOS %Zcrlf%
 mode,"linums",rtn	N Line numbers %Zlinums%
 mode,"hiline",rtn	U Highlight line %Zhiline%
@@ -411,7 +412,7 @@ mode,"single_quoted",rtn	% % ^G ignores '...' %Zsingle_quoted%
 mode,"no_double_quoted",rtn	% % ^G no ignore "..." %Zno_double_quoted%
 mode,"c_comment",rtn	% % ^G ignores /*...*/ %Zc_comment%
 mode,"cpp_comment",rtn	% % ^G ignores //... %Zcpp_comment%
-mode,"pound_comment",rtn	% % ^G ignores #... %Zpound_comment%
+mode,"hash_comment",rtn	% % ^G ignores #... %Zhash_comment%
 mode,"vhdl_comment",rtn	% % ^G ignores --... %Zvhdl_comment%
 mode,"semi_comment",rtn	% % ^G ignores ;... %Zsemi_comment%
 mode,"tex_comment",rtn % % ^G ignores %%... %Ztex_comment%
@@ -519,7 +520,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Search
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i   Help Screen    \|turn off with ^X^H  prev. screen ^X,  next screen ^X.        \i
 \i \iSearch sequences:                                                            \|\i \i
 \i \i    \\^  \\$  matches beg./end of line       \\.     match any single char      \|\i \i
 \i \i    \\<  \\>  matches beg./end of word       \\!     match char or expression   \|\i \i
@@ -533,7 +534,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {Escape sequences
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i   Help Screen    \|turn off with ^X^H  prev. screen ^X,  next screen ^X.        \i
 \i \iEscape sequences: \\x{10fff}  Unicode code point   \\p{Ll}  Unicode category \|\i \i
 \i \i    \\i / \\I  Identifier start      \\t  tab          \\e  escape               \|\i \i
 \i \i    \\c / \\C  Identifier continue   \\n  newline      \\r  carriage return      \|\i \i
@@ -543,7 +544,7 @@ mode,"spaces",rtn	% % No tabs %Zspaces%
 }
 
 {SearchOptions
-\i   Help Screen    \|turn off with ^KH    prev. screen ^[,    next screen ^[.     \i
+\i   Help Screen    \|turn off with ^X^H  prev. screen ^X,  next screen ^X.        \i
 \i \iSearch options:                                                              \|\i \i
 \i \i     r Replace      k Restrict search to highlighted block                   \|\i \i
 \i \i     i Ignore case  b Search backwards instead of forwards                   \|\i \i

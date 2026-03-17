@@ -92,7 +92,10 @@
 	"and"		oper
 	"as"		stmt
 	"assert"	stmt
+	"async"		defstmt
+	"await"		stmt
 	"break"		loop
+	"case"		cond
 	"class"		classstmt
 	"continue"	loop
 	"def"		defstmt
@@ -109,6 +112,8 @@
 	"in"		oper
 	"is"		oper
 	"lambda"	kw
+	"match"		cond
+	"nonlocal"	stmt
 	"not"		oper
 	"or"		oper
 	"pass"		stmt

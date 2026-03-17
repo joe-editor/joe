@@ -333,6 +333,14 @@ static int saver(W *w, int c, void *object, int *notify)
 	if (bw->b->er == 0 && bw->o.msold) {
 		exmacro(bw->o.msold, 1, NO_MORE_DATA);
 	}
+	if (bw->b->o.purify) {
+		static CMD *trimlines = NULL;
+		if (!trimlines) {
+			trimlines = findcmd("trimlines");
+		}
+
+		execmd(trimlines, NO_MORE_DATA);
+	}
 	if ((fl = bsave(bw->b->bof, req->name, bw->b->eof->byte, req->rename ? 2 : 1)) != 0) {
 		msgnw(bw->parent, joe_gettext(msgs[-fl]));
 		if (req->callback) {
@@ -358,23 +366,16 @@ static int saver(W *w, int c, void *object, int *notify)
 			saverr(bw->b->name);
 		}
 		{
-			/* Last UNDOREC which wasn't modified will be changed
-			 * to modified. And because this block is
-			 * executed after each 'save', there can't be more
-			 * than one record which is not modified
-			 *		24 Apr 2001, Marx
-			 */
+			/* Set changed flag in all prior undo record:
+			   any change compared to just saved buffer would
+			   require another save */
 			UNDO *u = bw->b->undo;
 			UNDOREC *rec, *rec_start;
 
-			rec = rec_start = &u->recs;
+			rec_start = &u->recs;
 
-			do {
-				rec = rec->link.prev;
-			} while (rec != rec_start && rec->changed);
-			if(rec->changed == 0)
+			for (rec = rec_start->link.prev; rec != rec_start; rec = rec->link.prev)
 				rec->changed = 1;
-
 		}
 		genexmsg(bw, 1, req->name);
 		if (req->callback) {

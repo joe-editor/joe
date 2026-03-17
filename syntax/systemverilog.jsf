@@ -1,0 +1,422 @@
+# JOE syntax highlight file for SystemVerilog
+
+# Define colors
+
+=Idle
+=Ident
+=Preproc
+=Precond	+Preproc
+=Comment
+=Constant
+=Number		+Constant
+=String		+Constant
+=Escape
+=StringEscape	+Escape +String
+=Type
+=Keyword
+=Bad
+
+# Skip whitespace at start of line
+:reset Idle
+	*		first		noeat
+	" 	"	reset
+
+:first Idle
+	*		idle		noeat
+	"`"		pre		mark
+
+:pre Preproc
+	*		idle		noeat
+	"a-zA-Z_"	preident	recolor=-1 buffer
+
+:preident Preproc
+	*		idle		noeat markend recolormark strings
+	"__FILE__"		preproc		markend recolormark
+	"__LINE__"		preproc		markend recolormark
+	"begin_keywords"	preproc		markend recolormark
+	"celldefine"		preproc		markend recolormark
+	"default_nettype"	preproc		markend recolormark
+	"define"		preproc		markend recolormark
+	"else"			precond		markend recolormark
+	"elsif"			precond		markend recolormark
+	"end_keywords"		preconf		markend recolormark
+	"endcelldefine"		preproc		markend recolormark
+	"endif"			precond		markend recolormark
+	"ifdef"			precond		markend recolormark
+	"ifndef"		precond		markend recolormark
+	"include"		preproc		markend recolormark
+	"line"			preproc		markend recolormark
+	"nounconnected_drive"	preproc		markend recolormark
+	"pragma"		preproc		markend recolormark
+	"resetall"		preproc		markend recolormark
+	"timescale"		preproc		markend recolormark
+	"unconnected_drive"	preproc		markend recolormark
+	"undef"			preproc		markend recolormark
+	"undefineall"		preproc		markend recolormark
+done
+	"a-zA-Z0-9_"	preident
+
+:preproc Preproc
+	*		idle		noeat
+
+:precond Precond
+	*		idle		noeat
+
+# All following states are for when we're not in a preprocessor line
+
+:idle Idle
+	*		idle
+	"\n"		reset
+	"/"		slash
+	"0-9"		first_digit	recolor=-1
+	"."		maybe_float
+	"\""		string		recolor=-1
+	"'"		sized_number	recolor=-1
+	"a-zA-Z_"	ident		buffer
+
+:slash Idle
+	*		idle		noeat
+	"*"		comment		recolor=-2
+	"/"		line_comment	recolor=-2
+
+:comment Comment comment
+	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment comment
+	*		comment
+	"/"		idle
+	"*"		maybe_end_comment
+
+:line_comment Comment comment
+	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		reset
+
+# Integer constants
+
+:first_digit Number
+	*		idle	noeat
+	"'"		sized_number
+	"."		float
+	"eE"		epart
+	"0-9_"		first_digit
+
+:sized_number Number
+	*		idle	noeat
+	"01zZxX"	idle
+	"hH"		hex_number
+	"oO"		octal_number
+	"bB"		binary_number
+	"dD"		decimal_number
+
+:hex_number Number
+	*		idle	noeat
+	"0-9A-Fa-f_xzXZ"	hex_number
+
+:binary_number Number
+	*		idle	noeat
+	"01_xzXZ"	binary_number
+
+:octal_number Number
+	*		idle	noeat
+	"0-7_xzXZ"	octal_number
+
+:decimal_number Number
+	*		idle	noeat
+	"0-9_"		decimal_number
+
+# Floating point
+
+:maybe_float Number
+	*		idle	recolor=-2	noeat
+	"0-9"		float		recolor=-2
+
+:float Number
+	*		idle	noeat
+	"eE"		epart
+	"0-9_"		float
+
+:epart	Number
+	*		idle	noeat
+	"0-9+\-"	enum
+
+:enum	Number
+	*		idle	noeat
+	"0-9_"		enum
+
+# Strings
+
+:string	String string
+	*		string
+	"\n"		reset
+	"\""		idle
+	"\\"		string_escape	recolor=-1
+	"%"		string_control	recolor=-1
+
+:string_escape StringEscape string
+	*		string
+	"\n"		string		recolor=-2
+
+:string_control StringEscape string
+	*		string_control
+	"\n"		reset
+	"efghdobcvstmEFGHDOBCVSTM%"	string
+
+# Identifiers
+
+:ident	Ident
+	*		idle		noeat strings
+# SystemVerilog added ones
+	"accept_on"	kw
+	"alias"		kw
+	"always_comb"	kw
+	"always_ff"	kw
+	"always_latch"	kw
+	"assert"	kw
+	"assume"	kw
+	"before"	kw
+	"bind"		kw
+	"bins"		kw
+	"binsof"	kw
+	"bit"		kw
+	"break"		kw
+	"byte"		kw
+	"chandle"	kw
+	"checker"	kw
+	"class"		kw
+	"clocking"	kw
+	"const"		kw
+	"constraint"	kw
+	"context"	kw
+	"continue"	kw
+	"cover"		kw
+	"covergroup"	kw
+	"coverpoint"	kw
+	"cross"		kw
+	"dist"		kw
+	"do"		kw
+	"endchecker"	kw
+	"endclass"	kw
+	"endclocking"	kw
+	"endgroup"	kw
+	"endinterface"	kw
+	"endpackage"	kw
+	"endprogram"	kw
+	"endproperty"	kw
+	"endsequence"	kw
+	"enum"		kw
+	"eventually"	kw
+	"expect"	kw
+	"export"	kw
+	"extends"	kw
+	"extern"	kw
+	"final"		kw
+	"first_match"	kw
+	"foreach"	kw
+	"forkjoin"	kw
+	"global"	kw
+	"iff"		kw
+	"ignore_bins"	kw
+	"illegal_bins"	kw
+	"implies"	kw
+	"import"	kw
+	"inside"	kw
+	"int"		kw
+	"interface"	kw
+	"intersect"	kw
+	"join_any"	kw
+	"join_none"	kw
+	"let"		kw
+	"local"		kw
+	"logic"		kw
+	"longint"	kw
+	"matches"	kw
+	"modport"	kw
+	"new"		kw
+	"nexttime"	kw
+	"null"		kw
+	"package"	kw
+	"packed"	kw
+	"priority"	kw
+	"program"	kw
+	"property"	kw
+	"protected"	kw
+	"pure"		kw
+	"rand"		kw
+	"randc"		kw
+	"randcase"	kw
+	"randsequence"	kw
+	"ref"		kw
+	"reject_on"	kw
+	"restrict"	kw
+	"return"	kw
+	"s_always"	kw
+	"sequence"	kw
+	"s_eventually"	kw
+	"shortint"	kw
+	"shortreal"	kw
+	"s_nexttime"	kw
+	"solve"		kw
+	"static"	kw
+	"string"	kw
+	"strong"	kw
+	"struct"	kw
+	"s_until"	kw
+	"s_until_with"	kw
+	"super"		kw
+	"sync_accept_on"	kw
+	"sync_reject_on"	kw
+	"tagged"	kw
+	"this"		kw
+	"throughout"	kw
+	"timeprecision"	kw
+	"timeunit"	kw
+	"type"		kw
+	"typedef"	kw
+	"union"		kw
+	"unique"	kw
+	"unique0"	kw
+	"until"		kw
+	"until_with"	kw
+	"untypted"	kw
+	"var"		kw
+	"virtual"	kw
+	"void"		kw
+	"wait_order"	kw
+	"weak"		kw
+	"wildcard"	kw
+	"with"		kw
+	"within"	kw
+# Verilog ones
+	"always"	kw
+	"and"		kw
+	"assign"	kw
+	"automatic"	kw
+	"begin"		kw
+	"buf"		kw
+	"bufif0"	kw
+	"bufif1"	kw
+	"case"		kw
+	"casex"		kw
+	"casez"		kw
+	"cell"		kw
+	"cmos"		kw
+	"config"	kw
+	"deassign"	kw
+	"default"	kw
+	"defparam"	kw
+	"design"	kw
+	"disable"	kw
+	"edge"		kw
+	"else"		kw
+	"end"		kw
+	"endcase"	kw
+	"endconfig"	kw
+	"endfunction"	kw
+	"endgenerate"	kw
+	"endmodule"	kw
+	"endprimitive"	kw
+	"endspecify"	kw
+	"endtable"	kw
+	"endtask"	kw
+	"event"		kw
+	"for"		kw
+	"force"		kw
+	"forever"	kw
+	"fork"		kw
+	"function"	kw
+	"generate"	kw
+	"genvar"	kw
+	"highz0"	kw
+	"highz1"	kw
+	"if"		kw
+	"ifnone"	kw
+	"incdir"	kw
+	"include"	kw
+	"initial"	kw
+	"instance"	kw
+	"join"		kw
+	"larger"	kw
+	"liblist"	kw
+	"library"	kw
+	"localparam"	kw
+	"macromodule"	kw
+	"medium"	kw
+	"module"	kw
+	"nand"		kw
+	"negedge"	kw
+	"nmos"		kw
+	"nor"		kw
+	"noshow-cancelled"	kw
+	"not"		kw
+	"notif0"	kw
+	"notif1"	kw
+	"or"		kw
+	"parameter"	kw
+	"pmos"		kw
+	"posedge"	kw
+	"primitive"	kw
+	"pull0"		kw
+	"pull1"		kw
+	"pulldown"	kw
+	"pullup"	kw
+	"pulsestyle_ondetect"	kw
+	"pulsestyle_onevent"	kw
+	"rcmos"		kw
+	"realtime"	kw
+	"release"	kw
+	"repeat"	kw
+	"rnmos"		kw
+	"rpmos"		kw
+	"rtran"		kw
+	"rtranif0"	kw
+	"rtranif1"	kw
+	"scalared"	kw
+	"show-cancelled"	kw
+	"signed"	kw
+	"small"		kw
+	"specify"	kw
+	"specpa"	kw
+	"strong0"	kw
+	"strong1"	kw
+	"table"		kw
+	"task"		kw
+	"tran"		kw
+	"tranif0"	kw
+	"tranif1"	kw
+	"use"		kw
+	"vectored"	kw
+	"wait"		kw
+	"weak0"		kw
+	"weak1"		kw
+	"while"		kw
+	"xnor"		kw
+	"xor"		kw
+	"inout"		type
+	"input"		type
+	"integer"	type
+	"output"	type
+	"real"		type
+	"reg"		type
+	"supply0"	type
+	"supply1"	type
+	"time"		type
+	"tri"		type
+	"tri0"		type
+	"tri1"		type
+	"triand"	type
+	"trior"		type
+	"trireg"	type
+	"wand"		type
+	"wire"		type
+	"wor"		type
+done
+	"a-zA-Z0-9_"	ident
+
+:type Type
+	*	idle	noeat
+
+:kw Keyword
+	*	idle	noeat

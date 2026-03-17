@@ -54,6 +54,7 @@ OPTIONS pdefault = {
 	0,		/* crlf */
 #endif
 	0,		/* Highlight */
+	0,		/* Visible whitespace */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
@@ -69,7 +70,7 @@ OPTIONS pdefault = {
 	0,		/* no_double_quoted */
 	0,		/* c_comment */
 	0,		/* cpp_comment */
-	0,		/* pound_comment */
+	0,		/* hash_comment */
 	0,		/* vhdl_comment */
 	0,		/* semi_comment */
 	0,		/* tex_comment */
@@ -118,6 +119,7 @@ OPTIONS fdefault = {
 	0,		/* crlf */
 #endif
 	0,		/* Highlight */
+	0,		/* Visible whitespace */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
@@ -133,7 +135,7 @@ OPTIONS fdefault = {
 	0,		/* no_double_quoted */
 	0,		/* c_comment */
 	0,		/* cpp_comment */
-	0,		/* pound_comment */
+	0,		/* hash_comment */
 	0,		/* vhdl_comment */
 	0,		/* semi_comment */
 	0,		/* tex_comment */
@@ -375,7 +377,8 @@ struct glopts {
 	{"no_double_quoted",4, NULL, (char *) &fdefault.no_double_quoted, _("Double quoting disabled"), _("Double quoting enabled"), _("^G ignores \"... \" "), 0, 0, 0 },
 	{"c_comment",	4, NULL, (char *) &fdefault.c_comment, _("/* comments enabled"), _("/* comments disabled"), _("^G ignores /*...*/ "), 0, 0, 0 },
 	{"cpp_comment",	4, NULL, (char *) &fdefault.cpp_comment, _("// comments enabled"), _("// comments disabled"), _("^G ignores //... "), 0, 0, 0 },
-	{"pound_comment",	4, NULL, (char *) &fdefault.pound_comment, _("# comments enabled"), _("# comments disabled"), _("^G ignores #... "), 0, 0, 0 },
+	{"pound_comment",	4, NULL, (char *) &fdefault.hash_comment, _("# comments enabled"), _("# comments disabled"), _("^G ignores #... "), 0, 0, 0 },
+	{"hash_comment",	4, NULL, (char *) &fdefault.hash_comment, _("# comments enabled"), _("# comments disabled"), _("^G ignores #... "), 0, 0, 0 },
 	{"vhdl_comment",	4, NULL, (char *) &fdefault.vhdl_comment, _("-- comments enabled"), _("-- comments disabled"), _("^G ignores --... "), 0, 0, 0 },
 	{"semi_comment",	4, NULL, (char *) &fdefault.semi_comment, _("; comments enabled"), _("; comments disabled"), _("^G ignores ;... "), 0, 0, 0 },
 	{"tex_comment",	4, NULL, (char *) &fdefault.tex_comment, _("% comments enabled"), _("% comments disabled"), _("^G ignores %... "), 0, 0, 0 },
@@ -404,7 +407,8 @@ struct glopts {
 	{"usetabs",	0, &opt_usetabs, NULL, 0, 0, _("Screen update uses tabs"), 0, 0, 0 },
 	{"assume_color", 0, &assume_color, NULL, 0, 0, _("Assume terminal supports color"), 0, 0, 0 },
 	{"assume_256color", 0, &assume_256color, NULL, 0, 0, _("Assume terminal supports 256 colors"), 0, 0, 0 },
-	{"joexterm", 0, &joexterm, NULL, 0, 0, _("Assume xterm patched for JOE"), 0, 0, 0 },
+	{"joexterm",	0, &joexterm, NULL, 0, 0, _("Assume xterm patched for JOE"), 0, 0, 0 },
+	{"visiblews",	4, NULL, (char *) &fdefault.visiblews, _("Visible whitespace enabled"), _("Visible whitespace disabled"), _("Visible whitespace"), 0, 0, 0 },
 	{ NULL,		0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0 }
 };
 

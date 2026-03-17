@@ -7,6 +7,11 @@
  */
 #include "types.h"
 
+/* For MAC OS */
+#ifdef HAVE_UTIL_H
+#include <util.h>
+#endif
+
 /* Needed for TIOCGWINSZ detection below */
 #ifdef GWINSZ_IN_SYS_IOCTL
 #ifdef HAVE_SYS_IOCTL_H
@@ -260,7 +265,7 @@ void ttclose(void)
 static int winched = 0;
 #ifdef SIGWINCH
 /* Window size interrupt handler */
-static RETSIGTYPE winchd(int unused)
+static void winchd(int unused)
 {
 	++winched;
 	REINSTALL_SIGHANDLER(SIGWINCH, winchd);
@@ -270,7 +275,7 @@ static RETSIGTYPE winchd(int unused)
 /* Second ticker */
 
 int ticked = 0;
-static RETSIGTYPE dotick(int unused)
+static void dotick(int unused)
 {
 	ticked = 1;
 }
@@ -465,7 +470,7 @@ void ttclsn(void)
 /* Timer interrupt handler */
 
 static int yep;
-static RETSIGTYPE dosig(int unused)
+static void dosig(int unused)
 {
 	yep = 1;
 }
@@ -1050,7 +1055,7 @@ static char *getpty(int *ptyfd, int *ttyfd)
  * been read. */
 int dead = 0;
 int death_fd;
-static RETSIGTYPE death(int unused)
+static void death(int unused)
 {
 	fcntl(death_fd,F_SETFL,O_NDELAY);
 	wait(NULL);

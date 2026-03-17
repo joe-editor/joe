@@ -25,6 +25,7 @@ struct bw {
 	int	top_changed;	/* Top changed */
 	struct lattr_db *db;	/* line attribute database */
 	int	shell_flag;	/* Cursor should follow shell cursor in this window */
+	int	pasting;	/* Whether a paste operation is occurring in this window */
 };
 
 extern int dspasis;	/* Display characters above 127 as-is */
@@ -38,6 +39,8 @@ extern int bg_linum;	/* Attribute value for line numbers */
 extern int bg_curlinum; /* Attribute value for the line number of the current line */
 extern int bg_curlin;	/* Attribute value for the current line */
 extern int curlinmask;	/* Mask for the current line */
+extern int vwsatr;      /* Attribute value for visible whitespace */
+extern int vwsmask;     /* Attribute mask for visible whitespace */
 
 void bwfllw(W *w);
 void bwfllwt(W *w);
@@ -68,3 +71,4 @@ extern int restore_file_pos;
 void set_file_pos_all(Screen *t);
 
 BW *vtmaster(Screen *t, B *b);
+void init_visiblews(void);

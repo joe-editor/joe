@@ -1,10 +1,10 @@
 # Process this file with autoconf to produce a configure script.
 
 # We need AC_PROG_EGREP
-AC_PREREQ(2.54)
+AC_PREREQ([2.64])
 
 #### Here's the only place where to change version number ####
-AC_INIT(joe, 4.6)
+AC_INIT([joe],[4.7])
 AC_CONFIG_SRCDIR([joe/b.c])
 
 AC_CANONICAL_BUILD
@@ -14,7 +14,7 @@ AC_CANONICAL_TARGET
 # Init automake
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
-AM_CONFIG_HEADER(joe/autoconf.h)
+AC_CONFIG_HEADERS(joe/autoconf.h)
 
 # Checks for programs.
 AC_PROG_CC
@@ -52,10 +52,10 @@ fi
 
 # Select Unicode version
 AC_ARG_VAR(UNICODE_VERSION,
-[  Select Unicode version: 8.0.0, 9.0.0 or 10.0.0  Default is 9.0.0 ])
+[  Select Unicode version: 8.0.0, 9.0.0, 10.0.0, 15.0.0, 15.1.0, 16.0.0 or 17.0.0  Default is 17.0.0 ])
 
 if test "$UNICODE_VERSION" = ""; then
-	UNICODE_VERSION=9.0.0
+	UNICODE_VERSION=17.0.0
 fi
 
 AC_SEARCH_LIBS(openpty, util, AC_DEFINE_UNQUOTED(HAVE_OPENPTY, 1, [If we have BSD function openpty()]))
@@ -76,6 +76,7 @@ else
 	fi
 fi
 AC_HEADER_TIOCGWINSZ
+AC_CHECK_HEADERS([util.h])
 AC_CHECK_HEADERS([errno.h fcntl.h locale.h sgtty.h stdlib.h string.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
 AC_CHECK_HEADERS([sys/dirent.h time.h pwd.h paths.h pty.h libutil.h])
@@ -115,7 +116,6 @@ AC_CHECK_TYPE([sighandler_t],
 #endif])
 
 # Checks for library functions.
-AC_PROG_GCC_TRADITIONAL
 AC_FUNC_LSTAT
 joe_SETPGRP
 AC_TYPE_PID_T
@@ -125,7 +125,6 @@ AC_CHECK_SIZEOF(off_t, 4)
 AC_CHECK_TYPE([ssize_t], [], [
 	AC_DEFINE([ssize_t], [int], [Define to `int' if <sys/types.h> does not define.])
 	], [])
-AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_FUNC_FORK
 AC_CHECK_FUNCS([getcwd getwd])

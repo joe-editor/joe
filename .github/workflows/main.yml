@@ -1,0 +1,125 @@
+name: POSIX build and test
+
+on:
+  push: &filters
+    branches:
+    - main
+    - coroutine
+    - windows
+    paths-ignore:
+    - "docs/**"
+    - "htdocs/**"
+    - "syntax/**"
+    - "joe/util/**"
+    - "*.md"
+    - "*.txt"
+    - ".gitignore"
+  pull_request: *filters
+
+# One at a time especially for PR's.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # 1. Standard OS Matrix (Linux, macOS)
+  posix-builds:
+    name: ${{ matrix.os }} Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Install autotools
+        if: runner.os == 'macOS'
+        run: brew update && brew install autoconf automake libtool
+
+      - name: Get tool versions
+        run: |
+          # Log versions of everything
+          autoconf --version
+          gcc --version
+          make --version
+          python3 --version
+
+      - name: Build
+        run: |
+          # Build
+          ./autojoe
+          ./configure --prefix=/usr/local
+          make -j
+
+      - name: Run tests
+        id: run_tests
+        run: |
+          ./runtests
+
+  # 2. Cygwin
+  cygwin-build:
+    name: Cygwin Build
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: C:\cygwin\bin\bash.exe --login -o igncr '{0}'
+    steps:
+      - name: Configure git
+        run: git config --global core.autocrlf input
+        shell: cmd "{0}"
+
+      - name: Checkout code
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Install Cygwin
+        uses: cygwin/cygwin-install-action@006ad0b0946ca6d0a3ea2d4437677fa767392401 # v4
+        with:
+          packages: >-
+            make, gcc-core, gcc-g++, binutils,
+            autoconf, automake, libtool,
+            python3, python3-pip, python3-virtualenv, python3-tox, python3-wheel
+
+      - name: Get tool versions
+        run: |
+          # Log versions of everything
+          autoconf --version
+          gcc --version
+          make --version
+          python3 --version
+
+      - name: Build in Cygwin
+        env:
+          # Keep other scripts from failing.
+          SHELLOPTS: igncr
+          CYGWIN_NOWINPATH: 1
+          CHERE_INVOKING: 1
+        run: |
+          # Build
+          ./autojoe && \
+          ./configure --prefix=/usr/local && \
+          make -j
+
+      - name: Run tests
+        # Only run the tests on Linux for now.
+        #if: runner.os == 'linux'
+        continue-on-error: true
+        id: run_tests
+        env:
+          # Keep other scripts from failing.
+          SHELLOPTS: igncr
+          CYGWIN_NOWINPATH: 1
+          CHERE_INVOKING: 1
+        run: |
+          ./runtests
+
+      - name: Annotate test result
+        if: steps.run_tests.outcome == 'failure'
+        run: |
+          echo "::warning title=Test Failure::The tests failed, but the build continued because they currently need work."
+          echo "### ⚠️ Flaky Test Warning" >> $GITHUB_STEP_SUMMARY
+          echo "The test suite failed. Please check the logs of the 'Run tests' step for details." >> $GITHUB_STEP_SUMMARY

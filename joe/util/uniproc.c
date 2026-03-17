@@ -24,6 +24,8 @@
     do { \
         buf[y] = (char)c; \
         x = y; \
+        while (buf[x] == ' ' || buf[x] == '\t') \
+            ++x; \
         if (buf[x] == ';') \
             ++x; \
         while (buf[x] == ' ' || buf[x] == '\t') \
@@ -83,7 +85,7 @@ static int unifold_full(char *name)
     out_low = 0;
 
     printf("\n");
-    printf("struct interval fold_table[] = {\n");
+    printf("const struct interval fold_table[] = {\n");
 
     while (fgets(buf, sizeof(buf), f)) {
         int x, y, c;
@@ -91,7 +93,7 @@ static int unifold_full(char *name)
         char flag;
         unsigned outval[8];
         int outval_ptr;
-        char *endp; 
+        char *endp;
 
         ++line;
 
@@ -200,7 +202,7 @@ static int unifold_full(char *name)
     printf("	{ 0x0, 0x0 }");
     printf("\n};\n");
     first = 0;
-    printf("\nint fold_repl[][REPLLEN] = {\n");
+    printf("\nconst int fold_repl[][REPLLEN] = {\n");
     for (z = 0; z != len; ++z) {
         COMMA;
         printf("	{ 0x%x, 0x%x, 0x%x }", repl[z][0], repl[z][1], repl[z][2]);
@@ -229,7 +231,7 @@ static int unifold_simple(char *name)
     out_low = 0;
 
     printf("\n");
-    printf("struct casefold tolower_table[] = {\n");
+    printf("const struct casefold tolower_table[] = {\n");
 
     while (fgets(buf, sizeof(buf), f)) {
         int x, y, c;
@@ -237,7 +239,7 @@ static int unifold_simple(char *name)
         char flag;
         unsigned outval[8];
         int outval_ptr;
-        char *endp; 
+        char *endp;
 
         ++line;
 
@@ -512,7 +514,7 @@ static int unicat(char *name)
         int count = 0;
         low = high = -2;
         printf("\n");
-        printf("struct interval %s_table[] = {\n", cat->name);
+        printf("const struct interval %s_table[] = {\n", cat->name);
         nd = !strcmp(cat->name, "Nd"); /* Set for digit table */
         for (v = u; v; v = v->next) {
             if (!strcmp(v->cat, cat->name)) {
@@ -555,7 +557,7 @@ static int unicat(char *name)
 
     /* Generate convert to uppercase table */
     printf("\n");
-    printf("struct interval toupper_table[] = {\n");
+    printf("const struct interval toupper_table[] = {\n");
     low = high = -2;
     diglow = dighigh = -2;
     first = 0;
@@ -586,7 +588,7 @@ static int unicat(char *name)
     }
     printf("	{ 0x0, 0x0 }\n");
     printf("};\n");
-    printf("int toupper_cvt[] = {\n");
+    printf("const int toupper_cvt[] = {\n");
     for (n = 0; n != len; ++n)
         printf("	0x%x, /* 0x%x..0x%x */\n", cvt[n],reclow[n],rechigh[n]);
     printf("	0x0\n");
@@ -594,7 +596,7 @@ static int unicat(char *name)
 
     /* Generate convert to lowercase table */
     printf("\n");
-    printf("struct interval tolower_table[] = {\n");
+    printf("const struct interval tolower_table[] = {\n");
     low = high = -2;
     diglow = dighigh = -2;
     first = 0;
@@ -625,7 +627,7 @@ static int unicat(char *name)
     }
     printf("	{ 0x0, 0x0 }\n");
     printf("};\n");
-    printf("int tolower_cvt[] = {\n");
+    printf("const int tolower_cvt[] = {\n");
     for (n = 0; n != len; ++n)
         printf("	0x%x, /* 0x%x..0x%x */\n", cvt[n],reclow[n],rechigh[n]);
     printf("	0x0\n");
@@ -633,7 +635,7 @@ static int unicat(char *name)
 
     /* Generate convert to titlecase table */
     printf("\n");
-    printf("struct interval totitle_table[] = {\n");
+    printf("const struct interval totitle_table[] = {\n");
     low = high = -2;
     diglow = dighigh = -2;
     first = 0;
@@ -664,7 +666,7 @@ static int unicat(char *name)
     }
     printf("	{ 0x0, 0x0 }\n");
     printf("};\n");
-    printf("int totitle_cvt[] = {\n");
+    printf("const int totitle_cvt[] = {\n");
     for (n = 0; n != len; ++n)
         printf("	0x%x, /* 0x%x..0x%x */\n", cvt[n],reclow[n],rechigh[n]);
     printf("	0x0\n");
@@ -672,14 +674,14 @@ static int unicat(char *name)
 
     /* Generate lookup table */
     printf("\n");
-    printf("struct unicat unicat[] = {\n");
+    printf("const struct unicat unicat[] = {\n");
     for (cat = cats; cat; cat = cat->next) {
         if (cat->idx == -1)
-            printf("	{ \"%s\", %d, %s_table, 0 },\n", cat->name, cat->size, cat->name);
+            printf("	{ \"%s\", %d, %s_table },\n", cat->name, cat->size, cat->name);
         else
-            printf("	{ \"%s\", %d, uniblocks + %d, 0 },\n", cat->name, cat->size, cat->idx);
+            printf("	{ \"%s\", %d, uniblocks + %d },\n", cat->name, cat->size, cat->idx);
     }
-    printf("	{ 0, 0, 0, 0 }\n");
+    printf("	{ 0, 0, 0 }\n");
     printf("};\n");
     return 0;
 }
@@ -700,7 +702,7 @@ static int uniblocks(char *name)
     }
     printf("\n/* Unicode blocks */\n");
     printf("\n");
-    printf("struct interval uniblocks[] = {\n");
+    printf("const struct interval uniblocks[] = {\n");
     while (fgets(buf, sizeof(buf), f)) {
         if ((buf[0] >= '0' && buf[0] <= '9') ||
             (buf[0] >= 'A' && buf[0] <= 'F') ||
@@ -742,7 +744,7 @@ static int uniwidth(char *name)
     }
     printf("\n/* Double-wide characters */\n");
     printf("\n");
-    printf("struct interval width_table[] = {\n");
+    printf("const struct interval width_table[] = {\n");
     while (fgets(buf, sizeof(buf), f)) {
         if ((buf[0] >= '0' && buf[0] <= '9') ||
             (buf[0] >= 'A' && buf[0] <= 'F') ||

@@ -15,8 +15,8 @@ int menu_jump = 0;		/* Jump into menu */
 extern WATOM watommenu;
 
 struct tab {
-	ptrdiff_t first_len;			/* Original size of path */
-	off_t ofst;			/* Starting offset to path */
+	ptrdiff_t first_len;	/* Original size of path */
+	P *path_loc;		/* Starting position of path */
 	char *path;		/* current directory */
 	char *pattern;		/* search pattern */
 	ptrdiff_t len;		/* no. entries in files */
@@ -115,13 +115,12 @@ static int get_entries(TAB *tab, ino_t prv)
 	return which;
 }
 
-static void insnam(BW *bw, char *path, char *nam, int dir, off_t ofst, int quote)
+static void insnam(BW *bw, char *path, char *nam, int dir, P *path_loc, int quote)
 {
-	P *p = pdup(bw->cursor, "insnam");
-
-	pgoto(p, ofst);
+	off_t rstr = path_loc->byte;
+	pset(bw->cursor, path_loc);
 	p_goto_eol(bw->cursor);
-	bdel(p, bw->cursor);
+	bdel(path_loc, bw->cursor);
 	if (sLEN(path)) {
 		if (quote)
 			binsmq(bw->cursor, sv(path));
@@ -142,7 +141,7 @@ static void insnam(BW *bw, char *path, char *nam, int dir, off_t ofst, int quote
 		binsm(bw->cursor, sc("/"));
 		p_goto_eol(bw->cursor);
 	}
-	prm(p);
+	pgoto(path_loc, rstr);
 	bw->cursor->xcol = piscol(bw->cursor);
 }
 
@@ -206,6 +205,7 @@ static void rmtab(TAB *tab)
 	vsrm(tab->path);
 	vsrm(tab->pattern);
 	varm(tab->files);
+	prm(tab->path_loc);
 	if (tab->type)
 		joe_free(tab->type);
 	joe_free(tab);
@@ -245,7 +245,7 @@ static int tabrtn(MENU *m, ptrdiff_t cursor, void *object, int op)
 	} else {		/* Select name */
 		BW *bw = (BW *)m->parent->win->object;
 
-		insnam(bw, tab->path, tab->files[cursor], (tab->type[cursor]==F_DIR), tab->ofst, tab->quote);
+		insnam(bw, tab->path, tab->files[cursor], (tab->type[cursor]==F_DIR), tab->path_loc, tab->quote);
 		rmtab(tab);
 		m->object = NULL;
 		m->abrt = NULL;
@@ -262,7 +262,7 @@ static int tabrtn1(MENU *m, int cursor, TAB *tab)
 	/* New way: just add directory to path */
 	BW *bw = (BW *)m->parent->win->object;
 
-	insnam(bw, tab->path, tab->files[cursor], (tab->type[cursor]==F_DIR ? 1 : 0), tab->ofst, tab->quote);
+	insnam(bw, tab->path, tab->files[cursor], (tab->type[cursor]==F_DIR ? 1 : 0), tab->path_loc, tab->quote);
 	rmtab(tab);
 	m->object = NULL;
 	m->abrt = NULL;
@@ -398,7 +398,6 @@ static int cmplt(BW *bw, int k, int flags_in)
 	char *cline;
 	int which;
 	char **l;
-	off_t ofst;
 	int flags;
 
 	tab = (TAB *) joe_malloc(SIZEOF(TAB));
@@ -413,8 +412,8 @@ static int cmplt(BW *bw, int k, int flags_in)
 	q = pdup(bw->cursor, "cmplt");
 	p_goto_eol(q);
 	p = pdup(q, "cmplt");
+	tab->path_loc = p;
 	flags = p_goto_start_of_path(p, flags_in);
-	ofst = p->byte;
 
 	cline = brvs(p, q->byte - p->byte); /* Risky */
 	if (flags & PATH_QUOTE) {
@@ -426,10 +425,8 @@ static int cmplt(BW *bw, int k, int flags_in)
 
 	/* Don't do it so soon... */
 	/* cline = canonical(cline); */
-	prm(p);
 	prm(q);
 
-	tab->ofst = ofst;
 	tab->pattern = namprt(cline);
 	tab->path = dirprt(cline);
 	tab->first_len = sLEN(tab->path);
@@ -471,7 +468,7 @@ static int cmplt(BW *bw, int k, int flags_in)
 			vsrm(tab->orgnam);
 			tab->orgnam = com;
 			/* wabort causes tab->orgnam to be copied to prompt */
-			insnam(bw, tab->orgpath, tab->orgnam, 0, tab->ofst, tab->quote);
+			insnam(bw, tab->orgpath, tab->orgnam, 0, tab->path_loc, tab->quote);
 			wabort(newmenu->parent);
 			smode = 2;
 			/* if(joe_beep) */
