@@ -23,7 +23,7 @@ FILE_OPTS = set([
     'rdonly', 'keymap', 'lmsg', 'rmsg', 'mfirst', 'mnew', 'mold', 'msnew', 'msold',
     'highlighter_context', 'single_quoted', 'no_double_quoted', 'c_comment', 'cpp_comment',
     'pound_comment', 'vhdl_comment', 'semi_comment', 'tex_comment', 'text_delimiters',
-    'title', 'hash_comment'
+    'title', 'hash_comment', 'break_hardlinks', 'break_links'
 ])
 
 OPTS_WITH_ARGS = set([
