@@ -23,7 +23,7 @@ FILE_OPTS = set([
     'rdonly', 'keymap', 'lmsg', 'rmsg', 'mfirst', 'mnew', 'mold', 'msnew', 'msold',
     'highlighter_context', 'single_quoted', 'no_double_quoted', 'c_comment', 'cpp_comment',
     'pound_comment', 'vhdl_comment', 'semi_comment', 'tex_comment', 'text_delimiters',
-    'title', 'hash_comment'
+    'title', 'hash_comment', 'break_hardlinks', 'break_links'
 ])
 
 OPTS_WITH_ARGS = set([
@@ -75,10 +75,19 @@ class RCFile(object):
                 return kbc
         return None
 
+    def getUnrecognizedOptions(self):
+        unrecognized = set()
+        unrecognized.update(self.globalopts.getUnrecognized())
+        for fileopts in self.fileopts:
+            unrecognized.update(fileopts.options.getUnrecognized())
+
+        return list(sorted(unrecognized))
+
 class Options(object):
     def __init__(self, properties):
         self._properties = properties
         self._values = {}
+        self._unrecognized = {}
         self._order = []
 
     def __getattr__(self, name):
@@ -108,6 +117,21 @@ class Options(object):
             if name not in self._order:
                 self._order.append(name)
 
+    def setValueOrUnrecognizedLine(self, name, value, line):
+        """When loading configs, especially during development, there may be options that we don't
+        recognize. In this case, store them as literal lines and re-emit them on serialization so
+        that we don't break tests repeatedly."""
+        if name not in self._properties:
+            # If we don't recognize the property, then
+            self._unrecognized[name] = line
+            if name not in self._order:
+                self._order.append(name)
+        else:
+            return self.setValue(name, value)
+
+    def getUnrecognized(self):
+        return self._unrecognized.keys()
+
     def serialize(self):
         result = []
         def apply(k, v):
@@ -119,8 +143,11 @@ class Options(object):
                 result.append('-%s %s' % (k, v))
 
         for k in self._order:
-            v = self._values[k]
-            apply(k, v)
+            if k in self._values:
+                apply(k, self._values[k])
+            else:
+                result.append(self._unrecognized[k])
+
         for k, v in self._values.items():
             if k not in self._order:
                 apply(k, v)
@@ -130,6 +157,7 @@ class Options(object):
     def clone(self):
         other = Options(self._properties)
         other._values.update(self._values)
+        other._unrecognized.update(self._unrecognized)
         other._order = self._order[:]
         return other
 
@@ -304,9 +332,9 @@ class ParserState(object):
         parts = self.curline.split(None, 1)
         optionName = parts[0].lstrip('-')
         if len(parts) == 1 or optionName not in OPTS_WITH_ARGS:
-            opts.setValue(optionName, mode)
+            opts.setValueOrUnrecognizedLine(optionName, mode, self.curline.rstrip('\r\n'))
         else:
-            opts.setValue(optionName, self.curline[len(parts[0]) + 1:].rstrip('\r\n'))
+            opts.setValueOrUnrecognizedLine(optionName, self.curline[len(parts[0]) + 1:].rstrip('\r\n'), self.curline.rstrip('\r\n'))
 
     def parsemacro(self, line):
         i = 0

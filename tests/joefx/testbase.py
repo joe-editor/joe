@@ -3,6 +3,7 @@ import os
 import unittest
 import time
 import re
+import warnings
 
 from . import controller
 from . import fixtures
@@ -80,6 +81,12 @@ class JoeTestBase(unittest.TestCase):
                 fname = os.path.join(path, cfgfile)
                 if os.path.exists(fname):
                     RCFILES[cfgfile] = rcfile.parse(fname)
+
+                    # Report unrecognized options as warnings
+                    unrecognizedopts = RCFILES[cfgfile].getUnrecognizedOptions()
+                    if len(unrecognizedopts) > 0:
+                        warnings.warn("Unrecognized options: " + ' '.join(unrecognizedopts))
+
                     break
 
         if cfgfile in RCFILES:
