@@ -39,7 +39,7 @@ VFILE *vmem;
 
 int nodeadjoe = 0;
 
-const char *msgs[] = {
+const char *const msgs[] = {
 	_("No error"),
 	_("New File"),
 	_("Error reading file"),

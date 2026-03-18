@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-const char *builtins[]=
+const char *const builtins[]=
 {
 	"joerc",
 		"-keepup	%k and %c status line escape sequences updated frequently\n"

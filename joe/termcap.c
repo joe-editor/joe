@@ -30,7 +30,7 @@ char *joeterm = NULL;
 
 /* Default termcap entry */
 
-char defentry[] = "\
+static const char defentry[] = "\
 :co#80:li#25:am:\
 :ho=\\E[H:cm=\\E[%i%d;%dH:cV=\\E[%i%dH:\
 :up=\\E[A:UP=\\E[%dA:DO=\\E[%dB:nd=\\E[C:RI=\\E[%dC:LE=\\E[%dD:\

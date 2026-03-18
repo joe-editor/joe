@@ -18,7 +18,7 @@ B *replhist = NULL;		/* Replacement string history */
 
 SRCH *globalsrch = NULL;	/* Most recent completed search data */
 
-SRCHREC fsr = { {&fsr, &fsr} };
+static SRCHREC fsr = { {&fsr, &fsr} };
 
 /* Clear compiled version of pattern */
 
@@ -41,7 +41,7 @@ void setpat(SRCH *srch, char *s)
 
 /* Completion stuff: should go somewhere else */
 
-char **word_list;
+static char **word_list;
 
 #define MAX_WORD_SIZE 64
 static char **get_word_list(B *b,off_t ignore)

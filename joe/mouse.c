@@ -194,7 +194,7 @@ int udefmiddleup(W *xx, int k)
 
 /* Return base64 code character given 6-bit number */
 
-char base64_code[]="\
+static const char base64_code[]="\
 ABCDEFGHIJKLMNOPQRSTUVWXYZ\
 abcdefghijklmnopqrstuvwxyz\
 0123456789+/";

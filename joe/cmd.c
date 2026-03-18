@@ -17,7 +17,7 @@ static int ubeep(W *w, int k)
 	return 0;
 }
 
-CMD cmds[] = {
+const CMD cmds[] = {
 	{"abort", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uabort, NULL, 0, NULL},
 	{"abortbuf", TYPETW, uabortbuf, NULL, 0, NULL},
 	{"arg", TYPETW + TYPEPW + TYPEMENU + TYPEQW, uarg, NULL, 0, NULL},
@@ -507,7 +507,7 @@ static void izcmds(void)
 
 	cmdhash = htmk(256);
 	for (x = 0; x != SIZEOF(cmds) / SIZEOF(CMD); ++x)
-		htadd(cmdhash, cmds[x].name, cmds + x);
+		htadd(cmdhash, cmds[x].name, (void *)(cmds + x));
 }
 
 CMD *findcmd(const char *s)

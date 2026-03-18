@@ -73,7 +73,7 @@ struct window {
 	W	*orgwin;	/* Window where space from this window came */
 	ptrdiff_t	curx, cury;	/* Cursor position within window */
 	KBD	*kbd;		/* Keyboard handler for this window */
-	WATOM	*watom;		/* The type of this window */
+	const WATOM	*watom;		/* The type of this window */
 	void	*object;	/* Object which inherits this */
 #if 0
 	union {			/* FIXME: instead of void *object we should */
@@ -179,7 +179,7 @@ void sresize(Screen *t);
  * Returns the new window or returns 0 if there was not enough space to
  * create the window and maintain family integrity.
  */
-W *wcreate(Screen *t, WATOM *watom, W *where, W *target, W *original, ptrdiff_t height, const char *huh, int *notify);
+W *wcreate(Screen *t, const WATOM *watom, W *where, W *target, W *original, ptrdiff_t height, const char *huh, int *notify);
 
 /* int wabort(W *w);
  *
