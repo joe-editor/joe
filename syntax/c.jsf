@@ -31,12 +31,13 @@
 # Within a state, define transitions (jumps) to other states.  Each
 # jump has the form: <character-list> <target-state> [<option>s]
 
-# There are three ways to specify <character-list>s, either * for any
-# character not otherwise specified, % or & to match the character in the
-# delimiter match buffer or a literal list of characters within quotes
-# (ranges and escape sequences allowed).  When the next character matches
-# any in the list, a jump to the target-state is taken and the character is
-# eaten (we advance to the next character of the file to be colored).
+# There are three ways to specify <character-list>s: * for any character not
+# otherwise specified, % or & to match the character in the delimiter match
+# buffer (use % for an exact match, or & for an opposite match- for example,
+# < matches >) or a literal list of characters within quotes (ranges and
+# escape sequences allowed).  When the next character matches any in the
+# list, a jump to the target-state is taken and the character is eaten (we
+# advance to the next character of the file to be colored).
 #
 # The * transition should be the first transition specified in the state.
 #
