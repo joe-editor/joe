@@ -490,6 +490,7 @@ static void izopts(void)
 		case LOC_OPT_RANGE:
 		case LOC_OPT_OFFSET:
 			glopts[x].ofst = glopts[x].addr - (char *) &fdefault;
+		default:; /* some are indeed unhandled */
 		}
 	}
 	isiz = 1;
@@ -913,6 +914,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			ret = -1;
 		}
 		break;
+	default:; /* not all handled here */
 	}
 	vsrm(s);
 	bw->b->o = bw->o;
