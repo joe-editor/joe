@@ -597,18 +597,12 @@ int ustop(W *w, int k)
 	if (recmac) {
 		struct recmac *r = recmac;
 		MACRO *m;
-		/* true if the macro is effectively empty (contains only "stop") */
-		int empty = recmac->m->steps[0]->cmd->func == ustop;
 
 		dostaupd = 1;
 		recmac = r->next;
 		if (kbdmacro[r->n])
 			rmmacro(kbdmacro[r->n]);
-		if (empty) {
-			kbdmacro[r->n] = NULL;
-			rmmacro(r->m);
-		} else
-			kbdmacro[r->n] = r->m;
+		kbdmacro[r->n] = r->m;
 		if (recmac)
 			record(m = mkmacro(r->n + '0', 0, 0, findcmd("play")), NO_MORE_DATA), rmmacro(m);
 		joe_free(r);
