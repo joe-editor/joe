@@ -30,16 +30,30 @@
 
 # Within a state, define transitions (jumps) to other states.  Each
 # jump has the form: <character-list> <target-state> [<option>s]
-
-# There are three ways to specify <character-list>s: * for any character not
-# otherwise specified, % or & to match the character in the delimiter match
-# buffer (use % for an exact match, or & for an opposite match- for example,
-# < matches >) or a literal list of characters within quotes (ranges and
-# escape sequences allowed).  When the next character matches any in the
-# list, a jump to the target-state is taken and the character is eaten (we
-# advance to the next character of the file to be colored).
 #
-# The * transition should be the first transition specified in the state.
+# There are three special ways to specify <character-list>s:
+#   *      for any character not otherwise specified
+#   ~      for any character not otherwise specified, but with match rules
+#          (several may be present; these are evaluated in reverse order)
+#   % or & to match the character in the delimiter match buffer
+#          - use % for an exact match
+#          - use & for an opposite match, e.g. < matches >
+#
+# The ordinary way is to put the characters to be matched within quotation
+# marks, e.g. "a" or "abcd".  Ranges are allowed, e.g.  "a-d" (same as
+# "abcd"), as are escape sequences, e.g.  "\n" for the line-feed character.
+# When the next character matches any in the list, a jump to the
+# target-state is taken and the character is eaten (we advance to the next
+# character of the file to be colored).
+#
+# The * transition should be the first transition specified in the state and
+# should normally be present.  It is expected to be present if any ~
+# transitions are specified in the same state.
+#
+# Later transitions will replace earlier transitions which are of the same
+# type (*; % or &; character lists, for the same character).  However,
+# multiple ~ transitions may be listed; these are evaluated in reverse
+# order.
 #
 # There are several options:
 #   noeat     	do not eat the character, instead feed it to the next state
@@ -54,6 +68,42 @@
 #   mark	Mark beginning of a region with current position.
 #
 #   markend	Mark end of region.
+#
+#   sset...	Set state bit(s). This does not clear any bits.
+#   sclear...	Clear state bit(s).
+#   sflip...	Toggle state bit(s).
+#   sifall...	Match rule: all tested state bits must be set.
+#   sifany...	Match rule: at least one tested state bit must be set.
+#   sifnone...	Match rule: all tested state bits must be clear.
+#
+#		These commands take a 32-bit mask word or a comma-separated
+#		list of bit numbers. E.g. these all set the same four bits:
+#		     sset=0xF000
+#		     set@12,13,14,15
+#                    sset@12-15
+#
+#               sclear & sflip, without a parameter, act as sclear=-1 and
+#               sflip=-1 respectively.
+#
+#		Additionally, the match rules take "~all", "~any", "~none"
+#		or "~other".  The first three are evaluated to the inverse
+#		of the already-parsed value (for this rule) of the
+#		corresponding stest command; "~other" uses the common bits
+#		from the other two stest commands.
+#
+#		So to test that the flags word is exactly 0xF000:
+#		     sifall=0xF000 sifnone=0xFFFF0FFF
+#		     sifall=0xF000 sifnone~all
+#
+#		Or all of bits 12-15, any of bits 0-3 but no others:
+#		     sifall=0xF000 sifany=15  sifnone=0xFFFF0FF0
+#		     sifall=0xF000 sifany=0xF sifnone~other
+#
+#		NOTE: you should normally use the match rules only on ~
+#		transitions because for character matching, only the last
+#		transition defined in the state for any given character can
+#		match tha character.  If it fails due to a failed match
+#		rule, the default * transition will be chosen instead.
 #
 #   recolormark Recolor all of the characters in the marked region with
 #               the color of the target-state.  If markend is not given,
@@ -105,7 +155,7 @@
 #
 #   (all of the options above are allowed except "strings", "istrings" and "noeat".  noeat is
 #    always implied after a matched string).
-#
+
 # Weirdness: only states have colors, not transitions.  This means that you
 # sometimes have to make dummy states with '* next-state noeat' just to get
 # a color specification.
@@ -127,6 +177,11 @@
 #
 # The subroutine itself returns to the caller like this:
 #       "\""	whatever  return
+#
+# The state bits word is saved when calling a subroutine and is normally
+# restored on return.  It can be returned by using 'returnstate' instead of
+# 'return':
+#	"\""	whatever  returnstate
 #
 # If we're in a subroutine, the return is made.  Otherwise the jump
 # to 'whatever' is made.

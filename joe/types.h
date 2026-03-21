@@ -342,6 +342,7 @@ struct highlight_state {
 	struct high_delim_frame *delim_stack; /* Pointer to the previously pushed delimiter buffer */
 	const int *saved_s; /* Interned Z-string for saved delimiter */
 	ptrdiff_t state; /* Current state in the current subroutine */
+	int statebits;
 };
 
 /* It's a good idea to optimize the size of struct highlight_state since there are N of
