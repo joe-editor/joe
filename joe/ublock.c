@@ -862,29 +862,31 @@ int urindent(W *w, int k)
 
 			while (p->byte < markk->byte) {
 				p_goto_bol(p);
-				/* FIXME: what to do with blank/whitespace lines? For now, just indent anyway /*
-				/* FIXME: cleanup should be optional */
-				off_t col;
-				pset(q, p);
-				if (bw->o.indentc == ' ' && brc(p) == '\t') {
-					/* Don't insert spaces before tabs */
-					/* Rewrite the whitespace instead */
-					p_goto_indent(q, bw->o.indentc);
-					col = piscol(q);
-					bdel(p,q);
-					pfill(p,col+indwid,bw->o.indentc);
-				} else {
-					/* Simple insert */
-					/* ... with some clean-up if inserting tabs */
-					if (bw->o.indentc == '\t') {
-						for (col = 0; col < common_width; col += bw->o.tab) {
-							pcol(q, col);
-							eat_pretab_spaces(q, common_width);
+				if (!piseol(p)) /* FIXME: we don't indent empty lines.. probably this should be optional */
+				{
+					off_t col;
+					pset(q, p);
+					if (bw->o.indentc == ' ' && brc(p) == '\t') {
+						/* Don't insert spaces before tabs */
+						/* Rewrite the whitespace instead */
+						p_goto_indent(q, bw->o.indentc);
+						col = piscol(q);
+						bdel(p,q);
+						pfill(p,col+indwid,bw->o.indentc);
+					} else {
+						/* Simple insert */
+						/* ... with some clean-up if inserting tabs */
+						/* FIXME: cleanup should be optional */
+						if (bw->o.indentc == '\t') {
+							for (col = 0; col < common_width; col += bw->o.tab) {
+								pcol(q, col);
+								eat_pretab_spaces(q, common_width);
+							}
 						}
-					}
-					while (piscol(p) < bw->o.istep) {
-						binsc(p, bw->o.indentc);
-						pgetc(p);
+						while (piscol(p) < bw->o.istep) {
+							binsc(p, bw->o.indentc);
+							pgetc(p);
+						}
 					}
 				}
 				pnextl(p);
