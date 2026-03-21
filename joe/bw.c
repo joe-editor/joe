@@ -376,9 +376,9 @@ static struct state_debug_data out_osc8(const struct state_debug_data *oldstate,
 
 			if (newstate) {
 				ttputs("\x1B]8;id=");
-				ttputs(newstate->name);
+				ttputs(state_names[newstate->name]);
 				ttputs(";");
-				ttputs(newstate->name);
+				ttputs(state_names[newstate->name]);
 				ttputs("\x1B\\");
 			}
 			break;
@@ -391,9 +391,9 @@ static struct state_debug_data out_osc8(const struct state_debug_data *oldstate,
 
 			if (newstate) {
 				ttputs("\x1B]8;id=");
-				ttputs(newstate->recolor ? newstate->recolor : "idle");
+				ttputs(newstate->recolor ? state_names[newstate->recolor] : "(idle)");
 				ttputs(";");
-				ttputs(newstate->recolor ? newstate->recolor : "idle");
+				ttputs(newstate->recolor ? state_names[newstate->recolor] : "(idle)");
 				ttputs("\x1B\\");
 			}
 			break;
@@ -406,12 +406,12 @@ static struct state_debug_data out_osc8(const struct state_debug_data *oldstate,
 
 			if (newstate) {
 				ttputs("\x1B]8;id=");
-				ttputs(newstate->name);
+				ttputs(state_names[newstate->name]);
 				ttputs(";");
-				ttputs(newstate->name);
+				ttputs(state_names[newstate->name]);
 				if (newstate->recolor && newstate->recolor != newstate->name) {
 					ttputs("→");
-					ttputs(newstate->recolor);
+					ttputs(state_names[newstate->recolor]);
 				}
 				ttputs("\x1B\\");
 			}

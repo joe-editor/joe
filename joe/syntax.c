@@ -26,6 +26,10 @@ static int state_count = 0; /* Max transitions possible without cycling */
 struct high_syntax *ansi_syntax;
 struct high_syntax *syntax_list;
 
+const char **state_names = NULL;
+static int num_state_names = 0;
+static int alloc_state_names = 0;
+
 /* ANSI highlighter */
 
 #define IDLE 0
@@ -472,8 +476,25 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 
 	/* It doesn't exist, so create it */
 	if(!state) {
+		if (!state_names) {
+			alloc_state_names = 128;
+			state_names = joe_malloc(alloc_state_names * sizeof(*state_names));
+		}
+		if (num_state_names == alloc_state_names) {
+			alloc_state_names *= 2;
+			state_names = joe_realloc(state_names, alloc_state_names * sizeof(*state_names));
+		}
+
+		/* Find a matching name */
+		int i;
+		for (i = 0; i < num_state_names; ++i)
+			if (!strcmp(name, state_names[i]))
+				break;
+		/* Copy the pointer if a match was found else duplicate the name */
+		state_names[num_state_names] = i < num_state_names ? state_names[i] : zdup(name);
+
 		state=(struct high_state *)joe_malloc(SIZEOF(struct high_state));
-		state->name = zdup(name);
+		state->name = num_state_names++; /* and account for one more name in the list */
 		state->no = syntax->nstates;
 		state->color = 0;
 		state->colorp = NULL;
@@ -485,7 +506,7 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 		state->dflt = &syntax->default_cmd;
 		state->delim = 0;
 		state->same_delim = 0;
-		htadd(syntax->ht_states, state->name, state);
+		htadd(syntax->ht_states, state_names[state->name], state);
 		++state_count;
 	}
 	return state;
@@ -612,7 +633,7 @@ void dump_syntax(BW *bw)
 		pnextl(bw->cursor);
 		for(x=0;x!=syntax->nstates;++x) {
 			struct high_state *s = syntax->states[x];
-			joe_snprintf_2(buf, SIZEOF(buf), "   state %s %x\n",s->name,s->color);
+			joe_snprintf_2(buf, SIZEOF(buf), "   state %s %x\n",state_names[s->name],s->color);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 //			for (l = s->src; l; l = l->next) {
@@ -621,7 +642,7 @@ void dump_syntax(BW *bw)
 //				binss(bw->cursor, buf);
 //				pnextl(bw->cursor);
 //			}
-			joe_snprintf_2(buf, SIZEOF(buf), "     default -> %s %d\n",(s->dflt->new_state ? s->dflt->new_state->name : "ERROR! Unknown state!"),(int)s->dflt->recolor);
+			joe_snprintf_2(buf, SIZEOF(buf), "     default -> %s %d\n",(s->dflt->new_state ? state_names[s->dflt->new_state->name] : "ERROR! Unknown state!"),(int)s->dflt->recolor);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 		}

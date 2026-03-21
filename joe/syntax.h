@@ -8,9 +8,11 @@
 
 /* State */
 
+extern const char **state_names;
+
 struct high_state {
 	ptrdiff_t no;			/* State number */
-	const char *name;		/* Highlight state name */
+	int name;			/* Highlight state name (index into state_names) */
 	int color;			/* Color for this state */
 	struct color_def *colorp;	/* Mapped color definition */
 
@@ -98,7 +100,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state,s
 
 typedef unsigned int attr_data;
 struct state_debug_data {
-	const char *name, *recolor;
+	int name, recolor;
 };
 extern attr_data *attr_buf;
 extern struct state_debug_data *syndebug_buf;
