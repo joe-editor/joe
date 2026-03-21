@@ -223,7 +223,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		do {
 			/* Guard against infinite loops from buggy syntaxes */
 			if (iters++ > state_count) {
+			      error_invalidate_return:
 				invalidate_state(&h_state);
+				memset(attr, 0, (attr_end - attr) * sizeof(*attr));
 				return h_state;
 			}
 
@@ -297,10 +299,8 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				/* Normal edge */
 				h = cmd->new_state;
 				/* Guard against missing jump targets */
-				if (!h) {
-					invalidate_state(&h_state);
-					return h_state;
-				}
+				if (!h)
+					goto error_invalidate_return;
 			}
 
 			/* Recolor if necessary */
