@@ -1357,7 +1357,7 @@ const char *get_status(BW *bw, char *s)
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *glopts[y].set.i);
 				return buf;
 			case GLO_OPT_STRING:
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *glopts[y].set.s ?: "");
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *glopts[y].set.s ? *glopts[y].set.s : "");
 				return buf;
 			case LOC_OPT_BOOL:
 				return *(int *) ((char *) &bw->o + glopts[y].ofst) ? "ON" : "OFF";
@@ -1365,7 +1365,7 @@ const char *get_status(BW *bw, char *s)
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *OPTPTR(&bw->o, glopts[y].ofst, int));
 				return buf;
 			case LOC_OPT_STRING:
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *OPTPTR(&bw->o, glopts[y].ofst, char *) ?: "");
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *OPTPTR(&bw->o, glopts[y].ofst, char *) ? *OPTPTR(&bw->o, glopts[y].ofst, char *) : "");
 				return buf;
 			case LOC_OPT_RANGE:
 #ifdef HAVE_LONG_LONG
@@ -1375,10 +1375,10 @@ const char *get_status(BW *bw, char *s)
 #endif
 				return buf;
 			case LOC_OPT_SYNTAX:
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", bw->o.syntax_name ?: "");
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", bw->o.syntax_name ? bw->o.syntax_name : "");
 				return buf;
 			case LOC_OPT_ENCODING:
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", bw->o.map_name ?: "");
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", bw->o.map_name ? bw->o.map_name : "");
 				return buf;
 			case LOC_OPT_OFFSET:
 #ifdef HAVE_LONG_LONG
@@ -1390,7 +1390,7 @@ const char *get_status(BW *bw, char *s)
 			case LOC_OPT_FILE_TYPE:
 				return bw->o.ftype;
 			case LOC_OPT_COLORS:
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", scheme_name ?: "");
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", scheme_name ? scheme_name : "");
 				return buf;
 			default:
 				return "";
