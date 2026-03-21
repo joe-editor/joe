@@ -412,6 +412,7 @@ menu,"global",rtn	% % global options
 menu,"cursor",rtn	% % cursor options
 menu,"marking",rtn	% % marking options
 menu,"tab",rtn	% % tab/indent options
+menu,"debug",rtn	% % debug options
 
 :defmenu indent menu,"root",rtn
 mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 1, Indent character = 32",rtn	1 Space
@@ -497,6 +498,12 @@ mode,"smartbacks",rtn	% % Smart backspace %Zsmartbacks%
 mode,"indentfirst",rtn	% % To indent first %Zindentfirst%
 mode,"purify",rtn	% % Clean up indents %Zpurify%
 mode,"spaces",rtn	% % No tabs %Zspaces%
+
+:defmenu debug menu,"more-options",rtn
+mode,"syntax_debug",rtn,"0",rtn,retype	% % Syntax debug off (0)
+mode,"syntax_debug",rtn,"1",rtn,retype	% % Syntax debug: states (1)
+mode,"syntax_debug",rtn,"2",rtn,retype	% % Syntax debug: recolor (2)
+mode,"syntax_debug",rtn,"3",rtn,retype	% % Syntax debug: full (3)
 
  THIRD SECTION: Named help screens:
 

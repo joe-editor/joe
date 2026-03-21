@@ -95,7 +95,13 @@ struct high_syntax *load_syntax(const char *name);
 /* Parse a lines.  Returns new state. */
 
 HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state,struct charmap *charmap);
-extern int *attr_buf;
+
+typedef unsigned int attr_data;
+struct state_debug_data {
+	const char *name, *recolor;
+};
+extern attr_data *attr_buf;
+extern struct state_debug_data *syndebug_buf;
 
 #define clear_state(s) (((s)->saved_s = 0), ((s)->state = 0), ((s)->stack = 0), ((s)->delim_stack = 0))
 #define invalidate_state(s) (((s)->state = -1), ((s)->saved_s = 0), ((s)->stack = 0), ((s)->delim_stack = 0))
