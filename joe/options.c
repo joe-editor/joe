@@ -55,6 +55,7 @@ OPTIONS pdefault = {
 #endif
 	0,		/* Highlight */
 	0,		/* Visible whitespace */
+	0,		/* Syntax debugging */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
@@ -120,6 +121,7 @@ OPTIONS fdefault = {
 #endif
 	0,		/* Highlight */
 	0,		/* Visible whitespace */
+	0,		/* Syntax debugging */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
@@ -380,6 +382,7 @@ struct glopts {
 	{"purify",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.purify, _("Indentation clean up enabled"), _("Indentation clean up disabled"), _("Clean up indents "), 0, 0, 0 },
 	{"picture",             LOC_OPT_BOOL, { NULL }, (char *) &fdefault.picture, _("Picture drawing mode enabled"), _("Picture drawing mode disabled"), _("Picture mode "), 0, 0, 0 },
 	{"backpath",            GLO_OPT_STRING, { &backpath }, NULL, _("Backup files stored in (%s): "), 0, _("Path to backup files "), 0, 0, 0 },
+	{"syntax_debug",	LOC_OPT_INT, { NULL }, (char *) &fdefault.syntax_debug, _("Syntax debug info %d (0=off, 1=state, 2=recolor, 3=both)"), NULL, _("Syntax debug mode"), 0, 0, 3 },
 	{"syntax",              LOC_OPT_SYNTAX, { NULL }, NULL, _("Select syntax (%{abort} to abort): "), 0, _("Syntax"), 0, 0, 0 },
 	{"colors",              LOC_OPT_COLORS, { NULL }, NULL, _("Select color scheme (%{abort} to abort): "), 0, _("Scheme "), 0, 0, 0 },
 	{"encoding",            LOC_OPT_ENCODING, { NULL }, NULL, _("Select file character set (%{abort} to abort): "), 0, _("Encoding "), 0, 0, 0 },
