@@ -13,7 +13,7 @@ struct macro {
 	int k; /* Keycode */
 	int flg; /* Flags: bit 0: this step wants the negative arg,
 	                   bit 1: ignore return value of this step, but use it as return value of macro */
-	CMD *cmd; /* Command address */
+	const CMD *cmd; /* Command address */
 	ptrdiff_t n; /* Number of steps */
 	ptrdiff_t size; /* Malloc size of steps */
 	MACRO **steps; /* Block */
@@ -37,7 +37,7 @@ extern struct recmac *recmac; /* Set when macro is recording: for status line */
  *  n is number of steps (but it does not allocate space for them)
  *  cmd is command for this step
  */
-MACRO *mkmacro(int k, int flg, ptrdiff_t n, CMD *cmd);
+MACRO *mkmacro(int k, int flg, ptrdiff_t n, const CMD *cmd);
 
 /* Append step m to macro */
 void addmacro(MACRO *macro, MACRO *m);

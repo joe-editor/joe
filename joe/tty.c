@@ -424,7 +424,7 @@ void ttopnn(void)
 	upc = DIVIDEND / tty_baud;
 	if (obuf)
 		joe_free(obuf);
-	if (!(TIMES * upc))
+	if (!upc)
 		obufsiz = 4096;
 	else {
 		obufsiz = 1000000 / (TIMES * upc);
@@ -1279,7 +1279,7 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 					for (;;) {
 						len = joe_read(0, ibuf, SIZEOF(ibuf));
 						if (len > 0) {
-							if (-1 == joe_write(1, ibuf, (size_t)len))
+							if (-1 == joe_write(1, ibuf, len))
 								break;
 						} else {
 							break;

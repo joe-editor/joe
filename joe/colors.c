@@ -391,7 +391,7 @@ SCHEME *load_scheme(const char *name)
 						/* p = end */
 
 						/* Add macro */
-						newmacro = joe_malloc(SIZEOF(struct color_macro));
+						newmacro = (struct color_macro *)joe_malloc(SIZEOF(struct color_macro));
 						newmacro->next = macros;
 						newmacro->name = zdup(bf);
 						newmacro->value = vsncpy(NULL, 0, q, p - q);
@@ -563,7 +563,7 @@ static int build_palette(COLORSET *cset, int startidx)
 {
 	const int SIZE = 256;
 	struct color_def *cdef;
-	int *palette = joe_malloc(SIZEOF(int) * SIZE);
+	int *palette = (int *)joe_malloc(SIZEOF(int) * SIZE);
 	int i, t;
 
 	/* Clear start */
@@ -673,7 +673,7 @@ static int sort_palette(int *palette, int start, int end)
 
 static int palcmp(const void *a, const void *b)
 {
-	return (*((int*)a) < *((int*)b)) ? -1 : 1;
+	return (*((const int *)a) < *((const int *)b)) ? -1 : 1;
 }
 
 /* Map GUI colors from color_spec into palette indices */
@@ -828,13 +828,13 @@ static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct co
 				char buf[128];
 
 				joe_snprintf_2(buf, SIZEOF(buf), "%s.%s", syntax->name, cref->name);
-				rcdef = htfind(cset->syntax, buf);
+				rcdef = (struct color_def *)htfind(cset->syntax, buf);
 			}
 		}
 
 		if (!rcdef) {
 			/* Check scheme for <color> */
-			rcdef = htfind(cset->syntax, cref->name);
+			rcdef = (struct color_def *)htfind(cset->syntax, cref->name);
 		}
 
 		if (rcdef) {
@@ -873,9 +873,9 @@ void resolve_syntax_colors(COLORSET *cset, struct high_syntax *syntax)
 			char buf[128];
 
 			joe_snprintf_2(buf, SIZEOF(buf), "%s.%s", syntax->name, scdef->name);
-			cdef = htfind(cset->syntax, buf);
+			cdef = (struct color_def *)htfind(cset->syntax, buf);
 			if (!cdef) {
-				cdef = htfind(cset->syntax, scdef->name);
+				cdef = (struct color_def *)htfind(cset->syntax, scdef->name);
 			}
 
 			if (cdef) {
@@ -1022,7 +1022,7 @@ void load_colors_state(FILE *fp)
 		/* Value */
 		len = parse_string(&p, bf, SIZEOF(bf));
 		if (len > 0) {
-			struct color_states *st = joe_malloc(SIZEOF(struct color_states));
+			struct color_states *st = (struct color_states *)joe_malloc(SIZEOF(struct color_states));
 			st->term = term;
 			st->scheme = zdup(bf);
 			st->next = saved_scheme_configs;

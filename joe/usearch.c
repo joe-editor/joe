@@ -65,7 +65,7 @@ static char **get_word_list(B *b,off_t ignore)
 		if (idx) {
 			if (joe_isalnum_(b->o.charmap, c)) {
 				if (b->o.charmap->type) {
-					if (idx + 8 < MAX_WORD_SIZE) {
+					if (idx < MAX_WORD_SIZE - 8) {
 						idx += utf8_encode(buf+idx, c);
 					}
 				} else {
@@ -498,6 +498,7 @@ static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len, B **entire, B *
 			switch (case_flag) {
 				case 1: {
 					case_flag = 0;
+					FALLTHROUGH
 				} case 2: {
 					while (y) {
 						int ch = fwrd_c(p->b->o.charmap, &t, &y);
@@ -508,6 +509,7 @@ static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len, B **entire, B *
 					break;
 				} case -1: {
 					case_flag = 0;
+					FALLTHROUGH
 				} case -2: {
 					while (y) {
 						int ch = fwrd_c(p->b->o.charmap, &t, &y);
@@ -566,11 +568,13 @@ static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len, B **entire, B *
 							switch (case_flag) {
 								case 1: {
 									case_flag = 0;
+									FALLTHROUGH
 								} case 2: {
 									ch = joe_tolower(p->b->o.charmap, ch);
 									break;
 								} case -1: {
 									case_flag = 0;
+									FALLTHROUGH
 								} case -2: {
 									ch = joe_toupper(p->b->o.charmap, ch);
 									break;
@@ -595,11 +599,13 @@ static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len, B **entire, B *
 					switch (case_flag) {
 						case 1: {
 							case_flag = 0;
+							FALLTHROUGH
 						} case 2: {
 							ch = joe_tolower(p->b->o.charmap, ch);
 							break;
 						} case -1: {
 							case_flag = 0;
+							FALLTHROUGH
 						} case -2: {
 							ch = joe_toupper(p->b->o.charmap, ch);
 							break;

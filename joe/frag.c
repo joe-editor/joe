@@ -29,10 +29,10 @@ void clr_frag(Frag *f)
 static void expand_frag(Frag *frag, ptrdiff_t size)
 {
 	if ((frag->size >> 1) > size)
-		// Grow by 50%
+		/* Grow by 50% */
 		frag->size = frag->size + (frag->size >> 1);
 	else
-		// Grow by 50% plus requested size
+		/* Grow by 50% plus requested size */
 		frag->size += frag->size + (frag->size >> 1);
 
 	frag->start = (unsigned char *)joe_realloc(frag->start, frag->size);

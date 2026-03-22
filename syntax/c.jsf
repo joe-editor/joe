@@ -206,6 +206,8 @@
 =Brace
 =Control
 
+=IfZero		+Comment
+
 :reset Idle
 	*		first		noeat
 	" \t"		reset
@@ -224,11 +226,11 @@
 	"define"	predef		markend recolormark
 	"include"	preinc_end	markend recolormark call=.inc_file()
 	"embed"		preembed_params	markend recolormark call=.inc_file()
-	"if"		precond		markend recolormark
+	"if"		preifzero	markend recolormark
 	"ifdef"		precond		markend recolormark
 	"ifndef"	precond		markend recolormark
 	"else"		precond		markend recolormark
-	"elif"		precond		markend recolormark
+	"elif"		preifzero	markend recolormark
 	"endif"		precond		markend recolormark
 	"undef"		predef		markend recolormark
 	"elifdef"	precond		markend recolormark # C++23
@@ -238,6 +240,77 @@ done
 
 :precond Precond
 	*		preproc		noeat
+
+# handle top-level "#if 0" & "#elif 0"
+:preifzero Preproc
+	*		preproc		noeat
+	" \t"		preifzero
+	"0"		preproc		call=.ifzero()
+
+# handle "#if 0" & "#elif 0", accounting for nested #if* blocks
+# FIXME: check what directly follows the '0'?
+.subr ifzero
+:ifzero IfZero
+	*		ifzero
+	"\n"		ifzero_maybe_pre
+
+:ifzero_maybe_pre IfZero
+	*		ifzero		noeat
+	" \t"		ifzero_maybe_pre
+	"#"		ifzero_pre	mark
+
+:ifzero_pre IfZero
+	*		ifzero		noeat
+	" \t"		ifzero_pre
+	"i"		ifzero_preif	noeat buffer
+	"e"		ifzero_preend	noeat buffer
+
+:ifzero_preif IfZero
+	*		ifzero		noeat strings
+	"if"		ifzero_prenest
+	"ifdef"		ifzero_prenest
+	"ifndef"	ifzero_prenest
+done
+	"a-z"		ifzero_preif
+
+# recursion on nested #if* (but not #elif*)
+:ifzero_prenest IfZero
+	*		ifzero		noeat call=.ifzero(nested)
+
+:ifzero_preend IfZero
+.ifdef nested # only return on #endif
+	*		ifzero		noeat strings
+	"endif"		ifzero_predone
+	"else"		ifzero_preelse
+	"elif"		ifzero_preelse
+	"elifdef"	ifzero_preelse
+	"elifndef"	ifzero_preelse
+done
+.else # top-level, so return on #else* or #endif, but check for #elif 0
+	*		ifzero		noeat strings
+	"endif"		ifzero_predone
+	"else"		ifzero_predone
+	"elif"		ifzero_preifzero	markend recolormark
+	"elifdef"	ifzero_predone
+	"elifndef"	ifzero_predone
+done
+.endif
+	"a-z"		ifzero_preend
+
+# handle #elif 0
+:ifzero_preifzero Preproc
+	*		ifzero_predone	noeat
+	" \t"		ifzero_preifzero
+	"0"		ifzero
+
+# nested #else*; ignore it
+:ifzero_preelse IfZero
+	*		ifzero		noeat
+
+# any #endif or a top-level #else*
+:ifzero_predone Preproc
+	*		NULL		noeat markend recolormark return
+.end
 
 .subr inc_file
 :preinc Preproc

@@ -48,21 +48,21 @@ int *msetI(int *dest, int c, ptrdiff_t sz)
 		sz -= 16;
 	}
 	switch (sz) {
-	case 15:	d[14] = c;
-	case 14:	d[13] = c;
-	case 13:	d[12] = c;
-	case 12:	d[11] = c;
-	case 11:	d[10] = c;
-	case 10:	d[9] = c;
-	case 9:		d[8] = c;
-	case 8:		d[7] = c;
-	case 7:		d[6] = c;
-	case 6:		d[5] = c;
-	case 5:		d[4] = c;
-	case 4:		d[3] = c;
-	case 3:		d[2] = c;
-	case 2:		d[1] = c;
-	case 1:		d[0] = c;
+	case 15:	d[14] = c; FALLTHROUGH
+	case 14:	d[13] = c; FALLTHROUGH
+	case 13:	d[12] = c; FALLTHROUGH
+	case 12:	d[11] = c; FALLTHROUGH
+	case 11:	d[10] = c; FALLTHROUGH
+	case 10:	d[9] = c; FALLTHROUGH
+	case 9:		d[8] = c; FALLTHROUGH
+	case 8:		d[7] = c; FALLTHROUGH
+	case 7:		d[6] = c; FALLTHROUGH
+	case 6:		d[5] = c; FALLTHROUGH
+	case 5:		d[4] = c; FALLTHROUGH
+	case 4:		d[3] = c; FALLTHROUGH
+	case 3:		d[2] = c; FALLTHROUGH
+	case 2:		d[1] = c; FALLTHROUGH
+	case 1:		d[0] = c; FALLTHROUGH
 	case 0:		/* do nothing */;
 	}
 	return orgd;
@@ -94,21 +94,21 @@ ptrdiff_t *msetD(ptrdiff_t *dest, ptrdiff_t c, ptrdiff_t sz)
 		sz -= 16;
 	}
 	switch (sz) {
-	case 15:	d[14] = c;
-	case 14:	d[13] = c;
-	case 13:	d[12] = c;
-	case 12:	d[11] = c;
-	case 11:	d[10] = c;
-	case 10:	d[9] = c;
-	case 9:		d[8] = c;
-	case 8:		d[7] = c;
-	case 7:		d[6] = c;
-	case 6:		d[5] = c;
-	case 5:		d[4] = c;
-	case 4:		d[3] = c;
-	case 3:		d[2] = c;
-	case 2:		d[1] = c;
-	case 1:		d[0] = c;
+	case 15:	d[14] = c; FALLTHROUGH
+	case 14:	d[13] = c; FALLTHROUGH
+	case 13:	d[12] = c; FALLTHROUGH
+	case 12:	d[11] = c; FALLTHROUGH
+	case 11:	d[10] = c; FALLTHROUGH
+	case 10:	d[9] = c; FALLTHROUGH
+	case 9:		d[8] = c; FALLTHROUGH
+	case 8:		d[7] = c; FALLTHROUGH
+	case 7:		d[6] = c; FALLTHROUGH
+	case 6:		d[5] = c; FALLTHROUGH
+	case 5:		d[4] = c; FALLTHROUGH
+	case 4:		d[3] = c; FALLTHROUGH
+	case 3:		d[2] = c; FALLTHROUGH
+	case 2:		d[1] = c; FALLTHROUGH
+	case 1:		d[0] = c; FALLTHROUGH
 	case 0:		/* do nothing */;
 	}
 	return orgd;
@@ -142,21 +142,21 @@ void **msetP(void **d, void *c, ptrdiff_t sz)
 		sz -= 16;
 	}
 	switch (sz) {
-	case 15:	d[14] = c;
-	case 14:	d[13] = c;
-	case 13:	d[12] = c;
-	case 12:	d[11] = c;
-	case 11:	d[10] = c;
-	case 10:	d[9] = c;
-	case 9:		d[8] = c;
-	case 8:		d[7] = c;
-	case 7:		d[6] = c;
-	case 6:		d[5] = c;
-	case 5:		d[4] = c;
-	case 4:		d[3] = c;
-	case 3:		d[2] = c;
-	case 2:		d[1] = c;
-	case 1:		d[0] = c;
+	case 15:	d[14] = c; FALLTHROUGH
+	case 14:	d[13] = c; FALLTHROUGH
+	case 13:	d[12] = c; FALLTHROUGH
+	case 12:	d[11] = c; FALLTHROUGH
+	case 11:	d[10] = c; FALLTHROUGH
+	case 10:	d[9] = c; FALLTHROUGH
+	case 9:		d[8] = c; FALLTHROUGH
+	case 8:		d[7] = c; FALLTHROUGH
+	case 7:		d[6] = c; FALLTHROUGH
+	case 6:		d[5] = c; FALLTHROUGH
+	case 5:		d[4] = c; FALLTHROUGH
+	case 4:		d[3] = c; FALLTHROUGH
+	case 3:		d[2] = c; FALLTHROUGH
+	case 2:		d[1] = c; FALLTHROUGH
+	case 1:		d[0] = c; FALLTHROUGH
 	case 0:		/* do nothing */;
 	}
 	return orgd;
@@ -172,21 +172,21 @@ char *mset(char *dest, char c, ptrdiff_t sz)
 
 	if (sz < 16) {
 		switch (sz) {
-		case 15:	d[14] = c;
-		case 14:	d[13] = c;
-		case 13:	d[12] = c;
-		case 12:	d[11] = c;
-		case 11:	d[10] = c;
-		case 10:	d[9] = c;
-		case 9:		d[8] = c;
-		case 8:		d[7] = c;
-		case 7:		d[6] = c;
-		case 6:		d[5] = c;
-		case 5:		d[4] = c;
-		case 4:		d[3] = c;
-		case 3:		d[2] = c;
-		case 2:		d[1] = c;
-		case 1:		d[0] = c;
+		case 15:	d[14] = c; FALLTHROUGH
+		case 14:	d[13] = c; FALLTHROUGH
+		case 13:	d[12] = c; FALLTHROUGH
+		case 12:	d[11] = c; FALLTHROUGH
+		case 11:	d[10] = c; FALLTHROUGH
+		case 10:	d[9] = c; FALLTHROUGH
+		case 9:		d[8] = c; FALLTHROUGH
+		case 8:		d[7] = c; FALLTHROUGH
+		case 7:		d[6] = c; FALLTHROUGH
+		case 6:		d[5] = c; FALLTHROUGH
+		case 5:		d[4] = c; FALLTHROUGH
+		case 4:		d[3] = c; FALLTHROUGH
+		case 3:		d[2] = c; FALLTHROUGH
+		case 2:		d[1] = c; FALLTHROUGH
+		case 1:		d[0] = c; FALLTHROUGH
 		case 0:		/* do nothing */;
 		}
 	} else {
@@ -194,13 +194,13 @@ char *mset(char *dest, char c, ptrdiff_t sz)
 
 		if (z != SIZEOF_INT) {
 			switch (z) {
-			case 7:		d[6] = c;
-			case 6:		d[5] = c;
-			case 5:		d[4] = c;
-			case 4:		d[3] = c;
-			case 3:		d[2] = c;
-			case 2:		d[1] = c;
-			case 1:		d[0] = c;
+			case 7:		d[6] = c; FALLTHROUGH
+			case 6:		d[5] = c; FALLTHROUGH
+			case 5:		d[4] = c; FALLTHROUGH
+			case 4:		d[3] = c; FALLTHROUGH
+			case 3:		d[2] = c; FALLTHROUGH
+			case 2:		d[1] = c; FALLTHROUGH
+			case 1:		d[0] = c; FALLTHROUGH
 			case 0:		/* do nothing */;
 			}
 			d += z;
@@ -219,13 +219,13 @@ char *mset(char *dest, char c, ptrdiff_t sz)
 		      c, sz >> SHFT);
 		d += sz & ~(SIZEOF_INT - 1);
 		switch (sz & (SIZEOF_INT - 1)) {
-		case 7:		d[6] = c;
-		case 6:		d[5] = c;
-		case 5:		d[4] = c;
-		case 4:		d[3] = c;
-		case 3:		d[2] = c;
-		case 2:		d[1] = c;
-		case 1:		d[0] = c;
+		case 7:		d[6] = c; FALLTHROUGH
+		case 6:		d[5] = c; FALLTHROUGH
+		case 5:		d[4] = c; FALLTHROUGH
+		case 4:		d[3] = c; FALLTHROUGH
+		case 3:		d[2] = c; FALLTHROUGH
+		case 2:		d[1] = c; FALLTHROUGH
+		case 1:		d[0] = c; FALLTHROUGH
 		case 0:		/* do nothing */;
 		}
 	}
@@ -268,21 +268,21 @@ static int *mbkwdI(int *dest, const int *src, ptrdiff_t sz)
 	d -= sz;
 	s -= sz;
 	switch (sz) {
-	case 15:	d[14] = s[14];
-	case 14:	d[13] = s[13];
-	case 13:	d[12] = s[12];
-	case 12:	d[11] = s[11];
-	case 11:	d[10] = s[10];
-	case 10:	d[9] = s[9];
-	case 9:		d[8] = s[8];
-	case 8:		d[7] = s[7];
-	case 7:		d[6] = s[6];
-	case 6:		d[5] = s[5];
-	case 5:		d[4] = s[4];
-	case 4:		d[3] = s[3];
-	case 3:		d[2] = s[2];
-	case 2:		d[1] = s[1];
-	case 1:		d[0] = s[0];
+	case 15:	d[14] = s[14]; FALLTHROUGH
+	case 14:	d[13] = s[13]; FALLTHROUGH
+	case 13:	d[12] = s[12]; FALLTHROUGH
+	case 12:	d[11] = s[11]; FALLTHROUGH
+	case 11:	d[10] = s[10]; FALLTHROUGH
+	case 10:	d[9] = s[9]; FALLTHROUGH
+	case 9:		d[8] = s[8]; FALLTHROUGH
+	case 8:		d[7] = s[7]; FALLTHROUGH
+	case 7:		d[6] = s[6]; FALLTHROUGH
+	case 6:		d[5] = s[5]; FALLTHROUGH
+	case 5:		d[4] = s[4]; FALLTHROUGH
+	case 4:		d[3] = s[3]; FALLTHROUGH
+	case 3:		d[2] = s[2]; FALLTHROUGH
+	case 2:		d[1] = s[1]; FALLTHROUGH
+	case 1:		d[0] = s[0]; FALLTHROUGH
 	case 0:		/* do nothing */;
 	}
 	return d;
@@ -322,21 +322,21 @@ static int *mfwrdI(int *dest, const int *src, ptrdiff_t sz)
 	s -= 15 - sz;
 	d -= 15 - sz;
 	switch (sz) {
-	case 15:	d[0] = s[0];
-	case 14:	d[1] = s[1];
-	case 13:	d[2] = s[2];
-	case 12:	d[3] = s[3];
-	case 11:	d[4] = s[4];
-	case 10:	d[5] = s[5];
-	case 9:		d[6] = s[6];
-	case 8:		d[7] = s[7];
-	case 7:		d[8] = s[8];
-	case 6:		d[9] = s[9];
-	case 5:		d[10] = s[10];
-	case 4:		d[11] = s[11];
-	case 3:		d[12] = s[12];
-	case 2:		d[13] = s[13];
-	case 1:		d[14] = s[14];
+	case 15:	d[0] = s[0]; FALLTHROUGH
+	case 14:	d[1] = s[1]; FALLTHROUGH
+	case 13:	d[2] = s[2]; FALLTHROUGH
+	case 12:	d[3] = s[3]; FALLTHROUGH
+	case 11:	d[4] = s[4]; FALLTHROUGH
+	case 10:	d[5] = s[5]; FALLTHROUGH
+	case 9:		d[6] = s[6]; FALLTHROUGH
+	case 8:		d[7] = s[7]; FALLTHROUGH
+	case 7:		d[8] = s[8]; FALLTHROUGH
+	case 6:		d[9] = s[9]; FALLTHROUGH
+	case 5:		d[10] = s[10]; FALLTHROUGH
+	case 4:		d[11] = s[11]; FALLTHROUGH
+	case 3:		d[12] = s[12]; FALLTHROUGH
+	case 2:		d[13] = s[13]; FALLTHROUGH
+	case 1:		d[14] = s[14]; FALLTHROUGH
 	case 0:		/* do nothing */;
 	}
 	return od;
@@ -366,13 +366,13 @@ static void *mbkwd(register void *orgd, register const void *orgs, register ptrd
 		s -= z;
 		d -= z;
 		switch (z) {
-		case 7:		d[6] = s[6];
-		case 6:		d[5] = s[5];
-		case 5:		d[4] = s[4];
-		case 4:		d[3] = s[3];
-		case 3:		d[2] = s[2];
-		case 2:		d[1] = s[1];
-		case 1:		d[0] = s[0];
+		case 7:		d[6] = s[6]; FALLTHROUGH
+		case 6:		d[5] = s[5]; FALLTHROUGH
+		case 5:		d[4] = s[4]; FALLTHROUGH
+		case 4:		d[3] = s[3]; FALLTHROUGH
+		case 3:		d[2] = s[2]; FALLTHROUGH
+		case 2:		d[1] = s[1]; FALLTHROUGH
+		case 1:		d[0] = s[0]; FALLTHROUGH
 		case 0:		/* do nothing */;
 		}
 		sz -= z;
@@ -380,13 +380,13 @@ static void *mbkwd(register void *orgd, register const void *orgs, register ptrd
 		d -= sz;
 		s -= sz;
 		switch (sz & (SIZEOF_INT - 1)) {
-		case 7:		d[6] = s[6];
-		case 6:		d[5] = s[5];
-		case 5:		d[4] = s[4];
-		case 4:		d[3] = s[3];
-		case 3:		d[2] = s[2];
-		case 2:		d[1] = s[1];
-		case 1:		d[0] = s[0];
+		case 7:		d[6] = s[6]; FALLTHROUGH
+		case 6:		d[5] = s[5]; FALLTHROUGH
+		case 5:		d[4] = s[4]; FALLTHROUGH
+		case 4:		d[3] = s[3]; FALLTHROUGH
+		case 3:		d[2] = s[2]; FALLTHROUGH
+		case 2:		d[1] = s[1]; FALLTHROUGH
+		case 1:		d[0] = s[0]; FALLTHROUGH
 		case 0:		/* do nothing */;
 		}
 	} else {
@@ -414,21 +414,21 @@ static void *mbkwd(register void *orgd, register const void *orgs, register ptrd
 		d -= sz;
 		s -= sz;
 		switch (sz) {
-		case 15:	d[14] = s[14];
-		case 14:	d[13] = s[13];
-		case 13:	d[12] = s[12];
-		case 12:	d[11] = s[11];
-		case 11:	d[10] = s[10];
-		case 10:	d[9] = s[9];
-		case 9:		d[8] = s[8];
-		case 8:		d[7] = s[7];
-		case 7:		d[6] = s[6];
-		case 6:		d[5] = s[5];
-		case 5:		d[4] = s[4];
-		case 4:		d[3] = s[3];
-		case 3:		d[2] = s[2];
-		case 2:		d[1] = s[1];
-		case 1:		d[0] = s[0];
+		case 15:	d[14] = s[14]; FALLTHROUGH
+		case 14:	d[13] = s[13]; FALLTHROUGH
+		case 13:	d[12] = s[12]; FALLTHROUGH
+		case 12:	d[11] = s[11]; FALLTHROUGH
+		case 11:	d[10] = s[10]; FALLTHROUGH
+		case 10:	d[9] = s[9]; FALLTHROUGH
+		case 9:		d[8] = s[8]; FALLTHROUGH
+		case 8:		d[7] = s[7]; FALLTHROUGH
+		case 7:		d[6] = s[6]; FALLTHROUGH
+		case 6:		d[5] = s[5]; FALLTHROUGH
+		case 5:		d[4] = s[4]; FALLTHROUGH
+		case 4:		d[3] = s[3]; FALLTHROUGH
+		case 3:		d[2] = s[2]; FALLTHROUGH
+		case 2:		d[1] = s[1]; FALLTHROUGH
+		case 1:		d[0] = s[0]; FALLTHROUGH
 		case 0:		/* do nothing */;
 		}
 	}
@@ -460,23 +460,23 @@ static void *mfwrd(register void *orgd, register const void *orgs, register ptrd
 			d -= z;
 			switch (SIZEOF_INT - z) {
 #if SIZEOF_INT == 8
-			case 7:		d[1] = s[1];
-			case 6:		d[2] = s[2];
-			case 5:		d[3] = s[3];
-			case 4:		d[4] = s[4];
-			case 3:		d[5] = s[5];
-			case 2:		d[6] = s[6];
-			case 1:		d[7] = s[7];
+			case 7:		d[1] = s[1]; FALLTHROUGH
+			case 6:		d[2] = s[2]; FALLTHROUGH
+			case 5:		d[3] = s[3]; FALLTHROUGH
+			case 4:		d[4] = s[4]; FALLTHROUGH
+			case 3:		d[5] = s[5]; FALLTHROUGH
+			case 2:		d[6] = s[6]; FALLTHROUGH
+			case 1:		d[7] = s[7]; FALLTHROUGH
 			case 0:		/* do nothing */;
 #else
 #if SIZEOF_INT == 4
-			case 3:		d[1] = s[1];
-			case 2:		d[2] = s[2];
-			case 1:		d[3] = s[3];
+			case 3:		d[1] = s[1]; FALLTHROUGH
+			case 2:		d[2] = s[2]; FALLTHROUGH
+			case 1:		d[3] = s[3]; FALLTHROUGH
 			case 0:		/* do nothing */;
 #else
 #if SIZEOF_INT == 2
-			case 1:		d[1] = s[1];
+			case 1:		d[1] = s[1]; FALLTHROUGH
 			case 0:		/* do nothing */;
 #endif
 #endif
@@ -491,23 +491,23 @@ static void *mfwrd(register void *orgd, register const void *orgs, register ptrd
 		d += sz - (SIZEOF_INT - 1);
 		switch (sz & (SIZEOF_INT - 1)) {
 #if SIZEOF_INT == 8
-		case 7:		d[0] = s[0];
-		case 6:		d[1] = s[1];
-		case 5:		d[2] = s[2];
-		case 4:		d[3] = s[3];
-		case 3:		d[4] = s[4];
-		case 2:		d[5] = s[5];
-		case 1:		d[6] = s[6];
+		case 7:		d[0] = s[0]; FALLTHROUGH
+		case 6:		d[1] = s[1]; FALLTHROUGH
+		case 5:		d[2] = s[2]; FALLTHROUGH
+		case 4:		d[3] = s[3]; FALLTHROUGH
+		case 3:		d[4] = s[4]; FALLTHROUGH
+		case 2:		d[5] = s[5]; FALLTHROUGH
+		case 1:		d[6] = s[6]; FALLTHROUGH
 		case 0:		/* do nothing */;
 #else
 #if SIZEOF_INT == 4
-		case 3:		d[0] = s[0];
-		case 2:		d[1] = s[1];
-		case 1:		d[2] = s[2];
+		case 3:		d[0] = s[0]; FALLTHROUGH
+		case 2:		d[1] = s[1]; FALLTHROUGH
+		case 1:		d[2] = s[2]; FALLTHROUGH
 		case 0:		/* do nothing */;
 #else
 #if SIZEOF_INT == 2
-		case 1:		d[0] = s[0];
+		case 1:		d[0] = s[0]; FALLTHROUGH
 		case 0:		/* do nothing */;
 #endif
 #endif
@@ -538,21 +538,21 @@ static void *mfwrd(register void *orgd, register const void *orgs, register ptrd
 		s -= 15 - sz;
 		d -= 15 - sz;
 		switch (sz) {
-		case 15:	d[0] = s[0];
-		case 14:	d[1] = s[1];
-		case 13:	d[2] = s[2];
-		case 12:	d[3] = s[3];
-		case 11:	d[4] = s[4];
-		case 10:	d[5] = s[5];
-		case 9:		d[6] = s[6];
-		case 8:		d[7] = s[7];
-		case 7:		d[8] = s[8];
-		case 6:		d[9] = s[9];
-		case 5:		d[10] = s[10];
-		case 4:		d[11] = s[11];
-		case 3:		d[12] = s[12];
-		case 2:		d[13] = s[13];
-		case 1:		d[14] = s[14];
+		case 15:	d[0] = s[0]; FALLTHROUGH
+		case 14:	d[1] = s[1]; FALLTHROUGH
+		case 13:	d[2] = s[2]; FALLTHROUGH
+		case 12:	d[3] = s[3]; FALLTHROUGH
+		case 11:	d[4] = s[4]; FALLTHROUGH
+		case 10:	d[5] = s[5]; FALLTHROUGH
+		case 9:		d[6] = s[6]; FALLTHROUGH
+		case 8:		d[7] = s[7]; FALLTHROUGH
+		case 7:		d[8] = s[8]; FALLTHROUGH
+		case 6:		d[9] = s[9]; FALLTHROUGH
+		case 5:		d[10] = s[10]; FALLTHROUGH
+		case 4:		d[11] = s[11]; FALLTHROUGH
+		case 3:		d[12] = s[12]; FALLTHROUGH
+		case 2:		d[13] = s[13]; FALLTHROUGH
+		case 1:		d[14] = s[14]; FALLTHROUGH
 		case 0:		/* do nothing */;
 		}
 	}
@@ -595,21 +595,21 @@ ptrdiff_t mcnt(register const char *blk, register char c, ptrdiff_t size)
 		size -= 16;
 	}
 	switch (size) {
-	case 15:	if (blk[14] == c) ++nlines;
-	case 14:	if (blk[13] == c) ++nlines;
-	case 13:	if (blk[12] == c) ++nlines;
-	case 12:	if (blk[11] == c) ++nlines;
-	case 11:	if (blk[10] == c) ++nlines;
-	case 10:	if (blk[9] == c) ++nlines;
-	case 9:		if (blk[8] == c) ++nlines;
-	case 8:		if (blk[7] == c) ++nlines;
-	case 7:		if (blk[6] == c) ++nlines;
-	case 6:		if (blk[5] == c) ++nlines;
-	case 5:		if (blk[4] == c) ++nlines;
-	case 4:		if (blk[3] == c) ++nlines;
-	case 3:		if (blk[2] == c) ++nlines;
-	case 2:		if (blk[1] == c) ++nlines;
-	case 1:		if (blk[0] == c) ++nlines;
+	case 15:	if (blk[14] == c) ++nlines; FALLTHROUGH
+	case 14:	if (blk[13] == c) ++nlines; FALLTHROUGH
+	case 13:	if (blk[12] == c) ++nlines; FALLTHROUGH
+	case 12:	if (blk[11] == c) ++nlines; FALLTHROUGH
+	case 11:	if (blk[10] == c) ++nlines; FALLTHROUGH
+	case 10:	if (blk[9] == c) ++nlines; FALLTHROUGH
+	case 9:		if (blk[8] == c) ++nlines; FALLTHROUGH
+	case 8:		if (blk[7] == c) ++nlines; FALLTHROUGH
+	case 7:		if (blk[6] == c) ++nlines; FALLTHROUGH
+	case 6:		if (blk[5] == c) ++nlines; FALLTHROUGH
+	case 5:		if (blk[4] == c) ++nlines; FALLTHROUGH
+	case 4:		if (blk[3] == c) ++nlines; FALLTHROUGH
+	case 3:		if (blk[2] == c) ++nlines; FALLTHROUGH
+	case 2:		if (blk[1] == c) ++nlines; FALLTHROUGH
+	case 1:		if (blk[0] == c) ++nlines; FALLTHROUGH
 	case 0:		/* do nothing */;
 	}
 	return nlines;

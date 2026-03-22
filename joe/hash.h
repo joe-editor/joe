@@ -6,6 +6,8 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
+/* Generic hash table */
+
 struct entry {
 	HENTRY *next;
 	const char *name;
@@ -39,7 +41,36 @@ void *htfind(HASH *ht, const char *name);
 const char *atom_add(const char *name);
 const char *atom_noadd(const char *name);
 
-/* Same as above, but for Z-strings: strings made up of integers instead of chars */
+/* Generic hash table, but value stored is a const.. all in the name of
+   const correctness.. */
+
+struct centry {
+	CHENTRY *next;
+	const char *name;
+	ptrdiff_t hash_val;
+	const void *val;
+};
+
+struct CHash {
+	ptrdiff_t len;
+	CHENTRY **tab;
+	ptrdiff_t nentries;
+};
+
+/* Create a hash table of specified size, which must be a power of 2 */
+CHASH *chtmk(ptrdiff_t len);
+
+/* Delete a hash table.  HENTRIES get freed, but name/vals don't. */
+void chtrm(CHASH *ht);
+
+/* Add an entry to a hash table.
+  Note: 'name' is _not_ strdup()ed */
+const void *chtadd(CHASH *ht, const char *name, const void *val);
+
+/* Look up an entry in a hash table, returns NULL if not found */
+const void *chtfind(CHASH *ht, const char *name);
+
+/* Generic hash table, but name is a Z-strings: strings made up of integers instead of chars */
 
 struct Zentry {
 	ZHENTRY *next;

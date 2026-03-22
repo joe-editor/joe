@@ -5,6 +5,8 @@
 #define _XOPEN_SOURCE 700
 #define _GNU_SOURCE 1 */
 
+#define FALLTHROUGH __attribute__((fallthrough));
+
 #define TO_DIFF_OK(a) ((ptrdiff_t)(a)) /* Means it's OK that we are converting off_t to ptrdiff_t in this case */
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
 #define SIZEOF(a) ((ptrdiff_t)sizeof(a)) /* Signed version of sizeof() */
@@ -242,8 +244,10 @@ typedef struct options OPTIONS;
 typedef struct macro MACRO;
 typedef struct cmd CMD;
 typedef struct entry HENTRY;
+typedef struct centry CHENTRY;
 typedef struct Zentry ZHENTRY;
 typedef struct Hash HASH;
+typedef struct CHash CHASH;
 typedef struct Zhash ZHASH;
 typedef struct kmap KMAP;
 typedef struct kbd KBD;
