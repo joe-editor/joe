@@ -478,11 +478,11 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 	if(!state) {
 		if (!state_names) {
 			alloc_state_names = 128;
-			state_names = joe_malloc(alloc_state_names * sizeof(*state_names));
+			state_names = (const char **)joe_malloc(alloc_state_names * SIZEOF(*state_names));
 		}
 		if (num_state_names == alloc_state_names) {
 			alloc_state_names *= 2;
-			state_names = joe_realloc(state_names, alloc_state_names * sizeof(*state_names));
+			state_names = (const char **)joe_realloc(state_names, alloc_state_names * SIZEOF(*state_names));
 		}
 
 		/* Find a matching name */

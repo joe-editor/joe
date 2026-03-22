@@ -1068,7 +1068,7 @@ static ptrdiff_t relcost(register SCRN *t, register ptrdiff_t x, register ptrdif
 			cstunder = t->cbt * ntabs + t->cbs * (t->tw - x % t->tw);
 		else
 			cstunder = 10000;
-		if (x - t->tw >= 0)
+		if (x >= t->tw)
 			cstover = t->cbt * (ntabs + 1) + x % t->tw;
 		else
 			cstover = 10000;
@@ -1372,7 +1372,7 @@ docv:
 			cstunder = t->cbt * ntabs + t->cbs * (t->tw - x % t->tw);
 		else
 			cstunder = 10000;
-		if (x - t->tw >= 0)
+		if (x >= t->tw)
 			cstover = t->cbt * (ntabs + 1) + x % t->tw;
 		else
 			cstover = 10000;

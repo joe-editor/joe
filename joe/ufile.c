@@ -547,7 +547,7 @@ int ublksave(W *w, int k)
 {
 	BW *bw;
 	WIND_BW(bw, w);
-	if (markb && markk && markb->b == markk->b && (markk->byte - markb->byte) > 0 && (!square || piscol(markk) > piscol(markb))) {
+	if (markb && markk && markb->b == markk->b && (markk->byte > markb->byte) && (!square || piscol(markk) > piscol(markb))) {
 		if (wmkpw(bw->parent, joe_gettext(_("Name of file to write (%{help} for help): ")), &filehist, dosave1, "Names", NULL, cmplt_file_out, mksavereq(NULL, NULL, NULL, 0, 1), NULL, locale_map, (PWFLAG_FILENAME | PWFLAG_UPDATE_CD))) {
 			return 0;
 		} else {

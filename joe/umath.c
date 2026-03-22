@@ -338,7 +338,7 @@ static double expr(int prec, int en,struct var **rtv, int secure)
 		x = -expr(10, en, &dumb, secure);
 	} else if (*ptr == '!') {
 		++ptr;
-		x = !expr(10, en, &dumb, secure);
+		x = (expr(10, en, &dumb, secure) == 0.0);
 	}
       loop:
 	while (*ptr == ' ' || *ptr == '\t')
@@ -1383,7 +1383,7 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 	int dp;
 	int myexp;
 	int exp_sign;
-	int x;
+	int x = 0;
 	int flg = 0;
 
 	--d_len; /* For terminator */

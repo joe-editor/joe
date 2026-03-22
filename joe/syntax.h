@@ -98,7 +98,7 @@ struct high_syntax *load_syntax(const char *name);
 
 HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE state,struct charmap *charmap);
 
-typedef unsigned int attr_data;
+typedef int attr_data;
 struct state_debug_data {
 	int name, recolor;
 };
