@@ -2,6 +2,7 @@
 
 # We need AC_PROG_EGREP
 AC_PREREQ([2.64])
+AC_CONFIG_MACRO_DIR([m4])
 
 #### Here's the only place where to change version number ####
 AC_INIT([joe],[4.7])
@@ -22,6 +23,22 @@ AC_PROG_CPP
 AC_PROG_EGREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
+
+AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="$CFLAGS -Wall"])
+# AX_CHECK_COMPILE_FLAG([-Wextra], [CFLAGS="$CFLAGS -Wextra"])
+AX_CHECK_COMPILE_FLAG([-Wconversion], [CFLAGS="$CFLAGS -Wconversion"])
+AX_CHECK_COMPILE_FLAG([-Wunused], [CFLAGS="$CFLAGS -Wunused"])
+AX_CHECK_COMPILE_FLAG([-Wlogical-op], [CFLAGS="$CFLAGS -Wlogical-op"])
+AX_CHECK_COMPILE_FLAG([-Wwrite-strings], [CFLAGS="$CFLAGS -Wwrite-strings"])
+AX_CHECK_COMPILE_FLAG([-Wmissing-include-dirs], [CFLAGS="$CFLAGS -Wmissing-include-dirs"])
+AX_CHECK_COMPILE_FLAG([-Winit-self], [CFLAGS="$CFLAGS -Winit-self"])
+AX_CHECK_COMPILE_FLAG([-Wcast-qual], [CFLAGS="$CFLAGS -Wcast-qual"])
+AX_CHECK_COMPILE_FLAG([-Wundef], [CFLAGS="$CFLAGS -Wundef"])
+AX_CHECK_COMPILE_FLAG([-Wmissing-declarations], [CFLAGS="$CFLAGS -Wmissing-declarations"])
+AX_CHECK_COMPILE_FLAG([-Wformat], [CFLAGS="$CFLAGS -Wformat"])
+AX_CHECK_COMPILE_FLAG([-Wmissing-format-attribute], [CFLAGS="$CFLAGS -Wmissing-format-attribute"])
+AX_CHECK_COMPILE_FLAG([-Wswitch-enum], [CFLAGS="$CFLAGS -Wswitch-enum"])
+AX_CHECK_COMPILE_FLAG([-Wshadow], [CFLAGS="$CFLAGS -Wshadow"])
 
 case "$host" in
 	*-*-solaris*)

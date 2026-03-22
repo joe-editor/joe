@@ -17,10 +17,6 @@ noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 
 bin_PROGRAMS = joe
 AM_CPPFLAGS = -DJOERC="\"$(sysconf_joedir)/\"" -DJOEDATA="\"$(data_joedir)/\""
-AM_CFLAGS = -Wall -Wconversion -Wunused -Wwrite-strings \
-            -Wmissing-include-dirs -Winit-self -Wcast-qual -Wundef -Wlogical-op \
-            -Wmissing-declarations -Wformat -Wmissing-format-attribute -Wswitch-enum \
-            -Wshadow
 
 # joe_LDADD = -lm
 
