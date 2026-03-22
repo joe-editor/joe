@@ -371,10 +371,10 @@ static struct state_debug_data out_osc8(const struct state_debug_data *oldstate,
 			if (oldstate->name == newstate->name)
 				return *oldstate;
 
-			if (oldstate->name)
+			if (oldstate->name >= 0)
 				ttputs("\x1B]8;;\x1B\\");
 
-			if (newstate) {
+			if (newstate && newstate->name >= 0) {
 				ttputs("\x1B]8;id=");
 				ttputs(state_names[newstate->name]);
 				ttputs(";");
@@ -389,7 +389,7 @@ static struct state_debug_data out_osc8(const struct state_debug_data *oldstate,
 			if (oldstate->recolor)
 				ttputs("\x1B]8;;\x1B\\");
 
-			if (newstate) {
+			if (newstate && newstate->name >= 0) {
 				ttputs("\x1B]8;id=");
 				ttputs(newstate->recolor ? state_names[newstate->recolor] : "(idle)");
 				ttputs(";");
@@ -401,10 +401,10 @@ static struct state_debug_data out_osc8(const struct state_debug_data *oldstate,
 			if (oldstate->name == newstate->name && oldstate->recolor == newstate->recolor)
 				return *oldstate;
 
-			if (oldstate->name || oldstate->recolor)
+			if (oldstate->name >= 0 || oldstate->recolor >= 0)
 				ttputs("\x1B]8;;\x1B\\");
 
-			if (newstate) {
+			if (newstate && newstate->name >= 0) {
 				ttputs("\x1B]8;id=");
 				ttputs(state_names[newstate->name]);
 				ttputs(";");
@@ -422,7 +422,7 @@ static struct state_debug_data out_osc8(const struct state_debug_data *oldstate,
 
 static void end_osc8(const struct state_debug_data *oldstate, int opt)
 {
-	if ((opt & 1 && oldstate->name) || (opt & 2 && oldstate->recolor))
+	if ((opt & 1 && oldstate->name >= 0) || (opt & 2 && oldstate->recolor >= 0))
 		ttputs("\x1B]8;;\x1B\\");
 }
 #define OUT_osc8(bw,os,ns) ((bw)->b->o.syntax_debug ? out_osc8(&(os), &(ns), (bw)->b->o.syntax_debug) : (os))
