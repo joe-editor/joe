@@ -365,7 +365,7 @@ static int dobuild(W *w, char *s, void *object, int *notify)
 	cmd = vsncpy(NULL, 0, sc("-c"));
 	a = vaadd(a, cmd);
 	if (bw->b->current_dir && bw->b->current_dir[0]) {
-		// Change directory before we run
+		/* Change directory before we run */
 		t = vsncpy(sv(t), sc("cd '"));
 		t = vsncpy(sv(t), sv(bw->b->current_dir));
 		t = vsncpy(sv(t), sc("' && "));

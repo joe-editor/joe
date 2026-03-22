@@ -596,6 +596,7 @@ MACRO *vt_data(VT *vt, char **indat, ptrdiff_t *insiz)
 						break;
 					} case 11: { /* VT- vt100: VT, same as LF */
 						vt_lf(vt);
+						break;
 					} case 12: { /* FF- linux: FF, same as LF */
 						vt_lf(vt);
 						break;

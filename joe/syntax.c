@@ -42,7 +42,7 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	int state = IDLE; /* h_state.saved_s[0]; */
 	int accu = 0; /* h_state.saved_s[1]; */
 	int current_attr = 0; /* (int)h_state.state; */ /* Do not let attributes cross lines - simplifies vt.c */
-	// int new_attr = *(int *)(h_state.saved_s + 8);
+	/* int new_attr = *(int *)(h_state.saved_s + 8); */
 
 	int ansi_mode = line->b->o.ansi;
 
@@ -71,7 +71,7 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 			} case AFTER_ESC: {
 				if (c == '[') {
 					state = AFTER_BRACK;
-					// new_attr = (current_attr & (FG_MASK | BG_MASK));
+					/* new_attr = (current_attr & (FG_MASK | BG_MASK)); */
 				} else {
 					state = IDLE;
 				}
@@ -572,12 +572,14 @@ void dump_syntax(BW *bw)
 			joe_snprintf_2(buf, SIZEOF(buf), "   state %s %x\n",s->name,s->color);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
-//			for (l = s->src; l; l = l->next) {
-//				struct high_cmd *h = (struct high_cmd *)l->map;
-//				joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",l->interval.first,l->interval.last,(h->new_state ? h->new_state->name : "ERROR! Unknown state!"),(int)h->recolor);
-//				binss(bw->cursor, buf);
-//				pnextl(bw->cursor);
-//			}
+#if 0
+			for (l = s->src; l; l = l->next) {
+				struct high_cmd *h = (struct high_cmd *)l->map;
+				joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",l->interval.first,l->interval.last,(h->new_state ? h->new_state->name : "ERROR! Unknown state!"),(int)h->recolor);
+				binss(bw->cursor, buf);
+				pnextl(bw->cursor);
+			}
+#endif
 			joe_snprintf_2(buf, SIZEOF(buf), "     default -> %s %d\n",(s->dflt->new_state ? s->dflt->new_state->name : "ERROR! Unknown state!"),(int)s->dflt->recolor);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);

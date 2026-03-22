@@ -1272,8 +1272,9 @@ static void cposs(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y)
 		texec(t->cap, t->ho, 1, 0, 0, 0, 0);
 		t->x = 0;
 		t->y = hy;
-doch:
+		goto doch;
 	case 4:
+doch:
 		texec(t->cap, t->ch, 1, x, 0, 0, 0);
 		t->x = x;
 		break;
@@ -1290,8 +1291,9 @@ doch:
 	case 8:
 		texec(t->cap, t->cr, 1, 0, 0, 0, 0);
 		t->x = 0;
-docv:
+		goto docv;
 	case 5:
+docv:
 		texec(t->cap, t->cv, 1, y, 0, 0, 0);
 		t->y = y;
 		break;
@@ -1980,7 +1982,7 @@ void nredraw(SCRN *t)
 	setregn(t, 0, t->li);
 
 	if (!skiptop) {
-#if 0 // Leave screen contents invalid.  This way line update emits explicit spaces.
+#if 0 /* Leave screen contents invalid.  This way line update emits explicit spaces. */
 		if (t->cl) {
 			texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 			t->x = 0;
@@ -2339,7 +2341,9 @@ void genfmt(SCRN *t, ptrdiff_t x, ptrdiff_t y, ptrdiff_t ofst, const char *s, in
 				break;
 			case '@':
 				c = 0;
+				goto emitch;
 			default: {
+emitch:
 				if (col++ >= ofst) {
 					outatr(locale_map, t, scrn, attr, x, y, (c&0x7F), atr);
 					++scrn;
