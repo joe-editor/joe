@@ -2664,7 +2664,7 @@ char *dequote(const char *s)
 
 /* Version of popen() that restores normal signal handling after the fork() */
 
-FILE *joe_popen(const char *s, int write_mode)
+static FILE *joe_popen(const char *s, int write_mode)
 {
 	int fds[2]; /* [0] is read, [1] is write */
 
@@ -2697,7 +2697,7 @@ FILE *joe_popen(const char *s, int write_mode)
 	}
 }
 
-void joe_pclose(FILE *f)
+static void joe_pclose(FILE *f)
 {
 	fclose(f);
 	wait(NULL);

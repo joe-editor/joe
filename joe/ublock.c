@@ -680,6 +680,7 @@ void setindent(BW *bw)
 	updall();
 }
 
+#if 0
 /* Purity check entire block */
 /* Verifies that at least n indentation characters (for non-blank lines) match c */
 /* If n is 0 (for urindent), this fails if c is space but indentation begins with tab */
@@ -704,6 +705,7 @@ static int purity_check(int c, off_t n)
 	prm(p);
 	return 1;
 }
+#endif
 
 /* Calculate the common indent across the selection */
 /* Assumes that the indent is spaces and/or tabs */
@@ -756,7 +758,7 @@ static void eat_pretab_spaces(P *p, off_t limit)
 	off_t col = piscol(p);
 	off_t del;
 	P *q = pdup(p, "eat_pretab_spaces");
-	const int tab = p->b->o.tab;
+	const off_t tab = p->b->o.tab;
 	int c;
 
 	col -= col % tab;
@@ -993,7 +995,7 @@ int ulindent(W *w, int k)
 				p_goto_bol(p);
 				if (!piseol(p)) {
 					pset(q, p);
-					/* FIXME: what to do with blank/whitespace lines? For now, just outdent anyway /*
+					/* FIXME: what to do with blank/whitespace lines? For now, just outdent anyway */
 					/* FIXME: cleanup should be optional */
 					/* character count is common_width, not indent step */
 					if (is_pure(q,bw->o.indentc,common_width)) {

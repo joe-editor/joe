@@ -65,7 +65,7 @@ static char **get_word_list(B *b,off_t ignore)
 		if (idx) {
 			if (joe_isalnum_(b->o.charmap, c)) {
 				if (b->o.charmap->type) {
-					if (idx + 8 < MAX_WORD_SIZE) {
+					if (idx < MAX_WORD_SIZE - 8) {
 						idx += utf8_encode(buf+idx, c);
 					}
 				} else {

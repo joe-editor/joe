@@ -731,6 +731,7 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 
 /* Disassembler */
 
+#ifdef DEBUG
 static const char *iname(int c)
 {
 	if (c >= 0) return "CHAR";
@@ -750,6 +751,7 @@ static const char *iname(int c)
 		default: return "HUH?";
 	}
 }
+#endif
 
 static void unasm(Frag *f)
 {

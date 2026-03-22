@@ -509,7 +509,7 @@ static struct color_def *find_color(struct color_def *colors,char *name,char *sy
 	return color;
 }
 
-void parse_syntax_color_def(struct color_def **color_list,const char *p,char *name,int line)
+static void parse_syntax_color_def(struct color_def **color_list,const char *p,char *name,int line)
 {
 	char bf[256];
 	if(!parse_tows(&p, bf)) {

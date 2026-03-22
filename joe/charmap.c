@@ -1502,6 +1502,7 @@ int joe_isspace_eos(struct charmap *map,int c)
  *   http://www.cl.cam.ac.uk/~mgk25/ucs/langinfo.c
  */
 
+#ifndef HAVE_SETLOCALE
 static const char *joe_getcodeset(char *l)
 {
   static char buf[16];
@@ -1572,6 +1573,7 @@ static const char *joe_getcodeset(char *l)
   }
   return "ascii";
 }
+#endif
 
 /* Initialize locale for JOE */
 
@@ -1595,7 +1597,10 @@ struct charmap *locale_map_non_utf8;
 void joe_locale(void)
 {
 	const char *sc;
-	char *s, *t, *u;
+	char *s, *t;
+#ifndef HAVE_SETLOCALE
+	char *u;
+#endif
 
 	sc=getenv("LC_ALL");
 	if (!sc || !*sc) {
@@ -1630,7 +1635,9 @@ void joe_locale(void)
 
 	s = zdup(sc);
 
+#ifndef HAVE_SETLOCALE
 	u = zdup(s);
+#endif
 
 	if ((t=zrchr(s,'.')))
 		*t = 0;

@@ -381,7 +381,7 @@ int modify_logic(BW *bw,B *b)
 
 /* Execute a command n with key k */
 
-int execmd(CMD *cmd, int k)
+int execmd(const CMD *cmd, int k)
 {
 	BW *bw = (BW *) maint->curwin->object;
 	int ret = -1;
@@ -479,9 +479,9 @@ int execmd(CMD *cmd, int k)
 
 void do_auto_scroll(void)
 {
-	static CMD *myscrup = 0;
-	static CMD *myscrdn = 0;
-	static CMD *drag = 0;
+	static const CMD *myscrup = 0;
+	static const CMD *myscrdn = 0;
+	static const CMD *drag = 0;
 	if (!myscrup) {
 		myscrup = findcmd("upslide");
 		myscrdn = findcmd("dnslide");
@@ -499,22 +499,22 @@ void do_auto_scroll(void)
 
 /* Return command table index for given command name */
 
-HASH *cmdhash = NULL;
+CHASH *cmdhash = NULL;
 
 static void izcmds(void)
 {
 	int x;
 
-	cmdhash = htmk(256);
+	cmdhash = chtmk(256);
 	for (x = 0; x != SIZEOF(cmds) / SIZEOF(CMD); ++x)
-		htadd(cmdhash, cmds[x].name, (void *)(cmds + x));
+		chtadd(cmdhash, cmds[x].name, (const void *)(cmds + x));
 }
 
-CMD *findcmd(const char *s)
+const CMD *findcmd(const char *s)
 {
 	if (!cmdhash)
 		izcmds();
-	return (CMD *) htfind(cmdhash, s);
+	return (const CMD *) chtfind(cmdhash, s);
 }
 
 void addcmd(const char *s, MACRO *m)
@@ -529,14 +529,14 @@ void addcmd(const char *s, MACRO *m)
 	cmd->m = m;
 	cmd->arg = 1;
 	cmd->negarg = NULL;
-	htadd(cmdhash, cmd->name, cmd);
+	chtadd(cmdhash, cmd->name, cmd);
 }
 
 static char **getcmds(void)
 {
 	char **s = vaensure(NULL, SIZEOF(cmds) / SIZEOF(CMD));
 	int x;
-	HENTRY *e;
+	CHENTRY *e;
 
 	for (x = 0; x != cmdhash->len; ++x)
 		for (e = cmdhash->tab[x]; e; e = e->next)

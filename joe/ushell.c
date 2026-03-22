@@ -156,8 +156,6 @@ static void cdata(void *obj, char *dat, ptrdiff_t siz)
 	} else if (b->raw) { /* Just append the data as-is */
 		P *q = pdup(b->eof, "cdata");
 		off_t byte = q->byte;
-		char bf[1024];
-		int x, y;
 		cready(b, byte);
 
 		if (siz) {

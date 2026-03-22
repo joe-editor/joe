@@ -11,7 +11,7 @@ MACRO *freemacros = NULL;
 
 /* Create a macro */
 
-MACRO *mkmacro(int k, int flg, ptrdiff_t n, CMD *cmd)
+MACRO *mkmacro(int k, int flg, ptrdiff_t n, const CMD *cmd)
 {
 	MACRO *macro;
 
@@ -150,7 +150,7 @@ MACRO *mparse(MACRO *m, const char *buf, ptrdiff_t *sta, int secure)
 		}
 		bf1[x] = 0;
 		if (x) {
-			CMD *cmd;
+			const CMD *cmd;
 			int flg = 0;
 
 			if (!secure || !zncmp(bf1, "shell_", 6))
@@ -342,7 +342,7 @@ static int argset = 0;		/* Set if 'arg' is set */
 
 static int exsimple(MACRO *m, int myarg, int u, int k)
 {
-	CMD *cmd = m->cmd;
+	const CMD *cmd = m->cmd;
 	int flg = 0; /* set if we should not try to merge minor changes into single undo record */
 	int ret = 0;
 
