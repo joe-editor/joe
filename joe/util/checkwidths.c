@@ -17,7 +17,7 @@
 
 #define TO_CHAR_OK(c) ((char)(c))
 
-ptrdiff_t utf8_encode(char *buf,int c)
+static ptrdiff_t utf8_encode(char *buf,int c)
 {
 	if (c < 0x80) {
 		buf[0] = TO_CHAR_OK(c);
@@ -61,10 +61,10 @@ ptrdiff_t utf8_encode(char *buf,int c)
 	}
 }
 
-int full_read(unsigned char *p, int total, int timeout)
+static int full_read(char *p, int total, int timeout)
 {
     int amount_read = 0;
-    ssize_t len;
+    int len;
     struct pollfd item;
 
     item.fd = fileno(stdin);
@@ -74,7 +74,7 @@ int full_read(unsigned char *p, int total, int timeout)
     while (total) {
         if (poll(&item, 1, timeout) < 1)
             return amount_read;
-        len = read(fileno(stdin), p, total);
+        len = (int)read(fileno(stdin), p, (size_t)total);
         if (len > 0) {
             total -= len;
             amount_read += len;
@@ -85,9 +85,9 @@ int full_read(unsigned char *p, int total, int timeout)
     return amount_read;
 }
 
-int get_line(char *buf, int timeout)
+static int get_line(char *buf, int timeout)
 {
-    unsigned char c;
+    char c;
     for (;;) {
         int x;
         for (x = 0; x != timeout; ++x)
@@ -101,7 +101,7 @@ int get_line(char *buf, int timeout)
             return 0;
         }
     }
-    
+
 }
 
 int main(int argc, char **argv)
@@ -125,14 +125,14 @@ int main(int argc, char **argv)
     attr.c_iflag |= (IGNBRK | IGNPAR);
 
 #ifdef IUCLC /* not POSIX */
-    attr.c_iflag &= ~(BRKINT | PARMRK | INPCK | ISTRIP | INLCR | IGNCR | IUCLC | IXANY);
+    attr.c_iflag &= (tcflag_t)~(BRKINT | PARMRK | INPCK | ISTRIP | INLCR | IGNCR | IUCLC | IXANY);
 #else
-    attr.c_iflag &= ~(BRKINT | PARMRK | INPCK | ISTRIP | INLCR | IGNCR | IXANY);
+    attr.c_iflag &= (tcflag_t)~(BRKINT | PARMRK | INPCK | ISTRIP | INLCR | IGNCR | IXANY);
 #endif
 
     attr.c_cflag |= (CREAD);
 
-    attr.c_lflag &= ~(
+    attr.c_lflag &= (tcflag_t)~(
 #ifdef XCASE /* not POSIX */
                       XCASE |
 #endif
@@ -147,9 +147,9 @@ int main(int argc, char **argv)
     attr.c_lflag |= (ECHOE | ECHOKE);
 
     /* Modes we usually want */
-    attr.c_lflag &= ~(ECHO | ICANON);
+    attr.c_lflag &= (tcflag_t)~(ECHO | ICANON);
 //    attr.c_oflag &= ~(ONLCR);
-    attr.c_iflag &= ~(ICRNL);
+    attr.c_iflag &= (tcflag_t)~(ICRNL);
     if (tcsetattr(fileno(stdin), TCSADRAIN, &attr)) {
         printf("Couldn't set termios data\n");
         return -1;
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
         printf("\r\n%x: %s %d %d\n", x, buf, line, col);
 
         col -= 2;
-        
+
         if (col == wid) {
             last = x;
         } else {
@@ -176,7 +176,7 @@ int main(int argc, char **argv)
                 fprintf(stderr, "%x..%x %d\n", first, last, wid);
                 first = last = -1;
                 wid = -1;
-            } 
+            }
             if (col != 1) {
                 first = last = x;
                 wid = col;

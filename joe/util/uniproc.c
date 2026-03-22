@@ -83,6 +83,7 @@ static int unifold_full(char *name)
     }
     in_low = 0;
     out_low = 0;
+    out_high = 0;
 
     printf("\n");
     printf("const struct interval fold_table[] = {\n");
@@ -214,6 +215,7 @@ static int unifold_full(char *name)
 
 /* Generate simple case folding table */
 
+#if 0
 static int unifold_simple(char *name)
 {
     FILE *f;
@@ -335,6 +337,7 @@ static int unifold_simple(char *name)
     fclose(f);
     return 0;
 }
+#endif
 
 /* Loaded version of UnicodeData.txt file */
 
@@ -369,6 +372,7 @@ static struct unidata *uniload(char *name)
     int line = 0;
     FILE  *f;
     first = 0;
+    last = 0;
     f = fopen(name, "r");
     if (!f) {
         fprintf(stderr, "Couldn't open %s\n", name);
@@ -508,6 +512,8 @@ static int unicat(char *name)
     /* First pass: find all category codes */
     for (v = u; v; v = v->next)
         addcat(v->cat);
+
+    diglow = dighigh = -2;
 
     /* Generate a table for each category */
     for (cat = cats; cat; cat = cat->next) if (cat->idx == -1) {
