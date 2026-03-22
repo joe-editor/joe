@@ -63,9 +63,9 @@ static int clicks;
 
 #define Cb_GET_BUTTON() (Cb & Cb_BUTTON_MASK)
 
-#define Cb_TESTBIT(b)   ((Cb & b) == b)
+#define Cb_TESTBIT(b)   ((Cb & (b)) == (b))
 #define Cb_IS_RELEASE() Cb_TESTBIT(Cb_RELEASE)
-#define Cb_IS_BUTTON(b) (Cb_GET_BUTTON() == b)
+#define Cb_IS_BUTTON(b) (Cb_GET_BUTTON() == (b))
 #define Cb_IS_DRAG()    Cb_TESTBIT(Cb_DRAG)
 #define Cb_CTRL_DOWN()  Cb_TESTBIT(Cb_CTRL)
 #define Cb_ALT_DOWN()   Cb_TESTBIT(Cb_ALT)
