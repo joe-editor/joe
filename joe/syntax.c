@@ -15,14 +15,20 @@
    'state' is initial parser state for the line (0 is initial state).
 */
 
-int *attr_buf = 0;
+attr_data *attr_buf = NULL;
+struct state_debug_data *syndebug_buf = NULL;
 int attr_size = 0;
 
 int stack_count = 0;
+int delim_stack_count = 0;
 static int state_count = 0; /* Max transitions possible without cycling */
 
 struct high_syntax *ansi_syntax;
 struct high_syntax *syntax_list;
+
+const char **state_names = NULL;
+static int num_state_names = 0;
+static int alloc_state_names = 0;
 
 /* ANSI highlighter */
 
@@ -31,35 +37,67 @@ struct high_syntax *syntax_list;
 #define AFTER_BRACK 2
 #define IN_NUMBER 3
 
+/* Check that the attr and, if needed, the syntax debug buffers are allocated */
+/* Will always set *attrp = *attr_endp = attr_buf and, if non-NULL, *syndebugp = syndebug_buf */
+
+static void check_alloc_attr_bufs(attr_data **attrp, attr_data **attr_endp, struct state_debug_data **syndebugp)
+{
+	if (!attr_buf) {
+		attr_size = 1024;
+		attr_buf = (attr_data *)joe_malloc(SIZEOF(attr_data) * attr_size);
+	}
+	*attrp = attr_buf;
+	*attr_endp = attr_buf + attr_size;
+
+	if (!syndebugp) {
+		joe_free(syndebug_buf);
+		syndebug_buf = NULL;
+	} else if (!syndebug_buf) {
+		/* attr_size will be non-0 here */
+		syndebug_buf = (struct state_debug_data *)joe_malloc(SIZEOF(struct state_debug_data) * attr_size);
+	}
+	if (syndebugp)
+		*syndebugp = syndebug_buf;
+}
+
+static void realloc_attr_bufs(attr_data **attrp, attr_data **attr_endp, struct state_debug_data **syndebugp)
+{
+	int new_size = attr_size * 2;
+
+	attr_buf = (attr_data *)joe_realloc(attr_buf, SIZEOF(attr_data) * new_size);
+	*attrp = attr_buf + attr_size;
+	*attr_endp = attr_buf + new_size;
+
+	if (syndebugp) {
+		syndebug_buf = (struct state_debug_data *)joe_realloc(attr_buf, SIZEOF(struct state_debug_data) * new_size);
+		*syndebugp = syndebug_buf + attr_size;
+	}
+
+	attr_size = new_size;
+}
+
 static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 {
-	int *attr = attr_buf;
-	int *attr_end = attr_buf + attr_size;
+	attr_data *attr, *attr_end;
+
 	int c;
 	int bold = 0; /* Save bold state for extended scheme colors */
 
 	int state = IDLE; /* h_state.saved_s[0]; */
 	int accu = 0; /* h_state.saved_s[1]; */
-	int current_attr = 0; /* (int)h_state.state; */ /* Do not let attributes cross lines - simplifies vt.c */
-	// int new_attr = *(int *)(h_state.saved_s + 8);
+	attr_data current_attr = 0; /* (int)h_state.state; */ /* Do not let attributes cross lines - simplifies vt.c */
+	/* int new_attr = *(int *)(h_state.saved_s + 8); */
+
+	check_alloc_attr_bufs(&attr, &attr_end, NULL);
 
 	int ansi_mode = line->b->o.ansi;
 
 	line->b->o.ansi = 0;
 
 	while ((c = pgetc(line)) != NO_MORE_DATA) {
-		if (attr == attr_end) {
-			if (!attr_buf) {
-				attr_size = 1024;
-				attr_buf = (int *)joe_malloc(SIZEOF(int) * attr_size);
-				attr = attr_buf;
-			} else {
-				attr_buf = (int *)joe_realloc(attr_buf, SIZEOF(int) * (attr_size * 2));
-				attr = attr_buf + attr_size;
-				attr_size *= 2;
-			}
-			attr_end = attr_buf + attr_size;
-		}
+		if (attr == attr_end)
+			realloc_attr_bufs(&attr, &attr_end, NULL);
+
 		*attr++ = current_attr;
 		switch (state) {
 			case IDLE: {
@@ -70,7 +108,7 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 			} case AFTER_ESC: {
 				if (c == '[') {
 					state = AFTER_BRACK;
-					// new_attr = (current_attr & (FG_MASK | BG_MASK));
+					/* new_attr = (current_attr & (FG_MASK | BG_MASK)); */
 				} else {
 					state = IDLE;
 				}
@@ -154,6 +192,7 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state,struct charmap *charmap)
 {
 	struct high_frame *stack;
+	struct high_delim_frame *delim_stack;
 	struct high_state *h;
 			/* Current state */
 	int buf[SAVED_SIZE];		/* Name buffer (trunc after 23 characters) */
@@ -161,8 +200,12 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	int lsaved_s[3*SAVED_SIZE];	/* Lower case version of delimiter match buffer */
 	int buf_idx;	/* Index into buffer */
 	int c;		/* Current character */
-	int *attr;
-	int *attr_end;
+
+	attr_data *attr, *attr_end;
+	struct state_debug_data *syndebug = NULL;
+	/* NULL unless syntax debug mode is active*/
+	struct state_debug_data **const syndebugp = line->b->o.syntax_debug ? &syndebug : NULL;
+
 	int buf_en;	/* Set for name buffering */
 	int ofst;	/* record offset after we've stopped buffering */
 	int mark1;	/* offset to mark start from current pos */
@@ -180,6 +223,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		return ansi_parse(line, h_state);
 
 	stack = h_state.stack;
+	delim_stack = h_state.delim_stack;
 	h = (stack ? stack->syntax : syntax)->states[h_state.state];
 	buf_idx = 0;
 	attr = attr_buf;
@@ -192,6 +236,8 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 	buf[0]=0;	/* Forgot this originally... took 5 months to fix! */
 
+	check_alloc_attr_bufs(&attr, &attr_end, syndebugp);
+
 	/* Get next character */
 	while((c=pgetc(line))!=NO_MORE_DATA) {
 		struct high_cmd *cmd, *kw_cmd;
@@ -203,21 +249,13 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			c = to_uni(charmap, c);
 
 		/* Create or expand attribute array if necessary */
-		if(attr==attr_end) {
-			if(!attr_buf) {
-				attr_size = 1024;
-				attr_buf = (int *)joe_malloc(SIZEOF(int)*attr_size);
-				attr = attr_buf;
-			} else {
-				attr_buf = (int *)joe_realloc(attr_buf,SIZEOF(int)*(attr_size*2));
-				attr = attr_buf + attr_size;
-				attr_size *= 2;
-			}
-			attr_end = attr_buf + attr_size;
-		}
+		if(attr==attr_end)
+			realloc_attr_bufs(&attr, &attr_end, syndebugp);
 
 		/* Advance to next attribute position (note attr[-1] below) */
 		attr++;
+		if (syndebug)
+			syndebug++;
 
 		/* Loop while noeat */
 		do {
@@ -231,6 +269,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Color with current state */
 			attr[-1] = h->color;
+			/* h->no? */
+			if (syndebug)
+				syndebug[-1].recolor = syndebug[-1].name = h->name;
 
 			/* Get command for this character */
 			if (h->delim && h_state.saved_s && c == h_state.saved_s[0] && h_state.saved_s[1] && h_state.saved_s[2] == 0)
@@ -305,24 +346,53 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Recolor if necessary */
 			if (recolor_delimiter_or_keyword)
-				for(x= -(buf_idx+1);x<-1;++x)
+				for(x= -(buf_idx+1);x<-1;++x) {
 					attr[x-ofst] = h->color;
+					if (syndebug)
+						syndebug[x-ofst].recolor = h->name;
+				}
 			for(x=cmd->recolor;x<0;++x)
-				if (attr + x >= attr_buf)
+				if (attr + x >= attr_buf) {
 					attr[x] = h->color;
+					if (syndebug)
+						syndebug[x].recolor = h->name;
+				}
 
 			/* Mark recoloring */
 			if (cmd->recolor_mark)
-				for(x= -mark1;x<-mark2;++x)
+				for(x= -mark1;x<-mark2;++x) {
 					attr[x] = h->color;
+					if (syndebug)
+						syndebug[x].recolor = h->name;
+				}
+
+			/* Push string or character? */
+			if (cmd->push_s || cmd->push_c) {
+				struct high_delim_frame **frame_ptr = delim_stack ? &delim_stack->child : &syntax->delim_stack_base;
+				/* Search for an existing stack frame for this push */
+				while (*frame_ptr && (*frame_ptr)->saved_s && h_state.saved_s && Zcmp((*frame_ptr)->saved_s, h_state.saved_s))
+					frame_ptr = &(*frame_ptr)->sibling;
+				if (*frame_ptr)
+					delim_stack = *frame_ptr;
+				else {
+					struct high_delim_frame *frame = (struct high_delim_frame *)joe_malloc(SIZEOF(struct high_delim_frame));
+					frame->parent = delim_stack;
+					frame->child = 0;
+					frame->sibling = 0;
+					frame->saved_s = h_state.saved_s;
+					*frame_ptr = frame;
+					delim_stack = frame;
+					++delim_stack_count;
+				}
+			}
 
 			/* Save string? */
-			if (cmd->save_s) {
+			if (cmd->save_s || cmd->push_s) {
 				h_state.saved_s = Zatom_add(buf);
 			}
 
 			/* Save character? */
-			if (cmd->save_c) {
+			if (cmd->save_c || cmd->push_c) {
 				int bf[3];
 				bf[1] = c;
 				bf[2] = 0;
@@ -339,6 +409,16 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				else
 					bf[0] = c;
 				h_state.saved_s = Zatom_add(bf);
+			}
+
+			if (cmd->pop_c || cmd->pop_s) {
+				/* Pop delimiter buffer */
+				if (delim_stack) {
+					h_state.saved_s = delim_stack->saved_s;
+					delim_stack = delim_stack->parent;
+				} else {
+					/* No delimiter buffers pushed, so ignore the pop */
+				}
 			}
 
 			/* Start buffering? */
@@ -385,6 +465,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	}
 	/* Return new state */
 	h_state.stack = stack;
+	h_state.delim_stack = delim_stack;
 	h_state.state = h->no;
 	return h_state;
 }
@@ -400,8 +481,25 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 
 	/* It doesn't exist, so create it */
 	if(!state) {
+		if (!state_names) {
+			alloc_state_names = 128;
+			state_names = joe_malloc(alloc_state_names * sizeof(*state_names));
+		}
+		if (num_state_names == alloc_state_names) {
+			alloc_state_names *= 2;
+			state_names = joe_realloc(state_names, alloc_state_names * sizeof(*state_names));
+		}
+
+		/* Find a matching name */
+		int i;
+		for (i = 0; i < num_state_names; ++i)
+			if (!strcmp(name, state_names[i]))
+				break;
+		/* Copy the pointer if a match was found else duplicate the name */
+		state_names[num_state_names] = i < num_state_names ? state_names[i] : zdup(name);
+
 		state=(struct high_state *)joe_malloc(SIZEOF(struct high_state));
-		state->name = zdup(name);
+		state->name = num_state_names++; /* and account for one more name in the list */
 		state->no = syntax->nstates;
 		state->color = 0;
 		state->colorp = NULL;
@@ -413,7 +511,7 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 		state->dflt = &syntax->default_cmd;
 		state->delim = 0;
 		state->same_delim = 0;
-		htadd(syntax->ht_states, state->name, state);
+		htadd(syntax->ht_states, state_names[state->name], state);
 		++state_count;
 	}
 	return state;
@@ -443,6 +541,10 @@ static void iz_cmd(struct high_cmd *cmd)
 	cmd->stop_buffering = 0;
 	cmd->save_c = 0;
 	cmd->save_s = 0;
+	cmd->push_c = 0;
+	cmd->push_s = 0;
+	cmd->pop_c = 0;
+	cmd->pop_s = 0;
 	cmd->new_state = 0;
 	cmd->keywords = 0;
 	cmd->delim = 0;
@@ -476,7 +578,7 @@ static struct color_def *find_color(struct color_def *colors,char *name,char *sy
 	return color;
 }
 
-void parse_syntax_color_def(struct color_def **color_list,const char *p,char *name,int line)
+static void parse_syntax_color_def(struct color_def **color_list,const char *p,char *name,int line)
 {
 	char bf[256];
 	if(!parse_tows(&p, bf)) {
@@ -515,7 +617,10 @@ void dump_syntax(BW *bw)
 	struct high_syntax *syntax;
 	struct high_param *params;
 	char buf[1024];
-	joe_snprintf_1(buf, SIZEOF(buf), "Allocated %d stack frames\n", stack_count);
+	joe_snprintf_1(buf, SIZEOF(buf), "Allocated %d state stack frames\n", stack_count);
+	binss(bw->cursor, buf);
+	pnextl(bw->cursor);
+	joe_snprintf_1(buf, SIZEOF(buf), "Allocated %d delimiter buffer stack frames\n", delim_stack_count);
 	binss(bw->cursor, buf);
 	pnextl(bw->cursor);
 	for (syntax = syntax_list; syntax; syntax = syntax->next) {
@@ -533,16 +638,18 @@ void dump_syntax(BW *bw)
 		pnextl(bw->cursor);
 		for(x=0;x!=syntax->nstates;++x) {
 			struct high_state *s = syntax->states[x];
-			joe_snprintf_2(buf, SIZEOF(buf), "   state %s %x\n",s->name,s->color);
+			joe_snprintf_2(buf, SIZEOF(buf), "   state %s %x\n",state_names[s->name],s->color);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
-//			for (l = s->src; l; l = l->next) {
-//				struct high_cmd *h = (struct high_cmd *)l->map;
-//				joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",l->interval.first,l->interval.last,(h->new_state ? h->new_state->name : "ERROR! Unknown state!"),(int)h->recolor);
-//				binss(bw->cursor, buf);
-//				pnextl(bw->cursor);
-//			}
-			joe_snprintf_2(buf, SIZEOF(buf), "     default -> %s %d\n",(s->dflt->new_state ? s->dflt->new_state->name : "ERROR! Unknown state!"),(int)s->dflt->recolor);
+#if 0
+			for (l = s->src; l; l = l->next) {
+				struct high_cmd *h = (struct high_cmd *)l->map;
+				joe_snprintf_4(buf, SIZEOF(buf), "     [%d-%d] -> %s %d\n",l->interval.first,l->interval.last,(h->new_state ? h->new_state->name : "ERROR! Unknown state!"),(int)h->recolor);
+				binss(bw->cursor, buf);
+				pnextl(bw->cursor);
+			}
+#endif
+			joe_snprintf_2(buf, SIZEOF(buf), "     default -> %s %d\n",(s->dflt->new_state ? state_names[s->dflt->new_state->name] : "ERROR! Unknown state!"),(int)s->dflt->recolor);
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 		}
@@ -632,6 +739,14 @@ static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *
 			cmd->save_c = 1;
 		} else if(!zcmp(bf,"save_s")) {
 			cmd->save_s = 1;
+		} else if(!zcmp(bf,"push_c")) {
+			cmd->push_c = 1;
+		} else if(!zcmp(bf,"push_s")) {
+			cmd->push_s = 1;
+		} else if(!zcmp(bf,"pop_c")) {
+			cmd->pop_c = 1;
+		} else if(!zcmp(bf,"pop_s")) {
+			cmd->pop_s = 1;
 		} else if(!zcmp(bf,"recolor")) {
 			parse_ws(&p,'#');
 			if(!parse_char(&p,'=')) {
@@ -962,6 +1077,7 @@ struct high_syntax *load_syntax_subr(const char *name,char *subr,struct high_par
 	iz_cmd(&syntax->default_cmd);
 	syntax->default_cmd.reset = 1;
 	syntax->stack_base = 0;
+	syntax->delim_stack_base = 0;
 	syntax_list = syntax;
 
 	if (load_dfa(syntax)) {

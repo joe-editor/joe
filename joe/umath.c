@@ -723,11 +723,14 @@ static double m_y1(double n) { return y1(n); }
 #endif
 #endif
 
+#if 0
+/* We don't have two argument functions yet */
 #ifdef HAVE_HYPOT
 static double m_hypot(double n, double m) { return hypot(n, m); }
 #else
 #ifdef hypot
 static double m_hypot(double n, double m) { return hypot(n, m); }
+#endif
 #endif
 #endif
 

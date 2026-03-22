@@ -743,7 +743,7 @@ void rtree_set(struct Rtree *r, struct interval *array, ptrdiff_t len, void *map
 void rtree_build(struct Rtree *r, struct interval_list *l)
 {
 	while (l) {
-		// printf("%p build %x %x %p\n",r, l->interval.first, l->interval.last, l->map);
+		/* printf("%p build %x %x %p\n",r, l->interval.first, l->interval.last, l->map); */
 		rtree_add(r, l->interval.first, l->interval.last, l->map);
 		l = l->next;
 	}
@@ -1378,8 +1378,8 @@ void cclass_diff(struct Cclass *m, struct Cclass *n)
 
 void cclass_inv(struct Cclass *m)
 {
-//	printf("\r\nBefore:\n");
-//	cclass_show(m);
+/*	printf("\r\nBefore:\n");
+	cclass_show(m); */
 	if (m->len && !m->intervals[0].first) {
 		/* Starts at 0 */
 		int x;
@@ -1412,9 +1412,9 @@ void cclass_inv(struct Cclass *m)
 			++m->len;
 		}
 	}
-//	printf("\r\nAfter:\n");
-//	cclass_show(m);
-//	sleep(1);
+/*	printf("\r\nAfter:\n");
+	cclass_show(m);
+	sleep(1); */
 }
 
 int cclass_lookup_unopt(struct Cclass *m, int ch)

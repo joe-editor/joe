@@ -30,7 +30,7 @@ char *joeterm = NULL;
 
 /* Default termcap entry */
 
-char defentry[] = "\
+static const char defentry[] = "\
 :co#80:li#25:am:\
 :ho=\\E[H:cm=\\E[%i%d;%dH:cV=\\E[%i%dH:\
 :up=\\E[A:UP=\\E[%dA:DO=\\E[%dB:nd=\\E[C:RI=\\E[%dC:LE=\\E[%dD:\
@@ -559,9 +559,11 @@ void texec(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptr
 					cap->out(cap->outptr, (char)(x / 96));
 					x %= 96;
 				}
+				FALLTHROUGH
 			case '+':
 				if (*s)
 					x += escape1(&s);
+				FALLTHROUGH
 			case '.':
 				cap->out(cap->outptr, (char)x);
 				++a;
@@ -569,9 +571,11 @@ void texec(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptr
 			case 'd':
 				if (x < 10)
 					goto one;
+				FALLTHROUGH
 			case '2':
 				if (x < 100)
 					goto two;
+				FALLTHROUGH
 			case '3':
 				c = '0';
 				while (x >= 100) {
@@ -652,6 +656,7 @@ void texec(CAP *cap, const char *s, ptrdiff_t l, ptrdiff_t a0, ptrdiff_t a1, ptr
 					a[0] += escape1(&s);
 				else
 					escape1(&s);
+				break;
 			default:
 				cap->out(cap->outptr, '%');
 				cap->out(cap->outptr, (char)c);

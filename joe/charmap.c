@@ -90,7 +90,7 @@ int from_utf8(struct charmap *map,const char *s)
 
 /* Aliases */
 
-static struct {
+static const struct {
 	const char *alias;
 	const char *builtin;
 } alias_table[] = {
@@ -139,7 +139,7 @@ struct builtin_charmap {
 	int to_uni[256];
 };
 
-static struct builtin_charmap builtin_charmaps[]=
+static const struct builtin_charmap builtin_charmaps[]=
 {
 	{ "ascii", {
 	0x0000, 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007,
@@ -1105,7 +1105,7 @@ static struct charmap *charmaps = NULL;	/* Loaded character sets */
    Consults unicode database "i18n.c" to determine which characters are
    uppercase, etc. */
 
-static struct charmap *process_builtin(struct builtin_charmap *builtin)
+static struct charmap *process_builtin(const struct builtin_charmap *builtin)
 {
 	int x;
 	struct charmap *map;
@@ -1502,6 +1502,7 @@ int joe_isspace_eos(struct charmap *map,int c)
  *   http://www.cl.cam.ac.uk/~mgk25/ucs/langinfo.c
  */
 
+#ifndef HAVE_SETLOCALE
 static const char *joe_getcodeset(char *l)
 {
   static char buf[16];
@@ -1572,6 +1573,7 @@ static const char *joe_getcodeset(char *l)
   }
   return "ascii";
 }
+#endif
 
 /* Initialize locale for JOE */
 
@@ -1595,7 +1597,10 @@ struct charmap *locale_map_non_utf8;
 void joe_locale(void)
 {
 	const char *sc;
-	char *s, *t, *u;
+	char *s, *t;
+#ifndef HAVE_SETLOCALE
+	char *u;
+#endif
 
 	sc=getenv("LC_ALL");
 	if (!sc || !*sc) {
@@ -1630,7 +1635,9 @@ void joe_locale(void)
 
 	s = zdup(sc);
 
+#ifndef HAVE_SETLOCALE
 	u = zdup(s);
+#endif
 
 	if ((t=zrchr(s,'.')))
 		*t = 0;

@@ -119,6 +119,103 @@ void *htfind(HASH *ht, const char *name)
 	return NULL;
 }
 
+static CHENTRY *cfreentry = NULL;
+
+/* Create hash table */
+
+CHASH *chtmk(ptrdiff_t len)
+{
+	CHASH *t = (CHASH *) joe_malloc(SIZEOF(CHASH));
+	t->nentries = 0;
+	t->len = len;
+	t->tab = (CHENTRY **) joe_calloc(SIZEOF(CHENTRY *), len);
+	return t;
+}
+
+/* Delete hash table.  Only the hash table is deleted, not the names and values */
+
+void chtrm(CHASH *ht)
+{
+	ptrdiff_t x;
+	for (x = 0; x != ht->len; ++x) {
+		CHENTRY *p, *n;
+		for (p = ht->tab[x]; p; p = n) {
+			n = p->next;
+			p->next = cfreentry;
+			cfreentry = p;
+		}
+	}
+	joe_free(ht->tab);
+	joe_free(ht);
+}
+
+/* Expand hash table */
+
+static void chtexpand(CHASH *h)
+{
+	ptrdiff_t x;
+	/* Allocate new table */
+	ptrdiff_t new_size = h->len * 2;
+	CHENTRY **new_table = (CHENTRY **)joe_calloc(new_size, SIZEOF(CHENTRY *));
+	/* Copy entries from old table to new */
+	for (x = 0; x != h->len; ++x) {
+		CHENTRY *e;
+		while ((e = h->tab[x])) {
+			h->tab[x] = e->next;
+			e->next = new_table[e->hash_val & (new_size - 1)];
+			new_table[e->hash_val & (new_size - 1)] = e;
+		}
+	}
+	/* Replace old table with new */
+	free(h->tab);
+	h->tab = new_table;
+	h->len = new_size;
+}
+
+/* Bind a value to a name.  This does not check for duplicate entries.  The
+ * name and value are not duplicated: it's up to you to keep them around for
+ * the life of the hash table. */
+
+const void *chtadd(CHASH *ht, const char *name, const void *val)
+{
+	ptrdiff_t hval = hash(name);
+	ptrdiff_t idx = hval & (ht->len - 1);
+	CHENTRY *entry;
+	ptrdiff_t x;
+
+	if (!cfreentry) {
+		entry = (CHENTRY *) joe_malloc(SIZEOF(CHENTRY) * 64);
+		for (x = 0; x != 64; ++x) {
+			entry[x].next = cfreentry;
+			cfreentry = entry + x;
+		}
+	}
+	entry = cfreentry;
+	cfreentry = entry->next;
+	entry->next = ht->tab[idx];
+	ht->tab[idx] = entry;
+	entry->name = name;
+	entry->val = val;
+	entry->hash_val = hval;
+	if (++ht->nentries == (ht->len >> 1) + (ht->len >> 2))
+		chtexpand(ht);
+	return val;
+}
+
+/* Return value associated with name or NULL if there is none */
+
+const void *chtfind(CHASH *ht, const char *name)
+{
+	CHENTRY *e;
+
+	for (e = ht->tab[hash(name) & (ht->len - 1)]; e; e = e->next) {
+		if (!zcmp(e->name, name)) {
+			return e->val;
+		}
+	}
+	return NULL;
+}
+
 /* Interned strings / aka atoms */
 
 HASH *atom_table;

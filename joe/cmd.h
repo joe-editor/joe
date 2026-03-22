@@ -17,7 +17,7 @@ struct cmd {
 	const char *negarg;	/* Command to use if arg was negative */
 };
 
-extern CMD cmds[];		/* Built-in commands */
+extern const CMD cmds[];	/* Built-in commands */
 extern int joe_beep;		/* Enable beep on command error */
 
 /* Command execution flags */
@@ -37,11 +37,11 @@ extern int joe_beep;		/* Enable beep on command error */
 /* CMD *findcmd(char *s);
  * Return command address for given name
  */
-CMD *findcmd(const char *s);
+const CMD *findcmd(const char *s);
 void addcmd(const char *s, MACRO *m);
 
 /* Execute a command.  Returns return value of command */
-int execmd(CMD *cmd, int k);
+int execmd(const CMD *cmd, int k);
 void do_auto_scroll(void);
 
 extern B *cmdhist; /* Command history buffer */

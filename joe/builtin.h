@@ -10,4 +10,4 @@ char *jfgets(char *buf,int len,JFILE *f);
 int jfclose(JFILE *f);
 char **jgetbuiltins(const char *suffix);
 
-extern const char *builtins[];
+extern const char *const builtins[];

@@ -334,7 +334,7 @@ static int saver(W *w, int c, void *object, int *notify)
 		exmacro(bw->o.msold, 1, NO_MORE_DATA);
 	}
 	if (bw->b->o.purify) {
-		static CMD *trimlines = NULL;
+		static const CMD *trimlines = NULL;
 		if (!trimlines) {
 			trimlines = findcmd("trimlines");
 		}
@@ -428,7 +428,7 @@ static int dosave(BW *bw, struct savereq *req, int *notify)
 				}
 				if (lightoff)
 					unmark(bw->parent, 0);
-					vsrm(req->name);
+				vsrm(req->name);
 				return ret;
 			}
 		} else {

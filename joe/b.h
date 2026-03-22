@@ -89,6 +89,7 @@ struct options {
 	int	crlf;
 	int	highlight;	/* Set to enable highlighting */
 	int	visiblews;	/* Visible whitespace */
+	int	syntax_debug;	/* Whether using OSC8 to help debug syntax colouring */
 	const char *syntax_name;	/* Name of syntax to use */
 	struct high_syntax *syntax;	/* Syntax for highlighting (load_syntax() from syntax_name happens in setopt()) */
 	const char *map_name;	/* Name of character set */
@@ -169,7 +170,7 @@ extern int force;		/* Set to have final '\n' added to file */
 
 extern VFILE *vmem;		/* Virtual memory file used for buffer system */
 
-extern const char *msgs[];	/* File access status messages */
+extern const char *const msgs[];	/* File access status messages */
 
 B *bmk(B *prop);
 void brm(B *b);

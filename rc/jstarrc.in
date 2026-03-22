@@ -389,6 +389,7 @@ menu,"global",rtn	% % global options
 menu,"cursor",rtn	% % cursor options
 menu,"marking",rtn	% % marking options
 menu,"tab",rtn	% % tab/indent options
+menu,"debug",rtn	% % debug options
 
 :defmenu indent menu,"root",rtn
 mode,"istep",rtn,"1",rtn,mode,"indentc",rtn,"32",rtn,msg,"Indent step = 1, Indent character = 32",rtn	1 Space
@@ -474,6 +475,12 @@ mode,"smartbacks",rtn	% % Smart backspace %Zsmartbacks%
 mode,"indentfirst",rtn	% % To indent first %Zindentfirst%
 mode,"purify",rtn	% % Clean up indents %Zpurify%
 mode,"spaces",rtn	% % No tabs %Zspaces%
+
+:defmenu debug menu,"more-options",rtn
+mode,"syntax_debug",rtn,"0",rtn,retype	% % Syntax debug off (0)
+mode,"syntax_debug",rtn,"1",rtn,retype	% % Syntax debug: states (1)
+mode,"syntax_debug",rtn,"2",rtn,retype	% % Syntax debug: recolor (2)
+mode,"syntax_debug",rtn,"3",rtn,retype	% % Syntax debug: full (3)
 
  THIRD SECTION: Named help screens:
 
@@ -730,13 +737,12 @@ extmouse	^[ [ <		Introduces an extended xterm mouse event
 :inherit windows
 
  Ispell
-:def ispellfile filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp",rtn,retype
-:def ispellword psh,nextword,markk,prevword,markb,filt,"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\012';/bin/rm ispell.tmp",rtn,retype,nextword
+:def ispellfile filt,"SPLTMP=\"$(mktemp -p '' joeXXXXXX)\"cat >$SPLTMP;ispell $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP",rtn,retype
+:def ispellword psh,nextword,markk,prevword,markb,filt,"SPLTMP=\"$(mktemp -p '' joeXXXXXX)\"cat >$SPLTMP;ispell $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\012';/bin/rm $SPLTMP",rtn,retype,nextword
 
  Aspell
-:def aspellfile filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell --lang=",language,".",charset," -x -c $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP",rtn,retype
-:def aspellword psh,nextword,markk,prevword,markb,filt,"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell --lang=",language,".",charset," -x -c $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\012';/bin/rm $SPLTMP",rtn,retype,nextword
-
+:def aspellfile filt,"SPLTMP=\"$(mktemp -p '' joeXXXXXX)\";cat >$SPLTMP;aspell --lang=",language,".",charset," -x -c $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP",rtn,retype
+:def aspellword psh,nextword,markk,prevword,markb,filt,"SPLTMP=\"$(mktemp -p '' joeXXXXXX)\";cat >$SPLTMP;aspell --lang=",language,".",charset," -x -c $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\012';/bin/rm $SPLTMP",rtn,retype,nextword,pop
 
 @SPELL@file	^Q l
 @SPELL@file	^Q L

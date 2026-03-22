@@ -680,6 +680,7 @@ void setindent(BW *bw)
 	updall();
 }
 
+#if 0
 /* Purity check entire block */
 /* Verifies that at least n indentation characters (for non-blank lines) match c */
 /* If n is 0 (for urindent), this fails if c is space but indentation begins with tab */
@@ -704,19 +705,84 @@ static int purity_check(int c, off_t n)
 	prm(p);
 	return 1;
 }
+#endif
+
+/* Calculate the common indent across the selection */
+/* Assumes that the indent is spaces and/or tabs */
+/* Returned value is in columns */
+
+static off_t get_common_indent_width(void)
+{
+	P *p = pdup(markb, "get_common_indent_width");
+	off_t maxwidth = 0x7FFFFFFF; /* that'd be one very wide indent */
+
+	p_goto_bol(p);
+	while (p->byte < markk->byte) {
+		off_t width = 0;
+		int c;
+		while ((c = pgetc(p)), c == ' ' || c == '\t')
+			width = p->col;
+		if (width < maxwidth)
+			maxwidth = width;
+		pnextl(p);
+	}
+	prm(p);
+
+	if (p->b->o.indentc == '\t')
+		return maxwidth - maxwidth % (p->b->o.tab * p->b->o.istep);
+	else
+		return maxwidth - maxwidth % p->b->o.istep;
+}
 
 /* Purity check single line */
-/* Verifies that at least n indentation characters match c */
+/* Verifies that at least n columns' worth of indentation characters match c */
 
 static int is_pure(P *p, int c, off_t n)
 {
-	int x;
-	for (x=0; x!=n; ++x) {
+	off_t col = piscol(p) + n;
+	while (piscol(p) < col) {
 		if (pgetc(p)!=c) {
 			return 0;
 		}
 	}
 	return 1;
+}
+
+/* Eat pre-tab spaces */
+/* Goes back to nearest tab stop and replaces following spaces with tabs */
+/* If chr after spaces is not a tab or EOF is reached, go back to nearest tab stop before replacing */
+/* Do not go beyond the given column limit */
+
+static void eat_pretab_spaces(P *p, off_t limit)
+{
+	off_t col = piscol(p);
+	off_t del;
+	P *q = pdup(p, "eat_pretab_spaces");
+	const off_t tab = p->b->o.tab;
+	int c;
+
+	col -= col % tab;
+	pcol(q, col);
+
+	while ((c = brc(q)), c == ' ' && q->col < limit)
+		c = pgetc(q);
+	if (piscol(q) >= limit) {
+		pcol(q, limit);
+		c = '\t'; /* lie */
+	}
+	del = piscol(q) - col; /* number of spaces being deleted */
+	if (del) {
+		if (c != '\t') {
+			/* not at a tab: leave last few, if any, beyond tab stop */
+			del -= del % tab;
+			pcol(q, col + del);
+		}
+		if (del) {
+			bdel(p,q);
+			pfill(q, col + del - (del % tab), '\t');
+		}
+	}
+	prm(q);
 }
 
 /* Left indent check */
@@ -788,6 +854,7 @@ int urindent(W *w, int k)
 		} else {
 			P *p = pdup(markb, "urindent");
 			P *q = pdup(markb, "urindent");
+			const off_t common_width = get_common_indent_width();
 			off_t indwid;
 
 			if (bw->o.indentc=='\t')
@@ -797,18 +864,27 @@ int urindent(W *w, int k)
 
 			while (p->byte < markk->byte) {
 				p_goto_bol(p);
-				if (!piseol(p)) {
+				if (!piseol(p)) /* FIXME: we don't indent empty lines.. probably this should be optional */
+				{
 					off_t col;
+					pset(q, p);
 					if (bw->o.indentc == ' ' && brc(p) == '\t') {
 						/* Don't insert spaces before tabs */
 						/* Rewrite the whitespace instead */
-						pset(q, p);
 						p_goto_indent(q, bw->o.indentc);
 						col = piscol(q);
 						bdel(p,q);
 						pfill(p,col+indwid,bw->o.indentc);
 					} else {
 						/* Simple insert */
+						/* ... with some clean-up if inserting tabs */
+						/* FIXME: cleanup should be optional */
+						if (bw->o.indentc == '\t') {
+							for (col = 0; col < common_width; col += bw->o.tab) {
+								pcol(q, col);
+								eat_pretab_spaces(q, common_width);
+							}
+						}
 						while (piscol(p) < bw->o.istep) {
 							binsc(p, bw->o.indentc);
 							pgetc(p);
@@ -907,6 +983,7 @@ int ulindent(W *w, int k)
 			/* All lines have enough whitespace for the left-shift */
 			P *p = pdup(markb, "ulindent");
 			P *q = pdup(markb, "ulindent");
+			const off_t common_width = get_common_indent_width();
 			off_t indwid;
 
 			if (bw->o.indentc=='\t')
@@ -918,12 +995,22 @@ int ulindent(W *w, int k)
 				p_goto_bol(p);
 				if (!piseol(p)) {
 					pset(q, p);
-					if (is_pure(q,bw->o.indentc,bw->o.istep)) {
+					/* FIXME: what to do with blank/whitespace lines? For now, just outdent anyway */
+					/* FIXME: cleanup should be optional */
+					/* character count is common_width, not indent step */
+					if (is_pure(q,bw->o.indentc,common_width)) {
 						/* Simple deletion */
 						pset(q, p);
 						while (piscol(q) < bw->o.istep)
 							pgetc(q);
 						bdel(p, q);
+					} else if (bw->o.indentc == '\t') {
+						/* Rewrite white space, but only up to the common indent width */
+						pcol(q, common_width);
+						bdel(p,q);
+						if (common_width > bw->o.tab) {
+							pfill(p, common_width - bw->o.tab, '\t');
+						}
 					} else {
 						/* Rewrite whitespace */
 						off_t col;

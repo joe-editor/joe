@@ -648,7 +648,7 @@ int usplitw(W *w, int k)
 	neww = wcreate(w->t, w->watom, findbotw(w), NULL, w, newh / 2 + (newh & 1), NULL, NULL);
 	if (!neww)
 		return -1;
-//	wfit(neww->t);
+/*	wfit(neww->t); */
 	neww->object = (void *) (newbw = bwmk(neww, bw->b, 0));
 	++bw->b->count;
 	newbw->offset = bw->offset;

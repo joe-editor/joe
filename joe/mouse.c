@@ -37,6 +37,40 @@ static ptrdiff_t Cx, Cy;
 static long last_msec=0;		/* time in ms when event occurred */
 static int clicks;
 
+#define Cb_BUTTON_MASK 0xC3
+#define Cb_DRAG        0x20
+#define Cb_CTRL        0x10
+#define Cb_ALT         0x08
+#define Cb_SHIFT       0x04
+#define Cb_RELEASE     0x8000
+
+#define Cb_BUTTON_LEFT   0
+#define Cb_BUTTON_MIDDLE 1
+#define Cb_BUTTON_RIGHT  2
+#define Cb_BUTTON_3      3
+#define Cb_WHEEL_UP      0x40
+#define Cb_WHEEL_DOWN    0x41
+#define Cb_WHEEL_LEFT    0x42
+#define Cb_WHEEL_RIGHT   0x43
+#define Cb_BUTTON_BACK   0x80
+#define Cb_BUTTON_FWD    0x81
+#define Cb_BUTTON_10     0x82
+#define Cb_BUTTON_11     0x83
+#define Cb_BUTTON_12     0xC0
+#define Cb_BUTTON_13     0xC1
+#define Cb_BUTTON_14     0xC2
+#define Cb_BUTTON_15     0xC3
+
+#define Cb_GET_BUTTON() (Cb & Cb_BUTTON_MASK)
+
+#define Cb_TESTBIT(b)   ((Cb & (b)) == (b))
+#define Cb_IS_RELEASE() Cb_TESTBIT(Cb_RELEASE)
+#define Cb_IS_BUTTON(b) (Cb_GET_BUTTON() == (b))
+#define Cb_IS_DRAG()    Cb_TESTBIT(Cb_DRAG)
+#define Cb_CTRL_DOWN()  Cb_TESTBIT(Cb_CTRL)
+#define Cb_ALT_DOWN()   Cb_TESTBIT(Cb_ALT)
+#define Cb_SHIFT_DOWN() Cb_TESTBIT(Cb_SHIFT)
+
 static void fake_key(int c)
 {
 	MACRO *m=dokey(maint->curwin->kbd,c);
@@ -64,27 +98,27 @@ static ptrdiff_t mcoord(ptrdiff_t x)
 
 static int mouse_event(W *w)
 {
-	if ((Cb & 0x41) == 0x40) {
+	if (Cb_IS_BUTTON(Cb_WHEEL_UP)) {
 		fake_key(KEY_MWUP); /* Mouse wheel scroll up */
 		return 0;
 	}
 
-	if ((Cb & 0x41) == 0x41) {
+	if (Cb_IS_BUTTON(Cb_WHEEL_DOWN)) {
 		fake_key(KEY_MWDOWN); /* Mouse wheel scroll down */
 		return 0;
 	}
 
-	if ((Cb & 3) == 3) {
+	if (Cb_IS_RELEASE()) {
 		/* button released */
 		mouseup(Cx,Cy);
-	} else if ((Cb & 3) == (rtbutton ? 2 : 0)) { /* left (or right) to select */
-		if ((Cb & 32) == 0)
+	} else if (Cb_IS_BUTTON(rtbutton ? Cb_BUTTON_RIGHT : Cb_BUTTON_LEFT)) { /* left (or right) to select */
+		if (!Cb_IS_DRAG())
 			/* button pressed */
 			mousedn(Cx, Cy, 0);
 		else
 			/* drag */
 			mousedrag(Cx,Cy);
-	} else if ((Cb & 3) == 1 && (Cb & 32) == 0) { /* middle button to paste */
+	} else if (Cb_IS_BUTTON(Cb_BUTTON_MIDDLE) && !Cb_IS_DRAG()) { /* middle button to paste */
 		mousedn(Cx, Cy, 1);
 	}
 	return 0;
@@ -97,6 +131,8 @@ int uxtmouse(W *w, int k)
 	Cb = (unsigned char)ttgetc() - 32;
 	if (Cb < 0)
 		return -1;
+	if (Cb == 3)
+		Cb = Cb_RELEASE;
 	Cx = (unsigned char)ttgetc();
 	if (Cx < 32)
 		return -1;
@@ -132,7 +168,7 @@ int uextmouse(W *w, int k)
 		Cy = 10 * Cy + c - '0';
 	}
 	if (c == 'm')
-		Cb |= 3;
+		Cb |= Cb_RELEASE;
 	return mouse_event(w);
 }
 
@@ -194,7 +230,7 @@ int udefmiddleup(W *xx, int k)
 
 /* Return base64 code character given 6-bit number */
 
-char base64_code[]="\
+static const char base64_code[]="\
 ABCDEFGHIJKLMNOPQRSTUVWXYZ\
 abcdefghijklmnopqrstuvwxyz\
 0123456789+/";

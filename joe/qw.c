@@ -155,7 +155,7 @@ static int abortqw(W *w)
 		return -1;
 }
 
-static WATOM watomqw = {
+static const WATOM watomqw = {
 	"query",
 	dispqw,
 	NULL,
@@ -169,7 +169,7 @@ static WATOM watomqw = {
 	TYPEQW
 };
 
-static WATOM watqwn = {
+static const WATOM watqwn = {
 	"querya",
 	dispqwn,
 	NULL,
@@ -183,7 +183,7 @@ static WATOM watqwn = {
 	TYPEQW
 };
 
-static WATOM watqwsr = {
+static const WATOM watqwsr = {
 	"querysr",
 	dispqwn,
 	NULL,

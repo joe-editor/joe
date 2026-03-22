@@ -36,7 +36,7 @@ struct charmap {
 
 	/* Information for byte-oriented character sets */
 
-	int *to_map;			/* Convert byte to Unicode */
+	const int *to_map;		/* Convert byte to Unicode */
 
 	unsigned char lower_map[256];	/* Convert to lower case */
 	unsigned char upper_map[256];

@@ -55,6 +55,7 @@ OPTIONS pdefault = {
 #endif
 	0,		/* Highlight */
 	0,		/* Visible whitespace */
+	0,		/* Syntax debugging */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
@@ -120,6 +121,7 @@ OPTIONS fdefault = {
 #endif
 	0,		/* Highlight */
 	0,		/* Visible whitespace */
+	0,		/* Syntax debugging */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
@@ -279,22 +281,34 @@ void setopt(B *b, const char *parsed_name)
 /* local means it's in an OPTION structure, global means it's in a global
  * variable */
 
+enum opt_type {
+	GLO_OPT_BOOL,      /* global option flag */
+	GLO_OPT_INT,       /* global option int */
+	GLO_OPT_STRING,    /* global option string (in locale encoding) */
+	LOC_OPT_BOOL,      /* local option flag */
+	LOC_OPT_INT,       /* local option int */
+	LOC_OPT_OFFSET,    /* local option off_t */
+	LOC_OPT_STRING,    /* local option string (in utf8) */
+	LOC_OPT_RANGE,     /* local option off_t+1, with range checking */
+	LOC_OPT_SYNTAX,    /* syntax (options->syntax_name) */
+	LOC_OPT_ENCODING,  /* byte encoding (options->map_name) */
+	LOC_OPT_FILE_TYPE, /* file type (options->ftype) */
+	LOC_OPT_COLORS,    /* color scheme */
+};
+
+union opt_storage_p {
+	void  *v;
+	char  *c;
+	int   *b; /* bool */
+	int   *i;
+	off_t *o;
+	char **s;
+};					/* Address of global option */
+
 struct glopts {
 	const char *name;		/* Option name */
-	int type;		/*      0 for global option flag
-				   1 for global option int
-				   2 for global option string (in locale encoding)
-				   4 for local option flag
-				   5 for local option int
-				   14 for local option off_t
-				   6 for local option string (in utf8)
-				   7 for local option off_t+1, with range checking
-				   9 for syntax (options->syntax_name)
-				   13 for byte encoding (options->map_name)
-				   15 for file type (options->ftype)
-				   17 for color scheme
-				 */
-	void *set;		/* Address of global option */
+	enum opt_type type;
+	union opt_storage_p set;	/* Address of global option */
 	const char *addr;		/* Local options structure member address */
 	const char *yes;		/* Message if option was turned on, or prompt string */
 	const char *no;		/* Message if option was turned off */
@@ -303,113 +317,114 @@ struct glopts {
 	int low;		/* Low limit for numeric options */
 	int high;		/* High limit for numeric options */
 } glopts[] = {
-	{"overwrite",4, NULL, (char *) &fdefault.overtype, _("Overtype mode"), _("Insert mode"), _("Overtype mode"), 0, 0, 0 },
-	{"hex",4, NULL, (char *) &fdefault.hex, _("Hex edit mode"), _("Text edit mode"), _("Hex edit display mode"), 0, 0, 0 },
-	{"ansi",4, NULL, (char *) &fdefault.ansi, _("Hide ANSI sequences"), _("Reveal ANSI sequences"), _("Hide ANSI mode"), 0, 0, 0 },
-	{"title",4, NULL, (char *) &fdefault.title, _("Status line context enabled"), _("Status line context disabled"), _("Status line context display mode"), 0, 0, 0 },
-	{"autoindent",	4, NULL, (char *) &fdefault.autoindent, _("Autoindent enabled"), _("Autoindent disabled"), _("Autoindent mode"), 0, 0, 0 },
-	{"wordwrap",	4, NULL, (char *) &fdefault.wordwrap, _("Wordwrap enabled"), _("Wordwrap disabled"), _("Word wrap mode"), 0, 0, 0 },
-	{"tab",	14, NULL, (char *) &fdefault.tab, _("Tab width (%lld): "), 0, _("Tab width"), 0, 1, 64 },
-	{"lmargin",	7, NULL, (char *) &fdefault.lmargin, _("Left margin (%d): "), 0, _("Left margin "), 0, 0, 63 },
-	{"rmargin",	7, NULL, (char *) &fdefault.rmargin, _("Right margin (%d): "), 0, _("Right margin "), 0, 7, 255 },
-	{"restore",	0, &restore_file_pos, NULL, _("Restore cursor position when files loaded"), _("Don't restore cursor when files loaded"), _("Restore cursor mode"), 0, 0, 0 },
-	{"regex",	0, &std_regex, NULL, _("Standard regular expression format"), _("JOE regular expression format"), _("Standard or JOE regular expression syntax"), 0, 0, 0 },
-	{"square",	0, &square, NULL, _("Rectangle mode"), _("Text-stream mode"), _("Rectangular region mode"), 0, 0, 0 },
-	{"icase",	0, &opt_icase, NULL, _("Search ignores case by default"), _("Case sensitive search by default"), _("Case insensitive search mode "), 0, 0, 0 },
-	{"wrap",	0, &wrap, NULL, _("Search wraps"), _("Search doesn't wrap"), _("Search wraps mode"), 0, 0, 0 },
-	{"menu_explorer",	0, &menu_explorer, NULL, _("Menu explorer mode"), _("Simple completion mode"), _("Menu explorer mode"), 0, 0, 0 },
-	{"menu_above",	0, &menu_above, NULL, _("Menu above prompt"), _("Menu below prompt"), _("Menu above/below mode"), 0, 0, 0 },
-	{"notagsmenu",	0, &notagsmenu, NULL, _("Tags menu disabled"), _("Tags menu enabled"), _("Tags menu mode"), 0, 0, 0 },
-	{"search_prompting",	0, &pico, NULL, _("Search prompting on"), _("Search prompting off"), _("Search prompting mode"), 0, 0, 0 },
-	{"menu_jump",	0, &menu_jump, NULL, _("Jump into menu is on"), _("Jump into menu is off"), _("Jump into menu mode"), 0, 0, 0 },
-	{"autoswap",	0, &autoswap, NULL, _("Autoswap ^KB and ^KK"), _("Autoswap off "), _("Autoswap mode "), 0, 0, 0 },
-	{"indentc",	5, NULL, (char *) &fdefault.indentc, _("Indent char %d (SPACE=32, TAB=9, %{abort} to abort): "), 0, _("Indent char "), 0, 0, 255 },
-	{"istep",	14, NULL, (char *) &fdefault.istep, _("Indent step %lld (%{abort} to abort): "), 0, _("Indent step "), 0, 1, 64 },
-	{"french",	4, NULL, (char *) &fdefault.french, _("One space after periods for paragraph reformat"), _("Two spaces after periods for paragraph reformat"), _("French spacing mode"), 0, 0, 0 },
-	{"flowed",	4, NULL, (char *) &fdefault.flowed, _("One space after paragraph line"), _("No spaces after paragraph lines"), _("Flowed text mode"), 0, 0, 0 },
-	{"highlight",	4, NULL, (char *) &fdefault.highlight, _("Highlighting enabled"), _("Highlighting disabled"), _("Syntax highlighting mode"), 0, 0, 0 },
-	{"spaces",	4, NULL, (char *) &fdefault.spaces, _("Inserting spaces when tab key is hit"), _("Inserting tabs when tab key is hit"), _("No tabs mode"), 0, 0, 0 },
-	{"mid",	0, &opt_mid, NULL, _("Cursor will be recentered on scrolls"), _("Cursor will not be recentered on scroll"), _("Center on scroll mode"), 0, 0, 0 },
-	{"left", 1, &opt_left, NULL, _("Columns to scroll left or -1 for 1/2 window (%d): "), 0, _("Left scroll amount"), 0, -128, 127 },
-	{"right", 1, &opt_right, NULL, _("Columns to scroll right or -1 for 1/2 window (%d): "), 0, _("Right scroll amount"), 0, -128, 127 },
-	{"guess_crlf",0, &guesscrlf, NULL, _("Automatically detect MS-DOS files"), _("Do not automatically detect MS-DOS files"), _("Auto detect CR-LF mode"), 0, 0, 0 },
-	{"guess_indent",0, &guessindent, NULL, _("Automatically detect indentation"), _("Do not automatically detect indentation"), _("Guess indent mode"), 0, 0, 0 },
-	{"guess_non_utf8",0, &guess_non_utf8, NULL, _("Automatically detect non-UTF-8 in UTF-8 locale"), _("Do not automatically detect non-UTF-8"), _("Guess non-UTF-8 mode"), 0, 0, 0 },
-	{"guess_utf8",0, &guess_utf8, NULL, _("Automatically detect UTF-8 in non-UTF-8 locale"), _("Do not automatically detect UTF-8"), _("Guess UTF-8 mode"), 0, 0, 0 },
-	{"guess_utf16",0, &guess_utf16, NULL, _("Automatically detect UTF-16"), _("Do not automatically detect UTF-16"), _("Guess UTF-16 mode"), 0, 0, 0 },
-	{"transpose",0, &transpose, NULL, _("Menu is transposed"), _("Menus are not transposed"), _("Transpose menus mode"), 0, 0, 0 },
-	{"crlf",	4, NULL, (char *) &fdefault.crlf, _("CR-LF is line terminator"), _("LF is line terminator"), _("CR-LF (MS-DOS) mode"), 0, 0, 0 },
-	{"linums",	4, NULL, (char *) &fdefault.linums, _("Line numbers enabled"), _("Line numbers disabled"), _("Line numbers mode"), 0, 0, 0 },
-	{"hiline",	4, NULL, (char *) &fdefault.hiline, _("Highlighting cursor line"), _("Not highlighting cursor line"), _("Highlight cursor line"), 0, 0, 0 },
-	{"marking",	0, &marking, NULL, _("Anchored block marking on"), _("Anchored block marking off"), _("Region marking mode"), 0, 0, 0 },
-	{"asis",	0, &dspasis, NULL, _("Characters above 127 shown as-is"), _("Characters above 127 shown in inverse"), _("Display meta chars as-is mode"), 0, 0, 0 },
-	{"force",	0, &force, NULL, _("Last line forced to have NL when file saved"), _("Last line not forced to have NL"), _("Force last NL mode"), 0, 0, 0 },
-	{"joe_state",0, &joe_state, NULL, _("~/.joe_state file will be updated"), _("~/.joe_state file will not be updated"), _("Joe_state file mode"), 0, 0, 0 },
-	{"nobackup",	4, NULL, (char *) &fdefault.nobackup, _("Nobackup enabled"), _("Nobackup disabled"), _("No backup mode"), 0, 0, 0 },
-	{"nobackups",	0, &nobackups, NULL, _("Backup files will not be made"), _("Backup files will be made"), _("Disable backups mode"), 0, 0, 0 },
-	{"nodeadjoe",	0, &nodeadjoe, NULL, _("DEADJOE files will not be made"), _("DEADJOE files will be made"), _("Disable DEADJOE mode"), 0, 0, 0 },
-	{"nolocks",	0, &nolocks, NULL, _("Files will not be locked"), _("Files will be locked"), _("Disable locks mode"), 0, 0, 0 },
-	{"nomodcheck",	0, &nomodcheck, NULL, _("No file modification time check"), _("File modification time checking enabled"), _("Disable mtime check mode"), 0, 0, 0 },
-	{"nocurdir",	0, &nocurdir, NULL, _("No current dir"), _("Current dir enabled"), _("Disable current dir "), 0, 0, 0 },
-	{"break_hardlinks",	0, &break_links, NULL, _("Hardlinks will be broken"), _("Hardlinks not broken"), _("Break hard links "), 0, 0, 0 },
-	{"break_links",	0, &break_symlinks, NULL, _("Links will be broken"), _("Links not broken"), _("Break links "), 0, 0, 0 },
-	{"lightoff",	0, &lightoff, NULL, _("Highlighting turned off after block operations"), _("Highlighting not turned off after block operations"), _("Auto unmark "), 0, 0, 0 },
-	{"exask",	0, &exask, NULL, _("Prompt for filename in save & exit command"), _("Don't prompt for filename in save & exit command"), _("Exit ask "), 0, 0, 0 },
-	{"beep",	0, &joe_beep, NULL, _("Warning bell enabled"), _("Warning bell disabled"), _("Beeps "), 0, 0, 0 },
-	{"nosta",	0, &staen, NULL, _("Top-most status line disabled"), _("Top-most status line enabled"), _("Disable status line "), 0, 0, 0 },
-	{"keepup",	0, &keepup, NULL, _("Status line updated constantly"), _("Status line updated once/sec"), _("Fast status line "), 0, 0, 0 },
-	{"pg",		1, &pgamnt, NULL, _("Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): "), 0, _("No. PgUp/PgDn lines "), 0, -1, 64 },
-	{"undo_keep",		1, &undo_keep, NULL, _("No. undo records to keep, or (0 for infinite): "), 0, _("No. undo records "), 0, -1, 64 },
-	{"csmode",	0, &csmode, NULL, _("Start search after a search repeats previous search"), _("Start search always starts a new search"), _("Continued search "), 0, 0, 0 },
-	{"rdonly",	4, NULL, (char *) &fdefault.readonly, _("Read only"), _("Full editing"), _("Read only "), 0, 0, 0 },
-	{"smarthome",	4, NULL, (char *) &fdefault.smarthome, _("Smart home key enabled"), _("Smart home key disabled"), _("Smart home key "), 0, 0, 0 },
-	{"indentfirst",	4, NULL, (char *) &fdefault.indentfirst, _("Smart home goes to indentation first"), _("Smart home goes home first"), _("To indent first "), 0, 0, 0 },
-	{"smartbacks",	4, NULL, (char *) &fdefault.smartbacks, _("Smart backspace key enabled"), _("Smart backspace key disabled"), _("Smart backspace "), 0, 0, 0 },
-	{"purify",	4, NULL, (char *) &fdefault.purify, _("Indentation clean up enabled"), _("Indentation clean up disabled"), _("Clean up indents "), 0, 0, 0 },
-	{"picture",	4, NULL, (char *) &fdefault.picture, _("Picture drawing mode enabled"), _("Picture drawing mode disabled"), _("Picture mode "), 0, 0, 0 },
-	{"backpath",	2, &backpath, NULL, _("Backup files stored in (%s): "), 0, _("Path to backup files "), 0, 0, 0 },
-	{"syntax",	9, NULL, NULL, _("Select syntax (%{abort} to abort): "), 0, _("Syntax"), 0, 0, 0 },
-	{"colors",	17, NULL, NULL, _("Select color scheme (%{abort} to abort): "), 0, _("Scheme "), 0, 0, 0 },
-	{"encoding",13, NULL, NULL, _("Select file character set (%{abort} to abort): "), 0, _("Encoding "), 0, 0, 0 },
-	{"type",	15, NULL, NULL, _("Select file type (%{abort} to abort): "), 0, _("File type "), 0, 0, 0 },
-	{"highlighter_context",	4, NULL, (char *) &fdefault.highlighter_context, _("Highlighter context enabled"), _("Highlighter context disabled"), _("^G uses highlighter context "), 0, 0, 0 },
-	{"single_quoted",	4, NULL, (char *) &fdefault.single_quoted, _("Single quoting enabled"), _("Single quoting disabled"), _("^G ignores '... ' "), 0, 0, 0 },
-	{"no_double_quoted",4, NULL, (char *) &fdefault.no_double_quoted, _("Double quoting disabled"), _("Double quoting enabled"), _("^G ignores \"... \" "), 0, 0, 0 },
-	{"c_comment",	4, NULL, (char *) &fdefault.c_comment, _("/* comments enabled"), _("/* comments disabled"), _("^G ignores /*...*/ "), 0, 0, 0 },
-	{"cpp_comment",	4, NULL, (char *) &fdefault.cpp_comment, _("// comments enabled"), _("// comments disabled"), _("^G ignores //... "), 0, 0, 0 },
-	{"pound_comment",	4, NULL, (char *) &fdefault.hash_comment, _("# comments enabled"), _("# comments disabled"), _("^G ignores #... "), 0, 0, 0 },
-	{"hash_comment",	4, NULL, (char *) &fdefault.hash_comment, _("# comments enabled"), _("# comments disabled"), _("^G ignores #... "), 0, 0, 0 },
-	{"vhdl_comment",	4, NULL, (char *) &fdefault.vhdl_comment, _("-- comments enabled"), _("-- comments disabled"), _("^G ignores --... "), 0, 0, 0 },
-	{"semi_comment",	4, NULL, (char *) &fdefault.semi_comment, _("; comments enabled"), _("; comments disabled"), _("^G ignores ;... "), 0, 0, 0 },
-	{"tex_comment",	4, NULL, (char *) &fdefault.tex_comment, _("% comments enabled"), _("% comments disabled"), _("^G ignores %... "), 0, 0, 0 },
-	{"text_delimiters",	6, NULL, (char *) &fdefault.text_delimiters, _("Text delimiters (%s): "), 0, _("Text delimiters "), 0, 0, 0 },
-	{"language",	6, NULL, (char *) &fdefault.language, _("Language (%s): "), 0, _("Language "), 0, 0, 0 },
-	{"cpara",		6, NULL, (char *) &fdefault.cpara, _("Characters which can indent paragraphs (%s): "), 0, _("Paragraph indent chars "), 0, 0, 0 },
-	{"cnotpara",	6, NULL, (char *) &fdefault.cnotpara, _("Characters which begin non-paragraph lines (%s): "), 0, _("Non-paragraph chars "), 0, 0, 0 },
-	{"floatmouse",	0, &floatmouse, 0, _("Clicking can move the cursor past end of line"), _("Clicking past end of line moves cursor to the end"), _("Click past end "), 0, 0, 0 },
-	{"rtbutton",	0, &rtbutton, 0, _("Mouse action is done with the right button"), _("Mouse action is done with the left button"), _("Right button "), 0, 0, 0 },
-	{"nonotice",	0, &nonotice, NULL, 0, 0, _("Suppress startup notice"), 0, 0, 0 },
-	{"noexmsg",	0, &noexmsg, NULL, 0, 0, _("Suppress exit message"), 0, 0, 0 },
-	{"help_is_utf8",	0, &help_is_utf8, NULL, 0, 0, _("Help is UTF-8"), 0, 0, 0 },
-	{"noxon",	0, &noxon, NULL, 0, 0, _("Disable XON/XOFF"), 0, 0, 0 },
-	{"orphan",	0, &orphan, NULL, 0, 0, _("Orphan extra files"), 0, 0, 0 },
-	{"helpon",	0, &helpon, NULL, 0, 0, _("Start editor with help displayed"), 0, 0, 0 },
-	{"dopadding",	0, &dopadding, NULL, 0, 0, _("Emit padding NULs"), 0, 0, 0 },
-	{"lines",	1, &env_lines, NULL, 0, 0, _("No. screen lines (if no window size ioctl)"), 0, 2, 1024 },
-	{"baud",	1, &Baud, NULL, 0, 0, _("Baud rate"), 0, 50, 32767 },
-	{"columns",	1, &env_columns, NULL, 0, 0, _("No. screen columns (if no window size ioctl)"), 0, 2, 1024 },
-	{"skiptop",	1, &skiptop, NULL, 0, 0, _("No. screen lines to skip"), 0, 0, 64 },
-	{"notite",	0, &notite, NULL, 0, 0, _("Suppress tty init sequence"), 0, 0, 0 },
-	{"brpaste",	0, &brpaste, NULL, 0, 0, _("Bracketed paste mode"), 0, 0, 0 },
-	{"pastehack",	0, &pastehack, NULL, 0, 0, _("Paste quoting hack"), 0, 0, 0 },
-	{"nolinefeeds",	0, &nolinefeeds, NULL, 0, 0, _("Suppress history preserving linefeeds"), 0, 0, 0 },
-	{"mouse",	0, &xmouse, NULL, 0, 0, _("Enable mouse"), 0, 0, 0 },
-	{"usetabs",	0, &opt_usetabs, NULL, 0, 0, _("Screen update uses tabs"), 0, 0, 0 },
-	{"assume_color", 0, &assume_color, NULL, 0, 0, _("Assume terminal supports color"), 0, 0, 0 },
-	{"assume_256color", 0, &assume_256color, NULL, 0, 0, _("Assume terminal supports 256 colors"), 0, 0, 0 },
-	{"joexterm",	0, &joexterm, NULL, 0, 0, _("Assume xterm patched for JOE"), 0, 0, 0 },
-	{"visiblews",	4, NULL, (char *) &fdefault.visiblews, _("Visible whitespace enabled"), _("Visible whitespace disabled"), _("Visible whitespace"), 0, 0, 0 },
-	{ NULL,		0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0 }
+	{"overwrite",           LOC_OPT_BOOL, { NULL }, (char *) &fdefault.overtype, _("Overtype mode"), _("Insert mode"), _("Overtype mode"), 0, 0, 0 },
+	{"hex",                 LOC_OPT_BOOL, { NULL }, (char *) &fdefault.hex, _("Hex edit mode"), _("Text edit mode"), _("Hex edit display mode"), 0, 0, 0 },
+	{"ansi",                LOC_OPT_BOOL, { NULL }, (char *) &fdefault.ansi, _("Hide ANSI sequences"), _("Reveal ANSI sequences"), _("Hide ANSI mode"), 0, 0, 0 },
+	{"title",               LOC_OPT_BOOL, { NULL }, (char *) &fdefault.title, _("Status line context enabled"), _("Status line context disabled"), _("Status line context display mode"), 0, 0, 0 },
+	{"autoindent",          LOC_OPT_BOOL, { NULL }, (char *) &fdefault.autoindent, _("Autoindent enabled"), _("Autoindent disabled"), _("Autoindent mode"), 0, 0, 0 },
+	{"wordwrap",            LOC_OPT_BOOL, { NULL }, (char *) &fdefault.wordwrap, _("Wordwrap enabled"), _("Wordwrap disabled"), _("Word wrap mode"), 0, 0, 0 },
+	{"tab",                 LOC_OPT_OFFSET, { NULL }, (char *) &fdefault.tab, _("Tab width (%lld): "), 0, _("Tab width"), 0, 1, 64 },
+	{"lmargin",             LOC_OPT_RANGE, { NULL }, (char *) &fdefault.lmargin, _("Left margin (%d): "), 0, _("Left margin "), 0, 0, 63 },
+	{"rmargin",             LOC_OPT_RANGE, { NULL }, (char *) &fdefault.rmargin, _("Right margin (%d): "), 0, _("Right margin "), 0, 7, 255 },
+	{"restore",             GLO_OPT_BOOL, { &restore_file_pos }, NULL, _("Restore cursor position when files loaded"), _("Don't restore cursor when files loaded"), _("Restore cursor mode"), 0, 0, 0 },
+	{"regex",               GLO_OPT_BOOL, { &std_regex }, NULL, _("Standard regular expression format"), _("JOE regular expression format"), _("Standard or JOE regular expression syntax"), 0, 0, 0 },
+	{"square",              GLO_OPT_BOOL, { &square }, NULL, _("Rectangle mode"), _("Text-stream mode"), _("Rectangular region mode"), 0, 0, 0 },
+	{"icase",               GLO_OPT_BOOL, { &opt_icase }, NULL, _("Search ignores case by default"), _("Case sensitive search by default"), _("Case insensitive search mode "), 0, 0, 0 },
+	{"wrap",                GLO_OPT_BOOL, { &wrap }, NULL, _("Search wraps"), _("Search doesn't wrap"), _("Search wraps mode"), 0, 0, 0 },
+	{"menu_explorer",       GLO_OPT_BOOL, { &menu_explorer }, NULL, _("Menu explorer mode"), _("Simple completion mode"), _("Menu explorer mode"), 0, 0, 0 },
+	{"menu_above",          GLO_OPT_BOOL, { &menu_above }, NULL, _("Menu above prompt"), _("Menu below prompt"), _("Menu above/below mode"), 0, 0, 0 },
+	{"notagsmenu",          GLO_OPT_BOOL, { &notagsmenu }, NULL, _("Tags menu disabled"), _("Tags menu enabled"), _("Tags menu mode"), 0, 0, 0 },
+	{"search_prompting",    GLO_OPT_BOOL, { &pico }, NULL, _("Search prompting on"), _("Search prompting off"), _("Search prompting mode"), 0, 0, 0 },
+	{"menu_jump",           GLO_OPT_BOOL, { &menu_jump }, NULL, _("Jump into menu is on"), _("Jump into menu is off"), _("Jump into menu mode"), 0, 0, 0 },
+	{"autoswap",            GLO_OPT_BOOL, { &autoswap }, NULL, _("Autoswap ^KB and ^KK"), _("Autoswap off "), _("Autoswap mode "), 0, 0, 0 },
+	{"indentc",             LOC_OPT_INT, { NULL }, (char *) &fdefault.indentc, _("Indent char %d (SPACE=32, TAB=9, %{abort} to abort): "), 0, _("Indent char "), 0, 0, 255 },
+	{"istep",               LOC_OPT_OFFSET, { NULL }, (char *) &fdefault.istep, _("Indent step %lld (%{abort} to abort): "), 0, _("Indent step "), 0, 1, 64 },
+	{"french",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.french, _("One space after periods for paragraph reformat"), _("Two spaces after periods for paragraph reformat"), _("French spacing mode"), 0, 0, 0 },
+	{"flowed",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.flowed, _("One space after paragraph line"), _("No spaces after paragraph lines"), _("Flowed text mode"), 0, 0, 0 },
+	{"highlight",           LOC_OPT_BOOL, { NULL }, (char *) &fdefault.highlight, _("Highlighting enabled"), _("Highlighting disabled"), _("Syntax highlighting mode"), 0, 0, 0 },
+	{"spaces",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.spaces, _("Inserting spaces when tab key is hit"), _("Inserting tabs when tab key is hit"), _("No tabs mode"), 0, 0, 0 },
+	{"mid",                 GLO_OPT_BOOL, { &opt_mid }, NULL, _("Cursor will be recentered on scrolls"), _("Cursor will not be recentered on scroll"), _("Center on scroll mode"), 0, 0, 0 },
+	{"left",                GLO_OPT_INT, { &opt_left }, NULL, _("Columns to scroll left or -1 for 1/2 window (%d): "), 0, _("Left scroll amount"), 0, -128, 127 },
+	{"right",               GLO_OPT_INT, { &opt_right }, NULL, _("Columns to scroll right or -1 for 1/2 window (%d): "), 0, _("Right scroll amount"), 0, -128, 127 },
+	{"guess_crlf",          GLO_OPT_BOOL, { &guesscrlf }, NULL, _("Automatically detect MS-DOS files"), _("Do not automatically detect MS-DOS files"), _("Auto detect CR-LF mode"), 0, 0, 0 },
+	{"guess_indent",        GLO_OPT_BOOL, { &guessindent }, NULL, _("Automatically detect indentation"), _("Do not automatically detect indentation"), _("Guess indent mode"), 0, 0, 0 },
+	{"guess_non_utf8",      GLO_OPT_BOOL, { &guess_non_utf8 }, NULL, _("Automatically detect non-UTF-8 in UTF-8 locale"), _("Do not automatically detect non-UTF-8"), _("Guess non-UTF-8 mode"), 0, 0, 0 },
+	{"guess_utf8",          GLO_OPT_BOOL, { &guess_utf8 }, NULL, _("Automatically detect UTF-8 in non-UTF-8 locale"), _("Do not automatically detect UTF-8"), _("Guess UTF-8 mode"), 0, 0, 0 },
+	{"guess_utf16",         GLO_OPT_BOOL, { &guess_utf16 }, NULL, _("Automatically detect UTF-16"), _("Do not automatically detect UTF-16"), _("Guess UTF-16 mode"), 0, 0, 0 },
+	{"transpose",           GLO_OPT_BOOL, { &transpose }, NULL, _("Menu is transposed"), _("Menus are not transposed"), _("Transpose menus mode"), 0, 0, 0 },
+	{"crlf",                LOC_OPT_BOOL, { NULL }, (char *) &fdefault.crlf, _("CR-LF is line terminator"), _("LF is line terminator"), _("CR-LF (MS-DOS) mode"), 0, 0, 0 },
+	{"linums",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.linums, _("Line numbers enabled"), _("Line numbers disabled"), _("Line numbers mode"), 0, 0, 0 },
+	{"hiline",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.hiline, _("Highlighting cursor line"), _("Not highlighting cursor line"), _("Highlight cursor line"), 0, 0, 0 },
+	{"marking",             GLO_OPT_BOOL, { &marking }, NULL, _("Anchored block marking on"), _("Anchored block marking off"), _("Region marking mode"), 0, 0, 0 },
+	{"asis",                GLO_OPT_BOOL, { &dspasis }, NULL, _("Characters above 127 shown as-is"), _("Characters above 127 shown in inverse"), _("Display meta chars as-is mode"), 0, 0, 0 },
+	{"force",               GLO_OPT_BOOL, { &force }, NULL, _("Last line forced to have NL when file saved"), _("Last line not forced to have NL"), _("Force last NL mode"), 0, 0, 0 },
+	{"joe_state",           GLO_OPT_BOOL, { &joe_state }, NULL, _("~/.joe_state file will be updated"), _("~/.joe_state file will not be updated"), _("Joe_state file mode"), 0, 0, 0 },
+	{"nobackup",            LOC_OPT_BOOL, { NULL }, (char *) &fdefault.nobackup, _("Nobackup enabled"), _("Nobackup disabled"), _("No backup mode"), 0, 0, 0 },
+	{"nobackups",           GLO_OPT_BOOL, { &nobackups }, NULL, _("Backup files will not be made"), _("Backup files will be made"), _("Disable backups mode"), 0, 0, 0 },
+	{"nodeadjoe",           GLO_OPT_BOOL, { &nodeadjoe }, NULL, _("DEADJOE files will not be made"), _("DEADJOE files will be made"), _("Disable DEADJOE mode"), 0, 0, 0 },
+	{"nolocks",             GLO_OPT_BOOL, { &nolocks }, NULL, _("Files will not be locked"), _("Files will be locked"), _("Disable locks mode"), 0, 0, 0 },
+	{"nomodcheck",          GLO_OPT_BOOL, { &nomodcheck }, NULL, _("No file modification time check"), _("File modification time checking enabled"), _("Disable mtime check mode"), 0, 0, 0 },
+	{"nocurdir",            GLO_OPT_BOOL, { &nocurdir }, NULL, _("No current dir"), _("Current dir enabled"), _("Disable current dir "), 0, 0, 0 },
+	{"break_hardlinks",     GLO_OPT_BOOL, { &break_links }, NULL, _("Hardlinks will be broken"), _("Hardlinks not broken"), _("Break hard links "), 0, 0, 0 },
+	{"break_links",         GLO_OPT_BOOL, { &break_symlinks }, NULL, _("Links will be broken"), _("Links not broken"), _("Break links "), 0, 0, 0 },
+	{"lightoff",            GLO_OPT_BOOL, { &lightoff }, NULL, _("Highlighting turned off after block operations"), _("Highlighting not turned off after block operations"), _("Auto unmark "), 0, 0, 0 },
+	{"exask",               GLO_OPT_BOOL, { &exask }, NULL, _("Prompt for filename in save & exit command"), _("Don't prompt for filename in save & exit command"), _("Exit ask "), 0, 0, 0 },
+	{"beep",                GLO_OPT_BOOL, { &joe_beep }, NULL, _("Warning bell enabled"), _("Warning bell disabled"), _("Beeps "), 0, 0, 0 },
+	{"nosta",               GLO_OPT_BOOL, { &staen }, NULL, _("Top-most status line disabled"), _("Top-most status line enabled"), _("Disable status line "), 0, 0, 0 },
+	{"keepup",              GLO_OPT_BOOL, { &keepup }, NULL, _("Status line updated constantly"), _("Status line updated once/sec"), _("Fast status line "), 0, 0, 0 },
+	{"pg",                  GLO_OPT_INT, { &pgamnt }, NULL, _("Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): "), 0, _("No. PgUp/PgDn lines "), 0, -1, 64 },
+	{"undo_keep",           GLO_OPT_INT, { &undo_keep }, NULL, _("No. undo records to keep, or (0 for infinite): "), 0, _("No. undo records "), 0, -1, 64 },
+	{"csmode",              GLO_OPT_BOOL, { &csmode }, NULL, _("Start search after a search repeats previous search"), _("Start search always starts a new search"), _("Continued search "), 0, 0, 0 },
+	{"rdonly",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.readonly, _("Read only"), _("Full editing"), _("Read only "), 0, 0, 0 },
+	{"smarthome",           LOC_OPT_BOOL, { NULL }, (char *) &fdefault.smarthome, _("Smart home key enabled"), _("Smart home key disabled"), _("Smart home key "), 0, 0, 0 },
+	{"indentfirst",         LOC_OPT_BOOL, { NULL }, (char *) &fdefault.indentfirst, _("Smart home goes to indentation first"), _("Smart home goes home first"), _("To indent first "), 0, 0, 0 },
+	{"smartbacks",          LOC_OPT_BOOL, { NULL }, (char *) &fdefault.smartbacks, _("Smart backspace key enabled"), _("Smart backspace key disabled"), _("Smart backspace "), 0, 0, 0 },
+	{"purify",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.purify, _("Indentation clean up enabled"), _("Indentation clean up disabled"), _("Clean up indents "), 0, 0, 0 },
+	{"picture",             LOC_OPT_BOOL, { NULL }, (char *) &fdefault.picture, _("Picture drawing mode enabled"), _("Picture drawing mode disabled"), _("Picture mode "), 0, 0, 0 },
+	{"backpath",            GLO_OPT_STRING, { &backpath }, NULL, _("Backup files stored in (%s): "), 0, _("Path to backup files "), 0, 0, 0 },
+	{"syntax_debug",	LOC_OPT_INT, { NULL }, (char *) &fdefault.syntax_debug, _("Syntax debug info %d (0=off, 1=state, 2=recolor, 3=both)"), NULL, _("Syntax debug mode"), 0, 0, 3 },
+	{"syntax",              LOC_OPT_SYNTAX, { NULL }, NULL, _("Select syntax (%{abort} to abort): "), 0, _("Syntax"), 0, 0, 0 },
+	{"colors",              LOC_OPT_COLORS, { NULL }, NULL, _("Select color scheme (%{abort} to abort): "), 0, _("Scheme "), 0, 0, 0 },
+	{"encoding",            LOC_OPT_ENCODING, { NULL }, NULL, _("Select file character set (%{abort} to abort): "), 0, _("Encoding "), 0, 0, 0 },
+	{"type",                LOC_OPT_FILE_TYPE, { NULL }, NULL, _("Select file type (%{abort} to abort): "), 0, _("File type "), 0, 0, 0 },
+	{"highlighter_context", LOC_OPT_BOOL, { NULL }, (char *) &fdefault.highlighter_context, _("Highlighter context enabled"), _("Highlighter context disabled"), _("^G uses highlighter context "), 0, 0, 0 },
+	{"single_quoted",       LOC_OPT_BOOL, { NULL }, (char *) &fdefault.single_quoted, _("Single quoting enabled"), _("Single quoting disabled"), _("^G ignores '... ' "), 0, 0, 0 },
+	{"no_double_quoted",    LOC_OPT_BOOL, { NULL }, (char *) &fdefault.no_double_quoted, _("Double quoting disabled"), _("Double quoting enabled"), _("^G ignores \"... \" "), 0, 0, 0 },
+	{"c_comment",           LOC_OPT_BOOL, { NULL }, (char *) &fdefault.c_comment, _("/* comments enabled"), _("/* comments disabled"), _("^G ignores /*...*/ "), 0, 0, 0 },
+	{"cpp_comment",         LOC_OPT_BOOL, { NULL }, (char *) &fdefault.cpp_comment, _("// comments enabled"), _("// comments disabled"), _("^G ignores //... "), 0, 0, 0 },
+	{"pound_comment",       LOC_OPT_BOOL, { NULL }, (char *) &fdefault.hash_comment, _("# comments enabled"), _("# comments disabled"), _("^G ignores #... "), 0, 0, 0 },
+	{"hash_comment",        LOC_OPT_BOOL, { NULL }, (char *) &fdefault.hash_comment, _("# comments enabled"), _("# comments disabled"), _("^G ignores #... "), 0, 0, 0 },
+	{"vhdl_comment",        LOC_OPT_BOOL, { NULL }, (char *) &fdefault.vhdl_comment, _("-- comments enabled"), _("-- comments disabled"), _("^G ignores --... "), 0, 0, 0 },
+	{"semi_comment",        LOC_OPT_BOOL, { NULL }, (char *) &fdefault.semi_comment, _("; comments enabled"), _("; comments disabled"), _("^G ignores ;... "), 0, 0, 0 },
+	{"tex_comment",         LOC_OPT_BOOL, { NULL }, (char *) &fdefault.tex_comment, _("% comments enabled"), _("% comments disabled"), _("^G ignores %... "), 0, 0, 0 },
+	{"text_delimiters",     LOC_OPT_STRING, { NULL }, (char *) &fdefault.text_delimiters, _("Text delimiters (%s): "), 0, _("Text delimiters "), 0, 0, 0 },
+	{"language",            LOC_OPT_STRING, { NULL }, (char *) &fdefault.language, _("Language (%s): "), 0, _("Language "), 0, 0, 0 },
+	{"cpara",               LOC_OPT_STRING, { NULL }, (char *) &fdefault.cpara, _("Characters which can indent paragraphs (%s): "), 0, _("Paragraph indent chars "), 0, 0, 0 },
+	{"cnotpara",            LOC_OPT_STRING, { NULL }, (char *) &fdefault.cnotpara, _("Characters which begin non-paragraph lines (%s): "), 0, _("Non-paragraph chars "), 0, 0, 0 },
+	{"floatmouse",          GLO_OPT_BOOL, { &floatmouse }, 0, _("Clicking can move the cursor past end of line"), _("Clicking past end of line moves cursor to the end"), _("Click past end "), 0, 0, 0 },
+	{"rtbutton",            GLO_OPT_BOOL, { &rtbutton }, 0, _("Mouse action is done with the right button"), _("Mouse action is done with the left button"), _("Right button "), 0, 0, 0 },
+	{"nonotice",            GLO_OPT_BOOL, { &nonotice }, NULL, 0, 0, _("Suppress startup notice"), 0, 0, 0 },
+	{"noexmsg",             GLO_OPT_BOOL, { &noexmsg }, NULL, 0, 0, _("Suppress exit message"), 0, 0, 0 },
+	{"help_is_utf8",        GLO_OPT_BOOL, { &help_is_utf8 }, NULL, 0, 0, _("Help is UTF-8"), 0, 0, 0 },
+	{"noxon",               GLO_OPT_BOOL, { &noxon }, NULL, 0, 0, _("Disable XON/XOFF"), 0, 0, 0 },
+	{"orphan",              GLO_OPT_BOOL, { &orphan }, NULL, 0, 0, _("Orphan extra files"), 0, 0, 0 },
+	{"helpon",              GLO_OPT_BOOL, { &helpon }, NULL, 0, 0, _("Start editor with help displayed"), 0, 0, 0 },
+	{"dopadding",           GLO_OPT_BOOL, { &dopadding }, NULL, 0, 0, _("Emit padding NULs"), 0, 0, 0 },
+	{"lines",               GLO_OPT_INT, { &env_lines }, NULL, 0, 0, _("No. screen lines (if no window size ioctl)"), 0, 2, 1024 },
+	{"baud",                GLO_OPT_INT, { &Baud }, NULL, 0, 0, _("Baud rate"), 0, 50, 32767 },
+	{"columns",             GLO_OPT_INT, { &env_columns }, NULL, 0, 0, _("No. screen columns (if no window size ioctl)"), 0, 2, 1024 },
+	{"skiptop",             GLO_OPT_INT, { &skiptop }, NULL, 0, 0, _("No. screen lines to skip"), 0, 0, 64 },
+	{"notite",              GLO_OPT_BOOL, { &notite }, NULL, 0, 0, _("Suppress tty init sequence"), 0, 0, 0 },
+	{"brpaste",             GLO_OPT_BOOL, { &brpaste }, NULL, 0, 0, _("Bracketed paste mode"), 0, 0, 0 },
+	{"pastehack",           GLO_OPT_BOOL, { &pastehack }, NULL, 0, 0, _("Paste quoting hack"), 0, 0, 0 },
+	{"nolinefeeds",         GLO_OPT_BOOL, { &nolinefeeds }, NULL, 0, 0, _("Suppress history preserving linefeeds"), 0, 0, 0 },
+	{"mouse",               GLO_OPT_BOOL, { &xmouse }, NULL, 0, 0, _("Enable mouse"), 0, 0, 0 },
+	{"usetabs",             GLO_OPT_BOOL, { &opt_usetabs }, NULL, 0, 0, _("Screen update uses tabs"), 0, 0, 0 },
+	{"assume_color",        GLO_OPT_BOOL, { &assume_color }, NULL, 0, 0, _("Assume terminal supports color"), 0, 0, 0 },
+	{"assume_256color",     GLO_OPT_BOOL, { &assume_256color }, NULL, 0, 0, _("Assume terminal supports 256 colors"), 0, 0, 0 },
+	{"joexterm",            GLO_OPT_BOOL, { &joexterm }, NULL, 0, 0, _("Assume xterm patched for JOE"), 0, 0, 0 },
+	{"visiblews",           LOC_OPT_BOOL, { NULL }, (char *) &fdefault.visiblews, _("Visible whitespace enabled"), _("Visible whitespace disabled"), _("Visible whitespace"), 0, 0, 0 },
+	{ NULL,                 GLO_OPT_BOOL, { NULL }, NULL, NULL, NULL, NULL, 0, 0, 0 }
 };
 
 /* Print command line help */
@@ -472,13 +487,21 @@ static void izopts(void)
 	for (x = 0; glopts[x].name; ++x) {
 		htadd(opt_tab, glopts[x].name, glopts + x);
 		switch (glopts[x].type) {
-		case 4:
-		case 5:
-		case 6:
-		case 7:
-		case 8:
-		case 14:
+		case LOC_OPT_BOOL:
+		case LOC_OPT_INT:
+		case LOC_OPT_STRING:
+		case LOC_OPT_RANGE:
+		case LOC_OPT_OFFSET:
 			glopts[x].ofst = glopts[x].addr - (char *) &fdefault;
+		/* these are unhandled */
+		case GLO_OPT_BOOL:
+		case GLO_OPT_INT:
+		case GLO_OPT_STRING:
+		case LOC_OPT_SYNTAX:
+		case LOC_OPT_ENCODING:
+		case LOC_OPT_FILE_TYPE:
+		case LOC_OPT_COLORS:
+		default:;
 		}
 	}
 	isiz = 1;
@@ -555,6 +578,8 @@ B *ftypehist = NULL;
  * glopt(name,arg,options,1): set file local option
  */
 
+#define OPTPTR(opts, off, type) ((type*) ((char *)(opts) + (off)))
+
 int glopt(char *s, char *arg, OPTIONS *options, int set)
 {
 	int val;
@@ -576,132 +601,93 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 
 	if (opt) {
 		switch (opt->type) {
-		case 0: /* Global variable flag option */
+		case GLO_OPT_BOOL: /* Global variable flag option */
 			if (set)
-				*(int *)opt->set = st;
+				*opt->set.b = st;
 			ret = 1;
 			break;
-		case 1: /* Global variable integer option */
+		case GLO_OPT_INT: /* Global variable integer option */
 			if (set && arg) {
 				val = ztoi(arg);
 				if (val >= opt->low && val <= opt->high)
-					*(int *)opt->set = val;
+					*opt->set.b = val;
 			}
-			if (arg)
-				ret = 2;
-			else
-				ret = 1;
+			ret = arg ? 2 : 1;
 			break;
-		case 2: /* Global variable string option */
+		case GLO_OPT_STRING: /* Global variable string option */
 			if (set) {
-				if (arg)
-					*(char **) opt->set = zdup(arg);
-				else
-					*(char **) opt->set = 0;
+				*opt->set.s = arg ? zdup(arg) : NULL;
 			}
-			if (arg)
-				ret = 2;
-			else
-				ret = 1;
+			ret = arg ? 2 : 1;
 			break;
-		case 4: /* Local option flag */
+		case LOC_OPT_BOOL: /* Local option flag */
 			if (options)
-				*(int *) ((char *) options + opt->ofst) = st;
+				*OPTPTR(options, opt->ofst, int) = st;
 			ret = 1;
 			break;
-		case 5: /* Local option integer */
+		case LOC_OPT_INT: /* Local option integer */
 			if (arg) {
 				if (options) {
 					val = ztoi(arg);
 					if (val >= opt->low && val <= opt->high)
-						*(int *) ((char *)
-							  options + opt->ofst) = val;
+						*OPTPTR(options, opt->ofst, int) = val;
 				}
 			}
-			if (arg)
-				ret = 2;
-			else
-				ret = 1;
+			ret = arg ? 2 : 1;
 			break;
-		case 14: /* Local option off_t */
+		case LOC_OPT_OFFSET: /* Local option off_t */
 			if (arg) {
 				if (options) {
 					off_t zz = ztoo(arg);
 					if (zz >= opt->low && zz <= opt->high)
-						*(off_t *) ((char *)
-							  options + opt->ofst) = zz;
+						*OPTPTR(options, opt->ofst, off_t) = zz;
 				}
 			}
-			if (arg)
-				ret = 2;
-			else
-				ret = 1;
+			ret = arg ? 2 : 1;
 			break;
-		case 15: /* Set file type */
+		case LOC_OPT_FILE_TYPE: /* Set file type */
 			if (arg && options) {
 				OPTIONS *o = find_ftype(arg);
 				if (o) {
 					*options = *o;
 				}
 			}
-			if (arg)
-				ret = 2;
-			else
-				ret = 1;
+			ret = arg ? 2 : 1;
 			break;
-		case 6: /* Local string option */
+		case LOC_OPT_STRING: /* Local string option */
 			if (options) {
-				if (arg) {
-					*(char **) ((char *)
-							  options + opt->ofst) = zdup(arg);
-				} else {
-					*(char **) ((char *)
-							  options + opt->ofst) = 0;
-				}
+				*OPTPTR(options, opt->ofst, char *) = arg ? zdup(arg) : NULL;
 			}
-			if (arg)
-				ret = 2;
-			else
-				ret = 1;
+			ret = arg ? 2 : 1;
 			break;
-		case 7: /* Local option numeric + 1, with range checking */
+		case LOC_OPT_RANGE: /* Local option numeric + 1, with range checking */
 			if (arg) {
 				off_t zz = ztoo(arg);
 				if (zz >= opt->low && zz <= opt->high) {
 					--zz;
 					if (options)
-						*(off_t *) ((char *)
-							  options + opt->ofst) = zz;
+						*OPTPTR(options, opt->ofst, off_t) = zz;
 				}
 			}
-			if (arg)
-				ret = 2;
-			else
-				ret = 1;
+			ret = arg ? 2 : 1;
 			break;
 
-		case 9: /* Set syntax */
+		case LOC_OPT_SYNTAX: /* Set syntax */
 			if (arg && options)
 				options->syntax_name = zdup(arg);
 			/* this was causing all syntax files to be loaded...
 			if (arg && options)
 				options->syntax = load_syntax(arg); */
-			if (arg)
-				ret = 2;
-			else
-				ret = 1;
+			ret = arg ? 2 : 1;
 			break;
 
-		case 13: /* Set byte mode encoding */
+		case LOC_OPT_ENCODING: /* Set byte mode encoding */
 			if (arg && options)
 				options->map_name = zdup(arg);
-			if (arg)
-				ret = 2;
-			else
-				ret = 1;
+			ret = arg ? 2 : 1;
 			break;
 
-		case 17: /* Set color scheme */
+		case LOC_OPT_COLORS: /* Set color scheme */
 			if (arg) {
 				scheme_name = zdup(arg);
 				ret = 2;
@@ -884,26 +870,26 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 
 	joe_free(xx);
 	switch (glopts[x].type) {
-	case 1:
+	case GLO_OPT_INT:
 		v = (int)calc(bw, s, 0);
 		if (merr) {
 			msgnw(bw->parent, merr);
 			ret = -1;
 		} else if (v >= glopts[x].low && v <= glopts[x].high)
-			*(int *)glopts[x].set = v;
+			*glopts[x].set.i = v;
 		else {
 			msgnw(bw->parent, joe_gettext(_("Value out of range")));
 			ret = -1;
 		}
 		break;
-	case 2:
+	case GLO_OPT_STRING:
 		if (s[0])
-			*(char **) glopts[x].set = zdup(s);
+			*glopts[x].set.s = zdup(s);
 		break;
-	case 6:
+	case LOC_OPT_STRING:
 		*(char **)((char *)&bw->o+glopts[x].ofst) = zdup(s);
 		break;
-	case 5:
+	case LOC_OPT_INT:
 		v = (int)calc(bw, s, 0);
 		if (merr) {
 			msgnw(bw->parent, merr);
@@ -915,7 +901,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			ret = -1;
 		}
 		break;
-	case 14:
+	case LOC_OPT_OFFSET:
 		vv = (off_t)calc(bw, s, 0);
 		if (merr) {
 			msgnw(bw->parent, merr);
@@ -927,7 +913,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			ret = -1;
 		}
 		break;
-	case 7:
+	case LOC_OPT_RANGE:
 		vv = (off_t)(calc(bw, s, 0) - 1.0);
 		if (merr) {
 			msgnw(bw->parent, merr);
@@ -939,6 +925,14 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			ret = -1;
 		}
 		break;
+	/* not all handled here */
+	case GLO_OPT_BOOL:
+	case LOC_OPT_BOOL:
+	case LOC_OPT_ENCODING:
+	case LOC_OPT_FILE_TYPE:
+	case LOC_OPT_COLORS:
+	case LOC_OPT_SYNTAX:
+	default:;
 	}
 	vsrm(s);
 	bw->b->o = bw->o;
@@ -1166,11 +1160,11 @@ static int find_option(char *s)
 	return -1;
 }
 
-static int applyopt(BW *bw, void *optp, int y, int flg)
+static int applyopt(BW *bw, int *optp, int y, int flg)
 {
 	int oldval, newval;
 
-	oldval = *(int *)optp;
+	oldval = *optp;
 	if (flg == 0) {
 		/* Return pressed: toggle */
 		newval = !oldval;
@@ -1182,7 +1176,7 @@ static int applyopt(BW *bw, void *optp, int y, int flg)
 		newval = 0;
 	}
 
-	*(int *)optp = newval;
+	*optp = newval;
 	msgnw(bw->parent, newval ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
 
 	return oldval;
@@ -1195,18 +1189,18 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 
 	if (y >= 0) {
 		switch (glopts[y].type) {
-		case 0:
-			applyopt(bw, glopts[y].set, y, flg);
+		case GLO_OPT_BOOL:
+			applyopt(bw, glopts[y].set.b, y, flg);
 			break;
-		case 4:
-			oldval = applyopt(bw, (char *) &bw->o + glopts[y].ofst, y, flg);
+		case LOC_OPT_BOOL:
+			oldval = applyopt(bw, OPTPTR(&bw->o, glopts[y].ofst, int), y, flg);
 
 			/* Propagate readonly bit to B */
-			if (glopts[y].ofst == (char *) &fdefault.readonly - (char *) &fdefault)
+			if (glopts[y].ofst == offsetof(OPTIONS, readonly))
 				bw->b->rdonly = bw->o.readonly;
 
 			/* Kill UTF-8 and CRLF modes if we switch to hex display */
-			if (glopts[y].ofst == (char *) &fdefault.hex - (char *) &fdefault) {
+			if (glopts[y].ofst == offsetof(OPTIONS, hex)) {
 				if (bw->o.hex && !oldval) {
 					bw->o.hex = 1;
 					if (bw->b->o.charmap->type) {
@@ -1279,7 +1273,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				}
 			}
 			break;
-		case 6:
+		case LOC_OPT_STRING:
 			xx = (int *) joe_malloc(SIZEOF(int));
 			*xx = y;
 			if(*(char **)((char *)&bw->o+glopts[y].ofst))
@@ -1291,8 +1285,8 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 			else
 				return -1;
 			/* break; warns on some systems */
-		case 1:
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *)glopts[y].set);
+		case GLO_OPT_INT:
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *glopts[y].set.i);
 			xx = (int *) joe_malloc(SIZEOF(int));
 
 			*xx = y;
@@ -1300,9 +1294,9 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				return 0;
 			else
 				return -1;
-		case 2:
-			if (*(char **) glopts[y].set)
-				joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(char **) glopts[y].set);
+		case GLO_OPT_STRING:
+			if (*glopts[y].set.s)
+				joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *glopts[y].set.s);
 			else
 				joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
 			xx = (int *) joe_malloc(SIZEOF(int));
@@ -1312,13 +1306,13 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				return 0;
 			else
 				return -1;
-		case 5:
+		case LOC_OPT_INT:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst));
 			goto in;
-		case 14:
+		case LOC_OPT_OFFSET:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
 			goto in;
-		case 7:
+		case LOC_OPT_RANGE:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst) + 1);
 		      in:xx = (int *) joe_malloc(SIZEOF(int));
 
@@ -1328,28 +1322,28 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 			else
 				return -1;
 
-		case 9:
+		case LOC_OPT_SYNTAX:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
 			if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
 
-		case 13:
+		case LOC_OPT_ENCODING:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
 			if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
 
-		case 15:
+		case LOC_OPT_FILE_TYPE:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
 			if (wmkpw(bw->parent, buf, &ftypehist, doftype, "ftype", NULL, ftypecmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
 
-		case 17:
+		case LOC_OPT_COLORS:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
 			if (wmkpw(bw->parent, buf, NULL, docolors, NULL, NULL, colorscmplt, NULL, notify, utf8_map, 0))
 				return 0;
@@ -1375,50 +1369,49 @@ const char *get_status(BW *bw, char *s)
 		return "???";
 	else {
 		switch (glopts[y].type) {
-			case 0: {
-				return *(int *)glopts[y].set ? "ON" : "OFF";
-			} case 1: {
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *(int *)glopts[y].set);
+			case GLO_OPT_BOOL:
+				return *glopts[y].set.b ? "ON" : "OFF";
+			case GLO_OPT_INT:
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *glopts[y].set.i);
 				return buf;
-			} case 2: {
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *(char **)glopts[y].set ? *(char **)glopts[y].set : "");
+			case GLO_OPT_STRING:
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *glopts[y].set.s ? *glopts[y].set.s : "");
 				return buf;
-			} case 4: {
+			case LOC_OPT_BOOL:
 				return *(int *) ((char *) &bw->o + glopts[y].ofst) ? "ON" : "OFF";
-			} case 5: {
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *(int *) ((char *) &bw->o + glopts[y].ofst));
+			case LOC_OPT_INT:
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *OPTPTR(&bw->o, glopts[y].ofst, int));
 				return buf;
-			} case 6: {
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *(char **)((char *) &bw->o + glopts[y].ofst) ? *(char **)((char *) &bw->o + glopts[y].ofst) : "");
+			case LOC_OPT_STRING:
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *OPTPTR(&bw->o, glopts[y].ofst, char *) ? *OPTPTR(&bw->o, glopts[y].ofst, char *) : "");
 				return buf;
-			} case 7: {
+			case LOC_OPT_RANGE:
 #ifdef HAVE_LONG_LONG
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%lld", (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst) + 1);
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%lld", (long long)*OPTPTR(&bw->o, glopts[y].ofst, off_t) + 1);
 #else
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%ld", (long)*(off_t *) ((char *) &bw->o + glopts[y].ofst) + 1);
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%ld", (long)*OPTPTR(&bw->o, glopts[y].ofst, off_t) + 1);
 #endif
 				return buf;
-			} case 9: {
+			case LOC_OPT_SYNTAX:
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", bw->o.syntax_name ? bw->o.syntax_name : "");
 				return buf;
-			} case 13: {
+			case LOC_OPT_ENCODING:
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", bw->o.map_name ? bw->o.map_name : "");
 				return buf;
-			} case 14: {
+			case LOC_OPT_OFFSET:
 #ifdef HAVE_LONG_LONG
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%lld", (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%lld", (long long)*OPTPTR(&bw->o, glopts[y].ofst, off_t));
 #else
-				joe_snprintf_1(buf, OPT_BUF_SIZE, "%ld", (long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
+				joe_snprintf_1(buf, OPT_BUF_SIZE, "%ld", (long)*OPTPTR(&bw->o, glopts[y].ofst, off_t));
 #endif
 				return buf;
-			} case 15: {
+			case LOC_OPT_FILE_TYPE:
 				return bw->o.ftype;
-			} case 17: {
+			case LOC_OPT_COLORS:
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", scheme_name ? scheme_name : "");
 				return buf;
-			} default: {
+			default:
 				return "";
-			}
 		}
 	}
 }

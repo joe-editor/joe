@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-const char *builtins[]=
+const char *const builtins[]=
 {
 	"joerc",
 		"-keepup	%k and %c status line escape sequences updated frequently\n"
@@ -344,10 +344,10 @@ const char *builtins[]=
 		"extmouse	^[ [ <		Introduces an extended xterm mouse event\n"
 		":main			Text editing window\n"
 		":inherit windows\n"
-		":def ispellfile filt,\"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;cat ispell.tmp;/bin/rm ispell.tmp\",rtn,retype\n"
-		":def ispellword psh,nextword,markk,prevword,markb,filt,\"cat >ispell.tmp;ispell ispell.tmp </dev/tty >/dev/tty;tr -d <ispell.tmp '\\\\012';/bin/rm ispell.tmp\",rtn,retype,nextword\n"
-		":def aspellfile filt,\"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell --lang=\",language,\".\",charset,\" -x -c $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP\",rtn,retype\n"
-		":def aspellword psh,nextword,markk,prevword,markb,filt,\"SPLTMP=ispell.tmp;cat >$SPLTMP;aspell --lang=\",language,\".\",charset,\" -x -c $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\\\012';/bin/rm $SPLTMP\",rtn,retype,nextword\n"
+		":def ispellfile filt,\"SPLTMP=\\\"$(/bin/mktemp -p '' joeXXXXXX)\\\";cat >$SPLTMP;ispell $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP\",rtn,retype\n"
+		":def ispellword psh,nextword,markk,prevword,markb,filt,\"SPLTMP=\\\"$(/bin/mktemp -p '' joeXXXXXX)\\\"cat >$SPLTMP;ispell $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\\\012';/bin/rm $SPLTMP\",rtn,retype,nextword\n"
+		":def aspellfile filt,\"SPLTMP=\\\"$(/bin/mktemp -p '' joeXXXXXX)\\\";cat >$SPLTMP;aspell --lang=\",language,\".\",charset,\" -x -c $SPLTMP </dev/tty >/dev/tty;cat $SPLTMP;/bin/rm $SPLTMP\",rtn,retype\n"
+		":def aspellword psh,nextword,markk,prevword,markb,filt,\"SPLTMP=\\\"$(/bin/mktemp -p '' joeXXXXXX)\\\";cat >$SPLTMP;aspell --lang=\",language,\".\",charset,\" -x -c $SPLTMP </dev/tty >/dev/tty;tr -d <$SPLTMP '\\\\012';/bin/rm $SPLTMP\",rtn,retype,nextword,pop\n"
 		"aspellfile	^[ l\n"
 		"aspellword	^[ n\n"
 		":def compile mwind!,mfit!,querysave,query,scratch,\"* Build Log *\",rtn,bof,markb,eof,\" \",markk,blkdel,build\n"

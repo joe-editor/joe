@@ -357,6 +357,77 @@ static void ansi_init(struct ansi_sm *sm)
 
 #define SELECT_IF(c)	{ if (c) { ca = selectatr; cm = selectmask; } else { ca = 0; cm = -1; } }
 
+static struct state_debug_data out_osc8(const struct state_debug_data *oldstate, const struct state_debug_data *newstate, int opt)
+{
+	static const struct state_debug_data empty = {};
+
+	opt &= 3;
+
+	if (!oldstate) oldstate = &empty;
+	if (!newstate) newstate = &empty;
+
+	switch (opt) {
+		case 1:
+			if (oldstate->name == newstate->name)
+				return *oldstate;
+
+			if (oldstate->name)
+				ttputs("\x1B]8;;\x1B\\");
+
+			if (newstate) {
+				ttputs("\x1B]8;id=");
+				ttputs(state_names[newstate->name]);
+				ttputs(";");
+				ttputs(state_names[newstate->name]);
+				ttputs("\x1B\\");
+			}
+			break;
+		case 2:
+			if (oldstate->recolor == newstate->recolor)
+				return *oldstate;
+
+			if (oldstate->recolor)
+				ttputs("\x1B]8;;\x1B\\");
+
+			if (newstate) {
+				ttputs("\x1B]8;id=");
+				ttputs(newstate->recolor ? state_names[newstate->recolor] : "(idle)");
+				ttputs(";");
+				ttputs(newstate->recolor ? state_names[newstate->recolor] : "(idle)");
+				ttputs("\x1B\\");
+			}
+			break;
+		case 3:
+			if (oldstate->name == newstate->name && oldstate->recolor == newstate->recolor)
+				return *oldstate;
+
+			if (oldstate->name || oldstate->recolor)
+				ttputs("\x1B]8;;\x1B\\");
+
+			if (newstate) {
+				ttputs("\x1B]8;id=");
+				ttputs(state_names[newstate->name]);
+				ttputs(";");
+				ttputs(state_names[newstate->name]);
+				if (newstate->recolor && newstate->recolor != newstate->name) {
+					ttputs("→");
+					ttputs(state_names[newstate->recolor]);
+				}
+				ttputs("\x1B\\");
+			}
+	}
+
+	return newstate ? *newstate : empty;
+}
+
+static void end_osc8(const struct state_debug_data *oldstate, int opt)
+{
+	if ((opt & 1 && oldstate->name) || (opt & 2 && oldstate->recolor))
+		ttputs("\x1B]8;;\x1B\\");
+}
+#define OUT_osc8(bw,os,ns) ((bw)->b->o.syntax_debug ? out_osc8(&(os), &(ns), (bw)->b->o.syntax_debug) : (os))
+#define END_osc8(bw,old) end_osc8(&(old), (bw)->b->o.syntax_debug)
+
 /* Update a single line */
 
 static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff_t x, ptrdiff_t w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
@@ -384,7 +455,10 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 	struct utf8_sm utf8_sm;
 	struct ansi_sm ansi_sm;
 
-        int *syn = 0;
+	const attr_data *syn = NULL;
+	const struct state_debug_data *syndebug = NULL;
+	struct state_debug_data atr_state = {};
+	struct state_debug_data old_atr_state = {};
         P *tmp;
         int idx=0;
         int defatr = (bw->o.hiline && bw->cursor->line == y - bw->y + bw->top->line) ? (bg_text & curlinmask) | bg_curlin : bg_text;
@@ -400,6 +474,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 		p_goto_bol(tmp);
 		parse(bw->o.syntax,tmp,st,p->b->o.charmap);
 		syn = attr_buf;
+		syndebug = syndebug_buf;
 		prm(tmp);
 	}
 
@@ -424,7 +499,10 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				ungetit = NO_MORE_DATA;
 			}
 			if(st.state!=-1) {
-				atr = syn[idx++] & ~CONTEXT_MASK;
+				atr = syn[idx] & ~CONTEXT_MASK;
+				if (syndebug)
+					atr_state = syndebug[idx];
+				++idx;
 				if (!(atr & BG_MASK))
 					atr |= defatr & BG_MASK;
 				if (!(atr & FG_MASK))
@@ -558,7 +636,10 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				ungetit = NO_MORE_DATA;
 			}
 			if(st.state!=-1) {
-				atr = syn[idx++] & ~CONTEXT_MASK;
+				atr = syn[idx] & ~CONTEXT_MASK;
+				if (syndebug)
+					atr_state = syndebug[idx];
+				++idx;
 				if (!(atr & BG_MASK))
 					atr |= defatr & BG_MASK;
 				if (!(atr & FG_MASK))
@@ -584,6 +665,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				if (*bp == '\n') {
 					if (bw->o.visiblews && x < w) {
 						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+						old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 						++x;
 					}
 
@@ -612,12 +694,14 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				tach = ' ';
 				if (ta > 0 && x < w && bw->o.visiblews) {
 					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vtab, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+					old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 					++x;
 					--ta;
 				}
 			      dota:
 			      	while (x < w && ta--) {
 					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, tach, (atr & cm) | ca);
+					old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 					++x;
 				}
 				if (ifhave)
@@ -627,11 +711,13 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 			} else if (bc == '\n') {
 				if (bw->o.visiblews && x < w) {
 					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+					old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 					++x;
 				}
 				goto eobl;
 			} else if (bc == ' ' && bw->o.visiblews && x < w) {
 				outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vspace, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+				old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 				++x;
 			} else {
 				int wid = -1;
@@ -684,11 +770,13 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 						/* If character hits right most column, don't display it */
 						while (x < w) {
 							outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, '>', (atr & cm) | ca);
+							old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 							x++;
 						}
 						goto eosl;
 					} else {
 						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, utf8_char, (atr & cm) | ca);
+						old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 						x += wid;
 					}
 				} else
@@ -716,7 +804,8 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
       eobl:			/* End of buffer line found.  Erase to end of screen line */
 	++p->line;
       eof:
-      	outatr_complete(t);
+	outatr_complete(t);
+	END_osc8(bw, old_atr_state);
 	if (x < w)
 		done = eraeol(t, x, y, BG_COLOR(defatr));
 	else
@@ -725,6 +814,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 /* Set p to bp/amnt */
       bye:
       	outatr_complete(t);
+	END_osc8(bw, old_atr_state);
 	if (bp - p->ptr <= p->hdr->hole)
 		p->ofst = (short)(bp - p->ptr);
 	else
@@ -734,6 +824,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 
       eosl:
       	outatr_complete(t);
+	END_osc8(bw, old_atr_state);
 	if (bp - p->ptr <= p->hdr->hole)
 		p->ofst = (short)(bp - p->ptr);
 	else
