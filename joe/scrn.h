@@ -200,7 +200,7 @@ void nclose(SCRN *t);
  *
  * Set cursor position
  */
-int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y);
+int cpos(REGISTER SCRN *t, /* register */ ptrdiff_t x, /* register */ ptrdiff_t y);
 
 /* int attr(SCRN *t,int a);
  *

@@ -153,7 +153,7 @@ static void mfill(int (*dest)[COMPOSE], int val, ptrdiff_t count)
  * https://www.gnu.org/software/termutils/manual/termcap-1.3/html_chapter/termcap_4.html#SEC27
  */
 
-static void fixupcursor(register SCRN *t)
+static void fixupcursor(REGISTER SCRN *t)
 {
 	if (t->x == t->co) {
 		texec(t->cap, t->cr, 1, 0, 0, 0, 0);
@@ -987,7 +987,7 @@ int nresize(SCRN *t, ptrdiff_t w, ptrdiff_t h)
  * This doesn't use the am and bw capabilities although it probably could.
  */
 
-static ptrdiff_t relcost(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y, register ptrdiff_t ox, register ptrdiff_t oy)
+static ptrdiff_t relcost(REGISTER SCRN *t, REGISTER ptrdiff_t x, REGISTER ptrdiff_t y, REGISTER ptrdiff_t ox, REGISTER ptrdiff_t oy)
 {
 	ptrdiff_t cost = 0;
 
@@ -1123,9 +1123,9 @@ static ptrdiff_t relcost(register SCRN *t, register ptrdiff_t x, register ptrdif
  * given new row and column and execute them.
  */
 
-static void cposs(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y)
+static void cposs(REGISTER SCRN *t, REGISTER ptrdiff_t x, REGISTER ptrdiff_t y)
 {
-	register ptrdiff_t bestcost, cost;
+	REGISTER ptrdiff_t bestcost, cost;
 	int bestway;
 	ptrdiff_t hy;
 	ptrdiff_t hl;
@@ -1441,7 +1441,7 @@ docv:
 	}
 }
 
-int cpos(register SCRN *t, register ptrdiff_t x, register ptrdiff_t y)
+int cpos(REGISTER SCRN *t, REGISTER ptrdiff_t x, REGISTER ptrdiff_t y)
 {
 	/* Move cursor quickly if we can */
 	if (y == t->y) {

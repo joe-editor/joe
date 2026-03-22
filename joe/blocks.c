@@ -347,7 +347,7 @@ static int *mfwrdI(int *dest, const int *src, ptrdiff_t sz)
  * are copied before the ones at the lowest ('s') are.
  */
 
-static void *mbkwd(register void *orgd, register const void *orgs, register ptrdiff_t sz)
+static void *mbkwd(REGISTER void *orgd, REGISTER const void *orgs, REGISTER ptrdiff_t sz)
 {
 	char *d = (char *)orgd;
 	const char *s = (const char *)orgs;
@@ -440,7 +440,7 @@ static void *mbkwd(register void *orgd, register const void *orgs, register ptrd
  * are copied before the ones at the highest ('s'+'sz'-1) are.
  */
 
-static void *mfwrd(register void *orgd, register const void *orgs, register ptrdiff_t sz)
+static void *mfwrd(REGISTER void *orgd, REGISTER const void *orgs, REGISTER ptrdiff_t sz)
 {
 	char *d = (char *)orgd;
 	const char *s = (const char *)orgs;
@@ -570,9 +570,9 @@ void *mmove(void *d, const void *s, ptrdiff_t sz)
 
 /* Utility to count number of lines within a segment */
 
-ptrdiff_t mcnt(register const char *blk, register char c, ptrdiff_t size)
+ptrdiff_t mcnt(REGISTER const char *blk, REGISTER char c, ptrdiff_t size)
 {
-	register ptrdiff_t nlines = 0;
+	REGISTER ptrdiff_t nlines = 0;
 
 	while (size >= 16) {
 		if (blk[0] == c) ++nlines;
@@ -617,7 +617,7 @@ ptrdiff_t mcnt(register const char *blk, register char c, ptrdiff_t size)
 
 #ifdef junk
 
-char *mchr(register char *blk, char c)
+char *mchr(REGISTER char *blk, char c)
 {
     loop:
 	if (blk[0] == c) return blk + 0;

@@ -11,6 +11,10 @@
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
 #define SIZEOF(a) ((ptrdiff_t)sizeof(a)) /* Signed version of sizeof() */
 
+/* For very old UNIX, declar register arguments.  No longer allowed in C++17 */
+#define REGISTER
+/* #define REGISTER register */
+
 #define WIND_BW(x, y) do { \
   if (!((y)->watom->what & (TYPETW | TYPEPW))) \
     return -1; \
