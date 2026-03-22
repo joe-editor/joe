@@ -25,7 +25,17 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 
 AX_CHECK_COMPILE_FLAG([-Wall], [CFLAGS="$CFLAGS -Wall"])
+
+# Many unused argument warnings
 # AX_CHECK_COMPILE_FLAG([-Wextra], [CFLAGS="$CFLAGS -Wextra"])
+
+# Warnings with gcc -O2, OK with no optimization
+# Nothing from clang
+# AX_CHECK_COMPILE_FLAG([-Wstrict-overflow=4], [CFLAGS="$CFLAGS -Wstrict-overflow=4"])
+
+# -Wformat-nonliteral and -Wformat become useful if joe_gettext is nullified- see types.h
+# AX_CHECK_COMPILE_FLAG([-Wformat-nonliteral], [CFLAGS="$CFLAGS -Wformat-nonliteral"])
+
 AX_CHECK_COMPILE_FLAG([-Wconversion], [CFLAGS="$CFLAGS -Wconversion"])
 AX_CHECK_COMPILE_FLAG([-Wunused], [CFLAGS="$CFLAGS -Wunused"])
 AX_CHECK_COMPILE_FLAG([-Wlogical-op], [CFLAGS="$CFLAGS -Wlogical-op"])

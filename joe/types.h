@@ -70,7 +70,9 @@ typedef int pid_t;
 #include <time.h>
 #endif
 
+/* Bypass joe_gettext to enable printf format checking -Wformat */
 #define joe_gettext(s) my_gettext((s))
+/* #define joe_gettext(s) (s) */
 
 /*
 #ifdef ENABLE_NLS
