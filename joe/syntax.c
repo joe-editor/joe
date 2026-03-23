@@ -261,7 +261,12 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		do {
 			/* Guard against infinite loops from buggy syntaxes */
 			if (iters++ > state_count) {
+			      error_invalidate_return:
 				invalidate_state(&h_state);
+				/* remainder of these two buffers has unknown content - clear it */
+				memset(attr, 0, (attr_end - attr) * sizeof(*attr));
+				if (syndebug)
+					memset(syndebug, 255, (attr_end - attr) * sizeof(*syndebug)); /* set to -1 */
 				return h_state;
 			}
 
@@ -337,6 +342,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			} else {
 				/* Normal edge */
 				h = cmd->new_state;
+				/* Guard against missing jump targets */
+				if (!h)
+					goto error_invalidate_return;
 			}
 
 			/* Recolor if necessary */
