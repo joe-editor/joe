@@ -707,6 +707,7 @@ query		^X Q		Query insert
 record,"0"	^X (		Record macro
 retype		^L		Refresh screen
 rtn		^M		Return
+rtn		^[ [ 1 0 9 ; 5 u
 shell		^Z		Suspend
 shell		^[ s		Suspend (uemacs)
 shell		^[ S		Suspend (uemacs)
@@ -1114,6 +1115,7 @@ redo		^^		Redo changes
 rsrch		^R		Incremental search backwards
 
 indentregion	^X ^I
+indentregion	^X ^[ [ 1 0 5 ; 5 u
 indentregion	^[ ^\
  markk,rindent	^[ ^\
 rtarw		.kr		Go right
@@ -1174,6 +1176,7 @@ shell4		.k4
 abort		^G
 abort		^C
 complete	^I
+complete	^[ [ 1 0 5 ; 5 u
 dnarw,eol	.kd		Go down
 dnarw,eol	^N
 dnarw,eol	^[ O B
@@ -1243,10 +1246,12 @@ rtarwmenu	^[ [ C
 rtarwmenu	^[ O C
 rtn		SP
 rtn		^I
+rtn		^[ [ 1 0 5 ; 5 u
 rtn		^X H
 rtn		^X h
 rtn		^X ^H
 tabmenu		^I
+tabmenu		^[ [ 1 0 5 ; 5 u
 uparwmenu	.ku
 uparwmenu	^P
 uparwmenu	^[ [ A
@@ -1268,8 +1273,10 @@ type		U+0 TO U+10FFFF
 ""		^C		Abort
 ""		^D		Eof
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace
 
 :vtshell		Input to ANSI shell windows
@@ -1287,6 +1294,8 @@ type		U+0 TO U+10FFFF
 ""		^D		Eof
 ""		^E		EOL for bash
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace

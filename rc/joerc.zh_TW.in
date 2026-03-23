@@ -736,6 +736,7 @@ abort		^K q
 arg		^K \		Repeat next command
 explode		^K I		Show all windows or show only one window
 explode		^K ^I
+explode		^K ^[ [ 1 0 5 ; 5 u
 explode		^K i
 help		^K H		Help menu
 help		^K ^H
@@ -745,6 +746,7 @@ hprev		^[ ,		Previous help window
 math		^[ m		Calculator
 math		^[ M		Calculator
  math		^[ ^M		Calculator
+ math		^[ ^[ [ 1 0 9 ; 5 u
 msg		^[ h		Display a message
 msg		^[ H		Display a message
 msg		^[ ^H		Display a message
@@ -767,6 +769,7 @@ query		^K ?		Macro query insert
 record		^K [		Record a macro
 retype		^R		Refresh screen
 rtn		^M		Return
+rtn		^[ [ 1 0 9 ; 5 u
 shell		^K Z		Shell escape
 shell		^K ^Z
 shell		^K z
@@ -921,7 +924,9 @@ execmd		^[ x		Prompt for command to execute
 execmd		^[ X		Prompt for command to execute
 execmd		^[ ^X		Prompt for command to execute
 finish		^[ ^I		Complete word in document
+finish		^[ ^[ [ 1 0 5 ; 5 u
 finish		^[ ^M		Complete word: used to be math
+finish		^[ ^[ [ 1 0 9 ; 5 u
 mwind!,mfit,jump,bol		^[ SP
 isrch		^[ s		Forward incremental search
 isrch		^[ S		Forward incremental search
@@ -1004,6 +1009,7 @@ blkdel		^K ^Y
 blkdel		^K y
 blkmove		^K M		Move marked block
 blkmove		^K ^M
+blkmove		^K ^[ [ 1 0 9 ; 5 u
 blkmove		^K m
 blksave		^K W		Save marked block
 blksave		^K ^W
@@ -1048,6 +1054,7 @@ ffirst		^K ^F
 ffirst		^K f
 filt		^K /		Filter block
  finish		^K ^M		Complete text under cursor
+ finish		^K ^[ [ 1 0 9 ; 5 u
 fnext		^L		Find next
 fmtblk		^K J		Format paragraphs in block
 fmtblk		^K ^J
@@ -1138,6 +1145,7 @@ shell4		.k4
 :inherit main
 if,"byte>size",then,complete,complete,else,delch,endif	^D
 complete	^I
+complete	^[ [ 1 0 5 ; 5 u
 dnarw,eol	.kd		Go down
 dnarw,eol	^N
 dnarw,eol	^[ O B
@@ -1207,10 +1215,12 @@ rtarwmenu	^[ [ C
 rtarwmenu	^[ O C
 rtn		SP
 rtn		^I
+rtn		^[ [ 1 0 5 ; 5 u
 rtn		^K H
 rtn		^K h
 rtn		^K ^H
 tabmenu		^I
+tabmenu		^[ [ 1 0 5 ; 5 u
 uparwmenu	.ku
 uparwmenu	^P
 uparwmenu	^[ [ A
@@ -1233,8 +1243,10 @@ type		U+0 TO U+10FFFF
 ""		^C		Abort
 ""		^D		Eof
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace
 
 :vtshell		Input to ANSI shell windows
@@ -1252,6 +1264,8 @@ type		U+0 TO U+10FFFF
 ""		^D		Eof
 ""		^E		EOL for bash
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace

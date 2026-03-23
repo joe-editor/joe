@@ -697,6 +697,7 @@ abort		^C		Abort window
 arg		^[ \		Repeat next command
 explode		^[ I		Show all windows or show only one window
 explode		^[ ^I
+explode		^[ ^[ [ 1 0 5 ; 5 u
 explode		^[ i
 help		^G		Help menu
 help		.k1
@@ -705,6 +706,7 @@ hprev		^[ ,		Previous help window
 math		^[ m		Calculator
 math		^[ M		Calculator
 math		^[ ^M		Calculator
+math		^[ ^[ [ 1 0 9 ; 5 u
 nextw		^[ N		Goto next window
 nextw		^[ ^N
 nextw		^[ n
@@ -724,6 +726,7 @@ query		^[ ?		Macro query insert
 record		^[ (		Record a macro
 retype		^L		Refresh screen
 rtn		^M		Return
+rtn		^[ [ 1 0 9 ; 5 u
 shell		^[ z
 shell		^[ Z
 shell		^[ ^Z
@@ -959,6 +962,7 @@ shell4		.k4
 :inherit main
 abort		^C
 complete	^I
+complete	^[ [ 1 0 5 ; 5 u
 cancel,bof	^Y
 cancel,eof	^V
 cancel,line	^T
@@ -1033,10 +1037,12 @@ rtarwmenu	^[ [ C
 rtarwmenu	^[ O C
 rtn		SP
 rtn		^I
+rtn		^[ [ 1 0 5 ; 5 u
 rtn		^K H
 rtn		^K h
 rtn		^K ^H
 tabmenu		^I
+tabmenu		^[ [ 1 0 5 ; 5 u
 uparwmenu	.ku
 uparwmenu	^P
 uparwmenu	^[ [ A
@@ -1058,8 +1064,10 @@ type		U+0 TO U+10FFFF
 ""		^C		Abort
 ""		^D		Eof
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace
 
 :vtshell		Input to ANSI shell windows
@@ -1077,6 +1085,8 @@ type		U+0 TO U+10FFFF
 ""		^D		Eof
 ""		^E		EOL for bash
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace
