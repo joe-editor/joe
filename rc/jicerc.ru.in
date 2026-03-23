@@ -359,6 +359,10 @@
 
 	-linums			Включить нумерацию строк
 
+	-hiline			Highlight current line
+
+	-visiblews		Shows whitespace as special glyphs
+
 	-rdonly			Файл можно только читать
 
 	-keymap name

@@ -304,6 +304,8 @@
 
 	-hiline			Highlight current line
 
+	-visiblews		Shows whitespace as special glyphs
+
 	-rdonly			File is read-only
 
 	-keymap name

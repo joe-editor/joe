@@ -300,7 +300,7 @@
 
 	-overwrite		Overtype mode
 
-        -picture                Picture mode (right arrow can go past end of lines)
+	-picture		Picture mode (right arrow can go past end of lines)
 
 	-lmargin nnn		Left margin
 
@@ -319,6 +319,8 @@
 	-linums			Enable line numbers on each line
 
 	-hiline			Highlight current line
+
+	-visiblews		Shows whitespace as special glyphs
 
 	-rdonly			File is read-only
 
