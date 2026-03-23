@@ -843,7 +843,7 @@ static void visit_colordef(COLORSET *cset, struct high_syntax *syntax, struct co
 
 			if (rcdef->spec.type != COLORSPEC_TYPE_NONE) {
 				/* Found something */
-				memcpy(&cdef->spec, &rcdef->spec, SIZEOF(struct color_spec));
+				memcpy(&cdef->spec, &rcdef->spec, sizeof(struct color_spec));
 				break;
 			}
 		}
@@ -860,7 +860,7 @@ void resolve_syntax_colors(COLORSET *cset, struct high_syntax *syntax)
 
 	/* Reset */
 	for (scdef = syntax->color; scdef; scdef = scdef->next) {
-		memset(&scdef->spec, 0, SIZEOF(struct color_spec));
+		memset(&scdef->spec, 0, sizeof(struct color_spec));
 		scdef->spec.type = COLORSPEC_TYPE_NONE;
 		scdef->visited = 0;
 	}
@@ -879,7 +879,7 @@ void resolve_syntax_colors(COLORSET *cset, struct high_syntax *syntax)
 			}
 
 			if (cdef) {
-				memcpy(&scdef->spec, &cdef->spec, SIZEOF(struct color_spec));
+				memcpy(&scdef->spec, &cdef->spec, sizeof(struct color_spec));
 				scdef->visited = COLORDEF_VISITED;
 			}
 		}

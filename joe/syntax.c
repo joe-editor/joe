@@ -264,9 +264,9 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			      error_invalidate_return:
 				invalidate_state(&h_state);
 				/* remainder of these two buffers has unknown content - clear it */
-				memset(attr, 0, (attr_end - attr) * sizeof(*attr));
+				memset(attr, 0, (size_t)(attr_end - attr) * sizeof(*attr));
 				if (syndebug)
-					memset(syndebug, 255, (attr_end - attr) * sizeof(*syndebug)); /* set to -1 */
+					memset(syndebug, 255, (size_t)(attr_end - attr) * sizeof(*syndebug)); /* set to -1 */
 				return h_state;
 			}
 
@@ -606,7 +606,7 @@ static void parse_syntax_color_def(struct color_def **color_list,const char *p,c
 		   compatibility, we'll try to map those into the scheme via the term_colors.
 		   We preserve the parsed color_spec here because the scheme/syntax color
 		   resolution procedure will overwrite color->spec. */
-		memcpy(&color->orig, &color->spec, SIZEOF(struct color_spec));
+		memcpy(&color->orig, &color->spec, sizeof(struct color_spec));
 	} else {
 		logerror_2(joe_gettext(_("%s %d: Missing class name\n")),name,line);
 	}
