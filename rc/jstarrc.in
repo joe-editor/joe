@@ -685,6 +685,7 @@ arg		^Q ^Q
 arg		^Q q
 explode		^K I
 explode		^K ^I
+explode		^K ^[ [ 1 0 5 ; 5 u
 explode		^K i
 help		^J
 nmark		^K H
@@ -694,6 +695,7 @@ hnext		^[ .
 hprev		^[ ,
 math		^Q M
 math		^Q ^M
+math		^Q ^[ [ 1 0 9 ; 5 u
 math		^Q m
 msg		^[ H
 msg		^[ ^H
@@ -715,6 +717,7 @@ query		^[ ?
 record		^[ (
 retype		^]
 rtn		^M
+rtn		^[ [ 1 0 9 ; 5 u
 shell		^K Z
 shell		^K ^Z
 shell		^K z
@@ -962,6 +965,7 @@ mode,"overtype",rtn	.kI
 lindent		^K ,		Indent to left
 line		^Q I		Goto line no.
 line		^Q ^I
+line		^Q ^[ [ 1 0 5 ; 5 u
 line		^Q i
 ltarw		.kl		Go left
 ltarw		^S
@@ -1050,6 +1054,7 @@ shell4		.k4
 :inherit main
 abort		^C
 complete	^I
+complete	^[ [ 1 0 5 ; 5 u
 dnarw,eol	.kd		Go down
 dnarw,eol	^X
 dnarw,eol	^[ O B
@@ -1119,11 +1124,13 @@ rtarwmenu	^[ [ C
 rtarwmenu	^[ O C
 rtn		SP
 rtn		^I
+rtn		^[ [ 1 0 5 ; 5 u
 rtn		^K H
 rtn		^K h
 rtn		^K ^H
 rtn		^J
 tabmenu		^I
+tabmenu		^[ [ 1 0 5 ; 5 u
 uparwmenu	.ku
 uparwmenu	^E
 uparwmenu	^[ [ A
@@ -1145,8 +1152,10 @@ type		U+0 TO U+10FFFF
 ""		^C		Abort
 ""		^D		Eof
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace
 
 :vtshell		Input to ANSI shell windows
@@ -1164,6 +1173,8 @@ type		U+0 TO U+10FFFF
 ""		^D		Eof
 ""		^E		EOL for bash
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace

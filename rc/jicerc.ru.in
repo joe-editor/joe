@@ -780,6 +780,7 @@ querysave,query,killjoe	^K q
 arg		^K \		Повтор следующей команды 
 explode		^K I		Показывать все окна или только одно
 explode		^K ^I
+explode		^K ^[ [ 1 0 5 ; 5 u
 explode		^K i
 help		.k1
 help		.k8
@@ -798,6 +799,7 @@ hprev		^P  		Предыдущая страница подсказки
 math		^[ m		Калькулятор
 math		^[ M		Калькулятор
 math		^[ ^M		Калькулятор
+math		^[ ^[ [ 1 0 9 ; 5 u
 msg		^[ h		Вывод сообщения
 msg		^[ H		Вывод сообщения
 msg		^[ ^H		Вывод сообщения
@@ -822,6 +824,7 @@ query		^K ?		Macro query insert
 record		^K [		Записать макро
 retype		^R		Перерисовка экрана
 rtn		^M		Перевод строки
+rtn		^[ [ 1 0 9 ; 5 u
 shell		^K Z		Выход в шелл
 shell		^K ^Z
 shell		^K z
@@ -943,7 +946,9 @@ execmd		^[ X
 execmd		^[ ^X		
 jump		^[ SP
 finish		^[ ^I		Complete word in document
+finish		^[ ^[ [ 1 0 5 ; 5 u
 finish		^[ ^M		Complete word: used to be math
+finish		^[ ^[ [ 1 0 9 ; 5 u
 isrch		^[ s		Инкрементальный поиск вперед
 isrch		^[ S		
 isrch		^[ ^S		
@@ -1030,6 +1035,7 @@ blkdel		^K y
 blkmove		^K M		Переместить блок
 blkmove		.k6 		
 blkmove		^K ^M
+blkmove		^K ^[ [ 1 0 9 ; 5 u
 blkmove		^K m
 blksave		.f5 		Сохранить блок
 blksave		.F5 		
@@ -1081,6 +1087,7 @@ ffirst		^K ^F
 ffirst		^K f
 filt		^K /		Фильтровать блок
  finish		^K ^M		Complete text under cursor
+ finish		^K ^[ [ 1 0 9 ; 5 u
 fnext		.k7     	Поиск дальше
 fnext		^L		
 fmtblk		^K J		Форматировать абзац в блоке
@@ -1174,6 +1181,7 @@ shell4		.k4
 :inherit main
 if,"byte>size",then,complete,complete,else,delch,endif	^D
 complete	^I
+complete	^[ [ 1 0 5 ; 5 u
 dnarw,eol	.kd		Go down
 dnarw,eol	^N
 dnarw,eol	^[ O B
@@ -1220,10 +1228,12 @@ rtarwmenu	^[ [ C
 rtarwmenu	^[ O C
 rtn		SP
 rtn		^I
+rtn		^[ [ 1 0 5 ; 5 u
 rtn		^K H
 rtn		^K h
 rtn		^K ^H
 tabmenu		^I
+tabmenu		^[ [ 1 0 5 ; 5 u
 uparwmenu	.ku
 uparwmenu	^P
 uparwmenu	^[ [ A
@@ -1245,8 +1255,10 @@ type		U+0 TO U+10FFFF
 ""		^C		Abort
 ""		^D		Eof
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace
 
 :vtshell		Input to ANSI shell windows
@@ -1264,6 +1276,8 @@ type		U+0 TO U+10FFFF
 ""		^D		Eof
 ""		^E		EOL for bash
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace

@@ -693,6 +693,7 @@ abort		^K q
 arg		^K \		Repeat next command
 explode		^K I		Show all windows or show only one window
 explode		^K ^I
+explode		^K ^[ [ 1 0 5 ; 5 u
 explode		^K i
 help		^K H		Help menu
 help		^K ^H
@@ -702,6 +703,7 @@ hprev		^[ ,		Previous help window
 maths		^[ m		Calculator
 maths		^[ M		Calculator
 maths		^[ ^M		Calculator
+maths		^[ ^[ [ 1 0 9 ; 5 u
 msg		^[ h		Display a message
 msg		^[ H		Display a message
 msg		^[ ^H		Display a message
@@ -724,6 +726,7 @@ query		^K ?		Macro query insert
 record		^K [		Record a macro
 retype		^R		Refresh screen
 rtn		^M		Return
+rtn		^[ [ 1 0 9 ; 5 u
  shell		^K Z		Shell escape
  shell		^K ^Z
  shell		^K z
@@ -823,6 +826,7 @@ tomarkk		^[ ^K		Go to end of marked block
 tomarkk		^[ K		Go to end of marked block
 txt		^[ i		Prompt for text and insert it
 txt		^[ ^I		Prompt for text and insert it
+txt		^[ ^[ [ 1 0 5 ; 5 u
 txt		^[ I		Prompt for text and insert it
 upslide		^[ w		Scroll up one line
 upslide		^[ ^W		Scroll up one line
@@ -878,6 +882,7 @@ blkdel		^K ^Y
 blkdel		^K y
 blkmove		^K M		Move marked block
 blkmove		^K ^M
+blkmove		^K ^[ [ 1 0 9 ; 5 u
 blkmove		^K m
  blksave		^K W		Save marked block
  blksave		^K ^W
@@ -1000,6 +1005,7 @@ uparw		^[ [ A
 :prompt			Prompt windows
 :inherit main
 complete	^I
+complete	^[ [ 1 0 5 ; 5 u
 dnarw,eol	.kd		Go down
 dnarw,eol	^N
 dnarw,eol	^[ O B
@@ -1068,10 +1074,12 @@ rtarwmenu	^[ [ C
 rtarwmenu	^[ O C
 rtn		SP
 rtn		^I
+rtn		^[ [ 1 0 5 ; 5 u
 rtn		^K H
 rtn		^K h
 rtn		^K ^H
 tabmenu		^I
+tabmenu		^[ [ 1 0 5 ; 5 u
 uparwmenu	.ku
 uparwmenu	^P
 uparwmenu	^[ [ A
@@ -1093,8 +1101,10 @@ type		U+0 TO U+10FFFF
 ""		^C		Abort
 ""		^D		Eof
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace
 
 :vtshell		Input to ANSI shell windows
@@ -1112,6 +1122,8 @@ type		U+0 TO U+10FFFF
 ""		^D		Eof
 ""		^E		EOL for bash
 "\t"		^I		Tab
+"\t"		^[ [ 1 0 5 ; 5 u
 ""		^H		Backspace
 "\r"		^M		Return
+"\r"		^[ [ 1 0 9 ; 5 u
 ""		^?		Backspace
