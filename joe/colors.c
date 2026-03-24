@@ -306,6 +306,7 @@ SCHEME *load_scheme(const char *name)
 	char bf[256];
 	char *b = NULL;
 	JFILE *f = NULL;
+	char *fullpath = 0; /* dynamic string */
 	int line, i;
 
 	/* Find existing */
@@ -316,24 +317,9 @@ SCHEME *load_scheme(const char *name)
 	}
 
 	/* Find file */
-	p = getenv("HOME");
-	if (p) {
-		joe_snprintf_2(buf, SIZEOF(buf), "%s/.joe/colors/%s.jcf", p, name);
-		f = jfopen(buf, "r");
-	}
-
-	if (!f) {
-		joe_snprintf_2(buf, SIZEOF(buf), "%scolors/%s.jcf", JOEDATA, name);
-		f = jfopen(buf, "r");
-	}
-	if (!f) {
-		joe_snprintf_1(buf, SIZEOF(buf), "*%s.jcf", name);
-		f = jfopen(buf, "r");
-	}
-
-	if (!f) {
+	fullpath = find_config_file(&f, "colors/", name, ".jcf");
+	if (!f)
 		return 0;
-	}
 
 	/* Create */
 	colors = (SCHEME *) joe_malloc(SIZEOF(struct color_scheme));
@@ -514,6 +500,7 @@ SCHEME *load_scheme(const char *name)
 		}
 	}
 
+	vsrm(fullpath);
 	return colors;
 }
 

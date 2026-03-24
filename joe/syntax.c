@@ -841,10 +841,11 @@ struct ifstack {
 
 static struct high_state *load_dfa(struct high_syntax *syntax)
 {
-	char name[1024];
+	char *fullpath = 0; /* Dynamic string */
 	char buf[1024];
 	char bf[256];
 	const char *p;
+	const char *xdg;
 	ptrdiff_t c;
 	JFILE *f = 0;
 	struct ifstack *stack=0;
@@ -854,24 +855,10 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 	int this_one = 0;
 	int inside_subr = 0;
 
-	/* Load it */
-	p = getenv("HOME");
-	if (p) {
-		joe_snprintf_2(name,SIZEOF(name),"%s/.joe/syntax/%s.jsf",p,syntax->name);
-		f = jfopen(name,"r");
-	}
-
-	if (!f) {
-		joe_snprintf_2(name,SIZEOF(name),"%ssyntax/%s.jsf",JOEDATA,syntax->name);
-		f = jfopen(name,"r");
-	}
-	if (!f) {
-		joe_snprintf_1(name,SIZEOF(name),"*%s.jsf",syntax->name);
-		f = jfopen(name,"r");
-	}
-	if (!f) {
+	/* Find the syntax file */
+	fullpath = find_config_file(&f, "syntax/", syntax->name, ".jsf");
+	if (!fullpath)
 		return 0;
-	}
 
 	/* Parse file */
 	while(jfgets(buf,SIZEOF(buf),f)) {
@@ -898,7 +885,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 								}
 							st->skip = 0;
 						} else {
-							logerror_2(joe_gettext(_("%s %d: missing parameter for ifdef\n")),name,line);
+							logerror_2(joe_gettext(_("%s %d: missing parameter for ifdef\n")),fullpath,line);
 						}
 					}
 					stack = st;
@@ -908,18 +895,18 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 						if (!stack->skip)
 							stack->ignore = !stack->ignore;
 					} else
-						logerror_2(joe_gettext(_("%s %d: else with no matching if\n")),name,line);
+						logerror_2(joe_gettext(_("%s %d: else with no matching if\n")),fullpath,line);
 				} else if (!zcmp(bf, "endif")) {
 					if (stack) {
 						struct ifstack *st = stack;
 						stack = st->next;
 						joe_free(st);
 					} else
-						logerror_2(joe_gettext(_("%s %d: endif with no matching if\n")),name,line);
+						logerror_2(joe_gettext(_("%s %d: endif with no matching if\n")),fullpath,line);
 				} else if (!zcmp(bf, "subr")) {
 					parse_ws(&p, '#');
 					if (parse_ident(&p, bf, SIZEOF(bf))) {
-						logerror_2(joe_gettext(_("%s %d: Missing subroutine name\n")),name,line);
+						logerror_2(joe_gettext(_("%s %d: Missing subroutine name\n")),fullpath,line);
 					} else {
 						if (!stack || !stack->ignore) {
 							inside_subr = 1;
@@ -934,16 +921,16 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 						inside_subr = 0;
 					}
 				} else {
-					logerror_2(joe_gettext(_("%s %d: Unknown control statement\n")),name,line);
+					logerror_2(joe_gettext(_("%s %d: Unknown control statement\n")),fullpath,line);
 				}
 			} else {
-				logerror_2(joe_gettext(_("%s %d: Missing control statement name\n")),name,line);
+				logerror_2(joe_gettext(_("%s %d: Missing control statement name\n")),fullpath,line);
 			}
 		} else if (stack && stack->ignore) {
 			/* Ignore this line because of ifdef */
 		} else if(!parse_char(&p, '=')) {
 			/* Parse color */
-			parse_syntax_color_def(&syntax->color,p,name,line);
+			parse_syntax_color_def(&syntax->color,p,fullpath,line);
 		} else if ((syntax->subr && !this_one) || (!syntax->subr && inside_subr)) {
 			/* Ignore this line because it's not the code we want */
 		} else if(!parse_char(&p, ':')) {
@@ -961,7 +948,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 						if(!zcmp(color->name,bf))
 							break;
 					if(!color) {
-						logerror_2(joe_gettext(_("%s %d: Unknown class\n")),name,line);
+						logerror_2(joe_gettext(_("%s %d: Unknown class\n")),fullpath,line);
 					}
 
 					state->color = 0;
@@ -972,13 +959,13 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 						} else if(!zcmp(bf, "string")) {
 							state->color |= CONTEXT_STRING;
 						} else {
-							logerror_2(joe_gettext(_("%s %d: Unknown context\n")),name,line);
+							logerror_2(joe_gettext(_("%s %d: Unknown context\n")),fullpath,line);
 						}
 					}
 				} else
-					logerror_2(joe_gettext(_("%s %d: Missing color for state definition\n")),name,line);
+					logerror_2(joe_gettext(_("%s %d: Missing color for state definition\n")),fullpath,line);
 			} else
-				logerror_2(joe_gettext(_("%s %d: Missing state name\n")),name,line);
+				logerror_2(joe_gettext(_("%s %d: Missing state name\n")),fullpath,line);
 		} else if(!parse_char(&p, '-')) {
 			/* No. sync lines ignored */
 		} else {
@@ -1003,7 +990,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 							/* logmessage_3("Interval add: %x - %x to %p\n", array[0].first, array[0].last, cmd); */
 						}
 						if (*p != '"')
-							logerror_2(joe_gettext(_("%s %d: Bad string\n")),name,line);
+							logerror_2(joe_gettext(_("%s %d: Bad string\n")),fullpath,line);
 						else
 							++p;
 						/* rtree_show(&state->rtree); */
@@ -1012,20 +999,20 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 					parse_ws(&p,'#');
 					if(!parse_ident(&p,bf,SIZEOF(bf))) {
 						cmd->new_state = find_state(syntax,bf);
-						line = parse_options(syntax,cmd,f,p,0,name,line);
+						line = parse_options(syntax,cmd,f,p,0,fullpath,line);
 					} else
-						logerror_2(joe_gettext(_("%s %d: Missing jump\n")),name,line);
+						logerror_2(joe_gettext(_("%s %d: Missing jump\n")),fullpath,line);
 				} else
-					logerror_2(joe_gettext(_("%s %d: No state\n")),name,line);
+					logerror_2(joe_gettext(_("%s %d: No state\n")),fullpath,line);
 			} else
-				logerror_2(joe_gettext(_("%s %d: Unknown character\n")),name,line);
+				logerror_2(joe_gettext(_("%s %d: Unknown character\n")),fullpath,line);
 		}
 	}
 
 	while (stack) {
 		struct ifstack *st = stack;
 		stack = st->next;
-		logerror_2(joe_gettext(_("%s %d: ifdef with no matching endif\n")),name,st->line);
+		logerror_2(joe_gettext(_("%s %d: ifdef with no matching endif\n")),fullpath,st->line);
 		joe_free(st);
 	}
 
@@ -1034,6 +1021,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 	/* Compile cmaps */
 	build_cmaps(syntax);
 
+	vsrm(fullpath);
 	return first;
 }
 

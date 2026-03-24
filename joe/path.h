@@ -101,3 +101,6 @@ char *pwd(void);
 char *simplify_prefix(const char *path);
 
 char *dequotevs(char *path);
+
+char *find_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix);
+

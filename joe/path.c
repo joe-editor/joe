@@ -507,3 +507,121 @@ char *dequotevs(char *s)
 	vsrm(s);
 	return d;
 }
+
+static const char *xdg_path()
+{
+	static char *xdg;
+
+	if (!xdg)
+	{
+		const char *home = getenv("HOME");
+		const char *x = getenv("XDG_CONFIG_HOME");
+		if (!x)
+		{
+			if (home)
+			{
+				xdg = vsncpy(NULL,0,sz(home));
+				xdg = vsncpy(sv(xdg),sc("/.config/joe"));
+			}
+		}
+		else
+		{
+			xdg = vsncpy(NULL,0,sz(x));
+			xdg = vsncpy(sv(xdg),sc("/joe"));
+		}
+	}
+
+	return xdg;
+}
+
+char *find_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix)
+{
+	JFILE *f;
+	char *fullpath = 0;
+	const char *home = getenv("HOME");
+	const char *xdg = xdg_path();
+
+#if 0
+	/* If we ever make an MSDOS version again: use t option for fopen to indicate text file */
+#ifdef __MSDOS__
+	fd = jfopen(buf, "rt");
+#else
+	fd = jfopen(buf, "r");
+#endif
+#endif
+
+	if (name[0] == '/') {
+		/* Absolute path given, don't mess with it */
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sz(name));
+		fullpath = vsncpy(sv(fullpath), sz(suffix));
+		f = jfopen(fullpath, "r");
+		if (f) {
+			*result = f;
+			return fullpath;
+		} else {
+			vsrm(fullpath);
+			return 0;
+		}
+	}
+
+	if (xdg) {
+		/* Try ~/.config/joe/<prefix><name><suffix> */
+		vsrm(fullpath);
+		fullpath = vsncpy(sv(xdg), sc("/joe/"));
+		fullpath = vsncpy(sv(fullpath), sz(prefix));
+		fullpath = vsncpy(sv(fullpath), sz(name));
+		fullpath = vsncpy(sv(fullpath), sz(suffix));
+		f = jfopen(fullpath, "r");
+		if (f) {
+			*result = f;
+			return fullpath;
+		}
+	}
+
+	/* Old style, before .config/joe */
+	if (!f && home) {
+		/* Try ~/.joe/<prefix>name<suffix> */
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sz(home));
+		fullpath = vsncpy(sv(fullpath), sc("/.joe/"));
+		fullpath = vsncpy(sv(fullpath), sz(prefix));
+		fullpath = vsncpy(sv(fullpath). sz(syntax->name));
+		fullpath = vsncpy(sv(fullpath), sz(suffix));
+		f = jfopen(fullpath, "r");
+		if (f) {
+			*result = f;
+			return fullpath;
+		}
+	}
+
+	if (!f) {
+		/* Try /usr/share/joe/syntax/name.jsf */
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sc(JOEDATA));
+		fullpath = vsncpy(sv(fullpath), sz(prefix));
+		fullpath = vsncpy(sv(fullpath). sz(syntax->name));
+		fullpath = vsncpy(sv(fullpath), sz(suffix));
+		f = jfopen(fullpath, "r");
+		if (f) {
+			*result = f;
+			return fullpath;
+		}
+	}
+
+	if (!f) {
+		/* Try *name.jsf (built-in) */
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sc("*"));
+		fullpath = vsncpy(sv(fullpath). sz(syntax->name));
+		fullpath = vsncpy(sv(fullpath), sz(suffix));
+		f = jfopen(fullpath, "r");
+		if (f) {
+			*result = f;
+			return fullpath;
+		}
+	}
+
+	vsrm(fullpath);
+	return 0;
+}
