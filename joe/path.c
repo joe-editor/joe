@@ -508,7 +508,7 @@ char *dequotevs(char *s)
 	return d;
 }
 
-static const char *xdg_path()
+const char *xdg_path(void)
 {
 	static char *xdg;
 
@@ -521,13 +521,13 @@ static const char *xdg_path()
 			if (home)
 			{
 				xdg = vsncpy(NULL,0,sz(home));
-				xdg = vsncpy(sv(xdg),sc("/.config/joe"));
+				xdg = vsncpy(sv(xdg),sc("/.config/joe/"));
 			}
 		}
 		else
 		{
 			xdg = vsncpy(NULL,0,sz(x));
-			xdg = vsncpy(sv(xdg),sc("/joe"));
+			xdg = vsncpy(sv(xdg),sc("/joe/"));
 		}
 	}
 
@@ -540,6 +540,8 @@ char *find_config_file(JFILE **result, const char *prefix, const char *name, con
 	char *fullpath = 0;
 	const char *home = getenv("HOME");
 	const char *xdg = xdg_path();
+
+	*result = 0;
 
 #if 0
 	/* If we ever make an MSDOS version again: use t option for fopen to indicate text file */
@@ -568,7 +570,7 @@ char *find_config_file(JFILE **result, const char *prefix, const char *name, con
 	if (xdg) {
 		/* Try ~/.config/joe/<prefix><name><suffix> */
 		vsrm(fullpath);
-		fullpath = vsncpy(sv(xdg), sc("/joe/"));
+		fullpath = vsncpy(NULL, 0, sv(xdg));
 		fullpath = vsncpy(sv(fullpath), sz(prefix));
 		fullpath = vsncpy(sv(fullpath), sz(name));
 		fullpath = vsncpy(sv(fullpath), sz(suffix));
@@ -586,7 +588,7 @@ char *find_config_file(JFILE **result, const char *prefix, const char *name, con
 		fullpath = vsncpy(NULL, 0, sz(home));
 		fullpath = vsncpy(sv(fullpath), sc("/.joe/"));
 		fullpath = vsncpy(sv(fullpath), sz(prefix));
-		fullpath = vsncpy(sv(fullpath). sz(syntax->name));
+		fullpath = vsncpy(sv(fullpath), sz(name));
 		fullpath = vsncpy(sv(fullpath), sz(suffix));
 		f = jfopen(fullpath, "r");
 		if (f) {
@@ -600,7 +602,7 @@ char *find_config_file(JFILE **result, const char *prefix, const char *name, con
 		vsrm(fullpath);
 		fullpath = vsncpy(NULL, 0, sc(JOEDATA));
 		fullpath = vsncpy(sv(fullpath), sz(prefix));
-		fullpath = vsncpy(sv(fullpath). sz(syntax->name));
+		fullpath = vsncpy(sv(fullpath), sz(name));
 		fullpath = vsncpy(sv(fullpath), sz(suffix));
 		f = jfopen(fullpath, "r");
 		if (f) {
@@ -613,7 +615,7 @@ char *find_config_file(JFILE **result, const char *prefix, const char *name, con
 		/* Try *name.jsf (built-in) */
 		vsrm(fullpath);
 		fullpath = vsncpy(NULL, 0, sc("*"));
-		fullpath = vsncpy(sv(fullpath). sz(syntax->name));
+		fullpath = vsncpy(sv(fullpath), sz(name));
 		fullpath = vsncpy(sv(fullpath), sz(suffix));
 		f = jfopen(fullpath, "r");
 		if (f) {

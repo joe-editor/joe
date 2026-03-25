@@ -82,14 +82,13 @@ static MACRO *multiparse(JFILE *fd, int *refline, char *buf, ptrdiff_t *ofst, in
  *         1 if there was a syntax error in the file
  */
 
-int procrc(CAP *cap, int fd, char *name)
+int procrc(CAP *cap, JFILE *fd, char *name)
 {
 	OPTIONS *o = &fdefault;	/* Current options */
 	KMAP *context = NULL;	/* Current context */
 	struct rc_menu *current_menu = NULL;
 	char buf[1024];	/* Input buffer */
 	char buf1[1024];	/* Input buffer */
-	JFILE *fd;		/* rc file */
 	int line = 0;		/* Line number */
 	int err = 0;		/* Set to 1 if there was a syntax error */
 

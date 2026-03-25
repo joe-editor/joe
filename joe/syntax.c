@@ -845,7 +845,6 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 	char buf[1024];
 	char bf[256];
 	const char *p;
-	const char *xdg;
 	ptrdiff_t c;
 	JFILE *f = 0;
 	struct ifstack *stack=0;

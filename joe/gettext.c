@@ -66,7 +66,7 @@ const char *my_gettext(const char *s)
 /* Load a .po file, convert entries to local character set and add them to
  * hash table */
 
-static int load_po(FILE *f)
+static int load_po(JFILE *f)
 {
 	char buf[1024];
 	char msgid[1024];
@@ -76,7 +76,7 @@ static int load_po(FILE *f)
 	int preload_flag = 0;
 	msgid[0] = 0;
 	msgstr[0] = 0;
-	while (preload_flag || fgets(buf,SIZEOF(buf)-1,f)) {
+	while (preload_flag || jfgets(buf,SIZEOF(buf)-1,f)) {
 		const char *p;
 		preload_flag = 0;
 		p = buf;
@@ -91,7 +91,7 @@ static int load_po(FILE *f)
 				ofst += len;
 				parse_ws(&p, '#');
 				if (!*p) {
-					if (fgets(buf,SIZEOF(buf) - 1,f)) {
+					if (jfgets(buf,SIZEOF(buf) - 1,f)) {
 						p = buf;
 						preload_flag = 1;
 						parse_ws(&p, '#');
@@ -110,7 +110,7 @@ static int load_po(FILE *f)
 				ofst += len;
 				parse_ws(&p, '#');
 				if (!*p) {
-					if (fgets(buf,SIZEOF(buf) - 1,f)) {
+					if (jfgets(buf,SIZEOF(buf) - 1,f)) {
 						p = buf;
 						preload_flag = 1;
 						parse_ws(&p, '#');
@@ -143,7 +143,7 @@ static int load_po(FILE *f)
 		}
 	}
 	bye:
-	fclose(f);
+	jfclose(f);
 	return 0;
 }
 
@@ -151,19 +151,25 @@ static int load_po(FILE *f)
 
 void init_gettext(const char *s)
 {
-	FILE *f;
-	char buf[1024];
-	joe_snprintf_2(buf, SIZEOF(buf), "%slang/%s.po",JOEDATA,s);
-	if ((f = fopen(buf, "r"))) {
-		/* Try specific language, like en_GB */
+	char *fullpath; /* Dynamic string */
+	JFILE *f;
+
+	/* Try specific language, like en_GB */
+	fullpath = find_config_file(&f, "lang/", s, ".po");
+
+	if (!fullpath && s[0] && s[1]) {
+		/* Otherwise, try generic language, like en */
+		char buf[3];
+		buf[0] = s[0];
+		buf[1] = s[1];
+		buf[2] = 0;
+		fullpath = find_config_file(&f, "lang/", buf, ".po");
+	}
+
+	if (fullpath) {
 		gettext_ht = htmk(256);
 		load_po(f);
-	} else if (s[0] && s[1]) {
-		/* Try generic language, like en */
-		joe_snprintf_3(buf, SIZEOF(buf), "%slang/%c%c.po",JOEDATA,s[0],s[1]);
-		if ((f = fopen(buf, "r"))) {
-			gettext_ht = htmk(256);
-			load_po(f);
-		}
+		vsrm(fullpath);
 	}
+
 }

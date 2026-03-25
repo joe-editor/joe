@@ -102,5 +102,5 @@ char *simplify_prefix(const char *path);
 
 char *dequotevs(char *path);
 
+const char *xdg_path(void);
 char *find_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix);
-
