@@ -792,6 +792,9 @@ defmiddledown	MIDDLEDOWN	Insert text
 xtmouse		^[ [ M		Introduces an xterm mouse event
 extmouse	^[ [ <		Introduces an extended xterm mouse event
 
+ CSIu for ^I
+"\t"		^[ [ 1 0 5 ; 5 u
+
  Sample if/then/else macro
  if,"char==65",then,"it's an A",else,"it's not an a",endif	^[ q
 
