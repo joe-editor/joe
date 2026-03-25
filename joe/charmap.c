@@ -1380,7 +1380,7 @@ struct charmap *find_charmap(const char *name)
 			return m;
 
 	/* Find file */
-	fullpath = find_config_file(&f, "charmaps/", name, "");
+	fullpath = open_config_file(&f, "charmaps/", name, "");
 	vsrm(fullpath);
 
 	/* Parse and install character map from file */

@@ -232,7 +232,7 @@ int procrc(CAP *cap, JFILE *fd, char *name)
 							JFILE *f = 0;
 							int rtn = -1;
 
-							fullpath = find_config_file(&f, "", incname, "");
+							fullpath = open_config_file(&f, "", incname, "");
 							if (fullpath)
 							{
 								rtn = procrc(cap, f, incname);

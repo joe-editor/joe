@@ -155,7 +155,7 @@ void init_gettext(const char *s)
 	JFILE *f;
 
 	/* Try specific language, like en_GB */
-	fullpath = find_config_file(&f, "lang/", s, ".po");
+	fullpath = open_config_file(&f, "lang/", s, ".po");
 
 	if (!fullpath && s[0] && s[1]) {
 		/* Otherwise, try generic language, like en */
@@ -163,7 +163,7 @@ void init_gettext(const char *s)
 		buf[0] = s[0];
 		buf[1] = s[1];
 		buf[2] = 0;
-		fullpath = find_config_file(&f, "lang/", buf, ".po");
+		fullpath = open_config_file(&f, "lang/", buf, ".po");
 	}
 
 	if (fullpath) {

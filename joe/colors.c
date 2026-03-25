@@ -317,7 +317,7 @@ SCHEME *load_scheme(const char *name)
 	}
 
 	/* Find file */
-	fullpath = find_config_file(&f, "colors/", name, ".jcf");
+	fullpath = open_config_file(&f, "colors/", name, ".jcf");
 	if (!f)
 		return 0;
 

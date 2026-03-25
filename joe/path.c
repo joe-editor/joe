@@ -152,14 +152,23 @@ char *endprt(const char *path)
 		return vsncpy(NULL, 0, sz(z));
 	}
 }
-/********************************************************************/
+
+/* Create all missing directories in path
+   'path' can't be const
+   Returns 0 for success */
+
 int mkpath(char *path)
 {
+	int err = 0;
+	char *org = pwd();
 	char *s;
 
 	if (path[0] == '/') {
-		if (chddir("/"))
-			return 1;
+		/* Start at root */
+		if (chpwd("/")) {
+			err = -1;
+			goto bye;
+		}
 		s = path;
 		goto in;
 	}
@@ -167,22 +176,32 @@ int mkpath(char *path)
 	while (path[0]) {
 		char c;
 
+		/* Find end of directory name */
 		for (s = path; (*s) && (*s != '/'); s++) ;
+		/* Terminate it */
 		c = *s;
 		*s = 0;
-		if (chddir(path)) {
-			if (mkdir(path, 0777))
-				return 1;
-			if (chddir(path))
-				return 1;
+		if (chpwd(path)) {
+			/* Couldn't change to it, try to create it */
+			if (mkdir(path, 0700)) {
+				err = -1;
+				goto bye;
+			}
+			if (chpwd(path)) {
+				err = -1;
+				goto bye;
+			}
 		}
 		*s = c;
 	      in:
+	      	/* Skip over multiple '/' */
 		while (*s == '/')
 			++s;
 		path = s;
 	}
-	return 0;
+	bye:
+	chpwd(org);
+	return err;
 }
 /********************************************************************/
 /* Create a temporary file */
@@ -411,7 +430,9 @@ char **rexpnd_users(const char *word)
 
 	return lst;
 }
-/********************************************************************/
+
+/* Change current drive and directory */
+
 int chpwd(const char *path)
 {
 #ifdef __MSDOS__
@@ -444,7 +465,8 @@ int chpwd(const char *path)
 #endif
 }
 
-/* The pwd function */
+/* Get current directory into a static buffer */
+
 char *pwd(void)
 {
 	static char buf[PATH_MAX];
@@ -508,7 +530,10 @@ char *dequotevs(char *s)
 	return d;
 }
 
-const char *xdg_path(void)
+/* Get the XDG config directory with '/' suffix
+   This can fail (returns 0) if $HOME is not set */
+
+const char *xdg_config_dir(int create)
 {
 	static char *xdg;
 
@@ -516,12 +541,45 @@ const char *xdg_path(void)
 	{
 		const char *home = getenv("HOME");
 		const char *x = getenv("XDG_CONFIG_HOME");
-		if (!x)
+		if (x && x[0])
+		{
+			xdg = vsncpy(NULL,0,sz(x));
+			xdg = vsncpy(sv(xdg),sc("/joe/"));
+		}
+		else
 		{
 			if (home)
 			{
 				xdg = vsncpy(NULL,0,sz(home));
 				xdg = vsncpy(sv(xdg),sc("/.config/joe/"));
+			}
+		}
+	}
+	if (xdg && create)
+		mkpath(xdg);
+
+	return xdg;
+}
+
+/* Get the XDG state directory with '/' suffix
+   This can fail (returns 0) if $HOME is not set */
+
+const char *xdg_state_dir(int create)
+{
+	static char *xdg;
+
+	if (!xdg || create)
+	{
+		const char *home = getenv("HOME");
+		const char *x = getenv("XDG_STATE_HOME");
+		vsrm(xdg);
+		xdg = 0;
+		if (!x)
+		{
+			if (home)
+			{
+				xdg = vsncpy(NULL,0,sz(home));
+				xdg = vsncpy(sv(xdg),sc("/.local/state/joe/"));
 			}
 		}
 		else
@@ -530,16 +588,19 @@ const char *xdg_path(void)
 			xdg = vsncpy(sv(xdg),sc("/joe/"));
 		}
 	}
+	if (xdg && create) {
+		mkpath(xdg);
+	}
 
 	return xdg;
 }
 
-char *find_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix)
+char *open_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix)
 {
 	JFILE *f;
 	char *fullpath = 0;
 	const char *home = getenv("HOME");
-	const char *xdg = xdg_path();
+	const char *xdg = xdg_config_dir(0);
 
 	*result = 0;
 
@@ -553,7 +614,7 @@ char *find_config_file(JFILE **result, const char *prefix, const char *name, con
 #endif
 
 	if (name[0] == '/') {
-		/* Absolute path given, don't mess with it */
+		/* Absolute path given, only add suffix */
 		vsrm(fullpath);
 		fullpath = vsncpy(NULL, 0, sz(name));
 		fullpath = vsncpy(sv(fullpath), sz(suffix));

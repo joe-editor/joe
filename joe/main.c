@@ -296,7 +296,7 @@ int ushowlog(W *w, int k)
 int main(int argc, char **real_argv, const char * const *envv)
 {
 	const char *home = getenv("HOME");
-	const char *xdg = xdg_path();
+	const char *xdg = xdg_config_dir(0);
 	JFILE *f;
 	CAP *cap;
 	char **argv = (char **)real_argv;

@@ -64,9 +64,6 @@ int mkpath(char *path);
 */
 char *mktmp(const char *where);
 
-/* Change drive and directory */
-#define chddir chdir
-
 /* int rmatch(char *pattern,char *string);
  * Return true if string matches pattern
  *
@@ -96,11 +93,17 @@ char **rexpnd_users(const char *word);
 char **rexpnd_cmd_cd(const char *word);
 char **rexpnd_cmd_path(const char *word);
 
+/* Change directory */
 int chpwd(const char *path);
+
+/* Get current directory into static buffer */
 char *pwd(void);
+
 char *simplify_prefix(const char *path);
 
 char *dequotevs(char *path);
 
-const char *xdg_path(void);
-char *find_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix);
+const char *xdg_config_dir(int create);
+const char *xdg_state_dir(int create);
+
+char *open_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix);
