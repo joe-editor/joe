@@ -730,6 +730,9 @@ defmiddledown	MIDDLEDOWN	Insert text
 xtmouse		^[ [ M		Introduces an xterm mouse event
 extmouse	^[ [ <		Introduces an extended xterm mouse event
 
+ CSIu for ^I
+"\t"		^[ [ 1 0 5 ; 5 u
+
 :main			Text editing window
 :inherit windows
 
