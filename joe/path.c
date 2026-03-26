@@ -157,8 +157,10 @@ char *endprt(const char *path)
    'path' can't be const
    Returns 0 for success */
 
-int mkpath(char *path)
+int mkpath(const char *path_in)
 {
+	char *path_cpy = zdup(path_in);
+	char *path = path_cpy;
 	int err = 0;
 	char *org = pwd();
 	char *s;
@@ -178,7 +180,6 @@ int mkpath(char *path)
 
 		/* Find end of directory name */
 		for (s = path; (*s) && (*s != '/'); s++) ;
-		/* Terminate it */
 		c = *s;
 		*s = 0;
 		if (chpwd(path)) {
@@ -201,6 +202,7 @@ int mkpath(char *path)
 	}
 	bye:
 	chpwd(org);
+	joe_free(path_cpy);
 	return err;
 }
 /********************************************************************/
@@ -533,7 +535,7 @@ char *dequotevs(char *s)
 /* Get the XDG config directory with '/' suffix
    This can fail (returns 0) if $HOME is not set */
 
-const char *xdg_config_dir(int create)
+const char *xdg_config_dir(void)
 {
 	static char *xdg;
 
@@ -555,8 +557,6 @@ const char *xdg_config_dir(int create)
 			}
 		}
 	}
-	if (xdg && create)
-		mkpath(xdg);
 
 	return xdg;
 }
@@ -564,16 +564,14 @@ const char *xdg_config_dir(int create)
 /* Get the XDG state directory with '/' suffix
    This can fail (returns 0) if $HOME is not set */
 
-const char *xdg_state_dir(int create)
+const char *xdg_state_dir(void)
 {
 	static char *xdg;
 
-	if (!xdg || create)
+	if (!xdg)
 	{
 		const char *home = getenv("HOME");
 		const char *x = getenv("XDG_STATE_HOME");
-		vsrm(xdg);
-		xdg = 0;
 		if (!x)
 		{
 			if (home)
@@ -588,9 +586,6 @@ const char *xdg_state_dir(int create)
 			xdg = vsncpy(sv(xdg),sc("/joe/"));
 		}
 	}
-	if (xdg && create) {
-		mkpath(xdg);
-	}
 
 	return xdg;
 }
@@ -600,7 +595,7 @@ char *open_config_file(JFILE **result, const char *prefix, const char *name, con
 	JFILE *f;
 	char *fullpath = 0;
 	const char *home = getenv("HOME");
-	const char *xdg = xdg_config_dir(0);
+	const char *xdg = xdg_config_dir();
 
 	*result = 0;
 

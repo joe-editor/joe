@@ -83,15 +83,17 @@ void save_state(void)
 {
 	char *fullpath = 0; /* Dynamic string */
 	char *home = getenv("HOME");
-	const char *xdg = xdg_state_dir(1);
+	const char *xdg = xdg_state_dir();
 	mode_t old_mask;
 	FILE *f = 0;
+
 	if (!joe_state)
 		return;
 
 	if (xdg) {
 		vsrm(fullpath);
 		fullpath = vsncpy(NULL, 0, sv(xdg));
+		mkpath(xdg);
 		fullpath = vsncpy(sv(fullpath), sc("joe_state"));
 		old_mask = umask(0066);
 		f = fopen(fullpath, "w");
@@ -138,7 +140,7 @@ void save_state(void)
 void load_state(void)
 {
 	const char *home = getenv("HOME");
-	const char *xdg = xdg_state_dir(0);
+	const char *xdg = xdg_state_dir();
 	FILE *f = 0;
 	char *fullpath = 0; /* Dynamic string */
 	char buf[1024];
