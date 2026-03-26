@@ -202,23 +202,23 @@ P *p_goto_eol(P *p);		/* move cursor to end of line */
 
 P *p_goto_indent(P *p,int c);	/* move cursor to indentation point */
 
-int pisbof(P *p);
-int piseof(P *p);
-int piseol(P *p);
-int pisbol(P *p);
-int pisbow(P *p);
-int piseow(P *p);
+bool pisbof(P *p);
+bool piseof(P *p);
+bool piseol(P *p);
+bool pisbol(P *p);
+bool pisbow(P *p);
+bool piseow(P *p);
 
 #define piscol(p) ((p)->valcol ? (p)->col : (pfcol(p), (p)->col))
 
-int pisblank(P *p);
-int piseolblank(P *p);
+bool pisblank(P *p);
+bool piseolblank(P *p);
 
 off_t pisindent(P *p);
-int pispure(P *p,int c);
+bool pispure(P *p,int c);
 
-int pnext(P *p);
-int pprev(P *p);
+bool pnext(P *p);
+bool pprev(P *p);
 
 int pgetb(P *p);
 int prgetb(P *p);
@@ -325,9 +325,9 @@ char **getbufs(void);
 
 int lock_it(const char *path,char *buf);
 void unlock_it(const char *path);
-int plain_file(B *b);
-int check_mod(B *b);
-int file_exists(const char *path);
+bool plain_file(B *b);
+bool check_mod(B *b);
+bool file_exists(const char *path);
 
 int udebug_joe(W *w, int k);
 

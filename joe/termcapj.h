@@ -88,7 +88,7 @@ const char *jgetstr(CAP *cap, const char *name);
  * Return true if the named capability is found in 'cap'.  A fast binary
  * search is used to lookup the capability.
  */
-int getflag(CAP *cap, const char *name);
+bool getflag(CAP *cap, const char *name);
 
 /* int getnum(CAP *cap,char *name);
  *

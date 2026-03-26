@@ -107,7 +107,7 @@ struct context {
 int ukeymap(W *w, int k);
 
 /* True is KMAP is empty */
-int kmap_empty(KMAP *k);
+bool kmap_empty(KMAP *k);
 
 /* KMAP *kmap_getcontext(char *name);
  * Find and return the KMAP for a given context name.  If none is found, an

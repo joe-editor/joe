@@ -23,11 +23,11 @@ struct charmap {
 
 	/* Character predicate functions */
 
-	int (*is_punct)(struct charmap *map,int c);
-	int (*is_print)(struct charmap *map,int c);
-	int (*is_space)(struct charmap *map,int c);
-	int (*is_alpha_)(struct charmap *map,int c);
-	int (*is_alnum_)(struct charmap *map,int c);
+	bool (*is_punct)(struct charmap *map,int c);
+	bool (*is_print)(struct charmap *map,int c);
+	bool (*is_space)(struct charmap *map,int c);
+	bool (*is_alpha_)(struct charmap *map,int c);
+	bool (*is_alnum_)(struct charmap *map,int c);
 
 	/* Character conversion functions */
 
@@ -58,8 +58,8 @@ struct charmap {
 #define joe_isalpha_(map,c) ((map)->is_alpha_((map),(c)))
 #define joe_isalnum_(map,c) ((map)->is_alnum_((map),(c)))
 
-int joe_isblank(struct charmap *map,int c); /* Space or Tab only */
-int joe_isspace_eos(struct charmap *map,int c); /* Space, Tab, CR, LF, FF or NUL */
+bool joe_isblank(struct charmap *map,int c); /* Space or Tab only */
+bool joe_isspace_eos(struct charmap *map,int c); /* Space, Tab, CR, LF, FF or NUL */
 
 /* Conversion functions */
 

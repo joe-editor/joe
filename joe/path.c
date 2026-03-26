@@ -232,7 +232,7 @@ char *mktmp(const char *where)
 	return name;
 }
 /********************************************************************/
-int rmatch(const char *a, const char *b)
+bool rmatch(const char *a, const char *b)
 {
 	int flag, inv, c;
 
@@ -283,7 +283,7 @@ int rmatch(const char *a, const char *b)
 		}
 }
 /********************************************************************/
-int isreg(const char *s)
+bool isreg(const char *s)
 {
 	int x;
 

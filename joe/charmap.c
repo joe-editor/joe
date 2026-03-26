@@ -1015,7 +1015,7 @@ static int pair_cmp(struct pair *a,struct pair *b)
 
 /* Predicate and conversion functions for byte-oriented charmaps */
 
-static int byte_ispunct(struct charmap *map,int c)
+static bool byte_ispunct(struct charmap *map,int c)
 {
 	int ofst;
 	int bitn;
@@ -1028,7 +1028,7 @@ static int byte_ispunct(struct charmap *map,int c)
 	return (map->print_map[ofst]&bitn) != 0 && (map->alnum__map[ofst]&bitn) == 0;
 }
 
-static int byte_isprint(struct charmap *map,int c)
+static bool byte_isprint(struct charmap *map,int c)
 {
 	int ofst;
 	int bitn;
@@ -1041,12 +1041,12 @@ static int byte_isprint(struct charmap *map,int c)
 	return (map->print_map[ofst]&bitn) != 0;
 }
 
-static int byte_isspace(struct charmap *map,int c)
+static bool byte_isspace(struct charmap *map,int c)
 {
 	return c==32 || (c >= 9 && c <= 13);
 }
 
-static int byte_isalpha_(struct charmap *map,int c)
+static bool byte_isalpha_(struct charmap *map,int c)
 {
 	int ofst;
 	int bitn;
@@ -1059,7 +1059,7 @@ static int byte_isalpha_(struct charmap *map,int c)
 	return (map->alpha__map[ofst]&bitn) != 0;
 }
 
-static int byte_isalnum_(struct charmap *map,int c)
+static bool byte_isalnum_(struct charmap *map,int c)
 {
 	int ofst;
 	int bitn;
@@ -1457,12 +1457,12 @@ char **get_encodings(void)
 
 /* This is not correct... (EBCDIC for example) */
 
-int joe_isblank(struct charmap *map,int c)
+bool joe_isblank(struct charmap *map,int c)
 {
 	return c == 32 || c == 9;
 }
 
-int joe_isspace_eos(struct charmap *map,int c)
+bool joe_isspace_eos(struct charmap *map,int c)
 {
 	return !c || c==32 || (c >= 9 && c <= 13);
 }

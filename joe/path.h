@@ -84,8 +84,8 @@ char *mktmp(const char *where);
  *  '-' may be specified in sets by placing it at the ends
  *  '[' may be specified in sets by placing it first
  */
-int rmatch(const char *a, const char *b);
-int isreg(const char *s);
+bool rmatch(const char *a, const char *b);
+bool isreg(const char *s);
 
 /* char **rexpnd(char *path,char *pattern);
  * Generate array (see va.h) of file names from directory in 'path'
