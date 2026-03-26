@@ -6,7 +6,7 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-extern int exask; /* Ask for file name during ^K X */
+extern bool exask; /* Ask for file name during ^K X */
 
 void genexmsg(BW *bw, int saved, char *name);
 
@@ -35,9 +35,9 @@ int get_buffer_in_window(BW *bw, B *b);
 
 extern B *filehist; /* History of file names */
 
-extern int nobackups; /* Set to disable backup files */
+extern bool nobackups; /* Set to disable backup files */
 extern char *backpath; /* Path to backup files if not current directory */
-extern int orphan; /* Set to keep orphaned buffers (buffers with no windows)  */
+extern bool orphan; /* Set to keep orphaned buffers (buffers with no windows)  */
 
 extern const char *yes_key;
 extern const char *no_key;

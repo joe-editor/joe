@@ -60,9 +60,9 @@ long mnow(void);
 void reset_trig_time(void);
 
 /* options */
-extern int floatmouse;	/* Allow mouse to set cursor past end of lines */
-extern int rtbutton; /* Use button 3 instead of button 1 */
+extern bool floatmouse;	/* Allow mouse to set cursor past end of lines */
+extern bool rtbutton; /* Use button 3 instead of button 1 */
 
-extern int auto_scroll; /* Set for autoscroll */
+extern int auto_scroll; /* Set for autoscroll (+ve or -ve to indicate direction*/
 extern long auto_trig_time; /* Time of next scroll */
-extern int joexterm; /* Set if xterm can do base64 paste */
+extern bool joexterm; /* Set if xterm can do base64 paste */

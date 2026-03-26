@@ -25,7 +25,7 @@
 
 #endif
 
-int dopadding = 0;
+bool dopadding = 0;
 char *joeterm = NULL;
 
 /* Default termcap entry */

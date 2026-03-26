@@ -15,8 +15,8 @@ int nowmarking;
 
 /* Global options */
 
-int square = 0;			/* Set for rectangle mode */
-int lightoff = 0;		/* Set if highlighting should turn off
+bool square = 0;			/* Set for rectangle mode */
+bool lightoff = 0;		/* Set if highlighting should turn off
 
 				   after block operations */
 /* Global variables */
@@ -75,7 +75,7 @@ int upop(W *w, int k)
 /* Return true if markb/markk are valid */
 /* If r is set, swap markb with markk if necessary */
 
-int autoswap;
+bool autoswap;
 
 int markv(int r)
 {

@@ -138,9 +138,9 @@ void ttsusp(void);
  */
 int ttflsh(void);
 
-extern int have; /* Set if we have typeahead */
 extern char havec; /* typeahead character */
-extern int leave; /* Set if we're exiting (so don't check for typeahead) */
+extern bool have; /* Set if we have typeahead */
+extern bool leave; /* Set if we're exiting (so don't check for typeahead) */
 
 #ifdef __MSDOS__
 #define ifhave bioskey(1)
@@ -190,7 +190,7 @@ void signrm(void);
 /* If use_pipe is set: connect stdout of program to JOE using a pipe instead of pty/tty pair */
 MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, char *data, ptrdiff_t len), void *object, void (*die) (void *object), void *dieobj, int copy_in, ptrdiff_t w, ptrdiff_t h, int use_pipe);
 
-extern int noxon;			/* Set if ^S/^Q processing should be disabled */
+extern bool noxon;			/* Set if ^S/^Q processing should be disabled */
 extern int Baud;			/* Baud rate from joerc, cmd line or environment */
 
 void tickoff(void);
@@ -200,4 +200,3 @@ extern time_t last_time; /* Current time in seconds */
 extern int idleout; /* Clear to use /dev/tty for screen */
 
 void ttstsz(int fd, ptrdiff_t w, ptrdiff_t h); /* Set window size */
-extern int nodeadjoe; /* Flag to prevent creation of DEADJOE files */

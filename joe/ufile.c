@@ -15,12 +15,12 @@
 #endif
 #endif
 
-int orphan;
+bool orphan;
 char *backpath = NULL;		/* Place to store backup files */
 B *filehist = NULL;	/* History of file names */
-int nobackups = 0;
-int exask = 0;
-extern int noexmsg;
+bool nobackups = 0;
+bool exask = 0;
+//extern int noexmsg;
 
 /* Ending message generator */
 /**** message which is shown after closing joe (CTRL+x; CTRL+k) *****/

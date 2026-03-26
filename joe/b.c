@@ -30,14 +30,14 @@ static int selinux_enabled = -1;
 
 char stdbuf[stdsiz];
 
-int guesscrlf = 0;
-int guessindent = 0;
+bool guesscrlf = 0;
+bool guessindent = 0;
 
 int berror;
-int force = 0;
+bool force = 0;
 VFILE *vmem;
 
-int nodeadjoe = 0;
+bool nodeadjoe = 0;
 
 const char *const msgs[] = {
 	_("No error"),
@@ -2358,7 +2358,7 @@ static int detect_utf16r(unsigned short *inbuf, ptrdiff_t amnt)
 	return 0;
 }
 
-int guess_utf16;
+bool guess_utf16;
 
 /* Read up to 'max' bytes from a file into a buffer */
 /* Returns with 0 in error or -2 in error for read error */
@@ -3156,8 +3156,8 @@ err:
  * name changed (i.e., we're renaming the file).
  */
 
-int break_links; /* Set to break hard links on writes */
-int break_symlinks; /* Set to break symbolic links and hard links on writes */
+bool break_links; /* Set to break hard links on writes */
+bool break_symlinks; /* Set to break symbolic links and hard links on writes */
 
 int bsave(P *p, const char *as, off_t size, int flag)
 {

@@ -1784,8 +1784,8 @@ void my_iconv1(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
 
 /* Guess character set */
 
-int guess_non_utf8;
-int guess_utf8;
+bool guess_non_utf8;
+bool guess_utf8;
 
 struct charmap *guess_map(const char *buf, ptrdiff_t len)
 {

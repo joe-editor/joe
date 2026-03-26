@@ -35,6 +35,7 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
+#include <stdbool.h>
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>

@@ -28,56 +28,56 @@ OPTIONS pdefault = {
 	NULL,		/* *next */
 	"prompt",	/* ftype */
 	NULL,		/* *match */
-	0,		/* overtype */
 	0,		/* lmargin */
 	76,		/* rmargin */
-	0,		/* autoindent */
-	0,		/* wordwrap */
-	0,		/* nobackup */
-	8,		/* tab */
+	false,		/* overtype */
+	false,		/* autoindent */
+	false,		/* wordwrap */
+	false,		/* nobackup */
 	' ',		/* indent char */
+	8,		/* tab */
 	1,		/* indent step */
 	NULL,		/* *context */
 	NULL,		/* *lmsg */
 	NULL,		/* *rmsg */
 	NULL,		/* *smsg */
 	NULL,		/* *zmsg */
-	0,		/* line numbers */
-	0,		/* highlight current line */
-	0,		/* read only */
-	0,		/* french spacing */
-	0,		/* flowed text */
-	0,		/* spaces */
-#ifdef __MSDOS__
-	1,		/* crlf */
-#else
-	0,		/* crlf */
-#endif
-	0,		/* Highlight */
-	0,		/* Visible whitespace */
-	0,		/* Syntax debugging */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
 	NULL,		/* Character set */
 	NULL,		/* Language */
-	0,		/* Smart home key */
-	0,		/* Goto indent first */
-	0,		/* Smart backspace key */
-	0,		/* Purify indentation */
-	0,		/* Picture mode */
-	0,		/* highlighter_context */
-	0,		/* single_quoted */
-	0,		/* no_double_quoted */
-	0,		/* c_comment */
-	0,		/* cpp_comment */
-	0,		/* hash_comment */
-	0,		/* vhdl_comment */
-	0,		/* semi_comment */
-	0,		/* tex_comment */
-	0,		/* hex */
-	0,		/* hide ansi */
-	0,		/* status line context */
+	false,		/* line numbers */
+	false,		/* highlight current line */
+	false,		/* read only */
+	false,		/* french spacing */
+	false,		/* flowed text */
+	false,		/* spaces */
+#ifdef __MSDOS__
+	true,		/* crlf */
+#else
+	false,		/* crlf */
+#endif
+	false,		/* Highlight */
+	false,		/* Visible whitespace */
+	false,		/* Syntax debugging */
+	false,		/* Smart home key */
+	false,		/* Goto indent first */
+	false,		/* Smart backspace key */
+	false,		/* Purify indentation */
+	false,		/* Picture mode */
+	false,		/* highlighter_context */
+	false,		/* single_quoted */
+	false,		/* no_double_quoted */
+	false,		/* c_comment */
+	false,		/* cpp_comment */
+	false,		/* hash_comment */
+	false,		/* vhdl_comment */
+	false,		/* semi_comment */
+	false,		/* tex_comment */
+	false,		/* hex */
+	false,		/* hide ansi */
+	false,		/* status line context */
 	NULL,		/* text_delimiters */
 	NULL,		/* Characters which can indent paragraphs */
 	NULL,		/* Characters which begin non-paragraph lines */
@@ -94,56 +94,56 @@ OPTIONS fdefault = {
 	NULL,		/* *next */
 	"default",	/* ftype */
 	NULL,		/* *match */
-	0,		/* overtype */
 	0,		/* lmargin */
 	76,		/* rmargin */
-	0,		/* autoindent */
-	0,		/* wordwrap */
-	0,		/* nobackup */
-	8,		/* tab */
+	false,		/* overtype */
+	false,		/* autoindent */
+	false,		/* wordwrap */
+	false,		/* nobackup */
 	' ',		/* indent char */
+	8,		/* tab */
 	1,		/* indent step */
 	"main",		/* *context */
 	"\\i%n %m %M",	/* *lmsg */
 	" %S Ctrl-K H for help",	/* *rmsg */
 	NULL,		/* *smsg */
 	NULL,		/* *zmsg */
-	0,		/* line numbers */
-	0,		/* higlight current line */
-	0,		/* read only */
-	0,		/* french spacing */
-	0,		/* flowed text */
-	0,		/* spaces */
-#ifdef __MSDOS__
-	1,		/* crlf */
-#else
-	0,		/* crlf */
-#endif
-	0,		/* Highlight */
-	0,		/* Visible whitespace */
-	0,		/* Syntax debugging */
 	NULL,		/* Syntax name */
 	NULL,		/* Syntax */
 	NULL,		/* Name of character set */
 	NULL,		/* Character set */
 	NULL,		/* Language */
-	0,		/* Smart home key */
-	0,		/* Goto indent first */
-	0,		/* Smart backspace key */
-	0,		/* Purity indentation */
-	0,		/* Picture mode */
-	0,		/* highlighter_context */
-	0,		/* single_quoted */
-	0,		/* no_double_quoted */
-	0,		/* c_comment */
-	0,		/* cpp_comment */
-	0,		/* hash_comment */
-	0,		/* vhdl_comment */
-	0,		/* semi_comment */
-	0,		/* tex_comment */
-	0,		/* hex */
-	0,		/* hide ansi */
-	0,		/* status line context */
+	false,		/* line numbers */
+	false,		/* higlight current line */
+	false,		/* read only */
+	false,		/* french spacing */
+	false,		/* flowed text */
+	false,		/* spaces */
+#ifdef __MSDOS__
+	true,		/* crlf */
+#else
+	false,		/* crlf */
+#endif
+	false,		/* Highlight */
+	false,		/* Visible whitespace */
+	false,		/* Syntax debugging */
+	false,		/* Smart home key */
+	false,		/* Goto indent first */
+	false,		/* Smart backspace key */
+	false,		/* Purity indentation */
+	false,		/* Picture mode */
+	false,		/* highlighter_context */
+	false,		/* single_quoted */
+	false,		/* no_double_quoted */
+	false,		/* c_comment */
+	false,		/* cpp_comment */
+	false,		/* hash_comment */
+	false,		/* vhdl_comment */
+	false,		/* semi_comment */
+	false,		/* tex_comment */
+	false,		/* hex */
+	false,		/* hide ansi */
+	false,		/* status line context */
 	NULL,		/* text_delimiters */
 	">;!#%/",	/* Characters which can indent paragraphs */
 	".",	/* Characters which begin non-paragraph lines */
@@ -299,7 +299,7 @@ enum opt_type {
 union opt_storage_p {
 	void  *v;
 	char  *c;
-	int   *b; /* bool */
+	bool  *b;
 	int   *i;
 	off_t *o;
 	char **s;
@@ -1160,7 +1160,7 @@ static int find_option(char *s)
 	return -1;
 }
 
-static int applyopt(BW *bw, int *optp, int y, int flg)
+static int applyopt(BW *bw, bool *optp, int y, int flg)
 {
 	int oldval, newval;
 
@@ -1193,7 +1193,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 			applyopt(bw, glopts[y].set.b, y, flg);
 			break;
 		case LOC_OPT_BOOL:
-			oldval = applyopt(bw, OPTPTR(&bw->o, glopts[y].ofst, int), y, flg);
+			oldval = applyopt(bw, OPTPTR(&bw->o, glopts[y].ofst, bool), y, flg);
 
 			/* Propagate readonly bit to B */
 			if (glopts[y].ofst == offsetof(OPTIONS, readonly))

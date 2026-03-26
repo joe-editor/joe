@@ -11,9 +11,9 @@
 struct tw {
 	char	*stalin;	/* Status line info */
 	char	*staright;
-	int	staon;		/* Set if status line was on */
+	bool	staon;		/* Set if status line was on */
+	bool	changed;	/* Previous changed value */
 	off_t	prevline;	/* Previous cursor line number */
-	int	changed;	/* Previous changed value */
 	B	*prev_b;	/* Previous buffer (we need to update status line on nbuf/pbuf) */
 };
 
@@ -30,9 +30,9 @@ int uabort(W *w, int k);
 int uabort1(W *w, int k);
 void setline(B *b, off_t line);
 int abortit(W *w, int k);
-extern int staen;
+extern bool staen;
 extern int staupd;
-extern int keepup;
+extern bool keepup;
 extern int bg_stalin;
 
 extern WATOM watomtw;

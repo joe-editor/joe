@@ -32,21 +32,21 @@ struct high_param {
 /* Command (transition) */
 
 struct high_cmd {
-	unsigned noeat : 1;		/* Set to give this character to next state */
-	unsigned start_buffering : 1;	/* Set if we should start buffering */
-	unsigned stop_buffering : 1;	/* Set if we should stop buffering */
-	unsigned save_c : 1;		/* Save character */
-	unsigned save_s : 1;		/* Save string */
-	unsigned push_c : 1;		/* Push character */
-	unsigned push_s : 1;		/* Push string */
-	unsigned pop_c : 1;		/* Push character */
-	unsigned pop_s : 1;		/* Push string */
-	unsigned ignore : 1;		/* Set to ignore case */
-	unsigned start_mark : 1;	/* Set to begin marked area including this char */
-	unsigned stop_mark : 1;		/* Set to end marked area excluding this char */
-	unsigned recolor_mark : 1;	/* Set to recolor marked area with new state */
-	unsigned rtn : 1;		/* Set to return */
-	unsigned reset : 1;		/* Set to reset the call stack */
+	bool noeat;			/* Set to give this character to next state */
+	bool start_buffering;		/* Set if we should start buffering */
+	bool stop_buffering;		/* Set if we should stop buffering */
+	bool save_c;			/* Save character */
+	bool save_s;			/* Save string */
+	bool push_c;			/* Push character */
+	bool push_s;			/* Push string */
+	bool pop_c;			/* Push character */
+	bool pop_s;			/* Push string */
+	bool ignore;			/* Set to ignore case */
+	bool start_mark;		/* Set to begin marked area including this char */
+	bool stop_mark;			/* Set to end marked area excluding this char */
+	bool recolor_mark;		/* Set to recolor marked area with new state */
+	bool rtn;			/* Set to return */
+	bool reset;			/* Set to reset the call stack */
 	ptrdiff_t recolor;		/* No. chars to recolor if <0. */
 	struct high_state *new_state;	/* The new state */
 	ZHASH *keywords;		/* Hash table of keywords */

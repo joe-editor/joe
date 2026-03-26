@@ -6,6 +6,6 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-extern int notagsmenu;
+extern bool notagsmenu;
 int utagjump(W *w, int k);
 int utag(W *w, int k);

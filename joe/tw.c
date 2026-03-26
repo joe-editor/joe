@@ -7,9 +7,9 @@
  */
 #include "types.h"
 
-int staen = 0;
+bool staen = 0;
 int staupd = 0;
-int keepup = 0;
+bool keepup = 0;
 int bg_stalin;
 
 /* Move text window */

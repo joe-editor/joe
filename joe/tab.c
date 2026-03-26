@@ -9,8 +9,8 @@
 
 typedef struct tab TAB;
 
-int menu_explorer = 0;		/* Stay in menu system when directory selected */
-int menu_jump = 0;		/* Jump into menu */
+bool menu_explorer = 0;		/* Stay in menu system when directory selected */
+bool menu_jump = 0;		/* Jump into menu */
 
 extern WATOM watommenu;
 

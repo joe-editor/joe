@@ -92,8 +92,8 @@ extern const char *locale_msgs;	/* Locale language for editor messages (like de_
 /* Guess map */
 struct charmap *guess_map(const char *buf, ptrdiff_t len);
 
-extern int guess_non_utf8;
-extern int guess_utf8;
+extern bool guess_non_utf8;
+extern bool guess_utf8;
 
 void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
               const char *src,struct charmap *src_map);

@@ -26,7 +26,7 @@ struct cap {
 	void	(*out) (void *, char);		/* Character output routine */
 	void	*outptr;	/* First arg passed to output routine.  Second
 				   arg is character to write */
-	int	dopadding;	/* Set if pad characters should be used */
+	bool	dopadding;	/* Set if pad characters should be used */
 };
 
 /* CAP *getcap(char *s,int baud,void (*out)(void *outptr,char c),void *outptr);
@@ -159,5 +159,5 @@ extern short ospeed;
 extern char PC, *UP, *BC;
 #endif
 
-extern int dopadding;
+extern bool dopadding;
 extern char *joeterm;

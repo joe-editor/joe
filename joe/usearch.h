@@ -21,31 +21,33 @@ struct search {
 	char	*pattern;	/* Search pattern */
 	struct regcomp *comp;	/* Compiled pattern */
 	char	*replacement;	/* Replacement string */
-	int	backwards;	/* Set if search should go backwards */
-	int	ignore;		/* Set if we should ignore case */
-	int	regex;		/* Set for standard regex syntax, clear for JOE syntax */
 	int	repeat;		/* Set with repeat count (or -1 for no repeat count) */
-	int	replace;	/* Set if this is search & replace */
-	int	debug;		/* Set to have regex debug information sent to log buffer */
-	int	rest;		/* Set to do remainder of search & replace w/o query */
+	bool	backwards;	/* Set if search should go backwards */
+	bool	ignore;		/* Set if we should ignore case */
+	bool	regex;		/* Set for standard regex syntax, clear for JOE syntax */
+	bool	replace;	/* Set if this is search & replace */
+	bool	debug;		/* Set to have regex debug information sent to log buffer */
+	bool	rest;		/* Set to do remainder of search & replace w/o query */
+	bool	flg;		/* Set after prompted for first replace */
+
+	bool	wrap_flag;	/* Set if we've wrapped */
+	bool	allow_wrap;	/* Set to allow wrapping */
+	bool	valid;		/* Set if original marks are a valid block */
+	bool	block_restrict;	/* Search restricted to marked block */
+	bool	all;		/* Set to continue in other windows */
+
 	Regmatch_t pieces[NMATCHES];	/* Sub-matches we found */
 	Regmatch_t entire;	/* Entire matching string */
-	int	flg;		/* Set after prompted for first replace */
 	SRCHREC	recs;		/* Search & replace position history */
 	P	*markb, *markk;	/* Original marks */
 	P	*wrap_p;	/* Wrap point */
-	int	wrap_flag;	/* Set if we've wrapped */
-	int	allow_wrap;	/* Set to allow wrapping */
-	int	valid;		/* Set if original marks are a valid block */
 	off_t	addr;		/* Where to place cursor after failed restruct_to_block() test */
 	off_t	last_repl;	/* Address of last replacement (prevents infinite loops) */
-	int	block_restrict;	/* Search restricted to marked block */
-	int	all;		/* Set to continue in other windows */
 	B	*first;		/* Starting buffer */
 	B	*current;	/* Current buffer */
 };
 
-extern int std_regex; /* Standard regex format by default */
+extern bool std_regex; /* Standard regex format by default */
 
 SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all, int regex);
 void rmsrch(SRCH *srch);
@@ -70,10 +72,10 @@ void save_srch(FILE *f);
 void load_srch(FILE *f);
 
 extern int smode;
-extern int csmode;
-extern int opt_icase;
-extern int wrap;
-extern int pico;
+extern bool csmode;
+extern bool opt_icase;
+extern bool wrap;
+extern bool pico;
 extern char srchstr[];
 extern char replstr[];
 extern SRCH *globalsrch;

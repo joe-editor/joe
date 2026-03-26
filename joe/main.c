@@ -13,12 +13,12 @@
 
 char *exmsg = NULL;		/* Message to display when exiting the editor */
 char *xmsg;			/* Message to display when starting the editor */
-int usexmouse=0;
-int xmouse=0;
-int nonotice;
-int noexmsg = 0;
-int pastehack;
-int helpon;
+bool usexmouse=0;
+bool xmouse=0;
+bool nonotice;
+bool noexmsg = 0;
+bool pastehack;
+bool helpon;
 
 Screen *maint;			/* Main edit screen */
 

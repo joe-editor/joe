@@ -10,7 +10,7 @@
 /* The current directory */
 
 int bg_prompt;
-int nocurdir;
+bool nocurdir;
 
 char *get_cd(W *w)
 {
