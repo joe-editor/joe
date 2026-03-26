@@ -699,7 +699,7 @@ static int findpal(int *palette, int startidx, int endidx, int color)
 /* Create a list of all available schemes */
 char **get_colors(void)
 {
-	return find_configs(NULL, "jcf", "colors", "colors");
+	return find_configs(NULL, "colors", ".jcf");
 }
 
 /* Apply the specified scheme */

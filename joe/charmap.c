@@ -1441,7 +1441,7 @@ char **get_encodings(void)
 	}
 
 	/* External maps */
-	return find_configs(encodings, NULL, "charmaps", "charmaps");
+	return find_configs(encodings, "charmaps", NULL);
 }
 
 /* This is not correct... (EBCDIC for example) */

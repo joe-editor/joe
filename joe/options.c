@@ -988,82 +988,97 @@ static int docolors(W *w, char *s, void *obj, int *notify)
 	return 0;
 }
 
-char **find_configs(char **ary, const char *extension, const char *datadir, const char *homedir)
+/* Add any strings from src that do not already appear in dst.
+   If trim is set, delete filename extension from src strings.
+   Do not add ".." to list */
+
+static char **merge_options(char **dst, char **src, int trim)
+{
+	if (src) {
+		int x;
+		for (x = 0; x < aLEN(src); ++x) {
+			int y;
+			if (trim) {
+				char *e = zrchr(src[x], '.');
+				if (e)
+					*e = 0;
+			}
+			if (zcmp(src[x], "..")) {
+				for (y = 0; y < aLEN(dst); ++y)
+					if (!zcmp(src[x], dst[y]))
+						break;
+				if (y == aLEN(dst))
+					dst = vaadd(dst, vsncpy(NULL, 0, sv(src[x])));
+			}
+		}
+	}
+	return dst;
+}
+
+char **find_configs(char **ary, const char *prefix, const char *extension)
 {
 	char wildcard[32];
-	char buf[2048];
 	char *oldpwd = pwd();
-	char **t = NULL;
-	char *p;
-	int x, y;
+	const char *home = getenv("HOME");
+	const char *xdg = xdg_config_dir();
+	char *path;
+	char **t;
 
 	if (extension) {
-		joe_snprintf_1(wildcard, SIZEOF(wildcard), "*.%s", extension);
+		joe_snprintf_1(wildcard, SIZEOF(wildcard), "*%s", extension);
 	} else {
 		zcpy(wildcard, "*");
 	}
 
-	if (datadir) {
-		joe_snprintf_2(buf, SIZEOF(buf), "%s%s", JOEDATA, datadir);
+	/* Look in /usr/share/joe/<prefix> */
 
-		/* Load first from global (NOTE: Order here does not matter.) */
-		if (!chpwd(buf) && (t = rexpnd(wildcard))) {
-			for (x = 0; x < aLEN(t); ++x) {
-				if (extension) *zrchr(t[x], '.') = 0;
-				for (y = 0; y < aLEN(ary); ++y)
-					if (!zcmp(t[x], ary[y]))
-						break;
-				if (y == aLEN(ary))
-					ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
-			}
+	path = vsncpy(NULL, 0, sc(JOEDATA));
+	path = vsncpy(sv(path), sz(prefix));
 
-			varm(t);
-			t = NULL;
-		}
-	}
-
-	if (homedir) {
-		/* Load from home directory. */
-		p = getenv("HOME");
-		if (p) {
-			joe_snprintf_2(buf, SIZEOF(buf), "%s/.joe/%s", p, homedir);
-
-			if (!chpwd(buf) && (t = rexpnd(wildcard))) {
-				for (x = 0; x < aLEN(t); ++x) {
-					if (extension) *zrchr(t[x],'.') = 0;
-					for (y = 0; y < aLEN(ary); ++y)
-						if (!zcmp(t[x],ary[y]))
-							break;
-					if (y == aLEN(ary))
-						ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
-				}
-
-				varm(t);
-				t = NULL;
-			}
-		}
-	}
-
-	/* Load from builtins. */
-	if (extension) {
-		joe_snprintf_1(wildcard, SIZEOF(wildcard), ".%s", extension);
-		t = jgetbuiltins(wildcard);
-
-		for (x = 0; x < aLEN(t); ++x) {
-			if (extension) *zrchr(t[x], '.') = 0;
-			for (y = 0; y < aLEN(ary); ++y)
-				if (!zcmp(t[x], ary[y]))
-					break;
-			if (y == aLEN(ary)) {
-				ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
-			}
-		}
-
+	if (!chpwd(path) && (t = rexpnd(wildcard))) {
+		ary = merge_options(ary, t, !!extension);
 		varm(t);
-		t = NULL;
+	}
+	vsrm(path);
+
+	/* Look in $HOME/.joe/<prefix> */
+
+	if (home) {
+		path = vsncpy(NULL, 0, sz(home));
+		path = vsncpy(sv(path), sc("/.joe/"));
+		path = vsncpy(sv(path), sz(prefix));
+
+		if (!chpwd(path) && (t = rexpnd(wildcard))) {
+			ary = merge_options(ary, t, !!extension);
+			varm(t);
+		}
+		vsrm(path);
 	}
 
-	varm(t);
+	/* Look in $HOME/.config/joe/<prefix> */
+
+	if (xdg) {
+		path = vsncpy(NULL, 0, sv(xdg));
+		path = vsncpy(sv(path), sz(prefix));
+
+		if (!chpwd(path) && (t = rexpnd(wildcard))) {
+			ary = merge_options(ary, t, !!extension);
+			varm(t);
+		}
+		vsrm(path);
+	}
+
+	/* Look through built-in files */
+
+	if (extension) {
+		t = jgetbuiltins(extension);
+
+		if (t) {
+			ary = merge_options(ary, t, !!extension);
+		}
+		varm(t);
+	}
+
 	chpwd(oldpwd);
 
 	if (aLEN(ary)) {
@@ -1078,7 +1093,7 @@ char **syntaxes = NULL; /* Array of available syntaxes */
 static int syntaxcmplt(BW *bw, int k)
 {
 	if (!syntaxes) {
-		syntaxes = find_configs(NULL, "jsf", "syntax", "syntax");
+		syntaxes = find_configs(NULL, "syntax", ".jsf");
 	}
 
 	return simple_cmplt(bw,syntaxes);
@@ -1089,7 +1104,7 @@ char **colorfiles = NULL; /* Array of available color schemes */
 static int colorscmplt(BW *bw, int k)
 {
 	if (!colorfiles) {
-		colorfiles = find_configs(NULL, "jcf", "colors", "colors");
+		colorfiles = find_configs(NULL, "colors", ".jcf");
 	}
 
 	return simple_cmplt(bw, colorfiles);
