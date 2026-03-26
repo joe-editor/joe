@@ -17,6 +17,12 @@ struct srchrec {
 
 #define NMATCHES 26
 
+enum searches {
+	SEARCH_ONE,
+	SEARCH_ALL,
+	SEARCH_ERROR_LIST,
+};
+
 struct search {
 	char	*pattern;	/* Search pattern */
 	struct regcomp *comp;	/* Compiled pattern */
@@ -40,14 +46,14 @@ struct search {
 	off_t	addr;		/* Where to place cursor after failed restruct_to_block() test */
 	off_t	last_repl;	/* Address of last replacement (prevents infinite loops) */
 	int	block_restrict;	/* Search restricted to marked block */
-	int	all;		/* Set to continue in other windows */
+	enum searches all;	/* Set to continue in other windows */
 	B	*first;		/* Starting buffer */
 	B	*current;	/* Current buffer */
 };
 
 extern int std_regex; /* Standard regex format by default */
 
-SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all, int regex);
+SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, enum searches all, int regex);
 void rmsrch(SRCH *srch);
 
 void setpat(SRCH *srch, char *pattern);
