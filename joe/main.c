@@ -149,10 +149,11 @@ int edloop(int flg)
 			w = (W *) (w->link.next);
 		} while (w != maint->curwin);
 
+		more_no_auto:
+
+		/* Insert CR not LF when pasting to get a newline and not deleol */
 		if (c == 10 && (!ahead || ((BW *)maint->curwin->object)->pasting))
 			c = 13;
-
-		more_no_auto:
 
 		/* Use special kbd if we're handing data to a shell window */
 		bw = (BW *)maint->curwin->object;
