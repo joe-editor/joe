@@ -800,7 +800,7 @@ char *ansi_string(int code)
 int pgetc(P *p)
 {
 	if (p->b->o.charmap->type) {
-		int val;
+		bool val;
 		int valattr;
 		int c; /* , oc; */
 		int d;
@@ -1004,7 +1004,7 @@ int prgetc(P *p)
 	P *q;
 	int c, left = 6;
 	off_t startbyte, startcol;
-	int val = 0;
+	bool val = 0;
 
 	if (!p->b->o.charmap->type || pisbol(p))
 		return prgetb(p);

@@ -34,7 +34,7 @@ struct search {
 	bool	allow_wrap;	/* Set to allow wrapping */
 	bool	valid;		/* Set if original marks are a valid block */
 	bool	block_restrict;	/* Search restricted to marked block */
-	bool	all;		/* Set to continue in other windows */
+	int	all;		/* Set to continue in other windows */
 
 	Regmatch_t pieces[NMATCHES];	/* Sub-matches we found */
 	Regmatch_t entire;	/* Entire matching string */
