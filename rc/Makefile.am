@@ -18,6 +18,6 @@ rjoerc : rjoerc.in
 
 SUFFIXES = .in
 .in:
-	LC_ALL=C sed 's,@JOERC\@,$(sysconf_joedir),; s,@JOEDOC\@,$(data_docdir),; s,@JOEDATA\@,$(data_joedir),; s,@SPELL\@,@SPELL@,' $(srcdir)/$< > $@
+	LC_ALL=C $(SED) 's,@JOERC\@,$(sysconf_joedir),; s,@JOEDOC\@,$(data_docdir),; s,@JOEDATA\@,$(data_joedir),; s,@SPELL\@,@SPELL@,' $(srcdir)/$< > $@
 
 MOSTLYCLEANFILES = $(sysconf_joe_built)
