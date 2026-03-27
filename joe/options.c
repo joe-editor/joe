@@ -1383,7 +1383,7 @@ const char *get_status(BW *bw, char *s)
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *glopts[y].set.s ? *glopts[y].set.s : "");
 				return buf;
 			case LOC_OPT_BOOL:
-				return *(int *) ((char *) &bw->o + glopts[y].ofst) ? "ON" : "OFF";
+				return *OPTPTR(&bw->o, glopts[y].ofst, bool) ? "ON" : "OFF";
 			case LOC_OPT_INT:
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *OPTPTR(&bw->o, glopts[y].ofst, int));
 				return buf;
