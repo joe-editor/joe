@@ -5,7 +5,12 @@
 #define _XOPEN_SOURCE 700
 #define _GNU_SOURCE 1 */
 
+#include "autoconf.h"
+#ifdef HAVE_FUNC_ATTRIBUTE_FALLTHROUGH
 #define FALLTHROUGH __attribute__((fallthrough));
+#else
+#define FALLTHROUGH
+#endif
 
 #define TO_DIFF_OK(a) ((ptrdiff_t)(a)) /* Means it's OK that we are converting off_t to ptrdiff_t in this case */
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
