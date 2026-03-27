@@ -225,6 +225,7 @@ AC_CHECK_PROG(SPELL,aspell,aspell,ispell)
 # Check for attributes
 AX_GCC_FUNC_ATTRIBUTE([fallthrough])
 AX_GCC_FUNC_ATTRIBUTE([malloc])
+AX_GCC_FUNC_ATTRIBUTE([malloc_args])
 AX_GCC_FUNC_ATTRIBUTE([alloc_size])
 
 AC_CONFIG_FILES([Makefile joe/Makefile joe/util/Makefile rc/Makefile

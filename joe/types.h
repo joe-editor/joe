@@ -12,13 +12,18 @@
 #define FALLTHROUGH
 #endif
 
-#ifdef HAVE_FUNC_ATTRIBUTE_MALLOC
+#ifdef HAVE_FUNC_ATTRIBUTE_MALLOC_ARGS
 #define ATTR_JOE_MALLOC __attribute__((malloc(joe_free, 1)))
 #define ATTR_MALLOC(func, index) __attribute__((malloc(func, index)))
-#else
+#else /*!malloc_args*/
+#ifdef HAVE_FUNC_ATTRIBUTE_MALLOC /* hello, clang */
+#define ATTR_JOE_MALLOC __attribute__((malloc))
+#define ATTR_MALLOC(func, index) __attribute__((malloc))
+#else /*!malloc*/
 #define ATTR_JOE_MALLOC
 #define ATTR_MALLOC(func, index)
-#endif
+#endif /*malloc*/
+#endif /*malloc_args */
 
 /* Note: use doubled parentheses: ATTR_JOE_ALLOC_SIZE((1,2)) */
 /* This is to avoid needing variadic macros */
