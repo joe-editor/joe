@@ -1,6 +1,4 @@
-sysconf_joedir = $(sysconfdir)/joe
-data_joedir = $(datadir)/joe
-data_docdir = $(docdir)
+include $(top_srcdir)/Makevars
 
 sysconf_joe_built = joerc jicerc.ru jmacsrc jstarrc rjoerc jpicorc joerc.zh_TW
 
@@ -18,6 +16,6 @@ rjoerc : rjoerc.in
 
 SUFFIXES = .in
 .in:
-	LC_ALL=C $(SED) 's,@JOERC\@,$(sysconf_joedir),; s,@JOEDOC\@,$(data_docdir),; s,@JOEDATA\@,$(data_joedir),; s,@SPELL\@,@SPELL@,' $(srcdir)/$< > $@
+	$(AM_V_SED) LC_ALL=C $(SED) 's,@JOERC\@,$(sysconf_joedir),; s,@JOEDOC\@,$(data_docdir),; s,@JOEDATA\@,$(data_joedir),; s,@SPELL\@,@SPELL@,' $(srcdir)/$< > $@
 
 MOSTLYCLEANFILES = $(sysconf_joe_built)
