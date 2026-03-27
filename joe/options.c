@@ -201,41 +201,43 @@ void lazy_opts(B *b, OPTIONS *o)
 	if (!b->o.language)
 		b->o.language = locale_msgs;
 	if (b->o.hex) {
+		b->o.hex_saved = 0;
+
 		/* Hex not allowed with UTF-8 */
 		if (b->o.charmap->type) {
 			b->o.charmap = find_charmap("c");
-			b->o.hex |= HEX_RESTORE_UTF8;
+			b->o.hex_saved |= HEX_RESTORE_UTF8;
 		}
 
 		/* Hex not allowed with CRLF */
 		if (b->o.crlf) {
 			b->o.crlf = 0;
-			b->o.hex |= HEX_RESTORE_CRLF;
+			b->o.hex_saved |= HEX_RESTORE_CRLF;
 		}
 
 		if (!b->o.overtype) {
 			b->o.overtype = 1;
-			b->o.hex |= HEX_RESTORE_INSERT;
+			b->o.hex_saved |= HEX_RESTORE_INSERT;
 		}
 
 		if (b->o.wordwrap) {
 			b->o.wordwrap = 0;
-			b->o.hex |= HEX_RESTORE_WORDWRAP;
+			b->o.hex_saved |= HEX_RESTORE_WORDWRAP;
 		}
 
 		if (b->o.autoindent) {
 			b->o.autoindent = 0;
-			b->o.hex |= HEX_RESTORE_AUTOINDENT;
+			b->o.hex_saved |= HEX_RESTORE_AUTOINDENT;
 		}
 
 		if (b->o.ansi) {
 			b->o.ansi = 0;
-			b->o.hex |= HEX_RESTORE_ANSI;
+			b->o.hex_saved |= HEX_RESTORE_ANSI;
 		}
 
 		if (b->o.picture) {
 			b->o.picture = 0;
-			b->o.hex |= HEX_RESTORE_PICTURE;
+			b->o.hex_saved |= HEX_RESTORE_PICTURE;
 		}
 	}
 
@@ -1162,7 +1164,7 @@ static int find_option(char *s)
 
 static int applyopt(BW *bw, bool *optp, int y, int flg)
 {
-	int oldval, newval;
+	bool oldval, newval;
 
 	oldval = *optp;
 	if (flg == 0) {
@@ -1201,43 +1203,46 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 
 			/* Kill UTF-8 and CRLF modes if we switch to hex display */
 			if (glopts[y].ofst == offsetof(OPTIONS, hex)) {
+				oldval = bw->o.hex_saved;
+
 				if (bw->o.hex && !oldval) {
 					bw->o.hex = 1;
+					bw->o.hex_saved = 0;
 					if (bw->b->o.charmap->type) {
 						/* Switch out of UTF-8 mode */
 						doencoding(bw->parent, vsncpy(NULL, 0, sc("C")), NULL, NULL);
-						bw->o.hex |= HEX_RESTORE_UTF8;
+						bw->o.hex_saved |= HEX_RESTORE_UTF8;
 					}
 
 					if (bw->o.crlf) {
 						/* Switch out of CRLF mode */
 						bw->o.crlf = 0;
-						bw->o.hex |= HEX_RESTORE_CRLF;
+						bw->o.hex_saved |= HEX_RESTORE_CRLF;
 					}
 
 					if (!bw->o.overtype) {
 						bw->o.overtype = 1;
-						bw->o.hex |= HEX_RESTORE_INSERT;
+						bw->o.hex_saved |= HEX_RESTORE_INSERT;
 					}
 
 					if (bw->o.wordwrap) {
 						bw->o.wordwrap = 0;
-						bw->o.hex |= HEX_RESTORE_WORDWRAP;
+						bw->o.hex_saved |= HEX_RESTORE_WORDWRAP;
 					}
 
 					if (bw->o.autoindent) {
 						bw->o.autoindent = 0;
-						bw->o.hex |= HEX_RESTORE_AUTOINDENT;
+						bw->o.hex_saved |= HEX_RESTORE_AUTOINDENT;
 					}
 
 					if (bw->o.ansi) {
 						bw->o.ansi = 0;
-						bw->o.hex |= HEX_RESTORE_ANSI;
+						bw->o.hex_saved |= HEX_RESTORE_ANSI;
 					}
 
 					if (bw->o.picture) {
 						bw->o.picture = 0;
-						bw->o.hex |= HEX_RESTORE_PICTURE;
+						bw->o.hex_saved |= HEX_RESTORE_PICTURE;
 					}
 					/* Try to put entire hex dump on screen in case where we were
 					   scrolled far to the right */

@@ -122,6 +122,8 @@ struct options {
 	MACRO	*msnew;		/* Macro to execute before saving new files */
 	MACRO	*msold;		/* Macro to execute before saving existing files */
 	MACRO	*mfirst;	/* Macro to execute on first change */
+	/* Storage for overrides etc. follows */
+	int	hex_saved;	/* Hex edit mode (saved state) */
 };
 
 /* A buffer */
