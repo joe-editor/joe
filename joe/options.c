@@ -624,7 +624,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 			break;
 		case LOC_OPT_BOOL: /* Local option flag */
 			if (options)
-				*OPTPTR(options, opt->ofst, int) = st;
+				*OPTPTR(options, opt->ofst, bool) = st;
 			ret = 1;
 			break;
 		case LOC_OPT_INT: /* Local option integer */
