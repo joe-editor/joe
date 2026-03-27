@@ -123,9 +123,9 @@ int edloop(int flg)
 		MACRO *m;
 		BW *bw;
 		int c;
-		int auto_off = 0;
-		int word_off = 0;
-		int spaces_off = 0;
+		bool auto_off = 0;
+		bool word_off = 0;
+		bool spaces_off = 0;
 
 		if (exmsg && !flg) {
 			vsrm(exmsg);

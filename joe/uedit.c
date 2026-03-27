@@ -2510,8 +2510,8 @@ int upaste(W *w, int k)
 	int c;
 	int accu = 0;
 	int count;
-	int tmp_ww;
-	int tmp_ai;
+	bool tmp_ww;
+	bool tmp_ai;
 	BW *bw;
 	WIND_BW(bw, w);
 	tmp_ww = bw->o.wordwrap;
@@ -2592,9 +2592,9 @@ int upaste(W *w, int k)
 
 /* Bracketed paste */
 
-int saved_ww;
-int saved_ai;
-int saved_sp;
+bool saved_ww;
+bool saved_ai;
+bool saved_sp;
 
 int ubrpaste(W *w, int k)
 {
