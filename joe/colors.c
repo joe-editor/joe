@@ -1028,7 +1028,7 @@ void load_colors_state(FILE *fp)
 			st->next = saved_scheme_configs;
 			saved_scheme_configs = st;
 		} else if (term) {
-			joe_free(term);
+			free(term);
 		}
 	}
 }

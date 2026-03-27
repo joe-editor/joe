@@ -708,8 +708,8 @@ static ptrdiff_t doabort(W *w, int *ret)
 			*w->notify = 1;
 	}
 	rmkbd(w->kbd);
-	joe_free(w);
 	windie(w);
+	joe_free(w);
 	return amnt;
 }
 

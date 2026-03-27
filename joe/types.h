@@ -12,6 +12,22 @@
 #define FALLTHROUGH
 #endif
 
+#ifdef HAVE_FUNC_ATTRIBUTE_MALLOC
+#define ATTR_JOE_MALLOC __attribute__((malloc(joe_free, 1)))
+#define ATTR_MALLOC(func, index) __attribute__((malloc(func, index)))
+#else
+#define ATTR_JOE_MALLOC
+#define ATTR_MALLOC(func, index)
+#endif
+
+/* Note: use doubled parentheses: ATTR_JOE_ALLOC_SIZE((1,2)) */
+/* This is to avoid needing variadic macros */
+#ifdef HAVE_FUNC_ATTRIBUTE_ALLOC_SIZE
+#define ATTR_ALLOC_SIZE(arg) __attribute__((alloc_size arg))
+#else
+#define ATTR_ALLOC_SIZE(arg)
+#endif
+
 #define TO_DIFF_OK(a) ((ptrdiff_t)(a)) /* Means it's OK that we are converting off_t to ptrdiff_t in this case */
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
 #define SIZEOF(a) ((ptrdiff_t)sizeof(a)) /* Signed version of sizeof() */
