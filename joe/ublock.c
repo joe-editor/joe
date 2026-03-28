@@ -1138,14 +1138,16 @@ int doinsf(W *w, char *s, void *object, int *notify)
 
 
 /* Filter highlighted block through a UNIX command */
+/* If object != NULL, it's argv[1:], and don't alter the buffer */
 
 static int filtflg = 0;
 
 static int dofilt(W *w, char *s, void *object, int *notify)
 {
-	int fr[2];
-	int fw[2];
+	int fr[2] = { -1, -1 };
+	int fw[2] = { -1, -1 };
 	int flg = 0;
+	int writeonly = object != NULL;
 	BW *bw;
 	WIND_BW(bw, w);
 
@@ -1202,7 +1204,20 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 		putenv(fname);
 		vsrm(fname);
 #endif
-		execl("/bin/sh", "/bin/sh", "-c", s, NULL);
+		if (object) {
+			/* execute directly */
+			/* need to add command name at start of argv */
+			char **argv = object;
+			size_t i;
+			for (i = 0; argv[i]; ++i) /**/;
+			argv = calloc(i + 2, sizeof(char *));
+			argv[0] = s;
+			memcpy(argv + 1, object, (i + 1) * sizeof(char *));
+			/* exec it */
+			execv(s, argv);
+		}
+		else /* execute via shell */
+			execl("/bin/sh", "/bin/sh", "-c", s, NULL);
 		_exit(0);
 	}
 	close(fr[1]);
@@ -1213,7 +1228,13 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 	if (vfork()) { /* For AMIGA only */
 #endif
 		close(fw[1]);
-		if (square) {
+		if (writeonly) {
+			/* let's try to avoid SIGPIPE */
+			B *tmp = bread(fr[0], MAXOFF, 0);
+			brm(tmp);
+			if (lightoff)
+				unmark(bw->parent, 0);
+		} else if (square) {
 			B *tmp;
 			off_t width = markk->xcol - markb->xcol;
 			off_t height;
@@ -1273,7 +1294,8 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 		close(fw[1]);
 		_exit(0);
 	}
-	vsrm(s);
+	if (!writeonly)
+		vsrm(s);
 	ttopnn();
 	if (filtflg)
 		unmark(bw->parent, 0);
@@ -1331,6 +1353,111 @@ int ufilt(W *w, int k)
 		msgnw(bw->parent, joe_gettext(_("No block")));
 		return -1;
 	}
+#endif
+}
+
+struct clipcmd_info {
+	const char *cmd;	 /* name (pref. absolute pathname), or NULL for end of list */
+	const char *const *args; /* NULL, or a NULL-terminated array */
+	const char *env;         /* pointer to env var required to exist, or NULL */
+};
+
+#define CLIPBOARD_COPY_COMMAND 1
+/* define NO_XSELECTION if there's no X primary selection */
+#ifdef __CYGWIN__
+static const struct clipcmd_info clipcmds[] = { { "clip", NULL, NULL }, {} };
+#define NO_XSELECTION
+#elif defined(__amigaos)
+/* FIXME: Amiga clipboard command? */
+# undef CLIPBOARD_COPY_COMMAND
+static const struct clipcmd_info clipcmds[] = { {} };
+# define NO_XSELECTION
+#elif defined(__MSDOS__)
+# undef CLIPBOARD_COPY_COMMAND
+static const struct clipcmd_info clipcmds[] = { {} };
+# define NO_XSELECTION
+#elif 0 /* FIXME: Mac OS macro? */
+static const struct clipcmd_info clipcmd[] = { { "pbcopy", NULL }, {} };
+#define xselcmd clipcmd
+#else
+/* Okay, probably something with X or Wayland */
+/* Supported: xsel for X and wl-copy (from wl-clipboard) for Wayland */
+/* xclip's no good as it tends not to exit immediately */
+static const char *const arg_clipboard[] = { "--clipboard", NULL };
+static const char *const arg_primary_sel[] = { "--primary", NULL };
+static const struct clipcmd_info clipcmds[] = {
+	{ "/usr/bin/wl-copy", NULL, "WAYLAND_DISPLAY" },
+	{ "/usr/bin/xsel", arg_clipboard, "DISPLAY"},
+	{}
+};
+static const struct clipcmd_info xselcmds[] = {
+	{ "/usr/bin/wl-copy", arg_primary_sel, "WAYLAND_DISPLAY" }, /* may not work */
+	{ "/usr/bin/xsel", arg_primary_sel, "DISPLAY"},
+	{}
+};
+#endif
+
+static int doclip(W *w, const struct clipcmd_info *cmdlist, const char *success)
+{
+	BW *bw;
+	static const char *const empty[] = { NULL };
+	WIND_BW(bw, w);
+#ifdef __MSDOS__
+	(void)empty;
+	msgnw(bw->parent, joe_gettext(_("Sorry, no sub-processes in DOS (yet)")));
+	return -1;
+#else
+# if defined(CLIPBOARD_COPY_COMMAND)
+	switch (checkmark(bw)) {
+	case 0:
+	case 1:
+		for (; cmdlist->cmd; ++cmdlist) {
+			char **files;
+			if (cmdlist->env && !getenv(cmdlist->env))
+				continue; /* env var not set */
+
+			if (cmdlist->cmd[0] == '/' && !access(cmdlist->cmd, X_OK)) {
+				/* ideal: absolute pathname */
+				/* FIXME: const char * */
+				if (!dofilt(w, (char *)cmdlist->cmd, (void *)(cmdlist->args ? cmdlist->args : empty), NULL)) {
+					msgnw(bw->parent, joe_gettext(success));
+					return 0;
+				}
+			} else {
+				/* hmm, just the command name */
+				files = rexpnd_cmd_path(cmdlist->cmd);
+				while (*files)
+					if (!dofilt(w, *files++, (void *)(cmdlist->args ? cmdlist->args : empty), NULL)) {
+						msgnw(bw->parent, joe_gettext(success));
+						return 0;
+					}
+			}
+		}
+		/* okay, failed; let the "no command" message happen */
+		break;
+	default:
+		msgnw(bw->parent, joe_gettext(_("No block")));
+		return -1;
+	}
+# else
+	(void)empty;
+# endif
+	msgnw(bw->parent, joe_gettext(_("Sorry, no known or functioning clipboard command")));
+	return -1;
+#endif
+}
+
+int uclip(W *w, int k)
+{
+	return doclip(w, clipcmds, _("Copied to clipboard."));
+}
+
+int uxsel(W *w, int k)
+{
+#ifdef NO_XSELECTION
+	return uclip(w, k);
+#else
+	return doclip(w, xselcmds, _("Copied to primary selection."));
 #endif
 }
 
