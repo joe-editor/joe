@@ -1,18 +1,21 @@
 # JOE syntax highlight file for debian/changelog files
 # (c) 2008, gregor herrmann <gregor+debian@comodo.priv.at>
+# (c) 2026 Darren Salt <devspam@moreofthesa.me.uk>
 # Released under the GNU GPL version 2 or later
 
-=Idle	white
-=Header	magenta
-=Footer	cyan
-=Email	red
-=Version	yellow
-=Bug	yellow
-=Warning	bold inverse blue
+=Idle
+=Header		+Title
+=Footer		+IncLocal +Ident
+=Email		+Email +URL +Ident +Constant
+=Version	+String
+=Bug		+Ident +Comment
+=Warning	+TODO
+=Section	+Ident +Constant
 
 :idle Idle
-	*	idle
+	*	space
 	" "	space	buffer
+	"A-Z"	old	noeat
 	"a-z"	header	noeat
 	"\n"	idle
 
@@ -20,13 +23,14 @@
 	*	space	istrings
 	" --"	footer	recolor=-2
 done
-	"<["	space	call=.email()	recolor=-1
-	"#"	space	call=.bug()	recolor=-2
+	"<"	space	call=.email()	recolor=-1
+	"["	space	call=.bracket()	recolor=-1
+	"#"	space	call=.bug()	recolor=-1
 	"\n"	idle
 
 :header Header
 	*	header
-	"UNRELEASED" unreleased noeat
+	" "	word
 	"("	header	call=.version()	recolor=-1
 	"\n"	idle
 
@@ -35,28 +39,51 @@ done
 	"<"	footer	call=.email()	recolor=-1
 	"\n"	idle
 
+:word Header
+	*	header		noeat
+	"\c"	checkword	buffer
+
+:checkword Header
+	*	header	noeat strings
+	"UNRELEASED" unreleased recolor=-10
+done
+	"\i"	checkword
+
 :unreleased Warning
-	*	unreleased
-	";"	header	recolor=-1
+	*	header	noeat
+
+:old Header
+	*	old
+	"<"	old	call=.email()	recolor=-1
+	"\n"	idle
 
 # subroutines
 
 .subr email
 :email Email
 	*	email
-	"<"	idle	recolor=-2	return
-	">]"	idle	return
+	"\n"	NULL	noeat		return
+	"<"	NULL	recolor=-2	return
+	">"	NULL	return
+.end
+
+.subr bracket
+:bracket Section
+	*	bracket
+	"\n"	NULL	noeat		return
+	"["	NULL	recolor=-2	return
+	"]"	NULL	return
 .end
 
 .subr version
 :version Version
 	*	version
-	")"	idle	return
+	")"	NULL	return
 .end
 
 .subr bug
 :bug Bug
+	*	NULL	noeat	return
 	"0-9"	bug
-	");. "	idle	recolor=-1	return
 .end
 

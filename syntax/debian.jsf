@@ -13,9 +13,10 @@
 =Brace		+Brace
 =String		+String
 =Value		+String
-=Heading	+Title +String
+=Heading	+Title +Constant
 =Escape
-=URL		+URL +String +Constant
+=URL		+URL +Ident +Constant
+=Email		+Email +URL +Ident +Constant
 =Distribution	+Tag +Keyword
 =Component	+Tag
 
@@ -140,14 +141,14 @@ done
 
 .ifdef url
 .else
-:email_local URL
+:email_local Email
 # no, absolutely not doing exhaustive checking here (I've seen the regexp)
 	*		email_local
 	"@"		email_domain
 	">\s"		resume		recolormark
 	"\n"		reset_long	recolormark
 
-:email_domain URL
+:email_domain Email
 # nor here (even though this bit's simpler)
 	*		bad		recolormark noeat
 	"\c."		email_domain
