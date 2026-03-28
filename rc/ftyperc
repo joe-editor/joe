@@ -717,10 +717,12 @@
 -syntax yaml
 -highlighter_context
 
- Debian apt
+ Debian apt, packaging scripts
 [debian]
 *apt/sources.list
-*sources.list.*
+*apt/sources.list.*/*
+*debian/control
+*debian/copyright
 -hash_comment
 -syntax debian
 
