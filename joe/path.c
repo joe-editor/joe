@@ -608,11 +608,11 @@ char *open_config_file(JFILE **result, const char *prefix, const char *name, con
 #endif
 #endif
 
-	if (name[0] == '/') {
-		/* Absolute path given, only add suffix */
+	if (name[0] == '/' || name[0] == '~') {
+		/* Absolute path given, don't add suffix (too confusing when user knows it's a file) */
 		vsrm(fullpath);
 		fullpath = vsncpy(NULL, 0, sz(name));
-		fullpath = vsncpy(sv(fullpath), sz(suffix));
+		fullpath = canonical(fullpath, 0);
 		f = jfopen(fullpath, "r");
 		if (f) {
 			*result = f;

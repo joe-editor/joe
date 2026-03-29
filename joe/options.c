@@ -557,6 +557,9 @@ static int doftype(W *w, char *s, void *object, int *notify)
 }
 
 B *ftypehist = NULL;
+B *encodinghist = NULL;
+B *colorhist = NULL;
+B *syntaxhist = NULL;
 
 /* Set a global or local option:
  * 's' is option name
@@ -1096,7 +1099,7 @@ static int syntaxcmplt(BW *bw, int k)
 		syntaxes = find_configs(NULL, "syntax", ".jsf");
 	}
 
-	return simple_cmplt(bw,syntaxes);
+	return simple_file_cmplt(bw,syntaxes);
 }
 
 char **colorfiles = NULL; /* Array of available color schemes */
@@ -1107,7 +1110,7 @@ static int colorscmplt(BW *bw, int k)
 		colorfiles = find_configs(NULL, "colors", ".jcf");
 	}
 
-	return simple_cmplt(bw, colorfiles);
+	return simple_file_cmplt(bw, colorfiles);
 }
 
 static int check_for_hex(BW *bw)
@@ -1163,7 +1166,7 @@ static int encodingcmplt(BW *bw, int k)
 		encodings = get_encodings();
 		vasort(av(encodings));
 	}
-	return simple_cmplt(bw,encodings);
+	return simple_file_cmplt(bw,encodings);
 }
 
 static int find_option(char *s)
@@ -1339,14 +1342,14 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 
 		case LOC_OPT_SYNTAX:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
-			if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, utf8_map, 0))
+			if (wmkpw(bw->parent, buf, &syntaxhist, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
 
 		case LOC_OPT_ENCODING:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
-			if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, utf8_map, 0))
+			if (wmkpw(bw->parent, buf, &encodinghist, doencoding, NULL, NULL, encodingcmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
@@ -1360,7 +1363,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 
 		case LOC_OPT_COLORS:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
-			if (wmkpw(bw->parent, buf, NULL, docolors, NULL, NULL, colorscmplt, NULL, notify, utf8_map, 0))
+			if (wmkpw(bw->parent, buf, &colorhist, docolors, NULL, NULL, colorscmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
