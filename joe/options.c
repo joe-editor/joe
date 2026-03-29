@@ -285,6 +285,7 @@ enum opt_type {
 	GLO_OPT_BOOL,      /* global option flag */
 	GLO_OPT_INT,       /* global option int */
 	GLO_OPT_STRING,    /* global option string (in locale encoding) */
+	GLO_OPT_PATH,	   /* same as GLO_OPT_STRING, but string is a path */
 	LOC_OPT_BOOL,      /* local option flag */
 	LOC_OPT_INT,       /* local option int */
 	LOC_OPT_OFFSET,    /* local option off_t */
@@ -381,7 +382,7 @@ struct glopts {
 	{"smartbacks",          LOC_OPT_BOOL, { NULL }, (char *) &fdefault.smartbacks, _("Smart backspace key enabled"), _("Smart backspace key disabled"), _("Smart backspace "), 0, 0, 0 },
 	{"purify",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.purify, _("Indentation clean up enabled"), _("Indentation clean up disabled"), _("Clean up indents "), 0, 0, 0 },
 	{"picture",             LOC_OPT_BOOL, { NULL }, (char *) &fdefault.picture, _("Picture drawing mode enabled"), _("Picture drawing mode disabled"), _("Picture mode "), 0, 0, 0 },
-	{"backpath",            GLO_OPT_STRING, { &backpath }, NULL, _("Backup files stored in (%s): "), 0, _("Path to backup files "), 0, 0, 0 },
+	{"backpath",            GLO_OPT_PATH, { &backpath }, NULL, _("Backup files stored in (%s): "), 0, _("Path to backup files "), 0, 0, 0 },
 	{"syntax_debug",	LOC_OPT_INT, { NULL }, (char *) &fdefault.syntax_debug, _("Syntax debug info %d (0=off, 1=state, 2=recolor, 3=both)"), NULL, _("Syntax debug mode"), 0, 0, 3 },
 	{"syntax",              LOC_OPT_SYNTAX, { NULL }, NULL, _("Select syntax (%{abort} to abort): "), 0, _("Syntax"), 0, 0, 0 },
 	{"colors",              LOC_OPT_COLORS, { NULL }, NULL, _("Select color scheme (%{abort} to abort): "), 0, _("Scheme "), 0, 0, 0 },
@@ -497,6 +498,7 @@ static void izopts(void)
 		case GLO_OPT_BOOL:
 		case GLO_OPT_INT:
 		case GLO_OPT_STRING:
+		case GLO_OPT_PATH:
 		case LOC_OPT_SYNTAX:
 		case LOC_OPT_ENCODING:
 		case LOC_OPT_FILE_TYPE:
@@ -618,6 +620,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 			ret = arg ? 2 : 1;
 			break;
 		case GLO_OPT_STRING: /* Global variable string option */
+		case GLO_OPT_PATH:
 			if (set) {
 				*opt->set.s = arg ? zdup(arg) : NULL;
 			}
@@ -886,6 +889,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 		}
 		break;
 	case GLO_OPT_STRING:
+	case GLO_OPT_PATH:
 		if (s[0])
 			*glopts[x].set.s = zdup(s);
 		break;
@@ -1324,6 +1328,18 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				return 0;
 			else
 				return -1;
+		case GLO_OPT_PATH:
+			if (*glopts[y].set.s)
+				joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *glopts[y].set.s);
+			else
+				joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
+			xx = (int *) joe_malloc(SIZEOF(int));
+
+			*xx = y;
+			if (wmkpw(bw->parent, buf, &filehist, doopt1, NULL, doabrt1, cmplt_file, xx, notify, locale_map, 0))
+				return 0;
+			else
+				return -1;
 		case LOC_OPT_INT:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst));
 			goto in;
@@ -1393,6 +1409,7 @@ const char *get_status(BW *bw, char *s)
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *glopts[y].set.i);
 				return buf;
 			case GLO_OPT_STRING:
+			case GLO_OPT_PATH:
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *glopts[y].set.s ? *glopts[y].set.s : "");
 				return buf;
 			case LOC_OPT_BOOL:

@@ -213,6 +213,7 @@ static int backup(BW *bw)
 		if (backpath) {
 			char *t = vsncpy(NULL, 0, sz(backpath));
 			t = canonical(t, CANFLAG_NORESTART);
+			mkpath(t);
 			joe_snprintf_3(name, SIZEOF(name), "%s/%s%s", t, namepart(tmp, SIZEOF(tmp), dequote(bw->b->name)), simple_backup_suffix);
 			vsrm(t);
 		} else {
