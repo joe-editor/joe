@@ -56,6 +56,11 @@
 		Directory to store backup files (one space between 'backpath' and
 		the 'path', no trailing spaces or comments after the path).
 
+ -backup_file_suffix string
+		Suffix string for backup files instead of ~ (one space
+		between backup_file_suffix and the string, no trailing
+		spaces or comments after the string).
+
  -floatmouse	Clicking past end of line moves the cursor past the end
  -rtbutton	Use the right mouse button for action, instead of the left
  -nonotice	Disable copyright notice

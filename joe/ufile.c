@@ -16,7 +16,8 @@
 #endif
 
 int orphan;
-char *backpath = NULL;		/* Place to store backup files */
+const char *backpath = NULL;	/* Place to store backup files */
+const char *backup_file_suffix = "~";
 B *filehist = NULL;	/* History of file names */
 int nobackups = 0;
 int exask = 0;
@@ -203,21 +204,15 @@ static int backup(BW *bw)
 		zlcpy(name + x, SIZEOF(name) - x, ".bak");
 
 #else
-
 		/* Create backup file name */
-		const char *simple_backup_suffix = getenv("SIMPLE_BACKUP_SUFFIX");
-
-		if (simple_backup_suffix == NULL) {
-			simple_backup_suffix = "~";
-		}
 		if (backpath) {
 			char *t = vsncpy(NULL, 0, sz(backpath));
 			t = canonical(t, CANFLAG_NORESTART);
 			mkpath(t);
-			joe_snprintf_3(name, SIZEOF(name), "%s/%s%s", t, namepart(tmp, SIZEOF(tmp), dequote(bw->b->name)), simple_backup_suffix);
+			joe_snprintf_3(name, SIZEOF(name), "%s/%s%s", t, namepart(tmp, SIZEOF(tmp), dequote(bw->b->name)), backup_file_suffix);
 			vsrm(t);
 		} else {
-			joe_snprintf_2(name, SIZEOF(name), "%s%s", dequote(bw->b->name), simple_backup_suffix);
+			joe_snprintf_2(name, SIZEOF(name), "%s%s", dequote(bw->b->name), backup_file_suffix);
 		}
 
 		/* Attempt to delete backup file first */

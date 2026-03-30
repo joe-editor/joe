@@ -72,6 +72,11 @@
 		'backpath' and the 'path', no trailing spaces or comments
 		after the path).
 
+ -backup_file_suffix string
+		Suffix string for backup files instead of ~ (one space
+		between backup_file_suffix and the string, no trailing
+		spaces or comments after the string).
+
  -floatmouse	Clicking past end of line moves the cursor past the end
  
  -rtbutton	Use the right mouse button for action, instead of the left
@@ -504,6 +509,7 @@ mode,"break_links",rtn	% % Break links %Zbreak_links%
 mode,"joe_state",rtn	% % Joe_state file %Zjoe_state%
 mode,"undo_keep",rtn	% % No. undo records %Zundo_keep%
 mode,"backpath",rtn	% % Path to backup files %Zbackpath%
+mode,"backup_file_suffix",rtn	% % Backup file suffix %Zbackup_file_suffix%
 
 :defmenu cursor menu,"more-options",rtn
 mode,"pg",rtn	% % No. PgUp/PgDn lines %Zpg%
