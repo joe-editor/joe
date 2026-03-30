@@ -172,23 +172,24 @@ extern VFILE *vmem;		/* Virtual memory file used for buffer system */
 
 extern const char *const msgs[];	/* File access status messages */
 
-B *bmk(B *prop);
 void brm(B *b);
 void brmall(void);
+B *bmk(B *prop) ATTR_MALLOC(brm, 1);
 
 B *bfind(const char *s);
 B *bfind_scratch(const char *s);
 B *bcheck_loaded(const char *s);
 B *bfind_reload(const char *s);
 
-P *pdup(P *p, const char *tr);
-P *pdupown(P *p, P **o, const char *tr);
+void prm(P *p);
+
+P *pdup(P *p, const char *tr) ATTR_MALLOC(prm, 1);
+P *pdupown(P *p, P **o, const char *tr) ATTR_MALLOC(prm, 1);
 P *poffline(P *p);
 P *ponline(P *p);
 B *bonline(B *b);
 B *boffline(B *b);
 
-void prm(P *p);
 P *pset(P *n, P *p);
 
 P *p_goto_bof(P *p);		/* move cursor to begging of file */

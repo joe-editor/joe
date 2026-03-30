@@ -223,6 +223,12 @@ AH_VERBATIM([_PARAMS],[/* Check to see if we can use strict prototypes */
 # Check for programs..
 AC_CHECK_PROG(SPELL,aspell,aspell,ispell)
 
+# Check for attributes
+AX_GCC_FUNC_ATTRIBUTE([fallthrough])
+AX_GCC_FUNC_ATTRIBUTE([malloc])
+AX_GCC_FUNC_ATTRIBUTE([malloc_args])
+AX_GCC_FUNC_ATTRIBUTE([alloc_size])
+
 AC_CONFIG_FILES([Makefile joe/Makefile joe/util/Makefile rc/Makefile
 man/Makefile man/ru/Makefile syntax/Makefile po/Makefile colors/Makefile
 charmaps/klingon desktop/Makefile])

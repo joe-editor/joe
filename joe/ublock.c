@@ -728,10 +728,10 @@ static off_t get_common_indent_width(void)
 	}
 	prm(p);
 
-	if (p->b->o.indentc == '\t')
-		return maxwidth - maxwidth % (p->b->o.tab * p->b->o.istep);
+	if (markb->b->o.indentc == '\t')
+		return maxwidth - maxwidth % (markb->b->o.tab * markb->b->o.istep);
 	else
-		return maxwidth - maxwidth % p->b->o.istep;
+		return maxwidth - maxwidth % markb->b->o.istep;
 }
 
 /* Purity check single line */

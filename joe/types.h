@@ -5,7 +5,33 @@
 #define _XOPEN_SOURCE 700
 #define _GNU_SOURCE 1 */
 
+#include "autoconf.h"
+#ifdef HAVE_FUNC_ATTRIBUTE_FALLTHROUGH
 #define FALLTHROUGH __attribute__((fallthrough));
+#else
+#define FALLTHROUGH
+#endif
+
+#ifdef HAVE_FUNC_ATTRIBUTE_MALLOC_ARGS
+#define ATTR_JOE_MALLOC __attribute__((malloc(joe_free, 1)))
+#define ATTR_MALLOC(func, index) __attribute__((malloc(func, index)))
+#else /*!malloc_args*/
+#ifdef HAVE_FUNC_ATTRIBUTE_MALLOC /* hello, clang */
+#define ATTR_JOE_MALLOC __attribute__((malloc))
+#define ATTR_MALLOC(func, index) __attribute__((malloc))
+#else /*!malloc*/
+#define ATTR_JOE_MALLOC
+#define ATTR_MALLOC(func, index)
+#endif /*malloc*/
+#endif /*malloc_args */
+
+/* Note: use doubled parentheses: ATTR_JOE_ALLOC_SIZE((1,2)) */
+/* This is to avoid needing variadic macros */
+#ifdef HAVE_FUNC_ATTRIBUTE_ALLOC_SIZE
+#define ATTR_ALLOC_SIZE(arg) __attribute__((alloc_size arg))
+#else
+#define ATTR_ALLOC_SIZE(arg)
+#endif
 
 #define TO_DIFF_OK(a) ((ptrdiff_t)(a)) /* Means it's OK that we are converting off_t to ptrdiff_t in this case */
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
