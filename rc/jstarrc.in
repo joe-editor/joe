@@ -969,8 +969,8 @@ insf		^K ^R
 insf		^K r
 macros		^[ d		Dump macros
 macros		^[ ^D
-mode,"overtype",rtn	^V		Insert/Overtype
-mode,"overtype",rtn	.kI
+mode,"overwrite",rtn	^V		Insert/Overtype
+mode,"overwrite",rtn	.kI
 lindent		^K ,		Indent to left
 line		^Q I		Goto line no.
 line		^Q ^I
