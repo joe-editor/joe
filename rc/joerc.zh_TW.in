@@ -102,7 +102,7 @@
 
  -skiptop nnn	Don't use top nnn lines of the screen
 
--notite         Don't send terminal initialization and termination strings:
+ -notite        Don't send terminal initialization and termination strings:
                 prevents restoration of screen on exit.
 
  -nolinefeeds	Prevent sending linefeeds to preserve screen history in terminal
@@ -890,26 +890,80 @@ eol			^[ O F			gnome-terminal
 eol			^[ [ 8 ~		RxVT
  eol			^# SP @		Amiga
 
-rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right Xterm
-rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C        Mark right Gnome-terminal
- (Almost all termcap entries have ^[ O C as an arrow key).
- rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O C		Mark right Putty Ctrl-rtarw
-rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O c		Mark right RxVT Ctrl-rtarw
+ Ctrl, Shift and Ctrl-Shift modifiers for cursor keys.  Try to be
+ compatible with modern GUI text editors:
 
-ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Mark left
-ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 5 D        Mark left
- ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O D		Mark left Putty Ctrl-ltarw
-ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O d		Mark left RxVT Ctrl-ltarw
+ New Ctrl-
 
-uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Mark up
-uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 5 A        Mark up
- uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O A		Mark up Putty Ctrl-uparw
-uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O a		Mark up RxVT Ctrl-uparw
+upslide		^[ [ 1 ; 5 A	Ctrl-Up
+upslide		^[ O a		rxvt
+dnslide		^[ [ 1 ; 5 B	Ctrl-Down
+dnslide		^[ O b
+nextword	^[ [ 1 ; 5 C	Ctrl-Right
+nextword	^[ O c
+prevword	^[ [ 1 ; 5 D	Ctrl-Left
+prevword	^[ O d
+prevw		^[ [ 5 ; 5 ~	Ctrl-PgUp
+prevw		^[ [ 5 ^	rxvt
+nextw		^[ [ 6 ; 5 ~	Ctrl-PgDn
+nextw		^[ [ 6 ^
+bof		^[ [ 1 ; 5 H	Ctrl-Home
+bof		^[ [ 7 ^
+eof		^[ [ 1 ; 5 F	Ctrl-End
+eof		^[ [ 8 ^
+yank		^[ [ 2 ; 5 -	Gnome-terminal Ctrl-Ins
+yank		^[ [ 2 ; 5 ~    Xterm Ctrl-Ins
+yank		^[ [ 2 ^
+delw		^[ [ 3 ; 5 ~	Ctrl-Del
+delw		^[ [ 3 ^
+ blkdel,nmark	^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
+ blkdel,nmark	^[ [ 3 ; 5 ~	Xterm Ctrl-Del
 
-dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Mark down
-dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
- dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O B		Mark down Putty Ctrl-dnarw
-dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O b		Mark down RxVT Ctrl-dnarw
+ New Shift-
+
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 2 A    Shift-Up	Mark up line
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ a		rxvt
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 2 B    Shift-Down	Mark down line
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ b
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 2 C    Shift-Right	Mark right
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ c
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 2 D    Shift-Left	Mark left
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ d
+uparw,dnarw,begin_marking,pgup,toggle_marking	^[ [ 5 ; 2 ~    Shift-PgUp	Mark up page [Usually scrolls back]
+dnarw,uparw,begin_marking,pgdn,toggle_marking	^[ [ 6 ; 2 ~    Shift-PgDn	Mark down page [Usually scrolls forward]
+ltarw,rtarw,begin_marking,bol,toggle_marking	^[ [ 1 ; 2 H    Shift-Home	Mark to bol
+ltarw,rtarw,begin_marking,bol,toggle_marking	^[ [ 7 $ 	Shift-Home	Mark to bol
+rtarw,ltarw,begin_marking,eol,toggle_marking	^[ [ 1 ; 2 F    Shift-End	Mark to eol
+rtarw,ltarw,begin_marking,eol,toggle_marking	^[ [ 8 $ 	Shift-End	Mark to eol
+dellin		^[ [ 3 ; 2 ~	Shift-Del
+dellin		^[ [ 3 $
+yank		^[ [ 2 ; 2 ~	Shift-Ins [but Shift-Ins usually pastes]
+yank		^[ [ 2 $
+
+ Shift-Ctrl-
+
+upslide		^[ [ 1 ; 6 A	Shift-Ctrl-Up
+dnslide		^[ [ 1 ; 6 B	Shift-Ctrl-Down
+rtarw,ltarw,begin_marking,nextword,toggle_marking	^[ [ 1 ; 6 C    Shift-Ctrl-Right Mark right word
+ltarw,rtarw,begin_marking,prevword,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Left Mark left word
+
+ Uncomment these if you want JOE to work the old way (Ctrl-cursor marks)
+
+ uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Ctrl-Up Mark up line
+ uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 5 A        Old Gnome-terminal
+ uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O a		Rxvt
+
+ dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Ctrl-Down Mark down line
+ dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
+ dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O b
+
+ rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Ctrl-Right Mark right
+ rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C
+ rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O c
+
+ ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Ctrl-Left Mark left
+ ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 5 D
+ ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O d
 
 blkdel,nmark   ^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
 blkdel,nmark   ^[ [ 3 ; 5 ~	Xterm Ctrl-Del

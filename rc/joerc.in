@@ -1002,9 +1002,7 @@ dnslide		^[ [ 1 ; 6 B	Shift-Ctrl-Down
 rtarw,ltarw,begin_marking,nextword,toggle_marking	^[ [ 1 ; 6 C    Shift-Ctrl-Right Mark right word
 ltarw,rtarw,begin_marking,prevword,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Left Mark left word
 
- Sadly, many terminal emulators do not support the above.
- Ctrl-arrow is reliable, so we bind it to marking
- Comment out this group to fully enable above:
+ Uncomment these if you want JOE to work the old way (Ctrl-cursor marks)
 
  uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Ctrl-Up Mark up line
  uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 5 A        Old Gnome-terminal

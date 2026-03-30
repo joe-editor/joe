@@ -142,7 +142,7 @@
 
  -skiptop nnn	Не использовать верхние nnn строк экрана
 
--notite         Не посылать строки инициализации и терминации терминала:
+ -notite        Не посылать строки инициализации и терминации терминала:
 		предотвращает восстановление экрана при выходе.
 
  -nolinefeeds	Prevent sending linefeeds to preserve screen history in terminal
