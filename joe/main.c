@@ -296,6 +296,9 @@ int ushowlog(W *w, int k)
 
 int main(int argc, char **real_argv, const char * const *envv)
 {
+	const char *home = getenv("HOME");
+	const char *xdg = xdg_config_dir();
+	JFILE *f;
 	CAP *cap;
 	char **argv = (char **)real_argv;
 	struct stat sbuf;
@@ -358,30 +361,45 @@ int main(int argc, char **real_argv, const char * const *envv)
 	}
 #endif
 
-#ifdef __MSDOS__
+	/* Load rc file */
 
+	t = 0; /* System */
+	s = 0; /* User's */
+
+#ifdef __MSDOS__
+	/* Look in current directory */
 	s = vsncpy(NULL, 0, sv(run));
 	s = vsncpy(sv(s), sc("rc"));
-	c = procrc(cap, s);
-	if (c == 0)
-		goto donerc;
-	if (c == 1) {
-		logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+	f = jfopen(s, "r");
+	if (f) {
+		c = procrc(cap, s);
+		if (c == 0)
+			goto donerc;
+		if (c == 1) {
+			logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+		}
 	}
 
+	/* Look in directory where joe executable was found */
 	vsrm(s);
 	s = vsncpy(NULL, 0, sv(rundir));
 	s = vsncpy(sv(s), sv(run));
 	s = vsncpy(sv(s), sc("rc"));
-	c = procrc(cap, s);
-	if (c == 0)
-		goto donerc;
-	if (c == 1) {
-		logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+	f = jfopen(s, "r");
+	if (f) {
+		c = procrc(cap, f, s);
+		if (c == 0)
+			goto donerc;
+		if (c == 1) {
+			logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+		}
 	}
+	vsrm(s);
+	s = 0;
 #else
-
 	/* Name of system joerc file.  Try to find one with matching language... */
+	/* We look here first because we want the file's date so we can complain
+	   if user's joerc is out of date */
 
 	/* Try full language: like joerc.de_DE */
 	t = vsncpy(NULL, 0, sc(JOERC));
@@ -405,73 +423,125 @@ int main(int argc, char **real_argv, const char * const *envv)
 		} else {
 			nope:
 			vsrm(t);
-			/* Try Joe's bad English */
+			/* Try non-localized */
 			t = vsncpy(NULL, 0, sc(JOERC));
 			t = vsncpy(sv(t), sv(run));
 			t = vsncpy(sv(t), sc("rc"));
 			if (!stat(t,&sbuf))
 				time_rc = sbuf.st_mtime;
-			else
+			else {
 				time_rc = 0;
+				vsrm(t);
+				t = 0;
+			}
 		}
 	}
 
-	/* User's joerc file */
-	s = getenv("HOME");
-	if (s) {
-		s = vsncpy(NULL, 0, sz(s));
+	/* User's joerc file ~/.config/joe/joerc */
+	if (xdg) {
+		s = vsncpy(NULL, 0, sv(xdg));
+		s = vsncpy(sv(s), sv(run));
+		s = vsncpy(sv(s), sc("rc"));
+
+		if (!stat(s,&sbuf)) {
+			/* Complain if system rc file is newer than user's */
+			if (sbuf.st_mtime < time_rc) {
+				logmessage_2(joe_gettext(_("Warning: %s is newer than your %s.\n")),t,s);
+			}
+
+			f = jfopen(s, "r");
+
+			if (f) {
+				c = procrc(cap, f, s);
+				if (c == 0) {
+					vsrm(t);
+					t = 0;
+					goto donerc;
+				}
+				if (c == 1) {
+					logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+				}
+			}
+		}
+		vsrm(s);
+		s = 0;
+	}
+
+	/* Older location for user's joerc file ~/.joerc */
+	if (home) {
+		s = vsncpy(NULL, 0, sz(home));
 		s = vsncpy(sv(s), sc("/."));
 		s = vsncpy(sv(s), sv(run));
 		s = vsncpy(sv(s), sc("rc"));
 
 		if (!stat(s,&sbuf)) {
+			/* Complain if system rc file is newer than user's */
 			if (sbuf.st_mtime < time_rc) {
 				logmessage_2(joe_gettext(_("Warning: %s is newer than your %s.\n")),t,s);
 			}
-		}
+			f = jfopen(s, "r");
 
-		c = procrc(cap, s);
-		if (c == 0) {
-			vsrm(t);
-			goto donerc;
+			if (f) {
+				c = procrc(cap, f, s);
+				if (c == 0) {
+					vsrm(t);
+					t = 0;
+					goto donerc;
+				}
+				if (c == 1) {
+					logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+				}
+			}
 		}
-		if (c == 1) {
-			logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
-		}
+		vsrm(s);
+		s = 0;
 	}
 
-	vsrm(s);
+	/* User's joerc didn't work, so fall back on system rc */
 	s = t;
-	c = procrc(cap, s);
-	if (c == 0)
-		goto donerc;
-	if (c == 1) {
-		logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
-	}
-
-	/* Try built-in joerc */
-	s = vsncpy(NULL, 0, sc("*"));
-	s = vsncpy(sv(s), sv(run));
-	s = vsncpy(sv(s), sc("rc"));
-	c = procrc(cap, s);
-	if (c != 0 && c != 1) {
-		/* If *fancyjoerc not present, use *joerc which is always there */
-		s = vstrunc(s, 0);
-		s = vsncpy(sv(s),sc("*joerc"));
-		c = procrc(cap, s);
-	}
-	if (c == 0)
-		goto donerc;
-	if (c == 1) {
-		logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+	t = 0;
+	if (s) {
+		f = jfopen(s, "r");
+		if (f) {
+			c = procrc(cap, f, s);
+			if (c == 0)
+				goto donerc;
+			if (c == 1) {
+				logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+			}
+		}
+		vsrm(s);
+		s = 0;
 	}
 #endif
 
+	/* System didn't work either, so try built-in joerc */
+
+	s = vsncpy(NULL, 0, sc("*"));
+	s = vsncpy(sv(s), sv(run));
+	s = vsncpy(sv(s), sc("rc"));
+	f = jfopen(s, "r");
+	if (f) {
+		c = procrc(cap, f, s);
+	} else {
+		/* If *fancyjoerc not present, use *joerc which is always there */
+		s = vstrunc(s, 0);
+		s = vsncpy(sv(s),sc("*joerc"));
+		f = jfopen(s, "r");
+		c = procrc(cap, f, s);
+	}
+	if (c == 0)
+		goto donerc;
+	if (c == 1) {
+		logerror_1(joe_gettext(_("There were errors in '%s'.  Falling back on default.\n")), s);
+	}
+
+	/* This should never happen because *joerc is supposed to be built-in */
 	logerror_1(joe_gettext(_("Couldn't open '%s'\n")), s);
 	goto exit_errors;
-	return 1;
 
 	donerc:
+	/* We have processed joerc, it's name is in s */
 
 	if (validate_rc()) {
 		logerror_0(joe_gettext(_("rc file has no :main key binding section or no bindings.  Bye.\n")));

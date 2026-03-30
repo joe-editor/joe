@@ -287,6 +287,7 @@ enum opt_type {
 	GLO_OPT_BOOL,      /* global option flag */
 	GLO_OPT_INT,       /* global option int */
 	GLO_OPT_STRING,    /* global option string (in locale encoding) */
+	GLO_OPT_PATH,	   /* same as GLO_OPT_STRING, but string is a path */
 	LOC_OPT_BOOL,      /* local option flag */
 	LOC_OPT_INT,       /* local option int */
 	LOC_OPT_OFFSET,    /* local option off_t */
@@ -383,7 +384,8 @@ struct glopts {
 	{"smartbacks",          LOC_OPT_BOOL, { NULL }, (char *) &fdefault.smartbacks, _("Smart backspace key enabled"), _("Smart backspace key disabled"), _("Smart backspace "), 0, 0, 0 },
 	{"purify",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.purify, _("Indentation clean up enabled"), _("Indentation clean up disabled"), _("Clean up indents "), 0, 0, 0 },
 	{"picture",             LOC_OPT_BOOL, { NULL }, (char *) &fdefault.picture, _("Picture drawing mode enabled"), _("Picture drawing mode disabled"), _("Picture mode "), 0, 0, 0 },
-	{"backpath",            GLO_OPT_STRING, { &backpath }, NULL, _("Backup files stored in (%s): "), 0, _("Path to backup files "), 0, 0, 0 },
+	{"backpath",            GLO_OPT_PATH, { &backpath }, NULL, _("Backup files stored in (%s): "), 0, _("Path to backup files "), 0, 0, 0 },
+	{"backup_file_suffix",  GLO_OPT_STRING, { &backup_file_suffix }, NULL, _("Backup file suffix (%s): "), 0, _("Backup file suffix "), 0, 0, 0 },
 	{"syntax_debug",	LOC_OPT_INT, { NULL }, (char *) &fdefault.syntax_debug, _("Syntax debug info %d (0=off, 1=state, 2=recolor, 3=both)"), NULL, _("Syntax debug mode"), 0, 0, 3 },
 	{"syntax",              LOC_OPT_SYNTAX, { NULL }, NULL, _("Select syntax (%{abort} to abort): "), 0, _("Syntax"), 0, 0, 0 },
 	{"colors",              LOC_OPT_COLORS, { NULL }, NULL, _("Select color scheme (%{abort} to abort): "), 0, _("Scheme "), 0, 0, 0 },
@@ -438,17 +440,90 @@ void cmd_help(int type)
 	for (x = 0; glopts[x].name; ++x) {
 		char buf[80];
 		buf[0] = 0;
-		if ((type == 0 && glopts[x].type < 3) || (type == 1 && glopts[x].type >= 3)) {
-			if (glopts[x].type == 0 || glopts[x].type == 4)
-				joe_snprintf_1(buf, SIZEOF(buf), "-[-]%s", glopts[x].name);
-			else if (glopts[x].type == 1 || glopts[x].type == 5 || glopts[x].type == 14 || glopts[x].type == 7)
-				joe_snprintf_1(buf, SIZEOF(buf), "-%s nnn", glopts[x].name);
-			else if (glopts[x].type == 2 || glopts[x].type == 6 || glopts[x].type == 9 || glopts[x].type == 13 || glopts[x].type == 15 || glopts[x].type == 17)
-				joe_snprintf_1(buf, SIZEOF(buf), "-%s sss", glopts[x].name);
-			if (glopts[x].menu)
-				printf("    %-23s %s\n", buf, glopts[x].menu);
-			else
-				printf("    %-23s\n", buf);
+		if (type == 0) {
+			int y = 0;
+			switch (glopts[x].type) {
+				case LOC_OPT_BOOL:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-[-]%s", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case LOC_OPT_INT:
+				case LOC_OPT_OFFSET:
+				case LOC_OPT_RANGE:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-%s nnn", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case LOC_OPT_STRING:
+				case LOC_OPT_SYNTAX:
+				case LOC_OPT_ENCODING:
+				case LOC_OPT_FILE_TYPE:
+				case LOC_OPT_COLORS:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-%s sss", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case GLO_OPT_BOOL:
+				case GLO_OPT_INT:
+				case GLO_OPT_STRING:
+				case GLO_OPT_PATH:
+				{
+					break;
+				}
+
+			}
+			if (y) {
+				if (glopts[x].menu)
+					printf("    %-23s %s\n", buf, glopts[x].menu);
+				else
+					printf("    %-23s\n", buf);
+			}
+		} else if (type == 1) {
+			int y = 0;
+			switch (glopts[x].type) {
+				case GLO_OPT_BOOL:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-[-]%s", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case GLO_OPT_INT:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-%s nnn", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case GLO_OPT_STRING:
+				case GLO_OPT_PATH:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-%s sss", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case LOC_OPT_BOOL:
+				case LOC_OPT_INT:
+				case LOC_OPT_OFFSET:
+				case LOC_OPT_RANGE:
+				case LOC_OPT_STRING:
+				case LOC_OPT_SYNTAX:
+				case LOC_OPT_ENCODING:
+				case LOC_OPT_FILE_TYPE:
+				case LOC_OPT_COLORS:
+				{
+					break;
+				}
+
+			}
+			if (y) {
+				if (glopts[x].menu)
+					printf("    %-23s %s\n", buf, glopts[x].menu);
+				else
+					printf("    %-23s\n", buf);
+			}
 		}
 	}
 
@@ -499,6 +574,7 @@ static void izopts(void)
 		case GLO_OPT_BOOL:
 		case GLO_OPT_INT:
 		case GLO_OPT_STRING:
+		case GLO_OPT_PATH:
 		case LOC_OPT_SYNTAX:
 		case LOC_OPT_ENCODING:
 		case LOC_OPT_FILE_TYPE:
@@ -559,6 +635,9 @@ static int doftype(W *w, char *s, void *object, int *notify)
 }
 
 B *ftypehist = NULL;
+B *encodinghist = NULL;
+B *colorhist = NULL;
+B *syntaxhist = NULL;
 
 /* Set a global or local option:
  * 's' is option name
@@ -617,6 +696,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 			ret = arg ? 2 : 1;
 			break;
 		case GLO_OPT_STRING: /* Global variable string option */
+		case GLO_OPT_PATH:
 			if (set) {
 				*opt->set.s = arg ? zdup(arg) : NULL;
 			}
@@ -885,6 +965,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 		}
 		break;
 	case GLO_OPT_STRING:
+	case GLO_OPT_PATH:
 		if (s[0])
 			*glopts[x].set.s = zdup(s);
 		break;
@@ -990,82 +1071,97 @@ static int docolors(W *w, char *s, void *obj, int *notify)
 	return 0;
 }
 
-char **find_configs(char **ary, const char *extension, const char *datadir, const char *homedir)
+/* Add any strings from src that do not already appear in dst.
+   If trim is set, delete filename extension from src strings.
+   Do not add ".." to list */
+
+static char **merge_options(char **dst, char **src, int trim)
+{
+	if (src) {
+		int x;
+		for (x = 0; x < aLEN(src); ++x) {
+			int y;
+			if (trim) {
+				char *e = zrchr(src[x], '.');
+				if (e)
+					*e = 0;
+			}
+			if (zcmp(src[x], "..")) {
+				for (y = 0; y < aLEN(dst); ++y)
+					if (!zcmp(src[x], dst[y]))
+						break;
+				if (y == aLEN(dst))
+					dst = vaadd(dst, vsncpy(NULL, 0, sv(src[x])));
+			}
+		}
+	}
+	return dst;
+}
+
+char **find_configs(char **ary, const char *prefix, const char *extension)
 {
 	char wildcard[32];
-	char buf[2048];
 	char *oldpwd = pwd();
-	char **t = NULL;
-	char *p;
-	int x, y;
+	const char *home = getenv("HOME");
+	const char *xdg = xdg_config_dir();
+	char *path;
+	char **t;
 
 	if (extension) {
-		joe_snprintf_1(wildcard, SIZEOF(wildcard), "*.%s", extension);
+		joe_snprintf_1(wildcard, SIZEOF(wildcard), "*%s", extension);
 	} else {
 		zcpy(wildcard, "*");
 	}
 
-	if (datadir) {
-		joe_snprintf_2(buf, SIZEOF(buf), "%s%s", JOEDATA, datadir);
+	/* Look in /usr/share/joe/<prefix> */
 
-		/* Load first from global (NOTE: Order here does not matter.) */
-		if (!chpwd(buf) && (t = rexpnd(wildcard))) {
-			for (x = 0; x < aLEN(t); ++x) {
-				if (extension) *zrchr(t[x], '.') = 0;
-				for (y = 0; y < aLEN(ary); ++y)
-					if (!zcmp(t[x], ary[y]))
-						break;
-				if (y == aLEN(ary))
-					ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
-			}
+	path = vsncpy(NULL, 0, sc(JOEDATA));
+	path = vsncpy(sv(path), sz(prefix));
 
-			varm(t);
-			t = NULL;
-		}
-	}
-
-	if (homedir) {
-		/* Load from home directory. */
-		p = getenv("HOME");
-		if (p) {
-			joe_snprintf_2(buf, SIZEOF(buf), "%s/.joe/%s", p, homedir);
-
-			if (!chpwd(buf) && (t = rexpnd(wildcard))) {
-				for (x = 0; x < aLEN(t); ++x) {
-					if (extension) *zrchr(t[x],'.') = 0;
-					for (y = 0; y < aLEN(ary); ++y)
-						if (!zcmp(t[x],ary[y]))
-							break;
-					if (y == aLEN(ary))
-						ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
-				}
-
-				varm(t);
-				t = NULL;
-			}
-		}
-	}
-
-	/* Load from builtins. */
-	if (extension) {
-		joe_snprintf_1(wildcard, SIZEOF(wildcard), ".%s", extension);
-		t = jgetbuiltins(wildcard);
-
-		for (x = 0; x < aLEN(t); ++x) {
-			if (extension) *zrchr(t[x], '.') = 0;
-			for (y = 0; y < aLEN(ary); ++y)
-				if (!zcmp(t[x], ary[y]))
-					break;
-			if (y == aLEN(ary)) {
-				ary = vaadd(ary, vsncpy(NULL, 0, sv(t[x])));
-			}
-		}
-
+	if (!chpwd(path) && (t = rexpnd(wildcard))) {
+		ary = merge_options(ary, t, !!extension);
 		varm(t);
-		t = NULL;
+	}
+	vsrm(path);
+
+	/* Look in $HOME/.joe/<prefix> */
+
+	if (home) {
+		path = vsncpy(NULL, 0, sz(home));
+		path = vsncpy(sv(path), sc("/.joe/"));
+		path = vsncpy(sv(path), sz(prefix));
+
+		if (!chpwd(path) && (t = rexpnd(wildcard))) {
+			ary = merge_options(ary, t, !!extension);
+			varm(t);
+		}
+		vsrm(path);
 	}
 
-	varm(t);
+	/* Look in $HOME/.config/joe/<prefix> */
+
+	if (xdg) {
+		path = vsncpy(NULL, 0, sv(xdg));
+		path = vsncpy(sv(path), sz(prefix));
+
+		if (!chpwd(path) && (t = rexpnd(wildcard))) {
+			ary = merge_options(ary, t, !!extension);
+			varm(t);
+		}
+		vsrm(path);
+	}
+
+	/* Look through built-in files */
+
+	if (extension) {
+		t = jgetbuiltins(extension);
+
+		if (t) {
+			ary = merge_options(ary, t, !!extension);
+		}
+		varm(t);
+	}
+
 	chpwd(oldpwd);
 
 	if (aLEN(ary)) {
@@ -1080,10 +1176,10 @@ char **syntaxes = NULL; /* Array of available syntaxes */
 static int syntaxcmplt(BW *bw, int k)
 {
 	if (!syntaxes) {
-		syntaxes = find_configs(NULL, "jsf", "syntax", "syntax");
+		syntaxes = find_configs(NULL, "syntax", ".jsf");
 	}
 
-	return simple_cmplt(bw,syntaxes);
+	return simple_file_cmplt(bw,syntaxes);
 }
 
 char **colorfiles = NULL; /* Array of available color schemes */
@@ -1091,10 +1187,10 @@ char **colorfiles = NULL; /* Array of available color schemes */
 static int colorscmplt(BW *bw, int k)
 {
 	if (!colorfiles) {
-		colorfiles = find_configs(NULL, "jcf", "colors", "colors");
+		colorfiles = find_configs(NULL, "colors", ".jcf");
 	}
 
-	return simple_cmplt(bw, colorfiles);
+	return simple_file_cmplt(bw, colorfiles);
 }
 
 static int check_for_hex(BW *bw)
@@ -1150,7 +1246,7 @@ static int encodingcmplt(BW *bw, int k)
 		encodings = get_encodings();
 		vasort(av(encodings));
 	}
-	return simple_cmplt(bw,encodings);
+	return simple_file_cmplt(bw,encodings);
 }
 
 static int find_option(char *s)
@@ -1311,6 +1407,18 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				return 0;
 			else
 				return -1;
+		case GLO_OPT_PATH:
+			if (*glopts[y].set.s)
+				joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *glopts[y].set.s);
+			else
+				joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
+			xx = (int *) joe_malloc(SIZEOF(int));
+
+			*xx = y;
+			if (wmkpw(bw->parent, buf, &filehist, doopt1, NULL, doabrt1, cmplt_file, xx, notify, locale_map, 0))
+				return 0;
+			else
+				return -1;
 		case LOC_OPT_INT:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst));
 			goto in;
@@ -1329,14 +1437,14 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 
 		case LOC_OPT_SYNTAX:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
-			if (wmkpw(bw->parent, buf, NULL, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, utf8_map, 0))
+			if (wmkpw(bw->parent, buf, &syntaxhist, dosyntax, NULL, NULL, syntaxcmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
 
 		case LOC_OPT_ENCODING:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
-			if (wmkpw(bw->parent, buf, NULL, doencoding, NULL, NULL, encodingcmplt, NULL, notify, utf8_map, 0))
+			if (wmkpw(bw->parent, buf, &encodinghist, doencoding, NULL, NULL, encodingcmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
@@ -1350,7 +1458,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 
 		case LOC_OPT_COLORS:
 			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), "");
-			if (wmkpw(bw->parent, buf, NULL, docolors, NULL, NULL, colorscmplt, NULL, notify, utf8_map, 0))
+			if (wmkpw(bw->parent, buf, &colorhist, docolors, NULL, NULL, colorscmplt, NULL, notify, utf8_map, 0))
 				return 0;
 			else
 				return -1;
@@ -1380,6 +1488,7 @@ const char *get_status(BW *bw, char *s)
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *glopts[y].set.i);
 				return buf;
 			case GLO_OPT_STRING:
+			case GLO_OPT_PATH:
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *glopts[y].set.s ? *glopts[y].set.s : "");
 				return buf;
 			case LOC_OPT_BOOL:

@@ -79,11 +79,6 @@
 :string_sq String string
 	*		string_sq
 	"\'"		idle
-	"\\"		string_sq_esc	recolor=-1
-
-:string_sq_esc StringEscape string
-	*		string_sq
-	"\n"		string_sq	recolor=-2
 
 :string_dq_1 String string
 	*		string_dq	noeat

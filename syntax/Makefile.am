@@ -1,6 +1,4 @@
-data_joedir = $(datadir)/joe
-
-data_syntaxdir = $(data_joedir)/syntax
+include $(top_srcdir)/Makevars
 
 data_syntax_DATA = c.jsf perl.jsf verilog.jsf conf.jsf python.jsf php.jsf sh.jsf \
 	mail.jsf pascal.jsf html.jsf vhdl.jsf fortran.jsf java.jsf xml.jsf tcl.jsf \

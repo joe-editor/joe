@@ -1256,7 +1256,7 @@ static void load_builtins(void)
 
 /* Parse character map file */
 
-static struct builtin_charmap *parse_charmap(const char *name,FILE *f)
+static struct builtin_charmap *parse_charmap(const char *name,JFILE *f)
 {
 	char buf[1024];
 	char bf1[1024];
@@ -1277,7 +1277,7 @@ static struct builtin_charmap *parse_charmap(const char *name,FILE *f)
 		b->to_uni[x]= -1;
 
 	/* This is a _really_bad_ parser.  The file has to be perfect. */
-	while (fgets(buf,sizeof(buf),f)) {
+	while (jfgets(buf,sizeof(buf),f)) {
 		const char *p = buf;
 		parse_ws(&p, comment_char);
 		parse_tows(&p, bf1);
@@ -1317,7 +1317,7 @@ static struct builtin_charmap *parse_charmap(const char *name,FILE *f)
 		printf("\n");
 	}
 */
-	fclose(f);
+	jfclose(f);
 	return b;
 }
 
@@ -1354,11 +1354,10 @@ static int map_name_cmp(const char *a,const char *b)
 
 struct charmap *find_charmap(const char *name)
 {
-	char buf[1024];
-	char *p;
+	char *fullpath = 0;
 	struct charmap *m;
 	struct builtin_charmap *b;
-	FILE *f;
+	JFILE *f;
 	int y;
 
 	if (!name || !name[0])
@@ -1380,19 +1379,9 @@ struct charmap *find_charmap(const char *name)
 		if (!map_name_cmp(m->name,name))
 			return m;
 
-	/* Check ~/.joe/charmaps */
-	p = getenv("HOME");
-	f = 0;
-	if (p) {
-		joe_snprintf_2(buf,SIZEOF(buf),"%s/.joe/charmaps/%s",p,name);
-		f = fopen(buf,"r");
-	}
-
-	/* Check JOERCcharmaps */
-	if (!f) {
-		joe_snprintf_2(buf,SIZEOF(buf),"%scharmaps/%s",JOEDATA,name);
-		f = fopen(buf,"r");
-	}
+	/* Find file */
+	fullpath = open_config_file(&f, "charmaps/", name, "");
+	vsrm(fullpath);
 
 	/* Parse and install character map from file */
 	if (f && (b = parse_charmap(name,f)))
@@ -1452,7 +1441,7 @@ char **get_encodings(void)
 	}
 
 	/* External maps */
-	return find_configs(encodings, NULL, "charmaps", "charmaps");
+	return find_configs(encodings, "charmaps", NULL);
 }
 
 /* This is not correct... (EBCDIC for example) */

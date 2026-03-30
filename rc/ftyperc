@@ -717,12 +717,20 @@
 -syntax yaml
 -highlighter_context
 
- Debian apt
+ Debian apt, packaging scripts
 [debian]
 *apt/sources.list
-*sources.list.*
+*apt/sources.list.*/*
+*debian/control
+*debian/copyright
 -hash_comment
 -syntax debian
+
+ debian_changelog
+[debian_changelog]
+*debian/changelog
+*debian/changelog.dch
+-syntax debian_changelog
 
  Java's .properties
 [java_properties]

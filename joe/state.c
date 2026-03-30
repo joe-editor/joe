@@ -81,19 +81,38 @@ static void load_hist(FILE *f,B **bp)
 
 void save_state(void)
 {
+	char *fullpath = 0; /* Dynamic string */
 	char *home = getenv("HOME");
+	const char *xdg = xdg_state_dir();
 	mode_t old_mask;
-	FILE *f;
+	FILE *f = 0;
+
 	if (!joe_state)
 		return;
-	if (!home)
+
+	if (xdg) {
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sv(xdg));
+		mkpath(xdg);
+		fullpath = vsncpy(sv(fullpath), sc("joe_state"));
+		old_mask = umask(0066);
+		f = fopen(fullpath, "w");
+		umask(old_mask);
+	}
+
+	if (!f && home) {
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sz(home));
+		fullpath = vsncpy(sv(fullpath), sc("/.joe_state"));
+		old_mask = umask(0066);
+		f = fopen(fullpath, "r");
+		umask(old_mask);
+	}
+
+	if(!f) {
+		vsrm(fullpath);
 		return;
-	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
-	old_mask = umask(0066);
-	f = fopen(stdbuf,"w");
-	umask(old_mask);
-	if(!f)
-		return;
+	}
 
 	/* Write ID */
 	fprintf(f,"%s",STATE_ID);
@@ -113,23 +132,40 @@ void save_state(void)
 	fprintf(f,"file_pos\n"); save_file_pos(f);
 	fprintf(f,"colors\n"); save_colors_state(f);
 	fclose(f);
+	vsrm(fullpath);
 }
 
 /* Load state */
 
 void load_state(void)
 {
-	char *home = getenv("HOME");
+	const char *home = getenv("HOME");
+	const char *xdg = xdg_state_dir();
+	FILE *f = 0;
+	char *fullpath = 0; /* Dynamic string */
 	char buf[1024];
-	FILE *f;
+
 	if (!joe_state)
 		return;
-	if (!home)
+
+	if (xdg) {
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sv(xdg));
+		fullpath = vsncpy(sv(fullpath), sc("joe_state"));
+		f = fopen(fullpath, "r");
+	}
+
+	if (!f && home) {
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sz(home));
+		fullpath = vsncpy(sv(fullpath), sc("/.joe_state"));
+		f = fopen(fullpath, "r");
+	}
+
+	if(!f) {
+		vsrm(fullpath);
 		return;
-	joe_snprintf_1(stdbuf,stdsiz,"%s/.joe_state",home);
-	f = fopen(stdbuf,"r");
-	if(!f)
-		return;
+	}
 
 	/* Only read state information if the version is correct */
 	if (fgets(buf,sizeof(buf),f) && !zcmp(buf,STATE_ID)) {
@@ -169,4 +205,5 @@ void load_state(void)
 	}
 
 	fclose(f);
+	vsrm(fullpath);
 }

@@ -67,7 +67,7 @@ void *replenish(void **list,ptrdiff_t size);
 #define zchr(s, c) strchr((s), (c))
 #define zrchr(s, c) strrchr((s), (c))
 #define zcat(a, b) strcat((a), (b))
-#define zdup(s) strdup(s)
+/* #define zdup(s) strdup(s) */
 #define zcpy(a, b) strcpy((a), (b))
 #define zcmp(a, b) strcmp((a), (b))
 
@@ -75,7 +75,7 @@ void *replenish(void **list,ptrdiff_t size);
 /* char *zchr(const char *s, int c); */
 /* char *zrchr(const char *s, int c); */
 /* char *zcat(char *a, char *b); */
-/* char *zdup(const char *s); */
+char *zdup(const char *s); /* Use joe_malloc */
 /* char *zcpy(char *a, char *b); */
 /* int zcmp(char *a, char *b); */
 
@@ -129,11 +129,11 @@ ptrdiff_t joe_write(int fd, const void *buf, ptrdiff_t siz);
 int joe_ioctl(int fd, unsigned long req, void *ptr);
 
 /* wrappers to *alloc routines */
-void *joe_malloc(ptrdiff_t size);
-char *joe_strdup(char *ptr);
-void *joe_calloc(ptrdiff_t nmemb, ptrdiff_t size);
-void *joe_realloc(void *ptr, ptrdiff_t size);
 void joe_free(void *ptr);
+void *joe_malloc(ptrdiff_t size) ATTR_JOE_MALLOC;
+char *joe_strdup(char *ptr) ATTR_JOE_MALLOC;
+void *joe_calloc(ptrdiff_t nmemb, ptrdiff_t size) ATTR_JOE_MALLOC ATTR_ALLOC_SIZE((1, 2));
+void *joe_realloc(void *ptr, ptrdiff_t size) ATTR_ALLOC_SIZE((2));
 
 #ifndef HAVE_SIGHANDLER_T
 typedef void (*sighandler_t)(int);

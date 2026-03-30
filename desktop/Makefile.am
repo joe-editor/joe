@@ -1,4 +1,5 @@
-desktopdir = $(datarootdir)/applications
+include $(top_srcdir)/Makevars
+
 dist_desktop_DATA = joe.desktop jmacs.desktop jstar.desktop jpico.desktop
 
 update-databases:

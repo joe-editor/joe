@@ -1,3 +1,5 @@
+include $(top_srcdir)/Makevars
+
 AUTOMAKE_OPTIONS = foreign
 
 EXTRA_DIST = \

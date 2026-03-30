@@ -111,6 +111,11 @@
 		Директория для сохранения резервных файлов (один пробел между 'backpath' и
 		'path', без завергающих пробелов или комментариев после path).
 
+ -backup_file_suffix string
+		Suffix string for backup files instead of ~ (one space
+		between backup_file_suffix and the string, no trailing
+		spaces or comments after the string).
+
  -floatmouse	Клик за концом строки переносит курсор за конец строки
  
  -rtbutton	Для выполнения действия использовать правую кнопку мыши вместо левой

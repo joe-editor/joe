@@ -152,14 +152,25 @@ char *endprt(const char *path)
 		return vsncpy(NULL, 0, sz(z));
 	}
 }
-/********************************************************************/
-int mkpath(char *path)
+
+/* Create all missing directories in path
+   'path' can't be const
+   Returns 0 for success */
+
+int mkpath(const char *path_in)
 {
+	char *path_cpy = zdup(path_in);
+	char *path = path_cpy;
+	int err = 0;
+	char *org = pwd();
 	char *s;
 
 	if (path[0] == '/') {
-		if (chddir("/"))
-			return 1;
+		/* Start at root */
+		if (chpwd("/")) {
+			err = -1;
+			goto bye;
+		}
 		s = path;
 		goto in;
 	}
@@ -167,22 +178,32 @@ int mkpath(char *path)
 	while (path[0]) {
 		char c;
 
+		/* Find end of directory name */
 		for (s = path; (*s) && (*s != '/'); s++) ;
 		c = *s;
 		*s = 0;
-		if (chddir(path)) {
-			if (mkdir(path, 0777))
-				return 1;
-			if (chddir(path))
-				return 1;
+		if (chpwd(path)) {
+			/* Couldn't change to it, try to create it */
+			if (mkdir(path, 0700)) {
+				err = -1;
+				goto bye;
+			}
+			if (chpwd(path)) {
+				err = -1;
+				goto bye;
+			}
 		}
 		*s = c;
 	      in:
+	      	/* Skip over multiple '/' */
 		while (*s == '/')
 			++s;
 		path = s;
 	}
-	return 0;
+	bye:
+	chpwd(org);
+	joe_free(path_cpy);
+	return err;
 }
 /********************************************************************/
 /* Create a temporary file */
@@ -411,7 +432,9 @@ char **rexpnd_users(const char *word)
 
 	return lst;
 }
-/********************************************************************/
+
+/* Change current drive and directory */
+
 int chpwd(const char *path)
 {
 #ifdef __MSDOS__
@@ -444,7 +467,8 @@ int chpwd(const char *path)
 #endif
 }
 
-/* The pwd function */
+/* Get current directory into a static buffer */
+
 char *pwd(void)
 {
 	static char buf[PATH_MAX];
@@ -506,4 +530,156 @@ char *dequotevs(char *s)
 			d = vsadd(d, s[x]);
 	vsrm(s);
 	return d;
+}
+
+/* Get the XDG config directory with '/' suffix
+   This can fail (returns 0) if $HOME is not set */
+
+const char *xdg_config_dir(void)
+{
+	static char *xdg;
+
+	if (!xdg)
+	{
+		const char *home = getenv("HOME");
+		const char *x = getenv("XDG_CONFIG_HOME");
+		if (x && x[0])
+		{
+			xdg = vsncpy(NULL,0,sz(x));
+			xdg = vsncpy(sv(xdg),sc("/joe/"));
+		}
+		else
+		{
+			if (home)
+			{
+				xdg = vsncpy(NULL,0,sz(home));
+				xdg = vsncpy(sv(xdg),sc("/.config/joe/"));
+			}
+		}
+	}
+
+	return xdg;
+}
+
+/* Get the XDG state directory with '/' suffix
+   This can fail (returns 0) if $HOME is not set */
+
+const char *xdg_state_dir(void)
+{
+	static char *xdg;
+
+	if (!xdg)
+	{
+		const char *home = getenv("HOME");
+		const char *x = getenv("XDG_STATE_HOME");
+		if (!x)
+		{
+			if (home)
+			{
+				xdg = vsncpy(NULL,0,sz(home));
+				xdg = vsncpy(sv(xdg),sc("/.local/state/joe/"));
+			}
+		}
+		else
+		{
+			xdg = vsncpy(NULL,0,sz(x));
+			xdg = vsncpy(sv(xdg),sc("/joe/"));
+		}
+	}
+
+	return xdg;
+}
+
+char *open_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix)
+{
+	JFILE *f;
+	char *fullpath = 0;
+	const char *home = getenv("HOME");
+	const char *xdg = xdg_config_dir();
+
+	*result = 0;
+
+#if 0
+	/* If we ever make an MSDOS version again: use t option for fopen to indicate text file */
+#ifdef __MSDOS__
+	fd = jfopen(buf, "rt");
+#else
+	fd = jfopen(buf, "r");
+#endif
+#endif
+
+	if (name[0] == '/' || name[0] == '~') {
+		/* Absolute path given, don't add suffix (too confusing when user knows it's a file) */
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sz(name));
+		fullpath = canonical(fullpath, 0);
+		f = jfopen(fullpath, "r");
+		if (f) {
+			*result = f;
+			return fullpath;
+		} else {
+			vsrm(fullpath);
+			return 0;
+		}
+	}
+
+	if (xdg) {
+		/* Try ~/.config/joe/<prefix><name><suffix> */
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sv(xdg));
+		fullpath = vsncpy(sv(fullpath), sz(prefix));
+		fullpath = vsncpy(sv(fullpath), sz(name));
+		fullpath = vsncpy(sv(fullpath), sz(suffix));
+		f = jfopen(fullpath, "r");
+		if (f) {
+			*result = f;
+			return fullpath;
+		}
+	}
+
+	/* Old style, before .config/joe */
+	if (!f && home) {
+		/* Try ~/.joe/<prefix>name<suffix> */
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sz(home));
+		fullpath = vsncpy(sv(fullpath), sc("/.joe/"));
+		fullpath = vsncpy(sv(fullpath), sz(prefix));
+		fullpath = vsncpy(sv(fullpath), sz(name));
+		fullpath = vsncpy(sv(fullpath), sz(suffix));
+		f = jfopen(fullpath, "r");
+		if (f) {
+			*result = f;
+			return fullpath;
+		}
+	}
+
+	if (!f) {
+		/* Try /usr/share/joe/syntax/name.jsf */
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sc(JOEDATA));
+		fullpath = vsncpy(sv(fullpath), sz(prefix));
+		fullpath = vsncpy(sv(fullpath), sz(name));
+		fullpath = vsncpy(sv(fullpath), sz(suffix));
+		f = jfopen(fullpath, "r");
+		if (f) {
+			*result = f;
+			return fullpath;
+		}
+	}
+
+	if (!f) {
+		/* Try *name.jsf (built-in) */
+		vsrm(fullpath);
+		fullpath = vsncpy(NULL, 0, sc("*"));
+		fullpath = vsncpy(sv(fullpath), sz(name));
+		fullpath = vsncpy(sv(fullpath), sz(suffix));
+		f = jfopen(fullpath, "r");
+		if (f) {
+			*result = f;
+			return fullpath;
+		}
+	}
+
+	vsrm(fullpath);
+	return 0;
 }

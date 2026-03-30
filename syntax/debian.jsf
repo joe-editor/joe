@@ -1,67 +1,330 @@
-# JOE syntax highlight file for apt's sources.list
-# by Christian Nicolai (http://mycrobase.de)
+# JOE syntax highlighting for Debian RFC822-like files
+# e.g. new-format sources.list files, debian/control, debian/copyright
+# Also recognises the old sources.list single-line format
+# © 2026 Darren Salt
 
 =Idle
 =Comment
 =Keyword
 =Bad
 
-=URL		+Constant
+=Options	+Brace
+=Equals
+=Brace		+Brace
+=String		+String
+=Value		+String
+=Heading	+Title +Constant
+=Escape
+=URL		+URL +Ident +Constant
+=Email		+Email +URL +Ident +Constant
+=Distribution	+Tag +Keyword
+=Component	+Tag
 
-=SpacyURL	+String +Constant
-=Distribution	+Preproc
-=Component	+DefinedIdent
+:reset Idle
+	*		bad		noeat
+	"#"		reset		noeat call=.comment() # only at line start
+	"\i"		keyword		noeat mark buffer
+	"\s"		bad		noeat # not an indented block!
+	"\n"		reset
 
-:line_start Idle
-	*		line_rest	noeat
-	"#"		line_comment	recolor=-1
-	"a-zA-Z"	deb		recolor=-1
+# Unrecognised content
+:bad Bad
+	*		bad
+	"\n"		reset
 
-:line_rest Idle
-	*		line_rest
-	"\n"		line_start
+# Comment (rest of line)
+.subr comment
+:comment Comment
+	*		comment
+	"\n"		NULL		return
+.end
 
-:line_comment Comment comment
-	*		line_comment
-	"\n"		line_start
+# Initial keyword handling (at line start)
+:keyword Keyword
+	*		bad		noeat strings
+	"deb-src"	oldstyle
+	"deb"		oldstyle
+done
+	":"		newstyle	noeat hold
+	"-\c"		keyword
 
-:deb Keyword
-	*		deb
-	" \t"		deb_url_pre
+# "token: value" or multi-line; RFC822-style
+:newstyle Keyword
+	*		newstyle_s	recolor=-1 # ':' in Equals colour
+:newstyle_s Equals
+	*		pre_value	noeat
+	"\s"		pre_value	noeat call=.space()
 
-# allow multiple spaces
-:deb_url_pre Idle
-	*		deb_url		noeat
-	" \t"		deb_url_pre
+:pre_value Idle
+	*		reset		noeat call=.rfc822text() istrings
+# This list is for headers which don't take (multi-line) plain text content
+# debian/control
+	"Package"		short
+	"Section"		short
+	"Priority"		short
+	"Essential"		short
+	"Standards-Version"	short
+	"Version"		short
+	"Rules-Requires-Root"	short
+	"Description"		reset	call=.rfc822text(headed)
+	"Build-Depends"		reset	call=.packages()
+	"Build-Depends-Indep"	reset	call=.packages()
+	"Build-Depends-Arch"	reset	call=.packages()
+	"Build-Conflicts"	reset	call=.packages()
+	"Build-Conflicts-Indep"	reset	call=.packages()
+	"Build-Conflicts-Arch"	reset	call=.packages()
+	"Built-Using"		reset	call=.packages()
+	"Depends"		reset	call=.packages()
+	"Recommends"		reset	call=.packages()
+	"Suggests"		reset	call=.packages()
+	"Enhances"		reset	call=.packages()
+	"Pre-Depends"		reset	call=.packages()
+	"Breaks"		reset	call=.packages()
+	"Conflicts"		reset	call=.packages()
+	"Replaces"		reset	call=.packages()
+	"Provides"		reset	call=.packages()
+	"Vcs-Browser"		reset	call=.rfc822text(url)
+	"Vcs-Git"		reset	call=.rfc822text(url)
+	"Bugs"			reset	call=.rfc822text(url)
+	"Homepage"		reset	call=.rfc822text(url)
+# debian/copyright
+	"Format"		reset	call=.rfc822text(url)
+# apt/sources.list
+	"URIs:"			reset	call=.rfc822text(url)
+done
 
-:deb_url URL
-	*		deb_url
-	"["		deb_spacy_url	recolor=-1
-	" \t"		deb_distro_pre
+:short Keyword
+	*		shortline	noeat
+:shortline String
+	*		shortline
+	"\n"		reset
 
-:deb_spacy_url SpacyURL
-	*		deb_spacy_url
-	"]"		deb_url
+# Line or block of text (inc. URL lists)
+.subr rfc822text
+:init Keyword
+.ifdef headed
+	*		heading		noeat buffer
 
-# allow multiple spaces
-:deb_distro_pre Idle
-	*		deb_distro	noeat
-	" \t"		deb_distro_pre
+:heading Heading
+	*		heading
+	"\n"		resume
+.else
+	*		text		noeat buffer
+.endif
 
-:deb_distro Distribution
-	*		deb_distro
-	" \t"		deb_component_pre
+.ifdef url
+:resume Bad
+	*		text		noeat buffer
 
-	# distro is the last obligatory part,
-	# components are all optional
-	"\n"		line_start
+:text Bad
+.else
+:resume String
+	*		text		noeat buffer
+	"."		maybeblank	recolor=-1
+:maybeblank Escape
+	*		text		noeat recolor=-2 buffer
+	"\n"		reset_long
 
-# allow multiple spaces
-:deb_component_pre Idle
-	*		deb_component	noeat
-	" \t"		deb_component_pre
+:text String
+.endif
+	*		resume
+	"A-Za-z:/"	text		istrings
+	"http://"	url_s
+	"https://"	url_s
+	"git:"		url_s
+done
+.ifdef url
+.else
+	"<"		email_local	recolor=-1 mark
+.endif
+	"\n"		reset_long
 
-:deb_component Component
-	*		deb_component
-	" \t"		deb_component_pre
-	"\n"		line_start
+.ifdef url
+.else
+:email_local Email
+# no, absolutely not doing exhaustive checking here (I've seen the regexp)
+	*		email_local
+	"@"		email_domain
+	">\s"		resume		recolormark
+	"\n"		reset_long	recolormark
+
+:email_domain Email
+# nor here (even though this bit's simpler)
+	*		bad		recolormark noeat
+	"\c."		email_domain
+	"\s"		resume		recolormark
+	">"		resume
+	"\n"		reset_long	recolormark
+.endif
+
+:url_s URL
+	*		url
+	"\s"		resume		recolormark
+	"\n"		reset_long	recolormark
+:url URL
+	*		url
+	"\s"		resume
+	"\n"		reset_long
+
+:reset_long String # at line start - want indented line or comment, else return
+	*		bad		noeat
+	"#"		reset_long	noeat call=.comment()
+	"\i\n"		NULL		noeat return
+	"\s"		indent_start	noeat call=.space()
+:indent_start Idle
+	*		resume		noeat recolor=-1
+	"\s"		indent_start
+	"\n"		NULL		noeat return
+
+:bad Bad
+	*		bad
+	"\s"		resume
+	"\n"		reset_long
+.end
+
+# Packages list
+.subr packages
+:init Keyword
+	*		name_s		noeat
+
+:resume Idle
+	*		name_s		noeat
+	"\n"		resume_reset
+:resume_reset Idle # at line start
+	*		NULL		return noeat
+	"#"		resume_reset	noeat call=.comment()
+	"\s"		name_s		call=.space()
+	"\n"		NULL		return noeat
+
+:name_s String # first letter
+	*		bad		noeat
+	"\i"		name		mark
+	"$"		subst		mark
+	"\n"		resume_reset
+
+:name String # continuation
+	*		comma		noeat call=.space()
+	"-\c"		name
+	"\s"		comma		noeat call=.space()
+	"\n"		comma_reset
+
+:comma Idle
+	*		bad		noeat
+	",|"		resume		call=.space()		# next package
+	"(["		bracketed	save_c recolor=-1	# version or arch
+	"\s"		comma		noeat call=.space()
+	"\n"		comma_reset
+:comma_reset Idle # at line start
+	*		NULL		return noeat
+	"#"		comma_reset	noeat call=.comment()
+	"\s"		comma		call=.space()
+
+:subst Brace
+	*		bad		noeat recolor=-2
+	"{"		bracketed	save_c recolor=-2
+
+:bracketed Brace # yourself
+	*		bracketed
+	&		comma		call=.space()
+	"\n"		bracket_reset
+:bracket_reset Brace # at line start
+	*		NULL		return noeat
+	"#"		bracket_reset	noeat call=.comment()
+	"\s"		bracketed	call=.space()
+
+:bad Bad
+	*		bad
+	"\n"		bad_reset
+:bad_reset Bad # at line start
+	*		NULL		return noeat
+	"#"		bad_reset	noeat call=.comment()
+	"\s"		bad		call=.space()
+.end
+
+# "deb" or "deb-src": old-style sources.list line
+# Yes, this'll still be coloured in outside sources.list* files
+:oldstyle Keyword
+	*		bad		noeat
+	"\s"		oldstyle_ws	noeat call=.space()
+	"\n"		reset
+
+:oldstyle_ws Idle
+	*		bad		noeat
+	"\i"		url_s		mark noeat
+	"["		options		recolor=-1
+
+:options Options
+	*		bad		noeat
+	"\s"		options		noeat call=.space()
+	"\i"		option_name	noeat
+	"]"		options_end	recolor=-1
+
+:option_name_s Keyword
+	*		bad		noeat
+	"]"		options_end	recolor=-1
+	"\i"		option_name
+
+:option_name Keyword
+	*		bad		noeat
+	"="		option_equal	recolor=-1
+	"]"		options_end	recolor=-1
+	"-\c"		option_name
+
+:option_equal Equals
+	*		bad		noeat
+	"\S"		option_value	noeat
+	"]"		options_end
+	"\n"		reset
+
+:option_value Value
+	*		option_value
+	"\s"		option_name_s	noeat call=.space()
+	"]"		options_end	recolor=-1
+	"\n"		reset
+
+:options_end Options
+	*		bad		noeat
+	"\s"		url_s		noeat call=.space()
+	"#"		reset		noeat call=.comment()
+
+:url_s URL
+	*		bad		noeat
+	"\i"		url
+	"\s"		distribution_s	noeat call=.space()
+	"#"		reset		noeat call=.comment()
+	"\n"		reset
+
+:url URL
+	*		url
+	"\s"		distribution_s	noeat call=.space()
+	"#"		reset		noeat call=.comment()
+	"\n"		reset
+
+:distribution_s Distribution
+	*		bad		noeat
+	"\i"		distribution
+	"#"		reset		noeat call=.comment()
+
+:distribution Distribution
+	*		bad		noeat
+	"\s"		component_s	noeat call=.space()
+	"-\c"		distribution
+	"#"		reset		noeat call=.comment()
+
+:component_s Component
+	*		bad		noeat
+	"\i"		component
+	"#"		reset		noeat call=.comment()
+
+:component Component
+	*		bad		noeat
+	"\s"		component_s	noeat call=.space()
+	"-\c"		component
+	"#"		reset		noeat call=.comment()
+
+.subr space
+:space Idle
+	*		NULL	noeat return
+	"\s"		space
+	"\n"		NULL	noeat return
+.end
