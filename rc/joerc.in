@@ -944,53 +944,65 @@ eol			^[ O F			gnome-terminal
 eol			^[ [ 8 ~		RxVT
  eol			^# SP @		Amiga
 
+ Ctrl, Shift and Ctrl-Shift modifiers for cursor keys.  Try to be
+ compatible with modern GUI text editors:
+
  New Ctrl-
 
-upslide		^[ [ 1 ; 5 A
-upslide		^[ O a
-dnslide		^[ [ 1 ; 5 B
+upslide		^[ [ 1 ; 5 A	Ctrl-Up
+upslide		^[ O a		rxvt
+dnslide		^[ [ 1 ; 5 B	Ctrl-Down
 dnslide		^[ O b
-nextword	^[ [ 1 ; 5 C
+nextword	^[ [ 1 ; 5 C	Ctrl-Right
 nextword	^[ O c
-prevword	^[ [ 1 ; 5 D
+prevword	^[ [ 1 ; 5 D	Ctrl-Left
 prevword	^[ O d
+prevw		^[ [ 5 ; 5 ~	Ctrl-PgUp
+prevw		^[ [ 5 ^	rxvt
+nextw		^[ [ 6 ; 5 ~	Ctrl-PgDn
+nextw		^[ [ 6 ^
+bof		^[ [ 1 ; 5 H	Ctrl-Home
+bof		^[ [ 7 ^
+eof		^[ [ 1 ; 5 F	Ctrl-End
+eof		^[ [ 8 ^
 
-prevw	^[ [ 5 ; 5 ~  Ctrl-PgUp
-nextw	^[ [ 6 ; 5 ~  Ctrl-PgDn
-bof	^[ [ 1 ; 5 H  Ctrl-Home
-eof	^[ [ 1 ; 5 F  Ctrl-End
+ New Shift-
 
- Old Ctrl-
-
- uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Mark up line
- uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 5 A        Gnome-terminal
- uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O a		Rxvt
-
- dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Mark down line
- dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
- dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O b
-
- rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Mark right
- rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C
- rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O c
-
- ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Mark left
- ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 5 D
- ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O d
-
- Shift-
-
-uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 2 A    Mark up line
-dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 2 B    Mark down line
-rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 2 C    Mark right
-ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 2 D    Mark left
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 2 A    Shift-Up	Mark up line
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ a		rxvt
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 2 B    Shift-Down	Mark down line
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ b
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 2 C    Shift-Right	Mark right
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ c
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 2 D    Shift-Left	Mark left
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ d
 
  Shift-Ctrl-
 
-upslide		^[ [ 1 ; 6 A
-dnslide		^[ [ 1 ; 6 B
-rtarw,ltarw,begin_marking,nextword,toggle_marking	^[ [ 1 ; 6 C    Mark right word
-ltarw,rtarw,begin_marking,prevword,toggle_marking	^[ [ 1 ; 6 D    Mark left word
+upslide		^[ [ 1 ; 6 A	Shift-Ctrl-Up
+dnslide		^[ [ 1 ; 6 B	Shift-Ctrl-Down
+rtarw,ltarw,begin_marking,nextword,toggle_marking	^[ [ 1 ; 6 C    Shift-Ctrl-Right Mark right word
+ltarw,rtarw,begin_marking,prevword,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Left Mark left word
+
+ Sadly, many terminal emulators do not support the above.
+ So we bind Ctrl-arrow to marking
+ Comment out this group to fully enable above.
+
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Ctrl-Up Mark up line
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 5 A        Old Gnome-terminal
+uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O a		Rxvt
+
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Ctrl-Down Mark down line
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
+dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O b
+
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Ctrl-Right Mark right
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C
+rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O c
+
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Ctrl-Left Mark left
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 5 D
+ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O d
 
 blkdel,nmark   ^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
 blkdel,nmark   ^[ [ 3 ; 5 ~	Xterm Ctrl-Del
