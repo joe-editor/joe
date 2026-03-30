@@ -298,7 +298,6 @@ int zncmp(const char *a, const char *b, ptrdiff_t len)
 }
 
 
-#if 0
 char *zdup(const char *bf)
 {
 	ptrdiff_t size = zlen(bf);
@@ -306,7 +305,6 @@ char *zdup(const char *bf)
 	memcpy(p, bf, (size_t)(size + 1));
 	return p;
 }
-#endif
 
 #if 0
 char *zcpy(char *a, char *b)

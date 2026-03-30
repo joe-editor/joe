@@ -67,7 +67,7 @@ void *replenish(void **list,ptrdiff_t size);
 #define zchr(s, c) strchr((s), (c))
 #define zrchr(s, c) strrchr((s), (c))
 #define zcat(a, b) strcat((a), (b))
-#define zdup(s) strdup(s)
+/* #define zdup(s) strdup(s) */
 #define zcpy(a, b) strcpy((a), (b))
 #define zcmp(a, b) strcmp((a), (b))
 
@@ -75,7 +75,7 @@ void *replenish(void **list,ptrdiff_t size);
 /* char *zchr(const char *s, int c); */
 /* char *zrchr(const char *s, int c); */
 /* char *zcat(char *a, char *b); */
-/* char *zdup(const char *s); */
+char *zdup(const char *s); /* Use joe_malloc */
 /* char *zcpy(char *a, char *b); */
 /* int zcmp(char *a, char *b); */
 
