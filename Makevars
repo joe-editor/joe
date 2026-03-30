@@ -1,0 +1,17 @@
+data_joedir = $(datadir)/joe
+
+data_charmapsdir = $(data_joedir)/charmaps
+data_colordir = $(data_joedir)/colors
+data_langdir = $(data_joedir)/lang
+data_syntaxdir = $(data_joedir)/syntax
+
+desktopdir = $(datarootdir)/applications
+
+sysconf_joedir = $(sysconfdir)/joe
+
+data_docdir = $(docdir)
+
+AM_V_SED = $(am__v_SED_$(V))
+am__v_SED_ = $(am__v_SED_$(AM_DEFAULT_VERBOSITY))
+am__v_SED_0 = @echo "  SED     " $@;
+am__v_SED_1 =

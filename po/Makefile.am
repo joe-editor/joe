@@ -1,6 +1,4 @@
-data_joedir = $(datadir)/joe
-
-data_langdir = $(data_joedir)/lang
+include $(top_srcdir)/Makevars
 
 data_lang_DATA = ru.po de.po fr.po uk.po zh_TW.po
 

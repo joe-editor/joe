@@ -1,11 +1,10 @@
+include $(top_srcdir)/Makevars
+
 AUTOMAKE_OPTIONS = foreign
 
 SUBDIRS = util
 
 EXTRA_DIST = TODO
-
-sysconf_joedir = $(sysconfdir)/joe
-data_joedir = $(datadir)/joe
 
 noinst_HEADERS = b.h blocks.h bw.h cmd.h config.h hash.h help.h kbd.h \
 	macro.h main.h menu.h path.h poshist.h pw.h queue.h qw.h rc.h regex.h \
