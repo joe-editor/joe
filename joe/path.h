@@ -55,7 +55,7 @@ char *endprt(const char *path);
  * the drive and path will be elsewhere (not necessarily where they
  * were before mkpath was called).
  */
-int mkpath(char *path);
+int mkpath(const char *path);
 
 /* char *mktmp(char *);
  * Create an empty temporary file.  The file name created is the string passed
@@ -63,9 +63,6 @@ int mkpath(char *path);
  * string six chars long which makes this file unique.
 */
 char *mktmp(const char *where);
-
-/* Change drive and directory */
-#define chddir chdir
 
 /* int rmatch(char *pattern,char *string);
  * Return true if string matches pattern
@@ -96,8 +93,17 @@ char **rexpnd_users(const char *word);
 char **rexpnd_cmd_cd(const char *word);
 char **rexpnd_cmd_path(const char *word);
 
+/* Change directory */
 int chpwd(const char *path);
+
+/* Get current directory into static buffer */
 char *pwd(void);
+
 char *simplify_prefix(const char *path);
 
 char *dequotevs(char *path);
+
+const char *xdg_config_dir(void);
+const char *xdg_state_dir(void);
+
+char *open_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix);

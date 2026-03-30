@@ -453,6 +453,21 @@ int simple_cmplt(BW *bw,char **list)
 	}
 }
 
+/* Complete based on list unless buffer starts with / or ~, then assume it's a file */
+
+int simple_file_cmplt(BW *bw, char **list)
+{
+	int c;
+	P *p=pdup(bw->cursor, "simple_file_cmplt");
+	p_goto_bol(p);
+	c = brc(p);
+	prm(p);
+	if (c == '/' || c == '~')
+		return cmplt_file(bw, '\t');
+	else
+		return simple_cmplt(bw, list);
+}
+
 int word_cmplt(BW *bw,char **list)
 {
 	MENU *m;

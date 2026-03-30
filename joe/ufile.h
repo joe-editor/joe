@@ -36,7 +36,8 @@ int get_buffer_in_window(BW *bw, B *b);
 extern B *filehist; /* History of file names */
 
 extern int nobackups; /* Set to disable backup files */
-extern char *backpath; /* Path to backup files if not current directory */
+extern const char *backpath; /* Path to backup files if not current directory */
+extern const char *backup_file_suffix; /* Suffix for backup files */
 extern int orphan; /* Set to keep orphaned buffers (buffers with no windows)  */
 
 extern const char *yes_key;

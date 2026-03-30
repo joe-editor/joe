@@ -82,26 +82,15 @@ static MACRO *multiparse(JFILE *fd, int *refline, char *buf, ptrdiff_t *ofst, in
  *         1 if there was a syntax error in the file
  */
 
-int procrc(CAP *cap, char *name)
+int procrc(CAP *cap, JFILE *fd, char *name)
 {
 	OPTIONS *o = &fdefault;	/* Current options */
 	KMAP *context = NULL;	/* Current context */
 	struct rc_menu *current_menu = NULL;
 	char buf[1024];	/* Input buffer */
 	char buf1[1024];	/* Input buffer */
-	JFILE *fd;		/* rc file */
 	int line = 0;		/* Line number */
 	int err = 0;		/* Set to 1 if there was a syntax error */
-
-	zlcpy(buf, SIZEOF(buf), name);
-#ifdef __MSDOS__
-	fd = jfopen(buf, "rt");
-#else
-	fd = jfopen(buf, "r");
-#endif
-
-	if (!fd)
-		return -1;	/* Return if we couldn't open the rc file */
 
 	logmessage_1(joe_gettext(_("Processing '%s'...\n")), name);
 
@@ -238,37 +227,29 @@ int procrc(CAP *cap, char *name)
 						for (c = x; !joe_isspace_eos(locale_map,buf[c]); ++c) ;
 						buf[c] = 0;
 						if (c != x) {
-							char bf[1024];
-							char *p = getenv("HOME");
+							char *incname = buf + x;
+							char *fullpath = 0; /* Dynamic string */
+							JFILE *f = 0;
 							int rtn = -1;
-							bf[0] = 0;
-							if (p && buf[x] != '/') {
-								joe_snprintf_2(bf,SIZEOF(bf),"%s/.joe/%s",p,buf + x);
-								rtn = procrc(cap, bf);
+
+							fullpath = open_config_file(&f, "", incname, "");
+							if (fullpath)
+							{
+								rtn = procrc(cap, f, incname);
 							}
-							if (rtn == -1 && buf[x] != '/') {
-								joe_snprintf_2(bf,SIZEOF(bf),"%s%s",JOERC,buf + x);
-								rtn = procrc(cap, bf);
-							}
-							if (rtn == -1 && buf[x] != '/') {
-								joe_snprintf_1(bf,SIZEOF(bf),"*%s",buf + x);
-								rtn = procrc(cap, bf);
-							}
-							if (rtn == -1 && buf[x] == '/') {
-								joe_snprintf_1(bf,SIZEOF(bf),"%s",buf + x);
-								rtn = procrc(cap, bf);
-							}
+
 							switch (rtn) {
 							case 1:
 								err = 1;
 								break;
 							case -1:
-								logerror_3(joe_gettext(_("%s %d: Couldn't open %s\n")), name, line, bf);
+								logerror_3(joe_gettext(_("%s %d: Couldn't open %s\n")), name, line, incname);
 								err = 1;
 								break;
 							}
 							context = 0;
 							o = &fdefault;
+							vsrm(fullpath);
 						} else {
 							err = 1;
 							logerror_2(joe_gettext(_("%s %d: :include missing file name\n")), name, line);

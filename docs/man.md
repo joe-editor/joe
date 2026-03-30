@@ -142,6 +142,10 @@ mark a legal block during block copy/move commands.
 <br>
 
 * backpath path<br>
+Sets suffix string to use for backup file names. If this is unset (the default), the suffix is ~.
+<br>
+
+* backup_file_suffix string<br>
 Sets path to a directory where all backup files are
 to be stored.  If this is unset (the default) backup files are stored in the
 directory containing the file.

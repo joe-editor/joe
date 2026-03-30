@@ -208,6 +208,15 @@ Sets path to a directory where all backup files are to be stored\. If this is un
 
 .
 .IP "\(bu" 4
+backup_file_suffix string
+.
+.br
+Sets suffix string to use for backup file names\. If this is unset (the default), the suffix is ~\.
+.
+.br
+
+.
+.IP "\(bu" 4
 baud nnn
 .
 .br
