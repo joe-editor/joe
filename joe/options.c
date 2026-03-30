@@ -438,17 +438,90 @@ void cmd_help(int type)
 	for (x = 0; glopts[x].name; ++x) {
 		char buf[80];
 		buf[0] = 0;
-		if ((type == 0 && glopts[x].type < 3) || (type == 1 && glopts[x].type >= 3)) {
-			if (glopts[x].type == 0 || glopts[x].type == 4)
-				joe_snprintf_1(buf, SIZEOF(buf), "-[-]%s", glopts[x].name);
-			else if (glopts[x].type == 1 || glopts[x].type == 5 || glopts[x].type == 14 || glopts[x].type == 7)
-				joe_snprintf_1(buf, SIZEOF(buf), "-%s nnn", glopts[x].name);
-			else if (glopts[x].type == 2 || glopts[x].type == 6 || glopts[x].type == 9 || glopts[x].type == 13 || glopts[x].type == 15 || glopts[x].type == 17)
-				joe_snprintf_1(buf, SIZEOF(buf), "-%s sss", glopts[x].name);
-			if (glopts[x].menu)
-				printf("    %-23s %s\n", buf, glopts[x].menu);
-			else
-				printf("    %-23s\n", buf);
+		if (type == 0) {
+			int y = 0;
+			switch (glopts[x].type) {
+				case LOC_OPT_BOOL:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-[-]%s", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case LOC_OPT_INT:
+				case LOC_OPT_OFFSET:
+				case LOC_OPT_RANGE:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-%s nnn", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case LOC_OPT_STRING:
+				case LOC_OPT_SYNTAX:
+				case LOC_OPT_ENCODING:
+				case LOC_OPT_FILE_TYPE:
+				case LOC_OPT_COLORS:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-%s sss", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case GLO_OPT_BOOL:
+				case GLO_OPT_INT:
+				case GLO_OPT_STRING:
+				case GLO_OPT_PATH:
+				{
+					break;
+				}
+
+			}
+			if (y) {
+				if (glopts[x].menu)
+					printf("    %-23s %s\n", buf, glopts[x].menu);
+				else
+					printf("    %-23s\n", buf);
+			}
+		} else if (type == 1) {
+			int y = 0;
+			switch (glopts[x].type) {
+				case GLO_OPT_BOOL:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-[-]%s", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case GLO_OPT_INT:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-%s nnn", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case GLO_OPT_STRING:
+				case GLO_OPT_PATH:
+				{
+					joe_snprintf_1(buf, SIZEOF(buf), "-%s sss", glopts[x].name);
+					y = 1;
+					break;
+				}
+				case LOC_OPT_BOOL:
+				case LOC_OPT_INT:
+				case LOC_OPT_OFFSET:
+				case LOC_OPT_RANGE:
+				case LOC_OPT_STRING:
+				case LOC_OPT_SYNTAX:
+				case LOC_OPT_ENCODING:
+				case LOC_OPT_FILE_TYPE:
+				case LOC_OPT_COLORS:
+				{
+					break;
+				}
+
+			}
+			if (y) {
+				if (glopts[x].menu)
+					printf("    %-23s %s\n", buf, glopts[x].menu);
+				else
+					printf("    %-23s\n", buf);
+			}
 		}
 	}
 
