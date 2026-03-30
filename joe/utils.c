@@ -80,7 +80,11 @@ int joe_ioctl(int fd, unsigned long req, void *ptr)
 {
 	int rt;
 	do {
+#ifdef __CYGWIN__
+		rt = ioctl(fd, (int)req, ptr);
+#else
 		rt = ioctl(fd, req, ptr);
+#endif
 	} while (rt == -1 && errno == EINTR);
 	return rt;
 }

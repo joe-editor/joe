@@ -592,7 +592,7 @@ const char *xdg_state_dir(void)
 
 char *open_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix)
 {
-	JFILE *f;
+	JFILE *f = 0;
 	char *fullpath = 0;
 	const char *home = getenv("HOME");
 	const char *xdg = xdg_config_dir();

@@ -102,7 +102,7 @@
 
  -skiptop nnn	Don't use top nnn lines of the screen
 
--notite         Don't send terminal initialization and termination strings:
+ -notite         Don't send terminal initialization and termination strings:
                 prevents restoration of screen on exit.
 
  -nolinefeeds	Prevent sending linefeeds to preserve screen history in terminal
@@ -1006,21 +1006,21 @@ ltarw,rtarw,begin_marking,prevword,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Lef
  Ctrl-arrow is reliable, so we bind it to marking
  Comment out this group to fully enable above:
 
-uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Ctrl-Up Mark up line
-uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 5 A        Old Gnome-terminal
-uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O a		Rxvt
+ uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Ctrl-Up Mark up line
+ uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 5 A        Old Gnome-terminal
+ uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O a		Rxvt
 
-dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Ctrl-Down Mark down line
-dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
-dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O b
+ dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Ctrl-Down Mark down line
+ dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
+ dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O b
 
-rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Ctrl-Right Mark right
-rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C
-rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O c
+ rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Ctrl-Right Mark right
+ rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C
+ rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O c
 
-ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Ctrl-Left Mark left
-ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 5 D
-ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O d
+ ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Ctrl-Left Mark left
+ ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 5 D
+ ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O d
 
  Extra functions not really part of JOE user interface:
 

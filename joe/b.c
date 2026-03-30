@@ -2081,6 +2081,7 @@ static H *bldchn(const char *blk, ptrdiff_t size, off_t *nlines)
 	} while (size);
 	l = anchor.link.next;
 	deque(H, link, &anchor);
+	ITEM = 0; /* Suppress dangling pointer (to local &anchor) warning */
 	return l;
 }
 
