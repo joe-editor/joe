@@ -968,7 +968,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			*glopts[x].set.s = zdup(s);
 		break;
 	case LOC_OPT_STRING:
-		*(char **)((char *)&bw->o+glopts[x].ofst) = zdup(s);
+		*OPTPTR(&bw->o, glopts[x].ofst, char *) = zdup(s);
 		break;
 	case LOC_OPT_INT:
 		v = (int)calc(bw, s, 0);
@@ -976,7 +976,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			msgnw(bw->parent, merr);
 			ret = -1;
 		} else if (v >= glopts[x].low && v <= glopts[x].high)
-			*(int *) ((char *) &bw->o + glopts[x].ofst) = v;
+			*OPTPTR(&bw->o, glopts[x].ofst, int) = v;
 		else {
 			msgnw(bw->parent, joe_gettext(_("Value out of range")));
 			ret = -1;
@@ -988,7 +988,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			msgnw(bw->parent, merr);
 			ret = -1;
 		} else if (vv >= glopts[x].low && vv <= glopts[x].high)
-			*(off_t *) ((char *) &bw->o + glopts[x].ofst) = vv;
+			*OPTPTR(&bw->o, glopts[x].ofst, off_t) = vv;
 		else {
 			msgnw(bw->parent, joe_gettext(_("Value out of range")));
 			ret = -1;
@@ -1000,7 +1000,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			msgnw(bw->parent, merr);
 			ret = -1;
 		} else if (vv >= glopts[x].low && vv <= glopts[x].high)
-			*(off_t *) ((char *) &bw->o + glopts[x].ofst) = vv;
+			*OPTPTR(&bw->o, glopts[x].ofst, off_t) = vv;
 		else {
 			msgnw(bw->parent, joe_gettext(_("Value out of range")));
 			ret = -1;
@@ -1372,8 +1372,8 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 		case LOC_OPT_STRING:
 			xx = (int *) joe_malloc(SIZEOF(int));
 			*xx = y;
-			if(*(char **)((char *)&bw->o+glopts[y].ofst))
-				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes,*(char **)((char *)&bw->o+glopts[y].ofst));
+			if(*OPTPTR(&bw->o, glopts[y].ofst, char *))
+				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes, *OPTPTR(&bw->o, glopts[y].ofst, char *));
 			else
 				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes,"");
 			if(wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, utf8_map, 0))
@@ -1415,13 +1415,17 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 			else
 				return -1;
 		case LOC_OPT_INT:
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst));
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *OPTPTR(&bw->o, glopts[y].ofst, int));
 			goto in;
 		case LOC_OPT_OFFSET:
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
+#ifdef HAVE_LONG_LONG
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), (long long)*OPTPTR(&bw->o, glopts[y].ofst, off_t));
+#else
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), (long)*OPTPTR(&bw->o, glopts[y].ofst, off_t));
+#endif
 			goto in;
 		case LOC_OPT_RANGE:
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst) + 1);
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *OPTPTR(&bw->o, glopts[y].ofst, int) + 1);
 		      in:xx = (int *) joe_malloc(SIZEOF(int));
 
 			*xx = y;
@@ -1487,7 +1491,7 @@ const char *get_status(BW *bw, char *s)
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%s", *glopts[y].set.s ? *glopts[y].set.s : "");
 				return buf;
 			case LOC_OPT_BOOL:
-				return *(int *) ((char *) &bw->o + glopts[y].ofst) ? "ON" : "OFF";
+				return *OPTPTR(&bw->o, glopts[y].ofst, int) ? "ON" : "OFF";
 			case LOC_OPT_INT:
 				joe_snprintf_1(buf, OPT_BUF_SIZE, "%d", *OPTPTR(&bw->o, glopts[y].ofst, int));
 				return buf;
