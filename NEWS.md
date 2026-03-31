@@ -12,6 +12,23 @@
 
 * Enhancements
 
+	* JOE now has the full set of navigation and edit keys
+	  (Ctrl-arrow selection has changed):
+		Ctrl-left, Ctrl-right: go to previous or next word
+		Ctrl-up, Ctrl-down: scroll by one line
+		Ins, Ctrl-Ins, Shift-Ins: Paste
+		Del, Ctrl-Del, Shift-Del: Cut selection or delete character, word or line
+		Shift-arrow: select by line or character
+		Shift-PgUp, Shift-PgDn: select by page
+		Shift-Home, Shift-End: select to beginning or end of line
+		Ctrl-Shift-left, Ctrl-Shift-right: select by words
+		Ctrl-Shift-up, Ctrl-Shift-down: select by paragraphs
+
+	* JOE now follows XDG Base Directory Standard:
+		Put state file in ~/.local/state/joe/ instead of ~/.joe_state
+		Put config and rc files in ~/.config/joe/ instead of ~/.joe
+		(but JOE will find the files in the old places as well)
+
 	* Visible whitespace mode: option to subtly display tabs, spaces and
 	  newlines
 
@@ -23,8 +40,8 @@
 
 	* Consider 'Tc' terminfo flag when determining whether a terminal supports 24-bit color
 
-	* Improved highlighters for: Verilog, SystemVerilog, C, C++, PHP,
-	  Markdown and Python
+	* Improved or added highlighters for: Verilog, SystemVerilog, C,
+	  C++, PHP, Markdown, Python, Debian
 
 	* `-purify` now cleans excess whitespace instead of no-opping
 
