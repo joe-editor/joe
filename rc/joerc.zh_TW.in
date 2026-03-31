@@ -1093,8 +1093,8 @@ center		^K ^A
 center		^K a
 crawll		^K <		Pan left
 crawlr		^K >		Pan right
-if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete block or character
- delch		.kD		Delete character
+ if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete block or character
+delch		.kD		Delete character
 delch		^D
 deleol		^J		Delete to end of line
 dellin		^Y		Delete entire line
@@ -1130,8 +1130,8 @@ gomark		^[ 0 TO 9	Goto bookmark
 groww		^K G		Grow window
 groww		^K ^G
 groww		^K g
-yank		.kI		Insert previously deleted
- insc		.kI		Insert a space
+ yank		.kI		Insert previously deleted
+insc		.kI		Insert a space
  insc		^@
 insf		^K R		Insert a file
 insf		^K ^R

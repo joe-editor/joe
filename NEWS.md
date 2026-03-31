@@ -16,8 +16,8 @@
 	  (Ctrl-arrow selection has changed):
 		Ctrl-left, Ctrl-right: go to previous or next word
 		Ctrl-up, Ctrl-down: scroll by one line
-		Ins, Ctrl-Ins, Shift-Ins: Paste
-		Del, Ctrl-Del, Shift-Del: Cut selection or delete character, word or line
+		Ctrl-Del, Shift-Del: Cut selection or delete word or line
+		(Del remains delete character, and Ins remains insert space)
 		Shift-arrow: select by line or character
 		Shift-PgUp, Shift-PgDn: select by page
 		Shift-Home, Shift-End: select to beginning or end of line

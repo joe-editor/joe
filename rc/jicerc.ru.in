@@ -1125,8 +1125,8 @@ crawll		^K <		Pan left
 crawll		^[ <		Pan left
 crawlr		^K >		Pan right
 crawlr		^[ >		Pan right
-if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete block or character
- delch		.kD		Удалить символ
+ if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete block or character
+delch		.kD		Удалить символ
 delch		^D
 deleol		^J		Удалить до конца строки
 dellin		^Y		Удалить всю строку
@@ -1167,8 +1167,8 @@ gomark		^[ 0 TO 9	Перейти к метке
 groww		^K G		Увеличить окно
 groww		^K ^G
 groww		^K g
-yank		.kI		Insert previously deleted
- insc		.kI		Вставить пробел
+ yank		.kI		Insert previously deleted
+insc		.kI		Вставить пробел
  insc		^@
 insf		^K R		Вставить файл                
 insf		^K ^R

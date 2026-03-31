@@ -994,8 +994,8 @@ center		^K a
 delbol		^Q ^H
 delbol		^Q ^?
 delbol		^Q .kD
-if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete block or character
- delch		.kD		Delete character
+ if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete block or character
+delch		.kD		Delete character
 delch		^G
 deleol		^Q Y		Delete to end of line
 deleol		^Q ^Y
@@ -1054,8 +1054,8 @@ insf		^K r
 macros		^[ d		Dump macros
 macros		^[ ^D
 mode,"overwrite",rtn	^V		Insert/Overtype
-yank		.kI		Insert previously deleted
- mode,"overwrite",rtn	.kI
+ yank		.kI		Insert previously deleted
+mode,"overwrite",rtn	.kI
 lindent		^K ,		Indent to left
 line		^Q I		Goto line no.
 line		^Q ^I
