@@ -968,10 +968,12 @@ eof		^[ [ 8 ^
 yank		^[ [ 2 ; 5 -	Gnome-terminal Ctrl-Ins
 yank		^[ [ 2 ; 5 ~    Xterm Ctrl-Ins
 yank		^[ [ 2 ^
-delw		^[ [ 3 ; 5 ~	Ctrl-Del
-delw		^[ [ 3 ^
- blkdel,nmark	^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
- blkdel,nmark	^[ [ 3 ; 5 ~	Xterm Ctrl-Del
+if,"markv",then,blkdel,nmark,else,delw,endif		^[ [ 3 ; 5 ~	Ctrl-Del Delete block or word
+if,"markv",then,blkdel,nmark,else,delw,endif		^[ [ 3 ^
+ delw		^[ [ 3 ; 5 ~	Delete word
+ delw		^[ [ 3 ^
+ blkdel,nmark	^[ [ 3 ; 5 -	Delete block
+ blkdel,nmark	^[ [ 3 ; 5 ~
 
 
  New Shift-
@@ -990,15 +992,19 @@ ltarw,rtarw,begin_marking,bol,toggle_marking	^[ [ 1 ; 2 H    Shift-Home	Mark to 
 ltarw,rtarw,begin_marking,bol,toggle_marking	^[ [ 7 $ 	Shift-Home	Mark to bol
 rtarw,ltarw,begin_marking,eol,toggle_marking	^[ [ 1 ; 2 F    Shift-End	Mark to eol
 rtarw,ltarw,begin_marking,eol,toggle_marking	^[ [ 8 $ 	Shift-End	Mark to eol
-dellin		^[ [ 3 ; 2 ~	Shift-Del
-dellin		^[ [ 3 $
+if,"markv",then,blkdel,nmark,else,dellin,endif		^[ [ 3 ; 2 ~	Ctrl-Del Delete block or line
+if,"markv",then,blkdel,nmark,else,dellin,endif		^[ [ 3 $
+ dellin		^[ [ 3 ; 2 ~	Shift-Del
+ dellin		^[ [ 3 $
 yank		^[ [ 2 ; 2 ~	Shift-Ins [but Shift-Ins usually pastes]
 yank		^[ [ 2 $
 
  Shift-Ctrl-
 
-upslide		^[ [ 1 ; 6 A	Shift-Ctrl-Up
-dnslide		^[ [ 1 ; 6 B	Shift-Ctrl-Down
+ upslide		^[ [ 1 ; 6 A	Shift-Ctrl-Up
+uparw,dnarw,begin_marking,bop,toggle_marking	^[ [ 1 ; 6 A    Mark up paragraph
+ dnslide		^[ [ 1 ; 6 B	Shift-Ctrl-Down
+dnarw,uparw,begin_marking,eop,toggle_marking	^[ [ 1 ; 6 B    Mark down paragraph
 rtarw,ltarw,begin_marking,nextword,toggle_marking	^[ [ 1 ; 6 C    Shift-Ctrl-Right Mark right word
 ltarw,rtarw,begin_marking,prevword,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Left Mark left word
 
@@ -1145,7 +1151,7 @@ crawll		^K <		Pan left
 crawll		^[ <		Pan left
 crawlr		^K >		Pan right
 crawlr		^[ >		Pan right
-delch		.kD		Delete character
+if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete character
 delch		^D
 deleol		^J		Delete to end of line
 dellin		^Y		Delete entire line
@@ -1181,7 +1187,9 @@ gomark		^[ 0 TO 9	Goto bookmark
 groww		^K G		Grow window
 groww		^K ^G
 groww		^K g
-insc		.kI		Insert a space
+yank		.kI		Insert previously deleted
+ insc		.kI		Insert a space
+ mode,"overwrite",rtn	.kI	Toggle insert/overtype
  insc		^@
 insf		^K R		Insert a file
 insf		^K ^R
