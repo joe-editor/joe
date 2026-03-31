@@ -1151,7 +1151,8 @@ crawll		^K <		Pan left
 crawll		^[ <		Pan left
 crawlr		^K >		Pan right
 crawlr		^[ >		Pan right
-if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete character
+if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete block or character
+ delch		.kD		Delete character
 delch		^D
 deleol		^J		Delete to end of line
 dellin		^Y		Delete entire line

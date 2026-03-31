@@ -830,10 +830,13 @@ eof		^[ [ 8 ^
 yank		^[ [ 2 ; 5 -	Gnome-terminal Ctrl-Ins
 yank		^[ [ 2 ; 5 ~    Xterm Ctrl-Ins
 yank		^[ [ 2 ^
-delw		^[ [ 3 ; 5 ~	Ctrl-Del
-delw		^[ [ 3 ^
- blkdel,nmark	^[ [ 3 ; 5 -	Gnome-terminal Ctrl-Del
- blkdel,nmark	^[ [ 3 ; 5 ~	Xterm Ctrl-Del
+if,"markv",then,blkdel,nmark,else,delw,endif		^[ [ 3 ; 5 ~	Ctrl-Del Delete block or word
+if,"markv",then,blkdel,nmark,else,delw,endif		^[ [ 3 ^
+ delw		^[ [ 3 ; 5 ~	Delete word
+ delw		^[ [ 3 ^
+ blkdel,nmark	^[ [ 3 ; 5 -	Delete block
+ blkdel,nmark	^[ [ 3 ; 5 ~
+
 
  New Shift-
 
@@ -851,15 +854,19 @@ ltarw,rtarw,begin_marking,bol,toggle_marking	^[ [ 1 ; 2 H    Shift-Home	Mark to 
 ltarw,rtarw,begin_marking,bol,toggle_marking	^[ [ 7 $ 	Shift-Home	Mark to bol
 rtarw,ltarw,begin_marking,eol,toggle_marking	^[ [ 1 ; 2 F    Shift-End	Mark to eol
 rtarw,ltarw,begin_marking,eol,toggle_marking	^[ [ 8 $ 	Shift-End	Mark to eol
-dellin		^[ [ 3 ; 2 ~	Shift-Del
-dellin		^[ [ 3 $
+if,"markv",then,blkdel,nmark,else,dellin,endif		^[ [ 3 ; 2 ~	Ctrl-Del Delete block or line
+if,"markv",then,blkdel,nmark,else,dellin,endif		^[ [ 3 $
+ dellin		^[ [ 3 ; 2 ~	Shift-Del
+ dellin		^[ [ 3 $
 yank		^[ [ 2 ; 2 ~	Shift-Ins [but Shift-Ins usually pastes]
 yank		^[ [ 2 $
 
  Shift-Ctrl-
 
-upslide		^[ [ 1 ; 6 A	Shift-Ctrl-Up
-dnslide		^[ [ 1 ; 6 B	Shift-Ctrl-Down
+ upslide		^[ [ 1 ; 6 A	Shift-Ctrl-Up
+uparw,dnarw,begin_marking,bop,toggle_marking	^[ [ 1 ; 6 A    Mark up paragraph
+ dnslide		^[ [ 1 ; 6 B	Shift-Ctrl-Down
+dnarw,uparw,begin_marking,eop,toggle_marking	^[ [ 1 ; 6 B    Mark down paragraph
 rtarw,ltarw,begin_marking,nextword,toggle_marking	^[ [ 1 ; 6 C    Shift-Ctrl-Right Mark right word
 ltarw,rtarw,begin_marking,prevword,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Left Mark left word
 
@@ -880,6 +887,7 @@ ltarw,rtarw,begin_marking,prevword,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Lef
  ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Ctrl-Left Mark left
  ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 5 D
  ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O d
+
 
 paste			^[ ] 5 2 ;		Base64 paste (obsolete)
 brpaste			^[ [ 2 0 0 ~		Bracketed paste
@@ -986,7 +994,8 @@ center		^K a
 delbol		^Q ^H
 delbol		^Q ^?
 delbol		^Q .kD
-delch		.kD		Delete character
+if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete block or character
+ delch		.kD		Delete character
 delch		^G
 deleol		^Q Y		Delete to end of line
 deleol		^Q ^Y
@@ -1045,7 +1054,8 @@ insf		^K r
 macros		^[ d		Dump macros
 macros		^[ ^D
 mode,"overwrite",rtn	^V		Insert/Overtype
-mode,"overwrite",rtn	.kI
+yank		.kI		Insert previously deleted
+ mode,"overwrite",rtn	.kI
 lindent		^K ,		Indent to left
 line		^Q I		Goto line no.
 line		^Q ^I
