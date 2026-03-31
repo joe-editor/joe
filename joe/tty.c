@@ -938,6 +938,8 @@ static void mpxend(void)
 #else
 #ifdef __CYGWIN__
 #define USEPTMX 1
+int grantpt(int);
+int unlockpt(int);
 #endif
 #endif
 
@@ -957,7 +959,7 @@ static char *getpty(int *ptyfd, int *ttyfd)
 
 /* Strange streams way */
 
-extern char *ptsname();
+extern char *ptsname(int);
 
 static char *getpty(int *ptyfd, int *ttyfd)
 {
@@ -1106,7 +1108,7 @@ MPX *mpxmk(int *ptyfd, const char *cmd, char **args, void (*func)(void *object, 
 	pid_t pid;
 	int x;
 	MPX *m = 0;
-	char *name;
+	char *name = NULL;
 	int ttyfd = -1;
 
 	/* Find free slot */

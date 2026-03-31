@@ -299,7 +299,7 @@ SCHEME *load_scheme(const char *name)
 {
 	SCHEME *colors;
 	COLORSET *curset;
-	struct color_def **lastdef;
+	struct color_def **lastdef= NULL;
 	struct color_macro *macros = NULL;
 	const char *p;
 	char buf[1024];

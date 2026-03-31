@@ -12,11 +12,11 @@
 #define FALLTHROUGH
 #endif
 
-#ifdef HAVE_FUNC_ATTRIBUTE_MALLOC_ARGS
+#if defined(HAVE_FUNC_ATTRIBUTE_MALLOC_ARGS) && !defined(__clang__)
 #define ATTR_JOE_MALLOC __attribute__((malloc(joe_free, 1)))
 #define ATTR_MALLOC(func, index) __attribute__((malloc(func, index)))
 #else /*!malloc_args*/
-#ifdef HAVE_FUNC_ATTRIBUTE_MALLOC /* hello, clang */
+#if defined(HAVE_FUNC_ATTRIBUTE_MALLOC) && !defined(__clang__) /* hello, clang */
 #define ATTR_JOE_MALLOC __attribute__((malloc))
 #define ATTR_MALLOC(func, index) __attribute__((malloc))
 #else /*!malloc*/
