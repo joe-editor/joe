@@ -40,7 +40,7 @@
 	"{}[]"		brace		recolor=-1
 	"-"		option		recolor=-1
 	"0-9"		maybe_base	recolor=-1
-	"a-zA-Z!_/"	ident		buffer mark
+	"a-zA-Z!_/"	ident_start	mark noeat
 
 :brace Brace
 	*		idle		noeat
@@ -256,6 +256,9 @@ done
 	*		idle		noeat
 	"#"		idle
 	"0-9"		maybe_base
+
+:ident_start Ident
+	*		ident		buffer
 
 :ident Ident
 	*		idle		noeat strings
