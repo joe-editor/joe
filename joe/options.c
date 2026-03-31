@@ -317,6 +317,8 @@ struct glopts {
 	ptrdiff_t ofst;		/* Local options structure member offset */
 	int low;		/* Low limit for numeric options */
 	int high;		/* High limit for numeric options */
+	/* For *_OPT_BOOL, if .yes=NULL or .no=NULL, a message using the menu
+	 * string (if non-NULL) & "ON" or "OFF" will be generated at need */
 } glopts[] = {
 	{"overwrite",           LOC_OPT_BOOL, { NULL }, (char *) &fdefault.overtype, _("Overtype mode"), _("Insert mode"), _("Overtype mode"), 0, 0, 0 },
 	{"hex",                 LOC_OPT_BOOL, { NULL }, (char *) &fdefault.hex, _("Hex edit mode"), _("Text edit mode"), _("Hex edit display mode"), 0, 0, 0 },
@@ -1259,6 +1261,7 @@ static int find_option(char *s)
 static int applyopt(BW *bw, int *optp, int y, int flg)
 {
 	int oldval, newval;
+	const char *msg;
 
 	oldval = *optp;
 	if (flg == 0) {
@@ -1273,8 +1276,18 @@ static int applyopt(BW *bw, int *optp, int y, int flg)
 	}
 
 	*optp = newval;
-	msgnw(bw->parent, newval ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
 
+	msg = newval ? glopts[y].yes : glopts[y].no;
+	if (msg)
+		msgnw(bw->parent, joe_gettext(msg));
+	else {
+		msg = newval ? "ON" : "OFF";
+		if (glopts[y].menu) {
+			joe_snprintf_2(msgbuf, JOE_MSGBUFSIZE, "%s: %s", joe_gettext(glopts[y].menu), msg);
+			msgnw(bw->parent, msgbuf);
+		} else
+			msgnw(bw->parent, msg);
+	}
 	return oldval;
 }
 
