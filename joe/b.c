@@ -2746,7 +2746,7 @@ B *bload(const char *s)
 	} else
 #endif
 	if (!zcmp(n, "-")) {
-#ifdef junk
+#if 0
 		FILE *f;
 		struct stat y;
 		fi = stdin;

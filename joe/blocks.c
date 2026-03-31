@@ -615,7 +615,7 @@ ptrdiff_t mcnt(REGISTER const char *blk, REGISTER char c, ptrdiff_t size)
 	return nlines;
 }
 
-#ifdef junk
+#if 0
 
 char *mchr(REGISTER char *blk, char c)
 {

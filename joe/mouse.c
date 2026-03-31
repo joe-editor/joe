@@ -130,7 +130,7 @@ int uxtmouse(W *w, int k)
 {
 	int cb = (unsigned char)ttgetc();
 	Cb = cb - 32;
-	if (cb < 32)
+	if (cb < 32) /* this construction avoids a signed overflow warning */
 		return -1;
 	if (Cb == 3)
 		Cb = Cb_RELEASE;

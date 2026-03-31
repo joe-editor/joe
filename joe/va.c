@@ -98,7 +98,7 @@ aELEMENT *vafill(aELEMENT *vary, ptrdiff_t pos, aELEMENT el, ptrdiff_t len)
 	return vary;
 }
 
-#ifdef junk
+#if 0
 aELEMENT *vancpy(aELEMENT *vary, ptrdiff_t pos, aELEMENT *array, ptrdiff_t len)
 {
 	ptrdiff_t olen = aLEN(vary);

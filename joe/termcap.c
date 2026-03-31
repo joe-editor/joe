@@ -725,7 +725,7 @@ char *tcompile(CAP *cap, const char *s, ptrdiff_t a0, ptrdiff_t a1, ptrdiff_t a2
 }
 
 /* Old termcap compatibility (not to be used when TERMINFO is set) */
-#ifdef junk
+#if 0
 short ospeed;			/* Output speed */
 char PC, *UP, *BC;		/* Unused */
 static CAP *latest;		/* CAP entry to use */

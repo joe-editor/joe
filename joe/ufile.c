@@ -1208,7 +1208,7 @@ int ulose(W *w, int k)
 
 /* Buffer list */
 
-#ifdef junk
+#if 0
 
 static int dobuf(MENU *m, int x, char **s)
 {

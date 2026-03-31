@@ -229,7 +229,7 @@ VFILE *vtmp(void)
 	return enqueb_f(VFILE, link, &vfiles, newf);
 }
 
-#ifdef junk
+#if 0
 
 VFILE *vopen(name)
 char *name;
@@ -295,7 +295,7 @@ void vclose(VFILE *vfile)
 			}
 }
 
-#ifdef junk
+#if 0
 /* this is now broken */
 void vlimit(amount)
 long amount;
@@ -356,7 +356,7 @@ off_t my_valloc(VFILE *vfile, off_t size)
 	return start;
 }
 
-#ifdef junk
+#if 0
 
 void vseek(vfile, addr)
 VFILE *vfile;
