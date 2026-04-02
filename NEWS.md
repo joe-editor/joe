@@ -12,6 +12,7 @@
 
 * Enhancements
 
+
 	* JOE now has the full set of navigation and edit keys
 	  (Ctrl-arrow selection has changed):
 		Ctrl-left, Ctrl-right: go to previous or next word
