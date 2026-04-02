@@ -1,4 +1,4 @@
-/*
+/* hi
  *	Editor engine
  *	Copyright
  *		(C) 1992 Joseph H. Allen
