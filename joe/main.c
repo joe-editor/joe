@@ -181,6 +181,11 @@ int edloop(int flg)
 			bw->o.spaces = 0;
 		}
 
+		/* FIXME: if we don't receive input in a reasonably short time,
+		 * assume that the pasting's done and call ubrpaste_done.
+		 * Also need to do that on switching buffer? Other times? */
+		if (bw->pasting) exemac_pasting(1); /* we're in paste mode */
+
 		if (maint->curwin->main && maint->curwin->main != maint->curwin) {
 			ptrdiff_t x = maint->curwin->kbd->x;
 
@@ -201,6 +206,8 @@ int edloop(int flg)
 			ttgetch();
 			ret = exemac(type_backtick, NO_MORE_DATA);
 		}
+
+		if (!bw->pasting) exemac_pasting(0); /* okay, done for now */
 
 		/* trailing part of disabled autoindent */
 		if (pastehack && !leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck()) {

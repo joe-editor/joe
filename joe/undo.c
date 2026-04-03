@@ -108,6 +108,14 @@ int uundo(W *w, int k)
 	UNDO *undo;
 	BW *bw;
 	WIND_BW(bw, w);
+
+	if (bw->pasting) {
+		/* won't happen unless people mess with certain commands */
+		exemac_pasting(0);
+		ubrpaste_done(w, k);
+		return 0;
+	}
+
 	undo = bw->b->undo;
 
 	if (!undo)
