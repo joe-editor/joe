@@ -85,6 +85,10 @@ static int keyval(char *s)
 		default:
 			return s[1] & 0x1F;
 		}
+	else if (s[0] == '^' && s[1] == '^' && s[2] >= '@' && s[2] <= 127 && !s[3])
+		return KEY_CTRLCAPLOWER | (s[2] & 0x1F);
+	else if (s[0] == '^' && s[1] == '@' && (s[2] & 0xDF) >= 'A' && (s[2] & 0xDF) <= 'Z' && !s[3])
+		return KEY_CAPLOWER | (s[2] & 0x1F);
 	else if ((s[0] == 'S' || s[0] == 's')
 		 && (s[1] == 'P' || s[1] == 'p') && !s[2])
 		return ' ';
@@ -163,6 +167,8 @@ static char *range(char *seq, int *vv, int *ww)
 		return NULL;
 	seq[x] = c;		/* Restore the space or 0 */
 	for (seq += x; *seq == ' '; ++seq) ;	/* Skip over spaces */
+	if (v >= KEY_CTRLCAPLOWER && v <= KEY_CAPLOWER_LAST)
+		goto done;
 
 	/* Check for 'TO ' */
 	if ((seq[0] == 'T' || seq[0] == 't') && (seq[1] == 'O' || seq[1] == 'o') && seq[2] == ' ') {
@@ -180,6 +186,7 @@ static char *range(char *seq, int *vv, int *ww)
 	if (v > w)
 		return NULL;
 
+	done:
 	*vv = v;
 	*ww = w;
 	return seq;
@@ -296,9 +303,29 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, MACRO *bind, int *err, cons
 	if (!kmap)
 		kmap = mkkmap();	/* Create new keymap if 'kmap' was NULL */
 
-	/* Make bindings between v and w */
-	if (v <= w) {
+	if (v >= KEY_CTRLCAPLOWER && v <= KEY_CAPLOWER_LAST) {
+		/* Make two or three bindings, e.g. Ctrl-A (if three), 'A' and 'a' */
+		int k = v >= KEY_CAPLOWER ? 64 : 0;
+		v &= 31;
+		for (; k <= 96; k += 32) {
+			if (*seq) {
+				KMAP *old;
+				if (k == 32)
+					continue;
+				old = (KMAP *)interval_lookup(kmap->src, NULL, k|v);
+				if (!old || !old->what) {
+					kmap->src = interval_add(kmap->src, k|v, k|v, kbuild(cap, NULL, seq, bind, err, NULL, 0));
+					++kmap->src_version;
+				} else
+					kbuild(cap, old, seq, bind, err, NULL, 0);
+			} else {
+				kmap->src = interval_add(kmap->src, k|v, k|v, bind);
+				++kmap->src_version;
+			}
+		}
+	} else if (v <= w) {
 		if (*seq || seql) {
+			/* Make bindings from a looked-up sequence */
 			KMAP *old = (KMAP *)interval_lookup(kmap->src, NULL, v);
 			if (!old || !old->what) {
 				kmap->src = interval_add(kmap->src, v, w, kbuild(cap, NULL, seq, bind, err, capseq, seql));
@@ -306,6 +333,7 @@ static KMAP *kbuild(CAP *cap, KMAP *kmap, char *seq, MACRO *bind, int *err, cons
 			} else
 				kbuild(cap, old, seq, bind, err, capseq, seql);
 		} else {
+			/* Make bindings between v and w */
 			kmap->src = interval_add(kmap->src, v, w, bind);
 			++kmap->src_version;
 		}
@@ -348,8 +376,18 @@ int kdel(KMAP *kmap, char *seq)
 	if (!seq)
 		return -1;
 
-	/* Clear bindings between v and w */
-	if (v <= w) {
+	if (v >= KEY_CTRLCAPLOWER && v <= KEY_CTRLCAPLOWER_LAST) {
+		/* Clear three codes, e.g Ctrl-A, 'A' and 'a' */
+		char s[2] = {};
+		char c = (char)v & 31;
+		s[0] = c;
+		kdel(kmap, s);
+		s[0] = c | 64;
+		kdel(kmap, s);
+		s[0] = c | 96;
+		kdel(kmap, s);
+	} else if (v <= w) {
+		/* Clear bindings between v and w */
 		if (*seq) {
 			KMAP *old = (KMAP *)interval_lookup(kmap->src, NULL, v);
 			if (old->what == 1) {
