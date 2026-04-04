@@ -211,13 +211,14 @@ done
 :comma Idle
 	*		bad		noeat
 	",|"		resume		call=.space()		# next package
-	"(["		bracketed	save_c recolor=-1	# version or arch
+	"([<"		bracketed	save_c recolor=-1	# version or arch
 	"\s"		comma		noeat call=.space()
 	"\n"		comma_reset
 :comma_reset Idle # at line start
 	*		NULL		return noeat
 	"#"		comma_reset	noeat call=.comment()
 	"\s"		comma		call=.space()
+	"\n"		NULL		return noeat
 
 :subst Brace
 	*		bad		noeat recolor=-2
@@ -231,6 +232,7 @@ done
 	*		NULL		return noeat
 	"#"		bracket_reset	noeat call=.comment()
 	"\s"		bracketed	call=.space()
+	"\n"		NULL		return noeat
 
 :bad Bad
 	*		bad
@@ -239,6 +241,7 @@ done
 	*		NULL		return noeat
 	"#"		bad_reset	noeat call=.comment()
 	"\s"		bad		call=.space()
+	"\n"		NULL		return noeat
 .end
 
 # "deb" or "deb-src": old-style sources.list line
