@@ -2363,7 +2363,7 @@ int guess_utf16;
 
 /* Read up to 'max' bytes from a file into a buffer */
 /* Returns with 0 in error or -2 in error for read error */
-B *bread(int fi, off_t max)
+B *bread(int fi, off_t max, int binary)
 {
 	B *b;
 	H anchor, *l;
@@ -2377,7 +2377,7 @@ B *bread(int fi, off_t max)
 	berror = 0;
 	seg = vlock(vmem, (l = halloc())->seg);
 
-	if (guess_utf16) {
+	if (!binary && guess_utf16) {
 		/* Read first segment here: detect UTF-16 */
 		amnt = bkread(fi, inbuf, max >= SEGSIZ ? SEGSIZ : (ptrdiff_t)max);
 		if (berror && !amnt) {
@@ -2495,7 +2495,7 @@ B *bread(int fi, off_t max)
 		b->o.charmap = utf16_map;
 	else if (type == 3)
 		b->o.charmap = utf16r_map;
-	else {
+	else if (!binary) {
 		/* Guess encoding for case of no-conversion load */
 		char buf[1024];
 		ptrdiff_t len = SIZEOF(buf);
@@ -2504,6 +2504,10 @@ B *bread(int fi, off_t max)
 		brmem(b->bof, buf, len);
 		b->o.charmap = guess_map(buf, len);
 		b->o.map_name = b->o.charmap->name;
+	} else {
+		b->o.charmap = find_charmap("ascii");
+		b->o.map_name = b->o.charmap->name;
+		b->o.hex = 1;
 	}
 
 	return b;
@@ -2517,17 +2521,19 @@ B *bread(int fi, off_t max)
  *
  * Returns new variable length string.
  */
-char *parsens(const char *s, off_t *skip, off_t *amnt)
+char *parsens(const char *s, off_t *skip, off_t *amnt, int *binary)
 {
 	char *n = vsncpy(NULL, 0, sz(s));
 	ptrdiff_t x;
 
 	*skip = 0;
 	*amnt = MAXOFF;
+	*binary = 0;
 	x = sLEN(n) - 1;
 	if (x > 0 && n[x] >= '0' && n[x] <= '9') {
 		for (x = sLEN(n) - 1; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
 		if (n[x] == ',' && x && n[x-1] != '\\') {
+			*binary = 1;
 			n[x] = 0;
 
 			*skip = ztoo(n + x + 1);
@@ -2717,6 +2723,7 @@ B *bload(const char *s)
 	FILE *fi = 0;
 	B *b = 0;
 	off_t skip, amnt;
+	int binary;
 	char *n;
 	int nowrite = 0;
 	P *p;
@@ -2735,7 +2742,7 @@ B *bload(const char *s)
 		return b;
 	}
 
-	n = parsens(s, &skip, &amnt);
+	n = parsens(s, &skip, &amnt, &binary);
 
 	/* Open file or stream */
 #ifndef __MSDOS__
@@ -2807,7 +2814,7 @@ B *bload(const char *s)
 	}
 
 	/* Read from stream into new buffer */
-	b = bread(fileno(fi), amnt);
+	b = bread(fileno(fi), amnt, binary);
 	empty:
 	b->mod_time = mod_time;
 	setopt(b,n);
@@ -2833,7 +2840,9 @@ opnerr:
 	b->name = joesep(zdup(s));
 
 	/* Set flags */
-	if (berror || s[0] == '!' || skip || amnt != MAXOFF) {
+	if (berror || s[0] == '!' || skip || amnt != MAXOFF || binary) {
+		/* We probably could backup data for binary files,
+		   but ufile.c:backup() can't deal with the comma suffix names */
 		b->backup = 1;
 		b->changed = 0;
 	} else if (!zcmp(n, "-")) {
@@ -2847,7 +2856,7 @@ opnerr:
 		b->rdonly = b->o.readonly = 1;
 
 	/* If first line has CR-LF, assume MS-DOS file */
-	if (guesscrlf) {
+	if (!binary && guesscrlf) {
 		int crlf = b->o.crlf;
 		b->o.crlf = 0; /* Prevent CR-LF to LF conversion for this test */
 		p=pdup(b->bof, "bload");
@@ -2870,7 +2879,7 @@ opnerr:
 
 	/* Search backwards through file: if first indented line
 	   is indented with a tab, assume indentc is tab */
-	if (guessindent) {
+	if (!binary && guessindent) {
 		int ix, y;
 		off_t guessed_step = 0;
 		int hist[20];
@@ -2945,9 +2954,20 @@ opnerr:
 	}
 
 	/* Disable syntax highlighting and context display on very large files */
-	if (b->eof->line > 450000 || b->eof->byte > 16000000) {
+	if (b->eof->line > 450000 || b->eof->byte > 16000000 || binary) {
 		b->o.title = 0;
 		b->o.highlight = 0;
+	}
+
+	/* Options for binary files */
+	if (binary) {
+		b->o.hex = 1;
+		b->o.wordwrap = 0;
+		b->o.autoindent = 0;
+		b->o.indentc = 9;
+		b->o.istep = 1;
+		b->o.tab = 8;
+		b->o.overtype = 1;
 	}
 
 	/* Eliminate parsed name */
@@ -3166,8 +3186,9 @@ int bsave(P *p, const char *as, off_t size, int flag)
 	int have_stat = 0;
 	FILE *f;
 	off_t skip, amnt;
+	int binary;
 	int norm = 0;
-	char *s = parsens(as, &skip, &amnt);
+	char *s = parsens(as, &skip, &amnt, &binary);
 
 	if (amnt < size)
 		size = amnt;
