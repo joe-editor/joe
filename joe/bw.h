@@ -26,6 +26,9 @@ struct bw {
 	struct lattr_db *db;	/* line attribute database */
 	int	shell_flag;	/* Cursor should follow shell cursor in this window */
 	int	pasting;	/* Whether a paste operation is occurring in this window */
+	struct {
+		int ww, ai, sp;	/* saved during bracketed paste */
+	} saved;
 };
 
 extern int dspasis;	/* Display characters above 127 as-is */

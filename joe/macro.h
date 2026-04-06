@@ -81,6 +81,7 @@ extern int current_arg_set; /* Set if repeat arg was given */
    K overrides the key for the macro if it is not -1.
 */
 int exemac(MACRO *m, int k);
+void exemac_pasting(int pasting);
 
 /* Execute a macro as a subroutine
     u set to treat as single undo step
