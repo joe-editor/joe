@@ -95,7 +95,7 @@ AC_SEARCH_LIBS(tgetflag, $search_libs, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we ha
 AC_SEARCH_LIBS(snprintf, snprintf db, AC_DEFINE_UNQUOTED(HAVE_SNPRINTF, 1, [If we have snprintf]))
 
 # Checks for header files.
-AC_SYS_LARGEFILE
+m4_ifdef([AC_SYS_YEAR2038], [AC_SYS_YEAR2038], [AC_SYS_LARGEFILE])
 AC_HEADER_DIRENT
 AC_SYS_POSIX_TERMIOS
 if test "$ac_cv_sys_posix_termios" = "yes"; then
