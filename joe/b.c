@@ -2957,6 +2957,17 @@ opnerr:
 		b->o.highlight = 0;
 	}
 
+	/* Options for binary files */
+	if (binary) {
+		b->o.hex = 1;
+		b->o.wordwrap = 0;
+		b->o.autoindent = 0;
+		b->o.indentc = 9;
+		b->o.istep = 1;
+		b->o.tab = 8;
+		b->o.overtype = 1;
+	}
+
 	/* Eliminate parsed name */
 	vsrm(n);
 
