@@ -2840,7 +2840,9 @@ opnerr:
 	b->name = joesep(zdup(s));
 
 	/* Set flags */
-	if (berror || s[0] == '!' || skip || amnt != MAXOFF) {
+	if (berror || s[0] == '!' || skip || amnt != MAXOFF || binary) {
+		/* We probably could backup data for binary files,
+		   but ufile.c:backup() can't deal with the comma suffix names */
 		b->backup = 1;
 		b->changed = 0;
 	} else if (!zcmp(n, "-")) {
