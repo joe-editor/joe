@@ -1148,6 +1148,8 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 	int fw[2] = { -1, -1 };
 	int flg = 0;
 	int writeonly = object != NULL;
+	pid_t pid;
+	int exitstatus;
 	BW *bw;
 	WIND_BW(bw, w);
 
@@ -1175,9 +1177,9 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 	npartial(bw->parent->t->t);
 	ttclsn();
 #ifdef HAVE_FORK
-	if (!fork()) {
+	if (!(pid = fork())) {
 #else
-	if (!vfork()) { /* For AMIGA only */
+	if (!(pid = vfork())) { /* For AMIGA only */
 #endif
 #ifdef HAVE_PUTENV
 		char *fname;
@@ -1280,8 +1282,10 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 				unmark(bw->parent, 0);
 		}
 		close(fr[0]);
-		wait(NULL);
-		wait(NULL);
+		if (wait(&exitstatus) == pid)
+			wait(NULL);
+		else
+			wait(&exitstatus);
 	} else {
 		if (square) {
 			B *tmp = pextrect(markb,
@@ -1300,7 +1304,7 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 	if (filtflg)
 		unmark(bw->parent, 0);
 	bw->cursor->xcol = piscol(bw->cursor);
-	return 0;
+	return WIFEXITED(exitstatus) ? WEXITSTATUS(exitstatus)>>8 : -1;
 }
 
 static B *filthist = NULL;
@@ -1401,6 +1405,7 @@ static int doclip(W *w, const struct clipcmd_info *cmdlist, const char *success)
 {
 	BW *bw;
 	static const char *const empty[] = { NULL };
+	int ret = 0;
 	WIND_BW(bw, w);
 #ifdef __MSDOS__
 	(void)empty;
@@ -1419,18 +1424,21 @@ static int doclip(W *w, const struct clipcmd_info *cmdlist, const char *success)
 			if (cmdlist->cmd[0] == '/' && !access(cmdlist->cmd, X_OK)) {
 				/* ideal: absolute pathname */
 				/* FIXME: const char * */
-				if (!dofilt(w, (char *)cmdlist->cmd, (void *)(cmdlist->args ? cmdlist->args : empty), NULL)) {
+				ret = dofilt(w, (char *)cmdlist->cmd, (void *)(cmdlist->args ? cmdlist->args : empty), NULL);
+				if (!ret) {
 					msgnw(bw->parent, joe_gettext(success));
 					return 0;
 				}
 			} else {
 				/* hmm, just the command name */
 				files = rexpnd_cmd_path(cmdlist->cmd);
-				while (*files)
-					if (!dofilt(w, *files++, (void *)(cmdlist->args ? cmdlist->args : empty), NULL)) {
+				while (files && *files) {
+					ret = dofilt(w, *files++, (void *)(cmdlist->args ? cmdlist->args : empty), NULL);
+					if (!ret) {
 						msgnw(bw->parent, joe_gettext(success));
 						return 0;
 					}
+				}
 			}
 		}
 		/* okay, failed; let the "no command" message happen */
