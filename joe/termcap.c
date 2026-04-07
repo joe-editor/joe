@@ -246,7 +246,11 @@ CAP *my_getcap(char *name, long baud, void (*out) (void *, char), void *outptr)
 		fclose(f);
 	}
 	vsrm(idxname);
-	fseek(f1, idx, 0); /* Should be fseeko, but old systems don't have it */
+#ifdef HAVE_FSEEKO
+	fseeko(f1, idx, 0);
+#else
+	fseek(f1, idx, 0);
+#endif
 	cap->tbuf = lfind(cap->tbuf, ti, f1, name);
 	fclose(f1);
 	if (sLEN(cap->tbuf) == ti)
