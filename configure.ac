@@ -147,6 +147,7 @@ AC_CHECK_TYPE([sighandler_t],
 #endif])
 
 # Checks for library functions.
+m4_ifdef([AC_FUNC_FSEEKO], [AC_FUNC_FSEEKO])
 AC_FUNC_LSTAT
 joe_SETPGRP
 AC_TYPE_PID_T

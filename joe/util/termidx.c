@@ -22,7 +22,11 @@ static void gen(char *s, FILE *fd)
 	if (c == '\n')
 		goto loop;
 	oaddr = addr;
+#ifdef HAVE_FSEEKO
+	addr = ftello(fd) - 1;
+#else
 	addr = ftell(fd) - 1;
+#endif
 	ungetc(c, fd);
 	s[x = 0] = 0;
 	while (1) {
