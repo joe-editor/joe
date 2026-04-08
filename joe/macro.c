@@ -331,7 +331,7 @@ int uquery(W *w, int k)
 	return ret;
 }
 
-static int/*bool*/ paste_undo = 1; /* true if not pasting */
+static bool paste_undo = 1; /* true if not pasting */
 
 /* Macro execution */
 

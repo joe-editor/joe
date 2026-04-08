@@ -2521,7 +2521,7 @@ B *bread(int fi, off_t max, int binary)
  *
  * Returns new variable length string.
  */
-char *parsens(const char *s, off_t *skip, off_t *amnt, int *binary)
+char *parsens(const char *s, off_t *skip, off_t *amnt, bool *binary)
 {
 	char *n = vsncpy(NULL, 0, sz(s));
 	ptrdiff_t x, y;
@@ -2626,13 +2626,13 @@ static off_t euclid(off_t a, off_t b)
 }
 
 /* return column of first nonblank character, but don't count comments */
-int found_space;
-int found_tab;
+static bool found_space;
+static bool found_tab;
 
 static off_t pisindentg(P *p)
 {
-	int i_spc = 0;
-	int i_tab = 0;
+	bool i_spc = 0;
+	bool i_tab = 0;
 	P *q = pdup(p, "pisindentg");
 	off_t col;
 	int ch;
@@ -2724,9 +2724,9 @@ B *bload(const char *s)
 	FILE *fi = 0;
 	B *b = 0;
 	off_t skip, amnt;
-	int binary;
+	bool binary;
 	char *n;
-	int nowrite = 0;
+	bool nowrite = 0;
 	P *p;
 	int x;
 	time_t mod_time = 0;
@@ -3184,11 +3184,11 @@ bool break_symlinks; /* Set to break symbolic links and hard links on writes */
 int bsave(P *p, const char *as, off_t size, int flag)
 {
 	struct stat sbuf;
-	int have_stat = 0;
+	bool have_stat = 0;
 	FILE *f;
 	off_t skip, amnt;
-	int binary;
-	int norm = 0;
+	bool binary;
+	bool norm = 0;
 	char *s = parsens(as, &skip, &amnt, &binary);
 
 	if (amnt < size)
