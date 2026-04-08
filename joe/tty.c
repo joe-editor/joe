@@ -119,7 +119,7 @@ int idleout = 1;
 
 /* Global configuration variables */
 
-int noxon = 0;			/* Set if ^S/^Q processing should be disabled */
+bool noxon = 0;			/* Set if ^S/^Q processing should be disabled */
 int Baud = 0;			/* Baud rate from joerc, cmd line or environment */
 
 /* The terminal */
@@ -190,9 +190,9 @@ static const long speeds_out[] = {
 
 /* Input buffer */
 
-int have = 0;			/* Set if we have pending input */
 char havec;	/* Character read in during pending input check */
-int leave = 0;			/* When set, typeahead checking is disabled */
+bool have = 0;			/* Set if we have pending input */
+bool leave = 0;			/* When set, typeahead checking is disabled */
 
 /* TTY mode flag.  1 for open, 0 for closed */
 static int ttymode = 0;

@@ -9,7 +9,7 @@
 
 /* Tag database */
 
-int notagsmenu = 0;
+bool notagsmenu = 0;
 
 typedef struct tag TAG;
 static struct tag {

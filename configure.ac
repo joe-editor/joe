@@ -95,7 +95,7 @@ AC_SEARCH_LIBS(tgetflag, $search_libs, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we ha
 AC_SEARCH_LIBS(snprintf, snprintf db, AC_DEFINE_UNQUOTED(HAVE_SNPRINTF, 1, [If we have snprintf]))
 
 # Checks for header files.
-AC_SYS_LARGEFILE
+m4_ifdef([AC_SYS_YEAR2038], [AC_SYS_YEAR2038], [AC_SYS_LARGEFILE])
 AC_HEADER_DIRENT
 AC_SYS_POSIX_TERMIOS
 if test "$ac_cv_sys_posix_termios" = "yes"; then
@@ -107,6 +107,7 @@ else
 	fi
 fi
 AC_HEADER_TIOCGWINSZ
+AC_CHECK_HEADER_STDBOOL
 AC_CHECK_HEADERS([util.h])
 AC_CHECK_HEADERS([errno.h fcntl.h locale.h sgtty.h stdlib.h string.h])
 AC_CHECK_HEADERS([sys/ioctl.h sys/param.h sys/time.h unistd.h utime.h])
@@ -147,6 +148,7 @@ AC_CHECK_TYPE([sighandler_t],
 #endif])
 
 # Checks for library functions.
+m4_ifdef([AC_FUNC_FSEEKO], [AC_FUNC_FSEEKO])
 AC_FUNC_LSTAT
 joe_SETPGRP
 AC_TYPE_PID_T

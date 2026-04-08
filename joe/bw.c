@@ -14,8 +14,8 @@ int bg_curlin = 0;
 int curlinmask = -1;
 
 /* Display modes */
-int dspasis = 0;
-int marking = 0;
+bool dspasis = 0;
+bool marking = 0;
 
 /* Selected text format */
 int selectatr = INVERSE;
@@ -63,7 +63,7 @@ static P *getto(P *p, P *cur, P *top, off_t line)
 }
 
 /* Recenter cursor on vertical scroll if true */
-int opt_mid = 0;
+bool opt_mid = 0;
 
 /* Amount to horizontally scroll when cursor goes past edge */
 /* -1 means 1/4 width of screen */
@@ -664,7 +664,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				}
 				if (*bp == '\n') {
 					if (bw->o.visiblews && x < w) {
-						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+						outatr(utf8_map, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
 						old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 						++x;
 					}
@@ -693,7 +693,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				ta = p->b->o.tab - (x - ox + scr) % p->b->o.tab;
 				tach = ' ';
 				if (ta > 0 && x < w && bw->o.visiblews) {
-					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vtab, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+					outatr(utf8_map, t, screen + x, attr + x, x, y, vtab, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
 					old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 					++x;
 					--ta;
@@ -710,13 +710,13 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 					goto eosl;
 			} else if (bc == '\n') {
 				if (bw->o.visiblews && x < w) {
-					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+					outatr(utf8_map, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
 					old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 					++x;
 				}
 				goto eobl;
 			} else if (bc == ' ' && bw->o.visiblews && x < w) {
-				outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vspace, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+				outatr(utf8_map, t, screen + x, attr + x, x, y, vspace, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
 				old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 				++x;
 			} else {
@@ -1190,7 +1190,7 @@ static struct file_pos *find_file_pos(const char *name)
 	return p;
 }
 
-int restore_file_pos;
+bool restore_file_pos;
 
 off_t get_file_pos(const char *name)
 {

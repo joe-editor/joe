@@ -8,7 +8,7 @@
 
 /* Set to enable use of ~/.joe_state file */
 
-extern int joe_state;
+extern bool joe_state;
 
 /* Load state from file */
 

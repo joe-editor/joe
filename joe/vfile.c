@@ -223,7 +223,7 @@ VFILE *vtmp(void)
 	newf->left = 0;
 	newf->lv = 0;
 	newf->vpage = NULL;
-	newf->flags = 1;
+	newf->istemp = 1;
 	newf->vpage1 = NULL;
 	newf->addr = -1;
 	return enqueb_f(VFILE, link, &vfiles, newf);
@@ -250,7 +250,7 @@ char *name;
 	newf->left = 0;
 	newf->lv = 0;
 	newf->vpage = NULL;
-	newf->flags = 0;
+	newf->istemp = 0;
 	newf->vpage1 = NULL;
 	newf->addr = -1;
 	return enqueb_f(VFILE, link, &vfiles, newf);
@@ -268,7 +268,7 @@ void vclose(VFILE *vfile)
 	if (vfile->vpage1)
 		vunlock(vfile->vpage1);
 	if (vfile->name) {
-		if (vfile->flags) {
+		if (vfile->istemp) {
 		        if (vfile->fd) {
 		                /* Unlink fails if file is open on some systems. */
 		                close(vfile->fd);

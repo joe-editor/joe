@@ -18,7 +18,7 @@ struct cmd {
 };
 
 extern const CMD cmds[];	/* Built-in commands */
-extern int joe_beep;		/* Enable beep on command error */
+extern bool joe_beep;		/* Enable beep on command error */
 
 /* Command execution flags */
 
@@ -51,5 +51,5 @@ int modify_logic(BW *bw,B *b);
 
 int uexecmd(W *w, int k);
 
-extern int nolocks; /* Disable file locking */
-extern int nomodcheck; /* Disable file modified check */
+extern bool nolocks; /* Disable file locking */
+extern bool nomodcheck; /* Disable file modified check */

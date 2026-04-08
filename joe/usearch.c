@@ -7,11 +7,11 @@
  */
 #include "types.h"
 
-int wrap = 0;			/* Allow wrap */
+bool wrap = 0;			/* Allow wrap */
 int smode = 0;			/* Decremented to zero by execmd */
-int csmode = 0;			/* Set for continued search mode */
-int opt_icase = 0;			/* Set to force case insensitive search */
-int pico = 0;			/* Pico search prompting */
+bool csmode = 0;			/* Set for continued search mode */
+bool opt_icase = 0;			/* Set to force case insensitive search */
+bool pico = 0;			/* Pico search prompting */
 
 B *findhist = NULL;		/* Search string history */
 B *replhist = NULL;		/* Replacement string history */
@@ -845,7 +845,7 @@ static void unesc_genfmt(char *d, char *s, ptrdiff_t len,ptrdiff_t max)
 	*d = 0;
 }
 
-int std_regex = 0; /* Standard regex format by default */
+bool std_regex = 0; /* Standard regex format by default */
 
 int dofirst(BW *bw, int back, int repl, char *hint)
 {

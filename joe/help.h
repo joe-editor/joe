@@ -15,4 +15,4 @@ int u_help(W *w, int k);		/* toggle help on/off */
 int u_help_next(W *w, int k);		/* goto next help screen */
 int u_help_prev(W *w, int k);		/* goto prev help screen */
 extern int bg_help;				/* Background color for help */
-extern int help_is_utf8;			/* Set if help text is UTF-8 */
+extern bool help_is_utf8;			/* Set if help text is UTF-8 */

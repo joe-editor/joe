@@ -30,14 +30,14 @@ static int selinux_enabled = -1;
 
 char stdbuf[stdsiz];
 
-int guesscrlf = 0;
-int guessindent = 0;
+bool guesscrlf = 0;
+bool guessindent = 0;
 
 int berror;
-int force = 0;
+bool force = 0;
 VFILE *vmem;
 
-int nodeadjoe = 0;
+bool nodeadjoe = 0;
 
 const char *const msgs[] = {
 	_("No error"),
@@ -549,19 +549,19 @@ P *p_goto_eof(P *p)
 }
 
 /* is p at the beginning of file? */
-int pisbof(P *p)
+bool pisbof(P *p)
 {
 	return p->hdr == p->b->bof->hdr && !p->ofst;
 }
 
 /* is p at the end of file? */
-int piseof(P *p)
+bool piseof(P *p)
 {
 	return p->ofst == GSIZE(p->hdr);
 }
 
 /* is p at the end of line? */
-int piseol(P *p)
+bool piseol(P *p)
 {
 	int c;
 
@@ -586,7 +586,7 @@ int piseol(P *p)
 
 /* is p at the beginning of line? */
 /* This needs to be fast and should not disturb valcol or valattr.  It's used by fixupins(). */
-int pisbol(P *p)
+bool pisbol(P *p)
 {
 	int c;
 
@@ -606,7 +606,7 @@ int pisbol(P *p)
 }
 
 /* is p at the beginning of word? */
-int pisbow(P *p)
+bool pisbow(P *p)
 {
 	P *q = pdup(p, "pisbow");
 	int c = brch(p);
@@ -620,7 +620,7 @@ int pisbow(P *p)
 }
 
 /* is p at the end of word? */
-int piseow(P *p)
+bool piseow(P *p)
 {
 	P *q = pdup(p, "piseow");
 	int d = brch(q);
@@ -634,7 +634,7 @@ int piseow(P *p)
 }
 
 /* is p on the blank line (i.e. full of spaces/tabs)? */
-int pisblank(P *p)
+bool pisblank(P *p)
 {
 	P *q = pdup(p, "pisblank");
 
@@ -651,7 +651,7 @@ int pisblank(P *p)
 }
 
 /* is p at end of line or spaces followed by end of line? */
-int piseolblank(P *p)
+bool piseolblank(P *p)
 {
 	P *q = pdup(p, "piseolblank");
 
@@ -682,7 +682,7 @@ off_t pisindent(P *p)
 
 /* return true if all characters to left of cursor match c */
 
-int pispure(P *p,int c)
+bool pispure(P *p,int c)
 {
 	P *q = pdup(p, "pispure");
 	if (c < 0)
@@ -697,7 +697,7 @@ int pispure(P *p,int c)
 	return 1;
 }
 
-int pnext(P *p)
+bool pnext(P *p)
 {
 	if (p->hdr == p->b->eof->hdr) {
 		p->ofst = GSIZE(p->hdr);
@@ -710,7 +710,7 @@ int pnext(P *p)
 	return 1;
 }
 
-int pprev(P *p)
+bool pprev(P *p)
 {
 	if (p->hdr == p->b->bof->hdr) {
 		p->ofst = 0;
@@ -800,7 +800,7 @@ char *ansi_string(int code)
 int pgetc(P *p)
 {
 	if (p->b->o.charmap->type) {
-		int val;
+		bool val;
 		int valattr;
 		int c; /* , oc; */
 		int d;
@@ -1004,7 +1004,7 @@ int prgetc(P *p)
 	P *q;
 	int c, left = 6;
 	off_t startbyte, startcol;
-	int val = 0;
+	bool val = 0;
 
 	if (!p->b->o.charmap->type || pisbol(p))
 		return prgetb(p);
@@ -2359,11 +2359,11 @@ static int detect_utf16r(unsigned short *inbuf, ptrdiff_t amnt)
 	return 0;
 }
 
-int guess_utf16;
+bool guess_utf16;
 
 /* Read up to 'max' bytes from a file into a buffer */
 /* Returns with 0 in error or -2 in error for read error */
-B *bread(int fi, off_t max)
+B *bread(int fi, off_t max, int binary)
 {
 	B *b;
 	H anchor, *l;
@@ -2377,7 +2377,7 @@ B *bread(int fi, off_t max)
 	berror = 0;
 	seg = vlock(vmem, (l = halloc())->seg);
 
-	if (guess_utf16) {
+	if (!binary && guess_utf16) {
 		/* Read first segment here: detect UTF-16 */
 		amnt = bkread(fi, inbuf, max >= SEGSIZ ? SEGSIZ : (ptrdiff_t)max);
 		if (berror && !amnt) {
@@ -2495,7 +2495,7 @@ B *bread(int fi, off_t max)
 		b->o.charmap = utf16_map;
 	else if (type == 3)
 		b->o.charmap = utf16r_map;
-	else {
+	else if (!binary) {
 		/* Guess encoding for case of no-conversion load */
 		char buf[1024];
 		ptrdiff_t len = SIZEOF(buf);
@@ -2504,6 +2504,10 @@ B *bread(int fi, off_t max)
 		brmem(b->bof, buf, len);
 		b->o.charmap = guess_map(buf, len);
 		b->o.map_name = b->o.charmap->name;
+	} else {
+		b->o.charmap = find_charmap("ascii");
+		b->o.map_name = b->o.charmap->name;
+		b->o.hex = 1;
 	}
 
 	return b;
@@ -2517,25 +2521,28 @@ B *bread(int fi, off_t max)
  *
  * Returns new variable length string.
  */
-char *parsens(const char *s, off_t *skip, off_t *amnt)
+char *parsens(const char *s, off_t *skip, off_t *amnt, int *binary)
 {
 	char *n = vsncpy(NULL, 0, sz(s));
-	ptrdiff_t x;
+	ptrdiff_t x, y;
+	const ptrdiff_t nlen = sLEN(n);
 
 	*skip = 0;
 	*amnt = MAXOFF;
+	*binary = 0;
 	x = sLEN(n) - 1;
-	if (x > 0 && n[x] >= '0' && n[x] <= '9') {
-		for (x = sLEN(n) - 1; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
-		if (n[x] == ',' && x && n[x-1] != '\\') {
+	x = nlen - 1;
+	if (x > 0) {
+		for (x = nlen - 1; x > 0 && n[x] != ','; --x) ;
+		if (n[x] == ',' && x && n[x-1] != '\\' && skip_digits(n+x+1) == n+nlen) {
+			*binary = 1;
 			n[x] = 0;
 
 			*skip = ztoo(n + x + 1);
-
-			--x;
-			if (x > 0 && n[x] >= '0' && n[x] <= '9') {
-				for (; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
-				if (n[x] == ',' && x && n[x-1]!='\\') {
+			y = x--;
+			if (x > 0) {
+				for (; x > 0 && n[x] != ','; --x) ;
+				if (n[x] == ',' && x && n[x-1]!='\\' && skip_digits(n+x+1) == n+y) {
 					n[x] = 0;
 					*amnt = *skip;
 					*skip = ztoo(n + x + 1);
@@ -2717,6 +2724,7 @@ B *bload(const char *s)
 	FILE *fi = 0;
 	B *b = 0;
 	off_t skip, amnt;
+	int binary;
 	char *n;
 	int nowrite = 0;
 	P *p;
@@ -2735,7 +2743,7 @@ B *bload(const char *s)
 		return b;
 	}
 
-	n = parsens(s, &skip, &amnt);
+	n = parsens(s, &skip, &amnt, &binary);
 
 	/* Open file or stream */
 #ifndef __MSDOS__
@@ -2807,7 +2815,7 @@ B *bload(const char *s)
 	}
 
 	/* Read from stream into new buffer */
-	b = bread(fileno(fi), amnt);
+	b = bread(fileno(fi), amnt, binary);
 	empty:
 	b->mod_time = mod_time;
 	setopt(b,n);
@@ -2833,7 +2841,9 @@ opnerr:
 	b->name = joesep(zdup(s));
 
 	/* Set flags */
-	if (berror || s[0] == '!' || skip || amnt != MAXOFF) {
+	if (berror || s[0] == '!' || skip || amnt != MAXOFF || binary) {
+		/* We probably could backup data for binary files,
+		   but ufile.c:backup() can't deal with the comma suffix names */
 		b->backup = 1;
 		b->changed = 0;
 	} else if (!zcmp(n, "-")) {
@@ -2847,7 +2857,7 @@ opnerr:
 		b->rdonly = b->o.readonly = 1;
 
 	/* If first line has CR-LF, assume MS-DOS file */
-	if (guesscrlf) {
+	if (!binary && guesscrlf) {
 		int crlf = b->o.crlf;
 		b->o.crlf = 0; /* Prevent CR-LF to LF conversion for this test */
 		p=pdup(b->bof, "bload");
@@ -2870,7 +2880,7 @@ opnerr:
 
 	/* Search backwards through file: if first indented line
 	   is indented with a tab, assume indentc is tab */
-	if (guessindent) {
+	if (!binary && guessindent) {
 		int ix, y;
 		off_t guessed_step = 0;
 		int hist[20];
@@ -2945,9 +2955,20 @@ opnerr:
 	}
 
 	/* Disable syntax highlighting and context display on very large files */
-	if (b->eof->line > 450000 || b->eof->byte > 16000000) {
+	if (b->eof->line > 450000 || b->eof->byte > 16000000 || binary) {
 		b->o.title = 0;
 		b->o.highlight = 0;
+	}
+
+	/* Options for binary files */
+	if (binary) {
+		b->o.hex = 1;
+		b->o.wordwrap = 0;
+		b->o.autoindent = 0;
+		b->o.indentc = 9;
+		b->o.istep = 1;
+		b->o.tab = 8;
+		b->o.overtype = 1;
 	}
 
 	/* Eliminate parsed name */
@@ -3157,8 +3178,8 @@ err:
  * name changed (i.e., we're renaming the file).
  */
 
-int break_links; /* Set to break hard links on writes */
-int break_symlinks; /* Set to break symbolic links and hard links on writes */
+bool break_links; /* Set to break hard links on writes */
+bool break_symlinks; /* Set to break symbolic links and hard links on writes */
 
 int bsave(P *p, const char *as, off_t size, int flag)
 {
@@ -3166,8 +3187,9 @@ int bsave(P *p, const char *as, off_t size, int flag)
 	int have_stat = 0;
 	FILE *f;
 	off_t skip, amnt;
+	int binary;
 	int norm = 0;
-	char *s = parsens(as, &skip, &amnt);
+	char *s = parsens(as, &skip, &amnt, &binary);
 
 	if (amnt < size)
 		size = amnt;
@@ -3496,7 +3518,7 @@ void unlock_it(const char *qpath)
 
 /* True if file is regular */
 
-int plain_file(B *b)
+bool plain_file(B *b)
 {
 	if (b->name && zcmp(b->name,"-") && b->name[0]!='!' && b->name[0]!='>' &&
 	    !b->scratch)
@@ -3507,7 +3529,7 @@ int plain_file(B *b)
 
 /* True if file changed under us */
 
-int check_mod(B *b)
+bool check_mod(B *b)
 {
 	struct stat sbuf;
 	if (!plain_file(b))
@@ -3522,7 +3544,7 @@ int check_mod(B *b)
 
 /* True if file exists */
 
-int file_exists(const char *path)
+bool file_exists(const char *path)
 {
 	struct stat sbuf;
 	if (!path) return 0;

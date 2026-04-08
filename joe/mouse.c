@@ -26,11 +26,11 @@ int auto_scroll = 0;		/* Set for autoscroll */
 ptrdiff_t auto_rate;		/* Rate */
 long auto_trig_time;		/* Time of next scroll */
 
-int rtbutton=0;			/* use button 3 instead of 1 */
-int floatmouse=0;		/* don't fix xcol after tomouse */
-int joexterm=0;			/* set if we're using Joe's modified xterm */
+bool rtbutton=0;			/* use button 3 instead of 1 */
+bool floatmouse=0;		/* don't fix xcol after tomouse */
+bool joexterm=0;			/* set if we're using Joe's modified xterm */
 
-static int selecting = 0;	/* Set if we did any selecting */
+static bool selecting = 0;	/* Set if we did any selecting */
 
 static int Cb;
 static ptrdiff_t Cx, Cy;

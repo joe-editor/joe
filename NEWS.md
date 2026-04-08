@@ -8,9 +8,18 @@
 
 [Build instructions](INSTALL.md)
 
-### JOE.next
+### JOE 4.7
 
 * Enhancements
+
+	* Visual debugging of syntax files (^T More options / debug
+	  options).  When enabled, tool tips show the highlighter state when
+	  you hover over any character on the screen.
+
+	* Simplified hex edit / binary mode: JOE now assumes that file is
+	  binary if comma suffix "filename,START,SIZE" is used.  Use
+	  "filename,0" as shorthand for "--guess_utf16 --guess_utf8
+	  -encoding ascii -hex filename".
 
 	* JOE now has the full set of navigation and edit keys
 	  (Ctrl-arrow selection has changed):
@@ -52,6 +61,8 @@
 * Bugs fixed
 
 	* Fix destructive multi-line bracketed paste: pasting multi-line input was destructive to pre-existing text
+
+	* Bracketed paste now counts as a single change for undo
 
 	* Fix screen corruption when pasting with line-numbers activated
 

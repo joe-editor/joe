@@ -7,7 +7,7 @@
  */
 #include "types.h"
 
-int joe_beep = 0;
+bool joe_beep = 0;
 
 /* Command table */
 
@@ -226,7 +226,7 @@ const CMD cmds[] = {
 
 /* Steal Lock dialog */
 
-int nolocks;
+bool nolocks;
 
 #define LOCKMSG2 _("Could not create lock. (I) edit anyway, (Q) cancel edit? ")
 #define LOCKMSG1 _("Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? ")
@@ -327,7 +327,7 @@ int try_lock(BW *bw,B *b)
 /* Returns 0 if we're not allowed to modify buffer */
 
 #define CHECK_INTERVAL 15
-int nomodcheck;
+bool nomodcheck;
 
 int modify_logic(BW *bw,B *b)
 {

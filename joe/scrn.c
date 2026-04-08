@@ -11,12 +11,12 @@ int bg_text = 0; /* Background color for text */
 int skiptop = 0;
 int env_lines = 0;
 int env_columns = 0;
-int notite = 0;
-int brpaste = 0;
-int nolinefeeds = 0;
-int opt_usetabs = 0;
-int assume_color = 0;
-int assume_256color = 0;
+bool notite = 0;
+bool brpaste = 0;
+bool nolinefeeds = 0;
+bool opt_usetabs = 0;
+bool assume_color = 0;
+bool assume_256color = 0;
 
 /* How to display characters (especially the control ones) */
 /* here are characters ... */

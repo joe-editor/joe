@@ -13,12 +13,12 @@
 
 char *exmsg = NULL;		/* Message to display when exiting the editor */
 char *xmsg;			/* Message to display when starting the editor */
-int usexmouse=0;
-int xmouse=0;
-int nonotice;
-int noexmsg = 0;
-int pastehack;
-int helpon;
+bool usexmouse=0;
+bool xmouse=0;
+bool nonotice;
+bool noexmsg = 0;
+bool pastehack;
+bool helpon;
 
 Screen *maint;			/* Main edit screen */
 
@@ -73,7 +73,7 @@ void edupd(int flg)
 	staupd = 0;
 }
 
-static int ahead = 0;
+static int ahead = 0; /* Low means typehead possible while JOE is starting, before TTY mode changed */
 static int ungot = 0;
 static int ungotc = 0;
 
@@ -123,9 +123,9 @@ int edloop(int flg)
 		MACRO *m;
 		BW *bw;
 		int c;
-		int auto_off = 0;
-		int word_off = 0;
-		int spaces_off = 0;
+		bool auto_off = 0;
+		bool word_off = 0;
+		bool spaces_off = 0;
 
 		if (exmsg && !flg) {
 			vsrm(exmsg);
@@ -151,12 +151,16 @@ int edloop(int flg)
 
 		more_no_auto:
 
+		if (maint->curwin->watom->what & (TYPETW | TYPEPW))
+			bw = (BW *)maint->curwin->object;
+		else
+			bw = 0;
+
 		/* Insert CR not LF when pasting to get a newline and not deleol */
-		if (c == 10 && (!ahead || ((BW *)maint->curwin->object)->pasting))
+		if (c == 10 && (!ahead || (bw && bw->pasting)))
 			c = 13;
 
 		/* Use special kbd if we're handing data to a shell window */
-		bw = (BW *)maint->curwin->object;
 		if (shell_kbd && (maint->curwin->watom->what & TYPETW) && bw->b->pid && !bw->b->vt && !bw->b->raw && piseof(bw->cursor))
 			m = dokey(shell_kbd, c);
 		else if ((maint->curwin->watom->what & TYPETW) && bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)
@@ -181,6 +185,11 @@ int edloop(int flg)
 			bw->o.spaces = 0;
 		}
 
+		/* FIXME: if we don't receive input in a reasonably short time,
+		 * assume that the pasting's done and call ubrpaste_done.
+		 * Also need to do that on switching buffer? Other times? */
+		if (bw && bw->pasting) exemac_pasting(1); /* we're in paste mode */
+
 		if (maint->curwin->main && maint->curwin->main != maint->curwin) {
 			ptrdiff_t x = maint->curwin->kbd->x;
 
@@ -201,6 +210,9 @@ int edloop(int flg)
 			ttgetch();
 			ret = exemac(type_backtick, NO_MORE_DATA);
 		}
+
+		/* exemac could have invalidated bw, but hopefully not from paste */
+		if (bw && !bw->pasting) exemac_pasting(0); /* okay, done for now */
 
 		/* trailing part of disabled autoindent */
 		if (pastehack && !leave && (!flg || !term) && m && (m == type_backtick || (m->cmd && (m->cmd->func == utype || m->cmd->func == urtn))) && ttcheck()) {

@@ -11,7 +11,7 @@ int bg_menu;
 int bg_menusel = INVERSE;
 int bg_menumask = ~INVERSE;
 
-int transpose;
+bool transpose;
 
 static void menufllw(W *w)
 {
@@ -640,7 +640,7 @@ void ldmenu(MENU *m, char **s, ptrdiff_t cursor)
 	mconfig(m);
 }
 
-int menu_above;
+bool menu_above;
 
 MENU *mkmenu(W *w, W *targ, char **s, int (*func)(MENU *m, ptrdiff_t cursor, void *object, int k),
              int (*abrt)(W *w, ptrdiff_t cursor, void *object), int (*backs)(MENU *m, ptrdiff_t cursor, void *object), ptrdiff_t cursor, void *object, int *notify)

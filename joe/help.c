@@ -97,7 +97,7 @@ static struct help *find_context_help(const char *name)
 	return tmp;
 }
 
-int help_is_utf8;
+bool help_is_utf8;
 
 /*
  * Display help text
