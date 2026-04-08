@@ -12,7 +12,7 @@
 
 * Enhancements
 
-	* Simpled hex edit / binary mode: JOE now assumes that file is
+	* Simplified hex edit / binary mode: JOE now assumes that file is
 	  binary if comma suffix "filename,START,SIZE" is used.  Use
 	  "filename,0" as shorthand for "--guess_utf16 --guess_utf8
 	  -encoding ascii -hex filename".
