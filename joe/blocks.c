@@ -13,10 +13,15 @@
 
 #if SIZEOF_INT == 8
 #  define SHFT 3
+#  define INTFILL_CHAR 0x0101010101010101
 #elif SIZEOF_INT == 4
 #  define SHFT 2
+#  define INTFILL_CHAR 0x01010101
 #elif SIZEOF_INT == 2
 #  define SHFT 1
+#  define INTFILL_CHAR 0x0101
+#else
+#  error I do not know how to handle your strange integers
 #endif
 
 /* Set 'sz' 'int's beginning at 'd' to the value 'c' */
@@ -206,17 +211,7 @@ char *mset(char *dest, char c, ptrdiff_t sz)
 			d += z;
 			sz -= z;
 		}
-		msetI((int *)d,
-#if SIZEOF_INT >= 8
-		      (c << (BITS * 7)) + (c << (BITS * 6)) + (c << (BITS * 5)) + (c << (BITS * 4)) +
-#endif
-#if SIZEOF_INT >= 4
-		      (c << (BITS * 3)) + (c << (BITS * 2)) +
-#endif
-#if SIZEOF_INT >= 2
-		      (c << BITS) +
-#endif
-		      c, sz >> SHFT);
+		msetI((int *)d, ((int)c & 255) * INTFILL_CHAR, sz >> SHFT);
 		d += sz & ~(SIZEOF_INT - 1);
 		switch (sz & (SIZEOF_INT - 1)) {
 		case 7:		d[6] = c; FALLTHROUGH
