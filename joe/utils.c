@@ -405,10 +405,10 @@ off_t ztoo(const char *s)
 		if (*s == '-') {
 			++s;
 			flg = 1;
-		} else if (*s == '+') {
+		} else if (*s == '+') { /* Why is this needed? */
 			++s;
 		}
-		if (s[0] == '0' && s[1] == 'x') {
+		if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) {
 			s += 2;
 			while ((*s >= '0' && *s <= '9') || (*s >= 'a' && *s <= 'f') || (*s >= 'A' && *s <= 'F')) {
 				if (*s >= '0' && *s <= '9')
@@ -755,7 +755,9 @@ const char *skip_digits(const char *p)
 {
 	if (*p == '-')
 		++p;
-	if (*p == '0' && p[1] == 'x') {
+	else if (*p == '+') /* Because ztoo has it */
+		++p;
+	if (*p == '0' && (p[1] == 'x' || p[1] == 'X')) {
 		p += 2;
 		while ((*p >= '0' && *p <= '9') || ((*p & ~32) >= 'A' && (*p & ~32) <= 'F'))
 			++p;
