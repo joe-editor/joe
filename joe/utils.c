@@ -80,7 +80,11 @@ int joe_ioctl(int fd, unsigned long req, void *ptr)
 {
 	int rt;
 	do {
+#ifdef __CYGWIN__
+		rt = ioctl(fd, (int)req, ptr);
+#else
 		rt = ioctl(fd, req, ptr);
+#endif
 	} while (rt == -1 && errno == EINTR);
 	return rt;
 }
@@ -401,10 +405,10 @@ off_t ztoo(const char *s)
 		if (*s == '-') {
 			++s;
 			flg = 1;
-		} else if (*s == '+') {
+		} else if (*s == '+') { /* Why is this needed? */
 			++s;
 		}
-		if (s[0] == '0' && s[1] == 'x') {
+		if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) {
 			s += 2;
 			while ((*s >= '0' && *s <= '9') || (*s >= 'a' && *s <= 'f') || (*s >= 'A' && *s <= 'F')) {
 				if (*s >= '0' && *s <= '9')
@@ -747,16 +751,31 @@ int parse_char(const char **pp, char c)
 
 /* Parse an integer.  Returns 0 for success. */
 
+const char *skip_digits(const char *p)
+{
+	if (*p == '-')
+		++p;
+	else if (*p == '+') /* Because ztoo has it */
+		++p;
+	if (*p == '0' && (p[1] == 'x' || p[1] == 'X')) {
+		p += 2;
+		while ((*p >= '0' && *p <= '9') || ((*p & ~32) >= 'A' && (*p & ~32) <= 'F'))
+			++p;
+	} else if (*p == '0')
+		while (*p >= '0' && *p <= '7')
+			++p;
+	else
+		while(*p>='0' && *p<='9')
+			++p;
+	return p;
+}
+
 int parse_int(const char **pp, int *buf)
 {
 	const char *p = *pp;
 	if ((*p>='0' && *p<='9') || *p=='-') {
 		*buf = ztoi(p);
-		if(*p=='-')
-			++p;
-		while(*p>='0' && *p<='9')
-			++p;
-		*pp = p;
+		*pp = skip_digits(p);
 		return 0;
 	} else
 		return -1;
@@ -767,11 +786,7 @@ int parse_diff(const char **pp, ptrdiff_t *buf)
 	const char *p = *pp;
 	if ((*p>='0' && *p<='9') || *p=='-') {
 		*buf = ztodiff(p);
-		if(*p=='-')
-			++p;
-		while(*p>='0' && *p<='9')
-			++p;
-		*pp = p;
+		*pp = skip_digits(p);
 		return 0;
 	} else
 		return -1;

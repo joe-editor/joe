@@ -8,9 +8,31 @@
 
 [Build instructions](INSTALL.md)
 
-### JOE.next
+### JOE 4.7
 
 * Enhancements
+
+	* Simpled hex edit / binary mode: JOE now assumes that file is
+	  binary if comma suffix "filename,START,SIZE" is used.  Use
+	  "filename,0" as shorthand for "--guess_utf16 --guess_utf8
+	  -encoding ascii -hex filename".
+
+	* JOE now has the full set of navigation and edit keys
+	  (Ctrl-arrow selection has changed):
+		Ctrl-left, Ctrl-right: go to previous or next word
+		Ctrl-up, Ctrl-down: scroll by one line
+		Ctrl-Del, Shift-Del: Cut selection or delete word or line
+		(Del remains delete character, and Ins remains insert space)
+		Shift-arrow: select by line or character
+		Shift-PgUp, Shift-PgDn: select by page
+		Shift-Home, Shift-End: select to beginning or end of line
+		Ctrl-Shift-left, Ctrl-Shift-right: select by words
+		Ctrl-Shift-up, Ctrl-Shift-down: select by paragraphs
+
+	* JOE now follows XDG Base Directory Standard:
+		Put state file in ~/.local/state/joe/ instead of ~/.joe_state
+		Put config and rc files in ~/.config/joe/ instead of ~/.joe
+		(but JOE will find the files in the old places as well)
 
 	* Visible whitespace mode: option to subtly display tabs, spaces and
 	  newlines
@@ -23,8 +45,8 @@
 
 	* Consider 'Tc' terminfo flag when determining whether a terminal supports 24-bit color
 
-	* Improved highlighters for: Verilog, SystemVerilog, C, C++, PHP,
-	  Markdown and Python
+	* Improved or added highlighters for: Verilog, SystemVerilog, C,
+	  C++, PHP, Markdown, Python, Debian
 
 	* `-purify` now cleans excess whitespace instead of no-opping
 
@@ -35,6 +57,8 @@
 * Bugs fixed
 
 	* Fix destructive multi-line bracketed paste: pasting multi-line input was destructive to pre-existing text
+
+	* Bracketed paste now counts as a single change for undo
 
 	* Fix screen corruption when pasting with line-numbers activated
 

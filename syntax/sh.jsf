@@ -58,6 +58,7 @@
 
 :maybe_inc1 Idle
 	*		inc		buffer noeat
+	"0-9"		idle noeat	# Bit shifting, not heredoc
 	"\""		inc_quote
 	"'"		inc_quote
 	" 	"	maybe_inc1

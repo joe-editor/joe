@@ -101,7 +101,7 @@
 
  -skiptop nnn	Don't use top nnn lines of the screen
 
--notite         Don't send terminal initialization and termination strings: prevents
+ -notite        Don't send terminal initialization and termination strings: prevents
                 restoration of screen on exit.
 
  -nolinefeeds	Prevent sending linefeeds to preserve screen history in terminal

@@ -442,8 +442,9 @@ char *stagen(char *stalin, BW *bw, const char *s, char fill)
 				else
 					if (!piseof(bw->cursor))
 						joe_snprintf_1(buf, SIZEOF(buf), "%x", brch(bw->cursor));
-					else
-						joe_snprintf_0(buf, SIZEOF(buf), "");
+					else {
+						buf[0] = 0;
+					}
 				for (x = 0; buf[x]; ++x)
 					if (buf[x] == ' ')
 						buf[x] = fill;

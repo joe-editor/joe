@@ -590,9 +590,9 @@ const char *xdg_state_dir(void)
 	return xdg;
 }
 
-char *open_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix)
+static char *open_configrc_file(JFILE **result, const char *sys, const char *prefix, const char *name, const char *suffix)
 {
-	JFILE *f;
+	JFILE *f = 0;
 	char *fullpath = 0;
 	const char *home = getenv("HOME");
 	const char *xdg = xdg_config_dir();
@@ -639,7 +639,7 @@ char *open_config_file(JFILE **result, const char *prefix, const char *name, con
 
 	/* Old style, before .config/joe */
 	if (!f && home) {
-		/* Try ~/.joe/<prefix>name<suffix> */
+		/* Try ~/.joe/<prefix><name><suffix> */
 		vsrm(fullpath);
 		fullpath = vsncpy(NULL, 0, sz(home));
 		fullpath = vsncpy(sv(fullpath), sc("/.joe/"));
@@ -654,9 +654,9 @@ char *open_config_file(JFILE **result, const char *prefix, const char *name, con
 	}
 
 	if (!f) {
-		/* Try /usr/share/joe/syntax/name.jsf */
+		/* Try <sys><prefix><name><suffix> */
 		vsrm(fullpath);
-		fullpath = vsncpy(NULL, 0, sc(JOEDATA));
+		fullpath = vsncpy(NULL, 0, sz(sys));
 		fullpath = vsncpy(sv(fullpath), sz(prefix));
 		fullpath = vsncpy(sv(fullpath), sz(name));
 		fullpath = vsncpy(sv(fullpath), sz(suffix));
@@ -668,7 +668,7 @@ char *open_config_file(JFILE **result, const char *prefix, const char *name, con
 	}
 
 	if (!f) {
-		/* Try *name.jsf (built-in) */
+		/* Try *<name><suffix> (built-in) */
 		vsrm(fullpath);
 		fullpath = vsncpy(NULL, 0, sc("*"));
 		fullpath = vsncpy(sv(fullpath), sz(name));
@@ -682,4 +682,14 @@ char *open_config_file(JFILE **result, const char *prefix, const char *name, con
 
 	vsrm(fullpath);
 	return 0;
+}
+
+char *open_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix)
+{
+	return open_configrc_file(result, JOEDATA, prefix, name, suffix);
+}
+
+char *open_rc_file(JFILE **result, const char *prefix, const char *name, const char *suffix)
+{
+	return open_configrc_file(result, JOERC, prefix, name, suffix);
 }

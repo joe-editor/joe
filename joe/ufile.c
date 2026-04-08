@@ -1299,16 +1299,16 @@ static int doquerysave(W *w,int c,void *obj,int *notify)
 		if (unbuf(bw->parent, 0)) {
 			if (notify)
 				*notify = 1;
-			rmsavereq(req);
 			genexmsgmulti(bw,1,req->not_saved);
+			rmsavereq(req);
 			return 0;
 		}
 		bw = (BW *)w->object;
 		if (bw->b==req->first) {
 			if (notify)
 				*notify = 1;
-			rmsavereq(req);
 			genexmsgmulti(bw,1,req->not_saved);
+			rmsavereq(req);
 			return 0;
 		}
 		if (!bw->b->changed || bw->b->scratch)

@@ -285,14 +285,14 @@ P *binss(P *p, const char *s);
  * -4 for open error
  */
 B *bload(const char *s);
-B *bread(int fi, off_t max);
+B *bread(int fi, off_t max, int binary);
 B *borphan(void);
 
 /* Save 'size' bytes beginning at 'p' into file with name in 's' */
 int bsave(P *p, const char *s, off_t size,int flag);
 int bsavefd(P *p, int fd, off_t size);
 
-char *parsens(const char *s, off_t *skip, off_t *amnt);
+char *parsens(const char *s, off_t *skip, off_t *amnt, int *binary);
 
 char *canonical(char *s, int flags);
 #define CANFLAG_NORESTART 1 /* Support path restart feature */

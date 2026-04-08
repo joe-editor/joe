@@ -107,3 +107,4 @@ const char *xdg_config_dir(void);
 const char *xdg_state_dir(void);
 
 char *open_config_file(JFILE **result, const char *prefix, const char *name, const char *suffix);
+char *open_rc_file(JFILE **result, const char *prefix, const char *name, const char *suffix);

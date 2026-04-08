@@ -664,7 +664,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				}
 				if (*bp == '\n') {
 					if (bw->o.visiblews && x < w) {
-						outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+						outatr(utf8_map, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
 						old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 						++x;
 					}
@@ -693,7 +693,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				ta = p->b->o.tab - (x - ox + scr) % p->b->o.tab;
 				tach = ' ';
 				if (ta > 0 && x < w && bw->o.visiblews) {
-					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vtab, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+					outatr(utf8_map, t, screen + x, attr + x, x, y, vtab, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
 					old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 					++x;
 					--ta;
@@ -710,13 +710,13 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 					goto eosl;
 			} else if (bc == '\n') {
 				if (bw->o.visiblews && x < w) {
-					outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+					outatr(utf8_map, t, screen + x, attr + x, x, y, vrtn, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
 					old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 					++x;
 				}
 				goto eobl;
 			} else if (bc == ' ' && bw->o.visiblews && x < w) {
-				outatr(bw->b->o.charmap, t, screen + x, attr + x, x, y, vspace, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
+				outatr(utf8_map, t, screen + x, attr + x, x, y, vspace, (((atr & vwsmask) | (vwsatr & ~vwsmask)) & cm) | ca);
 				old_atr_state = OUT_osc8(bw, old_atr_state, atr_state);
 				++x;
 			} else {

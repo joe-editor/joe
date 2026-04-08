@@ -43,7 +43,10 @@ AX_CHECK_COMPILE_FLAG([-Wlogical-op], [CFLAGS="$CFLAGS -Wlogical-op"])
 AX_CHECK_COMPILE_FLAG([-Wwrite-strings], [CFLAGS="$CFLAGS -Wwrite-strings"])
 AX_CHECK_COMPILE_FLAG([-Wmissing-include-dirs], [CFLAGS="$CFLAGS -Wmissing-include-dirs"])
 AX_CHECK_COMPILE_FLAG([-Winit-self], [CFLAGS="$CFLAGS -Winit-self"])
-AX_CHECK_COMPILE_FLAG([-Wcast-qual], [CFLAGS="$CFLAGS -Wcast-qual"])
+
+# gives unfixable warning around execve
+# AX_CHECK_COMPILE_FLAG([-Wcast-qual], [CFLAGS="$CFLAGS -Wcast-qual"])
+
 AX_CHECK_COMPILE_FLAG([-Wundef], [CFLAGS="$CFLAGS -Wundef"])
 AX_CHECK_COMPILE_FLAG([-Wmissing-declarations], [CFLAGS="$CFLAGS -Wmissing-declarations"])
 AX_CHECK_COMPILE_FLAG([-Wformat], [CFLAGS="$CFLAGS -Wformat"])
@@ -92,7 +95,7 @@ AC_SEARCH_LIBS(tgetflag, $search_libs, AC_DEFINE_UNQUOTED(TERMINFO, 1, [If we ha
 AC_SEARCH_LIBS(snprintf, snprintf db, AC_DEFINE_UNQUOTED(HAVE_SNPRINTF, 1, [If we have snprintf]))
 
 # Checks for header files.
-AC_SYS_LARGEFILE
+m4_ifdef([AC_SYS_YEAR2038], [AC_SYS_YEAR2038], [AC_SYS_LARGEFILE])
 AC_HEADER_DIRENT
 AC_SYS_POSIX_TERMIOS
 if test "$ac_cv_sys_posix_termios" = "yes"; then
@@ -145,6 +148,7 @@ AC_CHECK_TYPE([sighandler_t],
 #endif])
 
 # Checks for library functions.
+m4_ifdef([AC_FUNC_FSEEKO], [AC_FUNC_FSEEKO])
 AC_FUNC_LSTAT
 joe_SETPGRP
 AC_TYPE_PID_T

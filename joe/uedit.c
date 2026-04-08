@@ -2592,19 +2592,18 @@ int upaste(W *w, int k)
 
 /* Bracketed paste */
 
-bool saved_ww;
-bool saved_ai;
-bool saved_sp;
-
 int ubrpaste(W *w, int k)
 {
 	BW *bw;
 
 	WIND_BW(bw, w);
 
-	saved_ww = bw->o.wordwrap;
-	saved_ai = bw->o.autoindent;
-	saved_sp = bw->o.spaces;
+	if (bw->pasting)
+		return 0;
+
+	bw->saved.ww = bw->o.wordwrap;
+	bw->saved.ai = bw->o.autoindent;
+	bw->saved.sp = bw->o.spaces;
 
 	bw->o.wordwrap = bw->o.autoindent = bw->o.spaces = 0;
 	bw->pasting = 1;
@@ -2618,9 +2617,12 @@ int ubrpaste_done(W *w, int k)
 
 	WIND_BW(bw, w);
 
-	bw->o.wordwrap = saved_ww;
-	bw->o.autoindent = saved_ai;
-	bw->o.spaces = saved_sp;
+	if (!bw->pasting)
+		return 0;
+
+	bw->o.wordwrap = bw->saved.ww;
+	bw->o.autoindent = bw->saved.ai;
+	bw->o.spaces = bw->saved.sp;
 	bw->pasting = 0;
 
 	return 0;

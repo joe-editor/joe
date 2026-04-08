@@ -331,6 +331,8 @@ int uquery(W *w, int k)
 	return ret;
 }
 
+static int/*bool*/ paste_undo = 1; /* true if not pasting */
+
 /* Macro execution */
 
 MACRO *curmacro = NULL;		/* Set if we're in a macro */
@@ -498,9 +500,24 @@ int exmacro(MACRO *m, int u, int k)
 
 int exemac(MACRO *m, int k)
 {
+	int ret;
 	record(m, k);
 	ifflag=1; ifdepth=iffail=0;
-	return exmacro(m, 1, k);
+	ret = exmacro(m, paste_undo, k);
+	return ret;
+}
+
+void exemac_pasting(int state)
+{
+	if (state && paste_undo) {
+		paste_undo = 0;
+		umclear();
+		undomark();
+	} else if (!state && !paste_undo) {
+		paste_undo = 1;
+		umclear();
+		undomark();
+	}
 }
 
 /* Keyboard macro user routines */
