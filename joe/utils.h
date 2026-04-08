@@ -148,6 +148,9 @@ typedef void (*sighandler_t)(int);
 /* wrapper to hide signal interface differences */
 int joe_set_signal(int signum, sighandler_t handler);
 
+/* Helpers */
+const char *skip_digits(const char *p);
+
 /* Simple parsers */
 int parse_ws(const char * *p,int cmt);
 int parse_wsn(const char * *p,int cmt);

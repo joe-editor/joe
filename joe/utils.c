@@ -751,16 +751,29 @@ int parse_char(const char **pp, char c)
 
 /* Parse an integer.  Returns 0 for success. */
 
+const char *skip_digits(const char *p)
+{
+	if (*p == '-')
+		++p;
+	if (*p == '0' && p[1] == 'x') {
+		p += 2;
+		while ((*p >= '0' && *p <= '9') || ((*p & ~32) >= 'A' && (*p & ~32) <= 'F'))
+			++p;
+	} else if (*p == '0')
+		while (*p >= '0' && *p <= '7')
+			++p;
+	else
+		while(*p>='0' && *p<='9')
+			++p;
+	return p;
+}
+
 int parse_int(const char **pp, int *buf)
 {
 	const char *p = *pp;
 	if ((*p>='0' && *p<='9') || *p=='-') {
 		*buf = ztoi(p);
-		if(*p=='-')
-			++p;
-		while(*p>='0' && *p<='9')
-			++p;
-		*pp = p;
+		*pp = skip_digits(p);
 		return 0;
 	} else
 		return -1;
@@ -771,11 +784,7 @@ int parse_diff(const char **pp, ptrdiff_t *buf)
 	const char *p = *pp;
 	if ((*p>='0' && *p<='9') || *p=='-') {
 		*buf = ztodiff(p);
-		if(*p=='-')
-			++p;
-		while(*p>='0' && *p<='9')
-			++p;
-		*pp = p;
+		*pp = skip_digits(p);
 		return 0;
 	} else
 		return -1;

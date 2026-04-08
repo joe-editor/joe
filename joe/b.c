@@ -2524,24 +2524,25 @@ B *bread(int fi, off_t max, int binary)
 char *parsens(const char *s, off_t *skip, off_t *amnt, int *binary)
 {
 	char *n = vsncpy(NULL, 0, sz(s));
-	ptrdiff_t x;
+	ptrdiff_t x, y;
+	const ptrdiff_t nlen = sLEN(n);
 
 	*skip = 0;
 	*amnt = MAXOFF;
 	*binary = 0;
 	x = sLEN(n) - 1;
-	if (x > 0 && n[x] >= '0' && n[x] <= '9') {
-		for (x = sLEN(n) - 1; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
-		if (n[x] == ',' && x && n[x-1] != '\\') {
+	x = nlen - 1;
+	if (x > 0) {
+		for (x = nlen - 1; x > 0 && n[x] != ','; --x) ;
+		if (n[x] == ',' && x && n[x-1] != '\\' && skip_digits(n+x+1) == n+nlen) {
 			*binary = 1;
 			n[x] = 0;
 
 			*skip = ztoo(n + x + 1);
-
-			--x;
-			if (x > 0 && n[x] >= '0' && n[x] <= '9') {
-				for (; x > 0 && ((n[x] >= '0' && n[x] <= '9') || n[x] == 'x' || n[x] == 'X'); --x) ;
-				if (n[x] == ',' && x && n[x-1]!='\\') {
+			y = x--;
+			if (x > 0) {
+				for (; x > 0 && n[x] != ','; --x) ;
+				if (n[x] == ',' && x && n[x-1]!='\\' && skip_digits(n+x+1) == n+y) {
 					n[x] = 0;
 					*amnt = *skip;
 					*skip = ztoo(n + x + 1);
