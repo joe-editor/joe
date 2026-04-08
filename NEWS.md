@@ -12,6 +12,10 @@
 
 * Enhancements
 
+	* Visual debugging of syntax files (^T More options / debug
+	  options).  When enabled, tool tips show the highlighter state when
+	  you hover over any character on the screen.
+
 	* Simplified hex edit / binary mode: JOE now assumes that file is
 	  binary if comma suffix "filename,START,SIZE" is used.  Use
 	  "filename,0" as shorthand for "--guess_utf16 --guess_utf8
