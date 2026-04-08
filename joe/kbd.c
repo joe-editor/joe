@@ -402,7 +402,7 @@ KMAP *ngetcontext(const char *name)
 
 /* True if KMAP is empty */
 
-int kmap_empty(KMAP *k)
+bool kmap_empty(KMAP *k)
 {
 	return k->src == NULL && k->dflt == NULL;
 }

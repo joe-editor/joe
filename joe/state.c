@@ -9,7 +9,7 @@
 #include "types.h"
 
 /* Set to enable use of ~/.joe_state file */
-int joe_state;
+bool joe_state;
 
 /* Save a history buffer */
 

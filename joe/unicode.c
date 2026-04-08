@@ -78,52 +78,52 @@ struct Cclass *unicode(const char *cat)
 /* iswxxx functions */
 
 struct Cclass cclass_upper[1];
-int joe_iswupper(struct charmap *foo, int ch) { return cclass_lookup(cclass_upper, ch); }
+bool joe_iswupper(struct charmap *foo, int ch) { return cclass_lookup(cclass_upper, ch); }
 
 struct Cclass cclass_lower[1];
-int joe_iswlower(struct charmap *foo, int ch) { return cclass_lookup(cclass_lower, ch); }
+bool joe_iswlower(struct charmap *foo, int ch) { return cclass_lookup(cclass_lower, ch); }
 
 struct Cclass cclass_alpha[1];
-int joe_iswalpha(struct charmap *foo, int ch) { return cclass_lookup(cclass_alpha, ch); }
+bool joe_iswalpha(struct charmap *foo, int ch) { return cclass_lookup(cclass_alpha, ch); }
 
 struct Cclass cclass_alpha_[1];
 struct Cclass cclass_notalpha_[1];
-int joe_iswalpha_(struct charmap *foo, int ch) { return cclass_lookup(cclass_alpha_, ch); }
+bool joe_iswalpha_(struct charmap *foo, int ch) { return cclass_lookup(cclass_alpha_, ch); }
 
 struct Cclass cclass_alnum[1];
-int joe_iswalnum(struct charmap *foo, int ch) { return cclass_lookup(cclass_alnum, ch); }
+bool joe_iswalnum(struct charmap *foo, int ch) { return cclass_lookup(cclass_alnum, ch); }
 
 struct Cclass cclass_alnum_[1];
 struct Cclass cclass_notalnum_[1];
-int joe_iswalnum_(struct charmap *foo, int ch) { return cclass_lookup(cclass_alnum_, ch); }
+bool joe_iswalnum_(struct charmap *foo, int ch) { return cclass_lookup(cclass_alnum_, ch); }
 
 struct Cclass cclass_digit[1];
-int joe_iswdigit(struct charmap *foo, int ch) { return cclass_lookup(cclass_digit, ch); }
+bool joe_iswdigit(struct charmap *foo, int ch) { return cclass_lookup(cclass_digit, ch); }
 
 struct Cclass cclass_notdigit[1];
 
 struct Cclass cclass_xdigit[1];
-int joe_iswxdigit(struct charmap *foo, int ch) { return cclass_lookup(cclass_xdigit, ch); }
+bool joe_iswxdigit(struct charmap *foo, int ch) { return cclass_lookup(cclass_xdigit, ch); }
 
 struct Cclass cclass_punct[1];
-int joe_iswpunct(struct charmap *foo, int ch) { return cclass_lookup(cclass_punct, ch); }
+bool joe_iswpunct(struct charmap *foo, int ch) { return cclass_lookup(cclass_punct, ch); }
 
 struct Cclass cclass_space[1];
-int joe_iswspace(struct charmap *foo, int ch) { return cclass_lookup(cclass_space, ch); }
+bool joe_iswspace(struct charmap *foo, int ch) { return cclass_lookup(cclass_space, ch); }
 
 struct Cclass cclass_notspace[1];
 
 struct Cclass cclass_blank[1];
-int joe_iswblank(struct charmap *foo, int ch) { return cclass_lookup(cclass_blank, ch); }
+bool joe_iswblank(struct charmap *foo, int ch) { return cclass_lookup(cclass_blank, ch); }
 
 struct Cclass cclass_ctrl[1];
-int joe_iswctrl(struct charmap *foo, int ch) { return cclass_lookup(cclass_ctrl, ch); }
+bool joe_iswctrl(struct charmap *foo, int ch) { return cclass_lookup(cclass_ctrl, ch); }
 
 struct Cclass cclass_graph[1];
-int joe_iswgraph(struct charmap *foo, int ch) { return cclass_lookup(cclass_graph, ch); }
+bool joe_iswgraph(struct charmap *foo, int ch) { return cclass_lookup(cclass_graph, ch); }
 
 struct Cclass cclass_print[1];
-int joe_iswprint(struct charmap *foo, int ch) { return cclass_lookup(cclass_print, ch); }
+bool joe_iswprint(struct charmap *foo, int ch) { return cclass_lookup(cclass_print, ch); }
 
 struct Cclass cclass_word[1];
 struct Cclass cclass_notword[1];

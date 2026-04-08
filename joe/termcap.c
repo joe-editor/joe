@@ -25,7 +25,7 @@
 
 #endif
 
-int dopadding = 0;
+bool dopadding = 0;
 char *joeterm = NULL;
 
 /* Default termcap entry */
@@ -398,7 +398,7 @@ CAP *setcap(CAP *cap, long baud, void (*out) (void *, char), void *outptr)
 	return cap;
 }
 
-int getflag(CAP *cap, const char *name)
+bool getflag(CAP *cap, const char *name)
 {
 #ifdef TERMINFO
 	if (cap->abuf)

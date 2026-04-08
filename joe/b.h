@@ -37,6 +37,11 @@ struct point {
 
 	B	*b;		/* Buffer */
 	short	ofst;		/* Gap buffer offset */
+
+	bool	valcol;		/* bool: is col valid? */
+	bool	end;		/* set if this is end of file pointer */
+	bool	valattr;	/* set if attr is still valid */
+
 	char	*ptr;		/* Gap buffer address */
 	H	*hdr;		/* Gap buffer header */
 
@@ -44,10 +49,7 @@ struct point {
 	off_t	line;		/* Line number */
 	off_t	col;		/* current column */
 	off_t	xcol;		/* cursor column (can be different from actual column) */
-	int	valcol;		/* bool: is col valid? */
-	int	end;		/* set if this is end of file pointer */
 	int	attr;		/* current ANSI attribute */
-	int	valattr;	/* set if attr is still valid */
 
 	P	**owner;	/* owner of this pointer.  owner gets cleared if pointer is deleted. */
 	const char *tracker;	/* Name of function who pdup()ed me */
@@ -66,52 +68,52 @@ struct options {
 	OPTIONS	*next;
 	const char *ftype; /* Name of this set of options */
 	struct options_match *match; /* List of matching criteria */
-	int	overtype;
 	off_t	lmargin;
 	off_t	rmargin;
-	int	autoindent;
-	int	wordwrap;
-	int	nobackup;
-	off_t	tab;
+	bool	overtype;
+	bool	autoindent;
+	bool	wordwrap;
+	bool	nobackup;
 	int	indentc;
+	off_t	tab;
 	off_t	istep;
 	const char	*context;
 	const char	*lmsg;
 	const char	*rmsg;
 	const char	*smsg;
 	const char	*zmsg;
-	int	linums;
-	int	hiline;
-	int	readonly;
-	int	french;
-	int	flowed;
-	int	spaces;
-	int	crlf;
-	int	highlight;	/* Set to enable highlighting */
-	int	visiblews;	/* Visible whitespace */
-	int	syntax_debug;	/* Whether using OSC8 to help debug syntax colouring */
 	const char *syntax_name;	/* Name of syntax to use */
 	struct high_syntax *syntax;	/* Syntax for highlighting (load_syntax() from syntax_name happens in setopt()) */
 	const char *map_name;	/* Name of character set */
 	struct charmap *charmap;	/* Character set */
 	const char *language;	/* Language of this buffer (for spell) */
-	int	smarthome;	/* Set for smart home key */
-	int	indentfirst;	/* Smart home goes to indentation point first */
-	int	smartbacks;	/* Set for smart backspace key */
-	int	purify;		/* Purify indentation */
-	int	picture;	/* Picture mode */
-	int	highlighter_context;	/* Use the context annotations from the highlighter for ^G */
-	int	single_quoted;	/* Ignore '  ' for ^G */
-	int	no_double_quoted;	/* Don't ignore " " for ^G */
-	int	c_comment;	/* Ignore text in C comments */
-	int	cpp_comment;	/* Ignore text after // comments */
-	int	hash_comment;	/* Ignore text after # comments */
-	int	vhdl_comment;	/* Ignore text after -- comments */
-	int	semi_comment;	/* Ignore text after ; comments */
-	int	tex_comment;	/* Ignore text after % comments */
-	int	hex;		/* Hex edit mode */
-	int	ansi;		/* Hide ANSI sequences mode */
-	int	title;		/* Enable status line context display */
+	bool	linums;
+	bool	hiline;
+	bool	readonly;
+	bool	french;
+	bool	flowed;
+	bool	spaces;
+	bool	crlf;
+	bool	highlight;	/* Set to enable highlighting */
+	bool	visiblews;	/* Visible whitespace */
+	bool	syntax_debug;	/* Whether using OSC8 to help debug syntax colouring */
+	bool	smarthome;	/* Set for smart home key */
+	bool	indentfirst;	/* Smart home goes to indentation point first */
+	bool	smartbacks;	/* Set for smart backspace key */
+	bool	purify;		/* Purify indentation */
+	bool	picture;	/* Picture mode */
+	bool	highlighter_context;	/* Use the context annotations from the highlighter for ^G */
+	bool	single_quoted;	/* Ignore '  ' for ^G */
+	bool	no_double_quoted;	/* Don't ignore " " for ^G */
+	bool	c_comment;	/* Ignore text in C comments */
+	bool	cpp_comment;	/* Ignore text after // comments */
+	bool	hash_comment;	/* Ignore text after # comments */
+	bool	vhdl_comment;	/* Ignore text after -- comments */
+	bool	semi_comment;	/* Ignore text after ; comments */
+	bool	tex_comment;	/* Ignore text after % comments */
+	bool	hex;		/* Hex edit mode */
+	bool	ansi;		/* Hide ANSI sequences mode */
+	bool	title;		/* Enable status line context display */
 	const char *text_delimiters;	/* Define word delimiters */
 	const char *cpara;	/* Characters which can indent paragraphs */
 	const char *cnotpara;/* Characters which begin non-paragraph lines */
@@ -120,6 +122,8 @@ struct options {
 	MACRO	*msnew;		/* Macro to execute before saving new files */
 	MACRO	*msold;		/* Macro to execute before saving existing files */
 	MACRO	*mfirst;	/* Macro to execute on first change */
+	/* Storage for overrides etc. follows */
+	int	hex_saved;	/* Hex edit mode (saved state) */
 };
 
 /* A buffer */
@@ -129,16 +133,23 @@ struct buffer {
 	P	*bof;		/* Beginning of file pointer */
 	P	*eof;		/* End of file pointer */
 	char *name;	/* File name */
-	int locked;		/* Set if we created a lock for this file */
-	int ignored_lock;	/* Set if we didn't create a lock and we don't care (locked set in this case) */
-	int didfirst;		/* Set after user attempted first change */
+	bool	locked;		/* Set if we created a lock for this file */
+	bool	ignored_lock;	/* Set if we didn't create a lock and we don't care (locked set in this case) */
+	bool	didfirst;	/* Set after user attempted first change */
+	bool	gave_notice;	/* Set if we already gave file changed notice for this file */
+	int	count;		/* Reference count.  Buffer is deleted if brm decrements count to 0 */
+	bool	orphan;		/* Set if buffer is orphaned: refcount is bumped up by one in this case */
+	bool	changed;
+	bool	backup;
+
+	bool	rdonly;		/* Set for read-only */
+	bool	internal;	/* Set for internal buffers */
+	bool	scratch;	/* Set for scratch buffers */
+	bool	shell_flag;	/* Set if last cursor position is same as vt cursor: if it is we keep it up to date */
+	bool    raw;            /* just append data from shell, don't interpret it */
+
 	time_t	mod_time;	/* Last modification time for file */
 	time_t	check_time;	/* Last time we checked the file on disk */
-	int	gave_notice;	/* Set if we already gave file changed notice for this file */
-	int	orphan;		/* Set if buffer is orphaned: refcount is bumped up by one in this case */
-	int	count;		/* Reference count.  Buffer is deleted if brm decrements count to 0 */
-	int	changed;
-	int	backup;
 	UNDO	*undo;
 	P	*marks[11];	/* Bookmarks */
 	OPTIONS	o;		/* Options */
@@ -146,15 +157,10 @@ struct buffer {
 	P	*oldtop;	/* Last top screen position before orphaning */
 	P	*err;		/* Last error line */
 	char *current_dir;
-	int shell_flag;		/* Set if last cursor position is same as vt cursor: if it is we keep it up to date */
-	int	rdonly;		/* Set for read-only */
-	int	internal;	/* Set for internal buffers */
-	int	scratch;	/* Set for scratch buffers */
 	int	er;		/* Error code when file was loaded */
 	pid_t	pid;		/* Process id */
 	int	out;		/* fd to write to process */
 	VT	*vt;		/* video terminal emulator */
-	int     raw;            /* just append data from shell, don't interpret it */
 	struct lattr_db *db;	/* Linked list of line attribute databases */
 	void (*parseone)(struct charmap *map,const char *s,char **rtn_name,
 	                 off_t *rtn_line);
@@ -166,7 +172,7 @@ extern B bufs;
 /* 31744 */
 extern char stdbuf[stdsiz];	/* Convenient global buffer */
 
-extern int force;		/* Set to have final '\n' added to file */
+extern bool force;		/* Set to have final '\n' added to file */
 
 extern VFILE *vmem;		/* Virtual memory file used for buffer system */
 
@@ -199,23 +205,23 @@ P *p_goto_eol(P *p);		/* move cursor to end of line */
 
 P *p_goto_indent(P *p,int c);	/* move cursor to indentation point */
 
-int pisbof(P *p);
-int piseof(P *p);
-int piseol(P *p);
-int pisbol(P *p);
-int pisbow(P *p);
-int piseow(P *p);
+bool pisbof(P *p);
+bool piseof(P *p);
+bool piseol(P *p);
+bool pisbol(P *p);
+bool pisbow(P *p);
+bool piseow(P *p);
 
 #define piscol(p) ((p)->valcol ? (p)->col : (pfcol(p), (p)->col))
 
-int pisblank(P *p);
-int piseolblank(P *p);
+bool pisblank(P *p);
+bool piseolblank(P *p);
 
 off_t pisindent(P *p);
-int pispure(P *p,int c);
+bool pispure(P *p,int c);
 
-int pnext(P *p);
-int pprev(P *p);
+bool pnext(P *p);
+bool pprev(P *p);
 
 int pgetb(P *p);
 int prgetb(P *p);
@@ -322,17 +328,17 @@ char **getbufs(void);
 
 int lock_it(const char *path,char *buf);
 void unlock_it(const char *path);
-int plain_file(B *b);
-int check_mod(B *b);
-int file_exists(const char *path);
+bool plain_file(B *b);
+bool check_mod(B *b);
+bool file_exists(const char *path);
 
 int udebug_joe(W *w, int k);
 
-extern int guesscrlf; /* Try to guess line ending when set */
-extern int guessindent; /* Try to guess indent character and step when set */
-extern int break_links; /* Break hard links on write */
-extern int break_symlinks; /* Break symbolic links on write */
-extern int nodeadjoe; /* Prevent creation of DEADJOE files */
+extern bool guesscrlf; /* Try to guess line ending when set */
+extern bool guessindent; /* Try to guess indent character and step when set */
+extern bool break_links; /* Break hard links on write */
+extern bool break_symlinks; /* Break symbolic links on write */
+extern bool nodeadjoe; /* Prevent creation of DEADJOE files */
 
 void set_file_pos_orphaned(void);
 
@@ -344,4 +350,4 @@ char *dequote(const char *);
 int ansi_code(char *s);
 char *ansi_string(int code);
 
-extern int guess_utf16;
+extern bool guess_utf16;

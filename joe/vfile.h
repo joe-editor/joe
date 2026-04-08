@@ -13,7 +13,7 @@ struct vpage {
 	VFILE	*vfile;		/* Owner vfile */
 	off_t	addr;		/* Address of this page */
 	int	count;		/* Reference count */
-	int	dirty;		/* Set if page changed */
+	bool	dirty;		/* Set if page changed */
 	char	*data;		/* The data in the page */
 };
 
@@ -24,9 +24,9 @@ struct vfile {
 	off_t	size;		/* Number of bytes in physical file */
 	off_t	alloc;		/* Number of bytes allocated to file */
 	int	fd;		/* Physical file */
-	int	writeable;	/* Set if we can write */
+	bool	writeable;	/* Set if we can write */
+	bool	istemp;		/* Set if this is only a temporary file */
 	char	*name;		/* File name.  0 if unnamed */
-	int	flags;		/* Set if this is only a temporary file */
 
 	/* For array I/O */
 	char	*vpage1;	/* Page address */

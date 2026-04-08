@@ -14,8 +14,8 @@ int bg_curlin = 0;
 int curlinmask = -1;
 
 /* Display modes */
-int dspasis = 0;
-int marking = 0;
+bool dspasis = 0;
+bool marking = 0;
 
 /* Selected text format */
 int selectatr = INVERSE;
@@ -63,7 +63,7 @@ static P *getto(P *p, P *cur, P *top, off_t line)
 }
 
 /* Recenter cursor on vertical scroll if true */
-int opt_mid = 0;
+bool opt_mid = 0;
 
 /* Amount to horizontally scroll when cursor goes past edge */
 /* -1 means 1/4 width of screen */
@@ -1190,7 +1190,7 @@ static struct file_pos *find_file_pos(const char *name)
 	return p;
 }
 
-int restore_file_pos;
+bool restore_file_pos;
 
 off_t get_file_pos(const char *name)
 {

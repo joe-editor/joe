@@ -30,14 +30,14 @@ static int selinux_enabled = -1;
 
 char stdbuf[stdsiz];
 
-int guesscrlf = 0;
-int guessindent = 0;
+bool guesscrlf = 0;
+bool guessindent = 0;
 
 int berror;
-int force = 0;
+bool force = 0;
 VFILE *vmem;
 
-int nodeadjoe = 0;
+bool nodeadjoe = 0;
 
 const char *const msgs[] = {
 	_("No error"),
@@ -549,19 +549,19 @@ P *p_goto_eof(P *p)
 }
 
 /* is p at the beginning of file? */
-int pisbof(P *p)
+bool pisbof(P *p)
 {
 	return p->hdr == p->b->bof->hdr && !p->ofst;
 }
 
 /* is p at the end of file? */
-int piseof(P *p)
+bool piseof(P *p)
 {
 	return p->ofst == GSIZE(p->hdr);
 }
 
 /* is p at the end of line? */
-int piseol(P *p)
+bool piseol(P *p)
 {
 	int c;
 
@@ -586,7 +586,7 @@ int piseol(P *p)
 
 /* is p at the beginning of line? */
 /* This needs to be fast and should not disturb valcol or valattr.  It's used by fixupins(). */
-int pisbol(P *p)
+bool pisbol(P *p)
 {
 	int c;
 
@@ -606,7 +606,7 @@ int pisbol(P *p)
 }
 
 /* is p at the beginning of word? */
-int pisbow(P *p)
+bool pisbow(P *p)
 {
 	P *q = pdup(p, "pisbow");
 	int c = brch(p);
@@ -620,7 +620,7 @@ int pisbow(P *p)
 }
 
 /* is p at the end of word? */
-int piseow(P *p)
+bool piseow(P *p)
 {
 	P *q = pdup(p, "piseow");
 	int d = brch(q);
@@ -634,7 +634,7 @@ int piseow(P *p)
 }
 
 /* is p on the blank line (i.e. full of spaces/tabs)? */
-int pisblank(P *p)
+bool pisblank(P *p)
 {
 	P *q = pdup(p, "pisblank");
 
@@ -651,7 +651,7 @@ int pisblank(P *p)
 }
 
 /* is p at end of line or spaces followed by end of line? */
-int piseolblank(P *p)
+bool piseolblank(P *p)
 {
 	P *q = pdup(p, "piseolblank");
 
@@ -682,7 +682,7 @@ off_t pisindent(P *p)
 
 /* return true if all characters to left of cursor match c */
 
-int pispure(P *p,int c)
+bool pispure(P *p,int c)
 {
 	P *q = pdup(p, "pispure");
 	if (c < 0)
@@ -697,7 +697,7 @@ int pispure(P *p,int c)
 	return 1;
 }
 
-int pnext(P *p)
+bool pnext(P *p)
 {
 	if (p->hdr == p->b->eof->hdr) {
 		p->ofst = GSIZE(p->hdr);
@@ -710,7 +710,7 @@ int pnext(P *p)
 	return 1;
 }
 
-int pprev(P *p)
+bool pprev(P *p)
 {
 	if (p->hdr == p->b->bof->hdr) {
 		p->ofst = 0;
@@ -800,7 +800,7 @@ char *ansi_string(int code)
 int pgetc(P *p)
 {
 	if (p->b->o.charmap->type) {
-		int val;
+		bool val;
 		int valattr;
 		int c; /* , oc; */
 		int d;
@@ -1004,7 +1004,7 @@ int prgetc(P *p)
 	P *q;
 	int c, left = 6;
 	off_t startbyte, startcol;
-	int val = 0;
+	bool val = 0;
 
 	if (!p->b->o.charmap->type || pisbol(p))
 		return prgetb(p);
@@ -2359,7 +2359,7 @@ static int detect_utf16r(unsigned short *inbuf, ptrdiff_t amnt)
 	return 0;
 }
 
-int guess_utf16;
+bool guess_utf16;
 
 /* Read up to 'max' bytes from a file into a buffer */
 /* Returns with 0 in error or -2 in error for read error */
@@ -3178,8 +3178,8 @@ err:
  * name changed (i.e., we're renaming the file).
  */
 
-int break_links; /* Set to break hard links on writes */
-int break_symlinks; /* Set to break symbolic links and hard links on writes */
+bool break_links; /* Set to break hard links on writes */
+bool break_symlinks; /* Set to break symbolic links and hard links on writes */
 
 int bsave(P *p, const char *as, off_t size, int flag)
 {
@@ -3518,7 +3518,7 @@ void unlock_it(const char *qpath)
 
 /* True if file is regular */
 
-int plain_file(B *b)
+bool plain_file(B *b)
 {
 	if (b->name && zcmp(b->name,"-") && b->name[0]!='!' && b->name[0]!='>' &&
 	    !b->scratch)
@@ -3529,7 +3529,7 @@ int plain_file(B *b)
 
 /* True if file changed under us */
 
-int check_mod(B *b)
+bool check_mod(B *b)
 {
 	struct stat sbuf;
 	if (!plain_file(b))
@@ -3544,7 +3544,7 @@ int check_mod(B *b)
 
 /* True if file exists */
 
-int file_exists(const char *path)
+bool file_exists(const char *path)
 {
 	struct stat sbuf;
 	if (!path) return 0;

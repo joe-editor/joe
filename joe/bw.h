@@ -21,18 +21,18 @@ struct bw {
 	void	*object;
 
 	int	lincols;	/* Line number column width */
-	off_t	curlin;		/* Cursor line (highlighted) */
 	int	top_changed;	/* Top changed */
+	off_t	curlin;		/* Cursor line (highlighted) */
 	struct lattr_db *db;	/* line attribute database */
-	int	shell_flag;	/* Cursor should follow shell cursor in this window */
-	int	pasting;	/* Whether a paste operation is occurring in this window */
+	bool	shell_flag;	/* Cursor should follow shell cursor in this window */
+	bool	pasting;	/* Whether a paste operation is occurring in this window */
 	struct {
-		int ww, ai, sp;	/* saved during bracketed paste */
+		bool ww, ai, sp;	/* saved during bracketed paste */
 	} saved;
 };
 
-extern int dspasis;	/* Display characters above 127 as-is */
-extern int opt_mid;	/* Controls how window scrolls: when set, scroll window enough so that line with cursor becomes centered */
+extern bool dspasis;	/* Display characters above 127 as-is */
+extern bool opt_mid;	/* Controls how window scrolls: when set, scroll window enough so that line with cursor becomes centered */
 extern int opt_left;
 extern int opt_right;
 
@@ -62,14 +62,14 @@ int ucrawlr(W *w, int k);
 void orphit(BW *bw);
 int calclincols(BW *bw);
 
-extern int marking;	/* Anchored block marking mode */
+extern bool marking;	/* Anchored block marking mode */
 
 void save_file_pos(FILE *f);
 void load_file_pos(FILE *f);
 off_t get_file_pos(const char *name);
 void set_file_pos(const char *name, off_t pos);
 
-extern int restore_file_pos;
+extern bool restore_file_pos;
 
 void set_file_pos_all(Screen *t);
 

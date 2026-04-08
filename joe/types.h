@@ -61,6 +61,16 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
+#ifdef HAVE__BOOL
+#include <stdbool.h>
+#else
+# ifndef __cplusplus
+typedef unsigned char _Bool;
+#  define _Bool bool
+#  define true 1
+#  define false 0
+# endif
+#endif
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>

@@ -48,12 +48,14 @@ struct scrn {
 	const char	*brp;		/* Bracketed paste mode */
 	const char	*bre;		/* Stop bracketed paste */
 
-	int	haz;		/* Terminal can't print ~s */
-	int	os;		/* Terminal overstrikes */
-	int	eo;		/* Can use blank to erase even if os */
-	int	ul;		/* _ overstrikes */
-	int	am;		/* Terminal has autowrap, but not magicwrap */
-	int	xn;		/* Terminal has magicwrap */
+	bool	haz;		/* Terminal can't print ~s */
+	bool	os;		/* Terminal overstrikes */
+	bool	eo;		/* Can use blank to erase even if os */
+	bool	ul;		/* _ overstrikes */
+	bool	am;		/* Terminal has autowrap, but not magicwrap */
+	bool	xn;		/* Terminal has magicwrap */
+
+	bool	ms;		/* Ok to move when in standout/underline mode */
 
 	const char	*so;		/* Enter standout (inverse) mode */
 	const char	*se;		/* Exit standout mode */
@@ -61,8 +63,6 @@ struct scrn {
 	const char	*us;		/* Enter underline mode */
 	const char	*ue;		/* Exit underline mode */
 	const char	*uc;		/* Single time underline character */
-
-	int	ms;		/* Ok to move when in standout/underline mode */
 
 	const char	*mb;		/* Enter blinking mode */
 	const char	*md;		/* Enter bold mode */
@@ -78,18 +78,18 @@ struct scrn {
 	const char	*Sb;		/* Set background color */
 	const char	*Sf;		/* Set foreground color */
 	int	Co;			/* No. of colors */
-	int	Tc;			/* Truecolor (non-standard, tmux-supported) */
-	int	ut;		/* Screen erases with background color */
+	bool	Tc;			/* Truecolor (non-standard, tmux-supported) */
+	bool	ut;		/* Screen erases with background color */
 
-	int	da, db;		/* Extra lines exist above, below */
+	bool	da, db;		/* Extra lines exist above, below */
 	const char	*al, *dl, *AL, *DL;	/* Insert/delete lines */
 	const char	*cs;		/* Set scrolling region */
-	int	rr;		/* Set for scrolling region relative addressing */
 	const char	*sf, *SF, *sr, *SR;	/* Scroll */
+	bool	rr;		/* Set for scrolling region relative addressing */
 
+	bool	mi;		/* Set if ok to move while in insert mode */
 	const char	*dm, *dc, *DC, *ed;	/* Delete characters */
 	const char	*im, *ic, *IC, *ip, *ei;	/* Insert characters */
-	int	mi;		/* Set if ok to move while in insert mode */
 
 	const char	*bs;		/* Move cursor left 1 */
 	ptrdiff_t	cbs;
@@ -131,26 +131,26 @@ struct scrn {
 	const char	*ce;		/* Clear to end of line */
 	ptrdiff_t	cce;
 
-	int 	assume_256;	/* Assume terminal has 256 color mode, but use
+	int	*palette;	/* Truecolor RGB palette */
+	bool	truecolor;	/* Terminal supports true color */
+
+	bool 	assume_256;	/* Assume terminal has 256 color mode, but use
 	                           regular mode for standard colors just in case */
 
-	int	truecolor;	/* Terminal supports true color */
-	int	*palette;	/* Truecolor RGB palette */
-
 	/* Basic abilities */
-	int	scroll;		/* Set to use scrolling */
-	int	insdel;		/* Set to use insert/delete within line */
+	bool	scroll;		/* Set to use scrolling */
+	bool	insdel;		/* Set to use insert/delete within line */
 
 	/* Current state of terminal */
+	bool	ins;		/* Set if we're in insert mode */
 	int	(*scrn)[COMPOSE];		/* Characters on screen */
 	int	*attr;		/* Attributes on screen */
 	ptrdiff_t	x, y;		/* Current cursor position (-1 for unknown) */
 	ptrdiff_t	top, bot;	/* Current scrolling region */
 	int	attrib;		/* Current character attributes */
-	int	ins;		/* Set if we're in insert mode */
 
-	int	*updtab;	/* Dirty lines table */
 	int	avattr;		/* Bits set for available attributes */
+	int	*updtab;	/* Dirty lines table */
 	ptrdiff_t	*sary;		/* Scroll buffer array */
 
 	int	*compose;	/* Line compose buffer */
@@ -371,9 +371,9 @@ void setextpal(SCRN *t, int *palette);
 extern int bg_text;
 extern int env_lines;
 extern int env_columns;
-extern int notite;
-extern int brpaste;
-extern int nolinefeeds;
-extern int opt_usetabs;
-extern int assume_color;
-extern int assume_256color;
+extern bool notite;
+extern bool brpaste;
+extern bool nolinefeeds;
+extern bool opt_usetabs;
+extern bool assume_color;
+extern bool assume_256color;

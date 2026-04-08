@@ -48,23 +48,23 @@ extern struct Cclass cclass_combining[1];
 
 void joe_iswinit(void);
 
-int joe_iswupper(struct charmap *,int c);
-int joe_iswlower(struct charmap *,int c);
+bool joe_iswupper(struct charmap *,int c);
+bool joe_iswlower(struct charmap *,int c);
 
-int joe_iswalpha(struct charmap *,int c);	/* or _ */
-int joe_iswalpha_(struct charmap *,int c);
+bool joe_iswalpha(struct charmap *,int c);	/* or _ */
+bool joe_iswalpha_(struct charmap *,int c);
 
-int joe_iswalnum(struct charmap *,int c);
-int joe_iswalnum_(struct charmap *,int c);
+bool joe_iswalnum(struct charmap *,int c);
+bool joe_iswalnum_(struct charmap *,int c);
 
-int joe_iswdigit(struct charmap *,int c);
-int joe_iswspace(struct charmap *,int c);
-int joe_iswctrl(struct charmap *,int c);
-int joe_iswpunct(struct charmap *,int c);
-int joe_iswgraph(struct charmap *,int c);
-int joe_iswprint(struct charmap *,int c);
-int joe_iswxdigit(struct charmap *,int c);
-int joe_iswblank(struct charmap *,int c);
+bool joe_iswdigit(struct charmap *,int c);
+bool joe_iswspace(struct charmap *,int c);
+bool joe_iswctrl(struct charmap *,int c);
+bool joe_iswpunct(struct charmap *,int c);
+bool joe_iswgraph(struct charmap *,int c);
+bool joe_iswprint(struct charmap *,int c);
+bool joe_iswxdigit(struct charmap *,int c);
+bool joe_iswblank(struct charmap *,int c);
 
 /* Value of any \p{Nd} digit */
 int digval(int ch);

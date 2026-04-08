@@ -6,8 +6,8 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-extern int square; /* Column / rectangular block mode */
-extern int lightoff; /* Automatic turn off highlighting */
+extern bool square; /* Column / rectangular block mode */
+extern bool lightoff; /* Automatic turn off highlighting */
 extern P *markb, *markk; /* ^KB and ^KK positions */
 
 void pinsrect(P *cur, B *tmp, off_t width, int usetabs);
@@ -46,5 +46,5 @@ extern int nstack; /* No. block markers pushed on stack */
 int blksum(BW *bw, double *,double *);
 int blklr(BW *bw, double *,double *, double *, double *, double *, int, int);
 char *blkget(BW *bw);
-extern int autoswap; /* Automatically swap markb and markk if need to make a valid block */
+extern bool autoswap; /* Automatically swap markb and markk if need to make a valid block */
 extern int nowmarking; /* Now marking flag (so make block bigger) for Ctrl-arrow key block selection */
