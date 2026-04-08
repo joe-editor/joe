@@ -8,7 +8,7 @@
 
 [Build instructions](INSTALL.md)
 
-### JOE.next
+### JOE 4.7
 
 * Enhancements
 
