@@ -144,7 +144,7 @@ sELEMENT *_vsset(sELEMENT *vary, ptrdiff_t pos, sELEMENT el)
 	return vary;
 }
 
-#ifdef junk
+#if 0
 
 sELEMENT *vsins(sELEMENT *vary, ptrdiff_t pos, ptrdiff_t n)
 {
@@ -210,7 +210,7 @@ ptrdiff_t vsbsearch(const sELEMENT *ary, ptrdiff_t len, sELEMENT el)
 	return y;
 }
 
-#ifdef junk
+#if 0
 
 ptrdiff_t vsfirst(sELEMENT *ary, ptrdiff_t len, sELEMENT el)
 {
@@ -269,7 +269,7 @@ int vscmp(sELEMENT *a, sELEMENT *b)
 {
 	return vscmpn(sv(a), sv(b));
 }
-#ifdef junk
+#if 0
 int vsicmpn(sELEMENT *a, ptrdiff_t myalen, sELEMENT *b, ptrdiff_t blen)
 {
 	ptrdiff_t x, l;
@@ -341,7 +341,7 @@ ptrdiff_t vsspan(const sELEMENT *a, ptrdiff_t myalen, const sELEMENT *b, ptrdiff
 	return x;
 }
 
-#ifdef junk
+#if 0
 
 sELEMENT *vsread(sELEMENT d, ptrdiff_t p, int (*getC)(), void *ptr)
 {

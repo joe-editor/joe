@@ -319,6 +319,8 @@ struct glopts {
 	ptrdiff_t ofst;		/* Local options structure member offset */
 	int low;		/* Low limit for numeric options */
 	int high;		/* High limit for numeric options */
+	/* For *_OPT_BOOL, if .yes=NULL or .no=NULL, a message using the menu
+	 * string (if non-NULL) & "ON" or "OFF" will be generated at need */
 } glopts[] = {
 	{"overwrite",           LOC_OPT_BOOL, { NULL }, (char *) &fdefault.overtype, _("Overtype mode"), _("Insert mode"), _("Overtype mode"), 0, 0, 0 },
 	{"hex",                 LOC_OPT_BOOL, { NULL }, (char *) &fdefault.hex, _("Hex edit mode"), _("Text edit mode"), _("Hex edit display mode"), 0, 0, 0 },
@@ -970,7 +972,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			*glopts[x].set.s = zdup(s);
 		break;
 	case LOC_OPT_STRING:
-		*(char **)((char *)&bw->o+glopts[x].ofst) = zdup(s);
+		*OPTPTR(&bw->o, glopts[x].ofst, char *) = zdup(s);
 		break;
 	case LOC_OPT_INT:
 		v = (int)calc(bw, s, 0);
@@ -978,7 +980,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			msgnw(bw->parent, merr);
 			ret = -1;
 		} else if (v >= glopts[x].low && v <= glopts[x].high)
-			*(int *) ((char *) &bw->o + glopts[x].ofst) = v;
+			*OPTPTR(&bw->o, glopts[x].ofst, int) = v;
 		else {
 			msgnw(bw->parent, joe_gettext(_("Value out of range")));
 			ret = -1;
@@ -990,7 +992,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			msgnw(bw->parent, merr);
 			ret = -1;
 		} else if (vv >= glopts[x].low && vv <= glopts[x].high)
-			*(off_t *) ((char *) &bw->o + glopts[x].ofst) = vv;
+			*OPTPTR(&bw->o, glopts[x].ofst, off_t) = vv;
 		else {
 			msgnw(bw->parent, joe_gettext(_("Value out of range")));
 			ret = -1;
@@ -1002,7 +1004,7 @@ static int doopt1(W *w, char *s, void *obj, int *notify)
 			msgnw(bw->parent, merr);
 			ret = -1;
 		} else if (vv >= glopts[x].low && vv <= glopts[x].high)
-			*(off_t *) ((char *) &bw->o + glopts[x].ofst) = vv;
+			*OPTPTR(&bw->o, glopts[x].ofst, off_t) = vv;
 		else {
 			msgnw(bw->parent, joe_gettext(_("Value out of range")));
 			ret = -1;
@@ -1261,6 +1263,7 @@ static int find_option(char *s)
 static int applyopt(BW *bw, bool *optp, int y, int flg)
 {
 	bool oldval, newval;
+	const char *msg;
 
 	oldval = *optp;
 	if (flg == 0) {
@@ -1275,8 +1278,18 @@ static int applyopt(BW *bw, bool *optp, int y, int flg)
 	}
 
 	*optp = newval;
-	msgnw(bw->parent, newval ? joe_gettext(glopts[y].yes) : joe_gettext(glopts[y].no));
 
+	msg = newval ? glopts[y].yes : glopts[y].no;
+	if (msg)
+		msgnw(bw->parent, joe_gettext(msg));
+	else {
+		msg = newval ? "ON" : "OFF";
+		if (glopts[y].menu) {
+			joe_snprintf_2(msgbuf, JOE_MSGBUFSIZE, "%s: %s", joe_gettext(glopts[y].menu), msg);
+			msgnw(bw->parent, msgbuf);
+		} else
+			msgnw(bw->parent, msg);
+	}
 	return oldval;
 }
 
@@ -1377,8 +1390,8 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 		case LOC_OPT_STRING:
 			xx = (int *) joe_malloc(SIZEOF(int));
 			*xx = y;
-			if(*(char **)((char *)&bw->o+glopts[y].ofst))
-				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes,*(char **)((char *)&bw->o+glopts[y].ofst));
+			if(*OPTPTR(&bw->o, glopts[y].ofst, char *))
+				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes, *OPTPTR(&bw->o, glopts[y].ofst, char *));
 			else
 				joe_snprintf_1(buf, OPT_BUF_SIZE, glopts[y].yes,"");
 			if(wmkpw(bw->parent, buf, NULL, doopt1, NULL, doabrt1, utypebw, xx, notify, utf8_map, 0))
@@ -1420,13 +1433,17 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 			else
 				return -1;
 		case LOC_OPT_INT:
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst));
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *OPTPTR(&bw->o, glopts[y].ofst, int));
 			goto in;
 		case LOC_OPT_OFFSET:
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), (long long)*(off_t *) ((char *) &bw->o + glopts[y].ofst));
+#ifdef HAVE_LONG_LONG
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), (long long)*OPTPTR(&bw->o, glopts[y].ofst, off_t));
+#else
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), (long)*OPTPTR(&bw->o, glopts[y].ofst, off_t));
+#endif
 			goto in;
 		case LOC_OPT_RANGE:
-			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *(int *) ((char *) &bw->o + glopts[y].ofst) + 1);
+			joe_snprintf_1(buf, OPT_BUF_SIZE, joe_gettext(glopts[y].yes), *OPTPTR(&bw->o, glopts[y].ofst, int) + 1);
 		      in:xx = (int *) joe_malloc(SIZEOF(int));
 
 			*xx = y;

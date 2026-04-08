@@ -492,7 +492,7 @@ char *simplify_prefix(const char *s)
 	const char *t = getenv("HOME");
 	char *n;
 
-#ifdef junk
+#if 0
 	char *org = pwd();
 	/* Normalize home */
 	if (t && !chpwd(t)) {

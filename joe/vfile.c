@@ -10,8 +10,8 @@
 static VFILE vfiles = { {&vfiles, &vfiles} };	/* Known vfiles */
 static VPAGE *freepages = NULL;	/* Linked list of free pages */
 static VPAGE *htab[HTSIZE];	/* Hash table of page headers */
-static long curvalloc = 0;	/* Amount of memory in use */
-static long maxvalloc = ILIMIT;	/* Maximum allowed */
+static size_t curvalloc = 0;	/* Amount of memory in use */
+static const size_t maxvalloc = ILIMIT;	/* Maximum allowed */
 char *vbase;			/* Data first entry in vheader refers to */
 VPAGE **vheaders = NULL;	/* Array of header addresses */
 static ptrdiff_t vheadsz = 0;	/* No. entries allocated to vheaders */
@@ -128,7 +128,7 @@ char *vlock(VFILE *vfile, off_t addr)
 		goto gotit;
 	}
 
-	if (curvalloc + PGSIZE <= maxvalloc) {
+	if (curvalloc <= maxvalloc - PGSIZE) {
 		vp = (VPAGE *) joe_malloc(SIZEOF(VPAGE) * INC);
 		if (vp) {
 			vp->data = mema(PGSIZE, PGSIZE * INC);
@@ -229,7 +229,7 @@ VFILE *vtmp(void)
 	return enqueb_f(VFILE, link, &vfiles, newf);
 }
 
-#ifdef junk
+#if 0
 
 VFILE *vopen(name)
 char *name;
@@ -295,7 +295,7 @@ void vclose(VFILE *vfile)
 			}
 }
 
-#ifdef junk
+#if 0
 /* this is now broken */
 void vlimit(amount)
 long amount;
@@ -356,7 +356,7 @@ off_t my_valloc(VFILE *vfile, off_t size)
 	return start;
 }
 
-#ifdef junk
+#if 0
 
 void vseek(vfile, addr)
 VFILE *vfile;

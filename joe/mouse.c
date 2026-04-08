@@ -128,8 +128,9 @@ static int mouse_event(W *w)
 
 int uxtmouse(W *w, int k)
 {
-	Cb = (unsigned char)ttgetc() - 32;
-	if (Cb < 0)
+	int cb = (unsigned char)ttgetc();
+	Cb = cb - 32;
+	if (cb < 32) /* this construction avoids a signed overflow warning */
 		return -1;
 	if (Cb == 3)
 		Cb = Cb_RELEASE;

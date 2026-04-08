@@ -84,7 +84,7 @@ static int cpara(BW *bw, int c)
 		}
 	}
 	return 0;
-#ifdef junk
+#if 0
 	if (c == ' ' || c == '\t' || c == '\\' ||
 	    c == '>' || c == '|' || c == ':' || c == '*' || c == '/' ||
 	    c == ',' || c == '.' || c == '?' || c == ';' || c == ']' ||

@@ -880,7 +880,7 @@ ptrdiff_t parse_Zstring(const char **pp, int *buf, ptrdiff_t len)
 
 /* Emit a string with escape sequences */
 
-#ifdef junk
+#if 0
 
 /* Used originally for printing macros */
 

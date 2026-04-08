@@ -133,7 +133,7 @@ struct lattr_db *find_lattr_db(B *b, struct high_syntax *y)
 
 void drop_lattr_db(B *b, struct lattr_db *db)
 {
-#ifdef junk
+#if 0
 	if (!lattr_db_in_use(db)) {
 		if (b->db == db) {
 			b->db = db->next;
@@ -339,7 +339,7 @@ HIGHLIGHT_STATE lattr_get(struct lattr_db *db, struct high_syntax *y, P *p, ptrd
 
 	/* Check it */
 
-#ifdef junk
+#if 0
 	{
 		HIGHLIGHT_STATE st;
 		P *tmp =pdup(p, "lattr_get");

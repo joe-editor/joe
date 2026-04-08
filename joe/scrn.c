@@ -702,13 +702,13 @@ SCRN *nopen(CAP *cap)
 		if (ansiish) {
 			t->assume_256 = 1;
 #ifndef TERMINFO
-#ifdef junk
+#if 0
 			t->ut = 1;
 			t->Sf = "\\E[38;5;%dm";
 			t->Sb = "\\E[48;5;%dm";
 #endif
 #else
-#ifdef junk
+#if 0
 			t->ut = 1;
 			t->Sf = "\033[38;5;%p1%dm";
 			t->Sb = "\033[48;5;%p1%dm";
