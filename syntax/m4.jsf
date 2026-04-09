@@ -21,7 +21,7 @@
 	*		idle
 	"["		idle recolor=-1 call=.m4(quote -brace)
 #	"["		idle recolor=-1 call=.quote()
-	"a-zA-Z_"	ident buffer mark
+	"a-zA-Z_"	ident_start	noeat mark
 .ifdef quote
 	"]"		idle return
 .endif
@@ -37,8 +37,14 @@
 	*		idle noeat return
 
 .ifdef quote
+:ident_start Constant string
+	*		ident	buffer
+
 :ident Constant string
 .else
+:ident_start Ident
+	*		ident	buffer
+
 :ident Ident
 .endif
 	*		maybe_macro noeat strings
