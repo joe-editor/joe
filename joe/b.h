@@ -96,7 +96,7 @@ struct options {
 	bool	crlf;
 	bool	highlight;	/* Set to enable highlighting */
 	bool	visiblews;	/* Visible whitespace */
-	bool	syntax_debug;	/* Whether using OSC8 to help debug syntax colouring */
+	int	syntax_debug;	/* Whether using OSC8 to help debug syntax colouring */
 	bool	smarthome;	/* Set for smart home key */
 	bool	indentfirst;	/* Smart home goes to indentation point first */
 	bool	smartbacks;	/* Set for smart backspace key */

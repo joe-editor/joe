@@ -60,7 +60,7 @@ OPTIONS pdefault = {
 #endif
 	false,		/* Highlight */
 	false,		/* Visible whitespace */
-	false,		/* Syntax debugging */
+	0,		/* Syntax debugging */
 	false,		/* Smart home key */
 	false,		/* Goto indent first */
 	false,		/* Smart backspace key */
@@ -126,7 +126,7 @@ OPTIONS fdefault = {
 #endif
 	false,		/* Highlight */
 	false,		/* Visible whitespace */
-	false,		/* Syntax debugging */
+	0,		/* Syntax debugging */
 	false,		/* Smart home key */
 	false,		/* Goto indent first */
 	false,		/* Smart backspace key */
