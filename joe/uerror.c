@@ -145,19 +145,73 @@ static int freeall(void)
 	return count;
 }
 
-/* Parse "make[1]: Entering directory '/home/..../foo'" message. */
+/* Parse "make[1]: Entering directory '/home/..../foo'" message.
+ * Allow for possible aliases, e.g. gmake, kmk_gmake.
+ */
 
-static void parsedir(const char *s, char **rtn_dir)
+static void parsedir(struct charmap *map, const char *s, char **rtn_dir)
 {
-	const char *u, *v;
-	u = zstr(s, "Entering directory `");
-	if (u) {
-		u += zlen("Entering directory `");
-		for (v = u; *v && *v != '\''; ++v);
-		if (*v == '\'') {
+	const char *u, *v, *vv; /* -funsigned-char */
+
+	u = zstr(s, "make[");
+	if (!u) return;
+	/* Possible aliases of make, so check the preceding text */
+	for (v = s; v < u; ++v) {
+		if ((*v & 0xDF) < 'A')
+			return;
+		if ((*v & 0xDF) > 'Z' && *v != '_')
+			return;
+	}
+
+	if (!zncmp(u, "make[", 5)) {
+		char quote[2][4] = {};
+
+		u = strchr(s, '[') + 1; /* < the [ which got matched above */
+		while (*u >= '0' && *u <= '9')
+			++u;
+		if (u == s + 5 || u[0] != ']' || u[1] != ':')
+			return;
+		/* looks like "make[1]" */
+
+		while (*u && !quote[0][0]) {
+			/* List of quotation marks:
+			 *   $ grep -h 'Entering directory' $(find make-dfsg-4.4.1 -name \*.po) -A1|sed -e '/^msgstr/! d; s/^[^"]*"//; s/"[^"]*$//; s@[[:alnum:][:space:] %:\\[\]]*@@g'|sort -u|sed -e ':t N; s/\n/ /; t t'
+			 *   "" '' `' «» “” ”” „“ „” 「」
+			 * Unicode code point numbers for each pair:
+			 * 0022 0022, 0027 0027, 0060 0027, 00AB 00BB, 201C 201D, 201D 201D, 201E 201C, 201E 201D, 300C 300D
+			 */
+			int c = fwrd_c(map, &u, NULL);
+			switch (c) {
+			/* ASCII */
+			case 0x0022: quote[0][0] = '"';  break;
+			case 0x0027: quote[0][0] = '\''; break;
+			case 0x0060: quote[0][0] = '\''; break;
+			/* Latin-(various), possibly encoded as UTF-8 */
+			case 0x00AB: if (map->type) utf8_encode(quote[0], 0xBB); else quote[0][0] = (char)0xBB; break;
+			/* UTF-8 */
+			case 0x201C: utf8_encode(quote[0], 0x201D); break;
+			case 0x201D: utf8_encode(quote[0], 0x201D); break;
+			case 0x201E: utf8_encode(quote[0], 0x201C);
+			             utf8_encode(quote[0], 0x201D); break;
+			case 0x300C: utf8_encode(quote[0], 0x300D); break;
+			}
+		}
+		if (!quote[0][0])
+			return; /* no recognised quotation mark found */
+
+		/* find the corresponding closing quotation mark (the last one!) */
+		v = u - 1;
+		do {
+			vv = zstr(v + 1, quote[0]);
+			if (!vv && quote[1][0]) vv = zstr(v + 1, quote[1]);
+			if (vv) v = vv;
+		} while (vv);
+
+		/* hopefully, we now have a non-empty string */
+		if (v > u + 1) {
 			char *t = *rtn_dir;
 			t = vstrunc(t, 0);
-			t = vsncpy(sv(t), u, v - u);
+			t = vsncpy(sv(t), (char *)u, v - u);
 			if (sLEN(t) && t[sLEN(t)-1] != '/')
 				t = vsadd(t, '/');
 			*rtn_dir = t;
@@ -340,7 +394,7 @@ static off_t parserr(B *b)
 			s = brvs(q, p->byte - q->byte);
 			if (s) {
 				kill_ansi(s);
-				parsedir(s, &curdir);
+				parsedir(q->b->o.charmap, s, &curdir);
 				nerrs += parseit(q->b->o.charmap, s, q->line, (q->b->parseone ? q->b->parseone : parseone), (curdir ? curdir : q->b->current_dir));
 				vsrm(s);
 			}
@@ -366,7 +420,7 @@ static off_t parserr(B *b)
 			s = brvs(q, p->byte - q->byte);
 			if (s) {
 				kill_ansi(s);
-				parsedir(s, &curdir);
+				parsedir(q->b->o.charmap, s, &curdir);
 				nerrs += parseit(q->b->o.charmap, s, q->line, (q->b->parseone ? q->b->parseone : parseone), (curdir ? curdir : q->b->current_dir));
 				vsrm(s);
 			}
@@ -550,7 +604,7 @@ int ujump(W *w, int k)
 		s = brvs(q, p->byte - q->byte);
 		if (s) {
 			kill_ansi(s);
-			parsedir(s, &curdir);
+			parsedir(bw->b->o.charmap, s, &curdir);
 			vsrm(s);
 		}
 		if (NO_MORE_DATA == pgetc(p))
