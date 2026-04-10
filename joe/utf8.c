@@ -204,7 +204,7 @@ int utf8_decode_fwrd(const char **p,ptrdiff_t *plen)
 
 int fwrd_c(struct charmap *map, const char **s, ptrdiff_t *len)
 {
-	if (map->type)
+	if (map->is_unicode)
 		return utf8_decode_fwrd(s, len);
 	else {
 		int c = *(const unsigned char *)*s;

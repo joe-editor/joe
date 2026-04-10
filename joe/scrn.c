@@ -327,8 +327,8 @@ void outatr(struct charmap *map,SCRN *t,int (*scrn)[COMPOSE],int *attrf,ptrdiff_
 {
 	if (c < 0)
 		c += 256;
-	if(map->type)
-		if(locale_map->type) {
+	if(map->is_unicode)
+		if(locale_map->is_unicode) {
 			if (cclass_lookup(cclass_combining, c)) { /* It's a combining character */
 				if (!outatr_state) /* No start character? */
 					outatr_state = 2; /* Ignore it... */
@@ -408,7 +408,7 @@ void outatr(struct charmap *map,SCRN *t,int (*scrn)[COMPOSE],int *attrf,ptrdiff_
 			t->x++;
 		}
 	else
-		if (!locale_map->type) {
+		if (!locale_map->is_unicode) {
 			/* Non UTF-8 char to non UTF-8 terminal */
 			/* Byte-byte Translate? */
 
@@ -2172,7 +2172,7 @@ void genfield(SCRN *t,int (*scrn)[COMPOSE],int *attr,ptrdiff_t x,ptrdiff_t y,ptr
 				my_atr = (my_atr & ~BG_MASK) | (fmtatr & BG_MASK);
 			my_atr |= fmtatr & AT_MASK;
 		}
-		if (locale_map->type) {
+		if (locale_map->is_unicode) {
 			/* UTF-8 mode: decode character and determine its width */
 			c = utf8_decode(&sm,TO_CHAR_OK(c));
 			if (c >= 0)
@@ -2232,7 +2232,7 @@ void genfield(SCRN *t,int (*scrn)[COMPOSE],int *attr,ptrdiff_t x,ptrdiff_t y,ptr
 
 ptrdiff_t txtwidth(const char *s,ptrdiff_t len)
 {
-	if (locale_map->type) {
+	if (locale_map->is_unicode) {
 		ptrdiff_t col=0;
 		struct utf8_sm sm;
 		utf8_init(&sm);
@@ -2250,7 +2250,7 @@ ptrdiff_t txtwidth(const char *s,ptrdiff_t len)
 
 off_t txtwidth1(struct charmap *map,off_t tabwidth,const char *s,ptrdiff_t len)
 {
-	if (map->type) {
+	if (map->is_unicode) {
 		off_t col=0;
 		struct utf8_sm sm;
 		utf8_init(&sm);
@@ -2355,7 +2355,7 @@ emitch:
 			}
 		} else {
 			ptrdiff_t wid = -1;
-			if (locale_map->type) {
+			if (locale_map->is_unicode) {
 				/* UTF-8 mode: decode character and determine its width */
 				c = utf8_decode(&sm,TO_CHAR_OK(c));
 				if (c >= 0) {
@@ -2427,7 +2427,7 @@ ptrdiff_t fmtlen(const char *s)
 			}
 		} else {
 			ptrdiff_t wid = 0;
-			if(locale_map->type) {
+			if(locale_map->is_unicode) {
 				c = utf8_decode(&sm,TO_CHAR_OK(c));
 				if (c>=0)
 					wid = joe_wcwidth(1,c);
@@ -2478,7 +2478,7 @@ ptrdiff_t fmtpos(const char *s, ptrdiff_t goal)
 			}
 		} else {
 			ptrdiff_t wid = 0;
-			if(locale_map->type) {
+			if(locale_map->is_unicode) {
 				c = utf8_decode(&sm,TO_CHAR_OK(c));
 				if (c>=0)
 					wid = joe_wcwidth(1,c);

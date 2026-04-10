@@ -561,7 +561,7 @@ static bool lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdif
 				goto eobl;
 			else {
 				int wid = 1;
-				if (p->b->o.charmap->type) {
+				if (p->b->o.charmap->is_unicode) {
 					c = utf8_decode(&utf8_sm,bc);
 
 					if (c>=0) /* Normal decoded character */
@@ -722,7 +722,7 @@ static bool lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdif
 			} else {
 				int wid = -1;
 				int utf8_char;
-				if (p->b->o.charmap->type) { /* UTF-8 */
+				if (p->b->o.charmap->is_unicode) { /* UTF-8 */
 
 					utf8_char = utf8_decode(&utf8_sm,bc);
 
@@ -1432,7 +1432,7 @@ void init_visiblews(void)
 	vspace = vtab = vrtn = 0;
 
 	/* If we're Unicode, just take the best */
-	if (locale_map->type) {
+	if (locale_map->is_unicode) {
 		vspace = spaces[0];
 		vtab = tabs[0];
 		vrtn = rtns[0];

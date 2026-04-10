@@ -245,7 +245,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 		ptrdiff_t x;
 
 		/* If it isn't already, convert character to unicode */
-		if (!charmap->type)
+		if (!charmap->is_unicode)
 			c = to_uni(charmap, c);
 
 		/* Create or expand attribute array if necessary */

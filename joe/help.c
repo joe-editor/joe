@@ -165,7 +165,7 @@ void help_display(Screen *t)
 						c = *(const unsigned char *)str++;
 						--len;
 					}
-					width += joe_wcwidth((help_is_utf8 ? 1 : !!locale_map->type), c);
+					width += joe_wcwidth((help_is_utf8 ? 1 : !!locale_map->is_unicode), c);
 				}
 			}
 			str = start;
@@ -265,7 +265,7 @@ void help_display(Screen *t)
 					       t->t, t->t->scrn + x + y * t->w,
 				       	       t->t->attr + x + y * t->w, x, y,
 					       c, atr);
-					x += (joe_wcwidth((help_is_utf8 ? 1 : !!locale_map->type), c) - 1);
+					x += (joe_wcwidth((help_is_utf8 ? 1 : !!locale_map->is_unicode), c) - 1);
 				}
 			}
 			atr = BG_COLOR(bg_help);

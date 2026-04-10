@@ -200,7 +200,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 
 		in:
 
-		if (bw->b->o.charmap->type) {
+		if (bw->b->o.charmap->is_unicode) {
 			buf_len = utf8_encode(buf, c);
 		} else {
 			buf[0] = TO_CHAR_OK(from_uni(bw->b->o.charmap, c));
@@ -218,7 +218,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 
 	isrch->prompt = vstrunc(isrch->prompt, isrch->ofst);
 
-	if (locale_map->type && !bw->b->o.charmap->type) {
+	if (locale_map->is_unicode && !bw->b->o.charmap->is_unicode) {
 		/* Translate bytes to utf-8 */
 		char buf[16];
 		int x;
@@ -227,7 +227,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 			utf8_encode(buf, tc);
 			isrch->prompt = vsncpy(sv(isrch->prompt),sz(buf));
 		}
-	} else if (!locale_map->type && bw->b->o.charmap->type) {
+	} else if (!locale_map->is_unicode && bw->b->o.charmap->is_unicode) {
 		/* Translate utf-8 to bytes */
 		const char *p = isrch->pattern;
 		ptrdiff_t len = sLEN(isrch->pattern);

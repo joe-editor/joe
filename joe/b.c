@@ -799,7 +799,7 @@ char *ansi_string(int code)
 /* return current character and move p to the next character.  column will be updated if it was valid. */
 int pgetc(P *p)
 {
-	if (p->b->o.charmap->type) {
+	if (p->b->o.charmap->is_unicode) {
 		bool val;
 		int valattr;
 		int c; /* , oc; */
@@ -1006,7 +1006,7 @@ int prgetc(P *p)
 	off_t startbyte, startcol;
 	bool val = 0;
 
-	if (!p->b->o.charmap->type || pisbol(p))
+	if (!p->b->o.charmap->is_unicode || pisbol(p))
 		return prgetb(p);
 
 	/* Save p for later column calculation */
@@ -1109,7 +1109,7 @@ P *p_goto_indent(P *p, int c)
 /* move p to the end of line */
 P *p_goto_eol(P *p)
 {
-	if (p->b->o.crlf || p->b->o.charmap->type || p->b->o.ansi)
+	if (p->b->o.crlf || p->b->o.charmap->is_unicode || p->b->o.ansi)
 		while (!piseol(p))
 			pgetc(p);
 	else
@@ -1219,7 +1219,7 @@ P *pline(P *p, off_t line)
 P *pcol(P *p, off_t goalcol)
 {
 	p_goto_bol(p);
-	if(p->b->o.charmap->type || p->b->o.ansi) {
+	if(p->b->o.charmap->is_unicode || p->b->o.ansi) {
 		do {
 			int c;
 			off_t wid;
@@ -1291,7 +1291,7 @@ P *pcolwse(P *p, off_t goalcol)
 P *pcoli(P *p, off_t goalcol)
 {
 	p_goto_bol(p);
-	if (p->b->o.charmap->type || p->b->o.ansi) {
+	if (p->b->o.charmap->is_unicode || p->b->o.ansi) {
 		while (p->col < goalcol) {
 			int c;
 			c = brc(p);
@@ -2271,7 +2271,7 @@ P *binsc(P *p, int c)
 	if ((c & ANSI_BIT) && p->b->o.ansi) {
 		char *s = ansi_string(c);
 		return binsm(p, s, zlen(s));
-	} else if (c>127 && p->b->o.charmap->type) {
+	} else if (c>127 && p->b->o.charmap->is_unicode) {
 		char buf[8];
 		ptrdiff_t len = utf8_encode(buf,c);
 		return binsm(p,buf,len);
@@ -3328,7 +3328,7 @@ int brc(P *p)
 
 int brch(P *p)
 {
-	if (p->b->o.charmap->type) {
+	if (p->b->o.charmap->is_unicode) {
 		P *q = pdup(p, "brch");
 		int c = pgetc(q);
 		prm(q);

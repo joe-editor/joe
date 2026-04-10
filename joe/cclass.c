@@ -1461,7 +1461,7 @@ struct Cclass *cclass_remap(struct Cclass *m, struct charmap *map)
 {
 	if (!map)
 		return 0;
-	if (!map->type) {
+	if (!map->is_unicode) {
 		struct Cclass_list *l;
 		ptrdiff_t x;
 		int low, high;

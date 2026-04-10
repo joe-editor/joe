@@ -327,8 +327,8 @@ static void select_done(struct charmap *map)
 			/* Copy text into buffer */
 			while (q->byte < markk->byte && (!square || (piscol(q) >= left && piscol(q) < right))) {
 				c = pgetc(q);
-				if (map->type)
-					if (locale_map->type) {
+				if (map->is_unicode)
+					if (locale_map->is_unicode) {
 						/* UTF-8 char to UTF-8 terminal */
 						len = utf8_encode(buf,c);
 						ttputs64(buf, len);
@@ -341,7 +341,7 @@ static void select_done(struct charmap *map)
 						ttputs64(buf, 1);
 					}
 				else
-					if (locale_map->type) {
+					if (locale_map->is_unicode) {
 						/* Non-UTF-8 to UTF-8 terminal */
 						c = to_uni(map, c);
 						if (c == -1)
