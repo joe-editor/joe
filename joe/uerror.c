@@ -347,7 +347,7 @@ static int parseit(struct charmap *map,const char *s, off_t row,
 			/* We have an error */
 			err = (ERROR *) alitem(&errnodes, SIZEOF(ERROR));
 			err->file = name;
-			if (current_dir) {
+			if (current_dir && *name != '/') {
 				err->file = vsncpy(NULL, 0, sv(current_dir));
 				err->file = vsncpy(sv(err->file), sv(name));
 				err->file = canonical(err->file, CANFLAG_NORESTART);
