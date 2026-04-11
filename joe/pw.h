@@ -63,6 +63,6 @@ void set_current_dir(BW *bw, char *s,int simp);
 extern int bg_prompt;
 extern bool nocurdir;
 
-extern WATOM watompw;
+extern const WATOM watompw;
 
 char *get_cd(W *w);

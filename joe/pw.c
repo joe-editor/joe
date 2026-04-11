@@ -233,7 +233,7 @@ static int abortpw(W *w)
 	}
 }
 
-WATOM watompw = {
+const WATOM watompw = {
 	"prompt",
 	disppw,
 	bwfllwt,

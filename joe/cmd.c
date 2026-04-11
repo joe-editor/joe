@@ -231,9 +231,9 @@ bool nolocks;
 #define LOCKMSG2 _("Could not create lock. (I) edit anyway, (Q) cancel edit? ")
 #define LOCKMSG1 _("Locked by %s. (S)teal lock, (I) edit anyway, (Q) cancel edit? ")
 
-const char *steallock_key= _("|steal the lock|sS");
-const char *canceledit_key= _("|cancel edit due to lock|qQ");
-const char *ignorelock_key=  _("|ignore lock, continue with edit|iI");
+static const char steallock_key[]  = _("|steal the lock|sS");
+static const char canceledit_key[] = _("|cancel edit due to lock|qQ");
+static const char ignorelock_key[] = _("|ignore lock, continue with edit|iI");
 
 static int steal_lock(W *w,int c,void *object,int *notify)
 {
