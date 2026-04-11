@@ -303,7 +303,7 @@ static void record(MACRO *m, int k)
 }
 
 static int ifdepth=0;		/* JM: Nesting level of if cmds */
-static int ifflag=1;		/* JM: Truth flag for if */
+static bool ifflag=1;		/* JM: Truth flag for if */
 static int iffail=0;		/* JM: Depth where ifflag became 0 */
 
 /* Suspend macro record/play to allow for user input.
@@ -345,7 +345,7 @@ static int argset = 0;		/* Set if 'arg' is set */
 static int exsimple(MACRO *m, int myarg, int u, int k)
 {
 	const CMD *cmd = m->cmd;
-	int flg = 0; /* set if we should not try to merge minor changes into single undo record */
+	bool flg = 0; /* set if we should not try to merge minor changes into single undo record */
 	int ret = 0;
 
 	/* Find command to execute if repeat argument is negative */
@@ -388,7 +388,7 @@ int current_arg_set = 0;
 int exmacro(MACRO *m, int u, int k)
 {
 	int larg;
-	int negarg = 0;
+	bool negarg = 0;
 	int oid=0, oifl=0, oifa=0;
 	int ret = 0;
 	int main_ret = 0;
@@ -778,7 +778,8 @@ int uelsif(W *w, int k)
 		msgnw(w,joe_gettext(_("Elsif without if")));
 		return -1;
 	} else if(ifflag) {
-		ifflag=iffail=0; /* don't let the next else/elsif get run */
+		ifflag = false;
+		iffail = 0; /* don't let the next else/elsif get run */
 	} else if(ifdepth == iffail) {
 		ifflag=1;	/* so the script can type the condition :) */
 		if(wmkpw(w,joe_gettext(_("Else if: ")),NULL,doif,NULL,NULL,math_cmplt,NULL,NULL,locale_map,0)) return 0;

@@ -174,7 +174,7 @@ static void parsedir(const char *s, char **rtn_dir)
 
 static void parseone(struct charmap *map,const char *s,char **rtn_name,off_t *rtn_line)
 {
-	int flg;
+	bool flg;
 	int c;
 	char *name = NULL;
 	off_t line = -1;

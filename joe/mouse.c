@@ -575,8 +575,8 @@ static int tomousestay(void)
 
 static off_t anchor;		/* byte where mouse was originally pressed */
 static off_t anchorn;		/* near side of the anchored word */
-static int marked;		/* mark was set by defmdrag? */
-static int reversed;		/* mouse was dragged above the anchor? */
+static bool marked;		/* mark was set by defmdrag? */
+static bool reversed;		/* mouse was dragged above the anchor? */
 
 /* Select text */
 
@@ -653,8 +653,10 @@ int udefmdrag(W *xx, int k)
 		auto_rate = new_rate;
 	}
 
-	if (!marked)
-		marked++, umarkb(bw->parent, 0);
+	if (!marked) {
+		marked = false;
+		umarkb(bw->parent, 0);
+	}
 	if (tomousestay())
 		return -1;
 	selecting = 1;

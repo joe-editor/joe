@@ -851,8 +851,8 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 	struct high_state *state=0;	/* Current state */
 	struct high_state *first=0;	/* First state */
 	int line = 0;
-	int this_one = 0;
-	int inside_subr = 0;
+	bool this_one = 0;
+	bool inside_subr = 0;
 
 	/* Find the syntax file */
 	fullpath = open_config_file(&f, "syntax/", syntax->name, ".jsf");

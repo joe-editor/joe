@@ -22,7 +22,7 @@ VT *mkvt(B *b, P *top, ptrdiff_t height, ptrdiff_t width)
 
 void vt_resize(VT *vt, P *top, ptrdiff_t height, ptrdiff_t width)
 {
-	int flag = 0;
+	bool flag = 0;
 	if (vt->regn_bot == vt->height)
 		flag = 1;
 	vt->height = height;

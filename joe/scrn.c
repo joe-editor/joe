@@ -575,7 +575,7 @@ SCRN *nopen(CAP *cap)
 {
 	SCRN *t = (SCRN *) joe_malloc(SIZEOF(SCRN));
 	ptrdiff_t x, y, co, li;
-	int ansiish;
+	bool ansiish;
 
 	ttopen();
 

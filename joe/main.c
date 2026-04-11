@@ -73,8 +73,8 @@ void edupd(int flg)
 	staupd = 0;
 }
 
-static int ahead = 0; /* Low means typehead possible while JOE is starting, before TTY mode changed */
-static int ungot = 0;
+static bool ahead = 0; /* Low means typehead possible while JOE is starting, before TTY mode changed */
+static bool ungot = 0;
 static int ungotc = 0;
 
 void nungetc(int c)
@@ -322,11 +322,10 @@ int main(int argc, char **real_argv, const char * const *envv)
 	char *rundir;
 #endif
 	SCRN *n;
-	int opened = 0;
-	int omid;
+	bool opened = 0;
+	bool filesonly = 0;
 	int backopt;
 	int c;
-	int filesonly;
 
 	joe_iswinit();
 	joe_locale();
@@ -707,6 +706,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 
 
 	if (opened) {
+		bool omid;
 		wshowall(maint);
 		omid = opt_mid;
 		opt_mid = 1;

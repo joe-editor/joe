@@ -293,7 +293,7 @@ static int file_changed(W *w,int c,void *object,int *notify)
 
 /* Try to lock: start dialog if we can't.  Returns 0 if we couldn't lock */
 
-int try_lock(BW *bw,B *b)
+bool try_lock(BW *bw,B *b)
 {
 	/* First time we modify the file */
 	/* If we're a plain file, acquire lock */
@@ -329,7 +329,7 @@ int try_lock(BW *bw,B *b)
 #define CHECK_INTERVAL 15
 bool nomodcheck;
 
-int modify_logic(BW *bw,B *b)
+bool modify_logic(BW *bw,B *b)
 {
 	if (last_time > b->check_time + CHECK_INTERVAL) {
 		b->check_time = last_time;
