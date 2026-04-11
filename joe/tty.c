@@ -414,7 +414,7 @@ void ttopnn(void)
 
 	tty_baud = 9600;
 	upc = 0;
-	for (x = 0; x != sizeof(speeds_in)/sizeof(speed_t); ++x)
+	for (x = 0; x != ARRAY_LEN(speeds_in); ++x)
 		if (bbaud == speeds_in[x]) {
 			tty_baud = speeds_out[x];
 			break;

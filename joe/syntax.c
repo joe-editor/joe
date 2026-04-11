@@ -289,10 +289,10 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 			/* Lowerize strings for case-insensitive matching */
 			if (cmd->ignore) {
-				lowerize(lbuf, SIZEOF(lbuf)/SIZEOF(lbuf[0]), buf);
+				lowerize(lbuf, ARRAY_LEN(lbuf), buf);
 				if (cmd->delim) {
 					if (h_state.saved_s)
-						lowerize(lsaved_s, SIZEOF(lsaved_s)/SIZEOF(lsaved_s[0]), h_state.saved_s);
+						lowerize(lsaved_s, ARRAY_LEN(lsaved_s), h_state.saved_s);
 					else
 						lsaved_s[0] = 0;
 				}
@@ -794,10 +794,10 @@ static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *
 					int lkwbuf[256 * 3];
 					if(!parse_field(&p,"done"))
 						break;
-					if(parse_Zstring(&p,kwbuf,SIZEOF(kwbuf)/SIZEOF(kwbuf[0])) >= 0) {
+					if(parse_Zstring(&p,kwbuf,ARRAY_LEN(kwbuf)) >= 0) {
 						parse_ws(&p,'#');
 						if (cmd->ignore)
-							lowerize(lkwbuf, SIZEOF(lkwbuf)/SIZEOF(lkwbuf[0]), kwbuf);
+							lowerize(lkwbuf, ARRAY_LEN(lkwbuf), kwbuf);
 						if(!parse_ident(&p,bf1,SIZEOF(bf1))) {
 							struct high_cmd *kw_cmd=mkcmd();
 							kw_cmd->noeat=1;

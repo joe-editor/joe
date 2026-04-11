@@ -506,7 +506,7 @@ static void izcmds(void)
 	int x;
 
 	cmdhash = chtmk(256);
-	for (x = 0; x != SIZEOF(cmds) / SIZEOF(CMD); ++x)
+	for (x = 0; x != ARRAY_LEN(cmds); ++x)
 		chtadd(cmdhash, cmds[x].name, (const void *)(cmds + x));
 }
 
@@ -534,7 +534,7 @@ void addcmd(const char *s, MACRO *m)
 
 static char **getcmds(void)
 {
-	char **s = vaensure(NULL, SIZEOF(cmds) / SIZEOF(CMD));
+	char **s = vaensure(NULL, ARRAY_LEN(cmds));
 	int x;
 	CHENTRY *e;
 

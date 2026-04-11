@@ -1249,7 +1249,7 @@ static void load_builtins(void)
 
 	/* Load all built-in byte maps */
 	/*
-	for (y=0; y!=sizeof(builtin_charmaps)/sizeof(struct builtin_charmap); ++y)
+	for (y=0; y!=ARRAY_LEN(builtin_charmaps); ++y)
 		process_builtin(builtin_charmaps + y);
 	*/
 }
@@ -1388,7 +1388,7 @@ struct charmap *find_charmap(const char *name)
 		return process_builtin(b);
 
 	/* Check builtin sets */
-	for (y=0; y!=SIZEOF(builtin_charmaps)/SIZEOF(struct builtin_charmap); ++y)
+	for (y=0; y!=ARRAY_LEN(builtin_charmaps); ++y)
 		if (!map_name_cmp(builtin_charmaps[y].name,name))
 			return process_builtin(builtin_charmaps + y);
 
@@ -1428,7 +1428,7 @@ char **get_encodings(void)
 	r = vsncpy(NULL,0,sc("utf-16r"));
 	encodings = vaadd(encodings, r);
 
-	for (y=0; y!=SIZEOF(builtin_charmaps)/SIZEOF(struct builtin_charmap); ++y) {
+	for (y=0; y!=ARRAY_LEN(builtin_charmaps); ++y) {
 		r = vsncpy(NULL,0,sz(builtin_charmaps[y].name));
 		encodings = vaadd(encodings, r);
 	}

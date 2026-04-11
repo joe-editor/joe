@@ -50,6 +50,8 @@
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
 #define SIZEOF(a) ((ptrdiff_t)sizeof(a)) /* Signed version of sizeof() */
 
+#define ARRAY_LEN(a) (sizeof(a) / sizeof(a[0]))
+
 /* For very old UNIX, declar register arguments.  No longer allowed in C++17 */
 #define REGISTER
 /* #define REGISTER register */
