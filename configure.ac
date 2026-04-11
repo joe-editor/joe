@@ -54,6 +54,9 @@ AX_CHECK_COMPILE_FLAG([-Wmissing-format-attribute], [CFLAGS="$CFLAGS -Wmissing-f
 AX_CHECK_COMPILE_FLAG([-Wswitch-enum], [CFLAGS="$CFLAGS -Wswitch-enum"])
 AX_CHECK_COMPILE_FLAG([-Wshadow], [CFLAGS="$CFLAGS -Wshadow"])
 
+# these ones we want to error out on
+AX_CHECK_COMPILE_FLAG([-Werror=unterminated-string-initialization], [CFLAGS="$CFLAGS -Wconversion"])
+
 case "$host" in
 	*-*-solaris*)
 		CPPFLAGS="$CPPFLAGS -I/usr/local/include"
