@@ -693,7 +693,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 			if (set && arg) {
 				val = ztoi(arg);
 				if (val >= opt->low && val <= opt->high)
-					*opt->set.b = val;
+					*opt->set.i = val;
 			}
 			ret = arg ? 2 : 1;
 			break;
