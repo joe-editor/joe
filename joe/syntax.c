@@ -587,6 +587,7 @@ static void iz_cmd(struct high_cmd *cmd)
 	cmd->reset = 0;
 	cmd->call = 0;
 	cmd->state_test_all = cmd->state_test_any = cmd->state_test_none = 0;
+	cmd->keep_statebits = false;
 	cmd->statekeep = -1;
 	cmd->stateflip = 0;
 }
