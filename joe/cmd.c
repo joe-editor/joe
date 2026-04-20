@@ -139,7 +139,7 @@ const CMD cmds[] = {
 	{"nextw", TYPETW + TYPEPW + TYPEMENU + TYPEQW, unextw, NULL, 1, "prevw"},
 	{"nextword", TYPETW + TYPEPW + EFIXXCOL, u_goto_next, NULL, 1, "prevword"},
 	{"nmark", TYPETW + TYPEPW, unmark, NULL, 0, NULL},
-	{"notmod", TYPETW, unotmod, NULL, 0, NULL},
+	{"notmod", TYPETW + TYPEPW, unotmod, NULL, 0, NULL},
 	{"nxterr", TYPETW, unxterr, NULL, 1, "prverr"},
 	{"open", TYPETW + TYPEPW + EFIXXCOL + EMOD, uopen, NULL, 1, "deleol"},
 	{"parserr", TYPETW, uparserr, NULL, 0, NULL},
