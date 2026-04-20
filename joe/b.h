@@ -345,3 +345,6 @@ int ansi_code(char *s);
 char *ansi_string(int code);
 
 extern int guess_utf16;
+
+/* Return true if filename will be interpreted as something other than a filename */
+int hack_check(const char *name);

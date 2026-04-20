@@ -471,6 +471,9 @@ int ugparse(W *w, int k)
 static int jump_to_file_line(BW *bw,char *file,off_t line,char *msg)
 {
 	int omid;
+	/* Do not allow shell command! */
+	if (hack_check(file))
+		return -1;
 	if (!bw->b->name || zcmp(file, bw->b->name)) {
 		if (doswitch(bw->parent, vsdup(file), NULL, NULL))
 			return -1;

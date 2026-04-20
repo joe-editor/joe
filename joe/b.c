@@ -2513,6 +2513,19 @@ B *bread(int fi, off_t max, int binary)
 	return b;
 }
 
+/* Return true if filename will be interpreted as something other than a filename by bload()
+   It would be better to have a flag on bload, but more plumbing required */
+
+int hack_check(const char *name)
+{
+	if (name[0] == '!')
+		return 1;
+	else if (name[0] == '>' && name[1] == '>')
+		return 1;
+	else
+		return 0;
+}
+
 /* Parse file name.
  *
  * Removes ',xxx,yyy' from end of name and puts their value into skip and amnt
