@@ -222,7 +222,7 @@ static int dotag(W *w, char *s, void *obj, int *notify)
 				++x;
 			}
 			for (y = x; buf[y] && buf[y] != ' ' && buf[y] != '\t' && buf[y] != '\n'; ++y) ;
-			if (x != y) {
+			if (x != y && !hack_check(buf)) { /* Do not allow shell commands in tags file! */
 				char *file = 0;
 				c = buf[y];
 				buf[y] = 0;
