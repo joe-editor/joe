@@ -23,6 +23,8 @@ ERROR *errptr = &errors;	/* Current error row */
 
 B *errbuf = NULL;		/* Buffer with error messages */
 
+bool parserr_homeonly = true;	/* compiler errors: ignore file paths outside home directory */
+
 /* Function which allows stepping through all error buffers,
    for multi-file search and replace.  Give it a buffer.  It finds next
    buffer in error list.  Look at 'berror' for error information. */
@@ -336,6 +338,7 @@ static int parseit(struct charmap *map,const char *s, off_t row,
   void (*parseline)(struct charmap *map, const char *s, char **rtn_name, off_t *rtn_line), char *current_dir)
 {
 	char *name = NULL;
+	const char *home = parserr_homeonly ? getenv("HOME") : NULL;
 	off_t line = -1;
 	ERROR *err;
 
@@ -345,16 +348,20 @@ static int parseit(struct charmap *map,const char *s, off_t row,
 		if (line != -1) {
 			char *t;
 			/* We have an error */
-			err = (ERROR *) alitem(&errnodes, SIZEOF(ERROR));
-			err->file = name;
 			if (current_dir && *name != '/') {
-				err->file = vsncpy(NULL, 0, sv(current_dir));
-				err->file = vsncpy(sv(err->file), sv(name));
-				err->file = canonical(err->file, CANFLAG_NORESTART);
+				t = vsncpy(NULL, 0, sv(current_dir));
+				t = vsncpy(sv(t), sv(name));
+				t = canonical(t, CANFLAG_NORESTART);
 				vsrm(name);
 			} else {
-				err->file = name;
+				t = name;
 			}
+			if (home && zncmp(t, sz(home))) {
+				vsrm(name);
+				return 0;
+			}
+			err = (ERROR *) alitem(&errnodes, SIZEOF(ERROR));
+			err->file = t;
 			err->org = err->line = line;
 			err->src = row;
 			err->msg = vsncpy(NULL, 0, sc("\\i"));

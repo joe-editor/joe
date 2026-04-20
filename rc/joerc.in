@@ -142,6 +142,10 @@
 
  -notagsmenu	Disable tags file search menu
 
+-parserr_homeonly
+		In compiler error logs, ignore files (system header files
+		etc.) which are outside the user's home directory.
+
  -icase         Search is case insensitive by default.
 
  -wrap          Search wraps
