@@ -8,6 +8,37 @@
 
 [Build instructions](INSTALL.md)
 
+### JOE 4.8
+
+* Enhancements
+
+	* Allow notmod in prompt windows: if you set it in a macro, this
+	  suppresses adding the prompt to the history.  Good for keeping
+	  history clean.
+
+	* Save block filter prompt history in state file.
+
+* Bugs fixed
+
+	* Fix tags file security vulnerability: Someone could share a tags
+	  file that tricks a user into executing a shell command by using
+	  JOE's '!' filename syntax.  This fix prevents '!' from working
+	  when opening files specified in the tags file.
+
+	* Fix some build issues involving deprecated autoconf RETSIGTYPE.
+
+	* Do not use unicode arrow in tooltips for new syntax debugging
+	  feature
+
+	* Fix a number of minor syntax coloring issues: sh, m4, debian, rust
+
+	* Fix integer global option setting issue
+
+	* Prevent segfault when referring to certain boolean options
+
+	* Fix issue where block filtering does not work if JOE is reading
+	  from stdin pipe
+
 ### JOE 4.7
 
 * Enhancements

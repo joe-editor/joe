@@ -5,7 +5,7 @@ AC_PREREQ([2.64])
 AC_CONFIG_MACRO_DIR([m4])
 
 #### Here's the only place where to change version number ####
-AC_INIT([joe],[4.7])
+AC_INIT([joe],[4.8])
 AC_CONFIG_SRCDIR([joe/b.c])
 
 AC_CANONICAL_BUILD
