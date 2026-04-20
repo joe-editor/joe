@@ -337,6 +337,7 @@ struct glopts {
 	{"menu_explorer",       GLO_OPT_BOOL, { &menu_explorer }, NULL, _("Menu explorer mode"), _("Simple completion mode"), _("Menu explorer mode"), 0, 0, 0 },
 	{"menu_above",          GLO_OPT_BOOL, { &menu_above }, NULL, _("Menu above prompt"), _("Menu below prompt"), _("Menu above/below mode"), 0, 0, 0 },
 	{"notagsmenu",          GLO_OPT_BOOL, { &notagsmenu }, NULL, _("Tags menu disabled"), _("Tags menu enabled"), _("Tags menu mode"), 0, 0, 0 },
+	{"parserr_homeonly",	GLO_OPT_BOOL, { &parserr_homeonly }, NULL, 0, 0, _("Error logs: home dir only"), 0, 0, 0 },
 	{"search_prompting",    GLO_OPT_BOOL, { &pico }, NULL, _("Search prompting on"), _("Search prompting off"), _("Search prompting mode"), 0, 0, 0 },
 	{"menu_jump",           GLO_OPT_BOOL, { &menu_jump }, NULL, _("Jump into menu is on"), _("Jump into menu is off"), _("Jump into menu mode"), 0, 0, 0 },
 	{"autoswap",            GLO_OPT_BOOL, { &autoswap }, NULL, _("Autoswap ^KB and ^KK"), _("Autoswap off "), _("Autoswap mode "), 0, 0, 0 },
