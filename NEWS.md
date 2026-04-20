@@ -39,6 +39,10 @@
 	* Fix issue where block filtering does not work if JOE is reading
 	  from stdin pipe
 
+	* Fix asymmetric ^X / ^Z 
+
+	* Fix selection glitches during Ctrl-Shift-Right / -Left
+
 ### JOE 4.7
 
 * Enhancements
