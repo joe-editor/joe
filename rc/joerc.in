@@ -1002,11 +1002,11 @@ yank		^[ [ 2 $
  Shift-Ctrl-
 
  upslide		^[ [ 1 ; 6 A	Shift-Ctrl-Up
-uparw,dnarw,begin_marking,bop,toggle_marking	^[ [ 1 ; 6 A    Mark up paragraph
+uparw,dnarw,begin_marking,bop!,toggle_marking	^[ [ 1 ; 6 A    Mark up paragraph
  dnslide		^[ [ 1 ; 6 B	Shift-Ctrl-Down
-dnarw,uparw,begin_marking,eop,toggle_marking	^[ [ 1 ; 6 B    Mark down paragraph
-rtarw,ltarw,begin_marking,nextword,toggle_marking	^[ [ 1 ; 6 C    Shift-Ctrl-Right Mark right word
-ltarw,rtarw,begin_marking,prevword,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Left Mark left word
+dnarw,uparw,begin_marking,eop!,toggle_marking	^[ [ 1 ; 6 B    Mark down paragraph
+rtarw,ltarw,begin_marking,nextword!,toggle_marking	^[ [ 1 ; 6 C    Shift-Ctrl-Right Mark right word
+ltarw,rtarw,begin_marking,prevword!,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Left Mark left word
 
  Uncomment these if you want JOE to work the old way (Ctrl-cursor marks)
 
