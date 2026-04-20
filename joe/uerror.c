@@ -185,13 +185,13 @@ static void parsedir(struct charmap *map, const char *s, char **rtn_dir)
 			/* ASCII */
 			case 0x0022: quote[0][0] = '"';  break;
 			case 0x0027: quote[0][0] = '\''; break;
-			case 0x0060: quote[0][0] = '\''; break;
+			case 0x0060: quote[1][0] = '`'; quote[0][0] = '\''; break;
 			/* Latin-(various), possibly encoded as UTF-8 */
 			case 0x00AB: if (map->type) utf8_encode(quote[0], 0xBB); else quote[0][0] = (char)0xBB; break;
 			/* UTF-8 */
 			case 0x201C: utf8_encode(quote[0], 0x201D); break;
 			case 0x201D: utf8_encode(quote[0], 0x201D); break;
-			case 0x201E: utf8_encode(quote[0], 0x201C);
+			case 0x201E: utf8_encode(quote[1], 0x201C);
 			             utf8_encode(quote[0], 0x201D); break;
 			case 0x300C: utf8_encode(quote[0], 0x300D); break;
 			}
