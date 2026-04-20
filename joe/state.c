@@ -126,6 +126,7 @@ void save_state(void)
 	fprintf(f,"run\n"); save_hist(f,runhist);
 	fprintf(f,"build\n"); save_hist(f,buildhist);
 	fprintf(f,"grep\n"); save_hist(f,grephist);
+	fprintf(f,"filt\n"); save_hist(f,filthist);
 	fprintf(f,"cmd\n"); save_hist(f,cmdhist);
 	fprintf(f,"math\n"); save_hist(f,mathhist);
 	fprintf(f,"yank\n"); save_yank(f);
@@ -188,6 +189,8 @@ void load_state(void)
 				load_hist(f,&buildhist);
 			else if(!zcmp(buf,"grep\n"))
 				load_hist(f,&grephist);
+			else if(!zcmp(buf,"filt\n"))
+				load_hist(f,&filthist);
 			else if(!zcmp(buf,"cmd\n"))
 				load_hist(f,&cmdhist);
 			else if(!zcmp(buf,"math\n"))

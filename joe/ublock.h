@@ -48,3 +48,5 @@ int blklr(BW *bw, double *,double *, double *, double *, double *, int, int);
 char *blkget(BW *bw);
 extern int autoswap; /* Automatically swap markb and markk if need to make a valid block */
 extern int nowmarking; /* Now marking flag (so make block bigger) for Ctrl-arrow key block selection */
+
+extern B *filthist; /* Filter command history */
