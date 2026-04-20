@@ -193,6 +193,8 @@ static int p_goto_prev(P *ptr)
 	} else if (joe_isspace(map,c) || joe_ispunct(map,c)) {
 		while ((c=prgetc(p)), (joe_isspace(map,c) || joe_ispunct(map,c)))
 			/* Do nothing */;
+		if (c != NO_MORE_DATA)
+			pgetc(p);
 		while(joe_isalnum_(map,(c=prgetc(p))))
 			/* Do nothing */;
 		if (c != NO_MORE_DATA)
