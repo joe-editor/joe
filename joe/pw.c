@@ -251,7 +251,8 @@ const WATOM watompw = {
 
 BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, void *object, int *notify), const char *huh,
           int (*abrt)(W *w, void *object),
-          int (*tab)(BW *bw, int k), void *object, int *notify,struct charmap *map,int file_prompt)
+          int (*tab)(BW *bw, int k), void *object, int *notify,struct charmap *map,
+          enum pwflags file_prompt)
 {
 	W *neww;
 	PW *pw;
