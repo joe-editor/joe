@@ -1085,6 +1085,50 @@ int utomatch(W *w, int k)
 		f = '<';
 		dir = -1;
 		break;
+	case 0xAB:
+		f = 0xBB;
+		dir = 1;
+		break;
+	case 0xBB:
+		f = 0xAB;
+		dir = -1;
+		break;
+	case 0x201c:
+		f = 0x201d;
+		dir = 1;
+		break;
+	case 0x201e:
+		f = 0x201d;
+		dir = 1;
+		break;
+	case 0x201d:
+		f = 0x201c; // Should look for 0x201e also?
+		dir = -1;
+		break;
+	case 0x300c:
+		f = 0x300d;
+		dir = 1;
+		break;
+	case 0x300d:
+		f = 0x300c;
+		dir = -1;
+		break;
+	case 0xa1:
+		f = '!';
+		dir = 1;
+		break;
+	case '!':
+		f = 0xa1;
+		dir = -1;
+		break;
+	case 0xbf:
+		f = '?';
+		dir = 1;
+		break;
+	case '?':
+		f = 0xbf;
+		dir = -1;
+		break;
 	default:
 		return -1;
 	}
