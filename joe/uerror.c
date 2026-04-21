@@ -357,7 +357,7 @@ static int parseit(struct charmap *map,const char *s, off_t row,
 				t = name;
 			}
 			if (home && zncmp(t, sz(home))) {
-				vsrm(name);
+				vsrm(t);
 				return 0;
 			}
 			err = (ERROR *) alitem(&errnodes, SIZEOF(ERROR));
