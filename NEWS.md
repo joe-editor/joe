@@ -18,6 +18,10 @@
 
 	* Save block filter prompt history in state file.
 
+	* Add parserr_homeonly option: compiler error parser will ignore
+	  errors from files outside of user's home directory- suppresses
+	  references to system include files.
+
 * Bugs fixed
 
 	* Fix tags file security vulnerability: Someone could share a tags
@@ -42,6 +46,9 @@
 	* Fix asymmetric ^X / ^Z 
 
 	* Fix selection glitches during Ctrl-Shift-Right / -Left
+
+	* Fix compiler error parser: it was not handling "new" (as of 9
+	  years ago) delimiters from make
 
 ### JOE 4.7
 
