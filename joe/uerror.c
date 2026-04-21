@@ -356,7 +356,7 @@ static int parseit(struct charmap *map,const char *s, off_t row,
 			} else {
 				t = name;
 			}
-			if (home && zncmp(t, sz(home))) {
+			if (home && t[0] == '/' && zncmp(t, sz(home))) {
 				vsrm(t);
 				return 0;
 			}
