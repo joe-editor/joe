@@ -6,7 +6,7 @@
  *	This file is part of JOE (Joe's Own Editor)
  */
 
-extern bool parserr_homeonly;
+extern int parserr_homeonly;
 
 int unxterr(W *w, int k);
 int uprverr(W *w, int k);

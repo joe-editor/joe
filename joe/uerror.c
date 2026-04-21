@@ -23,7 +23,7 @@ ERROR *errptr = &errors;	/* Current error row */
 
 B *errbuf = NULL;		/* Buffer with error messages */
 
-bool parserr_homeonly = true;	/* compiler errors: ignore file paths outside home directory */
+int parserr_homeonly = 1;	/* compiler errors: ignore file paths outside home directory */
 
 /* Function which allows stepping through all error buffers,
    for multi-file search and replace.  Give it a buffer.  It finds next
@@ -356,8 +356,8 @@ static int parseit(struct charmap *map,const char *s, off_t row,
 			} else {
 				t = name;
 			}
-			if (home && zncmp(t, sz(home))) {
-				vsrm(name);
+			if (home && t[0] == '/' && zncmp(t, sz(home))) {
+				vsrm(t);
 				return 0;
 			}
 			err = (ERROR *) alitem(&errnodes, SIZEOF(ERROR));
