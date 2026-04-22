@@ -1281,7 +1281,7 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 	return 0;
 }
 
-static B *filthist = NULL;
+B *filthist = NULL;
 
 static void markall(BW *bw)
 {

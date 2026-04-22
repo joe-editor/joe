@@ -755,6 +755,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 			/* Close stdin, so that if user kills the copying the program feeding stdin sees a SIGPIPE */
 			/* It won't if there are any extra file descriptors open */
 			fclose(stdin);
+			stdin = fopen("/dev/tty", "rb");
 		}
 	}
 

@@ -156,37 +156,105 @@ long upc;			/* Microseconds per character */
  * too much to ask for them to just use an integer for the baud-rate?)
  */
 
-static const speed_t speeds_in[] = {
-	B50, B75, B110, B134, B150, B200, B300, B600, B1200, B1800, B2400, B4800, B9600
+static long convert_speed(speed_t speed)
+{
+	/* EXTA and EXTB not in switch because they are often aliases to some other rate */
 #ifdef EXTA
-	, EXTA
+	if (speed == EXTA)
+		return 19200;
 #endif
-#ifdef EXTB
-	, EXTB
-#endif
-#ifdef B19200
-	, B19200
-#endif
-#ifdef B38400
-	, B38400
-#endif
-};
 
-static const long speeds_out[] = {
-	50, 75, 110, 134, 150, 200, 300, 600, 1200, 1800, 2400, 4800, 9600
-#ifdef EXTA
-	, 19200
-#endif
 #ifdef EXTB
-	, 38400
+	if (speed == EXTB)
+		return 38400;
 #endif
+
+	switch (speed) {
+		case B50: return 50;
+		case B75: return 75;
+		case B110: return 110;
+		case B134: return 134;
+		case B150: return 150;
+		case B200: return 200;
+		case B300: return 300;
+		case B600: return 600;
+		case B1200: return 1200;
+		case B1800: return 1800;
+		case B2400: return 2400;
+		case B4800: return 4800;
+		case B9600: return 9600;
+
 #ifdef B19200
-	, 19200
+		case B19200: return 19200;
 #endif
+
 #ifdef B38400
-	, 38400
+		case B38400: return 38400;
 #endif
-};
+
+#ifdef B57600
+		case B57600: return 57600;
+#endif
+
+#ifdef B115200
+		case B115200: return 115200;
+#endif
+
+#ifdef B230400
+		case B230400: return 230400;
+#endif
+
+#ifdef B460800
+		case B460800: return 460800;
+#endif
+
+#ifdef B500000
+		case B500000: return 500000;
+#endif
+
+#ifdef B576000
+		case B576000: return 576000;
+#endif
+
+#ifdef B921600
+		case B921600: return 921600;
+#endif
+
+#ifdef B1000000
+		case B1000000: return 1000000;
+#endif
+
+#ifdef B1152000
+		case B1152000: return 1152000;
+#endif
+
+#ifdef B1500000
+		case B1500000: return 1500000;
+#endif
+
+#ifdef B2000000
+		case B2000000: return 2000000;
+#endif
+
+#ifdef B2500000
+		case B2500000: return 2500000;
+#endif
+
+#ifdef B3000000
+		case B3000000: return 3000000;
+#endif
+
+#ifdef B3500000
+		case B3500000: return 3500000;
+#endif
+
+#ifdef B4000000
+		case B4000000: return 4000000;
+#endif
+
+		default: return 115200;
+	}
+}
 
 /* Input buffer */
 
@@ -325,7 +393,6 @@ void tickon(void)
 
 void ttopnn(void)
 {
-	ptrdiff_t x;
 	speed_t bbaud;
 
 #ifdef HAVE_POSIX_TERMIOS
@@ -412,13 +479,8 @@ void ttopnn(void)
 #endif
 #endif
 
-	tty_baud = 9600;
 	upc = 0;
-	for (x = 0; x != ARRAY_LEN(speeds_in); ++x)
-		if (bbaud == speeds_in[x]) {
-			tty_baud = speeds_out[x];
-			break;
-		}
+	tty_baud = convert_speed(bbaud);
 	if (Baud)
 		tty_baud = Baud;
 	upc = DIVIDEND / tty_baud;

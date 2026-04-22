@@ -204,7 +204,7 @@ done
 
 :name String # continuation
 	*		comma		noeat call=.space()
-	"-\c"		name
+	"-.\c"		name
 	"\s"		comma		noeat call=.space()
 	"\n"		comma_reset
 

@@ -60,7 +60,7 @@ OPTIONS pdefault = {
 #endif
 	false,		/* Highlight */
 	false,		/* Visible whitespace */
-	false,		/* Syntax debugging */
+	0,		/* Syntax debugging */
 	false,		/* Smart home key */
 	false,		/* Goto indent first */
 	false,		/* Smart backspace key */
@@ -126,7 +126,7 @@ OPTIONS fdefault = {
 #endif
 	false,		/* Highlight */
 	false,		/* Visible whitespace */
-	false,		/* Syntax debugging */
+	0,		/* Syntax debugging */
 	false,		/* Smart home key */
 	false,		/* Goto indent first */
 	false,		/* Smart backspace key */
@@ -308,6 +308,8 @@ union opt_storage_p {
 	char **s;
 };					/* Address of global option */
 
+#define MAXSCRN 1024		/* Larget reasonable number for many screen related settings */
+
 struct glopts {
 	const char *name;		/* Option name */
 	enum opt_type type;
@@ -328,9 +330,9 @@ struct glopts {
 	{"title",               LOC_OPT_BOOL, { NULL }, (char *) &fdefault.title, _("Status line context enabled"), _("Status line context disabled"), _("Status line context display mode"), 0, 0, 0 },
 	{"autoindent",          LOC_OPT_BOOL, { NULL }, (char *) &fdefault.autoindent, _("Autoindent enabled"), _("Autoindent disabled"), _("Autoindent mode"), 0, 0, 0 },
 	{"wordwrap",            LOC_OPT_BOOL, { NULL }, (char *) &fdefault.wordwrap, _("Wordwrap enabled"), _("Wordwrap disabled"), _("Word wrap mode"), 0, 0, 0 },
-	{"tab",                 LOC_OPT_OFFSET, { NULL }, (char *) &fdefault.tab, _("Tab width (%lld): "), 0, _("Tab width"), 0, 1, 64 },
-	{"lmargin",             LOC_OPT_RANGE, { NULL }, (char *) &fdefault.lmargin, _("Left margin (%d): "), 0, _("Left margin "), 0, 0, 63 },
-	{"rmargin",             LOC_OPT_RANGE, { NULL }, (char *) &fdefault.rmargin, _("Right margin (%d): "), 0, _("Right margin "), 0, 7, 255 },
+	{"tab",                 LOC_OPT_OFFSET, { NULL }, (char *) &fdefault.tab, _("Tab width (%lld): "), 0, _("Tab width"), 0, 1, MAXSCRN },
+	{"lmargin",             LOC_OPT_RANGE, { NULL }, (char *) &fdefault.lmargin, _("Left margin (%d): "), 0, _("Left margin "), 0, 0, MAXSCRN },
+	{"rmargin",             LOC_OPT_RANGE, { NULL }, (char *) &fdefault.rmargin, _("Right margin (%d): "), 0, _("Right margin "), 0, 7, MAXSCRN },
 	{"restore",             GLO_OPT_BOOL, { &restore_file_pos }, NULL, _("Restore cursor position when files loaded"), _("Don't restore cursor when files loaded"), _("Restore cursor mode"), 0, 0, 0 },
 	{"regex",               GLO_OPT_BOOL, { &std_regex }, NULL, _("Standard regular expression format"), _("JOE regular expression format"), _("Standard or JOE regular expression syntax"), 0, 0, 0 },
 	{"square",              GLO_OPT_BOOL, { &square }, NULL, _("Rectangle mode"), _("Text-stream mode"), _("Rectangular region mode"), 0, 0, 0 },
@@ -339,18 +341,19 @@ struct glopts {
 	{"menu_explorer",       GLO_OPT_BOOL, { &menu_explorer }, NULL, _("Menu explorer mode"), _("Simple completion mode"), _("Menu explorer mode"), 0, 0, 0 },
 	{"menu_above",          GLO_OPT_BOOL, { &menu_above }, NULL, _("Menu above prompt"), _("Menu below prompt"), _("Menu above/below mode"), 0, 0, 0 },
 	{"notagsmenu",          GLO_OPT_BOOL, { &notagsmenu }, NULL, _("Tags menu disabled"), _("Tags menu enabled"), _("Tags menu mode"), 0, 0, 0 },
+	{"parserr_homeonly",	GLO_OPT_BOOL, { &parserr_homeonly }, NULL, 0, 0, _("Error logs: home dir only"), 0, 0, 0 },
 	{"search_prompting",    GLO_OPT_BOOL, { &pico }, NULL, _("Search prompting on"), _("Search prompting off"), _("Search prompting mode"), 0, 0, 0 },
 	{"menu_jump",           GLO_OPT_BOOL, { &menu_jump }, NULL, _("Jump into menu is on"), _("Jump into menu is off"), _("Jump into menu mode"), 0, 0, 0 },
 	{"autoswap",            GLO_OPT_BOOL, { &autoswap }, NULL, _("Autoswap ^KB and ^KK"), _("Autoswap off "), _("Autoswap mode "), 0, 0, 0 },
 	{"indentc",             LOC_OPT_INT, { NULL }, (char *) &fdefault.indentc, _("Indent char %d (SPACE=32, TAB=9, %{abort} to abort): "), 0, _("Indent char "), 0, 0, 255 },
-	{"istep",               LOC_OPT_OFFSET, { NULL }, (char *) &fdefault.istep, _("Indent step %lld (%{abort} to abort): "), 0, _("Indent step "), 0, 1, 64 },
+	{"istep",               LOC_OPT_OFFSET, { NULL }, (char *) &fdefault.istep, _("Indent step %lld (%{abort} to abort): "), 0, _("Indent step "), 0, 1, MAXSCRN },
 	{"french",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.french, _("One space after periods for paragraph reformat"), _("Two spaces after periods for paragraph reformat"), _("French spacing mode"), 0, 0, 0 },
 	{"flowed",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.flowed, _("One space after paragraph line"), _("No spaces after paragraph lines"), _("Flowed text mode"), 0, 0, 0 },
 	{"highlight",           LOC_OPT_BOOL, { NULL }, (char *) &fdefault.highlight, _("Highlighting enabled"), _("Highlighting disabled"), _("Syntax highlighting mode"), 0, 0, 0 },
 	{"spaces",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.spaces, _("Inserting spaces when tab key is hit"), _("Inserting tabs when tab key is hit"), _("No tabs mode"), 0, 0, 0 },
 	{"mid",                 GLO_OPT_BOOL, { &opt_mid }, NULL, _("Cursor will be recentered on scrolls"), _("Cursor will not be recentered on scroll"), _("Center on scroll mode"), 0, 0, 0 },
-	{"left",                GLO_OPT_INT, { &opt_left }, NULL, _("Columns to scroll left or -1 for 1/2 window (%d): "), 0, _("Left scroll amount"), 0, -128, 127 },
-	{"right",               GLO_OPT_INT, { &opt_right }, NULL, _("Columns to scroll right or -1 for 1/2 window (%d): "), 0, _("Right scroll amount"), 0, -128, 127 },
+	{"left",                GLO_OPT_INT, { &opt_left }, NULL, _("Columns to scroll left or -1 for 1/2 window (%d): "), 0, _("Left scroll amount"), 0, -1, MAXSCRN },
+	{"right",               GLO_OPT_INT, { &opt_right }, NULL, _("Columns to scroll right or -1 for 1/2 window (%d): "), 0, _("Right scroll amount"), 0, -1, MAXSCRN },
 	{"guess_crlf",          GLO_OPT_BOOL, { &guesscrlf }, NULL, _("Automatically detect MS-DOS files"), _("Do not automatically detect MS-DOS files"), _("Auto detect CR-LF mode"), 0, 0, 0 },
 	{"guess_indent",        GLO_OPT_BOOL, { &guessindent }, NULL, _("Automatically detect indentation"), _("Do not automatically detect indentation"), _("Guess indent mode"), 0, 0, 0 },
 	{"guess_non_utf8",      GLO_OPT_BOOL, { &guess_non_utf8 }, NULL, _("Automatically detect non-UTF-8 in UTF-8 locale"), _("Do not automatically detect non-UTF-8"), _("Guess non-UTF-8 mode"), 0, 0, 0 },
@@ -377,8 +380,8 @@ struct glopts {
 	{"beep",                GLO_OPT_BOOL, { &joe_beep }, NULL, _("Warning bell enabled"), _("Warning bell disabled"), _("Beeps "), 0, 0, 0 },
 	{"nosta",               GLO_OPT_BOOL, { &staen }, NULL, _("Top-most status line disabled"), _("Top-most status line enabled"), _("Disable status line "), 0, 0, 0 },
 	{"keepup",              GLO_OPT_BOOL, { &keepup }, NULL, _("Status line updated constantly"), _("Status line updated once/sec"), _("Fast status line "), 0, 0, 0 },
-	{"pg",                  GLO_OPT_INT, { &pgamnt }, NULL, _("Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): "), 0, _("No. PgUp/PgDn lines "), 0, -1, 64 },
-	{"undo_keep",           GLO_OPT_INT, { &undo_keep }, NULL, _("No. undo records to keep, or (0 for infinite): "), 0, _("No. undo records "), 0, -1, 64 },
+	{"pg",                  GLO_OPT_INT, { &pgamnt }, NULL, _("Lines to keep for PgUp/PgDn or -1 for 1/2 window (%d): "), 0, _("No. PgUp/PgDn lines "), 0, -1, MAXSCRN },
+	{"undo_keep",           GLO_OPT_INT, { &undo_keep }, NULL, _("No. undo records to keep, or (0 for infinite): "), 0, _("No. undo records "), 0, 0, MAXINT },
 	{"csmode",              GLO_OPT_BOOL, { &csmode }, NULL, _("Start search after a search repeats previous search"), _("Start search always starts a new search"), _("Continued search "), 0, 0, 0 },
 	{"rdonly",              LOC_OPT_BOOL, { NULL }, (char *) &fdefault.readonly, _("Read only"), _("Full editing"), _("Read only "), 0, 0, 0 },
 	{"smarthome",           LOC_OPT_BOOL, { NULL }, (char *) &fdefault.smarthome, _("Smart home key enabled"), _("Smart home key disabled"), _("Smart home key "), 0, 0, 0 },
@@ -416,10 +419,10 @@ struct glopts {
 	{"orphan",              GLO_OPT_BOOL, { &orphan }, NULL, 0, 0, _("Orphan extra files"), 0, 0, 0 },
 	{"helpon",              GLO_OPT_BOOL, { &helpon }, NULL, 0, 0, _("Start editor with help displayed"), 0, 0, 0 },
 	{"dopadding",           GLO_OPT_BOOL, { &dopadding }, NULL, 0, 0, _("Emit padding NULs"), 0, 0, 0 },
-	{"lines",               GLO_OPT_INT, { &env_lines }, NULL, 0, 0, _("No. screen lines (if no window size ioctl)"), 0, 2, 1024 },
-	{"baud",                GLO_OPT_INT, { &Baud }, NULL, 0, 0, _("Baud rate"), 0, 50, 32767 },
-	{"columns",             GLO_OPT_INT, { &env_columns }, NULL, 0, 0, _("No. screen columns (if no window size ioctl)"), 0, 2, 1024 },
-	{"skiptop",             GLO_OPT_INT, { &skiptop }, NULL, 0, 0, _("No. screen lines to skip"), 0, 0, 64 },
+	{"lines",               GLO_OPT_INT, { &env_lines }, NULL, 0, 0, _("No. screen lines (if no window size ioctl)"), 0, 2, MAXSCRN },
+	{"baud",                GLO_OPT_INT, { &Baud }, NULL, 0, 0, _("Baud rate"), 0, 50, 4000000 },
+	{"columns",             GLO_OPT_INT, { &env_columns }, NULL, 0, 0, _("No. screen columns (if no window size ioctl)"), 0, 2, MAXSCRN },
+	{"skiptop",             GLO_OPT_INT, { &skiptop }, NULL, 0, 0, _("No. screen lines to skip"), 0, 0, MAXSCRN },
 	{"notite",              GLO_OPT_BOOL, { &notite }, NULL, 0, 0, _("Suppress tty init sequence"), 0, 0, 0 },
 	{"brpaste",             GLO_OPT_BOOL, { &brpaste }, NULL, 0, 0, _("Bracketed paste mode"), 0, 0, 0 },
 	{"pastehack",           GLO_OPT_BOOL, { &pastehack }, NULL, 0, 0, _("Paste quoting hack"), 0, 0, 0 },
@@ -693,7 +696,7 @@ int glopt(char *s, char *arg, OPTIONS *options, int set)
 			if (set && arg) {
 				val = ztoi(arg);
 				if (val >= opt->low && val <= opt->high)
-					*opt->set.b = val;
+					*opt->set.i = val;
 			}
 			ret = arg ? 2 : 1;
 			break;

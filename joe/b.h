@@ -96,7 +96,7 @@ struct options {
 	bool	crlf;
 	bool	highlight;	/* Set to enable highlighting */
 	bool	visiblews;	/* Visible whitespace */
-	bool	syntax_debug;	/* Whether using OSC8 to help debug syntax colouring */
+	int	syntax_debug;	/* Whether using OSC8 to help debug syntax colouring */
 	bool	smarthome;	/* Set for smart home key */
 	bool	indentfirst;	/* Smart home goes to indentation point first */
 	bool	smartbacks;	/* Set for smart backspace key */
@@ -351,3 +351,6 @@ int ansi_code(char *s);
 char *ansi_string(int code);
 
 extern bool guess_utf16;
+
+/* Return true if filename will be interpreted as something other than a filename */
+int hack_check(const char *name);

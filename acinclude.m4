@@ -59,9 +59,16 @@ AC_DEFUN([joe_REINSTALL_SIGHANDLERS],
 #include <signal.h>
 #endif
 
+#ifndef RETSIGTYPE
+typedef void RETSIGTYPE;
+#endif
+
 #ifndef HAVE_SIGHANDLER_T
 typedef RETSIGTYPE (*sighandler_t)(int);
 #endif
+
+void set_signal(int signum, sighandler_t handler);
+RETSIGTYPE sigint(int s);
 
 int nsigint;
 
@@ -86,6 +93,7 @@ void set_signal(int signum, sighandler_t handler) {
 }
 
 RETSIGTYPE sigint(int s) {
+	(void)s;
 	nsigint++;
 }
 
