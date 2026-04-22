@@ -17,7 +17,7 @@ struct pw {
 	ptrdiff_t	promptofst;	/* Prompt scroll offset */
 	B	*hist;		/* History buffer */
 	void	*object;	/* Object */
-	bool	file_prompt;	/* Set if this is a file name prompt, so do ~ expansion */
+	int	file_prompt;	/* Set if this is a file name prompt, so do ~ expansion */
 };
 
 /* BW *wmkpw(BW *bw,char *prompt,int (*func)(),char *huh,int (*abrt)(),

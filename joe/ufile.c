@@ -187,7 +187,7 @@ static int backup(BW *bw)
 
 		if (backpath) {
 			char *t = vsncpy(NULL,0,sz(backpath));
-			t = canonical(t, CANFLAG_NORESTART);
+			t = canonical(t, CANFLAG_TILDE | CANFLAG_FULLPATH);
 			joe_snprintf_2(name, SIZEOF(name), "%s/%s", t, namepart(tmp, SIZEOF(tmp), bw->b->name));
 			vsrm(t);
 		} else {
@@ -207,7 +207,7 @@ static int backup(BW *bw)
 		/* Create backup file name */
 		if (backpath) {
 			char *t = vsncpy(NULL, 0, sz(backpath));
-			t = canonical(t, CANFLAG_NORESTART);
+			t = canonical(t, CANFLAG_TILDE | CANFLAG_FULLPATH);
 			mkpath(t);
 			joe_snprintf_3(name, SIZEOF(name), "%s/%s%s", t, namepart(tmp, SIZEOF(tmp), dequote(bw->b->name)), backup_file_suffix);
 			vsrm(t);
