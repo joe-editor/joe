@@ -33,6 +33,8 @@ void setindent(BW *bw);
 int urindent(W *w, int k);
 int ulindent(W *w, int k);
 int ufilt(W *w, int k);
+int uclip(W *w, int k); /* copy to clipboard using external utility */
+int uxsel(W *w, int k); /* copy to primary selection if supported else clipboard */
 int unmark(W *w, int k);
 int udrop(W *w, int k);
 int utoggle_marking(W *w, int k);
