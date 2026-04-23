@@ -18,6 +18,10 @@ bool opt_usetabs = 0;
 bool assume_color = 0;
 bool assume_256color = 0;
 
+/* see https://sw.kovidgoyal.net/kitty/keyboard-protocol/ */
+#define CSI_U_ENTRY "\033[>0u"
+#define CSI_U_EXIT  "\033[<u"
+
 /* How to display characters (especially the control ones) */
 /* here are characters ... */
 static const char xlatc[256] = {
@@ -921,6 +925,9 @@ SCRN *nopen(CAP *cap)
 		texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 	if (t->brp)
 		texec(t->cap, t->brp, 1, 0, 0, 0, 0);
+	/* disable (most) CSI-u on terminals which support it */
+	ttputs(CSI_U_ENTRY);
+	ttflsh();
 
 /* Initialize variable screen size dependent vars */
 	t->scrn = NULL;
@@ -1873,6 +1880,9 @@ void nescape(SCRN *t)
 	eraeol(t, 0, t->li - 1, 0);
 	if (t->bre)
 		texec(t->cap, t->bre, 1, 0, 0, 0, 0);
+	/* restore previous CSI-u setting on terminals which support it */
+	ttputs(CSI_U_EXIT);
+	ttflsh();
 	if (t->te)
 		texec(t->cap, t->te, 1, 0, 0, 0, 0);
 }
@@ -1882,6 +1892,9 @@ void nreturn(SCRN *t)
 	mouseopen();
 	if (t->ti)
 		texec(t->cap, t->ti, 1, 0, 0, 0, 0);
+	/* disable (most) CSI-u on terminals which support it */
+	ttputs(CSI_U_ENTRY);
+	ttflsh();
 	if (!skiptop && t->cl)
 		texec(t->cap, t->cl, 1, 0, 0, 0, 0);
 	if (t->brp)
@@ -1899,6 +1912,9 @@ void nclose(SCRN *t)
 	cpos(t, 0, t->li - 1);
 	if (t->bre)
 		texec(t->cap, t->bre, 1, 0, 0, 0, 0);
+	/* restore previous CSI-u setting on terminals which support it */
+	ttputs(CSI_U_EXIT);
+	ttflsh();
 	if (t->te)
 		texec(t->cap, t->te, 1, 0, 0, 0, 0);
 	ttclose();
