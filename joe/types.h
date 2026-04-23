@@ -266,6 +266,13 @@ typedef int pid_t;
 #define KEY_MIDDLEUP	0x10000B
 #define KEY_MIDDLEDOWN	0x10000C
 
+/* This one's for letters which may be modified with Ctrl or Shift: three-in-one */
+#define KEY_CTRLCAPLOWER	0x110000
+#define KEY_CTRLCAPLOWER_LAST	(KEY_CTRLCAPLOWER + 31)
+/* And just for upper and lower case: two-in-one */
+#define KEY_CAPLOWER		(KEY_CTRLCAPLOWER + 32)
+#define KEY_CAPLOWER_LAST	(KEY_CAPLOWER + 31)
+
 #define stdsiz		8192
 #define FITHEIGHT	4		/* Minimum height needed for new text windows */
 #define FITMIN		2		/* Minimum main window height */
