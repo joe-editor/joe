@@ -56,6 +56,7 @@ AX_CHECK_COMPILE_FLAG([-Wshadow], [CFLAGS="$CFLAGS -Wshadow"])
 
 # these ones we want to error out on
 AX_CHECK_COMPILE_FLAG([-Werror=unterminated-string-initialization], [CFLAGS="$CFLAGS -Wconversion"])
+AX_CHECK_COMPILE_FLAG([-Werror=mismatched-dealloc], [CFLAGS="$CFLAGS -Wshadow"])
 
 case "$host" in
 	*-*-solaris*)
