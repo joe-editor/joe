@@ -619,7 +619,7 @@ static int menuabort(W *w)
 		return -1;
 }
 
-WATOM watommenu = {
+const WATOM watommenu = {
 	"menu",
 	menudisp,
 	menufllw,

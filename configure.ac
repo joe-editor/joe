@@ -54,6 +54,10 @@ AX_CHECK_COMPILE_FLAG([-Wmissing-format-attribute], [CFLAGS="$CFLAGS -Wmissing-f
 AX_CHECK_COMPILE_FLAG([-Wswitch-enum], [CFLAGS="$CFLAGS -Wswitch-enum"])
 AX_CHECK_COMPILE_FLAG([-Wshadow], [CFLAGS="$CFLAGS -Wshadow"])
 
+# these ones we want to error out on
+AX_CHECK_COMPILE_FLAG([-Werror=unterminated-string-initialization], [CFLAGS="$CFLAGS -Wconversion"])
+AX_CHECK_COMPILE_FLAG([-Werror=mismatched-dealloc], [CFLAGS="$CFLAGS -Wshadow"])
+
 case "$host" in
 	*-*-solaris*)
 		CPPFLAGS="$CPPFLAGS -I/usr/local/include"
@@ -233,6 +237,8 @@ AX_GCC_FUNC_ATTRIBUTE([fallthrough])
 AX_GCC_FUNC_ATTRIBUTE([malloc])
 AX_GCC_FUNC_ATTRIBUTE([malloc_args])
 AX_GCC_FUNC_ATTRIBUTE([alloc_size])
+AX_GCC_FUNC_ATTRIBUTE([nonnull])
+AX_GCC_FUNC_ATTRIBUTE([returns_nonnull])
 
 AC_CONFIG_FILES([Makefile joe/Makefile joe/util/Makefile rc/Makefile
 man/Makefile man/ru/Makefile syntax/Makefile po/Makefile colors/Makefile

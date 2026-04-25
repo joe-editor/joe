@@ -12,8 +12,6 @@ typedef struct tab TAB;
 bool menu_explorer = 0;		/* Stay in menu system when directory selected */
 bool menu_jump = 0;		/* Jump into menu */
 
-extern WATOM watommenu;
-
 struct tab {
 	ptrdiff_t first_len;	/* Original size of path */
 	P *path_loc;		/* Starting position of path */

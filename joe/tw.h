@@ -35,6 +35,6 @@ extern int staupd;
 extern bool keepup;
 extern int bg_stalin;
 
-extern WATOM watomtw;
+extern const WATOM watomtw;
 char *stagen(char *stalin, BW *bw, const char *s, char fill);
 char *duplicate_backslashes(const char *s, ptrdiff_t len);
