@@ -799,7 +799,7 @@ char *ansi_string(int code)
 /* return current character and move p to the next character.  column will be updated if it was valid. */
 int pgetc(P *p)
 {
-	if (p->b->o.charmap->type) {
+	if (p->b->o.charmap->is_unicode) {
 		bool val;
 		int valattr;
 		int c; /* , oc; */
@@ -1006,7 +1006,7 @@ int prgetc(P *p)
 	off_t startbyte, startcol;
 	bool val = 0;
 
-	if (!p->b->o.charmap->type || pisbol(p))
+	if (!p->b->o.charmap->is_unicode || pisbol(p))
 		return prgetb(p);
 
 	/* Save p for later column calculation */
@@ -1109,7 +1109,7 @@ P *p_goto_indent(P *p, int c)
 /* move p to the end of line */
 P *p_goto_eol(P *p)
 {
-	if (p->b->o.crlf || p->b->o.charmap->type || p->b->o.ansi)
+	if (p->b->o.crlf || p->b->o.charmap->is_unicode || p->b->o.ansi)
 		while (!piseol(p))
 			pgetc(p);
 	else
@@ -1219,7 +1219,7 @@ P *pline(P *p, off_t line)
 P *pcol(P *p, off_t goalcol)
 {
 	p_goto_bol(p);
-	if(p->b->o.charmap->type || p->b->o.ansi) {
+	if(p->b->o.charmap->is_unicode || p->b->o.ansi) {
 		do {
 			int c;
 			off_t wid;
@@ -1291,7 +1291,7 @@ P *pcolwse(P *p, off_t goalcol)
 P *pcoli(P *p, off_t goalcol)
 {
 	p_goto_bol(p);
-	if (p->b->o.charmap->type || p->b->o.ansi) {
+	if (p->b->o.charmap->is_unicode || p->b->o.ansi) {
 		while (p->col < goalcol) {
 			int c;
 			c = brc(p);
@@ -2271,7 +2271,7 @@ P *binsc(P *p, int c)
 	if ((c & ANSI_BIT) && p->b->o.ansi) {
 		char *s = ansi_string(c);
 		return binsm(p, s, zlen(s));
-	} else if (c>127 && p->b->o.charmap->type) {
+	} else if (c>127 && p->b->o.charmap->is_unicode) {
 		char buf[8];
 		ptrdiff_t len = utf8_encode(buf,c);
 		return binsm(p,buf,len);
@@ -2534,7 +2534,7 @@ int hack_check(const char *name)
  *
  * Returns new variable length string.
  */
-char *parsens(const char *s, off_t *skip, off_t *amnt, int *binary)
+char *parsens(const char *s, off_t *skip, off_t *amnt, bool *binary)
 {
 	char *n = vsncpy(NULL, 0, sz(s));
 	ptrdiff_t x, y;
@@ -2639,13 +2639,13 @@ static off_t euclid(off_t a, off_t b)
 }
 
 /* return column of first nonblank character, but don't count comments */
-int found_space;
-int found_tab;
+static bool found_space;
+static bool found_tab;
 
 static off_t pisindentg(P *p)
 {
-	int i_spc = 0;
-	int i_tab = 0;
+	bool i_spc = 0;
+	bool i_tab = 0;
 	P *q = pdup(p, "pisindentg");
 	off_t col;
 	int ch;
@@ -2737,9 +2737,9 @@ B *bload(const char *s)
 	FILE *fi = 0;
 	B *b = 0;
 	off_t skip, amnt;
-	int binary;
+	bool binary;
 	char *n;
-	int nowrite = 0;
+	bool nowrite = 0;
 	P *p;
 	int x;
 	time_t mod_time = 0;
@@ -3197,11 +3197,11 @@ bool break_symlinks; /* Set to break symbolic links and hard links on writes */
 int bsave(P *p, const char *as, off_t size, int flag)
 {
 	struct stat sbuf;
-	int have_stat = 0;
+	bool have_stat = 0;
 	FILE *f;
 	off_t skip, amnt;
-	int binary;
-	int norm = 0;
+	bool binary;
+	bool norm = 0;
 	char *s = parsens(as, &skip, &amnt, &binary);
 
 	if (amnt < size)
@@ -3341,7 +3341,7 @@ int brc(P *p)
 
 int brch(P *p)
 {
-	if (p->b->o.charmap->type) {
+	if (p->b->o.charmap->is_unicode) {
 		P *q = pdup(p, "brch");
 		int c = pgetc(q);
 		prm(q);

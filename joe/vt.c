@@ -22,7 +22,7 @@ VT *mkvt(B *b, P *top, ptrdiff_t height, ptrdiff_t width)
 
 void vt_resize(VT *vt, P *top, ptrdiff_t height, ptrdiff_t width)
 {
-	int flag = 0;
+	bool flag = 0;
 	if (vt->regn_bot == vt->height)
 		flag = 1;
 	vt->height = height;
@@ -655,7 +655,7 @@ MACRO *vt_data(VT *vt, char **indat, ptrdiff_t *insiz)
 					} case 0x9F: { /* Same as ESC _ */
 						break;
 					} default: { /* Type regular character */
-						if (locale_map->type) {
+						if (locale_map->is_unicode) {
 							int ch = utf8_decode(&vt->utf8_sm, c);
 							if (ch >= 0) {
 								vt_type(vt, ch);

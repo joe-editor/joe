@@ -46,8 +46,8 @@ void do_auto_scroll(void);
 
 extern B *cmdhist; /* Command history buffer */
 
-int try_lock(BW *bw,B *b);
-int modify_logic(BW *bw,B *b);
+bool try_lock(BW *bw,B *b);
+bool modify_logic(BW *bw,B *b);
 
 int uexecmd(W *w, int k);
 

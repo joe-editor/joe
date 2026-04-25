@@ -1111,7 +1111,7 @@ static struct charmap *process_builtin(const struct builtin_charmap *builtin)
 	struct charmap *map;
 	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
 	map->name = zdup(builtin->name);
-	map->type = 0;
+	map->is_unicode = 0;
 	map->is_punct = byte_ispunct;
 	map->is_print = byte_isprint;
 	map->is_space = byte_isspace;
@@ -1205,7 +1205,7 @@ static void load_builtins(void)
 	/* install UTF-8 map (ties into i18n module) */
 	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
 	map->name = "utf-8";
-	map->type = 1;
+	map->is_unicode = 1;
 	map->is_punct = joe_iswpunct;
 	map->is_print = joe_iswprint;
 	map->is_space = joe_iswspace;
@@ -1220,7 +1220,7 @@ static void load_builtins(void)
 	/* install UTF-16 map (ties into i18n module) */
 	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
 	map->name = "utf-16";
-	map->type = 1;
+	map->is_unicode = 1;
 	map->is_punct = joe_iswpunct;
 	map->is_print = joe_iswprint;
 	map->is_space = joe_iswspace;
@@ -1235,7 +1235,7 @@ static void load_builtins(void)
 	/* install UTF-16R map (ties into i18n module) */
 	map = (struct charmap *)joe_malloc(SIZEOF(struct charmap));
 	map->name = "utf-16r";
-	map->type = 1;
+	map->is_unicode = 1;
 	map->is_punct = joe_iswpunct;
 	map->is_print = joe_iswprint;
 	map->is_space = joe_iswspace;
@@ -1688,9 +1688,9 @@ void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
 		return;
 	}
 
-	if (src_map->type) {
+	if (src_map->is_unicode) {
 		/* src is UTF-8 */
-		if (dest_map->type) {
+		if (dest_map->is_unicode) {
 			/* UTF-8 to UTF-8? */
 			zlcpy (dest, destsiz, src);
 		} else {
@@ -1713,7 +1713,7 @@ void my_iconv(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
 		}
 	} else {
 		/* src is not UTF-8 */
-		if (!dest_map->type) {
+		if (!dest_map->is_unicode) {
 			/* Non UTF-8 to non-UTF-8 */
 			--destsiz;
 			while (*src && destsiz) {
@@ -1753,7 +1753,7 @@ void my_iconv1(char *dest, ptrdiff_t destsiz, struct charmap *dest_map,
               const int *src)
 {
 	/* src is UTF-8 */
-	if (dest_map->type) {
+	if (dest_map->is_unicode) {
 		/* Unicode to UTF-8? */
 		Ztoutf8(dest, destsiz, src);
 	} else {
@@ -1807,7 +1807,7 @@ struct charmap *guess_map(const char *buf, ptrdiff_t len)
 
 	if (flag && c >= 0) {
 		/* There are characters above 128, and there are no utf-8 errors */
-		if (locale_map->type || !guess_utf8)
+		if (locale_map->is_unicode || !guess_utf8)
 			return locale_map;
 		else
 			return utf8_map;

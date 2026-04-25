@@ -14,7 +14,7 @@ struct irec {
 	ptrdiff_t	what;		/* 0 repeat, >0 append n chars */
 	off_t	start;		/* Cursor search position */
 	off_t	disp;		/* Original cursor position */
-	int	wrap_flag;	/* Wrap flag */
+	bool	wrap_flag;	/* Wrap flag */
 };
 
 struct isrch {
@@ -22,8 +22,8 @@ struct isrch {
 	char *pattern;	/* Search pattern string */
 	char *prompt;	/* Prompt (usually same as pattern unless utf-8/byte conversion) */
 	ptrdiff_t	ofst;		/* Offset in pattern past prompt */
-	int	dir;		/* 0=fwrd, 1=bkwd */
-	int	quote;		/* Set to quote next char */
+	bool	backwards;		/* 0=fwrd, 1=bkwd */
+	bool	quote;		/* Set to quote next char */
 };
 
 struct isrch *lastisrch = NULL;	/* Previous search */
@@ -76,7 +76,7 @@ static void iappend(BW *bw, struct isrch *isrch, char *s, ptrdiff_t len)
 	i->start = bw->cursor->byte;
 
 	if (!globalsrch)
-		srch = mksrch(NULL,NULL,opt_icase,isrch->dir,-1,0,0,0,0);
+		srch = mksrch(NULL,NULL,opt_icase,isrch->backwards,-1,0,0,0,0);
 	else {
 		srch = globalsrch;
 		globalsrch = 0;
@@ -94,7 +94,7 @@ static void iappend(BW *bw, struct isrch *isrch, char *s, ptrdiff_t len)
 	i->wrap_flag = srch->wrap_flag;
 
 	setpat(srch, vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern)));
-	srch->backwards = isrch->dir;
+	srch->backwards = isrch->backwards;
 
 	if (dopfnext(bw, srch, NULL)) {
 		if(joe_beep)
@@ -136,9 +136,9 @@ static int itype(W *w, int c, void *obj, int *notify)
 	} else if (c == 'S' - '@' || c == '\\' - '@' || c == 'L' - '@' || c == 'R' - '@') {
 		/* Repeat */
 		if (c == 'R' - '@') {
-			isrch->dir = 1;
+			isrch->backwards = 1;
 		} else {
-			isrch->dir = 0;
+			isrch->backwards = 0;
 		}
 		if (qempty(IREC, link, &isrch->irecs)) {
 			if (lastpat && lastpat[0]) {
@@ -151,7 +151,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 			i->what = 0;
 
 			if (!globalsrch)
-				srch = mksrch(NULL,NULL,opt_icase,isrch->dir,-1,0,0,0,0);
+				srch = mksrch(NULL,NULL,opt_icase,isrch->backwards,-1,0,0,0,0);
 			else {
 				srch = globalsrch;
 				globalsrch = 0;
@@ -169,7 +169,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 			i->wrap_flag = srch->wrap_flag;
 
 			setpat(srch, vsncpy(NULL, 0, isrch->pattern, sLen(isrch->pattern)));
-			srch->backwards = isrch->dir;
+			srch->backwards = isrch->backwards;
 
 			if (dopfnext(bw, srch, NULL)) {
 				if(joe_beep)
@@ -200,7 +200,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 
 		in:
 
-		if (bw->b->o.charmap->type) {
+		if (bw->b->o.charmap->is_unicode) {
 			buf_len = utf8_encode(buf, c);
 		} else {
 			buf[0] = TO_CHAR_OK(from_uni(bw->b->o.charmap, c));
@@ -218,7 +218,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 
 	isrch->prompt = vstrunc(isrch->prompt, isrch->ofst);
 
-	if (locale_map->type && !bw->b->o.charmap->type) {
+	if (locale_map->is_unicode && !bw->b->o.charmap->is_unicode) {
 		/* Translate bytes to utf-8 */
 		char buf[16];
 		int x;
@@ -227,7 +227,7 @@ static int itype(W *w, int c, void *obj, int *notify)
 			utf8_encode(buf, tc);
 			isrch->prompt = vsncpy(sv(isrch->prompt),sz(buf));
 		}
-	} else if (!locale_map->type && bw->b->o.charmap->type) {
+	} else if (!locale_map->is_unicode && bw->b->o.charmap->is_unicode) {
 		/* Translate utf-8 to bytes */
 		const char *p = isrch->pattern;
 		ptrdiff_t len = sLEN(isrch->pattern);
@@ -251,13 +251,13 @@ static int itype(W *w, int c, void *obj, int *notify)
 	}
 }
 
-static int doisrch(BW *bw, int dir)
+static int doisrch(BW *bw, int backwards)
 {				/* Create a struct isrch */
 	struct isrch *isrch = (struct isrch *) joe_malloc(SIZEOF(struct isrch));
 
 	izque(IREC, link, &isrch->irecs);
 	isrch->pattern = vsncpy(NULL, 0, NULL, 0);
-	isrch->dir = dir;
+	isrch->backwards = backwards;
 	isrch->quote = 0;
 	isrch->prompt = vsncpy(NULL, 0, sz(joe_gettext(_("I-find: "))));
 	isrch->ofst = sLen(isrch->prompt);

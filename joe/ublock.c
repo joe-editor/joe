@@ -1558,7 +1558,7 @@ char *blkget(BW *bw)
 				int ch = pgetc(q);
 				char bf[8];
 				ptrdiff_t len, x;
-				if (!q->b->o.charmap->type)
+				if (!q->b->o.charmap->is_unicode)
 					ch = to_uni(q->b->o.charmap, ch);
 				len = utf8_encode(bf, ch);
 				for (x = 0; x != len; ++x) {

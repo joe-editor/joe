@@ -204,7 +204,7 @@ void lazy_opts(B *b, OPTIONS *o)
 		b->o.hex_saved = 0;
 
 		/* Hex not allowed with UTF-8 */
-		if (b->o.charmap->type) {
+		if (b->o.charmap->is_unicode) {
 			b->o.charmap = find_charmap("c");
 			b->o.hex_saved |= HEX_RESTORE_UTF8;
 		}
@@ -1219,7 +1219,7 @@ static int doencoding(W *w, char *s, void *obj, int *notify)
 
 	map = find_charmap(s);
 
-	if (map && map->type && check_for_hex(bw)) {
+	if (map && map->is_unicode && check_for_hex(bw)) {
 		msgnw(bw->parent, joe_gettext(_("UTF-8 encoding not allowed with hexadecimal windows")));
 		if (notify)
 			*notify = 1;
@@ -1320,7 +1320,7 @@ static int olddoopt(BW *bw, int y, int flg, int *notify)
 				if (bw->o.hex && !oldval) {
 					bw->o.hex = 1;
 					bw->o.hex_saved = 0;
-					if (bw->b->o.charmap->type) {
+					if (bw->b->o.charmap->is_unicode) {
 						/* Switch out of UTF-8 mode */
 						doencoding(bw->parent, vsncpy(NULL, 0, sc("C")), NULL, NULL);
 						bw->o.hex_saved |= HEX_RESTORE_UTF8;
