@@ -187,7 +187,7 @@ static int backup(BW *bw)
 
 		if (backpath) {
 			char *t = vsncpy(NULL,0,sz(backpath));
-			t = canonical(t, CANFLAG_NORESTART);
+			t = canonical(t, CANFLAG_TILDE | CANFLAG_FULLPATH);
 			joe_snprintf_2(name, SIZEOF(name), "%s/%s", t, namepart(tmp, SIZEOF(tmp), bw->b->name));
 			vsrm(t);
 		} else {
@@ -207,7 +207,7 @@ static int backup(BW *bw)
 		/* Create backup file name */
 		if (backpath) {
 			char *t = vsncpy(NULL, 0, sz(backpath));
-			t = canonical(t, CANFLAG_NORESTART);
+			t = canonical(t, CANFLAG_TILDE | CANFLAG_FULLPATH);
 			mkpath(t);
 			joe_snprintf_3(name, SIZEOF(name), "%s/%s%s", t, namepart(tmp, SIZEOF(tmp), dequote(bw->b->name)), backup_file_suffix);
 			vsrm(t);
@@ -480,8 +480,10 @@ static int dosave1(W *w, char *s, void *object, int *notify)
 	req->name = s;
 
 	if (s[0] != '!' && !(s[0] == '>' && s[1] == '>')) {
+		char *cname = bw->b->name ? canonical_copy(bw->b->name, CANFLAG_TILDE|CANFLAG_FULLPATH) : NULL;
 		/* It's a normal file: not a pipe or append */
-		if (!bw->b->name || zcmp(s, bw->b->name)) {
+		if (!cname || (zcmp(s, cname) && zcmp(s, bw->b->name))) {
+			vsrm(cname);
 			/* Newly named file or name is different than buffer */
 			f = open(dequote(s), O_RDONLY);
 			if (f != -1) {
@@ -493,6 +495,7 @@ static int dosave1(W *w, char *s, void *object, int *notify)
 			}
 		}
 		else {
+			vsrm(cname);
 			/* We're saving a newer version of the same file */
 			if (check_mod(bw->b)) {
 				req->message = joe_gettext(_("File on disk is newer. Overwrite (y,n,%{abort})? "));

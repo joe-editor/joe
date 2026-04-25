@@ -294,8 +294,14 @@ int bsavefd(P *p, int fd, off_t size);
 
 char *parsens(const char *s, off_t *skip, off_t *amnt, int *binary);
 
-char *canonical(char *s, int flags);
-#define CANFLAG_NORESTART 1 /* Support path restart feature */
+enum canflags {
+	CANFLAG_RESTART	 = 1, /* path restart feature */
+	CANFLAG_TILDE	 = 2, /* tilde expansion */
+	CANFLAG_FULLPATH = 4, /* get the full path */
+};
+
+char *canonical(char *s, enum canflags flags);
+char *canonical_copy(const char *s, enum canflags flags);
 
 /* Get byte at pointer or return NO_MORE_DATA if pointer is at end of buffer */
 int brc(P *p);
