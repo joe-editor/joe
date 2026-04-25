@@ -142,6 +142,10 @@
 
  -notagsmenu	Disable tags file search menu
 
+-parserr_homeonly
+		In compiler error logs, ignore files (system header files
+		etc.) which are outside the user's home directory.
+
  -icase         Search is case insensitive by default.
 
  -wrap          Search wraps
@@ -978,20 +982,20 @@ if,"markv",then,blkdel,nmark,else,delw,endif		^[ [ 3 ^
 
  New Shift-
 
-uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 2 A    Shift-Up	Mark up line
-uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ a		rxvt
-dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 2 B    Shift-Down	Mark down line
-dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ b
-rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 2 C    Shift-Right	Mark right
-rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ c
-ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 2 D    Shift-Left	Mark left
-ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ d
-uparw,dnarw,begin_marking,pgup,toggle_marking	^[ [ 5 ; 2 ~    Shift-PgUp	Mark up page [Usually scrolls back]
-dnarw,uparw,begin_marking,pgdn,toggle_marking	^[ [ 6 ; 2 ~    Shift-PgDn	Mark down page [Usually scrolls forward]
-ltarw,rtarw,begin_marking,bol,toggle_marking	^[ [ 1 ; 2 H    Shift-Home	Mark to bol
-ltarw,rtarw,begin_marking,bol,toggle_marking	^[ [ 7 $ 	Shift-Home	Mark to bol
-rtarw,ltarw,begin_marking,eol,toggle_marking	^[ [ 1 ; 2 F    Shift-End	Mark to eol
-rtarw,ltarw,begin_marking,eol,toggle_marking	^[ [ 8 $ 	Shift-End	Mark to eol
+uparw,dnarw,begin_marking,uparw!,toggle_marking	^[ [ 1 ; 2 A    Shift-Up	Mark up line
+uparw,dnarw,begin_marking,uparw!,toggle_marking	^[ [ a		rxvt
+dnarw,uparw,begin_marking,dnarw!,toggle_marking	^[ [ 1 ; 2 B    Shift-Down	Mark down line
+dnarw,uparw,begin_marking,dnarw!,toggle_marking	^[ [ b
+rtarw,ltarw,begin_marking,rtarw!,toggle_marking	^[ [ 1 ; 2 C    Shift-Right	Mark right
+rtarw,ltarw,begin_marking,rtarw!,toggle_marking	^[ [ c
+ltarw,rtarw,begin_marking,ltarw!,toggle_marking	^[ [ 1 ; 2 D    Shift-Left	Mark left
+ltarw,rtarw,begin_marking,ltarw!,toggle_marking	^[ [ d
+uparw,dnarw,begin_marking,pgup!,toggle_marking	^[ [ 5 ; 2 ~    Shift-PgUp	Mark up page [Usually scrolls back]
+dnarw,uparw,begin_marking,pgdn!,toggle_marking	^[ [ 6 ; 2 ~    Shift-PgDn	Mark down page [Usually scrolls forward]
+ltarw,rtarw,begin_marking,bol!,toggle_marking	^[ [ 1 ; 2 H    Shift-Home	Mark to bol
+ltarw,rtarw,begin_marking,bol!,toggle_marking	^[ [ 7 $ 	Shift-Home	Mark to bol
+rtarw,ltarw,begin_marking,eol!,toggle_marking	^[ [ 1 ; 2 F    Shift-End	Mark to eol
+rtarw,ltarw,begin_marking,eol!,toggle_marking	^[ [ 8 $ 	Shift-End	Mark to eol
 if,"markv",then,blkdel,nmark,else,dellin,endif		^[ [ 3 ; 2 ~	Ctrl-Del Delete block or line
 if,"markv",then,blkdel,nmark,else,dellin,endif		^[ [ 3 $
  dellin		^[ [ 3 ; 2 ~	Shift-Del
@@ -1002,29 +1006,29 @@ yank		^[ [ 2 $
  Shift-Ctrl-
 
  upslide		^[ [ 1 ; 6 A	Shift-Ctrl-Up
-uparw,dnarw,begin_marking,bop,toggle_marking	^[ [ 1 ; 6 A    Mark up paragraph
+uparw,dnarw,begin_marking,bop!,toggle_marking	^[ [ 1 ; 6 A    Mark up paragraph
  dnslide		^[ [ 1 ; 6 B	Shift-Ctrl-Down
-dnarw,uparw,begin_marking,eop,toggle_marking	^[ [ 1 ; 6 B    Mark down paragraph
-rtarw,ltarw,begin_marking,nextword,toggle_marking	^[ [ 1 ; 6 C    Shift-Ctrl-Right Mark right word
-ltarw,rtarw,begin_marking,prevword,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Left Mark left word
+dnarw,uparw,begin_marking,eop!,toggle_marking	^[ [ 1 ; 6 B    Mark down paragraph
+rtarw,ltarw,begin_marking,nextword!,toggle_marking	^[ [ 1 ; 6 C    Shift-Ctrl-Right Mark right word
+ltarw,rtarw,begin_marking,prevword!,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Left Mark left word
 
  Uncomment these if you want JOE to work the old way (Ctrl-cursor marks)
 
- uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 1 ; 5 A    Ctrl-Up Mark up line
- uparw,dnarw,begin_marking,uparw,toggle_marking	^[ [ 5 A        Old Gnome-terminal
- uparw,dnarw,begin_marking,uparw,toggle_marking	^[ O a		Rxvt
+ uparw,dnarw,begin_marking,uparw!,toggle_marking	^[ [ 1 ; 5 A    Ctrl-Up Mark up line
+ uparw,dnarw,begin_marking,uparw!,toggle_marking	^[ [ 5 A        Old Gnome-terminal
+ uparw,dnarw,begin_marking,uparw!,toggle_marking	^[ O a		Rxvt
 
- dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 1 ; 5 B    Ctrl-Down Mark down line
- dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ [ 5 B        Mark down
- dnarw,uparw,begin_marking,dnarw,toggle_marking	^[ O b
+ dnarw,uparw,begin_marking,dnarw!,toggle_marking	^[ [ 1 ; 5 B    Ctrl-Down Mark down line
+ dnarw,uparw,begin_marking,dnarw!,toggle_marking	^[ [ 5 B        Mark down
+ dnarw,uparw,begin_marking,dnarw!,toggle_marking	^[ O b
 
- rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 1 ; 5 C    Ctrl-Right Mark right
- rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ [ 5 C
- rtarw,ltarw,begin_marking,rtarw,toggle_marking	^[ O c
+ rtarw,ltarw,begin_marking,rtarw!,toggle_marking	^[ [ 1 ; 5 C    Ctrl-Right Mark right
+ rtarw,ltarw,begin_marking,rtarw!,toggle_marking	^[ [ 5 C
+ rtarw,ltarw,begin_marking,rtarw!,toggle_marking	^[ O c
 
- ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 1 ; 5 D    Ctrl-Left Mark left
- ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ [ 5 D
- ltarw,rtarw,begin_marking,ltarw,toggle_marking	^[ O d
+ ltarw,rtarw,begin_marking,ltarw!,toggle_marking	^[ [ 1 ; 5 D    Ctrl-Left Mark left
+ ltarw,rtarw,begin_marking,ltarw!,toggle_marking	^[ [ 5 D
+ ltarw,rtarw,begin_marking,ltarw!,toggle_marking	^[ O d
 
  Extra functions not really part of JOE user interface:
 

@@ -38,7 +38,7 @@
 	"\""		string		recolor=-1
 	"'"		char		recolor=-1
 	"/"		slash		recolor=-1
-	"\i"		ident		buffer
+	"\i"		ident		buffer recolor=-1
 
 :slash Idle
 	*		idle		noeat

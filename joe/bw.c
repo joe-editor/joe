@@ -410,7 +410,8 @@ static struct state_debug_data out_osc8(const struct state_debug_data *oldstate,
 				ttputs(";");
 				ttputs(state_names[newstate->name]);
 				if (newstate->recolor && newstate->recolor != newstate->name) {
-					ttputs("→");
+					/* ugh, only ASCII for OSC-8 pop-up text */
+					ttputs("->");
 					ttputs(state_names[newstate->recolor]);
 				}
 				ttputs("\x1B\\");
