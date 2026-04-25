@@ -149,7 +149,7 @@ static int rtnpw(W *w)
 	if (pw->file_prompt & PWFLAG_COMMAND)
 		s = canonical(s, CANFLAG_TILDE); /* Tilde expansion only */
 	else if (pw->file_prompt & PWFLAG_FILENAME)
-		s = canonical(s, CANFLAG_RESTART | CANFLAG_TILDE | CANFLAG_FULLPATH); /* Tilde expansion and // restart */
+		s = canonical(s, CANFLAG_RESTART | CANFLAG_TILDE); /* Tilde expansion and // restart */
 
 	/* Save text into history buffer */
 	if (pw->hist) {
