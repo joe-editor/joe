@@ -77,7 +77,7 @@
 	"."		conditional_first	mark recolor=-1
 	"="		color_definition_first
 	":"		state_first
-	"*&%"		special_character	recolor=-1
+	"*&%~"		special_character	recolor=-1
 .endif
 	"\""		string			recolor=-1
 .ifdef STRINGS
@@ -359,6 +359,12 @@
 	"call"		call_color
 	"return"	option_color
 	"reset"		option_color
+	"sset"		option_flagword
+	"sclear"	option_flagword
+	"sflip"		option_flagword
+	"sifall"	option_flagword
+	"sifany"	option_flagword
+	"sifnone"	option_flagword
 	done
 .else
 	*		option_unknown		recolormark noeat strings
@@ -380,6 +386,12 @@
 	"call"		call_color
 	"return"	option_color
 	"reset"		option_color
+	"sset"		flagword_color
+	"sclear"	flagword_color_opt
+	"sflip"		flagword_color_opt
+	"sifall"	flagword_color_match
+	"sifany"	flagword_color_match
+	"sifnone"	flagword_color_match
 	done
 .endif
 	"\c"		option
@@ -560,12 +572,89 @@
 	*		call_parameter_bad
 	") \t#\n"	call_parameters_ws	noeat
 
+# Highlight the flag set/test options.
+:flagword_color Keyword
+	*		flagword_post		noeat call=.flagword_op()
+:flagword_color_opt Keyword
+	*		flagword_post		noeat call=.flagword_op(opt)
+:flagword_color_match Keyword
+	*		flagword_post		noeat call=.flagword_op(match)
+# Returned from .flagword_op.
+# If followed by whitespace or a comment, all is assumed to be well.
+:flagword_post Idle
+	*		option_bad		noeat #recolormark noeat
+	" \t"		options_ws		noeat
+	"#\n"		comment			noeat
+
+.subr flagword_op
+# sset must be followed by '=' or '@'.
+# sclear and sflip may be followed by '=' or '@'.
+# sif* must be followed by '=', '@' or '~'.
+:flagword_op Parameter #Idle
+.ifdef opt
+	*		NULL			noeat return
+.else
+	*		flagword_bad		noeat
+.endif
+	"="		flagword_word
+	"@"		flagword_list
+.ifdef match
+	"~"		flagword_match		mark hold
+.endif
+
+# Something unexpected. Return and let :option_bad take care of it.
+:flagword_bad Bad
+	*		NULL			recolormark noeat return
+
+# '=': Single number; decimal, hex or octal.
+:flagword_word Parameter
+	*		flagword_bad		noeat
+	"0"		flagword_oct_hex
+	"1-9"		flagword_decimal
+:flagword_decimal Parameter
+	*		NULL			noeat return
+	"0-9"		flagword_decimal
+:flagword_oct_hex Parameter
+	*		NULL			noeat return
+	"0-7"		flagword_oct
+	"xX"		flagword_hex
+:flagword_oct Parameter
+	*		NULL			noeat return
+	"0-7"		flagword_oct
+:flagword_hex Parameter
+	*		NULL			noeat return
+	"0-9A-Fa-f"	flagword_hex
+
+# '@': List of numbers, comma- or hyphen-separated.
+:flagword_list Parameter
+	*		flagword_bad		noeat
+	"0-9"		flagword_list_digits
+:flagword_list_digits Parameter
+	*		NULL			noeat return
+	"0-9"		flagword_list_digits
+	"-,"		flagword_list
+
+# '~': One of four keywords.
+:flagword_match Parameter
+	*		flagword_matching	noeat buffer
+:flagword_matching Parameter
+	*		flagword_bad		noeat onnomatch strings
+	"all"		flagword_matched
+	"any"		flagword_matched
+	"none"		flagword_matched
+	"other"		flagword_matched
+done
+	"\c"		flagword_matching
+
+:flagword_matched Parameter
+	*		NULL			noeat return
+.end
+
 # We saw something that is not a valid option name.  Continue to highlight it as
 # Bad until we see whitespace or a comment.
 :option_bad Bad
 	*		option_bad
 	" \t#\n"	options_ws		noeat
-
 
 ########
 # Done #

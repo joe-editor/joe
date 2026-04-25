@@ -33,6 +33,19 @@
 #define ATTR_ALLOC_SIZE(arg)
 #endif
 
+/* Also doubled parentheses */
+#ifdef HAVE_FUNC_ATTRIBUTE_NONNULL
+#define NONNULL(arg) __attribute__((nonnull arg))
+#else
+#define NONNULL(arg)
+#endif
+
+#ifdef HAVE_FUNC_ATTRIBUTE_RETURNS_NONNULL
+#define RETURNS_NONNULL __attribute__((returns_nonnull))
+#else
+#define RETURNS_NONNULL
+#endif
+
 #define TO_DIFF_OK(a) ((ptrdiff_t)(a)) /* Means it's OK that we are converting off_t to ptrdiff_t in this case */
 #define TO_CHAR_OK(a) ((char)(a)) /* Means it's OK that we are converting int to char */
 #define SIZEOF(a) ((ptrdiff_t)sizeof(a)) /* Signed version of sizeof() */
@@ -329,6 +342,7 @@ struct highlight_state {
 	struct high_delim_frame *delim_stack; /* Pointer to the previously pushed delimiter buffer */
 	const int *saved_s; /* Interned Z-string for saved delimiter */
 	ptrdiff_t state; /* Current state in the current subroutine */
+	int statebits;
 };
 
 /* It's a good idea to optimize the size of struct highlight_state since there are N of

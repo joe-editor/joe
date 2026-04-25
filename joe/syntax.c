@@ -189,12 +189,23 @@ static HIGHLIGHT_STATE ansi_parse(P *line, HIGHLIGHT_STATE h_state)
 	return h_state;
 }
 
+static struct high_cmd *test_cmd(const int statebits, struct high_cmd *cmd)
+{
+	if (!cmd) return NULL;
+	/* NULL if a test fails */
+	if (cmd->state_test_all  && (statebits & cmd->state_test_all ) != cmd->state_test_all) return NULL;
+	if (cmd->state_test_any  && (statebits & cmd->state_test_any ) == 0) return NULL;
+	if (cmd->state_test_none && (statebits & cmd->state_test_none) != 0) return NULL;
+	return cmd;
+}
+
 HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state,struct charmap *charmap)
 {
 	struct high_frame *stack;
 	struct high_delim_frame *delim_stack;
 	struct high_state *h;
 			/* Current state */
+	int statebits;
 	int buf[SAVED_SIZE];		/* Name buffer (trunc after 23 characters) */
 	int lbuf[3*SAVED_SIZE];		/* Lower case version of name buffer */
 	int lsaved_s[3*SAVED_SIZE];	/* Lower case version of delimiter match buffer */
@@ -224,6 +235,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 	stack = h_state.stack;
 	delim_stack = h_state.delim_stack;
+	statebits = h_state.statebits;
 	h = (stack ? stack->syntax : syntax)->states[h_state.state];
 	buf_idx = 0;
 	attr = attr_buf;
@@ -240,7 +252,8 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 
 	/* Get next character */
 	while((c=pgetc(line))!=NO_MORE_DATA) {
-		struct high_cmd *cmd, *kw_cmd;
+		struct high_cmd *cmd = NULL;
+		struct high_cmd *kw_cmd;
 		int iters = -8; /* +8 extra iterations before cycle detect. */
 		ptrdiff_t x;
 
@@ -283,8 +296,13 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				cmd = h->same_delim;
 			else {
 				cmd = (struct high_cmd *)rtree_lookup(&h->rtree, c);
-				if (!cmd)
-					cmd = h->dflt;
+				if (!cmd) {
+					for (int i = h->test_count - 1; i >= 0; --i)
+						if ((cmd = test_cmd(statebits, h->test_states[i])))
+							break;
+					if (!cmd)
+						cmd = h->dflt;
+				}
 			}
 
 			/* Lowerize strings for case-insensitive matching */
@@ -308,12 +326,16 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 				recolor_delimiter_or_keyword = 1;
 			}
 
+			/* Uodate state word */
+			statebits &= cmd->statekeep;
+			statebits ^= cmd->stateflip;
+
 			/* Determine new state */
 			if (cmd->call) {
 				/* Call */
 				struct high_frame **frame_ptr = stack ? &stack->child : &syntax->stack_base;
 				/* Search for an existing stack frame for this call */
-				while (*frame_ptr && !((*frame_ptr)->syntax == cmd->call && (*frame_ptr)->return_state == cmd->new_state))
+				while (*frame_ptr && !((*frame_ptr)->syntax == cmd->call && (*frame_ptr)->return_state == cmd->new_state && (*frame_ptr)->statebits == statebits))
 					frame_ptr = &(*frame_ptr)->sibling;
 				if (*frame_ptr)
 					stack = *frame_ptr;
@@ -324,6 +346,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 					frame->sibling = 0;
 					frame->syntax = cmd->call;
 					frame->return_state = cmd->new_state;
+					frame->statebits = statebits;
 					*frame_ptr = frame;
 					stack = frame;
 					++stack_count;
@@ -332,12 +355,15 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 			} else if (cmd->rtn) {
 				/* Return */
 				if (stack) {
+					if (!cmd->keep_statebits)
+						statebits = stack->statebits;
 					h = stack->return_state;
 					stack = stack->parent;
 				} else
 					/* Not in a subroutine, so ignore the return */
 					h = cmd->new_state;
 			} else if (cmd->reset) {
+				/* do NOT reset statebits here! */
 				h = syntax->states[0];
 			} else {
 				/* Normal edge */
@@ -470,6 +496,7 @@ HIGHLIGHT_STATE parse(struct high_syntax *syntax,P *line,HIGHLIGHT_STATE h_state
 	h_state.stack = stack;
 	h_state.delim_stack = delim_stack;
 	h_state.state = h->no;
+	h_state.statebits = statebits;
 	return h_state;
 }
 
@@ -512,6 +539,7 @@ static struct high_state *find_state(struct high_syntax *syntax,char *name)
 		syntax->states[syntax->nstates++]=state;
 		rtree_init(&state->rtree);
 		state->dflt = &syntax->default_cmd;
+		state->test_count = 0;
 		state->delim = 0;
 		state->same_delim = 0;
 		htadd(syntax->ht_states, state_names[state->name], state);
@@ -558,6 +586,10 @@ static void iz_cmd(struct high_cmd *cmd)
 	cmd->rtn = 0;
 	cmd->reset = 0;
 	cmd->call = 0;
+	cmd->state_test_all = cmd->state_test_any = cmd->state_test_none = 0;
+	cmd->keep_statebits = false;
+	cmd->statekeep = -1;
+	cmd->stateflip = 0;
 }
 
 static struct high_cmd *mkcmd(void)
@@ -653,6 +685,7 @@ void dump_syntax(BW *bw)
 			}
 #endif
 			joe_snprintf_2(buf, SIZEOF(buf), "     default -> %s %d\n",(s->dflt->new_state ? state_names[s->dflt->new_state->name] : "ERROR! Unknown state!"),(int)s->dflt->recolor);
+			// FIXME: print tests too
 			binss(bw->cursor, buf);
 			pnextl(bw->cursor);
 		}
@@ -727,7 +760,77 @@ struct high_syntax *load_syntax_subr(const char *name,char *subr,struct high_par
 
 /* Parse options */
 
-static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *f,const char *p,int parsing_strings,char *name,int line)
+enum { USE_ALL = 1, USE_ANY = 2, USE_NONE = 4 }; /* bitmask */
+
+static int parse_flagbits(const char **p, const char *name, const int line, const struct high_cmd *cmd, int use, int dflt)
+{
+	int value = 0;
+	parse_ws(p, '#');
+	if (cmd && !parse_char(p, '~')) {
+		char buf[256];
+		parse_ws(p, '#');
+		if (parse_ident(p, buf, SIZEOF(buf)))
+			goto badflag;
+		if (!zcmp(buf, "all"))
+			return ~cmd->state_test_all;
+		else if (!zcmp(buf, "any"))
+			return ~cmd->state_test_any;
+		else if (!zcmp(buf, "none"))
+			return ~cmd->state_test_none;
+		else if (!zcmp(buf, "other")) {
+			value = 0;
+			if (use & USE_ALL)  value |= cmd->state_test_all;
+			if (use & USE_ANY)  value |= cmd->state_test_any;
+			if (use & USE_NONE) value |= cmd->state_test_none;
+			return ~value;
+		} else {
+			logerror_2(joe_gettext(_("%s %d: Unknown class\n")), name, line);
+			return 0;
+		}
+	} else if (!parse_char(p, '=')) {
+		/* integer mask */
+		parse_ws(p, '#');
+		if (parse_int(p, &value)) goto badflag;
+		return value;
+	} else if (!parse_char(p, '@')) {
+		/* list of bit positions */
+		for (;;) {
+			int v1 = 0, v2 = 0;
+			parse_ws(p, '#');
+			if (parse_int(p, &v1)) goto badflag;	/* expected int */
+			if (v1 < 0 || v1 > 31) goto bitrange;	/* range 0..31 */
+			value |= 1 << v1;
+			parse_ws(p, '#');
+			if (!parse_char(p, ',')) continue;	/* comma -> read next bit no. */
+			if (parse_char(p, '-')) break;		/* hyphen = range -> read other end's bit no. */
+			/* range (inclusive) */
+			parse_ws(p, '#');
+			if (parse_int(p, &v2)) goto badflag;	/* expected int */
+			if (v2 < 0 || v2 > 31) goto bitrange;	/* range 0..31 again */
+			if (v2 > v1)
+				while (v1 <= v2 && v1 < 32)
+					value |= 1 << v1++;
+			else
+				while (v2 <= v1 && v2 < 32)
+					value |= 1 << v2++;
+			parse_ws(p, '#');
+			if (parse_char(p, ',')) break;		/* comma -> read next bit no. */
+		}
+		return value;
+	} else if (dflt)
+		return dflt;
+
+  badflag:
+	logerror_2(joe_gettext(_("%s %d: Missing value for option\n")), name, line);
+	return 0;
+
+  bitrange:
+	logerror_3("%s %d: %s\n", name, line, joe_gettext(_("Value out of range")));
+	return 0;
+}
+
+
+static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *f,const char *p,int parsing_strings,char *name,int line, int is_test_cmd)
 {
 	char buf[1024];
 	char bf[256];
@@ -780,9 +883,40 @@ static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *
 				logerror_2(joe_gettext(_("%s %d: Missing value for option\n")),name,line);
 		} else if(!zcmp(bf,"return")) {
 			cmd->rtn = 1;
-		} else if(!zcmp(bf,"reset")) {
-			cmd->reset = 1;
-		} else if(!parsing_strings && (!zcmp(bf,"strings") || !zcmp(bf,"istrings"))) {
+		} else if(!zcmp(bf,"returnstate")) {
+			cmd->keep_statebits = cmd->rtn = 1;
+		} else if(!zcmp(bf,"sset")) {
+			int bits = parse_flagbits(&p, name, line, NULL, 0, 0);
+			cmd->statekeep &= ~bits;
+			cmd->stateflip |= bits;
+		} else if(!zcmp(bf,"sclear")) {
+			int bits = parse_flagbits(&p, name, line, NULL, 0, -1);
+			cmd->statekeep &= ~bits;
+			cmd->stateflip &= ~bits;
+		} else if(!zcmp(bf,"sflip")) {
+			int bits = parse_flagbits(&p, name, line, NULL, 0, -1);
+			cmd->statekeep |= bits;
+			cmd->stateflip |= bits;
+		} else if(!zcmp(bf,"sifall")) {
+			if (is_test_cmd)
+				cmd->state_test_all |= parse_flagbits(&p, name, line, cmd, USE_ANY | USE_NONE, 0);
+			else
+				logerror_3(joe_gettext(_("%s %d: '%s' found outside a test command\n")), name, line, bf);
+		} else if(is_test_cmd && !zcmp(bf,"sifany")) {
+			if (is_test_cmd)
+				cmd->state_test_any |= parse_flagbits(&p, name, line, cmd, USE_ALL | USE_NONE, 0);
+			else
+				logerror_3(joe_gettext(_("%s %d: '%s' found outside a test command\n")), name, line, bf);
+		} else if(is_test_cmd && !zcmp(bf,"sifnone")) {
+			if (is_test_cmd)
+				cmd->state_test_none |= parse_flagbits(&p, name, line, cmd, USE_ALL | USE_ANY, 0);
+			else
+				logerror_3(joe_gettext(_("%s %d: '%s' found outside a test command\n")), name, line, bf);
+		} else if(!zcmp(bf,"strings") || !zcmp(bf,"istrings")) {
+			if (parsing_strings) {
+				logerror_3(joe_gettext(_("%s %d: '%s' found but already in strings mode\n")), name, line, bf);
+				continue;
+			}
 			if (bf[0]=='i')
 				cmd->ignore = 1;
 			while(jfgets(buf,sizeof(buf),f)) {
@@ -809,7 +943,7 @@ static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *
 									cmd->keywords = Zhtmk(64);
 								Zhtadd(cmd->keywords, (cmd->ignore ? Zdup(lkwbuf) : Zdup(kwbuf)), kw_cmd);
 							}
-							line = parse_options(syntax,kw_cmd,f,p,1,name,line);
+							line = parse_options(syntax,kw_cmd,f,p,1,name,line,is_test_cmd);
 						} else
 							logerror_2(joe_gettext(_("%s %d: Missing state name\n")),name,line);
 					} else
@@ -826,7 +960,17 @@ static int parse_options(struct high_syntax *syntax,struct high_cmd *cmd,JFILE *
 			cmd->recolor_mark = 1;
 		} else
 			logerror_2(joe_gettext(_("%s %d: Unknown option\n")),name,line);
+
+	if (is_test_cmd && cmd->state_test_all == 0 && cmd->state_test_any == 0 && cmd->state_test_none == 0)
+		logerror_2(joe_gettext(_("%s %d: bit-test has no valid bit tests\n")), name, line);
+
 	return line;
+}
+
+static void check_state_bugs(const struct high_state *state, const struct high_syntax *syntax, const char *name, int line)
+{
+	if (state->test_count && state->dflt == &syntax->default_cmd)
+		logerror_2(joe_gettext(_("%s %d: state has bit tests but no default command\n")), name, line);
 }
 
 struct ifstack {
@@ -850,6 +994,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 	struct ifstack *stack=0;
 	struct high_state *state=0;	/* Current state */
 	struct high_state *first=0;	/* First state */
+	int state_start_line = 0;
 	int line = 0;
 	int this_one = 0;
 	int inside_subr = 0;
@@ -934,7 +1079,10 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 			/* Ignore this line because it's not the code we want */
 		} else if(!parse_char(&p, ':')) {
 			if(!parse_ident(&p, bf, SIZEOF(bf))) {
+				if (state)
+					check_state_bugs(state, syntax, fullpath, state_start_line);
 
+				state_start_line = line;
 				state = find_state(syntax,bf);
 
 				if (!first)
@@ -971,11 +1119,19 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 			c = parse_ws(&p,'#');
 
 			if (!c) {
-			} else if (c=='"' || c=='*' || c=='&' || c =='%') {
+			} else if (c=='"' || c=='*' || c == '~' || c=='&' || c =='%') {
 				if (state) {
 					struct high_cmd *cmd = mkcmd();
+					int/*bool*/ testcmd = 0;
 					if(!parse_field(&p, "*")) {
 						state->dflt = cmd;
+					} else if(!parse_field(&p, "~")) {
+						/* allocate 8 at a time, extend by 8 at need */
+						if (state->test_count % 8 == 0)
+							state->test_states = state->test_count ? joe_realloc(state->test_states, (unsigned int)(state->test_count + 8) * sizeof(*state->test_states)) : joe_calloc(8, sizeof(*state->test_states));
+						/* store, increment count */
+						state->test_states[state->test_count++] = cmd;
+						testcmd = 1;
 					} else if(!parse_field(&p, "&")) {
 						state->delim = cmd;
 					} else if(!parse_field(&p, "%")) {
@@ -998,7 +1154,7 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 					parse_ws(&p,'#');
 					if(!parse_ident(&p,bf,SIZEOF(bf))) {
 						cmd->new_state = find_state(syntax,bf);
-						line = parse_options(syntax,cmd,f,p,0,fullpath,line);
+						line = parse_options(syntax,cmd,f,p,0,fullpath,line,testcmd);
 					} else
 						logerror_2(joe_gettext(_("%s %d: Missing jump\n")),fullpath,line);
 				} else
@@ -1014,6 +1170,8 @@ static struct high_state *load_dfa(struct high_syntax *syntax)
 		logerror_2(joe_gettext(_("%s %d: ifdef with no matching endif\n")),fullpath,st->line);
 		joe_free(st);
 	}
+	if (state)
+		check_state_bugs(state, syntax, fullpath, state_start_line);
 
 	jfclose(f);
 
