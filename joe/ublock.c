@@ -1170,7 +1170,11 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 		msgnw(bw->parent, joe_gettext(_("Couldn't create pipe")));
 		return -1;
 	}
-	npartial(bw->parent->t->t);
+	/* npartial is less jarring... */
+	/* npartial(bw->parent->t->t); */
+	/* But we must use nescape if we are using the ti te sequences, otherwise
+	   JOE doesn't return from alternate screen if aspell is used */
+	nescape(bw->parent->t->t);
 	ttclsn();
 #ifdef HAVE_FORK
 	if (!fork()) {
@@ -1275,6 +1279,8 @@ static int dofilt(W *w, char *s, void *object, int *notify)
 	}
 	vsrm(s);
 	ttopnn();
+	/* Use nreturn because we now use nescape */
+	nreturn(bw->parent->t->t);
 	if (filtflg)
 		unmark(bw->parent, 0);
 	bw->cursor->xcol = piscol(bw->cursor);
