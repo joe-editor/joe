@@ -1,0 +1,107 @@
+name: Sync mirrors
+
+on:
+  push:
+  schedule:
+    # Once daily. GitHub schedules are UTC.
+    - cron: "17 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mirror-sync-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  mirror-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Gate sync
+        id: should-sync
+        if: vars.GIT_SYNC_ENDPOINT != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "run_sync=true" >> "$GITHUB_OUTPUT"
+            echo "reason=event is ${{ github.event_name }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          pushed_at="$(gh api "repos/$REPO" --jq '.pushed_at')"
+          pushed_epoch="$(date -u -d "$pushed_at" +%s)"
+          cutoff_epoch="$(date -u -d '24 hours ago' +%s)"
+
+          echo "Repository pushed_at: $pushed_at"
+          echo "Cutoff: $(date -u -d "@$cutoff_epoch" --iso-8601=seconds)"
+
+          if [ "$pushed_epoch" -ge "$cutoff_epoch" ]; then
+            echo "run_sync=true" >> "$GITHUB_OUTPUT"
+            echo "reason=repository changed in the last 24h" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_sync=false" >> "$GITHUB_OUTPUT"
+            echo "reason=no repository push in the last 24h" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Sync mirrors
+        id: mirror-sync
+        if: vars.GIT_SYNC_ENDPOINT != '' && steps.should-sync.outputs.run_sync == 'true'
+        env:
+          GIT_SYNC_TOKEN: ${{ secrets.GIT_SYNC_BEARER_TOKEN }}
+          GIT_SYNC_URL: ${{ vars.GIT_SYNC_ENDPOINT }}
+        run: |
+          set +e
+
+          echo "Triggering mirror sync: $GIT_SYNC_URL"
+          echo "Reason: ${{ steps.should-sync.outputs.reason }}"
+          echo ""
+
+          response_file="$(mktemp)"
+
+          status=$(curl -sS \
+            --fail-with-body \
+            --connect-timeout 10 \
+            --max-time 300 \
+            -o "$response_file" \
+            -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer $GIT_SYNC_TOKEN" \
+            "$GIT_SYNC_URL")
+
+          rc=$?
+
+          echo "HTTP status: ${status:-unavailable}"
+          echo ""
+          echo "---- sync output ----"
+          cat "$response_file" || true
+          echo ""
+          echo "---- end sync output ----"
+
+          if [ "$rc" -ne 0 ]; then
+            echo "::warning title=Mirror sync failed::curl exited with code $rc; HTTP status was ${status:-unavailable}"
+            echo "result=failed" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "result=succeeded" >> "$GITHUB_OUTPUT"
+
+      - name: Report skipped
+        if: vars.GIT_SYNC_ENDPOINT != '' && steps.should-sync.outputs.run_sync != 'true'
+        run: |
+          echo "Mirror sync skipped: ${{ steps.should-sync.outputs.reason }}"
+
+      - name: Write summary
+        if: vars.GIT_SYNC_ENDPOINT != ''
+        run: |
+          echo "## Mirror sync" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Event: \`${{ github.event_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Decision: \`${{ steps.should-sync.outputs.run_sync || 'unknown' }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Reason: ${{ steps.should-sync.outputs.reason || 'unknown' }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Result: \`${{ steps.mirror-sync.outputs.result || 'skipped' }}\`" >> "$GITHUB_STEP_SUMMARY"
