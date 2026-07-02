@@ -21,6 +21,7 @@ jobs:
     steps:
       - name: Gate sync
         id: should-sync
+        if: vars.GIT_SYNC_ENDPOINT != ''
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -50,10 +51,10 @@ jobs:
 
       - name: Sync mirrors
         id: mirror-sync
-        if: steps.should-sync.outputs.run_sync == 'true'
+        if: vars.GIT_SYNC_ENDPOINT != '' && steps.should-sync.outputs.run_sync == 'true'
         env:
           GIT_SYNC_TOKEN: ${{ secrets.GIT_SYNC_BEARER_TOKEN }}
-          GIT_SYNC_URL: https://webhooks.joe-editor.org/hooks/git-sync
+          GIT_SYNC_URL: ${{ vars.GIT_SYNC_ENDPOINT }}
         run: |
           set +e
 
@@ -91,12 +92,12 @@ jobs:
           echo "result=succeeded" >> "$GITHUB_OUTPUT"
 
       - name: Report skipped
-        if: steps.should-sync.outputs.run_sync != 'true'
+        if: vars.GIT_SYNC_ENDPOINT != '' && steps.should-sync.outputs.run_sync != 'true'
         run: |
           echo "Mirror sync skipped: ${{ steps.should-sync.outputs.reason }}"
 
       - name: Write summary
-        if: always()
+        if: vars.GIT_SYNC_ENDPOINT != ''
         run: |
           echo "## Mirror sync" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
