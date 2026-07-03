@@ -1004,7 +1004,7 @@ int utomatch(W *w, int k)
 		}
 
 		/* We don't know the word, so start a search */
-		if (bw->b->o.charmap->type) {
+		if (bw->b->o.charmap->is_unicode) {
 			Ztoutf8(utf8_buf, SIZEOF(utf8_buf), buf);
 		} else {
 			Ztoz(utf8_buf, SIZEOF(utf8_buf), buf);
@@ -1815,7 +1815,7 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 	/* Send data to shell window */
 	if ((bw->b->pid && !bw->b->vt && piseof(bw->cursor)) ||
 	   ( bw->b->pid && bw->b->vt && bw->cursor->byte == bw->b->vt->vtcur->byte)) {
-	   	if (locale_map->type) {
+		if (locale_map->is_unicode) {
 	   		char buf[8];
 	   		ptrdiff_t len = utf8_encode(buf, k);
 	   		joe_write(bw->b->out, buf, len);
@@ -1836,7 +1836,7 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 		char buf[8];
 		ptrdiff_t x;
 		ptrdiff_t len;
-		if (map->type) {
+		if (map->is_unicode) {
 			len = utf8_encode(buf, k);
 		} else {
 			if (!no_decode)
@@ -1921,7 +1921,7 @@ static int utypebw_raw(BW *bw, int k, int no_decode)
 			}
 
 		if (!no_decode) {
-			if(!map->type) {
+			if(!map->is_unicode) {
 				/* Convert to byte code */
 				k = from_uni(map, k);
 			}
@@ -2035,7 +2035,7 @@ static int doquote(W *w, int c, void *object, int *notify)
 			else
 				return 0;
 		} else if (c == 'x' || c == 'X') {
-			if (bw->b->o.charmap->type) {
+			if (bw->b->o.charmap->is_unicode) {
 				if (!wmkpw(bw->parent, joe_gettext(_("Unicode (ISO-10646) character in hex (%{abort} to abort): ")), &unicodehist, dounicode,
 				           NULL, NULL, NULL, NULL, NULL, locale_map, 0))
 					return 0;
@@ -2467,7 +2467,7 @@ static int dotxt(W *w, char *s, void *object, int *notify)
 		ptrdiff_t len = sLEN(s);
 		while (len) {
 			int c;
-			if (bw->b->o.charmap->type)
+			if (bw->b->o.charmap->is_unicode)
 				c = utf8_decode_fwrd(&t, &len);
 			else {
 				c = *(const unsigned char *)t++;

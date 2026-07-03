@@ -28,27 +28,27 @@ struct color_builtin_specs {
 	const char		*name;		/* Name in config */
 	int			*attribute;	/* Destination of attribute */
 	int			*mask;		/* Destination of attribute mask */
-	int			invert;		/* Whether to invert input in config file (e.g. status) */
+	bool			invert;		/* Whether to invert input in config file (e.g. status) */
 	int			default_attr;	/* Default attribute value */
 	int			default_mask;	/* Default attribute mask */
 	int			*default_ptr;	/* Pointer to default attribute, e.g. to use bg_text */
 };
 
 static const struct color_builtin_specs color_builtins[] = {
-	{ "text", &bg_text, NULL, 0, 0, 0, 0 },	/* Must come first, so others can use as default */
-	{ "linum", &bg_linum, NULL, 0, 0, 0, &bg_text },
-	{ "curlin", &bg_curlin, &curlinmask, 0, 0, -1, &bg_text },
-	{ "curlinum", &bg_curlinum, NULL, 0, 0, 0, &bg_linum },
-	{ "selection", &selectatr, &selectmask, 0, INVERSE, ~INVERSE, NULL },
-	{ "help", &bg_help, NULL, 0, 0, 0, &bg_text },
-	{ "status", &bg_stalin, NULL, 1, 0, 0, &bg_text },
-	{ "menu", &bg_menu, NULL, 0, 0, 0, &bg_text },
-	{ "menusel", &bg_menusel, &bg_menumask, 0, INVERSE, ~INVERSE, NULL },
-	{ "prompt", &bg_prompt, NULL, 0, 0, 0, &bg_text },
-	{ "message", &bg_msg, NULL, 0, 0, 0, &bg_text },
-	{ "cursor", &bg_cursor, NULL, 0, INVERSE, ~INVERSE, NULL },
-	{ "visiblews", &vwsatr, &vwsmask, 0, DIM, ~(DIM | FG_MASK), &bg_text },
-	{ NULL, NULL, NULL, 0, 0, 0, NULL }
+	{ "text", &bg_text, NULL, false, 0, 0, 0 },	/* Must come first, so others can use as default */
+	{ "linum", &bg_linum, NULL, false, 0, 0, &bg_text },
+	{ "curlin", &bg_curlin, &curlinmask, false, 0, -1, &bg_text },
+	{ "curlinum", &bg_curlinum, NULL, false, 0, 0, &bg_linum },
+	{ "selection", &selectatr, &selectmask, false, INVERSE, ~INVERSE, NULL },
+	{ "help", &bg_help, NULL, false, 0, 0, &bg_text },
+	{ "status", &bg_stalin, NULL, true, 0, 0, &bg_text },
+	{ "menu", &bg_menu, NULL, false, 0, 0, &bg_text },
+	{ "menusel", &bg_menusel, &bg_menumask, false, INVERSE, ~INVERSE, NULL },
+	{ "prompt", &bg_prompt, NULL, false, 0, 0, &bg_text },
+	{ "message", &bg_msg, NULL, false, 0, 0, &bg_text },
+	{ "cursor", &bg_cursor, NULL, false, INVERSE, ~INVERSE, NULL },
+	{ "visiblews", &vwsatr, &vwsmask, false, DIM, ~(DIM | FG_MASK), &bg_text },
+	{ NULL, NULL, NULL, false, 0, 0, NULL }
 };
 
 /* Terminal -> color scheme mapping from joe_state file */

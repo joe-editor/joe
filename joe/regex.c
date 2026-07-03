@@ -357,7 +357,7 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 			struct Cclass *cat;
 			int first, last;
 
-			first = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+			first = escape(g->cmap->is_unicode, &g->ptr, &g->l, &cat);
 
 			if (first == -256) {
 				cclass_union(m, cclass_remap(cat, g->cmap));
@@ -365,7 +365,7 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 				if (g->l >= 2 &&  g->ptr[0] == '-' && g->ptr[1] != ']') {
 					++g->ptr;
 					--g->l;
-					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+					last = escape(g->cmap->is_unicode, &g->ptr, &g->l, &cat);
 				} else {
 					last = first;
 				}
@@ -385,7 +385,7 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 			cclass_inv(m);
 	} else {
 		struct Cclass *cat;
-		int ch = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+		int ch = escape(g->cmap->is_unicode, &g->ptr, &g->l, &cat);
 		if (ch == -256) {
 			no = mk_node(g, -'[', -1, -1);
 			if (cat)
@@ -393,7 +393,7 @@ static int do_parse_conventional(struct regcomp *g, int prec, int fold)
 			cclass_union(g->nodes[no].cclass, cat);
 		} else {
 			if (fold) {
-				if (g->cmap->type) { /* Unicode folding... */
+				if (g->cmap->is_unicode) { /* Unicode folding... */
 					int idx = rmap_lookup(rtree_fold, ch, 0);
 					if (idx < FOLDMAGIC)
 						no = mk_node(g, ch + idx, -1, -1);
@@ -579,7 +579,7 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 			struct Cclass *cat;
 			int first, last;
 
-			first = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+			first = escape(g->cmap->is_unicode, &g->ptr, &g->l, &cat);
 
 			if (first == -256) {
 				cclass_union(m, cclass_remap(cat, g->cmap));
@@ -587,7 +587,7 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 				if (g->l >= 2 &&  g->ptr[0] == '-' && g->ptr[1] != ']') {
 					++g->ptr;
 					--g->l;
-					last = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+					last = escape(g->cmap->is_unicode, &g->ptr, &g->l, &cat);
 				} else {
 					last = first;
 				}
@@ -609,13 +609,13 @@ static int do_parse(struct regcomp *g, int prec, int fold)
 			cclass_inv(m);
 	} else {
 		struct Cclass *cat;
-		int ch = escape(g->cmap->type, &g->ptr, &g->l, &cat);
+		int ch = escape(g->cmap->is_unicode, &g->ptr, &g->l, &cat);
 		if (ch == -256) {
 			no = mk_node(g, -'[', -1, -1);
 			cclass_union(g->nodes[no].cclass, cclass_remap(cat, g->cmap));
 		} else {
 			if (fold) {
-				if (g->cmap->type) { /* Unicode folding... */
+				if (g->cmap->is_unicode) { /* Unicode folding... */
 					int idx = rmap_lookup(rtree_fold, ch, 0);
 					if (idx < FOLDMAGIC)
 						no = mk_node(g, ch + idx, -1, -1);
@@ -827,9 +827,9 @@ static int extract(struct regcomp *g, int no, int fold)
 			}
 		} else if ((g->nodes[no].type >= 0) && (
 		            (g->nodes[no].type < 128 ||
-		            !g->cmap->type ||
+		            !g->cmap->is_unicode ||
 		            !fold))) {
-		        if (g->cmap->type) { /* UTF-8 */
+		        if (g->cmap->is_unicode) { /* UTF-8 */
 		        	char buf[8];
 		        	ptrdiff_t x;
 		        	utf8_encode(buf, g->nodes[no].type);
@@ -1300,7 +1300,7 @@ int joe_regexec(struct regcomp *g, P *p, int nmatch, Regmatch_t *matches, int fo
 		d = c;
 		byte = p->byte;
 		if (fold) { /* Case folding */
-			if  (g->cmap->type) { /* Unicode folding */
+			if  (g->cmap->is_unicode) { /* Unicode folding */
 				if (repl1) {
 					c = repl1;
 					repl1 = 0;

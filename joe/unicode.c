@@ -517,7 +517,7 @@ int joe_wcwidth(int wide,int ucs)
 
 	/* If terminal is not UTF-8 or file is not UTF-8: width is 1 */
 	/* FIXME */
-	if (!locale_map->type || !wide)
+	if (!locale_map->is_unicode || !wide)
 		return 1;
 
 	/* Negative characters are characters in range 128 - 255 converted from signed char to int */
@@ -560,7 +560,7 @@ int joe_wcwidth(int wide,int ucs)
 
 ptrdiff_t joe_wcswidth(struct charmap *map,const char *s, ptrdiff_t len)
 {
-	if (!map->type) {
+	if (!map->is_unicode) {
 		return len;
 	} else {
 		int width = 0;

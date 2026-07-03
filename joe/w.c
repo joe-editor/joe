@@ -266,7 +266,7 @@ void wfit(Screen *t)
 	W *pw;			/* Main window of previous family */
 	ptrdiff_t req;		/* Amount this family needs */
 	ptrdiff_t adj;		/* Amount family needs to be adjusted */
-	int flg = 0;		/* Set if cursor window was placed on screen */
+	bool flg = 0;		/* Set if cursor window was placed on screen */
 	int ret;
 
 	dostaupd = 1;

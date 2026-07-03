@@ -189,7 +189,7 @@ static void parsedir(struct charmap *map, const char *s, char **rtn_dir)
 			case 0x0027: quote[0][0] = '\''; break;
 			case 0x0060: quote[1][0] = '`'; quote[0][0] = '\''; break;
 			/* Latin-(various), possibly encoded as UTF-8 */
-			case 0x00AB: if (map->type) utf8_encode(quote[0], 0xBB); else quote[0][0] = (char)0xBB; break;
+			case 0x00AB: if (map->is_unicode) utf8_encode(quote[0], 0xBB); else quote[0][0] = (char)0xBB; break;
 			/* UTF-8 */
 			case 0x201C: utf8_encode(quote[0], 0x201D); break;
 			case 0x201D: utf8_encode(quote[0], 0x201D); break;
@@ -230,7 +230,7 @@ static void parsedir(struct charmap *map, const char *s, char **rtn_dir)
 
 static void parseone(struct charmap *map,const char *s,char **rtn_name,off_t *rtn_line)
 {
-	int flg;
+	bool flg;
 	int c;
 	char *name = NULL;
 	off_t line = -1;

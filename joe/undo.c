@@ -16,13 +16,13 @@ int undo_keep = 1000; /* Number of undo records to keep */
 static UNDO undos = { {&undos, &undos} };
 static UNDO frdos = { {&frdos, &frdos} };
 
-int inundo = 0;
-int inredo = 0;	/* Turns off recording of undo records */
+bool inundo = 0;
+bool inredo = 0;	/* Turns off recording of undo records */
 
 UNDOREC yanked = { {&yanked, &yanked} };
 int nyanked = 0;
-int inyank = 0;
-int justkilled = 0;
+bool inyank = 0;
+bool justkilled = 0;
 
 UNDOREC frrecs = { {&frrecs, &frrecs} };
 

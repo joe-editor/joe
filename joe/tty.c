@@ -779,7 +779,7 @@ static struct utf8_sm main_utf8_sm;
 
 int ttgetch(void)
 {
-	if (locale_map->type) {
+	if (locale_map->is_unicode) {
 		int utf8_char;
 		do {
 			char c = ttgetc();

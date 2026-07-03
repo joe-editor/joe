@@ -19,8 +19,8 @@ struct scrn {
 	ptrdiff_t	li;		/* Height of screen */
 	ptrdiff_t	co;		/* Width of screen */
 	short	*scrn;		/* Buffer */
-	int	scroll;
-	int	insdel;
+	bool	scroll;
+	bool	insdel;
 	int	*updtab;	/* Lines which need to be updated */
 	HIGHLIGHT_STATE *syntax;
 	int	*compose;

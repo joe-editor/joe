@@ -275,7 +275,7 @@ const char *no_key = _("|no|nN");
 int yncheck(const char *key_set, int c)
 {
 	const char *set = joe_gettext(key_set);
-	if (locale_map->type) {
+	if (locale_map->is_unicode) {
 		/* set is utf-8 */
 		while (*set) {
 			if (c == utf8_decode_fwrd(&set, NULL))

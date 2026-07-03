@@ -253,7 +253,7 @@ static HIGHLIGHT_STATE get_highlight_state(BW *w, P *p, off_t line)
  * the first line was split
  */
 
-void bwins(BW *w, off_t l, off_t n, int flg)
+void bwins(BW *w, off_t l, off_t n, bool flg)
 {
 	/* If highlighting is enabled... */
 	if (w->o.highlight && w->o.syntax) {
@@ -288,7 +288,7 @@ void bwins(BW *w, off_t l, off_t n, int flg)
 
 /* Scroll current windows after a delete */
 
-void bwdel(BW *w, off_t l, off_t n, int flg)
+void bwdel(BW *w, off_t l, off_t n, bool flg)
 {
 	/* If highlighting is enabled... */
 	if (w->o.highlight && w->o.syntax) {
@@ -431,7 +431,7 @@ static void end_osc8(const struct state_debug_data *oldstate, int opt)
 
 /* Update a single line */
 
-static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff_t x, ptrdiff_t w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
+static bool lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff_t x, ptrdiff_t w, P *p, off_t scr, off_t from, off_t to,HIGHLIGHT_STATE st,BW *bw)
 
 
             			/* Screen line address */
@@ -443,7 +443,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 	int ansi = bw->o.ansi;
 	ptrdiff_t ox = x;
 	int tach;
-	int done = 1;
+	bool done = 1;
 	off_t col = 0;
 	off_t byte = p->byte;
 	char *bp;	/* Buffer pointer, 0 if not set */
@@ -562,7 +562,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 				goto eobl;
 			else {
 				int wid = 1;
-				if (p->b->o.charmap->type) {
+				if (p->b->o.charmap->is_unicode) {
 					c = utf8_decode(&utf8_sm,bc);
 
 					if (c>=0) /* Normal decoded character */
@@ -723,7 +723,7 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 			} else {
 				int wid = -1;
 				int utf8_char;
-				if (p->b->o.charmap->type) { /* UTF-8 */
+				if (p->b->o.charmap->is_unicode) { /* UTF-8 */
 
 					utf8_char = utf8_decode(&utf8_sm,bc);
 
@@ -868,10 +868,10 @@ void bwgenh(BW *w)
 	ptrdiff_t bot = w->h + w->y;
 	ptrdiff_t y;
 	SCRN *t = w->t->t;
-	int flg = 0;
+	bool flg = 0;
 	off_t from;
 	off_t to;
-	int dosquare = 0;
+	bool dosquare = 0;
 
 	from = to = 0;
 
@@ -977,7 +977,7 @@ void bwgenh(BW *w)
 	prm(q);
 }
 
-void bwgen(BW *w, int linums, int linchg)
+void bwgen(BW *w, bool linums, bool linchg)
 {
 	int (*screen)[COMPOSE];
 	int *attr;
@@ -985,7 +985,7 @@ void bwgen(BW *w, int linums, int linchg)
 	P *q;
 	ptrdiff_t bot = w->h + w->y;
 	ptrdiff_t y;
-	int dosquare = 0;
+	bool dosquare = 0;
 	off_t from, to;
 	off_t fromline, toline;
 	SCRN *t = w->t->t;
@@ -1433,7 +1433,7 @@ void init_visiblews(void)
 	vspace = vtab = vrtn = 0;
 
 	/* If we're Unicode, just take the best */
-	if (locale_map->type) {
+	if (locale_map->is_unicode) {
 		vspace = spaces[0];
 		vtab = tabs[0];
 		vrtn = rtns[0];

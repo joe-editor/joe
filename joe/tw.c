@@ -553,7 +553,7 @@ char *stagen(char *stalin, BW *bw, const char *s, char fill)
 				break;
 			case 'w':
 				if (!piseof(bw->cursor)) {
-					joe_snprintf_1(buf, SIZEOF(buf), "%d", joe_wcwidth(bw->o.charmap->type, brch(bw->cursor)));
+					joe_snprintf_1(buf, SIZEOF(buf), "%d", joe_wcwidth(bw->o.charmap->is_unicode, brch(bw->cursor)));
 					stalin = vsncpy(sv(stalin), sz(buf));
 				}
 				break;

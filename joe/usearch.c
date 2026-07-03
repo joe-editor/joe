@@ -64,7 +64,7 @@ static char **get_word_list(B *b,off_t ignore)
 		c = pgetc(p);
 		if (idx) {
 			if (joe_isalnum_(b->o.charmap, c)) {
-				if (b->o.charmap->type) {
+				if (b->o.charmap->is_unicode) {
 					if (idx < MAX_WORD_SIZE - 8) {
 						idx += utf8_encode(buf+idx, c);
 					}
@@ -85,7 +85,7 @@ static char **get_word_list(B *b,off_t ignore)
 		} else {
 			start=p->byte-1;
 			if (joe_isalpha_(b->o.charmap, c)) {
-				if (b->o.charmap->type) {
+				if (b->o.charmap->is_unicode) {
 					idx += utf8_encode(buf+idx, c);
 				} else {
 					buf[idx++] = TO_CHAR_OK(c);
@@ -594,7 +594,7 @@ static P *insert(SRCH *srch, P *p, const char *s, ptrdiff_t len, B **entire, B *
 			} else {
 				const char *a = s + x;
 				ptrdiff_t l = len - x;
-				int ch = escape(p->b->o.charmap->type, &a, &l, NULL);
+				int ch = escape(p->b->o.charmap->is_unicode, &a, &l, NULL);
 				if (ch != -256) {
 					switch (case_flag) {
 						case 1: {

@@ -19,7 +19,7 @@ struct charmap {
 	struct charmap *next;		/* Linked list of loaded character maps */
 	const char *name;		/* Name of this one */
 
-	int type;			/* 0=byte, 1=UTF-8 */
+	bool is_unicode;		/* 0=byte, 1=UTF-8 */
 
 	/* Character predicate functions */
 

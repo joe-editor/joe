@@ -73,8 +73,8 @@ void edupd(int flg)
 	staupd = 0;
 }
 
-static int ahead = 0; /* Low means typehead possible while JOE is starting, before TTY mode changed */
-static int ungot = 0;
+static bool ahead = 0; /* Low means typehead possible while JOE is starting, before TTY mode changed */
+static bool ungot = 0;
 static int ungotc = 0;
 
 void nungetc(int c)
@@ -322,11 +322,10 @@ int main(int argc, char **real_argv, const char * const *envv)
 	char *rundir;
 #endif
 	SCRN *n;
-	int opened = 0;
-	int omid;
+	bool opened = 0;
+	bool filesonly = 0;
 	int backopt;
 	int c;
-	int filesonly;
 
 	joe_iswinit();
 	joe_locale();
@@ -707,6 +706,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 
 
 	if (opened) {
+		bool omid;
 		wshowall(maint);
 		omid = opt_mid;
 		opt_mid = 1;
@@ -742,7 +742,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 			xmsg = stagen(NULL, (BW *)(lastw(maint)->object), joe_gettext(xmsg), ' ');
 			msgnw(((BASE *)lastw(maint)->object)->parent, xmsg);
 		} else {
-			joe_snprintf_3(msgbuf,JOE_MSGBUFSIZE,joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->type ? "©" : "(C)"));
+			joe_snprintf_3(msgbuf,JOE_MSGBUFSIZE,joe_gettext(_("\\i** Joe's Own Editor v%s ** (%s) ** Copyright %s 2015 **\\i")),VERSION,locale_map->name,(locale_map->is_unicode ? "©" : "(C)"));
 			msgnw(((BASE *)lastw(maint)->object)->parent, msgbuf);
 		}
 

@@ -32,8 +32,8 @@ static char get_lcl_comma(void)
 const char *merr;
 
 int mode_display; /* 0 = decimal, 1 = engineering, 2 = hex, 3 = octal, 4 = binary */
-int mode_ins; /* Set if ins or insf appeared in command */
-int mode_commas; /* Set if insf was used, so include underscores */
+bool mode_ins; /* Set if ins or insf appeared in command */
+bool mode_commas; /* Set if insf was used, so include underscores */
 
 static BW *calc_bw;
 
@@ -50,7 +50,7 @@ static void fperr(int unused)
 struct var {
 	char *name;
 	double (*func)(double n);
-	int set;
+	bool set;
 	double val;
 	struct var *next;
 } *vars = NULL;
@@ -1551,7 +1551,7 @@ static char *eng(char *d, ptrdiff_t d_len, const char *s)
 
 static int doumath(W *w, char *s, void *object, int *notify);
 
-static void format_result(char *out, double result, int base, int commas)
+static void format_result(char *out, double result, int base, bool commas)
 {
 	char comma_char = get_lcl_comma();
 	char buf[128];

@@ -48,9 +48,9 @@ extern int vwsmask;     /* Attribute mask for visible whitespace */
 void bwfllw(W *w);
 void bwfllwt(W *w);
 void bwfllwh(W *w);
-void bwins(BW *w, off_t l, off_t n, int flg);
-void bwdel(BW *w, off_t l, off_t n, int flg);
-void bwgen(BW *w, int linums, int linchg);
+void bwins(BW *w, off_t l, off_t n, bool flg);
+void bwdel(BW *w, off_t l, off_t n, bool flg);
+void bwgen(BW *w, bool linums, bool linchg);
 void bwgenh(BW *w);
 BW *bwmk(W *window, B *b, int prompt);
 void bwmove(BW *w, ptrdiff_t x, ptrdiff_t y);
