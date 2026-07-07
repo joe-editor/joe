@@ -62,6 +62,23 @@ case "$host" in
 	*)	;;
 esac
 
+AC_MSG_CHECKING([whether debug instrumentation options are to be enabled])
+AC_ARG_ENABLE(instrumentation,
+[  --enable-instrumentation
+                          enable various instrumentation options for debugging],
+[instrumentation=no; if test "x$enableval" = "xyes"; then instrumentation=$enableval; fi],
+[instrumentation=no])
+AC_MSG_RESULT([$instrumentation])
+if test "$instrumentation" = "yes"; then
+	AX_CHECK_COMPILE_FLAG([-fsanitize=bounds-strict], [CFLAGS="$CFLAGS -fsanitize=bounds-strict"],
+		[AX_CHECK_COMPILE_FLAG([-fsanitize=bounds], [CFLAGS="$CFLAGS -fsanitize=bounds"])])
+	AX_CHECK_COMPILE_FLAG([-fsanitize=alignment], [CFLAGS="$CFLAGS -fsanitize=alignment"])
+	AX_CHECK_COMPILE_FLAG([-fsanitize=bool], [CFLAGS="$CFLAGS -fsanitize=bool"])
+	AX_CHECK_COMPILE_FLAG([-fsanitize=enum], [CFLAGS="$CFLAGS -fsanitize=enum"])
+	AX_CHECK_COMPILE_FLAG([-fsanitize=nonnull-attribute], [CFLAGS="$CFLAGS -fsanitize=nonnull-attribute"])
+	AX_CHECK_COMPILE_FLAG([-fsanitize=returns-nonnull-attribute], [CFLAGS="$CFLAGS -fsanitize=returns-nonnull-attribute"])
+fi
+
 search_libs="$search_libs m"
 
 # Checks for libraries.
