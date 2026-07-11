@@ -989,3 +989,16 @@
 --break_hardlinks
 --break_links
 
+ Qt QML
+[qml]
+*.qml
+-autoindent
+-title
+-syntax qml
+-smarthome
+-smartbacks
+-purify
+-c_comment
+-cpp_comment
+-cpara >#!;*/%
+-highlighter_context
