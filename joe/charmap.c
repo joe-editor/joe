@@ -91,8 +91,8 @@ int from_utf8(struct charmap *map,const char *s)
 /* Aliases */
 
 static const struct {
-	const char *alias;
-	const char *builtin;
+	const char alias[12];
+	const char builtin[12];
 } alias_table[] = {
 	{ "c", "ascii" },
 	{ "posix", "ascii" },
@@ -129,7 +129,7 @@ static const struct {
 	{ "latin8", "iso-8859-14" },
 	{ "latin9", "iso-8859-15" },
 	{ "latin10", "iso-8859-16" },
-	{ 0, 0 }
+	{}
 };
 
 /* I took all the ISO-8859- ones, plus any ones referenced by a locale */
@@ -1249,7 +1249,7 @@ static void load_builtins(void)
 
 	/* Load all built-in byte maps */
 	/*
-	for (y=0; y!=sizeof(builtin_charmaps)/sizeof(struct builtin_charmap); ++y)
+	for (y=0; y!=ARRAY_LEN(builtin_charmaps); ++y)
 		process_builtin(builtin_charmaps + y);
 	*/
 }
@@ -1368,7 +1368,7 @@ struct charmap *find_charmap(const char *name)
 		load_builtins();
 
 	/* Alias? */
-	for (y=0; alias_table[y].alias; ++y)
+	for (y=0; alias_table[y].alias[0]; ++y)
 		if (!map_name_cmp(alias_table[y].alias,name)) {
 			name = alias_table[y].builtin;
 			break;
@@ -1388,7 +1388,7 @@ struct charmap *find_charmap(const char *name)
 		return process_builtin(b);
 
 	/* Check builtin sets */
-	for (y=0; y!=SIZEOF(builtin_charmaps)/SIZEOF(struct builtin_charmap); ++y)
+	for (y=0; y!=ARRAY_LEN(builtin_charmaps); ++y)
 		if (!map_name_cmp(builtin_charmaps[y].name,name))
 			return process_builtin(builtin_charmaps + y);
 
@@ -1428,14 +1428,14 @@ char **get_encodings(void)
 	r = vsncpy(NULL,0,sc("utf-16r"));
 	encodings = vaadd(encodings, r);
 
-	for (y=0; y!=SIZEOF(builtin_charmaps)/SIZEOF(struct builtin_charmap); ++y) {
+	for (y=0; y!=ARRAY_LEN(builtin_charmaps); ++y) {
 		r = vsncpy(NULL,0,sz(builtin_charmaps[y].name));
 		encodings = vaadd(encodings, r);
 	}
 
 	/* Aliases */
 
-	for (y=0; alias_table[y].alias; ++y) {
+	for (y=0; alias_table[y].alias[0]; ++y) {
 		r = vsncpy(NULL,0,sz(alias_table[y].alias));
 		encodings = vaadd(encodings, r);
 	}

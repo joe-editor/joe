@@ -705,7 +705,7 @@ static void deltw(W *w, B *b, off_t l, off_t n, int flg)
 		bwdel(bw, l, n, flg);
 }
 
-WATOM watomtw = {
+const WATOM watomtw = {
 	"main",
 	disptw,
 	bwfllw,

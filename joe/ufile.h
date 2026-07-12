@@ -40,8 +40,8 @@ extern const char *backpath; /* Path to backup files if not current directory */
 extern const char *backup_file_suffix; /* Suffix for backup files */
 extern bool orphan; /* Set to keep orphaned buffers (buffers with no windows)  */
 
-extern const char *yes_key;
-extern const char *no_key;
+extern const char yes_key[];
+extern const char no_key[];
 #define YES_CODE -10
 #define NO_CODE -20
 int yncheck(const char *string, int c);

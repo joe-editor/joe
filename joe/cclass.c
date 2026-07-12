@@ -218,7 +218,7 @@ int rset_lookup_unopt(struct Rset *r, int ch)
 	b = (SECONDMASK & (ch >> SECONDSHIFT));
 	c = (THIRDMASK & (ch >> THIRDSHIFT));
 	d = (LEAFMASK & (ch >> LEAFSHIFT));
-	if (a >= TOPSIZE)
+	if (a < 0 || a >= TOPSIZE)
 		return 0;
 	idx = r->top.entry[a];
 	if (idx != -1) {
@@ -297,7 +297,7 @@ void rset_add(struct Rset *r, int ch, int che)
 
 	while (ch <= che) {
 
-		if (a >= TOPSIZE)
+		if (a < 0 || a >= TOPSIZE)
 			return;
 
 		ib = r->top.entry[a];
@@ -423,7 +423,7 @@ void *rtree_lookup(struct Rtree *r, int ch)
 	b = (SECONDMASK & (ch >> SECONDSHIFT));
 	c = (THIRDMASK & (ch >> THIRDSHIFT));
 	d = (LEAFMASK & (ch >> LEAFSHIFT));
-	if (a >= TOPSIZE)
+	if (a < 0 || a >= TOPSIZE)
 		return NULL;
 	if (a || b) { /* Full lookup for character >= 512 */
 		int idx = r->top.entry[a];
@@ -453,7 +453,7 @@ void *rtree_lookup_unopt(struct Rtree *r, int ch)
 	b = (SECONDMASK & (ch >> SECONDSHIFT));
 	c = (THIRDMASK & (ch >> THIRDSHIFT));
 	d = (LEAFMASK & (ch >> LEAFSHIFT));
-	if (a >= TOPSIZE)
+	if (a < 0 || a >= TOPSIZE)
 		return NULL;
 	idx = r->top.entry[a];
 	if (idx != -1) {
@@ -549,7 +549,7 @@ void rtree_add(struct Rtree *r, int ch, int che, void *map)
 
 	while (ch <= che) {
 
-		if (a >= TOPSIZE)
+		if (a < 0 || a >= TOPSIZE)
 			return;
 
 		ib = r->top.entry[a];
@@ -646,8 +646,8 @@ void rtree_opt(struct Rtree *r)
 
 	/* De-duplicate leaf nodes (it's not worth bothering with interior nodes) */
 
-	equiv = (int *)joe_malloc(SIZEOF(int) * r->leaf.alloc);
-	repl = (short *)joe_malloc(SIZEOF(short) * r->leaf.alloc);
+	equiv = r->leaf.alloc ? (int *)joe_malloc(SIZEOF(int) * r->leaf.alloc) : NULL;
+	repl = r->leaf.alloc ? (short *)joe_malloc(SIZEOF(short) * r->leaf.alloc) : NULL;
 
 	/* Create hash table index of all the leaf nodes */
 	dupcount = 0;
@@ -827,7 +827,7 @@ int rmap_lookup(struct Rtree *r, int ch, int dflt)
 	b = (SECONDMASK & (ch >> SECONDSHIFT));
 	c = (THIRDMASK & (ch >> THIRDSHIFT));
 	d = (LEAFMASK & (ch >> LEAFSHIFT));
-	if (a >= TOPSIZE)
+	if (a < 0 || a >= TOPSIZE)
 		return dflt;
 	if (a || b) { /* Full lookup for character >= 512 */
 		int idx = r->top.entry[a];
@@ -857,7 +857,7 @@ int rmap_lookup_unopt(struct Rtree *r, int ch, int dflt)
 	b = (SECONDMASK & (ch >> SECONDSHIFT));
 	c = (THIRDMASK & (ch >> THIRDSHIFT));
 	d = (LEAFMASK & (ch >> LEAFSHIFT));
-	if (a >= TOPSIZE)
+	if (a < 0 || a >= TOPSIZE)
 		return dflt;
 	idx = r->top.entry[a];
 	if (idx != -1) {
@@ -951,7 +951,7 @@ void rmap_add(struct Rtree *r, int ch, int che, int map, int dflt)
 
 	while (ch <= che) {
 
-		if (a >= TOPSIZE)
+		if (a < 0 || a >= TOPSIZE)
 			return;
 
 		ib = r->top.entry[a];

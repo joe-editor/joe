@@ -127,7 +127,7 @@ MACRO *mparse(MACRO *m, const char *buf, ptrdiff_t *sta, int secure)
 	}
 
 	/* Do we have a string? */
-	if (parse_Zstring(&buf, bf, SIZEOF(bf)/SIZEOF(bf[0])) >= 0) {
+	if (parse_Zstring(&buf, bf, ARRAY_LEN(bf)) >= 0) {
 		for (x = 0; bf[x]; ++x) {
 			if (m) {
 				if (!m->steps) {

@@ -31,13 +31,13 @@ static char get_lcl_comma(void)
 
 const char *merr;
 
-int mode_display; /* 0 = decimal, 1 = engineering, 2 = hex, 3 = octal, 4 = binary */
-int mode_ins; /* Set if ins or insf appeared in command */
-int mode_commas; /* Set if insf was used, so include underscores */
+static int mode_display; /* 0 = decimal, 1 = engineering, 2 = hex, 3 = octal, 4 = binary */
+static int mode_ins; /* Set if ins or insf appeared in command */
+static int mode_commas; /* Set if insf was used, so include underscores */
 
 static BW *calc_bw;
 
-double vzero = 0.0;
+static double vzero = 0.0;
 
 static void fperr(int unused)
 {

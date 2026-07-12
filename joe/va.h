@@ -197,7 +197,7 @@ aELEMENT *_vaset(aELEMENT *vary, ptrdiff_t pos, aELEMENT el);
 /* { aELEMENT *, int } ac(aELEMENT *array);
  * Return array,size pair.  Uses 'sizeof' to get size.
  */
-#define ac(a) (a), (sizeof(a) / sizeof(aELEMENT))
+#define ac(a) (a), ARRAY_LEN(a)
 
 /* { aELEMENT *, int } arest(aELEMENT *vary, int pos);
  * Return array,size pair of rest of array beginning at pos.  If

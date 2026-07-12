@@ -287,7 +287,7 @@ sELEMENT *_vsset(sELEMENT *vary, ptrdiff_t pos, sELEMENT el);
 /* { sELEMENT *, int } sc(sELEMENT *array);
  * Return array, size pair.  Uses 'sizeof' to get size.
  */
-#define sc(a) (a), (sizeof(a) / sizeof(sELEMENT) - 1)
+#define sc(a) (a), (ARRAY_LEN(a) - 1)
 
 /* { sELEMENT *, int } srest(sELEMENT *vary, int pos);
  * Return array, size pair of rest of array beginning at pos.  If

@@ -8,6 +8,13 @@
 
 /* Prompt window (a BW) */
 
+enum pwflags {
+	PWFLAG_FILENAME	 = 1, /* Prompt is for a filename, so perform ~ expansion and // restart */
+	PWFLAG_UPDATE_CD = 2, /* Update current directory when prompt complete */
+	PWFLAG_SEED_CD	 = 4, /* Seed prompt with current directory */
+	PWFLAG_COMMAND	 = 8, /* Prompt is for a shell command */
+};
+
 struct pw {
 	int	(*pfunc) (W *w, char *s, void *object, int *notify);	/* Func which gets called when RTN is hit */
 	int	(*abrt) (W *w, void *object);	/* Func which gets called when window is aborted */
@@ -17,27 +24,18 @@ struct pw {
 	ptrdiff_t	promptofst;	/* Prompt scroll offset */
 	B	*hist;		/* History buffer */
 	void	*object;	/* Object */
-	bool	file_prompt;	/* Set if this is a file name prompt, so do ~ expansion */
+	enum pwflags file_prompt;
 };
 
 /* BW *wmkpw(BW *bw,char *prompt,int (*func)(),char *huh,int (*abrt)(),
              int (*tab)(),void *object,int *notify);
  * Create a prompt window for the given window
- * file_prompt flags:
- *   bit 0: ~ expansion
- *   bit 1: update directory
- *   bit 2: seed with directory
- *   bit 3: it's a shell command, not just a file name
  */
 BW *wmkpw(W *w, const char *prompt, B **history, int (*func) (W *w, char *s, void *object, int *notify),
           const char *huh, int (*abrt)(W *w, void *object),
           int (*tab)(BW *bw, int k),
-          void *object, int *notify, struct charmap *map, int file_prompt);
-
-#define PWFLAG_FILENAME 1 /* Prompt is for a filename, so perform ~ expansion and // restart */
-#define PWFLAG_UPDATE_CD 2 /* Update current directory when prompt complete */
-#define PWFLAG_SEED_CD 4 /* Seed prompt with current directory */
-#define PWFLAG_COMMAND 8 /* Prompt is for a shell command */
+          void *object, int *notify, struct charmap *map,
+          enum pwflags file_prompt);
 
 int ucmplt(W *w, int k);
 
@@ -63,6 +61,6 @@ void set_current_dir(BW *bw, char *s,int simp);
 extern int bg_prompt;
 extern bool nocurdir;
 
-extern WATOM watompw;
+extern const WATOM watompw;
 
 char *get_cd(W *w);

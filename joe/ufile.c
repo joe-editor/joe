@@ -269,8 +269,8 @@ static void rmsavereq(struct savereq *req)
  * locale if necessary.
  */
 
-const char *yes_key = _("|yes|yY");
-const char *no_key = _("|no|nN");
+const char yes_key[] = _("|yes|yY");
+const char no_key[] = _("|no|nN");
 
 int yncheck(const char *key_set, int c)
 {

@@ -56,7 +56,7 @@ char *find_longest(char **lst);
 
 void menujump(MENU *m, ptrdiff_t x, ptrdiff_t y);
 
-extern WATOM watommenu; /* Menu WATOM */
+extern const WATOM watommenu; /* Menu WATOM */
 
 extern bool menu_above; /* Menu position: above or below */
 extern int bg_menu; /* Background color for menu */
