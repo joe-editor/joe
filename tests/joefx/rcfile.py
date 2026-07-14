@@ -453,6 +453,8 @@ class ParserState(object):
         if len(k) == 1: return True
         if k.startswith('U+'): return True
         if k.startswith('^') and len(k) == 2: return True
+        if k.startswith('^^') and len(k) == 3: return True
+        if k.startswith('^@') and len(k) == 3: return True
         if k.startswith('.k') and len(k) == 3: return True
         if k in ('MDOWN', 'MDRAG', 'MUP', 'M2DOWN', 'M2DRAG', 'M2UP', 'M3DOWN', 'M3DRAG',
                  'M3UP', 'MWDOWN', 'MWUP', 'SP', 'TO'):

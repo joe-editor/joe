@@ -742,6 +742,9 @@ mode,"syntax_debug",rtn,"3",rtn,retype	% % Syntax debug: full (3)
 
  Use U+12345 for specific unicode character
  Use ^@ through ^_ and ^? for Ctrl chars
+ Use ^^A to ^^Z to represent a choice between the upper-case letter, the
+     lower-case letter and the corresponding Ctrl char
+ Use ^@A to ^@Z to do similarly without the Ctrl char
  Use SP for space
  Use a TO b to generate a range of characters
  Use MDOWN, MDRAG, MUP, M2DOWN, M2DRAG, M2UP, M3DOWN, M3DRAG, M3UP for mouse
@@ -790,32 +793,21 @@ mode,"syntax_debug",rtn,"3",rtn,retype	% % Syntax debug: full (3)
 :windows		Bindings common to all windows
 type		U+0 TO U+10FFFF
 abort		^C		Abort window
-abort		^K Q
-abort		^K ^Q
-abort		^K q
+abort		^K ^^Q
  querysave,query,killjoe	^K Q	Query to save files, then exit
  querysave,query,killjoe	^K ^Q
  querysave,query,killjoe	^K q
 arg		^K \		Repeat next command
-explode		^K I		Show all windows or show only one window
-explode		^K ^I
+explode		^K ^^I		Show all windows or show only one window
 explode		^K ^[ [ 1 0 5 ; 5 u
-explode		^K i
-help		^K H		Help menu
-help		^K ^H
-help		^K h
+help		^K ^^H		Help menu
 hnext		^[ .		Next help window
 hprev		^[ ,		Previous help window
-math		^[ m		Calculator
-math		^[ M		Calculator
+math		^[ ^@m		Calculator
  math		^[ ^M		Calculator
  math		^[ ^[ [ 1 0 9 ; 5 u
-msg		^[ h		Display a message
-msg		^[ H		Display a message
-msg		^[ ^H		Display a message
-nextw		^K N		Goto next window
-nextw		^K ^N
-nextw		^K n
+msg		^[ ^^H		Display a message
+nextw		^K ^^N		Goto next window
 pgdn		.kN		Screen down
 pgdn		^V
 pgdn		^[ [ 6 ~
@@ -825,18 +817,14 @@ pgup		^U
 pgup		^[ [ 5 ~
  pgup      ^# T
 play		^K 0 TO 9	Execute macro
-prevw		^K P		Goto previous window
-prevw		^K ^P
-prevw		^K p
+prevw		^K ^^P		Goto previous window
 query		^K ?		Macro query insert
 record		^K [		Record a macro
  retype		^R		Refresh screen
  recenter	^R		Recenter and refresh screen
 rtn		^M		Return
 rtn		^[ [ 1 0 9 ; 5 u
-shell		^K Z		Shell escape
-shell		^K ^Z
-shell		^K z
+shell		^K ^^Z		Shell escape
 stop		^K ]		Stop recording
  Mouse handling
 defmdown	MDOWN		Move the cursor to the mouse location
@@ -1032,66 +1020,39 @@ ltarw,rtarw,begin_marking,prevword!,toggle_marking	^[ [ 1 ; 6 D    Shift-Ctrl-Le
 
  Extra functions not really part of JOE user interface:
 
-delbol		^[ o		Delete to beginning of line
-delbol		^[ ^O		Delete to beginning of line
-dnslide		^[ z		Scroll down one line
-dnslide		^[ Z		Scroll down one line
-dnslide		^[ ^Z		Scroll down one line
+delbol		^[ ^^O		Delete to beginning of line
+dnslide		^[ ^^Z		Scroll down one line
 dnslide,dnslide,dnslide,dnslide		MWDOWN
-compile		^[ c		Compile
-compile		^[ C
-compile		^[ ^C		Compile
-grep_find	^[ g		Grep
-grep_find	^[ G		Grep
-grep_find	^[ ^G		Grep
-execmd		^[ x		Prompt for command to execute
-execmd		^[ X		Prompt for command to execute
-execmd		^[ ^X		Prompt for command to execute
+compile		^[ ^^C		Compile
+grep_find	^[ ^^G		Grep
+execmd		^[ ^^X		Prompt for command to execute
 finish		^[ ^I		Complete word in document
 finish		^[ ^[ [ 1 0 5 ; 5 u
 finish		^[ ^M		Complete word: used to be math
 finish		^[ ^[ [ 1 0 9 ; 5 u
 mwind!,mfit,jump,bol		^[ SP
-isrch		^[ s		Forward incremental search
-isrch		^[ S		Forward incremental search
-isrch		^[ ^S		Forward incremental search
+isrch		^[ ^^S		Forward incremental search
 isrch		^S
 notmod		^[ ~		Not modified
 mwind,mfit,prevw,nxterr		^[ =		To next error
-parserr		^[ e		Parse errors in current buffer
-parserr		^[ E		Parse errors in current buffer
-parserr		^[ ^E		Parse errors in current buffer
+parserr		^[ ^^E		Parse errors in current buffer
 mwind,mfit,prevw,prverr		^[ -		To previous error
-rsrch		^[ r		Backward incremental search
-rsrch		^[ R		Backward incremental search
-rsrch		^[ ^R		Backward incremental search
+rsrch		^[ ^^R		Backward incremental search
 retype,rsrch	^R
 run		^[ !		Run a program in a window
-tomarkb		^[ b		Go to beginning of marked block
-tomarkb		^[ ^B		Go to beginning of marked block
-tomarkk		^[ k		Go to end of marked block
-tomarkk		^[ ^K		Go to end of marked block
-tomarkk		^[ K		Go to end of marked block
-txt		^[ i		Prompt for text and insert it
-txt		^[ I		Prompt for text and insert it
-upslide		^[ w		Scroll up one line
-upslide		^[ ^W		Scroll up one line
-upslide		^[ W		Scroll up one line
+tomarkb		^[ ^^B		Go to beginning of marked block
+tomarkk		^[ ^^K		Go to end of marked block
+txt		^[ ^@i		Prompt for text and insert it
+upslide		^[ ^^W		Scroll up one line
 upslide,upslide,upslide,upslide		MWUP
-yank		^[ y		Undelete text
-yankpop		^[ ^Y		Undelete text
-yank		^[ Y		Undelete text
+yankpop		^[ ^^Y		Undelete text
 
  toggle_marking	^@		Ctrl-space block selection method
 insc		^@		Ctrl-space used to insert a space
 
  bufed		^[ d		Menu of buffers
-nbuf		^[ v		Next buffer
-nbuf		^[ V		Next buffer
-nbuf		^[ ^V		Next buffer
-pbuf		^[ u		Prev buffer
-pbuf		^[ U		Prev buffer
-pbuf		^[ ^U		Prev buffer
+nbuf		^[ ^^V		Next buffer
+pbuf		^[ ^^U		Prev buffer
  query		^[ q		Quoted insert
  byte		^[ n		Goto byte
  col		^[ c		Goto column
@@ -1127,30 +1088,18 @@ backs		^?		Backspace
 backs		^H
 backw		^O		Backspace word
 bknd		^K '		Shell window
-blkcpy		^K C		Copy marked block
-blkcpy		^K ^C
-blkcpy		^K c
-blkdel		^K Y		Delete marked block
-blkdel		^K ^Y
-blkdel		^K y
-blkmove		^K M		Move marked block
-blkmove		^K ^M
+blkcpy		^K ^^C		Copy marked block
+blkdel		^K ^^Y		Delete marked block
+blkmove		^K ^^M		Move marked block
 blkmove		^K ^[ [ 1 0 9 ; 5 u
-blkmove		^K m
-blksave		^K W		Save marked block
-blksave		^K ^W
-blksave		^K w
-bof		^K U		Goto beginning of file
-bof		^K ^U
-bof		^K u
+blksave		^K ^^W		Save marked block
+bof		^K ^^U		Goto beginning of file
  bol		.kh		Goto beginning of line
  bol		^A
  bol      ^# SP A
 home		.kh
 home		^A
-center		^K A		Center line
-center		^K ^A
-center		^K a
+center		^K ^^A		Center line
 crawll		^K <		Pan left
 crawll		^[ <		Pan left
 crawlr		^K >		Pan right
@@ -1166,56 +1115,35 @@ dnarw		^N
 dnarw		^[ O B
 dnarw		^[ [ B
  dnarw		^# B
-edit		^K E		Edit a file
-edit		^K ^E
-edit		^K e
-eof		^K V		Go to end of file
-eof		^K ^V
-eof		^K v
+edit		^K ^^E		Edit a file
+eof		^K ^^V		Go to end of file
 eol		.kH		Go to end of line
 eol		.@7
 eol		^E
-exsave		^K X		Save and exit (prepend with ask,query, if you want it to ask before saving)
-exsave		^K ^X
-exsave		^K x
-ffirst		^K F		Find first
-ffirst		^K ^F
-ffirst		^K f
+exsave		^K ^^X		Save and exit (prepend with ask,query, if you want it to ask before saving)
+ffirst		^K ^^F		Find first
 filt		^K /		Filter block
  finish		^K ^M		Complete text under cursor
  finish		^K ^[ [ 1 0 9 ; 5 u
 fnext		^L		Find next
-fmtblk		^K J		Format paragraphs in block
-fmtblk		^K ^J
-fmtblk		^K j
+fmtblk		^K ^^J		Format paragraphs in block
 gomark		^[ 0 TO 9	Goto bookmark
-groww		^K G		Grow window
-groww		^K ^G
-groww		^K g
+groww		^K ^^G		Grow window
  yank		.kI		Insert previously deleted
 insc		.kI		Insert a space
  mode,"overwrite",rtn	.kI	Toggle insert/overtype
  insc		^@
-insf		^K R		Insert a file
-insf		^K ^R
-insf		^K r
+insf		^K ^^R		Insert a file
 lindent		^K ,		Indent to left
-line		^K L		Goto line no.
-line		^K ^L
-line		^K l
+line		^K ^^L		Goto line no.
 ltarw		.kl		Go left
 ltarw		^B
 ltarw		^[ O D
 ltarw		^[ [ D
  ltarw          ^# D
-macros		^[ d		Dump keyboard macros
-macros		^[ ^D
-markb		^K B		Set beginning of marked block
-markb		^K ^B
-markb		^K b
-markk		^K K		Set end of marked block
-markk		^K ^K
-markk		^K k
+macros		^[ ^^D		Dump keyboard macros
+markb		^K ^^B		Set beginning of marked block
+markk		^K ^^K		Set end of marked block
  mode		^T		Options menu
 menu,"root",rtn	^T
 nextpos		^K =		Goto next position in position history
@@ -1232,19 +1160,11 @@ rtarw		^[ O C
 rtarw		^[ [ C
  rtarw          ^# C
 run		^K !		Run a shell command
-save		^K D		Save file
-save		^K S
-save		^K ^D
-save		^K ^S
-save		^K d
-save		^K s
+save		^K ^^D		Save file
+save		^K ^^S
 setmark		^[ ^[		Set bookmark
-shrinkw		^K T		Shrink window
-shrinkw		^K ^T
-shrinkw		^K t
-splitw		^K O		Split window
-splitw		^K ^O
-splitw		^K o
+shrinkw		^K ^^T		Shrink window
+splitw		^K ^^O		Split window
 stat		^K SP		Show status
 stat		^K ^@		Show status
 tag		^K ;		Tags file search
@@ -1310,9 +1230,7 @@ eolmenu			^[ [ 8 ~		RxVT
 abort		^[ ^[	Why?
 backsmenu	^?
 backsmenu	^H
-bofmenu		^K U
-bofmenu		^K ^U
-bofmenu		^K u
+bofmenu		^K ^^U
 bolmenu		.kh
 bolmenu		^A
 dnarwmenu	.kd
@@ -1321,9 +1239,7 @@ dnarwmenu	^[ [ B
 dnarwmenu	^[ O B
  dnarwmenu ^# B
 dnarwmenu	MWDOWN
-eofmenu		^K V
-eofmenu		^K ^V
-eofmenu		^K v
+eofmenu		^K ^^V
 eolmenu		.kH
 eolmenu		^E
 ltarwmenu	.kl
@@ -1347,9 +1263,7 @@ rtarwmenu	^[ O C
 rtn		SP
 rtn		^I
 rtn		^[ [ 1 0 5 ; 5 u
-rtn		^K H
-rtn		^K h
-rtn		^K ^H
+rtn		^K ^^H
 tabmenu		^I
 tabmenu		^[ [ 1 0 5 ; 5 u
 uparwmenu	.ku

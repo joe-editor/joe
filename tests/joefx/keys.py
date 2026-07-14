@@ -122,7 +122,12 @@ def fromRcFile(keys):
     result = b''
     for k in keys:
         if k[0] == '^':
-            result += toctl(k)
+            if k[1] == '@': # upper or lower
+                result += toctl(k[2])
+            elif k[1] == '^': # upper, lower or ctrl
+                result += toctl('^'+k[2])
+            else: # ctrl
+                result += toctl(k)
         elif k.startswith("U+"):
             result += chr(int(k[2:], 16)).encode('utf-8')
         elif len(k) > 1:
