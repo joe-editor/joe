@@ -351,7 +351,7 @@ static int parseit(struct charmap *map,const char *s, off_t row,
 			if (current_dir && *name != '/') {
 				t = vsncpy(NULL, 0, sv(current_dir));
 				t = vsncpy(sv(t), sv(name));
-				t = canonical(t, CANFLAG_NORESTART);
+				t = canonical(t, CANFLAG_FULLPATH);
 				vsrm(name);
 			} else {
 				t = name;
@@ -646,7 +646,7 @@ int ujump(W *w, int k)
 			fullname = vsncpy(NULL, 0, sv(curd));
 		fullname = vsncpy(sv(fullname), sv(name));
 		vsrm(name);
-		name = canonical(fullname, CANFLAG_NORESTART);
+		name = canonical(fullname, CANFLAG_FULLPATH);
 		if (name && line != -1) {
 			ERROR *er = srcherr(bw, name, line);
 			uprevw(bw->parent, 0);

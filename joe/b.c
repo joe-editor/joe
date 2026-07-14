@@ -2569,15 +2569,42 @@ char *parsens(const char *s, off_t *skip, off_t *amnt, int *binary)
 	return n;
 }
 
+#ifndef __MSDOS__
+#if defined(PATH_MAX) && PATH_MAX >= 4096
+#define JOE_PATH_MAX PATH_MAX
+#elif defined(MAXPATHLEN) && MAXPATHLEN >= 4096
+#define JOE_PATH_MAX MAXPATHLEN
+#else
+#define JOE_PATH_MAX 4096
+#endif
+
+#if _POSIX_VERSION >= 200809L
+static char *joe_realpath(const char *path)
+{
+	char *buf = realpath(path, NULL);
+	char *ret = buf ? vsndup(NULL, 0, sz(buf)) : NULL;
+	free(buf);
+	return ret;
+}
+#else
+static char *joe_realpath(const char *path)
+{
+	char buf[JOE_PATH_MAX];
+	char *ret = realpath(path, buf);
+	return ret ? vsndup(NULL, 0, sz(ret)) : NULL;
+}
+#endif
+#endif
+
 /* Canonicalize file name: do ~ expansion */
 
-char *canonical(char *n, int flags)
+char *canonical(char *n, enum canflags flags)
 {
 	ptrdiff_t y = 0;
 #ifndef __MSDOS__
 	ptrdiff_t x;
-	char *s;
-	if (!(flags & CANFLAG_NORESTART)) {
+	char *s, *filepath;
+	if (flags & CANFLAG_RESTART) {
 		for (y = zlen(n); ; --y)
 			if (y <= 2) {
 				y = 0;
@@ -2587,7 +2614,7 @@ char *canonical(char *n, int flags)
 				break;
 			}
 	}
-	if (n[y] == '~') {
+	if (flags & CANFLAG_TILDE && n[y] == '~') {
 		for (x = y + 1; n[x] && n[x] != '/'; ++x) ;
 		if (n[x] == '/') {
 			if (x == y + 1) {
@@ -2617,6 +2644,32 @@ char *canonical(char *n, int flags)
 			}
 		}
 	}
+
+	if (flags & CANFLAG_FULLPATH) {
+		filepath = joe_realpath(n + y);
+		if (filepath) {
+			vsrm(n);
+			n = filepath;
+		} else {
+			x = zlen(n + y);
+			while (x > y && n[--x] != '/') ; /* chop off leafname */
+			if (x > y) {
+				n[x] = 0;
+				filepath = joe_realpath(n + y);
+				n[x++] = '/';
+			} else {
+				filepath = joe_realpath(".");
+			}
+			if (filepath) {
+				if (filepath[sLen(filepath) - 1] != '/')
+					filepath = vsncpy(sv(filepath), "/", 1);
+				filepath = vsncpy(sv(filepath), sz(n+x));
+				vsrm(n);
+				n = filepath;
+				y = 0;
+			}
+		}
+	}
 #endif
 	if (y) {
 		char *z = vsncpy(NULL, 0, n + y, zlen(n + y));
@@ -2624,6 +2677,12 @@ char *canonical(char *n, int flags)
 		return z;
 	} else
 		return n;
+}
+
+char *canonical_copy(const char *s, enum canflags flags)
+{
+      char *sp = (char *)s;
+      return canonical(vsndup(NULL, 0, sz(sp)), flags);
 }
 
 static off_t euclid(off_t a, off_t b)
@@ -2995,6 +3054,7 @@ opnerr:
 B *bfind(const char *s)
 {
 	B *b;
+	char *s_full = NULL;
 
 	if (!s || !s[0]) {
 		berror = -1;
@@ -3005,18 +3065,29 @@ B *bfind(const char *s)
 		b->er = berror;
 		return b;
 	}
-	for (b = bufs.link.next; b != &bufs; b = b->link.next)
-		if (b->name && !zcmp(s, b->name)) {
+
+	if (*s != '*')
+		s_full = canonical_copy(s, CANFLAG_TILDE | CANFLAG_FULLPATH);
+	for (b = bufs.link.next; b != &bufs; b = b->link.next) {
+		char *n_full = b->name ? canonical_copy(b->name, CANFLAG_TILDE | CANFLAG_FULLPATH) : NULL;
+
+		if (b->name && !zcmp(s_full ? s_full : s, n_full ? n_full : b->name)) {
 			if (!b->orphan)
 				++b->count; /* Assumes caller is going to put this in a window! */
 			else
 				b->orphan = 0;
 			berror = 0;
 			b->internal = 0;
-			return b;
+			if (n_full) vsrm(n_full);
+				goto ret;
 		}
+		if (n_full && n_full != b->name) vsrm(n_full);
+	}
 	b = bload(s); /* Returns count==1 */
+
+ret:
 	b->internal = 0;
+	if (s_full && s_full != s) vsrm(s_full);
 	return b;
 }
 

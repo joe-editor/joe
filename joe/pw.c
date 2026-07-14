@@ -146,10 +146,10 @@ static int rtnpw(W *w)
 	p_goto_bol(bw->cursor);
 	s = brvs(bw->cursor, byte - bw->cursor->byte);
 
-	if (pw->file_prompt & PWFLAG_FILENAME)
-		s = canonical(s, 0); /* Tilde expansion and // restart */
-	else if (pw->file_prompt & PWFLAG_COMMAND)
-		s = canonical(s, CANFLAG_NORESTART); /* Tilde expansion only */
+	if (pw->file_prompt & PWFLAG_COMMAND)
+		s = canonical(s, CANFLAG_TILDE); /* Tilde expansion only */
+	else if (pw->file_prompt & PWFLAG_FILENAME)
+		s = canonical(s, CANFLAG_RESTART | CANFLAG_TILDE); /* Tilde expansion and // restart */
 
 	/* Save text into history buffer */
 	if (pw->hist) {

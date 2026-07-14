@@ -612,7 +612,7 @@ static char *open_configrc_file(JFILE **result, const char *sys, const char *pre
 		/* Absolute path given, don't add suffix (too confusing when user knows it's a file) */
 		vsrm(fullpath);
 		fullpath = vsncpy(NULL, 0, sz(name));
-		fullpath = canonical(fullpath, 0);
+		fullpath = canonical(fullpath, CANFLAG_RESTART | CANFLAG_TILDE | CANFLAG_FULLPATH);
 		f = jfopen(fullpath, "r");
 		if (f) {
 			*result = f;
