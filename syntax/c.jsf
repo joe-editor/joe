@@ -30,16 +30,30 @@
 
 # Within a state, define transitions (jumps) to other states.  Each
 # jump has the form: <character-list> <target-state> [<option>s]
-
-# There are three ways to specify <character-list>s: * for any character not
-# otherwise specified, % or & to match the character in the delimiter match
-# buffer (use % for an exact match, or & for an opposite match- for example,
-# < matches >) or a literal list of characters within quotes (ranges and
-# escape sequences allowed).  When the next character matches any in the
-# list, a jump to the target-state is taken and the character is eaten (we
-# advance to the next character of the file to be colored).
 #
-# The * transition should be the first transition specified in the state.
+# There are three special ways to specify <character-list>s:
+#   *      for any character not otherwise specified
+#   ~      for any character not otherwise specified, but with match rules
+#          (several may be present; these are evaluated in reverse order)
+#   % or & to match the character in the delimiter match buffer
+#          - use % for an exact match
+#          - use & for an opposite match, e.g. < matches >
+#
+# The ordinary way is to put the characters to be matched within quotation
+# marks, e.g. "a" or "abcd".  Ranges are allowed, e.g.  "a-d" (same as
+# "abcd"), as are escape sequences, e.g.  "\n" for the line-feed character.
+# When the next character matches any in the list, a jump to the
+# target-state is taken and the character is eaten (we advance to the next
+# character of the file to be colored).
+#
+# The * transition should be the first transition specified in the state and
+# should normally be present.  It is expected to be present if any ~
+# transitions are specified in the same state.
+#
+# Later transitions will replace earlier transitions which are of the same
+# type (*; % or &; character lists, for the same character).  However,
+# multiple ~ transitions may be listed; these are evaluated in reverse
+# order.
 #
 # There are several options:
 #   noeat     	do not eat the character, instead feed it to the next state
@@ -54,6 +68,42 @@
 #   mark	Mark beginning of a region with current position.
 #
 #   markend	Mark end of region.
+#
+#   sset...	Set state bit(s). This does not clear any bits.
+#   sclear...	Clear state bit(s).
+#   sflip...	Toggle state bit(s).
+#   sifall...	Match rule: all tested state bits must be set.
+#   sifany...	Match rule: at least one tested state bit must be set.
+#   sifnone...	Match rule: all tested state bits must be clear.
+#
+#		These commands take a 32-bit mask word or a comma-separated
+#		list of bit numbers. E.g. these all set the same four bits:
+#		     sset=0xF000
+#		     set@12,13,14,15
+#                    sset@12-15
+#
+#               sclear & sflip, without a parameter, act as sclear=-1 and
+#               sflip=-1 respectively.
+#
+#		Additionally, the match rules take "~all", "~any", "~none"
+#		or "~other".  The first three are evaluated to the inverse
+#		of the already-parsed value (for this rule) of the
+#		corresponding stest command; "~other" uses the common bits
+#		from the other two stest commands.
+#
+#		So to test that the flags word is exactly 0xF000:
+#		     sifall=0xF000 sifnone=0xFFFF0FFF
+#		     sifall=0xF000 sifnone~all
+#
+#		Or all of bits 12-15, any of bits 0-3 but no others:
+#		     sifall=0xF000 sifany=15  sifnone=0xFFFF0FF0
+#		     sifall=0xF000 sifany=0xF sifnone~other
+#
+#		NOTE: you should normally use the match rules only on ~
+#		transitions because for character matching, only the last
+#		transition defined in the state for any given character can
+#		match tha character.  If it fails due to a failed match
+#		rule, the default * transition will be chosen instead.
 #
 #   recolormark Recolor all of the characters in the marked region with
 #               the color of the target-state.  If markend is not given,
@@ -105,7 +155,7 @@
 #
 #   (all of the options above are allowed except "strings", "istrings" and "noeat".  noeat is
 #    always implied after a matched string).
-#
+
 # Weirdness: only states have colors, not transitions.  This means that you
 # sometimes have to make dummy states with '* next-state noeat' just to get
 # a color specification.
@@ -127,6 +177,11 @@
 #
 # The subroutine itself returns to the caller like this:
 #       "\""	whatever  return
+#
+# The state bits word is saved when calling a subroutine and is normally
+# restored on return.  It can be returned by using 'returnstate' instead of
+# 'return':
+#	"\""	whatever  returnstate
 #
 # If we're in a subroutine, the return is made.  Otherwise the jump
 # to 'whatever' is made.
@@ -207,14 +262,26 @@
 =Control
 
 =IfZero		+Comment
+=IfOne		+Bad
 
-:reset Idle
+:init Idle
+	*		init		noeat call=.main() sclear
+
+.subr main
+:init Idle
+	*		restart		noeat sclear@0,1
+
+:restart Idle
 	*		first		noeat
-	" \t"		reset
+	" \t"		restart
 
 :first Idle
 	*		idle		noeat
-	"#"		pre		mark
+	"#"		pre_ret		mark
+
+:pre_ret Preproc
+	*		pre		noeat
+	~		NULL		noeat return sifall@2
 
 :pre Preproc
 	*		preproc		noeat
@@ -241,131 +308,32 @@ done
 :precond Precond
 	*		preproc		noeat
 
-# handle top-level "#if 0" & "#elif 0"
 :preifzero Preproc
 	*		preproc		noeat
 	" \t"		preifzero
-	"0"		preproc		call=.ifzero()
-
-# handle "#if 0" & "#elif 0", accounting for nested #if* blocks
-# FIXME: check what directly follows the '0'?
-.subr ifzero
-:ifzero IfZero
-	*		ifzero
-	"\n"		ifzero_maybe_pre
-
-:ifzero_maybe_pre IfZero
-	*		ifzero		noeat
-	" \t"		ifzero_maybe_pre
-	"#"		ifzero_pre	mark
-
-:ifzero_pre IfZero
-	*		ifzero		noeat
-	" \t"		ifzero_pre
-	"i"		ifzero_preif	noeat buffer
-	"e"		ifzero_preend	noeat buffer
-
-:ifzero_preif IfZero
-	*		ifzero		noeat strings
-	"if"		ifzero_prenest
-	"ifdef"		ifzero_prenest
-	"ifndef"	ifzero_prenest
-done
-	"a-z"		ifzero_preif
-
-# recursion on nested #if* (but not #elif*)
-:ifzero_prenest IfZero
-	*		ifzero		noeat call=.ifzero(nested)
-
-:ifzero_preend IfZero
-.ifdef nested # only return on #endif
-	*		ifzero		noeat strings
-	"endif"		ifzero_predone
-	"else"		ifzero_preelse
-	"elif"		ifzero_preelse
-	"elifdef"	ifzero_preelse
-	"elifndef"	ifzero_preelse
-done
-.else # top-level, so return on #else* or #endif, but check for #elif 0
-	*		ifzero		noeat strings
-	"endif"		ifzero_predone
-	"else"		ifzero_predone
-	"elif"		ifzero_preifzero	markend recolormark
-	"elifdef"	ifzero_predone
-	"elifndef"	ifzero_predone
-done
-.endif
-	"a-z"		ifzero_preend
-
-# handle #elif 0
-:ifzero_preifzero Preproc
-	*		ifzero_predone	noeat
-	" \t"		ifzero_preifzero
-	"0"		ifzero
-
-# nested #else*; ignore it
-:ifzero_preelse IfZero
-	*		ifzero		noeat
-
-# any #endif or a top-level #else*
-:ifzero_predone Preproc
-	*		NULL		noeat markend recolormark return
-.end
-
-.subr inc_file
-:preinc Preproc
-	*		preinc
-	" \t"		preinc_ws
-	"\n"		NULL		noeat return
-
-:preinc_ws Preproc
-	*		preinc_trail	noeat recolor=-1
-	"\c"		preinc_ident	recolor=-1 # e.g. #embed __FILE__
-	" \t"		preinc_ws
-	"\""		preinc_local	recolor=-1
-	"<"		preinc_system	recolor=-1
-	"\n"		NULL		noeat return
-
-:preinc_local IncLocal string
-	*		preinc_local
-	"\""		preinc_trail
-	"\n"		NULL		noeat return
-
-:preinc_system IncSystem string
-	*		preinc_system
-	">"		preinc_trail
-	"\n"		NULL		noeat return
-
-:preinc_ident	Idle
-	*		preinc_trail	noeat
-	"\c"		preinc_ident
-
-:preinc_trail	Idle
-	*		NULL		noeat return
-	" \t"		preinc_trail
-	"\n"		NULL		noeat return
-.end
+	"0"		preproc		call=.ifzero(-one)
+	"1"		preproc		call=.ifzero(one)
 
 :preinc_end	Bad
 	*		preinc_end
 	"\\"		preinc_end_cont
 	"/"		preinc_end	call=.slash()
-	"\n"		NULL		noeat return
+	"\n"		restart		noeat
 
 :preinc_end_cont Bad
 	*		preinc_end
 
 :preembed_params	Idle
-	*		idle	noeat
+	*		restart		noeat call=.ccode()
 
 :prebad	Bad
 	*		prebad
-	"\n"		reset
+	"\n"		restart
 
 :predef Preproc
 	*		predef
 	" \t"		predef_ws
-	"\n"		reset
+	"\n"		restart
 
 :predef_ws Preproc
 	*		prebad		recolor=-1
@@ -378,7 +346,7 @@ done
 
 :preproc Preproc
 	*		preproc
-	"\n"		reset
+	"\n"		restart
 	"\\"		preproc_cont
 	"/"		preproc		call=.slash()
 
@@ -390,7 +358,7 @@ done
 
 :idle Idle
 	*		idle
-	"\n"		reset
+	"\n"		restart
 	"/"		idle		call=.slash()
 	"0"		first_digit	recolor=-1
 	"1-9"		decimal		recolor=-1
@@ -410,28 +378,6 @@ done
 
 :control Control
 	*	idle	noeat
-
-.subr slash
-:slash Comment comment
-	*		NULL		noeat recolor=-2 return	# Not sure about this
-	"*"		comment		recolor=-2
-	"/"		line_comment	recolor=-2
-
-:comment Comment comment
-	*		comment
-	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
-	"*"		maybe_end_comment
-
-:maybe_end_comment Comment comment
-	*		comment
-	"/"		NULL		return
-	"*"		maybe_end_comment
-
-:line_comment Comment comment
-	*		line_comment
-	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
-	"\n"		NULL		noeat return
-.end
 
 :first_digit Number
 	*		idle	noeat
@@ -505,13 +451,13 @@ done
 :string_control StringEscape string
 	*		string
 	"\""		string noeat
-	"\n"		reset
+	"\n"		restart
 	"\\"		string_escape	recolor=-1
 	"0-9.\-+ #hjILtz$"	string_control
 
 :char Character string
 	*		char
-	"\n"		reset
+	"\n"		restart
 	"'"		idle
 	"\\"		char_escape	recolor=-1
 
@@ -675,3 +621,317 @@ done
 
 :struct Structure
 	*	idle	noeat
+.end
+
+.subr eat_if01_line
+:eat Bad
+	*	eat
+	"/"	eat	call=.slash()
+	"\\"	eat_cont
+	"\n"	NULL	return noeat
+:eat_cont Bad
+	*	eat
+.end
+
+.subr eat_if_line
+:eat Preproc
+	*	eat
+	"/"	eat	call=.slash()
+	"\\"	eat_cont
+	"\n"	NULL	return noeat
+:eat_cont Bad
+	*	eat
+.end
+
+.subr eat_ifzero_line
+:eat IfZero
+	*	eat
+	"\\"	eat_cont
+	"\n"	NULL	return noeat
+:eat_cont Bad
+	*	eat
+.end
+
+# handle "#if 0" & "#elif 0", accounting for nested #if* blocks
+# flags word:
+#	b0 = seen #if 0, #elif 0 or a corresponding #else
+#	b1 = seen #if 1, #elif 1 or a corresponding #else
+#	b2 = exit .main for preprocessor handling
+
+.subr ifzero
+.ifdef one
+:initial IfZero
+	*		ifone		noeat sclear
+.else
+:initial IfZero
+	*		ifzero		noeat sclear
+.endif
+
+:ifzero IfZero
+	*		ifzero_main	noeat call=.eat_if01_line() sset@0
+
+:ifzero_main IfZero
+	*		ifzero_main
+	"\\"		ifzero_eatesc
+	"\n"		ifzero_maybe_pre
+
+:ifzero_eatesc IfZero
+	*		ifzero_main
+
+:ifzero_maybe_pre Idle
+	*		ifzero_main	noeat
+	" \t"		ifzero_maybe_pre
+	"#"		ifzero_pre	mark recolor=-1
+
+:ifzero_pre IfZero
+	*		ifzero_main	noeat
+	" \t"		ifzero_pre
+	"i"		ifzero_preif	noeat buffer
+	"e"		ifzero_preend	noeat buffer
+
+:ifzero_preif IfZero
+	*		ifzero_main	noeat strings
+	"if"		ifzero_prenest
+	"ifdef"		ifzero_prenest
+	"ifndef"	ifzero_prenest
+done
+	"a-z"		ifzero_preif
+
+# recursion on nested #if* (but not #elif*)
+:ifzero_prenest IfZero
+	*		ifzero		noeat call=.ifignored
+
+:ifzero_preend IfZero
+# only return on #endif, but check for #elif
+	*		ifzero_main	noeat strings
+	"endif"		ifzero_predone
+	"else"		ifzero_one		recolormark
+	"elif"		ifzero_preifzero	recolormark
+	"elifdef"	ifzero_preelse		recolormark call=.eat_if_line()
+	"elifndef"	ifzero_preelse		recolormark call=.eat_if_line()
+done
+	"a-z"		ifzero_preend
+
+# handle #elif [01]
+:ifzero_preifzero Preproc
+	*		ifzero_preelse	noeat call=.eat_if_line()
+	" \t"		ifzero_preifzero
+	"0"		ifzero
+	"1"		ifzero_one
+
+# #else, #elifdef, #elif [not 0 or 1] etc.
+:ifzero_preelse Preproc
+	*		ifzero		noeat
+	~		ifsomething	noeat call=.eat_if_line() sifnone@1
+
+:ifzero_predone Preproc
+	*		NULL		noeat markend recolormark return
+
+:ifzero_one Preproc
+	*		ifzero		noeat
+	~		ifone		noeat sifnone@1
+
+:ifsomething Preproc
+	*		ifzero		noeat
+	~		ifone_main	noeat sifnone@1
+
+:ifone IfOne
+	*		ifone_main	noeat call=.eat_if01_line() sset@1
+
+:ifone_main IfOne
+	*		i1pre		noeat call=.main() sset@2
+
+:ifone_zero Preproc
+	*		ifzero_preelse	noeat call=.eat_if_line()
+	" \t"		ifone_zero
+	"0"		ifzero		call=.eat_if01_line()
+	"1"		ifzero_one	call=.eat_if01_line()
+
+:ifone_preelse Preproc
+	*		ifzero		noeat
+
+:ifone_predone Preproc
+	*		NULL		noeat markend recolormark return
+
+:ifone_zero Preproc
+	*		ifzero		noeat
+
+:i1pre Preproc
+	*		i1preproc		noeat
+	" \t"		i1pre
+	"a-z"		i1preident		recolor=-1 buffer
+
+# More or less duplicated from code above (:preindent to :idle).
+# A few differences in where things lead, though.
+# TODO: find a good way to deduplicate this
+
+:i1preident Preproc
+	*		i1preproc		noeat markend recolormark strings
+	"define"	i1predef		markend recolormark
+	"include"	i1preinc_end		markend recolormark call=.inc_file()
+	"embed"		i1preembed_params	markend recolormark call=.inc_file()
+	"if"		i1preifzero		markend recolormark
+	"ifdef"		i1precond		markend recolormark
+	"ifndef"	i1precond		markend recolormark
+	"else"		ifone_preelse		markend recolormark
+	"elif"		i1zero			markend recolormark
+	"endif"		ifone_predone		markend recolormark
+	"undef"		i1predef		markend recolormark
+	"elifdef"	ifone_preelse		markend recolormark call=.eat_if_line() # C++23
+	"elifndef"	ifone_preelse		markend recolormark call=.eat_if_line() # C++23
+done
+	"a-z"		i1preident
+
+:i1precond Precond
+	*		i1preproc		noeat
+
+:i1preifzero Preproc
+	*		i1preproc		noeat
+	" \t"		i1preifzero
+	"0"		i1preproc		call=.ifzero(-one)
+	"1"		i1preproc		call=.ifzero(one)
+
+:i1zero Preproc #Debug
+	*		ifzero_preelse	noeat call=.eat_if_line()
+	" \t"		i1zero
+	"0"		ifzero		call=.eat_if01_line()
+	"1"		ifzero_one	call=.eat_if01_line()
+
+:i1preinc_end	Bad
+	*		i1preinc_end
+	"\\"		i1preinc_end_cont
+	"/"		i1preinc_end		call=.slash()
+	"\n"		ifone_main		noeat
+
+:i1preinc_end_cont Bad
+	*		i1preinc_end
+
+:i1preembed_params	Idle
+	*		ifone_main		noeat
+
+:i1prebad	Bad
+	*		i1prebad
+	"\n"		ifone_main
+
+:i1predef Preproc
+	*		i1predef
+	" \t"		i1predef_ws
+	"\n"		ifone_main
+
+:i1predef_ws Preproc
+	*		i1prebad		recolor=-1
+	" \t"		i1predef_ws
+	"\c"		i1predef_ident		recolor=-1
+
+:i1predef_ident Define
+	*		idle			noeat
+	"\c"		i1predef_ident
+
+:i1preproc Preproc
+	*		i1preproc
+	"\n"		ifone_main
+	"\\"		i1preproc_cont
+	"/"		i1preproc		call=.slash()
+
+:i1preproc_cont Preproc
+	*		i1preproc_cont
+	"\n"		i1preproc
+.end
+
+.subr ifignored
+:ifignored IfZero
+	*		ifignored_main		noeat call=.eat_ifzero_line()
+
+:ifignored_main IfZero
+	*		ifignored_main
+	"\n"		ifignored_maybe_pre
+
+:ifignored_maybe_pre IfZero
+	*		ifignored_main		noeat
+	" \t"		ifignored_maybe_pre
+	"#"		ifignored_pre		mark
+
+:ifignored_pre IfZero
+	*		ifignored_main		noeat
+	" \t"		ifignored_pre
+	"i"		ifignored_preif		noeat buffer
+	"e"		ifignored_preend	noeat buffer
+
+:ifignored_preif IfZero
+	*		ifignored_main		noeat strings
+	"if"		ifignored_prenest
+	"ifdef"		ifignored_prenest
+	"ifndef"	ifignored_prenest
+done
+	"a-z"		ifignored_preif
+
+# recursion on nested #if* (but not #elif*)
+:ifignored_prenest IfZero
+	*		ifignored		noeat call=.ifignored()
+
+:ifignored_preend IfZero
+	*		ifignored_main		noeat strings
+	"endif"		ifignored_predone	call=.eat_ifzero_line()
+done
+	"a-z"		ifignored_preend
+
+# any #endif or a top-level #else*
+:ifignored_predone Preproc
+	*		NULL		noeat markend recolormark return
+.end
+
+.subr inc_file
+:preinc Preproc
+	*		preinc
+	" \t"		preinc_ws
+	"\n"		NULL		noeat return
+
+:preinc_ws Preproc
+	*		preinc_trail	noeat recolor=-1
+	"\c"		preinc_ident	recolor=-1 # e.g. #embed __FILE__
+	" \t"		preinc_ws
+	"\""		preinc_local	recolor=-1
+	"<"		preinc_system	recolor=-1
+	"\n"		NULL		noeat return
+
+:preinc_local IncLocal string
+	*		preinc_local
+	"\""		preinc_trail
+	"\n"		NULL		noeat return
+
+:preinc_system IncSystem string
+	*		preinc_system
+	">"		preinc_trail
+	"\n"		NULL		noeat return
+
+:preinc_ident	Idle
+	*		preinc_trail	noeat
+	"\c"		preinc_ident
+
+:preinc_trail	Idle
+	*		NULL		noeat return
+	" \t"		preinc_trail
+	"\n"		NULL		noeat return
+.end
+
+.subr slash
+:slash Comment comment
+	*		NULL		noeat recolor=-2 return	# Not sure about this
+	"*"		comment		recolor=-2
+	"/"		line_comment	recolor=-2
+
+:comment Comment comment
+	*		comment
+	"BFHNTX"	comment		noeat call=comment_todo.comment_todo()
+	"*"		maybe_end_comment
+
+:maybe_end_comment Comment comment
+	*		comment
+	"/"		NULL		return
+	"*"		maybe_end_comment
+
+:line_comment Comment comment
+	*		line_comment
+	"BFHNTX"	line_comment	noeat call=comment_todo.comment_todo()
+	"\n"		NULL		noeat return
+.end

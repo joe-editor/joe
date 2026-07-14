@@ -14,12 +14,17 @@ struct high_state {
 	ptrdiff_t no;			/* State number */
 	int name;			/* Highlight state name (index into state_names) */
 	int color;			/* Color for this state */
+	int statebits;			/* For use in the state machine */
+
+	int test_count;			/* number of state word tests */
+	struct high_cmd *dflt;		/* Defaults for no match (if only one) */
+	struct high_cmd **test_states;	/* For state word tests */
+	struct high_cmd *same_delim;	/* Same delimiter */
+	struct high_cmd *delim;		/* Matching delimiter */
+
 	struct color_def *colorp;	/* Mapped color definition */
 
 	struct Rtree rtree;		/* Character map (character ->struct high_cmd *) */
-	struct high_cmd *dflt;		/* Default for no match */
-	struct high_cmd *same_delim;	/* Same delimiter */
-	struct high_cmd *delim;		/* Matching delimiter */
 };
 
 /* Parameter list */
@@ -46,7 +51,14 @@ struct high_cmd {
 	bool stop_mark;			/* Set to end marked area excluding this char */
 	bool recolor_mark;		/* Set to recolor marked area with new state */
 	bool rtn;			/* Set to return */
+	bool keep_statebits;		/* Set to preserve statebits if returning */
 	bool reset;			/* Set to reset the call stack */
+
+	int stateflip, statekeep;	/* Mask words for altering statebits */
+	int state_test_all;		/* statebits test words, used if non-zero, fail match if false */
+	int state_test_any;
+	int state_test_none;
+
 	ptrdiff_t recolor;		/* No. chars to recolor if <0. */
 	struct high_state *new_state;	/* The new state */
 	ZHASH *keywords;		/* Hash table of keywords */
@@ -62,6 +74,7 @@ struct high_frame {
 	struct high_frame *sibling;		/* Caller's next callee's frame */
 	struct high_syntax *syntax;		/* Current syntax subroutine */
 	struct high_state *return_state;	/* Return state in the caller's subroutine */
+	int statebits;				/* Saved data */
 };
 
 /* delimiter stack frame */
@@ -105,10 +118,13 @@ struct state_debug_data {
 extern attr_data *attr_buf;
 extern struct state_debug_data *syndebug_buf;
 
-#define clear_state(s) (((s)->saved_s = 0), ((s)->state = 0), ((s)->stack = 0), ((s)->delim_stack = 0))
-#define invalidate_state(s) (((s)->state = -1), ((s)->saved_s = 0), ((s)->stack = 0), ((s)->delim_stack = 0))
+#define clear_state(s) (((s)->saved_s = 0), ((s)->state = 0), ((s)->stack = 0), ((s)->delim_stack = 0), ((s)->statebits = 0))
+#define invalidate_state(s) (((s)->state = -1), ((s)->saved_s = 0), ((s)->stack = 0), ((s)->delim_stack = 0), ((s)->statebits = 0))
 #define move_state(to,from) (*(to)= *(from))
+/*
 #define eq_state(x,y) ((x)->state == (y)->state && (x)->stack == (y)->stack && (x)->delim_stack == (y)->delim_stack && (x)->saved_s == (y)->saved_s)
+*/
+#define eq_state(x,y) (0)
 
 extern struct high_syntax *syntax_list;
 

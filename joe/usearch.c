@@ -407,7 +407,7 @@ static SRCH *setmark(SRCH *srch)
 	return srch;
 }
 
-SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, int all, int regex)
+SRCH *mksrch(char *pattern, char *replacement, int ignore, int backwards, int repeat, int replace, int rest, enum searches all, int regex)
 {
 	SRCH *srch = (SRCH *) joe_malloc(SIZEOF(SRCH));
 	int x;
@@ -727,9 +727,9 @@ static int set_options(W *w, char *s, void *obj, int *notify)
 	while (*t) {
 		int c = fwrd_c(locale_map, &t, NULL);
 		if (yncheck(all_key, c))
-			srch->all = 1;
+			srch->all = SEARCH_ALL;
 		else if (yncheck(list_key, c))
-			srch->all = 2;
+			srch->all = SEARCH_ERROR_LIST;
 		else if (yncheck(replace_key, c))
 			srch->replace = 1;
 		else if (yncheck(backwards_key, c))
@@ -869,7 +869,7 @@ int dofirst(BW *bw, int back, int repl, char *hint)
 			prgetc(bw->cursor);
 		return urtn(bw->parent, -1);
 	}
-	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0, 0, std_regex);
+	srch = mksrch(NULL, NULL, 0, back, -1, repl, 0, SEARCH_ONE, std_regex);
 	srch->addr = bw->cursor->byte;
 	srch->wrap_p = pdup(bw->cursor, "dofirst");
 	srch->wrap_p->owner = &srch->wrap_p;
@@ -1140,9 +1140,9 @@ static int fnext(BW *bw, SRCH *srch)
 		sta = searchb(bw, srch, bw->cursor);
 	else
 		sta = searchf(bw, srch, bw->cursor);
-	if (!sta && srch->all) {
+	if (!sta && srch->all != SEARCH_ONE) {
 		B *b;
-		if (srch->all == 2)
+		if (srch->all == SEARCH_ERROR_LIST)
 			b = beafter(srch->current);
 		else {
 			berror = 0;
@@ -1378,6 +1378,6 @@ void load_srch(FILE *f)
 			parse_int(&p,&block_restrict);
 		}
 	}
-	globalsrch = mksrch(pattern,replacement,ignore,backwards,-1,replace,0,0,regex);
+	globalsrch = mksrch(pattern,replacement,ignore,backwards,-1,replace,0,SEARCH_ONE,regex);
 	globalsrch->block_restrict = block_restrict;
 }

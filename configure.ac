@@ -233,6 +233,8 @@ AX_GCC_FUNC_ATTRIBUTE([fallthrough])
 AX_GCC_FUNC_ATTRIBUTE([malloc])
 AX_GCC_FUNC_ATTRIBUTE([malloc_args])
 AX_GCC_FUNC_ATTRIBUTE([alloc_size])
+AX_GCC_FUNC_ATTRIBUTE([nonnull])
+AX_GCC_FUNC_ATTRIBUTE([returns_nonnull])
 
 AC_CONFIG_FILES([Makefile joe/Makefile joe/util/Makefile rc/Makefile
 man/Makefile man/ru/Makefile syntax/Makefile po/Makefile colors/Makefile
