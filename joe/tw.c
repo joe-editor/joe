@@ -739,7 +739,7 @@ int abortit(W *w, int k)
 			/* FIXME: Shouldn't we wabort() and wcreate here to kill
 			   any prompt windows? */
 
-			bwrm(bw);
+			bwrm(&bw);
 			w->object = (void *) (bw = bwmk(w, b, 0));
 			wredraw(bw->parent);
 			bw->object = object;
@@ -747,7 +747,7 @@ int abortit(W *w, int k)
 			bw->cursor->xcol = piscol(bw->cursor);
 			return 0;
 		}
-	bwrm(bw);
+	bwrm(&bw);
 	vsrm(tw->stalin);
 	joe_free(tw);
 	w->object = NULL;
@@ -896,7 +896,7 @@ int uabortbuf(W *w, int k)
 	if ((b = borphan()) != NULL) {
 		void *object = bw->object;
 
-		bwrm(bw);
+		bwrm(&bw);
 		w->object = (void *) (bw = bwmk(w, b, 0));
 		wredraw(bw->parent);
 		bw->object = object;

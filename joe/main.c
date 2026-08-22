@@ -211,6 +211,11 @@ int edloop(int flg)
 			ret = exemac(type_backtick, NO_MORE_DATA);
 		}
 
+		if (maint->curwin && maint->curwin->watom->what & (TYPETW | TYPEPW))
+			bw = (BW *)maint->curwin->object;
+		else
+			bw = 0;
+
 		/* exemac could have invalidated bw, but hopefully not from paste */
 		if (bw && !bw->pasting) exemac_pasting(0); /* okay, done for now */
 
@@ -295,7 +300,7 @@ int ushowlog(W *w, int k)
 		newbw = (BW *) maint->curwin->object;
 		object = newbw->object;
 		w = newbw->parent;
-		bwrm(newbw);
+		bwrm(&newbw);
 		w->object = (void *) (newbw = bwmk(w, copied, 0));
 		wredraw(newbw->parent);
 		newbw->object = object;

@@ -602,7 +602,7 @@ static int doedit1(W *w,int c,void *obj, int *notify)
 		}
 		object = bw->object;
 		w = bw->parent;
-		bwrm(bw);
+		bwrm(&bw);
 		w->object = (void *) (bw = bwmk(w, b, 0));
 		/* Propagate current directory to newly loaded buffer */
 		if (!b->current_dir)
@@ -659,7 +659,7 @@ static int doedit1(W *w,int c,void *obj, int *notify)
 		}
 		object = bw->object;
 		w = bw->parent;
-		bwrm(bw);
+		bwrm(&bw);
 		w->object = (void *) (bw = bwmk(w, b, 0));
 		wredraw(bw->parent);
 		bw->object = object;
@@ -824,7 +824,7 @@ static int doscratch(W *w, char *s, void *obj, int *notify)
 	}
 	object = bw->object;
 	w = bw->parent;
-	bwrm(bw);
+	bwrm(&bw);
 	w->object = (void *) (bw = bwmk(w, b, 0));
 	wredraw(bw->parent);
 	bw->object = object;
@@ -882,7 +882,7 @@ static int doscratchpush(W *w, char *s, void *obj, int *notify)
 	}
 	object = bw->object;
 	w = bw->parent;
-	bwrm(bw);
+	bwrm(&bw);
 	w->object = (void *) (bw = bwmk(w, b, 0));
 	wredraw(bw->parent);
 	bw->object = object;
@@ -956,7 +956,7 @@ static int dorepl(W *w, char *s, void *obj, int *notify)
 	if (bw->b->count == 1 && (bw->b->changed || bw->b->name)) {
 		orphit(bw);
 	}
-	bwrm(bw);
+	bwrm(&bw);
 	w->object = (void *) (bw = bwmk(w, b, 0));
 	/* Propagate current directory into new buffer */
 	if (!b->current_dir)
@@ -999,7 +999,7 @@ int get_buffer_in_window(BW *bw, B *b)
 	if (bw->b->count == 1) {
 		orphit(bw);
 	}
-	bwrm(bw);
+	bwrm(&bw);
 	w->object = (void *) (bw = bwmk(w, b, 0));
 	wredraw(bw->parent);
 	bw->object = object;
@@ -1166,14 +1166,14 @@ static int dolose(W *w, int c, void *object, int *notify)
 					/* FIXME: Shouldn't we wabort() and wcreate here to kill
 					   any prompt windows? */
 
-					bwrm(tbw);
+					bwrm(&tbw);
 					w->object = (void *) (tbw = bwmk(w, new_b, 0));
 					wredraw(w);
 					tbw->object = obj;
 				} else {
 					BW *tbw = (BW *)w->object;
 					void *obj = tbw->object;
-					bwrm(tbw);
+					bwrm(&tbw);
 					w->object = (void *) (tbw = bwmk(w, bfind(""), 0));
 					wredraw(w);
 					tbw->object = obj;

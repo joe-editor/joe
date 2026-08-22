@@ -1278,8 +1278,13 @@ BW *vtmaster(Screen *t, B *b)
 	return m;
 }
 
-void bwrm(BW *w)
+void bwrm(BW **pw)
 {
+	if (pw == NULL || *pw == NULL) {
+		return;
+	}
+
+	BW *w = *pw;
 	if (w->b == errbuf && w->b->count == 1) {
 		/* Do not lose message buffer */
 		orphit(w);
@@ -1289,6 +1294,7 @@ void bwrm(BW *w)
 	prm(w->cursor);
 	brm(w->b);
 	joe_free(w);
+	*pw = NULL;
 }
 
 char *ustat_line;
