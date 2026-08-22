@@ -295,7 +295,7 @@ int ushowlog(W *w, int k)
 		newbw = (BW *) maint->curwin->object;
 		object = newbw->object;
 		w = newbw->parent;
-		bwrm(newbw);
+		bwrm(&newbw);
 		w->object = (void *) (newbw = bwmk(w, copied, 0));
 		wredraw(newbw->parent);
 		newbw->object = object;
