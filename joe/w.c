@@ -707,6 +707,10 @@ static ptrdiff_t doabort(W *w, int *ret)
 		if (w->notify)
 			*w->notify = 1;
 	}
+	if (w->t->curwin == w)
+		w->t->curwin = NULL;
+	if (w->t->topwin == w)
+		w->t->topwin = NULL;
 	rmkbd(w->kbd);
 	windie(w);
 	joe_free(w);
