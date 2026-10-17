@@ -1295,6 +1295,14 @@ Wherever JOE expects you to enter a file name, whether on the command line or in
 To read or write data to or from a shell command\. For example, use \fBjoe \'!ls\'\fR to get a copy of your directory listing to edit or from within the editor use \fB^K D !mail jhallen@world\.std\.com\fR to send the file being edited to me\.
 .
 .IP "\(bu" 4
+!!command
+.
+.IP "" 0
+.
+.P
+Like \fB!command\fR, but each line of the command\'s output is parsed for a file name and optional line number (\fBfile\fR or \fBfile:line:text\fR) and the named file is opened\.
+.
+.IP "\(bu" 4
 >>filename
 .
 .IP "" 0

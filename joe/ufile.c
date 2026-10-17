@@ -688,9 +688,42 @@ static int doedit1(W *w,int c,void *obj, int *notify)
 	}
 }
 
+/* Run a shell command and edit the file named on each line of its output */
+
+static int dojumpcmd(W *w, const char *s, int *notify)
+{
+	B *b = bload(s + 1);
+	P *p = pdup(b->bof, "dojumpcmd");
+
+	while (p->byte < b->eof->byte) {
+		P *q = pdup(p, "dojumpcmd");
+		char *line;
+
+		p_goto_eol(q);
+		line = brvs(p, q->byte - p->byte);
+		prm(q);
+		if (line && line[0])
+			jump_to_line((BW *)maint->curwin->object, line);
+		vsrm(line);
+		pnextl(p);
+	}
+	prm(p);
+	brm(b);
+	if (notify)
+		*notify = 1;
+	return 0;
+}
+
 static int doedit(W *w, char *s, void *obj, int *notify)
 {
 	B *b;
+
+	if (s[0] == '!' && s[1] == '!') {
+		int rtn = dojumpcmd(w, s, notify);
+
+		vsrm(s);
+		return rtn;
+	}
 
 	b = bcheck_loaded(s);
 

@@ -259,6 +259,7 @@ const char *const builtins[]=
 		" Hit TAB to complete names.  Use up / down arrow keys to traverse history.   \\| \n"
 		" Special file names:                                                         \\| \n"
 		"      \\b!\\bcommand                 Pipe in/out of a shell command                \\| \n"
+		"      \\b!!\\bcommand                Edit the file named on each output line       \\| \n"
 		"      \\b>>\\bfilename               Append to a file                              \\| \n"
 		"      \\b-\\b                        Read/Write to/from standard I/O               \\|\n"
 		"      filename\\b,START,SIZE\\b      Read/Write a part of a file/device            \\| \n"

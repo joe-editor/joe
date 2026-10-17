@@ -529,7 +529,7 @@ int ugparse(W *w, int k)
 	return 0;
 }
 
-static int jump_to_file_line(BW *bw,char *file,off_t line,char *msg)
+int jump_to_file_line(BW *bw,char *file,off_t line,char *msg)
 {
 	int omid;
 	/* Do not allow shell command! */
@@ -593,6 +593,30 @@ void kill_ansi(char *s)
 		} else
 			*d++ = *s++;
 	*d = 0;
+}
+
+/* Jump to the file (and optional line) named at the start of line */
+
+int jump_to_line(BW *bw, const char *line)
+{
+	char *t = vsncpy(NULL, 0, sz(line));
+	char *name = NULL;
+	char *fullname;
+	off_t l = -1;
+	int rtn = -1;
+
+	kill_ansi(t);
+	parseone_grep(bw->b->o.charmap, t, &name, &l);
+	vsrm(t);
+	if (name && l != -1) {
+		fullname = vsncpy(NULL, 0, sv(get_cd(bw->parent)));
+		fullname = vsncpy(sv(fullname), sv(name));
+		vsrm(name);
+		name = canonical(fullname, CANFLAG_NORESTART);
+		rtn = jump_to_file_line(bw, name, l, NULL);
+		vsrm(name);
+	}
+	return rtn;
 }
 
 int ujump(W *w, int k)

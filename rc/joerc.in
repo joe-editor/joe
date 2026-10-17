@@ -687,6 +687,7 @@ mode,"syntax_debug",rtn,"3",rtn,retype	% % Syntax debug: full (3)
   Hit TAB to complete names.  Use up / down arrow keys to traverse history.   \| 
   Special file names:                                                         \| 
        \b!\bcommand                 Pipe in/out of a shell command                \| 
+       \b!\b!\bcommand              Edit the file named on each output line       \| 
        \b>>\bfilename               Append to a file                              \| 
        \b-\b                        Read/Write to/from standard I/O               \|
        filename\b,START,SIZE\b      Read/Write a part of a file/device            \| 

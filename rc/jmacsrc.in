@@ -590,6 +590,7 @@ mode,"syntax_debug",rtn,"3",rtn,retype	% % Syntax debug: full (3)
 \i \i Or use up/down keys to access history of previously entered names           \|\i \i
 \i \i Special file names:                                                         \|\i \i
 \i \i      !command                 Pipe in/out of a shell command                \|\i \i
+\i \i      !!command                Edit the file named on each output line       \|\i \i
 \i \i      >>filename               Append to a file                              \|\i \i
 \i \i      -                        Read/Write to/from standard I/O               \|\i \i
 \i \i      filename,START,SIZE      Read/Write a part of a file/device            \|\i \i

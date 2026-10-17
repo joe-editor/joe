@@ -23,3 +23,5 @@ B *beafter(B *);
 extern B *errbuf; /* Buffer which has error messages */
 void parseone_grep(struct charmap *map, const char *s, char **rtn_name, off_t *rtn_line);
 int ucurrent_msg(W *w, int k);
+int jump_to_file_line(BW *bw, char *file, off_t line, char *msg);
+int jump_to_line(BW *bw, const char *line);

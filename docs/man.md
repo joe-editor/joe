@@ -832,6 +832,13 @@ use __joe '!ls'__ to get a copy of your directory listing to edit or from
 within the editor use __^K D !mail jhallen@world.std.com__ to send the
 file being edited to me.
 
+* !!command
+
+Like __!command__, but each line of the command's output is parsed for a
+file name and optional line number (__file__, __file:line:text__) and the
+named file is opened.  For example, __^K E !!find . -type f | fzf__ opens
+the file selected by fzf.
+
 * &gt;&gt;filename
 
 Use this to have JOE append the edited text to the end of the file 
