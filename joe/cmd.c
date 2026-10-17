@@ -51,6 +51,7 @@ const CMD cmds[] = {
 	{"charset", TYPETW + TYPEPW, ucharset, NULL, 0, NULL},
 	{"ctrl", TYPETW + TYPEPW + EMOD, uctrl, NULL, 0, NULL},
 	{"col", TYPETW + TYPEPW, ucol, NULL, 0, NULL},
+	{"comment", TYPETW + TYPEPW + EFIXXCOL + EMOD + EBLOCK, ucomment, NULL, 0, NULL},
 	{"complete", TYPEPW + EMINOR + EMOD, ucmplt, NULL, 0, NULL},
 	{"copy", TYPETW + TYPEPW, ucopy, NULL, 0, NULL},
 	{"crawll", TYPETW + TYPEPW, ucrawll, NULL, 1, "crawlr"},

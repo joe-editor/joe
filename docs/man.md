@@ -3507,6 +3507,14 @@ Insert a file
 Center line
 <br>
 
+* comment<br>
+Comment out the marked block, or the current line if there is no block.
+The comment prefix is guessed from the file type (for example, # for
+Python and // for C); if it can not be guessed, you are prompted for it.
+If all lines are already commented, they are uncommented instead. Blank
+lines are skipped.
+<br>
+
 * fmtblk<br>
 Format all paragraphs in a block
 <br>

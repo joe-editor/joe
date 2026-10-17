@@ -1076,6 +1076,160 @@ int ulindent(W *w, int k)
 	return 0;
 }
 
+/* Line comment prefix for comment command, guessed from file type options */
+
+static const char *comment_prefix(BW *bw)
+{
+	if (bw->o.cpp_comment)
+		return "//";
+	if (bw->o.hash_comment)
+		return "#";
+	if (bw->o.vhdl_comment)
+		return "--";
+	if (bw->o.semi_comment)
+		return ";";
+	if (bw->o.tex_comment)
+		return "%";
+	return NULL;
+}
+
+/* Advance past blanks, but not past end of line */
+
+static void skip_blanks(P *p)
+{
+	int c;
+	while ((c = brch(p)) == ' ' || c == '\t')
+		pgetc(p);
+}
+
+/* True for end of line, including MS-DOS line endings */
+
+static int blank_eol(P *p)
+{
+	return piseol(p) || brch(p) == '\r';
+}
+
+/* Comment or uncomment lines from p up to end. Blank lines are skipped.
+ * If every other line already starts with prefix, the prefix (and one
+ * following space) is removed, otherwise prefix and a space are inserted
+ * after the indentation. */
+
+static void comment_lines(BW *bw, P *p, P *end, const char *prefix, size_t len)
+{
+	P *q = pdup(p, "ucomment");
+	int uncomment = 1;
+
+	while (p->byte < end->byte) {
+		size_t i;
+		p_goto_bol(p);
+		skip_blanks(p);
+		if (!blank_eol(p)) {
+			for (i = 0; i != len; ++i)
+				if (pgetc(p) != (unsigned char)prefix[i])
+					break;
+			if (i != len) {
+				uncomment = 0;
+				break;
+			}
+		}
+		pnextl(p);
+	}
+
+	pset(p, q);
+	if (uncomment) {
+		while (p->byte < end->byte) {
+			size_t i;
+			p_goto_bol(p);
+			skip_blanks(p);
+			if (!blank_eol(p)) {
+				pset(q, p);
+				for (i = 0; i != len; ++i)
+					if (brch(p) != (unsigned char)prefix[i])
+						break;
+					else
+						pgetc(p);
+				if (i == len) {
+					if (brch(p) == ' ')
+						pgetc(p);
+					bdel(q, p);
+				}
+			}
+			pnextl(p);
+		}
+	} else {
+		while (p->byte < end->byte) {
+			p_goto_bol(p);
+			skip_blanks(p);
+			if (!blank_eol(p)) {
+				/* binsm/binsc insert before p, so insert in reverse order */
+				binsc(p, ' ');
+				binsm(p, prefix, (ptrdiff_t)len);
+			}
+			pnextl(p);
+		}
+	}
+	prm(q);
+	bw->cursor->xcol = piscol(bw->cursor);
+}
+
+/* Comment or uncomment marked block, or current line if there is no block */
+
+static void comment_range(BW *bw, const char *prefix)
+{
+	P *p;
+	P *end;
+	int free_end;
+
+	if (!markb || !markk || markb->b != markk->b || bw->cursor->byte < markb->byte || bw->cursor->byte > markk->byte || markb->byte == markk->byte) {
+		p = pdup(bw->cursor, "ucomment");
+		p_goto_bol(p);
+		end = pdup(p, "ucomment");
+		pnextl(end);	/* NULL at EOF: end stays at end of file */
+		free_end = 1;
+	} else {
+		p = pdup(markb, "ucomment");
+		end = markk;
+		free_end = 0;
+	}
+	comment_lines(bw, p, end, prefix, strlen(prefix));
+	prm(p);
+	if (free_end)
+		prm(end);
+}
+
+static B *commenthist = NULL;	/* History of previously entered prefixes */
+
+static int docomment(W *w, char *s, void *object, int *notify)
+{
+	BW *bw;
+	WIND_BW(bw, w);
+	if (notify)
+		*notify = 1;
+	if (!s[0]) {
+		vsrm(s);
+		msgnw(bw->parent, joe_gettext(_("Invalid comment prefix")));
+		return -1;
+	}
+	comment_range(bw, s);
+	vsrm(s);
+	return 0;
+}
+
+int ucomment(W *w, int k)
+{
+	BW *bw;
+	WIND_BW(bw, w);
+	const char *prefix = comment_prefix(bw);
+	if (prefix) {
+		comment_range(bw, prefix);
+		return 0;
+	}
+	if (wmkpw(bw->parent, joe_gettext(_("Comment prefix (%{abort} to abort): ")), &commenthist, docomment, NULL, NULL, NULL, NULL, NULL, utf8_map, 0))
+		return 0;
+	else
+		return -1;
+}
+
 /* Insert a file */
 
 int doinsf(W *w, char *s, void *object, int *notify)

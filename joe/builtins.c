@@ -488,6 +488,7 @@ const char *const builtins[]=
 		"crawll		^[ <		Pan left\n"
 		"crawlr		^K >		Pan right\n"
 		"crawlr		^[ >		Pan right\n"
+		"comment		^K #		Comment/uncomment block\n"
 		"delch		.kD		Delete character\n"
 		"delch		^D\n"
 		"deleol		^J		Delete to end of line\n"

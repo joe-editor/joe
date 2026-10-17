@@ -32,6 +32,7 @@ int doinsf(W *w, char *s, void *object, int *notify);
 void setindent(BW *bw);
 int urindent(W *w, int k);
 int ulindent(W *w, int k);
+int ucomment(W *w, int k);
 int ufilt(W *w, int k);
 int unmark(W *w, int k);
 int udrop(W *w, int k);

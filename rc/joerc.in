@@ -1155,6 +1155,7 @@ crawll		^K <		Pan left
 crawll		^[ <		Pan left
 crawlr		^K >		Pan right
 crawlr		^[ >		Pan right
+comment		^K #		Comment/uncomment block
  if,"markv",then,blkdel,nmark,else,delch,endif		.kD		Delete block or character
 delch		.kD		Delete character
 delch		^D
