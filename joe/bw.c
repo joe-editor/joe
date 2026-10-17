@@ -10,6 +10,7 @@
 /* Attributes for line numbers, and current line */
 int bg_linum = 0;
 int bg_curlinum = 0;
+int bg_marknum = 0;
 int bg_curlin = 0;
 int curlinmask = -1;
 
@@ -835,11 +836,25 @@ static int lgen(SCRN *t, ptrdiff_t y, int (*screen)[COMPOSE], int *attr, ptrdiff
 	return 0;
 }
 
+/* Bookmark on the given line, or -1 if none.  The lowest-numbered
+   bookmark wins when several share a line. */
+
+static int bookmarked_line(B *b, off_t line)
+{
+	int i;
+
+	for (i = 0; i != 11; ++i)
+		if (b->marks[i] && b->marks[i]->line == line)
+			return i;
+	return -1;
+}
+
 static void gennum(BW *w, int (*screen)[COMPOSE], int *attr, SCRN *t, ptrdiff_t y, int *comp)
 {
 	char buf[24];
 	ptrdiff_t z, x;
 	off_t lin = w->top->line + y - w->y;
+	int mark = (lin <= w->b->eof->line) ? bookmarked_line(w->b, lin) : -1;
 
 	if (lin <= w->b->eof->line)
 #ifdef HAVE_LONG_LONG
@@ -854,8 +869,15 @@ static void gennum(BW *w, int (*screen)[COMPOSE], int *attr, SCRN *t, ptrdiff_t 
 	}
 	int atr = (w->o.hiline && lin == w->cursor->line) ? bg_curlinum : bg_linum;
 	for (z = SIZEOF(buf) - w->lincols - 1, x = 0; buf[z]; ++z, ++x) {
-		outatr(w->b->o.charmap, t, screen + x, attr + x, x, y, buf[z], BG_COLOR(atr));
-		comp[x] = buf[z];
+		int a = atr;
+		int c = buf[z];
+
+		if (!x && mark >= 0) {
+			c = (mark == 10) ? ':' : '0' + mark;
+			a = bg_marknum;
+		}
+		outatr(w->b->o.charmap, t, screen + x, attr + x, x, y, c, BG_COLOR(a));
+		comp[x] = c;
 	}
 	outatr_complete(t);
 }

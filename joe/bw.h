@@ -40,6 +40,7 @@ extern int selectmask;	/* Attribute mask for selected text */
 extern int selectatr;	/* Attribute value for selected text */
 extern int bg_linum;	/* Attribute value for line numbers */
 extern int bg_curlinum; /* Attribute value for the line number of the current line */
+extern int bg_marknum;  /* Attribute value for bookmark indicator in the line number gutter */
 extern int bg_curlin;	/* Attribute value for the current line */
 extern int curlinmask;	/* Mask for the current line */
 extern int vwsatr;      /* Attribute value for visible whitespace */

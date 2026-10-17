@@ -2309,6 +2309,7 @@ static int dosetmark(W *w, int c, void *object, int *notify)
 	if (c >= '0' && c <= ':') {
 		pdupown(bw->cursor, bw->b->marks + c - '0', "dosetmark");
 		poffline(bw->b->marks[c - '0']);
+		updall();	/* Redraw the bookmark indicator in the line number gutter */
 		if (c!=':') {
 			joe_snprintf_1(msgbuf, JOE_MSGBUFSIZE, joe_gettext(_("Mark %d set")), c - '0');
 			msgnw(bw->parent, msgbuf);

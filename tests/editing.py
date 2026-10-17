@@ -72,3 +72,24 @@ const CCre = /(([a-zA-Z\-]+)\s*(=\s*(("([^"\\]|\\.)*")|([^"\s]+))?))*/;
         self.assertTextAt("MNOP", x=8, y=12)
         self.assertTextAt("ABCD", x=8, y=1)
         self.assertTextAt("ABCD", x=8, y=5)
+
+    def test_bookmark_indicator(self):
+        """A bookmark shows its digit in the line number gutter"""
+        self.workdir.fixtureData("test", "aaa\nbbb\nccc\n")
+        self.startup.args = ("test",)
+        self.startJoe()
+        self.mode("linums")
+        self.cmd("dnarw")
+        self.cmd("setmark")
+        self.assertTextAt("Set mark", x=0, y=-1)
+        self.write("7")
+        # Status line is row 0, so buffer line 2 is at screen row 2.
+        # The gutter reads "72 bbb": bookmark digit then line number.
+        self.assertTextAt("72 bbb", x=0, y=2)
+        # Unmarked lines keep the leading space
+        self.assertTextAt(" 1 aaa", x=0, y=1)
+        # Overwriting the bookmark updates the indicator
+        self.cmd("setmark")
+        self.assertTextAt("Set mark", x=0, y=-1)
+        self.write("3")
+        self.assertTextAt("32 bbb", x=0, y=2)

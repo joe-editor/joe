@@ -2718,6 +2718,8 @@ A number of environment colors can be changed:
 * `-linum` specifies the color in the line number gutter.
 * `-curlin` specifies the current line color (if `hiline` is on).
 * `-curlinum` specifies the current line number color (if `hiline` is on).
+* `-marknum` specifies the color of the bookmark indicator in the line number
+  gutter (see `setmark`).
 
 These do not all need to be specified.  `-text` defaults to the terminal's
 default foreground/background colors.  Each other will pick up the value of

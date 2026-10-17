@@ -1750,6 +1750,7 @@ const char *const builtins[]=
 		"-menusel 	default/default inverse\n"
 		"-linum		default dim\n"
 		"-curlinum	default bold\n"
+		"-marknum	default bold\n"
 		"=Idle\n"
 		"=Bad            bold red\n"
 		"=Preproc        blue\n"

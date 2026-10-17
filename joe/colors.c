@@ -39,6 +39,7 @@ static const struct color_builtin_specs color_builtins[] = {
 	{ "linum", &bg_linum, NULL, 0, 0, 0, &bg_text },
 	{ "curlin", &bg_curlin, &curlinmask, 0, 0, -1, &bg_text },
 	{ "curlinum", &bg_curlinum, NULL, 0, 0, 0, &bg_linum },
+	{ "marknum", &bg_marknum, NULL, 0, 0, 0, &bg_curlinum },
 	{ "selection", &selectatr, &selectmask, 0, INVERSE, ~INVERSE, NULL },
 	{ "help", &bg_help, NULL, 0, 0, 0, &bg_text },
 	{ "status", &bg_stalin, NULL, 1, 0, 0, &bg_text },
