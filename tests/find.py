@@ -2,6 +2,77 @@
 import joefx
 
 class FindTests(joefx.JoeTestBase):
+    def replace_in_rectangle(self, data, left, down, right, expected):
+        self.workdir.fixtureData("test", data)
+        self.startup.args = ("test",)
+        self.startJoe()
+        self.mode("square")
+        self.cmd("bof")
+        self.writectl("{right*%d}" % left)
+        self.cmd("markb")
+        self.writectl("{down*%d}{right*%d}" % (down, right - left))
+        self.cmd("markk")
+        self.cmd("tomarkb")
+        self.replace("i", "I", "k")
+        self.answerReplace("y")
+        self.write("!")
+        self.writectl("^C")
+        self.save()
+        self.exitJoe()
+        self.assertFileContents("test", expected)
+
+    def test_debug_rectangle_issue(self):
+        """Regression test for rectangle search column cache across rows."""
+        self.workdir.fixtureData("test", "row 1: i inside i outside\nrow 2: i another i outside\nrow 3: i third i outside\nrow 4: i final i outside\nrow 5: i outside-only\n")
+        self.startup.args = ("test",)
+        self.startJoe()
+        self.mode("square")
+        self.cmd("bof")
+        self.writectl("{right*7}")
+        self.cmd("markb")
+        self.writectl("{down*3}{right*8}")
+        self.cmd("markk")
+        self.cmd("tomarkb")
+        self.replace("i", "I", "k")
+        self.answerReplace("y")
+        self.write("!")
+        self.writectl("^C")
+        self.save()
+        self.exitJoe()
+        self.assertFileContents("test", "row 1: I InsIde i outside\nrow 2: I another i outside\nrow 3: I thIrd i outside\nrow 4: I fInal i outside\nrow 5: i outside-only\n")
+
+    def test_rectangle_replace_multiple_adjacent_matches(self):
+        """Restricted replacement handles adjacent matches and excluded columns."""
+        self.replace_in_rectangle(
+            "row 1: i  ii  i OUTSIDE i\n"
+            "row 2: i  i   ii OUTSIDE i\n"
+            "row 3: ii i   i OUTSIDE i\n"
+            "row 4: i  ii  ii OUTSIDE i\n"
+            "row 5: i  i   i OUTSIDE i\n"
+            "row 6: i  ii  i OUTSIDE i\n",
+            7, 4, 23,
+            "row 1: I  II  I OUTSIDE i\n"
+            "row 2: I  I   II OUTSIDE i\n"
+            "row 3: II I   I OUTSIDE i\n"
+            "row 4: I  II  II OUTSIDE i\n"
+            "row 5: I  I   I OUTSIDE i\n"
+            "row 6: i  ii  i OUTSIDE i\n")
+
+    def test_rectangle_replace_nonzero_start_column(self):
+        """Restricted replacement honors a rectangle that starts mid-field."""
+        self.replace_in_rectangle(
+            "row 1: i inside i outside\n"
+            "row 2: i inside i outside\n"
+            "row 3: i inside i outside\n"
+            "row 4: i inside i outside\n"
+            "row 5: i inside i outside\n",
+            9, 3, 16,
+            "row 1: i InsIde i outside\n"
+            "row 2: i InsIde i outside\n"
+            "row 3: i InsIde i outside\n"
+            "row 4: i InsIde i outside\n"
+            "row 5: i inside i outside\n")
+
     def test_abracadabra(self):
         """Regression test for #295: infinite loop on search-and-replace"""
         self.startJoe()

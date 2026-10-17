@@ -40,6 +40,8 @@ struct search {
 	Regmatch_t entire;	/* Entire matching string */
 	SRCHREC	recs;		/* Search & replace position history */
 	P	*markb, *markk;	/* Original marks */
+	off_t	markb_line, markb_xcol;
+	off_t	markk_line, markk_xcol;
 	P	*wrap_p;	/* Wrap point */
 	off_t	addr;		/* Where to place cursor after failed restruct_to_block() test */
 	off_t	last_repl;	/* Address of last replacement (prevents infinite loops) */
