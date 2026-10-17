@@ -458,6 +458,13 @@ The following local options may be specified on the command line:
 The cursor starts on the specified line.
 <br>
 
+* filename:line:column<br>
+Open the file with the cursor on the specified line (starting at 1) and
+character position. The column may be omitted. A __+nnn__ option overrides
+the line from the file name. Use __--__ before the file name to open a file
+whose name literally ends in digits after a colon.
+<br>
+
 * autoindent<br>
 Enable auto-indent mode.  When you hit __Enter__ on an indented line, the
 indentation is duplicated onto the new line.

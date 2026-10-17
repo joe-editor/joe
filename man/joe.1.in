@@ -754,6 +754,15 @@ The cursor starts on the specified line\.
 
 .
 .IP "\(bu" 4
+filename:line:column
+.
+.br
+Open the file with the cursor on the specified line (starting at 1) and character position\. The column may be omitted\. A \fB+nnn\fR option overrides the line from the file name\. Use \fB\-\-\fR before the file name to open a file whose name literally ends in digits after a colon\.
+.
+.br
+
+.
+.IP "\(bu" 4
 autoindent
 .
 .br

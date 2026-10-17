@@ -306,6 +306,78 @@ int ushowlog(W *w, int k)
 	return 1;
 }
 
+/* Advance p to 1-based character position col of its line, stopping at
+ * end of line (tabs and wide characters each count as one) */
+static void p_goto_col(P *p, off_t col)
+{
+	while (--col > 0 && !piseol(p) && !piseof(p))
+		pgetc(p);
+}
+
+/* Strict decimal conversion (ztoo would treat a leading 0 as octal) */
+static off_t parse_decimal(const char *s)
+{
+	off_t val = 0;
+	while (*s >= '0' && *s <= '9') {
+		if (val < 100000000)
+			val = val * 10 + (off_t)(*s - '0');
+		++s;
+	}
+	return val;
+}
+
+/* Parse a trailing ":line" or ":line:col" suffix (1-based, decimal digits
+ * only) from a file argument, as in "foo.c:10" or "foo.c:10:5".
+ *
+ * On success the argument is truncated at the suffix and *line is set (*col
+ * is set for ":line:col", else left 0). Otherwise the argument is untouched
+ * and *line is set to 0, so plain names like "123", "notes:10x" or files
+ * with colons in them keep working.
+ */
+static void parse_file_position(char *s, off_t *line, off_t *col)
+{
+	char *e = s + zlen(s);
+	char *p = e;
+	char *colon;
+	char *q;
+
+	*line = 0;
+	*col = 0;
+
+	/* Trailing run of digits */
+	while (p > s && p[-1] >= '0' && p[-1] <= '9')
+		--p;
+	if (p == e || p == s || p[-1] != ':')
+		return;
+	colon = p - 1;
+	if (colon == s)
+		return;
+	*line = parse_decimal(p);
+	if (*line <= 0)
+		goto literal;
+
+	/* A second run of digits before it makes this ":line:col": all or nothing */
+	q = colon;
+	while (q > s && q[-1] >= '0' && q[-1] <= '9')
+		--q;
+	if (q != colon && q > s && q[-1] == ':' && q - 1 != s) {
+		off_t l = parse_decimal(q);
+		if (l <= 0)
+			goto literal;
+		*col = *line;
+		*line = l;
+		q[-1] = 0;
+		return;
+	}
+
+	*colon = 0;
+	return;
+
+literal:
+	*line = 0;
+	*col = 0;
+}
+
 int main(int argc, char **real_argv, const char * const *envv)
 {
 	const char *home = getenv("HOME");
@@ -580,6 +652,7 @@ int main(int argc, char **real_argv, const char * const *envv)
 			cmd_help(0);
 			printf("\nLocal options:\n");
 			printf("    %-23s Start cursor on specified line\n", "+nnn");
+			printf("    %-23s Open file at line and character position\n", "file:line[:col]");
 			cmd_help(1);
 			return 0;
 		} else if (!strcmp(argv[c], "-v") || !strcmp(argv[c], "-version") || !strcmp(argv[c], "--version")) {
@@ -633,9 +706,18 @@ int main(int argc, char **real_argv, const char * const *envv)
 					++c;
 			}
 		} else {
-			B *b = bfind(argv[c]);
+			B *b;
 			BW *bw = NULL;
-			int er = berror;
+			int er;
+			off_t argline = 0;
+			off_t argcol = 0;
+
+			/* Split off trailing ":line" or ":line:col". "--" (filesonly)
+			 * means the name is literal. */
+			if (!filesonly)
+				parse_file_position(argv[c], &argline, &argcol);
+			b = bfind(argv[c]);
+			er = berror;
 
 			/* This is too annoying */
 			/* set_current_dir(argv[c],1); */
@@ -652,8 +734,14 @@ int main(int argc, char **real_argv, const char * const *envv)
 				off_t line;
 				b->orphan = 1;
 				b->oldcur = pdup(b->bof, "main");
-				pline(b->oldcur, get_file_pos(b->name));
+				if (argline > 0)
+					pline(b->oldcur, argline - 1);
+				else
+					pline(b->oldcur, get_file_pos(b->name));
 				p_goto_bol(b->oldcur);
+				if (argline > 0 && argcol > 1)
+					p_goto_col(b->oldcur, argcol);
+				b->oldcur->xcol = piscol(b->oldcur);
 				line = b->oldcur->line - (maint->h - 1) / 2;
 				if (line < 0)
 					line = 0;
@@ -685,11 +773,18 @@ int main(int argc, char **real_argv, const char * const *envv)
 				/* Put cursor in window, so macros work properly */
 				maint->curwin = bw->parent;
 				/* Hmm... window might not exist any more... depends on what macro does... */
+				/* Explicit +nnn overrides a ":line:col" suffix */
 				if (lnum > 0)
 					pline(bw->cursor, lnum - 1);
+				else if (argline > 0)
+					pline(bw->cursor, argline - 1);
 				else
 					pline(bw->cursor, get_file_pos(bw->b->name));
 				p_goto_bol(bw->cursor);
+				if (lnum <= 0 && argcol > 1)
+					p_goto_col(bw->cursor, argcol);
+				/* Display positions the cursor from xcol: recompute it */
+				bw->cursor->xcol = piscol(bw->cursor);
 				/* Execute macro */
 				if (er == -1 && bw->o.mnew)
 					exmacro(bw->o.mnew, 1, NO_MORE_DATA);
